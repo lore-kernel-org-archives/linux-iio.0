@@ -1,262 +1,1175 @@
-Received: from mx0b-00549402.pphosted.com (mx0b-00549402.pphosted.com [205.220.178.134])
+Received: from www571.your-server.de (www571.your-server.de [78.46.3.230])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA523238C1B;
-	Tue, 15 Jul 2025 09:12:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.178.134
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752570730; cv=fail; b=gwYR5YiiI2m/A3LtvqHoGFljLo9zOQhYlfTg0WCHLRflRmCUgeXOW4uYLM0YUS/4SqbuLVZJBCNGCtx/ycaWcvM9C4GuUw8JU0B0rJeecuZsR+Bi+9kOLSB5GDa9zxjsMs7gxMPrZwiPHCX9nAoN0orArUfFLrTgLgwNPLqrcig=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752570730; c=relaxed/simple;
-	bh=D0t7f65NGYHFyA+2FRx015/QUt62ebYbjTISxuN1rGQ=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=XgmcNARv0WQo9mOIoPtgaQRvsp5E02md5gYndilLeNYkcnUS0mIeopePO2sjfFSLefqtxQVcqlrLVUBFUsazFKt3ckwwXIhA70AfBj5FkQK+2KTWoIbTRVQuxCN27xwZYptDnVbuuD1dAa4ytSQlnSgrj5JPC8hcJCwO28wSOeY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tdk.com; spf=pass smtp.mailfrom=tdk.com; dkim=pass (2048-bit key) header.d=tdk.com header.i=@tdk.com header.b=gZb1Jb52; arc=fail smtp.client-ip=205.220.178.134
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=tdk.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tdk.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D51201E5018;
+	Tue, 15 Jul 2025 09:15:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=78.46.3.230
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1752570921; cv=none; b=Czgy7ZiCkpJD2yy+4b59uqRNqFCmzkAzni149HBEraImLoUTb2EZ4ACO4MZVZmaRKOhgqxxq7/pwqJLdFbefvNvPkGpm/eqmogUG13IrFhtB8yv53UgDzIufFQ+DKG7OTqoJwOo79exPtNKn0thpM2JRzgRtX+/iL41igTaWcwE=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1752570921; c=relaxed/simple;
+	bh=vpsdhoTvSkv3W1xPMmpRNCLx9uNIXvpsNyuiaRraPt8=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=eV7Wu+nR06K+FVXqMPL2uXUCN3GknRh0etH4ti1GBzjxvQgho45XQxRc5vhjot+NwdyDiraaTB6ozGnfRFSABpibt2qmQzEJ4BzuoB5+Zi859rQbYWBHkQ3JI5Zr/grOIIrhfpK4h01b7fulcBgRxutMnQZcAITtN0L699g0vh0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de; spf=pass smtp.mailfrom=it-klinger.de; dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b=N/Fw915n; arc=none smtp.client-ip=78.46.3.230
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=it-klinger.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=it-klinger.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=tdk.com header.i=@tdk.com header.b="gZb1Jb52"
-Received: from pps.filterd (m0233779.ppops.net [127.0.0.1])
-	by mx0b-00549402.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 56ELo6cH013827;
-	Tue, 15 Jul 2025 09:11:58 GMT
-Received: from beup281cu002.outbound.protection.outlook.com (mail-germanynorthazon11010044.outbound.protection.outlook.com [52.101.169.44])
-	by mx0b-00549402.pphosted.com (PPS) with ESMTPS id 47uh2mhytp-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 15 Jul 2025 09:11:57 +0000 (GMT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=b5h7Lue28L6HEj66/hp6tkSfFQMqJt+LgKv03R9rRBYybpmXYRTrxqMQh0MqnY3F29TyYnQRQy3Pk8Rpz4pgpBRoClIkcMQqZVijK3FDI2zmJm4wleTb0WAbtAqD8YhjjUlC3J7g8EDPrqNWgdgd0LYQTU+3UgiQeQrvuBTWVEd5WL7u1A6hUOAxceuNrzLwDnegv/7KmWyOYi1VO+hfHR75E/eHKSDDGT69aNWXfCYS5QNNxvt8eDO4fkrKz+Hb9FFeENko5YMLG78DZO3xe+KOmbj1o4q7Zk72HgZZgdbpNf/pagjjPkbML8lUDBEKsQl/A4IRU2kyrF+81V2sHw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=D0t7f65NGYHFyA+2FRx015/QUt62ebYbjTISxuN1rGQ=;
- b=nxufpI74e3UbIVtrp0O6A574pp8pygZJ1rpOw/pI+Ske1xPcffLW2LAtLj00TBUxOpQDKUzTG6nAAsop1ir6XJhnhMeCGxr0tOpdfgyMUXeSFAYQELzr+IdC5p0+0Qx/bBf13zKNqN4g6Mu5PX89Xe2/dzy1IICGLOvyj6w4fRbDHyuivThWIagfY6KIF3L3tfHZU6HNUW77djAdel7pjIb4Az9fCQZTI5OX+PaC4S9uefMf7YHtKT98BiJSrvet4BX6+vyqOTeB3zJ9pEDusJw7Lj5ziynTTnlQLWt9U8VGkD48c/zc+Z9ygfHZllzbcSonnz797rfbKp83rRM3ZA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=tdk.com; dmarc=pass action=none header.from=tdk.com; dkim=pass
- header.d=tdk.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=tdk.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=D0t7f65NGYHFyA+2FRx015/QUt62ebYbjTISxuN1rGQ=;
- b=gZb1Jb52WO0qrH5PInNxvn3n1VdYIOkfHuFoTc+9M1CyRjXcDt2/AkO904U78yzPDw6IGD3hnm8ipmA4O6dnfyE9cPbKQfcehT0b8ovGnB8XRdnKf7HO1bEq1p4/R9A5KLsXq2mz2d7324yOYpkfXGFXjqir73BQ7EkW5LO2RPXy9QDiSnGG29UjKjb4rkqLXizV5/hvtcqeLDdPHfXi6bQLlcG+uQXQgJWdn7q2HCnHSEl/+JTkl/LaAwDmcyaFfCdZN4jEp6g5XJ1TUl+zO91oMHoUynN7h+s7HUyCCo7RRJ2IrQOAXlzJbEfMeF+AUx6D4Y1Hl6teSkaGDkFI9w==
-Received: from FR2PPF4571F02BC.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d18:2::2d)
- by FR2PPF25532000A.DEUP281.PROD.OUTLOOK.COM (2603:10a6:d18:2::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.8922.32; Tue, 15 Jul
- 2025 09:11:47 +0000
-Received: from FR2PPF4571F02BC.DEUP281.PROD.OUTLOOK.COM
- ([fe80::903d:f362:450:c7bf]) by FR2PPF4571F02BC.DEUP281.PROD.OUTLOOK.COM
- ([fe80::903d:f362:450:c7bf%3]) with mapi id 15.20.8922.028; Tue, 15 Jul 2025
- 09:11:47 +0000
-From: Remi Buisson <Remi.Buisson@tdk.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-        David Lechner
-	<dlechner@baylibre.com>,
-        =?utf-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
-        Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof
- Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: RE: [PATCH v2 2/8] iio: imu: inv_icm45600: add new inv_icm45600
- driver
-Thread-Topic: [PATCH v2 2/8] iio: imu: inv_icm45600: add new inv_icm45600
- driver
-Thread-Index: AQHb8XjFFPwNlXicDEKbiHsXjh6cu7QrF22AgAGz8eCAAAc1AIAGGyUA
-Date: Tue, 15 Jul 2025 09:11:47 +0000
-Message-ID:
- <FR2PPF4571F02BC69DF6807BAA188B2B3A08C57A@FR2PPF4571F02BC.DEUP281.PROD.OUTLOOK.COM>
-References: <20250710-add_newport_driver-v2-0-bf76d8142ef2@tdk.com>
- <20250710-add_newport_driver-v2-2-bf76d8142ef2@tdk.com>
- <aG-ID7O3HgVc1EOX@smile.fi.intel.com>
- <FR2PPF4571F02BC5366477EC02E9C44041A8C4BA@FR2PPF4571F02BC.DEUP281.PROD.OUTLOOK.COM>
- <aHD7zEzvVuwSB9Ke@smile.fi.intel.com>
-In-Reply-To: <aHD7zEzvVuwSB9Ke@smile.fi.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: FR2PPF4571F02BC:EE_|FR2PPF25532000A:EE_
-x-ms-office365-filtering-correlation-id: 79c34315-54b0-4113-0f52-08ddc37fa089
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|7416014|1800799024|19092799006|366016|7053199007|38070700018|3613699012;
-x-microsoft-antispam-message-info:
- =?utf-8?B?S1JCMDV0L1pzeUZEbklkYVQ1SDNyOC9GWk5ITlloTVVmY05KNFovNUhYV0FE?=
- =?utf-8?B?c3d1bDVTZXFuUkN1ZEFiS0hKQ2dqZmRTSisxUkxyN3JCYW9ETHlXWWk2OHB6?=
- =?utf-8?B?ZllqdzBpUnFnaXM1UmViM1l1QTdUQnBvSUJYS28ycTdHQ002Y0lNM0hTQUQy?=
- =?utf-8?B?bmhFMStKakg5RHJySUJNZ2xPLzh2ck5ubWJZVDFEWVRnbkt2bnpWeG9TM3pJ?=
- =?utf-8?B?b1VPbVdBRTNiTVhHbjMrTFpYNlN3bFR1elh3MHUzVThsS05MSThFQmJKbDk3?=
- =?utf-8?B?THJNOGN1c0dzalZpakNsV3E4VXh2Y1BTOFQwY1FKaWp3elBiNm1MQldTNWNt?=
- =?utf-8?B?TkthaEZMQUppTkNVc2szMzB2RFZIQkdZeS83OTFVR01sSitkOHVIOWxmVFo1?=
- =?utf-8?B?NWtiWDJUYzRhZWFmbnNCdjlYV1kyS2I2S0o2OXpVM1dyTFBUd1V4T1ByTlRq?=
- =?utf-8?B?UjNTTTVnK1J1dGpYM2pKcmZSU1ZKbjlkbGI5blprZU16bWtiN2trNnJCYVRk?=
- =?utf-8?B?RnJHcDIxZzg0NkdkWVA1Y1FDZDNRWGVSOENDODgrQWc1UzZyMGlDQ2VqSmlz?=
- =?utf-8?B?SXg3dUdvZmZ6aWtPdE5rNDd3MXZuV0pZa0RUWlovRTVNdGNpdXNsdmx4bCta?=
- =?utf-8?B?a0QzUmM4MkIzYXR5NXVIUGgzVzJiUkp2eTA3UnNZUDBrejhTTVZkbzVzN0Fw?=
- =?utf-8?B?WkpSOFdVUWFUeHVWcnNkNkxQWFM4SWpsQ0tvVmRJSUdKQ2RZOGNEaHJOc0Uy?=
- =?utf-8?B?ZVBsUzR5d3hFbERtWjJ3WkY0dzltcmxwVDB6M3hDZlB1ZVNsd2FGQ1FqZWFq?=
- =?utf-8?B?YmRTelNUZ243dENiN0xmaFZtY3podVdETitXMWNoMHhzeFV4ZkVjd3NPeC8y?=
- =?utf-8?B?MXpXTTFuWk9teUZRazVkcmpjTTNqeTRRa3B6WWJ5WGRGeUsxUHRjZ0NrWHhR?=
- =?utf-8?B?Z2h1eXhRelRpWUpld2tRSUdXb2lBMTl0Sk15VDNvbExxZCtPTnB4ZDdIK2xy?=
- =?utf-8?B?L1VacW5jaGRCd0lxM2dSc283YTJkUHZ4TjU4OGxHdHRkK1MzdzFrM0g4ekVU?=
- =?utf-8?B?V2tWakdFQVlyWTBZUGNoMGlNY1ZjS1NJczlKN2FlMTJOdGtTWkR0eHFDYjF3?=
- =?utf-8?B?dnk5bjFPNlVlRXRsU1hZYXlqb2RGT2FwVlVxQVBkcnhLcGNrNVVxNkFQbVFR?=
- =?utf-8?B?dkZRaUl5WFBGNDgxVUNXUXhOUWxFUmF2bDQ2bDEzeTlBMDhLWUUyTVBHYUls?=
- =?utf-8?B?U2NCVnhYaFJkYm9wYjJjQ3hTcCs5VlQ1cFQ4ZUN6OEtSaERxajhWdjcyNk9x?=
- =?utf-8?B?Q2FvdEZNbEZnWFNQYXRUaVlheUJHejZRMlVQbG8rOFg1Z3NIWmd2cmdXMDhs?=
- =?utf-8?B?T3B1V3VWdFM3RVdQdkttaFR3UkJnZWhWYUNTZ3NkZW1LR0xqL2hDYkpCU2ty?=
- =?utf-8?B?dUxKUmlaZUZaODZQei9meEVJRUYzL3c2aEpWcDVQSGdrRWY0ekdnUGFLZ3Nx?=
- =?utf-8?B?ZytaNkhONjRocHlnb3drSElzdm1sMW5TdlVYOFJPVTRBdWlLM0J2YWFjbHU5?=
- =?utf-8?B?bmpXTGFYTXlMcy9zNVl0V1B2ZXJoMExlS1RCNTVKQmZ1cDdnZFdxRC9XWUxK?=
- =?utf-8?B?Zy91WWpBVnAwRkltdm9QNGNNc1JlK2Zod1hTd08rRkNQU2MxeEYrdWc4NDgx?=
- =?utf-8?B?UkppSjdUaG5JSnAyZ2FhTzBEaStzVVVXYmZ3QTFML2xieDJrVTFuRUs1enJy?=
- =?utf-8?B?OGRPR1dRRUN5UW1nczBIcG53U3NjOC9JcnhBbVBWN3JpaUkwa1RFVHowa3BV?=
- =?utf-8?B?VVA0LzFJdTlhTHN2L3dXS05yZTJzMDVORzRhM1hrdnAxNEFQMGE2OWl2OVVF?=
- =?utf-8?B?bUwya1ZtQmlnUUlvUVNxL1U4NnNqeHJhMmQ3T2JoZzQ5UE83U0pQTXZnUUt5?=
- =?utf-8?B?aSs3Wm1DZjZxa0drYk4wS1NsR1EySGhrSFJoODNwUldRTEl3MUlPbStiWDdr?=
- =?utf-8?B?c2Y3SWxlbnJ6R1I5cXJSMFdzSHE4WXpVbUZDMmpPdWhFTEJ6RERKeFBwTVBX?=
- =?utf-8?Q?E9i7fT?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:FR2PPF4571F02BC.DEUP281.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(1800799024)(19092799006)(366016)(7053199007)(38070700018)(3613699012);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?bExUQVBPR1JRVWJTdnFCbG9YVEZBL0RzU0FUdXZiMEhoaHhGd2FuNklCaEE5?=
- =?utf-8?B?VVJ3akMwdHdOR2VZekVURGovbmQ4L0h1NXlBS1QvOE90SUVIejJZQUpuU3pF?=
- =?utf-8?B?b1VhUkJ5bi82WnRoenZpM1dpMXREbU5lOURLQTZDQ1puR01QUnFvczNMbU5F?=
- =?utf-8?B?bjlPallma1BBeUdjMno4Ykpob2dlU29zVzVybFMyLytDR3NhRFlWR1RNSzIz?=
- =?utf-8?B?S2NSWUlVaEp0VmZkSEpiTGJJRXJHMVRnajBiMkFqbmpLLzBsSzd2K2xNS0Vq?=
- =?utf-8?B?Q0s5MTNVOWxjTFJNNTdUd1p0Mkt6RGk5UTI5c21pMkRlNSsyYmFYNWd0TzVI?=
- =?utf-8?B?MXZMY3dCd3pjMkxiMmlBR1k5bXNoalkxRXNlbkZsZlV5OWlNcjdXZEJwYVUv?=
- =?utf-8?B?ZGZocUVTZEJJUllqNUl4N21vTFprUit0MFNzOUVBNFV5aCszTDVIVWpMQldM?=
- =?utf-8?B?ellEeWZKSGVRK3lFY2VWRFh2Y1A4MG92QlFQVGZMNk1KQW1iSDFoZ2JJSjRo?=
- =?utf-8?B?LzhwUVFKSnpJSVR3bEtNU1ROdlV2WjZqM0xReVhCRG5sU2R6TXJ6dDloVzZo?=
- =?utf-8?B?dTVpNDk1NnBERFZETEVNQVB0VDEyRWM4QUE3SjZxMHZVbUJwYkV5bHY2V0xw?=
- =?utf-8?B?eFBVcCtoRm5FaTE5b0diRkd4SjBkNlVXaXJuWWhjOTNraE9DY08xb1dtZFh2?=
- =?utf-8?B?MjlLdU0zSU10UzFEenR2WDY5alhaK0E1Z0drdVNtdG9BTDdDR3p3KzB2UVIy?=
- =?utf-8?B?TDRwUU5kYk5VeCtpVTEzcWhHMWFnM2J5NHROTWJGRStYRGxEaGRpTzJqejdB?=
- =?utf-8?B?cnROMjBRbnpxUERZR3FuUURKam1FanlEUk0wRVA4TTRGdi82Q1FEQ0s2QUVC?=
- =?utf-8?B?K21FYWtYajYwdUVzTXBBemVPSjUzTmZ1bEV6OGh5OU03MVV4Wi92UllKK3py?=
- =?utf-8?B?S05mam5zUXpPUWVwQVlRZENOdUExV3k4MVBqbE5OdGxZOG5lb3hBMkp3L1Bv?=
- =?utf-8?B?b3hhek1jUGsxbHloTy9oVTRwR0lCQlZhSkE4b3lRTmluNURLUFlac0tnblNo?=
- =?utf-8?B?Q2RpOGoycWFVeUQ1YlJpVTEvaGx4cHdhcDd0SUlIWWtKYVVnNTJaeE5Hb0RG?=
- =?utf-8?B?N1d6ckxYS1QwOWQ3bWlRV0JJUHYySGdhYU5NRGdxMmdkSnFrWHl4RFBtblpI?=
- =?utf-8?B?QTdKZUZRdDF4Rk5rWGphNDNNcytZZE1iaWxOcXl3UU14RUdONW1TRnFBRFZF?=
- =?utf-8?B?REhIczBrK0RVMDNlZmpYVm1aQ2pTbHg0bER5MUthRUxZNVhmTzdEdTJXWlA3?=
- =?utf-8?B?UnQ3eXlUL0hWTmw4QmV2M00xdzVUUElrOG5lRWJWK3hVUmZjS24zWTFxSksz?=
- =?utf-8?B?R1pnWDV2b2JFdWFGNHFURTA5VTllM1FaYmx5MjVpeEFPZGZNNlBZdVpRWWt2?=
- =?utf-8?B?emhMWmEydC9yNHo3RzhCc3ZUTTFMRHMzb2ZBbWgycGJLUEcvNEZkaXZGSkZY?=
- =?utf-8?B?cVo0Rm9xeDB0bWFwUjMwc3RjV1lVQUJ2RWRSMEExOFBETEtUK1BHUTNzTXQ5?=
- =?utf-8?B?MmdNb3NCNXBuOEw5bVZtM3krOUdBaU51S0dWMHpuVzgwdnprZlhOKzFZUmhK?=
- =?utf-8?B?bnFXc1RhVXZCVGtMQlM5cmF1bitwaFhBVHE5VFhqcmFDK0Z3VjdVQ3pxQkVN?=
- =?utf-8?B?Y2ZFNjJqL0xpdS81N1QrMVUxV1Y1TWNlZjVZV3paZzBLbHI4d3JqTmN5M1hX?=
- =?utf-8?B?dmZLejFBWDd4WVBnbzFFV3NPWUo1TFM5QW9rZE1PNDJjRFBGV2JDWmhDS01M?=
- =?utf-8?B?anVGMi8vaFduZUxzQ3VpZjhiZXRERk91MDNwODVBUy9LMDBjVGt4UkxZQ3N3?=
- =?utf-8?B?RkpQeThqdWY4ajkrZFpINThLazU2alpOUm9xLzhEWVJzZm52eEQ0WlhtS2Ez?=
- =?utf-8?B?UXprNHgvaERySnRwN0RGWS90YkViL0kva24vVk1UUmNGcVpXOWhYWE8rbWZz?=
- =?utf-8?B?TDI4RjYvOHFNSVNjQ2l4U0ZVemkwMlhHVjVLUXdFZVpoODIrVERaOVhoYXdS?=
- =?utf-8?B?ajQyZDFCaWJSUHBiL3h6c1BlUFRKM00veGVvTEZkR2xXdFp2S09QeHRYMDYx?=
- =?utf-8?Q?mEoM2OAYVaIrLG7Y/neL4uqKt?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=it-klinger.de header.i=@it-klinger.de header.b="N/Fw915n"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=it-klinger.de; s=default2502; h=Content-Transfer-Encoding:MIME-Version:
+	References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+	Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+	Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID;
+	bh=u+K9rUEMZwYGO9IDp1xEQcwzm0e5Z7RqEXZcAkcSv5E=; b=N/Fw915nLpbu9JryC8v+q+H/5z
+	3rII5VZ9umaTyddnVgHDAg+gBPVUR70LL2u1sW615+mY5dzIbwnv628dcoq6ZoewEW0/OkhatwqK7
+	Rx5QVZ8y947CWrQu7H/LN7DAofAzeBWLH/mkEZuUzBiCUY9NkhieO4h8Nh/FR6F+Xb58k5TnEYTXL
+	szIqg2u2tAxCZEccxSxR74/ZIiZa8uGhqYdlQHsMKSAlC2PRserzJ3v3gh0hpVuUfSuFVaiKNWbt3
+	Ngd+q5JJUCLxJ17Jf06FoDMTMuD09ltA/3vSpcAr9rSOnGVSNZt2ZKhcP/isDGcafXN2hcFcHJmfw
+	Sy7ZN23Q==;
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+	by www571.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <ak@it-klinger.de>)
+	id 1ubbV9-000HlK-00;
+	Tue, 15 Jul 2025 10:59:03 +0200
+Received: from localhost ([127.0.0.1])
+	by sslproxy02.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <ak@it-klinger.de>)
+	id 1ubbV7-000AWe-2K;
+	Tue, 15 Jul 2025 10:59:02 +0200
+From: Andreas Klinger <ak@it-klinger.de>
+To: jic23@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org
+Cc: lars@metafoo.de,
+	javier.carrasco.cruz@gmail.com,
+	mazziesaccount@gmail.com,
+	andriy.shevchenko@linux.intel.com,
+	arthur.becker@sentec.com,
+	perdaniel.olsson@axis.com,
+	mgonellabolduc@dimonoff.com,
+	muditsharma.info@gmail.com,
+	clamor95@gmail.com,
+	emil.gedenryd@axis.com,
+	ak@it-klinger.de,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v6 2/3] iio: light: add support for veml6046x00 RGBIR color sensor
+Date: Tue, 15 Jul 2025 10:58:09 +0200
+Message-Id: <20250715085810.7679-3-ak@it-klinger.de>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20250715085810.7679-1-ak@it-klinger.de>
+References: <20250715085810.7679-1-ak@it-klinger.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: tdk.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: FR2PPF4571F02BC.DEUP281.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: 79c34315-54b0-4113-0f52-08ddc37fa089
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jul 2025 09:11:47.7505
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 7e452255-946f-4f17-800a-a0fb6835dc6c
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: JYCQID5ZB9LuTw1rrMXhRrzH+AARny+AKGGWLNWoiJI+ds4daCmgPAh3iF3bEFS9DBzEHQQqu1HBGMAJ3sigJQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: FR2PPF25532000A
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwNzE1MDA4MyBTYWx0ZWRfX8No/dSBr+H6+
- PB1uKU/2X62/WFjS4T6nkjz7oTQqrAPdZsoTmALnm6dblb2qd6f1693jEKvCg++tL7zKExonKwY
- hz/MkKCvHiV/k5l4zNa2ChPWRgYJeRkgEtZtx2qa8BDCxHij93UXj6Z1vY0NookftFTsz8jUXZE
- DG8vw0CD9uBKuVrZswga/Egw8qGBsW/mdztmxeuNOm5LHpXWOCa22bI66xG6K9Jj+tC5DmKEqbe
- lIT+C4UXFc3LSBHqm7AmLv2L85ficksVGNx8nZTcH+D+2g0CEtIxU0QOWMQZikHIBT05Ug14AgL
- P6fSg9GntcjbDdo475m7rfxuYhnNssskMV7kuEYm1ocYwbIDKFvd+wFBQcPk4ZTXWn6aHojIZJy
- 2BRWl28lDHTALbnbI6iUVs2AOvKL2qGwG0o6ZImkY41MwbqTkW0RdrGyVP7n1PgtMYjsXREi
-X-Proofpoint-GUID: yL4-f9Vvwga7HR7SkEWW7JCT_BfBgBpF
-X-Proofpoint-ORIG-GUID: yL4-f9Vvwga7HR7SkEWW7JCT_BfBgBpF
-X-Authority-Analysis: v=2.4 cv=MdZsu4/f c=1 sm=1 tr=0 ts=68761b5e cx=c_pps
- a=aHdhKcOANwzZ53GNjwmXag==:117 a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19
- a=wKuvFiaSGQ0qltdbU6+NXLB8nM8=:19 a=Ol13hO9ccFRV9qXi2t6ftBPywas=:19
- a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10 a=Wb1JkmetP80A:10 a=Uwzcpa5oeQwA:10
- a=QyXUC8HyAAAA:8 a=In8RU02eAAAA:8 a=VwQbUJbxAAAA:8 a=IpJZQVW2AAAA:8
- a=gAnH3GRIAAAA:8 a=i3VXfUYia7BG0nGZWDkA:9 a=QEXdDO2ut3YA:10
- a=EFfWL0t1EGez1ldKSZgj:22 a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1099,Hydra:6.1.7,FMLib:17.12.80.40
- definitions=2025-07-15_01,2025-07-14_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 clxscore=1015
- priorityscore=1501 mlxscore=0 mlxlogscore=999 impostorscore=0 malwarescore=0
- bulkscore=0 lowpriorityscore=0 phishscore=0 spamscore=0 adultscore=0
- suspectscore=0 classifier=spam authscore=0 authtc=n/a authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.19.0-2505280000
- definitions=main-2507150083
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: Clear (ClamAV 1.0.7/27699/Mon Jul 14 10:54:31 2025)
 
-Pg0KPg0KPkZyb206IEFuZHkgU2hldmNoZW5rbyA8YW5kcml5LnNoZXZjaGVua29AaW50ZWwuY29t
-PiANCj5TZW50OiBGcmlkYXksIEp1bHkgMTEsIDIwMjUgMTo1NiBQTQ0KPlRvOiBSZW1pIEJ1aXNz
-b24gPFJlbWkuQnVpc3NvbkB0ZGsuY29tPg0KPkNjOiBKb25hdGhhbiBDYW1lcm9uIDxqaWMyM0Br
-ZXJuZWwub3JnPjsgRGF2aWQgTGVjaG5lciA8ZGxlY2huZXJAYmF5bGlicmUuY29tPjsgTnVubyBT
-w6EgPG51bm8uc2FAYW5hbG9nLmNvbT47IEFuZHkgU2hldmNoZW5rbyA8YW5keUBrZXJuZWwub3Jn
-PjsgUm9iIEhlcnJpbmcgPHJvYmhAa2VybmVsLm9yZz47IEtyenlzenRvZiBLb3psb3dza2kgPGty
-emsrZHRAa2VybmVsLm9yZz47IENvbm9yIERvb2xleSA8Y29ub3IrZHRAa2VybmVsLm9yZz47IGxp
-bnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmc7IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7IGRl
-dmljZXRyZWVAdmdlci5rZXJuZWwub3JnDQo+U3ViamVjdDogUmU6IFtQQVRDSCB2MiAyLzhdIGlp
-bzogaW11OiBpbnZfaWNtNDU2MDA6IGFkZCBuZXcgaW52X2ljbTQ1NjAwIGRyaXZlcg0KPk9uIEZy
-aSwgSnVsIDExLCAyMDI1IGF0IDExOjMyOjQ4QU0gKzAwMDAsIFJlbWkgQnVpc3NvbiB3cm90ZToN
-Cj4+ID5Gcm9tOiBBbmR5IFNoZXZjaGVua28gYW5kcml5LnNoZXZjaGVua29AaW50ZWwuY29tPG1h
-aWx0bzphbmRyaXkuc2hldmNoZW5rb0BpbnRlbC5jb20+DQo+PiA+U2VudDogVGh1cnNkYXksIEp1
-bHkgMTAsIDIwMjUgMTE6MzAgQU0NCj4+ID5UbzogUmVtaSBCdWlzc29uIFJlbWkuQnVpc3NvbkB0
-ZGsuY29tPG1haWx0bzpSZW1pLkJ1aXNzb25AdGRrLmNvbT4NCj4+ID5PbiBUaHUsIEp1bCAxMCwg
-MjAyNSBhdCAwODo1Nzo1N0FNICswMDAwLCBSZW1pIEJ1aXNzb24gdmlhIEI0IFJlbGF5IHdyb3Rl
-Og0KPg0KPi4uLg0KPg0KPj4gPj4gK3N0cnVjdCBpbnZfaWNtNDU2MDBfc2Vuc29yX2NvbmYgew0K
-Pj4gPj4gKyAgICAgICBpbnQgbW9kZTsNCj4+ID4+ICsgICAgICAgaW50IGZzOw0KPj4gPj4gKyAg
-ICAgICBpbnQgb2RyOw0KPj4gPj4gKyAgICAgICBpbnQgZmlsdGVyOw0KPj4gPg0KPj4gPkFueSBv
-ZiB0aGVtIGNhbiBob2xkIG5lZ2F0aXZlIHZhbHVlPw0KPj4gDQo+PiBZZXMsIHdoZW4gc2V0dGlu
-ZyB0aGUgY29uZmlndXJhdGlvbiwgYSBuZWdhdGl2ZSB2YWx1ZSBtZWFucyAia2VlcCBwcmV2aW91
-cyBjb25maWd1cmVkIHZhbHVlIi4NCj4+IExpa2UgaW4gdGhlIElOVl9JQ000NTYwMF9TRU5TT1Jf
-Q09ORl9JTklUIG1hY3JvIGJlbG93Lg0KPg0KPkkgc2VlLCBidXQgY2FuJ3QgaXQgYmUgYXMgc2lt
-cGxlIGFzICJiaWcgbnVtYmVyIiB3aXRoIHRoZSBwcm9wZXIgdHlwZSBpbnN0ZWFkPw0KPg0KPiNk
-ZWZpbmUgLi4uX0tFRVBfVkFMVUUJCVU4X01BWCAvLyBvciB3aGF0ZXZlciB0eXBlDQpZZXMsIEkg
-Y2FuIHN1cmVseSBmaXggaXQgdGhpcyB3YXkuDQpJIGFncmVlIGl0IHdpbGwgYmUgY2xlYXJlci4N
-Cj4NCj4+ID4+ICt9Ow0KPg0KPi4uLg0KPg0KPj4gPj4gKyNkZWZpbmUgSU5WX0lDTTQ1NjAwX1NF
-TlNPUl9DT05GX0lOSVQgICAgICAgICAgICAgICAgICAgICAgICB7LTEsIC0xLCAtMSwgLTF9DQo+
-PiA+DQo+PiA+VW51c2VkLg0KPj4gVGhpcyBpcyB1c2VkIGluIGxhdGVyIHBhdGNoIG9mIHRoZSBz
-ZXJpZS4NCj4+IEkgd2lsbCBtb3ZlIHRoaXMgZGVmaW5pdGlvbiB0byB0aGUgcGF0Y2ggdXNpbmcg
-aXQuDQo+DQo+WWVzLCB1bnVzZWQgaW4gdGhpcyBjb2RlLiBZb3Ugc2hvdWxkIGNvbXBpbGUgdGhl
-IHNlcmllcyBpbmNyZW1lbnRhbGx5LA0KPnNvIGVhY2ggcGF0Y2ggd2lsbCBnZXQgYSBjb21waWxh
-dGlvbiB0ZXN0LiBUaGlzIGlzIGNhbGxlZCBjb21waWxlLXRpbWUNCj5iaXNlY3RhYmlsaXR5LiBB
-bHNvIHJ1biB0aGUgc3lzdGVtIGVhY2ggdGltZSB0byBjb25maXJtIG5vIHJlZ3Jlc3Npb25zDQo+
-KHRoaXMgaXMgY2FsbGVkIHJ1bi10aW1lIGJpc2VjdGFiaWxpdHkpLg0KWWVzIEkgZGlkIHRoYXQg
-Zm9yIGVhY2ggcGF0Y2gsIGV2ZXJ5dGhpbmcgYnVpbGQgc3VjY2Vzc2Z1bGx5Lg0KSW4gdGhhdCBj
-YXNlLCBub3RoaW5nIGlzIGJyb2tlbiBkdWUgdG8gdGhpcyBlYXJseSBkZWZpbml0aW9uIG9mIHRo
-ZSBtYWNyby4NCkJ1dCBJJ2xsIGRlZmluaXRlbHkgbW92ZSBpdCB0byBsYXRlciBwYXRjaCBmb3Ig
-Y2xhcml0eS4gDQo+DQo+Li4uDQo+DQo+PiA+PiArICAgICAgICAgICAgICAgICAgICAgIHVkZWxh
-eShJTlZfSUNNNDU2MDBfSVJFR19ERUxBWV9VUyk7DQo+PiA+DQo+PiA+Q2FuIGZzbGVlcCgpIGJl
-IHVzZWQgaGVyZT8NCj4+IEkgd2lsbCB1c2UgZnNsZWVwIHRoZXJlLg0KPj4gSXMgaXQgcmVjb21t
-ZW5kZWQgdG8gdXNlIGZzbGVlcCBldmVyeXdoZXJlIGVsc2UgaW4gcGxhY2Ugb2Ygb3RoZXIgc2xl
-ZXAgQVBJcz8NCj4NCj5Ob3QgZXZlcnl3aGVyZSwgYnV0IGluIGdlbmVyYWwgeWVzLCBpZiBpbiBk
-b3VidCwgdXNlIGl0IChidXQgdGhlIGF1dGhvciBpcw0KPnRoZSBvbmUgd2hvIGtub3dzIHRoZWly
-IHRoZSBjb2RlIGFuZCBhbnN3ZXIgdG8gdGhpcyBxdWVzdGlvbikuDQpPayB0aGFua3MhDQo+DQo+
-Li4uDQo+DQo+PiBJdCdzIHByb2JhYmx5IHNhZmVyIHRvIGtlZXAgdGhlIGRlbGF5IGV2ZW4gaW4g
-Y2FzZSBvZiBmYWlsdXJlIHRvIG1ha2Ugc3VyZQ0KPj4gdGhlIGRldmljZSBpcyByZWFkeSBiZWZv
-cmUgbmV4dCBvcGVyYXRpb24uDQo+DQo+SSBhbSBub3Qgc3VyZSBhYm91dCBpdC4gV2h5PyBUaGlz
-IGhhcyB0byBiZSB3ZWxsIGp1c3RpZmllZCBhcyBpdCdzIHF1aXRlDQo+dW51c3VhbCBwYXR0ZXJu
-Lg0KT2sgSSB1bmRlcnN0YW5kLCB0aGUgaGFyZHdhcmUgbmVlZHMgdGhhdCBkZWxheSBpZiB0aGUg
-YWNjZXNzIHdhcyBhY3R1YWxseSBkb25lIG9uIHRoZSBidXMgKHRvIG5vdCBqZW9wYXJkaXplIG5l
-eHQgYWNjZXNzKS4NCklmIGEgcmVnbWFwIGVycm9yIG1lYW5zIHRoYXQgbm8gcmVhbCBhY2Nlc3Mg
-b2NjdXJlZCB0aGVuIHRoZSBkZWxheSBpcyBhdm9pZGFibGUuDQo+DQo+LS0gDQo+V2l0aCBCZXN0
-IFJlZ2FyZHMsDQo+QW5keSBTaGV2Y2hlbmtvDQo+DQo+DQo+DQo=
+Add Vishay VEML6046X00 high accuracy RGBIR color sensor.
+
+This sensor provides three colour (red, green and blue) as well as one
+infrared (IR) channel through I2C.
+
+Support direct and buffered mode.
+
+An optional interrupt for signaling green colour threshold underflow or
+overflow is not supported so far.
+
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+---
+ drivers/iio/light/Kconfig       |   13 +
+ drivers/iio/light/Makefile      |    1 +
+ drivers/iio/light/veml6046x00.c | 1037 +++++++++++++++++++++++++++++++
+ 3 files changed, 1051 insertions(+)
+ create mode 100644 drivers/iio/light/veml6046x00.c
+
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index 4a7d983c9cd4..ac1408d374c9 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -724,6 +724,19 @@ config VEML6040
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called veml6040.
+ 
++config VEML6046X00
++	tristate "VEML6046X00 RGBIR color sensor"
++	select REGMAP_I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	depends on I2C
++	help
++	  Say Y here if you want to build a driver for the Vishay VEML6046X00
++	  high accuracy RGBIR color sensor.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called veml6046x00.
++
+ config VEML6070
+ 	tristate "VEML6070 UV A light sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 8229ebe6edc4..c0048e0d5ca8 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -67,6 +67,7 @@ obj-$(CONFIG_VCNL4035)		+= vcnl4035.o
+ obj-$(CONFIG_VEML3235)		+= veml3235.o
+ obj-$(CONFIG_VEML6030)		+= veml6030.o
+ obj-$(CONFIG_VEML6040)		+= veml6040.o
++obj-$(CONFIG_VEML6046X00)	+= veml6046x00.o
+ obj-$(CONFIG_VEML6070)		+= veml6070.o
+ obj-$(CONFIG_VEML6075)		+= veml6075.o
+ obj-$(CONFIG_VL6180)		+= vl6180.o
+diff --git a/drivers/iio/light/veml6046x00.c b/drivers/iio/light/veml6046x00.c
+new file mode 100644
+index 000000000000..bad4bd7f3f3f
+--- /dev/null
++++ b/drivers/iio/light/veml6046x00.c
+@@ -0,0 +1,1037 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * VEML6046X00 High Accuracy RGBIR Color Sensor
++ *
++ * Copyright (c) 2025 Andreas Klinger <ak@it-klinger.de>
++ */
++
++#include <linux/array_size.h>
++#include <linux/bitfield.h>
++#include <linux/bits.h>
++#include <linux/dev_printk.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/pm_runtime.h>
++#include <linux/regmap.h>
++#include <linux/time.h>
++#include <linux/types.h>
++#include <linux/units.h>
++
++#include <asm/byteorder.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++/*
++ * Device registers
++ * Those which are accessed as bulk io are omitted
++ */
++#define VEML6046X00_REG_CONF0       0x00
++#define VEML6046X00_REG_CONF1       0x01
++#define VEML6046X00_REG_THDH        0x04
++#define VEML6046X00_REG_THDL        0x06
++#define VEML6046X00_REG_R           0x10
++#define VEML6046X00_REG_G           0x12
++#define VEML6046X00_REG_B           0x14
++#define VEML6046X00_REG_IR          0x16
++#define VEML6046X00_REG_ID          0x18
++#define VEML6046X00_REG_INT         0x1A
++#define VEML6046X00_REG_INT_H       0x1B
++
++/* Bit masks for specific functionality */
++#define VEML6046X00_CONF0_ON_0      BIT(0)
++#define VEML6046X00_CONF0_INT       BIT(1)
++#define VEML6046X00_CONF0_AF_TRIG   BIT(2)
++#define VEML6046X00_CONF0_AF        BIT(3)
++#define VEML6046X00_CONF0_IT        GENMASK(6, 4)
++#define VEML6046X00_CONF1_CAL       BIT(0)
++#define VEML6046X00_CONF1_PERS      GENMASK(2, 1)
++#define VEML6046X00_CONF1_GAIN      GENMASK(4, 3)
++#define VEML6046X00_CONF1_PD_D2     BIT(6)
++#define VEML6046X00_CONF1_ON_1      BIT(7)
++#define VEML6046X00_INT_TH_H        BIT(1)
++#define VEML6046X00_INT_TH_L        BIT(2)
++#define VEML6046X00_INT_DRDY        BIT(3)
++#define VEML6046X00_INT_MASK						       \
++	(VEML6046X00_INT_TH_H | VEML6046X00_INT_TH_L | VEML6046X00_INT_DRDY)
++
++#define	VEML6046X00_GAIN_1          0x0
++#define	VEML6046X00_GAIN_2          0x1
++#define	VEML6046X00_GAIN_0_66       0x2
++#define	VEML6046X00_GAIN_0_5        0x3
++
++#define VEML6046X00_PD_2_2          0x0
++#define VEML6046X00_PD_1_2          BIT(6)
++
++/* Autosuspend delay */
++#define VEML6046X00_AUTOSUSPEND_MS  (3 * MSEC_PER_SEC)
++
++enum veml6046x00_scan {
++	VEML6046X00_SCAN_R,
++	VEML6046X00_SCAN_G,
++	VEML6046X00_SCAN_B,
++	VEML6046X00_SCAN_IR,
++	VEML6046X00_SCAN_TIMESTAMP,
++};
++
++/**
++ * struct veml6046x00_rf - Regmap field of configuration registers.
++ * @int_en:	Interrupt enable of green channel.
++ * @mode:	Mode of operation.
++ *		Driver uses always Active force mode.
++ * @trig:	Trigger to be set in active force mode for starting
++ *		measurement.
++ * @it:		Integration time.
++ * @pers:	Persistense - Number of threshold crossing for triggering
++ *		interrupt.
++ */
++struct veml6046x00_rf {
++	struct regmap_field *int_en;
++	struct regmap_field *mode;
++	struct regmap_field *trig;
++	struct regmap_field *it;
++	struct regmap_field *pers;
++};
++
++/**
++ * struct veml6046x00_data - Private data of driver.
++ * @regmap:	Regmap definition of sensor.
++ * @trig:	Industrial-IO trigger.
++ * @rf:		Regmap field of configuration.
++ */
++struct veml6046x00_data {
++	struct regmap *regmap;
++	struct iio_trigger *trig;
++	struct veml6046x00_rf rf;
++};
++
++/**
++ * DOC: Valid integration times (IT)
++ *
++ * static const int veml6046x00_it contains the array with valid IT.
++ *
++ * Register value to be read or written in regmap_field it on veml6046x00 is
++ * identical with array index.
++ * This means there is no separate translation table between valid integration
++ * times and register values needed. The index of the array is identical with
++ * the register value.
++ *
++ * The array is in the form as expected by the callback of the sysfs attribute
++ * integration_time_available (IIO_CHAN_INFO_INT_TIME). So there is no
++ * additional conversion needed.
++ */
++static const int veml6046x00_it[][2] = {
++	{ 0, 3125 },
++	{ 0, 6250 },
++	{ 0, 12500 },
++	{ 0, 25000 },
++	{ 0, 50000 },
++	{ 0, 100000 },
++	{ 0, 200000 },
++	{ 0, 400000 },
++};
++
++/**
++ * DOC: Handling of gain and photodiode size (PD)
++ *
++ * Gains here in the driver are not exactly the same as in the datasheet of the
++ * sensor. The gain in the driver is a combination of the gain of the sensor
++ * with the photodiode size (PD).
++ * The following combinations are possible:
++ *   gain(driver) = gain(sensor) * PD
++ *           0.25 = x0.5  * 1/2
++ *           0.33 = x0.66 * 1/2
++ *           0.5  = x0.5  * 2/2
++ *           0.66 = x0.66 * 2/2
++ *           1    = x1    * 2/2
++ *           2    = x2    * 2/2
++ */
++
++/**
++ * struct veml6046x00_gain_pd - Translation of gain and photodiode size (PD).
++ * @gain_sen:	Gain used in the sensor as described in the datasheet of the
++ *		sensor
++ * @pd:		Photodiode size in the sensor
++ *
++ * This is the translation table from the gain used in the driver (and also used
++ * by the userspace interface in sysfs) to the gain and PD used in the sensor
++ * hardware.
++ *
++ * There are six gain values visible to the user (0.25 .. 2) which translate to
++ * two different gains in the sensor hardware (x0.5 .. x2) and two PD (1/2 and
++ * 2/2). Theoretical are there eight combinations, but gain values 0.5 and 1 are
++ * doubled and therefore the combination with the larger PD (2/2) is taken as
++ * more photodiode cells are supposed to deliver a more precise result.
++ */
++struct veml6046x00_gain_pd {
++	unsigned int gain_sen;
++	unsigned int pd;
++};
++
++static const struct veml6046x00_gain_pd veml6046x00_gain_pd[] = {
++	{ .gain_sen = VEML6046X00_GAIN_0_5, .pd = VEML6046X00_PD_1_2 },
++	{ .gain_sen = VEML6046X00_GAIN_0_66, .pd = VEML6046X00_PD_1_2 },
++	{ .gain_sen = VEML6046X00_GAIN_0_5, .pd = VEML6046X00_PD_2_2 },
++	{ .gain_sen = VEML6046X00_GAIN_0_66, .pd = VEML6046X00_PD_2_2 },
++	{ .gain_sen = VEML6046X00_GAIN_1, .pd = VEML6046X00_PD_2_2 },
++	{ .gain_sen = VEML6046X00_GAIN_2, .pd = VEML6046X00_PD_2_2 },
++};
++
++/**
++ * DOC: Factors for calculation of lux
++ *
++ * static const int veml6046x00_it_gains contains the factors for calculation of
++ * lux.
++ *
++ * Depending on the set up integration time (IT), gain and photodiode size (PD)
++ * the measured raw values are different if the light is constant. As the gain
++ * and PD are already coupled in the driver (see &struct veml6046x00_gain_pd)
++ * there are two dimensions remaining: IT and gain(driver).
++ *
++ * The array of available factors for a certain IT are grouped together in the
++ * same form as expected by the callback of scale_available
++ * (IIO_CHAN_INFO_SCALE).
++ *
++ * Factors for lux / raw count are taken directly from the datasheet.
++ */
++static const int veml6046x00_it_gains[][6][2] = {
++	/* integration time: 3.125 ms */
++	{
++		{ 5, 376000 },	/* gain: x0.25 */
++		{ 4,  72700 },	/* gain: x0.33 */
++		{ 2, 688000 },	/* gain: x0.5 */
++		{ 2,  36400 },	/* gain: x0.66 */
++		{ 1, 344000 },	/* gain: x1 */
++		{ 0, 672000 },	/* gain: x2 */
++	},
++	/* integration time: 6.25 ms */
++	{
++		{ 2, 688000 },	/* gain: x0.25 */
++		{ 2,  36350 },	/* gain: x0.33 */
++		{ 1, 344000 },	/* gain: x0.5 */
++		{ 1,  18200 },	/* gain: x0.66 */
++		{ 0, 672000 },	/* gain: x1 */
++		{ 0, 336000 },	/* gain: x2 */
++	},
++	/* integration time: 12.5 ms */
++	{
++		{ 1, 344000 },	/* gain: x0.25 */
++		{ 1,  18175 },	/* gain: x0.33 */
++		{ 0, 672000 },	/* gain: x0.5 */
++		{ 0, 509100 },	/* gain: x0.66 */
++		{ 0, 336000 },	/* gain: x1 */
++		{ 0, 168000 },	/* gain: x2 */
++	},
++	/* integration time: 25 ms */
++	{
++		{ 0, 672000 },	/* gain: x0.25 */
++		{ 0, 509087 },	/* gain: x0.33 */
++		{ 0, 336000 },	/* gain: x0.5 */
++		{ 0, 254550 },	/* gain: x0.66 */
++		{ 0, 168000 },	/* gain: x1 */
++		{ 0,  84000 },	/* gain: x2 */
++	},
++	/* integration time: 50 ms */
++	{
++		{ 0, 336000 },	/* gain: x0.25 */
++		{ 0, 254543 },	/* gain: x0.33 */
++		{ 0, 168000 },	/* gain: x0.5 */
++		{ 0, 127275 },	/* gain: x0.66 */
++		{ 0,  84000 },	/* gain: x1 */
++		{ 0,  42000 },	/* gain: x2 */
++	},
++	/* integration time: 100 ms */
++	{
++		{ 0, 168000 },	/* gain: x0.25 */
++		{ 0, 127271 },	/* gain: x0.33 */
++		{ 0,  84000 },	/* gain: x0.5 */
++		{ 0,  63637 },	/* gain: x0.66 */
++		{ 0,  42000 },	/* gain: x1 */
++		{ 0,  21000 },	/* gain: x2 */
++	},
++	/* integration time: 200 ms */
++	{
++		{ 0,  84000 },	/* gain: x0.25 */
++		{ 0,  63635 },	/* gain: x0.33 */
++		{ 0,  42000 },	/* gain: x0.5 */
++		{ 0,  31818 },	/* gain: x0.66 */
++		{ 0,  21000 },	/* gain: x1 */
++		{ 0,  10500 },	/* gain: x2 */
++	},
++	/* integration time: 400 ms */
++	{
++		{ 0,  42000 },	/* gain: x0.25 */
++		{ 0,  31817 },	/* gain: x0.33 */
++		{ 0,  21000 },	/* gain: x0.5 */
++		{ 0,  15909 },	/* gain: x0.66 */
++		{ 0,  10500 },	/* gain: x1 */
++		{ 0,   5250 },	/* gain: x2 */
++	},
++};
++
++/*
++ * Two bits (RGB_ON_0 and RGB_ON_1) must be cleared to power on the device.
++ */
++static int veml6046x00_power_on(struct veml6046x00_data *data)
++{
++	int ret;
++	struct device *dev = regmap_get_device(data->regmap);
++
++	ret = regmap_clear_bits(data->regmap, VEML6046X00_REG_CONF0,
++				VEML6046X00_CONF0_ON_0);
++	if (ret) {
++		dev_err(dev, "Failed to set bit for power on %d\n", ret);
++		return ret;
++	}
++
++	return regmap_clear_bits(data->regmap, VEML6046X00_REG_CONF1,
++				 VEML6046X00_CONF1_ON_1);
++}
++
++/*
++ * Two bits (RGB_ON_0 and RGB_ON_1) must be set to power off the device.
++ */
++static int veml6046x00_shutdown(struct veml6046x00_data *data)
++{
++	int ret;
++	struct device *dev = regmap_get_device(data->regmap);
++
++	ret = regmap_set_bits(data->regmap, VEML6046X00_REG_CONF0,
++			      VEML6046X00_CONF0_ON_0);
++	if (ret) {
++		dev_err(dev, "Failed to set bit for shutdown %d\n", ret);
++		return ret;
++	}
++
++	return regmap_set_bits(data->regmap, VEML6046X00_REG_CONF1,
++			       VEML6046X00_CONF1_ON_1);
++}
++
++static void veml6046x00_shutdown_action(void *data)
++{
++	veml6046x00_shutdown(data);
++}
++
++static const struct iio_chan_spec veml6046x00_channels[] = {
++	{
++		.type = IIO_INTENSITY,
++		.address = VEML6046X00_REG_R,
++		.modified = 1,
++		.channel2 = IIO_MOD_LIGHT_RED,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME) |
++					   BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME) |
++						     BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = VEML6046X00_SCAN_R,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++	},
++	{
++		.type = IIO_INTENSITY,
++		.address = VEML6046X00_REG_G,
++		.modified = 1,
++		.channel2 = IIO_MOD_LIGHT_GREEN,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME) |
++					   BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME) |
++						     BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = VEML6046X00_SCAN_G,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++	},
++	{
++		.type = IIO_INTENSITY,
++		.address = VEML6046X00_REG_B,
++		.modified = 1,
++		.channel2 = IIO_MOD_LIGHT_BLUE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME) |
++					   BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME) |
++						     BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = VEML6046X00_SCAN_B,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++	},
++	{
++		.type = IIO_INTENSITY,
++		.address = VEML6046X00_REG_IR,
++		.modified = 1,
++		.channel2 = IIO_MOD_LIGHT_IR,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_INT_TIME) |
++					   BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_INT_TIME) |
++						     BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = VEML6046X00_SCAN_IR,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(VEML6046X00_SCAN_TIMESTAMP),
++};
++
++static const struct regmap_config veml6046x00_regmap_config = {
++	.name = "veml6046x00_regm",
++	.reg_bits = 8,
++	.val_bits = 8,
++	.max_register = VEML6046X00_REG_INT_H,
++};
++
++static const struct reg_field veml6046x00_rf_int_en =
++	REG_FIELD(VEML6046X00_REG_CONF0, 1, 1);
++
++static const struct reg_field veml6046x00_rf_trig =
++	REG_FIELD(VEML6046X00_REG_CONF0, 2, 2);
++
++static const struct reg_field veml6046x00_rf_mode =
++	REG_FIELD(VEML6046X00_REG_CONF0, 3, 3);
++
++static const struct reg_field veml6046x00_rf_it =
++	REG_FIELD(VEML6046X00_REG_CONF0, 4, 6);
++
++static const struct reg_field veml6046x00_rf_pers =
++	REG_FIELD(VEML6046X00_REG_CONF1, 1, 2);
++
++static int veml6046x00_regfield_init(struct veml6046x00_data *data)
++{
++	struct regmap *regmap = data->regmap;
++	struct device *dev = regmap_get_device(data->regmap);
++	struct regmap_field *rm_field;
++	struct veml6046x00_rf *rf = &data->rf;
++
++	rm_field = devm_regmap_field_alloc(dev, regmap, veml6046x00_rf_int_en);
++	if (IS_ERR(rm_field))
++		return PTR_ERR(rm_field);
++	rf->int_en = rm_field;
++
++	rm_field = devm_regmap_field_alloc(dev, regmap, veml6046x00_rf_mode);
++	if (IS_ERR(rm_field))
++		return PTR_ERR(rm_field);
++	rf->mode = rm_field;
++
++	rm_field = devm_regmap_field_alloc(dev, regmap, veml6046x00_rf_trig);
++	if (IS_ERR(rm_field))
++		return PTR_ERR(rm_field);
++	rf->trig = rm_field;
++
++	rm_field = devm_regmap_field_alloc(dev, regmap, veml6046x00_rf_it);
++	if (IS_ERR(rm_field))
++		return PTR_ERR(rm_field);
++	rf->it = rm_field;
++
++	rm_field = devm_regmap_field_alloc(dev, regmap, veml6046x00_rf_pers);
++	if (IS_ERR(rm_field))
++		return PTR_ERR(rm_field);
++	rf->pers = rm_field;
++
++	return 0;
++}
++
++static int veml6046x00_get_it_index(struct veml6046x00_data *data)
++{
++	int ret;
++	unsigned int reg;
++
++	ret = regmap_field_read(data->rf.it, &reg);
++	if (ret)
++		return ret;
++
++	/* register value is identical with index of array */
++	if (reg >= ARRAY_SIZE(veml6046x00_it))
++		return -EINVAL;
++
++	return reg;
++}
++
++static int veml6046x00_get_it_usec(struct veml6046x00_data *data, unsigned int *it_usec)
++{
++	int ret;
++	unsigned int reg;
++
++	ret = regmap_field_read(data->rf.it, &reg);
++	if (ret)
++		return ret;
++
++	if (reg >= ARRAY_SIZE(veml6046x00_it))
++		return -EINVAL;
++
++	*it_usec = (unsigned int)veml6046x00_it[reg][1];
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
++static int veml6046x00_set_it(struct iio_dev *iio, int val, int val2)
++{
++	struct veml6046x00_data *data = iio_priv(iio);
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(veml6046x00_it); i++) {
++		if ((veml6046x00_it[i][0] == val) &&
++		    (veml6046x00_it[i][1] == val2))
++			return regmap_field_write(data->rf.it, i);
++	}
++
++	return -EINVAL;
++}
++
++static int veml6046x00_get_val_gain_idx(struct veml6046x00_data *data, int val,
++					int val2)
++{
++	unsigned int i;
++	int it_idx;
++
++	it_idx = veml6046x00_get_it_index(data);
++	if (it_idx < 0)
++		return it_idx;
++
++	for (i = 0; i < ARRAY_SIZE(veml6046x00_it_gains[it_idx]); i++) {
++		if ((veml6046x00_it_gains[it_idx][i][0] == val) &&
++		    (veml6046x00_it_gains[it_idx][i][1] == val2)) {
++			return i;
++		}
++	}
++
++	return -EINVAL;
++}
++
++static int veml6046x00_get_gain_idx(struct veml6046x00_data *data)
++{
++	int ret;
++	unsigned int i, reg, reg_gain, reg_pd;
++
++	ret = regmap_read(data->regmap, VEML6046X00_REG_CONF1, &reg);
++	if (ret)
++		return ret;
++
++	reg_gain = FIELD_GET(VEML6046X00_CONF1_GAIN, reg);
++	reg_pd = reg & VEML6046X00_CONF1_PD_D2;
++
++	for (i = 0; i < ARRAY_SIZE(veml6046x00_gain_pd); i++) {
++		if ((veml6046x00_gain_pd[i].gain_sen == reg_gain) &&
++		    (veml6046x00_gain_pd[i].pd == reg_pd)) {
++			return i;
++		}
++	}
++
++	return -EINVAL;
++}
++
++static int veml6046x00_set_scale(struct iio_dev *iio, int val, int val2)
++{
++	struct veml6046x00_data *data = iio_priv(iio);
++	unsigned int new_scale;
++	int gain_idx;
++
++	gain_idx = veml6046x00_get_val_gain_idx(data, val, val2);
++	if (gain_idx < 0)
++		return gain_idx;
++
++	new_scale = FIELD_PREP(VEML6046X00_CONF1_GAIN,
++			       veml6046x00_gain_pd[gain_idx].gain_sen) |
++			       veml6046x00_gain_pd[gain_idx].pd;
++
++	return regmap_update_bits(data->regmap, VEML6046X00_REG_CONF1,
++				  VEML6046X00_CONF1_GAIN |
++				  VEML6046X00_CONF1_PD_D2,
++				  new_scale);
++}
++
++static int veml6046x00_get_scale(struct veml6046x00_data *data,
++				 int *val, int *val2)
++{
++	int gain_idx, it_idx;
++
++	gain_idx = veml6046x00_get_gain_idx(data);
++	if (gain_idx < 0)
++		return gain_idx;
++
++	it_idx = veml6046x00_get_it_index(data);
++	if (it_idx < 0)
++		return it_idx;
++
++	*val = veml6046x00_it_gains[it_idx][gain_idx][0];
++	*val2 = veml6046x00_it_gains[it_idx][gain_idx][1];
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
++/**
++ * veml6046x00_read_data_ready() - Read data ready bit
++ * @data:	Private data.
++ *
++ * Helper function for reading data ready bit from interrupt register.
++ *
++ * Return:
++ * * %1		- Data is available (AF_DATA_READY is set)
++ * * %0		- No data available
++ * * %-EIO	- Error during bulk read
++ */
++static int veml6046x00_read_data_ready(struct veml6046x00_data *data)
++{
++	struct device *dev = regmap_get_device(data->regmap);
++	int ret;
++	u8 reg[2];
++
++	/*
++	 * Note from the vendor, but not explicitly in the datasheet: we
++	 * should always read both registers together.
++	 */
++	ret = regmap_bulk_read(data->regmap, VEML6046X00_REG_INT,
++			       &reg, sizeof(reg));
++	if (ret) {
++		dev_err(dev, "Failed to read interrupt register %d\n", ret);
++		return -EIO;
++	}
++
++	if (reg[1] & VEML6046X00_INT_DRDY)
++		return 1;
++
++	return 0;
++}
++
++/**
++ * veml6046x00_wait_data_available() - Wait until data is available
++ * @iio:	Industrial IO.
++ * @usecs:	Microseconds to wait for data.
++ *
++ * This function waits for a certain bit in the interrupt register which signals
++ * that there is data to be read available.
++ *
++ * It tries it two times with a waiting time of usecs in between.
++ *
++ * Return:
++ * * %1		- Data is available (AF_DATA_READY is set)
++ * * %0		- Timeout, no data available after usecs timeout
++ * * %-EIO	- Error during bulk read
++ */
++static int veml6046x00_wait_data_available(struct iio_dev *iio, unsigned int usecs)
++{
++	struct veml6046x00_data *data = iio_priv(iio);
++	int ret;
++
++	ret = veml6046x00_read_data_ready(data);
++	if (ret == 0) {
++		fsleep(usecs);
++		ret = veml6046x00_read_data_ready(data);
++	}
++
++	return ret;
++}
++
++static int veml6046x00_single_read(struct iio_dev *iio,
++				   enum iio_modifier modifier, int *val)
++{
++	struct veml6046x00_data *data = iio_priv(iio);
++	struct device *dev = regmap_get_device(data->regmap);
++	unsigned int addr, it_usec;
++	int ret;
++	__le16 reg;
++
++	switch (modifier) {
++	case IIO_MOD_LIGHT_RED:
++		addr = VEML6046X00_REG_R;
++		break;
++	case IIO_MOD_LIGHT_GREEN:
++		addr = VEML6046X00_REG_G;
++		break;
++	case IIO_MOD_LIGHT_BLUE:
++		addr = VEML6046X00_REG_B;
++		break;
++	case IIO_MOD_LIGHT_IR:
++		addr = VEML6046X00_REG_IR;
++		break;
++	default:
++		return -EINVAL;
++	}
++	ret = pm_runtime_resume_and_get(dev);
++	if (ret)
++		return ret;
++
++	ret = veml6046x00_get_it_usec(data, &it_usec);
++	if (ret < 0) {
++		dev_err(dev, "Failed to get integration time ret: %d", ret);
++		goto no_data;
++	}
++
++	ret = regmap_field_write(data->rf.mode, 1);
++	if (ret) {
++		dev_err(dev, "Failed to write mode ret: %d", ret);
++		goto no_data;
++	}
++
++	ret = regmap_field_write(data->rf.trig, 1);
++	if (ret) {
++		dev_err(dev, "Failed to write trigger ret: %d", ret);
++		goto no_data;
++	}
++
++	/* integration time + 12.5 % to ensure completion */
++	fsleep(it_usec + it_usec / 8);
++
++	ret = veml6046x00_wait_data_available(iio, it_usec * 4);
++	if (ret < 0)
++		return ret;
++	if (ret == 0)
++		return -EAGAIN;
++
++	if (!iio_device_claim_direct(iio))
++		return -EBUSY;
++
++	ret = regmap_bulk_read(data->regmap, addr, &reg, sizeof(reg));
++	iio_device_release_direct(iio);
++	if (ret)
++		return ret;
++
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
++
++	*val = le16_to_cpu(reg);
++
++	return IIO_VAL_INT;
++
++no_data:
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
++
++	return -EAGAIN;
++}
++
++static int veml6046x00_read_raw(struct iio_dev *iio,
++				struct iio_chan_spec const *chan, int *val,
++				int *val2, long mask)
++{
++	struct veml6046x00_data *data = iio_priv(iio);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (chan->type != IIO_INTENSITY)
++			return -EINVAL;
++		return veml6046x00_single_read(iio, chan->channel2, val);
++	case IIO_CHAN_INFO_INT_TIME:
++		*val = 0;
++		return veml6046x00_get_it_usec(data, val2);
++	case IIO_CHAN_INFO_SCALE:
++		return veml6046x00_get_scale(data, val, val2);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int veml6046x00_read_avail(struct iio_dev *iio,
++				  struct iio_chan_spec const *chan,
++				  const int **vals, int *type, int *length,
++				  long mask)
++{
++	struct veml6046x00_data *data = iio_priv(iio);
++	int it_idx;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		*vals = (int *)&veml6046x00_it;
++		*length = 2 * ARRAY_SIZE(veml6046x00_it);
++		*type = IIO_VAL_INT_PLUS_MICRO;
++		return IIO_AVAIL_LIST;
++	case IIO_CHAN_INFO_SCALE:
++		it_idx = veml6046x00_get_it_index(data);
++		if (it_idx < 0)
++			return it_idx;
++		*vals = (int *)&veml6046x00_it_gains[it_idx];
++		*length = 2 * ARRAY_SIZE(veml6046x00_it_gains[it_idx]);
++		*type = IIO_VAL_INT_PLUS_MICRO;
++		return IIO_AVAIL_LIST;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int veml6046x00_write_raw(struct iio_dev *iio,
++				 struct iio_chan_spec const *chan,
++				 int val, int val2, long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		return veml6046x00_set_it(iio, val, val2);
++	case IIO_CHAN_INFO_SCALE:
++		return veml6046x00_set_scale(iio, val, val2);
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info veml6046x00_info_no_irq = {
++	.read_raw = veml6046x00_read_raw,
++	.read_avail = veml6046x00_read_avail,
++	.write_raw = veml6046x00_write_raw,
++};
++
++static int veml6046x00_buffer_preenable(struct iio_dev *iio)
++{
++	struct veml6046x00_data *data = iio_priv(iio);
++	struct device *dev = regmap_get_device(data->regmap);
++	int ret;
++
++	ret = regmap_field_write(data->rf.mode, 0);
++	if (ret) {
++		dev_err(dev, "Failed to set mode %d\n", ret);
++		return ret;
++	}
++
++	ret = regmap_field_write(data->rf.trig, 0);
++	if (ret) {
++		/*
++		 * no unrolling of mode as it is set appropriately with next
++		 * single read.
++		 */
++		dev_err(dev, "Failed to set trigger %d\n", ret);
++		return ret;
++	}
++
++	return pm_runtime_resume_and_get(dev);
++}
++
++static int veml6046x00_buffer_postdisable(struct iio_dev *iio)
++{
++	struct veml6046x00_data *data = iio_priv(iio);
++	struct device *dev = regmap_get_device(data->regmap);
++	int ret;
++
++	ret = regmap_field_write(data->rf.mode, 1);
++	if (ret) {
++		dev_err(dev, "Failed to set mode %d\n", ret);
++		return ret;
++	}
++
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
++
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops veml6046x00_buffer_setup_ops = {
++	.preenable = veml6046x00_buffer_preenable,
++	.postdisable = veml6046x00_buffer_postdisable,
++};
++
++static irqreturn_t veml6046x00_trig_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *iio = pf->indio_dev;
++	struct veml6046x00_data *data = iio_priv(iio);
++	int ret;
++	struct {
++		__le16 chans[4];
++		aligned_s64 timestamp;
++	} scan = {};
++
++	ret = regmap_bulk_read(data->regmap, VEML6046X00_REG_R,
++			       &scan.chans, sizeof(scan.chans));
++	if (ret)
++		goto done;
++
++	iio_push_to_buffers_with_timestamp(iio, &scan, iio_get_time_ns(iio));
++
++done:
++	iio_trigger_notify_done(iio->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int veml6046x00_validate_part_id(struct veml6046x00_data *data)
++{
++	struct device *dev = regmap_get_device(data->regmap);
++	unsigned int part_id;
++	int ret;
++	__le16 reg;
++
++	ret = regmap_bulk_read(data->regmap, VEML6046X00_REG_ID,
++			       &reg, sizeof(reg));
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to read ID\n");
++
++	part_id = le16_to_cpu(reg);
++	if (part_id != 0x0001)
++		dev_info(dev, "Unknown ID %#04x\n", part_id);
++
++	return 0;
++}
++
++static int veml6046x00_setup_device(struct iio_dev *iio)
++{
++	struct veml6046x00_data *data = iio_priv(iio);
++	struct device *dev = regmap_get_device(data->regmap);
++	int ret;
++	__le16 reg16;
++	u8 reg[2] = { VEML6046X00_CONF0_AF, 0x00 };
++
++	ret = regmap_bulk_write(data->regmap, VEML6046X00_REG_CONF0,
++				reg, sizeof(reg));
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to set configuration\n");
++
++	reg16 = cpu_to_le16(0);
++	ret = regmap_bulk_write(data->regmap, VEML6046X00_REG_THDL,
++				&reg16, sizeof(reg16));
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to set low threshold\n");
++
++	reg16 = cpu_to_le16(U16_MAX);
++	ret = regmap_bulk_write(data->regmap, VEML6046X00_REG_THDH,
++				&reg16, sizeof(reg16));
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to set high threshold\n");
++
++	ret = regmap_bulk_read(data->regmap, VEML6046X00_REG_INT,
++			       &reg16, sizeof(reg16));
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to clear interrupts\n");
++
++	return 0;
++}
++
++static int veml6046x00_probe(struct i2c_client *i2c)
++{
++	struct device *dev = &i2c->dev;
++	struct veml6046x00_data *data;
++	struct iio_dev *iio;
++	struct regmap *regmap;
++	int ret;
++
++	regmap = devm_regmap_init_i2c(i2c, &veml6046x00_regmap_config);
++	if (IS_ERR(regmap))
++		return dev_err_probe(dev, PTR_ERR(regmap), "Failed to set regmap\n");
++
++	iio = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!iio)
++		return -ENOMEM;
++
++	data = iio_priv(iio);
++	/* struct iio_dev is retrieved via get_drv_data(). */
++	i2c_set_clientdata(i2c, iio);
++	data->regmap = regmap;
++
++	ret = veml6046x00_regfield_init(data);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to init regfield\n");
++
++	ret = devm_regulator_get_enable(dev, "vdd");
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to enable regulator\n");
++
++	/* bring device in a known state and switch device on */
++	ret = veml6046x00_setup_device(iio);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_add_action_or_reset(dev, veml6046x00_shutdown_action, data);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "Failed to add shut down action\n");
++
++	ret = pm_runtime_set_active(dev);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "Failed to activate PM runtime\n");
++
++	ret = devm_pm_runtime_enable(dev);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to enable PM runtime\n");
++
++	pm_runtime_get_noresume(dev);
++	pm_runtime_set_autosuspend_delay(dev, VEML6046X00_AUTOSUSPEND_MS);
++	pm_runtime_use_autosuspend(dev);
++
++	ret = veml6046x00_validate_part_id(data);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to validate device ID\n");
++
++	iio->name = "veml6046x00";
++	iio->channels = veml6046x00_channels;
++	iio->num_channels = ARRAY_SIZE(veml6046x00_channels);
++	iio->modes = INDIO_DIRECT_MODE;
++
++	iio->info = &veml6046x00_info_no_irq;
++
++	ret = devm_iio_triggered_buffer_setup(dev, iio, NULL,
++					      veml6046x00_trig_handler,
++					      &veml6046x00_buffer_setup_ops);
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "Failed to register triggered buffer");
++
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
++
++	ret = devm_iio_device_register(dev, iio);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to register iio device");
++
++	return 0;
++}
++
++static int veml6046x00_runtime_suspend(struct device *dev)
++{
++	struct veml6046x00_data *data = iio_priv(dev_get_drvdata(dev));
++
++	return veml6046x00_shutdown(data);
++}
++
++static int veml6046x00_runtime_resume(struct device *dev)
++{
++	struct veml6046x00_data *data = iio_priv(dev_get_drvdata(dev));
++
++	return veml6046x00_power_on(data);
++}
++
++static DEFINE_RUNTIME_DEV_PM_OPS(veml6046x00_pm_ops,
++				 veml6046x00_runtime_suspend,
++				 veml6046x00_runtime_resume, NULL);
++
++static const struct of_device_id veml6046x00_of_match[] = {
++	{
++		.compatible = "vishay,veml6046x00",
++	},
++	{ }
++};
++MODULE_DEVICE_TABLE(of, veml6046x00_of_match);
++
++static const struct i2c_device_id veml6046x00_id[] = {
++	{ "veml6046x00" },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, veml6046x00_id);
++
++static struct i2c_driver veml6046x00_driver = {
++	.driver = {
++		.name = "veml6046x00",
++		.of_match_table = veml6046x00_of_match,
++		.pm = pm_ptr(&veml6046x00_pm_ops),
++	},
++	.probe = veml6046x00_probe,
++	.id_table = veml6046x00_id,
++};
++module_i2c_driver(veml6046x00_driver);
++
++MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
++MODULE_DESCRIPTION("VEML6046X00 RGBIR Color Sensor");
++MODULE_LICENSE("GPL");
+-- 
+2.39.5
+
