@@ -1,32 +1,30 @@
-Received: from out-186.mta1.migadu.com (out-186.mta1.migadu.com [95.215.58.186])
+Received: from out-171.mta1.migadu.com (out-171.mta1.migadu.com [95.215.58.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F274F1DE2A5
-	for <linux-iio@vger.kernel.org>; Tue, 15 Jul 2025 01:20:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.186
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF4891E25ED
+	for <linux-iio@vger.kernel.org>; Tue, 15 Jul 2025 01:20:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752542442; cv=none; b=tc06kWnxlrlik1dB920PjSFWkJ7XrnKbMP+oJsQ0Gi0UznzFknJ7jR9YeHO/VypNnaMORoh9QL9oDprP90RXk4EDVF5YS/VwurRhCvDIAqbGH6lZ5TDJILbpO/f6lNaeHkPveS9C3UAqiZN3BJWfCWVbZFS0AqPRspgi6678liA=
+	t=1752542444; cv=none; b=X6OazYvPD5BNP0C8Sbl71P/olGCGXXSd9clxLbyKDMk9wJ+k10zrnvZ9h5jzb8f9Vq+JH4JNUbws405rUiC5OZxFBDGdkOf31axipPnqXsSaXR0utoE54FekhYvLdLLbjDqJkxSfFLmEGodA/mtRo2Nrig39PoWLEzCMSpXQtZo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752542442; c=relaxed/simple;
-	bh=zxAZttHG0QzJMVGOZzzjcVjrFxXQX8clSrfk6A+vAFA=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=QIsajybubLN96l65azPexTLLThlatwVVhzCiDeB9/AlE4JhfPKoq59bl6pOwenkcgcBNAtxp+tAgKC9anHjsHLPvYruFMqXMQHVoqKcRdSZYR8exeXQoGIYxvWsynVsAkY5nJg5UmmT1qQFfen/RY9vnlCDbxwF5TDl0CCv1ZrI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=llDcbHTG; arc=none smtp.client-ip=95.215.58.186
+	s=arc-20240116; t=1752542444; c=relaxed/simple;
+	bh=rYpDziYirL3ZYFK/I9Ik59aptGdN12R8VseqntbfoI8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=K+1bmwfqOApcJ5Kcx2vyBsulfnXipsfA7Sn1GLmfcxNOsHxt6W1/12dV8gaESFGPkQH46mfy6e1x/on0H+YJNbk2bPEQxwVaZ5k0RiFhYtQtkrVjc5alds7shPExG6/BL/V/1nNqDD/Dxow/hj7aLDo8kws5tlw2G4ehtwr7Fok=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev; spf=pass smtp.mailfrom=linux.dev; dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b=r3sOTkBn; arc=none smtp.client-ip=95.215.58.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.dev
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="llDcbHTG"
+	dkim=pass (1024-bit key) header.d=linux.dev header.i=@linux.dev header.b="r3sOTkBn"
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-	t=1752542439;
+	t=1752542430;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=VS38gXY125VgWZkbqT/5MOqt89JO36iRPEiIvNaRM0g=;
-	b=llDcbHTGljqytCUrdfVtc37JD1mVxeDvOKIATE87BQiq4mOURFbxwqoTH3njU1rbMhhh3w
-	WYFeQdtUYuQ6/9iUGA7UgyizDdSgpI01wgc+rlv8/ykNaQRuwUw3vQqLUIKGGlmPiNarh9
-	gG5kYxp/zquFVmGBXGp/Sk702LEZLog=
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=v+85kuUpWbzYdAAt7bSvzqTfnHCqVfZ3tkov/6GvQy8=;
+	b=r3sOTkBnHxT1l/OuHEmvY8Whz9QB6r7MHJ2EVUVIovpMaK0eYjkGZ88wNU9C3TtqbjgcIK
+	5VioGdJdB/Jc4Z1fbb2o1z5AHNxR4y2VzGzDcKbhj0vsphxtKPbtQylFn9K3PDC5W2SfSC
+	Q6Ox1rHyJspLNcZWtnBB/vElUg8hIHU=
 From: Sean Anderson <sean.anderson@linux.dev>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Jean Delvare <jdelvare@suse.com>,
@@ -38,92 +36,44 @@ Cc: Andy Shevchenko <andy@kernel.org>,
 	linux-kernel@vger.kernel.org,
 	David Lechner <dlechner@baylibre.com>,
 	Sean Anderson <sean.anderson@linux.dev>
-Subject: [PATCH 4/7] hwmon: iio: Refactor scale calculation into helper
-Date: Mon, 14 Jul 2025 21:20:20 -0400
-Message-Id: <20250715012023.2050178-5-sean.anderson@linux.dev>
-In-Reply-To: <20250715012023.2050178-1-sean.anderson@linux.dev>
-References: <20250715012023.2050178-1-sean.anderson@linux.dev>
+Subject: [PATCH 0/7] hwmon: iio: Add alarm support
+Date: Mon, 14 Jul 2025 21:20:16 -0400
+Message-Id: <20250715012023.2050178-1-sean.anderson@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
 
-Add a function to determine the scale parameter, since it will soon be
-used in several places.
+Add alarm support for IIO HWMONs as well as the minimum/maximum
+thresholds. This involves the creation of two new in-kernel IIO APIs to
+set the thresholds and be notified of events.
 
-Signed-off-by: Sean Anderson <sean.anderson@linux.dev>
----
+I think this should probably go through the iio tree given the amount of
+IIO stuff it touches.
 
- drivers/hwmon/iio_hwmon.c | 40 ++++++++++++++++++++++++++++-----------
- 1 file changed, 29 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
-index e376d4cde5ad..bba8919377eb 100644
---- a/drivers/hwmon/iio_hwmon.c
-+++ b/drivers/hwmon/iio_hwmon.c
-@@ -44,6 +44,30 @@ static ssize_t iio_hwmon_read_label(struct device *dev,
- 	return iio_read_channel_label(chan, buf);
- }
- 
-+/**
-+ * iio_hwmon_scale() - Look up the scaling factor for a channel
-+ * @chan: Channel to get the scale of
-+ *
-+ * Determine the scale to use with @chan in the case where IIO and HWMON use
-+ * different units.
-+ *
-+ * Return: scale of @chan
-+ */
-+static int iio_hwmon_scale(struct iio_channel *chan)
-+{
-+	enum iio_chan_type type;
-+	int ret;
-+
-+	ret = iio_get_channel_type(chan, &type);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* mili-Watts to micro-Watts conversion */
-+	if (type == IIO_POWER)
-+		return 1000;
-+	return 1;
-+}
-+
- /*
-  * Assumes that IIO and hwmon operate in the same base units.
-  * This is supposed to be true, but needs verification for
-@@ -53,22 +77,16 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
- 				  struct device_attribute *attr,
- 				  char *buf)
- {
--	int result;
--	int ret;
- 	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
- 	struct iio_hwmon_state *state = dev_get_drvdata(dev);
- 	struct iio_channel *chan = &state->channels[sattr->index];
--	enum iio_chan_type type;
-+	int ret, result, scale;
- 
--	ret = iio_get_channel_type(chan, &type);
--	if (ret < 0)
--		return ret;
-+	scale = iio_hwmon_scale(chan);
-+	if (scale < 0)
-+		return scale;
- 
--	if (type == IIO_POWER)
--		/* mili-Watts to micro-Watts conversion */
--		ret = iio_read_channel_processed_scale(chan, &result, 1000);
--	else
--		ret = iio_read_channel_processed(chan, &result);
-+	ret = iio_read_channel_processed_scale(chan, &result, scale);
- 	if (ret < 0)
- 		return ret;
- 
+Sean Anderson (7):
+  math64: Add div64_s64_rem
+  iio: inkern: Add API for reading/writing events
+  iio: Add in-kernel API for events
+  hwmon: iio: Refactor scale calculation into helper
+  hwmon: iio: Add helper function for creating attributes
+  hwmon: iio: Add min/max support
+  hwmon: iio: Add alarm support
+
+ drivers/hwmon/iio_hwmon.c        | 522 ++++++++++++++++++++++++++++---
+ drivers/iio/industrialio-event.c |  34 +-
+ drivers/iio/inkern.c             | 198 ++++++++++++
+ include/linux/iio/consumer.h     |  86 +++++
+ include/linux/math64.h           |  18 ++
+ lib/math/div64.c                 |  20 ++
+ 6 files changed, 830 insertions(+), 48 deletions(-)
+
 -- 
 2.35.1.1320.gc452695387.dirty
 
