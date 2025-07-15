@@ -1,53 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA0F274B35;
-	Tue, 15 Jul 2025 08:20:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B5EC274FFB;
+	Tue, 15 Jul 2025 08:35:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752567657; cv=none; b=Mk5IMmX2jAXirYcyvF+fzmgARsegE85kPrduwLUrw/ldRNY8x5cGzNGQjpnNKZea+M/amzfwiG9NdN+zRowPAzlN+Fn5uNYCqnJTxKZEsEhBPQx4AHo4IPDvL4ThbJp8pqukNXsOe1za6MMld6Lf+X1wNylTF5SUFM8MBeGtXa4=
+	t=1752568522; cv=none; b=UuatEInEz+07s4zjr9UMnCZPzHC/KoJUTFgcApH25Xf3faS66Q8jiZvdmsA3auN5SH69JzE6D0qdZWnUxvG07LmREf/EpE1nPeJWTU7SrVBSdlyb6TYZbPDS2jhtLEAU9cJr74WW4TebExCSHoepTiawEpRAPGtqyZfu6mZc7/o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752567657; c=relaxed/simple;
-	bh=iMd4tRB3gOxTcZdIQGJuMTUHchGSoX7MMCA/0kUDBGY=;
+	s=arc-20240116; t=1752568522; c=relaxed/simple;
+	bh=FC833BzUIk5qRL90xtZ2unLYkvMRE9s4KPrfvPMPxIw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z0qlhf3O5e/uOBGbCyXO2754fQ0n2Zpf7ZPchGOYOW2TCvIRTi5Hw8Dged/hP7T9nxlnQcerpv2CnV5oN0KY8zlIi2vUINH3vv0G55PTI3iNR87/q3I0nlq9yYaR34wXv4K8XEAnhpWOK/wxeonhnwr3f3zW1w5DwyvLvWOlpqI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aaWhaQX0; arc=none smtp.client-ip=192.198.163.13
+	 Content-Type:Content-Disposition:In-Reply-To; b=Y1E7hzwxn6cqiPxfixeZkQfS2phMfe7a/qurJxmtsjRKg27nB5jMu4YQDzCIORcXFnrpjeUfrsNdb9nAv45GuZS05t7WZt068B0y19Avcul8VjYrhp/saB0jDfGr7DAOT1YclnOL86YGV4ljPITahJp4RqhXG8yt7VoPNkU4u24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h2JJ/2KP; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aaWhaQX0"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h2JJ/2KP"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1752567656; x=1784103656;
+  t=1752568521; x=1784104521;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=iMd4tRB3gOxTcZdIQGJuMTUHchGSoX7MMCA/0kUDBGY=;
-  b=aaWhaQX0HKCojwNuh1o06cvueYVVkWZG6/jSUFyPO2tx/UAASuXAbuoZ
-   iypOM+4F2GFtrZG28CUmB6j+2pDe6imfewr6feuAKT9ElssmKNa1tu8wU
-   HOmElmbAeWMzDBMASkzZB9LGfUSi/zd8jGTmgs1cCMd3sMQeQbdvYikgk
-   vtgl4J7sjwA+qgZIrOe7lKoJQBhCA48yTQDNd/D/xIUl+0xS1LcX8o+JE
-   /6V9+b5A+qD89DBUhePy0BQeuw2zsT+yYtkx1iZntiVVHcBMlJO3pcjLb
-   6D6vmMo82J/D+kwoJYWp9cIoaeCXN6jqdaWMUGaB2IvqEh0/ROwMomI12
-   g==;
-X-CSE-ConnectionGUID: 5mn4nRBtTDexpQUMo3igXQ==
-X-CSE-MsgGUID: ktrn4zPgSu2AAJ1KhnvGfA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="57388273"
+  bh=FC833BzUIk5qRL90xtZ2unLYkvMRE9s4KPrfvPMPxIw=;
+  b=h2JJ/2KPMhN8Nnf9lf+9OvvGghdHNiX5NfljGHS3QTMD2JrTi/5MDeq9
+   8bGZt84eVM3NPMZ8yh+gOYHl9FAIOd0GzJQJrkM0rK8L90c4iBMxHIBXD
+   9jNff58/iDcMfn9eZSRv2iBkeGnKEMCJN8l8YDQnPthJR6kV+SfuLKMmo
+   3kBkS1CC+IfJvUA8f3YxtKelM9pvKTv15qbik2ljU+PLyK3E5gAXFJS1N
+   AlyPyTrRUW6QlUQ1bW41/O4VdhPFB/IgNMQWC1AnNWfGHm1plcRTrhlIH
+   WtvJFlPFrHK9yvCAUCJ1XbyHfXj7zd/LA4sB8URao9UAvokKi92fVIHS5
+   Q==;
+X-CSE-ConnectionGUID: bTuLo2UkQ6KE529vRCYpsA==
+X-CSE-MsgGUID: v8Yilnu+R9yOv18IQHmzJg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11491"; a="54933042"
 X-IronPort-AV: E=Sophos;i="6.16,313,1744095600"; 
-   d="scan'208";a="57388273"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 01:20:55 -0700
-X-CSE-ConnectionGUID: UoaDR9HfRmG7eLXoID6L8A==
-X-CSE-MsgGUID: a92y67ciQYSLarhj834MBw==
+   d="scan'208";a="54933042"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 01:35:21 -0700
+X-CSE-ConnectionGUID: Nqrc97v8QjCZGBg+WB0WUQ==
+X-CSE-MsgGUID: MpPdwxiwRe+mPUoM393Y5A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.16,313,1744095600"; 
-   d="scan'208";a="156812729"
+   d="scan'208";a="161474806"
 Received: from smile.fi.intel.com ([10.237.72.52])
-  by fmviesa007.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 01:20:53 -0700
+  by fmviesa005.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jul 2025 01:35:18 -0700
 Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
 	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1ubauA-0000000Fav8-0Dgd;
-	Tue, 15 Jul 2025 11:20:50 +0300
-Date: Tue, 15 Jul 2025 11:20:49 +0300
+	id 1ubb86-0000000FbCc-0mbc;
+	Tue, 15 Jul 2025 11:35:14 +0300
+Date: Tue, 15 Jul 2025 11:35:13 +0300
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Sean Anderson <sean.anderson@linux.dev>
 Cc: Jonathan Cameron <jic23@kernel.org>, Jean Delvare <jdelvare@suse.com>,
@@ -55,10 +55,10 @@ Cc: Jonathan Cameron <jic23@kernel.org>, Jean Delvare <jdelvare@suse.com>,
 	linux-hwmon@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
-Subject: Re: [PATCH 3/7] iio: Add in-kernel API for events
-Message-ID: <aHYPYZgq17ogdEgC@smile.fi.intel.com>
+Subject: Re: [PATCH 4/7] hwmon: iio: Refactor scale calculation into helper
+Message-ID: <aHYSwVeC33qvb_-o@smile.fi.intel.com>
 References: <20250715012023.2050178-1-sean.anderson@linux.dev>
- <20250715012023.2050178-4-sean.anderson@linux.dev>
+ <20250715012023.2050178-5-sean.anderson@linux.dev>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,62 +67,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250715012023.2050178-4-sean.anderson@linux.dev>
+In-Reply-To: <20250715012023.2050178-5-sean.anderson@linux.dev>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Jul 14, 2025 at 09:20:19PM -0400, Sean Anderson wrote:
-> Add an API to notify consumers about events. Events still need to be
-> enabled using the iio_read_event/iio_write_event functions. Of course,
-> userspace can also manipulate the enabled events. I don't think this is
-> too much of an issue, since userspace can also manipulate the event
-> thresholds. But enabling events may cause existing programs to be
-> surprised when they get something unexpected. Maybe we should set the
-> interface as busy when there are any in-kernel listeners?
+On Mon, Jul 14, 2025 at 09:20:20PM -0400, Sean Anderson wrote:
+> Add a function to determine the scale parameter, since it will soon be
+> used in several places.
 
 ...
 
->  #include <linux/wait.h>
+> + * Return: scale of @chan
 
-While at it...
-
-+ blank line here...
-
-> +#include <linux/iio/consumer.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/iio-opaque.h>
-
-...and here?
-
->  #include "iio_core.h"
+Needs a bit of elaboration. Can it be negative? What is the unit of scale
+(just plain integer multiplier)? Should it be (always) signed?
 
 ...
 
-> +	struct iio_event_data ev = {
-> +		.id = ev_code,
-> +		.timestamp = timestamp,
-> +	};
+> +	/* mili-Watts to micro-Watts conversion */
+> +	if (type == IIO_POWER)
+> +		return 1000;
 
-...
-
->  	/* Does anyone care? */
->  	if (iio_event_enabled(ev_int)) {
-> -
-> -		ev.id = ev_code;
-> -		ev.timestamp = timestamp;
-> -
->  		copied = kfifo_put(&ev_int->det_events, ev);
->  		if (copied != 0)
->  			wake_up_poll(&ev_int->wait, EPOLLIN);
-
-Looks like this refactoring can be done before main change.
-
-...
-
-> +	WARN_ON(atomic_notifier_chain_unregister(&ev_int->notifier, block));
-
-Is bug.h already included?
-
+MICROWATT_PER_MILLIWATT ?
 
 -- 
 With Best Regards,
