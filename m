@@ -1,211 +1,72 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail-106103.protonmail.ch (mail-106103.protonmail.ch [79.135.106.103])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FC7E2E54C9;
-	Thu, 17 Jul 2025 13:26:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF8DF2E8E18
+	for <linux-iio@vger.kernel.org>; Thu, 17 Jul 2025 13:31:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.103
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1752758765; cv=none; b=a8pDro44Mz13+JpzJklgStP4lDvZIBpPsTvnrI2kRUnpezPuXjsh0zqCyLke7w4rswZfqDVhuPAZk+e4NyiKUv1g1gmz1yrOCm5HqYINMnhTMPoD7h8err55BoBa/W8OsxDAiLulotou5f+hddXgn1Vvya4UuUHmmfoOIY73tu4=
+	t=1752759110; cv=none; b=VjjLm32gzzCynuzIWziUiIH0i570fMKtxdKjuBVAdMxASZOwvyqd6vb5iGGg2NsXe9+DJJd2+YdHsF1sSxquyY51e2JlJZYx3Pnm4stChC0fuZq3LSJDJXoS8jBAfMO4CxkaKHsSRRfZa5mcvsbphRuWrKXIE1xdeHx3r8i7iTw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1752758765; c=relaxed/simple;
-	bh=vsHjZJf51AfU8S+DT+3gZS1r3jeZjtw/LCAGqXyQnIc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=d0baaukHvnHMWCYCS6Kc8OytwS/fcDYQkf521L4XVXZNVV1ai05XqbigeMuTjrmWQtV/1wY+QkghPBCT9OR+91pxf5kxICGdOrByUc5BJE6TYSw/cci3jjEzW1DQislRzdxYp3PolxY/B6ljwutUVsaO6o7bnO153k9gz6a83GM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=b/ftGr9+; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1752759110; c=relaxed/simple;
+	bh=aPEWDW3DKbruNkNr+5qftKrpi1xMqYprC+1aHTuSLYw=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RMUMTxdQaRTk15f6Tvk3pkntHFrBV6GiBG9N+NWdLXGZxuo4GGL1mrOBM+e5bOE/eADu7BVxL9NGH7qFr8TtFi0eVpK67ZTKHWjs7OvvoXD+z5HaeJnyAeBnykKEphMY2Zg1RZoBRxo4kKe4Ywof1/bBfD+85eZK+GAMUk9Pn4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=qUywYP61; arc=none smtp.client-ip=79.135.106.103
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="b/ftGr9+"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D1BF7C116B1;
-	Thu, 17 Jul 2025 13:26:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1752758764;
-	bh=vsHjZJf51AfU8S+DT+3gZS1r3jeZjtw/LCAGqXyQnIc=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=b/ftGr9+//vMPom69fmihuyNTohkLbo0qHkRCdUgP4A2vZh/WKwZLPnzusWaF8zZa
-	 az99xG6E293nhpQsaT7qG0R5B8YoHN4P7tfH5k7GviD7s/ePOCc4qAkIltLsPG02f6
-	 8L3s489TR0inazJuuc/iauXKOIYArkueiVjPiTy0uRf/z0jOs3kkXM05+3tJyLwPj7
-	 t6OfT/7DlnqDQEUUm6MjugpfrDDa3ZfHHKj/hJu09u3ysbODym14XtjtYu/P8NUbDd
-	 JLr/giH2xjYnEWF06bBDIg1TTT/9VVwklqRBlfnTfYYWXh3eg7eMp8kfyVkcE4qr70
-	 1usPFWw1wBePw==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9A73C83F38;
-	Thu, 17 Jul 2025 13:26:04 +0000 (UTC)
-From: Remi Buisson via B4 Relay <devnull+remi.buisson.tdk.com@kernel.org>
-Date: Thu, 17 Jul 2025 13:25:59 +0000
-Subject: [PATCH v3 7/8] iio: imu: inv_icm45600: add I3C driver for
- inv_icm45600 driver
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="qUywYP61"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1752759105; x=1753018305;
+	bh=aPEWDW3DKbruNkNr+5qftKrpi1xMqYprC+1aHTuSLYw=;
+	h=Date:To:From:Cc:Subject:Message-ID:In-Reply-To:References:
+	 Feedback-ID:From:To:Cc:Date:Subject:Reply-To:Feedback-ID:
+	 Message-ID:BIMI-Selector;
+	b=qUywYP613MdGorQ6Skw0P4OHml0OlX7xMq8/HtjRKCM0b4AnphpKQ8UQj05AVyOKq
+	 Jvo/77m/3rzY9zTxNRdadHYf9XjSJ29YEs/9JfkAAl6QOpnDiwU01b8vKud06URERr
+	 z6DV53QMPqWQSKKHKwiJsuahKpuCzzCcVXnqkoZDi+POZzOdrkPMoYbfadJM15V2Kt
+	 8HsLFlM2KSqTviUwbfNyCUm9iFC1OhvF0oNimT4jLkCZZX2jI+834P4C6fi2ienf6d
+	 UE4cObV7oUVTBMGyLXdU6HOJ+KLLzKoH85QIQqF1NsDxbsWnwuGzClUkChQdgqHcZf
+	 4xQy/wPq/eiHg==
+Date: Thu, 17 Jul 2025 13:31:40 +0000
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+From: Yassine Oudjana <y.oudjana@protonmail.com>
+Cc: Manivannan Sadhasivam <mani@kernel.org>, "David S. Miller" <davem@davemloft.net>, Eric Dumazet <edumazet@google.com>, Jakub Kicinski <kuba@kernel.org>, Paolo Abeni <pabeni@redhat.com>, Simon Horman <horms@kernel.org>, Bjorn Andersson <andersson@kernel.org>, Konrad Dybcio <konradybcio@kernel.org>, Masahiro Yamada <masahiroy@kernel.org>, Nathan Chancellor <nathan@kernel.org>, Nicolas Schier <nicolas.schier@linux.dev>, Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, =?utf-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Luca Weiss <luca@lucaweiss.eu>, linux-arm-msm@vger.kernel.org, netdev@vger.kernel.org, linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] iio: Add Qualcomm Sensor Manager driver
+Message-ID: <pf5Z61lF8AhA7lEZ3mew6aSShDnuQUe_da_gGIcw6cftOM0kuxDYHrnIbiOA91kHYw2RCQP4MvqOkubyJisqu8MmfcFI8yB5bXagfEO-U_Y=@protonmail.com>
+In-Reply-To: <CAHp75Vf8NzYRMeM=+S4p9LGnOd4iXcdw93hBjd=Rn=LqBXgwgA@mail.gmail.com>
+References: <20250710-qcom-smgr-v2-0-f6e198b7aa8e@protonmail.com> <20250710-qcom-smgr-v2-4-f6e198b7aa8e@protonmail.com> <CAHp75Vf8NzYRMeM=+S4p9LGnOd4iXcdw93hBjd=Rn=LqBXgwgA@mail.gmail.com>
+Feedback-ID: 6882736:user:proton
+X-Pm-Message-ID: c4341d71dd1799d4c6fdd96eeabe45193f82ce56
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250717-add_newport_driver-v3-7-c6099e02c562@tdk.com>
-References: <20250717-add_newport_driver-v3-0-c6099e02c562@tdk.com>
-In-Reply-To: <20250717-add_newport_driver-v3-0-c6099e02c562@tdk.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, Remi Buisson <remi.buisson@tdk.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1752758762; l=4456;
- i=remi.buisson@tdk.com; s=20250411; h=from:subject:message-id;
- bh=4m9qBpGi25U3Cwi+7Mah1nGcPeoIUiDCyFwUUL17ZWI=;
- b=0n0+HPE0K0r/Lj3Rk/G0PjJxaRH0TbP9AjBGhxovMXQmkZiIpMuyGLwWiidFIhy+IEyi69tic
- xSjUWTDZMjKDjBwORu4hCwB7gMyrzSN1EnyOOOeK7CKjsjVhIhilm2r
-X-Developer-Key: i=remi.buisson@tdk.com; a=ed25519;
- pk=yDVMi4C7RpXN4dififo42A7fDDt3THYzoZoNq9lUZuo=
-X-Endpoint-Received: by B4 Relay for remi.buisson@tdk.com/20250411 with
- auth_id=372
-X-Original-From: Remi Buisson <remi.buisson@tdk.com>
-Reply-To: remi.buisson@tdk.com
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Remi Buisson <remi.buisson@tdk.com>
+On Thursday, July 10th, 2025 at 9:58 AM, Andy Shevchenko <andy.shevchenko@g=
+mail.com> wrote:
 
-Add I3C driver for InvenSense ICM-45600 devices.
+> On Thu, Jul 10, 2025 at 11:06=E2=80=AFAM Yassine Oudjana via B4 Relay
+> devnull+y.oudjana.protonmail.com@kernel.org wrote:
+>=20
+> > Add a driver for sensors exposed by the Qualcomm Sensor Manager service=
+,
+> > which is provided by SLPI or ADSP on Qualcomm SoCs. Supported sensors
+> > include accelerometers, gyroscopes, pressure sensors, proximity sensors
+> > and magnetometers.
+>=20
+>=20
+> First of all it's almost 2kLoCs, it's on the edge of unreviewable
+> code. Please, try to make 3+ patches out of this one.
+> Second, take your time and check what your code is using from the
+> kernel internal libraries and APIs and follow IWYU principle when
+> including headers.
 
-Signed-off-by: Remi Buisson <remi.buisson@tdk.com>
----
- drivers/iio/imu/inv_icm45600/Kconfig            | 21 +++++++
- drivers/iio/imu/inv_icm45600/Makefile           |  3 +
- drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c | 82 +++++++++++++++++++++++++
- 3 files changed, 106 insertions(+)
-
-diff --git a/drivers/iio/imu/inv_icm45600/Kconfig b/drivers/iio/imu/inv_icm45600/Kconfig
-index 01399d136a7ea3aa92a3a18ea455c95c0a6578b3..dc133402f6d75f8c050100e8475404e00993818b 100644
---- a/drivers/iio/imu/inv_icm45600/Kconfig
-+++ b/drivers/iio/imu/inv_icm45600/Kconfig
-@@ -47,3 +47,24 @@ config INV_ICM45600_SPI
- 
- 	  This driver can be built as a module. The module will be called
- 	  inv-icm45600-spi.
-+
-+config INV_ICM45600_I3C
-+	tristate "InvenSense ICM-456xx I3C driver"
-+	depends on I3C
-+	select INV_ICM45600
-+	select REGMAP_I3C
-+	help
-+	  This driver supports the InvenSense ICM-456xx motion tracking
-+	  devices over I3C.
-+	  Supported devices:
-+	  - ICM-45605
-+	  - ICM-45606
-+	  - ICM-45608
-+	  - ICM-45634
-+	  - ICM-45686
-+	  - ICM-45687
-+	  - ICM-45688-P
-+	  - ICM-45689
-+
-+	  This driver can be built as a module. The module will be called
-+	  inv-icm45600-i3c.
-diff --git a/drivers/iio/imu/inv_icm45600/Makefile b/drivers/iio/imu/inv_icm45600/Makefile
-index 244cc8aa1f79e3367ac6925504cfd9d5b918a0e6..fa646ea8339da3c41eab8aa16e14b484fd884843 100644
---- a/drivers/iio/imu/inv_icm45600/Makefile
-+++ b/drivers/iio/imu/inv_icm45600/Makefile
-@@ -11,3 +11,6 @@ inv-icm45600-i2c-y += inv_icm45600_i2c.o
- 
- obj-$(CONFIG_INV_ICM45600_SPI) += inv-icm45600-spi.o
- inv-icm45600-spi-y += inv_icm45600_spi.o
-+
-+obj-$(CONFIG_INV_ICM45600_I3C) += inv-icm45600-i3c.o
-+inv-icm45600-i3c-y += inv_icm45600_i3c.o
-diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..9db249ca53ec3fecb0f85792a353d05463f52acb
---- /dev/null
-+++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_i3c.c
-@@ -0,0 +1,82 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/* Copyright (C) 2025 InvenSense, Inc. */
-+
-+#include <linux/err.h>
-+#include <linux/i3c/device.h>
-+#include <linux/i3c/master.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/regmap.h>
-+
-+#include "inv_icm45600.h"
-+
-+static const struct regmap_config inv_icm45600_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+};
-+
-+static const struct i3c_device_id inv_icm45600_i3c_ids[] = {
-+	I3C_DEVICE_EXTRA_INFO(0x0235, 0x0000, 0x0011, (void *)NULL),
-+	I3C_DEVICE_EXTRA_INFO(0x0235, 0x0000, 0x0084, (void *)NULL),
-+	{ /* sentinel */ },
-+};
-+MODULE_DEVICE_TABLE(i3c, inv_icm45600_i3c_ids);
-+
-+static const struct inv_icm45600_chip_info *i3c_chip_info[] = {
-+	&inv_icm45605_chip_info,
-+	&inv_icm45606_chip_info,
-+	&inv_icm45608_chip_info,
-+	&inv_icm45634_chip_info,
-+	&inv_icm45686_chip_info,
-+	&inv_icm45687_chip_info,
-+	&inv_icm45688p_chip_info,
-+	&inv_icm45689_chip_info,
-+};
-+
-+static int inv_icm45600_i3c_probe(struct i3c_device *i3cdev)
-+{
-+	int ret;
-+	unsigned int whoami;
-+	struct regmap *regmap;
-+	const int nb_chip = ARRAY_SIZE(i3c_chip_info);
-+	int chip;
-+
-+	regmap = devm_regmap_init_i3c(i3cdev, &inv_icm45600_regmap_config);
-+	if (IS_ERR(regmap)) {
-+		dev_err(&i3cdev->dev, "Failed to register i3c regmap %ld\n", PTR_ERR(regmap));
-+		return PTR_ERR(regmap);
-+	}
-+
-+	ret = regmap_read(regmap, INV_ICM45600_REG_WHOAMI, &whoami);
-+	if (ret) {
-+		dev_err(&i3cdev->dev, "Failed to read part id %d\n", whoami);
-+		return ret;
-+	}
-+
-+	for (chip = 0; chip < nb_chip; chip++) {
-+		if (whoami == i3c_chip_info[chip]->whoami)
-+			break;
-+	}
-+
-+	if (chip == nb_chip) {
-+		dev_err(&i3cdev->dev, "Failed to match part id %d\n", whoami);
-+		return -ENODEV;
-+	}
-+
-+	return inv_icm45600_core_probe(regmap, i3c_chip_info[chip], false, NULL);
-+}
-+
-+static struct i3c_driver inv_icm45600_driver = {
-+	.driver = {
-+		.name = "inv_icm45600_i3c",
-+		.pm = pm_sleep_ptr(&inv_icm45600_pm_ops),
-+	},
-+	.probe = inv_icm45600_i3c_probe,
-+	.id_table = inv_icm45600_i3c_ids,
-+};
-+module_i3c_driver(inv_icm45600_driver);
-+
-+MODULE_AUTHOR("Remi Buisson <remi.buisson@tdk.com>");
-+MODULE_DESCRIPTION("InvenSense ICM-456xx i3c driver");
-+MODULE_LICENSE("GPL");
-+MODULE_IMPORT_NS("IIO_ICM45600");
-
--- 
-2.34.1
-
+I can cleanly split it into 2 patches by putting the QMI components
+in a separate patch. Not sure about 3+ patches but will try my best.
+Will review includes.
 
