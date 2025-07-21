@@ -1,153 +1,162 @@
-Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A145E288C8D;
-	Mon, 21 Jul 2025 09:21:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11F10298CAC
+	for <linux-iio@vger.kernel.org>; Mon, 21 Jul 2025 10:44:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1753089705; cv=none; b=FaE4REic6If5PiMUN4y8lqsDkGcUwit4Z1nE8Ec6o2odIt89OT/nYnS0rZImzaSDTwxN6aYive2P9VnlSFp2/qmh96P7u3EDXRwL8gEmCw0M6ay6VciIQA3N+N+R4h6Q8FQe1Zg3Ho1V6Cbq3mTlwfdvQhZ7fwgb0Eup97KZRRM=
+	t=1753094672; cv=none; b=tERF/RMQUb2MVUgwP34jtKFo4k7deAcQIAs3h58Nvwfq6nMx9FikqANYftOGyHkQif/Lkd/8rwHm2STGuKe1lsuaUwtg2QoPFOdOozI8RbXq9mocP2fxvHG+BpjV0m1cY+qti3EeRtXhBLJ0ckNHFr5qdTMV8jFBY8/Yb8Rpt3M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1753089705; c=relaxed/simple;
-	bh=+/TElpPdYao+9Rd4FXtjzf7rWIlQdx/KEToLN7xS7hE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Ric+3FPXP8UEXFpZLiO8wubnbp1nmNuVhY+hnh1njb5eATnjE1Lhjgyl90DBPiHwJ+4zPZxaOxEjJmbimlsAm++C0cuavF5U+ROZPDd+GP3avwswl2wF1xl/zfLYfSbODIlaQbyt9jiQ69zb4HfDqOr5+XHzKEQZSSUl1mHgojU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HskNqwkz; arc=none smtp.client-ip=209.85.160.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1753094672; c=relaxed/simple;
+	bh=Jyg9VIduqhzzijMHnSKAC2B6G1xD8WFdq0kn3G+RX/E=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=SuAhFUj6oTCjgy8jPqz+y9KQg7mJ/lHXRW8jIKXEEvtsLQF4EaQ8IV2J0hfj8ZOjCC2NJMwQMeGs9HrOmMI1NVNUc25zggbHKe2WrF8Y9KF9jhEgUATKgPrFiWv1tjlM/t8F4Gj3d6Bgup7OVmSqIzcSWPlYL2VfZCmydkQyodM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=uKMwD7tk; arc=none smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HskNqwkz"
-Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-30194d82366so1427187fac.3;
-        Mon, 21 Jul 2025 02:21:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uKMwD7tk"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-3a528243636so2499725f8f.3
+        for <linux-iio@vger.kernel.org>; Mon, 21 Jul 2025 03:44:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1753089701; x=1753694501; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=NRLauZhbNLVf4xFZoSDTUJ1/uYBhYsUp8SR1mJmEK3U=;
-        b=HskNqwkzxg6T+l71RiB9KT4CLz3InNI1WSLczS2/Oe52p4TvCNuvDqPUb0O88GPvLG
-         aApPu5Qom7+K5CvUmqKmT4XyZQL9Z7DTUk2lrRXW0OeVh9OHxl39vrPuyRyDFn8u5dcV
-         KsOa0+krwRDzUzIUzGUkqrd+/erumMjUccfuwzgpHrxh/SnycnV1p3OJ+Lac07Rpksq1
-         Ri68fR2tdxuQlnsF+tLA1aGvTzPAWGYu8TQwrOCdVpQB5hlhX27WUkyEoB15iPJls8G3
-         gdjaPR+CvCNpYkoSHW1+472kovoW4ZHXg6Suo17AWLb0dJQz0S0pRmDGYVvPz0hPlmxZ
-         Tw6w==
+        d=linaro.org; s=google; t=1753094668; x=1753699468; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Jv8CKZAnBLUK/0fb5CiuD7Hp6E+b8QPJo8tRAQ5ZhDg=;
+        b=uKMwD7tkDvM6y1ai4Cu5EVRzwrIwC83suT5zEhID5qe2mwleN7zru6IM8MNu7+SUbd
+         vgX4l23PX6jIuXULkaJ+TZ3rQ8DgvCSmsxzitnTo+2P+xR1z05kAhjPbNO6apTwr4DNw
+         GmJgdxYa2PqJOo0U+EiI1aiKju5Ov4DsUZBp//Q+IZKwDwDBHfy4Cs5PN/+snhj940Cs
+         s+wcZA+nsqI0Ywhwe7pY9zH8/gYB6FboDPs8KArN3fVKdyB6hxVxGyqOE8f/YxHjxS5k
+         Qq3uIYladgqRGv6yBgyWOrT1rgbsPT1QMm9kqMQdY3DKEFtIM0h0D4TmxlDxvzaX1xRg
+         musA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1753089701; x=1753694501;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20230601; t=1753094668; x=1753699468;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NRLauZhbNLVf4xFZoSDTUJ1/uYBhYsUp8SR1mJmEK3U=;
-        b=KwKPLSyEL9F5DAys/4mPxWAK9Hs3jIVj0wAiy+QlN2C61lUn+Q8z7Gm5HeLSa90xV9
-         lVpPZhJL/gqVHmdJz1IWhYvaw2WMPGjdsAK5TPz6rvU/E2paD1vNKlJn2bqtgacZNHm0
-         KAMcjHerCrGwqA24xWnilLJ8bNhisoiQUok/3U2InYQ/sWu5YVnNGK0MvHCfy8P0Vf9s
-         e9TG57IUK7773UOoVRnZBvJIkag1cQk5688LugiMz46DGkKhEV76W5I1CjsNU2lOAJKI
-         rMmsbu3n3Pe8eMAUbJKZ4szOY9jH8Uoao0+IV0KLr+FCZGDCLlgK3/Bnl1B7hY7omosf
-         nibA==
-X-Forwarded-Encrypted: i=1; AJvYcCXE4Kn58NxcOoo6GzXEspKgsZRHbqBxcR3Va+C7g082KiymXrQ2g2mZXmx5IB0nJ5OuG5/ZHQnsFjqajJI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwpZVMcF9WPt3IIE6qrbM9Rnw42Ryy5gWrGKvxlaRLf8HGPnGHP
-	KcSRxrQyiGb9wzSI24wktW7p9fZ8/T/WabsftB8BQ1wAojTmCYSd3XV8
-X-Gm-Gg: ASbGnctjF5ujRvjG4LeOvPA3Ny6nOpAZy1uSJ4zBHyS55/Di5UWQpM5CFw5FXxUHCL9
-	XqmBQMYXBkbwUTXgB1GQNi80P7gl5brcCZuVOd1dGyvUNjtFYLP2yJRadiDvb0WOzkl9yP7beap
-	x3fS8jBsN3ZXviLWJ70DCc5iv7EaR6p3zPIe2qvwz+OR+AgrFwJnUL0M3C8k4iLKuQjS13j4mDq
-	MuPoY8mFyrB6zb7tPr3qJKe1BcXC1IGKrbzz3Q+MjxZrKIX0vm/5JW3D9uMQXhuDByZcAawxGTf
-	OhxnmHuyWsyps0HOsZiM9v2FBfe5y/4nQU0Cdg8OmNSYSrGOUZ+FU9A2kdBSZN527ejulcGfg8n
-	J0LYrSP2PGPGU
-X-Google-Smtp-Source: AGHT+IEGapepDDnCdlBR92F/d8VFfGrS+O6XmCr8qCYQJdXD8+j545fTeV+grwPm6Q2lnpRgIwdoNA==
-X-Received: by 2002:a05:6870:8a1e:b0:2c1:ac88:4a8d with SMTP id 586e51a60fabf-2ffb246eec1mr14424447fac.30.1753089701580;
-        Mon, 21 Jul 2025 02:21:41 -0700 (PDT)
-Received: from nsa ([83.136.182.32])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-30103d23cdcsm3365279fac.21.2025.07.21.02.21.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Jul 2025 02:21:41 -0700 (PDT)
-Date: Mon, 21 Jul 2025 10:21:51 +0100
-From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	jic23@kernel.org, dan.carpenter@linaro.org, lars@metafoo.de, 
-	Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	Markus.Elfring@web.de, marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v2 1/1] iio: adc: ad4170-4: Correctly update filter_fs
- after filter type change
-Message-ID: <3rl5w6ydn4pzrflaakx5njft7ojx2anf2c4jpha7zkm2oltuec@4jbc7gis7awr>
-References: <1c354ff9f41ff964a66ece44b0d356e0bda3d210.1753024756.git.marcelo.schmitt@analog.com>
+        bh=Jv8CKZAnBLUK/0fb5CiuD7Hp6E+b8QPJo8tRAQ5ZhDg=;
+        b=Ck39vNFZkykpmxor85fJ6Np6rsS7NIVNZAWbjC/xwBYgV+zCtxN2SIYgSiIud+o/fK
+         3podA7Agg2zDJvk5Az/vOxtTJCQ/ukVWQ/4XpZ0HYsdPdow2bhGZsHbZqnK1DiZPQRTp
+         XAfKST6wAPzK4rsg6mL0FCfB1PiMkwlowIKGGigsuE0L2pyOZ4kLwyL7Izpr73vSXK8/
+         t409jUoYq8eS7DCHrTijioKhd+bk8IJzJMH2J+jHkF6DiCrT+ygpgcZZg7+KwSYqkxYn
+         2oMhb8hcy9amw548bihEahYorvDGaDoockdBzp32WEeR7U+yNG6b+h+Av7IkSuRkSYoE
+         Abvg==
+X-Forwarded-Encrypted: i=1; AJvYcCWH2lE7PadDDslJBBwQrqVOJkYbv+oQpOMm5gDbamB/gs0w+NNVMcFB8maS8mVaz69d8XiWqUKDBpI=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzejsu4uGEoBKQn2wLtnoazY1SjwWQ3BFiQ8KR9bzxRh07joDrJ
+	o8tEdZw5sopC6CjjM4Uxk5foO+bmHj0mwZ65n+QUyc8tlRgDM+QHXomr0Uc4+eW9ir0=
+X-Gm-Gg: ASbGncuBCZsPXe4Oon9TMTSCtddwjqQLJshS9ygbxt3L4qHHg0QRX4KRGwWp482VSwT
+	xOLfpJ3YusWYdsdWSqZyQET8ZRS6g/QIOCd+6B/2ckcLRMTjQ5WBkKeXrjdEXMYPOAlVKjYUPEJ
+	DrEV+ChVLz0eJra7HQ42X3j9tG79P6Yb3SC8hWRj59m7sqei9BZ54cc7WsASY/iMBQsMckWueJ4
+	w/dE3SlLUDPedwy0KZ5LRNzqw/PH/qx2qx37viLFtvKHFuulOufE36qxrNnfWytUI0zSNizhKQz
+	RAMkakhOVFHHXb+FJqigQtjjm+L38AFxhr9WhhhcCuk97P3AjXiwhfStOHuN7kT8lYqmxUbFa/V
+	yLnUUxX3dvojHgiyonN/UuHfK44IrmbHLvFLxTzGZAK2y07boeKqpyT6gSjb6FEDsuZWINxtv2w
+	==
+X-Google-Smtp-Source: AGHT+IHsr6BfHmmGvAFEpmk7FK7MXUXtHfZVvvvivtdI5mefMv0lLuRMGQqdMBTcEDjNOnr/mFRYmQ==
+X-Received: by 2002:a05:6000:4108:b0:3a4:dc42:a0c3 with SMTP id ffacd0b85a97d-3b61b22ec16mr7504872f8f.56.1753094668208;
+        Mon, 21 Jul 2025 03:44:28 -0700 (PDT)
+Received: from [192.168.1.36] (p549d4bd0.dip0.t-ipconnect.de. [84.157.75.208])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b61ca48c40sm10159988f8f.58.2025.07.21.03.44.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 21 Jul 2025 03:44:27 -0700 (PDT)
+Message-ID: <e724e6a2-21a8-436a-8809-ce73c0afa433@linaro.org>
+Date: Mon, 21 Jul 2025 12:44:26 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1c354ff9f41ff964a66ece44b0d356e0bda3d210.1753024756.git.marcelo.schmitt@analog.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 2/7] nvmem: qcom-spmi-sdam: Migrate to
+ devm_spmi_subdevice_alloc_and_add()
+Content-Language: en-US
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ sboyd@kernel.org
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, arnd@arndb.de, gregkh@linuxfoundation.org,
+ srini@kernel.org, vkoul@kernel.org, kishon@kernel.org, sre@kernel.org,
+ krzysztof.kozlowski@linaro.org, u.kleine-koenig@baylibre.com,
+ linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+ linux-pm@vger.kernel.org, kernel@collabora.com, wenst@chromium.org
+References: <20250721075525.29636-1-angelogioacchino.delregno@collabora.com>
+ <20250721075525.29636-3-angelogioacchino.delregno@collabora.com>
+From: Casey Connolly <casey.connolly@linaro.org>
+In-Reply-To: <20250721075525.29636-3-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Jul 20, 2025 at 12:37:24PM -0300, Marcelo Schmitt wrote:
-> Previously, the driver was directly using the filter type value to update
-> the filter frequency (filter_fs) configuration. That caused the driver to
-> switch to the lowest filter_fs configuration (highest sampling frequency)
-> on every update to the filter type. Correct the filter_fs collateral update
-> by clamping it to the range of supported values instead of mistakenly
-> using the filter type to update the filter_fs.
+Hi Angelo,
+
+On 21/07/2025 09:55, AngeloGioacchino Del Regno wrote:
+> Some Qualcomm PMICs integrate a SDAM device, internally located in
+> a specific address range reachable through SPMI communication.
 > 
-> Reported-by: Dan Carpenter <dan.carpenter@linaro.org>
-> Link: https://lore.kernel.org/linux-iio/c6e54942-5b42-484b-be53-9d4606fd25c4@sabinyo.mountain/
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Fixes: 8ab7434734cd ("iio: adc: ad4170-4: Add digital filter and sample frequency config support")
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> Instead of using the parent SPMI device (the main PMIC) as a kind
+> of syscon in this driver, register a new SPMI sub-device for SDAM
+> and initialize its own regmap with this sub-device's specific base
+> address, retrieved from the devicetree.
+> 
+> This allows to stop manually adding the register base address to
+> every R/W call in this driver, as this can be, and is now, handled
+> by the regmap API instead.
+
+This is honestly a really nice improvement :D>
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 > ---
-> Hi, this is the same fix as the fix provided in implied v1 patch but with the
-> difference of doing it the way Markus suggested in reply to v1.
-> I have a slight preference for v1 since that one keeps code contained within
-> 80 columns. Though, totally fine with whatever version of the fix gets picked up.
+>  drivers/nvmem/qcom-spmi-sdam.c | 41 +++++++++++++++++++++++++---------
+>  1 file changed, 30 insertions(+), 11 deletions(-)
 > 
-> Change log v1 (implied) -> v2
-> - Replaces if by use of ternary operator as suggested by Markus in reply to v1.
-> - Fixed commit log typo: colateral -> collateral
-> - Fixed commit log typo: clampling -> clamping
-> 
-> Thanks,
-> Marcelo
-> 
->  drivers/iio/adc/ad4170-4.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad4170-4.c b/drivers/iio/adc/ad4170-4.c
-> index 6cd84d6fb08b..2e61f9a9a1ef 100644
-> --- a/drivers/iio/adc/ad4170-4.c
-> +++ b/drivers/iio/adc/ad4170-4.c
-> @@ -879,12 +879,11 @@ static int ad4170_set_filter_type(struct iio_dev *indio_dev,
->  		if (!iio_device_claim_direct(indio_dev))
->  			return -EBUSY;
+> diff --git a/drivers/nvmem/qcom-spmi-sdam.c b/drivers/nvmem/qcom-spmi-sdam.c
+> index 4f1cca6eab71..1b80e8563a33 100644
+> --- a/drivers/nvmem/qcom-spmi-sdam.c
+> +++ b/drivers/nvmem/qcom-spmi-sdam.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/nvmem-provider.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/regmap.h>
+> +#include <linux/spmi.h>
 >  
-> -		if (val == AD4170_SINC5_AVG || val == AD4170_SINC3)
-> -			setup->filter_fs = clamp(val, AD4170_SINC3_MIN_FS,
-> -						 AD4170_SINC3_MAX_FS);
-> -		else
-> -			setup->filter_fs = clamp(val, AD4170_SINC5_MIN_FS,
-> -						 AD4170_SINC5_MAX_FS);
-> +		setup->filter_fs = (val == AD4170_SINC5_AVG || val == AD4170_SINC3)
-> +				    ? clamp(setup->filter_fs,
-> +					    AD4170_SINC3_MIN_FS, AD4170_SINC3_MAX_FS)
-> +				    : clamp(setup->filter_fs,
-> +					    AD4170_SINC5_MIN_FS, AD4170_SINC5_MAX_FS);
-
-I very much prefer the approach in v1. To me, this code is just harder
-to read...
-
-Reminder to why is a good idea to wait a bit and don't rush into
-spinning new versions. Also, Markus has a very proven record of not
-being helpful at all in reviews (just look in lore :))
-
-With that:
-
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-
-- Nuno Sá
-
+>  #define SDAM_MEM_START			0x40
+>  #define REGISTER_MAP_ID			0x40
+> @@ -20,7 +21,6 @@
+>  struct sdam_chip {
+>  	struct regmap			*regmap;
+>  	struct nvmem_config		sdam_config;
+> -	unsigned int			base;
+>  	unsigned int			size;
+>  };
 >  
->  		setup->filter &= ~AD4170_FILTER_FILTER_TYPE_MSK;
->  		setup->filter |= FIELD_PREP(AD4170_FILTER_FILTER_TYPE_MSK,
-> 
-> base-commit: cd2731444ee4e35db76f4fb587f12d327eec5446
-> -- 
-> 2.47.2
-> 
+> @@ -73,7 +73,7 @@ static int sdam_read(void *priv, unsigned int offset, void *val,
+>  		return -EINVAL;
+>  	}
+>  
+> -	rc = regmap_bulk_read(sdam->regmap, sdam->base + offset, val, bytes);
+> +	rc = regmap_bulk_read(sdam->regmap, offset, val, bytes);
+>  	if (rc < 0)
+>  		dev_err(dev, "Failed to read SDAM offset %#x len=%zd, rc=%d\n",
+>  						offset, bytes, rc);
+> @@ -100,7 +100,7 @@ static int sdam_write(void *priv, unsigned int offset, void *val,
+>  		return -EINVAL;
+>  	}
+>  
+> -	rc = regmap_bulk_write(sdam->regmap, sdam->base + offset, val, bytes);
+> +	rc = regmap_bulk_write(sdam->regmap, offset, val, bytes);
+>  	if (rc < 0)
+>  		dev_err(dev, "Failed to write SDAM offset %#x len=%zd, rc=%d\n",
+>  						offset, bytes, rc);
+> @@ -110,28 +110,47 @@ static int sdam_write(void *priv, unsigned int offset, void *val,
+>  
+>  static int sdam_probe(struct platform_device *pdev)
+>  {
+> +	struct regmap_config sdam_regmap_config = {
+> +		.reg_bits = 16,
+> +		.val_bits = 16,
+
+I believe registers are 8 bits wide, at least on Qualcomm platforms.
+
+Kind regards,
+-- 
+// Casey (she/her)
+
