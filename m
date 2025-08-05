@@ -1,104 +1,142 @@
-Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
+Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC3B223D2B4;
-	Tue,  5 Aug 2025 12:28:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8B661A0BFD
+	for <linux-iio@vger.kernel.org>; Tue,  5 Aug 2025 12:41:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754396927; cv=none; b=J1oaCaUTcF1BWb/jX7nGdxvUzZEvo9UAjA4ZJmRnVW8oomBIQHyBTJSQwjHArkePDzCtTmIbUeRaifahXFPjozGRgN4a6hnRE0Oe55LWKNL8ZWRkOLCas2u9MAd1jTxhUp2IDggwyVdmsulF13L7tuEZxqWMRxUnkpPNWl3KIqY=
+	t=1754397705; cv=none; b=UCE/2bFlzCVnTQln+3gVEvpmsPHds+ExabofbdLcMt+0QPQs8vmRHm0YIZP45FiIu2DRlOIvsqGWItnA8DhqBNW2GG3w4+BLBrrqS30cr+OwydaTfH2MMnk+2GzGn3tZREkgWF9drWZuEr2cfZkLABhPmPQJ/NOqUX5P/joB1+A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754396927; c=relaxed/simple;
-	bh=Z5FcbTahZ/RRgoaKzPKgBR73e0JYexOrxpXMw9vqpdo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=hmYC/H9WAwpk+HXiR0ysH9oAStKJBXnMsjpqCP786dZ3yG4YwItQTM3w4+QVpBsuxtvrJP08qZszxLbZSPr4AUjwhR0PWeym8G1185IP8WWZzMAgxjDtJR+/WvcaZoJN97wm+AbHfTc6IWIkz/c4/cw3tP6wm3jJCROSFUMTzzc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Sa5hPvvI; arc=none smtp.client-ip=209.85.218.42
+	s=arc-20240116; t=1754397705; c=relaxed/simple;
+	bh=csoXacvin82Y2q1H2Sl/rc8mRogW7g/HQ5r3qzIBkmw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VREAVbaXocabZopF9GgFnMFBYRIFe0GELPaKCorpjCtFxBGl6h8+pvjpzF7l0/8ZHVn1fqiw7nfCSL8FWbScIzoXVW54xtifi/1P/JkZFbhABzRm1qQBJEC6sU06kzY4a/bWq9oDCkMXX7e0bpQBubiq05tOQ6ZVEPCpbkou1E8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y3ZALdpY; arc=none smtp.client-ip=209.85.208.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sa5hPvvI"
-Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-ae9c2754a00so1329754066b.2;
-        Tue, 05 Aug 2025 05:28:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y3ZALdpY"
+Received: by mail-ed1-f50.google.com with SMTP id 4fb4d7f45d1cf-6157c81ff9eso8078832a12.3
+        for <linux-iio@vger.kernel.org>; Tue, 05 Aug 2025 05:41:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754396924; x=1755001724; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=gcIvhPPK5rUJGxNryqxcF4CjZ+W21S0daDQr+2yRE+A=;
-        b=Sa5hPvvI0fpUtNdOiqLNjLRg2SyK7tk5nuZ2Az1YJ3KXa4KqxczpR5T4kbEyhHA0mj
-         +P0Wcgqet6pMTmZMMNFnRVm9pr+VqwJYDxcvPxTtSPm+eXfyOPd+swGCKGeuNwnaBMXp
-         C2xQ9OiOE7DLAfGDvSJUjjMf8s7THu6ysc+iP5fC6zggKlsywTjR2JbG6CymrTXLz2NM
-         6ZZ7OKX64qxhrpA/VFnVlu2PWRgUq+FamPQddHKdNmlADr8SGmj2jhz5kxDsQVOv6bXx
-         mUaCBOg5jVAxwM2zqmH8ni6qXrIMgQbabvrRhyg+D4ZuD3s6Spkw90JdYrVuvAlZSDva
-         Po0w==
+        d=gmail.com; s=20230601; t=1754397701; x=1755002501; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IJtOMjlld2BynwqxJvdPys6HUoBpeeeLGIpMOXj7T9Q=;
+        b=Y3ZALdpYJgDfwJVL542CMVordvvYD0d15Zufw0BSgQAP0zhHF2/qM4CR/BKYUY8kUh
+         M+xhlzlNLeQXWemgR1pIlWnaXbkQKQtiu1D8Z0xntL8l0n5NPz3qyuCV3hNGjzc+RT+r
+         3zrzrEQThawxVskLse/XCWTuqAEaaPEXWhsL1w9FuVgq9HCNb4WemWYjCZfmn9aoq2N3
+         chUxATd5gw/SXlWdL1WcgP+KO56RHP+DgMkGutEehqD9V5EVWuz6sk6UDaNu436IOvIF
+         Y5i3YAk/gThmiGRgWvuhiQ6KVzEkyqyPflPC82mLZ76GQOnZm0gbmYgC9CRgZt5BtjSL
+         x8cA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754396924; x=1755001724;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=gcIvhPPK5rUJGxNryqxcF4CjZ+W21S0daDQr+2yRE+A=;
-        b=nmPhgRPvH1v72bQ54NitRdbu4WbKEvpKHaaDEQ6buATQ8+TzZPnWxgLVdzMffBOqdA
-         Z+riFNepptRaLXhatmOniUVXs5RErD75+eLcp26G6Gl5Z76WeigD1MZasja0fkODTVrQ
-         gpYNmJ5fZ0cDUUGU+CQGRgxK//uYBjOku3hkA2piPRFSCL4i4XSnOQU3IX0fR3R/1mrc
-         aCizbOaYvbb10RX2X5gFMa0b4OLTA5KNBxE8fBlxsUDzQGmM2C7zq3dGiau2D2UjQGaD
-         gnk363zhAAtQiggo9d2fCHm4iMtlU4Wh1nBX+vreaJHaPQHeOBVHPUxi0vWluFS18FI8
-         SPVg==
-X-Forwarded-Encrypted: i=1; AJvYcCU83YUBNuSl6noEOa/oQ1Yrsq9MK4QPBc0GgChvJZe8gARoX0btrAUzzh3as4EGESgRqxB5s9h3krMwPz0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxgWoV7nK3CjPcL+blCZRJsrEusUh74Lgdg54VUihCx/yIcnS2g
-	VZi6I6Z65lfhh3drVvdUEXc9BU2fDA2v/wL4MlMOWaVtGvSgetq6sp8L
-X-Gm-Gg: ASbGncsZ8r1zQpet2X09KJa5qCX3uLxPFRX2Ni5Oyre/cCuldhI4ObSJK2lxXHdgO96
-	M9K0OvuS0vxKwxyOuFfY2VNjsFvHw31w0jZvL1NX1M+9SRdieB89sLwSkssRM2rziS6iQ7187UG
-	bpaf9wOc8ENEbKpxOPhsnrkiDo3crccJxloBVDq5lJdQfEM0sv6i9k4P/kvqzj2YmCA3dcNPAXh
-	2c8kIFNhP2b0p/QUbRRdqIvxCZi4EEyDKAKRgXAEePZYp/uemSFg5Hl0v2nWSwNBx5Cgu0Utxi6
-	p5hSOA06Xu7rQLh51EhwwpdJG04cs7KmkWVevvTCEwprIHpOmPRBjUIbEBRSWWt8rktuvCQoYbe
-	Xg2rLTqfuXaUrtpgsnn7clnI=
-X-Google-Smtp-Source: AGHT+IEqVHHRxx5/5XxanTeGkzAoGd0nO1c/93cB7pjgH8vrSNN/NU3YLCNsGtlJJwX4xh0/nrdldw==
-X-Received: by 2002:a17:907:3f99:b0:ae6:f564:18b5 with SMTP id a640c23a62f3a-af940007c7amr1441156266b.19.1754396923741;
-        Tue, 05 Aug 2025 05:28:43 -0700 (PDT)
-Received: from fedora.. ([109.69.133.178])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-615a911567fsm8121712a12.61.2025.08.05.05.28.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 05 Aug 2025 05:28:43 -0700 (PDT)
-From: Stefano Manni <stefano.manni@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Stefano Manni <stefano.manni@gmail.com>
-Subject: [PATCH] iio: adc: ad799x: add reference supply for ad7994
-Date: Tue,  5 Aug 2025 16:24:23 +0200
-Message-ID: <20250805142423.17710-1-stefano.manni@gmail.com>
-X-Mailer: git-send-email 2.48.1
+        d=1e100.net; s=20230601; t=1754397701; x=1755002501;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=IJtOMjlld2BynwqxJvdPys6HUoBpeeeLGIpMOXj7T9Q=;
+        b=Ndm4i84OCRWIwT3wWpdPdmQ00OON+zXsqev4j0iTchFN+qr8QhrX2XwmvMVccTQ4ay
+         26W8TUgBVOldgA8dnCMBpvuAR/ARur29K/Ve/Gl6NBcO2oovzRasA0nNcUXOUDw8/n/n
+         ATaMkh29CWHMxG+kaCZUgfvr1+Xc/jB7H4+cMBaOWyiGFevFB7z316ABubPOamUnlWQ2
+         UB7D646v0khFzsPwwm1aQyuEP849vOfjGyljVcb8yhUk7BH6fpsYMQGOR9MX5ggv9x//
+         sP0wDuYAf2yLeq0fxG4wYbFxNXp2CVEMMIiQ1/yg/KmcqvvYvJ6HSHiPbPplERhCKa4C
+         CIkw==
+X-Forwarded-Encrypted: i=1; AJvYcCVyttA/W+rtBcWByIKxEhGwrfhWX8K/zAskTSpwjswELuP3/SQZirkt9FYXalpYtNSTkEIJoSFaE+4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxR9jFlARESWHseibnP1X5vAgN8BI30AXMS1zbGwQbZRrjKVXEc
+	0TT0J615pmBBwVj3c5IsU+8SZA8g4U/Zf267B02OvPk+IJl+0z4E1f+Rh02qMBbSPwuo1aBM2og
+	cG5yvo6iakC50ELrM0Fq5wwiez7hVR+c=
+X-Gm-Gg: ASbGncvZJ/fTpsvoOR2FU9LlKczK3vQZ5jzhqNevU+QSylWy0c+Q5WMLcMSzmoHL6g1
+	uOhHmPKNw7VBqt3RTsnD67eGhM7wBSURYtqWIS7w/Jjph1fZ3uX/RIbYOvBIGVpa071qengVVdM
+	YNsFBM0lLDdx2EzPKB2/scplnjEKh6s3p3BvVp5sEYHTSfAN2J/2Fdlg7+QSHmzW4KbWL4vO2R7
+	EqQAIYasg==
+X-Google-Smtp-Source: AGHT+IFxlLV3nZ2NT2UTnAXExeDbr/ohgWVTv6XR8CJHirQZwjQgOsU0V9vSvU8i00oWkH/6iuV2QwLphL+D9fKP138=
+X-Received: by 2002:a17:907:d8d:b0:af9:2e26:4636 with SMTP id
+ a640c23a62f3a-af940173110mr1299680966b.32.1754397700524; Tue, 05 Aug 2025
+ 05:41:40 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20250802171539.518747-1-jic23@kernel.org> <73r5iyaprblcalagi7gt3bxjdnoudfyagwgz3n7dvmjhzjvure@2yekmv62faa4>
+ <CAHp75VcuWfQtxrhdZeX4cZ3aNnCZb1mKbZaUPVwF8oOnfpPcFw@mail.gmail.com> <zaymyis6xp4t6qz6se2xehj4gp4lzaybuu2vzabew3pxqoxtsf@36dykzwuloq6>
+In-Reply-To: <zaymyis6xp4t6qz6se2xehj4gp4lzaybuu2vzabew3pxqoxtsf@36dykzwuloq6>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 5 Aug 2025 14:41:03 +0200
+X-Gm-Features: Ac12FXy05EBG5JQkP0szw-txWx-os4xJBhj2PdYro9e_qHs6YnJ_uXneZ6V5-F4
+Message-ID: <CAHp75VcWepvA73Pv=JHZn3BAnnO=NcaEvU85p2yQrVJW_pXFmw@mail.gmail.com>
+Subject: Re: [PATCH RFT] iio: Fix core buffer demux failure to account for
+ unwanted channels at tail
+To: =?UTF-8?B?TnVubyBTw6E=?= <noname.nuno@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Shen Jianping <Jianping.Shen@de.bosch.com>, 
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-AD7994 supports the external reference voltage on pin REFIN.
+On Tue, Aug 5, 2025 at 10:16=E2=80=AFAM Nuno S=C3=A1 <noname.nuno@gmail.com=
+> wrote:
+> On Mon, Aug 04, 2025 at 06:02:22PM +0200, Andy Shevchenko wrote:
+> > On Mon, Aug 4, 2025 at 5:37=E2=80=AFPM Nuno S=C3=A1 <noname.nuno@gmail.=
+com> wrote:
+> > > On Sat, Aug 02, 2025 at 06:15:39PM +0100, Jonathan Cameron wrote:
 
-Signed-off-by: Stefano Manni <stefano.manni@gmail.com>
----
- drivers/iio/adc/ad799x.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+...
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 9c02f9199139..e5167dba925f 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -826,7 +826,8 @@ static int ad799x_probe(struct i2c_client *client)
- 		 * Use external reference voltage if supported by hardware.
- 		 * This is optional if voltage / regulator present, use VCC otherwise.
- 		 */
--		if ((st->id == ad7991) || (st->id == ad7995) || (st->id == ad7999)) {
-+		if ((st->id == ad7991) || (st->id == ad7995) || (st->id == ad7999)
-+			(st->id == ad7994)) {
- 			dev_info(&client->dev, "Using external reference voltage\n");
- 			extra_config |= AD7991_REF_SEL;
- 			ret = regulator_enable(st->vref);
--- 
-2.48.1
+> > > > +     /* Walk remaining bits of active_scan_mask */
+> > > > +     in_ind =3D find_next_bit(indio_dev->active_scan_mask, masklen=
+gth,
+> > > > +                            in_ind + 1);
+> > >
+> > > I wonder if it matters to check that in_ind + 1 is in fact lower than
+> > > masklength? Not that it will be an issue for find_next_bit() but we w=
+ill
+> > > fail the expectation:
+> > >
+> > > if (unlikely(__start >=3D sz)) [1]
+> > >
+> > > And being this a sensible path, I thought it's worth (at least) quest=
+ioning...
+> >
+> > It doesn't matter. The find_*_bit() are all aligned to return sz for
+> > anything "not found anymore" cases, so it will be okay.
+>
+> I know :):
+>
+> "...Not that it will be an issue for find_next_bit()..."
+>
+> I was mostly worried by performance as we'll have a compiler hint that
+> will pretty much fail (that =C2=B4if (unlikely(__start >=3D sz))' for eve=
+ry sample we push and
+> I guess the CPU will have to unroll that prediction. Maybe it will be sma=
+rt enough to
+> adapt.
 
+Ah, I see now. Yeah, there might be a hint to skip the branch which is
+unlikely() for.
+
+> But as I said, it might be neglectable but still worth at least
+> questioning...
+>
+> > > Other than that kind of nit comment, patch looks good.
+> > >
+> > > [1]: https://elixir.bootlin.com/linux/v6.16/source/lib/find_bit.c#L50
+> >
+> > > > +     while (in_ind !=3D masklength) {
+> > > > +             ret =3D iio_storage_bytes_for_si(indio_dev, in_ind);
+> > > > +             if (ret < 0)
+> > > > +                     goto error_clear_mux_table;
+> > > > +
+> > > > +             length =3D ret;
+> > > > +             /* Make sure we are aligned */
+> > > > +             in_loc =3D roundup(in_loc, length) + length;
+> > > > +             in_ind =3D find_next_bit(indio_dev->active_scan_mask,
+> > > > +                                    masklength, in_ind + 1);
+> > > > +     }
+
+--=20
+With Best Regards,
+Andy Shevchenko
