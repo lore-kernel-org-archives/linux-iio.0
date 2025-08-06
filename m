@@ -1,119 +1,202 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-lf1-f42.google.com (mail-lf1-f42.google.com [209.85.167.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E153121773F;
-	Wed,  6 Aug 2025 07:04:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E40ED18C008;
+	Wed,  6 Aug 2025 07:04:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754463851; cv=none; b=Z304kWhwfzOOGUmNL4cwHNdHaU+JA5DHlE6ua6rk0mZUxixoITkhyFYenhoXRMRQqjAkAFvt8Z5fg77yB6JCB1fLvKPW7uKV5H4nXLO2XCiSfW2nf+4vYYruPDgehKUW3bW2fmJ0mOX+oPoruORqDJxmfPGB6poFnYys571lrdY=
+	t=1754463876; cv=none; b=Li+yEoQvOf7exoRm0/TxIc5dn1tJtXIB+DFVQ4r/kIuSayMAa5/ql70nXcEOf6rgj0uXTHsbfGAZIgU5kU9TeJTOj/5mfSx/T2ryZTMMlKN0zoXIzKrcaNCOkwpxPrBL6lCXSi05u4xnbEr7Z9lJb2xodNl0n/suZbOCqpQOOzw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754463851; c=relaxed/simple;
-	bh=8UXkdIj2KKTxghd+Ie/sybWZyOAN/ou5VGvye1L/CQA=;
-	h=Date:From:Subject:To:Cc:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gfAw66zdEQT9GnT9IpSSUoC01YWmhPhiqXRxy8/8+DywP91goAJbB0ihWZDK8r4Z0Q9nbNkuto7FqbMg7ivg7UN/P4bop0MYtxDfxk3KsiRB84/8vFqamAndKbVTcveOmLXQBwxMT5gGNUUu1jb+iWD6HuS4pzUoFGbJeu3lr5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EUz3IkfC; arc=none smtp.client-ip=209.85.128.49
+	s=arc-20240116; t=1754463876; c=relaxed/simple;
+	bh=HIDATdxLWAtsTFrhPpUwodNtkOkXVxvzJzTt2F1oVNc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=juznQWya1Ghx09Kx6VDpmWa5RzxDEjHLLatqjf7+92LOoyiopNXb74JLyONfUMBL2SwRkTP0az+CaXhFfJxnMmymbIqru+HUMAqIOYjI2v7gUUDh04FyDCjeNoZuuaHJ5FLVofokp47VxBdeUvKh+Arnjll1FgNB0WLAQwSJ9ds=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yjk6R0rp; arc=none smtp.client-ip=209.85.167.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EUz3IkfC"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-459ddb41539so10161695e9.2;
-        Wed, 06 Aug 2025 00:04:09 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yjk6R0rp"
+Received: by mail-lf1-f42.google.com with SMTP id 2adb3069b0e04-55ba26abd62so3531912e87.1;
+        Wed, 06 Aug 2025 00:04:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754463848; x=1755068648; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:cc:to:subject:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RmZ/6RCWVOtcwdLcrSjqIJKUrn7Zsl9ifaiHRynfve4=;
-        b=EUz3IkfCED5pD6CxQBBOT63GmqZHHqYFW7zGwu10Y372QhVLhhCcGrkg7STKIjpKSw
-         ObGPOF3n0Ec31hPK+ldGBqPNxFF79NjY6XBB2V69AwFi5guFx0UcguhOJfBtSylk+YJZ
-         81wkHI2D8YgWdobtckfakn62jIkirTjUZzSG8Mn+tJFUbAkWGKOl3UNr2iwQbjGtET+q
-         vSdYrVWLrxQRDso7FOdYUs1Sce8FHOYZIZ3ja1r64Y9H2zdV4PdNgbZAcE5V1OxifROD
-         46HELugDEFnkfKl0HTXjKjMbO8JwGOXgKE42pS1LTrQV/Pw2hbRAGDG7whxZwuagop2+
-         t8OQ==
+        d=gmail.com; s=20230601; t=1754463873; x=1755068673; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=V4XHFY1HiaT/lA+RfXIKJtk3qW/DhRf7LAbT41Q0vUY=;
+        b=Yjk6R0rp6aknBlWQx/nEQoLAyelezgNi5tPfKeFasY9knlTiI6IiH0LRs4OpscujnA
+         9RQIpYc04dLeucsacypifTLX8DxMm/pn6oEVWM9aNPlxuDTT7Vyko0kav1oP6UykrKRD
+         PCKtShdu+3A3syT9QX2qNMDmgU4+kaFrE+UO6BpI+snO0L7Ux2/2Wr2EUJQGB9oUjLxz
+         TC/pMHNtBjkBSVvjamlIdHFUnW/t2LPlbH0noLe7g8RZH9IoWv8lTjiJMzGdim1x/Pjw
+         FeKLn9uvzKgAtFi4aae2T7jGOsF9XbX7fXbxW/A/mMoTR+VqDzfsTfrspYWaMDuVV/9l
+         5kNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754463848; x=1755068648;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:cc:to:subject:from:date:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RmZ/6RCWVOtcwdLcrSjqIJKUrn7Zsl9ifaiHRynfve4=;
-        b=W09DMUFVH2XTNwZpxcdk+0ml+zQMAA6qr/hJ9P4E21nETznOsiXx0qGO5oBXn9A+nO
-         Q8QRMR6tpV8IwRQtgb+iTXQKlCFYzVAa7etPnq5F785EIv5X2LGsb/xBaIOp4oYQJHlp
-         FkDvLkCE3U/Aj54OBeruPbGpVRunm0AV135tOvS1kPx/psJXCbviniuk4vaSC99VgozZ
-         7Zet5PzV2eQhLu2L0i56RtHYOG8iQdbgFXnXDG5QxjkhhgGEzZI8eG1xxBY8uILy+Mnl
-         5rmYOlQyl/KuONkgNW+uHCkYxsedjm47gYixn3gj3gd057KVx3XwBFbHhOnUwSBI4HCq
-         7tlw==
-X-Forwarded-Encrypted: i=1; AJvYcCVfMS6A0lmrFtcC6y1U1csaW2lPSnkwVQ3q/xEkWaLGtgcaZ1cfDjUFGBQcUIKkr/HHmDG9VwDNg+M=@vger.kernel.org, AJvYcCX0R6mRUGc/n8kFFf8Tmdg8Z2a6k75P1cZbDA7siiPTiYSM3RtN2SshRKInoBrbA821PTlUbOuadj3hwQSh@vger.kernel.org
-X-Gm-Message-State: AOJu0YwMMLJY8YkxKy1wNMNnzwxypGC2YbcUmdzYY3sXiLEt27kinHT/
-	KZpl9JG0QCcq5mkpXW6SCIVjfL6ogvCn5KSF02qsZ4BB/+uARLwxVLdt
-X-Gm-Gg: ASbGnctw+o4HrQDRqsNdFHTo4afbBEo9EcwNJKv6iZV+B0JBFbd9uTCSEoKC+bRHoqg
-	9zPUKV9spibEIbv84YLL7g7GB27j95t41Vsxjj44LmcrJxAdicSGPO1HwfV7Jla+yS2/NBjCGSu
-	N9iSstm82cLiFxUyrzpfwwp33G/+fljnYK+5D/zr74gK0E2IjHtBKtt0K7QQbzJ/hsLinuDuIgj
-	WF+BooPo1yXjmYqMGg7DZGv9/XxKtq1hNQr7sB9vX2kRptvxn6vKTYOvBNcYvbGMNnQvhtJRyAv
-	AfdsReC67zJfGfYqwxgt5ZIlV+wUiMIP/UaMC4t6TlpEbLEyy02KHV/kRVDPPpZw82pd6UAMpeT
-	5bftBhpZcCz9uDpsU5KKVIn9+XijOTnDONNgGDU1Z6U3cxZW8m74bng4pPhAkoJA=
-X-Google-Smtp-Source: AGHT+IE5XexZbuxfSVv6NlHh2TsciIJIhOErVnDMu7opONBWHe8EiMXmL23fwmPcEW/qBEMLyiVLlw==
-X-Received: by 2002:a05:600c:1d08:b0:453:66f:b96e with SMTP id 5b1f17b1804b1-459e7450e71mr11984785e9.11.1754463847709;
-        Wed, 06 Aug 2025 00:04:07 -0700 (PDT)
-Received: from [10.14.5.169] (93-38-186-193.ip71.fastwebnet.it. [93.38.186.193])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-459dcb86d6asm93686345e9.5.2025.08.06.00.04.06
+        d=1e100.net; s=20230601; t=1754463873; x=1755068673;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=V4XHFY1HiaT/lA+RfXIKJtk3qW/DhRf7LAbT41Q0vUY=;
+        b=IKfzv65wR3aq0OHPzkjFuzGjDqBabMy+qMriUcFWXNykzZk9kRORHD36mS00sc3GOP
+         fER8UlBS7CmXrowBpjV/nTwuBrFKT5IlcoOdtJ1Wmn3XnzNKoCcDbPxD5XqC8pKWjIpO
+         8qeIEgZwlxHrWpMM8RkAnbCCp8EUziAZYeztWjLGXc+QwHXbVoHYdiVlc0qEuHePVHTS
+         7SNr56Vc4BuToZBn0YPFbZZNQexdiLhxbzQmJNik1LlPQ9TiEsUOWC4EzL3ERu8fCMpw
+         8k3AuiEmXVfaWdydxcKNTCTUTj0iUc7Ya+5oDbXPbQepaZGXaEmLwH2aLdInQVdHEKKe
+         AWGQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWMCUTkRKt1pMBB+vgPW10LjiYCHEvDSQ3iK0Ij/tBO+F8ZdX5DdZM6o2oagDSCDhtMPboZqCdZsn0Q@vger.kernel.org, AJvYcCWzmjF0jm1jvivLQl7bYimYTh/lPuRSDtGlKs6EVZRyzbvWHRevm6iVAINfoJBv9oCpiYYt/rqwLb/0@vger.kernel.org, AJvYcCXdbNr9I3NhrdyMwWmDkK0NzE7Hr1kwAiED/0m2jtmQFtcfi6WGhaFM0QP56bPnGtPwNbVXSYRCqkQtQ7ZW@vger.kernel.org
+X-Gm-Message-State: AOJu0YxRn7JlZ8sLLqisfXyK+41F6NZ9pekTqr2HdZV1N6O5Sf6unnTU
+	r9Cfa38MeKrAebL4jPi2gRMDW+Hn2xxqGRUBs6SJofs59yebuse9YWp5
+X-Gm-Gg: ASbGnctdYymFMwo7IfWh+apVj40e3i7uldfGXZGob52Ffubl5G7e2x4ZFWN2/8CdDBl
+	TX3caG5xXSLgI3OATAlHJHtG2OrCXVXYkfHNo9BxYCbY5alHAo3bNPqHSoUUrYQkj/SfXdmsTw5
+	+IgzbQ+CWMcfKdlKBF6H39he0VDU5YHNfxdv1CN+YwvCrYnnltEywmP+YRdNHqG4nNu2nn+9YYg
+	S2eAs5PJr1YqWR+wa9h2xQRj0CWUR6ckugKpOHFqjvbRaLHWZR5ARyDEo2dcseiVP3WXJEOSzIg
+	mDFXeWNV6LmYvxb8RwJEC7Ly/7na6KwXGhTZA0FW3+C3I8tyLV8jC2ElCg4B3UjHdOsXQGR5vJy
+	V+YhTi+8sUissswv98mHeRXl9Lbxd
+X-Google-Smtp-Source: AGHT+IESKhQ2uRa8zByMU9hE+VEGDd9j1erNp4bb6696/MYMSRzxIOBe3Hge85NbBhQlSd5N8bGYdQ==
+X-Received: by 2002:a05:6512:3d0d:b0:55b:861a:d2cf with SMTP id 2adb3069b0e04-55caf34c46dmr509218e87.26.1754463872602;
+        Wed, 06 Aug 2025 00:04:32 -0700 (PDT)
+Received: from mva-rohm ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-55b889a1942sm2194053e87.53.2025.08.06.00.04.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Aug 2025 00:04:07 -0700 (PDT)
-Date: Wed, 06 Aug 2025 11:03:45 +0200
-From: Stefano Manni <stefano.manni@gmail.com>
-Subject: Re: [PATCH] iio: adc: ad799x: add reference supply for ad7994
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-Id: <9IEK0T.R3JGMPI97ET21@gmail.com>
-In-Reply-To: <CAHp75VfCL88GMSRYnJ+wh85Yj_RrBztSLWOvQJTapVdgFerMyg@mail.gmail.com>
-References: <20250805142423.17710-1-stefano.manni@gmail.com>
-	<CAHp75VfCL88GMSRYnJ+wh85Yj_RrBztSLWOvQJTapVdgFerMyg@mail.gmail.com>
-X-Mailer: geary/46.0
+        Wed, 06 Aug 2025 00:04:31 -0700 (PDT)
+Date: Wed, 6 Aug 2025 10:04:28 +0300
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+To: Matti Vaittinen <mazziesaccount@gmail.com>,
+	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 6/8] dt-bindings: iio: adc: ad7476: Add ROHM bd79105
+Message-ID: <3066337cb183afa5f53a4e6cf94ce15a36d14ec8.1754463393.git.mazziesaccount@gmail.com>
+References: <cover.1754463393.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="ZCvq7TjMx19kadkQ"
+Content-Disposition: inline
+In-Reply-To: <cover.1754463393.git.mazziesaccount@gmail.com>
+
+
+--ZCvq7TjMx19kadkQ
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi Andy,
+The ROHM BD79105 is a simple, 16-bit, 1-channel ADC with a 'CONVSTART'
+pin used to start the ADC conversion. Other than the 'CONVSTART', there
+are 3 supply pins (one used as a reference), analog inputs, ground and
+communication pins. It's worth noting that the pin somewhat confusingly
+labeled as 'DIN', is a pin which should be used as a chip-select. The IC
+does not have any writable registers.
 
-On mar, ago 5 2025 at 15:13:06 +02:00:00, Andy Shevchenko=20
-<andy.shevchenko@gmail.com> wrote:
-> On Tue, Aug 5, 2025 at 2:28=E2=80=AFPM Stefano Manni=20
-> <stefano.manni@gmail.com> wrote:
->>=20
->>  AD7994 supports the external reference voltage on pin REFIN.
->=20
-> ...
->=20
->>  -               if ((st->id =3D=3D ad7991) || (st->id =3D=3D ad7995) ||=
+The device is designed so that the output pin can, in addition to
+outputting the data, be used as a 'data-ready'-IRQ. This, however, would
+require the IRQ to be masked from host side for the duration of the data
+reads - and it wouldn't also work when the SPI is shared. (As access to
+the other SPI devices would cause data line changes to be detected as
+IRQs - and the BD79105 provides no means to detect if it has generated
+an IRQ).
+
+Hence the device-tree does not contain any IRQ properties.
+
+Add a compatible for the bd79105.
+
+Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+---
+ .../devicetree/bindings/iio/adc/adi,ad7476.yaml  | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml b/Do=
+cumentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
+index d0cb32f136e5..16d3866dd633 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
+@@ -41,6 +41,7 @@ properties:
+               - adi,ad7910
+               - adi,ad7920
+               - adi,ad7940
++              - rohm,bd79105
+               - ti,adc081s
+               - ti,adc101s
+               - ti,adc121s
+@@ -115,6 +116,7 @@ allOf:
+               - adi,ad7274
+               - adi,ad7475
+               - lltc,ltc2314-14
++              - rohm,bd79105
+     then:
+       properties:
+         vref-supply: true
+@@ -131,6 +133,7 @@ allOf:
+               - adi,ad7274
+               - adi,ad7475
+               - lltc,ltc2314-14
++              - rohm,bd79105
+     then:
+       required:
+         - vref-supply
+@@ -141,6 +144,7 @@ allOf:
+             enum:
+               - adi,ad7475
+               - adi,ad7495
++              - rohm,bd79105
+     then:
+       properties:
+         vdrive-supply: true
+@@ -154,6 +158,7 @@ allOf:
+             enum:
+               - adi,ad7091
+               - adi,ad7091r
++              - rohm,bd79105
+     then:
+       properties:
+         adi,conversion-start-gpios: true
+@@ -161,6 +166,17 @@ allOf:
+       properties:
+         adi,conversion-start-gpios: false
 =20
->> (st->id =3D=3D ad7999)) {
->>  +               if ((st->id =3D=3D ad7991) || (st->id =3D=3D ad7995) ||=
++  # Devices with a convstart GPIO where it is not optional
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - rohm,bd79105
++    then:
++      required:
++        - adi,conversion-start-gpios
++
+ unevaluatedProperties: false
 =20
->> (st->id =3D=3D ad7999)
->>  +                       (st->id =3D=3D ad7994)) {
->=20
-> Instead of making this conditional longer and uglier, it is better to
-> add a boolean field to chip_info and just check it instead. This will
-> remove the churn when any new chip will require the same change in the
-> future.
->=20
-> So, please make it two patches:
-> - introducing a field in chip_info and use it for the existing cases
-> - add this field to be true for the ad7994 case.
->=20
-> Is it doable?
->=20
-
-Yes, it is. A patch series is coming.
-
-> --
-> With Best Regards,
-> Andy Shevchenko
+ examples:
+--=20
+2.50.1
 
 
+--ZCvq7TjMx19kadkQ
+Content-Type: application/pgp-signature; name=signature.asc
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmiS/nsACgkQeFA3/03a
+ocVgjwgAh7N5dXRIVibVB+7bUJYdSrDzP6cdNLHxxq2GsuBcdRn74PbuiDYj8KSp
+2RTYUw1+WpfOTjczWC9SwNFCZZTpucaBADet8T93Y3uXEG7MnxVkAW+8CTipKjlD
+NVFJwjmlTsv3kum/hTVONaMhCBq9qGD0ZzMISEmIft7vIqElX7zNi2kyyCuMaGt8
+xyVuRyrQYUep2O68PmjS4QBf1gMLQc2iYr50tlwU1oxyW+BF6v0fN9Rlq8conOh8
+fc1TjI/VhwSSyvwa6WV6A92PNr/yhUZ+pG7LR20lfc2aDRYGkfFj2pwU3BNr+6L8
++jRkJ/2Yc2Ii7Pv84qsBC1GzIeUx0A==
+=HlMW
+-----END PGP SIGNATURE-----
+
+--ZCvq7TjMx19kadkQ--
