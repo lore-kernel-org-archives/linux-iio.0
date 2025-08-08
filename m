@@ -1,131 +1,113 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9ED31A2381;
-	Fri,  8 Aug 2025 06:52:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F35601EE019;
+	Fri,  8 Aug 2025 07:40:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754635939; cv=none; b=EvzWwfG7LcSnIbG+6qytnf2awWfktSvWCHFqn8WMgutbUSP0BJxsLZdqCiho2u/1uydHN5yAhX/jZuLe8WXAFQgPhIiwmyOnaRS5t49i6Z9EjnkL6Cc3OjIF4CWRgA7gMNKPzMHNpPOMFwbvmIvg6IXBV1fO8H1mUDZrO91cPVg=
+	t=1754638812; cv=none; b=ULSoGDDEVzFe1E437P1IxigdXqHL/TGZToE56I/nA3uL/f+b+C/BsThjwjqHPwvYrKxcXD5h+ndT/tRXFXAXtpScVHsen/1X8LWfHevoJ7bIgjvtLOTA3I3Eo7znK3++9ZovK9/lAaqTizRRnS0sUvrpRZBHhSGRGAKnHC47TkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754635939; c=relaxed/simple;
-	bh=7oU9aLqla/lEJ92TBUwaGjzVxRAbc+mfOnAF/l64+CA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A32sPrn/t48O8GoZ2HdTn0hNxL769nNAdPIoXGYdwEY4vbqi/CeMYZTL+h3jEvJLQrtmUU0iRzvGRAOFiGyZJx2onTmquQgkiuhsTkuPIjj/thnFFTSIou2ldG0dTCPpyyNUGD9cljv8Bj7I3LT3d8W++RGLF1YVIriPJ38GDAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bULo9tj2; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1754638812; c=relaxed/simple;
+	bh=VmEZ34d/BfDqCjXVktgRfwADPDnoWkyW/gk7BmB/x1Q=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ZVn5mcMTqBFX1JYbiPE+DbrxOIdQnJiC+aRbszEfhK/a96GKTs0woSBchQSMOsOdh+Mt20qykMr4Q5bF06AKsUWuWjKo1i0CNq5Y0NcEHoU22R9UybhkjKCe7+weC4iOU9XhzQPIFFJeTO37veQBdjqfsYGQz/EwlZZHiMD/bq0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AUp5q7py; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bULo9tj2"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C109DC4CEED;
-	Fri,  8 Aug 2025 06:52:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AUp5q7py"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 826D2C4CEED;
+	Fri,  8 Aug 2025 07:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1754635939;
-	bh=7oU9aLqla/lEJ92TBUwaGjzVxRAbc+mfOnAF/l64+CA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=bULo9tj2TZjIuq07/isqp7GkOo2z7okULrTAExW3AZFG3HD297WOh0AHkx89hgczH
-	 vtT0VH6cHx55Rb3V3hZEbb5iMeCEeGhkMw5HbX8lFrmBhRL1r2w9p3ddU6K10Zl8uf
-	 LtcdOm/Hn/SJUMuK/p2CMcK+pRuSXdmBgbdm99mD/3NI4sEQQ4akXaJ/GeVZPctnjW
-	 gBUAk3lqAOSu9j6jJJiuFPJvElNIf6MDoSHI3Z4ujUsD6vbrvnbS4A6pmv/68hjmAL
-	 zfSr+Djlo4OEP9t/dDXMfZG5zC51D9setZKlQH5O4WrJPP/k6dMhFELTLlxKqghoxH
-	 /4MgGKdhWwRpA==
-Date: Fri, 8 Aug 2025 08:52:16 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Ioana Risteiu <Ioana.Risteiu@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Ramona Nechita <ramona.nechita@analog.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] dt-bindings: iio: adc: add IIO backend support
-Message-ID: <20250808-caribou-of-beautiful-control-f4aab8@kuoka>
-References: <20250806192502.10120-1-Ioana.Risteiu@analog.com>
- <20250806192502.10120-3-Ioana.Risteiu@analog.com>
+	s=k20201202; t=1754638811;
+	bh=VmEZ34d/BfDqCjXVktgRfwADPDnoWkyW/gk7BmB/x1Q=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=AUp5q7pyx4AIAF0bU9xw33qIiIyBXHwnIwWWqSK3s45ov3ocuVjXtRn4hNcndLdCc
+	 dKloqpHmHosGnYJlxxmVurdEb/9wpxvVOfuzxYuc/vb3nzv5TfSO4UY5IbjwPZeUzg
+	 ozAKqudPtXMOKa4eQubk+b7FicDw/8f8W1p2rLawjkNHZ86kD24umsJ4oSg/qs+mtQ
+	 OTUa15y/FOxttaJGHIxYMr3wR3j5cx8zuqkmbFKDA3ddhxUUBlcwoWuphHDk0impX/
+	 Z7s/Jno02zTLZKe/KbV8zcZbPwMJHNcO6w4x3piMTIyPr7v+NdRzSjGw+NtrpTd3hM
+	 Jy2DFNbsLBBog==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7850BC87FD2;
+	Fri,  8 Aug 2025 07:40:11 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Fri, 08 Aug 2025 09:40:10 +0200
+Subject: [PATCH] iio: imu: inv_icm42600: change invalid data error to EBUSY
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20250806192502.10120-3-Ioana.Risteiu@analog.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250808-inv-icm42600-change-temperature-error-code-v1-1-986fbf63b77d@tdk.com>
+X-B4-Tracking: v=1; b=H4sIANmplWgC/y2NwQqDMBAFf0X23IUkaGr7K6WHkLy2ezCRjUpB/
+ HdD6XFgmNmpQgWV7t1Oik2qlNzAXjqKn5DfYEmNyRk3mNFcWfLGEqfeeWP4ryyYZmhYVgVDtSj
+ HksB+SNaH2xg9LLXgrHjJ9zd7PI/jBD+8oqZ8AAAA
+X-Change-ID: 20250807-inv-icm42600-change-temperature-error-code-65d16a98c6e1
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
+ stable@vger.kernel.org
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1754638810; l=1568;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=NpeRL441DPZ1rC1rEkgDPmcWmaZUMbzkqnfYNLrMji8=;
+ b=EPMyM5pzy8BkOiqIAuGm4MBI6sE8S7x+CcXBqShuVr25CsSsqrrzPnoiR5Nq0tEH5xd4Ivn8B
+ M1Bjef2/BL/C2SkgfYqYreeV0aECEBlblVdSc4X409EmjW8Sx3FSa/g
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
 
-On Wed, Aug 06, 2025 at 10:24:59PM +0300, Ioana Risteiu wrote:
-> Add the generic io-backends property to the AD7779 binding to enable
-> support for the IIO backend framework.
-> 
-> Also add the adi,num-lanes property to set the number of lanes used by
-> AD7779.
-> 
-> Signed-off-by: Ioana Risteiu <Ioana.Risteiu@analog.com>
-> ---
->  .../bindings/iio/adc/adi,ad7779.yaml          | 34 ++++++++++++++++++-
->  1 file changed, 33 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7779.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7779.yaml
-> index 044f92f39cfa..4205ac29c824 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7779.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7779.yaml
-> @@ -80,11 +80,27 @@ properties:
->    reset-gpios:
->      maxItems: 1
->  
-> +  io-backends:
-> +    maxItems: 1
-> +
-> +  adi,num-lanes:
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-I see @Rob already reviewed one other binding with adi,num-lanes instead
-of asking to re-use PCI num-lanes property, so I guess this is fine.
+Temperature sensor returns the temperature of the mechanical parts
+of the chip. If both accel and gyro are off, temperature sensor is
+also automatically turned off and return invalid data.
 
+In this case, returning EBUSY error code is better then EINVAL and
+indicates userspace that it needs to retry reading temperature in
+another context.
 
-> +    description: |
+Fixes: bc3eb0207fb5 ("iio: imu: inv_icm42600: add temperature sensor support")
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Cc: stable@vger.kernel.org
+---
+ drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-Drop |
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
+index 8b15afca498cb5dfa7e056a60d3c78e419f11b29..1756f3d07049a26038776a35d9242f3dd1320354 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
+@@ -32,8 +32,12 @@ static int inv_icm42600_temp_read(struct inv_icm42600_state *st, s16 *temp)
+ 		goto exit;
+ 
+ 	*temp = (s16)be16_to_cpup(raw);
++	/*
++	 * Temperature data is invalid if both accel and gyro are off.
++	 * Return EBUSY in this case.
++	 */
+ 	if (*temp == INV_ICM42600_DATA_INVALID)
+-		ret = -EINVAL;
++		ret = -EBUSY;
+ 
+ exit:
+ 	mutex_unlock(&st->lock);
 
-> +      Number of lanes on which the data is sent on the output when the data
-> +      output interface is used.
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [1, 2, 4]
-> +    default: 4
-> +
->  required:
->    - compatible
->    - reg
->    - clocks
-> -  - interrupts
-> +
-> +oneOf:
-> +  - required:
-> +      - interrupts
-> +  - required:
-> +      - io-backends
->  
->  unevaluatedProperties: false
->  
-> @@ -107,4 +123,20 @@ examples:
->            clocks = <&adc_clk>;
->          };
->      };
-> +
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        adc@0 {
-> +          compatible = "adi,ad7779";
-> +          reg = <0>;
-> +          start-gpios = <&gpio0 87 GPIO_ACTIVE_LOW>;
-> +          reset-gpios = <&gpio0 93 GPIO_ACTIVE_LOW>;
-> +          clocks = <&adc_clk>;
-> +          io-backends = <&iio_backend>;
-
-Make it complete if you add completely new example - num-lanes.
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+base-commit: 6408dba154079656d069a6a25fb3a8954959474c
+change-id: 20250807-inv-icm42600-change-temperature-error-code-65d16a98c6e1
 
 Best regards,
-Krzysztof
+-- 
+Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+
 
