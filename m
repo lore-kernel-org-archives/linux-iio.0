@@ -1,63 +1,63 @@
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com [209.85.167.49])
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4328A2690C4;
-	Fri,  8 Aug 2025 08:54:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7865D2690C4;
+	Fri,  8 Aug 2025 08:54:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754643258; cv=none; b=pspxTE9XKCFjyJpay6VRqB7aqvrMd8UAUFpZGYeCTkSP13LnD5ZfnijuxljiZ3jOjaoYto9XaAYoZaavI4Veqnlw3hcdhg5SMYs8k2VB+VQLrhRR+3HYSNaNnB57Lqy9yOzUoazHTlLo0O0SwavY6i+GR5+p3B/u8RiIl9lUwOk=
+	t=1754643274; cv=none; b=WIYyaQ5Nk5vB7JgIKmHncsPOrc5VIKf325SYFkDdZgkeoSX5t97MDiXP+xZ8ac4J/+xqguhiwOyYLPjlvAoGz+VY0pdp0Fp2ANUQDhTeDbkwOnTbP5kXQMkE9YopOS/pkc6LCs2bg17rT2Je28QXUCSvQc7tDhOSElYVGqNTMww=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754643258; c=relaxed/simple;
-	bh=nMzDRldyT6gamGZ8y4MMUQ0ws1QkdVOzdQy0YqPLcwo=;
+	s=arc-20240116; t=1754643274; c=relaxed/simple;
+	bh=OiR/2HnHwk3hu8f6SamcIhgWgOSPUE9a9pwFjFj4Qp0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ozTmspt9PeaDroswemGLwotbHOcsT0rX7hKUiFKFQlAyuoz41Gg/av5/bKVq+nUC+vsMRLcsuKB4ocx8TrGL4f02wSU+Pl57mSuFS/1O9jkf/KElo3d5WXN5hFVjPxTHQvGLsPLlTi+gW74vvNTAG40JWMQl+lqgPRJTzDCxAss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=T1Cd4uvj; arc=none smtp.client-ip=209.85.167.49
+	 Content-Type:Content-Disposition:In-Reply-To; b=ORBSj2HEsGz5HLswgoEAHeJT7eNp/eCVJNo/17Vhu5HwaYruyey2UUDbc+MpoD6AtAOzDFoyXHfJoWEPlvIrA86zGlOsYTlUDlCUs8asGpNp/Hu/aNCuDyQHRhVtTcc4MNq40w0YGe1N0bhAY7xL67ppwgouNSBVQnN/MAhYziU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EUg9XPQf; arc=none smtp.client-ip=209.85.167.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="T1Cd4uvj"
-Received: by mail-lf1-f49.google.com with SMTP id 2adb3069b0e04-55b8b8e00caso2297526e87.3;
-        Fri, 08 Aug 2025 01:54:15 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EUg9XPQf"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-55b7454c6b0so2032202e87.3;
+        Fri, 08 Aug 2025 01:54:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754643254; x=1755248054; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1754643269; x=1755248069; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=RWogjGnTRuwcmlfIkxh4lLwLazo54YDHCMD6nS/8DMA=;
-        b=T1Cd4uvjTCzzb2zS9bgFwfVZNJvRyIktPDS/u+GqmuMEv8kVuQ9iSgO4htJzDDCG8l
-         GotGTvVrLZ4kbGBX66b1MBTwKa+ZN06bsl7KL8chyMRuyrUaIHVbhSs7/GV1TGx/k0k2
-         0XWLfqK/YBG78eErqlR7+he1bP2n+Nc9A3IVJY7M83n4Jzz0b2CpuVMt47YOTUSBn8u+
-         MOLNC2OXFJ6jLTa7rxtAZLmqAtr3IBfdbRBpd0ULkVa9Knw/bG7tsaOJKpu/R4CnMr7o
-         BM6DecPpYGMfKuLVTuSM92h+keGkepE4jmI8LGYOOLK9AjZQH9SE/LsAq2Rxb0CwjeK1
-         062Q==
+        bh=GJXYbABixyTOaHOtiXscD+YAY82rcQaoMNZVj4YOt9Y=;
+        b=EUg9XPQfy1E/s8MiCkGOyS1ZSW78r1xUibPyzdh64T6fSGAvgPszVaTYA+2I3UA46y
+         5nbLCs50oyVGmaIQFG32eGYcx4jIGWaNQ441OhbAGGq2fSul6YS4w+dPY08Ie+XEU8lR
+         lhyaOHQmHSweaZR9dEub8hxzidpWDEybNaM6GN74i6EVpFnRaercNDQNk7mlahfzPPnr
+         vU3fwgOvDv65aJ02ExmOJmLg/W6PpnQAfsOhg/PPCNWbAJ12uxNj+1e1T0YG8fNmsVKL
+         IXzft6++F/TtDE+HiyFBv5UrX0RE02+A1a/Fbe+gpdidLjW558nt35D2ASiZ6ZUxGGBq
+         6law==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754643254; x=1755248054;
+        d=1e100.net; s=20230601; t=1754643269; x=1755248069;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=RWogjGnTRuwcmlfIkxh4lLwLazo54YDHCMD6nS/8DMA=;
-        b=PleVK5f7HzuhwJQonCZjQFtbwulpGZTlebShVykTkccOv68AP1op2b8Dd+aBFUZbSf
-         1uXAk836dpm24RLC8toTGTnvKcCG2QdZdlAGl0yxrQDs/dXRExstHjRjTAZG+8f5xrmR
-         GXdBaM8dtc3WfXiS54VB47GyP/pu3YAsxCCueYCfy+5B6whUV0lpoukN80Oz+FQNiP7w
-         QQchAsPhF/sy/pUQKmXkE+cJ4DUjrHLMBxOkUzt+EgkCO+36v/qzPnE9r2NghPxK/+Wn
-         QA8tJ/gF115ShEIqx5qaBultXCcBlD5Ft6Apw9vvd+/XClfNM5da/BNgG1sa5sCrZinQ
-         GFpw==
-X-Forwarded-Encrypted: i=1; AJvYcCUayg3H13Tny75zZ/xscgGzSe+Di/VWxgsLNmb7p1Zb/6zycgsi8iYAyGROL8wOsIT3ndssufn4CtkAx5mK@vger.kernel.org, AJvYcCWk0mWLISVOZMIx2cCrksYN5LrZDqcJOnwhP/9vMViktWUAE77EhvT53fHqTNcoL/mi+63NOj3RxHis@vger.kernel.org, AJvYcCX36fJlT0S/TmwLzMB/4azNBg5U8cd7tGyggjeJAOr7kPRhvAIYsz7qq/z4JfN8uQdnfnimOpm724Hv@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzoyvn2JkbVDV9wKKd6JfYgSmZR/3VmVGLO6ohI/QYCImQ4Lj49
-	vNDxRYc6OUJjd/ESKAc9PN8u0jKczdQCc0alziFPGIL3m7waAjk/eMMC+bMgWg==
-X-Gm-Gg: ASbGncs1Fcg1K6YSmgSSOLKo2kuMSfDiX0aOB8s1a409C84KHjhMV94RmFYbITW69cS
-	Pd4vvZXmrPJz44byTxm4z/BTc/eAn9hYY+692Otc3y+wVGgzKN2XzNjJHjA4pOczX2eMUftp4Fb
-	zQQs3JuMrdVpju27SXhqxn3+rlotBx8RfMFJsef2A5VNdLd7XAgdG3r9tRUpA55zcL5TphshbX2
-	skftrfqdpZkQJWGudNNkFzIUHq9uBD/gcvuIxY/bY57XUrA4LyjTCSenWrezfJJcuv4TJwAMQ84
-	1uydUaqo7g3hvNOzZBKznkV4gVEcDFeh1Krm4ynMe3YpcDVV7nvz70ZyMCLdVQrx7+ernd6D714
-	UZmh9X/WFjyL2vuUWCvaTB1+4vBSv
-X-Google-Smtp-Source: AGHT+IEDsSSIgbWeg2vqcDdGPmOdqerKcyBcMFifPi1Cnby+NU76x4CeDPpiP3/6+DXb9iajdac3lg==
-X-Received: by 2002:a05:6512:1591:b0:55b:8a07:7917 with SMTP id 2adb3069b0e04-55cc00fd54fmr520067e87.30.1754643254150;
-        Fri, 08 Aug 2025 01:54:14 -0700 (PDT)
+        bh=GJXYbABixyTOaHOtiXscD+YAY82rcQaoMNZVj4YOt9Y=;
+        b=B4XQsxtdb5PgdqUmB7RNKLt2Wg8zKuOfza3tYu1/lB1EfW9uYnLTJodZNc5G3m3IIg
+         HjIDvnFI9Q2Lx2yS2V1o/M47SrAIiqeJk6ls2N7GrPnB2dCjOhg2Kn46yJFUQuaoafqc
+         86XnkM2N2FgBpfCMv+6/gPu8zlT5IIUeYdxo5gbiomW+QzlbUc5IVduAjOrZ4gnk+9dX
+         aTzcT8+Ik+Groh5wKN5fpKGH/klwc6K344vpenxx2fZwvVq/oRBn9kUj7DD/sYR4AD+1
+         6RK4Yi018icSZNY+XQ0GP7gglviRrwAaK/Gi6KyfIHuNHoddg4LZ/norj6GngbW6xV46
+         XFfg==
+X-Forwarded-Encrypted: i=1; AJvYcCVq2CGOTnIrhFpwmq+9bTTkUbbTSkQ29Nb6AS5glAhoM1iCDnim3aWrvUh2glhqfloTlh6L1vElIjQP@vger.kernel.org, AJvYcCW91gQdXPPUdolAJoyWa1mjXAJC7MJtPAvsqMchogxWn98b5bLR3C1NVIYwPnCQyneJ43oTxTBSJRY7o0qI@vger.kernel.org, AJvYcCXrGzZqqazfKYPn71uwgJYHkcQpilp1lNFybzgoeCKWrL8G6mMMwv7SiRGdI0miciyCQUCz+gT+B0U8@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxonl6su3cc8RdVNIGdhphFyveUN7OwoznA7SR+3sUzmaXo9Ilh
+	avSbv5l1jSAzpp4wPziSxPrOINSzX+050v7QSd5LVE439+/b8Q19HySp
+X-Gm-Gg: ASbGncueSCeWY8wm5ksKTaUmgQ+nSwP8//U3ImL7QFrayuYqZNAIgQ3tUq/vCGsEJme
+	YzwDjhXAFBC/jXWlysG9uIEE7SMPYtjWOTj97afV2pcn6m3ZU1qCY8L7V3vo+ZHCJZXZj1bou07
+	ch4m3OPwNbUaEpsmXEGew74QgPm34ptckwsGblBru9eszlqARdr75lNgW1iJFQYt8ZuDonKtd1V
+	wv/ewFflpykhv231G3iQTVyIRkfUXTcxvf76NNHT1xqxDba9qnaaY3K6btpZHHa7xNUAvziwDBi
+	ZIrWe1OdDKPFKm13Vj4YZnQmMVjujMsAtqb1/xJq15sw6M73ZCyS0KFENf/SlJ73JpreNoZ+CF7
+	IFqS8O6htmzDsbth6IQYwF3cKtC4z
+X-Google-Smtp-Source: AGHT+IG6+zQUBeiPdqX1g2jivVW56r5EB4sFlrYO+u0gHY0UIcG4wiioSFcEo94BfT3o6rO+2EB62Q==
+X-Received: by 2002:a05:6512:2211:b0:55a:e1f6:bd98 with SMTP id 2adb3069b0e04-55cc0083b04mr542983e87.6.1754643269329;
+        Fri, 08 Aug 2025 01:54:29 -0700 (PDT)
 Received: from mva-rohm ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-55b9f77a1fbsm1912310e87.121.2025.08.08.01.54.12
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-55b887f72f4sm2979768e87.0.2025.08.08.01.54.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 08 Aug 2025 01:54:13 -0700 (PDT)
-Date: Fri, 8 Aug 2025 11:54:09 +0300
+        Fri, 08 Aug 2025 01:54:28 -0700 (PDT)
+Date: Fri, 8 Aug 2025 11:54:25 +0300
 From: Matti Vaittinen <mazziesaccount@gmail.com>
 To: Matti Vaittinen <mazziesaccount@gmail.com>,
 	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
@@ -73,8 +73,8 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Liam Girdwood <lgirdwood@gmail.com>,
 	Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 07/10] iio: adc: ad7476: Conditionally call convstart
-Message-ID: <57284a156afeb1531fae39897eba4e73d90fa5b9.1754641960.git.mazziesaccount@gmail.com>
+Subject: [PATCH v3 08/10] dt-bindings: iio: adc: ad7476: Add ROHM bd79105
+Message-ID: <cc5cfa7540caae4bcb7448a59602421d54353ecc.1754641960.git.mazziesaccount@gmail.com>
 References: <cover.1754641960.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -83,119 +83,194 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="MgcP2BfGJn65CyD4"
+	protocol="application/pgp-signature"; boundary="f2LLsVrY0GN/V41a"
 Content-Disposition: inline
 In-Reply-To: <cover.1754641960.git.mazziesaccount@gmail.com>
 
 
---MgcP2BfGJn65CyD4
+--f2LLsVrY0GN/V41a
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-The ad7476 supports two IC variants which may have a 'convstart' -GPIO
-for starting the conversion. Currently the driver calls a function which
-tries to access the GPIO for all of the IC variants, whether they
-support 'convstart' or not. This is not an error because this function
-returns early if GPIO information is not populated.
+The ROHM BD79105 is a simple, 16-bit, 1-channel ADC with a 'CONVSTART'
+pin used to start the ADC conversion. Other than the 'CONVSTART', there
+are 3 supply pins (one used as a reference), analog inputs, ground and
+communication pins. It's worth noting that the pin somewhat confusingly
+labeled as 'DIN', is a pin which should be used as a chip-select. The IC
+does not have any writable registers.
 
-We can do a tad better by calling this function only for the ICs which
-have the 'convstart' by providing a function pointer to the convstart
-function from the chip_info structure, and calling this function only
-for the ICs which have the function pointer set.
+The device is designed so that the output pin can, in addition to
+outputting the data, be used as a 'data-ready'-IRQ. This, however, would
+require the IRQ to be masked from host side for the duration of the data
+reads - and it wouldn't also work when the SPI is shared. (As access to
+the other SPI devices would cause data line changes to be detected as
+IRQs - and the BD79105 provides no means to detect if it has generated
+an IRQ).
 
-This does also allow to support ICs which require different convstart
-handling than the currently supported ICs.
+Hence the device-tree does not contain any IRQ properties.
 
-Call convstart function only on the ICs which can support it and allow
-IC-specific convstart functions for the ICs which require different
-handling.
+Add a compatible for the bd79105.
 
 Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+
 ---
 Revision history:
- v2 =3D> v3:
- - Use indirect call to convstart (via function pointer) also from the
-   ad7476_scan_direct().
- - Adapt to the change which returned the chip_info pointer back to the
-   driver's state structure.
+ v2 =3D> :
+ - No changes
 
  v1 =3D> v2:
- - Adapt to the change which removed the chip_info pointer from the
-  driver's state structure.
-
-The follow-up patch adding support for the ROHM BD79105 will bring
-different 'convstart' functions in use. The IC specific pointer will
-also prepare the way for this.
+ - BD79105 can provide data-ready IRQ (or GPIO) via DOUT-pin.
 ---
- drivers/iio/adc/ad7476.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ .../bindings/iio/adc/adi,ad7476.yaml          | 54 +++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
-diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-index ad9e629f0cbd..6cb2cbeafbd3 100644
---- a/drivers/iio/adc/ad7476.c
-+++ b/drivers/iio/adc/ad7476.c
-@@ -31,6 +31,7 @@ struct ad7476_chip_info {
- 	unsigned int			int_vref_mv;
- 	struct iio_chan_spec		channel[2];
- 	void (*reset)(struct ad7476_state *);
-+	void (*conversion_pre_op)(struct ad7476_state *st);
- 	bool				has_vref;
- 	bool				has_vdrive;
- };
-@@ -70,7 +71,8 @@ static irqreturn_t ad7476_trigger_handler(int irq, void  =
-*p)
- 	struct ad7476_state *st =3D iio_priv(indio_dev);
- 	int b_sent;
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml b/Do=
+cumentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
+index d0cb32f136e5..c411a7467651 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
+@@ -41,6 +41,7 @@ properties:
+               - adi,ad7910
+               - adi,ad7920
+               - adi,ad7940
++              - rohm,bd79105
+               - ti,adc081s
+               - ti,adc101s
+               - ti,adc121s
+@@ -55,6 +56,11 @@ properties:
+   reg:
+     maxItems: 1
 =20
--	ad7091_convst(st);
-+	if (st->chip_info->conversion_pre_op)
-+		st->chip_info->conversion_pre_op(st);
++  interrupts:
++    description:
++      The data-ready interrupt. Provided via DOUT pin.
++    maxItems: 1
++
+   vcc-supply:
+     description:
+       Main powersupply voltage for the chips, sometimes referred to as VDD=
+ on
+@@ -75,6 +81,10 @@ properties:
+     description: A GPIO used to trigger the start of a conversion
+     maxItems: 1
 =20
- 	b_sent =3D spi_sync(st->spi, &st->msg);
- 	if (b_sent < 0)
-@@ -94,7 +96,8 @@ static int ad7476_scan_direct(struct ad7476_state *st)
- {
- 	int ret;
++  rdy-gpios:
++    description: A GPIO for detecting the data-ready.
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+@@ -82,6 +92,20 @@ required:
+ allOf:
+   - $ref: /schemas/spi/spi-peripheral-props.yaml#
 =20
--	ad7091_convst(st);
-+	if (st->chip_info->conversion_pre_op)
-+		st->chip_info->conversion_pre_op(st);
++# Devices with an IRQ
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - rohm,bd79105
++    then:
++      properties:
++        interrupts: true
++    else:
++      properties:
++        interrupts: false
++
+   # Devices where reference is vcc
+   - if:
+       properties:
+@@ -115,6 +139,7 @@ allOf:
+               - adi,ad7274
+               - adi,ad7475
+               - lltc,ltc2314-14
++              - rohm,bd79105
+     then:
+       properties:
+         vref-supply: true
+@@ -131,6 +156,7 @@ allOf:
+               - adi,ad7274
+               - adi,ad7475
+               - lltc,ltc2314-14
++              - rohm,bd79105
+     then:
+       required:
+         - vref-supply
+@@ -141,12 +167,28 @@ allOf:
+             enum:
+               - adi,ad7475
+               - adi,ad7495
++              - rohm,bd79105
+     then:
+       properties:
+         vdrive-supply: true
+     else:
+       properties:
+         vdrive-supply: false
++
++  # Devices which support polling the data-ready via GPIO
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - rohm,bd79105
++    then:
++      properties:
++        rdy-gpios: true
++    else:
++      properties:
++        rdy-gpios: false
++
+   - if:
+       properties:
+         compatible:
+@@ -154,6 +196,7 @@ allOf:
+             enum:
+               - adi,ad7091
+               - adi,ad7091r
++              - rohm,bd79105
+     then:
+       properties:
+         adi,conversion-start-gpios: true
+@@ -161,6 +204,17 @@ allOf:
+       properties:
+         adi,conversion-start-gpios: false
 =20
- 	ret =3D spi_sync(st->spi, &st->msg);
- 	if (ret)
-@@ -160,12 +163,14 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- static const struct ad7476_chip_info ad7091_chip_info =3D {
- 	.channel[0] =3D AD7091R_CHAN(12),
- 	.channel[1] =3D IIO_CHAN_SOFT_TIMESTAMP(1),
-+	.conversion_pre_op =3D ad7091_convst,
- 	.reset =3D ad7091_reset,
- };
++  # Devices with a convstart GPIO where it is not optional
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - rohm,bd79105
++    then:
++      required:
++        - adi,conversion-start-gpios
++
+ unevaluatedProperties: false
 =20
- static const struct ad7476_chip_info ad7091r_chip_info =3D {
- 	.channel[0] =3D AD7091R_CHAN(12),
- 	.channel[1] =3D IIO_CHAN_SOFT_TIMESTAMP(1),
-+	.conversion_pre_op =3D ad7091_convst,
- 	.int_vref_mv =3D 2500,
- 	.has_vref =3D true,
- 	.reset =3D ad7091_reset,
+ examples:
 --=20
 2.50.1
 
 
---MgcP2BfGJn65CyD4
+--f2LLsVrY0GN/V41a
 Content-Type: application/pgp-signature; name=signature.asc
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmiVuzEACgkQeFA3/03a
-ocWDrAf/cJ7BfiUMPb+mT/65RXiU+d/OYqvkHvOu/SEjFt0mZkg8WuUL+BG670XU
-gC1TvWjFV4fFUTpigq0wAHyrv6ILMKzS2qFVzSbXip5QBReqjs1QRhLsJkC+j0Uv
-F43L3W6HYfuFZe9HZUjNXHgqs3ykXhEzYcMJt6776/tIujyK/erqqDCSAcGBVQCE
-wqIa0lWypN4lyYSmZjLedno58s2pA/qiEZq/ACLgeiNCx7AyR+XihXXENVDJLqA8
-8z7gGcw+ITri6S2kh1O6UGuvoky96PEhotswYtZUPTNX97nJK46eLlCCqP1zwoMQ
-7uOGBd3Q5aZRU5kmBGellJLLP/gRrQ==
-=sPUM
+iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmiVu0EACgkQeFA3/03a
+ocW9CAf/UPyXzdt1BynNJE7meCRzAkG9IHNcnMy/peVmH59nu/DDz/OmIONCiY/S
+0xs9+Z62vmiNwMlqE4Sm0BU+s4gbwZBCrZsX7EuB0QNFx5jUIWfSTBBRsJHxhvNL
+B3vrIT8MGxQvplZq/ilo0uzb+HoHw8A7TkSUIRIxDDzqiuwGvZ6jLLYOGe6Stk5u
+V+GDA818TuPepjnSvpvkHQW3aB5d/+dBA9g+ao+wsXeCTYvOAfdWoZ71OVbBQx5J
+Fq2eIZFOhX8LSj9TShZoSu9QY2KdbPnrulfhseibeSzKXmKojArtaSxebpx+7voO
+p227+BnPPOE07QpDUReYge18sXjUyA==
+=phHV
 -----END PGP SIGNATURE-----
 
---MgcP2BfGJn65CyD4--
+--f2LLsVrY0GN/V41a--
