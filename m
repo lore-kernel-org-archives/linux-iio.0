@@ -1,74 +1,78 @@
-Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C745423B610
-	for <linux-iio@vger.kernel.org>; Mon, 11 Aug 2025 09:43:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8C5F229B16;
+	Mon, 11 Aug 2025 09:49:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1754905437; cv=none; b=sgVye0AKEcogoQzaVaM+xr8ZtorKIejxLHDJM6tR5m7B32naWJFERUBQCCx4qzHR2zBVqU9A2rch9sJxEARMHT7hAabz4X9XCmxzdtzWVJBJ2ie5JnYMUwAdDm0cgnf2wPLks06qc/CmH/4XEqv9AjFh+xPlhCYbtGyt9YAS6fo=
+	t=1754905791; cv=none; b=O3+Bbm3t9rGRttG+K/rpa8w8eN+ubBGSZbmRD9PgRF8aKJ6kbUQGH0S0KdOiWnmzrlbghgw2tb1YSp28KtVrlc2D3g6DbLpYC3dM7T+Q6yM6v/mYvCzHEcHO0b2w+PnIPQXwzZeUFivrAKxP6CfdjlLscyQWgB9koLeploS5jf8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1754905437; c=relaxed/simple;
-	bh=ZEXXCgjLQIpfDDScD5PEZTYren34TCt1pQpqiKMk/Vg=;
+	s=arc-20240116; t=1754905791; c=relaxed/simple;
+	bh=YcmcwVrntbpJUWvUkS8vL6G2StHtKJEcN6d3vVXoA2M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QB/WM6Ipw6Gf1RXOmrBH9OnyW9WpYNW0nCzEaUcLdMwP/L4mMXSGXQ3p95Qnc1H2e5ytV2pA3B7qUzvYpzjL6qyNKlJ74MdAYso/cMJFmbZGPgKySHw4AKFkjEcPb+kivs7ONILJZUdvP6rHzSgrnKp1xoABcmu8ZQA6J61ZDI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KO4NWGX4; arc=none smtp.client-ip=209.85.221.43
+	 Content-Type:Content-Disposition:In-Reply-To; b=tMzHWk5ZIFFqo4Osk7nPqBthj8NfCkyWapUXvDUrwsefmb879SJ7ul0g3AS0Bna1Uj5BfBYH+O+98cHTM7Y0AQ+VYagx3lhkzbRJtvN03w5DE5GPK9ozIMc7jcBuC/LEpnIqmc6GX8MB5sSs7ITkBD2s6SP1mOUTxusslQdJlHY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R5mBz5B7; arc=none smtp.client-ip=209.85.128.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KO4NWGX4"
-Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-3b78bca0890so1986175f8f.3
-        for <linux-iio@vger.kernel.org>; Mon, 11 Aug 2025 02:43:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R5mBz5B7"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-451d41e1ad1so28152345e9.1;
+        Mon, 11 Aug 2025 02:49:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1754905434; x=1755510234; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1754905788; x=1755510588; darn=vger.kernel.org;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=rvlODK4gc0WfxHOqcBI+Ukql766uR9jRxYafgBiY7JA=;
-        b=KO4NWGX4iUoOLzghhz+Abbp4UpxaSkjwZbwiLdSMS9PbKqcUiDYxLiLSRXVVDqYzop
-         KYfZDoMb3DAvtpxVftsrAzi+0BO5L9np7Z7MPRNHwV0Tel2Q9Ms/O369socEUrK+DY3e
-         tPGumW+kBvZgm3FsY3ZXUbXrmp7y8RWJ8RaIHeht56QLiDFMw5mUQJERTOrfM8F/P+0h
-         gVFsf/mWttvwQteEEkivYR24iL/0QL0B66w4FzhSQ4UXD22KW7RO/NPXv8z/sVGJZXqD
-         IY1F0fmynAQzrxbQsbDHyBjfRM3TGc32NI0GnJuISvYAsv/04sAYHEFpMn6qi27r2XwV
-         pWqQ==
+        bh=xnroKAEBQ+dZK/MQ1N+FPOoMHBUJeVwsvByY/1RrYzA=;
+        b=R5mBz5B7PtdZBp2q4VR9AChPnvNJOg0BRKWIcqmnIadTBieq2CGRv1bD9dfBfdJwoj
+         H5LfekqGy/G2xPC+DCFeR+ygapO2XFbfb85rgJuGEzpsf+nn0+/NrKLFSKde1iy/+uKv
+         gfxPxc34XC6k+3C9I62xIzvZJIdVrLC/YLIZacTQ6wEjt7tFiyOoABm4txoYNJ9EoTLF
+         9RysT+JAdc5TvSliksW4xYPMve6F1/WTIDwWjkRvWGFZPpz2m3Ae3fswtlWVcZVsWahY
+         lJ/SggI/8AM1/Vk10VywJeHSQw0W0gZtZ/ONxMYFj+YMFzJP+rasJ+Ou0JPhrzJUutWz
+         P5sQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1754905434; x=1755510234;
+        d=1e100.net; s=20230601; t=1754905788; x=1755510588;
         h=in-reply-to:content-transfer-encoding:content-disposition
          :mime-version:references:message-id:subject:cc:to:from:date
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=rvlODK4gc0WfxHOqcBI+Ukql766uR9jRxYafgBiY7JA=;
-        b=v6RyyanuHX98LHz7DQRVtMresiCiclScp5Xx/sCT2hexHc1Lxi2/b9SHlDS98YNXWf
-         VnRDjaTQifawcw1SuUMe27myAa5IVKHdQZn1G4fslxEqOUeeyxjn35hQdtzgTZ4LpQ1x
-         YUBrelhpN2kd/BASiOyWgFLYlR51E+jl8AuLySdrvoarRuTO2rxaPako2a1pJpbfqqpg
-         jnJ48sp4vLDtCaE7vX5BXvqMbxHTbodUZYv/mEBJ9OJ3n+Siwpx8hjA30GuacXOYFe/C
-         MQWLBthH+t0zWKeAwpVmd4wXzMWQtfVsU15rUS6bx1cRcpSAsRkF9wnXdPWttCMU1psz
-         AyFA==
-X-Forwarded-Encrypted: i=1; AJvYcCXy5hR0CccD+NH+UzS4Oja7FAm6XFBYGgn8OP8RM4H0wURVxzhu9vcUjhmo6wxrLoSV2S2pXxn52no=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy/zIgImis9wVz7joQKPcXydiJFNiGpURhmt6hrf3N3504TIfLh
-	HF/WzZGSIwrG0lZOeAnh4OMdIYiBtVtJJE0e9ln/UtLoAbdm/O2PgreC8qG9Dtl34A5EJA==
-X-Gm-Gg: ASbGnctLe8o7cowxzqKv9TNBcWg+FCZQTJv3Y4zAdZq+U14qvpGTdlzxy7ujXn1g/lB
-	0z3ocwGg0o/T9dB66RPAGhg+/QBpdkANv/IbpbOeL8IkQljAuf5ksKY/hox/7Wdzokz/t9oBLp1
-	wIlmo8vpJjL1+gjrvBsyFaZ0gvqPF4zD6+uY6i7piQA4QeyU41Ex2IBTWYaZ9eoU4EIGcJiS2W8
-	3FoDgHgQhdeNQEqkr8Iu2pzHiPPAxl+Ri7iqbk/OTFVlaFXAntMOu85KDzvFp8C3O/Zx5j1P4xA
-	o2BmwdfjDP7hboBcWJDcc284V7r2lKoILOvjfkLBWUjKgMT58/lHrU7tPRcVHEW7QHKIP5M/VPi
-	GYtAcwkY5k3IyJg==
-X-Google-Smtp-Source: AGHT+IE5tIfyNEfJvF1e3GCPF8HCi0DAjMCgZxf+5tt/K0WXW6xKTM357rTxnAtF5MvBH2MSSpRpBQ==
-X-Received: by 2002:a05:6000:1445:b0:3a4:d6ed:8df8 with SMTP id ffacd0b85a97d-3b900b510f4mr9203693f8f.39.1754905433996;
-        Mon, 11 Aug 2025 02:43:53 -0700 (PDT)
+        bh=xnroKAEBQ+dZK/MQ1N+FPOoMHBUJeVwsvByY/1RrYzA=;
+        b=NWUs04oz4YBYXhlbe+og4l8VpWByLrO7PA0MKP2nzERBfACz4lLVQABh6yrQUoeDM5
+         4fEi6/ih20C83k4nrV9+TtcQ8BQHPgUZE9Asb7svbKBL9gNdopw2Qm6SVdGOoRiEoGrr
+         N604AjkohqgiSuQxfZO4YtmQKjNtveQI6JeUKRMSS51YmQRRCyV8xUGUF1ZBRah73taS
+         H7Rf9A6VKwL2m99NFLUUOedFCh32g2TfoTlhpZEPMsb7yafR9H6jdzmHF54rIEvVlAZG
+         /CyYQa5s1EQha+SqvAnoJBZSHTGy0sP9ojfRb2hQaBgjdGGGGziU6gk4XqGP4NEhRy6u
+         pFLg==
+X-Forwarded-Encrypted: i=1; AJvYcCU7TYZuZBiCFjGSoEcqqM3Is8eYY5JVeG0ahGWhcXL/14wSOGf4eFJG+48eLSftkCDl3OK6Xs9mUZBZy32a@vger.kernel.org, AJvYcCVwS79zVF7vmHteDKhIRX+Z5g8N+pdFLNgiiRe/LizVEekiTflOiUQrzZTAtFmR+Rw87xMWzDNKtp1u@vger.kernel.org, AJvYcCVy1zliCUuv5s6ox/fro7n+Tvtm5I70eiyYKZd8bBFWU6H2oAT57W4KuQWJYqPWax/MFsp6JfysYws6@vger.kernel.org
+X-Gm-Message-State: AOJu0YxHAfw4/OTpXNfqoasJdmYjlyiJHilC+oyd5fqAIhkThIzXVa6z
+	wz785muYSREqlP7fZsW4xptIUAw6j/063P2IW3dZcIMlCnAy0xWufYPQ
+X-Gm-Gg: ASbGncuQDIphtWYhfBD9R/znG5CzmK6dKcB2y2iwu8PxoSB18+eW6hNRBkeoohP/u6+
+	n7sEvbTmtVdGxqR53vmuQV7yDx7Wcu8VHjPAFAP6AmIHYfHvGUjyu22uSjYMnHZZW4XJbgOcjeB
+	CofPoJv4iqie5F47OG2TigHXnQKSGi48aSjHMD96ltGsQahs0O178tSvNLu2X8LWeXdfEEw6ioU
+	DDx5+bQEowT7lKv0hLiZNbpPyhzLbP5SpkqIDzgwqK6rnPARKOD5333elY/sCXq+I7FGFG5U30t
+	RuzVz3VNjm3fzyxPEXNbgfDy0tWpgOzi0IrD3yZ8VdejL6wePeaVBLOuahlIhXBt3pdjTPJdimU
+	Tdtsf2wSBKmc0gQ==
+X-Google-Smtp-Source: AGHT+IGd0A/3HGvlzm42aeigaZGW8IWcsYrCcr1/VFCrAJo8sseeU3JaSPP6i3EQFcqD1YiPx+SDQg==
+X-Received: by 2002:a05:600c:474f:b0:456:1d61:b0f2 with SMTP id 5b1f17b1804b1-459f4fc32fbmr122103575e9.30.1754905787471;
+        Mon, 11 Aug 2025 02:49:47 -0700 (PDT)
 Received: from nsa ([161.230.67.253])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-459e586a011sm266865245e9.19.2025.08.11.02.43.53
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-3b79c3bc12csm40819109f8f.28.2025.08.11.02.49.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Aug 2025 02:43:53 -0700 (PDT)
-Date: Mon, 11 Aug 2025 10:44:11 +0100
+        Mon, 11 Aug 2025 02:49:47 -0700 (PDT)
+Date: Mon, 11 Aug 2025 10:50:04 +0100
 From: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Nuno =?utf-8?B?U8Oh?= via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>, 
-	nuno.sa@analog.com, linux-iio@vger.kernel.org, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH] iio: imu: adis16475: remove extra line
-Message-ID: <jqgk5pboyya5reoznimit6njg4hy2drw23ir7dbjtclmkwemxk@3ugl7nlhbqqu>
-References: <20250808-adis15475-extraline-v1-1-e3259a466e95@analog.com>
- <20250809184913.4a1ec14d@jic23-huawei>
+Cc: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: Replace bouncing Analog emails
+Message-ID: <d6n24lux6pv47mb3z2bfdbtn5olsm46rdbnkwhjurkwh4a27kl@hkcedsvni4il>
+References: <20250724113826.61998-2-krzysztof.kozlowski@linaro.org>
+ <20250728144901.3f646a4c@jic23-huawei>
+ <20250809210438.23fb5fd0@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,49 +82,149 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20250809184913.4a1ec14d@jic23-huawei>
+In-Reply-To: <20250809210438.23fb5fd0@jic23-huawei>
 
-On Sat, Aug 09, 2025 at 06:49:13PM +0100, Jonathan Cameron wrote:
-> On Fri, 08 Aug 2025 17:12:33 +0100
-> Nuno Sá via B4 Relay <devnull+nuno.sa.analog.com@kernel.org> wrote:
+On Sat, Aug 09, 2025 at 09:04:38PM +0100, Jonathan Cameron wrote:
+> On Mon, 28 Jul 2025 14:49:01 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> > From: Nuno Sá <nuno.sa@analog.com>
+> > On Thu, 24 Jul 2025 13:38:27 +0200
+> > Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 > > 
-> > Remove extra line before adis16475_probe().
+> > > Emails to stefan.popa@analog.com and alexandru.tachici@analog.com bounce
+> > > permanently:
+> > > 
+> > >   Remote Server returned '550 5.1.10 RESOLVER.ADR.RecipientNotFound; Recipient not found by SMTP address lookup'
+> > > 
+> > > so replace them with Marcelo Schmitt from Analog where appropriate.
+> > > 
+> > > Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+> > > 
+> > > ---
+> > > 
+> > > I don't know who from Analog should maintain these devices, so I chosen
+> > > author from Analog of one of last commits.
+> > > 
+> > > Marcelo Schmitt, could you confirm that you are okay (or not) with this?  
 > > 
-> > Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-> Normally we'd not bother with this sort of thing unless otherwise working
-> on the driver, but given it's you and you are very active in general, applied.
+> > Nuno, Michael, other ADI folk.  Can someone confirm if we are making these Marcelo's
+> > problem?
+> > 
+> 
+> As amusing as it would be for me, I definitely can't pick this up without
+> some tags from ADI folk and Marcelo in particular!!
 
-Ahh I see. Thanks for applying. I realized this extra line so I felt the
-need to clean it up :)
+Normally in situations like this, it defaults to me but I'm happy if
+Marcelo is comfortable in assuming maintainership for these.
+
+That said, I do think that for the adis* drivers it makes sense to be me.
 
 - Nuno Sá
 > 
-> > ---
-> >  drivers/iio/imu/adis16475.c | 1 -
-> >  1 file changed, 1 deletion(-)
+> Jonathan
+> 
+> > Jonathan
 > > 
-> > diff --git a/drivers/iio/imu/adis16475.c b/drivers/iio/imu/adis16475.c
-> > index 924395b7e3b45dd3a6459d6eb788fa2ec86c4a29..ab39bea1e729ea8abb56dbbca3d5305dc1973083 100644
-> > --- a/drivers/iio/imu/adis16475.c
-> > +++ b/drivers/iio/imu/adis16475.c
-> > @@ -1930,7 +1930,6 @@ static int adis16475_config_irq_pin(struct adis16475 *st)
-> >  	return 0;
-> >  }
-> >  
-> > -
-> >  static int adis16475_probe(struct spi_device *spi)
-> >  {
-> >  	struct iio_dev *indio_dev;
-> > 
-> > ---
-> > base-commit: 6408dba154079656d069a6a25fb3a8954959474c
-> > change-id: 20250808-adis15475-extraline-534e5698f3a7
-> > --
-> > 
-> > Thanks!
-> > - Nuno Sá
+> > > ---
+> > >  Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml | 2 +-
+> > >  Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml   | 2 +-
+> > >  Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml      | 2 +-
+> > >  Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml    | 1 -
+> > >  Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml     | 2 +-
+> > >  Documentation/devicetree/bindings/iio/frequency/adf4371.yaml   | 2 +-
+> > >  Documentation/devicetree/bindings/iio/imu/adi,adis16480.yaml   | 2 +-
+> > >  7 files changed, 6 insertions(+), 7 deletions(-)
+> > > 
+> > > diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
+> > > index 3dc973b98f81..40e9a40a7a60 100644
+> > > --- a/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
+> > > @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+> > >  title: ADIS16240 Programmable Impact Sensor and Recorder driver
+> > >  
+> > >  maintainers:
+> > > -  - Alexandru Tachici <alexandru.tachici@analog.com>
+> > > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > >  
+> > >  description: |
+> > >    ADIS16240 Programmable Impact Sensor and Recorder driver that supports
+> > > diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml
+> > > index 88aa67bf2280..55e44c9292cf 100644
+> > > --- a/Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml
+> > > @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+> > >  title: Analog Devices ADXL372 3-Axis, +/-(200g) Digital Accelerometer
+> > >  
+> > >  maintainers:
+> > > -  - Stefan Popa <stefan.popa@analog.com>
+> > > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > >  
+> > >  description: |
+> > >    Analog Devices ADXL372 3-Axis, +/-(200g) Digital Accelerometer that supports
+> > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
+> > > index 7146a654ae38..958a37def56c 100644
+> > > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
+> > > @@ -8,7 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+> > >  title: Analog Devices AD7124 ADC device driver
+> > >  
+> > >  maintainers:
+> > > -  - Stefan Popa <stefan.popa@analog.com>
+> > > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > >  
+> > >  description: |
+> > >    Bindings for the Analog Devices AD7124 ADC device. Datasheet can be
+> > > diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml
+> > > index 5207c919abe0..eac48166fe72 100644
+> > > --- a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml
+> > > @@ -9,7 +9,6 @@ title: Linear Technology / Analog Devices LTC2496 ADC
+> > >  maintainers:
+> > >    - Lars-Peter Clausen <lars@metafoo.de>
+> > >    - Michael Hennerich <Michael.Hennerich@analog.com>
+> > > -  - Stefan Popa <stefan.popa@analog.com>
+> > >  
+> > >  properties:
+> > >    compatible:
+> > > diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml
+> > > index 82b0eed6a7b7..058df4c8ddf8 100644
+> > > --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml
+> > > @@ -8,7 +8,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+> > >  title: Analog Devices AD5770R DAC device driver
+> > >  
+> > >  maintainers:
+> > > -  - Alexandru Tachici <alexandru.tachici@analog.com>
+> > > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > >  
+> > >  description: |
+> > >    Bindings for the Analog Devices AD5770R current DAC device. Datasheet can be
+> > > diff --git a/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml b/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
+> > > index 53d607441612..031b1657cde1 100644
+> > > --- a/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
+> > > @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+> > >  title: Analog Devices ADF4371/ADF4372 Wideband Synthesizers
+> > >  
+> > >  maintainers:
+> > > -  - Popa Stefan <stefan.popa@analog.com>
+> > > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > >  
+> > >  description: |
+> > >    Analog Devices ADF4371/ADF4372 SPI Wideband Synthesizers
+> > > diff --git a/Documentation/devicetree/bindings/iio/imu/adi,adis16480.yaml b/Documentation/devicetree/bindings/iio/imu/adi,adis16480.yaml
+> > > index 7a1a74fec281..e49d5e6fab61 100644
+> > > --- a/Documentation/devicetree/bindings/iio/imu/adi,adis16480.yaml
+> > > +++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16480.yaml
+> > > @@ -7,7 +7,7 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+> > >  title: Analog Devices ADIS16480 and similar IMUs
+> > >  
+> > >  maintainers:
+> > > -  - Alexandru Tachici <alexandru.tachici@analog.com>
+> > > +  - Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > >  
+> > >  properties:
+> > >    compatible:  
 > > 
 > > 
 > 
