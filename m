@@ -1,125 +1,73 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7686823817D;
-	Thu, 14 Aug 2025 06:03:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AE9626CE36;
+	Thu, 14 Aug 2025 07:26:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755151407; cv=none; b=iyZhUveDLXPapCS1TgZa9siIcT2WdW7xhb4XbXXqmPI/pd+7hqe6qR91EGYdB9DuVrit4AdxypR/fTZ4b1R8v2B5+5VKIbsm1Al9UfaccsR131NNLB6WQiOgZ07KrfDMBUtnnhFND4cHjjso/T5rH0n0E0PfDXnDS8XwEpyUASM=
+	t=1755156362; cv=none; b=e0NP/0n5Npx5KVBoYEhRNiyIQVmYfaKGuRC4F1wC1JUiFSwSRp9n+Bu9dNzgD/thBnM7qTYCmhKShjon043NSSdLjxvUzhzJ6FyJ6TsSdvSAouWaKodAgzimN1TWsk1rXRWSb6BWb10lvdig5FCzN+6gw2ZJpF26sFb868eZipA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755151407; c=relaxed/simple;
-	bh=rqZLE8aWdiYpL3EpPANCrXfhk+gaSXxdGb4Y0ONH+oI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QZKqo/NF9CtucpHuOzUCX0x+cWy1JKFWYJdZWbxR2hMjFFbWhi1JjUMY58h1/s6dQyOZ0vXwiVbpRxDDG5AwW31KRBEYTQt1PQqbh6GL9qp5h/IZ7kodho6vOLZR2baYkcFhTFEj9MNNLT0KBxfusv96u0F0N2A7Mhag3bhlI7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h2MhWXkF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755156362; c=relaxed/simple;
+	bh=bCODuuaMFmNNXeW6jzV9cEYu0VFKOJKB7DKgj/ELYos=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TkcnN/6tUtHsGkASnufPOybqosXjdzoR4+AvrVj8fle2H33laCI+2wMcT/pdo/aKfoUnwIumiItPfeNZF8On/G7XvvxoqmXmtu1h0ETdhkrZHQgQ+w/le7nQX1MtvB4z7ISuQPXiQd4XIlNcuy4KP8WcSm6M7Ds+bQthiaZitsk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GzcT4JWH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h2MhWXkF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 70274C4CEF5;
-	Thu, 14 Aug 2025 06:03:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GzcT4JWH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 182D1C4CEEF;
+	Thu, 14 Aug 2025 07:26:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755151407;
-	bh=rqZLE8aWdiYpL3EpPANCrXfhk+gaSXxdGb4Y0ONH+oI=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=h2MhWXkFdRvKr6TiP/s8Jywgbtk3OdBL4mJUPNws1rdxTWLWLm8c4aJAjSL9oqg46
-	 obuYnAtVNDMwVpFjSWCwHBhdLkQfqp2l7ICBaaKZpphXseZlB43jO73jfGxI9V2iex
-	 9rlaCDlIJSSWf3f5eJPBgylgjcn9xKJ/RHYgeTXm9EJjCoKT3/GYI5BpyT5n6ClBrC
-	 ff4pt4ZVq+qGvpje0eLN8MEOn6CNh0jcWgbrHk5pBIOS3WRsgjq8v4VgVfnpyxB1OJ
-	 d8esAmlyDLdTuxl2YPeS19W7D3QUnEXhr1u829+4U7FYa33gCS+lghwAkxkr/9h8PD
-	 btiU7yMaamuhA==
-Message-ID: <8c27b00c-5b80-400f-8538-b9ad96fd5feb@kernel.org>
-Date: Thu, 14 Aug 2025 08:03:23 +0200
+	s=k20201202; t=1755156361;
+	bh=bCODuuaMFmNNXeW6jzV9cEYu0VFKOJKB7DKgj/ELYos=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GzcT4JWHuGjOBbjQSAT1kvFbLihB9CHP4Pz6CKXlFQKshniRyUBIPb5xQ2/Ff2IKY
+	 05LQZ217yrCAKXlkEhEM4Y8v+GiBtiLGKuj/OsLjJFhjkTHFWIM8uJhXR1yTE43RiZ
+	 hZTKqFv3NlDZO+NeoJhz5w2MKll5M90pEnXe+C2a9Df5dFQohbk4b7Wl5R4/MBgJbj
+	 lbvyDROT8813rhPTEltxkHe8yvSkLCb9BqIYD7MnvNp3iew+UVrXsIzrqsNcTxUBgG
+	 hZ6VIDb5Ykn2uMun5+0FQazZRQgevqXd4jPtJvp6SUBJK5PuOlXVVD9nHYh7SA0Ng2
+	 tE4Xm1Qq07RBw==
+Date: Thu, 14 Aug 2025 09:25:58 +0200
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Matti Vaittinen <mazziesaccount@gmail.com>
+Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 08/11] dt-bindings: iio: adc: ad7476: Drop redundant
+ prop: true
+Message-ID: <20250814-authentic-silky-lyrebird-05cbdd@kuoka>
+References: <cover.1754901948.git.mazziesaccount@gmail.com>
+ <bee66444bf628ba9a34a02738a1842e2abc14290.1754901948.git.mazziesaccount@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: ad7768-1: add new supported
- parts
-To: Jonathan Santos <Jonathan.Santos@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, Michael.Hennerich@analog.com,
- jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org
-References: <cover.1754617360.git.Jonathan.Santos@analog.com>
- <ecb7406f54938658b51b4469034d87a57086bd1e.1754617360.git.Jonathan.Santos@analog.com>
- <c3cf9b97-3883-4ebb-a2ed-0033adebda87@kernel.org>
- <aJ0UEUVmIH94Nuwi@JSANTO12-L01.ad.analog.com>
-Content-Language: en-US
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <aJ0UEUVmIH94Nuwi@JSANTO12-L01.ad.analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <bee66444bf628ba9a34a02738a1842e2abc14290.1754901948.git.mazziesaccount@gmail.com>
 
-On 14/08/2025 00:39, Jonathan Santos wrote:
->>>  
->>> +  adi,aaf-gain:
->>> +    description: |
->>> +      Specifies the gain of the Analog Anti-Aliasing Filter (AAF) applied to the
->>> +      ADC input, measured in milli-units. The AAF provides additional signal
->>
->> What is milli unit? Isn't gain in dB, so maybe you want mB? Quite
->> unpopular to see mB, but we cannot use 1/100 of dB, so I could
->> understand it.
->>
+On Mon, Aug 11, 2025 at 11:51:50AM +0300, Matti Vaittinen wrote:
+> The ad7476 supports a few variants with different power-supplies and
+> control GPIOs. The binding first unconditionally introduces all the
+> properties, and later sets them 'true' or 'false' based on the
+> combatible.
 > 
-> Actually, the gain is expressed in V/V, not in dB. I may have phrased it poorly, but since
-> there are fractional values like 0.364 and 0.143, I chose to represent it
-> in milli-units.
+> The 'true' seems to be implied by the initial property introduction so
+> the 'true' -branches in later conditional handling (based on the
+> compatible) can be omitted.
+> 
+> Drop the redundant true -branches.
+> 
+> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
+> 
 
-Why your reply to is corrupted:
-"c3cf9b97-3883-4ebb-a2ed-0033adebda87@kernel.org"?
-
-
-What sort of unit is milli-unit? Isn't this 1/1000 of some BASE unit,
-but you do not have here a base?
-
-I think you want just basis point if this is V/V (already in common
-property suffixes)
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
 Best regards,
 Krzysztof
+
