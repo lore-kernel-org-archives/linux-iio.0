@@ -1,76 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B7CB2690F9;
-	Thu, 14 Aug 2025 07:29:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2DD22472AA;
+	Thu, 14 Aug 2025 07:41:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755156547; cv=none; b=e2X1ru7xuRjAOznt5E//L7CCJtMmHVDQanQwuoAGVt7htmNCnq0WOvrNFwGiTtsDnML1wqGCX0diDY85MYKX+6Rqqe4GIQ7K11ol9cYEIy5+xTC2OjslG95uLyA0UyKfB3G1T9YwQyQP0JzOXL6kKUZTgM2HKHYqHKcWPGW8/pQ=
+	t=1755157317; cv=none; b=a5JPOUMjyoDHS1lMqSa9lzMpy+YV00EhlxfSoxeqWT/aaPUbDCcWNBifML3lm38CvYbeIrJaq1x4isbiX17cUjItbgr1UZhh5NPsmfeXbeHUAPP69bWr+q0IYgZVHmCVUCWG92yjVEHC/WAxk0SFwNNnpkJVgncrwSQ7/IdGWwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755156547; c=relaxed/simple;
-	bh=yFHZE0Fem6LY03lyJJsU+PZNFRS6Y/kss8PySXhjW9k=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=F4EoZ0AnXOMUt5BWcpw/r+JK2FlJQGBWoqWzjeKQ7N4uDdYS0otRhSxmuf1bzY4nuGp8BQFQKM8CK1bHZn2zvQgJRprOxa2Rah96pUxhcugY56glZ0wE0LlAurSQS+0GEW23NAt3gpv3LdFpvXsTahmlXijsrMcoOCLknoV5dQg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=twxsBirt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1755157317; c=relaxed/simple;
+	bh=95pkVyiyQQftf87klLRi7TrKiivUcW2/Rg5pHvWJMiE=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=a4jEwSU8zLcodA5m/FvtuJ+WOQ7+eJCLppci7UZZtJg8fnUahHJBVUgcUOZcyIC5EPSi6eVDlbLxO6TGbEgBVYAbJmVgOMXJhBSQJ4u/WyA9jHQ9/ggCHHnKQAwCbKr8XP/7ZLjUBGccFF4e6LBMHwUDJeQb7O5qV6oQzSRtl1I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TDy9hY5o; arc=none smtp.client-ip=209.85.221.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="twxsBirt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69186C4CEEF;
-	Thu, 14 Aug 2025 07:29:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755156547;
-	bh=yFHZE0Fem6LY03lyJJsU+PZNFRS6Y/kss8PySXhjW9k=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=twxsBirtdf1/fqUMGnjnp4W+W2EyaHiytp95UB5RLLzIBSMCZ+bU0ph8qSJcjOZk5
-	 6+OZ1TC0mrpErUesb+58RtFxWpnrAsHEtLksdYn+oLVkjEe4q3I0koe+Lz2D2npIPU
-	 ATtrdMR0/b/ljxnABqi/xE/mLsdVbWvJ1ASvsSHZQWlDJXopOo3PToPl1DMtXk09UE
-	 tqBq2VoLmbv2HkAMM/XTgpmV1Ygiabsyn3hehtyTqpzFctcFFPbVrseZ/nF9XjzjaH
-	 LavCdWPcnC3OpNneRPS5rAMFRL0TAm0TTHecn+aNZpwnbpSw8wlsKgPBlisvXTM+MB
-	 qtSlCSmlMpWeQ==
-Date: Thu, 14 Aug 2025 09:29:04 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Matti Vaittinen <mazziesaccount@gmail.com>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 09/11] dt-bindings: iio: adc: ad7476: Add ROHM bd79105
-Message-ID: <20250814-hilarious-nonchalant-bat-b205cf@kuoka>
-References: <cover.1754901948.git.mazziesaccount@gmail.com>
- <3f70f68665225be3091f8a0412e74037b6a2a88e.1754901948.git.mazziesaccount@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TDy9hY5o"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-3b9e4193083so480694f8f.3;
+        Thu, 14 Aug 2025 00:41:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1755157314; x=1755762114; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=95pkVyiyQQftf87klLRi7TrKiivUcW2/Rg5pHvWJMiE=;
+        b=TDy9hY5oa0vEzQufKLp1K3ScVqu0v3bZPM7SLpzdeaxzv2VpaiyHs22yxJDf6+vlPV
+         EzTmc8fNLtM55XHMQkDQ+dSPmLcau6RPYetFgBLrP3Jl6qOSamuvMXyPuFS32Uo91Tw9
+         p2SvFkUYjsCBQNUzYWPNQp27TB5o4D0MfDd8pJX+JvOhcvIumXPyuq7y29De+Fthf5ho
+         SNxglIcxgCGBkK44sSFNOoS+8tLVSHQx1PKZBQvgM6ouuesLT6s9NsrqRwWrhG/S+Exf
+         I4nGZ1jLV80QsFY7gJmVf/NzngtGs7ZtJWDapIOQtXWc51l+8iN9JUh0ktjvgaZaHH+y
+         +LgA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1755157314; x=1755762114;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=95pkVyiyQQftf87klLRi7TrKiivUcW2/Rg5pHvWJMiE=;
+        b=nAolSpsEO1nbVBdGtGukrYo6Rf49VxRq08OIJCemxJ974yVG4ZTY9N+qZXPgbSPtqB
+         GCdnZq3UfJ9mK4EfnIT7Xk+RV7ZqRgTw9sI0E8W8c+0/8EXkRcplFstoZ95XG6ktc1t6
+         KiVCclkAU2MBZPAQMw8zgvZWEWWdyFnOlMpI3iJNA8gjSXZBbAbzv3Ys3XB2yCHiOJZu
+         72iNLzkIVfsTI+h//tkYLGQ3a+6+cU10rV8vkN1GJgQ7UhGWnP50jU7Q0FIJzh7NsTfd
+         SdQcaZkIEy9A6sndX4pHIGsfg43osWXlLQQIXk1uREvPXQSOVcyDfSkCn34XWUSE1BgS
+         sanQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVHnr/sae9TbZ4vCDS4bX2a5ufqWc0KyPvCyqVRJzidIQYqMPaJIUG19EAnzaX4wMNI+gyaPMdfDYZQ@vger.kernel.org, AJvYcCVIeDgPWp7dD3125A1AXxJsy+sVoXxmbc1uzRQnBzL5WoxZSk+n64Fyxn3YEdgs/SaygCLeT8UPWVotcuuA@vger.kernel.org, AJvYcCXly4nY7BujBfI5zQukVF4b8Wkesn3pjTdgbPGIorsgqlQqUKh7WCndnM+pI8kkDtwWvxQ0nqOtRYme@vger.kernel.org
+X-Gm-Message-State: AOJu0YyxxT37mJiz28sU/GqOZ1XGICoGngVrXZaO46RncNMtZsGw8D33
+	x93/7LO2g4XkaviU6DdbpoRg84UT1W2Hq0oP8V/xITVa4D0ZgNbGctsq
+X-Gm-Gg: ASbGncvkOV6ixXfYvzqCLUlB7dr6pgA9B4gS26qdk9XWSOnb8EpjqDwgK9UoFLRRb2n
+	1G5U3Eh3k4ib1M12IRYhk9veLuM+QlH5mgFzRxagqxdCOvwbeYk72JkzVg0sz6zYWaukN37Tmim
+	Eb2aEETH719jGHslzXOH8QbyE91+KQvQ6HlSzwfMqkN0OMy5+psB7exsgEblsHUsV6RMLlZVi1w
+	I8FJ+SPDAbKvuXSuTA7SMIPE/wFFr7KQYvTXJXeONR8EmI0z7vtslQYHZbadj/y0T2fYipDDskF
+	D55b3SY9SUdIvVwBqN+4G0Ld1tP93srm5xVIYlvZoqPS+SzQjO6bRdOVWmyYOBK9MFCq+n3kSB4
+	1eeyArONFHdTMWFyk9Oeuk6yfICLq1Uszps1Ye1Wc1e8msOJkFCiFi/NdxQ/RNlczXZFqwp3Oj4
+	fP+sHYrH0=
+X-Google-Smtp-Source: AGHT+IHkOw24u8RuwNP+9gnD06nBLmyFoAvEktQxd4/kFTIBIRRoIBuhG43z5tniUPql4I/69y1wlw==
+X-Received: by 2002:a05:6000:2010:b0:3b8:d14b:8f86 with SMTP id ffacd0b85a97d-3b9edf4458fmr1707165f8f.45.1755157313754;
+        Thu, 14 Aug 2025 00:41:53 -0700 (PDT)
+Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45a1c6cd044sm11017685e9.9.2025.08.14.00.41.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Aug 2025 00:41:53 -0700 (PDT)
+Message-ID: <8330984c9e5130fb24b92a32d82899a7782f463e.camel@gmail.com>
+Subject: Re: [PATCH 0/4] Add support for ADAQ776x-1 ADC Family
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
+  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: Michael.Hennerich@analog.com, jic23@kernel.org, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, jonath4nns@gmail.com
+Date: Thu, 14 Aug 2025 07:42:37 +0100
+In-Reply-To: <cover.1754617360.git.Jonathan.Santos@analog.com>
+References: <cover.1754617360.git.Jonathan.Santos@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <3f70f68665225be3091f8a0412e74037b6a2a88e.1754901948.git.mazziesaccount@gmail.com>
 
-On Mon, Aug 11, 2025 at 11:52:04AM +0300, Matti Vaittinen wrote:
-> The ROHM BD79105 is a simple, 16-bit, 1-channel ADC with a 'CONVSTART'
-> pin used to start the ADC conversion. Other than the 'CONVSTART', there
-> are 3 supply pins (one used as a reference), analog inputs, ground and
-> communication pins. It's worth noting that the pin somewhat confusingly
-> labeled as 'DIN', is a pin which should be used as a chip-select. The IC
-> does not have any writable registers.
-> 
-> The device is designed so that the output pin can, in addition to
-> outputting the data, be used as a 'data-ready'-IRQ. There are cases
-> where the IRQ can't be used (because it is delivered via SPI data-line).
-> Hence, some systems may use a GPIO for polling the data readiness.
-> 
-> Add a compatible for the bd79105 and add the data-ready GPIO to the
-> binding.
-> 
-> Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-> 
+On Tue, 2025-08-12 at 23:48 -0300, Jonathan Santos wrote:
+> This adds support for the ADAQ7767-1, ADAQ7768-1 and ADAQ7769-1 devices.=
+=20
+>=20
+> The ADAQ7768-1 and ADAQ7769-1 integrate a programmable gain amplifier (PG=
+A)
+> with 7 and 8 gain options, respectively. The ADAQ7767-1 and ADAQ7769-1=
+=20
+> also feature a 3-pin selectable Anti-aliasing filter (AAF) gain.
+>=20
+> Jonathan Santos (4):
+> =C2=A0 dt-bindings: iio: adc: ad7768-1: add new supported parts
+> =C2=A0 iio: adc: ad7768-1: introduce chip info for future multidevice sup=
+port
+> =C2=A0 iio: adc: ad7768-1: use devm_regulator_get_enable_read_voltage
+> =C2=A0 iio: adc: ad7768-1: add support for ADAQ776x-1 ADC Family
+>=20
+> =C2=A0.../bindings/iio/adc/adi,ad7768-1.yaml=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 |=C2=A0 48 ++-
+> =C2=A0drivers/iio/adc/ad7768-1.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+ | 389 +++++++++++++++---
+> =C2=A02 files changed, 382 insertions(+), 55 deletions(-)
+>=20
+>=20
+> base-commit: 0a686b9c4f847dc21346df8e56d5b119918fefef
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+With Andy's feedback fixed:
 
-Best regards,
-Krzysztof
+Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 
