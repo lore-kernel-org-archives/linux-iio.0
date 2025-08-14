@@ -1,65 +1,66 @@
-Received: from mail-ed1-f44.google.com (mail-ed1-f44.google.com [209.85.208.44])
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 032CF19F11B;
-	Thu, 14 Aug 2025 11:00:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68C6F318159;
+	Thu, 14 Aug 2025 11:00:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755169228; cv=none; b=Fyx7afToPCorNMEJVb+B1NPd6ioGyV25AUrd3bZLLXRyLhTAvj01wP1DcTl98DpXav+M8CIWtSNW4vJtA4mPrCjI3kb4+FxDt+pztnUP+GhNzrVTWCBT7NBM5BVe3YDO5kNPwWWSKd7vkHW7nDRHD4ynW7PTQrAPu+NHaeJBe1g=
+	t=1755169229; cv=none; b=n7dOeaSLt5Q5OkheaEm0olX24zdrzfxMsxumWmI0nkpHzgL4yDdiEvaAxQPWsDqkTGfratOoGWy6tNMsSXEi5ErnuPJOE15INRXXRlAJOtmej5XCOc4elrXU67q+cXzc6WrxIk/v5BJmYij0oASW4Ed9yx2fyLOWGh+LsDdOEwQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755169228; c=relaxed/simple;
-	bh=Uy7vy8b0/Ve4PqRFiyW6SgaraGSuHiGGhfWaeYo9VOY=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Gt7Nb+52dLF/onKjkCpa65HWQkVSVj2zZ/HehEL9kZMft50uygSqsgXGhnCgOJHPrJG0M6s19cqh8jTZJKf1SjD7E9TZn/3vv7GY2zWorgiICenCQgte3C/CD353BdLSVBmXeX53AakLVyXI1oa7PloQgCWTR/g5DDRIkwUgxMY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YYaWfW7N; arc=none smtp.client-ip=209.85.208.44
+	s=arc-20240116; t=1755169229; c=relaxed/simple;
+	bh=7dL620a4ki2oCdeq6jvorfDoA7+7B+wm9Jmm2GXEtLw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=lclYnye6SwrURefgJ/ceSmBqm+k0W0dgjA3TaMdBtUR7nfm7cUIZTS+43xrBOGF8GbI8jLFH/040CoCZ73THKF+EQWZ3A6s9PBwQZoNo76pVdARO/LwgQTg4owcYAEgQZeJ4kkYhKMNPtyzJ1HRTpnCfVfPDq2g/Bq9PvScCpi0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JZvwjUbh; arc=none smtp.client-ip=209.85.218.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YYaWfW7N"
-Received: by mail-ed1-f44.google.com with SMTP id 4fb4d7f45d1cf-618690a80e8so2806545a12.1;
-        Thu, 14 Aug 2025 04:00:24 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JZvwjUbh"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-afcb7ae31caso134223866b.3;
+        Thu, 14 Aug 2025 04:00:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1755169223; x=1755774023; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=LZYBQ++xloO8OkMz0+ha0tp3u9TW+5yxhBPn7YbiqG4=;
-        b=YYaWfW7Nyg4S+lmpsv7m0aFRNg5n+togLUD96gqxK6oR1TlwppTyPWZR87/RugX+Fk
-         xBLnl0Q0IiszmlDJnY4/FLbirw4MRcFT3MQhjUeAPZO+VueL9nQ9G6ERE4xZj2M93UZ4
-         1HHeZ2Q60oOHR+HVShMM4hZAXKDPpxiZAQjX6Ko5R1TO1XldP28+egU6YFUnyYDvnXzR
-         aUIR4zM15MpFv5Tl9SczcywZY70nj+8b3/etUCg9ulvWWdARqBnbOybGOgqwsWoDD2c0
-         OVyPXeyn7aitiVzOpc7jZVcaDDNZ0e6Zj3911BV/2X1mGhK1iERQDsMxWhGKWNHb85Yl
-         2HEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755169223; x=1755774023;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=gmail.com; s=20230601; t=1755169226; x=1755774026; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=LZYBQ++xloO8OkMz0+ha0tp3u9TW+5yxhBPn7YbiqG4=;
-        b=XV+dtt4yUd4jRS1SHSY4BexfkoJivE0H0c82lTH5CGQ/Pykkx7noWj6ePnyZM9KBCm
-         y2js6z9wY58vLjxh2flzepkrcGxBDHqn2cFQcwj9Fk4ysvAy8mMTKdvCBdZX94Cacg82
-         bHVPoUy6zLQFPEVQRsAnEkqeC6MWFMB4HZPY/0oaKkdGJEpjfOoYg71TpZOjjSID5Nkq
-         cfjvhKFUPzkjQkgTOMJw1Ki2GWzxC5XP4NiQAU1T2I+ZYIaVWoxVUfewSm//cf9G29UQ
-         nTVFK/D83lKwCz3bK1mL0EouN4N7juF1OWYHZ487lgsJxUFhVVeAQLfxrmpHXGXq0YjR
-         vxmQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU4bK3YSE6Z4iP1md+DtqTUi/bDgawI1KPxjHfzoky9ot0tXdMJbLr8b+/IpikHwiVjkjkopDUWQ4tD@vger.kernel.org, AJvYcCUwpf/bzH78FisfllyL/gtmANNcUwD34Zfh2DDYEteId6gmZxgIpglzOSSCIAqAJAZAcjWTaQ2X4fwl@vger.kernel.org, AJvYcCWzYk/W3rBZlSMj9eQBliVNeYkt2UtUZgCktIDNEf4AMbHz/9Da9iv8pWpy5e8NRJYfSHo89/CTQMVdM6Sg@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy4eoIdUamywiDBq1Nek/uvOO9batMsTF5ecsQ9MIALvnT+V/B2
-	M4svgEXL12xxzsoF8i/I4dWvJjNIETF3ALoloEM09vTOhunSo0QXDgiD
-X-Gm-Gg: ASbGncvLsLFI6CPj22M2oXRrCFXvXIZXV92EfHFXKt2tRgSnoyL+3tHjAMzJf7T2W3k
-	58S1e9LcDv4Jpi6uh2v9ckSEJS4GNRZvvNBkNkQC71Gqaf7To+LFaVcULBLRemGPYxHXIYlgo/z
-	+AGE81SXme4NGW45mmMeqLNWAn4SsClPVcwXYXVoUSCLiOZ9xqnRXS4zy88rOCY17EkA/wgUSPD
-	rVWqGYDmUYszdJIk6cdgsT5oAB0YZe6trzqprnoaiEdENvabWQmUHnYzDoP3DCBS4HRlyfKiBX1
-	jAqpV4ZN1BdRGVN7BKV5Ew8mwMpcEiFb2FQOOTUS6/8ETQ3zQhcEM19PC9Wj2Emo8ElNW4RpwOo
-	S6OCAutDpVFkEPwrqOqC3lzihT4EN
-X-Google-Smtp-Source: AGHT+IFH+QOo/NEkimsMhFyuqVDKumuwl+ZBcNAhvEyEh/8JNY261/HUZg+DJlQOvRrIex+GY/wciQ==
-X-Received: by 2002:a17:907:781:b0:af9:8d61:b78e with SMTP id a640c23a62f3a-afcbd9334a5mr216578466b.30.1755169223036;
-        Thu, 14 Aug 2025 04:00:23 -0700 (PDT)
+        bh=WEhRKi0HmzptgOPz8lO5moCSp0j9P7xyPzVGCUEQhMI=;
+        b=JZvwjUbhqYRzgAKz/GSxl/rgKQLH4/NIMQLrAdP3yR0TFRU7C3I6xQ67TlBzXzZJgJ
+         6KuDiC0pHW8Jk/NyIH+oHSfG2/AEK0ppHp/TXf7YTgRA3MeDMux4UEFC3h0QHwpSs/yP
+         0ZYtKeIyzIFwlbNVWbeRGx2uuVFqu4jc4nG2Dr9Xow098xSzQ+5Vz1q3dT+ABO9M2Mt8
+         WwCLoqlWNaAPv7FsvPPIW/2DZ5Vj0akaXlF0hNnFqM1E4YgldqgUSbA+QQUUcq2JC6Ia
+         fOwSG+NOnXiYn5kvam9Hv/yKyPklD4G2bZBB1j7kIm1CHfiieZFyYqY5xBnSj/O/TGcv
+         SgUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1755169226; x=1755774026;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=WEhRKi0HmzptgOPz8lO5moCSp0j9P7xyPzVGCUEQhMI=;
+        b=RbJnMUE29wTVOdVwyC+Uld4VQi7nQxlWP8VgejwBeqm0AvvwCVH3/nA2Cz8A+wxlnn
+         R6txjnHVNlK82JDfCnxPQwYhI7P24XPbsygHY133gotJKmQJp+jDrdCm9Ly6Bx3yYS47
+         +XQFe5MAkrMoUf+vaVmq/LsGmMeWq6gEHLq1QS/Wryp+nGG8Joffv5jL13cePlnVn+cq
+         /WLflKrsB8rd8nHcwR9j5N6M2Xu12+xshJphlOMkH7Znpi3/S6qnP6wMZAZS7/iHLBbv
+         06D43qQaFO3bX2t75rqK0Keb81katggmty5fPMBUpAzMDxLGmVsxG6PFiAq2lR6WWEP2
+         Xnpg==
+X-Forwarded-Encrypted: i=1; AJvYcCVP5S/O+7A3+moS/E3+/zYJGG6Yv4h2yWTYh3B+OrF088fug+IQZOoVladdsc6/y3+jdE8JNH7l3cRF@vger.kernel.org, AJvYcCVaMwu/gAtc5nZXPdJbAA3mSCQFDxGaYl7flQa+JjhLqeqzhXd8y6R8rtg08r0+usY1uFKUHwWbamPQ@vger.kernel.org, AJvYcCXBE4MwDvv3SRFBH9SEsNMs8GI+s2QDomAWmFeJWqZpsJ/nhQsdi5S1Hig8OCutZw3cZ5e3Ydet3EaoDVJo@vger.kernel.org
+X-Gm-Message-State: AOJu0YxA1CjUgsI97YniW7Et376haT7b57tMFYCy40uSzPGb1rISQiLU
+	HfW7LlG2oTrZbzXlv2umcLlV/2msJ6s50MCmtq2TqaEwo8J5iuT8oxwS
+X-Gm-Gg: ASbGncsRQzJCgczMCNEC0P7SFpmaBtfEVrsNMQR6uGZGD+ZYza1/MfFuufH+xr52p0C
+	d0lmmbzZ5I+YAmACcUyH5lNNBby5uI38202z0FYMrjeBxooNKqcewwpRC/xUld/yg5u+AxZQmHT
+	yKYpgI8FSr3G1xupCkCxHWmv48fjDglaty7L7d4ae06NJHR4Pfy42y1wG4fRkkYEst5B5ItjzUY
+	VwyCn1vdgQJJPEjlyNhxDlT0P2WL2fz3mGtdsC575/XpSowbmXkRU9QuBpWrYlMlBnMeaSbLmW/
+	PKY70p1WaFcyC5KUIFvTL88WNr3wJTiWcCxEQhZ/Z5IP4qlTwwJxb7oFADWuAxpFxnBhCsy/5vT
+	VNmszrFRMWy3oenRxfjgDM0V6TLzv
+X-Google-Smtp-Source: AGHT+IGpy7AcomOG/iirooZ0YvCAWeXA8dWfouEtFX/dDgW1yuQGdQaKNHMtlTNXifnaHsiJk3/ATQ==
+X-Received: by 2002:a17:907:7241:b0:ade:8634:7b24 with SMTP id a640c23a62f3a-afcb9398044mr248048266b.1.1755169225500;
+        Thu, 14 Aug 2025 04:00:25 -0700 (PDT)
 Received: from [127.0.1.1] ([185.177.137.147])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-af91dfd4b31sm2542980066b.85.2025.08.14.04.00.22
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-af91dfd4b31sm2542980066b.85.2025.08.14.04.00.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Aug 2025 04:00:22 -0700 (PDT)
+        Thu, 14 Aug 2025 04:00:24 -0700 (PDT)
 From: Yusuf Alper Bilgin <y.alperbilgin@gmail.com>
-Subject: [PATCH v3 0/4] Add LTC2495 support
-Date: Thu, 14 Aug 2025 13:00:16 +0200
-Message-Id: <20250814-ltc2495-v3-0-c2a6cecd6b99@gmail.com>
+Date: Thu, 14 Aug 2025 13:00:18 +0200
+Subject: [PATCH v3 2/4] iio: adc: ltc2497: add support for LTC2495
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,11 +69,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAMDBnWgC/02MQQ6DIBQFr2JYlwY+Krar3qPpAvCjJCoNGNLGe
- PeiSVuX8/JmFhIxOIzkWiwkYHLR+SmDOBXE9GrqkLo2MwEGFWs4p8NsoLxUtJLQcGm4sK0g+f0
- MaN1rL90fmXsXZx/eezjxbf024NdInDIqtS1NbREN4K0blRvOxo9kayQ4euLvQfa0VhaYrbVi8
- uit6/oBGBvAw9YAAAA=
-X-Change-ID: 20250811-ltc2495-572817c13fd3
+Message-Id: <20250814-ltc2495-v3-2-c2a6cecd6b99@gmail.com>
+References: <20250814-ltc2495-v3-0-c2a6cecd6b99@gmail.com>
+In-Reply-To: <20250814-ltc2495-v3-0-c2a6cecd6b99@gmail.com>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
@@ -84,107 +83,61 @@ Cc: Michael Hennerich <michael.hennerich@analog.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Yusuf Alper Bilgin <y.alperbilgin@gmail.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1755169221; l=3931;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1755169221; l=1588;
  i=y.alperbilgin@gmail.com; s=20250811; h=from:subject:message-id;
- bh=Uy7vy8b0/Ve4PqRFiyW6SgaraGSuHiGGhfWaeYo9VOY=;
- b=CvHBPPMEo8jnWVMF1ozzyn2XjTsPKfLA7KZ0HfKOQMf74Gf2fZ4U6lqUTzC4ScnBRg/IUJDJN
- SeP+ft/nvH/Dj2Xt9+Po66bbxX4/TvQ8yNewXHThpI87rEHb1rxjCNP
+ bh=7dL620a4ki2oCdeq6jvorfDoA7+7B+wm9Jmm2GXEtLw=;
+ b=ZXQ9yA0JvgKaKvwfDWCsimXZts/WH/Z81TKnKQZoob3XZ2KalnOJXqQfR5utMxnb13AGxGR9s
+ UWAYTxdVyqcA2FWWKnKW3Q01dG3jE8Gm1ngDe8uiaUaQ7hLGbQiNtJ6
 X-Developer-Key: i=y.alperbilgin@gmail.com; a=ed25519;
  pk=FtW2oyQ0+xlYU0XmhYiJYC3lNPtPrgeE6i4WXPwaFnY=
 
-Hi All,
-
-This is the v3 of the patch series adding support for the LTC2495 ADC in
-the ltc2497 driver, and enabling the internal temperature channel for
-the LTC2495 and LTC2499.
-
-Thanks to Andy Shevchenko for his quick, helpful, and continued review
-of the previous version.
-
-In response to the request to check for code size changes, I have run
-`bloat-o-meter`. The results confirm no meaningful impact on code size.
-
-Full bloat-o-meter output:
-```
-./scripts/bloat-o-meter \
-    before_patch_4/ltc2497-core.o drivers/iio/adc/ltc2497-core.o
-add/remove: 0/0 grow/shrink: 1/1 up/down: 1/-1 (0)
-Function                      old     new   delta
-ltc2497core_read_raw          413     414      +1
-ltc2497core_probe             374     373      -1
-Total: Before=11576, After=11576, chg +0.00%
-
-./scripts/bloat-o-meter \
-    before_patch_4/ltc2497.o drivers/iio/adc/ltc2497.o
-add/remove: 0/0 grow/shrink: 2/0 up/down: 2/0 (2)
-Function                      old     new   delta
-ltc2497_result_and_measure    275     276      +1
-ltc2497_probe                 158     159      +1
-Total: Before=1946, After=1948, chg +0.10%
-
-./scripts/bloat-o-meter \
-    before_patch_4/ltc2496.o drivers/iio/adc/ltc2496.o
-add/remove: 0/0 grow/shrink: 0/0 up/down: 0/0 (0)
-Function                      old     new   delta
-Total: Before=1251, After=1251, chg +0.00%
-```
-
-Best Regards,
-
-Alper
+Update the LTC2497 driver to also support the LTC2495.
 
 Signed-off-by: Yusuf Alper Bilgin <y.alperbilgin@gmail.com>
 ---
-Changes in v3:
-  - Used the standard `kelvin_to_celsius()` helper instead of a custom
-    define.
-  - Corrected macro definition style.
-  - Renamed `LTC2497_CHANNELS` and `LTC_T_CHAN` for clarity.
-  - Combined all struct layout optimizations into a single patch.
-  - Link to v2: https://lore.kernel.org/r/20250813-ltc2495-v2-0-bbaf20f6ba07@gmail.com
+ drivers/iio/adc/ltc2497.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Changes in v2:
-  - Rewrote all commit messages to use the imperative mood.
-  - Added a justification for the new compatible string to the device
-    tree binding commit message.
-  - Removed all unrelated whitespace and formatting changes.
-  - Removed redundant explicit `false` initializers from structs.
-  - Replaced the magic number for Kelvin conversion with a define.
-  - Improved comments for defines and temperature scaling constants.
-  - Renamed confusing macros and struct fields to be more descriptive.
-  - Replaced dynamic channel allocation with a static array approach
-    using a shared macro to improve readability.
-  - Optimized data structure layouts based on pahole output to remove
-    memory holes.
-  - Link to v1: https://lore.kernel.org/r/20250812-ltc2495-v1-0-7bf4c6feec2e@gmail.com
----
-Implementation Notes
- - checkpatch warning: The new static array approach uses a shared macro
-   for the common channels (`LTC2497_CHANNELS`), which triggers a
-   checkpatch.pl warning: "Macros with complex values should be enclosed
-   in parentheses". However, this will cause a compilitaion error, as an
-   initializer list cannot be parenthesized.
- - uV to mV conversion: I could not find a standard macro, so a manual
-   division is used for now. This could be a point of future
-   improvement.
+diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
+index eb9d521e86e54def0493ea0e81f63b37900c56a5..8f4665547b5b0d32084599f8557c40102c37a4ce 100644
+--- a/drivers/iio/adc/ltc2497.c
++++ b/drivers/iio/adc/ltc2497.c
+@@ -19,6 +19,7 @@
+ #include "ltc2497.h"
+ 
+ enum ltc2497_chip_type {
++	TYPE_LTC2495,
+ 	TYPE_LTC2497,
+ 	TYPE_LTC2499,
+ };
+@@ -131,6 +132,10 @@ static void ltc2497_remove(struct i2c_client *client)
+ }
+ 
+ static const struct ltc2497_chip_info ltc2497_info[] = {
++	[TYPE_LTC2495] = {
++		.resolution = 16,
++		.name = "ltc2495",
++	},
+ 	[TYPE_LTC2497] = {
+ 		.resolution = 16,
+ 		.name = NULL,
+@@ -142,6 +147,7 @@ static const struct ltc2497_chip_info ltc2497_info[] = {
+ };
+ 
+ static const struct i2c_device_id ltc2497_id[] = {
++	{ "ltc2495", (kernel_ulong_t)&ltc2497_info[TYPE_LTC2495] },
+ 	{ "ltc2497", (kernel_ulong_t)&ltc2497_info[TYPE_LTC2497] },
+ 	{ "ltc2499", (kernel_ulong_t)&ltc2497_info[TYPE_LTC2499] },
+ 	{ }
+@@ -149,6 +155,7 @@ static const struct i2c_device_id ltc2497_id[] = {
+ MODULE_DEVICE_TABLE(i2c, ltc2497_id);
+ 
+ static const struct of_device_id ltc2497_of_match[] = {
++	{ .compatible = "lltc,ltc2495", .data = &ltc2497_info[TYPE_LTC2495] },
+ 	{ .compatible = "lltc,ltc2497", .data = &ltc2497_info[TYPE_LTC2497] },
+ 	{ .compatible = "lltc,ltc2499", .data = &ltc2497_info[TYPE_LTC2499] },
+ 	{ }
 
----
-Yusuf Alper Bilgin (4):
-      dt-bindings: iio: adc: ltc2497: add lltc,ltc2495 bindings
-      iio: adc: ltc2497: add support for LTC2495
-      iio: adc: ltc2497: add temperature sensor support
-      iio: adc: ltc2497: reorder struct members to fix memory holes
-
- .../devicetree/bindings/iio/adc/lltc,ltc2497.yaml  |   3 +
- drivers/iio/adc/ltc2497-core.c                     | 141 +++++++++++++++------
- drivers/iio/adc/ltc2497.c                          |  35 ++++-
- drivers/iio/adc/ltc2497.h                          |  23 +++-
- 4 files changed, 159 insertions(+), 43 deletions(-)
----
-base-commit: acbbb5a20971089064ca6b271dd251e629be8d4d
-change-id: 20250811-ltc2495-572817c13fd3
-
-Best regards,
 -- 
-Yusuf Alper Bilgin <y.alperbilgin@gmail.com>
+2.43.0
 
