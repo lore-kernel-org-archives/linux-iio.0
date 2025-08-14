@@ -1,201 +1,183 @@
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com [209.85.167.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67ACA2580D7;
-	Thu, 14 Aug 2025 08:35:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69F7F2E92C9;
+	Thu, 14 Aug 2025 08:57:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755160546; cv=none; b=kyJxr+vEneqVM0pvcxLft9fTvASTwOyao02TftHWJD7Mb3E2jv8yTNg6KK6OErYxr0jgmujC6ck4xCYat44EPrjzYzB+zZ8IOzrALGwDqVwxbGmcIE0g2sHXTiwGahNWZALPLPmymvqoAF+JL+Jm/XfsAxfKfcTgK42UTczwtR4=
+	t=1755161844; cv=none; b=TqgcMjpvW8utpPXSvbrmLaWKgV0S/tm7KuqCkLVDjj8MooLJXafBZVuxTU1TmRKqkrEfVNAVMV5mpGIRErSb8ZJfRoTv4Le3RXdPt7RDnrwzMhWeu2r4c8Wgz4NWsJb7IdHwihaQZZND4DdpIUfXAGI51UgZ5W+2CzWCOeIbL/8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755160546; c=relaxed/simple;
-	bh=WaOHZZiP2R3EwHbR/iA9SjuRqyg+X3URHBMmj281Ryg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lDMFd9CEabDVemU7LBgQEEi4LWdvKUWiUXxXEpg0qaTpJt5XOuaeTOioI6WnYhFP2StRvji3ut/vEnZ5Rpn9kLD3mH3xU1Cs3jJqEk+KXlOWP+/JY9OXEU8xYWlFSLoMmTlGbF5PxjITUHZwSvKzvU6emR22qCfQhi8JYgn0MGI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TH3QWULM; arc=none smtp.client-ip=209.85.167.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1755161844; c=relaxed/simple;
+	bh=Fl8H+oj0osT+K1fBWkJc81TgNpphdRz2K2nB4HUVi1M=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=uOS4GZ0N9A5R5sGHGf+Nk8fxYWKAesQ8ZVJh5rb4axlxmnW0ftgADLfcW/JGY9zzMjgkbTjoy6JeXEeCc/oejnotDUm5JjiDU0ScSl6PcozoMmVJ2Eqk/zqAyCQ/Rg5KSePLOtRIar6NLOaG3xo3K3EAJQK8pzAMk0Vv5h4FcJI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R0y60J9e; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TH3QWULM"
-Received: by mail-lf1-f46.google.com with SMTP id 2adb3069b0e04-55ce509127bso529666e87.0;
-        Thu, 14 Aug 2025 01:35:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1755160542; x=1755765342; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=Ht4+WuCclIjF62P/XUWWfv84cD1c1L3az5bzoDE1sSQ=;
-        b=TH3QWULMb9/YnJVO0uUes49sjhm9sAF6Zc0Qpk4t9U+xpANzzOF3vi9T6+BH5bsEUQ
-         e6b+Op9mhBFUoFiKhDXiDGQKdfbe5Kz1zk/2dCHBilHCUUwb0LK0pcunM4e4KOvHRj0+
-         Np2ScB0X8XhsV/jhnEmFCCvXScwNTj8I1qZfyOJlH+sQtcO2UDyHZTBEroyos0+avVl+
-         DylvWZXVpbKP19VBSK8p9ylV6hnS+8kyTRXqEgf0yVz0eoV5AqLy4odk8XGodEsmQ6rU
-         YjCe3sJYKJLw4mzRBvdO9s6eANWH1EA3q8mgMFcBQb5jtX+jDvpju+0ptf66Hztt3zUB
-         f0Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755160542; x=1755765342;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ht4+WuCclIjF62P/XUWWfv84cD1c1L3az5bzoDE1sSQ=;
-        b=UNkB1eJDlVUgKe95fz6yfjBztpSe+KOgKpJCdH0Ox4W/9iItFI2JaRXkt1rQ2Xqsws
-         TbBGR8hKTgqlDNfZ2sdEevB4PaRC1d0E+wutPw5zDq4NchnOT4KBcKY6XxZVTGf1T/9I
-         ExXZIQmnjGXsc9IjkFUvOYeATkifnALoo2/lryOKPvu/FaBTbDWoAflmaFS+X4lW+jKP
-         +31T4b2jaj8rM8ELLVTIlMuFeJdhnXLcJ6EPz+p3bfXK9Frmwm1wmXahP9eZ0WVX9ySS
-         GUXIFo9cXozmiFUP5s4yfTLI9yCGUdXsJIOgza2DE6cEdp3zYIvlcJXNROzPK26mOZHD
-         clqA==
-X-Forwarded-Encrypted: i=1; AJvYcCVj+5372a/Vn1FXU2DAb2ScpD3e59p3hON/9x8jhIY5UzFiShWsHQC2MfNlPClNjnzQBm2B8ZuDQWSz@vger.kernel.org, AJvYcCWM4dFGc+N51iNHRtgG+HTZz57NrKTUryRzt3kIOaPG9XD0P5dPFxArfr/zWaWmx6Aku3RHVujiFENWVq2q@vger.kernel.org, AJvYcCWvieeMaOo4UJXyC2ZEL3Sf2hASAKY4HlJpRjb+CYBzqrJRUUgIURx1UW6b3lOymVUdzrMieh9yCAL9@vger.kernel.org
-X-Gm-Message-State: AOJu0YydRGJDoiODtTD3a7ZbWwdsk+vx3eqcyJxLogTlMnIoE6T96qDk
-	Q1B/OkHFg4YbmGwCbfA/YS7Im2k6aS5YeABbUHslCjW2OdWQ+jKpKF/I9Wtmqw==
-X-Gm-Gg: ASbGncuU0mCubIjhmchG8hYQ0jGscKvdMhJtZrQr7BnoqQLWJnSE6E268RbigruvtJX
-	JdsChkALYtJyYbVKhTtQ09jt9CYbQ9FLLzKIyZQ4i5Qx7ppOM7nVFvLxjiBMODqS8BoevROxJQt
-	xW+GdD2F9QKMCJEpy2hIQsF6V4JU2EoybgWq/OpmlhsDLtAomukcZYW2AFypKKsZBw8uGVJdpqC
-	TgqxYaUYV23bGrlotsT56jp0jsDlxInjm7QpJzRaGRL9roFZayNZQGrAC1wD9TTE9axujWZYdjz
-	FglM/ECQIGZgZO2tao5xT3oWahiQZRRQCtnSPezlht6qowtP1jbfGXlxAfZ9WIj6bpvgqFr1hQH
-	qxFbxut75AtwwMahLXvFNF4yM
-X-Google-Smtp-Source: AGHT+IFx5zwb/Nodxv8hOdTbdKr/qi9nYS9WK66oxmazbUzRaJePPvUXSXJSUnrthUlk4i5mLboKhg==
-X-Received: by 2002:a05:6512:1302:b0:55b:885b:390d with SMTP id 2adb3069b0e04-55ce4fd6963mr852944e87.0.1755160542169;
-        Thu, 14 Aug 2025 01:35:42 -0700 (PDT)
-Received: from mva-rohm ([213.255.186.46])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-55b88c99057sm5572085e87.91.2025.08.14.01.35.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Aug 2025 01:35:41 -0700 (PDT)
-Date: Thu, 14 Aug 2025 11:35:37 +0300
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-To: Matti Vaittinen <mazziesaccount@gmail.com>,
-	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Matti Vaittinen <mazziesaccount@gmail.com>,
-	David Heidelberg <david@ixit.cz>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Sukrut Bellary <sbellary@baylibre.com>,
-	Lothar Rubusch <l.rubusch@gmail.com>
-Subject: [PATCH 3/3] iio: adc: adc128s052: Support ROHM BD7910[0,1,2,3]
-Message-ID: <e43c184fc6aa5c768045fc772b64d812fdb06254.1755159847.git.mazziesaccount@gmail.com>
-References: <cover.1755159847.git.mazziesaccount@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R0y60J9e"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 13BBCC4CEEF;
+	Thu, 14 Aug 2025 08:57:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1755161844;
+	bh=Fl8H+oj0osT+K1fBWkJc81TgNpphdRz2K2nB4HUVi1M=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=R0y60J9e2oQ4BmVWcQbL/xSBw6Tf6YOihank/5J9FWtGEHaFAXusFf7FYP7g4mvy7
+	 3cVipM03HtW7vPrbx2ye6I1RZGivw8Xu9KKmaekrWrpTwO2pKyXhaDH9JHInM6QW+v
+	 YpbpSOixgx+i+TmsUL8bm2eVCahynuUZqz/pifPeCsbklw1NmtVVwE6cIk9InTDyV8
+	 LIic7E2Gc4pfaCplHJsm1cgPMvmBfZUYLTAFDAJBf07xhiRCRc49is0WOGl62zIgEt
+	 jyRFn9adD94DVLhQZXgjqK5LXysLZyA5LoITfWm6492D2eSYTdA4aqVbwHrWv385Az
+	 0CUg9p30BSh0Q==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DFCCA0EE3;
+	Thu, 14 Aug 2025 08:57:24 +0000 (UTC)
+From: Remi Buisson via B4 Relay <devnull+remi.buisson.tdk.com@kernel.org>
+Date: Thu, 14 Aug 2025 08:57:15 +0000
+Subject: [PATCH v4 1/9] dt-bindings: iio: imu: Add inv_icm45600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="RBe/8Sbrp2Y9Vhm6"
-Content-Disposition: inline
-In-Reply-To: <cover.1755159847.git.mazziesaccount@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250814-add_newport_driver-v4-1-4464b6600972@tdk.com>
+References: <20250814-add_newport_driver-v4-0-4464b6600972@tdk.com>
+In-Reply-To: <20250814-add_newport_driver-v4-0-4464b6600972@tdk.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, Remi Buisson <remi.buisson@tdk.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1755161842; l=3305;
+ i=remi.buisson@tdk.com; s=20250411; h=from:subject:message-id;
+ bh=h1J88JN1g/YReQtGVeLTKGjC/sJtA2uL0J0HESlzSgg=;
+ b=6nWPnSPBbw684Ki9g6pqKMVkYvbwhHFMWvp79UPrt9o1Ilat7RVdPp8gHeNemRQ+7KC16eh1v
+ ROkp4vPJpugDsvDJiyDU66kAG8JTUXH66FtSXLEe9XGkJjGJjkeHW1V
+X-Developer-Key: i=remi.buisson@tdk.com; a=ed25519;
+ pk=yDVMi4C7RpXN4dififo42A7fDDt3THYzoZoNq9lUZuo=
+X-Endpoint-Received: by B4 Relay for remi.buisson@tdk.com/20250411 with
+ auth_id=372
+X-Original-From: Remi Buisson <remi.buisson@tdk.com>
+Reply-To: remi.buisson@tdk.com
 
+From: Remi Buisson <remi.buisson@tdk.com>
 
---RBe/8Sbrp2Y9Vhm6
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Document the ICM-45600 devices devicetree bindings.
 
-The ROHM BD79100, BD79101, BD79102, BD79103 are very similar ADCs as the
-ROHM BD79104. The BD79100 has only 1 channel. BD79101 has 2 channels and
-the BD79102 has 4 channels. Both BD79103 and BD79104 have 4 channels,
-and, based on the data sheets, they seem identical from the software
-point-of-view.
-
-Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
-
+Signed-off-by: Remi Buisson <remi.buisson@tdk.com>
 ---
-Tested only using the BD79104. The ROHM hardware colleagues swore this
-testing should be sufficient...
----
- drivers/iio/adc/ti-adc128s052.c | 36 +++++++++++++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
+ .../bindings/iio/imu/invensense,icm45600.yaml      | 97 ++++++++++++++++++++++
+ 1 file changed, 97 insertions(+)
 
-diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s05=
-2.c
-index 81153253529e..2f2ed438cf4e 100644
---- a/drivers/iio/adc/ti-adc128s052.c
-+++ b/drivers/iio/adc/ti-adc128s052.c
-@@ -122,6 +122,10 @@ static const struct iio_chan_spec adc124s021_channels[=
-] =3D {
- 	ADC128_VOLTAGE_CHANNEL(3),
- };
-=20
-+static const struct iio_chan_spec bd79100_channels[] =3D {
-+	ADC128_VOLTAGE_CHANNEL(0),
-+};
+diff --git a/Documentation/devicetree/bindings/iio/imu/invensense,icm45600.yaml b/Documentation/devicetree/bindings/iio/imu/invensense,icm45600.yaml
+new file mode 100644
+index 0000000000000000000000000000000000000000..f43258124c32ebf850fc29b2e97643885e6f8480
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/imu/invensense,icm45600.yaml
+@@ -0,0 +1,97 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/imu/invensense,icm45600.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- static const char * const bd79104_regulators[] =3D { "iovdd" };
-=20
- static const struct adc128_configuration adc122s_config =3D {
-@@ -142,6 +146,30 @@ static const struct adc128_configuration adc128s_confi=
-g =3D {
- 	.refname =3D "vref",
- };
-=20
-+static const struct adc128_configuration bd79100_config =3D {
-+	.channels =3D bd79100_channels,
-+	.num_channels =3D ARRAY_SIZE(bd79100_channels),
-+	.refname =3D "vdd",
-+	.other_regulators =3D &bd79104_regulators,
-+	.num_other_regulators =3D 1,
-+};
++title: InvenSense ICM-45600 Inertial Measurement Unit
 +
-+static const struct adc128_configuration bd79101_config =3D {
-+	.channels =3D adc122s021_channels,
-+	.num_channels =3D ARRAY_SIZE(adc122s021_channels),
-+	.refname =3D "vdd",
-+	.other_regulators =3D &bd79104_regulators,
-+	.num_other_regulators =3D 1,
-+};
++maintainers:
++  - Remi Buisson <remi.buisson@tdk.com>
 +
-+static const struct adc128_configuration bd79102_config =3D {
-+	.channels =3D adc124s021_channels,
-+	.num_channels =3D ARRAY_SIZE(adc124s021_channels),
-+	.refname =3D "vdd",
-+	.other_regulators =3D &bd79104_regulators,
-+	.num_other_regulators =3D 1,
-+};
++description: |
++  6-axis MotionTracking device that combines a 3-axis gyroscope and a 3-axis
++  accelerometer.
 +
- static const struct adc128_configuration bd79104_config =3D {
- 	.channels =3D adc128s052_channels,
- 	.num_channels =3D ARRAY_SIZE(adc128s052_channels),
-@@ -210,6 +238,10 @@ static const struct of_device_id adc128_of_match[] =3D=
- {
- 	{ .compatible =3D "ti,adc124s021", .data =3D &adc124s_config },
- 	{ .compatible =3D "ti,adc124s051", .data =3D &adc124s_config },
- 	{ .compatible =3D "ti,adc124s101", .data =3D &adc124s_config },
-+	{ .compatible =3D "rohm,bd79100", .data =3D &bd79100_config },
-+	{ .compatible =3D "rohm,bd79101", .data =3D &bd79101_config },
-+	{ .compatible =3D "rohm,bd79102", .data =3D &bd79102_config },
-+	{ .compatible =3D "rohm,bd79103", .data =3D &bd79104_config },
- 	{ .compatible =3D "rohm,bd79104", .data =3D &bd79104_config },
- 	{ }
- };
-@@ -223,6 +255,10 @@ static const struct spi_device_id adc128_id[] =3D {
- 	{ "adc124s021", (kernel_ulong_t)&adc124s_config },
- 	{ "adc124s051", (kernel_ulong_t)&adc124s_config },
- 	{ "adc124s101", (kernel_ulong_t)&adc124s_config },
-+	{ "bd79100", (kernel_ulong_t)&bd79100_config },
-+	{ "bd79101", (kernel_ulong_t)&bd79101_config },
-+	{ "bd79102", (kernel_ulong_t)&bd79102_config },
-+	{ "bd79103", (kernel_ulong_t)&bd79104_config },
- 	{ "bd79104", (kernel_ulong_t)&bd79104_config },
- 	{ }
- };
---=20
-2.50.1
++  It has a configurable host interface that supports I3C, I2C and SPI serial
++  communication, features up to 8kB FIFO and 2 programmable interrupts with
++  ultra-low-power wake-on-motion support to minimize system power consumption.
++
++  Other industry-leading features include InvenSense on-chip APEX Motion
++  Processing engine for gesture recognition, activity classification, and
++  pedometer, along with programmable digital filters, and an embedded
++  temperature sensor.
++
++  https://invensense.tdk.com/wp-content/uploads/documentation/DS-000576_ICM-45605.pdf
++
++properties:
++  compatible:
++    enum:
++      - invensense,icm45605
++      - invensense,icm45606
++      - invensense,icm45608
++      - invensense,icm45634
++      - invensense,icm45686
++      - invensense,icm45687
++      - invensense,icm45688p
++      - invensense,icm45689
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++
++  interrupt-names:
++    minItems: 1
++    maxItems: 2
++    items:
++      enum:
++        - INT1
++        - INT2
++    description: Choose chip interrupt pin to be used as interrupt input.
++
++  drive-open-drain:
++    type: boolean
++
++  vdd-supply:
++    description: Regulator that provides power to the sensor
++
++  vddio-supply:
++    description: Regulator that provides power to the bus
++
++  mount-matrix:
++    description: an optional 3x3 mounting rotation matrix
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-names
++  - vdd-supply
++  - vddio-supply
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        imu@68 {
++            compatible = "invensense,icm45605";
++            reg = <0x68>;
++            interrupt-parent = <&gpio2>;
++            interrupt-names = "INT1";
++            interrupts = <7 IRQ_TYPE_EDGE_RISING>;
++            vdd-supply = <&vdd>;
++            vddio-supply = <&vddio>;
++            mount-matrix = "0", "-1", "0",
++                           "1", "0", "0",
++                           "0", "0", "1";
++        };
++    };
+
+-- 
+2.34.1
 
 
---RBe/8Sbrp2Y9Vhm6
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmidn9kACgkQeFA3/03a
-ocUznwgAvCP4xHU3F2/KzfDwqTy7VJckfUH9qjtfncnPla8SWorSvSeEIBCiCQB/
-z/L1l11/heB2OlnaheXWfhRQv06+vaq14/fDePG4qvgf4MgiLrkwVEtg6z5EYd+a
-rCfQw7dr3cfuyknLS/Um5GKtEq1vvMXF04Xh16JhVVANGQZEeKNNl/ck7z/Edtls
-aFoQWyLxYjAB8OrICcvjJDqMiY1B2twKROzoUJH37toOd8EfgJDUQyoCdU5dWeos
-UJ+rAc4Jy8URpb5FUi/TMmtHvIVVDunj+hfJOuaP+3hDC9Iw4uKTlU+Q3+9sFJq8
-Zr95OOhqnCqzvs1HQJXb6prGjIldCA==
-=pioM
------END PGP SIGNATURE-----
-
---RBe/8Sbrp2Y9Vhm6--
