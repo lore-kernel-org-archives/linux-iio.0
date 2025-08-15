@@ -1,17 +1,17 @@
-Received: from out-188.mta0.migadu.com (out-188.mta0.migadu.com [91.218.175.188])
+Received: from out-184.mta0.migadu.com (out-184.mta0.migadu.com [91.218.175.184])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3C70321431
-	for <linux-iio@vger.kernel.org>; Fri, 15 Aug 2025 16:47:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.188
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8463A2E5D17
+	for <linux-iio@vger.kernel.org>; Fri, 15 Aug 2025 16:47:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.184
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755276452; cv=none; b=JYixJlpnSzGcGxAinpNG2L6CyKZRjjvcdqnp7jqTiuVNhF5F029pxOVEkzIzn44SO9sETfCY8sU465+5RH1Y0gFRf/z9Pr3PuqV/jnrRdA3dIuOi+bnea4tssFM89ToOM90jvmJMP1EehYZKrt3JULU/nEu/1jVZ31r/Fj7Yoxk=
+	t=1755276460; cv=none; b=i8J4iihXHCQIKvvjUWODhXs/YOwM6VFALcAWBXw/mV9vpv4UGEgytJycHfkC14YXr8w5AfNfqu238YmEaWqeCEqq3AjX3CHDLC9DquICrKGlQGOmVBGzR4UXOMjZRujPsk35wouxwSlwZhi19iVIiQuVVz5okJuBdLDgf3tzUM4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755276452; c=relaxed/simple;
-	bh=GnLf98a0XvBXfLq1B2oc1iFXcdrbZqoXmlyUC+Wy7h4=;
+	s=arc-20240116; t=1755276460; c=relaxed/simple;
+	bh=tLdq16+tT/SCDYe9EnIPIJ3s3zMQDVrtHieEdsXPFkY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=F6mDGTo4CIW4iHi696jI0NvemlXluHvQRMVzTyJL5Tkk8RaZ19h31/0kX3psM0jJC+nMmF5MkqICPA1Dm9rinc/gRrmIRDtre8rNFCpu1WKB6jc3KqFvw2Aa1wuwAeC7+/yKFS1XQH1lYGu2A3rrpH3LLoTFh7qWZ+McH6WNYzs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=watter.com; spf=pass smtp.mailfrom=linux.dev; arc=none smtp.client-ip=91.218.175.188
+	 MIME-Version; b=Zwd3ZSpBkQgoiU9q7qwokAr/T7daO/8Cej5Bi70p9uCDPxwF3AbJQMvrWMVojwWzuAPzzCJB2yoZBJx13cjp28gmP/ejVK4dE8mdlNPyGgWrnri40YjSzeHqxuG/A3Ael3FcgKXNSeVrN7yy8JEPrW5d25ktkoNOc6kPBNNhLVY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=watter.com; spf=pass smtp.mailfrom=linux.dev; arc=none smtp.client-ip=91.218.175.184
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=none dis=none) header.from=watter.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
@@ -23,9 +23,9 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: Ben Collins <bcollins@watter.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 3/5] iio: mcp9600: Recognize chip id for mcp9601
-Date: Fri, 15 Aug 2025 16:46:05 +0000
-Message-ID: <20250815164627.22002-4-bcollins@watter.com>
+Subject: [PATCH 5/5] iio: mcp9600: Add support for IIR filter
+Date: Fri, 15 Aug 2025 16:46:07 +0000
+Message-ID: <20250815164627.22002-6-bcollins@watter.com>
 In-Reply-To: <20250815164627.22002-1-bcollins@watter.com>
 References: <20250815164627.22002-1-bcollins@watter.com>
 Precedence: bulk
@@ -37,141 +37,155 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Migadu-Flow: FLOW_OUT
 
-The current driver works with mcp9601, but emits a warning because it
-does not recognize the chip id.
-
-MCP9601 is a superset of MCP9600. The drivers works without changes
-on this chipset.
-
-However, the 9601 chip supports open/closed-circuit detection if wired
-properly, so we'll need to be able to differentiate between them.
+MCP9600 supports an IIR filter with 7 levels. Add IIR attribute
+to allow get/set of this value.
 
 Signed-off-by: Ben Collins <bcollins@watter.com>
 ---
- drivers/iio/temperature/Kconfig   |  8 +++--
- drivers/iio/temperature/mcp9600.c | 51 +++++++++++++++++++++++++------
- 2 files changed, 46 insertions(+), 13 deletions(-)
+ drivers/iio/temperature/mcp9600.c | 73 +++++++++++++++++++++++++++++++
+ 1 file changed, 73 insertions(+)
 
-diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-index 1244d8e17d504..e14ea6ebc7a24 100644
---- a/drivers/iio/temperature/Kconfig
-+++ b/drivers/iio/temperature/Kconfig
-@@ -173,11 +173,13 @@ config MAX31865
- 	  will be called max31865.
- 
- config MCP9600
--	tristate "MCP9600 thermocouple EMF converter"
-+	tristate "MCP9600 and similar thermocouple EMF converters"
- 	depends on I2C
- 	help
--	  If you say yes here you get support for MCP9600
--	  thermocouple EMF converter connected via I2C.
-+	  If you say yes here you get support for:
-+	  - MCP9600
-+	  - MCP9601
-+	  and similar thermocouple EMF converters connected via I2C.
- 
- 	  This driver can also be built as a module. If so, the module
- 	  will be called mcp9600.
 diff --git a/drivers/iio/temperature/mcp9600.c b/drivers/iio/temperature/mcp9600.c
-index 40906bb200ec9..c18ae17b6d82f 100644
+index 361572a241f06..896520ddf6d3c 100644
 --- a/drivers/iio/temperature/mcp9600.c
 +++ b/drivers/iio/temperature/mcp9600.c
-@@ -42,6 +42,7 @@
- 
- /* MCP9600 device id value */
- #define MCP9600_DEVICE_ID_MCP9600	0x40
-+#define MCP9600_DEVICE_ID_MCP9601	0x41
- 
- #define MCP9600_ALERT_COUNT		4
- 
-@@ -123,6 +124,11 @@ static const struct iio_chan_spec mcp9600_channels[][2] = {
- 	MCP9600_CHANNELS(2, 0, 2, 0), /* Alerts: 1 2 3 4 */
+@@ -31,6 +31,7 @@
+ #define MCP9600_STATUS_ALERT(x)		BIT(x)
+ #define MCP9600_SENSOR_CFG		0x05
+ #define MCP9600_SENSOR_TYPE_MASK	GENMASK(6, 4)
++#define MCP9600_FILTER_MASK		GENMASK(2, 0)
+ #define MCP9600_ALERT_CFG1		0x08
+ #define MCP9600_ALERT_CFG(x)		(MCP9600_ALERT_CFG1 + (x - 1))
+ #define MCP9600_ALERT_CFG_ENABLE	BIT(0)
+@@ -94,6 +95,10 @@ static const int mcp9600_tc_types[] = {
+ 	[THERMOCOUPLE_TYPE_R] = 'R',
  };
  
-+struct mcp_chip_info {
-+	u8 chip_id;
-+	const char *chip_name;
++static const int mcp_iir_coefficients_avail[] = {
++	1, 2, 4, 8, 16, 32, 64, 128,
 +};
 +
+ static const struct iio_event_spec mcp9600_events[] = {
+ 	{
+ 		.type = IIO_EV_TYPE_THRESH,
+@@ -118,7 +123,10 @@ static const struct iio_event_spec mcp9600_events[] = {
+ 			.address = MCP9600_HOT_JUNCTION,		       \
+ 			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	       \
+ 					      BIT(IIO_CHAN_INFO_THERMOCOUPLE_TYPE) | \
++					      BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |  \
+ 					      BIT(IIO_CHAN_INFO_SCALE),	       \
++			.info_mask_separate_available =                        \
++					      BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
+ 			.event_spec = &mcp9600_events[hj_ev_spec_off],	       \
+ 			.num_event_specs = hj_num_ev,			       \
+ 		},							       \
+@@ -161,6 +169,7 @@ struct mcp_chip_info {
  struct mcp9600_data {
  	struct i2c_client *client;
+ 	u32 thermocouple_type;
++	u8 filter_level; /* Chip default is 0 */
  };
-@@ -416,16 +422,29 @@ static int mcp9600_probe_alerts(struct iio_dev *indio_dev)
  
- static int mcp9600_probe(struct i2c_client *client)
- {
-+	const struct mcp_chip_info *chip_info = i2c_get_match_data(client);
- 	struct iio_dev *indio_dev;
- 	struct mcp9600_data *data;
--	int ret, ch_sel;
-+	int ch_sel, dev_id, ret;
+ static int mcp9600_read(struct mcp9600_data *data,
+@@ -191,13 +200,36 @@ static int mcp9600_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			return ret;
+ 		return IIO_VAL_INT;
 +
-+	dev_id = i2c_smbus_read_byte_data(client, MCP9600_DEVICE_ID);
-+	if (dev_id < 0)
-+		return dev_err_probe(&client->dev, dev_id,
-+				     "Failed to read device ID\n");
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = 62;
+ 		*val2 = 500000;
+ 		return IIO_VAL_INT_PLUS_MICRO;
 +
-+	switch (dev_id) {
-+	case MCP9600_DEVICE_ID_MCP9600:
-+	case MCP9600_DEVICE_ID_MCP9601:
-+		if (dev_id != chip_info->chip_id)
-+			dev_warn(&client->dev,
-+				"Expected id %02x, but device responded with %02\n",
-+				 chip_info->chip_id, dev_id);
-+		break;
- 
--	ret = i2c_smbus_read_byte_data(client, MCP9600_DEVICE_ID);
--	if (ret < 0)
--		return dev_err_probe(&client->dev, ret, "Failed to read device ID\n");
--	if (ret != MCP9600_DEVICE_ID_MCP9600)
--		dev_warn(&client->dev, "Expected ID %x, got %x\n",
--				MCP9600_DEVICE_ID_MCP9600, ret);
+ 	case IIO_CHAN_INFO_THERMOCOUPLE_TYPE:
+ 		*val = mcp9600_tc_types[data->thermocouple_type];
+ 		return IIO_VAL_CHAR;
++
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++		*val = mcp_iir_coefficients_avail[data->filter_level];
++		return IIO_VAL_INT;
++
 +	default:
-+		dev_warn(&client->dev, "Unknown id %x, using %x\n", dev_id,
-+			 chip_info->chip_id);
++		return -EINVAL;
 +	}
++}
++
++static int mcp9600_read_avail(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      const int **vals, int *type, int *length,
++			      long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++		*vals = mcp_iir_coefficients_avail;
++		*type = IIO_VAL_INT;
++		*length = ARRAY_SIZE(mcp_iir_coefficients_avail);
++		return IIO_AVAIL_LIST;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -211,6 +243,7 @@ static int mcp9600_config(struct mcp9600_data *data)
  
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -439,7 +458,7 @@ static int mcp9600_probe(struct i2c_client *client)
- 		return ch_sel;
+ 	cfg  = FIELD_PREP(MCP9600_SENSOR_TYPE_MASK,
+ 			  mcp9600_type_map[data->thermocouple_type]);
++	FIELD_MODIFY(MCP9600_FILTER_MASK, &cfg, data->filter_level);
  
- 	indio_dev->info = &mcp9600_info;
--	indio_dev->name = "mcp9600";
-+	indio_dev->name = chip_info->chip_name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = mcp9600_channels[ch_sel];
- 	indio_dev->num_channels = ARRAY_SIZE(mcp9600_channels[ch_sel]);
-@@ -447,14 +466,26 @@ static int mcp9600_probe(struct i2c_client *client)
- 	return devm_iio_device_register(&client->dev, indio_dev);
+ 	ret = i2c_smbus_write_byte_data(client, MCP9600_SENSOR_CFG, cfg);
+ 	if (ret < 0) {
+@@ -221,6 +254,43 @@ static int mcp9600_config(struct mcp9600_data *data)
+ 	return 0;
  }
  
-+static const struct mcp_chip_info mcp9600_chip_info = {
-+	.chip_id   = MCP9600_DEVICE_ID_MCP9600,
-+	.chip_name = "mcp9600",
-+};
++static int mcp9600_write_raw_get_fmt(struct iio_dev *indio_dev,
++				     struct iio_chan_spec const *chan,
++				     long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
 +
-+static const struct mcp_chip_info mcp9601_chip_info = {
-+	.chip_id   = MCP9600_DEVICE_ID_MCP9601,
-+	.chip_name = "mcp9601",
-+};
++static int mcp9600_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct mcp9600_data *data = iio_priv(indio_dev);
++	int i;
 +
- static const struct i2c_device_id mcp9600_id[] = {
--	{ "mcp9600" },
-+	{ "mcp9600", .driver_data = (kernel_ulong_t)&mcp9600_chip_info },
-+	{ "mcp9601", .driver_data = (kernel_ulong_t)&mcp9601_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, mcp9600_id);
++	switch (mask) {
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++		for (i = 0; i < ARRAY_SIZE(mcp_iir_coefficients_avail); i++) {
++			if (mcp_iir_coefficients_avail[i] == val)
++				break;
++		}
++
++		if (i == ARRAY_SIZE(mcp_iir_coefficients_avail))
++			return -EINVAL;
++
++		data->filter_level = i;
++		return mcp9600_config(data);
++
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int mcp9600_get_alert_index(int channel2, enum iio_event_direction dir)
+ {
+ 	if (channel2 == IIO_MOD_TEMP_AMBIENT) {
+@@ -358,6 +428,9 @@ static int mcp9600_write_thresh(struct iio_dev *indio_dev,
  
- static const struct of_device_id mcp9600_of_match[] = {
--	{ .compatible = "microchip,mcp9600" },
-+	{ .compatible = "microchip,mcp9600", .data = &mcp9600_chip_info },
-+	{ .compatible = "microchip,mcp9601", .data = &mcp9601_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, mcp9600_of_match);
+ static const struct iio_info mcp9600_info = {
+ 	.read_raw = mcp9600_read_raw,
++	.read_avail = mcp9600_read_avail,
++	.write_raw = mcp9600_write_raw,
++	.write_raw_get_fmt = mcp9600_write_raw_get_fmt,
+ 	.read_event_config = mcp9600_read_event_config,
+ 	.write_event_config = mcp9600_write_event_config,
+ 	.read_event_value = mcp9600_read_thresh,
 -- 
 2.50.1
 
