@@ -1,35 +1,33 @@
-Received: from out-174.mta1.migadu.com (out-174.mta1.migadu.com [95.215.58.174])
+Received: from out-178.mta1.migadu.com (out-178.mta1.migadu.com [95.215.58.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24675273D8B
-	for <linux-iio@vger.kernel.org>; Mon, 18 Aug 2025 18:32:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4AC0224AF9
+	for <linux-iio@vger.kernel.org>; Mon, 18 Aug 2025 18:32:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755541959; cv=none; b=hpRHoGqkqAHk36jLcyQCUFe4+u6eMb+H3b8MEFYW9UAHTHP4PvwL0uAPej+HXfqyhcWLMT7fcQXhy9xrfO6nVaMmKGAqvK1+ngp0DZYtD+ZNa+DKa/d1VXupVHvAS8euqRZwvaGEC2lQPbRij+U0YNqFL1Ubk2y5um1F0VPokc8=
+	t=1755541960; cv=none; b=H1jID1Uuy0QS8WkYIE7b1LLMRNKWXXBJtwyTSdIJQ4YMFU+HeBRBkjZsrTtEzGs6Ck0YEtIo2ca/hbr1V31u87o8XeC+3EyIe8Fjh0Gh7NjeUcMcD5+MNojqGPhN9eaJTglZFDBT7rpoxYofHrKHDorWvQIPlJhP8ZbNsF08sLU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755541959; c=relaxed/simple;
-	bh=WGnehDgNegV77GT+UcGpwcKqV0rviFBYs8IzWylswcI=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=lwCjhJVDph3gng3wRiyPNc1d28lHHo80+b69QhSfbX/UH+Nfy2yA1l4KhJR7PH/SJXU1OFje94LvLlJma9kgqA6UDN4LvfxQsKCIKjFQkILuOop9DMbQNIMspJONBcw/T/1KPP+BRWh2us3WofGkGtXu9JY4FclTY3ONgNgAHy4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=linux.dev; arc=none smtp.client-ip=95.215.58.174
+	s=arc-20240116; t=1755541960; c=relaxed/simple;
+	bh=RL8XtDY8Tzi1/X7SpFPKSJptRATbpWDXcOQSvV+ecFs=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=hculC64bkExYy/Tji1nafCK9HP5N087p2B1H2xQXYoNXUVzX6+m8DdGm0fMtJPVgKgP1Wlv/0n78/FObJCiS6aacNxRhkyiF+k+84Ub8aFvKHwJPideBwmOXFuCuQUv4IoidL1KKt8cZC67xHhoYMdcnxrGqA8Ad69SEKs8XCUo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=linux.dev; arc=none smtp.client-ip=95.215.58.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 From: Ben Collins <bcollins@kernel.org>
-To: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Ben Collins <bcollins@watter.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Andrew Hepp <andrew.hepp@ahepp.dev>
-Subject: [PATCH v5 0/5] iio: mcp9600: Features and improvements
-Date: Mon, 18 Aug 2025 14:32:08 -0400
-Message-Id: <20250818183214.380847-1-bcollins@kernel.org>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: Ben Collins <bcollins@watter.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 5/6] iio: mcp9600: Add support for thermocouple-type
+Date: Mon, 18 Aug 2025 14:32:13 -0400
+Message-Id: <20250818183214.380847-6-bcollins@kernel.org>
+In-Reply-To: <20250818183214.380847-1-bcollins@kernel.org>
+References: <20250818183214.380847-1-bcollins@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,71 +39,143 @@ X-Migadu-Flow: FLOW_OUT
 
 From: Ben Collins <bcollins@watter.com>
 
-ChangeLog:
-v5 -> v6:
-  - Fix accidental typo added in dt-bindings: IRQ_TYPE_EDGE_RISIN
-  - Correct some constraints in dt-bindings
-  - Reverse if/then for mcp9601 vs mcp9600 constraints in dt-bindings
-  - Updates to changelog for patch 2/6 (dt-bindings mcp9600)
-  - Cleanup tabs that were converted to spaces
-  - Split thermocouple-type default to separate patch
+dt-bindings documentation for this driver claims to support
+thermocouple-type, but the driver does not actually make use of
+the property.
 
-v4 -> v5:
-  - Missed a one line fix to IIR patch (5/5)
+Implement usage of the property to configure the chip for the
+selected thermocouple-type.
 
-v3 -> v4:
-  - Based on feedback from David Lechner <dlechner@baylibre.com>
-    * Allow fallback compatible in dt-bindings for mcp9601.
-  - Based on feedback from Jonathan Cameron <jic23@kernel.org>
-    * Be explicit in patch description for fixed width changes.
-    * Check chip_info for NULL to quiet warnings from kernel-test-robot
-    * Remove "and similar" for long description of MCP9600.
-  - Based on lots of feedback, use frequency values for IIR, and use
-    filter_type[none, ema] to enable or disable.
-  - Set default 3 for thermocouple in dt-binding
-  - Rework open/short circuit in dt-bindings
+Signed-off-by: Ben Collins <bcollins@watter.com>
+---
+ drivers/iio/temperature/mcp9600.c | 69 +++++++++++++++++++++++++++++++
+ 1 file changed, 69 insertions(+)
 
-v2 -> v3:
-  - Improve changelogs in each patch
-  - Based on feedback from Andy Shevchenko <andy.shevchenko@gmail.com>
-    * Set register offsets to fixed width
-    * Fix typos
-    * Future-proof Kconfig changes
-    * Convert to using chip_info paradigm
-    * Verbiage: dt -> firmware description
-    * Use proper specifiers and drop castings
-    * Fix register offset to be fixed-width
-    * u8 for cfg var
-    * Fix % type for u32 to be %u
-    * Make blank lines consistent between case statements
-    * FIELD_PREP -> FIELD_MODIFY
-    * Remove explicit setting of 0 value in filter_level
-  - Based on feedback from David Lechner <dlechner@baylibre.com>
-    * Rework IIR values exposed to sysfs. Using the ratios, there was no
-      way to represent "disabled" (i.e. infinity). Based on the bmp280
-      driver I went with using the power coefficients (e.g. 1, 2, 4, 8,
-      ...) where 1 is disabled (n=0).
-
-v1 -> v2:
-  - Break into individual patches
-
-v1:
-  - Initial patch to enable IIR and thermocouple-type
-  - Recognize mcp9601
-
-Ben Collins (6):
-  dt-bindings: iio: mcp9600: Set default 3 for thermocouple-type
-  dt-bindings: iio: mcp9600: Add microchip,mcp9601 and add constraints
-  iio: mcp9600: White space and fixed width cleanup
-  iio: mcp9600: Recognize chip id for mcp9601
-  iio: mcp9600: Add support for thermocouple-type
-  iio: mcp9600: Add support for IIR filter
-
- .../iio/temperature/microchip,mcp9600.yaml    |  61 +++-
- drivers/iio/temperature/Kconfig               |   8 +-
- drivers/iio/temperature/mcp9600.c             | 295 +++++++++++++++++-
- 3 files changed, 341 insertions(+), 23 deletions(-)
-
+diff --git a/drivers/iio/temperature/mcp9600.c b/drivers/iio/temperature/mcp9600.c
+index a5fad80250d3..9b017820efc1 100644
+--- a/drivers/iio/temperature/mcp9600.c
++++ b/drivers/iio/temperature/mcp9600.c
+@@ -22,11 +22,15 @@
+ #include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+ 
++#include <dt-bindings/iio/temperature/thermocouple.h>
++
+ /* MCP9600 registers */
+ #define MCP9600_HOT_JUNCTION		0x00
+ #define MCP9600_COLD_JUNCTION		0x02
+ #define MCP9600_STATUS			0x04
+ #define MCP9600_STATUS_ALERT(x)		BIT(x)
++#define MCP9600_SENSOR_CFG		0x05
++#define MCP9600_SENSOR_TYPE_MASK	GENMASK(6, 4)
+ #define MCP9600_ALERT_CFG1		0x08
+ #define MCP9600_ALERT_CFG(x)		(MCP9600_ALERT_CFG1 + (x - 1))
+ #define MCP9600_ALERT_CFG_ENABLE	BIT(0)
+@@ -66,6 +70,30 @@ static const char * const mcp9600_alert_name[MCP9600_ALERT_COUNT] = {
+ 	[MCP9600_ALERT4] = "alert4",
+ };
+ 
++/* Map between dt-bindings enum and the chip's type value */
++static const unsigned int mcp9600_type_map[] = {
++	[THERMOCOUPLE_TYPE_K] = 0,
++	[THERMOCOUPLE_TYPE_J] = 1,
++	[THERMOCOUPLE_TYPE_T] = 2,
++	[THERMOCOUPLE_TYPE_N] = 3,
++	[THERMOCOUPLE_TYPE_S] = 4,
++	[THERMOCOUPLE_TYPE_E] = 5,
++	[THERMOCOUPLE_TYPE_B] = 6,
++	[THERMOCOUPLE_TYPE_R] = 7,
++};
++
++/* Map thermocouple type to a char for iio info in sysfs */
++static const int mcp9600_tc_types[] = {
++	[THERMOCOUPLE_TYPE_K] = 'K',
++	[THERMOCOUPLE_TYPE_J] = 'J',
++	[THERMOCOUPLE_TYPE_T] = 'T',
++	[THERMOCOUPLE_TYPE_N] = 'N',
++	[THERMOCOUPLE_TYPE_S] = 'S',
++	[THERMOCOUPLE_TYPE_E] = 'E',
++	[THERMOCOUPLE_TYPE_B] = 'B',
++	[THERMOCOUPLE_TYPE_R] = 'R',
++};
++
+ static const struct iio_event_spec mcp9600_events[] = {
+ 	{
+ 		.type = IIO_EV_TYPE_THRESH,
+@@ -89,6 +117,7 @@ static const struct iio_event_spec mcp9600_events[] = {
+ 			.type = IIO_TEMP,				       \
+ 			.address = MCP9600_HOT_JUNCTION,		       \
+ 			.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	       \
++					      BIT(IIO_CHAN_INFO_THERMOCOUPLE_TYPE) | \
+ 					      BIT(IIO_CHAN_INFO_SCALE),	       \
+ 			.event_spec = &mcp9600_events[hj_ev_spec_off],	       \
+ 			.num_event_specs = hj_num_ev,			       \
+@@ -131,6 +160,7 @@ struct mcp_chip_info {
+ 
+ struct mcp9600_data {
+ 	struct i2c_client *client;
++	u32 thermocouple_type;
+ };
+ 
+ static int mcp9600_read(struct mcp9600_data *data,
+@@ -165,11 +195,32 @@ static int mcp9600_read_raw(struct iio_dev *indio_dev,
+ 		*val = 62;
+ 		*val2 = 500000;
+ 		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_THERMOCOUPLE_TYPE:
++		*val = mcp9600_tc_types[data->thermocouple_type];
++		return IIO_VAL_CHAR;
+ 	default:
+ 		return -EINVAL;
+ 	}
+ }
+ 
++static int mcp9600_config(struct mcp9600_data *data)
++{
++	struct i2c_client *client = data->client;
++	int ret;
++	u8 cfg;
++
++	cfg  = FIELD_PREP(MCP9600_SENSOR_TYPE_MASK,
++			  mcp9600_type_map[data->thermocouple_type]);
++
++	ret = i2c_smbus_write_byte_data(client, MCP9600_SENSOR_CFG, cfg);
++	if (ret < 0) {
++		dev_err(&client->dev, "Failed to set sensor configuration\n");
++		return ret;
++	}
++
++	return 0;
++}
++
+ static int mcp9600_get_alert_index(int channel2, enum iio_event_direction dir)
+ {
+ 	if (channel2 == IIO_MOD_TEMP_AMBIENT) {
+@@ -457,6 +508,24 @@ static int mcp9600_probe(struct i2c_client *client)
+ 	data = iio_priv(indio_dev);
+ 	data->client = client;
+ 
++	/* Accept type from dt with default of Type-K. */
++	data->thermocouple_type = THERMOCOUPLE_TYPE_K;
++	ret = device_property_read_u32(&client->dev, "thermocouple-type",
++				       &data->thermocouple_type);
++	if (ret < 0 && ret != -EINVAL)
++		return dev_err_probe(&client->dev, ret,
++				     "Error reading thermocouple-type property\n");
++
++	if (data->thermocouple_type >= ARRAY_SIZE(mcp9600_type_map))
++		return dev_err_probe(&client->dev, -EINVAL,
++				     "Invalid thermocouple-type property %u.\n",
++				     data->thermocouple_type);
++
++	/* Set initial config. */
++	ret = mcp9600_config(data);
++	if (ret < 0)
++		return ret;
++
+ 	ch_sel = mcp9600_probe_alerts(indio_dev);
+ 	if (ch_sel < 0)
+ 		return ch_sel;
 -- 
 2.39.5
 
