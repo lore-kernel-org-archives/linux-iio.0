@@ -1,129 +1,94 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9DA7C1FBCA1
-	for <linux-iio@vger.kernel.org>; Tue, 19 Aug 2025 15:02:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA24C263C7F
+	for <linux-iio@vger.kernel.org>; Tue, 19 Aug 2025 15:05:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755615781; cv=none; b=M+tkh4p7lnOgLrBMNO16lYXKE0IQsSQv6VsHjfsmgx+VTWG2iJRxdKydlAH4TK3ZGlVsd7Ue5CHPJnmDDc4WTeF4Th2eEppD9fiTpRom4IBPLTrH2ky3YVeWoOZG3nynJ0CnXSVIqhr+60k44JDSJFT476GAPRRHNn81nTgvHsA=
+	t=1755615913; cv=none; b=ge55puyw7Bgsh6NGMw4wQT0pxBlOyMEtDZIbX9puhcU9/4cGv4VP0Mh6VRywNrED5K8/cqfWHEb2xcF4wFhU4yRNiFq/8JbxAdF19emRmyH14wCrVvYltKDLHYuFTRm8gtTMANK4ss9anUQy9YVcFRotLEnYgVihRxXOh0CXedo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755615781; c=relaxed/simple;
-	bh=nDsBN31ZPTJxWv5+xI/XKIMoevKJa238JoEMH3TkX7g=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=nePLFm5dGiG9ecg4pvK7o//1ukZZmcRfbxcxfSSIpRAaFnz0fS5CHh+lVqClOQX5YCVQDLsbIV1HsCz9StxlyzS3vWFuJfRQVFg2unyQqTDdxEVSqiI2oHejaBOddExp85X0o0K5XPyCs02iyCUXQmSNQDWZz/lDhMZsV9pHEHc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=lM46UYUv; arc=none smtp.client-ip=209.85.221.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1755615913; c=relaxed/simple;
+	bh=dekGUVKlmgJ1LUcSokupcNE9gClnOhE48jKoE7QWVuU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=WpiC6b1RowmJlHuOiUu0RSE36dBzdaT9xTH8eceYq2PaKeDQcAiV6Qd/NAFt1PV3L3jhi8+J3q8POEj2vR78fyC9L86vhSnwL2jnC2A+TdePwLbqxwtiex0QXgVkUP0x1UjZ7LrAoK7+5CyFQYCJxyVvUNEBAVBr0H5pPO96TDM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=bRNa3UM9; arc=none smtp.client-ip=209.85.210.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="lM46UYUv"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-3b9e414252dso2616740f8f.3
-        for <linux-iio@vger.kernel.org>; Tue, 19 Aug 2025 08:02:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="bRNa3UM9"
+Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-74381fc8abaso1450083a34.2
+        for <linux-iio@vger.kernel.org>; Tue, 19 Aug 2025 08:05:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1755615777; x=1756220577; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=k7444yQJ0rbL29maRl29fRLR2UuJK6Q0bhtUk89IdD0=;
-        b=lM46UYUvzuwBGRf6sqgIXwzjuOMkbQsnmFtz2+R8hLhfxzivfroRVDUEcjweD5prk8
-         bRg1SE5HuXpjI9KO2/heIhzQ0cFW4ERxBT+XWl5NnmvXQMf6mXfdQVDHh53JBAInmrsU
-         l8+jGse2VJZgbvo3TKpl9Tm+VBwzDf/T6vZgFh8tp/J1nSwEsvU+BmESCJtvoObHa6Ne
-         RLXel9FqWM4NdtD55ZPEzxNPnbzvuNZizhIV3oXGcKtrEpP/Twlas1K+63+HVF/4Gtpw
-         hCq1nrkIso071vnzo6LU1BuVtwcBZpkUv7sFskQpq/HJeVTUETNYiqcsoxs9d29PVSyf
-         9bOQ==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1755615911; x=1756220711; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=vMXTmk35S229MAbkPFpiW+nflBx28g6QPg9NXy1ZgtA=;
+        b=bRNa3UM98+CRr7ozyuGvPCldgOJpUdgX++S6BdcrcKH5v4xlU7UfCPcIW9MJ6Zuzit
+         INVeGC+Ysr7BXhsJxOKFxnVYFtMcOmRlWd2nw6j5HxP9fPIE8HZDGS7L5m++8aVbpz/X
+         cAJWhs65lEKaSzluCqFGNiskTUbCb3PQ06Cj2/Zi4aHMniBJrkdRVt9pP1SJhX7Z6HHT
+         4HrJorNOGFFZQKLA1kEPP5MTTESvc+lrSvVd8IOmPlFNFLJq5RRRug+pLJLspeOeS3rD
+         x/IYgUdI3vNmiJm0cZhqnrQJy4QXoU0xSqsNpXnklzsvDI2ZaCkw6omL9ptfUV4bGlFj
+         C20A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1755615777; x=1756220577;
-        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+        d=1e100.net; s=20230601; t=1755615911; x=1756220711;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=k7444yQJ0rbL29maRl29fRLR2UuJK6Q0bhtUk89IdD0=;
-        b=MFgs7gb3yDnjJyWRTan8g+TxI2zmtVQk+Iy8XuXrGV/6cFiVGzXNiLebxIh7mhFB9H
-         s8CtH0tvKUCdf0LYZemgVyQ/anuzs2EBuMwF8wGPu0W9Z+JnRznkR3eiq3m3To7r0YUw
-         tj6WQQlP2CVX8u9wR9ARkkoTqXGspupriFiDuA6Gg19xfRPx5hO2aiPlmQ9ynAGiZmYs
-         k3zFOwYG3wLA6R79S+vaAbwXEznyiZupPu2M98FF4p3VHZp90rtwuCGQginirNrLoYCA
-         H3DQJ4ZFuIPB9liGCx95N3rqEnMBczPifXrmepDDZh1dinbmjdkrpWTOHiJs7yyktk6g
-         BQng==
-X-Forwarded-Encrypted: i=1; AJvYcCXd9BXRIQLAQdXdOlzkNWheDPB8I/SJGkoZdHUyII2B21QiTsG8PazTxRIhAN+jzpi74bAWqJ6ptlQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywfz8Km6+q2ftXELYvFDYMAkh+vOGY38po0xnd3soExpvFtT97H
-	Azvf2+zDMaEv4MfbKBL6SSthb6y2pM0mcSZgpSpN6S0Qe0hgm/eYW6KeHBBPKQ1zOy4=
-X-Gm-Gg: ASbGncuxcn7bGzeLaXEx49dQz/XcVLkPQN/4DFyOBTXMXpaKCvyuRgzUC+DRXWRticA
-	hyUIdRt61NfNBJh9I3Za4bQzSSkJwjWu7XCTiiLuLZ7g8smpHCAjta4ywlIAPW/1Y9VQB0Zq9tU
-	ikuJ3Jl5seqTXV7tKEKvXJzRMdztKofysG2HBUL8o/EaibSVSZNEUqNiYjOfArb3QuG0TX15W+4
-	N0nNEqOXb3fqx3Zi9xgAWOQV8zgMQdqQf827K9h0OyxoHFvmKrzPsWOniIHPKprQ9cWKDH1CS0l
-	PqoIZ54iZju+N3ckK55IyoM2WPk2RMJ7bCBoD9fN3sb7zu+/ZRuX3xM0hfZBkzQOeU9j4bNqA/L
-	y8Grx7PocRq+R3R+pVZdolYBa2l/1UwfI0M4VTg==
-X-Google-Smtp-Source: AGHT+IFWnJ6Oo82ofz39gNSEwN0Z3yDLui3rTcpuA0COSeut86mLsEFA0jwdaleJOlWjIR41+mglKw==
-X-Received: by 2002:a05:6000:2404:b0:3b7:9d99:c0cc with SMTP id ffacd0b85a97d-3c0ed6c38ecmr2311284f8f.51.1755615776853;
-        Tue, 19 Aug 2025 08:02:56 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id ffacd0b85a97d-3c074879864sm4134355f8f.13.2025.08.19.08.02.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Aug 2025 08:02:56 -0700 (PDT)
-Date: Tue, 19 Aug 2025 18:02:53 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Waqar Hameed <waqar.hameed@axis.com>
-Cc: Song Qiang <songqiang1304521@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH v2 next] iio: proximity: vl53l0x-i2c: Fix error code in
- probe()
-Message-ID: <aKSSHTdJf5QoYiRx@stanley.mountain>
+        bh=vMXTmk35S229MAbkPFpiW+nflBx28g6QPg9NXy1ZgtA=;
+        b=dv5HGsl3VYUdCWtrVW5mBjcSAf92egudIyGdXQnrGDH1HUxHtZvL+LtLog2T33iOOc
+         a90/bRw5JejRS1wkNpDSUGkOXwclmPVxN+O6UlNliGSvMHhFzMnKnCQrC1Iuldw2HWiB
+         4lfbcd7eGjHaqcGgRZBGPtHPEZNBFX6bqaEOuw0tXSDGbruRZb+xNurvZ38c6PtKvpxb
+         6UroMWe8d5FPvjuoezOjN/Do53f9onguHmPS297jveFrMa+UJxTKLNvR9KjkphUF/0Ok
+         yce8Nal64lmelTXXm9BcVEEQNOiIQRwhNnJ8qk693QWqfGgx9g5Kxnd2F/6ndmWv0oK5
+         UlAQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVnoi1NQuJxB3lHakJ0ChNlkqqyRn1wSP2okd7DbYMPayPQGOm78tim7HC/n7QXbg7xk6nMOSQ0UpY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy6zMjaL21VdPmHudzw+GaaESCfK6yTB/ulu9Im6zePaZue6Gka
+	zQMQh18GCiaTE27Yno+6fNGEz3YiXKotwGux4y0cm54MQ4nj2WywtYBOqZt2ZoQeZD8=
+X-Gm-Gg: ASbGncuV3fF2uyeCpImVbay6koFL3YgFvHViOmrHM9+zqtSTamQND4DeYeOooJB7F2r
+	7FwNuXIFRKC2qho2uAGRwv4oJeOVhKlmohygQOXy9D/3Gpn110C/2etCLdj93EXEuCf1YacKtjR
+	GnuI+lOj3z03beWAjjb0Th+EnVgZ0r4GzLiRWoW6ijwfHEJvmohcpTD1TcsSoy8f0xvEiWsvXXF
+	CTYDfBeh3AJtbxgPozM9gg+R0dX1lPa7L1fa3RO/Qe1ZYpA5IrC1d8YH6mnZliwFgjii7HXGZlp
+	cHlRJG2bNw996i5w8vLnnanNdj8k8uPDuj5GoOgwQbegdejUNDnDrNDxns/CVtJii2QbLtUUh6D
+	SWzJTofGdTq9ARr4Hfb1G6RHJ2fdMY6PpRfb3vsBhjhLzDlhiNHeaRY+2LwZ7gGxHN74A5KFXGp
+	E=
+X-Google-Smtp-Source: AGHT+IG9hSIHsbvBSMuM+1DjW+6RnRyqFcbS8/ej/hb5PzR9IP8FISpX8gnH3Mud8EC9CDMd1mUScg==
+X-Received: by 2002:a05:6830:4186:b0:73e:96e6:2540 with SMTP id 46e09a7af769-744e09dfa60mr1883876a34.2.1755615910866;
+        Tue, 19 Aug 2025 08:05:10 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:1d00:990c:4d50:9c6c:f367? ([2600:8803:e7e4:1d00:990c:4d50:9c6c:f367])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7439204e556sm2418288a34.43.2025.08.19.08.05.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Aug 2025 08:05:10 -0700 (PDT)
+Message-ID: <f7815955-7e8a-4f67-b699-8b19cb38683a@baylibre.com>
+Date: Tue, 19 Aug 2025 10:05:09 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] staging: iio: adc: ad7816: Drop unnecessary
+ dev_set_drvdata() call
+To: Salah Triki <salah.triki@gmail.com>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+References: <aKSRpTuwA0P-ZaUS@pc>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <aKSRpTuwA0P-ZaUS@pc>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Commit 65e8202f0322 ("iio: Remove error prints for
-devm_add_action_or_reset()") accidentally introduced a bug where we
-returned "ret" but the error code was stored in "error" if
-devm_add_action_or_reset() failed.  Using two variables to store error
-codes is unnecessary and confusing.  Delete the "error" variable and use
-"ret" everywhere instead.
+On 8/19/25 10:00 AM, Salah Triki wrote:
+> Remove the call to `dev_set_drvdata()` and the associated comment
+> since private data is never read.
+> 
+> Signed-off-by: Salah Triki <salah.triki@gmail.com>
+> ---
+> Changes in v2 :
 
-Fixes: 65e8202f0322 ("iio: Remove error prints for devm_add_action_or_reset()")
-Signed-off-by: Dan Carpenter <dan.carpenter@linaro.org>
-Reviewed-by: Andy Shevchenko <andy@kernel.org>
----
-v2: Fix typos.  Add Andy's r-b tag.
-
- drivers/iio/proximity/vl53l0x-i2c.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-index 696340ec027a..ad3e46d47fa8 100644
---- a/drivers/iio/proximity/vl53l0x-i2c.c
-+++ b/drivers/iio/proximity/vl53l0x-i2c.c
-@@ -311,7 +311,6 @@ static int vl53l0x_probe(struct i2c_client *client)
- {
- 	struct vl53l0x_data *data;
- 	struct iio_dev *indio_dev;
--	int error;
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-@@ -344,13 +343,13 @@ static int vl53l0x_probe(struct i2c_client *client)
- 		return dev_err_probe(&client->dev, PTR_ERR(data->reset_gpio),
- 				     "Cannot get reset GPIO\n");
- 
--	error = vl53l0x_power_on(data);
--	if (error)
--		return dev_err_probe(&client->dev, error,
-+	ret = vl53l0x_power_on(data);
-+	if (ret)
-+		return dev_err_probe(&client->dev, ret,
- 				     "Failed to power on the chip\n");
- 
--	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off, data);
--	if (error)
-+	ret = devm_add_action_or_reset(&client->dev, vl53l0x_power_off, data);
-+	if (ret)
- 		return ret;
- 
- 	indio_dev->name = "vl53l0x";
--- 
-2.47.2
-
+Reviewed-by: David Lechner <dlechner@baylibre.com>
