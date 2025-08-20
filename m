@@ -1,85 +1,54 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7BA327602C;
-	Wed, 20 Aug 2025 07:29:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C15422DAFA9
+	for <linux-iio@vger.kernel.org>; Wed, 20 Aug 2025 09:06:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755674959; cv=none; b=AEcQObfkzZvCtg5LlwlIvhYcdui4sdCoBqMyLCH5oi8PkmMiRpDcnLGUwTJ2wXu9bEovQ3thbwjXODuo/UIDF+yTUKVFKECB05mXDAkdNa0M8l7SQOMNwwuQuP4e9jiy+0Bk8YXy4k6KLe7oH/Z9ADdZ6rVVPM+Nqcqv+LLjHPg=
+	t=1755680776; cv=none; b=egDPkvjX2OtJtBTO4CCjzWKenT5QmaVVjKBFYq/nUYnbGvDGGzq5q6eHkZb3VwiXKYKgvM7KFTSDbxwMp0SyRpaaY5iDrpAtguRbQmMPWlvitX3XRCrS2Ks8D40gWvGuqkqX9cW9immd55v6MC8cnGfa+T91GADvhncXCFqxSYU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755674959; c=relaxed/simple;
-	bh=NsOQ7u4Ri3uHrs1JNzzjbET6t1f2VJVojKuLxLJC/mU=;
+	s=arc-20240116; t=1755680776; c=relaxed/simple;
+	bh=S4Wqiryw4MwUiHxQzWdjvToMaIq8YmIYYfOErDXTxoQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WTwtv8pycOVSBttkCrCIK9iLRFViQoE+Ep7dLLFeMkskssRO/buWhTRVyUt2wEdqKbV/pUrXupkwX6pBQyxXq7oTUCpM/XuIZN1pb+AeHniCd3fv7IwKLPihCUewT8HzX3a3leU4v+cIinHkaboQEOWRPJrss+xtRsFIkGZtpDo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=h7n+gtjQ; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=kEhU8Lt3nHMQwHOfYJVu7AeakKvQUCYXLH0u5JYHq7kSydQRfR/PPIulM3PCC10ce6A/CdRN2XSt54ojHwj5V1x+IozC0YCiKcGEs6975JzBEIqnYwGu6bSznjFXIUWaCmaRNXctrU7J0VkFODo2UrdqlskKfAvnDX16ZxLlUUY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=vb9uGMa2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="h7n+gtjQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25B06C4CEEB;
-	Wed, 20 Aug 2025 07:29:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1755674958;
-	bh=NsOQ7u4Ri3uHrs1JNzzjbET6t1f2VJVojKuLxLJC/mU=;
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="vb9uGMa2"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D058C116B1;
+	Wed, 20 Aug 2025 09:06:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1755680776;
+	bh=S4Wqiryw4MwUiHxQzWdjvToMaIq8YmIYYfOErDXTxoQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=h7n+gtjQ7rjdtYxWk5uhwwkmsWosSCfmycms3s92t/K3XHyixQzgfLRCu5oYSUtOL
-	 iVIRSUqS+Jkmhu2eeQovxCu2MsOYIhyyZMFrTKZv0fhhvatt2Vi5lX45HB4WcSeFH/
-	 zKLQPx8OpGg62O2V4Ibir3VISFk3iH8rqI8NiSFrm/FPa+BshilOGMA3/DkC3R9vwk
-	 MTGvd7+RCbfJoPjGpOgZZZEs7KE7Nq0SgGSSQFzjZSC6NSQ5oM9RwlaRR+iOdfrS+L
-	 cNedLm1XkxSnJtvoI2Fs9/baV8L7AFw6gNwqo3S82EZDiMNjv72AFT9TDO0Zn7L60t
-	 vTkJfJif9FTUQ==
-Date: Wed, 20 Aug 2025 09:29:16 +0200
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Ben Collins <bcollins@watter.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Andrew Hepp <andrew.hepp@ahepp.dev>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 2/5] dt-bindings: iio: mcp9600: Add microchip,mcp9601
- and add constraints
-Message-ID: <20250820-free-nano-kittiwake-05308c@kuoka>
-References: <20250819-upstream-changes-v7-0-88a33aa78f6a@watter.com>
- <20250819-upstream-changes-v7-2-88a33aa78f6a@watter.com>
+	b=vb9uGMa2ynFcoAh4jIga4uWMNTgFKeQfRltJozHw+ezOZqS2rWJRHiRCV5lCO9ZoB
+	 CYI9IK9zfBYc9FWqO/oNAqDiJLZoOy5b7gdA4LJHXglyQGJlb3z2Si2YJZloksJVsa
+	 58/U4oLDHioC/S++eSBYPV2X/80JLuxxsKJfvt9Y=
+Date: Wed, 20 Aug 2025 11:05:41 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PULL] IIO: 1st set of fixes for 6.17
+Message-ID: <2025082033-roundup-playable-1443@gregkh>
+References: <20250819184005.301b9cf5@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20250819-upstream-changes-v7-2-88a33aa78f6a@watter.com>
+In-Reply-To: <20250819184005.301b9cf5@jic23-huawei>
 
-On Tue, Aug 19, 2025 at 07:44:43PM -0400, Ben Collins wrote:
-> +  - |
-> +    #include <dt-bindings/iio/temperature/thermocouple.h>
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        temperature-sensor@62 {
-> +            compatible = "microchip,mcp9601",
-> +                         "microchip,mcp9600";
+On Tue, Aug 19, 2025 at 06:40:05PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 8f5ae30d69d7543eee0d70083daf4de8fe15d585:
+> 
+>   Linux 6.17-rc1 (2025-08-10 19:41:16 +0300)
+> 
+> are available in the Git repository at:
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-6.17a
 
-One line.
+Pulled and pushed out, thanks.
 
-> +            microchip,vsense;
-> +            reg = <0x62>;
-
-reg is always the second property. microchip,vsense goes to the end as
-vendor property, see DTS coding style.
-
-> +            interrupt-parent = <&gpio>;
-> +            interrupts = <22 IRQ_TYPE_EDGE_RISING
-> +                          23 IRQ_TYPE_EDGE_RISING>;
-
-Two tuples <>, not one. It also looks like it fits in 80-char limit/
-
-With above changes:
-
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-
-Best regards,
-Krzysztof
-
+greg k-h
