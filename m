@@ -1,123 +1,63 @@
-Received: from out-186.mta1.migadu.com (out-186.mta1.migadu.com [95.215.58.186])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86D0F3043A9
-	for <linux-iio@vger.kernel.org>; Fri, 22 Aug 2025 13:24:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=95.215.58.186
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46674305E2B;
+	Fri, 22 Aug 2025 14:23:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1755869060; cv=none; b=Le9VN+rD18+MWfbvSdJqSF/FqGgpxKgkQyqOX4n15nNkmfKxOszD1h4DWD4gjWO8SJdchY0fcS53FG9v2RXS1o2cpazZmvKIyEDn3/YAYOfzK2jynzYVI5xzi2rRE6eQqiMfFgWpYmEQH6B0Jdm6Wi97R9PN9z8hChZpQfUwlAA=
+	t=1755872604; cv=none; b=WIDzQfpwMV9OhyMBhTNnjCWajRB5TBxTv4zInO0GfsrjmNV8Qd24N4DPVFMgCLqCCE4eZVbPSZqDS8EhSLPGzMrhftcocq/OGJ0vKk7FP4uCXl7iQbzUlqElCx3ISphz40WxCTJenobU4I2FtLudbRKO4zAjelT7OBBPTqID3Wc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1755869060; c=relaxed/simple;
-	bh=isJP0LwpNltVD4ln3oiGLB/8LCrIVyDtABbKd8g4b8A=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=RkHDTHppV7QIBypWixm4t97FrZ3kekcHuzXNsCi8sEfknY5plVYAZj3ts+ScD40qQ5oG+8YkMlTKsgBsvFiEb1ppW3YMA0IC7dGy/oJg8rnC+cng4ZPREfQTo0T/enHPAuGJHgYarPoXyGsuQkIuqPxIM/ilLCObO5qmiJu74AU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=watter.com; spf=pass smtp.mailfrom=linux.dev; arc=none smtp.client-ip=95.215.58.186
-Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=watter.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
-X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
-From: Ben Collins <bcollins@watter.com>
-Subject: [PATCH v8 0/5] iio: mcp9600: Features and improvements
-Date: Fri, 22 Aug 2025 09:23:49 -0400
-Message-Id: <20250822-upstream-changes-v8-0-40bb1739e3e2@watter.com>
+	s=arc-20240116; t=1755872604; c=relaxed/simple;
+	bh=p12u8vR8qiv7q0T3C6sATwxvsQ21DT4TNvgeIZFALCw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=p93z2zMHflhaSFAq6q1pVtY3o0exs54Sp6P5I3cxGh7M7+nq13TpCi5CVjfh8febt8OTgDtQq9lJ7WLb7pSgE/Y7DImCc4vc800QxG0zkZYHo1W0DiPG4ErIrw6mUph2mtSsrAkbd0szXIsS5rYuG9h2AH3hMfwY1aiFnDcwxGs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n7wztDtc; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n7wztDtc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60A69C4CEED;
+	Fri, 22 Aug 2025 14:23:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1755872603;
+	bh=p12u8vR8qiv7q0T3C6sATwxvsQ21DT4TNvgeIZFALCw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=n7wztDtcoLnf4euD7YyiSJ6Cdw+vq/HiDC9PejmzhDILhI5g/hqEWfEcH/TSTfLCQ
+	 g2UNAq+U18UTfNxZDh2bE1OW9Lms79Y+NQeyEbH3ud8oGwfFz3eBAQr6bSdhW7rV0l
+	 sr0FF7pECu1A11xgznHzRZitNnzwMdlsry+l1gqRRQkG7q45UQ2RO40dQvXmpHT3Cw
+	 d1fuNYFlmygAZ7kLZC1R1w0I9LT6tfq92XQCOoWYG8oJoYtzuZlLDPtC1iufG1R7Qc
+	 4Mlc0O6v9m9egfm9IuuSQ73DJllJbjPQnSJ3hI5LdqM/kHAtoBNBotcXP2FlvbzqVH
+	 jmToV1ArHKQvQ==
+Date: Fri, 22 Aug 2025 09:23:22 -0500
+From: "Rob Herring (Arm)" <robh@kernel.org>
+To: Salih Erim <salih.erim@amd.com>
+Cc: jic23@kernel.org, devicetree@vger.kernel.org, andy@kernel.org,
+	linux-kernel@vger.kernel.org, conall.ogriofa@amd.com,
+	nuno.sa@analog.com, dlechner@baylibre.com, krzk@kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	michal.simek@amd.com
+Subject: Re: [PATCH v2] MAINTAINERS: Update xilinx-ams driver maintainers
+Message-ID: <175587260151.3622268.4895714822866786813.robh@kernel.org>
+References: <20250820100519.2272509-1-salih.erim@amd.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAGVvqGgC/32NQQ6CMBBFr2K6dgyC0sGV9zAshjqVJlDItKCGc
- Hcr7l2+//PyFhVYHAd12S1KeHbBDT4B7nfKtOQfDO6eWOVZfs7wWME0hihMPfzuAAYrsljqU2F
- JJa2hwNAIedMm0U9dl8ZR2LrX1rnViVsX4iDvLTvr7/qnMGvIAJGKgkijLen6pBhZDmboVb2u6
- wcmeszDxgAAAA==
-X-Change-ID: 20250819-upstream-changes-c89af86743fa
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Andrew Hepp <andrew.hepp@ahepp.dev>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Ben Collins <bcollins@watter.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>, 
- Andy Shevchenko <abdy@kernel.org>
-X-Migadu-Flow: FLOW_OUT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250820100519.2272509-1-salih.erim@amd.com>
 
-ChangeLog:
-v7 -> v8:
-  - Style changes in dt-bindings example
-  - Simplify some return value checks
-  - Move assignment to where it's checked
-  - Speeling
 
-v6 -> v7:
-  - Separate out the mcp9600 IIR series into its own series as there is
-    a lot of conversation around implementation (removed related
-    comments from this changelog).
+On Wed, 20 Aug 2025 11:05:19 +0100, Salih Erim wrote:
+> Anand left AMD/Xilinx some time ago. Salih and Connall are new
+> maintainers of xilinx-ams driver.
+> 
+> Signed-off-by: Salih Erim <salih.erim@amd.com>
+> ---
+>  Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml | 3 ++-
+>  MAINTAINERS                                                    | 3 ++-
+>  2 files changed, 4 insertions(+), 2 deletions(-)
+> 
 
-v5 -> v6:
-  - Fix accidental typo added in dt-bindings: IRQ_TYPE_EDGE_RISIN
-  - Correct some constraints in dt-bindings
-  - Reverse if/then for mcp9601 vs mcp9600 constraints in dt-bindings
-  - Updates to changelog for patch 2/6 (dt-bindings mcp9600)
-  - Cleanup tabs that were converted to spaces
-  - Split thermocouple-type default to separate patch
-
-v4 -> v5:
-  - None
-
-v3 -> v4:
-  - Based on feedback from David Lechner <dlechner@baylibre.com>
-    * Allow fallback compatible in dt-bindings for mcp9601.
-  - Based on feedback from Jonathan Cameron <jic23@kernel.org>
-    * Be explicit in patch description for fixed width changes.
-    * Check chip_info for NULL to quiet warnings from kernel-test-robot
-    * Remove "and similar" for long description of MCP9600.
-  - Set default 3 for thermocouple in dt-binding
-  - Rework open/short circuit in dt-bindings
-
-v2 -> v3:
-  - Improve changelogs in each patch
-  - Based on feedback from Andy Shevchenko <andy.shevchenko@gmail.com>
-    * Set register offsets to fixed width
-    * Fix typos
-    * Future-proof Kconfig changes
-    * Convert to using chip_info paradigm
-    * Verbiage: dt -> firmware description
-    * Use proper specifiers and drop castings
-    * Fix register offset to be fixed-width
-    * u8 for cfg var
-    * Fix % type for u32 to be %u
-    * Make blank lines consistent between case statements
-
-v1 -> v2:
-  - Break into individual patches
-
-v1:
-  - Initial patch to enable IIR and thermocouple-type
-  - Recognize mcp9601
-
-Signed-off-by: Ben Collins <bcollins@watter.com>
----
-- Link to v7: https://lore.kernel.org/r/20250819-upstream-changes-v7-0-88a33aa78f6a@watter.com
-
----
-Ben Collins (5):
-      dt-bindings: iio: mcp9600: Set default 3 for thermocouple-type
-      dt-bindings: iio: mcp9600: Add microchip,mcp9601 and add constraints
-      iio: mcp9600: White space and fixed width cleanup
-      iio: mcp9600: Recognize chip id for mcp9601
-      iio: mcp9600: Add support for thermocouple-type
-
- .../iio/temperature/microchip,mcp9600.yaml         |  57 +++++++-
- drivers/iio/temperature/Kconfig                    |   8 +-
- drivers/iio/temperature/mcp9600.c                  | 151 +++++++++++++++++----
- 3 files changed, 187 insertions(+), 29 deletions(-)
----
-base-commit: c17b750b3ad9f45f2b6f7e6f7f4679844244f0b9
-change-id: 20250819-upstream-changes-c89af86743fa
-
-Best regards,
--- 
-Ben Collins <bcollins@watter.com>
+Acked-by: Rob Herring (Arm) <robh@kernel.org>
 
