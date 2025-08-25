@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AE42287241;
-	Sat, 13 Sep 2025 14:26:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47ADD2765D9;
+	Sat, 13 Sep 2025 14:27:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757773562; cv=none; b=XAoCOqURh6dtJu3nnX+7fiPOZIQvUhknN23oQJtGr4gmsDPMX4WFua4iBgtr2TP7ltxzp9MVdsTQ7U5hCC9sIRJanrXvzlR1ZnEQUO7lNsJRiCmH7qknXx/Ce4NWkaiS/Vxdrr8TNlBuxKjI38CWPuotfDs5MUD0vlxG8J5VINM=
+	t=1757773650; cv=none; b=ncV9r8VHWFD5goAklonGrEdY9YfzG2EF7LLI2PewEhU8DzoLOAeiclwHKB6n8VRx2RPvJretBk6xlp7mniY5AQEgT8Gw55PpUcH5UR6PPmoaFxQtBVOJELzJnnf9zy0gthn7e16f2tG4NduoWq4TiXGIIu3YA9LCnoOylxJxmAs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757773562; c=relaxed/simple;
-	bh=iLR+wMZkehN56E53wCGSMm2CSGQ7xDJDJUUYfyMxMIM=;
+	s=arc-20240116; t=1757773650; c=relaxed/simple;
+	bh=JB8ChRJxerzz0aN6yPFlNI/MgDihUqost679njvHcTc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=N8cI0RdjcJIUiI/1PtJui2hLlhimo9/ihZBqhULb6X97U2YbaLRTtryCMcqZEwg+iJAVDZsf5rChpTwkpXdLYecbJJjfX10sVcES1SVxlpRPicGn90GWSZGxThB6+oF1FKd4OYa+iSRLHAcVsND/yP5aou09ygEuOzHPOzT+q5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=s6B8L73k; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=DOhWSBmXBncuhi/PP020CZIswoxQmUjB4qBl4P374TZ6HGVGk4blyAxBjCQgDl+987mIfX2w+8AG5uc0pN40cSAj8zRHoxJu3KWeZ+J4LcfvaHrRfbt6Np3MBnij3qNE8BkgTBfcoqwkUhsFSA5wazzsGL2EkeWlFymgpatimTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=flIqDofb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="s6B8L73k"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3105BC4CEEB;
-	Sat, 13 Sep 2025 14:25:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="flIqDofb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B140C4CEEB;
+	Sat, 13 Sep 2025 14:27:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757773560;
-	bh=iLR+wMZkehN56E53wCGSMm2CSGQ7xDJDJUUYfyMxMIM=;
+	s=k20201202; t=1757773649;
+	bh=JB8ChRJxerzz0aN6yPFlNI/MgDihUqost679njvHcTc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=s6B8L73kzLWqTY4rb2aYhJM1u2uhQNgHb+RtjzTrC3zbPOUpQhrShP67str4KSiSm
-	 rdAO4nVetqvk2hvUdN8GQlP1FGcoIeyGhamaGmNLdSK7CiOI+d/uf7zv4f34QMokcu
-	 UGeU02vJ5uuLY6EVSfbJUiLm9RBDlAShk9eM8PqQ1xqsAgoH8S0ogV4De/Fm0OhoxY
-	 7+9TxczJcoXFN2WaaKTeRUYUrX0NsOYkeyjUa/xgvdqatsSAsDjzKSzJwoY7Ga30q/
-	 Lm+qj03yD2kwaqYP9HOUnndgw/XeZtgeCzz2cEKnCUUrO4RGptWtsccFFZ41Fquh2n
-	 i7t6+3OYw2KzA==
-Date: Sat, 13 Sep 2025 15:25:52 +0100
+	b=flIqDofbblx0JYbzrD1gdRc2Cbgs5TJtfhU4jNyHKDUbNIB5JuLY4XENLeG9SwUmy
+	 c9rLeHH4iC06u0wbckU3e5AURbOp18kfOb8nfYhi74pAKoyAQPJWNSeDKQjV1c1gEy
+	 HAtxOfwR+yoP4VV7KuZxqNpdEGcBXjdZiOGfnC37kz6xpVOt6WQvrXz169uA9pehnc
+	 eiB7bb/Q88X2fIFPw3VdWjH/VgsSCYBakIWSsla24H3+wpYV1K6ljNqYDAL+WuJT8x
+	 mm6eLezBKYGvV2BiwlhivaCdiLzaVmUgETpOXicXLsrIwyd1vL8uvjF1ohgnULnfI3
+	 D34JDKxNbhzvw==
+Date: Mon, 25 Aug 2025 15:52:08 +0100
 From: Jonathan Cameron <jic23@kernel.org>
 To: Salah Triki <salah.triki@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
@@ -34,10 +34,10 @@ Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v5 3/3] iio: pressure: bmp280: Use
  gpiod_set_value_cansleep()
-Message-ID: <20250913152552.5f7d82d3@jic23-huawei>
+Message-ID: <20250825155208.2b3c483b@jic23-huawei>
 In-Reply-To: <aKsAMRkmGX160gHl@pc>
 References: <aKsAMRkmGX160gHl@pc>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.50; x86_64-pc-linux-gnu)
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -58,16 +58,13 @@ Salah Triki <salah.triki@gmail.com> wrote:
 > Signed-off-by: Salah Triki <salah.triki@gmail.com>
 > Reviewed-by: David Lechner <dlechner@baylibre.com>
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-dropped my editted v3 and picked this up.
-
-Please don't send parts of patch series and if a patch has already
-being replied, it is fine for the numbering in a later version to update
-to reflect that.  Anyhow not a problem this time as I think I have
-all the right patches.
+> ---
+Don't worry about keeping the number of patches consistent if some
+are already applied.  However, I'm not sure where the previous patch 2
+has gone...
 
 Jonathan
 
-> ---
 > Changes in v5:
 >   - Clarify commit message in patch 3/3 to better explain why
 >     gpiod_set_value_cansleep() is needed, as suggested by Andy
