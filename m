@@ -1,23 +1,24 @@
 Received: from out-186.mta0.migadu.com (out-186.mta0.migadu.com [91.218.175.186])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A8081C84B8
-	for <linux-iio@vger.kernel.org>; Tue, 26 Aug 2025 00:10:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 917091DDC23
+	for <linux-iio@vger.kernel.org>; Tue, 26 Aug 2025 00:10:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=91.218.175.186
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756167021; cv=none; b=EqB+cE9K5wWJM/wfe1xbJGtNfVxSH8DZEyGOaPnfqt+RZ+ZIyJKaqOZI07Jzor09FDVkKrMp/Hm9cn1S35vnSQXAb8s7x9bKhwVoqWr1F0V7tpcXN1UUyrLJEV3a/B+Lc+kox/GoYf3pUoU5kJ5Zti9H+Q2AQRRPqnXLlfQQ8nQ=
+	t=1756167022; cv=none; b=YISX6ws6XXbkyts6l3X30WvtrkFh0lBYK0pyHzwbwX6jpNYcvUllT45ioRYEv4FhxQlzWAiBOuAJ0NSCXYRSPuvC978eb2+/so58U9IipB99nSjcsB58eAgoY37m2d/BsVSVAAzCnaG+fYfZC7SRdXrRuYH1d7OyOSjH1XtKLvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756167021; c=relaxed/simple;
-	bh=LaEU8eD4+oPJdKQmwQsYgoZaN/CtBhdsRi6A/cby/us=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=auQk+wV7uoQWUy1JMgDhYSYsZS5fFbvpCoKG0APVeLm2dN0AJWufT243x9xbpM8U2yFat4JhP5SKsi0peKZmaH04uKtP3VUI6bCQzE0NASaA8Fu3POpwvbU3BLcZVkRQwf1i5OZ3bM2gWXdkVyeVdm+FMkLlUjcfP8DVktE/mzY=
+	s=arc-20240116; t=1756167022; c=relaxed/simple;
+	bh=d0B9voqYEo1XKngf7852jpuT+gDiKxTJ2xcbkTBpflk=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=TwBTgIxXr7NLZcGDyJmmyV06B1vzjtTbl/ylnJj97pJ35gkhMih7HB2/iLMbX+cLbZAIe5swne4AvyOqQES0FEjGe3cgU2nTYOrd34TX+f2kYliwVl824eIl2CXGL3VqNUzOqQOO7eo8zSHrLIJNIfVjfI6b4bWyt9D8yZCCewk=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org; spf=pass smtp.mailfrom=linux.dev; arc=none smtp.client-ip=91.218.175.186
 Authentication-Results: smtp.subspace.kernel.org; dmarc=fail (p=quarantine dis=none) header.from=kernel.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.dev
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 From: Ben Collins <bcollins@kernel.org>
-Date: Mon, 25 Aug 2025 20:10:07 -0400
-Subject: [PATCH v7 5/5] iio: ad4080: Rework filter_type "none" logic
+Subject: [PATCH v7 0/5] iio: mcp9600: Implement IIR feature and add iio
+ core support
+Date: Mon, 25 Aug 2025 20:10:02 -0400
+Message-Id: <20250825-mcp9600-iir-v7-0-2ba676a52589@kernel.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -26,9 +27,11 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250825-mcp9600-iir-v7-5-2ba676a52589@kernel.org>
-References: <20250825-mcp9600-iir-v7-0-2ba676a52589@kernel.org>
-In-Reply-To: <20250825-mcp9600-iir-v7-0-2ba676a52589@kernel.org>
+X-B4-Tracking: v=1; b=H4sIAFr7rGgC/02Nyw6DIBBFf8WwLgkq8vBXGheAM5UF1oKaJsZ/L
+ 9bEdjGLM/fenI0kiB4SaYuNRFh98s8xg7wVxA1mfAD1fWZSsaphqtQ0uEkLxqj3kSqUiKXpmWK
+ c5IU1CaiNZnTDsfmrHukUAf3767p3J0d4LVk5n8+fsS0u3zKlOYIJ9AwTdUobVELyGk27qsvrn
+ iH4uS1cKa1smK1Nr5E3WFmBEvIhF1IrzivOkVlNun3/AFpHkhD/AAAA
+X-Change-ID: 20250819-mcp9600-iir-8f7ff1ad0804
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -40,81 +43,70 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  Ben Collins <bcollins@kernel.org>
 X-Migadu-Flow: FLOW_OUT
 
-The filter_type logic for "none" needed to be reworked to be more
-general.
+ChangeLog:
+v6 -> v7:
+  - Remove extra space before trailing \
+  - Don't add extra white-space
+  - Remove mcp9600_write_raw_get_fmt
+  - Separate out the mcp9600 IIR series into its own series as there is
+    a lot of conversation around implementation.
+  - Add rework of ad4080 to match filter_type "none" logic
 
-As documented, return IIO_VAL_EMPTY for sampling rates in "none" type
-and EINVAL when there's an attempt to write a rate for "none" type.
+v5 -> v6:
+  - Cleanup tabs that were converted to spaces
+
+v4 -> v5:
+  - Missed a one line fix to IIR patch (5/5)
+
+v3 -> v4:
+  - Based on lots of feedback, use frequency values for IIR, and use
+    filter_type[none, ema] to enable or disable.
+
+v2 -> v3:
+  - Improve changelogs in each patch
+  - Based on feedback from Andy Shevchenko <andy.shevchenko@gmail.com>
+    * Fix typos
+    * FIELD_PREP -> FIELD_MODIFY
+    * Remove explicit setting of 0 value in filter_level
+  - Based on feedback from David Lechner <dlechner@baylibre.com>
+    * Rework IIR values exposed to sysfs. Using the ratios, there was no
+      way to represent "disabled" (i.e. infinity). Based on the bmp280
+      driver I went with using the power coefficients (e.g. 1, 2, 4, 8,
+      ...) where 1 is disabled (n=0).
+
+v1 -> v2:
+  - Break into individual patches
+
+v1:
+  - Initial patch to enable IIR and thermocouple-type
+  - Recognize mcp9601
 
 Signed-off-by: Ben Collins <bcollins@kernel.org>
 ---
- drivers/iio/adc/ad4080.c | 23 ++++++++++-------------
- 1 file changed, 10 insertions(+), 13 deletions(-)
+Ben Collins (5):
+      iio: core: Add IIO_VAL_EMPTY type
+      ABI: sysfs-bus-iio: Disambiguate usage for filter_type "none"
+      ABI: sysfs-bus-iio: Document "ema" filter_type
+      iio: mcp9600: Add support for IIR filter
+      iio: ad4080: Rework filter_type "none" logic
 
-diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
-index 6e61787ed3213fe4332bd92b938a7a717dada99f..c7408b9703731ee5d4229a85ffa91ea64b233cd9 100644
---- a/drivers/iio/adc/ad4080.c
-+++ b/drivers/iio/adc/ad4080.c
-@@ -154,8 +154,6 @@ static const int ad4080_dec_rate_avail[] = {
- 	2, 4, 8, 16, 32, 64, 128, 256, 512, 1024,
- };
- 
--static const int ad4080_dec_rate_none[] = { 1 };
--
- static const char * const ad4080_power_supplies[] = {
- 	"vdd33", "vdd11", "vddldo", "iovdd", "vrefin",
- };
-@@ -268,13 +266,13 @@ static int ad4080_read_raw(struct iio_dev *indio_dev,
- 			*val = st->clk_rate;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
--		if (st->filter_type == FILTER_NONE) {
--			*val = 1;
--		} else {
--			*val = ad4080_get_dec_rate(indio_dev, chan);
--			if (*val < 0)
--				return *val;
--		}
-+		if (st->filter_type == FILTER_NONE)
-+			return IIO_VAL_EMPTY;
-+
-+		*val = ad4080_get_dec_rate(indio_dev, chan);
-+		if (*val < 0)
-+			return *val;
-+
- 		return IIO_VAL_INT;
- 	default:
- 		return -EINVAL;
-@@ -289,7 +287,7 @@ static int ad4080_write_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
--		if (st->filter_type == FILTER_NONE && val > 1)
-+		if (st->filter_type == FILTER_NONE)
- 			return -EINVAL;
- 
- 		return ad4080_set_dec_rate(indio_dev, chan, val);
-@@ -376,17 +374,16 @@ static int ad4080_read_avail(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
- 		switch (st->filter_type) {
- 		case FILTER_NONE:
--			*vals = ad4080_dec_rate_none;
--			*length = ARRAY_SIZE(ad4080_dec_rate_none);
-+			*type = IIO_VAL_EMPTY;
- 			break;
- 		default:
- 			*vals = ad4080_dec_rate_avail;
- 			*length = st->filter_type >= SINC_5 ?
- 				  (ARRAY_SIZE(ad4080_dec_rate_avail) - 2) :
- 				  ARRAY_SIZE(ad4080_dec_rate_avail);
-+			*type = IIO_VAL_INT;
- 			break;
- 		}
--		*type = IIO_VAL_INT;
- 		return IIO_AVAIL_LIST;
- 	default:
- 		return -EINVAL;
+ Documentation/ABI/testing/sysfs-bus-iio |   8 +-
+ drivers/iio/adc/ad4080.c                |  23 +++--
+ drivers/iio/industrialio-core.c         |   1 +
+ drivers/iio/temperature/mcp9600.c       | 147 ++++++++++++++++++++++++++++++++
+ include/linux/iio/types.h               |   1 +
+ 5 files changed, 166 insertions(+), 14 deletions(-)
+---
+base-commit: c17b750b3ad9f45f2b6f7e6f7f4679844244f0b9
+change-id: 20250819-mcp9600-iir-8f7ff1ad0804
+prerequisite-change-id: 20250819-upstream-changes-c89af86743fa:v8
+prerequisite-patch-id: 92882274615d59f2e89c189ce0859297fca88772
+prerequisite-patch-id: d2c1fd9da2dee3ad5dc240f34cc108d02980a4c5
+prerequisite-patch-id: 72368205aaa96b053ba78ffe6548d0895e039753
+prerequisite-patch-id: 98a8a8ee92fc0a9836975d5b216d41702860019a
+prerequisite-patch-id: c24cb6dd5b2b385c00bffdbf1f7a61e4d1532f49
 
+Best regards,
 -- 
-2.39.5
+Ben Collins <bcollins@kernel.org>
 
