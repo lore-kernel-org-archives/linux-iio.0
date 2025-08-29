@@ -1,116 +1,98 @@
-Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F286238D54;
-	Fri, 29 Aug 2025 19:11:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 173DF1E1DF2
+	for <linux-iio@vger.kernel.org>; Fri, 29 Aug 2025 19:29:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756494714; cv=none; b=CENS/XBhTuJNatc29+YPAiLGF4MRZJGyAwnN1vj1lq75R5FVH0970sM0dwfASnSxpqsuo1FMB8N3dHOfZHpR7IcrNK63wEcGRaeGlRUUxSEpHBRPut7xqg+k1QfmbbVM0M6yZUbf12/a2Ilr2o/510tdzqJ5UAp4o/l4WQgkppk=
+	t=1756495745; cv=none; b=Qs2TQMkZpQE7HczqOJXzsHPaIMxskHnGoX9B16K17l0WczfdjyjR6MPG5rD5b88AjL3RqDAnZ0CB6qupvwq28qUhyOOpPIikaAnuvlJfxziqAkqFvetD4SbeNoii9JOFu5fPAtacy8kUs5DO8QbVwShmbOKjby+mlzEdHzo10w0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756494714; c=relaxed/simple;
-	bh=Fuj6D0zW+DGqNmXsWTSh98hjxolyVyCn1KRczDru8/c=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Wwf0G0gFo8C+jzxzJSgn+cNw8eWGtVe8PiZ3OPEsvQTFKd2ckYvD5Hf9n6AjncY6PsnkS3FJQEr/jI+FiifL0vqhffhcYuUaAmf510TTBimbJ8p5IPUeabtDbbJzT3IbAAX03zGvOlJZO11Nm7e16mK76w1ozpr3caXwh5WXu0w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DFp9jkIt; arc=none smtp.client-ip=209.85.218.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1756495745; c=relaxed/simple;
+	bh=i+INH5PIUZ5fungsOczI6sZiAKm2LRX8A3qW19oUiZY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=aHRsChNP+9dRSLAtNrxeQ+gqeoubOHuwcrA0na2XBgJCvLH6ejG2xFd65ZyZL5/Btf723GrucF1u0u26QQAy58GyJKcYFdwlS1Gzi4itIUYYtYkoQNWc94hSasYSf8T1jO57JQ6e8r4XWs4olujOboxglFO0zkw9K8UFR9W3U7k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=MvyacE+V; arc=none smtp.client-ip=209.85.160.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DFp9jkIt"
-Received: by mail-ej1-f50.google.com with SMTP id a640c23a62f3a-afeee20b7c0so305440366b.3;
-        Fri, 29 Aug 2025 12:11:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="MvyacE+V"
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-315bb486e6dso691511fac.2
+        for <linux-iio@vger.kernel.org>; Fri, 29 Aug 2025 12:29:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756494711; x=1757099511; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=1KrY9Cwk2A6SDLbzKOA/S9ShMFQemtMswFHSYX9H3MQ=;
-        b=DFp9jkItqraztkoG/oH5fLGTCYivNWq7wBJjNJVjCUCVPXGwXGyYo22A2Se9agF9PS
-         ZEFSA1o7L3FOow+POHdEiT8hrRbkEkqrpyaT7yx5tERVMJADnRkOQKpOjbXrZcCOX52Y
-         a8djwXrRo0DHsjnKIrqCoZTjUFdYF4+hbL/ezRUzJ40XqAGuy+2ow5e4GozFS4AsW36B
-         fcJ40Fpww5UXLv/hmcBDdOn0vi7djsstRIOqeTBDx26KwOaFkjy2iq6hpfAcHOabvG35
-         2vxC1HPteSn/UDudorJirTT/ni+eNCAhhayn9TmAFWoxnOIH/5r6OB5R51c8D38it3HN
-         tmLg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1756495742; x=1757100542; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=M2+wT5He58Nk4ycI9gGI+sEh59JOmnfZJky17dXY3FY=;
+        b=MvyacE+VbzR/rlHHOyYqbkPUt5nGlFnChMysLkH8a3YxpttS96PxUHel1Q8eLws6eb
+         m5gRpkTRonUzJ0BCBdr8CQ7ad4+JEOdVx5IJfbjGvsoJTm+10RdjMJyescrNvn3l0Ng+
+         8sdEEcZN9Cxl7vYqEYvyrLL0lQTR15jyOcvBVFeEUX9pmmPdIfXlHW1hKARff++srJup
+         H9qtx22ULnHgY0Travd7brxt7zPWzfBduUdBlOUMXt9TVzt6ONHc3K+Jll8xI78xubWe
+         9Q5FWA5Dq44mOZa1gUueyyARb0BYM62tjay++0scQ7GqdIoeoTlbMJELN5mY7e1x2d5F
+         bGxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756494711; x=1757099511;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=1KrY9Cwk2A6SDLbzKOA/S9ShMFQemtMswFHSYX9H3MQ=;
-        b=l8Y6TNrYtx4INKJivoMpldELAno70Ztm/DwzZ9MM9SPA9z+gXMDG45OhNhD22TeZqC
-         lwLdp/FF0QtxNXn2XKz+Y0InAX8FsV9wqqfWt41zI5DK/Wx9HMFAvx52BBo+4P83zv8e
-         KgJak0rh1KP6gJkr/0Gif2WSfDO03UlWelWeMF5Cd6s/60IC26CMzEGt1/vwShdNAt0n
-         52/Bm/YGN1W81lpCYNiBDqXjaXmiQvUxKIwArsgBOI7sMyEZ4MQYBAaWl/nCNNrbOaOR
-         OMOgrtcb/x+FonmPCebPJzszGWD83IgcgVNAg/lwHBSEf512s6x0EvvOqd+0Rb0SnfDz
-         E1UA==
-X-Forwarded-Encrypted: i=1; AJvYcCUYi/PecOElsxK0hLP7CsWY3kq9XJO6lxcFeLTBZvFZ5IRwSFWJQGvGeVOCURvnbSu8X0Vk6CZBpW5FqGs/@vger.kernel.org, AJvYcCWx9vIHaSJfbvzsIvPAleobJOU8LB3UoDcRNN9WGxO5ufmqtVm24x1qa4JtY3XU6WDTglxRO7d7Gqti@vger.kernel.org, AJvYcCXQuFppz0Heur6cTZ/xPjl35oNc4KDfJ0nCa1QzEoFm2zotf8Bk64dN+4B+sx5s9VqxOhqsCewdfq1W@vger.kernel.org
-X-Gm-Message-State: AOJu0Yys6SCoTPGz6Ncw/AOLAFeIyVsxSdrs6DvDG4HWxe2ddX+9+2MU
-	EJAhp89sMhGwQvhhKXAaFMau6kXP+eZKf4olrai3tiic0qAFyXWGGLNdkRJ6A8AOlO6ExefgSNw
-	4smixCj37UQgYWCUG+3ajz0y2ggDU/VE=
-X-Gm-Gg: ASbGncsLNcMtOcHPfDNId825v6lCCy/VN/CZSCBKHOMda2CNWGZnkjC/b4PDD5A0OTQ
-	SBvy//XjspBInCjxb7GmVm8kvJiFofhGpe/MiDerzNnQQBNZOfEX/B/fZCE/iR9MMxDETSmoe3l
-	rx/k5YYira9D7oCfc1mugYBqL4hWVlapORuiax4TvwPR4RZRvc8u2u3qfEf1EP22zAyIMRINyhw
-	/ruepLYWkZ+Vqe8qIA0tu3vMQZD
-X-Google-Smtp-Source: AGHT+IHoLfOYIGXesMOJz7PlMIWE8EucCQX6fHarlka2VTVEP4xLnkqmHESieocix4CFJxHjmjzYogGgzh9h96yewgM=
-X-Received: by 2002:a17:907:1c92:b0:afc:b617:de96 with SMTP id
- a640c23a62f3a-afe2963b638mr2378979366b.49.1756494710438; Fri, 29 Aug 2025
- 12:11:50 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1756495742; x=1757100542;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=M2+wT5He58Nk4ycI9gGI+sEh59JOmnfZJky17dXY3FY=;
+        b=qKXHyiS0rllXDL6ACyN463Hlgc9MpDUbFb6ZLJ3cGdy7X8zaiKWm3nMvbcZ1+jrm3s
+         JV+3f4AfyEbzk8b5aIsKXVktxWl4aH1fHbyg9pcwG17Pa03CZPifonZd8WrG7zT7c6v3
+         Qhh76w0mJrAdLJc5zLUGv1w8KYmkgVka1ypDeiEpFtTR3fkhhGBZt5ZjT5k1Pbr4v0xK
+         4DCod5460EBg06O0FWttYgUP2ZvXXd4R8w+eOVAck/gmh/AmIYOXOuC/XV+j2X4GM2Yp
+         ZvrvR8wTpale2icmxQddqwc2OyKrVWM1jDdx/JTvP+jq2TB90o2aFwF9K5Cmo0/A3axJ
+         s5Pw==
+X-Forwarded-Encrypted: i=1; AJvYcCUHN1F5MjHQOMvYc2HMrtpECfIQYRPEavvCXjUCd7nZL295xbXDu+i89HAE6rZ5B9ExC2DycT+vwao=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz/5gqBErRiIRomLDaJuHYBlheMKxa8IXNLO74OCYMg9gM3rLZ3
+	rHXfJ4MYtfvN5SsAUh5C+DWsYizqbUUjHeCZLUWrYy/pxeqleYIRqoXePNGOvWJHKq0=
+X-Gm-Gg: ASbGncsUkyDk79xzwdAjYJGYMm+7bxovY9Gb9wSUPrtuVclfSOfOoP7AjHAmV8LyOaX
+	tuk1SynymeAXY6NbXLuzX1l8XEBgx4teGYr9GLiT8nfJRnGzxg+IfZ5YlM7dx3kx9O9IuyVBS7p
+	fUwRyVfseddQbvID6b9Fb2xcZXE4csp6KjYmL9r1zXQhdu6eA+cx+wS9hpAPOFbfkTm7GGzWCvC
+	wjU0VCeRJHLH0Smoixx9cNyj6zEfO0d+1Asg0WvNVbS/MB7Zn4eP3ZgA0z5gUWoClQDmVzF/Dc5
+	LhYx3KSDw51eQpupsiMjfT9zV7K4N1jd4qfRf0HwdojmgqHhBZEGn+Hse5J7ZhArx86n4BBG7cl
+	rIGSLu7kJY6iBDfBQXXTst+JQg24qmzJ6PVZ8T3QqjHd+j0E1K2nVh/eet20sFAmFZm+RGZu69U
+	esUW2gwOdG8Q==
+X-Google-Smtp-Source: AGHT+IFUI0HBrruEpYPUGPVj0o1naQM5URQdPGR0MpXZecuoseh/XCOIleBc4ls6rYo0uNS6K9zvvA==
+X-Received: by 2002:a05:6871:4:10b0:315:b558:1584 with SMTP id 586e51a60fabf-315b5582503mr1655470fac.21.1756495742127;
+        Fri, 29 Aug 2025 12:29:02 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:1d00:8d0a:2553:5881:1318? ([2600:8803:e7e4:1d00:8d0a:2553:5881:1318])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-315afe62235sm1585849fac.23.2025.08.29.12.29.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 29 Aug 2025 12:29:01 -0700 (PDT)
+Message-ID: <9971205b-6e92-46f8-978d-31b074305410@baylibre.com>
+Date: Fri, 29 Aug 2025 14:29:00 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250828-iio-adc-ad7124-proper-clock-support-v3-0-0b317b4605e5@baylibre.com>
- <20250828-iio-adc-ad7124-proper-clock-support-v3-3-0b317b4605e5@baylibre.com>
- <CAHp75VdtQ8vKULomgqPxwX=WZWUde7PC129BEznYqefd-U4DEQ@mail.gmail.com> <a20356ca-05ca-4c99-819b-4b278e799f2a@baylibre.com>
-In-Reply-To: <a20356ca-05ca-4c99-819b-4b278e799f2a@baylibre.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 29 Aug 2025 22:11:12 +0300
-X-Gm-Features: Ac12FXxOhkvK29FRssLfGKIp7tr3Tyfrj4DQU3WAlTOm9wwu2MUZHEFn0xlevUM
-Message-ID: <CAHp75Vf8fAFin1tJ-yjr22RPuDgBEBnj6JO3GkjDcZsmYoOfYA@mail.gmail.com>
-Subject: Re: [PATCH v3 3/4] iio: adc: ad7124: add external clock support
-To: David Lechner <dlechner@baylibre.com>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 3/6] dt-bindings: iio: adc: add ade9000
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>, jic23@kernel.org,
+ robh@kernel.org, conor+dt@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+References: <20250829115227.47712-1-antoniu.miclaus@analog.com>
+ <20250829115227.47712-4-antoniu.miclaus@analog.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20250829115227.47712-4-antoniu.miclaus@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Aug 29, 2025 at 8:19=E2=80=AFPM David Lechner <dlechner@baylibre.co=
-m> wrote:
-> On 8/29/25 10:53 AM, Andy Shevchenko wrote:
-> > On Fri, Aug 29, 2025 at 12:55=E2=80=AFAM David Lechner <dlechner@baylib=
-re.com> wrote:
+On 8/29/25 6:41 AM, Antoniu Miclaus wrote:
+> Add devicetree bindings support for ade9000.
+> 
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
 
 ...
 
-> >> +                       if (clk_hz > MEGA) {
-> >
-> > I read your answer, but maybe I missed something?  Can we use (1 *
-> > HZ_PER_MHZ) here?
->
-> I suppose we can. But it doesn't add any additional information.
-> We already know we are dealing with Hz because of clk_hz and 1
-> is implicit. So it is just a matter of style preference. Since I
-> read a lot of code, I tend to prefer the minimal approach - it is
-> less to read and still has the same meaning.
+> +  clock-names:
+> +    items:
+> +      - const: clkin
+> +
+https://lore.kernel.org/linux-iio/20250820205838.GA986565-robh@kernel.org/
 
-Physicist in me prefers pedantism in comparison of the units. We don't
-compare kilometers with kilograms (maybe not the best example, though,
-if you understand what I mean :-).
+Rob's comment about dropping clock-names was never addressed.
 
-> >> +                               clk_sel =3D AD7124_ADC_CONTROL_CLK_SEL=
-_EXT_DIV4;
-> >> +                               st->clk_hz =3D clk_hz / 4;
-> >> +                       } else {
-> >> +                               clk_sel =3D AD7124_ADC_CONTROL_CLK_SEL=
-_EXT;
-> >> +                               st->clk_hz =3D clk_hz;
-> >> +                       }
-
-
---=20
-With Best Regards,
-Andy Shevchenko
