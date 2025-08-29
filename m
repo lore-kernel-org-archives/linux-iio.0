@@ -1,129 +1,131 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A418C309DC0;
-	Fri, 29 Aug 2025 10:32:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A51E288CA3
+	for <linux-iio@vger.kernel.org>; Fri, 29 Aug 2025 11:25:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756463524; cv=none; b=Y0HbVGyWmoYdvMxc1MjOBspsr+Pdi229hQg62pJifdgGNCw8KqW1qp63P+1D3zjEF2jIirLqlU86x3Y6G/vt4gFnsQFpD6Xwd4+87Q1SU1DjtGcR6OT2Bg9OZhVJk4P11+kdnYQ17ySS4yU0zb7QZTY7vdjOqFqdu/Mw8WAFZyY=
+	t=1756466721; cv=none; b=ZfxBdhl49NyLThrFm26iaPNsmq/wN77Di8RmVrQGNo5fv8haMV6EokZIIy64RZIxpwY7bUKRqOcPdBEOwXprLF6qF+dcM8LUxCrF0PtT831LQeHQe6fCdcEyUG+zGMFOGQFOn3ioWWyf7MaOJ5r8wEaiIzneRLY9V3ECSnjnJSc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756463524; c=relaxed/simple;
-	bh=2HK9dPmt76X1vz8N9bbGM/cJkdjkqxzLRbvbl5x9FL0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Voa+zHoXifIv48Ucred2FcWZW9AomNTFF4AheuZCOvgakskgO1K9RirBriCqyhC48zbT0yJX3rvdC9evM0W35QWU+9dHydAukWmA8NGmHWElusk5Mz2ZOMLCTwnOs7CUH7pk1pFo0czq++tTADqyg8WU4wtojszb0nvuNJe0Yy4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ixVKxpab; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1756466721; c=relaxed/simple;
+	bh=XPdYg5r7Ft6i3S0kGOKRa/n0Sz74CTL7XxYiU+nvITs=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=HSi7jszHp5k5yV975uG9CeO7Ag81lpm1XHZSoJqmhczM8fUaIxi0hSn5XkxZqBuwQRgENG1a5NusN2S49BgQyQ9b62z61H+7BqIA2/WYDhqCEP6V+cv0m2eJvH0VVcWczogAKPTrxQoGeb3YWPlurJ47G41P/nySHpiyTUtfRS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OVTavmo4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ixVKxpab"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B3CDC4CEF0;
-	Fri, 29 Aug 2025 10:32:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OVTavmo4"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2B9FBC4CEF5;
+	Fri, 29 Aug 2025 11:25:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756463524;
-	bh=2HK9dPmt76X1vz8N9bbGM/cJkdjkqxzLRbvbl5x9FL0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=ixVKxpabcgrsV6WKSrcgxtO5Gt/zaeoMEsPiQWObwKMflQkQSI4c2iQmDcRupMRhg
-	 oY1RmbqWyjKzcm1BDfwP0Nvu+Vbai4VVObSxW4gxl5W1qkOp52tlSUK5OtjKA1CfO/
-	 CNjV3GF9wFO6alL5q8n1f/Iuu0ZyjdiGVq5eZMvWQEO654J5LEcArzyYMGDfzkSlk6
-	 vr3YWKd0u6gWf1TgINMSU7ZbXoXkbwMktFDjCtqcrnV1vPDKm6q3tvVVkBPd0zMvD1
-	 WpNmeZ0wASbxKoEWzD25QwlbLBvjARBjhQLTLKwXQeggc1KucXWvEYXmxoSKU/Vh/c
-	 RVp0W8RIxN4dw==
-Message-ID: <75b2db61-84ad-47a4-b809-da7e63e8dec8@kernel.org>
-Date: Fri, 29 Aug 2025 12:31:59 +0200
+	s=k20201202; t=1756466721;
+	bh=XPdYg5r7Ft6i3S0kGOKRa/n0Sz74CTL7XxYiU+nvITs=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=OVTavmo4eV2PtIXCOOu3IKqgj6XZYIGzVBg+mhPRBI3zAUcZTGuUagBSCYQuEPyzz
+	 N94+HenAO6BnG6gbIRc2Cm3dOu5SH5lxmmwVmpdvkyyZB3GKKBhpd/cv9yA/P4WLBC
+	 bYukIrZiLD+kxiRHwcGPe2k0t1noHjQFcfDzkMluybD2SszcLfXIBs1zPHBPA6PEys
+	 Sr/CL2a9oUEgKeKqr7ebhRnXWxbrVZ8XXpuqwK0IO6F2HBicSeV58+setYV/4c2iTr
+	 UX786FW2rC6t/eF8466FcEw4LSI0o1l/MmYJaNfhDXuJ4NGsmOJyubJq6L0dyuC9wd
+	 7haWer43YZv0Q==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24672CA1000;
+	Fri, 29 Aug 2025 11:25:21 +0000 (UTC)
+From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
+Date: Fri, 29 Aug 2025 12:25:42 +0100
+Subject: [PATCH v2 1/2] iio: frequency: adf4350: Fix prescaler usage.
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 1/2] iio: magnetometer: add support for Infineon
- TLV493D 3D Magentic sensor
-To: Dixit Parmar <dixitparmar19@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-References: <20250829-tlv493d-sensor-v6_16-rc5-v5-0-746e73bc6c11@gmail.com>
- <20250829-tlv493d-sensor-v6_16-rc5-v5-1-746e73bc6c11@gmail.com>
- <20250829-fluorescent-delicate-pogona-c96b5f@kuoka>
- <CAFmh=S3jKfGMek=ZPUrfgh9fXZaaq6zNBOmCyEpoe0qGpfbt5w@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <CAFmh=S3jKfGMek=ZPUrfgh9fXZaaq6zNBOmCyEpoe0qGpfbt5w@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250829-adf4350-fix-v2-1-0bf543ba797d@analog.com>
+References: <20250829-adf4350-fix-v2-0-0bf543ba797d@analog.com>
+In-Reply-To: <20250829-adf4350-fix-v2-0-0bf543ba797d@analog.com>
+To: linux-iio@vger.kernel.org
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1756466743; l=2195;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=aMJzC/7d5wR2yx1FO++7MdGnn2KNaY1jHKU5JDOOJyE=;
+ b=eRQ6Ax3bs+bUH6WMAN3JdW7NRZ8cR0ae/j1YRb1CueBtcwceeEG6olQHa29jxikxQFPzJJGZ9
+ H0+rfuvlq09BH67gSRK7g8WLIAUyTP9twZi28MBRCfm6rq/GCk8xHfk
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On 29/08/2025 12:07, Dixit Parmar wrote:
->>> +INFINEON TLV493D Driver
->>> +M:   Dixit Parmar <dixitparmar19@gmail.com>
->>> +L:   linux-iio@vger.kernel.org
->>> +S:   Maintained
->>> +W:   https://www.infineon.com/part/TLV493D-A1B6
->>> +F:   Documentation/devicetree/bindings/iio/magnetometer/infineon,tlv493d-a1b6.yaml
->>
->> There is no such file here. Apply this *patch* and check by yourself.
-> That file is being added as a separate patch(Patch 2/2) of this same
-> patch series. It's already reviewed by you only(based on the name).
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-No. Read my comment again:
+The ADF4350/1 features a programmable dual-modulus prescaler of 4/5 or 8/9.
+When set to 4/5, the maximum RF frequency allowed is 3 GHz.
+Therefore, when operating the ADF4351 above 3 GHz, this must be set to 8/9.
+In this context not the RF output frequency is meant
+- it's the VCO frequency.
 
-"Apply this *patch* and check by yourself."
+Therefore move the prescaler selection after we derived the VCO frequency
+from the desired RF output frequency.
 
-It does not matter if you add the file later. The file does not exist
-now, here.
+This BUG may have caused PLL lock instabilities when operating the VCO at
+the very high range close to 4.4 GHz.
 
-> https://lore.kernel.org/linux-iio/20250829-tlv493d-sensor-v6_16-rc5-v5-2-746e73bc6c11@gmail.com
->>
->> Your patchset is still incorrectly organized. See submitting patches in
->> DT dir.
-> By "incorrectly organized" do you mean order of the patches in the
-> patchset or anything else?
+Fixes: e31166f0fd48 ("iio: frequency: New driver for Analog Devices ADF4350/ADF4351 Wideband Synthesizers")
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 
-I pointed to the docs, is anything unclear in there?
+---
+v2:
+ * Added fixes tag;
+ * Added TODO (suggested by Andy).
+---
+ drivers/iio/frequency/adf4350.c | 20 +++++++++++++-------
+ 1 file changed, 13 insertions(+), 7 deletions(-)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index 47f1c7e9efa9f425a4c7cf82be930234e2c18434..475a7a653bfb52174a258662dcb64c9727f0897c 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -149,6 +149,19 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+ 	if (freq > ADF4350_MAX_OUT_FREQ || freq < st->min_out_freq)
+ 		return -EINVAL;
+ 
++	st->r4_rf_div_sel = 0;
++
++	/*
++	 * !\TODO: The below computation is making sure we get a power of 2
++	 * shift (st->r4_rf_div_sel) so that freq becomes higher or equal to
++	 * ADF4350_MIN_VCO_FREQ. This might be simplified with fls()/fls_long()
++	 * and friends.
++	 */
++	while (freq < ADF4350_MIN_VCO_FREQ) {
++		freq <<= 1;
++		st->r4_rf_div_sel++;
++	}
++
+ 	if (freq > ADF4350_MAX_FREQ_45_PRESC) {
+ 		prescaler = ADF4350_REG1_PRESCALER;
+ 		mdiv = 75;
+@@ -157,13 +170,6 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+ 		mdiv = 23;
+ 	}
+ 
+-	st->r4_rf_div_sel = 0;
+-
+-	while (freq < ADF4350_MIN_VCO_FREQ) {
+-		freq <<= 1;
+-		st->r4_rf_div_sel++;
+-	}
+-
+ 	/*
+ 	 * Allow a predefined reference division factor
+ 	 * if not set, compute our own
+
+-- 
+2.51.0
+
+
