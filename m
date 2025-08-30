@@ -1,376 +1,189 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 751CF2DCBE2;
-	Sat, 30 Aug 2025 18:43:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F8962D9EE7
+	for <linux-iio@vger.kernel.org>; Sat, 30 Aug 2025 18:45:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756579419; cv=none; b=RyzwJliwzVQYkFw2/K/0ItFqIfljvKAqSLWxwYcD0ZPpzYNomFH5YTFJCJBbCr43h57R/sZ9KgcZDMFP+LIErwdjP6pDHkDJlmvFU9Z5p3PxINDfTNnrEbPEcN1MZbEs3ZuKWPkmO7/AR3QYRrnIAYlf1Ie1PTVUb+zzVPGC118=
+	t=1756579520; cv=none; b=SRfhAXqZWOF0WuqTuhVopYMqxhK10VQCAsqVAUkBS7huWFlnsS1AonhzEBRZ9pG3dejzIGabF0s1TDcFj3Zfa6ouMAyg9L+7Fem2LsoV1daHeAXMzc9GS14vSSulXxGDIx7LF6NXnnM5hTXHe3wlQtLC4iW0jwdl0QGaNPJDNNA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756579419; c=relaxed/simple;
-	bh=YtIGNLXaQcmkc4Bi2x5bHdVSJylHl4+GAVTUbZPrAjo=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=rSmxxkcKvzH4i4o9WlaBFwR6x8L1NJzLWPRlS64y9Cm8mgcfJRIJ3vnNMma7+a+K5iNDsg24FDsRl7Z6rGlj03vgSnlYOxwNh0wKawU96TsAv5VxtAMAzR/H+PXCdZhtBhozySbBvl0TjU1WUrvAE1+yFDCnu2uR1uA+Qle0xAs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=I5OItFOn; arc=none smtp.client-ip=209.85.214.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1756579520; c=relaxed/simple;
+	bh=A6/ow0zfZVWRQiTl9Wxuq88PZFNMRCn7+IJy+ae1z5o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=NuFOUjfxESTMxTVhk4i7DeKFbatByfgJIJwUBvOmpxoeIQ+hkBBOKPQrRf+N7mqW57hSwxvRqNQPJ6TJ/mPtEHNqLb4AgBCyvVmR2jl8Ssy70nHqMGtNJxI4JSggsVZ90Ab616PIK/qCtip7yCskx/1QWWp0z7A/JSzxC6yInFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=q+A+ZUAn; arc=none smtp.client-ip=209.85.160.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="I5OItFOn"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-248c7f955a2so28199715ad.2;
-        Sat, 30 Aug 2025 11:43:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="q+A+ZUAn"
+Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-30ccec928f6so1578954fac.3
+        for <linux-iio@vger.kernel.org>; Sat, 30 Aug 2025 11:45:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756579417; x=1757184217; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=LPo8Q3Bu4jk8j+Uw+RLNhPXNNzhpQ7JonMOG41K09VA=;
-        b=I5OItFOng0mL1Vb/IePpYM+3PBjnK/JxtwOVLEYMKrj9CQXUk8oQOEfVD9mIYwU0hJ
-         HABNatyGQcWZZnmuZCde7dfY63+JILHZ5hXJfg9MGpsFsM3wPOI15VQzilqhT7xEILhw
-         t51dxwcnG0ysgdAZlJf1gLR2MlXoNzHg2ad+Eoe6ghMwfMHlhoPpr/9Hp6GVCS9Ly4Rx
-         cPvFLuN9JYQFMGUl7uPQV2WerpaE1XmjwnA1qpIkSABSXGMJ8urFhcRAmIVcs80ZNT3E
-         qlGjtn2iVuziv1PwN1D8yXgqYkVSywnIAyc6am/9ZjS+Ckf3ESqOU1MV5UsFZ02pVLMA
-         lEzA==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1756579516; x=1757184316; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CPiezsjLUnzBqGwDjKVX6a94n9N1zDOYr4AgH99/0TU=;
+        b=q+A+ZUAnPa3pIOgcgoNUaVcb6gueKaPfPJaZRh/PdLJ9Kq91g54ZZhXivvUYVVDqYj
+         +lrFA7UuPKZsdLwDBfMSaPSSMLZ+3WUhQ+1OxW94rYBNugHdDypN5i4O3+wFIe6UoiI+
+         BT1+06ct/n6zz/uNfjlr5Dv8foYHn8D7FDa1BBVFDDEaqm5vAn3mpZQQXoWtYeagX+Ox
+         FwUe3IJNq2Ftc0gMw9mEs8zyx22YSaDGWfPuetowzOfXeWaU+6Fqhj80b1D+ZhcbkB6k
+         2X4Jq7yBmghfUmBkyccZi7Kab5qtuQY6mvaxM5dp4fI5zDHuh2NVsEpzpvbx5aQD/MW9
+         K40A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756579417; x=1757184217;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=LPo8Q3Bu4jk8j+Uw+RLNhPXNNzhpQ7JonMOG41K09VA=;
-        b=LYPYfpz9O8inNEj1O21MaY53k3YOafUu7X9cn8UnYG3x4HVmZn/WcU8zgsDPdKq40E
-         P6S8i///YFHR+z8SB87/qKL0uCgkW+sZrtBk/riMjjnBU9mmfhnHipeqpm0tLian4HrP
-         wdVRSh3lF1DeYSuuw6N5BYm9ORNFn1KrpJww4ySUiRX7oBu8K1F4YE4NbK9jqCxkWGfR
-         RSyn5cJNtIWFaF3JlkHn57ToTOaKH9a2pDAlJiBwESpqG1SSIF4Y1z6eTfog5BDCv/0k
-         6B/CTcK1g86Kd1G2J/KDyiHp/DIGxH/8beiSZztuXldswOT8IX3A1UUNSfr2RIv6GuHv
-         f3xQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVh7QYJ0hZfVXHZq1gohYjbbLu4HVBwRePpoRj5CDbtoCcqM2tPPxeyi4UlnpRPn88xr/dFC+LDO3p8hQNW@vger.kernel.org, AJvYcCVtgQh0nnfs706cXr5D88gXFGu6/m4yJLwUnU4ozr6EVY31h/OIi43B3H+RChr9hJ48Kb5n8ql3cfuV@vger.kernel.org
-X-Gm-Message-State: AOJu0YzevKM7tvLZjz592+mqHNDjKxPYYBqqqrXN55YeILMCvHZ5B942
-	W9Wey3VGH4jw/7GK/1qGiAE/07B3ARai3BWusc/U+kTlGAeP37h1/Te8
-X-Gm-Gg: ASbGncuUMilKnV1e5rv1mGROeMtuJ8cdIpYObOwRFBb8rsVB/sIc9LLt7oixm+kD7A5
-	DbLsApkWSxP11oac2ulvQj5EFE/YOKaOK7ZBugA5Az0j8LcP4mUwQm8cqoGvvcxAl0E36mxTzJt
-	6R1toqvBA2BZNzFfZkAXYm6L1FWaAvDnqSIQOD7QOJxUJHgeIzGhfml6m/YfTSZ2RwcF4MEGq5N
-	PEC6Kr+YL0x68uUO0ovI+WvgdCHFATBa1Ejd0bwUeAzwty65bKnFUMsqz9nOx/StKLfNx2ANpUy
-	Qm6sK5P+7GZ2Vhv/BqeU2iJovAftsLgALFRbU0Pf/yihPyyUKL6fFs3hjJSwBHlbnaaOEDIc+lu
-	3DjcVYtMDMsJZ34hthN0TMQ35k3x1IMMBgQiLrgOiFV0oFECFokupUsBxEhU=
-X-Google-Smtp-Source: AGHT+IGatw6wqMSc9flLFH26sU9wlID4+2HyjBNw0BsJSxIrSeTya3p2EMyW+F3Cs0eWgDVkPaYYkg==
-X-Received: by 2002:a17:903:380f:b0:246:de71:1839 with SMTP id d9443c01a7336-24944b64760mr36733385ad.50.1756579416680;
-        Sat, 30 Aug 2025 11:43:36 -0700 (PDT)
-Received: from [192.168.1.19] ([122.177.240.86])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2490658999fsm56821665ad.112.2025.08.30.11.43.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 30 Aug 2025 11:43:36 -0700 (PDT)
-From: Bharadwaj Raju <bharadwaj.raju777@gmail.com>
-Date: Sun, 31 Aug 2025 00:12:49 +0530
-Subject: [PATCH 5/5] iio: imu: icm20948: add runtime power management
- support
+        d=1e100.net; s=20230601; t=1756579517; x=1757184317;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=CPiezsjLUnzBqGwDjKVX6a94n9N1zDOYr4AgH99/0TU=;
+        b=upPXwob7OFwYYVwSoc9AsLMhKAIXwtasgKKsFh+/KQKydAfgW4RA2d+BiPNsnWKcNU
+         QDbRjDuibTLM3jnLNrCf7win2/s4nc4dFrks7Jy2zSV7+qyarCKkx2LRbIzaXZ++xvH/
+         ciGxlkLF6byZ78N872sl0yMTXkcBGTizS+Q+hIS+wljKEKhzU4e4Q6aPLbrVHf2G47Xj
+         THZZUi6tLbLR+9sr4pCiHZlhbbQfLZ6zrG7/22CzQZC8q5q6SwJOJTVMQqH+xc2lGg1p
+         01iChy7iKLctGPXDzotjeyIDNbMNwcIuTgl+qqRGVPM6ZK0LfUM6BEFj/8b6FmN5GkP7
+         G/5g==
+X-Forwarded-Encrypted: i=1; AJvYcCUzScwyj/e9o7Dxvw9k5O60vbgaFNEwhSEytA/axMBONLPxw9aoCBd3IWEabF5f3MjdD7TG0YynwA0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxgk7bkjuQWvJpm+WfqTp7CeCLCgWsp7s/oKOBcXoWK62n0zQc1
+	j6uOHylmFWxQIMSibTYz8JRaDSvH4z/0I1Os4ZoYhgUwgwWAoQAUuUERcN6K5BntMcM=
+X-Gm-Gg: ASbGncueatXPiDzP2xCPD+Tu1DwDvzSBVagUzozw1l70qMbsGTNpHRcYLPe2eSXKA1B
+	ldqB/k4c+4d6IrfE2qLm6xahZamVDNxNZ3mzRLR2i/QlMn0kKq3ixi25cLx9CrDaH6fH2nFU3PG
+	PjHtnsjR3nW3Sim7/CKME4EspnNkWmV6AyX9TLFbr/64tDGalbE2Oc88kCAQSzX80M+ey5wv7ZE
+	q4vLVV2axj7vpIi27PgQSPr48nnc5NP/fb5KwU4Izn1bpTDXsK6zP/aGlTfG7ova7XFC3dCO5V0
+	9vbnRkTsC5o1GdmCK0lQkOF2jN8WWazTdCn8kyIX9gJS9Ht4bLIQId9MZzhcMWzg65UqYmXTr7Z
+	OC/zVwU/RZfVjLd5o4TpdsGlazckGN7GJKggFWpP3268Tf9cKg6+8WCb6/jqQ4GzxQza0+4qhej
+	0=
+X-Google-Smtp-Source: AGHT+IGv9C+6T4KddzZvtjmPR5YaSWFbXjOWucy8kEyzoY7r1q/BobV4qLWBoksIlhBWe9W/PezVCA==
+X-Received: by 2002:a05:6808:1809:b0:437:df8f:699b with SMTP id 5614622812f47-437f7ce0b66mr1214908b6e.14.1756579516610;
+        Sat, 30 Aug 2025 11:45:16 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:1d00:f7b4:dfbd:5110:c59d? ([2600:8803:e7e4:1d00:f7b4:dfbd:5110:c59d])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-437fff0819dsm20451b6e.14.2025.08.30.11.45.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 30 Aug 2025 11:45:16 -0700 (PDT)
+Message-ID: <bf2a2ef0-0ae0-4a57-a3be-e0062190da42@baylibre.com>
+Date: Sat, 30 Aug 2025 13:45:15 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 14/15] dt-bindings: iio: adc: adi,ad4030: Add ADAQ4216 and
+ ADAQ4224
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-spi@vger.kernel.org
+Cc: jic23@kernel.org, Michael.Hennerich@analog.com, nuno.sa@analog.com,
+ eblanc@baylibre.com, andy@kernel.org, corbet@lwn.net, robh@kernel.org,
+ krzk+dt@kernel.org, conor+dt@kernel.org, broonie@kernel.org,
+ Jonathan.Cameron@huawei.com, andriy.shevchenko@linux.intel.com,
+ ahaslam@baylibre.com, marcelo.schmitt1@gmail.com
+References: <cover.1756511030.git.marcelo.schmitt@analog.com>
+ <31584fd69731bf75967a0fa75302bd7402f6705f.1756511030.git.marcelo.schmitt@analog.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <31584fd69731bf75967a0fa75302bd7402f6705f.1756511030.git.marcelo.schmitt@analog.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250831-icm20948-v1-5-1fe560a38de4@gmail.com>
-References: <20250831-icm20948-v1-0-1fe560a38de4@gmail.com>
-In-Reply-To: <20250831-icm20948-v1-0-1fe560a38de4@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, shuah@kernel.org, 
- linux-kernel-mentees@lists.linux.dev, 
- Bharadwaj Raju <bharadwaj.raju777@gmail.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1756579380; l=9361;
- i=bharadwaj.raju777@gmail.com; s=20250830; h=from:subject:message-id;
- bh=YtIGNLXaQcmkc4Bi2x5bHdVSJylHl4+GAVTUbZPrAjo=;
- b=yj+v3a5GPXh26ZZOPJo4IfImx0oV3vCZhKBkPDgy5xpF0Plr/GhZS5aIqV+ZZKLqyYJX4fxKW
- eIrvJwehusNCpooAon7s0K1Ky2slKs4/K9XoxSmWZJBacQ5iOCXG3b7
-X-Developer-Key: i=bharadwaj.raju777@gmail.com; a=ed25519;
- pk=s+pP76EgUCC/7pyu4E6Q5AizWQ1T6hUf1jUWrQRl040=
 
-Implement runtime power management support for the ICM20948
-sensor. The device autosuspends after 2 seconds of idle time.
+On 8/29/25 7:45 PM, Marcelo Schmitt wrote:
+> ADAQ4216 and ADAQ4224 are similar to AD4030 except ADAQ devices have a PGA
+> (programmable gain amplifier) that scales the input signal prior to it
+> reaching the ADC inputs. The PGA is controlled through a couple of pins (A0
+> and A1) that set one of four possible signal gain.
+> 
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> ---
+> The PGA doc was inspired on ad7191 dt-binding and uses the same properies (but
+> with different values) to describe the hardware.
+> 
+>  .../bindings/iio/adc/adi,ad4030.yaml          | 39 +++++++++++++++++++
+>  1 file changed, 39 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml
+> index 9adb60629631..36fd2aa51922 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml
+> @@ -19,6 +19,8 @@ description: |
+>    * https://www.analog.com/media/en/technical-documentation/data-sheets/ad4030-24-4032-24.pdf
+>    * https://www.analog.com/media/en/technical-documentation/data-sheets/ad4630-24_ad4632-24.pdf
+>    * https://www.analog.com/media/en/technical-documentation/data-sheets/ad4630-16-4632-16.pdf
+> +  * https://www.analog.com/media/en/technical-documentation/data-sheets/adaq4216.pdf
+> +  * https://www.analog.com/media/en/technical-documentation/data-sheets/adaq4224.pdf
+>  
+>  $ref: /schemas/spi/spi-peripheral-props.yaml#
+>  
+> @@ -31,6 +33,8 @@ properties:
+>        - adi,ad4630-24
+>        - adi,ad4632-16
+>        - adi,ad4632-24
+> +      - adi,adaq4216
+> +      - adi,adaq4224
+>  
+>    reg:
+>      maxItems: 1
+> @@ -64,6 +68,27 @@ properties:
+>        The Reset Input (/RST). Used for asynchronous device reset.
+>      maxItems: 1
+>  
+> +  pga-gpios:
+> +    description:
+> +      A0 and A1 pins for gain selection. For devices that have PGA configuration
+> +      input pins, pga-gpios should be defined if adi,gain-milli is absent.
+> +    minItems: 2
+> +    maxItems: 2
+> +
+> +  adi,pga-value:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: |
+> +      Should be present if PGA control inputs are pin-strapped. The values
+> +      specify the gain per mille. For example, 333 means the input signal is
+> +      scaled by a 0.333 factor (i.e. attenuated to one third of it's original
+> +      magnitude). Possible values:
+> +      Gain 333 (A1=0, A0=0)
+> +      Gain 556 (A1=0, A0=1)
+> +      Gain 2222 (A1=1, A0=0)
+> +      Gain 6667 (A1=1, A0=1)
+> +      If defined, pga-gpios must be absent.
+> +    enum: [333, 556, 2222, 6667]
+> +
 
-Signed-off-by: Bharadwaj Raju <bharadwaj.raju777@gmail.com>
----
- drivers/iio/imu/inv_icm20948/Makefile             |  1 +
- drivers/iio/imu/inv_icm20948/inv_icm20948.h       |  7 +++
- drivers/iio/imu/inv_icm20948/inv_icm20948_core.c  |  3 +-
- drivers/iio/imu/inv_icm20948/inv_icm20948_gyro.c  | 28 ++++++---
- drivers/iio/imu/inv_icm20948/inv_icm20948_power.c | 73 +++++++++++++++++++++++
- drivers/iio/imu/inv_icm20948/inv_icm20948_temp.c  | 15 +++--
- 6 files changed, 114 insertions(+), 13 deletions(-)
+It looks like these chips have some different power supplies
+as well. E.g. V_DDH, VDD_FDA, VSS_FDA, VLDO. And there is only
+REFIN, no REF.
 
-diff --git a/drivers/iio/imu/inv_icm20948/Makefile b/drivers/iio/imu/inv_icm20948/Makefile
-index 88a37be159e1d6f575da1c070c84ac94cd963020..0a17ad1c003e6a93f3431f7a998e56cdf975d245 100644
---- a/drivers/iio/imu/inv_icm20948/Makefile
-+++ b/drivers/iio/imu/inv_icm20948/Makefile
-@@ -4,6 +4,7 @@ obj-$(CONFIG_INV_ICM20948) += inv-icm20948.o
- inv-icm20948-y += inv_icm20948_core.o
- inv-icm20948-y += inv_icm20948_temp.o
- inv-icm20948-y += inv_icm20948_gyro.o
-+inv-icm20948-y += inv_icm20948_power.o
- 
- obj-$(CONFIG_INV_ICM20948_I2C) += inv-icm20948-i2c.o
- inv-icm20948-i2c-y += inv_icm20948_i2c.o
-diff --git a/drivers/iio/imu/inv_icm20948/inv_icm20948.h b/drivers/iio/imu/inv_icm20948/inv_icm20948.h
-index ca2513114378cdcba5bc315fc94cd61f930b4dfa..194dcccabc2162334779b285320187c7ff1f5236 100644
---- a/drivers/iio/imu/inv_icm20948/inv_icm20948.h
-+++ b/drivers/iio/imu/inv_icm20948/inv_icm20948.h
-@@ -13,10 +13,13 @@
-  #include <linux/i2c.h>
-  #include <linux/iio/iio.h>
-  #include <linux/err.h>
-+ #include <linux/pm_runtime.h>
- 
- /* accel takes 20ms, gyro takes 35ms to wake from full-chip sleep */
-  #define INV_ICM20948_SLEEP_WAKEUP_MS 35
- 
-+ #define INV_ICM20948_SUSPEND_DELAY_MS 2000
-+
-  #define INV_ICM20948_REG_BANK_SEL 0x7F
-  #define INV_ICM20948_BANK_SEL_MASK GENMASK(5, 4)
- 
-@@ -46,6 +49,8 @@
- 
- extern const struct regmap_config inv_icm20948_regmap_config;
- 
-+extern const struct dev_pm_ops inv_icm20948_pm_ops;
-+
- enum inv_icm20948_gyro_fs {
- 	INV_ICM20948_GYRO_FS_250 = 0,
- 	INV_ICM20948_GYRO_FS_500 = 1,
-@@ -82,4 +87,6 @@ extern int inv_icm20948_core_probe(struct regmap *regmap);
- struct iio_dev *inv_icm20948_temp_init(struct inv_icm20948_state *state);
- struct iio_dev *inv_icm20948_gyro_init(struct inv_icm20948_state *state);
- 
-+int inv_icm20948_pm_setup(struct inv_icm20948_state *state);
-+
-  #endif
-diff --git a/drivers/iio/imu/inv_icm20948/inv_icm20948_core.c b/drivers/iio/imu/inv_icm20948/inv_icm20948_core.c
-index eb4f940de7013bf4ddeb69b6380a60fbde49964a..e6e670d96e40c3663e55d1545b52f609603a02ed 100644
---- a/drivers/iio/imu/inv_icm20948/inv_icm20948_core.c
-+++ b/drivers/iio/imu/inv_icm20948/inv_icm20948_core.c
-@@ -101,7 +101,7 @@ static int inv_icm20948_setup(struct inv_icm20948_state *state)
- 	if (IS_ERR(state->gyro_dev))
- 		return PTR_ERR(state->gyro_dev);
- 
--	return 0;
-+	return inv_icm20948_pm_setup(state);
- }
- 
- int inv_icm20948_core_probe(struct regmap *regmap)
-@@ -113,6 +113,7 @@ int inv_icm20948_core_probe(struct regmap *regmap)
- 	state = devm_kzalloc(dev, sizeof(*state), GFP_KERNEL);
- 	if (!state)
- 		return -ENOMEM;
-+	dev_set_drvdata(dev, state);
- 
- 	state->regmap = regmap;
- 	state->dev = dev;
-diff --git a/drivers/iio/imu/inv_icm20948/inv_icm20948_gyro.c b/drivers/iio/imu/inv_icm20948/inv_icm20948_gyro.c
-index 2d4d598eb21c8ce98d4ee3c72504554ab49ea596..9cefb47a46b1a323202aa84f0de647d7b7b89728 100644
---- a/drivers/iio/imu/inv_icm20948/inv_icm20948_gyro.c
-+++ b/drivers/iio/imu/inv_icm20948/inv_icm20948_gyro.c
-@@ -73,10 +73,14 @@ static const struct iio_chan_spec inv_icm20948_gyro_channels[] = {
- static int inv_icm20948_gyro_apply_config(struct inv_icm20948_state *state)
- {
- 	guard(mutex)(&state->lock);
-+	pm_runtime_get_sync(state->dev);
- 
--	return regmap_write_bits(state->regmap, INV_ICM20948_REG_GYRO_CONFIG_1,
-+	int ret = regmap_write_bits(state->regmap, INV_ICM20948_REG_GYRO_CONFIG_1,
- 				 INV_ICM20948_GYRO_CONFIG_FULLSCALE,
- 				 state->gyro_conf->fsr << 1);
-+
-+	pm_runtime_put_autosuspend(state->dev);
-+	return ret;
- }
- 
- static int inv_icm20948_gyro_read_sensor(struct inv_icm20948_state *state,
-@@ -99,23 +103,25 @@ static int inv_icm20948_gyro_read_sensor(struct inv_icm20948_state *state,
- 		return -EINVAL;
- 	}
- 
-+	pm_runtime_get_sync(state->dev);
-+
- 	__be16 raw;
- 	int ret = regmap_bulk_read(state->regmap, reg, &raw, sizeof(raw));
- 
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	*val = (s16)be16_to_cpu(raw);
- 
--	return 0;
-+out:
-+	pm_runtime_put_autosuspend(state->dev);
-+	return ret;
- }
- 
- static int inv_icm20948_gyro_read_calibbias(struct inv_icm20948_state *state,
- 					    struct iio_chan_spec const *chan,
- 					    int *val, int *val2)
- {
--	guard(mutex)(&state->lock);
--
- 	unsigned int reg;
- 
- 	switch (chan->channel2) {
-@@ -133,8 +139,11 @@ static int inv_icm20948_gyro_read_calibbias(struct inv_icm20948_state *state,
- 	}
- 
- 	__be16 offset_raw;
-+
-+	pm_runtime_get_sync(state->dev);
- 	int ret = regmap_bulk_read(state->regmap, reg, &offset_raw,
- 				   sizeof(offset_raw));
-+	pm_runtime_put_autosuspend(state->dev);
- 
- 	if (ret)
- 		return ret;
-@@ -216,8 +225,6 @@ static int inv_icm20948_write_calibbias(struct inv_icm20948_state *state,
- 					struct iio_chan_spec const *chan,
- 					int val, int val2)
- {
--	guard(mutex)(&state->lock);
--
- 	unsigned int reg;
- 
- 	switch (chan->channel2) {
-@@ -246,8 +253,13 @@ static int inv_icm20948_write_calibbias(struct inv_icm20948_state *state,
- 	s16 offset = clamp(offset64, (s64)S16_MIN, (s64)S16_MAX);
- 	__be16 offset_write = cpu_to_be16(offset);
- 
--	return regmap_bulk_write(state->regmap, reg, &offset_write,
-+	pm_runtime_get_sync(state->dev);
-+	mutex_lock(&state->lock);
-+	int ret = regmap_bulk_write(state->regmap, reg, &offset_write,
- 				 sizeof(offset_write));
-+	mutex_unlock(&state->lock);
-+	pm_runtime_put_autosuspend(state->dev);
-+	return ret;
- }
- 
- static int inv_icm20948_gyro_write_raw(struct iio_dev *gyro_dev,
-diff --git a/drivers/iio/imu/inv_icm20948/inv_icm20948_power.c b/drivers/iio/imu/inv_icm20948/inv_icm20948_power.c
-new file mode 100644
-index 0000000000000000000000000000000000000000..1281a5e5acb539cd3f91ca8ed8d52371f330b60a
---- /dev/null
-+++ b/drivers/iio/imu/inv_icm20948/inv_icm20948_power.c
-@@ -0,0 +1,73 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2025 Bharadwaj Raju <bharadwaj.raju777@gmail.com>
-+ */
-+
-+#include "inv_icm20948.h"
-+
-+static int inv_icm20948_suspend(struct device *dev)
-+{
-+	if (pm_runtime_suspended(dev))
-+		return 0;
-+
-+	struct inv_icm20948_state *state = dev_get_drvdata(dev);
-+
-+	guard(mutex)(&state->lock);
-+
-+	return regmap_write_bits(state->regmap, INV_ICM20948_REG_PWR_MGMT_1,
-+				 INV_ICM20948_PWR_MGMT_1_SLEEP,
-+				 INV_ICM20948_PWR_MGMT_1_SLEEP);
-+}
-+
-+static int inv_icm20948_resume(struct device *dev)
-+{
-+	struct inv_icm20948_state *state = dev_get_drvdata(dev);
-+
-+	guard(mutex)(&state->lock);
-+
-+	pm_runtime_disable(state->dev);
-+	pm_runtime_set_active(state->dev);
-+	pm_runtime_enable(state->dev);
-+
-+	int ret = regmap_write_bits(state->regmap, INV_ICM20948_REG_PWR_MGMT_1,
-+				    INV_ICM20948_PWR_MGMT_1_SLEEP, 0);
-+	if (ret)
-+		return ret;
-+
-+	msleep(INV_ICM20948_SLEEP_WAKEUP_MS);
-+
-+	return 0;
-+}
-+
-+static void inv_icm20948_pm_disable(void *data)
-+{
-+	struct device *dev = data;
-+
-+	pm_runtime_put_sync(dev);
-+	pm_runtime_disable(dev);
-+}
-+
-+int inv_icm20948_pm_setup(struct inv_icm20948_state *state)
-+{
-+	struct device *dev = state->dev;
-+
-+	guard(mutex)(&state->lock);
-+
-+	int ret;
-+
-+	ret = pm_runtime_set_active(dev);
-+	if (ret)
-+		return ret;
-+	pm_runtime_get_noresume(dev);
-+	pm_runtime_enable(dev);
-+	pm_runtime_set_autosuspend_delay(dev, INV_ICM20948_SUSPEND_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
-+	pm_runtime_put(dev);
-+
-+	return devm_add_action_or_reset(dev, inv_icm20948_pm_disable, dev);
-+}
-+
-+EXPORT_NS_GPL_DEV_PM_OPS(inv_icm20948_pm_ops, IIO_ICM20948) = {
-+	SYSTEM_SLEEP_PM_OPS(inv_icm20948_suspend, inv_icm20948_resume)
-+	RUNTIME_PM_OPS(inv_icm20948_suspend, inv_icm20948_resume, NULL)
-+};
-diff --git a/drivers/iio/imu/inv_icm20948/inv_icm20948_temp.c b/drivers/iio/imu/inv_icm20948/inv_icm20948_temp.c
-index 916053740cc5acda0316c76504d4086eff5ec7f0..6e17b3719301d6d7f005d545587f558fcadd2f40 100644
---- a/drivers/iio/imu/inv_icm20948/inv_icm20948_temp.c
-+++ b/drivers/iio/imu/inv_icm20948/inv_icm20948_temp.c
-@@ -24,17 +24,24 @@ static const struct iio_chan_spec
- static int inv_icm20948_temp_read_sensor(struct inv_icm20948_state *state,
- 					 s16 *temp)
- {
--	guard(mutex)(&state->lock);
-+	int ret;
-+
-+	pm_runtime_get_sync(state->dev);
-+	mutex_lock(&state->lock);
- 
- 	__be16 raw;
--	int ret = regmap_bulk_read(state->regmap, INV_ICM20948_REG_TEMP_DATA,
-+	ret = regmap_bulk_read(state->regmap, INV_ICM20948_REG_TEMP_DATA,
- 				   &raw, sizeof(raw));
- 	if (ret)
--		return ret;
-+		goto out;
- 
- 	*temp = __be16_to_cpu(raw);
-+	ret = 0;
- 
--	return 0;
-+out:
-+	mutex_unlock(&state->lock);
-+	pm_runtime_put_autosuspend(state->dev);
-+	return ret;
- }
- 
- static int inv_icm20948_temp_read_raw(struct iio_dev *temp_dev,
+>    pwms:
+>      description: PWM signal connected to the CNV pin.
+>      maxItems: 1
+> @@ -120,6 +145,20 @@ allOf:
+>      then:
+>        properties:
+>          adi,dual-data-rate: false
+> +  # ADAQ devices require a gain property to indicate how hardware PGA is set
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          contains:
+> +            enum:
+> +              - adi,adaq4216
+> +              - adi,adaq4224
 
--- 
-2.51.0
+Could use pattern instead:
+
+		pattern: ^adi,adaq
+
+> +    then:
+> +      oneOf:
+> +        - required:
+> +            - adi,pga-value
+> +        - required:
+> +            - pga-gpios
+
+  	else:
+	  adi,pga-value: false
+	  pga-gpios: false
+
+>  
+>  unevaluatedProperties: false
+>  
 
