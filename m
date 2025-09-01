@@ -1,105 +1,88 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABC682EC0A4;
-	Mon,  1 Sep 2025 17:52:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7FE030E831;
+	Mon,  1 Sep 2025 18:05:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756749136; cv=none; b=SOJGvdyKTYS8Ijg+5rBmTUAMKjSLPeli9cemPYG/S9Xoo853uYQpM5Y9K36k11+yY2xEa7B/5Y3H0HwsYm2z0B/vcKPQmyPf7z1IzWl4Yh0buTPm9vgdYgvspB9dqwblMhxZkwtjqdcqfNcaysbZNFMMQP5tlIRZ/zGXmlNspDA=
+	t=1756749908; cv=none; b=SmST95dprRXp55eiR8Vx/noNRSmRTsfHH1ami4HAE28xgJ5pKnKCZVBr4my2Lny9khpvzjaMgAX/c17RjdizVv4YJJ7QokAzqtD7PRU9jfvHBA3e4lyn+XkMRxT2U5ZBCyBI05ZPAny0GOFBMOCMaw7qPRW4ZMeEEkmL15aENGI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756749136; c=relaxed/simple;
-	bh=aZNgGvHlV7VcTlpwHrhtAjN8O1EjEhOimmgV9P7JcrE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BF78RcTL6ECoamRZt4EvQRf35E2dc++gEKynSG8aBO0SHUSo+dhPsi7/a2uwrHvmCS5VwYvQv6XOhFEj3g+/37GzeJhopQvbRLYVWeEfQ9k1comAwXIeV1IGbiw+/ncQ8N3Ldt4c0JMeNn+xPd0i6+2R50rW0+y1x8iRRSURDfE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TIFxx7Kx; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1756749908; c=relaxed/simple;
+	bh=2TBg+9XTm5fgkyWMdfNaMN7GEbqHr7rJyqT+6fjyW0k=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Nt4a0T003cyIvvSQu5tmS7QaTPMCT0voHzMDblqYNjz3zJ2HU5V79xNy+jclQ/LC6eIaqlo5vlBl/5TfxVjjwE0vbzhgihZnOfhlhE3YbUgusnxCH7G51ldRhLidjeeeAADJZHyKoCfF2knnbZEui91x9eCMuiy+/9LPvy0GC4s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p/07/UZc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TIFxx7Kx"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 35746C4CEF4;
-	Mon,  1 Sep 2025 17:52:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p/07/UZc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0506C4CEF0;
+	Mon,  1 Sep 2025 18:05:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1756749136;
-	bh=aZNgGvHlV7VcTlpwHrhtAjN8O1EjEhOimmgV9P7JcrE=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=TIFxx7KxozzVplXltHXVTgvCKaUko5HrDSAVfI2X/JjAhGomqHt3eIs5VbCXfJhUq
-	 z6WLzyTijYhTzGFwnCieTyGnOXMnlMmFUcCgIZQ1JD7ZyiX6LhzKTpCh6LZx8ULF4h
-	 uDdyI85nU6bZQqBSHCs0YQC53Q0NfSXX5wzZAW+xgrVqN70fCe/XgK4ZYpib5F/nCt
-	 Piu4DwyAnU9qO06iniG/aSxCQhZGybk9gvU3RbTC0LUM6cm0ZWCnFJohIcooiK3VdY
-	 EZ1DVsZ1OgHiIORLA9FmCCzAFDdO+u3UgQAaYf7IaUMUz7Y6+RKjhakjtXlpIn+unz
-	 ZVyZT7cu2sNfg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 263E6CA0FF0;
-	Mon,  1 Sep 2025 17:52:16 +0000 (UTC)
-From: Dimitri Fedrau via B4 Relay <devnull+dimitri.fedrau.liebherr.com@kernel.org>
-Date: Mon, 01 Sep 2025 19:51:58 +0200
-Subject: [PATCH v2 1/2] iio: humditiy: hdc3020: fix units for temperature
- and humidity measurement
+	s=k20201202; t=1756749908;
+	bh=2TBg+9XTm5fgkyWMdfNaMN7GEbqHr7rJyqT+6fjyW0k=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=p/07/UZcrU80RB8/ASWEollgpk6RQD5iMnqx/2z7Ga4mJw6CCAvax9egMy7aV56eO
+	 ExOyJKt0TWV/IQca1LIE5DH9239AAoDWZuCGir50BVZobD9/OAsuHTfAB4ebStakBA
+	 L340IlSf5hsRW+b3gfHJgVoTPnlJTylNduF//pPqRjiqOcyde5a1q9PtF60Lb82VmC
+	 4gX+fDWX5xl8btQSQB/tOdwq37Jsy1WNRg18gt7asNOMGIF41LKmP8Hbq0r2B2PPYK
+	 SqBLHJ1U5xZBA7E3KAJtH4BltNU01tVaog4HMp/2dTbLgtt9j6D6K1SPOpOlJLvggl
+	 wpkzqpC8Iygqw==
+Date: Mon, 1 Sep 2025 19:04:58 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Duje =?UTF-8?B?TWloYW5vdmnEhw==?= <duje@dujemihanovic.xyz>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Lee Jones
+ <lee@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+ <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Karel Balej
+ <balejk@matfyz.cz>, David Wronek <david@mainlining.org>,
+ phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 2/3] iio: adc: Add driver for Marvell 88PM886 PMIC
+ ADC
+Message-ID: <20250901190458.3c2853a0@jic23-huawei>
+In-Reply-To: <aLWU3AwC37jpV9W_@smile.fi.intel.com>
+References: <20250831-88pm886-gpadc-v2-0-759c1e14d95f@dujemihanovic.xyz>
+	<20250831-88pm886-gpadc-v2-2-759c1e14d95f@dujemihanovic.xyz>
+	<DCGUXTSZ8B9G.2S2Q2JXYMBSRY@matfyz.cz>
+	<5048048.31r3eYUQgx@radijator>
+	<aLWU3AwC37jpV9W_@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.50; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250901-hdc3020-units-fix-v2-1-082038a15917@liebherr.com>
-References: <20250901-hdc3020-units-fix-v2-0-082038a15917@liebherr.com>
-In-Reply-To: <20250901-hdc3020-units-fix-v2-0-082038a15917@liebherr.com>
-To: Javier Carrasco <javier.carrasco.cruz@gmail.com>, 
- Li peiyu <579lpy@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Dimitri Fedrau <dima.fedrau@gmail.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Dimitri Fedrau <dimitri.fedrau@liebherr.com>, 
- Chris Lesiak <chris.lesiak@licorbio.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1756749134; l=1275;
- i=dimitri.fedrau@liebherr.com; s=20241202; h=from:subject:message-id;
- bh=DTk8F0sZi2VViT14ML9opSSbm/71ZSWvhkH8fmcKoZ0=;
- b=HSHFG7h0RuMGrhFJiHHzewuWELDvbnPQvrP/CLr/7uMt9tictl8aaA00z5uSlxwlYf9tBt5qt
- KqqGFw1ECy8Dk83kkQsWzMQSqid90wRpcf71HGcd2JB6uLr9fdgZAqp
-X-Developer-Key: i=dimitri.fedrau@liebherr.com; a=ed25519;
- pk=rT653x09JSQvotxIqQl4/XiI4AOiBZrdOGvxDUbb5m8=
-X-Endpoint-Received: by B4 Relay for dimitri.fedrau@liebherr.com/20241202
- with auth_id=290
-X-Original-From: Dimitri Fedrau <dimitri.fedrau@liebherr.com>
-Reply-To: dimitri.fedrau@liebherr.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Dimitri Fedrau <dimitri.fedrau@liebherr.com>
+On Mon, 1 Sep 2025 15:43:08 +0300
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-According to the ABI the units after application of scale and offset are
-milli degrees for temperature measurements and milli percent for relative
-humidity measurements. Currently the resulting units are degree celsius for
-temperature measurements and percent for relative humidity measurements.
-Change scale factor to fix this issue.
+> On Sun, Aug 31, 2025 at 10:19:38PM +0200, Duje Mihanovi=C4=87 wrote:
+> > On Sunday, 31 August 2025 21:24:54 Central European Summer Time Karel B=
+alej wrote: =20
+> > > Duje Mihanovi=C4=87, 2025-08-31T12:33:05+02:00: =20
+>=20
+> ...
+>=20
+> > > > +	iio->dev.of_node =3D dev->parent->of_node; =20
+> > >=20
+> > > Didn't you mean to drop this since Jonathan pointed out that it's done
+> > > by the core? =20
+> >=20
+> > Actually I have found that device tree consumers fail to get their IO
+> > channels without this line, so I left it. =20
+>=20
+> because the passed device is not parent?
 
-Fixes: c9180b8e39be ("iio: humidity: Add driver for ti HDC302x humidity sensors")
-Reported-by: Chris Lesiak <chris.lesiak@licorbio.com>
-Suggested-by: Chris Lesiak <chris.lesiak@licorbio.com>
-Signed-off-by: Dimitri Fedrau <dimitri.fedrau@liebherr.com>
----
- drivers/iio/humidity/hdc3020.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Good point. I missed it seems to be going up another level.
+Absolutely fine to override in that case.
 
-diff --git a/drivers/iio/humidity/hdc3020.c b/drivers/iio/humidity/hdc3020.c
-index ffb25596d3a8bad01d1f84a9a972561266f65d76..8aa567d9aded9cab461f1f905b6b5ada721ba2f0 100644
---- a/drivers/iio/humidity/hdc3020.c
-+++ b/drivers/iio/humidity/hdc3020.c
-@@ -301,9 +301,9 @@ static int hdc3020_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		*val2 = 65536;
- 		if (chan->type == IIO_TEMP)
--			*val = 175;
-+			*val = 175 * MILLI;
- 		else
--			*val = 100;
-+			*val = 100 * MILLI;
- 		return IIO_VAL_FRACTIONAL;
- 
- 	case IIO_CHAN_INFO_OFFSET:
-
--- 
-2.39.5
-
+>=20
+> In any case this line is problematic. Use device_set_node() instead with =
+the
+> proper dev_fwnode() parameter.
+>=20
 
