@@ -1,121 +1,94 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3328119F464
-	for <linux-iio@vger.kernel.org>; Mon,  1 Sep 2025 19:47:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2D9526CE05;
+	Mon,  1 Sep 2025 19:48:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756756050; cv=none; b=EisjsLRsZo+x2lPnIC4dikBHEV/NV93rxd73oqMoHEv121JOwW3oZXYRnp5gET3NUAFUdA5MyqI4sa05fk+iOe3DJEH6bfTtYobhth2HzClcNS/KgepK1gURV+7nUyFpu7JPXOgE/nFkUBzmfV3bkOf5WsnTevDEkkAm/TVEZyM=
+	t=1756756086; cv=none; b=E1pHC14Lh8L4ANODoTNwoiwZ+Fjeuaal517FBFwd/5RptLc3aGrhxwC5v9nYUtKuUPm9ZnEJ87NMwpgcgmSmmBgrkWPK6CSdjk+H01jqVIE1SBd4X0KzVl46DPxiHgwRC5mQTooMNF3whPMX6z4IcwtJXoG6m4dM8iCRYrA6Mdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756756050; c=relaxed/simple;
-	bh=RcgZq6hquKpfqYbIn+6sTfO1bsT384AJr49qfHk1DIM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ilrIFbM0zNxWYRMBxHSbqrGrcWX0h6u2bAd/dYxMN2cFiMarZMhf+Jzy9VQthDIUbCNjFb6U4l8qzaWDNmXV3pEPQKpuWa2cm96aOMFVLb4jMkZkRb8Yi/tOBoZIOdncXlmVRfRXqxEUHGW1x4pGHv/l75b1p9JBEQFwV/umabc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=sfDZQVg1; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1756756086; c=relaxed/simple;
+	bh=cF3EvrApDf/cPk/HLyqyyg0xZlk+DVt3hkQn2VTPGa4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=CBd1v/7fyKf6zDRSxfOU2koyjRFiCQ+IjXjh3eVrma8hZ2RyHVYop2f9E0Oh0g4ODsAO1qQNAObREWS45Aio5IiWbofDCWybDyCW6SOURv4z16Cb+iyf3gqw/WHs+PZe9/4jT+9FaR2b5S8a8U8yc98ouRwg/NoepRFhXkVorvE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=eXhQ/AvZ; arc=none smtp.client-ip=172.105.74.154
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sfDZQVg1"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-45b86157e18so12692615e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 01 Sep 2025 12:47:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1756756046; x=1757360846; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=JSndmNKgJlks386GK4b6RRkFbD+zX0itT5uudAAwxDU=;
-        b=sfDZQVg1TsZxAsZ9JpLSbMEmip0zGfGLCBd8wRRVNwcdIxBVGwgAnK6IbyJd2kVnxR
-         YT9u/LmVWdEUIVDDvzQ8qIA0W29Zls5YHjZ2Qb98JKo1yp8Yqdqynqo72p7CDXAvSzL1
-         n5WC3MDUX70EDusXyaTB+M5h86lz/YGMdyBgOCMNrNAGnP4iFNTZBNRfw+72x1GB2C7T
-         G+eqhmipj6OrVhlCbldWaZVU6WLX6cyHGG9zNxdJOKFaxo6L99JS4rApKEumQpV3vd71
-         lFv05VrjMqfY9KIzuLrupM4r+uhNBE9ZcndfY1RwmbNqh+Sk1jgpLvbJFAyEzP9TUQls
-         IxVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756756046; x=1757360846;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JSndmNKgJlks386GK4b6RRkFbD+zX0itT5uudAAwxDU=;
-        b=Tw2D80PWDUWdl9ZeChqnDDtGz7OsoKckKrvC/CcGHDbonv9UY0SkelhgGKXK/LA7na
-         /dczfeXRxWO6Au9WW6HVFke5M35hG8siUjIynxWWOgnkIUyNYxMHQh/jAjso+anX1ywR
-         UmDfTJxedNdncHGhPxBOtu5PwYfHSlD3Z8DPmmdfm3QB+XioWK9JijU+o+UUozP5xjef
-         tF4xctSCxoPXmXR9wMmaRMivVzqvzVEdZ3gsN99TcRstqSZM5uOVE2HwYJCdLdKTJ3HY
-         cGvuOpZ0Lg2Q1Xog2qBNB6MLLmxZUhUiYReO8E08RlSSgF0N6/a3aVZ7fypJiZVdvzVk
-         kB7Q==
-X-Gm-Message-State: AOJu0YxEZG4EoN1iChIxe2jwOg7WwPt2AlpTe41QSL1/Zbu0kvEzvD4Z
-	qd51G2Pv1wZlsMkn34jS4l7HLHfXUHhgux0wS2qcPJowWQovjW9d7OA04cAJ/QGJdiU=
-X-Gm-Gg: ASbGncsxgR1ryJJ/pTQ7/TV7l55quWVpeJge6fKhgmxPVrWeuToct+nZQn4PywHxv8V
-	0CU7pkaS6uJ+Hi6fEBeFOI/WJ9xq8FLNrw+ZzApjV//gjQe69a8HJqnsYZEmhkcYo1DbRv6HMI4
-	vGs09Qaf3f0B1mV15n79VYJRK1BXWARnkK3bQbYJ5YYkD05pvyiMdwxTwZg3hnBeaEeTEmY6JrN
-	SQk0e4+WEAw4+jHYgjpteprtllUe+JuAtmcjwIKkFKAhUhaaGuHpwX1GyI+P9zas/ZzBsVDOED+
-	/2I2Mthv+8pGXvnJVK6JJm0aEiGux39vK016PFy6dZGQ8faW3rHNrn2ZRtDhpq05bLdpEU102Vm
-	xTqOGB0fc7TK3hj7ph9j+qe0MN7M=
-X-Google-Smtp-Source: AGHT+IF9XFzQaT4OzJqcXj3L72JEO/FSHcvHo14utxyiHAVTrzPdiXGjm/HvwtINoBkZqKmFN9Prrg==
-X-Received: by 2002:a05:600c:c491:b0:45b:7a03:8d7e with SMTP id 5b1f17b1804b1-45b85587defmr63827345e9.21.1756756046448;
-        Mon, 01 Sep 2025 12:47:26 -0700 (PDT)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-45b96d2a6b3sm1825785e9.10.2025.09.01.12.47.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Sep 2025 12:47:25 -0700 (PDT)
-Date: Mon, 1 Sep 2025 22:47:22 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Mohammad Amin Hosseini <moahmmad.hosseinii@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org, gregkh@linuxfoundation.org,
-	jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	sonic.zhang@analog.com, vapier@gentoo.org
-Subject: Re: [PATCH v5] staging: iio: adc: ad7816: fix race condition in SPI
- operations
-Message-ID: <aLX4SmvqBjJrS3FS@stanley.mountain>
-References: <20250901194043.20366-1-moahmmad.hosseinii@gmail.com>
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="eXhQ/AvZ"
+Received: from localhost.localdomain (unknown [IPv6:2a02:2f0e:3503:4a00:e2d5:5eff:fed9:f1c4])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id E39E8173BEF;
+	Mon, 01 Sep 2025 22:47:56 +0300 (EEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
+	s=mail; t=1756756077;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=0Ij4A38b6zGkOy+qUs09MDVVi9NjmgAjHdfoHDOqfCg=;
+	b=eXhQ/AvZ6C8807FuuNscwNKQYTB+BVOVqQd/LxCmk6ASKDkDb+3rFLRT948d3EtuwMRG3k
+	ZDdUYPLSerCvcvpVVn+gZcYtB452J1m1YbmYZ89p+l2XwNug+Ht6ukGM5MbLhCPKe5fyRl
+	PWWOYWCSoeVVVxRbkk716ucUFGUhfIjkY+q4FRYucegEQj8aTQBktqsqSfZoR6JjJankbt
+	ak8zhK1zg+MlrThdVLd5p7RPooqhSFN9eQARKvOytoAdjxFu2TseT7R35/DjcNT9jpOm1L
+	Uo76f3KWe4r9tl9qHeHq8w+zoEdgHZZTVfxiMnYtTXmoPMnmJwJo/PnYbpruRQ==
+From: Petre Rodan <petre.rodan@subdimension.ro>
+To: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Petre Rodan <petre.rodan@subdimension.ro>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH 07/10] iio: accel: BMA220 add debugfs reg access
+Date: Mon,  1 Sep 2025 22:47:33 +0300
+Message-ID: <20250901194742.11599-8-petre.rodan@subdimension.ro>
+X-Mailer: git-send-email 2.49.1
+In-Reply-To: <20250901194742.11599-1-petre.rodan@subdimension.ro>
+References: <20250901194742.11599-1-petre.rodan@subdimension.ro>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20250901194043.20366-1-moahmmad.hosseinii@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Mon, Sep 01, 2025 at 11:10:43PM +0330, Mohammad Amin Hosseini wrote:
-> The ad7816 driver lacks proper synchronization around SPI operations
-> and device state access. Concurrent access from multiple threads can
-> lead to data corruption and inconsistent device state.
-> 
-> The driver performs sequences of GPIO pin manipulations followed by
-> SPI transactions without any locking. Device state variables (mode,
-> channel_id, oti_data) are also accessed without synchronization.
-> 
-> This bug was found through manual code review using static analysis
-> techniques. The review focused on identifying unsynchronized access
-> patterns to shared resources. Key indicators were:
-> - GPIO pin state changes followed by SPI operations without atomicity
-> - Shared state variables accessed from multiple sysfs entry points
-> - No mutex or spinlock protection around sections
-> - Potential for interleaved execution in multi-threaded environments
-> 
-> The review methodology involved tracing data flow paths and identifying
-> points where concurrent access could corrupt device state or SPI
-> communication sequences.
-> 
-> Add io_lock mutex to protect:
-> - SPI transactions and GPIO sequences in read/write functions
-> - Device state variables in sysfs show/store functions
-> - Concurrent access to chip configuration
-> 
-> This prevents race conditions when multiple processes access the device
-> simultaneously through sysfs attributes or device file operations.
-> 
-> Fixes: 7924425db04a ("staging: iio: adc: new driver for AD7816 devices")
-> 
-> Signed-off-by: Mohammad Amin Hosseini <moahmmad.hosseinii@gmail.com>
-> 
+Allow read/write access to sensor registers for use in unit-tests.
 
-I've asked you to wait a day between resends and Jonathan asked you to
-wait for "a few days"...  It really is a headache to review the same
-patch over and over in the same day.
+Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
+---
+ drivers/iio/accel/bma220_core.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-regards,
-dan carpenter
+diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_core.c
+index e60acd62cf96..41889cdcef76 100644
+--- a/drivers/iio/accel/bma220_core.c
++++ b/drivers/iio/accel/bma220_core.c
+@@ -433,10 +433,21 @@ static int bma220_read_avail(struct iio_dev *indio_dev,
+ 	}
+ }
+
++static int bma220_reg_access(struct iio_dev *indio_dev, unsigned int reg,
++			     unsigned int writeval, unsigned int *readval)
++{
++	struct bma220_data *data = iio_priv(indio_dev);
++
++	if (readval)
++		return regmap_read(data->regmap, reg, readval);
++	return regmap_write(data->regmap, reg, writeval);
++}
++
+ static const struct iio_info bma220_info = {
+ 	.read_raw		= bma220_read_raw,
+ 	.write_raw		= bma220_write_raw,
+ 	.read_avail		= bma220_read_avail,
++	.debugfs_reg_access	= &bma220_reg_access,
+ };
+
+ static int bma220_reset(struct bma220_data *data, bool up)
+--
+2.49.1
 
