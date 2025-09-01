@@ -1,219 +1,130 @@
-Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-106113.protonmail.ch (mail-106113.protonmail.ch [79.135.106.113])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7D741E868;
-	Mon,  1 Sep 2025 07:38:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBEF22EDD5D
+	for <linux-iio@vger.kernel.org>; Mon,  1 Sep 2025 07:49:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.113
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756712284; cv=none; b=jKXVUv6EHDLLU4ddmy+wnrF3iiz2O4P9Kchb4yHNsyGKx3D02ESeagmi0NfZMo5I+4XwlBdvrRYv/d5IKK1KhRxbwZPongCOj6uM5CLw6LrBsaDcTFXqSXuXafl2gBhMeUWY+ONypEE0eRZg7S203mF3RaT7Bqj2JYoslVkam2s=
+	t=1756712980; cv=none; b=X34W2R/ni4ERjORUV1DJuUktR3mEEbqbhHruBmfCnEhD4UnQ+sSy5j80go28jy6bjCRQZrg87kfmsebxzkHyr+ZXj0kuibqMWeyOFvGz0TwO3pPfcnmzVP1qTz+PpccvVthrjSmrqnR75sE5bcUj2mXQ/DBnNDrw4vNRA3BqsFI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756712284; c=relaxed/simple;
-	bh=jAfgCrmovXTASeSG0seHoaOGT+mdDgAHBM64F+u2jtE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fZfKkcJatu3c+AN7RoqYhh0T2RqL9jHhGE652Ms4awlwGzMWTXt3b7RZ82rQ9NVu4d5aqA6TwNwjAYpfYJF8DmGnyb54BC6otsWaYTnO/dvMzS03MiPX/t/nE+x1U02FYgWUxv6nnFuCEp6iJO8YdSvxavS/s1wKh/uQIF08Jk0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Clok89JB; arc=none smtp.client-ip=209.85.215.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1756712980; c=relaxed/simple;
+	bh=6oRmmzziaTgPC0bksMOkEHu7AoqHaS3P3gyUbOWU46A=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=AT6MeBxtUZ7Iek8oRLltLK9ur5ik/ebIdqHjmkE4R+7hCkmcVZcx5/jDYdSI6FocUmSsj68jDObRZNLb1JDGWsYX+Td9tXuopgCmzAhp4bfkJYYsH/f81w/aDu3DLgo9d+bk5n4ftnaa76bZaOsLQcUT3V+9WbvYYjfVog9obPI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=wJwT4E/h; arc=none smtp.client-ip=79.135.106.113
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Clok89JB"
-Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-b4cb3367d87so2032736a12.3;
-        Mon, 01 Sep 2025 00:38:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756712282; x=1757317082; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=QlS6s9xBoj0Gsoj15IeDcSfwqpbtZrjtwfLutLxFrM0=;
-        b=Clok89JBrcjaQ2+Vz9WXFGqDWYhINOBIy7gQMmZ/uk9AkG+hTpKHBBqPaFvxLUKV7i
-         6q6O7yl5xC1tGMHch+z5+43YpD5Nm9V2YSrLR60rFJgcH6ZFoFqnIesDYgNIjOyx6AOQ
-         rnMoZmpLp79dC++QezqrwZIrYNgBYrtBHyDOLheLUlxcIXAFE/er+i+VITV4lymnaswZ
-         y0zAWFycJ860SjfeBXMjTquUMjjw2tb6gTuc12tLwRmqsS57cGxLNcYJEOns9ZsELzuH
-         pScmLiiHbsrHwW1DBlpW21ltBhv5VPTAYRk+nx8sFAOeDfIlmnUxwWv/FSzi2tbpZ4a4
-         n0NQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756712282; x=1757317082;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=QlS6s9xBoj0Gsoj15IeDcSfwqpbtZrjtwfLutLxFrM0=;
-        b=mWFI26v71LklNc82z65tpRDPQ62hCP+V+U4PMthtxMa2BDpzN15vS+8u163xJMiQlv
-         aO/fYva5hBfkk0VHPvyO7Vxtqh5hz4XC11YxQzOeIgYLlxgSINDkhdYPenCUhk0zb5F2
-         CKuzS/jajP0RBZPIHJLrt7T9kAUcU0n+EU82neoQrQ24D1n2kIIeFnoptO6VqTqYGaVh
-         M6b90EzOo48I2OOVmBoAB2sAChtUm4OO8ZUW0wZ5VfQckE4P+UZWt9KZp8wRg/+d5wjr
-         Z4cRtwfu+cnFVzQIx60jN5xQxbSLVJ81k4q2EbE7SqUCCTqmkAvT6leTa3brhTxiyst5
-         FAiA==
-X-Gm-Message-State: AOJu0YypTDQwoqYU0uO5OkS59qL3mvwERlNpQQUtt1mELXX0xfzrDB0w
-	gaj8vWVjHf1JN2fqtzmgmwdoc5rOpoFzG7VNI8g1ATNXSf5Ot2CGBKmQm/nPbA==
-X-Gm-Gg: ASbGncuM40Nu8WGZMc+1bQGxeILvNbCaFaUZWFjYYRshP1w2XGpSFNKwKIQPiEz1vPS
-	EeMpbyo2KcTsMrXUdgE++vLjPzNYHi3jcwpKLmJqFiFk2LY/l/JWLmUB+6C2wJmN2pStWcbrFPY
-	/Ys87C6j/DgNxc8rC9f1rAAoc3J27QhVFivakT9y4BN9vtbE2bEJZCnvHX+BE/PxlsQbErLaHym
-	M801+P9tzEbWabD6Hx04FApnhIcIS6HBbW21JEfVFfcXARLbhPfnh4ZOU9ebIK7qEWdB9YzWkkY
-	2YUjZ0TOGORxr2dUuH8egEihIO8cb8AZgp68+Zhh30cn3WVJhEyLlrimLbis1tEe2TfBZVnokNL
-	RenhHHV7zjE1Waa3E4xGtH1nGZGB9IHaFV5gp90S65Cf0PBixNeE=
-X-Google-Smtp-Source: AGHT+IFBa9YIxUxfvPklfq7ICZ6Mprmrrg84pYsUW/IV/7FZKdeJpVxqGnCn7Cgi5itSIo9WzCI4Zw==
-X-Received: by 2002:a17:903:1211:b0:246:ceda:ebeb with SMTP id d9443c01a7336-24944aa2848mr85094795ad.33.1756712282012;
-        Mon, 01 Sep 2025 00:38:02 -0700 (PDT)
-Received: from localhost ([77.111.118.146])
-        by smtp.gmail.com with UTF8SMTPSA id 41be03b00d2f7-b4de04a9ea7sm6489148a12.16.2025.09.01.00.38.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 01 Sep 2025 00:38:01 -0700 (PDT)
-From: Mohammad Amin Hosseini <moahmmad.hosseinii@gmail.com>
-To: linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev
-Cc: linux-kernel@vger.kernel.org,
-	gregkh@linuxfoundation.org,
-	jic23@kernel.org,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	Mohammad Amin Hosseini <moahmmad.hosseinii@gmail.com>
-Subject: [PATCH v3] staging: iio: adc: ad7816: add mutex to serialize SPI/GPIO operations
-Date: Mon,  1 Sep 2025 11:07:50 +0330
-Message-ID: <20250901073750.22687-1-moahmmad.hosseinii@gmail.com>
-X-Mailer: git-send-email 2.51.0
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="wJwT4E/h"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
+	s=protonmail2; t=1756712970; x=1756972170;
+	bh=vFveFwTnn7yrm9XsyVQ58MSODxhrcS6ozaHd9fgq5VU=;
+	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
+	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=wJwT4E/hWSXoWpD4U2xYwzaLLQhxo2Ao19MyqNDyDpajgy9AKtXwCyizEuNdl5flU
+	 uaIuyCWNOai7jeqwYWhWt9BYpNvs2LAND5GkH2jIyoHMRi+kpzxTihFVYX93Dj2TvN
+	 jddcnJVf7gm8tYJYJXvUL3LPbQwyhhxtZuMTvWD0LEoS9MfDnv4LlKyivTWy2fAMP1
+	 NmPpgOUzct/lpF+gbD8UogmDpC6xrnvkdKbPQ5/VnCE473SnSwCUD5v8K67x5wvP+e
+	 WcRj/fNIuK0cb1uRgwOpNF2rg72AHc6XFmvS9FlThz79fumfHbL5ZYP73LgqZ1FRkK
+	 Ze7f+pnnIDlRg==
+X-Pm-Submission-Id: 4cFgxj00Ghz1DDC3
+From: Sean Nyekjaer <sean@geanix.com>
+Date: Mon, 01 Sep 2025 09:49:13 +0200
+Subject: [PATCH v3 1/5] iio: imu: inv_icm42600: Simplify pm_runtime setup
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20250901-icm42pmreg-v3-1-ef1336246960@geanix.com>
+References: <20250901-icm42pmreg-v3-0-ef1336246960@geanix.com>
+In-Reply-To: <20250901-icm42pmreg-v3-0-ef1336246960@geanix.com>
+To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
+ rafael@kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ linux-pm@vger.kernel.org, Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ Sean Nyekjaer <sean@geanix.com>
+X-Mailer: b4 0.14.2
 
-The ad7816 driver was accessing SPI and GPIO lines without
-synchronization, which could lead to race conditions when accessed
-concurrently from multiple contexts. This might result in corrupted
-readings or inconsistent GPIO states.
+Rework the power management in inv_icm42600_core_probe() to use
+devm_pm_runtime_set_active_enabled(), which simplifies the runtime PM
+setup by handling activation and enabling in one step.
+Remove the separate inv_icm42600_disable_pm callback, as it's no longer
+needed with the devm-managed approach.
+Using devm_pm_runtime_enable() also fixes the missing disable of
+autosuspend.
+Update inv_icm42600_disable_vddio_reg() to only disable the regulator if
+the device is not suspended i.e. powered-down, preventing unbalanced
+disables.
+Also remove redundant error msg on regulator_disable(), the regulator
+framework already emits an error message when regulator_disable() fails.
 
-Introduce an io_lock mutex in the driver structure to serialize:
-- SPI transactions in ad7816_spi_read() and ad7816_spi_write()
-- GPIO pin toggling sequences
-- Updates to device state via sysfs store functions (mode, channel, oti)
+This simplifies the PM setup and avoids manipulating the usage counter
+unnecessarily.
 
-The mutex ensures proper mutual exclusion and prevents race
-conditions under concurrent access.
-
-Signed-off-by: Mohammad Amin Hosseini <moahmmad.hosseinii@gmail.com>
-
+Fixes: 31c24c1e93c3 ("iio: imu: inv_icm42600: add core of new inv_icm42600 driver")
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
 ---
-Changes in v3:
-- Restore proper capitalization in From:/Signed-off-by lines
-- Move v2 changelog below the --- line
+ drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 24 +++++++-----------------
+ 1 file changed, 7 insertions(+), 17 deletions(-)
 
-Changes in v2:
-- Fixed mismatch between From: and Signed-off-by lines
-- Verified style compliance with checkpatch.pl
----
- drivers/staging/iio/adc/ad7816.c | 29 +++++++++++++++++++----------
- 1 file changed, 19 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-index 4774df778de9..06567d048a6d 100644
---- a/drivers/staging/iio/adc/ad7816.c
-+++ b/drivers/staging/iio/adc/ad7816.c
-@@ -50,6 +50,7 @@ struct ad7816_chip_info {
- 	u8  oti_data[AD7816_CS_MAX + 1];
- 	u8  channel_id;	/* 0 always be temperature */
- 	u8  mode;
-+	struct mutex io_lock;	/* Protects SPI transactions and GPIO toggling */
- };
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+index a4d42e7e21807f7954def431e9cf03dffaa5bd5e..76d8e4f14d87a552a35d7a9e0cb3305781d85ca9 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+@@ -711,20 +711,12 @@ static void inv_icm42600_disable_vdd_reg(void *_data)
+ static void inv_icm42600_disable_vddio_reg(void *_data)
+ {
+ 	struct inv_icm42600_state *st = _data;
+-	const struct device *dev = regmap_get_device(st->map);
+-	int ret;
+-
+-	ret = regulator_disable(st->vddio_supply);
+-	if (ret)
+-		dev_err(dev, "failed to disable vddio error %d\n", ret);
+-}
++	struct device *dev = regmap_get_device(st->map);
  
- enum ad7816_type {
-@@ -67,13 +68,13 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
- 	int ret;
- 	__be16 buf;
+-static void inv_icm42600_disable_pm(void *_data)
+-{
+-	struct device *dev = _data;
++	if (pm_runtime_status_suspended(dev))
++		return;
  
-+	mutex_lock(&chip->io_lock);
-+
- 	gpiod_set_value(chip->rdwr_pin, 1);
- 	gpiod_set_value(chip->rdwr_pin, 0);
- 	ret = spi_write(spi_dev, &chip->channel_id, sizeof(chip->channel_id));
--	if (ret < 0) {
--		dev_err(&spi_dev->dev, "SPI channel setting error\n");
--		return ret;
--	}
-+	if (ret < 0)
-+		goto unlock;
- 	gpiod_set_value(chip->rdwr_pin, 1);
- 
- 	if (chip->mode == AD7816_PD) { /* operating mode 2 */
-@@ -92,13 +93,13 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
- 	gpiod_set_value(chip->rdwr_pin, 0);
- 	gpiod_set_value(chip->rdwr_pin, 1);
- 	ret = spi_read(spi_dev, &buf, sizeof(*data));
--	if (ret < 0) {
--		dev_err(&spi_dev->dev, "SPI data read error\n");
--		return ret;
--	}
-+	if (ret < 0)
-+		goto unlock;
- 
- 	*data = be16_to_cpu(buf);
- 
-+unlock:
-+	mutex_unlock(&chip->io_lock);
- 	return ret;
+-	pm_runtime_put_sync(dev);
+-	pm_runtime_disable(dev);
++	regulator_disable(st->vddio_supply);
  }
  
-@@ -107,12 +108,13 @@ static int ad7816_spi_write(struct ad7816_chip_info *chip, u8 data)
- 	struct spi_device *spi_dev = chip->spi_dev;
- 	int ret;
+ int inv_icm42600_core_probe(struct regmap *regmap, int chip,
+@@ -824,16 +816,14 @@ int inv_icm42600_core_probe(struct regmap *regmap, int chip,
+ 		return ret;
  
-+	mutex_lock(&chip->io_lock);
-+
- 	gpiod_set_value(chip->rdwr_pin, 1);
- 	gpiod_set_value(chip->rdwr_pin, 0);
- 	ret = spi_write(spi_dev, &data, sizeof(data));
--	if (ret < 0)
--		dev_err(&spi_dev->dev, "SPI oti data write error\n");
- 
-+	mutex_unlock(&chip->io_lock);
- 	return ret;
- }
- 
-@@ -136,6 +138,7 @@ static ssize_t ad7816_store_mode(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7816_chip_info *chip = iio_priv(indio_dev);
- 
-+	mutex_lock(&chip->io_lock);
- 	if (strcmp(buf, "full") == 0) {
- 		gpiod_set_value(chip->rdwr_pin, 1);
- 		chip->mode = AD7816_FULL;
-@@ -143,6 +146,7 @@ static ssize_t ad7816_store_mode(struct device *dev,
- 		gpiod_set_value(chip->rdwr_pin, 0);
- 		chip->mode = AD7816_PD;
- 	}
-+	mutex_unlock(&chip->io_lock);
- 
- 	return len;
- }
-@@ -200,7 +204,9 @@ static ssize_t ad7816_store_channel(struct device *dev,
- 		return -EINVAL;
- 	}
- 
-+	mutex_lock(&chip->io_lock);
- 	chip->channel_id = data;
-+	mutex_unlock(&chip->io_lock);
- 
- 	return len;
- }
-@@ -322,7 +328,9 @@ static inline ssize_t ad7816_set_oti(struct device *dev,
+ 	/* setup runtime power management */
+-	ret = pm_runtime_set_active(dev);
++	ret = devm_pm_runtime_set_active_enabled(dev);
  	if (ret)
- 		return -EIO;
+ 		return ret;
+-	pm_runtime_get_noresume(dev);
+-	pm_runtime_enable(dev);
++
+ 	pm_runtime_set_autosuspend_delay(dev, INV_ICM42600_SUSPEND_DELAY_MS);
+ 	pm_runtime_use_autosuspend(dev);
+-	pm_runtime_put(dev);
  
-+	mutex_lock(&chip->io_lock);
- 	chip->oti_data[chip->channel_id] = data;
-+	mutex_unlock(&chip->io_lock);
- 
- 	return len;
+-	return devm_add_action_or_reset(dev, inv_icm42600_disable_pm, dev);
++	return ret;
  }
-@@ -363,6 +371,7 @@ static int ad7816_probe(struct spi_device *spi_dev)
- 	dev_set_drvdata(&spi_dev->dev, indio_dev);
+ EXPORT_SYMBOL_NS_GPL(inv_icm42600_core_probe, "IIO_ICM42600");
  
- 	chip->spi_dev = spi_dev;
-+	mutex_init(&chip->io_lock);
- 	for (i = 0; i <= AD7816_CS_MAX; i++)
- 		chip->oti_data[i] = 203;
- 
+
 -- 
-2.43.0
+2.50.1
 
