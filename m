@@ -1,135 +1,176 @@
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38D4D16FF37;
-	Wed,  3 Sep 2025 08:17:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B745B2EA146
+	for <linux-iio@vger.kernel.org>; Wed,  3 Sep 2025 10:28:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1756887453; cv=none; b=q+H1K1U1850HmEiGb7MIcNRtjcFK6RCn9QNOIWFzGB92pTw4tN6/oEoaHXkd+F8RAkCs77pKGe9IpVRyjK0W6iCXEBkqqI1iRf9Mzw11bNw4FAZcfnoyVtu5lG43vKjGZC/PoARUrXMrFHRtaYlkB5at84HkJBk5A53efKkSBuA=
+	t=1756895284; cv=none; b=jNbznY7Szf9J/kxoMGnPjq+1grHZqRoL5s4rP8RxOw7/GhLU9gHD8rqoWZVRvPS6gvCD5v0B1dcUAG0hjI/EAd7TOPH7lTHXFAczNazZmDZ+PPdFYdWcNpWUAK7SYc45STrUhKJFjpf9unRB9PQpOQm+srifzlmCs9U175oaqvk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1756887453; c=relaxed/simple;
-	bh=uKpnAzLWfdtof80SJFgJD/xWRmX2bPTYKS22SYlBT1w=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=UWDASLlbURu5WKQdJDwK/NXhGUgRrb4U+iXOn7qcvj+d1XORqfC/xbXSz5uU0IAxYQu2HiDujpjWYs8oIvwrMt6ug3h47W0pZ1rS16pqzmq3taDZ8uqiuhNIOoQrXlIjkXB+InSaBSVrJnd77A2Wr9Dk419Zapje0kjT/cRtEmM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MVjxMN0U; arc=none smtp.client-ip=209.85.208.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1756895284; c=relaxed/simple;
+	bh=SkomEAWMr7dqJHQ8N7mLoE3pG7f6Vktqf3CG8y3O0qo=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=AYgRM7mRM5NaVDoiWzljjABiEm3PMxb2/aFDg11zytZkk99QBFXvqljNZEAVGx94ZG0jrInjBs6y3kmFE8cWixDkoMtgPQPAyINbk1xwiLyir0ST9kqVYwyWfW3dJEig06XYIMcKdDQM+1qEVENlKXvSd8kxkzr4Q1GwOM3JhDE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=bc/t6wiO; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MVjxMN0U"
-Received: by mail-lj1-f182.google.com with SMTP id 38308e7fff4ca-336cee72f40so32910141fa.2;
-        Wed, 03 Sep 2025 01:17:31 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bc/t6wiO"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-45b804ed966so23325855e9.2
+        for <linux-iio@vger.kernel.org>; Wed, 03 Sep 2025 03:28:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1756887450; x=1757492250; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=e5yMQaGuq2FEjQpYIbcJelW06QsO4qSYIb22l/g+sVs=;
-        b=MVjxMN0U+cIcybAONrjqBzNPYQCZ4f7KEwjcOLEdPg+HkzVDddyRmUX2+8FILk6tXN
-         MSg1IxkrliHufVJqJjbVZRhuLNoRLRQg29JDO1xo9EYqaijWrITBMCCjzykGB8jlCLun
-         OyFRmWC9ONyxGKNeAeB6PYiwjm0kfWEPEPej+KyBkClTKhmkFnz+Y9e52/z+hj9Q5gAj
-         H0RCcEl/qHxmicHFlKW2dUkuy2oOgIDkTekH4n46zCWs8avxPvmH2q+V3PVd2wTccDFf
-         8cuDxDLvQXrfB4BvRNRp6ZA98Y8kqgrcOkkNJzuUV14i4LLDF+NLkNVC41n/WO7QZYw3
-         G1fA==
+        d=linaro.org; s=google; t=1756895281; x=1757500081; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=zjVYYBfOPHu5us2l/I8UPnxyPLOr26L4rzL/vKv2LrY=;
+        b=bc/t6wiOSzGTRwzBHJwjcZWc3NrpL+oE0G3dawPq60iMEhV/zdvdka2j+voEQ8minM
+         jrdh0J9r+IusE6oBXEyjFmZI3fVbLDS1vJlGWLtrq9vGlq3h+2DAlJeiY8LuAHfVIj8Q
+         +hwaV65+CClatmXSVNxsOoJ2YfaQH2QQrcWY7Pbirm5+pzHGfwt4rscupuYl4uXrtL8h
+         hKoVU8rs+nUTRac34YdugcMq8SZevy1Hw6ksGFdooLYt47AuX9/fSm7NgA7Iczk7mFWF
+         TRvoXl7ivbnwyZzYZ4zCfZDSrFsHd1eq+BhBWu63vjjVY/VuFbbskjL0eMuLqqxzchtm
+         OB0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1756887450; x=1757492250;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=e5yMQaGuq2FEjQpYIbcJelW06QsO4qSYIb22l/g+sVs=;
-        b=psZGpJFYHxy6/ZVk0V7Q3aXC1chxoz55AhGldK/vJcTg453j0H4u54+Fv3REszcHyh
-         xR0K7OdcPl/IOX0V2d8HF9O1oIF5RKF111UVwf3yaKTfgG+22PDy9xo16IcunK5wCvJk
-         8beHggB3FJHeP5N0Z1ts/v0KNW9VFsL0/HgDF/BX3xwNxcHkfk7Daqnan8b2tC9LCUml
-         16pwZVK5nnFbqkjHQMHKyU4KcZkj2Ud5cm3aKIG+81nrIyDkxSdiwHlXAHtHCFCjMX2F
-         oonencpk1RixWIg2tPQOuyeDqmWd4cZmQZLWYW0w0x/EC1IDhqpXFL/ezk2Tcdn3iod+
-         yysQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUKTdkZ2lKOkTCrQskq2/sEy9FzYiAlohJHRkLQE3C3DzYGxs1Hu7TX1rYTwD7VmwqZU2CLZP/1Nt3S@vger.kernel.org, AJvYcCUYo9WzEGzlgxoSb9IrWHxFkhBw96fLfbeddnZIKVtP1vUG13ZwU2sCTGy1Dfu0thnnqaYMX1k/a3JO7vQw@vger.kernel.org, AJvYcCW4AarsVBe3Qo/Sby1LU38nLwCDYZrU788X1Nk50fDMDmAiF5IO5LxSVGEZyKlXRfzBvnfxqai1haFd@vger.kernel.org, AJvYcCXYBdlUHNgIWRA8y8bVPPyRxMpxB5OxsnJnPi+bOy/LfRdq04jdRXYoQumHF56KODTwQSS9X9mQDzblgQ==@vger.kernel.org
-X-Gm-Message-State: AOJu0YzKFl7UJnFeyhOWweRbGPukWsFv+vXy18SGVYIKoMuMFoihfS4a
-	pA2ONU3/ZZTtULQRUTkdvu6PmPItRSr++B96MpufditWqz5Jnf6nTj4g
-X-Gm-Gg: ASbGncvKxAdidM7zO6ECcegqe732alcCREAfFV2c9qLKFnqXaPXyUXm1EqbBcR7DEK4
-	DS8FDereguT5iiS4qwUiv+GWtnTIx+zSP6ZYCebYmSq9r0J5/CpYvzsERbzHvaEKhGZ6aER1c8Z
-	UR76QGo/aqwitAls5HwKN7nOKjLbxv02Z92jXqnB9koY7VV1z6YJKszGTSyI+vwy2lNc6UhHss8
-	aAdqT7SblVh6heo7buHXHn2oHEurSwowFO14bLmiOrzhjohtINh7skQFQCGCbVvOZqln9+m9MQw
-	AfyRL9NjcQh9FmyFEk34GC3GnGE3g5VLDDHtdVqqXjt6ETXvKp7v6/L1TksbvxG3q49bDRhflhB
-	fQ3UCTlHNZTnZNFPp/VOrdNDnngRXG2rSKuW32uYt5ngBTWHKaR/wXX+3PGXAArTDuX4KT4uxCH
-	kk3GPr
-X-Google-Smtp-Source: AGHT+IG+YijVHFyUxNVvzXnWLLiyTtyGCjk3sCs0cNHeF6s+anfHpB6noxI0ggPIV9/xDPtaPgyzkA==
-X-Received: by 2002:a2e:a4d8:0:b0:32a:6e20:7cdb with SMTP id 38308e7fff4ca-336ca997e26mr28937091fa.17.1756887449970;
-        Wed, 03 Sep 2025 01:17:29 -0700 (PDT)
-Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 38308e7fff4ca-337f5032df6sm8788741fa.39.2025.09.03.01.17.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 03 Sep 2025 01:17:29 -0700 (PDT)
-Message-ID: <86f7a107-cf69-40d2-9f96-e2025e28eaa7@gmail.com>
-Date: Wed, 3 Sep 2025 11:17:28 +0300
+        d=1e100.net; s=20230601; t=1756895281; x=1757500081;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=zjVYYBfOPHu5us2l/I8UPnxyPLOr26L4rzL/vKv2LrY=;
+        b=PLQ52p60A1CPDEeOZGUEjKL4emtkGiwyEkm2tCU414RBTfEFo3z1+sa8EhRdjO+YzD
+         Cpob3yB9omw6XCJX0UveQGbb08NoPadO4N31AVD/xKqygK4nTVZ+Iqrc0Jl9sv/M49Cp
+         Vkxts6K0BlX7wKgIm3PWT2y+nCJPodGeqBaVwvnymz5V8XXxIWezKkck60wwaeotmB//
+         1gjNx3T5KbbccF1ZXls/aBBCdpD8lJrOibqIPkUd07FeJWzH3WjJJdpZs81+YZOngmay
+         4Ln7cdO8pBAwMwfyN13AmWY/6mtKresHSPhos2wVD55SMDLnBFH3uaoLsZ8waOqT8chG
+         B+EA==
+X-Gm-Message-State: AOJu0Yw9tDcxbMDuWNsCR9LHKiJW5KOwZjXVYEXwPGLaN+pWXA6CX9pn
+	AaZzHzVpItcnvkGQrqE8zQmF36LKhGk4kZG4P+CI5sIdgOsuQjUe8V3STY4HNB/UHJ9LdYBEw5q
+	5jW8s
+X-Gm-Gg: ASbGnctzb8Z7BN8WNEfnZ7FMzQPhgQbyDzmTpGOHEHoBgDlgmOXU+XfKjujSUFpz6eo
+	AGb1uf/BkuigamgDl0TlbKbUTkhTJFBPrZKOu2cwaOyoDBMQkSnmtm59dIx6cyd3dj0L/h2sLBB
+	1HnA0ZZRlLqNCiGC/pwDp7c0BlwAWCd/To9nYztWnMDRiVN4IqAYe4acfcF+Ejm8lr6d7tZj2OV
+	vXHAc9g7uphcdSqJnjsFjsrblSfNEY3V3RiJchhHpsMlyn3+CT/x1yR/moO9be7d8oqqN0V6kSV
+	pZ5aqUJpbVvTTR42Pnde/h7VbFLV0mObafwFpN3HRt6bIAbkh46op73uGgH9zjsy1svIqVeVTom
+	Jxvus5alMNJ3XiWqw8wllCtBusugNf1EeOXrcDrjfOL0qU3M7/h6gfA==
+X-Google-Smtp-Source: AGHT+IGSUORYJzBn7O96WsftU689TaesXpGZtVK+MUa18v5BS6kecsxo5Ta5IrwC022eEBj1aLixuA==
+X-Received: by 2002:a05:600c:3b9a:b0:45b:8866:50fd with SMTP id 5b1f17b1804b1-45b88665357mr104875915e9.32.1756895280998;
+        Wed, 03 Sep 2025 03:28:00 -0700 (PDT)
+Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:2a30:223c:d73b:565a])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-45b9ab7c7dbsm55992855e9.11.2025.09.03.03.28.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 03 Sep 2025 03:28:00 -0700 (PDT)
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	conor+dt@kernel.org,
+	krzk+dt@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	s32@nxp.com,
+	linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	chester62515@gmail.com,
+	mbrugger@suse.com,
+	ghennadi.procopciuc@oss.nxp.com
+Subject: [PATCH v1 1/2] dt-bindings: iio: adc: Add the NXP SAR ADC for s32g2/3 platforms
+Date: Wed,  3 Sep 2025 12:27:55 +0200
+Message-ID: <20250903102756.1748596-2-daniel.lezcano@linaro.org>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20250903102756.1748596-1-daniel.lezcano@linaro.org>
+References: <20250903102756.1748596-1-daniel.lezcano@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] iio: adc: Support ROHM BD79112 ADC/GPIO
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-To: Linus Walleij <linus.walleij@linaro.org>,
- Michael Walle <mwalle@kernel.org>
-Cc: Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Bartosz Golaszewski <brgl@bgdev.pl>,
- Marcelo Schmitt <marcelo.schmitt@analog.com>,
- Javier Carrasco <javier.carrasco.cruz@gmail.com>,
- Tobias Sperling <tobias.sperling@softing.com>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Trevor Gamblin <tgamblin@baylibre.com>, Esteban Blanc <eblanc@baylibre.com>,
- Ramona Alexandra Nechita <ramona.nechita@analog.com>,
- Thomas Bonnefille <thomas.bonnefille@bootlin.com>,
- Hans de Goede <hansg@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org
-References: <cover.1756813980.git.mazziesaccount@gmail.com>
- <08929460fe11dd0b749c50a72a634423f13f4104.1756813980.git.mazziesaccount@gmail.com>
- <CACRpkdbOhm4PawYZUxU1SMi8WGr-LxhR1jhSVPDvPh3TTp8SWQ@mail.gmail.com>
- <ffef0fa6-45e4-467b-b264-1df15754d213@gmail.com>
- <CACRpkdbPzq6yKMHJXaFmXZSsttUkt5OAKRTSc_pjLwZZiZr7Gw@mail.gmail.com>
- <9f69e164-5e63-44c1-9354-90b8de2ca27c@gmail.com>
-Content-Language: en-US, en-AU, en-GB, en-BW
-In-Reply-To: <9f69e164-5e63-44c1-9354-90b8de2ca27c@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 03/09/2025 10:17, Matti Vaittinen wrote:
-> On 03/09/2025 09:47, Linus Walleij wrote:
->> On Wed, Sep 3, 2025 at 7:23 AM Matti Vaittinen 
->> <mazziesaccount@gmail.com> wrote:
->>
->>> Anyways, fast-forward to this day, I don't see it handling valid_mask. I
->>> think it is a must for this device/driver, where pins can be either
->>> GPIOs or ADC inputs.
->>
->> Why not just add a .init_valid_mask() to
->> struct gpio_regmap_config so it can just pass that
->> down to its gpio_chip?
-> 
-> Sigh. I suppose that would technically make sense. (So would allowing 
-> other IC-specific callbacks... ;) ).
-> 
->> OK I don't want to load you with too much extra work for
->> the driver, but it seems such a small thing for a blocker,
->> and Michael who wrote the library is really helpful
->> with extending the code, so consider it!
-> 
-> I suppose I can see how that works out. I am not a fan of maintaining 
-> the extra code. Thanks for the suggestion.
+The s32g2 and s32g3 NXP platforms have two instances of a Successive
+Approximation Register ADC. It supports the raw, trigger and scan
+modes which involves the DMA. Add their descriptions.
 
-After more thorough look, I don't think the gpio-regmap is flexible 
-enough for this IC (either). The BD79112 direction setting requires 
-accessing two registers (one for input, other for output), and I don't 
-see how this could be done with the current gpio-regmap.
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+---
+ .../bindings/iio/adc/nxp,s32g2-sar-adc.yaml   | 68 +++++++++++++++++++
+ 1 file changed, 68 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/nxp,s32g2-sar-adc.yaml
 
-...If only I was able to override the direction setting callback with IC 
-specific one, then I could use the regular gpio-regmap for all the rest...
+diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,s32g2-sar-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,s32g2-sar-adc.yaml
+new file mode 100644
+index 000000000000..dc6ec240f816
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/nxp,s32g2-sar-adc.yaml
+@@ -0,0 +1,68 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/nxp,s32g2-sar-adc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP Successive Approximation ADC
++
++description:
++  The NXP SAR ADC provides fast and accurate analog-to-digital
++  conversion using the Successive Approximation Register (SAR) method.
++  It has 12-bit resolution with 8 input channels. Conversions can be
++  launched in software or using hardware triggers. It supports
++  continuous and one-shot modes with separate registers.
++
++maintainers:
++  - Daniel Lezcano <daniel.lezcano@kernel.org>
++
++properties:
++  compatible:
++    oneOf:
++      - const: nxp,s32g2-sar-adc
++      - items:
++          - const: nxp,s32g3-sar-adc
++          - const: nxp,s32g2-sar-adc
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    minItems: 1
++
++  clock-names:
++    minItems: 1
++
++  dmas:
++    minItems: 1
++
++  dma-names:
++    const: rx
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++  - dmas
++  - dma-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    adc@401f8000 {
++        compatible = "nxp,s32g2-sar-adc";
++        reg = <0x401f8000 0x1000>;
++        interrupts = <GIC_SPI 70 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&clks 0x41>;
++        clock-names = "adc";
++        dmas = <&edma0 0 32>;
++        dma-names = "rx";
++    };
+-- 
+2.43.0
 
-Yours,
-	-- Matti
