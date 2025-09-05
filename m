@@ -1,132 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mx.olsak.net (mx.olsak.net [37.205.8.231])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C28642D5C6C;
-	Fri,  5 Sep 2025 10:42:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A12433CEB1;
+	Fri,  5 Sep 2025 11:01:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=37.205.8.231
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757068956; cv=none; b=NIJvHLJa29szJJ0JnUHMJ5+Fy7W66I8PyFUD7xniygAqvfJ2/pID653DFD3rvFUAXGFzLDfvq5aIvcztupXpWt4FQQ+EILgkVLJ8YWXc4aM8E6xSU/iLE2sRYBJsBwEkbY9b3MuwB0x52uLC1WK872U/BEpmpyN5SK8GJkQulPQ=
+	t=1757070092; cv=none; b=aG/Vbvdit06Gr96mtMPRtn93AgNMg0qDC4ISbSPO0gAbzBSjwszF+9ZwdPW6vT02kU/0tV0qwZL2D7bAP1YamJQqrd2SQ6PSPWZPBj8Dv/n3LbFsbj9bJUYGns5SdIeNhkwzsQtYloIhCe2tG8TXrNMy9+ZwlmUrJV8ZLdOvuWA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757068956; c=relaxed/simple;
-	bh=+I+6Ob8PFYzlZ0UQk3wSgdfHmrOiugnSzIZKb8fhQEk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nH24OTQ5/53JFbLpARH9vl4IsdQWpCgF+/E666Cv7FtI3Gj8Y/B1DIAigK3gvg4/4GnUqOEMHnWNNRxQ8ptVCGUZxIJbVS9TtYgIBUrVyO/3eLGMk4RieILOBel5N8Tq0MiU8EN9/68WleOCdSHpLaJuNpTHMSRL0SsHJLFJAsU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FJb78JN9; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1757070092; c=relaxed/simple;
+	bh=8lO4nr828tWQwLxmjjV752k5xLRe27/oDan4m5yXVVA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=KK0y7X770tz0vQPj03qf1tiq0+888m0z8dy/2QEovkCyW8Uw7oeYSpHuoXbGKRzUs9UEGysNV4MtJ+tPvpKQ323fiBVrEwxe0eBaskbMDGBdGxS3kQFZlnRblq5Aamc/c7KqCuOOqC9jNnrxEbDDUV//ed+6Q2LTkPI9Y/UDz+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=dujemihanovic.xyz; spf=pass smtp.mailfrom=dujemihanovic.xyz; dkim=pass (2048-bit key) header.d=dujemihanovic.xyz header.i=@dujemihanovic.xyz header.b=rdhKJR0Z; arc=none smtp.client-ip=37.205.8.231
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=dujemihanovic.xyz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dujemihanovic.xyz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FJb78JN9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98C01C4CEF1;
-	Fri,  5 Sep 2025 10:42:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1757068955;
-	bh=+I+6Ob8PFYzlZ0UQk3wSgdfHmrOiugnSzIZKb8fhQEk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=FJb78JN9Aubn7l+hWFWK2KhL4xncFQiznSU1O+VqVeYoJWONHp4RcAOCsvHduuTfN
-	 +nudQ518QxKtrWwCOfBIzTxEEJAGpU/jUCrDlsuwWXRXBBl2j3vBt1Ltw4szB1n87y
-	 h7x6GKYVobYJ3QTWpsrKBMfGZ15EnA7yYfTpXWUhfEXV1WWfuuJ0vS7hs6fM/OGabb
-	 EOWmFuoLcS3oeA8aB09KPBnxvbJrH5hUgrl3aMa2r81N5UzhAZ8Ke81VM3YcHVbnvU
-	 RJi3JEAJOsT+TM9h+WPDYgQX6anuQ91U155dHwC08dgE3WTQvlLfDX33vEVEuA2/m4
-	 2N9AdUNBEKQBA==
-Date: Fri, 5 Sep 2025 11:42:15 +0100
-From: Mark Brown <broonie@kernel.org>
-To: Xichao Zhao <zhao.xichao@vivo.com>
-Cc: Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Samuel Holland <samuel@sholland.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Guillaume La Roque <glaroque@baylibre.com>,
-	Miquel Raynal <miquel.raynal@bootlin.com>,
-	Florian Fainelli <florian.fainelli@broadcom.com>,
-	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
-	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
-	Markus Mayer <mmayer@broadcom.com>, Shawn Guo <shawnguo@kernel.org>,
-	Sascha Hauer <s.hauer@pengutronix.de>,
-	Pengutronix Kernel Team <kernel@pengutronix.de>,
-	Fabio Estevam <festevam@gmail.com>,
-	zhanghongchen <zhanghongchen@loongson.cn>,
-	Yinbo Zhu <zhuyinbo@loongson.cn>, Amit Kucheria <amitk@kernel.org>,
-	Thara Gopinath <thara.gopinath@gmail.com>,
-	Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund@ragnatech.se>,
-	Geert Uytterhoeven <geert+renesas@glider.be>,
-	Magnus Damm <magnus.damm@gmail.com>,
-	Heiko Stuebner <heiko@sntech.de>,
-	Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Alim Akhtar <alim.akhtar@samsung.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	Jonathan Hunter <jonathanh@nvidia.com>,
-	Talel Shenhar <talel@amazon.com>,
-	Eduardo Valentin <edubezval@gmail.com>, Keerthy <j-keerthy@ti.com>,
-	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-	Masami Hiramatsu <mhiramat@kernel.org>,
-	"open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
-	open list <linux-kernel@vger.kernel.org>,
-	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-	"moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel@lists.infradead.org>,
-	"open list:ARM/Allwinner sunXi SoC support" <linux-sunxi@lists.linux.dev>,
-	"open list:THERMAL" <linux-pm@vger.kernel.org>,
-	"open list:THERMAL DRIVER FOR AMLOGIC SOCS" <linux-amlogic@lists.infradead.org>,
-	"moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" <linux-rpi-kernel@lists.infradead.org>,
-	"open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <imx@lists.linux.dev>,
-	"open list:QUALCOMM TSENS THERMAL DRIVER" <linux-arm-msm@vger.kernel.org>,
-	"open list:RENESAS R-CAR THERMAL DRIVERS" <linux-renesas-soc@vger.kernel.org>,
-	"open list:ARM/Rockchip SoC support" <linux-rockchip@lists.infradead.org>,
-	"open list:SAMSUNG THERMAL DRIVER" <linux-samsung-soc@vger.kernel.org>,
-	"moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>,
-	"open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>,
-	"open list:TI BANDGAP AND THERMAL DRIVER" <linux-omap@vger.kernel.org>
-Subject: Re: [PATCH 04/12] regulator: max8973: Remove redundant error log
- prints
-Message-ID: <2f060139-7446-4cb1-910d-791918b28f51@sirena.org.uk>
-References: <20250905072423.368123-1-zhao.xichao@vivo.com>
- <20250905072423.368123-5-zhao.xichao@vivo.com>
+	dkim=pass (2048-bit key) header.d=dujemihanovic.xyz header.i=@dujemihanovic.xyz header.b="rdhKJR0Z"
+DKIM-Signature: a=rsa-sha256; bh=NNf4fuAZROXF/tF+4WNY4vZ8skBqcJAXIMX4FqXGMYk=;
+ c=relaxed/relaxed; d=dujemihanovic.xyz;
+ h=Subject:Subject:Sender:To:To:Cc:Cc:From:From:Date:Date:MIME-Version:MIME-Version:Content-Type:Content-Type:Content-Transfer-Encoding:Content-Transfer-Encoding:Reply-To:In-Reply-To:In-Reply-To:Message-Id:Message-Id:References:References:Autocrypt:Openpgp;
+ i=@dujemihanovic.xyz; s=default; t=1757070065; v=1; x=1757502065;
+ b=rdhKJR0Zn09b5uxXZxfBfxlqaLmzyLEZl7fpK7rI7w7usJ38R4t8HBQ3Sd1vCtiaboTY/8LO
+ W93jL/9Zp5lTuX9BSCxExTUL585UZUGE3Oxr8JU7yOVk928E8yHrVEhT8a5CGtvFsIqrfeWsdOp
+ q/ZhGZBxBBLU5IrQ1lZL2UfMWFCdII6/0P7ardUh5RQqVvKG4s/baQliBlRRw7TEZXNnaJdDJTV
+ OykD3mIGkXgBe2wb2+84yRaI5Gy88XabSzyL+9tnVFlSi5FlORahtBdyxJt1Rq6ihG/WqdQ4pYv
+ oabcwFiDl0hNh/o2Mb/NEfDfx8n+hKVCrQbjdFvh07DKQ==
+Received: by mx.olsak.net (envelope-sender <duje@dujemihanovic.xyz>) with
+ ESMTPS id 610bc954; Fri, 05 Sep 2025 13:01:05 +0200
+From: =?utf-8?q?Duje_Mihanovi=C4=87?= <duje@dujemihanovic.xyz>
+Date: Fri, 05 Sep 2025 13:00:54 +0200
+Subject: [PATCH v3 1/3] dt-bindings: mfd: 88pm886: Add #io-channel-cells
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="hSBr52yOin/qCY9V"
-Content-Disposition: inline
-In-Reply-To: <20250905072423.368123-5-zhao.xichao@vivo.com>
-X-Cookie: He who laughs, lasts.
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20250905-88pm886-gpadc-v3-1-4601ad9ccb51@dujemihanovic.xyz>
+References: <20250905-88pm886-gpadc-v3-0-4601ad9ccb51@dujemihanovic.xyz>
+In-Reply-To: <20250905-88pm886-gpadc-v3-0-4601ad9ccb51@dujemihanovic.xyz>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Karel Balej <balejk@matfyz.cz>, 
+ Lee Jones <lee@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>
+Cc: David Wronek <david@mainlining.org>, phone-devel@vger.kernel.org, 
+ ~postmarketos/upstreaming@lists.sr.ht, linux-kernel@vger.kernel.org, 
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ =?utf-8?q?Duje_Mihanovi=C4=87?= <duje@dujemihanovic.xyz>, 
+ Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1291;
+ i=duje@dujemihanovic.xyz; s=20240706; h=from:subject:message-id;
+ bh=8lO4nr828tWQwLxmjjV752k5xLRe27/oDan4m5yXVVA=;
+ b=owGbwMvMwCW21nBykGv/WmbG02pJDBm7Dr2vuKGlEyV4iFspSqD90Lo5c9PztwoJGBe+vPp3y
+ k1d30XJHaUsDGJcDLJiiiy5/x2v8X4W2bo9e5kBzBxWJpAhDFycAjCRq5MZ/oc8Ph7+dEFnU++E
+ CSefv50T2nH3xYo6Bj5drsfqjdNNPk1g+B+2Rd5vV5AIZ/KkhCsad347TedeJ/r0AevWr7P/hj9
+ MjmEDAA==
+X-Developer-Key: i=duje@dujemihanovic.xyz; a=openpgp;
+ fpr=6DFF41D60DF314B5B76BA630AD319352458FAD03
 
+Add an #io-channel-cells property to the Marvell 88PM886 PMIC binding to
+allow referencing the IO channels exposed by its GPADC.
 
---hSBr52yOin/qCY9V
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Acked-by: Karel Balej <balejk@matfyz.cz> # for the PMIC
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Signed-off-by: Duje Mihanović <duje@dujemihanovic.xyz>
+---
+v3:
+- Update trailers
 
-On Fri, Sep 05, 2025 at 03:23:56PM +0800, Xichao Zhao wrote:
-> devm_thermal_of_zone_register() prints error log messages when
-> it fails, so there is no need to print error log messages again.
+v2:
+- New patch
+---
+ Documentation/devicetree/bindings/mfd/marvell,88pm886-a1.yaml | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-Acked-by: Mark Brown <broonie@kernel.org>
+diff --git a/Documentation/devicetree/bindings/mfd/marvell,88pm886-a1.yaml b/Documentation/devicetree/bindings/mfd/marvell,88pm886-a1.yaml
+index d6a71c912b76f7d24787d346d4b4cd51919b1cf6..92a72a99fd790805e775727e39d457608fa1795d 100644
+--- a/Documentation/devicetree/bindings/mfd/marvell,88pm886-a1.yaml
++++ b/Documentation/devicetree/bindings/mfd/marvell,88pm886-a1.yaml
+@@ -35,6 +35,9 @@ properties:
+         description: LDO or buck regulator.
+         unevaluatedProperties: false
+ 
++  '#io-channel-cells':
++    const: 1
++
+ required:
+   - compatible
+   - reg
+@@ -53,6 +56,7 @@ examples:
+         reg = <0x30>;
+         interrupts = <0 4 IRQ_TYPE_LEVEL_HIGH>;
+         interrupt-parent = <&gic>;
++        #io-channel-cells = <1>;
+         wakeup-source;
+ 
+         regulators {
 
---hSBr52yOin/qCY9V
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+2.51.0
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmi6vocACgkQJNaLcl1U
-h9A9Ggf8DfcaSZB9QDgKG3CTzMYN6dA03Qdzw6VmLM9o81xSSlRvqsWSYEm0G86q
-z/jyW0esF1zaS9pQ+ni9mgIUQQvCBr6/d1pY2UJpJd3z1xw2eJUWIgNHIfLsaKDk
-ZIixofNJ8unn3ayIaYKW6fWIhZcoMRY+yXMtvdtUD2vxzMFOerQ1dFKakBEsu9Nj
-JTQTup0slsEXR1tzi/4HBQfftUi+24MUDaRkOnfPfOn1D5gmUaZ6c07B1fGp9dmM
-5c73MTNcN3xonK265AHjzWrgi4sJoXEeqfN7SmvHqspnq6df5zHeKUvFD9Jx+lEw
-n/HlWMMkt3wAlpDVMMsmqqlWaSrGcA==
-=sWAM
------END PGP SIGNATURE-----
-
---hSBr52yOin/qCY9V--
