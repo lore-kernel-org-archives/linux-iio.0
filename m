@@ -1,139 +1,135 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE484306B12;
-	Fri,  5 Sep 2025 17:52:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F0A731C572
+	for <linux-iio@vger.kernel.org>; Fri,  5 Sep 2025 18:12:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757094776; cv=none; b=Z1HlyJIE+Ptge3bA4HVzt6w6F+Cb/hWcnBARsKmuw2vX5ueehRp5OMBeVIX4ApXo59UV0m3HD9EuzQBwYq5y5t/45KVPZOcUrsjEO0Icd+HvtVhRDo9vGAgKl4klH5ZeXEYFSwIs+5ODFt9oH52/IzC6ZZNMhuF8YJ21FoHheds=
+	t=1757095969; cv=none; b=PU6HumFG2loNZ6U1730Jh4v1Z3rYxSmv7tBhyAu0nvp6WNIV/HKzfquiko2RgBmsnOPcy37dTCiRYuBhFFD/5g+BawCRhnZIH0Ncl4rMxEZGTCLnvNKYeL0eRVxG0FCw8ljkvf6/hkf+VRGP9YYqsf5g5AmQ2z6VG05tYeNdUAI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757094776; c=relaxed/simple;
-	bh=IJtObEWpiLPMjQekK9obEf61YS9ij6JQAfy2pMSQMPE=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=a49wuvU1LZmhqhFtRgB+GGvlOUA0yRnzk6bGzdGTR1kyeINybfFFeGHHbrucgX39NzQuQXX3/wdMRWXna5oJkCU62hLPzYanyj+ojbSg1SLBPzxG6Xwg8x6eT/7hr5hoOO0MSaWaQf9XQszBoBq9lP/qIA3VcfB/GfkdUIHsj3Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=FEaPe/hZ; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1757095969; c=relaxed/simple;
+	bh=8Xz0jDmXgFfZmGsZzujrdevuB+dP2gKFc/ViqMkwSBM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Tt1Y5GB2xEV21b0TiiLEGdblP31bNfsZpK8JSwpCZ1DNN7ftyvZKwq7F260KKtgexVBvbRhARJot3BTwfaW/wJJfpWrHPaE/9oMIuRrdG+k8c996ACAezIRmp4LNYL/HRl8zfYAhpQ7erXbdU7vpuRPgR/nAZmx31NWWms+puII=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=v9jorCiC; arc=none smtp.client-ip=209.85.160.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="FEaPe/hZ"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 585DrHAt031272;
-	Fri, 5 Sep 2025 11:53:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=LrmIc/v0AASjQQ/lqZEv4EstG2a
-	zFtLZr04gfZV6lQw=; b=FEaPe/hZBNb5xsuSHk3QwI9nHD3DCRT82s9naO2Fqik
-	9+AFggIIJa1Nu+bqJrAWgKJKhXWEoLFCi7UyT3u33HaSz0Yyr7cQ3NLcWCv10rC1
-	3MI6+rB9AF526nKsPJHHFSp1zrQnAOie85BOqh/shjEvOQGlBx+cTiCIg1r26Sij
-	aW2/Nk2gtSgKB4LAhJhwF1Hwa8n9OwMI06kYHUKQqv1Foh/op67FNDttUlwd9qsT
-	iCA9KQSaAhDQGfF8lsUgDRx/uA2jc/s8JySzK8ghLLCoQSJ5xB+UycslScCwK95H
-	LUdsL547j3GoOBqusJYjXWhMfQZvAxsUwnY11tTyBKw==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 48ypq4up8k-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 05 Sep 2025 11:53:06 -0400 (EDT)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 585Fr5Mq053254
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 5 Sep 2025 11:53:05 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Fri, 5 Sep 2025 11:53:05 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.10; Fri, 5 Sep 2025 11:53:05 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.10 via Frontend
- Transport; Fri, 5 Sep 2025 11:53:05 -0400
-Received: from JSANTO12-L01.ad.analog.com ([10.65.60.206])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 585Fqp1O020473;
-	Fri, 5 Sep 2025 11:52:53 -0400
-From: Jonathan Santos <Jonathan.Santos@analog.com>
-To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC: Jonathan Santos <Jonathan.Santos@analog.com>, <lars@metafoo.de>,
-        <jic23@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
-        <andy@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
-        <conor+dt@kernel.org>, <marcelo.schmitt1@gmail.com>,
-        <jonath4nns@gmail.com>
-Subject: [PATCH v3 0/4] Add support for ADAQ776x-1 ADC Family
-Date: Fri, 5 Sep 2025 06:48:59 -0300
-Message-ID: <cover.1757001160.git.Jonathan.Santos@analog.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="v9jorCiC"
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-30cce892b7dso1031589fac.1
+        for <linux-iio@vger.kernel.org>; Fri, 05 Sep 2025 11:12:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1757095965; x=1757700765; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=2hjnZ92wkXGB+M9U4sBlOBLi5ruvnazck0COy1mDnAY=;
+        b=v9jorCiCnEHH6FW9Pon5aH/LSEgO2Z2T9dJlbzFjGAs59lyHdiUs1AKYqDxKwtqQCo
+         tdTPkIOuq0Tq113xeoQW1ruDudJ2r4TQL6wSBx8VkPz4um02Jfpte/VJwb5XPAX0ZkBf
+         rBeJWg2ibF/mNBSsCFvw6g/gyw7tcnL/msFCpA61i1T3tDPGswrhNZmV44q/CI0S6igz
+         H1TCjKxOmv3PmLm8i9k2UdQBL9iwrq/kEsl8B6yJxeorX1ZK7cRNr91P1ckoyTDDugqF
+         rlyeS/h/Hgov3owqDsQtyG6uk3WfMvrhPt+FTaxTcvvQQYY151uZBuwM4Z04zi+861iy
+         M3+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1757095965; x=1757700765;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2hjnZ92wkXGB+M9U4sBlOBLi5ruvnazck0COy1mDnAY=;
+        b=NJLZTip5rRiTCKXG+hSCBtuv1nN4pziJ1T9uX8SgNDbJjLy1yc5Y75KiCXQojQu47y
+         Ps9GPWgxP2ygu7jDrNcI1XMw4b0MCPAT8mvXBgBd3oZY9cAkup1myrfj7DFvbhBIbagS
+         MFos+jy1msaaf5DXyYqVK+QeisuMIk8RuPqStr3LEj36oefeXQLYUtRYFDGDyhAE4Dor
+         8jjDdT2ClixzQuCMDqr7ZiSbbiOZUi1RRAU6h0oOtbHK4eoMh6+td+dtWTCMKde8ytTv
+         zuNKXexvnCSHa+XHySlYxsWdRQJhHYTuFxFobAwCBqL/d2MXj4WycnA41PtSDoXPNYGN
+         WR4A==
+X-Gm-Message-State: AOJu0YwMje85Cz8tBkgXE6s1MCrkswWL2vVtYTxEOBqw0RjAiPHEM7MR
+	g9X748+yRczOCJzMI1rJXWT4bP7DTaRlY1bezzQC0Elfobdd58nE5TkgqJcjVqJfMF4=
+X-Gm-Gg: ASbGncvKteEVJ6su72gkU2f8R+iH5SFDMk6UbRs34XpoIzRhcc1LEAXmhzNbZZ57IiT
+	9Dx/P4dLoAjl2VaHJygnIZ+paKxA7dGM1+7s+lnAbS9/xYCiMfIu23tgewR7LTc6zCbJerbTlNk
+	NkFkVgFNzqPvyCpGyKkNyQdstvCr8lVk3z5ec83uxRLMTX+6S/T1WAPykAl+hhKFBpICuTR/yd+
+	Aj+ESHp4S5OsKsB2fcBhn/voTn1XVrloD9tha+bh8N5N8pACZ8vRI/WxDr5HBHpsCCu+K842bk3
+	ATcWF7UOXLIZpui8pQMqIF6lKF0sRO62YomNCNlC8N7lEzK0Ckdxnb5nUQzumzuhZGigam9GOlQ
+	1ZRqfrvkF1MaW1wSMzItTBlX73NU=
+X-Google-Smtp-Source: AGHT+IGHV5aSKy1+WEZwvDJjVkimaepc+JPc/mUPv20bZpQa4SUghBoJ74xi+wAqFEpb0W0MNDXBEg==
+X-Received: by 2002:a05:6871:70b:b0:31d:8c33:59b4 with SMTP id 586e51a60fabf-31d8c342342mr2674795fac.28.1757095965282;
+        Fri, 05 Sep 2025 11:12:45 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:1d00:52e:cda3:16cc:72bb])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-31d686398e1sm3052292fac.13.2025.09.05.11.12.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Sep 2025 11:12:44 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+Subject: [PATCH 0/6] iio: adc: ad7124: add filter support
+Date: Fri, 05 Sep 2025 13:11:55 -0500
+Message-Id: <20250905-iio-adc-ad7124-add-filter-support-v1-0-aee3834be6a9@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: TXGafzvLlGnU5NDzRU3_PJmR72-dPRlN
-X-Proofpoint-GUID: TXGafzvLlGnU5NDzRU3_PJmR72-dPRlN
-X-Authority-Analysis: v=2.4 cv=LrKSymdc c=1 sm=1 tr=0 ts=68bb0762 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=yJojWOMRYYMA:10 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8 a=grXmcW2ECOK5zeps9zwA:9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTA1MDAxNiBTYWx0ZWRfX7XsKwpkYs7pA
- IYVCu5RTzV6SjKlyYu2Jt+lof78lhdB0elz8HSZrzv4zkM3w7KZJF+vz1BzCMc4jQO3btf678Vg
- n8keE5JXPhc8tkvzGy6/C1c7DJ/LgU5URADJWLPks0NN2hx9O3nIYQnyPRdACxCkXs4mRD0T3Ru
- 7hGUd+RHjyeTn1svO/vpTpBFIWpd/4hvE7Xw2Gpc+IEK6lAdK171kWJBBOSBbVqEdE6NkHCR1L+
- DyNxrImi67ONLD29wTpeLOh4814BrYHIaVHT3OKjt9Dnhejc5rEQibB5ZTn2te/3Al6xOZ+9IMi
- BXMCC6Y891FAvz86i0u0BcH8G+NX+zYC/PU5SwpqVnt9NSIjbimfsPXhowVxMaAIiybLc0CGYR5
- hUmA22OD
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
- definitions=2025-09-05_05,2025-09-04_01,2025-03-28_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 impostorscore=0 clxscore=1015 phishscore=0 adultscore=0
- malwarescore=0 bulkscore=0 priorityscore=1501 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.19.0-2507300000 definitions=main-2509050016
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAOsnu2gC/2WOwY7CMAxEf6XKGW+T0FLRE/+x4pCmDlhqmhKna
+ BHi3zHluAdrPJY8b56KMROy6qunyngnpjSLMbtK+aubLwg0ildW21Z3tgWiBG70Mp2xjcgIgaa
+ CGXhdlpQLjMYfsd2HQzO0SnKWjIH+Nsbv+esz3lZBle9RRWR2G6qvNtBR/wNJBLCLCwR5hpAyx
+ HUqBJ+WM05w34OBTtsQtGnQH8xpcI+Jhow/PsVPj8ExguyRSl9JJ64zxiQdakHVooXmizq/Xm+
+ jO98BFQEAAA==
+X-Change-ID: 20250725-iio-adc-ad7124-add-filter-support-d1c9e53f64b5
+To: Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ David Lechner <dlechner@baylibre.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1638; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=8Xz0jDmXgFfZmGsZzujrdevuB+dP2gKFc/ViqMkwSBM=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBouyfuSGFJbQrLF3TgXsnwRzTxuPJG28ERgq2xM
+ 8Blp2tq7BiJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaLsn7gAKCRDCzCAB/wGP
+ wJ2hB/0ZiafirPR4koj+Sk9aifQcfWkSsSlHR5abc4HfTLVDKhK4+OXTUmN/qInmoqBh7ogBqaK
+ 4iEBH5gSfBdYOIP8D25DZalLAGtLTSqdxW650Vsyix6cap15IqT8UteNpyGc3IjamuDrTbrBrgA
+ DF4qErFm3OwkvL/f98U5MyvItku9j5fEtFUt1Q9x5UNpvscdIGSgsRuE1U5sIAN6hfBeJDu4yrt
+ 97F+wgBA98U+wl52P4UvLFlExRMfIpmH/AvYGr/ObRGpcTiNPjMuu/q8YEDlBIV4n9d18GAhmLS
+ M40kbSUxJk4z5hPEr3Vkg0dlX/lASdagaFrA15VvEH0TgIJC
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-This adds support for the ADAQ7767-1, ADAQ7768-1 and ADAQ7769-1 devices. 
+The AD7124 family of chips supports a number of different filter modes.
+This series eventually gets around to adding support for selecting the
+filter mode at runtime after first doing some cleanups to the existing
+code.
 
-The ADAQ7768-1 and ADAQ7769-1 integrate a programmable gain amplifier (PGA)
-with 7 and 8 gain options, respectively. The ADAQ7767-1 and ADAQ7769-1 
-also feature a 3-pin selectable Anti-aliasing filter (AAF) gain.
+The first 3 patches are just updating things to use newer APIs.
+
+The 4th patch is addressing a shortcoming in the driver where the
+sampling_frequency attributes were being limited to an integer value.
+
+The 5th patch is the one that finally adds support for filter_type
+and filter_type_available attributes.
+
+And the last patch documents one new filter_type that was used that we
+haven't seen before.
+
+This applies on top of "[PATCH v3] iio: adc: ad7124: fix sample rate for
+multi-channel use"
 
 ---
-Changes in v3:
-* Renamed adi,gain-milli to adi,aaf-gain-bp. Now it represents basis points
-  (one hundredth of a percent).
-* ad7768_channel_masks removed along with available_masks element in
-  ad7768_chip_info struct. It does not add anything for single channels,
-  so not needed, at least for now.
-* New patch adding 64-bit fractional number types to math.h.
-* Moved aaf gain parsing to its own function, and now returning after
-  warning to avoid setting a variable when it shouldn't (avoid confusion).
-* ad7768_set_pga_gain(): removed the pgia enable check, relying on the
-  regmap cache.
-* Addressed other review comments, see individual patches.
+David Lechner (6):
+      iio: adc: ad7124: use clamp()
+      iio: adc: ad7124: use read_avail() for scale_available
+      iio: adc: ad7124: use guard(mutex) to simplify return paths
+      iio: adc: ad7124: support fractional sampling_frequency
+      iio: adc: ad7124: add filter support
+      iio: ABI: document "sinc4+rej60" filter_type
 
-Changes in v2:
-* adi,aaf-gain property renamed to adi,gain-milli. Default value added.
-* fixed some commit messages. 
-* Added 'select RATIONAL' to Kconfig.
-* Added lock to protect PGA value access.
-* rewrote AAF gain check and replaced error returns with warnings.
-* Addressed other review comments, see individual patches.
-* Link to v1: https://lore.kernel.org/linux-iio/cover.1754617360.git.Jonathan.Santos@analog.com/T/#t
+ Documentation/ABI/testing/sysfs-bus-iio |   1 +
+ drivers/iio/adc/ad7124.c                | 380 +++++++++++++++++++++++++-------
+ 2 files changed, 297 insertions(+), 84 deletions(-)
 ---
-Jonathan Santos (4):
-  dt-bindings: iio: adc: ad7768-1: add new supported parts
-  iio: adc: ad7768-1: introduce chip info for future multidevice support
-  math.h: Add 64-bit fractional numbers types
-  iio: adc: ad7768-1: add support for ADAQ776x-1 ADC Family
+base-commit: d1487b0b78720b86ec2a2ac7acc683ec90627e5b
+change-id: 20250725-iio-adc-ad7124-add-filter-support-d1c9e53f64b5
+prerequisite-message-id: 20250905-iio-adc-ad7124-fix-samp-freq-for-multi-channel-v3-1-702ff014ec61@baylibre.com
+prerequisite-patch-id: b70de00c7ae218fa6c1e6aca34fb4210922f6d86
 
- .../bindings/iio/adc/adi,ad7768-1.yaml        |  44 ++-
- drivers/iio/adc/Kconfig                       |   1 +
- drivers/iio/adc/ad7768-1.c                    | 359 ++++++++++++++++--
- include/linux/math.h                          |   2 +
- 4 files changed, 377 insertions(+), 29 deletions(-)
-
-
-base-commit: 91812d3843409c235f336f32f1c37ddc790f1e03
+Best regards,
 -- 
-2.34.1
+David Lechner <dlechner@baylibre.com>
 
