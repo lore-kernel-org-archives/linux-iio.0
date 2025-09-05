@@ -1,196 +1,132 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCA5627C17F
-	for <linux-iio@vger.kernel.org>; Fri,  5 Sep 2025 09:44:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C28642D5C6C;
+	Fri,  5 Sep 2025 10:42:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757065488; cv=none; b=isthpg47ukSSH7k+GJWvgM7nP9u8gMXvAgcmSF8xq/uqOCSr4N5lRMh2EYgVY+cld18+0aFGmXP5E49oiZqQ6+4NTjt1Wu/evytMKOSTm7aKIte1/IE/l46uBq2WdcxAa+YQyRMZWhNoY/cBAfZw52Cxpal6qXGPbem3WP0Q5PY=
+	t=1757068956; cv=none; b=NIJvHLJa29szJJ0JnUHMJ5+Fy7W66I8PyFUD7xniygAqvfJ2/pID653DFD3rvFUAXGFzLDfvq5aIvcztupXpWt4FQQ+EILgkVLJ8YWXc4aM8E6xSU/iLE2sRYBJsBwEkbY9b3MuwB0x52uLC1WK872U/BEpmpyN5SK8GJkQulPQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757065488; c=relaxed/simple;
-	bh=6rMxYhDmqs/v7kj6WGuLgYVPHayU1LenJFACJct8AbQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Bkj509QPPYPb4PgjhILTnAOB7buRQ3YtZYN0vzdohbZQ6PHK2usW8At3ODOHufbESYiuIdBbm5PL9pvYIkYB0F3FqJeybV94xTfX/mv28f2IHwV/PgOINEfEkq3KV45Mp3MJMKbuEVyVNpUv2zDU5ENBtxfX0mfup7gLS8n1Q/Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=xiTfp4+Y; arc=none smtp.client-ip=209.85.221.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1757068956; c=relaxed/simple;
+	bh=+I+6Ob8PFYzlZ0UQk3wSgdfHmrOiugnSzIZKb8fhQEk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nH24OTQ5/53JFbLpARH9vl4IsdQWpCgF+/E666Cv7FtI3Gj8Y/B1DIAigK3gvg4/4GnUqOEMHnWNNRxQ8ptVCGUZxIJbVS9TtYgIBUrVyO/3eLGMk4RieILOBel5N8Tq0MiU8EN9/68WleOCdSHpLaJuNpTHMSRL0SsHJLFJAsU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FJb78JN9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xiTfp4+Y"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-3e46fac8421so241215f8f.2
-        for <linux-iio@vger.kernel.org>; Fri, 05 Sep 2025 02:44:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1757065485; x=1757670285; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=vg+TuI+bOQ+/K0B+1sySJ2VK4abRlS/VZd6mZadbe2g=;
-        b=xiTfp4+YeasCu5odA010ly5KiKT9EEKcqYRTXMkgiaKb/FCblnUNXhZ0JhJ68h2n6a
-         auuNVTjrRc/Ml9aIGBk+/Vkdwe3czPSBbuLJvBsAKrqqcK2sT8Vduyb5CIiWMfWCXR3H
-         60SkkMbFQguQbuwydon7K7ZSTRQeigsdfwXkLPxGyQWrZe2tBdzE+IoBGTJLoTyT7czm
-         J11wjX7fs4eu4QYyFNnyEPAShVwEwMpddAdN6eY0SJ+TORjvA8BKzXuQEO2taS8IATjN
-         g7DdrKYdOrhCzcNh6H8JCxAIaKpl/VtjGeZviTetgBWQOyzLTerjXQTTZC/Ju2J7dVsi
-         3DzA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1757065485; x=1757670285;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=vg+TuI+bOQ+/K0B+1sySJ2VK4abRlS/VZd6mZadbe2g=;
-        b=kqtgrHWVwvs1X9nF7qv6Bm38H4U8q1XBVtZEL+Cr9w/042EuXKR2PE/Ydzw+s+ENPV
-         9OTgldrJzVzOkU6P5CpgetdhGq1PdVuzUOgTXosRBrsgt0CBzJ4nchOwi7V4ITlHPI1k
-         r0lJIgE+UBPSir+4J2H36KkTUe0ig3cMqAs1jPBUI6cnFS7qkl5exYB2yHvTyX6WLXOg
-         kQkwRAdgIS7aSV9VNVpNUKOwsNicerOmnekTYkE5m1/2FUCvrjZKWj8BL/aTLObDg2yG
-         8oGG79BzupwZFSrJZEX9x8jSR/FOD8O51Bfz4kqq98K8XGv5/RG4JZ8knractoes7rHm
-         yUhQ==
-X-Gm-Message-State: AOJu0YwfNw7ey8Ke3A+qYFAkujnycaBVgqOZ1dJbLVj+6kguvfKprNm7
-	ANyvRW8sHDic26pgn7hVQP0A55nO2q6BXmaQoK0V2MZqkw3MROd9TTHSqvsT1YCcHrE=
-X-Gm-Gg: ASbGncvg9ze5UN0ql+PwxH2LgJTkuDRoiXN2eybBMLiq+DV710bKd5SW0xxYUhDqagM
-	2Go0aadjyU534TD1/ML1txy3EEerK29utVYZt5EJ7d78CJkbLUAlnX5Y78QYT2sNAMLpgIrsynV
-	g9AERnmUtUFKac0ld9k48/vEVaP2pVIlxi1ev0IP321Vo1r7obWX0lm3SRMAPyQdSusvH2j7VUr
-	odxKJe3ziS9jJJ1CQeoey2Y2hcKIfTCLiBbYU9yuytXEpbKGoCfp3IF0KB/2EwHRUitRDzAuGPY
-	sjfFTyB/HP4HpXpgoQBzn3DEGb50QsQ67qPaLCb1rOOGiHyBCgGs/zh/zgW5SPxxrW3je8CNCEf
-	AKqyhXT26D0ngmnvxmhWxY6T1d8lvpYxRtiPCHyJf8iWz/0R7cFDjwb8xt1TvVytFpoqkeCxmrh
-	h9on0BKuYSPVpt
-X-Google-Smtp-Source: AGHT+IFodgj442lDLbVLMi4njhpRzF0c5s/MBO2AX5hxfzUKZQkDG+LP5IKBwiCAYGAM+uTD1n1Odw==
-X-Received: by 2002:a05:6000:250d:b0:3d6:b35b:153b with SMTP id ffacd0b85a97d-3d6b35b2262mr15384906f8f.26.1757065485080;
-        Fri, 05 Sep 2025 02:44:45 -0700 (PDT)
-Received: from ?IPV6:2a05:6e02:1041:c10:43b0:7b3b:e0d9:6992? ([2a05:6e02:1041:c10:43b0:7b3b:e0d9:6992])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-3e2f6af9791sm2928315f8f.26.2025.09.05.02.44.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Sep 2025 02:44:44 -0700 (PDT)
-Message-ID: <edc8e024-e425-49de-bfa2-44218fe72e26@linaro.org>
-Date: Fri, 5 Sep 2025 11:44:43 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FJb78JN9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 98C01C4CEF1;
+	Fri,  5 Sep 2025 10:42:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757068955;
+	bh=+I+6Ob8PFYzlZ0UQk3wSgdfHmrOiugnSzIZKb8fhQEk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=FJb78JN9Aubn7l+hWFWK2KhL4xncFQiznSU1O+VqVeYoJWONHp4RcAOCsvHduuTfN
+	 +nudQ518QxKtrWwCOfBIzTxEEJAGpU/jUCrDlsuwWXRXBBl2j3vBt1Ltw4szB1n87y
+	 h7x6GKYVobYJ3QTWpsrKBMfGZ15EnA7yYfTpXWUhfEXV1WWfuuJ0vS7hs6fM/OGabb
+	 EOWmFuoLcS3oeA8aB09KPBnxvbJrH5hUgrl3aMa2r81N5UzhAZ8Ke81VM3YcHVbnvU
+	 RJi3JEAJOsT+TM9h+WPDYgQX6anuQ91U155dHwC08dgE3WTQvlLfDX33vEVEuA2/m4
+	 2N9AdUNBEKQBA==
+Date: Fri, 5 Sep 2025 11:42:15 +0100
+From: Mark Brown <broonie@kernel.org>
+To: Xichao Zhao <zhao.xichao@vivo.com>
+Cc: Jean Delvare <jdelvare@suse.com>, Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Samuel Holland <samuel@sholland.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	Guillaume La Roque <glaroque@baylibre.com>,
+	Miquel Raynal <miquel.raynal@bootlin.com>,
+	Florian Fainelli <florian.fainelli@broadcom.com>,
+	Broadcom internal kernel review list <bcm-kernel-feedback-list@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>, Scott Branden <sbranden@broadcom.com>,
+	Markus Mayer <mmayer@broadcom.com>, Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <s.hauer@pengutronix.de>,
+	Pengutronix Kernel Team <kernel@pengutronix.de>,
+	Fabio Estevam <festevam@gmail.com>,
+	zhanghongchen <zhanghongchen@loongson.cn>,
+	Yinbo Zhu <zhuyinbo@loongson.cn>, Amit Kucheria <amitk@kernel.org>,
+	Thara Gopinath <thara.gopinath@gmail.com>,
+	Niklas =?iso-8859-1?Q?S=F6derlund?= <niklas.soderlund@ragnatech.se>,
+	Geert Uytterhoeven <geert+renesas@glider.be>,
+	Magnus Damm <magnus.damm@gmail.com>,
+	Heiko Stuebner <heiko@sntech.de>,
+	Bartlomiej Zolnierkiewicz <bzolnier@gmail.com>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Alim Akhtar <alim.akhtar@samsung.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	Jonathan Hunter <jonathanh@nvidia.com>,
+	Talel Shenhar <talel@amazon.com>,
+	Eduardo Valentin <edubezval@gmail.com>, Keerthy <j-keerthy@ti.com>,
+	Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+	Masami Hiramatsu <mhiramat@kernel.org>,
+	"open list:HARDWARE MONITORING" <linux-hwmon@vger.kernel.org>,
+	open list <linux-kernel@vger.kernel.org>,
+	"open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+	"moderated list:ARM/Allwinner sunXi SoC support" <linux-arm-kernel@lists.infradead.org>,
+	"open list:ARM/Allwinner sunXi SoC support" <linux-sunxi@lists.linux.dev>,
+	"open list:THERMAL" <linux-pm@vger.kernel.org>,
+	"open list:THERMAL DRIVER FOR AMLOGIC SOCS" <linux-amlogic@lists.infradead.org>,
+	"moderated list:BROADCOM BCM2711/BCM2835 ARM ARCHITECTURE" <linux-rpi-kernel@lists.infradead.org>,
+	"open list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" <imx@lists.linux.dev>,
+	"open list:QUALCOMM TSENS THERMAL DRIVER" <linux-arm-msm@vger.kernel.org>,
+	"open list:RENESAS R-CAR THERMAL DRIVERS" <linux-renesas-soc@vger.kernel.org>,
+	"open list:ARM/Rockchip SoC support" <linux-rockchip@lists.infradead.org>,
+	"open list:SAMSUNG THERMAL DRIVER" <linux-samsung-soc@vger.kernel.org>,
+	"moderated list:ARM/STM32 ARCHITECTURE" <linux-stm32@st-md-mailman.stormreply.com>,
+	"open list:TEGRA ARCHITECTURE SUPPORT" <linux-tegra@vger.kernel.org>,
+	"open list:TI BANDGAP AND THERMAL DRIVER" <linux-omap@vger.kernel.org>
+Subject: Re: [PATCH 04/12] regulator: max8973: Remove redundant error log
+ prints
+Message-ID: <2f060139-7446-4cb1-910d-791918b28f51@sirena.org.uk>
+References: <20250905072423.368123-1-zhao.xichao@vivo.com>
+ <20250905072423.368123-5-zhao.xichao@vivo.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 2/2] iio: adc: Add the NXP SAR ADC support for the
- s32g2/3 platforms
-To: David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <noname.nuno@gmail.com>, jic23@kernel.org, nuno.sa@analog.com,
- andy@kernel.org, robh@kernel.org, conor+dt@kernel.org, krzk+dt@kernel.org
-Cc: linux-iio@vger.kernel.org, s32@nxp.com, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, chester62515@gmail.com, mbrugger@suse.com,
- ghennadi.procopciuc@oss.nxp.com
-References: <20250903102756.1748596-1-daniel.lezcano@linaro.org>
- <20250903102756.1748596-3-daniel.lezcano@linaro.org>
- <eedbfbfd1ba625b6750eb3ae20a69301b8bc3ef9.camel@gmail.com>
- <0bfce1eb-69f1-4dae-b461-234eb98ffce1@linaro.org>
- <a3373804-08a4-4526-a432-c21a74ea3d6b@baylibre.com>
-Content-Language: en-US
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <a3373804-08a4-4526-a432-c21a74ea3d6b@baylibre.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-
-On 04/09/2025 19:49, David Lechner wrote:
-> On 9/4/25 12:40 PM, Daniel Lezcano wrote:
->>
->> Hi Nuno,
->>
->> On 03/09/2025 13:20, Nuno Sá wrote:
->>> On Wed, 2025-09-03 at 12:27 +0200, Daniel Lezcano wrote:
->>>> From: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
->>>>
->>>> The NXP S32G2 and S32G3 platforms integrate a successive approximation
->>>> register (SAR) ADC. Two instances are available, each providing 8
->>>> multiplexed input channels with 12-bit resolution. The conversion rate
->>>> is up to 1 Msps depending on the configuration and sampling window.
->>>>
->>>> The SAR ADC supports raw, buffer, and trigger modes. It can operate
->>>> in both single-shot and continuous conversion modes, with optional
->>>> hardware triggering through the cross-trigger unit (CTU) or external
->>>> events. An internal prescaler allows adjusting the sampling clock,
->>>> while per-channel programmable sampling times provide fine-grained
->>>> trade-offs between accuracy and latency. Automatic calibration is
->>>> performed at probe time to minimize offset and gain errors.
->>>>
->>>> The driver is derived from the BSP implementation and has been partly
->>>> rewritten to comply with upstream requirements. For this reason, all
->>>> contributors are listed as co-developers, while the author refers to
->>>> the initial BSP driver file creator.
->>>>
->>>> All modes have been validated on the S32G274-RDB2 platform using an
->>>> externally generated square wave captured by the ADC. Tests covered
->>>> buffered streaming via IIO, trigger synchronization, and accuracy
->>>> verification against a precision laboratory signal source.
->>>>
->>>> Co-developed-by: Alexandru-Catalin Ionita <alexandru-catalin.ionita@nxp.com>
->>>> Signed-off-by: Alexandru-Catalin Ionita <alexandru-catalin.ionita@nxp.com>
->>>> Co-developed-by: Ciprian Costea <ciprianmarian.costea@nxp.com>
->>>> Signed-off-by: Ciprian Costea <ciprianmarian.costea@nxp.com>
->>>> Co-developed-by: Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
->>>> Signed-off-by: Radu Pirea (NXP OSS) <radu-nicolae.pirea@oss.nxp.com>
->>>> Signed-off-by: Stefan-Gabriel Mirea <stefan-gabriel.mirea@nxp.com>
->>>> Co-developed-by: Daniel Lezcano <daniel.lezcano@linaro.org>
->>>> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
->>>> ---
->>
->> [ ... ]
->>
->>> The above needs some discussion at the very least. Have you considered the IIO
->>> DMA buffer interface? It should be extendable to accommodate any particularity
->>> of your usecase (or we should at least discuss it).
->>>
->>> With it, you also gain a userspace interface where you can actually share DMA
->>> buffers in a zero copy fashion. You can also share these buffers with USB
->>> gadgets. For instance, with libiio, you would be able to fetch samples from your
->>> host machine (through USB) in a very fast way (zero copy between IIO and USB).
->>>
->>> Setting up DMA to then "having" to push it to a SW buffer and needing a syscall
->>> to retrieve the data seems counter-productive.
->>
->> I've read a bit about the DMA engine. It is unclear how to use it and there are very few examples in the different drivers to refer to.
->>
->> This proposed driver supports the RAW, BUFFER and TRIGGERED.
->>
->> Shall I create an IIO device with the modes:
->>
->> indio_dev->modes =
->>      INDIO_DIRECT_MODE |
-> 
-> Only INDIO_DIRECT_MODE needs to be set here.
-> 
->>      INDIO_BUFFER_HARDWARE |
->>      INDIO_BUFFER_TRIGGERED
->>
->> And then use:
->>
->> devm_iio_triggered_buffer_setup()
-> 
-> Yes, use this and it will add INDIO_BUFFER_TRIGGERED to the flags.
-> 
->>
->> and
->>
->> devm_iio_dmaengine_buffer_setup_with_handle
-> 
-> Likewise, this will add INDIO_BUFFER_HARDWARE.
-> 
-> And you likely only need to call devm_iio_dmaengine_buffer_setup() which will
-> save some boilerplate code.
-
-What is still unclear for me is the trigger and the dma modes.
-
-If the dma engine is supported, I should use 
-devm_iio_dmaengine_buffer_setup_with_handle(), but will the trigger mode 
-be supported also automatically (I don't see a clear answer in the 
-documentation neither in the drivers) ?
-
-If not, shall I call devm_iio_triggered_buffer_setup() and 
-devm_iio_dmaengine_buffer_setup_with_handle() ?
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="hSBr52yOin/qCY9V"
+Content-Disposition: inline
+In-Reply-To: <20250905072423.368123-5-zhao.xichao@vivo.com>
+X-Cookie: He who laughs, lasts.
 
 
+--hSBr52yOin/qCY9V
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
+On Fri, Sep 05, 2025 at 03:23:56PM +0800, Xichao Zhao wrote:
+> devm_thermal_of_zone_register() prints error log messages when
+> it fails, so there is no need to print error log messages again.
 
+Acked-by: Mark Brown <broonie@kernel.org>
 
+--hSBr52yOin/qCY9V
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+-----BEGIN PGP SIGNATURE-----
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmi6vocACgkQJNaLcl1U
+h9A9Ggf8DfcaSZB9QDgKG3CTzMYN6dA03Qdzw6VmLM9o81xSSlRvqsWSYEm0G86q
+z/jyW0esF1zaS9pQ+ni9mgIUQQvCBr6/d1pY2UJpJd3z1xw2eJUWIgNHIfLsaKDk
+ZIixofNJ8unn3ayIaYKW6fWIhZcoMRY+yXMtvdtUD2vxzMFOerQ1dFKakBEsu9Nj
+JTQTup0slsEXR1tzi/4HBQfftUi+24MUDaRkOnfPfOn1D5gmUaZ6c07B1fGp9dmM
+5c73MTNcN3xonK265AHjzWrgi4sJoXEeqfN7SmvHqspnq6df5zHeKUvFD9Jx+lEw
+n/HlWMMkt3wAlpDVMMsmqqlWaSrGcA==
+=sWAM
+-----END PGP SIGNATURE-----
+
+--hSBr52yOin/qCY9V--
