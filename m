@@ -1,108 +1,60 @@
-Received: from smtp.smtpout.orange.fr (smtp-28.smtpout.orange.fr [80.12.242.28])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00EE623ABA1;
-	Sun,  7 Sep 2025 10:06:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=80.12.242.28
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF4821CC6A;
+	Sun,  7 Sep 2025 10:07:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757239571; cv=none; b=mpiQvfM66VsJKKZ0fxwJQOc1aqTq3BJfsuwbrg87tU8i908aauS3FkFxOUuHzQ8sThqxNjJGoFLUX7oHKsHG48nu0Iw4heZz5+QR9uqsY2HbqHKwyx+srqs+1zoXUrlKtMkq5AJbMsWr7OSjDWVkAHR3Pbma3vu2Bgd8Kp+fVkQ=
+	t=1757239620; cv=none; b=PdLwEXJnZAQgYhtwlRWTUhWktxQbNd+JxV2PDlK7chUnnoS0wnUY4btFuFmtha8/fvjeMCXX07Z2tWSbTMJdDkpIQp3vmAVyMf6WCYjDU+z4Prw8Sp4sNZ4Rag+kMOsXXm6sVMqhYvp+nKcms/Cp9gtd+Hc8EctF4bzkN5Q2A30=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757239571; c=relaxed/simple;
-	bh=GHvhM9FlWUM6e6T7HPIc6H001Vx3itz71YXkr7+4R0s=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=d4YPs1/57nIn/G9hN4/O4p3uD2H51xgP11RbDXh16hZPhxvHbvyc2UJVg9HLKqIJuZDzDvmwWxgWW97zsBPyyZRExn4UqgYQID31fQDNOoUPEPutA2koY/Zxn7PkjymCDPzwMPE4Lo4uxR6Gjk0/aMxomTtdBF6ikmbFX8drNjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=wanadoo.fr; spf=pass smtp.mailfrom=wanadoo.fr; dkim=pass (2048-bit key) header.d=wanadoo.fr header.i=@wanadoo.fr header.b=QzaLoyG+; arc=none smtp.client-ip=80.12.242.28
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=wanadoo.fr
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=wanadoo.fr
+	s=arc-20240116; t=1757239620; c=relaxed/simple;
+	bh=XUnf+qNwwLUICs5Io8Z3H1H0zXXbN6HpvHxAbpOmR88=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=dzHkg5VP7r3a2INys9mMmhXib60aDgR1eDFVg4sKaCeujLDT3TIWOvKU/cw1T5VfvhUpc92sKvOlS5Q+DUbPfqDpVNAEpBTihLcUtd2HR/aXHKZ9e87mguAdg8zKwJHVNU524xAua6miV9iuMk6QuzSzEg4rSmnuuTzako4yFEg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V4X5dUHQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=wanadoo.fr header.i=@wanadoo.fr header.b="QzaLoyG+"
-Received: from fedora.home ([IPv6:2a01:cb10:785:b00:8347:f260:7456:7662])
-	by smtp.orange.fr with ESMTPA
-	id vCGTuurvoWnbbvCGTudBOG; Sun, 07 Sep 2025 12:04:54 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wanadoo.fr;
-	s=t20230301; t=1757239495;
-	bh=j4wszVsZ5LxEb9ANpI/eE3wRjtrAQfQYbcfmSy7KxFY=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version;
-	b=QzaLoyG+qgm965ILkTq9Oesv17nJZFeFb+6/2XfDdLQEH+yXhD1vg9mlKZwyworh7
-	 oRKiXKHKHJR9lhGZm3MqDh5nqg40RBgGcwHEkkwXeqwZoDzot8F+buBynj1ajdNAMy
-	 jEKllGPCy2vsf312zTCTe0CFb5thYiicwq41J5i7cRR9z3d5sP4cYj7ZeDEogbMHGC
-	 gWBpkCGQLpnFNh+cEaO9Ce879Zk/4DOWpzWROP3V65FgIxuSPEn+Nq0/oxDGSk3HFW
-	 rTBA0nSbNxM7V+g+ZZNYqZjT6miW9x1KLs8KkPXkj2AmKT/hbeVYzjTj0SqXBDzJka
-	 +Yag+08hUc7Fg==
-X-ME-Helo: fedora.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 07 Sep 2025 12:04:55 +0200
-X-ME-IP: 2a01:cb10:785:b00:8347:f260:7456:7662
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To: Marius Cristea <marius.cristea@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] iio: adc: PAC1934: Use devm_mutex_init()
-Date: Sun,  7 Sep 2025 12:04:48 +0200
-Message-ID: <f92033415f43aa02fe862cb952e62b6ded949056.1757239464.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.51.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V4X5dUHQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 770CDC4CEF0;
+	Sun,  7 Sep 2025 10:06:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1757239620;
+	bh=XUnf+qNwwLUICs5Io8Z3H1H0zXXbN6HpvHxAbpOmR88=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=V4X5dUHQcM4Wv2/A8xF7i5/Coz1cVx8FFvKqJlj5ST/xTPQe2vExGXUMvN6WB2cVa
+	 iX3G60g5e33sJ/G6c12jYpvgCs9i3eKIvxOOvrs1s/zbf2jdSlpO6j7vR9TN3Ni9Sk
+	 Qa95vayGCIs90GtNCHb7xCs2+anu7Qe6mtr8KqTgxyhSRZ2XdDTqnP333Yv+bc7OtQ
+	 0dBP3FeDuF1wuKAsB6oaESZaeSCGIs+5IoY9uVg1clnA1JW1zPVcyjtcpRRnqDfsj6
+	 nInWP9DjOBtbdXf+k/grtM4mNEkLS2r6A8ws14WGTG0sJZdHIQ/RYvS+31/azpKkA/
+	 en6FKMXrVnA9g==
+Date: Sun, 7 Sep 2025 11:06:52 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/6] iio: adc: ad7124: use guard(mutex) to simplify
+ return paths
+Message-ID: <20250907110652.295b296b@jic23-huawei>
+In-Reply-To: <20250905-iio-adc-ad7124-add-filter-support-v1-3-aee3834be6a9@baylibre.com>
+References: <20250905-iio-adc-ad7124-add-filter-support-v1-0-aee3834be6a9@baylibre.com>
+	<20250905-iio-adc-ad7124-add-filter-support-v1-3-aee3834be6a9@baylibre.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.50; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Use devm_mutex_init() instead of hand-writing it.
+On Fri, 05 Sep 2025 13:11:58 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-This saves some LoC, improves readability and saves some space in the
-generated .o file.
+> Use guard(mutex) in a couple of functions to allow direct returns. This
+> simplifies the code a bit and will make later changes easier.
+> 
+> Signed-off-by: David Lechner <dlechner@baylibre.com>
+Another nice improvement that stands on it's own.
 
-Before:
-======
-   text	   data	    bss	    dec	    hex	filename
-  50985	  23992	    192	  75169	  125a1	drivers/iio/adc/pac1934.o
-
-After:
-=====
-   text	   data	    bss	    dec	    hex	filename
-  50654	  23920	    192	  74766	  1240e	drivers/iio/adc/pac1934.o
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
- drivers/iio/adc/pac1934.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
-
-diff --git a/drivers/iio/adc/pac1934.c b/drivers/iio/adc/pac1934.c
-index 2e442e46f679..48df16509260 100644
---- a/drivers/iio/adc/pac1934.c
-+++ b/drivers/iio/adc/pac1934.c
-@@ -1471,13 +1471,6 @@ static int pac1934_prep_custom_attributes(struct pac1934_chip_info *info,
- 	return 0;
- }
- 
--static void pac1934_mutex_destroy(void *data)
--{
--	struct mutex *lock = data;
--
--	mutex_destroy(lock);
--}
--
- static const struct iio_info pac1934_info = {
- 	.read_raw = pac1934_read_raw,
- 	.write_raw = pac1934_write_raw,
-@@ -1536,9 +1529,7 @@ static int pac1934_probe(struct i2c_client *client)
- 		return dev_err_probe(dev, ret,
- 				     "parameter parsing returned an error\n");
- 
--	mutex_init(&info->lock);
--	ret = devm_add_action_or_reset(dev, pac1934_mutex_destroy,
--				       &info->lock);
-+	ret = devm_mutex_init(dev, &info->lock);
- 	if (ret < 0)
- 		return ret;
- 
--- 
-2.51.0
-
+Applied.
