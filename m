@@ -1,139 +1,155 @@
-Received: from mail-106112.protonmail.ch (mail-106112.protonmail.ch [79.135.106.112])
+Received: from h4.cmg1.smtp.forpsi.com (h4.cmg1.smtp.forpsi.com [185.129.138.163])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 616123081A5;
-	Tue,  9 Sep 2025 07:11:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=79.135.106.112
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38403275112
+	for <linux-iio@vger.kernel.org>; Tue,  9 Sep 2025 08:59:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.129.138.163
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757401902; cv=none; b=msJcIxrfgDMEPBc3qTD/5ejuAVE6Cxyyq3D4JQ7ghIwtJYXbbCzG+1iCPGMAZxKdi2Hl3NR2MHUAVnNlyIVk0W80QoCap+5kh7+S726WXji8n19CsXipCbgWWtr+7OQh8OuBQsbyT+Yeoqjt1Gw2QVd3Q5E0yTwI6Mk51m5nIa8=
+	t=1757408354; cv=none; b=TR9ONt/jNmFcv4NjY3OxxcZo/uiAgwK/ZrV3NjcOHr4vx2/UyXRyT1Xs8tCAsFDgXI3XUeConxDx5pIEno5nN471qB8mxro0RHql0KfstvUuHvOPKF1wlxMWl6RrgJbqgA5FK9SxGCwrjeegGtH38hthUma6lA8WCXyyprG7nOs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757401902; c=relaxed/simple;
-	bh=gAaZ1TanExUpKz8pHuUzLT9Wce3FYd1z99y3OHAO5jE=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=eUAtheQoDZezVGaMc32oRS83P1aUMtn8u/AQaFKhTpGIMF8xRzRJ46icr47Q8XdC5caBs7E2m8Nz5H3f04HY+gRm0Eljcd0s6GcCDuYRGTIrsL82+1pvZYMZTiFewBO1izzUx4AGM5VKZYmLxX6njbE+I1QRCa7hD5OG1FxOK2s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com; spf=pass smtp.mailfrom=geanix.com; dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b=nsR9hqY2; arc=none smtp.client-ip=79.135.106.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=geanix.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=geanix.com
+	s=arc-20240116; t=1757408354; c=relaxed/simple;
+	bh=mZihvwBr7fR1a9HrhTmgjFlKaHvxCTPWQOKITOBrcyo=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=iZtl6u1HvIuLIZ4sPEXZGZYn+H03/ZrAZ9x6IqykA+fuGcfg/LpL+KKUe5kwI+kmD7s3StBOlHsnAZ71ApW69tdlIiJt9sd64tQqLoFbFzJA3X6ccnNYMbfCmUUU4WqjR4MybSoaGjMNXcuLV+z/2CJWh801FfeOtSmp26OONBQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=skyrain.eu; spf=none smtp.mailfrom=skyrain.eu; dkim=pass (2048-bit key) header.d=skyrain.eu header.i=@skyrain.eu header.b=TiDsnbUf; dkim=pass (2048-bit key) header.d=skyrain.eu header.i=@skyrain.eu header.b=TiDsnbUf; arc=none smtp.client-ip=185.129.138.163
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=skyrain.eu
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=skyrain.eu
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="nsR9hqY2"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=geanix.com;
-	s=protonmail2; t=1757401892; x=1757661092;
-	bh=O7HQJC6D4zuz6nZXJL5xFKWOz3c9FOfKqraNYIM6U/4=;
-	h=From:Date:Subject:Message-Id:References:In-Reply-To:To:Cc:From:To:
-	 Cc:Date:Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
-	b=nsR9hqY2cLbqQQvCPJfUeZ7AjiFsDIXQyRr2wiw9yPP0slzq3gc7gTdPyIYm3+Ptn
-	 TupKxhQjvo8wUWzAhcOSTCZ0hriUKmlL+3UlCbW/owItPR5GvTD69szc8glWe5jAvO
-	 bRKAs4jaIb3pxgkXDKd8NfvfKtj8uSMV560BVam9vO8Mj3c+BknNWBdzU+/M/9AtOs
-	 /6LOAgZGx6jGE7fVoZm0c3j1wgUPBnOLv/F6Lc4fYYUl0z5HB6YSF0XD+a06g/PWuR
-	 ozmm2V/dYqaY/h4d3x+U4PmLg84FgvG+R+S6k9/ve8+OPEV1RF9zF9tkdQTpo9fsRY
-	 S9jiY5GNNm1ow==
-X-Pm-Submission-Id: 4cLZkB6BL6z1DDrw
-From: Sean Nyekjaer <sean@geanix.com>
-Date: Tue, 09 Sep 2025 09:11:10 +0200
-Subject: [PATCH v4 4/5] iio: imu: inv_icm42600: Use
- devm_regulator_get_enable() for vdd regulator
+	dkim=pass (2048-bit key) header.d=skyrain.eu header.i=@skyrain.eu header.b="TiDsnbUf";
+	dkim=pass (2048-bit key) header.d=skyrain.eu header.i=@skyrain.eu header.b="TiDsnbUf"
+Received: from lt-aval.kyiv.ciklum.net ([85.248.43.180])
+	by cmgsmtp with ESMTPSA
+	id vu8pufLhfx9qovu9HuwPiH; Tue, 09 Sep 2025 10:56:24 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=skyrain.eu; s=f2022;
+	t=1757408184; bh=GlD2SlE9yoxd2ksFTCgBjcaCo+vjN0C+Gv7eogyzH3A=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version;
+	b=TiDsnbUfNzawxbe0H4HXz0L3ZNpiLkH4DLZyBTFT/gfsHkexyG+4tUT48y5GClzgY
+	 ceJTaCX/gOzlJVDKXM0zTZ1d2eHXvBj5UHn8VDKnZyBivrIPsj1CBksguDcjy5wyiH
+	 v6nHmacrF5fScxS/aUNlGGnB/NNwaNflKGXgzrOXjA2OsES/dNfQiZWeWnMsIwgD2w
+	 HkvpLREg8fAZVTUTHXGGMh4p0kWG02innEWNbLZ3MtHdbWIcYpDbSk02PEi/25tBM+
+	 IDNGH5i6W9hYSGVL1ObZCibD2XciqsZQ8uoR2kzbHUoMt/p9UmRa7us+x9r13eYuce
+	 NP3/U1x/5diYQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=skyrain.eu; s=f2022;
+	t=1757408184; bh=GlD2SlE9yoxd2ksFTCgBjcaCo+vjN0C+Gv7eogyzH3A=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version;
+	b=TiDsnbUfNzawxbe0H4HXz0L3ZNpiLkH4DLZyBTFT/gfsHkexyG+4tUT48y5GClzgY
+	 ceJTaCX/gOzlJVDKXM0zTZ1d2eHXvBj5UHn8VDKnZyBivrIPsj1CBksguDcjy5wyiH
+	 v6nHmacrF5fScxS/aUNlGGnB/NNwaNflKGXgzrOXjA2OsES/dNfQiZWeWnMsIwgD2w
+	 HkvpLREg8fAZVTUTHXGGMh4p0kWG02innEWNbLZ3MtHdbWIcYpDbSk02PEi/25tBM+
+	 IDNGH5i6W9hYSGVL1ObZCibD2XciqsZQ8uoR2kzbHUoMt/p9UmRa7us+x9r13eYuce
+	 NP3/U1x/5diYQ==
+From: Andrej Valek <andrej.v@skyrain.eu>
+To: linux-iio@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Puranjay Mohan <puranjay@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Valek Andrej <andrej.v@skyrain.eu>,
+	Kessler Markus <markus.kessler@hilti.com>
+Subject: [PATCH] drivers: iio: accel: fix ADX355 startup race condition
+Date: Tue,  9 Sep 2025 10:55:28 +0200
+Message-Id: <20250909085528.68966-1-andrej.v@skyrain.eu>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20250909-icm42pmreg-v4-4-2bf763662c5c@geanix.com>
-References: <20250909-icm42pmreg-v4-0-2bf763662c5c@geanix.com>
-In-Reply-To: <20250909-icm42pmreg-v4-0-2bf763662c5c@geanix.com>
-To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
- rafael@kernel.org, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-pm@vger.kernel.org, Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>, 
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- Sean Nyekjaer <sean@geanix.com>
-X-Mailer: b4 0.14.2
+Content-Transfer-Encoding: 8bit
+X-CMAE-Envelope: MS4xfLy/am1gnv8MfJ7bmFaiO2BfcQ2wiHRpAic7T5tEqizEVWnAqHb0ndcfM0yFYA2sPH/aUHQA//2trK8mWOFB4eH9cd+cOj2mBiSN5OCkDNvO2IhLeeFa
+ AZLpfTiLA81qThbswOTsH3ZR/wR5Qbc+GOh4smGhk9m0/BmGtyJnr2PRX9etxyVGVsXdtG6EcQa4H3GEtt2nQevMf12GnZ22cK/KL4DxGtP47+Qw3ak1Xd9G
+ gF/UF25Q8C4CyX2AdxihRmlgZB7mcflPZR1SLpcSjJTOp1WE5iQqzoTKgE6fGnE58nKrHiAxu+n86ukyeUYPhs2oQWcTH3VlEPa5hH+xFUsTAIaP4gwn+baY
+ NAvJu/zS3QSN6D0eGHmSuXBT5+10JYwgTIPhKUi1XJuE8reyv7o=
 
-The vdd regulator is not used for runtime power management, so it does
-not need explicit enable/disable handling.
-Use devm_regulator_get_enable() to let the regulator be managed
-automatically by devm.
+From: Valek Andrej <andrej.v@skyrain.eu>
 
-This simplifies the code by removing the manual enable and cleanup
-logic.
+There is an race-condition where device is not full working after SW reset.
+Therefore it's necessary to wait some time after reset and verify shadow
+registers values by reading and comparing the values before/after reset.
+This mechanism is described in datasheet at least from revision D.
 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Signed-off-by: Valek Andrej <andrej.v@skyrain.eu>
+Signed-off-by: Kessler Markus <markus.kessler@hilti.com>
 ---
- drivers/iio/imu/inv_icm42600/inv_icm42600.h      |  1 -
- drivers/iio/imu/inv_icm42600/inv_icm42600_core.c | 29 +++++-------------------
- 2 files changed, 6 insertions(+), 24 deletions(-)
+ drivers/iio/accel/adxl355_core.c | 48 ++++++++++++++++++++++++++++----
+ 1 file changed, 43 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-index 1430ab4f1dea5d5ba6277d74275fc44a6cd30eb8..c8b48a5c5ed0677bb35201d32934936faaf7a1a6 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-@@ -167,7 +167,6 @@ struct inv_icm42600_state {
- 	enum inv_icm42600_chip chip;
- 	const char *name;
- 	struct regmap *map;
--	struct regulator *vdd_supply;
- 	struct regulator *vddio_supply;
- 	int irq;
- 	struct iio_mount_matrix orientation;
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-index ee780f530dc8612cd25dc2216b153ef4e8c32b7b..4bf436c46f1cfd7e7e1bb911d94a0a566d63e791 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -697,17 +697,6 @@ static int inv_icm42600_enable_regulator_vddio(struct inv_icm42600_state *st)
- 	return 0;
- }
+diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
+index 2e00fd51b4d51..5386cd4766def 100644
+--- a/drivers/iio/accel/adxl355_core.c
++++ b/drivers/iio/accel/adxl355_core.c
+@@ -56,6 +56,8 @@
+ #define  ADXL355_POWER_CTL_DRDY_MSK	BIT(2)
+ #define ADXL355_SELF_TEST_REG		0x2E
+ #define ADXL355_RESET_REG		0x2F
++#define ADXL355_BASE_ADDR_SHADOW_REG	0x50
++#define ADXL355_SHADOW_REG_COUNT	5
  
--static void inv_icm42600_disable_vdd_reg(void *_data)
--{
--	struct inv_icm42600_state *st = _data;
--	const struct device *dev = regmap_get_device(st->map);
--	int ret;
--
--	ret = regulator_disable(st->vdd_supply);
--	if (ret)
--		dev_err(dev, "failed to disable vdd error %d\n", ret);
--}
--
- static void inv_icm42600_disable_vddio_reg(void *_data)
+ #define ADXL355_DEVID_AD_VAL		0xAD
+ #define ADXL355_DEVID_MST_VAL		0x1D
+@@ -294,6 +296,9 @@ static void adxl355_fill_3db_frequency_table(struct adxl355_data *data)
+ static int adxl355_setup(struct adxl355_data *data)
  {
- 	struct inv_icm42600_state *st = _data;
-@@ -765,23 +754,17 @@ int inv_icm42600_core_probe(struct regmap *regmap, int chip,
- 		return ret;
- 	}
+ 	unsigned int regval;
++	u8 shadow_regs[ADXL355_SHADOW_REG_COUNT];
++	bool shadow_regs_valid = false;
++	int retries = 5; /* retries for reading shadow registers */
+ 	int ret;
  
--	st->vdd_supply = devm_regulator_get(dev, "vdd");
--	if (IS_ERR(st->vdd_supply))
--		return PTR_ERR(st->vdd_supply);
-+	ret = devm_regulator_get_enable(dev, "vdd");
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to get vdd regulator\n");
-+
-+	msleep(INV_ICM42600_POWER_UP_TIME_MS);
+ 	ret = regmap_read(data->regmap, ADXL355_DEVID_AD_REG, &regval);
+@@ -321,14 +326,47 @@ static int adxl355_setup(struct adxl355_data *data)
+ 	if (regval != ADXL355_PARTID_VAL)
+ 		dev_warn(data->dev, "Invalid DEV ID 0x%02x\n", regval);
  
- 	st->vddio_supply = devm_regulator_get(dev, "vddio");
- 	if (IS_ERR(st->vddio_supply))
- 		return PTR_ERR(st->vddio_supply);
- 
--	ret = regulator_enable(st->vdd_supply);
--	if (ret)
--		return ret;
--	msleep(INV_ICM42600_POWER_UP_TIME_MS);
--
--	ret = devm_add_action_or_reset(dev, inv_icm42600_disable_vdd_reg, st);
--	if (ret)
--		return ret;
--
- 	ret = inv_icm42600_enable_regulator_vddio(st);
+-	/*
+-	 * Perform a software reset to make sure the device is in a consistent
+-	 * state after start-up.
+-	 */
+-	ret = regmap_write(data->regmap, ADXL355_RESET_REG, ADXL355_RESET_CODE);
++	/* Read shadow registers to be compared after reset */
++	ret = regmap_bulk_read(data->regmap,
++			       ADXL355_BASE_ADDR_SHADOW_REG,
++			       shadow_regs, ADXL355_SHADOW_REG_COUNT);
  	if (ret)
  		return ret;
-
+ 
++	/* Do software reset and check validity of the shadow registers */
++	while (!shadow_regs_valid && (retries > 0)) {
++		/*
++		 * Perform a software reset to make sure the device is in a consistent
++		 * state after start-up.
++		 */
++		ret = regmap_write(data->regmap, ADXL355_RESET_REG, ADXL355_RESET_CODE);
++		if (ret)
++			return ret;
++
++		/* Wait at least 5ms after software reset */
++		usleep_range(5000, 10000);
++
++		/* Read shadow registers for comparison */
++		ret = regmap_bulk_read(data->regmap,
++				       ADXL355_BASE_ADDR_SHADOW_REG,
++				       data->buffer.buf, ADXL355_SHADOW_REG_COUNT);
++		if (ret)
++			return ret;
++
++		/* Check if shadow registers have expected values */
++		shadow_regs_valid = !memcmp(shadow_regs, data->buffer.buf,
++					    ADXL355_SHADOW_REG_COUNT);
++		if (!shadow_regs_valid) {
++			retries--;
++			dev_warn(data->dev, "Shadow registers mismatch, retrying...\n");
++		}
++	}
++
++	if (!shadow_regs_valid) {
++		dev_err(data->dev, "Invalid shadow registers values\n");
++		return -EIO;
++	}
++
+ 	ret = regmap_update_bits(data->regmap, ADXL355_POWER_CTL_REG,
+ 				 ADXL355_POWER_CTL_DRDY_MSK,
+ 				 FIELD_PREP(ADXL355_POWER_CTL_DRDY_MSK, 1));
 -- 
-2.50.1
+2.34.1
 
