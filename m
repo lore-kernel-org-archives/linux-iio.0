@@ -1,42 +1,43 @@
 Received: from mail.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0597530F554;
-	Wed, 10 Sep 2025 07:58:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C13C30F7E3;
+	Wed, 10 Sep 2025 07:58:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757491093; cv=none; b=EaW3rlFluVA8b6vyiBVLwVuE76aOtELkh69jM/HhH1yonOJ71kpSCJsW/4z9BCpe5CXyAMBmaz9ek4rfq65cwFKN/iHv0KxyeNO+kV9BDXviW+Q9q4M8GK3o1+QPY6zopBEVM7qg8f+6ZJLWoBzhx2bp921vkf8vyjnA7E2d6VI=
+	t=1757491094; cv=none; b=SiLVaMmJQmq8TLG5/IzPCtp/bxKADudshwjZ401M2uhnqVOlN7ulrV/gLTphD42qD7uqo3MmyCwLX3V+Yw1y1nJGg0MQcbcEqFgpI0rssKcOd5tbCn3sDg/TXdzi1FI8BO6rqRY0sPl9mnmajMtEaibIe63RUV6jm+/vq+Xuz7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757491093; c=relaxed/simple;
-	bh=xCQ4R5IipziaPFirWiYAT8NBRrNTDlTpdFlbr3ypQUA=;
+	s=arc-20240116; t=1757491094; c=relaxed/simple;
+	bh=1scJCB+806UtNfxHO3wDXIOqiSHVx3IrG0YVu0piZBk=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=HWtAEnC4Z2VtvmTvXrd5r/MdbFdflzFNNCqTouRfUltmA9cCq0uWpX2T5BL8Yi8WcUe0PwZEoXyidzifJgyMMM3JSTrcoFhRv8dLamMN6MjjXlJ42c3zr5IOtQ4vrYcxsiWjEO9pcEJ00TbnWKfwNyWQgMY8Wo/KAi1xWVkFopY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=jq8ZgLop; arc=none smtp.client-ip=172.105.74.154
+	 In-Reply-To:To:Cc; b=RcyNza9MWQVy6tDXe1LFxdr2cO6bFt3WTWoe8p48a4scSpGncVmNTnwDQK95DuegA5vDacgP1t/53x1xhDcw9cUkAdT6jY0aQy/GtQNgb4BnhI3SABirjTKq1S/gV29QjJkHc1Zb8JzIHsA/FMbsXEttr9pHBxTL42+dZzJTmpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=g5XK6ZUL; arc=none smtp.client-ip=172.105.74.154
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="jq8ZgLop"
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="g5XK6ZUL"
 Received: from [10.212.0.13] (unknown [IPv6:2a02:2f0e:3503:4a00:e2d5:5eff:fed9:f1c4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 16981173BED;
-	Wed, 10 Sep 2025 10:58:03 +0300 (EEST)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 12611173BEF;
+	Wed, 10 Sep 2025 10:58:04 +0300 (EEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
-	s=mail; t=1757491083;
+	s=mail; t=1757491084;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=QdEGmUJ4rrZAPa1caKgA6NkLY7Tuz7+KbeKrR9ouOgY=;
-	b=jq8ZgLopmWzKvNx9ItTgcPQtTr5e8B1fJvag2PW97RB4qpqVPze6b+/zwyVGi6QSn/oDYa
-	s7/b6H/NRvAygkQjEbO0S17AiTMCb1WUTBIkAhGPCc6NbPgqZPdw6+o94l4YDKAfWPJ+wx
-	WTGipaolSGVIsDj8gMJjnGMyADDIsK02ts5lSGBPUohnv4Two5kDaA5GCRtnJVKJGnn05Q
-	ugo1+3TWsS15HbLaR0BGl8rQd2e92UXg8YFC2DVFjLSGPSk5RjD9j1FaP/gQBq+N0GGIO7
-	Mf9ljkNH+a8ABuNZ13uo/a/hO92hJnSIxXIDPfMxkEUiqj71tOus09Mqb1CbQw==
+	bh=AfJ3WGDj3DCbzW0qEw5j4fk1Oo5dl0J3mYsDlxO0xPM=;
+	b=g5XK6ZULBWfMavS2bQ7oqpVH2NX2kidmhUIMqkUzaNQibg8chlHbW71tiowyFynOUhVeDA
+	tM2U0lT2dUkiGnw6nbEnCEWYx+reMxnp6H7RMDpI5RhvYswabFJntO58UvitHyd3hZQ2OU
+	Yl/wb5QQX8V6n2q8Udp++baKx7C9lzgyt6SmMW/esUL4pBlApaFbcFgWU3UzHmGt1HyrUW
+	dIkEgKuG4DSAVyTdjlIk2CNSXX+WrBG4OxDRLZJw3w2DszJUc5Co3ZObEdBQIpizYnSi1Z
+	C6Ymtd/xbLUYURDpMBVDQAwkCAa2by3ijE/lB8ttorkkiteTP+k1E0+4IGSSCQ==
 From: Petre Rodan <petre.rodan@subdimension.ro>
-Date: Wed, 10 Sep 2025 10:57:10 +0300
-Subject: [PATCH v2 05/14] iio: accel: bma220: add open firmware table
+Date: Wed, 10 Sep 2025 10:57:12 +0300
+Subject: [PATCH v2 07/14] iio: accel: bma220: reset registers during init
+ stage
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -45,7 +46,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250910-bma220_improvements-v2-5-e23f4f2b9745@subdimension.ro>
+Message-Id: <20250910-bma220_improvements-v2-7-e23f4f2b9745@subdimension.ro>
 References: <20250910-bma220_improvements-v2-0-e23f4f2b9745@subdimension.ro>
 In-Reply-To: <20250910-bma220_improvements-v2-0-e23f4f2b9745@subdimension.ro>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -58,55 +59,146 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Petre Rodan <petre.rodan@subdimension.ro>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1021;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=3680;
  i=petre.rodan@subdimension.ro; h=from:subject:message-id;
- bh=xCQ4R5IipziaPFirWiYAT8NBRrNTDlTpdFlbr3ypQUA=;
- b=owEBbQKS/ZANAwAIAc8mmZmETn8wAcsmYgBowS+HssSDDQ8jhhQO7AnxHyi3PU5LdXf9CtEC8
- OQxdLZi55KJAjMEAAEIAB0WIQTYCn/BdhUZNew+X6nPJpmZhE5/MAUCaMEvhwAKCRDPJpmZhE5/
- MPdaEACaVKrrAeuji+1wneND0Qor5d6hDsQ3OpBywT4R48HXFYpd3RzfKYds1SXQ3I4lAsCsjmJ
- JXpqWiFgCBxhmXs6BPBr1M4+rmwA9Ej/3ORJcT7sVhGcuPeXhziJFJ9r08etFiiTD2/ewfHLSLY
- Pn40KCmkaZKWnTGaok2YEUDd+1a8UiyKMhMNTPgfNNWmUZkfADa7A1bZagJhthF8kvr74oGDKjT
- YBu1bs8Wnr+JKK5woxqtsIjVl8PSIeaVYTYqN/WghCxR4fiRjCWnYgEKW4n8jw3YidwIGrt1LU9
- MdWdZS404TT1OqDVVraWGriU5eKykUjFh1BK6AHKhT8wGflai2uQguQtUyDvLi+My0E1Lnn1cNv
- shG1ZQSKlwUgpiYQq16HohPAUlQXwfcV8bksywEWRcRhgCX4NrmZXjQfK1sFOL3JBgHxnCAfC8z
- K1HL6iYiTpkOxKSWMXwOuuJoN5ChVxgaOZ3L0DavcHVs2Hoty/rw/n45UabbHTP+nFwkglk/JlT
- SM6SBa3NiRchFKn6ladej+zQdoztPp262Jgur0Mv6DTzI8++8xplSC0Fdd5yAwUb+7+lkjA9GW7
- KzyjZwZqOCmClBddwBA8lwJ3t5eGn32s4dtYHjnYWihdxZ4GGIvdtS3iCbMivubeM3uyFzSgDaa
- 05ZAv7VqWjLfK2g==
+ bh=1scJCB+806UtNfxHO3wDXIOqiSHVx3IrG0YVu0piZBk=;
+ b=owEBbQKS/ZANAwAIAc8mmZmETn8wAcsmYgBowS+H+lbBm1fJRNRUAbqlyfztjKh1lRU6RZSq2
+ JRxA60heJqJAjMEAAEIAB0WIQTYCn/BdhUZNew+X6nPJpmZhE5/MAUCaMEvhwAKCRDPJpmZhE5/
+ MOxmEAC+9O+71EeYTsLfT7dvbo3t7T3N74DOKhNgg+kC1FIwVWuzEIcB5whTkTYo3Jk8ASAQ6ds
+ 9URirDv13cWoUT0XO/cg6wpjjA0dgUKKV59iULxlcvb5rIdc9IA+TZWHcFo9SpWt3e0aIsjIVRb
+ AU2zKMXdgccGORaZSBTkLTcRB1sUs+1QP1A8Drox2Q5Sp45r+vubybEer65UsmZky37rlrYH0zX
+ AdeHPRM66ffFAtChvG3rIYNcHoUzuzhkM36mfZrzuDzNxy+KZtjxk429kAyWF4dxV9Eby/eycgf
+ J0n+zhkTtC0kbfyytr9S3BylW2zKQsW7hJBAajbGiYupbIW9winyB/ZiZGq5TVil01ILJHzl1eX
+ 4MtODErwYCUoWrWsUpoUk9/bcLo2lww58+0y2NrDsVa/taZBGPKSvMoOfsjMoCBv4wqQ7dJHO7u
+ A0JYN0UB8kOZLJKM8i9UjNrlFsf1EFcbkt4dkV20fb3X3reZ0cVTlgjBA2jz6plmKw7bXQGCG5J
+ dGkWmJ1wdh8BCnBCne33PS3Vl6VlhhEPPoYzpNGw0z6J4ieLlupAGXg/X8p6jCSR3FCDTW1AI1i
+ EDcxuWR7aNSB4ksNlq1rh+Fx9LRCgHEnGJSsD3JK7rP0cor7VlPo1Bx+0qQDJjtc+wGXEKKy7+B
+ 3sTSgwPHpXIF4Fw==
 X-Developer-Key: i=petre.rodan@subdimension.ro; a=openpgp;
  fpr=D80A7FC176151935EC3E5FA9CF269999844E7F30
 
-Add open firmware entry to the spi driver.
+Bring all configuration registers to default values during device probe().
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
-no change
----
- drivers/iio/accel/bma220_spi.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iio/accel/bma220_core.c | 71 ++++++++++++++++++++++++++++-------------
+ 1 file changed, 49 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
-index 3ad5e43aae496d265a8cf198595bf824f8e73692..78820d90e39119d9755b6266a8329e11ffd55723 100644
---- a/drivers/iio/accel/bma220_spi.c
-+++ b/drivers/iio/accel/bma220_spi.c
-@@ -32,10 +32,17 @@ static const struct acpi_device_id bma220_acpi_id[] = {
- };
- MODULE_DEVICE_TABLE(spi, bma220_spi_id);
+diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_core.c
+index b6f1374a9cca52966c1055113710061a7284cf5a..322df516c90a7c645eeca579cae9803eb31caad1 100644
+--- a/drivers/iio/accel/bma220_core.c
++++ b/drivers/iio/accel/bma220_core.c
+@@ -29,12 +29,15 @@
+ #define BMA220_REG_ACCEL_Z			0x04
+ #define BMA220_REG_RANGE			0x11
+ #define BMA220_REG_SUSPEND			0x18
++#define BMA220_REG_SOFTRESET			0x19
  
-+static const struct of_device_id bma220_of_spi_match[] = {
-+	{ .compatible = "bosch,bma220" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, bma220_of_spi_match);
+ #define BMA220_CHIP_ID				0xDD
+ #define BMA220_READ_MASK			BIT(7)
+ #define BMA220_RANGE_MASK			GENMASK(1, 0)
+ #define BMA220_SUSPEND_SLEEP			0xFF
+ #define BMA220_SUSPEND_WAKE			0x00
++#define BMA220_RESET_MODE			0xFF
++#define BMA220_NONRESET_MODE			0x00
+ 
+ #define BMA220_DEVICE_NAME			"bma220"
+ 
+@@ -203,31 +206,28 @@ static const struct iio_info bma220_info = {
+ 	.read_avail		= bma220_read_avail,
+ };
+ 
+-static int bma220_init(struct spi_device *spi)
++static int bma220_reset(struct spi_device *spi, bool up)
+ {
+-	int ret;
+-	static const char * const regulator_names[] = { "vddd", "vddio", "vdda" };
++	int i, ret;
+ 
+-	ret = devm_regulator_bulk_get_enable(&spi->dev,
+-					     ARRAY_SIZE(regulator_names),
+-					     regulator_names);
+-	if (ret)
+-		return dev_err_probe(&spi->dev, ret, "Failed to get regulators\n");
++	/**
++	 * The chip can be reset by a simple register read.
++	 * We need up to 2 register reads of the softreset register
++	 * to make sure that the device is in the desired state.
++	 */
++	for (i = 0; i < 2; i++) {
++		ret = bma220_read_reg(spi, BMA220_REG_SOFTRESET);
++		if (ret < 0)
++			return ret;
+ 
+-	ret = bma220_read_reg(spi, BMA220_REG_ID);
+-	if (ret != BMA220_CHIP_ID)
+-		return -ENODEV;
++		if (up && (ret == BMA220_RESET_MODE))
++			return 0;
+ 
+-	/* Make sure the chip is powered on */
+-	ret = bma220_read_reg(spi, BMA220_REG_SUSPEND);
+-	if (ret == BMA220_SUSPEND_WAKE)
+-		ret = bma220_read_reg(spi, BMA220_REG_SUSPEND);
+-	if (ret < 0)
+-		return ret;
+-	if (ret == BMA220_SUSPEND_WAKE)
+-		return -EBUSY;
++		if (!up && (ret == BMA220_NONRESET_MODE))
++			return 0;
++	}
+ 
+-	return 0;
++	return -EBUSY;
+ }
+ 
+ static int bma220_power(struct spi_device *spi, bool up)
+@@ -244,16 +244,43 @@ static int bma220_power(struct spi_device *spi, bool up)
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		if (up && ret == BMA220_SUSPEND_SLEEP)
++		if (up && (ret == BMA220_SUSPEND_SLEEP))
+ 			return 0;
+ 
+-		if (!up && ret == BMA220_SUSPEND_WAKE)
++		if (!up && (ret == BMA220_SUSPEND_WAKE))
+ 			return 0;
+ 	}
+ 
+ 	return -EBUSY;
+ }
+ 
++static int bma220_init(struct spi_device *spi)
++{
++	int ret;
++	static const char * const regulator_names[] = { "vddd", "vddio", "vdda" };
 +
- static struct spi_driver bma220_spi_driver = {
- 	.driver = {
- 		.name = "bma220_spi",
- 		.pm = pm_sleep_ptr(&bma220_pm_ops),
-+		.of_match_table = bma220_of_spi_match,
- 		.acpi_match_table = bma220_acpi_id,
- 	},
- 	.probe =            bma220_spi_probe,
++	ret = devm_regulator_bulk_get_enable(&spi->dev,
++					     ARRAY_SIZE(regulator_names),
++					     regulator_names);
++	if (ret)
++		return dev_err_probe(&spi->dev, ret, "Failed to get regulators\n");
++
++	ret = bma220_read_reg(spi, BMA220_REG_ID);
++	if (ret != BMA220_CHIP_ID)
++		return -ENODEV;
++
++	/* Make sure the chip is powered on and config registers are reset */
++	ret = bma220_power(spi, true);
++	if (ret)
++		return dev_err_probe(&spi->dev, ret, "Failed to power-on chip\n");
++
++	ret = bma220_reset(spi, true);
++	if (ret)
++		return dev_err_probe(&spi->dev, ret, "Failed to soft reset chip\n");
++
++	return 0;
++}
++
+ static void bma220_deinit(void *spi)
+ {
+ 	bma220_power(spi, false);
 
 -- 
 2.49.1
