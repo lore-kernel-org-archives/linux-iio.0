@@ -1,43 +1,42 @@
 Received: from mail.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1BB62F3C25;
-	Sat, 13 Sep 2025 15:40:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DE552F49EA;
+	Sat, 13 Sep 2025 15:40:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757778018; cv=none; b=Myo7cSAu9gIHmbbaU/avM8ELrVAE9/F59XXqh7TkwN7U8JK8qF3hab9lYAQvhsjiUYnqMxz/ht3M8W9+spPIPjbyT/2U2KIjKOy5gvnet3VjgVFHrpUetpa/eBCgF9xfj7buRoEPCXdJDXcHfWZlwL+Ni3yNUlpghBNS7P6h0Lc=
+	t=1757778019; cv=none; b=gSADSWfZq/uB39dR+6wDYPDgMO/KhNzJ8IwLlFTxa/jQQIyqj3J1E2I2cnmO1pqxnu5qgGUK3BZ8zegQJeJfWqDNZgvfBx6KSRwnrTqH4v4YrAvfjuoJexvbkm273h2ZtCf7pV2PDop02F6kCnRoU8FTWMGkNuiLMxmaHgo9gPE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1757778018; c=relaxed/simple;
-	bh=q9F8ym1zAoiBANpZ3eFvKr8O9iTkRIkPpVEpgfAzDn0=;
+	s=arc-20240116; t=1757778019; c=relaxed/simple;
+	bh=P1ByNktlzb54OkAYWKnM+yrvmPUsH4ig/ZXROc/N450=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=olRMee9WHVAyxsK+QqPwDj0n7mE4csdWJOb1NIutzfY6fzohDupDsxK65icn+n1H2VvwfhoT0XTEGnj4YSKbqczAQk0PVyLACjVNpSp0GYuxmVszUfW+sljFVWe+IqZ8o2lbKsgtvNAARzKEXqc2ryZBhFpOHzQIrVvPMP7VAew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=3FtmIt+O; arc=none smtp.client-ip=172.105.74.154
+	 In-Reply-To:To:Cc; b=CX2OHmDnF6R0skHmK/l9YmUGB+pqu+mAazLzkrsNg7XA530tZJ9kgoKugbXxJ2OKrpz+RMLWZtjFteJJLyXWZVfE6y/zLb/gWFCmRdyU4iv1Ubi2zZLDj8VFpnYcEYq7oLHWgq6PgsNhXtahaWSaNyRbJdlvY5qGo7rbB4QuPeE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=kZcA4Jm8; arc=none smtp.client-ip=172.105.74.154
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="3FtmIt+O"
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="kZcA4Jm8"
 Received: from [10.212.0.13] (unknown [IPv6:2a02:2f0e:3e0c:5b00:e2d5:5eff:fed9:f1c4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 07343173BF3;
-	Sat, 13 Sep 2025 18:40:09 +0300 (EEST)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 74DD2173BF6;
+	Sat, 13 Sep 2025 18:40:10 +0300 (EEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
-	s=mail; t=1757778009;
+	s=mail; t=1757778010;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=p7Qdrrn79fEoUwqtYHfjMe1WJcl835xDJC7SRGwc0Ds=;
-	b=3FtmIt+OoKPXegTeKnfpn58a90YeXVAJYu7v3+QWnwwwQtzhXkbUuYLN7eBBHeAwYaztWb
-	Rs/pOot0fSc0wJeqwPxGDrQbzUeeD0lLcoCzDz1TBF3rDFAwlghRadNb6hkw4iXTZyFhY1
-	PBUjnY3YL/N6gVht3Bu4pH2xqol/4J2INvSRIiU1rFMqvdtbg3WhGxlCCFSG3DLpRGqSyZ
-	oXzp3AVq2noXd40sTsA+JbWVjBcqokcoVYm2oE49yE/YDsvKMogC9EviIG+3GztrYaLDwk
-	1qQaSv8TAwd5xcVRyqBLmIVXgtMpK8nsR33sxRh7IABCNamP98walNfNVTeFsA==
+	bh=47m/qPFJBR+lEXOa3oWH8mAKCAHufuCZWnCFTKXj2tY=;
+	b=kZcA4Jm8OU1UtmOJl6bfadVorD0glycGVk9D4HEKFtK7+UhCeKUeeNZ/U+U7xul3Xy8z62
+	0SItrcSD+htBCDCNic1uOu+3rsqbCMKwRavBTeksv4nbYHRjJ0CHevl6op1Iv/C7fZOTbV
+	5IuTSxC418BKRakMcH6gjqa8KiRY7/TkXmN9mQ+n4Osk1u5wVA5nZCXSouqmtl8wyIn3I9
+	MuVGf1HT1/6QvYfx4WukzQWNC1sX8kfGujzdU4zvDil6Blqvj9bAMNHuNf+JXt89lFkQU5
+	VpTxzKHOvwYQL6fSbtJJrnUz50RGCqjd4NbYRavKm/H0TtIzdn26BWnJupQ0lA==
 From: Petre Rodan <petre.rodan@subdimension.ro>
-Date: Sat, 13 Sep 2025 18:39:32 +0300
-Subject: [PATCH v3 11/18] iio: accel: bma220: populate buffer ts in trigger
- handler
+Date: Sat, 13 Sep 2025 18:39:35 +0300
+Subject: [PATCH v3 14/18] iio: accel: bma220: add i2c watchdog feature
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -46,7 +45,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250913-b4-bma220_improvements-v3-11-0b97279b4e45@subdimension.ro>
+Message-Id: <20250913-b4-bma220_improvements-v3-14-0b97279b4e45@subdimension.ro>
 References: <20250913-b4-bma220_improvements-v3-0-0b97279b4e45@subdimension.ro>
 In-Reply-To: <20250913-b4-bma220_improvements-v3-0-0b97279b4e45@subdimension.ro>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -59,57 +58,79 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Petre Rodan <petre.rodan@subdimension.ro>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1325;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1761;
  i=petre.rodan@subdimension.ro; h=from:subject:message-id;
- bh=q9F8ym1zAoiBANpZ3eFvKr8O9iTkRIkPpVEpgfAzDn0=;
- b=owEBbQKS/ZANAwAIAc8mmZmETn8wAcsmYgBoxZBSUcUcN/1qUu1tQb5KHAk13qOHhtQkjjCzU
- JFk1SCN86GJAjMEAAEIAB0WIQTYCn/BdhUZNew+X6nPJpmZhE5/MAUCaMWQUgAKCRDPJpmZhE5/
- MOzSEACSCIlEBMUfFedceyuZW4pFF1UKmNh0Mf85kjwA0B2H693mWdLd5Ytlf8iIUUxr/ujZZlZ
- N4iHeUt5kLWJSGL9oDlwYgoXhjRFRzLQHjqOOg7ph9fzYBN1Xi0e8+lxjWKdJ9GiIMqGvRo2c1z
- gFP5C35jwuY/aM0vaav4VNFaTa/lUdHkRpJTveTRnsWVd4+n8Whx29x2KZU82PQr1w9XOYBzul2
- MymF4zV0CIboOvS/NTTtLJKtNQtt37czrMghd9hbAbZhv1IvzoGeOm9HZ4BUs0GL6DqsKKyRY1i
- xh/l3RCbf5p1jiBdTklrce3lBybVA1D3KI1CtXi5K2RZkJ/LC6t8xkNUue4NiHM0Azii3wY6pNk
- 7KI0+GtP4JUBlE1UORGgnY9qPfRJeRmp6gJi0rClivTAlcZ2PMhTAVQ4NBCwkrQSHtSQKnmzjiN
- 41GOF0V3DlsAWgmTsqr8vURZ8pLnjwcPi2XJbToaWHZ4IXrxDFMdd4Hy/5DAfbeU0wJ/tReIoEq
- ieoWkIyb1E5+zW5Xod+uZjlyxXH7IUSNGCqlpLDWZZf/lcm1LQrJ8g/hSNNcumOOmmClpbJ4Q4C
- D5lmt7J3lR4GYBmW+lydHnQJOD3KKkNuPyb/N/jKD0vhaGNHuy526FPAbCGJnIO5NEBwArNg/Uu
- BJgmpnsh59qU3YQ==
+ bh=P1ByNktlzb54OkAYWKnM+yrvmPUsH4ig/ZXROc/N450=;
+ b=owEBbQKS/ZANAwAIAc8mmZmETn8wAcsmYgBoxZBSd1nrYwVwGQ4EK7GcRQ7VDPRKfUPbr4QUs
+ 1R9AQDT6TeJAjMEAAEIAB0WIQTYCn/BdhUZNew+X6nPJpmZhE5/MAUCaMWQUgAKCRDPJpmZhE5/
+ ME9ND/9KgcNxAF3coHUrGrQEO27j4vPYfMfZuik7Fz6pJotxYEeuy5Z0UgBI6L8EOGTAskjje1W
+ Q3Vpl1EbbhEIFIFkkg8UEIxYUW0HfuOfh0rk08BqHUgCI3YSBHpb8yol+uSUWZ1Or2YsgsgFeuX
+ yRYHaqlBYZLUFSjoSfLpfxrmtJ+ra7Q6Dj0ZajQuruaHrHWRJ4t2ZyKb3IaU2HopLS5Dhpu1/ht
+ ZgoMwrWKvidtl78+s63BHBexHOUEuXx5tNwRH43fQ/a+kIP2aP+y5o5dKR5GrNJK4uSFg8YjcJ/
+ RKMM01iFnpyqAq1apnOv1KQo5dhzK2ZF7CLSq/SHnGbfTDy18cM0RYFOXNJsmf4P7xm16/9RtLJ
+ /sWK6UcZDho37CbID/fc+IuZA2rh8/OmmZkHgaSvemr479aYV0s0XYzq6q4TSDv8RY7zps8UfM6
+ KzIPmM06CgDKf1aiT8Z5fMRtb7ysRHzbjMqMb4iJQ8lMnTAdTGd8Ilh2KpvQTa6ffN2NbpmAM2V
+ eHlSt1FDMh98iAvEH7sNKhKrCvbNpyBLurR7p4uF7dc8PTk50NIkJhYXU9gYwNAbbP1FuAAULgO
+ 0ZZYLO7FyiOy2J8y98KfEoCby9cUIkAkA/Wdo5zIi1Fw2b1R2Mo9kx+1/3W425t5GOPfIesCwwg
+ Xgc4OYF+8W162Og==
 X-Developer-Key: i=petre.rodan@subdimension.ro; a=openpgp;
  fpr=D80A7FC176151935EC3E5FA9CF269999844E7F30
 
-Populate buffer timestamps in trigger handler instead of in the
-top half. Otherwise all timestamps read zero.
+Sometimes the sensor gets stuck and enters a condition in which it pulls
+SDA low, thus making the entire i2c bus unusable.
+This problem is mitigated by activating a 1ms watchdog implemented in
+the sensor.
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
-v2->v3 split out from bigger patch (Jonathan)
+v1->v2
+- hardcode 1ms timer watchdog to any i2c-based sensor instead of
+  configuring a dt-based property
+- rename bma220_wdt() to bma220_set_wdt()
+v2->v3 no change
 ---
- drivers/iio/accel/bma220_core.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iio/accel/bma220_core.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_core.c
-index 73ce9a9511734961c2c6dadc99c21418070dce00..728bf08c2cfb250266be56e69b11af4b6c4a1347 100644
+index 5eef47151501119ab792aab6a511938a16c1ade1..425a8b981e141aa496351f29df0597c989aa4a0a 100644
 --- a/drivers/iio/accel/bma220_core.c
 +++ b/drivers/iio/accel/bma220_core.c
-@@ -188,7 +188,7 @@ static irqreturn_t bma220_trigger_handler(int irq, void *p)
- 		return IRQ_NONE;
+@@ -10,6 +10,7 @@
+ #include <linux/bitfield.h>
+ #include <linux/cleanup.h>
+ #include <linux/device.h>
++#include <linux/i2c.h>
+ #include <linux/kernel.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+@@ -358,6 +359,12 @@ static int bma220_power(struct bma220_data *data, bool up)
+ 	return -EBUSY;
+ }
  
- 	iio_push_to_buffers_with_ts(indio_dev, &data->scan, sizeof(data->scan),
--				    pf->timestamp);
-+				    iio_get_time_ns(indio_dev));
- 	iio_trigger_notify_done(indio_dev->trig);
- 
- 	return IRQ_HANDLED;
-@@ -409,8 +409,7 @@ int bma220_common_probe(struct device *dev, struct regmap *regmap, int irq)
++static int bma220_set_wdt(struct bma220_data *data, const u8 val)
++{
++	return regmap_update_bits(data->regmap, BMA220_REG_WDT, BMA220_WDT_MASK,
++				  FIELD_PREP(BMA220_WDT_MASK, val));
++}
++
+ static int bma220_init(struct bma220_data *data)
+ {
+ 	int ret;
+@@ -388,6 +395,13 @@ static int bma220_init(struct bma220_data *data)
  	if (ret)
- 		return ret;
+ 		return dev_err_probe(dev, ret, "Failed to soft reset chip\n");
  
--	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
--					      iio_pollfunc_store_time,
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
- 					      bma220_trigger_handler, NULL);
- 	if (ret < 0)
- 		dev_err_probe(dev, ret, "iio triggered buffer setup failed\n");
++	if (i2c_verify_client(dev)) {
++		ret = bma220_set_wdt(data, BMA220_WDT_1MS);
++		if (ret)
++			return dev_err_probe(dev, ret,
++					     "Failed to set i2c watchdog\n");
++	}
++
+ 	return 0;
+ }
+ 
 
 -- 
 2.49.1
