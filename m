@@ -1,43 +1,42 @@
 Received: from mail.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB55B2F60C9;
-	Sat, 13 Sep 2025 15:40:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 677D82F28F7;
+	Sat, 13 Sep 2025 15:40:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757778021; cv=none; b=ULpU8PYt9hz1G2E9ZIckXxZ9oG0phL/G/JElEPmFpRVPJNXQDtjw/qKHD1faFsaY+uoZPJ/vyz3AXThCsEt90gVcXgZhg6C5P0nCBiWo6f+5lTjxirHeagfEju8nFO6hfrJXetmq2Z1OSnqveJIzIL1vKEo98p8vtUGgHOqinnY=
+	t=1757778021; cv=none; b=i+zpoyO7MHrpWBP3oMYGAVpf05jPGXmD9QyBqjyrnGJUyLIJbk4YyVIChwdqrdVrn00oBq6zwb5BKdiSH5ZpP9NrXDvCW+4QfkPo3XnvckpB10aW1VHAMI9kHOuhisUH/t497G0dp/hn4GrBEr+1deVr+Jl+b5WtKdK991em1AM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1757778021; c=relaxed/simple;
-	bh=sUyLK4mjiPxml6XLVuyl+KqXPWsk9XNuaLa7OgMP9DY=;
+	bh=lzWx+a0dmfGLNa9KQBKgDX9o3geWkCG4XafSD5c/jTM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=j7ndWIWcv2LjJctsewOWKNxyjRKWnJ38zj1aTsNY8V1wCAvZBMktz+4we8NG8NlycH06UK0f4IiNzfYz40RiRmlZNn+s2/uvDv5DdLcDguz57i0u9qbkZq6cvrDOdnrYXm+v9LGD4hdTc7GH3Du6BGTagn9jA3qZ1ggIw9uzruM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=LufokHwa; arc=none smtp.client-ip=172.105.74.154
+	 In-Reply-To:To:Cc; b=oYQm3n5nMp/55hhbf2PX3aVXfXfP9kwAukuew4v02h2AY7KFCczASjFM8XYmzkClNlgRhszGga4eYYz+9wcbrb05vFEH/aq/AJGUNfT12iGYOIjELRKOswQk/tRtJHUVsd2yXcbGFOouiJWKIWvMB90gr4qtHRgVQFfjTwniyQM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=UqbOVKLg; arc=none smtp.client-ip=172.105.74.154
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="LufokHwa"
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="UqbOVKLg"
 Received: from [10.212.0.13] (unknown [IPv6:2a02:2f0e:3e0c:5b00:e2d5:5eff:fed9:f1c4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 5D8DE173BF8;
-	Sat, 13 Sep 2025 18:40:11 +0300 (EEST)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 411D4173BFA;
+	Sat, 13 Sep 2025 18:40:12 +0300 (EEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
-	s=mail; t=1757778011;
+	s=mail; t=1757778012;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=84hboF7CiZVHfrjWCxq7XHkJM0RXSj6s0PaFgrkOxYY=;
-	b=LufokHwa6+K4ikmLTJiwTXdVjWbytrU+YdVBQNzfx9FBdhsOdpU4cEWhwJwKwiWy+qzE33
-	/9LWnIZ1/a3gJ21wuP1tr4lbzw8nuV0qOyq8Brhg6cwh1qxhJiEKATIkeSRRfBvGdH2pPN
-	CgtRDYY7doqu5Tbqy0g2iQRsukP/gmtOYTyl1JMRGwBo/nJJ1y3iTSoKJGxbxU9f6AdumM
-	DCqNepGoaEgcsPxLXqnYKRjpsPEG6nPtLlZ+0pkoNM2GQr1w6D/qxTkZLpxn1ItIMokDBL
-	9t5aWMGfypjaEcpPZM4N5V1m+I1iXOlHJWwP7MqbJ1tKwRbnjCRMSmv6tOMTKg==
+	bh=4pA18o8EFs3MpHFqQmZXCGHKpMhUvAZNuJ+WPTR54bo=;
+	b=UqbOVKLgbgAZnJocHtRz6T9SsiHgXuhkgFirmNKwm8T1/YujV2wxDttgJi5JqVcT039gMG
+	8NrW7F2NvDTzHwlBBGhiFpa1bLwfOgQoGc1X8/cAO8ZEXyWLLEesj6850P/y6ggH9PwVDn
+	7TISS2IFJwAeOBXLiKOljADivLeGFLKmzPv+RdnGzti6GHKuGastxgq/+uNm0q/w0zmdLr
+	L2cBzZET8rWwUsAcOXU9nHpDV9JVnqXR1rkW0cwXTpHtwh2Z2n2E3a8pWhkubEyj+SHqMu
+	ipjmeQXnLd4aQ3vAWD3HvBiA7os3I0+VhdHIOcvWAtjiOPUC7O4sfDQbxN0VWg==
 From: Petre Rodan <petre.rodan@subdimension.ro>
-Date: Sat, 13 Sep 2025 18:39:37 +0300
-Subject: [PATCH v3 16/18] iio: accel: bma220: add LPF cut-off frequency
- mapping
+Date: Sat, 13 Sep 2025 18:39:39 +0300
+Subject: [PATCH v3 18/18] iio: accel: bma220: add maintainer
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -46,7 +45,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250913-b4-bma220_improvements-v3-16-0b97279b4e45@subdimension.ro>
+Message-Id: <20250913-b4-bma220_improvements-v3-18-0b97279b4e45@subdimension.ro>
 References: <20250913-b4-bma220_improvements-v3-0-0b97279b4e45@subdimension.ro>
 In-Reply-To: <20250913-b4-bma220_improvements-v3-0-0b97279b4e45@subdimension.ro>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -59,153 +58,51 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Petre Rodan <petre.rodan@subdimension.ro>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4181;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=875;
  i=petre.rodan@subdimension.ro; h=from:subject:message-id;
- bh=sUyLK4mjiPxml6XLVuyl+KqXPWsk9XNuaLa7OgMP9DY=;
- b=owEBbQKS/ZANAwAIAc8mmZmETn8wAcsmYgBoxZBSADDmM2duwKa5lMTwu74KlgE5tph4z3oHe
- 5YtI2763M+JAjMEAAEIAB0WIQTYCn/BdhUZNew+X6nPJpmZhE5/MAUCaMWQUgAKCRDPJpmZhE5/
- MIT2EACybHMNu0NhmB6ZoObb0nOl3GxfXLrOxnwDsgNOWOj7dMWzrejPVsIzD3c4QK7BRkK9fWN
- g+CVamykWC2jkcOW3ckg8b9PHqfQ5+KYJjYPPgbFfp9ObqR1JGmkjlzaGCee1DchS8LoN7D0JCe
- 5vJ5r5w9g3RK3koRX7QhPdFAxL5XjECy1sIsPxsNmOoJe+Dtrg4Z1hP+Q5Y4Lq3NRwzs0BJswgR
- 7T3gUZbHewhD2URiZpFAiIpUu9EIgI/p7FggdfIVKa9Cvi9AN+rpdeYJeEl9H7CRefKbhGDEjZE
- 8l27RxhDeJD3U4ScbksK3gzPWDa8K62EYAhV/lvMnj5s6/xnob+EKsCQ1jGdr4jgOT6mnQSb2/C
- um6nVKaFJSniX2Kf+XnUyMfBOP9ijNE2sDVBvHsc7K8+XFaZOC0gjEIeX7xI5/Oj4PoktA9fF/O
- yllBL1qHRVw8b9kDr5U5p/iab/gSxfMQ3KXKSLICWQmyeD0dl2Lt7+4uyZmyrIseEnMNEveSw3w
- if/BFhHlLMJf/2K+4UNbbY4bUuizudMzP7Uv7AK8Uq4JhjDgkyUupHeH4pMzgFk+wUR7PeeSq0i
- IsLEK6d7DxnQc46xxLQ2ckZ6huLfRQ0Hxc8/FLqo9OkHYdZgwIey7PaSGKDpIcwSjb/1shXzdmN
- fIx1FcnpfY2WslA==
+ bh=lzWx+a0dmfGLNa9KQBKgDX9o3geWkCG4XafSD5c/jTM=;
+ b=owEBbQKS/ZANAwAIAc8mmZmETn8wAcsmYgBoxZBSrGtrBf8q/IsJC++D6a5b2R7PFtHZHTaXl
+ ay/eev1idGJAjMEAAEIAB0WIQTYCn/BdhUZNew+X6nPJpmZhE5/MAUCaMWQUgAKCRDPJpmZhE5/
+ MHQWEADLbgtArbU+DB0vNAvwlBchBF8G1CvOpCoR6vsS70AuHWyQbRrtUubeviw2LDcrtcthXgg
+ NElCUcsUqhPU+edphgInTyoeVTG08B4Yt1gjhNwdzdrZ4STHR6Rye3qqnuiS1UDmLhZ+r+e3oHj
+ B6DZFQttWSlKGoTv5BiO3xJ+17skOjxVBcDR2sjWKRvkpNMAUF8nTYR7bhaQZkAyZMrqDKmnCZf
+ WrngtqElx1W+IE3WVeKPYhVK+Dr7geoyEamRb/iKvJHkb5Fmut3GO0CrV0biqB0DbcsCdXhmFRi
+ BfKb6aXPs3OMmjhIGdkhuAnir1kp2y9Ax+/r8FvCrzl2vfN2lXjTRBoeVedPOHm1t3tNEOvoty5
+ OnWxWfyL4y5kYCYu3cLDmVOcAoGdEvPpIUaoIVsmO738Q+s6Oz5ruZJHgD29VS62mimcZgI69bp
+ 317OvRylYp8NpPKSOXnLmKgFZYWNuN7Fd/QKdjuWLkwOHkyyHx71T44PslR8ONGPZTaodV+PczZ
+ dwJcgfPbYdbXsJF7FPhOeXmLMLehVaUC0s1lL1XN/A9WOlNUIY1jMigKNcIJtnaixqtlJ166Bgi
+ cWUKxf7guvxOYoHEifzhOq424cJwTbGODihDiRSFV72pjwIja/OqI7KgSPlvotXPwKMb3Tjzl+T
+ ut/x28udsWYGj4A==
 X-Developer-Key: i=petre.rodan@subdimension.ro; a=openpgp;
  fpr=D80A7FC176151935EC3E5FA9CF269999844E7F30
 
-Add mapping for the low pass filter cut-off frequency.
-Make valid values visible for both the cut-off frequency and the scale.
+Add maintainer for this driver.
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
-v1->v2 rename variables to include unit capitalization (dB, Hz)
-v2->v3 3->1 line comment (Jonathan)
+v1->v3 no change
 ---
- drivers/iio/accel/bma220_core.c | 59 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 58 insertions(+), 1 deletion(-)
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_core.c
-index 6297882bcf1b955291a2d8747984648bc6ee8512..508a1142a74b3fb330eea5222c4b0abc8fc37e49 100644
---- a/drivers/iio/accel/bma220_core.c
-+++ b/drivers/iio/accel/bma220_core.c
-@@ -94,13 +94,23 @@
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 75615d82593e173a9e07fd269163fecdc4711e8b..eb985bd06b7d960bbc25941a8ea7b420d83483b0 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4402,6 +4402,13 @@ F:	include/net/bond*
+ F:	include/uapi/linux/if_bonding.h
+ F:	tools/testing/selftests/drivers/net/bonding/
  
- #define BMA220_DEVICE_NAME			"bma220"
- 
-+#define BMA220_COF_1000Hz			0x0
-+#define BMA220_COF_500Hz			0x1
-+#define BMA220_COF_250Hz			0x2
-+#define BMA220_COF_125Hz			0x3
-+#define BMA220_COF_64Hz				0x4
-+#define BMA220_COF_32Hz				0x5
++BOSCH SENSORTEC BMA220 ACCELEROMETER IIO DRIVER
++M:	Petre Rodan <petre.rodan@subdimension.ro>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/accel/bosch,bma220.yaml
++F:	drivers/iio/accel/bma220*
 +
- #define BMA220_ACCEL_CHANNEL(index, reg, axis) {			\
- 	.type = IIO_ACCEL,						\
- 	.address = reg,							\
- 	.modified = 1,							\
- 	.channel2 = IIO_MOD_##axis,					\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-+	    BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),		\
-+	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE) |\
-+	    BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),		\
- 	.scan_index = index,						\
- 	.scan_type = {							\
- 		.sign = 's',						\
-@@ -125,6 +135,7 @@ struct bma220_data {
- 	struct device *dev;
- 	struct regmap *regmap;
- 	struct mutex lock;
-+	u8 lpf_3dB_freq_idx;
- 	u8 range_idx;
- 	struct iio_trigger *trig;
- 	struct {
-@@ -141,6 +152,16 @@ static const struct iio_chan_spec bma220_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
-+/* Available cut-off frequencies of the low pass filter in Hz. */
-+static const int bma220_lpf_3dB_freq_Hz_table[] = {
-+	[BMA220_COF_1000Hz] = 1000,
-+	[BMA220_COF_500Hz] = 500,
-+	[BMA220_COF_250Hz] = 250,
-+	[BMA220_COF_125Hz] = 125,
-+	[BMA220_COF_64Hz] = 64,
-+	[BMA220_COF_32Hz] = 32,
-+};
-+
- static const unsigned long bma220_accel_scan_masks[] = {
- 	BIT(AXIS_X) | BIT(AXIS_Y) | BIT(AXIS_Z),
- 	0
-@@ -254,6 +275,10 @@ static int bma220_read_raw(struct iio_dev *indio_dev,
- 		*val = bma220_scale_table[index][0];
- 		*val2 = bma220_scale_table[index][1];
- 		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		index = data->lpf_3dB_freq_idx;
-+		*val = bma220_lpf_3dB_freq_Hz_table[index];
-+		return IIO_VAL_INT;
- 	}
- 
- 	return -EINVAL;
-@@ -272,6 +297,18 @@ static int bma220_find_match_2dt(const int (*tbl)[2], const int n,
- 	return -EINVAL;
- }
- 
-+static int bma220_find_match(const int *arr, const int n, const int val)
-+{
-+	int i;
-+
-+	for (i = 0; i < n; i++) {
-+		if (arr[i] == val)
-+			return i;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static int bma220_write_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int val, int val2, long mask)
-@@ -297,6 +334,21 @@ static int bma220_write_raw(struct iio_dev *indio_dev,
- 			return ret;
- 		data->range_idx = index;
- 
-+		return 0;
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		index = bma220_find_match(bma220_lpf_3dB_freq_Hz_table,
-+					  ARRAY_SIZE(bma220_lpf_3dB_freq_Hz_table),
-+					  val);
-+		if (index < 0)
-+			return -EINVAL;
-+
-+		ret = regmap_update_bits(data->regmap, BMA220_REG_FILTER,
-+					 BMA220_FILTER_MASK,
-+					 FIELD_PREP(BMA220_FILTER_MASK, index));
-+		if (ret < 0)
-+			return ret;
-+		data->lpf_3dB_freq_idx = index;
-+
- 		return 0;
- 	}
- 
-@@ -314,6 +366,11 @@ static int bma220_read_avail(struct iio_dev *indio_dev,
- 		*type = IIO_VAL_INT_PLUS_MICRO;
- 		*length = ARRAY_SIZE(bma220_scale_table) * 2;
- 		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		*vals = (const int *)bma220_lpf_3dB_freq_Hz_table;
-+		*type = IIO_VAL_INT;
-+		*length = ARRAY_SIZE(bma220_lpf_3dB_freq_Hz_table);
-+		return IIO_AVAIL_LIST;
- 	default:
- 		return -EINVAL;
- 	}
+ BOSCH SENSORTEC BMA400 ACCELEROMETER IIO DRIVER
+ M:	Dan Robertson <dan@dlrobertson.com>
+ L:	linux-iio@vger.kernel.org
 
 -- 
 2.49.1
