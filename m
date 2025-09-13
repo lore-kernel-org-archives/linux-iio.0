@@ -1,42 +1,43 @@
 Received: from mail.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DE552F49EA;
-	Sat, 13 Sep 2025 15:40:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1A9B2F3C21;
+	Sat, 13 Sep 2025 15:40:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1757778019; cv=none; b=gSADSWfZq/uB39dR+6wDYPDgMO/KhNzJ8IwLlFTxa/jQQIyqj3J1E2I2cnmO1pqxnu5qgGUK3BZ8zegQJeJfWqDNZgvfBx6KSRwnrTqH4v4YrAvfjuoJexvbkm273h2ZtCf7pV2PDop02F6kCnRoU8FTWMGkNuiLMxmaHgo9gPE=
+	t=1757778019; cv=none; b=ZHTgw7kI+BuqCg/EMLztYA4r8hWr4pu5nUl1/k05KAjPzZvvW2OrrU5y0NuCdeCGEhSavNEJ8oL4RbLiNAUkY4Hut4iG9QyKqyolWXKqkVySn2DXiufiJ4AV2NZ1CTcfQVBP6S0YaQyH4lukUDlH93yYgv21S1J6QxiHkplwPKE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1757778019; c=relaxed/simple;
-	bh=P1ByNktlzb54OkAYWKnM+yrvmPUsH4ig/ZXROc/N450=;
+	bh=XT0h1eG0JoVte3XhqwukvD5D6xWONdFL7zvC58qTBKQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=CX2OHmDnF6R0skHmK/l9YmUGB+pqu+mAazLzkrsNg7XA530tZJ9kgoKugbXxJ2OKrpz+RMLWZtjFteJJLyXWZVfE6y/zLb/gWFCmRdyU4iv1Ubi2zZLDj8VFpnYcEYq7oLHWgq6PgsNhXtahaWSaNyRbJdlvY5qGo7rbB4QuPeE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=kZcA4Jm8; arc=none smtp.client-ip=172.105.74.154
+	 In-Reply-To:To:Cc; b=tCHEsWAyMCwqV8+029V66RIBugfg9HHcOxWFu0PIyubgwhM7o8tRrA4YFrHTDJA4s6aILHEekX0PLrb1CIK455CMAlenMYFgoEPEYGzlf41uOVx9W4L2We1IOyaTa3ND/H5nQTfUvn1uiW642iPfYI53W98K64P8s40Z0TaoS50=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=K2J8PIzl; arc=none smtp.client-ip=172.105.74.154
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="kZcA4Jm8"
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="K2J8PIzl"
 Received: from [10.212.0.13] (unknown [IPv6:2a02:2f0e:3e0c:5b00:e2d5:5eff:fed9:f1c4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 74DD2173BF6;
-	Sat, 13 Sep 2025 18:40:10 +0300 (EEST)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 24EC5173BF1;
+	Sat, 13 Sep 2025 18:40:08 +0300 (EEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
-	s=mail; t=1757778010;
+	s=mail; t=1757778008;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=47m/qPFJBR+lEXOa3oWH8mAKCAHufuCZWnCFTKXj2tY=;
-	b=kZcA4Jm8OU1UtmOJl6bfadVorD0glycGVk9D4HEKFtK7+UhCeKUeeNZ/U+U7xul3Xy8z62
-	0SItrcSD+htBCDCNic1uOu+3rsqbCMKwRavBTeksv4nbYHRjJ0CHevl6op1Iv/C7fZOTbV
-	5IuTSxC418BKRakMcH6gjqa8KiRY7/TkXmN9mQ+n4Osk1u5wVA5nZCXSouqmtl8wyIn3I9
-	MuVGf1HT1/6QvYfx4WukzQWNC1sX8kfGujzdU4zvDil6Blqvj9bAMNHuNf+JXt89lFkQU5
-	VpTxzKHOvwYQL6fSbtJJrnUz50RGCqjd4NbYRavKm/H0TtIzdn26BWnJupQ0lA==
+	bh=RnSZKcxQSUytQ3bLkEpLGeq2LN7bT+PLhjdXkHNsggY=;
+	b=K2J8PIzlK0pmziqoXWkVfnweqXcXVZHVpYP/sbGwQe+6//FHWWyTDiB6CLcvaH3sTLwrVD
+	q7SFaEuldCy/6hZD6S9jz2sB1h78RM+32pBn0LdnhkZVetepJMdT3FM0gREMVE6ti1PRuD
+	HARhBoVzgk2SFqc6GCmSHJW+QHj6Bebv0eVu3KJ5dl/731iZbIWUN1oGQ5SZvtQl41aQoq
+	9wiq4F2NbZm3INmkYZqg9JYJZGBmUrbaWJtV3CqbWZsNE9NdlFyErjLzbL6vvhhEzPMiO6
+	0tQGfAbscVClkS3eXqghpAA6Gkvynau51tyJPG9XoPZT2VGPvwr07vyYXWRzlg==
 From: Petre Rodan <petre.rodan@subdimension.ro>
-Date: Sat, 13 Sep 2025 18:39:35 +0300
-Subject: [PATCH v3 14/18] iio: accel: bma220: add i2c watchdog feature
+Date: Sat, 13 Sep 2025 18:39:30 +0300
+Subject: [PATCH v3 09/18] iio: accel: bma220: relax constraints during
+ probe()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -45,7 +46,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20250913-b4-bma220_improvements-v3-14-0b97279b4e45@subdimension.ro>
+Message-Id: <20250913-b4-bma220_improvements-v3-9-0b97279b4e45@subdimension.ro>
 References: <20250913-b4-bma220_improvements-v3-0-0b97279b4e45@subdimension.ro>
 In-Reply-To: <20250913-b4-bma220_improvements-v3-0-0b97279b4e45@subdimension.ro>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -58,79 +59,46 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, Petre Rodan <petre.rodan@subdimension.ro>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1761;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=888;
  i=petre.rodan@subdimension.ro; h=from:subject:message-id;
- bh=P1ByNktlzb54OkAYWKnM+yrvmPUsH4ig/ZXROc/N450=;
- b=owEBbQKS/ZANAwAIAc8mmZmETn8wAcsmYgBoxZBSd1nrYwVwGQ4EK7GcRQ7VDPRKfUPbr4QUs
- 1R9AQDT6TeJAjMEAAEIAB0WIQTYCn/BdhUZNew+X6nPJpmZhE5/MAUCaMWQUgAKCRDPJpmZhE5/
- ME9ND/9KgcNxAF3coHUrGrQEO27j4vPYfMfZuik7Fz6pJotxYEeuy5Z0UgBI6L8EOGTAskjje1W
- Q3Vpl1EbbhEIFIFkkg8UEIxYUW0HfuOfh0rk08BqHUgCI3YSBHpb8yol+uSUWZ1Or2YsgsgFeuX
- yRYHaqlBYZLUFSjoSfLpfxrmtJ+ra7Q6Dj0ZajQuruaHrHWRJ4t2ZyKb3IaU2HopLS5Dhpu1/ht
- ZgoMwrWKvidtl78+s63BHBexHOUEuXx5tNwRH43fQ/a+kIP2aP+y5o5dKR5GrNJK4uSFg8YjcJ/
- RKMM01iFnpyqAq1apnOv1KQo5dhzK2ZF7CLSq/SHnGbfTDy18cM0RYFOXNJsmf4P7xm16/9RtLJ
- /sWK6UcZDho37CbID/fc+IuZA2rh8/OmmZkHgaSvemr479aYV0s0XYzq6q4TSDv8RY7zps8UfM6
- KzIPmM06CgDKf1aiT8Z5fMRtb7ysRHzbjMqMb4iJQ8lMnTAdTGd8Ilh2KpvQTa6ffN2NbpmAM2V
- eHlSt1FDMh98iAvEH7sNKhKrCvbNpyBLurR7p4uF7dc8PTk50NIkJhYXU9gYwNAbbP1FuAAULgO
- 0ZZYLO7FyiOy2J8y98KfEoCby9cUIkAkA/Wdo5zIi1Fw2b1R2Mo9kx+1/3W425t5GOPfIesCwwg
- Xgc4OYF+8W162Og==
+ bh=XT0h1eG0JoVte3XhqwukvD5D6xWONdFL7zvC58qTBKQ=;
+ b=owEBbQKS/ZANAwAIAc8mmZmETn8wAcsmYgBoxZBSTqmNa1YZrLeG1upgV9nOixG5nhswuf0ts
+ m4aR8ovepGJAjMEAAEIAB0WIQTYCn/BdhUZNew+X6nPJpmZhE5/MAUCaMWQUgAKCRDPJpmZhE5/
+ MItcEACKKYj1vI5vnrGr/gcNSqqVTkiPQcNWpNam52eZBdzBdTek2irY3Xp5qUjifzUb69Tdhi+
+ LPwVpzsCnTKksCK/G/c6RgYQXuxMCOPnQBTjMa+pWSM5g82UqHBB67BIn25v1BoJRSEZ26+kAo0
+ tsXt9abfCe4cQREuvY/QLu3g8UViyPj0W8253R5zKT7isrpH5aqirt+ipy0DYQhyj0C5G886mhK
+ 1j4ecFwBgEEe/snqXQLCi4pkVTDKWNo/21+nLiFKqv0ju3yYmJ8x2J3+NyY/C96KwtvbgLizuYc
+ /HyBLwdjWFOf8OHTGC8JH9ZemCmzG4wPf7w3k8MbG1GElTUxerxChrCySKeS2OdS/lvuQT79k4F
+ 8VXt1CvfryLLSA5RAQ52gjmNaSXNhAE/m7MZARrnGosvQ9zT6gIQ74HXyZbBN9X89jXOhBJqpgq
+ jYa5grcU1jcCpf2bVk1NktvhuIfjfqNj9HYG0anDTtPF7OifjlrrrlfHYjJQNmGfEghPfY+qY9r
+ Yvn3VMXsWhTvQWFlSXyBW9g0P0s9eFVFj0bCQZpI/WF8kiR9+l2yiGD/LAKAi2jhMERBKehY2BL
+ ljngb/17Mt5HxzT9ZXMruVLFHV6ur/F7MNXiOWhK7gmGL3T3BQkI4e/ZdcP9PBJmUqACHlBTpTB
+ Rsp1E0mYFxbmXjQ==
 X-Developer-Key: i=petre.rodan@subdimension.ro; a=openpgp;
  fpr=D80A7FC176151935EC3E5FA9CF269999844E7F30
 
-Sometimes the sensor gets stuck and enters a condition in which it pulls
-SDA low, thus making the entire i2c bus unusable.
-This problem is mitigated by activating a 1ms watchdog implemented in
-the sensor.
+Allow compatible chips to work even if their identifier is different.
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
-v1->v2
-- hardcode 1ms timer watchdog to any i2c-based sensor instead of
-  configuring a dt-based property
-- rename bma220_wdt() to bma220_set_wdt()
-v2->v3 no change
+v2->v3 replace err with dev_info() (Jonathan)
 ---
- drivers/iio/accel/bma220_core.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+ drivers/iio/accel/bma220_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_core.c
-index 5eef47151501119ab792aab6a511938a16c1ade1..425a8b981e141aa496351f29df0597c989aa4a0a 100644
+index fad73bf6b8f29c0a33519c64c8888a01008f7579..7fdb83cedfa1809490cfb7f89532182123d580ba 100644
 --- a/drivers/iio/accel/bma220_core.c
 +++ b/drivers/iio/accel/bma220_core.c
-@@ -10,6 +10,7 @@
- #include <linux/bitfield.h>
- #include <linux/cleanup.h>
- #include <linux/device.h>
-+#include <linux/i2c.h>
- #include <linux/kernel.h>
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
-@@ -358,6 +359,12 @@ static int bma220_power(struct bma220_data *data, bool up)
- 	return -EBUSY;
- }
+@@ -267,7 +267,7 @@ static int bma220_init(struct spi_device *spi)
  
-+static int bma220_set_wdt(struct bma220_data *data, const u8 val)
-+{
-+	return regmap_update_bits(data->regmap, BMA220_REG_WDT, BMA220_WDT_MASK,
-+				  FIELD_PREP(BMA220_WDT_MASK, val));
-+}
-+
- static int bma220_init(struct bma220_data *data)
- {
- 	int ret;
-@@ -388,6 +395,13 @@ static int bma220_init(struct bma220_data *data)
- 	if (ret)
- 		return dev_err_probe(dev, ret, "Failed to soft reset chip\n");
+ 	ret = bma220_read_reg(spi, BMA220_REG_ID);
+ 	if (ret != BMA220_CHIP_ID)
+-		return -ENODEV;
++		dev_info(&spi->dev, "Unknown chip found: 0x%02x\n", ret);
  
-+	if (i2c_verify_client(dev)) {
-+		ret = bma220_set_wdt(data, BMA220_WDT_1MS);
-+		if (ret)
-+			return dev_err_probe(dev, ret,
-+					     "Failed to set i2c watchdog\n");
-+	}
-+
- 	return 0;
- }
- 
+ 	/* Make sure the chip is powered on and config registers are reset */
+ 	ret = bma220_power(spi, true);
 
 -- 
 2.49.1
