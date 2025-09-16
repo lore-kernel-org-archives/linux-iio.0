@@ -1,178 +1,103 @@
-Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3599315D2E
-	for <linux-iio@vger.kernel.org>; Tue, 16 Sep 2025 13:25:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F161228315A;
+	Tue, 16 Sep 2025 13:35:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758029119; cv=none; b=k42hY8VkSJ6LX55OHehQLXQaFz0EraKfseJIawlmwOT2mVT0+KtY57+Gu/WrC8Te5iC2VUlnFk3mRpZJfdp5A/pA105Lda8Jb+Dr8ksxPXZtppUsWddkqrXdEifu49ZdNjH1uv6eFepoQwNIhpQFECgFptfxehOrBUKoJikHeDM=
+	t=1758029749; cv=none; b=IccagmZZV9s+2LHNZXrppmI1eloupIOzmVR/XXrcetnlTEcl0u9HO9mRr9xfJT5wEAJdzaUW60rp+rQMnZDwP7KBLWEMarlHAC/Nq3jSlSQK/9XWT9TrIR1RC138xrtX0HxURFLo0UUcC7mdVLptQSj/421kx84AY9KQjOHBoTs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758029119; c=relaxed/simple;
-	bh=PRpXH+sZjdebPpC4rWrrnPimJkKolPv4aO3TWAccum0=;
+	s=arc-20240116; t=1758029749; c=relaxed/simple;
+	bh=xNjcCrqL3Fvvxc/pvu1fHNLYA6h0GPV11qPf/HCmCrw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tEFSoAD8kUmDCeJSSJx+y2tfuAnHRL4bGqrcL1ZoShH1tPQSB3SW3ABMBCAovH3iygE7yT96p0oosUuZ+TuUbeWExfhhaTK+thNOYdfMcligtGpUPqraZbHXd2PmipXuQLda8jBqfHsHVlHQkgqNIaYsabWPAE2FOzaOP0a8yrk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=IVUJhPTX; arc=none smtp.client-ip=209.85.218.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=plrKICyAbNjky8aQUsGYA5rTK6pH+glJ0TKCPoiEWm9JFBn/I56ziybKQ08YxFcGfN1UpyYpiP+HqvjJ/xer3n/urCq0RrbSCacljP3Tv//ltKMQZ+OE4hdZq90c6no8/t0i3Qx0WwqmtUKM3yivPHnv5AXx7rzA/Xb53rETFso=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m+eq16zf; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="IVUJhPTX"
-Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-afcb78ead12so776732166b.1
-        for <linux-iio@vger.kernel.org>; Tue, 16 Sep 2025 06:25:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1758029116; x=1758633916; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=cec1ryxoXhXjrqFSDj+/T+n/YhygzPX418Utr1UQ+9Q=;
-        b=IVUJhPTXbWR8QfUsBnQZUZsqv5OFAueWaiCO4FxXmaMFpwLs7Pn4IJfZI02C64cAwC
-         +RgPjPf/6I3Oinz0CfZfrNgP7pN061/hDfV7X9c9YjDJNJ3ZMEY73YBuR1O7zk2Eh+q+
-         PWWlULY8Z1Otvpz9z8SeD1zIryMmxf1/sOo/IY5drClwgKZwHO6GFxoe1kHpwzZhjccK
-         YvfRAHeYHblSiA0dTjjrXZ5VN9WoI3/KH+ADNaIBupDiMGgalOrgDpeTyLYRt//VNlPX
-         UXAuNW0mj1WnYYNdx1WB4K6sho7+aDhccOu5MqHlHEnHxdO9hQUctqvXimcR7o+I+9IH
-         08AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1758029116; x=1758633916;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=cec1ryxoXhXjrqFSDj+/T+n/YhygzPX418Utr1UQ+9Q=;
-        b=PEgJ7hTqTIVEBheY6iD/cjLS+SLNXOt3KeEP32HwOctKm8wZHyUp3YB5jvh5ud1KKK
-         m19qFOXlTMtS0HnKjRnjhSITysmEGizG/8k4riT+ZpMWHPHZ4hXBu9P11LC0N113JIWW
-         K4bvN6rfo7jY86aKK+MP+gdIWoaOP7LQrPcM6sKpb/5C+gs1yH2dDb8MfW6baGpzyi6r
-         5Gil4ldzMR42dRsv5gIR/ahF3+1ytCP/gUzvzYT0yAVvCmTnNSfOaEvE8bOSvKqDsIN2
-         bmaz48fXIsq3KxfyvNKJ5i/t2f9a6P4q8lToow74xpRcKngCLC7aK16pq3/t5y8x735/
-         dBrw==
-X-Forwarded-Encrypted: i=1; AJvYcCUfGAPsaGQKHZFmO9eUOY1gKB/Nx+b/IDz5B1hflaFfb7UD85z8z1Y8UuJSEtJm+4JhyVT3GGD7LPk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwtufFBnbDwgMZfqOHqXsieZceGFzZUGNQJo6PyZrZGttgUZ91D
-	PK6gRRv075ZjmFUes3EYJuz296T8QNbWAsd7aiWDD8w6rI0SyZtcvUS6d1/5Lexy6Xs=
-X-Gm-Gg: ASbGncuzEdl6Rrv52DyP272xB2oWPJ22EkF7qqeRb72C+lSoi7Codi6gAmZCK68PHtR
-	pMg7M3OxyYYpEF3d2dASSipdxU188EZ2MPcmgnvVimo3K2KkR3wxaZZxAjWeTqDSnHGl263X1ma
-	rJDMEqhnmq7N2Yfy16b8QKcMriAynGFDTfR4JbGvCdVkihjNNpf0UkyEEMMeNZgXatA8A520g2a
-	CB428g19IhS0/eylq6f6T9sUBaUQlO5c9LU+72ocJN0BvQIwHYr+GESdYxnalVHiR4p1VhF3dZT
-	jta/yqVijjmW8uJvvQVeHXoXHj5fIEbQwmaeAkSjDXoojqsFhT8dSq6hvt9eXAGaZxfMj0rfY0g
-	hi6Vkn6ke5miu2RdE6WZnQMsufbrE932K72G/A3YoBn+rHbd5O+XUGKBDiks7l+AWzNSf+SYswK
-	E=
-X-Google-Smtp-Source: AGHT+IHULzH6kKOXUPbwiu6vHARKbboHWXDMpcq23vOfkgCUTSIFoBy+/FHZDfo4eSTeHnxRnGrBPQ==
-X-Received: by 2002:a17:906:eca2:b0:b12:3f5f:603b with SMTP id a640c23a62f3a-b123f5f70c4mr542368966b.3.1758029116046;
-        Tue, 16 Sep 2025 06:25:16 -0700 (PDT)
-Received: from localhost (p200300f65f06ab0400000000000001b9.dip0.t-ipconnect.de. [2003:f6:5f06:ab04::1b9])
-        by smtp.gmail.com with UTF8SMTPSA id a640c23a62f3a-b07b32f35cdsm1135878466b.92.2025.09.16.06.25.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 16 Sep 2025 06:25:15 -0700 (PDT)
-Date: Tue, 16 Sep 2025 15:25:14 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
-To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Cc: sboyd@kernel.org, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, arnd@arndb.de, gregkh@linuxfoundation.org, 
-	srini@kernel.org, vkoul@kernel.org, kishon@kernel.org, sre@kernel.org, 
-	krzysztof.kozlowski@linaro.org, linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, 
-	kernel@collabora.com, wenst@chromium.org, casey.connolly@linaro.org, 
-	Jonathan Cameron <jonathan.cameron@huawei.com>, Neil Armstrong <neil.armstrong@linaro.org>
-Subject: Re: [PATCH v4 1/7] spmi: Implement spmi_subdevice_alloc_and_add()
- and devm variant
-Message-ID: <mr7gqhvom5soofn2oujzxtsuczsnx2yizkushar64cojwnvhd6@dt64ojgjqdxw>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m+eq16zf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1758029748; x=1789565748;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=xNjcCrqL3Fvvxc/pvu1fHNLYA6h0GPV11qPf/HCmCrw=;
+  b=m+eq16zfU6moWDxJxMNbl4K/7EXM4q6fONd6EM6LDFAWN2QWzVl2BHz3
+   Nfxjy9FV8NKdSvJ4vq/Ca82axwJfLO1BS97yN+xxodHn6BeucvIqO9TqO
+   cbIEXbK3KVHV4NU21QpxPL0HxTyG7kVSm18ASBWthiqxpm4zaKduKGJ0s
+   eJwlE/NowA153FB5lmB4qsA8zRJpnJnihQxo/Z97WUixaEZ7MbMkDiBdy
+   iLID0WYR09DE4yq0oX3gY/UbNiL4bW0kR1aNi6M7Jt/KaiICG+8QaWzdK
+   SIwOcSpd/AbcZw2NBTZ2WahzqnMTGklMbnH4Z5uk2Lbe3sZ+itbnXqRfb
+   A==;
+X-CSE-ConnectionGUID: o7cQcBz/Qrq5awzfO6pOSw==
+X-CSE-MsgGUID: g2b37pKGQL+iUtg0L6zqRA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11555"; a="60237209"
+X-IronPort-AV: E=Sophos;i="6.18,269,1751266800"; 
+   d="scan'208";a="60237209"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2025 06:35:46 -0700
+X-CSE-ConnectionGUID: n5JHXARFTkK+1BMz1LMX7w==
+X-CSE-MsgGUID: fePhtN52T8GQra3atVYGLw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.18,269,1751266800"; 
+   d="scan'208";a="175365031"
+Received: from smile.fi.intel.com ([10.237.72.51])
+  by fmviesa009.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Sep 2025 06:35:38 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.98.2)
+	(envelope-from <andriy.shevchenko@intel.com>)
+	id 1uyVqJ-00000003XU8-1c1D;
+	Tue, 16 Sep 2025 16:35:35 +0300
+Date: Tue, 16 Sep 2025 16:35:35 +0300
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <u.kleine-koenig@baylibre.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+	sboyd@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, arnd@arndb.de,
+	gregkh@linuxfoundation.org, srini@kernel.org, vkoul@kernel.org,
+	kishon@kernel.org, sre@kernel.org, krzysztof.kozlowski@linaro.org,
+	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+	linux-pm@vger.kernel.org, kernel@collabora.com, wenst@chromium.org,
+	casey.connolly@linaro.org,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+	Neil Armstrong <neil.armstrong@linaro.org>
+Subject: Re: [PATCH v4 2/7] nvmem: qcom-spmi-sdam: Migrate to
+ devm_spmi_subdevice_alloc_and_add()
+Message-ID: <aMlnp4x-1MUoModr@smile.fi.intel.com>
 References: <20250916084445.96621-1-angelogioacchino.delregno@collabora.com>
- <20250916084445.96621-2-angelogioacchino.delregno@collabora.com>
+ <20250916084445.96621-3-angelogioacchino.delregno@collabora.com>
+ <t3uk3k4h3l53yajoe3xog2njmdn3jhkmdphv3c4wnpvcqniz4n@opgigzazycot>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="j6v4vfa6gjhs5clj"
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20250916084445.96621-2-angelogioacchino.delregno@collabora.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <t3uk3k4h3l53yajoe3xog2njmdn3jhkmdphv3c4wnpvcqniz4n@opgigzazycot>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
+
+On Tue, Sep 16, 2025 at 03:24:56PM +0200, Uwe Kleine-König wrote:
+> On Tue, Sep 16, 2025 at 10:44:40AM +0200, AngeloGioacchino Del Regno wrote:
+
+...
+
+> > +MODULE_IMPORT_NS("SPMI");
+> 
+> If it's exactly the files that #include <linux/spmi.h> should have that
+> namespace import, you can put the MODULE_IMPORT_NS into that header.
+
+Which makes anyone to import namespace even if they just want to use some types
+out of the header. This is not good solution generally speaking. Also this will
+diminish one of the purposes of _NS variants of MODULE*/EXPORT*, i.e. make it
+invisible that some of the code may become an abuser of the API just by someone
+include the header (for a reason or by a mistake).
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
---j6v4vfa6gjhs5clj
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Subject: Re: [PATCH v4 1/7] spmi: Implement spmi_subdevice_alloc_and_add()
- and devm variant
-MIME-Version: 1.0
-
-Hello AngeloGioacchino,
-
-On Tue, Sep 16, 2025 at 10:44:39AM +0200, AngeloGioacchino Del Regno wrote:
-> +/**
-> + * spmi_subdevice_alloc_and_add(): Allocate and add a new SPMI sub-device
-> + * @sparent:	SPMI parent device with previously registered SPMI controller
-> + *
-> + * Returns:
-> + * Pointer to newly allocated SPMI sub-device for success or negative ERR_PTR.
-> + */
-> +struct spmi_subdevice *spmi_subdevice_alloc_and_add(struct spmi_device *sparent)
-> +{
-> +	struct spmi_subdevice *sub_sdev;
-> +	struct spmi_device *sdev;
-> +	int ret;
-> +
-> +	sub_sdev = kzalloc(sizeof(*sub_sdev), GFP_KERNEL);
-> +	if (!sub_sdev)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	ret = ida_alloc(&spmi_subdevice_ida, GFP_KERNEL);
-> +	if (ret < 0) {
-> +		kfree(sub_sdev);
-> +		return ERR_PTR(ret);
-> +	}
-> +
-> +	sdev = &sub_sdev->sdev;
-> +	sdev->ctrl = sparent->ctrl;
-> +	device_initialize(&sdev->dev);
-> +	sdev->dev.parent = &sparent->dev;
-> +	sdev->dev.bus = &spmi_bus_type;
-> +	sdev->dev.type = &spmi_subdev_type;
-> +
-> +	sub_sdev->devid = ret;
-> +	sdev->usid = sparent->usid;
-> +
-> +	ret = dev_set_name(&sdev->dev, "%d-%02x.%d.auto",
-> +			   sdev->ctrl->nr, sdev->usid, sub_sdev->devid);
-
-If I understand correctly sub_sdev->devid is globally unique. I wonder
-if a namespace that is specific to the parent spmi device would be more
-sensible?!
-
-> +	if (ret)
-> +		goto err_put_dev;
-> +
-> +	ret = device_add(&sdev->dev);
-> +	if (ret) {
-> +		dev_err(&sdev->dev, "Can't add %s, status %d\n",
-
-I'd use %pe instead of %d here.
-
-> +			dev_name(&sdev->dev), ret);
-> +		goto err_put_dev;
-> +	}
-> +
-> +	return sub_sdev;
-> +
-> +err_put_dev:
-> +	put_device(&sdev->dev);
-> +	return ERR_PTR(ret);
-> +}
-> +EXPORT_SYMBOL_NS_GPL(spmi_subdevice_alloc_and_add, "SPMI");
-> +
-
-Best regards
-Uwe
-
---j6v4vfa6gjhs5clj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmjJZTcACgkQj4D7WH0S
-/k4DDQf9Fn1HPf8O4u3moGauabP4ZoOg+KJoOMMHiL4JAWvb+ihWLP7SpGDPBfiO
-DjMRfgEltRK7S1XHVZqjpkIAREqaRc6TQCYX7uafwyX9JXpUGPvjoVWeywhnWJU3
-5vE9b9lEeFfiRzBq8RQ0tr17GyPpmviyXdL6kimCDDWkKzCqU9mXskQiO/HYxzDV
-mJBLPPQQ6aRxVVBLLqdsggxptBQ+8BtkqUy9+yqjncsbYTwEgj4QY65d9yQXPTgL
-st+pYh7Ra8xceTMOExplwPHN/uSqPBTMTRomAsrtOz09tETIkR6mOuEOUO3fsy9q
-v/FjPX6SlBekOqw7TnPDq/t/204YwA==
-=j8SY
------END PGP SIGNATURE-----
-
---j6v4vfa6gjhs5clj--
