@@ -1,124 +1,143 @@
-Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A9DA2D12ED;
-	Tue, 16 Sep 2025 15:08:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66A63335BA6
+	for <linux-iio@vger.kernel.org>; Tue, 16 Sep 2025 15:11:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1758035308; cv=none; b=Bq/6UojnyEKGlgsEp8YXaFkaoiNicR30xq5X3UFGRrWUzrAFclLxki1JPuuekzAYWoK4RW9Sv7qGlKAIoGthUCGcgO30bLkPEQ00UADnOWYiPSX9vN3LUyDqebggsK6g7cID5MonFfBJD6wH04JzUpHknWJDuc3VNrISZH0S+hk=
+	t=1758035474; cv=none; b=NNr9jc7OIf+5ArxYu8qrsag1HFzypIWTaVLlYBj2GLWdTwbSuh+0TpqCg5QK+g71c9uW+TN2tgcj7ZL2PYcu+Kh3umUhOw+RRT7WHEIHs/Eqf9JdY583Gy5AZz3HLc1npB2OP/Qk+V1FeJX3J9S2kWaC1MTXc3msQd703i6mLcE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1758035308; c=relaxed/simple;
-	bh=eh6QVqz3lffVGTOiB5L34b3cIqw2nKOaD4q8ix1TkTM=;
+	s=arc-20240116; t=1758035474; c=relaxed/simple;
+	bh=rmOaDep9iDvIkVV5SOO3btdvNEg4fjn3ZIsqxvgs9l0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RAcWQiNMV9G7nXbW7Tui19f8fpw3IkdOtsx2SQOGe+z5Ry1MEY5+o7e9f5dse64/aIxcXEWMSW/U8sOMLx4JaK0CNh5wkZHJA4yOneH7nAJ/aRwk+XFINJAK3NZEzUuU93TeDWWm6T/yhOj8U/1WTFRSa6I3lK0RhtFm+RBPR+w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=A5n3fHiM; arc=none smtp.client-ip=185.171.202.116
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=KTRPbHsS1xNn5HWdY9IXtGAyLDqyzCSydp93CQbWzLHvzGTlfjtjg/S0+lsHh3KJWRvlybRg+WqonwUxxpurof3HuJx063/V+wLb5f1ZxhoXrUNTmTndUOjkUVnW56xSV3Pl8f43dm9Lm8nkuy3o9Eb59pJ/EzKUpgzZe6YEgQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=fARFydGW; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="A5n3fHiM"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-04.galae.net (Postfix) with ESMTPS id 205DCC8F467;
-	Tue, 16 Sep 2025 15:08:08 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 7595F6061E;
-	Tue, 16 Sep 2025 15:08:24 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id B71A9102F1788;
-	Tue, 16 Sep 2025 17:08:08 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1758035303; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 content-transfer-encoding:in-reply-to:references;
-	bh=UQOE3eUMvpfqrZERSP7sEINW/46CzMSN740+oyUBq0U=;
-	b=A5n3fHiMc942pBxiiBYLe3Ui+XTe2GdJGXpoLjonwep6Fm3HRDcBDJ2kfucMjiUtzqSqDu
-	Pyuq0wuB08xAtdbWdJItZ3DbMhPoES66m5eMbmI1oNPHQTo3J8VCwI781aAq1NgKydtDPW
-	qILfxtHsmsefAfhKMely3Z5OOSLIfXq3kaHKRUcQkiVw0/4kKeNlrAMcIhBR0YjGknvHU9
-	IsUDRMKQ+Fa5VGZdjDZXEt4Pkdl5jZy+W1rrS1e27cb5NEjdAXud/EVL9S23Uggm1hveZ0
-	raBWRhUnhJB2FHm9Qab44gXXyrsp/SY5sdEv4eB0XY9MYU6DoM00TASOMfVKwg==
-Date: Tue, 16 Sep 2025 17:08:07 +0200
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Stephen Boyd <sboyd@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= via B4 Relay <devnull+nuno.sa.analog.com@kernel.org>,
-	dmaengine@vger.kernel.org, linux-clk@vger.kernel.org,
-	linux-fpga@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-pwm@vger.kernel.org,
-	linux-spi@vger.kernel.org, nuno.sa@analog.com,
-	Michael Turquette <mturquette@baylibre.com>,
-	Moritz Fischer <mdf@kernel.org>, Wu Hao <hao.wu@intel.com>,
-	Xu Yilun <yilun.xu@intel.com>, Tom Rix <trix@redhat.com>,
-	Vinod Koul <vkoul@kernel.org>, Jean Delvare <jdelvare@suse.com>,
-	Guenter Roeck <linux@roeck-us.net>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Trevor Gamblin <tgamblin@baylibre.com>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Mark Brown <broonie@kernel.org>,
-	Mike Turquette <mturquette@linaro.org>,
-	Xu Yilun <yilun.xu@linux.intel.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v6 3/7] include: linux: move adi-axi-common.h out of fpga
-Message-ID: <20250916150807090a7e5f@mail.local>
-References: <20250519-dev-axi-clkgen-limits-v6-0-bc4b3b61d1d4@analog.com>
- <20250519-dev-axi-clkgen-limits-v6-3-bc4b3b61d1d4@analog.com>
- <175133153648.4372.1727886846407026331@lazor>
- <202509161304166bf210e2@mail.local>
- <711b5e34-3534-440c-8914-ddb41987ee8d@baylibre.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="fARFydGW"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-45df7dc1b98so38709315e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 16 Sep 2025 08:11:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1758035471; x=1758640271; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=rmOaDep9iDvIkVV5SOO3btdvNEg4fjn3ZIsqxvgs9l0=;
+        b=fARFydGWUDs3Y1yIu9PeJvgd9JeExzEDi0HEQ3gzKF7bRe7OC5iIjm8aeOVBS1lJ73
+         k+stB81Cnwgt0KMjGGxj1F28HgeCc6wyYirwWIhI/CBqrGJevPQ9v5sMo6yCM4wyEhB7
+         xBzhqVMyCwgpc6Tm9Nz7dtOVPIKwq7IyRRQDYrq2uvoGtklHivAzYuD0zz1uOBtCtk7i
+         2uzEExAYgGUQTPx8LfDfjAUF6QxieX4CpS0Mrnt1ftjM+bb+mcfvRJaKFD/kCVD5yWcY
+         W/JnSUvYy2vIOACce4BTthGLdKKjt4Nsyp/20TM8aZ/doWkpdpY9dTNc3KxcZrFSwUSO
+         BW/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1758035471; x=1758640271;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rmOaDep9iDvIkVV5SOO3btdvNEg4fjn3ZIsqxvgs9l0=;
+        b=rmI9PnCUUPgtBKXM4VFUIpn5+OsSSN0XTxfaPpJAtVAyxkDgp51tCB36Aqe0LOMdHh
+         tRdzN4RzIGLHS9HX7+0Bb0kXx7x5zYLPkwG9tN1qkWns7wZb/f5eriTCIWOsE4lQp+V7
+         Z74kafva+VInFN1lR77ZdaP8ZWAHOPhoGaS0LCCGH1fSPBg0m6cCoXIfvHhxwo8ikYw1
+         dr2Q1tLrDBV4gI5rWXu3HuzrpXhKAbO6dGJDxQjGl7xhsYziKXL7w60DYksW7Y8N4lC/
+         wQzsGN91GmbzE1u2qiJeRIFHviS9zLz2zLPGeIDRAFcWB8JEdcSqOEg6ybDLW9jgIgsg
+         P5hg==
+X-Forwarded-Encrypted: i=1; AJvYcCVSb5rzlDrLZRaI5Tg6+BJJUWdK8A306sQqDlI4YGTT4L9ZksAQgxv8k+DSTDfuYXBD1l5dbDkv5kQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyepZYTdCOxBPyDiRoS6A/qKFi+cKvkDtyDFZt3G1c04jqS22Xv
+	GAPfz7ufmznfZq6cWP4mvbV5u42conCA1NWLX+j/fsKDlGZZ3bsDjrzF2B9m7mfkPng=
+X-Gm-Gg: ASbGncu1lEE0X6Q57Bt4Yd/RW5WFQ3/ogvZkOQhYyQh6DBTju59cgfe6/prA6xH+JfR
+	gvNfodz+pcbFekH95WTvRkM3HOYww1sq7k6SEtdxBMLq5hjkPEGe8Iaba+2Gr+/2qPIJ9NT391p
+	KCugNg5uBCGl4fWwwtji9P70R4yJGl34t8XToHzeXC1BxpWRWsOovHnvpw3s1vZF7B+DqalSfAW
+	24NAjGmQ7iOd4b6rm5yzEkUqYTWUhCkoHq8hn+N63WJJMxNIAio/oGOEPY5sm1CH+Rp4I5jE7ms
+	yTz1ZrHlq6rKo0FXyEqdR96LoTEsF4nOJPFBWfSzeqR+G0hq1KCdKg6qdoTs49aSdoFSRD2E0yt
+	7Qtc4COCWuRJJZh3WxrbfzyGRGhP0pfotiqc594W3DcLy3pI1XMGrrvbkaKp11/lu
+X-Google-Smtp-Source: AGHT+IFjwopgYVPo6VKMtYSKedXcVrli8pwqzXpfa37U2o4471Lcz0KQL5QMmQQhJ8xqhKe1X6WGiQ==
+X-Received: by 2002:a05:600c:1992:b0:456:fc1:c26d with SMTP id 5b1f17b1804b1-45f211c8437mr143544675e9.2.1758035470631;
+        Tue, 16 Sep 2025 08:11:10 -0700 (PDT)
+Received: from localhost (p200300f65f06ab0400000000000001b9.dip0.t-ipconnect.de. [2003:f6:5f06:ab04::1b9])
+        by smtp.gmail.com with UTF8SMTPSA id 5b1f17b1804b1-45e01578272sm241914915e9.9.2025.09.16.08.11.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 16 Sep 2025 08:11:09 -0700 (PDT)
+Date: Tue, 16 Sep 2025 17:11:08 +0200
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
+	sboyd@kernel.org, jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, arnd@arndb.de, gregkh@linuxfoundation.org, srini@kernel.org, 
+	vkoul@kernel.org, kishon@kernel.org, sre@kernel.org, 
+	krzysztof.kozlowski@linaro.org, linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, 
+	kernel@collabora.com, wenst@chromium.org, casey.connolly@linaro.org, 
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>, Neil Armstrong <neil.armstrong@linaro.org>
+Subject: Re: [PATCH v4 2/7] nvmem: qcom-spmi-sdam: Migrate to
+ devm_spmi_subdevice_alloc_and_add()
+Message-ID: <mknxgesog6aghc6cjzm63g63zqbqvysxf6ktmnbrbtafervveg@uoiohk3yclso>
+References: <20250916084445.96621-1-angelogioacchino.delregno@collabora.com>
+ <20250916084445.96621-3-angelogioacchino.delregno@collabora.com>
+ <t3uk3k4h3l53yajoe3xog2njmdn3jhkmdphv3c4wnpvcqniz4n@opgigzazycot>
+ <aMlnp4x-1MUoModr@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="cy5a22gjj6esxnjr"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <711b5e34-3534-440c-8914-ddb41987ee8d@baylibre.com>
-X-Last-TLS-Session-Version: TLSv1.3
+In-Reply-To: <aMlnp4x-1MUoModr@smile.fi.intel.com>
 
-On 16/09/2025 09:55:13-0500, David Lechner wrote:
-> On 9/16/25 8:04 AM, Alexandre Belloni wrote:
-> > Hi Stephen,
-> > 
-> > On 30/06/2025 17:58:56-0700, Stephen Boyd wrote:
-> >> Quoting Nuno Sá via B4 Relay (2025-05-19 08:41:08)
-> >>> From: Nuno Sá <nuno.sa@analog.com>
-> >>>
-> >>> The adi-axi-common.h header has some common defines used in various ADI
-> >>> IPs. However they are not specific for any fpga manager so it's
-> >>> questionable for the header to live under include/linux/fpga. Hence
-> >>> let's just move one directory up and update all users.
-> >>>
-> >>> Suggested-by: Xu Yilun <yilun.xu@linux.intel.com>
-> >>> Acked-by: Xu Yilun <yilun.xu@intel.com>
-> >>> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> # for IIO
-> >>> Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-> >>> ---
-> >>
-> >> Applied to clk-next
-> > 
-> > Do you mind providing an immutable branch for this as my i3c tree is
-> > introducing a new driver using this header and so it is going to depend
-> > on your branch.
-> > 
-> > Thanks!
-> > 
-> 
-> This was merged into mainline in v6.17-rc1, so I don't think we should
-> need an immutable branch at this point.
-> 
-> If you are modifying the include/linux/adi-axi-common.h file in the I3C
-> tree, FYI there are some changes in the SPI tree that just got applied [1].
-> But if you just need the header in the new location, it should already
-> be there since v6.17-rc1.
-> 
 
-Hum, right, this makes me realize I din't rebase i3c/next on top of
-v6.17-rc1
+--cy5a22gjj6esxnjr
+Content-Type: text/plain; protected-headers=v1; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH v4 2/7] nvmem: qcom-spmi-sdam: Migrate to
+ devm_spmi_subdevice_alloc_and_add()
+MIME-Version: 1.0
 
-> 
-> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git/commit/?id=67a529b7d3c50a56c162476509361f4fe11350dd
-> 
+On Tue, Sep 16, 2025 at 04:35:35PM +0300, Andy Shevchenko wrote:
+> On Tue, Sep 16, 2025 at 03:24:56PM +0200, Uwe Kleine-K=F6nig wrote:
+> > On Tue, Sep 16, 2025 at 10:44:40AM +0200, AngeloGioacchino Del Regno wr=
+ote:
+>=20
+> ...
+>=20
+> > > +MODULE_IMPORT_NS("SPMI");
+> >=20
+> > If it's exactly the files that #include <linux/spmi.h> should have that
+> > namespace import, you can put the MODULE_IMPORT_NS into that header.
+>=20
+> Which makes anyone to import namespace even if they just want to use some=
+ types
+> out of the header.
 
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Notice that I carefully formulated my suggestion to cope for this case.
+
+> This is not good solution generally speaking. Also this will
+> diminish one of the purposes of _NS variants of MODULE*/EXPORT*, i.e. mak=
+e it
+> invisible that some of the code may become an abuser of the API just by s=
+omeone
+> include the header (for a reason or by a mistake).
+
+Yeah, opinions differ. In my eyes it's quite elegant.
+
+Best regards
+Uwe
+
+--cy5a22gjj6esxnjr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmjJfgkACgkQj4D7WH0S
+/k5bVwgAg+5I7FGikPiLyM6nJF2xieob+ruwdkRFDohxfb7PQp4RA3i332VcbQXW
+uPoXcpVKI3rBmxcqdXznCt5nec30ko8fgwZAb31BtOXwOf+VPlXIz5wDU5CdFQs+
+35qgGyJnn48yhisyQx02GgDm/7esFho8zJOIaKvERuPGZ391HpLD4+z6Nxavy5JH
+ZgxR7eIMcsnuF9vidUZhFi25abs7LFmJ72MF4i2N41OEdA/SMG9rpkEFBk5moBvK
+qRRqVUDpCMxyDH6MddhP5CmgVUiW+3ucV17tdWKlnjjxMJx5rFb8BJD+jZx0Iuo+
+HRtugRPqfdauF5Que8FvEqOdkDDLIw==
+=R2qg
+-----END PGP SIGNATURE-----
+
+--cy5a22gjj6esxnjr--
