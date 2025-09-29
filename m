@@ -1,63 +1,63 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD5972FDC4C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD51126E6FF;
 	Mon, 29 Sep 2025 14:59:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759157975; cv=none; b=sx7I0UKu1uage6AZD0QxcV7sZETS+C34IzR6vDdgA43IBmn9P8ZpODXCw5a3pdwAMdUk9a/01T4I/2CmrFqRbVaNXdNM5X3S8RHpCceryRhwCF7wB6aBjNoZxzPhT7koFEB+56GplBVwThjGgJe1f7tdgBzltJCe398LkOmVF98=
+	t=1759157975; cv=none; b=oMePoRRwjVa/FtiwxqpiNZdqz28AOG+lyv6JZkOwNz8/twzCs682vW3S7WaghDJH4vkgR1VBFVSZpETtl0iBk6eCzyZ81fWrv2bYbRpxhXMOSXYVTukM1loPh0DA2vCQi7VITXv9jWR12Tn3HDXs9rMiXwKvzxipRYLBVoKrNkk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1759157975; c=relaxed/simple;
-	bh=+7GwcoqC8qWNy2L3sxfFP5h75DWzgpzZQkCDkSZfwy8=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jp6BicWwy3xByQs6EvBGqkztqefers4VCRz/9DSIN0lWMjADc0pBIyiJgAeTwhiIyJfeFJF68wYo36Nd9F23jqUe3ii/7c0yoroS3TbLp9EZrBiXofPPMCOladRBSXWk4Cr+wBVe9icRtO3tbG5tCKRS+JTim+Zyjrg6kcwoF64=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=u/U5g1LV; arc=none smtp.client-ip=148.163.135.77
+	bh=oalG20CtRpDcuQnoJM0+JyMi45I8t8CsE4LC4YYDonc=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=VR9fNcwIjuQ+I/zpg1XXx9LEr0QL9cG1AFbbxmsb3Md22tf0UNsdzBEmwEjapJlk7ItO0693CcP7eFSOOo37bUL+QdfVo7OooSGxFUrr+QMFl9mlx2TV92Lz6smS3DFsNkvpTOIoPTpUHlZqAhVbDQmVMgy5QKnADlPGKHeW7nc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=r5OfsUQl; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="u/U5g1LV"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="r5OfsUQl"
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58TCM7ea000989;
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58TCna4J001126;
 	Mon, 29 Sep 2025 10:59:25 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=ZYH8U
-	6wZt/gDCowcDACKdsRnUEM+NRV15GT9EOIoHC4=; b=u/U5g1LVxZeWn/PoMps5v
-	KnuzQRhVRekKDo0CNBeCzko3xnCGxtm2AAohCJ56s3TLgi6Gor0W8X+GAhwlBjin
-	lszJ/3fwpMmqQIuacIXduD7gOelS2BwbcXqSx6LmWi0o8CRTXbgMxVhYDgo5poNb
-	0cNJ4uEgbSSqv0IDgISxVJmODJvLbe6ViT2XXt3erQdDQHTHCFS+Y5u/TpV7L/4s
-	FbIPttXhs7NXdIMKnot4rOvK+KiQb/HcWum6jnT1tkSYnin/BVyoT7qIblkuHWNe
-	jFnp8AAb5RDwRuEQfp4AFPzOHzOKbiI6YeRjTJVIQaPDq2mDzZsnZ3cPzn3/9QoX
-	A==
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=5p7vsrRZWSngxnInGFwIRuXDwtu
+	E6LKHiW+cRdATNok=; b=r5OfsUQlLNzIcjoeaVou7WrHQEyfvmlDnTVHFO3OYPO
+	xJNcDm2jX3jiJeHb8Q4gk/Vy3JOLkXdGcW1FSqU62nOcyg3Ap/fKTddGvLd5qbbY
+	+b9kDXLhVaf1YvzqQgVeY525LGLkKUs8FzKRypmgttgQmfMeU3EE85HHK7y87B8D
+	hB1q1Lt2D2mwUnXByhwLat0LGjiYsVyo6QP/1wUKo4vVlaFa3zJNTNB5Ug0tjHAw
+	A9jGAIwfkzZ9kjcbhnOtCvO5YmCjWaQ03PElAtelnmEpg4LoGvU6gZpgTQCjQ7V7
+	AsV/IwrevAgwPYoY0yipg6HLJu3Rn7KtJ/iHyZ2CJ8w==
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 49ecu1jey7-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 49ecu1jey4-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 29 Sep 2025 10:59:25 -0400 (EDT)
+	Mon, 29 Sep 2025 10:59:24 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 58TExOTR013576
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 58TExNs3013573
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 29 Sep 2025 10:59:24 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 29 Sep
- 2025 10:59:24 -0400
+	Mon, 29 Sep 2025 10:59:23 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Mon, 29 Sep 2025 10:59:23 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Mon, 29 Sep 2025 10:59:23 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 29 Sep 2025 10:59:24 -0400
+ Transport; Mon, 29 Sep 2025 10:59:23 -0400
 Received: from Ubuntu.ad.analog.com (AMICLAUS-L01.ad.analog.com [10.48.65.188])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 58TExDG9023559;
-	Mon, 29 Sep 2025 10:59:20 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 58TExDG7023559;
+	Mon, 29 Sep 2025 10:59:16 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>
 CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH 3/5] iio: adc: ad4080: add support for AD4084
-Date: Mon, 29 Sep 2025 14:59:07 +0000
-Message-ID: <20250929145909.111243-3-antoniu.miclaus@analog.com>
+Subject: [PATCH 1/5] iio: adc: ad4080: prepare driver for multi-part support
+Date: Mon, 29 Sep 2025 14:59:05 +0000
+Message-ID: <20250929145909.111243-1-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20250929145909.111243-1-antoniu.miclaus@analog.com>
-References: <20250929145909.111243-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,19 +67,19 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: Odd8kYOjtyCFypfWxRBjZ-dUTeqpVi1P
-X-Proofpoint-GUID: Odd8kYOjtyCFypfWxRBjZ-dUTeqpVi1P
-X-Authority-Analysis: v=2.4 cv=A5Nh/qWG c=1 sm=1 tr=0 ts=68da9ecd cx=c_pps
+X-Proofpoint-ORIG-GUID: F9a2omZQMtcPf1unF5G-76SftsASoTKv
+X-Proofpoint-GUID: F9a2omZQMtcPf1unF5G-76SftsASoTKv
+X-Authority-Analysis: v=2.4 cv=A5Nh/qWG c=1 sm=1 tr=0 ts=68da9ecc cx=c_pps
  a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=yJojWOMRYYMA:10 a=gAnH3GRIAAAA:8 a=ibccQJ5QWis0U0yrBgcA:9
+ a=yJojWOMRYYMA:10 a=gAnH3GRIAAAA:8 a=Pkl20Ks3zfJNZXB0MFMA:9
  a=cPQSjfK2_nFv0Q5t_7PE:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTI3MDA4NCBTYWx0ZWRfX260NuSEv3s1g
- WisDf3ohBqxf9gxYN24hGbs/ISQba7ILCp6kxgSIXVGgPLAplsu+Up8Z97YWydFK9g5p9tnDmj+
- jRi8zBGwULuyST9m1o7IbKQMNzVjDIqjA9wytLAobtXnoV/H5FrPMwK/k4w/ryN8JKzuWvKZGkF
- M1InFPf4RqjuBdHAP2sOhAR07daXrPEZzbRqRfhtqT6ebZTWus5EL8UWjdOgNU1rl8lTtXmztDN
- 306+HhYwsDbDEFj6DLK/1LNhL2bD3BZ/cdvwmc6xIat9LL13qtkrYIoxUEgJKoGSvuDNjsif7gq
- p3QjYEeRQN+/C5U/iFN8/jP4Us5yYxSM15ZsmtzvfnHeV/VFihrLD+pjzuAKg0/0rzmmeGevmfp
- 6xrgxMDlLS8sBrIfltsNpXX9Bmf8eg==
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTI3MDA4NCBTYWx0ZWRfX8THRheibrPs/
+ xJS61kTUk8YkrZBLy1NQ07Tqa8HalQAFSGAMru2zeToUHB6nX/J7+oKblk5hSQRym9DZ565w7n1
+ iwlRzp503Abh4dS4v2weiIDf+fD6MenLu8WP6d7f17TFWBXbgg0HUnpEGhiqKQCUugHuW1XGhr2
+ OjilnVMVnjplpStPE4MjcSbBtoQTwqew/yPvWWPyNoUS0dB0H369T+dIwRLbGszdFGEtFClTiby
+ 4QXlMaO0M0xbmrMqWagJU44tdyMPF98YJgOaIttr1LjHXpz+jQdafGIRch/TJbn61XMPVZ1aIAN
+ 5N1rNGsNAloN0zu4AjCi3ZaKc0UwWkBe+tJjmRAypEdTTuD1ao4YlCYQaAbaQDH3OQ4/4iPqOd4
+ FQszd75E6NPs9MIqEFXx8h48oyf7ow==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
  definitions=2025-09-29_05,2025-09-29_03,2025-03-28_01
@@ -89,74 +89,120 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.19.0-2509150000 definitions=main-2509270084
 
-Add support for AD4084 16-bit SAR ADC. The AD4084 differs from
-AD4080 in resolution (16-bit vs 20-bit) and LVDS CNV clock count
-maximum (2 vs 7).
+Refactor the ad4080 driver to support multiple ADC variants with
+different resolution bits and LVDS CNV clock count maximums.
 
 Changes:
-- Add AD4084_CHIP_ID definition (0x54)
-- Create ad4084_channel with 16-bit resolution and storage
-- Add ad4084_chip_info with appropriate configuration
-- Register AD4084 in device ID and OF match tables
+- Update AD4080_CHIP_ID to correct value 0x50
+- Add lvds_cnv_clk_cnt_max field to chip_info structure
+- Create AD4080_CHANNEL_DEFINE macro for variable resolution/storage bits
+- Use AD4080_REG_PRODUCT_ID_L register for chip identification
+- Make LVDS CNV clock count configurable per chip variant
+
+This prepares the infrastructure for adding support for additional
+ADC parts with different specifications while maintaining backward
+compatibility with existing AD4080 functionality.
 
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/adc/ad4080.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
+ drivers/iio/adc/ad4080.c | 46 ++++++++++++++++++++++------------------
+ 1 file changed, 25 insertions(+), 21 deletions(-)
 
 diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
-index 9f670c290a55..cf3460a1eee4 100644
+index 6e61787ed321..9f670c290a55 100644
 --- a/drivers/iio/adc/ad4080.c
 +++ b/drivers/iio/adc/ad4080.c
-@@ -126,6 +126,7 @@
+@@ -125,7 +125,7 @@
+ 
  /* Miscellaneous Definitions */
  #define AD4080_SPI_READ						BIT(7)
- #define AD4080_CHIP_ID						0x50
-+#define AD4084_CHIP_ID						0x54
+-#define AD4080_CHIP_ID						GENMASK(2, 0)
++#define AD4080_CHIP_ID						0x50
  
  #define AD4080_LVDS_CNV_CLK_CNT_MAX				7
  
-@@ -435,6 +436,8 @@ static struct iio_chan_spec_ext_info ad4080_ext_info[] = {
+@@ -167,6 +167,7 @@ struct ad4080_chip_info {
+ 	const unsigned int (*scale_table)[2];
+ 	const struct iio_chan_spec *channels;
+ 	unsigned int num_channels;
++	unsigned int lvds_cnv_clk_cnt_max;
+ };
  
- static const struct iio_chan_spec ad4080_channel = AD4080_CHANNEL_DEFINE(20, 32);
+ struct ad4080_state {
+@@ -414,23 +415,25 @@ static struct iio_chan_spec_ext_info ad4080_ext_info[] = {
+ 	{ }
+ };
  
-+static const struct iio_chan_spec ad4084_channel = AD4080_CHANNEL_DEFINE(16, 16);
+-static const struct iio_chan_spec ad4080_channel = {
+-	.type = IIO_VOLTAGE,
+-	.indexed = 1,
+-	.channel = 0,
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE),
+-	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+-			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+-	.info_mask_shared_by_all_available =
+-			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
+-	.ext_info = ad4080_ext_info,
+-	.scan_index = 0,
+-	.scan_type = {
+-		.sign = 's',
+-		.realbits = 20,
+-		.storagebits = 32,
+-	},
+-};
++#define AD4080_CHANNEL_DEFINE(bits, storage) {\
++	.type = IIO_VOLTAGE,\
++	.indexed = 1,\
++	.channel = 0,\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE),\
++	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ) |\
++			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),\
++	.info_mask_shared_by_all_available =\
++			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),\
++	.ext_info = ad4080_ext_info,\
++	.scan_index = 0,\
++	.scan_type = {\
++		.sign = 's',\
++		.realbits = (bits),\
++		.storagebits = (storage),\
++	},\
++}
 +
++static const struct iio_chan_spec ad4080_channel = AD4080_CHANNEL_DEFINE(20, 32);
+ 
  static const struct ad4080_chip_info ad4080_chip_info = {
  	.name = "ad4080",
- 	.product_id = AD4080_CHIP_ID,
-@@ -445,6 +448,16 @@ static const struct ad4080_chip_info ad4080_chip_info = {
- 	.lvds_cnv_clk_cnt_max = AD4080_LVDS_CNV_CLK_CNT_MAX,
+@@ -439,6 +442,7 @@ static const struct ad4080_chip_info ad4080_chip_info = {
+ 	.num_scales = ARRAY_SIZE(ad4080_scale_table),
+ 	.num_channels = 1,
+ 	.channels = &ad4080_channel,
++	.lvds_cnv_clk_cnt_max = AD4080_LVDS_CNV_CLK_CNT_MAX,
  };
  
-+static const struct ad4080_chip_info ad4084_chip_info = {
-+	.name = "ad4084",
-+	.product_id = AD4084_CHIP_ID,
-+	.scale_table = ad4080_scale_table,
-+	.num_scales = ARRAY_SIZE(ad4080_scale_table),
-+	.num_channels = 1,
-+	.channels = &ad4084_channel,
-+	.lvds_cnv_clk_cnt_max = 2,
-+};
-+
  static int ad4080_setup(struct iio_dev *indio_dev)
- {
- 	struct ad4080_state *st = iio_priv(indio_dev);
-@@ -597,12 +610,14 @@ static int ad4080_probe(struct spi_device *spi)
+@@ -458,11 +462,11 @@ static int ad4080_setup(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		return ret;
  
- static const struct spi_device_id ad4080_id[] = {
- 	{ "ad4080", (kernel_ulong_t)&ad4080_chip_info },
-+	{ "ad4084", (kernel_ulong_t)&ad4084_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, ad4080_id);
+-	ret = regmap_read(st->regmap, AD4080_REG_CHIP_TYPE, &id);
++	ret = regmap_read(st->regmap, AD4080_REG_PRODUCT_ID_L, &id);
+ 	if (ret)
+ 		return ret;
  
- static const struct of_device_id ad4080_of_match[] = {
- 	{ .compatible = "adi,ad4080", &ad4080_chip_info },
-+	{ .compatible = "adi,ad4084", &ad4084_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ad4080_of_match);
+-	if (id != AD4080_CHIP_ID)
++	if (id != st->info->product_id)
+ 		dev_info(dev, "Unrecognized CHIP_ID 0x%X\n", id);
+ 
+ 	ret = regmap_set_bits(st->regmap, AD4080_REG_GPIO_CONFIG_A,
+@@ -488,7 +492,7 @@ static int ad4080_setup(struct iio_dev *indio_dev)
+ 				 AD4080_REG_ADC_DATA_INTF_CONFIG_B,
+ 				 AD4080_ADC_DATA_INTF_CONFIG_B_LVDS_CNV_CLK_CNT_MSK,
+ 				 FIELD_PREP(AD4080_ADC_DATA_INTF_CONFIG_B_LVDS_CNV_CLK_CNT_MSK,
+-					    AD4080_LVDS_CNV_CLK_CNT_MAX));
++					    st->info->lvds_cnv_clk_cnt_max));
+ 	if (ret)
+ 		return ret;
+ 
 -- 
 2.43.0
 
