@@ -1,99 +1,107 @@
-Received: from mail-vs1-f50.google.com (mail-vs1-f50.google.com [209.85.217.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3FC0D1922FD
-	for <linux-iio@vger.kernel.org>; Mon, 29 Sep 2025 11:27:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E9A91DD543;
+	Mon, 29 Sep 2025 14:31:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759145264; cv=none; b=cmXVIwDVSKkNLKKoTT0JQIbcl/LSnnAxWrF4SQwwOy2ivky73njdKg9XZdplvEquqsdH3/F5myUUXC5ITfEjt5ArJdIsPft2LrnhUb4Pxrwb28ggUlbcQqCAc6esa0LTflWvJbEIDY82MO1gktEPG8VFEquzQxXdUoQAIa+yhYA=
+	t=1759156294; cv=none; b=C3TwVRyJgwxMlFHzahc3NO3DPE1DBCH9zhO/whpeSw0XxKEzE/1bitNigQpBgukinygeevNvaPm+OtToXO7EJSAn0ALRvE5XNVMUH5nMiKFO8N8mS5bRBNaKOX38ge2z2oDghZ/g+zWgkh6Yp/kUwO1QzLwDgjN4nApZSq6XWC4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759145264; c=relaxed/simple;
-	bh=rmWlDx8/WnTcn1dhj2ug2PQJyxzNzRBfLIGobT30KUE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=lp4hnopJyUDoLOmA22ph5pWcXyqQPokYjVxpv0xC9Jrv+mKakA6WK9aXtUXGCRP236dcxmSu46WxWVi9GALVqI2pItlqizXHBl8eQcc4qTwEeRcKZySKGw1P129Ua/3Znqb1wrg6JqoYXhJxe2gI2HOo1aKC0m7pGsGKxXwe8qo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f50.google.com with SMTP id ada2fe7eead31-5b658b006e2so1517541137.0
-        for <linux-iio@vger.kernel.org>; Mon, 29 Sep 2025 04:27:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759145262; x=1759750062;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3p5ZyLrRZH5goQlwa/vwelLSKRvjTSePuKZhRKGtt3c=;
-        b=GupklF9wiURW2EfJaYXK6sX1Xa3ALaaXQBfTIzCBaql0kfm0LViy7Pn/LmG2blC/4a
-         CseE5qBJy9jO5yBo7FZS2vouZo/Lp3kYx9EUWGB6CtHt6hxxY7dpmrVOg9F0COtohcm7
-         qwyuNTuQUR6BPZ5iqZBbBO2GuHaictXV5mZ4/mDoXGKnk/3gHSEQ5vdQRLjBbt2jRYKR
-         SzWyOdz1aD0vfiy8e0Zv9kDSUfH1eLPR06crB0GCLxpYpIg2DjSG6lDaNiUUv+1ydB5L
-         SJq3JE4QQTVTk1Yr+M59cq2zhD+oKD1I9VabZyNXLckzv3ddSgz82/lL6OkhGNa7YgNH
-         iXcw==
-X-Forwarded-Encrypted: i=1; AJvYcCVVxH4IUYs9F0XE/royJOhGOqdQ9Jcz4cgAA31pFvB2HjzX9kgd4vKMY8fPIWmeMvu2ewvC27eH0GY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzB1IZzWgZQvHXNpZ+lvwlY/TFrxv+nne7vXov07PUxbDbUoFGL
-	Dboqo5B8rlBcGXUA7M+EZkCcM5tCpKw7icJkULhjyrXDXGSq/fuR847yNTnm2CxP
-X-Gm-Gg: ASbGncvnL+ypSi8vwMoG9gImpFVcVjjqKuME888np7pG7mbal3XZJR+AHvHHLN9y6MI
-	Y3VEq5FxdMWIFFXr4E9DhW+GpIkGfJfjQXrO9d9UJYi+sfBBlIoLjsNDjehvcWHlp8qOVKGaCOg
-	1txAU4guYWZqboTxKUlf9BonY8v+mCLrVuTFV+VwihRU10Es5TjsIdCjvez7C9pc049tx0AFIaO
-	9F1t0XfzxfuVqZjVIMfnaRJUBVBO90a4QY8p+UlwcKKKxquWQWKRQ5V1d4kGrV/rYq3P9Tr3WwD
-	E1Km/0uoTNp7KNYF034SVMly9KZRu3qzcnklNOcwr6CXP4FJkylhZoV3SvxZtErF/0b1qkjYXUo
-	Z2Me1a8IwDlvociNjtJhpZCIdsbyr+8Rsna/EsfgzSiVDsF+yf2cTfynfWCTQ
-X-Google-Smtp-Source: AGHT+IGgr2yvG/fNX3R4MX3AUdlLKUCubKP+m6qg6UbAgFI0IFyDgnMaEEbvjTHlyO6KPCFmk3nOwA==
-X-Received: by 2002:a05:6102:d91:b0:590:f704:6dca with SMTP id ada2fe7eead31-5acc6236640mr6168988137.10.1759145261879;
-        Mon, 29 Sep 2025 04:27:41 -0700 (PDT)
-Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-5ae302edafasm3293691137.4.2025.09.29.04.27.40
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 29 Sep 2025 04:27:41 -0700 (PDT)
-Received: by mail-vs1-f51.google.com with SMTP id ada2fe7eead31-580a1f1f187so1859494137.1
-        for <linux-iio@vger.kernel.org>; Mon, 29 Sep 2025 04:27:40 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCXH0/0rASEu/csYkNqSQ/tR/niJEWO32fHY0lQnt0o2+6dlrByETGhPzzsB70xNE+d482l7Yom2SVk=@vger.kernel.org
-X-Received: by 2002:a05:6102:442c:b0:521:7afa:3b95 with SMTP id
- ada2fe7eead31-5acd046d9damr5432533137.30.1759145260742; Mon, 29 Sep 2025
- 04:27:40 -0700 (PDT)
+	s=arc-20240116; t=1759156294; c=relaxed/simple;
+	bh=sKuqKNpE5dhMtZf1zaC2ZqjURpyd3C7l8Ef/qH3un8E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Y/WpLQQAY2VhIgq05GZw/Y5gWPTcD50VG9tKgVWCj9VSMe47LRQ4pPcHW7qa+Ymgbzt0AeqeqnysAAevuinVnpYfLSO5ovUaLudG3N+dsCkGTdx4yLYa4b58I73iZgL6lduSgbMgnROmvHM62Am3hddILF/UFsJMpIwp4REagP8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ybofpbcx; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ybofpbcx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68AE4C4CEF4;
+	Mon, 29 Sep 2025 14:31:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1759156293;
+	bh=sKuqKNpE5dhMtZf1zaC2ZqjURpyd3C7l8Ef/qH3un8E=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=Ybofpbcx+ejkNvAv75607kTZIE8CUsY9qhrXc/yrJ9X2bu9eV4OnGXQ3TNrOD/y2P
+	 ZTx2iK+hamBmIKKHDaVWhoOTCftImvcznOCK+7AEffOegIkND9rMYBhjXJdQX1r1ZL
+	 0JZPrZuBsBi3OkjiTPDsLn7YSdXtt3i13qbb2sqBLpmyWZ+oVdhkzjg1wkMuDpihUy
+	 6H4hKACxj53QRJs6VTVZG6utz4nyFWuKrwYhNjvjyPwNTkosbGPUWq/6n6pcvlANgh
+	 fQ2kDFeXinDxHted7Q2+zz5VDaq8aUMue0z6xZZqc8r3t6Teq5PIR23t0f4AHQZWzI
+	 MmqWDPc+OcTRw==
+Date: Mon, 29 Sep 2025 09:31:32 -0500
+From: Rob Herring <robh@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	linux-spi@vger.kernel.org, linux-kernel@vger.kernel.org,
+	michael.hennerich@analog.com, nuno.sa@analog.com,
+	eblanc@baylibre.com, dlechner@baylibre.com, andy@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org, corbet@lwn.net,
+	marcelo.schmitt1@gmail.com,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Bartosz Golaszewski <brgl@bgdev.pl>, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v3 7/8] dt-bindings: iio: adc: adi,ad4030: Add ADAQ4216
+ and ADAQ4224
+Message-ID: <20250929143132.GA4099970-robh@kernel.org>
+References: <cover.1758916484.git.marcelo.schmitt@analog.com>
+ <5dc08b622dac1db561f26034c93910ccff75e965.1758916484.git.marcelo.schmitt@analog.com>
+ <20250928111955.175680cb@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20250925224013.2146983-1-cosmin-gabriel.tanislav.xa@renesas.com> <20250925224013.2146983-3-cosmin-gabriel.tanislav.xa@renesas.com>
-In-Reply-To: <20250925224013.2146983-3-cosmin-gabriel.tanislav.xa@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 29 Sep 2025 13:27:29 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUytaS3P9UrK-bpFSP-z8ys4w37d0BWCJ6c5idnM4iNTg@mail.gmail.com>
-X-Gm-Features: AS18NWB5KjkQR6-4iBJ8hPH8oU_cNUXGPtBKbJx7p1IFxsy7u1OLZLpvVydcc3k
-Message-ID: <CAMuHMdUytaS3P9UrK-bpFSP-z8ys4w37d0BWCJ6c5idnM4iNTg@mail.gmail.com>
-Subject: Re: [PATCH v2 2/7] dt-bindings: iio: adc: document RZ/T2H and RZ/N2H ADC
-To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20250928111955.175680cb@jic23-huawei>
 
-On Fri, 26 Sept 2025 at 00:41, Cosmin Tanislav
-<cosmin-gabriel.tanislav.xa@renesas.com> wrote:
-> Document the A/D 12-Bit successive approximation converters found in the
-> Renesas RZ/T2H (R9A09G077) and RZ/N2H (R9A09G087) SoCs.
->
-> RZ/T2H has two ADCs with 4 channels and one with 6.
-> RZ/N2H has two ADCs with 4 channels and one with 15.
->
-> Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+On Sun, Sep 28, 2025 at 11:19:55AM +0100, Jonathan Cameron wrote:
+> On Fri, 26 Sep 2025 17:40:47 -0300
+> Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
+> 
+> > ADAQ4216 and ADAQ4224 are similar to AD4030 except that ADAQ devices have a
+> > PGA (programmable gain amplifier) that scales the input signal prior to it
+> > reaching the ADC inputs. The PGA is controlled through a couple of pins (A0
+> > and A1) that set one of four possible signal gain configurations.
+> > 
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > ---
+> > Change log v2 -> v3
+> > - PGA gain now described in decibels.
+> > 
+> > The PGA gain is not going to fit well as a channel property because it may
+> > affect more than one channel as in AD7191.
+> > https://www.analog.com/media/en/technical-documentation/data-sheets/AD7191.pdf
+> > 
+> > I consulted a very trustworthy source [1, 2] and learned that describing signal
+> > gains in decibels is a common practice. I now think it would be ideal to describe
+> > these PGA and PGA-like gains with properties in decibel units and this patch
+> > is an attempt of doing so. The only problem with this approach is that we end up
+> > with negative values when the gain is lower than 1 (the signal is attenuated)
+> > and device tree specification doesn't support signed integer types. As the
+> > docs being proposed fail dt_binding_check, I guess I have to nack the patch myself.
+> > Any chance of dt specification eventually support signed integers?
+> > Any suggestions appreciated.
+> > 
+> > [1] https://en.wikipedia.org/wiki/Decibel
+> > [2] https://en.wikipedia.org/wiki/Gain_(electronics)
+> 
+> I still wonder if the better way to describe this is to ignore that it
+> has anything to do with PGA as such and instead describe the pin strapping.
+> 
+> DT folk, is there an existing way to do that? My grep skills are failing to
+> spot one.
+> 
+> We've papered over this for a long time in various IIO drivers by controlling
+> directly what the pin strap controls with weird and wonderful device specific
+> bindings. I wonder if we can't have a gpio driver + binding that rejects all
+> config and just lets us check the current state of an output pin.  Kind of a
+> fixed mode regulator equivalent for gpios.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+If these are connected to GPIOs, isn't it possible that someone will 
+want to change their value?
 
-Gr{oetje,eeting}s,
+Other than some generic 'pinstrap-gpios' property, I don't see what we'd 
+do here? I don't feel like pin strapping GPIOs is something that we see 
+all that often.
 
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Rob
