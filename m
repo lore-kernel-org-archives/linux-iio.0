@@ -1,197 +1,157 @@
-Received: from h2.cmg2.smtp.forpsi.com (h2.cmg2.smtp.forpsi.com [81.2.195.189])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18775246BB0
-	for <linux-iio@vger.kernel.org>; Mon, 29 Sep 2025 06:24:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=81.2.195.189
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D167F24E4C4
+	for <linux-iio@vger.kernel.org>; Mon, 29 Sep 2025 06:40:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759127075; cv=none; b=HAXYj8QXGUnlLeCI4BnFX0Dux1h5YNhkDunvsAkMhp3DkiG2c5e6h5kKngTCO7qAXCLMXfELqhCZvpeKHsVicJpO3C89rknTYIjLzB3GCbdityDq4aE/fx8zPOWoW3F9kY2KbTlBU0OjeQ/tLw78v+oNzqdY1LfwUrqAJVEc7Jg=
+	t=1759128044; cv=none; b=HfGYLcKbld6swqyyBTdiWZeR0VRXokLyXwPft7mlwIfq9bQ+ZsMXjgIu1zhOjKiviAQz+musMRfqcsz+XB8vnrTlmQlzSdS3s1mYsofEKoHgWhplgjaBXWCM5SXY65fChiLt96ScPZoR3fjFn+Xv9rGhnO5CyWxZfyPXDONUH0w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759127075; c=relaxed/simple;
-	bh=re9IuesG0VWngK5bV6p+AyG4V3zzR/GbAZkIM5Ld1aY=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=iHexVJ+qC8XsVHZ1kduvJoawzV/77yr5zV6uPyTtcbrXpxsD+EwWgb8ayByfHqhCLDJACu0U1VlA5AOFxGDc/LTF9lzHr1J0TKDG14NdZbUrwS35xCKURcRcIP+R2FCkb5F4Y+UcDbFdwjDxGtHMw11V4YQITFUlXD7ghj1vgxo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=skyrain.eu; spf=none smtp.mailfrom=skyrain.eu; dkim=pass (2048-bit key) header.d=skyrain.eu header.i=@skyrain.eu header.b=HCor7W72; dkim=pass (2048-bit key) header.d=skyrain.eu header.i=@skyrain.eu header.b=HCor7W72; arc=none smtp.client-ip=81.2.195.189
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=skyrain.eu
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=skyrain.eu
+	s=arc-20240116; t=1759128044; c=relaxed/simple;
+	bh=3LR8E8CjvEpJbrTYnxXLx7VWtyus9mJZto38+M9EDak=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=XwlqkPBQ1QioeNB6/1T68Q3+nBx9IA33d8WdtKbi2oXweBOnZd29eTDfHyP3+loUvAl7iERz1jiQBakzpFnvBdSRal6HZa4y35ZC7za7YB335BE2Tw5gAI3xUDWVJcuTANbE9NZPoclXe0ctzwN40gbP/jPK3I4/WjkS3Kg4OYg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PPME/JuR; arc=none smtp.client-ip=209.85.128.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=skyrain.eu header.i=@skyrain.eu header.b="HCor7W72";
-	dkim=pass (2048-bit key) header.d=skyrain.eu header.i=@skyrain.eu header.b="HCor7W72"
-Received: from [172.25.231.43] ([85.248.43.180])
-	by cmgsmtp with ESMTPSA
-	id 3761vs1YDC4IT3761vpKyQ; Mon, 29 Sep 2025 08:10:50 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=skyrain.eu; s=f2022;
-	t=1759126250; bh=8TF55Bk30BfMBV3a1mEQG7EFaq/K8fRyukbVjWW9DK4=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Content-Type;
-	b=HCor7W72Wxo4iuiXKtkTle1UEZetl5JYj95Tjb5mWeCJUDr7cSHBOukf9HK3xughY
-	 P+wmFXUiXD18qsCOFAIyMWlB4Jv0mp5sJ7/0xfUi2kqrscT9NDzwsAgzhH7nYo9o6J
-	 mA/I/Q+DoGHYb/ZOHTuWOkW5djbNvfAOkkXmlLDJENgPbjs1/+DcKnzRzKTlmudajf
-	 mmQYs+/zu5XfuA6QLck57ZmHpfhfJH7SEihk/jS0fh/kwaXW8gh426uy2ObeETJFnF
-	 PxLCsyRmrg9g1D5iGU/lKay2+Knx9kxR5OS810Fza15gnPscAsRxv31h3WPW0nuj6F
-	 e0ZXhglZp3DuQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=skyrain.eu; s=f2022;
-	t=1759126250; bh=8TF55Bk30BfMBV3a1mEQG7EFaq/K8fRyukbVjWW9DK4=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Content-Type;
-	b=HCor7W72Wxo4iuiXKtkTle1UEZetl5JYj95Tjb5mWeCJUDr7cSHBOukf9HK3xughY
-	 P+wmFXUiXD18qsCOFAIyMWlB4Jv0mp5sJ7/0xfUi2kqrscT9NDzwsAgzhH7nYo9o6J
-	 mA/I/Q+DoGHYb/ZOHTuWOkW5djbNvfAOkkXmlLDJENgPbjs1/+DcKnzRzKTlmudajf
-	 mmQYs+/zu5XfuA6QLck57ZmHpfhfJH7SEihk/jS0fh/kwaXW8gh426uy2ObeETJFnF
-	 PxLCsyRmrg9g1D5iGU/lKay2+Knx9kxR5OS810Fza15gnPscAsRxv31h3WPW0nuj6F
-	 e0ZXhglZp3DuQ==
-Message-ID: <e4ac030c-8ce1-4b71-9b37-a2d304defdfa@skyrain.eu>
-Date: Mon, 29 Sep 2025 08:10:49 +0200
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PPME/JuR"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-46e52279279so3724285e9.3
+        for <linux-iio@vger.kernel.org>; Sun, 28 Sep 2025 23:40:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1759128041; x=1759732841; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=G3vOHHXpuMKt6IoeyX80AZv8OaZzqV02cCRhNcQ5018=;
+        b=PPME/JuRlY866f2XMmXmxGea2H5lEThmGWqBJkqtJxnIZF/djrZGw0mgFE64AOKQt2
+         sCabwQpjTxqM8+LLfCMgUUQrgXoetI+wM4+Hb4cpp+DeqxprVIhqzXw/yA/8bDVsnxKj
+         3jHyXuifbgr7L4vIkIDaW13LeMlApkCtjHhXiL/4Z23MTpODp7aSoFP2l5jteJKvHomz
+         q7A4h9X7IIzAxiG4z7Qf+qnd0n8sipEAU+9M2TFwrW2Fx2U2nmbmhkly0Qtao/KQ4Orm
+         jUqNOMF39lWCHUw1I3noy1srjj0jfxBdAP6CsZ0qlipSq5XMkDRoB8cJ+MjNjDfzd4nc
+         QThg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1759128041; x=1759732841;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=G3vOHHXpuMKt6IoeyX80AZv8OaZzqV02cCRhNcQ5018=;
+        b=igV3O+lw/vpEnopzHtYbpzDQGnungq/rftizZ61LXeBZ9z7nGbLI3RabnMeKNEQt9O
+         LKbFHOEJl2XQHgiL2OyKmzh3vR1RzqpoOy8ewBbCrLYh7mCL+B14NPy04iw4zqY/vWpQ
+         ZD4RWnOE/Hj0ZA0Ik/FUToblNurflGObvdmG3YvSie9+rMh9pqqhw/AOBOEfLUGS7iSw
+         iliwiGn8ZVtkelcZM/ktZ3Ur3icLWA+xSiD47pCTdufrorBTmNspi5z/gzKi97OYRv3f
+         BV1+wJsajgJo2qdVJ/0ODZPNgxeydnmFS9Ym9KeWh7P1DrlaQEuWHWBbmFMaMnexmxNa
+         5WhQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUoiQ/svsdnQO9b7VOndFzIPoEpsQ+DpVA7HcgjsEkjG5FgxvUQx0zm9uYGL/y7EJ+zWiUlsQMdZHs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyeT2N4vmjsReHcWKPmV2/eFRpQj/4TV8S6lUGUiiADM+mZYO6W
+	PvsqDSsqU0lqqp7r9tGxC6qUe5zHKHigbLbfH5uSu8paTuZ9awn7uxaT
+X-Gm-Gg: ASbGncsMtnC5WUxVWcY1E7meHFjTCeZFqAGPSruEOxrQup6BnAAUAhVt16YV7/B7QGW
+	HqbIt3BjaZDsPjlvKNRvDvxzzFwh/nbYsYpsBvWEBm2soBmHU86dPKAwbCIwY4hZvNh6Dco+RLL
+	NzxZRhI/6xCYgEzx2zuE8bXWUB9sRjmm0eEzQ+1U5ohER1q0klZI3FvWuTJ+9IgbD6eXaOt2Py3
+	jKl48GfsBTRwoNH+Kq8Ue7yi9Ka9n5HEIb5jZgCpf3m3uL1G2kDG9sARyMHJJrd8jvzCQK5oYKR
+	kqTYx1pdlPsDDx4Bfz/5LL/Rnh2N0Bz0rqX4EuA0M1r4BZvrev3NNPKaSIIbMe+SVYzSFXg5HBy
+	iBvUU3Kn2dT5eFy+2G4znBux6L9DAMe16Wgt3KbuWN4wmqwX9c9Tm4esSVm8mMgWxH3Wnyfu7
+X-Google-Smtp-Source: AGHT+IFZZJA3o5F9x0k/0C3Pbj7NTufjIeL93o2MLa2YiTXLngzlgMm0cTptySotti3yH8tb/SXC0g==
+X-Received: by 2002:a05:600c:a4c:b0:46e:2861:9eb2 with SMTP id 5b1f17b1804b1-46e329a4931mr177920745e9.8.1759128040686;
+        Sun, 28 Sep 2025 23:40:40 -0700 (PDT)
+Received: from ?IPv6:2001:818:ea56:d000:56e0:ceba:7da4:6673? ([2001:818:ea56:d000:56e0:ceba:7da4:6673])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46e33b9e8aesm169142595e9.4.2025.09.28.23.40.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Sep 2025 23:40:40 -0700 (PDT)
+Message-ID: <7fe5c02a0594a8fee0a0008722a2ab3d943925de.camel@gmail.com>
+Subject: Re: [PATCH 2/2] iio: dac: ltc2688: use the auto lock API
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?= via B4
+ Relay <devnull+nuno.sa.analog.com@kernel.org>
+Cc: nuno.sa@analog.com, linux-iio@vger.kernel.org, David Lechner
+	 <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
+Date: Mon, 29 Sep 2025 06:41:33 +0100
+In-Reply-To: <20250927185631.1051e315@jic23-huawei>
+References: <20250923-dev-ltc2688-minor-v1-0-ef92c441dc42@analog.com>
+	 <20250923-dev-ltc2688-minor-v1-2-ef92c441dc42@analog.com>
+	 <20250927185631.1051e315@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.52.4 (3.52.4-2.fc40) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] drivers: iio: accel: fix ADX355 startup race condition
-From: Andrej Valek <andrej.v@skyrain.eu>
-To: Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Puranjay Mohan <puranjay@kernel.org>,
- Kessler Markus <markus.kessler@hilti.com>
-References: <20250909085528.68966-1-andrej.v@skyrain.eu>
- <20250910193049.145aa79e@jic23-huawei>
- <6ee57754-4fa0-4694-b997-5f4c627b567b@skyrain.eu>
- <20250912151259.00006fd5@huawei.com>
- <b709ac66-d0f2-4eb9-a66b-be557b4fe2be@skyrain.eu>
- <20250915165313.000041fa@huawei.com>
- <722b91bc-fce7-4e1f-811f-aea30e130f15@skyrain.eu>
-Content-Language: en-US
-In-Reply-To: <722b91bc-fce7-4e1f-811f-aea30e130f15@skyrain.eu>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-CMAE-Envelope: MS4xfMkKS64mu5fHRpLMCFfB2/7CuxALymFqUp1oVZew5T6ef5MlNMEg5YVEhecTYH+UK+fMdXJ8vXSfKvZ5XgyCxFR3h78pHdleUdc6gCyxeEIbLHsuG767
- 2V6CFElZ7PFDyzeAclNixsYtZvrdunS3UsxToVwqdK9Es2H44TbHrh9jLxFqwmHpJCc870/hE/aar0Jo6mLsE3qgNSLz0Cs/hqEgFH0QwxZ6lZ9bA23hpTmX
- 82U393/KA0cCNOstivq5jpSnrP7jJITFBQ+4hrreOlKSS/mw5a2fJew3jAysmAppIXHa6JNBNTTnQXea7OY4804HPfdFNZ6wW3Qgah/9AzCxkxieV/N8+sNi
- 6sET9LGeu/ngMz1tfhTUq+926u8ugbMeHIbYA2qet1a2vh0lPFc=
 
-Hello Jonathan,
+On Sat, 2025-09-27 at 18:56 +0100, Jonathan Cameron wrote:
+> On Tue, 23 Sep 2025 09:41:48 +0100
+> Nuno S=C3=A1 via B4 Relay <devnull+nuno.sa.analog.com@kernel.org> wrote:
+>=20
+> > From: Nuno S=C3=A1 <nuno.sa@analog.com>
+> >=20
+> > Make use of the cleanup API so that we can simplify some code paths.
+> >=20
+> > Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> > ---
+> > =C2=A0drivers/iio/dac/ltc2688.c | 24 ++++++++++--------------
+>=20
+> This enables a few related simplifications that should be in this patch a=
+s well.
 
-Just a friendly reminder :).
+Yes, both make sense.
 
-Is there anything blocking before going to be merged?
-
-Regards,
-Andrej
-
-On 16.09.2025 09:07, Andrej Valek wrote:
->
->
-> On 15.09.2025 17:53, Jonathan Cameron wrote:
->> On Mon, 15 Sep 2025 14:03:47 +0200
->> Andrej Valek <andrej.v@skyrain.eu> wrote:
->>
->>> Hi Jonathan,
->>>
->>> I submitted the version 2 with applied your suggestions.
->>>
->>> On 12.09.2025 16:12, Jonathan Cameron wrote:
->>>> On Thu, 11 Sep 2025 11:33:49 +0200
->>>> Andrej Valek <andrej.v@skyrain.eu> wrote:
->>>>> Hi Jonathan,
->>>>>
->>>>> First, I would like to thanks for your feedback.
->>>>>
->>>>> On 10.09.2025 20:30, Jonathan Cameron wrote:
->>>>>> On Tue,  9 Sep 2025 10:55:28 +0200
->>>>>> Andrej Valek <andrej.v@skyrain.eu> wrote:
->>>>>>> From: Valek Andrej <andrej.v@skyrain.eu>
->>>>>> Hi Valek,
->>>>>>
->>>>>> Thanks for the patch. Small thing on patch title, don't include 
->>>>>> drivers.
->>>>>> It's a pain but you need to look at other patches to a given 
->>>>>> subsystem
->>>>>> to find out the preferred style.
->>>>> Valek is my surname 🙂.
->>>> Oops. Sorry!
->>>>
->>>> Hi Andrej,
->>>>>>> Signed-off-by: Valek Andrej <andrej.v@skyrain.eu>
->>>>>>> Signed-off-by: Kessler Markus <markus.kessler@hilti.com>
->>>>>>> ---
->>>>>>>     drivers/iio/accel/adxl355_core.c | 48 
->>>>>>> ++++++++++++++++++++++++++++----
->>>>>>>     1 file changed, 43 insertions(+), 5 deletions(-)
->>>>>>>
->>>>>>> diff --git a/drivers/iio/accel/adxl355_core.c 
->>>>>>> b/drivers/iio/accel/adxl355_core.c
->>>>>>> index 2e00fd51b4d51..5386cd4766def 100644
->>>>>>> --- a/drivers/iio/accel/adxl355_core.c
->>>>>>> +++ b/drivers/iio/accel/adxl355_core.c
->>>>>>> @@ -56,6 +56,8 @@
->>>>>>>     #define  ADXL355_POWER_CTL_DRDY_MSK    BIT(2)
->>>>>>>     #define ADXL355_SELF_TEST_REG        0x2E
->>>>>>>     #define ADXL355_RESET_REG        0x2F
->>>>>>> +#define ADXL355_BASE_ADDR_SHADOW_REG    0x50
->>>>>>> +#define ADXL355_SHADOW_REG_COUNT    5
->>>>>>>         #define ADXL355_DEVID_AD_VAL        0xAD
->>>>>>>     #define ADXL355_DEVID_MST_VAL        0x1D
->>>>>>> @@ -294,6 +296,9 @@ static void 
->>>>>>> adxl355_fill_3db_frequency_table(struct adxl355_data *data)
->>>>>>>     static int adxl355_setup(struct adxl355_data *data)
->>>>>>>     {
->>>>>>>         unsigned int regval;
->>>>>>> +    u8 shadow_regs[ADXL355_SHADOW_REG_COUNT];
->>>>>> Needs to be a DMA safe buffer.  We can't assume that regmap will 
->>>>>> always
->>>>>> bounce the data through one before passing it to the SPI controllers
->>>>>> that do sometimes require DMA safe buffers.    Add a buffer to 
->>>>>> end of
->>>>>> struct adxl355_data where you can take advantage of the forcing 
->>>>>> of appropriate
->>>>>> padding that is already going on there.
->>>>> I see, but I don't like extending the adxl355_data just for one time
->>>>> usage. The suggested approach is more similar to what is done with 
->>>>> the
->>>>> ID checking.
->>>>> | if (regval != ADXL355_DEVID_MST_VAL) {
->>>>> |  dev_err(data->dev, "Invalid MEMS ID 0x%02x\n", regval);
->>>>> |  return -ENODEV;
->>>>> | }
->>>> That's a single read.  Regmap always bounces those so a local 
->>>> variable should
->>>> be fine. Not so for a bulk read (or at least no one guarantees it)
->>>>
->>>> https://events19.linuxfoundation.org/wp-content/uploads/2017/12/20181023-Wolfram-Sang-ELCE18-safe_dma_buffers.pdf 
->>>>
->>>> Slide 11 (in general this slide deck is a good introduction to the 
->>>> fun of DMA safety).
->>>>
->>>> The path for a single read goes through:
->>>> https://elixir.bootlin.com/linux/v6.16.7/source/drivers/base/regmap/regmap.c#L2779 
->>>>
->>>> _regmap_bus_read() which uses map->work_buf which is DMA safe.
->>> regmap_bulk_read is using the same _regmap_read
->>> https://elixir.bootlin.com/linux/v6.16.7/source/drivers/base/regmap/regmap.c#L3137 
->>>
->>> so it should be safe, too I guess.
->> Whilst true, the repeated statement from the regmap maintainer that
->> is mentioned in the talk is that there is no guarantee that will 
->> continue
->> to be the case :(  Whereas the single reads are fine and will remain so.
->> I guess one reason for that is that regmap_read() take an unsigned 
->> int *val
->> so the type is almost always going to be wrong and a copy necessary.
->>
->> Anyhow, the whole thing is a bit silly but upshot is dma safe buffers 
->> only to bulk
->> accessors unless the ABI is ever documented as not needing them.
->>
->> Jonathan
-> Ok, I see. So can we live with the variant I did?
->>>> Jonathan
->>>>
->>> Andy
->>>
->>
-> In other words, is there anything pending from my side?
->
-> Andy
+- Nuno S=C3=A1
+>=20
+> > =C2=A0static int ltc2688_dac_code_read(struct ltc2688_state *st, u32 ch=
+an, u32 input,
+> > @@ -236,15 +234,15 @@ static int ltc2688_dac_code_read(struct ltc2688_s=
+tate *st,
+> > u32 chan, u32 input,
+> > =C2=A0	struct ltc2688_chan *c =3D &st->channels[chan];
+> > =C2=A0	int ret;
+> > =C2=A0
+> > -	mutex_lock(&st->lock);
+> > +	guard(mutex)(&st->lock);
+> > =C2=A0	ret =3D regmap_update_bits(st->regmap, LTC2688_CMD_A_B_SELECT, B=
+IT(chan),
+> > =C2=A0				 input << chan);
+> > =C2=A0	if (ret)
+> > -		goto out_unlock;
+> > +		return ret;
+> > =C2=A0
+> > =C2=A0	ret =3D regmap_read(st->regmap, LTC2688_CMD_CH_CODE(chan), code)=
+;
+> > -out_unlock:
+> > -	mutex_unlock(&st->lock);
+> > +	if (ret)
+> > +		return ret;
+> > =C2=A0
+> > =C2=A0	if (!c->toggle_chan && input =3D=3D LTC2688_INPUT_B)
+> > =C2=A0		*code =3D FIELD_GET(LTC2688_DITHER_RAW_MASK, *code);
+>=20
+> There is a return ret later in this function that can be return 0;
+>=20
+> > @@ -359,15 +357,13 @@ static ssize_t ltc2688_dither_toggle_set(struct i=
+io_dev
+> > *indio_dev,
+> > =C2=A0	if (ret)
+> > =C2=A0		return ret;
+> > =C2=A0
+> > -	mutex_lock(&st->lock);
+> > +	guard(mutex)(&st->lock);
+> > =C2=A0	ret =3D regmap_update_bits(st->regmap, LTC2688_CMD_TOGGLE_DITHER=
+_EN,
+> > =C2=A0				 BIT(chan->channel), en << chan->channel);
+> > =C2=A0	if (ret)
+> > -		goto out_unlock;
+> > +		return ret;
+> > =C2=A0
+> > =C2=A0	c->mode =3D en ? LTC2688_MODE_DITHER_TOGGLE : LTC2688_MODE_DEFAU=
+LT;
+> > -out_unlock:
+> > -	mutex_unlock(&st->lock);
+> > =C2=A0
+> > =C2=A0	return ret ?: len;
+> return len; as can't get here with non zero ret.
+>=20
+> > =C2=A0}
+> >=20
+>=20
 
