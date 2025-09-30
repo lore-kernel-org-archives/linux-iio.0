@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 825D23081AE
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8CA933081B7
 	for <linux-iio@vger.kernel.org>; Tue, 30 Sep 2025 15:32:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759246363; cv=none; b=NeDskJA9D1YwnE9h6citS0w42vPtQpTjkryeAbkQqeWOORLzuK956B1ummz+Cc3F8pVUYPBK20IGDJFEscT+y1CCd5l8uMi3377Cm1RPB8GiseV3SKYms7CQ2YuWJX+BLwXi//fdN8ObH5x9SW3YUYKEa+2wEXCp8vYtjYsXiIU=
+	t=1759246363; cv=none; b=AvNAnHpT9DCHS5ZQoSCdy/CdYwgAFkxrm4YTztVYQnthte/57IBLUEBPEPyxwB67Lnq/SuEY1BJo4swyv4Re+e9roqwb9C/gMohwKSdWxxDp8KRfgM2yhSkj2HgTQZKoa4pDtAXbCJRt6ir552+c7If2+VqGAXKOjH/Gm9Aua2E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1759246363; c=relaxed/simple;
-	bh=2R8ct2CIzDNl/WBKNmSNMtlvamsOPTT7vnMG3Fdcvg8=;
+	bh=y8ttHeKvDMmeyYg+h7xAT6ORFoQvuL+2vvytshvtqf0=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Bo8PPFRnr6kWyPZ6eAkp9XNfefWm2TfmLBss7SE5gGtSM/AQSmsTXJYOpt71Cm/Kk27DCdgF3PN6dhrkO7RZYuYToXaXdAEu7BJbolzoTr3EX04GwsbHaOb0Ue95gxkckLW5Oi8dzf5ef+isOO8euxbOuPCjhB+bSeZWOd3IkP0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YEN1pGRY; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=EZygRx7hwdHTAD94PKw1vIu2Cfzqy1CK3dVP9Geli07l4dmIQxjQvqsGSkJWUtATNLwseaJXzeixFyhKn9dx/eg1/q1yO8OdQuHGWPIKN47iZ3OGMP+7Eb8cgN6gbcL97eRvD7NXWzzE4UFwDC7Tw85ZtqUfFIpclBvuUEQNHNI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=riMJYDST; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YEN1pGRY"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 55BB7C19423;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="riMJYDST"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 17EFCC116C6;
 	Tue, 30 Sep 2025 15:32:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1759246363;
-	bh=2R8ct2CIzDNl/WBKNmSNMtlvamsOPTT7vnMG3Fdcvg8=;
+	bh=y8ttHeKvDMmeyYg+h7xAT6ORFoQvuL+2vvytshvtqf0=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=YEN1pGRYxsEXii3Jke/tUX7aPpf/oCD8CckZXHCdWTVR99D5E+6O056XC92G3GPlU
-	 UVR27SBsJEO1BWdwIXROxab2FHZcLVqDPZGTSM7b4SyA7T0u6LpmcUCVlJZ2MzwDhy
-	 ZoFs9Xk5Tq3W7pKxQrEvfAGB4BzThAzFu1xxjiSfe2L622m4LwrzvY6AemUiBe4sF0
-	 Il3Q3CxcC4G09Thh4buNf8zinGpEkaQzDgOQtg6CcUNmx9E0Aty98yht74+OzYQB1S
-	 DTQjknHdxUm2azqFuhj714mctuwj5vxBNjBryJtUsc7oFnYrWz5CL8nx/dGlDeiipb
-	 HTOy27z5kbkrA==
+	b=riMJYDSTEj8YSqugJ7eiTMjuq5Quku73gnunbuBslJnkDYON4kQOhU1ZDPfaFVSPu
+	 iaiNRO9AIl97D078ji4pwGkOyLn02t++BwT5npq0Pv244CzJguo1VFDeWePXYGjCVs
+	 1knij9QrIGFi+ak2dl5MuQOq/cK5Lpmh+2qiy4OQ4qiDBI0pQKkdAX0YlOkXSXWqEt
+	 B6414IPQluRByeN83212iqR38PjeI/QogT92v27l+GIzI3ZN9PRs82gn9OecnZvxDu
+	 zTa4EByWb3g0XraSL/ygbQW9SgHM6qN3n9iuphkde4QOn2vBSdsw5RjHpDAZwLwdiy
+	 SO3FiY5vg9+jQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D93FCAC5B8;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E09CAC5B8;
 	Tue, 30 Sep 2025 15:32:43 +0000 (UTC)
 From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 30 Sep 2025 16:33:14 +0100
-Subject: [PATCH 5/9] iio: adc: mt6360-adc: replace snprintf() with
- sysfs_emit()
+Date: Tue, 30 Sep 2025 16:33:10 +0100
+Subject: [PATCH 1/9] iio: adc: ad4030: replace sprintf() with sysfs_emit()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20250930-dev-sprintf-cleanup-v1-5-5d65d096a952@analog.com>
+Message-Id: <20250930-dev-sprintf-cleanup-v1-1-5d65d096a952@analog.com>
 References: <20250930-dev-sprintf-cleanup-v1-0-5d65d096a952@analog.com>
 In-Reply-To: <20250930-dev-sprintf-cleanup-v1-0-5d65d096a952@analog.com>
 To: linux-iio@vger.kernel.org
@@ -55,13 +54,14 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Matthias Brugger <matthias.bgg@gmail.com>, 
  AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, 
  Matteo Martelli <matteomartelli3@gmail.com>, Jiri Kosina <jikos@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sal@analog.com>
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1759246391; l=910;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1759246391; l=936;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=3f+W95hXwHL+jJYIyyCbGXqeeocZadZ1pyBxrDdqaHo=;
- b=8aP4W/p5srujnnNMnnPeKKFdtx8Tg/Gk/cxjEf0uazyj+bbAs5UmxKbFFfZk4rRfpY6eWLdrT
- bmfWmx7C/kBDiNSBA04XAST79B4jYbQzprH4UoB4Sp+0iH1a47lrOsH
+ bh=8oSpf8r5jwGofADc7uyuWm6zvYPITgJxkrmhRQeFNVw=;
+ b=YvsETcKc0FyfwIW9q42+ruD7MI2LXA8AQsvBfAfIKPHq0U5ERtdYkzgKTFO97ieoaonc2C9mT
+ rv6RbuR/aOuDK+pxAyySV9lQNy4dV9Evd/WfWrV8PGhEVjB6GqOCCM6
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -71,27 +71,29 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sá <nuno.sa@analog.com>
 
-Update the mt6360_adc_read_label() function to use sysfs_emit() for
-generating labels.
+Update the ad4030_read_label() function to use sysfs_emit() for generating
+labels.
 
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Nuno Sá <nuno.sal@analog.com>
 ---
- drivers/iio/adc/mt6360-adc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ad4030.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/mt6360-adc.c b/drivers/iio/adc/mt6360-adc.c
-index 69b3569c90e5b665e1d2c59621df00d6142fbe9c..e0e4df418612469bb11a88bdbeb77aeb7cb833eb 100644
---- a/drivers/iio/adc/mt6360-adc.c
-+++ b/drivers/iio/adc/mt6360-adc.c
-@@ -216,7 +216,7 @@ static const char *mt6360_channel_labels[MT6360_CHAN_MAX] = {
- static int mt6360_adc_read_label(struct iio_dev *iio_dev, const struct iio_chan_spec *chan,
- 				 char *label)
+diff --git a/drivers/iio/adc/ad4030.c b/drivers/iio/adc/ad4030.c
+index 1bc2f9a2247081e166680232aa6d4aebc5f41b89..4393160c7c77981729d8e43bbf1aa573616e4d40 100644
+--- a/drivers/iio/adc/ad4030.c
++++ b/drivers/iio/adc/ad4030.c
+@@ -852,8 +852,8 @@ static int ad4030_read_label(struct iio_dev *indio_dev,
+ 			     char *label)
  {
--	return snprintf(label, PAGE_SIZE, "%s\n", mt6360_channel_labels[chan->channel]);
-+	return sysfs_emit(label, "%s\n", mt6360_channel_labels[chan->channel]);
+ 	if (chan->differential)
+-		return sprintf(label, "differential%lu\n", chan->address);
+-	return sprintf(label, "common-mode%lu\n", chan->address);
++		return sysfs_emit(label, "differential%lu\n", chan->address);
++	return sysfs_emit(label, "common-mode%lu\n", chan->address);
  }
  
- static const struct iio_info mt6360_adc_iio_info = {
+ static int ad4030_get_current_scan_type(const struct iio_dev *indio_dev,
 
 -- 
 2.51.0
