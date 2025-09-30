@@ -1,60 +1,60 @@
 Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F3F52FB621;
-	Tue, 30 Sep 2025 10:33:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 77AEF2FBDF0;
+	Tue, 30 Sep 2025 10:33:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759228382; cv=none; b=ltSFxc7nkdFgUP1fIWbZi5eLwQwao1ff8k7Xk2YagDzwnirW7ALChNIFBXO0ceTAgOUp5Zqfi9ngfiDjUrfkd+ruP8qBFHuGDU2SbKN7PR5pZbbB900Ld0+dpwtmp/P3xNbzM6QeVPcTI+CK5DXvj7QcoBqFj5KBN4YVtSqkh2o=
+	t=1759228384; cv=none; b=r2UlOGSl+/wjVdLqlcY9wRC3zd42h2a9X4kAqMWJEdDDM/RCj9nftUthCzh/hifgMEBXG3zjvcMH/AwHHgo5XyuE1XXgbMu50uJMmIyPe6MkpI1sh8sDDv8kDDqxgruwMCsE/otN88Foo1nW+3ctBmAz+SnP2MPPSCial1hyP64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759228382; c=relaxed/simple;
-	bh=2k1KciQBK1CbG3Su5Z2u06t9roRSeI8ErDD274kKUL0=;
+	s=arc-20240116; t=1759228384; c=relaxed/simple;
+	bh=G3dXiSj38UTwxoTnwobKAgqe3zW6IWIRn4jKwDK1xiI=;
 	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qZsya4Ii7CfgwyMb7DKazujCiptAE8N5KuSPIuVQc6PZ0VXWvD3MdvQ1LBwIUUe3TebL6T4j093696p5Jswwlt/CfS2b0EVLug8JFD+ml88FCQrols4wU/nl7mqGRFiUauoH9U1BxG1keZX/maFxDKnMZsFPSbJR8wPRlqMQGoY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ovLKuCtH; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=LOwEaof98sTShnVM0fSjW5/WKxaNK7baeKXgAh0iUO3VZDzztqG3WzVkV9Dh0LrE2l4j2v3js3Yc7AR3FxTGil+rD6Ve2UpsLc0DDVcwYrEWjl7K1o1QvMQ0yYipHFb/hYTW1jCjvpCQoI07khGlk5oZTHjlOBdWRSy3eTCVTm4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=thWLIvcO; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ovLKuCtH"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="thWLIvcO"
 Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58U8BNbd026798;
-	Tue, 30 Sep 2025 06:32:57 -0400
+	by mx0b-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 58U8FgKJ026774;
+	Tue, 30 Sep 2025 06:32:59 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=TE6XI
-	dyXC61ReTXsxo1nkGguIWBoGeEN4U4yd45CvnE=; b=ovLKuCtHl6yeCStIbQLMu
-	CTOCh1We5e/0HStpGfieASTxLTPzIPuy0XWdUyInVHr1kNXARo//AKW6t6b3iabq
-	o/TYpSb7Q9QT+EE0ES5aVakpDO+oTJaTLEW6M8bfrh8VnaG50Au1T4h2Wrzhb77v
-	tDorauUQTY50zEMThlgDd7Q+el7n9P8F5bJ6sAi7O5bQv1hNoPSKEYfyw5/3T4mT
-	6ifLTU4VNTiumIPWC1No4RXQ85gB4TkK8ZzekqwQb3lWZomlZWStofdHPiAPzEvX
-	U3sYIb2UV+HkG6VkJy4/h2GUKSkmF9hxasKPXYpbeGbh22W+bnMZagAYBPs38LHB
-	g==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=aFpAy
+	V7ihnCIWNGwHQJ0ayXrTeBXwN6xnfN+J8FCe/0=; b=thWLIvcOPDLG/px0bT7ST
+	6kTo3YhcqZO2EKqUgvCjR9EK4hZpGHw9tiYYM9wLpaMrdIpG4FeVhINSffOABcbC
+	sc+qy6NW/8WeqGCilu7OeCojcruwkGUeBZPDBPZEIMNuHht59XH+OMqQRbwFkyC7
+	b240O5efi8kCfLl4yp7R4LpI25hSO4d1MA8iCul72j3nX7Nik+6vpv7e6w8k2qxB
+	n2cvM2lDOO7Mtx/9txqBRwFTjSjSpfyT/X/nP2CxiGGcurWm+1SXRIwZRk3QKaU7
+	w2m6Xin91Z5FLj/f6BK0VQ/8Z0d2i1/G7H2+HMLmYbLCkj/vqVxiIZSI3YkgpD/M
+	w==
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 49g7sjhwnk-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 49g7sjhwnp-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 30 Sep 2025 06:32:57 -0400 (EDT)
+	Tue, 30 Sep 2025 06:32:59 -0400 (EDT)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 58UAWunn027480
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 58UAWwGp027484
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 30 Sep 2025 06:32:56 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+	Tue, 30 Sep 2025 06:32:58 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 30 Sep
- 2025 06:32:56 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 30 Sep 2025 06:32:56 -0400
+ 2025 06:32:58 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Tue, 30 Sep 2025 06:32:58 -0400
 Received: from Ubuntu.ad.analog.com (AMICLAUS-L01.ad.analog.com [10.48.65.188])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 58UAWipV025133;
-	Tue, 30 Sep 2025 06:32:51 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 58UAWipY025133;
+	Tue, 30 Sep 2025 06:32:54 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>
 CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v2 3/6] dt-bindings: iio: adc: adi,ad4080: add support for AD4084
-Date: Tue, 30 Sep 2025 10:32:26 +0000
-Message-ID: <20250930103229.28696-3-antoniu.miclaus@analog.com>
+Subject: [PATCH v2 6/6] iio: adc: ad4080: add support for AD4081
+Date: Tue, 30 Sep 2025 10:32:29 +0000
+Message-ID: <20250930103229.28696-6-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20250930103229.28696-1-antoniu.miclaus@analog.com>
 References: <20250930103229.28696-1-antoniu.miclaus@analog.com>
@@ -67,18 +67,18 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: rugXg6DrM-KMKCjR8nUAW0QU_z0kZE03
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTMwMDAzMyBTYWx0ZWRfX1+J83lb3Eg1x
- XBaX8Y0FZS/U4rMg4RDTnHwBIlYj0HGabbHnH+463Wh0jBWxLfmuGcS2iYb/gH3n7AKChSZP/Lr
- GxDaL2mT04y5hj/NGb4gVn4paEwLJeZNItMFgDenGPytVuclVnA7AwnTfPH/8XDE5TmNIM2oMxk
- nRnqe0WmD3ovm4Xr7nmiRM4QfqEERzzsnCursS1ImyysEh1/BCjBIfxG5kAwREOro1tuzSk32dS
- 0oAxf0C/a6FBZ1VaIceN8W++TRJlmQXiR3mceLGcWYzvRxjWcnmJUTSqUilaA01ON7jQ/MaSp4K
- x/6CKfeVhCJyfkmm2+RMEMuido43KoBP5lc8iq27aEXBE/PMisOXxR7ViccI1Mowud4O9wW66sG
- XF5uCl+Skxz9RDhkvfn0DnWXchw6wQ==
-X-Proofpoint-GUID: rugXg6DrM-KMKCjR8nUAW0QU_z0kZE03
-X-Authority-Analysis: v=2.4 cv=U/CfzOru c=1 sm=1 tr=0 ts=68dbb1d9 cx=c_pps
+X-Proofpoint-ORIG-GUID: -0_RQ5GGRXg24TRtRIB8-DoNczBItmdi
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUwOTMwMDAzMyBTYWx0ZWRfX+MNWYu5pkC5l
+ /1Hmi3k7if/j4iI8xNhJxnL37N/o6BgPeTJBLm/JMEZyTcH4bYxLXKXPN5QvfQmFca2BvybvoJG
+ H6HQkq1PV44irCksGoa60AdDja5254f+mscYLPdjKzqWg32wtJ0wLIY3H/sQL1tf5VxhLYL0KmZ
+ uTKUCdjkL8weRDmVxJSadUS6+M8vyC+NVKRw/nOcY9wYkExwC7qG/Op/Ql2xSQNIVx1HlEIp5T7
+ ej2wqD4xsvFmiezXGCokQe/smbnM4GAM2eEk8B6fH2OPExra+xshucUbUutieTiKhdKRD0Y6y7D
+ 7AK410P6oNptGYKIkZRngIcQpKqKOeoHNaTCbMlIHkfEa6k8oKG5UInX+5KC/EXYDsRgCozzD05
+ 8Hqxj1htBDN3Qq1bgVFOD5Yx+NhcMg==
+X-Proofpoint-GUID: -0_RQ5GGRXg24TRtRIB8-DoNczBItmdi
+X-Authority-Analysis: v=2.4 cv=U/CfzOru c=1 sm=1 tr=0 ts=68dbb1db cx=c_pps
  a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=yJojWOMRYYMA:10 a=gAnH3GRIAAAA:8 a=oP9NV9ZnaF3-ZFNN28cA:9
+ a=yJojWOMRYYMA:10 a=gAnH3GRIAAAA:8 a=kT8vE1fiKq0M1JW6GToA:9
  a=cPQSjfK2_nFv0Q5t_7PE:22
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
@@ -90,31 +90,76 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.19.0-2509150000
  definitions=main-2509300033
 
-Add device tree binding support for the AD4084 16-bit SAR ADC.
-Add adi,ad4084 to the compatible enum.
+Add support for AD4081 20-bit SAR ADC. The AD4081 has the same
+resolution as AD4080 (20-bit) but differs in LVDS CNV clock count
+maximum (2 vs 7).
 
-A fallback compatible string to adi,ad4080 is not appropriate as the
-AD4084 has different resolution (16-bit vs 20-bit) and LVDS CNV clock
-count maximum (2 vs 7), requiring different driver configuration.
+Changes:
+- Add AD4081_CHIP_ID definition (0x0051)
+- Create ad4081_channel with 20-bit resolution and 32-bit storage
+- Add ad4081_chip_info with lvds_cnv_clk_cnt_max = 2
+- Register AD4081 in device ID and OF match tables
 
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- - improve commit description with respect to fallback compatibility.
- Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml | 1 +
- 1 file changed, 1 insertion(+)
+no changes in v2.
+ drivers/iio/adc/ad4080.c | 15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
-index ed849ba1b77b..c4c5d208f502 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4080.yaml
-@@ -26,6 +26,7 @@ properties:
-   compatible:
-     enum:
-       - adi,ad4080
-+      - adi,ad4084
+diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
+index a68d7fa9f977..0dcbf175523c 100644
+--- a/drivers/iio/adc/ad4080.c
++++ b/drivers/iio/adc/ad4080.c
+@@ -126,6 +126,7 @@
+ /* Miscellaneous Definitions */
+ #define AD4080_SPI_READ						BIT(7)
+ #define AD4080_CHIP_ID						0x0050
++#define AD4081_CHIP_ID						0x0051
+ #define AD4084_CHIP_ID						0x0054
  
-   reg:
-     maxItems: 1
+ #define AD4080_LVDS_CNV_CLK_CNT_MAX				7
+@@ -436,6 +437,8 @@ static struct iio_chan_spec_ext_info ad4080_ext_info[] = {
+ 
+ static const struct iio_chan_spec ad4080_channel = AD4080_CHANNEL_DEFINE(20, 32);
+ 
++static const struct iio_chan_spec ad4081_channel = AD4080_CHANNEL_DEFINE(20, 32);
++
+ static const struct iio_chan_spec ad4084_channel = AD4080_CHANNEL_DEFINE(16, 16);
+ 
+ static const struct ad4080_chip_info ad4080_chip_info = {
+@@ -448,6 +451,16 @@ static const struct ad4080_chip_info ad4080_chip_info = {
+ 	.lvds_cnv_clk_cnt_max = AD4080_LVDS_CNV_CLK_CNT_MAX,
+ };
+ 
++static const struct ad4080_chip_info ad4081_chip_info = {
++	.name = "ad4081",
++	.product_id = AD4081_CHIP_ID,
++	.scale_table = ad4080_scale_table,
++	.num_scales = ARRAY_SIZE(ad4080_scale_table),
++	.num_channels = 1,
++	.channels = &ad4081_channel,
++	.lvds_cnv_clk_cnt_max = 2,
++};
++
+ static const struct ad4080_chip_info ad4084_chip_info = {
+ 	.name = "ad4084",
+ 	.product_id = AD4084_CHIP_ID,
+@@ -611,6 +624,7 @@ static int ad4080_probe(struct spi_device *spi)
+ 
+ static const struct spi_device_id ad4080_id[] = {
+ 	{ "ad4080", (kernel_ulong_t)&ad4080_chip_info },
++	{ "ad4081", (kernel_ulong_t)&ad4081_chip_info },
+ 	{ "ad4084", (kernel_ulong_t)&ad4084_chip_info },
+ 	{ }
+ };
+@@ -618,6 +632,7 @@ MODULE_DEVICE_TABLE(spi, ad4080_id);
+ 
+ static const struct of_device_id ad4080_of_match[] = {
+ 	{ .compatible = "adi,ad4080", &ad4080_chip_info },
++	{ .compatible = "adi,ad4081", &ad4081_chip_info },
+ 	{ .compatible = "adi,ad4084", &ad4084_chip_info },
+ 	{ }
+ };
 -- 
 2.43.0
 
