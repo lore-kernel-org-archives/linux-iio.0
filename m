@@ -1,98 +1,189 @@
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com [209.85.222.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B9EB537E9
-	for <linux-iio@vger.kernel.org>; Thu,  2 Oct 2025 12:40:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4FE333997
+	for <linux-iio@vger.kernel.org>; Thu,  2 Oct 2025 15:06:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759408801; cv=none; b=dCyauYgVSQh2/ymAl2PwpnTWe+dB39aKPWd5olSy/Yqff38+UD1zkmXNBEqtsdKcL5K/roRrN9nqXnWwrUG88097jT56fERF620bRX4OLe1K3p3dSJE3i3e+WkmJXVffULhBnQYwcv0qNzSKC9dHTv9LUeJLuKCSHg93WKGS3p8=
+	t=1759417560; cv=none; b=YwS0IeNi424pIGkvm0VXRyyOPDDi7DJOB9D6k7dz04iDCHWGZ+DphUpTsDuvb2DO/xTRkzzia3eo3gw1LXs1UgdXwyIyp/mbQzKlsBVWiSXD9mAbRYX81jlg2N7Vo0ZAsQvtLiRXUB+tywELGHm87XwwpT65zXHZXQ+PuLVggWQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759408801; c=relaxed/simple;
-	bh=7O8Q6H/V342Hk9kSuK7PF1mqEQCZDCjvYkaJgb/FMnA=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GZCLBqT05knulRuMV2KJg6syNm3gs4tXl0gkms4e5T7c04m5wIqXa9loCyt1IUDvwAmwoReKQoLVdysKklt0DI7L9BHfk3/UoAh5eeo5ajrsCwdzYC1v+F5gR5FanLS+2KI/3YsGG/Ng9smPD5+AVOdA8ZfVVPrvuvtgBkDdvQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-ua1-f47.google.com with SMTP id a1e0cc1a2514c-8e3eaa30c71so968717241.0
-        for <linux-iio@vger.kernel.org>; Thu, 02 Oct 2025 05:40:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759408799; x=1760013599;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=rJG7Pi+JGjs1abvLn2qtglQhq0wRNhthICu3ohkXyqQ=;
-        b=LSzwAPJOsDEVxDV0Whaqykz2dT92XN/gY7hBLQeO9y6TgNWfpAwTG8rTCyEiT3/IJN
-         VuoBUEUz4I6HfajZAZCi5SRg/CNCKb3bXjuBKEJ7XkE8fGWTLOc5oMSVeVhFWrvvud8i
-         NByWRTSAMoP92DH0w6wF9OpwRcP3oULtlO77nID15MVfTQAabI7pJNGMWTm+fs6uHO5d
-         gV3Nh0PeaVnl/3pAeXJu7GZH1WcUKjE8+qWOJCVE1Qs/cnJQDgfPHsf4GdAo9XZ8TNf6
-         xvIQR71OOn0OmUYDcWWZWmGX3wVkQT3xgcHmCzkv/pU5cptUjHmq73N5nURCbswfi4NM
-         nz+w==
-X-Forwarded-Encrypted: i=1; AJvYcCVQ9JUH/goI1Yy11nadjn1ataVO9Nbg7Zilh8+8JFCIlM5fl6Nezcd0AfqwklLabc2j0JoqSFuQmZ4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzdcMSarhIr7pRCgzfESoW/ojeBHcHBbTCCf3IL78PEZWg1fKK0
-	UIc6PAqCiOuUjkCMIrlYMbZ07WWy1jGqHViJPEU8FG5W+qhirSCWbLF4GttyOX2ZSGQ=
-X-Gm-Gg: ASbGncsxVt9CrR+IkmTjwdTt2jNN1Zw1FRZ2csdGWm17RJkPsgwZPGXawL5lFFSu4JR
-	rLEAG/X0N7nQmpBxXDeP0Z+ZQuTGwHa70L1B/OPwUTbPpcMcJp6lQ2Iy7kmQDvEhNEEKfJidAjx
-	3sqjny3qyu4qdJzCI71Erh8DlOcTd8pa8SJ5bk8PFElONI3q8ra8DqemZXyW+lOquSozhAcYQf5
-	emkZlSuWaemZNVZ/TH7fST1fRoZPZlMLYkvcUDY1h5fWD/zu35evjkn7G0rEXcbd1/oyhNavuOB
-	x+K4w28v8cBvz3/cma725QZbxl5GddYS/s3CpWbT+DXeYe9hseVgHW712VIWk3vIue6aP4k77Te
-	OdA+3jFQezIBniWBjZQuamUw6ZyGZ9yVxbK71ZRkZChDQ0k+vMib1F1W9DPkCmoLU0mFukk5boB
-	PTK61ljgbZXmYFPHoDf4g=
-X-Google-Smtp-Source: AGHT+IGcemBOdhFnvdgk513ULhnouliludHlDqRnq3H3rKuDq/iW9BYRvoi6nVFiQy7Gc6w/czjmPA==
-X-Received: by 2002:a05:6122:3c48:b0:544:9f73:9b46 with SMTP id 71dfb90a1353d-5522d4f9e78mr3184454e0c.16.1759408799003;
-        Thu, 02 Oct 2025 05:39:59 -0700 (PDT)
-Received: from mail-vs1-f49.google.com (mail-vs1-f49.google.com. [209.85.217.49])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5523cf3e2a5sm453678e0c.14.2025.10.02.05.39.58
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 02 Oct 2025 05:39:58 -0700 (PDT)
-Received: by mail-vs1-f49.google.com with SMTP id ada2fe7eead31-5b62ab6687dso1098191137.0
-        for <linux-iio@vger.kernel.org>; Thu, 02 Oct 2025 05:39:58 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWGXKECAojlH4AnLAO5uprxYutOqKyeM/6t0pG9ugOiihV7xE23JEOj/cPcbFyVsyyNX/2NNOyS0Tc=@vger.kernel.org
-X-Received: by 2002:a05:6102:390c:b0:529:b446:1749 with SMTP id
- ada2fe7eead31-5d3fe5260edmr3028987137.15.1759408798147; Thu, 02 Oct 2025
- 05:39:58 -0700 (PDT)
+	s=arc-20240116; t=1759417560; c=relaxed/simple;
+	bh=ZKZ3faTHDg+RCyRtcpkJQQQ6tqZo8gqaJyDvMtrK+PU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=e+GAlTlMBy5dFiZiTDV5dl2gV3hNiANUY85RWH0p31Pp6V6sYXo0X/OFM17VmGEWt0wIVOgYH+2R+iwUPNy08OuHlex3/4Qr96NpVKIZ3N3V3izR/nJ61lwSOGul5E9OXH1PYjaCCnJET71geELjiuLtUtoAygwNbXQjT/AKxeY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J6Z4HqP6; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J6Z4HqP6"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 66E09C4CEF9;
+	Thu,  2 Oct 2025 15:06:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1759417560;
+	bh=ZKZ3faTHDg+RCyRtcpkJQQQ6tqZo8gqaJyDvMtrK+PU=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=J6Z4HqP6N+Y/1gyzo+rIwNAcbN0dCrVgep8oa7m4/19VbeGY1h61CA5Vy7JKBck02
+	 SieL0SF3zZWo3k6C+Ni6JGIx/+6JXXQqdYRBE80iozbJxrjQRMvJWRixeVYV63ZNuD
+	 nNoEgQHbmFWGX9ad7pXYgSN4a39NEV35eWL/VS4gi3sTeXpEtF4zLvJTclAA9CkARu
+	 +bNkSOGWufjJLpcDSUlvA46XC47jazd7c512crxhE3jCfuv6+VgPfS3ATq0t+biGhR
+	 nq5w0nLuwXEN/2Yyv6Og5OsVLG7/vLmCt/vfA+OwD3UprQDQ3yNaZSwGHHUr3R649X
+	 4SNKaBN5caqGQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53138CAC5B0;
+	Thu,  2 Oct 2025 15:06:00 +0000 (UTC)
+From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
+Date: Thu, 02 Oct 2025 16:06:28 +0100
+Subject: [PATCH 1/3] iio: buffer: support getting dma channel from the
+ buffer
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251001122326.4024391-1-cosmin-gabriel.tanislav.xa@renesas.com> <20251001122326.4024391-7-cosmin-gabriel.tanislav.xa@renesas.com>
-In-Reply-To: <20251001122326.4024391-7-cosmin-gabriel.tanislav.xa@renesas.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 2 Oct 2025 14:39:47 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdX1kbS-KvD0mFXHiApd7K6K1scm94WBg-84MQPtN__h3A@mail.gmail.com>
-X-Gm-Features: AS18NWB_Zolx4Yi5Ewsp7mWBmwmwJ9vX5Skmzp6rXOAIB3SYIXAxIWXsQiZ4XoY
-Message-ID: <CAMuHMdX1kbS-KvD0mFXHiApd7K6K1scm94WBg-84MQPtN__h3A@mail.gmail.com>
-Subject: Re: [PATCH v3 6/7] arm64: dts: renesas: rzt2h/rzn2h-evk: enable ADCs
-To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20251002-fix-iio-dmabuf-get-dma-device-v1-1-c1c9945029d0@analog.com>
+References: <20251002-fix-iio-dmabuf-get-dma-device-v1-0-c1c9945029d0@analog.com>
+In-Reply-To: <20251002-fix-iio-dmabuf-get-dma-device-v1-0-c1c9945029d0@analog.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1759417589; l=5086;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=ddJBu/hYz0gDJzFzZDUZ5HVRpDUBzFtShZwYan4tB9E=;
+ b=2bLYsq4c6Mft4uSCAPUxM9aH5Rm/1iZ9H4C8BoUfLxjKmK/iMpD0Fg0lf5HzCKeNfu5DzQSqF
+ yBAlW53ZFrGAGeXy7Mjtx3iKzFCNO99SpCeI76OcIf8s7M9e7g3/XOs
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On Wed, 1 Oct 2025 at 14:24, Cosmin Tanislav
-<cosmin-gabriel.tanislav.xa@renesas.com> wrote:
-> The ADCs on RZ/T2H and RZ/N2H are exposed on the evaluation kit boards.
->
-> Enable them.
->
-> Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+From: Nuno Sá <nuno.sa@analog.com>
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Add a new buffer accessor .get_dma_dev() in order to get the
+struct device responsible for actually providing the dma channel. We
+cannot assume that we can use the parent of the IIO device for mapping
+the DMA buffer. This becomes important on systems (like the Xilinx/AMD
+zynqMP Ultrascale) where memory (or part of it) is mapped above the
+32 bit range. On such systems and given that a device by default has
+a dma mask of 32 bits we would then need to rely on bounce buffers (to
+swiotlb) for mapping memory above the dma mask limit.
 
-Gr{oetje,eeting}s,
+Fixes: 3e26d9f08fbe ("iio: core: Add new DMABUF interface infrastructure")
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/iio/industrialio-buffer.c | 28 ++++++++++++++++++++++------
+ include/linux/iio/buffer_impl.h   |  2 ++
+ 2 files changed, 24 insertions(+), 6 deletions(-)
 
-                        Geert
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index f1448ae1b843fc577599fc1b9cf6d859bba226f1..279c7d716bf5d467d40b5c290789fcbd1f949660 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1627,15 +1627,20 @@ static struct dma_buf_attachment *
+ iio_buffer_find_attachment(struct iio_dev_buffer_pair *ib,
+ 			   struct dma_buf *dmabuf, bool nonblock)
+ {
+-	struct device *dev = ib->indio_dev->dev.parent;
++	struct device *dma_dev;
+ 	struct iio_buffer *buffer = ib->buffer;
+ 	struct dma_buf_attachment *attach = NULL;
+ 	struct iio_dmabuf_priv *priv;
+ 
++	if (buffer->access->get_dma_dev)
++		dma_dev = buffer->access->get_dma_dev(buffer);
++	else
++		dma_dev = ib->indio_dev->dev.parent;
++
+ 	guard(mutex)(&buffer->dmabufs_mutex);
+ 
+ 	list_for_each_entry(priv, &buffer->dmabufs, entry) {
+-		if (priv->attach->dev == dev
++		if (priv->attach->dev == dma_dev
+ 		    && priv->attach->dmabuf == dmabuf) {
+ 			attach = priv->attach;
+ 			break;
+@@ -1655,6 +1660,7 @@ static int iio_buffer_attach_dmabuf(struct iio_dev_buffer_pair *ib,
+ 	struct iio_buffer *buffer = ib->buffer;
+ 	struct dma_buf_attachment *attach;
+ 	struct iio_dmabuf_priv *priv, *each;
++	struct device *dma_dev;
+ 	struct dma_buf *dmabuf;
+ 	int err, fd;
+ 
+@@ -1679,7 +1685,12 @@ static int iio_buffer_attach_dmabuf(struct iio_dev_buffer_pair *ib,
+ 		goto err_free_priv;
+ 	}
+ 
+-	attach = dma_buf_attach(dmabuf, indio_dev->dev.parent);
++	if (buffer->access->get_dma_dev)
++		dma_dev = buffer->access->get_dma_dev(buffer);
++	else
++		dma_dev = indio_dev->dev.parent;
++
++	attach = dma_buf_attach(dmabuf, dma_dev);
+ 	if (IS_ERR(attach)) {
+ 		err = PTR_ERR(attach);
+ 		goto err_dmabuf_put;
+@@ -1719,7 +1730,7 @@ static int iio_buffer_attach_dmabuf(struct iio_dev_buffer_pair *ib,
+ 	 * combo. If we do, refuse to attach.
+ 	 */
+ 	list_for_each_entry(each, &buffer->dmabufs, entry) {
+-		if (each->attach->dev == indio_dev->dev.parent
++		if (each->attach->dev == dma_dev
+ 		    && each->attach->dmabuf == dmabuf) {
+ 			/*
+ 			 * We unlocked the reservation object, so going through
+@@ -1759,6 +1770,7 @@ static int iio_buffer_detach_dmabuf(struct iio_dev_buffer_pair *ib,
+ 	struct iio_buffer *buffer = ib->buffer;
+ 	struct iio_dev *indio_dev = ib->indio_dev;
+ 	struct iio_dmabuf_priv *priv;
++	struct device *dma_dev;
+ 	struct dma_buf *dmabuf;
+ 	int dmabuf_fd, ret = -EPERM;
+ 
+@@ -1769,11 +1781,15 @@ static int iio_buffer_detach_dmabuf(struct iio_dev_buffer_pair *ib,
+ 	if (IS_ERR(dmabuf))
+ 		return PTR_ERR(dmabuf);
+ 
++	if (buffer->access->get_dma_dev)
++		dma_dev = buffer->access->get_dma_dev(buffer);
++	else
++		dma_dev = indio_dev->dev.parent;
++
+ 	guard(mutex)(&buffer->dmabufs_mutex);
+ 
+ 	list_for_each_entry(priv, &buffer->dmabufs, entry) {
+-		if (priv->attach->dev == indio_dev->dev.parent
+-		    && priv->attach->dmabuf == dmabuf) {
++		if (priv->attach->dev == dma_dev && priv->attach->dmabuf == dmabuf) {
+ 			list_del(&priv->entry);
+ 
+ 			/* Unref the reference from iio_buffer_attach_dmabuf() */
+diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
+index 0daff9ff20ce49de67fa0f2ac6191882de2f4a67..c0b0e0992a85b2813a126c1a61f13f1ed0b498dd 100644
+--- a/include/linux/iio/buffer_impl.h
++++ b/include/linux/iio/buffer_impl.h
+@@ -51,6 +51,7 @@ struct sg_table;
+  * @enqueue_dmabuf:	called from userspace via ioctl to queue this DMABUF
+  *			object to this buffer. Requires a valid DMABUF fd, that
+  *			was previouly attached to this buffer.
++ * @get_dma_dev:	called to get the DMA channel associated with this buffer.
+  * @lock_queue:		called when the core needs to lock the buffer queue;
+  *                      it is used when enqueueing DMABUF objects.
+  * @unlock_queue:       used to unlock a previously locked buffer queue
+@@ -91,6 +92,7 @@ struct iio_buffer_access_funcs {
+ 			      struct iio_dma_buffer_block *block,
+ 			      struct dma_fence *fence, struct sg_table *sgt,
+ 			      size_t size, bool cyclic);
++	struct device * (*get_dma_dev)(struct iio_buffer *buffer);
+ 	void (*lock_queue)(struct iio_buffer *buffer);
+ 	void (*unlock_queue)(struct iio_buffer *buffer);
+ 
 
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.51.0
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
