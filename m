@@ -1,43 +1,42 @@
 Received: from mail.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A92BC2836B5;
-	Sun,  5 Oct 2025 13:13:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3EF2A274B48;
+	Sun,  5 Oct 2025 13:13:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759669992; cv=none; b=GT8FyToJyBQBMN1OBCJ3GgN/JlKhh2YW8iy58iQV8KEYGDTv0hE0s7FnFx2D4RCalrr9kWSiJroOnFhhUPbZJ1iBsaJ+Ibc7nV8oa9NJal1URA32MkgNxfI2LvFO906PIPLHtO2v/eocFX8DCLlD7KmkMMD7EL7xD+bIUzn/9is=
+	t=1759669993; cv=none; b=IzskPOfvYAFH3I4EGQIMc5g/T1IIeRIamwfCyzPqmX9heUg8gxIyEGRJYRR/WPZANIffF4NdxBMEz7rb8rBaSTFX2aKvDuDrpzeC027BTulzn3hJ9kaPx+ktPhWHvw0aG8N+YQ3akcOmFSK3mU7N5d4Wrd0Y3Mk0hGyyrfe738A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759669992; c=relaxed/simple;
-	bh=9z9iaV0kcIBckzkASDSpSEvlASqUUDNUq9wXYBNiKd8=;
+	s=arc-20240116; t=1759669993; c=relaxed/simple;
+	bh=bESRm6KHeFdhIgKWEqzxTGSHEOvBjPJPD6ZECPUFHo8=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=JMypHTj8WdwHxkGn+3/83NTNA3hRCRlSM0hjTVjk9IDRwsp5tyaE/1IWASER1cWZZg9/2toE+5FeyC5bCKM/PdyB05y7gxdZsa1s+WdWRBqc+DyGUg9+DXEUzKSlKuoFd1g4vtt+BP9ZO1fWtChfsSEUQpPFsuG1GeIF1J12Rf0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=lVcVGMPe; arc=none smtp.client-ip=172.105.74.154
+	 In-Reply-To:To:Cc; b=BG4XgqTW4RGoGgpQEAKYfyYNEnep3sEh/P6lG44PH4Tu4kD/xZDC+ORGmsstRh0tCJynpPGquF6LIsgZbxQnNmkmruY055g7N95rAf9sVrZs4Bi6y4ZsFRekW0hB7GhNiCX6Xsq0yifaCHj/nifJYUv9kJw9lQRB3D0xSn5LHk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=Eb3x5DVQ; arc=none smtp.client-ip=172.105.74.154
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="lVcVGMPe"
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="Eb3x5DVQ"
 Received: from [10.212.0.13] (unknown [IPv6:2a02:2f0e:3e0c:5b00:e2d5:5eff:fed9:f1c4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id BDDAE173BF2;
-	Sun, 05 Oct 2025 16:13:03 +0300 (EEST)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id CB481173BED;
+	Sun, 05 Oct 2025 16:13:01 +0300 (EEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
-	s=mail; t=1759669984;
+	s=mail; t=1759669982;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=5N3QOAb8TA2ZdEDRy0PgYLrjDQo06YJfWtZNDbxgXUQ=;
-	b=lVcVGMPe1tI0RAaFaRFUfcSfh8XoXoV7Wko+eszLbpCmY1Ppr2uF2q5hK97Jm8Ebq6/l/U
-	z9fo8pjREZLa4a0K9D8S43ZdV7L5gt+QY3kVA0j+kGU7dzdn6Ujp2nKmQJgcCFlr/XXeln
-	RJyAckflkypyE+zzolkt68T2zZ/bwC+QMctHAE5ruBqZbaeCsPnh25LRsK79/22EAcJTz/
-	YS3IjyXKRVmSyU/oKeLOGVkjRjIMFu6xlbJsvD7ii64O6nFRkG8p8hKlnGkKzZpt1J0c6X
-	+RVlOXylFirdiBH8FO7AWKvYjC2uk+BeLaLfKToUqSH9NLllSlCQX006/dAInw==
+	bh=wpf7JvsHD7foLXPGXmmVPDrW1g+beJLPvpuHuZ2gqQw=;
+	b=Eb3x5DVQ5tHaInwqi+m4NtL4zLlXtRIbntjyTLXkZZMeyb0OfQmXXu/NJ9eMHj5NXwvarW
+	TqDLnN1dZE4P4bJwemeYu2eua0JEnL30IcefSa+xyKFAXuPhRBj0mg5lj+BlkaBpuN/caA
+	QJXM1bCh1QB2ZVhl2a0X6A3/iM3vCnjyacHW4VM1Ay5wsA9tQbdtpNpiIBrTRTRZXSDox1
+	k2KGAGbWIWgDs+dLdYUPqaeUCTixSf+z227Fs8Sw49UHn5BySPddemRkcd2lDP629sGvr3
+	npoQFq8BcOed22kujhr1WcJQ5lagSwjz1q5CSVSsiusr4/KYPrbc5WzQ9f/sXA==
 From: Petre Rodan <petre.rodan@subdimension.ro>
-Date: Sun, 05 Oct 2025 16:12:19 +0300
-Subject: [PATCH v4 10/19] iio: accel: bma220: reset registers during init
- stage
+Date: Sun, 05 Oct 2025 16:12:14 +0300
+Subject: [PATCH v4 05/19] iio: accel: bma220: move bma220_power function
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -46,7 +45,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251005-b4-bma220_improvements-v4-10-0f449ba31585@subdimension.ro>
+Message-Id: <20251005-b4-bma220_improvements-v4-5-0f449ba31585@subdimension.ro>
 References: <20251005-b4-bma220_improvements-v4-0-0f449ba31585@subdimension.ro>
 In-Reply-To: <20251005-b4-bma220_improvements-v4-0-0f449ba31585@subdimension.ro>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -59,116 +58,107 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2605;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2068;
  i=petre.rodan@subdimension.ro; h=from:subject:message-id;
- bh=9z9iaV0kcIBckzkASDSpSEvlASqUUDNUq9wXYBNiKd8=;
- b=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgprQTBEQUFvQmRDc25wMk02U1dNQnl5WmlBR
- 2ppYnNTalNmajEwcHZwenNWb2pTd2pxUnVrUGpkMzZ3ZFQ4emVQCkZ3eDlIZEd3dklrQ013UUFB
- UW9BSFJZaEJCb2ltQncrRGJ4UXBFNmlkM1FySjZkak9rbGpCUUpvNG03RUFBb0oKRUhRcko2ZGp
- Pa2xqMzQ4UUFKa1NGM2F0SVZjS3hxRXVkVFNSNlhRR0lHdUR0Wkh4QVRjTjBLWkNjSFBMVXZFYQ
- p2eVRxb096TFl4czY1WVBIYitKYWpyclM4MGt6eW9LMUswb0lTSnBuQnVBV0lueUVEcFRNSFFzd
- Dk3S1duY2wzCk8rMEpPMjFUNDhDUjVLV2FyYUtuaWlSaVF3QWl4R0NIM0F3b3h2NGYzZEJNUWgy
- UURDV1NoN01lQmxRYzlWeWkKbGhCZG9BSi93bDM5VXFqOHdOdGM2ZHhkMFJpbFR1Zi9iVTdJUDh
- oa2RrbW5FeTRJZ2RhTWQ2TlRTU2hnTHhURQpsVDh5MWtkMS9qb3VsZmpXSzAwOUJDSzRibDVLbj
- dJUkhma29KUFVacENNMHFJZ2dPcUthQU5vTFV3NzdnT1FZCk1HYU1LY3Bpb1NFZkNhQmxCci9QM
- 2RYREtRWVpmK2ZiM3BOZzVTYkVXaVJsSVlhbDNDNVdSQTh2YUhUTVlFczYKcTR5S1ZTWGZ1a0o3
- M3dXZTZ2dlVJbGpNUVNNVlluTUZnOHVPaEQ4WUMrL1ZZbVQ2eWJKWnFFT3BWNnVqUUJHeApOYTl
- aNEcxYzgwV3J6UkRXNis4K0lnMHoxVDVSMUVaMS8zeSswMEpac0ZML2M3eE1hOWNiOWo5Kzhrdl
- FwSzk1CklYYzJuUmEwejFuUjNER1hFc0ZiNWxrbEpGV2NGZys2ZFFnVEV5VmR0aTFUelBhWVE4N
- mszOG5nUEJBY2I4SkQKSTc0VXdCeFBhM3RiNjBXekdCckliMjJpYTE1aXhzZjZMSWVuNC9sU2oy
- akQ4OEtnTEhvZzNnWHh5U3NHT2VLeQpWUGdXQnZWblloQ2pIalFEQTl0eDVkMnlWcGJKMkEvMVd
- SL1I2bTNtb0FMODFHb1VFdDBMSU5DWEF6TGYKPUpiR2kKLS0tLS1FTkQgUEdQIE1FU1NBR0UtLS
- 0tLQo=
+ bh=bESRm6KHeFdhIgKWEqzxTGSHEOvBjPJPD6ZECPUFHo8=;
+ b=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgpvd0o0bkFGdEFwTDlrQTBEQUFvQmRDc25wM
+ k02U1dNQnl5WmlBR2ppYnJiS2FtUlo3aDNqeFQ0QkdkUlhNaVNICnR6SStiZTRZcW5Ma1JIOEQ1
+ UDFCNElrQ013UUFBUW9BSFJZaEJCb2ltQncrRGJ4UXBFNmlkM1FySjZkak9rbGoKQlFKbzRtNjJ
+ BQW9KRUhRcko2ZGpPa2xqZ0p3UC8ybXUvUFV5ZjZsMjhLdnc1TWI1Wks1UkxGalBFNUdJejZKOA
+ pLbzk2NFBUVW9TUmx3SDRGZ2l1dHI5NDBXcWZsRVRnZjFyQzZGeDh3REo1WnpKemhDdk4zVDgrM
+ Go5bkdLakw2CkxrR04vSEZEN2hhREZlb0tUSW1vNWoyMnREc29HZEU2TW5tUmloZ1NqdmNuVExJ
+ azlmTk9TaUVseEtsR1IyZkQKQk5UN1BxeHphSDNobFo0QXk1Q3kzUS9OY3lDTnZ3MjVMLzlqTkN
+ xNzlRWVhERmFOQmRIbEFhd3dNSGRBenJuNApVZ2hiMVBXYWttYVRZTjJEWFdRZjRKSlU1RE9END
+ dWUnFiU2tKOThnWkd0UFJrbG1maXBlOVJjcGZ5VDFCWTVmCmdwL0xTTWZZN3V4bmtjM3pDRW13c
+ lJLWjhGQW5jK2JyRE1JMDlsNlhCNm1oT09Sd1pwR094VDhrVFNvbGxacWMKRTZaRWpWeXJucUNN
+ cTFLOTkxUGdUQ0FPSFpLUVBUZzk5cFpzMWtBQ2o5c3ZwWGQvMXBLYktQb0U2bDF6Q3RMWgovQlR
+ FMnlSdU1hMkJqVUF6QVFKTnVZQUF1bmtQUm04Q1NucWFaOXNLelpKc0RPRmord2JtNzFRMnAxdC
+ 9QeEZiCkpkc3pwbnlRREVJWmF0bGV2dmlYNkI1cTZGVzgyc0tvV1NKaHRQOGJyYlRqZ25kc0dVU
+ DR2TS9MQkNMeWl3aDQKbUNxcXNxMXQxdEgyWVVONUtDUlR2ZGJBTUtQNU5uSEY2T1pzbU9CT2RN
+ dHFmZUlINjFNeVVaSlBYS08xS1J6OAo4dzNwVDliWHNrVDRRUGxJRlNSY2IrZXZiM1pTOHJoZm4
+ va0s0RVJvN05EVGsyb0tSejZ0VlVPODVORi9naGV1CnY0VVBpZVp0dGhvbTZBPT0KPUxvM3MKLS
+ 0tLS1FTkQgUEdQIE1FU1NBR0UtLS0tLQo=
 X-Developer-Key: i=petre.rodan@subdimension.ro; a=openpgp;
  fpr=D80A7FC176151935EC3E5FA9CF269999844E7F30
 
-Bring all configuration registers to default values during
-device probe().
-Remove trivial code duplication regarding bma220_power() in
-_init()
+Move bma220_power() before bma220_init() as a precursor to a
+patch that removes code duplication.
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
-v4 dev ptr (Andy)
+v3->v4
+- unsigned i (Andy)
 ---
- drivers/iio/accel/bma220_core.c | 44 +++++++++++++++++++++++++++++++++--------
- 1 file changed, 36 insertions(+), 8 deletions(-)
+ drivers/iio/accel/bma220_spi.c | 49 +++++++++++++++++++++---------------------
+ 1 file changed, 25 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iio/accel/bma220_core.c b/drivers/iio/accel/bma220_core.c
-index 319a3d6867ee5ac2da64c9baf02a760865302ee8..1b118a9fce3f16f0cd805a68b9887c6eaf24973a 100644
---- a/drivers/iio/accel/bma220_core.c
-+++ b/drivers/iio/accel/bma220_core.c
-@@ -28,12 +28,15 @@
- #define BMA220_REG_ACCEL_Z			0x04
- #define BMA220_REG_RANGE			0x11
- #define BMA220_REG_SUSPEND			0x18
-+#define BMA220_REG_SOFTRESET			0x19
- 
- #define BMA220_CHIP_ID				0xDD
- #define BMA220_READ_MASK			BIT(7)
- #define BMA220_RANGE_MASK			GENMASK(1, 0)
- #define BMA220_SUSPEND_SLEEP			0xFF
- #define BMA220_SUSPEND_WAKE			0x00
-+#define BMA220_RESET_MODE			0xFF
-+#define BMA220_NONRESET_MODE			0x00
- 
- #define BMA220_DEVICE_NAME			"bma220"
- 
-@@ -202,6 +205,31 @@ static const struct iio_info bma220_info = {
+diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
+index a5d2906321ae5fc67c0e1dc44651833c5e7fcb39..45ac0d7ee27de65b204bd2766f26024e4ed57f4c 100644
+--- a/drivers/iio/accel/bma220_spi.c
++++ b/drivers/iio/accel/bma220_spi.c
+@@ -199,6 +199,31 @@ static const struct iio_info bma220_info = {
  	.read_avail		= bma220_read_avail,
  };
  
-+static int bma220_reset(struct spi_device *spi, bool up)
++static int bma220_power(struct spi_device *spi, bool up)
 +{
 +	int ret;
 +	unsigned int i;
 +
 +	/*
-+	 * The chip can be reset by a simple register read.
-+	 * We need up to 2 register reads of the softreset register
++	 * The chip can be suspended/woken up by a simple register read.
++	 * So, we need up to 2 register reads of the suspend register
 +	 * to make sure that the device is in the desired state.
 +	 */
 +	for (i = 0; i < 2; i++) {
-+		ret = bma220_read_reg(spi, BMA220_REG_SOFTRESET);
++		ret = bma220_read_reg(spi, BMA220_REG_SUSPEND);
 +		if (ret < 0)
 +			return ret;
 +
-+		if (up && ret == BMA220_RESET_MODE)
++		if (up && ret == BMA220_SUSPEND_SLEEP)
 +			return 0;
 +
-+		if (!up && ret == BMA220_NONRESET_MODE)
++		if (!up && ret == BMA220_SUSPEND_WAKE)
 +			return 0;
 +	}
 +
 +	return -EBUSY;
 +}
 +
- static int bma220_power(struct spi_device *spi, bool up)
+ static int bma220_init(struct spi_device *spi)
  {
  	int ret;
-@@ -246,14 +274,14 @@ static int bma220_init(struct spi_device *spi)
- 	if (ret != BMA220_CHIP_ID)
- 		dev_info(dev, "Unknown chip found: 0x%02x\n", ret);
- 
--	/* Make sure the chip is powered on */
--	ret = bma220_read_reg(spi, BMA220_REG_SUSPEND);
--	if (ret == BMA220_SUSPEND_WAKE)
--		ret = bma220_read_reg(spi, BMA220_REG_SUSPEND);
--	if (ret < 0)
--		return ret;
--	if (ret == BMA220_SUSPEND_WAKE)
--		return -EBUSY;
-+	/* Make sure the chip is powered on and config registers are reset */
-+	ret = bma220_power(spi, true);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to power-on chip\n");
-+
-+	ret = bma220_reset(spi, true);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "Failed to soft reset chip\n");
- 
+@@ -224,30 +249,6 @@ static int bma220_init(struct spi_device *spi)
  	return 0;
  }
+ 
+-static int bma220_power(struct spi_device *spi, bool up)
+-{
+-	int i, ret;
+-
+-	/*
+-	 * The chip can be suspended/woken up by a simple register read.
+-	 * So, we need up to 2 register reads of the suspend register
+-	 * to make sure that the device is in the desired state.
+-	 */
+-	for (i = 0; i < 2; i++) {
+-		ret = bma220_read_reg(spi, BMA220_REG_SUSPEND);
+-		if (ret < 0)
+-			return ret;
+-
+-		if (up && ret == BMA220_SUSPEND_SLEEP)
+-			return 0;
+-
+-		if (!up && ret == BMA220_SUSPEND_WAKE)
+-			return 0;
+-	}
+-
+-	return -EBUSY;
+-}
+-
+ static void bma220_deinit(void *spi)
+ {
+ 	bma220_power(spi, false);
 
 -- 
 2.49.1
