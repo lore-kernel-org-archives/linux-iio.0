@@ -1,43 +1,42 @@
 Received: from mail.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC61414A4F9;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC5C913BC0C;
 	Sun,  5 Oct 2025 13:20:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759670415; cv=none; b=txwPaq9GUAJvbfFUD57j29i2AC/F3W69DfROiFsxjxbBxNI0alLNMkaCUBni/7oFACvXtr4Q0Vy80KkF5YYbjNszmJ5EWsRxcUAKYaVGHINw7mZrWUNiUo5CXiHunS64RsY15792F/kMxhLX8wqmXHzGWLJGipWNST8KX5OcyRE=
+	t=1759670415; cv=none; b=HQqb7cf3gPhNWTQIebf5V5ZZaXsILEKiJPwaGhmocId3efReDMKnejjuw73jmNi8JsyFgF/5bidCRyDGnQKZWjxIiu3XO4mKFHXxjlP7FA1N+p/5miLGOJUZkPy+9Dag+RHk6fqD+HmvmJuFpUYO8R4YEt3qV0PwtDXokPzeEEw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1759670415; c=relaxed/simple;
-	bh=OMns8uwPd30PiioGzxoymRaskS8waCyzQdNMCb4kWtE=;
+	bh=SNhbxKclOKr8qZtB+edcMSy2LI4wWi2Pgm22C0Nbp+w=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=U5BaLcYtQx7RMgV2ZZdaNipJTCI5todi75SLhPUiwtbetDYGu0DeCGgccGUCkgO4RBqpHwCD+8+MULuUHO4CupqOhI5CYZqwkI1895JrwAtn5eXPme2MNKHdq3AKZJMVHU80eDK0015V8mhFzzMyWvQgSqFBj0A3ZMwhn+dU+uI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=vwiDgmR9; arc=none smtp.client-ip=172.105.74.154
+	 In-Reply-To:To:Cc; b=Gg45ha/PZnlFDtg5GLo1xmPjoxdMd1RJINumeA1xuO9AQNyCl3BbHjsLKbj7PfK79vYTpHEgSqPosFkhHzOXxLbMimYw9JJpESJXPCJG7UNOgWUzWWXNSV9pHAgjNfmrz3HeAAzm9Xzq1xDz1a5foiEbLXDFPc+1iuUCJhe8YIg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=JJoXx3ea; arc=none smtp.client-ip=172.105.74.154
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="vwiDgmR9"
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="JJoXx3ea"
 Received: from [10.212.0.13] (unknown [IPv6:2a02:2f0e:3e0c:5b00:e2d5:5eff:fed9:f1c4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 080A0173BE9;
+	by mail.subdimension.ro (Postfix) with ESMTPSA id C426D173BEB;
 	Sun, 05 Oct 2025 16:13:00 +0300 (EEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
-	s=mail; t=1759669980;
+	s=mail; t=1759669981;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=Ba9SmFFFThBt2H7cUfDPWfYs13rpomHUEj5ezt6iOfY=;
-	b=vwiDgmR9HjItH8IYsqFoRvqrjZPFu5X7teeiR9V2r6CWpaQMDvSSAe49H95tkH9G3e01mO
-	+9DCM00Qa7y1ZR3/Wp7yHsqJVomR6yv/zTmauxzAMyDEfmBu8nmWqbE1SEADKMnAgXrZIh
-	Nd2Tjoxh7NOCjm4RLdPn8cz0f89lpGjkEEP+gfLRJCv2EU5cPKvX45iKDry2TQAqCmFQzz
-	Qu5a1tVIgScqABciPfi/ai8fMJluOOGffcnVd4d9aoCMCjlw0+NUcE3gyieMEcYV7d8Mdh
-	PQFUmy+P27zic+bBfMvORAFZy04L/xSJ5fANaBYI6Qn/K59/vJx7FZuEDMB7SQ==
+	bh=pW6byNvJFW64sJMN/ca6XK7BnGpgRLCEvucnRjd3ONk=;
+	b=JJoXx3eaZ5q8lIJquexTf/QLVQBiIDOG4h9yAiqUXYQLtmjtQrLhNKyhCIEAtgIy7zlqs0
+	I1TwsFY/xI4SwLGEUw+m7jhchxFav/FHtJiTQwCdLRYg32q33NliTc49hi0uOSL7LYpyHF
+	6nrbXDFsyOs8vkWp6Xaq/DOupEPxsiPNJkPmQaJtzjWf3RacLtS1Hyc5aD0zpOVOyRIJTw
+	bt+DTr9DNRKft/jFx/MgXv8Fn3kPegZV/7ezQwEEv5zdZoXm5Vju4EakoJ7kAwmlfU6IhX
+	v9AjsT3obtvH6UIq5jGHw5tFhVZz80S6cQAy7r/pHF211GQRfH5KWNjenjNUYg==
 From: Petre Rodan <petre.rodan@subdimension.ro>
-Date: Sun, 05 Oct 2025 16:12:10 +0300
-Subject: [PATCH v4 01/19] iio: accel: bma220: remove incorrect kernel-doc
- marking
+Date: Sun, 05 Oct 2025 16:12:12 +0300
+Subject: [PATCH v4 03/19] iio: accel: bma220: cleanup license string
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -46,7 +45,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251005-b4-bma220_improvements-v4-1-0f449ba31585@subdimension.ro>
+Message-Id: <20251005-b4-bma220_improvements-v4-3-0f449ba31585@subdimension.ro>
 References: <20251005-b4-bma220_improvements-v4-0-0f449ba31585@subdimension.ro>
 In-Reply-To: <20251005-b4-bma220_improvements-v4-0-0f449ba31585@subdimension.ro>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -59,30 +58,33 @@ Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=openpgp-sha256; l=814;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=873;
  i=petre.rodan@subdimension.ro; h=from:subject:message-id;
- bh=OMns8uwPd30PiioGzxoymRaskS8waCyzQdNMCb4kWtE=;
- b=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgprQTBEQUFvQmRDc25wMk02U1dNQnl5WmlBR
- 2ppYnE2aitBaXlMZGZpbnhBRC9haWZib251VlFhbDYyYkdCaHlWClBtYWg5ZGRNY29rQ013UUFB
- UW9BSFJZaEJCb2ltQncrRGJ4UXBFNmlkM1FySjZkak9rbGpCUUpvNG02dUFBb0oKRUhRcko2ZGp
- Pa2xqT2xFUUFLZnBaN1g0di9aY3N5UVpCNTJ0dmRFWTlNelhJRWZDWEhmWVlOWk1lRzJqZ2g2YQ
- phRm9RRGZqTS9GNWlMZjMxRlFUc3AxWWpPZWdaMC9ibENiLzJiRUM4WUhKcW02WGd3bWhGK3ZhO
- XlJQzI2WkltCkFycnhRd0I3UWM1Nzk1NEsyMjVjVXRnSTFuU3RwcEt1ZXVjV3MzSGVIRDQyRWpF
- N0x2bTZmTkV5a0tpQXZPWEsKcmpxeXprWXJhK0dWYlZ6RVRSWGZBUmZ3bDc3UmIxTkVzS3hZeDE
- 2Nmo5TkNuZE1taFFoQkZtWEFoNkVkd29jNApERkJROW9EcHN2YjFrdWpGQkxpUTAyM29jc0tQUm
- IxRk9FVWJvN0lyY1lvVWxZVFAyYVc4SjBhSDJ6dE40Q0Q0CjJHMlRVa1ZpQ1RtM1l0ZEVDaHExW
- nJtME5CT29YeER1UFhaQmN5VnhYRjhKRnZlWXczclFjbzgzdTJ6cHdlUnUKWXBvR2I5UkN2VDly
- Sk0wcjJTM1lkc0dTcm96bk40citKUHcvaHh6bmw0U2xhYXYrUlBpYWdQZlhIS0MwN1JvZAoyUG1
- FRTFuVFdDNmZjS3VqSlRXM2JjOGhnTDNqR2JRRkFaKzR4blhHdTk2VjRxMkRwSGs3cEIzSjBDVz
- l2Snh6CkJEcFFCVExvQzMrd0kwdGhqT0VwVHdDaHoxUmxzWUhocHcxdmpVbE96ZE9mc1hZR0Zob
- jgxTjJKUUtWVU9zd3YKMGNwWDJWMlZLb3poUGRpMCtQUzJDRnZWeFo4OHZYdWRwQndIaHhHQmRu
- OVVBU2dScVduTmZIQWZpT2NucUZhQgovTnFjTUlJc1R0TWZGMndkVzl6QVc0UFpYekRGckNuK1l
- zWDlyU3Q2bXRNT21TcllVZzhKeUMycFJyd3IKPWJtZHQKLS0tLS1FTkQgUEdQIE1FU1NBR0UtLS
- 0tLQo=
+ bh=SNhbxKclOKr8qZtB+edcMSy2LI4wWi2Pgm22C0Nbp+w=;
+ b=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgpvd0o0bkFGdEFwTDlrQTBEQUFvQmRDc25wM
+ k02U1dNQnl5WmlBR2ppYnJOaXA4ekYrZ3RuSVNnZ05LOGNhZ2tqCjlnNUs0eVptbXFuODdqeUpa
+ dnlLcm9rQ013UUFBUW9BSFJZaEJCb2ltQncrRGJ4UXBFNmlkM1FySjZkak9rbGoKQlFKbzRtNnp
+ BQW9KRUhRcko2ZGpPa2xqaFJ3UC9pTmQ3bXJwN2psT2tjczYwL2VXMlc0Vi8rRWNLM2Y3NDhwTg
+ p6VW9KNnpySFhmU1BzS0lrMjZpcGp4c3dwMWpFOUxrR252Z1hzd3ZmYWhkOThvVWp0bFZvUGdIY
+ kVZckVBQzdUClJrSFl0WWVnTFFxSUNrM1pISkIwbGFVbVA5d3N3M3E0c0V0ellNcFVnb3F4TmlO
+ eXppQXlranBEVnZ2amh0QnAKaEVHdHFmNWNZQjRUcFJ3VGRKbGVpYVlyclJvdXBWQ01QamYzLzJ
+ GMlJCbEgyaFRESWVBS25WNVRtZ0RBeDdBeApRbEZhOVdRemhNakNndU1HWnBIa0xLR1JoOTduZ0
+ dna3F4UDUySklsM0dsd2hhbkNXTC9tTER5RTNVWkF1VFpHCno5cERkNWtSd0l6SzFCc2h0ZWw5N
+ lBzRkpXTlBtbEdRNy9ETFJWcmdDdVNlZk1mMkF6eFlVdW1IOElHd3BiOG0KcGZpZHY4NXZKZVlZ
+ Zk5BZGtYQU1HL0xGK09wMTgxeEw4ejRPV29pVXkrVEFMb1kycFVWejA0MXZlSUN4U3ZLWQpSa2Z
+ ETWhNZTQ3c3BmYUI2dUQ4c0IrM3Q5VWdyWGY2RG8xaHBMdEh4VDQyaFF3alZiQUpacGVveE5yek
+ dDN090CnZVT1c5NG85YndOSDluRk5uOGthRGUzRkpDbUFMYnMvQkFRVXdvV3NyZXB5N0xqZDh4U
+ Vh2bjdXa01jWGZPcUQKdnFLbExST1JrVzV2MGc4WjQ3VTVzYXB3OG9KVWtMVUNIdmkyaEZMNmI3
+ bWcvbkZPYVFBRDI5a2ozVTd2V0o1OAo1VUdFRXpKaWM1cmdLNUFjNkwxSVNKbWErcUo3T25yVnJ
+ EWGROZGhMYkNEeHlqTUxSOWdGK1dlS2lJaWhpUW9CCnZ6UC9SVGdaNVdVbkZ3PT0KPWpwQTcKLS
+ 0tLS1FTkQgUEdQIE1FU1NBR0UtLS0tLQo=
 X-Developer-Key: i=petre.rodan@subdimension.ro; a=openpgp;
  fpr=D80A7FC176151935EC3E5FA9CF269999844E7F30
 
-Remove incorrect use of kernel-doc marking.
+Fix checkpatch warning about use of "GPL v2" license:
+
+Prefer "GPL" over "GPL v2" - see commit bf7fbeeae6db
+("module: Cure the MODULE_LICENSE "GPL" vs. "GPL v2" bogosity")
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
@@ -92,18 +94,15 @@ v4 - split from bigger patch (Andy)
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
-index 01592eebf05bb6b002d44c41cca1d2dd5f28350c..505ad70912571ba629f91e56a92898d8320e976f 100644
+index 02ee6b4d51c0816a88ac258f0e5107111ec2a2bc..8c313debc1dff7f4bae7c165bc555ee190996291 100644
 --- a/drivers/iio/accel/bma220_spi.c
 +++ b/drivers/iio/accel/bma220_spi.c
-@@ -223,7 +223,7 @@ static int bma220_power(struct spi_device *spi, bool up)
- {
- 	int i, ret;
+@@ -332,4 +332,4 @@ module_spi_driver(bma220_driver);
  
--	/**
-+	/*
- 	 * The chip can be suspended/woken up by a simple register read.
- 	 * So, we need up to 2 register reads of the suspend register
- 	 * to make sure that the device is in the desired state.
+ MODULE_AUTHOR("Tiberiu Breana <tiberiu.a.breana@intel.com>");
+ MODULE_DESCRIPTION("BMA220 acceleration sensor driver");
+-MODULE_LICENSE("GPL v2");
++MODULE_LICENSE("GPL");
 
 -- 
 2.49.1
