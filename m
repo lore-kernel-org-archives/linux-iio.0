@@ -1,126 +1,117 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D2BA6288527;
-	Tue,  7 Oct 2025 09:14:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EB061991CA;
+	Tue,  7 Oct 2025 11:15:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759828491; cv=none; b=E8MGufa0Fes/JCw7Hu4nosh5IgkM5o/pAbKk0EG1rkpvM832TMXgUHPRNWXAR7oouEdtc2wpaPm79In4y1f9aHOTvWqhASJqc5V2IOTanwuVuyLWpR/NS7qbKd3BFsAfgpVZZUFKJyGH8Ww34ridVSrQLnZxEx8yS+vlvcRGCH8=
+	t=1759835759; cv=none; b=QVquCS5fHI7e/0GIGZsJ5tswnKZGQw5YiSdrj8Rv53whi1NukFbn+XmucVzlGxPx9/np9SfZiV9jv4iPT8DNNRdyyBhkC0hUqpfJgbC/zEzB+q8+aQpmtfc0oIs23fMInUgElScEC9TULewIC7hB6FGNQxY5oVYb0e/IaoAt5PM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759828491; c=relaxed/simple;
-	bh=7ix5FKmh/hONkOptzGkIxX2M47wJgX+yM53Gq77Zul8=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=gbSAPYPAHOmCGHhK734BN6AV0ru+GCxw3l5PppcUyKydLrtKMslgjhEwmzo8tdTVlppnoIFAPAgo44JjFDzMhCaddsZ+72GtiRJ6bOZHoNKt+ads+d5lnm2Y5iirOc8gh9aJMId1NvES0GdfoacLk2Gf0H5K5u/Ld8UeMRKwqsU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p7WyuQIS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1759835759; c=relaxed/simple;
+	bh=pCgjhOAfa0xJBY/SyhGRQksYUt+OUNex4S0WaZXWA4E=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ll4+2NE2cbsdZCbl3w3tEBdjCVSX98l4O9kgjoku2biyVh7efa1mJB3zK7tRqdbkyhbmjQSLjswijGlUKbuvUTJdZUP6gP6xtWy1UomBr1wiIrtipvXXgs091uPx0LiHgNK2XoHVygDv/miPhqbn2wvWjmh7LWp80U6cA4ybqU4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=FcAoANgm; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p7WyuQIS"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 60B01C4CEF1;
-	Tue,  7 Oct 2025 09:14:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1759828491;
-	bh=7ix5FKmh/hONkOptzGkIxX2M47wJgX+yM53Gq77Zul8=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=p7WyuQISlzlFDyvu0nwePc58LC8zUa0CMWjPoLfXfBIIonpXDc/VfXx/wFefbvo2R
-	 40MuKPrdhu9bktNSue083NFtIZhnQmG4lXnh1wNd1q352CopJnhf1xIH2mxOWRyBet
-	 LqAp6NASqF7iYMD8fh5oLCf3GCZ4krQeyerVtTk9XFDzBW22K59wIfL9I6IgHaa6+j
-	 oRLcvHvpAsVH+yryVCBs5xnvxdGB0dO5GDt5srvK4dwEYiYfbSqmVz/YwGcrI79Uxv
-	 dBx86VrML4qPGLqKIDz2Ii2uTyvrKWDmZOljKAnHa9jC+rpdxzSvly8QwKzmtpgjaP
-	 hz2lCjrSLtC5Q==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D9E5CCA470;
-	Tue,  7 Oct 2025 09:14:51 +0000 (UTC)
-From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Subject: [PATCH v3 0/3] iio: buffer: Fix DMABUF mapping in some systems
-Date: Tue, 07 Oct 2025 10:15:20 +0100
-Message-Id: <20251007-fix-iio-dmabuf-get-dma-device-v3-0-0c73e2c0653b@analog.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="FcAoANgm"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.2/8.18.1.2) with ESMTP id 5978d308006564;
+	Tue, 7 Oct 2025 07:15:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=s0vnOaWLD+wvbQNlkGU0J7hYscm
+	kGTZq5roKm/OUSRk=; b=FcAoANgm8V7trDPIdPzhH3LuTwndUxIm7CTF0GheD3H
+	43H8KB/l4HBeo5cFO23j8GSgAdZdDIs+xX47mM2o91F3MDQdXvWMNWAGEvhmL24F
+	Auo9Em2VEv8Md5BNb7WUz9fvgANwc+17Gz7ZcOu0rxXKr6LPGRdroi8DbCeDtZ89
+	6x7qHo38zcGBTDUjKfVg2ehmqSmSc+pwaPyRoQfYCBnVr9qpaCfhyyf7O7wfzwEk
+	ouv7lHWpArPO4PSBO9kVtFqSVbGnB+ANduxJ6zMzrMUSZ1rr5Mtgfd4f8Jy/dPzb
+	iusrYaTC0EtJW1TsD9NwLj0MHnaQh6maBRSZVDVyYqw==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 49myhq8qdw-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 07 Oct 2025 07:15:55 -0400 (EDT)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 597BFsoe058151
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 7 Oct 2025 07:15:54 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 7 Oct 2025 07:15:54 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 7 Oct 2025 07:15:54 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Tue, 7 Oct 2025 07:15:54 -0400
+Received: from Ubuntu.ad.analog.com ([10.32.15.145])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 597BFftR006224;
+	Tue, 7 Oct 2025 07:15:46 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v3 0/6] iio: adc: ad4080: add support for AD4081 and AD4084
+Date: Tue, 7 Oct 2025 11:15:19 +0000
+Message-ID: <20251007111525.25711-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-B4-Tracking: v=1; b=H4sIACja5GgC/4XNQQ6CMBAF0KuQrh0zbQGtK+9hXJS2wCRCTYuNh
- nB3CytdsZv/k/9mZtEFcpFdipkFlyiSH3OQh4KZXo+dA7I5M4GiQiURWnoDkQc76ObVQuem9QS
- bt8aBlEqbE1altA3LxjO4PNj82z3nnuLkw2d7l/jabjJHFDty4oBguFGqrFAoi1c96ofvjsYPb
- KWT+OXqPU5kzqoaG6PwXFr9xy3L8gUmpCOFGgEAAA==
-X-Change-ID: 20250930-fix-iio-dmabuf-get-dma-device-339ac70543db
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- stable@vger.kernel.org
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1759828521; l=2523;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=7ix5FKmh/hONkOptzGkIxX2M47wJgX+yM53Gq77Zul8=;
- b=JrZ6p59yqHwK+wgZVPUX2bedCunVOeS8mP7o2JfoyMxAsfM2LiHDx2pKkK4SuJnAxt9tSTNBB
- pTWjTB5AF7JCbLB24f/KlHNRKIW7Ufo5sesE/ZArf8lcrWiZbLXNDrl
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
- auth_id=100
-X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
-Reply-To: nuno.sa@analog.com
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMDA3MDA2OCBTYWx0ZWRfX4pefL6PqeBme
+ GwqxSr4f7ARNC4qw0o1iK3sEGuFswOjzIWB4kBNLtcYz2iFarEVRgzkOTZwXYRtLOGtHci1TPdW
+ stHzYh89X/F6h9eQ6fsA0lPG3mXkrOdW21dk4l8/yFrK3SUEQZuNBPq49Ek8HidPHesGyZpkngy
+ j6NfAkFVXf5vmk6WRJS0dYCPnG6iFnxtLt/rFhVicLWYnNvnZZ1orG19nfwj6369pPbVWPOMRTI
+ XJ8rYzYRpENDuxyc3UrPh7hj1XfWqxH9LH/fXaNisUiMKIlasPxofxbB11KmTGES4Aek9L9L74n
+ xTlTIB3KwCe3lD6DhRbmx/sBXJeCfP2kh8G5SrawxzN5IJ2zKfi9E8ZthrWj8urlUPkXYXL25bx
+ x8TBW2/SXwFA7J7KltSEJpGGPdQdFg==
+X-Authority-Analysis: v=2.4 cv=IdOKmGqa c=1 sm=1 tr=0 ts=68e4f66b cx=c_pps
+ a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
+ a=IkcTkHD0fZMA:10 a=x6icFKpwvdMA:10 a=V9bAyUBXO8NA9gdfiQwA:9
+ a=QEXdDO2ut3YA:10 a=cPQSjfK2_nFv0Q5t_7PE:22
+X-Proofpoint-GUID: iuisRfTAu3Xgj9GnKStaMdMf8tAYzT4F
+X-Proofpoint-ORIG-GUID: iuisRfTAu3Xgj9GnKStaMdMf8tAYzT4F
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1117,Hydra:6.1.9,FMLib:17.12.80.40
+ definitions=2025-10-06_07,2025-10-06_01,2025-03-28_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 impostorscore=0 clxscore=1015 adultscore=0 priorityscore=1501
+ spamscore=0 suspectscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.19.0-2509150000 definitions=main-2510070068
 
-This series fixes an issue with DMABUF support in the IIO subsystem where
-the wrong DMA device could be used for buffer mapping operations. This
-becomes critical on systems like Xilinx/AMD ZynqMP Ultrascale where memory
-can be mapped above the 32-bit address range.
-
-Problem:
---------
-The current IIO DMABUF implementation assumes it can use the parent device
-of the IIO device for DMA operations. However, this device may not have
-the appropriate DMA mask configuration for accessing high memory addresses.
-On systems where memory is mapped above 32-bits, this leads to the use of
-bounce buffers through swiotlb, significantly impacting performance.
-
-Solution:
----------
-This series introduces a new .get_dma_dev() callback in the buffer access
-functions that allows buffer implementations to specify the correct DMA
-device that should be used for DMABUF operations. The DMA buffer
-infrastructure implements this callback to return the device that actually
-owns the DMA channel, ensuring proper memory mapping without bounce buffers.
+Add support for AD4081 (16-bit, 4 LVDS CNV clock max) and AD4084
+(18-bit, 6 LVDS CNV clock max) ADC variants to the existing AD4080
+driver.
 
 Changes:
---------
-1. Add .get_dma_dev() callback to iio_buffer_access_funcs and update core
-   DMABUF code to use it when available
-2. Implement the callback in the DMA buffer infrastructure
-3. Wire up the callback in the dmaengine buffer implementation
+ - Update device tree bindings to include AD4081 and AD4084
+ - Add chip_info entries for AD4081 and AD4084 with appropriate
+   resolution and LVDS CNV clock count
+ - Modify channel definitions to accommodate different resolutions
+ - Ensure backward compatibility with existing AD4080 functionality
 
-This ensures that DMABUF operations use the device with the correct DMA
-configuration, eliminating unnecessary bounce buffer usage and improving
-performance on high-memory systems.
+Antoniu Miclaus (6):
+  iio: adc: ad4080: fix chip identification
+  iio: adc: ad4080: prepare driver for multi-part support
+  dt-bindings: iio: adc: adi,ad4080: add support for AD4084
+  iio: adc: ad4080: add support for AD4084
+  dt-bindings: iio: adc: adi,ad4080: add support for AD4081
+  iio: adc: ad4080: add support for AD4081
 
-(AI generated cover. I would not be this formal but I guess is not
-that bad :))
+ .../bindings/iio/adc/adi,ad4080.yaml          |  2 +
+ drivers/iio/adc/ad4080.c                      | 80 ++++++++++++++-----
+ 2 files changed, 60 insertions(+), 22 deletions(-)
 
----
-Changes in v3:
-- Patch 1
-  * Add a new iio_buffer_get_dma_dev() helper to get the DMA dev.
-- Link to v2: https://lore.kernel.org/r/20251006-fix-iio-dmabuf-get-dma-device-v2-0-d960bc9084da@analog.com
-
----
-Nuno Sá (3):
-      iio: buffer: support getting dma channel from the buffer
-      iio: buffer-dma: support getting the DMA channel
-      iio: buffer-dmaengine: enable .get_dma_dev()
-
- drivers/iio/buffer/industrialio-buffer-dma.c       |  6 ++++++
- drivers/iio/buffer/industrialio-buffer-dmaengine.c |  2 ++
- drivers/iio/industrialio-buffer.c                  | 21 ++++++++++++++++-----
- include/linux/iio/buffer-dma.h                     |  1 +
- include/linux/iio/buffer_impl.h                    |  2 ++
- 5 files changed, 27 insertions(+), 5 deletions(-)
----
-base-commit: b9700f87939f0f477e5c00db817f54ab8a97702b
-change-id: 20250930-fix-iio-dmabuf-get-dma-device-339ac70543db
---
-
-Thanks!
-- Nuno Sá
-
+-- 
+2.43.0
 
