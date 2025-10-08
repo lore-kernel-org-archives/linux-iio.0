@@ -1,98 +1,159 @@
-Received: from mail-vs1-f46.google.com (mail-vs1-f46.google.com [209.85.217.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from inva020.nxp.com (inva020.nxp.com [92.121.34.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 053B62475F7
-	for <linux-iio@vger.kernel.org>; Wed,  8 Oct 2025 09:51:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C8D62571DA;
+	Wed,  8 Oct 2025 10:16:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=92.121.34.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1759917078; cv=none; b=lC7bYXSRWT5qgC57RSy/tFUbLlwDQYIjIKEkbdUrTYR+emF4RkeB4wQl4XQd7IcRCmhxI5K8C8y7eNa4HW+q6mQ5cMzNUqy6tQpGp0orM0vrCZweR2dqlNEKWtZQmIq3mgX+VEcqCjw5W3BxUpeEWUI/7PkJ4Y4M45009kleG14=
+	t=1759918611; cv=none; b=K4IkRm6UVIBfODkDMRCUBfvPXBFJIiB5EqZI72CryD0c3ghNfuIlQfZVRSDmDMb03yn85FgqamQBRPMwBLtblkmzfFPJxIBHs1Z/pMYUCB6P6z55WYFblyLZCQDbYX7mNT5klxF/36TXK9fDVRmm2zo8KiNV9URWg4RJCO9PFh4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1759917078; c=relaxed/simple;
-	bh=r+ToGzTI6uxWEPYumm60pPHWI41nkxsIjrp4Zp1EsqY=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UxoGpLFXdG5m/FOeFbkBlWo471Y2D904vNYH5zqmQma21zk9Q3EBWa5azrm29DgTJm4qnkakVO6um3eu9KoaJWXSPhhvt0mtnK4QfXMQOc2/hFiHO+Kxj5/lGgvtlrna/gpbFiBW6Z+ehavDDJJIF3NYLpe4HA4FpBsun/Cxc2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vs1-f46.google.com with SMTP id ada2fe7eead31-5c72dce3201so3041600137.3
-        for <linux-iio@vger.kernel.org>; Wed, 08 Oct 2025 02:51:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1759917076; x=1760521876;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=G09dlK4ttSR1bBxdlZNpESQsXtEQhLpmRygu9mDDuZI=;
-        b=ezMCOXFgDn7C7yzaeoB09ZSwia0naV54UZ6vlJNQQ2FV6XLZY2GO3btpW55hyA9roe
-         s5i7wNJLqw8pYsoZFz8Smf0CAvLJaj76RnI7/J/VPMf7g3SQ6tpMqr8xYQstGNXnUl5L
-         rxrtlk+4Sjph6i481Heo2yMZCH9snv5HBTcN7bihEOqcTwWgen6FlGVHR+TUYcR7aBu5
-         xm80v0k3hkAXh1tH7NII0mposutUoymOVbxO/pZjz3YuFo7BgbLCJdza8m5VAwQy4o0M
-         9yMLDOh6xQiYClW9K6s5Lp1XSOrW9LRkE1/qMoKPUNPaPM3nFAJxs3agFLhD8CFvTRdF
-         wRqA==
-X-Forwarded-Encrypted: i=1; AJvYcCV2R2XqGZolJ2AZFYcac+IrXjB9QwpgRc7DXjw/FucgkFAi7Rkd9jugd/gi44DuS/JtMHYKrzDtJXU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzQhlztG14dkqwUvkkOktdu6/WVhs14Ths9OWEA++w28ubM8YGu
-	Whbra43qmkmCoUtGRCUdmzGBVG0eCgvv43tLzzfVWi9aU7EM/kvbJUJotBB/Nz24
-X-Gm-Gg: ASbGncuNEF8e0FEYTLJNoCm9V6qoq9QJAcI3hbT2XD7EbyqxMmGXHGyVBlIganpMQwv
-	/Mpe0RqAdfZjl6gVB0SZ47/LarvsQroqAyn98QbxExC+Wi1UmlhEmHcjEORmrMqxpeLXXxBMbHx
-	mQqkkhLVXoF9XAriT210zFWyYJtxkm99KQlFaJ36lfD7xP+/pnmmDOG+PwwswDS88gSjlvYE+/9
-	m2nfmEJzAVKKA1CGGBEz90DCY2ECtt3ALi5maDxQfQ9LutXam/rBb32Y7FA+SjG/cGaYwTCpFq/
-	UkE/cmuGLzCKhyWZ79Bj20FMLEgMiXl0VdF2GYLvsETn8a55fDox/xi58KvC9KShzJE0WitGjVE
-	r4AR7mzU4p6qvFi96hRSaIRgrdxUIeZO1EZp4rGWJy04Opg+waTO6svLuEUiuzjJxYCYVjCTB9i
-	cgSk1C7fa/
-X-Google-Smtp-Source: AGHT+IGrtPXqVslXMhvC5f2aabSuhxFO/phiJJQNKYxIlaU4MONf1zMSOn9O0PMCejuvm3N9sJJCbg==
-X-Received: by 2002:a05:6102:e12:b0:528:d2ad:1f54 with SMTP id ada2fe7eead31-5d5e223768amr954798137.8.1759917075624;
-        Wed, 08 Oct 2025 02:51:15 -0700 (PDT)
-Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com. [209.85.217.47])
-        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-5d5d39f1a2dsm1516577137.15.2025.10.08.02.51.14
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 08 Oct 2025 02:51:15 -0700 (PDT)
-Received: by mail-vs1-f47.google.com with SMTP id ada2fe7eead31-5c72dce3201so3041587137.3
-        for <linux-iio@vger.kernel.org>; Wed, 08 Oct 2025 02:51:14 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCX1oFmjZ4Br/zaGtZYuq+atvnsuSI1rRrZT5ITaCog+0nwtj33zRUUSWaFz2f/Q8mO6Frikd9WBMWA=@vger.kernel.org
-X-Received: by 2002:a05:6102:512a:b0:519:534a:6c20 with SMTP id
- ada2fe7eead31-5d5e23afcd1mr853215137.30.1759917074311; Wed, 08 Oct 2025
- 02:51:14 -0700 (PDT)
+	s=arc-20240116; t=1759918611; c=relaxed/simple;
+	bh=2IPtvjdgiWaQWqjxzOFwilGlEykAXjknjntHxIDRHTU=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=l6yW+KGtC6Yurtr4H+D0j7Oo/zCoNHbf5ApeAYxDPl7g9iD8yIveyteqORKx5Cp3vQUaxxpzHEx3n+zWlvcdAT33VqZB5SVXNYKM/GdPb2nPv/qkwctjbahyx/hla0fwjX6TddK1eKGQ7Og8oLUbixcZvZ3LtjLtQ3gOf1VRGeI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com; spf=pass smtp.mailfrom=nxp.com; arc=none smtp.client-ip=92.121.34.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=nxp.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=nxp.com
+Received: from inva020.nxp.com (localhost [127.0.0.1])
+	by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id 1CFDC1A3A6A;
+	Wed,  8 Oct 2025 12:07:21 +0200 (CEST)
+Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
+	by inva020.eu-rdc02.nxp.com (Postfix) with ESMTP id B251A1A15A4;
+	Wed,  8 Oct 2025 12:07:20 +0200 (CEST)
+Received: from lsv03900.swis.in-blr01.nxp.com (lsv03900.swis.in-blr01.nxp.com [10.12.177.15])
+	by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 28E771800087;
+	Wed,  8 Oct 2025 18:07:19 +0800 (+08)
+From: Lakshay Piplani <lakshay.piplani@nxp.com>
+To: linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	marcelo.schmitt1@gmail.com,
+	gregkh@linuxfoundation.org,
+	viro@zeniv.linux.org.uk,
+	peterz@infradead.org,
+	jstephan@baylibre.com,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org
+Cc: jdelvare@suse.com,
+	linux@roeck-us.net,
+	vikash.bansal@nxp.com,
+	priyanka.jain@nxp.com,
+	shashank.rebbapragada@nxp.com,
+	Lakshay Piplani <lakshay.piplani@nxp.com>
+Subject: [PATCH v4 1/2] dt-bindings: iio: temperature: Add NXP P3T175x support
+Date: Wed,  8 Oct 2025 15:37:12 +0530
+Message-Id: <20251008100713.1198461-2-lakshay.piplani@nxp.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20251008100713.1198461-1-lakshay.piplani@nxp.com>
+References: <20251008100713.1198461-1-lakshay.piplani@nxp.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20251006172119.2888-1-wsa+renesas@sang-engineering.com> <20251006172119.2888-2-wsa+renesas@sang-engineering.com>
-In-Reply-To: <20251006172119.2888-2-wsa+renesas@sang-engineering.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Wed, 8 Oct 2025 11:51:03 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdUb105BF1pNtqMpq2N2Yrh0Rp2hAxuzaZZWXfQfou=k4A@mail.gmail.com>
-X-Gm-Features: AS18NWDRVT_iGSvxNuYXIG-QZwF9FHymRVnJQTzRE7VPezsiv6NxhZyhisJFrAc
-Message-ID: <CAMuHMdUb105BF1pNtqMpq2N2Yrh0Rp2hAxuzaZZWXfQfou=k4A@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/2] dt-bindings: iio: accel: adxl345: document second interrupt
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-renesas-soc@vger.kernel.org, Rob Herring <robh@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 
-On Tue, 7 Oct 2025 at 01:20, Wolfram Sang
-<wsa+renesas@sang-engineering.com> wrote:
-> The pinout of all the supported chips in this binding have two interrupt
-> pins. Document the second one, too, even though the Linux driver
-> currently does not support the second interrupt. Boards may have it
-> wired nonetheless.
->
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Add bindings for the NXP P3T175x (P3T1750/P3T1755) temperature
+sensor, supporting both I2C & I3C interfaces.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+The P3T1750 and P3T1755 are functionally equivalent temperature
+sensors with identical interfaces and features. The P3T1755 offers
+improved accuracy(±0.5°C) in the –20°C to +85°C range, while both
+maintain ±1°C accuracy across –40°C to +125°C.
 
-Gr{oetje,eeting}s,
+Signed-off-by: Lakshay Piplani <lakshay.piplani@nxp.com>
+---
+V3 -> V4: Changes since V3:
+	  - Updated commit message to clarify the difference between P3T1750 and P3T1755.
+V2 -> V3: Changes since V2:
+          - Removed nxp,interrupt-mode and nxp,fault-queue properties from DT binding
+          - Updated compatible strings:
+            - nxp,p3t1750-iio → nxp,p3t1750dp
+            - nxp,p3t1755-iio → nxp,p3t1755dp
+V1 -> V2: Changes since V1:
+          - Dropped nxp,alert-active-high
+          - Fixed YAML formatting, line wrapping, and examples
 
-                        Geert
+ .../bindings/iio/temperature/nxp,p3t1755.yaml | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/nxp,p3t1755.yaml
 
+diff --git a/Documentation/devicetree/bindings/iio/temperature/nxp,p3t1755.yaml b/Documentation/devicetree/bindings/iio/temperature/nxp,p3t1755.yaml
+new file mode 100644
+index 000000000000..16a01fa81251
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/temperature/nxp,p3t1755.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/temperature/nxp,p3t1755.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: NXP P3T175xDP Temperature Sensor
++
++maintainers:
++  - Lakshay Piplani <lakshay.piplani@nxp.com>
++
++description: |
++  Datasheet: https://www.nxp.com/docs/en/data-sheet/P3T1755.pdf
++
++  P3T175xDP (P3T1750/P3T1755) is a digital temperature sensor with a range of
++  -40°C to +125°C and a 12-bit resolution. It supports communication over both
++  I2C and I3C interfaces.
++
++  The I2C interface supports up to 32 static addresses and provides an ALERT
++  output to signal when temperature thresholds are crossed.
++
++  The I3C interface supports In-Band interrupts (IBI) in interrupt mode,
++  allowing the device to notify the controller of threshold events without
++  dedicated alert pin.
++
++properties:
++  compatible:
++    enum:
++      - nxp,p3t1750dp
++      - nxp,p3t1755dp
++
++  interrupts:
++    maxItems: 1
++
++  reg:
++    maxItems: 1
++    description: |
++      In I2C mode, the device supports up to 32 static addresses.
++      In I3C mode, the 'reg' property encodes a triplet of
++      <static-address BCR PID> used for device matching.
++      Static address is optional if matching is done via PID.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        temp-sensor@48 {
++            compatible = "nxp,p3t1755dp";
++            reg = <0x48>;
++            interrupt-parent = <&gpio2>;
++            interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
++        };
++    };
 -- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+2.25.1
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
