@@ -1,116 +1,108 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 750FA226D1E;
-	Thu,  9 Oct 2025 16:58:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FE6D23C4ED
+	for <linux-iio@vger.kernel.org>; Thu,  9 Oct 2025 17:36:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760029114; cv=none; b=kD1zHVErJDeYAK1wkwOMO9yFMCTIHMexBRALT+6WIfLHxNXnz8OCK9Aw4L8E8rq0bJq4t5GOR7EI7rBG7k8smIEqKXVaX3bXzQhC16gVAtkQtLtiV4o4pTGsCj0fEz7Ub1LWnJfJrfbULYNeDncetR2p0nIKn+EncS4ywXtNUE4=
+	t=1760031375; cv=none; b=PpfCO2VFWIZNOcLCEyVAPzjH1SCxoPcuUE5TxyT1oKD7cVrRtGJA8L4QkO1Pe8XvI4PVBHM4Kny2h0xaEZ4adGfVY6gbfsWmB6j77eUEQABbAHogjFCmpk37FnVOVG99bUt27IxZKNful6El8SoyY/yM9grWEl8J9YcouKAZIK0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760029114; c=relaxed/simple;
-	bh=ouGPV7oXLO0nXJOGjQeFcq4BgOQGJoUl/Z0W43w/T/M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VGywaCISVzyBBUmwm4gKDJpBAUXv6SjYo4cvyEtNehylfggRF8hL5lAxaeL7yTMncdyMnFWlIotoxlGw+XHYJiFTPh//BAFw35X7EuWPbJH1UDpnTRGkojCP5/FdUk7TLETplAS1X2s4EbUs9el+jem2cv9Tc5UouGFwMYpNrb4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qDeiGwaM; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1760031375; c=relaxed/simple;
+	bh=Vkty7DzuVOFqKx8/EsqX2XjqQtiwC7HTIRMiI4/cOrc=;
+	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=sMDGCgXfpnoBycvGvGUbb0m9dlKrxW3ithXL6ZJ++Pcmu1r0rwcZz6kn1tVw1A0UQUsEu1/3huXrDmxcKfH434wyZzpZEPuLjx058hPcw4GQCVGuSW/AcEvN4DZ2LMaX6yuV1qi/vrgUdTVu95tuklzchZTrlM3gN0zIV5yaSRc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=XTP+0TLU; arc=none smtp.client-ip=209.85.218.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qDeiGwaM"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FABCC4CEE7;
-	Thu,  9 Oct 2025 16:58:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1760029113;
-	bh=ouGPV7oXLO0nXJOGjQeFcq4BgOQGJoUl/Z0W43w/T/M=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qDeiGwaMBznqqiv2IJw492Qxj6TZBLlPZqEJ+urDxl5HvclEpTnt9Q9uOOlesnw35
-	 xVEmPn+KnsIlTnU+5Jn0zq7CaoRfFnjsNqLP7xhdVwKHcztoE4O0iGTR706FLO2GmC
-	 vsr306KtmweaLHjBaifUvRrr8YXMJM97RVbmax3F0wsmUrWqzoNwPyFEVdGy7G/ute
-	 aaEf+1fYs6gJoZiSl7M466NxXHJ/gYWrNKmUYJkJC9Fl8Pj/Gd/ibyH35P3s3Yi5lK
-	 wUWdaTQiH5Fgfp7dy0L5vCVfgyRxlsasyJfPbM3QV1ygSpTmcb7oh5WRem0s9MZ/o0
-	 UYKF2sol7iBnw==
-Date: Thu, 9 Oct 2025 18:58:31 +0200
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-pwm@vger.kernel.org, linux-spi@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, jic23@kernel.org, michael.hennerich@analog.com, 
-	nuno.sa@analog.com, eblanc@baylibre.com, dlechner@baylibre.com, andy@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, corbet@lwn.net, 
-	marcelo.schmitt1@gmail.com, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v4 1/8] pwm: Declare waveform stubs for when PWM is not
- reachable
-Message-ID: <cuq6eh3vcrkgr7tj3xpo7ax4ruiy4ra6fjxgu45a3eqs2jbtah@ualgnhdwxnih>
-References: <cover.1759929814.git.marcelo.schmitt@analog.com>
- <129ff5c5b7f7be4f4f3f9cf8aa3e1957d713acb7.1759929814.git.marcelo.schmitt@analog.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="XTP+0TLU"
+Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-b3d80891c6cso356703766b.1
+        for <linux-iio@vger.kernel.org>; Thu, 09 Oct 2025 10:36:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1760031371; x=1760636171; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=i1r4d5+0RxhBZSIdX3lc2DX4DwfElrj3TmzYbJi6k7c=;
+        b=XTP+0TLUULiPhVzXCuTETZvahUNoLOX/lCneOK1276ul3xGEJKxCrvLVVMz9dmRdBi
+         F/4v/sJq3pwp4MBvRkS7GwRB943a2s+IsR2lVzzcofmvN7A/TATjf/pC3k6WL5r+v7+m
+         YsKEKRkTcbVCy+5JWXiixndEMkZoEapWpkRKg5jV+CH5iIFtRvhiTb0QINYyMYneK+5r
+         XyYcYEOuoQHBs10qtdVi0KwkUaZ4EIsSz18VPMjIQGKhQGrz3IrUc5+CQEIeBvaiHQ8E
+         Wgu9A9MVXTpI01PcDNVjoTlTLfvekCRHrt5VNgEZLqYxgACTFoQ+4FoK8u/Pf/ccp4SU
+         o5ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1760031371; x=1760636171;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=i1r4d5+0RxhBZSIdX3lc2DX4DwfElrj3TmzYbJi6k7c=;
+        b=KifvlEWXkuRAhATe1moVDbwqYXVkO86Mza+PQMYun6OG0DvfCCeynxjJTTT5mmQQTU
+         MGW2RvE5w8oS9QFqm0WTvw883b8muhecJltYFscx+OzxBammHCIuAJXN1lXVHElu3J4v
+         24j+ivbSpq1UIqlc7S+ulc6KEIQepOU7cNHXDq8nUo2bwwNOkdjhEdayonqSVaz3jQ6Z
+         6NZlL9fwpRHswBPhq79G79jIj/QaRQT8XA+3CiWiuzowWzhYL3NMa2/i6wT/GmNsu0ZE
+         6h7DnfOxWiWnLOzLHAt5SuKjhN1obeb4gCkej4cXDkjYUFa9uh7Ty1mgXPHA9sRJEh+8
+         Bszw==
+X-Forwarded-Encrypted: i=1; AJvYcCU5k/rkFBiloX0NQzHpTKwuHTZ9ZK8BCS9Kw7AotFUbhZBJbZF+HGSpiKecSOmGKe3pBMrMQY6/KdE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLsCr2aIc1XcW/p+0sUjjKn96TZRAQAzcxZOP5+eKeTIe+6YSA
+	f3S7KYmLihuQc/DmTHNZSZXmYYy+1G3ZLGvmXLMc1zOszrduVTgoZGX2TW+m0cIDEPw=
+X-Gm-Gg: ASbGncs9Ihge/JI3zhgMb4/2Ik/56eAMdyHC6pxOhsOCsawRZ/7ZWzdp4PvdW4w4hal
+	+QeNJ1mSjQ+MdTlvZhXiDSbC2YmKgflsUWHc+S4o1Klpgi3DhQB2nVG2WOmoZ9wggbiFD7DbNeG
+	ku5SZi+TTiGMCMD+Q+gMatg5yc2Hpt741fN2PKzctX4UeqafIC4D4Ao0tnuVBcWUL3qSgh2EBae
+	PO0nIygbUU4QcFkc+xN+FyeW6oWoaR1/uNoMzpDnZqYSzfXiO7Ord7aa//6OlRSdybfo95WmPFS
+	6IH5Yd0xi+t5fRKMoLxGXJrUynr9E/PrPCb8/4CV+erFc6Yi1/mzYB7L/hoUfKLOcwytgl4Vtt4
+	iT3goEpVgwFehNRVKXg==
+X-Google-Smtp-Source: AGHT+IHvd+4Q0w6q9Mqh3z9M0DeiQevOZL6zWVn+VNI9+7YPCwjTmW5gjknFUGylxug+1sKlSbi8mg==
+X-Received: by 2002:a17:907:a70d:b0:b4a:e7fa:3196 with SMTP id a640c23a62f3a-b4f429efe15mr1253251066b.20.1760031371466;
+        Thu, 09 Oct 2025 10:36:11 -0700 (PDT)
+Received: from localhost ([151.35.157.113])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b55d951deb6sm20547466b.76.2025.10.09.10.36.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 09 Oct 2025 10:36:11 -0700 (PDT)
+From: Francesco Lavra <flavra@baylibre.com>
+To: Lorenzo Bianconi <lorenzo@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] iio: imu: st_lsm6dsx: Fix measurement unit for odr struct member
+Date: Thu,  9 Oct 2025 19:36:08 +0200
+Message-Id: <20251009173609.992452-2-flavra@baylibre.com>
+X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20251009173609.992452-1-flavra@baylibre.com>
+References: <20251009173609.992452-1-flavra@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="4les542qp6fpfvza"
-Content-Disposition: inline
-In-Reply-To: <129ff5c5b7f7be4f4f3f9cf8aa3e1957d713acb7.1759929814.git.marcelo.schmitt@analog.com>
+X-Developer-Signature: v=1; a=openpgp-sha256; l=945; i=flavra@baylibre.com; h=from:subject; bh=Vkty7DzuVOFqKx8/EsqX2XjqQtiwC7HTIRMiI4/cOrc=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBo5/JEYLnqVvshBifg78xCx/6GToqsV6PVZTzrI ZT3rW0HpEeJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaOfyRAAKCRDt8TtzzpQ2 X2aVC/9PQQzoQFJjZ06iHXpU0MmfI8dCT7Fh4GetcHUvfMTR6C825UKwHMvM1Zk6OMtB8mut0rU 4wFNj4U13uDpVc3YR20NrddcTUJEus3MoLmZo0V5NOIEc4tC/twt+QYazPrgrf5y/s9SvAFTr36 j0exuraYLbZUjAmlyhnFleqV9TQRZJCHEQ7KU981a7fMT6tqXz8sigsVQbEpRffkxx0Jqmgis8q rgZjDYze0ZVc/+VXvLH2Kw5I6X0IqvHvZhQPGjLhYg/HYQgSJgqbErG5tdD4W04q47J3LC18uNb pGbho+n5sRuRlJ6v7FTV+klL0hYfNqFLfAMEBvCeGpjONjNk4ni0Zp0piFedP2QPt9Cq0qPmDWs 5oKfdwFMsFr+zzln3vi66wyPR+WqxYHgPIrt/SB6/zf/mV+nhIF2SJVYB8xIoE8qQIgvuc3spVU xJoXjCgcKAQ2WM6BhbDssv0oOLpYetLiSzhbMJtuMci3xXirVvGviIY6ej50g2t+Cpqj0=
+X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
+Content-Transfer-Encoding: 8bit
 
+The `odr` field in struct st_lsm6dsx_sensor contains a data rate
+value expressed in mHz, not in Hz.
 
---4les542qp6fpfvza
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH v4 1/8] pwm: Declare waveform stubs for when PWM is not
- reachable
-MIME-Version: 1.0
+Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hello,
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index c225b246c8a5..bd366c6e282a 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -365,7 +365,7 @@ enum st_lsm6dsx_fifo_mode {
+  * @id: Sensor identifier.
+  * @hw: Pointer to instance of struct st_lsm6dsx_hw.
+  * @gain: Configured sensor sensitivity.
+- * @odr: Output data rate of the sensor [Hz].
++ * @odr: Output data rate of the sensor [mHz].
+  * @samples_to_discard: Number of samples to discard for filters settling time.
+  * @watermark: Sensor watermark level.
+  * @decimator: Sensor decimation factor.
+-- 
+2.39.5
 
-On Wed, Oct 08, 2025 at 10:49:44AM -0300, Marcelo Schmitt wrote:
-> Previously, the PWM waveform consumer API would not be declared if
-> CONFIG_PWM was not reachable. That caused kernel builds to fail if a
-> consumer driver was enabled but PWM disabled. Add stubs for PWM waveform
-> functions so client drivers that use, but don't depend on PWM, can build =
-if
-> PWM is disabled.
->=20
-> Fixes: 6c5126c6406d ("pwm: Provide new consumer API functions for wavefor=
-ms")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Closes: https://lore.kernel.org/oe-kbuild-all/202509272028.0zLNiR5w-lkp@i=
-ntel.com/
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> ---
-> I've included this patch in this series because it should save us from be=
-ing
-> notified by 0-day about the build failure this patch fixes. From contribu=
-tor's
-> perspective, it's easier to have this patch together with the rest of ad4=
-030
-> series. Though, no objection if kernel maintainers decide to pick it [1] =
-through
-> the PWM tree.
->=20
-> [1]: https://lore.kernel.org/linux-pwm/1ac0fc529e02744aacfcb9140ed597ff60=
-886f39.1759873890.git.marcelo.schmitt@analog.com/
-
-TL;DR: nack
-
-I replied to the original submission about why this patch is wrong. See
-there for the details.
-
-Best regards
-Uwe
-
---4les542qp6fpfvza
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmjn6bQACgkQj4D7WH0S
-/k5meQf/ZUbpWgJbz2gIbDh0ItNlTparKj2Q4WVhgedGfKCY8chMHQTmFuUhtvQV
-iuFLynz2QJ4XDGg7SQ6zo2WMvE+DG+aSvELz4adu+8KV1M7FtoWfFP9uACVK2iZV
-Ls6lMV4ZyrCM+2me6/oa+uuKSrr+2/tUXTXz/GZzouBjuAYnsYEoYHjLuCbbjL7/
-XadRRmCRLPBMyDUlLk+b5MAXtLPXVhP9pMby8FAB4i2nQmq6JgdV0VzgpslhMV9b
-F3ekcy9YOJZifaAkQIORUsj9ChFkj86jy/H3uz5YVEGxSAyy5oLvqOgf9RZGZyiE
-2DbWbyB6lqRcjlBEyqWKxo8MGDj/lQ==
-=ZygH
------END PGP SIGNATURE-----
-
---4les542qp6fpfvza--
