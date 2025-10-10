@@ -1,83 +1,79 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B741D30171B
-	for <linux-iio@vger.kernel.org>; Fri, 10 Oct 2025 19:45:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F0453019A1
+	for <linux-iio@vger.kernel.org>; Fri, 10 Oct 2025 19:55:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760125511; cv=none; b=u12LN1L44H71C+7+tbleHl3mHwb/3GgKq6ORTeOF2U1rVMCpdi6oBZK0bZrtFwyNQyedsUDP8FCDQBiuBaK/lq5QzCSBk4eyt1hFtsM3Rf2cIShmjepWFUeFx8X2EeU0qDJ/wR6/xzKbBfnskBdfqzZ6b/BcTkaoAs31fNjsUBY=
+	t=1760126149; cv=none; b=Ovo8QhhdiYHMndmXGVhDtYlNZcc6oBde+S+3XaHCtDr13OG+XL07Jh+kwS39McUhkF8LJFYSw26equBRiP3cXZj/AyF9X8IwcFXbXn8IUprR/8qvYf1jFbECMEMeQ55XrKdY8ZQ10/Z+Hcdlc+yT6ej/Il6sE0+/ud3O1NxgTDk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760125511; c=relaxed/simple;
-	bh=j7eRCO8WXdU/zad3n+NWlTSndVmgNqtq1p4vqwLQNX8=;
+	s=arc-20240116; t=1760126149; c=relaxed/simple;
+	bh=9PS7F/m4n1uAkBYWPryVi2hX01WNFFT8P5czGODVaI0=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=SgzWCz8DrKvAMsqX3HxJUdb2eIk9HlUs/9/Xx+edliKfbYeCiSH/7EIZBSgYr7wk7w9cKOl8bVCEh+1ULID0+7VJtY/PlZrPYoe+FN8Pc3QzBEzyQiVLcjm3b7J7TMFgCsaYq71bfIXFU3EMAqkzVdQ/ZkNp35axy2JTQwS/228=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RuYvCcSf; arc=none smtp.client-ip=209.85.128.43
+	 Content-Type:MIME-Version; b=A8hkTRF623Szyax12iRGJrXpfC24QmvzBIYJ5/6dkj/0XM4Z7BZguxZ9TpQN6UXdZFPD7d7Rft0EZYpm080L5bsiwOxQzk6YjRV6ziJzne+Z4qawdS1ogLjNCZaxTrL4SuozuepP8PjWEOkGmcf+nvDI4tp3E6DjtZmUpYzOhf0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WoOTehJ8; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RuYvCcSf"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-46e504975dbso14533275e9.1
-        for <linux-iio@vger.kernel.org>; Fri, 10 Oct 2025 12:45:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WoOTehJ8"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-46b303f7469so15461755e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 10 Oct 2025 12:55:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1760125506; x=1760730306; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1760126146; x=1760730946; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=eQu0rr6UjxQklgSlwaowAdD1/Ytw7JaYBhmk2aJvOXk=;
-        b=RuYvCcSfJyIRhZ2o6Z9aV4YLxxndlUqEqvOjjxTQErygeiptPow5tlZRLSd0WzpIrA
-         xpezIgxuexsk0wMXBurwDM+KPzJPrWaY+05h3DITGERd2QjYQ/w57k7Mg/8aPo2hS8X6
-         g0cfNLDMzAv6m3UxQF1Vr48Yjt0qiRJ8lLr/p3PsFkVMLpgLAIiPjFicXz7v2zwkkw2O
-         nIEntAakKjQNS/Wg9RmrrTd7UYMfNvXxwn82LRW/REyFCfW6oSz034jlLI/nDqyFBNOF
-         Q5+0SxeMQCNW+9APIdfWhbFlFLzoT/+BsLHDxvdkF4GGOh2msKYl/9f/HPJWQLARHhk7
-         3H5g==
+        bh=WlPTxxGqUeSR2lZkjJtan7WE7z8YmM6/O314vANG+hE=;
+        b=WoOTehJ8ZIkVn5KybLL1WjDwxXHekgqlHfszjSWVfabSv6MMLS1rkll9MqiUPO62bF
+         YG+3c036NgWKmyj2Dh/1XJ+bMuTXoPEKAil+YyNqz9+xH6CLrKa+iSgYVtTKkuCdVRSG
+         99iEMe61IxbDPdpm/6FoQpcMygsb6AF/PicxL501BSRH0oNAgmcfhHF9cq3whuG9s4WW
+         KOUozpokXZlfF4QsWKgehZ/7JW/TnhKvL3uFcCYDsiOXC2wZD4z1HODQbSwHiuA4SqG7
+         wzs+KDzRFKQA8dIwE6gy3JGtuHsDibXGtghO9Iaex8q+V5LKIoslO95B0vtKvMrtMYHa
+         68uA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760125506; x=1760730306;
+        d=1e100.net; s=20230601; t=1760126146; x=1760730946;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=eQu0rr6UjxQklgSlwaowAdD1/Ytw7JaYBhmk2aJvOXk=;
-        b=ljIOYcCpFK7cs5Rm6bKwUSo2xtSmb8m7I3HY1zOiCDeQbc6MarME6xilAxoN3n2Fb3
-         xX2nHC7b28jH1fR3uud4HPIsldhziAdhLLQI3dTsTMKw6Ghe3z8v9Rtm9t4PnIqSlmNA
-         SDDr4ufgcnE5PXyZpfQSmPn66GWmBjWcl4E1dQSQTlJXwSGjwdd89mGBUwVIfq1v8cK1
-         E26q/F1CGCNffbTN+/k4aWCArZRFWO3rxX1HyU5wHZTqPHne89KlG2QVq+cOhmNSXKgu
-         mi/IKKs8zYgG/uKjyrTQI56OHt5rIhPFip1Iem/c5TxlGdoohuTekBOKRHHGSrqRyvq3
-         HPGA==
-X-Forwarded-Encrypted: i=1; AJvYcCWsKqIzP7MgdFvYQFkkG4eWhMufvPNH6Z0Jmg8QShRWzfbUKpqPC7hGsnNNQWS7vodeIjHP/jbtgB4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyM1dJ/XCXZWyJctzG34RMCvZJF1g1xjW26uMwcMU5FXv1YboTd
-	ejiTnIhKE3lafbAkrLWINyAEktxG8F9mcesofdGscfS2jrHm+w3tXF/I
-X-Gm-Gg: ASbGnctaCb62WRSc04nJlUkR4CUZCUKEAMvGy37V5r0bbstvXPP3wWKOBTa9Gz3csQI
-	vqmRoj7dxaL99Zw6XD3LRzLscKkQfv/29emQv6e5GuWHkPxhZN3dg6a3IY/bkLespwVDldR9twZ
-	fpji7vym7ilTt3HEynqqMckuxtABF+zeK50uxo0MukSV4TyXaMFA+KwWxIfxbJibOPyFdp5X8ym
-	MwahPxsTT1+2CHRo9iif0hVXd+Ad6uwsvi7akB9pKH7ooL0ILaC0MbkbMaOtCa8AYaLvu4+Dk77
-	ch10VMwG72Pr6v95SDpeHpXNlaDQLAmRviPy9UCzmKH3evGtw8R1Hf3l5H2TZnJ6FVLVqTuMUSJ
-	8f+p1V0alsQhQvv537eGxm9UX4nfzhj0m6tM3iWknXfCfmuyAdmU2SkVF8ubBwLWGiPcWKTI3oL
-	d/PPf+KTO67dCFfuDLrELz/SQ0
-X-Google-Smtp-Source: AGHT+IHHHrb9if1pSYItixsAXjV8Fo41Ye9u4kM+Ypfmjxxvzg1eG3Pwur7ZSPXeiqGWANKsBZ20ow==
-X-Received: by 2002:a05:600c:4506:b0:45b:8a0e:cda9 with SMTP id 5b1f17b1804b1-46fa9a8638dmr92447005e9.2.1760125505754;
-        Fri, 10 Oct 2025 12:45:05 -0700 (PDT)
+        bh=WlPTxxGqUeSR2lZkjJtan7WE7z8YmM6/O314vANG+hE=;
+        b=MlbseFarSzPfDp+9y5IKs+q0X4klX4diHf1a9lCOlDcI/TYRO6LyL1XjFLO82WAS45
+         W70UOvaQ07ID0oF0PL4UP3TAKNS+302gZMQFJOyQBCmKaKFleMwNiaalUHikA49rg89n
+         djwKwGxda5K7PKBsKYnxrTVDZujl9WO5kglVbsiIm+75YgA6lR4bbeC5hY/vcR05AgBG
+         iuFPQR55mWh8mU5hqlRXMJzhzKZWX9Qhc4gGZ9OXcn08iJIbY+k4HqYNezmRWz+K5t85
+         +BI6k/ba3ArjkDM9fJ6uKO05Y4MyHbVKt0lBK8UEyFCemHBmi3vwjwbAGZKAyqFu4mr2
+         PDrA==
+X-Forwarded-Encrypted: i=1; AJvYcCWAf0U58vuRLYZqY/i7smc21AOUvCJp+AN+PsxHZNQ68qwYjWCTvlD/g6oMB9a/TF1nMbD/ZI01ALg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyL29pFaxfZodXfNQY/w+YXBotDBubNfKvZ6rS3TDluf+03a6ll
+	J3gtwLPEvoEdrquHPtRJ0iZuh2a+cPeK/ym7rK//iFU9fGo/bj4UAXRK
+X-Gm-Gg: ASbGncsUklDazKz+gkSmBD5S/IZxZOg9D5S1i6z0YVruj+3hOE331ddo1vXPBJ4K+uE
+	HCl5P0ScHP8o4NDbu2ZboLADjZTlbnizGcjeRpQLDfgmarbfSe7PJYMQnCXNk1ExzUiHQms380z
+	7NsUu4mdZfx2oYIJtGFlvufvobXyH8kYijnlvnLI5CNJbRsJNxvYLCXfXKevT+JHPs6ojHaX0fR
+	3G3SkGigxnDtU4facVracLbG+NiY372WI5NCjCNKA4dkIkEzX7u3fF+WQ+GOIS0MYtRgo9dHYQt
+	a3CvFGhfoFbCMwuHeJdpb+bZhJrMdetJj4VPQyNkD3Cwm1kul43AAs+Pm9RMLaW2cNABG2bLZ0r
+	sF+kTQ9+M0vHx23B3f5jcX8xy/Rdwpa0kDu7/SMmxhuVnfuXeDm95fD0CXtCFFw3iWV7ogzJdYX
+	ZJUJ1s+qYb99YDOLYg1QDLN9oK
+X-Google-Smtp-Source: AGHT+IHaWYI9QvKReNHkAaSbov4hjc2gUESetJC4TFK/yM1c7gn97K56ZqGizY/MOi2ZOYx+SBgt6w==
+X-Received: by 2002:a05:600c:529a:b0:46e:3e25:1626 with SMTP id 5b1f17b1804b1-46fa9aefe15mr92408175e9.19.1760126145632;
+        Fri, 10 Oct 2025 12:55:45 -0700 (PDT)
 Received: from ?IPv6:2001:818:ea56:d000:94c4:fb0e:28f:2a8d? ([2001:818:ea56:d000:94c4:fb0e:28f:2a8d])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46fb32a84edsm39166195e9.4.2025.10.10.12.45.04
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-46fb489af92sm70551775e9.17.2025.10.10.12.55.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Oct 2025 12:45:05 -0700 (PDT)
-Message-ID: <755d4fcea043d62ba6ac44c483f70c0a08b5e41e.camel@gmail.com>
-Subject: Re: [PATCH v4 6/8] iio: adc: ad4030: Add SPI offload support
+        Fri, 10 Oct 2025 12:55:45 -0700 (PDT)
+Message-ID: <3e91c2a282499f862ed7d27842d5bc2ee461ebf8.camel@gmail.com>
+Subject: Re: [PATCH] iio:common:ssp_sensors: Fix an error handling path
+ ssp_probe()
 From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>, Marcelo Schmitt	
- <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
- linux-pwm@vger.kernel.org, 	linux-spi@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Cc: jic23@kernel.org, ukleinek@kernel.org, michael.hennerich@analog.com, 
-	nuno.sa@analog.com, eblanc@baylibre.com, andy@kernel.org, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org, corbet@lwn.net, 
-	marcelo.schmitt1@gmail.com, Trevor Gamblin <tgamblin@baylibre.com>, Axel
- Haslam	 <ahaslam@baylibre.com>
-Date: Fri, 10 Oct 2025 19:46:01 +0100
-In-Reply-To: <576b582e-7388-4ee4-9a4c-4f7e04fc3fda@baylibre.com>
-References: <cover.1759929814.git.marcelo.schmitt@analog.com>
-	 <2bde211f1bc730ee147c9540b88339a93b2983e6.1759929814.git.marcelo.schmitt@analog.com>
-	 <a86007ab148f9556af032f5ba61991a74a5641c0.camel@gmail.com>
-	 <576b582e-7388-4ee4-9a4c-4f7e04fc3fda@baylibre.com>
+To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>, Jonathan Cameron
+	 <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?=
+	 <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Kyungmin Park
+	 <kyungmin.park@samsung.com>, Karol Wrona <k.wrona@samsung.com>
+Cc: linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, 
+	linux-iio@vger.kernel.org
+Date: Fri, 10 Oct 2025 19:56:41 +0100
+In-Reply-To: <6fdd39e3763a6e0e700982ac6ed63a5748a4ce67.1760122717.git.christophe.jaillet@wanadoo.fr>
+References: 
+	<6fdd39e3763a6e0e700982ac6ed63a5748a4ce67.1760122717.git.christophe.jaillet@wanadoo.fr>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
@@ -88,75 +84,42 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 
-On Fri, 2025-10-10 at 11:18 -0500, David Lechner wrote:
-> On 10/10/25 6:19 AM, Nuno S=C3=A1 wrote:
-> > On Wed, 2025-10-08 at 10:51 -0300, Marcelo Schmitt wrote:
-> > > AD4030 and similar ADCs can capture data at sample rates up to 2 mega
-> > > samples per second (MSPS). Not all SPI controllers are able to achiev=
-e such
-> > > high throughputs and even when the controller is fast enough to run
-> > > transfers at the required speed, it may be costly to the CPU to handl=
+On Fri, 2025-10-10 at 20:58 +0200, Christophe JAILLET wrote:
+> If an error occurs after a successful mfd_add_devices() call, it should b=
 e
-> > > transfer data at such high sample rates. Add SPI offload support for =
-AD4030
-> > > and similar ADCs to enable data capture at maximum sample rates.
-> > >=20
-> > > Co-developed-by: Trevor Gamblin <tgamblin@baylibre.com>
-> > > Signed-off-by: Trevor Gamblin <tgamblin@baylibre.com>
-> > > Co-developed-by: Axel Haslam <ahaslam@baylibre.com>
-> > > Signed-off-by: Axel Haslam <ahaslam@baylibre.com>
-> > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > > ---
-> > > Change log v3 -> v4
-> > > - Applied code adjustments suggested to SPI offload patch.
-> > > - Only select SPI_OFFLOAD_TRIGGER_PWM if (SPI_OFFLOAD && PWM).
-> > >=20
-> > > =C2=A0drivers/iio/adc/Kconfig=C2=A0 |=C2=A0=C2=A0 3 +
-> > > =C2=A0drivers/iio/adc/ad4030.c | 504 ++++++++++++++++++++++++++++++++=
-+++----
-> > > =C2=A02 files changed, 465 insertions(+), 42 deletions(-)
-> > >=20
-> > > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > > index 58a14e6833f6..1ed091b6731a 100644
-> > > --- a/drivers/iio/adc/Kconfig
-> > > +++ b/drivers/iio/adc/Kconfig
-> > > @@ -62,7 +62,10 @@ config AD4030
-> > > =C2=A0	depends on GPIOLIB
-> > > =C2=A0	select REGMAP
-> > > =C2=A0	select IIO_BUFFER
-> > > +	select IIO_BUFFER_DMA
-> > > +	select IIO_BUFFER_DMAENGINE
-> > > =C2=A0	select IIO_TRIGGERED_BUFFER
-> > > +	select SPI_OFFLOAD_TRIGGER_PWM if (SPI_OFFLOAD && PWM)
-> >=20
-> > Two things as I mentioned in [1]:
-> >=20
-> > 1) Wouldn't 'imply SPI_OFFLOAD_TRIGGER_PWM' accomplish the same?
-> > 2) Don't we also need stubs for spi/offload/consumer.h?
+> undone by a corresponding mfd_remove_devices() call, as already done in t=
+he
+> remove function.
 >=20
-> It doesn't hurt to enable SPI offload support even if no controller
-> supports it, so I would prefer that drivers that use it just select
-> SPI_OFFLOAD.
+> Fixes: 50dd64d57eee ("iio: common: ssp_sensors: Add sensorhub driver")
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> ---
 
-It does not hurt for sure. I just don't love enabling code when the feature=
- is
-optional. For things like GPIO it not does not matter much because it's mos=
-t likely
-always enabled anyways.
+Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 
-But, fair enough! I don't feel strong about this at all and if we wanted to=
- be picky
-then we would also have to take into account that IIO_BUFFER_DMA and
-IIO_BUFFER_DMAENGINE also depend on SPI_OFFLOAD being present and we just s=
-elect
-those.
-
-- Nuno S=C3=A1
-
+> =C2=A0drivers/iio/common/ssp_sensors/ssp_dev.c | 4 +++-
+> =C2=A01 file changed, 3 insertions(+), 1 deletion(-)
 >=20
-> >=20
-> > [1]:
-> > https://lore.kernel.org/linux-pwm/2e82eaf275b5c8df768c8b842167c3562991e=
-50c.camel@gmail.com/T/#t
-> > - Nuno S=C3=A1
-> > =C2=A0
+> diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c
+> b/drivers/iio/common/ssp_sensors/ssp_dev.c
+> index 1e167dc673ca..da09c9f3ceb6 100644
+> --- a/drivers/iio/common/ssp_sensors/ssp_dev.c
+> +++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
+> @@ -503,7 +503,7 @@ static int ssp_probe(struct spi_device *spi)
+> =C2=A0	ret =3D spi_setup(spi);
+> =C2=A0	if (ret < 0) {
+> =C2=A0		dev_err(&spi->dev, "Failed to setup spi\n");
+> -		return ret;
+> +		goto err_setup_spi;
+> =C2=A0	}
+> =C2=A0
+> =C2=A0	data->fw_dl_state =3D SSP_FW_DL_STATE_NONE;
+> @@ -568,6 +568,8 @@ static int ssp_probe(struct spi_device *spi)
+> =C2=A0err_setup_irq:
+> =C2=A0	mutex_destroy(&data->pending_lock);
+> =C2=A0	mutex_destroy(&data->comm_lock);
+> +err_setup_spi:
+> +	mfd_remove_devices(&spi->dev);
+> =C2=A0
+> =C2=A0	dev_err(&spi->dev, "Probe failed!\n");
+> =C2=A0
