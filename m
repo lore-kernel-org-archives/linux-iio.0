@@ -1,129 +1,162 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-oa1-f49.google.com (mail-oa1-f49.google.com [209.85.160.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E82A1D86D6
-	for <linux-iio@vger.kernel.org>; Fri, 10 Oct 2025 20:01:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DFC0326F297
+	for <linux-iio@vger.kernel.org>; Fri, 10 Oct 2025 20:24:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760126512; cv=none; b=s2sX6aA7xlFIAQ6NPx+AdLvYaIGWtejsZHOxNmvJH+PtExbqfFYUB+xj2s/XykWqyj5Mleq7wBGH6lcwpUt314awHTrJRJm/WKZKyKgNx0jgxZSaZdOeU0RQr5u+eOSgYT79eLemaPe40WHrYmHMRS3gEGW+6ilamRh46tNao+U=
+	t=1760127884; cv=none; b=UycHE164yMLBuiXcHEQE39oIYXp9TcqtglaLFxbQ/CdoGTYvVyOY0RBeOHVkPXQ/c4xNmi51jOvbQ8JXi5YgGu6DIv8ovly/zLsbtc8CVmHVH8a94Bi+/VFgoNPBTyoWAvwrC7Cfb+QQyPadjSg+67WiJZiwPic2xFgd0IoMuto=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760126512; c=relaxed/simple;
-	bh=v83TZneUwIbHURqBLBUftZnuT49NHmKFDtDnU+8K10c=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=iv9OpPXlxfrfiuEhzF2t4gb/6ahrSFLHhCDRG369mWD0aAPiNfr5Cblw0L+Z9nnQ9mXHdcPC8yxMkg7MrbBr+HjLpMHYrZQtTxlf3T5PL/dwCrzwsa4b0H1Uoa1Tq1fw+48IvXbdsqnYnJY9dChZWI/RViM6/WZfyLuPJdqlxfE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Cy+cXTKl; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1760127884; c=relaxed/simple;
+	bh=NgmV/wTZZURejsJ+2VBaInl7u9CRnnkDWyHMfWsbVLA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=l1A+B8vGveW9x+R7PHdFWl7NzQBuJiFXpVgTOknFOYaCjAv1nHkvqSi4hPgvcDZj516oNx82lK83TurlQBUAXmgA6ynSdS7Z0/svMAXEIdc9o3hYgoEQqB3wLrkCTUxpSU4pI4g0pbTagOBJbsjtUPcSn+z4NwAM/GNpCpd/Vgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=vUg9Y+UM; arc=none smtp.client-ip=209.85.160.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Cy+cXTKl"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-46e6ba26c50so15263685e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 10 Oct 2025 13:01:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="vUg9Y+UM"
+Received: by mail-oa1-f49.google.com with SMTP id 586e51a60fabf-36c9859b036so1616012fac.0
+        for <linux-iio@vger.kernel.org>; Fri, 10 Oct 2025 13:24:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1760126509; x=1760731309; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=zZfPC9OqRt3Pko14zqSSfdQDkti8kHbrjDGGNF/Jl+4=;
-        b=Cy+cXTKlZPvYxmTrSFcFNp4DEwW1sX4jZMpr7yDVdo75G7w/nqcqxn9tYIfxLyXyWd
-         qKo2kG+knca/THYjP0fqHUHNjOXpxWfaOtaGW+7A8e9cxUmgxDVbeRjYbw+sKkdvX+Jl
-         AHoBd2t5tm5+HrhyT62O9P9NKD5kK6ZRptlWlbWSFqcx+L4NpFwD4Ft/g3rLUIJ3zRf2
-         dIZN9H61QT5QJc4JATUaBXmDNoxQcieX/YOC1+Og6d/gttzGLo30xm4feYYjQykJ2hYZ
-         9m7n/tysyUGT1Y+vu1DLBlxizW3G3OCSPa/Ru6m4JyGtF8AZa42rIUejHwrogY/5Rud2
-         lN9g==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1760127881; x=1760732681; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5ohCA47n/0QQWux/zB9KYmPHe4Ax+701jzx0dvdsVvk=;
+        b=vUg9Y+UM4NymYfP7nzHknYwLTjpj6gpO4MUmxt3MYg7PdLXdZan9ynkTg18V+hOviR
+         Gppo9XFkzQLT8GuQmSw3gfM2NwFDrFv4srlV3LX1xVZj1Ry24LaKfleajay0TS2+6YrH
+         /caDLypQPu0Ph06CGSvB9ScXyRjvHmN60lnmd5mB7CnPbfkpqJq/+G0/fSs3j0Y7uudq
+         S7eCAXg0ZnVdglOpnPoDXBOejBMOBPJtUIM73QPhSsJQwZnrnaRTCTLymBxo45eBMr/2
+         enyVQNQSA8AuTkb2Zk/6WSEaht/p4b+DV2tQFHDWYA6Wq+Hd22eZwY1ZN/OrEvU4/Vl9
+         /puw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1760126509; x=1760731309;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zZfPC9OqRt3Pko14zqSSfdQDkti8kHbrjDGGNF/Jl+4=;
-        b=iHoFhYl4yZYmg2UMiSjcDHSj6WFqhn72+uejpHx5eg31MfpDN+MxuULKe7umZH9AZF
-         S8CC5Jr5pE3wijKa2bTLGvmo95NNdlkU+jxsuQ+XdOhHKzx9ISPX6Z2LUjxnpC2vVHry
-         d7lMP4ukdoI7okt07ySZEFHoESTaabh3EGpm5dYNkpas+QW9i+hYrGYO/ehFxQBOykNt
-         3E6s8DuRvvaxH1Igo9L2zw8fafx8OXwBDiDx4rxfsQJlVLQuz+DLigHH8UUpFZ8ylpki
-         iEZzjqmOkgLACvE0z3xepE3xRhkqPjioK9eU5MujMqNXXvkToh039KParD21/bkRHini
-         7sBg==
-X-Forwarded-Encrypted: i=1; AJvYcCV/jjgWB3IlXiOjwRHoQdTCfsVkuHeE7BA8w9cRpuqWBbh251m93eYcY5/cor1+8QzSlbwdtgacDcE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyZqCBTa+Ae7506kUMpN8yQAM6bnCp/W7kTwNcWcCQG/YU5Gifq
-	kWyw7+VlTO8iouqLSVUaVVV4EQJoDcJ8LAdh8Y9lLNb2JvU1R22qT+UO
-X-Gm-Gg: ASbGnctI+r39Kg31xhOLsdJ76XOMYUJPVgCQQvItuFkol0lj/IttuFjDP367Wk3rpjm
-	uZG7+nJB7hQnf8SDO1AGE5tG9KNXJEivjxg9isdRN57MHoNiRf6xKmxGtTiXVJYKeySzz8P8sKx
-	2u2Hqh2dEKnG1C6efuMT5Q0eiJcSxqm96rfGs4UhkNqXKSXAgpAhAK/hyGhK6O9IiC2/Cubwtvc
-	FnJt+/WI0mhOJYyZxd+ib2hdDHqIK1kOet76sDXfJ1iOzzMDcBABxgI5QSFU57UdVJJHjUigbUc
-	IVW9hnH64ESfQqGeoB23SmlCW0nEyrCE+Y3KZjYgKRd6ECZgHTSXqkSkc32BB7fDbP+MMgaYs5P
-	ShL4eHOUur9fMX53sssYI+zU/P0+HXuJNK0GxHIwsIieUwLmkhxU2XfaIolGbsp3kcNAeoxXpHj
-	7jIQscXmALURJ3f3idoHW1bRJoEJCGUVNRx5c=
-X-Google-Smtp-Source: AGHT+IF08fno/6+c+hT7zPA/nd21lbMJVoyQ+kHnEhcG+gDzSp6aFl2IoErRcP/YuiRklbfCtO/rkg==
-X-Received: by 2002:a05:600c:1e86:b0:46e:4581:6634 with SMTP id 5b1f17b1804b1-46fa9b018e1mr92934245e9.29.1760126508907;
-        Fri, 10 Oct 2025 13:01:48 -0700 (PDT)
-Received: from ?IPv6:2001:818:ea56:d000:94c4:fb0e:28f:2a8d? ([2001:818:ea56:d000:94c4:fb0e:28f:2a8d])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-426ce5cf71dsm5393260f8f.29.2025.10.10.13.01.48
+        d=1e100.net; s=20230601; t=1760127881; x=1760732681;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=5ohCA47n/0QQWux/zB9KYmPHe4Ax+701jzx0dvdsVvk=;
+        b=adSVPkXQC6Y38Ch8ABLzvnG+LIu3yY1QkNZt1/b4pY2yXKesVrct5R2nE7Sr4zwZ3a
+         BJ8CBogX6VlNH8bigz9IKkwpTGhe8vLRqe+eYBzlmWJuzC636Q0vL8pkwPHTv3MkMavi
+         bJ3rzxR8KxGIoS2DnqTP7rDwdVm4dM7IqtsHEaRfbyNPRInxp+sPDRrtfkidWl1XcMv1
+         pkGdlL5cQ4s8gsX/BhdSA3W6WrChy8rYcj69mDYngcBR7yPcuiCE51Rsm/kE5IJ53WvU
+         /y1uLVTOMWUgBPp7hsP050Yv/D+vRGvgM3Gp1VyLrcDodVeMC53DuZkF+A0nmE9BLjEZ
+         0ywg==
+X-Forwarded-Encrypted: i=1; AJvYcCUIU7tvGeSQBBTE+zESFJsIaINTTtnN/pZ8Da5KLr8Yg2j3QpD4Bw0jQagza/gip2VJcXCJLsJjDXE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwulJVqk3aO1KciRBDNkQkH7olppfJv2kgzR0fH6Rz7Pf1FNXTU
+	X11mYVTVhVSbYkvJsYTnNrHZ3FK3R8IgHEe5qAe727RZ61z4WvhxWo+G7VO/PyyugHo=
+X-Gm-Gg: ASbGncugvNIUqYN+5HCOUTwOLMAaB7KoZJAlWQhsTYGWsEG1yayUm8cema6siW7HP3S
+	T0OGZlSf3lDos4hkwxqcoktbG2F84vt9r0HevniHc87UWjhjSfPWUPMiKhs5uHXlpe7/4V8UrY+
+	mlr2e1Oxlq/AOuuFOs6fCv5nL9hA9C1JwbGsUJ8uLBySD1LFXEtjlFqCukW01pCgZMhMoTaILXk
+	Ha2UOqPTNRQJce0HO1NclAV4OMJ9IMXACC9K90zgEd/4MX5QgAXfBV69P1XKEa+FkN17P5sZoJB
+	S9xnmswmIAV/Xup5z3dDjlf2bIf4IMDxCaCUhVlZI1UYUob4820QrEhBkJkFKQnpHjSxypv7BwX
+	QJK/tBPxfJUDLnyvgGlfbe5JUiSyb5wjSHUBB3HMuYhuU0A==
+X-Google-Smtp-Source: AGHT+IHA/Bb6A+Qw4x9EcHFnmRKfEZ1mJPteh91sY6GeuPQrrgCAwSA67yrgm073hiMHCMtpyNKZXQ==
+X-Received: by 2002:a05:6870:f607:b0:318:70e5:3ce with SMTP id 586e51a60fabf-3c11a250cf6mr6484649fac.21.1760127880776;
+        Fri, 10 Oct 2025 13:24:40 -0700 (PDT)
+Received: from [127.0.1.1] ([2600:8803:e7e4:500:8a0c:c02d:81d3:2e7f])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-3c8c8e8343csm1182109fac.17.2025.10.10.13.24.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Oct 2025 13:01:48 -0700 (PDT)
-Message-ID: <efeeda046354cabd7da93d5afa64417260fa7c82.camel@gmail.com>
-Subject: Re: [PATCH] iio: adc: ad7280a: fix ad7280_store_balance_timer()
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>, Lars-Peter Clausen
- <lars@metafoo.de>,  Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?=	
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Marcelo Schmitt	
- <marcelo.schmitt1@gmail.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- linux-iio@vger.kernel.org, 	linux-kernel@vger.kernel.org
-Date: Fri, 10 Oct 2025 20:02:44 +0100
-In-Reply-To: <20251010-iio-adc-ad7280a-fix-ad7280_store_balance_timer-v1-1-e11746735192@baylibre.com>
-References: 
-	<20251010-iio-adc-ad7280a-fix-ad7280_store_balance_timer-v1-1-e11746735192@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+        Fri, 10 Oct 2025 13:24:40 -0700 (PDT)
+From: David Lechner <dlechner@baylibre.com>
+Date: Fri, 10 Oct 2025 15:24:31 -0500
+Subject: [PATCH v2] iio: adc: ad7124: fix temperature channel
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20251010-iio-adc-ad7124-fix-temperature-channel-v2-1-b51b411faf36@baylibre.com>
+X-B4-Tracking: v=1; b=H4sIAH5r6WgC/5WNQQ6DMAwEv4JyrqvEQIGe+o+KQwimWKIEORQVI
+ f7ewA968GGs3Z1NBRKmoO7JpoQWDuzHCHhJlOvt+CLgNrJCjbmuMAVmD7Z18QqDGXT8hZneE4m
+ dP0JwlEYaIK+07opUY1neVBybhGL0FD3ryD2H2ct6ehdzfP9WLAYMUIbGVaXTbYGPxq4DN0JX5
+ 9+q3vf9B9w9W0TfAAAA
+X-Change-ID: 20250923-iio-adc-ad7124-fix-temperature-channel-5900f7302886
+To: Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ =?utf-8?q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@baylibre.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Marcelo Schmitt <marcelo.schmitt@analog.com>, 
+ David Lechner <dlechner@baylibre.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2609; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=NgmV/wTZZURejsJ+2VBaInl7u9CRnnkDWyHMfWsbVLA=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBo6WuBN+838DasTJ4Uo/uLWutAyoA9Osc6PiPjJ
+ MXA7pDizUGJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaOlrgQAKCRDCzCAB/wGP
+ wK55B/4ql2pWuD4Nbrdi0m5/tm0jLpTnTK91WZXWCQvD2EywRvnuw97mYdi6EU6OOQDydfFU6Cu
+ fF4HljsPVx6AfG7f+jJAYRQ4VLh3dNaBfp6DBNHZnMy7h3TMgYnCrJ+4fqtgIlhfAER8AQ1kpk4
+ nGsFyFAsL9igYcOjhYv3d/vHpJHfxknIqVzzcLrg2/au0A3Qh5nSKV8yn0ecLJSQW8TG3EsbGT3
+ 7Qp3ZNJf7o9NUXu+JtYbdoEzbqWYa0zFWb3uJIHL0VZKaH+ScWY2bTMFXAPosFGrfHWgb1IiFEP
+ cLPZWEjL/O8CFjF77xd8vNqiTOj0HUCpmcpZIZjjUeOvuSgy
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-On Fri, 2025-10-10 at 10:44 -0500, David Lechner wrote:
-> Use correct argument to iio_str_to_fixpoint() to parse 3 decimal places.
->=20
-> iio_str_to_fixpoint() has a bit of an unintuitive API where the
-> fract_mult parameter is the multiplier of the first decimal place as if
-> it was already an integer.=C2=A0 So to get 3 decimal places, fract_mult m=
-ust
-> be 100 rather than 1000.
->=20
-> Fixes: 96ccdbc07a74 ("staging:iio:adc:ad7280a: Standardize extended ABI n=
-aming")
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-> ---
+Fix temperature channel not working due to gain and offset not being
+initialized.  For channels other than the voltage ones calibration is
+skipped (which is OK).  However that results in the calibration register
+values tracked in st->channels[i].cfg all being zero.  These zeros are
+later written to hardware before a measurement is made which caused the
+raw temperature readings to be always 8388608 (0x800000).
 
-Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+To fix it, we just make sure the gain and offset values are set to the
+default values and still return early without doing an internal
+calibration.
 
-> =C2=A0drivers/iio/adc/ad7280a.c | 2 +-
-> =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iio/adc/ad7280a.c b/drivers/iio/adc/ad7280a.c
-> index
-> dda2986ccda075fbfa04851a1ceac7a186b47537..50a6ff7c8b1c73905fabdef119d4120=
-4c32b590c
-> 100644
-> --- a/drivers/iio/adc/ad7280a.c
-> +++ b/drivers/iio/adc/ad7280a.c
-> @@ -541,7 +541,7 @@ static ssize_t ad7280_store_balance_timer(struct iio_=
-dev
-> *indio_dev,
-> =C2=A0	int val, val2;
-> =C2=A0	int ret;
-> =C2=A0
-> -	ret =3D iio_str_to_fixpoint(buf, 1000, &val, &val2);
-> +	ret =3D iio_str_to_fixpoint(buf, 100, &val, &val2);
-> =C2=A0	if (ret)
-> =C2=A0		return ret;
-> =C2=A0
->=20
-> ---
-> base-commit: a9682f53c2d1678b93a123cdaa260e955430bc5c
-> change-id: 20251010-iio-adc-ad7280a-fix-ad7280_store_balance_timer-126bc5=
-b4ee90
->=20
-> Best regards,
+While here, add a comment explaining why we don't bother calibrating
+the temperature channel.
+
+Fixes: 47036a03a303 ("iio: adc: ad7124: Implement internal calibration at probe time")
+Reviewed-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+Changes in v2:
+- Improved commit message.
+- Expanded code comment.
+- Link to v1: https://lore.kernel.org/r/20250923-iio-adc-ad7124-fix-temperature-channel-v1-1-e421c98c0d72@baylibre.com
+---
+ drivers/iio/adc/ad7124.c | 12 ++++++++----
+ 1 file changed, 8 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+index 9d58ced7371d0af7004a81153888714e9795d4f4..2a449baf5b5645c8dbcc6af671aaafb86db96011 100644
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -1482,10 +1482,6 @@ static int __ad7124_calibrate_all(struct ad7124_state *st, struct iio_dev *indio
+ 	int ret, i;
+ 
+ 	for (i = 0; i < st->num_channels; i++) {
+-
+-		if (indio_dev->channels[i].type != IIO_VOLTAGE)
+-			continue;
+-
+ 		/*
+ 		 * For calibration the OFFSET register should hold its reset default
+ 		 * value. For the GAIN register there is no such requirement but
+@@ -1495,6 +1491,14 @@ static int __ad7124_calibrate_all(struct ad7124_state *st, struct iio_dev *indio
+ 		st->channels[i].cfg.calibration_offset = 0x800000;
+ 		st->channels[i].cfg.calibration_gain = st->gain_default;
+ 
++		/*
++		 * Only the main voltage input channels are important enough
++		 * to be automatically calibrated here. For everything else,
++		 * just use the default values set above.
++		 */
++		if (indio_dev->channels[i].type != IIO_VOLTAGE)
++			continue;
++
+ 		/*
+ 		 * Full-scale calibration isn't supported at gain 1, so skip in
+ 		 * that case. Note that untypically full-scale calibration has
+
+---
+base-commit: a9682f53c2d1678b93a123cdaa260e955430bc5c
+change-id: 20250923-iio-adc-ad7124-fix-temperature-channel-5900f7302886
+
+Best regards,
+-- 
+David Lechner <dlechner@baylibre.com>
+
