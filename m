@@ -1,109 +1,73 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7CC821ABC1;
-	Sat, 18 Oct 2025 17:35:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3DC61E520C;
+	Sat, 18 Oct 2025 18:10:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1760808930; cv=none; b=cRcBowwRda+iqkxrIRT0FO+TuBqqHqa/SbFtYXOPAGxIT4gA0a3AgdX/uBXR2ph7y87DdU9J5Jk/goXl3ksJxVHiEgubcLOAv7gpqZbFNmSFB2NZWddWkrYf6mHgECj8o0xAj14kxTY+dC9n2oKgn1znER+rdYk5GUDw6tRbqd0=
+	t=1760811040; cv=none; b=fEeUwUi5LaX0yemU4fuBoZkJ03iFZLhUnZyuDRYCSbzw+uxFGxngkD5G6x1KSv4zo5H/B7zRl0nXHjsX99fOf4KkNG7ubVpZIkMwlJ/ldTdgcPKdUuj+wbwpr6YLtUWfTsbeKjEMdum1CZZkp6v8ss/6EZIDFjt8K/pf/fGMh/c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1760808930; c=relaxed/simple;
-	bh=DwngqxyBoLU3lOfg2UKKvpT0jQqzGP+BCUhYdDa5wHo=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=GDyev44xX0nKyjoFOMbDAj7udoOdniKivQxFmo1Z615WnpNiNualpmGfmiNaF1Wmlye8xM59/0iyGZT5b/e1ndTSasF0JF0G6lzK8ssLbzV/HWz6/tuVDThEtDGAYETvJcjGCIH/NTcQdXtGfg/wtQWhOBM7UrmiWZEPBuQNaxE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qf9uh1fO; arc=none smtp.client-ip=198.175.65.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1760811040; c=relaxed/simple;
+	bh=Yly71XvLU3G0NcZs/5Sn7AIzcevt6O77xNUTdZVnZL0=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=RRC4z+M6ep+GPBy2mM7GlvDuLfsouo0KyG0ud/Be2GG0Bh8lVlgUSPFFkfg2VVrGdeEAIuou3GFP4YcGbqRlvZ7nLB9IM4ofiNO6dVyQvfe0upY43jY/XvBsF7hnxtXzEJjxLr3wB/GlInoBfl3HvSGS7dBRp0tJkx9+UrwXg74=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZNDynJSU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qf9uh1fO"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1760808929; x=1792344929;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DwngqxyBoLU3lOfg2UKKvpT0jQqzGP+BCUhYdDa5wHo=;
-  b=Qf9uh1fOKtYEtk0F3C8hJnhuEV3ePFUNnzvpdJ3nteyVT6MbfJxIAtTT
-   zehHC8CA2UVYxGSpjib7XzviSo+xRnI0inuDgst0mRUG1q3lCBMOOqvnU
-   OJjI6+8epZ4LO9dtYX3cvklD62unTwI2zzmtI3qiHEeZ+6chadpgpoEZj
-   3pR1l8WAUYYPLTbqG0izCWwS7Lk3C6NWvGCyTmXhCJdVvcn/S6RisFwFM
-   vqZJTUMPv24abeCSMM/peLPs9KnS+iK6jR7KS6/HBihvM4mvbsmKveVFO
-   9EOjkPh9ZJz/OdIqMoGkMqpLk2DQ0M8qKQQWbgmK9y+/tAQ+JedpFJWHV
-   g==;
-X-CSE-ConnectionGUID: q9cWj8wfR6eFDa6PMtp97w==
-X-CSE-MsgGUID: nUau3VGoT92ldX1QPJCBsA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11531"; a="62912196"
-X-IronPort-AV: E=Sophos;i="6.17,312,1747724400"; 
-   d="scan'208";a="62912196"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2025 10:35:28 -0700
-X-CSE-ConnectionGUID: jwYDZRQfTm+ESgUExNKtlw==
-X-CSE-MsgGUID: LsK4YWDAQO+B21zexd15vg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,239,1754982000"; 
-   d="scan'208";a="183400184"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO ashevche-desk.local) ([10.245.244.194])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Oct 2025 10:35:25 -0700
-Received: from andy by ashevche-desk with local (Exim 4.98.2)
-	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1v91po-00000000KWF-47Ql;
-	Wed, 15 Oct 2025 16:46:32 +0300
-Date: Wed, 15 Oct 2025 16:46:32 +0300
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, michael.hennerich@analog.com, nuno.sa@analog.com,
-	eblanc@baylibre.com, dlechner@baylibre.com, andy@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	corbet@lwn.net, marcelo.schmitt1@gmail.com,
-	Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v5 4/7] iio: adc: ad4030: Use BIT macro to improve code
- readability
-Message-ID: <aO-luIfTsekQC3e4@smile.fi.intel.com>
-References: <cover.1760479760.git.marcelo.schmitt@analog.com>
- <ec78fd7e4348e2cbc99ae08004c48b7ea238ecf7.1760479760.git.marcelo.schmitt@analog.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZNDynJSU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1F7BC4CEF8;
+	Sat, 18 Oct 2025 18:10:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1760811039;
+	bh=Yly71XvLU3G0NcZs/5Sn7AIzcevt6O77xNUTdZVnZL0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=ZNDynJSUOeaLiGTQUyu1It6KtyQuobQ0iKbvQwco0mrnv5M3nFRypfBdi8DbCRK+L
+	 mr2Z7I7DM9tCvVAfY5y6Fy20RswrKQYMs0qt4Ubmuctq3b5D5R4s99w9ZhSpAvbFrS
+	 +UJoz7VNwbdvJTMoEtAUsO0lju7L57hvagKPBsRaP8fscp2Cf8XTCZg4oyHmDQUwKP
+	 tqiCRwE/XNmrGiip6yRtU4+JEfddR4IE4Az9+COR5qqpwNH5hMJ6nWljtZ6nF3bmU8
+	 LsyMBBmygQMMzy3pIu8Sk1knVTGZF3h22OfxHUsfxeAAnJqOwEcjHR/f7SWeyEsuht
+	 VjMrTubpxul2w==
+Date: Sat, 18 Oct 2025 19:10:32 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Mark Brown <broonie@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ Michael Hennerich <michael.hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Sean Anderson
+ <sean.anderson@linux.dev>, linux-spi@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH 6/6] iio: adc: ad7380: Add support for multiple SPI
+ buses
+Message-ID: <20251018191032.669f3461@jic23-huawei>
+In-Reply-To: <20251014-spi-add-multi-bus-support-v1-6-2098c12d6f5f@baylibre.com>
+References: <20251014-spi-add-multi-bus-support-v1-0-2098c12d6f5f@baylibre.com>
+	<20251014-spi-add-multi-bus-support-v1-6-2098c12d6f5f@baylibre.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ec78fd7e4348e2cbc99ae08004c48b7ea238ecf7.1760479760.git.marcelo.schmitt@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, Oct 14, 2025 at 07:21:58PM -0300, Marcelo Schmitt wrote:
-> Use BIT macro to make the list of average modes more readable.
+On Tue, 14 Oct 2025 17:02:16 -0500
+David Lechner <dlechner@baylibre.com> wrote:
+
+> Add support for multiple SPI buses to increase throughput. The AD7380
+> family of ADCs have multiple SDO lines on the chip that can be used to
+> read each channel on a separate SPI bus. If wired up to a SPI controller
+> that supports it, the driver will now take advantage of this feature.
+> This allows reaching the maximum sample rate advertised in the datasheet
+> when combined with SPI offloading.
 > 
-> Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: David Lechner <dlechner@baylibre.com>
+This seems fine to me.  I briefly looked at the rest of the series and
+nothing jumped out other the many combinations of crazy that exist which
+came up in the discussion,
 
-Okay, but...
+Thanks,
 
-...
-
->  static const int ad4030_average_modes[] = {
-> -	1, 2, 4, 8, 16, 32, 64, 128,
-> -	256, 512, 1024, 2048, 4096, 8192, 16384, 32768,
-> -	65536,
-> +	BIT(0),					/* No averaging/oversampling */
-> +	BIT(1), BIT(2), BIT(3), BIT(4),		/* 2 to 16 */
-> +	BIT(5), BIT(6), BIT(7), BIT(8),		/* 32 to 256 */
-> +	BIT(9), BIT(10), BIT(11), BIT(12),	/* 512 to 4096 */
-> +	BIT(13), BIT(14), BIT(15), BIT(16),	/* 8192 to 65536 */
-
-...the comments now a bit odd as it's unclear in which step the values are.
-Taking this into account I would rather drop the comments for all bits but
-0.
-
-Or even drop all and make a top comment to explain the meaning of values
-0, 1, and bit permutations, if any.
-
->  };
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Jonathan
