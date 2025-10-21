@@ -1,280 +1,100 @@
-Received: from smtp1.iitb.ac.in (smtpd9.iitb.ac.in [103.21.126.64])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com [209.85.217.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1DDD222564
-	for <linux-iio@vger.kernel.org>; Tue, 21 Oct 2025 05:51:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=103.21.126.64
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06A4D22579E
+	for <linux-iio@vger.kernel.org>; Tue, 21 Oct 2025 07:46:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.217.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761025893; cv=none; b=fYZSFVNjpO9CRaCm64SOGjufzDFNeB8+oMWZFqpU5Eh/92/NxT5oDsRa7YnBHQepFRJivnLTMopge2Bs/xKeKl91V3Wt+hS3b+gNt33v/SSjAp6Vu6x1kiEz4aZuKH4O9dtbsRjB2uu9T75vyBObpvqL3Wp/hqt3RM2ZcXg5+Q0=
+	t=1761032775; cv=none; b=fKxfXvSPKo4qdZGh9IC1MeVQrA89//kjoq+kkuJDBahnfkvO8ZZnYDr3gulJoC6rdez3RsMKcD2wDeojFF3zEM5JyHYfgbq3nMXNAWDuoXNuA7eRM7+5NBx7RJlmvElHRkl4wlLpwIhTOdC6eyVc4X0MpOBbKElXZGu9hFPZ6ek=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761025893; c=relaxed/simple;
-	bh=ZIEtBExJkOm/Si6gWrjEFano0vuqhBJRpgdw3kmE10c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fuG8MTqgeTnTXKxFqBXRGxijokvLjhJ2xH7wPp8z1tTpIhOZWLG2OWFN8G07i8cug+l254um1ZG3h+QnPYJdCO+X3NZW/YA0btoS22DtvPJ0UewaP2FGuF4sJRmY8nhIpTh8qhO9fIq2cnbHjnbbb1s24AmPJ9S1w/D0CcB7pZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ee.iitb.ac.in; spf=pass smtp.mailfrom=ee.iitb.ac.in; dkim=pass (1024-bit key) header.d=iitb.ac.in header.i=@iitb.ac.in header.b=o4DJZCgX; arc=none smtp.client-ip=103.21.126.64
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=ee.iitb.ac.in
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ee.iitb.ac.in
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=iitb.ac.in header.i=@iitb.ac.in header.b="o4DJZCgX"
-Received: from ldns1.iitb.ac.in (ldns1.iitb.ac.in [10.200.12.1])
-	by smtp1.iitb.ac.in (Postfix) with SMTP id 1F1EB100905F
-	for <linux-iio@vger.kernel.org>; Tue, 21 Oct 2025 11:15:52 +0530 (IST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 smtp1.iitb.ac.in 1F1EB100905F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=iitb.ac.in; s=mail;
-	t=1761025552; bh=ZIEtBExJkOm/Si6gWrjEFano0vuqhBJRpgdw3kmE10c=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=o4DJZCgXHp/LsHPqB0PPQMQq2OCJkSMj1QdsoDiWqqInYNUuogDChoDqujIyRdDg7
-	 pgqOxFyonY1D8ykxSzG4uuGw+D7EPnwvLKlc2UDz0AiYWVFtqJFg7GEuaA8Y8Q3ahH
-	 UTd5EdmwFvr9wNZt2eYT1gjeTVL0WhvvYQDQazY0=
-Received: (qmail 22433 invoked by uid 510); 21 Oct 2025 11:15:52 +0530
-X-Qmail-Scanner-Diagnostics: from 10.200.1.25 by ldns1 (envelope-from <akhilesh@ee.iitb.ac.in>, uid 501) with qmail-scanner-2.11
- spamassassin: 3.4.1. mhr: 1.0. {clamdscan: 0.101.4/26439} 
- Clear:RC:1(10.200.1.25):SA:0(0.0/7.0):. Processed in 3.503469 secs; 21 Oct 2025 11:15:52 +0530
-X-Spam-Level: 
-X-Spam-Pyzor: Reported 0 times.
-X-Envelope-From: akhilesh@ee.iitb.ac.in
-X-Qmail-Scanner-Mime-Attachments: |
-X-Qmail-Scanner-Zip-Files: |
-Received: from unknown (HELO ldns1.iitb.ac.in) (10.200.1.25)
-  by ldns1.iitb.ac.in with SMTP; 21 Oct 2025 11:15:48 +0530
-Received: from bhairav.ee.iitb.ac.in (bhairav.ee.iitb.ac.in [10.107.1.1])
-	by ldns1.iitb.ac.in (Postfix) with ESMTP id 9549736008E;
-	Tue, 21 Oct 2025 11:15:47 +0530 (IST)
-Received: from bhairav-test.ee.iitb.ac.in (bhairav.ee.iitb.ac.in [10.107.1.1])
-	(Authenticated sender: akhilesh)
-	by bhairav.ee.iitb.ac.in (Postfix) with ESMTPSA id 7B7731E81391;
-	Tue, 21 Oct 2025 11:15:47 +0530 (IST)
-Date: Tue, 21 Oct 2025 11:15:42 +0530
-From: Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: dlechner@baylibre.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, nuno.sa@analog.com, andy@kernel.org,
-	marcelo.schmitt1@gmail.com, vassilisamir@gmail.com,
-	salah.triki@gmail.com, skhan@linuxfoundation.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, akhileshpatilvnit@gmail.com
-Subject: Re: [PATCH v2 2/2] iio: pressure: adp810: Add driver for adp810
- sensor
-Message-ID: <20251021-54542-354166@bhairav-test.ee.iitb.ac.in>
-References: <cover.1760374257.git.akhilesh@ee.iitb.ac.in>
- <0b72866f4e5ac28c78f6d683a1ca659a4239b68e.1760374257.git.akhilesh@ee.iitb.ac.in>
- <20251018174746.4a76af1d@jic23-huawei>
+	s=arc-20240116; t=1761032775; c=relaxed/simple;
+	bh=8b3HA5v4yZAxTJ8eIP9xopr8fWpaOCAQs9WFX5TX3YA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=q9yUsntutD+5Fb3oEhiejTFbQWQvDCYV2hKJ8brt3scDWfEMS2kms12FePfJUSZ0LJ53uQ7B+MQv1tvVGe7SWprL3W7aTUqNTTQ+JI+NnncRGeBVX3tZkkwqEdgyBw371T6ZnZLIl91ckbeWa0azY2DIwUYQyvoEOwq6/6emnKQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.217.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-vs1-f51.google.com with SMTP id ada2fe7eead31-5aa6b7c085aso4782305137.2
+        for <linux-iio@vger.kernel.org>; Tue, 21 Oct 2025 00:46:13 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761032773; x=1761637573;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=dz+xjmqR6cEerBTfm3rdjied7saH40mVkJYUcW/wH5Y=;
+        b=fAVpbLkCEOidMnf19XZ8j5GIs5DCk9qDzUYSlGJ+zb+TQ/hqdsCvNknMgdljUDFmMB
+         datM/s7t/CYRGJl8rRAbvqCVCGU5gBY/IO8FY5ahevja94Nmd6vg8Kqi5FQx/bIGj84/
+         hLP2dn41zExOS1DtCiSvceiichqoce55Vrtrf89EbYxFwsyTG97jDaJZKJ5g9TxnBx8Y
+         BW86CKAHtArcuSlyCSQNcxL2cu/5mX5nLmQRnEYDTNyqzufjPK1KnPXPSX8oRKkjjGX7
+         7fW8FehkH/PcGAkRGk6nkJZbIc91wTt+cSUskVOSoQP04zUKoYQB3420C5njWqWbwQhN
+         Nw/w==
+X-Forwarded-Encrypted: i=1; AJvYcCXS0TX5lWoyLL3I4GoZtum2vb7cIx52B7+dDgya2AbFUdF08PFkO61lVWJ1ku4TYpr2KyIGS2Ff/bM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwoXpsrV2u1I9gtvvK/F7qW17P8NEaDkcxbmqNvvQL2CZFcSNwi
+	h8gGq40WGT9Bdgd+QOtYEiYZlt30lx0+uoXgxn8tvQVMZR7QHV6bhQHykqLFc/ti
+X-Gm-Gg: ASbGncu4KbT7mBIT60p86e+SKwmJvDu5x1Z6hsjdqvv6pDTfda3HVe6EvSddO7qMBlg
+	FqUe288kJli7MAazyrUiFxNN0lQOZmi38tLvY5aD5AQT6b+nAo8s46R4odmNGnKHr6EzNuMTPmR
+	vZ6Bd8grnpuV8rDz3nyap9xYGkvSS0PvtI/kCdFRPumi7GWYU9GyhMdmWFE0e1pL5yeR2JBwmjG
+	8ZiokvgVzJryrKpkccbWASDoaUqjtpvRhZodBI+w58Ml6394jC7BrrEAvI45hciD3fAvV6wnsqL
+	D9Qwzo0mUSrFGyeDHGJiPi9wD7QjNnTY3q+k1Zb3lrLvl4NdVm9+TmXzre3sP/1yZLS14BXfeDe
+	Ycd0tWFc21/XZ8pCOCI4GMgtrIjo429JV8qhiSCE7cs4OwBFe4YfyntkWHM//XBUnLte8NUzQ9R
+	i8agaybWHyf9OC6Q8r16BJ1SBa+bLsc1RacG/HTF2tm8CGAq9H
+X-Google-Smtp-Source: AGHT+IGMjSngg+joZi52eTUvsTgCK5Wfhkhg/B523iXzlFipGKPpTcM4BKwMpAOqwKSpwpki//eRkA==
+X-Received: by 2002:a05:6102:418d:b0:5d6:5d9:dc0a with SMTP id ada2fe7eead31-5d7dd4650bcmr4994697137.10.1761032772759;
+        Tue, 21 Oct 2025 00:46:12 -0700 (PDT)
+Received: from mail-ua1-f48.google.com (mail-ua1-f48.google.com. [209.85.222.48])
+        by smtp.gmail.com with ESMTPSA id ada2fe7eead31-5d96c2accf4sm3387275137.15.2025.10.21.00.46.12
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 21 Oct 2025 00:46:12 -0700 (PDT)
+Received: by mail-ua1-f48.google.com with SMTP id a1e0cc1a2514c-932bf9d3deeso2751697241.2
+        for <linux-iio@vger.kernel.org>; Tue, 21 Oct 2025 00:46:12 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCVB3N+E9RJptH+nwWD8JnNTfi92Cs7HTF/Ztz8Yibn8rBF9cqSUYsDTOyqV/PkFvNwEbkSdDW0Lhr4=@vger.kernel.org
+X-Received: by 2002:a05:6102:374d:b0:59d:b0f7:664c with SMTP id
+ ada2fe7eead31-5d7dd5ecfc8mr4994352137.35.1761032772016; Tue, 21 Oct 2025
+ 00:46:12 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251018174746.4a76af1d@jic23-huawei>
+References: <20251005111323.804638-1-cosmin-gabriel.tanislav.xa@renesas.com> <20251005111323.804638-4-cosmin-gabriel.tanislav.xa@renesas.com>
+In-Reply-To: <20251005111323.804638-4-cosmin-gabriel.tanislav.xa@renesas.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 21 Oct 2025 09:46:00 +0200
+X-Gmail-Original-Message-ID: <CAMuHMdWZKDmME8vtCOR6xdtKxXO6YdR=60Nti8_Dc0SH8TnVwA@mail.gmail.com>
+X-Gm-Features: AS18NWB6U78jSeH5jtDsRrmJGY1udV7PT7USkr6r0d8-dTFiq84SEiscvsgnda4
+Message-ID: <CAMuHMdWZKDmME8vtCOR6xdtKxXO6YdR=60Nti8_Dc0SH8TnVwA@mail.gmail.com>
+Subject: Re: [PATCH v4 3/6] arm64: dts: renesas: r9a09g077: Add ADCs support
+To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Sat, Oct 18, 2025 at 05:47:46PM +0100, Jonathan Cameron wrote:
-> On Mon, 13 Oct 2025 22:32:35 +0530
-> Akhilesh Patil <akhilesh@ee.iitb.ac.in> wrote:
-> 
-> > Add driver for Aosong adp810 differential pressure and temperature sensor.
-> > This sensor provides an I2C interface for reading data.
-> > Calculate CRC of the data received using standard crc8 library to verify
-> > data integrity.
-> > 
-> > Tested on TI am62x sk board with sensor connected at i2c-2.
-> > 
-> > Signed-off-by: Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-> 
-> A few comments inline and it seems your rebase when wrong and you've
-> picked up unrelated build file changes.
-> 
-> Thanks
-> 
-> Jonathan
+On Sun, 5 Oct 2025 at 13:14, Cosmin Tanislav
+<cosmin-gabriel.tanislav.xa@renesas.com> wrote:
+> Renesas RZ/T2H (R9A09G077) includes three 12-Bit successive
+> approximation A/D converters, two 4-channel ADCs, and one 6-channel ADC.
+>
+> Add support for all of them.
+>
+> Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+> Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Hi Jonathan, Thanks for the review, I will share v3 addressing these comments.
+Thanks, will queue in renesas-devel for v6.19.
 
-Regards,
-Akhilesh
+Gr{oetje,eeting}s,
 
-> 
-> > diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-> > index 6482288e07ee..a21443e992b9 100644
-> > --- a/drivers/iio/pressure/Makefile
-> > +++ b/drivers/iio/pressure/Makefile
-> > @@ -5,6 +5,7 @@
-> >  
-> >  # When adding new entries keep the list in alphabetical order
-> >  obj-$(CONFIG_ABP060MG) += abp060mg.o
-> > +obj-$(CONFIG_ADP810) += adp810.o
-> >  obj-$(CONFIG_ROHM_BM1390) += rohm-bm1390.o
-> >  obj-$(CONFIG_BMP280) += bmp280.o
-> >  bmp280-objs := bmp280-core.o bmp280-regmap.o
-> > @@ -15,6 +16,7 @@ obj-$(CONFIG_DPS310) += dps310.o
-> >  obj-$(CONFIG_IIO_CROS_EC_BARO) += cros_ec_baro.o
-> >  obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
-> >  obj-$(CONFIG_HP03) += hp03.o
-> > +obj-$(CONFIG_HP206C) += hp206c.o
-> >  obj-$(CONFIG_HSC030PA) += hsc030pa.o
-> >  obj-$(CONFIG_HSC030PA_I2C) += hsc030pa_i2c.o
-> >  obj-$(CONFIG_HSC030PA_SPI) += hsc030pa_spi.o
-> > @@ -34,11 +36,9 @@ obj-$(CONFIG_SDP500) += sdp500.o
-> >  obj-$(CONFIG_IIO_ST_PRESS) += st_pressure.o
-> >  st_pressure-y := st_pressure_core.o
-> >  st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
-> > +obj-$(CONFIG_IIO_ST_PRESS_I2C) += st_pressure_i2c.o
-> > +obj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o
-> >  obj-$(CONFIG_T5403) += t5403.o
-> > -obj-$(CONFIG_HP206C) += hp206c.o
-> 
-> Rebase gone wrong I assume.  
+                        Geert
 
-These are intentional changes.
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-This addresses Andy's suggestion in v1, to keep entries alphabetically
-arranged in Makefile. Along with adp810 location, fixed other files as well
-hp206 and st_pressure_* to make entries alphabetically arranged in
-the entire Makefile.
-
-> 
-> >  obj-$(CONFIG_ZPA2326) += zpa2326.o
-> >  obj-$(CONFIG_ZPA2326_I2C) += zpa2326_i2c.o
-> >  obj-$(CONFIG_ZPA2326_SPI) += zpa2326_spi.o
-> > -
-> > -obj-$(CONFIG_IIO_ST_PRESS_I2C) += st_pressure_i2c.o
-> > -obj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o
-> > diff --git a/drivers/iio/pressure/adp810.c b/drivers/iio/pressure/adp810.c
-> > new file mode 100644
-> > index 000000000000..c2f3b5f7a1f9
-> > --- /dev/null
-> > +++ b/drivers/iio/pressure/adp810.c
-> > @@ -0,0 +1,212 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * Copyright (c) 2025 Akhilesh Patil <akhilesh@ee.iitb.ac.in>
-> > + *
-> > + * Driver for adp810 pressure and temperature sensor
-> > + * Datasheet:
-> > + *   https://aosong.com/userfiles/files/media/Datasheet%20ADP810-Digital.pdf
-> > + */
-> > +
-> > +#include <linux/crc8.h>
-> > +#include <linux/delay.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/module.h>
-> > +#include <linux/unaligned.h>
-> This is a very small set of includes.  Please follow include what you use (IWYU)
-> principles (loosely - there are a few headers that never make sense to include
-> directly).  So I'd definitely expect things like mutex.h here.
-> dev_printk.h etc.
-
-ACK.
-Added mutex.h, dev_printk.h along with other includes - cleanup.h,
-device.h, iio/types.h, mod_devicetable.h to follow IWYU.
-
-> 
-> > +
-> > +#include <linux/iio/iio.h>
-> 
-> > +
-> > +static int adp810_measure(struct adp810_data *data, struct adp810_read_buf *buf)
-> > +{
-> > +	struct i2c_client *client = data->client;
-> > +	struct device *dev = &client->dev;
-> > +	int ret;
-> > +	u16 trig_cmd = ADP810_TRIGGER_COMMAND;
-> > +
-> > +	/* Send trigger to the sensor for measurement */
-> > +	ret = i2c_master_send(client, (char *)&trig_cmd, sizeof(u16));
-> 
-> sizeof(trig_cmd)
-> 
-> I think it is vanishingly unlikely to matter but in theory i2c_master_send()
-> could return 1 and only one byte made it to device.
-> So it's common to have 
-> 	if (ret < 0)...
-> 		....
-> 	if (ret != sizeof(trig_cmd))
-> 		....
-> 
-
-Agree. This is a good corner case. Handled as per the suggestion above.
-
-> > +	if (ret < 0) {
-> > +		dev_err(dev, "Error sending trigger command\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	/*
-> > +	 * Wait for the sensor to acquire data. As per datasheet section 5.3.1,
-> > +	 * wait for at least 10ms before reading measurements from the sensor.
-> > +	 */
-> > +	msleep(ADP810_MEASURE_LATENCY_MS);
-> > +
-> > +	/* Read sensor values */
-> > +	ret = i2c_master_recv(client, (char *)buf, sizeof(*buf));
-> > +	if (ret < 0) {
-> 
-> Same potential issue for short reads as for the write above.
-> 
-> I don't recall seeing anything to say we either got full length or
-> error code but maybe that changed at somepoint to make this interface easier to use.
-
-ACK. Did similar implementation as _send() for error handling.
-
-> 
-> 
-> > +		dev_err(dev, "Error reading from sensor\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	/* CRC checks */
-> > +	crc8_populate_msb(crc_table, ADP810_CRC8_POLYNOMIAL);
-> > +	if (buf->dp_crc != crc8(crc_table, (u8 *)&buf->dp, 0x2, CRC8_INIT_VALUE)) {
-> > +		dev_err(dev, "CRC error for pressure\n");
-> > +		return -EIO;
-> > +	}
-> > +
-> > +	if (buf->tmp_crc != crc8(crc_table, (u8 *)&buf->tmp, 0x2, CRC8_INIT_VALUE)) {
-> > +		dev_err(dev, "CRC error for temperature\n");
-> > +		return -EIO;
-> > +	}
-> > +
-> > +	if (buf->sf_crc != crc8(crc_table, (u8 *)&buf->sf, 0x2, CRC8_INIT_VALUE)) {
-> > +		dev_err(dev, "CRC error for scale\n");
-> > +		return -EIO;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int adp810_read_raw(struct iio_dev *indio_dev,
-> > +			   struct iio_chan_spec const *chan,
-> > +			   int *val, int *val2, long mask)
-> > +{
-> > +	struct adp810_data *data = iio_priv(indio_dev);
-> > +	struct device *dev = &data->client->dev;
-> > +	struct adp810_read_buf buf = {0};
-> 
-> Not a big thing but slight preference for { }.
-
-Sure. Will use { } insteaed of {0}.
-
-> It's a messy thing wrt to the c spec which never talked about holes
-> and this construct until recently.  However the kernel has build tests
-> that verify that all compilers will zero the holes with the { }
-> syntax and that is what the C standards folk have put in the spec now
-> as meaning whole structure including holes.
-
-Good to know the background of this. Thanks.
-
-> 
-> > +	int ret;
-> > +
-> > +	scoped_guard(mutex, &data->lock) {
-> > +		ret = adp810_measure(data, &buf);
-> > +		if (ret) {
-> > +			dev_err(dev, "Failed to read from device\n");
-> > +			return ret;
-> > +		}
-> > +	}
-> > +
-> > +	switch (mask) {
-> 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
