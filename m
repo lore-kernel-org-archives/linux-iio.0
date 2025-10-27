@@ -1,104 +1,95 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1688530ACEC;
-	Mon, 27 Oct 2025 14:39:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF9B74A3E;
+	Mon, 27 Oct 2025 14:43:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761575943; cv=none; b=rxIBBUIy83eqs5XvkxCQxF8IxsTFmbyQM5w4BbnU0myvlqOu6xLswxOmDo9oDm2fXFbf7Tjor90VGOWKMaLUEA/6154m6MdJ2vLlWmYxNyiqh8a7HUtfYEtAOkTF407A+vA3l7rrgaZvEmkQaNv4Xn07FBAq19Z+CrQS7w9HjVQ=
+	t=1761576213; cv=none; b=T2F5ALQ9zJEknqlSVoNpWNbpsQ0ljdZwFk4/C4G0J53Dx1WJ1QnfIyIVRQInmTY37f0iL0ODytmp5iR7S5jafzZjCuy56L50BGBL3D0aOOZEHWqrtgB2kuqSdY0vELQig2GMe2sRhcbmlB9M0TfAkbl1Bs1SVzO4flivy6/YRAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761575943; c=relaxed/simple;
-	bh=0mf6KVr/j+MOBfxqbaBzUm0ypZGxlXyGgTneCJcNaf8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=r1zHohN2neI09cYLzAtnNYKCHyqlYPio3f0re3XZqeqIuqwhG0vgGd5XvH4J656a5raR+skYPzzc6014+BEv+D6/H/8lgjdJJYFeZ3UjDzRQyS3m/oziTof9PTOyzrFVZnjdGtXjntooc5D5KIf3dkORi3yQGtbhfvgMvnIotQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZMIk6eBx; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1761576213; c=relaxed/simple;
+	bh=DhOX7cgjBI/Y2+aAqeEvHLgr6AQ4KXFc7yQ7G3VryxI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=P5IjQxahpVdR8si7LtulSaZgGyNexUIn4XsADe2aXaqKAwB71IINeucnvyOUVXwzv3sgbhU3sCuHcplRr6xLgyo2MD3stssQniLo7JqTSe2czbCgRuDLn2/cWvXmU4AXaxRywR+Gnsgb3Dohqc1uI1hsxkWbY/WXnDzChccfN4Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g1ecJbEg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZMIk6eBx"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1761575941; x=1793111941;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=0mf6KVr/j+MOBfxqbaBzUm0ypZGxlXyGgTneCJcNaf8=;
-  b=ZMIk6eBxzJyWYeWNs4Ag8zaMmmsei9ZLQpUlEuxGCNufA3eq0VsBZsob
-   /V3BJ4UirKJrB4E7Mip3tstGFNrHCpXiox4umSBNqbgEcR2/BN4MAwal9
-   WzfCOd0+dG50Uxk63LcGvgBy8UHzDSnKyRAwMAsSrIz2J5ZJ1ceg8qcDj
-   0c5m46VWgAMkwnYpzJV7qRWEJAxAjQZ2fmrGjfAFzcI9Z4r0v9XpyFSUh
-   FisnI4o8LZvFmNfYtDhG6YeRHeesxmUvFe/0KuBAjkBrGx7KbFaxYw18k
-   /R+ZA8q2bwik+LYMa/qqxxmRmnoc4eL2yzZ4bUguoE8UA7UTAJC7y0yz7
-   g==;
-X-CSE-ConnectionGUID: cQBkssl/Q3y3CyrK+djgwg==
-X-CSE-MsgGUID: fj7IYf+mQnyumR9tBvbB2w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="67299503"
-X-IronPort-AV: E=Sophos;i="6.19,259,1754982000"; 
-   d="scan'208";a="67299503"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2025 07:39:00 -0700
-X-CSE-ConnectionGUID: bu4SSwf0Tuq5K1xZT9spYw==
-X-CSE-MsgGUID: Gb8a2lmTQkuVLnzjbCuitQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,259,1754982000"; 
-   d="scan'208";a="208673521"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by fmviesa002.fm.intel.com with ESMTP; 27 Oct 2025 07:38:56 -0700
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 632509B; Mon, 27 Oct 2025 15:38:53 +0100 (CET)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-iio@vger.kernel.org,
-	chrome-platform@lists.linux.dev,
-	linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Benson Leung <bleung@chromium.org>,
-	Guenter Roeck <groeck@chromium.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	"Daniel W. S. Almeida" <dwlsalmeida@gmail.com>
-Subject: [PATCH v1 6/6] iio: position: iqs624-pos: Convert to use PI definition
-Date: Mon, 27 Oct 2025 15:34:55 +0100
-Message-ID: <20251027143850.2070427-7-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
-In-Reply-To: <20251027143850.2070427-1-andriy.shevchenko@linux.intel.com>
-References: <20251027143850.2070427-1-andriy.shevchenko@linux.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g1ecJbEg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77BC1C4CEF1;
+	Mon, 27 Oct 2025 14:43:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761576213;
+	bh=DhOX7cgjBI/Y2+aAqeEvHLgr6AQ4KXFc7yQ7G3VryxI=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=g1ecJbEgErVHmKLNUgl7HW1vwRzEYHpLa5eYuRzZDd8RVrclOPXaZb+jJCKBLgG6/
+	 hGjTS8VtdoKsfmv764odRmy5Uq8c/EJsMoRmRTgD+BD0MN+ALCMyXdLti1usz29hTA
+	 3nHWsRk10afHLlyRAz7cDJXJSo1RNKwA79GOHRX04tzURZSPvmh1fmLkquM87vyl3+
+	 8ja/N7zoruhCEQ6j8lLnkYq4+yF3isBc/omhDPSrVeKW2ety6K6hMqkmS1ZAc4tI5Y
+	 fbGxAHeh4DDkJpB1i/dVHpT6Z9DqYXBZhg0iQ5boQ8tBGY6+CEJ9r7rVAQ8voZnRIg
+	 v4BeqTFJ/9gJw==
+Date: Mon, 27 Oct 2025 14:43:27 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Chen-Yu Tsai <wens@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: core: Use datasheet name as fallback for label
+Message-ID: <20251027144327.09f59982@jic23-huawei>
+In-Reply-To: <20251027124210.788962-1-wens@kernel.org>
+References: <20251027124210.788962-1-wens@kernel.org>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Convert to use PI definition instead of open coded value of it.
+On Mon, 27 Oct 2025 20:42:09 +0800
+Chen-Yu Tsai <wens@kernel.org> wrote:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/position/iqs624-pos.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> Some IIO drivers do not provide labels or extended names for their
+> channels. However they may provide datasheet names. axp20x-adc is
+> one such example.
+> 
+> Use the datasheet name as a fallback for the channel label. This mainly
+> benefits iio-hwmon by letting the produced hwmon sensors have more
+> meaningful names rather than in_voltageX.
 
-diff --git a/drivers/iio/position/iqs624-pos.c b/drivers/iio/position/iqs624-pos.c
-index 8239239c6ee2..da432d1b515c 100644
---- a/drivers/iio/position/iqs624-pos.c
-+++ b/drivers/iio/position/iqs624-pos.c
-@@ -15,10 +15,11 @@
- #include <linux/notifier.h>
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
-+#include <linux/units.h>
- 
- #define IQS624_POS_DEG_OUT			0x16
- 
--#define IQS624_POS_SCALE1			(314159 / 180)
-+#define IQS624_POS_SCALE1			DIV_ROUND_UP_ULL(PI, 1800000)
- #define IQS624_POS_SCALE2			100000
- 
- struct iqs624_pos_private {
--- 
-2.50.1
+I definitely don't want to have different behaviour for in kernel requests
+and for people reading the _label attributes.  
+https://elixir.bootlin.com/linux/v6.18-rc2/source/drivers/iio/industrialio-core.c#L1232
+would need modifying to allow for the sysfs attributes to be created.
+
+In general I'm not sure I want to do this.  Datasheet names can be exceptionally
+obscure which is why we've kept them hidden from userspace.  At least dts writers
+tend to have those names on their circuit diagrams and tend to have datasheet access.
+
+Let's see if anyone else has feedback on this suggestion over next week or so.
+
+Thanks,
+
+Jonathan
+
+> 
+> Signed-off-by: Chen-Yu Tsai <wens@kernel.org>
+> ---
+>  drivers/iio/industrialio-core.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 88c3d585a1bd..d410ea2e7963 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -749,6 +749,9 @@ ssize_t do_iio_read_channel_label(struct iio_dev *indio_dev,
+>  	if (c->extend_name)
+>  		return sysfs_emit(buf, "%s\n", c->extend_name);
+>  
+> +	if (c->datasheet_name)
+> +		return sysfs_emit(buf, "%s\n", c->datasheet_name);
+> +
+>  	return -EINVAL;
+>  }
+>  
 
