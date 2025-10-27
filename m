@@ -1,190 +1,113 @@
-Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 728B2231858
-	for <linux-iio@vger.kernel.org>; Mon, 27 Oct 2025 12:50:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE40F28FFFB
+	for <linux-iio@vger.kernel.org>; Mon, 27 Oct 2025 13:01:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761569459; cv=none; b=EDB46Zfjw1D5r2euhNpFf71apT6CtcKZtN02CP8MSmx98AL+NmIG3QGOrwWox0oOV6R5OU4+k1W49tzXZYFPL8oIxokjepjt4HO22apGxjUuGxzuj5+6gB+6uhF1HLC6TaJGsZyJE28SSWcoREmYF8ryw16mEqOzi/0TawH+71c=
+	t=1761570080; cv=none; b=GJr+TJjlemVKhuR28rzRwKfqHfbbPkJ8XXTYf9xvaLdtnxT5z90904sJlUfNeZTiGalyY1h4nAp0mEqqfhLIgmodBtjBXqysbX1JNyfEGUCVWU9QXsiR/myVU6cP58hKMLAH2k/5bsdRAAb/2kIO3MQ4ZwFOJQla95cznx1yWGA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761569459; c=relaxed/simple;
-	bh=4O6Fak0YkFyyHEXpPlXp+5rEysQmXbAYc8epUwyT5wM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=juXCyCsl1HL7KI407m85Jiux6l6OCwYHYI2cgWCMPawVqDjNAwpixFDa1R6dAr2Jh49UEEkvKxwrApAQtKPbmGayV3IWtbp04RK7awCqUgMPMW6wBFcjhGny8Q5cGy9vxnbvURoYSrIrxlXcTbcieoJxmymcn+D9dlNvbf5QmKM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DmLRDG7+; arc=none smtp.client-ip=209.85.167.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1761570080; c=relaxed/simple;
+	bh=986YysIn8Fe1HXmKjFlWdhnJPvdFAuoGinhshsvQYEQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=VgwIDatxE7Mcv4vRzIqSuO7mTXZ0+tBnSV8lpy+v9sJ3o6nNEI7qhbM7d+O5n+YW/0mcwzvVZTeJUdLXv0oF3tNXTWXjIX6fRrs+9gKbq5muyDxfV7uFoagipJFyK8IX0aJjFk0h1JW9WcNVJeQ0k8wO6TEo9R/QWl3zXb28SOw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tweaklogic.com; spf=pass smtp.mailfrom=tweaklogic.com; dkim=pass (2048-bit key) header.d=tweaklogic.com header.i=@tweaklogic.com header.b=Mrdusd4/; arc=none smtp.client-ip=209.85.210.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=tweaklogic.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=tweaklogic.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DmLRDG7+"
-Received: by mail-lf1-f48.google.com with SMTP id 2adb3069b0e04-592ee9a16adso7911856e87.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Oct 2025 05:50:57 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=tweaklogic.com header.i=@tweaklogic.com header.b="Mrdusd4/"
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-78125ed4052so5512134b3a.0
+        for <linux-iio@vger.kernel.org>; Mon, 27 Oct 2025 06:01:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1761569456; x=1762174256; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=37O4qKRJBc2jvfDWrKiGmX8gYqkd2w99cpfcHZsHVNk=;
-        b=DmLRDG7+dBAadk4y3T5UrL1KgFeJl9Jm+BJn9ux52dn/YoH88WWsHFkHq98ZVevNhl
-         rvoM4baTFyShRb7IPxLaO6oNMOtF/mUnWrLzHbIoJe39d34v/6Yh9vG55GDGyOZKqZfH
-         I2JrQoHXyiTfJd3HkBB1vL40pd6gxCfsu7YX0cquXGHFopkfnQP3UcBeZxCxUbFDt3SB
-         9CvIciMCHBSzjqMpQMx1l62+Isp8rCa2uldTEhLcSCHzn2I9EuqX/w26qFgQvQOjRtDB
-         mCDfxFW2LV5PFZtESzo0QDgkfyXwjqoNno852AjXcSXddgOH5lUiuvaGwHcpR2A3uO+g
-         lTtA==
+        d=tweaklogic.com; s=google; t=1761570077; x=1762174877; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=7jhqQbXCqzrcL3E+XppIF1w4lMrJvn7tFwhW0pKGsNs=;
+        b=Mrdusd4/UrHujgfIM3r9y+6fHUre8j/Vk6SV+/p1jSR893iCoGBRnKgKAAw97QS6Qo
+         Sq0LS5AQzWrHZYRCw+vxwpxeu1PnH9q9sXs6vx9TUbLQqovrBd73ac4abA03sI68fd5V
+         1plCq2miZezlAPOnSFNWn5upPFO4KtPHs4XVEvXMkZfCAuP9vZq6s54Y25iIdc4iERKh
+         6nvxfXDfy0rrvoOE61czW+p53S93Ixltx1YxVlZESLMlHQ/jZqpBV1mi+Yzq9oHCfazs
+         jAOtdvu/+gX0qxJ/esm511fMTkFd9GNTWb5o6p8EykNOe06EibYxrYLpJkTzYbFAxJ9q
+         RzKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761569456; x=1762174256;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=37O4qKRJBc2jvfDWrKiGmX8gYqkd2w99cpfcHZsHVNk=;
-        b=Df31WAnp0miiTxAem+d9NmWPEkWsPLdDyZ0cn/YanndoTm5ceTI3HW/rk5fLQKeFPW
-         8nb0sF9ZrYd13PbiFcAPk5vKGQlzChGIMryhu919YhNW0q1qGhIwu56TCl4rGTcAQTXz
-         G0kswLNZL/86XCqZnoV0m9/XiS5SQ5Ox/nFYtFQoJFLshNdd+9liHhlHVpykTmLSN9dC
-         hPFGfau1l+JgmFSJdBDZM5vq0MhoTTN6HT1zKXxcipF4GiuuqG63euLuM38fV9GAXAh9
-         nR6MYQwuiks6zRxPXWTzV9gjqykr3VqH6cxVvgU9jAU0em7K0uohHIr+y3GCMRpc+sEF
-         6Tcw==
-X-Forwarded-Encrypted: i=1; AJvYcCWVAMQNyeDOk7jizVRIISI+A30ufuxh/hOgkpCpXLrmn3NPit0NzFkL/XQbuzBmk7UNXOhXyAbgq2g=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyEYDh15+WfQo7x9Pjxd1e1tpAAt/GWoIMadEOCBugOTcHYsIFD
-	sNw7k3mKujqn1ghk3CUdUsW48mMPC1wMvHh3dtsc+V5Js9TAnu8DWl9QLhOH4qE8
-X-Gm-Gg: ASbGncvNxih9VyBkQtMgdhWe6X2k3Iv2OAihOQc3ZAn3G9uve6EruVTF2vNVmCudFKr
-	ZSa8ueAFBDTfhrt5PdrOPtrJgZ89Uh269y3PaOls+lOVxJurddDyqLzILLLgMfmDWamiU4n/r6s
-	9rHAPWLJSTj8uqhJ6lKHMac9tvVDq/AfMO6xLtCTT+RG+s+7/lyab1pxAFi1hCKmqZLtraIwLT7
-	CPoWyGBo4k35LtMAgWh8jORGfiOT2scfx9dyc+OOaxQubLmoduGZsRiztm1gIXcOkeedz5muJ5y
-	v3jd19vTVOaTTvquTKOvWL8QYOSt0fWtpTvwzQM4WiaxSMuqAsj7HGYE/DnldzfyNMBgHGORXEw
-	WdpGnFuB1ptSoh3a5y4F0haB3O72p0wzAvARxyhjxvLbm0gpX1cuBoQZng/OqlnI1kay0AD/iNg
-	SE5tJZu7JMFi7c9upr3w==
-X-Google-Smtp-Source: AGHT+IGv221R2iQIFs9R9mJVke8SKeb9zlIfzVvYe4ptw8r4RsNh+khkFd+dY8VHpRKJmHlBDQQaxA==
-X-Received: by 2002:a05:6512:b01:b0:592:f855:2d15 with SMTP id 2adb3069b0e04-592f8552dd1mr5297716e87.46.1761569455430;
-        Mon, 27 Oct 2025 05:50:55 -0700 (PDT)
-Received: from mva-rohm ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59301f41bdasm2260394e87.16.2025.10.27.05.50.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Oct 2025 05:50:54 -0700 (PDT)
-Date: Mon, 27 Oct 2025 14:50:51 +0200
-From: Matti Vaittinen <mazziesaccount@gmail.com>
-To: Matti Vaittinen <mazziesaccount@gmail.com>,
-	Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
-Cc: Matti Vaittinen <mazziesaccount@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iio: adc: rohm-bd79124: Use regmap_reg_range()
-Message-ID: <7e5d8edca0d77ce3f4e8327501c78efe4da806e6.1761569177.git.mazziesaccount@gmail.com>
-References: <cover.1761569177.git.mazziesaccount@gmail.com>
+        d=1e100.net; s=20230601; t=1761570077; x=1762174877;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=7jhqQbXCqzrcL3E+XppIF1w4lMrJvn7tFwhW0pKGsNs=;
+        b=Bc6PJ+vtGEBDmrp2SiZrG1Qubqs0cjf9FjDoAnOTnsrjpjs4IyyO2NX+nFzFCuEBto
+         JcCE8SBixE/05p0hzHWq0P/HtSF7kaGhtTqSwJu+XtRz9hk7NygPjIj3RdzHQnfZy1Mq
+         Yyik4bkl4lQF4xSDtLfDG4WWdEjPbhiMd0d8sPd7iv+QLliSszRZT01AbTGcDPPduOeW
+         0Vnec+UQLYJUf/6Yk3LgnEWwUWRSWg3o0VaTIrKfKZCJKf+tKdVmbx25aeyk3JLNuojN
+         5pbzLHqd9PzIg6drZcejmQPsbxXtfUk68DH7fboyZcQaxY7kTESJwiwN8ICKVdFKKVZf
+         GYvA==
+X-Gm-Message-State: AOJu0Yz39i6/uX05beHYkqvTga1wVjzEy68UVs8bdB3gIO+Vdz2iVAbb
+	krX12jdOg1T+AIEtLn1CApnN/9B1BHAyI7byoKfZCj7AYam3m4wiRvcDtOemXk1+m2g=
+X-Gm-Gg: ASbGncsOITtebTodc4ntFSaMAOyL2/A/8NFhzEhO4j9qo7E2dd9xE5paHMx7++zcNyq
+	liqxekb2Uh5M7JJvrdSpoTM3yy7YnzARnD+cEspAZoOAFZ9atxGy0mg8ISoqvwQxefyA48+ubRJ
+	5Cs5E9OH8pNzZDy861cDYx+iTC57wMPwjrOKtr9T7tUp/aYNHXXWNb23ahesfCFww6/ETAgCfRt
+	NisyNGJclpSPn280kKF7bmYuIu0TuuI5p/RP7LtojVF1fB+nAIX6eFFDcHs1vLD7OtAmhfPBDpU
+	I4P27taDtxSbToB8zuv9VwahkoJ2hEJCfWLG0zrzAqGkS0dMNXd8JrNpTK7ti8HcBIFOB5zw/zM
+	EmQ+8iIsdIK4iYujvPqfX6Lz2sF7m090uzK1PheEy4OQne+9GMfEatW8Bwc/nRosjvt3yhr+N6h
+	9vhBWF1QpIATOHjTJptkh0kCZlJLpruTnzTiwwTgWfhM+PfNfE60qi3bGs1J7TZBpH/Gk=
+X-Google-Smtp-Source: AGHT+IFz597Y7d5Kn0G6bkVUP3oCOfoggvomYjxgDPnOcMBnKIl/JIfYJkpaxyKj8FEWIIYpt3UWbg==
+X-Received: by 2002:a05:6a00:8c5:b0:7a2:8853:28f6 with SMTP id d2e1a72fcca58-7a2885329f8mr12142180b3a.22.1761570076019;
+        Mon, 27 Oct 2025 06:01:16 -0700 (PDT)
+Received: from [192.168.50.161] (61-245-156-102.3df59c.adl.nbn.aussiebb.net. [61.245.156.102])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-7a414049a44sm8034589b3a.35.2025.10.27.06.01.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Oct 2025 06:01:15 -0700 (PDT)
+Message-ID: <301aff96-5565-47cf-b519-27234ea53ea8@tweaklogic.com>
+Date: Mon, 27 Oct 2025 23:36:32 +1030
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="TTVG05uvdQ/2lkyW"
-Content-Disposition: inline
-In-Reply-To: <cover.1761569177.git.mazziesaccount@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/4] iio: light: apds9306: convert to use maple tree
+ register cache
+To: Chu Guangqing <chuguangqing@inspur.com>, lars@metafoo.de,
+ Michael.Hennerich@analog.com, jic23@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, javier.carrasco.cruz@gmail.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20251024073823.35122-1-chuguangqing@inspur.com>
+ <20251024073823.35122-4-chuguangqing@inspur.com>
+Content-Language: en-US
+From: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>
+In-Reply-To: <20251024073823.35122-4-chuguangqing@inspur.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
+On 24/10/25 18:08, Chu Guangqing wrote:
+> The maple tree register cache is based on a much more modern data structure
+> than the rbtree cache and makes optimisation choices which are probably
+> more appropriate for modern systems than those made by the rbtree cache.
+> 
+> Signed-off-by: Chu Guangqing <chuguangqing@inspur.com>
+> ---
+>   drivers/iio/light/apds9306.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/light/apds9306.c b/drivers/iio/light/apds9306.c
+> index 389125675caa..7e68cca0edfa 100644
+> --- a/drivers/iio/light/apds9306.c
+> +++ b/drivers/iio/light/apds9306.c
+> @@ -350,7 +350,7 @@ static const struct regmap_config apds9306_regmap = {
+>   	.volatile_table = &apds9306_volatile_table,
+>   	.precious_table = &apds9306_precious_table,
+>   	.max_register = APDS9306_ALS_THRES_VAR_REG,
+> -	.cache_type = REGCACHE_RBTREE,
+> +	.cache_type = REGCACHE_MAPLE,
+>   };
+>   
+>   static const struct reg_field apds9306_rf_sw_reset =
+Looks good. I will test it on a real hardware soon. Thank you.
+Jonathan will know more about regmap internal implementations.
 
---TTVG05uvdQ/2lkyW
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>
 
-Initializing the regmap_ranges using direct assignment to the range_min
-and range_max members is slightly verbose. We can make it a tad cleaner
-when using the regmap_reg_range() macro.
-
-Clean up the code using regmap_reg_range() when initializing the
-regmap_range structure.
-
-Signed-off-by: Matti Vaittinen <mazziesaccount@gmail.com>
----
-Compile tested only.
----
- drivers/iio/adc/rohm-bd79124.c | 39 ++++++++--------------------------
- 1 file changed, 9 insertions(+), 30 deletions(-)
-
-diff --git a/drivers/iio/adc/rohm-bd79124.c b/drivers/iio/adc/rohm-bd79124.c
-index 06c55c8da93f..fc0452749b79 100644
---- a/drivers/iio/adc/rohm-bd79124.c
-+++ b/drivers/iio/adc/rohm-bd79124.c
-@@ -126,13 +126,8 @@ struct bd79124_data {
- };
-=20
- static const struct regmap_range bd79124_ro_ranges[] =3D {
--	{
--		.range_min =3D BD79124_REG_EVENT_FLAG,
--		.range_max =3D BD79124_REG_EVENT_FLAG,
--	}, {
--		.range_min =3D BD79124_REG_RECENT_CH0_LSB,
--		.range_max =3D BD79124_REG_RECENT_CH7_MSB,
--	},
-+	regmap_reg_range(BD79124_REG_EVENT_FLAG, BD79124_REG_EVENT_FLAG),
-+	regmap_reg_range(BD79124_REG_RECENT_CH0_LSB, BD79124_REG_RECENT_CH7_MSB),
- };
-=20
- static const struct regmap_access_table bd79124_ro_regs =3D {
-@@ -141,22 +136,11 @@ static const struct regmap_access_table bd79124_ro_re=
-gs =3D {
- };
-=20
- static const struct regmap_range bd79124_volatile_ranges[] =3D {
--	{
--		.range_min =3D BD79124_REG_RECENT_CH0_LSB,
--		.range_max =3D BD79124_REG_RECENT_CH7_MSB,
--	}, {
--		.range_min =3D BD79124_REG_EVENT_FLAG,
--		.range_max =3D BD79124_REG_EVENT_FLAG,
--	}, {
--		.range_min =3D BD79124_REG_EVENT_FLAG_HI,
--		.range_max =3D BD79124_REG_EVENT_FLAG_HI,
--	}, {
--		.range_min =3D BD79124_REG_EVENT_FLAG_LO,
--		.range_max =3D BD79124_REG_EVENT_FLAG_LO,
--	}, {
--		.range_min =3D BD79124_REG_SYSTEM_STATUS,
--		.range_max =3D BD79124_REG_SYSTEM_STATUS,
--	},
-+	regmap_reg_range(BD79124_REG_RECENT_CH0_LSB, BD79124_REG_RECENT_CH7_MSB),
-+	regmap_reg_range(BD79124_REG_EVENT_FLAG, BD79124_REG_EVENT_FLAG),
-+	regmap_reg_range(BD79124_REG_EVENT_FLAG_HI, BD79124_REG_EVENT_FLAG_HI),
-+	regmap_reg_range(BD79124_REG_EVENT_FLAG_LO, BD79124_REG_EVENT_FLAG_LO),
-+	regmap_reg_range(BD79124_REG_SYSTEM_STATUS, BD79124_REG_SYSTEM_STATUS),
- };
-=20
- static const struct regmap_access_table bd79124_volatile_regs =3D {
-@@ -165,13 +149,8 @@ static const struct regmap_access_table bd79124_volati=
-le_regs =3D {
- };
-=20
- static const struct regmap_range bd79124_precious_ranges[] =3D {
--	{
--		.range_min =3D BD79124_REG_EVENT_FLAG_HI,
--		.range_max =3D BD79124_REG_EVENT_FLAG_HI,
--	}, {
--		.range_min =3D BD79124_REG_EVENT_FLAG_LO,
--		.range_max =3D BD79124_REG_EVENT_FLAG_LO,
--	},
-+	regmap_reg_range(BD79124_REG_EVENT_FLAG_HI, BD79124_REG_EVENT_FLAG_HI),
-+	regmap_reg_range(BD79124_REG_EVENT_FLAG_LO, BD79124_REG_EVENT_FLAG_LO),
- };
-=20
- static const struct regmap_access_table bd79124_precious_regs =3D {
---=20
-2.51.0
-
-
---TTVG05uvdQ/2lkyW
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEIx+f8wZb28fLKEhTeFA3/03aocUFAmj/aqsACgkQeFA3/03a
-ocWnVwgAh8x3JHPb5/YGIWJXONYVYMYvwo9z7ZCQUv6gya+4UjMeTE7ZWxXHpIRL
-LysmyXt3wWB3qVBKTz6H8jqmKgGLJ7yklUNQF+jShuBUZllgHLxt9YzTcGdubB5X
-nGdnq26PicZtaqsa+YzjmmbVKsOkDFCa3mEITPWzF9rz84lgpowujERB/6DtTdiR
-tkCXk3WZrtV/mbPUkAHQOf/VKvaylS/hNb2hNXh7zvhuS8x1FrHFSnztdJKUz63B
-lN8yxG7qDc7vI/kE7ZSPE9oSWWtMj9nQQlQOmAyH1FZhqvWyie9Vh93B/xV8uHdi
-/ELm+j8YKecqCvZA7b8RGQOB5l1cQQ==
-=2Aaa
------END PGP SIGNATURE-----
-
---TTVG05uvdQ/2lkyW--
+Regards,
+Subhajit Ghosh
