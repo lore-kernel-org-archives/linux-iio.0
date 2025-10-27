@@ -1,143 +1,181 @@
-Received: from caracal.ash.relay.mailchannels.net (caracal.ash.relay.mailchannels.net [23.83.222.30])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12EEC311C38;
-	Mon, 27 Oct 2025 17:36:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.222.30
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761586572; cv=pass; b=opMOJmUC+NREuMzpc8rvGSOM3wRkCRf7ESEJ8GL3D/Jumfn3Nd+jCYzpWopsKCcyQIcqI6PKYYCxN1HubX/qW0n1+OOyNL6C9GLXBnw7oM8tTQqijX2Hp9D2WdlAiwkrchVvAFy107m+zf6JncvOWcSAssgTXzZxsPZSKVj4GA0=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761586572; c=relaxed/simple;
-	bh=cLgnUhjqtxE3ue8jKNO8wJhYJ2MVAbCV1AutJE6+Kcc=;
-	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc:Date; b=LW63G5jd3ou71I/vKNgfEtax/gA9aep23I0FLyV7rrNm8GZMFY5G3P9n8XrIB5e5ZDpjUmGoIhUVgDlRQN08m+RqvLnBpzswlBF1+UDJuX7otG7kicSJMic6GiKazgV2ACMzrBWIGDvfmT78rRjGuHlXA0JjDUyuzVl4Gq5E8us=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=h9BnXV5n; arc=pass smtp.client-ip=23.83.222.30
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7580D316918
+	for <linux-iio@vger.kernel.org>; Mon, 27 Oct 2025 18:35:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1761590147; cv=none; b=oHUDxKVVLjLWjZfG9huEoQnROp8Nw3TsiZTgare/s/caDzcGvak/6u6zCFRxGVMDvPaHkWqFOjkotv5JZO17Oo34F7snVnxDUIPEK21Gwom9ZpReC3LPgj56UoQBPVp9HblpRPFVztV2nogyHHYp0lBgjnxqQ122U0EOfvgljs0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1761590147; c=relaxed/simple;
+	bh=PqKvPU0noBkdOcVjQUoD06IiGN+IODWXYRlWBSnglh4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=kBGo8GXaIUVLag81/usqjF9m8npGtR2LgXbFj+pzw3L3PLma3VxOGZjLey7IVb3JnoW3HHaaGdCTZIA+A3naEs2yupb9ffOjP3qzVF4EHPRBdS1iFDANaluQpdOfLgO2NU1qVSL1jnz4gSeFqf11VgvjETSxx5AdPvs2TEA5xnw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=OaXrUnXo; arc=none smtp.client-ip=209.85.210.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="h9BnXV5n"
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-Received: from relay.mailchannels.net (localhost [127.0.0.1])
-	by relay.mailchannels.net (Postfix) with ESMTP id 965F9435BB;
-	Mon, 27 Oct 2025 17:29:24 +0000 (UTC)
-Received: from fr-int-smtpout26.hostinger.io (trex-green-3.trex.outbound.svc.cluster.local [100.121.22.161])
-	(Authenticated sender: hostingeremail)
-	by relay.mailchannels.net (Postfix) with ESMTPA id 33FCE42548;
-	Mon, 27 Oct 2025 17:29:20 +0000 (UTC)
-ARC-Seal: i=1; s=arc-2022; d=mailchannels.net; t=1761586161; a=rsa-sha256;
-	cv=none;
-	b=4ywgjDUys5GOtl10dwTBpb55GXBGsC5fWsj8HaRP+Ql63Pi9PBK+qI9dh+2aE07GZd9hWr
-	F9gsO26L4cSubL/9BtncToumo18OjusmVIuPH0c9qNB2dWq3nGVOJaVhS4MpP/IHtXPL66
-	548S+AdzeqbIzo3DTu0FwwXW3uCT8FhW07h01xPeyyPDYkUmt2ffMqXA7oAWyVd1JPPsu3
-	tsagJVvuQt2b67R3chgymC2hE55Bw/miAjy61H2T6zGGdIoQp/bnT9Fv65BT1ke7zyr252
-	B60azHZPjpxDhXJTNYvjewS92nWOql8Dvy57uhSShKNi3IxWthMa+fd2rjwWTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
- d=mailchannels.net;
-	s=arc-2022; t=1761586161;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references:dkim-signature;
-	bh=F2+pEBigQD6/8zIYsLrP/KkObLZsezWI/xcTfxleyR0=;
-	b=f5QR8O8Zj4U9Ck+gLSJopSw+F7HptXN+0IYhBbUqDLAhTica5/nxHz1JdDSP69qJJW0FS8
-	Q5N12ljRXfhjVI23ybYtRZjfUtsqLkYVAKX1Q86W/jcePEZASihnn3/u/9v0AQkpHDiXig
-	i5m5H6DncWrkrjM2arzLNFixgao+c0nEKQvZvZI7YSb/dVeMU3gAKhzjv+HjU6QYzJwdIG
-	xhpgHyxazJy6iPmt/OgoKNKQy1UCcdHCXPs6+7yqKNCoz0RfqBPevk7XP/wxRseQyMa6Nj
-	ZsNVk5U2hjGX+xr0ymhFxz1/53hdFfLQ4oc7M9V38Au5TWPCkk1S/uCZ2kIrYA==
-ARC-Authentication-Results: i=1;
-	rspamd-674f557ffc-ggxpt;
-	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
-X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
-X-MC-Relay: Neutral
-X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
-X-MailChannels-Auth-Id: hostingeremail
-X-White-Obese: 33e60b38779a72b4_1761586164371_3076747356
-X-MC-Loop-Signature: 1761586164371:3950152993
-X-MC-Ingress-Time: 1761586164371
-Received: from fr-int-smtpout26.hostinger.io (fr-int-smtpout26.hostinger.io
- [148.222.54.11])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
-	by 100.121.22.161 (trex/7.1.3);
-	Mon, 27 Oct 2025 17:29:24 +0000
-Received: from [172.17.0.2] (unknown [36.79.119.172])
-	(Authenticated sender: linux@smankusors.com)
-	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4cwL8r4sNCz1yRM;
-	Mon, 27 Oct 2025 17:29:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
-	s=hostingermail-a; t=1761586158;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=F2+pEBigQD6/8zIYsLrP/KkObLZsezWI/xcTfxleyR0=;
-	b=h9BnXV5nULUPspx2hlErnjahUp/+GYJs7ybgnr+is7OwlSworBBm7GErnXkA0XaiSeAJ9O
-	BxtGfvx7OZDpv/whAd99+AnJzBaPraRkcvodTnCePdptWhzGrEPRmmv5vizinQw54LcYsL
-	L9kME3PM4soEVDO2qVV83UAQd2wMwMbJkpW+RxPtITm3PXVUY5Sy/QQIm3NV7TFASisQML
-	42csLXr658lGHKkORcOym8hL3/Y6lot3SJHKbZJIc5j936gJNdBHmuZOgz49Ld4GSTiuJK
-	wMYsOyngK8aHTJ6f0K6GkQq3TAAv2PX9JKMAoPy2oetTR9El7D/Oy2crTYrwYg==
-From: Antony Kurniawan Soemardi <linux@smankusors.com>
-Subject: [PATCH 1/2] iio: adc: qcom-pm8xxx-xoadc: add support for reading
- channel labels
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="OaXrUnXo"
+Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7c0e8367d4eso1702062a34.1
+        for <linux-iio@vger.kernel.org>; Mon, 27 Oct 2025 11:35:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1761590143; x=1762194943; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=lvdP54SX5DIvg5ddC4TkLzn7pRZGLq9mZQ1eodiVzk4=;
+        b=OaXrUnXoKv6Nsxa1PoJ+HHhXW6ISObM5qw0IKdLLmBYldolKEOpBf5X2KVC0If6gYn
+         JkrH9FkdiiG7mv73n2j1hNGwS5spHo6VlL2jD9w8Ym5ArgsHLkUkERYanH891DNnZQ/2
+         JV/ZNaDpGfQs0d+PonA466jBXsswabk4T7gT4vF2CNYMCa1xH+ajTy7zA/koUFpiKRNy
+         Mqtf3edryksJ9lhC1cpnN6okGzGW6Dgh2CcXDnjNzxs/90gweAmoXaL/N1fDHSb6+pBt
+         gntjEI22QFLyeB1kmy6MU/GzojNZlTMSnKfy2ZJ1zoHY34v+B7KjB8eoY8sj49KYjf6B
+         9bjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761590143; x=1762194943;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=lvdP54SX5DIvg5ddC4TkLzn7pRZGLq9mZQ1eodiVzk4=;
+        b=OJ+exTYPdP48OlzUnAbB79S/5A9Drbg67VA6bifcdFEZzFo4g9A3hz9uEooTib/At8
+         kK1iYE9UHOuwJl8plBJ5Yrvvoo22jjhpAdwNEOQxNx8tsT+qpDn59SWyPd3in8ENRKlZ
+         hUaJmoSvhmURRDGwmsas1rnODDGpcgFXBRAXFYEYesyUK/TUFHN+8WGkLxp3mZyD0Z1B
+         2RIR94IKtD20Q6gcvbXYp+EPPUKwzJmfGflGdU8Nfz90q9ZLhvoEdfxR/nFxyf5RldiH
+         JIPgHGgKbeSjjzNvl9igw5pDyxTBnxzrwAPUm4cRc4PKD48EYX9RS2SzZNfL/+rJGWEh
+         wGKA==
+X-Forwarded-Encrypted: i=1; AJvYcCVnM53hhdKKqMXhQ4tGAY2l/BiE3w32ZGFG672ruy3ppIgOVuxd8PHCAJZCQz8B6Ms/Iy/L16t+jqg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YytG9hl/pRRWiw8Sk9Nf4iGmsp6XLjKtRvGhHgZomlGTV2PPihb
+	Vd9b1kPuLTnEJNnkvT9BGnnd7T56OrcLh2ausU4YddutJkpqGNvqC1+6inOhV1oUAY0=
+X-Gm-Gg: ASbGncvTyfEXXHiYBRPN38KDrC9j+4zkZwn2nDfLECQUAsSn3JmgX8ZIG3PNnt+MdIw
+	i9TVOXG2dwLEr1osf6i8TyRQYPgV4FFIhWbbmyJ1QZvKZykHliUyp5aHI3+MwMVsLfYTkc+WipE
+	6/8L0tJxrwymR3Vpv1Kmcbzwnh5dpFaRZaKQ0f1b4aL62STwak3ZhjegJXF+g27yFqOARod7cuy
+	z5X2aMm0k5gVTtoef5oF1Oov3soLmG2s4D+8vmcraecYOp8yeCXVkZApWVSFtOoU6nObsjPNByG
+	NJf/GgnFZmL6qd3RSfani94acYW8B3KKFIvLKa5ooJPrFI4Qmt5w7oK35K4nbWLj4SizEY5R8J2
+	gBnFwZ8ikC8SNnCJExMPjl9RwdGqgivDzTaXR8giUIFtiB1NsI7SU4vaYnvbWnn1HmGdjup9yGp
+	B1WWTtAUeWzDAsZam7mRGbka/Vit//n80e9F7Ts1IKMlzLfKjrJw==
+X-Google-Smtp-Source: AGHT+IEsmQUfxd0dOcE/jYcTPBywE5Kc9BNx03k/QXwOh0ziGd8tdi38iwIv7izg1KS44yKfbURGxQ==
+X-Received: by 2002:a05:6808:188f:b0:44d:a271:fce4 with SMTP id 5614622812f47-44f6bb494e0mr343776b6e.47.1761590143393;
+        Mon, 27 Oct 2025 11:35:43 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:46d5:c880:64c8:f854? ([2600:8803:e7e4:500:46d5:c880:64c8:f854])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-654ef2eff7fsm1997150eaf.17.2025.10.27.11.35.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 27 Oct 2025 11:35:42 -0700 (PDT)
+Message-ID: <0eea7e4c-ec3b-421c-8522-aa3f52b5cb13@baylibre.com>
+Date: Mon, 27 Oct 2025 13:35:41 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20251028-pm8xxx-xoadc-fix-v1-1-b000e1036e41@smankusors.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iio: adc: qcom-pm8xxx-xoadc: fix incorrect
+ calibration values
+To: Antony Kurniawan Soemardi <linux@smankusors.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
 References: <20251028-pm8xxx-xoadc-fix-v1-0-b000e1036e41@smankusors.com>
-In-Reply-To: <20251028-pm8xxx-xoadc-fix-v1-0-b000e1036e41@smankusors.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, 
- Antony Kurniawan Soemardi <linux@smankusors.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1761586153; l=1001;
- i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
- bh=cLgnUhjqtxE3ue8jKNO8wJhYJ2MVAbCV1AutJE6+Kcc=;
- b=J1PsCFJ5naQrve/LXDo3Zk5sQblR8vddMr5/l7ma3rJJKhMestCoJ/uQroUOL4lCAP8XjoIaw
- h6fWOfa2SFSAgZehYofVgHf0DAaJ/RtQq0Ml40lmLDiRZwHsD2rCIfa
-X-Developer-Key: i=linux@smankusors.com; a=ed25519;
- pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
-Date: Mon, 27 Oct 2025 17:29:16 +0000 (UTC)
-X-CM-Analysis: v=2.4 cv=GbNFnhXL c=1 sm=1 tr=0 ts=68ffabee a=pMbO/JROBRbC3Cu+MWauHw==:117 a=pMbO/JROBRbC3Cu+MWauHw==:17 a=IkcTkHD0fZMA:10 a=wxLWbCv9AAAA:8 a=9BUqChrCs0__dafhRrMA:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
-X-CM-Envelope: MS4xfPMhP95yGjIFAld3TRf7KDkocukmG/asDfa12NxNEHZP5paIuOsOXNoUAuBETV9vvx8v3ihJRMKemz7wJ4l4SDlNNfy2DYcmKZuW+c4dd5KnfWvBSG5l ryt0fadibaqLtPlw6dWeb4eSzOdkYkKh9sqE23GSkz/lwG9xNP+vUt5uKiwUMjaICuIfnKHGe6FkNPnXK+mp7CT7Jh5NXR/TTBXdD9KvkBfQU1oHBjXZBz0v RMqvGBQ/3Kf6HvnQbRBn8yrUGx/5KLVMP8itc61IqNmguwvGwMxQIDvu4Y3laJ7vfURA+uWWPAQvnK+CbhzPT70uBKr81CHNDl//k3QDTJaW/J4Q80Lg5j3L oIfXf8gMdLFAQG6S84o/DoVq8cwmZtbgA0+iNLCsFkIcuJ+x9g/cHO9sOM0A+ztejz/q7jkF
-X-AuthUser: linux@smankusors.com
+ <20251028-pm8xxx-xoadc-fix-v1-2-b000e1036e41@smankusors.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20251028-pm8xxx-xoadc-fix-v1-2-b000e1036e41@smankusors.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-This allows user-space tools to identify ADC channels by name through
-the IIO sysfs interface.
+On 10/27/25 12:29 PM, Antony Kurniawan Soemardi wrote:
+> On msm8960 phones, the XOADC driver was using incorrect calibration
+> values:
+> absolute calibration dx = 625000 uV, dy = 4 units
+> ratiometric calibration dx = 1800, dy = -29041 units
+> 
+> As a result, reading from the IIO bus returned unexpected results:
+> in_voltage_7 (USB_VBUS): 0
+> in_voltage_10 (125V): 0
+> 
+> The issue was caused by not setting the ratiometric scale (amux_ip_rsv)
+> from the predefined channels. Additionally, the downstream code always
 
-Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
----
- drivers/iio/adc/qcom-pm8xxx-xoadc.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+Mentioning downstream kernels is usually a red flag. :-) 
 
-diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-index 31f88cf7f7f18297132d152648b312c0fb60608e..8555f34036fb13c41ac720dc02c1dc39876e9198 100644
---- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-+++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-@@ -725,8 +725,15 @@ static int pm8xxx_fwnode_xlate(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
-+static int pm8xxx_read_label(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan, char *label)
-+{
-+	return sysfs_emit(label, "%s\n", chan->datasheet_name);
-+}
-+
- static const struct iio_info pm8xxx_xoadc_info = {
- 	.fwnode_xlate = pm8xxx_fwnode_xlate,
-+	.read_label = pm8xxx_read_label,
- 	.read_raw = pm8xxx_read_raw,
- };
- 
+We can justify it here though by saying that there is no documentation
+available other than downstream source code, so we are just using it
+as a reference.
 
--- 
-2.34.1
+> set the ADC_ARB_USRP_DIG_PARAM register to PM8XXX_ADC_ARB_ANA_DIG [1].
+> That value does not include the SEL_SHIFT0 and SEL_SHIFT1 bits. Enabling
+> those bits caused calibration errors too, so they were removed.
+> 
+> With these fixes, calibration now uses the correct values:
+> absolute calibration dx = 625000 uV, dy = 6307 units
+> ratiometric calibration dx = 1800, dy = 18249 units
+> 
+> Reading from the IIO bus now returns expected results:
+> in_voltage_7 (USB_VBUS): 4973836
+> in_voltage_10 (125V): 1249405
+
+Would be useful to mention which hardware you tested with in case
+it turns out that there is some other hardware that does require the
+SHIFT0/1 bits to be set.
+
+> 
+> [1] https://github.com/LineageOS/android_kernel_sony_msm8960t/blob/93319b1e5aa343ec1c1aabcb028c5e88c7df7c01/drivers/hwmon/pm8xxx-adc.c#L407-L408
+> 
+
+Since this is a fix, it should have a Fixes: tag. And it sounds like
+possibly two separate fixes. In that case, it should be two separate
+patches.
+
+> Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+> ---
+>  drivers/iio/adc/qcom-pm8xxx-xoadc.c | 10 ++++++----
+>  1 file changed, 6 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+> index 8555f34036fb13c41ac720dc02c1dc39876e9198..a53d361456ec36b66d258041877bd96ab37838c4 100644
+> --- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+> +++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+> @@ -503,10 +503,11 @@ static int pm8xxx_read_channel_rsv(struct pm8xxx_xoadc *adc,
+>  		goto unlock;
+>  
+>  	/* Decimation factor */
+> -	ret = regmap_write(adc->map, ADC_ARB_USRP_DIG_PARAM,
+> -			   ADC_ARB_USRP_DIG_PARAM_SEL_SHIFT0 |
+> -			   ADC_ARB_USRP_DIG_PARAM_SEL_SHIFT1 |
+> -			   ch->decimation << ADC_DIG_PARAM_DEC_SHIFT);
+> +	ret = regmap_update_bits(adc->map,
+> +				 ADC_ARB_USRP_DIG_PARAM,
+> +				 ADC_ARB_USRP_DIG_PARAM_DEC_RATE0 |
+> +				 ADC_ARB_USRP_DIG_PARAM_DEC_RATE1,
+> +				 ch->decimation << ADC_DIG_PARAM_DEC_SHIFT);
+
+As a follow-up patch, it would be nice to update the driver to use FIELD_PREP().
+
+I.e. remove ADC_ARB_USRP_DIG_PARAM_DEC_RATE0, ADC_ARB_USRP_DIG_PARAM_DEC_RATE1
+and ADC_DIG_PARAM_DEC_SHIFT macros and replace them with one macro:
+
+#define ADC_ARB_USRP_DIG_PARAM_DEC_RATE		GENMASK(6, 5)
+
+Then use it like:
+
+	ret = regmap_update_bits(adc->map,
+				 ADC_ARB_USRP_DIG_PARAM,
+				 ADC_ARB_USRP_DIG_PARAM_DEC_RATE,
+				 FIELD_PREP(ADC_ARB_USRP_DIG_PARAM_DEC_RATE,
+					    ch->decimation));
+
+This should be done for all of the similar multi-bit fields.
+
+>  	if (ret)
+>  		goto unlock;
+>  
+> @@ -783,6 +784,7 @@ static int pm8xxx_xoadc_parse_channel(struct device *dev,
+>  	ch->calibration = VADC_CALIB_ABSOLUTE;
+>  	/* Everyone seems to use default ("type 2") decimation */
+>  	ch->decimation = VADC_DEF_DECIMATION;
+> +	ch->amux_ip_rsv = hwchan->amux_ip_rsv;
+>  
+>  	if (!fwnode_property_read_u32(fwnode, "qcom,ratiometric", &rsv)) {
+>  		ch->calibration = VADC_CALIB_RATIOMETRIC;
+> 
 
