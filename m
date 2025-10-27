@@ -1,303 +1,98 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 222162B9B7
-	for <linux-iio@vger.kernel.org>; Mon, 27 Oct 2025 13:03:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E70C303CAE;
+	Mon, 27 Oct 2025 13:30:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761570205; cv=none; b=jCwuogQeNK9k4DC3UY+5dbYDpV+x8PBi9hSiOpGvt+9zRFnclnChwS90ARMcxDFCB+Dc2h2jIn6GrZ2Rnq96HOvB9jGpiXvq85CdvOXa0Ep4C1W0UsA4zrFOAZTilWzQhCvoJ6qzvA/9yU69S3GPzz3ltIVvi7mtTHlRJ+ZXFi0=
+	t=1761571831; cv=none; b=B9LZIG5nKIt/GxDKe1JeUIlTjycpUq6UNgjT/V7ANgNG4+Kb5DtoRcrT77FyPq0BGDV9My6cnlYyWqLkwJUazpR4+JguTNc2bYOm9sKfI7UNaDjsn9QC983tS1eqqFS42YJEh2NATHD2V2A8mSaS36eKZYom8BgJM4hA6jPmmXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761570205; c=relaxed/simple;
-	bh=f3k/z3I0y5Ok43lqfeNHh7kQLWGPGLB7Q+pEbC0I+SQ=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=LOxbqGfzZX81V9KeIaTzXKDGuYplY+umzo4QsvavsyW3Y630TfBD/4HBIpaW4XaK45+DQYM2kktqqNY5SvySVRZzKRmmY5UJch7eLcUcz+LACj4fMn9Yx/tIj0hCG7hNMhPM6UqVBw3Q0FDDRuRkESFSKYLGgRog6Slk55nwLJM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AP2G+gny; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1761571831; c=relaxed/simple;
+	bh=+Gn+22X1H+YqaLAPSswhI/oCrb2qAnwjX7gTIDiIxwA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=oK61pR9S/SMlMprlp6b1YkN8tkWLQXpINjdZmn2YzWMSuOvXnWxtYbegQSPsHb/dvEzlUzjfht6kbXttI6S3fzX/S6amgnCzbWpSFEY+zpNFRuhoH4o8D5+oWR/eR2/DND/rKq7/bNYKji49h5leIVjyEUfP84zbt4Dv/9R1TaQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=m4NAjQC5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AP2G+gny"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-3f0ae439bc3so2994388f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 27 Oct 2025 06:03:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1761570200; x=1762175000; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=N31s0m6iPpe/D8ht+rzuSz/UgKSh2B3HnxendLz+41M=;
-        b=AP2G+gnyoMx/xh0SQDVkdJ+Yf++GzuAignKEoFQxXBU2IUkRMgzoa3/5oolOslS+5Z
-         NkYVJLjcbR+VNJQiDWrPO56SRsp9R9JgAaAxJnwKBaT8AoF9WWTv9IKv92aH6Th77LI+
-         V9uxjEdLgqO5fM+2h8b/MzqBKEtAOYxY7AD47ReLP9EiFo3bTKBcqeAl7ARPsZEw+s9Z
-         BNMfKzpKa+9laGMxjHJgoO51oonCNwQy4hyN5T58cBZMXU1ouBuszADyydLHdTqxt4gE
-         eIQR2mwi+m9RiuKSOGhhrPiCm8VhY74E1TN/F/Nv6SFBJ+DOtgc4uVulb2bn051QBSen
-         mRKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1761570200; x=1762175000;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=N31s0m6iPpe/D8ht+rzuSz/UgKSh2B3HnxendLz+41M=;
-        b=gIjLpmRG0z2KhH8jUwgRXeRtFMIfbyRVGbSBWTo6WlxC06hQIyc4ycib8ErN9e4JRJ
-         iWq/8dVFvGRgb04BQeVA/GikZMIIOlZWDmUW9a71AtzPoUA+LvHS2c6Xkx5YcbrqocHc
-         9flocMhBJfO9cclHluy0RvfPIadHlv3p/nk+boIB2TPGx3puhNxTXcDytYnNpdZh/wnj
-         P7rA6et26XBJYEvCp6UrA5RIxiKUPCHHyQ571rmX1bleC3fLE/3CDRdPPvpzfF+11BTq
-         kbdVT0wIOutSszxGS2SkgZ5YKNf6EZYS9ILdiVGXQgfYeu2qSieLcHKg0/QtU7jmpeM2
-         nMSw==
-X-Forwarded-Encrypted: i=1; AJvYcCWfOPEfUXIhrMiRBCLjj+mit1Svo6cVtPvofihzR7Eon6SPWZM0PLidkoKlPF1tC3Ko0Go07Rur1Fc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxeanVutVzp2pqui/qUggUeptBjDtboOfNJV8Et+HZ7hxaZmj66
-	0kOpyCTMnjTZk8Zm8aKT3wkTvb11EELiRNi7xPusjlEu964KagXab8D5
-X-Gm-Gg: ASbGnct+bYQTY+Ix8HTrzUrpBDIOELSSFawKzU0q0tK25lZAOwZEJihqUFokVlSJA5c
-	2dGOPTt7ksB2H6kQ3MvSYrcx/scvMVLp8E/OPvX4/RIdiAS2mpIFnNntb6hRuFXn7ioCPhBUkVQ
-	C1QAWxd0QZPUn0TVoIwvYyEcEuO3te0n/cHrb+yUPlocisIbsQKHFI0FJFPwektkdOM+LtPGNGd
-	PNN2CMYQahsyBLkmGE7PcMo5Fy0oRiVEN6NM7PPfI5raiuQY1SbX12akAPenZWodyhBaw0wIiqL
-	lkkJ3j++dM1hYXKwbQD4B0NBTHeLWuKaVcDyexL4cjtAQjEFbeNKMljJcxNwFmW35gcDk2xOmAW
-	d5NsedX4n1QdBa2K87oCMo2lq18O2MQnYqyRaKicJiCQqLSD7l2CoQ5H6tQKusouE1efmFD69KJ
-	OEZESS9uMd
-X-Google-Smtp-Source: AGHT+IFy4lHfZKYAUxpChiM/+pJgD0sz9c2mg6bmQSCoUd2BbEXzPK96ZbwUpKX3z8ifK+plNRNF8Q==
-X-Received: by 2002:a05:6000:22c7:b0:426:ff8f:a0a3 with SMTP id ffacd0b85a97d-4299072c0femr9120280f8f.34.1761570200163;
-        Mon, 27 Oct 2025 06:03:20 -0700 (PDT)
-Received: from [192.168.1.187] ([161.230.67.253])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-429952df3c7sm14013153f8f.40.2025.10.27.06.03.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Oct 2025 06:03:19 -0700 (PDT)
-Message-ID: <ff1af8b4d43ce31cbf94623e36b721b057ca4077.camel@gmail.com>
-Subject: Re: [PATCH] iio: imu: adis: fix all kernel-doc warnings in header
- file
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>,  Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, 	linux-iio@vger.kernel.org
-Date: Mon, 27 Oct 2025 13:03:54 +0000
-In-Reply-To: <20251026024759.433956-1-rdunlap@infradead.org>
-References: <20251026024759.433956-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.1 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="m4NAjQC5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE442C4CEF1;
+	Mon, 27 Oct 2025 13:30:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1761571830;
+	bh=+Gn+22X1H+YqaLAPSswhI/oCrb2qAnwjX7gTIDiIxwA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=m4NAjQC5wKgnjSEHN8S+h+W/miYeM0mJ7H9uHu0U3drmJLEmoGNz0J5xvCjdBYcqM
+	 frCyAzPSYXO0kfTH9BF8hJFnDy63DPm4NzprAV6US0Pmsfmjee6XT28ndMBQ3/9IhE
+	 JZ2brQWKHM0lSFLIjqWsY3ZeUSmok86DH+r9PgmstlTmqGG9uqDdirepqmdV8M7tuX
+	 X+XL5e5kN9tA8nceKcfBl39MZfK2iw37RKB9nTp31F2Gr8RAEWOBy3XiyAW+cxWULM
+	 nWFe4GO5NMZSwYVMdl3oD1ljCdRWuCbpW5RPlC+PyOBiiupsMdO3J2B9Q5C4ovsaFy
+	 ebrJDQeEQHLIg==
+Date: Mon, 27 Oct 2025 13:30:25 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Mario Tesi <martepisa@gmail.com>
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>, linux-iio@vger.kernel.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: st_lsm6dsx: Fixed calibrated timestamp calculation
+Message-ID: <20251027133025.542b9653@jic23-huawei>
+In-Reply-To: <20251021113544.GA256337@ctocxl9700.cto.st.com>
+References: <20251015161619.GA87736@ctocxl9700.cto.st.com>
+	<aO_e2DEGsO-kJQFx@lore-desk>
+	<20251018202301.2680cc79@jic23-huawei>
+	<20251021113544.GA256337@ctocxl9700.cto.st.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, 2025-10-25 at 19:47 -0700, Randy Dunlap wrote:
-> Correct and add to adis.h to resolve all kernel-doc warnings:
->=20
-> - add a missing struct member description
-> - change one non-kernel-doc comment to use /* instead of /**
-> - correct function parameter @value to @val (7 locations)
-> - add function return value comments (13 locations)
->=20
-> Warning: include/linux/iio/imu/adis.h:97 struct member 'has_fifo'
-> =C2=A0not described in 'adis_data'
-> Warning: include/linux/iio/imu/adis.h:139 Incorrect use of kernel-doc
-> =C2=A0format: * The state_lock is meant to be used during operations that
-> =C2=A0require
-> Warning: include/linux/iio/imu/adis.h:158 struct member '"__adis_"'
-> =C2=A0not described in 'adis'
-> Warning: include/linux/iio/imu/adis.h:264 function parameter 'val'
-> =C2=A0not described in 'adis_write_reg'
-> Warning: include/linux/iio/imu/adis.h:371 No description found for
-> =C2=A0return value of 'adis_update_bits_base'
->=20
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> ---
+On Tue, 21 Oct 2025 13:35:44 +0200
+Mario Tesi <martepisa@gmail.com> wrote:
 
-Thanks!
-
-Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: David Lechner <dlechner@baylibre.com>
-> Cc: Nuno S=C3=A1 <nuno.sa@analog.com>
-> Cc: Andy Shevchenko <andy@kernel.org>
-> Cc: linux-iio@vger.kernel.org
-> ---
-> =C2=A0include/linux/iio/imu/adis.h |=C2=A0=C2=A0 45 +++++++++++++++++++++=
-+++++-------
-> =C2=A01 file changed, 36 insertions(+), 9 deletions(-)
+> On Sat, Oct 18, 2025 at 08:23:01PM +0100, Jonathan Cameron wrote:
+> > On Wed, 15 Oct 2025 19:50:16 +0200
+> > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> >  =20
+> > > > The calibrated timestamp is calculated from the nominal value using=
+ the
+> > > > formula:
+> > > >   ts_gain[ns] =E2=89=88 ts_sensitivity - (ts_trim_coeff * val) / 10=
+00.
+> > > >=20
+> > > > The values of ts_sensitivity and ts_trim_coeff are not the same for=
+ all
+> > > > devices, so it is necessary to differentiate them based on the part=
+ name.
+> > > > For the correct values please consult the relevant AN.
+> > > >=20
+> > > > Signed-off-by: Mario Tesi <mario.tesi@st.com>   =20
+> > >=20
+> > > Acked-by: Lorenzo Bianconi <lorenzo@kernel.org> =20
+> >=20
+> > Fixes tag?  Just reply to this thread with one and I'll pick it up from=
+ here.
+> > No need for a new version.
+> >=20
+> > Otherwise seems fine to me.
+> >=20
+> > Thanks,
+> >=20
+> > Jonathan
+> >  =20
+> Fixes: cb3b6b8e1bc0 ("iio: imu: st_lsm6dsx: add odr calibration feature")
 >=20
-> --- linux-next-20251024.orig/include/linux/iio/imu/adis.h
-> +++ linux-next-20251024/include/linux/iio/imu/adis.h
-> @@ -57,6 +57,7 @@ struct adis_timeout {
-> =C2=A0 * @enable_irq: Hook for ADIS devices that have a special IRQ enabl=
-e/disable
-> =C2=A0 * @unmasked_drdy: True for devices that cannot mask/unmask the dat=
-a ready
-> pin
-> =C2=A0 * @has_paging: True if ADIS device has paged registers
-> + * @has_fifo: True if ADIS device has a hardware FIFO
-> =C2=A0 * @burst_reg_cmd:	Register command that triggers burst
-> =C2=A0 * @burst_len:		Burst size in the SPI RX buffer. If @burst_max_len =
-is
-> defined,
-> =C2=A0 *			this should be the minimum size supported by the
-> device.
-> @@ -136,7 +137,7 @@ struct adis {
-> =C2=A0	const struct adis_data	*data;
-> =C2=A0	unsigned int		burst_extra_len;
-> =C2=A0	const struct adis_ops	*ops;
-> -	/**
-> +	/*
-> =C2=A0	 * The state_lock is meant to be used during operations that requi=
-re
-> =C2=A0	 * a sequence of SPI R/W in order to protect the SPI transfer
-> =C2=A0	 * information (fields 'xfer', 'msg' & 'current_page') between
-> @@ -166,7 +167,7 @@ int __adis_reset(struct adis *adis);
-> =C2=A0 * adis_reset() - Reset the device
-> =C2=A0 * @adis: The adis device
-> =C2=A0 *
-> - * Returns 0 on success, a negative error code otherwise
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int adis_reset(struct adis *adis)
-> =C2=A0{
-> @@ -183,7 +184,9 @@ int __adis_read_reg(struct adis *adis, u
-> =C2=A0 * __adis_write_reg_8() - Write single byte to a register (unlocked=
-)
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the register to be written
-> - * @value: The value to write
-> + * @val: The value to write
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int __adis_write_reg_8(struct adis *adis, unsigned in=
-t reg,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 u8 val)
-> @@ -195,7 +198,9 @@ static inline int __adis_write_reg_8(str
-> =C2=A0 * __adis_write_reg_16() - Write 2 bytes to a pair of registers (un=
-locked)
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the lower of the two registers
-> - * @value: Value to be written
-> + * @val: Value to be written
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int __adis_write_reg_16(struct adis *adis, unsigned i=
-nt reg,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u16 val)
-> @@ -207,7 +212,9 @@ static inline int __adis_write_reg_16(st
-> =C2=A0 * __adis_write_reg_32() - write 4 bytes to four registers (unlocke=
-d)
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the lower of the four register
-> - * @value: Value to be written
-> + * @val: Value to be written
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int __adis_write_reg_32(struct adis *adis, unsigned i=
-nt reg,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 u32 val)
-> @@ -220,6 +227,8 @@ static inline int __adis_write_reg_32(st
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the lower of the two registers
-> =C2=A0 * @val: The value read back from the device
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int __adis_read_reg_16(struct adis *adis, unsigned in=
-t reg,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 u16 *val)
-> @@ -239,6 +248,8 @@ static inline int __adis_read_reg_16(str
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the lower of the two registers
-> =C2=A0 * @val: The value read back from the device
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int __adis_read_reg_32(struct adis *adis, unsigned in=
-t reg,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 u32 *val)
-> @@ -257,8 +268,10 @@ static inline int __adis_read_reg_32(str
-> =C2=A0 * adis_write_reg() - write N bytes to register
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the lower of the two registers
-> - * @value: The value to write to device (up to 4 bytes)
-> + * @val: The value to write to device (up to 4 bytes)
-> =C2=A0 * @size: The size of the @value (in bytes)
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int adis_write_reg(struct adis *adis, unsigned int re=
-g,
-> =C2=A0				 unsigned int val, unsigned int size)
-> @@ -273,6 +286,8 @@ static inline int adis_write_reg(struct
-> =C2=A0 * @reg: The address of the lower of the two registers
-> =C2=A0 * @val: The value read back from the device
-> =C2=A0 * @size: The size of the @val buffer
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static int adis_read_reg(struct adis *adis, unsigned int reg,
-> =C2=A0			 unsigned int *val, unsigned int size)
-> @@ -285,7 +300,9 @@ static int adis_read_reg(struct adis *ad
-> =C2=A0 * adis_write_reg_8() - Write single byte to a register
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the register to be written
-> - * @value: The value to write
-> + * @val: The value to write
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int adis_write_reg_8(struct adis *adis, unsigned int =
-reg,
-> =C2=A0				=C2=A0=C2=A0 u8 val)
-> @@ -297,7 +314,9 @@ static inline int adis_write_reg_8(struc
-> =C2=A0 * adis_write_reg_16() - Write 2 bytes to a pair of registers
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the lower of the two registers
-> - * @value: Value to be written
-> + * @val: Value to be written
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int adis_write_reg_16(struct adis *adis, unsigned int=
- reg,
-> =C2=A0				=C2=A0=C2=A0=C2=A0 u16 val)
-> @@ -309,7 +328,9 @@ static inline int adis_write_reg_16(stru
-> =C2=A0 * adis_write_reg_32() - write 4 bytes to four registers
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the lower of the four register
-> - * @value: Value to be written
-> + * @val: Value to be written
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int adis_write_reg_32(struct adis *adis, unsigned int=
- reg,
-> =C2=A0				=C2=A0=C2=A0=C2=A0 u32 val)
-> @@ -322,6 +343,8 @@ static inline int adis_write_reg_32(stru
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the lower of the two registers
-> =C2=A0 * @val: The value read back from the device
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int adis_read_reg_16(struct adis *adis, unsigned int =
-reg,
-> =C2=A0				=C2=A0=C2=A0 u16 *val)
-> @@ -341,6 +364,8 @@ static inline int adis_read_reg_16(struc
-> =C2=A0 * @adis: The adis device
-> =C2=A0 * @reg: The address of the lower of the two registers
-> =C2=A0 * @val: The value read back from the device
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int adis_read_reg_32(struct adis *adis, unsigned int =
-reg,
-> =C2=A0				=C2=A0=C2=A0 u32 *val)
-> @@ -366,6 +391,8 @@ int __adis_update_bits_base(struct adis
-> =C2=A0 * @size: Size of the register to update
-> =C2=A0 *
-> =C2=A0 * Updates the desired bits of @reg in accordance with @mask and @v=
-al.
-> + *
-> + * Returns: %0 on success, a negative error code otherwise
-> =C2=A0 */
-> =C2=A0static inline int adis_update_bits_base(struct adis *adis, unsigned=
- int reg,
-> =C2=A0					const u32 mask, const u32 val, u8
-> size)
+Thanks. Applied to the fixes-togreg branch of iio.git.
+I might hold this back if I get so far as doing a pull request today or
+tomorrow just to give it a little time to soak in linux-next.
+
+Thanks,
+
+Jonathan
+
+> Thanks,
+> Mario
+>=20
+
