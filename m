@@ -1,50 +1,50 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F0D33090CA;
-	Mon, 27 Oct 2025 14:39:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1688530ACEC;
+	Mon, 27 Oct 2025 14:39:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761575942; cv=none; b=hFxQKNMIWKzGOl9V9y/WwZMVp2DD5fsYHYqR8B8bde9XstmUpflz7Q9a+eyK2zt3VbPYXBNAmGITN2NSq5gzcBNyyGfcjOoPaIakSUIcMdIgFaVlDuuH+VU0Py1PeFy6fXr4Mhl0dM/W/EuY9lRQPBDdxgpQI1/Qf7pXhy0jByQ=
+	t=1761575943; cv=none; b=rxIBBUIy83eqs5XvkxCQxF8IxsTFmbyQM5w4BbnU0myvlqOu6xLswxOmDo9oDm2fXFbf7Tjor90VGOWKMaLUEA/6154m6MdJ2vLlWmYxNyiqh8a7HUtfYEtAOkTF407A+vA3l7rrgaZvEmkQaNv4Xn07FBAq19Z+CrQS7w9HjVQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761575942; c=relaxed/simple;
-	bh=avO4KxU32Xlunsqyq7BmWvOS2Y5h0UKNDU8DR6pAnGI=;
+	s=arc-20240116; t=1761575943; c=relaxed/simple;
+	bh=0mf6KVr/j+MOBfxqbaBzUm0ypZGxlXyGgTneCJcNaf8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Qn6c/F1nUg8FA4ZH8qQcJPDWwsZ1Lj2sA/xGlzdX71Anv8mcNcI2A9O9lp4pVMPFVS4T0nNQYiAzugmDjvoCfq5hN+7MKyH5jHAvkSihPrnrTdlrrSLZ8AhwoagAup3JHqWGK+9YF0P7+rlWgI1AeXIgapoHBoOJ5TBoHukWNrE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kTOd9Q2K; arc=none smtp.client-ip=198.175.65.15
+	 MIME-Version; b=r1zHohN2neI09cYLzAtnNYKCHyqlYPio3f0re3XZqeqIuqwhG0vgGd5XvH4J656a5raR+skYPzzc6014+BEv+D6/H/8lgjdJJYFeZ3UjDzRQyS3m/oziTof9PTOyzrFVZnjdGtXjntooc5D5KIf3dkORi3yQGtbhfvgMvnIotQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZMIk6eBx; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kTOd9Q2K"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZMIk6eBx"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1761575941; x=1793111941;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=avO4KxU32Xlunsqyq7BmWvOS2Y5h0UKNDU8DR6pAnGI=;
-  b=kTOd9Q2KLZTvjKEe5N34ACLZ1uzIlUw7iEO7LaUn0qNjLKhFAdPa2kaw
-   6qsGjyxGPSvAMKT2/uddGxty6YcDPMquraSFk9dKXUZggKLbP12gURPre
-   +BJjKxqyYnC66xT13luLBe4NjAMadoXbIN/jXXaCLyTaLe7VnNRNhesmY
-   ts+XMHQrO9mr3OYCDCdEg97o4Wdr48/4aCPBd6OxTtZMcWg42dQckYA8P
-   WNTp8f6eEzi/gf4GV+FoyxduJMsQXioEXNnl3yKRUv3q8Dm5Ha2KXypzD
-   BTT4sRNBXozWXi/VoRDw7ZG1bF1MtCCLqAv5Jjr8UKO5ty4cnN4KFtx2n
-   Q==;
-X-CSE-ConnectionGUID: Jy3F5rlSSqWAwMtgDToXJg==
-X-CSE-MsgGUID: wjYsmwwDTxmvNhJU7pmoDw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="67299499"
+  bh=0mf6KVr/j+MOBfxqbaBzUm0ypZGxlXyGgTneCJcNaf8=;
+  b=ZMIk6eBxzJyWYeWNs4Ag8zaMmmsei9ZLQpUlEuxGCNufA3eq0VsBZsob
+   /V3BJ4UirKJrB4E7Mip3tstGFNrHCpXiox4umSBNqbgEcR2/BN4MAwal9
+   WzfCOd0+dG50Uxk63LcGvgBy8UHzDSnKyRAwMAsSrIz2J5ZJ1ceg8qcDj
+   0c5m46VWgAMkwnYpzJV7qRWEJAxAjQZ2fmrGjfAFzcI9Z4r0v9XpyFSUh
+   FisnI4o8LZvFmNfYtDhG6YeRHeesxmUvFe/0KuBAjkBrGx7KbFaxYw18k
+   /R+ZA8q2bwik+LYMa/qqxxmRmnoc4eL2yzZ4bUguoE8UA7UTAJC7y0yz7
+   g==;
+X-CSE-ConnectionGUID: cQBkssl/Q3y3CyrK+djgwg==
+X-CSE-MsgGUID: fj7IYf+mQnyumR9tBvbB2w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11586"; a="67299503"
 X-IronPort-AV: E=Sophos;i="6.19,259,1754982000"; 
-   d="scan'208";a="67299499"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2025 07:38:57 -0700
-X-CSE-ConnectionGUID: 14+sqHWdR4m8zXTHKhpQtw==
-X-CSE-MsgGUID: 4Brf0ud8TmumEX8E11mt7w==
+   d="scan'208";a="67299503"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Oct 2025 07:39:00 -0700
+X-CSE-ConnectionGUID: bu4SSwf0Tuq5K1xZT9spYw==
+X-CSE-MsgGUID: Gb8a2lmTQkuVLnzjbCuitQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,259,1754982000"; 
-   d="scan'208";a="184756643"
+   d="scan'208";a="208673521"
 Received: from black.igk.intel.com ([10.91.253.5])
-  by fmviesa007.fm.intel.com with ESMTP; 27 Oct 2025 07:38:53 -0700
+  by fmviesa002.fm.intel.com with ESMTP; 27 Oct 2025 07:38:56 -0700
 Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 55B4298; Mon, 27 Oct 2025 15:38:53 +0100 (CET)
+	id 632509B; Mon, 27 Oct 2025 15:38:53 +0100 (CET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	linux-iio@vger.kernel.org,
@@ -61,9 +61,9 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Mauro Carvalho Chehab <mchehab@kernel.org>,
 	"Daniel W. S. Almeida" <dwlsalmeida@gmail.com>
-Subject: [PATCH v1 3/6] media: dvb-frontends: atbm8830: Convert to use PI definition
-Date: Mon, 27 Oct 2025 15:34:52 +0100
-Message-ID: <20251027143850.2070427-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 6/6] iio: position: iqs624-pos: Convert to use PI definition
+Date: Mon, 27 Oct 2025 15:34:55 +0100
+Message-ID: <20251027143850.2070427-7-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20251027143850.2070427-1-andriy.shevchenko@linux.intel.com>
 References: <20251027143850.2070427-1-andriy.shevchenko@linux.intel.com>
@@ -79,32 +79,26 @@ Convert to use PI definition instead of open coded value of it.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/media/dvb-frontends/atbm8830.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iio/position/iqs624-pos.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/dvb-frontends/atbm8830.c b/drivers/media/dvb-frontends/atbm8830.c
-index 778c865085bf..74032364d183 100644
---- a/drivers/media/dvb-frontends/atbm8830.c
-+++ b/drivers/media/dvb-frontends/atbm8830.c
-@@ -6,7 +6,8 @@
-  *    Copyright (C) 2009 David T.L. Wong <davidtlwong@gmail.com>
-  */
- 
--#include <asm/div64.h>
-+#include <linux/math64.h>
+diff --git a/drivers/iio/position/iqs624-pos.c b/drivers/iio/position/iqs624-pos.c
+index 8239239c6ee2..da432d1b515c 100644
+--- a/drivers/iio/position/iqs624-pos.c
++++ b/drivers/iio/position/iqs624-pos.c
+@@ -15,10 +15,11 @@
+ #include <linux/notifier.h>
+ #include <linux/platform_device.h>
+ #include <linux/regmap.h>
 +#include <linux/units.h>
- #include <media/dvb_frontend.h>
  
- #include "atbm8830.h"
-@@ -112,7 +113,7 @@ static int set_if_freq(struct atbm_state *priv, u32 freq /*in kHz*/)
+ #define IQS624_POS_DEG_OUT			0x16
  
- 	if (freq != 0) {
- 		/* 2 * PI * (freq - fs) / fs * (2 ^ 22) */
--		t = (u64) 2 * 31416 * (freq - fs);
-+		t = 2 * DIV_ROUND_UP_ULL(PI, 100000) * (freq - fs);
- 		t <<= 22;
- 		do_div(t, fs);
- 		do_div(t, 1000);
+-#define IQS624_POS_SCALE1			(314159 / 180)
++#define IQS624_POS_SCALE1			DIV_ROUND_UP_ULL(PI, 1800000)
+ #define IQS624_POS_SCALE2			100000
+ 
+ struct iqs624_pos_private {
 -- 
 2.50.1
 
