@@ -1,101 +1,131 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6788833031D
-	for <linux-iio@vger.kernel.org>; Fri, 31 Oct 2025 12:31:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CBE0D19ABC6
+	for <linux-iio@vger.kernel.org>; Fri, 31 Oct 2025 12:45:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1761913862; cv=none; b=Gy+1YqMY4txCT0jPrRjtD+HJ8uHuOr3ydcn6FX5B3dPaWiRYdrzKZYiy9+Npkg2tFPOsUMOzfYWQ1hE0Mow9oKhwEUWvUWKPFacs7P69yWlI4eWJwYrFgS/cc3yCuRgQg2ENHO+nf4Ykq+qly0QSvSrvq64OX1ZZFawO+X5pzEA=
+	t=1761914735; cv=none; b=Z1cmyujoiCCkU6BR4mtkhPnmyM9Bn4f8XiR7CJI9mHYj74dCVT0G/o+/eJV4xMXMfwGoFMnh4SPE9fb9ovmFoXDGp+vkPETx+24xQsEphwrkB472NMGFoN3PohYqs9Bax+op4h9BKbMjWfVkReOrI/6SFR02uiwvSDId1DL0D9Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1761913862; c=relaxed/simple;
-	bh=z2lRDLdFlsmgOkIc4nH0Z6iUuX88oc8E0HDC8HY20bg=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=ryIlw3C7CFvd3+VuUdsvTZdbk/N0rD3P+TAoniLtpSfnU1BXH7iAtXvXrXuPBWgVKEpTiM+VRPMGUmWwF7uUxEu3vklmUDu670OdeD+kfIMxHDRsD5GrlAkjYyaFqSQmwzMtgyQro27qS42N3LsjJUR401gieC8Yil2n8Rnbf/8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dSOANCeu; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1761914735; c=relaxed/simple;
+	bh=YEJFofn4dJHm/7g/MnUrRU8zirCPi/m2VRyPXl529WI=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=nsGgpBc8HZX5D3ZCnCYpZ4cg2P5Mn6wYD7vGmGRoOBgMy0EiAulGFZ5g9o5FTL14WlxCY2iCDuaMldvBIj8vG5GXQMTV+Ll74eoQyevVnNOfXeMSU0mU6+P0pWP32ydbrof0j+88dzXcDwpRAnkPOaX9QhzCAnywyvqwaGmljoM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SKTc/vLY; arc=none smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dSOANCeu"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 49A98C19423;
-	Fri, 31 Oct 2025 12:31:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1761913862;
-	bh=z2lRDLdFlsmgOkIc4nH0Z6iUuX88oc8E0HDC8HY20bg=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=dSOANCeuU7RkqXHv6Q6A/3jhTr19FiK23qw0qyDttz5RllDGzqL5n3RcJjV/Q+tHF
-	 LMtSDaGklYPLScuatRsOYqLyM8/qi8NtenhWwWbiwlzyFWqZYt5mILH1xO4q8EzK+8
-	 TSzS9/+SALQAuy/NyaEWKV8LFSHfudPQoc7wJ5HUjYghbKTQMmBfV/24bMGXsgFghu
-	 DqoMIuGQYfBgbX5uwJWUW5NY+5axixSZoQxbuzKln/lhB/avq5cdPb7lx0bHKqWMKn
-	 +WgP5MaY/0GBsqhjZi0xG6hWaoXV9UUpbElCcU/zJqvG9P6aoati64lvQamItk0ryF
-	 mGoAZeOOh/y/g==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42695CCF9FE;
-	Fri, 31 Oct 2025 12:31:02 +0000 (UTC)
-From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Date: Fri, 31 Oct 2025 12:31:31 +0000
-Subject: [PATCH v3 10/10] iio: dac: ad5446: Add AD5542 to the spi id table
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SKTc/vLY"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-426f1574a14so1464599f8f.3
+        for <linux-iio@vger.kernel.org>; Fri, 31 Oct 2025 05:45:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1761914732; x=1762519532; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=htLfTgaGj6SXyo+gY+C4RM9cQYSpr8e9dgfcpC46jhA=;
+        b=SKTc/vLYhamnfomqqqDSBQM3XSkYb8cQPUdYv/tzGvjNLc84NDF+N3MfONpqDMbvFN
+         ZaYOHDTr7erTHV8vTRzrxxahAwEbV8Z45Dc8d1orsJrA3KbsONJj6K9zLpKoE8rkr24s
+         nPTJWGsDAL8heGdasVxisIydjsTISXLLPiFitnXlek0iYHMRwsmAKQIEzKaldVNLKNJ2
+         VRW1L2IkndqEGDjDjodM3xgnjaGIJtMGjYwALif4wE5X1NIY+5iMrSWeLrQasL8zmjGG
+         bgHMcAr9Ef89TlkeadNGVu7Q050czjfjQEUPEET4tk5+WlEUrOpsHdAvXdJ0sdDKMQVY
+         qDMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1761914732; x=1762519532;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:subject:cc:to:from:date:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=htLfTgaGj6SXyo+gY+C4RM9cQYSpr8e9dgfcpC46jhA=;
+        b=diKYaYxJ7zSl2Xs+YbL+Wods7B+8MPKjxHcm0aBu/JctNOksHvEQR2dV8Cqy2i0vaU
+         pyLwe/vGETuDb3RecRDsoYaa+59qWznDU5mSLHaQjv7touatyU/xnElrX9TyNW3y4ahD
+         Ovd9aSO7JEH6ZKWuDtJit/wrJYLBbm6VLTF+XrylpRajluudx2VpWDVjmVWEvO3UatUx
+         LciWCw8wZiW3LcdJZEDApnVj4fhxsTI+jEmEVSSThP7T9O3lDDq9p/Sd/vQHBDSebNj7
+         V2ovpM0E873BhSrQ51PAzp7yyaq9df2RmokehCNnkw3nS1bpS0zGGDJbaRFJbwvXKVeo
+         smog==
+X-Forwarded-Encrypted: i=1; AJvYcCUX4n/W9kJlJUFXCQyPH1O9y2QcBeryXgGChum6fWHTgEL/nwJoMFC2RFAHoZFTnUdJSaxc+3/o644=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx6y7V0LQ0khBme2GOy0XBrqDH+Wel5mOCXWQI6e8izHqeTBMhy
+	x938rOLjvOPIEBkLTUYZxsPdbu5cr1Urgq4gNrPGpTVyZq/3g5zj91Hw
+X-Gm-Gg: ASbGncsheoZmfDxrLV8KFVEM3oXgpWzi/Ow8E6RSmeU5XBPhlPUOPqBp9OV10jRpVZf
+	Il22C1TEnVXrCydJS4iDc8NV+DCm87kuA9xESpEqVkwX7yzUGTOQ1uY8x7bIBezhho52x9Nk5V9
+	SGODhfIQ9plYRiBDkrwHFDSBrrxvBV4DEkqEn2nXVr5fuLNAiFl0X75r53SJdShbBlMZPqbJ5dm
+	7gPcf01F28dFXweyy4FwyBdvpZFjcTkaRwpPrm1UN5WQzfUohLaHNQFI++pJiNuJ4fp/Js5P7dS
+	3nwkBlDSvg8Mh4fa66HoIvDvT4cyvr4q5TlNjlYjPp8Z33r61ITKFiHpBE6Bs0cedXtVtYPSfTz
+	PNvewJCDrdMeVjBZ8xm7cOfIk6Vc9VixRJY7uYNAo12xsthajtTtL7f/oJX1Ffp6/IiWARLsacW
+	Xl2ef54rph5MKzOTaa5omOy93ql1xABtGtPvr+G1WZc5dFQJ29JUb3
+X-Google-Smtp-Source: AGHT+IHSbBaoyJFzeN/27Rgp+5ix/nizQNjZB0dnWxKV1godF2Cu1it5Urb0qAv1OThr89VNsq/Rxg==
+X-Received: by 2002:a05:6000:40ca:b0:429:b9bc:e81a with SMTP id ffacd0b85a97d-429bd5ef85bmr2376964f8f.0.1761914731839;
+        Fri, 31 Oct 2025 05:45:31 -0700 (PDT)
+Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-429c1125ad0sm3503532f8f.13.2025.10.31.05.45.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 31 Oct 2025 05:45:31 -0700 (PDT)
+Date: Fri, 31 Oct 2025 12:45:30 +0000
+From: David Laight <david.laight.linux@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Jyoti Bhayana
+ <jbhayana@google.com>, Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio: common: scmi_sensors: Replace const_ilog2()
+ with ilog2()
+Message-ID: <20251031124530.3db7805b@pumpkin>
+In-Reply-To: <aQSHVsWGXzigTEMe@smile.fi.intel.com>
+References: <20251031074500.3958667-1-andriy.shevchenko@linux.intel.com>
+	<20251031094336.6f352b4f@pumpkin>
+	<aQSHVsWGXzigTEMe@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20251031-dev-add-ad5542-v3-10-d3541036c0e6@analog.com>
-References: <20251031-dev-add-ad5542-v3-0-d3541036c0e6@analog.com>
-In-Reply-To: <20251031-dev-add-ad5542-v3-0-d3541036c0e6@analog.com>
-To: linux-iio@vger.kernel.org
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1761913895; l=1707;
- i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=/OfQFB0/UcOV1OFJoyHe7o8DYKnhhHQOcnOWnnCI1R4=;
- b=dDgW35FgKe1VnCQUTlWgGLcTZtPpheOgVbI1ADIVZGFMM+TMZ50k02iAT+UkF2JOjPOAMf5cl
- XJlnVSlE/p1BgGgWXj8YvKk76s8fHlPdz5Qgpra2o4WRNugpozaOLd+
-X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
- pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
-X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
- auth_id=100
-X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
-Reply-To: nuno.sa@analog.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+On Fri, 31 Oct 2025 11:54:30 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-This adds support for the AD5542 single channel Current Source and
-Voltage Output DACs.
+> On Fri, Oct 31, 2025 at 09:43:36AM +0000, David Laight wrote:
+> > On Fri, 31 Oct 2025 08:45:00 +0100
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote: =20
+>=20
+> ...
+>=20
+> > >  		tstamp_scale =3D sensor->sensor_info->tstamp_scale +
+> > > -			       const_ilog2(NSEC_PER_SEC) / const_ilog2(10);
+> > > +			       ilog2(NSEC_PER_SEC) / ilog2(10); =20
+> >=20
+> > Is that just a strange way of writing 9 ? =20
+>=20
+> Why? It's correct way of writing log=C2=B9=E2=81=B0(NSEC_PER_SEC), the pr=
+oblem here is that
+> "i" people do not think about :-)
 
-It is similar to the AD5542A model so just use the same id.
+Even without the "i" the division could easily give 8.999999.
+So you'd be relying on rounding to get the required integral value.
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Co-developed-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
----
- drivers/iio/dac/ad5446-spi.c | 2 ++
- 1 file changed, 2 insertions(+)
+> But we have intlog10(), I completely forgot about it.
 
-diff --git a/drivers/iio/dac/ad5446-spi.c b/drivers/iio/dac/ad5446-spi.c
-index 7419b17a455f..34d4a737156d 100644
---- a/drivers/iio/dac/ad5446-spi.c
-+++ b/drivers/iio/dac/ad5446-spi.c
-@@ -177,6 +177,7 @@ static const struct spi_device_id ad5446_spi_ids[] = {
- 	{"ad5453", (kernel_ulong_t)&ad5446_chip_info}, /* ad5453 is compatible to the ad5446 */
- 	{"ad5512a", (kernel_ulong_t)&ad5512a_chip_info},
- 	{"ad5541a", (kernel_ulong_t)&ad5541a_chip_info},
-+	{"ad5542", (kernel_ulong_t)&ad5541a_chip_info}, /* ad5541a and ad5542 are compatible */
- 	{"ad5542a", (kernel_ulong_t)&ad5541a_chip_info}, /* ad5541a and ad5542a are compatible */
- 	{"ad5543", (kernel_ulong_t)&ad5541a_chip_info}, /* ad5541a and ad5543 are compatible */
- 	{"ad5553", (kernel_ulong_t)&ad5553_chip_info},
-@@ -213,6 +214,7 @@ static const struct of_device_id ad5446_of_ids[] = {
- 	{ .compatible = "adi,ad5453", .data = &ad5446_chip_info },
- 	{ .compatible = "adi,ad5512a", .data = &ad5512a_chip_info },
- 	{ .compatible = "adi,ad5541a", .data = &ad5541a_chip_info },
-+	{ .compatible = "adi,ad5542", .data = &ad5541a_chip_info },
- 	{ .compatible = "adi,ad5542a", .data = &ad5541a_chip_info },
- 	{ .compatible = "adi,ad5543", .data = &ad5541a_chip_info },
- 	{ .compatible = "adi,ad5553", .data = &ad5553_chip_info },
+And it isn't the function the code is looking for.
+(The result is shifted left 24 and it doesn't have an optimisation
+for constants.)
 
--- 
-2.51.0
+>=20
+> > Mathematically log2(x)/log2(10) is log10(x) - which would be 9.
+> > The code does seem to be 'in luck' though.
+> > NSEC_PER_SEC is 10^9 or 0x3b9aca00, so ilog2(NSEC_PER_SEC) is 29.
+> > ilog2(10) is 3, and 29/3 is 9.
+> >=20
+> > Do the same for 10^10 and you get 11. =20
+>=20
+> That code looks like working by luck entirely, TBH. I just took the scope=
+ of
+> the patch to start dropping const_ilog2() usages.
+
+Something always crawls out of the woodwork...
+
+	David
 
 
