@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 767A927BF7C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B12C2C15B7;
 	Tue,  4 Nov 2025 15:34:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762270474; cv=none; b=UScdec3eRPrtM3/7v8wX91rteDaXM7O2DGbyllp59itTH0YXbYnJI5cZ0pHvw7DBZTen214BPJlunGkKWLHUWAxidUzbNlO85DJlHE/kZWZoX/BYcfsxIRfjrFOf8quJys3zJ0hbVdxdJtPUr/LuikqPMB+1WG4PFoIuwsYVyfw=
+	t=1762270474; cv=none; b=d0II7WvfF72gCdwChk/Wb78sqIHGhHkIBSkXXlYSapF9H4F5//G8nGb06L1SPHoVB3MwSHpji3sR41BGEkoF6jE01rGW8mTf8dzWmVN7c1JjbxsYTKylWQRz2IYTTh9MH4BuqX4BIqUvN7nuOVhT+LDJsgZY9T7AraclhaYvEoM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1762270474; c=relaxed/simple;
-	bh=F6UI+eN8N6kLNATzQWjpDkJSVtUKoac0Fua7sSCUpWI=;
+	bh=O1KbXXqkKIoOS9eEnR9SxyXF0BQ7aFH1gzcBIpITaNc=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=nZZPCeVIXu+v5B4ywqEYBpRbEgAUHyp7HxGnn8iPxpRQPgivrn3Y1jqGekbexNF6ptigCl+wyOr5FqLq77hTfUPoYNY6uet9kBkvCp+12ioHyxGfOQhj1RvPzbp9kpRP29Nj5zM4InpkJe1IYXPzn14ZGEGMci4o1GcCFzB41Ho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e4GTq4n4; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=cNHAHI3DGsbLwFs+ClenSRTQz31r/YH5hYse4wDaSGbNYwEXHxw4C3NnXTpd+BJFgtXI8AFiiBRvBbpIAr2ZTZggRa7ftIURz0v/zUntRs2jGdOofv4o3I5Io0HsQXm31mcAXQLKrVk7tcyLJiJmushMOFf7NbtQIra3muQaXlc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CAf1eOPc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e4GTq4n4"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 0FDE5C19423;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CAf1eOPc"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 53B06C2BC86;
 	Tue,  4 Nov 2025 15:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1762270474;
-	bh=F6UI+eN8N6kLNATzQWjpDkJSVtUKoac0Fua7sSCUpWI=;
+	bh=O1KbXXqkKIoOS9eEnR9SxyXF0BQ7aFH1gzcBIpITaNc=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=e4GTq4n40vqkfYmqfsl+ZQT/IRnLKivyYoKeL0wnvtjYORBKGGdji8PENqFrlED58
-	 /uVVblR6Jm/jxm55o7Mx6SmpRwkDorknNpJ6kJ8+64qUrYyaJj4w5aHjunkt8hQYRY
-	 f8JDEV94EvPOpuq3zB8dzLqWeeMHtZsIsXVwiA54GSnczR3id241kUrBlUA9x22hZM
-	 r+DjXLhAj8Fr0oo2+e7E8uV14UhKES7TM5MH/gYOP/eZ4ptj9f+Mw4Rgksk3B7x6i0
-	 SWOQ2/CoEe2jQQKsY1YwubOsB9ffSLljToqxvdinijBUGLlCTbicOKPWxpkjd2p6O0
-	 NWfnNu+keDFRA==
+	b=CAf1eOPc+2d33X9rtcsWUu1JNKBRSpzE9SqwbKBOg9zCqq/lCMCQbonEhE0YcfSas
+	 g5IlzF6QUWzg2OhvGXk/4d4ClvkR8PKyrD+dQ9BQsjTWNdZpaf/+OLCe6WUabBrhs5
+	 Mu1GxSW8Fha+HuMCe/C7evbT+81kJODxQ6gYxG6Y6SDwOXdGywaGCq+k7oxhQlwUnX
+	 wm9Z+5iEd5Qf/emkWFIoRVo3QUOGs1aBaCjuS9mMDyfwK0DFVGKvXXkqI/JQ3ua3o3
+	 EUirjeaeHxw+QZQ4isqhYIpaAvrsnBYmXfvBxe6P4wMPPl0l99QqtzQhW9GnmboIWW
+	 W0O1Sk1M+7rOA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A2BCCFA04;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E011CCFA12;
 	Tue,  4 Nov 2025 15:34:34 +0000 (UTC)
 From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 04 Nov 2025 15:35:08 +0000
-Subject: [PATCH v4 03/12] iio: dac: ad5446: Drop duplicated spi_id entry
+Date: Tue, 04 Nov 2025 15:35:13 +0000
+Subject: [PATCH v4 08/12] iio: dac: ad5446: Make use of devm_mutex_init()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20251104-dev-add-ad5542-v4-3-6fe35458bf8c@analog.com>
+Message-Id: <20251104-dev-add-ad5542-v4-8-6fe35458bf8c@analog.com>
 References: <20251104-dev-add-ad5542-v4-0-6fe35458bf8c@analog.com>
 In-Reply-To: <20251104-dev-add-ad5542-v4-0-6fe35458bf8c@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
@@ -50,11 +50,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1762270508; l=1347;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1762270508; l=695;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=mlIlN1vKecNlba8Yd4mqcS02tNFjhgmuz7OVQKG3b7Q=;
- b=rW/B7LL2sa4JZTr7uIeqW9F+scJRM8g+L6hoSs+Z5nBRP+OPbno9ZH8rmhoQhcWke4thp+yRU
- 5HzXzM58tMTBDyeKe68o+AqYCJ2ugiIiwvQjLOzvnQ7ySMMYf7bcWXc
+ bh=8mzFmEgM7w3rsBt6qaEgYIGpFV7hcIrmz0viJjwtS/E=;
+ b=VJ1oPWo5GnEBNCS/uv3iMubDjIzksi7J6sC/d9MjDYWmWd3VwizdiSYyKNsYBzruQaMnMQEWG
+ EnzvVDy+gQZCw+T1JQfDFYNm8aQXFZidxZY5OvxhefxFMqkEG/9+zmt
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -64,46 +64,28 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sá <nuno.sa@analog.com>
 
-AD5600 and AD5541A are compatible so there's no need to have a dedicated
-entry for ID_AD5600.
+Use devm_mutex_init() which is helpful with CONFIG_DEBUG_MUTEXES.
 
 Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/dac/ad5446.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/iio/dac/ad5446.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
-index de5e4e0e397e..c0a38f642451 100644
+index c7876217c7ec..59e1f67ef334 100644
 --- a/drivers/iio/dac/ad5446.c
 +++ b/drivers/iio/dac/ad5446.c
-@@ -301,7 +301,6 @@ enum ad5446_supported_spi_device_ids {
- 	ID_AD5541A,
- 	ID_AD5512A,
- 	ID_AD5553,
--	ID_AD5600,
- 	ID_AD5601,
- 	ID_AD5611,
- 	ID_AD5621,
-@@ -356,10 +355,6 @@ static const struct ad5446_chip_info ad5446_spi_chip_info[] = {
- 		.channel = AD5446_CHANNEL(14, 16, 0),
- 		.write = ad5446_write,
- 	},
--	[ID_AD5600] = {
--		.channel = AD5446_CHANNEL(16, 16, 0),
--		.write = ad5446_write,
--	},
- 	[ID_AD5601] = {
- 		.channel = AD5446_CHANNEL_POWERDOWN(8, 16, 6),
- 		.write = ad5446_write,
-@@ -427,7 +422,7 @@ static const struct spi_device_id ad5446_spi_ids[] = {
- 	{"ad5542a", ID_AD5541A}, /* ad5541a and ad5542a are compatible */
- 	{"ad5543", ID_AD5541A}, /* ad5541a and ad5543 are compatible */
- 	{"ad5553", ID_AD5553},
--	{"ad5600", ID_AD5600},
-+	{"ad5600", ID_AD5541A}, /* ad5541a and ad5600 are compatible  */
- 	{"ad5601", ID_AD5601},
- 	{"ad5611", ID_AD5611},
- 	{"ad5621", ID_AD5621},
+@@ -184,7 +184,9 @@ int ad5446_probe(struct device *dev, const char *name,
+ 	indio_dev->channels = &st->chip_info->channel;
+ 	indio_dev->num_channels = 1;
+ 
+-	mutex_init(&st->lock);
++	ret = devm_mutex_init(dev, &st->lock);
++	if (ret)
++		return ret;
+ 
+ 	st->pwr_down_mode = MODE_PWRDWN_1k;
+ 
 
 -- 
 2.51.0
