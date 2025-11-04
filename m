@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76731277011;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 607C026E711;
 	Tue,  4 Nov 2025 15:34:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762270474; cv=none; b=IOArwhbgNlRWe3kdcTU0lrjNVaNwIVhZJMwcSxMpo9AbH3EFYQqxlwBHpRA6qUGQBIyLyW0vxP5ktoQQ+6a6IHxWudtO/wXSTW5y11mjnrcsU1s04hFVepWDCz6o39uV5CY8TnIBcITuO9dCUjcbrsxfuWOmoCMgGrT0kelMD/k=
+	t=1762270474; cv=none; b=t2tbK3Tm4hpDpDWhZTdNlSiJKx3/nG66Jd0dONLJKWZ/BQEx/YgpeVF/QtpMUmMOLk6PMHLf8PzSNTk5QoljuM/L/LENSZXJZuyznSFSC/l2ln6oKEWZlqHbQ4h1PtuIIky+7qh6QiS6dY4gLx3UXogEKbns90cPYPCIPX1Vrbw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1762270474; c=relaxed/simple;
-	bh=kgkQ5ZLEY+CnmbfHIWE+KeYZQnP3lZR3rOo4iJQzQDE=;
+	bh=kI0ICAUDioiU+0h8yB6fOl+rRXtjBS0tzNhQaUkmK9I=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=bs1lgvbmA1F/oJ/9kUZaytTkbyCaEXL8cZLbLhGly4dF4Ez78yJlgdTj3Usxje7zdj90eSy9JjVpxPN+NSujMN1qNCoGL7ORKo/hdJECkJzQavkoid7hYqHMRrw2SO7YR2zKpF02Bk54CTUPyLg6qn12Qmqf9yRwcsr8AVYCz3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ToYtb7O5; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=WbNiZS3M5hCfEpNAL1shRaInV4N2e2Z4D1OaH22QPjqkw8sV5Z6FtNrG3gW0Z9p/x7x2e0uYRj8jEANY4kR2yXq2WwUsaabz/qC+ST39z0Mqt+em3QyXIWlYuwu0Sz3oCxC8WBz+t/BzwTV8j3kbbDeRIcI1gjm0UHvnstfrQZg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ovg+u4FM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ToYtb7O5"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 038C3C16AAE;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ovg+u4FM"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 1C94EC4AF0F;
 	Tue,  4 Nov 2025 15:34:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1762270474;
-	bh=kgkQ5ZLEY+CnmbfHIWE+KeYZQnP3lZR3rOo4iJQzQDE=;
+	bh=kI0ICAUDioiU+0h8yB6fOl+rRXtjBS0tzNhQaUkmK9I=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ToYtb7O5WGWAnh7ipgoGTBTUZx4KOmtAsIr5B6dPrasmvM9oh5DgPN3uuG6cNcfAM
-	 dUUkwh4B9e+mlvxwRaPqQsTmcxWcgitQu3o74+Zbn6oCgwCaShKL5fj3ON+pLdjqvF
-	 l6TGVeeYT1I4BUgxtOx06npYwqsuoFzctKrfjlhs0tYC4GvwMjQL862hDvWxDDpszU
-	 Dzg1pTQvDd5Nt/CiOeHYTZm61lft/GD2eWugyZ+qbz7L5Y2pdV41mtc4lbtMurez4J
-	 1rGAXUuy5jLi+f1avGzD14oQsjdf7idY3hcks3A262q5/6sNeotx1BVjO32qz/AsHV
-	 4MqY1DX4sCJlg==
+	b=ovg+u4FMdP+HwDe16lJCnL7FbSsFNSMPQTTTUaLsyeDFYCsolMe52rDuZ5fEnVZXD
+	 wNbR8YRhj/00d/1RQqQWIL7LcaLyl6A9uMr8oTQPpn+LCUkGMv6hG9liONL/IeyUNG
+	 B4pJ0VXSurBEZVoC3OwPP3nCaxfgznI7/6e1G4DpnRH7WkonqPuGqzVF9ff91R5o1I
+	 LMUflgB2kmX5uWfCtFxx8CMfpv58GNweZA8FzflaJweO8dRqHPp4P33ijJM/2fcJik
+	 TOKYHxKGc6Ias9KLjNXF8lytlWVr9E1RBNrem25U1o6Ae8tkEQJtclinZWsbw2qnrw
+	 6ZgCt73ZFOERw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC4ECCFA0D;
-	Tue,  4 Nov 2025 15:34:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1367ACCFA12;
+	Tue,  4 Nov 2025 15:34:34 +0000 (UTC)
 From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Date: Tue, 04 Nov 2025 15:35:07 +0000
-Subject: [PATCH v4 02/12] iio: dac: ad5446: Use DMA safe buffer for
- transfers
+Date: Tue, 04 Nov 2025 15:35:09 +0000
+Subject: [PATCH v4 04/12] iio: dac: ad5446: Don't ignore missing regulator
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20251104-dev-add-ad5542-v4-2-6fe35458bf8c@analog.com>
+Message-Id: <20251104-dev-add-ad5542-v4-4-6fe35458bf8c@analog.com>
 References: <20251104-dev-add-ad5542-v4-0-6fe35458bf8c@analog.com>
 In-Reply-To: <20251104-dev-add-ad5542-v4-0-6fe35458bf8c@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
@@ -51,11 +50,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1762270508; l=1997;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1762270508; l=1108;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=46famHhMqK6pdPFGxx4pY0sifQUpnrHIY3AH+TPxpr8=;
- b=ALDlYE1NquYKGgazTyb0hXprmbuPRP7TCR9ISRMcP4MU62GqaEyD04k3URvM0kGcyzmUfKnxS
- wBxSGEmTqAtCaiKcRBC8prYyY1Rxn0rqG+WxHhvrLBZPJ2g7pnUXgPB
+ bh=okuknmDZ8VnobvB5MdfQlpCEFH0waLrFc7eKB4aMwI8=;
+ b=9t96c7asVOUQZb8RdHLBsepPuro1xeLexBVTVuuqtkEfKw2LterBxkynt0MfuPixJcYqKHZpO
+ e1ctjkKfH1qCCkTqVeI7tFhhIzLp7CDDNNxsetxCVBDZS5zzst/BLBw
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -65,72 +64,36 @@ Reply-To: nuno.sa@analog.com
 
 From: Nuno Sá <nuno.sa@analog.com>
 
-Make sure to use DMA safe buffer. While for i2c we could be fine without
-them, we need it for spi anyways.
-
-As we now have DMA safe buffers, use i2c_master_send_dmasafe().
+If the chip does not have an internal reference, do not ignore a missing
+regulator as we won't be able to actually provide a proper scale for the
+DAC. Since it's now seen as an error, flip the if() logic so errors are
+treated first (which is the typical pattern).
 
 Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/dac/ad5446.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+ drivers/iio/dac/ad5446.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
-index ad304b0fec08..de5e4e0e397e 100644
+index c0a38f642451..cbe2a6862f10 100644
 --- a/drivers/iio/dac/ad5446.c
 +++ b/drivers/iio/dac/ad5446.c
-@@ -47,6 +47,10 @@ struct ad5446_state {
- 	unsigned			pwr_down_mode;
- 	unsigned			pwr_down;
- 	struct mutex			lock;
-+	union {
-+		__be16 d16;
-+		u8 d24[3];
-+	} __aligned(IIO_DMA_MINALIGN);
- };
- 
- /**
-@@ -265,19 +269,18 @@ static int ad5446_probe(struct device *dev, const char *name,
- static int ad5446_write(struct ad5446_state *st, unsigned val)
- {
- 	struct spi_device *spi = to_spi_device(st->dev);
--	__be16 data = cpu_to_be16(val);
-+	st->d16 = cpu_to_be16(val);
- 
--	return spi_write(spi, &data, sizeof(data));
-+	return spi_write(spi, &st->d16, sizeof(st->d16));
- }
- 
- static int ad5660_write(struct ad5446_state *st, unsigned val)
- {
- 	struct spi_device *spi = to_spi_device(st->dev);
--	uint8_t data[3];
- 
--	put_unaligned_be24(val, &data[0]);
-+	put_unaligned_be24(val, &st->d24[0]);
- 
--	return spi_write(spi, data, sizeof(data));
-+	return spi_write(spi, st->d24, sizeof(st->d24));
- }
- 
- /*
-@@ -489,13 +492,13 @@ static inline void ad5446_spi_unregister_driver(void) { }
- static int ad5622_write(struct ad5446_state *st, unsigned val)
- {
- 	struct i2c_client *client = to_i2c_client(st->dev);
--	__be16 data = cpu_to_be16(val);
-+	st->d16 = cpu_to_be16(val);
- 	int ret;
- 
--	ret = i2c_master_send(client, (char *)&data, sizeof(data));
-+	ret = i2c_master_send_dmasafe(client, (char *)&st->d16, sizeof(st->d16));
- 	if (ret < 0)
+@@ -253,10 +253,11 @@ static int ad5446_probe(struct device *dev, const char *name,
+ 	if (ret < 0 && ret != -ENODEV)
  		return ret;
--	if (ret != sizeof(data))
-+	if (ret != sizeof(st->d16))
- 		return -EIO;
- 
- 	return 0;
+ 	if (ret == -ENODEV) {
+-		if (chip_info->int_vref_mv)
+-			st->vref_mv = chip_info->int_vref_mv;
+-		else
+-			dev_warn(dev, "reference voltage unspecified\n");
++		if (!chip_info->int_vref_mv)
++			return dev_err_probe(dev, ret,
++					     "reference voltage unspecified\n");
++
++		st->vref_mv = chip_info->int_vref_mv;
+ 	} else {
+ 		st->vref_mv = ret / 1000;
+ 	}
 
 -- 
 2.51.0
