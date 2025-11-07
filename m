@@ -1,50 +1,50 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 549432F90CA;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5007C248886;
 	Fri,  7 Nov 2025 20:10:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762546216; cv=none; b=cUf54VWxkDQUz+hDefOy1D6NBZ/clw0T0kZ1F4OdJ1L2B0F9hXQaJyZYXQJdN0bM7ljnKt5grpVpgBLYcRUOMDov2a35OhI4W5UhiIFFNZviLqt/sFm6gLA+kA53ZV6je2yQTI/pemMH9Cqj3+bhogNT2/XLxdKIxIpIWCIss1Y=
+	t=1762546216; cv=none; b=VJ2WsYoTkTYHsPEpAFODF+AI1UD3VE3Z+qc46LtdkGIKUkG7BJUfJRvx5U1Xhy8gURC4sz3/OHdVezyzQ1jSlKhXvk9nXn2CpN80PhOnUUBP29NopaXYndU86OaBc3CxOfT4cN7rIIqQbfMW0LBp4+NJc6msFVJr25tNWWgb0Ac=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1762546216; c=relaxed/simple;
-	bh=cP9DN2wA6tmoni0SP93QiDeuwGHTaMLX9aB3XhWVMFM=;
+	bh=gZxnTDD1Ce1SqG2GR6hS7cmsMjDdgSRDGSuC/N0eyg4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ILtoR6Ahp/ERKTVUf884ia3wigzMud1dyHimtUvAoFOZuJ1VG9dUwNWoYruUPofjDOviJxgT91N41zk6WYqT90RpmDjJ7fOmYfD+vuRXtN2aVaadTlb74kvsdylnrGcrd1XToPfavz+fyLn9lw2c9Z+QVZPU+iBeAdQkFchMPxg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=S6C/qgwy; arc=none smtp.client-ip=198.175.65.14
+	 MIME-Version; b=BSSpDIs5Fx3z/tqHWTCtS3v090ozI1Qvz7XcPEIQGtZhCdmxK4/D6uRH7ql9Z7LMKfmaBCSZvPq5ypDWxdsWyMcfMwwuNRS+3MryFbldG4adErhCC9w9RFzo3m1m2ghsorTzCALcZLkDSCRYu0neaSOm83Gk5GIBLFn/+wrdiKc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eOmJ5Bwj; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="S6C/qgwy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eOmJ5Bwj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762546215; x=1794082215;
+  t=1762546214; x=1794082214;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=cP9DN2wA6tmoni0SP93QiDeuwGHTaMLX9aB3XhWVMFM=;
-  b=S6C/qgwy0oi0Q+Fh8i+aVoaHAzQ2C4W726jITy8IKmUNjv/usyRrWrQK
-   ayIhPHcXhrBxxdttUm+aX6GT1Hz3n3kNLFsA1AwmaW/2NQ61S5tuAhEXI
-   z0zBfrkkkSuaYU7B7qFF+qWT8tWGu7nn2u5Jx0VghOrNnzAmqZ+mHA6Vy
-   ntU62m6qDkufrYkcICGwtg7dk4KRFZNQeUazl5XN6DxMXyK0bmBmruKrR
-   Tpy3DsTl1MQpwIKhETVsCjOmnODxbjkBAPVEJGN3yJYmx9gtpNBFs/Otj
-   npCRAtq3Z14Ome425QsB5aOV/r57+v/RTigZfahj+8HLgn+d4eDHADJNx
-   A==;
-X-CSE-ConnectionGUID: BGCbHhP4RNqQnQMzrj7Itg==
-X-CSE-MsgGUID: P6pRL4vcTSWMy3cXpZRm8A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11606"; a="68539689"
+  bh=gZxnTDD1Ce1SqG2GR6hS7cmsMjDdgSRDGSuC/N0eyg4=;
+  b=eOmJ5BwjY+4oV8lKesMN8lg2CJ3J0skrmMIiSmtNwzL8fBDaxY9CYnXD
+   0GRc/m2dI+Ank1u9pbrH/JW9+hnCXHuESxQ0IASyf0Zt2X2G6NdPzDphK
+   kr3nlrdd7Fbk+IfazKQ7KD+2x5zBaBnowednJdV1SsW4lNWRLeFdm37nR
+   MHBE+xXwycwl+DWVhRcGXLbgF5KUuklWenhs6gSZ554p4p2TNG4rh10vr
+   VNHiqBP6F43JS6vC+2ZdJ18iSF8i+4NvmFLTzMcWN7dNzDCD0UipY+2Ze
+   t3XE1gmUUeq8lcLLu6JhUpUMY/LEj476nZXj8qo4lyDzfG0pqbO3LLci6
+   w==;
+X-CSE-ConnectionGUID: 060Y0LUbQfujMplj2rS4IQ==
+X-CSE-MsgGUID: 43FKdsGySTa2SSHtIwi//g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11606"; a="75392090"
 X-IronPort-AV: E=Sophos;i="6.19,287,1754982000"; 
-   d="scan'208";a="68539689"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2025 12:10:14 -0800
-X-CSE-ConnectionGUID: JYfyRC4TRbabWn4R+B2AhA==
-X-CSE-MsgGUID: tGAtMTO/RqOpbmA3tHb96g==
+   d="scan'208";a="75392090"
+Received: from fmviesa001.fm.intel.com ([10.60.135.141])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Nov 2025 12:10:13 -0800
+X-CSE-ConnectionGUID: yTkssod/RnCj9VKYmQYKAQ==
+X-CSE-MsgGUID: Ptst7ycIQnajgDzbJaPtIA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,287,1754982000"; 
-   d="scan'208";a="187372878"
+   d="scan'208";a="218860981"
 Received: from black.igk.intel.com ([10.91.253.5])
-  by orviesa006.jf.intel.com with ESMTP; 07 Nov 2025 12:10:10 -0800
+  by fmviesa001.fm.intel.com with ESMTP; 07 Nov 2025 12:10:10 -0800
 Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id E820899; Fri, 07 Nov 2025 21:10:09 +0100 (CET)
+	id D9F2896; Fri, 07 Nov 2025 21:10:09 +0100 (CET)
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Hans Verkuil <hverkuil+cisco@kernel.org>,
@@ -62,9 +62,9 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Mauro Carvalho Chehab <mchehab@kernel.org>,
 	"Daniel W. S. Almeida" <dwlsalmeida@gmail.com>
-Subject: [PATCH v2 4/6] iio: cros_ec_sensors: Convert to use PI definition
-Date: Fri,  7 Nov 2025 21:03:02 +0100
-Message-ID: <20251107201005.3156118-5-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 1/6] media: vidtv: Rename PI definition to PI_SAMPLES
+Date: Fri,  7 Nov 2025 21:02:59 +0100
+Message-ID: <20251107201005.3156118-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20251107201005.3156118-1-andriy.shevchenko@linux.intel.com>
 References: <20251107201005.3156118-1-andriy.shevchenko@linux.intel.com>
@@ -76,34 +76,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Convert to use PI definition instead of open coded value of it.
+The definition of PI in the driver is not the actual value in radians,
+but rather degrees. Since we are going to have a value in radians
+defined in a global header, rename this definition to avoid potential
+collisions. No functional changes.
 
+Acked-by: Hans Verkuil <hverkuil+cisco@kernel.org>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/test-drivers/vidtv/vidtv_s302m.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-index 82cef4a12442..e248ba1eb3f9 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-@@ -21,6 +21,7 @@
- #include <linux/platform_data/cros_ec_commands.h>
- #include <linux/platform_data/cros_ec_proto.h>
- #include <linux/platform_device.h>
-+#include <linux/units.h>
- #include <linux/slab.h>
+diff --git a/drivers/media/test-drivers/vidtv/vidtv_s302m.c b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
+index 9da18eac04b5..b3217d643b1e 100644
+--- a/drivers/media/test-drivers/vidtv/vidtv_s302m.c
++++ b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
+@@ -45,7 +45,7 @@
+ #define FF_S302M_DEFAULT_PTS_OFFSET 100000
  
- #define CROS_EC_SENSORS_MAX_CHANNELS 4
-@@ -120,7 +121,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
- 			 * loss. Round to the nearest integer.
- 			 */
- 			*val = 0;
--			*val2 = div_s64(val64 * 3141592653ULL,
-+			*val2 = div_s64(val64 * DIV_ROUND_UP_ULL(PI_LL, GIGA),
- 					180 << (CROS_EC_SENSOR_BITS - 1));
- 			ret = IIO_VAL_INT_PLUS_NANO;
- 			break;
+ /* Used by the tone generator: number of samples for PI */
+-#define PI		180
++#define PI_SAMPLES		180
+ 
+ static const u8 reverse[256] = {
+ 	/* from ffmpeg */
+@@ -259,10 +259,10 @@ static u16 vidtv_s302m_get_sample(struct vidtv_encoder *e)
+ 		if (!ctx->last_tone)
+ 			return 0x8000;
+ 
+-		pos = (2 * PI * ctx->note_offset * ctx->last_tone) / S302M_SAMPLING_RATE_HZ;
++		pos = (2 * PI_SAMPLES * ctx->note_offset * ctx->last_tone) / S302M_SAMPLING_RATE_HZ;
+ 		ctx->note_offset++;
+ 
+-		return (fixp_sin32(pos % (2 * PI)) >> 16) + 0x8000;
++		return (fixp_sin32(pos % (2 * PI_SAMPLES)) >> 16) + 0x8000;
+ 	}
+ 
+ 	/* bug somewhere */
 -- 
 2.50.1
 
