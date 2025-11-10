@@ -1,188 +1,369 @@
-Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECA9F31326F
-	for <linux-iio@vger.kernel.org>; Mon, 10 Nov 2025 15:41:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68914224AE8;
+	Mon, 10 Nov 2025 15:45:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762789314; cv=none; b=A2u9/Rcn+RMChybQrrX2Kp0RrDhyO/lVo4z+whvsWkn6o9wztfxBaklNkzTeM0whzFscYgb1EAKX7w4dg9eD5QXiXN4YxkuVpRxze+hFVSPjXiHKQnqLVtiMCCJtpyButnk8RJO+UohTc4gY3agnydlDExqySP7CEgzXiUnlfaM=
+	t=1762789530; cv=none; b=KiBwLQubP1XnkePV+4Jt3DMQqda15Z3cFzKeVVyhTTzZFWHV/dWdC4k2hgwOgqPE1is/Rzw93XDg/Upzw+kqiajyE4qrPbBT1t/gBzvqUWMPp314ucYCoBSuNIAF3/0NfoLhITaor8Ey0yJm1pBbXSkvWs0Zn3TzAfYkdfBJNpI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762789314; c=relaxed/simple;
-	bh=IBEHosaYIw4Uy2q8CYzcuC+/MKjcxH+HXLEgyNLHiEc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=IBvonMsJXBkoQc4kbu2xXFFFfGgtilMXObzZdY/6R9EuKZDn29XA4cv2RcjWDqk+orcUJJaqJH+3VJOTFIphocbWym+69EiHnnpk78uiNNLkRjBoM9agvvmlI9DmCNrtY73EOhWp0gHGPci80Q7k3KHrudWcNL7/xfIaRsWW7fU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VtMJ9ZVm; arc=none smtp.client-ip=209.85.210.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1762789530; c=relaxed/simple;
+	bh=tGxprLrftAwjCoXRJ+nMUe8IsESY4LQ1oVBr+0IAoZY=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=UYyVBtMXT0i1N2lDSE0nS0HEAWGkED/vImyGDNC1/lA+l7+/hE8LCVY1kiEqDoEom6ftLRgk90AocMrG48PJnUM24mlncCO4u+Y+U/6L/PILBeP5brmlw1K8Y0Y69Dm2m30C37u/G4GmFpwTkmd0VlRJEklTT99SL2zNk34Cpvk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KfjBqVXq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VtMJ9ZVm"
-Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-7b4933bc4bbso1004318b3a.1
-        for <linux-iio@vger.kernel.org>; Mon, 10 Nov 2025 07:41:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1762789312; x=1763394112; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=/ylq5ip16KIlNEm4q5Drc6EevlzHi/eE660ukaOSOxw=;
-        b=VtMJ9ZVmyhkYlREYDhuIP/MGHIeqIrH8d9SKCs4YNq6LqjSPiaIAjiKoPLnmDhvbTX
-         OknozvPCaRJOSApwEiqdz0D3Swz6niOUIKUDq85P6q8R1PVTfK2YIe4N/RIhH3JnMkeO
-         ck/BBOYNtHsxdb5j3YkqFgL9odOF3fOFYxHujKxXXJ5vcKRzFpSmW3qf8zEgNEpes3qr
-         03FpkWFAgbfgiojS14yLcN5QgRcZuIEcdgOqRaIG2WWuPQbYS6h0o/OEikWMfgzDv1ep
-         Zi4XwmUJUw/Y6v8TAtEYjPN5OP67B9FvgKnzNhwq6QZBKOyJu1I+aXRob/AYt0QB+zpD
-         OYgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762789312; x=1763394112;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=/ylq5ip16KIlNEm4q5Drc6EevlzHi/eE660ukaOSOxw=;
-        b=sMFq4zwnXbjXwHZ3xsdJVtWG/oC3hKjpCLou/UVEnoAwEVada0MMUuJ0N25RXL+VdW
-         gbG+aAu38W30sXgdhV+n42wvH3gSH2EGHezgsrWlwWcMcX02mtghRK0M05DHkVN4gWHn
-         T3wJdg2c9XVoG8mP5q2hOJNxHrY1pVCXIohLrIAFsNfO47qcWVb5YXAJ5ulA1EVCt/9e
-         qges/sDa9hswdgqRI0JByIGGIozaR4pZCygkWKoq/+kgB7h+jbJ9OvTgRAkSUGJqKIwu
-         ZDPUszA1u+XmyQvOJJ772a3NLVk4T6uAZ2vDsObzDCYRtd08Uhap3irZk6QLom5yGH3j
-         oLaA==
-X-Forwarded-Encrypted: i=1; AJvYcCXfBTGYW6vDv2KP4f5lJf8SXMrH0FcwNs+UmQUvSXwb1OS8+MeWwRFaW8nUyNWR76RSobCt6Qe4qr0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx1GTT2pvNw9pKtjPe0iSNROCjWJQ6LHpHhkVOXskj/8dN82aCL
-	XkRdMR+SuQ7ndBDBY1oHvt9FYXcVMGA5WhJOYyyrgbXNAqH8/ykAOLS0
-X-Gm-Gg: ASbGncsuD4AFGSnARLqs3OQsEhlUMVO2JNyENigG02QAKTbgzXLc7qZrybn9grotb16
-	uIBcizNYj8v9dOOdnjVO82fF2QhqEFcFWt5lRJMKzKsarYbqeKjkgZ8xPCIfI+R+8ebrRxSZfE9
-	Rjb0topbZXC2Ee7HpdVfUgCyeRKnzE1Vn91gAPbfL9ABXbsxWdbApMEPCiYOK91oNkT7W2DqDnF
-	KeK7yOemK6sp8hqYQGJflgaY/Ot/f3jlPoAWLSRd2mc65LtpV5iuErKBGtVpKRC3dEJxtNQVE2p
-	d5u8ZFuEO5Xu8lthQUgUVHcqoycNjTXYfdGQJOHG9NO37jCsKRt5djsNqeV7elyL2hzv42bPpBk
-	S9DdHKYB5CaP/iwD+eWg2mpnQxpW7gl6DbaZ0kxljIt21lWJ2yXOaC9+PIxLj8bgf9kt4/8pNkt
-	L4njJa+1myow==
-X-Google-Smtp-Source: AGHT+IH2AanJ/xvo0tNEHTz1Ql1SAqJGcv6JRo7rtSuZftddi6C1S80+uwRJGFeK0pubFMUbdbyzbA==
-X-Received: by 2002:a05:6a00:3213:b0:7ae:b13f:37c2 with SMTP id d2e1a72fcca58-7b14a1206aemr10855026b3a.10.1762789312083;
-        Mon, 10 Nov 2025 07:41:52 -0800 (PST)
-Received: from localhost ([2804:30c:1661:8a00:578a:911c:ac25:24a6])
-        by smtp.gmail.com with UTF8SMTPSA id d2e1a72fcca58-7b0cc76c0dbsm12121713b3a.51.2025.11.10.07.41.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Nov 2025 07:41:51 -0800 (PST)
-Date: Mon, 10 Nov 2025 12:43:09 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
-	dlechner@baylibre.com, andy@kernel.org,
-	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, corbet@lwn.net, cosmin.tanislav@analog.com
-Subject: Re: [PATCH v1 0/3] iio: adc: Add AD4134 minimum I/O support
-Message-ID: <aRIIDTUR5Pyz1Rxi@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1762777931.git.marcelo.schmitt@analog.com>
- <aRHgaXxxnD5YsIQQ@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KfjBqVXq"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E083AC116D0;
+	Mon, 10 Nov 2025 15:45:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762789530;
+	bh=tGxprLrftAwjCoXRJ+nMUe8IsESY4LQ1oVBr+0IAoZY=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=KfjBqVXqSXm10xxchP+gqjfb96ScZCWi40kfdsNGtiHo6bnYXgaPJrbjIsGhJlPV2
+	 Soto2ZMOfPsZtifQXcDO/Xqxl6VLnsImjc8/hnhzCNFdoYSKvX35UwFJa6QXFUEMVT
+	 3+FVRVU7dp+oZ9w43QdUYihny72mR0uNt7b3MyL50AmMnmRE8kp10xlpANULXcDNal
+	 rjnF9gRdYFv5dLjMCTCgaY66tONPfyOZeec2jaPzLNiC/JzGtPpF3Y8b1HPoWj51Pz
+	 CrAQxvtNJ873s3Ux++P2YrLmJ7gB7rD4YYBSbkndI+3PXrxQ8g5GeOjg6Aj/6Ecboc
+	 NQbDyjtUGogMA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5916CD1297;
+	Mon, 10 Nov 2025 15:45:29 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Mon, 10 Nov 2025 15:44:45 +0000
+Subject: [PATCH 2/3] dt-bindings: iio: frequency: add adf41513
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aRHgaXxxnD5YsIQQ@smile.fi.intel.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Message-Id: <20251110-adf41513-iio-driver-v1-2-2df8be0fdc6e@analog.com>
+References: <20251110-adf41513-iio-driver-v1-0-2df8be0fdc6e@analog.com>
+In-Reply-To: <20251110-adf41513-iio-driver-v1-0-2df8be0fdc6e@analog.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org, linux-doc@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+ Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1762789528; l=10076;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=lVwojzT6WizUcRBWmB0UObJnWFpsQQtx46u9qWYqXPk=;
+ b=qag8YCAvMAps567tUXFTXniKVEZnj5V2mENJlLRLZblYYhjBulcN02vGl4wTne98lGQGoZPfw
+ R0RSSWRvAG/BszqaaBWExVZ58uArfTtsIRlAi+aKqmeKPJZRqu1Y0/b
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-Hi Andy,
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-On 11/10, Andy Shevchenko wrote:
-> On Mon, Nov 10, 2025 at 09:44:56AM -0300, Marcelo Schmitt wrote:
-> > This patch series adds basic support for ad4134. AD4134 is a very flexible
-> > device that can be configured in many different ways. This series aims to
-> > support the simplest way of interfacing with AD4134 which is called minimum I/O
-> > mode in data sheet. This is essentially usual SPI with the addition of an ODR
-> > (Output Data Rate) GPIO which functions as conversion start signal in minimum
-> > I/O mode. The CS pin may be connected to a host controller CS pin or grounded.
-> > 
-> > This set provides just one feature:
-> > - Single-shot ADC sample read.
-> > 
-> > [PATCH 1] Device tree documentation for AD4134.
-> > [PATCH 2] IIO Linux driver for AD4134.
-> > [PATCH 3] Initial IIO documentation.
-> > 
-> > There is a driver by Cosmin on ADI Linux tree that supports AD4134 in wiring
-> > configurations suited for high speed data transfers. Even though the minimum I/O
-> > support was initialy based on that high speed transfer driver, the result ended
-> > up becoming entirely different. Also, because the different wiring
-> > configurations are likely going to use different resources and software
-> > interfaces, the code for AD4134 support was split into ad4134-spi.c,
-> > ad4134-common.h, and ad4134-common.c.
-> 
-> The cover letter misses the answer to: "Why do we need a brand new driver?
-> Don't we have anything similar already in IIO that can be expanded to cover
-> this one?"
+ultralow noise PLL frequency synthesizer that can be used to
+implement local oscillators (LOs) as high as 26.5 GHz
 
-Ah sorry about that, let me provide more context.
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ .../bindings/iio/frequency/adi,adf41513.yaml       | 268 +++++++++++++++++++++
+ MAINTAINERS                                        |   1 +
+ 2 files changed, 269 insertions(+)
 
-ADI has a design called AD4134 which people would like to use with Linux.
-This is another fast sample rate ADC that would need SPI offload support to
-reach maximum sample rate. The driver I mentioned above provides support for the
-SPI offload use case but, it has not been reviewed nor merged to mainline Linux
-(at least as far as I'm aware of). I also searched the lore and found no
-previous matches for ad4134. So, we currently have no driver supporting AD4134
-on mainline Linux.
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
+new file mode 100644
+index 000000000000..7e1ad80d68af
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
+@@ -0,0 +1,268 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,adf41513.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices ADF41513 PLL Frequency Synthesizer
++
++maintainers:
++  - Rodrigo Alencar <rodrigo.alencar@analog.com>
++
++description:
++  The ADF41513 is an ultralow noise frequency synthesizer that can be used to
++  implement local oscillators (LOs) as high as 26.5 GHz in the upconversion and
++  downconversion sections of wireless receivers and transmitters. The ADF41510
++  supports frequencies up to 10 GHz.
++
++  https://www.analog.com/en/products/adf41513.html
++  https://www.analog.com/en/products/adf41510.html
++
++properties:
++  compatible:
++    enum:
++      - adi,adf41510
++      - adi,adf41513
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 25000000
++
++  clocks:
++    maxItems: 1
++    description: Clock that provides the reference input frequency.
++
++  '#clock-cells':
++    const: 0
++
++  clock-output-names:
++    maxItems: 1
++
++  vcc-supply:
++    description: Power supply for the device (3.3V)
++
++  chip-enable-gpios:
++    description:
++      GPIO that controls the chip enable pin. A logic low on this pin
++      powers down the device and puts the charge pump output into
++      three-state mode.
++    maxItems: 1
++
++  lock-detect-gpios:
++    description:
++      GPIO for lock detect functionality. When configured for digital lock
++      detect, this pin will output a logic high when the PLL is locked.
++    maxItems: 1
++
++  adi,power-up-frequency:
++    $ref: /schemas/types.yaml#/definitions/uint64
++    minimum: 1000000000
++    maximum: 26500000000
++    default: 10000000000
++    description:
++      The PLL tunes to this frequency (in Hz) on driver probe.
++      Range is 1 GHz to 26.5 GHz for ADF41513, and 1 GHz to 10 GHz for ADF41510.
++
++  adi,reference-div-factor:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    minimum: 1
++    maximum: 32
++    description:
++      Reference division factor (R Counter). If not specified, the driver
++      will calculate the optimal value automatically.
++
++  adi,reference-doubler-enable:
++    description:
++      Enables the reference doubler. The maximum reference frequency when
++      the doubler is enabled is 225 MHz.
++    type: boolean
++
++  adi,reference-div2-enable:
++    description:
++      Enables the reference divide-by-2 function. This provides a 50%
++      duty cycle signal to the PFD.
++    type: boolean
++
++  adi,charge-pump-current-microamp:
++    minimum: 450
++    maximum: 7200
++    default: 2400
++    description:
++      Charge pump current in microamps. The value will be rounded to the
++      nearest supported value.
++
++  adi,charge-pump-resistor-ohms:
++    minimum: 1800
++    maximum: 10000
++    default: 2700
++    description:
++      External charge pump resistor value in ohms. This sets the maximum
++      charge pump current along with the charge pump current setting.
++
++  adi,muxout-select:
++    description:
++      On chip multiplexer output selection.
++      high_z - MUXOUT Pin set to high-Z. (default)
++      muxout_high - MUXOUT Pin set to high.
++      muxout_low - MUXOUT Pin set to low.
++      f_div_rclk - MUXOUT Pin set to R divider output
++      f_div_nclk - MUXOUT Pin set to N divider output
++      lock_detect - MUXOUT Pin set to Digital lock detect
++      serial_data - MUXOUT Pin set to Serial data output
++      readback - MUXOUT Pin set to Readback mode
++      f_div_clk1 - MUXOUT Pin set to CLK1 divider output
++      f_div_rclk_2 - MUXOUT Pin set to R divider/2 output
++      f_div_nclk_2 - MUXOUT Pin set to N divider/2 output
++    enum: [high_z, muxout_high, muxout_low, f_div_rclk, f_div_nclk, lock_detect,
++           serial_data, readback, f_div_clk1, f_div_rclk_2, f_div_nclk_2]
++
++  adi,muxout-level-1v8-enable:
++    description:
++      Set MUXOUT and DLD logic levels to 1.8V. Default is 3.3V.
++    type: boolean
++
++  adi,phase-detector-polarity-positive-enable:
++    description:
++      Set phase detector polarity to positive. Default is negative.
++      Use positive polarity with non-inverting loop filter and VCO with
++      positive tuning slope, or with inverting loop filter and VCO with
++      negative tuning slope.
++    type: boolean
++
++  adi,lock-detect-precision:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    minimum: 0
++    maximum: 3
++    description:
++      Lock detector precision setting. Controls the sensitivity of the
++      lock detector. Lower values of precision increases the lock detector
++      window size.
++
++  adi,lock-detect-count:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    minimum: 0
++    maximum: 7
++    description: |
++      Lock detector count setting (3-bit value). Determines the number of
++      consecutive phase detector cycles that must be within the lock detector
++      window before lock is declared. The count grows in powers of two of the
++      programmed value:
++      - if adi,fast-lock-enable is set count = 2 * 2^value
++      - if adi,fast-lock-enable is not set count = 64 * 2^value
++
++  adi,lock-detect-bias-microamp:
++    description:
++      Lock detector bias current. Controls the lock detector window size
++      along with the lock detector precision setting. Lower bias current
++      increases the window size.
++    enum: [10, 20, 30, 40]
++
++  adi,fast-lock-enable:
++    description:
++      Enable fast lock mode. This changes the lock detector clock selection
++      for faster lock indication.
++    type: boolean
++
++  adi,phase-resync-enable:
++    description:
++      Enable phase resync functionality. This produces a consistent output
++      phase offset with respect to the input reference.
++    type: boolean
++
++  adi,12bit-clk-divider:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    minimum: 0
++    maximum: 4095
++    description:
++      CLK1 divider value used when adi,phase-resync-enable is set
++
++  adi,12bit-clk2-divider:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    minimum: 0
++    maximum: 4095
++    description:
++      CLK2 divider value used when adi,phase-resync-enable is set
++
++  adi,le-sync-enable:
++    description:
++      Synchronize the rising edge of LE on an SPI write with the falling
++      edge of the reference signal to prevent glitches.
++    type: boolean
++
++  adi,freq-resolution:
++    $ref: /schemas/types.yaml#/definitions/uint64
++    minimum: 1
++    default: 1000000
++    description:
++      Initial frequency resolution in micro-Hz (µHz) for the algorithm to achieve.
++      This influences the choice between fixed and variable modulus modes.
++      Default is 1000000 µHz (1 Hz).
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - vcc-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pll@0 {
++            compatible = "adi,adf41513";
++            reg = <0>;
++            spi-max-frequency = <10000000>;
++            clocks = <&ref_clk>;
++            vcc-supply = <&vcc_3v3>;
++            #clock-cells = <0>;
++
++            adi,power-up-frequency = /bits/ 64 <12000000000>;
++            adi,charge-pump-current-microamp = <2400>;
++            adi,phase-detector-polarity-positive-enable;
++        };
++    };
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        /* Example with advanced features enabled */
++        pll_advanced@0 {
++            compatible = "adi,adf41513";
++            reg = <0>;
++            spi-max-frequency = <25000000>;
++            clocks = <&ref_clk>;
++            vcc-supply = <&vcc_3v3>;
++            chip-enable-gpios = <&gpio0 10 GPIO_ACTIVE_HIGH>;
++            lock-detect-gpios = <&gpio0 11 GPIO_ACTIVE_HIGH>;
++            #clock-cells = <0>;
++            clock-output-names = "adf41513_clk";
++
++            adi,power-up-frequency = /bits/ 64 <15500000000>;
++            adi,charge-pump-current-microamp = <3600>;
++            adi,charge-pump-resistor-ohms = <2700>;
++            adi,reference-doubler-enable;
++            adi,muxout-select = "lock_detect";
++            adi,lock-detect-precision = <1>;
++            adi,lock-detect-count = <4>;
++            adi,lock-detect-bias-microamp = <40>;
++            adi,fast-lock-enable;
++            adi,phase-resync-enable;
++            adi,12bit-clk-divider = <1>;
++            adi,12bit-clk2-divider = <200>;
++            adi,le-sync-enable;
++            adi,freq-resolution = /bits/ 64 <1000000>;
++            adi,phase-detector-polarity-positive-enable;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8df4a0d216c8..1bbcff826238 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1606,6 +1606,7 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
+ F:	drivers/iio/frequency/adf41513.c
+ 
+ ANALOG DEVICES INC ADF4377 DRIVER
 
-Why not just upstreaming the SPI offload support driver for AD4134? To achieve
-the highest sample rates, the AD4134 provides a dedicated set of lines (DOUT0 to
-DOUT3) to output ADC sample data. We would need to describe and manage an
-additional bus this part (an SPI bus for configuration, and a data bus to read
-ADC conversions). In ADI tree + HDL, the data bus is read through SPI-Engine
-as usual SPI data and a second SPI controller interface is used for normal SPI
-commands. The setup actually uses two AD4134 devices and is more or less like
-the diagram below.
-
-::
-
-                                                              +-------------+
-  +----------------------+                                    |  DATA HOST  |
-  |       AD4134         |                                    | (SPI-ENGINE)|
-  |                      |                                    |             |
-  |Data interface  DOUT0 |----------------------------------->| GPI0        |
-  |for ADC data    DOUT1 |----------------------------------->| GPI1        |
-  |read back       DOUT2 |----------------------------------->| GPI2        |
-  |                DOUT3 |----------------------------------->| GPI3        |
-  |                DCLK  |<--------------+        +---------->| GPI4        |
-  |                ODR   |<------------+ |        | +-------->| GPI5        |
-  |                      |             | |        | | +------>| GPI6        |
-  |                      |             | |        | | | +---->| GPI7        |
-  | SPI interface   CS   |<-------+    | +--------|-|-|-|-+---| DCLK        |
-  | for register    SCLK |<-----+ |    |          | | | | |   |             |
-  | access          SDI  |<---+ | |    |          | | | | |   | TRIGGER     |
-  |                 SDO  |--+ | | |    |          | | | | |   +-------------+
-  +----------------------+  | | | |    +----------|-|-|-|-|-+     ^
-                            | | | |               | | | | | |     |
-  +----------------------+  | | | | +-----------+ | | | | | | +---+
-  |       AD4134         |  | | | | |   HOST    | | | | | | | |
-  |                      |  | | | | |(ZED PS SPI) | | | | | | |  +------------+
-  | SPI interface   CS   |<-|-|-|-+-| CS        | | | | | | | |  | PULSE      |
-  | for register    SCLK |<-|-|-+---| SCLK      | | | | | | | |  | GENERATOR  |
-  | access          SDI  |<-|-+-----| MOSI      | | | | | | | |  |(AXI PWM GEN)
-  |                 SDO  |--+------>| MISO      | | | | | | | |  |            |
-  |                      |          +-----------+ | | | | | | +--| OUT0       |
-  |                      |                        | | | | | +----| OUT1       |
-  |Data interface  DOUT0 |------------------------+ | | | | |    +------------+
-  |for ADC data    DOUT1 |--------------------------+ | | | |
-  |read back       DOUT2 |----------------------------+ | | |
-  |                DOUT3 |------------------------------+ | |
-  |                DCLK  |<-------------------------------+ |
-  |                ODR   |<---------------------------------+
-  +----------------------+
+-- 
+2.43.0
 
 
-Luckily, for handling the dedicated data bus, we might benefit from the multi-bus
-support [1] in the future. Though, the high speed setup has other implied
-intricacies such as an additional periodic signal (ODR) being required to sample
-data in addition to DCLK.
-
-[1]: https://lore.kernel.org/linux-iio/20251107-spi-add-multi-bus-support-v2-0-8a92693314d9@baylibre.com/
-
-Although we got that working on ADI tree, there are some aspects of the high
-speed driver that could be improved before upstreaming, IMHO.
-So, to start with something less overwhelming, I thought of trying the minimum
-I/O mode first (a.k.a. usual SPI interface). Note that the -common parts of the
-driver are intended to be reusable by the high speed driver when we get to
-upstreaming that. Also, by the way, that high speed driver doesn't support
-minimum I/O mode and the intent is that the drivers will provide complementary
-ways of interfacing with AD4134.
-
-With best regards,
-Marcelo
