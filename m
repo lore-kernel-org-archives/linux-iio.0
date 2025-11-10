@@ -1,53 +1,53 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83797305066;
-	Mon, 10 Nov 2025 16:38:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71548285071;
+	Mon, 10 Nov 2025 16:41:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762792703; cv=none; b=NpCS2oBUGM/XHPdxgYqYUzwdOUZaMF1RopzGgds0itq6ID0vZ6rJSFhYckUf0B9z+ET31UN+4kjw32Q/ct1kYU1Kwp9unFkKIqVw5xh+FMJw1L890L98EQz8R719GmS8IPNF/pf7tVnu1CZ17p5yvBxNSV9FZOt28nb3FKvYfzY=
+	t=1762792896; cv=none; b=Lk3c20nG5NjMvWokt9kfrb/cMn+JFOTLGKleCvYeW+kj+6RteblbGP+FQVpD49haxxuJhMqZzNOkUeK6IZmLsABn0mweamttq9B6jTCLkjGna1NYpbot1rZzSsfSpim7NkwwdZ9a/0dLt9LR4c4XvMzGUNJRH87u2MoQPUX9Is0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762792703; c=relaxed/simple;
-	bh=fLzd+VRzKDe+3L+miM0mvnpuDsl++gErPafaJMrhHLs=;
+	s=arc-20240116; t=1762792896; c=relaxed/simple;
+	bh=+JaRnn6TOFncnY8V8tno8RX9mMo3XnHLQl5ZHhchGwM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RsqE7eryg5zp1T2+8EBICQBbaLPH/1QU5VR25jf5bOr59wUT/zeGl/QOTY8ziO0oXhazr0khKYkYaGEXQS9bRt0ireNNvP/ylBf3KO/WAucDTxScOcrcVdl/R0GdpWOj3lv9Wtj/Dk5Us+KniHHiy39/4zNl9P8O9EHH0djxkVo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UDtuIYwE; arc=none smtp.client-ip=198.175.65.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=gI2+79UM9j5ioqixZWDV/vPuNhDiKYIM8X0jOY3sJpLzmfYhR3lEu+qTXZUWkIJYhkxXasp4SIbzRJ/Kd79lZDl4aBpc4j0oW3GaAbFWqrzM1a9Wuj4W7h3RfP+WVk9iv8kjgvE9BEDz/W7lGj2bkhANMjoed23X9YZIcyUmT7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TwEkKaEv; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UDtuIYwE"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TwEkKaEv"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762792701; x=1794328701;
+  t=1762792895; x=1794328895;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fLzd+VRzKDe+3L+miM0mvnpuDsl++gErPafaJMrhHLs=;
-  b=UDtuIYwEcifr2twarGZYdwjXXgdpQSe7fg4PiSJ1AukfXEOyJGHpY98+
-   k3Oljzk6cj94X6ohwKSZr93e/EXPh9C9ndo1cxEMnoIHsXT1hj8qrAv4u
-   Qwex6ecka3TZvMq09qdRpj+6kLFwFkPTbxh/9S3DRalrrnS6SpMnzW6GL
-   GTQp9oKxdlzDiE0mLAzg+63Lp6mG3ufntenQXUqDke/5R3M7/gGNrAqLP
-   smbd5yGJBj8X1Q8gtsEZFMWfwrZwa/5BfsjRxm6WtWjb4t9geR/HIwGtt
-   mv0+MaOiCMZCpqeW6wdjnJnlxlFIcFdQ1Rc5FAOl4Gg9uGnskwSUOWMMM
-   A==;
-X-CSE-ConnectionGUID: BotMA2rGTISWukGZuWf0Pg==
-X-CSE-MsgGUID: IkNlKB+cTVOLschNw71gHQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11609"; a="65002515"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=+JaRnn6TOFncnY8V8tno8RX9mMo3XnHLQl5ZHhchGwM=;
+  b=TwEkKaEv1/cUSGxDDzvdXOlyr7/B8sqpB0o7FlUygLjSr0SJTjgmVHUF
+   jlqFrwTy62rzRQOiFd+ofVYPCTPX/Qxu4FU6hjItr++PmYlUx+IGk8P9B
+   nellj32u8vZ785UygSZhyWUKP07CFLTffoZFk+gEoaJIZpX0J6ZiF19Op
+   BsxKzGvIRJ3IOIAc/iANpQEB9JFK4SNMNsTJhSF60qmnyWyKNUEArZCXF
+   aG5EyWkskZTpNhBVS6AIZ61Wtb9YUa/5V3tCpSqIAU8Oqz7g69hIQNTSq
+   uJYDCNOHYcde8XhjwZ3HJ+Q6jCoL3sh+H8U6vVjr2NQ2Rca5A4d4pGG1R
+   w==;
+X-CSE-ConnectionGUID: IVNECE2HQyWga069usm/ug==
+X-CSE-MsgGUID: o93Db2ewSzSG29PL51HLFg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11609"; a="75532349"
 X-IronPort-AV: E=Sophos;i="6.19,294,1754982000"; 
-   d="scan'208";a="65002515"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 08:38:21 -0800
-X-CSE-ConnectionGUID: 72YtJHcySWevO5D6mmsIlg==
-X-CSE-MsgGUID: idgDsCzOSomtSbUEqOFZ+w==
+   d="scan'208";a="75532349"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 08:41:34 -0800
+X-CSE-ConnectionGUID: OkxH/shdQ7O3addLoVZBbg==
+X-CSE-MsgGUID: HTwgO6D2RVyzJn4eMqNJbQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.19,294,1754982000"; 
-   d="scan'208";a="188669479"
+   d="scan'208";a="193096616"
 Received: from kniemiec-mobl1.ger.corp.intel.com (HELO ashevche-desk.local) ([10.245.245.235])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 08:38:18 -0800
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Nov 2025 08:41:31 -0800
 Received: from andy by ashevche-desk.local with local (Exim 4.98.2)
 	(envelope-from <andriy.shevchenko@intel.com>)
-	id 1vIUuF-00000007W0X-1St9;
-	Mon, 10 Nov 2025 18:38:15 +0200
-Date: Mon, 10 Nov 2025 18:38:15 +0200
+	id 1vIUxL-00000007W2x-3TGZ;
+	Mon, 10 Nov 2025 18:41:27 +0200
+Date: Mon, 10 Nov 2025 18:41:27 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: rodrigo.alencar@analog.com
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -61,50 +61,42 @@ Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
 	Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH 0/3] ADF41513/ADF41510 PLL frequency synthesizers
-Message-ID: <aRIU94elwpjiUDMc@smile.fi.intel.com>
+Subject: Re: [PATCH 1/3] iio: frequency: adf41513: driver implementation
+Message-ID: <aRIVt5zpWmlBVjyh@smile.fi.intel.com>
 References: <20251110-adf41513-iio-driver-v1-0-2df8be0fdc6e@analog.com>
+ <20251110-adf41513-iio-driver-v1-1-2df8be0fdc6e@analog.com>
+ <aRITLaJir-2IoclU@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20251110-adf41513-iio-driver-v1-0-2df8be0fdc6e@analog.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aRITLaJir-2IoclU@smile.fi.intel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Nov 10, 2025 at 03:44:43PM +0000, Rodrigo Alencar via B4 Relay wrote:
-> This patch series adds support for the Analog Devices ADF41513 and ADF41510
-> ultralow noise PLL frequency synthesizers. These devices are designed for
-> implementing local oscillators (LOs) in high-frequency applications.
-> 
-> The ADF41513 covers frequencies from 1 GHz to 26.5 GHz, while the ADF41510
-> operates from 1 GHz to 10 GHz. Both devices feature exceptional phase noise
-> performance and flexible frequency synthesis capabilities.
-> 
-> Key features supported by this driver:
-> - Integer-N and fractional-N operation modes
-> - Ultra-low phase noise (-235 dBc/Hz integer-N, -231 dBc/Hz fractional-N)
-> - High maximum PFD frequency (250 MHz integer-N, 125 MHz fractional-N)
-> - 25-bit fixed modulus or 49-bit variable modulus fractional modes
-> - Programmable charge pump currents with 16x range
-> - Digital lock detect functionality
-> - Phase resync capability for consistent output phase
-> - Clock framework integration for system clock generation
-> 
-> The series includes:
-> 1. Core driver implementation with full register programming support
-> 2. Device tree bindings documentation
-> 3. IIO subsystem documentation with usage examples
-> 
-> The driver integrates with both the IIO subsystem (for direct hardware control)
-> and the Linux clock framework (for use as a system clock source), providing
-> flexibility for different use cases.
+On Mon, Nov 10, 2025 at 06:30:38PM +0200, Andy Shevchenko wrote:
+> On Mon, Nov 10, 2025 at 03:44:44PM +0000, Rodrigo Alencar via B4 Relay wrote:
 
-When cover letter is better than the commit message :-)
+...
+
+> In any case, I stopped my review here, you have more than enough to fix.
+> Please, come next time with a tag from one whose name is in the MAINTAINERS.
+> From now on it will be my requirement as a reviewer of IIO subsystem.
+
+And to be more clear on this requirement (for all submissions from @analog.com
+and related): A name from approximately below list I want to see as Rb.
+
+	Antoniu Miclaus <antoniu.miclaus@analog.com>
+	Marcelo Schmitt <marcelo.schmitt@analog.com>
+	Michael Hennerich <michael.hennerich@analog.com>
+        Nuno Sá <nuno.sa@analog.com>
+
+(those people seems experienced and I have heard of / from).
 
 -- 
 With Best Regards,
