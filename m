@@ -1,118 +1,104 @@
-Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8541313E06
-	for <linux-iio@vger.kernel.org>; Mon, 10 Nov 2025 16:45:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 262F828D829;
+	Mon, 10 Nov 2025 17:04:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762793135; cv=none; b=fde0DzO2Gh92rc1UvpMd4uIcr+z7d+jYGWDakWojIpkfn9T1/rrcz17SSRpg0RUrm29FZb7y5NdiPYrsqVQDIsj8FhSjp1V3RKhjnq5EPv+5NXt4tKlvohogtcfeHrnkUG44GaECPkHiP9POyPziYSouRMFLX9Zh0yXz4BIR9DM=
+	t=1762794249; cv=none; b=pUbX9ls2BYefcEXjHN00vxm1i4F164H7eTk7CdMKu5OH9yBivweV64THPckM5NeZDy/C5OG4nTqAImymHUxPIx6nglMgT8cQOPRXb/RJvLQZHRq5oL/BWBgNPb7OCjUgETkGEjzFeG5Mk5FJmqH5u987B8iZKxIdxOJLbAiqAcY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762793135; c=relaxed/simple;
-	bh=bgCzKrhzMsbjtyucE9Wji1o3OOtYybWdKrlZ1ecTWTE=;
+	s=arc-20240116; t=1762794249; c=relaxed/simple;
+	bh=GlWEUJ81HuML3QniPfob+FZyBGIp/OgbbJgntqBpGV0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=kUOU6+69ars5elKd2KG5soF8QDU+tn5vGxvw1jZAE9LYdaROVTEZUQv+mgMYo/lQ0y8TePwQPy54sE664pyXsUdb3W60atNfv33gtZaWaXCJv1qso8WINZACt11cNmqtLCmpdz8b3myr8bV1F/c4chkXYnfy1kx8o3IMPrVzZtE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nV3j4stb; arc=none smtp.client-ip=209.85.215.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=WYflYcfTK1r2rQUZcGIdzeKNqaJFwcZecFJnEpe1YrmFx6CfoN2yjCSmYhDqZXYpTub+4mce3PcON4ga5KxaTimcwwVseJUGL+zxLxO/qqhT1D50ZHVL6pL7I8ZIMNqooW5Mwwv0l3s+eal4EmKZuhlH75esnUAOS1P/+plQ1pU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V/f8290t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nV3j4stb"
-Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-b593def09e3so2011134a12.2
-        for <linux-iio@vger.kernel.org>; Mon, 10 Nov 2025 08:45:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1762793133; x=1763397933; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=ejgzWIAmMtwDeIAONVbXRMu0MknYB8VkcpRxQd2rWvU=;
-        b=nV3j4stbm+vcaGq0c5YHStIInJnhL8I54TPjZHDp6q0rY3KJdBeU2LdLBV+A8PMLNd
-         3UDAcZroJ2/4u1ohtPKCixAdo5DMgRp2pTa42z705lK6Wh1wbqoz5w7yKpZlwP+YwK1d
-         FXnwb72f4hCaWLFToIN26L5qlwRTbbqvPDgUPiPgNFY9ZFeg4nRg10UdtOeHyebrPBLV
-         hW8pIVyoJkAu/yL6AeYS3+gn9fIGyx3klbslQG0NE+ySA5owcPBHKAMKkJ6LUUbPA7hq
-         jyAh0y2ElV8g7ZXuLNUfRXPtZ5ThaRkUiYl0HTwaUGr+FTOUYjQdjLUJhmRyo5hoaOms
-         P+sQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1762793133; x=1763397933;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=ejgzWIAmMtwDeIAONVbXRMu0MknYB8VkcpRxQd2rWvU=;
-        b=Zimrpx3XyiO+ju9++rxRMvWM5DGt1JHMly5qwmW7k/eaqoA0OwZkxXetAK5fY0JF0n
-         vV5TXcxdHHe4UIs2qsEXOUsXy7gif40db9r8aNHjLMRvdDN+1kMATtbNNbItkZIlcCwW
-         KBqUM7ZD5OfV/xCLySR53jciEuYyqI7OFa1rxy7gBVqFiGMnyUOgyQtEAIK88Utx6JQx
-         9dBHWEswAHy8BUs1axRQHG+eOZNXgXtrqlWS/7Ap1wdlC3P2X7bXSlC+BnERmSisMiER
-         rFCbNTBwJ4tHtkC4JcC09yEvBLvUclXiM0c818LkaDQ55bQ/VD5EZU0C3DlNsDnMrKX4
-         BNMQ==
-X-Forwarded-Encrypted: i=1; AJvYcCW0F03jr2gjbWZ7FusnzuHpX4bocBM0urXxgbJoZgHc8/oIl4CIf120JRB3JelmPhB+L0SvYbbRJVA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw8rMxQEbkwJgEK1eQo+hhafo31JCbsykoWA1MRlvlu28jbWovH
-	BpJ03czkkABZuUYRd22YypKrGlGNyIt7SvJ1KQNtEtE0oD+QJRFlbhg4
-X-Gm-Gg: ASbGnctYQ1jlhgyf3s48Rol0+aPNXeU3JWBodedlEisLnQs71SuZ75mBXicfCQqD59w
-	agcWbdIkKJHpNnwiaBYJ5duKGM4r2Yqiw230XcM2ySGj0OXKWzAVDClIOACqmwuO/a/hYaw1KFc
-	kWHGxpOO+bw+E9oSVRXACeUAhdpbXX5U+Mgt24VTwn3a+SKh3yUjBsII1qqXwk/FomSp5ItVs2f
-	3gvPwvHY5k3YV1tOHbtz63OS4kngi/Ix31RK4VhE5r3wjur+dUQIp7q3FQt/dfzdWTyQC9909Bg
-	hjjrY9admFsIg/MDk4oFEVD0yUR0ocSyPGmLK28h+eF9+ESY+ZaBEGjhT6IkwuYbcnsAnSO+gFX
-	R/RTlsoicmreCHysu0wvZQ8Lkm/0TWG5YTPvIxKA7l5rWDnt29tsG4CTKRSd/JSbc+Q/2ALk0FJ
-	+1qp6GDZdmKQ==
-X-Google-Smtp-Source: AGHT+IHlDbq/FuhUx5b37jOHHuGk+B4j8Ue7lQztTGR+qjnK+j0oCN6+BEjfuAMoSyUWo5a31EZ/jA==
-X-Received: by 2002:a17:902:da4b:b0:295:24d7:3792 with SMTP id d9443c01a7336-297e54030a4mr120060845ad.1.1762793133088;
-        Mon, 10 Nov 2025 08:45:33 -0800 (PST)
-Received: from localhost ([2804:30c:1661:8a00:578a:911c:ac25:24a6])
-        by smtp.gmail.com with UTF8SMTPSA id d9443c01a7336-29651c7409esm150687835ad.64.2025.11.10.08.45.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 10 Nov 2025 08:45:32 -0800 (PST)
-Date: Mon, 10 Nov 2025 13:46:50 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com,
-	dlechner@baylibre.com, andy@kernel.org,
-	Michael.Hennerich@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, corbet@lwn.net, cosmin.tanislav@analog.com
-Subject: Re: [PATCH v1 0/3] iio: adc: Add AD4134 minimum I/O support
-Message-ID: <aRIW-tksre10iB1v@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1762777931.git.marcelo.schmitt@analog.com>
- <5e0ea52e6a77a1d6af861ba5aaeeea5c3d514705.camel@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V/f8290t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E8DDC4CEF5;
+	Mon, 10 Nov 2025 17:04:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762794248;
+	bh=GlWEUJ81HuML3QniPfob+FZyBGIp/OgbbJgntqBpGV0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=V/f8290tO0Qum103i3UTbYvQJViWqXdRzOLaLZpBVpzFJbKTDf8GfzuY7aTcAvTRA
+	 /jF6uSv2pWoAceJx7WXTgkYDQbOUQid0BbI5xyZK/DMk/dP5EkZKnznNi3d9XAUS0w
+	 U5uoiA7WuqFmoo8FhrRcjTfambWpwdFgjro4beBd+36XfArmfbcp+v2EUD5ikr/EAm
+	 fALV09seY/gdEf074FGUCjQxQd8DiXYQGY2oAZ5Ogc0Iu49+IWaiGixzUHWtgtdwMW
+	 A2VqkOPYjDao3JHSacdLMAIiR2MVf4ykzKwnyTHKmtZE8u1pQNhQ6iKaS0oriFO0p8
+	 iGTOVCHfe65Ig==
+Date: Mon, 10 Nov 2025 17:04:05 +0000
+From: Mark Brown <broonie@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>,
+	Sean Anderson <sean.anderson@linux.dev>, linux-spi@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/6] dt-bindings: spi: Add spi-buses property
+Message-ID: <aRIbBVNzo-7EYJbl@finisterre.sirena.org.uk>
+References: <20251014-spi-add-multi-bus-support-v1-0-2098c12d6f5f@baylibre.com>
+ <20251014-spi-add-multi-bus-support-v1-1-2098c12d6f5f@baylibre.com>
+ <20251021142129.GA34073-robh@kernel.org>
+ <14ae0769-341b-4325-b925-7bba6d57bbdf@baylibre.com>
+ <20251030135126.GA3749313-robh@kernel.org>
+ <f731ebd7-6494-45f5-861d-05a2926cc5fa@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="JY5VEXwAAsIpIsIR"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <5e0ea52e6a77a1d6af861ba5aaeeea5c3d514705.camel@gmail.com>
+In-Reply-To: <f731ebd7-6494-45f5-861d-05a2926cc5fa@baylibre.com>
+X-Cookie: You dialed 5483.
 
-Hi Nuno,
 
-On 11/10, Nuno Sá wrote:
-> On Mon, 2025-11-10 at 09:44 -0300, Marcelo Schmitt wrote:
-> > This patch series adds basic support for ad4134. AD4134 is a very flexible
-> > device that can be configured in many different ways. This series aims to
-> > support the simplest way of interfacing with AD4134 which is called minimum I/O
-> > mode in data sheet. This is essentially usual SPI with the addition of an ODR
-> > (Output Data Rate) GPIO which functions as conversion start signal in minimum
-> > I/O mode. The CS pin may be connected to a host controller CS pin or grounded.
-> > 
-> > This set provides just one feature:
-> > - Single-shot ADC sample read.
-> > 
-> > [PATCH 1] Device tree documentation for AD4134.
-> > [PATCH 2] IIO Linux driver for AD4134.
-> > [PATCH 3] Initial IIO documentation.
-> > 
-> > There is a driver by Cosmin on ADI Linux tree that supports AD4134 in wiring
-> > configurations suited for high speed data transfers. Even though the minimum I/O
-> > support was initialy based on that high speed transfer driver, the result ended
-> > up becoming entirely different. Also, because the different wiring
-> > configurations are likely going to use different resources and software
-> > interfaces, the code for AD4134 support was split into ad4134-spi.c,
-> > ad4134-common.h, and ad4134-common.c.
-> 
-> I'm familiar with the odd way this part is implemented in ADI tree :). Question is, are
-> you intending to support the high speed bits? I guess so, otherwise having the above split
-> would not make much sense.
-> 
-Yes, the intent is that the common parts may be reusable by the high speed
-driver when we get to upstream that. For now, this only supports conventional SPI.
-We may, at least, get some support for AD4134, though.
+--JY5VEXwAAsIpIsIR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Oct 30, 2025 at 05:42:44PM -0500, David Lechner wrote:
+> On 10/30/25 8:51 AM, Rob Herring wrote:
+
+> > But it can't really be 2 independent buses/controllers unless the ADC=
+=20
+> > has 2 completely independent interfaces, right?
+
+> Correct.
+
+> The proposed property really only concerns the data lines (tx/rx). It doe=
+sn't
+> care if there is 1 or 2 SCLK lines and it doesn't care if there is only 1=
+ CS
+> line.
+
+> So maybe spi-data-buses would be a better name for the property? Or
+> spi-data-ports (using the NXP FlexSPI controller docs terminology)?
+> Or spi-data-channels?
+
+This bindings discussion seems to have stalled out?
+
+--JY5VEXwAAsIpIsIR
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmkSGv0ACgkQJNaLcl1U
+h9ChyQgAg3ZRTKZiHLuTOHpkH+zC1xu6qXXVEgDCvya8kcGtk1SZuS/Z9ctSXQRd
+AUAwuRDDY51+uQVewX3TPXBjsfJK1c/3CQOWZ2boNWgOrpHcN4WhQESem7O9eYue
+ONdSa6DpVU0E+SLo0TYkNBSEeE0WKEhGGlYjW0CvIlHiZBHo7zxzqxt7lXPd48um
+2pYqZMdC/h5yeahRJ8Cjl2ZdJLKGvqnE+DP0UBLoHxNKxDznMCwFwzxHL8YLWsjn
+dxoMNisrtyJSeFBHrjdHPHFEeaZD4Pn2lvk4sCdi+vG/tWeGUVIU/Lnp9YjK96/D
+Q+Xe+sZVvakT+7qwg5XHHYOY5wVc8g==
+=XKp/
+-----END PGP SIGNATURE-----
+
+--JY5VEXwAAsIpIsIR--
