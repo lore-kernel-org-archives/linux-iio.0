@@ -1,313 +1,200 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D17362E9748
-	for <linux-iio@vger.kernel.org>; Mon, 10 Nov 2025 06:14:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4FA8A2F3605;
+	Mon, 10 Nov 2025 07:59:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762755279; cv=none; b=q/a2yv/DIimuCYdpdBMW6dDebZwaXCQYyEsvU/J3vrLZcZvgQg+Y+q2n2+21kJ/i+jZAa8WBJiTy6aJ6h/h8bBgWUIo5snaLwFxM8dUsM3pb9uIZlxCIdA7GrDLhw7i9eIiMfQ0oVLfH8TNc1MrIhgRgV7+u26srIu/rhZqAWVw=
+	t=1762761579; cv=none; b=li/SM8yV9FA7YOT/AcoWUEuw7ASErb2HGHuSMAtkKS4oaHf5k0/DyZwBQFXp+cMG2fRT5Xnc84UEDik56v5CM1fGFMBNEwXxsKFXi/yv/TREU7EIK6pIX5e78Ynj8yRSbH4OV7fUPlfs6y+D+0WlDJbB1gy/dWBOuSEM3qAQ26A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762755279; c=relaxed/simple;
-	bh=DuiIGtY0qQwfD+vldm5Ivq6YSFje38G8KMqsRMeGqyc=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ak15vcB5+ZaUGhfu9omBlE+wVcoLJBFNENGtCromqgt0Q+P+MYmxuCt04VQbVTrayIEmm2RjicKP1ALL54IOCF4KBx6lIHi3wcB7w5FvU5I+lximbUs6cb/30bwDB0+ehQW4h4kXb9zM15JgJ3sjJklHMEdBT5mBDsPdnNgImH0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1vILAL-0002LZ-G5; Mon, 10 Nov 2025 07:14:13 +0100
-Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac])
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <ore@pengutronix.de>)
-	id 1vILAK-007y74-2S;
-	Mon, 10 Nov 2025 07:14:12 +0100
-Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.98.2)
-	(envelope-from <ore@pengutronix.de>)
-	id 1vILAK-000000032sx-2vxv;
-	Mon, 10 Nov 2025 07:14:12 +0100
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
-	kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Andy Shevchenko <andy.shevchenko@gmail.com>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Subject: [PATCH v2 1/2] bindings: iio: adc: Add bindings for TI ADS131M0x ADCs
-Date: Mon, 10 Nov 2025 07:14:08 +0100
-Message-ID: <20251110061409.726028-2-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20251110061409.726028-1-o.rempel@pengutronix.de>
-References: <20251110061409.726028-1-o.rempel@pengutronix.de>
+	s=arc-20240116; t=1762761579; c=relaxed/simple;
+	bh=Ky4ZUbF427UA1ak5hD3hxfs9YMIHo7w0v8HQSA52ZSo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=H+vaTy+Xe+n/ttzNO3T5QBN0ombtrz5JYQVtPZJLHfa80xNuInVabbNJwPtsCwYocFA50YWnryvkU/NyYjEJda6GGvPYlH8wpj5WDw9uPrtkGD4RR+jm1OshKSvyOWzd5cyvhk0ijz2ew+8HUjyAePsSZD6w2qCqNQvmMIdkf48=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nF7nczR4; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nF7nczR4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D6F1C4AF0B;
+	Mon, 10 Nov 2025 07:59:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1762761578;
+	bh=Ky4ZUbF427UA1ak5hD3hxfs9YMIHo7w0v8HQSA52ZSo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=nF7nczR4VaS5idOtiTinYLTvd5C1dCOOK9Ot68JAgL+Le+7WryMEjUTLPVwzzZP5x
+	 Q/XTjtI2E99bTUFOW60XU4BMh8wGgbeVsZkro5xlokTDnRt6iS021RT9aLk1J28kyJ
+	 ATua9Lpc3wRUBayBCVtjM2EN/5eJrz7RcseWwEgdLnL/QK4TN5h7W+PMFUlBFXs4Q6
+	 Zic+84U3r4LHLypMc/41px3sPHf5FVmgahgfaB4nfFvR4gXIcEZAMkcajsQ1REqUBR
+	 l5gX+IY0wmCBZhE9gS4CrpNDoAOpRLKJwi3UPv3aoNvF7KvhQZvq6s202d6fo/vF6u
+	 +noU7jxGRS+bw==
+Date: Mon, 10 Nov 2025 08:59:36 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: Ajith Anandhan <ajithanandhan0406@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add TI ADS1120 binding
+Message-ID: <20251110-curly-ultra-coucal-d7cc32@kuoka>
+References: <20251109141119.561756-1-ajithanandhan0406@gmail.com>
+ <20251109141119.561756-2-ajithanandhan0406@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20251109141119.561756-2-ajithanandhan0406@gmail.com>
 
-Add device tree bindings documentation for the Texas Instruments
-ADS131M0x analog-to-digital converters. This family includes the ADS131M02,
-ADS131M03, ADS131M04, ADS131M06, and ADS131M08 variants.
+On Sun, Nov 09, 2025 at 07:41:18PM +0530, Ajith Anandhan wrote:
+> Add device tree binding documentation for the Texas Instruments
+> ADS1120.
 
-These variants differ primarily in the number of supported channels
-(2, 3, 4, 6, and 8, respectively), which requires separate compatible
-strings to validate the channel nodes.
+A nit, subject: drop second/last, redundant "binding". The
+"dt-bindings" prefix is already stating that these are bindings.
+See also:
+https://elixir.bootlin.com/linux/v6.17-rc3/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v2:
-- Rename file to ti,ads131m02.yaml and update $id.
-- Add supplies (avdd, dvdd, refin), interrupts, reset-gpios, and clock-names.
-- Make avdd-supply, dvdd-supply, and clock-names required.
-- Tighten channel validation logic for each device variant.
-- Simplify channel description and reorder datasheet list.
-- Update commit message to clarify device difference
----
- .../bindings/iio/adc/ti,ads131m02.yaml        | 220 ++++++++++++++++++
- 1 file changed, 220 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads131m02.yaml
+> 
+> The binding defines required properties like compatible, reg, and
+> SPI configuration parameters.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads131m02.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads131m02.yaml
-new file mode 100644
-index 000000000000..ed1d3fd4d26c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,ads131m02.yaml
-@@ -0,0 +1,220 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/ti,ads131m02.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Texas Instruments ADS131M0x 2-, 3-, 4-, 6- and 8-Channel ADCs
-+
-+maintainers:
-+  - Oleksij Rempel <o.rempel@pengutronix.de>
-+
-+description: |
-+  The ADS131M0x are a family of multichannel, simultaneous sampling,
-+  24-bit, delta-sigma, analog-to-digital converters (ADCs) with a
-+  built-in programmable gain amplifier (PGA) and internal reference.
-+  Communication with the ADC chip is via SPI.
-+
-+  Datasheets:
-+  - ADS131M02: https://www.ti.com/lit/ds/symlink/ads131m02.pdf
-+  - ADS131M03: https://www.ti.com/lit/ds/symlink/ads131m03.pdf
-+  - ADS131M04: https://www.ti.com/lit/ds/symlink/ads131m04.pdf
-+  - ADS131M06: https://www.ti.com/lit/ds/symlink/ads131m06.pdf
-+  - ADS131M08: https://www.ti.com/lit/ds/symlink/ads131m08.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,ads131m02
-+      - ti,ads131m03
-+      - ti,ads131m04
-+      - ti,ads131m06
-+      - ti,ads131m08
-+
-+  reg:
-+    description: SPI chip select number.
-+
-+  clocks:
-+    description:
-+      Phandle to the external clock source required by the ADC's CLKIN pin.
-+      The datasheet recommends specific frequencies based on the desired power
-+      mode (e.g., 8.192 MHz for High-Resolution mode).
-+    maxItems: 1
-+
-+  avdd-supply:
-+    description: Analog power supply (AVDD).
-+
-+  dvdd-supply:
-+    description: Digital power supply (DVDD).
-+
-+  interrupts:
-+    description: DRDY (Data Ready) output signal.
-+    maxItems: 1
-+
-+  reset-gpios:
-+    description: Optional RESET signal.
-+    maxItems: 1
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 0
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - avdd-supply
-+  - dvdd-supply
-+
-+patternProperties:
-+  "^channel@([0-7])$":
-+    type: object
-+    $ref: /schemas/iio/adc/adc.yaml#
-+    description: Properties for a single ADC channel.
-+
-+    properties:
-+      reg:
-+        description: The channel index (0-7).
-+        minimum: 0
-+        maximum: 7  # Max channels on ADS131M08
-+
-+      label: true
-+
-+    required:
-+      - reg
-+
-+    unevaluatedProperties: false
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+  - if:
-+      # 20-pin devices: M02, M03, M04
-+      # These do not support XTAL or REFIN.
-+      properties:
-+        compatible:
-+          enum:
-+            - ti,ads131m02
-+            - ti,ads131m03
-+            - ti,ads131m04
-+    then:
-+      properties:
-+        clock-names:
-+          const: clkin
-+        refin-supply: false
-+      required:
-+        - clock-names
-+
-+  - if:
-+      # 32-pin devices: M06, M08
-+      # These support both XTAL/CLKIN and optional REFIN.
-+      properties:
-+        compatible:
-+          enum:
-+            - ti,ads131m06
-+            - ti,ads131m08
-+    then:
-+      properties:
-+        clock-names:
-+          description:
-+            Indicates if a crystal oscillator (XTAL) or CMOS signal is connected
-+            (CLKIN).
-+          enum: [xtal, clkin]
-+        refin-supply:
-+          description: Optional external reference supply (REFIN).
-+      required:
-+        - clock-names
-+
-+  - if:
-+      # ADS131M02: 2 channels max (0-1)
-+      properties:
-+        compatible:
-+          contains:
-+            const: ti,ads131m02
-+    then:
-+      patternProperties:
-+        "^channel@[0-1]$":
-+          properties:
-+            reg:
-+              maximum: 1
-+        "^channel@([2-7])$": false
-+
-+  - if:
-+      # ADS131M03: 3 channels max (0-2)
-+      properties:
-+        compatible:
-+          contains:
-+            const: ti,ads131m03
-+    then:
-+      patternProperties:
-+        "^channel@[0-2]$":
-+          properties:
-+            reg:
-+              maximum: 2
-+        "^channel@([3-7])$": false
-+
-+  - if:
-+      # ADS131M04: 4 channels max (0-3)
-+      properties:
-+        compatible:
-+          contains:
-+            const: ti,ads131m04
-+    then:
-+      patternProperties:
-+        "^channel@[0-3]$":
-+          properties:
-+            reg:
-+              maximum: 3
-+        "^channel@([4-7])$": false
-+
-+  - if:
-+      # ADS131M06: 6 channels max (0-5)
-+      properties:
-+        compatible:
-+          contains:
-+            const: ti,ads131m06
-+    then:
-+      patternProperties:
-+        "^channel@[0-5]$":
-+          properties:
-+            reg:
-+              maximum: 5
-+        "^channel@([6-7])$": false
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/stm32mp1-clks.h>
-+
-+    spi1 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@0 {
-+            compatible = "ti,ads131m02";
-+            reg = <0>;
-+            spi-max-frequency = <8000000>;
-+
-+            clocks = <&rcc CK_MCO2>;
-+            clock-names = "clkin";
-+
-+            avdd-supply = <&vdd_ana>;
-+            dvdd-supply = <&vdd_dig>;
-+
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            channel@0 {
-+                reg = <0>;
-+                label = "input_voltage";
-+            };
-+
-+            channel@1 {
-+                reg = <1>;
-+                label = "input_current";
-+            };
-+        };
-+    };
--- 
-2.47.3
+Drop sentence, completely redundant. We can read the diff.
+
+> 
+> Signed-off-by: Ajith Anandhan <ajithanandhan0406@gmail.com>
+> ---
+>  .../bindings/iio/adc/ti,ads1120.yaml          | 109 ++++++++++++++++++
+>  1 file changed, 109 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads1120.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1120.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1120.yaml
+> new file mode 100644
+> index 000000000..2449094af
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1120.yaml
+> @@ -0,0 +1,109 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/ti,ads1120.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Texas Instruments ADS1120 4-channel, 16-bit, 2kSPS ADC
+> +
+> +maintainers:
+> +  - Ajith Anandhan <ajithanandhan0406@gmail.com>
+> +
+> +description: |
+> +  The ADS1120 is a precision, 16-bit, analog-to-digital converter (ADC)
+> +  that features two differential or four single-ended inputs through a
+> +  flexible input multiplexer.
+> +
+> +  Datasheet: https://www.ti.com/lit/gpn/ads1120
+> +
+> +properties:
+> +  compatible:
+> +    const: ti,ads1120
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    minItems: 1
+> +    maxItems: 2
+> +    description: |
+
+Do not need '|' unless you need to preserve formatting.
+
+> +      Interrupts for the DRDY (data ready) pin(s). The device can output
+> +      DRDY on a dedicated pin or multiplex it with DOUT. If both pins are
+> +      wired, both interrupts can be specified.
+> +
+> +  interrupt-names:
+> +    minItems: 1
+> +    maxItems: 2
+> +    items:
+> +      enum:
+> +        - drdy
+> +        - dout
+
+No, this cannot be flexible so much. Look at existing examples how this
+is supposed to be written.
+
+minItems: 1
+items:
+ - enum
+ - const
+
+> +
+> +  avdd-supply:
+> +    description: |
+
+
+Do not need '|' unless you need to preserve formatting.
+
+
+> +      Analog power supply, typically 2.3V to 5.5V.
+> +
+> +  vref-supply:
+> +    description: |
+
+Do not need '|' unless you need to preserve formatting.
+
+> +      Optional external voltage reference. Can be connected to either
+> +      REFP0/REFN0 or REFP1/REFN1 pins. If not supplied, the internal
+> +      2.048V reference is used.
+> +
+> +  ti,avdd-is-ref:
+> +    type: boolean
+> +    description: |
+
+Do not need '|' unless you need to preserve formatting.
+
+> +      If present, indicates that the AVDD supply voltage is of sufficient
+> +      quality and stability to be used as the voltage reference instead of
+> +      the internal reference. This allows the driver to select AVDD as the
+> +      reference source for potentially better performance.
+
+Driver? Aren't you just describing the case when AVDD is connected to
+REF pins?
+
+> +
+> +  clocks:
+> +    maxItems: 1
+> +    description: |
+
+Do not need '|' unless you need to preserve formatting.
+
+> +      Optional external clock input. If not specified, the internal
+
+Drop first sentence, completely redundant. Schema defines what is
+optional, not your description. Can it be something else than external
+clock input? No, it cannot. Please write informative descriptions, not
+just inflate the text.
+
+> +      oscillator is used.
+> +
+> +  spi-max-frequency:
+> +    maximum: 4000000
+> +
+> +  spi-cpha: true
+> +
+> +  "#io-channel-cells":
+> +    const: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+
+avdd-suply
+
+> +
+> +allOf:
+> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> +
+> +unevaluatedProperties: false
+
+Best regards,
+Krzysztof
 
