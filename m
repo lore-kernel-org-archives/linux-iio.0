@@ -1,83 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DDD7346FAB;
-	Wed, 12 Nov 2025 14:57:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98DDD342539
+	for <linux-iio@vger.kernel.org>; Wed, 12 Nov 2025 16:52:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762959464; cv=none; b=NvQuchHTlXOH+FWWArq5H6mQ+pu5pRidsl5Ib4y40Syo/d4me6+UYqlJ0hhNK5Is/wFTaqF54PSNKUz3OsdqCQgWqkBpOB0PhkQXBSvLJnDY3syz5gRwYXK8vPDOZlpmjQih0kSc8uz3S7OataxkrqoXB2jy38tEsEtAhMWxNCc=
+	t=1762966360; cv=none; b=N0j6wcgL3jZPB9WJlvNBMjvQb3BTFZN6VU5t1zFTwc9NKx0VgNBBTKusQYHRis3bqpNq3e/IUXr3uusqOF3Pp4rlF+KfJHvur4XMXAq9kBf8vhVz0ven3osneQc/g2c8APdrskHl65hXMeHGYd3tNSu6W4iIlIgtkE+C6OgacKo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762959464; c=relaxed/simple;
-	bh=gC5uVc2nDHrl/dFTyqnlyGHiCt8hcDtXsBez+wE+sBg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fUcKLtEGhf1c5tpXLQyhFSn4Ywb4OOqAR6345tEBwz9lpce3wQbaJsXrOckY9qi2gvZ42SdJtZfUQg4l/eCAes8Yvcu+nLRqHWiNOn5qHtjJT9NbFRN+u92roWCc5hlalEJX3YoC3dopZNhsfvMBf/AWJKgKCSt1Gf6waQhtw9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=TrbPf3Og; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1762966360; c=relaxed/simple;
+	bh=vquyA6U0yVLVU87ffFxSvxSxY4DbgBQ5yYCH68Wc3l4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jRjG/kAYtmDzlm/7y1LOHEO5Y5tETgv6TejlRrlrbkZ9kfe+uNqjqN3hPbxgU6pNcZ81qcPj8uUIvucDfIpNRlF1Kr+BOdDCoH93c3OrLRpLmnE6m8AgVidt/d6Wei2l4lRZ6d43hajfnURH+yzRRI/E67uKrpD9LQAmiAplSsI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=jO46oGgS; arc=none smtp.client-ip=209.85.210.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="TrbPf3Og"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1762959463; x=1794495463;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=gC5uVc2nDHrl/dFTyqnlyGHiCt8hcDtXsBez+wE+sBg=;
-  b=TrbPf3OgRmSR228isbQG/kAmx6+1vebUkx5rLMoSdqV+dvq/k2SDtdbd
-   k6DS1N0FLx3W29cZr2hCEy/BTFJJE9tUDWDJ7Jzb/qLLdv9h+Z6/EwDyb
-   Md5bboMPsMJAq/bWGydI4UsqquYPA1YKPv0ZFniuQ1/5yeOOFCxdJVId/
-   ZzIKWh/H1J4JTi1g8WX8RsHgH6Ruzqip2KQFC6FrGIV8Zz+54jpmIxBST
-   S3/TN5FtALasXkcIi2xjPSw2H0piulKZ9MWApQLULuzJeiFWbn54fi6BE
-   9P0daZzyLtgMkX4gc9aJ22H2Wg46Ii646rW+fslx1vsa0TtqdB8Mki0Gz
-   A==;
-X-CSE-ConnectionGUID: 86CTEMJCSyOLMNN2hrGv+g==
-X-CSE-MsgGUID: RIKFW66gTtWJClLjPl9mDA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11611"; a="64728036"
-X-IronPort-AV: E=Sophos;i="6.19,299,1754982000"; 
-   d="scan'208";a="64728036"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2025 06:57:38 -0800
-X-CSE-ConnectionGUID: GevwlwVCS8+qxBmJipjDfA==
-X-CSE-MsgGUID: q8UovTbXSBWqk7wqAHRfVg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.19,299,1754982000"; 
-   d="scan'208";a="188874873"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by fmviesa007.fm.intel.com with ESMTP; 12 Nov 2025 06:57:37 -0800
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id 2263C95; Wed, 12 Nov 2025 15:57:36 +0100 (CET)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 0/3] iio: core: fix error path in iio_device_alloc()
-Date: Wed, 12 Nov 2025 15:55:07 +0100
-Message-ID: <20251112145735.2075527-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="jO46oGgS"
+Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-7c70e53db41so575181a34.2
+        for <linux-iio@vger.kernel.org>; Wed, 12 Nov 2025 08:52:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1762966356; x=1763571156; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=otKN6HaBW7TeFZXmhol1N0rafttZcw0ehXIldHQZRQU=;
+        b=jO46oGgS/vM3MXXYczpi4QHmtXP4ZJ6G9q+Sfnq2whfaApDS5crM9wQfMGl7pYGSSF
+         kS5DX/Ko2AXyYeJ1cwm2qjGLv6RlMafrr5J1cXTVxvacrsR6SW2gT6knsOQdYZAO6zSY
+         d9Cgmf99MFjOpBDPnWQ8BW8GwOun1+B8s7WWmDVNjto8kTwxkkntu4+H/CsBP0F/arPK
+         2Ry3hfnAzVIGT8YeflrPx+6zEc3djCRx3Vonriz2hNiJKY9YXrPjki+5youDgXgRqU+L
+         twTzmcbLFregOVEXAm2a6AA1Vr0EaauKeBWqhA9Z1OTTlndzLeM2pdXl5x8Hz8/KaHQC
+         9JdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1762966356; x=1763571156;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=otKN6HaBW7TeFZXmhol1N0rafttZcw0ehXIldHQZRQU=;
+        b=P4Zx2uagPuo0Edf4aiTcP5pg4LFbU7DEcOycy4figolfcUWBxYyHhNQymYq57iW/R/
+         nNZz6djwGwMdfneRUtHjbYhuaKvBE8W8crDRDqh4RA4qm2hDNwZCbj4+c9H4DpFf9Wo1
+         gWcstb2sGrBULxrpfNESYJqLEk2GKFeBrECYjBEw9uwqDAu861SL3Nj8i68HsbooKU63
+         6iiqgOIMyHOub2derrZLx5pe26T57sBP+ty/zAhfDLr3qld3ipOTpfcPKI0Up9MmDH+x
+         1rHQyAk4VDFAxeTNzDEQnqnliORGZthfvGGACsk+pz2JeWKp3HsLZQ9Oy3zQELrjIFeW
+         M3Gg==
+X-Forwarded-Encrypted: i=1; AJvYcCUo6XFtcUFqgjWnoBuAQu9VW45prmV7juZOfh3r9c9l2TammLKs7tzt/z0Z7zq73+Mcy/+JH8/oSB4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzxoFcYYaKbPQSlF6fsr3W2voa7Ze/3dJE9xL0xnpwr4cbtmw13
+	EP1QjmWi0sAYJN7GVRSy/XTV0x5VJcJoWAoKJ3uIgTlFLlr+QYYBJKBPnGbg9ROdh7A=
+X-Gm-Gg: ASbGncv6HbEVjU//Wyh4ovEr3LvQYbzOaKmotX8gs4WtzKB667iTC83T+N5n0e9JU7f
+	il2fOKF6gsmFyIFZGPOswk8G6a+tZ4syG0s1mxfMJWFrgp1Awqfh8auc5S/fYGwsKIxyUjvGA+q
+	5z+QwYE4zJVeVJu4JansitNs/ELojDyuHwN87Fs0KuxIr+uMcpzohsSaabccg5YOth7M1KzzAXx
+	N51FAeQR9ueBPAB3RXqB8B6pS5Ck9e8E9DqZJrV+br0ZNEOCNlZTgPSfURd5EmSa00xCS75Tt2+
+	9yKGCMCqVfNNKjavCnWk9ydNSAWAyppTEfc+NLMxWF4DHIDkdF9LO8DZdG8JX3p7nxyEbOpnRFW
+	jMWhmAooEusIj321hhQ3nyHzzhnSvNxO6/Ael+RxWDlsWFcq04mcND/PCFRGNOrPYjOGgutTT5J
+	E3qixU2OpHjOSDMcAlhFfC9pQY0Tkh5+LWgRiLDIyM8QfmD9WVhw==
+X-Google-Smtp-Source: AGHT+IEzlLhnjrljziZsPJD+6TFphu87RW7odVOmHqBJgKS1HNWc+2CO5ak3CF5B+KTraiO0uH2Sxw==
+X-Received: by 2002:a05:6808:1b07:b0:450:3c49:519 with SMTP id 5614622812f47-450743f38afmr1702472b6e.7.1762966355944;
+        Wed, 12 Nov 2025 08:52:35 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:d404:301b:b985:c499? ([2600:8803:e7e4:500:d404:301b:b985:c499])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-656c57ec231sm8495588eaf.17.2025.11.12.08.52.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 12 Nov 2025 08:52:35 -0800 (PST)
+Message-ID: <b18db31d-47e5-44bb-a671-c8d8a9f2cd82@baylibre.com>
+Date: Wed, 12 Nov 2025 10:52:34 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/6] dt-bindings: spi: Add spi-buses property
+To: Mark Brown <broonie@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ Michael Hennerich <michael.hennerich@analog.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ Sean Anderson <sean.anderson@linux.dev>, linux-spi@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+References: <20251014-spi-add-multi-bus-support-v1-0-2098c12d6f5f@baylibre.com>
+ <20251014-spi-add-multi-bus-support-v1-1-2098c12d6f5f@baylibre.com>
+ <20251021142129.GA34073-robh@kernel.org>
+ <14ae0769-341b-4325-b925-7bba6d57bbdf@baylibre.com>
+ <20251030135126.GA3749313-robh@kernel.org>
+ <f731ebd7-6494-45f5-861d-05a2926cc5fa@baylibre.com>
+ <aRIbBVNzo-7EYJbl@finisterre.sirena.org.uk>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <aRIbBVNzo-7EYJbl@finisterre.sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-The series is induced by the similar fixes in viio_trigger_alloc().
-Basically two things happen here: 1) add missed mutex_destroy()
-calls, and 2) refactor to make sure we clean resources with put_device()
-when appropriate.
+On 11/10/25 11:04 AM, Mark Brown wrote:
+> On Thu, Oct 30, 2025 at 05:42:44PM -0500, David Lechner wrote:
+>> On 10/30/25 8:51 AM, Rob Herring wrote:
+> 
+>>> But it can't really be 2 independent buses/controllers unless the ADC 
+>>> has 2 completely independent interfaces, right?
+> 
+>> Correct.
+> 
+>> The proposed property really only concerns the data lines (tx/rx). It doesn't
+>> care if there is 1 or 2 SCLK lines and it doesn't care if there is only 1 CS
+>> line.
+> 
+>> So maybe spi-data-buses would be a better name for the property? Or
+>> spi-data-ports (using the NXP FlexSPI controller docs terminology)?
+>> Or spi-data-channels?
+> 
+> This bindings discussion seems to have stalled out?
 
-Andy Shevchenko (3):
-  iio: core: add missing mutex_destroy in iio_dev_release()
-  iio: core: Clean up device correctly on iio_device_alloc() failure
-  iio: core: Replace lockdep_set_class() + mutex_init() by combined call
+Yes, it seems so. I sent a v2 with with the property changed to "spi-data-buses"
+in hopes that that it would be good enough, or if not, get the conversation going
+again. [1]
 
- drivers/iio/industrialio-core.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+[1]: https://lore.kernel.org/linux-iio/20251107-spi-add-multi-bus-support-v2-1-8a92693314d9@baylibre.com/
 
--- 
-2.50.1
+
 
