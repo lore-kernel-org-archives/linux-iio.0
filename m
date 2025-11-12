@@ -1,243 +1,96 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 75B6D284689
-	for <linux-iio@vger.kernel.org>; Wed, 12 Nov 2025 01:46:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7611A346E41;
+	Wed, 12 Nov 2025 14:57:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1762912013; cv=none; b=Qf0JtEx4KpHOvA7+3nZld59XCijEqJ1lsR17sjsfeJ8KTUwfzqdQ4dinQEEBovs4NNSqQ8EdFkgsi6xwemzZ8HAI2J+wv6I7jRrMh+cnoQItCvwGVD3Zm00xmjt+LmA/3toklHEvJ0q6ObefDeyHDRKoTA6dVXONl7aidyV8ebs=
+	t=1762959461; cv=none; b=YPPBCuh+jzyZ9PGbLZ9j6g3MI8VDygmPninz+3RZuy+psSDSIm4MW/yPIsUbixJqVo/7zi+E+oLFK+pVc63DZN6bkdqrP2Cf24mFYsplbSdbjgJ0KMVqX9tXrrvkkpt6URYmKlqFmMDBXF+kLMbzZJZxq992uT1XR8KJTh3FzGU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1762912013; c=relaxed/simple;
-	bh=vobJ/1vdObFgvyWypp5ZNLxQcdCa9e4yhVUGVXNVasg=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=C8I/oylwPq4bOl4YqcNfIvbYGYGnxIwF1IZATzWzRA3eotGuzjsNN0w+xsBfe41WKN3W/dXQ5IJN1bBz0GY1C+2C78+P+reIjTcLKMBxZzvHoP+sPrTL3BYJMkmIaHpto7T+obp7CoVhzIIyxpEQ3SLpqvtbarH+bBkyK12qeBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NNaDaWGL; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1762959461; c=relaxed/simple;
+	bh=dzPIN1K4a2crXL9FdXtllClPyLCjvr+amLRN6CCJ9DE=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=MHXje7MYDg67YF7mZz/ddKPj5rgxb9QZtuyP4MZLYuSHHkFJOLnOdj0hwByMjqVkXmekmR6EdiA1PlkUfhY4LHNixRtr3uIg4wu2inOGLnGcQY3sTcWTJW6Oaibe64wGPm4hacKors5AtIZu/ZaIj1XUaMBTGocT2MNf1+S1AmE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hPgj24so; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NNaDaWGL"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id EADB7C4CEFB
-	for <linux-iio@vger.kernel.org>; Wed, 12 Nov 2025 01:46:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1762912013;
-	bh=vobJ/1vdObFgvyWypp5ZNLxQcdCa9e4yhVUGVXNVasg=;
-	h=From:To:Subject:Date:In-Reply-To:References:From;
-	b=NNaDaWGLhdkpqdo0gZ5SwEbZrnt6TOUXfWAwTgZrd55x6m7ksZpqqLSSBYWSJvEwX
-	 GRI/Yojkb7B+aYIXjFsylhaVk9p3UHNlwWNK+4i4Z/RU09O4IsjcR+clWwERT+Bxx1
-	 eiAZIAngHvPGwg67lam6W4OnBoQ3WMEYYW+jdnf8N4yWxyaDUtOECExHAmOdL93NFz
-	 sC5PaoiJ+06WiT2uIGBMsh7VJZsd1SH4/ulQofK74K4RXKG8DCTg7S3275dcJ8MSq3
-	 3xsqH0kqq9/ol6tM+KCgv9PpNHO0x7jC6Sa2zha6PUR5IFFJ4ALtsSwrkF37ICxI0x
-	 xo6ZIqwkxHlyw==
-Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
-	id DF052C53BBF; Wed, 12 Nov 2025 01:46:52 +0000 (UTC)
-From: bugzilla-daemon@kernel.org
-To: linux-iio@vger.kernel.org
-Subject: [Bug 220772] NULL pointer dereference in bmc150-accel-core
-Date: Wed, 12 Nov 2025 01:46:52 +0000
-X-Bugzilla-Reason: None
-X-Bugzilla-Type: changed
-X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Product: Drivers
-X-Bugzilla-Component: IIO
-X-Bugzilla-Version: 2.5
-X-Bugzilla-Keywords: 
-X-Bugzilla-Severity: normal
-X-Bugzilla-Who: highwaystar.ru@gmail.com
-X-Bugzilla-Status: NEW
-X-Bugzilla-Resolution: 
-X-Bugzilla-Priority: P3
-X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Flags: 
-X-Bugzilla-Changed-Fields: 
-Message-ID: <bug-220772-217253-hKYWpHfSlh@https.bugzilla.kernel.org/>
-In-Reply-To: <bug-220772-217253@https.bugzilla.kernel.org/>
-References: <bug-220772-217253@https.bugzilla.kernel.org/>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Bugzilla-URL: https://bugzilla.kernel.org/
-Auto-Submitted: auto-generated
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hPgj24so"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1762959459; x=1794495459;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=dzPIN1K4a2crXL9FdXtllClPyLCjvr+amLRN6CCJ9DE=;
+  b=hPgj24soos9MQ0bn94V+Ffm2mXCkY6Rq8qEbOB+1Kwp4X39SGYmsXE5Z
+   px4vZlnyRErYhCCbB3c8YXlFoNJBaf8RjQ/HM4HPms4rTVxgXJCJ6hb4X
+   yhyi4nMw5EijP7vBQ/GvtKZ6dAEX0DeoOsPyyTmBgAWClCZGwtYZPWXts
+   oLuvcnDKXQZ+zK8w17D3Vel1T0fguOF6f9iJdeP70GQdjJ40dQCv/s3IK
+   FEt6ILf7tRU/r9dQBQpCIPQfvEpO121WQQS3c60RAYPwRKHE1V8UKaZPj
+   JabYxHD+oPe9Te0gXkLx6x/J2TJUYg0p5coLN/aFco1Bpl57FDDiTWWWR
+   Q==;
+X-CSE-ConnectionGUID: DweKAa+IT3SNMpR2Sm7rng==
+X-CSE-MsgGUID: O2zy6zldTsaBY4HpBP3cTg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11611"; a="64728018"
+X-IronPort-AV: E=Sophos;i="6.19,299,1754982000"; 
+   d="scan'208";a="64728018"
+Received: from fmviesa007.fm.intel.com ([10.60.135.147])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Nov 2025 06:57:38 -0800
+X-CSE-ConnectionGUID: 7mz2q09mQNC7ixwOcD8f/g==
+X-CSE-MsgGUID: h0CL+YTFTgSZ8gNpn7iqHA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.19,299,1754982000"; 
+   d="scan'208";a="188874869"
+Received: from black.igk.intel.com ([10.91.253.5])
+  by fmviesa007.fm.intel.com with ESMTP; 12 Nov 2025 06:57:37 -0800
+Received: by black.igk.intel.com (Postfix, from userid 1003)
+	id 2C87798; Wed, 12 Nov 2025 15:57:36 +0100 (CET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 3/3] iio: core: Replace lockdep_set_class() + mutex_init() by combined call
+Date: Wed, 12 Nov 2025 15:55:10 +0100
+Message-ID: <20251112145735.2075527-4-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.50.1
+In-Reply-To: <20251112145735.2075527-1-andriy.shevchenko@linux.intel.com>
+References: <20251112145735.2075527-1-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-https://bugzilla.kernel.org/show_bug.cgi?id=3D220772
+Replace lockdep_set_class() + mutex_init() by combined call
+mutex_init_with_key().
 
---- Comment #3 from Vitaliy Tomin (highwaystar.ru@gmail.com) ---
-(In reply to Jonathan Cameron from comment #2)
-> On Sun, 09 Nov 2025 19:59:38 +0000
-> bugzilla-daemon@kernel.org wrote:
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/industrialio-core.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-> Could you share the names of the triggers under
-> /sys/bus/iio/devices/trigger*/name
-> and
-> cat /proc/interrupts
->=20
-> Maybe the tooling is using an hrtimer or sysfs trigger but the
-> driver seems to have a validate_trigger callback that should prevent that
-> so I think we need a little more information.
->=20
-> Thanks
->=20
-> Jonathan
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 5d2f35cf18bc..f69deefcfb6f 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1717,9 +1717,8 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ 	INIT_LIST_HEAD(&iio_dev_opaque->ioctl_handlers);
+ 
+ 	lockdep_register_key(&iio_dev_opaque->mlock_key);
+-	lockdep_set_class(&iio_dev_opaque->mlock, &iio_dev_opaque->mlock_key);
+ 
+-	mutex_init(&iio_dev_opaque->mlock);
++	mutex_init_with_key(&iio_dev_opaque->mlock, &iio_dev_opaque->mlock_key);
+ 	mutex_init(&iio_dev_opaque->info_exist_lock);
+ 
+ 	indio_dev->dev.parent = parent;
+-- 
+2.50.1
 
-
-There is no such files here:
-tomin@fedora:~$ ls /sys/bus/iio/devices/trigger*/name
-ls: cannot access '/sys/bus/iio/devices/trigger*/name': No such file or
-directory
-tomin@fedora:~$ ls /sys/bus/iio/devices/iio\:device*/
-'/sys/bus/iio/devices/iio:device0/':
-buffer                   events                       in_accel_x_raw=20=20
-in_temp_offset  name                          subsystem
-buffer0                  firmware_node                in_accel_y_raw=20=20
-in_temp_raw     power                         trigger
-current_timestamp_clock  in_accel_sampling_frequency  in_accel_z_raw=20=20
-in_temp_scale   sampling_frequency_available  uevent
-dev                      in_accel_scale               in_mount_matrix  labe=
-l=20=20=20
-       scan_elements                 waiting_for_supplier
-
-'/sys/bus/iio/devices/iio:device1/':
-buffer                   events                       in_accel_x_raw=20=20
-in_temp_offset  name                          subsystem
-buffer0                  firmware_node                in_accel_y_raw=20=20
-in_temp_raw     power                         trigger
-current_timestamp_clock  in_accel_sampling_frequency  in_accel_z_raw=20=20
-in_temp_scale   sampling_frequency_available  uevent
-dev                      in_accel_scale               in_mount_matrix  labe=
-l=20=20=20
-       scan_elements                 waiting_for_supplier
-tomin@fedora:~$ ls /sys/bus/iio/devices/iio\:device*/trigger
-'/sys/bus/iio/devices/iio:device0/trigger':
-current_trigger
-
-'/sys/bus/iio/devices/iio:device1/trigger':
-current_trigger
-
-
-
-tomin@fedora:~$ cat /proc/interrupts
-            CPU0       CPU1       CPU2       CPU3=20=20=20=20=20=20=20
-   1:          0          0         72          0 IR-IO-APIC    1-edge=20=
-=20=20=20=20
-i8042
-   8:          0          0          0          0 IR-IO-APIC    8-edge=20=
-=20=20=20=20
-rtc0
-   9:      10041          0          0          0 IR-IO-APIC    9-fasteoi=
-=20=20
-acpi
-  12:          0          6          0          0 IR-IO-APIC   12-edge=20=
-=20=20=20=20
-i8042
-  14:          8          0          0          0 IR-IO-APIC   14-fasteoi=
-=20=20
-INTC1057:00
-  16:         56          0          0          0 IR-IO-APIC   16-fasteoi=
-=20=20
-mmc0, i801_smbus
-  27:          0          0       5167          0 IR-IO-APIC   27-fasteoi=
-=20=20
-i2c_designware.1, idma64.1
-  29:        236          0          0          0 IR-IO-APIC   29-fasteoi=
-=20=20
-i2c_designware.3, idma64.3
-  31:          0          0          0          0 IR-IO-APIC   31-fasteoi=
-=20=20
-i2c_designware.5, idma64.5
-  32:          0          0          0          0 IR-IO-APIC   32-fasteoi=
-=20=20
-i2c_designware.6, idma64.6
-  33:          0       4921          0          0 IR-IO-APIC   33-fasteoi=
-=20=20
-i2c_designware.4, idma64.4
-  39:          0          0          0          0 IR-IO-APIC   39-fasteoi=
-=20=20
-pxa2xx-spi.0, idma64.0
-  40:          0          0          0          0 IR-IO-APIC   40-fasteoi=
-=20=20
-i2c_designware.2, idma64.2
- 120:          0          1          0          0 IR-PCI-MSI-0000:00:1d.0=
-=20=20=20
-0-edge      aerdrv, PCIe bwctrl
- 121:       9054          0          0          0 IR-PCI-MSI-0000:00:14.0=
-=20=20=20
-0-edge      xhci_hcd
- 126:         10          4          0         30 IR-PCI-MSIX-0000:01:00.0=
-=20=20=20
-0-edge      nvme0q0
- 127:       7450          0          0          0 IR-PCI-MSIX-0000:01:00.0=
-=20=20=20
-1-edge      nvme0q1
- 128:          0       5690          0          0 IR-PCI-MSIX-0000:01:00.0=
-=20=20=20
-2-edge      nvme0q2
- 129:          0          0       5152          0 IR-PCI-MSIX-0000:01:00.0=
-=20=20=20
-3-edge      nvme0q3
- 130:          0          0          0       6240 IR-PCI-MSIX-0000:01:00.0=
-=20=20=20
-4-edge      nvme0q4
- 131:          0      10732      10690       1008 IR-PCI-MSI-0000:00:02.0=
-=20=20=20
-0-edge      i915
- 132:          8          0          0          0 intel-gpio  306  GDIX1001=
-:00
- 133:          0         49          0          0 IR-PCI-MSI-0000:00:16.0=
-=20=20=20
-0-edge      mei_me
- 134:        883       1015        400        779 IR-PCI-MSIX-0000:00:14.3=
-=20=20=20
-0-edge      iwlwifi:default_queue
- 135:         46         59         35          4 IR-PCI-MSIX-0000:00:14.3=
-=20=20=20
-1-edge      iwlwifi:queue_1
- 136:          5         68          1         17 IR-PCI-MSIX-0000:00:14.3=
-=20=20=20
-2-edge      iwlwifi:queue_2
- 137:         20         30         25         35 IR-PCI-MSIX-0000:00:14.3=
-=20=20=20
-3-edge      iwlwifi:queue_3
- 138:         21        123        114        269 IR-PCI-MSIX-0000:00:14.3=
-=20=20=20
-4-edge      iwlwifi:queue_4
- 139:          0          0          0          5 IR-PCI-MSIX-0000:00:14.3=
-=20=20=20
-5-edge      iwlwifi:exception
- 140:       1213          0          0          0 IR-PCI-MSI-0000:00:1f.3=
-=20=20=20
-0-edge      snd_hda_intel:card1
- NMI:          8          8          9          8   Non-maskable interrupts
- LOC:      87542      86732      94323      81275   Local timer interrupts
- SPU:          0          0          0          0   Spurious interrupts
- PMI:          8          8          9          8   Performance monitoring
-interrupts
- IWI:       2334      10486       9187       2892   IRQ work interrupts
- RTR:          0          0          0          0   APIC ICR read retries
- RES:       1781       1199       1600       3146   Rescheduling interrupts
- CAL:      23231      22621      16364      21816   Function call interrupts
- TLB:       1208       1127       1072       1304   TLB shootdowns
- TRM:        680        680        680        680   Thermal event interrupts
- THR:          0          0          0          0   Threshold APIC interrup=
-ts
- DFR:          0          0          0          0   Deferred Error APIC
-interrupts
- MCE:          0          0          0          0   Machine check exceptions
- MCP:          3          4          4          4   Machine check polls
- ERR:          0
- MIS:          0
- PIN:          0          0          0          0   Posted-interrupt
-notification event
- NPI:          0          0          0          0   Nested posted-interrupt
-event
- PIW:          0          0          0          0   Posted-interrupt wakeup
-event
- PMN:          0          0          0          0   Posted MSI notification
-event
-
---=20
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are watching the assignee of the bug.=
