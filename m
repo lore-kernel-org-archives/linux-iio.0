@@ -1,62 +1,58 @@
 Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B736A315D26;
-	Fri, 14 Nov 2025 11:59:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66A012FB08F;
+	Fri, 14 Nov 2025 12:10:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763121588; cv=none; b=AGHLPwcp/+XP1fhfrUFxBPkqEZ3eStKs+GbLlnfUE9vSYZ2dDWqdDM6+bGastRO28dwQjFVG1lNhwxsZYvR7ZFSWHgYH78mprpoAzwf4QUl4ftLvFXHQDhxdfPAyhEE2D7bIHWt3617/Kmh+q0IPTEYUVjstM0ZT+tOVPuYPCYY=
+	t=1763122209; cv=none; b=ECDLsG51h/Z9SgqF4bOF4UUceISlcG11ROTXkHBxPrHytaFz5ukqof+63rnp1hm4Lxa55CtPMcWNofjXisWphU/lKXcLJVpUZWhLSpF4KUDEeRymCj6redn8EaiUVgFkzOTFPrV2wwvHPjZEGggysKqWCTdqEonemEYSMVp0DF0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763121588; c=relaxed/simple;
-	bh=eNU2dfgFmtBJq37mteaUxJp1cGsyEgobjPsimxjft7E=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=EO9bwr2D6PCfXalam8pBo7vGirGmf7366o1mPkEHNfhzCiemaOo++AXPqB5HFgryL1m62gQtxE2i0CUqn6cM6IEiJmj1vNlO8UT5ar7MAK+nygpoXq8d73iMYM5PlgsgXEU65nATuJeJGgWVxu9VnLUN0ZWZ6ZiEtnpk6hoqU7o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=PuHN+dmM; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1763122209; c=relaxed/simple;
+	bh=ZJfTysD1AInk3W4VMRR9yEsCe8X31yY3XoTCWXVARTk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=BQh4Gpvr9PYekF4cCgn9/gousF2jS05jowxrRWEl7uPdH+eJXfL54so4+zEBgdAUDgNvLzMYAiaJ0LROrfHJr1LdwFXZWm4sWSewxZvS9BRS+AFBOqMCQSHEZ1SVTdf4kafa0DmCbwoiU8SrRnuLVostrSVCwK5O03/axZ4oDEQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=aMtm6zBj; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="PuHN+dmM"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="aMtm6zBj"
 Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AE8eSW33654633;
-	Fri, 14 Nov 2025 06:59:44 -0500
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AE8H3lW3654525;
+	Fri, 14 Nov 2025 07:10:05 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=lxfbEMVp3frthPM2L9tfN8WBAWF
-	oJYHNYY5cA7X/Z80=; b=PuHN+dmMte+GwgCV9ogs3Pe9AfflLHSTvEYrX6Cwi0c
-	OcJDfD1LOE9e0Gt863xHi2IBXOe2UnjFym+b7wpsXdJxdIzveR4+39kucie7K6oi
-	OQivvzIdGtYX9EsXFKjAPBDFp/fV0eSTltAqxLSD8b/OQiBNF4KnOtWQUHBMWHBz
-	bcu8AXkWZ6MwxTA/ypTqBneMAZb1Xqv+IMVKHTkjh1dPB5lnQONuKXl4wwCkGE4r
-	m3ce1mt9AQLPRpJsqyw2ZLWepR/ObDlZJR3Oqt7bez0VOar4e5RDS0/yFKN5b7ms
-	Ix90OFLhYLYhTUCtn0ecnAFEye8P6wy403nKSJ3tBug==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4adwaw1v1v-1
+	:mime-version:subject:to; s=DKIM; bh=LuU2sVKUX/c5ku4iRMv1s5eComd
+	YLCvDIbwKUDl/gYk=; b=aMtm6zBjBGbBrG4ucpyEQ1yQEtFrYCGsIKaDuWSCg78
+	oHhamACcU+FsJVxacoUdZStL3v0OlWQ/yKanKj4AJ9Y56HgZ0oZ/VpxngfErw4uV
+	umTtX4ng8SM8LiR17Ai1aRRlZZOgjCa8aSXVzef3/e8xVMI3nlX5ZShmcYPKfIwn
+	MPn5t68Mtk86a2LK3RYNjOffJQasoqhr2QLmilBi5vhLq6oZWEmb7gFo0KpmNVRk
+	DWtNKuWDlY0qt7oa8FuFZrQkl2FvUG6JODg5DzMI9U7xvpBKQ3Cl5GoitlSldOTb
+	4Z3S9UgdHCL/9YRVIryV2QaWK6JFMMl+ZhNiVjBjJew==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4adwaw1wq3-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 14 Nov 2025 06:59:03 -0500 (EST)
+	Fri, 14 Nov 2025 07:10:05 -0500 (EST)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 5AEBx2La016249
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 5AECA4MG045507
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 14 Nov 2025 06:59:02 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 14 Nov 2025 06:59:02 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 14 Nov 2025 06:59:01 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 14 Nov 2025 06:59:01 -0500
+	Fri, 14 Nov 2025 07:10:04 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 14 Nov
+ 2025 07:10:04 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 14 Nov 2025 07:10:04 -0500
 Received: from Ubuntu.ad.analog.com ([10.66.6.193])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 5AEBwodg018389;
-	Fri, 14 Nov 2025 06:58:53 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 5AEC9r1x019558;
+	Fri, 14 Nov 2025 07:09:56 -0500
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: <jic23@kernel.org>, <robh@kernel.org>, <conor+dt@kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>
 CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v3 0/3] iio: amplifiers: add support for ADL8113 Low Noise Amplifier
-Date: Fri, 14 Nov 2025 11:57:22 +0000
-Message-ID: <20251114115725.5660-1-antoniu.miclaus@analog.com>
+Subject: [PATCH 0/2] iio: frequency: adf4377: add clock provider support
+Date: Fri, 14 Nov 2025 12:09:06 +0000
+Message-ID: <20251114120908.6502-1-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -67,19 +63,19 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTE0MDA5NSBTYWx0ZWRfX0SbCbRpgZMzI
- 8ehXrIYQ7wINlj1GvKzkBsExdHiXnUtBY/dOJvwkiq1M31QPBI/2RFnglkcWQ2tsZn2tk17dkwE
- Sd+M4P8msi8w8QTr7tPKRdmA0moe60SHN4ezKIOWcpsuTt0v21q1G5w3LNViE7G+nL7EGq2A45B
- T4o9YcxfgaVrXQJbXHY7c4DXCCYrEFngvQoHDKO5YVslqfrzDp0N5cgpti/rqTVSPtduzD0vVzi
- RE7x8EQEnIGOFcuRorfXx7a177D2N4bQPOcDBDs9SGeeBRxGdZ2aqsn2RvwgjQQJ891HtmOSgxv
- FC5MZ1aiVTTCrk5PggNOz4Ar64JurRAuKIi9m2AarMQ/6Qsa6TYDvIBSebs97iid0i5yah4BizW
- 9FRVb34MjwkODQ4KnOjf/Jn47GuKow==
-X-Proofpoint-ORIG-GUID: Dm8rQ4OKq9Z-iLZJmRo26spzCjiLjT-l
-X-Authority-Analysis: v=2.4 cv=M91A6iws c=1 sm=1 tr=0 ts=691719b0 cx=c_pps
- a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22 a=_jDn8YihPVvimUYNn0YA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTE0MDA5NyBTYWx0ZWRfXzIID1O2d07Uv
+ qF/zNX4h+YLAFo56oXYlqthUQssNE7lpZvBlSNWLQps0mrLEqGigzsISGoiS/9ay0jrbRpD7zgI
+ Qqg2QB3NwKVJUBSvgnQXF/i7dDyYIs64G72dGQXqanIX/nEhhBmKZrb0d7Y3iFkS4jQXu2oH6gm
+ 4rKFP/d8nAO/viKqwfhpdH2R4fIrHC74UHDVHec0ocUd7cmaL9xU1/2CVW2i8xyZWFs9q5/kLy+
+ HfKsq0BRV4E23OJ2NxqRS1POcD2CdQVFz8VPdqHdjHHkiUflud8uH2S3nt009TkRViM1fbMYwXM
+ gJdWRnMimi6O/8TS3nx9Z1SchYBPMtGigVu4ypJLRaRupgZxdD5rD7Rg9e1PAZPeah1glaVh9Xj
+ CVOXi0QLFsuyrs+D330MYsnV3pb/Mw==
+X-Proofpoint-ORIG-GUID: ALdTJBQIaGFi_KjO8UlA5kgJ0v8aLzSC
+X-Authority-Analysis: v=2.4 cv=M91A6iws c=1 sm=1 tr=0 ts=69171c1d cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22 a=xhyw43Vw4g2VkAmxKawA:9
  a=cPQSjfK2_nFv0Q5t_7PE:22
-X-Proofpoint-GUID: Dm8rQ4OKq9Z-iLZJmRo26spzCjiLjT-l
+X-Proofpoint-GUID: ALdTJBQIaGFi_KjO8UlA5kgJ0v8aLzSC
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
  definitions=2025-11-14_03,2025-11-13_02,2025-10-01_01
@@ -87,43 +83,28 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
  suspectscore=0 priorityscore=1501 impostorscore=0 clxscore=1015 adultscore=0
  bulkscore=0 phishscore=0 spamscore=0 malwarescore=0 lowpriorityscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511140095
+ reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511140097
 
-This patch series adds support for the Analog Devices ADL8113, a 10MHz to 12GHz
-Low Noise Amplifier with integrated bypass switches.
+This series adds clock provider functionality to the ADF4377 frequency
+synthesizer driver to address user requests for controlling output
+frequencies from userspace.
 
-The ADL8113 provides four operation modes controlled by two GPIO pins:
-- Internal Amplifier (14dB gain)
-- Internal Bypass (0dB gain)
-- External Bypass A (0dB gain) - Signal routes from RFIN to OUT_A and from IN_A to RFOUT
-- External Bypass B (0dB gain) - Signal routes from RFIN to OUT_B and from IN_B to RFOUT
+While implemented as an IIO driver, the ADF4377 is commonly used as a
+clock source. This patch series enables it to function as either:
+- A traditional IIO device (when #clock-cells is not specified)
+- A clock provider (when #clock-cells is present in device tree)
 
-The external bypass modes enable external signal processing, conditioning, or filtering
-while maintaining signal integrity through dedicated signal paths.
+The implementation provides standard clock framework integration with
+rate control, enable/disable support, and maintains backward
+compatibility with existing IIO configurations.
 
-Changes in v3:
-- Refactor driver architecture to separate gain mode and signal path controls
-- Replace single "mode" attribute with separate "signal_path" and "hardwaregain" attributes
-- Add write support for hardwaregain to enable switching between amplifier (14dB) and bypass (0dB) modes
-- Automatically handle signal path constraints (external paths force bypass mode)
-- Simplify device tree bindings by removing extra blank line
-- Update ABI documentation to reflect the new signal_path attribute interface
-- Add comprehensive validation for gain/path combinations
+Antoniu Miclaus (2):
+  dt-bindings: frequency: adf4377: add clk provider
+  iio: frequency: adf4377: add clk provider support
 
-Antoniu Miclaus (3):
-  dt-bindings: iio: amplifiers: add adl8113
-  iio: amplifiers: adl8113: add driver support
-  Documentation: ABI: adl8113: add documentation
-
- .../testing/sysfs-bus-iio-amplifiers-adl8113  |  30 +++
- .../bindings/iio/amplifiers/adi,adl8113.yaml  |  64 +++++
- drivers/iio/amplifiers/Kconfig                |  12 +
- drivers/iio/amplifiers/Makefile               |   1 +
- drivers/iio/amplifiers/adl8113.c              | 252 ++++++++++++++++++
- 5 files changed, 359 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-amplifiers-adl8113
- create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,adl8113.yaml
- create mode 100644 drivers/iio/amplifiers/adl8113.c
+ .../bindings/iio/frequency/adi,adf4377.yaml   |  20 +++
+ drivers/iio/frequency/adf4377.c               | 131 +++++++++++++++++-
+ 2 files changed, 149 insertions(+), 2 deletions(-)
 
 -- 
 2.43.0
