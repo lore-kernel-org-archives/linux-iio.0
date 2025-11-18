@@ -1,128 +1,147 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12D530DD21
-	for <linux-iio@vger.kernel.org>; Tue, 18 Nov 2025 08:17:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 474F530E836
+	for <linux-iio@vger.kernel.org>; Tue, 18 Nov 2025 09:13:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763453849; cv=none; b=a7rcDL2p3J+Y+u/H32QdjlB0fIjlMXQsHCi9gtxU3LFtwWKC+dRWFGX+AtMcKRsJGNi0quBL3faL30tP1T89DE7Z8/ZFgX2CuaJwiwmo1R6IxgIN10nTcWZUZj7Oku3apsOMxtvGjq/lgG3ySzPICCESfLToJjjoOfAer//xjDs=
+	t=1763457190; cv=none; b=U3wMshl1Onbc6BOSnj3J7UqZeWFnx1+Oh6UVXwQv+o+trV1RLj2Df6r8JTGuDuTbULPglAiVCZwdUmB2fJU1LxFxoSFLGkLJe8DHUqRM9OJ7YGDruRo7LD9yXi0WfXuPYGt475A2m9/BNnqz0kahPV8vn4OVz51iJyeHWCoQeJY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763453849; c=relaxed/simple;
-	bh=Xbkd0OhYK9CGSu7BYStw60Kktb8UPNtSubpkQmtNXQ4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=UclFcgIWh7L0JntvmswrmLQm0lJFvWjwF6QXKcuxO0PeGfVcasCT7eC9/NSXw7JpBJPRdelslL5UZUZYAHVLcuS5zUHtcHxWsABgW17U0OGcsk4kEWTAzy6acpf6mq59LXwgLTHZXI/AhOdE+jsIHGEK+gGR2ROI1V6NEkzVqmc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kKrRKswX; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kKrRKswX"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-477632d9326so35170075e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 18 Nov 2025 00:17:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1763453846; x=1764058646; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=Xbkd0OhYK9CGSu7BYStw60Kktb8UPNtSubpkQmtNXQ4=;
-        b=kKrRKswXT/RReYMXU+TukCUrXy7yd91kfB1ZOWCq4dpvfSz3s9QVFdZBE/opHn0RES
-         IhAiGRiBM2pve7N0gL5agBEiAnpiX04STINS9ITBBQoiRmWvOMli2hqMb9zheQ0NAkJM
-         oOQYKNjcokAOIpkkiJzEMZRJG1Zz9reTEv/dQIWbY34EtWBRHzomEzZQMm4hDn7iXE2S
-         jBXkqj/ZiBIJMFKuVTADTvC2ZeGjAsX2HSJmmnw0+o6bSKLip+NAZaMP5kjYH1k3eEoM
-         axsZwTbjSu9lMXUzuJW00wS/0pGtgquzxM5ZREEcKakI+2Az9tq7xvrflpdLca29Mm80
-         9qLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1763453846; x=1764058646;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=Xbkd0OhYK9CGSu7BYStw60Kktb8UPNtSubpkQmtNXQ4=;
-        b=gQXySKu+IgXI+ZBRvV4VIc1XKVPvZx2dyiZ2WmHl3m6xZldba+ed66Sb4hG/vCOmvp
-         yQxlWmZ5xpRw/g4B6gimB8FgEY+1nCF0UmrRlshnFJQjpi67wlhb9qIjW9V3zD1sOB/x
-         IYafpxUDHchPSsvh8w2LDUOg4KQ8TScVHxn2gwnmUeAjuvrwbXxm5QSxDv2BJBnxgkx3
-         8B38B5tzcHHbLPDnjereJFoxWtRyyClJQDiUSpeBSNHIJf7oQVrJAVS3YD4gWeXCVlJP
-         q5MnVMQxBqaoanmcSk7aI+CMYFgkxoEXxECtKOvGGPtT60y91GgabH+OLgHqSMQkdvBR
-         BizQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUPqxxTRnF8UEIcofRaZFzEgB1JKklFk+i03eVD0U39hFTiQinN0drvv9tzRd4zvFrYAKOVt2QDyaA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz7BTgH4UHcI2ZyxaCoqRQXCuhHO18gns8utvJSRe7Yb+Sdhr9F
-	HS837AVXT7dVYBJmFubypi51eTxmvNCXU9q0k1o5KA0A4yXaOqeEBxD0m6JwRg==
-X-Gm-Gg: ASbGncsHxTl7t65kw61Yur0m4SHLLwt0RfUwExZ6g6WT7B9inxZdNc5rb4wAetP0VEu
-	nbkbYLZY4nJClMXhSaqmcsRFnCJkyNFcqMYsEbTY6YRziDfOujyH3KSc6Yr+hEwFxmr5zTGse4o
-	Gd7HW4T7SuzRP+VO4l/AfusVZaM1glhNJNFqMMI4oj0RKgHDEmTQfDglV36LOLoO3LZTTtWyKVj
-	VV/qenQAtrGB9XGknGnE1Yh51sUt1fIbR3nAl9zhsMuYBxyEA9UX2gNmDpnkV5l89exE//UpmRC
-	BeE/6eOcXTooEEF0Y4c2xq83EdhgvAJe10rP4eDLULx4sI7RgNxqT4eF0YgEchphD6C8Do/69ym
-	Q6cQeZMl8XI4Ui/vjsxSJjYS+XVfFS1wILiXhJgOv+8cI34wGaH76rr/adXdgOqCnWXbWF0aCzf
-	OUBJGlwc1uUBuvxYsraErtP5SBllmIKFqbFCkdWDGQ99fsAuQG
-X-Google-Smtp-Source: AGHT+IEQK9M+UEhXUxY/WFeaRZPh0DFjsNVaCKSh+luJ0k+GHsFsMy0/x61VLnd/4XfZ5D3SUwZ4aw==
-X-Received: by 2002:a05:600c:a07:b0:46f:c55a:5a8d with SMTP id 5b1f17b1804b1-4778fe55101mr136563585e9.4.1763453845879;
-        Tue, 18 Nov 2025 00:17:25 -0800 (PST)
-Received: from ?IPv6:2001:818:ea56:d000:94c4:fb0e:28f:2a8d? ([2001:818:ea56:d000:94c4:fb0e:28f:2a8d])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4779920f2cdsm200467775e9.10.2025.11.18.00.17.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Nov 2025 00:17:25 -0800 (PST)
-Message-ID: <34a55901fe0729145097d287a98746f23eea13d8.camel@gmail.com>
-Subject: Re: [PATCH] staging: iio: adt7316: replace sprintf() with
- sysfs_emit()
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko
-	 <andy.shevchenko@gmail.com>
-Cc: Shi Hao <i.shihao.999@gmail.com>, Michael.Hennerich@analog.com, 
-	lars@metafoo.de, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, 	gregkh@linuxfoundation.org, linux-iio@vger.kernel.org, 
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Date: Tue, 18 Nov 2025 08:18:28 +0000
-In-Reply-To: <20251116152800.4c1849cc@jic23-huawei>
-References: <20251116101620.25277-1-i.shihao.999@gmail.com>
-		<CAHp75VdY7W8EgOfKuxtTALj777aVatxV5dqsxm688JTy=iVW2Q@mail.gmail.com>
-	 <20251116152800.4c1849cc@jic23-huawei>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+	s=arc-20240116; t=1763457190; c=relaxed/simple;
+	bh=JY8g9+Iv96I59y5ev4BmnnuzHSlvp11V8wDFWmv8Pbc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=THQ4T7xzYdMHgZtS4p7F4iRFMznpdE/RnECRCthYLSJHUGo1lj7zmcddLiK6rRZy/HUuzZ2iGd13uZKW+b6m+fs+gm4iG7mv18fAERvluZUkqbZSzOfTxdrH2l0Mro3QZpKCio/oM2m/8kHL9J9RWQb+8gTupKdY+ERl3NoZjmU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vLHli-00056w-O1; Tue, 18 Nov 2025 10:12:58 +0100
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vLHlg-0013co-2R;
+	Tue, 18 Nov 2025 10:12:56 +0100
+Received: from ore by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vLHlg-00A9WL-1z;
+	Tue, 18 Nov 2025 10:12:56 +0100
+Date: Tue, 18 Nov 2025 10:12:56 +0100
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: "A. Sverdlin" <alexander.sverdlin@siemens.com>
+Cc: Pengutronix Kernel Team <kernel@pengutronix.de>,
+	linux-iio@vger.kernel.org, Ahmad Fatoum <a.fatoum@pengutronix.de>,
+	"Paul E . McKenney" <paulmck@kernel.org>,
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	William Breathitt Gray <wbg@kernel.org>
+Subject: Re: [PATCH] counter: interrupt-cnt: Drop IRQF_NO_THREAD flag
+Message-ID: <aRw4mIZpWdsr9exb@pengutronix.de>
+References: <20251118083603.778626-1-alexander.sverdlin@siemens.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20251118083603.778626-1-alexander.sverdlin@siemens.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL: http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Sun, 2025-11-16 at 15:28 +0000, Jonathan Cameron wrote:
-> On Sun, 16 Nov 2025 13:08:07 +0200
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
->=20
-> > On Sun, Nov 16, 2025 at 12:16=E2=80=AFPM Shi Hao <i.shihao.999@gmail.co=
-m> wrote:
-> > >=20
-> > > Convert several sprintf() calls to sysfs_emit() in the
-> > > sysfs show functions, as it is the preferred helper and
-> > > prevents potential buffer overruns.
-> > >=20
-> > > No functional changes intended.=C2=A0=20
-> >=20
-> > I briefly looked at it and see no issues,
-> > Reviewed-by: Andy Shevchenko <andy@kernel.org>
-> >=20
->=20
-> Applied, but I will note that this driver is a long way from suitable
-> for moving out of staging and I would be surprised if more than
-> one or two of the lines changed in this patch make it through the
-> necessary refactors (should anyone actually have another go at
-> doing them).=C2=A0 Anyhow, I still think this is worth taking just to
-> reduce the noise of remaining instances of this.
->=20
-> I'd have deleted this long ago except I actually have one somewhere
-> and it one of the supported parts was still listed as suitable for
-> new designs when I checked not long ago.
+Hi Alexander,
 
-Seems to be now "just" in production. So no longer advised for new designs.=
- I gave a
-quick look and this is far from being a simple driver. It would require a f=
-air amount
-of work to bring it out of staging. So, are there users relying on staging =
-drivers?
-But I would assume that for staging we are still free to drop support it?
+On Tue, Nov 18, 2025 at 09:35:48AM +0100, A. Sverdlin wrote:
+> From: Alexander Sverdlin <alexander.sverdlin@siemens.com>
+> 
+> An IRQ handler can either be IRQF_NO_THREAD or acquire spinlock_t, as
+> CONFIG_PROVE_RAW_LOCK_NESTING warns:
+> =============================
+> [ BUG: Invalid wait context ]
+> 6.18.0-rc1+git... #1
+> -----------------------------
+> some-user-space-process/1251 is trying to lock:
+> (&counter->events_list_lock){....}-{3:3}, at: counter_push_event [counter]
+> other info that might help us debug this:
+> context-{2:2}
+> no locks held by some-user-space-process/....
+> stack backtrace:
+> CPU: 0 UID: 0 PID: 1251 Comm: some-user-space-process 6.18.0-rc1+git... #1 PREEMPT
+> Call trace:
+>  show_stack (C)
+>  dump_stack_lvl
+>  dump_stack
+>  __lock_acquire
+>  lock_acquire
+>  _raw_spin_lock_irqsave
+>  counter_push_event [counter]
+>  interrupt_cnt_isr [interrupt_cnt]
+>  __handle_irq_event_percpu
+>  handle_irq_event
+>  handle_simple_irq
+>  handle_irq_desc
+>  generic_handle_domain_irq
+>  gpio_irq_handler
+>  handle_irq_desc
+>  generic_handle_domain_irq
+>  gic_handle_irq
+>  call_on_irq_stack
+>  do_interrupt_handler
+>  el0_interrupt
+>  __el0_irq_handler_common
+>  el0t_64_irq_handler
+>  el0t_64_irq
+> 
+> ... and Sebastian correctly points out. Remove IRQF_NO_THREAD as an
+> alternative to switching to raw_spinlock_t, because the latter would limit
+> all potential nested locks to raw_spinlock_t only.
+> 
+> Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Cc: stable@vger.kernel.org
+> Link: https://lore.kernel.org/all/20251117151314.xwLAZrWY@linutronix.de/
+> Fixes: a55ebd47f21f ("counter: add IRQ or GPIO based counter")
+> Signed-off-by: Alexander Sverdlin <alexander.sverdlin@siemens.com>
+> ---
+>  drivers/counter/interrupt-cnt.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
+> index 6c0c1d2d7027d..e6100b5fb082e 100644
+> --- a/drivers/counter/interrupt-cnt.c
+> +++ b/drivers/counter/interrupt-cnt.c
+> @@ -229,8 +229,7 @@ static int interrupt_cnt_probe(struct platform_device *pdev)
+>  
+>  	irq_set_status_flags(priv->irq, IRQ_NOAUTOEN);
+>  	ret = devm_request_irq(dev, priv->irq, interrupt_cnt_isr,
+> -			       IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
+> -			       dev_name(dev), counter);
+> +			       IRQF_TRIGGER_RISING, dev_name(dev), counter);
+>  	if (ret)
+>  		return ret;
+>  
 
->=20
-> ADI folk, I would like to hear if we should just delete this one.
+Hm, I guess it will break the requirement to handle at least 10kHz
+interrupts. May be we should move only counter_push_event() to the
+thread? or using delayed worker?
 
-I guess Michael is the best person to answer this question.
+Right now I do not have needed system for testing to come with better
+proposal.
 
-- Nuno S=C3=A1
+Best Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
