@@ -1,95 +1,250 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 05AEE2F7ADA;
-	Mon, 24 Nov 2025 09:11:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A8162F4A16;
+	Mon, 24 Nov 2025 09:18:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763975509; cv=none; b=WDQ+gJ7x4lAtJvSZ0IBCCnaW5YHmshxMhWKKVVOGTIAruIDcUmy2HJwGyasbcDHWDeDGiUl68BdD45vw8Eh1OaUhYDRn7elsYHDxe8ZCgq8Dt6k99Zf2GQ91LyNU4DgRtebw2DBVFilLfIFSEwZof6kTdcdMDRSlym7Qyo7wZ44=
+	t=1763975939; cv=none; b=EDmIrSThYPfbYZJRZ7U4G7BJuril6O300IhERF4d/ZH7bxrPmdcgn7P2kximdFRsVG+fCi35J+QKk5/1DNXC7RtGlJTmHgYlp2JyDUVHJ72UXBuDembSPLETzD6JWjdtw/eUMJ7Xm1ptxkRQSmuKCrc0wkjv3tMhteZkxNpEP6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1763975509; c=relaxed/simple;
-	bh=ds/FXB3Sv+gr9hk89pOD61xECL/GN9oYXn1YmpKtXlA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tHGC3OWtbCiR9HQBAS6rPXxtJlyW4SQGXJNNc5ABxaYXRm9hD28pjMEifh+PWkKi5CaBQi5aION7WyG1scvQGC7dl3cmXtqzgU5Jdf22gAcJ/ifi5c/7B2FaFt9FdrCR/LoluO5Oq/83M20cvgLk3IRIB4bzQXWyvxWf8V0hWSg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Cu7QwQtR; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1763975939; c=relaxed/simple;
+	bh=Z8LmT3qY041U83j0q+I/X13ABeV5uquFKXkkjyjU46A=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
+	 In-Reply-To:To:CC; b=NyC6rRYySb+Q1mLWnNf6A3h8ZgRhyc66+fL59eVYtwDrlY91ohWlbn0fBLdeIqBTZstJYmwe40T671iIh8E/RzCFevD1CAFaM6W4d2TXCweI8V+45mLMI5JPMrjwQX9gQV8G7NLgAiVKZQ7q1K/K3TBwkHXa3JYqgQ76IEhgluk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=SmA7eRj5; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Cu7QwQtR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1763975508; x=1795511508;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ds/FXB3Sv+gr9hk89pOD61xECL/GN9oYXn1YmpKtXlA=;
-  b=Cu7QwQtRNE0YaTAe+QZrUHPg1Qt+fsTL0gMOTHlPE9TbrczKm2uRyZNW
-   k9gtFVims1FztUgkzV2AIuah34rXtuXiOAPjDoyIDr8oMVRRsdOWFtK96
-   swGoAGQw/MoxoU6ZmRgzOsVqVOWuUG9kdsdepV90NcnTvcLXxzGZHPKZm
-   NoEmkCdrlNWZAAtV6Y/9urW/WkOX007sSnRAcCEndd3bjeQ5io0SSmway
-   1rhM3enAsKw1lYKuK6uqEqheyPQH5Dmvm73DC+PDJcKUWLbsofZC/9xzB
-   Htg+0TGL7mtO9rJKT1M/sdn5/NkUh4I8egeVFvdZn5EsBWPALRT67yQS7
-   g==;
-X-CSE-ConnectionGUID: +Kzbl2juSfm1BhpiX/Pkww==
-X-CSE-MsgGUID: AkcOBl20Qx+2iCAZfVqMUw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11622"; a="91454666"
-X-IronPort-AV: E=Sophos;i="6.20,222,1758610800"; 
-   d="scan'208";a="91454666"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2025 01:11:47 -0800
-X-CSE-ConnectionGUID: cm0CIinqRt+nJq6aRMh0lQ==
-X-CSE-MsgGUID: m2BwaQhQRkCL6H5zZ0zjwA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,222,1758610800"; 
-   d="scan'208";a="193061710"
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.5])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2025 01:11:43 -0800
-Date: Mon, 24 Nov 2025 11:11:41 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jorge Marques <gastmaier@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Jorge Marques <jorge.marques@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-doc@vger.kernel.org
-Subject: Re: [PATCH 3/7] iio: adc: Add support for ad4062
-Message-ID: <aSQhTd5Z7KyvHtbG@smile.fi.intel.com>
-References: <20251013-staging-ad4062-v1-0-0f8ce7fef50c@analog.com>
- <20251013-staging-ad4062-v1-3-0f8ce7fef50c@analog.com>
- <20251018171032.144a126c@jic23-huawei>
- <ou6qwayt4g7qaoe5dm7tdg6jl5dwquslpfbok6on5r2q2wytyl@wlqxj5y6ircj>
- <aSQMjZbc75cQtFqJ@smile.fi.intel.com>
- <o4kt2of4xql4azufjgiecm4jzuexgm6nkvr7aghbwfk6qd7yqd@r4plggehzces>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="SmA7eRj5"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AO72rRt3692062;
+	Mon, 24 Nov 2025 04:18:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=P0sLh
+	+LxqQq6lmxSuci+6Il+GFar9iBr5Mc1DPZRFLY=; b=SmA7eRj5rcxN6NdXvvuIA
+	psb/Zr4QvNJnTJ017G5Xjsk2x9bdwlpUYvqJe+5jVQwG5upymSj06pHFIyxnbJoF
+	+SyUmmiJ1+4a5iTPnelTJakirAoVfShtpdWn0bR6+maz9B4spPGHv11xEJr7GLom
+	Jtm0JU07RYE1DBSD2qHfMcn8qVBIgs+Q/P1MinhsofZAZawG2XN/iNtpH7b3jIlR
+	ObrwfmOVsXWF0dcsMy6FXJtqP21pACcBtoS7Fji0UUxRv7kJAodfoQf50SwhIDED
+	HADYz1phOnkjyDK3apj0fc7CIV+OwieL52K7Q4Depfd0IcqI9y2UGLF/7GEFwXk+
+	w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4akvcjmw7y-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 24 Nov 2025 04:18:28 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 5AO9IR8J050884
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 24 Nov 2025 04:18:27 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 24 Nov
+ 2025 04:18:27 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Mon, 24 Nov 2025 04:18:27 -0500
+Received: from HYB-DlYm71t3hSl.ad.analog.com (HYB-DlYm71t3hSl.ad.analog.com [10.44.3.82])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 5AO9I8VL024016;
+	Mon, 24 Nov 2025 04:18:20 -0500
+From: Jorge Marques <jorge.marques@analog.com>
+Date: Mon, 24 Nov 2025 10:18:01 +0100
+Subject: [PATCH v2 2/9] docs: iio: New docs for ad4062 driver
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <o4kt2of4xql4azufjgiecm4jzuexgm6nkvr7aghbwfk6qd7yqd@r4plggehzces>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20251124-staging-ad4062-v2-2-a375609afbb7@analog.com>
+References: <20251124-staging-ad4062-v2-0-a375609afbb7@analog.com>
+In-Reply-To: <20251124-staging-ad4062-v2-0-a375609afbb7@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David
+ Lechner <dlechner@baylibre.com>,
+        =?utf-8?q?Nuno_S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>, Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+        Linus Walleij
+	<linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
+        <linux-gpio@vger.kernel.org>, Jorge Marques <jorge.marques@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1763975888; l=4325;
+ i=jorge.marques@analog.com; s=20250303; h=from:subject:message-id;
+ bh=Z8LmT3qY041U83j0q+I/X13ABeV5uquFKXkkjyjU46A=;
+ b=jJNj03hkSeBFF9vkNqDG9dZrPgoF43A3DbjgZmysB03r5VB5qLsuCbuY1b7za0N/W/1cYfFHj
+ 0PiDJzywFR2CLYi5wEkJ2/N3l89jXQ6YjlhOjWT01RXrD4yoNtJaKYi
+X-Developer-Key: i=jorge.marques@analog.com; a=ed25519;
+ pk=NUR1IZZMH0Da3QbJ2tBSznSPVfRpuoWdhBzKGSpAdbg=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTI0MDA4MSBTYWx0ZWRfXxZ/qTJBhbYe5
+ tBhuWZhMaw4340Jmr9lVy9tASE1Xbsxi2/CTtBEicUE2aZO5Oa4kK7STr1yD9vD5+X5M6QWIrZi
+ DSgLnZE18WHRQks8b5aU8f3L33OYF9TiOjv8Vow1hih+Q4eM4N9SHZDScXd/5lKXkjTAFiGBLkS
+ TwZ+RkDt89RyZcaMqRBfsZqfbqM3qpUiJHf5s5jymXbmIUxAUvIaHT0alcUwOW7GZVcEEcxYf2j
+ e5sMzE9vtzepHsCMAGDkRItLUOkvihy9OGC0WskPsDYRfF4yzDsB90TXDTTcJC0vFJTIG/SOcLg
+ 5yWQfDS0KmnCfOTB0M9hQOGLqxEtQBMY/yY7RCyVJcpJvERn7cgOlTPDShdwYCR8Lup40to0W67
+ AjNaLsFlH9bH6jpBo2CEHouJP+dqYw==
+X-Authority-Analysis: v=2.4 cv=EqrfbCcA c=1 sm=1 tr=0 ts=692422e4 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=gAnH3GRIAAAA:8 a=5m_mccj1f-mIrhuec74A:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: NlgkzN2oYlEEivSc8m3yj9ygm_2uOyVt
+X-Proofpoint-GUID: NlgkzN2oYlEEivSc8m3yj9ygm_2uOyVt
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-24_03,2025-11-21_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ lowpriorityscore=0 phishscore=0 bulkscore=0 malwarescore=0 adultscore=0
+ spamscore=0 clxscore=1011 priorityscore=1501 impostorscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511240081
 
-On Mon, Nov 24, 2025 at 09:57:26AM +0100, Jorge Marques wrote:
-> On Mon, Nov 24, 2025 at 09:43:09AM +0200, Andy Shevchenko wrote:
+This adds a new page to document how to use the ad4062 ADC driver.
 
-...
+Signed-off-by: Jorge Marques <jorge.marques@analog.com>
+---
+ Documentation/iio/ad4062.rst | 94 ++++++++++++++++++++++++++++++++++++++++++++
+ Documentation/iio/index.rst  |  1 +
+ MAINTAINERS                  |  1 +
+ 3 files changed, 96 insertions(+)
 
-> I will submitted v2 shortly.
-
-I think the "shortly" is not needed, please take your time, this seems missed
-v6.19-rc1 anyway.
+diff --git a/Documentation/iio/ad4062.rst b/Documentation/iio/ad4062.rst
+new file mode 100644
+index 0000000000000..e6bcca2bef24b
+--- /dev/null
++++ b/Documentation/iio/ad4062.rst
+@@ -0,0 +1,94 @@
++.. SPDX-License-Identifier: GPL-2.0-only
++
++=============
++AD4062 driver
++=============
++
++ADC driver for Analog Devices Inc. AD4060/AD4062 devices. The module name is
++``ad4062``.
++
++Supported devices
++=================
++
++The following chips are supported by this driver:
++
++* `AD4060 <https://www.analog.com/AD4060>`_
++* `AD4062 <https://www.analog.com/AD4062>`_
++
++Wiring modes
++============
++
++The ADC is interfaced through an I3C bus, and contains two programmable GPIOs.
++
++The ADC convert-start happens on the SDA rising edge of the I3C stop (P) bit
++at the end of the read command.
++
++The two programmable GPIOS are optional and have a role assigned if present in
++the devicetree ``interrupt-names`` property:
++
++- GP1: Is assigned the role of Data Ready signal.
++
++Device attributes
++=================
++
++The ADC contains only one channel with following attributes:
++
++.. list-table:: Channel attributes
++   :header-rows: 1
++
++   * - Attribute
++     - Description
++   * - ``in_voltage_calibscale``
++     - Sets the gain scaling factor that the hardware applies to the sample,
++       to compensate for system gain error.
++   * - ``in_voltage_oversampling_ratio``
++     - Sets device's burst averaging mode to over sample using the
++       internal sample rate. Value 1 disable the burst averaging mode.
++   * - ``in_voltage_oversampling_ratio_available``
++     - List of available oversampling values.
++   * - ``in_voltage_raw``
++     - Returns the raw ADC voltage value.
++   * - ``in_voltage_scale``
++     - Returns the channel scale in reference to the reference voltage
++       ``ref-supply`` or ``vdd-supply`` if the former not present.
++
++Also contain the following device attributes:
++
++.. list-table:: Device attributes
++   :header-rows: 1
++
++   * - Attribute
++     - Description
++   * - ``sampling_frequency``
++     - Sets the duration of a single scan, used in the burst averaging mode.
++       The duration is described by ``(n_avg - 1) / fosc + tconv``, where
++       ``n_avg`` is the oversampling ratio, ``fosc`` is the internal sample
++       rate and ``tconv`` is the ADC conversion time.
++   * - ``sampling_frequency_available``
++     - Lists the available sampling frequencies, computed on the current
++       oversampling ratio. If the ratio is 1, the frequency is ``1/tconv``.
++
++Interrupts
++==========
++
++The interrupts are mapped through the ``interrupt-names`` and ``interrupts``
++properties.
++
++The ``interrupt-names`` ``gp1`` entry sets the role of Data Ready signal.
++If it is not present, the driver fallback to enabling the same role as an
++I3C IBI.
++
++Low-power mode
++==============
++
++The device enters low-power mode on idle to save power. Enabling an event puts
++the device out of the low-power since the ADC autonomously samples to assert
++the event condition.
++
++Unimplemented features
++======================
++
++- Monitor mode
++- Trigger mode
++- Averaging mode
++- General purpose output
+diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+index 315ae37d6fd4b..ba3e609c6a13c 100644
+--- a/Documentation/iio/index.rst
++++ b/Documentation/iio/index.rst
+@@ -22,6 +22,7 @@ Industrial I/O Kernel Drivers
+    ad3552r
+    ad4000
+    ad4030
++   ad4062
+    ad4695
+    ad7191
+    ad7380
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e22ba5ec8c849..8fc28b789d639 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1437,6 +1437,7 @@ M:	Jorge Marques <jorge.marques@analog.com>
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad4062.yaml
++F:	Documentation/iio/ad4062.rst
+ 
+ ANALOG DEVICES INC AD4080 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.51.1
 
