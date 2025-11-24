@@ -1,59 +1,59 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 933A72E975F;
-	Mon, 24 Nov 2025 09:18:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 824332F5A17;
+	Mon, 24 Nov 2025 09:19:00 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1763975942; cv=none; b=WGZyawWcjfb21554WIFF6yW+7/6fV6U97+9mDlCo0Mv7uS2khGL1aujL7czRYU1+or0xysu6pEG4BA7zMffzRmU/I0Tft2VBH6/d49UStWlylmVBRVQSvrfmMiANNRzv5VMTlGiVPpBVQP4zT8kcK36PBXf7/UUG+RnikAK1Lpg=
+	t=1763975942; cv=none; b=k14Xci5wQbzS8TvUSH+ZveEYhrX4aAAzvqlmzJci2byGjYyPQT1sYzGnpbc0Set9qtO6iPIdeqhznorcN2qsWGqijc7nlehpvqb2+nzVu3b5jyNLJ58dkbj00wGz+n+/ARnIpjIiQdoZTGLYKjNJynaZ/YMCdukqf+PoyCnmgxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1763975942; c=relaxed/simple;
-	bh=aimic6kj2sqeybnlXxxmgqYOKreM6Xsl1lxRdNDh5rw=;
+	bh=K+zt3nceOOODApou1DvNcVnqg8L6U+BAmtwiQUTSD/g=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=Lf3YRf0Th0G5xKGHBstGom+vL+9y58Yfbla0Gr4Rzdy/mzge1pB/IfKRxEGVNbC7luh421eRGGTWGCu7juvCDhmEG15v97WvPpOdTXEm5jASYwdCHFXQtrquhxCUHFgO/t2e/Dm3xAQMvPGz0B1PrwKM+BudqMzhC5KPFGFp9mI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=e692b7bh; arc=none smtp.client-ip=148.163.135.77
+	 In-Reply-To:To:CC; b=X8LGjFKPWeXkji7lRYMD4RDblXH73RfYyHmE68rSkYoVZnrwNAFvq08jSm7SOLlFpY4b/nrc6N5wbGXtyjyVKsQwTidZwrrUVymOnVAZlANk8NIxySHgLbBcQDrcFX8Aq0xs0VSUMlze9zBeTKlyjWB0cuYdXOLVavHjjEYJ4Kg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=xmUru0DI; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="e692b7bh"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AO72rRs3692062;
-	Mon, 24 Nov 2025 04:18:26 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="xmUru0DI"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AO9FOq0420237;
+	Mon, 24 Nov 2025 04:18:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=1+k63
-	l1rnim23b0NAkdD+DTOB1vy/YqvY+H9q5cXpiM=; b=e692b7bhq7xw8PQ2y2Jsx
-	wD2byAhrhA9dThAH8aOv9YemnkakU+euESXmyeOqw1WS1xYlTGCgAFv1Y/2ZV6DW
-	JZSTIxMs4VcF1XWSySputcVB/4qAqlMxTggIVr2WmCFoiVmnb1GO2wwjkK5Obko2
-	h2ybUExkbsPRAPsUUMzBjIGrddc+rXhB+e1+LxwUu9yaBpfU73c/Mhkmi8qAEFnR
-	k+Fy8sjYvy5QuROZG7tvqUejLt2hOzmHq8rzJY6ZUMfPwTEkr1mhUeHIUP0q62ii
-	afWWO6dYcSm5H2fzph2WZB1t4QRxZ6SFOmpQo1WYc0TRth4zZJWsPwBUdTIs3I/S
-	w==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4akvcjmw7w-1
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=CFxea
+	+0RlEzrXndzpVbk0p5/3GjSlvBMRFAAzli0hlw=; b=xmUru0DI8Es/vIqElXdD8
+	b6vajFlAD5HEAXo8ofI/reNuod3RMJKUF/rOqV2P/XvEXD8VuCDXcimTPsXWrtRQ
+	ZWoZcVB7sh38JKoNo5xidIQyv8q9bNqYnzZOSrmQFREoNNvL0jGg4ywYzvs05rO5
+	jE8GjRcic/OUjzfNGVfwxiHyxB0lQfOiuVBOsY4Jt8eww9ilCgouk/XsOil1N2GX
+	KkllLB72pbkGqwjqOHDPg1sH0a9NYs+FmcVSqcZ2CS7p+3flntKN+w0f6eVtWqe3
+	3nV9t2F58u34L3UHlegiiHb/k2Po9hWyrWXED4SfXuzeRxIflLjWLOaWl1RWFP73
+	g==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4aky424gt7-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 24 Nov 2025 04:18:26 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 5AO9IP9m050879
+	Mon, 24 Nov 2025 04:18:45 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 5AO9IikJ007671
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 24 Nov 2025 04:18:25 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+	Mon, 24 Nov 2025 04:18:44 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 24 Nov 2025 04:18:25 -0500
+ 15.2.1748.37; Mon, 24 Nov 2025 04:18:44 -0500
 Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 24 Nov 2025 04:18:25 -0500
+ 15.2.1748.37; Mon, 24 Nov 2025 04:18:43 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 24 Nov 2025 04:18:25 -0500
+ Transport; Mon, 24 Nov 2025 04:18:43 -0500
 Received: from HYB-DlYm71t3hSl.ad.analog.com (HYB-DlYm71t3hSl.ad.analog.com [10.44.3.82])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 5AO9I8VK024016;
-	Mon, 24 Nov 2025 04:18:18 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 5AO9I8VS024016;
+	Mon, 24 Nov 2025 04:18:37 -0500
 From: Jorge Marques <jorge.marques@analog.com>
-Date: Mon, 24 Nov 2025 10:18:00 +0100
-Subject: [PATCH v2 1/9] dt-bindings: iio: adc: Add adi,ad4062
+Date: Mon, 24 Nov 2025 10:18:08 +0100
+Subject: [PATCH v2 9/9] iio: adc: ad4062: Add GPIO Controller support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,7 +62,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-ID: <20251124-staging-ad4062-v2-1-a375609afbb7@analog.com>
+Message-ID: <20251124-staging-ad4062-v2-9-a375609afbb7@analog.com>
 References: <20251124-staging-ad4062-v2-0-a375609afbb7@analog.com>
 In-Reply-To: <20251124-staging-ad4062-v2-0-a375609afbb7@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
@@ -85,195 +85,225 @@ CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
         <linux-gpio@vger.kernel.org>, Jorge Marques <jorge.marques@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1763975888; l=5123;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1763975888; l=5730;
  i=jorge.marques@analog.com; s=20250303; h=from:subject:message-id;
- bh=aimic6kj2sqeybnlXxxmgqYOKreM6Xsl1lxRdNDh5rw=;
- b=8qUBq1a+HA6SOgh8zl/eDDPpOfmUWdRpkk25fNApLNHPRo0jw8f0HMJK/L0/M21AB6GJfFOQZ
- X6CZwC+ws6vA/tIPPx4K2mn7kczAqBCjpgj3G4zYrL008IWLt/iVOHU
+ bh=K+zt3nceOOODApou1DvNcVnqg8L6U+BAmtwiQUTSD/g=;
+ b=1VAot/oOiNyakNSh6gDyBPRNszQvAcZm8xQNisXkdA/bzEsIP70eTI0VY9+l3Kb9oasJEsf9O
+ CueObBm8ZDNBgVKmgjWk9wntp7ztaAUEPhpWEIeTCBsejt4IE8rxTcR
 X-Developer-Key: i=jorge.marques@analog.com; a=ed25519;
  pk=NUR1IZZMH0Da3QbJ2tBSznSPVfRpuoWdhBzKGSpAdbg=
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTI0MDA4MSBTYWx0ZWRfXz1bnTPtJGkZ9
- PRu1KwSr2PJe2SVEmiU+nMrRUasYAqjG7/IZRw30RHl2nShLLTPQdh2Zs5G9nibbRWGStjnZtNk
- PyjfHmt/p7z+rRgQO0MOWjKflqwDMzJE+tU62I9lbCm614rDaWq2Vt05Bwd9p8JDxCj8OQKcd7Z
- tkNNR105gsRWD86ZbOGdsh8irNZVMRMYARNGd+qu+LqzJ34YpvhtVhO3WQPJ64vX9FTYndLm+5s
- GajaHrszbCMUju/PZDjqit+tLzubLzV6qOuXnGSDm3wR5gRuutNFIbPl4I0QVVs5GXKLxxnAuAT
- Ad7P9lfTC5qQIltGpGnQ09nYLE1HEGSqAhlrkoZPaUtOhtzMCHyZS/H4cOBaVwsRo3IXsCA+JMm
- k/IZ0PBHs7uyIxXJdSIMXcD3IQ/s/w==
-X-Authority-Analysis: v=2.4 cv=EqrfbCcA c=1 sm=1 tr=0 ts=692422e2 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+X-Authority-Analysis: v=2.4 cv=ffGgCkQF c=1 sm=1 tr=0 ts=692422f5 cx=c_pps
+ a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
  a=IkcTkHD0fZMA:10 a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8 a=7dW3d56Owd-7Eugxv60A:9
- a=QEXdDO2ut3YA:10 a=sptkURWiP4Gy88Gu7hUp:22
-X-Proofpoint-ORIG-GUID: 8oTHBlp9DO_FO_P1lCSlLoaRuM_fWyog
-X-Proofpoint-GUID: 8oTHBlp9DO_FO_P1lCSlLoaRuM_fWyog
+ a=gAnH3GRIAAAA:8 a=tsAnktj4w5_xAW6w_LAA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: qnndZnCmPiIo8KBvd6zxKRxwrLjot_Oa
+X-Proofpoint-ORIG-GUID: qnndZnCmPiIo8KBvd6zxKRxwrLjot_Oa
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTI0MDA4MSBTYWx0ZWRfXzm1H17O3z1ka
+ 58Sk6AOif0vFEOksLwDwuI+DxVIxm7//yL+swNiROzxCdBTePaStLBpoVxx6ldZFdgGS6Lw1NW7
+ fdwDOc5kVxPEpnF9Vm4CfGyq3TJ28ibutbmB6GeBvol46JNhyb4KIgE/ICTipduEL4dKJ9a4GbL
+ KxRRYgCxgl2i8Nng1BJGN20EDPBdlQo/rDcJwOpEjsU8/erMTNQsLLPidK3ZEZHzTFDNb7iV11v
+ G7AQzmRQ+r5BJkQ/5LyBzRChHK6lfVW6rx/vvnuBi2b35ke8t/JY95bnb0DY/fp6evucUcFEkK1
+ s/6kjx1ZlAQJjGTAF0Y4JgiQ4jOUD74Pb7/QyiZuwd0QytTT2gqCgecR7mvkhIWcMcDS5CCqs0A
+ Px0Kz/jNJMMSiFs63DwwofN0yHYm7Q==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
  definitions=2025-11-24_03,2025-11-21_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 phishscore=0 bulkscore=0 malwarescore=0 adultscore=0
- spamscore=0 clxscore=1011 priorityscore=1501 impostorscore=0 suspectscore=0
+ impostorscore=0 malwarescore=0 priorityscore=1501 bulkscore=0 clxscore=1015
+ lowpriorityscore=0 adultscore=0 phishscore=0 spamscore=0 suspectscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511240081
 
-Add dt-bindings for AD4062 family, devices AD4060/AD4062, low-power with
-monitor capabilities SAR ADCs. Each variant of the family differs in
-resolution. The device contains two outputs (gp0, gp1). The outputs can
-be configured for range of options, such as threshold and data ready.
-The device uses a 2-wire I3C interface.
+When gp0 or gp1 is not taken as an interrupt, expose them as gpo if
+gpio-contoller is set in the devicetree.
 
 Signed-off-by: Jorge Marques <jorge.marques@analog.com>
 ---
- .../devicetree/bindings/iio/adc/adi,ad4062.yaml    | 123 +++++++++++++++++++++
- MAINTAINERS                                        |   6 +
- 2 files changed, 129 insertions(+)
+ drivers/iio/adc/ad4062.c | 134 +++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 134 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4062.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4062.yaml
-new file mode 100644
-index 0000000000000..a25af66dd64d2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4062.yaml
-@@ -0,0 +1,123 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright 2024 Analog Devices Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/adi,ad4062.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices AD4062 ADC family device driver
-+
-+maintainers:
-+  - Jorge Marques <jorge.marques@analog.com>
-+
-+description: |
-+  Analog Devices AD4062 Single Channel Precision SAR ADC family
-+
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/ad4060.pdf
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/ad4062.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad4060
-+      - adi,ad4062
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    description:
-+      The interrupt pins are digital outputs that can be configured at runtime
-+      as multiple interrupt signals. Each can be configured as GP_INTR, RDY,
-+      DEV_EN, logic low, logic high and DEV_RDY (GP1 only). RDY is the
-+      active-low data ready signal, indicates when new ADC data are ready to
-+      read. DEV_EN synchronizes the enable and power-down states of signal
-+      chain devices with the ADC sampling instant. DEV_RDY is an active-high
-+      signal that indicates when the device is ready to accept serial interface
-+      communications. In GP_INTR mode, the interrupt outputs one of the
-+      threshold detection interrupt signals (MIN_INTR, MAX_INTR or either).
-+    minItems: 1
-+    items:
-+      - description:
-+          gp0, interrupt line for GP0 pin, cannot be configured as DEV_RDY.
-+      - description:
-+          gp1, interrupt line for GP1 pin, can be configured to any setting.
-+
-+  interrupt-names:
-+    items:
-+      - const: gp0
-+      - const: gp1
-+
-+  gpio-controller:
-+    description:
-+      Marks the device node as a GPIO controller. GPs not listed in
-+      interrupt-names are exposed as a GPO.
-+
-+  '#gpio-cells':
-+    const: 2
-+    description:
-+      The first cell is the GPIO number and the second cell specifies
-+      GPIO flags, as defined in <dt-bindings/gpio/gpio.h>.
-+
-+  vdd-supply:
-+    description: Analog power supply.
-+
-+  vio-supply:
-+    description: Digital interface logic power supply.
-+
-+  ref-supply:
-+    description:
-+      Reference voltage to set the ADC full-scale range. If not present,
-+      vdd-supply is used as the reference voltage.
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+  - vio-supply
-+
-+allOf:
-+  - $ref: /schemas/i3c/i3c.yaml#
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i3c {
-+        #address-cells = <3>;
-+        #size-cells = <0>;
-+
-+        adc@0,2ee007c0000 {
-+            reg = <0x0 0x2ee 0x7c0000>;
-+            vdd-supply = <&vdd>;
-+            vio-supply = <&vio>;
-+            ref-supply = <&ref>;
-+
-+            interrupt-parent = <&gpio>;
-+            interrupts = <0 0 IRQ_TYPE_EDGE_RISING>,
-+                         <0 1 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-names = "gp0", "gp1";
-+        };
-+    };
-+
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i3c {
-+        #address-cells = <3>;
-+        #size-cells = <0>;
-+
-+        adc@0,2ee007c0000 {
-+            reg = <0x0 0x2ee 0x7c0000>;
-+            vdd-supply = <&vdd>;
-+            vio-supply = <&vio>;
-+            ref-supply = <&ref>;
-+
-+            gpio-controller;
-+            #gpio-cells = <2>;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 31d98efb1ad15..e22ba5ec8c849 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1432,6 +1432,12 @@ F:	Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml
- F:	Documentation/iio/ad4030.rst
- F:	drivers/iio/adc/ad4030.c
+diff --git a/drivers/iio/adc/ad4062.c b/drivers/iio/adc/ad4062.c
+index 3df7dbf29ae4a..203b06276431f 100644
+--- a/drivers/iio/adc/ad4062.c
++++ b/drivers/iio/adc/ad4062.c
+@@ -10,6 +10,7 @@
+ #include <linux/completion.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
++#include <linux/gpio/driver.h>
+ #include <linux/i3c/device.h>
+ #include <linux/i3c/master.h>
+ #include <linux/iio/buffer.h>
+@@ -85,8 +86,11 @@
+ #define AD4062_MAX_AVG		0xB
+ #define AD4062_MON_VAL_MAX_GAIN		1999970
+ #define AD4062_MON_VAL_MIDDLE_POINT	0x8000
++#define AD4062_GP_DISABLED	0x0
+ #define AD4062_GP_INTR		0x1
+ #define AD4062_GP_DRDY		0x2
++#define AD4062_GP_STATIC_LOW	0x5
++#define AD4062_GP_STATIC_HIGH	0x6
+ #define AD4062_INTR_EN_NEITHER	0x0
+ #define AD4062_INTR_EN_EITHER	0x3
+ #define AD4062_TCONV_NS		270
+@@ -635,12 +639,14 @@ static int ad4062_request_irq(struct iio_dev *indio_dev)
+ 	if (ret == -EPROBE_DEFER) {
+ 		return ret;
+ 	} else if (ret < 0) {
++		st->gpo_irq[0] = false;
+ 		ret = regmap_update_bits(st->regmap, AD4062_REG_ADC_IBI_EN,
+ 					 AD4062_REG_ADC_IBI_EN_MAX | AD4062_REG_ADC_IBI_EN_MIN,
+ 					 AD4062_REG_ADC_IBI_EN_MAX | AD4062_REG_ADC_IBI_EN_MIN);
+ 		if (ret)
+ 			return ret;
+ 	} else {
++		st->gpo_irq[0] = true;
+ 		ret = devm_request_threaded_irq(dev, ret, NULL,
+ 						ad4062_irq_handler_thresh,
+ 						IRQF_ONESHOT, indio_dev->name,
+@@ -1263,6 +1269,130 @@ static int ad4062_regulators_get(struct ad4062_state *st, bool *ref_sel)
+ 	return 0;
+ }
  
-+ANALOG DEVICES INC AD4062 DRIVER
-+M:	Jorge Marques <jorge.marques@analog.com>
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/adc/adi,ad4062.yaml
++static int ad4062_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
++{
++	return GPIO_LINE_DIRECTION_OUT;
++}
 +
- ANALOG DEVICES INC AD4080 DRIVER
- M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
- L:	linux-iio@vger.kernel.org
++static int ad4062_gpio_set(struct gpio_chip *gc, unsigned int offset, int value)
++{
++	struct ad4062_state *st = gpiochip_get_data(gc);
++	unsigned int reg_val = value ? AD4062_GP_STATIC_HIGH : AD4062_GP_STATIC_LOW;
++
++	if (st->gpo_irq[offset])
++		return -ENODEV;
++
++	if (offset)
++		return regmap_update_bits(st->regmap, AD4062_REG_GP_CONF,
++					  AD4062_REG_GP_CONF_MODE_MSK_1,
++					  FIELD_PREP(AD4062_REG_GP_CONF_MODE_MSK_1, reg_val));
++	else
++		return regmap_update_bits(st->regmap, AD4062_REG_GP_CONF,
++					  AD4062_REG_GP_CONF_MODE_MSK_0,
++					  FIELD_PREP(AD4062_REG_GP_CONF_MODE_MSK_0, reg_val));
++}
++
++static int ad4062_gpio_get(struct gpio_chip *gc, unsigned int offset)
++{
++	struct ad4062_state *st = gpiochip_get_data(gc);
++	unsigned int reg_val;
++	int ret;
++
++	ret = regmap_read(st->regmap, AD4062_REG_GP_CONF, &reg_val);
++	if (ret)
++		return 0;
++
++	if (st->gpo_irq[offset])
++		return -ENODEV;
++
++	if (offset)
++		reg_val = FIELD_GET(AD4062_REG_GP_CONF_MODE_MSK_1, reg_val);
++	else
++		reg_val = FIELD_GET(AD4062_REG_GP_CONF_MODE_MSK_0, reg_val);
++
++	return reg_val == AD4062_GP_STATIC_HIGH ? 1 : 0;
++}
++
++static void ad4062_gpio_disable(void *data)
++{
++	struct ad4062_state *st = data;
++	u8 val = FIELD_PREP(AD4062_REG_GP_CONF_MODE_MSK_0, AD4062_GP_DISABLED) |
++		 FIELD_PREP(AD4062_REG_GP_CONF_MODE_MSK_1, AD4062_GP_DISABLED);
++
++	regmap_update_bits(st->regmap, AD4062_REG_GP_CONF,
++			   AD4062_REG_GP_CONF_MODE_MSK_1 | AD4062_REG_GP_CONF_MODE_MSK_0,
++			   val);
++}
++
++static int ad4062_gpio_init_valid_mask(struct gpio_chip *gc,
++				       unsigned long *valid_mask,
++				       unsigned int ngpios)
++{
++	struct ad4062_state *st = gpiochip_get_data(gc);
++
++	bitmap_zero(valid_mask, ngpios);
++
++	if (!st->gpo_irq[0])
++		set_bit(0, valid_mask);
++	if (!st->gpo_irq[1])
++		set_bit(1, valid_mask);
++
++	return 0;
++}
++
++static int ad4062_gpio_init(struct ad4062_state *st)
++{
++	struct device *dev = &st->i3cdev->dev;
++	struct gpio_chip *gc;
++	u8 val, mask;
++	int ret;
++
++	if ((st->gpo_irq[0] && st->gpo_irq[1]) ||
++	    !device_property_read_bool(dev, "gpio-controller"))
++		return 0;
++
++	gc = devm_kzalloc(dev, sizeof(*gc), GFP_KERNEL);
++	if (!gc)
++		return -ENOMEM;
++
++	val = 0;
++	mask = 0;
++	if (!st->gpo_irq[0]) {
++		mask |= AD4062_REG_GP_CONF_MODE_MSK_0;
++		val |= FIELD_PREP(AD4062_REG_GP_CONF_MODE_MSK_0, AD4062_GP_STATIC_LOW);
++	}
++	if (!st->gpo_irq[1]) {
++		mask |= AD4062_REG_GP_CONF_MODE_MSK_1;
++		val |= FIELD_PREP(AD4062_REG_GP_CONF_MODE_MSK_1, AD4062_GP_STATIC_LOW);
++	}
++
++	ret = regmap_update_bits(st->regmap, AD4062_REG_GP_CONF,
++				 mask, val);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(dev, ad4062_gpio_disable, st);
++	if (ret)
++		return ret;
++
++	gc->parent = dev;
++	gc->label = st->chip->name;
++	gc->owner = THIS_MODULE;
++	gc->base = -1;
++	gc->ngpio = 2;
++	gc->init_valid_mask = ad4062_gpio_init_valid_mask;
++	gc->get_direction = ad4062_gpio_get_direction;
++	gc->set = ad4062_gpio_set;
++	gc->get = ad4062_gpio_get;
++	gc->can_sleep = true;
++
++	ret = devm_gpiochip_add_data(dev, gc, st);
++	if (ret)
++		return dev_err_probe(dev, ret, "Unable to register GPIO chip\n");
++
++	return 0;
++}
++
+ static const struct i3c_device_id ad4062_id_table[] = {
+ 	I3C_DEVICE(AD4062_I3C_VENDOR, ad4060_chip_info.prod_id, &ad4060_chip_info),
+ 	I3C_DEVICE(AD4062_I3C_VENDOR, ad4062_chip_info.prod_id, &ad4062_chip_info),
+@@ -1351,6 +1481,10 @@ static int ad4062_probe(struct i3c_device *i3cdev)
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "Failed to request i3c ibi\n");
+ 
++	ret = ad4062_gpio_init(st);
++	if (ret)
++		return ret;
++
+ 	INIT_WORK(&st->trig_conv, ad4062_trigger_work);
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
 
 -- 
 2.51.1
