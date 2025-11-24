@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66E462F83AB;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 757B72F99A3;
 	Mon, 24 Nov 2025 23:35:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764027324; cv=none; b=liBL5nQnfeDcqR08lNP379svOifiDEzWMlG/ztIbF7PlH+mkq0fCt5Pp2BHHuUcu3Wejiu6ai2Pun2/9sB8WK/q6NnifGm6vELvBBodLWkfZNIESVWrVDZ3u4OdGs7fDYj9tjZMZODP8m/c8Ou76b4XAup3fd2cwfIee5OSqupg=
+	t=1764027324; cv=none; b=iwFUtGUHDHxby2XzT6FE7R5dbOLEW0kGqKOvqoXmqtW9WF6VCaljcWqZjFhf4Kf5MNU3eiYlH//TxWzND0Y2C3r9LF2oeQzeoFXHfsrRm1DySnVR69d6hzKZEPlW67prk5QxdJkixcFVWO9tHPWX8GvX3qYQlU72lWgFzpdaOHQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1764027324; c=relaxed/simple;
-	bh=4s39l/QafgDyne7Fk0MupeREU7/ycQbXTGHYHcfkGAQ=;
+	bh=q3meXTXtsVW4mUeYvPaWad8ZUVulXIlzub5OzKQPlZM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=KAKps9d6+KP84xRsWEJ6eZszaAA25VYX8RN4Cdoms5ZdiMBgZcKnp5yLisNLSDW2DdQIcdKhFZ/uZGZrlMNd8lc55IZIA7vX4gQey/o2JrjhLtgndfpqugH/oMLKCawmiE6qB9s514yTKtKeE6ji0UwtuKlEIZn30h5qZq4fns8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dzwoRwJy; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=obDBH80KuoObV2z9qaFphpW6nkhUOHkQIjkBYrg+jfIpn+/YXY0X1H0ft9PvMw8lV4AjKDs2QvFTILpgNa9Sxbd9Mz8+YSKvy4u4gAgvsQCSSxIJxdPnpCQIfU0va8TK9mQV+/5lhlE0YrlAsiHYUv7iRdB4bgj8M2PSfutp84Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NHhVrjqJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dzwoRwJy"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C8837C2BCB0;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NHhVrjqJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E4185C2BC87;
 	Mon, 24 Nov 2025 23:35:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1764027323;
-	bh=4s39l/QafgDyne7Fk0MupeREU7/ycQbXTGHYHcfkGAQ=;
+	bh=q3meXTXtsVW4mUeYvPaWad8ZUVulXIlzub5OzKQPlZM=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=dzwoRwJyRIuwVAV9ki2N/QeAfGmeEZB+2oy32qTXOQDln6LRMiPWM+18H/yNKf7SU
-	 yTmedX0oS3n/bBHUioxAeDh/nOQ/XtIQxzMUgkuhz5Zd/l+zSkMpnxg55aGJBclUbM
-	 WHTIzNiY86QhZt00BiePmanNAM3wkBExQfRs4GV5Ol0KLD2QZ5mxWqQIFHmvS8FcYw
-	 YfRGVK1YcmFnnrWTkaftHimMS1lIsyuz80so/6aohXPrSd5wqFVom3gHPC5C2iOnuS
-	 IPIVuQq+nMXcJ9I18s/u3kGuyx3Y/VSwg8DlYgjOND0gH2pP2UNoYVhb4pu0Q9KmXt
-	 kExYfd/Jxo6XQ==
+	b=NHhVrjqJKq+B6rCnz6FErsBfHZqF22dnN1cSlK30KC5uQ4dpnTH2mfx65GY5LfFdY
+	 69aukn1RjH/nthcxbl5lNwtlod02URd/Hitoy9NFdLfb4Aaz/FrCoMkUHf6JTbpT8e
+	 hFx4ag884/jVr774Us1QB2i3MHwQ53nrCT5wh+9n0bL/od5RsgnYOnZ0F4EI1Q0i/W
+	 e83nFi74D8apj2Q6D98UeVoSablfmABQ0jiAOXQXrlCS6bzcF5SaQyeOe+/rg0z2OX
+	 JvVQdV095PQGR+nrRkXzsTRj+aPJiARwR3rd7bPdrzg8fEXj2wztrWfZBU1pmtoez/
+	 EQ4zVFmn6uqyA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9FF7CFD36C;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB121CFD369;
 	Mon, 24 Nov 2025 23:35:23 +0000 (UTC)
 From: Rudraksha Gupta via B4 Relay <devnull+guptarud.gmail.com@kernel.org>
-Date: Mon, 24 Nov 2025 15:35:25 -0800
-Subject: [PATCH v4 4/6] ARM: dts: qcom: msm8960: expressatt: Add
- Magnetometer
+Date: Mon, 24 Nov 2025 15:35:27 -0800
+Subject: [PATCH v4 6/6] ARM: dts: qcom: msm8960: expressatt: Add
+ Accelerometer
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251124-expressatt_nfc_accel_magn_light-v4-4-9c5686ad67e2@gmail.com>
+Message-Id: <20251124-expressatt_nfc_accel_magn_light-v4-6-9c5686ad67e2@gmail.com>
 References: <20251124-expressatt_nfc_accel_magn_light-v4-0-9c5686ad67e2@gmail.com>
 In-Reply-To: <20251124-expressatt_nfc_accel_magn_light-v4-0-9c5686ad67e2@gmail.com>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -56,11 +56,11 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  Rudraksha Gupta <guptarud@gmail.com>, 
  Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1764027322; l=1006;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1764027322; l=964;
  i=guptarud@gmail.com; s=20240916; h=from:subject:message-id;
- bh=7jrbiFxqBdAClrq/n9H3dJIomUxZ8Xc6QvLk/kgFMvE=;
- b=reakw873qQWdfmQwHHLrt2onXrvLUiqgp/jZu9RU6H70hA4ED0hQhMHEo7nM2IZ2vrRmvys1P
- hUvRikVVUw0D6V1iof74GtNrLmB2IJMlwAxnaaL7ZifQmMIAL79eph0
+ bh=dKXKMkVKjf56BlmeyijR32PuIauhgvlaM3EWEdUBB0E=;
+ b=n5zAvflHZnzTNoHbN+46IeWgqQrcusBhwDS5I0yDtfHPJCM7AaOuRc594HFOxuzyatiPI4kv1
+ 9upVjkgYTjtDUj1u0Z6n7dsX4It5TSFLpqhMbD3ZLO0lLOznwbfTWuw
 X-Developer-Key: i=guptarud@gmail.com; a=ed25519;
  pk=ETrudRugWAtOpr0OhRiheQ1lXM4Kk4KGFnBySlKDi2I=
 X-Endpoint-Received: by B4 Relay for guptarud@gmail.com/20240916 with
@@ -70,41 +70,36 @@ Reply-To: guptarud@gmail.com
 
 From: Rudraksha Gupta <guptarud@gmail.com>
 
-Add the Yamaha magnetometer. Mount Matrix is left as a TODO.
+Add the Bosch Accelerometer.
 
 Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 Signed-off-by: Rudraksha Gupta <guptarud@gmail.com>
 ---
- .../boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ arch/arm/boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
 diff --git a/arch/arm/boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts b/arch/arm/boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts
-index 4f9b59db7bc3..d32461fc58e9 100644
+index d32461fc58e9..5a39abd6f3ce 100644
 --- a/arch/arm/boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts
 +++ b/arch/arm/boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts
-@@ -487,3 +487,22 @@ nfc@2b {
- 		pinctrl-names = "default";
- 	};
- };
-+
-+&gsbi12 {
-+	qcom,mode = <GSBI_PROT_I2C>;
-+
-+	status = "okay";
-+};
-+
-+&gsbi12_i2c {
-+	status = "okay";
-+
-+	magnetometer@2e {
-+		compatible = "yamaha,yas532";
-+		reg = <0x2e>;
+@@ -497,6 +497,17 @@ &gsbi12 {
+ &gsbi12_i2c {
+ 	status = "okay";
+ 
++	accelerometer@18 {
++		compatible = "bosch,bma254";
++		reg = <0x18>;
 +		vdd-supply = <&pm8921_l9>;
-+		iovdd-supply = <&pm8921_lvs4>;
++		vddio-supply = <&pm8921_lvs4>;
 +
-+		/* TODO: Figure out Mount Matrix */
++		mount-matrix =  "-1", "0", "0",
++				"0",  "-1", "0",
++				"0",  "0", "1";
 +	};
-+};
++
+ 	magnetometer@2e {
+ 		compatible = "yamaha,yas532";
+ 		reg = <0x2e>;
 
 -- 
 2.52.0
