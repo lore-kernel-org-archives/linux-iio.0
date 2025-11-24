@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3055725F7A4;
-	Mon, 24 Nov 2025 23:35:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66E462F83AB;
+	Mon, 24 Nov 2025 23:35:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764027324; cv=none; b=pss9agHbhk0v05gNex3be1DhNNGQXdS77MMf+RLyd42LhARETCRaHlP2RbDVYlNz2eGGEl7u4Z1FkSSQlobHLXIxKgiUvdVzANy1NOTw+vn2KZdEIcy5xN7bVja/Sn3esY6VHJlcp2HeMwpC4LlQtnp6QynByglaYSsZzvlolw8=
+	t=1764027324; cv=none; b=liBL5nQnfeDcqR08lNP379svOifiDEzWMlG/ztIbF7PlH+mkq0fCt5Pp2BHHuUcu3Wejiu6ai2Pun2/9sB8WK/q6NnifGm6vELvBBodLWkfZNIESVWrVDZ3u4OdGs7fDYj9tjZMZODP8m/c8Ou76b4XAup3fd2cwfIee5OSqupg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1764027324; c=relaxed/simple;
-	bh=u9aqNiA6Nwt1ajTqNsGO/hPjY+Fe7Gxd2kkZFH/hsZQ=;
+	bh=4s39l/QafgDyne7Fk0MupeREU7/ycQbXTGHYHcfkGAQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=snK7Ab+wq7hCkhALdNswjin3CsdkN5byoYvW7gentOQNf2SOtZkCHoxXdjKHVw2hbXBArpegm5gDMphHnR4WSvcKt0/dssSP/r9AJMQ8tx95umoy0DqDjeTB1FeVFoOj4uO5bOPdG/uHhznYoQ8yxUE3ThrwhnGlg6rKeoJgv5w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NOVOQk+3; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=KAKps9d6+KP84xRsWEJ6eZszaAA25VYX8RN4Cdoms5ZdiMBgZcKnp5yLisNLSDW2DdQIcdKhFZ/uZGZrlMNd8lc55IZIA7vX4gQey/o2JrjhLtgndfpqugH/oMLKCawmiE6qB9s514yTKtKeE6ji0UwtuKlEIZn30h5qZq4fns8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dzwoRwJy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NOVOQk+3"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A90DFC116D0;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dzwoRwJy"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id C8837C2BCB0;
 	Mon, 24 Nov 2025 23:35:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1764027323;
-	bh=u9aqNiA6Nwt1ajTqNsGO/hPjY+Fe7Gxd2kkZFH/hsZQ=;
+	bh=4s39l/QafgDyne7Fk0MupeREU7/ycQbXTGHYHcfkGAQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=NOVOQk+3z99qZ8n17ov4+EF8Rt+G1K67VXfmqJtIe0mRRyxqPT+zdMZegMfTF+Vb/
-	 MpcMfjz/dsIV9peiDY0Jrs17JPq8sJ8BL/B6zUJvDl7kKVRF+Vzm+Se7R88zVNdQwD
-	 jx3NLw1HRpaUtK9EruvBXKhUx+zUik7tS/NrvM7zQlSYo4t5sxV3JlZ/thDES3ehQZ
-	 z+VyPX82yfd2MuIRMmspG4D1L39vJZ/bhtYvl11UM/Ft7FLwL4kfBZg5Czbgh+DeTF
-	 9omTxK11eO2o3Kk1I+RC6g2t+Oq4FitLBYJpbXXpGfwuri+z29gceJUjRwOXQtP7Yh
-	 ZZpzsPZKHTOXA==
+	b=dzwoRwJyRIuwVAV9ki2N/QeAfGmeEZB+2oy32qTXOQDln6LRMiPWM+18H/yNKf7SU
+	 yTmedX0oS3n/bBHUioxAeDh/nOQ/XtIQxzMUgkuhz5Zd/l+zSkMpnxg55aGJBclUbM
+	 WHTIzNiY86QhZt00BiePmanNAM3wkBExQfRs4GV5Ol0KLD2QZ5mxWqQIFHmvS8FcYw
+	 YfRGVK1YcmFnnrWTkaftHimMS1lIsyuz80so/6aohXPrSd5wqFVom3gHPC5C2iOnuS
+	 IPIVuQq+nMXcJ9I18s/u3kGuyx3Y/VSwg8DlYgjOND0gH2pP2UNoYVhb4pu0Q9KmXt
+	 kExYfd/Jxo6XQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B079CFD360;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9FF7CFD36C;
 	Mon, 24 Nov 2025 23:35:23 +0000 (UTC)
 From: Rudraksha Gupta via B4 Relay <devnull+guptarud.gmail.com@kernel.org>
-Date: Mon, 24 Nov 2025 15:35:23 -0800
-Subject: [PATCH v4 2/6] ARM: dts: qcom: msm8960: expressatt: Add
- Light/Proximity Sensor
+Date: Mon, 24 Nov 2025 15:35:25 -0800
+Subject: [PATCH v4 4/6] ARM: dts: qcom: msm8960: expressatt: Add
+ Magnetometer
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251124-expressatt_nfc_accel_magn_light-v4-2-9c5686ad67e2@gmail.com>
+Message-Id: <20251124-expressatt_nfc_accel_magn_light-v4-4-9c5686ad67e2@gmail.com>
 References: <20251124-expressatt_nfc_accel_magn_light-v4-0-9c5686ad67e2@gmail.com>
 In-Reply-To: <20251124-expressatt_nfc_accel_magn_light-v4-0-9c5686ad67e2@gmail.com>
 To: Bjorn Andersson <andersson@kernel.org>, 
@@ -56,11 +56,11 @@ Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
  Rudraksha Gupta <guptarud@gmail.com>, 
  Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1764027322; l=1637;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1764027322; l=1006;
  i=guptarud@gmail.com; s=20240916; h=from:subject:message-id;
- bh=yZG1sZBCe3vOBZ7yKg0s6tW7F4POpCoTYx3Ig3XEUjI=;
- b=qSQ/BzuXX2x20sp0Y1qc8/8p9k11aGCyUtH0TUWT5dyHPPKz43FdS3Ax5hT+L0RWtY2caF7SN
- iT1UFWEGuuIDLro1mbI84S5vI37PcbmHQJBbtQjY0I8mZWsnHlHSng/
+ bh=7jrbiFxqBdAClrq/n9H3dJIomUxZ8Xc6QvLk/kgFMvE=;
+ b=reakw873qQWdfmQwHHLrt2onXrvLUiqgp/jZu9RU6H70hA4ED0hQhMHEo7nM2IZ2vrRmvys1P
+ hUvRikVVUw0D6V1iof74GtNrLmB2IJMlwAxnaaL7ZifQmMIAL79eph0
 X-Developer-Key: i=guptarud@gmail.com; a=ed25519;
  pk=ETrudRugWAtOpr0OhRiheQ1lXM4Kk4KGFnBySlKDi2I=
 X-Endpoint-Received: by B4 Relay for guptarud@gmail.com/20240916 with
@@ -70,67 +70,41 @@ Reply-To: guptarud@gmail.com
 
 From: Rudraksha Gupta <guptarud@gmail.com>
 
-Currently the Proximity Sensor doesn't work, but light sensor does.
-Left the proximity sensor as a TODO for later.
+Add the Yamaha magnetometer. Mount Matrix is left as a TODO.
 
 Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
 Signed-off-by: Rudraksha Gupta <guptarud@gmail.com>
 ---
- .../dts/qcom/qcom-msm8960-samsung-expressatt.dts   | 34 ++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+ .../boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
 diff --git a/arch/arm/boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts b/arch/arm/boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts
-index 5ee919dce75b..8d75ebd7976c 100644
+index 4f9b59db7bc3..d32461fc58e9 100644
 --- a/arch/arm/boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts
 +++ b/arch/arm/boot/dts/qcom/qcom-msm8960-samsung-expressatt.dts
-@@ -54,6 +54,31 @@ key-volume-down {
+@@ -487,3 +487,22 @@ nfc@2b {
+ 		pinctrl-names = "default";
  	};
  };
- 
-+&gsbi2 {
++
++&gsbi12 {
 +	qcom,mode = <GSBI_PROT_I2C>;
 +
 +	status = "okay";
 +};
 +
-+&gsbi2_i2c {
++&gsbi12_i2c {
 +	status = "okay";
 +
-+	light-sensor@39 {
-+		compatible = "amstaos,tmd2772";
-+		reg = <0x39>;
-+		interrupts-extended = <&pm8921_gpio 6 IRQ_TYPE_EDGE_FALLING>;
++	magnetometer@2e {
++		compatible = "yamaha,yas532";
++		reg = <0x2e>;
 +		vdd-supply = <&pm8921_l9>;
-+		vddio-supply = <&pm8921_lvs4>;
++		iovdd-supply = <&pm8921_lvs4>;
 +
-+		/* TODO: Proximity doesn't work */
-+		amstaos,proximity-diodes = <0>;
-+		led-max-microamp = <100000>;
-+
-+		pinctrl-0 = <&prox_sensor_int>;
-+		pinctrl-names = "default";
++		/* TODO: Figure out Mount Matrix */
 +	};
 +};
-+
- &gsbi5 {
- 	qcom,mode = <GSBI_PROT_I2C_UART>;
- 	status = "okay";
-@@ -163,6 +188,15 @@ &pm8921 {
- 	interrupts-extended = <&tlmm 104 IRQ_TYPE_LEVEL_LOW>;
- };
- 
-+&pm8921_gpio {
-+	prox_sensor_int: prox-sensor-int-state {
-+		pins = "gpio6";
-+		function = "normal";
-+		input-enable;
-+		bias-disable;
-+	};
-+};
-+
- &rpm {
- 	regulators {
- 		compatible = "qcom,rpm-pm8921-regulators";
 
 -- 
 2.52.0
