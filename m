@@ -1,125 +1,126 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8684D22F389;
-	Fri, 28 Nov 2025 16:14:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45ABD2627EC
+	for <linux-iio@vger.kernel.org>; Fri, 28 Nov 2025 17:21:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764346456; cv=none; b=p8slj16AGDhnxIfg7tpaxLWonk0kwyR4OY8wSjni39gHmWfuwBS4TT+HVEgqsDJDMy1/yLUSAl1Pv8p+2V4c0pXfJ93qshnos/3QgJ68Ptw9ab5yKOKvRZWOJ65FtmlS1auBWiRzxIIsz9xe8XTYCVDJo8IOC+b1UTr4FdxUEsQ=
+	t=1764350505; cv=none; b=DBm1JyK6+Dt3zynZeLjtveTS0gp+gLHLy/4yGVJWmeeaAV3XkQwyIOfPWr0TtDdUbHs0OuD/6YI+/TXjwEuAQ7OAHAEmgHpZtNgPqMT+rSSDy+9KnIJT/6+zh+ZLgJ0tFUBDnjszwUkKUo/4BPnXU9dkQweQKBdn+HhQzJsV8sE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764346456; c=relaxed/simple;
-	bh=MJx2PDinxZPaHAZ5lMDKBEQt7v+A7NDh7oo3tQbbopY=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=XaVpZpgs1WxQcP1fqE5DqvbQXzx02C5NVbEV1M69zmVh9t/Y/QQ+9B+K0YBd9fQoKqh8VCOeHwO0cPsgKC42s+PMjUetOGt/epKO1qZju+78cLT6/pUvXGZi17bCOB5iQ3207UPk6/ld9bUB24YUxkTXdxVmpRMAG0szkAmNguw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=0xBDVhh8; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1764350505; c=relaxed/simple;
+	bh=uDYERl7M4CHVlX3TL7em9lSGrgrS5AMYJsyyfd4wiSE=;
+	h=From:To:Subject:Date:Message-Id:MIME-Version; b=jeTDaZ+Boj7+K++/+3whGEdoLuF11N4lzFWvPyX8klUiqgKA65mRmXTawh2IygI4lH7zZ3/A/+RcR4EfIiWIzvRDWQsG041nBcEdB0CtF1JahluXMaKieoQ+UXIjkaOVhQzshIeFmlceNOcQ4yBd/Hm/uodIErrKzQkg9FT1JLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=a65JjCEf; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="0xBDVhh8"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AS9qM513943452;
-	Fri, 28 Nov 2025 09:45:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=TstNbKo0wPt/azh1rRCSzQaWvWz
-	KaAHP2U6FHYa1Q+k=; b=0xBDVhh8CHOejETncbwSmmSEHS9cyIYJNOb2LbAxiv4
-	I1/vb4yV3be5MZsG46VLyPInepp+TWgE1mp286Oa25OevNMU5oNAnbJjYEQbwrg5
-	m8p0UFNW8yKA7C7aGlAYgMhqQwJRYSLgO3q9W4Kk1boH5g67MnjwsDfvgRzlPmAs
-	ZMlMgr0BIDq9rwnBnVsEHdWoUhqBcXxY/ckvfcDn3LElPPZzlISyWVHmHm9En60K
-	VEmYfmSkm1gKo/wWk+lsIpRSGKB1nWZQKBWyfGdokGUuuEQji7HYUWu/cGIzp9//
-	v9l4dNF3eNmWCcHrkuiNybBn0RX2+HxnbZHepzjGpLA==
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4aph60prhr-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 28 Nov 2025 09:45:00 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 5ASEixjD026686
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 28 Nov 2025 09:44:59 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 28 Nov 2025 09:44:59 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 28 Nov 2025 09:44:58 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 28 Nov 2025 09:44:58 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.13.98])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 5ASEilHo011408;
-	Fri, 28 Nov 2025 09:44:49 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "David
- Lechner" <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?=
-	<nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v5 0/2] iio: amplifiers: add support for ADL8113 Low Noise Amplifier
-Date: Fri, 28 Nov 2025 16:44:09 +0200
-Message-ID: <20251128144428.24450-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="a65JjCEf"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b7633027cb2so163792166b.1
+        for <linux-iio@vger.kernel.org>; Fri, 28 Nov 2025 09:21:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1764350500; x=1764955300; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:from:to:cc:subject:date:message-id:reply-to;
+        bh=0o316vC9WiaR3tTaCWrIiITBeYf+5Kgf/Kcm7GUATFM=;
+        b=a65JjCEfXV8zC62byEpnw2Hhuqz/5bGa83l5O367ZIQvsEC24Vf0k4Sdp+LJ9vrwfI
+         wGcwwrdtlgHn9ctMyRu/UbMpkaNOTUhzFrVM8i1D1lXLr/4XAGpQbZ0GvrpNfGpL4+Fy
+         HqiMMVRX4McDh0HiGomAgTKssVpGX5ECloaKHZaYbGFaDWNK+9b7mIF/SeAFASGbqO2v
+         fvhz2gV46dMfPZBQIAYyULGHvA9VkAbAbiO3qoMfVr+MtRHDrNeu9DGcZj3/iveQ0ZLT
+         x2xSuiFH0h23paW9Tn7jUKWyZJLJ4WQ/LY8XUWn0Bt+Sv3kRYm3H80bHeNMECgheb3Bx
+         myLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1764350500; x=1764955300;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:to
+         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0o316vC9WiaR3tTaCWrIiITBeYf+5Kgf/Kcm7GUATFM=;
+        b=A+q09QH2O5K8uB0rK2R6fZV95LOOdduTJQNez/MjKGgg9RGhyW4xljJ+TSDelwCUUW
+         C68R7sx4pTWy8kkJxT9wXBb3qSjkAtJUu61fafKlSuqxe5v8RivHqFcjyjXnHOYC+tiL
+         wr4guEXES7pB08cC8TCr6Qfufqf/Cc5PvNOVNCZQgaUjC933aUvKwX71H92wrrg70tWN
+         SC2VdjGM+8a3G6h9L6lAKoaWVAYKdgCzFIlTqJIYA7TmK+JrWItZuN6FFhoOdp+tDrhs
+         hpiy7N4zpuzmH5CerO7Bf/TleG/tPtUaROBFWRVARlbFMRA+ocU23z7/hVuSGnXxiG1h
+         JTwg==
+X-Forwarded-Encrypted: i=1; AJvYcCVdOufeoHaH+tq9JWIEjLERWI6HI8Eojac59AaZYWI1t376brNqc0baqyPOw8RMNOVG8E6ojWD9aUs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwmfU6CGy0oF2e9xwyZQ2WqQc5avyFyN+gCdW4ZDsX93BkHdLWD
+	R2bJqsKO0RWp17DqGVB/9gLx8nt0delXApjDGa5ptENGAl56AFIhJAKzhUdjDEp61Lo=
+X-Gm-Gg: ASbGncuVyu5N2Qt1WsmQv1rCi3VbDjv6csBXtvNZoVXBEhAPXlBFbSSMfVATFhPlfru
+	dJLVjc9exs4Q4hS22AkX8+5dz6bp6bBvNrFw4+5oLBl2yBhY93ou8kCJrKINw/oUmQTRcN25jIp
+	T0D1BvJTQx0rH5F78V4691aCnYKpJo+Dsvyj/xEB8+A/44hBf0h92Eg1ZmLNy9V/Tf3dVIOSNi4
+	QocWkT+M6o96s/HVGLmkVqUDaDt7XIP+SZV+5KeXLrF4amO4jQGZdjbNqZ4hStqqRbscuNdHNnz
+	JrvkkfFY7K9PBkzX0zqyLLJN/xZb8I4g5Cf93WQRrzPiXV0kjbCs/rKKowWdlnYc1ClbzqUl84c
+	SK6bkf1FPwvrPNWLydMri+XbRtBUDNr5GaBSu6hjYThRHaJwAODYycoj97Z3Ocug6eIoRsgK+3f
+	yFsg==
+X-Google-Smtp-Source: AGHT+IGmpNEn2fy1edz63cjxx5L1QCCwvrbgiP5eTG0zfIU1MryJIhORXDLagO2TT8pRFNM4URvWlw==
+X-Received: by 2002:a17:907:6d1b:b0:b76:fe3f:e76d with SMTP id a640c23a62f3a-b76fe3ff0femr726893366b.15.1764350500468;
+        Fri, 28 Nov 2025 09:21:40 -0800 (PST)
+Received: from localhost ([151.35.208.252])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b76f5a4b926sm493521366b.68.2025.11.28.09.21.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 28 Nov 2025 09:21:39 -0800 (PST)
+From: Francesco Lavra <flavra@baylibre.com>
+To: Ramona Gradinariu <ramona.gradinariu@analog.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v3] iio: accel: adxl380: fix handling of unavailable "INT1" interrupt
+Date: Fri, 28 Nov 2025 18:21:38 +0100
+Message-Id: <20251128172138.257961-1-flavra@baylibre.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1591; i=flavra@baylibre.com; h=from:subject; bh=uDYERl7M4CHVlX3TL7em9lSGrgrS5AMYJsyyfd4wiSE=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpKdn24Y7qQupxDrr9JGAedi2Q+p/corh1sUBVp F44zgdNqhaJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaSnZ9gAKCRDt8TtzzpQ2 X0H6DACm+jgfQZHcI4WNcN+r5LnxzXXx94gNep3p5KRZyazeHrdZyXxiRNh4bilx4HoqEjCfdOC tBhbsO2yNUROn6+C6YY6vdOn3OScWvm0zbJs0lKGsDEl6PdQf/RcdHiP+vOfJ/M8avEbCzvDHqJ fE+WphGAViYiPjjNvsGHabS6TGXkeRaYhN2ZSyOOUOXdTS4+AlDojdB5xI6kn6jGB1XLn8/d5z+ m9Jkb+rgzishqLUCD+R7lIFV5PjQfxBlSO7CWJk5u0EAtGBGajoYSJhw+eaefmcprqtWkt+hdTK R0Cj6a1SF1Uufe/+zH88D8eSpfdIRUubVeltmrV7EE9IryJJ3ldhSECxS4o9bS28eSWTxA5VDKz V6zgBYP/VCJFgLg519yku2jpyw1aHqV0lZJfx0cexkTznq2lp052mnrYa43vSiXO5+Q7uelHEwP 426j/wsc52niX2Cr142z/WW7M5Acc7tzz2598gUQuEOhQ8GHTC8m8s+HNVLGtb2GeVn+A=
+X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: wAvr1Iv5YINOL_sLg9hYIfbU2cc608r2
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTI4MDEwOCBTYWx0ZWRfX9ZrzlnWZ0Vbr
- c5p9KCFfhR7/Sd1X6METHDoGe3dkVf2Xeoj28R4lsWOsA6TbOkBdjwtSchbR2WSOZLnZtrt4ILC
- F+mt/5KGhSlBNWTIVSG1VLjIK+IGZtHT95sid2mL3x3z77BuV4x5WyHsyFyZ3aykxxn+tFuRsMY
- 3COB6EBnzSbWbqH3WH0m9ihfr1lDFR9sqV9Y+EnVjwg0F/G2dPbD9smRz8W6Z9Z5SYZh/6B2vBD
- XnqK469WpsET0H0dfAEYzROTaaaZ2kNI3aiypeFjyJT5S94WOe5WCY/fQ3tMsgIeIIFYs3L8Sge
- fp3EHS6gjaDQUCuVcfMfxajw7FIeJv4H51PlHHtMjoBd1Rh9jDIo/KHXM1eMlfbn/ppggSoWxiO
- ZvinPpHQu1WtcU0jceKC0LXU20IZjA==
-X-Authority-Analysis: v=2.4 cv=BN2+bVQG c=1 sm=1 tr=0 ts=6929b56c cx=c_pps
- a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
- a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22 a=nGdWsVW0n162tS-kH1oA:9
-X-Proofpoint-ORIG-GUID: wAvr1Iv5YINOL_sLg9hYIfbU2cc608r2
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2025-11-28_03,2025-11-27_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 suspectscore=0 spamscore=0 adultscore=0 lowpriorityscore=0
- impostorscore=0 bulkscore=0 clxscore=1015 phishscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511280108
 
-This patch series adds support for the Analog Devices ADL8113, a 10MHz to 12GHz
-Low Noise Amplifier with integrated bypass switches.
+fwnode_irq_get_byname() returns a negative value on failure; if a negative
+value is returned, use it as `err` argument for dev_err_probe().
+While at it, add a missing trailing newline to the dev_err_probe() error
+message.
 
-The ADL8113 provides four operation modes controlled by two GPIO pins:
-- Internal Amplifier (14dB gain)
-- Internal Bypass (0dB gain)
-- External Bypass A (0dB gain) - Signal routes from RFIN to OUT_A and from IN_A to RFOUT
-- External Bypass B (0dB gain) - Signal routes from RFIN to OUT_B and from IN_B to RFOUT
+Fixes: df36de13677a ("iio: accel: add ADXL380 driver")
+Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
+---
+Changes from v2 [2]:
+- added missing trailing newline to the dev_err_probe() error message
+  (Andy)
+- added Andy's Reviewed-by tag
+Changes from v1 [1]:
+- added fix to `err` argument passed to dev_err_probe() (Andy)
 
-Antoniu Miclaus (2):
-  dt-bindings: iio: amplifiers: add adl8113
-  iio: amplifiers: adl8113: add driver support
+[1] https://lore.kernel.org/linux-iio/20251126144624.24512-1-flavra@baylibre.com/T/
+[2] https://lore.kernel.org/linux-iio/20251128140726.243005-1-flavra@baylibre.com/T/
 
- .../bindings/iio/amplifiers/adi,adl8113.yaml  |  89 ++++++
- drivers/iio/amplifiers/Kconfig                |  12 +
- drivers/iio/amplifiers/Makefile               |   1 +
- drivers/iio/amplifiers/adl8113.c              | 290 ++++++++++++++++++
- 4 files changed, 392 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,adl8113.yaml
- create mode 100644 drivers/iio/amplifiers/adl8113.c
+ drivers/iio/accel/adxl380.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/iio/accel/adxl380.c b/drivers/iio/accel/adxl380.c
+index 0cf3c6815829..6d82873357cb 100644
+--- a/drivers/iio/accel/adxl380.c
++++ b/drivers/iio/accel/adxl380.c
+@@ -1728,9 +1728,9 @@ static int adxl380_config_irq(struct iio_dev *indio_dev)
+ 		st->int_map[1] = ADXL380_INT0_MAP1_REG;
+ 	} else {
+ 		st->irq = fwnode_irq_get_byname(dev_fwnode(st->dev), "INT1");
+-		if (st->irq > 0)
+-			return dev_err_probe(st->dev, -ENODEV,
+-					     "no interrupt name specified");
++		if (st->irq < 0)
++			return dev_err_probe(st->dev, st->irq,
++					     "no interrupt name specified\n");
+ 		st->int_map[0] = ADXL380_INT1_MAP0_REG;
+ 		st->int_map[1] = ADXL380_INT1_MAP1_REG;
+ 	}
 -- 
-2.43.0
+2.39.5
 
