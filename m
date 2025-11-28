@@ -1,137 +1,214 @@
-Received: from mail-vk1-f179.google.com (mail-vk1-f179.google.com [209.85.221.179])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC6E3332EC9
-	for <linux-iio@vger.kernel.org>; Fri, 28 Nov 2025 17:40:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E9902C030E;
+	Fri, 28 Nov 2025 17:54:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764351612; cv=none; b=mtBJKRJhsaAAnSodM3+qHBhFCQLCkIr8tV+kp5G+tvSwQ3pndeIPoMHa5Uhh2mgsF9LJzsmdLEOFaFPx5eGS11buGaALlBniF2NLD4eI6JnrSOrZ6GMED/47CmjFGWf8B3ULXAtB9/ORge5pIHtf3ztfjtKBJyvsLf/Z/sVek9o=
+	t=1764352465; cv=none; b=SrNkMZHTcLD7g/GCsV/ArRJLRlexGZxuPq0bwHPBwKlMdloe2kwhlNH6jgD2rYjNiCXBiY9RKKfW8RKMzCC2j93egXU12Pa5gQOtW696DEy9bTo/xAclARImDFsLsrtUfZCf8FcssFSxIYknLuihKyGlphsIrhueRFjhovVPUsw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764351612; c=relaxed/simple;
-	bh=O3gwZTCrjFoeqf+4ZZG/d68f+S5hhU8HJwBqekuNMGA=;
-	h=Mime-Version:Content-Type:Date:Message-Id:To:Cc:Subject:From:
-	 References:In-Reply-To; b=rz/R6tExVR4oMDlDQD0V6F2Jkzy7JQ9VRaJ9anmv5ZjJgxYcR5qswqmlzMO005IoeCg62Q825CLNrofub90kvf27FQcKGpIZG5xGcv4dZau9n7fZ09OqEjKMcLrCZGjC1hlCWoK9CkvjKQ0GDb3ObtW3CrA1FcfTBDBdQRoIz+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BHZPkkfn; arc=none smtp.client-ip=209.85.221.179
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1764352465; c=relaxed/simple;
+	bh=nfg8ijWsrq/26EBsYgopDb7xFVSrHGFVksbDyLWr5RA=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Eg6aBhLZO+80bvKSpeZCezGcY/HrwCrUVrmUC22CZVPhIM7gsSf+pmUvOlQTOus4BMhw1DNfmmw19TxjvwsrkGJMS1GvawAyJ5zI4NW5+DjWYVRB6Oocunko92rVEyZreuglnsgFwMaMvPcJz8+fLeSZGplAxTp6c2d1bSZab9g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=hHNGMKGs; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BHZPkkfn"
-Received: by mail-vk1-f179.google.com with SMTP id 71dfb90a1353d-55b155c9ab2so640471e0c.1
-        for <linux-iio@vger.kernel.org>; Fri, 28 Nov 2025 09:40:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1764351608; x=1764956408; darn=vger.kernel.org;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Ksf9bpHNFLQpJsZYVUeK4l3VWIZV+1TA8e1+Ve8vX3E=;
-        b=BHZPkkfna4KayLc1o458l5oA2AVaiqU/d6U4sniNrf3ijQ7XYEi+hIt8mWinIQvjzC
-         GMEsYJbSo+PXit5owWSYfZT69Yw8llUO7SaFaR3jGWMZkv6tUESm51lJLobKTlDEoKMG
-         H4mJkaSnuXRRxNO1bTYFuQt2Zp0TYazFWus0FoW13O3kQHft5g5+Y+HigwSakOZ8sAV5
-         bZsuvLOYFzjsWZy8NZXaQJOrLDlQkHqUNq5ADwxWDX+rjdGUKsEV/9N2JhUgw2wVQlMH
-         cZw/rrjeHt4wg5Jptjps+uJnrfck5Z6rQWjrd4EJk8cy/5IbUlpkXUra/7OYsRcbodY0
-         Suqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1764351608; x=1764956408;
-        h=in-reply-to:references:from:subject:cc:to:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=Ksf9bpHNFLQpJsZYVUeK4l3VWIZV+1TA8e1+Ve8vX3E=;
-        b=uQBbtTkT+saVC4CyUqPEpkMNwhVdoQeKbdNtVIfioNcLM9imx1Ij1MGwxnoO6/Sy3U
-         ghk3VqpHFZV8M8jRBraPq5BeKJdDnivJ3zTdzrBXP/jmr11xG2xh9ET/Y9SmWdzs0PUx
-         FqliZhIO86BT14RSocFPpH0ZhXXY+fHigQOaLbZs3p2dhd09f1DgvCEOW9Mcpnl4D9Iy
-         cGM+qAt5vIDMVFNvJABlv/eDrlxbb+z9TjC1xQE4z1atsj4kAjmgvJHZIoPYoFpZwQAi
-         pX6cYQRMq383RbM+TnT0SgkPlNcAaus/BvAsMFcetRNbJzsxk5iULvoRkjQNm3X5V2F1
-         MKzw==
-X-Forwarded-Encrypted: i=1; AJvYcCVCNQKAQPOdbbBYUS7XlS6hhYDP8ZnvYh0KsLnwTzt//5NiTG3SzGDVmS0hUulipjA+B+NV2mVssys=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwQ240DcDG8x/XsIxQJRgrqjNYGh4MY9GBpgUvqUalyEaXauI+F
-	DKC96ubWBlq53gkJ72y892i16EFAEs/DCDmkyAH/sBAH9S9mbONvDwdWnoHuMg==
-X-Gm-Gg: ASbGncuOP6+rfZ1FPHWitpNFj2cfND+9xzMMrqXPbpv6lfIzplTZJ5W/I5gbb52O26/
-	Mvg/BO1elqdDpIQxt3wizJN9ZI2+PObnk7CH6Cg/NNXI7ZeRMFJClqeVMVQW9Y6qnXv+dDPC55i
-	j75EdgOnprsa2golUJhsAxTf7xqJP4fdnYoKSdGMYNTaMkfkqMdpsA0rf5dOHkH8zUqI5txF1yy
-	PvFfUAFZGIGiB0dm34LVRTR3D88C48szDe/HTNdgx6AEMFcfSAP6ozVDBlPc7AbsL9UfXKRlzEY
-	PFCr+glCJrD1wCUww9wNfdeRU+HUV4ck/PwSE4BuDBonhR/OBZ4Vt298BpnPjXETdiR7Fry63n3
-	7UaKIY1ia4rege2NwzGQWGNGR1A1ziXVhZ1fmRobxByd0xkBXu9V0cPISOqkP2Jg8J4vCGXqLx8
-	KJDqPKog==
-X-Google-Smtp-Source: AGHT+IFe8GiAMTa0/l9shgwgJWoUbKMN6FN3Mnu2XXuSPGgXKPKMwILFzaMqyMjJpH018s1tlchfJw==
-X-Received: by 2002:a05:6122:6b1b:b0:55b:9bee:ff61 with SMTP id 71dfb90a1353d-55b9bef0f0amr7951568e0c.16.1764351608522;
-        Fri, 28 Nov 2025 09:40:08 -0800 (PST)
-Received: from localhost ([2800:bf0:4580:3149:7d4:54b1:c444:6f2f])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-55cf5186d0csm2161858e0c.20.2025.11.28.09.40.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 28 Nov 2025 09:40:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="hHNGMKGs"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 5AS9lmAY769750;
+	Fri, 28 Nov 2025 09:45:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=686Es
+	vQsEWdff/qeC69omCafaW5g+o0PR8F7f8iW46U=; b=hHNGMKGs4YjphJIK0sy5N
+	jPBQ3x7MVt+Bn6Qd89Bnwfic8u/+CaHxw36nxLNEM4JN7WFxPcnaOUT0HeqWkWPO
+	cSQIeTm9yVt6iPZxBthchB3D1h5XGFLC74sTgNYFKEe+aho7L/wcFgCkHB2pvdnW
+	Hfge28b3N4wqZ5+kGBY278M0UBLoOn7L/oGtd7MMOZhUHnrfHWVeikIKsM2tPDgt
+	pES5TrZwbId3zQXcl7q0a+yRjX0QVoN3Hcr9DsiO1PE8rfHeadymbbXpAVM5GqND
+	3M7Lr+2zfIcX9FBbwd9StQN1FWZRaAVi1hM0BhXKhNiYlsslzCB5VQoS+QAs/LHA
+	g==
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4aq0u5u7q0-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 28 Nov 2025 09:45:08 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 5ASEj65s026708
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 28 Nov 2025 09:45:06 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 28 Nov
+ 2025 09:45:06 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 28 Nov 2025 09:45:06 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.13.98])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 5ASEilHp011408;
+	Fri, 28 Nov 2025 09:44:59 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David
+ Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>, Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v5 1/2] dt-bindings: iio: amplifiers: add adl8113
+Date: Fri, 28 Nov 2025 16:44:10 +0200
+Message-ID: <20251128144428.24450-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20251128144428.24450-1-antoniu.miclaus@analog.com>
+References: <20251128144428.24450-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Fri, 28 Nov 2025 12:40:06 -0500
-Message-Id: <DEKIG2EXEUS9.28A50WAN06ZMQ@gmail.com>
-To: "Krzysztof Kozlowski" <krzk@kernel.org>, "Kurt Borja"
- <kuurtb@gmail.com>, "Jonathan Cameron" <jic23@kernel.org>, "Rob Herring"
- <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, "Conor
- Dooley" <conor+dt@kernel.org>, "Tobias Sperling"
- <tobias.sperling@softing.com>
-Cc: "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, "Jonathan Cameron"
- <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add TI ADS1018/ADS1118
-From: "Kurt Borja" <kuurtb@gmail.com>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20251127-ads1x18-v2-0-2ebfd780b633@gmail.com>
- <20251127-ads1x18-v2-1-2ebfd780b633@gmail.com>
- <bc76c2c9-ceb6-4ba4-80f0-8a114c5da033@kernel.org>
-In-Reply-To: <bc76c2c9-ceb6-4ba4-80f0-8a114c5da033@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: oR0wAP6bQJ50yK8MEd5VFZd4FhSi-YBW
+X-Proofpoint-ORIG-GUID: oR0wAP6bQJ50yK8MEd5VFZd4FhSi-YBW
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjUxMTI4MDEwOCBTYWx0ZWRfX3lx1spDKIUQn
+ rGlHxTsLUGqsipAlX73SD4pQ/gJjg2rKIsnOPh9YTWTrfdZH4cp8H0MkTOy+GPSA7ABmvmvWpXf
+ WHr7NabvES5SbntBjMBjzdt7T0frG1csBEFW1WxRDelrEm341+T3ryDjTbrlwXFC/pMyQovXqOf
+ A8mk9P20BwJhfk/uLdnYs6NQZXMifX6txVbzZg3XlUZAbxYQpbL68MdZ0A+wTcg4tqFKsrr0B34
+ 1uIzXKhaHJSH14jgxWnr5KZijdiq7j8mg93Y2oizQBGJsZ2BRVAcXlBeCymLAjh8/4nCvXxkZaF
+ VsNg0kLPB98s4ak8Ryry6gegyesHBbwHaRyrhaUIWtGrAwh8LUwDp0t1l9vkw5CpDq1fx+8w8vH
+ j317sfAaDMhJAQBvwCfIKKODNw/iSA==
+X-Authority-Analysis: v=2.4 cv=LLZrgZW9 c=1 sm=1 tr=0 ts=6929b574 cx=c_pps
+ a=PpDZqlmH/M8setHirZLBMw==:117 a=PpDZqlmH/M8setHirZLBMw==:17
+ a=6UeiqGixMTsA:10 a=VkNPw1HP01LnGYTKEx00:22 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8
+ a=1yNy12B5puk2P9Y3jxYA:9 a=4Crt4hL0rqkA:10 a=shvgCOL7IKUA:10
+ a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2025-11-28_03,2025-11-27_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 clxscore=1015 lowpriorityscore=0 bulkscore=0 phishscore=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 adultscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2510240001 definitions=main-2511280108
 
-On Fri Nov 28, 2025 at 4:43 AM -05, Krzysztof Kozlowski wrote:
-> On 28/11/2025 04:37, Kurt Borja wrote:
->> +
->> +  interrupts:
->> +    description: DOUT/DRDY (Data Out/Data Ready) line.
->> +    maxItems: 1
->> +
->> +  drdy-gpios:
->> +    description:
->> +      Extra GPIO line connected to DOUT/DRDY (Data Out/Data Ready). Thi=
-s allows
->> +      distinguishing between interrupts triggered by the data-ready sig=
-nal and
->> +      interrupts triggered by an SPI transfer.
->> +    maxItems: 1
->> +
->> +  '#address-cells':
->> +    const: 1
->> +
->> +  '#size-cells':
->> +    const: 0
->
-> These two properties are not correct now - you do not have any children.
->
->> +
->> +  '#io-channel-cells':
->> +    const: 1
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - vdd-supply
->> +  - '#address-cells'
->> +  - '#size-cells'
->
-> And they should not be required.
+Add devicetree bindings for adl8113.
 
-I'll drop these. Thank you, Krzysztof!
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+Changes in v5:
+- Replace separate va-gpios and vb-gpios properties with single ctrl-gpios array
+- Remove second example, keep only one with external bypass configuration
+- Add comments to external bypass gains in example
 
->
->
-> Best regards,
-> Krzysztof
+ .../bindings/iio/amplifiers/adi,adl8113.yaml  | 89 +++++++++++++++++++
+ 1 file changed, 89 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,adl8113.yaml
 
-
---=20
- ~ Kurt
+diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,adl8113.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,adl8113.yaml
+new file mode 100644
+index 000000000000..43ba51f8a235
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,adl8113.yaml
+@@ -0,0 +1,89 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/amplifiers/adi,adl8113.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices ADL8113 Low Noise Amplifier with integrated bypass switches
++
++maintainers:
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
++
++description: |
++  The ADL8113 is a 10MHz to 12GHz Low Noise Amplifier with integrated bypass
++  switches controlled by two GPIO pins (VA and VB). The device supports four
++  operation modes:
++    - Internal Amplifier: VA=0, VB=0 - Signal passes through the internal LNA
++    - Internal Bypass: VA=1, VB=1 - Signal bypasses through internal path
++    - External Bypass A: VA=0, VB=1 - Signal routes from RFIN to OUT_A and from IN_A to RFOUT
++    - External Bypass B: VA=1, VB=0 - Signal routes from RFIN to OUT_B and from IN_B to RFOUT
++
++    https://www.analog.com/en/products/adl8113.html
++
++properties:
++  compatible:
++    const: adi,adl8113
++
++  vdd1-supply: true
++
++  vdd2-supply: true
++
++  vss2-supply: true
++
++  ctrl-gpios:
++    description:
++      GPIOs connected to the VA and VB control pins (in that order).
++      Must be specified as GPIO_ACTIVE_HIGH.
++    minItems: 2
++    maxItems: 2
++
++  adi,external-bypass-a-gain-db:
++    description:
++      Gain in dB of external amplifier connected to bypass path A (OUT_A/IN_A).
++      When specified, this gain value becomes selectable via the hardwaregain
++      attribute and automatically routes through the external A path.
++
++  adi,external-bypass-b-gain-db:
++    description:
++      Gain in dB of external amplifier connected to bypass path B (OUT_B/IN_B).
++      When specified, this gain value becomes selectable via the hardwaregain
++      attribute and automatically routes through the external B path.
++
++required:
++  - compatible
++  - ctrl-gpios
++  - vdd1-supply
++  - vdd2-supply
++  - vss2-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    /* Basic configuration with only internal paths */
++    amplifier {
++        compatible = "adi,adl8113";
++        ctrl-gpios = <&gpio 22 GPIO_ACTIVE_HIGH>,
++                     <&gpio 23 GPIO_ACTIVE_HIGH>;
++        vdd1-supply = <&vdd1_5v>;
++        vdd2-supply = <&vdd2_3v3>;
++        vss2-supply = <&vss2_neg>;
++    };
++
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++
++    /* Configuration with external bypass amplifiers */
++    amplifier {
++        compatible = "adi,adl8113";
++        ctrl-gpios = <&gpio 24 GPIO_ACTIVE_HIGH>,
++                     <&gpio 25 GPIO_ACTIVE_HIGH>;
++        vdd1-supply = <&vdd1_5v>;
++        vdd2-supply = <&vdd2_3v3>;
++        vss2-supply = <&vss2_neg>;
++        adi,external-bypass-a-gain-db = <20>;  /* 20dB external amp on path A */
++        adi,external-bypass-b-gain-db = <6>;   /* 6dB external amp on path B */
++    };
++...
+-- 
+2.43.0
 
