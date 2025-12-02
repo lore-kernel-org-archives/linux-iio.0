@@ -1,69 +1,73 @@
-Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11021114.outbound.protection.outlook.com [52.101.65.114])
+Received: from DU2PR03CU002.outbound.protection.outlook.com (mail-northeuropeazon11021099.outbound.protection.outlook.com [52.101.65.99])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28EA7230BCC;
-	Tue,  2 Dec 2025 10:21:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.114
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB3B527E7EC;
+	Tue,  2 Dec 2025 12:53:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.65.99
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764670868; cv=fail; b=WOex815CrIlSaa8qPQWjvaB0vre5RRR9vxwocfpAuPRC1tDum4ZzD5YnmcbsRK+Jf98cSLth9lWczxHj8jS8HL3pc4Ij1aQvIxFmws/NPo+O2tteh8UladOQ6KE39QeV7SvRubmH6Y49+8tdwUCkFuTxXQb9H1TXX/lRmVDt57c=
+	t=1764680012; cv=fail; b=ExldcOgwDkwteomfabAJGVmY6EoHm9vWMWnMzSx7jQHOKkEkWMH04Rnb/X5ApbINwDI8bOUOZDvVOaZwfqJxKbceLp3LuaE1/5lnceGKOzPMxfpf781O37p9z7KycHxoTGUDmqkYZJpMzHkhCb4FYYOuqc5uSXJM1r1eSFL+DrI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764670868; c=relaxed/simple;
-	bh=2keDlab4tvaqJegv9BrsBLdPnZ0jP3zyropDKbcUYG0=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=I9LdNrYgicrLB/ETSGGIUwf6jWw2KeYkj9RST6MGOMEh7u2GjArPbLsAosLlOuad1zGZ/ggY8H9I1uKKGgXDc641xJ6uBGLReEEnogZPOBa0fPpDIzk8WvzF6n2qyTCoOfHaZGjhdQHzN/1drB2VGfm4AizHTEiP8K3ZKw7BDaQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=m1ynU7rs; arc=fail smtp.client-ip=52.101.65.114
+	s=arc-20240116; t=1764680012; c=relaxed/simple;
+	bh=3A5fLDkJADFUxeOllggaO4hPQboxTgptNgbWyyQPqTM=;
+	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
+	 To:Cc:MIME-Version; b=mIfZzU6sai50F+0h+mNmyqJLR0GVboVTEk1fD7KUaV/LyCDElg3XNjd81omSTSOc/M3JhP7xpfIRk+vUqm92LNdTRNO9baOQFLgH/AgkHKWh2ChPc1JpNfi1Ik0u209HmiMrzTBgeh3MXvsYEUjwcSez929AaY5EG1g6fjPQ9tE=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=u3TYyyGB; arc=fail smtp.client-ip=52.101.65.99
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="m1ynU7rs"
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="u3TYyyGB"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=ZP2SxFr0JyxiCaV5Co3BMZk4VCJnkXbYshR6U5Pxja1fR47cxaTTQaPHjLP01eHzDFaoQFgeSBsvs9sbM6NK/DTuqt6oAw7+bvehw3KBNsATJxSaVv2yhNMCSeL6BqS3ZMbdoOjlLs43/+GmpsllCaiodG5XiALmSvA4hBBx5QOSNKkb+GIYLHGgNDudPqvXFjNZ3WWfmsScM3sP46jJ/74hhP65iLvI5br1jbc9a6MWZujzOxHqN2ISQ0DlTPa4kiKJYnYFv8mTTXQ74+N2xR9I0JT7WmxKkfRDrKJhD26qOO/vIn8k8d4ciYH/YcOwfvQs4oNDFsZw8Ykyix0aHQ==
+ b=NM+uxxXX4NDrGv9BP16BuUd9wA7fpyzAFcK8YwzQmKam+FsMkrDBUfnLxu0Msb81521pFK4JCbS9D7fm8d87vSWBrHdqRf4O7AbQnBUliC2E68ypX+VSmA4mohGhCmbCKMg5R7Qg2hMxVQ+2MbjsG/BuKX7geUxRfkqqjEgMHSwkrH+rOCVPJOty0iRTnfD8CcP8X+21vw8g7Q97uSfBYjpJTHtu7iuWkM3IvTD/NJg0dISZUsGNx+xU7sRFR878+qOZeIJKdFl7hAfEfQXpyaiG5eiPUAsWiOIo9LjKZpWGBcL7FNLB8/LgFYWJMk8QyFh7r8tTljiqllWF+yHwbw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BbNw3VYHxecburOiX1IhT5YAhL7or8Ca5aDGjvKmfNk=;
- b=HO33Z16Q1hFQWo8H9TmfenZZl2UKRIxR7s0CbjGEf0RhiQ0FHlTCsXBAsjyrsQ2TarVYuY3wEsiOJ0xFXUCkL2AYrgLmcZM+k7ZujJyxbYsNFwPZxOcwUgXmWlUS+EaQdmfufRoFoSKI9dj/+crEREc08VDj27W5rSg/y9SD3ePapV0qWiiGpgmVxVCKAXlKxBx7cke64yrWDrJT8c+BiSiwlcmhGoGXFMXYMIhvlBNaAgo1sGahEx6BjE7Vc0Ma7g5R4Hfnw6zcc9Bp/j364tYTwdhvf6eww6vWP5kOZfK/nC5Y7yVraLOdjUaKhEFyZxuXtPhOzhVEWxYx2f1ctw==
+ bh=sDwj9dxrIa0V2IEtj5gG5UKRuNGXDgQd0/Hvu9SDYaM=;
+ b=HolO/BR1MOK2+hDSd8hEOp4NrymMaOOD90YB30Yt+CEfBVrf94woOeNqAyY9YatJT+bfflclhXUAjBv5Oi10MWiywrt5wm4N2G0t5z/5IYCtNwgpyur7LLDel0UG5SGymO2rxHaajdIh8lk48xKaH7Zgkr5LNWaoIq6i97wjWjvbVtOzDkM22wUR1ptHfbtl8a5EcO525TlbkOiUM/1caT+ACszpK+QeujzlLn2VoN8BJAWGw4WQ2xHE2AmrWPcRS14uxZfX9F3oSOAF4HJCm14BtNiBe1YHD2FwVp4nWthEKQq9oOQYJx20K0EKOyUAHKXunuea3s9Y/Tc8eUC0Sw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
  dkim=pass header.d=vaisala.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BbNw3VYHxecburOiX1IhT5YAhL7or8Ca5aDGjvKmfNk=;
- b=m1ynU7rsabeThIkffRnTLtoPqvQgjXWTaE3F59Ksniht/5EQq023uq00E/oxxMTK1Odtvv8uUB8vzRxPZNuW1wPCiXH5aELrdYoICxtRBg5FewGxr1xYXFFn0FZuyf4IU9viDQS9J9zhPdIqYSJGvnsn+JeNEImBxGVl2+7R1zQnIhxJiAz23SzLLDMZsN56XmGVREoKB0hNkKrrwEMsYaXl9xsMxXeS0QUR7gei5mlPBrKVjJTWsG6ayi4cJbnSkxb/F3XMJGz10DZu7+DGBrDFGfd5ff1O2AsLlFBfxJJVYxjOcrxDsWqARaGV1TxH6Bs8XAgujMfwooIy/J3+9Q==
+ bh=sDwj9dxrIa0V2IEtj5gG5UKRuNGXDgQd0/Hvu9SDYaM=;
+ b=u3TYyyGBR8yxcZLwYpV7d4L/VkDj6qVB1bCUaGQExFs6D19OhEWD//qqxTpLg8wRpUy9A8zK0w2BS3fZnkRp+XZI9Zawd50gpAZBRctwjrRee1Vc+9bc/mxdQMJdP46C13xE5Ms0EwUubNDyJ2q3nKGTNFaoRhnuoZtnkXETNvYd3iupAIqObdH/ndiqOBmgG08XRUDzRSiZkoh34ggnOtMgmkZk4331l1AQhhWyI9asCmdxSx4JrxtVUsd6FYXrUX8UjUwjDmBTVlIcqGLeMQXvpdM80JUKegbIlRwhkeiMtDBcGi9Tfje6CK77FFpTcdtU6bXd0rfq06T6uHvkeQ==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=vaisala.com;
 Received: from AMBPR06MB10365.eurprd06.prod.outlook.com (2603:10a6:20b:6f0::7)
- by DB9PR06MB7562.eurprd06.prod.outlook.com (2603:10a6:10:251::12) with
+ by GVXPR06MB9178.eurprd06.prod.outlook.com (2603:10a6:150:1c2::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9388.9; Tue, 2 Dec
- 2025 10:20:58 +0000
+ 2025 12:53:24 +0000
 Received: from AMBPR06MB10365.eurprd06.prod.outlook.com
  ([fe80::4606:8e25:96e6:bede]) by AMBPR06MB10365.eurprd06.prod.outlook.com
  ([fe80::4606:8e25:96e6:bede%5]) with mapi id 15.20.9366.012; Tue, 2 Dec 2025
- 10:20:58 +0000
-Message-ID: <9f1ba4d9-8a94-4445-988a-56725a197a1c@vaisala.com>
-Date: Tue, 2 Dec 2025 12:20:51 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iio: adc: ad9467: support write/read offset
-To: David Lechner <dlechner@baylibre.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>,
- Andy Shevchenko <andy@kernel.org>,
- Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20251201-ad9434-fixes-v1-0-54a9ca2ac514@vaisala.com>
- <20251201-ad9434-fixes-v1-2-54a9ca2ac514@vaisala.com>
- <7e042d4e-0ca6-4b2c-9b65-79593a526b5d@baylibre.com>
-Content-Language: en-US
+ 12:53:24 +0000
 From: Tomas Melin <tomas.melin@vaisala.com>
-In-Reply-To: <7e042d4e-0ca6-4b2c-9b65-79593a526b5d@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
+Date: Tue, 02 Dec 2025 12:53:08 +0000
+Subject: [PATCH v2 1/2] iio: adc: ad9467: fix ad9434 vref mask
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: HE1PR05CA0293.eurprd05.prod.outlook.com
- (2603:10a6:7:93::24) To AMBPR06MB10365.eurprd06.prod.outlook.com
+Message-Id: <20251202-ad9434-fixes-v2-1-fa73d4eabbea@vaisala.com>
+References: <20251202-ad9434-fixes-v2-0-fa73d4eabbea@vaisala.com>
+In-Reply-To: <20251202-ad9434-fixes-v2-0-fa73d4eabbea@vaisala.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+ Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc: Michael Hennerich <michael.hennerich@analog.com>, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Tomas Melin <tomas.melin@vaisala.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1764680002; l=909;
+ i=tomas.melin@vaisala.com; s=20251125; h=from:subject:message-id;
+ bh=3A5fLDkJADFUxeOllggaO4hPQboxTgptNgbWyyQPqTM=;
+ b=lEBfxxlwj7yQdagt1yXTd7UYo4AjrdncnhIVuwvkHrF2/qFl1swc51y4ISUEIrQ3o2cbYdsWm
+ QWv5KkfPXrLCWbU5DzueWBV1Ydk5lJmDdudtPVnf2FoY2z2x0eryUK5
+X-Developer-Key: i=tomas.melin@vaisala.com; a=ed25519;
+ pk=6lMiecjZ+OeyZuxYsDm/ADy9D1JKvYrKdsYv58PMepU=
+X-ClientProxiedBy: HE1PR05CA0137.eurprd05.prod.outlook.com
+ (2603:10a6:7:28::24) To AMBPR06MB10365.eurprd06.prod.outlook.com
  (2603:10a6:20b:6f0::7)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -72,264 +76,126 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMBPR06MB10365:EE_|DB9PR06MB7562:EE_
-X-MS-Office365-Filtering-Correlation-Id: 7a9e1d96-07cc-4e15-f5c8-08de318c7c70
+X-MS-TrafficTypeDiagnostic: AMBPR06MB10365:EE_|GVXPR06MB9178:EE_
+X-MS-Office365-Filtering-Correlation-Id: a453d471-6c16-4c55-0a21-08de31a1c778
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|52116014|7416014|376014|366016|1800799024|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?Rlc5cmpFVjhSMTZlSGhxZFRheDd4a29uNk5CRVpNemxpNFJHWU04b3I1cjZR?=
- =?utf-8?B?cmp6UjlMVjZJOXZzSzlLWkRtaCtKR2NZeks5SDlTY3hqU0dpS2ZuM2lCcGxq?=
- =?utf-8?B?TzlxYWVWTzBNNGdVMTBCUmUyK0hIQU1QbXE3d1cwNGVZR29JcUZrc2pwRWt5?=
- =?utf-8?B?Q3lhMzdwUFFYbk5McHNWZnVzOGF0NmlaQWNzcmNMUGQwM1NoWCtFajc2cWJr?=
- =?utf-8?B?VkQvcjg2eW9uMm1veHR1MmhBUTJWVitaWHU3ZWFDKzYxa08zZlBsUVZ3aHJm?=
- =?utf-8?B?Q3Y2NThvU2pBL0R5VVFzYXZSYUVzZDIzQUI1aTlpTjlRT0lrcitBRDVBUlRw?=
- =?utf-8?B?M29FbmdXWmlIaDE2Mk9pTWJ0VGFQWnROc3VxMTZ1ajQ5U0RMVXIxUnA2dkQ2?=
- =?utf-8?B?L2pYQWpXY3d5bXpDOTN5SzJNRkJlTzhGSEVhcFArbGhaTS9mbU1PUnBhQzQz?=
- =?utf-8?B?Z2I1Mi93dEhIaVlHVkExUU1CRWdoWEg5Q1FrWWh0SHkzRE1GRHN3dlhHcmV2?=
- =?utf-8?B?U3BGSnlzaW9BbXpzejBnck5MaXRudkkrZHZkTTdoWXN2OWdpSEVVbW1VU1oz?=
- =?utf-8?B?eURWSmVwUGowZ1RDbGVMdlg5VXV3QWhQVGRSQTVETVJaYnFQVm9oVkpUMGhW?=
- =?utf-8?B?R3NqRGlLNm0zTDZtb0U3c3B0Rjk4MTMzK1JiN0p1d2tPaHlzckF1R0d5S1V1?=
- =?utf-8?B?bzBiZUxkVy9nSkwrREVyWVdWZWErVFdHelUzWERjQTJJblpIenE1alNFT042?=
- =?utf-8?B?ODNyMTdzRjY3MGRrNDQ4SEM4RzBnQ3ZJTUlHOXlCZk9lM2ZDSzAzSUhsVjFk?=
- =?utf-8?B?Q0RsNDJta1B1MlVmVzFDd25VMmc4Y1FISWtUTytIa2xRdFlmSHVQVm1rbGE5?=
- =?utf-8?B?K0d1U2swTTRWVW91ZHg2NjJQQlVnMlNKZEVscXk0WTI1TTBQQXlmZjVGZ1p6?=
- =?utf-8?B?ejhMQ0Yram1ENmcwcDh5ZEpDemNFTHRFcFQ2b2MwbnhMT2I2M3pIeGJUMk1J?=
- =?utf-8?B?NmdqUGM4c01TcG1tdHNnQjNITmMydzY4Mkw4YnczNU52ZXV3SklyUWJ4R1BE?=
- =?utf-8?B?bGczb0VranpzZ0tmMEkya2hXcldQdTA3ZWdrY1AzdFRHYitPOTkwQVJMR1Jw?=
- =?utf-8?B?bG9rS3hQZkcxUXdEdnlRQ2FPcW5qZ0dqekYrTVFGejdWUTc1dmVWcFhJWTZy?=
- =?utf-8?B?YUZQcFhoeXBRbjAvMi9ZSUpQc0xpd1JtNURLNjMxZUtFT1pLUlM5R2RTMGtX?=
- =?utf-8?B?dm1Yd0psNWlneVE0bllxdFhoU3dpRjh4UXZwbmpPZ3lrQmJ3VWZ2eEdzNC85?=
- =?utf-8?B?SXZmRmNBTkwvU211d2ZoT3NnNnZtaUhoeVZaUVBqUWNndkxKckZqN2IxL3Z4?=
- =?utf-8?B?UEhTRHZ5UTFrZGxHckRBbTZjbTlBZ2RabVdWSmNjRitLY2NxQUtWdXQ3OW1y?=
- =?utf-8?B?V1pSNWtQVzgycEFGa2Zya1B1QmhpVEkyYWdTanlpMFRLb25KRjI2TFpLWVVY?=
- =?utf-8?B?RXQ3dU9uU1lQUXNNOTk3TGxNRTVkMTBoQndaSnlEbnliMHBIRzA2YjBlelRk?=
- =?utf-8?B?bDdxZlBSbXBsVG5EVkJMYzdIY0JqNWYwSlQ2MlY1ZzI2Z09ZTGQydG9Xd2RP?=
- =?utf-8?B?MEdCQXhEcllHU2xrU2xXL0tzRHE2Wno1cjVqMU9hVW5sYkxiQUhwNHJKQXo4?=
- =?utf-8?B?QUluTUMwK2VMM1drMVErVnN2YUpFdE4vWGRQd3kzTG1KWU1UdWtnVFlpRU8w?=
- =?utf-8?B?akU3RHlsY0lqNC93Sm45a1Z2UzE0YjNaTnpKQTc2ZjNoUG5INEJ4L09RWG9I?=
- =?utf-8?B?NnJodnIwQ1lFZGVZUFdyMUJKcHhUYzdsOEpwRE04cFV0NHFRUEVnOWg4ZTgx?=
- =?utf-8?B?YXU0QnJVTkUzY1NCUzNUcCtlS2JhalA4dXBzRk1zVFdzUDd5dzhFbUJEcXR6?=
- =?utf-8?Q?cInlQxcQM84koU5ZczbzfGpxiqVasJ6J?=
+	=?utf-8?B?b21GaUxSWHJsSlR2aWkxTGdlcmJGV0ZNa1pkdXBwUFR4bE5FbGxra0tYNldh?=
+ =?utf-8?B?d1hsWERCV2RPSkFSNUVWMU83OThqWXcybmgvVzBaLzNPRnd0aisyN3Nod3o5?=
+ =?utf-8?B?MGYraTJJYUVqcUhOWXNpWUdQbkZMYzJ6SW5zSjJ5Lzd3MEJmK1NnOUVGbjgw?=
+ =?utf-8?B?YzZTS2FpczdVNTR4U24xcVdBOGJlQzFkNDhYT2JLT01SZlNPTFlZU0VjZjRX?=
+ =?utf-8?B?RDdhTVBqSE11T05SeU1hZjRHbXNObWJxZitKc3V2TWNCejl1NFlXelJMOW9G?=
+ =?utf-8?B?SzRaRkhqeG5rR2UwalZleFNPWDl2N2hEVENueFlwVktJd1F0U0VQdUVrUWdn?=
+ =?utf-8?B?OWpRemZkM3E4NGNsZjFvb2tkM0VzdWRiaGhrNlBoRVgrOWR1ZmE0MU5HcFI2?=
+ =?utf-8?B?SFEwWWVJTHJHakhKb3hIYW5BdUl5ZzNoSDVKZUtvRmgraWQ1clBKRnJ5dm85?=
+ =?utf-8?B?V1FodzJtVGRyOEUwQkVEbm56WE9FWUQvdGEvR1k3SUwyckxkSTF3dVViOGdY?=
+ =?utf-8?B?MFNOQi9QZVZ3SnhTdEkyM3ZvRmVuOStqMnoyWU85eFowRk1FNWlJWDh5Q2dz?=
+ =?utf-8?B?L1NnaVV3RU53b1VSdS9pRXJRTVRQNkltb0xZUmcrRDIrTlFCaURtRlFZbll3?=
+ =?utf-8?B?Tzl3cW8zMG1qOEdDUkRFbVQ2Vktha29mL2RkcFNCeVFReUozVEZDUUpvTEtZ?=
+ =?utf-8?B?NE1pQXBzU1MxTitBQ0FYZnhTNnI2M1FPak1kc3MrR3RSN3JacEFhQ21md3Nt?=
+ =?utf-8?B?SStZb0xBSDlyd0VqVXd4L2pWUnMyNDB2QTlzVWZXSWI4Z2R2MFVjQ05RRTdk?=
+ =?utf-8?B?dDhJaDMwUlUwbFhac0RBU2JyVDFMR1N5NkdmQldGMlE3U0tGaUlUb0NYbC81?=
+ =?utf-8?B?SDhDMUdXK09IaW93QjlycHg2R0NXN29oZktzRSt2SXZHMUp1R2RWYVBRNjQ0?=
+ =?utf-8?B?NnA0MHZ6S3RycEtGc3ZJMG9hZ0xTa1E3SG9mcElKSnVTYXNpTE5raVhLa1Q4?=
+ =?utf-8?B?aEhlNXp1UDZhRDdoUUJHVkFPNFo3M3ZuaGNUSzhxR0hXOWxxWlZ6UVlUdGFM?=
+ =?utf-8?B?L0hpdnI5TVVXTUNPUzB3TkxqcHNGbngyQWNONW1DK3VMN3EwTVNzZStKREpu?=
+ =?utf-8?B?bHFSemxnLy9SeTJHSmo3bkMrSmZMN0V6TkovVWY2MzYzdDdXaTQzVm1JRi9S?=
+ =?utf-8?B?VTJYMnZCaFdVSDY5RVJYU3dwaTVqZCtXQjhMaE5lNTNxcWpWYkxtaHlBSFFp?=
+ =?utf-8?B?Nk0zYkwrVzZLQ0szTkkwNTVyUUFSZUl0ZXJycTREQjkyekRtYmRmNk1pZ29B?=
+ =?utf-8?B?enFldEF6TUZmUk4zclZmbFBNWjR3WFp6YWM3b0Y4ZEJjREtqdENnNy9LMFhl?=
+ =?utf-8?B?a2tLdjI2aHFLOThzU1lUMEdNeGZsWEhERGdFRUNxK3NnNi9ZOVNIRGI5RnY1?=
+ =?utf-8?B?WXp6R0FVR3IraS9pWkNVL3hiaXZUUlBleXpCdHVpVXlLWE1ZT3d1ZlRDQjdI?=
+ =?utf-8?B?TXlTQ3Q5bGIreGRXMk5PRGl2VU5Fa3drM1RabU9RUE02bUR6REJLQVlkY1FF?=
+ =?utf-8?B?YWN4SGpVVGU4bmJUT3h1cmJ3M0ZyKytRSzYvSXhJNWtMVXRSSHpoOVNvVzJr?=
+ =?utf-8?B?M2V6UHI0R3FHOUFKVHI2QUk3OGYrM1F4cGVEaWxHdFpKVmtrc3pmRVp4b2Vq?=
+ =?utf-8?B?c003d1gweFljNTYxUVc1ZFcwbG9TZVdZajB0cmpQbHhMYkMrV3RtMEQ3WTVX?=
+ =?utf-8?B?VzJOdTdLNWFKdGtFZWpqcVBvRVd4U2x6Y3lraEtXTExRZ2RocWJDN3AwbFlI?=
+ =?utf-8?B?UVJRWUZkQ1BCYUJObUoycXdIeC85Y21wNzk5RWMyVGpTTnZDalptWm15Y3VR?=
+ =?utf-8?B?V3Ara3A1MTdEVktjVTd6N00wN2puenNtT0Z3WHFKVk5uZldSVEtKRDFCbjVa?=
+ =?utf-8?B?M3ZNMWp5RGZyclBmUlRXajZrZGdmMStvaWduTFBqOU53QmdNUjZjWnY2TjI1?=
+ =?utf-8?B?UVVKam8vN1pKTUFkejVGa05IK0JQMndtcjIzZFBESGFEMDRnLzU1bDhLbmQ2?=
+ =?utf-8?Q?Bf/aKE?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMBPR06MB10365.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMBPR06MB10365.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(52116014)(7416014)(376014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WUtSbytZRlpiQjBEbUN0VDIrYmt4WGNHRkRSZGtaaG9KeEZ3bG03NjVBclBu?=
- =?utf-8?B?R3FlMVJTUGpJR21iaEFHUENQaDNBejZlTmdqVG9BaHZhOURwY0sreG4rV1FT?=
- =?utf-8?B?RWcrL1ErVGY5dDRMaUo0Wm1KMytRaWVqWWpXcGgzaTVmRlJQOGtDVmRycDdu?=
- =?utf-8?B?OXNmWlFnUzUzeVpab0dKc2lYSDRKNTYvU3liZHVHaXFTSlFoN1g3c05aR1RE?=
- =?utf-8?B?ZTZ1TjF4akpMR1BUbytMRi9JdDBFTUVTU3QzRmQyVjZkQzZNMFJPRHd5RUY0?=
- =?utf-8?B?YTVvSXc5bzJTQXM1elFDV2VTS2M2VTZ1RkZDbStwMTQwR0VKVzZKQmFMcjRK?=
- =?utf-8?B?blo2SkJCZ2dGSGZiTVF5ZzNnSzNtYXh0RmhFaVhtZ29nT0VNWkNhbkxCZUpW?=
- =?utf-8?B?TkZOekRPZEdlMS9EaFJYWHh1RlhXeVdmVkVUM3hiRmEzWU45cVJkMGs1YnhB?=
- =?utf-8?B?K1c4TldDWHYzVlE5RjdCMXliRFpPU0x3NUdGcXFuc00vVFFYR3d2WWh0dkhD?=
- =?utf-8?B?bUtpSUc5aVp0ZEpMNXJEOE01Q2ExVkoxMWYyMC93YXpXdm9IUUlsZHNmUW9M?=
- =?utf-8?B?a3ZnUU0yOTZWcDV1eTA5bkpFL1RUUWg0aGJPQTNjRlFHY2ZBQzd5bVIwVFZB?=
- =?utf-8?B?dFpTeEZhelBVTXdzcHdsUFVaRTFrS25BdndPVHl1NFNNZmFnTWdHc0JnRUQr?=
- =?utf-8?B?RksrNy9qRW4wcTBEbmliTUV2QWowMnlDSlVuanFmSHJCOW9HR1QzaWpIRU01?=
- =?utf-8?B?MnZxVEJnTHl3Mml2TlZnVU4wNzZVTjdMRzd6VjJZZkwvZlByb0VYSnozSStt?=
- =?utf-8?B?cDF0L3BMVFpYQ1NvTm04ck40OTZuRjdTcmRKREs0bHlPUVBuWHRNZmgvWitH?=
- =?utf-8?B?S2VvbEx1UHVtS1p2WFdOUldaYldEaU53dC9sVmNzSUJZdTlNNzcxYS82Y2Rz?=
- =?utf-8?B?dVdhNWl5Qjk0dHFENmxJazRzYlg2Ym9hTnZiZjZsWHplSlJ6WTd1WXRZTWls?=
- =?utf-8?B?Z2lPVDhtZ2w1c25VaTVicmU2T2svN2FGSU8rbVBhbWprQU9IbGdFT1NNNkN2?=
- =?utf-8?B?a2Q4Tm5SVTVudVl4N052TkpCcDFBQ2UvUk44R3pUeGFpUnNqaHNpQTEwSTZZ?=
- =?utf-8?B?cmplRmJtQmJNdWw1U3oyZjRoUTh0SDAyVU8wTThIZ1RZd0I4c0V2SDNPOE5H?=
- =?utf-8?B?K2RFeFVjRUQ1ZytsT0s0dGhQZm1mRC8xcXZnV0FlNTgvMmVVd2lKWnozWTJV?=
- =?utf-8?B?ZWZFaU9RVndldU5Hc3o0Y0J3R1NZK1dkSlhtL1lYaXcraENKZDBJUVR6WXR0?=
- =?utf-8?B?SmFxRWl2d0E5T0xSb2lIc1hpR0VEWm9ZS0tqSTY2WUF6TnloYVhTZS9vYm5l?=
- =?utf-8?B?cUphaWpYSEFpZC9HcXBKYkZHTnFzblJQWlp4QVVsY3U5WWNqcmkxV0tZUkpQ?=
- =?utf-8?B?bENoVXgzelhuQmFBc3dCT1kxYkFwczBhN1MxblM1VlNGVkRKblJCRHk2OThm?=
- =?utf-8?B?UEZiM0FLaFdpRk80SzhkNVdGSGIyZkF4Z1lzdnVoY2k0eFl5S1FxMnY3cFBB?=
- =?utf-8?B?THBWYzhWendROU0wWWFUYTh0aitPeC9wd1dxZS9JVVFzSllSTVBaUDV1L3d3?=
- =?utf-8?B?aGRQbHFMSEtxRnRWc1pmMTE0M2hmYml4SmZ4UXVtcEcyTldUMXZob0o4amRP?=
- =?utf-8?B?ZnVXOW1qaW52aEE2Zm9MUXNVOVJjc2J4UzYxVFU4RVNQd0N1TzVDK0ttdzdh?=
- =?utf-8?B?ei9JUFJtWTJXSGxSN3JLbGhadEsyWEtQNm1GVG9VRnlUQTlxRFpDMk1tQXE3?=
- =?utf-8?B?YlZyZ0VLY0p6T3pOU1hRSGM0Y05hZkVUTVVydzdEWTlGcTlkY0JlUTRaZkta?=
- =?utf-8?B?VWtkdEtXZ0h0TEYrbm9ReU9ZQnVHQzk2OFJHWW5ZakJoU0tUbTYrdjBzejFI?=
- =?utf-8?B?dHdiZzdPbUVpWVZ1em4yRWd5R1AyZDd6dEFBZnNDTEtYUmxJa0RrNWtqMW1Y?=
- =?utf-8?B?eHVwTldFcE9wcHl3VUZRdFdxVzV4am5Tc0JPZzVWWDNMRnRzendCZjBKbjBm?=
- =?utf-8?B?aUcxNTBUSlpOVVkxYndncUErLzk0UURxdDlmN2VScGxHcXlRVVVpbmhCaTNz?=
- =?utf-8?B?eVhPWTMxbS9lTHV0eW5sMEdKQ3JST3NLaEI3ZmxTUGxuelJMenRZYkltUTBo?=
- =?utf-8?B?WEE9PQ==?=
+	=?utf-8?B?WnFpY1c0UmMzS2d5VGdCa0pkcDcxd09McG84Umk2RWJHSGxDTGh1ODhIRVRw?=
+ =?utf-8?B?Um1qQnZ3R1YxVXNHMXBYZ21GOVJsYWR6dCs1SHRvbFFkTmw4UVpSWU56bzh0?=
+ =?utf-8?B?VTh5YlRocWtIQitjQ0xEVWR1TlhQWmRkblZYWWNPK2Y3ZlhSMzZ3WXlnRTl6?=
+ =?utf-8?B?TllNL0d6VzQ5RGlmNUdyRWxEK1hKT2xnc0JYSVNsQk0rWlNMYndyN2cwUjY5?=
+ =?utf-8?B?M2NSMmE4NkZlWjBBaEUrTnZkSDNqYmlwZVdBQ2hxWjdnVnV5ZzhzZDhBTVdy?=
+ =?utf-8?B?MEVVdjZLcGF1dDN1MlVPVWh3aXkzcjRwcEdxQ1BhQWxuWHlxd2phcnh4RjdO?=
+ =?utf-8?B?RXFnUUt5Y0htTDhMUEpZVkxiVWp2NG44SWp1SnRLcHhzWlZ3U05vMEU2ZjVX?=
+ =?utf-8?B?NWlDMm9QamRlTjBkbmZmM0hzVDdscWV2SFZxNzIzaHVTZVpTOEpxR1h0R2pn?=
+ =?utf-8?B?QkpWVGNOd3hxamo3RmEwbm16Z09LRWZrdDBXSGM3QmxUUE9oR1pHV2U4TDg5?=
+ =?utf-8?B?dnQ1STdlZ04wbGFFOTNnZjBlc0RTWDUrVHpsYm1MbE9ET2QvYVp4Wi9xMTY3?=
+ =?utf-8?B?b1c1aWNyemd5SlJMQWJwM0VEZnk3czAwcGFSU21LQlJwS1c1cW5vcFhFTHVC?=
+ =?utf-8?B?YkxkcFlNc0VPeTBZRUltSHkxSmZTNTlVYmdkbFI4WnM5S1k4VlFhcm9tY212?=
+ =?utf-8?B?bDMxanZ4dkk2Y2EzbWNlZGZNMlo3WHVvb3pkNXZyTHdTYS8vSzBWMytBUWpJ?=
+ =?utf-8?B?d2EvQk5TVTVJd2FhaDk5OVJibzRaVnBQZW53MVdWc2Q3SFpvMXpWM1g1Tld2?=
+ =?utf-8?B?eTJ3bUpPWFpILytZL2pmTjhHSkpPMTlIbUFwVE9wSDRjVjZYaFZXUTJKajZq?=
+ =?utf-8?B?VTRTdmpIVVZGVHBGQmxIWXM4WklVZEp2bWlwbS9kUWxlbXNWM2tIQWRNcW1r?=
+ =?utf-8?B?alRsc0Q1TURrTHdncXJrSnBNMk1VM3ByTjVZYUNmUG9pcEdieStYS2sxenli?=
+ =?utf-8?B?dS9wWGZObDRWalEzbkhIMUxIclU5bStRYUhnSlRFZ284Z3RGbkpCYXB5dHp0?=
+ =?utf-8?B?T2o5TWpENENhZWNseXlVY01jTnh0eGRPczlPbjdrMnFYcFF3ZlM4VFdwTXZk?=
+ =?utf-8?B?RllPdVROMWRXWCs1ZHUyMVVCbUxHSEdINnh5THN5WnNIc3NqVExTTTFFbmJG?=
+ =?utf-8?B?ZDNTWng0R0EzR1h2NThUeUYweTNaR1VyMEcrOFdaM0hCV1dtTFFyWm0waEFv?=
+ =?utf-8?B?YktzeHptd0hZUEdOMmRYRnlrN2ozdTVkYmxqZUMzQlBVdllXd0NjS21BeHd6?=
+ =?utf-8?B?Z2VhQStzTE9KcEVGaU9yY3Q3MnowWC9JbDc3YWJxMjA2RldtN29CUnNYTUIy?=
+ =?utf-8?B?K1ZEYTNQNlBYYnRXZndLOHBobkZNT0NuUmFPaDczRFVFb1NNRkl4T2xBa0NJ?=
+ =?utf-8?B?cmd0c29QbS9hQzRyY0hWSU5FUG9GSUNPV3RBR0FGVlp1Q1hJM2hTQjZmbUpT?=
+ =?utf-8?B?K09GaHJPVER6N3cvVWdQTkQxcjV3QkVNS1BaTDg3cyt3eUdobEhGQU9BOC8y?=
+ =?utf-8?B?OXlmWWU0bzVmdVlMSTF5ZEJnSmN1WjkrS3ZtWStKeVYya3hwQ0RTTEtabklp?=
+ =?utf-8?B?UmpRR0dRNlFFaFpvQ3ZrdVFhNm1qN25XMkNYNUxjZVNFZVhJeHNTYSs2VVY4?=
+ =?utf-8?B?ejRHYUMzSkxnOHJlMzB3TGk4aFRsRmI5VjlFSnVJbVdEUXE5dDY4OEN6T2kw?=
+ =?utf-8?B?SDltR21VOEFjZW1HUkpLRWs4OTkxcmJtVkIycUdRR3ptb2IzQlQ0bXhvbDl4?=
+ =?utf-8?B?SDRuajAwa2M4bWJmQTVtUkVSRU1JcXFnRFFkOHFjdElmN1pBVEV6Vi9hOVdO?=
+ =?utf-8?B?UUEwUUFUWi9PUjZlc3ZvbmN4cDlDS25URXdMckEwOXhtRkRZdzlMVVcyQ21W?=
+ =?utf-8?B?djA4d1ZzYVV2Nk02Q2RhcHhoYng1eTZXNndSK3NqTlUyYUU3Z0s2TTVVbWsw?=
+ =?utf-8?B?dFplNkVuUnhnL0d1bkcxcTlhZWRtQ1F4MFc3QmJnenhoZXNTeExJc3pkUDk4?=
+ =?utf-8?B?d2NPT2dNWjZDZFFMT29KRW82TEdnNW5DcFBScklVTFpKenJVZ3RUbnM2ekpQ?=
+ =?utf-8?B?cUJsMFZRVE91aGg1TW9tM09nSXRmSXl1RGV3MGVQbkxzaTg5K21xWGNPYTVX?=
+ =?utf-8?B?TXc9PQ==?=
 X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a9e1d96-07cc-4e15-f5c8-08de318c7c70
+X-MS-Exchange-CrossTenant-Network-Message-Id: a453d471-6c16-4c55-0a21-08de31a1c778
 X-MS-Exchange-CrossTenant-AuthSource: AMBPR06MB10365.eurprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2025 10:20:58.7290
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Dec 2025 12:53:23.9884
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: HUeLFvDM3fHgEXyMIDoeX8u74mbCAnxqnTZZrs5rAK8Hzp2WgJKFYy8mbdModsdKsOSrNkQ9VtNgpoloRuX9oQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB9PR06MB7562
+X-MS-Exchange-CrossTenant-UserPrincipalName: ca++uM6pKeX1wkEWY8d7l7IwQ6HblhxXBe69wl0ZPHZG08ANQkEND7g7rUPOkECnsSITK//d7jxlXlVMhYNZuA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR06MB9178
 
-Hi David,
+The mask setting is 5 bits wide for the ad9434
+(ref. data sheet register 0x18 FLEX_VREF). Apparently the settings
+from ad9265 were copied by mistake when support for the device was added
+to the driver.
 
-On 01/12/2025 19:40, David Lechner wrote:
-> On 12/1/25 5:59 AM, Tomas Melin wrote:
->> Support configuring output offset value. Among the devices
->> currently supported by this driver, this setting is specific to
->> ad9434.
-> 
-> What is the purpose of adjusting the offset. If it is to compensate
-> e.g. for manufacturing variations, the CALIBBIAS might be a better
-> choice. In any case, the commit message should explain a bit better
-> the intended use.
+Fixes: 4606d0f4b05f ("iio: adc: ad9467: add support for AD9434 high-speed ADC")
+Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+---
+ drivers/iio/adc/ad9467.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This is indeed more of a calibration. It should compensate for
-difference between expected and actual output. I agree that the
-CALIBBIAS seems to be a better fit.
+diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
+index f7a9f46ea0dc405e25f312197df4b2131871b4bc..2d8f8da3671dac61994a1864a82cdbef7f54c1af 100644
+--- a/drivers/iio/adc/ad9467.c
++++ b/drivers/iio/adc/ad9467.c
+@@ -95,7 +95,7 @@
+ 
+ #define CHIPID_AD9434			0x6A
+ #define AD9434_DEF_OUTPUT_MODE		0x00
+-#define AD9434_REG_VREF_MASK		0xC0
++#define AD9434_REG_VREF_MASK		GENMASK(4, 0)
+ 
+ /*
+  * Analog Devices AD9467 16-Bit, 200/250 MSPS ADC
 
-> 
->>
->> Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
->> ---
->>  drivers/iio/adc/ad9467.c | 58 +++++++++++++++++++++++++++++++++++++++++++++++-
->>  1 file changed, 57 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
->> index 2910b6c5b576d101a25c0b5f0fb9024f0b4da63d..41b29e9e765b4296358bb277d63993889ce46290 100644
->> --- a/drivers/iio/adc/ad9467.c
->> +++ b/drivers/iio/adc/ad9467.c
->> @@ -145,6 +145,7 @@ struct ad9467_chip_info {
->>  	unsigned int num_lanes;
->>  	unsigned int dco_en;
->>  	unsigned int test_points;
->> +	const int *offset_range;
->>  	/* data clock output */
->>  	bool has_dco;
->>  	bool has_dco_invert;
->> @@ -234,6 +235,10 @@ static int ad9467_reg_access(struct iio_dev *indio_dev, unsigned int reg,
->>  	return 0;
->>  }
->>  
->> +static const int ad9434_offset_range[] = {
->> +	-128, 1, 127,
->> +};
->> +
->>  static const unsigned int ad9265_scale_table[][2] = {
->>  	{1250, 0x00}, {1500, 0x40}, {1750, 0x80}, {2000, 0xC0},
->>  };
->> @@ -281,6 +286,23 @@ static void __ad9467_get_scale(struct ad9467_state *st, int index,
->>  	*val2 = tmp % 1000000;
->>  }
->>  
->> +#define AD9434_CHAN(_chan, avai_mask, _si, _bits, _sign)		\
->> +{									\
->> +	.type = IIO_VOLTAGE,						\
->> +	.indexed = 1,							\
->> +	.channel = _chan,						\
->> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
->> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |				\
->> +		BIT(IIO_CHAN_INFO_OFFSET),				\
->> +	.info_mask_shared_by_type_available = avai_mask,		\
->> +	.scan_index = _si,						\
->> +	.scan_type = {							\
->> +		.sign = _sign,						\
->> +		.realbits = _bits,					\
->> +		.storagebits = 16,					\
->> +	},								\
->> +}
->> +
->>  #define AD9467_CHAN(_chan, avai_mask, _si, _bits, _sign)		\
->>  {									\
->>  	.type = IIO_VOLTAGE,						\
->> @@ -298,7 +320,8 @@ static void __ad9467_get_scale(struct ad9467_state *st, int index,
->>  }
->>  
->>  static const struct iio_chan_spec ad9434_channels[] = {
->> -	AD9467_CHAN(0, BIT(IIO_CHAN_INFO_SCALE), 0, 12, 's'),
->> +	AD9434_CHAN(0, BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_OFFSET),
->> +		    0, 12, 's'),
->>  };
->>  
->>  static const struct iio_chan_spec ad9467_channels[] = {
->> @@ -367,6 +390,7 @@ static const struct ad9467_chip_info ad9434_chip_tbl = {
->>  	.default_output_mode = AD9434_DEF_OUTPUT_MODE,
->>  	.vref_mask = AD9434_REG_VREF_MASK,
->>  	.num_lanes = 6,
->> +	.offset_range = ad9434_offset_range,
->>  };
->>  
->>  static const struct ad9467_chip_info ad9265_chip_tbl = {
->> @@ -499,6 +523,29 @@ static int ad9467_set_scale(struct ad9467_state *st, int val, int val2)
->>  	return -EINVAL;
->>  }
->>  
->> +static int ad9467_get_offset(struct ad9467_state *st, int *val)
->> +{
->> +	*val = ad9467_spi_read(st, AN877_ADC_REG_OFFSET);
->> +	if (*val < 0)
->> +		return *val;
-> 
-> 
-> Since processed value is (raw + offset) * scale, this means that
-> the offset will be applied twice, once in hardware and once in
-> software. I don't think that is the intended case here?
-offset has not been used in "official" way here. But I think this should
-be sorted out if moving to CALIBBIAS?
-
-> 
->> +
->> +	return IIO_VAL_INT;
->> +}
->> +
->> +static int ad9467_set_offset(struct ad9467_state *st, int val)
->> +{
->> +	int ret;
->> +
->> +	if (val < st->info->offset_range[0] || val > st->info->offset_range[2])
->> +		return -EINVAL;
->> +
->> +	ret = ad9467_spi_write(st, AN877_ADC_REG_OFFSET, val);
->> +	if (ret < 0)
->> +		return ret;
-> 
-> This could use a comment explaining why we need to do the sync after
-> adjusting the offset.
-Certain registers in the map needs the sync to take effect. I can add
-comment.>
->> +	return ad9467_spi_write(st, AN877_ADC_REG_TRANSFER,
->> +				AN877_ADC_TRANSFER_SYNC);
->> +}
->> +
->>  static int ad9467_outputmode_set(struct ad9467_state *st, unsigned int mode)
->>  {
->>  	int ret;
->> @@ -802,6 +849,8 @@ static int ad9467_read_raw(struct iio_dev *indio_dev,
->>  	struct ad9467_state *st = iio_priv(indio_dev);
->>  
->>  	switch (m) {
->> +	case IIO_CHAN_INFO_OFFSET:
->> +		return ad9467_get_offset(st, val);
->>  	case IIO_CHAN_INFO_SCALE:
->>  		return ad9467_get_scale(st, val, val2);
->>  	case IIO_CHAN_INFO_SAMP_FREQ:
->> @@ -836,6 +885,8 @@ static int ad9467_write_raw(struct iio_dev *indio_dev,
->>  	int ret;
->>  
->>  	switch (mask) {
->> +	case IIO_CHAN_INFO_OFFSET:
->> +		return ad9467_set_offset(st, val);
->>  	case IIO_CHAN_INFO_SCALE:
->>  		return ad9467_set_scale(st, val, val2);
->>  	case IIO_CHAN_INFO_SAMP_FREQ:
->> @@ -874,6 +925,11 @@ static int ad9467_read_avail(struct iio_dev *indio_dev,
->>  	const struct ad9467_chip_info *info = st->info;
->>  
->>  	switch (mask) {
->> +	case IIO_CHAN_INFO_OFFSET:
->> +		*type = IIO_VAL_INT;
->> +		*vals = info->offset_range;
->> +		*length = 3;
-> 
-> We don't need to specify length when using IIO_AVAIL_RANGE.
-> 
->> +		return IIO_AVAIL_RANGE;
->>  	case IIO_CHAN_INFO_SCALE:
->>  		*vals = (const int *)st->scales;
->>  		*type = IIO_VAL_INT_PLUS_MICRO;
->>
-> 
+-- 
+2.47.3
 
