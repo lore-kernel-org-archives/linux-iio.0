@@ -1,133 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD103305074;
-	Wed,  3 Dec 2025 14:56:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C565A325484
+	for <linux-iio@vger.kernel.org>; Wed,  3 Dec 2025 15:10:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1764773778; cv=none; b=g4oXbweVcaFKvnjaPYyC8N6nFb83B1ygr1Oecse+qU3ErwBfn0ZgkY+xG6HtbyUF+clBtopiWNWmGgtjYFa9H4YBFKx+mkMaR9oCEl89CVflvTQ/fJeQc2xDi73rL0y9o91ha5Qxd+jXFLL2sug/Ouju3CDA009Wqkh6VkfBmcc=
+	t=1764774657; cv=none; b=NFT1LVLf/9jkVYp8HcGnu+EOdViaA8gvqIDvjHgYQ28CvBaEwnlwyekvbV7otJdM2KbXKzWVh3ifdhUJfWPHw/LGYB1n+scTOnVpZ1iG8/jy+TRm8qPq7Wm2mPCMnTZVcsQXtXqYYWnxim9wmlvFOKxP7gF5ljux2DBc71fb89E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1764773778; c=relaxed/simple;
-	bh=95R62c0rl9Xz8a36PrIyLInk2dnyvViYCKRZrPmY8zk=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Vk60Vo76OxSzlYxb0zzENKpAMpKsZjoTJyTH12ShBMmsyd7koSMOkYnHhWoelmBYeBWXljLTWQsGW6k8qsTeWbJDxhGIAaodOTrtNM9hJ9lu/pmJsg+wV8sJlPgLSvbUWkBv2vljoHCSaiRgJYunNVPwg5oOb9yk0LnPJ/2dDeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UY6MHgHp; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1764774657; c=relaxed/simple;
+	bh=OaFYzVcxHNpU/0dnE+kOcBVE2F31fveVbCbpvikixzQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=ZOjvZmmSpT8RdkYpZRelEHa4aNBCEaVOJ5sJ2AxzPBHq/4LwJtBi266gmvK6u2tIt23TeuBIlUAWseeqVe/dEjNaKODpdIqGyk4ijci+hyNUaHocHkgGVp+ZxossWW1Z/PuVYxGaZvUMPlxsC9kPOoXhfW5vNs2dVmWM8wHMFzI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NDRSafH/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UY6MHgHp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1764773777; x=1796309777;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=95R62c0rl9Xz8a36PrIyLInk2dnyvViYCKRZrPmY8zk=;
-  b=UY6MHgHpfzVdk1tvVtGotH1bg2QvLhxwWYrnlO56JYQbqHkoW6y2sivG
-   P3Kh8PeCPnidCR5bn+UGWPJKipzVkPkNGtgQmbqVVhfZ6lz+JiNT28P54
-   GtZkTokSTX8vv/Nsq4BbAOS/GTiyqImWg7qzdcSMFi5Yt+if5b4jG1C44
-   WuhEQRibFsSjSpQExR+8g9FErH1Myvg4K5yVqx6FHQsm9nqWYrqYdcDf6
-   z7t4cdoPBr6gPlvsUw8HnXj9oy5DGd4f8mDTYgyYWDeptlsHSMEutehg7
-   Fe4YjsjMmQNzQRcD0RIPzlPNhonIHvFzVOyIcDijK4ADz6Rl4v4YMPqW+
-   A==;
-X-CSE-ConnectionGUID: cKlyvhlUSOeikMAXIrKpwQ==
-X-CSE-MsgGUID: Y3aL06NbR16T47bqgsyFpQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11631"; a="66842742"
-X-IronPort-AV: E=Sophos;i="6.20,246,1758610800"; 
-   d="scan'208";a="66842742"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2025 06:56:16 -0800
-X-CSE-ConnectionGUID: mkvnUAnsRc2QzCMrhwLO8g==
-X-CSE-MsgGUID: jmBsO3FvQOmAOo+xLM/SgA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.20,246,1758610800"; 
-   d="scan'208";a="225665442"
-Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.245.81])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Dec 2025 06:56:12 -0800
-Date: Wed, 3 Dec 2025 16:56:10 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
-	andy@kernel.org, Michael.Hennerich@analog.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, corbet@lwn.net,
-	marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v3 2/3] iio: adc: Initial support for AD4134
-Message-ID: <aTBPivrI7iy2cLQ1@smile.fi.intel.com>
-References: <cover.1764708608.git.marcelo.schmitt@analog.com>
- <c189c25b1c46f406c3f7942e5ac4cdb0b964ee52.1764708608.git.marcelo.schmitt@analog.com>
- <CAHp75Vf7p=aPy2ofC_zVz1PURA3R9i0WZCG63-dCEXO=xKJ0FA@mail.gmail.com>
- <daf53d16106f29a09134b2c2a5a2f4870a0bfbe1.camel@gmail.com>
- <aTA0LDYDzP8s__1V@smile.fi.intel.com>
- <c45e24e5edb3ea668accb608f6cdffff62592c74.camel@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NDRSafH/"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 72F9CC116C6;
+	Wed,  3 Dec 2025 15:10:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1764774657;
+	bh=OaFYzVcxHNpU/0dnE+kOcBVE2F31fveVbCbpvikixzQ=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=NDRSafH/ThEEQ+BsZmq+2oCXdQNS9HyFi/Iqb11ByYz8frC/7s1uzViRMG//Sh9kN
+	 eKOGhondggRPwSH8a1+alqj5d4hJOGuR/1XzXZWe13vB8FAaA3aSCCL0BGigWht2XR
+	 FPmRj4VF1Yf0Z2G5mPonDiaJ2RcjsHW6h7Cx2BdFvLwYy3c+cvESRz/J5jd+31hvgK
+	 /tlaQwmSU2YCsKT05Tf0js7nRX5BhpPTw5qYS10JsbfFfIINphbvfnLh96MF9gYSSV
+	 AO3gVr+EIrGTVvwHgIwZp5xwRxfp5tQghLfGi+DXr0YBpPXP72Ups1lkLW3QFbvdae
+	 sXmBNGWYsNCfQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 611E0D12D79;
+	Wed,  3 Dec 2025 15:10:57 +0000 (UTC)
+From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
+Date: Wed, 03 Dec 2025 15:11:36 +0000
+Subject: [PATCH 1/6] iio: buffer-dma: use lockdep instead of WARN()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <c45e24e5edb3ea668accb608f6cdffff62592c74.camel@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Message-Id: <20251203-iio-dmabuf-improvs-v1-1-0e4907ce7322@analog.com>
+References: <20251203-iio-dmabuf-improvs-v1-0-0e4907ce7322@analog.com>
+In-Reply-To: <20251203-iio-dmabuf-improvs-v1-0-0e4907ce7322@analog.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1764774697; l=1113;
+ i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
+ bh=q3xzONCOKbjzU83uO5v2RZKwpfbxm04ZQK8NV2XP1fs=;
+ b=hXwu7OyGp+n8oGduTudhJGR7uB4NweKGe7u7oJrOLIXyEXRCaLyTHfyPzKj1W4JFbbJdRH1xd
+ 7F555Q5kEoKB6ElEfBq4AtEmnB/UZpTds4oww6/YVDTJGGkxWqqYDJ8
+X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
+ pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
+X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
+ auth_id=100
+X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
+Reply-To: nuno.sa@analog.com
 
-On Wed, Dec 03, 2025 at 02:48:44PM +0000, Nuno Sá wrote:
-> On Wed, 2025-12-03 at 14:59 +0200, Andy Shevchenko wrote:
-> > On Wed, Dec 03, 2025 at 11:02:45AM +0000, Nuno Sá wrote:
-> > > On Tue, 2025-12-02 at 23:26 +0200, Andy Shevchenko wrote:
-> > > > On Tue, Dec 2, 2025 at 10:55 PM Marcelo Schmitt
-> > > > <marcelo.schmitt@analog.com> wrote:
+From: Nuno Sá <nuno.sa@analog.com>
 
-...
+As documented, WARN() should be used with care given that it can panic
+running kernels (depending on command line options). So, instead of
+using it to make sure a lock is held, use the annotations we already
+have in the kernel for the very same reason.
 
-> > Nuno, may you please remove unrelated context when replying?
-> 
-> It was not that much. That is why I did not bothered :)
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/iio/buffer/industrialio-buffer-dma.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-2 pages of text on my screen... We definitely have different metrics
-for "too much" :-)
-
-...
-
-> > > Hmm, can you share why we should have a reset controller for the above? 
-> > 
-> > My point here is to have a standard way of handling "reset" pin independently
-> > of what's beneath in the HW — GPIO or other means to assert/deassert it.
-> 
-> That makes sense.
-> 
-> > > Unless I'm missing something, even with the aux device, you'll need the code to
-> > > optionally add it which (I think) will already force you to check the existence for
-> > > the pin (which would be a bit odd IMO).
-> > 
-> > If this is the case, it needs to be fixed, but reset framework provides
-> > _optional() API, that's what should be used for the cases where reset is
-> > optional. Let reset framework to handle that.
-> 
-> Ok, I think I was also misunderstanding you. So you mean that instead of doing 
-> devm_gpiod_get_optional() we should use one of the devm_reset_control_get_*() calls? 
-
-Yep!
-
-> Ok, I went to check the reset core implementation and with [1] I take back my comment. I can see now
-> that the framework will automatically handle creating the auxdevice. So while I still think most of
-> the times we'll still see reset-gpios in bindings, it makes sense to have this HW abstraction in the
-> code.
-
-...and standardisation.
-
-> One thing to note is that the reset framework always enforces reset-gpios and we do have places
-> where reset pins have different ids (just because that's how the datasheet defines them).
-
-This might affect the decision. In any case, please consider using it and we
-can see if it makes sense over open-coded approach.
+diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
+index ee294a775e8a..617b2d550c2f 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dma.c
++++ b/drivers/iio/buffer/industrialio-buffer-dma.c
+@@ -6,6 +6,7 @@
+ 
+ #include <linux/atomic.h>
+ #include <linux/cleanup.h>
++#include <linux/lockdep.h>
+ #include <linux/slab.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+@@ -764,7 +765,7 @@ int iio_dma_buffer_enqueue_dmabuf(struct iio_buffer *buffer,
+ 	bool cookie;
+ 	int ret;
+ 
+-	WARN_ON(!mutex_is_locked(&queue->lock));
++	lockdep_assert_held(&queue->lock);
+ 
+ 	cookie = dma_fence_begin_signalling();
+ 
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.52.0
 
 
