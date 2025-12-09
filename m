@@ -1,208 +1,162 @@
-Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11022091.outbound.protection.outlook.com [52.101.66.91])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F01F27F759;
-	Tue,  9 Dec 2025 15:47:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.91
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765295267; cv=fail; b=MjV+ANkspTz83l46sML2/+zD4cBn11owCAh8kDc2xVU1/aisjcHICkFWJUJ4zKO305iaRO+dnWFm8C7UsKOx9cHA8sO5fz0NGkLui8Zz6lV4SXqbUfaBMwCrH5AJ/Ugm+8t1f6yjnVJ7uAHWHAGn2enZjIYzEV01e+amQfKK/DY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765295267; c=relaxed/simple;
-	bh=qz9JDfSWeIclZ1n3gEl0RWGzPKjnQ/UClUOE2WtOqQ4=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=RG5zJNOWOB5vN8Y768juAlwfocdNO9wfSKmRMXCUsbsA9WL7KJGLj7GpljFadKVmyEYmgxK39/YnaiVD6eRFJBYx+tSmV1M8LgQOl4yauVKoN7r0r8eH8ESnWKTMAAzTZTWItqiqWSg7iu/JGqX2/NHzsveEq5A1zmwn91kf604=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=NkdvjBKb; arc=fail smtp.client-ip=52.101.66.91
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1D2A329C7E
+	for <linux-iio@vger.kernel.org>; Tue,  9 Dec 2025 17:05:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765299927; cv=none; b=EkbYLjF5joC59l/NMzlodINlK9Ijdf6roQKO+8MQCAZvnTq7dIBXqc9wPd4RGHXureifK4Cora+tPkWm+37Rz0nDXBHzIjnGFUs2DmU3whnRDJvmKL3/4FRPUp2kdLqrytDWkJKgB1uPxcArK1MuKzdXoxh9/A3Q3u32yWsCI/U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765299927; c=relaxed/simple;
+	bh=djwV1YPqHJRmfMBqb2pv7M2B8bAh/V9aaC8VS4CE0eQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oWN7tJ8xfCKxCU+XcSyBeFZ2kybXR4ItLZE9s8U/8LVEC6nWByN5oIk6YCvlOK7Rkb8e0ugRGmqeWOW96DUA3WvMbe8IVhphTL1NbYigplqAt9tYb7t/QU3UnRaJqF1fpOGhNVVMzNP+Q8L+inzeNgpKWfkJWl+r9DZMbH7YXew=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=z7zrM7qJ; arc=none smtp.client-ip=209.85.210.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="NkdvjBKb"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Bd8mGc4p3dS0UqoTqii7RAipazlkDabm1xArOf4jeEubuAJRzbsJOGmR+7BiWwoQ2ISR6TwVHkbLy//YtUIsxUsVhUrU/1tTRNilsP2Ck7jdwUSAYRxgmx2KnMNXXHo4n4fXpaDyPmAhfqagTBp4bX9xT/NwLTSLGUlUwmW8Vgs7yqtbfDKrDMM4Q8xAXjWkXB0GY2XVqq2CqQd8lqbwz3RjS74hGOGLUEWtMZkOY2ePc+ih6sVPVGzce0lq/lCBNjDj74amuUXyfTQXxSvxhX429M2gm5FXQP2spN5eYbPeJIsWK+wAnQZyyC1mqDzdr8UsysEGJ3G6m75p6QWVJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=OAiVMuG8Epna+Q6krFxPMcVvUYSCC3mpaZ021toLkhk=;
- b=h57kOg9BkW5n2zhLuo1PiufyGVlwF5fmP3A1nD6QzX7EAmp56jVB+mkkKYxuq96+GiiybMr8y5Bem6S0EXRKLpYxeEbQlzaX+PC/FGwSUEZgnTtOj2SusCad8XyxclbKuiOHbjGYB9krXZb5r2pOxU/p7IuQHr2kD9fTSIcwWWQhEBVy4nr1Vvqr20USwthX+0MW+5n5rErFbfJac7VKZ3BZizQJBQC27w08SfrDkVS265zhu6lMdoETEuE48Svf7hnRq0YX7hey+heA+9kxSm7XBboarkFXL5JpL1V9sae8pZFdRwWCjvAxr3Sl616p/KnkndrFAP/FjSAFnOeefg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
- dkim=pass header.d=vaisala.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OAiVMuG8Epna+Q6krFxPMcVvUYSCC3mpaZ021toLkhk=;
- b=NkdvjBKbfjKc7cq9rW613OmjjaToNtk/Mpyo6G/Od7FiX2xUOQzLIm/S8Op/fhY8GXXG5CCifeu/Fb6wjYgCYaEfUYIDhK2RezcTyAebwfsuBphKzzbX5OqJ6kkvRm9FbKh9uaPK5rXXOGpUeWBsHP8g4nSJO4H7wMs3Rl5PWr7zw5UD1QBQtiWFY1CJd06aXGtI/5cUZck33QDoiIWRINPy0siiYrFWldo/IY45tX8NrzCWFb2Tu3+DY6LtAi0u6IRdEcnDy7iJ349NTod/Dof6p++WMr3YdM1++FvBL8KJ3YR1GOMDfCKRcd/20NIg+7+Khj5MAz8UP0rheT2oUA==
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vaisala.com;
-Received: from AMBPR06MB10365.eurprd06.prod.outlook.com (2603:10a6:20b:6f0::7)
- by GVXPR06MB9536.eurprd06.prod.outlook.com (2603:10a6:150:1bd::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9388.14; Tue, 9 Dec
- 2025 15:47:37 +0000
-Received: from AMBPR06MB10365.eurprd06.prod.outlook.com
- ([fe80::4606:8e25:96e6:bede]) by AMBPR06MB10365.eurprd06.prod.outlook.com
- ([fe80::4606:8e25:96e6:bede%5]) with mapi id 15.20.9388.013; Tue, 9 Dec 2025
- 15:47:37 +0000
-Message-ID: <7a792f4e-edba-42f3-bcc8-76004972c2f7@vaisala.com>
-Date: Tue, 9 Dec 2025 17:46:16 +0200
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 2/3] iio: adc: ad9467: sort header includes
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20251209-add-ad9211-v4-0-02217f401292@vaisala.com>
- <20251209-add-ad9211-v4-2-02217f401292@vaisala.com>
- <CAHp75VeOZHvxr60R0TCS5_c-xsrmfC97gWdP4-EWvFPpbodLTA@mail.gmail.com>
-Content-Language: en-US
-From: Tomas Melin <tomas.melin@vaisala.com>
-In-Reply-To: <CAHp75VeOZHvxr60R0TCS5_c-xsrmfC97gWdP4-EWvFPpbodLTA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: GV2PEPF00003836.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:144:1:0:5:0:1f) To AMBPR06MB10365.eurprd06.prod.outlook.com
- (2603:10a6:20b:6f0::7)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="z7zrM7qJ"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7c77fc7c11bso24609a34.1
+        for <linux-iio@vger.kernel.org>; Tue, 09 Dec 2025 09:05:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1765299925; x=1765904725; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=G4n56/mm+y5lEIPHBvAL6dNtszRve9ILxt5EMAL7gg8=;
+        b=z7zrM7qJ8sXuoRlLGJ07uvlVq6I/btvkDv1GNSKG5iSTw5HdxXwQFkfjCCR8C7eGGX
+         Vtbpa2518QxoTiqVcC1FqAWLmFOsPvZCdIDDZCe4gx321Th19vyQm1HRO+hRqMyKNBPP
+         0zxQt2kSuV78jv/NAbvQLumEtR+AQK/M59pcarISck9UsL5jR5KXJidiAOaNRIuCbOCx
+         Q0A+QgYh/piRDHU+NLxhGnoR5GyJngcIa2l+zZBO/t5qYrxiWTqWkDh/LHSsLtBjlf21
+         NAR5ZL7EyLmBhMkp0mg1iIbwpbIH6uPHR/Q9ygQEUPe+VcDeWhhwkebizPl1dxX1RQpy
+         mIjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765299925; x=1765904725;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=G4n56/mm+y5lEIPHBvAL6dNtszRve9ILxt5EMAL7gg8=;
+        b=WE1y8Xnby7UDQMqARb5pYcGXLJ9ifJojpszvXgySvvh0n8yEPLW1LyOPU4rf/aux05
+         YLMwXU9Aaq/quDFUk00OMifBPYSXmi8SMJ/+zOapCqfxALFDnQXJPw0nuAEP6I58dvQI
+         s8KA3CByWgvMUK4g1FyOuv/mVH0FHGOaQ3/zqF/YoKCE729Xcm6a3R9A+ijOegg7Dk9e
+         /xoZy7BOG0uKWuMr/v9OF2HGr3rABG8JSaZDZMPPSYuYx8YmQBcvA4wMvyQ8Ko9D2+Th
+         r3Lso9Y08CRd66jNtedZfhPk5WXcjsSbrIoOpijNCXNkKdcefKCAUk6fc+N0fK33xpC+
+         phCg==
+X-Forwarded-Encrypted: i=1; AJvYcCVxF87eg2QqLBc+ALMx6o/cYpoYKdpL8mpyW6JWMskTlTav3CI76BSQUWj/pvdShSDiRYqV+mfNggE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzZb0G68ORFPD1Gys5SAEeZ/3+BEIdaaD4+Ar9EoOwa11zY+m3F
+	y/nO6keGVhl39FyQtBlctuidQTapLlzz2+Jmew/+zzGZUCOzdVNymJpssstJq8ldLGw=
+X-Gm-Gg: ASbGncu+tu4pxWLdECRW4ZlVStsOTXj0ZT25rg/Br08UNk3LJCUoy+Fkvgy5faQ949J
+	paM6eZbtbdJbrfdPfynkACGjDWN+JTm2fuEuHlLYubqO1tRer4ymsxzf+g9aZGxYOhU/da+KD/4
+	aSJ1eJ2EyXussUaUk6uP5L4sPrfoUIlvI0+AVybPrn4LNbrh0kOq9dVTv6fjWBdHuknulwRwdre
+	eqqjtAVjUyeGiIB29hZUUf/x8uz/9yCNBy3TWhLDGcWXj6Rqw1yUMkm2Myqv9dUo53zS4/t1i+h
+	ByuOU96IvzHUTv1EOjAk+G/0fdyQ2PEKNRggVJX69JfZdM9rrySjIxnEDIhgtqcWFnSVS6RCOJn
+	tA3d3obA1TSIeXNI1OwGJnLmMbIMJJ3C+hqXFNi9XiBxm5PCgFnveBUWuEsblQsIBm4UIDDKYeP
+	r96GS3mSWxqI19HsC7S8NfYwlLb1E2Sx1KhnpuA3taIW6jCNgQaUqtaQF9UTMd
+X-Google-Smtp-Source: AGHT+IHciYLjfEru5jIntKmz+IlcCYn208iA7CXd8tNMDSBw5mXO3tJHz1jntfIlpMhCeSxWYUZMIg==
+X-Received: by 2002:a05:6830:6e85:b0:7c7:6a56:cfb5 with SMTP id 46e09a7af769-7cac65f16f5mr870582a34.11.1765299924620;
+        Tue, 09 Dec 2025 09:05:24 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:e3b0:13f2:d6fb:6f28? ([2600:8803:e7e4:500:e3b0:13f2:d6fb:6f28])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7c95ac833d3sm12635774a34.17.2025.12.09.09.05.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 09 Dec 2025 09:05:24 -0800 (PST)
+Message-ID: <7aeab2a4-72d9-452f-af86-1e44d5133b67@baylibre.com>
+Date: Tue, 9 Dec 2025 11:05:22 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMBPR06MB10365:EE_|GVXPR06MB9536:EE_
-X-MS-Office365-Filtering-Correlation-Id: f43bde7b-c378-4ced-1685-08de373a4758
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?bFpubVZHZFQ2RG8yOUgwMys3Q2QzSW9nQTU0UDVjam9rYXZzQ2JlaTN4QmlY?=
- =?utf-8?B?UjFrTDdJMkxVRjhsVU4xVVAzWmdaTmM1T0h3VGxIM1lLcmZ5U0dPK0VsUmtM?=
- =?utf-8?B?MXdDSkppN3AyNlBUTFRSOFFpWmZyc0Y1TUJVK3g3NWx1WW9ObVpUNTVWcnlC?=
- =?utf-8?B?TXZOSkxHZ2VBNlRoR2M0WmowTkhYSElmY0l4MjB6a0J5MjMxYU4rUnErWnVW?=
- =?utf-8?B?MU1PbEhYYmVpR1MzSkphOEVqanIvcmZob0hWdEcyV1JyTUJ2Rzc3bHRYdFFD?=
- =?utf-8?B?cWl3cUd4K0tCelpvN21rVXlrbTN5YTNxZUdXNmdFZ2pQY2taQXRuci9NbVBN?=
- =?utf-8?B?SUdGUEtCWFZiRTZCd2hpNkUyTjFxanNjUjhad0JkNU43bGxqVEpQaEswMVpE?=
- =?utf-8?B?MDNzSEJwUjN5WFJTYnlNbWxyQW44UUM3TGhoWnR2ZXpKcTdXWlRVZFhiUmxS?=
- =?utf-8?B?aTM0VHg4V29JejdmZFhmQXRrRkJKc0NPWGtUOHQ3VDJMZjdvSWx6aENYY3Bz?=
- =?utf-8?B?dGIrS21XZ3dNVDVZUmt4MVdDU3QvS2ovdjdldzB0MjRkeVkyWlM5S2NSQWlR?=
- =?utf-8?B?Nk5Sek1QTllHYTE3TmNXTnB4VzAvR0IrVmpOVnAvbExSOElWbkhxZW01WDJI?=
- =?utf-8?B?TlZsQXY5MXVEWXhjc0grbTlWUEhKYkxLeXBqYXNlWFRBak5waWtZOWZxS1NN?=
- =?utf-8?B?Um9nU291Z0gzYWJZRkUzTW1aZzExNmJVd1o0bWl6d0FidTJwRGVLMXl4UzNs?=
- =?utf-8?B?NUZaVEl4akNhT1VGUGFSRHJjLzhyTGh6OWduZTJwZmNJU0hjV2NxOHpxM0pj?=
- =?utf-8?B?Yll6L2pWVnlCSDhhc0c0QmVKZUhTVGE4NHNYV0JBc1lXSEdqT1h6VG1VYUpk?=
- =?utf-8?B?ZXA1SjZFQzNUU0FVcnVGZDJsK0IxMkZSN29WVHIvN1VNdndvOW5iQVd4WUlO?=
- =?utf-8?B?Qm9XcnRmNnZFYVBqU0xmYXNFS3pVVFZlMk5aK3RmR1lLOXhmSm1NZVlpM2VT?=
- =?utf-8?B?Yk5RTGNNaTdaTFZQUlliVzBXdm8wS1haNGloUXV2cW9iYkhTSkNzM2M3R0xj?=
- =?utf-8?B?bVd5RWFMR1FBUHYzT01EUVZqdjhLMnV1dUZUc0NGL2gxM212bG5ncm9NcXE4?=
- =?utf-8?B?bjd0YkFrci83NlBiWXp0bWZSWFQ4S20vS1BTWjhBOUwwZHZ0VnV1eHlpOHFo?=
- =?utf-8?B?N0I2UHZPVzhWMFUyTnRyd0R4SVhsTWVVYkc1ankvT0lIUEdaTlhJWXB0L3Rl?=
- =?utf-8?B?VTJmL0wrbXNzcEdRNnlocEZpSnNiTXg0REl4a2g3a3MyMEEzZXprUVYwVitB?=
- =?utf-8?B?SlJDTHUwR2szYWpLczlZZGduSzVGSmVDR1VpbFl3eDRCR05ZQ2RwWWM0S3Vn?=
- =?utf-8?B?eExITDR0bjViMm1pWlpVWHBETTExVGdNbVhXTkNhbGRWRHA1NUJIaW9vaFVK?=
- =?utf-8?B?eHlWTW9XUGV3U09hVjhHRFJ6TWlTdldJbjJVK01OTFU0dnlFSWQ2b2VBdEQz?=
- =?utf-8?B?UUZGYUtxa2F5WmYwLzJKS01NREs1MCtqSjNteDY2dW9EOWFjSTk5WmJyN0pK?=
- =?utf-8?B?YS85RCtWaTNmNkFUZzFIMTk1UmpFSHQvam9abjB6RzV0cXUwMDNVUFpwQ2RQ?=
- =?utf-8?B?azBxSmxxMVVqeTlwZERaa3NwaUw2Zy9HMkVheHlrTE1mcGJyZEdwYnRUazg1?=
- =?utf-8?B?QjdvZUpFUy90N3EwdlVyV0JGM3hqNDRFVnlaWFhWOVIrdWtIbHBZQlRiR0h3?=
- =?utf-8?B?WDZ2Z1Ric2l5OU5CNlZkUUFjSUJVZ1ROdHdwM2p1RERkdXJBVjZpS2Y4QkNh?=
- =?utf-8?B?SG14VndueUZuNVJnM2JWT0tXbitpZ0plcjlwQkFnaXIybVpLdlZHdjlUWSsw?=
- =?utf-8?B?OTRyTlVXOUEwS0IvRjNsbG5QUzB4aE4vL2xpRVRlOEpoZkhlMTEyeVZhSzBm?=
- =?utf-8?Q?tvWQTUwZOvK8KZd50Q0858y92ZE1zSzo?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMBPR06MB10365.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?Ymo4QUFXdTVSRzNWSzBtS25rcDVFa3o3M0xRTU80ZTBSSC9LaG5TdnBRZnB0?=
- =?utf-8?B?eTdETlp4elpHanFkc2p6cmp2UkRMY25GWTk4Nzh1bW1OQXo1MjV0R3J3cnIv?=
- =?utf-8?B?Rm5FOWVuTEIzZ293dC9zdDFWenpKWjMvT0xkRVdCdkhMRFh1RjBSOXRkeVlj?=
- =?utf-8?B?Nm5wOERzYUhxZmtOUng5VnhLaG1JcFhVa081WnBUdkdkRk84YXVGMGJvQjNO?=
- =?utf-8?B?cjhmV3Z5ZjdiN0xUM0pNdjJ1RE5uV2poZXVCT1l0V0dhQWh5TGhldkNTeFdY?=
- =?utf-8?B?em5NUXFnSk0yMlVGU25NM1Jmd1VtTXZkWnpKUHlTenZKQUcrRmw1Z2ZnTFpD?=
- =?utf-8?B?YzhQbDhvUW91MXZqM0JPd1hkdENvUkU5YTMxZVhuL1h1bW91bEowVHVqMHc4?=
- =?utf-8?B?L1VZWDFpdThRM3hhQXdMUFFndnpOeit3b1k2bzRwTTdSME1kUmFRRC9UemNL?=
- =?utf-8?B?dnR2ZWJKaHV5VUZrNm5nYmZlcWMyV0xwRm1sQ0pCY3VnR1NjUUsrL3ZGajJp?=
- =?utf-8?B?TFVtOFRYSmlyRU9uZ0tGQjNxU2F2d0tRTXMrMnBvK1BSRURqL2E2dHNKSWpO?=
- =?utf-8?B?UXZlMDdHcGVIL2VZMU5aK093R3VzWjVkL2JCY3dSTzU1U1MxQkpicU1Jd0Nn?=
- =?utf-8?B?Q0tqeExpeXJvcG5oZ1N4bWUzRHJpaGpLS0s0SWo4SFV1dGZ4Q1RpRVlMNXN4?=
- =?utf-8?B?aEZKUThFa3Mvc2FaRjlKOS91Q0RxUzBueXUxU0g4NlE5M3I1b1lOZHMyb3ZT?=
- =?utf-8?B?TkRaZSs3eElsdWlxYlYzUkpHcGttY0VJc3l5dm5YajlObkNpNHYyLzRtTTls?=
- =?utf-8?B?aXZ4ZU9nSm1aNGIxYVhLdTlqa2ZIRjBYNjJJakNNUTBYQlQ4SnJkVngySVo1?=
- =?utf-8?B?OUZoNnZaU3B1YkVQUFNtUThkRm4rUm5Jd2FYQllXYTNaanFqMkRvekhtejha?=
- =?utf-8?B?WXBGcFRxbU8wWVJ6dnBaV2lTSWV0TW5rOGZrUmlYS0lyR0d1dlVzdlZ5T1NJ?=
- =?utf-8?B?SDBEYVJobW9XdnJCMHN5aTRYTVhDYWVUVmpJMnowOVczUEU2dFZTcHZEZFdB?=
- =?utf-8?B?dFFLYlI2b3lxcDRiQXBpaXR6MytBSmxGQ2xXRjBpWldKYUlmcXFBbkpIbzls?=
- =?utf-8?B?YmZ3NkZ1Sms0eDR5NFNzbnlNSHJSc1Y1R3ZkVW5FNFdhUG5CMXVnbWVkTjVn?=
- =?utf-8?B?T3VnR0cxZllCOXNpOVJiazNxeE9Pc1dxbmg2a2RvRGFZVVVNS0w4WUhScXVF?=
- =?utf-8?B?Qzc4dFprOVRha3laWXcxa2NJRndVMmVMdWZsbUxsanV0S3BoSXFITzk5MG85?=
- =?utf-8?B?K09lRDI4VldxMC9xOHI5b3d1SmZIdzlNL2FHM3B0SjJDL1lGSEtwUW91U1cv?=
- =?utf-8?B?bVFsWlhHWmU2bkloU094QnNZNTFwaWdaRk5USDM2aWhOQklnM3Ixc29qbE96?=
- =?utf-8?B?U29wZUYvRU5DaUdSTXBzZzFNN3F2L01RaklJUnRwWk8xd2JXWHJadGFIU1BS?=
- =?utf-8?B?MHg0VHhXYkhxSlR1U0pPamswaE1NMTAwZEFVV2hWdWR0a2o1ZDRlUzVwTGty?=
- =?utf-8?B?bEZoV3NROFRLTHVwQWNUaGY2RDI0OUYwNHdnNGFmbHk1S2Y0ZUdaSnNEdXZt?=
- =?utf-8?B?ekIrSk5mR2diWGN1bi9sUlZnSzd3SFRpMDBnNmgwSEY0NHhyVlR3cml0cUR4?=
- =?utf-8?B?YWtHeitkMXRqL0VJR3liVzlQYks2c2NNUHNDWVIyVEdib3RJd1VCcnZkMkhy?=
- =?utf-8?B?Z05GR0UvYVJwM28vQU1CTzZPK1Qwa2tyT3NTSm9UL2dhS3VVTTJTdld0Titu?=
- =?utf-8?B?ZmhsSnNlUGkzblZ5b0Z1aFI2QWwrL25JczdCeW9UVGpYaXdYOUZxaC9EUmRR?=
- =?utf-8?B?VXJ0WDZpQUJrQWJBRFFGcEJUSmpwWlNseElSZ0xMU0xma0VnTFNwOXorUERs?=
- =?utf-8?B?Q3VJS3QwcHl1VWIxcEpRVk9lZnRxVzhrcmh1S1FqaXdtN2hUc3JhZjJzL0F3?=
- =?utf-8?B?eU1OUUlzV3JrSEFJZStqczNPQmpkWXU2VnpTWWhkNTJubTk1V0VNajExcUJ4?=
- =?utf-8?B?cm01eUY4TEFLd25SRWw4YzJDeUZVay9tZEo0c3pOaXl3U1FrVlRyV0padHNt?=
- =?utf-8?B?bUhIWE1pUGxmdGRmNEwxUC90SjAzY0RIL0VkY3B0QnpTajBLWWlHbThnNjEw?=
- =?utf-8?B?eEE9PQ==?=
-X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f43bde7b-c378-4ced-1685-08de373a4758
-X-MS-Exchange-CrossTenant-AuthSource: AMBPR06MB10365.eurprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Dec 2025 15:47:37.8373
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: YiC2mIhM4pFYGxpB7C2aDV8FOhBBDOBTDWhHL883Y1k0UyUjxDzqqiSFAG5vyRJpO+5Lxiu3BOs2ndMh7WuhcQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVXPR06MB9536
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH RFC 0/6] iio: core: Introduce cleanup.h support for mode
+ locks
+To: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Kurt Borja <kuurtb@gmail.com>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Benson Leung <bleung@chromium.org>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Gwendal Grignou <gwendal@chromium.org>,
+ Shrikant Raskar <raskar.shree97@gmail.com>,
+ Per-Daniel Olsson <perdaniel.olsson@axis.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Guenter Roeck <groeck@chromium.org>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
+References: <20251203-lock-impr-v1-0-b4a1fd639423@gmail.com>
+ <77ca77847511e67066a150096a7af2fb84f1f25f.camel@gmail.com>
+ <CAHp75VdNjqZdy0+aSbBzn9CwEwHUhjwED+KRVqkdOMc_N+nX9w@mail.gmail.com>
+ <20251206184645.51099254@jic23-huawei>
+ <54483083c42cf7500239ebb7c0d32d25f11bb02f.camel@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <54483083c42cf7500239ebb7c0d32d25f11bb02f.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-
-
-On 09/12/2025 16:41, Andy Shevchenko wrote:
-> On Tue, Dec 9, 2025 at 7:34 AM Tomas Melin <tomas.melin@vaisala.com> wrote:
+On 12/9/25 4:34 AM, Nuno Sá wrote:
+> On Sat, 2025-12-06 at 18:46 +0000, Jonathan Cameron wrote:
+>> On Thu, 4 Dec 2025 17:07:28 +0200
+>> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 >>
->> Include headers in ascending order.
+>>> On Thu, Dec 4, 2025 at 4:35 PM Nuno Sá <noname.nuno@gmail.com> wrote:
+>>>> On Wed, 2025-12-03 at 14:18 -0500, Kurt Borja wrote:  
+>>>>>
+>>>>> In a recent driver review discussion [1], Andy Shevchenko suggested we
+>>>>> add cleanup.h support for the lock API:
+>>>>>
+>>>>>       iio_device_claim_{direct,buffer_mode}().  
+>>>>
+>>>> We already went this patch and then reverted it. I guess before we did not had
+>>>> ACQUIRE() and ACQUIRE_ERR() but I'm not sure that makes it much better. Looking at the
+>>>> last two patches on how we are handling the buffer mode stuff, I'm really not convinced...
+>>>>
+>>>> Also, I have doubts sparse can keep up with the __cleanup stuff so I'm not sure the
+>>>> annotations much make sense if we go down this path. Unless we want to use both
+>>>> approaches which is also questionable.  
+>>>
+>>> This, indeed, needs a (broader) discussion and I appreciate that Kurt
+>>> sent this RFC. Jonathan, what's your thoughts?
+>>
+>> I was pretty heavily involved in discussions around ACQUIRE() and it's use
+>> in CXL and runtime PM (though that's still evolving with Rafael trying
+>> to improve the syntax a little).  As you might guess I did have this use
+>> in mind during those discussions.
+>>
+>> As far as I know by avoiding the for loop complexity of the previous
+>> try we made and looking (under the hood) like guard() it should be much
+>> easier and safer to use.  Looking at this was on my list, so I'm very happy
+>> to see this series from Kurt exploring how it would be done.
+>>
+>> Sparse wise there is no support for now for any of the cleanup.h magic
+>> other than ignoring it.  That doesn't bother me that much though as these
+>> macros create more or less hidden local variables that are hard to mess
+>> with in incorrect ways.
+>>
+>> So in general I'm very much in favour of this for same reasons I jumped
+>> in last time (which turned out to be premature!)
+>>
+>> This will be particularly useful in avoiding the need for helper functions
+>> in otherwise simple code flows.
+>>
 > 
-> Thanks, but...
+> Ok, it seems we are going down the path to introduce this again. I do agree the new ACQUIRE()
+> macros make things better (btw, I would be in favor of something similar to pm runtime). Though
+> I'm still a bit worried about the device lock helper (the iio_device_claim one). We went through
+> some significant work in order to make mlock private (given historical abuse of it) and this
+> is basically making it public again. So I would like to either think a bit harder to see if we
+> can avoid it or just keep the code in patches 5 and 6 as is (even though the dance in there is
+> really not pretty).
 > 
->>  #include <linux/iio/backend.h>
->>  #include <linux/iio/iio.h>
->>  #include <linux/iio/sysfs.h>
+> At the very least I would like to see a big, fat comment stating that lock is not to be randomly
+> used by drivers to protect their own internal data structures and state.
 > 
-> ...this was specifically grouped to show the relation to the certain
-> subsystem. At the end we should have something like this
-> 
-> linux/*.h // generic ones
-> ...blank line...
-> asm/*.h // generic ones (optionally, if there is a need in a such)
-> ...blank line...
-> linux/iio/*.h
-> ...blank line...
+> - Nuno Sá
 
-Thanks for the clarification. Sure, it's not a big deal to do a new
-version. But FWIW, that convention is not AFAIS explicitly stated
-anywhere and with even recent drivers not all following it, it's
-somewhat hard to know what expected formatting should be.
-It would really be good to have that documented somewhere.
-
-Thanks,
-Tomas
-
-
-> 
-> So, what I meant with fixing clk.h is just to move it to the main
-> group and sort that.
-> 
-> You can check (recent enough) drivers for the examples. Yes, some of
-> them (but minority IIRC) might have linux/iio/*.h among linux/*.h, but
-> usually they are grouped separately.
-> 
-
+Due to the way that conditional guards only extend regular guards, I don't
+think there is a way to not expose the basic mlock wrapper. So "don't use this
+unless you really know what you are doing" docs seem like the best option.
