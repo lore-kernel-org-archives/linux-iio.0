@@ -1,162 +1,175 @@
-Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1D2A329C7E
-	for <linux-iio@vger.kernel.org>; Tue,  9 Dec 2025 17:05:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 936E1199FAB;
+	Tue,  9 Dec 2025 17:42:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765299927; cv=none; b=EkbYLjF5joC59l/NMzlodINlK9Ijdf6roQKO+8MQCAZvnTq7dIBXqc9wPd4RGHXureifK4Cora+tPkWm+37Rz0nDXBHzIjnGFUs2DmU3whnRDJvmKL3/4FRPUp2kdLqrytDWkJKgB1uPxcArK1MuKzdXoxh9/A3Q3u32yWsCI/U=
+	t=1765302173; cv=none; b=I+VO5dGqUh3OpU8UUaJN1ITBSV8XfQ4N4rV/32voprT+nThix0MnzdjHK9KUhgxHOpK6V8NubtHFVLlAXryXdTMZb8QNUI4SXgljCp0G4WDq8/oJjLoJMaHaCPqJcPrn8BLq1SDSbNiGhJDB5PpFCuzlisYWlwZB308/43hL22I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765299927; c=relaxed/simple;
-	bh=djwV1YPqHJRmfMBqb2pv7M2B8bAh/V9aaC8VS4CE0eQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=oWN7tJ8xfCKxCU+XcSyBeFZ2kybXR4ItLZE9s8U/8LVEC6nWByN5oIk6YCvlOK7Rkb8e0ugRGmqeWOW96DUA3WvMbe8IVhphTL1NbYigplqAt9tYb7t/QU3UnRaJqF1fpOGhNVVMzNP+Q8L+inzeNgpKWfkJWl+r9DZMbH7YXew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=z7zrM7qJ; arc=none smtp.client-ip=209.85.210.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1765302173; c=relaxed/simple;
+	bh=ltbEnJePxGHfiWbMRJejKVkhJ9FvXRiTBky6V8Q0BXM=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=jqlbHTlWs33nZqiEKs0p/9Xyv5RwZSLva+77xPiSOv5fPqHM706CX4PkM+wXhiVVf2LhwRS88+Y7SoSwET5DCBggqDg5mDV5H5Q+HYJpPts7F0Zhjbmc73NjCWjK/q5imkMXrNKvZNYSQnRMVoj8TmTv6aML34/kIF9hB8yanPI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=iIkUEtvX; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="z7zrM7qJ"
-Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7c77fc7c11bso24609a34.1
-        for <linux-iio@vger.kernel.org>; Tue, 09 Dec 2025 09:05:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1765299925; x=1765904725; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=G4n56/mm+y5lEIPHBvAL6dNtszRve9ILxt5EMAL7gg8=;
-        b=z7zrM7qJ8sXuoRlLGJ07uvlVq6I/btvkDv1GNSKG5iSTw5HdxXwQFkfjCCR8C7eGGX
-         Vtbpa2518QxoTiqVcC1FqAWLmFOsPvZCdIDDZCe4gx321Th19vyQm1HRO+hRqMyKNBPP
-         0zxQt2kSuV78jv/NAbvQLumEtR+AQK/M59pcarISck9UsL5jR5KXJidiAOaNRIuCbOCx
-         Q0A+QgYh/piRDHU+NLxhGnoR5GyJngcIa2l+zZBO/t5qYrxiWTqWkDh/LHSsLtBjlf21
-         NAR5ZL7EyLmBhMkp0mg1iIbwpbIH6uPHR/Q9ygQEUPe+VcDeWhhwkebizPl1dxX1RQpy
-         mIjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1765299925; x=1765904725;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=G4n56/mm+y5lEIPHBvAL6dNtszRve9ILxt5EMAL7gg8=;
-        b=WE1y8Xnby7UDQMqARb5pYcGXLJ9ifJojpszvXgySvvh0n8yEPLW1LyOPU4rf/aux05
-         YLMwXU9Aaq/quDFUk00OMifBPYSXmi8SMJ/+zOapCqfxALFDnQXJPw0nuAEP6I58dvQI
-         s8KA3CByWgvMUK4g1FyOuv/mVH0FHGOaQ3/zqF/YoKCE729Xcm6a3R9A+ijOegg7Dk9e
-         /xoZy7BOG0uKWuMr/v9OF2HGr3rABG8JSaZDZMPPSYuYx8YmQBcvA4wMvyQ8Ko9D2+Th
-         r3Lso9Y08CRd66jNtedZfhPk5WXcjsSbrIoOpijNCXNkKdcefKCAUk6fc+N0fK33xpC+
-         phCg==
-X-Forwarded-Encrypted: i=1; AJvYcCVxF87eg2QqLBc+ALMx6o/cYpoYKdpL8mpyW6JWMskTlTav3CI76BSQUWj/pvdShSDiRYqV+mfNggE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzZb0G68ORFPD1Gys5SAEeZ/3+BEIdaaD4+Ar9EoOwa11zY+m3F
-	y/nO6keGVhl39FyQtBlctuidQTapLlzz2+Jmew/+zzGZUCOzdVNymJpssstJq8ldLGw=
-X-Gm-Gg: ASbGncu+tu4pxWLdECRW4ZlVStsOTXj0ZT25rg/Br08UNk3LJCUoy+Fkvgy5faQ949J
-	paM6eZbtbdJbrfdPfynkACGjDWN+JTm2fuEuHlLYubqO1tRer4ymsxzf+g9aZGxYOhU/da+KD/4
-	aSJ1eJ2EyXussUaUk6uP5L4sPrfoUIlvI0+AVybPrn4LNbrh0kOq9dVTv6fjWBdHuknulwRwdre
-	eqqjtAVjUyeGiIB29hZUUf/x8uz/9yCNBy3TWhLDGcWXj6Rqw1yUMkm2Myqv9dUo53zS4/t1i+h
-	ByuOU96IvzHUTv1EOjAk+G/0fdyQ2PEKNRggVJX69JfZdM9rrySjIxnEDIhgtqcWFnSVS6RCOJn
-	tA3d3obA1TSIeXNI1OwGJnLmMbIMJJ3C+hqXFNi9XiBxm5PCgFnveBUWuEsblQsIBm4UIDDKYeP
-	r96GS3mSWxqI19HsC7S8NfYwlLb1E2Sx1KhnpuA3taIW6jCNgQaUqtaQF9UTMd
-X-Google-Smtp-Source: AGHT+IHciYLjfEru5jIntKmz+IlcCYn208iA7CXd8tNMDSBw5mXO3tJHz1jntfIlpMhCeSxWYUZMIg==
-X-Received: by 2002:a05:6830:6e85:b0:7c7:6a56:cfb5 with SMTP id 46e09a7af769-7cac65f16f5mr870582a34.11.1765299924620;
-        Tue, 09 Dec 2025 09:05:24 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:e3b0:13f2:d6fb:6f28? ([2600:8803:e7e4:500:e3b0:13f2:d6fb:6f28])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7c95ac833d3sm12635774a34.17.2025.12.09.09.05.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 09 Dec 2025 09:05:24 -0800 (PST)
-Message-ID: <7aeab2a4-72d9-452f-af86-1e44d5133b67@baylibre.com>
-Date: Tue, 9 Dec 2025 11:05:22 -0600
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="iIkUEtvX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1765302171; x=1796838171;
+  h=from:subject:date:message-id:mime-version:
+   content-transfer-encoding:to:cc;
+  bh=ltbEnJePxGHfiWbMRJejKVkhJ9FvXRiTBky6V8Q0BXM=;
+  b=iIkUEtvXJ2cto+BjKR4Heq1JsvkT73W1ebcxN0FL4Xf9p46IRTyJo7p7
+   LJAYKFaJOhn1ApbwNKsqGLCRhRprbGah8loX5HM6Xb7Zn7wQGpZ4LZiGc
+   UAmc3lvqKldXJ/5pfi+RzMCj8OCMJPOl8gbEJ7y0p2cHrzTmxq5Wy125n
+   sCAEq7h8X4mq4MJ8i3lSvzqL2ZEe5rLPEYCFyZEh2AK+i0gq5jSTc4aBi
+   Bqb8Gz1XKKbE1UnLy1367g/si01rCHUZaCd8K+SmGfahfIMFgoIxntkwv
+   6vtra6yErrjDE6SWv4NmF/8P79uiEE+BjmeTSv71DiSYoY7JC3/QhwRFh
+   A==;
+X-CSE-ConnectionGUID: LG0HgYJJTZ+gWu6GgiIt8w==
+X-CSE-MsgGUID: Y75IwKQcQeOcyOtd1erMbw==
+X-IronPort-AV: E=Sophos;i="6.20,262,1758610800"; 
+   d="scan'208";a="50302834"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 09 Dec 2025 10:42:44 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2507.58; Tue, 9 Dec 2025 10:42:33 -0700
+Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
+ Transport; Tue, 9 Dec 2025 10:42:31 -0700
+From: Ariana Lazar <ariana.lazar@microchip.com>
+Subject: [PATCH v3 0/2] Adding support for Microchip MCP47FEB02
+Date: Tue, 9 Dec 2025 18:06:22 +0200
+Message-ID: <20251209-mcp47feb02-v3-0-bb0ba9052f4f@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 0/6] iio: core: Introduce cleanup.h support for mode
- locks
-To: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>,
- Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Kurt Borja <kuurtb@gmail.com>,
- Andy Shevchenko <andriy.shevchenko@intel.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Benson Leung <bleung@chromium.org>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Gwendal Grignou <gwendal@chromium.org>,
- Shrikant Raskar <raskar.shree97@gmail.com>,
- Per-Daniel Olsson <perdaniel.olsson@axis.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Guenter Roeck <groeck@chromium.org>,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, chrome-platform@lists.linux.dev
-References: <20251203-lock-impr-v1-0-b4a1fd639423@gmail.com>
- <77ca77847511e67066a150096a7af2fb84f1f25f.camel@gmail.com>
- <CAHp75VdNjqZdy0+aSbBzn9CwEwHUhjwED+KRVqkdOMc_N+nX9w@mail.gmail.com>
- <20251206184645.51099254@jic23-huawei>
- <54483083c42cf7500239ebb7c0d32d25f11bb02f.camel@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <54483083c42cf7500239ebb7c0d32d25f11bb02f.camel@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
+X-B4-Tracking: v=1; b=H4sIAP5IOGkC/13MQQ6CMBCF4auQrq1pp+CAK+9hXJShyCywpDWNh
+ nB3CyZGXb6X/N8sogvsojgWswgucWR/y8PsCkGDvV2d5C5vAQoqVUMlR5pK7F2rQBpNiHWF1kE
+ jcjAF1/Njw86XvAeOdx+em530+r6ZBuCbSVoqqQ7UlpasNSWeRqbgaeBpT34UK5Xgk2utzE8OO
+ a/JIJa67Rq0//myLC/jGene5wAAAA==
+X-Change-ID: 20250825-mcp47feb02-31c77857ae29
+To: Ariana Lazar <ariana.lazar@microchip.com>, Jonathan Cameron
+	<jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+	=?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Andy Shevchenko
+	<andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+	<krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, Conor Dooley <conor.dooley@microchip.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1765296389; l=4389;
+ i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
+ bh=ltbEnJePxGHfiWbMRJejKVkhJ9FvXRiTBky6V8Q0BXM=;
+ b=UIHgkxJ7kTCiN27HHBGGyOYXhlYfdsWmZ0VjPowCewVHENYyRVOjaJVSvHBvstEgwDj6jNdXy
+ NvWfY806aP2Axtew/EdNsVgbJpq27PbwMiooP5zym6RXtLt0XFZQLbl
+X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
+ pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-On 12/9/25 4:34 AM, Nuno Sá wrote:
-> On Sat, 2025-12-06 at 18:46 +0000, Jonathan Cameron wrote:
->> On Thu, 4 Dec 2025 17:07:28 +0200
->> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
->>
->>> On Thu, Dec 4, 2025 at 4:35 PM Nuno Sá <noname.nuno@gmail.com> wrote:
->>>> On Wed, 2025-12-03 at 14:18 -0500, Kurt Borja wrote:  
->>>>>
->>>>> In a recent driver review discussion [1], Andy Shevchenko suggested we
->>>>> add cleanup.h support for the lock API:
->>>>>
->>>>>       iio_device_claim_{direct,buffer_mode}().  
->>>>
->>>> We already went this patch and then reverted it. I guess before we did not had
->>>> ACQUIRE() and ACQUIRE_ERR() but I'm not sure that makes it much better. Looking at the
->>>> last two patches on how we are handling the buffer mode stuff, I'm really not convinced...
->>>>
->>>> Also, I have doubts sparse can keep up with the __cleanup stuff so I'm not sure the
->>>> annotations much make sense if we go down this path. Unless we want to use both
->>>> approaches which is also questionable.  
->>>
->>> This, indeed, needs a (broader) discussion and I appreciate that Kurt
->>> sent this RFC. Jonathan, what's your thoughts?
->>
->> I was pretty heavily involved in discussions around ACQUIRE() and it's use
->> in CXL and runtime PM (though that's still evolving with Rafael trying
->> to improve the syntax a little).  As you might guess I did have this use
->> in mind during those discussions.
->>
->> As far as I know by avoiding the for loop complexity of the previous
->> try we made and looking (under the hood) like guard() it should be much
->> easier and safer to use.  Looking at this was on my list, so I'm very happy
->> to see this series from Kurt exploring how it would be done.
->>
->> Sparse wise there is no support for now for any of the cleanup.h magic
->> other than ignoring it.  That doesn't bother me that much though as these
->> macros create more or less hidden local variables that are hard to mess
->> with in incorrect ways.
->>
->> So in general I'm very much in favour of this for same reasons I jumped
->> in last time (which turned out to be premature!)
->>
->> This will be particularly useful in avoiding the need for helper functions
->> in otherwise simple code flows.
->>
-> 
-> Ok, it seems we are going down the path to introduce this again. I do agree the new ACQUIRE()
-> macros make things better (btw, I would be in favor of something similar to pm runtime). Though
-> I'm still a bit worried about the device lock helper (the iio_device_claim one). We went through
-> some significant work in order to make mlock private (given historical abuse of it) and this
-> is basically making it public again. So I would like to either think a bit harder to see if we
-> can avoid it or just keep the code in patches 5 and 6 as is (even though the dance in there is
-> really not pretty).
-> 
-> At the very least I would like to see a big, fat comment stating that lock is not to be randomly
-> used by drivers to protect their own internal data structures and state.
-> 
-> - Nuno Sá
+Adding support for Microchip MCP47F(E/V)B(0/1/2)1, MCP47F(E/V)B(0/1/2)2,
+MCP47F(E/V)B(0/1/2)4 and MCP47F(E/V)B(0/1/2)8 series of buffered voltage
+output Digital-to-Analog converters with an I2C Interface. This driver
+covers the following part numbers:
+ - With nonvolatile memory:
+   - MCP47FEB01, MCP47FEB11, MCP47FEB21, MCP47FEB02, MCP47FEB12,
+   - MCP47FEB22, MCP47FEB04, MCP47FEB14, MCP47FEB24, MCP47FEB08,
+     MCP47FEB18, MCP47FEB28
+ - With volatile memory:
+   - MCP47FVB01, MCP47FVB11, MCP47FVB21, MCP47FVB02, MCP47FVB12,
+     MCP47FVB22, MCP47FVB04, MCP47FVB14, MCP47FVB24, MCP47FVB08,
+     MCP47FVB18, MCP47FVB28
 
-Due to the way that conditional guards only extend regular guards, I don't
-think there is a way to not expose the basic mlock wrapper. So "don't use this
-unless you really know what you are doing" docs seem like the best option.
+The families support up to 8 output channels. The devices can be 8-bit,
+10-bit and 12-bit resolution.
+
+---
+Changes in v3:
+- fix review comments driver:
+    run pahole on mcp47feb02_features, mcp47feb02_channel_data and
+      mcp47feb02_data structs
+    rephase comment with datasheet links
+    add missing include files
+    remove shift operations from defines and provided the shifted values
+      instead
+    remove MCP47FEB02_DELAY_1_MS define, renamed _MV to _mV
+    correct style issue in struct definition 
+    remove fwnode_property_present
+    protect setting active mask bits operation with mutex
+    use unsigned int instead of int where possible
+    use IIO_DEVICE_ATTR_WO() for store_eeprom instead of IIO_DEVICE_ATTR()
+    refractor Kconfig entry for better visibility
+- Link to v2: https://lore.kernel.org/r/20251103-mcp47feb02-v2-0-8c37741bd97a@microchip.com
+
+Changes in v2:
+v2:
+- fix review comments device tree binding:
+    corrected the use of patternProperties and enum with an array of
+      channel numbers instead of minimum/maximum
+    gave more specific names to the labels of the channels
+    removed '|' from where it was unneccesarry
+    removed unneccesarry setting of attributes to true
+
+- fix review comments driver:
+    replace custom write function with regmap_update_bits.
+    add read_flag_mask field to regmap_config struct and shifted all
+       register addresses with 3 bits in order to correctly apply R/W
+       command mask
+    change cache_type field of regmap_config structs to REGCACHE_MAPLE
+    add val_format_endian field to regmap_config struct as
+       REGMAP_ENDIAN_BIG
+    keep in powerdown_mode last value written to register before reloading
+       the driver
+    create defines for magic bits used in probe function
+    remove unneccesarry channel enabled checks
+    add in parse_fw initialization of reg with 0, check for valid
+    reg number after reading it from devicetree and nonzero num_channels
+    initialize vref_mv, vref1_mv, vdd_mv
+    replace CH_0, ... CH_7 masks with DAC_CTRL_BITS(ch) and  G_0, ... G_7
+      with DAC_GAIN_BIT(ch)
+    correct write_powerdown function to write normal operation into
+      specific bit mask from power-down register when a channel exits
+      power-down mode.
+    add const pointer to info in data struct
+    delete device_property_present checks for vref, vref1. Read vref1 only
+      if have_ext_vref1 is present in features
+    protect write operations with mutex using scoped_guard or guard
+    refactor probe function by creating 2 setup functions,
+      mcp47feb02_init_ctrl_regs and mcp47feb02_init_ch_scales.
+    correct info/debug messages where it was specified
+    use devm_iio_device_register and deleted remove() function
+    in write_raw only update struct data if regmap write succeeds
+
+v1:
+- first version committed to review
+- Link to v1: https://lore.kernel.org/r/20250922-mcp47feb02-v1-0-06cb4acaa347@microchip.com
+
+Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+
+---
+Ariana Lazar (2):
+      dt-bindings: iio: dac: adding support for Microchip MCP47FEB02
+      iio: dac: adding support for Microchip MCP47FEB02
+
+ .../bindings/iio/dac/microchip,mcp47feb02.yaml     |  302 +++++
+ MAINTAINERS                                        |    7 +
+ drivers/iio/dac/Kconfig                            |   17 +
+ drivers/iio/dac/Makefile                           |    1 +
+ drivers/iio/dac/mcp47feb02.c                       | 1254 ++++++++++++++++++++
+ 5 files changed, 1581 insertions(+)
+---
+base-commit: 19272b37aa4f83ca52bdf9c16d5d81bdd1354494
+change-id: 20250825-mcp47feb02-31c77857ae29
+
+Best regards,
+-- 
+Ariana Lazar <ariana.lazar@microchip.com>
+
