@@ -1,151 +1,116 @@
-Received: from codeconstruct.com.au (pi.codeconstruct.com.au [203.29.241.158])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CF9530149C;
-	Thu, 11 Dec 2025 08:51:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=203.29.241.158
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E1C1207A0B
+	for <linux-iio@vger.kernel.org>; Thu, 11 Dec 2025 11:32:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765443116; cv=none; b=mmkaTS1a30I7Ad2ygyXVMmwletC4lOskwWReYx2vzDnK9hjLAgH8eUkIwSe1fQXoZNglV1C6iv/cDZtYcV8RMEffoX+UDTZRxJ9eIbd+ENKEregYO24PehCpZT6EQ92DH/4av9u4Oe0KvECeuTWHzmxCEMAd1kfNBgAXC8eSWlg=
+	t=1765452739; cv=none; b=LlF8MFuZnnNcc8efptZh4oJ86fQR6/PANlnlTsdSsSk50DdxcN1oYBnIAxCxHgpq4vUcOcpz8gy9OsKbxcFRvE7j3QdqmzZerF4Y3Wpdm6d1J6LTFWzOU8liXufCzYguNU83Bz8orfDTIEWCstzvjBnPqb2h60apKgaMlny4IVo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765443116; c=relaxed/simple;
-	bh=5nJRX8cBMM5cpww6xJMJgmgVNn29qROHtAouR2sAhjw=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=WDh9jT7s5e3+5Y3i7G807N9F7Pk+a90Q1QvB5alh9MyNaXjzXyN/m73m0bMtDZRhqW46XYgePxmM9frw0qgBA/QHXtc9AcUxFi2EQvcTbsV58z414CNBU5mnet62xk7CPRMLrF6xu9zkaTAKwAhqk7TFfj/gqkDOqgSvT505yyc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au; spf=pass smtp.mailfrom=codeconstruct.com.au; dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b=bqC5HF97; arc=none smtp.client-ip=203.29.241.158
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=codeconstruct.com.au
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=codeconstruct.com.au
+	s=arc-20240116; t=1765452739; c=relaxed/simple;
+	bh=NchHZPDCVbR2zKgQZ6II0ne2TAbumnNcDZoeVADXcKk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=N2tyfq7SgBvNaJwHo8DDoGQkYPMKxOLT/sTgVNmcLL2ZWx2fd8HjVwR5ma/KVPO83IbC7w81wxW6ZSLqg8gJPwzJIKF8fwh8W9lyUqanDkfMawx8EJhq0S4vm1fNRNBeyExagmR1gzF5WwNeDWRBI+6z/sNo84ltS8uxRs2ZBBw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=QQX57O8O; arc=none smtp.client-ip=74.125.224.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=codeconstruct.com.au header.i=@codeconstruct.com.au header.b="bqC5HF97"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QQX57O8O"
+Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-64472ea7d18so760731d50.2
+        for <linux-iio@vger.kernel.org>; Thu, 11 Dec 2025 03:32:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=codeconstruct.com.au; s=2022a; t=1765442785;
-	bh=e/DM6Sr1SqiFaFi6So6itNGziX/g9agVvmrw9nqOKwk=;
-	h=From:Subject:Date:To:Cc;
-	b=bqC5HF97IEXGGiwn8BjKImcZTCClNnB5F20Ne02GYuzhc+xDMiDRF+Z09oKeAgrrL
-	 jLJwO0XqylJgqUw5ZMQxQBGVLJk8bZNZm//deP56z5ytmmRPS1z919GTDPdpgieASR
-	 wQj3FYYvWzGaCnsX7lvoNg6pAbH8wMrWcz+aeqHbvZsOqDZNdr6zUbki4wtinbPe/p
-	 YEMg+SviXUlGezg5bkwlU/iDzeNrtJ4W0Viu8jpT69TRVD/cg7WOIPEiaS8gkz2iCb
-	 W68/0xn4kthIfGBvzsjLKS29+37YApjp2QqNC4f8WR7bnVOuDqSn7QTMljkot5glDw
-	 DoCvbsMthhpKQ==
-Received: from [127.0.1.1] (fs98a57d9c.tkyc007.ap.nuro.jp [152.165.125.156])
-	by mail.codeconstruct.com.au (Postfix) with ESMTPSA id 490B164DF5;
-	Thu, 11 Dec 2025 16:46:19 +0800 (AWST)
-From: Andrew Jeffery <andrew@codeconstruct.com.au>
-Subject: [PATCH RFC 00/16] Eliminate warnings for AST2500 and AST2600 EVB
- devicetrees
-Date: Thu, 11 Dec 2025 17:45:42 +0900
-Message-Id: <20251211-dev-dt-warnings-all-v1-0-21b18b9ada77@codeconstruct.com.au>
+        d=linaro.org; s=google; t=1765452735; x=1766057535; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=vAvAduq0/fXRtJhO0coRhdPgTbJSI1bNLnmdQnPpfuY=;
+        b=QQX57O8OsKuVkASZOy3qxp6if78bDgDbkjwSeD7uaKrKurvNp1ku/3MDnCE9Bf6Mym
+         C+NxsqKpUWN8GaO+RapzoLI/tFEh9UW9QqyYNX0PmN9kAFmFVCqFATZR4TX2+JART4Ij
+         Ww1J4foYdr6vNtt8a7tOuoiWCzh7oZhR6S70cb/Kv0KsQTQyCYa60HSECZoFp77O9N8H
+         VRb0rfvZ7BoxG92nyYSOGgqg5xoWMAP23FDSPo9rP75amoW8qhfaCLkVnVG8eHhNcGb9
+         vncS2Ps5PoPRn4RlbNAcuewgWJFWm6evYv1K+ckfssLI9BeMqOCvPe8FxXjDgx8FcCr/
+         O/3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765452735; x=1766057535;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=vAvAduq0/fXRtJhO0coRhdPgTbJSI1bNLnmdQnPpfuY=;
+        b=Vsn6r0OWqaNi9g1poNOG96DFGCatQcRJYs2rMiF9p3S2wIcCKq5+OmfyOCpfOZrenJ
+         o9r9Hd741ajsLnNj3UM2Hdn7P1jseLywXTX5SHkF5TsbeO1TCeizpM//F5Bew0MEkJ9P
+         Cp2wT3UE9EkmS3kZjhYrpgyE6x9PgaNAvnSSld1xkUmuwW87sobrhuR43B3UBdp39Zp5
+         GYTZe742EJOSafPLdT2rEq+GmgkBOma/EkL6VB/4GlaW3GcAooCBdPeX0yroEHUyOYcW
+         LL6cModjChOkwV+ikt0tDi8tC2ZGm2wQi3EXsfSD8TOlpasO+S9BuaOE+qbM0TJRZAyB
+         G6Fw==
+X-Forwarded-Encrypted: i=1; AJvYcCUFHIDLZD+d1wOGCL4qb0fgxCKZs8PcB0n1La9M5NfX7ostJW5OCT8qLZWjcTfU5kG/mq3hIN83l44=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzKnblA05y6ySYEW2xlBVeYB5Xnor+9x/8lmAMljDxClVL5ou0y
+	wPfJ6vRAzJEK9+BXcrp9Baxfdmik4WJGPzFWphedgk5XXHqsfag0VKO1u6Fn1oI3AzxRiWDhK4Q
+	pREIeIX1wkVX0uiNw1NWBngwdtI/o1kmUJ4WLSbDFRw==
+X-Gm-Gg: AY/fxX71NFfvCekWmSQyxgBtUj1WjF6KVg8DI9diOqvW1b8Ao2qYIrN4cUfSxub8oFG
+	rendQIgLgyufLPB9YAedMcuvP9jZa2g/WvTb1P0JSIoG01cROHqmIUSlmrbffWYRPUOJ4/LGhS6
+	5ls+0cGwTbhQJg6bKMWhXhKkWVyqBwKRMQwRW4jIQ+Mm0gFX+/s+E18L/bG+YobuyHal300TOaS
+	Pcw/kJig2Ca2qzMxD6j2pSBUswBFKDFsaeBSC/Xb8RqhpKubrCxfxGsdJmnzZKKTSaWUhmXWyXM
+	TN2/fIk=
+X-Google-Smtp-Source: AGHT+IG8bNJ7GVmxCtKmkFoNf2sieoYkv2mgOPVq2xJndKf37hgXCewb4eZsd1D0ffqnRQUAE3M4kyCHgtlEMcMmN4I=
+X-Received: by 2002:a05:690e:191b:b0:640:db57:8d95 with SMTP id
+ 956f58d0204a3-6446eb3aa4emr5006636d50.63.1765452735377; Thu, 11 Dec 2025
+ 03:32:15 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIALeEOmkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDI1NDI0ND3ZTUMt2UEt3yxKK8zLz0Yt3EnBzdpBRTC1OTJAOTFDMDJaDOgqL
- UtMwKsKnRSkFuzkqxtbUAFLhwe2oAAAA=
-X-Change-ID: 20251211-dev-dt-warnings-all-bd5854b04d60
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>
-Cc: Joel Stanley <joel@jms.id.au>, linux-hwmon@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, 
- linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org, 
- openbmc@lists.ozlabs.org, linux-gpio@vger.kernel.org, 
- linux-mmc@vger.kernel.org, linux-crypto@vger.kernel.org, 
- linux-iio@vger.kernel.org, Andrew Jeffery <andrew@codeconstruct.com.au>
-X-Mailer: b4 0.14.3
+References: <20251211-dev-dt-warnings-all-v1-0-21b18b9ada77@codeconstruct.com.au>
+ <20251211-dev-dt-warnings-all-v1-6-21b18b9ada77@codeconstruct.com.au>
+In-Reply-To: <20251211-dev-dt-warnings-all-v1-6-21b18b9ada77@codeconstruct.com.au>
+From: Ulf Hansson <ulf.hansson@linaro.org>
+Date: Thu, 11 Dec 2025 12:31:38 +0100
+X-Gm-Features: AQt7F2pSIRmWc3gz3aUnvZCl6QhFMFW_pPE_bkwFhLy-FhbClf3aqE2_J1pJY4M
+Message-ID: <CAPDyKFrbS_3XRTSuexFxTpP1ydgvfFvXNv_tninnTqum7+92ZA@mail.gmail.com>
+Subject: Re: [PATCH RFC 06/16] dt-bindings: mmc: Switch ref to sdhci-common.yaml
+To: Andrew Jeffery <andrew@codeconstruct.com.au>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Linus Walleij <linusw@kernel.org>, Joel Stanley <joel@jms.id.au>, 
+	linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org, 
+	linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org, 
+	linux-gpio@vger.kernel.org, linux-mmc@vger.kernel.org, 
+	linux-crypto@vger.kernel.org, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Hi all,
+On Thu, 11 Dec 2025 at 09:47, Andrew Jeffery
+<andrew@codeconstruct.com.au> wrote:
+>
+> Enable use of common SDHCI-related properties such as sdhci-caps-mask as
+> found in the AST2600 EVB DTS.
+>
+> Signed-off-by: Andrew Jeffery <andrew@codeconstruct.com.au>
 
-This series removes the remaining warnings produced by `make
-CHECK_DTBS=y ...` for the AST2500 and AST2600 EVBs and their related
-DTSIs. The tidy-up has the usual benefit of making it clear to
-contributors that any warnings are likely their own to fix before their
-patches will be considered for merging.
+Applied for fixes and by adding a stable-tag, thanks!
 
-I've framed it as an RFC with all patches contained in the one series
-so the goal is clear, we can see what's needed to reach it, and we can
-decide whether and how it should be split or merged going forward.
+Kind regards
+Uffe
 
-As it stands there's little in the way of code change, except to
-pinctrl (though also not much there). As such I've included the
-binding maintainers and subsystem lists as recipients but not yet Cc'ed
-subsystem maintainers directly because there are quite a few and I hope
-to avoid mostly uninteresting patches being a source of irritation.
 
-The patches fall into several groups:
-
-Patch 1:
-  Rob's conversion of the PWM/tach binding to DT schema with fixes
-  applied for the license and typos identified by Krzysztof.
-
-Patches 2-5:
-  Fixes for the warnings related to the LPC and pinctrl nodes, touching
-  relevant drivers and the devicetrees.
-
-  I expect that if this approach is acceptable that we'll need to split
-  application of the patches across successive release cycles, with the
-  driver changes going in first.
-
-Patches 6-8:
-  Fix MMC/SDHCI warnings, touching the relevant binding and devicetrees
-
-Patches 9-10:
-  Clarify the relationships between the ACRY and AHB controller
-
-Patches 11-16:
-  The remaining pieces that eliminate the warnings
-
-I'm at plumbers so don't have hardware on hand to test with, but some
-brief smoke tests under qemu look okay. Given that it's all RFC that
-should be enough for the moment. I'll do more testing after discussions
-and when I have boards at hand.
-
-Please review!
-
-Andrew
-
-Signed-off-by: Andrew Jeffery <andrew@codeconstruct.com.au>
----
-Andrew Jeffery (15):
-      pinctrl: aspeed: g5: Constrain LPC binding revision workaround to AST2500
-      pinctrl: aspeed: g5: Allow use of LPC node instead of LPC host controller
-      ARM: dts: aspeed: g5: Use LPC phandle for pinctrl aspeed,external-nodes
-      ARM: dts: aspeed: Remove unspecified LPC host controller node
-      dt-bindings: mmc: Switch ref to sdhci-common.yaml
-      ARM: dts: aspeed: Remove sdhci-drive-type property from AST2600 EVB
-      ARM: dts: aspeed: Use specified wp-inverted property for AST2600 EVB
-      dt-bindings: bus: aspeed: Require syscon for AST2600 AHB controller
-      dt-bindings: crypto: Document aspeed,ahbc property for Aspeed ACRY
-      ARM: dts: aspeed: Drop syscon compatible from EDAC in g6 dtsi
-      ARM: dts: aspeed: g6: Drop unspecified aspeed,ast2600-udma node
-      ARM: dts: aspeed: ast2600-evb: Tidy up A0 work-around for UART5
-      dt-bindings: iio: adc: Allow interrupts property for AST2600
-      ARM: dts: aspeed: g6: Drop clocks property from arm,armv7-timer
-      dt-bindings: mfd: Document smp-memram node for AST2600 SCU
-
-Rob Herring (Arm) (1):
-      dt-bindings: hwmon: Convert aspeed,ast2400-pwm-tacho to DT schema
-
- .../bindings/bus/aspeed,ast2600-ahbc.yaml          |   8 +-
- .../bindings/crypto/aspeed,ast2600-acry.yaml       |   7 ++
- .../bindings/hwmon/aspeed,ast2400-pwm-tacho.yaml   | 106 +++++++++++++++++++++
- .../devicetree/bindings/hwmon/aspeed-pwm-tacho.txt |  73 --------------
- .../bindings/iio/adc/aspeed,ast2600-adc.yaml       |   3 +
- .../bindings/mfd/aspeed,ast2x00-scu.yaml           |  18 ++++
- .../devicetree/bindings/mmc/aspeed,sdhci.yaml      |   2 +-
- arch/arm/boot/dts/aspeed/aspeed-ast2600-evb.dts    |   7 +-
- .../dts/aspeed/aspeed-bmc-facebook-clemente.dts    |   4 -
- arch/arm/boot/dts/aspeed/aspeed-g4.dtsi            |   5 -
- arch/arm/boot/dts/aspeed/aspeed-g5.dtsi            |   8 +-
- arch/arm/boot/dts/aspeed/aspeed-g6.dtsi            |  17 +---
- drivers/pinctrl/aspeed/pinctrl-aspeed-g5.c         |  32 ++++---
- 13 files changed, 165 insertions(+), 125 deletions(-)
----
-base-commit: 5ce74bc1b7cb2732b22f9c93082545bc655d6547
-change-id: 20251211-dev-dt-warnings-all-bd5854b04d60
-
-Best regards,
--- 
-Andrew Jeffery <andrew@codeconstruct.com.au>
-
+> ---
+>  Documentation/devicetree/bindings/mmc/aspeed,sdhci.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/devicetree/bindings/mmc/aspeed,sdhci.yaml b/Documentation/devicetree/bindings/mmc/aspeed,sdhci.yaml
+> index 9fce8cd7b0b6..d24950ccea95 100644
+> --- a/Documentation/devicetree/bindings/mmc/aspeed,sdhci.yaml
+> +++ b/Documentation/devicetree/bindings/mmc/aspeed,sdhci.yaml
+> @@ -41,7 +41,7 @@ properties:
+>  patternProperties:
+>    "^sdhci@[0-9a-f]+$":
+>      type: object
+> -    $ref: mmc-controller.yaml
+> +    $ref: sdhci-common.yaml
+>      unevaluatedProperties: false
+>
+>      properties:
+>
+> --
+> 2.47.3
+>
+>
