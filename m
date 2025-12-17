@@ -1,244 +1,295 @@
-Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11021081.outbound.protection.outlook.com [40.107.130.81])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9417A2BF015;
-	Wed, 17 Dec 2025 05:38:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.81
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1765949894; cv=fail; b=hef7e53xTtBkiDtg1iNegBJsZqjSozJrykjkr+dGfhq0aMtBa3HUFT6B0cK4NbLstP9YgsEkQY13GBJeWxUNeeM6lU5273T+y42FYfNmBEVOGvmOnS8Ka1tfHSxGOim2NqzZgo7VnrnT9NIZWZyUEsMU0g9FH2+OrpJHCCreSEw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1765949894; c=relaxed/simple;
-	bh=K6C20dSDNNbn6JkgeuyPa45/Fk51BSnE/QyCd7kwMKU=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=QjShI+mrCKFdXRWEGx9kx5lxZvAvRfdDRjHn1qgwtBuMj5aG21HtEgsxhVn+z4+Sy3Ul6WAArcNerumwmawcryu3rPFCCemUtiGvk6ieeXxESWxB9WAONtqm4AHR8RMeiec5HA5OY7HZEYVHtM4VIX8oXpkirpSlU/v4NyOC7nY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=GjWvSGKF; arc=fail smtp.client-ip=40.107.130.81
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50E9C23ABB0
+	for <linux-iio@vger.kernel.org>; Wed, 17 Dec 2025 06:47:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1765954060; cv=none; b=YIGSjCsCH0oq6kte7LKea0Q0Wf8R416FTQsYlDY8e/u7FPLDc4S/1Jvoc4tjECW0Zv+Zr8UPRJ9VFJGYmAGcDQFLo6dtGo6myKINzxe2flApCY2f8jL0vffD01r6ICJd0LgZLBz96WJmCDhD1fTTzqWgOS+wuEOvQ+fwX7RbcY0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1765954060; c=relaxed/simple;
+	bh=zoNH4pIFgLK/vLl/4K5BO5JGfpwKVGkJp2pg+JwOaiE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VzJ6toyjYc5YRwBonzERsUkrZf672S2pAL9R2IwOTpZfoloOeEOs8QPfWKjyIVQd0V0KZLsYOCMFN0kWE0+ZJjguxiV6nKMW+3Ajrl6pRuEgEWj3QpisLeGZ5/9TF1m0BktM2ql3reKKhV6sxComfcUJYBYlxxWpUZYctH8uRN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jx63u80I; arc=none smtp.client-ip=209.85.167.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="GjWvSGKF"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JUjIyR8O1WFkuEYc5ihMEzUCMBwFVUZ25pYJf+1STvL3F00+bRGioYzWOtLRL5FH9482sBsA/sH3tWfR9AIuGzqzA0gB32Lrw7ByEcT4mMA6xxiRRafZ9Ui+pTkUXkg+Gjl7E6WWY79fl2084Yaa47NvI4FUMkrg/VnL+c3FEGVwCQ6UD3smAkju/Qvo/ciy+Th89QWi7U0KB+9TBdDy0KSEEBDoLRhqI7vp0fRGxvjt1adbyqxTaj+4hjO4JPhAwNmhkGykzQeZxFdTSJ+Ql/A1oPFvpCCjWIu/4MplNoBvuxvwgpzKR1SGKpgX9IZtc1Lg/1ODxf+uyPxzVVYDqg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K6C20dSDNNbn6JkgeuyPa45/Fk51BSnE/QyCd7kwMKU=;
- b=H+tXDxFGEia+FJ1AGwwzxEvfz15IJ/9GBoFM4ljNcJ6oloDjmvF64MMK/ueMB4KQgvxLFCtjJTHhGqX9cR8A8T18krnnyer9l2gB4OSNjqtBGnKl5wC0oPraLXvB/X30RKjTzhZT69nlPfVn3s3nzx0sh1kAIWAsQl4IFaq6K4go7MiGzxeNQy4cJWdOQLZtYi1I0CBl6FykkTX+k4qiLxLrk4OZFmQ1Y8M2UzKxGx1T/2KxjO0E0DKeUlDHES2Jhww+4JVA7jjBypDaaixSs9S2MzKGJZiQL9DXLenxL0ytSTMvX8ogu6glvk3RE03IiS/YnJUtdu8+tV4bPw5WrA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
- dkim=pass header.d=vaisala.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K6C20dSDNNbn6JkgeuyPa45/Fk51BSnE/QyCd7kwMKU=;
- b=GjWvSGKFKRPDKf+Izb3s3OasSKLmDDWKuiTpFMvIc1F+2crJpl2v7tB+ovTMgcMOJNue8N8TEorzx8JtVr/rRNkAwwHWiKtwJFpUgRFvlo9EG3Jn6bAoyFAK4CXd3yhEJ6++qe6ky2bJRb7XFHzXuLFzjpCOtzQQ7bgxQtIjKeT4lFwtOU4YSsrb3xRpxu0/5mxeXALOyyClfNn2qoF2lFa1fIFoa51/+HzE5MqZTGthM4nS40djRJ9GJ4fO/jgJauTNfQZZXWBaoGbE8VqXtlGvafBactqxCUHD4U9QzpARIiw6+1dcBVlKAcSsP7nYu11130qvw1HfezbR25TUZA==
-Received: from AMBPR06MB10365.eurprd06.prod.outlook.com (2603:10a6:20b:6f0::7)
- by AM0PR06MB6387.eurprd06.prod.outlook.com (2603:10a6:208:192::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9434.6; Wed, 17 Dec
- 2025 05:38:05 +0000
-Received: from AMBPR06MB10365.eurprd06.prod.outlook.com
- ([fe80::4606:8e25:96e6:bede]) by AMBPR06MB10365.eurprd06.prod.outlook.com
- ([fe80::4606:8e25:96e6:bede%5]) with mapi id 15.20.9434.001; Wed, 17 Dec 2025
- 05:38:05 +0000
-From: Tomas Melin <tomas.melin@vaisala.com>
-To: David Lechner <dlechner@baylibre.com>, =?iso-8859-1?Q?Nuno_S=E1?=
-	<noname.nuno@gmail.com>, Michael Hennerich <Michael.Hennerich@analog.com>,
-	Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Jonathan
- Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: adc: ad9467: make iio backend optional
-Thread-Topic: [PATCH 2/2] iio: adc: ad9467: make iio backend optional
-Thread-Index: AQHcboDg2jiPMh+SKEeDKHne+sMY7rUkOemAgABObACAAEApAIAAqn8A
-Date: Wed, 17 Dec 2025 05:38:05 +0000
-Message-ID: <84bb3751-178f-4577-9952-2b3ad5d11dad@vaisala.com>
-References:
- <20251216-b4-ad9467-optional-backend-v1-0-83e61531ef4d@vaisala.com>
- <20251216-b4-ad9467-optional-backend-v1-2-83e61531ef4d@vaisala.com>
- <2a265681ad73bebf1ad7aeea418fb9399b8350cf.camel@gmail.com>
- <d2cfd1bb-0bc0-47c0-a68a-3967cd64878c@vaisala.com>
- <2f45fdbd-44a3-41a2-9fc0-7c446bd7ca35@baylibre.com>
-In-Reply-To: <2f45fdbd-44a3-41a2-9fc0-7c446bd7ca35@baylibre.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-exchange-imapappendstamp: AMBPR06MB10365.eurprd06.prod.outlook.com
- (15.20.9434.000)
-msip_labels:
- MSIP_Label_7246d30e-a6af-4059-9b44-a42233242e28_Enabled=True;MSIP_Label_7246d30e-a6af-4059-9b44-a42233242e28_SiteId=6d7393e0-41f5-4c2e-9b12-4c2be5da5c57;MSIP_Label_7246d30e-a6af-4059-9b44-a42233242e28_SetDate=2025-12-17T05:38:05.052Z;MSIP_Label_7246d30e-a6af-4059-9b44-a42233242e28_Name=No
- Label;MSIP_Label_7246d30e-a6af-4059-9b44-a42233242e28_ContentBits=1;MSIP_Label_7246d30e-a6af-4059-9b44-a42233242e28_Method=Standard;
-user-agent: Mozilla Thunderbird
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=vaisala.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: AMBPR06MB10365:EE_|AM0PR06MB6387:EE_
-x-ms-office365-filtering-correlation-id: 6d387ff1-97c5-45a0-6850-08de3d2e73bc
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700021;
-x-microsoft-antispam-message-info:
- =?iso-8859-1?Q?VwuDLp9uWPlVIr0N10VAFPGu6oMZC3OV6gvdVr3Pw7anzbjGEjVRZwmY6z?=
- =?iso-8859-1?Q?qJjWxmu7kkqQRf7+3W+IJguaRgn6oWgo5qRFumgb2MJkqy7TGI03oEsxiZ?=
- =?iso-8859-1?Q?zvrDXU8gI1HRUXWQ3b/Xy0rDWtfsIt2qshnStCdbCc94UEGJnyukF+PFZL?=
- =?iso-8859-1?Q?9pF61iymO9pwUEsBSfBYss+MmsA3itEUe4chX5Kd4+NxO8KVA9LEJ0mtmo?=
- =?iso-8859-1?Q?Ui8ZeFczncMaKHi9jTj2YyP/HTfTRfxxwCmZMIXs+ysP6SOXD6sCDB7nuS?=
- =?iso-8859-1?Q?MR1PdMWKdRfrhQan++B3JU2MRLCd66SB11QS2LwIJGr5HUUSWd1rtHjYRW?=
- =?iso-8859-1?Q?TMrxQoeShZZfNeQ3+Ry/XiIBMmBghKvAIww7n9HkG3MtEehST6EYuX4upe?=
- =?iso-8859-1?Q?mAqBR+ZdAmDdZx129vDMRr7U7Y9m/Gaip27B4MFGn3x9GyOyXmiNs9TaqZ?=
- =?iso-8859-1?Q?n7ygJKlSOnNRDhvvxOZD5CzZHgbqEMeW2jf0KB2SQJVdBcBElOAge5ZSft?=
- =?iso-8859-1?Q?S3zye44Zn09gWoQFCc3fge+Rtr6poZA2LQqku6S7MoAw3svqC/0QOgEw/n?=
- =?iso-8859-1?Q?QhIVjj31QUILh5+SbMEn2uJq/HrXh30eGjSqOKUbTCzQ0xa2nOr2gWDEuy?=
- =?iso-8859-1?Q?2xGeSsXJ2hEnbPyGyBKmV+9ebddKAHlAi30uFCT7rY8eNDNQWF2QJhb06P?=
- =?iso-8859-1?Q?roJAwkHsrm9Ys4nQKQN+5Ymc4+Fr+NzVvkssgSLqZEbAm7s9p/yEwbRTJ+?=
- =?iso-8859-1?Q?MzJSxZwEqHI8bEEwg73uygYNX1BIPgA6CyHnX6wHrF7Vdd+XgNjJzvJV8r?=
- =?iso-8859-1?Q?/qAW0RGFLgpOB5KHx6AWzPAaATAnUU2GzW3KJylc4mGh6nATDTRXJEHQpj?=
- =?iso-8859-1?Q?2oURd/0Omx02v5L3Vb7ZnNSLhWUHhHCEQznfDyIEqliFmTrp/5SzteJcsA?=
- =?iso-8859-1?Q?6Mp9qv9H0CI1sTO0N23l1wAPSRC3kPfKw9iK3ATHEM/Kci/yqB0u/6LLnQ?=
- =?iso-8859-1?Q?HLg6QaaleBkvn35s3lfdliFuY0m8qYfdq/CdKjzEhiFal852ivwVDMMgic?=
- =?iso-8859-1?Q?Iwg4Zk5tm/7CRLKwVzErzCOEapKqKZYmmuKv4xbBGLj56NSSL4pbkRr0QS?=
- =?iso-8859-1?Q?A+/xq19+6GXjBPDoTQRxJXFGi2HG9GLlSPz8DNQ505GX9HuWcHyzdhOUWK?=
- =?iso-8859-1?Q?xuxVkH4Z3n7euQrgkYrB6Vgmvcwu5ohl5Es4NlBaqaOzz9QkzPpoe5jng1?=
- =?iso-8859-1?Q?e16pyXK+pPGPOnIIfViBqHFL2mZG9JgnM/S9HAxlvSkv+HyR1bD/xFxtm5?=
- =?iso-8859-1?Q?C5RDKYRBcoXWtd2V7G+m/agRk+VpwhJaxrng9pBAbcvzoN64TWAAej0E/5?=
- =?iso-8859-1?Q?ftDTt45fUJ65aBGBlv540CJpIdFeS/ZfDYHgOjgqdvuCt2EFGkj34GC9/s?=
- =?iso-8859-1?Q?U2VtTAeWnGqbpAlxXmFOFSD+YTZkp0oB03snDxpYhy2iVCfztsy180IdJc?=
- =?iso-8859-1?Q?ADvXa2FdkE09Wvp+TA6Sr+pI6O3+3+TZfq6tKaLJeQ7ei5yd9FNiVUM3aY?=
- =?iso-8859-1?Q?ZxGoYkUXhz2IA/r04SqbLgimu0sQ?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMBPR06MB10365.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700021);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?Co6ar7NwFDOgWyr0ftIVU3P00YnV3hrC8ukIwcKPcqMWzBKOchBGEJDOrO?=
- =?iso-8859-1?Q?FsOH7v6PMKK7DQwOYe4XuefCABsJAWA5PpsuHwuG8B0WuuGnmSqiTEb0kj?=
- =?iso-8859-1?Q?luS7JFnQGMxRgN3TLevcbybGK/2uVt6g7Tog50y68XoQuoaJFoTucdi3o9?=
- =?iso-8859-1?Q?Omr3cxc3IaUReRcbwYu5mkv8bu6ZKMNAYWXGlYuLWLRDneLEp+WC9O2L67?=
- =?iso-8859-1?Q?3ZDH6kX7nf0kpxI8FPLVYGWh41efrICiRrhAIDpy+k2x3jGc50nIVgfItf?=
- =?iso-8859-1?Q?FUyVGSrOhOTwz0yqz1W/H54OCLtG6DFSLwkbMs7hdNhLXhCyF1CjunIDYX?=
- =?iso-8859-1?Q?ltTxKKsd8xkSFZugykGt8yOwEKGpYZm3uDw0QFI0CfLGGJpJpMYnpo5Hsk?=
- =?iso-8859-1?Q?Z1LrimDNNddRbBHvznNjnP+ewlLT9c6P8V8GoItRdggaP7aAdTsDCUtMX5?=
- =?iso-8859-1?Q?4rjWCAn68ci/c7RzxGKiXBQ6A5e7iB1fYfRO7RI15IpwEQytoOqhrZBWVV?=
- =?iso-8859-1?Q?3zVs3slVR5ZTfRbXlwPF/yDZjpA5d/Xsz0w60Ktkz1hE+5TlnGGifhQo+C?=
- =?iso-8859-1?Q?Q40dtkt3sVpsvp708wMSvYjh6QTO/isbb1FbGgAThikNtuezQ6oc2AkTn4?=
- =?iso-8859-1?Q?qdhrcKE15yBanaJ2550tAJX73AspSXRT/RDFIBlNdvhHKYctJ28HZ85s4R?=
- =?iso-8859-1?Q?pqzkXwZUn0z2nAVy6T8iObs9EVXaqOxZorawmQdzIKcqb5zwqTgzApp/f8?=
- =?iso-8859-1?Q?SMA3yKDEpFYpASufo5jdf2dc26izR4GIRdv7tUB2e6NEhxVe8UswzOl4kb?=
- =?iso-8859-1?Q?j/VPTLykfWPMFwXvcs6p0vH7ZHheFDNdoUhgKHSr1Es48Uk34bnMjGHN3J?=
- =?iso-8859-1?Q?nGLDbSRSpwrSl3u8eOGqWe2L+ZbCXbe79rz/pnGFLmMiff4Jz74QYCa/Qd?=
- =?iso-8859-1?Q?DYX9v3QPKMG/BnoK9RvHHMID+19Bd8p7bafmIriWDelBfQkscDLxY+twFn?=
- =?iso-8859-1?Q?HcJWOIQj//FNNgHX1i7j3u62iRyQS+3Z5p7hjphaTCekQuhYlvdvYoYmZ3?=
- =?iso-8859-1?Q?6CefRxq6sLgZptcpB4P9GGjC7CYcFuIyiXHqUWafqyzBx4W3eztVypuM+q?=
- =?iso-8859-1?Q?nmPBM4PBDfiHB7hbU/Ze97UpiI3b8qA0yECEnNz3mz+m5fKDWY3ZAoyqsW?=
- =?iso-8859-1?Q?W/2POlDOA6jjTm6jOFwDQIU7jGqhv+swRfXtEL2jWQEnL32kvCJPJvKAhY?=
- =?iso-8859-1?Q?m2st8Ii5MzSUIXzD+L7Gmg8OK4zY6Yds1Tt33QI+Au95Ypp8l6q0/Rva1B?=
- =?iso-8859-1?Q?+nY724BWRxYZ218dk07JtlGQe0rg6xJIeVFJdtDn4Uc6Fp68pkL4KBjUZ1?=
- =?iso-8859-1?Q?YZVRqCweTRgXMoM+GLEZ4S2dYHx+U2Ofg4wx8DDcE0d+L7+yoIAgWZzBR/?=
- =?iso-8859-1?Q?hI7sCsFDdnDjU+E17946SZt4HvZ9hl3c1OGAEyUv2Yqd8U7UHsjEqK9SWy?=
- =?iso-8859-1?Q?A3svktdqjByeOR7wPIOdqPjklGUYhV2bGAx6f46Sv7zzd4DggHS+IDw+GT?=
- =?iso-8859-1?Q?qunmJ3SUOK4wIeM2xgbAEW2jD/g8IJw1GecLthgYD71xeCYhV6h+syElnz?=
- =?iso-8859-1?Q?p3FCTr3lrb87txMvsNm6g0rpG4NuJUEZfy?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <CFF289CADCBD7643AA27C5EE6AC700F5@VaisalaWorks.onmicrosoft.com>
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jx63u80I"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-45392215f74so1973639b6e.3
+        for <linux-iio@vger.kernel.org>; Tue, 16 Dec 2025 22:47:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1765954052; x=1766558852; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=tobnOt0/k4PP1UYJ8wXGQviRZwJ5NKX9ZlmQIJiFe40=;
+        b=jx63u80IjG85INND9ddWxdqv6zsbark1qYsK+ja3+NknQeGJDoLqVvCTecYIFP6Frm
+         WqNEcc2I7b8ULJiezjX3OTwWPlV1BfP0VVz2LpGcW4+WcqGX/lDDR/2o76MjMj2GFuKJ
+         cbS7lfx/iZBC9jY9V4fjl5BPXe6iA3bzcu8sI95Uh0mVVCHWQhJ9XBa2Y5ZnZ6AgqpWv
+         c0A01QpiOnGJUHBByo/phW6WTZM3mCPMic2/5JmLglzKHt01klpDkqdtuxfD9jKSEWRW
+         WYaBpPVcwUoqXPCJfjASKsMfxoW8tB+MyE2EYO9WxBz+WHoAnMZqaCY/su+FuJ7DKglS
+         reFg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1765954052; x=1766558852;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=tobnOt0/k4PP1UYJ8wXGQviRZwJ5NKX9ZlmQIJiFe40=;
+        b=YI3E50ELd1Tei4dxgg7XRCQlrmXTCn4rdsyleSr4CPEujJ5zbRA+3Y+U6Sezp9tt4g
+         tfm44Zb6RUCVi6wgSQEQb2DUwdMtNMHAO5SIlFQUhtqrgOsH8EOT5caGSFrjK7cj26BA
+         yJo/1/GtrXk+LRQfxVWvkd+CN5DHzhPLv4tNCNLlCuaqcLcuZW5tvujfan+20Dos+1rA
+         HiitRkVnb7t4oc40NaHCt6fbZE0RrMkCrC+DqgkN1fqkOTf7unsh5+kdvgsTiEmqnZCE
+         yDB99H1/cxuQvEqpq6k7m0KOB02jIfKnbCH7/VUsbrAp+Vayk3+vMU6lzR1xC3Ne3JUP
+         zJnA==
+X-Forwarded-Encrypted: i=1; AJvYcCXq4u/e8ni1riMzsbzRC2MaPfxR58aznRBdAzN6QEJUcNJ4yhG4Ot0AIxIYk9TohCw/u6S6xh6fsrk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxPI8XfFhbXsFjknT3lqyyqjg7UmaTZvBcWF/eTeOq9tTWzE23+
+	9n/ImxrvSFbtCKMsp5ciYp4BRij6vT1fFq0H+7NAsLXfFqvu7FTAVG0Tv+1rYoPil43XOxtvIiJ
+	aEf05F584j3VVGsUw2V72s4vGqY78feM=
+X-Gm-Gg: AY/fxX7Jh4orN2hH2gzCBrqBOhkNs+/2nD/UhJlRZDXknT+cCbI0zA0M/blQYastTwo
+	wsY06mllJCZU9Npzy6FjXdwGQ22X95+KIkr+W6P5UurZjJHc6CAqlkflJfLM3N2ap1aMtWGYh7I
+	pc1rDKvvmC4RD97fO0j2U3fn2QodhUP/vmvFYok8Bx5xw0o30+1JEt87/Hc1YO2oUTSs/8AJXmG
+	G7qJ2wzlWkIMtR5nrwK6NVZvDlyyygFZouXW2lwZpe9+5AnKo0dnnjRk+XkgaCQIo0/ELo=
+X-Google-Smtp-Source: AGHT+IFYcalltdWcT3nqGaUGS/eyHQDYubt+G8nJU4xXTi2ABpcZ+qsrj3+PVod3H8ztx117RVgXZ6MS6YlsNLv0m/A=
+X-Received: by 2002:a05:6808:199f:b0:455:7da6:44d5 with SMTP id
+ 5614622812f47-455ac82425fmr7395535b6e.27.1765954051901; Tue, 16 Dec 2025
+ 22:47:31 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: AMBPR06MB10365.eurprd06.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6d387ff1-97c5-45a0-6850-08de3d2e73bc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Dec 2025 05:38:05.2645
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Xl/pJdX/c4pGQ+cNUKD52eW9TGrD9wPtTfSzVDe6ImPe7TBDAhl2mGzaY+ScBB2ynOojO0tltvgu/b0ZeX/zww==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR06MB6387
+References: <20251027150713.59067-1-linmq006@gmail.com> <aQB8PRlaBY_9-L8d@smile.fi.intel.com>
+ <aQB8j7Hc3b9vAT5_@smile.fi.intel.com> <aQCHt9JL0Bc4Pduv@smile.fi.intel.com>
+ <071e3da4d69e10d64c54a18b7dd34ae11ab68f58.camel@gmail.com>
+ <aQDXF-AIF6wNIo76@smile.fi.intel.com> <aecd2e25900f2ef38f937a295e995269c433453b.camel@gmail.com>
+ <aQDe7-ienRpcfNV_@smile.fi.intel.com>
+In-Reply-To: <aQDe7-ienRpcfNV_@smile.fi.intel.com>
+From: =?UTF-8?B?5p6X5aaZ5YCp?= <linmq006@gmail.com>
+Date: Wed, 17 Dec 2025 14:47:17 +0800
+X-Gm-Features: AQt7F2pzlGRamaAGvC_lHizVPmrUNXKPjw_woO4VnnMXFdBtJxbwn9NJ3SkYBW8
+Message-ID: <CAH-r-ZE0brfZ_T0tDjV5+D90V9QVLhWUO_-zvPxS7kd=LnDrWg@mail.gmail.com>
+Subject: Re: [PATCH] iio: dac: ad3552r-hs: fix out-of-bound write in ad3552r_hs_write_data_source
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: =?UTF-8?B?TnVubyBTw6E=?= <noname.nuno@gmail.com>, 
+	Markus Burri <markus.burri@mt.com>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Angelo Dureghello <adureghello@baylibre.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Content-Type: multipart/mixed; boundary="000000000000f42c790646203724"
 
-Hi,=0A=
-=0A=
-On 16/12/2025 23:27, David Lechner wrote:=0A=
-> On 12/16/25 9:39 AM, Tomas Melin wrote:=0A=
->> Hi,=0A=
->>=0A=
->> On 16/12/2025 14:56, Nuno S=E1 wrote:=0A=
->>> On Tue, 2025-12-16 at 11:40 +0000, Tomas Melin wrote:=0A=
->>>> Not all users can or want to use the device with an iio-backend.=0A=
->>>> For these users, let the driver work in standalone mode, not coupled=
-=0A=
->>>> to the backend or the services it provides.=0A=
->>>>=0A=
->>>> Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>=0A=
->>>> ---=0A=
->>>=0A=
->>> Which users? The only usecases (for all the supported devices) we have =
-require=0A=
->>> the FPGA backend. So do you have a specific usecase for a specific devi=
-ce? If so, I would=0A=
->>> prefer an explicit boolean in the chip_info struture for the device(s) =
-we know this=0A=
->>> can happen (unless you have a usecase for all :)).=0A=
->>=0A=
->> This is generically for all the devices supported by the ad9467, not=0A=
->> only a specific device. So it's about how this is used as part of the=0A=
->> design.=0A=
->>=0A=
->> This is aimed at users that do not use the ADI HDL reference backend=0A=
->> with these devices, but instead have custom backends suited for their=0A=
->> own needs.=0A=
-> =0A=
-> If you have your own backend, why would it not use the IIO backend=0A=
-> framework?=0A=
-> =0A=
-> I can understand if this custom backend sends the data somewhere else=0A=
-> besides an IIO buffer and we don't want to create the buffer for the IIO=
-=0A=
-> device. But I would still think that there needs to be some sort of=0A=
-> communication between the IIO device and the backend.=0A=
-=0A=
-True, there needs to some kind of backend, but they don't all have iio=0A=
-backends or other kernel drivers. Data will flow when the device starts=0A=
-sending without much further need to configure. Adding a backend driver=0A=
-in these cases could have some benefits, but often it would just be an=0A=
-unneeded complication.=0A=
-=0A=
-And even if there were a custom iio-backend available, it would not be=0A=
-compatible with the current assumptions about ADI backend wrt=0A=
-calibration, test mode enabling and iio buffering. So having a strict=0A=
-dependency on an iio-backend does not really work in a generic use case.=0A=
-=0A=
-> =0A=
-> Maybe you could explain more how this custom backend is intended to work?=
-=0A=
-=0A=
-I hope the explanation above helps. There is real use case behind, this=0A=
-is not some imaginary nice to have feature. Before the introduction of=0A=
-the iio backend, the driver was even more dependent on the backend. At=0A=
-that point, needed to carry some out of tree patches to remove the=0A=
-dependency and make it a standalone iio driver. Thankfully with the=0A=
-introduction of the iio-backend, this is now more loosely coupled and I=0A=
-see opportunity for making this standalone mode possible also in mainline.=
-=0A=
-=0A=
-Thanks,=0A=
-Tomas=0A=
-=0A=
-> =0A=
->> In that case, we need to be able to skip the backend registration and=0A=
->> register device as a standalone iio device.=0A=
->>=0A=
->> Hopefully this made the use case clearer?=0A=
->>=0A=
->> Thanks,=0A=
->> Tomas=0A=
->>=0A=
->>=0A=
->>>=0A=
->>> - Nuno S=E1=0A=
->>>=0A=
->>=0A=
-> =0A=
-=0A=
+--000000000000f42c790646203724
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+
+Hi,
+
+I don=E2=80=99t have the actual hardware, so I built a similar demo module =
+to
+mirror the bug and ran it in QEMU.
+With KASAN enabled, the PoC triggers BUG: KASAN: stack-out-of-bounds.
+
+Pattern of the bug:
+- A fixed 64-byte stack buffer is filled using count.
+- If count > 64, the code still does buf[count] =3D '\0', causing an
+out-of-bounds write on the stack.
+
+PoC (what it does):
+- Opens the device node.
+- Writes 128 bytes of A to it.
+- This overflows the 64-byte stack buffer and KASAN reports the stack OOB.
+
+If you have the real device, you may run the similar PoC on your driver
+to validate=E2=80=94just ensure KASAN is enabled to see the report.
+I also tested the straightforward fix buf[ret] =3D '\0'; with that
+change, the issue no longer reproduces.
+Below are the trace, the demo module, and the PoC for reference.
+
+
+[   11.824318] overflow_demo: copied 63 bytes (stack buf 64, user count 128=
+)
+[   11.825125] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[   11.825806] BUG: KASAN: stack-out-of-bounds in mas_walk+0x466/0x510
+[   11.825806] Write of size 8 at addr ffff888011017e48 by task
+overflow_demo_p/75
+[   11.825806]
+[   11.825806] CPU: 0 PID: 75 Comm: overflow_demo_p Tainted: G
+  O       6.6.9 #4
+[   11.825806] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009),
+BIOS 1.16.3-debian-1.16.3-2 04/01/2014
+[   11.825806] Call Trace:
+[   11.825806]  <TASK>
+[   11.825806]  dump_stack_lvl+0x36/0x50
+[   11.825806]  print_report+0xcf/0x670
+[   11.825806]  ? __pfx__raw_spin_lock_irqsave+0x10/0x10
+[   11.825806]  kasan_report+0xc7/0x100
+[   11.825806]  ? mas_walk+0x466/0x510
+[   11.825806]  ? mas_walk+0x466/0x510
+[   11.825806]  mas_walk+0x466/0x510
+[   11.825806]  ? __pfx_rebalance_domains+0x10/0x10
+[   11.825806]  lock_vma_under_rcu+0xbe/0x420
+[   11.825806]  ? __pfx_lock_vma_under_rcu+0x10/0x10
+[   11.825806]  ? __do_softirq+0x1bf/0x5b2
+[   11.825806]  ? hrtimer_interrupt+0x313/0x7c0
+[   11.825806]  do_user_addr_fault+0x1c6/0x940
+[   11.825806]  exc_page_fault+0x5d/0xd0
+[   11.825806]  asm_exc_page_fault+0x26/0x30
+[   11.825806] RIP: 0033:0x43f430
+[   11.825806] Code: Unable to access opcode bytes at 0x43f406.
+[   11.825806] RSP: 002b:00007ffe2f3b53b8 EFLAGS: 00000202
+[   11.825806] RAX: 00007ffe2f3b53e0 RBX: 0000000000000003 RCX: 00000000000=
+00002
+[   11.825806] RDX: 00007ffe2f3b53c0 RSI: 0000000000486029 RDI: 00000000004=
+b2320
+[   11.825806] RBP: 00007ffe2f3b5490 R08: 00000000004b2820 R09: 00000000000=
+00110
+[   11.825806] R10: 0000000000000000 R11: 0000000000000202 R12: 00007ffe2f3=
+b54a0
+[   11.825806] R13: 00007ffe2f3b5668 R14: 00000000004ad868 R15: 00000000000=
+00001
+[   11.825806]  </TASK>
+[   11.825806]
+[   11.825806] The buggy address belongs to stack of task overflow_demo_p/7=
+5
+[   11.825806]  and is located at offset 56 in frame:
+[   11.825806]  lock_vma_under_rcu+0x0/0x420
+[   11.825806]
+[   11.825806] This frame has 1 object:
+[   11.825806]  [32, 96) 'mas'
+[   11.825806]
+[   11.825806] The buggy address belongs to the physical page:
+[   11.825806] page:(____ptrval____) refcount:0 mapcount:0
+mapping:0000000000000000 index:0x0 pfn:0x11017
+[   11.825806] flags: 0x100000000000000(node=3D0|zone=3D1)
+[   11.825806] page_type: 0xffffffff()
+[   11.825806] raw: 0100000000000000 dead000000000100 dead000000000122
+0000000000000000
+[   11.825806] raw: 0000000000000000 0000000000000000 00000000ffffffff
+0000000000000000
+[   11.825806] page dumped because: kasan: bad access detected
+[   11.825806]
+[   11.825806] Memory state around the buggy address:
+[   11.825806]  ffff888011017d00: 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00
+[   11.825806]  ffff888011017d80: 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00
+[   11.825806] >ffff888011017e00: 00 00 f1 f1 f1 f1 00 00 00 f3 00 00
+00 00 f3 f3
+[   11.825806]                                               ^
+[   11.825806]  ffff888011017e80: f3 f3 00 00 00 00 00 00 00 00 00 00
+00 00 00 00
+[   11.825806]  ffff888011017f00: 00 00 00 00 00 00 00 00 00 00 00 00
+00 00 00 00
+[   11.825806] =3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+[   11.858618] Disabling lock debugging due to kernel taint
+[   11.892349] overflow_demo_p (75) used greatest stack depth: 27192 bytes =
+left
+
+Andy Shevchenko <andriy.shevchenko@intel.com> =E4=BA=8E2025=E5=B9=B410=E6=
+=9C=8828=E6=97=A5=E5=91=A8=E4=BA=8C 23:19=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Tue, Oct 28, 2025 at 03:12:29PM +0000, Nuno S=C3=A1 wrote:
+> > On Tue, 2025-10-28 at 16:45 +0200, Andy Shevchenko wrote:
+> > > On Tue, Oct 28, 2025 at 12:31:04PM +0000, Nuno S=C3=A1 wrote:
+>
+> ...
+>
+> > > For the latter I want to see the real traceback and a reproducer. I a=
+lso
+> > > wonder why
+> > > we never had reports from syzkaller on this. It has non-zero chance t=
+o stumble
+> > > over
+> > > the issue here (if there is an issue to begin with).
+> >
+> > If I have the time, I might do it. If my suspicious are correct, it sho=
+uld be
+> > fairly easy to reproduce.
+>
+> My suspicious is also like this, if you have a working setup for one of s=
+uch
+> a user (like this chip) already, it's ~15 minutes to get it done without
+> writing an additional code.
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
+
+--000000000000f42c790646203724
+Content-Type: application/octet-stream; name="overflow_demo_poc.c"
+Content-Disposition: attachment; filename="overflow_demo_poc.c"
+Content-Transfer-Encoding: base64
+Content-ID: <f_mj9ndi4x1>
+X-Attachment-Id: f_mj9ndi4x1
+
+Ly8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjAtb25seQovKgogKiBTaW1wbGUgUG9D
+IGZvciB0aGUgb3ZlcmZsb3dfZGVtbyBrZXJuZWwgbW9kdWxlLgogKiBCdWlsZCB3aXRoOiBnY2Mg
+LVdhbGwgLU8yIC1vIG92ZXJmbG93X3BvYyBzYW1wbGVzL292ZXJmbG93X2RlbW9fcG9jLmMKICov
+CgojaW5jbHVkZSA8ZXJybm8uaD4KI2luY2x1ZGUgPGZjbnRsLmg+CiNpbmNsdWRlIDxzdGRpby5o
+PgojaW5jbHVkZSA8c3RkbGliLmg+CiNpbmNsdWRlIDxzdHJpbmcuaD4KI2luY2x1ZGUgPHVuaXN0
+ZC5oPgoKI2lmbmRlZiBUQVJHRVRfREVWSUNFCiNkZWZpbmUgVEFSR0VUX0RFVklDRSAiL2Rldi9v
+dmVyZmxvd19kZW1vIgojZW5kaWYKI2RlZmluZSBQQVlMT0FEX1NJWkUgMTI4CgppbnQgbWFpbih2
+b2lkKQp7CgljaGFyIHBheWxvYWRbUEFZTE9BRF9TSVpFXTsKCWludCBmZCwgcmV0OwoKCW1lbXNl
+dChwYXlsb2FkLCAnQScsIHNpemVvZihwYXlsb2FkKSk7CgoJZmQgPSBvcGVuKFRBUkdFVF9ERVZJ
+Q0UsIE9fV1JPTkxZKTsKCWlmIChmZCA8IDApIHsKCQlwZXJyb3IoIm9wZW4iKTsKCQlyZXR1cm4g
+RVhJVF9GQUlMVVJFOwoJfQoKCXJldCA9IHdyaXRlKGZkLCBwYXlsb2FkLCBzaXplb2YocGF5bG9h
+ZCkpOwoJaWYgKHJldCA8IDApIHsKCQlwZXJyb3IoIndyaXRlIik7CgkJY2xvc2UoZmQpOwoJCXJl
+dHVybiBFWElUX0ZBSUxVUkU7Cgl9CgoJcHJpbnRmKCJ3cm90ZSAlZCBieXRlcyB0byAlc1xuIiwg
+cmV0LCBUQVJHRVRfREVWSUNFKTsKCWNsb3NlKGZkKTsKCXJldHVybiBFWElUX1NVQ0NFU1M7Cn0K
+--000000000000f42c790646203724
+Content-Type: application/octet-stream; name="overflow_demo.c"
+Content-Disposition: attachment; filename="overflow_demo.c"
+Content-Transfer-Encoding: base64
+Content-ID: <f_mj9ndi4r0>
+X-Attachment-Id: f_mj9ndi4r0
+
+Ly8gU1BEWC1MaWNlbnNlLUlkZW50aWZpZXI6IEdQTC0yLjAtb25seQovKgogKiBTdGFjayBvdmVy
+ZmxvdyBkZW1vIG1vZHVsZQogKgogKiBUaGlzIHNhbXBsZSBtaW1pY3MgYSByZWFsLXdvcmxkIGJ1
+ZyBwYXR0ZXJuOiBhIGZpeGVkLXNpemUgc3RhY2sgYnVmZmVyIGlzCiAqIGZpbGxlZCB2aWEgc2lt
+cGxlX3dyaXRlX3RvX2J1ZmZlcigpLCBidXQgdGhlIGNvZGUgdXNlcyB0aGUgdXNlci1zdXBwbGll
+ZAogKiBjb3VudCB0byBwbGFjZSBhIHRlcm1pbmF0b3IsIHNvIGEgbGFyZ2UgY291bnQgY2F1c2Vz
+IGEgd3JpdGUgcGFzdCB0aGUgZW5kCiAqIG9mIHRoZSBzdGFjayBidWZmZXIgZXZlbiBpZiB0aGUg
+Y29weSB3YXMgdHJ1bmNhdGVkLiBEZXZpY2U6IC9kZXYvb3ZlcmZsb3dfZGVtby4KICovCgojZGVm
+aW5lIHByX2ZtdChmbXQpICJvdmVyZmxvd19kZW1vOiAiIGZtdAoKI2luY2x1ZGUgPGxpbnV4L2Zz
+Lmg+CiNpbmNsdWRlIDxsaW51eC9pbml0Lmg+CiNpbmNsdWRlIDxsaW51eC9taXNjZGV2aWNlLmg+
+CiNpbmNsdWRlIDxsaW51eC9tb2R1bGUuaD4KI2luY2x1ZGUgPGxpbnV4L3VhY2Nlc3MuaD4KCiNk
+ZWZpbmUgREVNT19TVEFDS19CVUZfU0laRSA2NAoKc3RhdGljIG5vaW5saW5lIHNzaXplX3Qgb3Zl
+cmZsb3dfZGVtb193cml0ZShzdHJ1Y3QgZmlsZSAqZmlsZSwKCQkJCQkgICAgY29uc3QgY2hhciBf
+X3VzZXIgKmJ1Ziwgc2l6ZV90IGxlbiwKCQkJCQkgICAgbG9mZl90ICpwcG9zKQp7CgljaGFyIGxv
+Y2FsW0RFTU9fU1RBQ0tfQlVGX1NJWkVdOwoJc3NpemVfdCB3cml0dGVuOwoKCWlmICghbGVuKQoJ
+CXJldHVybiAwOwoKCS8qIFZ1bG5lcmFibGUgcGF0dGVybjogY29weSBpcyBib3VuZGVkLCBidXQg
+dGVybWluYXRvciB1c2VzIHVzZXIgY291bnQuICovCgl3cml0dGVuID0gc2ltcGxlX3dyaXRlX3Rv
+X2J1ZmZlcihsb2NhbCwgc2l6ZW9mKGxvY2FsKSAtIDEsIHBwb3MsIGJ1ZiwKCQkJCQkgbGVuKTsK
+CWlmICh3cml0dGVuIDwgMCkKCQlyZXR1cm4gd3JpdHRlbjsKCgkvKiBEaWFnbm9zdGljOiBzaG93
+IHRoZSBzdGFjayBidWZmZXIgYmFzZSBhbmQgdGhlIHRlcm1pbmF0b3Igd3JpdGUgdGFyZ2V0LiAq
+LwoJaWYgKGxlbiA+PSBzaXplb2YobG9jYWwpKQoJCXByX2VycigibGVuPSV6dSA+PSBidWY9JXp1
+OiBsb2NhbD0lcHgsIHRlcm1pbmF0b3JfdGFyZ2V0PSVweFxuIiwKCQkgICAgICAgbGVuLCBzaXpl
+b2YobG9jYWwpLCBsb2NhbCwgbG9jYWwgKyBsZW4pOwoJZWxzZQoJCXByX2luZm8oImxlbj0lenUg
+PCBidWY9JXp1OiBsb2NhbD0lcHgsIHRlcm1pbmF0b3JfdGFyZ2V0PSVweFxuIiwKCQkgICAgICAg
+bGVuLCBzaXplb2YobG9jYWwpLCBsb2NhbCwgbG9jYWwgKyBsZW4pOwoKCS8qIEJVRzogbGVuIG1h
+eSBleGNlZWQgbG9jYWwgc2l6ZTsgdGhpcyBPT0Igd3JpdGUgbWltaWNzIHRoZSByZWFsIGlzc3Vl
+LiAqLwoJbG9jYWxbbGVuXSA9ICdcMCc7CgoJcHJfaW5mbygiY29waWVkICV6ZCBieXRlcyAoc3Rh
+Y2sgYnVmICV6dSwgdXNlciBjb3VudCAlenUpXG4iLCB3cml0dGVuLAoJCXNpemVvZihsb2NhbCks
+IGxlbik7CgoJcmV0dXJuIHdyaXR0ZW47Cn0KCnN0YXRpYyBjb25zdCBzdHJ1Y3QgZmlsZV9vcGVy
+YXRpb25zIG92ZXJmbG93X2RlbW9fZm9wcyA9IHsKCS5vd25lciA9IFRISVNfTU9EVUxFLAoJLndy
+aXRlID0gb3ZlcmZsb3dfZGVtb193cml0ZSwKfTsKCnN0YXRpYyBzdHJ1Y3QgbWlzY2RldmljZSBv
+dmVyZmxvd19kZW1vX21pc2NkZXYgPSB7CgkubWlub3IgPSBNSVNDX0RZTkFNSUNfTUlOT1IsCgku
+bmFtZSA9ICJvdmVyZmxvd19kZW1vIiwKCS5mb3BzID0gJm92ZXJmbG93X2RlbW9fZm9wcywKfTsK
+CnN0YXRpYyBpbnQgX19pbml0IG92ZXJmbG93X2RlbW9faW5pdCh2b2lkKQp7CglpbnQgcmV0OwoK
+CXJldCA9IG1pc2NfcmVnaXN0ZXIoJm92ZXJmbG93X2RlbW9fbWlzY2Rldik7CglpZiAocmV0KQoJ
+CXJldHVybiByZXQ7CgoJcHJfd2FybigibG9hZGVkOiB3cml0aW5nID4gJWQgYnl0ZXMgd2lsbCBj
+b3JydXB0IHRoZSBzdGFjayAoY291bnQtYmFzZWQgT09CKVxuIiwKCQlERU1PX1NUQUNLX0JVRl9T
+SVpFKTsKCXJldHVybiAwOwp9CgpzdGF0aWMgdm9pZCBfX2V4aXQgb3ZlcmZsb3dfZGVtb19leGl0
+KHZvaWQpCnsKCW1pc2NfZGVyZWdpc3Rlcigmb3ZlcmZsb3dfZGVtb19taXNjZGV2KTsKCXByX2lu
+Zm8oInVubG9hZGVkXG4iKTsKfQoKbW9kdWxlX2luaXQob3ZlcmZsb3dfZGVtb19pbml0KTsKbW9k
+dWxlX2V4aXQob3ZlcmZsb3dfZGVtb19leGl0KTsKCk1PRFVMRV9ERVNDUklQVElPTigiSW50ZW50
+aW9uYWwgc3RhY2sgb3ZlcmZsb3cgZGVtbyBtb2R1bGUiKTsKTU9EVUxFX0FVVEhPUigiWW91ciBO
+YW1lIDxkZXZudWxsQGV4YW1wbGUuY29tPiIpOwpNT0RVTEVfTElDRU5TRSgiR1BMIik7Cg==
+--000000000000f42c790646203724--
