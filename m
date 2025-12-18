@@ -1,43 +1,42 @@
 Received: from mail.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F068274FD3;
-	Thu, 18 Dec 2025 11:06:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF182314A7E;
+	Thu, 18 Dec 2025 11:06:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766055987; cv=none; b=u7Xlp4Tg1uJKUWERYnJHCUI8B6v/iRBMc06iTCOxgfp3zJNd61esdIer7yGlXj0CqUynUpJc6WOMkCZw1FrCfI0X0hPOC0YovRSF+Ln4RmtQR7sKAqPDXAV9QmQVJK7Ov5awOJ4L5hstjHOSoQFIbsnceyFPXPGCvg2PuZ8aB2w=
+	t=1766055988; cv=none; b=ni2Bw44r/px8kBeiru3+fWXM/aoriJEComQAH9dHJFcUzD0sEChAdgI3W9PcCpMGvscLzb0KuBMCqhm/F+lOsFQj8p9Nhv3RchqYiYipRGeSH5FYlyfBq/hWkrwOfUWg2knDPUIMl/UDPBbUxV13p8cwUO7t61z9rzJh3z3KT28=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766055987; c=relaxed/simple;
-	bh=YtdLkwaEn/Njh+9YgIYuZTDDL97h5UEgYVTAhMkgLO8=;
+	s=arc-20240116; t=1766055988; c=relaxed/simple;
+	bh=i2E+jfjK81U1qieOr4tfsvMfhk11pPuIIc+VFbXQ1HM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=f3I2Qtjr+DzW33AFR6tLjgvrdxBpVYtYFWCba4cT50TKPlHkz4Wfv4PYOENokKA48wZB3Zp0ofjbbaTuhdPMVJyvWpfp89c0z7Iw47NBm8tcSpyFGTsrAN5F/GDLoOSjzwVu3zi2aR2TA3bRlPxcaS9ZMKs3jDDcGyuP0nxrakM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=JwYTSNxg; arc=none smtp.client-ip=172.105.74.154
+	 In-Reply-To:To:Cc; b=b5IliwmeJR1RgqNTCqLyg23Y4jS8mQfz+vculJ/bWR6D6YK8d388FzP2Cx++yFhtvT4OBmgzpWJHKjDQpXnp4RHtVkIuqvvrvd0S7uafV5gnG6fObTMZJELZ2y40Bnq+tuSfh0RWZ+X1+PYp9H2lWo1T/OYREw/kZoWGfgu2484=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=aHcaiDfn; arc=none smtp.client-ip=172.105.74.154
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="JwYTSNxg"
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="aHcaiDfn"
 Received: from sunspire.home.arpa (unknown [IPv6:2a02:2f0e:3804:ac00:e2d5:5eff:fed9:f1c4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id D465816020E;
-	Thu, 18 Dec 2025 13:06:17 +0200 (EET)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 07CF5160215;
+	Thu, 18 Dec 2025 13:06:21 +0200 (EET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
-	s=mail; t=1766055978;
+	s=mail; t=1766055981;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=L5GrPTT2kTPYZpkdo9apif/m7Zhj1Oz7ayLuuaoyHDg=;
-	b=JwYTSNxgCzoojkgu7MXGYelyfquE2+h6LHNe6eSo49PsvCmXgUJ06oxRpQfKTFKdhOGP0k
-	FqL/WMe/Rv6Nb0jHXYgZnyCjatnQoPPLzcmr1SKrMqbdyf+IGq15fd239zxEg/FFZqqp/q
-	oV8uFI28TlHKtUSzoHJ0Ol0B/FM+UGw1bwMY4ZAeA4KieTafGm2dxaoRnzTYLKFloGu9dA
-	QrPrjYbz8wF+xypIGKTpTh+veP7+s3k6gfH+iHemaz2N4vCX4UNzpe30/lCT5R8suWsia8
-	x7mxMOqFonBxQ3/f23EK6+Xz4r0/pqUm680+nPsEWvLHpxq+XcyjCVr+KAkKdA==
+	bh=PyMLcWTm5jiH1jQ6mHYwXRTLPdKxHYWWusZTtJVLEUQ=;
+	b=aHcaiDfnFF2k6156UTHAWUikxtoJpEPPR8vhF2AizhDfeUCVhkUSrFDj5colxFw6a5o81Z
+	OIHSsnknAmmvcXWG3LwnLo4xh6iJLsOFAdAEqHk3lFYWPQFw5OFE+rljI8rlHFXNcJyz1r
+	2ac3R+yUeVcdWJFOLnXvgEuKuRtKzFuU2WPrvZVM5DWvu0YDXrhRPdx4zcHK1+1IMhWUJB
+	2inv5ZTfJ6PmNGFfeSWXOROJI89cLSZOFm4ewDrSETvKK/NrqOWx+7tofeoJcjUlZdfZ3s
+	SzFO6qX5Susjor//jlkxYDRgRFSS6y2TtROmnHNYt6Kd2g4Cf6uwTae1asgkVg==
 From: Petre Rodan <petre.rodan@subdimension.ro>
-Date: Thu, 18 Dec 2025 13:05:47 +0200
-Subject: [PATCH 05/14] iio: pressure: mprls0025pa: zero out spi_transfer
- struct
+Date: Thu, 18 Dec 2025 13:05:54 +0200
+Subject: [PATCH 12/14] iio: pressure: mprls0025pa: fix interrupt flag
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -46,7 +45,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251218-mprls_cleanup-v1-5-b36a170f1a5c@subdimension.ro>
+Message-Id: <20251218-mprls_cleanup-v1-12-b36a170f1a5c@subdimension.ro>
 References: <20251218-mprls_cleanup-v1-0-b36a170f1a5c@subdimension.ro>
 In-Reply-To: <20251218-mprls_cleanup-v1-0-b36a170f1a5c@subdimension.ro>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -56,49 +55,60 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jonathan Cameron <Jonathan.Cameron@huawei.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=761;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1179;
  i=petre.rodan@subdimension.ro; h=from:subject:message-id;
- bh=YtdLkwaEn/Njh+9YgIYuZTDDL97h5UEgYVTAhMkgLO8=;
+ bh=i2E+jfjK81U1qieOr4tfsvMfhk11pPuIIc+VFbXQ1HM=;
  b=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgpvd0o0bkFGdEFwTDlrQTBEQUFvQmRDc25wM
- k02U1dNQnl5WmlBR2xENEJNb1RCVjFKb3VCZ21KaXBlS2ZXbFdZCnNNdzhYSHdFOXljMFlpMElQ
- aXpmVW9rQ013UUFBUW9BSFJZaEJCb2ltQncrRGJ4UXBFNmlkM1FySjZkak9rbGoKQlFKcFErQVR
- BQW9KRUhRcko2ZGpPa2xqSmdrUCtRR3ZISC9Bc0N2L09nMlZ4RGtUbmRyOFpJbGtjNE56M3hqbA
- pwaXVaSFhmWGxZUEIwRWVsOWdaeHlDeExCR2RxV3ZwS1hqL0c2SVB4M3o4d2FqaGRsZVEvOGNza
- U52OUVoSXFYCjJmSHhPcXJQVy9rMUpyU2R2YXpEaE90TGtEL0FQV3NZaHhvSjVhR1JGQ3ByUldD
- QlRuYnhoclNNSE42VEZ6RzgKZEJaQkpFWWgrcWtRL1lrOW9HdHVEdUtVcERuczFmY2Q2aE1DZmp
- Qdy9jNTBIU0lKY0gwNVZVQktlZnpmd0trUwpKdU5EcUluWkV0Y2VXaG9QWndzTFFLWlJwWGtwR1
- hMZDg0Y0FxZVB2dXNqemM0K0luL2hkeW1uQjNKdFBJR2QzClNsSXgvRGRQaFpVMFpwa3k1Y0I0Y
- mpXbjVrL0Zqd0c2d25NUHRrTFFXdCtadVp5TnJSVC9JL2pQZ2lrU1JPQ3UKTHN3dmVIOEFmck9r
- ZUlzdGt0MlR0b0Z3NmNpREFEWGJpWGltR1Z4NU9aTmZhWEpCc3YzbFduckI3K2RIZGpGSgpqR2w
- 3Vkd6ZHdJUi8va0U0MnlnVGE5Q0lWU2FleS9ZV2Y4YVZ2REVFdHdRbk9YRC9uTnYxTThBWkxRYU
- MrbGZhCjVERld2Qm5GdkVESjdyc2wwanFWcEJrTHEvS21VZXNQQ3FUUU9ldHdkR2ZORjhMTW81Z
- Ho3dFV2T0FLQ0pXWEgKSVJodi9aSXFTYXBFTE50OHdvamhMMSs0dDhqUEdnT09HMTJhTmQzTWVE
- RmNCWGhkUWxxZlRLbTExL0xNUE9MYwpPTWhiYjVCUXlkMnFqVHRRSklrTkZ5V2J2YjZ3QkNiSkN
- FTXE4N0xSTXRWajlRT3BHbzdzbEp6Sk5hZjFyYXFDCnFFZXJObzhick1nZ0dnPT0KPXBTaXoKLS
+ k02U1dNQnl5WmlBR2xENENFRlY5UERpd1BJaGw4ajYxc1JRVjFYCjNsTEY5RXdrSTVmam9XY3Q1
+ dWxXd1lrQ013UUFBUW9BSFJZaEJCb2ltQncrRGJ4UXBFNmlkM1FySjZkak9rbGoKQlFKcFErQWh
+ BQW9KRUhRcko2ZGpPa2xqdjkwUUFJSWt3SmwxSk5WNWh6WnJLMnNDYWhKTnAzNG9QQkxoVGdmMg
+ pDbU5oYzBuTyt5VFowSWlYNzkybHZIVE9CNVlTRE8yZXRYak94VG1sQnU5K1RvTFBuc242RjZ5S
+ llXMmp5SzU2Cm1mRDRFN2FkYTNSNnZsNVA2cFd6blRWQVdjZld6MngvaG5jUUQ5Q0FLT1lPUjVw
+ ZmdvUmpldkpsRUNCOGMrK0IKQkE4UUtqRGlTclZ2TlhWZzJoRmtMY09PUXBvWkFDb3B4OVI2dkt
+ 4cU9QbTc0ZmdPZmpJVDh6WDZybHVjRE95bQpPNytycFQ2UktoSVpQcTRPbzRpaUFhOHd2dVluZj
+ dTSnRGVTVjR1lxOG1PalM4VE55SHZYOGhBTUdtTVQ1T1hsCnBSa2dnYzAxMjZFWWttRVV3UDI2U
+ E5SNTRjT3U2YWlCRFZYWkhjZGRLSHU5ZUU1VGxOZ2UwSVhBdmRXcWVUdGMKYnVEU1B4TGRHTTBk
+ TEcxMytzZ3p0T0pONWNiTVZOTkdTc2pTVnVZeWtVMy91OUxiVmNMcWtJMzVSNkUzQ2RCRQp1Tkl
+ zVVJZSjduY1B6SnBYOTQ2bDNYSGJETGVtcTBmcC8xdUpnVDdTSE1abmIyeDRHelJQUW43Y3RNcj
+ JMVmZwCk10YUFZRnovTklMemlraWlaSXJvV3FlUmNaTkxvcnphMlpBdEpISjFKUUUzMXNaMW1HU
+ nVhdkcwR21SbkdTRGMKQ3hFRnY3U3Z2eGZmUzg3WEN6cGxTUzZtL0FGQ2pabUJNNmZ3cmc2U3FB
+ R0FscWlnQVlEbTNDTFZyOE1NT2dnMwpidUlUSzZLamt4Mk5Bbk5LZXRDVSs5eG0rYXpNalcrZ3h
+ 0cUs1V2FNKzc5TjNWL1ZXVG1hZWtvV1U0YnVaRDE2CmdCQjRSdEROMXFRbWV3PT0KPWdjUlUKLS
  0tLS1FTkQgUEdQIE1FU1NBR0UtLS0tLQo=
 X-Developer-Key: i=petre.rodan@subdimension.ro; a=openpgp;
  fpr=D80A7FC176151935EC3E5FA9CF269999844E7F30
 
-Make sure that the spi_transfer struct is zeroed out before use.
+Interrupt falling/rising flags should only be defined in the device tree.
 
+Fixes: 713337d9143e ("iio: pressure: Honeywell mprls0025pa pressure sensor")
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
- drivers/iio/pressure/mprls0025pa_spi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/pressure/mprls0025pa.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/pressure/mprls0025pa_spi.c b/drivers/iio/pressure/mprls0025pa_spi.c
-index 021c0ed812c0..73f0714f66ca 100644
---- a/drivers/iio/pressure/mprls0025pa_spi.c
-+++ b/drivers/iio/pressure/mprls0025pa_spi.c
-@@ -21,7 +21,7 @@
- static int mpr_spi_xfer(struct mpr_data *data, const u8 cmd, const u8 pkt_len)
- {
- 	struct spi_device *spi = to_spi_device(data->dev);
--	struct spi_transfer xfer;
-+	struct spi_transfer xfer = { };
+diff --git a/drivers/iio/pressure/mprls0025pa.c b/drivers/iio/pressure/mprls0025pa.c
+index 243a5717b88f..fc04988b9437 100644
+--- a/drivers/iio/pressure/mprls0025pa.c
++++ b/drivers/iio/pressure/mprls0025pa.c
+@@ -14,6 +14,7 @@
+ #include <linux/bits.h>
+ #include <linux/delay.h>
+ #include <linux/errno.h>
++#include <linux/interrupt.h>
+ #include <linux/math64.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+@@ -404,9 +405,7 @@ int mpr_common_probe(struct device *dev, const struct mpr_ops *ops, int irq)
  
- 	if (pkt_len > MPR_MEASUREMENT_RD_SIZE)
- 		return -EOVERFLOW;
+ 	if (data->irq > 0) {
+ 		ret = devm_request_irq(dev, data->irq, mpr_eoc_handler,
+-				       IRQF_TRIGGER_RISING,
+-				       dev_name(dev),
+-				       data);
++				       IRQF_ONESHOT, dev_name(dev), data);
+ 		if (ret)
+ 			return dev_err_probe(dev, ret,
+ 					  "request irq %d failed\n", data->irq);
 
 -- 
 2.51.2
