@@ -1,42 +1,43 @@
 Received: from mail.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24BD1314B9A;
-	Thu, 18 Dec 2025 11:06:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C176F31283A;
+	Thu, 18 Dec 2025 11:14:27 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766055990; cv=none; b=RJscZ0r7oN8oR8/rtJjAtjJQXNEWHQqjJw18S5qbOxdnoI236xHet8tuBtTqydWRIxgOfZoIGuQeUq4kl4PgSFWJPowvGuDvOa2k7P/ZBQpgnxvB/tjxMoBkVZd0gjL1wnvcd9aI9z+T/V22gO1e0ISGshnjbw4P9WmaTkzu4Vs=
+	t=1766056469; cv=none; b=kaxcDmDTf/sSZ1uZDJO+48UlxU7u8PUH+YiHg2pNBfe4f2J7xBovpdSClhn8jFnFiOlkNVrR5ErmoyHRFM1tPchdi5pq7PO/MI3OToumnZOKxIIYJNHQhJBqKEVtij6vb8Ybx21dlgLhkpZTSwjDSrT3DVdGjFOAdl9rI6Zr7lM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1766055990; c=relaxed/simple;
-	bh=GCkK0VAT6YURJVUHsAV2cRDK2Ylk9MKA9vKPrxg8PHA=;
+	s=arc-20240116; t=1766056469; c=relaxed/simple;
+	bh=XSdGMOB3rRzh359mI12D/ax0XdyDOTtw4nPSx825r2k=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=alNWArFY+vHMrcCNIZAXGUMxNWI14DRP7joFHU4BIKZR2qNHWLvDR88136lc/Cf4iSlBfOFTIs0NJ3ZreOxL6FKseZbsPbgG4UiedomAJtEtzVhf4AUrKHnd5q406HQhSK7tDHSrzQikDE0yzMve01R4vg/W3DfTiSR/KYkz7tI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=G7O8DHya; arc=none smtp.client-ip=172.105.74.154
+	 In-Reply-To:To:Cc; b=dKKxPUrK7q5qPAiYgvOqus1Zaydd/wXNel50kuxsOA8AXiqQwtxKOSkrX00csVCZjSFaKbRCCF48L/SVPU5XMZH7YS8gHcsTE1G5x5xPgizSfJo1p0GjDORceHrhmQ/DrGlxKDJz1VTjQ3lSjlbnDyeGgjL3jPeDeAGTnRq0XwU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=reEptIXI; arc=none smtp.client-ip=172.105.74.154
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="G7O8DHya"
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="reEptIXI"
 Received: from sunspire.home.arpa (unknown [IPv6:2a02:2f0e:3804:ac00:e2d5:5eff:fed9:f1c4])
 	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
 	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
 	(Client did not present a certificate)
-	by mail.subdimension.ro (Postfix) with ESMTPSA id 3F7DA160217;
-	Thu, 18 Dec 2025 13:06:22 +0200 (EET)
+	by mail.subdimension.ro (Postfix) with ESMTPSA id 34A6716020A;
+	Thu, 18 Dec 2025 13:06:16 +0200 (EET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
-	s=mail; t=1766055982;
+	s=mail; t=1766055976;
 	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
 	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
 	 content-transfer-encoding:content-transfer-encoding:
 	 in-reply-to:in-reply-to:references:references;
-	bh=5I6rVkaUyMlNAVNjMbpzYJ5yxuGb41VpMPmiTDGi4EA=;
-	b=G7O8DHya0Dv/v84ctsxX2qzV6HaI6ozrtHo5i1y2/xSoRuUmkd2De5q8omGAP1MgN58hpm
-	eZJ4O4Kf5OPz6xPkkSXhUJdjELfHaHh2G9s3KW3oWzLAMBYByHDdb+U6qPipj6vY+gsGWf
-	54d8cv0cKA+VK/qlDoJ+y3ZJHknC3s7viVnrgVR7o23CeHUcJdZuBnZIg5dpEC9yeiRuJT
-	7zaMq6po0gNAyHVuR07vdcAQVO+dCslEvT5sox7qJc2GNRRdIzSGY+YewUWXjwnFo50tS1
-	Xo3M3vGtNWWO4NH+iE58kSkU56aBCnY31ywi60/qZ9TemYPHed7S3xq5O+uybg==
+	bh=tVIOyIOESd4wkc1FWbJueLTErVXe9VdBH1S86VEToqQ=;
+	b=reEptIXIKLsUzSIWNwSlXQUm9PdgfNQ8yHGKnWNADoTvmi6ShhQKCH5jpihu4WXsHBDe6O
+	vcJ/d8NCHGw0M0LcJBC1s5gfYwesIJHx4kaNoKuCOGTjIf2JQ901YJucDOAkol1QIKasDA
+	b2MMwJnd9QKtMxgVgwJ1gDbhvoOIQ53aE5x4AI8+/Z0NIg00Rl7TewiOoGdJyXFLd/RGvk
+	qjU5pq7xXUliEHqd0k7irPPzvWHuTuENiwrUIfoRtpjhL9k4dV5GRgfrACQIzKb4Q3klfV
+	UuXowgZbxIIKWnr7bTbsm/fqkQ5TlMaULAqHIEzNCmAZGpuGd5JFd0GaygQS3w==
 From: Petre Rodan <petre.rodan@subdimension.ro>
-Date: Thu, 18 Dec 2025 13:05:56 +0200
-Subject: [PATCH 14/14] iio: pressure: mprls0025pa: add copyright line
+Date: Thu, 18 Dec 2025 13:05:43 +0200
+Subject: [PATCH 01/14] iio: pressure: mprls0025pa: Kconfig allow bus
+ selection
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -45,7 +46,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20251218-mprls_cleanup-v1-14-b36a170f1a5c@subdimension.ro>
+Message-Id: <20251218-mprls_cleanup-v1-1-b36a170f1a5c@subdimension.ro>
 References: <20251218-mprls_cleanup-v1-0-b36a170f1a5c@subdimension.ro>
 In-Reply-To: <20251218-mprls_cleanup-v1-0-b36a170f1a5c@subdimension.ro>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -55,48 +56,90 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jonathan Cameron <Jonathan.Cameron@huawei.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=884;
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2108;
  i=petre.rodan@subdimension.ro; h=from:subject:message-id;
- bh=GCkK0VAT6YURJVUHsAV2cRDK2Ylk9MKA9vKPrxg8PHA=;
- b=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgpvd0o0bkFGdEFwTDlrQTBEQUFvQmRDc25wM
- k02U1dNQnl5WmlBR2xENENWM2NKb2Vzak42NlVvTWoxbWRaZ2tUCmJ5eDNJNjFHZWp2TDZaWDFz
- SDJ3RG9rQ013UUFBUW9BSFJZaEJCb2ltQncrRGJ4UXBFNmlkM1FySjZkak9rbGoKQlFKcFErQWx
- BQW9KRUhRcko2ZGpPa2xqN0xBUC9qSlRyZzQram5qR2Q3UlRLZ2YzLyt4cStTeVp3aG1PSDJDbg
- ppOW5qa1JHYStsVzVmMmRnOERwV3FBQnBaS0greVNQSGpPQVlscTVsYzlTY3IzT1dYNGQrb0Ire
- lp4TmVGdVF2CjI4RmRxVkJRZ3NseS91OTJLNy9QMWVsajU1anZ4Q2UxWm93cDlka1VrOGVkS3ZT
- ekhkVmdxSGN1NlQ0cGM4UjcKam5nOVIxWkpISiszMzNibjJtelc3d29JVDM5OVdLb0NiUXlxRkV
- TenFJT1B4cmo3WU1LWFF3OUNPeUVoNFpVTwpmZVNPUmxrYXVFM1ZXK3B1RXB6SXdRK2ZZRHMwZm
- loaDRUbDIrUnJzMHRWdVZwY1MxbDVaOXc1cjF0SVlCVXVtCjJpZWhWNFRwdm9PNDFwU3JaaGQ0T
- 0JmT3A4b0tzNm04VDlienRxcUpHZFBwQzk2akU4YmZYNnRDRVptazI3ZXoKWUZBVGI0YUhaUENY
- OXRTQ3ZRV0ZHMXRCQ01qRTMzY3plaWtyRlc0UXI0ZnBuQ2JWZDdKTDZiTVg5dXd3K0xVdwpxNGl
- SQ3dHNHNNemEvd1Jma0ZmL0tHaDQxQThUb3RKRElqWjc0MmFQNVh3QmN1d2RKdXRFU3FHbGRvem
- FmYUZXCk5ya29ETk1HN242c25BRmhmdGJuUFBHVGxhV1FKT2poa0h5VUd6a2YxWDZHVFZqZTR1N
- EczTUU5cUJwRWZmK2EKbDVQN2JTeUpVNWhQd0owKzRQQWE4VGxSRW1hZEdyNjF3NHU2M0ZtZ2VX
- UWtTSlRuaTRoSUI3MExaeGJnUVJZcAoxZlZhakpEcm9MdmhBMzRRVDRNSjRlZnZsYWh6SFZScU0
- 2WkpBYXg4OW9YbjZCbXpIQkdtU3RaekY5blFBQk9NCldNU2tMRE40Vk5rblhRPT0KPWMyT0IKLS
- 0tLS1FTkQgUEdQIE1FU1NBR0UtLS0tLQo=
+ bh=XSdGMOB3rRzh359mI12D/ax0XdyDOTtw4nPSx825r2k=;
+ b=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgprQTBEQUFvQmRDc25wMk02U1dNQnl5WmlBR
+ 2xENEF5aWJDWVBJcE9PUWNybzdVaTRGbWl4WFRCeXpMMVlESEd4CklwbGJSd0ZQejRrQ013UUFB
+ UW9BSFJZaEJCb2ltQncrRGJ4UXBFNmlkM1FySjZkak9rbGpCUUpwUStBTUFBb0oKRUhRcko2ZGp
+ Pa2xqT3VBUC9SeC9VQ0VxVWtqZkh6c1lsQkdUZ21oekQ0ekd0K2lCWWlBcEZuR0JiUk96RzQvMA
+ ptNld5ZXF5WVgwNlpjZWxsMVpzb0pPOEU4ampyODI0TXBqQVUzWWVPTC9HRXhkR0MvSm5TZmJIZ
+ TFhOFM1T3haCldjYk1oOUUrVE5DYnprR1gvTnd1RUlUUU5DOEphazgvZDl2U1BrRkcvdXhrTllm
+ ZFkyVmhUMXV4bmJCVDlDRlIKQis4UjBBdXhXeDFoT2xOYTU1c2YxZmdKN3c5NUZnNjVOd1doUXZ
+ KcjRrdHpRSHkraG1wN3NuQ0xMR05FWGZ1NQp2aHQvNHFZK2xQcURlMUdHUy90N0kzSWJwV2Z0RG
+ JLdGNpVlJ5MjYwaURTM1JQeS9ZSVdpSjRCZXk2Y1R0Y2dwCk91eHFERG5CL2xKeEVvdDg1TE9TU
+ Wp3MTNWZlhGbWRsMTJaMUx0dmFVb2pxS2hMODdDeGFWQitkVG1hK2xTMDIKdkx5VGtnc1RrYU51
+ SS9pL2hSeTJTTEFGYnBKa0Q2T1FQbFBwYTE5UEF4cnF5R0c5TUVYU0ZTcHQ2RG94ZTFjbwpIL2p
+ vTmRzT2FrbG1lanU5c25xM0JpYzEwNnpLazB3bTMvb0x2Ung2RHBhellmUTNOZy9qZmg4dE1jTl
+ I1RlZkCkg2SUlkYzI0ZGRyOXBweUhreVhSUnBTdVIzUjFJMGhXQnpJVDlmcmYwN1NtWUxNdVZQe
+ XhPTVVSWjhJRkk5L3UKYXZ0Y2VzUllOMmVTUmVUL056NnBlUXZuYjhxUGlHbUVPbkNLNTZ6S2ZQ
+ QTFIcmpNT0YvMm5UdUlNT1lDU2VmcQpSMnlOZmVpbzNKeEd5cFdBcXR1RlovZzN0aWtzdDJuODV
+ UV05uOEs0YzRSR2R5cTN1bUwxSXlxK3RkeHUKPVp5aDUKLS0tLS1FTkQgUEdQIE1FU1NBR0UtLS
+ 0tLQo=
 X-Developer-Key: i=petre.rodan@subdimension.ro; a=openpgp;
  fpr=D80A7FC176151935EC3E5FA9CF269999844E7F30
 
-Add copyright line to the core driver.
+Allow the user to select either the SPI or the i2c bus specific
+module and autoselect core if needed.
 
 Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
 ---
- drivers/iio/pressure/mprls0025pa.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/pressure/Kconfig | 34 +++++++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/iio/pressure/mprls0025pa.c b/drivers/iio/pressure/mprls0025pa.c
-index 71728f9fc498..d71b36fcc982 100644
---- a/drivers/iio/pressure/mprls0025pa.c
-+++ b/drivers/iio/pressure/mprls0025pa.c
-@@ -3,6 +3,7 @@
-  * MPRLS0025PA - Honeywell MicroPressure pressure sensor series driver
-  *
-  * Copyright (c) Andreas Klinger <ak@it-klinger.de>
-+ * Copyright (c) 2023-2025 Petre Rodan <petre.rodan@subdimension.ro>
-  *
-  * Data sheet:
-  *  https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/board-mount-pressure-sensors/micropressure-mpr-series/documents/sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index 2fe9dc90cceb..cbbbcbebf144 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -187,29 +187,33 @@ config MPL3115
+ 	  will be called mpl3115.
+ 
+ config MPRLS0025PA
+-	tristate "Honeywell MPRLS0025PA (MicroPressure sensors series)"
+-	depends on (I2C || SPI_MASTER)
+-	select MPRLS0025PA_I2C if I2C
+-	select MPRLS0025PA_SPI if SPI_MASTER
++	tristate
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+-	help
+-	  Say Y here to build support for the Honeywell MicroPressure pressure
+-	  sensor series. There are many different types with different pressure
+-	  range. These ranges can be set up in the device tree.
+-
+-	  To compile this driver as a module, choose M here: the module will be
+-	  called mprls0025pa.
+ 
+ config MPRLS0025PA_I2C
+-	tristate
+-	depends on MPRLS0025PA
++	tristate "Honeywell MPR pressure sensor series I2C driver"
+ 	depends on I2C
++	select MPRLS0025PA
++	help
++	  Say Y here to build I2C bus support for the Honeywell MicroPressure
++	  series sensor.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called mprls0025pa_i2c and you will also get mprls0025pa
++	  for the core module.
+ 
+ config MPRLS0025PA_SPI
+-	tristate
+-	depends on MPRLS0025PA
++	tristate "Honeywell MPR pressure sensor series SPI driver"
+ 	depends on SPI_MASTER
++	select MPRLS0025PA
++	help
++	  Say Y here to build SPI bus support for the Honeywell MicroPressure
++	  series sensor.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called mprls0025pa_spi and you will also get mprls0025pa
++	  for the core module.
+ 
+ config MS5611
+ 	tristate "Measurement Specialties MS5611 pressure sensor driver"
 
 -- 
 2.51.2
