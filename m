@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D22133A00C
-	for <linux-iio@vger.kernel.org>; Fri, 19 Dec 2025 15:27:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E8334321E
+	for <linux-iio@vger.kernel.org>; Fri, 19 Dec 2025 15:27:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1766158053; cv=none; b=ZJzHNbHncjti061fT+bnKKyrbOLxmWzyW4iJzrrr1D3lNbNXkM//V1USKJ3CeUE3gl7osrokTteDdqmwbFVuirRZ6q1Ze6DazYNI0miAGmaBJzGyZQUaCLct/9C9zsLoxfENLiKu+qn0/jEpbSas+n2iSCR15O61tqTvhjOno2Q=
+	t=1766158053; cv=none; b=sVbEneUtax8UdnRyiP6Bf3OMk3qlY3bJN5jE2vmybOgdOxX0o1jwhQNgsBDQjyhg4qnHPkQhy9Npk2P/AoIseKBXvWEDwpc45MIKq+BN/3+vnUXgenZ9nVG6pkAgObrpH8opKtooQNeeKkO/Vw6xsY59I6wUpE7ZV06JqEsgAW8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1766158053; c=relaxed/simple;
-	bh=7B9b4hCxFdQqUBqU1Za9w9/A3ZlUxdSGN+/kRKOVz/Q=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=pb6ExAd3pIaLINvtVbCk4K6p1gI0yMffmhJPkvlL1nX759BjrmOZliPbnunseg7qxsID2Kuf5W8GbQZzT48D+HBZsxKlgfrNcHQZTP0Tr5+L9IR1fdYrvXP+6xlhXiXIdONj20oalLjg+Hga0mAw8Ec/Io75acpFszDjsfMOBvw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=W6KE+9xL; arc=none smtp.client-ip=10.30.226.201
+	bh=kDT4GASbwzi4yQXRWZBEF6knm2Xzp3O0z7UDIsKWgPg=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=teZGyZXtfKw03I+BtBM8da6DZHFbcTNltWFF+JZhignqPNjO29O+1aPX38rBoCkWP3PK5iy3DJ865Rh0euul/8zhQ03rPl06b/xXHiSkPca9ppOWM8T8MjceGxOckEAqKOvaBEoUdk7TPzoh2j0LUubuLLfvu3ZPSKCwI/Yaflg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LZhl4p7E; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="W6KE+9xL"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1CC6CC116D0;
-	Fri, 19 Dec 2025 15:27:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LZhl4p7E"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EB293C4CEF1;
+	Fri, 19 Dec 2025 15:27:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1766158052;
-	bh=7B9b4hCxFdQqUBqU1Za9w9/A3ZlUxdSGN+/kRKOVz/Q=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=W6KE+9xLAGjTAD2QiStob0YgdHf9qbcU5KudhsJ/pvDEeFu1cR7jUUNctGk98REwM
-	 maWmKbfT4tUL/lIQJZh0uHEULEuycGLAgvNa3bEzRa1nSmXiGPazKztQQ/S0z/feHK
-	 BWCZEW46VkQvHc7ETRi9QGE38DB/6JKCQH3X40h2WncuV1iRS0bUkhzY5j+3aqLSPR
-	 fU0mD1XhZ3jdcQYtAOwvmGX4I2XcTFlAFtvAPuIxsl59sGULGVa0HP2uiG/mWGXSb5
-	 cj/IQ+ojJPqfEnxVEsBsnJbWlXO2iQXl/uGC8s9IDIZLV1UmDzErQGZ0A5YaIyg9gE
-	 YUVoo6wRpEXcQ==
+	bh=kDT4GASbwzi4yQXRWZBEF6knm2Xzp3O0z7UDIsKWgPg=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=LZhl4p7Ek/YlOYlwVt/4m44eecTstaTLES/+Kbq1YB2FIRiSiz1fhXOrhKW38MDuv
+	 i0I0AB0LJSKAgDO8nKeHywKPthKkhfLgRJqbDKmGs2rWWTj0j5jZZ2Y8T85odmbwPC
+	 aOsYbjV5jPlBC8ZOdcmJPrrH2OgGx+nBftMFKS1WVwZK91uagazYdfIalwTBpidNsL
+	 oRBz86Vmnd/hR4ig5nKb4hbmaUX+6+dxr6rkICw0d9b8IlvM/knCJevn/k1kFwo0TT
+	 RZmLUmS8CO5kNGhMUnJxVdlP+tBDHvLUoKMYhlbDQkI8zfCiiyS4XVlOWePIGnJykW
+	 yrjHgvreMzW1w==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13723D7878A;
-	Fri, 19 Dec 2025 15:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD561D78770;
+	Fri, 19 Dec 2025 15:27:31 +0000 (UTC)
 From: =?utf-8?q?Nuno_S=C3=A1_via_B4_Relay?= <devnull+nuno.sa.analog.com@kernel.org>
-Date: Fri, 19 Dec 2025 15:28:14 +0000
-Subject: [PATCH v2 3/6] iio: buffer-dma: Turn iio_dma_buffer_init() void
+Subject: [PATCH v2 0/6] iio: buffer-dma: Minor cleanups and improvements
+Date: Fri, 19 Dec 2025 15:28:11 +0000
+Message-Id: <20251219-iio-dmabuf-improvs-v2-0-caa76de6e873@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,18 +40,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-Message-Id: <20251219-iio-dmabuf-improvs-v2-3-caa76de6e873@analog.com>
-References: <20251219-iio-dmabuf-improvs-v2-0-caa76de6e873@analog.com>
-In-Reply-To: <20251219-iio-dmabuf-improvs-v2-0-caa76de6e873@analog.com>
+X-B4-Tracking: v=1; b=H4sIAAtvRWkC/22NQQ6CMBBFr0Jm7ZjpUAVceQ/DokCBSYSSVhsN4
+ e5W3Lp8L/nvrxCsFxvgkq3gbZQgbk7Ahwza0cyDRekSAxOflCKNIg67yTTPHmVavIsBKe8qzVz
+ qpjxDGi7e9vLao7c68Sjh4fx7/4jqa385pvxfLiokJKsrKlpb5MxXM5u7G46tm6Detu0DoKqoV
+ 7UAAAA=
+X-Change-ID: 20251104-iio-dmabuf-improvs-03d942284b86
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1766158092; l=2345;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1766158092; l=1574;
  i=nuno.sa@analog.com; s=20231116; h=from:subject:message-id;
- bh=i2mR17oBuj0z0WQHcCbOUfOiriuyh4DEJuWWhy3zyw0=;
- b=5vk0DRlwJYEXk6O/qk1Ym1blSy2VQzmyc27nAAePAi4VOf/m8j8M846eR9o/RRXhOFoMxyN/F
- DVWk4S0SQGmDa0v2D8sE585DHhJ5kRWwjspEffO/O+D6zvY14VHgAsV
+ bh=kDT4GASbwzi4yQXRWZBEF6knm2Xzp3O0z7UDIsKWgPg=;
+ b=Dgkk/W415qIeM6iV3WycUKrnzASz1vjIQ31Fm5DCxgOUU5e7T7Fyx7wAgn1GfJDGj2AlgMZub
+ kY9rS+7F5wjDLVkJ97zZZlQzbLVmXwg/kByzt/Vm9qkljFa1cy5XnI9
 X-Developer-Key: i=nuno.sa@analog.com; a=ed25519;
  pk=3NQwYA013OUYZsmDFBf8rmyyr5iQlxV/9H4/Df83o1E=
 X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
@@ -59,61 +61,46 @@ X-Endpoint-Received: by B4 Relay for nuno.sa@analog.com/20231116 with
 X-Original-From: =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
 Reply-To: nuno.sa@analog.com
 
-From: Nuno Sá <nuno.sa@analog.com>
+Small series with some minor improvements for IIO DMA buffers:
+ * Use lockdep instead of WARN() + mutex API;
+ * Use cleanup.h;
+ * Turn iio_dma_buffer_init() void;
+ * And I could not resist in cleaning up coding style.
 
-iio_dma_buffer_init() always return 0. Therefore there's no point in
-returning int.
+Also note that in some of the coding style cleanups I deliberately went
+above the 80 col limit as I think it otherwise hurts readability. If not
+the case for everyone, I can change it.
 
-While at it, fix a mismatch between the function declaration and definition
-regarding the struct device (dma_dev != dev).
-
-Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/buffer/industrialio-buffer-dma.c | 6 ++----
- include/linux/iio/buffer-dma.h               | 4 ++--
- 2 files changed, 4 insertions(+), 6 deletions(-)
+Changes in v2:
+- Patch 1
+  * Updated the commit subject and message (given that lockdep also WARNs()) 
+- Patch 2
+  * Slight change on the 80 column limit when allocating the block
+    (Jonathan expressed preference on that form).
+- Patch 4
+  * Updated mutex/spinlock comments according Andy feedback.
+- Link to v1: https://lore.kernel.org/r/20251203-iio-dmabuf-improvs-v1-0-0e4907ce7322@analog.com
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
-index 1f918a3e6b93..3ab1349f9ea5 100644
---- a/drivers/iio/buffer/industrialio-buffer-dma.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-@@ -820,8 +820,8 @@ EXPORT_SYMBOL_NS_GPL(iio_dma_buffer_set_length, "IIO_DMA_BUFFER");
-  * should refer to the device that will perform the DMA to ensure that
-  * allocations are done from a memory region that can be accessed by the device.
-  */
--int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
--	struct device *dev, const struct iio_dma_buffer_ops *ops)
-+void iio_dma_buffer_init(struct iio_dma_buffer_queue *queue, struct device *dev,
-+			 const struct iio_dma_buffer_ops *ops)
- {
- 	iio_buffer_init(&queue->buffer);
- 	queue->buffer.length = PAGE_SIZE;
-@@ -833,8 +833,6 @@ int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
- 
- 	mutex_init(&queue->lock);
- 	spin_lock_init(&queue->list_lock);
--
--	return 0;
- }
- EXPORT_SYMBOL_NS_GPL(iio_dma_buffer_init, "IIO_DMA_BUFFER");
- 
-diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
-index 5eb66a399002..91f678e5be71 100644
---- a/include/linux/iio/buffer-dma.h
-+++ b/include/linux/iio/buffer-dma.h
-@@ -157,8 +157,8 @@ int iio_dma_buffer_set_bytes_per_datum(struct iio_buffer *buffer, size_t bpd);
- int iio_dma_buffer_set_length(struct iio_buffer *buffer, unsigned int length);
- int iio_dma_buffer_request_update(struct iio_buffer *buffer);
- 
--int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
--	struct device *dma_dev, const struct iio_dma_buffer_ops *ops);
-+void iio_dma_buffer_init(struct iio_dma_buffer_queue *queue, struct device *dev,
-+			 const struct iio_dma_buffer_ops *ops);
- void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue);
- void iio_dma_buffer_release(struct iio_dma_buffer_queue *queue);
- 
+---
+Nuno Sá (6):
+      iio: buffer-dma: Use lockdep for locking annotations
+      iio: buffer-dma: Use the cleanup.h API
+      iio: buffer-dma: Turn iio_dma_buffer_init() void
+      iio: buffer-dma: Fix coding style complains
+      iio: buffer-dmaengine: Use the cleanup.h API
+      iio: buffer-dmaengine: Fix coding style complains
 
--- 
-2.52.0
+ drivers/iio/buffer/industrialio-buffer-dma.c       | 187 +++++++++------------
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c |  22 +--
+ include/linux/iio/buffer-dma.h                     |  20 ++-
+ 3 files changed, 97 insertions(+), 132 deletions(-)
+---
+base-commit: c5411c8b9ed1caf53604bb1a5be3f487988efc98
+change-id: 20251104-iio-dmabuf-improvs-03d942284b86
+--
+
+Thanks!
+- Nuno Sá
 
 
