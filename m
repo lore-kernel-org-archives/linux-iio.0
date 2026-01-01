@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E15172580DE;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E158627874F;
 	Thu,  1 Jan 2026 16:18:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767284293; cv=none; b=uKuPB+sTXMpJ6cWEU46mS8XPtA0XPZhPOkreZqZ646MYdIoOQ6gxwRjT0TdntGhl5xvrQKu45Slh4kCE67eK0VVt76Id1/4K6URa66F09zZtYIXbnauF1jchEmA68P1wOb3ccvYPpeUSNzq8evgwh1lJjZrubPusSkTyEjTvjPM=
+	t=1767284293; cv=none; b=ptFwNSYKOic07YybgWDl3J5zfN0dmfiVn9Hi//3vpg1CN1TJkmvAmQ5PoGHtPcmF974LH6vHUeCFEBZqyFtx/ISiGe2bAloZNhCF+yDZwNRHYDkPCgVJNFsyjnb01SktdMljj6TLnd1nTGinLxTi8KVOJeY7P3wjJIaIDnjJHDs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1767284293; c=relaxed/simple;
-	bh=uKMD+YVerNdxBNPgulQjVdLKZtk3V9JT3BlPXYGr/IM=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=aPe5Vu4XrE9JMsjqtFVmJx3DQ8h+weFJDG9ww3JHPdzVbLTIUNLdK3d6uIL5WuQFPA9RxVwprI27/S2Mt5esHHHD3RMCsmwWh83GR4AJf8CP2hVCv2kHiOPA0D7Rn3FAvJYbNjbk8WBwcrkZ3s/eKLwekDYbpQGHTbe44W+gZyo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NripT5A5; arc=none smtp.client-ip=10.30.226.201
+	bh=4MeX26Uz9CqThCeP7n61Cdxs3/XzsdN1BSOCj4rcVlM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=HkyiJcWShPc3W6q3q0plIYD23M1UUv2IHfpkGPRIGLd60DLJX4KxoHY9LzhnueLMInoEqjuAToiTLxPpLFlXHNKR33g2ie6i5iwk0NsmLgsSD/r/pubMk2X8Y++PGi56ZKdfY2+B0DV4pRMCoFxA6AlEkGH4zupgRNhegsukWxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IDlf11c+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NripT5A5"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 57868C4CEF7;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IDlf11c+"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 79678C19422;
 	Thu,  1 Jan 2026 16:18:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1767284292;
-	bh=uKMD+YVerNdxBNPgulQjVdLKZtk3V9JT3BlPXYGr/IM=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=NripT5A5OiQXwG901sjdHBgdv/lMgAjxc074gYhOOKj+MfH1oAyLO2v1LjUc5StsL
-	 yj9HHQkIV9zV2EJ8KSmrITE/MklozaD2TmQfzKX+jmNXQuUFydczV4293U20fMOniK
-	 K4vZ2HlWplvsE7qLxMFuz+Yvp+rtmtX8e0rzSsPmuj5flsSLAsR8QlqoYwEf8E0VL3
-	 3jjAGtRzyBaANAHb9CacEdBoRgUIvEFoBBtTpn2FGBDYQEG3mPQn4vnIW4J4+kzxSm
-	 NMNr+PCSJqNuTrDcN2iYfj5IwwQpn/W8UuPjK+3wmBZPT5BZQt+LlTlJMr1g33X6Et
-	 SC2E/B23maQhg==
+	bh=4MeX26Uz9CqThCeP7n61Cdxs3/XzsdN1BSOCj4rcVlM=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=IDlf11c+jTWfjwztVYkpaDmnRaFKns8LIl1ZbVhuDq+jOYrbuSteUvBPCcOBH65fU
+	 oJwkaLikHEx6N46+FTfa1pzvukx802Z/JsSLjorvMXF+IBEgzLF1joBharH53BZ177
+	 ylQYX2miEFLnTxtKGGB7G2GD6Pd3+VWPs3qyldn9kCxci6lIMLgMJaW6PRbkE3QjS0
+	 xYFjLhYus52Zfl+0t+TLHInbYey4xavwlcEO/pgJcHo1VNWejjY/ikjgmBM9miQUHB
+	 6IJwT0cExfKULQYjnAf2Wu7u4mr2tAC7QEg+AdjhjR3AypFV1Beb5+b192ru6T1U3l
+	 3a8B7g6yy0J2g==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43003EED615;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CBF4EED60F;
 	Thu,  1 Jan 2026 16:18:12 +0000 (UTC)
 From: Shrikant Raskar via B4 Relay <devnull+raskar.shree97.gmail.com@kernel.org>
-Subject: [PATCH v4 0/4] iio: proximity: Add interrupt support for RFD77402
-Date: Thu, 01 Jan 2026 21:47:37 +0530
-Message-Id: <20260101-b4-rfd77402_irq-v4-0-42cd54359e9f@gmail.com>
+Date: Thu, 01 Jan 2026 21:47:40 +0530
+Subject: [PATCH v4 3/4] iio: proximity: rfd77402: Use kernel helper for
+ result polling
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,10 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIACGeVmkC/x3MTQqAIBBA4avErBMmlYSuEhGaY82mnxEiCO+et
- PwW772QSZgyDM0LQjdnPvYK2zawbH5fSXGsBo26xw47FaySFJ2zqGeWS5kYfR980sYh1OoUSvz
- 8x3Eq5QNLQss4YQAAAA==
-X-Change-ID: 20260101-b4-rfd77402_irq-3dda6baf2370
+Message-Id: <20260101-b4-rfd77402_irq-v4-3-42cd54359e9f@gmail.com>
+References: <20260101-b4-rfd77402_irq-v4-0-42cd54359e9f@gmail.com>
+In-Reply-To: <20260101-b4-rfd77402_irq-v4-0-42cd54359e9f@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -52,14 +52,13 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>
 Cc: raskar.shree97@gmail.com, skhan@linuxfoundation.org, 
  david.hunter.linux@gmail.com, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1767284290; l=2057;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1767284290; l=1779;
  i=raskar.shree97@gmail.com; s=20260101; h=from:subject:message-id;
- bh=uKMD+YVerNdxBNPgulQjVdLKZtk3V9JT3BlPXYGr/IM=;
- b=QeBOXo7QsqTkrTgk2V4poG9kBTJvzCdU4jyE/bmrqDdzRTYLWqw/gnH3IbgI2UydC8unw7f3Q
- Dv/AMHop7ULBrKzR938Qp6AvVvcA06b0/BSEMhAHe7IYkeds5umHHst
+ bh=LS/GSeSQrtkZGeuXrepvOA1K2RRvlQ1qjhZCkwokVvE=;
+ b=C+NrC31Xzpph97j24fL29MGZ28F+Z2CvCubZfv7JLjNSG9Ci3juEc5vysFpIQLqcfPxmMljCG
+ SFWfDAnHZkkBuN+smeYYMuOxwmAFeLN6ib8bO9ZMQXWWhlTvc8u3j/g
 X-Developer-Key: i=raskar.shree97@gmail.com; a=ed25519;
  pk=4m2wXDvY0vlXefvRRzawNcNAif88Cy4XvbLkU6iMG/Y=
 X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
@@ -67,55 +66,68 @@ X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
 X-Original-From: Shrikant Raskar <raskar.shree97@gmail.com>
 Reply-To: raskar.shree97@gmail.com
 
-This patch series adds:
- - Add RF Digital vendor prefix
- - YAML binding for RFD77402
- - Add OF device ID for enumeration via DT
- - Use kernel helper for result polling
- - Interrupt handling support
+From: Shrikant Raskar <raskar.shree97@gmail.com>
 
-These changes enable DT-based configuration and event-driven
-operation for the RFD77402 Time-of-Flight sensor.
-
-Changelog:
-- Resend the patch series as v4 since not all patches were delivered
-in v3 due to SMTP daily sending limits.
-- Add 'Reviewed-by' tag to dt-binding patch.
-- Update commit message in OF device ID patch.
-- Update commit message in the third patch.
-- Replace rfd77402_result_polling() with read_poll_timeout().
-- Add 'struct rfd77402_data' details in kernel-doc format.
-- Arrange includes in order.
-- Add comment for completion timeout value.
-- Remove blank lines.
-- Indent the comments to code.
-- Convert mutex_init() to devm_mutex_init().
-- Remove 'IRQF_TRIGGER_FALLING' flag from devm_request_threaded_irq().
-- Drop the duplicate message.
-- Replace 'dev_info' with 'dev_dbg()'.
-- Update 'dev_id' to 'pdata' in rfd77402_interrupt_handler().
-- Drop 'interrupt mode' comment
-- Use 'if(ret)' instead of 'if(ret < 0) for consistency.
-- Use 'return i2c_smbus_write_byte_data()' in 'rfd77402_config_irq'.
+Replace the manually written polling loop with read_poll_timeout(),
+the kernel's standard helper for waiting on hardware status.
+This makes the code easier to read and avoids repeating the same
+polling code in the driver.
 
 Signed-off-by: Shrikant Raskar <raskar.shree97@gmail.com>
 ---
-Shrikant Raskar (4):
-      dt-bindings: iio: proximity: Add RF Digital RFD77402 ToF sensor
-      iio: proximity: rfd77402: Add OF device ID for enumeration via DT
-      iio: proximity: rfd77402: Use kernel helper for result polling
-      iio: proximity: rfd77402: Add interrupt handling support
+ drivers/iio/proximity/rfd77402.c | 22 +++++++++-------------
+ 1 file changed, 9 insertions(+), 13 deletions(-)
 
- .../bindings/iio/proximity/rfdigital,rfd77402.yaml |  53 ++++++++
- .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
- drivers/iio/proximity/rfd77402.c                   | 149 ++++++++++++++++++---
- 3 files changed, 183 insertions(+), 21 deletions(-)
----
-base-commit: d8ba32c5a460837a5f0b9619dac99fafb6faef07
-change-id: 20260101-b4-rfd77402_irq-3dda6baf2370
+diff --git a/drivers/iio/proximity/rfd77402.c b/drivers/iio/proximity/rfd77402.c
+index 3262af6f6882..496c1412ebf8 100644
+--- a/drivers/iio/proximity/rfd77402.c
++++ b/drivers/iio/proximity/rfd77402.c
+@@ -13,6 +13,7 @@
+ #include <linux/module.h>
+ #include <linux/i2c.h>
+ #include <linux/delay.h>
++#include <linux/iopoll.h>
+ 
+ #include <linux/iio/iio.h>
+ 
+@@ -113,7 +114,6 @@ static int rfd77402_set_state(struct i2c_client *client, u8 state, u16 check)
+ static int rfd77402_measure(struct i2c_client *client)
+ {
+ 	int ret;
+-	int tries = 10;
+ 
+ 	ret = rfd77402_set_state(client, RFD77402_CMD_MCPU_ON,
+ 				 RFD77402_STATUS_MCPU_ON);
+@@ -126,19 +126,15 @@ static int rfd77402_measure(struct i2c_client *client)
+ 	if (ret < 0)
+ 		goto err;
+ 
+-	while (tries-- > 0) {
+-		ret = i2c_smbus_read_byte_data(client, RFD77402_ICSR);
+-		if (ret < 0)
+-			goto err;
+-		if (ret & RFD77402_ICSR_RESULT)
+-			break;
+-		msleep(20);
+-	}
+-
+-	if (tries < 0) {
+-		ret = -ETIMEDOUT;
++	/* Poll ICSR until RESULT bit is set */
++	ret = read_poll_timeout(i2c_smbus_read_byte_data, ret,
++				ret & RFD77402_ICSR_RESULT,
++				10000,    /* sleep: 10ms */
++				100000,   /* timeout: 100ms */
++				false,
++				client, RFD77402_ICSR);
++	if (ret < 0)
+ 		goto err;
+-	}
+ 
+ 	ret = i2c_smbus_read_word_data(client, RFD77402_RESULT_R);
+ 	if (ret < 0)
 
-Best regards,
 -- 
-Shrikant Raskar <raskar.shree97@gmail.com>
+2.43.0
 
 
