@@ -1,62 +1,64 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-ej1-f42.google.com (mail-ej1-f42.google.com [209.85.218.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0388B346786
-	for <linux-iio@vger.kernel.org>; Tue,  6 Jan 2026 19:36:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01460346796
+	for <linux-iio@vger.kernel.org>; Tue,  6 Jan 2026 19:36:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767728193; cv=none; b=ticGiP94j9flIHKWD/huwxd74RoR7l2z+lppyobiiuXgQEyO46XbmNDXts490z+bTiA9n5hgaV4fYx9uo0qqtT4btmdTuSRFgNqGqc9v9M+CqvSPap+2mmH/AoM3QypVucjAAmsfMVbTHp5w7XRG197WUMN19ImsEA0E74teMw0=
+	t=1767728195; cv=none; b=dOBXIIwSGNc5BiipZUPnUCKgY1tFbgSmzQeZv8polr3Yn6AtsygSfxQmlvQIJbGG6IFgychmmaExbg815smLwsatl/c7IKaGWBz9MBKcVy9ejn2cJxQcWlDwREJD/sia6LVET7eWRG6XJkTwEdeltcFx68YVycx6xA2MpXCe558=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767728193; c=relaxed/simple;
-	bh=zG1q1v7IQN9l4S7nJiZB81g2uvy2p2fCMgyQXRbuukw=;
-	h=From:To:Subject:Date:Message-Id:MIME-Version; b=nijpDJAen2PCeuIQy597mbHPzLRBsoarbp7r/2ZjKipe0tbeEEJ2LMwKApRq69ICdRjwU2+nW4IVfpRRQicuv24xPNd1Th6/fJszfWOiti/7r2NXtkwdzaCdrGwNyFRDQZJvtM/+myG3YzB6Kc5KA7LKSXdOGfEky/cie64fIYk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Uh2PMGCc; arc=none smtp.client-ip=209.85.208.52
+	s=arc-20240116; t=1767728195; c=relaxed/simple;
+	bh=Hv+4Td7imHc66YvbfhKCd05nmjS6AFCfOJi3FGBPJHk=;
+	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=cV2XNuZVs/pno7Bl8ua8KW99GEBv9LgeuPoHSJ+h8dNXtOr3q7IscocnrxhzHNG7dtR5x3Sq5TUop5KLjJ1aQOr0F/wsaBMV7oEeXF6nEu0jgokjc9ugKC2MC38YQizcSFkzexGMeVEb5mZdB2frdJrN3okdg4xhdsZyucIO84Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Er+Ha+Tl; arc=none smtp.client-ip=209.85.218.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Uh2PMGCc"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-64baaa754c6so1781099a12.3
-        for <linux-iio@vger.kernel.org>; Tue, 06 Jan 2026 11:36:30 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Er+Ha+Tl"
+Received: by mail-ej1-f42.google.com with SMTP id a640c23a62f3a-b7277324054so241013966b.0
+        for <linux-iio@vger.kernel.org>; Tue, 06 Jan 2026 11:36:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1767728189; x=1768332989; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:from:to:cc:subject:date:message-id:reply-to;
-        bh=bFyVzL7C6M6CDHXuEKasBffJkzf3DPHBWHoIdtXmcFI=;
-        b=Uh2PMGCc3Qis84h/EPExgZFhmemoYIGMLIJPo1TUkOIx6TozWQcWkoNAu6qm0uMPNA
-         VuC9/GsGdvg0KOvOwgSVYiA7Lgx6l2xJ+/lHN0X9bVViEdI4SbXlVSVCoG0LJKs6WzT5
-         z3DalKtVjv3+FLQ/bDvFXoiIU1T0p92DkmS9dDORnehdgmOeTs21QH3vcWWyI8grDyxj
-         2ISUOOyAOizymbDeFfkkarsXvExkW31BhxsDGuG64byQkmnSVZXFgWZQUlvlvonXnziN
-         945plXo1DcKOhxatfIrz6vLpiMPDeYLJ+LcSz422ygPzyddzcyKmLzNILaLG/GTU4K42
-         2tmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767728189; x=1768332989;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:to
-         :from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1767728191; x=1768332991; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=bFyVzL7C6M6CDHXuEKasBffJkzf3DPHBWHoIdtXmcFI=;
-        b=avXG3AUtT9fX25FRI3w82wCGWDizden0gdP2siAWzXPXr8d3kFFyc9leXAinIAORKo
-         kLpNOV3d91H4Q4USIE/GzIq4uY9+gwBcHKZEtb+9BGUpD/74hb0QwIziCJmdHKb03/6X
-         Me5DMwCSUHu3I2C04B0WuksAPdFMAXdjD1oKlVZ4VFL/2uQcGFy6TpEYKLIbPNnTDI/c
-         MILZ30vMkhwRnSrGwP1VcbpYk+3jWJsJvZPsrY6S/I8RxRFMq1VEYjX/JfxeOHLfKc/U
-         3KrOeVkRGaVCK2bnBjXpw6b/e5saypF1OcvbNUwlXTIF0T92ONwsIE9qUTGNIBPnKpFk
-         ZSag==
-X-Forwarded-Encrypted: i=1; AJvYcCWvBF/R5ZEDUWeErL+95gSlsW0wz4Lh3OgS0OkqQH7QxXExXNQPmv3adGOF1zuzCnmZGN7EblEes7U=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyeWcR32uccoRBjx7LXWGwcDyweDrXjlzbIJkIKWh3zt6a5gy0Q
-	YJGvUfR/cte+5DMt3PoZ922wDHQY2lOYsy8qwCHeDBPnu91sQ6zPSTLZ2Ohr46Z9iPI=
-X-Gm-Gg: AY/fxX427Nh4gxdD3JJvFxyrsvGtZwEofe/vhDWu70f4VI3iy9uQ1SfZ4ofmwJoIeJO
-	W43nJbUUoUOpYEcNbIvNdWvEFZHIYtQz7FeGNnq3rGZ8gYD0Bx93D227yc+bvrzr+Q5WxsXFEfv
-	/P/z0uhe8HgabBTTyt50+jwuy7mpdcY4U/SSDiCjwRPS/ncLonY71N/1uuRL1w5ylG6YyY5PZuS
-	GS4hgHA8NIJ03O9EruAJhrbqVZd5/+YfdM+xcvAKJOkF1U1XrALSXYYsSvngF3pN5c20vRpkG7s
-	iqEqHuJmBhhXRdIZoOpY6nEsV2p9Nm8pz4pId5dicYFFYZI1tMoDQyMb1TkUoXGy/hLIZOcZQjN
-	T2lRQZKTRAPwSHU34QlM9qkVj20XuzY7KHFVbSWlpJ879M75No2OV1cj9wUfBCJCJwuRgj1dwff
-	Q4KFUubxcV+59wOQFqCeWJCAA6Nzcmzwn2WcKbQVXA7w==
-X-Google-Smtp-Source: AGHT+IEQwXkC4rY9AODpwuc6LwbEXaiZvIFxNYWi2PF2HMmffG4XB8GWu3QxJdRKABaCjjqSwGmuIg==
-X-Received: by 2002:a17:907:6e93:b0:b83:c7ff:a47c with SMTP id a640c23a62f3a-b844523333emr22972466b.17.1767728189166;
-        Tue, 06 Jan 2026 11:36:29 -0800 (PST)
+        bh=fIsy4zlRCSb3g+IcnxxPTLfEgVdaWceO+4E7k1hxNNo=;
+        b=Er+Ha+Tlojob9s9XC5br9NWpvRdnk2YnuwWg1t9KDOpOrudDEELpMgQk5vgdGLQ71U
+         aIYzfREKIvnDkElHraFxfpiC2MZED1379NGYJEaTN1SWLGdsy+GQXEoFM45N6QheGpS7
+         mhqDrtCw2dcqb+2Z3p5WP+QJc4Ca8d0NT8OO7JaF4wkjJJM3XAtQnmdCv2pMtluBv/mf
+         XAzS02/MMmLwWUiZ6qtdCvTzQroxRO5A7kYo+S7kwQg3xyqG24kSie0nQPwIcGZ4XfdA
+         +7N66fH8OVgCZuQgi6qX55nXmPdHr0fxgXCQ0B3W2DS5Nl72CHnslXBUV+XGpPrdUPTX
+         rUJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1767728191; x=1768332991;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=fIsy4zlRCSb3g+IcnxxPTLfEgVdaWceO+4E7k1hxNNo=;
+        b=iCsl4pNNt15BKOx5AR8GhNelY6HDx9e0bDeJWWgd+5qFC2O1SON5i48XoLwH/dSowi
+         q0/vzFc7T+NVhMeD95dtQj03JDycVm/vaa/kahvDmDulZa8MMMKnCVsaSO89FlW4NbP+
+         II+wMIh8zOEHvodD9+TovUcl3r+5jpj+j8SvYXzM/Dt8VfksKQuRUN0pvFtLX/lA4uJE
+         cCA9mU+QI4Fg1WSkWVJgJ/uJ9aXybB1vna2AjkK3c7NDTmRLTJ6QZtG5cJ7xBBdC9tO5
+         oF9lh4qpTm3qtXuSkmAwGP+MhFmpKwdegvToP3OMumdcilB5iiPq8EkIz7KdItPUiI+7
+         4d4w==
+X-Forwarded-Encrypted: i=1; AJvYcCVuR0cBjEgmU8TjI+FSX59vghnCO4vlLAiliKn8RT1veFCDhv7VQYqSJcALZU1Yrh2COm861K2NQhg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwawwdHJ5aGoyM2wqQcDpaJX9H+tdh2+Kk+bc2J/H6wEWUvbOUk
+	Wys23vThvxqt7ONpSrWJPYRGa0zBogGpCGVuD4GK/dtfkr81vUkxWg48gCJA9muWO4g=
+X-Gm-Gg: AY/fxX69BC9EcF+7NJFaIWVuwcDF6stylwebIaLJQk+++E8F6HVCCWHKPbY8VWVFJqJ
+	s4BN2gZ9vBGzHdC9I1GB3K1kaPXxTXcrhrgTt6WBZjV/3LHhIt3AgU2eG9xIJ1oy/QWcykAV31L
+	nSq5tD0Wwf+ozgAytLyVmW3Qht7koNv5QRjvCSWUdEVZYy6qd+uJxPKcaEhBYf1A+9WCXjNzK7f
+	oxZGLDThpr/BrelHJe7iWhK+62nud894dVVBJVu8wMn7kn/9EhtsDrY+IVPA/2XhBuId5h1lUlE
+	g61eCTn25lziom/RM8g/vXMkyF8aOfPEsMwKwl6RC1uZBj+d0WLyDwPrI9qpVQa/rb2QNbqWW9o
+	VOxdMeTrAbZjMI/VZA7eqvm73Q3qzaW9D1NiZsOAX9BXkFXDSOLvnD+yst8m4Ozql+ggK0woccH
+	AVPyNppPTuyskbFGIC3ItKAeUo9iGDh7eDdn6B16kh0w==
+X-Google-Smtp-Source: AGHT+IGHslxzKv8h3YydnagEsr9OTmsVNjwXar8tIg+Hw3tJSVZ8OjYLZtqr3XlA6LOtw/xV5bqxKw==
+X-Received: by 2002:a17:907:6e93:b0:b83:ee0d:e03d with SMTP id a640c23a62f3a-b84451bd516mr21119266b.19.1767728191386;
+        Tue, 06 Jan 2026 11:36:31 -0800 (PST)
 Received: from localhost (mob-176-245-131-134.net.vodafone.it. [176.245.131.134])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b842a4cfe60sm295756466b.45.2026.01.06.11.36.28
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b842a4cfe60sm295763366b.45.2026.01.06.11.36.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jan 2026 11:36:28 -0800 (PST)
+        Tue, 06 Jan 2026 11:36:31 -0800 (PST)
 From: Francesco Lavra <flavra@baylibre.com>
 To: Ramona Gradinariu <ramona.gradinariu@analog.com>,
 	Antoniu Miclaus <antoniu.miclaus@analog.com>,
@@ -68,33 +70,57 @@ To: Ramona Gradinariu <ramona.gradinariu@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] accel: adxl380: improve data reading from FIFO
-Date: Tue,  6 Jan 2026 20:36:25 +0100
-Message-Id: <20260106193627.3989930-1-flavra@baylibre.com>
+Subject: [PATCH 2/2] iio: accel: adxl380: Optimize reading of FIFO entries in interrupt handler
+Date: Tue,  6 Jan 2026 20:36:27 +0100
+Message-Id: <20260106193627.3989930-3-flavra@baylibre.com>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20260106193627.3989930-1-flavra@baylibre.com>
+References: <20260106193627.3989930-1-flavra@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=514; i=flavra@baylibre.com; h=from:subject; bh=zG1q1v7IQN9l4S7nJiZB81g2uvy2p2fCMgyQXRbuukw=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpXWPOJjw0pAPkoTXnksj+HM3TzyX4EC40t70NW hasOoNtHR2JAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaV1jzgAKCRDt8TtzzpQ2 XxVKDACKkaTatBirFEpRlc+bUaBc4FllfjTZZxPTWgYXOeCcxHZMwi5hTD23eDo9Wu6+Ri5jS2n IH/JYkWIKaMQD4Z8EB4/ZP3RE2vFoSyJtuyfu9nQgtkKQ1KndQv4UhkYoFvPhaRzIjOLHFwRMSP ho0AfmH/mC2dbNAhbs2Va5ffk3HJNInRddtcqGwlwPNRyoZ5h6ugYjBJMbwEvvxQvXpqbbYzez+ GVu10tQKs5yz6r/041awkl10KpynBx4/pupDisvABhGGsVr6QyGeQOwYMajv0dj3pf6l+SGqJvX LCkJo6kzBblYH+QKNZN9Klu7Fc6AiDAThAcKz/5Coug3GLwmN+hqUVlkal0aC4nzfOjy7CeY2nj IHSWK4aMBNcMIrCyqjwGhlhS1BBevSjzqDKxdTYjuOxgKPfIJZPwQ33/FY0/xMohyoFRqHQvxjd 5JEnPLtsbpeLLJYhu7PxhcWgfCUzZ42HUSky5t01fCWh0TtS5Hdk/06ybnvIgBdX74wlQ=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1312; i=flavra@baylibre.com; h=from:subject; bh=Hv+4Td7imHc66YvbfhKCd05nmjS6AFCfOJi3FGBPJHk=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpXWPSYNm/sCZ9PlbzOgzKR/J/Va7BlVRGafiJd saURpEKC3SJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaV1j0gAKCRDt8TtzzpQ2 XxlPDACiqss/sHDs48h4kpmUERyNxijtJvnCjBHO33SfXSAs7jjEWrMrKHS9ITWFXoZJjGOI4AG sVALL9CguQQfN2MGEM/TgU0zl9stW2EYuQtzRW/pOVZQMFe4YKciuOFApFT0GEgZ0OjE1Qh393c bryd6QLemeKFUEr+EF0Jm1k1vBerexWSyO3wBEdUPVpAYUuXgInt7wlOPJxLQyhtsrkJSVW/qGm bN4NDm8c8kgAVcQnXTB1rSy5XNBsV+namcukcFp/GXniX0XGJPj2wa2yI+K5p4eKMXIVneVDVSn ot2zTckodOO/PYvhMwIMz+UwpVRhc8xHvA4FSf1Cc9QSe78AhciT602i2JYN4pqCsrqJxkphR90 5xbb75uGInjlSsW+6kv7bnBJB56zol1s3mqNH8sdT7g2NekHAkC5Xqf5vcFs9NpgLY2qaDQjTOC RkgQxQq2uFySwfhTvoNhGZOB6ufhw5MaS8d4lv2nUqarFlWMBrJrASUZ8ciRcPtuhUcnY=
 X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
 Content-Transfer-Encoding: 8bit
 
-Patch 1 fixes a bug that might cause the adxl380 interrupt handler
-to read from the sensor FIFO more entries than actually present.
-Patch 2 optimizes transfer of FIFO data by minimizing transport protocol
-overhead.
+In order to minimize the time required for transferring FIFO data from the
+sensor to the host machine, perform the read from the FIFO in a single call
+to regmap_bulk_read().
+This allows reading acceleration data for all 3 axes at 16 kHz
+sampling frequency using a 1MHz I2C bus frequency.
 
-Francesco Lavra (2):
-  iio: accel: adxl380: Avoid reading more entries than present in FIFO
-  iio: accel: adxl380: Optimize reading of FIFO entries in interrupt
-    handler
+Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+---
+ drivers/iio/accel/adxl380.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
- drivers/iio/accel/adxl380.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/iio/accel/adxl380.c b/drivers/iio/accel/adxl380.c
+index 9f6c0e02575a..ce3643c5deb8 100644
+--- a/drivers/iio/accel/adxl380.c
++++ b/drivers/iio/accel/adxl380.c
+@@ -950,14 +950,12 @@ static irqreturn_t adxl380_irq_handler(int irq, void  *p)
+ 		return IRQ_HANDLED;
+ 
+ 	fifo_entries = rounddown(fifo_entries, st->fifo_set_size);
+-	for (i = 0; i < fifo_entries; i += st->fifo_set_size) {
+-		ret = regmap_noinc_read(st->regmap, ADXL380_FIFO_DATA,
+-					&st->fifo_buf[i],
+-					2 * st->fifo_set_size);
+-		if (ret)
+-			return IRQ_HANDLED;
++	ret = regmap_noinc_read(st->regmap, ADXL380_FIFO_DATA,
++				&st->fifo_buf, 2 * fifo_entries);
++	if (ret)
++		return IRQ_HANDLED;
++	for (i = 0; i < fifo_entries; i += st->fifo_set_size)
+ 		iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
+-	}
+ 
+ 	return IRQ_HANDLED;
+ }
 -- 
 2.39.5
 
