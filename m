@@ -1,61 +1,59 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4F4C37C119;
-	Wed,  7 Jan 2026 16:22:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68961338F40;
+	Wed,  7 Jan 2026 21:04:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767802966; cv=none; b=hDBmOmsVlcMc7ganAqHJeiH4nfoYqPyGVCOry7HpUbC2a7AhPGiZo16g/31dqZI6NoYvj7PkDzgqSU0tEXPSfY/gElkwU9SsTwdh+DwDC/QeBh46yU7hrAbzr9YalbzaU3qBNZmS5eymD3kIEYuHe3CbuJEk2T1N+uxA3B2CUB0=
+	t=1767819900; cv=none; b=sZorK4mwc7sPZ4g+9K+wzm5f0gmZ6UfnPv6Ldr/Ht3ed7r1D2bRAzYztiAwDO2Trw87i/gqVM0G45WihXJOnBUCX/n6Kgq9sgvbCd+lSxSxVN4HsLysEd8i0uL0OyAov0eR3VHEjg/5q9AiDFSd0kVPJh6p1kL/6g1O/mbE/iGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767802966; c=relaxed/simple;
-	bh=jq0QEywoTnzpVD2zdLE2JdG+q/baB33yw7lWGEVqPoI=;
+	s=arc-20240116; t=1767819900; c=relaxed/simple;
+	bh=B49lYPR21dBOlhf27eCzjOyf3dFDv8GA6LKS41ILDnU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qGZ6ajhhtxaCGYQ4dVVEVxLu4VNyL8NKLZTbvd7jGIcL7X8FIimvpgj7ilKRTLCQYah2msf7Bs6zAVqIEI1G1XQV0cObcAVZrp1igHQZuLIkWIOfKTsGis2riuZHYj7/+f6bX6TEZlZMEamfEaVuHUOuU1OG9vtmZPcy57o+GuU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EyZ3d3Nl; arc=none smtp.client-ip=198.175.65.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=t1OoOIRsRdF+GstZfgk2O8MPLx+zr0Ox26GF6pQFX9wKlgwiyhlsJitgGD0g5EOIrNmTJoyiF2B9sWK9mYeVdT23xBuSNPs1Rx6hDvpechBEZFLliA67ixNw+reFjjn6Qy+E7x3uduGCl+S4YRBHMIhxpquJ+Ml2zZ5pah2yMH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ITi58j5Q; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EyZ3d3Nl"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ITi58j5Q"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1767802955; x=1799338955;
+  t=1767819898; x=1799355898;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=jq0QEywoTnzpVD2zdLE2JdG+q/baB33yw7lWGEVqPoI=;
-  b=EyZ3d3NlkrU3NfB0PL/Ft+CzDGLk02sjqMl/Gdd45He3KxMohYrqkYzN
-   38fDUlMXwoIyGIJr3tzQfwqi4f+fJdjt35H7iTtN1jXwOLtiZb9x766Ij
-   kkb1+Q3g4Uftr1feqZmcb+THUUVPXeMEJ8ta82DSr/JIbUv4MmWOtOsRL
-   +KHxQxIiCt7ZUe840pWKxAH6H1XFXD4bIkdBKraOaXRaNBNLe1Ibk6E5N
-   ZUxQ7RvK+GkS9McYlQppB76g0fg0FapDS5qht01t26XsJWKg0pQi821cX
-   nppqoX/kQGmx33XdGY9t84SS6a+HXFGnrPyLghi7wHBorF8TBen86FCxw
-   Q==;
-X-CSE-ConnectionGUID: tXHAnheySWSQjb8cCT/NCw==
-X-CSE-MsgGUID: B6cSSCVzR/2NCjRp+NwmIQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11664"; a="86592549"
-X-IronPort-AV: E=Sophos;i="6.21,208,1763452800"; 
-   d="scan'208";a="86592549"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2026 08:22:29 -0800
-X-CSE-ConnectionGUID: RP5w7t7WSsGmOLpz6X5W8w==
-X-CSE-MsgGUID: OcEnbIIuQ9OMzuB4HNKMtA==
+  bh=B49lYPR21dBOlhf27eCzjOyf3dFDv8GA6LKS41ILDnU=;
+  b=ITi58j5QezDOvCTL5bIMRRhUf63wzJGxxL33OlUKCbG1XoraI2XlR/eo
+   6HHe9RmPmmhLucpIpSKskRfV82u4wI2SI3VrBDwdxPatpflWRDJ30qpzN
+   xxHt1CAcBZazPN8gqviGRAFxsub/XsUmMoCi2pcurgYD+MT1YxB19Cm0w
+   DlETwaU6lnGeS127TRDKTVo4bv58NkQqidomnE9bDLNZLex0JL+IKhEH8
+   J6Ig+bw3BUMJLWh4WTJwUPid4nqPEc5/24Js5CM82eb2/FeKtKk//nfgd
+   wqBVjzjJAuIFU/AoO9uSsi/sCEosMzZkJm1sHnsE4Vu4gDBM76sL7XxYY
+   w==;
+X-CSE-ConnectionGUID: qzL4tVFHQc2rePEtqKKkxA==
+X-CSE-MsgGUID: LfKSRts/QgO46jyos3fdOg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11664"; a="80650255"
+X-IronPort-AV: E=Sophos;i="6.21,209,1763452800"; 
+   d="scan'208";a="80650255"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2026 13:04:57 -0800
+X-CSE-ConnectionGUID: +xQXAbXdQdecu/iDuwVhZg==
+X-CSE-MsgGUID: j2NqLM2IQHewWoDb9SG4Cg==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,208,1763452800"; 
-   d="scan'208";a="202746645"
+X-IronPort-AV: E=Sophos;i="6.21,209,1763452800"; 
+   d="scan'208";a="203077811"
 Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.168])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2026 08:22:27 -0800
-Date: Wed, 7 Jan 2026 18:22:23 +0200
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2026 13:04:56 -0800
+Date: Wed, 7 Jan 2026 23:04:53 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
-	andy@kernel.org, Michael.Hennerich@analog.com, robh@kernel.org,
-	krzk+dt@kernel.org, conor+dt@kernel.org, tomas.melin@vaisala.com,
-	marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v4 2/2] iio: adc: Initial support for AD4134
-Message-ID: <aV6IP3T3Q3z3aTVa@smile.fi.intel.com>
-References: <cover.1767795849.git.marcelo.schmitt@analog.com>
- <6ae8e203f6fb6e9718271132bd35daef790ab574.1767795849.git.marcelo.schmitt@analog.com>
+To: "Derek J. Clark" <derekjohn.clark@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Alex Lanzano <lanzano.alex@gmail.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: bmi270_i2c: Add MODULE_DEVICE_TABLE for BMI260/270
+Message-ID: <aV7KdXkQkI5XsoF3@smile.fi.intel.com>
+References: <20260106054519.566796-1-derekjohn.clark@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,55 +62,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <6ae8e203f6fb6e9718271132bd35daef790ab574.1767795849.git.marcelo.schmitt@analog.com>
+In-Reply-To: <20260106054519.566796-1-derekjohn.clark@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jan 07, 2026 at 11:47:59AM -0300, Marcelo Schmitt wrote:
-> AD4134 is a 24-bit, 4-channel, simultaneous sampling, precision
-> analog-to-digital converter (ADC). The device can be managed through SPI or
-> direct control of pin logical levels (pin control mode). The AD4134 design
-> also features a dedicated bus for ADC sample data output. Though, this
-> initial driver for AD4134 only supports usual SPI connections.
+On Tue, Jan 06, 2026 at 05:45:19AM +0000, Derek J. Clark wrote:
+> Currently BMI260 & BMI270 devices do not automatically load this
+> driver. To fix this, add missing MODULE_DEVICE_TABLE for the i2c,
+> acpi, and of device tables so the driver will load when the hardware
+> is detected.
 > 
-> Add basic support for AD4134 that enables single-shot ADC sample read.
+> Tested on my OneXPlayer F1 Pro.
 
-I have been on a few weeks leave and do not remember much, but it looks like
-this version has all my previous comments being addressed.
-
+No objections,
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
-...
-
-> +#include <linux/array_size.h>
-> +#include <linux/bitfield.h>
-
-> +#include <linux/bitops.h>
-
-> +#include <linux/bits.h>
-
-No need, as bitops.h implies (and guarantees) that BIT()/GENMASK() are provided
-with it.
-
-> +#include <linux/clk.h>
-> +#include <linux/crc8.h>
-> +#include <linux/delay.h>
-> +#include <linux/dev_printk.h>
-> +#include <linux/err.h>
-> +#include <linux/export.h>
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/types.h>
-> +#include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/reset.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/time.h>
-> +#include <linux/types.h>
-> +#include <linux/unaligned.h>
-> +#include <linux/units.h>
 
 -- 
 With Best Regards,
