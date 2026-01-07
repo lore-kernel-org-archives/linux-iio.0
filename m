@@ -1,58 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80999392B77;
-	Wed,  7 Jan 2026 15:29:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABE14335567;
+	Wed,  7 Jan 2026 15:30:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767799759; cv=none; b=rGBGsGBfTkvh0rR3ipKoFJb5xqyImJWmG4utU8JgccJHmDqv55LYem8bkS/P8SPEOATKZiu8fQwOEDeQCemutbSF4ASG5z+atfI1mNG/gIuEkq95owyqwn3g2Yknp9SciEWda04vWWusI5SxJ2UzYMTHlNF0nJucG8sbWm4Ppmg=
+	t=1767799857; cv=none; b=YPVvo9VRCppsMw1aFbyoOkkciP7Wgd5gK0VGJ/YRbn6akzTCjvEqN1RnK2pT3qlD7dNjDY5zeBvYxRq5+68FgIAcnDljGG9f4wmJhV2zjMLMWjYlnqTQ5wiKtcwm79rNAn+PvIfwS/TgOYb3BSw0S3m/be/X/fzQhkHSTkYlyWY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767799759; c=relaxed/simple;
-	bh=26LnPSlE6H/04Cg86Bu4iGZobd8GHkU0wUulnfXq4I0=;
+	s=arc-20240116; t=1767799857; c=relaxed/simple;
+	bh=e8FKn11v79ssXsv0JerpySvSnmHmZncjqqH0AJm/f+I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=NTqs7//uLStT6lFb798iwHZWoxvYODIDicyrVMVDk/9LBob7fhyoIc+MRmOaZq7fvmDiyMyJfRM2FP7LvjW7exGsfHKblMEib4zBd22C+VMGPw1qW9hwUm/AgHm6ufjZ2hO9Q0g5+P+8DetDejt1Y+71wY1ga+Q1XdcVVQft+AM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FloTs901; arc=none smtp.client-ip=192.198.163.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=OpVHIfkCnSsnEdvfn66Dt8SAD8Y/dv2zWDDN7vTs0PBbhGvM/J/uqIsedqzyQnLKmf0nFS+/JHd8gA5FUsTj8bL3kO6HLZ5DDtd9ZYff6gyBKTIILdfS4RuVXbm+GbHlnhTiutPag3PyuU7iRlbrFmtH8m1xHQnKZSZ4+Z2Gk9k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YHYe90kO; arc=none smtp.client-ip=192.198.163.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FloTs901"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YHYe90kO"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1767799757; x=1799335757;
+  t=1767799854; x=1799335854;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=26LnPSlE6H/04Cg86Bu4iGZobd8GHkU0wUulnfXq4I0=;
-  b=FloTs901DsDQX2ymoQEEoP3v/NTb783EwX0kerT4F2fvqZvSz/CiqiSe
-   6LCZX/n0tUv6r2do00wxFWEW7es8jpYFR6f0JOYNqty2zYuTv4Yu3p4D0
-   ulweETYOpJI6CeqvbGaW4rY0ju2lr4uXcz/bZiZj4gnZ8RA+nATra4sK3
-   CIDyOImzqkJHxxg/5m5MIxAFIDgg6nVmo07551u3BHAN/h0QkpDndjLS6
-   HM0qwHOqaxG9j0vOCtDG5MA46KSTLyrP6IdU6JK+nrkJR+Wt7cB3wKVaE
-   AeBYPDaPjl6/VZ6KQEWkKIqg9xKcsINpB5Pslfq2xWfNWVc0sqxyMBoZr
-   w==;
-X-CSE-ConnectionGUID: ACyerL/MTj6U7GOli8wVVQ==
-X-CSE-MsgGUID: ptVVyOwlT3Sln2E23bhPdA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11664"; a="79892361"
+  bh=e8FKn11v79ssXsv0JerpySvSnmHmZncjqqH0AJm/f+I=;
+  b=YHYe90kOvlx1Je6JKnwi0ZLZdhU3+cuznDzzyhIvgu3ZSAky8W1yEAk2
+   p2unS8Lc5Mz0fDH8olwgRWsaVgCfF7LYtG3FqEAlKTOX5Mj05ioT8O58S
+   FiyPesoOzy0pnushVwgXZ2ZIJa9g4ES0TUKP8K5TB5MoGFUah9el1h4O4
+   MzgKTLMdNXQeDgmt04xHBdw1FqY9ItJ0Gos/ioaeJrOhDjAQsaJbXjq9V
+   iEdRmJRn5yqazmIY0v8s/3tw1NjtKWKHKyqgFFm7OoqJHcK/Qn8GIWTCI
+   ksM/F/MxHidz5j7PWmdUuF54dGjmHB2rTPvZn4h3cwwy9cqubASrxf7WE
+   Q==;
+X-CSE-ConnectionGUID: 4vl9Qk7jTsuy5WLhVY09Wg==
+X-CSE-MsgGUID: nzG/lcV9QkCyTTZmU/cbkw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11664"; a="94639313"
 X-IronPort-AV: E=Sophos;i="6.21,208,1763452800"; 
-   d="scan'208";a="79892361"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2026 07:29:14 -0800
-X-CSE-ConnectionGUID: xJSR9bTRR/CpYzwHr0MkNQ==
-X-CSE-MsgGUID: egdtjVn5QgSoFGK9K97hcQ==
+   d="scan'208";a="94639313"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2026 07:30:52 -0800
+X-CSE-ConnectionGUID: 2Ig73mmiRQC9/YDa8EoXow==
+X-CSE-MsgGUID: t64rvZbTRtKmUQ6tZebOQQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,208,1763452800"; 
-   d="scan'208";a="233666237"
+   d="scan'208";a="202963615"
 Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.168])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2026 07:29:12 -0800
-Date: Wed, 7 Jan 2026 17:29:09 +0200
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Jan 2026 07:30:51 -0800
+Date: Wed, 7 Jan 2026 17:30:48 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Chen Ni <nichen@iscas.ac.cn>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, mazziesaccount@gmail.com,
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad7476: Remove duplicate include
-Message-ID: <aV57xb7nsUT-klRm@smile.fi.intel.com>
-References: <20260107082920.2151042-1-nichen@iscas.ac.cn>
+To: Miaoqian Lin <linmq006@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Angelo Dureghello <adureghello@baylibre.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH v2] iio: dac: ad3552r-hs: fix out-of-bound write in
+ ad3552r_hs_write_data_source
+Message-ID: <aV58KPqNn9uYRMk6@smile.fi.intel.com>
+References: <20260107143550.34324-1-linmq006@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,26 +67,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260107082920.2151042-1-nichen@iscas.ac.cn>
+In-Reply-To: <20260107143550.34324-1-linmq006@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jan 07, 2026 at 04:29:20PM +0800, Chen Ni wrote:
-> Remove duplicate inclusion of linux/bitops.h.
+On Wed, Jan 07, 2026 at 10:35:50PM +0800, Miaoqian Lin wrote:
+> When simple_write_to_buffer() succeeds, it returns the number of bytes
+> actually copied to the buffer. The code incorrectly uses 'count'
+> as the index for null termination instead of the actual bytes copied.
+> If count exceeds the buffer size, this leads to out-of-bounds write.
+> Add a check for the count and use the return value as the index.
+> 
+> The bug was validated using a demo module that mirrors the original
+> code and was tested under QEMU.
+> 
+> Pattern of the bug:
+> - A fixed 64-byte stack buffer is filled using count.
+> - If count > 64, the code still does buf[count] = '\0', causing an
+> - out-of-bounds write on the stack.
+> 
+> Steps for reproduce:
+> - Opens the device node.
+> - Writes 128 bytes of A to it.
+> - This overflows the 64-byte stack buffer and KASAN reports the OOB.
+> 
+> Found via static analysis. This is similar to the
+> commit da9374819eb3 ("iio: backend: fix out-of-bound write")
 
-...
-
-> --- a/drivers/iio/adc/ad7476.c
-> +++ b/drivers/iio/adc/ad7476.c
-
->  #include <linux/gpio/consumer.h>
->  #include <linux/err.h>
->  #include <linux/module.h>
-> -#include <linux/bitops.h>
->  #include <linux/delay.h>
-
-Can you actually sort the headers alphabetically so this will be visible change
-(in terms of the context)?
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
