@@ -1,245 +1,127 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 764C531812C
-	for <linux-iio@vger.kernel.org>; Wed,  7 Jan 2026 12:35:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 534CC33F37A
+	for <linux-iio@vger.kernel.org>; Wed,  7 Jan 2026 13:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767789326; cv=none; b=HzbxedZGMCgSnusSQ0oqLb2UqsRYdpwAGMMzjqK5fM0ibwUXpmddX33q5TKvWwVTzj+kKBQHnlNsSOEwMM3jWQQm0grG47cHJ7JS5MwAbpSC+XK6BSA6qbYjoqy4LqAgn691FQLyUF5uI5lMh7MYQIurUJ8Y9OK+a7x5RwpMLcg=
+	t=1767793203; cv=none; b=CYnRFWwW12AYermLP2mEk1jyX1rwJIZ1jyEOESOZgWnk2CVNTAKCRYhZALa0gwirWH38CiwTxKAVGmuE3JY6ftdltTOzQidObg+9loNCB29XO4hw7ryrruu4em+FTi6GeN79zC1WbBEl5RSevB+9T6Pml8iLwvz8Vx5ZqZh/fH8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767789326; c=relaxed/simple;
-	bh=0s7F3wx9F8OanhM3tiFMaiQriDANuo8GZ/AwyAxEqkY=;
-	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=kf/8W+4knohgacinYNF/JwBkFhHqnpcg6TVqhK49MbMQH08hmCpgEDcZrQ+vdfcNDXbi4cfLbDEfZVX2TF/JfnSpk6diDgti7UYFc+nK1GMz+DtYaKjoETrp+UwSXeJm7yQ50TjCsrEjj41baaYh7Xa23yZ5JSKF8tEIegtUW3A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=fmuL1bEo; arc=none smtp.client-ip=209.85.208.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1767793203; c=relaxed/simple;
+	bh=m0D9V4x0TDiYMScx+B2rDcfNHpt1W4utB08H2EYXkTI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Se1j6n1fUapLLtKzYzfuutMtno07/NU7JY7LrPa2Vo0CvmmEoJTSqIfrG0Uxz3MvYTH1xjiUxMAruN1dmoeqh4HbL8IkB/n4UODsjMQSVI8zSqA8odrEH13IXfgOkHhnt2GfJC4d1Cbs9SxuyKVus9gwjSy21AKMDiA556SlyfA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=c1MCj9sb; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="fmuL1bEo"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6505cbe47d8so3202409a12.1
-        for <linux-iio@vger.kernel.org>; Wed, 07 Jan 2026 04:35:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="c1MCj9sb"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-477632b0621so12851215e9.2
+        for <linux-iio@vger.kernel.org>; Wed, 07 Jan 2026 05:40:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1767789323; x=1768394123; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1767793198; x=1768397998; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=Hb9X7ojqs7UxJ/3kF+kDP4GTNw9n7fjfq/OK20F33Hg=;
-        b=fmuL1bEoKBUtjPdfkxS+bMHNsrBzKWzOlncCcZW8wbw77YL53D8lwJd7yU2YHaB5Gy
-         Cu3YAfjaQCDoJaP070dbstpYlgOkVLJ2yyseeQh3xjXaL/x/GcjVzQCcGFh3Z9qmw9Jd
-         /1cEH9i7eRdF7bu9JCHE3RWGiYCB4bGAZrKMuQWyUfT02His9YWnxxyacBSi6OoHZrcF
-         ApLUJa8lfGoM6s/I/6S16REgemF9unZc9dDTNxj8Wy7xvlusenAcKjhSA//qo9aAyjmD
-         4acv659aWo4cwh0n3L5yKlYnev5ZfnDx7lCla5i2xNQBk4xnPXi7ECqAS4D+QHur6DNe
-         xYRw==
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=reHYsRVhVlhU9/XLdVBvX/hBxL5PqvrIU5ifd6VhtQI=;
+        b=c1MCj9sbolerNjOMN9gMJ4G6Vdx9y1omxk3sisMGw3VZ0UPpB2Uusu7g/h7hx49OTf
+         nLoVJ/AJCCMJsF51qfpnz3hCA5HZHhn9mogFmA9O5PxkXuRBGjPkDysLWLiuuYLIrHYT
+         4cTLuTnS0/yd2PcGSONVWoY82fyMFuJGtOpBF1x/Y22hNrBTMaK2+8oqjNrSxSIMjqJn
+         az8d7PGgpti2tZots9Vu28NcYcBVgUz2no22bfE4VpFWuZHRwj39zNa0qRn/vq2X+Csx
+         5IY9boglXzlRupC596H+AnxWsNEfUreDnbBP7r78wansGKvDrAFt7C4l3Zgopobxle4q
+         OXpQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767789323; x=1768394123;
+        d=1e100.net; s=20230601; t=1767793198; x=1768397998;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=Hb9X7ojqs7UxJ/3kF+kDP4GTNw9n7fjfq/OK20F33Hg=;
-        b=OnEvjQlLAU2F3cGsii4Q24JM2/hDkYDFB1zIfkof7RoQeYY1dmnnXsMr/HnO/NllHw
-         zV0foJWYQHfVGRbfmK/Da0TosvaBDvj8VJTzzCBt0pYr+4oIvKwbYYoyKXLVaxeKiY/D
-         a4LMjF7zam6+M0TukoUKp2MRUB9CrmRW1NHyh45V0WTmx6qghAuLVMyDPgorWV4blLRx
-         EjmLM5bUB7xN2ipQ+bAmzHOSYo3tuU128iZBiMojXnuj3JvF0f1BIN0AAvDyPp7+JSm2
-         yBnDg9TwPFHE15hPgOeyhp36RhDsw2DjyG9VZ6cjnLSs+i3vgZOAuXTGcrjDuYzb2jZu
-         vu4A==
-X-Forwarded-Encrypted: i=1; AJvYcCXsM7Os3Tl4JNz2EhdxXZZp1TaQGO5ncj0VwquJpxoKw+mGOdZgy/qubeW/pFIKexM0FD8mYyl+fR8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwqmaUzcEI9KJDDoZiPKaheBSAKjMIx7Re3pVt18C2M0tTnQNev
-	udxUWXlYlgBVLd0DlKFhi4WRUdXIdLHEc6Ps4PrBYjMU690sNO/CzM4mn5UQIjLJRmw=
-X-Gm-Gg: AY/fxX5wFkF5+QBpUNe8+iVEitt4xs77Mxtb9sE9L95jXHEQdEiO7dLjTGmD2geonQR
-	wfdbwXAE6Jjx2eHt/h/8a4IJCcDkbiSqRHujRj5npSy4FavypQ4mA7B0IhxZoDUUaw4TOMeEz8T
-	s3disX8zHejJBu6IwTTZtUHovXFCGDEdwRepZUVcpaVJIIMKYQP2aTmKTwR3jkTy+C8u0Jwptr3
-	iHqZ+/mE569esQeM+irmtOsTn2hMmvDUF2ukOi3fbvtDWAN0EsxF7xAsxwl7T2vUexIXeTg0AsG
-	i2/avN7OZ0Vg4V33JeaS861LKOh3SY8rtmvOH0R6icutrpBk9ai7BRDd7krf6TDJZDsZ5rBT/7g
-	LOmo4X1vm+2xbiEQm+l1TfVvGkh7LywBEB3IOD1VIt1Nx2EykakrIRQ0urgZOwK7iSujF9dDbpW
-	0xilVZ+pPAQcMmvgy/JRIzCliHKhAy9mtqTqqQRy4=
-X-Google-Smtp-Source: AGHT+IHDilfFE4eSHAWVwsGDGF+z/OqbkLKKZXP7CW7m7ovmXEdVaEkBR4XZZ0kGhIy0u76UlatFIA==
-X-Received: by 2002:a05:6402:518f:b0:64c:62f7:1ac4 with SMTP id 4fb4d7f45d1cf-65097e717abmr2090092a12.32.1767789322697;
-        Wed, 07 Jan 2026 04:35:22 -0800 (PST)
-Received: from localhost (mob-176-245-211-45.net.vodafone.it. [176.245.211.45])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6507bf6d5absm4503713a12.33.2026.01.07.04.35.22
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=reHYsRVhVlhU9/XLdVBvX/hBxL5PqvrIU5ifd6VhtQI=;
+        b=sHiaVrEnaPF9SGFuIbjLeCJeAUbxDxru5ZuM+2CglzazOa5A9htW+nNZx+BHd7/DPj
+         ivnEQjenDdPCM0QBWNBaAbbN+mhB5ZQpdOQyCNxUPuMKQV2ihAjQOtsSqNDoyEpFpLNG
+         39qh7euqnHvXOAIbBRUiYYaaEYKyuUYBbJ70PArUXSh1ZzivF/E8oQ6XZjQS5XiOXNtR
+         SeZm6ak8hjlvwT8eWiS9C8zrkHIeTrxbOeLzmjej5gD3+ySEYYe0cKnInbKnpbbEsqel
+         2eZKph1XDFs6JOQSHi6l5pJERviTKi5+dlip0Z0+OdlbaZ6sYROiT6yUWcV318VV1DoJ
+         0viQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUDf8CUFj5/tpdWzFZZSt1dj6fTo7wecCzzE1DvvO0kHo4ljQLoSaYareUqNwQqInn18ViFdO17SUU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyXfOl+solQMuiqoPlseyyTPUcnHTWzEbGbR5HHrKl0IMWgLb24
+	sE9GcuWEts5oQq6VITLSz88enkftkGS87Aa6L+R7VWcc4YG40iAmoMqro3ttuBhE1dk=
+X-Gm-Gg: AY/fxX6EHAp1okjDH7rcI0er0Aefe/4a1s8CYh42KLcve9i7wLdtSw+99yEgNbwcbWi
+	yNuodS9GxjQwiDh/wwWAuns41T+/kcquFN4EsReLvPc/0SIJNTdaj2625/QGRX+/L8B5hwzDq99
+	sX7m1vaLG6BhoPrz29vqL5kZVs4AEz5AUR053kw1pAm5Q2ofqBGWc6PVKunuu7ctjSigB+y1fBm
+	VMDWzUYKFC/cnDudC5+1H0+R+ly5bir4vXtkgTAOLbB9DZgXS+MmQn049oT/rArmULvvfgzSd1Q
+	Pvw2Ee5czmKHAvEQ5iUl7ZEkrrfRni0LF/gTLT1QNuL4PRaSrVTX4A4ligOCLycEJs6bP2/vaPR
+	peXBrMKJESmOmpmnu30jDbL0q4D+K53FAQLhhz6c+RrtL84Xe2QXxttkXyP/6JemsRuOtupCSi/
+	1/+v9ZsdKCTLiGUl6Vno4Le9nbPAmqIZfdlLNo27q51g==
+X-Google-Smtp-Source: AGHT+IGsXFTEj4VT6TREhqzbbNBgMjGQPUdJHu/PUzy+9Vp/LyXJd2kFDSR3tgJFYV0qZeNTBlTjWA==
+X-Received: by 2002:a05:600c:5490:b0:46e:59bd:f7d3 with SMTP id 5b1f17b1804b1-47d84b34819mr29682965e9.20.1767793198615;
+        Wed, 07 Jan 2026 05:39:58 -0800 (PST)
+Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:39ee:bc4c:aafe:6bd0])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432bd0dade5sm10595542f8f.9.2026.01.07.05.39.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 07 Jan 2026 04:35:22 -0800 (PST)
-From: Francesco Lavra <flavra@baylibre.com>
-To: Ramona Gradinariu <ramona.gradinariu@analog.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iio: accel: adxl380: Add support for 1 kHz sampling frequency
-Date: Wed,  7 Jan 2026 13:35:18 +0100
-Message-Id: <20260107123518.4017292-3-flavra@baylibre.com>
-X-Mailer: git-send-email 2.39.5
-In-Reply-To: <20260107123518.4017292-1-flavra@baylibre.com>
-References: <20260107123518.4017292-1-flavra@baylibre.com>
+        Wed, 07 Jan 2026 05:39:58 -0800 (PST)
+From: Daniel Lezcano <daniel.lezcano@linaro.org>
+To: wbg@kernel.org
+Cc: robh@kernel.org,
+	conor+dt@kernel.org,
+	krzk+dt@kernel.org,
+	s32@nxp.com,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v4 1/3] counters: Reorder the Makefile
+Date: Wed,  7 Jan 2026 14:39:50 +0100
+Message-ID: <20260107133953.2094015-2-daniel.lezcano@linaro.org>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260107133953.2094015-1-daniel.lezcano@linaro.org>
+References: <20260107133953.2094015-1-daniel.lezcano@linaro.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5746; i=flavra@baylibre.com; h=from:subject; bh=0s7F3wx9F8OanhM3tiFMaiQriDANuo8GZ/AwyAxEqkY=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpXlMAoKv/PJe5nKgcmvrGJrBmMoq0oNO0XUSSY 1jAe2v0pFeJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaV5TAAAKCRDt8TtzzpQ2 X8GwC/49A2LyU02o9MyMvyYV2QNhlFAaB1sELziezLeqxbamqmd7pBuN+9qsVnIiFysCCH5FPd3 /KRYI9jNt2+espGVDOTTIwEncncKX3ZOAX0+SxSF2E3gwDB/l7qt2wgrLx2SsMK9wdd4yHwYjAQ EcGQuevaKUwGxcDutPHy2f2+L8TrZvGQhsiEAKdXM73+Z11pRkQSwTcePIpBRpTSN8i+albIOe3 pTnK7YgvJiTv1SJ6TS9zLAK1nkVNRlVaImiYguJMzJe8LJMR/M6k/hUk5by84OpPF3Cazgos4Hd Blc4Ogw6S3HuaFtTo+CwnJk8gUyF+oGMe4qL1pCs019UxpAWZ1qoTyXoGyRoApx1MKndYvVw+M9 95IbJQ70NeMoWQrxMl60f8ldeONLpy3rAPz+ON23C58+q4veAjoxiXe7KJRe3b9UO7TPdKjXNLd Vt2oRjfZTdJDu/jvt0TnE0uKgqOsQUSu+nMk4FsD+mFugN7CIik2uSfMFhsgHkdzdNsJE=
-X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
 Content-Transfer-Encoding: 8bit
 
-In sensor variants (such as ADXL380 and ADXL382) that support low-power
-mode, the SAR signal path allows sampling acceleration data at lower rates;
-more specifically, when the sensor operates in VLP mode, the sampling
-frequency is 1 kHz.
-To add support for the 1kHz sampling frequency value, modify the operating
-mode selection logic to take into account the sampling frequency, and
-configure the decimation filters only when applicable (i.e. when using a
-sampling frequency that relies on the DSM signal path).
+The next changes provide a new driver. For the sake of clarity,
+reorder the Makefile alphabetically.
 
-Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+No functional changes intended.
+
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 ---
- drivers/iio/accel/adxl380.c | 49 +++++++++++++++++++++++--------------
- drivers/iio/accel/adxl380.h | 10 +++++++-
- 2 files changed, 40 insertions(+), 19 deletions(-)
+ drivers/counter/Makefile | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/accel/adxl380.c b/drivers/iio/accel/adxl380.c
-index bbf1f88ca781..a6919dfce2e9 100644
---- a/drivers/iio/accel/adxl380.c
-+++ b/drivers/iio/accel/adxl380.c
-@@ -245,12 +245,14 @@ static int adxl380_set_measure_en(struct adxl380_state *st, bool en)
+diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
+index fa3c1d08f706..40e644948e7a 100644
+--- a/drivers/counter/Makefile
++++ b/drivers/counter/Makefile
+@@ -6,14 +6,16 @@
+ obj-$(CONFIG_COUNTER) += counter.o
+ counter-y := counter-core.o counter-sysfs.o counter-chrdev.o
  
- 		/*
- 		 * Activity/Inactivity detection available only in VLP/ULP
--		 * mode and for devices that support low power modes. Otherwise
--		 * go straight to measure mode (same bits as ADXL380_OP_MODE_HP).
-+		 * mode and for devices that support low power modes.
- 		 */
- 		if (st->chip_info->has_low_power &&
- 		    (FIELD_GET(ADXL380_ACT_EN_MSK, act_inact_ctl) ||
- 		     FIELD_GET(ADXL380_INACT_EN_MSK, act_inact_ctl)))
-+			st->odr = ADXL380_ODR_VLP;
+-obj-$(CONFIG_I8254)		+= i8254.o
+-obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
++obj-$(CONFIG_104_QUAD_8)		+= 104-quad-8.o
++obj-$(CONFIG_FTM_QUADDEC)		+= ftm-quaddec.o
++obj-$(CONFIG_I8254)			+= i8254.o
++obj-$(CONFIG_INTEL_QEP)			+= intel-qep.o
+ obj-$(CONFIG_INTERRUPT_CNT)		+= interrupt-cnt.o
+-obj-$(CONFIG_RZ_MTU3_CNT)	+= rz-mtu3-cnt.o
+-obj-$(CONFIG_STM32_TIMER_CNT)	+= stm32-timer-cnt.o
+-obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
+-obj-$(CONFIG_TI_EQEP)		+= ti-eqep.o
+-obj-$(CONFIG_FTM_QUADDEC)	+= ftm-quaddec.o
+ obj-$(CONFIG_MICROCHIP_TCB_CAPTURE)	+= microchip-tcb-capture.o
+-obj-$(CONFIG_INTEL_QEP)		+= intel-qep.o
+-obj-$(CONFIG_TI_ECAP_CAPTURE)	+= ti-ecap-capture.o
++obj-$(CONFIG_RZ_MTU3_CNT)		+= rz-mtu3-cnt.o
++obj-$(CONFIG_STM32_TIMER_CNT)		+= stm32-timer-cnt.o
++obj-$(CONFIG_STM32_LPTIMER_CNT)		+= stm32-lptimer-cnt.o
++obj-$(CONFIG_TI_ECAP_CAPTURE)		+= ti-ecap-capture.o
++obj-$(CONFIG_TI_EQEP)			+= ti-eqep.o
 +
-+		if (st->odr == ADXL380_ODR_VLP)
- 			op_mode = ADXL380_OP_MODE_VLP;
- 		else
- 			op_mode = ADXL380_OP_MODE_HP;
-@@ -478,17 +480,22 @@ static int adxl380_set_odr(struct adxl380_state *st, u8 odr)
- 	if (ret)
- 		return ret;
- 
--	ret = regmap_update_bits(st->regmap, ADXL380_TRIG_CFG_REG,
--				 ADXL380_TRIG_CFG_DEC_2X_MSK,
--				 FIELD_PREP(ADXL380_TRIG_CFG_DEC_2X_MSK, odr & 1));
--	if (ret)
--		return ret;
-+	if (odr >= ADXL380_ODR_DSM) {
-+		u8 mul = odr - ADXL380_ODR_DSM;
-+		u8 field;
- 
--	ret = regmap_update_bits(st->regmap, ADXL380_TRIG_CFG_REG,
--				 ADXL380_TRIG_CFG_SINC_RATE_MSK,
--				 FIELD_PREP(ADXL380_TRIG_CFG_SINC_RATE_MSK, odr >> 1));
--	if (ret)
--		return ret;
-+		field = FIELD_PREP(ADXL380_TRIG_CFG_DEC_2X_MSK, mul & 1);
-+		ret = regmap_update_bits(st->regmap, ADXL380_TRIG_CFG_REG,
-+					 ADXL380_TRIG_CFG_DEC_2X_MSK, field);
-+		if (ret)
-+			return ret;
 +
-+		field = FIELD_PREP(ADXL380_TRIG_CFG_SINC_RATE_MSK, mul >> 1);
-+		ret = regmap_update_bits(st->regmap, ADXL380_TRIG_CFG_REG,
-+					 ADXL380_TRIG_CFG_SINC_RATE_MSK, field);
-+		if (ret)
-+			return ret;
-+	}
- 
- 	st->odr = odr;
- 	ret = adxl380_set_measure_en(st, true);
-@@ -1219,9 +1226,14 @@ static int adxl380_read_avail(struct iio_dev *indio_dev,
- 		*length = ARRAY_SIZE(st->chip_info->scale_tbl) * 2;
- 		return IIO_AVAIL_LIST;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		*vals = (const int *)st->chip_info->samp_freq_tbl;
-+		if (st->chip_info->has_low_power) {
-+			*vals = st->chip_info->samp_freq_tbl;
-+			*length = ADXL380_ODR_MAX;
-+		} else {
-+			*vals = st->chip_info->samp_freq_tbl + ADXL380_ODR_DSM;
-+			*length = ADXL380_ODR_MAX - ADXL380_ODR_DSM;
-+		}
- 		*type = IIO_VAL_INT;
--		*length = ARRAY_SIZE(st->chip_info->samp_freq_tbl);
- 		return IIO_AVAIL_LIST;
- 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
- 		*vals = (const int *)st->lpf_tbl;
-@@ -1611,7 +1623,7 @@ const struct adxl380_chip_info adxl318_chip_info = {
- 		[ADXL380_OP_MODE_8G_RANGE] = { 0, 2615434 },
- 		[ADXL380_OP_MODE_16G_RANGE] = { 0, 5229886 },
- 	},
--	.samp_freq_tbl = { 8000, 16000, 32000 },
-+	.samp_freq_tbl = { 0, 8000, 16000, 32000 },
- 	/*
- 	 * The datasheet defines an intercept of 550 LSB at 25 degC
- 	 * and a sensitivity of 10.2 LSB/C.
-@@ -1629,7 +1641,7 @@ const struct adxl380_chip_info adxl319_chip_info = {
- 		[ADXL382_OP_MODE_30G_RANGE] = { 0, 9806650 },
- 		[ADXL382_OP_MODE_60G_RANGE] = { 0, 19613300 },
- 	},
--	.samp_freq_tbl = { 16000, 32000, 64000 },
-+	.samp_freq_tbl = { 0, 16000, 32000, 64000 },
- 	/*
- 	 * The datasheet defines an intercept of 550 LSB at 25 degC
- 	 * and a sensitivity of 10.2 LSB/C.
-@@ -1647,7 +1659,7 @@ const struct adxl380_chip_info adxl380_chip_info = {
- 		[ADXL380_OP_MODE_8G_RANGE] = { 0, 2615434 },
- 		[ADXL380_OP_MODE_16G_RANGE] = { 0, 5229886 },
- 	},
--	.samp_freq_tbl = { 8000, 16000, 32000 },
-+	.samp_freq_tbl = { 1000, 8000, 16000, 32000 },
- 	/*
- 	 * The datasheet defines an intercept of 470 LSB at 25 degC
- 	 * and a sensitivity of 10.2 LSB/C.
-@@ -1667,7 +1679,7 @@ const struct adxl380_chip_info adxl382_chip_info = {
- 		[ADXL382_OP_MODE_30G_RANGE] = { 0, 9806650 },
- 		[ADXL382_OP_MODE_60G_RANGE] = { 0, 19613300 },
- 	},
--	.samp_freq_tbl = { 16000, 32000, 64000 },
-+	.samp_freq_tbl = { 1000, 16000, 32000, 64000 },
- 	/*
- 	 * The datasheet defines an intercept of 570 LSB at 25 degC
- 	 * and a sensitivity of 10.2 LSB/C.
-@@ -1906,6 +1918,7 @@ int adxl380_probe(struct device *dev, struct regmap *regmap,
- 	st->dev = dev;
- 	st->regmap = regmap;
- 	st->chip_info = chip_info;
-+	st->odr = ADXL380_ODR_DSM;
- 
- 	mutex_init(&st->lock);
- 
-diff --git a/drivers/iio/accel/adxl380.h b/drivers/iio/accel/adxl380.h
-index e67c5aab8efc..d2c260c8b2fa 100644
---- a/drivers/iio/accel/adxl380.h
-+++ b/drivers/iio/accel/adxl380.h
-@@ -8,10 +8,18 @@
- #ifndef _ADXL380_H_
- #define _ADXL380_H_
- 
-+enum adxl380_odr {
-+	ADXL380_ODR_VLP,
-+	ADXL380_ODR_DSM,
-+	ADXL380_ODR_DSM_2X,
-+	ADXL380_ODR_DSM_4X,
-+	ADXL380_ODR_MAX
-+};
-+
- struct adxl380_chip_info {
- 	const char *name;
- 	const int scale_tbl[3][2];
--	const int samp_freq_tbl[3];
-+	const int samp_freq_tbl[ADXL380_ODR_MAX];
- 	const struct iio_info *info;
- 	const int temp_offset;
- 	const u16 chip_id;
 -- 
-2.39.5
+2.43.0
 
