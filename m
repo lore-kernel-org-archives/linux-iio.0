@@ -1,140 +1,114 @@
-Received: from mail-ed1-f49.google.com (mail-ed1-f49.google.com [209.85.208.49])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6796823EA9D
-	for <linux-iio@vger.kernel.org>; Thu,  8 Jan 2026 14:07:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6374B3314D9
+	for <linux-iio@vger.kernel.org>; Thu,  8 Jan 2026 14:41:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1767881239; cv=none; b=ZFX9kOcDnVTT1cBNbUecJdk7T/dmpCQ+uxH4l9CFjF+8WpPI7k719rV6ILV7cfzAzqEzN/W+KuY/tFxCUjWgoHPvGAxA+ivppW62oqGZc/9zTsLXnyJQg9Dr9vjXTcPVPGeMPmEbc41xFCtKefptPumRUfAw3yZvXlSYy1bkkkY=
+	t=1767883261; cv=none; b=M9RQTXRvsHfAqY65eO7cesJmsfJLao9G04MH5Az8iMFnKzOVAj3jSipDcJ5s8TpJqBWto0/HZRvtGH6S9/eUXGaizz28vD/Tlzt/WCxE0am/kc8pqUZm4MTLT+vdNxQZ3naoBS++REtR65IpWd4k0v+Bi2rXAvkhZlE1ZU4Rqak=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1767881239; c=relaxed/simple;
-	bh=GfIhDumiTaTtgjE1NoS7th6W+rdlUjEK0cqr4kMgvj8=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=DUlxA5nN7isiR/mJkR9esUhd6ncKDt22RU/co0yS8lcY/IegvcaK08QxJlG8vH/crpJHWkh5dwgOt8hC1RKPiZQdmbxgCpawyTgMxu4eZuHRVzXRV8ryE4RXc5eoxn4HGmLdMed+KFfHBTcUlM7/knJVTusXGTj3IKlk81OEGzw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=091t2/Yv; arc=none smtp.client-ip=209.85.208.49
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1767883261; c=relaxed/simple;
+	bh=VCvoKljqX3kZKrg0wl5o7D7vP2IqS4NfiwwNUjNseAA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=thy3UGBzVh1Lhq8SXgOckQp7cc93a8OQiyNl7p6FyXxznL1BQIWYZdYEQEbg1J68joqHp2y8YJJSEhWPVIqIJPZq2idjIcCcMPmFQ6Jd8ok9pKk8eIh5VFPqJ4oOGCkX4Iwi/tQOcjhnxsFBhxYfQGyopl44XFUeFIXbu8BXZ7g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DlPEEBaV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="091t2/Yv"
-Received: by mail-ed1-f49.google.com with SMTP id 4fb4d7f45d1cf-64fabaf9133so5692482a12.3
-        for <linux-iio@vger.kernel.org>; Thu, 08 Jan 2026 06:07:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1767881235; x=1768486035; darn=vger.kernel.org;
-        h=mime-version:user-agent:organization:references:in-reply-to:date:to
-         :from:subject:message-id:from:to:cc:subject:date:message-id:reply-to;
-        bh=GfIhDumiTaTtgjE1NoS7th6W+rdlUjEK0cqr4kMgvj8=;
-        b=091t2/YvnaS5QgD3fHRC8KubvlgXsY6gm3ciqowSv9ZeZMxktTKj+2pcu3XtMsAtk7
-         IyfF2g0rme/LSXcXnbQWvs95OJo0urXRDvdYhcCZp6O9qQM8lGC5ozngBSXcmqeUSECX
-         ZC3xTNwam7Q9GsAKzA54YH4gxmxL0wijvxYBe5ffRAudrCptGkUGn/ZizYWHnmRndxnj
-         2lEK4iJGI6lYSDh9tRUaJN2yVkz5awzcyYiAanQ9nk2dbMo+38CqYwJ8rI68n+Nu0tmc
-         7Xb44yNoIqipg2XGoGB9ZhmSQksEtk0FpLBI4XmkS3pKMjVv0tr1uWlk0DwAHEJ36QDB
-         66/w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1767881235; x=1768486035;
-        h=mime-version:user-agent:organization:references:in-reply-to:date:to
-         :from:subject:message-id:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=GfIhDumiTaTtgjE1NoS7th6W+rdlUjEK0cqr4kMgvj8=;
-        b=YaDgv4CfUKBoVwzpuBZTaPx7hQPN1ils3ZhzI/L4dXJvY5oPRfJLlcGNlV1M4N8bHQ
-         pVaaLQ17kpFm1SFTZJ2Kp5DrlIODJriH8rzkKhZjYqBURKzelbM3SipPO+pJtr/jQwj6
-         gcyypMvF+uFoBkkGvuEcPFAB+iik+DbpHXbLFvfeKU2ORjg7xeQOvVURTteYtAgMzWVd
-         V/UBF8HuY2PQHjyBnTc59PVhUim/WOXh4maB7+n0k8An/KZqv07OQwKAV8j2sN76NToO
-         vNVTjXcd63NG7mJjxST3e2luyOZub+gv0qUqqIz3pVKQTJ+D9mvtOlICv+eLpnSTZEMH
-         glKw==
-X-Forwarded-Encrypted: i=1; AJvYcCXSNSBXAvtc0HqiGX2ByF6975GDzA4XwqDg56LUu+/o9R3EJI0WRbY4DaW3dfROD7yD0JQ4pM1yTLE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YygUY+45JHSo4rfHdePxwYHJfyz/4DNzMqEOl7IhsoBQk7TbofZ
-	3+4jaabGvblWhr7fWMxTWZvbfN0ZUFEFrePsfIoOzv8PMV5acz6bjIjgXgzgA4eL4B0=
-X-Gm-Gg: AY/fxX6df331pGJ3TOSV+7XpNFwokRurHxuJGuEwkkFup0mJBbZBgQlYryoVXmYWKrB
-	xe8AtrIgPsLWKrntT/bIptfwk9SGXdzJfVKgwqXaPyTa4uRS0gw4nXYO/pju3yz/9L2WmaD5qJ8
-	yFwC1iaf+6ZsDf1K90HrrMDAl38HcN0XpDD40DWgYMH58TjPVYxUy5OaYdL0EmT5AkkMx3BD0//
-	hFgG1F7cPwzatQHEndluKVPrz7lVuQEPDMBjse1HMuNTzjLXIbHN/lIJ2M2TR46pXVBP2kX5lRU
-	Q785quBiYBbKt3J9lY7c3/Jg7UWhvO/s0/NvzbnHPGh6f9zjYl0GAef+ncBQDhTq53ERX9I4qgh
-	0xCuMRaR8rIn+AcxwESDJ7AzFA1Ro3rPmUz3vaIZFgkox3kKzIzvdxEBOrHhbsphKsI4LcO7tZq
-	Kpdyk/BemUS5/J
-X-Google-Smtp-Source: AGHT+IG0EkEuOhjLyXTP0B/o0vqKuHZddyHHwLf8yXUsHkIwAObUMOKJP2iNC5VThdlElmZ0Kwn0qA==
-X-Received: by 2002:a05:6402:524c:b0:647:9380:103c with SMTP id 4fb4d7f45d1cf-65097df5672mr5918312a12.13.1767881234641;
-        Thu, 08 Jan 2026 06:07:14 -0800 (PST)
-Received: from [10.203.83.73] ([151.19.68.242])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-6507be641e0sm7584777a12.22.2026.01.08.06.07.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 08 Jan 2026 06:07:13 -0800 (PST)
-Message-ID: <371503c267d9ded0195da126b58bc8339cb864e8.camel@baylibre.com>
-Subject: Re: [PATCH 2/2] iio: accel: adxl380: Add support for 1 kHz sampling
- frequency
-From: Francesco Lavra <flavra@baylibre.com>
-To: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>, Ramona Gradinariu
- <ramona.gradinariu@analog.com>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>,  Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,  Jonathan Cameron
- <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>,  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Thu, 08 Jan 2026 15:07:07 +0100
-In-Reply-To: <5cd68e397bb45f606f59038290e4f3ac09d241da.camel@gmail.com>
-References: <20260107123518.4017292-1-flavra@baylibre.com>
-	 <20260107123518.4017292-3-flavra@baylibre.com>
-	 <52e5cea72b99fc23c922cf74d7dce3403f43c9cd.camel@gmail.com>
-	 <9a5db937dc7072d95d6757cdf2eb8d6fde4abbd0.camel@baylibre.com>
-	 <5cd68e397bb45f606f59038290e4f3ac09d241da.camel@gmail.com>
-Organization: BayLibre
-Content-Type: multipart/signed; micalg="pgp-sha512";
-	protocol="application/pgp-signature"; boundary="=-Rb3+OvpD8SnvOKPzkrqM"
-User-Agent: Evolution 3.46.4-2 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DlPEEBaV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0251EC19424
+	for <linux-iio@vger.kernel.org>; Thu,  8 Jan 2026 14:41:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1767883261;
+	bh=VCvoKljqX3kZKrg0wl5o7D7vP2IqS4NfiwwNUjNseAA=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=DlPEEBaVI+xP7JjLfS9LR7e7TGlmyC5TXYpt0PNmPihe3YioXsrVmtrq1bDvAbAlr
+	 DGQBoe0/BBqPxEDAat093atVemL+rsMNoS4kC49Pg9BpmAZgGRFiEkQdkSTLecOfG+
+	 poB3TiqB3KlW5jq1VyvVP3hp3sorPJDtMbWrYvxFO8lusCSeJyKRcPIrCqDY3ofN3a
+	 j77fZG3Y/Wr/xsiaSXRnJzZlY2y9ukAD9v5DlTjUi4i7Sd7nHzz0KYnoANhj8k8luW
+	 A1jJFXxGdReXBvIrTVbgWB83BJbBPTv2KiA8ytRN+HMBPxWAg09+sQor/s3ENg9Znp
+	 H7nY7A1BD5mtA==
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-64b9d01e473so5094928a12.2
+        for <linux-iio@vger.kernel.org>; Thu, 08 Jan 2026 06:41:00 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWJvDdIG175HKNJ4OjEqYiDiOKxg0RtzRxk4bmDYjNPRjYwmTZ2TElut7cVNFSdcSxzJU4YzX9IKfU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy5ZkcQHgddcKhnPcmFbVyRxXQwLhnQX2WzCelfBsPUrgkWZ9+s
+	oXoP0RY6PeuOkICEGiZZghVBgvF58by825+CZzIWb1ePa/TANBDBCVgyc12/U8pukpfNFgx3Uh3
+	ries3S+i2u5rvbHXXZxZt2W+oULp17A==
+X-Google-Smtp-Source: AGHT+IHI33xhADwXbn0vf2H6UNw8erJbbT8WWPi8EUBJ/Ob7LvrmYmQ7U0+rDVaaapOIsNUCqxvWDN4KWUHOnOQ+6Dw=
+X-Received: by 2002:a17:907:72cd:b0:b83:f09f:4e56 with SMTP id
+ a640c23a62f3a-b844516d7admr651521166b.63.1767883259450; Thu, 08 Jan 2026
+ 06:40:59 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-
-
---=-Rb3+OvpD8SnvOKPzkrqM
+References: <20251219-spi-add-multi-bus-support-v4-0-145dc5204cd8@baylibre.com>
+ <20251219-spi-add-multi-bus-support-v4-2-145dc5204cd8@baylibre.com> <aV-jQImroXxFqj3Z@debian-BULLSEYE-live-builder-AMD64>
+In-Reply-To: <aV-jQImroXxFqj3Z@debian-BULLSEYE-live-builder-AMD64>
+From: Rob Herring <robh@kernel.org>
+Date: Thu, 8 Jan 2026 08:40:47 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+y86RJ3PwN1DSbw1zUgL-f-R98u7s+zfrKr99V+za1Zw@mail.gmail.com>
+X-Gm-Features: AQt7F2o2jGkKFch4Ba0iemfY8-pqG-ebcXF772c-dsVzMB7IP52XjuMQWCjxSCI
+Message-ID: <CAL_Jsq+y86RJ3PwN1DSbw1zUgL-f-R98u7s+zfrKr99V+za1Zw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/9] spi: dt-bindings: add spi-{tx,rx}-lane-map properties
+To: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Mark Brown <broonie@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Marcelo Schmitt <marcelo.schmitt@analog.com>, 
+	Michael Hennerich <michael.hennerich@analog.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>, 
+	Sean Anderson <sean.anderson@linux.dev>, linux-spi@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, 2026-01-08 at 13:45 +0000, Nuno S=C3=A1 wrote:
-> On Wed, 2026-01-07 at 16:39 +0100, Francesco Lavra wrote:
-> > On Wed, 2026-01-07 at 13:56 +0000, Nuno S=C3=A1 wrote:
-> >=20
-> > > 3. Other thing that comes to mind is if it makes sense to allow
-> > > controlling odr if
-> > > Activity/Inactivity detection is enabled?
-> >=20
-> > Disallowing odr control when activity detection is enabled could be an
-> > option, but what error code should be returned if the user tries to set
-> > the
-> > sampling frequency value when not allowed? -EBUSY?
->=20
-> I think it makes sense given the constrains on activity events. EBUSY
-> would be my choice as well.
-> Out of curiosity, do you know how the chip behaves if we change the odr
-> with activity enabled? Is it
-> just ignored?
+On Thu, Jan 8, 2026 at 6:28=E2=80=AFAM Marcelo Schmitt
+<marcelo.schmitt1@gmail.com> wrote:
+>
+> On 12/19, David Lechner wrote:
+> > Add spi-tx-lane-map and spi-rx-lane-map properties to the SPI periphera=
+l
+> > device tree binding. These properties allow specifying the mapping of
+> > peripheral data lanes to controller data lanes. This is needed e.g. whe=
+n
+> > some lanes are skipped on the controller side so that the controller
+> > can correctly route data to/from the peripheral.
+> >
+> > Signed-off-by: David Lechner <dlechner@baylibre.com>
+> > ---
+> >
+> > v4 changes:
+> > - This replaces the data-lanes property from the previous revision. Now
+> >   there are separate properties for tx and rx lane maps. And instead of
+> >   being the primary property for determining the number of lanes, this
+> >   is only needed in special cases where the mapping is non-trivial.
+> > ---
+> >  .../devicetree/bindings/spi/spi-peripheral-props.yaml      | 14 ++++++=
+++++++++
+> >  1 file changed, 14 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/spi/spi-peripheral-props=
+.yaml b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > index 59ddead7da14..2f278f145f78 100644
+> > --- a/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > +++ b/Documentation/devicetree/bindings/spi/spi-peripheral-props.yaml
+> > @@ -75,6 +75,13 @@ properties:
+> >        enum: [0, 1, 2, 4, 8]
+> >      default: [1]
+> >
+> > +  spi-rx-lane-map:
+> > +    description: Mapping of peripheral RX lanes to controller RX lanes=
+.
+> > +      Each index in the array represents a peripheral RX lane, and the=
+ value
+> > +      at that index represents the corresponding controller RX lane.
+> These are peripheral props so I guess RX is from peripheral perspective.
+> In that case, those would be routed to controller TX lanes, no?
 
-The chip supports activity detection only when in low-power mode; changing
-the odr to a value that requires exiting from low-power mode would mean
-effectively disabling activity detection. The driver prevents this by
-forcing low-power mode whenever detection is enabled, which means that any
-odr changes by userspace do not take effect as long as detection is
-enabled.
+I'm pretty sure it's the input to the controller like the other rx
+properties. Like rx-delay is for reads.
 
---=-Rb3+OvpD8SnvOKPzkrqM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
+I guess "peripheral RX lanes to controller RX lanes" is a bit oddly worded.
 
------BEGIN PGP SIGNATURE-----
-
-iQGzBAABCgAdFiEEhleFT5U73KMewxTm7fE7c86UNl8FAmlfugsACgkQ7fE7c86U
-Nl8eYwv+MqJw6Dhh/gpXoP9Q6tBMxn81AJDeAjBaTImGR4edL5+nMDK9SpNaDwOu
-NwbzpLN+YIMFPBrzoMT1NG3MHifWDtqlCQvyerR2CnCBYtUPQz9zvRQwRQ6V6sJ9
-BfPMoyTfXS0EQ6kBDnhCDv+YOvXajkt3ZmfT8UMJElX1f7c29/mX3GZGUGzzGl0y
-oCpy1Yjjbr4+/OLBts6YSZrY7w8p8xzSDNBOXGicf95w8kfjEv146kfzlaHfihI2
-6mx02x3YKpMlAXaNikg7b+GelIHlhw36dBw6ulNs4RNiWvwbYulMg8p7DQ+aCGys
-GA5Lcmej7cZjv6h2wtZw6EsGXek1vLRun32gQK6n0MNJH0hpVHDF62EhI4pBmwiT
-HWwhNc0Y5Wfvb+BV/bD/O7UpzxZZAs1+gorret8kzofj9k5Rqsrpz1PeqsbS5RBA
-numHdymAFQ9ZpIihdRa3idEb/XkhsF7GbToe2gAbn2J/Z1P/0EuAa3SmiZkiiu9S
-2uGxY29E
-=N292
------END PGP SIGNATURE-----
-
---=-Rb3+OvpD8SnvOKPzkrqM--
+Rob
