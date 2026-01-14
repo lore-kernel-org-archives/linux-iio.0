@@ -1,135 +1,166 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40BF839903B;
-	Wed, 14 Jan 2026 12:45:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDA732FBDED;
+	Wed, 14 Jan 2026 12:47:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768394734; cv=none; b=BRfILqHAVOub/lwE+qdbz4PREBaFbip4KWPSP+C0khz/8gcNngIzezn7iYHKMFgoePfbLM2gFxQM7W5nKrwRuNfFOAlYbofq+H1I0vtoR6GozB39JNHr//wCIICJeICTgSCqs2BMkUbL73xrpnHuEYYjhNbfq2Cc/get+cFcEIo=
+	t=1768394839; cv=none; b=aiTG71+YA9Jrp4YTtFzM0+m6yLrbarLjZP6GiHW2cUnvfpQmbfEU3EAmuXe5iXNbgp5EyWmJb1a3Nu9kXEtWmQCf31/CEnxJcntMgMk4F1cQ88ajvGzRq/x16W8fhj9bhCQoAPs0HIZc+Xz8xZVgF5ohkeFutdYeQAYZQU3vhwk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768394734; c=relaxed/simple;
-	bh=nty8LgT231y7IUfYwjizh9hq071dgjnd4Wk1SjzoEhg=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pcm8BGCOsW71YYwJN2Z0Ndbd21ZqiJ+S+RmlBQP3w8Enu5bGsmwGYLx8z/Jx9vLYhjA6LRvQzUBasUnIN4j3XxRc49t1BjarE8jUCuVEJksRQtDb1J3EYSRqVvDfEDryZBpFfJXbeSziXf4CHceH4CoHs3y+nNlm64dI7IBg0Q8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.224.150])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4drm6g0ZwmzJ46BG;
-	Wed, 14 Jan 2026 20:45:15 +0800 (CST)
-Received: from dubpeml100005.china.huawei.com (unknown [7.214.146.113])
-	by mail.maildlp.com (Postfix) with ESMTPS id B429340563;
-	Wed, 14 Jan 2026 20:45:29 +0800 (CST)
-Received: from localhost (10.203.177.15) by dubpeml100005.china.huawei.com
- (7.214.146.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.36; Wed, 14 Jan
- 2026 12:45:29 +0000
-Date: Wed, 14 Jan 2026 12:45:27 +0000
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Tomas Melin <tomas.melin@vaisala.com>
-CC: Michael Hennerich <Michael.Hennerich@analog.com>, Nuno Sa
-	<nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, "Jonathan
- Cameron" <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, "Andy
- Shevchenko" <andy@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 4/4] iio: adc: ad9467: check for backend capabilities
-Message-ID: <20260114124527.00000344@huawei.com>
-In-Reply-To: <20260114-b4-ad9467-optional-backend-v3-4-d2c84979d010@vaisala.com>
-References: <20260114-b4-ad9467-optional-backend-v3-0-d2c84979d010@vaisala.com>
-	<20260114-b4-ad9467-optional-backend-v3-4-d2c84979d010@vaisala.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1768394839; c=relaxed/simple;
+	bh=fqE/iW2Pn4jYDv2zxW4AlHGPVpWGgAheApWkx+7iBZk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=brLEIeghkeYYsAs2pw9507xo0GKG7ZgbLq/neohd0SOPTdXO0kJJZMLw6jFdD4N9uLjBKoT7vBOojqkea6ja6NU/ylZD+g7EQUsg33fzQeP56xw9TtIj99GuflvUIRbmhiDMbNteAgKOLoy/XKz1x18BfqfrVitVobaZvIVyaaI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=rx/2nAOT; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="rx/2nAOT"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60EC4qCG3765811;
+	Wed, 14 Jan 2026 07:47:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=+Y0K6MWYjw6b1NU5Gjgchbt2SR6
+	Dghjcx2ukTmA2WWU=; b=rx/2nAOTfp0ppzbp9lsLef3J8GVXOoZmYtrWSCGz4/m
+	iTdBze4AO7oDxxd1UNb1ZN8m6haBcC9sZMpRRRIpw6gnhO3YQEJliUXljIrHCetS
+	XSlIBN2fzkJSi3w9mFfKcLoWgvc6fEBfUsfcAvoMUGP7OhQu3wW106BFVxIzMruK
+	JOYWMjDL/6JXnfQ+Q+NiWZlmMRPhPCr3RcNxoR3AQGise4L+10X7TyJW0ArnLmWi
+	Ah2ffETzvgt6bnMIQC4v31ybc3qDS7pU4KXySlRUzghLKTeWTuI0GMJC35SyQ8DT
+	fgCu1wu2M+hRjx8RSNXIEe/3XaRxmoFvRdawZ0XFYeQ==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4bpau08gju-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 14 Jan 2026 07:47:00 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 60ECkwaG061428
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 14 Jan 2026 07:46:58 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 14 Jan 2026 07:46:58 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Wed, 14 Jan 2026 07:46:58 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Wed, 14 Jan 2026 07:46:58 -0500
+Received: from JSANTO12-L01.ad.analog.com ([10.65.60.206])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 60ECkcX7001719;
+	Wed, 14 Jan 2026 07:46:41 -0500
+From: Jonathan Santos <Jonathan.Santos@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Jonathan Santos <Jonathan.Santos@analog.com>, <lars@metafoo.de>,
+        <Michael.Hennerich@analog.com>, <jic23@kernel.org>,
+        <dlechner@baylibre.com>, <nuno.sa@analog.com>, <andy@kernel.org>,
+        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <jonath4nns@gmail.com>
+Subject: [PATCH v6 0/5] Add support for ADAQ776x-1 ADC Family
+Date: Wed, 14 Jan 2026 06:26:22 -0300
+Message-ID: <cover.1768350772.git.Jonathan.Santos@analog.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml100010.china.huawei.com (7.191.174.197) To
- dubpeml100005.china.huawei.com (7.214.146.113)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTE0MDEwNiBTYWx0ZWRfX/fat0h6jQT3s
+ iSripvF0nijEYwLz6HvUr67TVA5RzVEPD1Chgo4bpUh8onppcY1C6vYRb1JR/ZKSnCINrwvfmuK
+ 1JZ46Phf5aNwJm4DbVt30TT2N+4Q1mg0qP73UD9iP4LbNwHY0Bw7tzrSChL7XV8fk6dsv5VUogf
+ mLLdBAw2Lfx+cjO1laewy4alnlU2lM2eSXBH6cnWN1nAeRWztgRbgCZPGPAQ0tV09PWMdPboQ3K
+ uPq77LVEpRURcPl/D6of86rPTk+MNmnp8rFsYMaQEzl4Rz4RVnPyJ0RsRvUhjsOSGB6Iu0Z79lM
+ hxolF4t+uW1vqzLe5VEunDdele6bbCVzg2B4Bs13bXyq/CMV88oIFVapgbWEW1f/Y8ZUn5daEq4
+ lCLNM0k3Gnb4CLLxif3YqGmDhCdTYGNWhRWI7PAue3RgpJCuvPtTACX7H0DbkezsLbz31eoa6qP
+ DIpiXjxgCjKPJX90U7w==
+X-Authority-Analysis: v=2.4 cv=YcWwJgRf c=1 sm=1 tr=0 ts=69679044 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=vUbySO9Y5rIA:10 a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8
+ a=RBodamOL_v8OAKJrvLgA:9
+X-Proofpoint-ORIG-GUID: kw0OkdXEwIyw8pZWRvaLHeYGZ40DtVg0
+X-Proofpoint-GUID: kw0OkdXEwIyw8pZWRvaLHeYGZ40DtVg0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
+ definitions=2026-01-14_04,2026-01-09_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 malwarescore=0 lowpriorityscore=0 adultscore=0 clxscore=1015
+ priorityscore=1501 phishscore=0 bulkscore=0 spamscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2512120000 definitions=main-2601140106
 
-On Wed, 14 Jan 2026 10:45:53 +0000
-Tomas Melin <tomas.melin@vaisala.com> wrote:
+This adds support for the ADAQ7767-1, ADAQ7768-1 and ADAQ7769-1 devices. 
 
-> Add capability checks for operation with backends that do not support
-> full set of features, but are otherwise compatible with the device.
-> 
-> Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
-Hi Tomas,
+The ADAQ7768-1 and ADAQ7769-1 integrate a programmable gain amplifier (PGA)
+with 7 and 8 gain options, respectively. The ADAQ7767-1 and ADAQ7769-1 
+also feature a 3-pin selectable Anti-aliasing filter (AAF) gain.
 
-A few comments inline around when we should or should not return errors.
+---
+Changes in v6:
+* Use Pattern PER* for all percentage-related macros and include macros 
+  for Per mille and per cent mille units.
+* Refactored ad7768_parse_aaf_gain() to improve cleanliness and readability.
+* Link to v5: https://lore.kernel.org/linux-iio/cover.1765900411.git.Jonathan.Santos@analog.com/T/#t/
 
-> ---
->  drivers/iio/adc/ad9467.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-> index 9cfe66425d4e91e215cccc40e24a92c5e99e9b87..349779a049ad68b4c9f72abfc40154b4a3f2e095 100644
-> --- a/drivers/iio/adc/ad9467.c
-> +++ b/drivers/iio/adc/ad9467.c
-> @@ -645,6 +645,9 @@ static int ad9467_backend_testmode_on(struct ad9467_state *st,
->  	};
->  	int ret;
->  
-> +	if (!iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
-> +		return 0;
+Changes in v5:
+* Added PERCENT macro along with BASIS_POINTS in units.h.
+* Added new patch to allow writing attributes without direct mode claim.
+* Write scale attribute without direct mode claim to avoid deadlock
+  when using GPIOs from the device's own controller.
+* Link to v4: https://lore.kernel.org/linux-iio/cover.1764101647.git.Jonathan.Santos@analog.com/T/#t
 
-If it isn't supported then isn't any attempt to turn test_mode on an error?
-I would return errors from all these calls and only decide it doesn't
-matter right at the top of the call stack.
 
-In this particular case that's either calibration mode stuff (covered by check
-below) or ad9467_chan_test_mod_write()  I'd just add a top level check there
-on ability to do calibration. Alternative would be to not register the debugfs
-at all.  Challenge is that is a small ABI break.  Do we care?  If we had
-been doing this from the start we would have just hidden the pointless
-interface.
-(Key is we can change userspace interfaces, as long no one notices!)
+Changes in v4:
+* Removed u64_fract type patch, as it is not used. u32_fract is sufficient
+  for the PGA gain calculations.
+* Added new patch adding BASIS_POINTS macro to units.h.
+* Included pga-gpios property for parts that support PGA gain.
+  Before we were using the internal gpio controller to manage the PGA pins,
+  but still exposing the controller for external use (causing possible conflicts).
+* Addressed other review comments, see individual patches.
+* Link to v3: https://lore.kernel.org/linux-iio/cover.1757001160.git.Jonathan.Santos@analog.com/T/#t
 
-> +
->  	ret = iio_backend_data_format_set(st->back, chan, &data);
->  	if (ret)
->  		return ret;
-> @@ -665,6 +668,9 @@ static int ad9467_backend_testmode_off(struct ad9467_state *st,
- 	};
->  	int ret;
->  
-> +	if (!iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
-> +		return 0;
-> +
->  	ret = iio_backend_chan_disable(st->back, chan);
->  	if (ret)
->  		return ret;
-> @@ -807,6 +813,9 @@ static int ad9467_calibrate(struct ad9467_state *st)
->  	bool invert = false, stat;
->  	int ret;
->  
-> +	if (!iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
-> +		return 0;
+Changes in v3:
+* Renamed adi,gain-milli to adi,aaf-gain-bp. Now it represents basis points
+  (one hundredth of a percent).
+* ad7768_channel_masks removed along with available_masks element in
+  ad7768_chip_info struct. It does not add anything for single channels,
+  so not needed, at least for now.
+* New patch adding 64-bit fractional number types to math.h.
+* Moved aaf gain parsing to its own function, and now returning after
+  warning to avoid setting a variable when it shouldn't (avoid confusion).
+* ad7768_set_pga_gain(): removed the pgia enable check, relying on the
+  regmap cache.
+* Addressed other review comments, see individual patches.
 
-So this the idea of a stub calibration bothers me a little, but I think
-it's more acceptable to do it for this top level call. So keep this one, but
-all the others look to me like they should be returning errors.
+Changes in v2:
+* adi,aaf-gain property renamed to adi,gain-milli. Default value added.
+* fixed some commit messages. 
+* Added 'select RATIONAL' to Kconfig.
+* Added lock to protect PGA value access.
+* rewrote AAF gain check and replaced error returns with warnings.
+* Addressed other review comments, see individual patches.
+* Link to v1: https://lore.kernel.org/linux-iio/cover.1754617360.git.Jonathan.Santos@analog.com/T/#t
 
-> +
->  	/* all points invalid */
->  	bitmap_fill(st->calib_map, st->calib_map_size);
->  
-> @@ -1357,7 +1366,7 @@ static int ad9467_probe(struct spi_device *spi)
->  		return ret;
->  
->  	ret = devm_iio_backend_request_buffer(&spi->dev, st->back, indio_dev);
-> -	if (ret)
-> +	if (ret && ret != -EOPNOTSUPP)
+Jonathan Santos (5):
+  dt-bindings: iio: adc: ad7768-1: add new supported parts
+  iio: adc: ad7768-1: introduce chip info for future multidevice support
+  units: add conversion macros for percentage related units
+  iio: adc: ad7768-1: refactor ad7768_write_raw()
+  iio: adc: ad7768-1: add support for ADAQ776x-1 ADC Family
 
-I don't see any modification of devm_iio_backend_request_buffer() in this
-set so why why is it now acceptable to return not supported?
-Given the capabilities stuff added, should this not be another capability
-we check before trying to request the buffer?
+ .../bindings/iio/adc/adi,ad7768-1.yaml        |  64 ++-
+ drivers/iio/adc/Kconfig                       |   1 +
+ drivers/iio/adc/ad7768-1.c                    | 423 +++++++++++++++---
+ include/linux/units.h                         |  19 +
+ 4 files changed, 453 insertions(+), 54 deletions(-)
 
->  		return ret;
->  
->  	ret = devm_iio_backend_enable(&spi->dev, st->back);
-> 
+
+base-commit: e0bc6d7e258486c10bb11e31fd4421c134063b1d
+-- 
+2.34.1
 
