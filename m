@@ -1,157 +1,146 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from nalicastle.subdimension.ro (nalicastle.subdimension.ro [172.105.74.154])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 742C13A4AC4
-	for <linux-iio@vger.kernel.org>; Wed, 14 Jan 2026 16:38:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ECE943A6412;
+	Wed, 14 Jan 2026 16:56:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=172.105.74.154
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768408741; cv=none; b=ZA5JaR3vMwdUBhZhfqxVWf7Pm+WRx3uvEwI3JF084xReoA6f4KYT40Pc19W7ZWAsuFdcDnpF1p17nUwoZs1Z/tZN4A4YwEAxV8W8JtRY8YV/4xQwycarVr9TjE3uUBWXuizVmoZwYGXKNgH5wHFYArhxOX63lzZz+GmLSs2sqw0=
+	t=1768409788; cv=none; b=VUhKYPviD8KWqvfxXGIxa4vDy5UBlpO2LTMeqsSwhLdSuKQ70by1h4xg5sEJveqAAN5iOcrrCsywhxlD2yo0UnIUQoe9BdgOJyesLP2Q9TjhvbiR1ZQqlTtlbcLesdJ4NQJxXQWU+n/n5xmPiN2v7epUMefSD2XYZE/kHhmzqo8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768408741; c=relaxed/simple;
-	bh=JCUV58cUqQKhCjdeo/XygWeSJIfKra0j28AlW6+loGA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=UAbEl1yc/LL5SZ4DYALT6Whu/dPo9xeGU+fPeBTfT3FjsLW3hsDJwGQqnx9ZjfyHwY6OB1M5k3P2Khl8D+Y+NEQVpcdUnbBxkdIbQIpXLQLDXBAaOqJUG1T9anU/tfCsMLTFMsuOPj+zMZpiQ60BMAnJWxSpZi37DIxrHxBQmi8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=bot3ecRr; arc=none smtp.client-ip=209.85.221.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1768409788; c=relaxed/simple;
+	bh=W9aAMBBR6uyrjOwGrt0cli/0vzbAjq13Qzolf5EZ+Lc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=sQ+SC8wCdUXXGOJm3u9KIUVdtD0VK5bt8O2WTUpNJQ8cnP2C5Ahm2MGaYUYHT/9Issi46m3m/IhFuuzpttCXNeZxl2hSK6+LmyOHZueukezh/y29vawZQ4G8fPWeK98XFptaccZvsihnRAxaCABRPaEb1mzb1fAtnU2FVC2GtNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=e/ImHivy; arc=none smtp.client-ip=172.105.74.154
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bot3ecRr"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-42fbc3056afso21885f8f.2
-        for <linux-iio@vger.kernel.org>; Wed, 14 Jan 2026 08:38:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1768408736; x=1769013536; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kz9SH3CkZz+PQQkAjq5SbvfDuE757gp5ylXm52bn0UQ=;
-        b=bot3ecRr/tikhJxHe8k6PPUFR7TOxUap1cxNxaivX//Veeh/pEXVRyINzg+OTZ66xy
-         mKUIYsCRFL3qC1RSALTBCw37Umva0hjBcg3rEPlCLr3qEDXp/OuUvM5UJpNq7SnpizL2
-         l39I8wizkYhNKTbTLcaGfBUXhpdJXh+b1+LWt1Pmtly75Eg6k3Hwkox35YroZzY25esj
-         7Zqs6NduJZTHABCDK5Gi6hiqOY6Wx8cUAaEwdVcGroRX8iFO3Ao6Gpms0Zj+zfnkDJQb
-         UbvXodfD8kC2p0C45qGsn0YaXJjM46UFk9iJq96jqJ6vrhXVs1XOrvmRUk8+xhek4hzO
-         e5iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768408736; x=1769013536;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kz9SH3CkZz+PQQkAjq5SbvfDuE757gp5ylXm52bn0UQ=;
-        b=MCN6wip/ABoNep3SToUi3MQB6LQcgQ2+Fq8pndmS0F2Wr8GX6NqOXbpxyAKABRsG95
-         2K3RCwUZCdlLlm4W5YbHKKKU2Ip9IWKHd0Rg6EeIp/xieGEDsguam0kfbXYOoU7na9PE
-         IzpTl09ch9wUxDPA9UsdnK8tO22WLY0LBLrT668OZxLP6HJARhK0IN386VeiUgtZf9i2
-         57Zxto75OlvTTUOB7cAmYHauVs9ImqQ/tcR1uLFwo65wairKLjBlJsWmKX1FpRuliZwD
-         T1LV2plwdLf044UcTagUFd0GFO61dZIxPU3LpgEIlODgsOHpPSa0mQULMdqvwPWac+MR
-         +w4Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVugrYJenenZ7lsZWclBbClF1KYO4JzqvIoFPEj4DR4cUzZL369jpNXhJZmjAr4G/EGJ6P+Z3dro0Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzaRXHUF3p2f1UVFEFOoa3xegd0rSmIuT4U5AIJZncsbmjsXgqQ
-	4O1aUXGGDkWpiweUQi5CLGBNTVqr/fdEkJ2JugMb/gVq3Eb1I6mfnHR0sJXfoGMX/74=
-X-Gm-Gg: AY/fxX4u5OtyrionUCFI704U7HJ6EOJLTED3CMOUKLvel6nOMiRpqeHRebp0LD8sv3x
-	CfXiIYqA7H5XaHZ/H8P4HQnoN7wt+o6g31jJ9sxA2OVXBkv8YGGHvE0gKRq/9VCgcEXthhRzuMo
-	P4XUi8Gt6KI/fWSqJ3rp5Qimaw44KEIGebrmOiIDxIXhOylrAzfKZJdtq+2nQmOgfnraLjickpj
-	iRVVg7wZ1smm4PrVfSG2l4QrSHbGbX2kJyzKB/kAbl1pSD4IOJC7zt/m6SHlXq1UktkuC4jQf+G
-	c12IFOKwNSA/FbPhZ23lJdiZFiJC4ZEDbDenQSZj3g6e2x7gKSbS9ZbkKsowqHDqU27vSZafRai
-	EfKlg/w57MD50hsL+ClZyARSsnPAJPlhq/kOOQqraCGDoSkBx2qkNwIE4+N+warXggvgzPLMcJC
-	gsaHEe3HxO/mBFYBeVKzQEjZoEmNLDeo2vVF5Ltp8+S3qwPL8=
-X-Received: by 2002:a05:6000:616:b0:432:c37c:d83a with SMTP id ffacd0b85a97d-4342c4ffd94mr3862827f8f.15.1768408735959;
-        Wed, 14 Jan 2026 08:38:55 -0800 (PST)
-Received: from [192.168.2.1] (146725694.box.freepro.com. [130.180.211.218])
-        by smtp.googlemail.com with ESMTPSA id ffacd0b85a97d-434af6d90aasm207556f8f.29.2026.01.14.08.38.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Jan 2026 08:38:55 -0800 (PST)
-Message-ID: <19dbdd5d-42d8-4ce6-8d8e-f91251348780@linaro.org>
-Date: Wed, 14 Jan 2026 17:38:51 +0100
+	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="e/ImHivy"
+Received: from sunspire.home.arpa (unknown [IPv6:2a02:2f0e:300:8a00:e2d5:5eff:fed9:f1c4])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange x25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+	(Client did not present a certificate)
+	by nalicastle.subdimension.ro (Postfix) with ESMTPSA id 83B2B16020B;
+	Wed, 14 Jan 2026 18:56:22 +0200 (EET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
+	s=mail; t=1768409782;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=AeEhn/pRGwMuCxZxT+q3vRI9M7KSErrvZC+oQg46pR8=;
+	b=e/ImHivyWuLYON92EuS87qOKfVlv2hm0z1T4u0oyWpUiyWSfPsFFtYAJi6kxPrjmwq6zfW
+	14yAK71L0v3oEis4OA868O7TIEygaz7+dnxQSfe32VIQGQv5jhP4/sp1MYEgR6tuC7lX17
+	bkgTmt/GVBxf9oFqkQkryUlSxbLTQrvYe7fgtdf72N8Im2+30a54OLdoXQW6JOTuFXcB6h
+	x2Z+mXmisPnP8e9VkmH47xr2E1Mg6W0Emnytz86k0Faq3AjgJCtDaZcwssq9DQ+6dUPEo3
+	ihtT41IaXnva+MiKGIj3Sz0UUXxp2fhRLpo88MlyO9gTHaAii++VllhUBhetzw==
+From: Petre Rodan <petre.rodan@subdimension.ro>
+Date: Wed, 14 Jan 2026 18:55:31 +0200
+Subject: [PATCH v3 02/13] iio: pressure: mprls0025pa: fix SPI CS delay
+ violation
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/3] counter: Add STM based counter
-To: Frank Li <Frank.li@nxp.com>
-Cc: wbg@kernel.org, robh@kernel.org, conor+dt@kernel.org, krzk+dt@kernel.org,
- s32@nxp.com, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-References: <20260113165220.1599038-1-daniel.lezcano@linaro.org>
- <20260113165220.1599038-4-daniel.lezcano@linaro.org>
- <aWaIXRLxGBh0bjuQ@lizhi-Precision-Tower-5810>
-Content-Language: en-US
-From: Daniel Lezcano <daniel.lezcano@linaro.org>
-In-Reply-To: <aWaIXRLxGBh0bjuQ@lizhi-Precision-Tower-5810>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260114-mprls_cleanup-v3-2-bc7f1c2957c2@subdimension.ro>
+References: <20260114-mprls_cleanup-v3-0-bc7f1c2957c2@subdimension.ro>
+In-Reply-To: <20260114-mprls_cleanup-v3-0-bc7f1c2957c2@subdimension.ro>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Andreas Klinger <ak@it-klinger.de>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ Petre Rodan <petre.rodan@subdimension.ro>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2486;
+ i=petre.rodan@subdimension.ro; h=from:subject:message-id;
+ bh=W9aAMBBR6uyrjOwGrt0cli/0vzbAjq13Qzolf5EZ+Lc=;
+ b=LS0tLS1CRUdJTiBQR1AgTUVTU0FHRS0tLS0tCgpvd0o0bkFHSkFuYjlrQTBEQUFvQmRDc25wM
+ k02U1dNQnl5WmlBR2xueXBrcks4UHQzZEdjd2E5RUVxQlBwbmRBCjB0d244OTQ0aSsra0U5OG5j
+ allNVW9rQ1R3UUFBUW9BT1JZaEJCb2ltQncrRGJ4UXBFNmlkM1FySjZkak9rbGoKQlFKcFo4cVp
+ HeFNBQUFBQUFBUUFEbTFoYm5VeUxESXVOU3N4TGpFeExESXNNZ0FLQ1JCMEt5ZW5ZenBKWXhqMg
+ pELzBjT3JEazZVdkFXRi8wSFhVK2IxSnA3SHgxNnFwMklsakYxZEJJR2FWbGtZMGdGWXpuNXhjb
+ HNRYmxHcHJoCm9wTis0aG5TNmZuQnZuQnZlTmZ1SjZyRGhXK0Ntbk8vdUpKdjZjV0FSNm52cjFV
+ Z2IrWSt1RWh5TmU4d2dZUGgKaFlkenYwRWNBREdZb0NBL3oxazNzUlRTUVQxTDg2Q292ZlBrYmh
+ jeHYyR2Q0NnpwZ3pkTXhObzJjcE1wUmowRwoxYzFZOURmQ29vbzllWjRlLzRsZTJ1NzBvdWVwWk
+ ZGd2FCaktsaDVMdmNOOTNaclgxSEZUMkZ5MHozNElnNnJXCko5RGhhK1lrQWxaZ2ZaRnlEYlNDT
+ UpjVTZrVStWUk9DRkZXc04veVV4OHJ3MFY2TWJYc2ZySmZHS1FuTnpnd1QKVU5MaWc0M29XcWhD
+ Tk1vczBtNStqQXVHVDRlRExiVWNzakhCbldHSzhQS1J4L2M5TjNhc1k2eHk4dGFEbmQraQpnMFo
+ 0bGpaWXhxWE1ad3VyMkRVOXBmNmxFS0FGclR4dmNkSEQ5SEJCekRpZDMxWGRKelpJdU5vZTYybH
+ AxQ2oyCnBtYXVSRk5ZUWtNck1raFptQ3pvL0ZuL08rczhpaHJacVN2SWhNU0tpY1Z3Q3NuU0dCR
+ FJ6N0lYY3VTS0s3TjMKazFKUzNLZWJJYXJpL0EvWWhUaUdTeWh1OEkvenRmbkd2U3ladWpDN2hh
+ bnk2MmNSS25WQ2Z4VmtzWXlMdDQvRgpBMStDK08xU2FtUzVvOHN0MEhNdkRoMkdBSUNuUjV3c2h
+ WVEdPOEFtZnZXeVlxc1UyVDhSK1FQQ3VyTzdqcUo4CnpGdllnTnVKRWdUaWtpMGxLSHV1WDErSV
+ JpakRIRkJBOXNoeHh2Q2lDdE9uaWZhT05IMD0KPTlYR2sKLS0tLS1FTkQgUEdQIE1FU1NBR0UtL
+ S0tLQo=
+X-Developer-Key: i=petre.rodan@subdimension.ro; a=openpgp;
+ fpr=D80A7FC176151935EC3E5FA9CF269999844E7F30
 
-On 1/13/26 19:01, Frank Li wrote:
-> On Tue, Jan 13, 2026 at 05:52:20PM +0100, Daniel Lezcano wrote:
->> The NXP S32G2 automotive platform integrates four Cortex-A53 cores and
->> three Cortex-M7 cores, along with a large number of timers and
->> counters. These hardware blocks can be used as clocksources or
->> clockevents, or as timestamp counters shared across the various
->> subsystems running alongside the Linux kernel, such as firmware
->> components. Their actual usage depends on the overall platform
->> software design.
->>
->> In a Linux-based system, the kernel controls the counter, which is a
->> read-only shared resource for the other subsystems. One of its primary
->> purposes is to act as a common timestamp source for messages or
->> traces, allowing correlation of events occurring in different
->> operating system contexts.
->>
->> These changes introduce a basic counter driver that can start, stop,
->> and reset the counter. It also handles overflow accounting and
->> configures the prescaler value.
->>
->> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
->> ---
+Based on the sensor datasheet in chapter 7.6 SPI timing, Table 20,
+during the SPI transfer there is a minimum time interval requirement
+between the CS being asserted and the first clock edge (tHDSS).
+This minimum interval of 2.5us is being violated if two consecutive SPI
+transfers are queued up.
 
-[ ... ]
+Fixes: a0858f0cd28e ("iio: pressure: mprls0025pa add SPI driver")
+Datasheet: https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/board-mount-pressure-sensors/micropressure-mpr-series/documents/sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf?download=false
+Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
+---
+v1 -> v2 use xfer.delay.value as per Marcelo Schmitt's review
+v2 -> v3 no change
+---
+ drivers/iio/pressure/mprls0025pa_spi.c | 19 ++++++++++++++-----
+ 1 file changed, 14 insertions(+), 5 deletions(-)
 
->> +static int nxp_stm_cnt_count_read(struct counter_device *dev,
->> +				  struct counter_count *count, u64 *val)
->> +{
->> +	struct nxp_stm_cnt *stm_cnt = counter_priv(dev);
->> +	u32 w1, w2, cnt;
->> +
->> +	do {
->> +		w1 = atomic_read(&stm_cnt->nr_wraps);
->> +		cnt = nxp_stm_cnt_get_counter(stm_cnt);
->> +		w2 = atomic_read(&stm_cnt->nr_wraps);
->> +	} while (w1 != w2);
-> 
-> Still have problem. Does hardware have overflow flags? This way is just
-> work for hardware overflow
-
-No, there is no overflow flag. Just a comparator.
-
-> CPU1
-> 
-> 	w1  = 0
->          count = 0xffff,ffff
-> 	w2 = 0
-> 
-> 
-> when count wrap to 0, triger irq, but irq handle have latency at CPU0,
-> CPU0 have not chance to sevice irq. you can add printk at irq sevice to
-> create corner case.
-> 
-> So CPU1 get
-> 
-> 	w1= 0
-> 	count = 0
-> 	w2=0
-> 
-> so counter still suddently change to 0.
-
-Ok, so I think I'll stick to the initial implementation and just give 
-the counter number instead of trying to do fancy things.
-
-
-[ ... ]
+diff --git a/drivers/iio/pressure/mprls0025pa_spi.c b/drivers/iio/pressure/mprls0025pa_spi.c
+index e6bb75de3411..cf17eb2e7208 100644
+--- a/drivers/iio/pressure/mprls0025pa_spi.c
++++ b/drivers/iio/pressure/mprls0025pa_spi.c
+@@ -8,6 +8,7 @@
+  *  https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/board-mount-pressure-sensors/micropressure-mpr-series/documents/sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
+  */
+ 
++#include <linux/array_size.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
+ #include <linux/mod_devicetable.h>
+@@ -40,17 +41,25 @@ static int mpr_spi_xfer(struct mpr_data *data, const u8 cmd, const u8 pkt_len)
+ {
+ 	struct spi_device *spi = to_spi_device(data->dev);
+ 	struct mpr_spi_buf *buf = spi_get_drvdata(spi);
+-	struct spi_transfer xfer = { };
++	struct spi_transfer xfers[2] = { };
+ 
+ 	if (pkt_len > MPR_MEASUREMENT_RD_SIZE)
+ 		return -EOVERFLOW;
+ 
+ 	buf->tx[0] = cmd;
+-	xfer.tx_buf = buf->tx;
+-	xfer.rx_buf = data->buffer;
+-	xfer.len = pkt_len;
+ 
+-	return spi_sync_transfer(spi, &xfer, 1);
++	/*
++	 * Dummy transfer with no data, just cause a 2.5us+ delay between the CS assert
++	 * and the first clock edge as per the datasheet tHDSS timing requirement.
++	 */
++	xfers[0].delay.value = 2500;
++	xfers[0].delay.unit = SPI_DELAY_UNIT_NSECS;
++
++	xfers[1].tx_buf = buf->tx;
++	xfers[1].rx_buf = data->buffer;
++	xfers[1].len = pkt_len;
++
++	return spi_sync_transfer(spi, xfers, ARRAY_SIZE(xfers));
+ }
+ 
+ static const struct mpr_ops mpr_spi_ops = {
 
 -- 
-<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+2.52.0
 
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
