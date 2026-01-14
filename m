@@ -1,131 +1,152 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAE063904D0;
-	Wed, 14 Jan 2026 12:21:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0B6CC397AC1
+	for <linux-iio@vger.kernel.org>; Wed, 14 Jan 2026 12:28:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768393309; cv=none; b=hSqyp+pWXT7w7uAKGQpd9shYztrB0rIvQAMMnjOU3uBZJahY5ASEwyo6eICG93WpgFoEjBZlSBIsEDl8MbF1vxr5M8q51PYS/HUOYTEkjpCRoS2GH3f8vQi/xvNKC3J2ZL/w+h3RyhEiBGupHsc1UIsy0A+Gl62YfQRiMNFAP4k=
+	t=1768393707; cv=none; b=CPbBzNM7yiI317enYlLVBkZT4deMJSQ+M7VG+79AIKE8/7Yj3bCLeSKvv7HVKDrl1LNzZ0ew8eNUXR3aZq7HBQEmxvMQc362qBFLzrlzxx6Pdnv4jzI8Qr3reeevIclp1vN65YUc3+LkU4gv+NkTwuMiNwstrygpRpdMhN9QIlw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768393309; c=relaxed/simple;
-	bh=7zZcDF9gSmRnrONZN0KyqDT+wCk5pjDYznP+xYeRZqA=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pS9w2EwZZjVRp9WYgIosQj0/i+JmN1P2n9ZswDdybNobJNkF8STKvOecPIivesif86uKneJ/e0lni4oXwlfoFOLe9KlcvhYffVkdyk0TtfRO5cY0HrjKnFczoyeDz6z3dL8tLRaekkyVOLeCzxeynJ1D5l4YRipSbI2V70UhmLA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.224.107])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4drlbG4ftDzJ46pC;
-	Wed, 14 Jan 2026 20:21:30 +0800 (CST)
-Received: from dubpeml100005.china.huawei.com (unknown [7.214.146.113])
-	by mail.maildlp.com (Postfix) with ESMTPS id 45AB340570;
-	Wed, 14 Jan 2026 20:21:45 +0800 (CST)
-Received: from localhost (10.203.177.15) by dubpeml100005.china.huawei.com
- (7.214.146.113) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.36; Wed, 14 Jan
- 2026 12:21:44 +0000
-Date: Wed, 14 Jan 2026 12:21:43 +0000
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Petre Rodan <petre.rodan@subdimension.ro>
-CC: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Andreas Klinger <ak@it-klinger.de>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Marcelo Schmitt
-	<marcelo.schmitt1@gmail.com>
-Subject: Re: [PATCH v2 00/13] iio: pressure: mprls0025pa: driver code
- cleanup
-Message-ID: <20260114122143.000073cd@huawei.com>
-In-Reply-To: <20260114-mprls_cleanup-v2-0-5868b0045316@subdimension.ro>
-References: <20260114-mprls_cleanup-v2-0-5868b0045316@subdimension.ro>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1768393707; c=relaxed/simple;
+	bh=QgwsHL9AbTLz5x42otaIV8gXrDTeQm0xTsamF2Jq5bU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=h8baPZ7s/HJtCkUwnnNyjDl1n6qMKKk+BFgHiJ/M1AA5RsExzDiHr/ImhzWHBgyUj/FpJX/frdJriW69kV5343ZcO9rN6BbClwjlOCMd6+nWMkDT2JjqRHauv4CvfoiWkWxDsoXe/XoYQbQ6Dvvq4r3kSADKpvVepZI5nX94H40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BXGycMSC; arc=none smtp.client-ip=209.85.221.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BXGycMSC"
+Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-430f57cd471so4401051f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 14 Jan 2026 04:28:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1768393704; x=1768998504; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=PNFOqNpn1rMH4P5bAL5Hvxr+IGOQ+YxsG/76tkaFGV8=;
+        b=BXGycMSCkZUtITJM+m44UsyX8YnXut4MOd25/39GO2QoxDrdtgZcwXjtzUgZD0m76z
+         4oc5gJXns8upNJfr1c/2vc673xKlvSJ1zqpWdKAfDtloJiGqxPhmMOyn+dh1hyvNEurf
+         40CFp5Bg9SfJ2wr0+Te7A7w+LtiV4cZdmE7FrZRH1bkIIvaBeDrUz4KhMMrsLEs8s/+J
+         gUBJk4Dx6o1YnLBaKpFkM5u/1+Gd60fRynDk/NcGd7Jd0SJRCwkExAh5HOP4aXzvAODQ
+         JxXztnPaIAerhZOOIKiQk3lh4tWwPRjj6z5IiOhnxePc6N8dPDuTVr43FQCgUnyuoX8T
+         WKHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768393704; x=1768998504;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PNFOqNpn1rMH4P5bAL5Hvxr+IGOQ+YxsG/76tkaFGV8=;
+        b=tgxULVI7LP2NYiXfPxz54h0WNqAwXV1ODpbmpUYnalOEGNDfx25VWv/n3ffoJrodKu
+         x5AJyS/NRIT1tx8HukM/UXFH48FfB/ZGA+U7FtESx+2KRKpEXmiM10g88kg+qsRH93Tz
+         dAkDYta4pjYrNelJu50oDdq4uhhrThZRbdoCemFHI9XH5kbQnZuapB8iHzJGMdV6TcC6
+         QHuT7dLA+fHHOwdOnRqNBUJYvbTIAI6XzthljBqEXTU47qyECzg8emDNz/Ergn5TTW0p
+         X699Ef5OTCj1zwJi2DBvsY+MrKUsTMSsTei21ykyFnsSXettGLAlf7ThW1cD4KASehQ+
+         nNnQ==
+X-Gm-Message-State: AOJu0YxM8XRl9uQyHGc7EIdk/rJ610KUCNmfGKqWyq9XKU2et+LOjMy9
+	U2J7SatDTxX9TwL4KeZZO+vuLTCf6J6xVCLJJ67m6AvcCs7f68ArqdFV
+X-Gm-Gg: AY/fxX6fb6clBXCr9y8bcDQamrGDnH/ZsQWO/OeedwmUxVpcA5owDzvQV9dI1b170kB
+	UWw0MWNhYnbBvm0AjoucTtY9I3xwPvmQwx5BYBJB9V+GSxGQFBOvIIM874qpC6l0PGwEUVpZULK
+	gAeZp34rhNumPskPBQPLH6rV9qN3eHmWd/5EhLV7U2drNnjEY2RmJHcFZAuozdn8c4JtaS9tUgy
+	6AP+mhAgXMAVN3PvQxlkjxI2bS/Dmbd4g/mLEZy7MSu4PTGitazA0hpZHVpADCt+JooUI97T9zT
+	fY3n3trDMsWOksNQ4NVl/QkvdqslBPw4Dc6FcSrzZF8fBcuNzvUwP8tCPLG17yZEuCAWVcBCoJX
+	B7qkdf8rLAmbnGuwjnlBtF11QEgPZ4HQdnOOnjXADk13YtYs/LZ3l/JiBN/Lgiu6rbeuxaMKg13
+	LSeDa3jIVQZJhI4i6XQQY=
+X-Received: by 2002:a05:6000:22ca:b0:432:8537:85ca with SMTP id ffacd0b85a97d-4342c554c55mr2772714f8f.50.1768393704095;
+        Wed, 14 Jan 2026 04:28:24 -0800 (PST)
+Received: from [192.168.1.187] ([161.230.67.253])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-432bd0dacc5sm49668267f8f.5.2026.01.14.04.28.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Jan 2026 04:28:23 -0800 (PST)
+Message-ID: <34e97dbb610e82953657d8354c0a343a9e1fa57a.camel@gmail.com>
+Subject: Re: [PATCH v3 4/4] iio: adc: ad9467: check for backend capabilities
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Tomas Melin <tomas.melin@vaisala.com>, Michael Hennerich	
+ <Michael.Hennerich@analog.com>, Nuno Sa <nuno.sa@analog.com>, Lars-Peter
+ Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner	 <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Olivier Moysan	 <olivier.moysan@foss.st.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Wed, 14 Jan 2026 12:29:06 +0000
+In-Reply-To: <20260114-b4-ad9467-optional-backend-v3-4-d2c84979d010@vaisala.com>
+References: 
+	<20260114-b4-ad9467-optional-backend-v3-0-d2c84979d010@vaisala.com>
+	 <20260114-b4-ad9467-optional-backend-v3-4-d2c84979d010@vaisala.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml100012.china.huawei.com (7.191.174.184) To
- dubpeml100005.china.huawei.com (7.214.146.113)
 
-On Wed, 14 Jan 2026 12:05:34 +0200
-Petre Rodan <petre.rodan@subdimension.ro> wrote:
-
-> This series contains a collection of patches to the MPR sensor based
-> on feedback I received for other drivers.
-
-Hi Petre,
-
-I took a look at the whole series and didn't have anything to add to
-Andy's review.
-
-As we are somewhat near the end of the cycle, if you have time,
-feel free to send a v3 sooner than the normal delay of 1ish weeks
-(unless there is something you want to wait for more feedback on!)
-
-I'll almost certainly take the lot for the merge window now rather
-than trying to get the fixes in this cycle.
-
-Thanks,
-
-Jonathan
-
-
-
-> 
-> major changes:
->  - trigger flag fix (define edge direction only in the device tree)
->  - fix SPI timing violation
->  - fix scan_type struct
->  - fix pressure calculation
->     (does not affect users that define a sensor via the pressure-triplet)
->  - stricter check for the status byte + better error return levels
->  - drop the use of devm_kzalloc()
->  - stick to the datasheet parameters while performing the measurement
->     sequence
-> 
-> minor changes:
->  - includes added and removed
->  - rename generic 'buffer' variable to 'rx_buf'
-> 
-> I still included the memset patch for the reasons described in the v1 thread.
-> if you strongly consider that patch inadequate then please skip it.
-> 
-> Tested on two sensors - MPRLS0015PA0000SA and MPRLS0001BA00001A
-> 
-> Datasheet: https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/products/sensors/pressure-sensors/board-mount-pressure-sensors/micropressure-mpr-series/documents/sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf?download=false
-> Signed-off-by: Petre Rodan <petre.rodan@subdimension.ro>
+On Wed, 2026-01-14 at 10:45 +0000, Tomas Melin wrote:
+> Add capability checks for operation with backends that do not support
+> full set of features, but are otherwise compatible with the device.
+>=20
+> Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
 > ---
-> Changes in v2:
-> - reordered patches based on Marcelo's input
-> - implemented code changes based on Marcelo and Jonathan's reviews
-> - Link to v1: https://lore.kernel.org/r/20251218-mprls_cleanup-v1-0-b36a170f1a5c@subdimension.ro
-> 
-> ---
-> Petre Rodan (13):
->       iio: pressure: mprls0025pa: fix spi_transfer struct initialisation
->       iio: pressure: mprls0025pa: fix SPI CS delay violation
->       iio: pressure: mprls0025pa: fix interrupt flag
->       iio: pressure: mprls0025pa: fix scan_type struct
->       iio: pressure: mprls0025pa: fix pressure calculation
->       iio: pressure: mprls0025pa: cleanup includes
->       iio: pressure: mprls0025pa: remove redundant declarations
->       iio: pressure: mprls0025pa: rename buffer variable
->       iio: pressure: mprls0025pa: introduce tx buffer
->       iio: pressure: mprls0025pa: move memset to core
->       iio: pressure: mprls0025pa: stricter checks for the status byte
->       iio: pressure: mprls0025pa: change measurement sequence
->       iio: pressure: mprls0025pa: add copyright line
-> 
->  drivers/iio/pressure/mprls0025pa.c     | 112 +++++++++++++++------------------
->  drivers/iio/pressure/mprls0025pa.h     |  15 ++---
->  drivers/iio/pressure/mprls0025pa_i2c.c |  13 +---
->  drivers/iio/pressure/mprls0025pa_spi.c |  41 +++++-------
->  4 files changed, 73 insertions(+), 108 deletions(-)
-> ---
-> base-commit: f9e05791642810a0cf6237d39fafd6fec5e0b4bb
-> change-id: 20251215-mprls_cleanup-01de8971b439
-> 
-> Best regards,
+> =C2=A0drivers/iio/adc/ad9467.c | 11 ++++++++++-
+> =C2=A01 file changed, 10 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
+> index 9cfe66425d4e91e215cccc40e24a92c5e99e9b87..349779a049ad68b4c9f72abfc=
+40154b4a3f2e095 100644
+> --- a/drivers/iio/adc/ad9467.c
+> +++ b/drivers/iio/adc/ad9467.c
+> @@ -645,6 +645,9 @@ static int ad9467_backend_testmode_on(struct ad9467_s=
+tate *st,
+> =C2=A0	};
+> =C2=A0	int ret;
+> =C2=A0
+> +	if (!iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
+> +		return 0;
+> +
+> =C2=A0	ret =3D iio_backend_data_format_set(st->back, chan, &data);
+> =C2=A0	if (ret)
+> =C2=A0		return ret;
+> @@ -665,6 +668,9 @@ static int ad9467_backend_testmode_off(struct ad9467_=
+state *st,
+> =C2=A0	};
+> =C2=A0	int ret;
+> =C2=A0
+> +	if (!iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
+> +		return 0;
+> +
+> =C2=A0	ret =3D iio_backend_chan_disable(st->back, chan);
+> =C2=A0	if (ret)
+> =C2=A0		return ret;
+> @@ -807,6 +813,9 @@ static int ad9467_calibrate(struct ad9467_state *st)
+> =C2=A0	bool invert =3D false, stat;
+> =C2=A0	int ret;
+> =C2=A0
+> +	if (!iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
+> +		return 0;
+> +
 
+As David suggested, it might make more sense to do the check from the calle=
+rs. Not as
+important as within the backend functions though.
+
+> =C2=A0	/* all points invalid */
+> =C2=A0	bitmap_fill(st->calib_map, st->calib_map_size);
+> =C2=A0
+> @@ -1357,7 +1366,7 @@ static int ad9467_probe(struct spi_device *spi)
+> =C2=A0		return ret;
+> =C2=A0
+> =C2=A0	ret =3D devm_iio_backend_request_buffer(&spi->dev, st->back, indio=
+_dev);
+> -	if (ret)
+> +	if (ret && ret !=3D -EOPNOTSUPP)
+> =C2=A0		return ret;
+
+Don't agree with the above. I would prefer to see a dedicated CAP for buffe=
+ring
+otherwise I would argue why not doing the same for everything? While it mig=
+ht
+be acceptable merging IIO_BACKEND_CAP_TEST_PATTERNS and IIO_BACKEND_CAP_CAL=
+IBRATION
+(given they are related to some extent), that does not apply to buffering.
+
+- Nuno S=C3=A1
