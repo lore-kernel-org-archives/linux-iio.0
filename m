@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2294733344A;
-	Thu, 15 Jan 2026 08:28:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4A26B333752;
+	Thu, 15 Jan 2026 08:28:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768465695; cv=none; b=fjThxLitrMTqGvmsLQs7ez5GjdiM7ioLxLOUR0ZSuBNDTzDmDTMb/6CJfOJAm0+y+GMlvamC93Ux0RNyLnz9hgvaGhgdJNk/phyyf/GCV9YnrenNrhbHr4BfezYoMkes51b0UVt5dKTNdDcsInC7tqpzzdHfS88lJY7HfxHgwcs=
+	t=1768465695; cv=none; b=Y72v2wUBwH7gxtJcT8TqA9kc9Ikktlq8p7ud+SVmDbtn3bsBA6ox9oRFWQhFGan25ZhhW7Go2T/AAw1v+fw9BlAJMdZZGTQIoT2/DT+HZlrtPu2S1azjAaqVTFzg4NC5O5rlL/GVQy/D+gWBGeqAwEjSuFtPkAgfsr/w4wmk/mk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1768465695; c=relaxed/simple;
-	bh=TD0CKqKvYK6A8K4BW0oFhjlCzyxkS+4b/3agMVvwxlQ=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=B/rfOUUIcywvNAgHRBROUFUSxiPjwrMo0j77onJIvpPvpWgEx9661bslZ7wDFkrFh1olE35+wMnS9LDYLqyPnexWf+w+ea2jfnjO/CZ+XfXWiEDKzU09CRStv3TDdRpD0umdcaVtFEfx4hzaX8ieVK1PyR7gZvm5xJ7jJe6W0D8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nkywRJEY; arc=none smtp.client-ip=10.30.226.201
+	bh=KPba62IqbsuMVgb2wGwXvzb3M/gVX4dJMynxBAA3LPo=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=ZDPmU1sMigRgbTOT4s6N69zey38QYiGAhnP9jlq/CvjWaitQsj+dzvCPF+pHzaMZRNED558z8/DYNkBWzwLjO1ye3Rd7kX4w4Gy3uRA/X/DKzTmzYsKHEw+1HmhMdUfNMbm0i1M4HSZC7lfYWvGYnOZTdEKmuLcHJAP1JneAB8k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MZ+etE21; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nkywRJEY"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 97937C19423;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MZ+etE21"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B015EC19425;
 	Thu, 15 Jan 2026 08:28:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1768465694;
-	bh=TD0CKqKvYK6A8K4BW0oFhjlCzyxkS+4b/3agMVvwxlQ=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=nkywRJEYkcTHgeMgF9kkmIl0mhve8xBCQteUQCFsjAQ1yp2qzwScHFN3j55jAWQe+
-	 WBdAnmq3JU1+AulKMwgsQjeO3atArLVahzOMcneAZ8VznK8xYGcr/fWy5J7Jiom+4f
-	 rgbRGaVoyHK2NaQfeQnwUL2EwTt6sS8AS9npzFVsm2kgqj4UR291JcHKcTZfM1nGpe
-	 RnkJXVgzq+H6joxIs/X8ERw2DU/jpAKhQDvovkwMsJ8c0xGqT+H9Kqxf4Y9Y/3eNxs
-	 e17YiwXOBMxuHat9p7B1VnW5eX5k0/x50A8MctrSbgrJOGnSuO6vgroatiyRkX9T8S
-	 QJmrHTdnFI+tw==
+	bh=KPba62IqbsuMVgb2wGwXvzb3M/gVX4dJMynxBAA3LPo=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=MZ+etE21wNpL8XZQ7h6oAEglSFipXYVYXcQ9HgUdXIiHqDEYrLD/uvPUDsb+hmXEA
+	 IQgUFC5AUS+S1PQai+7dxjcsFLmPx28ASzgPdCH+ukBJ/2Z5TaDXb39hzFX3X9NEQF
+	 VvbvP/fvO0ygVnH2ghuuAvByTKMV52lDaI90ya4Dx7cR5RjIOrBx4tqCHXNLYZzFOZ
+	 khVH988zCRvOnMDqj4NAppYgemPtY9TEm6G0YgeEe148RSbF12BWZP3YQR6/wLxX6G
+	 XOSE76NjEwy+Gvkv9WPnDhyAYr5AXOcI/yIb+635hAUY2PB6H4G/7SRVzZMvDpTkYF
+	 pb11+G+4yiNzA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8890ED3CCB9;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A449CD3CC9F;
 	Thu, 15 Jan 2026 08:28:14 +0000 (UTC)
 From: Shrikant Raskar via B4 Relay <devnull+raskar.shree97.gmail.com@kernel.org>
-Subject: [PATCH v5 0/5] iio: proximity: Add interrupt support for RFD77402
-Date: Thu, 15 Jan 2026 13:57:36 +0530
-Message-Id: <20260115-rfd77402_v5-v5-0-594eb57683e4@gmail.com>
+Date: Thu, 15 Jan 2026 13:57:38 +0530
+Subject: [PATCH v5 2/5] iio: proximity: rfd77402: Use kernel helper for
+ result polling
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,10 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAPikaGkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyTHUUlJIzE
- vPSU3UzU4B8JSMDIzMDQ0NT3aK0FHNzEwOj+DJTXdMUQzPTJKPUxJRECyWgjoKi1LTMCrBp0bG
- 1tQAGhsn6XQAAAA==
-X-Change-ID: 20260115-rfd77402_v5-5d165b2eada8
+Message-Id: <20260115-rfd77402_v5-v5-2-594eb57683e4@gmail.com>
+References: <20260115-rfd77402_v5-v5-0-594eb57683e4@gmail.com>
+In-Reply-To: <20260115-rfd77402_v5-v5-0-594eb57683e4@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -52,11 +52,11 @@ Cc: skhan@linuxfoundation.org, david.hunter.linux@gmail.com,
  raskar.shree97@gmail.com, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1768465693; l=2922;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1768465693; l=2336;
  i=raskar.shree97@gmail.com; s=20260101; h=from:subject:message-id;
- bh=TD0CKqKvYK6A8K4BW0oFhjlCzyxkS+4b/3agMVvwxlQ=;
- b=DDRfls7lm9wPJ9qaKzpoJH66SkdxFA9mAHwXnWF6MXMusz+kzW1AzOnbXLCgKgT5S9qfTny2s
- M3QkoaaxdqrBSSodzVNxv5FAF5c1uyROux27KBZqRrOipZ0FUH3O7g6
+ bh=LaZ44z8hgRMvbV0yeT+/nj7G5ikDhjSZuco4zkRzSNU=;
+ b=p2RHYl6Q3UQP7UvUpegS5IEklJMs2jFdiZSdUE2+j+s+Hac63yQxUSvKxZCUpHwkVNikVCBIi
+ 4YdXBLhzVN4Coj85CJWiXhfiCw3dFowxCSUo0YOuWmffm63ic+AeXNW
 X-Developer-Key: i=raskar.shree97@gmail.com; a=ed25519;
  pk=4m2wXDvY0vlXefvRRzawNcNAif88Cy4XvbLkU6iMG/Y=
 X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
@@ -64,77 +64,89 @@ X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
 X-Original-From: Shrikant Raskar <raskar.shree97@gmail.com>
 Reply-To: raskar.shree97@gmail.com
 
-This series improves the RFD77402 ToF driver by cleaning up include
-ordering, improving resource lifetime handling, switching to kernel
-polling helpers, and adding optional interrupt-driven operation.
+From: Shrikant Raskar <raskar.shree97@gmail.com>
 
-Changes in v5:
-- Add precursor patch to reorder includes before functional changes.
-- Use devm_mutex_init() for proper lifetime management.
-- Address maintainer feedback on polling helper usage.
-- Remove dead code from interrupt_handler.
-- Add blank line in rfd77402_wait_for_irq.
-- Update measurement timeout comment.
-- Add helper function for result polling.
-- Fix comment format in rfd77402_init.
-- Remove 'data->irq_en = false', as it already initialized by kzalloc.
-- Improve documentation of private driver data.
+Replace the manually written polling loop with read_poll_timeout(),
+the kernel's standard helper for waiting on hardware status.
+This makes the code easier to read and avoids repeating the same
+polling code in the driver.
 
 Signed-off-by: Shrikant Raskar <raskar.shree97@gmail.com>
 ---
-Changelog:
+ drivers/iio/proximity/rfd77402.c | 34 +++++++++++++++++++---------------
+ 1 file changed, 19 insertions(+), 15 deletions(-)
 
-v3 to v4:
-- No code change.
-Link to v3: https://lore.kernel.org/all/20251221083902.134098-1-raskar.shree97@gmail.com/
+diff --git a/drivers/iio/proximity/rfd77402.c b/drivers/iio/proximity/rfd77402.c
+index 4499939215e7..8c6379bebcc3 100644
+--- a/drivers/iio/proximity/rfd77402.c
++++ b/drivers/iio/proximity/rfd77402.c
+@@ -12,6 +12,7 @@
+ 
+ #include <linux/delay.h>
+ #include <linux/i2c.h>
++#include <linux/iopoll.h>
+ #include <linux/module.h>
+ 
+ #include <linux/iio/iio.h>
+@@ -110,10 +111,23 @@ static int rfd77402_set_state(struct i2c_client *client, u8 state, u16 check)
+ 	return 0;
+ }
+ 
+-static int rfd77402_measure(struct i2c_client *client)
++static int rfd77402_wait_for_result(struct rfd77402_data *data)
+ {
++	struct i2c_client *client = data->client;
++	int ret;
++
++	return read_poll_timeout(i2c_smbus_read_byte_data, ret,
++				 ret & RFD77402_ICSR_RESULT,
++				 10 * USEC_PER_MSEC,
++				 10 * 10 * USEC_PER_MSEC,
++				 false,
++				 client, RFD77402_ICSR);
++}
++
++static int rfd77402_measure(struct rfd77402_data *data)
++{
++	struct i2c_client *client = data->client;
+ 	int ret;
+-	int tries = 10;
+ 
+ 	ret = rfd77402_set_state(client, RFD77402_CMD_MCPU_ON,
+ 				 RFD77402_STATUS_MCPU_ON);
+@@ -126,19 +140,9 @@ static int rfd77402_measure(struct i2c_client *client)
+ 	if (ret < 0)
+ 		goto err;
+ 
+-	while (tries-- > 0) {
+-		ret = i2c_smbus_read_byte_data(client, RFD77402_ICSR);
+-		if (ret < 0)
+-			goto err;
+-		if (ret & RFD77402_ICSR_RESULT)
+-			break;
+-		msleep(20);
+-	}
+-
+-	if (tries < 0) {
+-		ret = -ETIMEDOUT;
++	ret = rfd77402_wait_for_result(data);
++	if (ret < 0)
+ 		goto err;
+-	}
+ 
+ 	ret = i2c_smbus_read_word_data(client, RFD77402_RESULT_R);
+ 	if (ret < 0)
+@@ -168,7 +172,7 @@ static int rfd77402_read_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		mutex_lock(&data->lock);
+-		ret = rfd77402_measure(data->client);
++		ret = rfd77402_measure(data);
+ 		mutex_unlock(&data->lock);
+ 		if (ret < 0)
+ 			return ret;
 
-v2 to v3:
-- Add 'Reviewed-by' tag to dt-binding patch.
-- Update commit message in OF device ID patch.
-- Update commit message in the third patch.
-- Replace rfd77402_result_polling() with read_poll_timeout().
-- Add 'struct rfd77402_data' details in kernel-doc format.
-- Arrange includes in order.
-- Add comment for completion timeout value.
-- Remove blank lines.
-- Indent the comments to code.
-- Convert mutex_init() to devm_mutex_init().
-- Remove 'IRQF_TRIGGER_FALLING' flag from devm_request_threaded_irq().
-- Drop the duplicate message.
-- Replace 'dev_info' with 'dev_dbg()'.
-- Update 'dev_id' to 'pdata' in rfd77402_interrupt_handler().
-- Drop 'interrupt mode' comment
-- Use 'if(ret)' instead of 'if(ret < 0) for consistency.
-- Use 'return i2c_smbus_write_byte_data()' in 'rfd77402_config_irq'.
-Link to v2: https://lore.kernel.org/all/20251130153712.6792-1-raskar.shree97@gmail.com/
-
-v1 to v2:
-- Fix commit message for dt-binding patch
-- Update interrupt description in dt-binding
-- Add 'vdd-supply' to 'required' property in dt-binding
-- Add patch for moving polling implementation to helper
-- Add helper rfd77402_wait_for_irq()
-- Code refactoring
-- Return failure if request IRQ fail
-Link to v1: https://lore.kernel.org/all/20251126031440.30065-1-raskar.shree97@gmail.com/
----
-
----
-Shrikant Raskar (5):
-      iio: proximity: rfd77402: Reorder header includes
-      iio: proximity: rfd77402: Use kernel helper for result polling
-      iio: proximity: rfd77402: Add interrupt handling support
-      iio: proximity: rfd77402: Use devm-managed mutex initialization
-      iio: proximity: rfd77402: Document device private data structure
-
- drivers/iio/proximity/rfd77402.c | 157 +++++++++++++++++++++++++++++++++------
- 1 file changed, 133 insertions(+), 24 deletions(-)
----
-base-commit: 40e81d379e69d6db147865eee0c89e41634e0b60
-change-id: 20260115-rfd77402_v5-5d165b2eada8
-
-Best regards,
 -- 
-Shrikant Raskar <raskar.shree97@gmail.com>
+2.43.0
 
 
