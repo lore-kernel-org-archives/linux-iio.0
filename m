@@ -1,97 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FACC334694;
-	Thu, 15 Jan 2026 08:28:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D40E231354F;
+	Thu, 15 Jan 2026 08:37:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768465695; cv=none; b=HYaNHbOVTJkfy1go86RyJ0Rc9bPpSODuPe7s8jRiagKGn4csQ+xIgVJxB38C34qGAhNsYUmYNtgKAXEYU45dzDcSh63m1yGMi02F1PGypG6m+s/MnEN9pvy5j90ihq2SGI6l10v4ETGTWiOvx35azSuEUkp00ts6LDzuJuQwC5Y=
+	t=1768466259; cv=none; b=YhK6wL2mC7SjOVdH5WxZ239kyLpOlPbyfBf7GkgFw9mXv8uJOXsxPcutEY49PpRtAZInQUfro+1O8+c+P5UQk2DKuSLdmzI1TZgQkH23+sZu7jG/GG3n8Gghn2GDvqAoXiuJIPghM4Rk0+T2JyTpsRMjqhmFVHBZB4NxIv4fqnE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768465695; c=relaxed/simple;
-	bh=8KqJ2pAVkZmMUBGEofrU94g2ybwyVL8+Pr16hfWd92M=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Lnsae3fxLvswLzNZxYhtbvjeYajcy+n0T/7iKRQSmX2hYGM5FqYsBZwzM3cjz2ihpbzTxNHPpLV6QLxXlc3OiJhIaRHPccz3OTMqIVI6dYz0A5TXQQQCsUBQJ8NmRBKeEsxZQr2pg5VZ5VArBchU5ahS3mlXrTPxMSZ78lXJ/Lc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MzOfft6N; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768466259; c=relaxed/simple;
+	bh=rN2WtW7R5Ty1GSTqZ6JsaQEKw5Cca7xgMLAD2WplUas=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qJoVNrERQvulMlR1ro8cpsPljEEEsO1sYVWe72ct5INQUwHOKAg8Pqa3GPPCQb9YaLAUq7H1f+xHmnmGboD/+C5Zd8OsICpS+XOngUYxpUEF7IN0vhsnF862zeZQKAMWWOiIg+hYCK+g/lKvIJVRZ1T809Qf6QSDSkt8O59EXLY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hT2mqnbD; arc=none smtp.client-ip=192.198.163.8
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MzOfft6N"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C5BB5C2BCAF;
-	Thu, 15 Jan 2026 08:28:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768465694;
-	bh=8KqJ2pAVkZmMUBGEofrU94g2ybwyVL8+Pr16hfWd92M=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=MzOfft6NG+dAlVVeFvdsEQNCt5mOIGIcDSX9D+u9N/WgEabo3WMXfGR29nx2zvI9V
-	 OdAq61sDB0npM1SYIfs9xWr13TJObGZl+dDs9O5cmwWzw9VXMMsS4Gd4HWim3AdopV
-	 0WpI43jAK/OtnJXErDTHzADSRsrPs6IJTF/35ltdCLwHDHltMX6LTxIhgLhLDuK4Kz
-	 kR8FVnBDtnqQwNtV0TC0gslAcn6+F8CmfU/3/HJJygmAHxCShrUgHQ/ycoDHYC29AE
-	 0//8V1dD0sFw+CSvpHT4SBI8ayqYsIP3ce10dAtgj7adoNMQYRI+1l3RG+b4XhiSQZ
-	 HneMAKJDWXAWg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF418D33A02;
-	Thu, 15 Jan 2026 08:28:14 +0000 (UTC)
-From: Shrikant Raskar via B4 Relay <devnull+raskar.shree97.gmail.com@kernel.org>
-Date: Thu, 15 Jan 2026 13:57:40 +0530
-Subject: [PATCH v5 4/5] iio: proximity: rfd77402: Use devm-managed mutex
- initialization
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hT2mqnbD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1768466258; x=1800002258;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=rN2WtW7R5Ty1GSTqZ6JsaQEKw5Cca7xgMLAD2WplUas=;
+  b=hT2mqnbDRv//kdorjHbS3E7xTTbYbF/pjXW0RSdK/930PndoZfeOd0xo
+   ZzaaGu2ZGniuw1Zw5Lej9m6C+CAX76G1ml80U8L2qNThlI+lOZTEpsOwL
+   FcmJzF9gLRX5xmsuHov2BCEB0HGiak6IcgSs41qOWPo7Jh2aoRMQT9iEP
+   cAv+TKfHLr8sAiQcYB/gyPZn466LDyVtoc+ER6OOuwYlNLPjDljXPCoAx
+   HpeSD8wEryP7Yl2nR3RVt0dfBe0UA/eDGHxKZQMtIUEJ1Y66vt6qhq5PE
+   OgerDsFJbLBhv7smZ/xi+VuyeapUcpCZ5/feZd5xldo2NxAdNxy0KqTg9
+   w==;
+X-CSE-ConnectionGUID: RxdyoPGSTmumiZZSUD40mQ==
+X-CSE-MsgGUID: Rgx6NIOXSM2TEmSeb71/jA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11671"; a="87347720"
+X-IronPort-AV: E=Sophos;i="6.21,226,1763452800"; 
+   d="scan'208";a="87347720"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2026 00:37:37 -0800
+X-CSE-ConnectionGUID: kp1tObyeTaWJc8AnORf/nQ==
+X-CSE-MsgGUID: CqLyKKhCSlCIALYW8CzI1A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,226,1763452800"; 
+   d="scan'208";a="205184475"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.216])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2026 00:37:35 -0800
+Date: Thu, 15 Jan 2026 10:37:33 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: raskar.shree97@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, skhan@linuxfoundation.org,
+	david.hunter.linux@gmail.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/5] iio: proximity: rfd77402: Use kernel helper for
+ result polling
+Message-ID: <aWinTdOD0FHaeqYp@smile.fi.intel.com>
+References: <20260115-rfd77402_v5-v5-0-594eb57683e4@gmail.com>
+ <20260115-rfd77402_v5-v5-2-594eb57683e4@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260115-rfd77402_v5-v5-4-594eb57683e4@gmail.com>
-References: <20260115-rfd77402_v5-v5-0-594eb57683e4@gmail.com>
-In-Reply-To: <20260115-rfd77402_v5-v5-0-594eb57683e4@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: skhan@linuxfoundation.org, david.hunter.linux@gmail.com, 
- raskar.shree97@gmail.com, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1768465693; l=818;
- i=raskar.shree97@gmail.com; s=20260101; h=from:subject:message-id;
- bh=k49VHFrDJjFFj/mgpbeRdvQKWZLsslBIKwH8rf7C0xA=;
- b=MXcNHdrkfwXyMt0tXfP3jClJ8j7XUeEIoX8XU60MwpRiDF+eQGxH3/WpDGOi4iVrDowaM4yv5
- S89IXle5RaJC6xq67Kwwt1K2+f/7WYeSCJ8s40M6y1izmK+a/SHIOlP
-X-Developer-Key: i=raskar.shree97@gmail.com; a=ed25519;
- pk=4m2wXDvY0vlXefvRRzawNcNAif88Cy4XvbLkU6iMG/Y=
-X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
- auth_id=589
-X-Original-From: Shrikant Raskar <raskar.shree97@gmail.com>
-Reply-To: raskar.shree97@gmail.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260115-rfd77402_v5-v5-2-594eb57683e4@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Shrikant Raskar <raskar.shree97@gmail.com>
+On Thu, Jan 15, 2026 at 01:57:38PM +0530, Shrikant Raskar via B4 Relay wrote:
 
-Use devm_mutex_init() to tie the mutex lifetime to the device and
-simplify resource lifetime management.
+> Replace the manually written polling loop with read_poll_timeout(),
+> the kernel's standard helper for waiting on hardware status.
+> This makes the code easier to read and avoids repeating the same
+> polling code in the driver.
 
-Signed-off-by: Shrikant Raskar <raskar.shree97@gmail.com>
----
- drivers/iio/proximity/rfd77402.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Also need to add that you made it as a separate helper as it will be reused in
+the future (or next changes).
 
-diff --git a/drivers/iio/proximity/rfd77402.c b/drivers/iio/proximity/rfd77402.c
-index dd79c9ee838b..43ace2beef7e 100644
---- a/drivers/iio/proximity/rfd77402.c
-+++ b/drivers/iio/proximity/rfd77402.c
-@@ -359,7 +359,10 @@ static int rfd77402_probe(struct i2c_client *client)
- 
- 	data = iio_priv(indio_dev);
- 	data->client = client;
--	mutex_init(&data->lock);
-+	ret = devm_mutex_init(&client->dev, &data->lock);
-+	if (ret)
-+		return ret;
-+
- 	init_completion(&data->completion);
- 	i2c_set_clientdata(client, indio_dev);
- 
+No need to resend just for this, I hope Jonathan can tweak this whilst applying.
 
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
 
 
