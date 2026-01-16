@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D50D7392C3A;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAEED392C43;
 	Fri, 16 Jan 2026 14:32:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768573958; cv=none; b=NaVlQEapoZBg12eKSmDoOgeYjLOuk06OgLgKHTS+9Xhh9IeB6QqGcMyP8F0/rXllaaeoMoZF4FDJSAFDeUZgkBQUbxw1VmQg++hqoSg3GEjupgv8ZjOdAf826JGmBxxbgcdeigQkIVhG4wfejePjItFEw4ZqAdgjCvXbm/DMr/I=
+	t=1768573959; cv=none; b=XJSSfbTIyNODHdnXerCsEcHjFAxhryJRxEZ7DM3gfaTFTiU7a+rgJjmK+Z73084zoaHYRsoKWpYROsgoSK5ne0BycRloZUf04zCzv8tA8/dS3B3iCuuIVwcjVtNZUA2UjiF/M3IQSKz+NnLNhxRK8DRDWsmwlrnZygRBZD3djuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768573958; c=relaxed/simple;
-	bh=W1PCOuxQA9A2tP9QuthJCHiDAoHE0mj5IZ5fHnrMt8Q=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=mBcwufdu/C5S7volD6LoeH3tusM4lG8opfNKoRfQJI8SyVXWVmqh1y4xZoRibMdaXNbO/LlUu1FgR1D1BWWvX13igePPvRYpE7zd2gakdTJJ85WJXyfwpYgWTTAxnJlU1uMuOmUfzfmQoZ85vz/YRNxplY7XFv0V3+dBRCM11II=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ukahvETz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768573959; c=relaxed/simple;
+	bh=cydN38l100wMdf4/ArcxvU5f/tYHQl/0FrnHEEJfGEY=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=cPBKTWn7Bgbvz7APnAgMJc82BVeERJvjI/q9piTIjNjectzLITyDd+7QyLWRb2fAewEn/Fk2fAROtB1rfL97euxZyYlmKKXDR9dH/LEpJMNPbRDHe2TKk/elF+gdpG/W431KDzNPAZOm1SOi+DOpgu+SIbJw1UW9T9Zuw8gygjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EFbQOKcs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ukahvETz"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 77B2CC116C6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EFbQOKcs"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id BED07C19423;
 	Fri, 16 Jan 2026 14:32:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1768573958;
-	bh=W1PCOuxQA9A2tP9QuthJCHiDAoHE0mj5IZ5fHnrMt8Q=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=ukahvETznrJOUVlhjWKJAsZEv/yhPm8BtzsV19AmG7zCS0I2Rx1MHxU+DCPHO+Xax
-	 OIWGRhy578Nnmgp786Qqnc7ivoY9NRkVl4buc1gEoqavrwBCwbBVIE6sScpRfhrYpr
-	 5u0Lw/735hnAxoxr6yPlA6sO19QiYBqjpMn/dAPpcyOyO11NmEkK/3PLDzwp2Ph2Tv
-	 TvZ0MFG+kKYuEWopyNJ4MFNLAYf3sun+KHNRbcg2xhLgxjJjQ3Nh5H8WQ1Vo9fRlFF
-	 lB0BiM4weZmyJ+hamjUTl9OzvvvW+OCyEzd9bvipN+5LlfGXVopJOZEifBdPC/Eyot
-	 GmfSQJoHmhtZg==
+	bh=cydN38l100wMdf4/ArcxvU5f/tYHQl/0FrnHEEJfGEY=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=EFbQOKcsnXeczKY4TGv5SJjluWiowx1tVcMG3rRLwJ4IWsa/0CjUI1LDv7xjctCTG
+	 bZXvnKopsvGDvAoURiDxOEqE76ajG3wK+UhkS0BmJ9zF5qUycpVD/0xw/SdjHrBb1i
+	 Fy22QWOFG4lKM+dIapFbOc/kURge7Hwj8to6xyeQXJS5Xsn6md8W1CIAH2UAQf4ILx
+	 dtLDIfFmZDW42v2eG/MdoRjpcvgqKJ8ooSwlGg6ZNvUrovZrtCzgF6k1mmW9dbJRsw
+	 HCyn6s9bxYUkKSHkThD4vMYux+dfZHIpQr4DjucZ/CV7r7IRDCZorI8HJd5RPKwbsk
+	 BPHEC92snBNkQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69A21C79FBF;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B64FBC982C5;
 	Fri, 16 Jan 2026 14:32:38 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH v4 0/7] ADF41513/ADF41510 PLL frequency synthesizers
-Date: Fri, 16 Jan 2026 14:32:19 +0000
-Message-Id: <20260116-adf41513-iio-driver-v4-0-dbb7d6782217@analog.com>
+Date: Fri, 16 Jan 2026 14:32:23 +0000
+Subject: [PATCH v4 4/7] iio: frequency: adf41513: handle LE synchronization
+ feature
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,11 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAPNLamkC/33OzQrCMAzA8VcZPVtp2n10nnwP8RDX1AV0lU6KI
- nt3u4GIKB7/gfyShxgpMo1iUzxEpMQjhyFHuSpE1+NwJMkut9BKVwCgJDpfQgVGMgfpIieKErF
- Di423ypLIm5dInm+Lutvn7nm8hnhfjiSYp/+9BFJJ7bw9kPKuq2mLA57Ccd2Fs5jBpN+IhvY3o
- jNyIN2iNa5qWvOFmBdSK1D2N2LmT4wD0wCSL+0HMk3TE4fQ9YVBAQAA
-X-Change-ID: 20251110-adf41513-iio-driver-aaca8a7f808e
+Message-Id: <20260116-adf41513-iio-driver-v4-4-dbb7d6782217@analog.com>
+References: <20260116-adf41513-iio-driver-v4-0-dbb7d6782217@analog.com>
+In-Reply-To: <20260116-adf41513-iio-driver-v4-0-dbb7d6782217@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>, 
@@ -55,11 +54,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1768573956; l=3158;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1768573956; l=3002;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=W1PCOuxQA9A2tP9QuthJCHiDAoHE0mj5IZ5fHnrMt8Q=;
- b=GNLIGcVH6An//1BSFYh5sTuZY1j5u0Zfqs06uG4U5di+kCt+9JDzCuJ+6HBCWRrD4P74za+G6
- 5qLKlritDkfCwDcx28Xa2I+K4sc6q68ryAaB71Xk0jXQpsDxhqPhHcJ
+ bh=aTmu0dNsrjGGz+g8LnBK4RH9b4yL9PK+xZvKjCBO1KI=;
+ b=Zcv4qybX05ubOQ1hkxkENmnYLJJiaW0tQBuKw6cJ1hptgbrVBJtzznFWXpJOoCJ5C+O87l+hk
+ tiK+FyeSbz/DoToEX/0grQJBnj0NrOcPYqAOn+H2w5dvA4oOQWoRae1
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -67,77 +66,100 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-This patch series adds support for the Analog Devices ADF41513 and ADF41510
-ultralow noise PLL frequency synthesizers. These devices are designed for
-implementing local oscillators (LOs) in high-frequency applications.
-The ADF41513 covers frequencies from 1 GHz to 26.5 GHz, while the ADF41510
-operates from 1 GHz to 10 GHz.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Key features supported by this driver:
-- Integer-N and fractional-N operation modes
-- High maximum PFD frequency (250 MHz integer-N, 125 MHz fractional-N)
-- 25-bit fixed modulus or 49-bit variable modulus fractional modes
-- Digital lock detect functionality
-- Phase resync capability for consistent output phase
-- Load Enable vs Reference signal syncronization
-
-The series includes:
-1. PLL driver implementation
-2. Device tree bindings documentation
-3. IIO ABI documentation
+When LE sync is enabled, it is must be set after powering up and must be
+disabled when powering down. It is recommended when using the PLL as
+a frequency synthesizer, where reference signal will always be present
+while the device is being configured.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Changes in v4:
-- Proper usage of units.h macros
-- Simplifications to DT property parsing
-- Adjustments to return value handling
-- Drop of simple DT property node example
-- Link to v3: https://lore.kernel.org/r/20260108-adf41513-iio-driver-v3-0-23d1371aef48@analog.com
+ drivers/iio/frequency/adf41513.c | 35 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 32 insertions(+), 3 deletions(-)
 
-Changes in v3:
-- Use FIELD_MODIFY macro in driver implementation
-- Drop refin_frequency iio attribute
-- Drop muxout-select property from dt-bindings (and rename logic-level property)
-- Use -mhz suffix in power-up frequency property
-- Address documentation issues
-- Link to v2: https://lore.kernel.org/r/20251219-adf41513-iio-driver-v2-0-be29a83d5793@analog.com
+diff --git a/drivers/iio/frequency/adf41513.c b/drivers/iio/frequency/adf41513.c
+index 9068c427d8e9..dfbe55bb6973 100644
+--- a/drivers/iio/frequency/adf41513.c
++++ b/drivers/iio/frequency/adf41513.c
+@@ -220,6 +220,7 @@ struct adf41513_data {
+ 	bool phase_detector_polarity;
+ 
+ 	bool logic_lvl_1v8_en;
++	bool le_sync_en;
+ };
+ 
+ struct adf41513_pll_settings {
+@@ -698,13 +699,27 @@ static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 s
+ static int adf41513_suspend(struct adf41513_state *st)
+ {
+ 	st->regs[ADF41513_REG6] |= FIELD_PREP(ADF41513_REG6_POWER_DOWN_MSK, 1);
++	st->regs[ADF41513_REG12] &= ~ADF41513_REG12_LE_SELECT_MSK;
+ 	return adf41513_sync_config(st, ADF41513_SYNC_DIFF);
+ }
+ 
+ static int adf41513_resume(struct adf41513_state *st)
+ {
++	int ret;
++
+ 	st->regs[ADF41513_REG6] &= ~ADF41513_REG6_POWER_DOWN_MSK;
+-	return adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++	ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++	if (ret)
++		return ret;
++
++	if (st->data.le_sync_en) {
++		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
++		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++		if (ret)
++			return ret;
++	}
++
++	return ret;
+ }
+ 
+ static ssize_t adf41513_read_uhz(struct iio_dev *indio_dev,
+@@ -989,6 +1004,8 @@ static int adf41513_parse_fw(struct adf41513_state *st)
+ 				     "invalid lock detect count: %u\n", tmp);
+ 	st->data.lock_detect_count = tmp;
+ 
++	/* load enable sync */
++	st->data.le_sync_en = device_property_read_bool(dev, "adi,le-sync-enable");
+ 	st->data.freq_resolution_uhz = MICROHZ_PER_HZ;
+ 
+ 	return 0;
+@@ -996,6 +1013,7 @@ static int adf41513_parse_fw(struct adf41513_state *st)
+ 
+ static int adf41513_setup(struct adf41513_state *st)
+ {
++	int ret;
+ 	u32 tmp;
+ 
+ 	memset(st->regs_hw, 0xFF, sizeof(st->regs_hw));
+@@ -1029,8 +1047,19 @@ static int adf41513_setup(struct adf41513_state *st)
+ 					      st->data.logic_lvl_1v8_en ? 0 : 1);
+ 
+ 	/* perform initialization sequence with power-up frequency */
+-	return adf41513_set_frequency(st, st->data.power_up_frequency_hz * MICRO,
+-				      ADF41513_SYNC_ALL);
++	ret = adf41513_set_frequency(st, st->data.power_up_frequency_hz * MICRO,
++				     ADF41513_SYNC_ALL);
++	if (ret)
++		return ret;
++
++	if (st->data.le_sync_en) {
++		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
++		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
+ }
+ 
+ static void adf41513_power_down(void *data)
 
-Changes in v2:
-- separate driver implementation from extra features and improve commit messages
-- use macros from units.h
-- explanation of custom parse function: adf41513_parse_uhz
-- reorganize driver data structures
-- drop clock framework support for now
-- reorganize documentation
-- Link to v1: https://lore.kernel.org/r/20251110-adf41513-iio-driver-v1-0-2df8be0fdc6e@analog.com
-
----
-Rodrigo Alencar (7):
-      dt-bindings: iio: frequency: add adf41513
-      units: Add HZ_PER_GHZ definition
-      iio: frequency: adf41513: driver implementation
-      iio: frequency: adf41513: handle LE synchronization feature
-      iio: frequency: adf41513: features on frequency change
-      docs: iio: add documentation for adf41513 driver
-      Documentation: ABI: testing: add common ABI file for iio/frequency
-
- Documentation/ABI/testing/sysfs-bus-iio-frequency  |   11 +
- .../bindings/iio/frequency/adi,adf41513.yaml       |  212 ++++
- Documentation/iio/adf41513.rst                     |  199 +++
- Documentation/iio/index.rst                        |    1 +
- MAINTAINERS                                        |   10 +
- drivers/iio/frequency/Kconfig                      |   10 +
- drivers/iio/frequency/Makefile                     |    1 +
- drivers/iio/frequency/adf41513.c                   | 1295 ++++++++++++++++++++
- include/linux/units.h                              |    1 +
- 9 files changed, 1740 insertions(+)
----
-base-commit: b82f3047dae4aba38cb26c55c28444db4d77f521
-change-id: 20251110-adf41513-iio-driver-aaca8a7f808e
-
-Best regards,
 -- 
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+2.43.0
 
 
