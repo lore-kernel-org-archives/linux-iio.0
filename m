@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 563FB365A02
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 562E33644DE
 	for <linux-iio@vger.kernel.org>; Mon, 19 Jan 2026 18:24:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768847077; cv=none; b=Ng3DbWGJxgRkvewvt9FbOJz0wdOAmSSw+80Ve98r66a+6PNsqW6QqkM4+Xa5ZaHFBu1YvOsKjj7O/BCRRib+hlJNCDZVEbuUC2+MddZ5rwMTxyNWpqeMjsWpl8dFML9LjA13b70caVu8424Sa6M/85lR3SGksovJ4X2y2zdfGRg=
+	t=1768847077; cv=none; b=SHoqeiHi+/IHjZDw7C0OWdGmQOsFxmDh/ALlnxxt5zZ6Bi4wmEzoBEZblPMs38S7F5Q0Sh474B6t2h3yJPCX39cgZSv6UJAa+qG3mdnAY4qUfC6dNS1W9rqwYxsGS+alGovDQ63/POSeGJ6bPbz49v/fQmJlfVddl+OuxcGd6v4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1768847077; c=relaxed/simple;
-	bh=Vjn6/7sVL2PRX0fnsG7PEGcF6n99+IlYZKmpZI6Qq3g=;
+	bh=hAEvEHpjltGseJiJJMnfe33kIokUzk+wFFOghd/Au8E=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=KJzAiCMITDMAc1f9GC/q6K/uodoswkZVLw7rTV/PBRgV6L+1rdl+VkxA4aD9lQR1HibogXNdCEHLMKKCCoNtKfpalxhG7Jv8eruycpRFmp/M0VfLLI9iw8sMnu+tJurALh/ilP06noC9PA7tQu7U+R8DiXKaVye3oL/EnlrL6vw=
+	 MIME-Version; b=ImbHF+iIWM4ZNL2u+gwdd3aBmmNwEQqIYp0BnNHBsmyJNXp8MlC7HpdbRmxhbLM697VW7A/9xlcA063U3/ck5NxtE9tMRt+P4Zqug2MG+vAygTYFLpp/yrfGN/DXgBcSObLXtfUxHK2i2n1etXJ5Y5WhQ+HPzlxdLlv336EjcoE=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vhtvO-0004SQ-7b; Mon, 19 Jan 2026 19:24:26 +0100
+	id 1vhtvO-0004SM-7b; Mon, 19 Jan 2026 19:24:26 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vhtvO-001SUn-1R;
+	id 1vhtvO-001SUf-10;
 	Mon, 19 Jan 2026 19:24:25 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vhtvN-00000006y2J-2lo9;
+	id 1vhtvN-00000006y1e-2OA6;
 	Mon, 19 Jan 2026 19:24:25 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -43,9 +43,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v1 6/8] iio: dac: ds4424: clear outputs on probe
-Date: Mon, 19 Jan 2026 19:24:22 +0100
-Message-ID: <20260119182424.1660601-7-o.rempel@pengutronix.de>
+Subject: [PATCH v1 2/8] dt-bindings: iio: dac: maxim,ds4424: add maxim,rfs-ohms property
+Date: Mon, 19 Jan 2026 19:24:18 +0100
+Message-ID: <20260119182424.1660601-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260119182424.1660601-1-o.rempel@pengutronix.de>
 References: <20260119182424.1660601-1-o.rempel@pengutronix.de>
@@ -61,59 +61,42 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-The DS44xx devices have no reset pin or reset bit, so output registers
-may retain preconfigured values across reboot or warm reset.
+Introduce the 'maxim,rfs-ohms' property. The full-scale output current
+of these DACs is determined by external resistors (Rfs) connected to
+the FS pins. The driver requires the physical resistance values to
+calculate the correct current scale (Amps per step) for the IIO
+subsystem.
 
-Also, the driver suspend/resume path restores from data->raw. When the
-device is first probed, data->raw is zero-initialized and may not match
-the actual hardware state. A later suspend/resume can therefore change an
-output from a preconfigured non-zero value to 0 mA.
-
-Initialize all channels to 0 output current during probe to ensure a
-deterministic baseline and consistent suspend/resume behavior.
+Keep it optional to avoid forcing updates of existing DTs; without it
+the driver cannot derive a correct IIO scale.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/iio/dac/ds4424.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ .../devicetree/bindings/iio/dac/maxim,ds4424.yaml     | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-index a0c60eb89717..2d299a52cede 100644
---- a/drivers/iio/dac/ds4424.c
-+++ b/drivers/iio/dac/ds4424.c
-@@ -220,6 +220,20 @@ static int ds4424_verify_chip(struct iio_dev *indio_dev)
- 	return ret;
- }
+diff --git a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
+index efe63e6cb55d..b7af8464a4fc 100644
+--- a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
+@@ -27,6 +27,17 @@ properties:
  
-+static int ds4424_init(struct iio_dev *indio_dev)
-+{
-+	int i, ret;
-+
-+	/* Set all channels to 0 current. */
-+	for (i = 0; i < indio_dev->num_channels; i++) {
-+		ret = ds4424_set_value(indio_dev, 0, &indio_dev->channels[i]);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int ds4424_setup_channels(struct i2c_client *client,
- 				 struct ds4424_data *data,
- 				 struct iio_dev *indio_dev)
-@@ -397,6 +411,11 @@ static int ds4424_probe(struct i2c_client *client)
- 	if (ret)
- 		goto fail;
+   vcc-supply: true
  
-+	/* No reset pin/bit: clear any preconfigured output on probe. */
-+	ret = ds4424_init(indio_dev);
-+	if (ret)
-+		goto fail;
++  maxim,rfs-ohms:
++    description: |
++      Array of resistance values in Ohms for the external Rfs resistors
++      connected to the FS pins.
++      - For DS44x2 (2 channels): 2 values required.
++      - For DS44x4 (4 channels): 4 values required.
++      Typical values range from 40000 (40 kOhm) to 160000 (160 kOhm).
++    minItems: 2
++    maxItems: 4
++    $ref: /schemas/types.yaml#/definitions/uint32-array
 +
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &ds4424_iio_info;
- 
+ required:
+   - compatible
+   - reg
 -- 
 2.47.3
 
