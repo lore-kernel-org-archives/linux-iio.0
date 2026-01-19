@@ -1,15 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56380364E80
-	for <linux-iio@vger.kernel.org>; Mon, 19 Jan 2026 18:24:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4CFC3904FA
+	for <linux-iio@vger.kernel.org>; Mon, 19 Jan 2026 18:24:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768847078; cv=none; b=kCHF11AOcrzrH6DEc8c7VF+uZ0wDvrM4mgFzhQ2ZaNt0tqfzLLN3HT8QL5lhKQFSOUtSyAUdYieAGO0d5DAy1h61tC3KT2sQXD2hsPY6zwko/wIOH0qqNNrOoyIe+fNr5hnt96oIg3q/gEUARPlNJXE7KotzkUymSHVkPCVmiGo=
+	t=1768847085; cv=none; b=FY6F4iOfC6az3qDB77bB6+p/vZGs5mxCQKF6miQbdWIeDmgyeZdlJrR0jjhJ42/2OqWIDbLQm9yLwfAdqKIhXOsxSY0Ywx5srjX9qyu2owB/xjmjxIPHOoqe2wyLnUoSbUBHOQMAwrn0BDBVMiDh4fC8WFrjZXNLAU1/d+fvpSs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768847078; c=relaxed/simple;
-	bh=+fIrNbS98U6SMuroy+VdbUC5CeLGD15R1yYgVv4GsBw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WXGsGqgmi/hvdKr61Ce0ofOdyqorvfOoDq7v6P1mY6HK3/u+GmM+UQWocFG8MrSA+0yHSjaJJRdngzCrK8AP7MEOnlh7XK6nAazecwp24o93etZCLPeHT7w5prmbHJTC6W2rn25anJDNVRMx6qsfpUgE41XM2d7eHRYpGCe8Q8M=
+	s=arc-20240116; t=1768847085; c=relaxed/simple;
+	bh=+L8hofjKyjTSzyKgvlJ00wSPTK1EZoc14n6gT4ZKxvI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=kT39cZ7DVc7r1xf159OzdEydUcT9BG7j8ENrFUABR+vLHsCYqiWtcBiXvbt0RkHKlhCRUv0h+clkgmzln6deAYKYgLyU0FDIPLgANMOtvcfIzM05oEFvfePu/cMj3nzZyggfg7ITbKOpBJ35qipbsRBeWl4e3ivOkuinCLJ/A8o=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -17,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vhtvO-0004SK-7e; Mon, 19 Jan 2026 19:24:26 +0100
+	id 1vhtvO-0004SO-7c; Mon, 19 Jan 2026 19:24:26 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vhtvO-001SUd-0n;
+	id 1vhtvO-001SUi-1B;
 	Mon, 19 Jan 2026 19:24:25 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vhtvN-00000006y1K-25lJ;
+	id 1vhtvN-00000006y1y-2aWd;
 	Mon, 19 Jan 2026 19:24:25 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -34,6 +35,7 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>
 Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+	stable@vger.kernel.org,
 	kernel@pengutronix.de,
 	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
@@ -42,10 +44,12 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v1 0/8] iio: dac: ds4424: add DS4402/DS4404 support and scale
-Date: Mon, 19 Jan 2026 19:24:16 +0100
-Message-ID: <20260119182424.1660601-1-o.rempel@pengutronix.de>
+Subject: [PATCH v1 4/8] iio: dac: ds4424: reject -128 RAW value
+Date: Mon, 19 Jan 2026 19:24:20 +0100
+Message-ID: <20260119182424.1660601-5-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260119182424.1660601-1-o.rempel@pengutronix.de>
+References: <20260119182424.1660601-1-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -58,39 +62,36 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-This series extends the ds4424 IIO DAC driver and its devicetree binding
-to support the DS4402 and DS4404 current DAC variants.
+The DS442x DAC uses sign-magnitude encoding, so -128 cannot be
+represented in hardware.
 
-DS440x devices share the same register map as DS442x but use a different
-resolution (5-bit vs 7-bit) and a different full-scale current formula.
-The full-scale current depends on external Rfs resistors connected to
-the FS pins, so a new optional DT property is added to provide the
-per-channel Rfs values and allow the driver to report a correct IIO
-SCALE (mA/step).
+With the previous check, userspace could pass -128, which gets converted
+to a magnitude of 128 and then truncated by the 7-bit DAC field. This
+ends up programming a zero magnitude with the sign bit set, i.e. an
+unintended output (effectively 0 mA instead of -128 steps).
 
-While adding DS440x support, a few related issues were addressed:
-- Reject -128 in RAW writes on DS442x, which cannot be represented with
-  sign-magnitude encoding and could silently program an unintended
-  output.
-- Clear outputs on probe to avoid retaining preconfigured values across
-  warm reset and to make suspend/resume behavior deterministic.
-- Ratelimit read error logging and use device context.
-- Add small comments documenting sign handling and probe verification.
+Reject -128 to avoid silently producing the wrong current.
 
-Oleksij Rempel (8):
-  dt-bindings: iio: dac: maxim,ds4424: add ds4402/ds4404
-  dt-bindings: iio: dac: maxim,ds4424: add maxim,rfs-ohms property
-  iio: dac: ds4424: add DS4402/DS4404 device IDs
-  iio: dac: ds4424: reject -128 RAW value
-  iio: dac: ds4424: add Rfs-based scale and per-variant limits
-  iio: dac: ds4424: clear outputs on probe
-  iio: dac: ds4424: ratelimit read errors and use device context
-  iio: dac: ds4424: document output sign and probe verification
+Fixes: d632a2bd8ffc ("iio: dac: ds4422/ds4424 dac driver")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/iio/dac/ds4424.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- .../bindings/iio/dac/maxim,ds4424.yaml        |  18 +-
- drivers/iio/dac/ds4424.c                      | 175 +++++++++++++++++-
- 2 files changed, 184 insertions(+), 9 deletions(-)
-
---
+diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+index 072b7e6672cf..9c24c37d3c42 100644
+--- a/drivers/iio/dac/ds4424.c
++++ b/drivers/iio/dac/ds4424.c
+@@ -143,7 +143,7 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		if (val < S8_MIN || val > S8_MAX)
++		if (val <= S8_MIN || val > S8_MAX)
+ 			return -EINVAL;
+ 
+ 		if (val > 0) {
+-- 
 2.47.3
 
