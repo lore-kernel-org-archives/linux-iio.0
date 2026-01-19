@@ -1,153 +1,163 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFEFE3009D4;
-	Mon, 19 Jan 2026 17:07:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45DBA320CCF;
+	Mon, 19 Jan 2026 17:19:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768842439; cv=none; b=ZkT/FNSs7itT3MR6CNdkatwkNh0wTRCtMnmJn+besgQWzWKS4hurHCqEBA/Hs02WZi/G4XwA4mrBR4jnX7JVZUvlcU0/zZFNLRI+MLNnllME9GbpsZ2+Qt0GItgCAsY06/yGGORoNk/v/0hvbdHEU1OEj0Kwp/c8TeJwg/eFD60=
+	t=1768843159; cv=none; b=fsS5thjUIViSKlQVEou22CE6ZKkkzpJf6pk4L5QMPvFg2G64BVXzauFbLrq6U9iivV5AWW/Kjtd4SkFvv6yugXXw7ol3GeMlvl2UBLOmivXYoPl+T8sXs5CJkR1Yn6QMCZIpa4GZmWQpCBeaglWOGVD9AUF7TemVOxEYq/m+VMA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768842439; c=relaxed/simple;
-	bh=umGUgXUvr1uT8JukHyQuH75tpKnMXwJ4gEX/wfj8CtA=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gcQ5DB5JIB/dDDq8nobct9dzXapoaTeESf4LLwfvgxyZvYWzwbeCu9cMVOVVYrAoNigRcN2VeXjwmNVPjAH/+4aWcFTHVfC6+AKKZUYCirgIZsae3oqLgbkyg4Vg7Hb77AKZdjy3PasCI6D4yAYEHlUsr/trVjiXTkxPKltKAR4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jHHR4ab+; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1768843159; c=relaxed/simple;
+	bh=vgsWMnalXEzctyb/qHwzwgoCbMWvv9mKKThKgNHGnPc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=t5uaJJRDYjYGo5ymLz1vbgSmEzjUuNU1ezsruNiW8z7+uYL4rkd+KH+FQqe0rp6sgqdevI/5Yzg9WBGtXNzRzpXOeMmWyxJU0V1etmOvMA3PDrq7W+gu/hkY0ajMnremKFQirYo3ZV2Z3NEiO0wmnKoJ6gkJChVsqsYXWD6Jys4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sjAB33Uy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jHHR4ab+"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768842438; x=1800378438;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=umGUgXUvr1uT8JukHyQuH75tpKnMXwJ4gEX/wfj8CtA=;
-  b=jHHR4ab+7JpwK1gYGr4JY/sWVe0ISoIFShy+jKlxhqfA5LtLjYNfIDu7
-   xD1M5hB2HiR6O5jo9tP9ZXqqdXtYXD8B/cIMsW/7bWon6IHqFv+VNy1Ub
-   ap5pZu7QCVCFLzUFdJCU8TwAP0X9ArTB8g/OX9GuLV/qJutfEXPEbfP6n
-   6GQrJ+0IF1USSpqpW9TMoWLl+c8c/XMqFp6LOm2WE4REJezef5E4BgFe+
-   JybR8E+xmYa9VI+mTHExc6Dj5N2IdhMUtoh5zueegWvHX0+5YJQLZWRiT
-   KMd28ftdly8BBCBPaVpR9JFBpUFpgwFr8txtYj0PHS7xhxgXOCmu6yUR1
-   w==;
-X-CSE-ConnectionGUID: zv7KStBWR7OiX77KClAtJw==
-X-CSE-MsgGUID: 1T2l/CgJSQOtH5egFF+aHA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11676"; a="70106619"
-X-IronPort-AV: E=Sophos;i="6.21,238,1763452800"; 
-   d="scan'208";a="70106619"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2026 09:07:17 -0800
-X-CSE-ConnectionGUID: FDZ5n+reQkmsVYELbboAOQ==
-X-CSE-MsgGUID: hKjQXR76SVSKRSyem0tumA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,238,1763452800"; 
-   d="scan'208";a="243497123"
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.37])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2026 09:07:13 -0800
-Date: Mon, 19 Jan 2026 19:07:10 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH v4 3/7] iio: frequency: adf41513: driver implementation
-Message-ID: <aW5kk6K30Izckvg5@smile.fi.intel.com>
-References: <20260116-adf41513-iio-driver-v4-0-dbb7d6782217@analog.com>
- <20260116-adf41513-iio-driver-v4-3-dbb7d6782217@analog.com>
- <aW3dxuelYDM67pqZ@smile.fi.intel.com>
- <texwv5s2tvcy34bwr4iruj5xofmea663pwletmpqpuh66zulmv@m7qvjgqbhalv>
- <aW40ylvMwVhqNQMw@smile.fi.intel.com>
- <hgy3bcrqqsvt7pobhnzuvwzhb2taetpxltkaxpigmmlvmlirod@v6anhmrsvv2r>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sjAB33Uy"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id DBF59C19422;
+	Mon, 19 Jan 2026 17:19:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768843158;
+	bh=vgsWMnalXEzctyb/qHwzwgoCbMWvv9mKKThKgNHGnPc=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=sjAB33UyurdZCvW+71NpzazGJRn+w29dq+R5jDje7RMUN68KoOf3cbY08Q2s/jS6I
+	 ik8+12b0/uSWeXDWed9BXoE6NdBrbKxCfoyHOc65iH0g33FIK4x7siqesFv9sfAwkL
+	 ioUEQiPiM39V2/96ornZL2+jxvfhfb8jAiGNNhe1DIPOSs6vt6P4AGBFOQa0xVXe6+
+	 x+YG5RHlyQDzMhSKiuUCgQE5nB7TmDlvgP80V6M21E35NJsAe3n6hwq8uveKEIKEUX
+	 6JV6AjbgIL4TAWUA9yTQV3hED4rGDyDNt9VK+LbG8a3oY+t2m3QBVdZBIxaELr7sst
+	 ytylfrl/+S/VQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CED6DD29C4D;
+	Mon, 19 Jan 2026 17:19:18 +0000 (UTC)
+From: Petr Hodina via B4 Relay <devnull+petr.hodina.protonmail.com@kernel.org>
+Date: Mon, 19 Jan 2026 18:19:06 +0100
+Subject: [PATCH 1/3] doc: add Device Tree binding for AMS TCS3400 light
+ sensor
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <hgy3bcrqqsvt7pobhnzuvwzhb2taetpxltkaxpigmmlvmlirod@v6anhmrsvv2r>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260119-tsc3400-v1-1-82a65c5417aa@protonmail.com>
+References: <20260119-tsc3400-v1-0-82a65c5417aa@protonmail.com>
+In-Reply-To: <20260119-tsc3400-v1-0-82a65c5417aa@protonmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, David Heidelberg <david@ixit.cz>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
+ Petr Hodina <petr.hodina@protonmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1768843157; l=2537;
+ i=petr.hodina@protonmail.com; s=20260107; h=from:subject:message-id;
+ bh=1LDwA54n0tkYAGyvdpUdaNISfncR1cK5nESUpKkwwc8=;
+ b=xKuI+yo90AJJ5IlxvKntYTEmP+ZcSeI/7Px4HhOzYrqfHogJT4MvIE2kGre8uJcqnP0tc2evl
+ 0Rwcq3WXQmgALu+8yy7Jf0RVMqEoLMdrCGWQsEhne6kaSw+BwLxWCbV
+X-Developer-Key: i=petr.hodina@protonmail.com; a=ed25519;
+ pk=3QaVc6AaAu1IsyyH86+LIOOFhD7kCws8Xhe+wwyE7Bg=
+X-Endpoint-Received: by B4 Relay for petr.hodina@protonmail.com/20260107
+ with auth_id=594
+X-Original-From: Petr Hodina <petr.hodina@protonmail.com>
+Reply-To: petr.hodina@protonmail.com
 
-On Mon, Jan 19, 2026 at 04:37:09PM +0000, Rodrigo Alencar wrote:
-> On 26/01/19 03:42PM, Andy Shevchenko wrote:
-> > On Mon, Jan 19, 2026 at 11:21:59AM +0000, Rodrigo Alencar wrote:
-> > > On 26/01/19 09:31AM, Andy Shevchenko wrote:
-> > > > On Fri, Jan 16, 2026 at 02:32:22PM +0000, Rodrigo Alencar via B4 Relay wrote:
+From: Petr Hodina <petr.hodina@protonmail.com>
 
-...
+Adds a new YAML binding describing the AMS TCS3400 I2C light sensor,
+including compatible string, registers, interrupts, power supply, and an
+example node.
 
-> > > > > +static int adf41513_parse_uhz(const char *str, u64 *freq_uhz)
-> > > > > +{
-> > > > > +	u64 uhz = 0;
-> > > > > +	int f_count = ADF41513_HZ_DECIMAL_PRECISION;
-> > > > > +	bool frac_part = false;
-> > > > > +
-> > > > > +	if (str[0] == '+')
-> > > > > +		str++;
-> > > > > +
-> > > > > +	while (*str && f_count > 0) {
-> > > > > +		if ('0' <= *str && *str <= '9') {
-> > > > > +			uhz = uhz * 10 + *str - '0';
-> > > > > +			if (frac_part)
-> > > > > +				f_count--;
-> > > > > +		} else if (*str == '\n') {
-> > > > > +			if (*(str + 1) == '\0')
-> > > > > +				break;
-> > > > > +			return -EINVAL;
-> > > > 
-> > > > > +		} else if (*str == '.' && !frac_part) {
-> > > > 
-> > > > This can be found by strchr() / strrchr() (depending on the expectations of
-> > > > the input).
-> > > > 
-> > > > > +			frac_part = true;
-> > > > > +		} else {
-> > > > > +			return -EINVAL;
-> > > > > +		}
-> > > > > +		str++;
-> > > > > +	}
-> > > > 
-> > > > With the above the rest becomes just a couple of simple_strtoull() calls with
-> > > > a couple of int_pow(10) calls (and some validation on top).
-> > > > 
-> > > > > +	for (; f_count > 0; f_count--)
-> > > > > +		uhz *= 10;
-> > > > 
-> > > > This is int_pow(10).
-> > > > 
-> > > > > +	*freq_uhz = uhz;
-> > > > > +
-> > > > > +	return 0;
-> > > > > +}
-> > > 
-> > > The current implementation is kind of a stripped version of
-> > > __iio_str_to_fixpoint(). Would you prefer something like this, then?:
-> > 
-> > Do they have most of the parts in common? If so, why can't we use
-> > __iio_str_to_fixpoint() directly? Or why can't we slightly refactor
-> > that to give us the results we need here?
-> 
-> __iio_str_to_fixpoint() only parses "int" chunks, adf41513_parse_uhz
-> was modified to accomodate the u64 parsing removing unnecessary stuff.
+Signed-off-by: Petr Hodina <petr.hodina@protonmail.com>
+---
+ .../devicetree/bindings/iio/light/ams,tcs3400.yaml | 54 ++++++++++++++++++++++
+ MAINTAINERS                                        |  6 +++
+ 2 files changed, 60 insertions(+)
 
-But why? The fractional part most likely will be kept int (it's up to 10⁻⁹).
-The integer can be bigger than 10⁹?
-
-> I am preparing V5 to use simple_strtoull. Thanks for early review
-> and suggestions.
+diff --git a/Documentation/devicetree/bindings/iio/light/ams,tcs3400.yaml b/Documentation/devicetree/bindings/iio/light/ams,tcs3400.yaml
+new file mode 100644
+index 000000000000..2c5a9295af1a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/ams,tcs3400.yaml
+@@ -0,0 +1,54 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/iio/light/ams,tcs3400.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: AMS TCS3400 Color Light-to-Digital Converter
++
++maintainers:
++  - name: Petr Hodina
++    email: petr.hodina@protonmail.com
++
++description: |
++  The AMS TCS3400 is an I2C-connected color light sensor providing
++  RGBC or RGB-IR measurements with a programmable integration time
++  and gain.
++
++properties:
++  compatible:
++    const: ams,tcs3400
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++    description:
++      Interrupt line signaling ALS data ready or threshold events.
++
++  vdd-supply:
++    description:
++      Regulator supplying the main sensor power.
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@39 {
++            compatible = "ams,tcs3400";
++            reg = <0x39>;
++            interrupt-parent = <&gpio1>;
++            interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
++            vdd-supply = <&vdd_3v3>;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 14a06f856b81..ab5307a34180 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -22866,6 +22866,12 @@ S:	Supported
+ F:	drivers/iio/adc/rohm-bd79112.c
+ F:	drivers/iio/adc/rohm-bd79124.c
+ 
++AMS TCS3400 AMBIENT LIGHT SENSOR DRIVER
++M:	Petr Hodina
++L:	Petr Hodina <petr.hodina@protonmail.com>
++S:	Petr Hodina <petr.hodina@protonmail.com>
++F:	Documentation/devicetree/bindings/iio/light/ams,tcs3400.yaml
++
+ ROHM BH1745 COLOUR SENSOR
+ M:	Mudit Sharma <muditsharma.info@gmail.com>
+ L:	linux-iio@vger.kernel.org
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.52.0
 
 
