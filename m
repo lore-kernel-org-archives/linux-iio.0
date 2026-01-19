@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44120327783;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 689C537BE62;
 	Mon, 19 Jan 2026 14:37:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768833450; cv=none; b=CkSLJyNe4KZrnaKANbE8tzgm+RChCBOK+K+r0bB77QiZHXZcBIMkQ3OOf9ij4JOz4WVNJnQlaiULNuIq9b62GOABqpHp89CSwyi6jeKefBlMOomKdrdCEa1gEXtcK2dDb3PF5sxwDodNdBOXihV76eXj6jIDbSMgyREz7/zqRh4=
+	t=1768833450; cv=none; b=ANwhNrdeM48PjfYOgCTyIwj+n8+alJ/rgY9I2bWghjkzU8KvOUyq7b8kYg88fq8fm1mf5Qh/NUvufiRGJlbvqDHknabmQ6ZD5ybqgJVyUMtW/sTVJVuOhqz4/rxeRhS8OzyP1Ey3UjfM8eCJaKFUDyaqofw4UTXLFHhr1qVcZwY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1768833450; c=relaxed/simple;
-	bh=xPOhEhJe2siRPjS/kJC/6NA/KZx23W+i1g4sCUKpoFY=;
+	bh=y1m1SiLaohoC5eNbpZldUkqlDCAqPqNXgONSe2+u36Y=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qHr27tcNbssPPJNELuG13JEhSg+HBP27UZ/MJDdQzKDfSCG5ZOgWaMmbm/zMCJ1vo6xu+YTkEY+A1DbJSHGShvGWtgYW5QO/YH3GHrXSgSpPcWya2eNXtg3rrtIWaFYNQ1lAvLf3s2Db/UT9YH7Sb7Kasx5doTPfRdwUmYbp29A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=efAt2KMr; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=TFT9zcxwA45oAAAqEght2twNzjCR7J2dkOLeMIlFMREt5a0RKgnXRBCCluW263Cyuzfwxba7Pi6jelMtzjTWr4Qox4gsQ40LkWZT014uybk2AdrHX+STw7UTvdQFOUABGuJic8R8ZxF7wtytr95YAmA2c61eNQOm7Ey4KoMbmw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WIe3xOwj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="efAt2KMr"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 1394FC2BC9E;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WIe3xOwj"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 3949AC2BC87;
 	Mon, 19 Jan 2026 14:37:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1768833450;
-	bh=xPOhEhJe2siRPjS/kJC/6NA/KZx23W+i1g4sCUKpoFY=;
+	bh=y1m1SiLaohoC5eNbpZldUkqlDCAqPqNXgONSe2+u36Y=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=efAt2KMrMLppYw+4RUV62Ws4oUbimR8M1+HGWZZT0FMDaiHWxdH9R0nvd4qBDbwtm
-	 61xUCKOOWiaOE91qqRt9jLvg04PVIESJK+vNj2B24TE0ksPeNIRCpGta5cLRCZbGBb
-	 ITAAOm1ooevK5rPvaRBBs3MF+0oNpUeOR3U6HDeX1lP72DFRam545WxLAqjPzaIObo
-	 DZqKf0JWVzqcML0vIUkZzyRPMNB2kIirSsq0yDRhx5FVaNNwdjjZ15nGXiAW9+2eNs
-	 lCP9TUeaYG2c/NElbQemZ7l68FpcrJIfyL0MhWis6I+b/kpETlXzy+6RNT9qrPwdeb
-	 A6OhTq8QNDMvw==
+	b=WIe3xOwjeU0V/1UChjxVWu1BT3a69bVar6MVjawm9GJjUT1vkpNgK3aWVSVLBBlar
+	 jO4QQJzrgDVXjwPM3M4uyMXTR7AeeCH8B+JXfzZ2AzUeQvoQpiyI7jmp/0NWlhC4B0
+	 Hcubw76y6+u/W8lyLkPfXgDlhjj7GDrzhPPhWeBZCBN6UDPcrupm6G7KqBI2qaA3Sm
+	 /aoho/1/Pmm3XjfM3WW4l8Q0w5lSUNxuIADJ1PbEh3kq4qOW9EiWxeApMlZBYEpJcc
+	 2zSnjmjb2pOt8EFhR8+nJ9XqAGn9IKiOmgZrD4FYl8Q44bLSzT/wpNJwwVMm75mjME
+	 6dY7XIEHsIdAg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CC9CD29C30;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FB0DD29C30;
 	Mon, 19 Jan 2026 14:37:30 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 19 Jan 2026 14:36:57 +0000
-Subject: [PATCH 3/7] iio: amplifiers: ad8366: consume enable gpio for
- applicable parts
+Date: Mon, 19 Jan 2026 14:36:59 +0000
+Subject: [PATCH 5/7] iio: amplifiers: ad8366: use cleanup.h mutex guard
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260119-iio-ad8366-update-v1-3-8044e23e964a@analog.com>
+Message-Id: <20260119-iio-ad8366-update-v1-5-8044e23e964a@analog.com>
 References: <20260119-iio-ad8366-update-v1-0-8044e23e964a@analog.com>
 In-Reply-To: <20260119-iio-ad8366-update-v1-0-8044e23e964a@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -53,11 +52,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Conor Dooley <conor+dt@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1768833448; l=1344;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1768833448; l=1898;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=72lAxpPNNVQiH2FXV5I3I6t6Jbf3Jb9inxis9HKayGg=;
- b=ucKmp4HZErTKFi9sJh+JIsoCqsY/QGNLqSVg7QQSl32tUv5zhJtJfI4iCycjsyP6+xhAmBpXc
- FiUEq/SJwoOCRtUjswdfirRTeW4ZDJdyst3bWb6gfYCsq7yFgtfS5bm
+ bh=YAYuOUTweoFKOoWx+os6umUAifv0dwftAt5d8TlJqJM=;
+ b=XO9ZOAiOXRraSPnBYDMJ92vscFlv6RXnUB1srGcO5GKbPh/9atl/9cKD5LVevvB4MJtc5/IhN
+ zfcLQaRgzWQB153uBkHdfmqCo/RgQq41EGJrnzH+zdwQcjWIwq29kC5
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -67,42 +66,78 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Some parts may consume enable GPIO to set serial mode (PS pin) or
-powerup the device (e.g. ADA4961's PWUP pin).
+Changes related to mutex handling:
+- use guard() from cleanup for mutex locking
+- replace mutex_init() for devm_mutex_init()
 
-Co-developed-by: Michael Hennerich <michael.hennerich@analog.com>
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/amplifiers/ad8366.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iio/amplifiers/ad8366.c | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
-index d06ac786501c..63bb9f0179eb 100644
+index 160a8ab0c2ee..26856cb4216e 100644
 --- a/drivers/iio/amplifiers/ad8366.c
 +++ b/drivers/iio/amplifiers/ad8366.c
-@@ -43,6 +43,7 @@ struct ad8366_state {
- 	struct regulator	*reg;
- 	struct mutex            lock; /* protect sensor state */
- 	struct gpio_desc	*reset_gpio;
-+	struct gpio_desc	*enable_gpio;
- 	unsigned char		ch[2];
- 	enum ad8366_type	type;
- 	const struct ad8366_info *info;
-@@ -281,6 +282,13 @@ static int ad8366_probe(struct spi_device *spi)
- 			ret = PTR_ERR(st->reset_gpio);
- 			goto error_disable_reg;
- 		}
+@@ -17,6 +17,7 @@
+  * Copyright 2012-2026 Analog Devices Inc.
+  */
+ 
++#include <linux/cleanup.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+@@ -164,7 +165,8 @@ static int ad8366_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 	int code, gain = 0;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
 +
-+		st->enable_gpio = devm_gpiod_get_optional(&spi->dev, "enable", GPIOD_OUT_HIGH);
-+		if (IS_ERR(st->enable_gpio)) {
-+			ret = PTR_ERR(st->enable_gpio);
-+			goto error_disable_reg;
-+		}
-+
- 		indio_dev->channels = ada4961_channels;
- 		indio_dev->num_channels = ARRAY_SIZE(ada4961_channels);
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_HARDWAREGAIN:
+ 		code = st->ch[chan->channel];
+@@ -210,7 +212,6 @@ static int ad8366_read_raw(struct iio_dev *indio_dev,
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+-	mutex_unlock(&st->lock);
+ 
+ 	return ret;
+ };
+@@ -267,7 +268,8 @@ static int ad8366_write_raw(struct iio_dev *indio_dev,
  		break;
+ 	}
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
++
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_HARDWAREGAIN:
+ 		st->ch[chan->channel] = code;
+@@ -276,7 +278,6 @@ static int ad8366_write_raw(struct iio_dev *indio_dev,
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+-	mutex_unlock(&st->lock);
+ 
+ 	return ret;
+ }
+@@ -336,10 +337,13 @@ static int ad8366_probe(struct spi_device *spi)
+ 	}
+ 
+ 	spi_set_drvdata(spi, indio_dev);
+-	mutex_init(&st->lock);
+ 	st->spi = spi;
+ 	st->type = spi_get_device_id(spi)->driver_data;
+ 
++	ret = devm_mutex_init(&spi->dev, &st->lock);
++	if (ret)
++		return ret;
++
+ 	switch (st->type) {
+ 	case ID_AD8366:
+ 		indio_dev->channels = ad8366_channels;
 
 -- 
 2.43.0
