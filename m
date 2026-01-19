@@ -1,276 +1,299 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11021126.outbound.protection.outlook.com [40.107.130.126])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 974E030FF3A;
-	Mon, 19 Jan 2026 11:25:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768821940; cv=none; b=BKjX/jJuXEAeJ4OylIqKKyd4fSX34rPWgNM7gWDOGmwKGuCWgF9gw73VP253NAVk++Ui0oZ0w0BqRt1QT5+H8SMkGSEcw2XH9h3r89FyXL3c0n/jsbPKMLJZ9NfTj6CcjZjAEoNTo1p9ZzaMrIQ5cDYikmB0KCo3W2KYfqi9EW4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768821940; c=relaxed/simple;
-	bh=1CwT5vzAfpN7Fw7yzF9dpywP+ZKx1ta/8L74orbGr+c=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:References:
-	 In-Reply-To:To:CC; b=TVrqXSwehWHM5wS9LOI59CZQMVnbupGg1/o62kfdci4bhqlBBAACZTWKfed+PDDcSS3IceIgEXF9J/hOSoWrE/NDsbujVXQ7vHnXEntt+4GwBxMHdLUBOaa1RJaH7kq0Y5C0aSMXoTLvva5Wr44xa0Cn6M+IsDdzHcqMRvGbJDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=bYCkcq7N; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BF04314D2F;
+	Mon, 19 Jan 2026 11:55:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.126
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768823722; cv=fail; b=aMZ5NxvclOOQqerDeL+GQRw3AzCwOY0a7CldBgJV03qnqMaEL6pxH+ggOjAyqaryb7WmzNE/R6ON+LN9RbrMqCuNq37BZMT5CwUFRaVyoSFiS+QiYJxC6MxvDGi+VGb6NUh5/OQxKPbxpWvtbvPviuDzFH2mg7DLQdVLCwNrFUQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768823722; c=relaxed/simple;
+	bh=q9UqEZGQacaLEkBo8WxPiT9uuxp9wgjVrdeilDXH4fw=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=cunUddJ4ns2RC+teM2/0IYJOh62hCq8AMzt28QtzlF6bs5dlCgvlfXbFlkvsv5y3llfHkR0BRM8wsRHW/3ZMckOhq/itpGLOZf1g/dnRh3AJ5qzNDJeNyv8NCiLSBHN2FpfAISKsFe67Jvr5lCSyNJmp91ocgDw5y0eHnmk/cX4=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=qT5omNcz; arc=fail smtp.client-ip=40.107.130.126
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="bYCkcq7N"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60J7x6uA2897195;
-	Mon, 19 Jan 2026 06:25:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=pS1VD
-	V8VPI+kSQM64fBij25pElStbfin/YWMMDp+7rU=; b=bYCkcq7NbknYKueaF6rDf
-	tYpYK/k6V5gkNCW37BDP/T/QHCEpBrKye+95GgA7hQfs8ycKpLlMs1nxHgLnVwEY
-	zN+bIJrYItoFylN14LoczUWxUXrKf9rKzqi12LhL34jqD6TrbjrwP8NSwNQkUg/d
-	aY9Ub4Rju8Np1VwDadtxG8MOIS1NpjoXRh0y2oEelR+KNmQOu+vf+THetReuhQ4z
-	VYHfnYpxNwAHcTc8lH6294qzNGyg+NMO406oAXJI0d4JohInjbjHy8IpO0XCqk/M
-	fCIeed0mDdwQplMvm6wxLd+v5WvzTz/NWlCupaAXG2Tlx7TT0p54tKLR2J28r9c0
-	Q==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4brsmgv7mx-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 19 Jan 2026 06:25:16 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 60JBPFI0041193
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 19 Jan 2026 06:25:15 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 19 Jan 2026 06:25:15 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 19 Jan 2026 06:25:14 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 19 Jan 2026 06:25:14 -0500
-Received: from HYB-e1y2fvUQ3cx.ad.analog.com (HYB-e1y2fvUQ3cx.ad.analog.com [10.44.3.126])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 60JBOwHr023363;
-	Mon, 19 Jan 2026 06:25:08 -0500
-From: Janani Sunil <janani.sunil@analog.com>
-Date: Mon, 19 Jan 2026 12:24:23 +0100
-Subject: [PATCH v4 1/2] dt-bindings: iio: dac: Add max22007
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="qT5omNcz"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=ks/1gGlsPa3n0E+6klU/eO9mdNAQuQlWVYGcb0M6jVTq1lM4tYP4/URPu5U5TkVLUQxlm3odjAEkvGIgrn2/4mf4PCu26MID2xKmi16KyebkI5toI6hwo2BjiRLfHDp3V7MpSRpGOunSbh7GjmqBz/bvkkc3feuX1CH0y7Qvi/S7D/2FJKCorO1WVU+GWZjC6LnqBfX2Wf6SOWQF5iJ5dkNFLdX4Wu/kJ2RYbnsuPrpjdz2Dx1pLOrbPSy8/3sAb3UebGjP+lTwF5ibnjsktCcQRAZqfY+3vuj0LhegHeT7tzVUtBvZE92LL5dnPOb5Riayt852MllyjAP//BjBXoQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JChQud9NKZP8r35cebE2cdYnk1kYyC2eDEdRPchsq20=;
+ b=JQmnwFKjHSK6b1eXcoXb3Tc04X+v7Y7jnBye/aiScVXOr73S6P0uKwA2jyQ20V5cpeQM3VwX6//6e5KMe4PtRzKyBul+opspz02vr5ew59a7QQs8xsm5MrmVcmd8NIKilw68aGZFMVIzG4Y0WL7oA5tXYYRcIGrwtIHOJ3HtmMps1He5kP5gUpu1HgYiVP4si5kkQ06ofNDKtcPNIA5SD0DhpYETd31SzWMjFviP6oQQKospvqLKHRBTSNLqJSUd0Jgy33akAzG/sxZaHc7VUiRlpoS2/XqovilPgfvczKqY9XDvwHVSDALHRDHVLnIrUh/pxmH57vEfEg+aBSfeXA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
+ dkim=pass header.d=vaisala.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JChQud9NKZP8r35cebE2cdYnk1kYyC2eDEdRPchsq20=;
+ b=qT5omNczhEgsjaULd8v6Nap6tXGCPTFF2xAiVe1XuI1j/iyflBajflGmHBU7EfPFzTHfC4e/Eu2fCKrrdkqjP6AI55orMGpY6Lv4QoxQEI+TfQnvTMl1abThAB12IwHvk84FVAKOzPo5dd+vJHpt412k5CraiuLWwNHgCBpxfHG6I5oX0xhLJDYrSBHHO5W5TesRzJ+rso4RJ/w9oE0CKnIXy44NhLldhtGCrGgQNJEvRM50nAkcaQ+mXKljc3otnXtieM+0lrfAtHB864qJyyj5DGXu7N+Hs2QxMbFZJWcoVMZhwTqDTrL5buhvfubSlF0uccx+ijvWlOReoSEvhA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vaisala.com;
+Received: from AMBPR06MB10365.eurprd06.prod.outlook.com (2603:10a6:20b:6f0::7)
+ by VI1PR06MB6608.eurprd06.prod.outlook.com (2603:10a6:800:180::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9520.12; Mon, 19 Jan
+ 2026 11:55:11 +0000
+Received: from AMBPR06MB10365.eurprd06.prod.outlook.com
+ ([fe80::4606:8e25:96e6:bede]) by AMBPR06MB10365.eurprd06.prod.outlook.com
+ ([fe80::4606:8e25:96e6:bede%5]) with mapi id 15.20.9520.009; Mon, 19 Jan 2026
+ 11:55:11 +0000
+Message-ID: <fdc20647-671b-4ba8-a30a-50e46ac71c6e@vaisala.com>
+Date: Mon, 19 Jan 2026 13:55:08 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 4/4] iio: adc: ad9467: check for backend capabilities
+To: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <noname.nuno@gmail.com>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+ Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260114-b4-ad9467-optional-backend-v3-0-d2c84979d010@vaisala.com>
+ <20260114-b4-ad9467-optional-backend-v3-4-d2c84979d010@vaisala.com>
+ <34e97dbb610e82953657d8354c0a343a9e1fa57a.camel@gmail.com>
+ <68cee45e-4822-41af-a0da-d1b88166425d@vaisala.com>
+ <9214d1ba49ee31e4f35d8d3fe5d894142e1d6fef.camel@gmail.com>
+ <20260116183212.08630389@jic23-huawei>
+Content-Language: en-US
+From: Tomas Melin <tomas.melin@vaisala.com>
+In-Reply-To: <20260116183212.08630389@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: GVZP280CA0006.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:150:273::12) To AMBPR06MB10365.eurprd06.prod.outlook.com
+ (2603:10a6:20b:6f0::7)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-ID: <20260119-max22007-patch-v4-1-e22404a885a6@analog.com>
-References: <20260119-max22007-patch-v4-0-e22404a885a6@analog.com>
-In-Reply-To: <20260119-max22007-patch-v4-0-e22404a885a6@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>, "Rob
- Herring" <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        "Conor
- Dooley" <conor+dt@kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-doc@vger.kernel.org>,
-        <jan.sun97@gmail.com>, <gastmaier@gmail.com>,
-        Janani Sunil
-	<janani.sunil@analog.com>,
-        Krzysztof Kozlowski
-	<krzysztof.kozlowski@oss.qualcomm.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1768821898; l=4501;
- i=janani.sunil@analog.com; h=from:subject:message-id;
- bh=1CwT5vzAfpN7Fw7yzF9dpywP+ZKx1ta/8L74orbGr+c=;
- b=FtUULZRnl7RxPYdcx3w9iUFLH7Ohr/1OAzjZLafIafoIKI+5nojdF0+NztWpF3/q3H4cRpqC3
- iWu9M02K7VLCf0xXcS+QNDCFKcvi6yk2aSRFiK7PjBMAS53ePo6UkoT
-X-Developer-Key: i=janani.sunil@analog.com; a=ed25519;
- pk=e25MyjRLPY3RWrYm/LrJ+/+t1MZJUbkgIW5CZg+g+hA=
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: xdJUUY_-Yg9GMmO2lCa7ufH7fIXPBmiS
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTE5MDA5NCBTYWx0ZWRfX92E2LdOE6WLC
- Kv1j0iUBXJErMf0gPy1RW0GNuhNYgpKU7cDhFMmhVY1/8OsOP+I0mH3WsmFDpWG+biXyvS8wUwA
- 7cghWoNiS35upjGd2vAPCL8cGCA/h2ZgmwCqW6cRBT+9rklwhkoPbqM9L09cAmyM7bnOw2iIiAU
- jIl4rIvRI4CSc92bV/YFdiDtGhX1F3MKn1f9YbSYmlSaopPMHbRuIT4V+8zmocsd/JKKOQNjIMv
- 5VU5InPg76HiMwn1t/AL7FV5IrdzB2Qabiji2Ifomrv8QMbsYwsIPzPQAh/bI8fC71YD2sgn4nM
- xZclk0oFZqfRFiRBUf9a26JiiEU8pjdoq6jeHIqsyyEfztznvY7uAMiLTHvxsHwLr/JuI+qnw2w
- cqu2cqrDVq+S/SDeSwOmuCpnuFP745EW6XHaZiEdGybtlH57iy8yN9UfrYl0k/JEzDX0m1KpOVf
- lSJIf94TZ+R8iHuilcg==
-X-Authority-Analysis: v=2.4 cv=fr7RpV4f c=1 sm=1 tr=0 ts=696e149c cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=vUbySO9Y5rIA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=EUspDBNiAAAA:8 a=VwQbUJbxAAAA:8
- a=5yLO_ytG1KKSPBdCm3cA:9 a=QEXdDO2ut3YA:10 a=9pxso9FRmSwA:10
- a=kMJE-xFm7jYA:10 a=sptkURWiP4Gy88Gu7hUp:22
-X-Proofpoint-GUID: xdJUUY_-Yg9GMmO2lCa7ufH7fIXPBmiS
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.9,FMLib:17.12.100.49
- definitions=2026-01-19_02,2026-01-19_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 impostorscore=0 phishscore=0 suspectscore=0
- lowpriorityscore=0 adultscore=0 bulkscore=0 clxscore=1015 malwarescore=0
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
- definitions=main-2601190094
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AMBPR06MB10365:EE_|VI1PR06MB6608:EE_
+X-MS-Office365-Filtering-Correlation-Id: a779cc17-c75d-4ff7-21ad-08de575199b9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|7416014|376014|366016|1800799024;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?ZDgxLzkxa05lUkd3dnpiVjlxR3JKUjdKbHBsWElxRFZMMTY1QTZiYzJPM3B6?=
+ =?utf-8?B?TFhlN0NOdkxBWm9oMGUvSGk3Ym43RjA2N2xncG1VQ3BMYjFNbmdacTlkc2Ni?=
+ =?utf-8?B?Z0JSQnBnUklPSXBtcjlqaWNYWDVkSHVvSCt2UFdWU3IvTjljYUpHZlhzVTVS?=
+ =?utf-8?B?L1lQMHZSRTRQQzRwZ2dPQnlhVkNONDlDa0Z0YlJRNCtLeVZaUFBoOC9qK2ww?=
+ =?utf-8?B?SGJCWkR0NE5KY3RveTdtcFNueGtwSkhJUjJIdnY5c1ZDVTBldStKcG1lNWZJ?=
+ =?utf-8?B?VGJ0SG9RMHNEeXFGTWZjVzArRUM2TXhwWGhUUWZTbzdjNiszYlF6aXRVNk8x?=
+ =?utf-8?B?eklHWkRvaTJvTXdVd0pDZ3ZtK29odjFITG5LZVRiTGxENEpNRm1XUWN5dnM5?=
+ =?utf-8?B?Y0VEL0MyTzhZMjNpaVhZNENERlhWOVpodVc2RzNycmFYUmtYNWlNdjBuZ0d3?=
+ =?utf-8?B?R1lSMkRTVVk3enJwbTAvL2VGSEllRGI3dDlicVlJVU5DOFFoUXFRaGRhem95?=
+ =?utf-8?B?Sjk2VzdCNkJCZkFlRld1WFUrZ05tUGhqWUFUdWpoWEpRQ0hFaE9TeU5MamZY?=
+ =?utf-8?B?K0JUSE9Yd0M4MEZVVzBuR1ZPRnVHRXd5cHUxYkFNREFIMVhRS1VISmxOYXdP?=
+ =?utf-8?B?UWZROGJCdU54YnpjSDE0Y21ZVzgwdjRIdW84V0g0QzZ0d0JMMlRlOTN4MU1Y?=
+ =?utf-8?B?QStHMkhYbzk4QlRUcG9lckUrUXMxSGRvTzRTMTg1MVlwZVl0NUo5N01NQkhn?=
+ =?utf-8?B?bGlsTEl4M3B1Z21oTzhvVUw2ckVnUXl3ZG1zSXpIZDhIMFc3ZXNzeDJGaHNG?=
+ =?utf-8?B?dUJJcjMxRFFZQ2dTUWJ1WkRXWjVUbSt1bFFzUlB6cmJWYXBsdExYcEkvUlU5?=
+ =?utf-8?B?aGpiNU1RT3Z0VlZEUm9jcWg3eVNWOSt4NlJNMzNHQTY2MlZPalZQbmVXODZ5?=
+ =?utf-8?B?UXQwSzdSWE1ueTdJRHBsVktjK0dGdzkrZVdaM2JCWHZyUUNvTEg5eXhMV214?=
+ =?utf-8?B?ZHM1NVMveFFZcHRkZFlpdHhWY2xhajBNMlpvWVJHOTRsTkNFN2EvY0NtVTY1?=
+ =?utf-8?B?SU9GZWNjdVNWdDJ3UGVEb3VYSTZibFMxVFRBYzVkUExLcjJkSE55emZNaHhQ?=
+ =?utf-8?B?dkNXeDBHMHBlQ3I0WU8zazNsTmlvRjdsT1VOa3pWbWY4aVVPaWY0a3hpdVEw?=
+ =?utf-8?B?bUw3blgvdFNSL2c5TkNJTkthVk92djdnN0ltcExGejkrS2JBb1FUbjJlaVFH?=
+ =?utf-8?B?QVlTQTd6NURucUQ1R3QzeHNmNnJQYWI3K2k5RjNYMmhUSllTTlZubStIZXV3?=
+ =?utf-8?B?cngycnY1MExqb3cyNjRhQXJGRStqN3lNZjVDNDF4L04rOTF2L3B3MzhhT1BH?=
+ =?utf-8?B?b1dMN09OY3BxWVVPdjVPY3VTWWtETUlYRFZzWXZWRFRtNUFWWUpTdlRROEVs?=
+ =?utf-8?B?WmpwamhwNXA0NVBZdGxCODRlaUxsWWdRQktoanFvTmJ5emhRMUtaa0EwMHU3?=
+ =?utf-8?B?VXVmbTdvVzQ5SHN6MzQ2OENZMU4wS3JIVDN6clptSWN5NlVzVjVpdUdWdXRO?=
+ =?utf-8?B?SHR2WUE1bzZVbHNNSGtvTjRmTlRRMnlld20rcHhnWW00allFaHA1Z05FZnBY?=
+ =?utf-8?B?ZnE5NjV0RFRpTzdUTHc1TkdFTXU2NFBNVG84L09PbHo4T1VMRGIrTFBqdW8v?=
+ =?utf-8?B?WjRHb2hiU0IyQlB5aXZieGtMR2tZL3RLOGZVSnZ0eHVEZHg5M1lCV3ZVM2p5?=
+ =?utf-8?B?STU1amcyVHVlc0MyeDg1UjJKT3hheC9WMmVqazg3VFZVK2o5a2N3SDM5UVhY?=
+ =?utf-8?B?MVArZVR3VXc4blI5c2dSRGc5UlYzQVlwTjlEbkszb3dmZGZuTjFnNEJ2Vlp2?=
+ =?utf-8?B?SmZEZXhkZnRvZmZuenVVSlVzazJ4VUVBVktiZjRvMURRTE1VRVlLY3VyTk1O?=
+ =?utf-8?B?MDU4VkZwcTl0cFJoMlcvWDB1NnhiblQxUHFkNTVJOUs2WkM4QnpBVTh2TWQx?=
+ =?utf-8?B?cVd5YzVvWW5YNnZxM0FwWjRqU3hPUVZ1S3NNRjBaWnp2NjFpSEJORkY5SDVG?=
+ =?utf-8?B?NWd3MGUyaDd6dHFJdFRqQ0RvYUxOM2J5MnprK0NvVEgxVHJzcE9QVXRCejZL?=
+ =?utf-8?Q?7a4A=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMBPR06MB10365.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(7416014)(376014)(366016)(1800799024);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?THJpR0hPVG9Ra1RMcy8rQjZlOTRHdmExR25xKytyVlJtYnN4d3IvUUlvZ1hw?=
+ =?utf-8?B?M1hyMVk2WG1ZM016Umd2QldGQzRKaTFSQWdOcXROVXhnV0VHQkc3dkhyWkJX?=
+ =?utf-8?B?aDZjaHNIbkNJVHVHR0Zyd2VOdnNtMkdsbEI0MldYcUdqS2RNRlo4ZmMyVmhF?=
+ =?utf-8?B?a2tFaUw2eWwwOWJibE1tNkFoYmZEVGJsZ3QzczdMSDNhQWIwdjhvNFdhR2gr?=
+ =?utf-8?B?Q2pyaFRlSjZoREN3ZWZtQlVZSmJqRFpucGhYaHpURmdPRVg5YTN2dFg3c0ZE?=
+ =?utf-8?B?V2RRK2FXTHgxS2E1bGFFYWhWdis1cFpNS0xtQmJianBxbWFWLzBlNGlCTEs5?=
+ =?utf-8?B?cWFBN3JOSlZ6VmxkNVpxbGF6OFhRU0hTdEFia0RyMkk3N0JaWEltUjdsY2sr?=
+ =?utf-8?B?Skszb1JOcXdlbFJuNFBBcDBqR3RGeis1VnE1b1M3SzdudWVjcnVaMWNuSk11?=
+ =?utf-8?B?ckxZeGJPaXBFZ3BkSHVtNk9uWWplckFaQ0JWd01zZS9wbUtMcU00VFNUMzVX?=
+ =?utf-8?B?aHZ3U2gyclRveWY0V21qUGhRdks3VlBFVTFCeVlMcHEyRHVxTjUwOER1NFVE?=
+ =?utf-8?B?Q2YzLzZzWHFnMWNUQlgwa2ZOUXBkUFhldFZnd2NEWlJNOTFmZ0JtZUJIdjAw?=
+ =?utf-8?B?cDlRQ0FkaHhrajQzZ0EyL0F6dk4wSGwrUjYvbDc0S0EvNzNic0V5N0MrU0JK?=
+ =?utf-8?B?andkdlM0YUt3QW5keWRCUXdhTTE4L25ieS9IcE50Z2RBR2ZCdmI5VWx1VXE1?=
+ =?utf-8?B?Rnd6N2JwZnhoRFVpYUZJaEtQQzhKR0dCMVArSDVONDliYUJCWjRkanFKMURS?=
+ =?utf-8?B?RTJYTG55VHFtdkszVXlEZnZ4bnp4VFljZjdaZ2YySmcyNVVSbzFKZ0ZZelNU?=
+ =?utf-8?B?b2JmM0FkT2FEc2Fhamxtb29VeEpQVVFOUXJvaDN6aXpoeFZkZWFubjJDQjZh?=
+ =?utf-8?B?d2RVVzJONXg2MFhwRDNDQllZK1llTUIvc0kwblpLME5xTElXMVU2Vk5MOTRo?=
+ =?utf-8?B?Q2lPL2c5L0NUa1d0YXgySjFyeEkzNVVHWkJocUpnME5DRzkrMG1JSERibWla?=
+ =?utf-8?B?OVlMdWdtMHFWMDJ4ZDRmdEJKVmpSZ00zd0NBU3M1Zkd1aFJRbFpjU3p1M25S?=
+ =?utf-8?B?RnNrMFNISkYxVHVmUGE0SDk4ci8rOHRrYjJvb0lnZUZBKzJSVnpiQkhNSVk5?=
+ =?utf-8?B?RXBkVmlCczZoNmJmMytjOEZQeEpNRWVMOFJkWW1LZk9Tdm9IZTFIV3VLTkhs?=
+ =?utf-8?B?L1czL2hVZnR2Wlc1THpFT3lsV0UwRytGWEhhdzBkZVNQWmlyWisxVzVlV2wx?=
+ =?utf-8?B?UWJsUTZiNkJyTTZYYUUyYWJuM2ZvUzZFNWk4Qk44MkF2OUtkUitiRDFIYzF6?=
+ =?utf-8?B?cEdFd1hZSVZ3U3F1L0tRRGRSNXRXekU4MW94Q1BVbEpmSTdranovQ29uVThD?=
+ =?utf-8?B?enVjSWdDTUc5UmQ5Z0Qxblp2aUs2dS9udERoSW4rZVhhSDN4SFRtc29SMlVh?=
+ =?utf-8?B?T2s2NU00QkZlbW1LeGRvV3JYWTdwWldjRFB0K0pvb2E0MWJvWnVvZldVSUZO?=
+ =?utf-8?B?Q3BnQmg2ckhlMUxIOThiUDNJeEpodW1YYkJtakpPY3VWV3dlTHpoRWxmSWl4?=
+ =?utf-8?B?UkJGVTFobW5TUzN2UktvUlF0V0EwRzEyZ3ZvT0NCMGFNcm56MXpxaS83elpr?=
+ =?utf-8?B?ZkFLUzBEZStReEdHc2NZSDAya0laQVYwMG12QVFEbVp0YTJUZnhPNFJHZXB5?=
+ =?utf-8?B?cHJDcHNlZzJoQUI3Y2Z2bkR6QWxKM1hoVmg5aUsrUnI0WHR3YkpXbXNud3Q0?=
+ =?utf-8?B?VTUrazlLOXlUSUVOeFdzSHg2U1B3UjFVTmpHUWpscy9PbnZkcU1vTjgzbWla?=
+ =?utf-8?B?SVpiMHpBY2xYNlJ6b2Z1NWx2OGdwWUxXVFRnZUNoQjNJa3d6RlY5UFpkNFJ6?=
+ =?utf-8?B?MkZETWZOaHM1SlFIN3JPcE80c1poOUlydjVUTGhXRkhVU2lwaTBhRkM5TTVC?=
+ =?utf-8?B?Zmh2b3h6aHp0QlNSeklYM1NnQnRMblM4ajBHS01QWFZlYThPVkZPcnZxeTdy?=
+ =?utf-8?B?R21DdG1kL2VaM0c2c3pDOVRmUUtBbVJ1ZDArTWlFKzRybkNNNTNaSkI4eUQr?=
+ =?utf-8?B?cDFSTXhBL3N6NHlTYkl4cFdlQlBUVnFVUHBnYkFPWC9pU2dXdmlsNi9xQ2Nn?=
+ =?utf-8?B?SE9VZmxSNVR6SDlhVGhqRm5HSDlyNkkxVHV6cGRibXZmOGY5VGR6YWd2dWNl?=
+ =?utf-8?B?L0JGWlFOUVFZTVBhWGk1bXNMOXNLTHRZZjRET1FhN296ZVRNejk4SUlRU3Nh?=
+ =?utf-8?B?b0JKNlJmaldBSXYvUjlKUjB0U1k3M1Z2ZXE4TFcwL0R2QXIzVUxWWnpsaWhV?=
+ =?utf-8?Q?FKIR8Zkma8TmgOF0=3D?=
+X-OriginatorOrg: vaisala.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a779cc17-c75d-4ff7-21ad-08de575199b9
+X-MS-Exchange-CrossTenant-AuthSource: AMBPR06MB10365.eurprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2026 11:55:11.7303
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2cdPhjRmod0RujCKfsQFXEAdHmQo3rBCfuH+q2W60OszMo5IPNo8jt37aafWdNX2mfOOwleNTR+fsLKGBHMkdg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR06MB6608
 
-Devicetree bindings for MAX22007 4-channel 12-bit DAC that drives a
-voltage or current output on each channel
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
-Signed-off-by: Janani Sunil <janani.sunil@analog.com>
----
- .../devicetree/bindings/iio/dac/adi,max22007.yaml  | 120 +++++++++++++++++++++
- MAINTAINERS                                        |   7 ++
- 2 files changed, 127 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,max22007.yaml b/Documentation/devicetree/bindings/iio/dac/adi,max22007.yaml
-new file mode 100644
-index 000000000000..93d95f6b4c08
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,max22007.yaml
-@@ -0,0 +1,120 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/dac/adi,max22007.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices MAX22007 DAC
-+
-+maintainers:
-+  - Janani Sunil <janani.sunil@analog.com>
-+
-+description:
-+  The MAX22007 is a quad-channel, 12-bit digital-to-analog converter (DAC)
-+  with integrated precision output amplifiers and current output capability.
-+  Each channel can be independently configured for voltage or current output.
-+  Datasheet available at https://www.analog.com/en/products/max22007.html
-+
-+$ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+properties:
-+  compatible:
-+    const: adi,max22007
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 500000
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 0
-+
-+  vdd-supply:
-+    description: Low-Voltage Power Supply from +2.7V to +5.5V.
-+
-+  hvdd-supply:
-+    description:
-+      Positive High-Voltage Power Supply from +8V to (HVSS +24V) for
-+      the Output Channels.
-+
-+  hvss-supply:
-+    description:
-+      Optional Negative High-Voltage Power Supply from -2V to 0V for the Output
-+      Channels. For most applications HVSS can be connected to GND (0V), but for
-+      applications requiring output down to true 0V or 0mA, connect to a -2V supply.
-+
-+  reset-gpios:
-+    maxItems: 1
-+    description:
-+      Active low GPIO.
-+
-+patternProperties:
-+  "^channel@[0-3]$":
-+    $ref: /schemas/iio/dac/dac.yaml#
-+    type: object
-+    description:
-+      Represents the external channels which are connected to the DAC.
-+
-+    properties:
-+      reg:
-+        description: Channel number
-+        items:
-+          minimum: 0
-+          maximum: 3
-+
-+      adi,ch-func:
-+        description:
-+          Channel output type. Use CH_FUNC_VOLTAGE_OUTPUT for voltage
-+          output or CH_FUNC_CURRENT_OUTPUT for current output.
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        enum: [1, 2]
-+
-+    required:
-+      - reg
-+      - adi,ch-func
-+
-+    unevaluatedProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+  - hvdd-supply
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/iio/addac/adi,ad74413r.h>
-+
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        dac@0 {
-+            compatible = "adi,max22007";
-+            reg = <0>;
-+            spi-max-frequency = <500000>;
-+            reset-gpios = <&gpio 19 GPIO_ACTIVE_LOW>;
-+            vdd-supply = <&vdd_reg>;
-+            hvdd-supply = <&hvdd_reg>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            channel@0 {
-+                reg = <0>;
-+                adi,ch-func = <CH_FUNC_VOLTAGE_OUTPUT>;
-+            };
-+
-+            channel@1 {
-+                reg = <1>;
-+                adi,ch-func = <CH_FUNC_CURRENT_OUTPUT>;
-+            };
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 5b11839cba9d..48559d2625b3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1594,6 +1594,13 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
- F:	drivers/iio/dac/ad9739a.c
- 
-+ANALOG DEVICES INC MAX22007 DRIVER
-+M:	Janani Sunil <janani.sunil@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/dac/adi,max22007.yaml
-+
- ANALOG DEVICES INC ADA4250 DRIVER
- M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
- L:	linux-iio@vger.kernel.org
+On 16/01/2026 20:32, Jonathan Cameron wrote:
+> On Thu, 15 Jan 2026 11:54:28 +0000
+> Nuno Sá <noname.nuno@gmail.com> wrote:
+> 
+>> On Wed, 2026-01-14 at 17:23 +0200, Tomas Melin wrote:
+>>> Hi,
+>>>
+>>> On 14/01/2026 14:29, Nuno Sá wrote:  
+>>>> On Wed, 2026-01-14 at 10:45 +0000, Tomas Melin wrote:  
+>>>>> Add capability checks for operation with backends that do not support
+>>>>> full set of features, but are otherwise compatible with the device.
+>>>>>   
+>>>   
+>>>>> +		return 0;
+>>>>> +  
+>>>>
+>>>> As David suggested, it might make more sense to do the check from the callers. Not as
+>>>> important as within the backend functions though.
+>>>>   
+>>>>>  	/* all points invalid */
+>>>>>  	bitmap_fill(st->calib_map, st->calib_map_size);
+>>>>>  
+>>>>> @@ -1357,7 +1366,7 @@ static int ad9467_probe(struct spi_device *spi)
+>>>>>  		return ret;
+>>>>>  
+>>>>>  	ret = devm_iio_backend_request_buffer(&spi->dev, st->back, indio_dev);
+>>>>> -	if (ret)
+>>>>> +	if (ret && ret != -EOPNOTSUPP)
+>>>>>  		return ret;  
+>>>>
+>>>> Don't agree with the above. I would prefer to see a dedicated CAP for buffering
+>>>> otherwise I would argue why not doing the same for everything? While it might
+>>>> be acceptable merging IIO_BACKEND_CAP_TEST_PATTERNS and IIO_BACKEND_CAP_CALIBRATION
+>>>> (given they are related to some extent), that does not apply to buffering.  
+>>>
+>>> Okay perhaps we first need to agree on how we define a capability;)
+>>>
+>>> So my thinking here was that calibration capability expands across
+>>> several or even many op calls, so it's a feature level thing and
+>>> requires several coordinated functions. So does the test pattern, but
+>>> it's a sub entity of the calibration so I merged the two together. So
+>>> checking for a capability in these cases makes sense, since checking
+>>> against a single operation call for determining if the capability is
+>>> present is not easy and which function would it be, etc.  
+>>
+>> Makes sense.
+>>
+>>>
+>>> The backend buffer on the other hand maps to a single op call (in theory
+>>> two). So checking for that buffering capability can be done by checking
+>>> if the op call is supported (eopnotsupp). I was kindof thinking that why
+>>> need a capability if the mapping is 1:1 and the information is available
+>>> through that error value directly?  
+>>
+>> Yeah, TBH the only reason I can think of is readability. To me, it is more
+>> explicit:
+>>
+>> if (has_buffering())
+>> 	request_buffer(); //not allowed to fail
+>>
+>> And can be a bit confusing having a mix of has_capability() and checking for
+>> error codes.
+>>
+>> But yes, checking for specific error codes for determining behavior is a common
+>> pattern so I won't be nitpicky about it.
+> 
+> I'd prefer capabilities for each thing rather than a mixed scheme.
+> Nothing wrong with also returning -ENOTSUPP if someone doesn't check
+> the capability first as that's still helpful for debug.
 
--- 
-2.43.0
+Okay I'll update accordingly. So capabilities are defined as being
+something that
+
+* is defined/added on a need basis to help frontends decide if a feature
+is supported
+* can map into multiple operations
+* can map to a single operation
+
+Thanks,
+Tomas
+
+
+
+> 
+> 
+>>
+>>>
+>>> On frontend level, like here it is known that the driver can function
+>>> without that buffering, so if the backend does not supported it can be
+>>> okay to proceed.
+>>> If we add a capability for a single operation that has 1:1 mapping then
+>>> basically we should map all and that is not really the point?  
+>>
+>>> I see the capability like a contract between the backend and frontend on
+>>> feature level, that the feature is there but the implementation of a
+>>> specific capability might actually differ depending on the use case
+>>> (like we see with ad9467 and ad485x calibration and their backends)
+>>>
+>>> What are your thoughts about this?
+>>>   
+>>
+>> Ok, I think it makes sense to me but maybe we should be more explicit/clear in
+>> the docs:
+>>
+>> "... meaning that a capability requires certain 
+>> operations to be implemented by the backend"
+>>
+>> Maybe s/certain/multiple and we could even mention that if a frontend is interested
+>> in knowing that a operation is not supported, the error code can be checked
+>> (though this could be obvious already).
+>>
+>> Let's see what Jonathan and others thinks about it.
+>>
+>> - Nuno Sá
+>>
+>>
+>>
+>>
+>>
+>>
+> 
+> 
 
