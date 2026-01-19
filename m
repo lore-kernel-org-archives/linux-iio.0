@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5625336402D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 561BD35B13C
 	for <linux-iio@vger.kernel.org>; Mon, 19 Jan 2026 18:24:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768847076; cv=none; b=lSHSkM2NEFoc8WgzVyS1A23BIwBaTfsnUMEvc9S2v21IuOiTcbXfv4AU3Qy3Hyl1nMzu1ojCqQ6mul4qdfcuTsPO/wNXovOLVXHTAz1ALZ0w3twyU1o6ez9/Jai1KZOWo9i8ZGXpmGGzR8jV8Oik5Ubsi9XwcErw6sDO0nDCkDc=
+	t=1768847076; cv=none; b=QoTNP5fuTMvNhosF+tAj/c8HVbN4xL5gFVc6JqahAhi4aMPJeJ4WNjZhLhwU+b7wCYQt0Sa8Iua0tOyyf+VjJxTUaAyegsaIW4p0Omv7n3bh05tjOPZcURWBdBUWJMISjSBbfg572dUnujO6L2OfmoixzVEc+aoskKIm0bu8PQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1768847076; c=relaxed/simple;
-	bh=hfRqSHoUd/W/eV/madXW+xbCjKlyqcFtv2XVBYIuxKk=;
+	bh=Xfoi+lem2nLxE7UAyO/lJ6F52/txLPDbokgn0yZNdFs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IBEsRmvyK9vKmU9GtRSAuZGqUEdzm9z8u3ocLEHxYqzewwDM3c+UeX8FZ+bQMRdoAxRR0cxpAV6ZPNo6wFkZVhQc4TpdY2zhjesEdxd5GZn9QmDkAyY9TWNvVgTEc3dR3QCvOUHPFa2KdJXJp2mDLpRPzA2eKz0FdL5gfliTbOQ=
+	 MIME-Version; b=H6v9YYg9Zmafl8/ROyfP5oPjBDZN/mEWqa1+L6laXRXQaWyDUEsKyIumKRhuaHZIIVzz6tJT9vmG+RRUkCz5789zx34zrGTV65BSB217w+tIhHGNnSENp4sHor1TdL64zOPWr+fQqjiKIsF5B6DAv/4Ztowe2o650qAIjQa1dng=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vhtvO-0004SL-7c; Mon, 19 Jan 2026 19:24:26 +0100
+	id 1vhtvO-0004SR-7d; Mon, 19 Jan 2026 19:24:26 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vhtvO-001SUe-0v;
+	id 1vhtvO-001SUp-1X;
 	Mon, 19 Jan 2026 19:24:25 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vhtvN-00000006y1U-2H6t;
+	id 1vhtvN-00000006y2U-2r3l;
 	Mon, 19 Jan 2026 19:24:25 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -43,9 +43,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v1 1/8] dt-bindings: iio: dac: maxim,ds4424: add ds4402/ds4404
-Date: Mon, 19 Jan 2026 19:24:17 +0100
-Message-ID: <20260119182424.1660601-2-o.rempel@pengutronix.de>
+Subject: [PATCH v1 7/8] iio: dac: ds4424: ratelimit read errors and use device context
+Date: Mon, 19 Jan 2026 19:24:23 +0100
+Message-ID: <20260119182424.1660601-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260119182424.1660601-1-o.rempel@pengutronix.de>
 References: <20260119182424.1660601-1-o.rempel@pengutronix.de>
@@ -61,42 +61,32 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-Add compatible strings for Maxim DS4402 and DS4404 current DACs.
-These devices are 5-bit variants of the DS4422/DS4424 family.
+Replace pr_err() with dev_err_ratelimited() in the RAW read path to avoid
+log spam on repeated I2C failures and to include the device context.
+
+Use %pe to print errno names for faster debugging.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- .../devicetree/bindings/iio/dac/maxim,ds4424.yaml          | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ds4424.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-index 264fa7c5fe3a..efe63e6cb55d 100644
---- a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-@@ -4,18 +4,21 @@
- $id: http://devicetree.org/schemas/iio/dac/maxim,ds4424.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: Maxim Integrated DS4422/DS4424 7-bit Sink/Source Current DAC
-+title: Maxim Integrated DS4402/DS4404 and DS4422/DS4424 Current DACs
- 
- maintainers:
-   - Ismail Kose <ihkose@gmail.com>
- 
- description: |
--  Datasheet publicly available at:
-+  Datasheets publicly available at:
-+  https://datasheets.maximintegrated.com/en/ds/DS4402-DS4404.pdf
-   https://datasheets.maximintegrated.com/en/ds/DS4422-DS4424.pdf
- 
- properties:
-   compatible:
-     enum:
-+      - maxim,ds4402
-+      - maxim,ds4404
-       - maxim,ds4422
-       - maxim,ds4424
- 
+diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+index 2d299a52cede..13acb427d43b 100644
+--- a/drivers/iio/dac/ds4424.c
++++ b/drivers/iio/dac/ds4424.c
+@@ -148,8 +148,9 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_RAW:
+ 		ret = ds4424_get_value(indio_dev, val, chan->channel);
+ 		if (ret < 0) {
+-			pr_err("%s : ds4424_get_value returned %d\n",
+-							__func__, ret);
++			dev_err_ratelimited(&indio_dev->dev,
++					    "%s: ds4424_get_value failed %pe\n",
++					    __func__, ERR_PTR(ret));
+ 			return ret;
+ 		}
+ 		raw.bits = *val;
 -- 
 2.47.3
 
