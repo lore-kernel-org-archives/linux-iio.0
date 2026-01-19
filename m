@@ -1,106 +1,184 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from ixit.cz (ixit.cz [185.100.197.86])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 610C9325719;
-	Mon, 19 Jan 2026 17:20:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BDB62DEA67;
+	Mon, 19 Jan 2026 17:33:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.100.197.86
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768843209; cv=none; b=atBsJNWIt/706kZjRwbjN0r2o7tZIxGzl5wjIjy7n4vxszhWBgj21HyAbOH0n8spStangKPk4B+n04k25ql6SXbbZKuurcm9sgNnMDV38RsZy2wehNCTy4cP18RK4WUmTR6VauGGXBtMsPxBcOhhF0CBfXwPiU5xyH92dNRIDBU=
+	t=1768844007; cv=none; b=AbyWsHZfHme6KaqfC/D/fyu1JulNgBywirXNikttjNyQkp3cXVU1EiUxoGPzD5UeM02zTsIoJqCfkMS+OzldzDf9DfhEhOzvLoW982dES7nRilcSG7B3yz5Om+1pksZfj9Z4nkoSngp8spZcUt55ALUytgxwVOgZtr0yHXXg0Ck=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768843209; c=relaxed/simple;
-	bh=v3If7khaoVa8/stoqUkdZXkFNHufWZUfyfb/J2p7VVM=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=WyMYwjdTsjhUvX42s0CilG+tOLXrFSbIEt+XZdu7/w/cKSLB6qSQOKxwDnYzjLPHbSBQk1nuI85sZEcLeOJIuA4ize5pNc2q2ts1+zHcegAFs5YjgMRixh6sC3hZr7GM9i6IPLfNIuBOKj3gDJ4/18GUMix9l65JG0sBDCzbte4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PPsmg+x5; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768844007; c=relaxed/simple;
+	bh=wv3iGVgADZfczhmEdP1XRF7qtuIrc52olJlqa3xFPk8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dJDNug2y+cI4n+QbJMjwccSNYxO5u4Vf67hI5gSsuT0cTR8izkt2HGV9cvZyB6YC+qe103r7ZaeMAzBCXLwkUec/fwF+2AJnevMa2LVgW2gKBmUIE2COMYEYlS8tEmhE8e/Gh1UaRfWdIKTcyHTs0zWL0hpCqjcfjZqVklTb1rg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ixit.cz; spf=pass smtp.mailfrom=ixit.cz; dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b=HkrynRV2; arc=none smtp.client-ip=185.100.197.86
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ixit.cz
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ixit.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PPsmg+x5"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E29B7C116C6;
-	Mon, 19 Jan 2026 17:20:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768843209;
-	bh=v3If7khaoVa8/stoqUkdZXkFNHufWZUfyfb/J2p7VVM=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=PPsmg+x5JH6wNYAk95iZN2n2eB5kid8O+1HZEiWpMzJ9jg0eNKS0wXRBhr3kdR0GY
-	 agOffxGbKxnUfIrbMyfIq//rbHg9J4Z/Mfbdwx+0tkfToLfm7ipKOgQdcg2Zh5uG1S
-	 GugHwJG5KsjhjhGwd/BFTiD7IEXCPI+uQgp6Zef+jEnEuaoNn5Td4cgHgTwrvMz//j
-	 ZWdyHAv18enb4Mf8QINJlTJqZwC2WRNokT1WjnYQZFLd0+zQivOG11/siEAVxhlmaA
-	 86KLapDtXjl1y/8Z0ptTAOxMTUatuiHkkp+fPTb1NM3B6HDMQSAlnVxJfaeiteSsSv
-	 AdTNE8yR+VZew==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8AF0D29C4D;
-	Mon, 19 Jan 2026 17:20:08 +0000 (UTC)
-From: Petr Hodina via B4 Relay <devnull+petr.hodina.protonmail.com@kernel.org>
-Subject: [PATCH 0/4] iio: proximity: vl53l0x: power sequencing, optional
- VDDIO, raw I2C ID read
-Date: Mon, 19 Jan 2026 18:19:54 +0100
-Message-Id: <20260119-vl53l0x-v1-0-cf71715a1353@protonmail.com>
+	dkim=pass (1024-bit key) header.d=ixit.cz header.i=@ixit.cz header.b="HkrynRV2"
+Received: from [10.0.0.200] (unknown [10.88.125.21])
+	(using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+	 key-exchange x25519)
+	(No client certificate requested)
+	by ixit.cz (Postfix) with ESMTPSA id 2B7B6534326A;
+	Mon, 19 Jan 2026 18:33:21 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+	t=1768844001;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:autocrypt:autocrypt;
+	bh=qwSKq3FSr+ZsvZCd240HErUbHksnnk4TWi2yz+40qgo=;
+	b=HkrynRV2qGbhsPswcbE+EnvifCfc7rPmOE/M+zqFK2Lhm+rSv4oGAM38KgCA9nnOBW/+LG
+	GjMvUGz6qm4/UG8oOeCGHZ60TlHsERc38p6xN7A3yIymVah3gleHVvnTRtUXisqbQCrn8l
+	SRpK1rkKq0pEHMCLln3AgPWuksiBT8s=
+Message-ID: <b53a78cf-3c66-44ac-8f13-2925e3d9b9a2@ixit.cz>
+Date: Mon, 19 Jan 2026 18:33:20 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] sdm845: tama: Add AMS TCS3400 ambient light sensor
+To: petr.hodina@protonmail.com, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Bjorn Andersson <andersson@kernel.org>,
+ Konrad Dybcio <konradybcio@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
+References: <20260119-tsc3400-v1-0-82a65c5417aa@protonmail.com>
+ <20260119-tsc3400-v1-3-82a65c5417aa@protonmail.com>
+Content-Language: en-US
+From: David Heidelberg <david@ixit.cz>
+Autocrypt: addr=david@ixit.cz; keydata=
+ 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
+In-Reply-To: <20260119-tsc3400-v1-3-82a65c5417aa@protonmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIALpnbmkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDI1NDIyML3bIcU+McgwpdU3NjUxPDVAPjNIMUJaDqgqLUtMwKsEnRsbW1ANV
- 5BkpZAAAA
-X-Change-ID: 20251228-vl53l0x-573541e03f0d
-To: Song Qiang <songqiang1304521@gmail.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, 
- Mark Brown <broonie@kernel.org>, David Heidelberg <david@ixit.cz>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Petr Hodina <petr.hodina@protonmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1768843207; l=1309;
- i=petr.hodina@protonmail.com; s=20260107; h=from:subject:message-id;
- bh=v3If7khaoVa8/stoqUkdZXkFNHufWZUfyfb/J2p7VVM=;
- b=JnT1c7WAoLWRO4MGX2Wz5wMnYHdcY/2xR1OV0jNPWqSFWofL9q5ASYhwg9Xd12B8M5pS/H6Hs
- mQpw6SZc5L1CsPxqtOWmZklNuoZsGkMVSGTc/xG9MnAx/hlv8FtbHQU
-X-Developer-Key: i=petr.hodina@protonmail.com; a=ed25519;
- pk=3QaVc6AaAu1IsyyH86+LIOOFhD7kCws8Xhe+wwyE7Bg=
-X-Endpoint-Received: by B4 Relay for petr.hodina@protonmail.com/20260107
- with auth_id=594
-X-Original-From: Petr Hodina <petr.hodina@protonmail.com>
-Reply-To: petr.hodina@protonmail.com
 
-Hi,
+On 19/01/2026 18:19, Petr Hodina via B4 Relay wrote:
+> From: Petr Hodina <petr.hodina@protonmail.com>
+> 
+> Add device tree node for TCS3400 ambient light sensor with
+> power supplies, interrupt on GPIO11, and pinctrl states.
+> 
+> Signed-off-by: Petr Hodina <petr.hodina@protonmail.com>
+> ---
+>   .../boot/dts/qcom/sdm845-sony-xperia-tama.dtsi     | 36 +++++++++++++++++++++-
+>   1 file changed, 35 insertions(+), 1 deletion(-)
+> 
+> diff --git a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi
+> index 7dc9349eedfd..15d56d6831c5 100644
+> --- a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi
+> +++ b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi
+> @@ -485,7 +485,23 @@ &i2c14 {
+>   	clock-frequency = <400000>;
+>   
+>   	/* SONY ToF sensor @ 52 */
+> -	/* AMS TCS3490 RGB+IR color sensor @ 72 */
+> +
 
-this series improves robustness and hardware compatibility of the
-VL53L0X IIO proximity driver.
+Nice! Few comments:
 
-Patch 1 and 2 adds support for an optional VDDIO (vio) regulator and documents
-it in the device tree binding.
+You replacing sensor comment at 0x72 with one 0x39, could be there 
+different sensor model with different address? e.g. tcs3400 vs tcs3490?
 
-Patch 3 fixes the reset and power-up sequencing. The previous logic drove
-the reset GPIO in a way that does not match the datasheet timing and
-level requirements.
+Also the node should go above ToF sensor as @39 < @52.
 
-Patch 4 switches the initial device identification from SMBus helpers to
-raw I2C transfers and reads the full 16-bit model and revision IDs.
+> +	tcs3400_sensor: tcs3400_sensor@39 {
+> +		compatible = "ams,tcs3400";
+> +		reg = <0x39>;
+> +
+> +		interrupts-extended = <&tlmm 11 IRQ_TYPE_EDGE_FALLING>;
+> +
+> +		vdd-supply = <&vreg_l22a_2p8>;
+> +		vio-supply = <&cam_vio_vreg>;
+> +
+> +		pinctrl-0 = <&ams_sensor_default>;
+> +		pinctrl-1 = <&ams_sensor_sleep>;
 
-The series has been tested on hardware - Sony Xperia XZ3 (akatsuki).
+pinctrl-names missing
 
-Signed-off-by: Petr Hodina <petr.hodina@protonmail.com>
----
-Petr Hodina (4):
-      iio: proximity: vl53l0x-i2c: Add optional vddio regulator
-      iio: proximity: vl53l0x-i2c: Add optional vddio supply
-      iio: proximity: vl53l0x-i2c: Fix reset sequence
-      iio: proximity: vl53l0x-i2c: Use raw I2C access and read full device ID
+> +
+> +		ams,rgbcir-vdd-supply = <1>;
+> +		ams,rgbcir-gpio-vdd = <0>;
+> +		ams,rgbcir-vio-supply = <1>;
+> +	};
+>   };
+>   
+>   &ibb {
+> @@ -751,6 +767,24 @@ int-pins {
+>   			bias-pull-down;
+>   		};
+>   	};
+> +
+> +	ams_sensor_default: ams-sensor-default-state {
+> +		int-pins {
+> +			pins = "gpio11";
+> +			function = "gpio";
+> +			drive-strength = <2>;
+> +			bias-pull-up;
+> +		};
+> +	};
+> +
+> +	ams_sensor_sleep: ams_sensor-sleep-state {
+> +		int-pins {
+> +			pins = "gpio11";
+> +			function = "gpio";
+> +			drive-strength = <2>;
+> +			bias-pull-down;
+> +		};
+> +	};
+>   };
+>   
+>   &uart6 {
+> 
 
- .../bindings/iio/proximity/st,vl53l0x.yaml         |  2 +
- drivers/iio/proximity/vl53l0x-i2c.c                | 71 +++++++++++++++++++---
- 2 files changed, 63 insertions(+), 10 deletions(-)
----
-base-commit: 46fe65a2c28ecf5df1a7475aba1f08ccf4c0ac1b
-change-id: 20251228-vl53l0x-573541e03f0d
-
-Best regards,
 -- 
-Petr Hodina <petr.hodina@protonmail.com>
-
+David Heidelberg
 
