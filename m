@@ -1,38 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45DBA320CCF;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45E88322557;
 	Mon, 19 Jan 2026 17:19:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768843159; cv=none; b=fsS5thjUIViSKlQVEou22CE6ZKkkzpJf6pk4L5QMPvFg2G64BVXzauFbLrq6U9iivV5AWW/Kjtd4SkFvv6yugXXw7ol3GeMlvl2UBLOmivXYoPl+T8sXs5CJkR1Yn6QMCZIpa4GZmWQpCBeaglWOGVD9AUF7TemVOxEYq/m+VMA=
+	t=1768843159; cv=none; b=Ahgwm5IIaLMcnLad35S/WeR5yFZvGaudTolydQnxeydvyhpjEBAvU41D9Q/mTPY5A1bddMgnRnpLPWGdhKTY9JdYxIt4N0HA3WwZffguOKhSB8UArF36C+Ji4hhvBjH6WuybkjFiW5TXma3ZjwSUxu8WYgCkdwRi7cFwP4VFR7Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1768843159; c=relaxed/simple;
-	bh=vgsWMnalXEzctyb/qHwzwgoCbMWvv9mKKThKgNHGnPc=;
+	bh=V3C1yvRX6bb7a06RtadQrxrf/kE11eVwt9lTWF0EcrU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=t5uaJJRDYjYGo5ymLz1vbgSmEzjUuNU1ezsruNiW8z7+uYL4rkd+KH+FQqe0rp6sgqdevI/5Yzg9WBGtXNzRzpXOeMmWyxJU0V1etmOvMA3PDrq7W+gu/hkY0ajMnremKFQirYo3ZV2Z3NEiO0wmnKoJ6gkJChVsqsYXWD6Jys4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sjAB33Uy; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=tjJFmOsKKtp73bnbdjve3fzWFdV6qgWhEga6JuGjUHo98/+/Gk4PoJvs+JqMDGBRvEPqgh9BEGwUSZjF2vIbTF2OxD4DpyvZbgkjR421Ly9A9UxtpEHeXqefr66j9iBRm2xnEWGTyeADwZvbmBiEQ4v4fcUUy4IMXByc4wNGJYk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FlkDOD+V; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sjAB33Uy"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id DBF59C19422;
-	Mon, 19 Jan 2026 17:19:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FlkDOD+V"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 0991BC2BCB0;
+	Mon, 19 Jan 2026 17:19:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768843158;
-	bh=vgsWMnalXEzctyb/qHwzwgoCbMWvv9mKKThKgNHGnPc=;
+	s=k20201202; t=1768843159;
+	bh=V3C1yvRX6bb7a06RtadQrxrf/kE11eVwt9lTWF0EcrU=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=sjAB33UyurdZCvW+71NpzazGJRn+w29dq+R5jDje7RMUN68KoOf3cbY08Q2s/jS6I
-	 ik8+12b0/uSWeXDWed9BXoE6NdBrbKxCfoyHOc65iH0g33FIK4x7siqesFv9sfAwkL
-	 ioUEQiPiM39V2/96ornZL2+jxvfhfb8jAiGNNhe1DIPOSs6vt6P4AGBFOQa0xVXe6+
-	 x+YG5RHlyQDzMhSKiuUCgQE5nB7TmDlvgP80V6M21E35NJsAe3n6hwq8uveKEIKEUX
-	 6JV6AjbgIL4TAWUA9yTQV3hED4rGDyDNt9VK+LbG8a3oY+t2m3QBVdZBIxaELr7sst
-	 ytylfrl/+S/VQ==
+	b=FlkDOD+VQF6a6b45l1G0N/lMZjzr/Yb8XvQG8Hi+tajSKklCqv0T57NTwiZQ48iAZ
+	 adkSF+ev5oCGmhVGTvFVl0i2yXVpB8OWYYqQQHzl1h6XQmKayniC8kD9Yio/DIBbYt
+	 q/qhIXVAn0tdCYLSGe+3JbJ8G9uB4a9lBSM7yukviBlzPSX9iGIYcAdWOezLvcr+cM
+	 qsM1XxAXWRyFDQBMz2206UragoRBT3Gd/8vZOdnbFV+W8d5yPfSDTghHXTGX3wFnY0
+	 vU/Grx4qvOU7dyT2RBb3vRN3OmMdgq7BMcQjR09oDBlDB+lWSvlKb9TYgIW4hvzkOE
+	 eHnSfPVYihJ1w==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CED6DD29C4D;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F21C3D29C32;
 	Mon, 19 Jan 2026 17:19:18 +0000 (UTC)
 From: Petr Hodina via B4 Relay <devnull+petr.hodina.protonmail.com@kernel.org>
-Date: Mon, 19 Jan 2026 18:19:06 +0100
-Subject: [PATCH 1/3] doc: add Device Tree binding for AMS TCS3400 light
- sensor
+Date: Mon, 19 Jan 2026 18:19:08 +0100
+Subject: [PATCH 3/3] sdm845: tama: Add AMS TCS3400 ambient light sensor
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260119-tsc3400-v1-1-82a65c5417aa@protonmail.com>
+Message-Id: <20260119-tsc3400-v1-3-82a65c5417aa@protonmail.com>
 References: <20260119-tsc3400-v1-0-82a65c5417aa@protonmail.com>
 In-Reply-To: <20260119-tsc3400-v1-0-82a65c5417aa@protonmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -55,11 +54,11 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org, 
  Petr Hodina <petr.hodina@protonmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1768843157; l=2537;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1768843157; l=1617;
  i=petr.hodina@protonmail.com; s=20260107; h=from:subject:message-id;
- bh=1LDwA54n0tkYAGyvdpUdaNISfncR1cK5nESUpKkwwc8=;
- b=xKuI+yo90AJJ5IlxvKntYTEmP+ZcSeI/7Px4HhOzYrqfHogJT4MvIE2kGre8uJcqnP0tc2evl
- 0Rwcq3WXQmgALu+8yy7Jf0RVMqEoLMdrCGWQsEhne6kaSw+BwLxWCbV
+ bh=Q9E7GuxhgZ08JdbgPbICgzjn1Hy4d+2NDwK0eFbzpK4=;
+ b=IPlvfSzMaVogNzIyBJOL3YLmXBH9HaRoJaSrYSVDZl1JUNZ1qdR+DMyeh2pkmnMzL6g6XE2I+
+ f3+Rw8osNwoBtlto0Ayw/blcLYEr3Cmn59eFeMOVU0lSKayRCyUfKK8
 X-Developer-Key: i=petr.hodina@protonmail.com; a=ed25519;
  pk=3QaVc6AaAu1IsyyH86+LIOOFhD7kCws8Xhe+wwyE7Bg=
 X-Endpoint-Received: by B4 Relay for petr.hodina@protonmail.com/20260107
@@ -69,93 +68,68 @@ Reply-To: petr.hodina@protonmail.com
 
 From: Petr Hodina <petr.hodina@protonmail.com>
 
-Adds a new YAML binding describing the AMS TCS3400 I2C light sensor,
-including compatible string, registers, interrupts, power supply, and an
-example node.
+Add device tree node for TCS3400 ambient light sensor with
+power supplies, interrupt on GPIO11, and pinctrl states.
 
 Signed-off-by: Petr Hodina <petr.hodina@protonmail.com>
 ---
- .../devicetree/bindings/iio/light/ams,tcs3400.yaml | 54 ++++++++++++++++++++++
- MAINTAINERS                                        |  6 +++
- 2 files changed, 60 insertions(+)
+ .../boot/dts/qcom/sdm845-sony-xperia-tama.dtsi     | 36 +++++++++++++++++++++-
+ 1 file changed, 35 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/light/ams,tcs3400.yaml b/Documentation/devicetree/bindings/iio/light/ams,tcs3400.yaml
-new file mode 100644
-index 000000000000..2c5a9295af1a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/ams,tcs3400.yaml
-@@ -0,0 +1,54 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/iio/light/ams,tcs3400.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: AMS TCS3400 Color Light-to-Digital Converter
-+
-+maintainers:
-+  - name: Petr Hodina
-+    email: petr.hodina@protonmail.com
-+
-+description: |
-+  The AMS TCS3400 is an I2C-connected color light sensor providing
-+  RGBC or RGB-IR measurements with a programmable integration time
-+  and gain.
-+
-+properties:
-+  compatible:
-+    const: ams,tcs3400
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+    description:
-+      Interrupt line signaling ALS data ready or threshold events.
-+
-+  vdd-supply:
-+    description:
-+      Regulator supplying the main sensor power.
-+
-+required:
-+  - compatible
-+  - reg
-+  - vdd-supply
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        light-sensor@39 {
-+            compatible = "ams,tcs3400";
-+            reg = <0x39>;
-+            interrupt-parent = <&gpio1>;
-+            interrupts = <5 IRQ_TYPE_EDGE_FALLING>;
-+            vdd-supply = <&vdd_3v3>;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 14a06f856b81..ab5307a34180 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -22866,6 +22866,12 @@ S:	Supported
- F:	drivers/iio/adc/rohm-bd79112.c
- F:	drivers/iio/adc/rohm-bd79124.c
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi
+index 7dc9349eedfd..15d56d6831c5 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi
++++ b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi
+@@ -485,7 +485,23 @@ &i2c14 {
+ 	clock-frequency = <400000>;
  
-+AMS TCS3400 AMBIENT LIGHT SENSOR DRIVER
-+M:	Petr Hodina
-+L:	Petr Hodina <petr.hodina@protonmail.com>
-+S:	Petr Hodina <petr.hodina@protonmail.com>
-+F:	Documentation/devicetree/bindings/iio/light/ams,tcs3400.yaml
+ 	/* SONY ToF sensor @ 52 */
+-	/* AMS TCS3490 RGB+IR color sensor @ 72 */
 +
- ROHM BH1745 COLOUR SENSOR
- M:	Mudit Sharma <muditsharma.info@gmail.com>
- L:	linux-iio@vger.kernel.org
++	tcs3400_sensor: tcs3400_sensor@39 {
++		compatible = "ams,tcs3400";
++		reg = <0x39>;
++
++		interrupts-extended = <&tlmm 11 IRQ_TYPE_EDGE_FALLING>;
++
++		vdd-supply = <&vreg_l22a_2p8>;
++		vio-supply = <&cam_vio_vreg>;
++
++		pinctrl-0 = <&ams_sensor_default>;
++		pinctrl-1 = <&ams_sensor_sleep>;
++
++		ams,rgbcir-vdd-supply = <1>;
++		ams,rgbcir-gpio-vdd = <0>;
++		ams,rgbcir-vio-supply = <1>;
++	};
+ };
+ 
+ &ibb {
+@@ -751,6 +767,24 @@ int-pins {
+ 			bias-pull-down;
+ 		};
+ 	};
++
++	ams_sensor_default: ams-sensor-default-state {
++		int-pins {
++			pins = "gpio11";
++			function = "gpio";
++			drive-strength = <2>;
++			bias-pull-up;
++		};
++	};
++
++	ams_sensor_sleep: ams_sensor-sleep-state {
++		int-pins {
++			pins = "gpio11";
++			function = "gpio";
++			drive-strength = <2>;
++			bias-pull-down;
++		};
++	};
+ };
+ 
+ &uart6 {
 
 -- 
 2.52.0
