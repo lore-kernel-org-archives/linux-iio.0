@@ -1,127 +1,96 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEA2839341F;
-	Tue, 20 Jan 2026 19:49:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C753F3A35AC;
+	Tue, 20 Jan 2026 20:36:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768938581; cv=none; b=T9Hhl2p2tF4Ol4F+w7yvfhaE/9BT9oTbxjmKocmmu8oHF7kvVOWAyNsxFeTueVT/8EZmAitIIYqftsNSMHWV+eXnqekhDAu3hbMPfIQ4xpf3MFHEcEw+TepagBznP3GElxJJkjpG2HFkwuwJyqCuZO9EJEQY5JpfnVKqSPkSKnE=
+	t=1768941365; cv=none; b=BrOkg3mmkKxs/Z1PNlVKfDwR6wUDFT4laMnJN1qcM8g5Mg0a3KUZRq/b8ncUNdjyh1wVUpVlOD18+aX6FfdvZdX74LTjF96kmJbnE9S25P+k3ARqdEY7KB+e53X/M0HfmI6I8sae4NnRwI6gG0bcTkLcc9LCdpaLEDN3AFf2G18=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768938581; c=relaxed/simple;
-	bh=tsWM3d8iCmhp/RJs7MDgtxaiXZPebNGaqNIDAPcjfF8=;
-	h=From:Date:Content-Type:MIME-Version:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=nBf7tFNNS5bpfqOhkOmBJxiOuDzwuNrwOLg5egSXkjHfI/AjLI+F1SRMMYVFqgNV9f6wGsVSwyEjuT4oOT54H9tktqx9zq44Ggghv28A7dynYJy3/ua/MSV4+96zMbXJwaMrOsghi9Y1safpSJS8Zlf1q+dsCN2bmVIRHsKLNgk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q4ytq5VT; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768941365; c=relaxed/simple;
+	bh=5ZmR2GfzffFLBtHed5hb5/Xe8Pkk/TMf/pAQ/QvfE2s=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=iWoueM3xirSMTH73Ym9M7aLB65+GVgU2slLXyyK2kAOzeMPYth5z3BLQr4bk4ucqu63twbxeXhwpnlB+JGQvedgPXuml1pRhiiK1fehJfIgskPxb8q23JNTeHHlKXiwqMHWTeWbQPGlPVyhqSeAzDMeB7H/GF7ydMq9X+Sa5Om0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KWtXmlR/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q4ytq5VT"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48313C16AAE;
-	Tue, 20 Jan 2026 19:49:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KWtXmlR/"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7FF1AC19422;
+	Tue, 20 Jan 2026 20:36:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768938580;
-	bh=tsWM3d8iCmhp/RJs7MDgtxaiXZPebNGaqNIDAPcjfF8=;
-	h=From:Date:Cc:To:In-Reply-To:References:Subject:From;
-	b=Q4ytq5VTWaZ3xt7D1EYAwUwA92owOwswff7/a8MsB/Zbd2cn/WdHd05QQneYLZQ5O
-	 AKR8mBWapfeHqnmmcu+BdINnqKY4coZNidCAgBaaomZvPm2+NBpq8g4yahUkN95F2x
-	 o64vwsUiF3iYpK+Vm3Hc/zaVkWJNwljdy+dH1nlEVIJvsspWDZPJplyT+RlymeIAaG
-	 BXfw3HP1YDtMKYfYAxMrPVbEf2g8bQF7RPUL8cP+DZ/CC4kRSsV6ykGugP/oQRlaJD
-	 ItXjqpRT4ixgBevEoU6pz3MjK5zklPwLSyVrhm+rywSQsXduA5pperiu9Wkyi5fVGF
-	 TN+VTIl6QWe3w==
-From: Rob Herring <robh@kernel.org>
-Date: Tue, 20 Jan 2026 13:49:39 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	s=k20201202; t=1768941365;
+	bh=5ZmR2GfzffFLBtHed5hb5/Xe8Pkk/TMf/pAQ/QvfE2s=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=KWtXmlR/Gj/Svw18Tt3grSD5lqWf4kQItXQWIt9s9Z9M8JAsnJu71LWZXO+hvICZe
+	 svjlaxYVf+dCROQrkYysgNM1lTk0YZ85ZUzQUiRR8lLHrnKfZtoIT8G0qKujJPy8IQ
+	 dlPQ8YLRRr07NKbqwN6NLvmWTlN6EX1zWQ3bvbwOOkkd9gMnCbFw6ykIbwWd12hU+H
+	 hKPlh9RNbsZ8IGIsCQ4STn+RHAgYXq+6MHT/txZjRUaTSjao8YdqgcKwegSn6HiX9S
+	 hAZJjZYzEjbQDDUu9bLqDeNbQIg6mFtN8gIObiqjUPMN0H2mKGKXgGIelBhKZJn0UJ
+	 hDWcWcXt2Q2Fw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F776D2629F;
+	Tue, 20 Jan 2026 20:36:05 +0000 (UTC)
+From: Shrikant Raskar via B4 Relay <devnull+raskar.shree97.gmail.com@kernel.org>
+Date: Wed, 21 Jan 2026 02:05:41 +0530
+Subject: [PATCH v6 1/5] iio: proximity: rfd77402: Reorder header includes
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Cc: Konrad Dybcio <konradybcio@kernel.org>, linux-arm-msm@vger.kernel.org, 
- devicetree@vger.kernel.org, Conor Dooley <conor+dt@kernel.org>, 
- David Heidelberg <david@ixit.cz>, linux-kernel@vger.kernel.org, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Jonathan Cameron <jic23@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Bjorn Andersson <andersson@kernel.org>
-To: Petr Hodina <petr.hodina@protonmail.com>
-In-Reply-To: <20260119-tsc3400-v1-0-82a65c5417aa@protonmail.com>
-References: <20260119-tsc3400-v1-0-82a65c5417aa@protonmail.com>
-Message-Id: <176893840646.630967.6863112889558802076.robh@kernel.org>
-Subject: Re: [PATCH 0/3] iio: light: add AMS TCS3400 driver
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260121-b4-rfd77402_v5-v6-1-5b944d0605dd@gmail.com>
+References: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
+In-Reply-To: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: skhan@linuxfoundation.org, david.hunter.linux@gmail.com, 
+ raskar.shree97@gmail.com, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1768941363; l=731;
+ i=raskar.shree97@gmail.com; s=20260101; h=from:subject:message-id;
+ bh=+lDkn76SMhA3dkH1gC8XiqHtbB8QLypbDZIHSMwSfMo=;
+ b=/2dpmXYCt5Ks+vFNDZQ/RlkvexSClD5ouFTK3Pz9c0ML2KH62JnlJM/HNB4UvZwUMtiH0OF/Z
+ +yZYo09NikmB7+T4LvIvQvmFgjyyVQJp+QrogNVRMP+Rf9W1de7LBGW
+X-Developer-Key: i=raskar.shree97@gmail.com; a=ed25519;
+ pk=4m2wXDvY0vlXefvRRzawNcNAif88Cy4XvbLkU6iMG/Y=
+X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
+ auth_id=589
+X-Original-From: Shrikant Raskar <raskar.shree97@gmail.com>
+Reply-To: raskar.shree97@gmail.com
 
+From: Shrikant Raskar <raskar.shree97@gmail.com>
 
-On Mon, 19 Jan 2026 18:19:05 +0100, Petr Hodina wrote:
-> Hi,
-> 
-> This patch adds an IIO driver for the AMS TCS3400 color light-to-digital
-> converter.
-> 
-> The TCS3400 is an I2C-connected RGB color sensor supporting RGBC and
-> RGB-IR measurement modes, programmable integration time, selectable
-> gain, optional interrupt-driven sampling, and regulator-based power
-> control.
-> 
-> Signed-off-by: Petr Hodina <petr.hodina@protonmail.com>
-> ---
-> Petr Hodina (3):
->       doc: add Device Tree binding for AMS TCS3400 light sensor
->       iio: light: add AMS TCS3400 RGB and RGB-IR color sensor driver
->       sdm845: tama: Add AMS TCS3400 ambient light sensor
-> 
->  .../devicetree/bindings/iio/light/ams,tcs3400.yaml |  54 +++
->  MAINTAINERS                                        |   7 +
->  .../boot/dts/qcom/sdm845-sony-xperia-tama.dtsi     |  36 +-
->  drivers/iio/light/Kconfig                          |  11 +
->  drivers/iio/light/Makefile                         |   1 +
->  drivers/iio/light/tcs3400.c                        | 505 +++++++++++++++++++++
->  6 files changed, 613 insertions(+), 1 deletion(-)
-> ---
-> base-commit: 46fe65a2c28ecf5df1a7475aba1f08ccf4c0ac1b
-> change-id: 20260119-tsc3400-68a91d8c1355
-> 
-> Best regards,
-> --
-> Petr Hodina <petr.hodina@protonmail.com>
-> 
-> 
-> 
+Reorder header includes to follow kernel include
+ordering conventions.
 
+Signed-off-by: Shrikant Raskar <raskar.shree97@gmail.com>
+---
+ drivers/iio/proximity/rfd77402.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-My bot found new DTB warnings on the .dts files added or changed in this
-series.
+diff --git a/drivers/iio/proximity/rfd77402.c b/drivers/iio/proximity/rfd77402.c
+index aff60a3c1a6f..69cc1505b964 100644
+--- a/drivers/iio/proximity/rfd77402.c
++++ b/drivers/iio/proximity/rfd77402.c
+@@ -10,9 +10,9 @@
+  * https://media.digikey.com/pdf/Data%20Sheets/RF%20Digital%20PDFs/RFD77402.pdf
+  */
+ 
+-#include <linux/module.h>
+-#include <linux/i2c.h>
+ #include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
+ 
+ #include <linux/iio/iio.h>
+ 
 
-Some warnings may be from an existing SoC .dtsi. Or perhaps the warnings
-are fixed by another series. Ultimately, it is up to the platform
-maintainer whether these warnings are acceptable or not. No need to reply
-unless the platform maintainer has comments.
-
-If you already ran DT checks and didn't see these error(s), then
-make sure dt-schema is up to date:
-
-  pip3 install dtschema --upgrade
-
-
-This patch series was applied (using b4) to base:
- Base: 46fe65a2c28ecf5df1a7475aba1f08ccf4c0ac1b (use --merge-base to override)
-
-If this is not the correct base, please add 'base-commit' tag
-(or use b4 which does this automatically)
-
-
-Warnings in base: 229
-Warnings after series: 235
-
-New warnings running 'make CHECK_DTBS=y for arch/arm64/boot/dts/qcom/' for 20260119-tsc3400-v1-0-82a65c5417aa@protonmail.com:
-
-arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akari.dtb: tcs3400_sensor@39 (ams,tcs3400): 'ams,rgbcir-gpio-vdd', 'ams,rgbcir-vdd-supply', 'ams,rgbcir-vio-supply', 'vio-supply' do not match any of the regexes: '^pinctrl-[0-9]+$'
-	from schema $id: http://devicetree.org/schemas/iio/light/ams,tcs3400.yaml
-arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-apollo.dtb: tcs3400_sensor@39 (ams,tcs3400): 'ams,rgbcir-gpio-vdd', 'ams,rgbcir-vdd-supply', 'ams,rgbcir-vio-supply', 'vio-supply' do not match any of the regexes: '^pinctrl-[0-9]+$'
-	from schema $id: http://devicetree.org/schemas/iio/light/ams,tcs3400.yaml
-arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama-akatsuki.dtb: tcs3400_sensor@39 (ams,tcs3400): 'ams,rgbcir-gpio-vdd', 'ams,rgbcir-vdd-supply', 'ams,rgbcir-vio-supply', 'vio-supply' do not match any of the regexes: '^pinctrl-[0-9]+$'
-	from schema $id: http://devicetree.org/schemas/iio/light/ams,tcs3400.yaml
-
-
-
+-- 
+2.43.0
 
 
