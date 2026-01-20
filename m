@@ -1,67 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D57CE3ED121
-	for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 22:52:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 448AC3A63EA
+	for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 23:02:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768949538; cv=none; b=MwLb1C9wmLxM3RdjhpclDB2jSsLf7x2R7rH6hwCyhhfJuQmWYqmzW8r7AANgvhiTbfbRE2h80tiKe2WPTqjBlbr++xKpWpHcMhQkiS/DJEZraQODxwPXsyTwftnf/wzMUS8uwOm2deBs38nW5YVjaocWmFvm00hRrFELVHxs6YU=
+	t=1768950145; cv=none; b=YwDYppZUg4j+loog6Cp9k4tAjwUrvxrdq/JZGHJa8xYkpK+3qeWJt6+ebWgmZsjQz9uV6m95j8ichZEe0+cK+w6zf75o2+zPsrZ5Z1g29HyTt350jH39VQLxPsYeJHt5+2ksjxWnvtu4Pv6nAC0nz7lBBtI1474SgK5Kx1Z9hjE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768949538; c=relaxed/simple;
-	bh=QXUSlm4aUM7Oi9ZGMiU5peWwKF6FDchlejeHBBFZJMY=;
+	s=arc-20240116; t=1768950145; c=relaxed/simple;
+	bh=LLmBgOGKQ1qgYXxjfeK8boKNlXniFY+Q5EBH79xWGvo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DS29YN+COJEEwIwkw2tp2oIF14t6Xi6C4DJlonae9VgWyq6yHYEaP6Lq5CMW9FyUjvZlr5o2uMNEexw4LG8itcB4FpzXG8Yav98DXvkCMJVSyUP/QuHWuvbHhzeVr/i0LpTo1kFQmYjKxiR22Hv4rkqp0B/Rs7BGk5M2UQ7oRFw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=muKetcER; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=Hu1+v3c/M6kaDs/s/C0WgaraNJ8Hxt2C+g240U6iM3UP62A1DTB49jBUcr5XtowQIOG/k5JOIqIRBiuZpMDb3rYxK2EmqD5TNSYeyntSTxc/saYUHYMiZu8nhtI6ikGAwxAhBN2g1K3PVXNDbmHIBKnLdT1akUl10HdtCrEDxS4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=ziqN87gu; arc=none smtp.client-ip=185.171.202.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="muKetcER"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768949537; x=1800485537;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=QXUSlm4aUM7Oi9ZGMiU5peWwKF6FDchlejeHBBFZJMY=;
-  b=muKetcERMAkIRxZBCSHhUn6vvfbOFHkhecL4C5AZ3oxNwGKsoCDfOW3h
-   R+iRRCOTasqhhZLJijGBOibBKU9SToaYCZwSjne+/bD56t/k6wrfxODtW
-   ZgZAqM03HihGMzEFF6PZmll4M9jU6tL2WS5YT39Z5mIRUv2pt5JeUXVP+
-   ZOzAG6S1R2TxhvxtMVIdUGEX/duMDBCgTQcM7JOVbpFmQkXP9E3dWNV51
-   Nu3TzrI9AJ0JjOv81t1oVjp35ozgsnj6LDIV9oFjO9R+7t7R6V9bvyQAV
-   9sZBekBbqgvmuBxB4UyzByXwbS+10jft2Y3Q3Mwz/JtWgwjLMzHsyqViN
-   w==;
-X-CSE-ConnectionGUID: EUJw+P8FT1K53to654cBuA==
-X-CSE-MsgGUID: tXF1nDoXS3K0RISxewt5bQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11677"; a="57733409"
-X-IronPort-AV: E=Sophos;i="6.21,241,1763452800"; 
-   d="scan'208";a="57733409"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 14:52:16 -0800
-X-CSE-ConnectionGUID: u8bPt/vHQvWntTdWn4OWhQ==
-X-CSE-MsgGUID: 9/rwtIMYQJ+qVjTGDIzDSA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,241,1763452800"; 
-   d="scan'208";a="210705311"
-Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.240])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 14:52:13 -0800
-Date: Wed, 21 Jan 2026 00:52:11 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Mike Looijmans <mike.looijmans@topic.nl>,
-	Liam Beguin <liambeguin@gmail.com>,
-	Miquel Raynal <miquel.raynal@bootlin.com>,
-	Ibrahim Tilki <Ibrahim.Tilki@analog.com>,
-	Cosmin Tanislav <cosmin.tanislav@analog.com>,
-	Alisa-Dariana Roman <alisadariana@gmail.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 04/11] iio: adc: max1027: Improve include relevance
-Message-ID: <aXAHG1Ieug6vzKlR@smile.fi.intel.com>
-References: <20260119212110.726941-1-jic23@kernel.org>
- <20260119212110.726941-5-jic23@kernel.org>
- <aW81S3XcVBnuYI71@smile.fi.intel.com>
- <20260120221040.35735609@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="ziqN87gu"
+Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
+	by smtpout-04.galae.net (Postfix) with ESMTPS id 88485C20338;
+	Tue, 20 Jan 2026 23:01:54 +0000 (UTC)
+Received: from mail.galae.net (mail.galae.net [212.83.136.155])
+	by smtpout-01.galae.net (Postfix) with ESMTPS id ABEF4606AB;
+	Tue, 20 Jan 2026 23:02:21 +0000 (UTC)
+Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 19383119B01E4;
+	Wed, 21 Jan 2026 00:02:18 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
+	t=1768950140; h=from:subject:date:message-id:to:cc:mime-version:content-type:
+	 in-reply-to:references; bh=TreuwGMpIeYNk63GLZLQ3HNUc7bshFktVfXuohKMyLk=;
+	b=ziqN87gurgQbp1p96wgTNmkOMFl190jML6BcP7b3M7lyN1f/95Z3l0C019oAf9+cTL2I+G
+	Y9MPNUTmyxWqp1jyLFfnAVW3MAEa73RZvWrSzHx76ir8UuC90IRT1ZWakonw1QmhrrKBLr
+	OkPqbowb590K+pf+Xut1ZFRud4njULwOl5ocW+wpx/dJydQPKHyGQO+2PpaH9X6vtLKPxA
+	CrK97a61lSL0pvUEy+aPcPV7vvj8erOA8h1LimAmOezeD5mxjv6/d65o2ymswqhJoCASJU
+	/KlhMb9BM7v7E77Z3lZ/GGhLrJzSd479u4iF3qy2O1c2iKgddPGMaaEpMtCw9g==
+Date: Wed, 21 Jan 2026 00:02:18 +0100
+From: Alexandre Belloni <alexandre.belloni@bootlin.com>
+To: Jonathan Cameron <jonathan.cameron@huawei.com>
+Cc: Frank Li <Frank.Li@nxp.com>, andriy.shevchenko@intel.com,
+	carlos.song@nxp.com, fluturel.adrian@gmail.com,
+	linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org,
+	lkp@intel.com, oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH 1/1] i3c: Add stub functions when I3C support is disabled
+Message-ID: <202601202302180c990bfb@mail.local>
+References: <20251230145718.4088694-1-Frank.Li@nxp.com>
+ <176840281753.1259180.16475027635174872850.b4-ty@bootlin.com>
+ <20260115171220.000001b7@huawei.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,38 +52,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260120221040.35735609@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260115171220.000001b7@huawei.com>
+X-Last-TLS-Session-Version: TLSv1.3
 
-On Tue, Jan 20, 2026 at 10:10:40PM +0000, Jonathan Cameron wrote:
-> On Tue, 20 Jan 2026 09:56:59 +0200
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > On Mon, Jan 19, 2026 at 09:21:03PM +0000, Jonathan Cameron wrote:
+Hello,
 
-...
-
-> > >   #include <linux/device.h>            // for dev_err, dev_name, devm_kmal. ..  
-> > 
-> > Not good, we also should treat device.h as "include everything" and try to
-> > avoid that, above comment hints like
-> > 
-> > dev_printk.h
-> > device/devres.h
+On 15/01/2026 17:12:20+0000, Jonathan Cameron wrote:
+> On Wed, 14 Jan 2026 16:02:06 +0100
+> Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
 > 
-> It's there for
-> spi->dev.driver->name used for some reason as the irq name.
+> > On Tue, 30 Dec 2025 09:57:18 -0500, Frank Li wrote:
+> > > When I3C is disabled, unused functions are removed by the linker because
+> > > the driver relies on regmap and no I3C devices are registered, so normal
+> > > I3C paths are never called.
+> > > 
+> > > However, some drivers may still call low-level I3C transfer helpers.
+> > > Provide stub implementations to avoid adding conditional ifdefs everywhere.
+> > > 
+> > > [...]  
+> > 
+> > Applied, thanks!
+> > 
+> > [1/1] i3c: Add stub functions when I3C support is disabled
+> >       https://git.kernel.org/i3c/c/8564f88df202
+> > 
+> > Best regards,
+> > 
+> 
+> Hi Alexandre,
+> 
+> This is going to make for an 'interesting' merge window as I'm getting
+> build failures without that patch.  I don't suppose you'd mind
+> doing an immutable branch? 
+> 
 
-Ah, I see...
-
-> I considered fixing that but felt it was out of scope for this series.
-
-Sure thing!
-
-> I'll add a comment as iwyu forgot to mention use of struct device ;)
+I just sent it, let me know if this works for you.
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
