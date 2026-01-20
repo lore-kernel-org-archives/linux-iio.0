@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C75C83A35BE;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED053B52EA;
 	Tue, 20 Jan 2026 20:36:05 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768941365; cv=none; b=Np/poqKzdKN305AsAfigqRArwUgjRtJyIL/84L+qMxKOECwRUlDHhp09jTfGI1wZNELDUf8K+uGlLKLVMvPmbAhbf8XqmEGD5DYHvvwV1HtayoDv08ZddrGCvxi3sBlfgMzzp9llNcfC0p/kY9v5krxLtdaFmf3oc6SUwNQk7WQ=
+	t=1768941366; cv=none; b=meLXpUi0ZCzlLOTIDlcrI5w5NR8l377iGnWW2OzyIxO2aP6wPYQTemNz4r4u5YQGjMbxKMn0edordRDTK8k4CO7hQF+50XgqUfaHzFJ3BB1wkfjJE6MrNKemWWiUGacFpY4VvK/rTihQHuWBJQjpqX6C0QzvLY5ocQ/z0T3PsfE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768941365; c=relaxed/simple;
-	bh=FB47RSHBLDay1WFyqzvAElWv0sZdV0PAfNZr2uI/fnE=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=dDjnbE3aXYF5NEWTNVwlLLOxAlOETtHGr2Fgt3p5XXyKSZOabjjnU/jbz4hirctxQ1M1Ffjum4rdK80NzanaJZUF1OvR973Ivhm+bkzLs/4AHd+5QtbRsqcrHCcaHycXuOniRnkabpZZ2+59Y74pWwz7s5Y014IpewKg/qY5/zM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xfysf2Xn; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768941366; c=relaxed/simple;
+	bh=UbUmzcvsKu9V0KRgT6cWJVKpkyxRu8aIhwGqdX6yOF0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=XCyZVS4GEl729CL99UREgS/b176EAeEdD6EcL1sW9Wt0Vh/GwQWrLymn6v09d5sB/SazIF6fv5TXZODJ5t5qVuIeGs4vx3E+mmyrsrhqnQLJYLHhZyhbGAoeRmLvBtAxUMan2B2zODPVWEpR6UfYzKpYgp/3Pq6CaNBwkeV5dGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jG4hujG+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xfysf2Xn"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6FFADC16AAE;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jG4hujG+"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 96032C2BC86;
 	Tue, 20 Jan 2026 20:36:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1768941365;
-	bh=FB47RSHBLDay1WFyqzvAElWv0sZdV0PAfNZr2uI/fnE=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=Xfysf2Xn8bCfnbWpiDBr3ikWfaoSj6ZNWt+mQA5R1/gxFp2bQMkTWO/6ftcgTXoNS
-	 k/ThsIg+7LgbDD14Efbuj5Ue9qUI6Y5IFPMXZaU1Px8VGJ1aJpelh6Csnz6TGbqIu0
-	 UT79PA0eSZKGWDQW3iZP1j+llQZwijs9h1nsWBVf7BPd8mzZe2mrwNobnTseFkKc2t
-	 nJ3ZGuazzC8HFb4D33a3i3loh94rI7cVKUHZGIEPvjcOwguyLyiaCyBiAebpGwRKpK
-	 O+QcgMMsmRxjArePqyGLvrFbpMg3JzLsLC02qKj+iKL5EriDQD9lzjLoTAxYPqF64/
-	 AYfHY4aJLssxg==
+	bh=UbUmzcvsKu9V0KRgT6cWJVKpkyxRu8aIhwGqdX6yOF0=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=jG4hujG+sbw3MHzhkk81xNTFZKIjPdEEEsVhrXdC5OCMFb+31eLItxa97HmVyQzkL
+	 4nO+UsbpQxV5Z+uxHCnMx8xzFUXb6Uv2GDVGW/XEww9JjaAQ1lLeJZU2CfrmBlLUW4
+	 EDCSPR4v9NGrFG6LrN9aYN+EpzuHYIUgjiMMqXRGYjqmU/T0lQKoxQgGlWyFsMop6d
+	 MgiL9BtIPmTLBg8b9IOOsbFQxNBjtax/rjnxLbiqmH+qwEPYCDKjE1xQ+OsOb7zJbb
+	 1ohcoz8GiqCvrcn1TbkEee5l6JuGJPvF3BrIxQ+DKBQfJNLr9vhIwY6mcoZoRmetnh
+	 GF8BGu3pfh0vQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FD9FD262A1;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CA34D2629E;
 	Tue, 20 Jan 2026 20:36:05 +0000 (UTC)
 From: Shrikant Raskar via B4 Relay <devnull+raskar.shree97.gmail.com@kernel.org>
-Subject: [PATCH v6 0/5] iio: proximity: Add interrupt support for RFD77402
-Date: Wed, 21 Jan 2026 02:05:40 +0530
-Message-Id: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
+Date: Wed, 21 Jan 2026 02:05:43 +0530
+Subject: [PATCH v6 3/5] iio: proximity: rfd77402: Use devm-managed mutex
+ initialization
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,10 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIABznb2kC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyzHQUlJIzE
- vPSU3UzU4B8JSMDIzMDQyND3SQT3aK0FHNzEwOj+DJTXVNTiySLVCOLZGMLcyWgpoKi1LTMCrC
- B0bG1tQCB/+z/YAAAAA==
-X-Change-ID: 20260121-b4-rfd77402_v5-558b8e28c387
+Message-Id: <20260121-b4-rfd77402_v5-v6-3-5b944d0605dd@gmail.com>
+References: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
+In-Reply-To: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -52,11 +52,11 @@ Cc: skhan@linuxfoundation.org, david.hunter.linux@gmail.com,
  raskar.shree97@gmail.com, linux-iio@vger.kernel.org, 
  linux-kernel@vger.kernel.org
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1768941363; l=3252;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1768941363; l=818;
  i=raskar.shree97@gmail.com; s=20260101; h=from:subject:message-id;
- bh=FB47RSHBLDay1WFyqzvAElWv0sZdV0PAfNZr2uI/fnE=;
- b=uz2BG6NbVL5zhWIpBlfD9JnGD+mTGMcKXodVWKolH5yzxAgW3Z8jUM4gci67p0aXSHYF56Uij
- 7JnZMSe4Z/LDOuZpLb4D3V7EIDR8XDJJt+ZlS/uNTQnk14RcyP9RLae
+ bh=Jbw2jRYhJCQKsDCCTnrLgTMuFbvpolChjoZDjy+nAZg=;
+ b=1+1jcJY9BWvd4UKejZ3wtDiiEG0TDJdi0FUlMjglDA8UXCNZFS0KxMOqOFZc6zB/ekmi0/MjU
+ vAYl1sSW+40D7GI3x1I1txBfGNzmOHdmo052pgimQtGBUp/H6IV1nTu
 X-Developer-Key: i=raskar.shree97@gmail.com; a=ed25519;
  pk=4m2wXDvY0vlXefvRRzawNcNAif88Cy4XvbLkU6iMG/Y=
 X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
@@ -64,84 +64,34 @@ X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
 X-Original-From: Shrikant Raskar <raskar.shree97@gmail.com>
 Reply-To: raskar.shree97@gmail.com
 
-This series improves the RFD77402 ToF driver by cleaning up include
-ordering, improving resource lifetime handling, switching to kernel
-polling helpers, and adding optional interrupt-driven operation.
+From: Shrikant Raskar <raskar.shree97@gmail.com>
 
-Changes in v6:
-- Convert rfd77402_data comments to proper kernel-doc format.
-- Re-order the patch sequence as suggested.
-- Add missing header files.
-- Refactor code to get rid of the i2c_set_clientdata() and 
-respective getter calls.
+Use devm_mutex_init() to tie the mutex lifetime to the device and
+simplify resource lifetime management.
 
 Signed-off-by: Shrikant Raskar <raskar.shree97@gmail.com>
 ---
-Changelog:
+ drivers/iio/proximity/rfd77402.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-v4 to v5:
-- Add precursor patch to reorder includes before functional changes.
-- Use devm_mutex_init() for proper lifetime management.
-- Address maintainer feedback on polling helper usage.
-- Remove dead code from interrupt_handler.
-- Add blank line in rfd77402_wait_for_irq.
-- Update measurement timeout comment.
-- Add helper function for result polling.
-- Fix comment format in rfd77402_init.
-- Remove 'data->irq_en = false', as it already initialized by kzalloc.
-- Improve documentation of private driver data.
-Link to v4: https://lore.kernel.org/all/20260101-b4-rfd77402_irq-v4-0-42cd54359e9f@gmail.com/
+diff --git a/drivers/iio/proximity/rfd77402.c b/drivers/iio/proximity/rfd77402.c
+index 716c9330b14e..fce85f783ab4 100644
+--- a/drivers/iio/proximity/rfd77402.c
++++ b/drivers/iio/proximity/rfd77402.c
+@@ -279,7 +279,10 @@ static int rfd77402_probe(struct i2c_client *client)
+ 
+ 	data = iio_priv(indio_dev);
+ 	data->client = client;
+-	mutex_init(&data->lock);
++
++	ret = devm_mutex_init(&client->dev, &data->lock);
++	if (ret)
++		return ret;
+ 
+ 	indio_dev->info = &rfd77402_info;
+ 	indio_dev->channels = rfd77402_channels;
 
-v3 to v4:
-- No code change.
-Link to v3: https://lore.kernel.org/all/20251221083902.134098-1-raskar.shree97@gmail.com/
-
-v2 to v3:
-- Add 'Reviewed-by' tag to dt-binding patch.
-- Update commit message in OF device ID patch.
-- Update commit message in the third patch.
-- Replace rfd77402_result_polling() with read_poll_timeout().
-- Add 'struct rfd77402_data' details in kernel-doc format.
-- Arrange includes in order.
-- Add comment for completion timeout value.
-- Remove blank lines.
-- Indent the comments to code.
-- Convert mutex_init() to devm_mutex_init().
-- Remove 'IRQF_TRIGGER_FALLING' flag from devm_request_threaded_irq().
-- Drop the duplicate message.
-- Replace 'dev_info' with 'dev_dbg()'.
-- Update 'dev_id' to 'pdata' in rfd77402_interrupt_handler().
-- Drop 'interrupt mode' comment
-- Use 'if(ret)' instead of 'if(ret < 0) for consistency.
-- Use 'return i2c_smbus_write_byte_data()' in 'rfd77402_config_irq'.
-Link to v2: https://lore.kernel.org/all/20251130153712.6792-1-raskar.shree97@gmail.com/
-
-v1 to v2:
-- Fix commit message for dt-binding patch
-- Update interrupt description in dt-binding
-- Add 'vdd-supply' to 'required' property in dt-binding
-- Add patch for moving polling implementation to helper
-- Add helper rfd77402_wait_for_irq()
-- Code refactoring
-- Return failure if request IRQ fail
-Link to v1: https://lore.kernel.org/all/20251126031440.30065-1-raskar.shree97@gmail.com/
-
----
-Shrikant Raskar (5):
-      iio: proximity: rfd77402: Reorder header includes
-      iio: proximity: rfd77402: Use kernel helper for result polling
-      iio: proximity: rfd77402: Use devm-managed mutex initialization
-      iio: proximity: rfd77402: Document device private data structure
-      iio: proximity: rfd77402: Add interrupt handling support
-
- drivers/iio/proximity/rfd77402.c | 170 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 143 insertions(+), 27 deletions(-)
----
-base-commit: 0f61b1860cc3f52aef9036d7235ed1f017632193
-change-id: 20260121-b4-rfd77402_v5-558b8e28c387
-
-Best regards,
 -- 
-Shrikant Raskar <raskar.shree97@gmail.com>
+2.43.0
 
 
