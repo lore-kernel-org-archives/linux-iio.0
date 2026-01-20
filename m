@@ -1,100 +1,95 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 40C693B52EF;
-	Tue, 20 Jan 2026 20:36:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7E7343E9CD
+	for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 21:44:39 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768941366; cv=none; b=oaw4Rhk3pUIoXZYvI8scmYOkLsKo0jPom2sw4qK+EOWyRPpXcy2EdERNCc1Dt5iUde4z57F45WDhxju/K0Zj1bL919jKWOMDAc8g+Y3dduJqZ/V+nrtgxbMU/Q1K6REisghx7ag8G+lGIdyF53rcDxBE6M09EZwjOjM2WokIIy0=
+	t=1768945479; cv=none; b=Tm96GHwnQS/KLWlh6bMh+njqwWf6B50sq7jSk1lK+Flqt/jVDRcparaIRfBrRmSoQ6H2sRJQQwej2Pa0v0juxT4ClW02yjNCbYAJTSPK4yodUPAGvafjxQ5QFRBOfiiSz3N27oR1k+KGgPyKabtCv9Pk1MCjOzdjoZ5a7VJM4wo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768941366; c=relaxed/simple;
-	bh=Uxql/rqWAgjr7g9LNR1+R/8omv+xrkH9wRXMusg9PWY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=j1PgHcg4rju/V4fzZfXroUxZ8vXtQwY5w7KMHlOyIlVwifp9z940c0f6AKkjxapAJoKzlnOFEWhOoZJIFdDgBJLT7/qCuLxVAvz/y+IXJG28KxBiG0/rz3QWDyMPCo/mSmrSk+LLKVqwXtSvVZ/Em8hTFBoSLk9/Avp1r37+KL8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZU4h46dX; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1768945479; c=relaxed/simple;
+	bh=0Psxno2fYYLnWxqlJrkIrQGdS92LSEdhDmttxxClFws=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UeHFqAc2+N/Jci43dXet1WgnmG/+L2zSWKZab3NX0yEqN+YRnUakmYjdw2SircT6kg0sUpNudQcXDPTM8OP+rctC7A06bn4gLYQ8IbrJaR7gbp9Kd02tyzic06hbgR9PW8oAL1LbA7H57W9RhZE3XO5B60UWPDw5gSqQS5rl5B8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnRAsyky; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZU4h46dX"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id A4FB3C2BC9E;
-	Tue, 20 Jan 2026 20:36:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnRAsyky"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA2B2C16AAE;
+	Tue, 20 Jan 2026 21:44:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768941365;
-	bh=Uxql/rqWAgjr7g9LNR1+R/8omv+xrkH9wRXMusg9PWY=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ZU4h46dX6V0NpmibR/NPqVy2eNdTnRh6uUvzNtAQaOdH4lBcRS9sMrqOMK7lzmYxb
-	 6xRT4A6mn/ARvWe9zOrsAo2o9KgGJNFgLeIknrIjB+5R0jk+ox9ltAccpAe0NfKm8C
-	 x1b1/PeNLbp/RySEkbIjHOdMHHWokdQce1rvGB5UQTz1r1wQw/6rvTXw7xSIZWfmL0
-	 sJm4gJsAIa1dlV33apK1z3QdwnME9d65H1HILW8iDILEj7XxJjMrfCwS1gfH3F3NJl
-	 xQBYwTO1n1qvFYGaAu64k7X5lg00xorg5E2y7ZVDWV1AR4QsHgR9te0Wo4Y+UF0USS
-	 oYLbfardxCFOA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BC7AD262A3;
-	Tue, 20 Jan 2026 20:36:05 +0000 (UTC)
-From: Shrikant Raskar via B4 Relay <devnull+raskar.shree97.gmail.com@kernel.org>
-Date: Wed, 21 Jan 2026 02:05:44 +0530
-Subject: [PATCH v6 4/5] iio: proximity: rfd77402: Document device private
- data structure
+	s=k20201202; t=1768945479;
+	bh=0Psxno2fYYLnWxqlJrkIrQGdS92LSEdhDmttxxClFws=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=dnRAsykywsx5u69K7Qcum9dqTuYt2ilPd/GvrBCqlSUEpGcSTLmrFLCTCNBmRnftO
+	 6G3buowpr5ZNBLIKLFX629ZtWsEWL4zQSuu7itIUkavl+5zjDChA2iz2+xCV6nr/AF
+	 s17mSGrJgq8HdH3DXgh1blrq0Dt8arDHfiOEhpRHOBlbCxCmo57V28W64ZgYAhsl/R
+	 9OTDFvO34E6KAMjo7cqwdyUrieiw82+packcoTxdvm22IYE32Og1O0jxdAsfvWyPvr
+	 z4gy6X/NGYtCAyUL7p6vt/zYUXiy+JrWqTDMQalSkJy7LfBg6DJCS0Ie6RONy3Ftoo
+	 RqQ6NaoaW8SOA==
+Date: Tue, 20 Jan 2026 21:44:30 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Jonathan Cameron <jonathan.cameron@huawei.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, linux-iio@vger.kernel.org, Andy Shevchenko
+ <andy@kernel.org>, Sasha Levin <sashal@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+ jorge.marques@analog.com, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Frank Li <Frank.Li@nxp.com>
+Subject: Re: [PATCH] iio: adc: ad4062: Switch from struct i3c_priv_xfer to
+ struct i3c_xfer
+Message-ID: <20260120214430.00d1f726@jic23-huawei>
+In-Reply-To: <CAHp75VckpV8JWmJ7rwmSAVk71isd=d9J0JAOCjDjmsTH_3s4bQ@mail.gmail.com>
+References: <20260119213617.745603-1-jic23@kernel.org>
+	<aW8sk9mD-dOHeJZg@smile.fi.intel.com>
+	<20260120095041.0000705f@huawei.com>
+	<CAHp75VckpV8JWmJ7rwmSAVk71isd=d9J0JAOCjDjmsTH_3s4bQ@mail.gmail.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260121-b4-rfd77402_v5-v6-4-5b944d0605dd@gmail.com>
-References: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
-In-Reply-To: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: skhan@linuxfoundation.org, david.hunter.linux@gmail.com, 
- raskar.shree97@gmail.com, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1768941363; l=846;
- i=raskar.shree97@gmail.com; s=20260101; h=from:subject:message-id;
- bh=ZNRXTbMiZ66e9jZOOxYOba5M4vr3u4LqUYpX35UAbzs=;
- b=910QesgCgsLpYFqkQ106kEJ2rfknYxgus4+rk6blMJS3uq/dP0wFmz4FyBF/udrtpJWZg8nlL
- lN0yfK6cy6LCI3RljXnyaXZpA0Ouv5PoRNXjdEw6Q5ob5BFBQ/4hrkU
-X-Developer-Key: i=raskar.shree97@gmail.com; a=ed25519;
- pk=4m2wXDvY0vlXefvRRzawNcNAif88Cy4XvbLkU6iMG/Y=
-X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
- auth_id=589
-X-Original-From: Shrikant Raskar <raskar.shree97@gmail.com>
-Reply-To: raskar.shree97@gmail.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-From: Shrikant Raskar <raskar.shree97@gmail.com>
+On Tue, 20 Jan 2026 12:03:57 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-Add kernel-doc style comments for struct rfd77402_data to describe
-the purpose of each member.
+> On Tue, Jan 20, 2026 at 11:50=E2=80=AFAM Jonathan Cameron
+> <jonathan.cameron@huawei.com> wrote:
+> > On Tue, 20 Jan 2026 09:19:47 +0200
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote: =20
+> > > On Mon, Jan 19, 2026 at 09:36:17PM +0000, Jonathan Cameron wrote: =20
+>=20
+> ...
+>=20
+> > > > Cc: jorge.marques@analog.com =20
+> > >
+> > > Can we move this to be after the '---' cutter line? =20
+> >
+> > When I really want someone to review / test I tend to put them above th=
+e ---
+> > so that I remember to poke them if they don't and I want them to be
+> > included in any follow on threads.
+> >
+> > More FYI type +CC below the line. Mostly I just add them to the send
+> > list however rather than having a Cc at all. =20
+>=20
+> The trick is that you can add
+>=20
+> ---
+> Cc: ...
+> Cc: ...
+>=20
+> to the commit message in your local tree. It will be kept and
+> represented in `git format-patch`.
+>=20
+I do. This is more pointed because I see it when I use b4 to pick
+my own patches up from this list ;)
 
-Signed-off-by: Shrikant Raskar <raskar.shree97@gmail.com>
----
- drivers/iio/proximity/rfd77402.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Anyhow, for one or two I don't think the commit log mess matters
+much.
 
-diff --git a/drivers/iio/proximity/rfd77402.c b/drivers/iio/proximity/rfd77402.c
-index fce85f783ab4..dd57156a7859 100644
---- a/drivers/iio/proximity/rfd77402.c
-+++ b/drivers/iio/proximity/rfd77402.c
-@@ -77,9 +77,13 @@ static const struct {
- 	{RFD77402_HFCFG_3,	0x45d4},
- };
- 
-+/**
-+ * struct rfd77402_data - device-specific data for the RFD77402 sensor
-+ * @client: I2C client handle
-+ * @lock: mutex to serialize sensor reads
-+ */
- struct rfd77402_data {
- 	struct i2c_client *client;
--	/* Serialize reads from the sensor */
- 	struct mutex lock;
- };
- 
-
--- 
-2.43.0
-
+J
 
