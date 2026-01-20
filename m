@@ -1,194 +1,148 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A54933ECBCD
-	for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 11:06:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768907211; cv=none; b=PsYQVVZCcH95u93DmK8M6CTh+o4dztw//DuooLgy11KCU9DXDtHSfPFxKddx0s4JBk4EX6/fXHJ0aiNrlHndHPzwyBfNh1ExlYl13Q53vCgSFmCn3dIkQxTKxH1clC1E0PTaXeyeDLV54lOSEdSbDgsUQ/yFEBTEZWHhAXKdKFc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768907211; c=relaxed/simple;
-	bh=qd4+Th94V2aKdqVjG6D5LnNUS6XetozG8x9QcYx7qOo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Wq5LL2XzxG5FyNuCuBKFOskfjGuZmGdH1lecKSGO0xnl1BGrPYgtYuPTjputIc5lpZBcYhPweQKCrIdk6aD3tV9Ls/vsDcbGTc8EeG753WBvvdQav8yk/qtdjViHDHJabNM6q8iS5YrA/fAFtwxNDUem3gWpva6nwehB7lJZMmE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=M6vLZdgF; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=KV1ZJTh7; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6220C3EF0A7
+	for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 11:25:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768908307; cv=pass; b=qtx2tzOort4jbUZHKAlZlyAyePDtAEXIBq7desdrqw5R8GpSGbyUCUP9zbgZH/FE/qQVOsX3vvmRWjsksjv4IewKpBv3KfIAZzR3ibHIKX4kj5prpBuqkPCJfTWgunTErW5E3aLT/0dlUFXYnw1Gr0iA879yML1ZRZXT9E6t9Aw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768908307; c=relaxed/simple;
+	bh=NRnrSD0zAFPtVaS5sTi5Ar8t18WLmEhSZ6lKcGsCMmg=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=hKjTlbYI+r/cLRENNisQYvq7x8Br40D5h3Q8Q7Y4G7jT9jj/8GT2XgqCExXopRSzrbabPnFnTmNwfcmAREGOy36Fc89p2F+jWxGcGx9VRlv8qbXZTqkD5UqNhSkIhusVLWHi2Ri8lC+PQ5WoXDS//xcS+KHiojWY+HckyPZAung=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fF4bTY6c; arc=pass smtp.client-ip=209.85.218.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="M6vLZdgF";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="KV1ZJTh7"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60K9Uuuu3177315
-	for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 11:06:49 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	4NSu8zTti4kQhYydByRV1dDUaviriPhETn1j+QujkUA=; b=M6vLZdgFwAqcFoBD
-	hlcaT4gy7N8WBMC7wQxJUr95n6MqcjQCuPqZ89Vi9SzOpKxg1J+N6ti3WqW/ndXo
-	KoUHjztUOzLH7LNxuNTsCgAs0JjBqtuuaHSZVOOmDn9NHXiDx76RfabXaQYMWH/J
-	vbejeRw0pSf4hOWZdXiSrK0T54uatpLoJkJ3krK3bRUD7kGRZTp1IpsTiIVWJ1oF
-	ljlYqoVfipBhwdeaGh30PIlVfpe2fn97xEHRuXDw1Mvha4sfEeXpxKWacbHa382f
-	FxdZj7pLwMae/mofy1r2AfswstNeDOHYFe8uLxf1G6sjw8a49/6JgM5wgME0T2C6
-	5IVrCg==
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4bt0p2hg7j-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 11:06:48 +0000 (GMT)
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-8c536c9d2f7so195149485a.1
-        for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 03:06:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fF4bTY6c"
+Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b872cf905d3so861902466b.2
+        for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 03:25:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1768908303; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Jyo1DdfcNG33NPabkuDtiQ1Zhog1QD+0A2PwwvjyM2g6+luUbCCUUDuAioRdaW2lnL
+         23LIzSNiy5Mr9ukXCoSv2AkW+LcHGDFa+8e3ZY2ZLCo6RB0MGK9h8bvEXEet+2etXB9p
+         QP+A4vhE5xqAtc2y4o6Fjfh9AmUoQwUFWB6hVuCs+Clld/5aDCog6FBZyYmvswiBP8xE
+         OHFwCIs6FC3ExaniYNrA7DfmIREPBx6QzNYkViLhFbrbyI9KQJAmLiqJVMlxQpE8CxtT
+         /Avtjrecb6iezoG3ERBpFI+Vr8Zc/+4lR48rLYvGUPZvVhTOkHtD5WymU9/hdfG6bDgd
+         rDmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=NRnrSD0zAFPtVaS5sTi5Ar8t18WLmEhSZ6lKcGsCMmg=;
+        fh=Sk6OF+P6CSZnIiSCOe1PLrlLmcngB4duk6IvKRXVnjE=;
+        b=VdnKffTCmQly7dPqwHRFOaZVFHVnHQyVJAYZfiYOwk5Vu3QUKRPzBFtjlZxSFEHJsP
+         dacpQFEur1Wj46aohItX373R8N+KWfjcBDI0L9C/QHK8QUOae0S42p5kjEoYC1RiAjIu
+         lymTkKCir4Bb9aIWkAeiqYLpw+B11lJOrU0XvtJNlJ0QQPit7fZzr7JZjky9/pc/5LJf
+         ZLFRX4CO+6VvTLQxiGZZwk39+VWzDTk7VDcKSZju/+rJXiFTeY9ySteP1PqwgZaFJipB
+         fgSU+HSGBVMEctBP7gfAAUNZPmPVp0uVYhGCovsJ+snodXmsG4iBNVk3WZikCyTfLmsF
+         x34A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1768907208; x=1769512008; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4NSu8zTti4kQhYydByRV1dDUaviriPhETn1j+QujkUA=;
-        b=KV1ZJTh78EuHoWG4X+V6iyvX69DvUh5deHBmNXiC9+f7K3G+Khb3Zer40bPp/2zV1X
-         RPu4X09tcxJTsNW6wMZUz287B6UDbxDkffkkBTsX+J8LGXaj344dRgzrvjtK3kq3NHvm
-         uod84wge5DJqRbuVlfjeHDr3OgXlmNJ/GgZLFLoUL8Y4TGPzJ3ECo71BkLj3Z7UYpNHE
-         aRvqeAmMRiogANjgaf7x9F69DQYADfAzq+gekNz7Kn+wfxFT4a9ekZbDIZ3KQoi36Xks
-         zgOKSoThpq4AktJ5fTuwUclZKEWTlnnwRJEDG0v4IUCw3I7SXyMYX0Z8l63JjyxphtYn
-         O66w==
+        d=gmail.com; s=20230601; t=1768908303; x=1769513103; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=NRnrSD0zAFPtVaS5sTi5Ar8t18WLmEhSZ6lKcGsCMmg=;
+        b=fF4bTY6c3MbHOeQ/jKWah88aHsRPIwdCzy1n+76DzcN+krplIKkOg8JnbBr8qdeUMZ
+         XLIHNPiSeBkYa0qAKsaCHGaHVzrIhEMeJh+CtaPE/t4PRy+y8+f10o2y5z5IB8oZ78Jm
+         JfNzahHCQWQ5Wjo46/bNmVjJ4An2XmEnHbQAK/Pyautkqw47mw1dDp8Du70Dl9ZAtgz+
+         GXkVYjbaTWJer0qL0flmGqRtOOSfxPWvaDOCAxRX+9AMmZqdfK58u+x3BAq7h4a+p44p
+         0P/vp3R/Tmit/BIC5wkN7p274WeglzgE8vqaTCoKUXeRXwRo69w1TYzn4JVu2Ak1V6Ck
+         Z/pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768907208; x=1769512008;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4NSu8zTti4kQhYydByRV1dDUaviriPhETn1j+QujkUA=;
-        b=XM6T4LUu2jgUlzARsTuEbh5oyaSu8fYqnXidKNjH1/zd0IYNqmHsGiQyiKtd08cqJ5
-         fJABDLWxmOfKrXctCM2mVcJhODx7CT4zWIQ45eKUUx4X8w3+nHT2Sg+YOYZtRK2RL+r3
-         CTLHCaF/qPNjIh/WJewQlZKIcysp3acd5KZ2qO9ZKTsRujqx6q0AEJrVeyfoJ4alfMsp
-         ohXK8PY0E7EZMuV23fQQuDFQtOliyZnxImiQp72PKn7tmKJ8Lq9Vpnq8ISG4YawrN4HI
-         qvPTZQJK6H4xfBTSLWmfN317fKSpjdmSUPAG3uK+A3T9P9vyzq+6prGqw4TOtJwT6bup
-         U0lQ==
-X-Gm-Message-State: AOJu0YyE0b4rxpCoe5OnC3s70U9+t8pn5DuQe+828R3cdvMoQ6DPzYT1
-	TTXrPu2EGOF44uRaU5LwcXUwBDGipJVUOaBxIIxbZrKvuNUFkVt9OgfxgQBlHhuQaomfqVdKLga
-	Zz1X1XXoPTNAodARSB4EZ4/q0o2fMceHstQCMy4Yqww+KStiLZIiXgBC2NEaacDQcp9xzemY=
-X-Gm-Gg: AY/fxX5PAG7zNpThvfuETMk1anTQxveUyxcrQWBqbTAHtm4bhECbNipAA6FOj7xP0Uo
-	Pu8RTAbv13O2Oob/e4O3KngliBVZghS/oN0cIOVYowML5ORmfj3LS6/CFJR/g6kZ9NiQg+WWmZb
-	H5UzFBixlQSm6JMUuSRrrqcQ6TrWC4BiebFi+FghNCySkh46uPuB1I55zEJm/F6JIevgAarMe0r
-	+h/PZuKeTRO8zZwKv9ShYbtekVQhOEQ3ptoj3vRzXwR190FN1Om8Zudh8lbj4cK7ReNyY9g/w/3
-	VRK+fIGj/MH12TiRcCJOMv/KBGzRGtt6S2MLQLmM4s56wpoNNbgc96U5f5YqIRQJW746IMjhsk7
-	7Fd4iI44ONcvLXpsy1Fco+OkoUjFNAhtMRTWcGW5SF8tAr9srPRtfBVLmjGss5XVeDRw=
-X-Received: by 2002:a05:620a:1a1e:b0:8c0:cec5:148c with SMTP id af79cd13be357-8c6a67d8224mr1384275985a.11.1768907207777;
-        Tue, 20 Jan 2026 03:06:47 -0800 (PST)
-X-Received: by 2002:a05:620a:1a1e:b0:8c0:cec5:148c with SMTP id af79cd13be357-8c6a67d8224mr1384272185a.11.1768907207296;
-        Tue, 20 Jan 2026 03:06:47 -0800 (PST)
-Received: from [192.168.119.254] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b87959ca4d6sm1355982066b.39.2026.01.20.03.06.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 20 Jan 2026 03:06:46 -0800 (PST)
-Message-ID: <3c4b38a2-d526-4ac8-95ac-f4cc828d823d@oss.qualcomm.com>
-Date: Tue, 20 Jan 2026 12:06:44 +0100
+        d=1e100.net; s=20230601; t=1768908303; x=1769513103;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=NRnrSD0zAFPtVaS5sTi5Ar8t18WLmEhSZ6lKcGsCMmg=;
+        b=FiPp6uUadaILPlDhZSaxx+PcKeKZ78UweLUAbni8nT+TRfQcNBAuBkaRGabj0kq28J
+         HqKkd/p4V84btSKL9PMKxqgkCrFwmtGqg+U8sxXo4XzW2d8qCQDIVC098hV694wuY7yv
+         B5+WAdTrAqGNUAt+wQJvhswQzrJ9fpYvMVFol/s9Gz4FubRc0RsqaDUJLSKTRRaIKGy4
+         tyiSAQNffFOWFD0zSLyCQkoM2jIkOmQIWMMRu0a4FJIRrG+lhJzwpqheD5JTx2xzF9U0
+         lRM+ID7QIpa7CV0e5W8kflw7s7cNT15RygoxHqSHBhlsjl9swPb5pS2F7KCRai9Jx0CY
+         ribg==
+X-Forwarded-Encrypted: i=1; AJvYcCWVb/fJQCoZhfvuICgmoHZXdhibZh1i1ESuhHPLiV2WfwjpUsRPSQDXtqWC0b+hQ3tWluiUzVPIKdo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxPuI9jGym/bnzgf3/HrnVy9zW26P+eplR9lLXheuADn1NxQdtk
+	qZFRvdagSzP/ij1yxYUyKvMMjHdu+g/YGbtUsBwXiWDPxsfTwQnE/J7/a5bbeoeaX0xwkvz4V42
+	jfFpm31exmHQxGMOUhyO8bWxxnZo0NGc=
+X-Gm-Gg: AY/fxX4uyDoNZDqyD9FkU4XAWE53Vwjlel6NFui10lR3CBXln0rcapZUiGixzoJNh5o
+	Hdn1UAolq5yb8VmGNj5WDd8YDPY9gF17sKHvw4DbDQAyH2IgnRywGnw2nmibs/ovbkmsiLocYiw
+	Bt9ru6IDX+2sxe3697Ewawwk9uIm9u39/z9w7ejVF36yThqMjqwUC+fYxzR8YscmZzYn+eYOguy
+	3Tg0sZPR+jWIamjmQV0H1fzQOLiArofBA8FNwJGkWHvxrr4YyJ1LEfL/xLRvfoHlQbLWWWeZjbv
+	i/9f0BWilmv73L0ubbjpwlgP4A+U8BEnz8gIwaKd+iuUj3sNQU3LMU80L/GmF8BKTe6IVtg=
+X-Received: by 2002:a17:907:7212:b0:b86:edaf:5553 with SMTP id
+ a640c23a62f3a-b8796bb20f6mr1347007566b.59.1768908303287; Tue, 20 Jan 2026
+ 03:25:03 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] sdm845: tama: Add AMS TCS3400 ambient light sensor
-To: petr.hodina@protonmail.com, Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        David Heidelberg <david@ixit.cz>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org
-References: <20260119-tsc3400-v1-0-82a65c5417aa@protonmail.com>
- <20260119-tsc3400-v1-3-82a65c5417aa@protonmail.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260119-tsc3400-v1-3-82a65c5417aa@protonmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-ORIG-GUID: 4il-EzugZ7WiMMNSn7sUO-6MO60xIqv7
-X-Authority-Analysis: v=2.4 cv=drTWylg4 c=1 sm=1 tr=0 ts=696f61c8 cx=c_pps
- a=HLyN3IcIa5EE8TELMZ618Q==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
- a=IkcTkHD0fZMA:10 a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=sfOm8-O8AAAA:8 a=oY6S75yeMliEVWA0OjEA:9
- a=QEXdDO2ut3YA:10 a=bTQJ7kPSJx9SKPbeHEYW:22 a=TvTJqdcANYtsRzA46cdi:22
-X-Proofpoint-GUID: 4il-EzugZ7WiMMNSn7sUO-6MO60xIqv7
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTIwMDA5MiBTYWx0ZWRfX10O46wmwlHGx
- 01ngpt4X7oI+uz/4THH6gVAxQrhOIE3nzoK54jJ5byG80x4Timklr1mohuUrwaSGiE76Y2oplQ6
- onYen+i7A3sWIqL54XMWG0EAEMDOtnvfTiuMvCH+KR62s+uyiLzs35BgpFg9VwfBwzDqiX/tioT
- QegcLxznGNFjLAtSe35KOPwT7qgIVbbqa6b1xVnHzXu7KKva18NikpNChzZDvN7+JuN53RqLSCb
- wdKS1a+wMBq7jOqrkUpaBSnKVgubjuwmasL+u9jUmMZJhhgOMVCt/X9f5bJF0vgP7yaD8/Oi+P/
- jgj4jzjjAyXEcXBg/GnLCW2As5qQWJM9BxF4cf9WLbL/ctu03H0S7zIwGslNVU2I/ucGO2R5Udw
- IVJ374mFYIcGY+Oiqrb9U37ou+ZXR9qWJgTGml9lXAZR7mXvpxruT2QiE5M8K+r/9uNCvnImw6m
- ujzhhMtatNm2jKVFUfg==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.20,FMLib:17.12.100.49
- definitions=2026-01-20_02,2026-01-20_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 spamscore=0 bulkscore=0 adultscore=0 impostorscore=0
- malwarescore=0 priorityscore=1501 clxscore=1015 lowpriorityscore=0
- phishscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
- definitions=main-2601200092
+References: <20260116-adf41513-iio-driver-v4-0-dbb7d6782217@analog.com>
+ <20260116-adf41513-iio-driver-v4-3-dbb7d6782217@analog.com>
+ <aW3dxuelYDM67pqZ@smile.fi.intel.com> <texwv5s2tvcy34bwr4iruj5xofmea663pwletmpqpuh66zulmv@m7qvjgqbhalv>
+ <aW40ylvMwVhqNQMw@smile.fi.intel.com> <hgy3bcrqqsvt7pobhnzuvwzhb2taetpxltkaxpigmmlvmlirod@v6anhmrsvv2r>
+ <aW5kk6K30Izckvg5@smile.fi.intel.com> <e5lcg5kkey3c6u2l4rlzzpolp7qkudhcofyzcx5s2tjbh2iwkg@js3fisv23zyj>
+In-Reply-To: <e5lcg5kkey3c6u2l4rlzzpolp7qkudhcofyzcx5s2tjbh2iwkg@js3fisv23zyj>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 20 Jan 2026 13:24:26 +0200
+X-Gm-Features: AZwV_QiT_7RWmWfYlrbsFcBlA4d2Dt_jON90l4jrfax3VAFOpLzCvwj49Sjh5L4
+Message-ID: <CAHp75VepcSZo_E4_UxhKRfHrMFDd7huJg14m8=6zVo4ENKFXkA@mail.gmail.com>
+Subject: Re: [PATCH v4 3/7] iio: frequency: adf41513: driver implementation
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, rodrigo.alencar@analog.com, 
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Jonathan Corbet <corbet@lwn.net>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 1/19/26 6:19 PM, Petr Hodina via B4 Relay wrote:
-> From: Petr Hodina <petr.hodina@protonmail.com>
-> 
-> Add device tree node for TCS3400 ambient light sensor with
-> power supplies, interrupt on GPIO11, and pinctrl states.
-> 
-> Signed-off-by: Petr Hodina <petr.hodina@protonmail.com>
-> ---
->  .../boot/dts/qcom/sdm845-sony-xperia-tama.dtsi     | 36 +++++++++++++++++++++-
->  1 file changed, 35 insertions(+), 1 deletion(-)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi
-> index 7dc9349eedfd..15d56d6831c5 100644
-> --- a/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi
-> +++ b/arch/arm64/boot/dts/qcom/sdm845-sony-xperia-tama.dtsi
-> @@ -485,7 +485,23 @@ &i2c14 {
->  	clock-frequency = <400000>;
->  
->  	/* SONY ToF sensor @ 52 */
-> -	/* AMS TCS3490 RGB+IR color sensor @ 72 */
-> +
-> +	tcs3400_sensor: tcs3400_sensor@39 {
+On Tue, Jan 20, 2026 at 12:43=E2=80=AFPM Rodrigo Alencar
+<455.rodrigo.alencar@gmail.com> wrote:
+> On 26/01/19 07:07PM, Andy Shevchenko wrote:
+> > On Mon, Jan 19, 2026 at 04:37:09PM +0000, Rodrigo Alencar wrote:
+> > > On 26/01/19 03:42PM, Andy Shevchenko wrote:
+> > > > On Mon, Jan 19, 2026 at 11:21:59AM +0000, Rodrigo Alencar wrote:
+> > > > > On 26/01/19 09:31AM, Andy Shevchenko wrote:
+> > > > > > On Fri, Jan 16, 2026 at 02:32:22PM +0000, Rodrigo Alencar via B=
+4 Relay wrote:
 
-node names (between ':' and '@') must not contain underscores,
-and should be generic where possible, let's call it sensor@,
-rgb-ir@ or perhaps colorimeter@ (Krzysztof, opinions?)
+...
 
-> +		compatible = "ams,tcs3400";
-> +		reg = <0x39>;
+> > > > > The current implementation is kind of a stripped version of
+> > > > > __iio_str_to_fixpoint(). Would you prefer something like this, th=
+en?:
+> > > >
+> > > > Do they have most of the parts in common? If so, why can't we use
+> > > > __iio_str_to_fixpoint() directly? Or why can't we slightly refactor
+> > > > that to give us the results we need here?
+> > >
+> > > __iio_str_to_fixpoint() only parses "int" chunks, adf41513_parse_uhz
+> > > was modified to accomodate the u64 parsing removing unnecessary stuff=
+.
+> >
+> > But why? The fractional part most likely will be kept int (it's up to 1=
+0=E2=81=BB=E2=81=B9).
+> > The integer can be bigger than 10=E2=81=B9?
+> >
+>
+> Correct, integer part of the frequency value goes up to 26.5 GHz
+> (uint_max is approx 4.3 GHz). Also, with the dual modulus, the PLL can
+> achieve micro Hz resolution.
 
-I can't find supporting evidence for this reg change
+=C2=B5Hz is not a problem since it's up to nHz.
+So, the difference so far is the integer part that can be 64-bit.
+Again, can we factor out something to be used for this and for the
+__iio_str_to_fixpoint() cases?
 
-> +
-> +		interrupts-extended = <&tlmm 11 IRQ_TYPE_EDGE_FALLING>;
-> +
-> +		vdd-supply = <&vreg_l22a_2p8>;
-> +		vio-supply = <&cam_vio_vreg>;
-> +
-> +		pinctrl-0 = <&ams_sensor_default>;
-> +		pinctrl-1 = <&ams_sensor_sleep>;
-> +
-> +		ams,rgbcir-vdd-supply = <1>;
-> +		ams,rgbcir-gpio-vdd = <0>;
-> +		ams,rgbcir-vio-supply = <1>;
-> +	};
->  };
->  
->  &ibb {
-> @@ -751,6 +767,24 @@ int-pins {
->  			bias-pull-down;
->  		};
->  	};
-> +
-> +	ams_sensor_default: ams-sensor-default-state {
-> +		int-pins {
 
-Drop this inner level, define the properties directly under the
--state node, both cases
-
-Konrad
+--=20
+With Best Regards,
+Andy Shevchenko
