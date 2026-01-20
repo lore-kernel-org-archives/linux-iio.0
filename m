@@ -1,148 +1,113 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6220C3EF0A7
-	for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 11:25:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768908307; cv=pass; b=qtx2tzOort4jbUZHKAlZlyAyePDtAEXIBq7desdrqw5R8GpSGbyUCUP9zbgZH/FE/qQVOsX3vvmRWjsksjv4IewKpBv3KfIAZzR3ibHIKX4kj5prpBuqkPCJfTWgunTErW5E3aLT/0dlUFXYnw1Gr0iA879yML1ZRZXT9E6t9Aw=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768908307; c=relaxed/simple;
-	bh=NRnrSD0zAFPtVaS5sTi5Ar8t18WLmEhSZ6lKcGsCMmg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=hKjTlbYI+r/cLRENNisQYvq7x8Br40D5h3Q8Q7Y4G7jT9jj/8GT2XgqCExXopRSzrbabPnFnTmNwfcmAREGOy36Fc89p2F+jWxGcGx9VRlv8qbXZTqkD5UqNhSkIhusVLWHi2Ri8lC+PQ5WoXDS//xcS+KHiojWY+HckyPZAung=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fF4bTY6c; arc=pass smtp.client-ip=209.85.218.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8DD5421F09;
+	Tue, 20 Jan 2026 11:33:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1768908791; cv=none; b=FmP9rMfHRaGhLSe9ToYBZV7xKwcpqjLCMNXlBE3ONcuL2foFYFBeyziFrEDFz68d75rvJe/gK6dt1IcPv3nRn9tAIsnj2QaCOoiPZMSyLtRcgxuWOyKZwo4IlFWnegdR7OCzwblCfkTa8DySrzF+7ZRpodjKtLW1RsdhUNp7BnU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1768908791; c=relaxed/simple;
+	bh=A+Z3wrnP5sDbDJq3uwHYkkcS4B4ltkl3d1XG5v73lM4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i2ecsmKGUSx3JriUzvagOL5gyPaEOkjOuV3H1eoj6rOCoSqlk3VVnbXYHn69kDC54uXdByzbAfZKLdeTKXPqt933Kv7HKI+IBDsqreDPQpSn+4T7g/lxu4Eq9XbRxw6D3Eo/U4C3o4JH7QyXrJ1KYQW1TQX1MzQDMWiievRtQZk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ghVv+3rr; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fF4bTY6c"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b872cf905d3so861902466b.2
-        for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 03:25:04 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1768908303; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Jyo1DdfcNG33NPabkuDtiQ1Zhog1QD+0A2PwwvjyM2g6+luUbCCUUDuAioRdaW2lnL
-         23LIzSNiy5Mr9ukXCoSv2AkW+LcHGDFa+8e3ZY2ZLCo6RB0MGK9h8bvEXEet+2etXB9p
-         QP+A4vhE5xqAtc2y4o6Fjfh9AmUoQwUFWB6hVuCs+Clld/5aDCog6FBZyYmvswiBP8xE
-         OHFwCIs6FC3ExaniYNrA7DfmIREPBx6QzNYkViLhFbrbyI9KQJAmLiqJVMlxQpE8CxtT
-         /Avtjrecb6iezoG3ERBpFI+Vr8Zc/+4lR48rLYvGUPZvVhTOkHtD5WymU9/hdfG6bDgd
-         rDmw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=NRnrSD0zAFPtVaS5sTi5Ar8t18WLmEhSZ6lKcGsCMmg=;
-        fh=Sk6OF+P6CSZnIiSCOe1PLrlLmcngB4duk6IvKRXVnjE=;
-        b=VdnKffTCmQly7dPqwHRFOaZVFHVnHQyVJAYZfiYOwk5Vu3QUKRPzBFtjlZxSFEHJsP
-         dacpQFEur1Wj46aohItX373R8N+KWfjcBDI0L9C/QHK8QUOae0S42p5kjEoYC1RiAjIu
-         lymTkKCir4Bb9aIWkAeiqYLpw+B11lJOrU0XvtJNlJ0QQPit7fZzr7JZjky9/pc/5LJf
-         ZLFRX4CO+6VvTLQxiGZZwk39+VWzDTk7VDcKSZju/+rJXiFTeY9ySteP1PqwgZaFJipB
-         fgSU+HSGBVMEctBP7gfAAUNZPmPVp0uVYhGCovsJ+snodXmsG4iBNVk3WZikCyTfLmsF
-         x34A==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1768908303; x=1769513103; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NRnrSD0zAFPtVaS5sTi5Ar8t18WLmEhSZ6lKcGsCMmg=;
-        b=fF4bTY6c3MbHOeQ/jKWah88aHsRPIwdCzy1n+76DzcN+krplIKkOg8JnbBr8qdeUMZ
-         XLIHNPiSeBkYa0qAKsaCHGaHVzrIhEMeJh+CtaPE/t4PRy+y8+f10o2y5z5IB8oZ78Jm
-         JfNzahHCQWQ5Wjo46/bNmVjJ4An2XmEnHbQAK/Pyautkqw47mw1dDp8Du70Dl9ZAtgz+
-         GXkVYjbaTWJer0qL0flmGqRtOOSfxPWvaDOCAxRX+9AMmZqdfK58u+x3BAq7h4a+p44p
-         0P/vp3R/Tmit/BIC5wkN7p274WeglzgE8vqaTCoKUXeRXwRo69w1TYzn4JVu2Ak1V6Ck
-         Z/pw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768908303; x=1769513103;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=NRnrSD0zAFPtVaS5sTi5Ar8t18WLmEhSZ6lKcGsCMmg=;
-        b=FiPp6uUadaILPlDhZSaxx+PcKeKZ78UweLUAbni8nT+TRfQcNBAuBkaRGabj0kq28J
-         HqKkd/p4V84btSKL9PMKxqgkCrFwmtGqg+U8sxXo4XzW2d8qCQDIVC098hV694wuY7yv
-         B5+WAdTrAqGNUAt+wQJvhswQzrJ9fpYvMVFol/s9Gz4FubRc0RsqaDUJLSKTRRaIKGy4
-         tyiSAQNffFOWFD0zSLyCQkoM2jIkOmQIWMMRu0a4FJIRrG+lhJzwpqheD5JTx2xzF9U0
-         lRM+ID7QIpa7CV0e5W8kflw7s7cNT15RygoxHqSHBhlsjl9swPb5pS2F7KCRai9Jx0CY
-         ribg==
-X-Forwarded-Encrypted: i=1; AJvYcCWVb/fJQCoZhfvuICgmoHZXdhibZh1i1ESuhHPLiV2WfwjpUsRPSQDXtqWC0b+hQ3tWluiUzVPIKdo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxPuI9jGym/bnzgf3/HrnVy9zW26P+eplR9lLXheuADn1NxQdtk
-	qZFRvdagSzP/ij1yxYUyKvMMjHdu+g/YGbtUsBwXiWDPxsfTwQnE/J7/a5bbeoeaX0xwkvz4V42
-	jfFpm31exmHQxGMOUhyO8bWxxnZo0NGc=
-X-Gm-Gg: AY/fxX4uyDoNZDqyD9FkU4XAWE53Vwjlel6NFui10lR3CBXln0rcapZUiGixzoJNh5o
-	Hdn1UAolq5yb8VmGNj5WDd8YDPY9gF17sKHvw4DbDQAyH2IgnRywGnw2nmibs/ovbkmsiLocYiw
-	Bt9ru6IDX+2sxe3697Ewawwk9uIm9u39/z9w7ejVF36yThqMjqwUC+fYxzR8YscmZzYn+eYOguy
-	3Tg0sZPR+jWIamjmQV0H1fzQOLiArofBA8FNwJGkWHvxrr4YyJ1LEfL/xLRvfoHlQbLWWWeZjbv
-	i/9f0BWilmv73L0ubbjpwlgP4A+U8BEnz8gIwaKd+iuUj3sNQU3LMU80L/GmF8BKTe6IVtg=
-X-Received: by 2002:a17:907:7212:b0:b86:edaf:5553 with SMTP id
- a640c23a62f3a-b8796bb20f6mr1347007566b.59.1768908303287; Tue, 20 Jan 2026
- 03:25:03 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ghVv+3rr"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1768908790; x=1800444790;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=A+Z3wrnP5sDbDJq3uwHYkkcS4B4ltkl3d1XG5v73lM4=;
+  b=ghVv+3rrIZ3NNgW8kMZw3DZrZI1zBQuyHmW9okFqQKKS5p2zMNlZ4Gxr
+   PLatPq/W4M93jriyq6ku5lNlMND2AxKSv/LF9SpvIDShC5SG7epStsMSG
+   UbYw32FBYmihQQGSNpYFuoL3PN0P6Ah89ho6DYHdISdSxaa/idASiDhLP
+   iQmGHjMhJjfw7p4fxYvma68z1X/3g+j0PzrfdW5RWMk7jZujwgBjy4QTL
+   a94ygf7nehSEIatMPqDF1IT1Na/wLbXG1ZjLgYBGQwqWXhsZYnKP1gbW/
+   76K2kUEKxLSlNhQ5cpl5aDQ4sbb5JjF3ewBc1NXBI3E8zHfmkyoaMWdwX
+   g==;
+X-CSE-ConnectionGUID: b3z+rzBXRUyUWdnRquDwuA==
+X-CSE-MsgGUID: ucadC5PYR92bW97VQY+mXw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11676"; a="73982619"
+X-IronPort-AV: E=Sophos;i="6.21,240,1763452800"; 
+   d="scan'208";a="73982619"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2026 03:33:03 -0800
+X-CSE-ConnectionGUID: lOKi9zYeS56TXwlx2KAP8A==
+X-CSE-MsgGUID: umVVrEKHQya7yS7W3Ll2Ug==
+X-ExtLoop1: 1
+Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
+  by fmviesa003.fm.intel.com with ESMTP; 20 Jan 2026 03:32:58 -0800
+Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vi9yi-00000000OtN-1vy4;
+	Tue, 20 Jan 2026 11:32:56 +0000
+Date: Tue, 20 Jan 2026 19:32:19 +0800
+From: kernel test robot <lkp@intel.com>
+To: Petr Hodina via B4 Relay <devnull+petr.hodina.protonmail.com@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	David Heidelberg <david@ixit.cz>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	Petr Hodina <petr.hodina@protonmail.com>
+Subject: Re: [PATCH 2/3] iio: light: add AMS TCS3400 RGB and RGB-IR color
+ sensor driver
+Message-ID: <202601201908.GaxFkE6t-lkp@intel.com>
+References: <20260119-tsc3400-v1-2-82a65c5417aa@protonmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260116-adf41513-iio-driver-v4-0-dbb7d6782217@analog.com>
- <20260116-adf41513-iio-driver-v4-3-dbb7d6782217@analog.com>
- <aW3dxuelYDM67pqZ@smile.fi.intel.com> <texwv5s2tvcy34bwr4iruj5xofmea663pwletmpqpuh66zulmv@m7qvjgqbhalv>
- <aW40ylvMwVhqNQMw@smile.fi.intel.com> <hgy3bcrqqsvt7pobhnzuvwzhb2taetpxltkaxpigmmlvmlirod@v6anhmrsvv2r>
- <aW5kk6K30Izckvg5@smile.fi.intel.com> <e5lcg5kkey3c6u2l4rlzzpolp7qkudhcofyzcx5s2tjbh2iwkg@js3fisv23zyj>
-In-Reply-To: <e5lcg5kkey3c6u2l4rlzzpolp7qkudhcofyzcx5s2tjbh2iwkg@js3fisv23zyj>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 20 Jan 2026 13:24:26 +0200
-X-Gm-Features: AZwV_QiT_7RWmWfYlrbsFcBlA4d2Dt_jON90l4jrfax3VAFOpLzCvwj49Sjh5L4
-Message-ID: <CAHp75VepcSZo_E4_UxhKRfHrMFDd7huJg14m8=6zVo4ENKFXkA@mail.gmail.com>
-Subject: Re: [PATCH v4 3/7] iio: frequency: adf41513: driver implementation
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, rodrigo.alencar@analog.com, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260119-tsc3400-v1-2-82a65c5417aa@protonmail.com>
 
-On Tue, Jan 20, 2026 at 12:43=E2=80=AFPM Rodrigo Alencar
-<455.rodrigo.alencar@gmail.com> wrote:
-> On 26/01/19 07:07PM, Andy Shevchenko wrote:
-> > On Mon, Jan 19, 2026 at 04:37:09PM +0000, Rodrigo Alencar wrote:
-> > > On 26/01/19 03:42PM, Andy Shevchenko wrote:
-> > > > On Mon, Jan 19, 2026 at 11:21:59AM +0000, Rodrigo Alencar wrote:
-> > > > > On 26/01/19 09:31AM, Andy Shevchenko wrote:
-> > > > > > On Fri, Jan 16, 2026 at 02:32:22PM +0000, Rodrigo Alencar via B=
-4 Relay wrote:
+Hi Petr,
 
-...
+kernel test robot noticed the following build warnings:
 
-> > > > > The current implementation is kind of a stripped version of
-> > > > > __iio_str_to_fixpoint(). Would you prefer something like this, th=
-en?:
-> > > >
-> > > > Do they have most of the parts in common? If so, why can't we use
-> > > > __iio_str_to_fixpoint() directly? Or why can't we slightly refactor
-> > > > that to give us the results we need here?
-> > >
-> > > __iio_str_to_fixpoint() only parses "int" chunks, adf41513_parse_uhz
-> > > was modified to accomodate the u64 parsing removing unnecessary stuff=
-.
-> >
-> > But why? The fractional part most likely will be kept int (it's up to 1=
-0=E2=81=BB=E2=81=B9).
-> > The integer can be bigger than 10=E2=81=B9?
-> >
->
-> Correct, integer part of the frequency value goes up to 26.5 GHz
-> (uint_max is approx 4.3 GHz). Also, with the dual modulus, the PLL can
-> achieve micro Hz resolution.
+[auto build test WARNING on 46fe65a2c28ecf5df1a7475aba1f08ccf4c0ac1b]
 
-=C2=B5Hz is not a problem since it's up to nHz.
-So, the difference so far is the integer part that can be 64-bit.
-Again, can we factor out something to be used for this and for the
-__iio_str_to_fixpoint() cases?
+url:    https://github.com/intel-lab-lkp/linux/commits/Petr-Hodina-via-B4-Relay/doc-add-Device-Tree-binding-for-AMS-TCS3400-light-sensor/20260120-012240
+base:   46fe65a2c28ecf5df1a7475aba1f08ccf4c0ac1b
+patch link:    https://lore.kernel.org/r/20260119-tsc3400-v1-2-82a65c5417aa%40protonmail.com
+patch subject: [PATCH 2/3] iio: light: add AMS TCS3400 RGB and RGB-IR color sensor driver
+config: x86_64-allmodconfig (https://download.01.org/0day-ci/archive/20260120/202601201908.GaxFkE6t-lkp@intel.com/config)
+compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260120/202601201908.GaxFkE6t-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202601201908.GaxFkE6t-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/iio/light/tcs3400.c:82:18: warning: unused variable 'tcs3400_gains' [-Wunused-const-variable]
+      82 | static const int tcs3400_gains[] = {1, 4, 16, 64};
+         |                  ^~~~~~~~~~~~~
+   1 warning generated.
 
 
---=20
-With Best Regards,
-Andy Shevchenko
+vim +/tcs3400_gains +82 drivers/iio/light/tcs3400.c
+
+    81	
+  > 82	static const int tcs3400_gains[] = {1, 4, 16, 64};
+    83	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
