@@ -1,101 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 286353502B6;
-	Wed, 21 Jan 2026 09:18:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0658A288510
+	for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 09:32:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768987131; cv=none; b=CmfT6zgXK++zOOCfECrOT7gtEujM4J0Nb1yQozkV8CnM3E08sDeu5MicepOYIwP0+aa7wivh+hhul0G1SDcKkMfNmud4IOwHKLyqgcKyj4KU4OLvD6KQxoHzdSLJtctqYu5Lx6R5wQF0ESCEx0PqR7Uxrchqv0jTpdI9cjX32WQ=
+	t=1768987957; cv=none; b=n6e14oq72Gv+hSh5rkFXYyTaZpGxB0XpagQeVNfidKqUMNuBYOyepY6Hj9+u6fh98z0azjUy3S1PL9bh7LyP++yZ8xVBhgdb8BS4pMg1wPwqQuBNujm67PuXMfq4Fw8eG90vdQ+eowfHuAAfIL3JESx83WiaLZkKLgpqZR1ZGl0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768987131; c=relaxed/simple;
-	bh=pK3xF14d/sdmpNhyY0OCtNZmYjuPYQkW4SF0otPqzn0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KIoas+00QWdN8ZYjzowHOfH8cHKq2tQ6WbS8ACQpvAP/O1JqZXr7p6+ShBbrDA+8563FYPpAka0W0+3wpUiz5KZAw5K/AAKoyBNcjyaOcw73LB3toZLtFQG6H8kTaOd2RsLqM2xaDgRchVIYjUNUNdnM4fCxKMEDLkfXMSHJx3o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oLHYNOhD; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1768987957; c=relaxed/simple;
+	bh=9Z3GJR+oR4iElQBYLEJPW3P34rRlaSYDMSuwJ/wBKr0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=rl4okw/JqsXs9yIyqgbgxnmF4r9Q0gvwnCZ3Jsy4nIb6DhEDwnfl6DknLdW6ltGYT7JD8ot7yqlvyJtEN+0c+Wao4R3SkLjNxmC3OaxK10xRpN5vL+87tlcThULdyiNyyZufdVCzyuZjvjZEZOmJpcKvGC/7cLa6JbWeCY6RROM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mQYH/STp; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oLHYNOhD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1768987130; x=1800523130;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pK3xF14d/sdmpNhyY0OCtNZmYjuPYQkW4SF0otPqzn0=;
-  b=oLHYNOhDCczTJ3NQvLEjg+jhtUjoRK5xCJ5NqXKJ9tGBcehlqhFwgwCx
-   lxMjuuqwzHymFj3CWc/GIYtE2krC/6/33b/czcATf8AJf9RYVzn0DGLhA
-   2WRpl6YL7+CU/5x2LtuP/iii5keOoCJZ0SPBGaKcc4SvBW/EXVmcgZj2X
-   dTwfxkyiff3+oEANlZWskxXOikS0PIedEDGtuUW/bxlCEaohe2yMAm9Hf
-   X3ew25kZ4A8Nwnb4VxA25Su9X4vu9JnnTNzu649xyrUvH31IK8Px9HgfR
-   Gymt6yIODAzPJle36vBDU6Bv0Ol31JdDdtWh5Mz70EyDrPMLNlR8VwuN6
-   g==;
-X-CSE-ConnectionGUID: We05w/NLT4qDNETQw64sdw==
-X-CSE-MsgGUID: m003vc7VTYa9JTc7PvGD6g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11677"; a="87788523"
-X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
-   d="scan'208";a="87788523"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2026 01:18:47 -0800
-X-CSE-ConnectionGUID: tR5SvLReTtOjI2kxdc+u5Q==
-X-CSE-MsgGUID: slwWj9hvSaKWPWKf85lOaQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
-   d="scan'208";a="243967835"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.73])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2026 01:18:45 -0800
-Date: Wed, 21 Jan 2026 11:18:42 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: raskar.shree97@gmail.com
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, skhan@linuxfoundation.org,
-	david.hunter.linux@gmail.com, linux-iio@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mQYH/STp"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4801c2fae63so41838225e9.2
+        for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 01:32:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1768987953; x=1769592753; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=y6R7V3ZWTA9/RaVBxdw376Kf2ZDaVjKcJaNX1RQPxK4=;
+        b=mQYH/STpTLYYTga+Vrlcwb5CSScvlmZutNonEZCUhpFwDYcpwt+9AFHzGcdKzSh02W
+         QtqSP4M2cRRJ57NRA/rmcnBVj0exQTqR7iVwcuU0RoNAluC3r3Hy2HUKRGVSCV+nQ7Ku
+         xQJ/IbyemhI3KcHVHWj+M9ONv3KXcsB+cc1JQc1hSjh2SflALszZ8ZjetuKX+8TLmrrB
+         BB1+01s8EE28BvhgyZ7RhpiT4NfMk6XpX1dJCwspNPmrMlVWl01VMY4O4aKRP6TcvSW+
+         13qanAjKsI9P5NwIz9yG+ZAwMUg978s0uejnNKb2fA/Vt9vm2wB7iQcUDv5bJ1auSexl
+         Pxjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1768987953; x=1769592753;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=y6R7V3ZWTA9/RaVBxdw376Kf2ZDaVjKcJaNX1RQPxK4=;
+        b=VFRBtTGZUu1S+LcU41v8Xqwag2V0e+IAak/fySmMJJg51h2TiFEnNvRFZ9fklrQDZq
+         Hi3+fJbMtRW+GnWKZS/+02xbCN7P8iopcbcBWygZefM8ndAcPzz5d3NGd+2B1YXhR7y0
+         0519G2i1Kt5zFMQxEO/bs9ZpfWrKfFDUX+2riew6iP9ggvD36XqhuHPowyMRvNM2QPXF
+         aj0YLP19kY6zKkS2BjLqSLWYbiTu+nH9m/KxA0ma0lDBzIH3liMtWCFFX0LHeV64YKvr
+         PsAhT71CLjPH9H0KGc/w9WjGeORYWoHU/+IV64h2vd+v6jjC3pP2NK9nm7+nE4+Fn5h9
+         1lDA==
+X-Forwarded-Encrypted: i=1; AJvYcCVPahmqtFNbkjorfltjHvg9ARSVFr+VSf6UAIlKM2FOrAilkinvwGOZ8x1s6D7zdkJExSMogMQQvVU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwKXmylig1dkdZY0TlhbguC7IayU8UIpkQasLK3+B9jYyNZfYnA
+	BukHkmMoJKSUVMSTuIx0lXwiDe77ubKnlPopGK8pZVqUax2CLBaZ8jDW
+X-Gm-Gg: AZuq6aI56RZ3xwfry+wS097z8+b68V2y051xgdCRe7yMufW9Xm7xdPpzcrYXMlp2Tfh
+	RIrhfZd8oMG1UGZYfalWAZae2GAXPGCiZkX2DKvfZvi4NhUmRszoghfy3yhl3q+llUyY8CIv+3G
+	HJvjj14mN8Pir07AeZtFEiK7O7h62TTZKjLZStRgEws7KqNrqEh5VXTrTxpVd6ukBpom2sn3VgK
+	z4gUiFUJ4K8rtJAMAmKu+EypHvl1I4M4wS/NekZxnwcHdHamwSrer0jDGrlAdOW3Dlx4kq/qgR1
+	MQn07RewxrUs1/hg4GmB8Tm2N1iipqzpDHvS0gOliOhyELmwpZHDeR8ELhSl6ggJyaf8yiEIlB+
+	ItgncUegQK3W8XwjmfhU619L5W/Qk3uqrp48vXhr9yk6hkJ644k5YLs6yWPrxzuRrMhsiAquFPh
+	AjySNgO6P4h23N4p66mI8=
+X-Received: by 2002:a05:600c:35c2:b0:480:3b26:82cc with SMTP id 5b1f17b1804b1-4803b2683c0mr108208865e9.18.1768987953048;
+        Wed, 21 Jan 2026 01:32:33 -0800 (PST)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4801e8d90b3sm304721065e9.15.2026.01.21.01.32.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Jan 2026 01:32:32 -0800 (PST)
+Message-ID: <2f9e7172885c5dd20be198f013283c6ec0513ef1.camel@gmail.com>
+Subject: Re: [RFC PATCH v1 0/9] iio: Expand IIO event interface for
+ real-world unit handling
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: David Lechner <dlechner@baylibre.com>, Marcelo Schmitt
+	 <marcelo.schmitt1@gmail.com>, linux-iio@vger.kernel.org, 
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 4/5] iio: proximity: rfd77402: Document device private
- data structure
-Message-ID: <aXCZ8gRTsR93A5Kz@smile.fi.intel.com>
-References: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
- <20260121-b4-rfd77402_v5-v6-4-5b944d0605dd@gmail.com>
+Cc: jic23@kernel.org, Jonathan.Cameron@huawei.com, nuno.sa@analog.com, 
+	andy@kernel.org
+Date: Wed, 21 Jan 2026 09:33:16 +0000
+In-Reply-To: <4a04fa3f-c056-4443-a55a-e8622feb1c2a@baylibre.com>
+References: <cover.1768759292.git.marcelo.schmitt1@gmail.com>
+	 <4a04fa3f-c056-4443-a55a-e8622feb1c2a@baylibre.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260121-b4-rfd77402_v5-v6-4-5b944d0605dd@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Jan 21, 2026 at 02:05:44AM +0530, Shrikant Raskar via B4 Relay wrote:
+On Sun, 2026-01-18 at 14:33 -0600, David Lechner wrote:
+> On 1/18/26 12:18 PM, Marcelo Schmitt wrote:
+> > This patch set adjusts and complements the IIO event ABI docs making th=
+em
+> > coherent with the fact that not all threshold value attributes had a _r=
+aw/_input
+> > indicator set in their names. In addition that, the latter patches on t=
+his
+> > series update the IIO event infrastructure to actually enable drivers t=
+o provide
+> > _input threshold value attributes.
+>=20
 
-> Add kernel-doc style comments for struct rfd77402_data to describe
-> the purpose of each member.
+...=20
 
-Assuming checkpatch.pl doesn't complain (see below why),
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+>=20
+> Just throwing out an idea here without thinking about it too much...
+>=20
+> Instead of adding a new field/parameter for units, could we extend
+> enum iio_event_info to add IIO_EV_INFO_VALUE_RAW and IIO_EV_INFO_VALUE_IN=
+PUT
+> (and same for HYSTERESIS). Really, the units only make sense for these
+> two info types anyway.
+>=20
 
-...
+Makes sense to me.  Or we can just document that the old value is _INPUT? O=
+r just make
+it the same value in the enum.
 
-> +/**
-> + * struct rfd77402_data - device-specific data for the RFD77402 sensor
-> + * @client: I2C client handle
-> + * @lock: mutex to serialize sensor reads
-> + */
->  struct rfd77402_data {
->  	struct i2c_client *client;
-> -	/* Serialize reads from the sensor */
-
-Not sure if this can be removed due to some checkpatch checks.
-Have you run it to verify?
-
->  	struct mutex lock;
->  };
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+- Nuno S=C3=A1
