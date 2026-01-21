@@ -1,196 +1,92 @@
-Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FA113E95B6
-	for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 23:09:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87AAC346ACE;
+	Wed, 21 Jan 2026 02:36:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768950583; cv=none; b=vEfQwRNRtN9L/+zQzS7XuF0l87O/LEZbskc0HWND/f98r/y75c0IdxvYmQeRLLnSNNnnCHUaJwLzbzvHld8gQdvJPW4v+zcsLIHs2tynCS5WEOsty4zk6qcqnrYyX0ZPX+pi+EXp5ivjsxoczhB/0g2ZQAEEqPTJv8NiQYkl514=
+	t=1768962963; cv=none; b=NDsUJYJa6IhvxnVqJfkEvo1e1+/vaWPWaVYzGSIaFM/vNxBKAjMGeAOYB9fy3InfMnpQs+pevoXhUFJtVvyPewkeiMTJ1aCocCAB2MpCAezDfVZbFqILcKszUc3WNI7h4PWsGRWdIaL2Ky3cks5U9kGFixxqh72bq3nbwQt09wQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768950583; c=relaxed/simple;
-	bh=wf8rbGI+BwbHr/v/eiWQcTcvQ/wwgyk84RiXzn6snfc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ksIhLHQtJ4DqGaJ1MkRD33P9A1ppN/2mrC8HhhpB6/j65GJLjwTO2iu+kLzejX2ab4CSbLQULGSH9QPRyaWk6lmkPI/xiF3DoygqEjsNT7EBYu38Y43gE55myGHLGOoFooxlWmHdfus4gxo0+/V1eNLD5B4FnPRvAiDE73IpANQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=NhXwUOUl; arc=none smtp.client-ip=185.171.202.116
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1768962963; c=relaxed/simple;
+	bh=XGS/C4+dQ/MQcbeNze+TLdbIkN63FPlGdIp9X0YopKQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=MVMWNnaX8PZUE8HhuzDKECI9+Z+rKGkBuZEYQv67vo5YHX4TEx288hg2nn/hpoOokdHcMxCBlgP7VtRlYh90qGkavnKY0xIKUDBY94NSNKyKqd1hZaNugGfazBh2O4EEQmVeufHuBC2NFEDw4oF4KdzheuNhpN2+vmLvOeZHU/0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tELJxsNq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="NhXwUOUl"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-04.galae.net (Postfix) with ESMTPS id 935ADC2033B;
-	Tue, 20 Jan 2026 23:09:11 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 9814A606AB;
-	Tue, 20 Jan 2026 23:09:38 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 349F6119B01E4;
-	Wed, 21 Jan 2026 00:09:36 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1768950578; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=cSo/CbqltJypUPT2B2N/y5DKktBTma9cQloHLapKu3w=;
-	b=NhXwUOUlvNM+TXjjrVeqLAyJiF0bcho6nG2+/ry4NlCvX7OxPuv6dUgZdc8wHd1D1UEa1L
-	cKLHmjK+sLkrIQ1/o9NuB295+WS+ZXKs+sZ6/N0NHefTsU4KjipwlKMxKWhCpedzsRvCfQ
-	ffnjUz4OWqSn1gk2UYqBZBpyXatzC9DFRJ0FFIWlt+rKT4Sodmn/6QIoDoBBU1ZymlEPmO
-	BONckFfmBFvqkhLgAY2e29Znhf64SsxTtOnGdpBHGH+eXb26DTSS4STcEKyeZINsTSZOKK
-	keX33AsEu5rx9ZXogqfkv28JeIOFrtuxQf/KqnpwLeC382sXTbNsLzwdjUCGGA==
-Date: Wed, 21 Jan 2026 00:09:35 +0100
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
-	Sasha Levin <sashal@kernel.org>,
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tELJxsNq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF703C2BC87;
+	Wed, 21 Jan 2026 02:36:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1768962963;
+	bh=XGS/C4+dQ/MQcbeNze+TLdbIkN63FPlGdIp9X0YopKQ=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=tELJxsNqzZMYdqxd+6NcnANbM+4awqj5BUrHvwLfi1q3teM32VjaTW3BmbTjdidPx
+	 hTIxnzdwEsjDGbJE8/tCufDDLBNwYJf7mZw+vLAdNGetoMzytYHkfSG+GEvUlCb3Ko
+	 1tg5U41FUe0oEVMw5cALlHkO3grXdTOg/BY1nUqr9Ce0sl68NkM1TTPIcgm3siG0dm
+	 +UOZi1kSSEB4K/Z53IWJMbf2FRZtLc7dOney/F94r4wvcQqwsino0JBdBiHpChjWWg
+	 QitmQFqAQ6oSVVKx9k3ThuHK8F2ledH9Ey1l9rlC2AFJZ0MvwW9lQnOjXrtTNedBjM
+	 eT0exqfYTgQyg==
+From: Bjorn Andersson <andersson@kernel.org>
+To: Konrad Dybcio <konradybcio@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	jorge.marques@analog.com, Frank Li <Frank.Li@nxp.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH] iio: adc: ad4062: Switch from struct i3c_priv_xfer to
- struct i3c_xfer
-Message-ID: <202601202309350bdc5dd6@mail.local>
-References: <20260119213617.745603-1-jic23@kernel.org>
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Rudraksha Gupta <guptarud@gmail.com>
+Cc: linux-arm-msm@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+Subject: Re: (subset) [PATCH v4 0/6] ARM: dts: qcom: msm8960: expressatt: Add more peripherals
+Date: Tue, 20 Jan 2026 20:35:52 -0600
+Message-ID: <176896294106.1060469.2033786103404524478.b4-ty@kernel.org>
+X-Mailer: git-send-email 2.52.0
+In-Reply-To: <20251124-expressatt_nfc_accel_magn_light-v4-0-9c5686ad67e2@gmail.com>
+References: <20251124-expressatt_nfc_accel_magn_light-v4-0-9c5686ad67e2@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260119213617.745603-1-jic23@kernel.org>
-X-Last-TLS-Session-Version: TLSv1.3
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 
-On 19/01/2026 21:36:17+0000, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> commit 9904232ae30bc ("i3c: drop i3c_priv_xfer and i3c_device_do_priv_xfers()")
-> currently in the i3c/for-next tree removes the deprecated
-> struct i3c_priv_xfer and i3c_device_do_priv_xfers().
-> 
-> Switch to struct i3c_xfer and i3c_device_do_xfers(..., I3C_SDR)
-> now rather causing a build issue when both trees are merged.
-> 
-> Suggested-by: Sasha Levin <sashal@kernel.org>
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: jorge.marques@analog.com
-> ---
-> I'm already carrying this on my tree to resolve the issue in next
-> but feedback still welcome!
 
-This looks fine to me, I'm sorry this patch is causing you so much
-troubles, I was pretty sure every drivers where converted so I took me a
-while to understand that this is actually a new driver, I didn't expect
-this!
-
-> ---
->  drivers/iio/adc/ad4062.c | 26 +++++++++++++-------------
->  1 file changed, 13 insertions(+), 13 deletions(-)
+On Mon, 24 Nov 2025 15:35:21 -0800, Rudraksha Gupta wrote:
+> Intro:
+> =================
+> The following is now working on the Samsung Galaxy Express SGH-I437, an
+> old 2012 Android phone:
+> - Light Sensor
+>     - Proximity is currently floating, even though it matches downstream
+>       GPIO pin
+> - Magnetometer
+>     - Regardless of orientation:
+>         - X axis seems to always be negative
+>         - Y and Z axis seems to always be positive
+> - NFC
+> - Accelerometer
 > 
-> diff --git a/drivers/iio/adc/ad4062.c b/drivers/iio/adc/ad4062.c
-> index a6b3ccc98acf..dd4ad32aa6f5 100644
-> --- a/drivers/iio/adc/ad4062.c
-> +++ b/drivers/iio/adc/ad4062.c
-> @@ -468,13 +468,13 @@ static int ad4062_set_operation_mode(struct ad4062_state *st,
->  
->  	if (mode == AD4062_MONITOR_MODE) {
->  		/* Change address pointer to enter monitor mode */
-> -		struct i3c_priv_xfer xfer_trigger = {
-> +		struct i3c_xfer xfer_trigger = {
->  			.data.out = &st->conv_addr,
->  			.len = sizeof(st->conv_addr),
->  			.rnw = false,
->  		};
->  		st->conv_addr = AD4062_REG_CONV_TRIGGER_32BITS;
-> -		return i3c_device_do_priv_xfers(st->i3cdev, &xfer_trigger, 1);
-> +		return i3c_device_do_xfers(st->i3cdev, &xfer_trigger, 1, I3C_SDR);
->  	}
->  
->  	return regmap_write(st->regmap, AD4062_REG_MODE_SET,
-> @@ -607,18 +607,18 @@ static void ad4062_trigger_work(struct work_struct *work)
->  	 * Read current conversion, if at reg CONV_READ, stop bit triggers
->  	 * next sample and does not need writing the address.
->  	 */
-> -	struct i3c_priv_xfer xfer_sample = {
-> +	struct i3c_xfer xfer_sample = {
->  		.data.in = &st->buf.be32,
->  		.len = st->conv_sizeof,
->  		.rnw = true,
->  	};
-> -	struct i3c_priv_xfer xfer_trigger = {
-> +	struct i3c_xfer xfer_trigger = {
->  		.data.out = &st->conv_addr,
->  		.len = sizeof(st->conv_addr),
->  		.rnw = false,
->  	};
->  
-> -	ret = i3c_device_do_priv_xfers(st->i3cdev, &xfer_sample, 1);
-> +	ret = i3c_device_do_xfers(st->i3cdev, &xfer_sample, 1, I3C_SDR);
->  	if (ret)
->  		return;
->  
-> @@ -627,7 +627,7 @@ static void ad4062_trigger_work(struct work_struct *work)
->  	if (st->gpo_irq[1])
->  		return;
->  
-> -	i3c_device_do_priv_xfers(st->i3cdev, &xfer_trigger, 1);
-> +	i3c_device_do_xfers(st->i3cdev, &xfer_trigger, 1, I3C_SDR);
->  }
->  
->  static irqreturn_t ad4062_poll_handler(int irq, void *p)
-> @@ -852,12 +852,12 @@ static int ad4062_set_chan_calibscale(struct ad4062_state *st, int gain_int,
->  static int ad4062_read_chan_raw(struct ad4062_state *st, int *val)
->  {
->  	struct i3c_device *i3cdev = st->i3cdev;
-> -	struct i3c_priv_xfer xfer_trigger = {
-> +	struct i3c_xfer xfer_trigger = {
->  		.data.out = &st->conv_addr,
->  		.len = sizeof(st->conv_addr),
->  		.rnw = false,
->  	};
-> -	struct i3c_priv_xfer xfer_sample = {
-> +	struct i3c_xfer xfer_sample = {
->  		.data.in = &st->buf.be32,
->  		.len = sizeof(st->buf.be32),
->  		.rnw = true,
-> @@ -876,7 +876,7 @@ static int ad4062_read_chan_raw(struct ad4062_state *st, int *val)
->  	reinit_completion(&st->completion);
->  	/* Change address pointer to trigger conversion */
->  	st->conv_addr = AD4062_REG_CONV_TRIGGER_32BITS;
-> -	ret = i3c_device_do_priv_xfers(i3cdev, &xfer_trigger, 1);
-> +	ret = i3c_device_do_xfers(i3cdev, &xfer_trigger, 1, I3C_SDR);
->  	if (ret)
->  		return ret;
->  	/*
-> @@ -888,7 +888,7 @@ static int ad4062_read_chan_raw(struct ad4062_state *st, int *val)
->  	if (!ret)
->  		return -ETIMEDOUT;
->  
-> -	ret = i3c_device_do_priv_xfers(i3cdev, &xfer_sample, 1);
-> +	ret = i3c_device_do_xfers(i3cdev, &xfer_sample, 1, I3C_SDR);
->  	if (ret)
->  		return ret;
->  	*val = be32_to_cpu(st->buf.be32);
-> @@ -1236,7 +1236,7 @@ static int pm_ad4062_triggered_buffer_postenable(struct ad4062_state *st)
->  	st->conv_sizeof = ad4062_sizeof_storagebits(st);
->  	st->conv_addr = ad4062_get_conv_addr(st, st->conv_sizeof);
->  	/* CONV_READ requires read to trigger first sample. */
-> -	struct i3c_priv_xfer xfer_sample[2] = {
-> +	struct i3c_xfer xfer_sample[2] = {
->  		{
->  			.data.out = &st->conv_addr,
->  			.len = sizeof(st->conv_addr),
-> @@ -1249,8 +1249,8 @@ static int pm_ad4062_triggered_buffer_postenable(struct ad4062_state *st)
->  		}
->  	};
->  
-> -	return i3c_device_do_priv_xfers(st->i3cdev, xfer_sample,
-> -					st->gpo_irq[1] ? 2 : 1);
-> +	return i3c_device_do_xfers(st->i3cdev, xfer_sample,
-> +				   st->gpo_irq[1] ? 2 : 1, I3C_SDR);
->  }
->  
->  static int ad4062_triggered_buffer_postenable(struct iio_dev *indio_dev)
-> -- 
-> 2.52.0
-> 
+> [...]
 
+Applied, thanks!
+
+[1/6] ARM: dts: qcom: msm8960: Add GSBI2 & GSBI7
+      commit: 4535af3dc91c43c16c31e4e2ad9e79cead0ef308
+[2/6] ARM: dts: qcom: msm8960: expressatt: Add Light/Proximity Sensor
+      commit: 72c6158e17cd3ef2069423ae70a24b955b1c0b72
+[3/6] ARM: dts: qcom: msm8960: expressatt: Add NFC
+      commit: 7f07c27808e68af92cbf6d352f675248c3ea7cab
+[4/6] ARM: dts: qcom: msm8960: expressatt: Add Magnetometer
+      commit: 3649a120a7106aca89a4eddbddbc2e5a85aa64f9
+[6/6] ARM: dts: qcom: msm8960: expressatt: Add Accelerometer
+      commit: 7f45d77240f9fc9948ba4d9c4eec3b97c3e2c51d
+
+Best regards,
 -- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Bjorn Andersson <andersson@kernel.org>
