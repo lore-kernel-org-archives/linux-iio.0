@@ -1,72 +1,73 @@
-Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
+Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6232D31064E
-	for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 02:38:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B53334AB07
+	for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 02:47:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768963115; cv=none; b=fpq1qHmNhP0fFypYAI5Z1hqn+tYOhdv5c8DaSfzgbwsdlxBylAlFfSsKEGSGSeEo1Sf4P7B1EDW2GDxqxnHGH2drid458afYBlDjfZmgXZWXe9Q3BaV+Vd3W0fPWWLE6STD1xDWVjNOnFKTddGQPqu14mbfDlEsYdYYOljmifTk=
+	t=1768963644; cv=none; b=jLfGLJHCJK0ZgonODCE3Q5fith/BN/o0H5afnGc13JYE257nHdlHpHJFwylec6ieS9lqnHvVcgOW2zuLun9wIjBvD1O/CjZRcOHz7vtX37eGzvBOKoZOXAXA4FPXxVlZhf7ho6PQLBKAcD74IW77/BdH2zV+46lHpmL5NzcD8No=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768963115; c=relaxed/simple;
-	bh=zfnKoToX5Qep+GYp7TpBRb60LAdEmDsHiudoUxCcZ3k=;
+	s=arc-20240116; t=1768963644; c=relaxed/simple;
+	bh=ToxIZWctlQilSCoHqiefXHI/xunJ4P0DC5xriL95dRs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=faFBlsAV6dGHJAF8oEz7QtKIuZoSFMrV4tW9GgXgpcfdnkW+glGgxaR7Enywc/f3tCAHVmqZxWUcizXTAlnUU2QZ/v+YC8eyeWgu4zBoUdVMxH6iHKz2UbItygGq8W5N4omBmGqkCWfJe1rpBYcvsY+cEHWRI4Aa9sJ82uYWMIU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z/tWYpy8; arc=none smtp.client-ip=74.125.82.50
+	 Content-Type:Content-Disposition:In-Reply-To; b=Dur3zhj3MLwOL93m9naKxP5F+tqTX5FcbsUrgD0f9nyGeGBETvdRM0Lw8ajCSm7+XwkUnD4OdiLrWUjBWMAckj46neXClKcvCGEhlHFV1B2ncP0fLMTCdy06cgqe8D3JO/SUPKwASmFDHOsLeijvMLH7cVKCgPbjPG9sQq3iWLI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lOkuSnO3; arc=none smtp.client-ip=74.125.82.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z/tWYpy8"
-Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-12460a7caa2so3926212c88.1
-        for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 18:38:34 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lOkuSnO3"
+Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-2ae287a8444so253058eec.0
+        for <linux-iio@vger.kernel.org>; Tue, 20 Jan 2026 18:47:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1768963113; x=1769567913; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1768963642; x=1769568442; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+TMBluTOO1iJxxCpBCo8mF4pvpdslEVo42L/jLf85BU=;
-        b=Z/tWYpy858y2gjcX7xDPEzjfeOOoF4bJS2VRThoAFk0W+uJrdbaDouX3jJ/5jCTzjV
-         mPRkRJIWR0Aa2E/4IqZUPyKrVQa9vW8DMopTVXIMzdwyk65zQAr4PsjqB0+qY4HhuVGi
-         8OKP8NoKhKsZnC2BTmI8GLRwQZkXCN5Tmp7QKFpe1PFwfNIdmlp3ArvDQCNziJewcZIL
-         gMgEgz0ErlXyFPfs3T/DvBe/kNXlXDXzL8CXwsTCf+HczZuDHyRDX5pRp45fYdC2a1ov
-         0xwfSnwSLhydA9XjTiCwyRGjjiHUtvaeM79BGjRGEQIuvcBIiM/wNei48I0LTIWx4SIL
-         Rokw==
+        bh=VQbdBgfkd7EcwE75AgiRI1/65NEwUWBGyhPvKNZxv3w=;
+        b=lOkuSnO34aYx7/g7u1s6a4bOIf6xDW5g0ymownW6ldnrfVC3SH67XtlUDnOIXAZcyV
+         Vl8x6NgmayGC6YQvP0Yd4mOYFT7/GBvNZfAQLI8mNu9PR8iQGAclG4/YjjohtTGp7uuV
+         6Kw1E8Ael+3/jC+y/4O4QuDB4PiLEcjZyjlxi2T92O8bcKbms23VA6R0TArSCIH4ss/h
+         aZZRztJNbO5H3lHIZVs3MRp9Tpkrm9Guxrt4Qsjj1lwpQI2glBZMsoD+1bG4D88SH236
+         8cqif8QVuJlT/ODpoJVTP5oii8wDfgkCqpO6Ho4TfqlHzELFufIMpjkaUm38bRc6fb4U
+         qTxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768963113; x=1769567913;
+        d=1e100.net; s=20230601; t=1768963642; x=1769568442;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+TMBluTOO1iJxxCpBCo8mF4pvpdslEVo42L/jLf85BU=;
-        b=HkDdxIG9IU59/bhe0Vr2TiQuwp1XM0/Sl3pTiPfYqkyQQetNZdldo7agbKBpUUgh5g
-         KURZ/ZkCbMZYt+Srqis+5XzjuamEuqOr36sxRFwsHF42z/KMP7yyJu5zcFss01LWWDu/
-         UF/x6HQajh6NNoxoABVG4Van6/34dCX+kogMmrO4qO0gwU+97dht47yoh7he97ziMhML
-         LOJvG82LcM0ZSLBNqOPNGVz0R3Ne9FeykCAOpsaMqxZGM9yVQsF33MAqQ32tC3R8yUdE
-         ymspW3lJV6sf56oQaAeCx/OxEo46IcmS3ALqykncGhM91kQe//hDaRRbWeh+o6ylpNuN
-         sQHg==
-X-Gm-Message-State: AOJu0Yy6d0DB6Kq8P/sQDBBiAxx6O73munV7szcsTdWtcB/xkiRHH7dG
-	CYinybE/N1jp/oyxj2hSWMfBR9IJqSrRj2sPpD5CzNvT0p0VdJ56h4Fg
-X-Gm-Gg: AZuq6aKIzlIi5bSC2E4aW5m+mVuGxEZrBrN2l+kfzaMSpkmJsGh8sVD8YaLowgVYqJT
-	XA90536b/uJeDWqKPl1b/llgi+Q9SO9P9rO+tsuQaLonlEyRgVA9BjfCc/a3G89KUjuSxcJL/ha
-	ajCqmGx+F7pTKmqT2r6QhUeEWolXPW9b9xlENhK2QLqhr8grivVNuT734MQi3Uj5Bif6CCDi8cw
-	5HI2EWVyynUTcCLHRGSbrKN93ORoETSPqtLc6d9DLEa3JsRgORzdY17fGogl/xVTu1QcKIUobkZ
-	T0KtxCHLfma3k+w6h8ffXF9tzyXKXkGXs5PGI128jnUPMbK6yzAYbwH1yW4GYtxUr//GqZ0SFQ3
-	eqO7kUuoABDT1PTxQiVItExuZG7lZzNWbAT4g/RXHchJPn5kLJVVrhRN2nSWwAlLhMulWYX9EVk
-	KRO/eCKkeQSGSKYoKFViA7gr+mnvdiqg==
-X-Received: by 2002:a05:7022:7a7:b0:119:e569:f622 with SMTP id a92af1059eb24-1244b35bb2dmr9409676c88.27.1768963113220;
-        Tue, 20 Jan 2026 18:38:33 -0800 (PST)
+        bh=VQbdBgfkd7EcwE75AgiRI1/65NEwUWBGyhPvKNZxv3w=;
+        b=SAlHJNy3IjwhAQxs/863JJS8ubLIzazTVsT5tw24WlYgyyixJFB1D96PwIj5jVA9VE
+         Nwmqbdk/rbbXPOPIhkJrAmGphb3DlFzjU1XRr8vEAjbg2dksqtp4TUM7UdPO6wFcK5X8
+         V9QTNHZJyTl+za10+ot9/5PGmEarM99932GOGmW4M3yeH3mXqzj8+CjJkTXlRswGAtwZ
+         drENMpGpeBC9LE+A+tnkszvn79Fi+xwnytDNvJ3Qi7YICsFevcvUytWXkZrwk9473gcB
+         adpCV8qJ5U50ChhbaY3xbnb2EosbrecRVV1OLcr0UqTEqYIIFWer4LSQlpW/ukeuGa9e
+         Vrvg==
+X-Gm-Message-State: AOJu0YxD0xliQRgoqTjNavHG8axptoAE7VL2rt1GTsi5LGWyFD64kbFO
+	AkSiqTSRSw2//NxJwLJOvDofSURvPdTDNf7CU37l2rmns5H0RFZ8vcPr
+X-Gm-Gg: AZuq6aJddlrCcByGtfh74C16F11nwWSXMq30zvrx5Hw16forW6kz6Kg+I8u/2atFy3x
+	HHYrJTfdgKt23c7zJxC7AkeyGch65xDC1FisPQglxaX6NOmx4TKlNmT3R6xhPv4hOZsnr2irqVj
+	cYSuG/rcXb9dXfh+7ujzjTghOpeO67fYwPWGqrHHhQQPcbeuhfmQtTcM4VVzDBmI83oaq8Z0cCZ
+	ccbpsGNWaE4V0t8sVeLqe2WOOGJJsGhXNl8uaVd1+zff6rDx0DlNlDHxh4WE9uPz+Bphh1amCxB
+	BdJ6nvDPCrqTr8vF6N/Btywxsvn95E50n7sT1de/CjM1qi90eJVSd+Rk4pITj/vIebSYixVI4T+
+	U8kz/6Si8gMsemnPBEI7x8NrB/47EaMeyQdANcbobpQ4f28YMl9PbAx+7It5HhBz7Crm0UMOLCK
+	Xa7IZmtKAMvBDr3OrkSkcYoCgtvdDXcQ==
+X-Received: by 2002:a05:7300:3208:b0:2a6:a306:efdb with SMTP id 5a478bee46e88-2b6b3468f3amr12058623eec.3.1768963642311;
+        Tue, 20 Jan 2026 18:47:22 -0800 (PST)
 Received: from localhost ([2804:30c:2766:a500:b70:8c42:f792:bef6])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1244ac58140sm20703271c88.4.2026.01.20.18.38.31
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2b712881482sm1136344eec.5.2026.01.20.18.47.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jan 2026 18:38:32 -0800 (PST)
-Date: Tue, 20 Jan 2026 23:40:22 -0300
+        Tue, 20 Jan 2026 18:47:21 -0800 (PST)
+Date: Tue, 20 Jan 2026 23:49:11 -0300
 From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 To: David Lechner <dlechner@baylibre.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	jic23@kernel.org, Jonathan.Cameron@huawei.com, nuno.sa@analog.com,
 	andy@kernel.org
-Subject: Re: [RFC PATCH v1 0/9] iio: Expand IIO event interface for
- real-world unit handling
-Message-ID: <aXA8lq7JGZEF4ffa@debian-BULLSEYE-live-builder-AMD64>
+Subject: Re: [RFC PATCH v1 2/9] iio: ABI: Accurately describe
+ in_distance_input
+Message-ID: <aXA-p5p5dT3uBDva@debian-BULLSEYE-live-builder-AMD64>
 References: <cover.1768759292.git.marcelo.schmitt1@gmail.com>
- <4a04fa3f-c056-4443-a55a-e8622feb1c2a@baylibre.com>
+ <b38d761e3d78d6121bd3f3de0908a156ad9ea277.1768759292.git.marcelo.schmitt1@gmail.com>
+ <2d148091-9e40-41ee-95cb-544abcbf81be@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,40 +76,71 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4a04fa3f-c056-4443-a55a-e8622feb1c2a@baylibre.com>
+In-Reply-To: <2d148091-9e40-41ee-95cb-544abcbf81be@baylibre.com>
 
 On 01/18, David Lechner wrote:
-> On 1/18/26 12:18 PM, Marcelo Schmitt wrote:
-> > This patch set adjusts and complements the IIO event ABI docs making them
-> > coherent with the fact that not all threshold value attributes had a _raw/_input
-> > indicator set in their names. In addition that, the latter patches on this
-> > series update the IIO event infrastructure to actually enable drivers to provide
-> > _input threshold value attributes.
+> On 1/18/26 12:20 PM, Marcelo Schmitt wrote:
+> > There is only one driver (drivers/iio/accel/mma9553.c) that declares a
+> > channel of type IIO_DISTANCE with an info_mask containing
+> > IIO_CHAN_INFO_PROCESSED. Though, mma9553.c provides distance in meters (as
+> > would be expected for the _input interface). Split in_distance_raw and
+> > in_distance_input ABI documentation to provide accurate description for the
+> > in_distance_input interface.
+> > 
+> > Fixes: 7cf78db585b1 ("iio: Add ABI documentation for illuminance raw and scale values in light")
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> > ---
+> > Added a fix tag though not sure it's needed/desired since it might not be worth
+> > to backport documentation?
+> > 
+> >  Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+> >  1 file changed, 7 insertions(+)
+> > 
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> > index aec39b8e3345..27251b65ea0e 100644
+> > --- a/Documentation/ABI/testing/sysfs-bus-iio
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> > @@ -1613,6 +1613,13 @@ Description:
+> >  		user). Units after application of scale are Joules.
+> >  
+> >  What:		/sys/.../iio:deviceX/in_distance_input
+> > +KernelVersion:	4.0
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		This attribute is used to read the measured distance (in meters)
+> > +		to an object or the distance covered by the user since the last
+> > +		reboot while activated.
+> > +
+> >  What:		/sys/.../iio:deviceX/in_distance_raw
+> >  KernelVersion:	4.0
+> >  Contact:	linux-iio@vger.kernel.org
 > 
-...
-> 
-> Just throwing out an idea here without thinking about it too much...
-> 
-> Instead of adding a new field/parameter for units, could we extend
-> enum iio_event_info to add IIO_EV_INFO_VALUE_RAW and IIO_EV_INFO_VALUE_INPUT
-> (and same for HYSTERESIS).
+> I'm not sure it is worth splitting these up since the documentation is
+> just repeated except for the bit about scale. And it is common knowledge
+> that scale only applies to raw and not input.
 
-Makes sense. If no other idea comes up, I'll go with that for the next version.
-
-> Really, the units only make sense for these
-> two info types anyway.
-
-Ah good point. I was too hasty in thinking the _raw/_input distinction would
-apply to other event_info options. Will avoid affecting those.
-
-Thanks
+It's common knowledge to us who are familiar with IIO. For anyone else, it might
+not be. Plus, it is tecnically incorrect to have _raw and _input together like
+they were before.
 
 > 
-> This would work like my suggestion above that existing drivers would continue
-> to use the old enum value, but we would encourage using the new enum values
-> in new code. And it would eliminate the churn of having to touch every existing
-> user.
-> 
-> And if someone really wants to take advantage of the new naming for a driver
-> with existing events, we could do the duplicate attribute thing I mentioned
-> above still.
+> Also, looks like raw and input are swapped. raw it the one with scale
+> so the sentence about scale should be with the raw attribute.
+
+Hmm, have I messed up with the patches? Their final look in my local tree is:
+
+What:		/sys/.../iio:deviceX/in_distance_input
+KernelVersion:	4.0
+Contact:	linux-iio@vger.kernel.org
+Description:
+		This attribute is used to read the measured distance (in meters)
+		to an object or the distance covered by the user since the last
+		reboot while activated.
+
+What:		/sys/.../iio:deviceX/in_distance_raw
+KernelVersion:	4.0
+Contact:	linux-iio@vger.kernel.org
+Description:
+		This attribute is used to read the measured distance to an object
+		or the distance covered by the user since the last reboot while
+		activated. Units after application of scale are meters.
