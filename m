@@ -1,138 +1,167 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 511363ACA75
-	for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 09:40:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F69B47CC61
+	for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 09:41:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768988458; cv=none; b=chljbgVLAUVqJBGhF0n9T/Z9jgsNb/biz7PTWdP+gVyzam1hrSTrATuz2QojYm3ajWLjC7iThmwjxtyYkMWy20jkM9pn67Ht42y3szVY3WIu27XNeSMY2SwkVBGo1IInUjudQdPXBeqSjr8jQpvh1K06EkihqRwwEuWnoD4t7Dw=
+	t=1768988500; cv=none; b=nmvu0khS/VSiQT1TIhQrgwxPJbljkA2b5Xezh/TrFYZD+GkGq+KHICWpmLtAepe/ezqFzBfqqNRqygwM6Z9COVWX3pb+FJ0t/ifd041GrS/uvHittGkj85jwk+LkXGCDdb3zgNI67A2XhD8IMnWqGYLTTNnrdYJ/z81g9OLS5U8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768988458; c=relaxed/simple;
-	bh=1RwtR2YF6mIX/88P7C8QJKHXMWvNiJJrLpdcEtimbug=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=s6pyfHhnG7aiQgJDJnazbDDuABxaDLtu7PmZKDobcmAqeqMqZ7JR+xF1jEvousk7uKiSFYZQP4uNYaPJIEuZITki6iXoNhLCD+jIXgGWiMZ0a9TYLLdS+OOWB/T5Tn4iUrfggjzJDdISXKfzg5H7fsnMf2ecSZ8vrhRjKY9T+RI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IqWiqvl/; arc=none smtp.client-ip=209.85.221.54
+	s=arc-20240116; t=1768988500; c=relaxed/simple;
+	bh=bxzThV7tQ3Murw+misd2L3l9CTOTGBERVGRAqk/Z1Uk=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=CkdkIaefMT9b9ZUJVYMnndRJAzMSlGBuHpcK6U04fNIGQlUVTTplVW2cQHRhaexvXsF6T4jPvIuOCpdFaq8pMy07qJJ4bvO/XUsScIjUxxSJDftzWOsiT8wLodfZUBunndpfiz0BKWHFWiwuETrjQoPFCo8lDGbpX8z/0a1EO2E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Iko2czaZ; arc=none smtp.client-ip=209.85.128.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IqWiqvl/"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-432d2c7a8b9so5406158f8f.2
-        for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 01:40:56 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Iko2czaZ"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4801bbbdb4aso4779425e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 01:41:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1768988454; x=1769593254; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=1RwtR2YF6mIX/88P7C8QJKHXMWvNiJJrLpdcEtimbug=;
-        b=IqWiqvl/nnGg72ScZhYiYYR04ZrrgDQFopxD7KutFWfHt1IlPJSTYZXcohsN5OcAkG
-         FwAcCHBzwIOeYkeXxlm/iH86Jg8ZoGgcge0rYUrfHn7CSBUT8TfinVkCNOOplxm3W96r
-         2k1IY2ZNTWw0hSOFetiJOPtkoIBKZWuWCF/ySEPpvVIov1qYu8qTsqw+NqTMr98JBEsS
-         J9XbF2hhmgHdUL3C3Rt8dOKRsrFNPNh0x2XJHXvK7TCZcgGZKgMupUdlU57aMOr/RDOp
-         RQ22BmvqY3ex3GUHQt1sNCzuTbM/OjIF6GFsAfLCAAoOrNak9/l7ZNPWQguBY/8crm36
-         ym1w==
+        d=gmail.com; s=20230601; t=1768988496; x=1769593296; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=UQrmNmrNqyC9vSBp6JJ3q8RaAwfn1AOiBhLRYJqypV4=;
+        b=Iko2czaZE397M8iccteVHSU6MrTe9cognIzK4Ju9MJbsLTR/wj2VtdFhQMHDIvFhgX
+         D7LX/uuXICJsFLnCMB/qKuN1gGAZmjpLWNjuRQh4CZcKRxaKzLI1CxoPFntNaQANakTe
+         AyTmjSFsHpeFbinXSStjIvwOKKtxK33zIFIAqcfugCOF9vKFOWZvuMAwV5rfQ9Gvm6OZ
+         xCscRXA102u/cEUwUsiuSktcvo+nd53WfeFosI2ctKgcl3o7xyxxWTeFfUDObYuc57Zj
+         0IXlubU0gteYtCX1fgxhXk7iUrbIO2gWNrbvBZ8EUN2ynUl1Db8CVRRGhmVkY4ZRuSqV
+         J2Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1768988454; x=1769593254;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+        d=1e100.net; s=20230601; t=1768988496; x=1769593296;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1RwtR2YF6mIX/88P7C8QJKHXMWvNiJJrLpdcEtimbug=;
-        b=hyc9Y4uoSpgEB+AJS6Ek+BuEbErP69d80GDjBdZsQ7GGXxcu9YmX4fyNXwQ8iFEc3D
-         2LMBSwxG6A9BeqCeVp9/KspUq38gxZhmveetUkKmz6DHDzQhVgRbws/Z8Uc4KnhHMDKs
-         4pPBo1z9HMUxPPMJ7ZWvFaZhV93EDeWaNNxs7udAqxj0dCO+xxqdg9suoEhKW6fDWP9M
-         bGDETJsPq9Mko8vP7ggApAddlbPFh0piZozEvln88BJSTWeSPw3NJsCx5SO3Wbkgh2LE
-         LV6pd0mKhQoyq7KNsjb5ZMC9uhmr/eBDDJTwFkwa5pp76sDDL0RZvCZaTMQO64UB7Ohf
-         +aQQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUjqzbup06YVVSzHkHRB2HsZhDDIiRxMK75gkgdlftAJQow6OAZEmhcdKTsU0U4JzZ/vNuA7RLs+kQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yze+Jg7PopMhqECxzcm+kO3JyLLReC4Fto7qkNau2+uB2Xqg1Fh
-	K8+8zTXJvmoU37WeRwDx+mOG1R9QDrMjxoFkdvy9aJUGKBGaWr416D6y
-X-Gm-Gg: AZuq6aIqQbGBMdw83Mv/N/LyTWc5DzrNPPicu/UeNpwm4WE6pCVq6MRoqPs5wolHOsn
-	2FIAMHIdEdDY5eHeUjBL/TBpz1gYi2EMol8osERjKrGLC+7CkwkHMKC/ds/cncEkELqIWVGSGa4
-	J+x4nOmiQUZN9R/JV8M53dI1UQGTJFGaHk9zNQOC0EcfNyqp9nwU8SI1bNT1dC5XvF8Tj0fxf8/
-	KLdoyOxaPIIpsollNVwKdCzf0dgaqhjBnC0zsYImXOWPLNhSJEYW2l0NQD8KwB0U0u/n1PC+hfr
-	MY+/mKKcTf118xXw6OK54Vh6B/pG/tJ5FjPtYoKhEV31PVX+UXd7W6F9Csb3/sBjgf7OIW/Z7qg
-	FE3tkNg/1dtUDtCtvWRnhAolRGbn11wucSiXXvWnwT1Iie/91RKEp+WI+0vNC7epQBVDBZLdbpu
-	3Im7xmjN+wfXbr0fqEfxU=
-X-Received: by 2002:a05:6000:18a8:b0:431:864:d48f with SMTP id ffacd0b85a97d-4356a04aa5cmr27712912f8f.27.1768988454347;
-        Wed, 21 Jan 2026 01:40:54 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43597ae9f37sm5713590f8f.8.2026.01.21.01.40.53
+        bh=UQrmNmrNqyC9vSBp6JJ3q8RaAwfn1AOiBhLRYJqypV4=;
+        b=ZD7EhRb+7QWyOblj1diFsROsVKKUJxsU1FgY/bto+4wxUePtQDaMzTiGreyMu4FSm4
+         9smmKfgDsLXwX6bI29gyZHwxizIS/19QLE2fDCenXVI4AnIxbJ3OiLZiTnmMmtLUMhTc
+         VddOsFjlFFlF0eV/SkUHcHygEObUVgTkV64hzhfmXTDbVCFX13mMu5YmQMDfWcwCS9Zg
+         fs7ZAHeytOqvqJGtaOBjraaUVN9zalByiOtVWCI4MszNc233YL5SeYq7Z1tOmqTiElyV
+         xNWjYDjRJZvvvAVfW0A/laPvJtV05pvyDO72qGGQq+pST0Wj96g36so645N5iCpV0JTL
+         xDnQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW0mmbp7Oe5/xKl1G/wh3EUNpGeLLlcE3EnwSUDH9l/7/2J249p8cfJpV1+1mZEwhi8LXdXp6gW/Lk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzGgXALgE6euy+tAnMwEBxxPLx3W49TMqKrySyNBs3V/Sum0Sa8
+	3PbrdYd7a6nA3JRm1muKJQD17V51HTlPcqyYObZngQBkMhX4I49xf2Z3
+X-Gm-Gg: AZuq6aK+y8PSo6vfzgfPQ8biloP9sWHZyJSQ6RnRvFe8bNgulA8XIwlnrImA+2ijIsh
+	hHaCNwQQut3PorOL/3eZo21wrYjIR8gnOhpFesD4zmX+4NH4XJrmyHI/529oiXl4kLqndXam56N
+	XWKOWYMIh+S/e5OA39jMStFjtR65NqtsRjwNGVH9hDAc1Z3MdIf/JfZ3su21ZBK6im7dG4NNV07
+	uzHfQvCwi1H0J/I9gSVhwWjSwaf6oQ9W6cki9WuqINWixIJy1t+hlKyaHNMQXj4fnG0Hb1ghxAB
+	ci/wqN9hgbcpJg0tes2NfE0MMw3MxuFRyV13wfHkgBBd+ECANmeCqgnrzX2wTrXmc0xgj4W9xvz
+	jld8tivy5ZFnYkraPvs1aXhpmrWNNar1CZ34aOEpDRsmNSN3qv+cobQJYVVyrbzaLNoJmbf+TbT
+	Dyda+StFlRIhg4jD4rpl8nql/B/OMsjY1Sf9g0BwWn0vGiqjmvZsryBxXyixwr7IqB+Ka4LfTpC
+	/gr
+X-Received: by 2002:a05:600c:1f86:b0:477:a289:d854 with SMTP id 5b1f17b1804b1-4801e53ca36mr276279895e9.5.1768988496073;
+        Wed, 21 Jan 2026 01:41:36 -0800 (PST)
+Received: from RDEALENC-L01.ad.analog.com ([24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4801e8caceesm297259935e9.13.2026.01.21.01.41.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jan 2026 01:40:54 -0800 (PST)
-Message-ID: <5847ac7a68fbf805b86c0ab1f7743e686350ff05.camel@gmail.com>
-Subject: Re: [PATCH 00/11] iio: adc: Improve include relevance for some ADCs.
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, Andy
- Shevchenko <andy@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	
- <nuno.sa@analog.com>, Mike Looijmans <mike.looijmans@topic.nl>, Liam Beguin
-	 <liambeguin@gmail.com>, Miquel Raynal <miquel.raynal@bootlin.com>, Ibrahim
- Tilki <Ibrahim.Tilki@analog.com>, Cosmin Tanislav
- <cosmin.tanislav@analog.com>,  Alisa-Dariana Roman
- <alisadariana@gmail.com>, Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Date: Wed, 21 Jan 2026 09:41:37 +0000
-In-Reply-To: <20260119212110.726941-1-jic23@kernel.org>
-References: <20260119212110.726941-1-jic23@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 
+        Wed, 21 Jan 2026 01:41:35 -0800 (PST)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Wed, 21 Jan 2026 09:41:25 +0000
+To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, 
+	rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH v4 3/7] iio: frequency: adf41513: driver implementation
+Message-ID: <kmdqcaewxxg7isappgfxuf5ode5fepbywrdriksmvrzmaykcjd@crpr27tt3bmf>
+References: <20260116-adf41513-iio-driver-v4-3-dbb7d6782217@analog.com>
+ <aW3dxuelYDM67pqZ@smile.fi.intel.com>
+ <texwv5s2tvcy34bwr4iruj5xofmea663pwletmpqpuh66zulmv@m7qvjgqbhalv>
+ <aW40ylvMwVhqNQMw@smile.fi.intel.com>
+ <hgy3bcrqqsvt7pobhnzuvwzhb2taetpxltkaxpigmmlvmlirod@v6anhmrsvv2r>
+ <aW5kk6K30Izckvg5@smile.fi.intel.com>
+ <e5lcg5kkey3c6u2l4rlzzpolp7qkudhcofyzcx5s2tjbh2iwkg@js3fisv23zyj>
+ <CAHp75VepcSZo_E4_UxhKRfHrMFDd7huJg14m8=6zVo4ENKFXkA@mail.gmail.com>
+ <vvdk3whhwua73g63eetnmn46t2cpbpkzzkx7m6wsbverp7gcvs@mi7cipis3i4t>
+ <aW-Fai68pk1tAeyY@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aW-Fai68pk1tAeyY@smile.fi.intel.com>
 
-On Mon, 2026-01-19 at 21:20 +0000, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->=20
-> So this is a continuation of experimenting with IWYU to ensure that we
-> follow what I consider best practice in driver by including all
-> headers that are used (subject to some slightly fuzzy rules for some
-> of them standard kernel headers).
->=20
-> I was focusing on cases where kernel.h was included and moving from that
-> to the more specific headers. That partly explains why there were so
-> many headers to add. However, it is also clear that many standard
-> headers (mutex.h for example) were missing from these drivers.
->=20
-> There are a few notes and questions in the individual patch descriptions,
-> typically where I have either decided to ignore a recommendation or
-> conversely have broken things down more finely than IWYU was doing with
-> my config files.
->=20
-> All comments welcome.=C2=A0 Whilst I don't consider this particular high
-> priority (much of it was done in a train where I couldn't access my
-> email)m I would like to provide more examples in tree of what I consider
-> to the right way to do things!
->=20
-> Thanks,
->=20
-> Jonathan
->=20
-> Jonathan Cameron (11):
-> =C2=A0 iio: adc: ltc2471: Improve include relevance
-> =C2=A0 iio: adc: ltc2309: Improve include relevance
-> =C2=A0 iio: adc: max1027: Reorder headers into alphabetical order
-> =C2=A0 iio: adc: max1027: Improve include relevance
-> =C2=A0 iio: adc: max11100: Improve include relevance
-> =C2=A0 iio: adc: max11410: Improve relevance of includes
-> =C2=A0 iio: adc: ad4130: Improve include relevance
-> =C2=A0 iio: adc: ad7124: Improve include relevance
-> =C2=A0 iio: adc: ad7124: Replace device.h with more specific includes
-> =C2=A0 iio: adc: ad7192: Put headers in alphabetical order
-> =C2=A0 iio: adc: ad7192: Improve include relevance
->=20
-> =C2=A0drivers/iio/adc/ad4130.c=C2=A0=C2=A0 | 22 ++++++++++++++++++----
-> =C2=A0drivers/iio/adc/ad7124.c=C2=A0=C2=A0 | 17 +++++++++++++----
-> =C2=A0drivers/iio/adc/ad7192.c=C2=A0=C2=A0 | 32 +++++++++++++++++++------=
--------
-> =C2=A0drivers/iio/adc/ltc2309.c=C2=A0 |=C2=A0 9 ++++++++-
-> =C2=A0drivers/iio/adc/ltc2471.c=C2=A0 |=C2=A0 8 ++++++--
-> =C2=A0drivers/iio/adc/max1027.c=C2=A0 | 18 ++++++++++++++++--
-> =C2=A0drivers/iio/adc/max11100.c | 11 ++++++++---
-> =C2=A0drivers/iio/adc/max11410.c | 22 ++++++++++++++++++++--
-> =C2=A08 files changed, 108 insertions(+), 31 deletions(-)
+On 26/01/20 03:38PM, Andy Shevchenko wrote:
+> On Tue, Jan 20, 2026 at 01:07:49PM +0000, Rodrigo Alencar wrote:
+> > On 26/01/20 01:24PM, Andy Shevchenko wrote:
+> > > On Tue, Jan 20, 2026 at 12:43 PM Rodrigo Alencar
+> > > <455.rodrigo.alencar@gmail.com> wrote:
+> > > > On 26/01/19 07:07PM, Andy Shevchenko wrote:
+> > > > > On Mon, Jan 19, 2026 at 04:37:09PM +0000, Rodrigo Alencar wrote:
+> > > > > > On 26/01/19 03:42PM, Andy Shevchenko wrote:
+> > > > > > > On Mon, Jan 19, 2026 at 11:21:59AM +0000, Rodrigo Alencar wrote:
+> > > > > > > > On 26/01/19 09:31AM, Andy Shevchenko wrote:
+> > > > > > > > > On Fri, Jan 16, 2026 at 02:32:22PM +0000, Rodrigo Alencar via B4 Relay wrote:
 
-Just one minor comment. LGTM
+...
 
-Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> > > > > > > > The current implementation is kind of a stripped version of
+> > > > > > > > __iio_str_to_fixpoint(). Would you prefer something like this, then?:
+> > > > > > >
+> > > > > > > Do they have most of the parts in common? If so, why can't we use
+> > > > > > > __iio_str_to_fixpoint() directly? Or why can't we slightly refactor
+> > > > > > > that to give us the results we need here?
+> > > > > >
+> > > > > > __iio_str_to_fixpoint() only parses "int" chunks, adf41513_parse_uhz
+> > > > > > was modified to accomodate the u64 parsing removing unnecessary stuff.
+> > > > >
+> > > > > But why? The fractional part most likely will be kept int (it's up to 10⁻⁹).
+> > > > > The integer can be bigger than 10⁹?
+> > > >
+> > > > Correct, integer part of the frequency value goes up to 26.5 GHz
+> > > > (uint_max is approx 4.3 GHz). Also, with the dual modulus, the PLL can
+> > > > achieve micro Hz resolution.
+> > > 
+> > > µHz is not a problem since it's up to nHz.
+> > > So, the difference so far is the integer part that can be 64-bit.
+> > > Again, can we factor out something to be used for this and for the
+> > > __iio_str_to_fixpoint() cases?
+> > 
+> > I am not sure what you are suggesting,
+> 
+> To make changes to reuse the code.
+> 
+> > but I am avoiding changes to iio core at this point.
+> 
+> Why?
+
+I understood that core changes would require more than one user
+supporting the change.
+
+> > If any other user needs similar behavior,
+> > I'd say we would need to have __iio_str_to_fixpoint() implementation
+> > modified, so to create a version of iio_str_to_fixpoint() that handles
+> > long long variables. Possibly consuming simple_strtoull instead of
+> > doing the manual parsing.
+> 
+> That's the problem here. With Yet Another Cool Parser this all becomes
+> unmaintainable very soon
+
+Considering that the need for a new parser for 64-bit parts is only driven
+by this specific PLL driver, I wonder how things become that unmaintainable.
+
+> (basically as you said when new comer needs a third
+> variant of it). This is not good. Instead better to create (amend, expand)
+> existing test cases, split out a foundation API that parses 64-bit parts
+> (maybe even for fractional as well, dunno) and evolve a needed (sub)API
+> from it.
+
+I don't disagree with you though, I suppose I will need a green light to
+move on with this?
+
+Kind regards,
+
+Rodrigo Alencar 
