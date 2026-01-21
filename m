@@ -1,161 +1,83 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 18D313587C4;
-	Wed, 21 Jan 2026 08:10:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B3BC8362129;
+	Wed, 21 Jan 2026 08:54:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1768983043; cv=none; b=uktB0WstTF8Wl23C4vnMyaP3TDpmX6fLHXo9odWYRPx1i0z9nU1KG7NMR6FKQflitSuZKxGlgFWLYknQ/DYe2Xe3hc1s/F9HE9Pq5VvX1GtUpPIlIXs/9XIi7uJoh7I88Odf/53fOEVtX+mZg6GoMsKw9kl+tz3x16MnoOslBOk=
+	t=1768985647; cv=none; b=RLXoyU2QXmkvN1NGYJa0/Fo84T8zLvEFZB7p9jlqf8LedpQuz5knGt9012jOhxLbw5tbL+8aTdBl2LE+PrLMIqvVaABEN88KPjMMquTXvt4XtAA+LrvyQnauDJ3WM8ok8r1MTWNabWZfuyDKM6IjlQoCj6sf4bmvg9Cr3o+y/nU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1768983043; c=relaxed/simple;
-	bh=r4zOPzV7E/g8Vx7+FbnIqyKLv0U8+MchrTaQd10CpsI=;
+	s=arc-20240116; t=1768985647; c=relaxed/simple;
+	bh=Rx94yPtyx8GCTIfo2G6plM7lsWnY25H54RGIWj4Vkxo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ntjY3pJ2SPEsE/I+oRbUJRA8AxIL/67okmQNGvOfJ2D2M69pIEkp6wlAYMWGAJR2l9Q8URBbBDfBOkUuuIqEdoyhw1Z+vCU3NcWckCa169tGChRSr+X+wTg8Beq74CwQlV4tyNaJFRTtEF4iI1EQuCi5aCVuKDi7mzbDhQ8v3j0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=sttF+rPI; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=ErquUZRJgFG58YN4MeuoSRdiJXZGx2WAPfMFJkHfU2wYcubzVee+iNuzgs3AV1swPr6+8GmFlX28tJgrtVeUND1DGY1Du4tXVq5uWZpWFZMI+swNxZaRVk3lAA/p1H6ilYelsucReF28YpNnb9wUOUh8Uod32HmrHy9OGnF5DS8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kZa92+JC; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="sttF+rPI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31E38C116D0;
-	Wed, 21 Jan 2026 08:10:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1768983042;
-	bh=r4zOPzV7E/g8Vx7+FbnIqyKLv0U8+MchrTaQd10CpsI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=sttF+rPIUrLYBixoUtYhpB7EPzIDsY3XF+R4VfXXWru9Zd0mIglnLskC73Nrzce3B
-	 V3n7uK8zlXBS1EfCb5dg/sKE34KVDigA6UIVt4mHNTgDA+sJ8GAzM+Xu0OLrAiMjaT
-	 vRWtqFh351cnOJrZNzggu45idh+OUh8JawOJesLVkleyiWfbeN/lntbucDAwCJLUf+
-	 dHJ+UhfFzBYKJ4XmU+i1k9vlSUvvVEK60IntZcjTmGTh2hApqZNZH1tKgrMaEifVZv
-	 hSTmMQridSQ6gnWcb82fBdFGy4DDGcls+N1iCv+HB0mMLrw7tU1ucPA3OgUzmuJNni
-	 skZDqhmiZAIVQ==
-Date: Wed, 21 Jan 2026 09:10:40 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH 2/7] dt-bindings: iio: amplifiers: Add AD8366 support
-Message-ID: <20260121-merciful-exotic-panther-eca1b0@quoll>
-References: <20260119-iio-ad8366-update-v1-0-8044e23e964a@analog.com>
- <20260119-iio-ad8366-update-v1-2-8044e23e964a@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kZa92+JC"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1768985646; x=1800521646;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Rx94yPtyx8GCTIfo2G6plM7lsWnY25H54RGIWj4Vkxo=;
+  b=kZa92+JCWm/GcHnwbDquLia/2g4FxgORt2fChEROZB6E3JcMGnB8Y2Nm
+   IuNGZKfjjs70hIR1qddH4QdfbNSq/qGdModlggD8o+dLSJbQ7E1QKrF2v
+   5N7Mej7+Eo6rU2Id8dHMzNBEHjsLWddZlumWHT67LDnYY7lRNeEg5xlWH
+   qOUNPx/1aCmC8MGCBFdMjsSUTphoxxk/Df8yl9hpEqub+AQdAmP/Vf+eJ
+   IbK/BgmqNElahDmuxntneYFWe5ITExgR//7ZV86POj5Aa2iVcbu7Z9Jna
+   CYgUTcBmxmE6+oeSkJ5KiJHdaAAarftZ/wG96BYZIxgjGy9gcoK1S8y/z
+   g==;
+X-CSE-ConnectionGUID: RQateGlASCu2PV4eff7/jw==
+X-CSE-MsgGUID: aC81xMIjSkSN8iHlRlGWlQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11677"; a="70262558"
+X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
+   d="scan'208";a="70262558"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2026 00:54:05 -0800
+X-CSE-ConnectionGUID: t2vm3NWRTPysfQKGZoz3GA==
+X-CSE-MsgGUID: JYPyL8QzRv6erEaHM9AwbQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,242,1763452800"; 
+   d="scan'208";a="206808371"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.73])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2026 00:54:02 -0800
+Date: Wed, 21 Jan 2026 10:54:00 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: raskar.shree97@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, skhan@linuxfoundation.org,
+	david.hunter.linux@gmail.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 1/5] iio: proximity: rfd77402: Reorder header includes
+Message-ID: <aXCUKMcCyYBf4ZdJ@smile.fi.intel.com>
+References: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
+ <20260121-b4-rfd77402_v5-v6-1-5b944d0605dd@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260119-iio-ad8366-update-v1-2-8044e23e964a@analog.com>
+In-Reply-To: <20260121-b4-rfd77402_v5-v6-1-5b944d0605dd@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Jan 19, 2026 at 02:36:56PM +0000, Rodrigo Alencar wrote:
-> Add device tree binding documentation for amplifiers and digital
-> attenuators. This covers different device variants with similar
-> SPI control.
-> 
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
->  .../bindings/iio/amplifiers/adi,ad8366.yaml        | 85 ++++++++++++++++++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 86 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
-> new file mode 100644
-> index 000000000000..7477bb9b5071
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
-> @@ -0,0 +1,85 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/amplifiers/adi,ad8366.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: AD8366, similar Gain Amplifiers and Digital Attenuators
+On Wed, Jan 21, 2026 at 02:05:41AM +0530, Shrikant Raskar via B4 Relay wrote:
 
-s/,/and/
+> Reorder header includes to follow kernel include
+> ordering conventions.
 
-> +
-> +maintainers:
-> +  - Michael Hennerich <michael.hennerich@analog.com>
-> +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
-> +
-> +description: |
+FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Do not need '|' unless you need to preserve formatting.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> +  Digital Variable Gain Amplifiers (VGAs) and Digital Attenuators with
-> +  SPI interface.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad8366
-> +      - adi,ada4961
-> +      - adi,adl5240
-> +      - adi,adrf5720
-> +      - adi,adrf5730
-> +      - adi,adrf5731
-> +      - adi,hmc271a
-> +      - adi,hmc792a
-> +      - adi,hmc1018a
-> +      - adi,hmc1019a
-> +      - adi,hmc1119
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  vcc-supply:
-> +    description: Regulator that provides power to the device.
-> +
-> +  reset-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO pin used to reset the device.
-
-Drop description, redundant, said nothing more other than what property
-already said. This cannot be a something else than GPIO and cannot be
-used for something else than resetting device.
-
-> +
-> +  enable-gpios:
-> +    maxItems: 1
-> +    description:
-> +      GPIO pin used to enable the device.
-
-Drop description.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vcc-supply
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      amplifier@0 {
-> +        compatible = "adi,ad8366";
-> +        reg = <0>;
-> +        spi-max-frequency = <1000000>;
-> +        vcc-supply = <&vcc_3v3>;
-> +      };
-> +    };
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-
-Drop second example. It's the same as first.
-
-Best regards,
-Krzysztof
 
