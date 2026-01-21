@@ -1,117 +1,96 @@
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51618288C2F
-	for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 17:43:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4B7F3ECBE6;
+	Wed, 21 Jan 2026 20:00:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769017389; cv=none; b=W5BcH9Gp2qI5KtIjo9prPMwssB0atHa7N5zNB4x7ftERl+xFIw3lKpZt/r2Y3xFgRoMY/lqQYpZwEkRntYM5gaVYev2x/ZfXguQH5vr5ZuW9F9KpH/Psx/9X8CiE6EKi/HYEEO+nmYuzgaXLsUWsdAoaKvp9AQHTDD6LTIZoEfE=
+	t=1769025616; cv=none; b=VWr/+qc94MIrNyX23lCnZLid8LolrxGU/4lfhhu3cXoc2jViRwQSkL5ba6zEHEyvSXgqSgXchCFobVzG4VqMS8Nb9zWhAotytZAiiFxXRAVJg8snVgIuSN8tYRMZbNPCH/uBBnCR7jYJCtc61gG+hnujRjha0URB3PbjcGJ0G0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769017389; c=relaxed/simple;
-	bh=KCp/PHafNusEm2mfmFDT5kqNhBPSp5+sK77Cir7m40E=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XMpB1Sd1/ghbZJjr13qNUL7xsg251RsgofMqcrTlJKhnShefrUj/TMwnRYRCtHlSN8S3eQgB9pBrJn+o5MIMLKA5/nmS/XnxSjhLF7egDdeYsstF1XdM1i7Tyc7boOxMdD3OrxK7O05CKaxcK6CvmpoMWOH7XjLIvKJ9oJn2X8A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=ZIFME/Fu; arc=none smtp.client-ip=209.85.167.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1769025616; c=relaxed/simple;
+	bh=k5StDB744iuYc5dUgOf9B8d4U2oXZcIkwrLmoQPyQc4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=YYrCdFLy8iwhBYcr1aInXYKrG2rKhxKNhEhJ8E971/H9oauJOrD9YzZHaqeBm9VZinpBCYvDlGgMaY5fYbjlX7d3gNk8JQlIdzGUdsZ5cwo+ndvbvvQxkvOeaDtDsR+QK9B25kFIT90baT5JNlMje60lh3eE9+Z0/iQwAZgB6uA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r6bCkqg9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="ZIFME/Fu"
-Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-45c78da5936so582325b6e.1
-        for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 09:43:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769017386; x=1769622186; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=avyvpoQXDRAmKtq315EuJLUT0g5dGnGHq3S82pBKxXk=;
-        b=ZIFME/FupEiel1u9wI3vCxL++b4ucSKbY9zLu39ahCfkV4mmw09WCQc82Oq+zb35IV
-         FeE7Rofp7yvw1EGh9Wj8bAR8umcEMz32FrfxL0to82pAhpSkJQW5rEzOlMekCrHIwKX8
-         4KEaJ7QQkNapWY4mTrOJEW0WzZMdDDtOBDhQg5lFzTGqvMSjBoub9CxdkMIeDPBBGPh8
-         BZa/laCmru+zIHKYK9BHFaeK1sAN1NiSpHqbGQpx+AmwdC0O1vQIcCDIXRd88XB9FVd/
-         I+ru2bcGDyBTuBsLZBB7/ubn+nktaqZ8uyG9UIw6djtq8VSwMZWpNK6WXwpGoih9V34Y
-         N66w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769017386; x=1769622186;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=avyvpoQXDRAmKtq315EuJLUT0g5dGnGHq3S82pBKxXk=;
-        b=NV1nGpytDCJZKAHQ4a6qEmY602s5rC9SzjFZot9nBTGS1oHKPLNCE0ahtr5o2/L7U8
-         K/aMU3zFNdCRxJCMb0fVIdg6p5dVecUnNoRz0v/Sn7l7OUH00jVeQWgg/McOyd7L5uqK
-         3T5/ZK8apJ/NKvKYcc9WopHuS3RWIjq18cmZez/6Onm/hcIHy922sb3Qf6FednbEU1nu
-         Q/2q6qzAKDd5xYsihiNAqc2DOBJYMUFprEozi5NL7otFZDswvdGKr9oXjiwGQ6cYcqiQ
-         diVbjQpYbhhLwwVJZU/U/jzG6BjnX4yl5ZYJfIQOeg/xEPM7WUxZ1jDzyA7VVO8Jz77Y
-         59Hg==
-X-Forwarded-Encrypted: i=1; AJvYcCXVdPwy2DcYmtkuhMzeaFOSkn/i1ZoEAGWve8RqfrhoCBpxcN4lJKmKE6Z4UttrOo7JTt/fdjtajQ0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyTKqB3JUu2QTF2Jk43fGJdDLS3OZmKTABMNCpUaRvAzW6hU5xL
-	EDNj+6yp0kFcOkocENbChHX0daBqxHhh0lWZi2DWwnCmycmD6+pKSPn7XGePNmbCgNQ=
-X-Gm-Gg: AZuq6aIeOGpUOk1+cJnW7VmNysXmb4sulFg5WKl1RgNMYMoqO7kimE63B4UcjBA7BRD
-	Gsvs0m5+46fpVCjEkHLtxApb/cTobhzSOZfoa2w8511kv3nkoSIEBbAEY5SSQxhq8QPvpwfbDcu
-	eCCQ8ASk8dgFS/2zjN+LB24ifhFihuKcycZKT1iZ0EzBbZNByKTekNejU22i1Q6p0RyL/sRr3kd
-	mWFFLz7mdNddROpD84B05FzVOP+zmc2jGfzzee1ERmtxpk2c3xTTH/TJqilNulGxErYiK+aIlr3
-	fAFdb9fhREuKUKA5C+OoLBBWjUmtWzBqhthaghTSIN5L9Tlb7ffpiJKCzTWP17g5fLUE9ks9kw9
-	O4yBcrWcjH5i+99t+ZDrR0GmmfWu0KooABqkDwa4nsACloY+Iqn4DDncP6GAmbMkJGngFJ7IZSw
-	mUHnfKXSF3TT4bOJ55syasVyTwRE+EFV9HyhkrBM9P5ErSc6mn/QcQV8A=
-X-Received: by 2002:a05:6808:150f:b0:457:a9bc:dbf7 with SMTP id 5614622812f47-45ea3d89eb7mr105116b6e.20.1769017386123;
-        Wed, 21 Jan 2026 09:43:06 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:9a8b:7a9:24fa:a0a? ([2600:8803:e7e4:500:9a8b:7a9:24fa:a0a])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-45c9dbcdcd3sm8784078b6e.0.2026.01.21.09.43.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 21 Jan 2026 09:43:04 -0800 (PST)
-Message-ID: <95b13260-0564-445d-bff7-b3b54fa15005@baylibre.com>
-Date: Wed, 21 Jan 2026 11:43:03 -0600
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r6bCkqg9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05B67C4CEF1;
+	Wed, 21 Jan 2026 20:00:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769025616;
+	bh=k5StDB744iuYc5dUgOf9B8d4U2oXZcIkwrLmoQPyQc4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=r6bCkqg95gGOANpwCMpjZc0i5lfopXO6D/SHW34+RNKjBD53boMfZUzp9TFe8fRey
+	 j++ReBuvvT132sI2sZEPvrc9xc5a+tnnU3UbcraEXnuvWYxDB643QW7Xa/I/B5nRor
+	 cxREGEZTwKRJYUdtfE2lxVvJuFNDhA2P45fjo3TXMXsT8HApoBGE9OehNLA1di4970
+	 j5N8h2d8Bz8HrUHBWokBTjRyc6wJemro+L0h0ub4wraRlwDB9+zi0Koklu9fA9PYwe
+	 eNuSSNVackVvcZzgtJBctVlBhqmdMBROTEYNJAq6L+3vqxDFqembzF6SeE0e1iHNIp
+	 zTrvkAY7b3/Sw==
+Date: Wed, 21 Jan 2026 20:00:09 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Jonathan Cameron <jonathan.cameron@huawei.com>, Frank Li
+ <Frank.Li@nxp.com>, andriy.shevchenko@intel.com, carlos.song@nxp.com,
+ fluturel.adrian@gmail.com, linux-i3c@lists.infradead.org,
+ linux-iio@vger.kernel.org, lkp@intel.com, oe-kbuild-all@lists.linux.dev
+Subject: Re: [PATCH 1/1] i3c: Add stub functions when I3C support is
+ disabled
+Message-ID: <20260121200009.44dfe893@jic23-huawei>
+In-Reply-To: <202601202302180c990bfb@mail.local>
+References: <20251230145718.4088694-1-Frank.Li@nxp.com>
+	<176840281753.1259180.16475027635174872850.b4-ty@bootlin.com>
+	<20260115171220.000001b7@huawei.com>
+	<202601202302180c990bfb@mail.local>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH v1 0/9] iio: Expand IIO event interface for real-world
- unit handling
-To: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
- Marcelo Schmitt <marcelo.schmitt1@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Cc: jic23@kernel.org, Jonathan.Cameron@huawei.com, nuno.sa@analog.com,
- andy@kernel.org
-References: <cover.1768759292.git.marcelo.schmitt1@gmail.com>
- <4a04fa3f-c056-4443-a55a-e8622feb1c2a@baylibre.com>
- <2f9e7172885c5dd20be198f013283c6ec0513ef1.camel@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <2f9e7172885c5dd20be198f013283c6ec0513ef1.camel@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 1/21/26 3:33 AM, Nuno Sá wrote:
-> On Sun, 2026-01-18 at 14:33 -0600, David Lechner wrote:
->> On 1/18/26 12:18 PM, Marcelo Schmitt wrote:
->>> This patch set adjusts and complements the IIO event ABI docs making them
->>> coherent with the fact that not all threshold value attributes had a _raw/_input
->>> indicator set in their names. In addition that, the latter patches on this
->>> series update the IIO event infrastructure to actually enable drivers to provide
->>> _input threshold value attributes.
->>
-> 
-> ... 
-> 
->>
->> Just throwing out an idea here without thinking about it too much...
->>
->> Instead of adding a new field/parameter for units, could we extend
->> enum iio_event_info to add IIO_EV_INFO_VALUE_RAW and IIO_EV_INFO_VALUE_INPUT
->> (and same for HYSTERESIS). Really, the units only make sense for these
->> two info types anyway.
->>
-> 
-> Makes sense to me.  Or we can just document that the old value is _INPUT? Or just make
-> it the same value in the enum.
-> 
-> - Nuno Sá
+On Wed, 21 Jan 2026 00:02:18 +0100
+Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
 
-I don't think that works since IIO_EV_INFO_VALUE could be _RAW or _INPUT
-depending on the driver. And another point was that this should also
-control the _raw or _input in the attribute name, and we can't change the
-existing attribute names.
+> Hello,
+> 
+> On 15/01/2026 17:12:20+0000, Jonathan Cameron wrote:
+> > On Wed, 14 Jan 2026 16:02:06 +0100
+> > Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+> >   
+> > > On Tue, 30 Dec 2025 09:57:18 -0500, Frank Li wrote:  
+> > > > When I3C is disabled, unused functions are removed by the linker because
+> > > > the driver relies on regmap and no I3C devices are registered, so normal
+> > > > I3C paths are never called.
+> > > > 
+> > > > However, some drivers may still call low-level I3C transfer helpers.
+> > > > Provide stub implementations to avoid adding conditional ifdefs everywhere.
+> > > > 
+> > > > [...]    
+> > > 
+> > > Applied, thanks!
+> > > 
+> > > [1/1] i3c: Add stub functions when I3C support is disabled
+> > >       https://git.kernel.org/i3c/c/8564f88df202
+> > > 
+> > > Best regards,
+> > >   
+> > 
+> > Hi Alexandre,
+> > 
+> > This is going to make for an 'interesting' merge window as I'm getting
+> > build failures without that patch.  I don't suppose you'd mind
+> > doing an immutable branch? 
+> >   
+> 
+> I just sent it, let me know if this works for you.
+> 
+Thanks. I've dropped the temp fix and merged that ib.
+
+Looks good.
+
+Jonathan
+
 
