@@ -1,46 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4B7F3ECBE6;
-	Wed, 21 Jan 2026 20:00:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A8483EDAB1
+	for <linux-iio@vger.kernel.org>; Wed, 21 Jan 2026 20:01:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769025616; cv=none; b=VWr/+qc94MIrNyX23lCnZLid8LolrxGU/4lfhhu3cXoc2jViRwQSkL5ba6zEHEyvSXgqSgXchCFobVzG4VqMS8Nb9zWhAotytZAiiFxXRAVJg8snVgIuSN8tYRMZbNPCH/uBBnCR7jYJCtc61gG+hnujRjha0URB3PbjcGJ0G0c=
+	t=1769025671; cv=none; b=OXfqsyfVrP512yscrJVoUjn46CseK6z+OGHCSDRnR8JmWU5vxgJ7ZB/HIOqJIUmr93KdqEpMcgIvDt3RnEv6zRSljWtFCjrY6PVwtN0QduVbrw38M3e+0lLAs8MVJBliFDODsIhPaOC8oSuv2bexuzYQt9wsqBcoeJ9oVlDn0ME=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769025616; c=relaxed/simple;
-	bh=k5StDB744iuYc5dUgOf9B8d4U2oXZcIkwrLmoQPyQc4=;
+	s=arc-20240116; t=1769025671; c=relaxed/simple;
+	bh=li8HtJW6b7I2ovEM/SnpMklHwQYRCf0hBaNiMsIiBbM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=YYrCdFLy8iwhBYcr1aInXYKrG2rKhxKNhEhJ8E971/H9oauJOrD9YzZHaqeBm9VZinpBCYvDlGgMaY5fYbjlX7d3gNk8JQlIdzGUdsZ5cwo+ndvbvvQxkvOeaDtDsR+QK9B25kFIT90baT5JNlMje60lh3eE9+Z0/iQwAZgB6uA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=r6bCkqg9; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=MtGWB/asw/8Y/u7VmS9EEv210BZqXrmDP3O68ClJ1FvSHYJBVGFYmb7UJMP7H19NLq3yPSDALufdv307uR3Qf7OiuIxugZ+Uu6+v/m3Uw+Tt5NXK/Yei3g9bIDBFn40+8kusVwc/kJst4hYBF5g63sf8wAbQwB8JoDK9lQ7Qh4c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=G9hW4pMK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="r6bCkqg9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05B67C4CEF1;
-	Wed, 21 Jan 2026 20:00:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="G9hW4pMK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74A06C4CEF1;
+	Wed, 21 Jan 2026 20:01:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769025616;
-	bh=k5StDB744iuYc5dUgOf9B8d4U2oXZcIkwrLmoQPyQc4=;
+	s=k20201202; t=1769025670;
+	bh=li8HtJW6b7I2ovEM/SnpMklHwQYRCf0hBaNiMsIiBbM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=r6bCkqg95gGOANpwCMpjZc0i5lfopXO6D/SHW34+RNKjBD53boMfZUzp9TFe8fRey
-	 j++ReBuvvT132sI2sZEPvrc9xc5a+tnnU3UbcraEXnuvWYxDB643QW7Xa/I/B5nRor
-	 cxREGEZTwKRJYUdtfE2lxVvJuFNDhA2P45fjo3TXMXsT8HApoBGE9OehNLA1di4970
-	 j5N8h2d8Bz8HrUHBWokBTjRyc6wJemro+L0h0ub4wraRlwDB9+zi0Koklu9fA9PYwe
-	 eNuSSNVackVvcZzgtJBctVlBhqmdMBROTEYNJAq6L+3vqxDFqembzF6SeE0e1iHNIp
-	 zTrvkAY7b3/Sw==
-Date: Wed, 21 Jan 2026 20:00:09 +0000
+	b=G9hW4pMK2758LWErT3aF4PWgYo8o+aUiATZteIsOCndN/I2ejwKbhIL2A0HJ1p8jZ
+	 uYqDOBQhyeh8EhPCm8g/3lO5k1KccDaZtRDGQEKwIFq/O1YC3TPW63GhajswAjn719
+	 mjy1Mq4a0kFnos1YVaIMuKo9frebFyt/oUha74b6y8BXlewBrQabT1XTSKZ4lmbAGP
+	 fP2Nf2pJroXQDLQPJ1AXlbeCSs1hFRI2EeHipnvE9e6vz5ZZqQ7V3ZyCBdQsmrkVD0
+	 sHbyBqCQvt0j+yHoVN2lT4V/Dq9AfNDDrBHXnb6CiHSyL5/anoqslFQF2EDSPHo2oG
+	 w3zF2ugS0t2Bw==
+Date: Wed, 21 Jan 2026 20:01:02 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>, Frank Li
- <Frank.Li@nxp.com>, andriy.shevchenko@intel.com, carlos.song@nxp.com,
- fluturel.adrian@gmail.com, linux-i3c@lists.infradead.org,
- linux-iio@vger.kernel.org, lkp@intel.com, oe-kbuild-all@lists.linux.dev
-Subject: Re: [PATCH 1/1] i3c: Add stub functions when I3C support is
- disabled
-Message-ID: <20260121200009.44dfe893@jic23-huawei>
-In-Reply-To: <202601202302180c990bfb@mail.local>
-References: <20251230145718.4088694-1-Frank.Li@nxp.com>
-	<176840281753.1259180.16475027635174872850.b4-ty@bootlin.com>
-	<20260115171220.000001b7@huawei.com>
-	<202601202302180c990bfb@mail.local>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Alexandre Belloni <alexandre.belloni@bootlin.com>,
+ Frank Li <Frank.Li@nxp.com>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH 2/2] iio: magn: mmc5633: Add some ifdef / __maybe_unused
+ until stubs available
+Message-ID: <20260121200102.2ef0cf00@jic23-huawei>
+In-Reply-To: <20260120220328.771b2589@jic23-huawei>
+References: <20260119221736.804825-1-jic23@kernel.org>
+	<20260119221736.804825-3-jic23@kernel.org>
+	<aW8tWECNSvLTTKU8@smile.fi.intel.com>
+	<20260120215627.371741a7@jic23-huawei>
+	<20260120220328.771b2589@jic23-huawei>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,46 +53,30 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 21 Jan 2026 00:02:18 +0100
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+On Tue, 20 Jan 2026 22:03:28 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Hello,
+> On Tue, 20 Jan 2026 21:56:27 +0000
+> Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> On 15/01/2026 17:12:20+0000, Jonathan Cameron wrote:
-> > On Wed, 14 Jan 2026 16:02:06 +0100
-> > Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+> > On Tue, 20 Jan 2026 09:23:04 +0200
+> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 > >   
-> > > On Tue, 30 Dec 2025 09:57:18 -0500, Frank Li wrote:  
-> > > > When I3C is disabled, unused functions are removed by the linker because
-> > > > the driver relies on regmap and no I3C devices are registered, so normal
-> > > > I3C paths are never called.
+> > > On Mon, Jan 19, 2026 at 10:17:36PM +0000, Jonathan Cameron wrote:
+> > >     
+> > > > The I3C tree has Frank Li's fix for the case of I3C not being built      
+> > >     
+> > > > https://lore.kernel.org/all/20251230145718.4088694-1-Frank.Li@nxp.com/      
+> > > 
+> > > Make it a Link tag
+> > >     
+> > > > Given those will only be available upstream at the next merge window
+> > > > and the ordering of merge of I3C vs IIO is uncertain, apply some temporary
+> > > > stubs in the driver to avoid build issues.
 > > > > 
-> > > > However, some drivers may still call low-level I3C transfer helpers.
-> > > > Provide stub implementations to avoid adding conditional ifdefs everywhere.
-> > > > 
-> > > > [...]    
-> > > 
-> > > Applied, thanks!
-> > > 
-> > > [1/1] i3c: Add stub functions when I3C support is disabled
-> > >       https://git.kernel.org/i3c/c/8564f88df202
-> > > 
-> > > Best regards,
-> > >   
-> > 
-> > Hi Alexandre,
-> > 
-> > This is going to make for an 'interesting' merge window as I'm getting
-> > build failures without that patch.  I don't suppose you'd mind
-> > doing an immutable branch? 
-> >   
-> 
-> I just sent it, let me know if this works for you.
-> 
-Thanks. I've dropped the temp fix and merged that ib.
+> > > > This can be reverted next cycle.      
+Dropped this patch in favour of the immutable branch Alexandre pushed out.
 
-Looks good.
+Much nicer than this hack.
 
 Jonathan
-
-
