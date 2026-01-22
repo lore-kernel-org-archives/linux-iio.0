@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6144E33A6ED;
-	Thu, 22 Jan 2026 19:53:21 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDE6F39BA52;
+	Thu, 22 Jan 2026 19:54:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769111601; cv=none; b=GSwnNu2o2rQkRUF36Pr7s2h/pKwIw/gyvDnKgtVEHaTVEn6WnaExE1IFNOAAsAHsvKCGVMd6FgY1An4WilukAjYdP7LDkft77PGHh+5CBR9jHiIzhUlEq2nNBOfeglbQZu2jJyuV0yBr8VY3DtjOkjqzgRVjvJb92Np/lmGGGVU=
+	t=1769111671; cv=none; b=du4ht3JOBKtzDlqGW4v1R7VB54aA99NbZ3GG04AHNkNZhngcT8gZ5TorcmM5GdOrA66uGxfGBgaevhnJhAqQZh+MtQ3qlAOay/vBiSEWpBsJ52qldO0byW+X673xwug9ANHzVoJ8RzVhnxtZtxF05KVGWf5BA3zskX/RplOuIZM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769111601; c=relaxed/simple;
-	bh=oT4/MA+K+m0OviyBjFj8MxdSzV5XU4lIW7en1Lb9Mzk=;
+	s=arc-20240116; t=1769111671; c=relaxed/simple;
+	bh=hatfovsPRhyp9G47SP3JOu4AZYQGg+kg1WpUDtCT/i4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=laFUAAJudiof2+vDiwKBXFmchiRq6WyWIgMl1UeZRflPNyc/tYam+9xvpjJgD204fCsrba5v2i72oQ/pXaayh4YLznBNk3sSMLje2yD1RQ6OE2CDDDlrdC/viCUA3vXm16RrE8Cunqn1Ihtu+XCN1yH951W4G1BNZMLWn/ukHLk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QRnPiP4/; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=AckBERq08oZ4b/iJm4Hfv8dFxWz/x/HE/cqPD4tXxjQA/lx2yLoAHxY5oybTAc327VVf24fsk04y+Hl/wfYmqaJfpd7ymFHr3gWlP6jqHBRrdonxkgwkrDf3Bp23SYtLzKmnkCZTvOE0JhU5Nk4mtrg6/8D/xe+It4Bwy0QPjNw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PPkMYQsP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QRnPiP4/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0E3DC116C6;
-	Thu, 22 Jan 2026 19:53:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PPkMYQsP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CEAEC116C6;
+	Thu, 22 Jan 2026 19:54:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769111600;
-	bh=oT4/MA+K+m0OviyBjFj8MxdSzV5XU4lIW7en1Lb9Mzk=;
+	s=k20201202; t=1769111670;
+	bh=hatfovsPRhyp9G47SP3JOu4AZYQGg+kg1WpUDtCT/i4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QRnPiP4/N9RgBcr52wYKKDt1p5joMZE77pcKlzCEXl0A0ww+ylQ/IVKMBsX3s10OG
-	 u3ZHlXyyddP/Smufx3/wvyVvGpWFuPRiiitEC3Jd1vD2tqn/0pXsxbUVlKCr4BMLLH
-	 fKZgZJR85PlL+2K4mT5l9bDfwFybPqH248Qq0aQYsRiU0e3YQqbac7fzs1PMYD/o6z
-	 Q1FULejg5srCmZBOfBJWQmyuco8MhN/bQZcfvwG4CjFs2ea1R+1LaVgeSLet+5XxX9
-	 PKbhE9TWrDQfuOFGcJE7B9kjMolTGFeYy9vbn6X5pzi/mkcAcS+NIR2bLXxusm5ZDt
-	 NeQ4jjjy4dopg==
-Date: Thu, 22 Jan 2026 19:53:13 +0000
+	b=PPkMYQsPOM2ifgJ8m80in6fp2blFd5jZglerRJQ8ajfQmE1eAkE4rEgocQ1mTqZO/
+	 o+S4e7nvGH9dYxA9EXy77t3N/h0XTgmfwefv13AVglr9CgFjI92RvWw2F4llmOMm4x
+	 7K24wIZyl+kk6oyVFw/ukfAJPnbez2HnFgG/JDjPVXxfeymDcBzx1WH+WjIEb2IpKN
+	 TEs8eCgNf3Z8UyV9wvbd3V+voQ/up4wPdNoT/Mq2VL4tMxXf50/AeQpAfMIKiqFTwL
+	 yisjppXL9bRrQwc08lpz5cNOpfR8tGznMAO+fBzn4+rOq+stldak+4xMSTzILZPRdZ
+	 BOfL0xv7ANkkA==
+Date: Thu, 22 Jan 2026 19:54:23 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Francesco Lavra <flavra@baylibre.com>
 Cc: Ramona Gradinariu <ramona.gradinariu@analog.com>, Antoniu Miclaus
@@ -35,12 +35,10 @@ Cc: Ramona Gradinariu <ramona.gradinariu@analog.com>, Antoniu Miclaus
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
  Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: accel: adxl380: Optimize reading of FIFO
- entries in interrupt handler
-Message-ID: <20260122195313.53fde73c@jic23-huawei>
-In-Reply-To: <20260119102317.1565417-3-flavra@baylibre.com>
+Subject: Re: [PATCH v2 0/2] accel: adxl380: Improve data reading from FIFO
+Message-ID: <20260122195423.692d90ec@jic23-huawei>
+In-Reply-To: <20260119102317.1565417-1-flavra@baylibre.com>
 References: <20260119102317.1565417-1-flavra@baylibre.com>
-	<20260119102317.1565417-3-flavra@baylibre.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,45 +49,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 19 Jan 2026 11:23:17 +0100
+On Mon, 19 Jan 2026 11:23:15 +0100
 Francesco Lavra <flavra@baylibre.com> wrote:
 
-> In order to minimize the time required for transferring FIFO data from the
-> sensor to the host machine, perform the read from the FIFO in a single call
-> to regmap_bulk_read().
-It's a call to regmap_noinc_read()  not regmap_bulk_read()
-I'll fix it.
+> Patch 1 fixes a bug that might cause the adxl380 interrupt handler
+> to read from the sensor FIFO more entries than actually present.
+> Patch 2 optimizes transfer of FIFO data by minimizing transport protocol
+> overhead.
+> 
+> Changes from v1 [1]:
+> - replaced 2 with sizeof(*st->fifo_buf) in adxl380_irq_handler (Jonathan)
+> 
+> [1] https://lore.kernel.org/linux-iio/20260106193627.3989930-1-flavra@baylibre.com/T/
+Series applied.
 
-> This allows reading acceleration data for all 3 axes at 16 kHz
-> sampling frequency using a 1MHz I2C bus frequency.
+Given timing I've queued it up on the testing (soon to be togreg) branch of iio.git
+but marked the first patch for stable so that it'll get backported after the merge
+window.
+
+Thanks,
+
+Jonathan
+
 > 
-> Signed-off-by: Francesco Lavra <flavra@baylibre.com>
-> ---
->  drivers/iio/accel/adxl380.c | 12 +++++-------
->  1 file changed, 5 insertions(+), 7 deletions(-)
+> Francesco Lavra (2):
+>   iio: accel: adxl380: Avoid reading more entries than present in FIFO
+>   iio: accel: adxl380: Optimize reading of FIFO entries in interrupt
+>     handler
 > 
-> diff --git a/drivers/iio/accel/adxl380.c b/drivers/iio/accel/adxl380.c
-> index 650cdbffd4a7..e3e6b182eb3d 100644
-> --- a/drivers/iio/accel/adxl380.c
-> +++ b/drivers/iio/accel/adxl380.c
-> @@ -965,14 +965,12 @@ static irqreturn_t adxl380_irq_handler(int irq, void  *p)
->  		return IRQ_HANDLED;
->  
->  	fifo_entries = rounddown(fifo_entries, st->fifo_set_size);
-> -	for (i = 0; i < fifo_entries; i += st->fifo_set_size) {
-> -		ret = regmap_noinc_read(st->regmap, ADXL380_FIFO_DATA,
-> -					&st->fifo_buf[i],
-> -					2 * st->fifo_set_size);
-> -		if (ret)
-> -			return IRQ_HANDLED;
-> +	ret = regmap_noinc_read(st->regmap, ADXL380_FIFO_DATA, &st->fifo_buf,
-> +				sizeof(*st->fifo_buf) * fifo_entries);
-> +	if (ret)
-> +		return IRQ_HANDLED;
-> +	for (i = 0; i < fifo_entries; i += st->fifo_set_size)
->  		iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
-> -	}
->  
->  	return IRQ_HANDLED;
->  }
+>  drivers/iio/accel/adxl380.c | 13 ++++++-------
+>  1 file changed, 6 insertions(+), 7 deletions(-)
+> 
 
