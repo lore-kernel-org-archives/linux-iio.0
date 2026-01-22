@@ -1,103 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92D8233C183;
-	Thu, 22 Jan 2026 15:15:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC7143D7D8F
+	for <linux-iio@vger.kernel.org>; Thu, 22 Jan 2026 15:34:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769094950; cv=none; b=TEYA5kkjUzq8wSsu2zWP1U1+OKHetgYXIqrnEUQCjDUxtT1jxtieuyhd9wWLe+ip0as1SWAqahXldiKslH1biT5BTYszF/AuO2k2vSuFjB+EsW8GA5n/g6v/T/MByjHVO1boJJb/83dExycPr1zDMTqJn9YdxYMJCARHAOWBP3A=
+	t=1769096080; cv=none; b=XGvSreIk/SXhdAqBawf/SQm6bkna+tONxqn2fqIA7Dnpdb8YFwiwKjQe+ShRjI1DGwLi3dlezcr0g4laXcqd8vieU68yp56qCPqUGurSdjOYFbyc+k3BQtQnHtYsxCWbDYnAbvDh7L3FqByfUS49uBIkaJ9nbDHrWS3Vv5WreFs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769094950; c=relaxed/simple;
-	bh=E3pssJeSpEjSCVPHmUhZ5NoUXtg4mXfjIev+q+aekaU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KdklJ7Z/7xUK9hNEz+MElntdn+ffjW4ill7OT6fwMPe8Z5NK+pQWS/oQjmWiWXbza2rBrjQc2feqfSYYdfp8fqj9R8pVse422hzWym7FKYw4dTBv28KhkTgbCyjw05hL0+74jurqwgtY/xuEBDA4gtruJisMKqgLIBtJYSebk8Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XYtcdzPi; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1769096080; c=relaxed/simple;
+	bh=EyDARny+YwThyKQOrkf5m260pLOE6KAGgRiLiOGNkEI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=seVLUIPiumwCbbi5fAdrv9ofgfPuZgfrYFbA5bpdn3UGPXpJ4UUpxnsIQ4S7rAHhdtWKVR3upPXJJ5xJhh9lxIKtr9KiOZ37gFkqjGnmGzV/soR3vUc/NHAhmm8mwPtG7fXZsi5Ja6pcxJwg03T5doEl+vHQ5uiRkYzR/Kjo9y4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IYjuCl9l; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XYtcdzPi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769094949; x=1800630949;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=E3pssJeSpEjSCVPHmUhZ5NoUXtg4mXfjIev+q+aekaU=;
-  b=XYtcdzPiiKjrTcD4xpd4HORZFNAJHDeMMWvaCjY44H5Q01nw6+Muax12
-   TnBO89vwf2bhUtc9Uw37gEP8VI0UDDUmHCA220tqvMNK4YXkVrG32JIbA
-   yv220aucupNTabAKsHHlc74FHYXYnSJxWgw39gcpRGwkkFnnkhsyZ/+4Y
-   2bhJVtJOdjphBRw1c4ftxvxkYE7QueYhdPjblmujxiJ/dpxqqELVcdKg3
-   EL/8C4ATXBppY9wPGpDShOuZpv2VlhylgC4kwS11kyTfGCAfjwAkDyCOi
-   lB/zQQ6fhU3bdG80FYubz8NFHobuhK0+u8mDdsiPrV57Nldk5FDgrkMjA
-   g==;
-X-CSE-ConnectionGUID: g9o0F4JMQLmpA6la4q0iWQ==
-X-CSE-MsgGUID: ftHForvpTEemx0iMfWSulA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11679"; a="70386696"
-X-IronPort-AV: E=Sophos;i="6.21,246,1763452800"; 
-   d="scan'208";a="70386696"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2026 07:15:49 -0800
-X-CSE-ConnectionGUID: 5gfogVnZT7i+B5A0aZZLDQ==
-X-CSE-MsgGUID: PYn+/KX0SR+Edhv2kBfioA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,246,1763452800"; 
-   d="scan'208";a="206809486"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.225])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2026 07:15:45 -0800
-Date: Thu, 22 Jan 2026 17:15:42 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Archit Anant <architanant5@gmail.com>
-Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-	gregkh@linuxfoundation.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: impedance-analyzer: ad5933: use div64_ul()
- instead of do_div()
-Message-ID: <aXI_HnvDNbX68-lq@smile.fi.intel.com>
-References: <20260122145633.14938-1-architanant5@gmail.com>
- <aXI-ZV4uAd5GyFLz@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IYjuCl9l"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-47d63594f7eso10412255e9.0
+        for <linux-iio@vger.kernel.org>; Thu, 22 Jan 2026 07:34:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1769096077; x=1769700877; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=mx/uPaqOU1cLTitX0CrQOK3JjwkChXmdOPeXdYeNQlM=;
+        b=IYjuCl9liSAtEUpArgMHVU0WMfr4yxZY22Z8S+cUgoWhN9nxluOlQBrq1vfkFhuqA/
+         3QUIvERF4lTR/dUK5bAUJ+BomMWgqIbPcjJf7yMc6lEolGMrZnRXc9jFIVLPKQnlsOgY
+         aCSRk9if1TvzatqsU0i4dOE/8HzPec4/DjHwPStt7ABW6loUiEqHO+crCb12RpvyU/kq
+         j0kSqpAa1Do7KDfHHvFw29bFBu9FnqKkpCcDeFlMcdOHhiUuHkmtCCRsVpp3iPu1Hh8p
+         I8AkPSGNR/qusntOgcEHlkhJZFI8hbtG1mbyO9SGVL7f/L/Fh1wvT8yzbQE0uEJH0MdG
+         lLGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769096077; x=1769700877;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=mx/uPaqOU1cLTitX0CrQOK3JjwkChXmdOPeXdYeNQlM=;
+        b=o6xdouvELKU7sFtlhkZVosSCKw87ZbEQT0PL2ZE4ah0ot/meN5f+LTZUqU0mLp6x3D
+         Ks1HItSPmQuXguUTCC4WAGevgZsczmBWwgUR7CgTvbjCttU0YYPRL1TcFUJTvhb1ZsCE
+         D9FklKQddkExxcB+Fks6wrEHhzEwjyfnrPL2AQG4SLvaxmCiTqay9V77olRBczSE99PF
+         ht0xf2YxjxBtkbNsV8ZQKoVvs43XxwDd3ATFJFZblToyALxrrCqyJuYuKgRWr36mY5N7
+         vQ8Jqv96NEeICYg0TXW05e5r2Mg7SNOu5fNKgVZPrVTkgkRvl6wBAbSMgmV0fHMH+71X
+         Jmhw==
+X-Gm-Message-State: AOJu0YwJnMLTVgB6snWcDecfVfhCUnmcWQpShSWUPTGvXiqNfEv54MQl
+	nHApJmoOgpwEVaVFslttZagBJHHNLoWHvdg/xraTr6Sf+G4KoSHPEY9CO369/A==
+X-Gm-Gg: AZuq6aI4lMAyBvLwZcdLVZ9ud6NJQVxOVxLT/okN/mVzWF7mB/KhV67zccH1yGPfGWp
+	6F/EBZ33TRfBu9f3U8BEUwkcF/XWDJC1NftpKy+gFQD/CG+/Mmvun7VXndaesKK8npN4g9CoxhV
+	esrjNCCk+c4Yb+555QR3mralW49ij7023TB9ojQmV5gW2UWAM7RAd8n+bZEtLthCTQodsQaTvd3
+	pY7D0k9PV96CLiKfHLPSl4nkACIkZ1igvuaPv+1xfN9M5KHVWpWZqyziv4lJezAsAmTCARu7HkM
+	dbVB+n81FcB9MURQX5JlBlTVPrLZIAtlzY5JX2KSMueDZ2bOkVlN6klzg4KcLebr0M7AmPo+KH0
+	oZKrSRlEQWoDDS4GtS359DdLQFeyQyLBNSL5GuVLGHPIusXl9FXRfcocbTGPLqGqwIyRyqYeht6
+	z7
+X-Received: by 2002:a05:600c:8189:b0:479:35e7:a0e3 with SMTP id 5b1f17b1804b1-4804c9b9b54mr158695e9.30.1769096076946;
+        Thu, 22 Jan 2026 07:34:36 -0800 (PST)
+Received: from xeon ([188.163.112.49])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4356997e6dasm47355229f8f.32.2026.01.22.07.34.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jan 2026 07:34:36 -0800 (PST)
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Linus Walleij <linus.walleij@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/1] drivers: iio: mpu3050: use dev_err_probe for regulator request
+Date: Thu, 22 Jan 2026 17:34:24 +0200
+Message-ID: <20260122153425.8751-1-clamor95@gmail.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aXI-ZV4uAd5GyFLz@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Jan 22, 2026 at 05:12:42PM +0200, Andy Shevchenko wrote:
-> On Thu, Jan 22, 2026 at 08:26:33PM +0530, Archit Anant wrote:
+Regulator requesting may result in deferred probing error which will
+abort driver probing. To avoid this just use dev_err_probe which handles
+deferred probing.
 
-...
+Addresses this situation:
+[    2.250875] mpu3050-i2c 2-0068: Cannot get regulators
 
-> > -	freqreg = (u64)freq * (u64)(1 << 27);
-> > -	do_div(freqreg, st->mclk_hz / 4);
-> > +	freqreg = div64_ul((u64)freq * (u64)(1 << 27),
-> > +			   st->mclk_hz / 4);
-> 
-> It can be one line to begin with.
-> Then drop that ugly castings and explicit big shifts.
-> 
-> 	freqreg = div64_ul(BIT_ULL(27) * freq, st->mclk_hz / 4);
-> 
-> Now you can see That 4 is only 2 bits, so this can be written in
-> simpler way:
-> 
-> 	freqreg = div64_ul(BIT_ULL(29) * freq, st->mclk_hz);
-> 
-> which may give a better precision at the end of the day.
+Svyatoslav Ryhel (1):
+  drivers: iio: mpu3050: use dev_err_probe for regulator request
 
-It also might be worth to add a comment on top to explain (with given context
-I don't know if there is already one on top of the function, though).
-
-And I think we want AD people to comment on this and maybe explain better
-the calculations done (and why the original code drops precision, was it
-deliberate?).
+ drivers/iio/gyro/mpu3050-core.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.51.0
 
