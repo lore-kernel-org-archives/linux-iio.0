@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84A8D30F52B;
-	Thu, 22 Jan 2026 19:15:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDBF135DCEE;
+	Thu, 22 Jan 2026 19:16:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769109322; cv=none; b=spTejRZzie+cx6VqS7kFDw/LlzEHeznlOAhRc5bR5htMgU/E/mw+9hUn/+y2Go+VBDwh5bKbBFS2dHHWSqRDc355gzxQWuFRLxeanMBQLUraAb3VY1pKiNOnHg+gGZd9PX38/FPcJNxl4EMjUo4CCvw7AMbxnD18pQG7fwjuFa0=
+	t=1769109418; cv=none; b=ssRr/nzwhAvmle4GahBP5PouxIxc2VrrfjDTNAHNKLDCmzIzv+r7fkJX3m5uI6eM1awtUw1YPg3b4tJW77mY8YJdGBDLvJKjhdYctXphFSwIQ6WkQr/vH39PmTmWLbvcwdG/3pX/jDyNzZmwHrB3rzj2+gUPr+Dv8htyS2S5MSQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769109322; c=relaxed/simple;
-	bh=7Jl5E5KkPzQnVVwZ6kadxvQ5BzsBWFNS7T3cU6d6uqc=;
+	s=arc-20240116; t=1769109418; c=relaxed/simple;
+	bh=0kZ71WJP6OLB8TARzAvQV419UxdEmSp/UWUFCdxlmaA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=beQlYDX5urVrzV7gIsEpGgE6l2MJmQtJwHgSCFwiVjmP5lZgmYVas5Pe0WVo/7slbQdK+9kzm1h143DT+Cd55XMxhz9ugOVLsl4Q4WhG4IvkgFRROSVa0re1R/lMU0J7S98Vk302y8K4TYdML3I4xQGya/l0LBRh7beFerNiM6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eiet4xtR; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=sIrdLflNO6NxXEOXrkCWsJHAbE1/9LFvAGk7GXQ/fb6/hLe/vb5jVqyAXPG6KY+87AY6zWcOeI4bIPR2Pdo7pkvfRIdpCj9zSMn/HLS2nMhq/j8UsgtvFj9qat6WanE//0XLb0SBT/kbsmdgYDcgCucSlFuGtMqJfTKINT+rbSQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HHS6IVM3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eiet4xtR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3247CC116C6;
-	Thu, 22 Jan 2026 19:15:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HHS6IVM3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C5FEC116C6;
+	Thu, 22 Jan 2026 19:16:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769109320;
-	bh=7Jl5E5KkPzQnVVwZ6kadxvQ5BzsBWFNS7T3cU6d6uqc=;
+	s=k20201202; t=1769109417;
+	bh=0kZ71WJP6OLB8TARzAvQV419UxdEmSp/UWUFCdxlmaA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=eiet4xtRtY4kY7O9MpOhxhCu4d/jU83iMsvMdeU3ejAN7H7/e4XmFrAw93NJWkoXd
-	 +w3lxh5Ggp29w6as2J3UHO8cS+ca9dp80UeRzTmznTCPjHMS/igvlc5SbiDPSA8/ZQ
-	 5Wf27+GFhUI80yZX1h13G57AD4GxEy80huzWO2Y3C4InP0onYZbkHnEp5ZOXVLD70L
-	 uVI1MYYGtzkYSCCLEnJELGk7jQ+eOcOJE2UNDZqTWJw8JGSyJMLujTHgys/VUVt+fF
-	 xHdHspjnPZ8LCi8dz8QlJUMIZ+7s8Cd0iV93k+KxsopecNw08zgIqMMhlFYcUWg2/t
-	 f6CUTwBRDOZ3w==
-Date: Thu, 22 Jan 2026 19:15:10 +0000
+	b=HHS6IVM3DA68UiUmvhfmjDI/X2bY520P9zeNm/WYeLlznDK862hrXMRa1EJh5YOC1
+	 6BhVB/qVjSuI3bvSx3YdgLM4L9Ol75bXulPvTYJFoFaAev7KeuXCshDh8PaHtFijsZ
+	 nyUSeCFyeji36UDHppMSHYYFMZiwSCW2trwURDxbW5vom8y2mAkcZ2h20M/Prypsn8
+	 XYMtsMs0IFJ9F6PTV09t2wDlMOWkJDbRgjwzNxtWs+wtrsxg/06/j5SgJpek5TAO3j
+	 e9ckli1/EBJXNaatQSjSM2dEW3aNWzTz6dXdM/yFKB4xceOhk9EOk14HuKj+JVNeJM
+	 9Ny8kX9QFYQYw==
+Date: Thu, 22 Jan 2026 19:16:48 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Kurt Borja <kuurtb@gmail.com>
 Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Lars-Peter Clausen
@@ -39,11 +39,11 @@ Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Lars-Peter Clausen
  <groeck@chromium.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
  chrome-platform@lists.linux.dev
-Subject: Re: [PATCH v5 6/7] iio: health: max30102: Use IIO cleanup helpers
-Message-ID: <20260122191510.2aca6bef@jic23-huawei>
-In-Reply-To: <20260120-lock-impr-v5-6-d4d22347041f@gmail.com>
+Subject: Re: [PATCH v5 0/7] iio: core: Introduce cleanup.h support for mode
+ locks
+Message-ID: <20260122191648.2c10cdf6@jic23-huawei>
+In-Reply-To: <20260120-lock-impr-v5-0-d4d22347041f@gmail.com>
 References: <20260120-lock-impr-v5-0-d4d22347041f@gmail.com>
-	<20260120-lock-impr-v5-6-d4d22347041f@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,82 +51,159 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 20 Jan 2026 01:20:46 -0500
+On Tue, 20 Jan 2026 01:20:40 -0500
 Kurt Borja <kuurtb@gmail.com> wrote:
 
-> Use IIO_DEV_GUARD_CURRENT_MODE() cleanup helper to simplify and drop
-> busy-waiting code in max30102_read_raw().
->=20
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> Hi,
+> 
+> In a recent driver review discussion [1], Andy Shevchenko suggested we
+> add cleanup.h support for the lock API:
+> 
+> 	iio_device_claim_{direct,buffer_mode}().
+> 
+> Which would allow some nice code simplification in many places. Some
+> examples are given as patches, but the last two are the biggest
+> differences.
+> 
+> In this version I dropped the RFC tag, as the general feeling is to go
+> through with this after some modifications. Main one is the addition of
+> IIO_DEV_ACQUIRE_{BUFFER,CLAIM}_MODE() wrappers to avoid drivers using
+> the guard classes directly. I also added comments on the forbidden ways
+> to use this API but I definitely still take suggestions on this.
+> 
+> For now I dropped iio_device_claim_buffer_mode() rename, as this point
+> is still being discussed. My suggestion based on the RFC discussion is
+> to do it, but in a separate patch (using coccinelle) and while we're at
+> it rename the whole API like this:
+> 
+> 	iio_dev_mode_lock()
+> 	iio_dev_mode_direct_trylock()
+> 	iio_dev_mode_buffer_trylock()
+> 	iio_dev_mode_unlock()
+> 
+> Let me know what you think and thanks for taking a look!
+> 
 > Signed-off-by: Kurt Borja <kuurtb@gmail.com>
-FWIW this and the next one trip up sparse as well :(
+I've queued this up. For now it'll just be pushed out on the testing branch.
+Hopefully the new noise from sparse won't bother anyone too much.
+
+Jonathan
 
 > ---
->  drivers/iio/health/max30102.c | 33 +++++++++------------------------
->  1 file changed, 9 insertions(+), 24 deletions(-)
->=20
-> diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
-> index 6918fcb5de2b..47da44efd68b 100644
-> --- a/drivers/iio/health/max30102.c
-> +++ b/drivers/iio/health/max30102.c
-> @@ -467,44 +467,29 @@ static int max30102_read_raw(struct iio_dev *indio_=
-dev,
->  			     int *val, int *val2, long mask)
->  {
->  	struct max30102_data *data =3D iio_priv(indio_dev);
-> -	int ret =3D -EINVAL;
-> +	int ret;
-> =20
->  	switch (mask) {
-> -	case IIO_CHAN_INFO_RAW:
-> +	case IIO_CHAN_INFO_RAW: {
->  		/*
->  		 * Temperature reading can only be acquired when not in
->  		 * shutdown; leave shutdown briefly when buffer not running
->  		 */
-> -any_mode_retry:
-> -		if (!iio_device_try_claim_buffer_mode(indio_dev)) {
-> -			/*
-> -			 * This one is a *bit* hacky. If we cannot claim buffer
-> -			 * mode, then try direct mode so that we make sure
-> -			 * things cannot concurrently change. And we just keep
-> -			 * trying until we get one of the modes...
-> -			 */
-> -			if (!iio_device_claim_direct(indio_dev))
-> -				goto any_mode_retry;
-> +		IIO_DEV_GUARD_CURRENT_MODE(indio_dev);
-> =20
-> -			ret =3D max30102_get_temp(data, val, true);
-> -			iio_device_release_direct(indio_dev);
-> -		} else {
-> -			ret =3D max30102_get_temp(data, val, false);
-> -			iio_device_release_buffer_mode(indio_dev);
-> -		}
-> +		ret =3D max30102_get_temp(data, val, !iio_buffer_enabled(indio_dev));
->  		if (ret)
->  			return ret;
-> =20
-> -		ret =3D IIO_VAL_INT;
-> -		break;
-> +		return IIO_VAL_INT;
-> +	}
->  	case IIO_CHAN_INFO_SCALE:
->  		*val =3D 1000;  /* 62.5 */
->  		*val2 =3D 16;
-> -		ret =3D IIO_VAL_FRACTIONAL;
-> -		break;
-> +		return IIO_VAL_FRACTIONAL;
-> +	default:
-> +		return -EINVAL;
->  	}
-> -
-> -	return ret;
->  }
-> =20
->  static const struct iio_info max30102_info =3D {
->=20
+> v5:
+> 
+>   - Fix all function/macro names in kernel-doc
+> 
+> v4: https://lore.kernel.org/r/20260118-lock-impr-v4-0-6c8d0aee8ed2@gmail.com
+> 
+>   - Replace "," with ";" in __iio_dev_mode_lock() docs.
+> 
+>   - Fix "bellow" -> "below" typo.
+> 
+>   - Drop first example in IIO_DEV_ACQUIRE_DIRECT_MODE() docs.
+> 
+>   - Match variable names in kernel-doc and definitions.
+> 
+>   - Replace "markings" with "annotations" in the "static inline" remark
+> 
+>   - Replace "claim_ptr" with "claim" in IIO_DEV_ACQUIRE_FAILED() and get
+>     the pointer inside.
+> 
+> v3: https://lore.kernel.org/r/20260106-lock-impr-v3-0-1db909b192c0@gmail.com
+> 
+>   - Reword commit message of patch 1: infallible -> unconditional.
+> 
+>   - Drop "*strongly*" in __iio_dev_mode_lock() kernel-doc and be a bit
+>     more clear on the function's intention.
+> 
+>   - Keep comment about inline functions and sparse markings, but drop
+>     the __cond_acquires() part, as the new implementation makes it
+>     unnecessary.
+> 
+>   - Implement iio_device_release_*() as macros around
+>     __iio_dev_mode_unlock().
+> 
+>   - Rename iio_device_claim_buffer_mode() ->
+>     iio_device_try_claim_buffer_mode() to avoid silently breaking
+>     out-of-tree drivers.
+> 
+>   - Drop the `_` argument prefix in new macros, as there are no name
+>     conflicts.
+> 
+>   - Drop "dummy" from IIO_DEV_ACQUIRE_DIRECT_MODE kernel-doc, as the
+>     `claim` variable does store the error value.
+> 
+>   - Drop IIO_DEV_ACQUIRE_BUFFER_MODE() until a driver actually needs it.
+> 
+>   - Rename IIO_DEV_ACQUIRE_ERR() -> IIO_DEV_ACQUIRE_FAILED() to make the
+>     name more clear.
+> 
+>   - Rename IIO_DEV_GUARD_ANY_MODE() -> IIO_DEV_GUARD_CURRENT_MODE() to
+>     make the name more clear.
+> 
+>   - Add missing . in iio_device_release_direct() kernel-doc.
+> 
+>   NOTE: Andy suggested __iio_dev_mode_*() be exported into the IIO_CORE
+>         namespace. However, this cannot be done because these functions
+> 	need to be called inline, so Sparse can see the __acquires() and
+> 	__releases() tags.
+> 
+>   Happy new year to everyone :)
+> 
+> v2: https://lore.kernel.org/r/20251211-lock-impr-v2-0-6fb47bdaaf24@gmail.com
+> 
+>   - Add __iio_dev_mode_lock() (formerly iio_device_claim()) in the first
+>     patch.
+> 
+>   - Added comments to make sure __iio_dev_mode_lock() is not used by
+>     drivers to protect internal state, or in general.
+> 
+>   - Add patch which re-implements iio_device_claim_direct() using
+>     __iio_dev_mode_lock().
+> 
+>   - Match iio_device_claim_buffer_mode() semantics by reimplementing it
+>     in the same way as iio_device_claim_direct().
+> 
+>   - Guard classes now are prefixed with __priv__ to make sure drivers
+>     don't use them directly.
+> 
+>   - Add IIO_DEV_ACQUIRE_{BUFFER,DIRECT}_MODE() documented wrappers
+> 
+>   - Avoid any function renames (for now).
+> 
+>   - Rename dummy variable `claim` instead of `busy` on vcnl4000 patch.
+> 
+>   - Avoid scoped guard in max30102.
+> 
+>   - Keep using iio_trigger_validate_own_device() insted of
+>     iio_trigger_using_own() in opt4060.
+> 
+> v1: https://lore.kernel.org/r/20251203-lock-impr-v1-0-b4a1fd639423@gmail.com
+> 
+> ---
+> Kurt Borja (7):
+>       iio: core: Add and export __iio_dev_mode_lock()
+>       iio: core: Refactor iio_device_claim_direct() implementation
+>       iio: core: Match iio_device_claim_*() semantics and implementation
+>       iio: core: Add cleanup.h support for iio_device_claim_*()
+>       iio: light: vcnl4000: Use IIO cleanup helpers
+>       iio: health: max30102: Use IIO cleanup helpers
+>       iio: light: opt4060: Use IIO cleanup helpers
+> 
+>  drivers/iio/adc/ade9000.c                          |   2 +-
+>  .../common/cros_ec_sensors/cros_ec_sensors_core.c  |   5 +-
+>  drivers/iio/health/max30100.c                      |   8 +-
+>  drivers/iio/health/max30102.c                      |  33 ++---
+>  drivers/iio/industrialio-core.c                    |  86 +++----------
+>  drivers/iio/light/opt4060.c                        |  52 +++-----
+>  drivers/iio/light/vcnl4000.c                       |  49 +++-----
+>  include/linux/iio/iio.h                            | 139 +++++++++++++++++++--
+>  8 files changed, 190 insertions(+), 184 deletions(-)
+> ---
+> base-commit: eab91f819af428173f7e0aa1c80b3e561c3707bb
+> change-id: 20251130-lock-impr-6f22748c15e8
+> 
 
