@@ -1,131 +1,112 @@
-Received: from mail.andi.de1.cc (mail.andi.de1.cc [178.238.236.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f196.google.com (mail-pf1-f196.google.com [209.85.210.196])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AF431990C7;
-	Thu, 22 Jan 2026 14:23:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=178.238.236.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1AA234B661
+	for <linux-iio@vger.kernel.org>; Thu, 22 Jan 2026 14:56:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.196
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769091802; cv=none; b=BQwDcEhe91e6/00QcHmi4apefZerce1WQG0lUvsVQlZ5eBWjWaZ0LIULS2YFRzWHF2ABAgdOf75W/8kJ3+Rlss373bDMjBVgJOGfvDPbyI+Sy0mL+fHUavaER5X6Td2CzwYHQrK40QS1ZUiOK+af+UkGJ3puBtKyEVwQ3nT5jKI=
+	t=1769093806; cv=none; b=mro8a4FQcF7sJaSHcPR4FkdO6p1manGbJqbIGtr26j5i98V7JuJdPYs8p3TmMOPprWU6zLjS/dupLS2eU66XOYsw8KWJOexnIUl3TSDqWfSrM6eZlLSxUKJ4+WE+5hMnii0uOJbC3eG6vlWuSQ705uH1cN1abOOfINof9ymBZ4g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769091802; c=relaxed/simple;
-	bh=ln7IA6At36MujTqs6Tf+Pr0cH8C/0oMPTb/NCVMcpis=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FgID9kzYvKAEkq7LxRnG0sHpkNs+jFZk1I+cFB+y+GNS4kM3pS6rkD9hUwA4Eo3P9uUftaIirsxMu12lHm0WWd6sCBOqBEbxFOZNKLJfNuXnmTt3M52uVU1Zdt3XpDErawGJHy2lqvmIKPA4UVH0bpv+X/4wTHmSFlAIHGmZNWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info; spf=pass smtp.mailfrom=kemnade.info; dkim=pass (2048-bit key) header.d=kemnade.info header.i=@kemnade.info header.b=MqTPzCq1; arc=none smtp.client-ip=178.238.236.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=kemnade.info
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=kemnade.info
+	s=arc-20240116; t=1769093806; c=relaxed/simple;
+	bh=YcwchRL3dmquMNXp0MXiCoLQ/zmWnbBjTfaHSzYtjL0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Sy83LOGXD2PphdlIHqVXLyAjg+QleBH4i+6z4cg53NtV811tChDjie7iSVgVdpkShaYcUR25A6o54Pfz0GHR9NTn+YnU0LPkYtm6s+MzvbN1aa5mjFZmDpcSLofSQEzBbfdwhBfmKcHsb2r5q6rR+4OAW6+FRVzoIkEDPNRWjfQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=btD02vTg; arc=none smtp.client-ip=209.85.210.196
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="MqTPzCq1"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=kemnade.info; s=20220719; h=References:In-Reply-To:Cc:From:Sender:Reply-To:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID;
-	bh=l4OWvZD0QdYckL8UcRFTatggDXwenvoPYXyQIXMKnYE=; b=MqTPzCq1vbw3teNvmYQOGUg7qy
-	dWtC24626u+zjv0l0aaFdfVU4vd7q7FTlyVGu8zG76KalstrgcAKGqRVurztsBfW8YyOEkvBseEnF
-	kldSSiaHpkcxbvhXgKliDvnmt8LMlbEej7PU6XKihl4srCdwm2Cd+wVNhQi2k1cIyCyz88mrTOkNH
-	ViuveA2GZYZnPLqk1xL7B5Kxomf1qTPfOyDRFBxn0Wb+Fs7+0DEZbTdxgBcE1Eb21KmDVyGNrXinO
-	5y58miOOEAMqv0qckS4ErEKuaCLTEOInl0YkMl/wJH0Sxg+u3G9wIG0gao/xFaJN4I/7aj5dIjSjK
-	xCHz5+Gw==;
-Date: Thu, 22 Jan 2026 15:23:06 +0100
-From: Andreas Kemnade <andreas@kemnade.info>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Mark Brown <broonie@kernel.org>, jdelvare@suse.com, lgirdwood@gmail.com,
- linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org, Alistair Francis
- <alistair@alistair23.me>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>
-Subject: In-kernel hwmon read: (was: Re: [PATCH RFC 1/2] hwmon: (sy7636a)
- fix races during probe of mfd subdevices)
-Message-ID: <20260122152306.6211995e@kemnade.info>
-In-Reply-To: <e6c8f022-ebfc-459c-806b-f75618f65916@roeck-us.net>
-References: <20250920114311.291450-1-andreas@kemnade.info>
-	<20250920114311.291450-2-andreas@kemnade.info>
-	<79aa98fe-b9b6-4210-a556-d33863f0129a@sirena.org.uk>
-	<20250920233307.0c425863@kemnade.info>
-	<473e217a-c6b3-4ebc-895d-85beab50267c@sirena.org.uk>
-	<20250924090023.282ae450@kemnade.info>
-	<b68d40d9-6ea9-49a9-8a2e-8b899f33340d@roeck-us.net>
-	<20250924195358.16bbd90c@kemnade.info>
-	<e6c8f022-ebfc-459c-806b-f75618f65916@roeck-us.net>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; aarch64-unknown-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="btD02vTg"
+Received: by mail-pf1-f196.google.com with SMTP id d2e1a72fcca58-82311f4070cso147283b3a.0
+        for <linux-iio@vger.kernel.org>; Thu, 22 Jan 2026 06:56:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1769093804; x=1769698604; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=rP4Md871BpNzoliM2Q93M6GSwYNDmOpzKTl/uPt8x+I=;
+        b=btD02vTgWzC1fb/6tAELT5wJHQcX5BlcMagVsi81bIJ3GxkSDOMw5HfCl/2M9SNC8a
+         pDJ5g78bltTM+msuG+hjpc8lFijF3Av/SHsDPTPD7uxudUWgWSCs0vnBkjsCyod2R/iq
+         B57mFpC5wLy57VtEgK+U0PCiahQ03IlIkp8bOyujNsbpmtK79anB+Qs9uaaM2J9i++Lu
+         LiSYQ7C8V88yVh+Z2Z1/2z8iUCAzY+b+BsMk3dJNgo4vXF4Ah7XQ+5nywK2I4NTAwyl/
+         MQL+xNf7uGGg6VQeXtgITCjzvC3bKfAaBfGlntVR7yiL3PN8UfdBUMq8lAEyZQKfJS1e
+         tHKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769093804; x=1769698604;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=rP4Md871BpNzoliM2Q93M6GSwYNDmOpzKTl/uPt8x+I=;
+        b=kbBiY+Cd4V46oy2vUwgmNi6+pKkDtFWU3IYzV1T0AUNMA57jzTsfY8Z40Bm6BJNt57
+         Pr/eA1olaO1xZZH1HcQKPmWkqTYsuBvNDn84TqtylA3Ra067XgXjbKSid/FmhqNr+WFl
+         o1F4E09iy991rfw4KSKP7TrcgzSTSuR8Si6wOt70XLsrmMx/pd0lI580BroFd1QuosGR
+         wvMMvpHdYH5BzSHRZsMm1ogi8NiDrIKQY2dnVdMpVPPW+MmyBn1BNdWWr5+54t9uDaEG
+         XGMJ4fkx45PNdPbrHYds+vFCHBHhMBTPrh9OnCoiLf/JatOWHCJqOLAhK0m9izx/aFDq
+         1S1g==
+X-Forwarded-Encrypted: i=1; AJvYcCUiENFSUfPfXd7tcnteE7NAjK5XsB7hcigYF6PFnX88kHq5aSM1acrdibJVnrpnL1qQocgWnLY4xNY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwpfSttuET0d8xa+czRBK1os8/pdKK/YuGufJV4swlxjikXNg5F
+	zZjoBlbxjddATx0oZCgrD6UvcoD148RSFjGPHyQZaz/PuVbL47GYLDXI
+X-Gm-Gg: AZuq6aKA82iovA9Y/m2IFMUIkoRzhLOdXmNYuEGHpQc82OH111bED9a2xExTF2Ypw29
+	8nDWWW4WnVphjGgyMhkgH5fQSv6NwXsQoO90t9bUR03wpwP757KHwpZMI/uUc5qNX0t7WjmPvDk
+	8WrBIN3xi0xQsHX4daanICFsgkLq4KSYMSSqqWQ5ggtf2vyidjtiYKaEumvkjOCASGVxSIj4bL+
+	eK2xuLOCXoACUZbjQqCw7Rn1sWSJUoa9JgtuCdsOT3NBksiJ1iMH+WuODTQ+ep9lRZsDbt2yB1F
+	WORdzQ8IcYIg97isYkwkHs2mkBVF/hZNWSEmyjgoWTwiE3qRiTpQc61neHZ1CoQw5SgaKCtmeXO
+	M05t/3FwaN+P2XT/JtSedWyjooxPXwRirLfxlx5ZK+FcHHDl4cWueHj15/Q6T3IIfFrfdOjadtL
+	/IRR6jYlPbgC069jY6bh7PudMtJ+fj
+X-Received: by 2002:a05:6a00:84f:b0:7e8:3fcb:9b09 with SMTP id d2e1a72fcca58-821a7b4b364mr2805889b3a.31.1769093803845;
+        Thu, 22 Jan 2026 06:56:43 -0800 (PST)
+Received: from debian.ari ([152.58.182.11])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-81fa1277966sm18318780b3a.31.2026.01.22.06.56.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Jan 2026 06:56:43 -0800 (PST)
+From: Archit Anant <architanant5@gmail.com>
+To: jic23@kernel.org,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com
+Cc: gregkh@linuxfoundation.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Archit Anant <architanant5@gmail.com>
+Subject: [PATCH] staging: iio: impedance-analyzer: ad5933: use div64_ul() instead of do_div()
+Date: Thu, 22 Jan 2026 20:26:33 +0530
+Message-Id: <20260122145633.14938-1-architanant5@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Wed, 24 Sep 2025 12:16:14 -0700
-Guenter Roeck <linux@roeck-us.net> wrote:
+Replace do_div() with div64_ul() since the remainder is not used.
+div64_ul() is the preferred API for 64-bit by 32-bit division when
+only the quotient is needed, as it returns the result directly rather
+than modifying the dividend in-place.
 
-> > But what is the hwmon equivalent for
-> > devm_fwnode_iio_channel_get_by_name() + iio_read_channel_processed()?
-> >   
-> 
-> Assuming you refer to the exported functions for in-kernel use, so far no one has
-> expressed a need for it. The best solution would probably be a hwmon->iio bridge,
-> or equivalent functions could be implemented and exported.
+Issue identified by coccicheck using do_div.cocci.
 
-So first analyzing the need of such an interface. I think
-there is a need for such interface. The need just gets masked by some hacks
-to be able to divert to other interfaces.
+Signed-off-by: Archit Anant <architanant5@gmail.com>
+---
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-There is out-of-tree waiting to be upstreamed:
-- rockchip_ebc driver: Display on PineNote, uses iio_read_chanel_processed()
-                       in combination with an out-of-tree iio temperature
-		       driver
-- mxc_epdc_drm driver: Display on Kobo/Tolino ebook readers, uses
-                       thermal_zone_get_temp() now.
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 85a4223295cd..772267f6f093 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -194,8 +194,8 @@ static int ad5933_set_freq(struct ad5933_state *st,
+ 		u8 d8[4];
+ 	} dat;
+ 
+-	freqreg = (u64)freq * (u64)(1 << 27);
+-	do_div(freqreg, st->mclk_hz / 4);
++	freqreg = div64_ul((u64)freq * (u64)(1 << 27),
++			   st->mclk_hz / 4);
+ 
+ 	switch (reg) {
+ 	case AD5933_REG_FREQ_START:
+-- 
+2.39.5
 
-In tree, there is:
-- drivers/gpu/drm/tiny/repaper.c
-  in combination with
-  Documentation/devicetree/bindings/display/repaper.txt
-
-  Code excerpt:
-        if (!device_property_read_string(dev, "pervasive,thermal-zone",
-                                         &thermal_zone)) {
-                epd->thermal = thermal_zone_get_zone_by_name(thermal_zone);
-
-  and thermal_zone_get_temp() to tune refreshes according to panel temperature.
-
-
-
-The example in the binding is:
-        display_temp: lm75@48 {
-                compatible = "lm75b";
-                reg = <0x48>;
-                #thermal-sensor-cells = <0>;
-        };
-
-        thermal-zones {
-                display {
-                        polling-delay-passive = <0>;
-                        polling-delay = <0>;
-                        thermal-sensors = <&display_temp>;
-                };
-        };
-
-[...]
-                    pervasive,thermal-zone = "display";
-
-
-I would prefer to be able to use e.g. pervasive,temperature-sensor = <&display_temp>;
-or maybe <&display_temp 0> if there are multiple sensors in the same chip.
-so that dtc will tell me when there is a typo and avoid the thermal
-zone layer
-
-So what are the options:
-a) provide similar logic like iio/inkern.c for hwmon usage.
-b) automatically add iio channels during hwmon registration.
-
-looking at the iio_hwmon bridge we already have, it depends on
-iio/inkern.c so for a  hwmon_iio bridge we need a) or b) anyways,
-so I think a separate bridge device/driver has no advantages.
-And having a devicetree node for the bridge would be bad because
-we are then describing linux implementation details instead of
-the actual hardware in the devicetree.
-
-Regards,
-Andreas
