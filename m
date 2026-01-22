@@ -1,40 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A3C5225A35
-	for <linux-iio@vger.kernel.org>; Thu, 22 Jan 2026 20:37:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 258E4392B7E;
+	Thu, 22 Jan 2026 20:38:46 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769114245; cv=none; b=IH9FmolH6xgPYAoz5a/fMKCjCb+t0M4Dn1OKJpqj8yWqg6gmMIDZZijQWeC7IwnjCO2vqvJ4JoYk15fxMU77L0sI4Mph44OtO/NOMyf/zDt3dZI5zo1oQSnRd6fOPmghNzQm4kbczqbMp+5H2zUr5Lk9/J4Duv0VnbzftLBD2jM=
+	t=1769114327; cv=none; b=GmkjqJBNg0LxlWBmUA7ACSnGfArFaqm1mk4PFAtoaFG//qq9m2SGfSATcjvwACrx1hetxH11RAZY3Dvg/sr9NW/xBBzCwMbmaKT2C5fK9SxiewJaRiLH2FcKU/HF0qk6NizCOfGCF28RZx7iQgEDudg7tzHY3RM7OpMyF9F41xQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769114245; c=relaxed/simple;
-	bh=t0dUDxojzklGc7/4nqNpdXYAFiIQqZ18B+Z+LO6VqYY=;
+	s=arc-20240116; t=1769114327; c=relaxed/simple;
+	bh=KXMy6g3Wkg4/OPTqy1LkPPp26Fiy2UD7XLpXJvZwlho=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EEq++umbqq0vn5vvQ/Ro2Eb8HBwc3oGVm8ZJol47J+K2e/spkxYtmKXu+SvrEMnlg31zNpxplfzP/LFrZJO1E4BluFZ2XP/PFnnzOmT+n/PGWBcZb838xYnaDO38PbWp6rH4vmUEAoer63o7jDH+4VjVc6XX1QeOyIKFHIlNXEQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CeFr+VSJ; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=mYiU8b0Uz2BbqdHFOl5Y8hYJmfz1feyFO+wZt8/g9GQGsZqGPc3IVpxCMckkd94tUZT3SQ9HCUf7ZmmTpUvaBsNdOBvAjlzodrTm0zaMpkatDqd2AoM/+kFanpi3C1fESqRYGPXETP2mBjJJ2UODFj6y+JYDfbVMlp1h3DqfTMs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nlQa3TKn; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CeFr+VSJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2DADC116C6;
-	Thu, 22 Jan 2026 20:37:19 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nlQa3TKn"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A40F0C116C6;
+	Thu, 22 Jan 2026 20:38:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769114241;
-	bh=t0dUDxojzklGc7/4nqNpdXYAFiIQqZ18B+Z+LO6VqYY=;
+	s=k20201202; t=1769114325;
+	bh=KXMy6g3Wkg4/OPTqy1LkPPp26Fiy2UD7XLpXJvZwlho=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CeFr+VSJmskK3HJcG19b/ouL0CljHxesphBdH7OjJOizOPfehxT33tjFx4aFx/Ro+
-	 PfVgO00zydWmvvakYSV7ZDZ7ZrYOwFJNgPoNpZoKJvS9OrJ6Z2AJ9/IEwkRiDv4t55
-	 rIsIiyZVDDQWx0eok2o2uVmkoj+e0AB+TdCJgBnVn/rpyRK6hbCWhjyPDQE5Nx/8DL
-	 YjuzHihmlMKgvAH+tL9qCZ6w+vwQo8X5Sj+GDr8E7WtzNs8UFQq1VzpFYalN/PzaOw
-	 dMfA3TZwqdkhmj5xuhu770JY/EQs5bxDbLjg+Ah6TSZiW/01YUfOtgvnj0BlLa6kM2
-	 PT7A4tALoIs8Q==
-Date: Thu, 22 Jan 2026 20:37:15 +0000
+	b=nlQa3TKnnrZ+uVSiwZ27/HrcxrhJyLiuWupLCiaXIBPhygsSP9bW47kXvE8fZHEXo
+	 cirjgiBx/zS34Rb9V5g7rYoT34oEg+rQ1PqbyosD60S68oB8i9nduf7QC26drwz4NJ
+	 dyVALILpKBi4BVgg+axyXeT9e13QutWle3Pt0F+XxmyC1l9Djc7rich5eDMZLrEszF
+	 B7Kt/vrcO0WLIOCZlmGLI0SSFCuSCc7H8G1tVvBy9QXyHiuj/0wP7uU0Iu5jz6dqOv
+	 UNVPgaAD/swN7PSPlb/g6yFap/ov79wxAeF5nz3qrOuqcC9RqjCTtOtgtz0wauOnsw
+	 vGzCHIorZt5RA==
+Date: Thu, 22 Jan 2026 20:38:36 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Gwendal Grignou <gwendal@chromium.org>
-Cc: nvaccaro@google.com, tzungbi@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: cros_ec: Allow enabling/disabling calibration
- mode
-Message-ID: <20260122203715.3b44c883@jic23-huawei>
-In-Reply-To: <20260121164657.1433637-1-gwendal@chromium.org>
-References: <20260121164657.1433637-1-gwendal@chromium.org>
+To: Tomas Melin <tomas.melin@vaisala.com>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, Nuno Sa
+ <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Olivier Moysan
+ <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 0/4] iio: adc: ad9467: Support alternative backends
+Message-ID: <20260122203836.3019efe8@jic23-huawei>
+In-Reply-To: <20260121-b4-ad9467-optional-backend-v4-0-18d2c0d450cc@vaisala.com>
+References: <20260121-b4-ad9467-optional-backend-v4-0-18d2c0d450cc@vaisala.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,23 +48,69 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 21 Jan 2026 08:46:57 -0800
-Gwendal Grignou <gwendal@chromium.org> wrote:
+On Wed, 21 Jan 2026 12:08:29 +0000
+Tomas Melin <tomas.melin@vaisala.com> wrote:
 
-> 'calibrate' was a one-shot event sent to the sensor to calibrate itself.
-> It is used on Bosch sensors (BMI160, BMA254).
-> Light sensors work differently: They are first put in calibration mode,
-> tests are run to collect information and calculate the calibration
-> values to apply. Once done, the sensors are put back in normal mode.
-> 
-> Accept boolean true and false (not just true) to enter/exit calibration
-> state.
-> 
-> Check "echo 0 > calibrate" is supported.
-> 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Reviewed-by: Nick Vaccaro <nvaccaro@google.com>
+> To facilitate backends with different set of features, add support
+> for defining capabilites provided by the backend. These capabilites
 
-Ah. I replied to v1 without checking for a v2.
+Spell check. capabilities
 
-Short version is; Needs ABI docs update.
+> typically extend beyond a single operation and are therefore not
+> directly linked to if a single function call is implemented or not.
+> Furthermore, the capabilites determine if a certain set of operations
+> should be attempted, or skipped by the frontend. This way
+> the frontend driver can work with a minimalistic set of features and
+> still have the device in fully functional state.
+> 
+> Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+> ---
+> Changes in v4:
+> - Readd CAP_BUFFERING and also add CAP_ALWAYS_ON to support backends
+>   that do not need explicit enable/disable
+> - Don't mix checks for eopnotsupp and caps. Prefer capability checking
+>   also for caps that map to single operation
+> - Move capability checking to top of call stack
+> - Revise iio_backend_has_caps to use bool signature and fixup semantics
+> - Amend documentation texts
+> - Add capability checks for axi-dac
+> - Drop two's complement patch from this series, already applied
+> - Link to v3: https://lore.kernel.org/r/20260114-b4-ad9467-optional-backend-v3-0-d2c84979d010@vaisala.com
+> 
+> Changes in v3:
+> - Reduce set of capabilities to only include calibration. The other
+>   ones propsed in V2 can be seen as subset of calibration, or single
+>   operation failing with opnotsupported
+> - Rename backends checking function
+> - Relocate caps field inside backend struct (pahole)
+> - Add kernel-docs
+> - Add capabilites for exisiting backend variants
+> - Link to v2: https://lore.kernel.org/r/20260113-b4-ad9467-optional-backend-v2-0-0a27e7e72f41@vaisala.com
+> 
+> Changes in v2:
+> - Added industrialio-backend capabilities feature
+> - Removed acceptance for fully optional backend, instead require atleast
+>   minimalistic backend to exist
+> - Switched to FIELD_MODIFY()
+> - Fixed kernel test robot reported failure for missing bitfield.h
+> - Link to v1: https://lore.kernel.org/r/20251216-b4-ad9467-optional-backend-v1-0-83e61531ef4d@vaisala.com
+> 
+> ---
+> Tomas Melin (4):
+>       iio: industrialio-backend: support backend capabilities
+>       iio: adc: adi-axi-adc: define supported iio-backend capabilities
+>       iio: adc: adi-axi-dac: define supported iio-backend capabilities
+>       iio: adc: ad9467: check for backend capabilities
+> 
+>  drivers/iio/adc/ad9467.c           | 72 ++++++++++++++++++++++++--------------
+>  drivers/iio/adc/adi-axi-adc.c      |  3 ++
+>  drivers/iio/dac/adi-axi-dac.c      |  2 ++
+>  drivers/iio/industrialio-backend.c | 16 +++++++++
+>  include/linux/iio/backend.h        | 25 +++++++++++++
+>  5 files changed, 91 insertions(+), 27 deletions(-)
+> ---
+> base-commit: a7b10f0963c651a6406d958a5f64b9c5594f84da
+> change-id: 20251215-b4-ad9467-optional-backend-23f1099ee4d7
+> 
+> Best regards,
+
