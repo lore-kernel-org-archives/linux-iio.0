@@ -1,44 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDE6F39BA52;
-	Thu, 22 Jan 2026 19:54:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6759E2773C1;
+	Thu, 22 Jan 2026 20:08:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769111671; cv=none; b=du4ht3JOBKtzDlqGW4v1R7VB54aA99NbZ3GG04AHNkNZhngcT8gZ5TorcmM5GdOrA66uGxfGBgaevhnJhAqQZh+MtQ3qlAOay/vBiSEWpBsJ52qldO0byW+X673xwug9ANHzVoJ8RzVhnxtZtxF05KVGWf5BA3zskX/RplOuIZM=
+	t=1769112487; cv=none; b=LbGN9vf0ar3eLI1liVudbCeE2Nq2I9IgCAjjsBORe5fJIKhUHKY4Zt7Vnz6/H6mHLXNHIzEyd58Xj63HH4+ksa3FvDCmeVYXVa5H7DLwnmh/IZ6DHcHhH6uGc0RFUeZ/8HiUcNo7A0NxikfgWO+k3Grqj87Mej94lBh+DXSP7K8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769111671; c=relaxed/simple;
-	bh=hatfovsPRhyp9G47SP3JOu4AZYQGg+kg1WpUDtCT/i4=;
+	s=arc-20240116; t=1769112487; c=relaxed/simple;
+	bh=TtKasqEsGC6r5n+cW78XJcd4NBmmsVN619CA3gbsI0s=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AckBERq08oZ4b/iJm4Hfv8dFxWz/x/HE/cqPD4tXxjQA/lx2yLoAHxY5oybTAc327VVf24fsk04y+Hl/wfYmqaJfpd7ymFHr3gWlP6jqHBRrdonxkgwkrDf3Bp23SYtLzKmnkCZTvOE0JhU5Nk4mtrg6/8D/xe+It4Bwy0QPjNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PPkMYQsP; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=GWv9Y0TKklXTzQooRj93++7ZUcmnr/vVA2MRHJGS2fek3lWqkRggQ9Zax3vZF+pjJSyiGCUm4UxTG4Uz/VlxVRmS+p0smB1izVZZ4Ppn+CJ9QA/x5qQEU/ni7BpYwmvHpOuxusyZcaKW6rFlGTcLcJHVodut9LUEmFHWixGG42s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Tbz0cdi0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PPkMYQsP"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CEAEC116C6;
-	Thu, 22 Jan 2026 19:54:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Tbz0cdi0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49939C116D0;
+	Thu, 22 Jan 2026 20:08:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769111670;
-	bh=hatfovsPRhyp9G47SP3JOu4AZYQGg+kg1WpUDtCT/i4=;
+	s=k20201202; t=1769112485;
+	bh=TtKasqEsGC6r5n+cW78XJcd4NBmmsVN619CA3gbsI0s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=PPkMYQsPOM2ifgJ8m80in6fp2blFd5jZglerRJQ8ajfQmE1eAkE4rEgocQ1mTqZO/
-	 o+S4e7nvGH9dYxA9EXy77t3N/h0XTgmfwefv13AVglr9CgFjI92RvWw2F4llmOMm4x
-	 7K24wIZyl+kk6oyVFw/ukfAJPnbez2HnFgG/JDjPVXxfeymDcBzx1WH+WjIEb2IpKN
-	 TEs8eCgNf3Z8UyV9wvbd3V+voQ/up4wPdNoT/Mq2VL4tMxXf50/AeQpAfMIKiqFTwL
-	 yisjppXL9bRrQwc08lpz5cNOpfR8tGznMAO+fBzn4+rOq+stldak+4xMSTzILZPRdZ
-	 BOfL0xv7ANkkA==
-Date: Thu, 22 Jan 2026 19:54:23 +0000
+	b=Tbz0cdi0NBlYZgwKB3ntHo0Y5PrBvoomqOLOJubyujUVn12f0mcbCuGvm8MZF65m0
+	 R788rfUlCoQHz7FbNRMOFedxPfyR5n2JxL49uoIW56GxkJuKuCybXDlSy0MMK5PUx0
+	 xZMnD+sJb4CHXgtDBbajatNwFnZWSQwHbK7ulyXfJaXXN6UtsODg0Y6lWteABGktVD
+	 9niWOuJy8N+50ipeEeE8gfsI+rE8BcvyWB1hYf/OviLoxjc5ivruTZIfkSFghYeyty
+	 SwLN2yaoQsMonuAqtporqgF10YLvir9CV9+HkA1UIlbNiU0kK5kOgCgk+dzf8PDhxD
+	 iS7ojSKzpIFRQ==
+Date: Thu, 22 Jan 2026 20:07:57 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Francesco Lavra <flavra@baylibre.com>
-Cc: Ramona Gradinariu <ramona.gradinariu@analog.com>, Antoniu Miclaus
- <antoniu.miclaus@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
  Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 0/2] accel: adxl380: Improve data reading from FIFO
-Message-ID: <20260122195423.692d90ec@jic23-huawei>
-In-Reply-To: <20260119102317.1565417-1-flavra@baylibre.com>
-References: <20260119102317.1565417-1-flavra@baylibre.com>
+Subject: Re: [PATCH v5 3/4] iio: imu: st_lsm6dsx: Fix check for invalid
+ samples from FIFO
+Message-ID: <20260122200757.47863f0f@jic23-huawei>
+In-Reply-To: <20260122162335.2020006-4-flavra@baylibre.com>
+References: <20260122162335.2020006-1-flavra@baylibre.com>
+	<20260122162335.2020006-4-flavra@baylibre.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,35 +49,86 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 19 Jan 2026 11:23:15 +0100
+On Thu, 22 Jan 2026 17:23:34 +0100
 Francesco Lavra <flavra@baylibre.com> wrote:
 
-> Patch 1 fixes a bug that might cause the adxl380 interrupt handler
-> to read from the sensor FIFO more entries than actually present.
-> Patch 2 optimizes transfer of FIFO data by minimizing transport protocol
-> overhead.
+> The DRDY_MASK feature implemented in sensor chips marks gyroscope and
+> accelerometer invalid samples (i.e. samples that have been acquired during
+> the settling time of sensor filters) with the special values 0x7FFFh,
+> 0x7FFE, and 0x7FFD.
+> The driver checks FIFO samples against these special values in order to
+> discard invalid samples; however, it does the check regardless of the type
+> of samples being processed, whereas this feature is specific to gyroscope
+> and accelerometer data. This could cause valid samples to be discarded.
 > 
-> Changes from v1 [1]:
-> - replaced 2 with sizeof(*st->fifo_buf) in adxl380_irq_handler (Jonathan)
-> 
-> [1] https://lore.kernel.org/linux-iio/20260106193627.3989930-1-flavra@baylibre.com/T/
-Series applied.
+> Fix the above check so that it takes into account the type of samples being
+> processed. In st_lsm6dsx_push_tagged_data(), change the type of the data
+> parameter to __le16 *, to reflect the fact that this function is called
+> with an aligned data argument and avoid casting to __le16 * when checking
+> sample values.
+Hi Francesco,
 
-Given timing I've queued it up on the testing (soon to be togreg) branch of iio.git
-but marked the first patch for stable so that it'll get backported after the merge
-window.
-
-Thanks,
-
-Jonathan
-
+I'm going to guess Andy meant all the way up rather than pushing the cast
+upwards.  I think this can be done in a fashion that cleans up the type
+representation in general.
 > 
-> Francesco Lavra (2):
->   iio: accel: adxl380: Avoid reading more entries than present in FIFO
->   iio: accel: adxl380: Optimize reading of FIFO entries in interrupt
->     handler
+> Fixes: 960506ed2c69 ("iio: imu: st_lsm6dsx: enable drdy-mask if available")
+> Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+
+
+> ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
 > 
->  drivers/iio/accel/adxl380.c | 13 ++++++-------
->  1 file changed, 6 insertions(+), 7 deletions(-)
-> 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> index 5b28a3ffcc3d..ded9a96076e6 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> @@ -539,14 +539,14 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
+>  #define ST_LSM6DSX_INVALID_SAMPLE	0x7ffd
+>  static int
+>  st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
+> -			    u8 *data, s64 ts)
+> +			    __le16 *data, s64 ts)
+>  {
+> -	s16 val = le16_to_cpu(*(__le16 *)data);
+>  	struct st_lsm6dsx_sensor *sensor;
+>  	struct iio_dev *iio_dev;
+>  
+>  	/* invalid sample during bootstrap phase */
+> -	if (val >= ST_LSM6DSX_INVALID_SAMPLE)
+> +	if ((tag == ST_LSM6DSX_GYRO_TAG || tag == ST_LSM6DSX_ACC_TAG) &&
+> +	    (s16)le16_to_cpup(data) >= ST_LSM6DSX_INVALID_SAMPLE)
+>  		return -EINVAL;
+>  
+>  	/*
+> @@ -670,7 +670,8 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
+>  					reset_ts = true;
+>  				ts *= hw->ts_gain;
+>  			} else {
+> -				st_lsm6dsx_push_tagged_data(hw, tag, iio_buff,
+> +				st_lsm6dsx_push_tagged_data(hw, tag,
+> +							    (__le16 *)iio_buff,
+
+This is ugly but at least it's near the declaration so improvement on previous.
+
+However, I smell a cleaner solution.  If I read the buffer definition correctly
+it could be replaced with
+
+struct {
+	__le16 data[3];
+	aligned_s64 timestamp;
+} iio_buff = { };
+
+//note the zeroing because the code never writes the hole which is
+bad...  Also that the { } is guaranteed to fill the hole with the build options
+the kernel uses (there is a selftest for this).
+
+
+Which will let you pass iio_buf->data to this call.
+
+
+>  							    ts);
+>  			}
+>  		}
 
