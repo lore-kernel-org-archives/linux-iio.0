@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2AD530BF75;
-	Fri, 23 Jan 2026 15:53:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D6293101A2;
+	Fri, 23 Jan 2026 15:53:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769183638; cv=none; b=rk8hP6sg3AzGz26AcLLldGZMztX/e+rzO4xIV70UoHj+qu3bc72o2JfLV/cUQJ0+gmc+RwX02h/fIDVeYjOUXKOVeXT4ejECzU5rmE/1rEFflUnGu6tSJEqTmxJqhsC+phsTgoTn7zBimPUcFQiOiWq7MawGbnj7jdwDjRpj1C0=
+	t=1769183639; cv=none; b=b9iiKBjcp/uSqS9mt5PLW1S9ajTdxc6p+EtlPciWl1/gTCFxzoL0Rph4GRxzPzWJ8yKLjdxbfsNlcZtxBaQqF3A64Xg+Bjw0Ly0VroG9R4X7Iu6D4P6uCgp1Dq+WyrKuPULc9iNnRSrose6Wqwkj8o3i6B1jc/yiqmDwGBIdzY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769183638; c=relaxed/simple;
-	bh=XtBXL//seGED9nOoCL32TNrr4TWA9ay6t7NhoYR48Qg=;
+	s=arc-20240116; t=1769183639; c=relaxed/simple;
+	bh=kYnBn0hPZJrXUXTU31Ix0gevpfaNxn8AINHbROFMUOE=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hi6BKw4ALio1Mqzp+urlSLIAhk5GjQWCyVDagI+yrqiEMO1EhuRqiO3UU7nQzCvAimGUA6PxrvSYb/s7zRuZD1vrQLMcZGmrgIT0EqZsb/i9LlaA72Q7b9J7bbXHMb463rLxSvdmucIlKASbFTRAad//+vQdLhp/Csc3bec3UDw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QQved3I6; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=FR+9DIkgW8iY7ic8D6lmbDH/a75c/VPNcSKo3wOJRn9fInfhOlzOPO/SWilT7vNfDTuVojm69WhynWITXTnLPYxbBP6d9zeb7vS0bjgA/eGj+EYl0TFKJMYvlqpe/dq8MtqdNguu8iqvNXX4o7MOqN2ONZfeu1AFEmSDCfN1lu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t7vr+Fos; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QQved3I6"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 90193C2BCB1;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t7vr+Fos"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D54C3C19423;
 	Fri, 23 Jan 2026 15:53:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1769183638;
-	bh=XtBXL//seGED9nOoCL32TNrr4TWA9ay6t7NhoYR48Qg=;
+	bh=kYnBn0hPZJrXUXTU31Ix0gevpfaNxn8AINHbROFMUOE=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=QQved3I6hsvklv14Sn0DZYtWfs0yaWKiQVXgmK+yBoxzTgDkb7XbDQGnfYhiWviNJ
-	 Im4ISa7ywsRKyh71cr9AhX0Oy0/gx2fA9Y89zxeeJb+uL+fylr/sEQEefkCcBykbvH
-	 wxzgfMWXsJ+2ZEXTeBOrLWMq8gtHqDaHKdtIzbDgldsZWVniO6Hv+ryjQhJ3ZKzNw2
-	 +Wj8S6y5u7fbN2iKhakQvhe57JOn5Qyd2eN0l79DxdwJWaPuJfLFft7pVatO7FsT/D
-	 Q33vYcvEjGi93p9ROeVNi0nwbpAQsP/pIzcNeMbZFz9TCb4KMffItcLX4M5OLzO+3W
-	 KfoJuCpVqoqdQ==
+	b=t7vr+FosHSGaXpKKxi/Mi2wHHwSGguT/fFQzm376tC8YoAPs/pVJoT2nMfLF+++sZ
+	 nkFiwOtW1wO2mHmvNyCyn6PFCB6gctMFHQ1JvCtjgYK6q198G+HjVJl1eKXKPNHjBx
+	 HdQqFWoPKZzlLHPKPWPW42HQEoSfh6Sq9BvGEBagWt4BTWmCBRnWFZxDTIrBvcHWBl
+	 NJyFn4uOVNyI93C3/RSxijva8P8PR3srXOrQTOaGExp3KG5Abz+v/v6Ug5v2zbHKuf
+	 QklzMqa81bE0tQovHgF6qy/U2iAs18Uyycu4YWXXR6OcLzwmxRDIGJMYNRbrf5uhy8
+	 inC5xF0M1rI2A==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 883B5D74EF5;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA09FD74EED;
 	Fri, 23 Jan 2026 15:53:58 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 23 Jan 2026 15:53:10 +0000
-Subject: [PATCH v5 5/8] iio: frequency: adf41513: handle LE synchronization
- feature
+Date: Fri, 23 Jan 2026 15:53:13 +0000
+Subject: [PATCH v5 8/8] Documentation: ABI: testing: add common ABI file
+ for iio/frequency
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260123-adf41513-iio-driver-v5-5-2dce812a2dda@analog.com>
+Message-Id: <20260123-adf41513-iio-driver-v5-8-2dce812a2dda@analog.com>
 References: <20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com>
 In-Reply-To: <20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -54,11 +54,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1769183636; l=2998;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1769183636; l=1731;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=g3dcnu3ZqqYsdxD3OfjJPLiHtxs/OM+CQIo7yTrs3SQ=;
- b=xG+Qs+p/Dq4bN/jbOphK9oA7kIIxLWZxufMiNcKLbGil9h67oeWNCVkTc24IFKmd4tK5Nma1h
- AhTuWPeL0v6B30CmZF3OgI0yedSaU0r4U7FVx/U6d8OOGRv1lJ2Gass
+ bh=67mGOWaw3wet6Ddy/uiN+nSBqKV1DJFYXkAQQXBO/tY=;
+ b=sY9hFkMvphekFdXeCxn6OC+rdNYYSYMjqKaoJPGl1x4jhVrFUJsz0W+oMP63vw6d6PqprB0o4
+ VRiABngTpexAYGbjNOkFOC4fD1ydbzYxtZdrOAv7b/QQwqrvHKDkWSC
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,96 +68,44 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-When LE sync is enabled, it is must be set after powering up and must be
-disabled when powering down. It is recommended when using the PLL as
-a frequency synthesizer, where reference signal will always be present
-while the device is being configured.
+Add ABI documentation file for PLL/DDS devices with frequency_resolution
+sysfs entry attribute used by ADF4350 and ADF41513.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/frequency/adf41513.c | 35 ++++++++++++++++++++++++++++++++---
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio-frequency | 11 +++++++++++
+ MAINTAINERS                                       |  1 +
+ 2 files changed, 12 insertions(+)
 
-diff --git a/drivers/iio/frequency/adf41513.c b/drivers/iio/frequency/adf41513.c
-index 7b5a3a19f1b5..ddad4f4f1938 100644
---- a/drivers/iio/frequency/adf41513.c
-+++ b/drivers/iio/frequency/adf41513.c
-@@ -221,6 +221,7 @@ struct adf41513_data {
- 	bool phase_detector_polarity;
- 
- 	bool logic_lvl_1v8_en;
-+	bool le_sync_en;
- };
- 
- struct adf41513_pll_settings {
-@@ -639,13 +640,27 @@ static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 s
- static int adf41513_suspend(struct adf41513_state *st)
- {
- 	st->regs[ADF41513_REG6] |= FIELD_PREP(ADF41513_REG6_POWER_DOWN_MSK, 1);
-+	st->regs[ADF41513_REG12] &= ~ADF41513_REG12_LE_SELECT_MSK;
- 	return adf41513_sync_config(st, ADF41513_SYNC_DIFF);
- }
- 
- static int adf41513_resume(struct adf41513_state *st)
- {
-+	int ret;
-+
- 	st->regs[ADF41513_REG6] &= ~ADF41513_REG6_POWER_DOWN_MSK;
--	return adf41513_sync_config(st, ADF41513_SYNC_DIFF);
-+	ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
-+	if (ret)
-+		return ret;
-+
-+	if (st->data.le_sync_en) {
-+		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
-+		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return ret;
- }
- 
- static ssize_t adf41513_read_uhz(struct iio_dev *indio_dev,
-@@ -939,6 +954,8 @@ static int adf41513_parse_fw(struct adf41513_state *st)
- 				     "invalid lock detect count: %u\n", tmp);
- 	st->data.lock_detect_count = tmp;
- 
-+	/* load enable sync */
-+	st->data.le_sync_en = device_property_read_bool(dev, "adi,le-sync-enable");
- 	st->data.freq_resolution_uhz = MICROHZ_PER_HZ;
- 
- 	return 0;
-@@ -946,6 +963,7 @@ static int adf41513_parse_fw(struct adf41513_state *st)
- 
- static int adf41513_setup(struct adf41513_state *st)
- {
-+	int ret;
- 	u32 tmp;
- 
- 	memset(st->regs_hw, 0xFF, sizeof(st->regs_hw));
-@@ -979,8 +997,19 @@ static int adf41513_setup(struct adf41513_state *st)
- 					      st->data.logic_lvl_1v8_en ? 0 : 1);
- 
- 	/* perform initialization sequence with power-up frequency */
--	return adf41513_set_frequency(st, st->data.power_up_frequency_hz * MICRO,
--				      ADF41513_SYNC_ALL);
-+	ret = adf41513_set_frequency(st, st->data.power_up_frequency_hz * MICRO,
-+				     ADF41513_SYNC_ALL);
-+	if (ret)
-+		return ret;
-+
-+	if (st->data.le_sync_en) {
-+		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
-+		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
- }
- 
- static void adf41513_power_down(void *data)
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
+new file mode 100644
+index 000000000000..1ce8ae578fd6
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
+@@ -0,0 +1,11 @@
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
++KernelVersion:	6.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Stores channel Y frequency resolution/channel spacing in Hz for PLL
++		devices. The given value directly influences the operating mode when
++		fractional-N synthesis is required, as it derives values for
++		configurable modulus parameters used in the calculation of the output
++		frequency. It is assumed that the algorithm that is used to compute
++		the various dividers, is able to generate proper values for multiples
++		of channel spacing.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b9cc8ddcd624..ed39a275b7f6 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1623,6 +1623,7 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/ABI/testing/sysfs-bus-iio-frequency
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
+ F:	Documentation/iio/adf41513.rst
+ F:	drivers/iio/frequency/adf41513.c
 
 -- 
 2.43.0
