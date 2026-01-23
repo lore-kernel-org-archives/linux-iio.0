@@ -1,117 +1,90 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F1DA33B961;
-	Fri, 23 Jan 2026 09:59:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B7430F92E
+	for <linux-iio@vger.kernel.org>; Fri, 23 Jan 2026 09:59:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769162385; cv=none; b=KlHlrHCqXVSvetCUkjddJYBFE94o2s+KVJlWW9zioVU+t578xNqA3STueRUHvQ/D/SKwBSc0YbP7K5/0/a0gvlPG0xkZP8aNNtYHKq5a4WA6w4pNABqClRAnMwu2UrOWkNKN16XODZ1gQPBRGcKvrRxPeNxoaGD30URmZwK3Roc=
+	t=1769162388; cv=none; b=ahk5/4hkIABFncslej8Nsiz6uWOo65uXq6ujS5jKyd8S6CHvqHnwr25dr4n8cycHzLSfTqNchE06xUNiUJnBfhRQXL9R76LCZ0J1IF2UbEFcyGeHb4Z3ejPTpJwhsyGRdsIJ48UMUdpBVxt/98OYSQwPEGx/07RiTT26w3NS29w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769162385; c=relaxed/simple;
-	bh=vR5abBsm/U3O5AV+nyEEHBOsWf1Z3K2+Ex1qGmHdbQU=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ffeYb7PnoihSmBjgKrynl/95oZHqfG04QswCU3uEqhfp/ZUGg3ZWQV7WA/SvshAFOn05G0VpSMmyJPzjSGbu1Z+rcteheBAjck7Qxiyti/yj6d5ZrrMa2BF9EQvlh5Vm+p67o74bkIj/t8O8nY1GgzQh9QRLaMgTu1COYrkqZQQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vkebqn2k; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vkebqn2k"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DABE4C4CEF1;
-	Fri, 23 Jan 2026 09:59:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769162384;
-	bh=vR5abBsm/U3O5AV+nyEEHBOsWf1Z3K2+Ex1qGmHdbQU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Vkebqn2k//BN5RFV2gkmw0to0bTdv7xLHEx3nZICZOU1+7pZmOPc9+b/FwuvJcT7C
-	 0QtAumJLLYTF9B2Ej64mgBkhv6IlacIdAntJ859j02/ccQie4NUcbgI/3neB9oFDXo
-	 AlSZ3rs62aQDeae+qLK2N/tz79FnKuV62i5Hk3S+kWDwMcy3T7U7T9o9UqoyD0h0D6
-	 MXNbbH/G2Kk4ArUZ+ALPHEVYk1EO+5iZa/wavMMuSPhZgtEJS2cpSFxShqN6maMC7m
-	 mTsuoh8kd/5NL9+GPLsZvhn4GFGryBdZER8GFHRu4maZT3W3118ojfSXLdN0+fjTEO
-	 hk/qpVse6ty6g==
-Date: Fri, 23 Jan 2026 09:59:36 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Shrikant <raskar.shree97@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, skhan@linuxfoundation.org,
- david.hunter.linux@gmail.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 1/5] iio: proximity: rfd77402: Reorder header
- includes
-Message-ID: <20260123095936.27efdeb4@jic23-huawei>
-In-Reply-To: <CAHc1_P6cPk8T1SXK6jmYPsqzqbwM0h6_9eJ82OiRO-uC1Sn+AA@mail.gmail.com>
-References: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
-	<20260121-b4-rfd77402_v5-v6-1-5b944d0605dd@gmail.com>
-	<aXCUKMcCyYBf4ZdJ@smile.fi.intel.com>
-	<20260122205749.4f939243@jic23-huawei>
-	<CAHc1_P6cPk8T1SXK6jmYPsqzqbwM0h6_9eJ82OiRO-uC1Sn+AA@mail.gmail.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	s=arc-20240116; t=1769162388; c=relaxed/simple;
+	bh=yyDwabrTYrJpFXvPN1Y+Tn8xXCiOdVIuaECjT5c3qc4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=SzCjiGTvYpVPhERB5DZYNq60DtGiQ10FA9F/lruByEPpZKlH993tPC7VQIvrBglsDIfOMRKMqSqt0nmFxO3+mcz5xSqfNLQLR3EQR/PFufds29zOMDi3wSQsc751bk6GDjqEsCcB1LtbB+h0CIIVWXKTDfGyJgIuu9bJRUyzbvw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vjDx0-0002hV-LR; Fri, 23 Jan 2026 10:59:34 +0100
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vjDx0-0024Ql-0v;
+	Fri, 23 Jan 2026 10:59:33 +0100
+Received: from ore by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vjDwz-00Atke-1e;
+	Fri, 23 Jan 2026 10:59:33 +0100
+Date: Fri, 23 Jan 2026 10:59:33 +0100
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	David Jander <david@protonic.nl>
+Subject: Re: [PATCH v1 6/8] iio: dac: ds4424: clear outputs on probe
+Message-ID: <aXNGhVTuzJpzQkxV@pengutronix.de>
+References: <20260119182424.1660601-1-o.rempel@pengutronix.de>
+ <20260119182424.1660601-7-o.rempel@pengutronix.de>
+ <20260123093804.139f0409@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20260123093804.139f0409@jic23-huawei>
+X-Sent-From: Pengutronix Hildesheim
+X-URL: http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Fri, 23 Jan 2026 09:12:31 +0530
-Shrikant <raskar.shree97@gmail.com> wrote:
+On Fri, Jan 23, 2026 at 09:38:04AM +0000, Jonathan Cameron wrote:
+> On Mon, 19 Jan 2026 19:24:22 +0100
+> Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+> 
+> > The DS44xx devices have no reset pin or reset bit, so output registers
+> > may retain preconfigured values across reboot or warm reset.
+> > 
+> > Also, the driver suspend/resume path restores from data->raw. When the
+> > device is first probed, data->raw is zero-initialized and may not match
+> > the actual hardware state. A later suspend/resume can therefore change an
+> > output from a preconfigured non-zero value to 0 mA.
+> 
+> For DACs we often want to retain settings from before kernel load (or
+> on exit of the driver).  Can we just read them back from the device to
+> fill in the cached versions?  If we can I think that would be preferred
+> option.
 
-> On Fri, Jan 23, 2026 at 2:27=E2=80=AFAM Jonathan Cameron <jic23@kernel.or=
-g> wrote:
-> >
-> > On Wed, 21 Jan 2026 10:54:00 +0200
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > =20
-> > > On Wed, Jan 21, 2026 at 02:05:41AM +0530, Shrikant Raskar via B4 Rela=
-y wrote:
-> > > =20
-> > > > Reorder header includes to follow kernel include
-> > > > ordering conventions. =20
-> > >
-> > > FWIW,
-> > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > > =20
-> >
-> > Patches 1 and 2 were already queued up.  I've rebuilt the merge
-> > in my tree to drop patch 2 without breaking the rest of the history.
-> >
-> > Shrikant, it is common for maintainer to pick up the early
-> > part of a series whilst later parts still need more work.
-> > If that happens, please rebase on the appropriate tree or
-> > just drop those patches form your series that have already been
-> > applied. Otherwise this mess happens where new review comes
-> > in. Review is always good, but it should be clear if it
-> > is on applied patches or not!
-> > =20
-> Sorry for creating the confusion, the patches 1 and 2 which were
-> applied in v4 were dropped from v5 onwards as per your suggestion.
-> Please see the links of the accepted patches for your reference.
-> 1. https://lore.kernel.org/all/20260101-b4-rfd77402_irq-v4-1-42cd54359e9f=
-@gmail.com/
-> 2. https://lore.kernel.org/all/20260101-b4-rfd77402_irq-v4-2-42cd54359e9f=
-@gmail.com/
->=20
-> As per reviewer comments , I have split the existing patches into
-> multiple commits like:
-> 1. Added pre-cursor commit for include order
-> 2. Added separate commit for devm mutex initialization
-> 3. Added separate commit for kernel-doc for privata data.
->=20
-> Because of these separated commits, the total number of
-> patches in series are still 5.
-Ah ok so in general good. I guess you missed that I mailed to say I picked =
-up a few
-more in v5.
-https://lore.kernel.org/all/20260116200921.7494025b@jic23-huawei/
+ACK, i was not sure what is the best way here.
 
-These things happen so don't worry about it. I was just grumpy last night :(
-
-Feeling much better now I've spent a few more hours getting on top of the
-backlog for this cycle!
-
-Jonathan
->=20
-> Regards,
-> Shrikant
->=20
-
+Best Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
