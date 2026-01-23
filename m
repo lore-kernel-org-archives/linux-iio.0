@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A50318DB37;
-	Fri, 23 Jan 2026 09:14:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35A76342CB0;
+	Fri, 23 Jan 2026 09:25:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769159644; cv=none; b=uvTQ5iQfHf1b2zFgk8nCn5kO9qV5qYKt5IiD8wASXlIRSqOU70IuzrxEpWsQtBCKBrQugp5WxPtw2GpphMK7ABvjtDO9SCqX1+lGUONBJpult2Cb1HHVD7xZwcZ+rjPzo1o3BwALPo3ykme60lReAL5AUaWWQUSY4pETcHvws54=
+	t=1769160358; cv=none; b=S351X36cwtpPv1LRKKu+pVSlFg3EL+2xvfGL3HhMdMlNBaOLdvy3v6he4mkXkybCSgyIz3SksnCDNcwjR47Mqr7s8dZuYPVVcxFJHn3h+1p0gMwcL9zFh3Bn1WI8LsZDw4FdB+VtU3xxX71Hc6cnQ/62w2bYLx1ESF6LipMppdY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769159644; c=relaxed/simple;
-	bh=hc1d8PprO/rifKZP0byHcVdxf/ktn0MVN+Yt9SP+4x4=;
+	s=arc-20240116; t=1769160358; c=relaxed/simple;
+	bh=3tEshxzJOU/wgE+yqwpdHdeX7nQ2dd5+FGhq9qJ+ZqI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=P/Ns6Hzxnap286h8RFJPHSwt49XiGP51vm9AeHrOHfulgT+VOHtJ1YtV8GMypAfo0TJEZXH9GkWSUcIakaTkp7y1gHHYcAyIx7b7ZqQfrLBq1mcNp/zLU/zuLVNYUg4qjX4HlegRqlvaQnZDH+iBLNbwGCTbxAq7qlcO1G+XIoM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UOHyzX/u; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=d7VC6uy+tL810+lbBst+dZB84uqBaqYCE82bgOISoWggqI/Wl38J//Aq+9joYfz5pCkoX0HohlI12ZodioB6axmgyC8KiVltOldykld5oL4rZ6Ovz1sqduF7KwT1QOftJ+ZUpvPgSsVzB7/xjFiHwGn9QAPV1YdCwl5eXfv1LKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ObzZd/OH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UOHyzX/u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB16EC116D0;
-	Fri, 23 Jan 2026 09:13:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ObzZd/OH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAAADC4CEF1;
+	Fri, 23 Jan 2026 09:25:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769159644;
-	bh=hc1d8PprO/rifKZP0byHcVdxf/ktn0MVN+Yt9SP+4x4=;
+	s=k20201202; t=1769160357;
+	bh=3tEshxzJOU/wgE+yqwpdHdeX7nQ2dd5+FGhq9qJ+ZqI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=UOHyzX/uAQxunuEDWA4IjDUOigApHS8eJBIqSQRpVY9chEOfKR1746LpYDX0GVOBm
-	 XRNNP8HaVKLbtqq/svc4/AXBzqi0fbKHY0Ml3UA6NnVfJZk697gxcMi/xE8799bhzF
-	 6Pcq7WmNr2xJcq6/NjIH2489ekMnMoMRxcqn6ExEA0CzydGHasCKhYI9v1t+Kntdvs
-	 buGaT0/gJj7Wh5fO3vgFs6XHmsVr8xk7FbiS/ald7IfANgULofI8HRLm5RLDRH/Zf5
-	 oLZVDL6jf9c3MXRlx9z8e/wyAoJtUFdfyL3R5nlUOCwv2HfU7FWjNfJ+Ngk/CdE9M2
-	 CvAA3RvQYREVg==
-Date: Fri, 23 Jan 2026 09:13:53 +0000
+	b=ObzZd/OHSF4/5W8kZzYKVAYOzJcXa+Clrfr5FwM+5Ff5XgAMimbFZ6oa7pKxhTELg
+	 spqxOBDVcVhm2ThTys2UfJpviTceqOsiLfbl4144xZyc+kPtQTarlMQPSn+pyxCk4J
+	 poogLME2tdeFUN7qrqZFVP3cQtwcdRy6F0N98gLsB9x51TfYYdzMQ85DoAvDrkHQit
+	 pqQFg55xwhgb3Z64wrIEdj3xNplluNTAHHdMmvjy3e6+zfJ7m3h0oCqTQbBXw8eiQy
+	 aORqCDtVnu4kKMQaqTKNg2Lqq2BfhRwV0BSB1emJrwQBU655YRKzanVmLGlPCWh2Dy
+	 3/OUqR3BP9lfw==
+Date: Fri, 23 Jan 2026 09:25:46 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Petr Hodina via B4 Relay <devnull+petr.hodina.protonmail.com@kernel.org>
 Cc: petr.hodina@protonmail.com, Song Qiang <songqiang1304521@gmail.com>,
@@ -37,12 +37,12 @@ Cc: petr.hodina@protonmail.com, Song Qiang <songqiang1304521@gmail.com>,
  <broonie@kernel.org>, David Heidelberg <david@ixit.cz>,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] iio: proximity: vl53l0x-i2c: Add optional vddio
- supply
-Message-ID: <20260123091353.420218cc@jic23-huawei>
-In-Reply-To: <20260119-vl53l0x-v1-2-cf71715a1353@protonmail.com>
+Subject: Re: [PATCH 4/4] iio: proximity: vl53l0x-i2c: Use raw I2C access and
+ read full device ID
+Message-ID: <20260123092546.3ebbedcd@jic23-huawei>
+In-Reply-To: <20260119-vl53l0x-v1-4-cf71715a1353@protonmail.com>
 References: <20260119-vl53l0x-v1-0-cf71715a1353@protonmail.com>
-	<20260119-vl53l0x-v1-2-cf71715a1353@protonmail.com>
+	<20260119-vl53l0x-v1-4-cf71715a1353@protonmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,78 +53,126 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 19 Jan 2026 18:19:56 +0100
+On Mon, 19 Jan 2026 18:19:58 +0100
 Petr Hodina via B4 Relay <devnull+petr.hodina.protonmail.com@kernel.org> wrote:
 
 > From: Petr Hodina <petr.hodina@protonmail.com>
 > 
-> The VL53L0X can be powered using separate core (VDD) and I/O (VDDIO)
-> supplies.
+> Replace SMBus byte reads with raw I2C transfers when reading the device
+> identification registers.
 > 
-> Add support for an optional vio regulator and enable/disable it during
-> power on/off when present. Update the device tree binding to document the
-> new optional supply.
+> The VL53L0X exposes its model and revision as 16-bit registers, which are
+> more accurately accessed using standard I2C send/receive operations.
+> This also avoids depending on SMBus byte data support, which is not
+> guaranteed on all I2C adapters.
 
-In what sense is it optional?  Some change to device config to say don't
-use it, or simply might not be in DT binding but in that case is always on?
-
-If the second just let the regulator framework provide a stub regulator.
-That is in the driver don't treat it as optional and all should work fine.
-
-
+Hmm. I thought it was emulated wherever possible.  See below for
+request for a specific comment on what the subtle difference is.
+I'm also wondering from this description if it actually works with
+smbus but  isn't documented as doing so?
+> 
+> Read and log both model and revision IDs, and validate the model ID
+> during probe to ensure the expected device is present.
 > 
 > Signed-off-by: Petr Hodina <petr.hodina@protonmail.com>
 > ---
->  drivers/iio/proximity/vl53l0x-i2c.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
+>  drivers/iio/proximity/vl53l0x-i2c.c | 45 +++++++++++++++++++++++++++++++------
+>  1 file changed, 38 insertions(+), 7 deletions(-)
 > 
 > diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-> index ad3e46d47fa8..7bfab396377a 100644
+> index 6901ce7dd835..a2de4cc16a43 100644
 > --- a/drivers/iio/proximity/vl53l0x-i2c.c
 > +++ b/drivers/iio/proximity/vl53l0x-i2c.c
-> @@ -55,6 +55,7 @@ struct vl53l0x_data {
->  	struct i2c_client *client;
->  	struct completion completion;
->  	struct regulator *vdd_supply;
-> +	struct regulator *vio_supply;
->  	struct gpio_desc *reset_gpio;
->  	struct iio_trigger *trig;
+> @@ -320,11 +320,35 @@ static const struct iio_trigger_ops vl53l0x_trigger_ops = {
+>  	.validate_device = iio_trigger_validate_own_device,
 >  };
-> @@ -256,6 +257,8 @@ static void vl53l0x_power_off(void *_data)
->  	gpiod_set_value_cansleep(data->reset_gpio, 1);
 >  
->  	regulator_disable(data->vdd_supply);
-> +	if (data->vio_supply)
-> +		regulator_disable(data->vio_supply);
->  }
+> +
+> +static int vl53l0x_read_word(struct i2c_client *client, u8 reg, u16 *val)
+> +{
+> +	int ret;
+> +	u8 buf[2];
+> +
+> +	ret = i2c_master_send(client, &reg, 1);
+
+Add a comment that a stop is needed. Otherwise this would
+be i2c_smbus_read_word_swapped()
+
+Sigh, seems ST liked to make everyone's life a little harder ;)
+
+
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != 1)
+> +		return -EIO;
+> +
+> +	ret = i2c_master_recv(client, buf, 2);
+> +	if (ret < 0)
+> +		return ret;
+> +	if (ret != 2)
+> +		return -EIO;
+> +
+> +	*val = (buf[0] << 8) | buf[1];
+> +
+> +	return 0;
+> +}
+> +
+>  static int vl53l0x_probe(struct i2c_client *client)
+>  {
+>  	struct vl53l0x_data *data;
+>  	struct iio_dev *indio_dev;
+>  	int ret;
+> +	u16 model, rev;
 >  
->  static int vl53l0x_power_on(struct vl53l0x_data *data)
-> @@ -266,6 +269,12 @@ static int vl53l0x_power_on(struct vl53l0x_data *data)
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>  	if (!indio_dev)
+> @@ -339,13 +363,6 @@ static int vl53l0x_probe(struct i2c_client *client)
+>  				     I2C_FUNC_SMBUS_BYTE_DATA))
+>  		return -EOPNOTSUPP;
+>  
+> -	ret = i2c_smbus_read_byte_data(data->client, VL_REG_IDENTIFICATION_MODEL_ID);
+> -	if (ret < 0)
+> -		return -EINVAL;
+> -
+> -	if (ret != VL53L0X_MODEL_ID_VAL)
+> -		dev_info(&client->dev, "Unknown model id: 0x%x", ret);
+> -
+>  	data->vdd_supply = devm_regulator_get(&client->dev, "vdd");
+>  	if (IS_ERR(data->vdd_supply))
+>  		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
+> @@ -372,6 +389,20 @@ static int vl53l0x_probe(struct i2c_client *client)
 >  	if (ret)
 >  		return ret;
 >  
-> +	if (data->vio_supply) {
-> +		ret = regulator_enable(data->vio_supply);
-> +		if (ret)
-> +			return ret;
-> +	}
+> +	ret = vl53l0x_read_word(client, 0xC0, &model);
+defines for the register addresses.
+I'm curious why they got bigger in a patch that doesn't mention it in the
+patch description.
+
+> +	if (ret)
+> +		return dev_err_probe(&client->dev, ret, "Failed to read model ID\n");
+Given these long lines, it would be good to have a precursor patch
+struct device *dev = &client->dev;
+and use that throughout probe()
+
 > +
->  	gpiod_set_value_cansleep(data->reset_gpio, 0);
->  
->  	usleep_range(3200, 5000);
-> @@ -338,6 +347,13 @@ static int vl53l0x_probe(struct i2c_client *client)
->  		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
->  				     "Unable to get VDD regulator\n");
->  
-> +	data->vio_supply = devm_regulator_get_optional(&client->dev, "vio");
-> +	if (PTR_ERR(data->vio_supply) == -ENODEV)
-> +		data->vio_supply = NULL;
-> +	else if (IS_ERR(data->vio_supply))
-> +		return dev_err_probe(&client->dev, PTR_ERR(data->vio_supply),
-> +				     "Unable to get VDDIO regulator\n");
+> +	ret = vl53l0x_read_word(client, 0xC2, &rev);
+> +	if (ret)
+> +		return dev_err_probe(&client->dev, ret, "Failed to read revision ID\n");
 > +
->  	data->reset_gpio = devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_HIGH);
->  	if (IS_ERR(data->reset_gpio))
->  		return dev_err_probe(&client->dev, PTR_ERR(data->reset_gpio),
+> +	dev_info(&client->dev, "VL53L0X model=0x%04x rev=0x%04x\n", model, rev);
+> +
+> +	if ((model >> 8) != VL53L0X_MODEL_ID_VAL)
+> +		return dev_err_probe(&client->dev, -ENODEV,
+> +			"Unexpected model ID: 0x%04x\n", model);
+See comment on other patch. This breaks DT fallback compatibles and
+the benefit they bring for new compatible parts being able to be run with 
+old kernels.  Just warn and carry on with whatever the firmware told you this
+was.
+
+> +
+>  	indio_dev->name = "vl53l0x";
+>  	indio_dev->info = &vl53l0x_info;
+>  	indio_dev->channels = vl53l0x_channels;
 > 
 
