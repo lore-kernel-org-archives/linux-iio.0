@@ -1,220 +1,120 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D68143EBF31;
-	Fri, 23 Jan 2026 17:48:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FAA91A9FB0
+	for <linux-iio@vger.kernel.org>; Fri, 23 Jan 2026 19:48:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769190498; cv=none; b=WssozcaG/C+qcGGy9vOOvL0W3SlqgV7C3ij+0c3z6A0voOGZ8vSZDUKumxEkWUA+wY7VaUqCYQ4RyToyjyMPMICdI4IAqxuorZQxKWxVV5oDRZ3ugvQbJRwypFQHSjMm1bfbz2HA1dnytHDyAuUsfctaZtrKBeEvutUFQGOJf9A=
+	t=1769197710; cv=none; b=uz/gZ9pctNtz6VlpvC7M+KN2UEs6Sde5It6vmvrnhHzDwz+C+5b0VaakbZ6VytaZfWjvzwKw0vOb2mmfOmAycii6XsUAaW3op8/xXO8Qd8H0Qv8ahkU9LKighJ0Uo7yhiuZqFnpGGo+MxtMT/jkfj3ClQ+VnCFd0ZBTOdy/MAJU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769190498; c=relaxed/simple;
-	bh=+SJ2l2db+3r1J8gCRGQRTTpSXpSkztK3iRH1oQNk1QY=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gCrBB/eYpBR3SQc0oM7d+k3l/maUtBZlFLo6QYDmAi2A7kwcCe+a+R6EotxJ5uXbEoEqxyYfJfS/L2d+f4t95ZnY+kmwBz4OhkFZW4WVb9UuOfCYXrvx5NkxDfZbKblpl37HwOlalyCx65Mw+FhH4GjHIeiAxCt+TVHYY159mho=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.224.83])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4dyQPV2xzZzJ468m;
-	Sat, 24 Jan 2026 01:47:42 +0800 (CST)
-Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
-	by mail.maildlp.com (Postfix) with ESMTPS id 1FED240086;
-	Sat, 24 Jan 2026 01:48:12 +0800 (CST)
-Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
- (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Fri, 23 Jan
- 2026 17:48:11 +0000
-Date: Fri, 23 Jan 2026 17:48:10 +0000
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Francesco Lavra <flavra@baylibre.com>
-CC: Jonathan Cameron <jic23@kernel.org>, Lorenzo Bianconi
-	<lorenzo@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
-	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 4/4] iio: imu: st_lsm6dsx: Add support for rotation
- sensor
-Message-ID: <20260123174810.00007ce5@huawei.com>
-In-Reply-To: <c722a6a28788ee36b5c87b0a98ec29f2f945470c.camel@baylibre.com>
-References: <20260122162335.2020006-1-flavra@baylibre.com>
-	<20260122162335.2020006-5-flavra@baylibre.com>
-	<20260122202943.344e7311@jic23-huawei>
-	<c722a6a28788ee36b5c87b0a98ec29f2f945470c.camel@baylibre.com>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1769197710; c=relaxed/simple;
+	bh=B1c/vr0GUaEtusnH07mu4sq5q8A1cYkBwTJ7qRZS3NI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tvQkMyayET2z5wnIlH7AwtCoJw2xIop2B1/Xd24JFvvSUmlitHE720VqC8OhXWe8qC5TK1sB9dlivl9USlN64WmMcvSFveIABywKe17xBP9JK8Gr7mRl0NNDy2g/g8wvkHB3QTMuHRcgVB6HJcM2iyC5ovG1u37wekWv3i8/gWw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Op7zqKXv; arc=none smtp.client-ip=209.85.210.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Op7zqKXv"
+Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-81e8a9d521dso1530709b3a.2
+        for <linux-iio@vger.kernel.org>; Fri, 23 Jan 2026 11:48:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1769197709; x=1769802509; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=B3R1HFYAHVqM4kzN3/S5Q8P4MgXYgJzeRc7cvT0rLI4=;
+        b=Op7zqKXvfU5ogwzPXBXvV01axqv+ohlWi0Rh25G3HQzM7Nw5WjLwtzsIk3hCduLpQm
+         LfwgeEfOI5fJhL85gpx53v2Pm5MTXWOPeiAExf4/eDesI6HdI56GyyHPwhssUiXqAR0I
+         Ii3F9N/jEcZvASk2/cmwTYFnwtPucAoPHF/oplIqLr2m1f4iyiczWfzOfAmORCymyMmB
+         kuuJZ+8Mgefcpv1npkdc9Am6jIP3E8JZqfp6NTEzOOvBd2ocipMbJ7EOzEw+2dWzWPn/
+         XyiUGZNEU5/SCbJ4sY6EDnkJoycK7BMTr5dxhJVPy/GOc6v66OD8eiA7E8MqiHjNLgbv
+         y47A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769197709; x=1769802509;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=B3R1HFYAHVqM4kzN3/S5Q8P4MgXYgJzeRc7cvT0rLI4=;
+        b=cDBxKjxZz5pHQSj2CcSnWqB4mhH6iFjJ9gYh3V7XIr53paZIK9no5HIL/iEdpdhMHn
+         Ea4a+S0vhTmA5bsU0fnqBfhnTClGBIBWefnNkZ3JU2ORbFlRzF7wmDf/Bybd1DD/WG25
+         nCvXEg/54QBpv63VJQIILSLZ5DXdXjYrSPWKF1zi1spfNI/W9E4OTEv5rQMsJG4CjAAW
+         OU1bHFP7zjr0K4CtUqvu3BI9Iqq/1ARn0JvdG1GKHpxmzihi6lScW7DBxU9+AhJmO6MC
+         ZlXXGf/0mDBrTLexGm9TfD46ZzGafQO1d14j//O+HOzNhMJTmyXZdfyntVyXdQ5awlpA
+         9sSg==
+X-Forwarded-Encrypted: i=1; AJvYcCXlNv9k9j/Z68x4mMygR3qte4HGMhBliIUAwwk8u/O3vDjir0AWubx7XnpyenxkGCSdsz7TknyJHqA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzFZjouRL80NOzL6p17KqkKrq3MO6YOttrZJ+pyJWkNRS7WPhB/
+	2nRp4xCIU7/4wUrQGmrAu2mDd80g03FcxrepmAHhetKzSARUjOBrEXZx
+X-Gm-Gg: AZuq6aL3BVxPKcVnNCWnsklMXde7lFjRKFAC0sPcRzQRby3l8AqU4y+93URSWmbqWUx
+	Uq7DpwYw4V/sZn+KlQZ/kLBBMQFeMJpgU9C5tdMfFiadqPH38wIayybwWNf+dC41ZmMeCPpfCrA
+	jEISxDkA7cDYDjpDaxHNgcPc2ea2S1uBAxlJj8yEbKoj4C/kz0kLRKdRuM00Dhmvofi70luxdaB
+	kHCSdqZ/St8Kp2dzmBAqPY+hBL8jrMpgLxJiTwg/IOCRF4B7HhJFtGOTD0Z/PmTXqEN8dlOHxMG
+	tDWgFojk3xfQTaC+gbsvoBiVYc1Jfos6puCrwRoJ2+hNoJysZb9gvEPS2uBxKnYbyGm6gF/M7+j
+	+nlX12jR4gSPYa21oCUpmeOg5rybO1GoedRjxxEHkTgorWKgTAwvFbCjooQf1555/eByQD7Nswl
+	6MFz4VpLE7DFhgWhXuL9pi5C30flXTsxxWDs8=
+X-Received: by 2002:a05:6a00:1f04:b0:81f:528b:c091 with SMTP id d2e1a72fcca58-82317da618cmr3147119b3a.22.1769197708811;
+        Fri, 23 Jan 2026 11:48:28 -0800 (PST)
+Received: from fedora ([61.74.238.173])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82318644bcasm2884618b3a.2.2026.01.23.11.48.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Jan 2026 11:48:28 -0800 (PST)
+From: SeungJu Cheon <suunj1331@gmail.com>
+To: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: andriy.shevchenko@intel.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	SeungJu Cheon <suunj1331@gmail.com>
+Subject: [PATCH v3] iio:frequency:adf4377: Fix duplicated soft reset mask
+Date: Sat, 24 Jan 2026 04:47:58 +0900
+Message-ID: <20260123194758.15445-1-suunj1331@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: quoted-printable
-X-ClientProxiedBy: lhrpeml500012.china.huawei.com (7.191.174.4) To
- dubpeml500005.china.huawei.com (7.214.145.207)
+Content-Transfer-Encoding: 8bit
 
-On Fri, 23 Jan 2026 12:03:29 +0100
-Francesco Lavra <flavra@baylibre.com> wrote:
+The regmap_read_poll_timeout() uses ADF4377_0000_SOFT_RESET_R_MSK
+twice instead of checking both SOFT_RESET_MSK (bit 0) and
+SOFT_RESET_R_MSK (bit 7). This causes an incomplete reset status check.
 
-> On Thu, 2026-01-22 at 20:29 +0000, Jonathan Cameron wrote:
-> > On Thu, 22 Jan 2026 17:23:35 +0100
-> > Francesco Lavra <flavra@baylibre.com> wrote:
-> >  =20
-> > > Some IMU chips in the LSM6DSX family have sensor fusion features that
-> > > combine data from the accelerometer and gyroscope. One of these
-> > > features
-> > > generates rotation vector data and makes it available in the hardware
-> > > FIFO as a quaternion (more specifically, the X, Y and Z components of
-> > > the
-> > > quaternion vector, expressed as 16-bit half-precision floating-point
-> > > numbers).
-> > >=20
-> > > Add support for a new sensor instance that allows receiving sensor
-> > > fusion
-> > > data, by defining a new struct st_lsm6dsx_sf_settings (which contains
-> > > chip-specific details for the sensor fusion functionality), and adding
-> > > this
-> > > struct as a new field in struct st_lsm6dsx_settings. In
-> > > st_lsm6dsx_core.c,
-> > > populate this new struct for the LSM6DSV and LSM6DSV16X chips, and add
-> > > the
-> > > logic to initialize an additional IIO device if this struct is
-> > > populated
-> > > for the hardware type being probed.
-> > > Note: a new IIO device is being defined (as opposed to adding channels
-> > > to
-> > > an existing device) because the rate at which sensor fusion data is
-> > > generated may not match the data rate from any of the existing device=
-s.
-> > >=20
-> > > Tested on LSMDSV16X.
-> > >=20
-> > > Signed-off-by: Francesco Lavra <flavra@baylibre.com>
-> > > Acked-by: Lorenzo Bianconi <lorenzo@kernel.org> =20
-> >  =20
-> > > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > > b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > > index ded9a96076e6..3b4fa57bf461 100644
-> > > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c =20
-> >  =20
-> > > @@ -580,6 +584,16 @@ st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw
-> > > *hw, u8 tag,
-> > > =A0=A0=A0=A0=A0=A0=A0=A0case ST_LSM6DSX_EXT2_TAG:
-> > > =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0iio_dev =3D hw->iio_d=
-evs[ST_LSM6DSX_ID_EXT2];
-> > > =A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0break;
-> > > +=A0=A0=A0=A0=A0=A0=A0case ST_LSM6DSX_ROT_TAG:
-> > > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0/*
-> > > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 * The sensor reports o=
-nly the {X, Y, Z} elements of
-> > > the
-> > > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 * quaternion vector; s=
-et the W value to 0 (it can be
-> > > derived
-> > > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 * from the {X, Y, Z} v=
-alues due to the property that
-> > > the vector
-> > > +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 * is normalized). =20
-> >=20
-> > I'd missed this before.=A0 This is going to really confuse user space.
-> > I don't think we can just return it with a 0 in that last entry.
-> > At the very least we need an ABI doc update to reflect this oddity.
-> >=20
-> > I don't think that is enough though. This isn't a quaternion, but
-> > rather something we can derive one from. Annoying though it is,
-> > we can't realistically fix it up in kernel, so we are probably talking
-> > a new MOD_TYPE. =20
->=20
-> Quaternion data read from the sensor is expressed in floating-point forma=
-t,
-> and as such needs to be interpreted by userspace in a "non-standard" way
-> (note there is no scale in the channel info, and this is intentional
-> because we are not dealing with integers) regardless of whether the W val=
-ue
-> is present or must be derived.
-> Isn't the absence of the scale info enough to let userspace know that this
-> data is non-standard?
+The code first sets both SOFT_RESET and SOFT_RESET_R bits to 1 via
+regmap_update_bits(), then polls for them to be cleared. Since we set
+both bits before polling, we should be waiting for both to clear.
 
-Given both scale and offset are optional with defaults of 1.0 and 0 if
-not there, likely code won't notice that both are missing and under
-the ABI that would just make _raw =3D=3D _scale which is odd but not specif=
-ically
-excluded.
+Fix by using both masks as done in regmap_update_bits() above.
 
-> Only applications that know how to deal specifically
-> with this sensor device can make sense of the data (and these applications
-> know that the quaternion vector is normalized and the W value must be
-> derived from X, Y, Z).
+Fixes: eda549e2e524 ("iio:frequency:adf4377: add support for ADF4377")
+Signed-off-by: SeungJu Cheon <suunj1331@gmail.com>
+---
+v3:
+ - Summarize discussion about why both bits need to be checked
 
-This is the sort of feature that I'm reluctant to support. The only thing
-that we have let in (because it was truely obscure) that looks like this
-is pulse oximeters - the stuff in drivers/iio/health. It's a complex
-many reading maths thing to go from the data to the actual thing being
-measured.  The purpose of unified interfaces is being able to use them
-across different sensors. Here we can't.  Hence this need some careful
-thought.
+v2:
+ - Add Fixes tag
 
->=20
-> > Also it's been a long time since I did much with quaternions,
-> > but isn't the sign of w ambiguous if we are relying on only X, Y and Z?
-> > A bit of googling + AI suggests flipping it inverts the direction of
-> > rotation around a given axis. Feels like there is a constraint missing
-> > in this description. =20
->=20
-> Flipping the sign of W doesn't just invert the direction of rotation, it
-> basically applies an offset of -360 degrees; if a value w0 indicates a
-> rotation by an angle theta0, the value -w0 indicates a rotation by (theta0
-> - 360), which is basically the same as rotating by theta0. So knowing the
-> {X, Y, Z} values is enough to have a non-ambiguous orientation.
+ drivers/iio/frequency/adf4377.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Ok. Taking a while to remember this stuff, but I'm fairly sure it isn't qui=
-te
-that.
-Inverting w is the difference between theta and (360 - theta) not (theta - =
-360)
-given the 360 doesn't matter as you say, it's a clockwise vs anticlockwise
-rotation.
-
-Lets take a vector to rotate (say representing up on a screen represnted
-as pure quaternion  v=3D (0 1 0 0). Apply rotation quaternion to rotate tha=
-t about the
-Y axis by 90 degrees in one direction (I'm too lazy to figure out which but=
- doesn't
-matter!)
-q =3D (cos(theta/2), 0, sin(theta/2)j, 0)
-  =3D (sqrt(2)/2, 0, sqrt(2)/2, 0)
-
-Apply rotation is q v q'=20
-
-So multiplying it out=20
-(sqrt(2)/2, 0, (sqrt(2)/2)j, 0) (0, 1i, 0 0) (sqrt(2)/2, 0, -(sqrt(2)/2)j, =
-0)
-Given it's all multiples of (Sqrt(2)/2) Lets call that A
-=3D (A, 0, Aj, 0)(0, 1j, 0, 0)(A, 0, -Aj, 0)
-=3D (0, Ai, 0, -Ak) (A, 0, -Aj, 0)
-=3D (0, (A*A - (-A)*(-A))i, 0, (A *(-A) + (-A) * A)j)
-=3D (0, 0, 0, -1) or down on the z axis
-
-Same again, but now flip the W value
-
-(-A, 0, Aj, 0)(0, 1j, 0, 0)(-A, 0, -Aj, 0)
-=3D (0, (-A)i, 0, -(A)k)(-A, 0, -Aj, 0)
-=3D (0, ((-A)*(-A) -  (-A)*(-A))j, 0, (-A)*(-A) + (-A)*(-A)
-=3D (0, 0, 0, 1) or up on the z axis.
-
-Anyhow, that is moot if we don't figure out what to do about the fact
-we are forcing data into a representation a long way from what
-user space accepts.
-
-Jonathan
-
-
-
-
-
-
-
-
-
->=20
+diff --git a/drivers/iio/frequency/adf4377.c b/drivers/iio/frequency/adf4377.c
+index 08833b7035e4..48aa4b015a14 100644
+--- a/drivers/iio/frequency/adf4377.c
++++ b/drivers/iio/frequency/adf4377.c
+@@ -501,7 +501,7 @@ static int adf4377_soft_reset(struct adf4377_state *st)
+ 		return ret;
+ 
+ 	return regmap_read_poll_timeout(st->regmap, 0x0, read_val,
+-					!(read_val & (ADF4377_0000_SOFT_RESET_R_MSK |
++					!(read_val & (ADF4377_0000_SOFT_RESET_MSK |
+ 					ADF4377_0000_SOFT_RESET_R_MSK)), 200, 200 * 100);
+ }
+ 
+-- 
+2.52.0
 
