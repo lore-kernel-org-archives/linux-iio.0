@@ -1,47 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87DC936C0A8;
-	Fri, 23 Jan 2026 09:34:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C298364025;
+	Fri, 23 Jan 2026 09:38:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769160848; cv=none; b=hQQJm8M/hIJPqaTZh7xkP6D+JHBKGZ4Scw87MbYG/qJXG9XCZ8aEj7hlqUHkMO3O8cWRjBCHCTWML8RJBKtHqgWa7kCsyvNhnx/E+3LRjSdZ+C0lXBsC52WZ05/WS5y5l/GIyejLAmIzACiOxD+f2r8Odvo2L86RyKgvWZVtBbg=
+	t=1769161094; cv=none; b=qCS+VTrDSx+ETwT2m/rIpbThWixMol/zknb2kDV5BMf6lj1N7ilq1uPA4l0FgXvpH+6NujyoC/0g9wTxu8cljeXrO+WxEuuJQGCnc22MBc5HEO6IsNkaxNlOX3nZorLFCNf8Rs+/7KoHvuYZjdab3cDJqE4IpCFpuw/s23FZuks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769160848; c=relaxed/simple;
-	bh=OHgUB6UEKM0ab7UrpkwVT+z2dqOdymtjtNsQzMlv0bM=;
+	s=arc-20240116; t=1769161094; c=relaxed/simple;
+	bh=LfipcSOqdAFv0IVQ+sn6QVivzYsh6QNdOssfK/qpBTQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XrrOA2zQ5B36U4bkErfnhm8Y99GoQ8lm5MNDwKgNwSgQMqxGCVK3mzcbG6lnKOp0TW0qbvo4Ur2lR8OUgy8kDsdDLFW3VdAFXH/BrTppKI6JNwdmsct48El5+xqyDE898VRC2XIqKMJBINark50CdDdGghkPwsKYLagzzuN3ifs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V4zdI2ug; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=QvBxrxc5Ty3/mUWxWuBme6wT+b5qkZcAwXMFfxDE36MGPG+5qJFzJuw8OUXLulZBK7dZFyl8Ou//t313lbSbpTvC69Q171IfI3132UjiMuqjqHh+pf6aLsYeOq+t5V3SIc8lO+hEOfb+JWyF8Zf6sy4rI+KRGP0buzIeTHEOgmQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AV/hK1Gt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V4zdI2ug"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1207C4CEF1;
-	Fri, 23 Jan 2026 09:34:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AV/hK1Gt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6D16C4CEF1;
+	Fri, 23 Jan 2026 09:38:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769160847;
-	bh=OHgUB6UEKM0ab7UrpkwVT+z2dqOdymtjtNsQzMlv0bM=;
+	s=k20201202; t=1769161093;
+	bh=LfipcSOqdAFv0IVQ+sn6QVivzYsh6QNdOssfK/qpBTQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=V4zdI2ug+9Nsn1fhBMdLw+rlWMsUSy1WMR0LMRIV2H4J1d3mkRGNiQYM1bkmSnK0K
-	 rwg4caeYfvbmBohzuWpldR3915Avre1hRsA+T/5b/AOsCv5V8vAPWKZ1VZ6zcyQSnN
-	 bNyTjWLiyYIoojRPltW8Z8qUEV0d7lxByrDupi6KNheE3shHd1LgXZKMG01jS/bbnb
-	 oJymRNR8i2m/ai7tLRh8+nWTO/iTNyfzO0QDhmNzNxLi8ohAk/xJ99zc8Fzz4xTXyl
-	 KsK3y8M+fTTHxPLJnKF44U8Da26Rmog4KV3GJzoOHkAgy7KUxXIjufoVI7cSYLwawy
-	 xEvjl2CherMuA==
-Date: Fri, 23 Jan 2026 09:33:57 +0000
+	b=AV/hK1GtHkKYoj+6Ja82nUdIyRwDp3wDifzvuTytCFL7yP/u0M+0nGLJzfGYB6/XY
+	 fZ9+oaZ4bEYS5RMv95Mu+c//ZAoNw42KFutOZ82yrjvYhl6Tstw4X+QYaH7LYxT4dz
+	 S5pFDzyaYSsFWeWUCHOOoKVhI2bD+KtuLJgZoYWmpAI2htvexR421Isbu4+3r3Ewcx
+	 hG94LF/nUnOkL1ALQkBJqKyp1taeboBt+l2mdYExad3MDiO+EnyYqZ91TZ3bCwV3A8
+	 wxDQRkELzOSw3EurSl9dFVdf+g5fF0DG8Fwnag/dL/k0c8el3tbdqEdbC+cb6J4fm8
+	 4OZUUmelKnW+Q==
+Date: Fri, 23 Jan 2026 09:38:04 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, stable@vger.kernel.org, kernel@pengutronix.de,
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
  linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, David
  Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
  <nuno.sa@analog.com>, David Jander <david@protonic.nl>
-Subject: Re: [PATCH v1 4/8] iio: dac: ds4424: reject -128 RAW value
-Message-ID: <20260123093357.6996154f@jic23-huawei>
-In-Reply-To: <aW6AEszfRQzuHf6j@smile.fi.intel.com>
+Subject: Re: [PATCH v1 6/8] iio: dac: ds4424: clear outputs on probe
+Message-ID: <20260123093804.139f0409@jic23-huawei>
+In-Reply-To: <20260119182424.1660601-7-o.rempel@pengutronix.de>
 References: <20260119182424.1660601-1-o.rempel@pengutronix.de>
-	<20260119182424.1660601-5-o.rempel@pengutronix.de>
-	<aW6AEszfRQzuHf6j@smile.fi.intel.com>
+	<20260119182424.1660601-7-o.rempel@pengutronix.de>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,44 +50,69 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 19 Jan 2026 21:03:46 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 19 Jan 2026 19:24:22 +0100
+Oleksij Rempel <o.rempel@pengutronix.de> wrote:
 
-> On Mon, Jan 19, 2026 at 07:24:20PM +0100, Oleksij Rempel wrote:
-> > The DS442x DAC uses sign-magnitude encoding, so -128 cannot be
-> > represented in hardware.
-> > 
-> > With the previous check, userspace could pass -128, which gets converted
-> > to a magnitude of 128 and then truncated by the 7-bit DAC field. This
-> > ends up programming a zero magnitude with the sign bit set, i.e. an
-> > unintended output (effectively 0 mA instead of -128 steps).
-> > 
-> > Reject -128 to avoid silently producing the wrong current.  
+> The DS44xx devices have no reset pin or reset bit, so output registers
+> may retain preconfigured values across reboot or warm reset.
 > 
-> ...
-> 
-> > -		if (val < S8_MIN || val > S8_MAX)
-> > +		if (val <= S8_MIN || val > S8_MAX)
-> >  			return -EINVAL;  
-> 
-> Hmm... So the range is [ -127 .. 0 .. 127 ] ?
-> 
-> I think in such case the plain numbers would be more specific than
-> the type related limits.
-> 
+> Also, the driver suspend/resume path restores from data->raw. When the
+> device is first probed, data->raw is zero-initialized and may not match
+> the actual hardware state. A later suspend/resume can therefore change an
+> output from a preconfigured non-zero value to 0 mA.
 
-Check the abs(val) <= 127 given that's what we care about I think?
-Or make it explicit and do
-FIELD_FIT() against a mask that you then use to fill the register
-value (another mask for the sign bit).
-
-Btw use abs(val) to set raw.dx and drop it out of the conditional.
-Even better get rid of the bitfield stuff and just add
-two defines + fill val directly in this function using FIELD_PREP().
-Then both the checking and the field filling use the same defines
-and it should be easy to see what is going on.
+For DACs we often want to retain settings from before kernel load (or
+on exit of the driver).  Can we just read them back from the device to
+fill in the cached versions?  If we can I think that would be preferred
+option.
 
 Jonathan
 
 
+> 
+> Initialize all channels to 0 output current during probe to ensure a
+> deterministic baseline and consistent suspend/resume behavior.
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+>  drivers/iio/dac/ds4424.c | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+> 
+> diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+> index a0c60eb89717..2d299a52cede 100644
+> --- a/drivers/iio/dac/ds4424.c
+> +++ b/drivers/iio/dac/ds4424.c
+> @@ -220,6 +220,20 @@ static int ds4424_verify_chip(struct iio_dev *indio_dev)
+>  	return ret;
+>  }
+>  
+> +static int ds4424_init(struct iio_dev *indio_dev)
+> +{
+> +	int i, ret;
+> +
+> +	/* Set all channels to 0 current. */
+> +	for (i = 0; i < indio_dev->num_channels; i++) {
+> +		ret = ds4424_set_value(indio_dev, 0, &indio_dev->channels[i]);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int ds4424_setup_channels(struct i2c_client *client,
+>  				 struct ds4424_data *data,
+>  				 struct iio_dev *indio_dev)
+> @@ -397,6 +411,11 @@ static int ds4424_probe(struct i2c_client *client)
+>  	if (ret)
+>  		goto fail;
+>  
+> +	/* No reset pin/bit: clear any preconfigured output on probe. */
+> +	ret = ds4424_init(indio_dev);
+> +	if (ret)
+> +		goto fail;
+> +
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->info = &ds4424_iio_info;
+>  
 
