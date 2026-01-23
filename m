@@ -1,47 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B749350A21;
-	Fri, 23 Jan 2026 09:28:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87DC936C0A8;
+	Fri, 23 Jan 2026 09:34:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769160509; cv=none; b=PcWZYRSGYIxTDtFr/BMZedjMKT9SsAkjJBEUgao+cM0oSPYhbyI5UolbSvUwrdXRf1kg2Zg195g7e2xQjfalZMl/6sSGDIWnPXIwGRcs8s4TamFt8xyrk/67gXeAGn0JwAtzZPcai8jkj0qB79qxIjZKV/YWY7haeoElzA1S5IQ=
+	t=1769160848; cv=none; b=hQQJm8M/hIJPqaTZh7xkP6D+JHBKGZ4Scw87MbYG/qJXG9XCZ8aEj7hlqUHkMO3O8cWRjBCHCTWML8RJBKtHqgWa7kCsyvNhnx/E+3LRjSdZ+C0lXBsC52WZ05/WS5y5l/GIyejLAmIzACiOxD+f2r8Odvo2L86RyKgvWZVtBbg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769160509; c=relaxed/simple;
-	bh=ke87CicNIBzJitf1GLyB4AYrViCw7+226adczwrhkyk=;
+	s=arc-20240116; t=1769160848; c=relaxed/simple;
+	bh=OHgUB6UEKM0ab7UrpkwVT+z2dqOdymtjtNsQzMlv0bM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DoW4QVO1L7lTJT+GlWrFg2NhUnt3mPAGqYvEBCdoLf7GBDngQdlwsSXYgEwWDCsi35BZXOA1Emt9RPRQHxeyPd4pgeYsj8I1rFmWr4eqnMbR37VMoznqZJXxfGzUYcvQzNiy8CFCnM7Rwi66D9zEqhb2af4RtFpk0xGvMdYjZmw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J2uLL95l; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=XrrOA2zQ5B36U4bkErfnhm8Y99GoQ8lm5MNDwKgNwSgQMqxGCVK3mzcbG6lnKOp0TW0qbvo4Ur2lR8OUgy8kDsdDLFW3VdAFXH/BrTppKI6JNwdmsct48El5+xqyDE898VRC2XIqKMJBINark50CdDdGghkPwsKYLagzzuN3ifs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V4zdI2ug; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J2uLL95l"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA177C4CEF1;
-	Fri, 23 Jan 2026 09:28:24 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V4zdI2ug"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1207C4CEF1;
+	Fri, 23 Jan 2026 09:34:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769160509;
-	bh=ke87CicNIBzJitf1GLyB4AYrViCw7+226adczwrhkyk=;
+	s=k20201202; t=1769160847;
+	bh=OHgUB6UEKM0ab7UrpkwVT+z2dqOdymtjtNsQzMlv0bM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=J2uLL95ltP1whHjryoLrROiuLH8HtUt6oyF8O1TPoUfIlhSsWJYNFRG2l9OXyGZti
-	 mzxGH0CNKlO4GaDEG4FcrevKsvzPk8dNACpXAlmPaWsF8ibDAgdG7Io+hFwsBH9VL1
-	 LKC0AHV58OBpxyY77CsZWeLk122kv1i4s02dxnRt86uK9vGWdKZfLwMnRVhn2CQZou
-	 EqhfVAqy//OI5SrF/fHlKTY9101Wb5Hg4ce+EzvHAG1sz58gnyNRzhAPq9pOunokaV
-	 Hg+3fmJ3ZizR0rUNvvJ7uyghaWcBj2ACQji8qv0AaeJmH5JjqWSSP/EgQMjG8FVnB7
-	 rQE+FwkvgmVHw==
-Date: Fri, 23 Jan 2026 09:28:19 +0000
+	b=V4zdI2ug+9Nsn1fhBMdLw+rlWMsUSy1WMR0LMRIV2H4J1d3mkRGNiQYM1bkmSnK0K
+	 rwg4caeYfvbmBohzuWpldR3915Avre1hRsA+T/5b/AOsCv5V8vAPWKZ1VZ6zcyQSnN
+	 bNyTjWLiyYIoojRPltW8Z8qUEV0d7lxByrDupi6KNheE3shHd1LgXZKMG01jS/bbnb
+	 oJymRNR8i2m/ai7tLRh8+nWTO/iTNyfzO0QDhmNzNxLi8ohAk/xJ99zc8Fzz4xTXyl
+	 KsK3y8M+fTTHxPLJnKF44U8Da26Rmog4KV3GJzoOHkAgy7KUxXIjufoVI7cSYLwawy
+	 xEvjl2CherMuA==
+Date: Fri, 23 Jan 2026 09:33:57 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Conor Dooley <conor@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Oleksij Rempel <o.rempel@pengutronix.de>, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, kernel@pengutronix.de, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Andy Shevchenko
- <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, David Jander <david@protonic.nl>
-Subject: Re: [PATCH v1 2/8] dt-bindings: iio: dac: maxim,ds4424: add
- maxim,rfs-ohms property
-Message-ID: <20260123092819.6ae81211@jic23-huawei>
-In-Reply-To: <20260119-turbine-feminize-9dcd5c86feec@spud>
+ <conor+dt@kernel.org>, stable@vger.kernel.org, kernel@pengutronix.de,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, David Jander <david@protonic.nl>
+Subject: Re: [PATCH v1 4/8] iio: dac: ds4424: reject -128 RAW value
+Message-ID: <20260123093357.6996154f@jic23-huawei>
+In-Reply-To: <aW6AEszfRQzuHf6j@smile.fi.intel.com>
 References: <20260119182424.1660601-1-o.rempel@pengutronix.de>
-	<20260119182424.1660601-3-o.rempel@pengutronix.de>
-	<20260119-turbine-feminize-9dcd5c86feec@spud>
+	<20260119182424.1660601-5-o.rempel@pengutronix.de>
+	<aW6AEszfRQzuHf6j@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,59 +52,44 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 19 Jan 2026 18:27:52 +0000
-Conor Dooley <conor@kernel.org> wrote:
+On Mon, 19 Jan 2026 21:03:46 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Mon, Jan 19, 2026 at 07:24:18PM +0100, Oleksij Rempel wrote:
-> > Introduce the 'maxim,rfs-ohms' property. The full-scale output current
-> > of these DACs is determined by external resistors (Rfs) connected to
-> > the FS pins. The driver requires the physical resistance values to
-> > calculate the correct current scale (Amps per step) for the IIO
-> > subsystem.
+> On Mon, Jan 19, 2026 at 07:24:20PM +0100, Oleksij Rempel wrote:
+> > The DS442x DAC uses sign-magnitude encoding, so -128 cannot be
+> > represented in hardware.
 > > 
-> > Keep it optional to avoid forcing updates of existing DTs; without it
-> > the driver cannot derive a correct IIO scale.  
+> > With the previous check, userspace could pass -128, which gets converted
+> > to a magnitude of 128 and then truncated by the 7-bit DAC field. This
+> > ends up programming a zero magnitude with the sign bit set, i.e. an
+> > unintended output (effectively 0 mA instead of -128 steps).
+> > 
+> > Reject -128 to avoid silently producing the wrong current.  
 > 
-> I don't really follow the logic here, if the driver doesn't work
-> properly without it, shouldn't it be a required property even if that
-> means existing devicetrees get new warnings? Warnings are preferable to
-> the drivers malfunctioning on those devices, after all!
-
-Agreed. The driver can paper over holes or I guess we could provide a default
-if the datasheet has some reference value or similar?  
-
-DT binding should require it.
-
+> ...
 > 
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  .../devicetree/bindings/iio/dac/maxim,ds4424.yaml     | 11 +++++++++++
-> >  1 file changed, 11 insertions(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-> > index efe63e6cb55d..b7af8464a4fc 100644
-> > --- a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-> > @@ -27,6 +27,17 @@ properties:
-> >  
-> >    vcc-supply: true
-> >  
-> > +  maxim,rfs-ohms:
-> > +    description: |
-> > +      Array of resistance values in Ohms for the external Rfs resistors
-> > +      connected to the FS pins.
-> > +      - For DS44x2 (2 channels): 2 values required.
-> > +      - For DS44x4 (4 channels): 4 values required.
-> > +      Typical values range from 40000 (40 kOhm) to 160000 (160 kOhm).
-> > +    minItems: 2
-> > +    maxItems: 4
-> > +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> > +
-> >  required:
-> >    - compatible
-> >    - reg
-> > -- 
-> > 2.47.3
-> >   
+> > -		if (val < S8_MIN || val > S8_MAX)
+> > +		if (val <= S8_MIN || val > S8_MAX)
+> >  			return -EINVAL;  
+> 
+> Hmm... So the range is [ -127 .. 0 .. 127 ] ?
+> 
+> I think in such case the plain numbers would be more specific than
+> the type related limits.
+> 
+
+Check the abs(val) <= 127 given that's what we care about I think?
+Or make it explicit and do
+FIELD_FIT() against a mask that you then use to fill the register
+value (another mask for the sign bit).
+
+Btw use abs(val) to set raw.dx and drop it out of the conditional.
+Even better get rid of the bitfield stuff and just add
+two defines + fill val directly in this function using FIELD_PREP().
+Then both the checking and the field filling use the same defines
+and it should be easy to see what is going on.
+
+Jonathan
+
+
 
