@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F2FA830FC2E;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2AD530BF75;
 	Fri, 23 Jan 2026 15:53:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769183639; cv=none; b=fM1HFXKfBUDefm4wAAWX8/W4JADxVVL2VMf1eZuraTr5MIO8r4NfLRlj8b6YYr3d9DtBAy2nrleT0GPXSrGEzXOZ7cp87svnFt8fLAKo+PMHhnNPuz758kFsl7ZdN8OPSaGfzCJ6dK0kEolYi7D//n0pXYZIr88Cd8tG9K8RZhw=
+	t=1769183638; cv=none; b=rk8hP6sg3AzGz26AcLLldGZMztX/e+rzO4xIV70UoHj+qu3bc72o2JfLV/cUQJ0+gmc+RwX02h/fIDVeYjOUXKOVeXT4ejECzU5rmE/1rEFflUnGu6tSJEqTmxJqhsC+phsTgoTn7zBimPUcFQiOiWq7MawGbnj7jdwDjRpj1C0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769183639; c=relaxed/simple;
-	bh=wAG7Z5cSEyYZ0CcWmfF6m6FfvPFffvd7M/S0m4cosQs=;
+	s=arc-20240116; t=1769183638; c=relaxed/simple;
+	bh=XtBXL//seGED9nOoCL32TNrr4TWA9ay6t7NhoYR48Qg=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=qPm6CwyTlr8HOGjMP5uCVIgeDVUQL+/gA16r9UTcBGPx+5Ys10RGfcH5reNxUnGv8iX5QnRhGmBa1MWx72A5b5itdHXf9TcCL/WQqYh5eB8sEHhMIecjWjsCMT9NSf1s7sXzLPpZOmEQJ29ZeW8WlqU8PpYcW0R3F/sIfKbRXQA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aI8meRe2; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=hi6BKw4ALio1Mqzp+urlSLIAhk5GjQWCyVDagI+yrqiEMO1EhuRqiO3UU7nQzCvAimGUA6PxrvSYb/s7zRuZD1vrQLMcZGmrgIT0EqZsb/i9LlaA72Q7b9J7bbXHMb463rLxSvdmucIlKASbFTRAad//+vQdLhp/Csc3bec3UDw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QQved3I6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aI8meRe2"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B1FACC2BCB3;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QQved3I6"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 90193C2BCB1;
 	Fri, 23 Jan 2026 15:53:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1769183638;
-	bh=wAG7Z5cSEyYZ0CcWmfF6m6FfvPFffvd7M/S0m4cosQs=;
+	bh=XtBXL//seGED9nOoCL32TNrr4TWA9ay6t7NhoYR48Qg=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=aI8meRe2Zm41QpL1fF6jlHU1HaC5RoFsDo1B9Rwj/wQh9wdBb7eqb7eOXxCDwueIp
-	 ocbqxdsLklPmnVLNfHqyzCNQk7f8H4a5AvItG0Dx85vhAUiThRutR7BAfv9jZOQAHS
-	 DvUHKpSWZ/HOKfSRBh7/yLc7IxP0ph8iunfC0Sd04MsEdutoXkBmxMppA0IxWUhWux
-	 7iBUIgctvmcKOwcpbw99azTKGJh1h3h0eZeQAY+lkLLyI1zg6OiCJjoDNIWHh4rMVO
-	 Mjp2V8w97hc6xehr7M1kqFbYo9cK8u9lnaLT8THtdN0yq5yKr5Mqf1z0JKe96DWJS8
-	 zi1Z+0+v99pbQ==
+	b=QQved3I6hsvklv14Sn0DZYtWfs0yaWKiQVXgmK+yBoxzTgDkb7XbDQGnfYhiWviNJ
+	 Im4ISa7ywsRKyh71cr9AhX0Oy0/gx2fA9Y89zxeeJb+uL+fylr/sEQEefkCcBykbvH
+	 wxzgfMWXsJ+2ZEXTeBOrLWMq8gtHqDaHKdtIzbDgldsZWVniO6Hv+ryjQhJ3ZKzNw2
+	 +Wj8S6y5u7fbN2iKhakQvhe57JOn5Qyd2eN0l79DxdwJWaPuJfLFft7pVatO7FsT/D
+	 Q33vYcvEjGi93p9ROeVNi0nwbpAQsP/pIzcNeMbZFz9TCb4KMffItcLX4M5OLzO+3W
+	 KfoJuCpVqoqdQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A91C5D74EF3;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 883B5D74EF5;
 	Fri, 23 Jan 2026 15:53:58 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 23 Jan 2026 15:53:11 +0000
-Subject: [PATCH v5 6/8] iio: frequency: adf41513: features on frequency
- change
+Date: Fri, 23 Jan 2026 15:53:10 +0000
+Subject: [PATCH v5 5/8] iio: frequency: adf41513: handle LE synchronization
+ feature
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,8 +40,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Message-Id: <20260123-adf41513-iio-driver-v5-6-2dce812a2dda@analog.com>
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260123-adf41513-iio-driver-v5-5-2dce812a2dda@analog.com>
 References: <20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com>
 In-Reply-To: <20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -54,11 +54,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1769183636; l=5626;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1769183636; l=2998;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=4hbokyb0RGvwd8HLkFM6gMWD1P+J7htn3Rbiepnfkr8=;
- b=DR9k8oDU19SV9yInzGuRxF3HjN5vSRlZOtYKk16ywS5H29R+aCPnlIN7X6TcL1Quq3J7o0kew
- gqx2qO6ecTEBHX755jjz0n/tQ9BFGaR3gzTgl3/VQvBTQgimvjOLE4q
+ bh=g3dcnu3ZqqYsdxD3OfjJPLiHtxs/OM+CQIo7yTrs3SQ=;
+ b=xG+Qs+p/Dq4bN/jbOphK9oA7kIIxLWZxufMiNcKLbGil9h67oeWNCVkTc24IFKmd4tK5Nma1h
+ AhTuWPeL0v6B30CmZF3OgI0yedSaU0r4U7FVx/U6d8OOGRv1lJ2Gass
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,172 +68,96 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Set Bleed current when PFD frequency changes (bleed enabled when in
-fractional mode). Set lock detector window size, handling bias and
-precision. Add phase resync support, setting clock dividers when
-PFD frequency changes.
+When LE sync is enabled, it is must be set after powering up and must be
+disabled when powering down. It is recommended when using the PLL as
+a frequency synthesizer, where reference signal will always be present
+while the device is being configured.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/frequency/adf41513.c | 100 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 100 insertions(+)
+ drivers/iio/frequency/adf41513.c | 35 ++++++++++++++++++++++++++++++++---
+ 1 file changed, 32 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/frequency/adf41513.c b/drivers/iio/frequency/adf41513.c
-index ddad4f4f1938..351965a575ff 100644
+index 7b5a3a19f1b5..ddad4f4f1938 100644
 --- a/drivers/iio/frequency/adf41513.c
 +++ b/drivers/iio/frequency/adf41513.c
-@@ -20,6 +20,7 @@
- #include <linux/property.h>
- #include <linux/regulator/consumer.h>
- #include <linux/spi/spi.h>
-+#include <linux/time64.h>
- #include <linux/types.h>
- #include <linux/units.h>
+@@ -221,6 +221,7 @@ struct adf41513_data {
+ 	bool phase_detector_polarity;
  
-@@ -212,6 +213,7 @@ struct adf41513_chip_info {
- struct adf41513_data {
- 	u64 power_up_frequency_hz;
- 	u64 freq_resolution_uhz;
-+	u32 phase_resync_period_ns;
- 	u32 charge_pump_voltage_mv;
- 	u32 lock_detect_count;
- 
-@@ -276,6 +278,16 @@ struct adf41513_state {
- 	__be32 buf __aligned(IIO_DMA_MINALIGN);
+ 	bool logic_lvl_1v8_en;
++	bool le_sync_en;
  };
  
-+static const u16 adf41513_ld_window_x10_ns[] = {
-+	9, 12, 16, 17, 21, 28, 29, 35,			/* 0 - 7 */
-+	43, 47, 49, 52, 70, 79, 115,			/* 8 - 14 */
-+};
-+
-+static const u8 adf41513_ldp_bias[] = {
-+	0xC, 0xD, 0xE, 0x8, 0x9, 0x4, 0xA, 0x5,		/* 0 - 7 */
-+	0x0, 0x6, 0xB, 0x1, 0x2, 0x7, 0x3,		/* 8 - 14 */
-+};
-+
- static const char * const adf41513_power_supplies[] = {
- 	"avdd1", "avdd2", "avdd3", "avdd4", "avdd5", "vp",
- };
-@@ -583,9 +595,82 @@ static int adf41513_calc_pll_settings(struct adf41513_state *st,
- 	return 0;
- }
- 
-+static void adf41513_set_bleed_val(struct adf41513_state *st)
-+{
-+	u32 bleed_value, cp_index;
-+
-+	if (st->data.phase_detector_polarity)
-+		bleed_value = 90;
-+	else
-+		bleed_value = 144;
-+
-+	cp_index = 1 + FIELD_GET(ADF41513_REG5_CP_CURRENT_MSK,
-+				 st->regs[ADF41513_REG5]);
-+	bleed_value = div64_u64(st->settings.pfd_frequency_uhz * cp_index * bleed_value,
-+				1600ULL * MEGA * MICROHZ_PER_HZ);
-+
-+	FIELD_MODIFY(ADF41513_REG6_BLEED_CURRENT_MSK, &st->regs[ADF41513_REG6],
-+		     bleed_value);
-+}
-+
-+static void adf41513_set_ld_window(struct adf41513_state *st)
-+{
-+	/*
-+	 * The ideal lock detector window size is halfway between the max
-+	 * window, set by the phase comparison period t_PFD = (1 / f_PFD),
-+	 * and the minimum is set by (I_BLEED/I_CP) × t_PFD
-+	 */
-+	u16 ld_window_10x_ns = div64_u64(10ULL * NSEC_PER_SEC * MICROHZ_PER_HZ,
-+					 st->settings.pfd_frequency_uhz << 1);
-+	u8 ld_idx, ldp, ld_bias;
-+
-+	if (st->settings.mode != ADF41513_MODE_INTEGER_N) {
-+		/* account for bleed current (deduced from eq.6 and eq.7) */
-+		if (st->data.phase_detector_polarity)
-+			ld_window_10x_ns += 4;
-+		else
-+			ld_window_10x_ns += 6;
-+	}
-+
-+	ld_idx = find_closest(ld_window_10x_ns, adf41513_ld_window_x10_ns,
-+			      ARRAY_SIZE(adf41513_ld_window_x10_ns));
-+	ldp = (adf41513_ldp_bias[ld_idx] >> 2) & 0x3;
-+	ld_bias = adf41513_ldp_bias[ld_idx] & 0x3;
-+
-+	FIELD_MODIFY(ADF41513_REG6_LDP_MSK, &st->regs[ADF41513_REG6], ldp);
-+	FIELD_MODIFY(ADF41513_REG9_LD_BIAS_MSK, &st->regs[ADF41513_REG9], ld_bias);
-+}
-+
-+static void adf41513_set_phase_resync(struct adf41513_state *st)
-+{
-+	u32 total_div, clk1_div, clk2_div;
-+
-+	if (!st->data.phase_resync_period_ns)
-+		return;
-+
-+	/* assuming both clock dividers hold similar values */
-+	total_div = mul_u64_u64_div_u64(st->settings.pfd_frequency_uhz,
-+					st->data.phase_resync_period_ns,
-+					1ULL * MICROHZ_PER_HZ * NSEC_PER_SEC);
-+	clk1_div = clamp(int_sqrt(total_div), 1,
-+			 ADF41513_MAX_CLK_DIVIDER);
-+	clk2_div = clamp(DIV_ROUND_CLOSEST(total_div, clk1_div), 1,
-+			 ADF41513_MAX_CLK_DIVIDER);
-+
-+	FIELD_MODIFY(ADF41513_REG5_CLK1_DIV_MSK, &st->regs[ADF41513_REG5],
-+		     clk1_div);
-+	FIELD_MODIFY(ADF41513_REG7_CLK2_DIV_MSK, &st->regs[ADF41513_REG7],
-+		     clk2_div);
-+
-+	/* enable phase resync */
-+	st->regs[ADF41513_REG7] |= ADF41513_REG7_CLK_DIV_MODE_MSK;
-+}
-+
- static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 sync_mask)
+ struct adf41513_pll_settings {
+@@ -639,13 +640,27 @@ static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 s
+ static int adf41513_suspend(struct adf41513_state *st)
  {
- 	struct adf41513_pll_settings result;
-+	bool pfd_change = false;
-+	bool mode_change = false;
- 	int ret;
- 
- 	ret = adf41513_calc_pll_settings(st, &result, freq_uhz);
-@@ -593,6 +678,8 @@ static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 s
- 		return ret;
- 
- 	/* apply computed results to pll settings */
-+	pfd_change = st->settings.pfd_frequency_uhz != result.pfd_frequency_uhz;
-+	mode_change = st->settings.mode != result.mode;
- 	st->settings = result;
- 
- 	dev_dbg(&st->spi->dev,
-@@ -634,6 +721,14 @@ static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 s
- 		st->regs[ADF41513_REG6] |= ADF41513_REG6_BLEED_ENABLE_MSK;
- 	}
- 
-+	if (pfd_change) {
-+		adf41513_set_bleed_val(st);
-+		adf41513_set_phase_resync(st);
-+	}
-+
-+	if (pfd_change || mode_change)
-+		adf41513_set_ld_window(st);
-+
- 	return adf41513_sync_config(st, sync_mask | ADF41513_SYNC_REG0);
+ 	st->regs[ADF41513_REG6] |= FIELD_PREP(ADF41513_REG6_POWER_DOWN_MSK, 1);
++	st->regs[ADF41513_REG12] &= ~ADF41513_REG12_LE_SELECT_MSK;
+ 	return adf41513_sync_config(st, ADF41513_SYNC_DIFF);
  }
  
-@@ -944,6 +1039,11 @@ static int adf41513_parse_fw(struct adf41513_state *st)
- 	st->data.phase_detector_polarity =
- 		device_property_read_bool(dev, "adi,phase-detector-polarity-positive-enable");
- 
-+	st->data.phase_resync_period_ns = 0;
-+	ret = device_property_read_u32(dev, "adi,phase-resync-period-ns", &tmp);
-+	if (!ret)
-+		st->data.phase_resync_period_ns = tmp;
+ static int adf41513_resume(struct adf41513_state *st)
+ {
++	int ret;
 +
- 	st->data.logic_lvl_1v8_en = device_property_read_bool(dev, "adi,logic-level-1v8-enable");
+ 	st->regs[ADF41513_REG6] &= ~ADF41513_REG6_POWER_DOWN_MSK;
+-	return adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++	ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++	if (ret)
++		return ret;
++
++	if (st->data.le_sync_en) {
++		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
++		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++		if (ret)
++			return ret;
++	}
++
++	return ret;
+ }
  
- 	tmp = ADF41513_LD_COUNT_MIN;
+ static ssize_t adf41513_read_uhz(struct iio_dev *indio_dev,
+@@ -939,6 +954,8 @@ static int adf41513_parse_fw(struct adf41513_state *st)
+ 				     "invalid lock detect count: %u\n", tmp);
+ 	st->data.lock_detect_count = tmp;
+ 
++	/* load enable sync */
++	st->data.le_sync_en = device_property_read_bool(dev, "adi,le-sync-enable");
+ 	st->data.freq_resolution_uhz = MICROHZ_PER_HZ;
+ 
+ 	return 0;
+@@ -946,6 +963,7 @@ static int adf41513_parse_fw(struct adf41513_state *st)
+ 
+ static int adf41513_setup(struct adf41513_state *st)
+ {
++	int ret;
+ 	u32 tmp;
+ 
+ 	memset(st->regs_hw, 0xFF, sizeof(st->regs_hw));
+@@ -979,8 +997,19 @@ static int adf41513_setup(struct adf41513_state *st)
+ 					      st->data.logic_lvl_1v8_en ? 0 : 1);
+ 
+ 	/* perform initialization sequence with power-up frequency */
+-	return adf41513_set_frequency(st, st->data.power_up_frequency_hz * MICRO,
+-				      ADF41513_SYNC_ALL);
++	ret = adf41513_set_frequency(st, st->data.power_up_frequency_hz * MICRO,
++				     ADF41513_SYNC_ALL);
++	if (ret)
++		return ret;
++
++	if (st->data.le_sync_en) {
++		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
++		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
+ }
+ 
+ static void adf41513_power_down(void *data)
 
 -- 
 2.43.0
