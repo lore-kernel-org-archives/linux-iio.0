@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8B7430F92E
-	for <linux-iio@vger.kernel.org>; Fri, 23 Jan 2026 09:59:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C76D35CBD0
+	for <linux-iio@vger.kernel.org>; Fri, 23 Jan 2026 10:03:41 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769162388; cv=none; b=ahk5/4hkIABFncslej8Nsiz6uWOo65uXq6ujS5jKyd8S6CHvqHnwr25dr4n8cycHzLSfTqNchE06xUNiUJnBfhRQXL9R76LCZ0J1IF2UbEFcyGeHb4Z3ejPTpJwhsyGRdsIJ48UMUdpBVxt/98OYSQwPEGx/07RiTT26w3NS29w=
+	t=1769162630; cv=none; b=QVjx1Yy+5Cn2O6kBJB7mcVwJsVUoT2KBAjiNsE1kDxiy1+QsuQ4d2LhS4qtAn4V/hLobTnYIFS/yHwY3xWhxzMXSKHnEtxgcg6PNXpdtNhTZfw09oZxWLqdnBLxIzQVzfGHT9wlKlygtoU0pmwZCVlU80DY+P1fJ9IAxxYU/gd0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769162388; c=relaxed/simple;
-	bh=yyDwabrTYrJpFXvPN1Y+Tn8xXCiOdVIuaECjT5c3qc4=;
+	s=arc-20240116; t=1769162630; c=relaxed/simple;
+	bh=9d3cVU+Sh2WWeMGTwT1O9VmL80KThVzljYfG9O63cQI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SzCjiGTvYpVPhERB5DZYNq60DtGiQ10FA9F/lruByEPpZKlH993tPC7VQIvrBglsDIfOMRKMqSqt0nmFxO3+mcz5xSqfNLQLR3EQR/PFufds29zOMDi3wSQsc751bk6GDjqEsCcB1LtbB+h0CIIVWXKTDfGyJgIuu9bJRUyzbvw=
+	 Content-Type:Content-Disposition:In-Reply-To; b=ArAmzeTMm5Xamvdb04iEZMYjQ6YvEKdi2VmSRpRcWqyNWLW+iVFySQwHkuwtOFC4Z0BKCUyc+YOmlN9AnpJR0QqJ2J3+8acEskJ94avpD85gU/OL9kSEuieKr3ZpzDugXXYxmMMbzP4sI7lEBqAwVPkWeq6LexKjuuTBiXn2QAU=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,32 +18,35 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vjDx0-0002hV-LR; Fri, 23 Jan 2026 10:59:34 +0100
+	id 1vjE0x-0003Pg-3s; Fri, 23 Jan 2026 11:03:39 +0100
 Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vjDx0-0024Ql-0v;
-	Fri, 23 Jan 2026 10:59:33 +0100
+	id 1vjE0w-0024R8-33;
+	Fri, 23 Jan 2026 11:03:38 +0100
 Received: from ore by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vjDwz-00Atke-1e;
-	Fri, 23 Jan 2026 10:59:33 +0100
-Date: Fri, 23 Jan 2026 10:59:33 +0100
+	id 1vjE0w-00Atlx-0Y;
+	Fri, 23 Jan 2026 11:03:38 +0100
+Date: Fri, 23 Jan 2026 11:03:38 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+Cc: Conor Dooley <conor@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: Re: [PATCH v1 6/8] iio: dac: ds4424: clear outputs on probe
-Message-ID: <aXNGhVTuzJpzQkxV@pengutronix.de>
+Subject: Re: [PATCH v1 2/8] dt-bindings: iio: dac: maxim,ds4424: add
+ maxim,rfs-ohms property
+Message-ID: <aXNHeq9Fi1Ldf-oE@pengutronix.de>
 References: <20260119182424.1660601-1-o.rempel@pengutronix.de>
- <20260119182424.1660601-7-o.rempel@pengutronix.de>
- <20260123093804.139f0409@jic23-huawei>
+ <20260119182424.1660601-3-o.rempel@pengutronix.de>
+ <20260119-turbine-feminize-9dcd5c86feec@spud>
+ <20260123092819.6ae81211@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -52,7 +55,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260123093804.139f0409@jic23-huawei>
+In-Reply-To: <20260123092819.6ae81211@jic23-huawei>
 X-Sent-From: Pengutronix Hildesheim
 X-URL: http://www.pengutronix.de/
 X-Accept-Language: de,en
@@ -62,27 +65,36 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Fri, Jan 23, 2026 at 09:38:04AM +0000, Jonathan Cameron wrote:
-> On Mon, 19 Jan 2026 19:24:22 +0100
-> Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+On Fri, Jan 23, 2026 at 09:28:19AM +0000, Jonathan Cameron wrote:
+> On Mon, 19 Jan 2026 18:27:52 +0000
+> Conor Dooley <conor@kernel.org> wrote:
 > 
-> > The DS44xx devices have no reset pin or reset bit, so output registers
-> > may retain preconfigured values across reboot or warm reset.
+> > On Mon, Jan 19, 2026 at 07:24:18PM +0100, Oleksij Rempel wrote:
+> > > Introduce the 'maxim,rfs-ohms' property. The full-scale output current
+> > > of these DACs is determined by external resistors (Rfs) connected to
+> > > the FS pins. The driver requires the physical resistance values to
+> > > calculate the correct current scale (Amps per step) for the IIO
+> > > subsystem.
+> > > 
+> > > Keep it optional to avoid forcing updates of existing DTs; without it
+> > > the driver cannot derive a correct IIO scale.  
 > > 
-> > Also, the driver suspend/resume path restores from data->raw. When the
-> > device is first probed, data->raw is zero-initialized and may not match
-> > the actual hardware state. A later suspend/resume can therefore change an
-> > output from a preconfigured non-zero value to 0 mA.
+> > I don't really follow the logic here, if the driver doesn't work
+> > properly without it, shouldn't it be a required property even if that
+> > means existing devicetrees get new warnings? Warnings are preferable to
+> > the drivers malfunctioning on those devices, after all!
 > 
-> For DACs we often want to retain settings from before kernel load (or
-> on exit of the driver).  Can we just read them back from the device to
-> fill in the cached versions?  If we can I think that would be preferred
-> option.
+> Agreed. The driver can paper over holes or I guess we could provide a default
+> if the datasheet has some reference value or similar?  
 
-ACK, i was not sure what is the best way here.
+No, this DAC controls the current. The current range is application specific and
+defined by the load resistors. Is it better to not provide scale if this
+information not available, guessing it will make things worse and
+potentially damage some HW.
 
-Best Regards,
-Oleksij
+> DT binding should require it.
+
+ACK
 -- 
 Pengutronix e.K.                           |                             |
 Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
