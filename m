@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 933DD279329;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9346E28BA83;
 	Fri, 23 Jan 2026 15:53:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769183638; cv=none; b=qGkUmpwu2TaStn7df0haGY+Xy+he5ILcfiV7Mupox3n52hiBoRLsYdYwfZgP3gxnC10EP3zCsS/LqqLmoHFtzfnWbYcheyBwXC2fXexYrpMKdcmAhIwVD8UbO4EjQjJSxSZByvxQhceRmm8Ty2PXCzsgZh/WxXXH/0t95NmRbiY=
+	t=1769183638; cv=none; b=ktYIpmpBPu5H1oBiFMacQgFTl2K/bbOz1Eq79q0ulQuYlvUNFPePRsbkUKRXTIHtMmtZBwVjlpXwUQ8DsK4CXBmvwyYKahkPb9aeNQisRJTXxQwlWfaMXvNAPgmsNUEUNFETW6rUobHwEH8CH9Yk6LIDJv01pwkJRCMs5ju+if8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1769183638; c=relaxed/simple;
-	bh=UHlRZ5DldTHyADoNZZ73Un9907UYWbQli9Ti3A0SiBs=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ZEQTe/SLzJd7fmiMT4bDrlWOxeO1u8to2fjcT7DKsR8QUcSZPDEcunjAQGpwuLJtBVCFajIypxQvJC20D4d9cRtaqrW6R7N7rXb+2g/UvkRudAtSDvMC1sIf8BjsaIuA5sKZyEkcOMuR9EpKq89rQ5MH6s7NJZd+xgwJRXe1Xzs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nJ25TAp0; arc=none smtp.client-ip=10.30.226.201
+	bh=VLRY0AnO1763+FVkg+Tw47W0Mp6szvsy6ZB1KpPp9YY=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=lTcGFO+/RUM0k94avhvEdTV16KqJkEI/lxIdpaeSb+gaDAkBJL3pKFNPP5wVDFORAZ2rZdabOM11uh5fHi7EX84FiYuCvzvhhqiqm2ES3pDrm31wvcZnRYqcOPYmG/IIpkSqqPnJdRX8PmOJS5wvRiiaZArId92zpzeJnafWtmc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Zj6xkcUf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nJ25TAp0"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2D446C4CEF1;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Zj6xkcUf"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6B7D5C2BC9E;
 	Fri, 23 Jan 2026 15:53:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1769183638;
-	bh=UHlRZ5DldTHyADoNZZ73Un9907UYWbQli9Ti3A0SiBs=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=nJ25TAp0fp0G7GmgindKnPpC1pMUQYY7uhYqFgkwCWUconacyiZuj7gEaiNVD+Vnw
-	 O3hpoDV/gL/Wj8Cw3UicLB1ZAsK2P798B2qNlUhpfBr3R5utgBisOJdsOAA5yJSLea
-	 ITcbF6Otn4QQEeijp8eBYw+nhQeSrRmtxoXjtFyO/yynS0cPbHWKbd0QbUMOhchuh4
-	 hPZOPsDTKxMvuFK6OgsxIO9Dzj+OBMikUD3gokPACQLBSfMOrOyZp86tFp2IsF4sD2
-	 BOdYAbAk6nxQpmAG1e/e45pwDS5tVfuuSwSOElQhgSm3pGLfqKP3JeJu3oxvl30yC4
-	 7LAFYOPQ3NQBA==
+	bh=VLRY0AnO1763+FVkg+Tw47W0Mp6szvsy6ZB1KpPp9YY=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=Zj6xkcUftgywlGppvwf8HEQgX2J3F42Wxtfo/e1Qlr1F5gGPWoUNrRdP5amVzhqOQ
+	 b8S33N6dcc90KFP37PZfui0To0tLj0H4s7fxSVk0f8vSKodaUc6/4w8fWSZiahQmrP
+	 nsSIxd6QfDYpxgU9kLudZOrmeQzpC14sF+NGAYyXx97IxVqV6HEuSRZh2NDOmUdUTp
+	 HZBIB+0wkZQiv5WC4cOwFJb2lPFtJVZb67GyJCFHwHdPitr+qzVURceiRR7dzyjvgh
+	 qgS5NVIYiY19+CKve2Xhjxb+/+VpF3aT3SlJuUWn0mJ+WfeiTX7Eh88r7XkjzYdR7F
+	 2JgqcfH0eb2tA==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27478D74EC7;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FB3AD74EF5;
 	Fri, 23 Jan 2026 15:53:58 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH v5 0/8] ADF41513/ADF41510 PLL frequency synthesizers
-Date: Fri, 23 Jan 2026 15:53:05 +0000
-Message-Id: <20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com>
+Date: Fri, 23 Jan 2026 15:53:08 +0000
+Subject: [PATCH v5 3/8] iio: test: add kunit test for fixed-point parsing
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,12 +40,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAGKZc2kC/33OwWrDMAyA4VcpPs/DkpPY2anvUXZQYrkVbPFwi
- ukoefc5hbGWhh1/gT7pqmbOwrN6211V5iKzpKlG+7JT44mmI2sJtRUabAHAaAqxgRasFkk6ZCm
- cNdFInlz0xrOqm1+Zo1xu6uG99knmc8rftyMF1un/XgFtNIboBzYxjB3vaaKPdHwd06dawYJ/C
- EK/jWBFBsaevA2t6+0TYn+RzoDx24hdP7EBrAPi2PgnpLlDoNtGmoqEYXChcx4R3AOyLMsPOh5
- c0oYBAAA=
-X-Change-ID: 20251110-adf41513-iio-driver-aaca8a7f808e
+Message-Id: <20260123-adf41513-iio-driver-v5-3-2dce812a2dda@analog.com>
+References: <20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com>
+In-Reply-To: <20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>, 
@@ -54,14 +51,13 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1769183636; l=3878;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1769183636; l=17198;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=UHlRZ5DldTHyADoNZZ73Un9907UYWbQli9Ti3A0SiBs=;
- b=4MBhws7Y5/hMcdecd0oCGQp6xEEQkxeLLV5cYql/wU0Qs2Ojz2GKEEUEr/MFraQuYGjvG3lzb
- XdzCJlk5qceBY7zEdFtqsxUepC1jUtzUocmfbMXgY+C5nGuipnz3c1V
+ bh=rtEhREE7ZkzMoCTlvhh3uZ2ieeBAB9M5TfKzeYIHvfc=;
+ b=5Zc7lNkErjs4H5lHUb4+AJo+SisUwHo3k3oWKZmql1I/tWH9+UxQV/Whb2S4IZNbTMtnMIbSs
+ GcW5WYV42ezCkEStSLsoxEhvZDAmflqRrGj/2okykwO9uNb1uLw07Ss
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -69,89 +65,511 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-This patch series adds support for the Analog Devices ADF41513 and ADF41510
-ultralow noise PLL frequency synthesizers. These devices are designed for
-implementing local oscillators (LOs) in high-frequency applications.
-The ADF41513 covers frequencies from 1 GHz to 26.5 GHz, while the ADF41510
-operates from 1 GHz to 10 GHz.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Key features supported by this driver:
-- Integer-N and fractional-N operation modes
-- High maximum PFD frequency (250 MHz integer-N, 125 MHz fractional-N)
-- 25-bit fixed modulus or 49-bit variable modulus fractional modes
-- Digital lock detect functionality
-- Phase resync capability for consistent output phase
-- Load Enable vs Reference signal syncronization
-
-The series includes:
-1. PLL driver implementation
-2. Device tree bindings documentation
-3. IIO ABI documentation
+Add kunit test cases that aims to verify expected behavior for
+iio_str_to_fixpoint() and iio_str_to_fixpoint64().
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Changes in v5:
-- Drop local parsing of 64-bit plus fractional parts
-- Add iio_str_to_fixpoint64() to iio core with parsing tests
-- Add DT property dependency for adi,charge-pump-resistor-ohms
-- Add local definition for ADF41513_HZ_PER_GHZ and drop units.h patch
-- Link to v4: https://lore.kernel.org/r/20260116-adf41513-iio-driver-v4-0-dbb7d6782217@analog.com
+ MAINTAINERS                                |   1 +
+ drivers/iio/test/Kconfig                   |  12 +
+ drivers/iio/test/Makefile                  |   1 +
+ drivers/iio/test/iio-test-fixpoint-parse.c | 437 +++++++++++++++++++++++++++++
+ 4 files changed, 451 insertions(+)
 
-Changes in v4:
-- Proper usage of units.h macros
-- Simplifications to DT property parsing
-- Adjustments to return value handling
-- Drop of simple DT property node example
-- Link to v3: https://lore.kernel.org/r/20260108-adf41513-iio-driver-v3-0-23d1371aef48@analog.com
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 095af34e234e..f6383f2724aa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1624,6 +1624,7 @@ L:	linux-iio@vger.kernel.org
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
++F:	drivers/iio/test/iio-test-fixpoint-parse.c
+ 
+ ANALOG DEVICES INC ADF4377 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
+index 4fc17dd0dcd7..c60dff504bc2 100644
+--- a/drivers/iio/test/Kconfig
++++ b/drivers/iio/test/Kconfig
+@@ -29,6 +29,18 @@ config IIO_RESCALE_KUNIT_TEST
+ 
+ 	  If unsure, say N.
+ 
++config IIO_FIXPOINT_PARSE_KUNIT_TEST
++	tristate "Test IIO fixpoint parsing functions" if !KUNIT_ALL_TESTS
++	depends on KUNIT
++	default KUNIT_ALL_TESTS
++	help
++	  build unit tests for the IIO fixpoint parsing functions.
++
++	  For more information on KUnit and unit tests in general, please refer
++	  to the KUnit documentation in Documentation/dev-tools/kunit/.
++
++	  If unsure, say N.
++
+ config IIO_FORMAT_KUNIT_TEST
+ 	tristate "Test IIO formatting functions" if !KUNIT_ALL_TESTS
+ 	depends on KUNIT
+diff --git a/drivers/iio/test/Makefile b/drivers/iio/test/Makefile
+index 0c846bc21acd..0c31aaeed755 100644
+--- a/drivers/iio/test/Makefile
++++ b/drivers/iio/test/Makefile
+@@ -5,6 +5,7 @@
+ 
+ # Keep in alphabetical order
+ obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o
++obj-$(CONFIG_IIO_FIXPOINT_PARSE_KUNIT_TEST) += iio-test-fixpoint-parse.o
+ obj-$(CONFIG_IIO_FORMAT_KUNIT_TEST) += iio-test-format.o
+ obj-$(CONFIG_IIO_GTS_KUNIT_TEST) += iio-test-gts.o
+ obj-$(CONFIG_IIO_MULTIPLY_KUNIT_TEST) += iio-test-multiply.o
+diff --git a/drivers/iio/test/iio-test-fixpoint-parse.c b/drivers/iio/test/iio-test-fixpoint-parse.c
+new file mode 100644
+index 000000000000..281e8c906523
+--- /dev/null
++++ b/drivers/iio/test/iio-test-fixpoint-parse.c
+@@ -0,0 +1,437 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Unit tests for IIO fixpoint parsing functions
++ *
++ * Copyright (c) 2026
++ */
++
++#include <kunit/test.h>
++#include <linux/iio/iio.h>
++#include <linux/math.h>
++
++#define PRECISION(x)	(int_pow(10, (x) - 1))
++
++/* Test iio_str_to_fixpoint64() with valid positive integers */
++static void iio_test_str_to_fixpoint64_positive_integers(struct kunit *test)
++{
++	s64 integer, fract;
++	int ret;
++
++	/* Simple positive integer */
++	ret = iio_str_to_fixpoint64("42", 0, &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 42);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++
++	/* Positive integer with leading + */
++	ret = iio_str_to_fixpoint64("+10", 0, &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 10);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++
++	/* Large positive integer */
++	ret = iio_str_to_fixpoint64("123456789", 0, &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 123456789);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++}
++
++/* Test iio_str_to_fixpoint64() with valid negative integers */
++static void iio_test_str_to_fixpoint64_negative_integers(struct kunit *test)
++{
++	s64 integer, fract;
++	int ret;
++
++	/* Simple negative integer */
++	ret = iio_str_to_fixpoint64("-23", 0, &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, -23);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++
++	/* Large negative integer */
++	ret = iio_str_to_fixpoint64("-987654321", 0, &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, -987654321);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++}
++
++/* Test iio_str_to_fixpoint64() with zero */
++static void iio_test_str_to_fixpoint64_zero(struct kunit *test)
++{
++	s64 integer, fract;
++	int ret;
++
++	/* Zero */
++	ret = iio_str_to_fixpoint64("0", 0, &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 0);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++
++	/* Zero with decimal */
++	ret = iio_str_to_fixpoint64("0.0", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 0);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++}
++
++/* Test iio_str_to_fixpoint64() with valid decimal numbers */
++static void iio_test_str_to_fixpoint64_positive_decimals(struct kunit *test)
++{
++	s64 integer, fract;
++	int ret;
++
++	/* Positive decimal */
++	ret = iio_str_to_fixpoint64("3.14", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 3);
++	KUNIT_EXPECT_EQ(test, fract, 140000);
++
++	/* Decimal less than 1 */
++	ret = iio_str_to_fixpoint64("0.5", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 0);
++	KUNIT_EXPECT_EQ(test, fract, 500000);
++
++	/* Decimal with trailing zeros */
++	ret = iio_str_to_fixpoint64("123.000", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 123);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++
++	/* High precision decimal */
++	ret = iio_str_to_fixpoint64("1.123456789", PRECISION(9), &integer,
++				    &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 1);
++	KUNIT_EXPECT_EQ(test, fract, 123456789);
++
++	/* Very small decimal */
++	ret = iio_str_to_fixpoint64("0.000000001", PRECISION(9), &integer,
++				    &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 0);
++	KUNIT_EXPECT_EQ(test, fract, 1);
++}
++
++/* Test iio_str_to_fixpoint64() with negative decimals */
++static void iio_test_str_to_fixpoint64_negative_decimals(struct kunit *test)
++{
++	s64 integer, fract;
++	int ret;
++
++	/* Negative decimal */
++	ret = iio_str_to_fixpoint64("-2.71", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, -2);
++	KUNIT_EXPECT_EQ(test, fract, 710000);
++
++	/* Negative decimal less than -1 */
++	ret = iio_str_to_fixpoint64("-0.5", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 0);
++	KUNIT_EXPECT_EQ(test, fract, -500000);
++
++	/* Negative with high precision */
++	ret = iio_str_to_fixpoint64("-0.000000001", PRECISION(9), &integer,
++				    &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 0);
++	KUNIT_EXPECT_EQ(test, fract, -1);
++}
++
++/* Test iio_str_to_fixpoint64() with precision edge cases */
++static void iio_test_str_to_fixpoint64_precision_edge_cases(struct kunit *test)
++{
++	s64 integer, fract;
++	int ret;
++
++	/* More digits than precision - should truncate */
++	ret = iio_str_to_fixpoint64("1.23456", 100, &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 1);
++	KUNIT_EXPECT_EQ(test, fract, 234);
++
++	/* Fewer digits than precision - should pad with zeros */
++	ret = iio_str_to_fixpoint64("1.23", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 1);
++	KUNIT_EXPECT_EQ(test, fract, 230000);
++
++	/* Single digit fractional with high precision */
++	ret = iio_str_to_fixpoint64("5.1", PRECISION(9), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 5);
++	KUNIT_EXPECT_EQ(test, fract, 100000000);
++}
++
++/* Test iio_str_to_fixpoint64() with newline characters */
++static void iio_test_str_to_fixpoint64_with_newline(struct kunit *test)
++{
++	s64 integer, fract;
++	int ret;
++
++	/* Integer with newline */
++	ret = iio_str_to_fixpoint64("42\n", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 42);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++
++	/* Decimal with newline */
++	ret = iio_str_to_fixpoint64("3.14\n", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 3);
++	KUNIT_EXPECT_EQ(test, fract, 140000);
++}
++
++/* Test iio_str_to_fixpoint64() with edge cases */
++static void iio_test_str_to_fixpoint64_edge_cases(struct kunit *test)
++{
++	s64 integer, fract;
++	int ret;
++
++	/* Leading decimal point */
++	ret = iio_str_to_fixpoint64(".5", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 0);
++	KUNIT_EXPECT_EQ(test, fract, 500000);
++
++	/* Leading decimal with sign */
++	ret = iio_str_to_fixpoint64("-.5", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 0);
++	KUNIT_EXPECT_EQ(test, fract, -500000);
++
++	ret = iio_str_to_fixpoint64("+.5", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 0);
++	KUNIT_EXPECT_EQ(test, fract, 500000);
++}
++
++/* Test iio_str_to_fixpoint64() with invalid inputs */
++static void iio_test_str_to_fixpoint64_invalid(struct kunit *test)
++{
++	s64 integer, fract;
++	int ret;
++
++	/* Empty string */
++	ret = iio_str_to_fixpoint64("", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_NE(test, ret, 0);
++
++	/* Just a sign */
++	ret = iio_str_to_fixpoint64("-", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_NE(test, ret, 0);
++
++	ret = iio_str_to_fixpoint64("+", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_NE(test, ret, 0);
++
++	/* Trailing decimal without digits */
++	ret = iio_str_to_fixpoint64("42.", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++
++	/* Non-numeric characters */
++	ret = iio_str_to_fixpoint64("abc", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_NE(test, ret, 0);
++
++	ret = iio_str_to_fixpoint64("12a", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++
++	ret = iio_str_to_fixpoint64("3.4x", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++
++	/* Multiple decimal points */
++	ret = iio_str_to_fixpoint64("12.34.56", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++
++	/* Trailing spaces */
++	ret = iio_str_to_fixpoint64("42 ", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++
++	/* Too many digits in integer part */
++	ret = iio_str_to_fixpoint64("123456789012345678901", PRECISION(6),
++				    &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++
++	/* Too many digits in fractional part */
++	ret = iio_str_to_fixpoint64("1.123456789012345678901", PRECISION(6),
++				    &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++}
++
++/* Test iio_str_to_fixpoint() with valid inputs */
++static void iio_test_str_to_fixpoint_valid(struct kunit *test)
++{
++	int integer, fract;
++	int ret;
++
++	/* Test with 6 decimal places */
++	ret = iio_str_to_fixpoint("10.001234", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 10);
++	KUNIT_EXPECT_EQ(test, fract, 1234);
++
++	ret = iio_str_to_fixpoint("5.5", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 5);
++	KUNIT_EXPECT_EQ(test, fract, 500000);
++
++	/* Test with 9 decimal places */
++	ret = iio_str_to_fixpoint("5.123456789", PRECISION(9), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 5);
++	KUNIT_EXPECT_EQ(test, fract, 123456789);
++
++	ret = iio_str_to_fixpoint("1.0", PRECISION(9), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 1);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++
++	/* Test with 2 decimal places */
++	ret = iio_str_to_fixpoint("7.8", PRECISION(2), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 7);
++	KUNIT_EXPECT_EQ(test, fract, 80);
++
++	/* Truncation with 2 decimal places */
++	ret = iio_str_to_fixpoint("3.1415", PRECISION(2), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 3);
++	KUNIT_EXPECT_EQ(test, fract, 14);
++
++	/* Integer with 6 decimal places */
++	ret = iio_str_to_fixpoint("42", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, 42);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++
++	ret = iio_str_to_fixpoint("-15", PRECISION(2), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer, -15);
++	KUNIT_EXPECT_EQ(test, fract, 0);
++}
++
++/* Test iio_str_to_fixpoint() with overflow cases */
++static void iio_test_str_to_fixpoint_overflow(struct kunit *test)
++{
++	int integer, fract;
++	int ret;
++
++	/* Integer overflow - value exceeds INT_MAX */
++	ret = iio_str_to_fixpoint("2147483648", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -ERANGE);
++
++	/* Integer underflow - value less than INT_MIN */
++	ret = iio_str_to_fixpoint("-2147483649", PRECISION(6), &integer,
++				  &fract);
++	KUNIT_EXPECT_EQ(test, ret, -ERANGE);
++
++	/* fractional overflow */
++	ret = iio_str_to_fixpoint("0.2147483648", PRECISION(10), &integer,
++				  &fract);
++	KUNIT_EXPECT_EQ(test, ret, -ERANGE);
++
++	/* fractional underflow */
++	ret = iio_str_to_fixpoint("-0.2147483649", PRECISION(10), &integer,
++				  &fract);
++	KUNIT_EXPECT_EQ(test, ret, -ERANGE);
++}
++
++/* Test iio_str_to_fixpoint() with invalid inputs */
++static void iio_test_str_to_fixpoint_invalid(struct kunit *test)
++{
++	int integer, fract;
++	int ret;
++
++	/* Empty string */
++	ret = iio_str_to_fixpoint("", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_NE(test, ret, 0);
++
++	/* Non-numeric */
++	ret = iio_str_to_fixpoint("abc", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_NE(test, ret, 0);
++
++	/* Trailing decimal */
++	ret = iio_str_to_fixpoint("42.", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++
++	/* Invalid characters */
++	ret = iio_str_to_fixpoint("12.34x", PRECISION(6), &integer, &fract);
++	KUNIT_EXPECT_EQ(test, ret, -EINVAL);
++}
++
++/* Test both functions with boundary values */
++static void iio_test_fixpoint_boundary_values(struct kunit *test)
++{
++	s64 integer64, fract64;
++	int integer32, fract32;
++	int ret;
++
++	/* INT_MAX */
++	ret = iio_str_to_fixpoint("2147483647", PRECISION(6), &integer32,
++				  &fract32);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer32, INT_MAX);
++	KUNIT_EXPECT_EQ(test, fract32, 0);
++
++	/* INT_MIN */
++	ret = iio_str_to_fixpoint("-2147483648", PRECISION(6), &integer32,
++				  &fract32);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer32, INT_MIN);
++	KUNIT_EXPECT_EQ(test, fract32, 0);
++
++	/* INT_MIN with fractional part */
++	ret = iio_str_to_fixpoint("-2147483648.2147483647", PRECISION(10),
++				  &integer32, &fract32);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer32, INT_MIN);
++	KUNIT_EXPECT_EQ(test, fract32, INT_MAX);
++
++	/* LLONG_MAX */
++	ret = iio_str_to_fixpoint64("9223372036854775807", PRECISION(6),
++				    &integer64, &fract64);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer64, LLONG_MAX);
++	KUNIT_EXPECT_EQ(test, fract64, 0);
++
++	/* LLONG_MIN */
++	ret = iio_str_to_fixpoint64("-9223372036854775808", PRECISION(6),
++				    &integer64, &fract64);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer64, LLONG_MIN);
++	KUNIT_EXPECT_EQ(test, fract64, 0);
++
++	/* LLONG_MIN with fractional part */
++	ret = iio_str_to_fixpoint64("-9223372036854775808.9223372036854775807",
++				    PRECISION(19), &integer64, &fract64);
++	KUNIT_EXPECT_EQ(test, ret, 0);
++	KUNIT_EXPECT_EQ(test, integer64, LLONG_MIN);
++	KUNIT_EXPECT_EQ(test, fract64, LLONG_MAX);
++}
++
++static struct kunit_case iio_fixpoint_parse_test_cases[] = {
++	KUNIT_CASE(iio_test_str_to_fixpoint64_positive_integers),
++	KUNIT_CASE(iio_test_str_to_fixpoint64_negative_integers),
++	KUNIT_CASE(iio_test_str_to_fixpoint64_zero),
++	KUNIT_CASE(iio_test_str_to_fixpoint64_positive_decimals),
++	KUNIT_CASE(iio_test_str_to_fixpoint64_negative_decimals),
++	KUNIT_CASE(iio_test_str_to_fixpoint64_precision_edge_cases),
++	KUNIT_CASE(iio_test_str_to_fixpoint64_with_newline),
++	KUNIT_CASE(iio_test_str_to_fixpoint64_edge_cases),
++	KUNIT_CASE(iio_test_str_to_fixpoint64_invalid),
++	KUNIT_CASE(iio_test_str_to_fixpoint_valid),
++	KUNIT_CASE(iio_test_str_to_fixpoint_overflow),
++	KUNIT_CASE(iio_test_str_to_fixpoint_invalid),
++	KUNIT_CASE(iio_test_fixpoint_boundary_values),
++	{ }
++};
++
++static struct kunit_suite iio_fixpoint_parse_test_suite = {
++	.name = "iio-fixpoint-parse",
++	.test_cases = iio_fixpoint_parse_test_cases,
++};
++
++kunit_test_suite(iio_fixpoint_parse_test_suite);
++
++MODULE_AUTHOR("Rodrigo Alencar <rodrigo.alencar@analog.com>");
++MODULE_AUTHOR("IIO Kunit Test");
++MODULE_DESCRIPTION("Test IIO fixpoint parsing functions");
++MODULE_LICENSE("GPL");
 
-Changes in v3:
-- Use FIELD_MODIFY macro in driver implementation
-- Drop refin_frequency iio attribute
-- Drop muxout-select property from dt-bindings (and rename logic-level property)
-- Use -mhz suffix in power-up frequency property
-- Address documentation issues
-- Link to v2: https://lore.kernel.org/r/20251219-adf41513-iio-driver-v2-0-be29a83d5793@analog.com
-
-Changes in v2:
-- separate driver implementation from extra features and improve commit messages
-- use macros from units.h
-- explanation of custom parse function: adf41513_parse_uhz
-- reorganize driver data structures
-- drop clock framework support for now
-- reorganize documentation
-- Link to v1: https://lore.kernel.org/r/20251110-adf41513-iio-driver-v1-0-2df8be0fdc6e@analog.com
-
----
-Rodrigo Alencar (8):
-      dt-bindings: iio: frequency: add adf41513
-      iio: core: add fixed point parsing with 64-bit parts
-      iio: test: add kunit test for fixed-point parsing
-      iio: frequency: adf41513: driver implementation
-      iio: frequency: adf41513: handle LE synchronization feature
-      iio: frequency: adf41513: features on frequency change
-      docs: iio: add documentation for adf41513 driver
-      Documentation: ABI: testing: add common ABI file for iio/frequency
-
- Documentation/ABI/testing/sysfs-bus-iio-frequency  |   11 +
- .../bindings/iio/frequency/adi,adf41513.yaml       |  215 ++++
- Documentation/iio/adf41513.rst                     |  199 ++++
- Documentation/iio/index.rst                        |    1 +
- MAINTAINERS                                        |   11 +
- drivers/iio/frequency/Kconfig                      |   10 +
- drivers/iio/frequency/Makefile                     |    1 +
- drivers/iio/frequency/adf41513.c                   | 1244 ++++++++++++++++++++
- drivers/iio/industrialio-core.c                    |  151 ++-
- drivers/iio/test/Kconfig                           |   12 +
- drivers/iio/test/Makefile                          |    1 +
- drivers/iio/test/iio-test-fixpoint-parse.c         |  437 +++++++
- include/linux/iio/iio.h                            |    2 +
- 13 files changed, 2245 insertions(+), 50 deletions(-)
----
-base-commit: c30e80d68a7afb334fde7147ee0106f25dd58d3a
-change-id: 20251110-adf41513-iio-driver-aaca8a7f808e
-
-Best regards,
 -- 
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+2.43.0
 
 
