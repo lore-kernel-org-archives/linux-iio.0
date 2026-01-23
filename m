@@ -1,68 +1,68 @@
-Received: from AS8PR04CU009.outbound.protection.outlook.com (mail-westeuropeazon11021084.outbound.protection.outlook.com [52.101.70.84])
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11022072.outbound.protection.outlook.com [52.101.66.72])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1CFDC2FD69F;
-	Fri, 23 Jan 2026 05:40:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.70.84
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29E1A3491C8;
+	Fri, 23 Jan 2026 07:10:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.72
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769146848; cv=fail; b=mVg/QGF9hWtOJW5+PxTfSR68InccxKsCp0NxaY9e+LZxMyXilnJGf7TvedtluwjOknc42NEQZyyGbcYYdf7R0kojeKmMMFaavNFv5bTxZ+XKSeOHd3/QCPgPRAGMh59t/+kIkp9W1x0pnrxbj6SDFdOYFmiW7sByPi/tXf/oU4o=
+	t=1769152261; cv=fail; b=rxAh52Rzp/Vkn4/ZH315MavW1PSWBtT/NdcoOdctnI4ZvoUH1VBLrJmfga3ZlgTHmArqM4km/wx/FZfZVJVt0+hCIQ4v4/AD3QUQTTzGBnboIKZc0PgMOTIetYFXwOiFDTMM8QOul0/hCykfysn8TgvYUgC++dQSNyUrXf9hjT8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769146848; c=relaxed/simple;
-	bh=RKwbfYT7VT68Rjh3jgjI4nTV5K6y6PhajaNqmsT+lg8=;
+	s=arc-20240116; t=1769152261; c=relaxed/simple;
+	bh=9jHGkpRRQt3BGmZ5V29J7TOQcW7/fgNltEJmu/0MOqc=;
 	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=PgnP4LRdkrOjLvsvqFlfoZ/QROMNgoybMQRZUuFOWWiY+hEwXSOcc3unwSV10m7nXi4+cEHH+2QMTxd6+R9XGCmKaLxaH8JHiwbJ8Rd7V62AcUm88DDz/etjMI0e51lYlVieLP8OPKgZ5zy0kYRGgTZ8zQuyML47z5BSvVAuGec=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=hx9M6p/y; arc=fail smtp.client-ip=52.101.70.84
+	 Content-Type:MIME-Version; b=fDpLG/m5UgXRpUd7t5XvenkswOmZIWViVOzgLPtTy2eT8xQpnJBzueP5B6rCcrGK1uInQhTxOD3wI0YbyfnHmm6YMlby6C2c6FCSfMn72a5rCD/DPo0JgTrfdgftPjUTSnexyPx4f8vWUEUlZD2aA/7EjdE2Y65kaBwzDhsdCRU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=lWTI48sn; arc=fail smtp.client-ip=52.101.66.72
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="hx9M6p/y"
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="lWTI48sn"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=gRPxd2aZg4zyeSQDenisS8CPRijFxlufjxuFZ1pERsxadwfGIYvx3i15w6yRncIHoBjbOMF9R21GbkB01mCo3WVk9KwtPWoa721Y+HsgVE+ayb/qTdFKjiRVXRG81MhnOEGxqKcwPW72g8lF0V9aQs0oKMHTdebVyzmSnh0IFCOTv2uV4lgBf8lejZrBcNz8KehWVP89+iBwckSC3vkNGlmSe2T8OJTWoza2R4bFxLzE9MEWo50FsWQo+aiPJ3E3AMKgoZ4ddBVy4W64nDt7n7PHWZq2v6gfxXnu6sufKdmYat2sz9W0x0Tuwm3xILxuM1Fei3135A1pLbVVGeHGPA==
+ b=ecLCQQpE5fPr1SsOtowkWPSWqQrT3YRkdQRWpnoo6bAZDvZrj+5thKb6kWYR4Dxpwx+TpX7JecNlNo6vRpe4IVYmPzb+Q1T2QhMQfjm3f4B4fHDTZ1ffBydRS8Z5i8Ic1YPoThfmAaQaKAXikdht4oSPcbEbTOhb58f+nIc7Q2+lUC7rcvyycdc6IhjtPDozO7IuorvcwQgpqdkFzWoTOsMJjIn7PYuqyD9atzm82P5nwimJ8FPYrlwR+pZOvqUGXyZwieZXc/EXyNTFS3Jvs3h0LaSYgXYncZGJ6VOIG+vyggtW++qBjGXNI7Q2Pnq4wgjEjz81JTDa5OaVnfKF0w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=qcxllPVmxPp8H2sCNVIvFvSFFgRQaCGN7+tIKZfWTNI=;
- b=SKy4UuM+qF07K9mWk42KWv0DtrZOZ8TRAzPrObL3lo4EmueGM1brZBTDXGK5ILaICB3vXeoDlp8v7dCraj5xtmHGcHoMWwfrAeZDKbavaBE0Rcj5Ssz0ZU50OPx53nuByux5wCAmr2mYsArKdk5nmriRxi7KDtCxzNN5W4TNPoqzN2zTG1Nq27WR3bWcvT0AtRLWRln3Izm0l3VLwODMTaJnyOBTIqg1meMEJEKDgLQzdN2LeVPzGTyvpTmdfSnNV4u1SoPJ1bn/qmajruyxr8YnuHL1AGzY6Z/1GSedHHOe8xeahYzYC+B4mkVz/LSLvx3Yd4c3pp8SmC+koHwARQ==
+ bh=+nqcg0uxMVw21iIXRirULvWGpLH2BH2S4XY7GPuHcn4=;
+ b=Bs3gRqAvpfo7k9Vyr39apKLj1Mak1tnodsQjUeoYAKstY/mXay6gxZUw6KMTC7mz83XpW5tx33rUupbmHrbC8M7qKApx2R/pqmp7QRUNWHcSJtf1HwMCQtsi+7fZA1wFC4/55daOyXGHIuaFJTOqOYR8f+l2d9Cdf+OU1XvG5bgsKThUJ2N8wGcSC7gvAk/nXMauXjKhEN1bGEHyWovDdQM/1MtnWb0x47iaHdqDCqa/iwq08DhVq5Fsyn3QmJbO+TeWomcv1gwm9UgQfibP7/zyFzSTcKFa5326iCpPLfHrct1prw8qiv+E5960OPd4D2/S4EEEmLFWeTp28e/QCA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
  dkim=pass header.d=vaisala.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qcxllPVmxPp8H2sCNVIvFvSFFgRQaCGN7+tIKZfWTNI=;
- b=hx9M6p/y057yeTjefLdTaLIxOBuyjqY4yEGgqWgwYBoIgYTboDjGdfq7614SJglSxAvVb2eHPMQ3xuNQ92i+gGlcct6U2KhLNw5VBScMSRLjreflhq9zyUxf3v/jmU2T1wwz4AY1/9NkcloWjfFG5S/HPLDinjXlVO4ixzOfc7AvsZ37ArWSChHhJZOKdNadrA4YizdabOD7SxnD0QmC6Sc+xhxubViEJjTeU0WeklW0XQw9qDyejtNOJJ52wiJG5HpLcAhhY4tgFA/UVTog/BBsNpgYAy6tw5HLh0u+HTQ1pZZaRcHgVGinuE3ay211CQK45oMiC9FaAB5hm8Ut0A==
+ bh=+nqcg0uxMVw21iIXRirULvWGpLH2BH2S4XY7GPuHcn4=;
+ b=lWTI48snp38+4nlBQrp8ANIjWdMGyI9iTr6Tg0Belf2LPSQPTDrD1eY3OX7U6lJNdQTaIx1JfLFO3cBekWZhdBmonSDuN09kgBmbYmtu06xbyVkBU971gzB5xlFSn0rS46sEAgkVO55rQ84CXbHl7mm76RTWs9O1yC5kuwG1hDWjnJvQwhnzC7bs9BwvAEYvYp1xFvrAapeQpnojwGtlfwekd5Ul85x8IPc9qPdyImBVo3QosYTnoL2tXl7UHxDs8KvcKWDPlsxzYTBljdeZuYZkfXaJeq6Fwpk/J914J1m8syoNNBQEuH19VMxIfw9xy8OGvLaoDrt8te8ZWbYysg==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=vaisala.com;
 Received: from AMBPR06MB10365.eurprd06.prod.outlook.com (2603:10a6:20b:6f0::7)
- by GV1PR06MB9194.eurprd06.prod.outlook.com (2603:10a6:150:1a2::13) with
+ by FRWPR06MB9835.eurprd06.prod.outlook.com (2603:10a6:d10:174::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9542.11; Fri, 23 Jan
- 2026 05:40:29 +0000
+ 2026 07:10:50 +0000
 Received: from AMBPR06MB10365.eurprd06.prod.outlook.com
  ([fe80::4606:8e25:96e6:bede]) by AMBPR06MB10365.eurprd06.prod.outlook.com
  ([fe80::4606:8e25:96e6:bede%5]) with mapi id 15.20.9542.010; Fri, 23 Jan 2026
- 05:40:28 +0000
-Message-ID: <86840afc-b21d-4637-815b-65615610363c@vaisala.com>
-Date: Fri, 23 Jan 2026 07:38:55 +0200
+ 07:10:48 +0000
+Message-ID: <24ab3315-8f83-4d52-b6be-abd31e58d0c8@vaisala.com>
+Date: Fri, 23 Jan 2026 09:10:20 +0200
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/4] iio: industrialio-backend: support backend
- capabilities
-To: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v4 4/4] iio: adc: ad9467: check for backend capabilities
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Andy Shevchenko <andy@kernel.org>,
  Olivier Moysan <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20260121-b4-ad9467-optional-backend-v4-0-18d2c0d450cc@vaisala.com>
- <20260121-b4-ad9467-optional-backend-v4-1-18d2c0d450cc@vaisala.com>
- <20260122204310.55446399@jic23-huawei>
+ <20260121-b4-ad9467-optional-backend-v4-4-18d2c0d450cc@vaisala.com>
+ <aXDNZWSWpuDPzdwv@smile.fi.intel.com>
 Content-Language: en-US
 From: Tomas Melin <tomas.melin@vaisala.com>
-In-Reply-To: <20260122204310.55446399@jic23-huawei>
+In-Reply-To: <aXDNZWSWpuDPzdwv@smile.fi.intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: GV3P280CA0020.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:150:b::32) To AMBPR06MB10365.eurprd06.prod.outlook.com
+X-ClientProxiedBy: GV3PEPF0001DBF4.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:158:400::312) To AMBPR06MB10365.eurprd06.prod.outlook.com
  (2603:10a6:20b:6f0::7)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -71,202 +71,143 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMBPR06MB10365:EE_|GV1PR06MB9194:EE_
-X-MS-Office365-Filtering-Correlation-Id: 3f27e319-a16e-4152-472e-08de5a41ea90
+X-MS-TrafficTypeDiagnostic: AMBPR06MB10365:EE_|FRWPR06MB9835:EE_
+X-MS-Office365-Filtering-Correlation-Id: 457f385f-32e0-4ac3-5e45-08de5a4e88de
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|1800799024;
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|7416014|376014|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?cU1mbzNvRWpBbHZsOUdTcVR5SVhUbVVFNzNjdlBhRzVvRkNYdStVVDN2b2g3?=
- =?utf-8?B?OElrc1hKaVBMQzd6akx4QXFWVUZQWkdpUHNRTjZPRVIzNkZlaElmWnhGQnRC?=
- =?utf-8?B?U3YyZDl6YzRWN3l1akh0dzJVNjBteDRJZHdLM3lYemVwakQ0UTN0T052OERa?=
- =?utf-8?B?VU9IbHdRTnF1ZGphZGRHYmIrVDZSTGhHUE1CSDk4ak9BYUZveUszVjZJb3N3?=
- =?utf-8?B?aE1sYmNvUDBLNnY1dUpDNmswZUNSeCtaQmRGRTFQZTRka01sSmdVVkdrSWZC?=
- =?utf-8?B?SlJ1RmtCOHJnTzBMdEQ3VThlNHp3aGlUUjFNdzlWMnUvNFFOVktSdVVKZlU5?=
- =?utf-8?B?Tm5FSkhUdFlLR25yTGJocWhxdGV1Qmx2NjRHRUdTLzZsSzlMV0MrWmdzNmVx?=
- =?utf-8?B?RHFYV3NyVjh5Y0F2eXVxdVZOZVNhZDdDSEMzeHZkVVZJVmJkS1dLZzJGYlQr?=
- =?utf-8?B?K2JXc2VTSzlsTzlXZDVRZzV6STNUV0owaUxxaUp0dXhhL3I3aC9PaVBXRkxV?=
- =?utf-8?B?bEJLNXgyalo0bk4wNSthMGRkeEY4QUlENW9BNFpOUlQ5WFFTSkNqb3hVSTZY?=
- =?utf-8?B?akdiNUxrTHd2UlB2czd5OXl2R3o2MXYxOWNEY1IwOHlTbUZOOWNPR3ZDbU5N?=
- =?utf-8?B?TkFCdnVJSGVCY2FBSUZXRGhvWkIyQ2NsZ0VVNUVMc05Md3gvQmpOSWhEaWt6?=
- =?utf-8?B?ZlR4RzNQSWl2c3lFSThUdjdtM2xlOExobFl0a01mZ0IwdGsxOU9rc2VNOWtn?=
- =?utf-8?B?dnRrSjJCYk52L3dZU243NFJodTloTUdSTjVzNHpYK2hocG55NlBZa2llQ3gr?=
- =?utf-8?B?aXY2aGxqZk0zVUFnTGR6bDBNb05GNDROV1Y5WldUWWtUTFcxbEpQZDRTNmhH?=
- =?utf-8?B?WHYxbmx1Vy9OckwrbDR2UXlYTW4xR2lkb2tFdG45WWY5VEdqQlQ2TFdieC9S?=
- =?utf-8?B?eHF0dzY2NmdScU9WK0FHdHZseHdlcnAxQVlpMFhOU1BnUkZYZCtHRG1NOEQz?=
- =?utf-8?B?N2sxZDhsRURkVFBJU0JkbGQ1NE9HOWwwOUp1MUgwQ3g3V0RIMXNDTjEwUmJQ?=
- =?utf-8?B?am9QWW1hTFRNRHQ4aGFrREQvZk0xRFcxWTlsd1JEZ05WcTdZSC9JZ0hxY1hK?=
- =?utf-8?B?MmxEY1FGcE1FQVRsYzFISm45TEVIWUk0K29VNjBYYUFlU0dnd0hCRUFXNGtB?=
- =?utf-8?B?MlJFcUlWNmYzMnY1MGdpclVUNGtHR29DVjhxd0JNNkZYY2FDeENrbVZJaTlq?=
- =?utf-8?B?MlhoTjRsdFNudUd6d3hQditrYUlpUVIzeW4xbk9YOWs0QkFtblRhR2Q2Y0kx?=
- =?utf-8?B?WjFWMWQvYXBhU2FJWTFqbTBVNkVvV0hlclF5UUt3VGJvU2licVFZKyt1WWNR?=
- =?utf-8?B?NWx2VFYzbkpBL01NWitYVVB3ZkhlYkkzbTRpQXV2K2h3TUVHczYxL1V3dTQ1?=
- =?utf-8?B?TDZUMngxVVV4RWNnTm53eEt5dk0wczltNGxCRVF5dGUxWXIyeGJ1YnRGMm1T?=
- =?utf-8?B?K0VuTnBWZkhJT3hDQnlGNzVkd2ZTQ3ZGU01BNFg1dG1VYWZyWmxOVkUySSs5?=
- =?utf-8?B?eXIyOGlPMGlRNHVkSVhpMmhCK1h4SU1HS1QvazE5bW1qeE54YlRyYkxuYVJq?=
- =?utf-8?B?T0hNWGpiZnZWSjBQY0tOT3c1eWEzN1FUNmdvZUFUcjZZc0JvRjlySVVyeCs0?=
- =?utf-8?B?WmlpUE1zU29NUmdjVzVjL1hLM3h6MGdvdUt3M3dWb0NFVmRqaXh2Z3ZnYVhM?=
- =?utf-8?B?SnVhL0VRdlNwTWVjV0JpTThnRWo3Qm9FRkkvcElDOG9FdzhGRFlqWGwxV2lJ?=
- =?utf-8?B?ZFlCNkRRcFFoamZpbVhldlNmMlhqaHE5UFlKUmtObDUvRHcxSk9aa2t0Nno3?=
- =?utf-8?B?UDRESDFGNk5ETWZXRUY4cVhHVDMrcWhZemlmWmFlbnFwY2llR05IdmUrVnRF?=
- =?utf-8?B?NTZ6SmFQa1l6Y2JwZzhoNWlYWkZuVGgyMHVYMm8vc205bklUZmdxU25jckVk?=
- =?utf-8?B?OUpLK2hCVENrS0FFd1lVTUloTGlpakNSM2hWcGpCS0FtMThqb3dZTUpIdUxR?=
- =?utf-8?B?M3lhZ2VsV09wL04vQlVhMFFRdkRSemIza0NkaytGNlpWVmJSM3FFV2lyaWpr?=
- =?utf-8?Q?F5ac=3D?=
+	=?utf-8?B?a3c1eU1pZTdvNUFyRWRmWkpZSU5ySU1JS0dCbnFXK1l6bm01R0ljZy9jd0Za?=
+ =?utf-8?B?aFFTM0dJODdkU1BacmZGb1p3WFdrUjl6TzB3Nld5WFJmczhZKzZDbTZxaHpD?=
+ =?utf-8?B?VnFZWWt0M2phNUlkRnZORkFyU213WEcvSjdONCtqUkZoMDEyaUdFLzltSjZF?=
+ =?utf-8?B?UTJyaUpTSkV1YUwyQXZUMW00cWFwVGhUUG1QK285UmxtTVc5Sk00M3RuRGE5?=
+ =?utf-8?B?dEcwT0hjdXV2aTRNMnNjakhnOC9vbmgxbUs4UXVVVTUvYk1PL0orYi9ZNWRH?=
+ =?utf-8?B?bmJJL1dWZWUvQkdpc0Y0QnhkMVpZZTR0STMyTFdidGVLL2tpOEJLNC9uVFkv?=
+ =?utf-8?B?ditjaE02SHhtZ05IM09VdWVWa3V2TTVXL3Y4OWNJdjdPRXNQL21xcGVqUFBj?=
+ =?utf-8?B?aWo1dlYxL1ZPbjk3cGppU0dwa2VtOGd4bDhvYWNhWVNyWVVFVUhzYWIxNGdh?=
+ =?utf-8?B?Wm0ycGVDM0Y4RVlhTkJzRmM5djREai9oSlJkZzQycEUwN0FDRUw1d2F0SzZr?=
+ =?utf-8?B?WVV2T241UjhTMjdxMVk0RGQ2UTg4YlZCMkFLZmwzNVdJdTJSNEVSQ3lZR3pX?=
+ =?utf-8?B?NU8wMTFYT2cvdXh1aHJnY08rNHRDQmFyTEgvWnRQeUxPYTduT0pkTktDakRS?=
+ =?utf-8?B?aG1uV00xT2VpTlREN0tFWmVZM3R2dWNsN0VEN3VVRG1qRkN3U3hJSzBCQ1kx?=
+ =?utf-8?B?ckt0OTdXZndpUjFTU0hqU0lpclhYUlczMFdZNE1FWk5remdqMUJtcnVkMnZH?=
+ =?utf-8?B?ZlBVTXJXWUowRGpHV005KzBHRVRobGtnZERBY3d1eGlTY0RJOVc3a1RCejBR?=
+ =?utf-8?B?OUdhdVNRQ3BxV08zWFBKWUZhRUFNT2w4MDI1WXRnNERnNS8rcnZkZXVYQU1T?=
+ =?utf-8?B?WWxUSkdQT2U0UTc5Q0VuSzNUMC9taFRmcHUyVmpUOHUzUjVRK2JrdkFNWFVn?=
+ =?utf-8?B?QS9EZ1NPS2JKSlpZdHhXdG5CS3FHQUNRNTlEODY4L1dPbGl0VExWdlRJTGdl?=
+ =?utf-8?B?eFpDS1MyajF0SUZnN1phZUJ1Q1grZU9DdFZjdDRZQnBJMkVOejFqQVBnek9u?=
+ =?utf-8?B?amlKNlBteCt1VnZCZy9HdXd0YUVyYTUzdEVhZzlXZjdSVnlBSGZkc1puSmpo?=
+ =?utf-8?B?K0p5NGpocnRVNXVvMC80S2FsSDZUYm12WHJpMTFIRFpPcFlQQU00T1NSdlVy?=
+ =?utf-8?B?UkNLVERVQi9Wb1c5bjExMEpmemhlQ0ZSbFdiRkd1bWl1Um1CTnZvaVh5Vzdh?=
+ =?utf-8?B?dndMcmdNaCtqcHRwNWFqOW9qTE5Ma2M1UTRmV1NRb29ZSDlicE05OTZTK05s?=
+ =?utf-8?B?T1NDNXQySDZzODJIS3dGbFNqMWFRTVlxWXJwRDRaZ1hpWlBQaFhIMEtEaTlH?=
+ =?utf-8?B?VWpYL282OWIzYnRuMnE0LzFJOHRzOGdlTGFiY29na2RXNHYrOEdMUTYzUWEz?=
+ =?utf-8?B?dXg4V3lHUU8rRTNMdXJiSFFXZ3VnUFVqei9sOEFxbVI5akZVN1RsOThzMlF1?=
+ =?utf-8?B?SDludmlYNzZjNi9yR0kvS2lvVk1yN3FzeXhrZVRzVit3UE9RZVFrWTUxKzdq?=
+ =?utf-8?B?TFM5OXA4TFMxVnlzdXExSHUvSk15MHo4bmhvbnBJbHFQZHVrM1l1T0RZMXFm?=
+ =?utf-8?B?cHBmRU1ZZXpZNnNMSEFYeERSY2hpZUZkQ0J4U3BCRHhWOXNrYUs0SzBycS9T?=
+ =?utf-8?B?eGRzeVZQQWJxMEN2ZjU4eXpNNmRxcStUSDlWSFJwYTIxODRLcXpJdmw0eU0z?=
+ =?utf-8?B?cHpTRnNJbjg2b2Q5RS8wN3VSTDVpVUNNcGhmbzFwalZpc0pKRmJpSU9tZVVu?=
+ =?utf-8?B?Rys1Tkw5dHpSblNwSlZwS2hSVnl5N2cySStQRVJhVjVNb203SjlzOG1FVlEv?=
+ =?utf-8?B?SHdkTEJCUlB4NDh1K1NLVWRybkhDTUpob2lxdVlBd0NLRXRaSExMeVRKZGJX?=
+ =?utf-8?B?d0lWdkR6T3VrZjVsVnV5NUgvUnhVdHRoYkNjRnVvaFNscmw3VkxkUFp1VUts?=
+ =?utf-8?B?UHI5UXNUU083bkFyNVpmUWVwMTRDem5BK3c3WWJQbGFhUmYyejZsRFZQZG1h?=
+ =?utf-8?B?ZG0vRTFIc3ZhaFFtSktlOFlKaW4rYUFQWmM4aHZKcDhybVJiY3ZBN05hMFRX?=
+ =?utf-8?Q?Hx3c=3D?=
 X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMBPR06MB10365.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024);DIR:OUT;SFP:1102;
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMBPR06MB10365.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?ejV6RloyL0M4amgxT0FaRjdITFNtZEFVV0o1Qmc2WWs3eHAwd0RJbXc4SEY5?=
- =?utf-8?B?L2VjbzdQZHV5UFhBdEJaT2cycTVmYXJMd3lwV05QNFJkZlBNUVpqRmxVTDJU?=
- =?utf-8?B?dFczTW1QUXRFZTVVWVpDREpQZzAvOW5HbUJmTDN3WS9TTlNLYWNQWU1VMDNp?=
- =?utf-8?B?dEZoaEdJNzdUQmMrYkFGL2U5M29vMG82YjFkc2FlanFvZEZ2U0pRZ2daR3lR?=
- =?utf-8?B?ejF0Vy9MRWdtOGlDdXJVbDJHemVvTGNiaWdsNkhWT1hEK3lUd3BpRy9TYkNQ?=
- =?utf-8?B?clRUKzNNdEhLWmE5ejNFMlhreEZrTHo3b1U1cWc0L0JUS3V1SDdVUXBCMFJH?=
- =?utf-8?B?bWZxWGF1R2FBdmpnOTlwb0toZ2ZWYVlnUEJieXA0cEJkZnl0aTF1TndmLzhy?=
- =?utf-8?B?UlFRbjBKWFFzYUpLZzgwdHJLQVJTK0ozY05iMmROQUhNQmU0azczVTkzMVRQ?=
- =?utf-8?B?UDBUZ1RseVJtaWRINEcwKzBIMkdWMWNSdGpZYWRJRjBWLzF1QkN6V2FJZkc0?=
- =?utf-8?B?a0Q1RkRVWTF0KzRZRzJSdGxTTHl5T3FQZURmWDNra0Vha0wzN1dEUTI3L1NT?=
- =?utf-8?B?Y2RtbDdqbGFrb0UzdDFTSnpzcTBEdmltTU5PeHdxMEJiMU41SzBTbHpMNzhh?=
- =?utf-8?B?cjhLMmpqbEhabGcwb0FSemtZWUJHVnhzVURsRFhOQ1hjcUl2RDdMbnFpUGMx?=
- =?utf-8?B?UXN0cEdmbHhyQ3RhMVFibUZoeTRFU29yZ2xiaXhMakQwV2Q4QkYzaGpjUmtP?=
- =?utf-8?B?U1ZseEJYMjRwSXV5RDBKZkdCUTVmUGVINXhGN04zRFBNRXJJZ1FQcENtdm1Y?=
- =?utf-8?B?c090eHpMVHh3bktMN3U5bnl3bkdBRzJ6OUF1Uks5bHcyVGdYUVI5elpTVmhR?=
- =?utf-8?B?Uko1NUhsWlNhb3dubzVrWUE3VkZLSkZWU2R4ZTlUYTRlMktaajN5M3BVTGZa?=
- =?utf-8?B?TGRETFBBYkJ6MUlsYXE4eW1iVzZlUTloRFV6T2E0ZGpFVldqdllmZ2lWMWtN?=
- =?utf-8?B?V0ZpcEYwUU4xTGhqdDRBOUdzVG9YNW5HZTFuM3IvUkxQeFNZU3ZIY3pQcUpp?=
- =?utf-8?B?d1NsYXdZMS9jclEvTXN4U01JVm5wS3J3T3hrREt3eHdxdzhBUFIyandpb1lh?=
- =?utf-8?B?WlY4WW5uQmlJU0NZWVVER3dxaTdHcTVUQm9kNjJMTm5HV1JkTWQ4U2RRaHdP?=
- =?utf-8?B?ODRoV2tlQ2Vvbjc3TjZnZ1lhN1JiS3QrM0ZhZHcxYXl2cHBwSTRaOWNSMXAz?=
- =?utf-8?B?QTBkQWZBSm5IcDBsVkRURURhUFdpMG03YVFXRnpTRHpkSjJlVU51Um92NWZh?=
- =?utf-8?B?ZTVSbVdVOGR1VWFlaEVwRlJmQXh1N2l4NkNUb0c1VFJ6YlNJd05US3AzWXhS?=
- =?utf-8?B?d241UXpIRkJLbFkvaWRkdmtpNEFRZnM1U01oNTBvMTMreHl6Slp0V1M4Z1Ns?=
- =?utf-8?B?WkNET1F2TGRsNW9ITmdYaE5sNHQwdXRBMVkrU2RCYWZTazVRWEkzOEg5MC8w?=
- =?utf-8?B?TERUSUJvTjBVWTZDaEhLNWt6MGtmK3dseXhaTzNubllUMEtGYjQ4SWpuYjZ4?=
- =?utf-8?B?blRzaWVHelVtcHZ6UWk1RVlDV1picFNycUFOaWl4TzM0R1A2L0lOektVbFlY?=
- =?utf-8?B?NWI4RlhkOTZxblVvSW5CWWpDUExKaXJvRDJUeWxBZDRJem1EK3gvV3VwZHRR?=
- =?utf-8?B?NXR4WEE0MkYrSy9rOFBtaHQwRHJXcWxqenN4YTV5RXN0ZG5xbEJhZ1VTTWlO?=
- =?utf-8?B?SnFDRk5BMHZCVnlIcHJCYkVPZTdqM2JRT1BpNUZPNFIrMzgyeFFRN2NYRlZw?=
- =?utf-8?B?Z0wzenAvZ3lWWE1xdUVUS3c4MUpKMW9BUVZpKzRlMWkwWlQ4Wk1lNlBOT1k1?=
- =?utf-8?B?Zmhadk90VUkxZDRHTWpJbHk2bGhRTzA5RklxczRmamloQlZ2Q1RDQlBXc0Zz?=
- =?utf-8?B?Q01FenorRFl0NTM5cy9EVTNmV0x0T2dvbHoyUzJZOTcwUG03RXhhdlpwbUxl?=
- =?utf-8?B?UE5CZnV2U1pnaGo2VE4yQm1scG5kWUtRM0I1WmcxSXFJT3lrZytGYlRISytB?=
- =?utf-8?B?aDhJdHE1SE5EQk81SDZCSnBUN2VjT2RYOGN4dlYxbEprQ1hxT055MFpkYXpq?=
- =?utf-8?B?UEFSTGoyajcxS25sNnQzL0UxQmNHRzFyRXVzVWRwN1Q4ZCt6V2NOSlVNY0Zv?=
- =?utf-8?B?ZmZBM2RvUFVkSFgvMFkvN25xd2w0K0NyUEpLVTlJV29kaURQOUtWS1NOcGlW?=
- =?utf-8?B?aUpncUNDM3ZWMXAxYnMzbDNCWTJnQng3UmVBbVVBZVh5ODVIT0pjbEpIS212?=
- =?utf-8?B?Y3lnM0xHWDhMVHRGZmtCa0dQYjRpSG5WN1dldytpaWZBNm5tbEovMmVtRjhZ?=
- =?utf-8?Q?/KN6gYlCGsjirQkY=3D?=
+	=?utf-8?B?V0c3Z2Jmc0wrVkM5OWc1SXVBNE1WUWJha0YveHJXekhOaXdrNHkzU0FtRDl4?=
+ =?utf-8?B?OVZjZmx0MkZEbWdjVmJDUVhsTkZHM0p1Y3FnWVR1SGJaNS9JcVpLUGh0Nlo3?=
+ =?utf-8?B?alhwQmw1Q3U0QlVVdEVhSGhKbkgvbzlMZEF0bDZPV2tZTXVTZGhyRlkvSEVn?=
+ =?utf-8?B?MFRaTm9JL0V1MkJOcVRsSys2NDVGYWhGWVFuTWhSblk2TFZGNW11dXVqNmgv?=
+ =?utf-8?B?eCtVWk42Q0xJVzR0aTQ0Y1dMVyt5N1p2M29HYkFPQXc2THVJZzdzWXNyeGdU?=
+ =?utf-8?B?VXo4bEcvQXBGQXY5a3hPL2JNcW1MT3JtYnFkRDltQ2N6eEp4b3VPcDJPSVQv?=
+ =?utf-8?B?SDgza3g2NVlDdUVrSVlRUlpWcjBrWlF0UXZKOFJCKzlVVERpVS9OOGVJVitq?=
+ =?utf-8?B?VlZoaGp6U2U4UmVOOFVsRitjRTJOdmxxWVBRc1h0U1BtWkIvQS80SUZQWHh0?=
+ =?utf-8?B?TnBWTEhUWS9qWXNxKy9WWHluWXd2ZTl4RUtJcHR6Q2x3ZFVmNUpMTWdleHBE?=
+ =?utf-8?B?V0Y1Qm93a3dHbHhETUhFRUNRVlBrR2ZnSldFSHZlU2x0WmFYMWl6VjRpd0U4?=
+ =?utf-8?B?K1FqZTZia1dza0xzTFNSWHF0MnJoZmFSTXZiZldpL0xSUVB3TkNRS1ROeHg1?=
+ =?utf-8?B?TGM5Vm5ia0dZL0FUYzBlU1VzMnRDd3NwQXJSWHdJV0lVZEp3MlFLMnZLVTh1?=
+ =?utf-8?B?Y2w4U1QwREMzVWhNMTA3Tmx2YXp0WGRWVlJpMURQR3pnQXRyb3FqeSs5NFow?=
+ =?utf-8?B?cWZpUHh1cU4wRlIzZDlZN1Q3YTVWbGRCVU11L2VSMHFqN2NRSFhtbDZWclZ4?=
+ =?utf-8?B?ZHk4V3ZDWlRSVWxRc0VUK1NWaEk3d1kyZGlseGtFMXc1V0paWkN5N3AydW9s?=
+ =?utf-8?B?bHR5YTFidW5CUlR3dUJIN3ErVmwwMWQ1UC90VGRoaFZiOG1CVjFzWW8vZTFq?=
+ =?utf-8?B?aGViRnM3cnFId3FwYWpxclhPWEJGcCs4NnBsa1ExT1VMK3NaRVBOVWVBbDRm?=
+ =?utf-8?B?SmtxTEcrbU5LeHZ0cmdxbUxCSCtQLzZRcG1YWlNRaUlLTnpxeHNud01tZlYr?=
+ =?utf-8?B?WHBrMTlPbnRDQXUrZTc4SEVrR2o3dEZqM2IyTHB1S29lOGNMM21GbUpMdWp0?=
+ =?utf-8?B?TEluTmRSYXEremNLQmFIdzhHdGZCRGk2L0JHNXBqcHdGbGx5RWZROW9DTER5?=
+ =?utf-8?B?Q2EvZ1Erc2IvK05VZVNZT04yREZERmhnYlNXNTB6ZDVtRkxRdHJXemJsbk52?=
+ =?utf-8?B?U01qZU1WdUZVNWRaRzl2QUoxZlJBUzRVNTVXMW9pdTlnbXlPY0tJQ0RGUFN6?=
+ =?utf-8?B?dWtNZ3BXRndId3BybVdudTRIbC9tMnFnaXFyRUt4QVVFSlFyVEtWOXlLa1RQ?=
+ =?utf-8?B?M1hVTk1pbFI1bFpKNmRXSHg2ekltK09iVDRWVGhmTUxoR2FIMHc0RklZbHFo?=
+ =?utf-8?B?MVRPZ2hIUjFNeGsrMGl0ZWlSNnp3TXozbllwY0N5SzBaOXZzVUxGaVVmRkNn?=
+ =?utf-8?B?d3hZenRDbkR5L25nakszekozeUQ1SXRweTJac24wcEE2MFR1bkdPUVhPRzl0?=
+ =?utf-8?B?N3hPUi9XYUpFOGJsSGxoU1QrYmFRbmNUS3M0aVdsMU43Y0d0cmNuWmpyOFVG?=
+ =?utf-8?B?ajdzVmtUNVRhMHp3eE9VQ3hIYkFEUkdSNGZRVWRDYU5pR1Z6d29Yem5pTDQ4?=
+ =?utf-8?B?SWh1OUJud2JSRHVwYjRKVWJHL05zdFZRd1hEYVlTeGMyUDgvYVUvL2IwcWtz?=
+ =?utf-8?B?Z0FFZitXeDFoYnM0aWRpRW1yYXZPZ0l0dnZ6OUZOMzZUYTlTeHhYZldhbktV?=
+ =?utf-8?B?ZS9GN3JtbWwyeFhkSFltTVRmSWlZMDBiNWRhR2dPeXdQNnp4YS9BUnQ0SWlr?=
+ =?utf-8?B?SDBUYUNnT2hpV0RrR21CV1F2UUF0OWhrcG1QWmNmOEVrTjRzRWlMNlhiWDht?=
+ =?utf-8?B?QnJ6bE9MdWNyZElLVFVZQUxMaWFQQmpOSlFGTUMvcUNCdmlIdS96VnE0a2lx?=
+ =?utf-8?B?OGM5MGdxMFJZVXJGVjlKUlN6SmdwdHljRXJ6QnM3UVpnWG9xM3IwQXJBZWov?=
+ =?utf-8?B?V3BwZUxCTXA5T21RWlZBZVFkak1iRmViT3UzS0p4bFVwVEJ3TEp6VUpOUGNn?=
+ =?utf-8?B?OEpiWVRxckhmemRJR2djMnpqdm5Vd3dXUHZXSEtuWFBVbGRhVnZkeTFpREZB?=
+ =?utf-8?B?VFZaRUhNeGsyN3lzV2dDYS9jRjVGMW9iMmtoeFFFTWlMZFJwUlNZRy9zRGYw?=
+ =?utf-8?B?aHVXcHIvYStLZzJmb1VKUGpwamZPL0ZPNDVjRUZjRTQybHNobCtNeEEwT01h?=
+ =?utf-8?B?cDFjR1FlczBRRHRlWjN3eGhrNGlaUDEvVC9Ick1EN1pvK0JzaU1Yd1Zmbnpy?=
+ =?utf-8?Q?ll99A3II0oxo19gA=3D?=
 X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3f27e319-a16e-4152-472e-08de5a41ea90
+X-MS-Exchange-CrossTenant-Network-Message-Id: 457f385f-32e0-4ac3-5e45-08de5a4e88de
 X-MS-Exchange-CrossTenant-AuthSource: AMBPR06MB10365.eurprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2026 05:40:28.9091
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jan 2026 07:10:48.4135
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: WRIqi2LImjpb61PIL3RpluZZQpsIHmBprp5y6c/784h/OHN8MPzWSGzaphmL5Db9MSRITcK5Kepqs/83eTuKAg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GV1PR06MB9194
+X-MS-Exchange-CrossTenant-UserPrincipalName: Jp2FJrhVZbtbUJnUzUxMyOFL4n7VDxwYH4oTSh3pVRkzsEXlldiCZGhPsWf2TQRnWqU0sIEyp9fzBx4+BjG8ow==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: FRWPR06MB9835
 
 Hi,
 
-On 22/01/2026 22:43, Jonathan Cameron wrote:
-> On Wed, 21 Jan 2026 12:08:30 +0000
-> Tomas Melin <tomas.melin@vaisala.com> wrote:
+On 21/01/2026 14:58, Andy Shevchenko wrote:
+> On Wed, Jan 21, 2026 at 12:08:33PM +0000, Tomas Melin wrote:
+>> Add capability checks for operation with backends that do not necessarily
+>> support full set of features, but are otherwise compatible with the device.
+>> This ensures a fully functional device, but with limited capabilities.
 > 
->> Not all backends support the full set of capabilities provided by the
->> industrialio-backend framework. Capability bits can be used in frontends
->> and backends for checking for a certain feature set, or if using
->> related functions can be expected to fail.
->>
->> Capability bits should be set by a compatible backend and provided when
->> registering the backend.
->>
->> Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
+> ...
 > 
-> One question on the 'sense' of the cap that controls whether it's
-> always on. It's the sort of question that I'm not sure has a perfect answer.
-Agreed, it is not as clear as the other bits. I'll give my reasoning below.
-
+>> static int __ad9467_update_clock(struct ad9467_state *st, long r_clk)
 > 
-> 
->> diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
->> index 7f815f3fed6ae34c65ffc579d5101020fc9bd336..ac80abb71bbca88c3f6313d8d67b9c7ace076ceb 100644
->> --- a/include/linux/iio/backend.h
->> +++ b/include/linux/iio/backend.h
->> @@ -84,6 +84,28 @@ enum iio_backend_filter_type {
->>  	IIO_BACKEND_FILTER_TYPE_MAX
->>  };
+>>  	if (ret)
+>>  		return ret;
 >>  
->> +/**
->> + * enum iio_backend_capabilities - Backend capabilities
->> + * Backend capabilities can be used by frontends to check if a given
->> + * functionality is supported by the backend. This is useful for frontend
->> + * devices which are expected to work with alternative backend
->> + * implementations. Capabilities are loosely coupled with operations,
->> + * meaning that a capability requires certain operations to be implemented
->> + * by the backend. A capability might be mapped to a single operation or
->> + * multiple operations.
->> + *
->> + * @IIO_BACKEND_CAP_CALIBRATION: Backend supports digital interface
->> + * calibration. Calibration procedure is device specific.
->> + * @IIO_BACKEND_CAP_BUFFERING: Backend supports buffering.
->> + * @IIO_BACKEND_CAP_ALWAYS_ON: Backend does not need to be explicitly
->> + * enabled/disabled. It is always on.
-> I'd like opinions on this one. To me it sound backwards though I can
-> see why you'd go this way.
-> Either the backend is capable of being enabled / disabled
-> in which case we have to further assume at boot it is disabled
-> (which is the dodgy bit!)
+>> -	guard(mutex)(&st->lock);
 > 
-> Or the backend is always on. To me that's not a capability,
-> it's a limitation.
-I pondered about this too, but ended up having the bit this way around.
-The logic being that backend is capable of working even if not
-explicitly enabled/disabled. So looking at it from that perspective it
-would be a capability. And assumption being that typically the
-enabling/disabling is required, checking if the capability to omit
-enabling seemed logical to me.
+> I would leave this as is. Yes, practically we don't need to cover
+> iio_backend_has_caps() with mutex to access the data, but it just makes code
+> slightly more maintainable in my opinion. If anything appears here, it would
+> probably mean some kind of if (...) do_blablabla(...); pattern that will need
+> a mutex.
+
+I have no strong opinion on this. Current option was chosen as it seemed
+cleaner in the sense that it a) takes the mutex only when needed and b)
+check for caps does not require the mutex to be held. Based on this I
+still suggest keeping as is but will change if you insist.
 
 Thanks,
 Tomas
 
+
 > 
-> My slight preference is for a capability meaning we 'can'
-> do something so the 1st option.
-> 
->> + */
->> +enum iio_backend_capabilities {
->> +	IIO_BACKEND_CAP_CALIBRATION = BIT(0),
->> +	IIO_BACKEND_CAP_BUFFERING = BIT(1),
->> +	IIO_BACKEND_CAP_ALWAYS_ON = BIT(2),
->> +};
->> +
->>  /**
->>   * struct iio_backend_ops - operations structure for an iio_backend
->>   * @enable: Enable backend.
->> @@ -179,10 +201,12 @@ struct iio_backend_ops {
->>   * struct iio_backend_info - info structure for an iio_backend
->>   * @name: Backend name.
->>   * @ops: Backend operations.
->> + * @caps: Backend capabilities. @see iio_backend_capabilities
->>   */
->>  struct iio_backend_info {
->>  	const char *name;
->>  	const struct iio_backend_ops *ops;
->> +	u32 caps;
->>  };
->>  
->>  int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan);
->> @@ -235,6 +259,7 @@ int iio_backend_read_raw(struct iio_backend *back,
->>  			 long mask);
->>  int iio_backend_extend_chan_spec(struct iio_backend *back,
->>  				 struct iio_chan_spec *chan);
->> +bool iio_backend_has_caps(struct iio_backend *back, u32 caps);
->>  void *iio_backend_get_priv(const struct iio_backend *conv);
->>  struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
->>  struct iio_backend *devm_iio_backend_fwnode_get(struct device *dev,
->>
+>> -	return ad9467_calibrate(st);
+>> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION)) {
+>> +		guard(mutex)(&st->lock);
+>> +		return ad9467_calibrate(st);
+>> +	}
+>> +	return 0;
+>>  }
 > 
 
