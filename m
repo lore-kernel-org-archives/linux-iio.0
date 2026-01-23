@@ -1,63 +1,71 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A85B730C602;
-	Fri, 23 Jan 2026 07:58:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 66528345CA3;
+	Fri, 23 Jan 2026 08:01:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769155097; cv=none; b=pkadJFHkiBxN1+PXifkoaGafTIrdE/r/R/8BYtZJO8L5dFbXVFMtebxjv//bb8b/K97nf9gT1/W1GKEloUgjjPkuoGxHW1+qttQE3s8ge8GcnvlGniMti8sDzgFTA3MDTHMxcxkXpMNcWR6n5fanuSj2oa+8a3YEQS8E/BmtZcw=
+	t=1769155308; cv=none; b=oKEjVJFmYCJGQIqm+ObGovwGSy/Zs7jgJgtKtxYeaFfpaU3QM6au/+ujJbElfmwsZdDru+bNkBgNrVvcDOIwG+HXnKPN1gxEddb0jt7KRn/ZCgr06KmZWKnahy/eDgsodhEbpOJ+EM9y6LHOOHti8XozGsTDZAgHYK7w+bAgaYs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769155097; c=relaxed/simple;
-	bh=XFE2jRjeo9x23ItP0ztyTpjWy9V6hV9I2JOlha8PL04=;
+	s=arc-20240116; t=1769155308; c=relaxed/simple;
+	bh=lWbKcI45So6qHwexFpABQSsa++sWJSBK3pzhuSxJ3qg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qr9GK7+deN9LBCfdzbuJ5mXV/oMNWPu/j48Eb28f6sMcpdt4QdoY62byaF2WYjng3+F/P8zLx4YLkPLm/yux1k+kdzBjV4m2eAatGFpuC9qvheZtUKFvpJRboES59OgQKoQxctA9YZbGaf6qLxjgrU7A0v9gxDgBUfnWUgSAoFc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SH1O9FE6; arc=none smtp.client-ip=198.175.65.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=YmKSIxIdRWU1rQRVQrZkqNyEnRhLnV5NZ3Pc6h5R6FtsEi61S1dPKCjG6JZchxISuUsQ4GgQo3IR1/pSpxWwxS313ZiTg+6ekWciT7APXkK0HxNOG5ANTlhVjHD9R5PilsFfhUFHumnvvEnLOjgrAv8YM3KTg/WlU1derNV89s8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VWwGgKzy; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SH1O9FE6"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VWwGgKzy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769155096; x=1800691096;
+  t=1769155307; x=1800691307;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=XFE2jRjeo9x23ItP0ztyTpjWy9V6hV9I2JOlha8PL04=;
-  b=SH1O9FE6wt1X8HlMhKcU/aLYFjhtAzlMPiQw5QpE4eYOtyOZRYNHP7gp
-   KHmZDxkXSEAt+X2Ya/bqdrqyW+2LET7gn7vdqX2/2QiMFFamHk2s1k8Pn
-   e8wDohMzshVdX9y8xEJi5vDvxgwfT0Y+BrP/9B490O9n6GB0f2VOBP9JP
-   EeyRwlcydnrj51bL4byVvFJ3vjTWukQ9uTLifusrFyugb6MYDWkiL2c9m
-   2bX3J+nXfUnICTnGS8Hc6IzhRMSn/DJEW8IlVvB3JAJnoPri2Rqsh6tWU
-   sXSfEGRWuvM7DcAaeL9sz/b+1UDVgNMe9pm73kbFMKgd4FJDMRHLGlVin
+  bh=lWbKcI45So6qHwexFpABQSsa++sWJSBK3pzhuSxJ3qg=;
+  b=VWwGgKzyv1kSiAGJj6W51hShzallljLzv9Nu3dB1zNjPhG7Qo695RTU6
+   xxL9j0xeHv7rWD7CDetzSIBUEehs1kPgBCU0PjVHCNvxj3sI0vqjrfAVs
+   oLt7PHlM+O5+2szeA48xjD34T85UWZgBn0tD72kpdyIBe7vJy8KJUVYtC
+   AWWokxRKFCc7j5BH8+Z806sR7S7PUG8jKWEG4KiW6YeupEsNS3C9J4aK9
+   K22ee1dkrCvhtNjgo9z+AyxnUtzt5aBi6BWKUaTAYpXbGmLR9ut8r2tvy
+   s0Wz7j/lkb0F7MVKF7PY9jZGPVfaAcR2k3+T2mOHB33wwlSatRjgTGiB5
    w==;
-X-CSE-ConnectionGUID: LB72Yi7aRCuWfDEG3I/YdQ==
-X-CSE-MsgGUID: HF2tbRf+Q2mdx9MwgBfl3Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11679"; a="70457267"
+X-CSE-ConnectionGUID: MVIoHJtjR0WpyztQFv+3Zw==
+X-CSE-MsgGUID: uV8Phok4RSWRy2ghKBmfiA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11679"; a="93073845"
 X-IronPort-AV: E=Sophos;i="6.21,248,1763452800"; 
-   d="scan'208";a="70457267"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2026 23:58:15 -0800
-X-CSE-ConnectionGUID: hhi594cSSuulAtlaaPO1xw==
-X-CSE-MsgGUID: cIKRrZPSS62WAIUyPD+u5w==
+   d="scan'208";a="93073845"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2026 00:01:47 -0800
+X-CSE-ConnectionGUID: gIrY2jd+Qhyn338J2dLgsw==
+X-CSE-MsgGUID: CyE2eFcfRtiSGhxy3D0AjQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,248,1763452800"; 
-   d="scan'208";a="211964806"
+   d="scan'208";a="207224658"
 Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.112])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2026 23:58:13 -0800
-Date: Fri, 23 Jan 2026 09:58:10 +0200
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2026 00:01:43 -0800
+Date: Fri, 23 Jan 2026 10:01:41 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Francesco Lavra <flavra@baylibre.com>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
+Cc: Kurt Borja <kuurtb@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Benson Leung <bleung@chromium.org>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Shrikant Raskar <raskar.shree97@gmail.com>,
+	Per-Daniel Olsson <perdaniel.olsson@axis.com>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 3/4] iio: imu: st_lsm6dsx: Fix check for invalid
- samples from FIFO
-Message-ID: <aXMqEtk8K68sqAyQ@smile.fi.intel.com>
-References: <20260122162335.2020006-1-flavra@baylibre.com>
- <20260122162335.2020006-4-flavra@baylibre.com>
- <20260122200757.47863f0f@jic23-huawei>
+	Andy Shevchenko <andy@kernel.org>,
+	Guenter Roeck <groeck@chromium.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	chrome-platform@lists.linux.dev
+Subject: Re: [PATCH v5 2/7] iio: core: Refactor iio_device_claim_direct()
+ implementation
+Message-ID: <aXMq5bBkj8It6f5z@smile.fi.intel.com>
+References: <20260120-lock-impr-v5-0-d4d22347041f@gmail.com>
+ <20260120-lock-impr-v5-2-d4d22347041f@gmail.com>
+ <20260122190401.510234c4@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,59 +74,22 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260122200757.47863f0f@jic23-huawei>
+In-Reply-To: <20260122190401.510234c4@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Jan 22, 2026 at 08:07:57PM +0000, Jonathan Cameron wrote:
-> On Thu, 22 Jan 2026 17:23:34 +0100
-> Francesco Lavra <flavra@baylibre.com> wrote:
-> 
-> > The DRDY_MASK feature implemented in sensor chips marks gyroscope and
-> > accelerometer invalid samples (i.e. samples that have been acquired during
-> > the settling time of sensor filters) with the special values 0x7FFFh,
-> > 0x7FFE, and 0x7FFD.
-> > The driver checks FIFO samples against these special values in order to
-> > discard invalid samples; however, it does the check regardless of the type
-> > of samples being processed, whereas this feature is specific to gyroscope
-> > and accelerometer data. This could cause valid samples to be discarded.
-> > 
-> > Fix the above check so that it takes into account the type of samples being
-> > processed. In st_lsm6dsx_push_tagged_data(), change the type of the data
-> > parameter to __le16 *, to reflect the fact that this function is called
-> > with an aligned data argument and avoid casting to __le16 * when checking
-> > sample values.
-
-> I'm going to guess Andy meant all the way up rather than pushing the cast
-> upwards.  I think this can be done in a fashion that cleans up the type
-> representation in general.
-
-Indeed. This version is not so better than the previous.
+On Thu, Jan 22, 2026 at 07:04:01PM +0000, Jonathan Cameron wrote:
+> On Tue, 20 Jan 2026 01:20:42 -0500
+> Kurt Borja <kuurtb@gmail.com> wrote:
 
 ...
 
-> > -				st_lsm6dsx_push_tagged_data(hw, tag, iio_buff,
-> > +				st_lsm6dsx_push_tagged_data(hw, tag,
-> > +							    (__le16 *)iio_buff,
-> 
-> This is ugly but at least it's near the declaration so improvement on previous.
-> 
-> However, I smell a cleaner solution.  If I read the buffer definition correctly
-> it could be replaced with
-> 
-> struct {
-> 	__le16 data[3];
-> 	aligned_s64 timestamp;
-> } iio_buff = { };
-> 
-> //note the zeroing because the code never writes the hole which is
-> bad...  Also that the { } is guaranteed to fill the hole with the build options
-> the kernel uses (there is a selftest for this).
-> 
-> Which will let you pass iio_buf->data to this call.
+> So sparse does change what it moans about with this one in precisely one instance
+> There are 9 false positives with Al Viro's updated sparse - I haven't checked the
+> original one recently.
 
-Yes, this looks way better and allows to get rid of all assumptions and
-castings.
+FWIW, I also switched to use Al's branch of sparse and recommended LKP to use
+that as well.
 
 -- 
 With Best Regards,
