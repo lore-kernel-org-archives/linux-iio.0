@@ -1,110 +1,94 @@
-Received: from mail-ej1-f66.google.com (mail-ej1-f66.google.com [209.85.218.66])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE27A1AB6F1
-	for <linux-iio@vger.kernel.org>; Sat, 24 Jan 2026 16:56:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.66
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769273779; cv=pass; b=gqcwiO6/5m8T8e1QjP+r86o6ncpPQYnA3OlbO2nKYodw01XEDpsAA3X3yFag/h7Sbv5T7qslXJu+Pz0UlKMSms8+kYDfPtzRX1TFaJvJksYnk0bwokM8NmhUrYke54+5Us8pLGs0UmoKYOlRzFpHCazBCU6Eas+u2lK5QXmdR3Q=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769273779; c=relaxed/simple;
-	bh=nngxUqRFcmb+PaCYme9ss53MQLQbq9LdKlsZgz3OuBU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=GccB09g7ZtaatDpz+/Y46eyqrxnx0xTQXGFvVRl3CM2F6SdjYEviqOiSeQEPtsn5MdbYbEQ3fhoF7IhIu302NT5t8KDzJ0pBjSaqGwFWDsXXMBpRZ8WQOP+YQEyRnEqBYWZe/Q3Ci5aGL8ntEyn3aRwj6fP4GuMfLMf1NlcTtKo=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VpDIehb1; arc=pass smtp.client-ip=209.85.218.66
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F0BB3EBF0C;
+	Sun, 25 Jan 2026 10:22:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769336536; cv=none; b=m27PMsXM8otb47UEE0qcBBC8IywjpXA4Ol1h8nNy6yQOGjdsN/bvFPAWH3DS5dmtGEXfWDIihLEY5d/D+cseanF4uWR+4AxAPppoS6HCLNom2790HvAe/edEjlojdYHBOoI2i4JC0suqGVw3ybhOre2PiFg4yyCBCrnIQsb4U0U=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769336536; c=relaxed/simple;
+	bh=kPcLWa/o3rjsJMhWGoaV5KilA7EaTEWHRAIvHjLome4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=pxrMiB0BKsppbFLGYkjavLUwyaDAgRa+2cKw9oIWVnZWbTf2eJG4B27SsvWeYoOz5cDAVPZ0tvtAT0ZXCAHXXatpIdzi+yaIhofGKNauUcmEvDUWwwCSZQgsq6c2q/a+gFe/G3pzPsWB9nP1rxL9sb1o5VlcYPzZpeozOpcbHho=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q7mVYeeq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VpDIehb1"
-Received: by mail-ej1-f66.google.com with SMTP id a640c23a62f3a-b8842e5a2a1so407903066b.2
-        for <linux-iio@vger.kernel.org>; Sat, 24 Jan 2026 08:56:17 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1769273776; cv=none;
-        d=google.com; s=arc-20240605;
-        b=OVXaskNNUW/+p1tBTliHv+pFRB5Fm4V35BSZ8qDn0nqd6d5IwBGr2I4yPjXlWC3OBj
-         +QfxU25jj6ccy4Awm2I2wWbaz55kbrTPRKsO0MSM2/nuPgBgu0lfL8yhlQiW8qVBkTm/
-         GQ+WUuB1WLqmfIz3W0B3jFCw/y+fDDSD9UM3Cu99U2H1W9iJbn+GSo+Tt0I9Jo9pm4YD
-         Pv5N77yj7lPFyfDzezU25hgeCHtBLICN3D0VN11qt0xmN70JHCiUH+BgGFYTXZERtOov
-         aa8YPbNh58PuokqGHzS4QKyVPwzKBA0AGdrWT/Up/CNhyVqyByF4s+DkiE3/wW7mR/e0
-         HAQA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:dkim-signature;
-        bh=KZpvGDkcl1DgYAfVYgQMcbiMSJ/Yorek6nrxD3kJFJc=;
-        fh=3f0js+XK2ZpRwAZDnC85lAbi68pCI4cpEhE3728+REU=;
-        b=Xm447SsBHKxAxfYS9HIjYD54LoL/iEQNT2XKuna+uPNq16NKJx8GJc0lAJFQ+UCnY6
-         qt8MBdQyN00umxwW/x7Yr6SMXFrTh77A1OBrj6V2NnAIOAJqbF2Dm2zYGICEEcArNtiZ
-         LIHdu+Qa9xgrQLKyM/p6RdN6+GwsDzyUiY5aHYwbmYEjYrAmqWgnsq+HddjzGVxh4Ah4
-         7w1ssOgMNmr/0zB+MbeguF1Xnm+e8CGfPz5gIQ39LZt2clnGuecAW+L7Oju8CiRiMTVl
-         QUwzXeTlfk6ZJUB+xDmbmd0394yWsp3AMDR5h1xzY1779cQ9WX3z1x90vJQoI2OexM1s
-         1Wmw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769273776; x=1769878576; darn=vger.kernel.org;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc:subject:date:message-id:reply-to;
-        bh=KZpvGDkcl1DgYAfVYgQMcbiMSJ/Yorek6nrxD3kJFJc=;
-        b=VpDIehb1kCy9VB+ycNkkJYX/9K/H2hCYIsG67De6/t1p9skc1hWAol/t2q1zbQRWzy
-         9Q/DWD+DJ+clyWUxNSq6exQ7vmdrxX2J+4YtubXyld4NMg3FLMinY6IyB1UPkbva2yel
-         Crd+kM7jkhRZmtHjhCotJqblAEaOBAqzuzv/EAmoFaceB8+Dre9D0FKsAUqyNbBG1h0Z
-         pQxHEftWBZDsmi5UGOOSvSGkBKWXrSVM+1KpdDMYpntGDanQRp71tgCpjRe5TFjnXGqx
-         IN5RLLcWOsYVsEak3M5AK8VlGVgrEcMpL/GJgtwqNOSguSVfWkHcBZtx2ajLYMXFjlyQ
-         deJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769273776; x=1769878576;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=KZpvGDkcl1DgYAfVYgQMcbiMSJ/Yorek6nrxD3kJFJc=;
-        b=ilHTFE/v7HW25O/11yQUoZkkc2ZBquQbQYZ5Txnb8t92CPyVPQlSvPaBiSLRS+1YXy
-         GDD1BRenaq5DluetI9hwUqQUxOvJo+naiNrYzH5wUJOHQ6DSamAmvwvc4led3D1QEmZs
-         ELw+XDlKFR5DqALL0WKfzJUsZy34xwTxdjJOiC6Uh22eQThZjl2EfaAZGojb29sZ+ith
-         S0k2+S2SVhAEIiKaorVnORL4NAuYRMpOGnHX1Y8AaiTQcblUSr9jdbQkns1ED19YBxzp
-         3HXrvydovTgxW8sOMH6FRDGuI+xVpGNFUUsNItnwqWgzmp/9kJFn3+cAaK71viE+u8OZ
-         iNgg==
-X-Forwarded-Encrypted: i=1; AJvYcCUqOUjbh0u9fpU2BF2loCTXLChf72X0ZORQIFfp16iGSrEDYflAeZvUpKMV7q4b3KZqkgUty+I1X1w=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyBoa6DYe5V696nTyAK95nwaFunDYAFwMXCk+UGAzll3huA6WQO
-	Q716wrAVBkx5T33rWvnjZsOdJQ7012ufS2Lm5O/fC2zmK4IeXCOxCoqsO0cE95c6Rbx07orRcIi
-	KyeJlRZWMkOBDEt4fr7HXtl2e9IfO+Ys=
-X-Gm-Gg: AZuq6aLv3fOHhJt+N8QDskIDp9yx9POZKKDNsrzpqhRN0TQS421tCjA9NFKO6t7iHvj
-	7c6/d1gja5NEXQXFEH3/5TJEI4MHk0tn4vD5oyQ4x0/tSGZLfib8O/UoVy3GzWV2t6OlGSBcTB/
-	yvNOWUYJivJpJUuyNKAFMhBnZiy5u0F+g65mKOfaPDCoLFXg3FJyocxZjXZjZFzExpy0Of1do21
-	HEO5nIVgYaTCHnT8oEOfNiV5N101XDP8fwHQxd7M3SoS/hnzbk/qYnWJXgCn6YA0If5diSVIQhc
-	X/Op/w==
-X-Received: by 2002:a17:906:ef04:b0:b83:37eb:34f8 with SMTP id
- a640c23a62f3a-b885ae11011mr460485766b.35.1769273775891; Sat, 24 Jan 2026
- 08:56:15 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q7mVYeeq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7C3FC4CEF1;
+	Sun, 25 Jan 2026 10:22:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769336535;
+	bh=kPcLWa/o3rjsJMhWGoaV5KilA7EaTEWHRAIvHjLome4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=q7mVYeeqOJ8GuQi3cJbvxZy3DkaOJA+wUm3UfAdnn2WCOOsq9sDMODT3gHaZKV8Vn
+	 jXOy+X4bket6JZG4yDp7hM7haqKXrFh9QSPnxq96IqZtcGjCj1K7aUYkUgE+cdiuzM
+	 PlWiEU0D79UB/Rp+kEN4S4aNsuAq0sqBynnfgKlfQWR+0rC17uVRhtMeYobV3J/6fC
+	 AgI12ZoXqQnvzILuv0MOgnSAVVJTnb03fnfQUMw7vxQ60VpNktfOFuB8Them2KUpaV
+	 hurCNCz4YMl2DAhWOkJBkjHGm/45roAaGHcokhE13pSJr7YMjYT/Jf/JoxT55omw5V
+	 CLofBM5M0IWqQ==
+Date: Sun, 25 Jan 2026 10:22:07 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Conor Dooley <conor@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Andy Shevchenko
+ <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, David Jander <david@protonic.nl>
+Subject: Re: [PATCH v1 2/8] dt-bindings: iio: dac: maxim,ds4424: add
+ maxim,rfs-ohms property
+Message-ID: <20260125102207.37ce3501@jic23-huawei>
+In-Reply-To: <aXNHeq9Fi1Ldf-oE@pengutronix.de>
+References: <20260119182424.1660601-1-o.rempel@pengutronix.de>
+	<20260119182424.1660601-3-o.rempel@pengutronix.de>
+	<20260119-turbine-feminize-9dcd5c86feec@spud>
+	<20260123092819.6ae81211@jic23-huawei>
+	<aXNHeq9Fi1Ldf-oE@pengutronix.de>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
- <20260121-b4-rfd77402_v5-v6-2-5b944d0605dd@gmail.com> <aXCWz6O2CdU_Sp8r@smile.fi.intel.com>
-In-Reply-To: <aXCWz6O2CdU_Sp8r@smile.fi.intel.com>
-From: Shrikant <raskar.shree97@gmail.com>
-Date: Sat, 24 Jan 2026 22:26:04 +0530
-X-Gm-Features: AZwV_QjAq7IK3pArFOJQgcpOOCZzeFXqetm3twDJeg8XCCBWYDIP9QttPFf8Xfg
-Message-ID: <CAHc1_P5hY6-z5s0J4SW_2GMER+NP4NsqoVVVaYFUg_gRi=31JQ@mail.gmail.com>
-Subject: Re: [PATCH v6 2/5] iio: proximity: rfd77402: Use kernel helper for
- result polling
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, skhan@linuxfoundation.org, david.hunter.linux@gmail.com, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
->
-> > +                              10 * USEC_PER_MSEC,
-> > +                              10 * 10 * USEC_PER_MSEC,
->
-> This makes sleeps shorter by 2. Why?
-I have considered the timeout values from the RFD77402 datasheet.
-The timeout values mentioned in section 3.1.1 Single Measure are as below:
-1. Every Status Check = 10ms
-2. Whole Flow = 100 ms
+On Fri, 23 Jan 2026 11:03:38 +0100
+Oleksij Rempel <o.rempel@pengutronix.de> wrote:
 
-Regards,
-Shrikant
+> On Fri, Jan 23, 2026 at 09:28:19AM +0000, Jonathan Cameron wrote:
+> > On Mon, 19 Jan 2026 18:27:52 +0000
+> > Conor Dooley <conor@kernel.org> wrote:
+> >   
+> > > On Mon, Jan 19, 2026 at 07:24:18PM +0100, Oleksij Rempel wrote:  
+> > > > Introduce the 'maxim,rfs-ohms' property. The full-scale output current
+> > > > of these DACs is determined by external resistors (Rfs) connected to
+> > > > the FS pins. The driver requires the physical resistance values to
+> > > > calculate the correct current scale (Amps per step) for the IIO
+> > > > subsystem.
+> > > > 
+> > > > Keep it optional to avoid forcing updates of existing DTs; without it
+> > > > the driver cannot derive a correct IIO scale.    
+> > > 
+> > > I don't really follow the logic here, if the driver doesn't work
+> > > properly without it, shouldn't it be a required property even if that
+> > > means existing devicetrees get new warnings? Warnings are preferable to
+> > > the drivers malfunctioning on those devices, after all!  
+> > 
+> > Agreed. The driver can paper over holes or I guess we could provide a default
+> > if the datasheet has some reference value or similar?    
+> 
+> No, this DAC controls the current. The current range is application specific and
+> defined by the load resistors. Is it better to not provide scale if this
+> information not available, guessing it will make things worse and
+> potentially damage some HW.
+> 
+Then does this need to be a fix on the driver side?
+Or are you just suggesting not proving the scale if we don't have enough info?
+That's fine if so.
+
+> > DT binding should require it.  
+> 
+> ACK
+
