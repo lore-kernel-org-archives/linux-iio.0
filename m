@@ -1,62 +1,62 @@
-Received: from mail-wr1-f68.google.com (mail-wr1-f68.google.com [209.85.221.68])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B53E2321F5E
-	for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2026 13:43:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.68
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6632D320CD9
+	for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2026 13:43:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769348598; cv=none; b=tkAuKv3c2/ggy0Stgt5+w5FZvNMd824HGtSF59bhB3Rx8Vre7qCAZpSZ08FA5G+MXbp0z9//aq7puDDyCVX6T1UOfO0Nu8eC/cV/lSA7S90glHrq7wIotu/7MAB55ZuToWic05HPM1sRo1wgH043yqfdnfNqHjXoI1pjl8+LcbM=
+	t=1769348600; cv=none; b=OrZC2tBHVrWEZKMms4e9DiwwqKo7/yKTCUJIFwcQY1NU9LDZK2nT7x5S+P4WHS10IkAl9c1k8qPnlDp6Fuen/dH6ybYo8rahA9X6w+E58A0O2JQm1v53j5U6GBSzMMfspfvyWpalxb7TBu/6joVPGJB97Z3mGJW29EyLabyyj3s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769348598; c=relaxed/simple;
-	bh=hHWILRyUU54F+w7k7JPriQ6DmoCAg8TcBCDlQKA/teg=;
+	s=arc-20240116; t=1769348600; c=relaxed/simple;
+	bh=DmGjedKkND/XSbjiuPXjmC36aaS/LlhmmKioOtF38hI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=vBr6p18c2LOk5SF6LGGpZHtgo1PZuDEsc0laQFjObNi4fyHtjBWJ2vvZFuGmfqkYHNSDfJt5LYUKZRmXZyREACtiyyTlsJ7QWYOkvdVaRSagDLK2XRAXqzVUIqwMb0stbQ63L808OJyiEagJGvk+51J+Ywvmh0dPg8zVDnycH08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KkkAQa8p; arc=none smtp.client-ip=209.85.221.68
+	 MIME-Version; b=eS/Kyy2J004hhryJCpQAlRE21elcFovIZrE3l2Gt4aD/mPp6ihH8QyWd+N27HnFEcwCK9UOQokJ1RUM1mS8ct7D2GMD6i7oAQDJtSbJuqIvXvpjAEbkPg1nLddXYKHIFPDnN8CSk2f4u8mXTCjtLIDRMCINDPqZEy9Lnm3U/y0M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CQci+Dex; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KkkAQa8p"
-Received: by mail-wr1-f68.google.com with SMTP id ffacd0b85a97d-432d2c7a8b9so3626141f8f.2
-        for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2026 05:43:16 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CQci+Dex"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4801c2fae63so28580955e9.2
+        for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2026 05:43:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769348595; x=1769953395; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1769348596; x=1769953396; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SM6Glg7veqcWlsyKtZF2bdqamcvshEMVFBWJQkCFRkQ=;
-        b=KkkAQa8pk+K6A4UYfw61ESplTSO1FwqHE9aWvDVpOPFwJQUIV+ln1LAaxk9fNgE+/R
-         YhbIncZI9Pw98gLno0610Y7X0NQoHNoQ3lHfnAk0iibeXhmb1IPqq9KG/c2Zf6n7Tfwe
-         qN9bfojsh3di8hOMJZFAS6w6/EzcXzB4Ee/+VZxVQN6vlvLxwBcn6zaNniQ/CYEiTmtM
-         0JWww2zno2CHh8zFkVEJQtdgqYqIPwIm19S8s+kbceNAumA5ImVckrxzgGXsOcBSMdId
-         gNJKd9WT2DQGKHYKDbBwrA9RxSpjEeVvgJCCofbrCLUI+79fEISSdkb4VOWNcucjMD/K
-         Ou5g==
+        bh=gJR3t/I+dSBF7pxTKcEd0IpTH4h4FNjSSBlovFfwKo0=;
+        b=CQci+Dex+S9w7gtUy3IvYfDMFYvAKmIoJPVEACFM6PZ+QPlDYtUCOTEpmcwTb8hXFw
+         Ywre9l48mm4zMUqQ+zdcct6DwTFhOggKa+8EZopi3KmGUmv1gRK3RYwUzdEHYsS+3Jj8
+         MCWtTL+P6ERRWixecUvPqIrK9LI8kkQVUBc9Wnq7Krd+IYkDmcgvMG7dlp19O1xe//Jl
+         sRXKgGes5tl/9qm36Nucu5mtabsBMNqdhSAfopw+0MNl1KuW58DVsVJJeRP+koCbuM3A
+         vJIMfdGRGPdaP7XysuBY84ofBh/gEtFHab+nTY3Vu/33gu/PoVPpEWXvO1tLvjgk2QJS
+         8GPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769348595; x=1769953395;
+        d=1e100.net; s=20230601; t=1769348596; x=1769953396;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=SM6Glg7veqcWlsyKtZF2bdqamcvshEMVFBWJQkCFRkQ=;
-        b=MBqLKJ4K4mBH5CQ4JGNM8GeC5dWJsf/hLnovvMvBqW9zbjZFpUF+kNgwWrpfyYJnqv
-         CIDiOxXMVhfTZq5ypdmcGPw/Z/qaJQaeyVPZtaPtXimJ3/z5GnrFU9nT4mHD5+GT45gm
-         k5Vzo0wQjTLdZyT2fAFuOAxwvo/4244Rqb/DttdclgBy2NgH/HwfwOhxrnrkt1jpzaZD
-         QL5q0gusU28KEqzBgoWg8xhTZ1F6Z9yE7MWxZIJjC7jFFcO+L6LJbsWi6jrpY+gDPiYU
-         bpYeM17xMIphlmLiS4CuFB6xPwM0NseA7IViQQutbKd556gBISqD40f+0OONIRbU4dLa
-         Q6Ww==
-X-Gm-Message-State: AOJu0Yz2HcSyOxtQcbZyJuF4UumvRdliLJBKYOIOQLSWFUBtV7KjkC6Z
-	Y/+aOmQ6+fFiBHn2lCq2D5qeHPThs6isIWE5SOEBwUErtbBo5vha6s9J
-X-Gm-Gg: AZuq6aIb3iEeST8HEsT6w+ElLV/LjjIZg8MD8ElD9bLDER7ho7xeIVpxOBZOUTeanG4
-	MS2ZHcwdjPHXhAzI2AkAY2bRItxQTglUDMTm3zJ7vOaZ6yGmqety+0fUfoCiNALWc+dl7yN/Nac
-	iW1Ldvs0qb4CjtCpT8xyRTNUEb7lGmFNsTMsSlMKf+ixRcZaIkslGUeSG4bPEJWbZLGLWDLd0fS
-	d9jonEO8UujiqTW3EYVuVkSMBOvYF7Bloyxn9S7TchkB098vLibfpgU4k0s3o9QozI8ngi7XdJq
-	CKTkAlSSE83Vs8IJhUiXOoDAJq2xlVVckPqBR+WE7Ek6XA7DmkOoHQk8chNTqHd0/hF8/WokW14
-	uFF8pn05yX1TRYLIbtINvs+A/U0HUjuRqZKGryoo+zMxLurHMvmpGdaJmgLMYfl/F7RPGW00L5O
-	Ex
-X-Received: by 2002:a05:6000:2506:b0:435:b020:30a3 with SMTP id ffacd0b85a97d-435ca39b3c7mr3408860f8f.54.1769348595045;
-        Sun, 25 Jan 2026 05:43:15 -0800 (PST)
+        bh=gJR3t/I+dSBF7pxTKcEd0IpTH4h4FNjSSBlovFfwKo0=;
+        b=qXs0K6/Q+/2sD6d6L/Z1ppGt38Xqdrxnp1faggz7noi1qWCU20Z2gwTI+bP4id5vsr
+         os+WjdLnQPMq4xms1i1in5zWWW3M3mM4pDCXpfiVGOExoIl1KW1miliw8SELhkKoBmGt
+         NFdLbts9NF8qrOMvSvsCAVbSS54ja2+4p+s+a/g/yDULKt9+X5UWc3B4wC0qICX7u6Fd
+         rdLbkdKgFJKXEa3Pig7rDXigZPc1tfaSASkBH1hcYS07Tpk7THYA0KyCpRcO0oge22/a
+         lo1vnCrJJVKPXgSD14c31T5MUcQcNxss6fLLP/WBphwPliIeJQg+l228Iozbr7LB0U2Z
+         EHwg==
+X-Gm-Message-State: AOJu0YwJixP6Nql31r29ViS3gVGCDKJcUtcQKpcngDxgK53juTZZlYBl
+	Xm9YgURaqM6HoJIM4YzU1Bcf1FB3YbOMhGeBpiTm7WvcqaXFjsP10ljK
+X-Gm-Gg: AZuq6aJTRNuLm0cVqm9HKI7s37/s3Z96BYvC6ozy6kOYbgVcX80hagMoAJrkWw6RbwM
+	r96wNTc90BXEWNLb/ISLCFBRj9j43r0NTHbAxruQZPajZh/9DBUrsZJbPPxbNSAwBbQFFyFJ8pv
+	Fms+mbaY2ZndnMZbdYtJfNfzvHuNX+19mD1cS2xKCsltaRluuP+OCcCvHXRD/i+OCQaiKoUEaWy
+	C4NJlywYX3z31/gjurpSE+2nLukC2gFpfISWFnWbEfangnEUeE0pCyN2Lro5rMw6yhBb+xd4ni4
+	pfk0418JTlIVCIX6RYOMjqlnw9bZ/bZLNkWnEya9wS0RGxRAdkw/5oixNsyxU92XzH7CfDlKxT+
+	C//RnI6yVawou8BnR9F9NFDHrYFttU88z7WZcv0irYFnij/hs6ctJj9JO1wnTMihZqlXFrOyeSV
+	iA
+X-Received: by 2002:a05:600c:1f8f:b0:477:b642:9dc9 with SMTP id 5b1f17b1804b1-4805cf672c6mr27725115e9.28.1769348596249;
+        Sun, 25 Jan 2026 05:43:16 -0800 (PST)
 Received: from xeon ([188.163.112.49])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435b1c246ecsm22459688f8f.10.2026.01.25.05.43.13
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435b1c246ecsm22459688f8f.10.2026.01.25.05.43.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Jan 2026 05:43:14 -0800 (PST)
+        Sun, 25 Jan 2026 05:43:15 -0800 (PST)
 From: Svyatoslav Ryhel <clamor95@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
@@ -80,9 +80,9 @@ Cc: linux-iio@vger.kernel.org,
 	linux-input@vger.kernel.org,
 	linux-leds@vger.kernel.org,
 	linux-rtc@vger.kernel.org
-Subject: [PATCH v1 03/10] dt-bindings: iio: adc: cpcap-adc: document Mot ADC
-Date: Sun, 25 Jan 2026 15:42:55 +0200
-Message-ID: <20260125134302.45958-4-clamor95@gmail.com>
+Subject: [PATCH v1 04/10] iio: adc: cpcap-adc: add support for Mot ADC
+Date: Sun, 25 Jan 2026 15:42:56 +0200
+Message-ID: <20260125134302.45958-5-clamor95@gmail.com>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260125134302.45958-1-clamor95@gmail.com>
 References: <20260125134302.45958-1-clamor95@gmail.com>
@@ -94,26 +94,49 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add compatible for ADC used in Mot board. Separate compatible is required
-since ADC in the Mot board uses a unique set of configurations.
+Add support for ADC found in Motorola Mot board, used as a base for
+Atrix 4G and Droid X2 smartphones.
 
 Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
 ---
- .../devicetree/bindings/iio/adc/motorola,cpcap-adc.yaml          | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/adc/cpcap-adc.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/motorola,cpcap-adc.yaml b/Documentation/devicetree/bindings/iio/adc/motorola,cpcap-adc.yaml
-index 9ceb6f18c854..1f77da7f8e06 100644
---- a/Documentation/devicetree/bindings/iio/adc/motorola,cpcap-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/motorola,cpcap-adc.yaml
-@@ -19,6 +19,7 @@ properties:
-     enum:
-       - motorola,cpcap-adc
-       - motorola,mapphone-cpcap-adc
-+      - motorola,mot-cpcap-adc
+diff --git a/drivers/iio/adc/cpcap-adc.c b/drivers/iio/adc/cpcap-adc.c
+index d9ee2ea116a7..c25c22a1c03a 100644
+--- a/drivers/iio/adc/cpcap-adc.c
++++ b/drivers/iio/adc/cpcap-adc.c
+@@ -934,6 +934,17 @@ static const struct cpcap_adc_ato mapphone_adc = {
+ 	.atox_ps_factor_out = 0,
+ };
  
-   interrupts:
-     maxItems: 1
++static const struct cpcap_adc_ato mot_adc = {
++	.ato_in = 0x0300,
++	.atox_in = 0,
++	.adc_ps_factor_in = 0x0200,
++	.atox_ps_factor_in = 0,
++	.ato_out = 0x0780,
++	.atox_out = 0,
++	.adc_ps_factor_out = 0x0600,
++	.atox_ps_factor_out = 0,
++};
++
+ static const struct of_device_id cpcap_adc_id_table[] = {
+ 	{
+ 		.compatible = "motorola,cpcap-adc",
+@@ -942,7 +953,11 @@ static const struct of_device_id cpcap_adc_id_table[] = {
+ 		.compatible = "motorola,mapphone-cpcap-adc",
+ 		.data = &mapphone_adc,
+ 	},
+-	{ }
++	{
++		.compatible = "motorola,mot-cpcap-adc",
++		.data = &mot_adc,
++	},
++	{ /* sentinel */ },
+ };
+ MODULE_DEVICE_TABLE(of, cpcap_adc_id_table);
+ 
 -- 
 2.51.0
 
