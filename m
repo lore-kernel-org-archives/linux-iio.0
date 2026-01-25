@@ -1,70 +1,68 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f46.google.com (mail-dl1-f46.google.com [74.125.82.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C48D022CBC0
-	for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2026 18:52:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 999B13009FA
+	for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2026 23:05:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769367131; cv=none; b=UnarFdCvggOoRGILFKYMymY6pF57VAnkmEB1ER1HOFje4Iq0vHFnvDtEc92BXP2gJz6Anui5iKrFnkRJ6LTWS1tX5z+Qf4m04i3CSTKxcYLq43kZMnn0Q56eTu6Z4fkcT7l8Apm2bpT8ptNnm1oMcEDf4WgCe6GV99azHhxtKNw=
+	t=1769382339; cv=none; b=geI/4QeT8c3g5A0EJ3qyQi5hiXWDScQL1++J1XLJOszNYLo9jwL4e1DXyGQKwmDy8YRrL6zvFgO7Nfdzthkt2tKA6HPcWCHNOKm6W159Sg3EIWYCt6HL6HytHbz2niX34Css10lT6VcEoamPFaXYreE9Lu73MW+rtYwG1qieRrs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769367131; c=relaxed/simple;
-	bh=VL247n96oRPcfuixpfOIb+O7qbGpBQQK2ECt48CpKvI=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=kK+JMgpiIiJDEZSA+Yxm/LXWEcliYd+TrkLa0/VpOFCK2fQrfHXAeZzJRPFhc6jDlrHWcKE0RMrCOrOxMegIWfWpybYsNGjEBbVzmcmgY0OJmaO1/r3Ofl4Fd6bbTPDInDfvvIfcIwZREqH2Lk+HUOx+dnJ4N+dX0aueOTYLSfE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=SMLgbxB1; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	s=arc-20240116; t=1769382339; c=relaxed/simple;
+	bh=cMgxdWitXeOCAuAju3ueXPj91D/a8w9FVq4Xtxmm8zc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fwy0Pn8QgrKA0BbekJYIrdYWyPDSCpFaxYOdCECLDvay+Q0gAlbo3e77Juvr1tX0+gFAcnX5Zy9qUc/VjzXnkuWDXZLr8VtE2FbusNdAQXmu/j04t8z9JvrIPdeyeqEdNuWya9+HJDin0dBHtbvEYkm55s/GSVtqYKADy+unFZI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JtN1PgtR; arc=none smtp.client-ip=74.125.82.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="SMLgbxB1"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=from:to:cc:subject:date:message-id
-	:in-reply-to:references:mime-version:content-transfer-encoding;
-	 s=k1; bh=z4r+DipmsGc4TALWGuhn2ZwJzaRHArRzwqq3J+v552E=; b=SMLgbx
-	B1PEXNHJ5oir0k+1bSIbdpgScGfVkkJqi4T1aeQJNKLvxOiELtzrDIYETfuMTHrz
-	9nhfTkASTyg72yoIiSOEzmV88opLRXCuYnsNzg+ORzFMDBwOrHaDfsjHp1WBtz6T
-	Pr+ksqXw4UcNCrgibeE6AWs8dlhHokeFlklrQnT5DVl59U1h46ti8F8TffE2V9/5
-	w7voaGRF+dsySf1Lv4AzRv40XAR+6BM+9sxzXGKj34TCOext62ibuI2u349hMyU4
-	45iM+UbF9nng0Js/2oiM5Q6GHup0dd5jN62IVMLGKrbh0hyHI1A817GCrbdIgJqx
-	g6x26A0RPSKXRlcQ==
-Received: (qmail 2369640 invoked from network); 25 Jan 2026 19:51:54 +0100
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 25 Jan 2026 19:51:54 +0100
-X-UD-Smtp-Session: l3s3148p1@rcBK4jpJXzptKXAW
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: linux-renesas-soc@vger.kernel.org
-Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Mark Brown <broonie@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Lee Jones <lee@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Antonio Borneo <antonio.borneo@foss.st.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-gpio@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-spi@vger.kernel.org
-Subject: [RFC PATCH 3/4] treewide: convert hwspinlock users to the new consumer header file
-Date: Sun, 25 Jan 2026 19:46:54 +0100
-Message-ID: <20260125184654.17843-9-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260125184654.17843-6-wsa+renesas@sang-engineering.com>
-References: <20260125184654.17843-6-wsa+renesas@sang-engineering.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JtN1PgtR"
+Received: by mail-dl1-f46.google.com with SMTP id a92af1059eb24-121bf277922so6367360c88.0
+        for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2026 15:05:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1769382336; x=1769987136; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=i8HUwLeGRFpzo9FUWLQP6iNYUn5cQ5zvukR0bF1DuE8=;
+        b=JtN1PgtRmfAk3aLH2NykbMgJ4/0eBg4iWczkFzdMnhAYzGbieZ0r0ksbhWT3nAXL8v
+         ySMR3ka+2OE2wkAu3fQ+TbH//EJ1ls3/eEE/Qi5ZzlUr2hgzj9Df6PFOuwYZ83LOAnDL
+         ftBaz/ArXDZz8/8qj+wWeO8xuoqksP2QeB7E5cbTWuRC7wjNNclFUgsU7rlhY7qyqFIB
+         efY/Sq3uMsniMgOZwN6cg4Bltz4+es0r2TkYFqaczdJ6uJDC46Mp3JYV6dp39WHg4oK4
+         7wRjoqxtFHkZjnmpWSQUiIi3u77R64QCvRy/GVSCsgmCpgRR4IdFcvuD9A5tOQ/i8mFc
+         APkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769382336; x=1769987136;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=i8HUwLeGRFpzo9FUWLQP6iNYUn5cQ5zvukR0bF1DuE8=;
+        b=cpEL3n0bNU17ktJJolOb3eBsJpp0piaazp3I53Eg7Vlvt/asNd9vrqv56abJs8MEiB
+         E/wmtarsLEFZTebwm+tbLtQcavy6YTlyo3jpUrWyFW8GJ9a0WZDTzKxMkhKmEPFjTFif
+         /Mi2YatJc6Icy1z7bwz1MQ/Nye9ezBfxNOZDxEP7Is2RhnG2EeXr1EbE7MrTC750E7wr
+         MckDKuf8Xdhy111P7SO2JB3Pau+3Xfc5y9iSuH8bq/LtWeUjcQrXL9EPxxN646apwmbd
+         2BgIXQPR6G1SPHAlRaJwS1yM2fs3qKOIRqToBQshtln1veowDxAIL4Ge5bgG5pmbLVr2
+         e0iA==
+X-Gm-Message-State: AOJu0Yyjwd69fcrT4B+cjJErxP6qAyUIyPp2v9d0tggdjIz92TLR/9XE
+	j1WE51a9sWCgx4QVquhiabMoADKwp6YSVSPsnSqi93T/g5oQTfRmPoz+88AzSg==
+X-Gm-Gg: AZuq6aLdLM+CC9XnOvoo7IKxgcNJ9zkclu4/mg2AO3/bMlcDpSOYeWGxCdDx15PqyZf
+	lbgEO57u7A8/eNnt1dtTnD9vk/cD0vB5LxBpT4kFJRX57rZVlEcYNVU8Ceno0+0HYohP5aCRKvb
+	64yFB2uBGdV5A/LSi5IiqVhQZ0oS8fCrek65xEAxgjzr4t1qSxm7mKc1/7Nk/K1SDg2PO2wllVV
+	DqJWux2FGVJuxNhcnMuxoWQy5wm0CScdd7Y10L6GPSeF7um0TlHho2h4oGa44+AWoQO5+Hl3ELA
+	7QW+FFFCDvW6BoHvXIWCJqU5bV1w4YeueKOHmc91sqiyFn2aLvjUFG58nuV44h2SORQSUYKi0Ao
+	5UZKYaghp++2QQGZSGolzBvtHuVydZNIVRQJlqHiNZ6MvnMt6kfVQAwQATdz7QzAbxTfsj2jPga
+	/i5H83JCebI3IUN9bYKQ/xGKSJIdc=
+X-Received: by 2002:a05:7022:a8d:b0:119:e569:f60d with SMTP id a92af1059eb24-1248ebf0bc9mr1360140c88.6.1769382335953;
+        Sun, 25 Jan 2026 15:05:35 -0800 (PST)
+Received: from localhost.localdomain ([2804:20:28:3cc:d5a3:2e3a:ba09:7c1a])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-1247d90ce0dsm15061855c88.4.2026.01.25.15.05.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Jan 2026 15:05:35 -0800 (PST)
+From: Gabriel Almeida <gabrielsousa230@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	gabrielsousa230@gmail.com
+Subject: [PATCH v2] iio: light: zopt2201: use lock guards
+Date: Sun, 25 Jan 2026 20:05:18 -0300
+Message-ID: <20260125230518.112027-1-gabrielsousa230@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,138 +71,123 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Point the drivers to the new header file. No functional changes.
+Use guard() to handle the mutex lock instead of manually
+locking and unlocking it.
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Signed-off-by: Gabriel Almeida <gabrielsousa230@gmail.com>
 ---
- drivers/base/regmap/regmap.c          | 2 +-
- drivers/iio/adc/sc27xx_adc.c          | 2 +-
- drivers/irqchip/irq-stm32mp-exti.c    | 2 +-
- drivers/mfd/syscon.c                  | 2 +-
- drivers/nvmem/sc27xx-efuse.c          | 2 +-
- drivers/nvmem/sprd-efuse.c            | 2 +-
- drivers/pinctrl/stm32/pinctrl-stm32.c | 2 +-
- drivers/soc/qcom/smem.c               | 2 +-
- drivers/spi/spi-sprd-adi.c            | 2 +-
- 9 files changed, 9 insertions(+), 9 deletions(-)
+v2:
+- Reorder headers
+- Add required linux/cleanup.h include
+- Use lock guards in zopt2201_read()
+- Use scoped_guard() in zopt2201_write_resolution()
+ drivers/iio/light/zopt2201.c | 40 +++++++++++++++---------------------
+ 1 file changed, 16 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index ae2215d4e61c..ec2348e199c1 100644
---- a/drivers/base/regmap/regmap.c
-+++ b/drivers/base/regmap/regmap.c
-@@ -16,7 +16,7 @@
- #include <linux/sched.h>
+diff --git a/drivers/iio/light/zopt2201.c b/drivers/iio/light/zopt2201.c
+index 1dba1b949cc3..c73c604170b3 100644
+--- a/drivers/iio/light/zopt2201.c
++++ b/drivers/iio/light/zopt2201.c
+@@ -10,15 +10,14 @@
+  * TODO: interrupt support, ALS/UVB raw mode
+  */
+ 
+-#include <linux/module.h>
+-#include <linux/i2c.h>
+-#include <linux/mutex.h>
+-#include <linux/err.h>
++#include <linux/cleanup.h>
  #include <linux/delay.h>
- #include <linux/log2.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
+-
++#include <linux/err.h>
++#include <linux/i2c.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+-
++#include <linux/module.h>
++#include <linux/mutex.h>
  #include <linux/unaligned.h>
  
- #define CREATE_TRACE_POINTS
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index 6209499c5c37..8a881d63b7dd 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (C) 2018 Spreadtrum Communications Inc.
+ #define ZOPT2201_DRV_NAME "zopt2201"
+@@ -186,10 +185,10 @@ static int zopt2201_read(struct zopt2201_data *data, u8 reg)
+ 	u8 buf[3];
+ 	int ret;
  
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/iio/iio.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-diff --git a/drivers/irqchip/irq-stm32mp-exti.c b/drivers/irqchip/irq-stm32mp-exti.c
-index a24f4f1a4f8f..25d5aa67728a 100644
---- a/drivers/irqchip/irq-stm32mp-exti.c
-+++ b/drivers/irqchip/irq-stm32mp-exti.c
-@@ -6,7 +6,7 @@
-  */
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 	ret = zopt2201_enable_mode(data, reg == ZOPT2201_UVB_DATA);
+ 	if (ret < 0)
+-		goto fail;
++		return ret;
  
- #include <linux/bitops.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/irq.h>
-diff --git a/drivers/mfd/syscon.c b/drivers/mfd/syscon.c
-index e5d5def594f6..49473669e84e 100644
---- a/drivers/mfd/syscon.c
-+++ b/drivers/mfd/syscon.c
-@@ -11,7 +11,7 @@
- #include <linux/cleanup.h>
- #include <linux/clk.h>
- #include <linux/err.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/list.h>
- #include <linux/mutex.h>
- #include <linux/of.h>
-diff --git a/drivers/nvmem/sc27xx-efuse.c b/drivers/nvmem/sc27xx-efuse.c
-index 4e2ffefac96c..309090cd4ff0 100644
---- a/drivers/nvmem/sc27xx-efuse.c
-+++ b/drivers/nvmem/sc27xx-efuse.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (C) 2018 Spreadtrum Communications Inc.
+ 	while (tries--) {
+ 		unsigned long t = zopt2201_resolution[data->res].us;
+@@ -200,30 +199,25 @@ static int zopt2201_read(struct zopt2201_data *data, u8 reg)
+ 			msleep(t / 1000);
+ 		ret = i2c_smbus_read_byte_data(client, ZOPT2201_MAIN_STATUS);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
+ 		if (ret & ZOPT2201_MAIN_STATUS_DRDY)
+ 			break;
+ 	}
  
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
-diff --git a/drivers/nvmem/sprd-efuse.c b/drivers/nvmem/sprd-efuse.c
-index 1a7e4e5d8b86..92e3092719ba 100644
---- a/drivers/nvmem/sprd-efuse.c
-+++ b/drivers/nvmem/sprd-efuse.c
-@@ -3,7 +3,7 @@
+ 	if (tries < 0) {
+ 		ret = -ETIMEDOUT;
+-		goto fail;
++		return ret;
+ 	}
  
- #include <linux/clk.h>
- #include <linux/delay.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/nvmem-provider.h>
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-index 6a99708a5a23..17b2072d609e 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -10,7 +10,7 @@
- #include <linux/clk.h>
- #include <linux/export.h>
- #include <linux/gpio/driver.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/irq.h>
- #include <linux/mfd/syscon.h>
-diff --git a/drivers/soc/qcom/smem.c b/drivers/soc/qcom/smem.c
-index 088b2bbee9e6..4cc65b6a7f24 100644
---- a/drivers/soc/qcom/smem.c
-+++ b/drivers/soc/qcom/smem.c
-@@ -4,7 +4,7 @@
-  * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
-  */
+ 	ret = i2c_smbus_read_i2c_block_data(client, reg, sizeof(buf), buf);
+ 	if (ret < 0)
+-		goto fail;
++		return ret;
  
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/of.h>
-diff --git a/drivers/spi/spi-sprd-adi.c b/drivers/spi/spi-sprd-adi.c
-index e7d83c16b46c..04313e4a63dd 100644
---- a/drivers/spi/spi-sprd-adi.c
-+++ b/drivers/spi/spi-sprd-adi.c
-@@ -5,7 +5,7 @@
-  */
+ 	ret = i2c_smbus_write_byte_data(client, ZOPT2201_MAIN_CTRL, 0x00);
+ 	if (ret < 0)
+-		goto fail;
+-	mutex_unlock(&data->lock);
++		return ret;
  
- #include <linux/delay.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/init.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
+ 	return get_unaligned_le24(&buf[0]);
+-
+-fail:
+-	mutex_unlock(&data->lock);
+-	return ret;
+ }
+ 
+ static const struct iio_chan_spec zopt2201_channels[] = {
+@@ -324,9 +318,9 @@ static int zopt2201_write_resolution(struct zopt2201_data *data,
+ 
+ 	for (i = 0; i < ARRAY_SIZE(zopt2201_resolution); i++)
+ 		if (val2 == zopt2201_resolution[i].us) {
+-			mutex_lock(&data->lock);
+-			ret = zopt2201_set_resolution(data, i);
+-			mutex_unlock(&data->lock);
++			scoped_guard(mutex, &data->lock) {
++				ret = zopt2201_set_resolution(data, i);
++			}
+ 			return ret;
+ 		}
+ 
+@@ -351,15 +345,13 @@ static int zopt2201_write_scale_by_idx(struct zopt2201_data *data, int idx,
+ {
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 	ret = zopt2201_set_resolution(data, zopt2201_scale_array[idx].res);
+ 	if (ret < 0)
+-		goto unlock;
++		return ret;
+ 
+ 	ret = zopt2201_set_gain(data, zopt2201_scale_array[idx].gain);
+ 
+-unlock:
+-	mutex_unlock(&data->lock);
+ 	return ret;
+ }
+ 
 -- 
-2.47.3
+2.43.0
 
