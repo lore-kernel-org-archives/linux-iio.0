@@ -1,126 +1,177 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4240E30BF79;
-	Mon, 26 Jan 2026 10:13:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769422419; cv=none; b=Efmv6lJ9gv7wEmzROSK1AhuREkOemHXb5ZQDLpvDwFd3nrFKmvDQn3JoScNmhzU6uNVB7HUOQA+m2TQNN/LLlbK1TIP+Z6CffTk1a0rdZHSm79oF0gVByA7hMhaiYoXELln5TEonTQ5ZodBfRI9wsCZ5XmfQl6PGrFcilskC37s=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769422419; c=relaxed/simple;
-	bh=bxAsgAI1bcwqUPWb9MMZ6DfQMOVlA+K8LCl1jZgHiIU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=YKxW9rMmwFAnDC2mSDD7+8mOfhSnRLjhcAQUiXWnZNY8Dj4BCGXw9Ua8eNtJ34KnUYKZzEJqJcvAlIq5g3aYuH34nvCrb7RW/7AMIuldMqB45oifNpM0/rxrVE+rCcAHW/ar6gN+f4WVqaqNiPtcVWHE9DWUoYcCPY2TWeLnT6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IHhE+Q5i; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16F6D27FB34
+	for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 10:13:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.51
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769422434; cv=pass; b=c7rpmOjDi8uOsevDLTAM0/0wzuyN1q+hYemepDK/sxibInzWaYiCv8jp6F37fACtD+Yms1oA63ETzzRkS9yokd/IRbh8rYeOPYEwwroHe3RS2NI6lhY6DHKwgx9e38cgJFt29I7RApg+BNQKYSpdRR8/0vC1ZUQaGjsmQQ7lhZs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769422434; c=relaxed/simple;
+	bh=wy+avasr22mgfIucIYeDtvO+JIZdj7VULkHTn3GuJCI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=U60zlt1+G/5JNU+WwS0qsxDbJvlAUnr5G2eLbgKGl1045K5PHbaBvieFPESc7jfM5RUj35BdZVlwOYqV8tPBM2AyFeJZcWKdlZyCbqMMPHFYhScw0jIjHv2fiei8sZOZAzxhvIxUhJLmFoJMwsBDLIMDRHBT+BciY85DZhe1UMo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=elnDSJUZ; arc=pass smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IHhE+Q5i"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769422417; x=1800958417;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bxAsgAI1bcwqUPWb9MMZ6DfQMOVlA+K8LCl1jZgHiIU=;
-  b=IHhE+Q5idfwXa8hviBbGwueVAX07CdwbyVL2ZuwjceO79V9Wktz1Rt2s
-   9dsHiy0R8HdNPpc/NnHTmT8K+GxiKf5ZJZVl+Lnba/vsWXujIGklTBoaV
-   JPvtjRRwgCjEP1rZdUnZl3kdm/zCclNz2z/sYE3rjGouGGP0c6JXP3Jbs
-   F44H2THIFjUPTdXkJ3CDaU5zx/nWGF2I1M4S+x+7x157GYgwwmV8bJrG6
-   tbG0wzCb+7l/SsZgZfJAPj0jK2nGNwGV1frKOJ0238ICLOdqPX5P8QmG1
-   ne0AuD3C2eQbokCDirUYnYknNyWeswFtEXffBZH/MnG0E9s7pG7xF60QX
-   g==;
-X-CSE-ConnectionGUID: ijvVfCWKTXKuMKY3YaoHig==
-X-CSE-MsgGUID: 6MrvQwnfRKW+jX8nEQOKtg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11682"; a="74439626"
-X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
-   d="scan'208";a="74439626"
-Received: from fmviesa008.fm.intel.com ([10.60.135.148])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 02:13:36 -0800
-X-CSE-ConnectionGUID: Sbn7hhujTT2n2mu8LbYuKw==
-X-CSE-MsgGUID: xGI3w2RgTCiNPUKvpvI9rQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
-   d="scan'208";a="207892953"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.122])
-  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 02:13:32 -0800
-Date: Mon, 26 Jan 2026 12:13:30 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Dixit Parmar <dixitparmar19@gmail.com>,
-	Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
-	linux-rtc@vger.kernel.org
-Subject: Re: [PATCH v1 09/10] mfd: motorola-cpcap: diverge configuration
- per-board
-Message-ID: <aXc-Sklb6QTWLvcE@smile.fi.intel.com>
-References: <20260125134302.45958-1-clamor95@gmail.com>
- <20260125134302.45958-10-clamor95@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="elnDSJUZ"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-42fbc305914so3719771f8f.0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 02:13:52 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1769422431; cv=none;
+        d=google.com; s=arc-20240605;
+        b=PByEpiDCPOErOrv4eUU0ZbTbJ9ont/yUeoyB6D6CNPgez5cOwOZfcBj5wW0DC3pfrt
+         /NQL2Bj9pUhm4EU6gLwDfY4QqrfNPZz5itMDqePj2QvQKDywMokObO9YB2ZYUY36ZgKZ
+         FzfBr9w9f94ATv6ziqzF6c13G/fj3ZyROwF4q90KTSjrAi2Ui7AoKYpAYHF0KYhoFipQ
+         1lA6Zv5knCy4gkxJ+5OJuIPI6tHiEqqvuRAjz4tFpDQtzH9nkmkqQ+v9F5Upje979FQD
+         k32JDHFbUH47ea75owntyFKiJnvmX9qseUtiIu/mEISuwWtEP5BX06Rqwlm0yFjtqwbv
+         aSvA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=/9dTPcMDWhfJ1rIvjDmwY/itS6IYJkkuuHjxU9ulEjk=;
+        fh=u/d+wjqdcWvla3+CNXi7fF2JRpLUbuJF6fhFcBnqCpc=;
+        b=Wn4KNiU24s2xf/1pBvUWfzv+r0jmecJQW11RU1xrf4FhtKMvfNzVD2Vql7aiuKw9NN
+         gPlYOQf+W46uvEwKPzVd+32Il2NyWc3MUJdmrTr4vVFzm5BLuUJCD3udbwAZc37JJsig
+         BMF/Cl8cokKd2SCvOW7FWvEQuygAIWyCuTki7pE93WIDSoT+roC3xae68OT7GsT10WRA
+         3kIflDDp2xKb50vmW7Ej+iYG3doxfnrtgBR03M7PEMjZ8TdxqZMW6zK65qtnGwc7iKGc
+         jWBzDeR3mQV0+5v6xmjd1dGce6psnKafBq2jiL2rJ3nOT2Q3ph5MEvbHQ7xzCygY1Pep
+         DFEQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1769422431; x=1770027231; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/9dTPcMDWhfJ1rIvjDmwY/itS6IYJkkuuHjxU9ulEjk=;
+        b=elnDSJUZbStbMHWx0dcASZueczLi03SuEJsFL7IWU8wcbnx3DTXbep8uw9YePkzG2a
+         MuTQuJRp/opoXbEc0fjd7uRRwemI0apD/kQ8c0wMbhLFwNAl3QHaQWkRhCuYsWR/Xb3p
+         aP9cV+le9oVbyg+/15e3VGrLhAQTu2syytcHTQZDHblerrvvYDDdTadSDkScRiZK+FpT
+         6j0+uLvSRF6LiCa0AdzaS0s/fRZyF0mMfjv0l6b+i2yZ2+GV5ADc6nxa9nYTAd0NT1ob
+         Ho5mTEI/Eb6UPZPt/8nmr9avjBraCnrEeoInuVfPXtgeJOzB5zIK1IkAaebXI3vry6hh
+         0J4A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769422431; x=1770027231;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=/9dTPcMDWhfJ1rIvjDmwY/itS6IYJkkuuHjxU9ulEjk=;
+        b=arTnrKrAXHkMIejTQPSCiIGmnRO1PNAuJgJfP4wDsfYGi5PBFNWPxfieVidvoTcnDA
+         WSVwhnmlRhVv/z7iIRMxPAqNwqKx5wq5nmtB8VGAD8NAHl1xO6YTRVZr5V+8Xulmivti
+         /JQP5A9H1j+xOM3hQRxuD0qfm9xN/O+8ZKIkCsFqRlctMf92a6cfaeasyovsotRYTMoh
+         I0VEXCqkYTOGBXeLOgMr++uHXCbLg2kaZk2x2BbLGfz4gjxLLNsispPaUdVoyHODjERo
+         PWIANIC7RWC7GUVBregV83vWSCPQwfPGMailIg/IRXh1t0CjOruHU27DEu1A35BKLhfr
+         KpPA==
+X-Forwarded-Encrypted: i=1; AJvYcCWxHbSWuGYHQAg97cYi6EDV5zA88Ay8tZuVNPjsY/AkHabw6Cct5TyJRRrsxrmp5JvEuNT7X8bkTA0=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxo0ezwSyTbM1neOM7DBUBPlv9DWIcIawivW+D1tfVLtrdzfcGF
+	jTWAP7T9/ku1z7THwA/Ht7nkJA2SAyDB6/TL4z2BhdnUHZJNEDSyeSWZoL7ZAG9d3WA2/ReUf87
+	LI5f/s5+BpXk7JFnPThVtbptCOHkln/M=
+X-Gm-Gg: AZuq6aIFFgdXt/UsRRK9ml8XXfZb2xPcmDPG2WZ61gt0L8/9sEoRXuFR/JGkOBeXBUx
+	k4kzRhMyizLNKMkubKETdVjLA/09L94kF5BknIFNA1QBRZdQ9QUvRqmNgCwb9XppO8AERbmlAqc
+	6KKhjgpA+GP+uNWrGHzt6doHejVEdSvig/E4iYE58oA75cFwFCfr0FdNCn2lY+xd4k2XEwViCHp
+	glY6JhPnKObVgoSfZyZOaKGfaZgG5XOUz+3VT3VX8BGRKZ7fyEaVPIpZXDnzbCL9Mxtmb80
+X-Received: by 2002:a05:6000:3109:b0:435:a464:f468 with SMTP id
+ ffacd0b85a97d-435ca1b0a8amr6471509f8f.47.1769422431344; Mon, 26 Jan 2026
+ 02:13:51 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260125134302.45958-10-clamor95@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260125134302.45958-1-clamor95@gmail.com> <20260125134302.45958-3-clamor95@gmail.com>
+ <aXc9n_gc7TEFvNA8@smile.fi.intel.com>
+In-Reply-To: <aXc9n_gc7TEFvNA8@smile.fi.intel.com>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Mon, 26 Jan 2026 12:13:39 +0200
+X-Gm-Features: AZwV_QgQiSXyGE1Y1qrMc2HU_ThQY8l_CasgZEnx0m0QabZgNO42haOxvzkombQ
+Message-ID: <CAPVz0n0MM6OcjOWnNBaGk=6eYcb09P0XBFDn+MYHtXXcgkcvQQ@mail.gmail.com>
+Subject: Re: [PATCH v1 02/10] regulator: cpcap-regulator: add support for Mot regulators
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>, 
+	Pavel Machek <pavel@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Dixit Parmar <dixitparmar19@gmail.com>, 
+	Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, 
+	linux-leds@vger.kernel.org, linux-rtc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, Jan 25, 2026 at 03:43:01PM +0200, Svyatoslav Ryhel wrote:
-> MFD have rigid subdevice structure which does not allow flexible dynamic
-> subdevice linking. Address this by diverging CPCAP subdevice composition
-> to take into account board specific configuration.
-> 
-> Create a common default subdevice composition, rename existing subdevice
-> composition into cpcap_mapphone_mfd_devices since it targets mainly
-> Mapphone board.
+=D0=BF=D0=BD, 26 =D1=81=D1=96=D1=87. 2026=E2=80=AF=D1=80. =D0=BE 12:10 Andy=
+ Shevchenko <andriy.shevchenko@intel.com> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On Sun, Jan 25, 2026 at 03:42:54PM +0200, Svyatoslav Ryhel wrote:
+> > Add support for regulator set used in Motorola Mot board, used as a bas=
+e
+> > for Atrix 4G and Droid X2 smartphones.
+>
+> ...
+>
+> > +static const unsigned int sw_mot_val_tbl[] =3D  { 600000, 612500, 6250=
+00,
+> > +                                             637500, 650000, 662500,
+> > +                                             675000, 687500, 700000,
+> > +                                             712500, 725000, 737500,
+> > +                                             750000, 762500, 775000,
+> > +                                             787500, 800000, 812500,
+> > +                                             825000, 837500, 850000,
+> > +                                             862500, 875000, 887500,
+> > +                                             900000, 912500, 925000,
+> > +                                             937500, 950000, 962500,
+> > +                                             975000, 987500, 1000000,
+> > +                                             1012500, 1025000, 1037500=
+,
+> > +                                             1050000, 1062500, 1075000=
+,
+> > +                                             1087500, 1100000, 1112500=
+,
+> > +                                             1125000, 1137500, 1150000=
+,
+> > +                                             1162500, 1175000, 1187500=
+,
+> > +                                             1200000, 1212500, 1225000=
+,
+> > +                                             1237500, 1250000, 1262500=
+,
+> > +                                             1275000, 1287500, 1300000=
+,
+> > +                                             1312500, 1325000, 1337500=
+,
+> > +                                             1350000, 1362500, 1375000=
+,
+> > +                                             1387500, 1400000, 1412500=
+,
+> > +                                             1425000, 1437500, 1450000=
+,
+> > +                                             1462500, 1475000, };
+>
+> What a style! (Yeah, I see it's being used elsewhere here...)
+>
 
-...
+I have just made it in same way the other tables present in here.
 
-> +#include <linux/of.h>
+> ...
+>
+> > +     CPCAP_REG(VAUDIO, CPCAP_REG_VAUDIOC, CPCAP_REG_ASSIGN4,
+> > +               CPCAP_BIT_VAUDIO_SEL, vaudio_val_tbl,
+> > +               0x16, 0x1, 0x5, 0, 0),
+>
+> > +     { /* sentinel */ },
+>
+> No trailing comma for sentinel.
+>
 
-Why?
+noted
 
-
-...
-
-> +	cpcap->cdata = of_device_get_match_data(&spi->dev);
-
-device_get_match_data() from property.h.
-
-> +	if (!cpcap->cdata)
-> +		return -ENODEV;
-> +
-
-...
-
-> +static const struct of_device_id cpcap_of_match[] = {
-> +	{ .compatible = "motorola,cpcap", .data = &cpcap_default_data },
-> +	{ .compatible = "st,6556002", .data = &cpcap_default_data },
-> +	{ .compatible = "motorola,mapphone-cpcap", .data = &cpcap_mapphone_data	},
-
-> +	{ /* sentinel */ },
-
-No trailing comma for sentinel.
-
-> +};
-> +MODULE_DEVICE_TABLE(of, cpcap_of_match);
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> > +};
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
