@@ -1,295 +1,192 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F50327281E;
-	Mon, 26 Jan 2026 19:32:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 985832C0266;
+	Mon, 26 Jan 2026 20:11:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769455977; cv=none; b=ixhTrOb8bIqRxPI8qDszp3EVSGuQdoG1g5KhmxQ28ins1w/9/hgbI03Ir2ruL9fruHs8FFRhUdN3TNmWybMp74VI1HYnPzECSuSIc+QM20FlaLYpCOQbZxY7N2bk2x4xNZlmBuu6gl2+EiZ8E8zcBilXYf0Qil8stylg7CcrEQs=
+	t=1769458282; cv=none; b=caak4s43xjqRVRcAtsKMRFz7sNnzShDaNHmXHt0cO24jjoonvcwKLjejmZgNECtiGiaIuLxPzkHZ7hD5fo92G5LxPEP7UCj9KUkNrodk4oXbFB8iqZnP94rPHmaRURKWCQcRKsMG1zYE5mwdixviaOLYZJ+oB/YtssS1xRTQoJk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769455977; c=relaxed/simple;
-	bh=KIW8/dKTa1YNKlK58MwInmmKjgMUS2SczSqpAXZtH4A=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hdnSZFH3dK2/5g60Hr5QinqUWAUznuOsT9KEl6RYe6WbyQvflYtUZt32O7fSH8VXdJ/4hmX9lEGMoO1ajJj3hZBwO+kbAeNUwGJ8K3GW7dzGVY/cEZP1rv6GDAItognqLaqUhm9l9qW9SjYgBQ6i1llyx7wTDgrlSUHEdvC4KaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DnOu60tL; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769458282; c=relaxed/simple;
+	bh=J3qYdIDqyV8RYRgDHENbIWZEFbDRj/MLMx4R8f4wuwc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HwgHSPYZJv2C7KdOOo5YnREk+qZC3ET7mmpdlY6eZ6iv7DYVE/o3xgpPD1ieHYM2yhjx0NlM6o0KHj0Wd3MoKdmqhk/DMR44KHrNyGVK68F2bF7mt2pA8VHuOox4iTUcyEJc48e+13KvYv7GOG+JTCwAPLhAKap5BK+GznjFm3E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eOcDu/Mm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DnOu60tL"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5DE5DC2BC86;
-	Mon, 26 Jan 2026 19:32:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eOcDu/Mm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24147C116C6;
+	Mon, 26 Jan 2026 20:11:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769455977;
-	bh=KIW8/dKTa1YNKlK58MwInmmKjgMUS2SczSqpAXZtH4A=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=DnOu60tLBuDDNaxPi3r20WL38rLAJkPcvw15iWAKjKH+vGO/JMqa8GiLJAfRtsxeS
-	 ovtBYgKA8C9yVaBJMjzlNamzZ6qjH5GsHm6DR6L4afNHGaL3NB3ViMmY4Bb2hhE/OY
-	 wj2OQc5oNP1+ezEcWecjLvg58b4E+n6OrtsvVETwGIafHlUYx6vqim6+3KRGYbfib9
-	 7zhZKiE2+R+LWBAkNFmBmiVh3dI5n/l3NUzk2xkzMw2a0IgYUFiRB2uI+53WkygDE4
-	 lgSG3zr5LkRXOFue5x9zekA3pO8LU3C7HXOs8JTm95JZxszLNJY8H8lgFBsmdFVS6Q
-	 D7jNZJZAxdwbQ==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E92D19518;
-	Mon, 26 Jan 2026 19:32:57 +0000 (UTC)
-From: Shrikant Raskar via B4 Relay <devnull+raskar.shree97.gmail.com@kernel.org>
-Date: Tue, 27 Jan 2026 01:02:20 +0530
-Subject: [PATCH v7 6/6] iio: proximity: rfd77402: Add interrupt handling
- support
+	s=k20201202; t=1769458282;
+	bh=J3qYdIDqyV8RYRgDHENbIWZEFbDRj/MLMx4R8f4wuwc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=eOcDu/MmFqgefo7yLUJC+pL/WMLQXaY7KT4kqkYdiTh64WdvrxOG8T80gga0WIH1V
+	 0xyyo2b9TEGVIsJX7TBJgAlupbXkrlUtIZHe8a6zCXjGFqQ+lMiJdRr4ivwI1iBqN1
+	 Rz9xjJxQLWWmaJM1If2GbypFtOa1zfHCY0kbiw0FWBRETcFVEpxtKKEm837YbnfPy7
+	 jBCZY5xnMLoxAgaErPh3c/rNhSMUHYtoGuMRzDDSpaJjO6Q0kxxYxe6YS1Ug6dit/m
+	 +Thp21fze3+8uSVvuCpVtge5pe+njM1aDg0F8S83scCMY9t3I6rquGRXAAhtzXKZPV
+	 FY0dDrDqCNrSw==
+Date: Mon, 26 Jan 2026 20:11:18 +0000
+From: Conor Dooley <conor@kernel.org>
+To: rodrigo.alencar@analog.com
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH v2 2/6] dt-bindings: iio: amplifiers: Add AD8366 support
+Message-ID: <20260126-porous-hurdle-bfc510f113bb@spud>
+References: <20260126-iio-ad8366-update-v2-0-c9a4d31aeb01@analog.com>
+ <20260126-iio-ad8366-update-v2-2-c9a4d31aeb01@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260127-b4-rfd77402_v5-v7-6-3e7f2d452da2@gmail.com>
-References: <20260127-b4-rfd77402_v5-v7-0-3e7f2d452da2@gmail.com>
-In-Reply-To: <20260127-b4-rfd77402_v5-v7-0-3e7f2d452da2@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: skhan@linuxfoundation.org, david.hunter.linux@gmail.com, 
- raskar.shree97@gmail.com, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1769455974; l=6529;
- i=raskar.shree97@gmail.com; s=20260101; h=from:subject:message-id;
- bh=PXRuCHQwhL0RvoseV0P0rP1fSG0LvtG292soIV5X2ZE=;
- b=HFphvdYoSUNInrvf9j6d4SOGmCHBKv6z0JvGECmHnUj5x1jFFfKXIAkbcVhHMv3qJWqj/hWNn
- yIToHCuJFAeCBSjJpWl+N1tF11fC0+8/qeX1WtYexXMUPKRKvBdHBmf
-X-Developer-Key: i=raskar.shree97@gmail.com; a=ed25519;
- pk=4m2wXDvY0vlXefvRRzawNcNAif88Cy4XvbLkU6iMG/Y=
-X-Endpoint-Received: by B4 Relay for raskar.shree97@gmail.com/20260101 with
- auth_id=589
-X-Original-From: Shrikant Raskar <raskar.shree97@gmail.com>
-Reply-To: raskar.shree97@gmail.com
-
-From: Shrikant Raskar <raskar.shree97@gmail.com>
-
-Add interrupt handling support to enable event-driven data acquisition
-instead of continuous polling. This improves responsiveness, reduces
-CPU overhead, and supports low-power operation by allowing the system
-to remain idle until an interrupt occurs.
-
-Signed-off-by: Shrikant Raskar <raskar.shree97@gmail.com>
----
- drivers/iio/proximity/rfd77402.c | 121 ++++++++++++++++++++++++++++++++++++---
- 1 file changed, 113 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iio/proximity/rfd77402.c b/drivers/iio/proximity/rfd77402.c
-index c29ae9af4a90..53dff934d66d 100644
---- a/drivers/iio/proximity/rfd77402.c
-+++ b/drivers/iio/proximity/rfd77402.c
-@@ -6,20 +6,28 @@
-  *
-  * 7-bit I2C slave address 0x4c
-  *
-- * TODO: interrupt
-  * https://media.digikey.com/pdf/Data%20Sheets/RF%20Digital%20PDFs/RFD77402.pdf
-  */
- 
-+#include <linux/bits.h>
-+#include <linux/completion.h>
- #include <linux/delay.h>
-+#include <linux/dev_printk.h>
-+#include <linux/errno.h>
- #include <linux/i2c.h>
-+#include <linux/interrupt.h>
- #include <linux/iopoll.h>
-+#include <linux/jiffies.h>
- #include <linux/module.h>
-+#include <linux/types.h>
- 
- #include <linux/iio/iio.h>
- 
- #define RFD77402_DRV_NAME "rfd77402"
- 
- #define RFD77402_ICSR		0x00 /* Interrupt Control Status Register */
-+#define RFD77402_ICSR_CLR_CFG   BIT(0)
-+#define RFD77402_ICSR_CLR_TYPE  BIT(1)
- #define RFD77402_ICSR_INT_MODE	BIT(2)
- #define RFD77402_ICSR_INT_POL	BIT(3)
- #define RFD77402_ICSR_RESULT	BIT(4)
-@@ -27,6 +35,12 @@
- #define RFD77402_ICSR_H2M_MSG	BIT(6)
- #define RFD77402_ICSR_RESET	BIT(7)
- 
-+#define RFD77402_IER		0x02
-+#define RFD77402_IER_RESULT	BIT(0)
-+#define RFD77402_IER_M2H_MSG	BIT(1)
-+#define RFD77402_IER_H2M_MSG	BIT(2)
-+#define RFD77402_IER_RESET	BIT(3)
-+
- #define RFD77402_CMD_R		0x04
- #define RFD77402_CMD_SINGLE	0x01
- #define RFD77402_CMD_STANDBY	0x10
-@@ -81,10 +95,14 @@ static const struct {
-  * struct rfd77402_data - device-specific data for the RFD77402 sensor
-  * @client: I2C client handle
-  * @lock: mutex to serialize sensor reads
-+ * @completion: completion used for interrupt-driven measurements
-+ * @irq_en: indicates whether interrupt mode is enabled
-  */
- struct rfd77402_data {
- 	struct i2c_client *client;
- 	struct mutex lock;
-+	struct completion completion;
-+	bool irq_en;
- };
- 
- static const struct iio_chan_spec rfd77402_channels[] = {
-@@ -95,6 +113,41 @@ static const struct iio_chan_spec rfd77402_channels[] = {
- 	},
- };
- 
-+static irqreturn_t rfd77402_interrupt_handler(int irq, void *pdata)
-+{
-+	struct rfd77402_data *data = pdata;
-+	int ret;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, RFD77402_ICSR);
-+	if (ret < 0)
-+		return IRQ_NONE;
-+
-+	/* Check if the interrupt is from our device */
-+	if (!(ret & RFD77402_ICSR_RESULT))
-+		return IRQ_NONE;
-+
-+	/* Signal completion of measurement */
-+	complete(&data->completion);
-+	return IRQ_HANDLED;
-+}
-+
-+static int rfd77402_wait_for_irq(struct rfd77402_data *data)
-+{
-+	int ret;
-+
-+	/*
-+	 * According to RFD77402 Datasheet v1.8,
-+	 * Section 3.1.1 "Single Measure" (Figure: Single Measure Flow Chart),
-+	 * the suggested timeout for single measure is 100 ms.
-+	 */
-+	ret = wait_for_completion_timeout(&data->completion,
-+					  msecs_to_jiffies(100));
-+	if (ret == 0)
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
- static int rfd77402_set_state(struct i2c_client *client, u8 state, u16 check)
- {
- 	int ret;
-@@ -120,6 +173,11 @@ static int rfd77402_wait_for_result(struct rfd77402_data *data)
- 	struct i2c_client *client = data->client;
- 	int val, ret;
- 
-+	if (data->irq_en) {
-+		reinit_completion(&data->completion);
-+		return rfd77402_wait_for_irq(data);
-+	}
-+
- 	ret = read_poll_timeout(i2c_smbus_read_byte_data, val,
- 				 (val < 0) || (val & RFD77402_ICSR_RESULT),
- 				 10 * USEC_PER_MSEC,
-@@ -200,8 +258,20 @@ static const struct iio_info rfd77402_info = {
- 	.read_raw = rfd77402_read_raw,
- };
- 
--static int rfd77402_init(struct i2c_client *client)
-+static int rfd77402_config_irq(struct i2c_client *client, u8 csr, u8 ier)
- {
-+	int ret;
-+
-+	ret = i2c_smbus_write_byte_data(client, RFD77402_ICSR, csr);
-+	if (ret)
-+		return ret;
-+
-+	return i2c_smbus_write_byte_data(client, RFD77402_IER, ier);
-+}
-+
-+static int rfd77402_init(struct rfd77402_data *data)
-+{
-+	struct i2c_client *client = data->client;
- 	int ret, i;
- 
- 	ret = rfd77402_set_state(client, RFD77402_CMD_STANDBY,
-@@ -209,10 +279,26 @@ static int rfd77402_init(struct i2c_client *client)
- 	if (ret < 0)
- 		return ret;
- 
--	/* configure INT pad as push-pull, active low */
--	ret = i2c_smbus_write_byte_data(client, RFD77402_ICSR,
--					RFD77402_ICSR_INT_MODE);
--	if (ret < 0)
-+	if (data->irq_en) {
-+		/*
-+		 * Enable interrupt mode:
-+		 * - Configure ICSR for auto-clear on read and
-+		 *   push-pull output
-+		 * - Enable "result ready" interrupt in IER
-+		 */
-+		ret = rfd77402_config_irq(client,
-+					  RFD77402_ICSR_CLR_CFG |
-+					  RFD77402_ICSR_INT_MODE,
-+					  RFD77402_IER_RESULT);
-+	} else {
-+		/*
-+		 * Disable all interrupts:
-+		 * - Clear ICSR configuration
-+		 * - Disable all interrupts in IER
-+		 */
-+		ret = rfd77402_config_irq(client, 0, 0);
-+	}
-+	if (ret)
- 		return ret;
- 
- 	/* I2C configuration */
-@@ -292,13 +378,29 @@ static int rfd77402_probe(struct i2c_client *client)
- 	if (ret)
- 		return ret;
- 
-+	init_completion(&data->completion);
-+
-+	if (client->irq > 0) {
-+		ret = devm_request_threaded_irq(&client->dev, client->irq,
-+						NULL, rfd77402_interrupt_handler,
-+						IRQF_ONESHOT,
-+						"rfd77402", data);
-+		if (ret)
-+			return ret;
-+
-+		data->irq_en = true;
-+		dev_dbg(&client->dev, "Using interrupt mode\n");
-+	} else {
-+		dev_dbg(&client->dev, "Using polling mode\n");
-+	}
-+
- 	indio_dev->info = &rfd77402_info;
- 	indio_dev->channels = rfd77402_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(rfd77402_channels);
- 	indio_dev->name = RFD77402_DRV_NAME;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	ret = rfd77402_init(client);
-+	ret = rfd77402_init(data);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -316,7 +418,10 @@ static int rfd77402_suspend(struct device *dev)
- 
- static int rfd77402_resume(struct device *dev)
- {
--	return rfd77402_init(to_i2c_client(dev));
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct rfd77402_data *data = iio_priv(indio_dev);
-+
-+	return rfd77402_init(data);
- }
- 
- static DEFINE_SIMPLE_DEV_PM_OPS(rfd77402_pm_ops, rfd77402_suspend,
-
--- 
-2.43.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="REc/ih/jUk+hM7Ip"
+Content-Disposition: inline
+In-Reply-To: <20260126-iio-ad8366-update-v2-2-c9a4d31aeb01@analog.com>
 
 
+--REc/ih/jUk+hM7Ip
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Mon, Jan 26, 2026 at 01:51:03PM +0000, Rodrigo Alencar via B4 Relay wrot=
+e:
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+>=20
+> Add device tree binding documentation for amplifiers and digital
+> attenuators. This covers different device variants with similar
+> SPI control.
+>=20
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> ---
+>  .../bindings/iio/amplifiers/adi,ad8366.yaml        | 68 ++++++++++++++++=
+++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 69 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.=
+yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
+> new file mode 100644
+> index 000000000000..02f790fd73d7
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
+> @@ -0,0 +1,68 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/amplifiers/adi,ad8366.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: AD8366 and similar Gain Amplifiers and Digital Attenuators
+> +
+> +maintainers:
+> +  - Michael Hennerich <michael.hennerich@analog.com>
+> +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
+> +
+> +description:
+> +  Digital Variable Gain Amplifiers (VGAs) and Digital Attenuators with
+> +  SPI interface.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,ad8366
+> +      - adi,ada4961
+> +      - adi,adl5240
+> +      - adi,adrf5720
+> +      - adi,adrf5730
+> +      - adi,adrf5731
+> +      - adi,hmc271a
+> +      - adi,hmc792a
+> +      - adi,hmc1018a
+> +      - adi,hmc1019a
+> +      - adi,hmc1119
+
+Why do none of these devices use fallback compatibles? Please put the
+rationale in the commit message.
+
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  vcc-supply:
+> +    description: Regulator that provides power to the device.
+> +
+> +  reset-gpios:
+> +    maxItems: 1
+> +
+> +  enable-gpios:
+> +    maxItems: 1
+
+How come enable-gpios is optional? Is it optional on all devices?
+Do all devices support enable-gpios and/or reset-gpios?
+
+Cheers,
+Conor.
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - vcc-supply
+> +
+> +allOf:
+> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    spi {
+> +      #address-cells =3D <1>;
+> +      #size-cells =3D <0>;
+> +
+> +      amplifier@0 {
+> +        compatible =3D "adi,ad8366";
+> +        reg =3D <0>;
+> +        spi-max-frequency =3D <1000000>;
+> +        vcc-supply =3D <&vcc_3v3>;
+> +      };
+> +    };
+> +...
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 8b5bb7030fa6..c3403ae478b7 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1589,6 +1589,7 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Supported
+>  W:	https://ez.analog.com/linux-software-drivers
+> +F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
+>  F:	drivers/iio/amplifiers/ad8366.c
+> =20
+>  ANALOG DEVICES INC AD9467 DRIVER
+>=20
+> --=20
+> 2.43.0
+>=20
+>=20
+
+--REc/ih/jUk+hM7Ip
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaXfKZQAKCRB4tDGHoIJi
+0nSMAP9IMMgh4K1FRRAZto+4PMk3bPwjy7eoUdbW0FGtUPjOLQEAzTyvu8YAhB4S
+gSXqK/0rn2l1g4Ih/ZMwKZ1CrVA4jQU=
+=gRdd
+-----END PGP SIGNATURE-----
+
+--REc/ih/jUk+hM7Ip--
