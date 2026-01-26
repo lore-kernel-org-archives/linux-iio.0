@@ -1,230 +1,145 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from mail-ed1-f66.google.com (mail-ed1-f66.google.com [209.85.208.66])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 400A833CEB5
-	for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 15:20:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769440814; cv=none; b=boU+oztdzGBSGDkEYo8R6YUiyB6HvV101gmZ3fHgS/Pm5vWdUMwHt3rVJ5xy2F4Uy5B+kk4MZBjmTC+nq2J6T1OH/Kc3DnXH7HlpEAqU6scqF5aKLiee5kUPLD0wv/DbiArKkMD5tuDJW+84XFiik6EeFHQumab+i5p8RCnOJL8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769440814; c=relaxed/simple;
-	bh=EMXDvoXJ5/2vBtxSLRj4Me8GlfV7fukQDcxRRL6oaOc=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BLJAv2kX+7n3aor9IwwvD/mxqZN2KCUxaSxeSsk6JUanuU3lsAFhfSHI1nogCf0j4FMYhgw1OufEb4vKixEhZVe1AO62fg8zkB+HU4qsNdvGoc590HMFMMDZ8YDOWzVeLv2QTFYdrCSPlLLaXX/1vnAwtY2Wscp8jc5KX1XgMWA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RXVXipko; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C05B339709
+	for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 15:28:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.66
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769441303; cv=pass; b=tZ2Kz2BUMEybhWvIruoLeMlIsJsuoz1tcPScTtb+RzoaFiC7BYcxScZxWQbudfsql4AUxU8oNNppCuO+oIoIR9S6VDZS4O/FRLgxH7AS1tc3+y4Tzzp7N0gutKLVOBk4w2fPqFshkip0MNoJnSYmhBcJt5mJWILnpoe6zn+N7ig=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769441303; c=relaxed/simple;
+	bh=DZuVyYmAJlNHQeh2UsM5TuQEw8xVuRp2mZfwN6hfsiU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=RkB28vVg9qWx8vff0plJyHDZ8GC3aIMTJ6QqpnbQt/NskpgtZQLy5JWW7H6VtiiCVniQGbfc18McaUL4XvPS4y3AedZubBOJJVkW6ex1s8cfC5SIRHR3Qo9cqP8u7A1YF5t0gJQk3gjCzw0PL76UoGZWJWL/daQgxKZmLf/LbOU=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YHXv+wTc; arc=pass smtp.client-ip=209.85.208.66
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RXVXipko"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-435a517be33so2830402f8f.0
-        for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 07:20:12 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YHXv+wTc"
+Received: by mail-ed1-f66.google.com with SMTP id 4fb4d7f45d1cf-64d1ef53cf3so5895518a12.0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 07:28:21 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1769441300; cv=none;
+        d=google.com; s=arc-20240605;
+        b=FXW801/TMIH/YHU/I+2v5PRomLgF0zh2lFGD1t8CUeMbYxPex7iytPIoPK8VbHVzJ4
+         IBqNdCPSfhBeUdbOBVAT6iMgOoyZ7lc/jc8kE2zNOO+XiSArRBNZtsWaiqpyyPUyX86n
+         mMvDZvFKgUHS/E6pfPJ7O6HXllen9xLCGLdMyKu4TYwYbRgjbHymE27+Jn2up54KgzSa
+         72mYp4gx5hUmGmOs+x3fCwDKRFVUGvi7riMXWVoAXfJAeOAgsgTLw6hINl+RzBgZ5MWs
+         OCMAxT8bvXCR1pBy69+C2R/W5yIMx4QyGx6ZtrxCyxhzuWj826m6uK+CbzXuzTlKU/Ry
+         jAmA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=P0XjDcj2o2hjGIIH2CLp+7qJSqdr/dOfyw8ype3p+r0=;
+        fh=UOtNFuX1c4pTE5OANbj+JQQZ51YbaztagKD/m3QpFGs=;
+        b=X0qIQzGfq3ncxcfdnFemIjJuITNz2ATTupsjhUg/8bnZcSn1y20smvSrbBNrg2B0Wh
+         Lpq+DtOe9NyImkv2JZ+SKqLYp583ZlvRn1PM/zz7mGgNuCZgLFDRUDUcJKHURJs+5+qc
+         ZBLtW4mDgu0HBzjVTCVTFyA4xhDv2OLhqcjnM/ecjJLN3bkJLgrH5en9m84rxbI3UgBL
+         xiNvvpyBWBUXfEp9FfI2l7DORg2LFE4GOOE+P6i1+0s7zekmv+7rC5L8o/mJ++ZxnmAg
+         o0DLWRkEjFHV/gEKo+vjFcNp968VUEJ8cyBCgeT4dGFsPMBExGkjSH/IOt5dBU+zpmM+
+         vBkw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769440811; x=1770045611; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7P/+mX1PWBDAGM9xKdya4BErpz7ZLdNNb0retKVcXWk=;
-        b=RXVXipkoOiAeF85KDImKGHJKUZuW4Szk6OssvaL9AK4b7Cu8sCwXMDmlRwpKO/TWxe
-         J1kEpa4hZmjTrq1u3fzy4TPv33+yNnUv8gnv47ysNNyUcwPjkqtFU2eYnM+eldRsGiA+
-         jbUpAg9OJbeYk8BnN/pItKbFDlJg/uyZqko+jerHgZrW98ISxMwptlv48z7DHdj1O0xH
-         HyZo87OPydT8YQBlhQWlGVMO6z8qrHCgrPsY7rdtwVfcFgVnGASADDnt+7TvzutdhbJ3
-         LR44saZPnxG0WLd84WNsZAoWZHgNiKaS+YEcgWUOEnxl8XTnd+ppixeWgDIdz+R3EkA2
-         OYoQ==
+        d=gmail.com; s=20230601; t=1769441300; x=1770046100; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=P0XjDcj2o2hjGIIH2CLp+7qJSqdr/dOfyw8ype3p+r0=;
+        b=YHXv+wTcg6jYwfwFy1uvnX82KQVSdGJ3joUvsQDfZChy+qJE6s9nWRng2SA7fnZL1g
+         iJWHptzdx1i8Lfb+yAKI7wAcf+DmnKO+E6PauJ2y9215ej0mkt2hPb+r2sTBPeurNHR6
+         DfUZ7MRwprr04t3ydTIwWcT8AskQhVGQZ5nLzqIemtQ9PppeXMa7LH5pyBkaPlPfVXd/
+         t/fys1MrzGHUCc+hqC02x9b+Vszf3TVZ0xT/RqyhAQ38EeVrsowZeHstgykX330PncE7
+         W1GVuf4/gspkxTo4XO4566yFjA9RfMhQ6mpphllW3EkLhdI0kceRlgJl7/hDOYr+gcu/
+         mTGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769440811; x=1770045611;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=7P/+mX1PWBDAGM9xKdya4BErpz7ZLdNNb0retKVcXWk=;
-        b=U+jPVQ0SAhygTVw9xknYeu/tchmeaMlgGGf5P3HhL4B2+DbmArQ69uzCytD+w5jXtT
-         +zgaD8uN3VXwt0lku0v3MCJaAnHvGXUimr74No4WSh8OK5ERjN9UakKxGxCmSJy/7Nw8
-         Rn9UVq1AZts7u/xEJwmJiZZeD+MmxqSuEuUZABfvVFnlk+KhT7cU9jTvzCjhRgVZobyi
-         7jQGYPlIugNGn95skMgG//r6MVCL3YHNxoDWMULTLjJaDmKczE7r+lcW4CwoxzcsL9Jo
-         rqR6ZhlSsFgNliwvOPRg2YoWbJKZix+OPIrPufuGYcc5f8dF10zYQD8+t9TthlVOvnAO
-         lkqA==
-X-Forwarded-Encrypted: i=1; AJvYcCXXzrgf0Z8gFajsnqCe7w9mz1GR5LC6Or5tUEFli25uYUlNFNwEkNdburov0iPmbVa/5JwAS63xdSs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy8fXLsoycrWa64RvumomVXi+MY6uw9mdxmfrZ5J5HURB9y6iB5
-	ZkHRma+DpvklGcJi3j/i/38J3s3Yuzl43w15g5IwdUIHmxRG02/wAG+MqSBqQw==
-X-Gm-Gg: AZuq6aLEk1bSpAsmQ/UEyjsJxT0t88aQidXPpoKH2RgZYv2TOUrqocmM4ka0ptuBJ2i
-	OmZ5i6wFWyqLyS2q796tEh2NKdhlFJ29mE2s36FdgMCPVF3JBzzuI5KRArkbVz+rGihX7fiJ/Wk
-	vUTVdqWN9JPjj0ZRQPxdyfxOHGWQFZxVXGK9FQJZHlXgiMPhKTZTgSBVTB0+qcOX7ZOeS+DXy3y
-	04jYggEIQdZyYampHPuvs2C0G3/Bm/McwninDoEI5EjdM0pnAiZqsAZQdf14WkLqLeSIr4kwkaI
-	yJuVz1zPnlUutHBp1rH+MfTbj/wafNiJVvuiL5BqsxvuEDZI9BiSyCTPIcD7EiQxiRZSx+vPfFx
-	zbSqpN127DB/ulAxUQgkNRvk2PAaybYWjnuIEWHwClxi4bxon5eRfnoWjCisBhnHlDnuwXeI7xW
-	5Odve2CieKei6dGH1eXsMDJzPpMTWh5JE2bz0CoHaZ0EEPAdGtFDFiN7JJNR5CfPqzv48G0AIUM
-	7Kt
-X-Received: by 2002:a05:6000:2404:b0:435:8aa1:ff4d with SMTP id ffacd0b85a97d-435ca0ef8a3mr7243502f8f.22.1769440811285;
-        Mon, 26 Jan 2026 07:20:11 -0800 (PST)
-Received: from RDEALENC-L01.ad.analog.com ([24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435b1c24f15sm31673845f8f.18.2026.01.26.07.20.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Jan 2026 07:20:10 -0800 (PST)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Mon, 26 Jan 2026 15:20:03 +0000
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-doc@vger.kernel.org, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH v5 2/8] iio: core: add fixed point parsing with 64-bit
- parts
-Message-ID: <n2ms3esyxlegqibu4nluut3x4c4bkjxt5xrcd4gw35xxb2tipb@a2v73y25kroc>
-References: <20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com>
- <20260123-adf41513-iio-driver-v5-2-2dce812a2dda@analog.com>
- <aXdUvRZ9NmP5Nh95@smile.fi.intel.com>
- <byitgzjli5gsq5v66topve7ip3inkk2udwhuihjdp6bknnkmos@tv226l7tek7s>
- <aXdtpkL5QUhhB_hh@smile.fi.intel.com>
- <ty6hptfh65k2rkqo6c6mg5z6vismuvyqsu3emvqarr2rbhpvcz@kn6tzjk5xi2o>
- <aXd_0uNVm8c_Fhwd@smile.fi.intel.com>
+        d=1e100.net; s=20230601; t=1769441300; x=1770046100;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=P0XjDcj2o2hjGIIH2CLp+7qJSqdr/dOfyw8ype3p+r0=;
+        b=hsYEPcBjdyx0/PlanVDquylMjZQd4p67nEaCJp1gFl/9TAWAimQXVhWnLwtvArC+AM
+         8Vsh+UrtcxR9g8tTa//7e+HtD2Tv04cHnpDnLxx5WVC4gf3lIIadC7DB6mPCvYO6bQU4
+         KMl+lPlGqkvsOj2oeEcIsb3wz0IdmISkU8P76yj8xy0tVXaI8PnNtCPBzfSwWVblCuMK
+         UtYfZaag0ZA+5Otamqef4tiHnC+IJC4SP3nXSG0BThEQJJnRfmRn0KGKMnhEg/e1dJEa
+         h++cnuBYqUW/MZD6v1Y6fVGhCPKu9Gy9JLMoiZrE4rKsDJ4sb6zX3//zPTvprCZoRkKi
+         UpaQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVA4nHoy7urjq2nnC3/AFUubsn45e341l7IyJpNC6UMtFQIZdkt55r6dguAB6leIr9+lQVInvKTa60=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxL7AOO4C4dUOMl6uMlcBq4K7Dsk5UrEYRcGFq4bZBVaBOR2yBG
+	9/BJdQ3p1ZQDw2pAsYjvICGtvBSJYb/TB3vdwHeDLv/CR/HA7Cu+wt8V80dqACn056NGAzlhzC7
+	wseJZkdKyJSl6avwy4NK7gSZabv0nCv4=
+X-Gm-Gg: AZuq6aJtUjpnNxD53scLnZaBy7FvrSEZjBbsmpYCtTFq7Qqw1zmPmMa7jSVirCy5Y5+
+	8td+l4CipOIIlIPjPSwtScifvGVxt0uFLiW7r6xSVwx72lS1f6zWMVUy2mRd5Wn9v1D4rPVv3tv
+	8OmHegLVoXmIJ6lVcV08FsASEpo97nUUoEwzHbM/L4LtfKR1x8y5gyttb2RCY7VpwXW22bV4S8j
+	ANSws3H0gXaFbfSgKplsP/upBQan/rnmQCu0fbPYyCeweGB6c2q6+UHqydmvsVYYqftXbY=
+X-Received: by 2002:a17:906:7955:b0:b84:22cc:3c8 with SMTP id
+ a640c23a62f3a-b8d3fa128f5mr341632366b.4.1769441299497; Mon, 26 Jan 2026
+ 07:28:19 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aXd_0uNVm8c_Fhwd@smile.fi.intel.com>
+References: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
+ <20260121-b4-rfd77402_v5-v6-2-5b944d0605dd@gmail.com> <aXCWz6O2CdU_Sp8r@smile.fi.intel.com>
+ <CAHc1_P5hY6-z5s0J4SW_2GMER+NP4NsqoVVVaYFUg_gRi=31JQ@mail.gmail.com> <aXc3lPNFF18ygeow@smile.fi.intel.com>
+In-Reply-To: <aXc3lPNFF18ygeow@smile.fi.intel.com>
+From: Shrikant <raskar.shree97@gmail.com>
+Date: Mon, 26 Jan 2026 20:58:07 +0530
+X-Gm-Features: AZwV_QiB1pA_yKuA5_b0Y438f7gLUi63CD2fPIwUfe0nRdJptnszvolzl1iHctI
+Message-ID: <CAHc1_P7vG4=zzTB2RWeNXzaqbXZ7zKokUJkRXnwQOXQBgJJmqg@mail.gmail.com>
+Subject: Re: [PATCH v6 2/5] iio: proximity: rfd77402: Use kernel helper for
+ result polling
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, skhan@linuxfoundation.org, david.hunter.linux@gmail.com, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 26/01/26 04:53PM, Andy Shevchenko wrote:
-> On Mon, Jan 26, 2026 at 02:26:20PM +0000, Rodrigo Alencar wrote:
-> > On 26/01/26 03:35PM, Andy Shevchenko wrote:
-> > > On Mon, Jan 26, 2026 at 12:42:53PM +0000, Rodrigo Alencar wrote:
-> > > > On 26/01/26 01:49PM, Andy Shevchenko wrote:
-> > > > > On Fri, Jan 23, 2026 at 03:53:07PM +0000, Rodrigo Alencar via B4 Relay wrote:
-> 
+On Mon, Jan 26, 2026 at 3:14=E2=80=AFPM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Sat, Jan 24, 2026 at 10:26:04PM +0530, Shrikant wrote:
+>
 > ...
-> 
-> > > > > > +static int __iio_str_to_fixpoint64(const char *str, u64 fract_mult,
-> > > > > > +				   s64 *integer, s64 *fract, bool scale_db)
-> > > > > > +{
-> > > > > > +	u64 i = 0, f = 0;
-> > > > > > +	char *end;
-> > > > > > +	int digit_count, precision = ffs(fract_mult);
-> > > > > > +	bool negative = false;
-> > > > > > +
-> > > > > > +	if (str[0] == '-') {
-> > > > > > +		negative = true;
-> > > > > > +		str++;
-> > > > > > +	} else if (str[0] == '+') {
-> > > > > > +		str++;
-> > > > > > +	}
-> > > > > > +
-> > > > > > +	i = simple_strtoull(str, &end, 10);
-> > > > > > +	digit_count = end - str;
-> > > > > > +	if (digit_count > 20)
-> > > > > > +		return -EINVAL;
-> > > > > 
-> > > > > Not really. If we are talking about decimal (only) cases we need to also count
-> > > > > leading 0:s.
-> > > > > 
-> > > > > 0000000000000000000000000000000025 is still 25, no overflow.
-> > > > > 
-> > > > > That's why I recommend to have a helper, maybe for now locally here, like
-> > > > > 
-> > > > > int safe_strtoull(..., unsigned long long *res)
-> > > > > {
-> > > > > 	...
-> > > > > }
-> > > > 
-> > > > Are you suggesting to not use simple_strtoull then?
-> > > 
-> > > Nope, I suggest to do an additional step before checking for the range.
-> > 
-> > You mean, conditionally skip leading 0's when parsing the integer part?
-> > e.g.
-> > 
-> > /*function entry and arg check */
-> > while(*str == '\0')
-> > 	str++;
-> > /* then call simple_strtoull() */
-> 
-> Not skipping, but counting them.
-> 
-> > simple_strtoull() is not overflow-safe,
-> 
-> Yes, I know. That's why all these additional checks are required,
-> 
-> > as it does not use
-> > check_mul_overflow() or check_add_overflow(), only checking the
-> > amount of digits is not enough.
-> 
-> Why? Can you elaborate how checking amount of digits is different to
-> check_mul_overflow()?
+>
+> > > > +                              10 * USEC_PER_MSEC,
+> > > > +                              10 * 10 * USEC_PER_MSEC,
+> > >
+> > > This makes sleep shorter by 2. Why?
+> > I have considered the timeout values from the RFD77402 datasheet.
+> > The timeout values mentioned in section 3.1.1 Single Measure are as bel=
+ow:
+> > 1. Every Status Check =3D 10ms
+> > 2. Whole Flow =3D 100 ms
+>
+> So, you should do this in a separate change explaining this.
+In that case, I can add a small preparatory patch before the
+=E2=80=9CUse kernel helper for result polling=E2=80=9D patch to adjust the
+polling interval according to the datasheet.
 
-consider U64_MAX = 18_446_744_073_709_551_615 as the limit:
-- 19_000_000_000_000_000_000 contains the same amount of digits but overflows.
-- 18_446_744_073_710_000_000 contains the same amount of digits but overflows.
+This would mean changing the existing polling loop, for example:
+diff --git a/drivers/iio/proximity/rfd77402.c b/drivers/iio/proximity/rfd77=
+402.c
+index 69cc1505b964..3e14660a4bb1 100644
+--- a/drivers/iio/proximity/rfd77402.c
++++ b/drivers/iio/proximity/rfd77402.c
+@@ -132,7 +132,7 @@ static int rfd77402_measure(struct i2c_client *client)
+                        goto err;
+                if (ret & RFD77402_ICSR_RESULT)
+                        break;
+-               msleep(20);
++               msleep(10);
+        }
 
-to catch those cases, we need to check for the overflow, everytime we read a
-character and accumulate:
+        if (tries < 0) {
 
-u64 acc;
+However, this change would then be removed in the very next patch
+when the polling loop is replaced by read_poll_timeout().I just want
+to confirm that this temporary change=E2=80=93then=E2=80=93removal is accep=
+table?
 
-while(isdigit(*str))
-	if (check_mul_overflow(acc, 10, &acc) ||
-	    check_add_overflow(acc, *str - '0', &acc))
-		return -EOVERFLOW;
-
-*res = acc;
-
-acc can get weird results if not checked. 
-
-> 
-> > Previous implementation of fixpoint parsing didn't care about that.
-> 
-> Do we have test cases for the current implementation?
-
-No, I am adding a kunit test in this patch.
-
-> > > > Understood, leading zeros can be ignored only when parsing the integer 
-> > > > part. Also, would be nice to have truncation of the fractional part
-> > > > while doing the parsing. How about:
-> > > > 
-> > > > static int iio_safe_strtoull(const char *str, const char **end,
-> > > > 			     size_t max_chars, u64 *res)
-> > > 
-> > > > - max_chars = 0: ignores leading 0's and process all digits
-> > > > - max_chars > 0: process only initial max_chars digits and ignores the rest
-> > > 
-> > > I'm not sure why we would need that. It should parse the whole line until the
-> > > first invalid character or overflow.
-> > 
-> > "process all digits" and "ignores the rest" would be for digits only, so it
-> > would stop until the first invalid character is found. I suppose proper
-> > overflow check is implemented with check_mul_overflow() and check_add_overflow(),
-> 
-> I don't see the need. Amount of digits defines the order of the number (in
-> power-of-ten).
-> 
-> > while iterating over the characters and accumulating the value.
-> 
-> The problem that you can refer to is the corner case when the first
-> (most significant digit(s)) are already give an overflow while being
-> inside the allowed length. But it also can be checked.
-> 
-
-Yes. Not sure how to do that without checking every digit again.
-
-> 
-> The benefit of simple_strto*() over kstrto*() that they do not require
-> a temporary buffer and work over constant data (always).
-
-Agreed.
- 
-> If you see a way how to refactor lib/kstrtox.c and lib/vsprintf.c to have
-> an implementation there directly that may operate over constant buffers,
-> I will be glad to help with it. That would be good for existing cases,
-> such as Intel QAT driver, and any newcomers. I actually don't know why
-> the heck kstrto*() were made against non-constant buffers. Perhaps to
-> avoid this 'end' parameter...
-
-That would be out of the scope of this patch.
-
-Kind regards,
-
-Rodrigo Alencar
+Regards,
+Shrikant
