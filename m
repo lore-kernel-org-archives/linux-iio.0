@@ -1,137 +1,131 @@
-Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DBC1255F5E;
-	Mon, 26 Jan 2026 10:10:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70BD13064AF;
+	Mon, 26 Jan 2026 10:10:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769422239; cv=none; b=I5z/XoKThni7lhlxYrqr3yMs2KQjwRrWCgzvIR16ZeyW4KjvZnbLhWlwC2QFU+YusGYTCIHIeWPOkdX4p9/yzZD5ZzvftHOK/CsNPl0MlMvtPK409IPYaWlYf/PFECLiXUOHbKfL00uUYRLeE79quuVQiUtKizcFv4matRENfGk=
+	t=1769422248; cv=none; b=G0e65kHYcoSiJE8gfuNtGpM3jAupTg/e3HEJXtl5ESnU4ic+yj/5M1jDuD2y5JVg9SFNpu62upX6gwSPGLHWkQvPrwpxw0FgqQJ+IBSZh7m7cSR2pVn3Qfw8e9gQSadXOi1YfeS1NLzrj0XW1okwNBD3HeAUK9WwTwnABVrGQro=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769422239; c=relaxed/simple;
-	bh=xRVCDR5hiiDmGZtULdlXQZLT/t68n7I3mBxKRnxkDjI=;
+	s=arc-20240116; t=1769422248; c=relaxed/simple;
+	bh=Tw1PGm4BgpZd9LnQ5sgcPOcjTd28/XnCmSCwK2lu8Vw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=RaOgurZWafdE3F8+YtBtKVslzfGB8cNRQzyQuPOjMksMSOTWZY2r0XPFbwKoH+Jp+JEBparRuBWsnfx4xRtCk7OrcjU3ULtnjeVlWb0jVhH0dDvi+rZ+X/X4ETZXgBRRPbYNRTMNf+XXwQUPnmrnhwUM813ZuYScKKyZUM5Qjz8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0+KrxCKt; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=zyyUu95S; arc=none smtp.client-ip=193.142.43.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
+	 Content-Type:Content-Disposition:In-Reply-To; b=loztVnPzXo6ZEbD4igoCgp1x12x+ubNTkGGSFoc71/VL/pVskqhlPob47cLlnT6AdNFcwqT2M9INTId7/bOsytzt1kB4L0ZzZyz8OsQXi2FHSi5DaV1X+W76DqjlYBwk2a3ZHppwrTGQi1jOpLCo6iGQktvhqPqlFdtk30u3CRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ui9b5nwa; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0+KrxCKt";
-	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="zyyUu95S"
-Date: Mon, 26 Jan 2026 11:10:34 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020; t=1769422235;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cDCvmrrHYwe06OKQ96thqOovpL6Xr/sVW3H5W1NA7lc=;
-	b=0+KrxCKt9+O9O6oLKiRjtd74lhdWUD6wkk3QQo0XIHELJbf/WG/nQYEh4BDog55CA5SeAq
-	Xj2uUuYMth89IMHNIAVWxDYBQncsGJBl49880bLY1j+1KH/ND+4eKmWhasWsJMTK12g2Ze
-	ZAmneodcYIIQONypCNiDSthuYxCN73oQ4n6H5Wedf74sxj/Abr2xbJZWd9vCN+Xq6mkw8R
-	VOUarBH6JLmecPFn3e9VsZDPJwjZH/lS5cFdqD7MMC9i/AKGo5doLisqex+gYL1uINU9dn
-	KQtFA7EhNO83ypx3IzgUeh2+Ra0mU39+JGvxW3+s9jM9USUH5M9tdjc1Ey4n/A==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-	s=2020e; t=1769422235;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=cDCvmrrHYwe06OKQ96thqOovpL6Xr/sVW3H5W1NA7lc=;
-	b=zyyUu95SpRMrlHpcdEh8rOdGnyBdxwJe64Hmu6ruEYJQuDwXPLqZ/rcoTszLpvByHgiYU+
-	ig9KhvUYpxq+R1DA==
-From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: linux-kernel@vger.kernel.org, linux-rt-devel@lists.linux.dev,
-	Thomas Gleixner <tglx@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Puranjay Mohan <puranjay@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ui9b5nwa"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769422247; x=1800958247;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Tw1PGm4BgpZd9LnQ5sgcPOcjTd28/XnCmSCwK2lu8Vw=;
+  b=Ui9b5nwaKcQ8BLx9ZkevT5VfqxA9bowd+uoBxew9PhCHejjCJTclE8mQ
+   xeEkq4+b07weUxWPsnATSEYyikV0hstMEGKGuLC+4k5I2tUqf26kbnI0g
+   RRhhrgjyNyPK0RP55yczHad5v3HKFb8FHtpJKKibGpmAnviAB6SlbXLPy
+   NSChIDWfRLoWpkO1zkg89PS8t9otyVqw48D3pkEwDxqQAkLrbPRsXuMfd
+   U0CFNhg6R72lXTeaUnqy+/+rb6RGRKpqDXDJ7HDVrLa2dPWfBoTza2hk7
+   uiaJK8yZg8DsYGh62KqSmwp39am4/ylJFtACmWUIzVhwuCxq0tROFkpKE
+   g==;
+X-CSE-ConnectionGUID: gPl97HbmSOqWn9QTcrvoxQ==
+X-CSE-MsgGUID: mWkYWzcJTCWOkuBLZo/W+w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11682"; a="74439458"
+X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
+   d="scan'208";a="74439458"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 02:10:46 -0800
+X-CSE-ConnectionGUID: PS1MA59iSFafenoqNWnutg==
+X-CSE-MsgGUID: ASba5ayqQdi7cp9BIj2Fxw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
+   d="scan'208";a="207892624"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.122])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 02:10:41 -0800
+Date: Mon, 26 Jan 2026 12:10:39 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	Marcus Folkesson <marcus.folkesson@gmail.com>,
-	Kent Gustavsson <kent@minoris.se>,
-	Gustavo Silva <gustavograzs@gmail.com>,
-	Nishant Malpani <nish.malpani25@gmail.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 18/21] iio: Replace IRQF_ONESHOT with IRQF_NO_THREAD
-Message-ID: <20260126101034.lnGGQmUD@linutronix.de>
-References: <20260123113708.416727-1-bigeasy@linutronix.de>
- <20260123113708.416727-19-bigeasy@linutronix.de>
- <aXOKVqxyhQ10l9V4@smile.fi.intel.com>
- <20260126081510.jr8Rp6R7@linutronix.de>
- <aXc5Efu-PlLNCxkk@smile.fi.intel.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Dixit Parmar <dixitparmar19@gmail.com>,
+	Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+	linux-rtc@vger.kernel.org
+Subject: Re: [PATCH v1 02/10] regulator: cpcap-regulator: add support for Mot
+ regulators
+Message-ID: <aXc9n_gc7TEFvNA8@smile.fi.intel.com>
+References: <20260125134302.45958-1-clamor95@gmail.com>
+ <20260125134302.45958-3-clamor95@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <aXc5Efu-PlLNCxkk@smile.fi.intel.com>
+In-Reply-To: <20260125134302.45958-3-clamor95@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 2026-01-26 11:51:13 [+0200], Andy Shevchenko wrote:
-> > > > Cc: Lars-Peter Clausen <lars@metafoo.de>
-> > > > Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-> > > > Cc: Puranjay Mohan <puranjay@kernel.org>
-> > > > Cc: Jonathan Cameron <jic23@kernel.org>
-> > > > Cc: David Lechner <dlechner@baylibre.com>
-> > > > Cc: "Nuno S=C3=A1" <nuno.sa@analog.com>
-> > > > Cc: Andy Shevchenko <andy@kernel.org>
-> > > > Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > > > Cc: Marcus Folkesson <marcus.folkesson@gmail.com>
-> > > > Cc: Kent Gustavsson <kent@minoris.se>
-> > > > Cc: Gustavo Silva <gustavograzs@gmail.com>
-> > > > Cc: Nishant Malpani <nish.malpani25@gmail.com>
-> > > > Cc: linux-iio@vger.kernel.org
-> > >=20
-=E2=80=A6
-> I didn't follow. How? What tools do you use?
+On Sun, Jan 25, 2026 at 03:42:54PM +0200, Svyatoslav Ryhel wrote:
+> Add support for regulator set used in Motorola Mot board, used as a base
+> for Atrix 4G and Droid X2 smartphones.
 
-b4/ git.
+...
 
-> > So I have to move them for each submission. Or is there something I am =
-not
-> > aware of?
->=20
-> Make them in the tail of commit messages locally with a delimiter, they w=
-ill
-> always be present as long as they are in your tree.
->=20
-> I dunno if `b4` manages the Cc lists separately. At least I see no-one us=
-ing
-> `b4` *and* putting the Cc noise into the commit messages, so I assume it
-> behaves nicely.
+> +static const unsigned int sw_mot_val_tbl[] =  { 600000, 612500, 625000,
+> +						637500, 650000, 662500,
+> +						675000, 687500, 700000,
+> +						712500, 725000, 737500,
+> +						750000, 762500, 775000,
+> +						787500, 800000, 812500,
+> +						825000, 837500, 850000,
+> +						862500, 875000, 887500,
+> +						900000, 912500, 925000,
+> +						937500, 950000, 962500,
+> +						975000, 987500, 1000000,
+> +						1012500, 1025000, 1037500,
+> +						1050000, 1062500, 1075000,
+> +						1087500, 1100000, 1112500,
+> +						1125000, 1137500, 1150000,
+> +						1162500, 1175000, 1187500,
+> +						1200000, 1212500, 1225000,
+> +						1237500, 1250000, 1262500,
+> +						1275000, 1287500, 1300000,
+> +						1312500, 1325000, 1337500,
+> +						1350000, 1362500, 1375000,
+> +						1387500, 1400000, 1412500,
+> +						1425000, 1437500, 1450000,
+> +						1462500, 1475000, };
 
-I point is if I move them for one submission, I lose it on the next if I
-update patches in tree and re-export them.=20
+What a style! (Yeah, I see it's being used elsewhere here...)
 
-> > > > +		ret =3D devm_request_irq(dev, st->irq,
-> > > > +				       iio_trigger_generic_data_rdy_poll,
-> > > > +				       IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
-> > > > +				       indio_dev->name, st->dready_trig);
-> > > >  		if (ret < 0)
-> > > >  			return ret;
-> > >=20
-> > > Interestingly that this driver ignores the flags from firmware... See=
-ms to me
-> > > like a bug (not in your patch, obviously). Ditto for other drivers do=
-ing similar
-> > > things.
-> >=20
-> > If the irq-chip is level or unknown mode on boot up/ default and the
-> > device can only operate as an edge-rising then I don't see why this
-> > should be a bug.
->=20
-> But if FW says use "level", wouldn't this setting override it?
+...
 
-Yes, it will. It was common to use it pre-device-tree time where this
-information was not configured automatically before ->probe. Now it
-might be missing/wrong in the dt for some of the old devices.
-It might be a left-over which continued to grow and spread.
+> +	CPCAP_REG(VAUDIO, CPCAP_REG_VAUDIOC, CPCAP_REG_ASSIGN4,
+> +		  CPCAP_BIT_VAUDIO_SEL, vaudio_val_tbl,
+> +		  0x16, 0x1, 0x5, 0, 0),
 
-Sebastian
+> +	{ /* sentinel */ },
+
+No trailing comma for sentinel.
+
+> +};
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
