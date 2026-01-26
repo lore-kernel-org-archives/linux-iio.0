@@ -1,225 +1,149 @@
-Received: from mail-pf1-f180.google.com (mail-pf1-f180.google.com [209.85.210.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61F1C1DE3AD
-	for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 01:30:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36A9126FA5A;
+	Mon, 26 Jan 2026 06:23:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769391003; cv=none; b=DrEksy4HGNDR1ThrbqtkDC/ff70He2quhTGzQA7+zn3w8XhfIHdZwFJbA1Ne8ME1OvPRgLM+J5iSBE5s1SZ3DpB/OSqQRx0VHfssV0BoIP20JVnUn1bt0RGImjYat2coTE6qTcwfS6BbCD7F7wd/aOw44/05vM3n1x0hJafzX6g=
+	t=1769408587; cv=none; b=UZzHNVIaNL/OwJzybZD1pE+fdLR79ztbllpGNHZTGqBvJ9yXY+PoZi3nGrIBMo1KfemY9f6uFDsxDxRbBFHqFl83hx+6mnEnvsKCUW4H4K+3fycYgwGb5da2QJeIj1nKKu0VNT7ADHzIqRZQOULb5icjbb/mt8Njx/iqfECNW/w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769391003; c=relaxed/simple;
-	bh=qjqG/4Tak5dcEPBHNEyOcH6tCeLxc2+lSgf0SX/Zx7w=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=DJjdynNGMe1mxMS+NuR8RA3UgwuVYTLUUMnHxrgSllGW0udSn0w+sLXi28b2ZiWblXqns5qFIWZ8J4unN/LZs1SiC7EW8TM786pIicyhdIgqHGBE1Fx8KjZjvZ4NLD2MUWdtH7yi8HSB2x8Ee44bnPF4qgYpU96OCgFvHDFqNk4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CFGJg/hc; arc=none smtp.client-ip=209.85.210.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1769408587; c=relaxed/simple;
+	bh=YsXx1MoHLIz7jzQAiJhBrQUFvFX/e6YQld0DsR1WATo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fHARhLfaqIiGIscFv4oa4elYRXdHU7MvFgvtp2Oc09P1oPpZChAr42NuRKUlSEkEuKFqdHeJQfUWuy9SZ/kZG2HVEOo57uFFzyKEPGvax/ovfdy5bun3MiqhF0xsr3oAgOdPqS71/a0Q/GK87zz7EabictJZcJUsfOd19g0OXtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=baZ6cTh6; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CFGJg/hc"
-Received: by mail-pf1-f180.google.com with SMTP id d2e1a72fcca58-8230f2140beso1286235b3a.1
-        for <linux-iio@vger.kernel.org>; Sun, 25 Jan 2026 17:30:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769391002; x=1769995802; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oeZfIkWxarijPCx3ki4a4A1AcDxm8HJqYE5e3TeBzjM=;
-        b=CFGJg/hctBTDAYj6PwFXi0HR7urLdHoBL2KFJa/zcbuFKtxpvZo9BSRsvUkRL5rw/O
-         bQWk1cTB52XErY4EAGy2eFtp95fhsbh8l59fed+0K96oIOXICpvacvgVUXKu8qddWYr0
-         DmOhqHWx8VghpIIdt1lf95FKov4XkzuI71T/2SJFR6lt5f5fWxhpEv2AEw4ttSXSCcRd
-         t8mFtcXvTv3H9IUAJ7wQV6GlJmchxkyiJLpINkGmAATdCQfGu4ms5K3yAUtPP1dzwU8X
-         3GF4CrTCjLrEM5hB7U705YgbYzPLyJTTFQJbYYvOui7V/se9x3Z885ueFieMz42F+d21
-         Ntgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769391002; x=1769995802;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=oeZfIkWxarijPCx3ki4a4A1AcDxm8HJqYE5e3TeBzjM=;
-        b=S06zuG8w0eladALwS1W+QR/b+VOO0g1iLnl5iDxTrWdzhgsGtVBvtKIO6oQVm2pthW
-         RngrGdVOpSTvF5NfVjFN9oy736bjd5E87XtjfSljroqLy0KzHCGgblY2Gk24xCuqdiPa
-         gMqv3rHnRClQLTUCNgwAyels4MD1LjzVp0PXf2oxYeFoUnnTw2b+X1e7Eei1f2KZQyuX
-         ET/qzuRYsXWmZs0VFqrxSipKvdODjc9CTCNBVgabOzPpf2ywL9gTfBg+yI/WvS9mDtey
-         X+yLcfB/1mXs8bmrSjFW2A+jEEbkrTq/FMwascrLwjoLl/4ZbnoK6p2RJKnM+cV5l0KI
-         +MIg==
-X-Forwarded-Encrypted: i=1; AJvYcCXES7vDydYHQYBVOK9hZBLSl4Ey9mbpgFs5ybGhQ3D5GyCmVEYdkPUbQdfEY4ttd6u2sSZSbnYpubU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx5rIPq5KrrlW3IdPZC3I2K7g5yzGm7x19NIX58xBLlSqEW1aX1
-	v7TJJHNdik416X4sEplubRa+JzpjGlL4vgEcMQT5gHJNB2GANq70JD3/
-X-Gm-Gg: AZuq6aLdPNFoOpJppB/sCH9Eh4qxXj37a7kHzhe/wh9zQWkHGKOesBwDMn2wuEbGV0V
-	u1WytAI9Gr+X85hMSQbeWXt/GdvNP/kFCLM3sxzBzhfeuIMPcaHTMAmmIODRX20obt/a4I/VaSX
-	2RPLlh56+FffHPJEcsUE73nBGt/GjuC3PnKlO9nJBsuTDOuEUGWoMj0wzTK5RyqdC53HXReqLFf
-	R11T0c2sieFU4RRDWWBX7sin1rL5QAuE1IC0f6u7tZ3/2rg4uJP0J6CrjHOxd7wEO3b9V+KDFcP
-	nGsLwQVidoLVScnaZZrvZ/2WjqfyOjNQvj1xhqFer6LaB5+ZaXJqCF9Yst4gMXjN45+Y+1ve7Gl
-	6fHcT1sA50tyAfjrSB0KQALhatBTenl1hgxf/GiV6ouUI4RZQdDqaPBJcs2zgzT6o1fm5n48dkG
-	NHhZd9ZR8ytmy9vjQVhLIP+SW24a/hmDc6QAx5t64xbrR1olHdN9CeBljdOHXfGw==
-X-Received: by 2002:a05:6a20:c5a7:b0:2ab:a456:9b09 with SMTP id adf61e73a8af0-38e9e528736mr2529581637.15.1769391001759;
-        Sun, 25 Jan 2026 17:30:01 -0800 (PST)
-Received: from [127.0.1.1] (61-220-246-151.hinet-ip.hinet.net. [61.220.246.151])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c635a1309dfsm7010359a12.6.2026.01.25.17.29.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Jan 2026 17:30:01 -0800 (PST)
-From: Kyle Hsieh <kylehsieh1995@gmail.com>
-Date: Mon, 26 Jan 2026 09:29:42 +0800
-Subject: [PATCH v3 2/2] iio: adc: ltc2309: add support for ltc2305
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="baZ6cTh6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769408586; x=1800944586;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=YsXx1MoHLIz7jzQAiJhBrQUFvFX/e6YQld0DsR1WATo=;
+  b=baZ6cTh6J5Mnpsvbi2NUN0BubheLhm3aN4wdaKJINw3kiHpl/IA6TZAs
+   6CXjsU9OFG0dyq2l1qAgdMOf22oprV7zU4yN8jTKRD57IC1OxODJ2qv1t
+   sK0v+k7neJ7Sg2Uu3WaynXbWTNk+S75ScqQ22OqGxhI7YHQ6q/S3DTOf7
+   07I5b8duYl2wFy3K6Cg16t6aQo6fBdrlKANF2rx80+NxfpP9lC48/JIvR
+   ZkfDyh+d7gZswFbmUNqq5D1Xh89xo3v4x7xnyaHHeGE0qdr9pmZTN8vNw
+   mfatZdYGKwOi7A7R6Yg8K6V9dK2ciyhKW805dBml/4YRUQuK6hJzbL/1F
+   g==;
+X-CSE-ConnectionGUID: 6JSAjr15RP2PUt2+qY8SOA==
+X-CSE-MsgGUID: DiSBW4DHRra0g2HN2Uxk2g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11682"; a="58158201"
+X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
+   d="scan'208";a="58158201"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2026 22:23:05 -0800
+X-CSE-ConnectionGUID: u4qiLRv2TbGKtlwNgiNogA==
+X-CSE-MsgGUID: bfxaqDnrS3a/xUWWplBWVw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
+   d="scan'208";a="207406796"
+Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
+  by orviesa009.jf.intel.com with ESMTP; 25 Jan 2026 22:23:02 -0800
+Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vkG02-00000000X02-3aRH;
+	Mon, 26 Jan 2026 06:22:58 +0000
+Date: Mon, 26 Jan 2026 14:22:21 +0800
+From: kernel test robot <lkp@intel.com>
+To: Kyle Hsieh <kylehsieh1995@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Liam Beguin <liambeguin@gmail.com>
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Kyle Hsieh <kylehsieh1995@gmail.com>
+Subject: Re: [PATCH v3 2/2] iio: adc: ltc2309: add support for ltc2305
+Message-ID: <202601261441.M4qQzY72-lkp@intel.com>
+References: <20260126-add_ltc2305_driver-v3-2-951349a87f97@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260126-add_ltc2305_driver-v3-2-951349a87f97@gmail.com>
-References: <20260126-add_ltc2305_driver-v3-0-951349a87f97@gmail.com>
-In-Reply-To: <20260126-add_ltc2305_driver-v3-0-951349a87f97@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Liam Beguin <liambeguin@gmail.com>
-Cc: Michael Hennerich <michael.hennerich@analog.com>, 
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, Kyle Hsieh <kylehsieh1995@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=4100;
- i=kylehsieh1995@gmail.com; h=from:subject:message-id;
- bh=qjqG/4Tak5dcEPBHNEyOcH6tCeLxc2+lSgf0SX/Zx7w=;
- b=owEBbQGS/pANAwAKAaWDQrcJVsSBAcsmYgBpdsOQCaip7zE/WdM3kQ3WWIUgNU7dYH65hWN8I
- HdLO7QhhACJATMEAAEKAB0WIQTJHsaNZOdY+THGqJelg0K3CVbEgQUCaXbDkAAKCRClg0K3CVbE
- gbiQB/458twWSGoVgfHr7oQIGVWS/4QkrfjL5nO8l+jBP9IX7n8dsKiiHyImU/Z6RyE+BDFV97N
- Ypo1of9SEL61gVzY0kMeYfzuh7wPy+WHDAPEAiB8mFvkvhJaRewI0ktpwLVgKA3WPNU0NzNEhih
- vDHD/a5jZy+5jxW682u/ePnYToZcmPsxZRVOHb6V2e0nbWjEzk9G36hGWDFfG3WkZCyJRq0DHgp
- 0ZYJ2MA8umzx2GkwqMeSijHQBwAltQJXmJCrpx6kdkgsTeCV5Uc5cpregJBh5HqYWKmYuy+bonx
- W1oPM6iiu43JA9ayGEAYXkCrUMo6zMMlLKMpUS244EG+aOSb
-X-Developer-Key: i=kylehsieh1995@gmail.com; a=openpgp;
- fpr=C91EC68D64E758F931C6A897A58342B70956C481
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260126-add_ltc2305_driver-v3-2-951349a87f97@gmail.com>
 
-Add support for the 2-channel LTC2305 ADC in the existing LTC2309 driver.
-The LTC2305 and LTC2309 share similar features: both are 12-bit,
-low-noise, low-power SAR ADCs with an I2C interface.
-The main difference is the number of channels: LTC2305 has 2 channels,
-while LTC2309 has 8 channels.
+Hi Kyle,
 
-Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
----
- drivers/iio/adc/ltc2309.c | 48 ++++++++++++++++++++++++++++++++++++++++++-----
- 1 file changed, 43 insertions(+), 5 deletions(-)
+kernel test robot noticed the following build warnings:
 
-diff --git a/drivers/iio/adc/ltc2309.c b/drivers/iio/adc/ltc2309.c
-index 5f0d947d0615..25acf7f5331a 100644
---- a/drivers/iio/adc/ltc2309.c
-+++ b/drivers/iio/adc/ltc2309.c
-@@ -1,8 +1,10 @@
- // SPDX-License-Identifier: GPL-2.0
- /*
-+ * The LTC2305 is a  2-Channel, 12-Bit SAR ADC with an I2C Interface.
-  * The LTC2309 is an 8-Channel, 12-Bit SAR ADC with an I2C Interface.
-  *
-  * Datasheet:
-+ * https://www.analog.com/media/en/technical-documentation/data-sheets/23015fb.pdf
-  * https://www.analog.com/media/en/technical-documentation/data-sheets/2309fd.pdf
-  *
-  * Copyright (c) 2023, Liam Beguin <liambeguin@gmail.com>
-@@ -41,6 +43,13 @@ struct ltc2309 {
- };
- 
- /* Order matches expected channel address, See datasheet Table 1. */
-+enum ltc2305_channels {
-+	LTC2305_CH0_CH1 = 0x0,
-+	LTC2305_CH1_CH0 = 0x4,
-+	LTC2305_CH0     = 0x8,
-+	LTC2305_CH1     = 0xc,
-+};
-+
- enum ltc2309_channels {
- 	LTC2309_CH0_CH1 = 0,
- 	LTC2309_CH2_CH3,
-@@ -80,6 +89,13 @@ enum ltc2309_channels {
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
- }
- 
-+static const struct iio_chan_spec ltc2305_channels[] = {
-+	LTC2309_CHAN(0, LTC2305_CH0),
-+	LTC2309_CHAN(1, LTC2305_CH1),
-+	LTC2309_DIFF_CHAN(0, 1, LTC2305_CH0_CH1),
-+	LTC2309_DIFF_CHAN(1, 0, LTC2305_CH1_CH0),
-+};
-+
- static const struct iio_chan_spec ltc2309_channels[] = {
- 	LTC2309_CHAN(0, LTC2309_CH0),
- 	LTC2309_CHAN(1, LTC2309_CH1),
-@@ -99,6 +115,24 @@ static const struct iio_chan_spec ltc2309_channels[] = {
- 	LTC2309_DIFF_CHAN(7, 6, LTC2309_CH7_CH6),
- };
- 
-+struct ltc2309_chip_info {
-+	const char *name;
-+	const struct iio_chan_spec *channels;
-+	int num_channels;
-+};
-+
-+static const struct ltc2309_chip_info ltc2305_chip_info = {
-+	.name = "ltc2305",
-+	.channels = ltc2305_channels,
-+	.num_channels = ARRAY_SIZE(ltc2305_channels),
-+};
-+
-+static const struct ltc2309_chip_info ltc2309_chip_info = {
-+	.name = "ltc2309",
-+	.channels = ltc2309_channels,
-+	.num_channels = ARRAY_SIZE(ltc2309_channels),
-+};
-+
- static int ltc2309_read_raw_channel(struct ltc2309 *ltc2309,
- 				    unsigned long address, int *val)
- {
-@@ -158,6 +192,7 @@ static const struct iio_info ltc2309_info = {
- 
- static int ltc2309_probe(struct i2c_client *client)
- {
-+	const struct ltc2309_chip_info *chip_info;
- 	struct iio_dev *indio_dev;
- 	struct ltc2309 *ltc2309;
- 	int ret;
-@@ -167,13 +202,14 @@ static int ltc2309_probe(struct i2c_client *client)
- 		return -ENOMEM;
- 
- 	ltc2309 = iio_priv(indio_dev);
-+
- 	ltc2309->dev = &indio_dev->dev;
- 	ltc2309->client = client;
- 
--	indio_dev->name = "ltc2309";
-+	indio_dev->name = chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	indio_dev->channels = ltc2309_channels;
--	indio_dev->num_channels = ARRAY_SIZE(ltc2309_channels);
-+	indio_dev->channels = chip_info->channels;
-+	indio_dev->num_channels = chip_info->num_channels;
- 	indio_dev->info = &ltc2309_info;
- 
- 	ret = devm_regulator_get_enable_read_voltage(&client->dev, "vref");
-@@ -189,13 +225,15 @@ static int ltc2309_probe(struct i2c_client *client)
- }
- 
- static const struct of_device_id ltc2309_of_match[] = {
--	{ .compatible = "lltc,ltc2309" },
-+	{ .compatible = "lltc,ltc2305", .data = &ltc2305_chip_info },
-+	{ .compatible = "lltc,ltc2309", .data = &ltc2309_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ltc2309_of_match);
- 
- static const struct i2c_device_id ltc2309_id[] = {
--	{ "ltc2309" },
-+	{ "ltc2305", (kernel_ulong_t)&ltc2305_chip_info },
-+	{ "ltc2309", (kernel_ulong_t)&ltc2309_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, ltc2309_id);
+[auto build test WARNING on 9448598b22c50c8a5bb77a9103e2d49f134c9578]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Kyle-Hsieh/dt-bindings-adc-ltc2497-add-support-for-ltc2305/20260126-093339
+base:   9448598b22c50c8a5bb77a9103e2d49f134c9578
+patch link:    https://lore.kernel.org/r/20260126-add_ltc2305_driver-v3-2-951349a87f97%40gmail.com
+patch subject: [PATCH v3 2/2] iio: adc: ltc2309: add support for ltc2305
+config: i386-buildonly-randconfig-006-20260126 (https://download.01.org/0day-ci/archive/20260126/202601261441.M4qQzY72-lkp@intel.com/config)
+compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260126/202601261441.M4qQzY72-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202601261441.M4qQzY72-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/iio/adc/ltc2309.c:209:20: warning: variable 'chip_info' is uninitialized when used here [-Wuninitialized]
+     209 |         indio_dev->name = chip_info->name;
+         |                           ^~~~~~~~~
+   drivers/iio/adc/ltc2309.c:195:43: note: initialize the variable 'chip_info' to silence this warning
+     195 |         const struct ltc2309_chip_info *chip_info;
+         |                                                  ^
+         |                                                   = NULL
+   1 warning generated.
+
+
+vim +/chip_info +209 drivers/iio/adc/ltc2309.c
+
+   192	
+   193	static int ltc2309_probe(struct i2c_client *client)
+   194	{
+   195		const struct ltc2309_chip_info *chip_info;
+   196		struct iio_dev *indio_dev;
+   197		struct ltc2309 *ltc2309;
+   198		int ret;
+   199	
+   200		indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*ltc2309));
+   201		if (!indio_dev)
+   202			return -ENOMEM;
+   203	
+   204		ltc2309 = iio_priv(indio_dev);
+   205	
+   206		ltc2309->dev = &indio_dev->dev;
+   207		ltc2309->client = client;
+   208	
+ > 209		indio_dev->name = chip_info->name;
+   210		indio_dev->modes = INDIO_DIRECT_MODE;
+   211		indio_dev->channels = chip_info->channels;
+   212		indio_dev->num_channels = chip_info->num_channels;
+   213		indio_dev->info = &ltc2309_info;
+   214	
+   215		ret = devm_regulator_get_enable_read_voltage(&client->dev, "vref");
+   216		if (ret < 0 && ret != -ENODEV)
+   217			return dev_err_probe(ltc2309->dev, ret,
+   218					     "failed to get vref voltage\n");
+   219	
+   220		ltc2309->vref_mv = ret == -ENODEV ? LTC2309_INTERNAL_REF_MV : ret / 1000;
+   221	
+   222		mutex_init(&ltc2309->lock);
+   223	
+   224		return devm_iio_device_register(&client->dev, indio_dev);
+   225	}
+   226	
 
 -- 
-2.34.1
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
