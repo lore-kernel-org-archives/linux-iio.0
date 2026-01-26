@@ -1,149 +1,116 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CA9B2C08D5;
-	Mon, 26 Jan 2026 09:51:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C34D32D7F3
+	for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 09:52:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769421082; cv=none; b=qHMH4oZ1dNYOWTBy07DaTelPwtNOOZZXBWYl+sT9A6d5xZpTtX6NYmJRuOjiRnUNMouHlUmiV5zldEKSMzBRdq9kxcTTENYBbugm2ua5HQJahFYqqj1i/rQ06wsbumdCLAILB4YOw0xZSrRQpTpJpb52x6+XVRIKAt/NPLc1Vu0=
+	t=1769421171; cv=none; b=SHezwwqp7q07TCVsQlWxyK+BE6//WdchICBVNru5ykYigRJp8RulSglIAMJbgY5VKFMxQMSFr0edMTM5gISs6HlcukhW/RckDhnMnyYqaf/bkN1ynXog4ZBZSQe9Wv+hwRXbqIn0rFz0PB8x0YKrFu20iJwGjwtOAjbHLWb/UYk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769421082; c=relaxed/simple;
-	bh=0B+ki7zm3XlFyUpJlEmR6BoipBh4Fb3jpboWMAe4HL0=;
+	s=arc-20240116; t=1769421171; c=relaxed/simple;
+	bh=GvlqXsYlJpBfKDbhLQVPx/9zjMm1auq6vLVLKzaEOoU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=goU3PQ1j0VeQVVXow4ARgp94C9CGwu3LLMwQU5luwzXEE8fDN95OpXtHNx43PD6/B0z2lv6/YAb3l6lhurYDnna3oVrz1HEGx0DJq4n6ZBgu6XtFTwWZLi/hhs2cXtF+defYO4kYCDlVtYb1myKBNqaVxDaeRQkEHtlqrK3QX1o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OBmruUHJ; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OBmruUHJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769421081; x=1800957081;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=0B+ki7zm3XlFyUpJlEmR6BoipBh4Fb3jpboWMAe4HL0=;
-  b=OBmruUHJ7h1XRN9ojCsVicjupnWe1h8lYUTgg8iZmLXSxi6SDLEdI2m6
-   tUtMEYYwwh8jqK5OHgJ1IzhIIadVijfuKBEa4zYQCWuQfLTJfcG58DlrS
-   9xsOvRu98tbH/tddjp1zizX4WF8zITTTrkYtCdTrosl5E47H9jc4OlLSt
-   jF1M8nCS8R4x2Bjp4YEKpyIAU0c8rfTVhGIptU1A1Pp9oZ4goPOlfIuW9
-   nnp/HkPBKymPXk5JU7XNTe8rXmJd0E3tzU6oayjSCmyK0sZ5JN5i4UpvV
-   76lFlYe5aAH99uooJk/MbFDCGeYj4hKCfTEYlgpaLwnsEbT9E55Ht5uWH
-   A==;
-X-CSE-ConnectionGUID: XsZWEbHbTKSTlnj0v+iyBQ==
-X-CSE-MsgGUID: DxcoA85mQK65cHIjZON1jQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11682"; a="74437917"
-X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
-   d="scan'208";a="74437917"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 01:51:21 -0800
-X-CSE-ConnectionGUID: GuPCQ1lgSm6FdVtZjTBqsw==
-X-CSE-MsgGUID: 2SFYT0vIQs6qbvwryJBCgw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
-   d="scan'208";a="245249365"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.122])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 01:51:15 -0800
-Date: Mon, 26 Jan 2026 11:51:13 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-Cc: linux-kernel@vger.kernel.org, linux-rt-devel@lists.linux.dev,
-	Thomas Gleixner <tglx@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Puranjay Mohan <puranjay@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	 Content-Type:Content-Disposition:In-Reply-To; b=n4kRVQ2NBjb/jc4yUy6sHsT0vvqZ/gTwpjf7AI4ekTtPRuwgS8wE804dcJBWbjg98JL01AjyB8bFfjTL/hnVlh3x7X0RHEegkJHSgIMVAw+9zkMubaiOAyksJ9JZtpxbzLdBKOa5CYNDFnRunMQL9CBmF2T6jP+EOSzCCCId1aI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vkJH1-0003kA-Io; Mon, 26 Jan 2026 10:52:43 +0100
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vkJH1-002Yjf-05;
+	Mon, 26 Jan 2026 10:52:42 +0100
+Received: from ore by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vkJH0-00GVpx-0e;
+	Mon, 26 Jan 2026 10:52:42 +0100
+Date: Mon, 26 Jan 2026 10:52:42 +0100
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, stable@vger.kernel.org,
+	kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	Andy Shevchenko <andy@kernel.org>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	Marcus Folkesson <marcus.folkesson@gmail.com>,
-	Kent Gustavsson <kent@minoris.se>,
-	Gustavo Silva <gustavograzs@gmail.com>,
-	Nishant Malpani <nish.malpani25@gmail.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 18/21] iio: Replace IRQF_ONESHOT with IRQF_NO_THREAD
-Message-ID: <aXc5Efu-PlLNCxkk@smile.fi.intel.com>
-References: <20260123113708.416727-1-bigeasy@linutronix.de>
- <20260123113708.416727-19-bigeasy@linutronix.de>
- <aXOKVqxyhQ10l9V4@smile.fi.intel.com>
- <20260126081510.jr8Rp6R7@linutronix.de>
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	David Jander <david@protonic.nl>
+Subject: Re: [PATCH v1 4/8] iio: dac: ds4424: reject -128 RAW value
+Message-ID: <aXc5agTyH4XmzKUi@pengutronix.de>
+References: <20260119182424.1660601-1-o.rempel@pengutronix.de>
+ <20260119182424.1660601-5-o.rempel@pengutronix.de>
+ <aW6AEszfRQzuHf6j@smile.fi.intel.com>
+ <20260123093357.6996154f@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260126081510.jr8Rp6R7@linutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260123093357.6996154f@jic23-huawei>
+X-Sent-From: Pengutronix Hildesheim
+X-URL: http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Mon, Jan 26, 2026 at 09:15:10AM +0100, Sebastian Andrzej Siewior wrote:
-> On 2026-01-23 16:48:54 [+0200], Andy Shevchenko wrote:
-> > On Fri, Jan 23, 2026 at 12:37:04PM +0100, Sebastian Andrzej Siewior wrote:
-
-...
-
-> > > Cc: Lars-Peter Clausen <lars@metafoo.de>
-> > > Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-> > > Cc: Puranjay Mohan <puranjay@kernel.org>
-> > > Cc: Jonathan Cameron <jic23@kernel.org>
-> > > Cc: David Lechner <dlechner@baylibre.com>
-> > > Cc: "Nuno Sá" <nuno.sa@analog.com>
-> > > Cc: Andy Shevchenko <andy@kernel.org>
-> > > Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> > > Cc: Marcus Folkesson <marcus.folkesson@gmail.com>
-> > > Cc: Kent Gustavsson <kent@minoris.se>
-> > > Cc: Gustavo Silva <gustavograzs@gmail.com>
-> > > Cc: Nishant Malpani <nish.malpani25@gmail.com>
-> > > Cc: linux-iio@vger.kernel.org
-> > 
-> > Move these...
-> > 
-> > > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > > ---
-> > 
-> > ...to be here. This will drastically reduce the unneeded noise in the commit
-> > message. The email will have (if using git format-patch and git send-email)
-> > them.
+On Fri, Jan 23, 2026 at 09:33:57AM +0000, Jonathan Cameron wrote:
+> On Mon, 19 Jan 2026 21:03:46 +0200
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 > 
-> Yeah but if I have to send v2 then they are gone, aren't they?
-
-I didn't follow. How? What tools do you use?
-
-> So I have to move them for each submission. Or is there something I am not
-> aware of?
-
-Make them in the tail of commit messages locally with a delimiter, they will
-always be present as long as they are in your tree.
-
-I dunno if `b4` manages the Cc lists separately. At least I see no-one using
-`b4` *and* putting the Cc noise into the commit messages, so I assume it
-behaves nicely.
-
-...
-
-> > > +		ret = devm_request_irq(dev, st->irq,
-> > > +				       iio_trigger_generic_data_rdy_poll,
-> > > +				       IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
-> > > +				       indio_dev->name, st->dready_trig);
-> > >  		if (ret < 0)
-> > >  			return ret;
+> > On Mon, Jan 19, 2026 at 07:24:20PM +0100, Oleksij Rempel wrote:
+> > > The DS442x DAC uses sign-magnitude encoding, so -128 cannot be
+> > > represented in hardware.
+> > > 
+> > > With the previous check, userspace could pass -128, which gets converted
+> > > to a magnitude of 128 and then truncated by the 7-bit DAC field. This
+> > > ends up programming a zero magnitude with the sign bit set, i.e. an
+> > > unintended output (effectively 0 mA instead of -128 steps).
+> > > 
+> > > Reject -128 to avoid silently producing the wrong current.  
 > > 
-> > Interestingly that this driver ignores the flags from firmware... Seems to me
-> > like a bug (not in your patch, obviously). Ditto for other drivers doing similar
-> > things.
+> > ...
+> > 
+> > > -		if (val < S8_MIN || val > S8_MAX)
+> > > +		if (val <= S8_MIN || val > S8_MAX)
+> > >  			return -EINVAL;  
+> > 
+> > Hmm... So the range is [ -127 .. 0 .. 127 ] ?
+> > 
+> > I think in such case the plain numbers would be more specific than
+> > the type related limits.
+> > 
 > 
-> If the irq-chip is level or unknown mode on boot up/ default and the
-> device can only operate as an edge-rising then I don't see why this
-> should be a bug.
+> Check the abs(val) <= 127 given that's what we care about I think?
+> Or make it explicit and do
+> FIELD_FIT() against a mask that you then use to fill the register
+> value (another mask for the sign bit).
+> 
+> Btw use abs(val) to set raw.dx and drop it out of the conditional.
+> Even better get rid of the bitfield stuff and just add
+> two defines + fill val directly in this function using FIELD_PREP().
+> Then both the checking and the field filling use the same defines
+> and it should be easy to see what is going on.
 
-But if FW says use "level", wouldn't this setting override it?
+FIELD_* macros require compile-time constant masks. Since the next patch
+adds support for variants with different data widths (making the mask a
+runtime variable), I prefer using an implementation now that remains
+consistent with the followup changes.
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
