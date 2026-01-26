@@ -1,197 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0EF1332EBE;
-	Mon, 26 Jan 2026 11:49:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 404123314C3;
+	Mon, 26 Jan 2026 11:50:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769428166; cv=none; b=mdZzReMk1GYNgDd6eXi1KXYXlmxxY4AsjSVyiknyBAU6mg09LIFd8aAV7ml5Ge2v+It0kvkfM9SP+AOS4y8AKOAFqKvpGds0ZtQFY3HzO92lfSSWAeqSTaYnm8yNELk+WroAZjtVQo8EOmM1Jpo+WIDR5mQb0Unn+NDIp/r6ADE=
+	t=1769428251; cv=none; b=DJOvYrCgaKwMOJQzu+1gCrMAUQdDghj1ufO5lHRiq8p6cZ+goXU3Lh9E4ajD07MeiJeKuqxghMsGqiHXuc05sjwtnPIDbuxhDestCNHfSKwAuoIXQkFYtJEY9FyLZ+G6a5yqjKL2afYvekoyu0AVpkX4tqFUvcVZgvnWBULbMGM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769428166; c=relaxed/simple;
-	bh=mLTI/Rc3fTn+15bs93dGEvkWnkXy18wYQevpv7dqnx8=;
+	s=arc-20240116; t=1769428251; c=relaxed/simple;
+	bh=jQrD/YnqEmhH+/JMx3dt7/PiA6+c+hcKXnVnjT1UfMA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=aaZg5Fv1a7MzPL1mfva8pSHJy+tCdnm29XPK4joFCSvCLiapMt04lmwIv+O6kfcKU6N/ZSho8yNNlTLNjuPeuPDEcI0LVUhBgqNvnmfkT77s/e9+DBWpaDFN8xFrxfWg5UpOdbmsPwIC/BiDvuFHhjxKDFaIYmgXcQPpysMRBfg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P8Gl4TIe; arc=none smtp.client-ip=192.198.163.8
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZWXdVNA5C6C47SkEPqAHYSGggBLH9soXDo6Fxg7DGmOdB0pXzEKq3T6ouEt95jXNQxL7evur43pVDZ21Ph3B0fb83slC8Z7PK9MK1EP+1ItbfDbbMqvDGbzaBYG/w8YL4oOVBY5Mmp32ZjniEZQk4YgtY8clCg046PXaSv+yOrA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HQCE72yr; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P8Gl4TIe"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HQCE72yr"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769428164; x=1800964164;
+  t=1769428250; x=1800964250;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mLTI/Rc3fTn+15bs93dGEvkWnkXy18wYQevpv7dqnx8=;
-  b=P8Gl4TIehD8ee83orsU3AnFOA/fkohZiku6MYZpyLQbiBrZKWCdNi0Od
-   om2K3NsZip6Avl+QDSwlf7K3e/wjFavZpDCWKLTZmkYmUb9au/GGY5roR
-   rhcPQszMbSHJtyRK5JJkqIHWEr3/rtwVZudjfIxrAdULzpr1WwYGx7Rf3
-   5zbYdgrNZJrFcpPxooB7s7PVpi5kAS9sPU/HiVngbFPvPpSTRQatJw7Le
-   9/uE6FjGiUUbPefFFCU9hIZeOYgp+ow9bwWXq3DpH85wtLlfDs99jaTUM
-   XjjyjU8CVHexaE2QRuK4VxVGgDDRpGFFVJoFP9zId7W/MjY8g/p2FbDIv
-   g==;
-X-CSE-ConnectionGUID: Y24mluxiTSiHzeMEa+CLCg==
-X-CSE-MsgGUID: 3ga85jO6QNOSaxwAOe/gmw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11682"; a="88184516"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=jQrD/YnqEmhH+/JMx3dt7/PiA6+c+hcKXnVnjT1UfMA=;
+  b=HQCE72yrX1aBtZq4joxePaf0vt6ckGBabaYb3bn5F0BHTMXEpkGuJm2F
+   dWrGMRz6DpQXSWn4+EhVxfhqAFDCYltlssYMMQDFJrPDIXbopPv2syREI
+   6UK2xhp21zYE6FGT3+VSdURn2DwiZJRCyWA9ZJxWYoFKlCNwFdI5baJpC
+   AXXXkygd31rQKH+BhpBm+Svh7ef/c7EoV2HXW73BIlDyVmcBzR5lMy/gB
+   hgpZ8ydcujlCd/Dg0eQrgbJE+u6M5h5+9NxByGhdAENEBv3vgljt0wFHb
+   wGexiqonELMTjJ8NCT3MjG3gHsOTcQ1R+RistgCCzn9VCb7ptw/GfvxFm
+   A==;
+X-CSE-ConnectionGUID: RTBvYqBgQ9uveeHlQ7u0ZQ==
+X-CSE-MsgGUID: tm+oHFG3SROjNxq5ld/cuQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11682"; a="70646542"
 X-IronPort-AV: E=Sophos;i="6.21,255,1763452800"; 
-   d="scan'208";a="88184516"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 03:49:23 -0800
-X-CSE-ConnectionGUID: BGUXQ0V0SBqFn4BsujWiVg==
-X-CSE-MsgGUID: AS7QmB7JRNujCrc86lQodw==
+   d="scan'208";a="70646542"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 03:50:50 -0800
+X-CSE-ConnectionGUID: q1XQs/B5R0SyTvVYgtRR5g==
+X-CSE-MsgGUID: lI3OErbwTUCCByJAmwLyEQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,255,1763452800"; 
-   d="scan'208";a="206783265"
+   d="scan'208";a="238340181"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.122])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 03:49:20 -0800
-Date: Mon, 26 Jan 2026 13:49:17 +0200
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 03:50:44 -0800
+Date: Mon, 26 Jan 2026 13:50:42 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH v5 2/8] iio: core: add fixed point parsing with 64-bit
- parts
-Message-ID: <aXdUvRZ9NmP5Nh95@smile.fi.intel.com>
-References: <20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com>
- <20260123-adf41513-iio-driver-v5-2-2dce812a2dda@analog.com>
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Dixit Parmar <dixitparmar19@gmail.com>,
+	Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-leds@vger.kernel.org,
+	linux-rtc@vger.kernel.org
+Subject: Re: [PATCH v1 02/10] regulator: cpcap-regulator: add support for Mot
+ regulators
+Message-ID: <aXdVEtHVmArFhqFB@smile.fi.intel.com>
+References: <20260125134302.45958-1-clamor95@gmail.com>
+ <20260125134302.45958-3-clamor95@gmail.com>
+ <aXc9n_gc7TEFvNA8@smile.fi.intel.com>
+ <CAPVz0n0MM6OcjOWnNBaGk=6eYcb09P0XBFDn+MYHtXXcgkcvQQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260123-adf41513-iio-driver-v5-2-2dce812a2dda@analog.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAPVz0n0MM6OcjOWnNBaGk=6eYcb09P0XBFDn+MYHtXXcgkcvQQ@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jan 23, 2026 at 03:53:07PM +0000, Rodrigo Alencar via B4 Relay wrote:
-
-> Add iio_str_to_fixpoint64() function that leverages simple_strtoull()
-> to parse numbers from a string.
-> A helper function __iio_str_to_fixpoint64() replaces
-> __iio_str_to_fixpoint() implementation, extending its usage for
-> 64-bit fixed-point parsing.
+On Mon, Jan 26, 2026 at 12:13:39PM +0200, Svyatoslav Ryhel wrote:
+> пн, 26 січ. 2026 р. о 12:10 Andy Shevchenko <andriy.shevchenko@intel.com> пише:
+> > On Sun, Jan 25, 2026 at 03:42:54PM +0200, Svyatoslav Ryhel wrote:
 
 ...
 
-> +/**
-> + * __iio_str_to_fixpoint64() - Parse a fixed-point number from a string
-> + * @str: The string to parse
-> + * @fract_mult: Multiplier for the first decimal place, should be a power of 10
+> > What a style! (Yeah, I see it's being used elsewhere here...)
+> 
+> I have just made it in same way the other tables present in here.
 
-> + * @integer: The integer part of the number
-> + * @fract: The fractional part of the number
-
-Can we use struct s64_fract? (Yes, you would need to add a couple of lines into
-math.h for that, but don't worry, I will Ack such a change immediately.)
-
-> + * @scale_db: True if this should parse as dB
-> + *
-> + * This variant uses 64-bit integers for both integer and fractional parts.
-> + *
-> + * Returns:
-> + * 0 on success, or a negative error code if the string could not be parsed.
-> + */
-> +static int __iio_str_to_fixpoint64(const char *str, u64 fract_mult,
-> +				   s64 *integer, s64 *fract, bool scale_db)
-> +{
-> +	u64 i = 0, f = 0;
-> +	char *end;
-> +	int digit_count, precision = ffs(fract_mult);
-> +	bool negative = false;
-> +
-> +	if (str[0] == '-') {
-> +		negative = true;
-> +		str++;
-> +	} else if (str[0] == '+') {
-> +		str++;
-> +	}
-> +
-> +	i = simple_strtoull(str, &end, 10);
-> +	digit_count = end - str;
-> +	if (digit_count > 20)
-> +		return -EINVAL;
-
-Not really. If we are talking about decimal (only) cases we need to also count
-leading 0:s.
-
-0000000000000000000000000000000025 is still 25, no overflow.
-
-That's why I recommend to have a helper, maybe for now locally here, like
-
-int safe_strtoull(..., unsigned long long *res)
-{
-	...
-}
-
-that will do all necessary checks and returns -EINVAL, -ERANGE, et cetera.
-In the below we would need check for the error codes respectively.
-
-> +	if (precision && *end == '.') {
-> +		str = end + 1;
-> +		f = simple_strtoull(str, &end, 10);
-> +		digit_count = end - str;
-> +		if (!digit_count || digit_count > 20)
-> +			return -EINVAL;
-> +
-> +		if (digit_count > precision) {
-> +			digit_count -= precision;
-> +			f = div64_u64(f, int_pow(10, digit_count));
-> +		} else {
-> +			digit_count = precision - digit_count;
-> +			f *= int_pow(10, digit_count);
-> +		}
-> +	} else if (!digit_count) {
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (scale_db) {
-
-> +		/* Ignore the dB suffix */
-> +		if (!strncmp(end, " dB", sizeof(" dB") - 1))
-> +			end += sizeof(" dB") - 1;
-> +		else if (!strncmp(end, "dB", sizeof("dB") - 1))
-> +			end += sizeof("dB") - 1;
-
-Now we have strends()
-
-> +	}
-
-And I'm not sure we need to go too deep with dB (I don't expect 64-bit values
-for it ever), but for the sake of consistency and interoperability let's have
-it be.
-
-> +	if (*end == '\n')
-> +		end++;
-> +
-> +	if (*end != '\0')
-> +		return -EINVAL;
-
-> +	*integer = (negative && i) ? -i : i;
-> +	*fract = (negative && !i) ? -f : f;
-
-> +	return 0;
-> +}
-
-...
-
-> +	if (integer64 < INT_MIN || integer64 > INT_MAX ||
-> +	    fract64 < INT_MIN || fract64 > INT_MAX)
-> +		return -ERANGE;
-
-This needs to account the sign, right?
-It's fine to be UINT_MAX I believe. But I haven't checked the current
-implementation.
+I understood that (see my note in the parentheses above).
 
 -- 
 With Best Regards,
