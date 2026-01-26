@@ -1,150 +1,137 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+Received: from galois.linutronix.de (Galois.linutronix.de [193.142.43.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD29A329E49;
-	Mon, 26 Jan 2026 10:00:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4DBC1255F5E;
+	Mon, 26 Jan 2026 10:10:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=193.142.43.55
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769421603; cv=none; b=f5TTxjw1zFP4xgyUhEkICwuk8Vivt/LOkHaVxUmEFWq+8jnqFXoCQw9+AQ9YL22ppn2cYoH6xQ9vJ/7V5m9J7NQaQyxKSCmd7dtAur6ynGtIhYjQx7vxc+EbIpPE1zjzo6w73jc6tdTba2y1qi7B0V1NCaRhk3mCPHPzG4hm/vk=
+	t=1769422239; cv=none; b=I5z/XoKThni7lhlxYrqr3yMs2KQjwRrWCgzvIR16ZeyW4KjvZnbLhWlwC2QFU+YusGYTCIHIeWPOkdX4p9/yzZD5ZzvftHOK/CsNPl0MlMvtPK409IPYaWlYf/PFECLiXUOHbKfL00uUYRLeE79quuVQiUtKizcFv4matRENfGk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769421603; c=relaxed/simple;
-	bh=8+66ynW/UosBvC/E+PZZmULkSUQHS1YNGDIGs4shhqw=;
+	s=arc-20240116; t=1769422239; c=relaxed/simple;
+	bh=xRVCDR5hiiDmGZtULdlXQZLT/t68n7I3mBxKRnxkDjI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Kdf9+TAoWpIk49DpS7cfNTCLBKzzquI+QiPS+2PTAYY+MZ7nmjMtN8tMpeQoLWjGF+eOaDV6GQhXMyfqmhKjrLSvjQjSLHrxzmnl7biwqmBbWPxfva7seZUc+3ZXSxJUA3hTL38d4NNvZ43ykogIiM6uoq2MfDfI2x0P7AAoWcU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NmTer1ie; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=RaOgurZWafdE3F8+YtBtKVslzfGB8cNRQzyQuPOjMksMSOTWZY2r0XPFbwKoH+Jp+JEBparRuBWsnfx4xRtCk7OrcjU3ULtnjeVlWb0jVhH0dDvi+rZ+X/X4ETZXgBRRPbYNRTMNf+XXwQUPnmrnhwUM813ZuYScKKyZUM5Qjz8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de; spf=pass smtp.mailfrom=linutronix.de; dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=0+KrxCKt; dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b=zyyUu95S; arc=none smtp.client-ip=193.142.43.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linutronix.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NmTer1ie"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769421601; x=1800957601;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8+66ynW/UosBvC/E+PZZmULkSUQHS1YNGDIGs4shhqw=;
-  b=NmTer1ieWlIOpTqEXaCTGgZnw9ZQIPsQJuCT/9TAvZLDhOVPiWmb4mP5
-   5qhmuU+nkBIbTt0wFvZXw/NDEPUJxxd2W5EUI1F3Fb3VQ5pOzri1Nf1H4
-   LE2u9+fCmG329hDGdp//fXII7iWOtpxY3Fet7vE+0nOVt26zABq//VZzq
-   zHT6O5NSpPB/E+QKfrlZBmk4VHstnxpXK8aujzLbLJlKwMKKnqdH/24Ni
-   m42psYQKb7w4zZA4AeaW6QJC2lequ7yxtE6vOoKyUAvbAstLaXVrX16xx
-   m+sesm6wT4CbTzeqsfGaOxAeCw2UqFfs34DZDZmuIhb+AcxglBJ7L3IQD
-   w==;
-X-CSE-ConnectionGUID: WhTd4SGrTlyoerr4iIgAVg==
-X-CSE-MsgGUID: k9B5vsF5RLKF7qsj6uSZxg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11682"; a="73183351"
-X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
-   d="scan'208";a="73183351"
-Received: from fmviesa004.fm.intel.com ([10.60.135.144])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 01:59:55 -0800
-X-CSE-ConnectionGUID: XFLH6wX1QCeVh2rWVMlKBw==
-X-CSE-MsgGUID: lTttj+paRWeICoj+PaAr/w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,254,1763452800"; 
-   d="scan'208";a="212501718"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.122])
-  by fmviesa004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 01:59:46 -0800
-Date: Mon, 26 Jan 2026 11:59:43 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-renesas-soc@vger.kernel.org,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Antonio Borneo <antonio.borneo@foss.st.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Boqun Feng <boqun.feng@gmail.com>, Chen-Yu Tsai <wens@kernel.org>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Danilo Krummrich <dakr@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	dkim=pass (2048-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="0+KrxCKt";
+	dkim=permerror (0-bit key) header.d=linutronix.de header.i=@linutronix.de header.b="zyyUu95S"
+Date: Mon, 26 Jan 2026 11:10:34 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020; t=1769422235;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=cDCvmrrHYwe06OKQ96thqOovpL6Xr/sVW3H5W1NA7lc=;
+	b=0+KrxCKt9+O9O6oLKiRjtd74lhdWUD6wkk3QQo0XIHELJbf/WG/nQYEh4BDog55CA5SeAq
+	Xj2uUuYMth89IMHNIAVWxDYBQncsGJBl49880bLY1j+1KH/ND+4eKmWhasWsJMTK12g2Ze
+	ZAmneodcYIIQONypCNiDSthuYxCN73oQ4n6H5Wedf74sxj/Abr2xbJZWd9vCN+Xq6mkw8R
+	VOUarBH6JLmecPFn3e9VsZDPJwjZH/lS5cFdqD7MMC9i/AKGo5doLisqex+gYL1uINU9dn
+	KQtFA7EhNO83ypx3IzgUeh2+Ra0mU39+JGvxW3+s9jM9USUH5M9tdjc1Ey4n/A==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+	s=2020e; t=1769422235;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=cDCvmrrHYwe06OKQ96thqOovpL6Xr/sVW3H5W1NA7lc=;
+	b=zyyUu95SpRMrlHpcdEh8rOdGnyBdxwJe64Hmu6ruEYJQuDwXPLqZ/rcoTszLpvByHgiYU+
+	ig9KhvUYpxq+R1DA==
+From: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-kernel@vger.kernel.org, linux-rt-devel@lists.linux.dev,
+	Thomas Gleixner <tglx@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Puranjay Mohan <puranjay@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
-	linux-remoteproc@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-sunxi@lists.linux.dev, Mark Brown <broonie@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Samuel Holland <samuel@sholland.org>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>, Waiman Long <longman@redhat.com>,
-	Wilken Gottwalt <wilken.gottwalt@posteo.net>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [RFC PATCH 0/4] hwspinlock: refactor headers into public
- provider/consumer pair
-Message-ID: <aXc7DxsqiCGdfzxi@smile.fi.intel.com>
-References: <20260125184654.17843-6-wsa+renesas@sang-engineering.com>
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Marcus Folkesson <marcus.folkesson@gmail.com>,
+	Kent Gustavsson <kent@minoris.se>,
+	Gustavo Silva <gustavograzs@gmail.com>,
+	Nishant Malpani <nish.malpani25@gmail.com>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 18/21] iio: Replace IRQF_ONESHOT with IRQF_NO_THREAD
+Message-ID: <20260126101034.lnGGQmUD@linutronix.de>
+References: <20260123113708.416727-1-bigeasy@linutronix.de>
+ <20260123113708.416727-19-bigeasy@linutronix.de>
+ <aXOKVqxyhQ10l9V4@smile.fi.intel.com>
+ <20260126081510.jr8Rp6R7@linutronix.de>
+ <aXc5Efu-PlLNCxkk@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260125184654.17843-6-wsa+renesas@sang-engineering.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <aXc5Efu-PlLNCxkk@smile.fi.intel.com>
 
-On Sun, Jan 25, 2026 at 07:46:51PM +0100, Wolfram Sang wrote:
-> TLDR: I want to create a hwspinlock provider outside of the hwspinlock
-> directory. So, I refactored the headers into a provider/consumer pair.
-> Which seems to me like a reasonable seperation anyhow. No functional
-> changes. My build tests went fine and buildbots are happy, too.
-> 
-> Longer explanation:
-> 
-> There is a device (MFIS) in newer Renesas SoCs which combines various
-> things like hwspinlocks, mailboxes and other stuff. Sadly, these are not
-> strictly separated. Registers are kind of mixed and its register
-> unprotection scheme will need one of its own locks. I tried various
-> paths to handle this device (MFD, auxiliary bus) but I concluded that
-> the sub-device dependencies give enough reasons for a single driver in
-> drivers/soc/. So, this series will allow me to instantiate a hwspinlock
-> provider from the other directory.
-> 
-> Patches 1+2 do the actual refactoring with a fallback being in place. I
-> used '-B' with git-format-patch in this RFC, so the actual changes are
-> more visible when the headers are moved.
-> 
-> Patch 3 converts all the users. There are not many. We could try to get
-> all the acks for this single patch. Or I can break it into single
-> patches and send them to subsystems. I don't mind.
-> 
-> Patch 4 simply removes the fallback.
-> 
-> Looking forward to comments on this approach. If the hwspinlock
-> maintainers like it as is, I would kindly propose to apply patches 1+2
-> after 7.0-rc1 comes out. This might sound a bit hasty, but a) I want to
-> avoid chasing a moving target and b) this would remove one dependency of
-> the hwspinlock driver I originally intend to upstream, of course.
-> 
-> I would take care of patches 3+4 as needed.
-> 
-> A branch can be found here:
-> 
-> git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/hwspinlock/refactor-includes
-> 
-> Patches are based on linux-next as of 2026-01-21.
-> 
-> Opinions?
+On 2026-01-26 11:51:13 [+0200], Andy Shevchenko wrote:
+> > > > Cc: Lars-Peter Clausen <lars@metafoo.de>
+> > > > Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+> > > > Cc: Puranjay Mohan <puranjay@kernel.org>
+> > > > Cc: Jonathan Cameron <jic23@kernel.org>
+> > > > Cc: David Lechner <dlechner@baylibre.com>
+> > > > Cc: "Nuno S=C3=A1" <nuno.sa@analog.com>
+> > > > Cc: Andy Shevchenko <andy@kernel.org>
+> > > > Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> > > > Cc: Marcus Folkesson <marcus.folkesson@gmail.com>
+> > > > Cc: Kent Gustavsson <kent@minoris.se>
+> > > > Cc: Gustavo Silva <gustavograzs@gmail.com>
+> > > > Cc: Nishant Malpani <nish.malpani25@gmail.com>
+> > > > Cc: linux-iio@vger.kernel.org
+> > >=20
+=E2=80=A6
+> I didn't follow. How? What tools do you use?
 
-I don't like the idea of sharing internal stuff. Why would we need to have
-a struct hwspinlock to be visible?
+b4/ git.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> > So I have to move them for each submission. Or is there something I am =
+not
+> > aware of?
+>=20
+> Make them in the tail of commit messages locally with a delimiter, they w=
+ill
+> always be present as long as they are in your tree.
+>=20
+> I dunno if `b4` manages the Cc lists separately. At least I see no-one us=
+ing
+> `b4` *and* putting the Cc noise into the commit messages, so I assume it
+> behaves nicely.
 
+I point is if I move them for one submission, I lose it on the next if I
+update patches in tree and re-export them.=20
 
+> > > > +		ret =3D devm_request_irq(dev, st->irq,
+> > > > +				       iio_trigger_generic_data_rdy_poll,
+> > > > +				       IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
+> > > > +				       indio_dev->name, st->dready_trig);
+> > > >  		if (ret < 0)
+> > > >  			return ret;
+> > >=20
+> > > Interestingly that this driver ignores the flags from firmware... See=
+ms to me
+> > > like a bug (not in your patch, obviously). Ditto for other drivers do=
+ing similar
+> > > things.
+> >=20
+> > If the irq-chip is level or unknown mode on boot up/ default and the
+> > device can only operate as an edge-rising then I don't see why this
+> > should be a bug.
+>=20
+> But if FW says use "level", wouldn't this setting override it?
+
+Yes, it will. It was common to use it pre-device-tree time where this
+information was not configured automatically before ->probe. Now it
+might be missing/wrong in the dt for some of the old devices.
+It might be a left-over which continued to grow and spread.
+
+Sebastian
