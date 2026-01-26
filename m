@@ -1,123 +1,112 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B92442D7817;
-	Mon, 26 Jan 2026 16:11:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C956833A717
+	for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 16:34:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769443900; cv=none; b=LL8GUlxa0mdWt8O8EGKsxSJ6PiXNQgqXqTgJEoKjQXTMA3GDjg4gQDyN/8UwjnwhM85jNDZgS6aOF0dDi8uOG2nhCwvr/qveBTHmDcvRBx6U8/WEJQ9m9TJELuD8mfsAIlwY0j4c4yuhihO6mxwTZCNbOXDV96vnddwRdJv7E4E=
+	t=1769445299; cv=none; b=budWD2tAxdnnSPGO6ByNC8w5RtT4DDtsZ17VA/VOc05Fu+vWYE1RR0LMKxFCSWlypoNmDfeciMeU351+drDp0AnKm6bWoMYiFSm9PstMV2tpIBM2+SZi7yAgEy8tqmM14Q5hBvUAiPB/hv0ZzKsIb26ozZLKjYUDX25hV556taE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769443900; c=relaxed/simple;
-	bh=Pkuiqseu2HBLtqGxHAGQMQZ50dVRu5Xif/58/CtpI4o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oFxG/pnk55gJy1BBE9say0514FjCEfa0vFyHrq3e/CPmDEnJzUmbGlB+3qcN17fgJt+RoyQFlFoh1vT9YG05ijHxj6RimJfLHeJ5ZzKLkCgTwH4EJQ8XboHcEVprE9eHiAxecRP6pHeQUOslSdR8/9XuNLMhA9UDIAHMivc9Wgs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Hd26IWzT; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1769445299; c=relaxed/simple;
+	bh=ZyeCEnRJjBRKG7NXS66982Tk6HBV6hiwXRGWLHqwKpI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HAuxgeZ0tBKFHJ3t3YuLTMQnfhlw1kw3smz/iOTqYPN7W3p/fPYlrvjqpnjDk3xbC1s3yQ6JpwDRq3y7xgEVjT9SpUwd3+PIeiGsY6/FcGZVuXF7gbQp5PEm9i/10G0OLNny0OE0STYgG1BG0sMnsXIawmC4gh/l5MwCCdJbmtw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=E66wUZxi; arc=none smtp.client-ip=209.85.210.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Hd26IWzT"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769443898; x=1800979898;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Pkuiqseu2HBLtqGxHAGQMQZ50dVRu5Xif/58/CtpI4o=;
-  b=Hd26IWzTy1ObtanVIaBWbYn+JR7LWUM8+Trj5MYdi86RkesBXm7WdxwA
-   xffwk47XRnQzz6ABtyxinh252x7J8P+oN0exUd7p+lr540sARLzxq85c6
-   pb6nM9rUrU+KMqTxRIlMxoYJORcloqufMDRHvQ3Mv6DtIBBeDPS8OH+dv
-   ig7vl1rJY5LZ0b3B8psPyytRLUm4N/uFO5yKFvsf/1VDalafBmhO3iNEH
-   IGIaM4MHhs7oqT9M2QxK3zsw/CxyhMhtX/0mz8wtYf3FT81G7vtkz1Yz0
-   Y/zuaViO/KCLR7J2gFp2wqLh7OCGJxEmZHEYM0d/MAngWtR1qSUUwel6Y
-   w==;
-X-CSE-ConnectionGUID: 8ZO9yFaFRpC8rvC2UzS79g==
-X-CSE-MsgGUID: q5a6CDWAQhapiUuaxJHZcA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11683"; a="70527766"
-X-IronPort-AV: E=Sophos;i="6.21,255,1763452800"; 
-   d="scan'208";a="70527766"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 08:11:38 -0800
-X-CSE-ConnectionGUID: 917qBI+iQXeeLelUmPL2vw==
-X-CSE-MsgGUID: h2kjTGUPTxGuxmY48dia/w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,255,1763452800"; 
-   d="scan'208";a="238390272"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.122])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2026 08:11:36 -0800
-Date: Mon, 26 Jan 2026 18:11:33 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Shrikant <raskar.shree97@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, skhan@linuxfoundation.org,
-	david.hunter.linux@gmail.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 2/5] iio: proximity: rfd77402: Use kernel helper for
- result polling
-Message-ID: <aXeSNSKqgfVwhRvs@smile.fi.intel.com>
-References: <20260121-b4-rfd77402_v5-v6-0-5b944d0605dd@gmail.com>
- <20260121-b4-rfd77402_v5-v6-2-5b944d0605dd@gmail.com>
- <aXCWz6O2CdU_Sp8r@smile.fi.intel.com>
- <CAHc1_P5hY6-z5s0J4SW_2GMER+NP4NsqoVVVaYFUg_gRi=31JQ@mail.gmail.com>
- <aXc3lPNFF18ygeow@smile.fi.intel.com>
- <CAHc1_P7vG4=zzTB2RWeNXzaqbXZ7zKokUJkRXnwQOXQBgJJmqg@mail.gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="E66wUZxi"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7cfe2a6bf81so1455334a34.0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Jan 2026 08:34:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769445296; x=1770050096; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=BNGg+szk5GN7k1/fr737eGbbjOqTigabkUA45rZV/8A=;
+        b=E66wUZxiiAgfz7m+tVuJA/9izTvlkE0JDzwabHNfuRRm//F8f76q8eU478427/R0Mb
+         uunZ/rOLSAUhd2TTEhpVLooA0ZWqq/xaQqwb+b3r7frW9uJyCe/ql28+avjFEooFwEt5
+         KY1o/JlvQKZwvdwj+cla93FRXMEMy38tG+1lnbeshBB4kfhLM6n4DoqTMZ9FCe/eM1Mg
+         xfm66UzeldhXntYUR2hoOcU34g3YfpYyISxa9vk9xQqais5p2/kbF3g55F0wb66riGa1
+         ZMY14tA0gpX5d0H7QyJMU7GYvNJiHO+TCeVRsTnYQP/IaxxAsKsBH8aLjOiAfwOXifAD
+         vAKQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769445296; x=1770050096;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=BNGg+szk5GN7k1/fr737eGbbjOqTigabkUA45rZV/8A=;
+        b=XOB2h6rXMdywGkbpw9kWmi/6mK00gsQKC6ylCdecWPJ55i+lyEdP68PQphZpTfnJc7
+         j3JWaiRM5QKiWUGsxxmjjfolID3XtxtzO1M2b0ekBYoI3zZBJ/CnBhEiqkU9njAFAzBl
+         Eu1tcq/APEVWe/HHKVIuGLUDjMVLjnx3eUPyq+nMcQfYXiH6EiMSWXoom2o0aa30F7V5
+         v9bs4sBrArstP3d9ayu2e+oAQvAr8U6U1PF3YinS4SBwYPlNKOxca19JT6cpJhzsWHoq
+         7J5rkcpvRxnyuohyt8ApNIZ2/hve76AR8Da3wxvZ4zOu11fmj1TyZdKdCf1tRHVK337d
+         vvhQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV7VpILDs0YCzjMtfo3CB4KLqrsQ7BXej6z0wapxj9EMvu20B7yg50jQTryDis5+enzaJW8DbQbRpM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YybhMv44CjQ60+eHocEahF1D92kz/sfRV2Ih6kh1GO4kDpWDzRQ
+	a9HePcvW673dTlI+wQxsyQZ2zJS2eTqdo86u8zk3WUqEPI8Cvg6s8jVwncLS0MvBKOo=
+X-Gm-Gg: AZuq6aLOI3FDnSANvUHZ2O31/hVknTq7wCu3C9yLvys0CyEKiM5fADfvpCOfCzlmgEA
+	ST63mSCfJU5WZjLdv/fQsB0w39ziaWg7MYOPdeJ7Fd8HzZx998iU+40JW77uoHsdpUjeUv7NRIC
+	QtwuISJOYd93xlCxY8I6zvZ72i0/0HQoc2i9lejcxqlJfycw3kF/mSQtUEQ+y/lBn64I3gt6TQc
+	9qpACHgjqtTZhanhdk7DPoHVCkjVOL06CH8butchqeJ+7q4mrpQJTgsL8MJl926w1AdkwUNqM9p
+	DuEe8bfhqtP8/wuuGbEuWV3MCtsuWZ9BsEbrWY0vMiTl9HCD9rY0PXkLuPySdhO0F9dzOnw4Vwh
+	YLZLI386qOR9HlHMxPkACql2TMrJbXfBHC4ph/4mZj+H4wdqY/yoy6lNInM2w5m5kkJDW6s2hVl
+	Cr5Gtv4Gf5m7YGAprLjzdCHijPsScSrj7q4rI0JKS0IAKq83jRrYCBqci02UKu
+X-Received: by 2002:a05:6830:2810:b0:7c7:6063:8e0f with SMTP id 46e09a7af769-7d17021ec7cmr2337382a34.15.1769445295763;
+        Mon, 26 Jan 2026 08:34:55 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:37c6:d863:90ba:c4c5? ([2600:8803:e7e4:500:37c6:d863:90ba:c4c5])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d15b36db91sm7936018a34.13.2026.01.26.08.34.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 26 Jan 2026 08:34:55 -0800 (PST)
+Message-ID: <8e560227-3596-4bf8-9fd8-b843a4738940@baylibre.com>
+Date: Mon, 26 Jan 2026 10:34:54 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAHc1_P7vG4=zzTB2RWeNXzaqbXZ7zKokUJkRXnwQOXQBgJJmqg@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 19/21] iio: Use IRQF_NO_THREAD
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, linux-rt-devel@lists.linux.dev,
+ Thomas Gleixner <tglx@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>, linux-iio@vger.kernel.org
+References: <20260123113708.416727-1-bigeasy@linutronix.de>
+ <20260123113708.416727-20-bigeasy@linutronix.de>
+ <ac45bbeb-7a76-42f0-88d8-35dbf9742a0c@baylibre.com>
+ <20260126080903.B0_vWRKy@linutronix.de>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260126080903.B0_vWRKy@linutronix.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, Jan 26, 2026 at 08:58:07PM +0530, Shrikant wrote:
-> On Mon, Jan 26, 2026 at 3:14 PM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> > On Sat, Jan 24, 2026 at 10:26:04PM +0530, Shrikant wrote:
-
-...
-
-> > > > > +                              10 * USEC_PER_MSEC,
-> > > > > +                              10 * 10 * USEC_PER_MSEC,
-> > > >
-> > > > This makes sleep shorter by 2. Why?
-> > > I have considered the timeout values from the RFD77402 datasheet.
-> > > The timeout values mentioned in section 3.1.1 Single Measure are as below:
-> > > 1. Every Status Check = 10ms
-> > > 2. Whole Flow = 100 ms
-> >
-> > So, you should do this in a separate change explaining this.
-> In that case, I can add a small preparatory patch before the
-> “Use kernel helper for result polling” patch to adjust the
-> polling interval according to the datasheet.
+On 1/26/26 2:09 AM, Sebastian Andrzej Siewior wrote:
+> On 2026-01-23 14:56:32 [-0600], David Lechner wrote:
+>>> -static irqreturn_t ad7766_irq(int irq, void *private)
+>>> -{
+>>> -	iio_trigger_poll(private);
+>>> -	return IRQ_HANDLED;
+>>> -}
+>>> -
+>>
+>> Replacing this with iio_trigger_generic_data_rdy_poll() seems like a
+>> separate improvement that should be in a separate patch.
+>>
+>> At a minimum, the commit message should explain this change. But I expect
+>> the reason will make it obvious it should be a separate patch.
 > 
-> This would mean changing the existing polling loop, for example:
-> diff --git a/drivers/iio/proximity/rfd77402.c b/drivers/iio/proximity/rfd77402.c
-> index 69cc1505b964..3e14660a4bb1 100644
-> --- a/drivers/iio/proximity/rfd77402.c
-> +++ b/drivers/iio/proximity/rfd77402.c
-> @@ -132,7 +132,7 @@ static int rfd77402_measure(struct i2c_client *client)
->                         goto err;
->                 if (ret & RFD77402_ICSR_RESULT)
->                         break;
-> -               msleep(20);
-> +               msleep(10);
->         }
+> The other use iio_trigger_generic_data_rdy_poll() as the handler except
+> this one. Which uses a wrapper around it. It looked to easier to add
+> this hunk.
+> What do you want (split or keep)?
 > 
->         if (tries < 0) {
-> 
-> However, this change would then be removed in the very next patch
-> when the polling loop is replaced by read_poll_timeout().I just want
-> to confirm that this temporary change–then–removal is acceptable?
-
-Yes. These two will be quite different semantically.
-
--- 
-With Best Regards,
-Andy Shevchenko
+I would still expect a separate patch to replace the duplicate
+function with iio_trigger_generic_data_rdy_poll(). That change
+stands on it's own, so deserves a separate patch.
 
 
