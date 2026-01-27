@@ -1,192 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 985832C0266;
-	Mon, 26 Jan 2026 20:11:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAB67329E79
+	for <linux-iio@vger.kernel.org>; Tue, 27 Jan 2026 06:09:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769458282; cv=none; b=caak4s43xjqRVRcAtsKMRFz7sNnzShDaNHmXHt0cO24jjoonvcwKLjejmZgNECtiGiaIuLxPzkHZ7hD5fo92G5LxPEP7UCj9KUkNrodk4oXbFB8iqZnP94rPHmaRURKWCQcRKsMG1zYE5mwdixviaOLYZJ+oB/YtssS1xRTQoJk=
+	t=1769494187; cv=none; b=RDFUqS46VlrjdrnP5C6ybBLWwShqD1Nlv5cTB10PE/zZHIK5r/hwlALVWA3GMsvXxmGEUdyxDgHtl2z666F1fbRyAu8zHBqSNKxORKftf6w8sCFc3BtvMhnaIBHmZQaJMMRUtt/qvnSRtMPUImOg40+xGW/hBXzoYMyOAqc1g7Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769458282; c=relaxed/simple;
-	bh=J3qYdIDqyV8RYRgDHENbIWZEFbDRj/MLMx4R8f4wuwc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HwgHSPYZJv2C7KdOOo5YnREk+qZC3ET7mmpdlY6eZ6iv7DYVE/o3xgpPD1ieHYM2yhjx0NlM6o0KHj0Wd3MoKdmqhk/DMR44KHrNyGVK68F2bF7mt2pA8VHuOox4iTUcyEJc48e+13KvYv7GOG+JTCwAPLhAKap5BK+GznjFm3E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eOcDu/Mm; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eOcDu/Mm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24147C116C6;
-	Mon, 26 Jan 2026 20:11:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769458282;
-	bh=J3qYdIDqyV8RYRgDHENbIWZEFbDRj/MLMx4R8f4wuwc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=eOcDu/MmFqgefo7yLUJC+pL/WMLQXaY7KT4kqkYdiTh64WdvrxOG8T80gga0WIH1V
-	 0xyyo2b9TEGVIsJX7TBJgAlupbXkrlUtIZHe8a6zCXjGFqQ+lMiJdRr4ivwI1iBqN1
-	 Rz9xjJxQLWWmaJM1If2GbypFtOa1zfHCY0kbiw0FWBRETcFVEpxtKKEm837YbnfPy7
-	 jBCZY5xnMLoxAgaErPh3c/rNhSMUHYtoGuMRzDDSpaJjO6Q0kxxYxe6YS1Ug6dit/m
-	 +Thp21fze3+8uSVvuCpVtge5pe+njM1aDg0F8S83scCMY9t3I6rquGRXAAhtzXKZPV
-	 FY0dDrDqCNrSw==
-Date: Mon, 26 Jan 2026 20:11:18 +0000
-From: Conor Dooley <conor@kernel.org>
-To: rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	s=arc-20240116; t=1769494187; c=relaxed/simple;
+	bh=9Cz8ny6H8Kxen28oclTzgb9tYmjwRZ2qNY5FU7uS0G4=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=QBlydil4A7MKRyjlBDg4hpBbnuYmhfG/84B1XOl6iraKwSJIUodyaxcPFeGxo3ADMvl8EUmYngzx6WjyGnDwiuTiZptivcFFag4r4eMz8FgMYKBVAHQtEXGfyBx5sp2Zr7+uF31xu74e8PU+Ee8yFsXOl/BM7fQgA/UVPc90McI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vkcGk-0003pY-0E; Tue, 27 Jan 2026 07:09:42 +0100
+Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vkcGj-002hiM-36;
+	Tue, 27 Jan 2026 07:09:41 +0100
+Received: from ore by dude04 with local (Exim 4.98.2)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vkcGj-0000000GQFD-0maB;
+	Tue, 27 Jan 2026 07:09:41 +0100
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v2 2/6] dt-bindings: iio: amplifiers: Add AD8366 support
-Message-ID: <20260126-porous-hurdle-bfc510f113bb@spud>
-References: <20260126-iio-ad8366-update-v2-0-c9a4d31aeb01@analog.com>
- <20260126-iio-ad8366-update-v2-2-c9a4d31aeb01@analog.com>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+	kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	David Jander <david@protonic.nl>
+Subject: [PATCH v2 4/8] iio: dac: ds4424: sort headers alphabetically
+Date: Tue, 27 Jan 2026 07:09:35 +0100
+Message-ID: <20260127060939.3914006-5-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260127060939.3914006-1-o.rempel@pengutronix.de>
+References: <20260127060939.3914006-1-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="REc/ih/jUk+hM7Ip"
-Content-Disposition: inline
-In-Reply-To: <20260126-iio-ad8366-update-v2-2-c9a4d31aeb01@analog.com>
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
+Sort the header inclusions alphabetically. This improves readability and
+simplifies adding new includes in the future.
 
---REc/ih/jUk+hM7Ip
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+changes v2:
+- new patch
+---
+ drivers/iio/dac/ds4424.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-On Mon, Jan 26, 2026 at 01:51:03PM +0000, Rodrigo Alencar via B4 Relay wrot=
-e:
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
->=20
-> Add device tree binding documentation for amplifiers and digital
-> attenuators. This covers different device variants with similar
-> SPI control.
->=20
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
->  .../bindings/iio/amplifiers/adi,ad8366.yaml        | 68 ++++++++++++++++=
-++++++
->  MAINTAINERS                                        |  1 +
->  2 files changed, 69 insertions(+)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.=
-yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
-> new file mode 100644
-> index 000000000000..02f790fd73d7
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
-> @@ -0,0 +1,68 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/amplifiers/adi,ad8366.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: AD8366 and similar Gain Amplifiers and Digital Attenuators
-> +
-> +maintainers:
-> +  - Michael Hennerich <michael.hennerich@analog.com>
-> +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
-> +
-> +description:
-> +  Digital Variable Gain Amplifiers (VGAs) and Digital Attenuators with
-> +  SPI interface.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad8366
-> +      - adi,ada4961
-> +      - adi,adl5240
-> +      - adi,adrf5720
-> +      - adi,adrf5730
-> +      - adi,adrf5731
-> +      - adi,hmc271a
-> +      - adi,hmc792a
-> +      - adi,hmc1018a
-> +      - adi,hmc1019a
-> +      - adi,hmc1119
+diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+index 072b7e6672cf..a4f00045f17b 100644
+--- a/drivers/iio/dac/ds4424.c
++++ b/drivers/iio/dac/ds4424.c
+@@ -5,16 +5,16 @@
+  * Copyright (C) 2017 Maxim Integrated
+  */
+ 
+-#include <linux/kernel.h>
+-#include <linux/module.h>
+-#include <linux/i2c.h>
+-#include <linux/regulator/consumer.h>
+-#include <linux/err.h>
+ #include <linux/delay.h>
+-#include <linux/iio/iio.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/iio/consumer.h>
+ #include <linux/iio/driver.h>
++#include <linux/iio/iio.h>
+ #include <linux/iio/machine.h>
+-#include <linux/iio/consumer.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/regulator/consumer.h>
+ 
+ #define DS4422_MAX_DAC_CHANNELS		2
+ #define DS4424_MAX_DAC_CHANNELS		4
+-- 
+2.47.3
 
-Why do none of these devices use fallback compatibles? Please put the
-rationale in the commit message.
-
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  vcc-supply:
-> +    description: Regulator that provides power to the device.
-> +
-> +  reset-gpios:
-> +    maxItems: 1
-> +
-> +  enable-gpios:
-> +    maxItems: 1
-
-How come enable-gpios is optional? Is it optional on all devices?
-Do all devices support enable-gpios and/or reset-gpios?
-
-Cheers,
-Conor.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vcc-supply
-> +
-> +allOf:
-> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +      #address-cells =3D <1>;
-> +      #size-cells =3D <0>;
-> +
-> +      amplifier@0 {
-> +        compatible =3D "adi,ad8366";
-> +        reg =3D <0>;
-> +        spi-max-frequency =3D <1000000>;
-> +        vcc-supply =3D <&vcc_3v3>;
-> +      };
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 8b5bb7030fa6..c3403ae478b7 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1589,6 +1589,7 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
->  L:	linux-iio@vger.kernel.org
->  S:	Supported
->  W:	https://ez.analog.com/linux-software-drivers
-> +F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ad8366.yaml
->  F:	drivers/iio/amplifiers/ad8366.c
-> =20
->  ANALOG DEVICES INC AD9467 DRIVER
->=20
-> --=20
-> 2.43.0
->=20
->=20
-
---REc/ih/jUk+hM7Ip
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaXfKZQAKCRB4tDGHoIJi
-0nSMAP9IMMgh4K1FRRAZto+4PMk3bPwjy7eoUdbW0FGtUPjOLQEAzTyvu8YAhB4S
-gSXqK/0rn2l1g4Ih/ZMwKZ1CrVA4jQU=
-=gRdd
------END PGP SIGNATURE-----
-
---REc/ih/jUk+hM7Ip--
