@@ -1,67 +1,77 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C63E22259F;
-	Tue, 27 Jan 2026 10:51:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEA7B1E520A
+	for <linux-iio@vger.kernel.org>; Tue, 27 Jan 2026 11:38:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769511106; cv=none; b=DsgZr6tlX0mUd0NdLna9iZSoHZ/eNSmtcJysxD9xsKDhCG+VFIy9qYDfP6CzhNmkAbtUVnByOmDpHNIzXuV2+P5w6zV8JDO6Z0NXSQo2Rafa4EYMrN7KrbVYq5iWNReWKa6iSRZCzDKeg6xchf+qz95lcmOwCXJ6U6sTGt8Z3QQ=
+	t=1769513916; cv=none; b=OBxxT+HgTmpERwYsXR8EWFqM5s3iSEEB8izz3AAIooAeQONwjOHi5/8HEgkFnC9psygel9nX6PNOCHg7++YK9q/zefTvOkbZHobd8kEbk3JBnY+WpJio6K+n766JM4mh9UP5HVnBvwMSfWATqAIICktOdwH1EJprqgGLyhuhEM4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769511106; c=relaxed/simple;
-	bh=ljqmwRc2tYNxotdkL9n9m9ypMnz2jmSmOYIg+mlkRg8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BjUqVZE8ds8rWO7A/XPTCYxHw89+5FTBjXR9s/UQ6leHyQp65O7M6u8Qvf0NKsA5X+TD2v0mVsEjIK47RfdKXZBihNs6gPt0mg0L5vUg7jEf1jfd3RVCQbH/wfOkaBLNpSms8yuyK7CtspfYu5iAs0spQPJMzfxCK1+qfyxnnjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hlTpy36m; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1769513916; c=relaxed/simple;
+	bh=3K9aBDr/ArfdtgOK1jMZcCRg52z6zlVpVc/LOShdI0w=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=o5hZj2N4aiy7jxbfU2b4NZIvXRem3+ZZPmUovUuKBd7cL9+R/hOtju/j5Rou/4foIdqF+60yPNPxFjcjOsPZ0fwJb+AoFc4ukGe5UfVnWFZ3LTFWvW4Zo/5rGjZ8kCWYyr1J2PinGL0yObqk18k4l1AzP5rISKX//KTNjWet0Zg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VeXTgXJK; arc=none smtp.client-ip=209.85.128.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hlTpy36m"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769511104; x=1801047104;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ljqmwRc2tYNxotdkL9n9m9ypMnz2jmSmOYIg+mlkRg8=;
-  b=hlTpy36m1wQXe6KeEFmQBLfZR+fT0UyelBG126GCe+NqQBYpSYswIdTn
-   YaqKFbTSZG2lwuAnHpUYMLnA64eIDHP76kMyhR32IXC7v/lqXcOkvPbqG
-   sYlRfMV7YwhIdkXXS3XXzPPY9X/68YDUIB0CrqZPoH8YPgkq+TtCCoKz3
-   TxBOLIyFcN0BzegihN5EZww2hIY27/tUEMGRkpxHUzTY8ea1EahTmAIZ2
-   keyniqVFMExMBoJCBu4C4d8hs3xWp5wDsn1PeiRv8dyH91fMGegW3lS5H
-   0z2TUepO4ZSl2sYrQtlfikTAGqqFuL1NGdNGlX/cf5RlsgR+Czu2wBuYx
-   w==;
-X-CSE-ConnectionGUID: 7wbCByiLQaqF0Pu8A8XV9g==
-X-CSE-MsgGUID: 1SOeLfXdTOaEZ1FMLLqJ+g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11683"; a="96166989"
-X-IronPort-AV: E=Sophos;i="6.21,256,1763452800"; 
-   d="scan'208";a="96166989"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:51:41 -0800
-X-CSE-ConnectionGUID: 2OpoyD9oRFCIuYl9/d0W1g==
-X-CSE-MsgGUID: PyxEpHwDRuqtKLHeHX3EAQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,256,1763452800"; 
-   d="scan'208";a="207739664"
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.248])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:51:37 -0800
-Date: Tue, 27 Jan 2026 12:51:35 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, stable@vger.kernel.org,
-	kernel@pengutronix.de, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	David Jander <david@protonic.nl>
-Subject: Re: [PATCH v2 6/8] iio: dac: ds4424: fix -128 rejection and refactor
- raw access
-Message-ID: <aXiYty1gFMcmC4lT@smile.fi.intel.com>
-References: <20260127060939.3914006-1-o.rempel@pengutronix.de>
- <20260127060939.3914006-7-o.rempel@pengutronix.de>
- <aXiWkF04r7FkLPRx@smile.fi.intel.com>
- <aXiYIYd08vFfLoIQ@pengutronix.de>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VeXTgXJK"
+Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-47ff94b46afso48577465e9.1
+        for <linux-iio@vger.kernel.org>; Tue, 27 Jan 2026 03:38:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1769513913; x=1770118713; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=AASlxAZ4aYaHvKBg73VpYx8embHwR8icb+WKnSC8l4A=;
+        b=VeXTgXJKEOQZICQQnEWpueYYCwBUiIhJgU7y5bErDw+JS0lOYIOEucTgdh08TxhBVq
+         +J/7H64ZXS7ISt9wlClbdwHG9BAinVChxTyFHeYBcQ/PTMLaGftGM0tHOu2r0lRCui9e
+         k2sfvB/6bXl7/iyDdv+LURBou6/0LlsUqi/spFi1WPEZxb+0QkdIGl04YgQ6+qRd0dY2
+         dV3oOn8vsykIZchwF2NBICS8yxrsbReEDdypDTgDwLy0jKxENVa8/76YX9IXgKVj4xsU
+         jTRuwaaFXQR3bILjL0MdQHB5vY1JNzt19IYtz6jow+KB+3jOJJEJs0IYMOpdWVoE1JCC
+         kFHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769513913; x=1770118713;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=AASlxAZ4aYaHvKBg73VpYx8embHwR8icb+WKnSC8l4A=;
+        b=Y9BUn/nA1dXhtYor1wjFNcvVwOVj5+prP7MoWHiBzP0BWzqEckbotwrIZ4E7g8C96n
+         +DoRF1pgZLGItpqDGiTnwyGKbSuuFKCuLvUWk49/ii0XxLp494bmJStq07weZsYKw/c9
+         0k1qgWFv6FtlR4WUp6zRwFtrz1Tn+MwNLQU4+2p3X7wuz+4Y1zp0ZA8IRU5LhFRXv7C0
+         ej++dY/x4vQi57ckz9N6bh80XDVdhsKp8NF8PpsBxJ3heq1wkt6tBgwgNViOQ1YKpWaR
+         sPEd0U0cTfOh4ldo3aUQnKNsTM8nxe1ZOgLjR3axdewKpNgfC9bQneDY2fYkAfLfxAM2
+         utHw==
+X-Forwarded-Encrypted: i=1; AJvYcCV687ENGJU7qsjEmaSryD0aTvVj5mLb/lHSIJY3EnwKTmZ6S5PVKoV1aidboquINWX2z58/suT195w=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzpgcf9q/Mu7zm07RaBPx/i2MYOUetReiGDuHQ2uH7isVBOruvX
+	AKD/o1RhFMana4FzQc9T2iiqWwSchP3zI6xHivReIRtL+iGlBeO7IM1H
+X-Gm-Gg: AZuq6aJFhLS2iG42ofe3NUWhAuEK/lLRhLDkwZeaBspsHCJLvb5n+XbzN92tF51w2uR
+	DqxOWg93AfL+IFF9o/vVbrlliyADx6Yt2ZCEsZbg2+AWYuYYWdRf+neB1mYP4OYEvzNKPNYHa3G
+	c6ELL+Vg5cMYS/hZffvkUdFsap/z9hWbIa7ucqitX9qb94MzehJTsGsCaDsV4ovLPARxssOMB3Q
+	EDtCMQskQvPHdoPt9pprLk2DUhuMobinT6dab/9TttRR+PpJ/FP8dfuPOLhxxeOGv3SjhvlP9Dh
+	90pHJo4nolAQOMczvBtODT5RHntwyHZVWg+X4ZAsp7sBEH/+BQ7bxmv/quetOJhPcvvcQ37HD2s
+	fvRd1SGRrud3uRuSouVIHXhs8KDWPdUh2prGlzzG6tIK20QV9zi2ImAKJ+qqAs+lxIYvnatEZgE
+	kIfuPStVbqzqzm3PvDRkn8K/CJgP7vjZlWQmUxfAnwqCqjMxKtZHhk4Zt5SOdT4/Z3fTmfB7aJd
+	GgQ
+X-Received: by 2002:a05:600c:4587:b0:47d:403a:277 with SMTP id 5b1f17b1804b1-48069e24034mr18944385e9.4.1769513912960;
+        Tue, 27 Jan 2026 03:38:32 -0800 (PST)
+Received: from RDEALENC-L01.ad.analog.com ([24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48066c428basm58082165e9.12.2026.01.27.03.38.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 27 Jan 2026 03:38:32 -0800 (PST)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Tue, 27 Jan 2026 11:37:52 +0000
+To: Conor Dooley <conor@kernel.org>, rodrigo.alencar@analog.com
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH v2 2/6] dt-bindings: iio: amplifiers: Add AD8366 support
+Message-ID: <rzco2g6psoblzaaqrdnmpmhs44hl7kqusa2kuafpkjx635dug2@rtwebhwztfkd>
+References: <20260126-iio-ad8366-update-v2-0-c9a4d31aeb01@analog.com>
+ <20260126-iio-ad8366-update-v2-2-c9a4d31aeb01@analog.com>
+ <20260126-porous-hurdle-bfc510f113bb@spud>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,32 +80,63 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aXiYIYd08vFfLoIQ@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260126-porous-hurdle-bfc510f113bb@spud>
 
-On Tue, Jan 27, 2026 at 11:49:05AM +0100, Oleksij Rempel wrote:
-> On Tue, Jan 27, 2026 at 12:42:24PM +0200, Andy Shevchenko wrote:
-> > On Tue, Jan 27, 2026 at 07:09:37AM +0100, Oleksij Rempel wrote:
+On 26/01/26 08:11PM, Conor Dooley wrote:
+> On Mon, Jan 26, 2026 at 01:51:03PM +0000, Rodrigo Alencar via B4 Relay wrote:
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Add device tree binding documentation for amplifiers and digital
+> > attenuators. This covers different device variants with similar
+> > SPI control.
 
 ...
 
-> > > +		/*
-> > > +		 * Currents exiting the IC (Source) are positive.
-> > > +		 * Canonicalize 0 to sink; datasheet treats sign as don't-care.
-> > > +		 */
-> > > +		if (val > 0)
-> > > +			abs_val |= DS4424_DAC_SOURCE;
-> > 
-> > Hmm... Maybe 0 should be excluded as invalid?
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - adi,ad8366
+> > +      - adi,ada4961
+> > +      - adi,adl5240
+> > +      - adi,adrf5720
+> > +      - adi,adrf5730
+> > +      - adi,adrf5731
+> > +      - adi,hmc271a
+> > +      - adi,hmc792a
+> > +      - adi,hmc1018a
+> > +      - adi,hmc1019a
+> > +      - adi,hmc1119
 > 
-> 0 is valid value for no current flow (power off). The direction bit
-> DS4424_DAC_SOURCE  will just make no difference if value is 0.
+> Why do none of these devices use fallback compatibles? Please put the
+> rationale in the commit message.
 
-Perhaps elaborate this in the comment above?
+Will do. Each device has their own gain range/step. 
+
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  vcc-supply:
+> > +    description: Regulator that provides power to the device.
+> > +
+> > +  reset-gpios:
+> > +    maxItems: 1
+> > +
+> > +  enable-gpios:
+> > +    maxItems: 1
+> 
+> How come enable-gpios is optional? Is it optional on all devices?
+> Do all devices support enable-gpios and/or reset-gpios?
+
+Board designs often hardwire powerup or serial mode enable signals
+to high voltage level, so there will not be a reason to add the
+enable-gpio.
+I went over the device datasheets and I could not find the
+reason for the reset gpio. I left it there because it was being used
+in the current driver implementation, and I would not like to
+invalidate designs that might be currently using it. I will ask around.
 
 -- 
-With Best Regards,
-Andy Shevchenko
+Kind regards,
 
-
+Rodrigo Alencar
