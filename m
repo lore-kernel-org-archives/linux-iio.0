@@ -1,80 +1,62 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56D22348860
-	for <linux-iio@vger.kernel.org>; Tue, 27 Jan 2026 11:41:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A17835C1B7;
+	Tue, 27 Jan 2026 14:56:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769514100; cv=none; b=okKwek+KQjYT7FLx6KlO7ResTIQkyks6Hcz7LVf+9IXacMcKENJbfNtNWmJkQjEcOHSr0BjmFBKpzGstWzz0H+x9BuMTv4RurEY1wECRU3bLPv/JFXScPKcMCahemn2b8aroGncc/FeR60tcmtJ2q6ow0KDilhgpYC4zfSNeLO8=
+	t=1769525792; cv=none; b=mft45Buu5TUJxDPa/lhjIaMWarlefBJkZGl5rd++z7/PvqD/+x0NXmlZp9BQL6wWu0RG1L8k5G2gMk3jqfMr+qNf2wAd7sX6e4g496qGNRyYJFpOEDPbRyTZbjHHJoGhzPSOq1SO0LzbVgbSy94n/zUkad426vjAAA8NSL+wSPE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769514100; c=relaxed/simple;
-	bh=68UIz997v/QQuZTcsHzoMjMrK8CsIhjT+rj9uii+aXU=;
+	s=arc-20240116; t=1769525792; c=relaxed/simple;
+	bh=PeRheMNS24d5z3Pyul80a17rmyMjh2FZrk/kxsJ6sMo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lumPblOsy7uI2e0wMdoDg8uPjYPbqGYRhyNcfyujdpV7C+LWD2ehgRn3/8MoyZ0yNecz01tbYvEq0LI28SyFnk0rZT4SotEWAMTAt8NgpYgiPJwgP4EkihEWjF1aIVY/qfb9+8U0SgnfjWrDROO183NO//fkE34gtckmMiIWvpg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=HMKf9MJH; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=KIXcbd+lrQeDfBMBKBI2t4T9wPmYQ9whU1fSTM1v4Uq0y7ZCqODp+KMbTrp2Rppy15aI0juE1C3VwcHbXgLbces3767Npg1Am6w7ZfVB88DgvoR7H0F1RzzJ+ijraI9+L8a7030UykaVMkfH2XOWB8a6FNZOSZLHtGhRN2O2dk4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bZIZl5JM; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="HMKf9MJH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=date:from:to:cc:subject:message-id
-	:references:mime-version:content-type:in-reply-to; s=k1; bh=jjft
-	8BNeQcJsJ7Q11OQxvOD2FcnLqb+zVi7vsmsrKrA=; b=HMKf9MJHWxg4cDoC0MI5
-	PucL2VvzlUC0YI8iulenVBfr4MKGN1Ebz/YS1t187Hww6Lia4sqg0KTw3F3qaA8d
-	fVpnblfy4xEeohABEyTM7oqNa6BOGfLVxxr8rmkvMhfQK1nrI0ib+mawvB2j67eb
-	escveoPg+49prmLwiAVDxa5Olq9jqrb6Oy2VLTS9slta+ejYZ8tAxILuEUEqjzd2
-	B497UTAZnMHLfG99P4I4tAefPug2NI2ICiFMumiJtdHcDFX8eRFkkgXPgVb3IwCd
-	FkzdQ2TxXtfOYU07f71N22Yc46fbmeUV+2jRLzGsvUZzhJUb6Bnj7QG1Sfroih7i
-	Vg==
-Received: (qmail 3194881 invoked from network); 27 Jan 2026 12:41:27 +0100
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 27 Jan 2026 12:41:27 +0100
-X-UD-Smtp-Session: l3s3148p1@x4iaGl1JPqYujnvZ
-Date: Tue, 27 Jan 2026 12:41:27 +0100
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: linux-renesas-soc@vger.kernel.org,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Antonio Borneo <antonio.borneo@foss.st.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Boqun Feng <boqun.feng@gmail.com>, Chen-Yu Tsai <wens@kernel.org>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Danilo Krummrich <dakr@kernel.org>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bZIZl5JM"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769525791; x=1801061791;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=PeRheMNS24d5z3Pyul80a17rmyMjh2FZrk/kxsJ6sMo=;
+  b=bZIZl5JMS1Ek3qdwwYXCUxpBhQrVV/iFRtWA77MwlSE9R19cJNVsRQJ7
+   2sY1T9u4QMrez0yks1Ck4HejnlwudVUpsm/HlJvgwe/YXIbJzfdfAQf6r
+   r9IrAnDz2TNJHxEm9Y0gqDsYDFPF8vSpR98mOBmaDUnNBxrLXhvnGDiWT
+   BZZtZiSRl9MXWxof/u46B1CxJ1YLiY51JPIC/TY5YRzP4B7ONGncRP/S/
+   WlvRzuD1p5Oy+RaEcLVDrV66pbmWvtNODRriM90w6bLIZTqjunixbd8uc
+   5PDsiktaxzAr21Z6UoMObwyQ7pO3p15DssI/Ku/JVFOXT6broIBFpeb1V
+   g==;
+X-CSE-ConnectionGUID: Y0cp743gQLWS/Uqupa0vmA==
+X-CSE-MsgGUID: eh6bsagmTJ6VHj32NKNebQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="70762973"
+X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
+   d="scan'208";a="70762973"
+Received: from fmviesa008.fm.intel.com ([10.60.135.148])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:56:31 -0800
+X-CSE-ConnectionGUID: DZbb2G14QPuH32B6sE9KAQ==
+X-CSE-MsgGUID: lDPzgPqNTWO6nQmNov2+wQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
+   d="scan'208";a="208241690"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.248])
+  by fmviesa008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 06:56:28 -0800
+Date: Tue, 27 Jan 2026 16:56:26 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: raskar.shree97@gmail.com
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Jernej Skrabec <jernej.skrabec@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-gpio@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
-	linux-remoteproc@vger.kernel.org, linux-spi@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-sunxi@lists.linux.dev, Mark Brown <broonie@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Samuel Holland <samuel@sholland.org>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Thomas Gleixner <tglx@kernel.org>, Waiman Long <longman@redhat.com>,
-	Wilken Gottwalt <wilken.gottwalt@posteo.net>,
-	Will Deacon <will@kernel.org>
-Subject: Re: [RFC PATCH 0/4] hwspinlock: refactor headers into public
- provider/consumer pair
-Message-ID: <aXikZ5wc6bvgRqF6@ninjato>
-References: <20260125184654.17843-6-wsa+renesas@sang-engineering.com>
- <aXc7DxsqiCGdfzxi@smile.fi.intel.com>
- <aXc-Zxw05XQLb1Dy@ninjato>
- <aXdAB2bLTy6u8G8c@smile.fi.intel.com>
- <aXdCBu6kzdw1NWay@ninjato>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, skhan@linuxfoundation.org,
+	david.hunter.linux@gmail.com, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 2/6] iio: proximity: rfd77402: Align polling timeout
+ with datasheet
+Message-ID: <aXjSGlttD7qs66Uy@smile.fi.intel.com>
+References: <20260127-b4-rfd77402_v5-v7-0-3e7f2d452da2@gmail.com>
+ <20260127-b4-rfd77402_v5-v7-2-3e7f2d452da2@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,26 +65,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aXdCBu6kzdw1NWay@ninjato>
+In-Reply-To: <20260127-b4-rfd77402_v5-v7-2-3e7f2d452da2@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi all,
+On Tue, Jan 27, 2026 at 01:02:16AM +0530, Shrikant Raskar via B4 Relay wrote:
 
-> > > Providers need it, especially the 'priv' member. Consumers won't see it.
-> > 
-> > But can't we make it opaque?
-> > 
-> > We may have getters and setters for the priv member...
-> 
-> I think we could do that.
-> 
-> Two drivers use the bank member, but only for the device
-> (lock->bank->dev). That can probably be refactored away, I'd guess.
+> Update the polling delay to use a 100 ms timeout, as specified
+> in the RFD77402 datasheet.
 
-I am willing to develop this series in the above direction. Before
-though, I'd like to know from hwspinlock maintainers if they agree to
-this refactoring in general.
+Please, refer at least in the code what is the section and/or table specifies
+that...
 
-Thanks and happy hacking,
+...
 
-   Wolfram
+>  		if (ret & RFD77402_ICSR_RESULT)
+>  			break;
+
+...here.
+
+Note, it's a requirement to comment all long sleeps (~1ms is considered long),
+and some other short sleeps depending on the context.
+
+> -		msleep(20);
+> +		msleep(10);
+>  	}
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
