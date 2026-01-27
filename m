@@ -1,63 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CAEA1DEFE0;
-	Tue, 27 Jan 2026 10:27:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47FC71A9F93;
+	Tue, 27 Jan 2026 10:30:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769509657; cv=none; b=MkBR/S5+pZN2CI4tY0LJkkIO0zW2PoQXqgLayAKjov9wR20zTtbXnMK+zd+p/E8PDkFg/W0iM8a20hUYClVwc0kgzvKtFskVViS3yRbV0a+sSP/ciEJLPWdIC6iY8/bnhab8J8U+UObcdB5sxf0yUugGgZIrkYxXN/y+gDC1klU=
+	t=1769509824; cv=none; b=AeuA3TwTHCQAuOEDn28YMndh6MY7Rcv6ERcIn3OKg8KJaK4fgJ54OCqFneUtUGi4FJdTqHRDZCMpEMusbv6jjEMZYyscImtbOtU5nKv0O3B3mRlJuibKnvn97jjR7YBJyYim7Hsbx8P+tEKp/y/djHOydIpaZszOOQHvHmYb1GU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769509657; c=relaxed/simple;
-	bh=CjHuV3qGuHUbHTKmaPvMx6YJMmJj9aKu5E4zdV9gJwA=;
+	s=arc-20240116; t=1769509824; c=relaxed/simple;
+	bh=8um1ztHVRtPlpYKICq+T4cYvuETxYSOKlJwZD/mCu8o=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rOO1T77i8yZhs9wGJUpfgLanuO4Vrbj8fLc+oMwOpIiU8X/JxOLYZi6a0V4iir+aQHzOG8DI/GAxOpmd9Cc47tHYN5XGleIdEZQgXK6+9VAxrHBny0Zc410PqO7WmYsX+/p2h2ufq5KmaRjUqMBY4eH0IQUWuv1BR+3WYYu10ac=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kBSOOw6Y; arc=none smtp.client-ip=192.198.163.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=bwjHNsMixunQW8ilSndpI8hLxggSncHmn+mE7TgMoQOJJNYhUJo7TrWyeQqb2ZIvSe0UU1j/ue0F83yL1AysyGnLpL8Abo2RZ0ErJmAGCuAOB0uspQKBpne+J2SSm5PPY+5uClnv5Yb0P60gdseqc5sYZ+RdjVBQY7DXQBKn30U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=m91b0RPy; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kBSOOw6Y"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="m91b0RPy"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769509655; x=1801045655;
+  t=1769509821; x=1801045821;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=CjHuV3qGuHUbHTKmaPvMx6YJMmJj9aKu5E4zdV9gJwA=;
-  b=kBSOOw6Y2ugTRwR+1sHBBeIJYwW7huJnwTX0DmILeqXf/bzgfRUyCadL
-   PL8XIr3uU8ZgQBOltBXa85X89UlASrbpw+TBToT0D7GhOqoPeN94ZYJoU
-   RW+dsM/NOZH+IvMZeTq+nZR0T+7W9HvWdocewAj46OuW+CC5rsn5YfL1f
-   O3GH/3lmVFx6oFXj/o91eQ7gcrBGu3UW3xRxBgYWYZzX46lzzc6RWFV35
-   BQ/5/7SjuG2DYLqMGNZcbyX0Fcz5RNLpa3kimKloTtp6VqNgSmEBnMHSt
-   ElAKWH+fydwBmICx1XtH1F/WwVRbZ80BPd8xgx7hkMfD34+e6Fkx5BrU6
-   w==;
-X-CSE-ConnectionGUID: FINPmqpCQhmnW6HCyZY+HQ==
-X-CSE-MsgGUID: 39WyJonfS0KZX1CmEm0uHw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11683"; a="58275191"
+  bh=8um1ztHVRtPlpYKICq+T4cYvuETxYSOKlJwZD/mCu8o=;
+  b=m91b0RPywUIxbBQzuRhjO+xv0RYZFIGciYpzv2UO8WvECywgBchKi0DQ
+   5Rg70HPSU2jUo/mdLVMA2qE+8WabxT2fIuFs2+WIuJ5zk6SWy+s/TeN57
+   7h5g2Grn/Nam/9iY20ixYrV4bKW5LslIFfuplA5d9t1dnMnkLIvFm1gD5
+   WthCZ5W9C2t1mlVH28grZwJFWcJ8ZkCybIonvx3PWiW0icmgga3leuKf0
+   J1Xqb/fnoQDYRDSofsaN0YnBeXqEkxW/XaFNFa5v3juLjId7QV84Nc04u
+   iKd6Gd9h6bl0UpANCwX1EFy9Dl4Y9OHM0awXqcVyfXgZRPS4OgUGAlzYb
+   A==;
+X-CSE-ConnectionGUID: iEZFa23WREun6qbFiPUrYg==
+X-CSE-MsgGUID: OnFajv1sQlG+sqH/h8Yv+w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11683"; a="74546244"
 X-IronPort-AV: E=Sophos;i="6.21,256,1763452800"; 
-   d="scan'208";a="58275191"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:27:34 -0800
-X-CSE-ConnectionGUID: srThuj24RkWh0v4Wq2cTIA==
-X-CSE-MsgGUID: JmgQZWlSR0q7srVtzj+NtQ==
+   d="scan'208";a="74546244"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:30:17 -0800
+X-CSE-ConnectionGUID: KqBtgNzCRfu7jmZ6d+Vo5g==
+X-CSE-MsgGUID: kcg+rOELR5e6jUTKaB868A==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,256,1763452800"; 
-   d="scan'208";a="212485666"
 Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.248])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:27:31 -0800
-Date: Tue, 27 Jan 2026 12:27:29 +0200
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:30:14 -0800
+Date: Tue, 27 Jan 2026 12:30:12 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Oleksij Rempel <o.rempel@pengutronix.de>
 Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Jander <david@protonic.nl>, kernel@pengutronix.de,
+	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Subject: Re: [PATCH v2 3/8] iio: dac: ds4424: add DS4402/DS4404 device IDs
-Message-ID: <aXiTEXOPUANd7vIQ@smile.fi.intel.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	David Jander <david@protonic.nl>
+Subject: Re: [PATCH v2 4/8] iio: dac: ds4424: sort headers alphabetically
+Message-ID: <aXiTtJ39YXTmqkYW@smile.fi.intel.com>
 References: <20260127060939.3914006-1-o.rempel@pengutronix.de>
- <20260127060939.3914006-4-o.rempel@pengutronix.de>
+ <20260127060939.3914006-5-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,20 +64,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260127060939.3914006-4-o.rempel@pengutronix.de>
+In-Reply-To: <20260127060939.3914006-5-o.rempel@pengutronix.de>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jan 27, 2026 at 07:09:34AM +0100, Oleksij Rempel wrote:
-> Add I2C/OF IDs for DS4402 and DS4404 and set the correct channel count.
-> Follow-up changes add per-variant scaling based on external Rfs.
+On Tue, Jan 27, 2026 at 07:09:35AM +0100, Oleksij Rempel wrote:
+> Sort the header inclusions alphabetically. This improves readability and
+> simplifies adding new includes in the future.
 
-> Signed-off-by: David Jander <david@protonic.nl>
+...
 
-Unclear who that is. Co-developed-by? Original author? The From is set to your
-address, should it be otherwise?
+> -#include <linux/kernel.h>
+> -#include <linux/module.h>
+> -#include <linux/i2c.h>
+> -#include <linux/regulator/consumer.h>
+> -#include <linux/err.h>
+>  #include <linux/delay.h>
+> -#include <linux/iio/iio.h>
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> +#include <linux/iio/consumer.h>
+>  #include <linux/iio/driver.h>
+> +#include <linux/iio/iio.h>
+>  #include <linux/iio/machine.h>
+> -#include <linux/iio/consumer.h>
+
+This was at the end and I assume we want this to be kept at the end as a
+separate group of linux/iio/* to emphasize on the fact that the driver is
+related to that subsystem.
+
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/regulator/consumer.h>
+
+With that being said, I think the result should look as
+
+#include <linux/delay.h>
+#include <linux/err.h>
+#include <linux/i2c.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/regulator/consumer.h>
+
+#include <linux/iio/consumer.h>
+#include <linux/iio/driver.h>
+#include <linux/iio/iio.h>
+#include <linux/iio/machine.h>
 
 -- 
 With Best Regards,
