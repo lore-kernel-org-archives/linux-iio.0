@@ -1,63 +1,65 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AFC4342511;
-	Tue, 27 Jan 2026 10:39:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A9B66342C8B;
+	Tue, 27 Jan 2026 10:42:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769510375; cv=none; b=H/woCjG1XZTu2DsIz8OM4I05TUU3rUucGpLqIjB3a/tmo8HxDzm+N+V2xdOUm1ELBp+Rnqc7+XD106zTrx3056VOMZPkM2preB/no5fzUWItGnl8APZbY4dd+Rvzcruz/yIQV1ApPON96q/3SFMPlr2t0K1v2lzVsnOHyAEQDDo=
+	t=1769510556; cv=none; b=BSE5Uy/LrVEXvfK45nMJFaeuXlHjh8A0XpS+SZ4CrtRsRx3qE9VkyPVEmHrLia4fQnCsy8sTpgHIIvc/gRj21cwVUFGyDidr703GGH91/T6WcosKqQIZ/2RDL0gY/pASGnHOqaeSb5UCzQ2EaYjfbvH3tzHHbc0mJtrNSUlm0Ik=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769510375; c=relaxed/simple;
-	bh=ZzDd73Ng2R6n+Cihacwa8im9RBVNxVzfCxKK5la1Ruw=;
+	s=arc-20240116; t=1769510556; c=relaxed/simple;
+	bh=geF5sj/jmwdPWTxyB3iA1a2JfJu4BPJEE1G2d4A9lHk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hZtyX4Fri1P+2cw0pQ6uYlbCoS3MRvRbR6+P7E0NiAqZpTpBxJqs2bmkem7Um9XMwmdqFW2XpB3T6fx6+DIisSgPiwcRg9nUiuYWW3VTfWGRFQlIYKhCYdKufAbUi3dr2t+aMBCN0yaN8NIxqBG32Z1VmR4a35Lo+2PJisOilB0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i4EWu9aG; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=KRgl29BP/3D7EGCxiyWEzkjajZe3hwTXESxCVolYrWq3yYVxoEL34fJlwS0xXC6TTnMHvUig624eQH8Rk7DXoNB7d6Qpe4ll8cZSGxHBwg5p7wHP2A7mEfzkrxx8n4aRJsQ5j/BzT4aaS+48gYIXSpiyhnVwiTl6J+XX8+PNafA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=F/jfU2uz; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i4EWu9aG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="F/jfU2uz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769510374; x=1801046374;
+  t=1769510554; x=1801046554;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ZzDd73Ng2R6n+Cihacwa8im9RBVNxVzfCxKK5la1Ruw=;
-  b=i4EWu9aG+VT/Ilf8tBM5veVUmFEXBn7NSPnneho6eYBvEiXwbzuJzzSJ
-   8A6g8l/eNZTSRmIFtu5KUvWcewTMx9vzbv6p9wuZdQL0EP2EvCsC1bpM+
-   9CCmP16/xir1WhZJ+NrTI6Qgq8gIhRFpULHZUNRzfktexSUX/WDdjswsn
-   qdXvvHYzEcRPlkyKNrWh6fqYiVJCMKhswD4Er+TJjm/YVq1YNoxzFa8y0
-   wSPJfGSVCuJrJwe6B9IyUSpkj+ZNLbTJ+xJ+Pfhd3MVTGVWEjAh4hILh0
-   aosFCpmmBH6Fm2vBzEuEiwJB297Zp3ozYf96c4BdVUQLsDFkzgOwaHQLV
-   A==;
-X-CSE-ConnectionGUID: Lbs7WgeBTSmHUmeMlIaQ2w==
-X-CSE-MsgGUID: eQHvjUSnTciuKJFynRu9kA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11683"; a="70420793"
+  bh=geF5sj/jmwdPWTxyB3iA1a2JfJu4BPJEE1G2d4A9lHk=;
+  b=F/jfU2uzPeliUumg/v5cvqcJ8LdbFp7oCGi9bTh6bHxsJRzjzhgZW9nL
+   qyiAcCk02simYgUxDqukchVuVUFac6+9tA6UFJXZlmcNx+p+9vNb6KPtL
+   ncPjA0FHH3n1S6bgrQHYIiiqarTiP1yjFvm6xrGaqMICejQDo1k5uL/FG
+   nLLgy/SSpeNhPOD/z6Fu9FyWgnDvI+RTMshhE6i9FXkDlGT9P/xlJkw21
+   hp9fboibowNsGMvdSgiHrj5k4yGQX+lWB3HQ+rLXE6Rz1tbVYO0pzOv9n
+   HD6OnDVyEotcHS1munlvTuf5Yv92OivjCguZNozazygGTJRXFp9y8CBTG
+   Q==;
+X-CSE-ConnectionGUID: 3fkg44pbSaCCXbbyh7IPmA==
+X-CSE-MsgGUID: 20TewNRKR7qkbB7s9ctDcw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11683"; a="74325558"
 X-IronPort-AV: E=Sophos;i="6.21,256,1763452800"; 
-   d="scan'208";a="70420793"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:39:34 -0800
-X-CSE-ConnectionGUID: puYNiABrR0iPPznUl3txCg==
-X-CSE-MsgGUID: 5S0ziBPTSIW+kc9fWBSz4A==
+   d="scan'208";a="74325558"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:42:31 -0800
+X-CSE-ConnectionGUID: pqlJ3fqBTeCsCl+BiiaO5w==
+X-CSE-MsgGUID: ct7ZOaZuQmG0IivPMXplNg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,256,1763452800"; 
-   d="scan'208";a="207070933"
+   d="scan'208";a="212056489"
 Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.248])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:39:30 -0800
-Date: Tue, 27 Jan 2026 12:39:27 +0200
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 02:42:26 -0800
+Date: Tue, 27 Jan 2026 12:42:24 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Oleksij Rempel <o.rempel@pengutronix.de>
 Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, stable@vger.kernel.org,
+	kernel@pengutronix.de, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: Re: [PATCH v2 5/8] iio: dac: ds4424: convert to regmap
-Message-ID: <aXiV35CoH6f8FPUT@smile.fi.intel.com>
+Subject: Re: [PATCH v2 6/8] iio: dac: ds4424: fix -128 rejection and refactor
+ raw access
+Message-ID: <aXiWkF04r7FkLPRx@smile.fi.intel.com>
 References: <20260127060939.3914006-1-o.rempel@pengutronix.de>
- <20260127060939.3914006-6-o.rempel@pengutronix.de>
+ <20260127060939.3914006-7-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,114 +68,52 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260127060939.3914006-6-o.rempel@pengutronix.de>
+In-Reply-To: <20260127060939.3914006-7-o.rempel@pengutronix.de>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Jan 27, 2026 at 07:09:36AM +0100, Oleksij Rempel wrote:
-> Refactor the driver to use the regmap API.
+On Tue, Jan 27, 2026 at 07:09:37AM +0100, Oleksij Rempel wrote:
+> The DS442x DAC uses sign-magnitude encoding, so -128 cannot be represented.
+> Previously, passing -128 resulted in a truncated value that programmed 0mA.
 > 
-> Replace the driver-specific mutex and manual shadow buffers with the
-> standard regmap infrastructure for locking and caching.
-> 
-> This ensures the cache is populated from hardware at probe, preventing
-> state desynchronization (e.g. across suspend/resume).
-> 
-> Define access tables to validate the different register maps of DS44x2
-> and DS44x4.
+> Fix this by validating the input against the 7-bit magnitude limit.
+> Additionally, refactor the raw access logic to use symmetrical bitwise
+> operations, replacing the union structure.
+
+> Fixes: d632a2bd8ffc ("iio: dac: ds4422/ds4424 dac driver")
+
+Usually fixes go first in the series...
 
 ...
 
-> +static const struct regmap_access_table ds44x4_table = {
-> +	.yes_ranges = ds44x4_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(ds44x4_ranges),
+> +#define DS4424_DAC_MASK			GENMASK(6, 0)
+> +#define DS4424_DAC_SOURCE		BIT(7)
 
-+ array_size.h
-
-> +};
++ bits.h ?
 
 ...
 
-> +		ret = regmap_read(data->regmap, DS4424_DAC_ADDR(chan->channel),
-> +				  &regval);
->  		if (ret < 0) {
-> -			pr_err("%s : ds4424_get_value returned %d\n",
-> -							__func__, ret);
-> +			pr_err("%s : regmap_read returned %d\n",
-> +						__func__, ret);
+>  	case IIO_CHAN_INFO_RAW:
+> -		if (val < S8_MIN || val > S8_MAX)
+> +		abs_val = abs(val);
 
-This should be dev_err() to begin with. Perhaps you want a new patch for that.
-
->  			return ret;
->  		}
-
-...
-
-> +	/* Bulk read all channels starting at 0xf8.
-> +	 * This populates the regmap cache with current HW values.
-> +	 */
-
-/*
- * Use proper style for multi-line
- * comments.
- */
-
-...
-
-> +	if (ret)
-> +		return dev_err_probe(&indio_dev->dev, ret, "Failed to seed cache\n");
-
-Why not physical device? I assume during probe we use physical device, when we
-do IIO callbacks, we use IIO device.
-
-...
-
->  static int ds4424_suspend(struct device *dev)
->  {
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct ds4424_data *data = iio_priv(indio_dev);
-> +	int ret;
 > +
-> +	/* Disable all outputs, bypass cache so the '0' isn't saved */
-> +	regcache_cache_bypass(data->regmap, true);
-> +	for (unsigned int i = 0; i < indio_dev->num_channels; i++) {
-> +		ret = regmap_write(data->regmap, DS4424_DAC_ADDR(i), 0);
-> +		if (ret) {
-> +			dev_err(dev, "Failed to zero channel %d: %d\n", i, ret);
 
-%u for 'i'.
+Redundant blank line.
 
-> +			regcache_cache_bypass(data->regmap, false);
->  			return ret;
-> +		}
->  	}
-> +	regcache_cache_bypass(data->regmap, false);
-> +
-> +	regcache_cache_only(data->regmap, true);
-> +	regcache_mark_dirty(data->regmap);
-> +
-> +	return 0;
->  }
+> +		if (abs_val > DS4424_DAC_MASK)
+>  			return -EINVAL;
 
 ...
 
->  	usleep_range(1000, 1200);
+> +		/*
+> +		 * Currents exiting the IC (Source) are positive.
+> +		 * Canonicalize 0 to sink; datasheet treats sign as don't-care.
+> +		 */
+> +		if (val > 0)
+> +			abs_val |= DS4424_DAC_SOURCE;
 
-Side note: Perhaps fsleep() in the future...
-
-> +	ret = ds4424_init_regmap(client, indio_dev);
-> +	if (ret < 0)
-
-Do we need ' < 0' part?
-
-> +		goto fail;
-> +
-> +	ret = ds4424_verify_chip(indio_dev);
-> +	if (ret < 0)
-
-Ditto.
-
-> +		goto fail;
+Hmm... Maybe 0 should be excluded as invalid?
 
 -- 
 With Best Regards,
