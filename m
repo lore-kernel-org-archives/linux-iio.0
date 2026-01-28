@@ -1,191 +1,78 @@
-Received: from smtp28.bhosted.nl (smtp28.bhosted.nl [94.124.121.40])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A1553358CD
-	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 08:02:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=94.124.121.40
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA56B33C188;
+	Wed, 28 Jan 2026 09:09:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769587353; cv=none; b=YjhntbW/trQRaRbdGbumzt4QsGUBDZWFvPtWIsLNulehlKm21KCMTcASLu2+L/eZPMe1ZkJhE8PpZ4ti3ODSNesH1u5aTVHEVzXP9woIjenfyyIhnwvRWb+M+DfzdcPWMPeqwXYvjXVZDg/PYHiuU8+dMGJxGLk4MsK5IrK2VAY=
+	t=1769591351; cv=none; b=gQBLChMbKEqDbHEx2OPYJFBRFzu7t3iyBocrltmnMfcn5ZP9QY1q8RdU4BVAX7yWny2RSjLd14338QWORystgzZ7+iyaoTuT37p3EtbDSV5nv8NiMoaD1BRfXWIEUFb9GbAUs8ZZHJnNnlKEhfVQQYm4DKxc2sJmEBC77aiWZhA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769587353; c=relaxed/simple;
-	bh=vzLbqsrJXpQk1rZTedA54L5eBl7mKGWmonFrkudmtA8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jZgHmOkAFe7U1y2Zs8tqi0j72Fwu0A0XEBNXu4XBbcGHOGPSpqVSYEC4EnWWt+jsOW1aNHqWes/8xJf4aPBFbx9AhzsM2j/HYDUFVyDfRzhHEI1T8ONhQ6RTxunUM51wks7uSWelB81N4ixVRs3iPNZnF+4wvvpD5g9BN5UAKsU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=protonic.nl; spf=pass smtp.mailfrom=protonic.nl; dkim=pass (2048-bit key) header.d=protonic.nl header.i=@protonic.nl header.b=un9QM/9z; arc=none smtp.client-ip=94.124.121.40
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=protonic.nl
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonic.nl
+	s=arc-20240116; t=1769591351; c=relaxed/simple;
+	bh=T5Wby/ofFHI0LWTjyPta8N1F5LOuBsXqoVGkqkg+4UM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=E6qtGhJV8pzE+FPjSuzMtK3bPZinEXaxgrIKxdhgwdUyu/EgkH2mb9LKgtkti/2SUryGWw8zB5emCSRLE9r5FE6F22Q2BNU5iZYO0Gf4V9bbEsCwRtlLm5f+SeSRiy3/anQ647KfuHdMBbzpCaSpbwKmlQK5C7bWb+NPI3w2Yh4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WOOzM7EU; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=protonic.nl header.i=@protonic.nl header.b="un9QM/9z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-	d=protonic.nl; s=202111;
-	h=content-transfer-encoding:content-type:mime-version:references:in-reply-to:
-	 message-id:subject:cc:to:from:date:from;
-	bh=/6kS6UXU7s2teckxYIdOZyT52Pzin9Ij/Q3t+1VU1b4=;
-	b=un9QM/9zZ9v0zxq66pjrebjJNsfdCCAzriDvze3mM5Nx/4Edemmo3BOfOIPUf5WkjhtAE7/qZExb7
-	 4EW9rTTEwweXH4Jiu6s9JIlTMROplDTfQY8Cjcq/CL7Qi/zwbKqYoPuoLoT6Q9WjqKM6G9DYlMGdtb
-	 fomCMxhVvvINfIqOzQWWxYOlVQk9pQR5ojb7++TATQz+IERR6gRc4Yo+lWbQP+liWnlU5TDm7rUjd/
-	 GyyskrDuuxGBBCo53MLO7LLKn/HH4+DZhs8eHAzpoQEzCc4u88OLWmnPeW9jbYONWIgBOW4gx1cCAV
-	 fBuA2jTGFCnLTLFJq/G5NHawhzHs/Pg==
-X-MSG-ID: 8702a83c-fc1f-11f0-b52c-0050568164d1
-Date: Wed, 28 Jan 2026 09:01:18 +0100
-From: David Jander <david@protonic.nl>
-To: Conor Dooley <conor@kernel.org>
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>, Jonathan Cameron
- <jic23@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- kernel@pengutronix.de, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Andy Shevchenko
- <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
-Subject: Re: [PATCH v2 2/8] dt-bindings: iio: dac: maxim,ds4424: add
- maxim,rfs-ohms property
-Message-ID: <20260128090118.5c1d7906@erd003.prtnl>
-In-Reply-To: <20260127-rockiness-finalize-e0b50b9d823f@spud>
-References: <20260127060939.3914006-1-o.rempel@pengutronix.de>
-	<20260127060939.3914006-3-o.rempel@pengutronix.de>
-	<20260127-consonant-vividness-13707c7cf8f6@spud>
-	<20260127-rockiness-finalize-e0b50b9d823f@spud>
-Organization: Protonic Holland
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.49; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WOOzM7EU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1769591350; x=1801127350;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=T5Wby/ofFHI0LWTjyPta8N1F5LOuBsXqoVGkqkg+4UM=;
+  b=WOOzM7EUZsVrqS0u4ibxD/zHHN3tlPoApKV7LxfNu6Cxlkj5RoUzpgLy
+   2PZeG6Mu8JS5zjwY8yb+anbNYszPvDc4cOdhKNc6Twl18QqVuUoXwOR30
+   4jBXPuAl3coIOaAXioZZWgdn9FNWk2H1kg78ohWPKBDjYWmityhWjlSuG
+   GgzKASEj6/qI8t2Dd1f6ZEg0H2/tnl2VU511aFwzbjg9HnJoH+UvxIqwW
+   HwNrDkiyzOT4MKxBvActHgKxSUX9fWWTv9rRpTZnHay+mXdM6QDk0g1Zu
+   5fRVkuXPV+ABgzFmVOwcP2jqNv4hilgstfNK3zVc5Jb86RdQcnIT5IrDU
+   A==;
+X-CSE-ConnectionGUID: nWqiVGQ4RF6AT0XEF4rlng==
+X-CSE-MsgGUID: uWWfBLmUQXS1Um3CvWg/Eg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="58369422"
+X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
+   d="scan'208";a="58369422"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 01:09:10 -0800
+X-CSE-ConnectionGUID: u4kPBOxdRSWScEEqFT8nYg==
+X-CSE-MsgGUID: wyrjAHuSRf2M/C3eRJqP0g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
+   d="scan'208";a="212694786"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.196])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 01:09:07 -0800
+Date: Wed, 28 Jan 2026 11:09:05 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Chen Ni <nichen@iscas.ac.cn>
+Cc: haibo.chen@nxp.com, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	imx@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: vf610: Add missing check for
+ device_property_read_u32_array
+Message-ID: <aXnSMR2yLJGgVzQk@smile.fi.intel.com>
+References: <20260128042700.2260803-1-nichen@iscas.ac.cn>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260128042700.2260803-1-nichen@iscas.ac.cn>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 27 Jan 2026 19:55:26 +0000
-Conor Dooley <conor@kernel.org> wrote:
+On Wed, Jan 28, 2026 at 12:27:00PM +0800, Chen Ni wrote:
+> Add check for the return value of device_property_read_u32_array() and
+> return the error if it fails in order to catch the error.
 
-> On Tue, Jan 27, 2026 at 07:49:20PM +0000, Conor Dooley wrote:
-> > On Tue, Jan 27, 2026 at 07:09:33AM +0100, Oleksij Rempel wrote:  
-> > > The Maxim DS4422/DS4424 and DS4402/DS4404 current DACs determine their
-> > > full-scale output current via external resistors (Rfs) connected to the
-> > > FSx pins. Without knowing these values, the full-scale range of the
-> > > hardware is undefined.
-> > > 
-> > > Add the 'maxim,rfs-ohms' property to describe these physical components.
-> > > This property is required to provide a complete description of the
-> > > hardware configuration.
-> > > 
-> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > > ---
-> > > changes v2:
-> > > - make maxim,rfs-ohms a required property as the hardware range is undefined
-> > >   without external resistors.
-> > > - add allOf constraints to enforce 2 vs 4 items in maxim,rfs-ohms based on
-> > >   compatible string.
-> > > - drop explicit $ref for maxim,rfs-ohms to fix dt_binding_check warning.
-> > > - update example in binding to include the new required property.
-> > > ---
-> > >  .../bindings/iio/dac/maxim,ds4424.yaml        | 36 +++++++++++++++++++
-> > >  1 file changed, 36 insertions(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-> > > index efe63e6cb55d..400afd8771aa 100644
-> > > --- a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-> > > +++ b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-> > > @@ -27,9 +27,44 @@ properties:
-> > >  
-> > >    vcc-supply: true
-> > >  
-> > > +  maxim,rfs-ohms:
-> > > +    description: |
-> > > +      Array of resistance values in Ohms for the external Rfs resistors
-> > > +      connected to the FS pins.
-> > > +      - For DS44x2 (2 channels): 2 values required.
-> > > +      - For DS44x4 (4 channels): 4 values required.
-> > > +      Typical values range from 40000 (40 kOhm) to 160000 (160 kOhm).  
-> > 
-> > Add here
-> > maxItems: 4
-> > minItems: 2
-> > 
-> > Are 40kOhm and 160kOhm actual max/min values, or just a suggested range?  
-> 
-> Datasheet for the ds4424 seems to imply they're actual max/min values:
-> "Input resistors (RFS) must be between the speciifed values to ensure the
-> device meets its accuracy and linearity specifications."
-> In that case, consider also adding something like:
->     items:
->       maximum: 40000
->       minimum: 160000
-> 
-> Although, that would complain about the 5100 Ohms you're using. How come
-> the example lies outside of the "typical" range?
-
-Sorry to chime in here out of nowhere with this, but 2 things:
-1. Rfs for DS4402/4 has a different "typical" range than DS4424 (different
-Vref and different output current range).
-2. "Typical" or "recommended" ranges should not translate to a hard limit in
-the driver. IMHO, no max or min value should be enforced here.
-
-> > > +
-> > >  required:
-> > >    - compatible
-> > >    - reg
-> > > +  - maxim,rfs-ohms
-> > > +
-> > > +allOf:
-> > > +  - if:
-> > > +      properties:
-> > > +        compatible:
-> > > +          contains:
-> > > +            enum:
-> > > +              - maxim,ds4402
-> > > +              - maxim,ds4422
-> > > +    then:
-> > > +      properties:
-> > > +        maxim,rfs-ohms:  
-> >   
-> > > +          minItems: 2  
-> > 
-> > Remove this...
-> >   
-> > > +          maxItems: 2
-> > > +  - if:
-> > > +      properties:
-> > > +        compatible:
-> > > +          contains:
-> > > +            enum:
-> > > +              - maxim,ds4404
-> > > +              - maxim,ds4424
-> > > +    then:
-> > > +      properties:
-> > > +        maxim,rfs-ohms:
-> > > +          minItems: 4  
-> > 
-> >   
-> > > +          maxItems: 4  
-> > 
-> > ...and this. The outer-most constraints should be in the definition and
-> > the if/else bit just adjusts whichever bounds it needs to.
-> > 
-> > Cheers,
-> > Conor.
-> > 
-> > pw-bot: changes-requested
-> >   
-> > >  
-> > >  additionalProperties: false
-> > >  
-> > > @@ -43,6 +78,7 @@ examples:
-> > >              compatible = "maxim,ds4424";
-> > >              reg = <0x10>; /* When A0, A1 pins are ground */
-> > >              vcc-supply = <&vcc_3v3>;
-> > > +            maxim,rfs-ohms = <5100>, <5100>, <5100>, <5100>;
-> > >          };
-> > >      };
-> > >  ...
-> > > -- 
-> > > 2.47.3
-> > >   
-> 
-> 
-
-
+Why? Is this mandatory property or optional?
 
 -- 
-David Jander
+With Best Regards,
+Andy Shevchenko
+
+
