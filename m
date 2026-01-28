@@ -1,82 +1,82 @@
 Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B24FA2DF12F
-	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 11:24:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF61A34575A
+	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 11:24:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769599489; cv=none; b=DDOM9ZLkKJsOLIDn51Mdrdw3YqDMQIFrosUVaRqYGQsHaDZUeIVWqcrLDUMtgObEfvf6TOyo4iEZ5V3NM2SO3BPTdzKPjyZbF1zJdHxrHRfb83VCSUyNiajdu4lKzFlwuNMXdnD5/C8d2k+Ay/a1/meSbNVU5OCAiniaad4oRxg=
+	t=1769599495; cv=none; b=tLyU6N/sHRmhgCMtjKsRUGKxDyKW+AOZPdCmawgCwuYdTk+h1Sl9QVUUKEUJp35APocQf9ggtHlgF5YhWHtXkjnm0hfR/RVvEACJxGab2cs5khkipVt1YLQX7Rt/c9qZaL/j9FtF+L0roFFjOfjOPLNrGPT6KCzXYi9yrAqXomE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769599489; c=relaxed/simple;
-	bh=DbLPeovYiwjXpn5dbWMK4U8Irz//NWlC2tACaOAzwNI=;
+	s=arc-20240116; t=1769599495; c=relaxed/simple;
+	bh=CbgzOaYDkc3bXhiSUZkzlP8DjhXVBP0eRFGEsmWlQbQ=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=hTF13FVm1hJraQXveKEqAilTC8tO/GkonvA+EthUjjXTtCf3p4XVDikj25LXPGu4YMN6/Ak3TNoUt3sVU5WxMpAkZLZr3AnGoXCLXt2fZ5KivXmdfvidGE9t/i2k7ISLWaJZdVNa1RqWiU4qVVOKot7fNzzWIUFR2uwi4jcQeYM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=pXlzDfPq; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=g/bv2MSX; arc=none smtp.client-ip=205.220.168.131
+	 MIME-Version; b=KjdK2cdeXAJLvSo/kdTXK25jbPOVm6Pax10sJus7p94+OkkFx6kT98rhADrsa/Q3rjNdkBHBybnOd8oLtHO22orm7G/5O2WSoD0cxfe/BZLJ4S8s6U7CTBkGRLPDI20aADkhPccG/mdzjqHeGYlm7LgG7dKdPVxth9JIWAP+vz4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=NEZ1O9C1; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=blXiCWjk; arc=none smtp.client-ip=205.220.168.131
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="pXlzDfPq";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="g/bv2MSX"
-Received: from pps.filterd (m0279862.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60S92URi254475
-	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 11:24:44 GMT
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="NEZ1O9C1";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="blXiCWjk"
+Received: from pps.filterd (m0279865.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60S92cHc041990
+	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 11:24:53 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
 	cc:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=qcppdkim1; bh=+Sy9zUDZs56
-	f6JnqKzFkwx6XwPXTc9MqxOFBhYwgs2A=; b=pXlzDfPqPTKlaz46J7jRQdlXg7Z
-	WxENcRFC433nlc8E4DoqJlywKtUw9E++MFHibHEt5xi/qm5ltMsVnn456T9hx75X
-	AwUcy6HD1u8+7FJZToCO747Ihj1xPkCjK+g6IvIOb5GWwzFCD5wO2iwnwyahKFH6
-	mPPgVxVK88tjR/u6I/BEzr94maGzro+ySIKIq1PW/Ee5qVyoVosM5ZhPwwMMf6Di
-	NTNd2lKXU20wIU8SfSAUgodddX/OtW4SaA/a0fNW4q1/MwiiTLOUg/uej9MiYBAk
-	gWMAZ0pZ4gF9qswb0qmyGZB2imKx2G0n7FrCjKsB8pCDLptmimKgLgEcf7A==
-Received: from mail-pl1-f200.google.com (mail-pl1-f200.google.com [209.85.214.200])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4by20y34au-1
+	:mime-version:references:subject:to; s=qcppdkim1; bh=yRCNcS5A6Eu
+	GBIPJ6FqXwxvOo4jjK2JrobpZz5iBr1c=; b=NEZ1O9C1xjmXUug5MGg9HJlfDQZ
+	VLfM7SzWKCQhIf3apuStnyMQF5RT1FWABL2S0tqvYAqQ6g/GndyzTQTtC6dW4Ajv
+	pX14Qf4R83YEZiLuX+ylcwSNse+uB26O8ZoQqXqd5a9+Sm+Bkqt0CgJD0Eg6dmIt
+	Qzv13YpxZ0tih04/8idz9dQTw88A4ZQx/yZBaIT6gPIF+u4bvPYzDQiXVXGSDDaQ
+	97whNgBIQdeXFyQvZcOWT/oNCvozwxU0G6vgeNBZfhreqoxnPHAuW2PzXgX3jSM/
+	j9flU9UXYPO8ab2Wt1q2m9ukTd8d1GLuRdXZnS1eveYZrw2Z8G4IOS0DhfQ==
+Received: from mail-pg1-f199.google.com (mail-pg1-f199.google.com [209.85.215.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4by355ttq2-1
 	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 11:24:43 +0000 (GMT)
-Received: by mail-pl1-f200.google.com with SMTP id d9443c01a7336-2a7a98ba326so12193345ad.1
-        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 03:24:43 -0800 (PST)
+	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 11:24:52 +0000 (GMT)
+Received: by mail-pg1-f199.google.com with SMTP id 41be03b00d2f7-b6097ca315bso12733174a12.3
+        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 03:24:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1769599483; x=1770204283; darn=vger.kernel.org;
+        d=oss.qualcomm.com; s=google; t=1769599492; x=1770204292; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+Sy9zUDZs56f6JnqKzFkwx6XwPXTc9MqxOFBhYwgs2A=;
-        b=g/bv2MSXVpSH0nEaj6PmIMvc5nKwKoDxWUydqYZOVP76Zcv0N3y3VpbzGGrVqn7GQZ
-         Iq2sxMJ52fXxkzthO1jTu7aGf67y013QUhuDdWzrpH+PvFfYOqjGimfbtkbQ8VKPcpII
-         v2VHH3SPlefe43DbQEn9WIglPSIxYBzoSrUfbzR8KJJPRNZOL602rnhhxbHyqrjqnhUv
-         vmEH4uhXqNrljEIiiuEseJPZocoAaBF57e46xNEQkZm99w4NVPXeowyTjHJyhegDAgQJ
-         tUK2MPLZVpG6307urE0llSwZtiMvydSAg2gJnr2G8Z9PDyUVaE8rrHwRF2odBd1fFc68
-         S+9Q==
+        bh=yRCNcS5A6EuGBIPJ6FqXwxvOo4jjK2JrobpZz5iBr1c=;
+        b=blXiCWjkjDlrOiP8vQnH3fkTVOL05cLzr5Bw9CW47lR3+mfxzleoW4xgHhZv/x40QB
+         xSyHYB+xaPNiteTE+lPVoq/Xm0DMsAnZVExA9cyAfuDqZObpM0mjXc541V8fEvX4Sn8A
+         NqJNLa7yOv52kYW6GhleiVaIpOxm17qWsSLGLugQ2Lr+q/e0kJIWMyR8Wz7FauXGRgSX
+         8VKwdkQ5dhVlI9XlVZuPo5B2HaBSEMsoq4ie3RBEZx79+knNHvksF9cmrrl3VrLFZ3vM
+         6037EC/BSYyTUkUdA4wfO4Ko6s+YUqhe7nGs+DUUD6hWUVUkaRwlr2nm/bdwWQfhidbj
+         7+Nw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769599483; x=1770204283;
+        d=1e100.net; s=20230601; t=1769599492; x=1770204292;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=+Sy9zUDZs56f6JnqKzFkwx6XwPXTc9MqxOFBhYwgs2A=;
-        b=ES25/PiT92v/9aA0dPorx81OYmYX8+MQmJOOCMLF9AkG2tKsikfiOjtD38ilK+4Hnp
-         VEPDbtFzIQNdp4f51O7r/IOI2VmCgpyx0p5Bi7ZRuNFMmNF70Om2YJ9zcpDEtvk0jRBr
-         jc12ReT0veMdhpwtnXU25NCQ3av5V5Ma0ptZ0iP6IY45ZF3cbdPsGXDnMcMoFQDQ9aIK
-         NW7uGIAQ7gKRs4uozJjaxQZUGsl7o73hSjJ/lkwvBnC+TIc8dx47Iis5RFYJYbT5NQaQ
-         JASJDABPxAvyopFdOXg2nMEnz+oZc0P1EwnQS3DgIGsvUKgHjbnTEczaacepvxlTao8t
-         +yZQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVMZoQ5DfT+w1/R2sH5jBXA9FT/GAteYQPjCKfLvibdnFqnT0y9VbLtfgTCmzxJ4B9wYn63bqjRSCA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxpew3wjyjt5Rz5ANf2hE+9XSmDhACN0eyTTXNIq1uC48RL5MDF
-	NvL9MSwx8SwOLdZJVc+0Afmvt6Smp8r58wKyckiaWpcdywYDi8IL0tjwS3U8/R5ct03zilzJThe
-	RVvEcaG0A1OYS2qU7aZrm7sbGU06R5YLGBhi2kJYHUWMLkAi9/+svMJvwp1iOOlQ=
-X-Gm-Gg: AZuq6aKF4vSifzBEf1d/pe4k1Fwdprls9ALGQa74n2tLO7AXBXyx9iGz4qxTYOm0HlU
-	ZoYinuffJAV8n7QOhZ08njRAIz5AWx+qZTuCKxB3w2W2WM4Y/13HWiWjr/g20y9AGir8KX7XDmY
-	nlzUFxY2blHy46WczXZLBkn+XLBK+AbNrOtkYrZ/WEOG7H0Nwi+WA8j394QgX1gXnbhadaOXvxn
-	RPIrSNffwiLA0ih2eWzXOHlP2trkfVgBG2x+ISNepz7P7eaXEVBzHrd5V+TlpQEHS60h5oMc06w
-	RoJn9HBOQ2zKuTsdbF0B/0T87kRfN9lGiVdy2mSF0oEKx+7E400/gCHKizJWhaY7XNuS/qfSJZA
-	LqtikrbiwWINHfAPI/gr4tZo+FRJOEf787S5Xr030yz2Y
-X-Received: by 2002:a17:902:d2cc:b0:2a7:bbe0:f01f with SMTP id d9443c01a7336-2a87120f624mr46348375ad.2.1769599482753;
-        Wed, 28 Jan 2026 03:24:42 -0800 (PST)
-X-Received: by 2002:a17:902:d2cc:b0:2a7:bbe0:f01f with SMTP id d9443c01a7336-2a87120f624mr46347955ad.2.1769599482206;
-        Wed, 28 Jan 2026 03:24:42 -0800 (PST)
+        bh=yRCNcS5A6EuGBIPJ6FqXwxvOo4jjK2JrobpZz5iBr1c=;
+        b=RU9GhUAPgfHlYIV0xaWnSUlPkl9t5L8Sq5renaX1AQAC/mQrUK7M2j2dWgXGlUJNbs
+         TE/0QktL4HavCz6j+gZ3cHtK7vK0bSIGmMshV20fwJfbK+LwuKNiv5lYlM7XjDu4y/0/
+         9g+CsfzprpxOSHJn3xCq0Izt73ak7qnok9ZVvuvrwRANCA0DuMcxgZKrdlWX+x53oBJW
+         d2ur97pSbLrvwYYMErhnps4JO39kSx+2JG2sxmwSScpvnrJ8CN4o/5n0fW9Rlrp3GaNF
+         AJIPDT5c7Zq16shBumb06EvJngBOATozgwxXmcJaZ021W94N+CPJIq1VUdzAgkoVFFcD
+         7WHg==
+X-Forwarded-Encrypted: i=1; AJvYcCVxGBDqRWnZu3M34QQTePETnr+vosY4jtupVOuTzAXulNaHh1y4G3A4f2jldLPr/eg8stJvOso80mk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxWbItWB7l4Ru2+6RZ1qB1fEzmOqEs6s9cIjZynofiAAsRUdM4H
+	9kxnAoKkcN9sZp5tptBXvs3V1ncciwtBlnltIUZy3Djf3nmXGXQWLRYbiIiOk4d9KImC5ME5rJC
+	GNEXScUg8S6e3wFQMo1gJRig0y781XqdIJzoUbwnV1UpEAfJJn1jyZHi2dDc8Umk=
+X-Gm-Gg: AZuq6aIvN+kEJA5Ul8c64rSExCgpGsDecMBNW0BgrRPkvoRa0HYH7yGh8PQjVUjM+tY
+	h4tS0TALe1kZkD4YINStFvhzkwrc9knOr7SZuRzXuhT6B/o8PDktuRgPz2+Ztpb952zP+yDr7Mg
+	Al8XHSDYjkpyLpJ/UKHjqREr3QKsFGbwtldXys6CD0VACbXjdPM9nIO0o3IDFFROyLqmfdZ056A
+	2KyWqf1BLZL85vu7o8sZk9o9Pnpg6fFDtZeZUEn010k+RPJgT3eqykBtGZDBTXDP8/0aRpoEqd7
+	ps/C2NGtDn69yntyA/Em4ZIEMEyF9ctnm/GymvcbK9/PmQL5Uie+LqWEmzdyM71Af2SInfCiaJt
+	kZOIrPFkrEsn48ndp4a/98xi5/lGVvm//UwXXgOu5WStB
+X-Received: by 2002:a05:6a20:9f03:b0:35f:46d3:f28e with SMTP id adf61e73a8af0-38ec6555b6amr4437336637.43.1769599491991;
+        Wed, 28 Jan 2026 03:24:51 -0800 (PST)
+X-Received: by 2002:a05:6a20:9f03:b0:35f:46d3:f28e with SMTP id adf61e73a8af0-38ec6555b6amr4437315637.43.1769599491459;
+        Wed, 28 Jan 2026 03:24:51 -0800 (PST)
 Received: from hu-jprakash-hyd.qualcomm.com ([202.46.22.19])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a88b4c40a8sm21984605ad.51.2026.01.28.03.24.33
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a88b4c40a8sm21984605ad.51.2026.01.28.03.24.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jan 2026 03:24:41 -0800 (PST)
+        Wed, 28 Jan 2026 03:24:51 -0800 (PST)
 From: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
 To: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
         agross@kernel.org, andersson@kernel.org, lumag@kernel.org,
@@ -92,11 +92,11 @@ Cc: rui.zhang@intel.com, lukasz.luba@arm.com, devicetree@vger.kernel.org,
         cros-qcom-dts-watchers@chromium.org, jishnu.prakash@oss.qualcomm.com,
         quic_kotarake@quicinc.com, neil.armstrong@linaro.org,
         stephan.gerhold@linaro.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH V9 1/4] dt-bindings: iio: adc: Split out QCOM VADC channel properties
-Date: Wed, 28 Jan 2026 16:54:17 +0530
-Message-Id: <20260128112420.695518-2-jishnu.prakash@oss.qualcomm.com>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
+Subject: [PATCH V9 2/4] dt-bindings: iio: adc: Add support for QCOM PMIC5 Gen3 ADC
+Date: Wed, 28 Jan 2026 16:54:18 +0530
+Message-Id: <20260128112420.695518-3-jishnu.prakash@oss.qualcomm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20260128112420.695518-1-jishnu.prakash@oss.qualcomm.com>
 References: <20260128112420.695518-1-jishnu.prakash@oss.qualcomm.com>
@@ -107,244 +107,294 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-ORIG-GUID: -wsDeqal_dpLgrslCvTJQh2cmVLRNElk
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI4MDA5MyBTYWx0ZWRfXydR9d0PjSJ2I
- +NKUZ6z0qtFhYvGD3372MgPXyLvdlzWJtpu8wcoLrXjbKJbMQ7o/7PtX7/tKcbHlO6WvxS9ACpq
- HKrw8Tahh0INQ/Drl1FzTaGvh6l3LOZARp7zLeMBSoMAgA2W9LxeNgTF5XkpGKeCh1KNuNZPMye
- LXewLdg3K0wlcs+jD8kty12Yh/6w8aJ4znYx0Zt1ixNRF4l0AEWq/gOYQdh/Mq/KKqDYLetJzKk
- iwRn6iH17sPPNWnzVJ+VDp7y5FCnt986sqxB7D3GYMObL/Sd8Z9RVNF7czH7x+JNLPFf4EigExV
- ZSfJOqfUBMis/h7Vo5yx0lP4Xi+bwg+kAGTsaEepDOXjwindkzwqwffK6gu9MEs4gV9fBTTMClY
- yBjMFnGMQc9oXszhni9PKg4MHAyezh85OWDUOjhBhZ4Xuwmxr0F6oa3rvM2waIuyIjWql3doypz
- N+e0jHOlvB505jUgyVg==
-X-Proofpoint-GUID: -wsDeqal_dpLgrslCvTJQh2cmVLRNElk
-X-Authority-Analysis: v=2.4 cv=IKgPywvG c=1 sm=1 tr=0 ts=6979f1fb cx=c_pps
- a=IZJwPbhc+fLeJZngyXXI0A==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+X-Authority-Analysis: v=2.4 cv=YNWSCBGx c=1 sm=1 tr=0 ts=6979f204 cx=c_pps
+ a=Oh5Dbbf/trHjhBongsHeRQ==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
  a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=gEfo2CItAAAA:8 a=KKAkSRfTAAAA:8 a=i0EeH86SAAAA:8 a=EUspDBNiAAAA:8
- a=4vDKtjJwf6yegxfEYBcA:9 a=uG9DUKGECoFWVXl0Dc02:22 a=sptkURWiP4Gy88Gu7hUp:22
- a=cvBusfyB2V15izCimMoJ:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=gEfo2CItAAAA:8 a=i0EeH86SAAAA:8
+ a=YrMGt2jeDSw4g2R_97MA:9 a=_Vgx9l1VpLgwpw_dHYaR:22 a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-ORIG-GUID: JdvElSnkKm4zj7_3t4yhwOM5r2ZLJRXz
+X-Proofpoint-GUID: JdvElSnkKm4zj7_3t4yhwOM5r2ZLJRXz
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI4MDA5MyBTYWx0ZWRfX8eEDdb6uP/df
+ XK8PhdkAOFuvyIZ0XYPDyEAG8/VTGnYzjuKddb4FHNXN0zcks2U7xb8bbWolPvuA+aOkwdlHSoV
+ 2j7lFslR/xTuKfacpQz6QGWu+BmnhvgweZB0I5Ai68wavXdkDHbdLFLlPrufUfWtm4zh6fvy7bt
+ /TTY1yX0Q3CW6S9D7njR6FLiRNU4EyYe/8nhboqwEXJNCHVGtK+PBgX7lPmzk8wMoAuMDRKmfTh
+ 6KTaOTwHr/vQzUOE/xdgfghyIz1zNt7657ANqmhKz/2ieT1alAMUg0wkrRgimMP2kTjWOsQZnfv
+ 3S42rfWoLoTIexjbOdLtdaG5ma4AcG1E/4Y54t1FGr5rfS/SWoWfwmrX1GRjABdqPhpiXqzga+x
+ 1BxvkHWKzxES+wf+QyHoQ5KGp7y4FORltxKeldOR4nRrZE9yGJ5sMEJWQHfRp/1jB9p0tkOM6um
+ fJGtHAuK/ByVQAWRXpQ==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-01-28_02,2026-01-27_03,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 priorityscore=1501 clxscore=1015 suspectscore=0 impostorscore=0
- phishscore=0 bulkscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0
+ bulkscore=0 phishscore=0 suspectscore=0 lowpriorityscore=0 adultscore=0
+ priorityscore=1501 spamscore=0 impostorscore=0 malwarescore=0 clxscore=1015
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601280093
 
-Split out the common channel properties for QCOM VADC devices into a
-separate file so that it can be included as a reference for devices
-using them. This will be needed for the upcoming ADC5 Gen3 binding
-support patch, as ADC5 Gen3 also uses all of these common properties.
+For the PMIC5-Gen3 type PMICs, ADC peripheral is present in HW for the
+following PMICs: PMK8550, PM8550, PM8550B and PM8550VX PMICs.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+It is similar to PMIC5-Gen2, with SW communication to ADCs on all PMICs
+going through PBS(Programmable Boot Sequence) firmware through a single
+register interface. This interface is implemented on SDAM (Shared
+Direct Access Memory) peripherals on the master PMIC PMK8550 rather
+than a dedicated ADC peripheral.
+
+Add documentation for PMIC5 Gen3 ADC and update SPMI PMIC bindings to
+allow ADC5 Gen3 as adc@ subnode.
+
 Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
 ---
 Changes since v7:
-- Removed binding file paths mentioned under `reg` property description in
-  Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc-common.yaml, and
-  updated the description slightly, to simplify it and avoid any dependencies
-  on patch 1 from the earlier series.
-- Removed an extra blank line present in
-  Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
-  in previous versions.
+- Dropped ADC5 GEN3 channel macro definitions from bindings, based
+  on discussion with Krzysztof concluded here: 
+  https://lore.kernel.org/all/d10e2eea-4b86-4e1a-b7a0-54c55907a605@oss.qualcomm.com/,
+  to be added separately in other patches.
+- Fixed quotes to use only double quotes for "#address-cells",
+  "#size-cells" and "#io-channel-cells" properties, to address Krzysztof's
+  comment.
+- Removed inclusion of ADC channel macro header files from ADC5 Gen3 example
+  and replaced the macros used in the "reg" properties in channel nodes
+  with the actual hex values.
+- Removed update made under `reg` property in
+  Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc-common.yaml
+  which referenced ADC macro binding files, to align with change made
+  in patch 1 of this series.
 
 Changes since v6:
+- Updated SPMI PMIC bindings to allow ADC5 Gen3 as adc@ subnode, to address
+  Neil's comment.
+- Replaced 2025 copyright in newly added files with yearless copyright,
+  following new internal guidelines.
 - Collected Acked-by tag from Jonathan.
 
 Changes since v5:
-- Collected Reviewed-by tag from Krzysztof.
+- Addressed following comments from Krzysztof:
+  - Increased line wrap length for top-level device description.
+  - Added more details in binding description explaining how number
+    of SDAM peripherals used for ADC is allocated per SoC.
+  - Dropped "interrupt-names" property.
+  - Moved `required` block to after the list of all properties.
+  - Dropped | from patternProperties description.
+  - Renamed per-PMIC binding files listing ADC channel macro names.
+- Addressed following comments from Jonathan:
+  - Moved ref before description, under patternProperties.
+  - Arranged enum under qcom,hw-settle-time as groups of 8.
 
- .../iio/adc/qcom,spmi-vadc-common.yaml        | 84 +++++++++++++++++++
- .../bindings/iio/adc/qcom,spmi-vadc.yaml      | 76 +----------------
- 2 files changed, 86 insertions(+), 74 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc-common.yaml
+Changes since v4:
+- Added ADC5 Gen3 documentation in a separate new file to avoid complicating
+  existing VADC documentation file further to accomodate this device, as
+  suggested by reviewers.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc-common.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc-common.yaml
+Changes since v3:
+- Added ADC5 Gen3 documentation changes in existing qcom,spmi-vadc.yaml file
+  instead of adding separate file and updated top-level constraints in documentation
+  file based on discussion with reviewers.
+- Dropped default SID definitions.
+- Addressed other reviewer comments.
+
+Changes since v2:
+- Moved ADC5 Gen3 documentation into a separate new file.
+
+Changes since v1:
+- Updated properties separately for all compatibles to clarify usage
+  of new properties and updates in usage of old properties for ADC5 Gen3.
+- Avoided updating 'adc7' name to 'adc5 gen2' and just left a comment
+  mentioning this convention.
+- Used predefined channel IDs in individual PMIC channel definitions
+  instead of numeric IDs.
+- Addressed other comments from reviewers.
+
+ .../bindings/iio/adc/qcom,spmi-adc5-gen3.yaml | 151 ++++++++++++++++++
+ .../bindings/iio/adc/qcom,spmi-vadc.yaml      |   2 +
+ .../bindings/mfd/qcom,spmi-pmic.yaml          |   1 +
+ 3 files changed, 154 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml
 new file mode 100644
-index 000000000000..3ae252c17b91
+index 000000000000..149f4af8f4b8
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc-common.yaml
-@@ -0,0 +1,84 @@
++++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml
+@@ -0,0 +1,151 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/qcom,spmi-vadc-common.yaml#
++$id: http://devicetree.org/schemas/iio/adc/qcom,spmi-adc5-gen3.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Qualcomm Technologies, Inc. SPMI PMIC ADC channels
++title: Qualcomm's SPMI PMIC ADC5 Gen3
 +
 +maintainers:
 +  - Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
 +
-+description:
-+  This defines the common properties used to define Qualcomm VADC channels.
++description: |
++  SPMI PMIC5 Gen3 voltage ADC (ADC) provides interface to clients to read
++  voltage. It is a 16-bit sigma-delta ADC. It also performs the same thermal
++  monitoring function as the existing ADC_TM devices.
++
++  The interface is implemented on SDAM (Shared Direct Access Memory) peripherals
++  on the master PMIC rather than a dedicated ADC peripheral. The number of PMIC
++  SDAM peripherals allocated for ADC is not correlated with the PMIC used, it is
++  programmed in FW (PBS) and is fixed per SOC, based on the SOC requirements.
++  All boards using a particular (SOC + master PMIC) combination will have the
++  same number of ADC SDAMs supported on that PMIC.
 +
 +properties:
++  compatible:
++    const: qcom,spmi-adc5-gen3
++
 +  reg:
++    items:
++      - description: SDAM0 base address in the SPMI PMIC register map
++      - description: SDAM1 base address
++    minItems: 1
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  "#io-channel-cells":
++    const: 1
++
++  "#thermal-sensor-cells":
++    const: 1
++
++  interrupts:
++    items:
++      - description: SDAM0 end of conversion (EOC) interrupt
++      - description: SDAM1 EOC interrupt
++    minItems: 1
++
++patternProperties:
++  "^channel@[0-9a-f]+$":
++    type: object
++    unevaluatedProperties: false
++    $ref: /schemas/iio/adc/qcom,spmi-vadc-common.yaml
 +    description:
-+      ADC channel number (PMIC-specific for versions after PMIC5 ADC).
-+    maxItems: 1
++      Represents the external channels which are connected to the ADC.
 +
-+  label:
-+    description:
-+      ADC input of the platform as seen in the schematics.
-+      For thermistor inputs connected to generic AMUX or GPIO inputs
-+      these can vary across platform for the same pins. Hence select
-+      the platform schematics name for this channel.
++    properties:
++      qcom,decimation:
++        enum: [ 85, 340, 1360 ]
++        default: 1360
 +
-+  qcom,decimation:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      This parameter is used to decrease ADC sampling rate.
-+      Quicker measurements can be made by reducing decimation ratio.
++      qcom,hw-settle-time:
++        enum: [ 15, 100, 200, 300, 400, 500, 600, 700,
++                1000, 2000, 4000, 8000, 16000, 32000, 64000, 128000 ]
++        default: 15
 +
-+  qcom,pre-scaling:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    description:
-+      Used for scaling the channel input signal before the signal is
-+      fed to VADC. The configuration for this node is to know the
-+      pre-determined ratio and use it for post scaling. It is a pair of
-+      integers, denoting the numerator and denominator of the fraction by which
-+      input signal is multiplied. For example, <1 3> indicates the signal is scaled
-+      down to 1/3 of its value before ADC measurement.
-+      If property is not found default value depending on chip will be used.
-+    oneOf:
-+      - items:
-+          - const: 1
-+          - enum: [ 1, 3, 4, 6, 20, 8, 10, 16 ]
-+      - items:
-+          - const: 10
-+          - const: 81
++      qcom,avg-samples:
++        enum: [ 1, 2, 4, 8, 16 ]
++        default: 1
 +
-+  qcom,ratiometric:
-+    type: boolean
-+    description: |
-+      Channel calibration type.
-+      - For compatible property "qcom,spmi-vadc", if this property is
-+        specified VADC will use the VDD reference (1.8V) and GND for
-+        channel calibration. If property is not found, channel will be
-+        calibrated with 0.625V and 1.25V reference channels, also
-+        known as absolute calibration.
-+      - For other compatible properties, if this property is specified
-+        VADC will use the VDD reference (1.875V) and GND for channel
-+        calibration. If property is not found, channel will be calibrated
-+        with 0V and 1.25V reference channels, also known as absolute calibration.
-+
-+  qcom,hw-settle-time:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: |
-+      Time between AMUX getting configured and the ADC starting
-+      conversion. The 'hw_settle_time' is an index used from valid values
-+      and programmed in hardware to achieve the hardware settling delay.
-+
-+  qcom,avg-samples:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: |
-+      Number of samples to be used for measurement.
-+      Averaging provides the option to obtain a single measurement
-+      from the ADC that is an average of multiple samples. The value
-+      selected is 2^(value).
++      qcom,adc-tm:
++        description:
++          ADC_TM is a threshold monitoring feature in HW which can be enabled
++          on any ADC channel, to trigger an IRQ for threshold violation. In
++          earlier ADC generations, it was implemented in a separate device
++          (documented in Documentation/devicetree/bindings/thermal/qcom-spmi-adc-tm5.yaml.)
++          In Gen3, this feature can be enabled in the same ADC device for any
++          channel and threshold monitoring and IRQ triggering are handled in FW
++          (PBS) instead of another dedicated HW block.
++          This property indicates ADC_TM monitoring is done on this channel.
++        type: boolean
 +
 +required:
++  - compatible
 +  - reg
++  - "#address-cells"
++  - "#size-cells"
++  - "#io-channel-cells"
++  - interrupts
 +
-+additionalProperties: true
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    pmic {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      adc@9000 {
++        compatible = "qcom,spmi-adc5-gen3";
++        reg = <0x9000>, <0x9100>;
++        interrupts = <0x0 0x90 0x1 IRQ_TYPE_EDGE_RISING>,
++                      <0x0 0x91 0x1 IRQ_TYPE_EDGE_RISING>;
++        #address-cells = <1>;
++        #size-cells = <0>;
++        #io-channel-cells = <1>;
++        #thermal-sensor-cells = <1>;
++
++        /* PMK8550 Channel nodes */
++        channel@3 {
++          reg = <0x3>;
++          label = "pmk8550_die_temp";
++          qcom,pre-scaling = <1 1>;
++        };
++
++        channel@44 {
++          reg = <0x44>;
++          label = "pmk8550_xo_therm";
++          qcom,pre-scaling = <1 1>;
++          qcom,ratiometric;
++          qcom,hw-settle-time = <200>;
++          qcom,adc-tm;
++        };
++
++        /* PM8550 Channel nodes */
++        channel@103 {
++          reg = <0x103>;
++          label = "pm8550_die_temp";
++          qcom,pre-scaling = <1 1>;
++        };
++
++        /* PM8550B Channel nodes */
++        channel@78f {
++          reg = <0x78f>;
++          label = "pm8550b_vbat_sns_qbg";
++          qcom,pre-scaling = <1 3>;
++        };
++
++        /* PM8550VS_C Channel nodes */
++        channel@203 {
++          reg = <0x203>;
++          label = "pm8550vs_c_die_temp";
++          qcom,pre-scaling = <1 1>;
++        };
++      };
++    };
 diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
-index b9dc04b0d307..16c80709a3ee 100644
+index 16c80709a3ee..72188041e8b5 100644
 --- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
 +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
-@@ -56,7 +56,7 @@ required:
- patternProperties:
-   "^channel@[0-9a-f]+$":
-     type: object
--    additionalProperties: false
-+    unevaluatedProperties: false
-     description: |
-       Represents the external channels which are connected to the ADC.
-       For compatible property "qcom,spmi-vadc" following channels, also known as
-@@ -64,79 +64,7 @@ patternProperties:
-       configuration nodes should be defined:
-       VADC_REF_625MV and/or VADC_SPARE1(based on PMIC version) VADC_REF_1250MV,
-       VADC_GND_REF and VADC_VDD_VADC.
--
--    properties:
--      reg:
--        maxItems: 1
--        description: |
--          ADC channel number.
--          See include/dt-bindings/iio/qcom,spmi-vadc.h
--          For PMIC7 ADC, the channel numbers are specified separately per PMIC
--          in the PMIC-specific files in include/dt-bindings/iio/.
--
--      label:
--        description: |
--            ADC input of the platform as seen in the schematics.
--            For thermistor inputs connected to generic AMUX or GPIO inputs
--            these can vary across platform for the same pins. Hence select
--            the platform schematics name for this channel.
--
--      qcom,decimation:
--        $ref: /schemas/types.yaml#/definitions/uint32
--        description: |
--            This parameter is used to decrease ADC sampling rate.
--            Quicker measurements can be made by reducing decimation ratio.
--
--      qcom,pre-scaling:
--        description: |
--            Used for scaling the channel input signal before the signal is
--            fed to VADC. The configuration for this node is to know the
--            pre-determined ratio and use it for post scaling. It is a pair of
--            integers, denoting the numerator and denominator of the fraction by which
--            input signal is multiplied. For example, <1 3> indicates the signal is scaled
--            down to 1/3 of its value before ADC measurement.
--            If property is not found default value depending on chip will be used.
--        $ref: /schemas/types.yaml#/definitions/uint32-array
--        oneOf:
--          - items:
--              - const: 1
--              - enum: [ 1, 3, 4, 6, 20, 8, 10, 16 ]
--          - items:
--              - const: 10
--              - const: 81
--
--      qcom,ratiometric:
--        description: |
--            Channel calibration type.
--            - For compatible property "qcom,spmi-vadc", if this property is
--              specified VADC will use the VDD reference (1.8V) and GND for
--              channel calibration. If property is not found, channel will be
--              calibrated with 0.625V and 1.25V reference channels, also
--              known as absolute calibration.
--            - For compatible property "qcom,spmi-adc5", "qcom,spmi-adc7" and
--              "qcom,spmi-adc-rev2", if this property is specified VADC will use
--              the VDD reference (1.875V) and GND for channel calibration. If
--              property is not found, channel will be calibrated with 0V and 1.25V
--              reference channels, also known as absolute calibration.
--        type: boolean
--
--      qcom,hw-settle-time:
--        $ref: /schemas/types.yaml#/definitions/uint32
--        description: |
--            Time between AMUX getting configured and the ADC starting
--            conversion. The 'hw_settle_time' is an index used from valid values
--            and programmed in hardware to achieve the hardware settling delay.
--
--      qcom,avg-samples:
--        $ref: /schemas/types.yaml#/definitions/uint32
--        description: |
--            Number of samples to be used for measurement.
--            Averaging provides the option to obtain a single measurement
--            from the ADC that is an average of multiple samples. The value
--            selected is 2^(value).
--
--    required:
--      - reg
-+    $ref: /schemas/iio/adc/qcom,spmi-vadc-common.yaml
+@@ -15,6 +15,8 @@ description: |
+   voltage. The VADC is a 15-bit sigma-delta ADC.
+   SPMI PMIC5/PMIC7 voltage ADC (ADC) provides interface to clients to read
+   voltage. The VADC is a 16-bit sigma-delta ADC.
++  Note that PMIC7 ADC is the generation between PMIC5 and PMIC5 Gen3 ADC,
++  it can be considered like PMIC5 Gen2.
  
- allOf:
-   - if:
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml b/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
+index 65c80e3b4500..cc5de26bbf57 100644
+--- a/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
++++ b/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
+@@ -129,6 +129,7 @@ patternProperties:
+   "^adc@[0-9a-f]+$":
+     type: object
+     oneOf:
++      - $ref: /schemas/iio/adc/qcom,spmi-adc5-gen3.yaml#
+       - $ref: /schemas/iio/adc/qcom,spmi-iadc.yaml#
+       - $ref: /schemas/iio/adc/qcom,spmi-rradc.yaml#
+       - $ref: /schemas/iio/adc/qcom,spmi-vadc.yaml#
 -- 
 2.25.1
 
