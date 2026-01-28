@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CC062D73BD
-	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 15:38:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38AFC2E1C63
+	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 15:38:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769614713; cv=none; b=f6RtkcvverM2z1UTN6DxEviWEa+PElyc1WQ9+V94Z0BHqCexJPlazlLB6Z1O8uQ2+Rwj88fBdbQBz/TIXQg5jmyOU5es12SC3K5Uq3lWZ+eMqbn7Dcou/EZiRhTqOMrkep5TS1r7FG3M2lfZIu9pPUq4cPDvNImqLwqEX3MZaqA=
+	t=1769614713; cv=none; b=Q68ECURAWohr2bZD7NkE/u8bOFLdYWduSpElxyDpLP5gbhw+BNFhpQOAplh8DfBtqYzK415I7RSU0u75+xAWr5nad8qXwVAlJG0UIMUb3YMJXwe/kCyGEx2PXbiqrjURxHwA9j/99Z5y+A2HaPKdhte1vkx7ssEI+/iufOzKV/o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1769614713; c=relaxed/simple;
-	bh=cLW8SrWmi7lpQKdnvAFnJeRFfADLLP7ovJP67HXlncc=;
+	bh=cICnMvrZpddQjj4AsMXgMuQwqiM4gYA74oqyfJsDmfM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Jbt6Esucbn7jdQ5kfH5R9y6GC1/B2Zz89XFdSe9gr0DxbIvC8lHaNXA2eN2XhK+Q3USYWdSSqSCvsvJQRl3LJDEVckTf8OcAPMG+k+5K92MWAWtbP85Hyy9C4P7A5sCjd6iMjjsOso/kbp3Xjr6elDRKhs1gd87cqw/8Gh6emOc=
+	 MIME-Version; b=ExUwRNTjyWhc245dZPi3/VVM8ddhVS9Wlu7QJefxn6zk1nEltEY4hTrGCSSoHqKbUtvYDxVrrt4O3ToeNBdfeqG3c+bD28PfTM7Kgw81c52bKrQTwBS8a0Ij1ZWFkea9QlXlBlPQSOicOpHYgX42/dYLvXMGDRsvAxUy/EflW9c=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vl7cg-0003oq-Ng; Wed, 28 Jan 2026 16:38:26 +0100
+	id 1vl7cg-0003ov-Ni; Wed, 28 Jan 2026 16:38:26 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vl7cg-002wSL-2U;
+	id 1vl7cg-002wSX-33;
 	Wed, 28 Jan 2026 16:38:26 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vl7cg-0000000FR9u-06sZ;
+	id 1vl7cg-0000000FRAk-0h6c;
 	Wed, 28 Jan 2026 16:38:26 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -43,9 +43,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v3 2/8] iio: dac: ds4424: ratelimit read errors and use device context
-Date: Wed, 28 Jan 2026 16:38:18 +0100
-Message-ID: <20260128153824.3679187-3-o.rempel@pengutronix.de>
+Subject: [PATCH v3 7/8] iio: dac: ds4424: convert to regmap
+Date: Wed, 28 Jan 2026 16:38:23 +0100
+Message-ID: <20260128153824.3679187-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260128153824.3679187-1-o.rempel@pengutronix.de>
 References: <20260128153824.3679187-1-o.rempel@pengutronix.de>
@@ -61,41 +61,329 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-Replace pr_err() with dev_err_ratelimited() in the RAW read path to avoid
-log spam on repeated I2C failures and to include the device context.
+Refactor the driver to use the regmap API.
 
-Use %pe to print errno names for faster debugging. Use the parent
-device context to identify the physical hardware causing the error.
+Replace the driver-specific mutex and manual shadow buffers with the
+standard regmap infrastructure for locking and caching.
+
+This ensures the cache is populated from hardware at probe, preventing
+state desynchronization (e.g. across suspend/resume).
+
+Define access tables to validate the different register maps of DS44x2
+and DS44x4.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
 changes v3:
-- Use indio_dev->dev.parent to reference the physical device.
-- Remove redundant space in error message: "channel %d: %pe".
-- This patch now precedes regmap refactoring.
+- Switch to REGCACHE_MAPLE to efficiently handle the sparse register map
+  (offset 0xF8) and avoid allocating memory for the unused 0x00-0xF7 range.
+- Use explicit regmap_bulk_read() in probe to seed the cache with the
+  bootloader configuration. This avoids the invalid read from address 0x00
+  that occurred with generic cache defaults.
+- Remove ds4424_verify_chip(); devm_regmap_init_i2c() and the subsequent
+  bulk read implicitly validate the device presence.
+- Use regmap_bulk_write() in ds4424_suspend() to efficiently zero all
+  channels.
+- Adopt fsleep() for delays and include <linux/array_size.h>.
+- Use dev_err_ratelimited() with the physical device context in the read
+  path (incorporating feedback aimed at v2 patch 8).
 changes v2:
-- Update error message
-- Rebase against regmap refactoring
+- new patch
 ---
- drivers/iio/dac/ds4424.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iio/dac/Kconfig  |   1 +
+ drivers/iio/dac/ds4424.c | 171 ++++++++++++++++++++++-----------------
+ 2 files changed, 97 insertions(+), 75 deletions(-)
 
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 7cd3caec1262..dbbbc45e8718 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -408,6 +408,7 @@ config DPOT_DAC
+ config DS4424
+ 	tristate "Maxim Integrated DS4422/DS4424 DAC driver"
+ 	depends on I2C
++	select REGMAP_I2C
+ 	help
+ 	  If you say yes here you get support for Maxim chips DS4422, DS4424.
+ 
 diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-index 596ff5999271..36286e4923af 100644
+index f340d491fcc1..9bef1c60b2eb 100644
 --- a/drivers/iio/dac/ds4424.c
 +++ b/drivers/iio/dac/ds4424.c
-@@ -100,8 +100,9 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_RAW:
- 		ret = ds4424_get_value(indio_dev, &regval, chan->channel);
- 		if (ret < 0) {
--			pr_err("%s : ds4424_get_value returned %d\n",
--							__func__, ret);
-+			dev_err_ratelimited(indio_dev->dev.parent,
-+					    "Failed to read channel %d: %pe\n",
-+					    chan->channel, ERR_PTR(ret));
- 			return ret;
- 		}
+@@ -5,12 +5,14 @@
+  * Copyright (C) 2017 Maxim Integrated
+  */
  
++#include <linux/array_size.h>
+ #include <linux/bits.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ 
+ #include <linux/iio/consumer.h>
+@@ -42,11 +44,8 @@ enum ds4424_device_ids {
+ };
+ 
+ struct ds4424_data {
+-	struct i2c_client *client;
+-	struct mutex lock;
+-	uint8_t save[DS4424_MAX_DAC_CHANNELS];
++	struct regmap *regmap;
+ 	struct regulator *vcc_reg;
+-	uint8_t raw[DS4424_MAX_DAC_CHANNELS];
+ };
+ 
+ static const struct iio_chan_spec ds4424_channels[] = {
+@@ -56,52 +55,88 @@ static const struct iio_chan_spec ds4424_channels[] = {
+ 	DS4424_CHANNEL(3),
+ };
+ 
+-static int ds4424_get_value(struct iio_dev *indio_dev,
+-			     int *val, int channel)
+-{
+-	struct ds4424_data *data = iio_priv(indio_dev);
+-	int ret;
++static const struct regmap_range ds44x2_ranges[] = {
++	regmap_reg_range(DS4424_DAC_ADDR(0), DS4424_DAC_ADDR(1)),
++};
+ 
+-	mutex_lock(&data->lock);
+-	ret = i2c_smbus_read_byte_data(data->client, DS4424_DAC_ADDR(channel));
+-	if (ret < 0)
+-		goto fail;
++static const struct regmap_range ds44x4_ranges[] = {
++	regmap_reg_range(DS4424_DAC_ADDR(0), DS4424_DAC_ADDR(3)),
++};
+ 
+-	*val = ret;
++static const struct regmap_access_table ds44x2_table = {
++	.yes_ranges = ds44x2_ranges,
++	.n_yes_ranges = ARRAY_SIZE(ds44x2_ranges),
++};
+ 
+-fail:
+-	mutex_unlock(&data->lock);
+-	return ret;
+-}
++static const struct regmap_access_table ds44x4_table = {
++	.yes_ranges = ds44x4_ranges,
++	.n_yes_ranges = ARRAY_SIZE(ds44x4_ranges),
++};
+ 
+-static int ds4424_set_value(struct iio_dev *indio_dev,
+-			     int val, struct iio_chan_spec const *chan)
++static const struct regmap_config ds44x2_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.cache_type = REGCACHE_MAPLE,
++	.max_register = DS4424_DAC_ADDR(1),
++	.rd_table = &ds44x2_table,
++	.wr_table = &ds44x2_table,
++	/* Seed cache from HW during regmap_init */
++};
++
++static const struct regmap_config ds44x4_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++	.cache_type = REGCACHE_MAPLE,
++	.max_register = DS4424_DAC_ADDR(3),
++	.rd_table = &ds44x4_table,
++	.wr_table = &ds44x4_table,
++	/* Seed cache from HW during regmap_init */
++};
++
++static int ds4424_init_regmap(struct i2c_client *client,
++			      struct iio_dev *indio_dev)
+ {
+ 	struct ds4424_data *data = iio_priv(indio_dev);
++	const struct regmap_config *regmap_config;
++	u8 vals[DS4424_MAX_DAC_CHANNELS];
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
+-	ret = i2c_smbus_write_byte_data(data->client,
+-			DS4424_DAC_ADDR(chan->channel), val);
+-	if (ret < 0)
+-		goto fail;
+-
+-	data->raw[chan->channel] = val;
+-
+-fail:
+-	mutex_unlock(&data->lock);
+-	return ret;
++	if (indio_dev->num_channels == DS4424_MAX_DAC_CHANNELS)
++		regmap_config = &ds44x4_regmap_config;
++	else
++		regmap_config = &ds44x2_regmap_config;
++
++	data->regmap = devm_regmap_init_i2c(client, regmap_config);
++	if (IS_ERR(data->regmap))
++		return dev_err_probe(&client->dev, PTR_ERR(data->regmap),
++				     "Failed to init regmap.\n");
++
++	/*
++	 * Prime the cache with the bootloader's configuration.
++	 * regmap_bulk_read will automatically populate the cache with
++	 * the values read from the hardware.
++	 */
++	ret = regmap_bulk_read(data->regmap, DS4424_DAC_ADDR(0), vals,
++			       indio_dev->num_channels);
++	if (ret)
++		return dev_err_probe(&client->dev, ret,
++				     "Failed to read hardware defaults\n");
++
++	return 0;
+ }
+ 
+ static int ds4424_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+ {
+-	int ret, regval;
++	struct ds4424_data *data = iio_priv(indio_dev);
++	unsigned int regval;
++	int ret;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		ret = ds4424_get_value(indio_dev, &regval, chan->channel);
++		ret = regmap_read(data->regmap, DS4424_DAC_ADDR(chan->channel),
++				  &regval);
+ 		if (ret < 0) {
+ 			dev_err_ratelimited(indio_dev->dev.parent,
+ 					    "Failed to read channel %d: %pe\n",
+@@ -124,6 +159,7 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int val, int val2, long mask)
+ {
++	struct ds4424_data *data = iio_priv(indio_dev);
+ 	unsigned int abs_val;
+ 
+ 	if (val2 != 0)
+@@ -143,58 +179,44 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
+ 		if (val > 0)
+ 			abs_val |= DS4424_DAC_SOURCE;
+ 
+-		return ds4424_set_value(indio_dev, abs_val, chan);
++		return regmap_write(data->regmap, DS4424_DAC_ADDR(chan->channel),
++				    abs_val);
+ 
+ 	default:
+ 		return -EINVAL;
+ 	}
+ }
+ 
+-static int ds4424_verify_chip(struct iio_dev *indio_dev)
+-{
+-	int ret, val;
+-
+-	ret = ds4424_get_value(indio_dev, &val, 0);
+-	if (ret < 0)
+-		dev_err(&indio_dev->dev,
+-				"%s failed. ret: %d\n", __func__, ret);
+-
+-	return ret;
+-}
+-
+ static int ds4424_suspend(struct device *dev)
+ {
+-	struct i2c_client *client = to_i2c_client(dev);
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ds4424_data *data = iio_priv(indio_dev);
+-	int ret = 0;
+-	int i;
+-
+-	for (i = 0; i < indio_dev->num_channels; i++) {
+-		data->save[i] = data->raw[i];
+-		ret = ds4424_set_value(indio_dev, 0,
+-				&indio_dev->channels[i]);
+-		if (ret < 0)
+-			return ret;
++	u8 zero_buf[DS4424_MAX_DAC_CHANNELS] = { 0 };
++	int ret;
++
++	/* Disable all outputs, bypass cache so the '0' isn't saved */
++	regcache_cache_bypass(data->regmap, true);
++	ret = regmap_bulk_write(data->regmap, DS4424_DAC_ADDR(0),
++				zero_buf, indio_dev->num_channels);
++	regcache_cache_bypass(data->regmap, false);
++	if (ret) {
++		dev_err(dev, "Failed to zero outputs: %pe\n", ERR_PTR(ret));
++		return ret;
+ 	}
+-	return ret;
++
++	regcache_cache_only(data->regmap, true);
++	regcache_mark_dirty(data->regmap);
++
++	return 0;
+ }
+ 
+ static int ds4424_resume(struct device *dev)
+ {
+-	struct i2c_client *client = to_i2c_client(dev);
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct ds4424_data *data = iio_priv(indio_dev);
+-	int ret = 0;
+-	int i;
+ 
+-	for (i = 0; i < indio_dev->num_channels; i++) {
+-		ret = ds4424_set_value(indio_dev, data->save[i],
+-				&indio_dev->channels[i]);
+-		if (ret < 0)
+-			return ret;
+-	}
+-	return ret;
++	regcache_cache_only(data->regmap, false);
++	return regcache_sync(data->regmap);
+ }
+ 
+ static DEFINE_SIMPLE_DEV_PM_OPS(ds4424_pm_ops, ds4424_suspend, ds4424_resume);
+@@ -217,7 +239,6 @@ static int ds4424_probe(struct i2c_client *client)
+ 
+ 	data = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+-	data->client = client;
+ 	indio_dev->name = id->name;
+ 
+ 	data->vcc_reg = devm_regulator_get(&client->dev, "vcc");
+@@ -225,7 +246,6 @@ static int ds4424_probe(struct i2c_client *client)
+ 		return dev_err_probe(&client->dev, PTR_ERR(data->vcc_reg),
+ 				     "Failed to get vcc-supply regulator.\n");
+ 
+-	mutex_init(&data->lock);
+ 	ret = regulator_enable(data->vcc_reg);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev,
+@@ -233,10 +253,7 @@ static int ds4424_probe(struct i2c_client *client)
+ 		return ret;
+ 	}
+ 
+-	usleep_range(1000, 1200);
+-	ret = ds4424_verify_chip(indio_dev);
+-	if (ret < 0)
+-		goto fail;
++	fsleep(1000);
+ 
+ 	switch (id->driver_data) {
+ 	case ID_DS4402:
+@@ -258,6 +275,10 @@ static int ds4424_probe(struct i2c_client *client)
+ 		goto fail;
+ 	}
+ 
++	ret = ds4424_init_regmap(client, indio_dev);
++	if (ret)
++		goto fail;
++
+ 	indio_dev->channels = ds4424_channels;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &ds4424_info;
 -- 
 2.47.3
 
