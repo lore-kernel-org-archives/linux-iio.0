@@ -1,74 +1,63 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E1A318027;
-	Wed, 28 Jan 2026 20:51:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01B2333B6D8;
+	Wed, 28 Jan 2026 22:17:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769633513; cv=none; b=CIfCAwV+r21P9KhB7cUsqnSTMyvkInrCPgNgaoiaOakT9S4y/kiFuzKqwTGcGbXmJzRAXcrvmvr0YvpCulyRGfj50/Bpu7tR+Q2myRZX37oxO+vhNF8hDewBzG5sNEu7uPYJfZ6fDP+RQDA7iqAp/PS9kR0I/UhfEKTvNiamHWk=
+	t=1769638647; cv=none; b=OSv332Ae7gsq9KZCHu/yJXsHmjLKBFV2BCz1+t/ioQfwUz7cfBzEja9IFiTD/6zZb9TuugRlT3vj2wtP3NBOtblQF1z4eK6snZpMHMfT7bhlvbW+soG020lFprsnf6opmNd76QR1T/bC8HcUfrxoP3BRgLHXCH4WtCN/BQJFF0w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769633513; c=relaxed/simple;
-	bh=ha8O6xBwkZSEe2x4SwRua9ejKFac6uo5R6gUfiFhrL0=;
+	s=arc-20240116; t=1769638647; c=relaxed/simple;
+	bh=24QUwx8+zuFuOc95qstRWfmdWt5/LdmL7zps/Q9Zvac=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rR77NEKSak6/hjuCcWkDdlJ04OpqOw4dn5ptt2+TlSfTBzyexqUYrFmFKVPGw6VKVmyjjoB2KIS/FlXyWfG1NYe+28P0MGLDFZsRovtCDSXzsyPGG4DIBljR0cMukz8i5fzJcUNGOuz1oly//nCHIFuSmQVcUlKKh8kRZoR8hwM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I6NQOWhG; arc=none smtp.client-ip=198.175.65.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=bM5q+u74bEjCyVCn9Pqkm4+QCHa17GUUJ93dI9CbQf3oO67/CTF2rTtBTeUx30aAsRw51WKHfWXH9DBhA4YPNYvn7mPOc6w5dUw17rosv/RUFy+YeCbb0vLe7MWFNN4SnpAD37MZOQle/oiZeIqdIwWc19+srqYlMPyspZQvxBM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EUUxziLH; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I6NQOWhG"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EUUxziLH"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769633512; x=1801169512;
+  t=1769638646; x=1801174646;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ha8O6xBwkZSEe2x4SwRua9ejKFac6uo5R6gUfiFhrL0=;
-  b=I6NQOWhGeAkK+895bW3tbBrhhF2YTnCE/kS+S/MpUoXivlOZugZijLv4
-   29Gr8Yr/ktom6jdU9T2g2u35ByoH8GSFeSDzHFyDio6UvR98e7xSsslwS
-   9eKS2haefkPYsQfyjyH689m43nkGrOQ9OJr0t6hbTuxXMlNNQ4a2Pa1M+
-   Pf/44EckXFy07lFlEGpdKq1LwBHkoSJVMTpmwCxNne07IEytx1X96Fnh5
-   Vuriz90MBdduX8NHdkZuIYGeEj+SeCJHrjwEiwMfxg0C9+QvFojabRrM3
-   mRmHAr2L/rcG/kQ27F+46m/8mjoyAKLFYJ6tAD6562bBWPRm51tu4wpNM
-   w==;
-X-CSE-ConnectionGUID: sKtiKRU8SkWIOryzL7/HTA==
-X-CSE-MsgGUID: 5eWT0QOGR5ikcBRE68r5JA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11685"; a="74707655"
+  bh=24QUwx8+zuFuOc95qstRWfmdWt5/LdmL7zps/Q9Zvac=;
+  b=EUUxziLHkFwgJ1zwdIE4jK96EaJqfDMmtc4XF3+LmVGaDrQSntWLHy7L
+   Bx+gQY21KRQGLDMAAxpaXtiXIYI7KtCQiS+cQmKrupGIP0g6tBj5uWx61
+   yRP+njY+bf9PJDTm/4kAJX5L6la99AZpGJQHdlUmDv/o/LWc9EeAcw+6r
+   clYydt7SFcSuPbkZgSFw9TGSMQY4A98d9MBV/Gv/2/oPRU2g941Na/8yX
+   GV26qmM7yclOvYe6CVWi0hXFBl1XpOwJ1ts8gTWyTB37iUoaJipjCd/p8
+   0p2OGYLa6dSwLLz28pwFyp4EAmiwfIVhSqFGA+MMg9pnJ+a5rzB1poGlI
+   g==;
+X-CSE-ConnectionGUID: QPO4MfytSzGBihHFYEXoig==
+X-CSE-MsgGUID: cYobtw17QqqbbPlVoA/kLw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11685"; a="74488270"
 X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
-   d="scan'208";a="74707655"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 12:51:48 -0800
-X-CSE-ConnectionGUID: ycrchlomTX6zgh1lpCciQw==
-X-CSE-MsgGUID: Zz6Zga9YSyWrIn4dTFUbww==
+   d="scan'208";a="74488270"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 14:17:25 -0800
+X-CSE-ConnectionGUID: tbdeqmatTDuKp3FX+IwO8A==
+X-CSE-MsgGUID: kaCAgeGdREGV0M9u40/iDQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,258,1763452800"; 
-   d="scan'208";a="207971392"
-Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by fmviesa007.fm.intel.com with ESMTP; 28 Jan 2026 12:51:41 -0800
-Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vlCVm-00000000anM-33eF;
-	Wed, 28 Jan 2026 20:51:38 +0000
-Date: Thu, 29 Jan 2026 04:51:33 +0800
-From: kernel test robot <lkp@intel.com>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>, jic23@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	agross@kernel.org, andersson@kernel.org, lumag@kernel.org,
-	dmitry.baryshkov@oss.qualcomm.com, konradybcio@kernel.org,
-	daniel.lezcano@linaro.org, sboyd@kernel.org, amitk@kernel.org,
-	thara.gopinath@gmail.com, lee@kernel.org, rafael@kernel.org,
-	subbaraman.narayanamurthy@oss.qualcomm.com,
-	david.collins@oss.qualcomm.com, anjelique.melendez@oss.qualcomm.com,
-	kamal.wadhwa@oss.qualcomm.com
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	rui.zhang@intel.com, lukasz.luba@arm.com,
-	devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pm@vger.kernel.org, cros-qcom-dts-watchers@chromium.org,
-	jishnu.prakash@oss.qualcomm.com, quic_kotarake@quicinc.com,
-	neil.armstrong@linaro.org
-Subject: Re: [PATCH V9 4/4] thermal: qcom: add support for PMIC5 Gen3 ADC
- thermal monitoring
-Message-ID: <202601290438.IXYMj3d2-lkp@intel.com>
-References: <20260128112420.695518-5-jishnu.prakash@oss.qualcomm.com>
+   d="scan'208";a="208410639"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.57])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2026 14:17:22 -0800
+Date: Thu, 29 Jan 2026 00:17:19 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	David Jander <david@protonic.nl>
+Subject: Re: [PATCH v3 7/8] iio: dac: ds4424: convert to regmap
+Message-ID: <aXqK73h9NIlBfHiu@smile.fi.intel.com>
+References: <20260128153824.3679187-1-o.rempel@pengutronix.de>
+ <20260128153824.3679187-8-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,101 +66,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260128112420.695518-5-jishnu.prakash@oss.qualcomm.com>
+In-Reply-To: <20260128153824.3679187-8-o.rempel@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Jishnu,
+On Wed, Jan 28, 2026 at 04:38:23PM +0100, Oleksij Rempel wrote:
+> Refactor the driver to use the regmap API.
+> 
+> Replace the driver-specific mutex and manual shadow buffers with the
+> standard regmap infrastructure for locking and caching.
+> 
+> This ensures the cache is populated from hardware at probe, preventing
+> state desynchronization (e.g. across suspend/resume).
+> 
+> Define access tables to validate the different register maps of DS44x2
+> and DS44x4.
 
-kernel test robot noticed the following build warnings:
+...
 
-[auto build test WARNING on 63804fed149a6750ffd28610c5c1c98cce6bd377]
+> changes v3:
+> - Switch to REGCACHE_MAPLE to efficiently handle the sparse register map
+>   (offset 0xF8) and avoid allocating memory for the unused 0x00-0xF7 range.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jishnu-Prakash/dt-bindings-iio-adc-Split-out-QCOM-VADC-channel-properties/20260128-193116
-base:   63804fed149a6750ffd28610c5c1c98cce6bd377
-patch link:    https://lore.kernel.org/r/20260128112420.695518-5-jishnu.prakash%40oss.qualcomm.com
-patch subject: [PATCH V9 4/4] thermal: qcom: add support for PMIC5 Gen3 ADC thermal monitoring
-config: hexagon-allmodconfig (https://download.01.org/0day-ci/archive/20260129/202601290438.IXYMj3d2-lkp@intel.com/config)
-compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260129/202601290438.IXYMj3d2-lkp@intel.com/reproduce)
+> - Use explicit regmap_bulk_read() in probe to seed the cache with the
+>   bootloader configuration. This avoids the invalid read from address 0x00
+>   that occurred with generic cache defaults.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202601290438.IXYMj3d2-lkp@intel.com/
+Isn't regmap has an option to do it for you?
+(I'm talking about num_reg_defaults_raw without setting reg_defaults_raw)
 
-All warnings (new ones prefixed by >>):
+> - Remove ds4424_verify_chip(); devm_regmap_init_i2c() and the subsequent
+>   bulk read implicitly validate the device presence.
+> - Use regmap_bulk_write() in ds4424_suspend() to efficiently zero all
+>   channels.
+> - Adopt fsleep() for delays and include <linux/array_size.h>.
+> - Use dev_err_ratelimited() with the physical device context in the read
+>   path (incorporating feedback aimed at v2 patch 8).
 
->> drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c:180:9: warning: variable 'upper_set' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-     180 |                                 if (ret)
-         |                                     ^~~
-   drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c:188:9: note: uninitialized use occurs here
-     188 |                 if (!(upper_set || lower_set))
-         |                       ^~~~~~~~~
-   drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c:180:5: note: remove the 'if' if its condition is always false
-     180 |                                 if (ret)
-         |                                 ^~~~~~~~
-     181 |                                         break;
-         |                                         ~~~~~
-   drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c:171:17: note: initialize the variable 'upper_set' to silence this warning
-     171 |                 bool upper_set, lower_set;
-         |                               ^
-         |                                = 0
-   1 warning generated.
+...
 
+> -	usleep_range(1000, 1200);
+> +	fsleep(1000);
 
-vim +180 drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c
-
-   159	
-   160	static void tm_handler_work(struct work_struct *work)
-   161	{
-   162		struct adc_tm5_gen3_chip *adc_tm5 = container_of(work, struct adc_tm5_gen3_chip,
-   163								 tm_handler_work);
-   164		int sdam_index = -1;
-   165		u8 tm_status[2] = { };
-   166		u8 buf[16] = { };
-   167	
-   168		for (int i = 0; i < adc_tm5->nchannels; i++) {
-   169			struct adc_tm5_gen3_channel_props *chan_prop = &adc_tm5->chan_props[i];
-   170			int offset = chan_prop->tm_chan_index;
-   171			bool upper_set, lower_set;
-   172			int ret, temp;
-   173			u16 code;
-   174	
-   175			scoped_guard(adc5_gen3, adc_tm5) {
-   176				if (chan_prop->sdam_index != sdam_index) {
-   177					sdam_index = chan_prop->sdam_index;
-   178					ret = adc5_gen3_tm_status_check(adc_tm5, sdam_index,
-   179									tm_status, buf);
- > 180					if (ret)
-   181						break;
-   182				}
-   183	
-   184				upper_set = ((tm_status[0] & BIT(offset)) && chan_prop->high_thr_en);
-   185				lower_set = ((tm_status[1] & BIT(offset)) && chan_prop->low_thr_en);
-   186			}
-   187	
-   188			if (!(upper_set || lower_set))
-   189				continue;
-   190	
-   191			code = get_unaligned_le16(&buf[2 * offset]);
-   192			dev_dbg(adc_tm5->dev, "ADC_TM threshold code:%#x\n", code);
-   193	
-   194			ret = adc5_gen3_therm_code_to_temp(adc_tm5->dev,
-   195							   &chan_prop->common_props,
-   196							   code, &temp);
-   197			if (ret) {
-   198				dev_err(adc_tm5->dev,
-   199					"Invalid temperature reading, ret = %d, code=%#x\n",
-   200					ret, code);
-   201				continue;
-   202			}
-   203	
-   204			chan_prop->last_temp = temp;
-   205			chan_prop->last_temp_set = true;
-   206			thermal_zone_device_update(chan_prop->tzd, THERMAL_TRIP_VIOLATED);
-   207		}
-   208	}
-   209	
+Seems like undescribed / unrelated change.
+Also needs a comment to explain the delay.
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+With Best Regards,
+Andy Shevchenko
+
+
