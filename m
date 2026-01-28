@@ -1,129 +1,136 @@
-Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06AF12E03F1
-	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 10:24:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 696F02F1FD7
+	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 10:44:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769595849; cv=none; b=QwQaqJuVpvrcwsMFeraid2IAiijl+6UyJBgaFEOfArHF/dV8B7Ydex2BeUbwys4LoomJdy+pjlOm7DIYCWImBowFQZ/R4O0MYT30O6QOgOAFAz4M1+tD+T54HqzeSv6cy8uSEqKBXgKLEHvObJwlElpEhJTrFT3mFuFrysqmzhg=
+	t=1769597062; cv=none; b=NYkd0OiV4YT5qKNSgvEu4BiLBwZvkJCJ1mYkHREw1nrAMWdajnAeZxzuQrTRC6N/GUnelXL/Eri+oU/cA/O0fFAHLGUQrA2yKNDpfMA+J9bf2yUKvDugnJfmKqVz1+Mm2nCO99nh/T/q1GM+aBocAVRZuWa7dFkuB6EbBmfSOrI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769595849; c=relaxed/simple;
-	bh=IAuO3hZmjWwJidDrBK/ocDP5eyCa0LwHoRRJa6AHUhw=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HN8QKDrcoXeGWFFmfOROdFs4T2/RFcnL5bq6Fn0BNqTQ5asHEJ5hlRymxaaq4PmVBelLtlrA7YYpirFRkTTqA2UdKpclvW2wfnPIqscw5NPk2oBlWksa00wi+559enVnhrbJUJNHpzM4a7sJhwzd2e26rwFXLD+Q8RsAtVe9egE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X7B+5XjG; arc=none smtp.client-ip=209.85.128.49
+	s=arc-20240116; t=1769597062; c=relaxed/simple;
+	bh=WP54E5Zozvp+1GAPNgjDcxymFAEsnkay7BW+MQRPQZQ=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=WIG0N7MsCWnqHtTyCXjsejnWQMMfN92Oe7YATDsvh/LcvF9U5kOnuNG4u1RTA3wrBGeuen/MQyl1ezfQgq1mJEOadZuPIZeWRww0BsdjExYnwlj1Ptm0B7b6LnbixrWC5s8UKeLghzhU9LlYEtoIXUVQHiPNBBkeVp9APexWfD4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ha5CU76R; arc=none smtp.client-ip=209.85.128.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X7B+5XjG"
-Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-47edd9024b1so55497305e9.3
-        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 02:24:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ha5CU76R"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-48049955f7fso57796965e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 02:44:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769595846; x=1770200646; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=2K2glf1WnKZAPsmypQA7tsSM/kM81tZ2AhTOrY90KiM=;
-        b=X7B+5XjG75R7H5Y81fYY/ZjBnyyoRo7svYk5QWYN+CEO/KEkKz0aium590j8gAh0zk
-         blUuLMUlB7oZV0OEwN230dzsu3r529UGidfGnqdJB7Gi+QPYop+hIZOBoejQvSyN2RnG
-         Z3ebA/+VpkyVQa73T5erjx1K1pTw69QkoIzpmsO6jfsmjY0DYyzvHYoXXsbVrE/pa9E2
-         bSqsnGeChUhxgEuEj6wh9PYYwJPp91PTqUBSAtq0ON73ki0HYbJZbcU9eWmyvG1o1eXC
-         maqSBjbqUaPSxVUGeJqCDIkKvzJKBah21Fjg4N82x9EEa3N/4g0RtCJhrfy4lg0uPS3T
-         aI/g==
+        d=gmail.com; s=20230601; t=1769597059; x=1770201859; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=WP54E5Zozvp+1GAPNgjDcxymFAEsnkay7BW+MQRPQZQ=;
+        b=ha5CU76R9iZ8pR9i5SRorBW+YfRoQZJ+N+JYGk1jvvV+16SA7ty0qgPRJQmerqpHSi
+         JDxzy1/xUjSgF4iWgWvujZmlSiL6QJ5l06VYv0U7bldTlqLZ4fr90e+/8XyfTO0SSESM
+         /0pq2I6waugcE+mVBqfm8smSZHBHXUoziosT8AqpUv+RF9EvJ6mQm7gfPsf7x1Lf1c0O
+         zQ16vXcqJ+Ko1JPE9vEAuTBDPadnRS4rTGPFQs/HaMi2TvRHW0WHLNdeW7hb+QQowhjr
+         cTmP59cew8vSC7SI89pwWZVtb54T9xi1FFNQI1Y1CJUyTiHuhgRZmfwu1zgEKr3qcKEs
+         8KnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769595846; x=1770200646;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=2K2glf1WnKZAPsmypQA7tsSM/kM81tZ2AhTOrY90KiM=;
-        b=isS973OITcTR1IEyKohNfIEHM+1FEhHK1vwL5wyM8NWraUS2higYDuVoLXkJ2o3+t0
-         Q/lrrxdbM486bN/mxKcUannwzt4mfI/U9JiaFRs21Mnt4OIEkHzgBfLySGXmmxAG0sxm
-         StIUjEaOXq/EzsY5rl6B/1xtrptOGHTO7SSJSvxZLtBHzdHzRC7tuwYQ43lpQMXfTzGC
-         yUCGDZcvL3aGpSsH0rKCAJMyqYMTv4ZidRL0mjJCnjHiRMaMgDLXFw7Ri2CiN/tz0KGd
-         wgqFTgpCpXT0tipn7avD3Pk9lIeeovVZxHTpQmcexBazUi50fo6B2M8d9W8n6WsX9Q5J
-         QnKA==
-X-Forwarded-Encrypted: i=1; AJvYcCUfpe+QLqaLPaUNoy97skrNbbqYrGTl21NdeOtXIjfbUYVpnXZgoncctvzkbzUM4zZyCnIUgtB/39I=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw+FM3+iwWkuzpOJmXFZi/cezZP9Wv4WSUeYE1KNtEKZ/dInrci
-	8Zk/S0KfBn4N8M8cVyNHvgficIwOxBRgeMUoKgMacz8LHkXI1NGBH+Mu
-X-Gm-Gg: AZuq6aJolix4cT8EhdOIQed63JnCbA3wXuxxX3E9e2WmoHHqTRY7JU3+q3/518vI4Sg
-	Ek/A7iSEnd+ZX5RkGWhzrvFre3xDNWVUuWSBi8izSiiRUvAGdF2PxjhGjI7ZYYrPriAlgRxg/cV
-	jZGUT5eOp3NY+eIa/UQRKpTR944k42smoBsahFE0l97LSYiD4o3BFlwd90sojYhO3qcctMtFt/3
-	b1YI9BDJH/coNr5/eC4i+vWhf6dpQeci0pvZ3YDVaduCP02ZRtBQqKymo2jEqm4vPITy3joyZP+
-	u+6EegLzJq7+rBpn2vCbsxURsoewy2sWIDDx9Rp3+7nHEMEu6zBiYTH5+eN7krUPVTGk7w3z1GI
-	f/RJFkBPz9XyhdTmtj1y5QTKr/TZEpDftRHM4oNKiPEOVGxl8OI4Kt9gOnEannbnfu+Wo50IBMi
-	CJaIwSq2j94YKVfyeWbmZBBZavpucITld2xVARMUAmOgBT5Jzr2L/uxVrfiZ8CTzvpgjRwdMrJp
-	3OC
-X-Received: by 2002:a05:600c:6092:b0:47d:586e:2fea with SMTP id 5b1f17b1804b1-48069c3a7abmr60068075e9.15.1769595846225;
-        Wed, 28 Jan 2026 02:24:06 -0800 (PST)
-Received: from RDEALENC-L01.ad.analog.com ([24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4806cdeafffsm54409255e9.7.2026.01.28.02.24.04
+        d=1e100.net; s=20230601; t=1769597059; x=1770201859;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=WP54E5Zozvp+1GAPNgjDcxymFAEsnkay7BW+MQRPQZQ=;
+        b=drw5fKxcvkuzDi+N5s9oTU8cO1IlHonmxVnjrWhCWLiJaoW65ZMFoXaZgGNPlZkF+r
+         jq4WfXkRqZo0MYpHc6bw7x3SnheboZXZYCYqvzWQMhsZjnBwha3KbDNkw2Y6BjUJcTbe
+         O1w95u829c0YJCpaiPiWBS+dDPndMAR6nw863xene6fwWGZLklSJUOzgOo2YNyGgyofz
+         iHwRocqLozvWij3doP+SQQZ57ker7rqQeGmbCoI6O5wof4xdjxCw6B5hv+gKayAnd5l/
+         d2yBIYYnG4udkYXPKDvZduoSn8gsWc5cQd9v1CPM0mrLYVbv9VPpL6Sw+rbze+Oid3Sh
+         eoZA==
+X-Forwarded-Encrypted: i=1; AJvYcCVxL3rJliXSrRtOWAkEZ/vKf8rAVlu3zwSjy5Jy7QRCTYkHWp8j2v9lOQ5+1XjXxHhEcium0r1F7vo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzdUaaole2cCBzR4C4lwjTnUCVa/1OO74xFEiLczXpsIiVPWJBG
+	nS1wyIRXPzOdUkMNLqSDGWu0gzVwOnfjwhQ6df/kRvvzhwjrfgKoUmhr
+X-Gm-Gg: AZuq6aISxzR9CDTW2hDRQbZNV5aMcJu9TkBnEo4cbrqg8JvNmdiK3SP00+qh7XlIrMh
+	oeKltBVDcXQdh8QcYjX1sGehiD7H7ZD3Zvr8NO/qRCfvO+YOBJo5LUDq4PGbPP2L5Ez/tJcT3LG
+	de3UB+fhExmwvGs1tzPIvDNVrat4clkOiH9TRBut9C4SsHitr1Db26W2v3PI/ylXEdVEQX31mwH
+	CTDJXY7SZoujMVun9NQ8aM73mvezpyj/NY4BwPYm+1SBHSyn+XPsgZBboCsm8Ng8Tqi3LD2FQLG
+	m12ZikUrAyUAvzsyU/6WoXySk04TnAhCqZEjGK5YCKSwpMUKw7rRveY5lK8FfxImJbrQUJ45mYo
+	9GIam4uvh59xoArdJEMM3XlfBO7+Ci/0et2tXs4Vx0oYXpAujqU09AaHzysXfzBX9Ig3xdl7JRJ
+	3LP+Uf8W10Rxrv9JcDTN6FmgiwWqXmIA==
+X-Received: by 2002:a05:600c:4746:b0:47e:e9c9:23bc with SMTP id 5b1f17b1804b1-48069c5547amr64307945e9.30.1769597058510;
+        Wed, 28 Jan 2026 02:44:18 -0800 (PST)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4806ce564f9sm57099265e9.14.2026.01.28.02.44.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jan 2026 02:24:05 -0800 (PST)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Wed, 28 Jan 2026 10:23:58 +0000
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v2 4/6] iio: amplifiers: ad8366: add device tree support
-Message-ID: <knzaphyzfuh4fihlftzh3jhjxbjrdjqezqsd7rc33pmtc4anxi@2uhqhizyfsed>
-References: <20260126-iio-ad8366-update-v2-0-c9a4d31aeb01@analog.com>
- <20260126-iio-ad8366-update-v2-4-c9a4d31aeb01@analog.com>
- <aXksSjsyNn6if3eQ@smile.fi.intel.com>
- <b6pzhwmfranyhuetv65movfqzubvbjasl6ruxiym2ehuch2hov@r56lgzgf4us5>
- <aXngRcVMj18tryGT@smile.fi.intel.com>
+        Wed, 28 Jan 2026 02:44:18 -0800 (PST)
+Message-ID: <be27fa4404511cdf65a9a0f212653a7f1fcd86b6.camel@gmail.com>
+Subject: Re: [PATCH 18/21] iio: Replace IRQF_ONESHOT with IRQF_NO_THREAD
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Konstantin Ryabitsev <mricon@kernel.org>, Andy Shevchenko
+	 <andriy.shevchenko@intel.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, tools@kernel.org, 
+	linux-kernel@vger.kernel.org, linux-rt-devel@lists.linux.dev, Thomas
+ Gleixner	 <tglx@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich	 <Michael.Hennerich@analog.com>, Puranjay Mohan
+ <puranjay@kernel.org>,  Jonathan Cameron	 <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Marcelo Schmitt	
+ <marcelo.schmitt@analog.com>, Marcus Folkesson
+ <marcus.folkesson@gmail.com>,  Kent Gustavsson	 <kent@minoris.se>, Gustavo
+ Silva <gustavograzs@gmail.com>, Nishant Malpani	
+ <nish.malpani25@gmail.com>, linux-iio@vger.kernel.org
+Date: Wed, 28 Jan 2026 10:45:01 +0000
+In-Reply-To: <20260126-cocky-sawfish-of-variation-c0cedd@lemur>
+References: <20260123113708.416727-1-bigeasy@linutronix.de>
+	 <20260123113708.416727-19-bigeasy@linutronix.de>
+	 <aXOKVqxyhQ10l9V4@smile.fi.intel.com>
+	 <20260126081510.jr8Rp6R7@linutronix.de>
+	 <aXc5Efu-PlLNCxkk@smile.fi.intel.com>
+	 <20260126101034.lnGGQmUD@linutronix.de>
+	 <aXdJbidb3DPyRaxB@smile.fi.intel.com>
+	 <20260126-cocky-sawfish-of-variation-c0cedd@lemur>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aXngRcVMj18tryGT@smile.fi.intel.com>
 
-On 26/01/28 12:09PM, Andy Shevchenko wrote:
-> On Wed, Jan 28, 2026 at 09:55:16AM +0000, Rodrigo Alencar wrote:
-> > On 26/01/27 11:21PM, Andy Shevchenko wrote:
-> > > On Mon, Jan 26, 2026 at 01:51:05PM +0000, Rodrigo Alencar via B4 Relay wrote:
-> 
-> ...
-> 
-> > > > +static size_t ad8366_pack_code(struct ad8366_state *st)
-> > > > +{
-> > > > +	u8 ch_a = bitrev8(st->ch[0] & 0x3F);
-> > > > +	u8 ch_b = bitrev8(st->ch[1] & 0x3F);
-> > > 
-> > > GENMASK() in both cases? But I don't see why ch_a needs this at all,
-> > > isn't the 2 LSBs are not used anyway?
-> > 
-> > Yes, I can adjust with:
-> > 
-> > u8 ch_a = bitrev8(st->ch[0]) >> 2;
-> > u8 ch_b = bitrev8(st->ch[1]) >> 2;
-> > 
-> > st->data[0] = ch_b >> 2;
-> > st->data[1] = (ch_b << 6) | ch_a;
-> > 
-> > so no need for masking both.
-> 
-> This is better, but let's think a bit more. The data we put seems to be
-> __be12 (yeah, we don't have the exact type for that) and can be put slightly
-> differently.
-> 
-> So, something like
-> 
-> 	put_unaligned_be16((ch_b << 6) | ch_a, &st->deta[0]);
-> 
-> should be better, no? (Note, you would need linux/unaligned.h).
+On Mon, 2026-01-26 at 09:29 -0500, Konstantin Ryabitsev wrote:
+> On Mon, Jan 26, 2026 at 01:01:02PM +0200, Andy Shevchenko wrote:
+> > > I lose it on the next if I update patches in tree and re-export them.=
+=20
+> >=20
+> > I don't understand this, sorry. Can you provide a step-by-step example?
+> > Do you mean that you are taking previous version from the list and reap=
+plying
+> > it via `git am`? But shouldn't `b4` take care of that as long as it kno=
+ws the
+> > Change-ID and it matches?
+>=20
+> That's not the intended workflow -- the series is kept as a branch in you=
+r
+> local tree and any updates happen to that branch, so any entries in a com=
+mit
+> falling under "---" will persist across revisions.
+>=20
 
-ok, ch_b would have to be u16 and ch_a could be too (for consistency)
+Hi Konstantin,
 
--- 
-Kind regards,
+Since I have you here, I might ask about something that I'm not sure how to=
+ handle. Might be dumb
+but here it goes. One problem is when I send v1 based on a branch and when =
+I'm starting to work on
+v2 that branch was force-updated and I want to base my v2 on it. Is there a=
+ny good way to handle
+this?
 
-Rodrigo Alencar
+
+What I currently do is more or less:
+
+git cat-file -p $COVER_SHA
+git reset --hard origin/branch
+git commit --allow-empty (and past all the cover with b4 metadata)
+// apply my series patches.
+
+Thx!
+- Nuno S=C3=A1
+>=20
