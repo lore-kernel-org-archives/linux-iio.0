@@ -1,143 +1,172 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27B1227603A;
-	Tue, 27 Jan 2026 21:21:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB93E224AF0
+	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 03:27:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769548885; cv=none; b=Mrr+yqkM3U2kcf6niwpdkpXzcbDqpffCwzA5wFzEd/YzzPu++RnObIs+HQ+RFxlqtUe3Ymjyy2FXa1Ag/K5ZL/0aLeVB9god95w3+KFGVkXLeCEjo2fMVYMD3YQt1TI2b2/anA6urt8n7tGMmkom15oe1BpuXbIa+5z23da9boQ=
+	t=1769570828; cv=none; b=So5mJ5zi5hwzHAWIh59yizxxWTJF6xxQvWYPLxBA+gqI1Dr54NlZGpPWSteP7pW/VH/Ig4HORqS1Diksh8xPuG4Niou2NWKt9rHFn/qDnQgh1F2lJdiI7+8L3N36y4ImVT85ORAZTO6Jebp7zQmCDyw9SQ2i6PtginV70P6ElWM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769548885; c=relaxed/simple;
-	bh=WIudJyqYjgNb4UJwGIp5U4RhIK6L/d9A0RKcKfMRozU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mPyWr9msikkRCU4wQcOZMDibvDonduTJDfETH3mLyBDCU/yn36KmOJgMgFb1X/NB/UEiy+ErLyLDKb+/Ta/BmXXD6gTHxQrF8F9sU/FW1nb1wR91TmSUtvGazHO+Px376Jx8IF2yDW3T4/P2UBOz1nR9lEMUePd5FYalbNt9Udc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DWkl/kcJ; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1769570828; c=relaxed/simple;
+	bh=m55Oq0OM42E/H5AtUF+f5F1AKPGvAsarLBXNrruuBrw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mwRN4XlpgqVFFgVsFjBSuGMqgZv21glq7nfkgYN5r8XaAqzgsUqzJatz4je0huoUiKS+xnNcc17RHLi5IjaSWRw/HSNBwsDck4qOQMGzLWabh6QPk4KnQBiGAx0bu+/BTRe2umJNKHqIrh9Ras8hXM6KQ8yQt7LfusERLEP1mgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org; spf=pass smtp.mailfrom=chromium.org; dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b=VzoCQ43k; arc=none smtp.client-ip=74.125.82.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=chromium.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chromium.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DWkl/kcJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1769548883; x=1801084883;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WIudJyqYjgNb4UJwGIp5U4RhIK6L/d9A0RKcKfMRozU=;
-  b=DWkl/kcJ0FJ4zUAu8ogWIva+SlUY4THogOyvb14cMCHYuJkGbcd4NzPc
-   BNxzlIzBdSR16WqmdffqPi4D3P8HlhZcsujYDpVxcs7dafk0RKNUFJpS/
-   YFZLYbUiYTtsz9rzC9DuNNepDW8vM+1DNbdErq5p6s2VeI7fewW4RZV+v
-   S0W6kehGTfFwkf7YoD1nrkqi7R0ljrn4eMmeJv3cnwwK8F8cQd8f3JVVr
-   aTHt74KyHPjL8b9H0kA6rKNbrC76BOGs8nJVuauY9FF2jv3ImCimlXqJ9
-   VBdIT5RY5BUrfAblHkjyI7p6vRyDtv/XBixxJ+oBTrguW1QeJvpT1YZ1l
-   w==;
-X-CSE-ConnectionGUID: l5n5Ld/VRP6qj8/KQI1ucg==
-X-CSE-MsgGUID: rhGS/U2mQMOIuM4V3ZtOMA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11684"; a="81862461"
-X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="81862461"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 13:21:20 -0800
-X-CSE-ConnectionGUID: HMEQzzcWShGBXCja4snHjg==
-X-CSE-MsgGUID: GmKajvpYTHie1OxvVpU+Qg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,257,1763452800"; 
-   d="scan'208";a="207982170"
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.248])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2026 13:21:16 -0800
-Date: Tue, 27 Jan 2026 23:21:14 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v2 4/6] iio: amplifiers: ad8366: add device tree support
-Message-ID: <aXksSjsyNn6if3eQ@smile.fi.intel.com>
-References: <20260126-iio-ad8366-update-v2-0-c9a4d31aeb01@analog.com>
- <20260126-iio-ad8366-update-v2-4-c9a4d31aeb01@analog.com>
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="VzoCQ43k"
+Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-2b720bb90d0so5830027eec.0
+        for <linux-iio@vger.kernel.org>; Tue, 27 Jan 2026 19:27:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google; t=1769570826; x=1770175626; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=XNqURX/4DzNha23BzKt7hSs6dV3TsScOiZxeTj4ynNg=;
+        b=VzoCQ43kC3h94m4TU2DfNBbb+cLh7FK4FojT2x8sYCB3NgmsHzowCcdngdcnltkBaS
+         zQNJTA5tiaJEdOyhawGh6fiUfhn4kclT5AZ+lTcLjxDTxN//jP7ptZooBLJbeNEbahO/
+         D1fQmFP9y4GmsoljRnBTocQ7o+Ib9Yzab/uPs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769570826; x=1770175626;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=XNqURX/4DzNha23BzKt7hSs6dV3TsScOiZxeTj4ynNg=;
+        b=p/hsmgHy+GxTIPes5bFwmqSv/bApgVhECu08LgDIT/G5IuiogiPTF5zMPxfnyLbo9x
+         RtfftAWbA03NvvVrrfP1EQD84pggtqi5uVi+DK1+8hqaGXBrWLnfubk0cVQ5wWtcuOVP
+         Vcy7h7TJBrdkgEfKDWFemybjjvzY4cajfSyV7jfwm9GGA2lLsKXohB3yoe6Q2bjcza9d
+         vUl02/OxhPBukzIIE5fZ8o7X7DFxn0e+9btHUIUxrRcQr5OVNy46g0lSQqx/YUnIGYgQ
+         1tcBse+jk9nwUD8Q9Upzbuf4Fb0Xr1j9k1D2Q+4H6zleURXF5cM6SbATbqz1ikcYizZO
+         f/nQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWnx6YADMg9MhhO00XyQ8NipdgFNPpn8/BIQsO3g0TSe+Xicwbbs/6pritje5Ch0gx0ZheGyAQvd/Q=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxp1tu4JHEAzMhWOr3hLuAyS5OhiPiYYGq17Zagg+/IcAWF6vHe
+	V1HAtgj12//MXQ91lQ2Z7F1fwKYwOXvkDhVDGGlAj774SZJ70stBecJahDBvFjPEG+OvgVd8bhM
+	4Ams=
+X-Gm-Gg: AZuq6aI+yDLy60TvZ5/bsXWDEQ6k9qBlNJoYQqg9ayZpKqDhLFyACkHo+TDb3l1hupg
+	+S35jb2nW/Dqmga0kNrcwbb3JqVWiMUX9zlb4nPWHImJCPHfWB4zSB+WSx/yWPEETVpwaKnojYe
+	pO84c4d0DAuR2vuuU6jPGniN7rLs0z96u3tMhHjJANR1KhaFk3e+BHTW7D560lgHaz4dhISOJzS
+	wDmnUPKH2HTDtGWL4mMDUTG35qEZ0N0jWdIFWogr1XRBmJLIcap9cuNUACkQyRhpJYItb/OeZkF
+	HBXoujAF7dRypYP2dg/CbonTUs4fT8EvE+RIhkhOYQY1yRY/Yb+ohK6qV03MRzZ6F+PxkVBngJg
+	AQFn35qbBZm4O3NN3B0PeJyr4IAb2KVrLX8uxwVeNIBroElwwPZoRpY8fuH7iy3hfdHRtgkIPAq
+	6i53pB+0jbFfXeiX80c3JlgCwB0ZRI1JvwzOHmdk8SXtcXvGqESsDQkFA=
+X-Received: by 2002:a05:7300:72c5:b0:2b7:1abc:a6eb with SMTP id 5a478bee46e88-2b78d8cc6dcmr2587933eec.7.1769570825897;
+        Tue, 27 Jan 2026 19:27:05 -0800 (PST)
+Received: from localhost ([2a00:79e0:2ebe:8:bbd7:b5c3:7c7a:45ed])
+        by smtp.gmail.com with UTF8SMTPSA id 5a478bee46e88-2b7a1abeb6asm985555eec.19.2026.01.27.19.27.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 27 Jan 2026 19:27:05 -0800 (PST)
+From: Gwendal Grignou <gwendal@chromium.org>
+To: jic23@kernel.org
+Cc: nvaccaro@google.com,
+	tzungbi@kernel.org,
+	linux-iio@vger.kernel.org,
+	Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH v3] iio: cros_ec: Allow enabling/disabling calibration mode
+Date: Tue, 27 Jan 2026 19:27:02 -0800
+Message-ID: <20260128032702.1714041-1-gwendal@chromium.org>
+X-Mailer: git-send-email 2.53.0.rc1.225.gd81095ad13-goog
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260126-iio-ad8366-update-v2-4-c9a4d31aeb01@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Mon, Jan 26, 2026 at 01:51:05PM +0000, Rodrigo Alencar via B4 Relay wrote:
+'calibrate' was a one-shot event sent to the sensor to calibrate itself.
+It is used on Bosch sensors (BMI160, BMA254).
+Light sensors work differently: They are first put in calibration mode,
+tests are run to collect information and calculate the calibration
+values to apply. Once done, the sensors are put back in normal mode.
 
-> Add device-tree support by dropping the enum ID in favor of extended
-> chip info table, containing:
-> - gain_step, indicating with sign the start of the code range;
-> - num_channels, to indicate the number IIO channels;
-> - pack_code() function to describe how SPI buffer is populated;
-> 
-> With this, switch cases on the device type were dropped:
-> - probe() function adjusted accordingly;
-> - Simplified read_raw() and write_raw() callbacks;
+Accept boolean true and false (not just true) to enter/exit calibration
+state.
 
-> - mutex_lock()/mutex_unlock() replaced for guard(mutex)() to allow
->   moving to early returns;
+Check "echo 0 > calibrate" is supported.
 
-Shouldn't this be in a separate change? I dunno. Let Jonathan to decide.
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Reviewed-by: Nick Vaccaro <nvaccaro@google.com>
+---
+Changes in v3:
+- Update ABI documentation.
 
-...
+Changes in v2:
+- Reword commit message to indicate the calibration mode is a state for
+  some sensors (light)
 
-> +static size_t ad8366_pack_code(struct ad8366_state *st)
-> +{
-> +	u8 ch_a = bitrev8(st->ch[0] & 0x3F);
-> +	u8 ch_b = bitrev8(st->ch[1] & 0x3F);
+ Documentation/ABI/testing/sysfs-bus-iio-cros-ec      |  9 ++++++---
+ .../common/cros_ec_sensors/cros_ec_sensors_core.c    |  6 +++---
+ include/linux/platform_data/cros_ec_commands.h       | 12 +++++++++---
+ 3 files changed, 18 insertions(+), 9 deletions(-)
 
-GENMASK() in both cases? But I don't see why ch_a needs this at all,
-isn't the 2 LSBs are not used anyway?
-
-Also missed header inclusion for this? And also perhaps sorting headers first
-to see what's there and what needs to be updated (ideally another patch to move
-to IWYU principle).
-
-> +	st->data[0] = ch_b >> 4;
-> +	st->data[1] = (ch_b << 4) | (ch_a >> 2);
-> +	return 2;
-> +}
-
-...
-
->  static int ad8366_read_raw(struct iio_dev *indio_dev,
->  			   struct iio_chan_spec const *chan,
->  			   int *val,
->  			   int *val2,
-> -			   long m)
-> +			   long mask)
-
-Seems like unrelated change.
-
-...
-
-> -	/* Values in dB */
-
-Do you think this comment is useless? To me looks like a stray change.
-
->  	if (val < 0)
->  		gain = (val * 1000) - (val2 / 1000);
-
-...
-
-> +	st->info = spi_get_device_match_data(spi);
-
-> +	if (!st->info)
-> +		return dev_err_probe(dev, -EINVAL, "Invalid device info\n");
-
-Only useful for the developer, dead code in production.
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-cros-ec b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+index 9e39262437979..3de1dfc983893 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
++++ b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+@@ -3,9 +3,12 @@ Date:		July 2015
+ KernelVersion:	4.7
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Writing '1' will perform a FOC (Fast Online Calibration). The
+-                corresponding calibration offsets can be read from `*_calibbias`
+-                entries.
++		Writing '1' either perform a FOC (Fast Online Calibration) or
++		enter calibration mode.
++		Writing '0` exits calibration mode. It is a NOP for FOC enabled
++		sensors.
++		The corresponding calibration offsets can be read from `*_calibbias`
++		entries.
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/id
+ Date:		September 2017
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index 9ac80e4b7d756..f1cdee2a61cbd 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -444,14 +444,14 @@ static ssize_t cros_ec_sensors_calibrate(struct iio_dev *indio_dev,
+ 	ret = kstrtobool(buf, &calibrate);
+ 	if (ret < 0)
+ 		return ret;
+-	if (!calibrate)
+-		return -EINVAL;
+ 
+ 	mutex_lock(&st->cmd_lock);
+ 	st->param.cmd = MOTIONSENSE_CMD_PERFORM_CALIB;
++	st->param.perform_calib.enable = calibrate;
+ 	ret = cros_ec_motion_send_host_cmd(st, 0);
+ 	if (ret != 0) {
+-		dev_warn(&indio_dev->dev, "Unable to calibrate sensor\n");
++		dev_warn(&indio_dev->dev, "Unable to calibrate sensor: %d\n",
++			 ret);
+ 	} else {
+ 		/* Save values */
+ 		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
+diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+index 69294f79cc88a..d363d60bb8a36 100644
+--- a/include/linux/platform_data/cros_ec_commands.h
++++ b/include/linux/platform_data/cros_ec_commands.h
+@@ -2598,13 +2598,19 @@ struct ec_params_motion_sense {
+ 
+ 		/*
+ 		 * Used for MOTIONSENSE_CMD_INFO, MOTIONSENSE_CMD_DATA
+-		 * and MOTIONSENSE_CMD_PERFORM_CALIB.
+ 		 */
+ 		struct __ec_todo_unpacked {
+ 			uint8_t sensor_num;
+-		} info, info_3, data, fifo_flush, perform_calib,
+-				list_activities;
++		} info, info_3, data, fifo_flush, list_activities;
+ 
++		/*
++		 * Used for MOTIONSENSE_CMD_PERFORM_CALIB:
++		 * Allow entering/exiting the calibration mode.
++		 */
++		struct __ec_todo_unpacked {
++			uint8_t sensor_num;
++			uint8_t enable;
++		} perform_calib;
+ 		/*
+ 		 * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR
+ 		 * and MOTIONSENSE_CMD_SENSOR_RANGE.
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.53.0.rc1.225.gd81095ad13-goog
 
