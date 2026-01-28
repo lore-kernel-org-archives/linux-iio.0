@@ -1,15 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 525052E0405
-	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 15:38:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6289F23EAB7
+	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 15:38:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769614713; cv=none; b=JdOJG+BmdDAvlTKcC5UE0QA2+UiqLnuMfgPkEfGfwNNtXUpZ3K8KApyrVimLmPyMxhDUrQ9WQvuPUttY3k0GkRaMT01rAo2mircS7OQQ7yyXYRm1cI0GoXsu/7I2+S7SoKAXyO7eTivE3wgX36aIyUN3nWmLcr0RQoLADPkGIWc=
+	t=1769614717; cv=none; b=YWttOltcYy5b9NWw3NbIASdxY4YbrZkc9pbflTFAx+ic9jMCANC6qtJYzLIvPLYE7Rv4ACGnnRumng2ulVkgqSqR5+FWkmLnUnPOZ59d1HYHlbMn7AsJ94FsEnIV7suWYgMoUZvKPEyswBYfkFOcymQXeOVeapFkgftv4XIXaK8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769614713; c=relaxed/simple;
-	bh=zCr6LEZ8hqiYApECOvFthtaaWbs/9iyDcYHceOPIlO8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RjcMa8BVVw5iZCbPF/jBx+dVwm6XAhDxRsLpZ+o8MicBHPeAA6TI/DPsFrcwS3awesVWQ5MacR+IfJ9sP25sZ/yzNQVaxmNZNDHwszBpEgaQ2im/kJ2cfILF04SyUYznEm/S+iIP55b8GRQdP9vPqDzN8enOXjXym+lCN88GBYQ=
+	s=arc-20240116; t=1769614717; c=relaxed/simple;
+	bh=8OlP/76Ew+hhf0/5eOzjr5oQG0D+UPVg93zLkxqIWvE=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=OIuGwfE1ZQKyFFt83IjIB6X6OjNespkYuQurFfsGyUoSj5ZcaIUVVtDQwe3twXs+uqb9V0JyNtBdIHdmmdq8GqI4Bq9abZioqL5PAOVJ3UsoF5tHKBISXnS2YGm2j5tA0HuPFwMkzxGKKx2SC1r32kPzPnV3k2CpkmQ+j6iuazk=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -17,17 +18,17 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vl7cg-0003oo-Nh; Wed, 28 Jan 2026 16:38:26 +0100
+	id 1vl7cg-0003ot-Nh; Wed, 28 Jan 2026 16:38:26 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vl7cg-002wSJ-2K;
+	id 1vl7cg-002wSR-2p;
 	Wed, 28 Jan 2026 16:38:26 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vl7cf-0000000FR9Z-43mZ;
-	Wed, 28 Jan 2026 16:38:25 +0100
+	id 1vl7cg-0000000FRAO-0SOw;
+	Wed, 28 Jan 2026 16:38:26 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Rob Herring <robh@kernel.org>,
@@ -42,10 +43,12 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v3 0/8] iio: dac: ds4424: add DS4402/DS4404 support and scale
-Date: Wed, 28 Jan 2026 16:38:16 +0100
-Message-ID: <20260128153824.3679187-1-o.rempel@pengutronix.de>
+Subject: [PATCH v3 5/8] dt-bindings: iio: dac: maxim,ds4424: add maxim,rfs-ohms property
+Date: Wed, 28 Jan 2026 16:38:21 +0100
+Message-ID: <20260128153824.3679187-6-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260128153824.3679187-1-o.rempel@pengutronix.de>
+References: <20260128153824.3679187-1-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -58,41 +61,92 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-This series extends the ds4424 IIO DAC driver and its devicetree binding
-to support the DS4402 and DS4404 current DAC variants.
+The Maxim DS4422/DS4424 and DS4402/DS4404 current DACs determine their
+full-scale output current via external resistors (Rfs) connected to the
+FSx pins. Without knowing these values, the full-scale range of the
+hardware is undefined.
 
-DS440x devices share the same register map as DS442x but use a different
-resolution (5-bit vs 7-bit) and a different full-scale current formula.
-The full-scale current depends on external Rfs resistors connected to
-the FS pins, so a new optional DT property is added to provide the
-per-channel Rfs values and allow the driver to report a correct IIO
-SCALE (mA/step).
+Add the 'maxim,rfs-ohms' property to describe these physical components.
+This property is required to provide a complete description of the
+hardware configuration.
 
-While adding DS440x support, a few related issues were addressed:
-- Port to regmap
-- Reject -128 in RAW writes on DS442x, which cannot be represented with
-  sign-magnitude encoding and could silently program an unintended
-  output.
-- Preserve preconfigured values on probe.
-- Ratelimit read error logging and use device context.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+changes v3:
+- Moved minItems and maxItems to the main property definition
+- Refined property description to state that values depend on chip
+  variant and hardware requirements, deliberately avoiding specific
+  "typical" ranges to prevent unnecessary hard-limit enforcement.
+- Corrected the rfs-ohms example to use a plausible value within
+  datasheet typical range.
+- Removed redundant constraint definitions from the allOf logic.
+changes v2:
+- make maxim,rfs-ohms a required property as the hardware range is undefined
+  without external resistors.
+- add allOf constraints to enforce 2 vs 4 items in maxim,rfs-ohms based on
+  compatible string.
+- drop explicit $ref for maxim,rfs-ohms to fix dt_binding_check warning.
+- update example in binding to include the new required property.
+---
+ .../bindings/iio/dac/maxim,ds4424.yaml        | 35 +++++++++++++++++++
+ 1 file changed, 35 insertions(+)
 
-David Jander (1):
-  iio: dac: ds4424: add DS4402/DS4404 device IDs
-
-Oleksij Rempel (7):
-  iio: dac: ds4424: fix -128 rejection and refactor raw access
-  iio: dac: ds4424: ratelimit read errors and use device context
-  iio: dac: ds4424: sort headers alphabetically
-  dt-bindings: iio: dac: maxim,ds4424: add ds4402/ds4404
-  dt-bindings: iio: dac: maxim,ds4424: add maxim,rfs-ohms property
-  iio: dac: ds4424: convert to regmap
-  iio: dac: ds4424: add Rfs-based scale and per-variant limits
-
- .../bindings/iio/dac/maxim,ds4424.yaml        |  42 ++-
- drivers/iio/dac/Kconfig                       |   1 +
- drivers/iio/dac/ds4424.c                      | 351 ++++++++++++------
- 3 files changed, 283 insertions(+), 111 deletions(-)
-
---
+diff --git a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
+index efe63e6cb55d..4323df2036ac 100644
+--- a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
+@@ -27,9 +27,43 @@ properties:
+ 
+   vcc-supply: true
+ 
++  maxim,rfs-ohms:
++    description: |
++      Array of resistance values in Ohms for the external Rfs resistors
++      connected to the FS pins. These values determine the full-scale
++      output current. The actual resistance depends on the chip variant
++      and specific hardware design requirements.
++    minItems: 2
++    maxItems: 4
++
+ required:
+   - compatible
+   - reg
++  - maxim,rfs-ohms
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - maxim,ds4402
++              - maxim,ds4422
++    then:
++      properties:
++        maxim,rfs-ohms:
++          maxItems: 2
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - maxim,ds4404
++              - maxim,ds4424
++    then:
++      properties:
++        maxim,rfs-ohms:
++          minItems: 4
+ 
+ additionalProperties: false
+ 
+@@ -43,6 +77,7 @@ examples:
+             compatible = "maxim,ds4424";
+             reg = <0x10>; /* When A0, A1 pins are ground */
+             vcc-supply = <&vcc_3v3>;
++            maxim,rfs-ohms = <40000>, <40000>, <40000>, <40000>;
+         };
+     };
+ ...
+-- 
 2.47.3
 
