@@ -1,81 +1,78 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6982F34D4D8
-	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 11:38:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BBEB932ED24
+	for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 11:40:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769600317; cv=none; b=FpS0Y9rZjhvBWxAcXtBjTcKPYdOoHXiE3h8agARLpdpAYPMG3VUYlTFj/fUzsWvsFCumAPT4M/TCY7cNYwXRPaqMTE0mvUo13e8aQXiSzgmYAmK188sGM0DRdpvKDPWFTji5RMrO/HAAEaq8AFl4lqIpj8BuRGWGpVBrNHAzd2E=
+	t=1769600416; cv=none; b=sx6N9pZCUBzxnwYHFif1WcPID/eb1AN7rc+md0slhyA1oAT8pR9C93ovLEfmboTc+r1VCnA3MRHw29YtF2T1R1UGaFfDrrFjcAspHxQLtA0jUM098zMJ53FgjJKP99pzO21QM3hrOubwO1Wchaku2Z/dXisns0/RbkraRCC+pok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769600317; c=relaxed/simple;
-	bh=Va20b2/bvndKSsNijEO4trQF5II6HDXdxfQ+M89505k=;
+	s=arc-20240116; t=1769600416; c=relaxed/simple;
+	bh=KB+cTTZ2B/upxhJNZQuf6e9ml0y2/4jWR+djJXUwpqc=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=FVi0QFwiS0GV7soAh7KOhAZAfrR7rMubl40a25QoClBbw4SkrpJ3Q7CtkWDphHP3Eqo/sNuGd9WC1M9iU2pu7OjkY5+gXZO6AOfwI+sZgoToOs/FGqG6fnNzlz/1Oy0aFn7eXyjXIXieTmFg4F8GghD1UiuEs8BV/km4epBYIkU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HA5H60Y5; arc=none smtp.client-ip=209.85.221.53
+	 Content-Type:MIME-Version; b=hQpfCRGwsR05HkDtDy8yPdbRxXPJSTWbIzOt5RpcvzRr+foKGmYiAVrnBUk9SOWnecEmFBEHMYFrRMSytnLTMTVHoC8osPOFe5xhzCy6VKlxwe2GIbSzQXdQk0ut6HSVRCjWhSt8iIcuRc95faZM/BWjmR6zFhtlbQdtoHs958Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Pys07qyS; arc=none smtp.client-ip=209.85.128.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HA5H60Y5"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-4359a302794so4264681f8f.1
-        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 03:38:35 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Pys07qyS"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-47ff94b46afso6998845e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 03:40:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769600314; x=1770205114; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1769600413; x=1770205213; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=dGTKFOwtLRLddCS+Lcm6JeAnR+5Y7TqOesIqD332lDc=;
-        b=HA5H60Y5v2h0vhYniBs4vmH+3UazqXFKE0vwqD1IE48dV86CubFvkWZLQ1MXZv5xia
-         dAEbEhyZcyodPPaPrAtA7o+uMPvmvXMJlqrK3Uxn943SQQIutkfyYsvYJDqg3H+Ha6Nn
-         pW0dy0mx1hSi5dixhfqybhx8qTx1NCWFfiBosiRiErVbaxckGmjUrL9fuCNOzq4nw59u
-         dtEicigQ8cApRRzA/9qGcOg/eXVBs33iDPtxd7DsGeX9rr0lBdEf/C1V/NHmoZYDBQfH
-         EaZRjFqzwgHvWZkO2YctHUFcJhAQXpRCswgQgp8WEg3/AUurZY4RDbGD5UTGjVnR8eLQ
-         gGrA==
+        bh=vqRfd2vfHh4nYKD1extyhWwNfCg5ToGGBeU/+CUnFPM=;
+        b=Pys07qySDJAJvNd2AJQ/VNpD71BF5GVT/dlynJWJ9AR9rda6UvzrfqE0+eFPlgZ6Vy
+         jGKy4UsjjCHyK0uvG18Z9pNoGJN4VEOkAUknvBQgtw6Iubr/ZWhDK6XHOu/3TkUuKcVS
+         iiypkb+ifoXG2HfyLwDGtTCZVjvqNSFoeHXx8u10ifPcURYOj5fQhq9JZzjlJlEwSoRI
+         MJZQph8mt357UpH28e5tlb43ceDqHaMN/GO+Bc6y8S0cEpny4LawhbaU2AgC9htK95Kp
+         4EOhOqt334N+uKLotem/+a3SkvF2zrakRfiSjHv5U/C1O0hitsVkqV5BYswISDUh58sD
+         ChoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769600314; x=1770205114;
+        d=1e100.net; s=20230601; t=1769600413; x=1770205213;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=dGTKFOwtLRLddCS+Lcm6JeAnR+5Y7TqOesIqD332lDc=;
-        b=p281jdbWO9qLfyftdSy8fK35BLvehXK4hgwAHnswlCp/fND8dNmAfjQmrvp4n5oelA
-         Ab84HuRZE+paApSkyibdTf0gDG3bbUUuqv6EjT0TJGzLJoodpuU6rU54sPLzeOE+yovD
-         FvqnWkNwccs9fjeBE3GIffO0rb9Y9e56g1sy70zzG5cgcj+L08PYe0lck1zYNcklYYUr
-         S++mltFB50EHKLv6waFDWMILB45uxoheUzxXXZ4RhMFXHE1jwNsm++kmktbfFv4aV+5m
-         7IH5aMW8698Gu88f7XqqcJa4WtvKf++I5cPpAlUk7IUMz+Yz+BSXD5k+b7fPGEGnRLjy
-         7osQ==
-X-Forwarded-Encrypted: i=1; AJvYcCV39S4p1yjKnNcO7XdtUcVlKc/hoNfaj78+f0VTMoGms69pGYpwVi0TAO9Qj330lgZY2KV6ULtd8XY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwQ0DhNir4Zux8JFibtbuyx3ea+8mYS6w4uyLsY50z12INYE2NW
-	gI6AGYYZeW3t8t1UdYLU2yl1U+/SFh08NtK78IuwDXNg00sRXlidrzxd
-X-Gm-Gg: AZuq6aIqNrTtQDz/xoWc3nkUv3is2nHmeOo8oao3kwTCE9uVNWv90AeaGpOzSz/MS4o
-	PVmU5cUQaX7JoKB3MP+qejIuNsDgTzpLpBaXbm2zbw5u+SgpOKggj91O1adeJ0G+r8U6MElPHbV
-	XUubXHR5nMMGvxrvE4YhplNL70QQqzdHBQ7g8jWybWEV0QAsKEAlpCSg2oG+7KrYo1n2LrYxww4
-	xodXjrhiJbXV3NPmvG7psVNkreTfA8QeUaHtEb6VRMrQG9As68BRI/nZnz/ESS56q/NTNJzfV70
-	4czk7ZRbMgmduUVgLNli11YPP9o+y1m1LslzWJJTogTrAuzVECbZ/RBieuDGnfrpHJhArPr4qWM
-	ysZrEkP1DQ3kEnNF5HytbaZRy0qEy1K3b4ITEFlpm4Vwbfw9kSjnq0OQtqU6or9H1Aw+FbBwvLn
-	VUtR6ZilnrTiMpDgzzb80=
-X-Received: by 2002:a05:6000:a8c:b0:435:bbd7:185f with SMTP id ffacd0b85a97d-435dd029a52mr4718065f8f.9.1769600313449;
-        Wed, 28 Jan 2026 03:38:33 -0800 (PST)
+        bh=vqRfd2vfHh4nYKD1extyhWwNfCg5ToGGBeU/+CUnFPM=;
+        b=M6HUqOp0BdqDn8diqo1LqzflDfCUIZ+/MbtiSjwhQjFPUCSnDXwXdvKPia9TU3vWCa
+         X67JVBHendk4U+xxDFPMVsih6peau6YTaq3QM0ovJ5Fa3xYmUmOrbKGXdW0QXOgdZZw1
+         XJb1m6M5QPhxKK6Do6QTY31ln7glLaJtNP3nt7eMsL24EuIzBdjm4NY0LNRaUV8fmIiF
+         JvEnLmC0ERvs+O43g+NPSxl4fN03rs5ed3uCDAeTtq0cKtho0Xl5FNZESnXSngV27K+y
+         YPXuGgJ2J5m3dZq6o59wo/d+kp+hskio1cZrYZ91fyJWmPSIgQMmQmrCKFpQUgYIN9Af
+         ls1g==
+X-Forwarded-Encrypted: i=1; AJvYcCV5zz2Br9MnPgBduREUUqTVaEV3cGigON71z7XKwNRWPKa7t+/JJpKSnR77kUdo4IWPnMabvjOM12U=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx2f9vw+p2LYl2QduMvGMSncmxCNHBVuweOCugLd+gacoJ4k5K1
+	wpglkIpchjTSntcPtUlUbw8eWC41EgW+yrtH9Vud2R2dT5c2TMLA91mg
+X-Gm-Gg: AZuq6aK9AxKcPm8RD7fMcYspVfaXyKYWMYWIo1MDw7sI8vBkQVFQ9JWMeJ2UJAk2PyS
+	AtqdEisRG9NQcp6aaQ9ZUP1IEK0kT/TsJZAmiypPHiF3/ZNAaPkpIWw1Ue7mkW9tWeyyzAEQCW+
+	QnroVTHAk9CSz6j1L/fTYxOUWK55tWuCigHWyfR7fFm0G0i37Qwbd8yFD8r6CLj7MXa8QzWN5tv
+	9IqRYYxGEEKyEstmQKP8iPxdGebrauW7atHyzrArZV1eBbcrgfMZGJNAJ6aeXM2ORowfMNaaQrQ
+	LDy+EI4/SzJYWjQlyLKFfLaqeJ0UXQAYBbSuGUUG/ap1bl36HAtapqwUrqn73wEN1Ssd/P4gdCM
+	EDybFXK1oq8Yyb6zwulH/xjjGgtlhCGcxgb9uzM5HIwCDh28x6f0SUOsg/u7WtW/BEoPPdQbLGH
+	fzTzE967m2H7vR6i4Fic/66j/EVbTVTA==
+X-Received: by 2002:a05:600c:4448:b0:47d:6c36:a125 with SMTP id 5b1f17b1804b1-48069e9b5dbmr70565845e9.17.1769600412962;
+        Wed, 28 Jan 2026 03:40:12 -0800 (PST)
 Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e132368csm5956202f8f.31.2026.01.28.03.38.32
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4806e2e50ccsm4732965e9.17.2026.01.28.03.40.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jan 2026 03:38:33 -0800 (PST)
-Message-ID: <0b48a4b08a6dbe34c017ed4ebb277e2082842101.camel@gmail.com>
-Subject: Re: [PATCH 18/21] iio: Replace IRQF_ONESHOT with IRQF_NO_THREAD
+        Wed, 28 Jan 2026 03:40:12 -0800 (PST)
+Message-ID: <91aafb3174ca943e240dd8164f27080eab085e29.camel@gmail.com>
+Subject: Re: [PATCH 20/21] iio: magnetometer: Remove IRQF_ONESHOT
 From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
 To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
 	linux-kernel@vger.kernel.org
 Cc: linux-rt-devel@lists.linux.dev, Thomas Gleixner <tglx@kernel.org>, 
- Lars-Peter Clausen	 <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>,  Puranjay Mohan <puranjay@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
-  Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Marcelo Schmitt	 <marcelo.schmitt@analog.com>, Marcus
- Folkesson <marcus.folkesson@gmail.com>,  Kent Gustavsson	
- <kent@minoris.se>, Gustavo Silva <gustavograzs@gmail.com>, Nishant Malpani	
- <nish.malpani25@gmail.com>, linux-iio@vger.kernel.org
-Date: Wed, 28 Jan 2026 11:39:16 +0000
-In-Reply-To: <20260123113708.416727-19-bigeasy@linutronix.de>
+ Jonathan Cameron
+	 <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?=
+	 <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
+	linux-iio@vger.kernel.org
+Date: Wed, 28 Jan 2026 11:40:56 +0000
+In-Reply-To: <20260123113708.416727-21-bigeasy@linutronix.de>
 References: <20260123113708.416727-1-bigeasy@linutronix.de>
-	 <20260123113708.416727-19-bigeasy@linutronix.de>
+	 <20260123113708.416727-21-bigeasy@linutronix.de>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.58.2 
@@ -93,385 +90,35 @@ On Fri, 2026-01-23 at 12:37 +0100, Sebastian Andrzej Siewior wrote:
 > (again) while its handler is running.
 > The flag also disallows force-threading of the primary handler and the
 > irq-core will warn about this.
+> The force-threading functionality is required on PREEMPT_RT because the
+> handler is using locks with can sleep on PREEMPT_RT.
 >=20
-> The intention here was probably not allowing forced-threading for
-> handlers such as iio_trigger_generic_data_rdy_poll() will intends to
-> invoke hard-interrupt handlers.
+> Remove IRQF_ONESHOT from irqflags.
 >=20
-> Replace IRQF_ONESHOT with IRQF_NO_THREAD.
->=20
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-> Cc: Puranjay Mohan <puranjay@kernel.org>
 > Cc: Jonathan Cameron <jic23@kernel.org>
 > Cc: David Lechner <dlechner@baylibre.com>
 > Cc: "Nuno S=C3=A1" <nuno.sa@analog.com>
 > Cc: Andy Shevchenko <andy@kernel.org>
-> Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>
-> Cc: Marcus Folkesson <marcus.folkesson@gmail.com>
-> Cc: Kent Gustavsson <kent@minoris.se>
-> Cc: Gustavo Silva <gustavograzs@gmail.com>
-> Cc: Nishant Malpani <nish.malpani25@gmail.com>
 > Cc: linux-iio@vger.kernel.org
 > Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
 > ---
 
-LGTM,
-
 Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 
-> =C2=A0drivers/iio/accel/adxl355_core.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 |=C2=A0 3 ++-
-> =C2=A0drivers/iio/accel/adxl372.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 9 ++++-----
-> =C2=A0drivers/iio/accel/mxc4005.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 11 ++++-------
-> =C2=A0drivers/iio/accel/stk8ba50.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 | 11 ++++-------
-> =C2=A0drivers/iio/adc/ad4170-4.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 2 +-
-> =C2=A0drivers/iio/adc/ad7768-1.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 5 ++---
-> =C2=A0drivers/iio/adc/ad7779.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 2 +-
-> =C2=A0drivers/iio/adc/mcp3911.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 2 +-
-> =C2=A0drivers/iio/adc/ti-ads131e08.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 |=C2=A0 2 +-
-> =C2=A0drivers/iio/chemical/ens160_core.c=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 =
-9 +++------
-> =C2=A0drivers/iio/gyro/adxrs290.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 2 +-
-> =C2=A0drivers/iio/health/afe4403.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 9 ++++-----
-> =C2=A0drivers/iio/health/afe4404.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 9 ++++-----
-> =C2=A0drivers/iio/magnetometer/bmc150_magn.c |=C2=A0 9 +++------
-> =C2=A0drivers/iio/pressure/dlhl60d.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0 |=C2=A0 6 +++---
-> =C2=A0drivers/iio/temperature/tmp006.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 | 10 ++++------
-> =C2=A016 files changed, 42 insertions(+), 59 deletions(-)
+> =C2=A0drivers/iio/magnetometer/ak8975.c | 2 +-
+> =C2=A01 file changed, 1 insertion(+), 1 deletion(-)
 >=20
-> diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355=
-_core.c
-> index 5fc7f814b9077..04caa493176d3 100644
-> --- a/drivers/iio/accel/adxl355_core.c
-> +++ b/drivers/iio/accel/adxl355_core.c
-> @@ -770,7 +770,8 @@ static int adxl355_probe_trigger(struct iio_dev *indi=
-o_dev, int irq)
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer=
+/ak8975.c
+> index 3fd0171e5d69b..d30315ad85ded 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -581,7 +581,7 @@ static int ak8975_setup_irq(struct ak8975_data *data)
+> =C2=A0		irq =3D gpiod_to_irq(data->eoc_gpiod);
 > =C2=A0
-> =C2=A0	ret =3D devm_request_irq(data->dev, irq,
-> =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &iio_trigger_generic_data_r=
-dy_poll,
-> -			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_ONESHOT, "adxl355_irq", dat=
-a->dready_trig);
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_THREAD,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "adxl355_irq", data->dready_trig=
-);
-> =C2=A0	if (ret)
-> =C2=A0		return dev_err_probe(data->dev, ret, "request irq %d failed\n",
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 irq);
-> diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-> index 46d518a2a0291..2f6aa52aeba51 100644
-> --- a/drivers/iio/accel/adxl372.c
-> +++ b/drivers/iio/accel/adxl372.c
-> @@ -1247,11 +1247,10 @@ int adxl372_probe(struct device *dev, struct regm=
-ap *regmap,
-> =C2=A0
-> =C2=A0		indio_dev->trig =3D iio_trigger_get(st->dready_trig);
-> =C2=A0
-> -		ret =3D devm_request_threaded_irq(dev, st->irq,
-> -					iio_trigger_generic_data_rdy_poll,
-> -					NULL,
-> -					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-> -					indio_dev->name, st->dready_trig);
-> +		ret =3D devm_request_irq(dev, st->irq,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_trigger_generic_data_rdy_po=
-ll,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_TRIGGER_RISING | IRQF_NO_T=
-HREAD,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio_dev->name, st->dready_tri=
-g);
-> =C2=A0		if (ret < 0)
-> =C2=A0			return ret;
-> =C2=A0	}
-> diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
-> index ac973d871c8bb..a2c3cf13d0981 100644
-> --- a/drivers/iio/accel/mxc4005.c
-> +++ b/drivers/iio/accel/mxc4005.c
-> @@ -486,13 +486,10 @@ static int mxc4005_probe(struct i2c_client *client)
-> =C2=A0		if (!data->dready_trig)
-> =C2=A0			return -ENOMEM;
-> =C2=A0
-> -		ret =3D devm_request_threaded_irq(&client->dev, client->irq,
-> -						iio_trigger_generic_data_rdy_poll,
-> -						NULL,
-> -						IRQF_TRIGGER_FALLING |
-> -						IRQF_ONESHOT,
-> -						"mxc4005_event",
-> -						data->dready_trig);
-> +		ret =3D devm_request_irq(&client->dev, client->irq,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_trigger_generic_data_rdy_po=
-ll,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_TRIGGER_FALLING | IRQF_NO_=
-THREAD,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "mxc4005_event", data->dready_t=
-rig);
-> =C2=A0		if (ret) {
-> =C2=A0			dev_err(&client->dev,
-> =C2=A0				"failed to init threaded irq\n");
-> diff --git a/drivers/iio/accel/stk8ba50.c b/drivers/iio/accel/stk8ba50.c
-> index 384f1fbcbcb37..a9ff2a273fe1c 100644
-> --- a/drivers/iio/accel/stk8ba50.c
-> +++ b/drivers/iio/accel/stk8ba50.c
-> @@ -428,13 +428,10 @@ static int stk8ba50_probe(struct i2c_client *client=
-)
-> =C2=A0	}
-> =C2=A0
-> =C2=A0	if (client->irq > 0) {
-> -		ret =3D devm_request_threaded_irq(&client->dev, client->irq,
-> -						stk8ba50_data_rdy_trig_poll,
-> -						NULL,
-> -						IRQF_TRIGGER_RISING |
-> -						IRQF_ONESHOT,
-> -						"stk8ba50_event",
-> -						indio_dev);
-> +		ret =3D devm_request_irq(&client->dev, client->irq,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 stk8ba50_data_rdy_trig_poll,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_TRIGGER_RISING | IRQF_NO_T=
-HREAD,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "stk8ba50_event", indio_dev);
-> =C2=A0		if (ret < 0) {
-> =C2=A0			dev_err(&client->dev, "request irq %d failed\n",
-> =C2=A0				client->irq);
-> diff --git a/drivers/iio/adc/ad4170-4.c b/drivers/iio/adc/ad4170-4.c
-> index efaed92191f1b..82205bfae531e 100644
-> --- a/drivers/iio/adc/ad4170-4.c
-> +++ b/drivers/iio/adc/ad4170-4.c
-> @@ -2973,7 +2973,7 @@ static int ad4170_probe(struct spi_device *spi)
-> =C2=A0
-> =C2=A0	if (spi->irq) {
-> =C2=A0		ret =3D devm_request_irq(dev, spi->irq, &ad4170_irq_handler,
-> -				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_ONESHOT, indio_dev->name, =
-indio_dev);
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_THREAD, indio_dev->name=
-, indio_dev);
-> =C2=A0		if (ret)
-> =C2=A0			return ret;
-> =C2=A0
-> diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
-> index d96802b7847a6..84ce23c8e5782 100644
-> --- a/drivers/iio/adc/ad7768-1.c
-> +++ b/drivers/iio/adc/ad7768-1.c
-> @@ -1394,9 +1394,8 @@ static int ad7768_probe(struct spi_device *spi)
-> =C2=A0	if (ret)
-> =C2=A0		return ret;
-> =C2=A0
-> -	ret =3D devm_request_irq(&spi->dev, spi->irq,
-> -			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &ad7768_interrupt,
-> -			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_TRIGGER_RISING | IRQF_ONESH=
-OT,
-> +	ret =3D devm_request_irq(&spi->dev, spi->irq, &ad7768_interrupt,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_TRIGGER_RISING | IRQF_NO_TH=
-READ,
-> =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio_dev->name, indio_dev)=
-;
-> =C2=A0	if (ret)
-> =C2=A0		return ret;
-> diff --git a/drivers/iio/adc/ad7779.c b/drivers/iio/adc/ad7779.c
-> index aac5049c9a07b..695cc79e78da5 100644
-> --- a/drivers/iio/adc/ad7779.c
-> +++ b/drivers/iio/adc/ad7779.c
-> @@ -840,7 +840,7 @@ static int ad7779_setup_without_backend(struct ad7779=
-_state *st, struct
-> iio_dev
-> =C2=A0	iio_trigger_set_drvdata(st->trig, st);
-> =C2=A0
-> =C2=A0	ret =3D devm_request_irq(dev, st->spi->irq, iio_trigger_generic_da=
-ta_rdy_poll,
-> -			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_ONESHOT | IRQF_NO_AUTOEN, i=
-ndio_dev->name,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_THREAD | IRQF_NO_AUTOEN,=
- indio_dev->name,
-> =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 st->trig);
-> =C2=A0	if (ret)
-> =C2=A0		return dev_err_probe(dev, ret, "request IRQ %d failed\n",
-> diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
-> index a6f21791c6859..ddc3721f3f688 100644
-> --- a/drivers/iio/adc/mcp3911.c
-> +++ b/drivers/iio/adc/mcp3911.c
-> @@ -815,7 +815,7 @@ static int mcp3911_probe(struct spi_device *spi)
-> =C2=A0		 * don't enable the interrupt to avoid extra load on the system.
-> =C2=A0		 */
-> =C2=A0		ret =3D devm_request_irq(dev, spi->irq, &iio_trigger_generic_data=
-_rdy_poll,
-> -				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_AUTOEN | IRQF_ONESHOT,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_AUTOEN | IRQF_NO_THREAD=
-,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio_dev->name, adc->trig=
-);
-> =C2=A0		if (ret)
-> =C2=A0			return ret;
-> diff --git a/drivers/iio/adc/ti-ads131e08.c b/drivers/iio/adc/ti-ads131e0=
-8.c
-> index c9a20024d6b11..a585621b0bc30 100644
-> --- a/drivers/iio/adc/ti-ads131e08.c
-> +++ b/drivers/iio/adc/ti-ads131e08.c
-> @@ -827,7 +827,7 @@ static int ads131e08_probe(struct spi_device *spi)
-> =C2=A0	if (spi->irq) {
-> =C2=A0		ret =3D devm_request_irq(&spi->dev, spi->irq,
-> =C2=A0			ads131e08_interrupt,
-> -			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-> +			IRQF_TRIGGER_FALLING | IRQF_NO_THREAD,
-> =C2=A0			spi->dev.driver->name, indio_dev);
-> =C2=A0		if (ret)
-> =C2=A0			return dev_err_probe(&spi->dev, ret,
-> diff --git a/drivers/iio/chemical/ens160_core.c b/drivers/iio/chemical/en=
-s160_core.c
-> index 86bde4a91bf7e..bbc96c4c62838 100644
-> --- a/drivers/iio/chemical/ens160_core.c
-> +++ b/drivers/iio/chemical/ens160_core.c
-> @@ -316,12 +316,9 @@ static int ens160_setup_trigger(struct iio_dev *indi=
-o_dev, int irq)
-> =C2=A0
-> =C2=A0	indio_dev->trig =3D iio_trigger_get(trig);
-> =C2=A0
-> -	ret =3D devm_request_threaded_irq(dev, irq,
-> -					iio_trigger_generic_data_rdy_poll,
-> -					NULL,
-> -					IRQF_ONESHOT,
-> -					indio_dev->name,
-> -					indio_dev->trig);
-> +	ret =3D devm_request_irq(dev, irq, iio_trigger_generic_data_rdy_poll,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_THREAD, indio_dev->name,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio_dev->trig);
-> =C2=A0	if (ret)
-> =C2=A0		return dev_err_probe(dev, ret, "failed to request irq\n");
-> =C2=A0
-> diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
-> index 8fcb41f45baac..3efe385ebedc4 100644
-> --- a/drivers/iio/gyro/adxrs290.c
-> +++ b/drivers/iio/gyro/adxrs290.c
-> @@ -597,7 +597,7 @@ static int adxrs290_probe_trigger(struct iio_dev *ind=
-io_dev)
-> =C2=A0
-> =C2=A0	ret =3D devm_request_irq(&st->spi->dev, st->spi->irq,
-> =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &iio_trigger_generic_data_r=
-dy_poll,
-> -			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_ONESHOT, "adxrs290_irq", st=
-->dready_trig);
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_THREAD, "adxrs290_irq", =
-st->dready_trig);
-> =C2=A0	if (ret < 0)
-> =C2=A0		return dev_err_probe(&st->spi->dev, ret,
-> =C2=A0				=C2=A0=C2=A0=C2=A0=C2=A0 "request irq %d failed\n", st->spi->ir=
-q);
-> diff --git a/drivers/iio/health/afe4403.c b/drivers/iio/health/afe4403.c
-> index 0e5a512e3bb8f..d358f4d5e5da8 100644
-> --- a/drivers/iio/health/afe4403.c
-> +++ b/drivers/iio/health/afe4403.c
-> @@ -540,11 +540,10 @@ static int afe4403_probe(struct spi_device *spi)
-> =C2=A0			return ret;
-> =C2=A0		}
-> =C2=A0
-> -		ret =3D devm_request_threaded_irq(dev, afe->irq,
-> -						iio_trigger_generic_data_rdy_poll,
-> -						NULL, IRQF_ONESHOT,
-> -						AFE4403_DRIVER_NAME,
-> -						afe->trig);
-> +		ret =3D devm_request_irq(dev, afe->irq,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_trigger_generic_data_rdy_po=
-ll,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_THREAD, AFE4403_DRIVER_=
-NAME,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 afe->trig);
-> =C2=A0		if (ret) {
-> =C2=A0			dev_err(dev, "Unable to request IRQ\n");
-> =C2=A0			return ret;
-> diff --git a/drivers/iio/health/afe4404.c b/drivers/iio/health/afe4404.c
-> index 768d794e574b9..032da52a96d0e 100644
-> --- a/drivers/iio/health/afe4404.c
-> +++ b/drivers/iio/health/afe4404.c
-> @@ -547,11 +547,10 @@ static int afe4404_probe(struct i2c_client *client)
-> =C2=A0			return ret;
-> =C2=A0		}
-> =C2=A0
-> -		ret =3D devm_request_threaded_irq(dev, afe->irq,
-> -						iio_trigger_generic_data_rdy_poll,
-> -						NULL, IRQF_ONESHOT,
-> -						AFE4404_DRIVER_NAME,
-> -						afe->trig);
-> +		ret =3D devm_request_irq(dev, afe->irq,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_trigger_generic_data_rdy_po=
-ll,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_THREAD, AFE4404_DRIVER_=
-NAME,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 afe->trig);
-> =C2=A0		if (ret) {
-> =C2=A0			dev_err(dev, "Unable to request IRQ\n");
-> =C2=A0			return ret;
-> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magneto=
-meter/bmc150_magn.c
-> index 6a73f6e2f1f06..a022e1805dff7 100644
-> --- a/drivers/iio/magnetometer/bmc150_magn.c
-> +++ b/drivers/iio/magnetometer/bmc150_magn.c
-> @@ -906,12 +906,9 @@ int bmc150_magn_probe(struct device *dev, struct reg=
-map *regmap,
-> =C2=A0			goto err_poweroff;
-> =C2=A0		}
-> =C2=A0
-> -		ret =3D request_threaded_irq(irq,
-> -					=C2=A0=C2=A0 iio_trigger_generic_data_rdy_poll,
-> -					=C2=A0=C2=A0 NULL,
-> -					=C2=A0=C2=A0 IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-> -					=C2=A0=C2=A0 "bmc150_magn_event",
-> -					=C2=A0=C2=A0 data->dready_trig);
-> +		ret =3D request_irq(irq, iio_trigger_generic_data_rdy_poll,
-> +				=C2=A0 IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
-> +				=C2=A0 "bmc150_magn_event", data->dready_trig);
-> =C2=A0		if (ret < 0) {
-> =C2=A0			dev_err(dev, "request irq %d failed\n", irq);
-> =C2=A0			goto err_trigger_unregister;
-> diff --git a/drivers/iio/pressure/dlhl60d.c b/drivers/iio/pressure/dlhl60=
-d.c
-> index 8bad7162fec64..e975b733ce0a1 100644
-> --- a/drivers/iio/pressure/dlhl60d.c
-> +++ b/drivers/iio/pressure/dlhl60d.c
-> @@ -306,9 +306,9 @@ static int dlh_probe(struct i2c_client *client)
-> =C2=A0	indio_dev->num_channels =3D ARRAY_SIZE(dlh_channels);
-> =C2=A0
-> =C2=A0	if (client->irq > 0) {
-> -		ret =3D devm_request_threaded_irq(&client->dev, client->irq,
-> -			dlh_interrupt, NULL,
-> -			IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-> +		ret =3D devm_request_irq(&client->dev, client->irq,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dlh_interrupt,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_TRIGGER_RISING | IRQF_NO_T=
-HREAD,
-> =C2=A0			st->info->name, indio_dev);
-> =C2=A0		if (ret) {
-> =C2=A0			dev_err(&client->dev, "failed to allocate threaded irq");
-> diff --git a/drivers/iio/temperature/tmp006.c b/drivers/iio/temperature/t=
-mp006.c
-> index 10bd3f221929d..d8d8c8936d177 100644
-> --- a/drivers/iio/temperature/tmp006.c
-> +++ b/drivers/iio/temperature/tmp006.c
-> @@ -356,12 +356,10 @@ static int tmp006_probe(struct i2c_client *client)
-> =C2=A0
-> =C2=A0		indio_dev->trig =3D iio_trigger_get(data->drdy_trig);
-> =C2=A0
-> -		ret =3D devm_request_threaded_irq(&client->dev, client->irq,
-> -						iio_trigger_generic_data_rdy_poll,
-> -						NULL,
-> -						IRQF_ONESHOT,
-> -						"tmp006_irq",
-> -						data->drdy_trig);
-> +		ret =3D devm_request_irq(&client->dev, client->irq,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_trigger_generic_data_rdy_po=
-ll,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_NO_THREAD, "tmp006_irq",
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 data->drdy_trig);
-> =C2=A0		if (ret < 0)
-> =C2=A0			return ret;
-> =C2=A0	}
+> =C2=A0	rc =3D devm_request_irq(&client->dev, irq, ak8975_irq_handler,
+> -			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_TRIGGER_RISING,
+> =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 dev_name(&client->dev), data);
+> =C2=A0	if (rc < 0) {
+> =C2=A0		dev_err(&client->dev, "irq %d request failed: %d\n", irq, rc);
