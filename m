@@ -1,132 +1,136 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94CF23559D8;
-	Thu, 29 Jan 2026 18:04:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6337C225390;
+	Thu, 29 Jan 2026 18:15:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769709853; cv=none; b=n0vuom5v9ziUn7bt6L1RAbWf0agtynh1NVzYsz3G1o5HsXV4joK8HW6D2u7vA8NsrJ+R87rQ4MG4gog6xLOjUrRas+lDMPZ+hyKJSi5FpM7GhSQABz/Isqqdxrs8qrSi9aYupzG6EglibTJmckYMFM11oGv7LMMip1u4JsBzWz0=
+	t=1769710521; cv=none; b=KdRf5VyVIboDJZzIqaouuBzW5UbWDeFGhE4eVrHeJTjFN3s2D9uhRe3r8JNk+ttnqzeLQ0jTBQyT1id87k8hyomwTg/EvTRKf5eWhwteoHPtKwYk6bec0oBumVMFn1Y6oNHkPUlhmupkUjBjMYAyyoqeBVItEWvBUOJvfQT7wUI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769709853; c=relaxed/simple;
-	bh=W81LbQ0yfMFBC66w1hQ4EGhsdxQKV/9uYC19p4OV40A=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oagwlisjRggjL/oAau/BvxBUSXJ+T/cBRkc9ygnQDl9VL77Vol9OzObk/mDm9ndPIG2YFOxr186fSrbZAscOPq7wOOnkw83x3NtrvMSd3TN7gXiA5XlQ3nqn+cRt/bqp16wod+2urHhbTt3WgH0SoOlaONvomKQvb9VNKlXMLWg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iSIITNmm; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769710521; c=relaxed/simple;
+	bh=s8u98sPm1ExILr4yN3ZM0JLZXWdlzD3k1bgzVwYHDJE=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=lRGF3N9k5Qum8mA5Ukrm6xE3naGzLsuVdxSeZlHWwQKTrzaB0TBWVj7/famMKNngVdHYu1c1uG7BE1qS1PBBgGW8HZ2K0tZf53y77pOngYKAv5xa8zT6ImTNwb0vgSLRRlHOPzzxKAYD50+FnBKYYDZ21JALEsw01C5oLaMWkIQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=GTSCclQJ; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iSIITNmm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9EEFC4CEF7;
-	Thu, 29 Jan 2026 18:04:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769709853;
-	bh=W81LbQ0yfMFBC66w1hQ4EGhsdxQKV/9uYC19p4OV40A=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=iSIITNmm44gnuL+q0GkLgzZ+9iKEYSLa4dVl0JtoBkipqprHdWj776SudppXSccCJ
-	 hkVuRDSi6EtBOZ4357nlsZXlJYnGyQuXnFeF1jSgYIorRJsJCtc0hVhqBZbM08k6p0
-	 C6NmYv32sce8L+NevYVus9t4zJHjFGgAEefRYedRask46mU+7uMfGOUunJDfBvQRZI
-	 dJ7t2h27h26uWx+Rsu15wvWtuf0E7y3cznFgJdhveb7PRp1ptanqafCRhUis0M9pMg
-	 MnKH93nrg6Eyt2lFtHex/8rgnWWywLTjmmPFKhvKL3D4m0urha1oiwGDKi1h/25XNz
-	 Nbwujz2RSE0JA==
-Date: Thu, 29 Jan 2026 18:04:04 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, David Jander <david@protonic.nl>
-Subject: Re: [PATCH v3 7/8] iio: dac: ds4424: convert to regmap
-Message-ID: <20260129180404.68bcdf20@jic23-huawei>
-In-Reply-To: <20260128153824.3679187-8-o.rempel@pengutronix.de>
-References: <20260128153824.3679187-1-o.rempel@pengutronix.de>
-	<20260128153824.3679187-8-o.rempel@pengutronix.de>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="GTSCclQJ"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60THkH0W2946343;
+	Thu, 29 Jan 2026 13:15:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=517dUUOgFaeY8BMvrrJ5wfLWKk3
+	jAi7XnNS5XCnLKXI=; b=GTSCclQJJL+yhvBPZbFIuHH8Ihi2piaJCTTnMVcL5n1
+	0aoSMEjhwcb9pr9vVBy4ygUq46rLB3OKfLnn4JjihpEGToqr0ZGXt/aX5Z0ntEQn
+	MQidhqSRRUc38zgD1imPRZ4u9mmMy82iWWeHKDnoYGwDfSIMD+spZyRMuGT0oMNN
+	wGcvOUUKoPujN9fMCqDuIYscVvuFL6mBwzTEZ/Vj0+Y8sjroGMsyE5TEKapbfP6P
+	UdJw6O7SSkSftq5WErbo6eFbOKWIBBHwTkVcron93upW9skQdMjjm5iDhBzDeopW
+	3NbN9NbdG3I7krv83daZBZoLLBMUykcgn4I/yovLUiw==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4c0c8a034u-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Jan 2026 13:15:12 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 60TIFBTn061131
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 29 Jan 2026 13:15:11 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 29 Jan
+ 2026 13:15:11 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 29 Jan 2026 13:15:11 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 60TIEwv5011036;
+	Thu, 29 Jan 2026 13:15:01 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Petre Rodan <petre.rodan@subdimension.ro>,
+        Jonathan Cameron
+	<jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v2] iio: pressure: hsc030pa: Improve i2c_transfer return value handling
+Date: Thu, 29 Jan 2026 20:14:52 +0200
+Message-ID: <20260129181452.57628-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=LPJrgZW9 c=1 sm=1 tr=0 ts=697ba3b0 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=vUbySO9Y5rIA:10 a=VkNPw1HP01LnGYTKEx00:22 a=gAnH3GRIAAAA:8
+ a=fp1qgPpjcrRE5sl1YSkA:9
+X-Proofpoint-GUID: PzUNGbRToG1MipzqLj8dLjNfY0V_jRFw
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI5MDEyOSBTYWx0ZWRfX9iOck2GcUN7n
+ Ud4XT/ROBbpkbYUPPfij86vCp4sTyxTQbegJL008zTHRr1puZq/UDGRIf4lrqwDoutWN6yvAcie
+ riqzTMEIJwKISjqKvuF9uAh3Ty2n5WU7aQYYPeq+VskEZz5CcrgeAZApbZIGOrKvsqEkxinnR7i
+ 09K3/Os/S6f7oV7CdycY7HwogzP/tIg4OAe+mXUYZQwVK5HBsP3VkcZhj3vOoe5Q4Z+DdWxcCJw
+ QWlKIajw/fusYs6E5iArrx0CcpUqHxawt07/PDNg+8zVxqwDnYa+EXLMrrU/gulFsD+KAFpHpBS
+ Scgmtu6P83ksPB2/dBhrZDb4sWrrx+C5RpgZEZ+hESL8tHF8/YZ0fbsGL163Vaxg7n4ebLpzTRO
+ JvtI5Zt2VTF8AjIobJT0KQumRaVUEd2LVk93ZcvtyhIphwZnX5j7k+r8pm+GRRI3QrCwvvdGp/P
+ qz2QET62g/9Xipa4N0g==
+X-Proofpoint-ORIG-GUID: PzUNGbRToG1MipzqLj8dLjNfY0V_jRFw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-01-29_02,2026-01-29_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 adultscore=0 lowpriorityscore=0 spamscore=0 impostorscore=0
+ clxscore=1015 priorityscore=1501 bulkscore=0 malwarescore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601290129
 
-On Wed, 28 Jan 2026 16:38:23 +0100
-Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+The i2c_transfer() function returns the number of messages
+successfully transferred. The function sends 1 message but checks
+for ret == 2, which can never be true.
 
-> Refactor the driver to use the regmap API.
-> 
-> Replace the driver-specific mutex and manual shadow buffers with the
-> standard regmap infrastructure for locking and caching.
-> 
-> This ensures the cache is populated from hardware at probe, preventing
-> state desynchronization (e.g. across suspend/resume).
-> 
-> Define access tables to validate the different register maps of DS44x2
-> and DS44x4.
-> 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Hi Oleksij
+In practice this has no impact since the caller checks ret < 0,
+and the erroneous return value of 1 is not treated as an error.
 
-A few comments that might not overlap with what Andy already provided.
+Improve the return value handling to properly distinguish between
+I2C errors and unexpected transfer counts.
 
-> diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-> index f340d491fcc1..9bef1c60b2eb 100644
-> --- a/drivers/iio/dac/ds4424.c
-> +++ b/drivers/iio/dac/ds4424.c
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+v2:
+ - Changed subject from 'Fix' to 'Improve'
+ - Clarified that the bug has no practical impact
+ - Used explicit if/return pattern instead of ternary
+ - Dropped Fixes tag
 
+ drivers/iio/pressure/hsc030pa_i2c.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-> +static int ds4424_init_regmap(struct i2c_client *client,
-> +			      struct iio_dev *indio_dev)
->  {
->  	struct ds4424_data *data = iio_priv(indio_dev);
-> +	const struct regmap_config *regmap_config;
-> +	u8 vals[DS4424_MAX_DAC_CHANNELS];
->  	int ret;
->  
-> -	mutex_lock(&data->lock);
-> -	ret = i2c_smbus_write_byte_data(data->client,
-> -			DS4424_DAC_ADDR(chan->channel), val);
-> -	if (ret < 0)
-> -		goto fail;
-> -
-> -	data->raw[chan->channel] = val;
-> -
-> -fail:
-> -	mutex_unlock(&data->lock);
-> -	return ret;
-> +	if (indio_dev->num_channels == DS4424_MAX_DAC_CHANNELS)
-> +		regmap_config = &ds44x4_regmap_config;
-> +	else
-> +		regmap_config = &ds44x2_regmap_config;
-> +
-> +	data->regmap = devm_regmap_init_i2c(client, regmap_config);
-> +	if (IS_ERR(data->regmap))
-> +		return dev_err_probe(&client->dev, PTR_ERR(data->regmap),
-> +				     "Failed to init regmap.\n");
-> +
-> +	/*
-> +	 * Prime the cache with the bootloader's configuration.
-> +	 * regmap_bulk_read will automatically populate the cache with
+diff --git a/drivers/iio/pressure/hsc030pa_i2c.c b/drivers/iio/pressure/hsc030pa_i2c.c
+index a34ef4653f34..3500bda03d75 100644
+--- a/drivers/iio/pressure/hsc030pa_i2c.c
++++ b/drivers/iio/pressure/hsc030pa_i2c.c
+@@ -34,8 +34,13 @@ static int hsc_i2c_recv(struct hsc_data *data)
+ 	msg.buf = data->buffer;
+ 
+ 	ret = i2c_transfer(client->adapter, &msg, 1);
++	if (ret < 0)
++		return ret;
+ 
+-	return (ret == 2) ? 0 : ret;
++	if (ret != 1)
++		return -EIO;
++
++	return 0;
+ }
+ 
+ static int hsc_i2c_probe(struct i2c_client *client)
+-- 
+2.43.0
 
-regmap_bulk_read() 
-style preferred for functions mentioned in comments.
-
-> +	 * the values read from the hardware.
-> +	 */
-> +	ret = regmap_bulk_read(data->regmap, DS4424_DAC_ADDR(0), vals,
-
-> @@ -233,10 +253,7 @@ static int ds4424_probe(struct i2c_client *client)
->  		return ret;
->  	}
->  
-> -	usleep_range(1000, 1200);
-> -	ret = ds4424_verify_chip(indio_dev);
-> -	if (ret < 0)
-> -		goto fail;
-> +	fsleep(1000);
-
-This change to fsleep() is unrelated to regmap stuff. So separate patch.
-
-Thanks,
-
-Jonathan
