@@ -1,260 +1,164 @@
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 912BB23D7FB
-	for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 16:39:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55D503446AF
+	for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 16:46:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769704761; cv=none; b=btSntlvZtzYoNfDFtBAI0hsy6wCLbSYPY9vxuBBE5fhvlJVwGSTzZiJT5Y+HwpbOd3XjHD56eqA0deLdfwuoGO0HtPFQPSdC8mYT8Y9FM4y/dlZlVSkV/JK677M6HtgiwZnGlw+PaCbyFj1sSjbGo9VjbETNJ1MnAv/y55EnEU4=
+	t=1769705201; cv=none; b=UubSO00hTM5GEiZKON4zdx4818OeLJh3o0hlFUo4fHItFmZUBYlxePj7V09lsdtwFYcFC3m/DPtC3PZer2KyO9wn2u4u8LsdZsaFfT37aklXFEnzGhitEzm2oNR/nVRfikbPkS9+N/KEpTg7TkrKT0R1GQPQA1LtQipP9tSYM5U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769704761; c=relaxed/simple;
-	bh=rbRL4Edrc7zizbHI5AYLxT5kKdGzTDHBU67MLf7yos4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=KZ9h9c1TPqslXokMPWACEFH6KRSXVETYHSTWg+eWScRTKAx0wqMrAIRg4Ed8hv8bcEOJSISy7H3cDbiuHGLS6hkpHwJgdFtoeCqZyXH0PNvCMGvDUnkMemT5nLJcrDlNkCpCITacmv9RUyi4XAFWamRtjbiGjEnp+npLL3ZVyZA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=yFw5h4ql; arc=none smtp.client-ip=209.85.167.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1769705201; c=relaxed/simple;
+	bh=06Yu0cheza3u1SIYgfg53idlzfJF6Rcd80IYs6YTqvM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=a846yUsFuUrWDkHudI8wy1oEJ2zpg/nDZ1QXQcKRuKvhtZ+HITnwaLPcJaCw5yXgt6v7FRxbg+wYjY3larIFwahfTyzEzse8LtzAq76zzwxSdiPgClKmY17A1pZZxJQh4MAdisqZQEuONv044ioMOD/zKa6WbqlNRLuOGbYK5BY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e3AEZpFE; arc=none smtp.client-ip=209.85.221.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="yFw5h4ql"
-Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-45c70afbeebso784327b6e.0
-        for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 08:39:18 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e3AEZpFE"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-435f177a8f7so440439f8f.1
+        for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 08:46:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769704757; x=1770309557; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=h+MtO/a7hGYDkcIcwRBj6WWrsou7vps2yYW0Fk+bD78=;
-        b=yFw5h4ql4F+kOuo362W+Zc2x/FreInqdq0cYGPfPuY5d/DEvNqohHCXF5WX5/0bTyT
-         Tvwt4jvWvg3gXZO7eaeyDl736/eyU/cYrNsLp8RQBqxsOO96b9TcQ8MjiZLMz/2FC1eh
-         RlHjlPinNp65IZcrELrLox7ANl8tNkvrfHPtYjnlihrFG36PJofxV7ss27r23Xul/Vtg
-         RpbDNNsv/m0o/HpLgwZpA2OQb3UBuML1wNRC1+Xrmsk4mNhaY7LazNdNbRcPIOCsQeWF
-         hzQ2q66ZXxweBOZcLEscxC3n+0NHb22eprXx+xYfOWTg+QrO4izNcFYytNepJyNxkLXE
-         jxiw==
+        d=gmail.com; s=20230601; t=1769705197; x=1770309997; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=q2q9Y+U2EjlfzP1ztQbm0j6KAL4MGa9Xk07DRm0b9uM=;
+        b=e3AEZpFE5fZznZ3dsyGCHp3wGVjthHZ39C7eZWb6rgeJfV4ScnLB0Lt4FuI7+nYMGM
+         kYswm73Z8KMBZVJTiVo6G1flhbGbsCFqk+Kg6lRKEz/y/VRTnKXdTXJ07z71k2fQBi7K
+         uVNIUhyiYElpYUl4IsDkjA7ylg9vyVaMPQf/uUhpqZHyWcAU8IXcuzxd74q4fTOOSk1N
+         9ofgP2MCgiePc6kGWNMSj5oS1Im+/e9TkaHmdniqgbrO2Lqsl3Bjv/Kzz+Zf5e9IphpJ
+         p9vIk5aLrXkBc/d7qOz6g6rG3EOsQBevwz7ivfIlCZk0ceL+bXcx+wKFhQxWKiDqL7Iq
+         k8SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769704757; x=1770309557;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=h+MtO/a7hGYDkcIcwRBj6WWrsou7vps2yYW0Fk+bD78=;
-        b=SvjLCDDwL0QySRr4zcKNXmAdwYQqtyA7G8Xc3B1/LEpeONIzysOInd+pHaphcJUQI2
-         cOmVIKPjJ6MrgyMqOd0uqJ91ystn38uESqCTBIoywX5H17VLXV5Sr/OCFbWMOKYyFvEY
-         Au6d3ndSPR0k0Q8NVThsXWMhVSh5YkF4vyh7SQMhOWXa0+WRrkx7hDSvmkVjMGwegmuS
-         +dbp/gECCdMp/+/63fSULh3hd9yJ1Rl/EzNR9I6r0nOjgZOnDsnq6+G5C+KEedz6aFR0
-         vY9SS8pQRI0z/lLIo5U1+3qhDXJ4O6QwMFWIjuoyFsEq+3V575AnLWpglAb8KEhVxE77
-         EFcw==
-X-Forwarded-Encrypted: i=1; AJvYcCV9vQVDjoZ7v2uG1ldOeWc8cVNM+1CPjjus21gFS/9IQKqFQv1LacEtM/dwDiOCB3zlEex2FcIl/mE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyJ8/b9y3yoc3WKTr0kRvMTQ7IgWHELrbtQFwivdLVFEIMq8fGP
-	uZH0hjcw39IuwqJ1Bxkrx9mkZam/9ipWjHUjrjPUJTnrqcd0wv12LWTYM28LlwUdkcg=
-X-Gm-Gg: AZuq6aIlzEcxQ1V7u3MnWlXUUArVkJnJSuIjwX/jlMTaRZvng0Mtt4cLTYXC2lVi3yv
-	9wef4Xw9BSz1lxwiXvZN4a+MvUBqh6IpKTdL0/TWYonPgU2sz8neVnWUWN0eDQJHaY1lEp0O1WG
-	OjyVfv19a1QrKjDtSqbklMxrpSotrlGRDuSnRuYX8RzYhfIC5wa0w/gOjTEn31K+FDuGWmovY/6
-	T8TTGFqUondZ3sGbfYlC4hrmOfZ0MC5Yx9R2z2v8jnNKyK+tl8zVoqO52dnotIoUob/pyGDaDS/
-	Mnlhjxpdz49mZWa4+IKub1A87Pm7q6o48sFZJl4eYKlW5nQjUmMtcH6U12KnRH8L51xcaRT2Z2u
-	DFiqDw75+F4eHeiuZEr6WieyFvm/l89W4p91BDeYngcKZo8ktzbG8Wx5nq2T/4VVFMBkuZ9v0a1
-	gFTHQ+ILkpwQuSiSLZjRCshMLWY3QnufWLd+U3oE2JfelBstJ2ERP0GBdCBHIIA8RZvAmOqSM=
-X-Received: by 2002:a05:6808:3020:b0:45a:6cf0:68c1 with SMTP id 5614622812f47-45f34d26f75mr86743b6e.58.1769704757347;
-        Thu, 29 Jan 2026 08:39:17 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:eca6:912e:45a4:4837? ([2600:8803:e7e4:500:eca6:912e:45a4:4837])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-45f18d5ee3bsm1977744b6e.7.2026.01.29.08.39.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 29 Jan 2026 08:39:16 -0800 (PST)
-Message-ID: <68855a28-02f9-4241-ad1c-d523a9e55928@baylibre.com>
-Date: Thu, 29 Jan 2026 10:39:16 -0600
+        d=1e100.net; s=20230601; t=1769705197; x=1770309997;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=q2q9Y+U2EjlfzP1ztQbm0j6KAL4MGa9Xk07DRm0b9uM=;
+        b=uGAsdG9Bba8V3t7GMMZlLz0HeNP+Biezr9w/jmfKaKz/k6dYa1UC3zrgJZgKpvcFBc
+         FGeIZbkRnZw9AhqxRAZ0IAj2s31uFVLUTSrxmiTlanDsKD89uj2IxN+iGw40g+DIQ1mG
+         tMlCsVvDIHuP/o68gHrgbTStE0KFNcWsRJaESwOSnFy/esFzTCoAwF4DJK5uvN00JquK
+         ih/nkauqh8Stw6Zh6WwY4uHe5DWuuWgdDNYp2YlipyIdEt+sLe9xrnew80ts2iunkDAZ
+         E5pnGDrb6zLYVRU1o0u0YGyLO725w76ckC2gHsbZ2XR+F6ALRvPdro1H34JuuzFZ8uZe
+         WRtg==
+X-Gm-Message-State: AOJu0YzPwNgLWGMLqIK347QeyoxqJw4OqIQ16wMPkTEtDf/GPYz+FNYu
+	oMlTzcjICQp+tULs13vZ1DrtShKHX00BB0rVGQ2lw26iLSxktzyvTZbhifcnNg==
+X-Gm-Gg: AZuq6aIYyrooTwRjOshhSVmrZv+FkhMdjmmPSuXRTmepUiQsd6VvpOX30xGRbIiLzLA
+	wEwXjyGTwNvd2Jx3Cb3M0I2bKAuGfoJzal5VptEyL/cE0HmJj+aYtZBh+0nDBJEay1sp/0HcF1W
+	K4BbwVKC2mVOhl93CxXTXKajmd4zV5rVOohu8Y4Kbx16X12W3LmqfTJLoro6h4ij0kRCDcG6Nbs
+	+Wuc0+I5ktiooJ5SI1DpsnATRnr3NR8eQzvL3kHgRc+mqp00cpTn1OaYqlzX+C3k5evOz9Dq+iN
+	NLlT1XSQCDOrxvGXcKv4icAeKEhvcspGOut4MiGjsddiuNuxfkh+0D1E5ggW32zR0VFJfYhlt30
+	ClSuIfUaV8TWIizRC+XeeSLcDYu7ODotqCp955t674o1Ndh7T3vVn1tWrjDsUmy4AA2oBvVSu4q
+	iWT2gw4mhjVURpqI8=
+X-Received: by 2002:a05:6000:144a:b0:432:c0b8:ee55 with SMTP id ffacd0b85a97d-435f3a0abafmr360737f8f.0.1769705197202;
+        Thu, 29 Jan 2026 08:46:37 -0800 (PST)
+Received: from arch-xeno ([109.228.249.216])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10e483asm14965225f8f.3.2026.01.29.08.46.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 29 Jan 2026 08:46:36 -0800 (PST)
+From: Menderes Sabaz <sabazmenderes@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	andy.shevchenko@gmail.com,
+	sabazmenderes@gmail.com
+Subject: [PATCH v4] iio: dac: ad5360: converting to guard(mutex)
+Date: Thu, 29 Jan 2026 19:46:10 +0300
+Message-ID: <20260129164610.81917-1-sabazmenderes@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iio: adc: ad4080: add support for AD4880 dual-channel
- ADC
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260129152731.154368-1-antoniu.miclaus@analog.com>
- <20260129152731.154368-3-antoniu.miclaus@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260129152731.154368-3-antoniu.miclaus@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 1/29/26 9:27 AM, Antoniu Miclaus wrote:
-> Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC with
-> integrated fully differential amplifiers (FDA).
-> 
-> The AD4880 has two independent ADC channels, each with its own SPI
-> configuration interface. The driver uses spi_new_ancillary_device() to
-> create an additional SPI device for the second channel, allowing both
-> channels to share the same SPI bus with different chip selects.
-> 
+Converting mutex_lock and mutex_unlock to guard(mutex)
 
-...
+Signed-off-by: Menderes Sabaz <sabazmenderes@gmail.com>
+Reviewed-by: David Lechner <dlechner@baylibre.com>
+---
+Changes in v4:
+ - Fixed alignment of ad5360_write_unlocked arguments to match open parenthesis
+   (addressing feedback from David Lechner and Andy Shevchenko).
+ - Added Reviewed-by tag from David Lechner.
 
-> +static int ad4080_update_scan_mode(struct iio_dev *indio_dev,
-> +				   const unsigned long *scan_mask)
-> +{
-> +	struct ad4080_state *st = iio_priv(indio_dev);
-> +	unsigned int ch;
-> +	int ret;
-> +
-> +	for (ch = 0; ch < st->info->num_channels; ch++) {
-> +		/*
-> +		 * Each backend has a single channel (channel 0 from the
-> +		 * backend's perspective), so always use channel index 0.
-> +		 */
-> +		if (test_bit(ch, scan_mask))
-> +			ret = iio_backend_chan_enable(st->back[ch], 0);
-> +		else
-> +			ret = iio_backend_chan_disable(st->back[ch], 0);
-> +		if (ret)
-> +			return ret;
+Changes in v3:
+ - Removed unnecessary local variables (from v2 feedback).
+ - (Note: v3 had incorrect indentation and versioning confusion).
 
-Previously, the single-channel chips didn't call backend channel 
-enable/disable. It this going to cause problems for that? I.e. the
-function isn't implemented in the backend?
+ drivers/iio/dac/ad5360.c | 29 +++++++++--------------------
+ 1 file changed, 9 insertions(+), 20 deletions(-)
 
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static const struct iio_info ad4080_iio_info = {
->  	.debugfs_reg_access = ad4080_reg_access,
->  	.read_raw = ad4080_read_raw,
->  	.write_raw = ad4080_write_raw,
->  	.read_avail = ad4080_read_avail,
-> +	.update_scan_mode = ad4080_update_scan_mode,
->  };
->  
->  static const struct iio_enum ad4080_filter_type_enum = {
-> @@ -414,23 +451,23 @@ static const struct iio_enum ad4080_filter_type_enum = {
->  };
->  
->  static struct iio_chan_spec_ext_info ad4080_ext_info[] = {
-> -	IIO_ENUM("filter_type", IIO_SHARED_BY_ALL, &ad4080_filter_type_enum),
-> -	IIO_ENUM_AVAILABLE("filter_type", IIO_SHARED_BY_ALL,
-> +	IIO_ENUM("filter_type", IIO_SEPARATE, &ad4080_filter_type_enum),
-> +	IIO_ENUM_AVAILABLE("filter_type", IIO_SEPARATE,
->  			   &ad4080_filter_type_enum),
-
-This is a breaking ABI change, so could be problamatic. We probably need to
-keep the old info[] for the single channle chips and make a new info[] for
-the multi-channels chips to avoid breaking things.
-
->  	{ }
->  };
->  
-
-...
-
-> @@ -617,13 +694,35 @@ static int ad4080_probe(struct spi_device *spi)
->  		return dev_err_probe(dev, ret,
->  				     "failed to get and enable supplies\n");
->  
-> -	st->regmap = devm_regmap_init_spi(spi, &ad4080_regmap_config);
-> -	if (IS_ERR(st->regmap))
-> -		return PTR_ERR(st->regmap);
-> +	/* Setup primary SPI device (channel 0) */
-> +	st->spi[0] = spi;
-> +	st->regmap[0] = devm_regmap_init_spi(spi, &ad4080_regmap_config);
-> +	if (IS_ERR(st->regmap[0]))
-> +		return PTR_ERR(st->regmap[0]);
->  
-> -	st->info = spi_get_device_match_data(spi);
-> -	if (!st->info)
-> -		return -ENODEV;
-> +	/* Setup ancillary SPI device for additional channel (AD4880) */
-> +	if (st->info->num_channels > 1) {
-> +		u32 aux_cs;
-> +
-> +		ret = device_property_read_u32(dev, "adi,aux-spi-cs", &aux_cs);
-
-As in the DT bindings comment, this sould be looking up the value at index 1
-of the reg property rather than a custom property.
-
-> +		if (ret)
-> +			return dev_err_probe(dev, ret,
-> +					     "missing adi,aux-spi-cs for multi-channel device\n");
-> +
-> +		st->spi[1] = spi_new_ancillary_device(spi, aux_cs);
-> +		if (IS_ERR(st->spi[1]))
-> +			return PTR_ERR(st->spi[1]);
-> +
-> +		ret = devm_add_action_or_reset(dev, ad4080_unregister_ancillary,
-> +					       st->spi[1]);
-> +		if (ret)
-> +			return ret;
-> +
-> +		st->regmap[1] = devm_regmap_init_spi(st->spi[1],
-> +						     &ad4080_regmap_config);
-> +		if (IS_ERR(st->regmap[1]))
-> +			return PTR_ERR(st->regmap[1]);
-> +	}
->  
->  	ret = devm_mutex_init(dev, &st->lock);
->  	if (ret)
-> @@ -644,15 +743,22 @@ static int ad4080_probe(struct spi_device *spi)
->  
->  	st->clk_rate = clk_get_rate(clk);
->  
-> -	st->back = devm_iio_backend_get(dev, NULL);
-> -	if (IS_ERR(st->back))
-> -		return PTR_ERR(st->back);
-> +	/* Get backends for all channels */
-> +	for (ch = 0; ch < st->info->num_channels; ch++) {
-> +		if (st->info->num_channels > 1)
-> +			st->back[ch] = devm_iio_backend_get(dev, backend_names[ch]);
-
-It looks like we missed io-backend-names from the DT bindings. In this case
-though, going by index instead of name would make more sense. So we could add
-a devm_iio_backend_get_by_index() function instead of modifying the DT bindings.
-Then we wouldn't need the if statement here.
-
-> +		else
-> +			st->back[ch] = devm_iio_backend_get(dev, NULL);
->  
-> -	ret = devm_iio_backend_request_buffer(dev, st->back, indio_dev);
-> -	if (ret)
-> -		return ret;
-> +		if (IS_ERR(st->back[ch]))
-> +			return PTR_ERR(st->back[ch]);
-> +
-> +		ret = devm_iio_backend_enable(dev, st->back[ch]);
-> +		if (ret)
-> +			return ret;
-> +	}
->  
-> -	ret = devm_iio_backend_enable(dev, st->back);
-> +	ret = devm_iio_backend_request_buffer(dev, st->back[0], indio_dev);
-
-If this is correct, it could use a comment explaining why only one
-backend has the buffer even if there are two backends.
-
->  	if (ret)
->  		return ret;
->  
-> @@ -670,6 +776,7 @@ static const struct spi_device_id ad4080_id[] = {
->  	{ "ad4084", (kernel_ulong_t)&ad4084_chip_info },
->  	{ "ad4086", (kernel_ulong_t)&ad4086_chip_info },
->  	{ "ad4087", (kernel_ulong_t)&ad4087_chip_info },
-> +	{ "ad4880", (kernel_ulong_t)&ad4880_chip_info },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(spi, ad4080_id);
-> @@ -681,6 +788,7 @@ static const struct of_device_id ad4080_of_match[] = {
->  	{ .compatible = "adi,ad4084", &ad4084_chip_info },
->  	{ .compatible = "adi,ad4086", &ad4086_chip_info },
->  	{ .compatible = "adi,ad4087", &ad4087_chip_info },
-> +	{ .compatible = "adi,ad4880", &ad4880_chip_info },
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(of, ad4080_of_match);
+diff --git a/drivers/iio/dac/ad5360.c b/drivers/iio/dac/ad5360.c
+index 8271849b1..3503b81bc 100644
+--- a/drivers/iio/dac/ad5360.c
++++ b/drivers/iio/dac/ad5360.c
+@@ -206,14 +206,10 @@ static int ad5360_write_unlocked(struct iio_dev *indio_dev,
+ static int ad5360_write(struct iio_dev *indio_dev, unsigned int cmd,
+ 	unsigned int addr, unsigned int val, unsigned int shift)
+ {
+-	int ret;
+ 	struct ad5360_state *st = iio_priv(indio_dev);
+ 
+-	mutex_lock(&st->lock);
+-	ret = ad5360_write_unlocked(indio_dev, cmd, addr, val, shift);
+-	mutex_unlock(&st->lock);
+-
+-	return ret;
++	guard(mutex)(&st->lock);
++	return ad5360_write_unlocked(indio_dev, cmd, addr, val, shift);
+ }
+ 
+ static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
+@@ -232,7 +228,7 @@ static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
+ 		},
+ 	};
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
+ 
+ 	st->data[0].d32 = cpu_to_be32(AD5360_CMD(AD5360_CMD_SPECIAL_FUNCTION) |
+ 		AD5360_ADDR(AD5360_REG_SF_READBACK) |
+@@ -240,12 +236,10 @@ static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
+ 		AD5360_READBACK_ADDR(addr));
+ 
+ 	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
+-	if (ret >= 0)
+-		ret = be32_to_cpu(st->data[1].d32) & 0xffff;
+-
+-	mutex_unlock(&st->lock);
++	if (ret < 0)
++		return ret;
+ 
+-	return ret;
++	return be32_to_cpu(st->data[1].d32) & 0xffff;
+ }
+ 
+ static ssize_t ad5360_read_dac_powerdown(struct device *dev,
+@@ -262,19 +256,14 @@ static int ad5360_update_ctrl(struct iio_dev *indio_dev, unsigned int set,
+ 	unsigned int clr)
+ {
+ 	struct ad5360_state *st = iio_priv(indio_dev);
+-	int ret;
+ 
+-	mutex_lock(&st->lock);
++	guard(mutex)(&st->lock);
+ 
+ 	st->ctrl |= set;
+ 	st->ctrl &= ~clr;
+ 
+-	ret = ad5360_write_unlocked(indio_dev, AD5360_CMD_SPECIAL_FUNCTION,
+-			AD5360_REG_SF_CTRL, st->ctrl, 0);
+-
+-	mutex_unlock(&st->lock);
+-
+-	return ret;
++	return ad5360_write_unlocked(indio_dev, AD5360_CMD_SPECIAL_FUNCTION,
++				     AD5360_REG_SF_CTRL, st->ctrl, 0);
+ }
+ 
+ static ssize_t ad5360_write_dac_powerdown(struct device *dev,
+-- 
+2.52.0
 
