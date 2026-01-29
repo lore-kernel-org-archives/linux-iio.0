@@ -1,73 +1,72 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D3122032D
-	for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 11:37:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E35A26CE32;
+	Thu, 29 Jan 2026 14:13:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769686660; cv=none; b=D9lowtqcebRCol8rsGiDS21uY0q5MkGHpBGALjUXNysX1gvBtXoL5dMTgzE0Fmq+OMWPmtEBeGKoClVGtppr2nUVI2Z4IbKam1JaWmp35uR8fytE0PK5/8n6GcmVR69UMlwrk8lQP/QF4SGtuVEaBm+hu9hcok/pcYDyjeSysas=
+	t=1769695984; cv=none; b=irRRa56mdgTGZEBZSPmgVKhPtx69lRMSijjeQ6lUgAzK9UBJvF/AMxhGbOEFPNWR8E0jx65LwePP9JYRoEWqw0fCXYWvIl5gVSE8EQ+cqYDCUIDEKogxvDjGrtPxxXkjmPhGAbkg8yNLSTdaJB8STF/p0MDXWRkebatU0XDZWJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769686660; c=relaxed/simple;
-	bh=H0RIktYbGUMjTVnrqmNjNlztqcuwLyjIbW3gqBmYPoo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=sGy1tJxRqnLLKpxDpSnG8xd/OcNiDHB/UXYjHsbHRlGczDjXF9eHyRowTdvfdWKHa8iz1qODSvm4eni31qqdFveiclfwN0gpTQcwp2H/fVpylwRAo8/CJB4MNfyklF2GpjjsxklG64VQ7us2Enhkm9FilQXK85zXaLD0/AyzvIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J5eNSDVh; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1769695984; c=relaxed/simple;
+	bh=ezgR2MtkiV8NJHxOHzi0NS6pC1M38PDJvpiWwd4pFl8=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uc4wqyIpUJCbxx7cNJBt/I4OxPyf5nYW2ntreUgAZ1cbsmWv18nLJkCo3SJd6qYb7Se1ZaTJp+fqKYmIPJB1prfpo6m69uAJSfggX27zulRJ0viwu+1UXAXqxZqLveBgjvm7Bb+3PvvRqVV4doz5T/XcpDE77bLrgfOy1bw8KRM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=HVnfwny2; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J5eNSDVh"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4801eb2c0a5so8232105e9.3
-        for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 03:37:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769686658; x=1770291458; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=c+by/fhtd1bwTkOLdgg+y/ln6LM6DBnVLDc+6MtevWo=;
-        b=J5eNSDVhGGzZp18eY4qpNMYpYsks1XuMUtv/p3xYVYhX+J3Z3HEov+nA+mTE64BXxY
-         YLC8XoU4XIq6cSm+pHZsJ34M8fh2oFPewK2GSr0B745To3Vbepu+cRJNpELiVnlwR3J2
-         YZFRg2wt5l3UiqrFUucWcLFkLVaroPjhi8Oa7HUuKk/fbZ55qSQL6/5b9nKyMHNI7BlR
-         rIRU0q2e5HV+q9adUi7J5ZppBj0R3re948qx2+MigzxK2jA/nKQb3dnGyMOJqdw1S7u/
-         S6XwhLpeuQW+4vkJkjAhRg29dwWrZiL6s8jFIi+qVDnSxALFsbUTmEiTvqzW3VJPzsqG
-         i89w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769686658; x=1770291458;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=c+by/fhtd1bwTkOLdgg+y/ln6LM6DBnVLDc+6MtevWo=;
-        b=FC6qBijcOvxmQgBdKScXnJ790MPDhx444W44PTHmHJD6DVU/GFEiJDxflUONUxuvih
-         beT4hQZb5rT8vYi7sou5nEyv3aCyH0ZGBmkISv++3hJcNYe7LnP57XVQAm/+rwznJoZ7
-         sZwyTvhk8yAdNIQG1QferHyx3ReYPpU3pR52+gxVwEncUYauW4jLpkzDRQN9ztJ6CxGn
-         e3yy8grrflI395pagzB/XZnDUKAG1XpTv+lwH2PaWjsWLvzLIe0lfl4pFeYs9zis70aa
-         FgxLlp/gKxtaltP9jZatBgLG/vduC5XxMNR8f4UVJqv1Ks0IwLETmZYwsz0Qv6XPvHvI
-         Fyhg==
-X-Forwarded-Encrypted: i=1; AJvYcCXYgVt0n9dWtD+q4Zv+It7h8UvIuc0s4pD6wdUEGJtbKNwzNDDo99O8OX+uFLj5kD0OldILf+meaMU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy1an48tRzTBQTx8QHdkGBzxQXR/jD8xeM4fKoX/+9KdVG8Hp8U
-	DNB70MVHeX+iFpYHVFT2/tdnZnlPAVG/4r0BOsKDoEYrUwAu3aFQXahg
-X-Gm-Gg: AZuq6aINeatj+dk8McGTnaD9cGzRMWYAV+bp6puc2Bj3fDHSDmNYhVOk3nIo0QWEZkK
-	pXQfiBbpxK6A/+v6xeXG71c0CrwVsiljA5xtwg2vNe3FQWD3JtGQIfj7EaZA4+KsDmdptKIKmU1
-	irkuxxrHpVjw5SnCS1e99IqWCWBZPjc9o/54t/Pe9L2AaBwgBSLJxHLS6yuRkwj9QbPkozVOt8W
-	KrFVLDWhJBVHWl+QHzuvVZZWhdEKl46QDNtQ2OYMTX681F0CMtiEGOITULGeoG3d5OdYK5Kzkqy
-	pjeaERqlVJjVyr7vL9Q6tgjXT33qUhRia8tHK6dEnmBVaxzypz2fT2TQLKNElXT2Zqr6cSnRLJB
-	0QgC5UWoGgyKaZb7mMeLNniKhZuuXiaflx9rMSZRfMC93YDUrDE4HkX1mhdDTk5OAT6mCAJjmTt
-	ZZYxh2Txfbx3R10+Y=
-X-Received: by 2002:a05:600c:3e85:b0:477:a54a:acba with SMTP id 5b1f17b1804b1-48069c557a6mr125687795e9.17.1769686657504;
-        Thu, 29 Jan 2026 03:37:37 -0800 (PST)
-Received: from arch-xeno ([109.228.249.216])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4806cdd79c7sm117776055e9.2.2026.01.29.03.37.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Jan 2026 03:37:36 -0800 (PST)
-From: Menderes Sabaz <sabazmenderes@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	Menderes Sabaz <sabazmenderes@gmail.com>
-Subject: [PATCH] iio: dac: ad5360: converting to guard(mutex)
-Date: Thu, 29 Jan 2026 14:37:16 +0300
-Message-ID: <20260129113716.43479-1-sabazmenderes@gmail.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="HVnfwny2"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60TC5VXZ3783280;
+	Thu, 29 Jan 2026 09:12:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=11wIM
+	RPMo1mn8dZNf8uxIT+lKYPDJTy5FYcsV4jiDqA=; b=HVnfwny2bt/8qZ6W9JNZ7
+	4clQRl7/i9MYrlNFRWQU5V18cQDtDel9ve/RR4jew5b+mfrNqxLA9KjxtZmzNvor
+	xC1zfrJvvGuoYUZDmjJQkVq5CDFZ+k25pI7ycHTbdFe5H/2qoTRgHLdGcSBDZwbJ
+	Hwzqhw16TXO8ZFDi+vzPc3iquU/MPBIBsCbZYxEmQlGvF/VURsWxGRUO5c5joPGn
+	Hvt6pZZkmd7MUiiZm6CPSj/iOm4xaBFp9DClSu9C+wWWdjTrJ20/Z4xs7beCEpJi
+	5VlRbnSR24f1+atC10raxgiYaAmaBub2PjVFho6uZR1A2RHBkK2Iqk4L1eYnYJcy
+	A==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4c011bhs36-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 29 Jan 2026 09:12:41 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 60TECeRX033304
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 29 Jan 2026 09:12:40 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 29 Jan
+ 2026 09:12:40 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 29 Jan 2026 09:12:40 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 60TECNWJ031872;
+	Thu, 29 Jan 2026 09:12:35 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Michael Hennerich <michael.hennerich@analog.com>,
+        Lars-Peter Clausen
+	<lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner
+	<dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Ramona Gradinariu
+	<ramona.gradinariu@analog.com>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Andrew Ijano <andrew.ijano@gmail.com>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 2/3] iio: accel: adxl380: remove unused odr field
+Date: Thu, 29 Jan 2026 16:11:58 +0200
+Message-ID: <20260129141205.106285-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260129141205.106285-1-antoniu.miclaus@analog.com>
+References: <20260129141205.106285-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,83 +74,51 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=PvmergM3 c=1 sm=1 tr=0 ts=697b6ad9 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=vUbySO9Y5rIA:10 a=VkNPw1HP01LnGYTKEx00:22 a=gAnH3GRIAAAA:8
+ a=LbWV5dLEJMo44prF9IAA:9
+X-Proofpoint-GUID: f_A_2JvaqicIoCKcun6AkkFFIdR4bZVw
+X-Proofpoint-ORIG-GUID: f_A_2JvaqicIoCKcun6AkkFFIdR4bZVw
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI5MDA5NiBTYWx0ZWRfX8ek7yMXrHWeb
+ VvH6yD5ydCPittVAyclwhBc2/xaPk4+0UZmYMva3QHymzvpDyU+7qaqW0XGKhFg1aDuNZ7AItw2
+ 2BKkgg1XO1vafETJdFTFH8C1y/HtfrM7L3fsmNyPWTPYNSKk2SErcxgq3hAnlFjvCgJbL/sABF9
+ FfXcpnLRUuWSBz2/1Svj9sgJDSzfN6p1lOHaYQENCtHfPk7ysibnZ93aIbvbPME57IUkDaqGRj0
+ C4gZ8OwG/2X/ZcHZaL+sArt/Lv9UiKXd9idqVXHvKCegGbwmvAp4R54aQPrUy82jHM7Q2KNtx+q
+ VjM4kSZ2j186/mgvWHGDJOVoB0sEMqJRvSlrSDSeHg01iCusQ6DJCIoAQHQaRXpQ55OfxPgrCje
+ LpmmAmQHJE1aj8+IibF4i4PQpYn21MQT8W4FQDBtlI8oQXIM0u/9DiQ8yXa43M2UXLDAvPIFXQT
+ 37qVgIvlWxhCjXf8L1A==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-01-29_02,2026-01-28_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 bulkscore=0 priorityscore=1501 clxscore=1015 suspectscore=0
+ malwarescore=0 impostorscore=0 phishscore=0 adultscore=0 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601290096
 
-Converting mutex_lock and mutex_unlock to guard(mutex)
+Remove unused odr field from adxl380_state struct.
+The field is declared but never accessed in the driver.
 
-Signed-off-by: Menderes Sabaz <sabazmenderes@gmail.com>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/dac/ad5360.c | 29 +++++++++--------------------
- 1 file changed, 9 insertions(+), 20 deletions(-)
+ drivers/iio/accel/adxl380.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5360.c b/drivers/iio/dac/ad5360.c
-index 8271849b1..5f51f0c12 100644
---- a/drivers/iio/dac/ad5360.c
-+++ b/drivers/iio/dac/ad5360.c
-@@ -206,14 +206,10 @@ static int ad5360_write_unlocked(struct iio_dev *indio_dev,
- static int ad5360_write(struct iio_dev *indio_dev, unsigned int cmd,
- 	unsigned int addr, unsigned int val, unsigned int shift)
- {
--	int ret;
- 	struct ad5360_state *st = iio_priv(indio_dev);
- 
--	mutex_lock(&st->lock);
--	ret = ad5360_write_unlocked(indio_dev, cmd, addr, val, shift);
--	mutex_unlock(&st->lock);
--
--	return ret;
-+	guard(mutex)(&st->lock);
-+	return ad5360_write_unlocked(indio_dev, cmd, addr, val, shift);
- }
- 
- static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
-@@ -232,7 +228,7 @@ static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
- 		},
- 	};
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	st->data[0].d32 = cpu_to_be32(AD5360_CMD(AD5360_CMD_SPECIAL_FUNCTION) |
- 		AD5360_ADDR(AD5360_REG_SF_READBACK) |
-@@ -240,12 +236,10 @@ static int ad5360_read(struct iio_dev *indio_dev, unsigned int type,
- 		AD5360_READBACK_ADDR(addr));
- 
- 	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
--	if (ret >= 0)
--		ret = be32_to_cpu(st->data[1].d32) & 0xffff;
--
--	mutex_unlock(&st->lock);
-+	if (ret < 0)
-+		return ret;
- 
--	return ret;
-+	return be32_to_cpu(st->data[1].d32) & 0xffff;
- }
- 
- static ssize_t ad5360_read_dac_powerdown(struct device *dev,
-@@ -262,19 +256,14 @@ static int ad5360_update_ctrl(struct iio_dev *indio_dev, unsigned int set,
- 	unsigned int clr)
- {
- 	struct ad5360_state *st = iio_priv(indio_dev);
--	int ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	st->ctrl |= set;
- 	st->ctrl &= ~clr;
- 
--	ret = ad5360_write_unlocked(indio_dev, AD5360_CMD_SPECIAL_FUNCTION,
--			AD5360_REG_SF_CTRL, st->ctrl, 0);
--
--	mutex_unlock(&st->lock);
--
--	return ret;
-+	return ad5360_write_unlocked(indio_dev, AD5360_CMD_SPECIAL_FUNCTION,
-+				 AD5360_REG_SF_CTRL, st->ctrl, 0);
- }
- 
- static ssize_t ad5360_write_dac_powerdown(struct device *dev,
+diff --git a/drivers/iio/accel/adxl380.c b/drivers/iio/accel/adxl380.c
+index aef5109c1ddd..4c584f6ec902 100644
+--- a/drivers/iio/accel/adxl380.c
++++ b/drivers/iio/accel/adxl380.c
+@@ -206,7 +206,6 @@ struct adxl380_state {
+ 	struct mutex lock;
+ 	enum adxl380_axis tap_axis_en;
+ 	u8 range;
+-	u8 odr;
+ 	u8 fifo_set_size;
+ 	u8 transf_buf[3];
+ 	u16 watermark;
 -- 
-2.52.0
+2.43.0
 
