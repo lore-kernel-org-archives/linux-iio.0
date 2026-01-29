@@ -1,45 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B2E4334C00;
-	Thu, 29 Jan 2026 16:13:32 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE66B33C534;
+	Thu, 29 Jan 2026 16:14:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769703212; cv=none; b=CSubb6+6iGhH2ZM6CpnjELwiCkVsjuKUO3caS7osG3Lcm9oPMogstTNw7t45hL+aPCFTW28ivGBjBTXFA2sdL00Kt92mBVa+O9fd/LUqgIWlNJRCVPa1zgpmc8h6LT7jhrrxApyg/wcd41PJ1vkO0Eaic++zISqYvNEiq+mnaPA=
+	t=1769703255; cv=none; b=jqhLHt11q7j34Enbzruh80ppJnB7kS5JZvCrUWsWLpI4KgDrCK7mpO+bmvAPEzsP+H4tkLSCZEifIfgZDsSmaxcYZkLSHRQ2aTl8aEYV8o+lc4EZtxHYvxCdfun5zO1+QaD7DxIqcBmFd8CNCPPLV9uBVCASfy5zffhVwYyG1KU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769703212; c=relaxed/simple;
-	bh=3Lf7dnM4IFrElB7yczbm4tHHkvxw0b3IuurTDhMRVyo=;
+	s=arc-20240116; t=1769703255; c=relaxed/simple;
+	bh=X+b6+F9T2ResFcEoWA9vPXwWaCD4NTszgDDYTeiC0aA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=R84yPX4JmNS1Tq7x5PLQaudgwQcOJyag8zYVvmuQtn+iKDwPpNTT5ctQ/43lFxjqEhSbdbdpy9uvD7VsaBrmK8Mjfo9YESOzgguT5lt8lC35ZS4KkaBWVeJbzCFlGWDJZTcYRR0sLZbSBO8AC7/vdVathouwx++Y1PE8I9Q6HwA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=U1IZ8h0m; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=m/6j1NijvUv1OL7JGYYrAAmCYn/jebE9DmAJCnI/V7ce70DHxu8RqXQqQgLnkwwfrffl+NqOmru6Vt8nMOYiUbYxICYOQNyB6i/aMFiBBXMlJJDmg37sL9dIWHNWlNxJwJlyh80df5Pn1ac1G/XXigfibs/eMSOaYopZZu5BMk8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OKEQEizu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="U1IZ8h0m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1579C4CEF7;
-	Thu, 29 Jan 2026 16:13:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OKEQEizu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 566F8C2BCB1;
+	Thu, 29 Jan 2026 16:14:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769703212;
-	bh=3Lf7dnM4IFrElB7yczbm4tHHkvxw0b3IuurTDhMRVyo=;
+	s=k20201202; t=1769703255;
+	bh=X+b6+F9T2ResFcEoWA9vPXwWaCD4NTszgDDYTeiC0aA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=U1IZ8h0mIMRZWury8++0ry58MX6Tl0mnQwy3y9fZKKgt78ehuyDTfPwWake6vCkOu
-	 tdzkoBLdiG34LAAIk/hxe4K0Rf0hMEq/RlEWZAQwdB7J6KNVlj26Qbx05bs3GoJfcc
-	 bdubFXbLlgtFt42fpzL6ug9uOiuJjiXvspCf1XA51ZLMO3f1//KkgNp8183Usl95rL
-	 d9YSfuFAhIG7yeCy93hdqKjN5Pw1hSIVM/tAccMknUnPL32YVDzI3j5NUhlNfkbdtq
-	 90jE1zUM/UvN1zPvGAeZsPFg8LqnGjs8bPqSShtOUAAnB8W23DwFq3kDJPE158M5/E
-	 Kl6cuVodCRcIg==
-Date: Thu, 29 Jan 2026 16:13:23 +0000
+	b=OKEQEizuUpBN1Og8c8jiOuJTQCaEOnlReR/yGMiWzLkJXKnqltlxFd+Ds5l5MlvCx
+	 8ltQWS3rBdw73vg8OMqHkm8UwFHxrhF0qo6uFxlgiyiUOoKPsdMA10bFF8rKFQaegC
+	 O3o+GhiSkaO7CcAvGRAY57eNZwNP/j4Ei3G+gwzPlxf3+0pTw/WujacDjVihLMAHGI
+	 voecv8b1NUpAHb75A4pTH5gv7b8TOPFeTxW2lgMOIXzOfO51CCJy/ykFHQC6ue1C7M
+	 YyPRtYJxKuPN5rdrX3PYrMpRlXJT3stgp8CPjTSsxqR2qKbvd7BwinV52uEkDyW2m+
+	 3/WZDo0XYVwqw==
+Date: Thu, 29 Jan 2026 16:14:06 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@kernel.org>, Geert
- Uytterhoeven <geert+renesas@glider.be>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 18/20] iio: magnetometer: Remove IRQF_ONESHOT
-Message-ID: <20260129161323.6b491e95@jic23-huawei>
-In-Reply-To: <aXoJXg5JFnFXZqUT@smile.fi.intel.com>
+ linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@kernel.org>, Lars-Peter
+ Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 19/20] iio: adc: ad7766: Use
+ iio_trigger_generic_data_rdy_poll()
+Message-ID: <20260129161406.4a447483@jic23-huawei>
+In-Reply-To: <aXoJoXgliFimSE-r@smile.fi.intel.com>
 References: <20260128095540.863589-1-bigeasy@linutronix.de>
-	<20260128095540.863589-19-bigeasy@linutronix.de>
-	<aXoJXg5JFnFXZqUT@smile.fi.intel.com>
+	<20260128095540.863589-20-bigeasy@linutronix.de>
+	<aXoJoXgliFimSE-r@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,23 +52,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 28 Jan 2026 15:04:30 +0200
+On Wed, 28 Jan 2026 15:05:37 +0200
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Wed, Jan 28, 2026 at 10:55:38AM +0100, Sebastian Andrzej Siewior wrote:
-> > Passing IRQF_ONESHOT ensures that the interrupt source is masked until
-> > the secondary (threaded) handler is done. If only a primary handler is
-> > used then the flag makes no sense because the interrupt can not fire
-> > (again) while its handler is running.
-> > The flag also disallows force-threading of the primary handler and the
-> > irq-core will warn about this.
-> > The force-threading functionality is required on PREEMPT_RT because the
-> > handler is using locks with can sleep on PREEMPT_RT.
+> On Wed, Jan 28, 2026 at 10:55:39AM +0100, Sebastian Andrzej Siewior wrote:
+> > ad7766_irq() is identical to iio_trigger_generic_data_rdy_poll().
 > > 
-> > Remove IRQF_ONESHOT from irqflags.  
+> > Use iio_trigger_generic_data_rdy_poll() instead of ad7766_irq().  
 > 
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 > 
 Applied.
-Thanks
+
+Thanks,
+
+Jonathan
+
 
