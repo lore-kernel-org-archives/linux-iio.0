@@ -1,49 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 038DF21A444;
-	Thu, 29 Jan 2026 18:40:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 62530309EEA
+	for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 18:46:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769712036; cv=none; b=i1RTRPPpJ6YUVcMjuuI3hLyAVPYkDezfG46U+eg2S+6w5KGMl6tyfyGNejnIALLkH6iwm7PSLv2NmGmW6u6g8t2RrsGJmMIPh9UHyr4QMbm/FIfufu7irU0bpnriJ2iJMbqzchRvs3M6rOkLYWohMHq/ccb+Iu8f5LemXVp/1eU=
+	t=1769712390; cv=none; b=ire0UFPVfUD7Zv7GTffeN7Gwa4dHcvBW7GtztK4HknnVL8CvtTZFJ/b2iWTN/aDB4aLjw6kmSZa83e9L75MuqQiA6E5m5ZlMAPdjv/LhhO1MxWU5kfd2l1lhITaL6aeguO0Ub1ZtbS+F0/aGAzUxgSfjoE1y9mI/Fywk9i6cKyc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769712036; c=relaxed/simple;
-	bh=w5ZpZFUVGwCEwUETHRongFvZUoQhcqny4z5JtF1t74k=;
+	s=arc-20240116; t=1769712390; c=relaxed/simple;
+	bh=rfH3xNuU0bL3W2q4vgBTHDbKyt6hckIj8vgVnl0A6fI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RTPZySq2VmE3j+X2qAVo3qO4h/PepJ1V9mr7I2Cy/yL3Ne2S8NewLCjB3YKMn4N6PpbOT8++F01TqOS51tsE16k0UQJGw2xy3fFWEPnz/hpuRRzDb39wpVWTbL4X9KG9vetEtDnGbCDNyYoLLNq0w9lg2IA07YZQS2O+c916FZc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IZWkPyXi; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=go3aFltDU9jliLlhI1JhjGdvAfsnuoyWd2Az/TXIE8quhS4uj6pymBLNUrA1vgPBtNvzXYidwfWyF+hBNqdDNoyvpwXVyPTrlWXtiTdYottXf5wmNLbEhGbsN8NOwR2Q8AF8vOcPAcIZb9HIGyllr2jTGR2rHniDoq6kNb/9/Ow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FZAxmWx/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IZWkPyXi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 224E9C4CEF7;
-	Thu, 29 Jan 2026 18:40:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FZAxmWx/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A9BCC116D0;
+	Thu, 29 Jan 2026 18:46:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769712035;
-	bh=w5ZpZFUVGwCEwUETHRongFvZUoQhcqny4z5JtF1t74k=;
+	s=k20201202; t=1769712390;
+	bh=rfH3xNuU0bL3W2q4vgBTHDbKyt6hckIj8vgVnl0A6fI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=IZWkPyXi0aBhgsN5cXlQNJtckfRfXJifCq+blvMARj1gTfAmwq4hMy7T2nlC95QaR
-	 4mZi27CZT8SnAvzPZoQ2FQiMYrdJyWynWKhqsvY0AUEeIELGQzL23MxFR5KPtVMeTZ
-	 CxxsdFUaFF+cR9OjsY0TUpQRf0gCRne4wi0m5Zx++Coh3/H3a8wgbFTeu11QUclLa6
-	 jZYuizG+B8/zytF/S8bfja/yCGUdN53AW08SzOpoQfkA1zFWZxseHLRGFwNDpx7xSr
-	 caTCCf41SzvHojTqpyTao9n/y/9Pamq2Euj9qzkLP9xjN+Jpsn0xjElstSPF7WJqiR
-	 zOuPJSgu8qkPQ==
-Date: Thu, 29 Jan 2026 18:40:25 +0000
+	b=FZAxmWx/la6FU4721UI+2UXzDR9jeMOp2NKvd0LFABJsfPTKwtay7eLi7BhOUDI36
+	 Red2Tan7/LCG8d3Bm9M2tDOSw4Sxsh5NS3LMAsqm2bfZnAWav4GFFA/NNrJ1zHz2mj
+	 vKMKqJt/j0Ku+w9fPDnpGabtAYBCdxbPPuWNEW5i/IQ+kUccsP1FXfcb91PAFcydxn
+	 dH7OLFsuiT983k70fVadd8AMo0fZv5+VwFgJsI6YJ48sJ4Ea6nonoxvlqKyplucPca
+	 3KhZCJENnf43jDJA0oy6tgdMfzuyABM7liXF2FEWr9bHVeKDDwb8TlwlH9KZKiGsnd
+	 blbCN4OoJQ0lA==
+Date: Thu, 29 Jan 2026 18:46:21 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Michael Hennerich
- <Michael.Hennerich@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v2 3/6] iio: amplifiers: ad8366: refactor device
- resource management
-Message-ID: <20260129184025.4abd4fe0@jic23-huawei>
-In-Reply-To: <rtu3nsjdufyhtox5uvtkoyzqtfcmq2wdfzmsr3xyvqlrdloirn@a3jdshanc7ha>
-References: <20260126-iio-ad8366-update-v2-0-c9a4d31aeb01@analog.com>
-	<20260126-iio-ad8366-update-v2-3-c9a4d31aeb01@analog.com>
-	<aXkqKZELWdjrB8wN@smile.fi.intel.com>
-	<rtu3nsjdufyhtox5uvtkoyzqtfcmq2wdfzmsr3xyvqlrdloirn@a3jdshanc7ha>
+To: Jun Yan <jerrysteve1101@gmail.com>
+Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org
+Subject: Re: [PATCH 5/6] dt-bindings: iio: gyroscope: bosch,bmg160: add
+ bmx055 gyroscope binding
+Message-ID: <20260129184621.749d6450@jic23-huawei>
+In-Reply-To: <20260129071105.389493-6-jerrysteve1101@gmail.com>
+References: <20260129071105.389493-1-jerrysteve1101@gmail.com>
+	<20260129071105.389493-6-jerrysteve1101@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,43 +47,43 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 28 Jan 2026 09:31:10 +0000
-Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+On Thu, 29 Jan 2026 15:11:01 +0800
+Jun Yan <jerrysteve1101@gmail.com> wrote:
 
-> On 26/01/27 11:12PM, Andy Shevchenko wrote:
-> > On Mon, Jan 26, 2026 at 01:51:04PM +0000, Rodrigo Alencar via B4 Relay wrote:
-> >   
-> > > Adhere modern device resource management with the following:
-> > > - Voltage regulator managed and enabled internally;
-> > > - Proper mutex lifecycle with devm_mutex_init(), replacing mutex_init();
-> > > - IIO device registration handled with devm_iio_device_register();
-> > > - removal of goto's from the probe function;
-> > > - ad8366_remove() removed as it is not needed anymore;
-> > > 
-> > > Also, dev_err_probe() is used to report probe errors with created local
-> > > device pointer.  
-> > 
-> > And also it uses the temporary dev variable in the cases that are not covered
-> > by the above.
-> > 
-> > So, three changes in one patch...  
+> Add the device-tree binding for the bosch BMX055 IMU (gyroscope part).
 > 
-> I can split. Using proper devm functions allowed me to drop goto's and
-> ad8366_remove(). Dropping the goto's allowed for the usage of
-> dev_err_probe().
+> Datasheet: https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_datasheet.pdf
+> Signed-off-by: Jun Yan <jerrysteve1101@gmail.com>
 
-As general rule I prefer one patch one change, though just occasionally
-I'll take the expedient view if a series is otherwise ready to merge
-and one change is really really small.
+Hi Jun,
 
-J
+Is there anything stopping the use of fallback compatibles? 
+It seems from the driver that even the chip ID matches.
+
+That is, can we have
+compatible = 'bosch,bmx055_gyro', 'bosch,bmg160'.
+
+or something like that (I can't remember exact syntax) so that
+if we have a newer DT, it will work on an older kernel?
+
+Thanks,
+
+Jonathan
+
+> ---
+>  .../devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml          | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> I could place the temporary dev variable in a separate patch. 
-> 
-> > 
-> > Dunno if Jonathan is okay with this. I would rather split it.
-> > Code wise LGTM.  
-> 
-> Yeah I can now see it coming. Thanks for the review.
-> 
+> diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
+> index 3c6fe74af0b8..907fca4e5895 100644
+> --- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
+> +++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
+> @@ -15,6 +15,7 @@ properties:
+>        - bosch,bmg160
+>        - bosch,bmi055_gyro
+>        - bosch,bmi088_gyro
+> +      - bosch,bmx055_gyro
+>  
+>    reg:
+>      maxItems: 1
 
