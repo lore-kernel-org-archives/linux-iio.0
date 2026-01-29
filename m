@@ -1,46 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E991233508B;
-	Thu, 29 Jan 2026 16:11:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02CA514E2F2;
+	Thu, 29 Jan 2026 16:12:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769703076; cv=none; b=uOzcLPqaiW2PR1FLB9QSj1ZK6OU9x5CgMPRDqQOY3H09AYpt6tlxGELuyDNmyKfZPLw3LzCyXrPyD7KqQ8AhoCRjtovxClefRrWdAQepQJeAXQ/U9E2PKOEVkMAaN5WdZ3kIjiZkfSHzUtanl71VU4zW6tkPUTg/17M2vtZ2CXk=
+	t=1769703147; cv=none; b=jALM2sTmVnRqA9f0uw947lW3I7TkHNhjbgUY3YN897MMkUEoXQNGbOwl+nHVdnpLRaitLiQTEYlaQAt4W6O3lEqdmXV4lBoi7qXuYGmIXBRs9Z9ulWwtZtqYXzKDVofmOuHiX+uiyVZMK1T8fd9nJHuKEoO34A+GXXdi/xYCNhQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769703076; c=relaxed/simple;
-	bh=euK3N2PE+sYNIqe7z4g287DsQ35uOLspKLRZ1IF4lPc=;
+	s=arc-20240116; t=1769703147; c=relaxed/simple;
+	bh=6ETg/2bx8w1l/epP2HPg/n6DzFYAeYAyOcyEgxUHEO0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Fvu7Htge0/lO7t/hVi1pffpTfAwswK/zqOfkObqPSyPJz2GW7Z2r+4D9nWE0Ovuw8KKHrV+kKaaoBB7JlItBV8WB9gn17293IHjTXCK6sP//TUO7P9h4qBebP3ozanGtdXVukquxNGjpYl0s7romx3ZW46+tZbS2GnHTTVHJAP0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IAM4q81u; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=WER+cWAf4Oi4ashiMogAkBBBunBldLvN6hNKIF/iTOyq/cuBFeIT70br3kT06WD8oo8YTN74tCyvc0qq8U+s2T1gdwpVK6cBNfRck12VKTLV72LJfTkzfrzNIZmCq83SA+2s6oYxPun9RZ6inqiRwqRcXBccJUKp6BnB1773O5M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hPrCTckN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IAM4q81u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 833E1C4CEF7;
-	Thu, 29 Jan 2026 16:11:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hPrCTckN"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2E53C4CEF7;
+	Thu, 29 Jan 2026 16:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769703075;
-	bh=euK3N2PE+sYNIqe7z4g287DsQ35uOLspKLRZ1IF4lPc=;
+	s=k20201202; t=1769703146;
+	bh=6ETg/2bx8w1l/epP2HPg/n6DzFYAeYAyOcyEgxUHEO0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=IAM4q81uS97vyglRZlnndYhoVcF4/LMVdh7CSk3+glw51DhWgVtPNEBj0qBjmzKDu
-	 hC0W7lEQ0CSzRZN6VuvEhfATbZKnhbpDJf+/T0cGQlG8BKwCNcuNe/UqDNxbd90M9v
-	 Bd3qD2hC++yxs7lZoROldOv3QRrhEFgkAYwwJWzJ/2sIsf9zVIUY4C0jk3B56W1zQQ
-	 QVMn32hx2Mtmco49hyseHan7UvAvZuSMa5KavMNhQRidUWYfZQ3gwSixC0palkN9j8
-	 X/CnWRJH5bzxX3aXarjrOu3f9YEqJM4R3yWG/7y8Jk82tYOh0FCH4G0bC3uPsLalih
-	 +L3W+lwVCfUbg==
-Date: Thu, 29 Jan 2026 16:11:06 +0000
+	b=hPrCTckNvwzGh+xMxhHpTgzn7uXSVnAUsWugHx6qH55r8DpQsH/GHmXTvy69zcMW7
+	 4KOQfERWrjXdprDPvph3XXizln2CGxiURpeinMdk2tuAX1tCOh7PEyqX0Rz7kug7+S
+	 RBvzIB65Yq+vvBlUWioD7G/E9jumYsn/t+/zVeIF4RwmOpWcZOeKd4zRreWqIWn3OS
+	 3g6HQIp8kr8Y0EtYaUo3luOzk7wj/lRunFVmv/Bw3Qi4TifLM4ncTyBv5Yjhmpyv2T
+	 QmGGf80fA40w22ZSfIDuCFSZPRPwEpxO86K5oTicbQQt0dqxPl+LUmm/qLyikF29l6
+	 r/VbLS0ZxajuQ==
+Date: Thu, 29 Jan 2026 16:12:15 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 16/20] iio: Use IRQF_NO_THREAD
-Message-ID: <20260129161106.4c4b7430@jic23-huawei>
-In-Reply-To: <aXoJCmySAPIWlXYY@smile.fi.intel.com>
+To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Cc: linux-kernel@vger.kernel.org, "Thomas Gleixner" <tglx@kernel.org>, Andy
+ Shevchenko <andriy.shevchenko@intel.com>, Marcus Folkesson
+ <marcus.folkesson@gmail.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Puranjay Mohan
+ <puranjay@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Marcelo Schmitt <marcelo.schmitt@analog.com>, Kent Gustavsson
+ <kent@minoris.se>, Gustavo Silva <gustavograzs@gmail.com>, Nishant Malpani
+ <nish.malpani25@gmail.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 17/20] iio: Replace IRQF_ONESHOT with IRQF_NO_THREAD
+Message-ID: <20260129161215.03f71a7f@jic23-huawei>
+In-Reply-To: <20260128095540.863589-18-bigeasy@linutronix.de>
 References: <20260128095540.863589-1-bigeasy@linutronix.de>
-	<20260128095540.863589-17-bigeasy@linutronix.de>
-	<aXoJCmySAPIWlXYY@smile.fi.intel.com>
+	<20260128095540.863589-18-bigeasy@linutronix.de>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,21 +53,25 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 28 Jan 2026 15:03:06 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed, 28 Jan 2026 10:55:37 +0100
+Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
 
-> On Wed, Jan 28, 2026 at 10:55:36AM +0100, Sebastian Andrzej Siewior wrote:
-> > The interrupt handler iio_trigger_generic_data_rdy_poll() will invoke
-> > other interrupt handler and this supposed to happen from within the
-> > hardirq.
-> > 
-> > Use IRQF_NO_THREAD to forbid forced-threading.  
+> Passing IRQF_ONESHOT ensures that the interrupt source is masked until
+> the secondary (threaded) handler is done. If only a primary handler is
+> used then the flag makes no sense because the interrupt can not fire
+> (again) while its handler is running.
+> The flag also disallows force-threading of the primary handler and the
+> irq-core will warn about this.
+> 
+> The intention here was probably not allowing forced-threading for
+> handlers such as iio_trigger_generic_data_rdy_poll() will intends to
+> invoke hard-interrupt handlers.
+> 
+> Replace IRQF_ONESHOT with IRQF_NO_THREAD.
 > 
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> 
-Applied.
+> Reviewed-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+> Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Applied
 
-Thanks for fixing these up.
-
-Jonathan
-
+Thanks.
