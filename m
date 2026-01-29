@@ -1,46 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35154335081;
-	Thu, 29 Jan 2026 16:26:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FC3E1DC997;
+	Thu, 29 Jan 2026 16:28:02 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769703972; cv=none; b=EEr3+IXKp8X0paYyE5Uwecgj1iBVoD4R6b6zGqEbT4tvxHrN3wUfkXFGmnQNlJeqgWo3S0h22jyEwKFJumaCD8kSdJqTBftY7ASl4AsbTonfhd3IfSqcAYr4Zm1NSjaC9olfHXAl2xDPG+rGVx+l6887OZSm6WECUTbU4Il3BG4=
+	t=1769704083; cv=none; b=XVqbRHYnUOd0CXE678euUsu5UfG+8PRKC/WPZOnbsWbU+7CVqxzQq0NyXO/Vkmy4+vybfMp5azsIqAAcoHF3tdRdqN8EeuSMTciRvUrKNfX2IhZAr2nOJ4WKY5mr8O2kQ69K0VEbrg7bLG8HdHnJ5lGz0QJoY3hQRh4joJuttRU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769703972; c=relaxed/simple;
-	bh=tHhCi/yF39si+LQwI9OVpUpgjxhmW7VFw0p0zy6mJwA=;
+	s=arc-20240116; t=1769704083; c=relaxed/simple;
+	bh=au6rBD3WD7g5u8kFHlS2uHXAl8fgIV9+FiC/rfJ9/4E=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VbSGhCcnDwYwZ5nQS+z8aA3P94RdTCJs1P1PI/xkdmznXwhNbuQDvHXwusn8805v3AyDV3yUHCLlzcfb6led1bnNDe6+cEtIbQ9r4d9UoZk4tpnXyk+7w3w6KSsMsNiV914V40tQcO4EVYJW3G1T8BmMeXtILX/AhwRWghHueDE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e081R4gJ; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=MxGBUhYL43S34FRGpVbpbOuLO2myFPfURZEtElfzJe4TuPLeGMRH3iOoayOR7G2r7jOJi3VDMBKg5flVicVKHxxSY1xmrdDxEIMnimqwZyBpJv5lnUrOyFQXn8q4+DaZopusPr0xsdfbP8iJrkZ8oXw0G5ttf3PD46Na1z/1tJo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tCubv0af; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e081R4gJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4107DC4CEF7;
-	Thu, 29 Jan 2026 16:26:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tCubv0af"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33421C116D0;
+	Thu, 29 Jan 2026 16:28:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769703971;
-	bh=tHhCi/yF39si+LQwI9OVpUpgjxhmW7VFw0p0zy6mJwA=;
+	s=k20201202; t=1769704082;
+	bh=au6rBD3WD7g5u8kFHlS2uHXAl8fgIV9+FiC/rfJ9/4E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=e081R4gJtzKP/aBGvI4mcksV05eag6g42mjxOFbyHfhzr1Mwlq0PDjF0D3hF7goAV
-	 c24sedHEFg+8KH4StsTRSYYfQMZKM0ztqCvhqiAHA9c9UTgK+x+HwkQZ9AdFP0TuDn
-	 tVdYz6LbSDF/vg19mQcOvB+fUiXxp5iww99jeFk0/CtLGUG+TsS67IntnViU0pvyxS
-	 J8ExHfvGe0A9I6ydbF0AhyeceKwEgZlx73uMFynjV/zuCHzmKwgFozi3/VTTMu4aXB
-	 /+OFx69l8NUHozMRE4KP1jphHfxnE3YWOPsXvosedAiIuNuITDXSpe5Dgt3uN/+Gqt
-	 /QnTMfj8ketdA==
-Date: Thu, 29 Jan 2026 16:26:02 +0000
+	b=tCubv0afNze1CpMkmRRuChHZsdr3dCn6ApCwAPY/sdA38ch2cHlP/ieHbQyrwBlSQ
+	 vtBGF7aKXn9QqifPrG346xjWAyB/4LWIulGTJka28RhtKs02JraRLl2Y2DYQ/D6J6C
+	 un5cfU+aYtuv/CvbJYRfJpedXPCCG5qohXiaAMvQw/ibFV0iTlwFj6OFqVFJaS5oe7
+	 lysea//JqsmQaGG3bguK3uU071/dTMpHvbbK2XnUElN3tf9ghj7bJsvI7ZuenpTZG5
+	 qP2PhQKSAlJ2bKUhh6XfUCaT40YJzTiGSrVXQwPVKXooGyZ1vft5qlX54nm+jJAPbF
+	 D3e3R/g6EqT8A==
+Date: Thu, 29 Jan 2026 16:27:55 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Ramona Gradinariu <ramona.gradinariu@analog.com>, Andrew Ijano
- <andrew.ijano@gmail.com>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] iio: accel: sca3000: remove unused last_timestamp
- field
-Message-ID: <20260129162602.694ce7e8@jic23-huawei>
-In-Reply-To: <20260129141205.106285-3-antoniu.miclaus@analog.com>
-References: <20260129141205.106285-1-antoniu.miclaus@analog.com>
-	<20260129141205.106285-3-antoniu.miclaus@analog.com>
+Cc: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] MAINTAINERS: add entry for ADE9000 driver
+Message-ID: <20260129162755.76d68a54@jic23-huawei>
+In-Reply-To: <20260129144307.118520-1-antoniu.miclaus@analog.com>
+References: <20260129144307.118520-1-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,42 +44,16 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 29 Jan 2026 16:11:59 +0200
+On Thu, 29 Jan 2026 16:43:07 +0200
 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-> Remove unused last_timestamp field from sca3000_state
-> struct. The field is declared but never accessed in the
-> driver.
+> Add maintainer entry for the ADE9000 polyphase energy metering IC
+> driver, including devicetree bindings and driver documentation.
 > 
 > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Also fine so applied.
+> ---
+Applied.
 
-Thanks for tidying these up.
+Thanks,
 
 Jonathan
-
-> ---
->  drivers/iio/accel/sca3000.c | 2 --
->  1 file changed, 2 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-> index bfa8a3f5a92f..950b4c672484 100644
-> --- a/drivers/iio/accel/sca3000.c
-> +++ b/drivers/iio/accel/sca3000.c
-> @@ -153,7 +153,6 @@
->   * struct sca3000_state - device instance state information
->   * @us:			the associated spi device
->   * @info:			chip variant information
-> - * @last_timestamp:		the timestamp of the last event
->   * @mo_det_use_count:		reference counter for the motion detection unit
->   * @lock:			lock used to protect elements of sca3000_state
->   *				and the underlying device state.
-> @@ -163,7 +162,6 @@
->  struct sca3000_state {
->  	struct spi_device		*us;
->  	const struct sca3000_chip_info	*info;
-> -	s64				last_timestamp;
->  	int				mo_det_use_count;
->  	struct mutex			lock;
->  	/* Can these share a cacheline ? */
-
