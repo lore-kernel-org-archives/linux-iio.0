@@ -1,60 +1,62 @@
 Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A4C0212B0A
-	for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 07:13:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDE4D2E888A
+	for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 07:13:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769670806; cv=none; b=CgB6mRb9PLBIma7RWbJjUmHDjiz98XbCZrPw2tOuRcHwJJul87/rXNaA+mLbmR+k2IqJ1hrVv1PqzJYWp3kuEQaHQ4y8tActLnQ7fyPgcrhzIe3A7CTy3T7fbG+vNPx7/uUeeZCuiZNpNg0u/AhjNVcpWLo/58OfGzCm/Y7TfOI=
+	t=1769670810; cv=none; b=dFzvZb96CnCbujeqEvf4PRo6KM8nsoN/kz8qN8hOtNZ04J3PYRvCVqPYzb8NXqPnacaC3X4+ShBmEhfnxrNVDA2OcCDinqODeC7EcV6qiA09PvqWUZQjS/F3UQFw4MtO2/lPdVrCHi1EZV+t9W8akNqy7KXSERWH8TlKYF/m/vc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769670806; c=relaxed/simple;
-	bh=p9UFRzF8kTIYoqUigZjD4noD3QMRcYLM8lia3LQYS7k=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=gGYEekm37bSlep95nInFPLREAHr8h/un00+LtwuX2mGYubh01FPvDGTjERL2Sf/5nOj/lGA2c8rGgRb18Brdw8HZGG4FrD0IoFT6dPqJFEpp26bixasGnM9PeHwZ7Zy+nwNa++oGqPmgAR0LflVM7ow4VvsdQVat2ONwW+4tBeQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Z8C8Qmwj; arc=none smtp.client-ip=209.85.214.181
+	s=arc-20240116; t=1769670810; c=relaxed/simple;
+	bh=Pl3LsGXAU1w0hUE/eJ0/7aCXI39BmRJFYyqFT2Rojlk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=WQe4z54l8niF61dDJD32qKhvF5F/hV4ndwNdJxjy6yx6D2h75Jz3p9eN4flFm09dUl1BFYQFb8xG2yhWsAPmYvXAyXRwxZlYQiUSDlW1DhLJcEJ1XEW/2rLEA6o9nyg8kRUnEql3KcqrzUrFiupnSn2/nU+EUNy1UwaJt6heMjc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=U82NEPsr; arc=none smtp.client-ip=209.85.214.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z8C8Qmwj"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2a2ea96930cso4585385ad.2
-        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 23:13:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U82NEPsr"
+Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2a76f90872cso3255865ad.3
+        for <linux-iio@vger.kernel.org>; Wed, 28 Jan 2026 23:13:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769670804; x=1770275604; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=E3phpUQoO69zrOUwV1tyBLLk6DjOMH+Lu3vPhU0jOq8=;
-        b=Z8C8QmwjIK3PmVr/6yeOLJO8CeQBr4G1W1LNHNE4TiXVkvUqtsp+X7eVtFIAs+pSPs
-         VfBx96oWmjY27qjK0sxsoHQ1PFDGgIi4HcZfH+E1hFg/RGRYrHUdAkmfiHijehYPOg8Y
-         4OcZIaqxlGD8SXvwyUb+EIlEO8WTf2SukYN58Niw2q77lbZCdR3o6dKNVtfJpMt33ljx
-         clAe+u04NsXCIGMV0ZRleOh+PAZsBEvJF2wbwdePodYF+9cyC7myniZRWRY5Ts8a4lb1
-         7OyfGsGTB6PvMBIW5hwMrp+WKOp6KC9WP+jddBTMNzNLmzHn2BumgPdBWEobC29TUbyr
-         T5mg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769670804; x=1770275604;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1769670808; x=1770275608; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=E3phpUQoO69zrOUwV1tyBLLk6DjOMH+Lu3vPhU0jOq8=;
-        b=ubjsR0DxP4j7bOvFCOibeoVPyjWv82+1U0Wz+m9WF76x9jeESO1Pq6cUm3OeKF6/nO
-         bZEszzj047xmBwr6j7Q/MpemLm/l4QLICglVqQau/4b8+d0hbICegOFVG6icGDBUHfMv
-         KA3RunwpgRGNKBFrnMNyKLljQqGYuj3pB/6fM0W/mOGmDjmsuN3/NTSoW7yEDcTldn3S
-         CPVRE9Xq+mn8B3af5Z8VkA5o+GXUAYEcUjnwWMA3ahk45UdKW9zST23LA/wCFLpGGhk0
-         hI2XH3HsE97rk9KFQXLyAzZf0dJOEOZDE36Gjd84mVKOyYyEC9yyvw7Z0WECPbKkhDGG
-         R2QQ==
-X-Gm-Message-State: AOJu0Yz1Y0flY8XJ9IGTR9HKiEM38HUm8kBaNHEsKbbZnDqdtwgVMzlA
-	d4FDrjZmnTsKVroOeTTaUG95FqYhkcJJtof4oAe7PDfTlVirt2UstYO12GzO2o8R
-X-Gm-Gg: AZuq6aLrr5tVnp+VBZ/xijXkvJMvVK6CO4NePQeOiEccZ7XADbn5uIptJ++PyZj6rg2
-	KwPGICBeyeuB9XzYBEhi2hrPuVA6vuGxelECsgv2KwHVq9zGo94j2ut/C3/a0C+eqsvPgvc/0kr
-	3O4EP1HlHeuKM0uG1HJSxtwxeg1awTrFobbP4kCYVOKTPmNzTBPKEWR944pMQBzAL8hwx5BLfFf
-	PWJdpiEIFy+/HN8441QIUrqCx7oqzdyBKne31l1pjgsRrRrAzfbtM72c1LIupVPCIG330mDtHfh
-	r6+PX2Qa5yX7J6b/46AdzdqPhRsMV2S8Pvh1QHKBXgMHwbJRHo/RH8HbrneB59gD4kOo/DwwjQF
-	D19e4tbX11l25qAr03kkPM0q0BturfAvLqYU0IGIhxwTkjTbcX9qqLX3efeQAf5UmfAOy5lN4CI
-	O8jBs4+TtmUE1bsHUnQW4JIh6RbN7voNiedwl7KmmfAW7q5EvH
-X-Received: by 2002:a17:903:234a:b0:29e:e642:95d6 with SMTP id d9443c01a7336-2a870e54eb8mr83236225ad.59.1769670804111;
-        Wed, 28 Jan 2026 23:13:24 -0800 (PST)
+        bh=VEMvCNVdZBz7QayGJ2jMAB9DSKFLF0OAwSH3cf8ofWc=;
+        b=U82NEPsr8YqEU532ibncrHHXZR53igAw/XoZ33drTbv/dQYUfH8M3f3EmrLkNWyccf
+         hJUw1SvS8SFCYMFqb5d99fdw1pEZSszjAG+H+Idv0gA0O/PZCPzDe3H4y3McJ/CChu/u
+         TSfMVWzPqz+uyGBOxCyjpZca6boohh3ouP+CsZ8gIIxLAHSFzZ5/JphoRc6P/TxECDi7
+         imxJ6bWk8Kl1hQyoVywey7OEa35Hz7aDEmzYntKP1BqbFREnRkSpKpfMqSgYpasbujKU
+         MY6JAmscWklVHLZMZCMXQMTCZfyDDlKD6/Z4/pvbkFUmUgNlKWJDRBYfReC9yIIFf9V4
+         JLEQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769670808; x=1770275608;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=VEMvCNVdZBz7QayGJ2jMAB9DSKFLF0OAwSH3cf8ofWc=;
+        b=fvoFbIxEzb/lBy71vL8klsALWrqbF3tJaxFV/R8s2nDFSD5NrsvG9lYtjPqjMwL70R
+         d8g0Fjj0SOIcR0ajOW2KqX3EUfb0rZ/zZ99bq/jyDYO1rw1QnlUURROj6b9COI0+Dz23
+         SbBhLssi9C3qKW0NhokyEgkCEAbvK4dbhzJn74SM88wimRBQRtNxWa7uX3cuLgVEHFjM
+         RxOmbCDCKUPlilpti9F+7VtKV9k6P9gCGTeAhjsI66kTFEUc3mP+v/TuP9SVl4nct1+X
+         abmBwtvtwHJBDC9//EovdKgl0jEB0yeh3/SK5SkwtvOrlrc6oFRyY9AizcfwIVuC7Io7
+         KY9A==
+X-Gm-Message-State: AOJu0YzIQOQr50gdd29GDPHIszhpj7iiC6brjbemuzHcsYg7gNbzXM6z
+	bB+FL0hzvCoW/bURKcTzIgshlyQigv0HTGSkMJvtohiSKGkS/letHr853m3W9w==
+X-Gm-Gg: AZuq6aK5qPx5z20ezgsBHzdbQMqLBkwVQ7kh50GDVPrjAxJt88VxLlK+xdhxpQA/0xV
+	trUr/voNclyLo45DyWrQUWhSQA+cNUBYnRe0JBueT2FSO/C2ux/UVKLVL2/GIfi6+sZjPmPZUw2
+	mE3+WUqZ76iYyFIpmMD7XHoa9vTNCcfS2X0q60I7Bdtyxwn5ruGy5+KZBoiRy8BCvJEHXO2hOh0
+	xNn7WH2wLmifeVZXe56oEIFgRkS9Sb0qBVl8yDD5A2mpCYi3rGnHn+jx4kN6aaAhgdLRqDLluJg
+	brtXQd/7AHAvp/ynUYPnkWisNd3RFRRQZ4m+lCMTXhANDJsHUuFW2TRJ+EHZ3w+i2yi5JjqCNRP
+	BprQjQW93S/UyP9S4UWTQj6EAgqHQa+gF0MGXeaS5tGo3j6yT0b4pDmkedIDGauMaYkO6KR3fdm
+	CCBJ3rPfepjTpxmYZQWi53cobvXY14UY6RgxLGs7g3Mzxaw59S
+X-Received: by 2002:a17:902:e784:b0:295:5132:1a99 with SMTP id d9443c01a7336-2a870dfc964mr85505815ad.44.1769670807796;
+        Wed, 28 Jan 2026 23:13:27 -0800 (PST)
 Received: from arch.localdomain (awork135098.netvigator.com. [219.76.135.98])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a88b6ed92dsm44160135ad.93.2026.01.28.23.13.20
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a88b6ed92dsm44160135ad.93.2026.01.28.23.13.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Jan 2026 23:13:23 -0800 (PST)
+        Wed, 28 Jan 2026 23:13:27 -0800 (PST)
 From: Jun Yan <jerrysteve1101@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org,
@@ -65,56 +67,40 @@ Cc: jic23@kernel.org,
 	krzk+dt@kernel.org,
 	conor+dt@kernel.org,
 	Jun Yan <jerrysteve1101@gmail.com>
-Subject: [PATCH 0/6] iio: add support for Bosch BMX055 IMU
-Date: Thu, 29 Jan 2026 15:10:56 +0800
-Message-ID: <20260129071105.389493-1-jerrysteve1101@gmail.com>
+Subject: [PATCH 1/6] dt-bindings: iio: accel: bosch,bma255: add bmx055 accel binding
+Date: Thu, 29 Jan 2026 15:10:57 +0800
+Message-ID: <20260129071105.389493-2-jerrysteve1101@gmail.com>
 X-Mailer: git-send-email 2.52.0
+In-Reply-To: <20260129071105.389493-1-jerrysteve1101@gmail.com>
+References: <20260129071105.389493-1-jerrysteve1101@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-The BMX055[1] is a Bosch 9-axis IMU integrating a 3-axis accelerometer, 
-gyroscope and geomagnetic sensor. 
+Add the device-tree binding for the Bosch BMX055 IMU (accelerometer part).
 
-It supports SPI/I²C interfaces, and existing compatible drivers can 
-be reused by simply adding the corresponding device IDs as follows:
-
-- accelerometer: bmc150-accel
-- gyroscope: bmg160
-- magnetometer: bmc150_magn
-
-[1] https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_datasheet.pdf
-
-Jun Yan (6):
-  dt-bindings: iio: accel: bosch,bma255: add bmx055 accel binding
-  iio: accel: bmc150-accel: add support for bmx055 accel
-  dt-bindings: iio: magnetometer: bosch,bmc150_magn: add bmx055
-    magnetometer binding
-  iio: magnetometer: bmc150_magn: add support for bmx055 magnetometer
-  dt-bindings: iio: gyroscope: bosch,bmg160: add bmx055 gyroscope
-    binding
-  iio: gyro: bmg160: add support for bmx055 gyroscope
-
+Datasheet: https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_datasheet.pdf
+Signed-off-by: Jun Yan <jerrysteve1101@gmail.com>
+---
  Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml | 1 +
- .../devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml       | 1 +
- .../bindings/iio/magnetometer/bosch,bmc150_magn.yaml          | 1 +
- drivers/iio/accel/Kconfig                                     | 3 ++-
- drivers/iio/accel/bmc150-accel-core.c                         | 2 +-
- drivers/iio/accel/bmc150-accel-i2c.c                          | 2 ++
- drivers/iio/accel/bmc150-accel-spi.c                          | 1 +
- drivers/iio/gyro/Kconfig                                      | 4 ++--
- drivers/iio/gyro/bmg160_i2c.c                                 | 2 ++
- drivers/iio/gyro/bmg160_spi.c                                 | 2 ++
- drivers/iio/magnetometer/Kconfig                              | 4 ++--
- drivers/iio/magnetometer/bmc150_magn_i2c.c                    | 3 +++
- drivers/iio/magnetometer/bmc150_magn_spi.c                    | 2 ++
- 13 files changed, 22 insertions(+), 6 deletions(-)
+ 1 file changed, 1 insertion(+)
 
+diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
+index c1387e02eb82..78f043c38e98 100644
+--- a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
+@@ -28,6 +28,7 @@ properties:
+       - bosch,bmc150_accel
+       - bosch,bmc156_accel
+       - bosch,bmi055_accel
++      - bosch,bmx055_accel
+ 
+       # bma180 driver in Linux
+       - bosch,bma023
 -- 
 2.52.0
 
