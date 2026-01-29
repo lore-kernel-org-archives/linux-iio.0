@@ -1,47 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE66B33C534;
-	Thu, 29 Jan 2026 16:14:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46E752441B8
+	for <linux-iio@vger.kernel.org>; Thu, 29 Jan 2026 16:16:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769703255; cv=none; b=jqhLHt11q7j34Enbzruh80ppJnB7kS5JZvCrUWsWLpI4KgDrCK7mpO+bmvAPEzsP+H4tkLSCZEifIfgZDsSmaxcYZkLSHRQ2aTl8aEYV8o+lc4EZtxHYvxCdfun5zO1+QaD7DxIqcBmFd8CNCPPLV9uBVCASfy5zffhVwYyG1KU=
+	t=1769703390; cv=none; b=AuI2CziyV04090C0Vtho8ACXyBeQOgdHewN6UM66wDjhUTsfXPQtzZk/x1cGMkbJpBBh1JoeGvGZdS/xNzNKeH0tkFN7l28x4wSe/7waapEUqCbSo65HTHHnH2i+DvHeGxiMKxzfbDS8YnrY3sbJ63AKQpVGsZNvlALuqgD35hg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769703255; c=relaxed/simple;
-	bh=X+b6+F9T2ResFcEoWA9vPXwWaCD4NTszgDDYTeiC0aA=;
+	s=arc-20240116; t=1769703390; c=relaxed/simple;
+	bh=WUF9ax9UdKCP1uCGy9j61UCfITg9AOXA+FPPyvtaCtc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=m/6j1NijvUv1OL7JGYYrAAmCYn/jebE9DmAJCnI/V7ce70DHxu8RqXQqQgLnkwwfrffl+NqOmru6Vt8nMOYiUbYxICYOQNyB6i/aMFiBBXMlJJDmg37sL9dIWHNWlNxJwJlyh80df5Pn1ac1G/XXigfibs/eMSOaYopZZu5BMk8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OKEQEizu; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=eseBp0AmgKO+3Dw/W6Q6u57JwxaG2oF9TnNho+t8VseAmzcaOcCNbU3V1ar5PnQGKg2Ob/JGrmm4x5blqX9KSsT93SgSMIfvvw5CXatyC7FL9LnZkfCbDGT5L+WI9LR0KwOQEWXyfAq/P7VJPpzfSQb2Kxyrv1+xvamMqI3PFCs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dlBDlQ11; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OKEQEizu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 566F8C2BCB1;
-	Thu, 29 Jan 2026 16:14:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dlBDlQ11"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE362C4CEF7;
+	Thu, 29 Jan 2026 16:16:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769703255;
-	bh=X+b6+F9T2ResFcEoWA9vPXwWaCD4NTszgDDYTeiC0aA=;
+	s=k20201202; t=1769703389;
+	bh=WUF9ax9UdKCP1uCGy9j61UCfITg9AOXA+FPPyvtaCtc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=OKEQEizuUpBN1Og8c8jiOuJTQCaEOnlReR/yGMiWzLkJXKnqltlxFd+Ds5l5MlvCx
-	 8ltQWS3rBdw73vg8OMqHkm8UwFHxrhF0qo6uFxlgiyiUOoKPsdMA10bFF8rKFQaegC
-	 O3o+GhiSkaO7CcAvGRAY57eNZwNP/j4Ei3G+gwzPlxf3+0pTw/WujacDjVihLMAHGI
-	 voecv8b1NUpAHb75A4pTH5gv7b8TOPFeTxW2lgMOIXzOfO51CCJy/ykFHQC6ue1C7M
-	 YyPRtYJxKuPN5rdrX3PYrMpRlXJT3stgp8CPjTSsxqR2qKbvd7BwinV52uEkDyW2m+
-	 3/WZDo0XYVwqw==
-Date: Thu, 29 Jan 2026 16:14:06 +0000
+	b=dlBDlQ11t1xlxYq0X/gN2SsQaVgz8Mv8v/D93QWijDSEUINPWKYSfVtGk9IpsIIlf
+	 6+eivZ12c3ILq/ltS6R/MIbFkUlp80+2Kg1wqhP12/zGWJJMwajcqMGKS+LFyEN4U8
+	 4t8kmTtwOwAdKHzbeXhQ4MfbwS/pYrRNMjEwSm6LYDgFaZYjSKiNIUwbxmmnpMcjwZ
+	 FvWEkxOoiuDqM9UliMJVRl/fU7J3IHarrTdD0boV45Dd9tLwVZ3/bCdHBLQDWzna8k
+	 skpDXcW1wxfYNW/AhqfS9eRQepN6TGRc7GHn+LqwiKCmUPIJ1RwJ3HkIp+EiA+t/5K
+	 DPYWebnk9oGdg==
+Date: Thu, 29 Jan 2026 16:16:21 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@kernel.org>, Lars-Peter
- Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 19/20] iio: adc: ad7766: Use
- iio_trigger_generic_data_rdy_poll()
-Message-ID: <20260129161406.4a447483@jic23-huawei>
-In-Reply-To: <aXoJoXgliFimSE-r@smile.fi.intel.com>
-References: <20260128095540.863589-1-bigeasy@linutronix.de>
-	<20260128095540.863589-20-bigeasy@linutronix.de>
-	<aXoJoXgliFimSE-r@smile.fi.intel.com>
+To: Menderes Sabaz <sabazmenderes@gmail.com>
+Cc: Michael.Hennerich@analog.com, andy@kernel.org, dlechner@baylibre.com,
+ lars@metafoo.de, linux-iio@vger.kernel.org, nuno.sa@analog.com
+Subject: Re: [PATCH v2] iio: dac: ad5360: convert to guard(mutex)
+Message-ID: <20260129161621.7900dc11@jic23-huawei>
+In-Reply-To: <20260128153221.327987-1-sabazmenderes@gmail.com>
+References: <20260128113751.258219-1-sabazmenderes@gmail.com>
+	<20260128153221.327987-1-sabazmenderes@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,20 +46,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 28 Jan 2026 15:05:37 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed, 28 Jan 2026 18:32:21 +0300
+Menderes Sabaz <sabazmenderes@gmail.com> wrote:
 
-> On Wed, Jan 28, 2026 at 10:55:39AM +0100, Sebastian Andrzej Siewior wrote:
-> > ad7766_irq() is identical to iio_trigger_generic_data_rdy_poll().
-> > 
-> > Use iio_trigger_generic_data_rdy_poll() instead of ad7766_irq().  
+> Converting mutex_lock and mutex_unlock to guard(mutex)
+> Simplify the locking logic by using guard(mutex).
+> This removes the need for explicit unlock calls in error paths and
+> simplifies the code by removing goto labels.
 > 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> 
-Applied.
+> Signed-off-by: Menderes Sabaz <sabazmenderes@gmail.com>
+
+Hi Menderes,
+
+Applied to the togreg branch of iio.git.
 
 Thanks,
 
 Jonathan
-
-
