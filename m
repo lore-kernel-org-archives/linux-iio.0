@@ -1,136 +1,337 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6337C225390;
-	Thu, 29 Jan 2026 18:15:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5498E23A984;
+	Thu, 29 Jan 2026 18:19:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769710521; cv=none; b=KdRf5VyVIboDJZzIqaouuBzW5UbWDeFGhE4eVrHeJTjFN3s2D9uhRe3r8JNk+ttnqzeLQ0jTBQyT1id87k8hyomwTg/EvTRKf5eWhwteoHPtKwYk6bec0oBumVMFn1Y6oNHkPUlhmupkUjBjMYAyyoqeBVItEWvBUOJvfQT7wUI=
+	t=1769710792; cv=none; b=DRSpGyAPmeGOvbkOKf5JK8LjxDVNTK/yh6P2B4oevSY560ReBYqEX4fvFMjX6UH/THS8+dVYq71BSacF+jKHoSZkL8+cEg2HkHWk7CSHNE4gil40d16KajLrEKHbBoFhqUiG+wJ4ltS+HSbxV0FuwVgfwhB3d5rw2i/yRaEIonk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769710521; c=relaxed/simple;
-	bh=s8u98sPm1ExILr4yN3ZM0JLZXWdlzD3k1bgzVwYHDJE=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=lRGF3N9k5Qum8mA5Ukrm6xE3naGzLsuVdxSeZlHWwQKTrzaB0TBWVj7/famMKNngVdHYu1c1uG7BE1qS1PBBgGW8HZ2K0tZf53y77pOngYKAv5xa8zT6ImTNwb0vgSLRRlHOPzzxKAYD50+FnBKYYDZ21JALEsw01C5oLaMWkIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=GTSCclQJ; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1769710792; c=relaxed/simple;
+	bh=og90nOX/+6jWXCTeB4CAJLzIXd1dsAZvRA+nFx2XInc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=XKiLC0aMdSfvMyhYTxnCydxn1dVHNU/VVhmeQUwLm8MPMBakoh2rl9hGVw6gv1gTDGv4riLit9DIcuBtqgokMxUcog6RvS+bXMi1ezKy1IG7KKkWpKuWbHqbtpTANXrpg6czVYB/Po7IuJvLZWFdn/P6/TAT35FMQq3bBvPxguI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FC89fFDm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="GTSCclQJ"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60THkH0W2946343;
-	Thu, 29 Jan 2026 13:15:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=517dUUOgFaeY8BMvrrJ5wfLWKk3
-	jAi7XnNS5XCnLKXI=; b=GTSCclQJJL+yhvBPZbFIuHH8Ihi2piaJCTTnMVcL5n1
-	0aoSMEjhwcb9pr9vVBy4ygUq46rLB3OKfLnn4JjihpEGToqr0ZGXt/aX5Z0ntEQn
-	MQidhqSRRUc38zgD1imPRZ4u9mmMy82iWWeHKDnoYGwDfSIMD+spZyRMuGT0oMNN
-	wGcvOUUKoPujN9fMCqDuIYscVvuFL6mBwzTEZ/Vj0+Y8sjroGMsyE5TEKapbfP6P
-	UdJw6O7SSkSftq5WErbo6eFbOKWIBBHwTkVcron93upW9skQdMjjm5iDhBzDeopW
-	3NbN9NbdG3I7krv83daZBZoLLBMUykcgn4I/yovLUiw==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4c0c8a034u-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Thu, 29 Jan 2026 13:15:12 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 60TIFBTn061131
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Thu, 29 Jan 2026 13:15:11 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 29 Jan
- 2026 13:15:11 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Thu, 29 Jan 2026 13:15:11 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 60TIEwv5011036;
-	Thu, 29 Jan 2026 13:15:01 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Petre Rodan <petre.rodan@subdimension.ro>,
-        Jonathan Cameron
-	<jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
-	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v2] iio: pressure: hsc030pa: Improve i2c_transfer return value handling
-Date: Thu, 29 Jan 2026 20:14:52 +0200
-Message-ID: <20260129181452.57628-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FC89fFDm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3ECC2C4CEF7;
+	Thu, 29 Jan 2026 18:19:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1769710791;
+	bh=og90nOX/+6jWXCTeB4CAJLzIXd1dsAZvRA+nFx2XInc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=FC89fFDmUOLbxVrWJudzUoL6CGgbCKmvNg00z19QqRTJ6dG6N+BbbZsqlDC39FObm
+	 O9h3580qG0pc87JrmkFA+dIDUDA0vCDi6nIe0i2UCGP12V2zwpr7GSZWJBguXePct/
+	 Kee1DE5Gx61Qiyqn093X1OoW3cH+cQ1UViVtmG2+8Qs6AqPvrepcMjq6UFRUDf1miZ
+	 idCO22w3iEAzmhnYW/rKiMxeZkOqx23v8aIwnyS7I0tHY8Sgdu/VKDjNQFQlA3eoGs
+	 AXce/TLAp/uxzar7qxEnOg8IkdMdY9lXhCGq4pr+6JGiLAYBXZRuPiOYqtOLF1O6Jr
+	 3W6RueUIVjFPg==
+Date: Thu, 29 Jan 2026 18:19:42 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, David Jander <david@protonic.nl>
+Subject: Re: [PATCH v3 8/8] iio: dac: ds4424: add Rfs-based scale and
+ per-variant limits
+Message-ID: <20260129181942.1bf0ae28@jic23-huawei>
+In-Reply-To: <20260128153824.3679187-9-o.rempel@pengutronix.de>
+References: <20260128153824.3679187-1-o.rempel@pengutronix.de>
+	<20260128153824.3679187-9-o.rempel@pengutronix.de>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=LPJrgZW9 c=1 sm=1 tr=0 ts=697ba3b0 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=vUbySO9Y5rIA:10 a=VkNPw1HP01LnGYTKEx00:22 a=gAnH3GRIAAAA:8
- a=fp1qgPpjcrRE5sl1YSkA:9
-X-Proofpoint-GUID: PzUNGbRToG1MipzqLj8dLjNfY0V_jRFw
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTI5MDEyOSBTYWx0ZWRfX9iOck2GcUN7n
- Ud4XT/ROBbpkbYUPPfij86vCp4sTyxTQbegJL008zTHRr1puZq/UDGRIf4lrqwDoutWN6yvAcie
- riqzTMEIJwKISjqKvuF9uAh3Ty2n5WU7aQYYPeq+VskEZz5CcrgeAZApbZIGOrKvsqEkxinnR7i
- 09K3/Os/S6f7oV7CdycY7HwogzP/tIg4OAe+mXUYZQwVK5HBsP3VkcZhj3vOoe5Q4Z+DdWxcCJw
- QWlKIajw/fusYs6E5iArrx0CcpUqHxawt07/PDNg+8zVxqwDnYa+EXLMrrU/gulFsD+KAFpHpBS
- Scgmtu6P83ksPB2/dBhrZDb4sWrrx+C5RpgZEZ+hESL8tHF8/YZ0fbsGL163Vaxg7n4ebLpzTRO
- JvtI5Zt2VTF8AjIobJT0KQumRaVUEd2LVk93ZcvtyhIphwZnX5j7k+r8pm+GRRI3QrCwvvdGp/P
- qz2QET62g/9Xipa4N0g==
-X-Proofpoint-ORIG-GUID: PzUNGbRToG1MipzqLj8dLjNfY0V_jRFw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-01-29_02,2026-01-29_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 adultscore=0 lowpriorityscore=0 spamscore=0 impostorscore=0
- clxscore=1015 priorityscore=1501 bulkscore=0 malwarescore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601290129
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The i2c_transfer() function returns the number of messages
-successfully transferred. The function sends 1 message but checks
-for ret == 2, which can never be true.
+On Wed, 28 Jan 2026 16:38:24 +0100
+Oleksij Rempel <o.rempel@pengutronix.de> wrote:
 
-In practice this has no impact since the caller checks ret < 0,
-and the erroneous return value of 1 is not treated as an error.
+> Parse optional maxim,rfs-ohms values to derive the per-channel output
+> current scale (mA per step) for the IIO current ABI.
+> 
+> Select per-variant parameters to match the shared register map while
+> handling different data widths and full-scale current calculations.
+> 
+> Behavior changes:
+> - If maxim,rfs-ohms is present, IIO_CHAN_INFO_SCALE becomes available
+>   and reports mA/step derived from Rfs.
+> - If maxim,rfs-ohms is missing, SCALE is not exposed to keep older DTs
+>   working without requiring updates.
+> - RAW writes are now limited to the representable sign-magnitude range
+>   of the detected variant to avoid silent truncation (e.g. +/-31 on
+>   DS440x).
 
-Improve the return value handling to properly distinguish between
-I2C errors and unexpected transfer counts.
+This seems to be doing several things.
+Split it into a patch introducing the structure for per channel information
+and then one adding the maxim,rfs-ohms support.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-v2:
- - Changed subject from 'Fix' to 'Improve'
- - Clarified that the bug has no practical impact
- - Used explicit if/return pattern instead of ternary
- - Dropped Fixes tag
+Various more specific suggestions inline.
 
- drivers/iio/pressure/hsc030pa_i2c.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+Thanks,
 
-diff --git a/drivers/iio/pressure/hsc030pa_i2c.c b/drivers/iio/pressure/hsc030pa_i2c.c
-index a34ef4653f34..3500bda03d75 100644
---- a/drivers/iio/pressure/hsc030pa_i2c.c
-+++ b/drivers/iio/pressure/hsc030pa_i2c.c
-@@ -34,8 +34,13 @@ static int hsc_i2c_recv(struct hsc_data *data)
- 	msg.buf = data->buffer;
- 
- 	ret = i2c_transfer(client->adapter, &msg, 1);
-+	if (ret < 0)
-+		return ret;
- 
--	return (ret == 2) ? 0 : ret;
-+	if (ret != 1)
-+		return -EIO;
-+
-+	return 0;
- }
- 
- static int hsc_i2c_probe(struct i2c_client *client)
--- 
-2.43.0
+Jonathan
+
+> 
+> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> ---
+> changes v3:
+> - Added explicit check for negative return from device_property_count_u32().
+> - Rename vref_mv to vref_mV
+> - Use devm_kmemdup_array() instead of devm_kmemdup()
+> - Use %u for unsigned index in Rfs error logs.
+> - Consolidated Rfs parse logs to a single line.
+> changes v2:
+> - Reorder struct ds4424_chip_info members to optimize padding.
+> - Use GENMASK() for chip variant masks instead of hex constants.
+> - Simplify ds4424_setup_channels: use direct devm_kmemdup to avoid stack
+>   usage and memcpy.
+> - Use local 'dev' pointer and dev_err_probe() in ds4424_parse_rfs for
+>   cleaner error handling.
+> - Rename the static iio_info struct to ds4424_iio_info to prevent name
+>   collision with the new hardware chip_info structs.
+> - Use unsigned int for loop counters.
+> - Rebase on top of regmap and symmetrical raw_access refactoring.
+> ---
+>  drivers/iio/dac/ds4424.c | 121 +++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 116 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+> index 9bef1c60b2eb..2b01e20daee4 100644
+> --- a/drivers/iio/dac/ds4424.c
+> +++ b/drivers/iio/dac/ds4424.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/i2c.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> +#include <linux/property.h>
+>  #include <linux/regmap.h>
+>  #include <linux/regulator/consumer.h>
+>  
+> @@ -24,6 +25,7 @@
+>  #define DS4424_MAX_DAC_CHANNELS		4
+>  
+>  #define DS4424_DAC_MASK			GENMASK(6, 0)
+> +#define DS4404_DAC_MASK			GENMASK(4, 0)
+>  #define DS4424_DAC_SOURCE		BIT(7)
+>  
+>  #define DS4424_DAC_ADDR(chan)   ((chan) + 0xf8)
+> @@ -43,9 +45,38 @@ enum ds4424_device_ids {
+>  	ID_DS4424,
+>  };
+>  
+> +/*
+> + * Two variant groups share the same register map but differ in:
+> + * - resolution/data mask (DS4402/DS4404: 5-bit, DS4422/DS4424: 7-bit)
+> + * - full-scale current calculation (different Vref and divider)
+> + * Addressing also differs (DS440x tri-level, DS442x bi-level), but is
+> + * handled via board configuration, not driver logic.
+> + */
+> +struct ds4424_chip_info {
+As mentioned below. This being introduced should occur
+without anything related to the rfs. I'd also like the enum to go away
+in favour of using these structures directly as the per device type data
+in the i2c_device_id tables and the dt ones.
+Note there is a nice helper that tries to get that data first from DT
+and then falls back to the i2c_device_id table if it fails
+i2c_get_match_data().
+
+> +	int vref_mV;
+> +	int scale_denom;
+> +	u8 result_mask;
+> +};
+> +
+> +static const struct ds4424_chip_info ds4424_info = {
+> +	.vref_mV = 976,
+> +	.scale_denom = 16,
+> +	.result_mask = DS4424_DAC_MASK,
+> +};
+> +
+> +/* DS4402 is handled like DS4404 (same resolution and scale formula). */
+> +static const struct ds4424_chip_info ds4404_info = {
+> +	.vref_mV = 1230,
+> +	.scale_denom = 4,
+> +	.result_mask = DS4404_DAC_MASK,
+> +};
+> +
+>  struct ds4424_data {
+>  	struct regmap *regmap;
+>  	struct regulator *vcc_reg;
+> +	const struct ds4424_chip_info *chip_info;
+> +	u32 rfs_ohms[DS4424_MAX_DAC_CHANNELS];
+> +	bool has_rfs;
+>  };
+>  
+>  static const struct iio_chan_spec ds4424_channels[] = {
+> @@ -144,11 +175,20 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
+>  			return ret;
+>  		}
+>  
+> -		*val = regval & DS4424_DAC_MASK;
+> +		*val = regval & data->chip_info->result_mask;
+>  		if (!(regval & DS4424_DAC_SOURCE))
+>  			*val = -*val;
+>  
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (!data->has_rfs)
+> +			return -EINVAL;
+> +
+> +		/* SCALE is mA/step: mV / Ohm = mA. */
+> +		*val = data->chip_info->vref_mV;
+> +		*val2 = data->rfs_ohms[chan->channel] *
+> +			data->chip_info->scale_denom;
+> +		return IIO_VAL_FRACTIONAL;
+>  
+>  	default:
+>  		return -EINVAL;
+> @@ -168,7 +208,7 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+>  		abs_val = abs(val);
+> -		if (abs_val > DS4424_DAC_MASK)
+> +		if (abs_val > data->chip_info->result_mask)
+This confused me as nothing to do with the rfs.
+So this should be multiple patches.
+
+>  			return -EINVAL;
+>  
+>  		/*
+> @@ -187,6 +227,65 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
+>  	}
+>  }
+>  
+> +static int ds4424_setup_channels(struct i2c_client *client,
+> +				 struct ds4424_data *data,
+> +				 struct iio_dev *indio_dev)
+> +{
+> +	struct iio_chan_spec *channels;
+> +
+> +	/* Use a local non-const pointer for modification */
+> +	channels = devm_kmemdup_array(&client->dev, ds4424_channels,
+> +				      indio_dev->num_channels,
+> +				      sizeof(ds4424_channels[0]), GFP_KERNEL);
+> +	if (!channels)
+> +		return -ENOMEM;
+> +
+> +	if (data->has_rfs) {
+> +		for (unsigned int i = 0; i < indio_dev->num_channels; i++)
+> +			channels[i].info_mask_separate |=
+> +				BIT(IIO_CHAN_INFO_SCALE);
+
+There are only two options.  Just have 2 static const iio_chan_spec []
+and pick between them.  One has the scale and the other doesn't.
+
+Dynamic channel specification creation is fine if there are lots
+of variants, but not worth the effort for 2.
+
+> +	}
+> +
+> +	indio_dev->channels = channels;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ds4424_parse_rfs(struct i2c_client *client,
+> +			    struct ds4424_data *data,
+> +			    struct iio_dev *indio_dev)
+> +{
+> +	struct device *dev = &client->dev;
+> +	int count, ret;
+> +
+> +	if (!device_property_present(dev, "maxim,rfs-ohms")) {
+> +		dev_info_once(dev, "maxim,rfs-ohms missing, scale not supported\n");
+
+Absences of the _scale sysfs file should be enough for that rather than filling up
+the kernel log. dev_dbg() only.
+
+> +		return 0;
+> +	}
+> +
+> +	count = device_property_count_u32(dev, "maxim,rfs-ohms");
+> +	if (count < 0)
+> +		return dev_err_probe(dev, count, "Failed to count maxim,rfs-ohms entries\n");
+> +	if (count != indio_dev->num_channels)
+> +		return dev_err_probe(dev, -EINVAL, "maxim,rfs-ohms must have %u entries\n",
+> +				     indio_dev->num_channels);
+> +
+> +	ret = device_property_read_u32_array(dev, "maxim,rfs-ohms",
+> +					     data->rfs_ohms,
+> +					     indio_dev->num_channels);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to read maxim,rfs-ohms property\n");
+> +
+> +	for (unsigned int i = 0; i < indio_dev->num_channels; i++) {
+> +		if (!data->rfs_ohms[i])
+> +			return dev_err_probe(dev, -EINVAL, "maxim,rfs-ohms entry %u is zero\n", i);
+> +	}
+> +
+> +	data->has_rfs = true;
+> +
+> +	return 0;
+> +}
+
+> @@ -258,15 +357,20 @@ static int ds4424_probe(struct i2c_client *client)
+>  	switch (id->driver_data) {
+>  	case ID_DS4402:
+>  		indio_dev->num_channels = DS4422_MAX_DAC_CHANNELS;
+> +		/* See ds4404_info comment above. */
+> +		data->chip_info = &ds4404_info;
+
+I'd strongly prefer to see the driver_data become a pointer to this structure
+(and have it it for all firmware types rather than relying on matching
+ across them which sometimes goes wrong).
+
+That would need to be a precursor patch but would end up simplifying
+things because you'd just put num_channels in there as well and no
+switch statement would be on these enum values (get rid of that enum)
+
+>  		break;
+>  	case ID_DS4404:
+>  		indio_dev->num_channels = DS4424_MAX_DAC_CHANNELS;
+> +		data->chip_info = &ds4404_info;
+>  		break;
+>  	case ID_DS4422:
+>  		indio_dev->num_channels = DS4422_MAX_DAC_CHANNELS;
+> +		data->chip_info = &ds4424_info;
+>  		break;
+>  	case ID_DS4424:
+>  		indio_dev->num_channels = DS4424_MAX_DAC_CHANNELS;
+> +		data->chip_info = &ds4424_info;
+>  		break;
+>  	default:
+>  		dev_err(&client->dev,
+> @@ -279,9 +383,16 @@ static int ds4424_probe(struct i2c_client *client)
+>  	if (ret)
+>  		goto fail;
+>  
+> -	indio_dev->channels = ds4424_channels;
+> +	ret = ds4424_parse_rfs(client, data, indio_dev);
+> +	if (ret)
+> +		goto fail;
+> +
+> +	ret = ds4424_setup_channels(client, data, indio_dev);
+> +	if (ret)
+> +		goto fail;
+> +
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> -	indio_dev->info = &ds4424_info;
+> +	indio_dev->info = &ds4424_iio_info;
+I'd be tempted to do the rename as at trivial precursor patch
+that just says you need the namespace for the use made in this patch.
+
+Otherwise the code becomes a bit fiddly to read in here as meaning
+changes between removed and added code.
+
+Jonathan
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0) {
 
