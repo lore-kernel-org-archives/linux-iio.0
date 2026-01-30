@@ -1,62 +1,38 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D4FE3783B6;
-	Fri, 30 Jan 2026 12:23:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 3880036B05C;
+	Fri, 30 Jan 2026 12:24:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769775806; cv=none; b=NY2JEp8gIYTYGJtX2z4j6tBKva3naZnuA6s14/NTzcPPEhixsf3+Z+b8unTEPQFr2AwsPKGb8Dfp+K4Vc75sDAH0opSCFIussDRvypNiM4V+V0E4dpPJTlyy/ISC+Rs6jy7/Oe+nZRu3uwrbXTyRWN93MQ4TKrYRsfnZmZDrPjs=
+	t=1769775898; cv=none; b=PNTm4qLOM7Pwf0aJH0uGc0B7EcZg8b0Je8EjmCy2xElN8su4p0tt/g7sPEkEtyVS8ULfLG5kb7z7EcIFPMq4hyFnu7XEZnMlhawNFPmW4eCU40BTERv9DQEfjYZ4dVZsmNM2SI0Bo0RmbD3OqyDDgtN/jVCSEP9mFzTdEjKIAC0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769775806; c=relaxed/simple;
-	bh=AfwFDmy6MGnM2nhPGo039gbYthqtrtO+TrrM03UXRmA=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=MZlkN2y08rI6tnL2BFTBArLiaz+31D/mTWnFeYlQ/0t9ZGdvCRBLPkzBrqTcHR/ASccrY2MaMgHBRheNrlDGTrGHc4XNuC9kbqPry+uWNvZ715q1+zVyRw6Bqs8pVAxe/zjySiqdrzOmCrti1LxCa+1dLQJVXOLK3uhzBmFr2EA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=T6zZRxX5; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="T6zZRxX5"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60U6VbhF2946649;
-	Fri, 30 Jan 2026 07:23:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=yFO2cUdPn7eGZ8UbQ4bQLPvTsnE
-	LiXvA9gyByfFWk9Y=; b=T6zZRxX53nlswXHpJESrvz2NPiQ5zTcd1hubk37GRkd
-	yWFkVCDM6jE0/Qx9xTUoyTZPzbg3gGuwMwQJvduE017mlvvYneNXJ9pkSbMBmrI0
-	Q1UAUYERpa8WnSEtMYPOwEyqDNfMF90vbUsvf8iQw+9LTA1KDA5f6XTOx6DB9ePL
-	Xomty3g67CHzRS2hfpAJnkRkinHf7gLoqf4n0K+XNeGfaOMTt+1zdi5kBnw0+e3j
-	F1mNMySV2ljUewuJ3JtI+fc/xM1rVEMzWfNfeMV5Vz1OpReNJ285njteytP9nxfJ
-	QhnlL++MxqhAdYpxUUYqRYywvUWJDhj3n/NRwc6Y1VA==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4c0c8a3j01-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 30 Jan 2026 07:23:21 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 60UCNKsH051505
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 30 Jan 2026 07:23:20 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 30 Jan 2026 07:23:20 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 30 Jan 2026 07:23:20 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 30 Jan 2026 07:23:20 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 60UCNA70010740;
-	Fri, 30 Jan 2026 07:23:12 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <jic23@kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH] MAINTAINERS: add entry for ADL8113 driver
-Date: Fri, 30 Jan 2026 14:23:08 +0200
-Message-ID: <20260130122308.87935-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
+	s=arc-20240116; t=1769775898; c=relaxed/simple;
+	bh=Pu/D/MqAtuCra0f6cMUDlK7OdIThQPfoBXULNMCwseE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=V27swykVJXY6UgkIyefSuhDEwzPJWdEGsx8/ieWnP9fcWgHWdQQDnxFfKEhVjB7s1uMh3S7IdeUO+TL+jjvQdB5v9NOBguok2ARGYTaSsF1UdLhWjobvQb2VIZ/ivObeCgAE+8SCTp/MGCAhgdu1o5h/c136uIMgCjkZMBEcpu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
+X-CSE-ConnectionGUID: nX8ZW6YtRiKWK2Wj8EbUAA==
+X-CSE-MsgGUID: BKHOHriOTaW2RkA2WX91Ug==
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie5.idc.renesas.com with ESMTP; 30 Jan 2026 21:24:48 +0900
+Received: from demon-pc.localdomain (unknown [10.226.92.78])
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 162454190888;
+	Fri, 30 Jan 2026 21:24:44 +0900 (JST)
+From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+To: Biju Das <biju.das.jz@bp.renesas.com>,
+	William Breathitt Gray <wbg@kernel.org>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Thierry Reding <thierry.reding@gmail.com>
+Cc: linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org,
+	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Subject: [PATCH 0/5] Renesas MTU3 PWM / counter fixes
+Date: Fri, 30 Jan 2026 14:23:48 +0200
+Message-ID: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,57 +40,136 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=LPJrgZW9 c=1 sm=1 tr=0 ts=697ca2b9 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=vUbySO9Y5rIA:10 a=VkNPw1HP01LnGYTKEx00:22 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
- a=iNWud8tueSu1nfbozfIA:9
-X-Proofpoint-GUID: 5wXkTYTWBee0NdVvArhtmPJ8ZTXJNhqd
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTMwMDEwMSBTYWx0ZWRfX6314+7JIov9V
- 51Tiqs3yaqWNNJeEIL00ZyCyrw3UwzZLO+Rgrz9hDRJujpVx5jK0w7d2pxFbWoj7AHkhR01GxFy
- pCtLZ37EyDjsAiaTnz22AlzqGXH/ml7G3ZTX89NrEaGIDzdyHudho0kCtCL2kEG/A1oPNd11esR
- zauRmaV7yyNZoQGLO/SEPReDMLl9eOQpLkXsuRLFI+k3Iqyau+srWMAklT8+RS3wKSGFox3CsHz
- wkILY1kzJmoXxiQCwdhCLhwKzWfexi8EGQr13XUUR0d75S0EqWEu0iq2Z16JYuW+q+dSiFnqRQ0
- 4gfce+GwRGsWrmsw+3Bumu0MU5mXxUO8f3mHAnbD8FTnqsZufA0PvmYpfiUq93HnhWIyq/86kFQ
- xEDCVTTicgZmVqntHhLLZeaV7vYHHlOdqNs8+bOhSiDLRGyRnesXHR55j8wYSHfABjdCgT0dDDx
- EpB03I8SMWbOmORT6IA==
-X-Proofpoint-ORIG-GUID: 5wXkTYTWBee0NdVvArhtmPJ8ZTXJNhqd
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-01-30_01,2026-01-29_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 adultscore=0 lowpriorityscore=0 spamscore=0 impostorscore=0
- clxscore=1015 priorityscore=1501 bulkscore=0 malwarescore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2601300101
 
-Add MAINTAINERS entry for the ADL8113 driver.
+The Renesas MTU3 PWM and counter drivers have some issues which have
+been observed while adding support for the Renesas RZ/T2H and RZ/N2H
+SoCs.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+This series fixes the most important issues which prevent normal
+functioning of the driver, while other less important issues will be
+handled in a future series.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1251965d70bd..04b918b07ea3 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1691,6 +1691,14 @@ S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/imu/adi,adis16550.yaml
- 
-+ANALOG DEVICES INC ADL8113 DRIVER
-+M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/amplifiers/adi,adl8113.yaml
-+F:	drivers/iio/amplifiers/adl8113.c
-+
- ANALOG DEVICES INC ADM1177 DRIVER
- M:	Michael Hennerich <Michael.Hennerich@analog.com>
- L:	linux-hwmon@vger.kernel.org
+Questions for the PWM maintainer:
+
+1)
+
+The handling introduced in patches 1 and 2 is similar to the approach
+taken in commits [1] and [2].
+
+Is this the right approach?
+
+This code snippet below extracted from drivers/pwm/pwm-rzg2l-gpt.c
+entirely prevents the period ticks from changing at all when two PWM
+channels backed by the same HW channel are in use.
+
+if (rzg2l_gpt->channel_request_count[ch] > 1) {
+  u8 sibling_ch = rzg2l_gpt_sibling(pwm->hwpwm);
+
+  if (rzg2l_gpt_is_ch_enabled(rzg2l_gpt, sibling_ch)) {
+    if (period_ticks < rzg2l_gpt->period_ticks[ch])
+      return -EBUSY;
+
+    period_ticks = rzg2l_gpt->period_ticks[ch];
+  }
+}
+
+Same logic has been imposed in patches 1 and 2 as the HW limitation is
+similar.
+
+Based on the logic here, a second channel can be enabled as long as its
+period is larger than the period of the first enabled channel, and the
+period and duty cycle will be adjusted to be <= to the period of the
+first enabled channel.
+
+But once the second channel is enabled, there's no way to adjust the
+period of either channels anymore.
+
+Wouldn't a better solution be that the smallest period between the two
+channels is used, so that adjustment is still possible dynamically?
+
+Here is an example.
+
+echo 0 > /sys/class/pwm/pwmchip0/export
+echo 1 > /sys/class/pwm/pwmchip0/export
+echo 0xFFF000 > /sys/class/pwm/pwmchip0/pwm0/period
+echo 0x7FF800 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+echo 0xFFF000 > /sys/class/pwm/pwmchip0/pwm1/period
+echo 0x7FF800 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
+echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
+echo 1 > /sys/class/pwm/pwmchip0/pwm1/enable
+
+Now both LEDs are on, let's increase the period.
+
+echo 0xFFFF000 > /sys/class/pwm/pwmchip0/pwm0/period
+echo 0x7FFF800 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+
+The effective period did not change.
+
+echo 0xFFFF000 > /sys/class/pwm/pwmchip0/pwm1/period
+echo 0x7FFF800 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
+
+The effective period didn't change now either.
+
+echo 0 > /sys/class/pwm/pwmchip0/pwm0/enable
+echo 0 > /sys/class/pwm/pwmchip0/pwm1/enable
+
+echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
+echo 1 > /sys/class/pwm/pwmchip0/pwm1/enable
+
+After turning the PWMs off and on again, the effective period is
+updated.
+
+If we were to change the period dynamically to the smallest one, the
+LEDs would have changed their effective period without needing to be
+turned off and on again.
+
+Would this approach be better than the current approach? I can see that
+other drivers just refuse updating the period entirely when the PWM
+channels must share the same period.
+
+
+2)
+
+Another issue that I've encountered is that PWM is left enabled even if
+the channel is unexported.
+
+Here is an example.
+
+echo 0 > /sys/class/pwm/pwmchip0/export
+echo 0xFFFF000 > /sys/class/pwm/pwmchip0/pwm0/period
+echo 0x7FFF800 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
+echo 0 > /sys/class/pwm/pwmchip0/unexport
+
+The connected LED is kept blinking as 0 was not written to enable.
+
+Is this intended? Or should the PWM turn off on unexport?
+
+
+3)
+
+Should the .get_state() ops read the period and duty cycle from the
+hardware if the PWM is not enabled?
+
+Currently the MTU3 driver guards reading period and duty cycle based on
+whether the PWM is enabled.
+
+[1]: e373991eb9ff ("pwm: rzg2l-gpt: Accept requests for too high period length")
+[2]: fae00ea9f003 ("pwm: rzg2l-gpt: Allow checking period_tick cache value only if sibling channel is enabled")
+
+Cosmin Tanislav (5):
+  pwm: rz-mtu3: fix prescale check when enabling 2nd channel
+  pwm: rz-mtu3: impose period restrictions
+  pwm: rz-mtu3: correctly enable HW channel 4 and 7
+  counter: rz-mtu3-cnt: prevent counter from being toggled multiple
+    times
+  counter: rz-mtu3-cnt: do not use struct rz_mtu3_channel's dev member
+
+ drivers/counter/rz-mtu3-cnt.c | 67 +++++++++++++-----------
+ drivers/pwm/pwm-rz-mtu3.c     | 99 ++++++++++++++++++++++++++++-------
+ include/linux/mfd/rz-mtu3.h   |  2 +
+ 3 files changed, 117 insertions(+), 51 deletions(-)
+
 -- 
-2.43.0
+2.52.0
 
