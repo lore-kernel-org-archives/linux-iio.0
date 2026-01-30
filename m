@@ -1,36 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34B3533ADB0;
-	Fri, 30 Jan 2026 15:38:59 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08795346FAE;
+	Fri, 30 Jan 2026 16:10:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769787539; cv=none; b=oNrJRDJwUOHAYPyCjTH6ckeqDTQDCF8hwjAqf2/Gy5Gw6Gb5FWpCaf2eB4xN2Jh61iSEXzJTGY0pdYbZVDeUycbbyZn/7KKz8hhglsiamFebNvDa6GimU4uBpS35Jc008240Ihgwm5NfD0wVj0XwSJ2Ueu/pnNy5SSfAJpJypFE=
+	t=1769789434; cv=none; b=LSUjRm1ePqGQAqiXeF7xSBgUyOzWjQhMB53DUOKQUGt4MbwyGlaesTsQBfkt+9DZNTtvBN1c75u8rQAlyZROeUMTsHkjpoLA59gbgOv7JL4oAh+vU+YmjC3a4Hzn/QB3NmvhaMddCFFarktzxaOYEiBI66TIO3hCv7LheO0hQkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769787539; c=relaxed/simple;
-	bh=iHiJRrjTly3jAX19XuLPgUXslc9svIoVKTSGZtd3tF0=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=PciZy1XueEQwVXNjncwm4Sol8Dw/ZxDGBuX/fQNJgvFg9ZjJan5zlaGbOLLLuLUDu59m2oDBt5ADDE+sjqedGvHjoY/+lp3gXbWGckMiM7xtl5j66GEuXOoQEHJOYXx9PX07UjR+2enAtYVWE12A0PAlNyBAIDsuC5LY7p7wqwI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CSYHkMnH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1769789434; c=relaxed/simple;
+	bh=KTuap8kdmVW1GPDaErKGGJn+66swwrDJ78HyQS6jS04=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Wrc3gU8pNZbsaxIAUZAfPoFsSKcKXa+badPc2NjdBNNqJ0ga2mj6R3TGQayjn2Oj7JSHV09/aS5xjeg0Yyq2JfczVJuxc28la9Y9o2t0wZXXU9H3nJJd9q2Ai/zyfalaHvyvANB72d2PgizgB7v5NX8Tzs+8WL04aHQE4Cgw678=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DDCfqAuM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CSYHkMnH"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CE97FC4CEF7;
-	Fri, 30 Jan 2026 15:38:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DDCfqAuM"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id CF3E6C4CEF7;
+	Fri, 30 Jan 2026 16:10:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769787538;
-	bh=iHiJRrjTly3jAX19XuLPgUXslc9svIoVKTSGZtd3tF0=;
+	s=k20201202; t=1769789433;
+	bh=KTuap8kdmVW1GPDaErKGGJn+66swwrDJ78HyQS6jS04=;
 	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=CSYHkMnHV6UEcDoRGjoNkOZNiFFpFERcMXL4OZnYGkW6tyELpjdTH5dNhHzhUDK4J
-	 ll6jYi4bsiid6qdeJXKj2Ws8TWufZ0vfUPRY96YCCXHxvClob9zHe3hGxL82LYs9Ko
-	 SExe2YuPTY3flWa3xF9kedfrWL6c1VMhZiVqZSvLsuLcVTlD4CnG/A8QG7ahiWuiXJ
-	 rIr8X6LuXhxJlVns9H4H6IA5Yg36i4pRKgTfoucpFwLMNeMNnMeLreyco7an09B3u9
-	 rfhxJkGCiMoke9R6bgme18WLrCcMsaEWsFkswpg57eBagaDLhAXDbH9yw6n/MB9hPB
-	 lERXt/nw2rSRw==
+	b=DDCfqAuMpAvJR6nkUUhZf89mM1BONa18Y5/pdPFH0emmX82uRqpyQ9+ZmlqJkghju
+	 ta7N5XwLHyolV0bo2XS4L+7DkF05V8anBdsv4Sujc63ihkhZ3MQKdGBacbDBWgeYP/
+	 rJhOSpw5INaE80EM4e65GodeK0xai0Uu2g7vJDG+siIRh9krVTP1mNIY69Trp16/py
+	 WNhid2vHrUxtNk0mtcPqy5mll76lBnFPevj6goe1tVVJ9jD1vcbzFSVb9pc1n7vVTP
+	 vpO3+gmhHirv42ZJcCbYQ1tD+gXQCzYw4CMptn7ss3y22B3kmIgiVNYiZTcUwz6E+p
+	 V2hs7jwvG67Xw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF536E6BF20;
-	Fri, 30 Jan 2026 15:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD626E6BF1F;
+	Fri, 30 Jan 2026 16:10:33 +0000 (UTC)
 From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Date: Fri, 30 Jan 2026 16:38:47 +0100
-Subject: [PATCH] iio: imu: inv_icm42600: fix odr switch to the same value
+Date: Fri, 30 Jan 2026 17:10:23 +0100
+Subject: [PATCH] iio: imu: inv_icm42600: fix odr switch when turning buffer
+ off
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,26 +40,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260130-inv-icm42600-fix-odr-change-v1-1-347a03a57fa1@tdk.com>
-X-B4-Tracking: v=1; b=H4sIAIbQfGkC/y3MSwqAMAwA0atI1gb6Q9CriAu1UbOwlRaKULy7Q
- Vw+GKZCpsSUYWgqJCqcOQaBbhtYjznshOzFYJTplLYKORTk9XRChRvfGH3CP+0NuU0vnpzVIIc
- rkRTffZye5wVAScWLbQAAAA==
-X-Change-ID: 20260130-inv-icm42600-fix-odr-change-92e4f1bde431
+Message-Id: <20260130-inv-icm42600-fix-odr-change-when-turning-buffer-off-v1-1-f76fc3604bdc@tdk.com>
+X-B4-Tracking: v=1; b=H4sIAO7XfGkC/y3NzQqDMAwH8FeRnBeoVpTtVcYOtiaaw9KRTh2I7
+ 74iHn/w/9ghkwlleFQ7GK2SJWlBfasgzoNOhDIWQ+OaztXeoeiKEt9toUOWH6bR8IpuMyl+F1P
+ RCcPCTIaJGX0YfMf9vY2hh7L8MSrN8/X5Oo4/C1dNn4UAAAA=
+X-Change-ID: 20260130-inv-icm42600-fix-odr-change-when-turning-buffer-off-3ba36f794cb7
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
-Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>, 
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, 
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
  stable@vger.kernel.org
 X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1769787537; l=2088;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1769789432; l=1938;
  i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=rFQH6wdMXA8+FMQIBC/54JO8ilgcnHM/BrtDPx5h0/I=;
- b=EGAnytWi+eEGCX/Rq8LlqGxsO1BaSuO5nPpnqPMeEIYUH+ECk/7ptVeJpA58dvB4B6wHh2hYK
- p3BOUUpf/rXCBzfZtxlYUknVBw8p6piQ2na0IwiDZ1HBUYkFY1pPYd1
+ bh=V+V88fAK8S3LRNlRrvLoACHqnirAnUGI3yB4cFHD2YQ=;
+ b=g1bZqJfpCPrJ6Njn9UJDzPM2DEnt6LVrFBiX/gWCn7lkV8DGRDW3D+/hYBGwzdGCiIHQzx6oV
+ hLdoOSwSX6gBQ0waVHQe8B54J3gyCAmt5WQX/UWURwo/IEMsl/Fc+cs
 X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
  pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
 X-Endpoint-Received: by B4 Relay for
@@ -70,50 +71,45 @@ From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
 ODR switch is done in 2 steps when FIFO is on : change the ODR register
 value and acknowledge change when reading the FIFO ODR change flag.
-When we are switching to the same odr value, we end up waiting for a
-FIFO ODR flag that is never happening.
+When we are switching odr and turning buffer off just afterward, we are
+losing the FIFO ODR change flag and ODR switch is blocked.
 
-Fix the issue by doing nothing and exiting properly when we are
-switching to the same ODR value.
+Fix the issue by force applying any waiting ODR change when turning
+buffer off.
 
 Fixes: ec74ae9fd37c ("iio: imu: inv_icm42600: add accurate timestamping")
 Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 Cc: stable@vger.kernel.org
 ---
- drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c | 2 ++
- drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 2 ++
- 2 files changed, 4 insertions(+)
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-index 54760d8f92a279334338fd09e3ab74b2d939a46d..0ab6eddf0543feeb51170271d766a732d1e45544 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
-@@ -651,6 +651,8 @@ static int inv_icm42600_accel_write_odr(struct iio_dev *indio_dev,
- 		return -EINVAL;
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+index ada968be954d480a2022bc8aa6918f32e5e543f7..68a395758031884792781d6eee748d273a86a22e 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+@@ -371,6 +371,8 @@ static int inv_icm42600_buffer_predisable(struct iio_dev *indio_dev)
+ static int inv_icm42600_buffer_postdisable(struct iio_dev *indio_dev)
+ {
+ 	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
++	struct inv_icm42600_sensor_state *sensor_st = iio_priv(indio_dev);
++	struct inv_sensors_timestamp *ts = &sensor_st->ts;
+ 	struct device *dev = regmap_get_device(st->map);
+ 	unsigned int sensor;
+ 	unsigned int *watermark;
+@@ -392,6 +394,8 @@ static int inv_icm42600_buffer_postdisable(struct iio_dev *indio_dev)
  
- 	conf.odr = inv_icm42600_accel_odr_conv[idx / 2];
-+	if (conf.odr == st->conf.accel.odr)
-+		return 0;
- 
- 	pm_runtime_get_sync(dev);
  	mutex_lock(&st->lock);
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-index 7ef0a25ec74f6b005ca6e86058d67d0be67327df..11339ddf1da36c85e56de6c4a95486713cbd182a 100644
---- a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-@@ -358,6 +358,8 @@ static int inv_icm42600_gyro_write_odr(struct iio_dev *indio_dev,
- 		return -EINVAL;
  
- 	conf.odr = inv_icm42600_gyro_odr_conv[idx / 2];
-+	if (conf.odr == st->conf.gyro.odr)
-+		return 0;
- 
- 	pm_runtime_get_sync(dev);
- 	mutex_lock(&st->lock);
++	inv_sensors_timestamp_apply_odr(ts, 0, 0, 0);
++
+ 	ret = inv_icm42600_buffer_set_fifo_en(st, st->fifo.en & ~sensor);
+ 	if (ret)
+ 		goto out_unlock;
 
 ---
 base-commit: 62b44ebc1f2c71db3ca2d4737c52e433f6f03038
-change-id: 20260130-inv-icm42600-fix-odr-change-92e4f1bde431
+change-id: 20260130-inv-icm42600-fix-odr-change-when-turning-buffer-off-3ba36f794cb7
 
 Best regards,
 -- 
