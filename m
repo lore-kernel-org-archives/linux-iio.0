@@ -1,132 +1,265 @@
-Received: from skycaves.subdimension.ro (skycaves.subdimension.ro [157.180.79.17])
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E51D3368291;
-	Fri, 30 Jan 2026 11:52:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=157.180.79.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2A8336E479
+	for <linux-iio@vger.kernel.org>; Fri, 30 Jan 2026 11:54:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769773943; cv=none; b=BjvLrFKm1mrGMYNKjZhpN9gY+j8IpN4gTE3SLd2voRq6jzcC8B7n9KCw4yZ2Tjf/SmV8dX8eeWmtwtvHgDWfbtKxDQxEl2NdXEoib9LVvYuO/PWu3IpuQ1FO87A9bOu37gYZLqT5QCfoxdTxjqT+hhtqM3zAP/x3LwfI7priniA=
+	t=1769774079; cv=none; b=cYpqQ/Pf+sjB/uH6Ii4mi+uEqWvmPouc+O2vvFm1YYEsZxrOXc5l9Fw2R7e3EReNFPMQhpJZY1VyRzMNv/Q3GPYFFZoNxsRruD4WeklVSc/Yf+O8jVDpZA9WGvgO8FpQiEkW7C2EiiyQEuNdhRUfmyU6R2wV/HbhhHyXihKN7+o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769773943; c=relaxed/simple;
-	bh=5ORs/MhtBZU2bRCi/4A3n8dzgwjRGsW9J/7WVyXKG3c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OrPFOI1/kT1A/ZCf0AIePM9QRvonjUu9iy4TjpsuJ/rHt9yhhv9MIJqJC52Sc0eGSu8uw3EjyAysDdtY812S0RA/hSSyPdlQZpbbknrmNJ+QTcf4ymcQerGl7vbf1iJhKEfjU+EAVyBWUx6sZK0IeuTacEOFZoEQvPJhcpNxPR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; arc=none smtp.client-ip=157.180.79.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
-Received: from sunspire.home.arpa (unknown [IPv6:2a02:2f0e:3d08:a700:e2d5:5eff:fed9:f1c4])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by skycaves.subdimension.ro (Postfix) with ESMTPSA id 3AEE96546D;
-	Fri, 30 Jan 2026 13:46:20 +0200 (EET)
-Date: Fri, 30 Jan 2026 13:46:17 +0200
-From: Petre Rodan <petre.rodan@subdimension.ro>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno S?? <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: pressure: hsc030pa: Improve i2c_transfer return
- value handling
-Message-ID: <aXyaCTZfJ8WC-rcq@sunspire.home.arpa>
-References: <20260129181452.57628-1-antoniu.miclaus@analog.com>
+	s=arc-20240116; t=1769774079; c=relaxed/simple;
+	bh=9nJeV5otfxhvyVk/o3mAdnETeHwPKzjbL0aq17GpJ1Q=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tUblrANv5/ZgUEipybFWemAZCde2ktZoyArccGa8CI0MolvbgyiND2Om/SVv5suDMPCNlhN07gvmoNcji5mq9UdyecFUqYQFnLHAYzjp1/mYheWw/GFq4JoiszWvumzToVvuPxGwjmYcaYabQsIHoW88TkLppN93NOH3a6GoG44=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=a8hjxkTy; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=hRkHk0sq; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="a8hjxkTy";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="hRkHk0sq"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60UAnMf52992828
+	for <linux-iio@vger.kernel.org>; Fri, 30 Jan 2026 11:54:36 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=qcppdkim1; bh=6DxR+POmIz59mgQ++mArmaUuOtuww7k8jS+
+	8SDgDEck=; b=a8hjxkTya+8mNNpjlQ1oxD0hJ/NrAzaZrN4Fi199xmQV8UM5LiQ
+	mQv1DuH7zPTubvQLisvTwxleZJvDp2ANYvAC5ELHuM8JvimNp9wgbS1aoBdNWnAz
+	TS5THZRUOaYs4EAg9SmOYS5FPcl6pYR1HpSuJZyM0Opr0eTcIcVoxbfwHy69+Vjy
+	h6eM54Yx3fDOo6XF5aVaV5q3jxt5Z+TPHgagCXqZc7/PdF3QXI5U8GEu+hv34grS
+	bMbhrmCa3nZbuddl17Gw6DPmhbBfoH0N37+o3pzr2wigl+l9FBdl2E1vCojuTfEn
+	+zNRXPpRVvnPXltLZU5JX7sJhJUcP0EzWWA==
+Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4c0db1jp47-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Fri, 30 Jan 2026 11:54:36 +0000 (GMT)
+Received: by mail-pj1-f71.google.com with SMTP id 98e67ed59e1d1-34ab8693a2cso4239573a91.0
+        for <linux-iio@vger.kernel.org>; Fri, 30 Jan 2026 03:54:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=oss.qualcomm.com; s=google; t=1769774075; x=1770378875; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=6DxR+POmIz59mgQ++mArmaUuOtuww7k8jS+8SDgDEck=;
+        b=hRkHk0sqsV0prqkY9qNfn2eM8BinGAaRlSmMrjTT2kj6eMZIrTPwR5sbMDChPRe29K
+         Zjr00cHEk4pw2jLTXMKOLUYY8bgI1w5Z+SFLxxQUFIgZibkMHN/239KXBVGTP0Bn82JX
+         IKTtlmLBxH+iVULKGIwjaxuEqtzqxwHV1W/d9Tks2QxACzcLGAOaVkfsg/9aW6S2Z3KZ
+         ZTjOR2WWsrvsCfzFikdUxARmwK0UfaZY14GQoc8GnIfxmn83RlxU2Z30IoVk+7ckvcBT
+         ixQMjGznt4t+78IXlM/oH0qXo3Zb3035MwHn/ikxrIb3VN2f+01Hb6HvPaI+hSk/+f/V
+         O3Fw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769774075; x=1770378875;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=6DxR+POmIz59mgQ++mArmaUuOtuww7k8jS+8SDgDEck=;
+        b=wjv99qeCpmAIcMOQGKskJZb6kORlBbkSfji09dmVWEOwZWoKAI8VkIfIV7BukmrWmA
+         ELjUD/vnNuhDECejBGyjEhxbDkqo3ORjZGIbF16w6LnHLzSghyt0vxVy0LJUcByNwh1Q
+         YV8RiH+/gWz46H5gbMr+dPfMj8IWn8TDQJu8gKrDUbMGOaqODnx0fle4i3MHYjV9t7ur
+         0sE6FD3y+KDMnnYNwJIYqpU0F3GVHYJ9aCoGPw30yYQtNAK170P8CsBmSFwvXbEypLeV
+         U9FvYlpEUdL80WvUGGsNyicDFm9OvFUFgAmZkFsrQMsa56XuP/U6nCtcxUJHzvWRJgrA
+         yJPg==
+X-Forwarded-Encrypted: i=1; AJvYcCVSvrNVk7Ruet/p3Mx7XIohQH4H8dt4yOW+2sdt9oYGioBsgCikLvHdV8ct9pq78OD01YOhSNz7UPg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzuWv5aQsEMUnhTN47qkeZZPvQWvz0thfxR468kRBTqw/QFsIN9
+	oXXDb3AW95pSIa0u8zjnKW6XmzFqnVj3GkDt50/GQ9RmqpdxHTBqIClNOOshqYlUUlEmLyPAu9W
+	2CzcYA6jDUXCjt3gBTHrOkKSVEnA3DNUto8kC7umE3MDVsUhibT/lKxCOJ9XxtZQ=
+X-Gm-Gg: AZuq6aIvchIIDLI2JtdYSPHQnPMWbUGUY+Ix5IbTBMO972Ap/lDGCCKeATRu/cUdzdS
+	IjNUTq4roBFrnRg+kLLvuvawUw4J383QSRVG+kXC/rImBhss59A7gM3F6PBKg1GsGMneP6DuZjO
+	ZBnBMdwgqjkuPDZQpiUTLlii9h84qNv4ivXNy3mlRx6OXGtZ3j+eTNgcPCEqXOVOYvsKNJ6E5MQ
+	4ea0gsWDbvj2uPj/QRNiABGjTZy46HDEd85UiocFJ+xzUQea5olGCCZd1MQ4p4zhvwW6o6aNWP4
+	d4QAxx0CLDX3xpNwNVE8zNEbA/lSfyea3nNxrQQBkTbb/8FcwP2zem05kz4IOuk8tcYDBoEd3Ck
+	n4mOq4vOW/DasQnsyzm9abhiqdnBD12qSOjkPjhZL2p34
+X-Received: by 2002:a17:90b:2e47:b0:34a:b8fc:f1d8 with SMTP id 98e67ed59e1d1-3543b3e3a6amr2950595a91.37.1769774075317;
+        Fri, 30 Jan 2026 03:54:35 -0800 (PST)
+X-Received: by 2002:a17:90b:2e47:b0:34a:b8fc:f1d8 with SMTP id 98e67ed59e1d1-3543b3e3a6amr2950553a91.37.1769774074844;
+        Fri, 30 Jan 2026 03:54:34 -0800 (PST)
+Received: from hu-jprakash-hyd.qualcomm.com ([202.46.22.19])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3540f2f24ccsm10431278a91.8.2026.01.30.03.54.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 30 Jan 2026 03:54:34 -0800 (PST)
+From: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+To: jic23@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+        agross@kernel.org, andersson@kernel.org, lumag@kernel.org,
+        dmitry.baryshkov@oss.qualcomm.com, konradybcio@kernel.org,
+        daniel.lezcano@linaro.org, sboyd@kernel.org, amitk@kernel.org,
+        thara.gopinath@gmail.com, lee@kernel.org, rafael@kernel.org,
+        subbaraman.narayanamurthy@oss.qualcomm.com,
+        david.collins@oss.qualcomm.com, anjelique.melendez@oss.qualcomm.com,
+        kamal.wadhwa@oss.qualcomm.com
+Cc: rui.zhang@intel.com, lukasz.luba@arm.com, devicetree@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        cros-qcom-dts-watchers@chromium.org, jishnu.prakash@oss.qualcomm.com,
+        quic_kotarake@quicinc.com, neil.armstrong@linaro.org,
+        stephan.gerhold@linaro.org
+Subject: [PATCH V10 0/4] Add support for QCOM SPMI PMIC5 Gen3 ADC
+Date: Fri, 30 Jan 2026 17:24:17 +0530
+Message-Id: <20260130115421.2197892-1-jishnu.prakash@oss.qualcomm.com>
+X-Mailer: git-send-email 2.25.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="FxrO91ofccmuop7h"
-Content-Disposition: inline
-In-Reply-To: <20260129181452.57628-1-antoniu.miclaus@analog.com>
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-ORIG-GUID: kkkYOfrzC8Olhfovhlha3nU6rGwjuUmg
+X-Proofpoint-GUID: kkkYOfrzC8Olhfovhlha3nU6rGwjuUmg
+X-Authority-Analysis: v=2.4 cv=VMTQXtPX c=1 sm=1 tr=0 ts=697c9bfc cx=c_pps
+ a=UNFcQwm+pnOIJct1K4W+Mw==:117 a=fChuTYTh2wq5r3m49p7fHw==:17
+ a=vUbySO9Y5rIA:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=VwQbUJbxAAAA:8 a=EUspDBNiAAAA:8 a=COk6AnOGAAAA:8 a=XccleKrqIk_kMzO7r2MA:9
+ a=uKXjsCUrEbL0IQVhDsJ9:22 a=TjNXssC_j7lpFel5tvFf:22
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTMwMDA5NyBTYWx0ZWRfXxZbeTqRV15np
+ NQAnsebATCjxT7PGnjXC+rgy6yQrkSiEBxDcFnQZAtyvHY/sDF8Z8rMcI6oJUfdELB/hPBUdxdf
+ jbeounKiREAfhocFJkErc3LhPuSl+AWVdUmITUhy/CFT02GQPpiaxe0WARjFzzEQC0MRvLTwFUA
+ pMD5YH1x0xL4igNrmL/0JfRGL6SWDqKX42LpliTPgmP++n/ck+mBYMSCo6VWwCL0Ly0i8DwgeNA
+ +UNtBHc5gr62zZ7U/IM/9o2CiO82sJG/x1CDeWq+XUDiZ556TpQ4QjB4u3SKOBoUohLGCzUSlSt
+ 9By5R7ZsxsTd1MbjgaQyq0u6tvqBo/qwDdQb4/q4KaK6zPmKmddr+2N0unp1480gu9koVDw+F6u
+ i9ucQg9AF2dv2zBbbUOurEYHar9ZRvp3oS1q4/kLQLSLQnGUKfyKq9Gw92dCuj9cHfG909S5mCs
+ ZKKAGfWbcMiJ3dS8uBA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-01-30_01,2026-01-29_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 priorityscore=1501 bulkscore=0 lowpriorityscore=0
+ impostorscore=0 adultscore=0 phishscore=0 suspectscore=0 spamscore=0
+ malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
+ definitions=main-2601300097
+
+PMIC5 Gen3 has a similar ADC architecture to that on PMIC5 Gen2,
+with all SW communication to ADC going through PMK8550 which
+communicates with other PMICs through PBS. The major difference is
+that the register interface used here is that of an SDAM present on
+PMK8550, rather than a dedicated ADC peripheral. There may be more than one
+SDAM used for ADC5 Gen3. Each ADC SDAM has eight channels, each of which may
+be used for either immediate reads (same functionality as previous PMIC5 and
+PMIC5 Gen2 ADC peripherals) or recurring measurements (same as PMIC5 and PMIC5
+Gen2 ADC_TM functionality). In this case, we have VADC and ADC_TM functionality
+combined into the same module.
+
+Patch 1 splits out the common ADC channel properties used on older
+VADC devices, which would also be reused on ADC5 Gen3, into a common 
+binding file, to be referenced in Gen3 and other ADC binding files.
+
+Patch 2 adds bindings for ADC5 Gen3 peripheral.
+
+Patch 3 adds the main driver for ADC5 Gen3.
+
+Patch 4 adds the auxiliary thermal driver which supports the ADC_TM
+functionality of ADC5 Gen3.
+
+Changes since v9:
+- In patch 4, replaced the break statement within scoped_guard() in tm_handler_work()
+  with return statement to fix the error reported by kernel test robot.
+
+Changes since v8:
+- Collected Reviewed-by tag from Krzysztof on patch 2.
+- Dropped the common module (drivers/iio/adc/qcom-adc5-gen3-common.c) as suggested
+  by Dmitry.
+- Made changes in patches 3 and 4 to simplify auxiliary device structure to use
+  module_auxiliary_driver() as requested by Dmitry.
+- Updated header files included in all newly added files to follow IWYU
+  (include-what-you-use) principles as requested by Jonathan.
+- Addressed all remaining comments from Jonathan in patches 3 and 4, for
+  refactoring some code.
+- More details about all changes are present in per-patch change logs.
+- Link to v8: https://lore.kernel.org/all/20251127134036.209905-1-jishnu.prakash@oss.qualcomm.com/
+
+Changes since v7:
+- Based on a discussion with Krzysztof concluded here: 
+  https://lore.kernel.org/all/d10e2eea-4b86-4e1a-b7a0-54c55907a605@oss.qualcomm.com/,
+  patch 1 in the previous series is updated to move ADC header files from binding to
+  devicetree folders, as they contain HW constants, not exactly bindings.
+  Earlier in series v7, patches 3 (Gen3 binding) and 4 (driver) were dependent on
+  patch 1, as it updated the location of include/dt-bindings/iio/qcom,spmi-vadc.h,
+  which was used in patches 3 and 4 for Gen3 channel macros. In v8, these macros
+  will be added in other new files, so the former patch 1 will now be a standalone
+  change separate from this series, as the other patches here are no longer
+  dependent on it.
+- Patches 2/3/4/5 of v7 are now patches 1/2/3/4 in v8. Below comments refer to
+  v7 patch numbers.
+- Updated description of `reg` property in patch 2 to completely drop mentions of binding
+  file paths, to simplify it and avoid any dependencies with patch 1.
+- Dropped all ADC channel macro definitions from patch 3, updated binding example
+  correspondingly and fixed formatting inconsistancies in property names, to address
+  Krzysztof's comments.
+- Addressed all comments from Jonathan in driver patches 4 and 5, for fixing formatting
+  and refactoring some code.
+- In patch 4, added ADC5 Gen3 channel macros in qcom-adc5-gen3-common.h, for use in main
+  driver file. Also added a check to fail probe in case ADC channel value obtained
+  from devicetree is not among list of supported channels.
+- More details about all changes are present in per-patch change logs.
+- Link to v7: https://lore.kernel.org/all/20250826083657.4005727-1-jishnu.prakash@oss.qualcomm.com/
+
+Changes since v6:
+- Collected Acked-by tags from Jonathan on patches 1, 2 and 3.
+- Addressed Neil's comment in patch 3.
+- Updated copyright to yearless one in newly added files, following new internal guidelines.
+- Addressed all comments from Jonathan on patches 4 and 5 (most importantly for updating
+  auxiliary device cleanup handling to fix memory freeing issues).
+- More details about all changes are present in per-patch change logs.
+- Link to v6: https://lore.kernel.org/all/20250509110959.3384306-1-jishnu.prakash@oss.qualcomm.com/
+
+Changes since v5:
+- Collected Reviewed-by tag from Krzysztof on patch 2.
+- Addressed all comments from Krzysztof and Jonathan on patch 3.
+- Addressed all comments from Jonathan on patches 4 and 5.
+- More details about all changes are present in per-patch change logs.
+- Link to v5: https://lore.kernel.org/all/20250131183242.3653595-1-jishnu.prakash@oss.qualcomm.com/
+
+Changes since v4:
+- Split common ADC channel properties out into a separate file to use as 
+  ref for ADC5 Gen3 and moved ADC5 Gen3 documentation into a separate
+  file as suggested by reviewers.
+- Addressed few reviewer comments in driver patches.
+- Link to v4: https://lore.kernel.org/all/20241030185854.4015348-1-quic_jprakash@quicinc.com/
+
+Changes since v3:
+- Updated files affected by adc file path change in /arch/arm folder,
+  which were missed earlier.
+- Added ADC5 Gen3 documentation changes in existing qcom,spmi-vadc.yaml file
+  instead of adding separate file and addressed reviewer comments for all bindings.
+- Addressed review comments in driver patch. Split out TM functionality into
+  auxiliary driver in separate patch and added required changes in main driver, as
+  suggested by Dmitry.
+- Link to v3: https://lore.kernel.org/all/20231231171237.3322376-1-quic_jprakash@quicinc.com/
+
+Changes since v2:
+- Reordered patches to keep cleanup change for ADC files first.
+- Moved ADC5 Gen3 documentation into a separate file
+
+Changes since v1:
+- Dropped patches 1-5 for changing 'ADC7' peripheral name to 'ADC5 Gen2'.
+- Addressed reviewer comments for binding and driver patches for ADC5 Gen3.
+- Combined patches 8-11 into a single patch as requested by reviewers to make
+  the change clearer and made all fixes required in same patch.
+
+Jishnu Prakash (4):
+  dt-bindings: iio: adc: Split out QCOM VADC channel properties
+  dt-bindings: iio: adc: Add support for QCOM PMIC5 Gen3 ADC
+  iio: adc: Add support for QCOM PMIC5 Gen3 ADC
+  thermal: qcom: add support for PMIC5 Gen3 ADC thermal monitoring
+
+ .../bindings/iio/adc/qcom,spmi-adc5-gen3.yaml | 151 +++
+ .../iio/adc/qcom,spmi-vadc-common.yaml        |  84 ++
+ .../bindings/iio/adc/qcom,spmi-vadc.yaml      |  78 +-
+ .../bindings/mfd/qcom,spmi-pmic.yaml          |   1 +
+ drivers/iio/adc/Kconfig                       |  26 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/qcom-spmi-adc5-gen3.c         | 860 ++++++++++++++++++
+ drivers/thermal/qcom/Kconfig                  |   9 +
+ drivers/thermal/qcom/Makefile                 |   1 +
+ drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c | 512 +++++++++++
+ include/linux/iio/adc/qcom-adc5-gen3-common.h | 211 +++++
+ 11 files changed, 1860 insertions(+), 74 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-adc5-gen3.yaml
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc-common.yaml
+ create mode 100644 drivers/iio/adc/qcom-spmi-adc5-gen3.c
+ create mode 100644 drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c
+ create mode 100644 include/linux/iio/adc/qcom-adc5-gen3-common.h
 
 
---FxrO91ofccmuop7h
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+base-commit: 63804fed149a6750ffd28610c5c1c98cce6bd377
+-- 
+2.25.1
 
-
-Hello Antoniu,
-
-On Thu, Jan 29, 2026 at 08:14:52PM +0200, Antoniu Miclaus wrote:
-> The i2c_transfer() function returns the number of messages
-> successfully transferred. The function sends 1 message but checks
-> for ret =3D=3D 2, which can never be true.
->=20
-> In practice this has no impact since the caller checks ret < 0,
-> and the erroneous return value of 1 is not treated as an error.
->=20
-> Improve the return value handling to properly distinguish between
-> I2C errors and unexpected transfer counts.
-
-thank you for the patch, much appreciated.
-
-Tested-by: Petre Rodan <petre.rodan@subdimension.ro>
-
-best regards,
-peter
-
->=20
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
-> v2:
->  - Changed subject from 'Fix' to 'Improve'
->  - Clarified that the bug has no practical impact
->  - Used explicit if/return pattern instead of ternary
->  - Dropped Fixes tag
->=20
->  drivers/iio/pressure/hsc030pa_i2c.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iio/pressure/hsc030pa_i2c.c b/drivers/iio/pressure/h=
-sc030pa_i2c.c
-> index a34ef4653f34..3500bda03d75 100644
-> --- a/drivers/iio/pressure/hsc030pa_i2c.c
-> +++ b/drivers/iio/pressure/hsc030pa_i2c.c
-> @@ -34,8 +34,13 @@ static int hsc_i2c_recv(struct hsc_data *data)
->  	msg.buf =3D data->buffer;
-> =20
->  	ret =3D i2c_transfer(client->adapter, &msg, 1);
-> +	if (ret < 0)
-> +		return ret;
-> =20
-> -	return (ret =3D=3D 2) ? 0 : ret;
-> +	if (ret !=3D 1)
-> +		return -EIO;
-> +
-> +	return 0;
->  }
-> =20
->  static int hsc_i2c_probe(struct i2c_client *client)
-> --=20
-> 2.43.0
->=20
-
---=20
-petre rodan
-
---FxrO91ofccmuop7h
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCgA5FiEEGiKYHD4NvFCkTqJ3dCsnp2M6SWMFAml8mgIbFIAAAAAABAAO
-bWFudTIsMi41KzEuMTEsMiwyAAoJEHQrJ6djOkljlAwP/RpqaY2rFHB8d3hR463A
-8xGKYGtgoXZxHBB9mhq0sKsg5/8Orh5+a/7PYig4Ksu9RBHODSiV0/p7hra2Zp8Z
-JhMh4HwqqnoXNJ9AqFY+WxsHhb4cmz9Tu8Bz+8VKt7lE0dfgoP1gtxiooKLh9PIg
-1HWpAu9x7MTmtCSR52eH+/qNsPsPb+j1rKPh/CZbQDSziz3GPVgsl2HzuFX2Gfbq
-1BlhaGGwbnPckgnNzUVVbMvlrgjyUNrp370mtZmJj1W4SZjX3nsdC2U8YkHmxyjA
-ceX4N92qwnVZJCQW9iYLi8bh6YJEpx1TnsmONCJMCG9pZesZHYXNoNtBaVxabh9o
-1BMKZHXPgGvDpdbtBGG4QqFSLjiuMWM1sC4JybhPjvm5nTayViUASHXgRhCupJ36
-nOW4t9geCZhn6VSIARVCKw+tTuBo21rz4GNw+Xs+jGoNZ1rqhK2Gh6XFPQPFtUW8
-AQNxWJBDiDGl2RJvNG93ND2BzDwt9x+gMtB8nKXQcoc2ZRFzf5x+wBBZ7xqi26tC
-cl427GRNp3mKEDhNGDyVH8IDlwNJardok0yYxeuRNshDwCKBF/TcotqPKIVVGM3T
-p3tRjquyPkhAmDnNb0LD+0hLseRxezDbWAddoYl6IQjz0z7J4ekVjFzRxbkwP6uD
-nKnJL2QrmPqd6+qjeSqTcmVx
-=hIqm
------END PGP SIGNATURE-----
-
---FxrO91ofccmuop7h--
