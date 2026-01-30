@@ -1,82 +1,63 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDC592DFF19
-	for <linux-iio@vger.kernel.org>; Fri, 30 Jan 2026 19:35:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 241272737F2;
+	Fri, 30 Jan 2026 21:43:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769801715; cv=none; b=DcvxmFgTvE/bvpmAKOpstSBEULWuNBoylX4EJDxbOcZkXbUkSNzo1JHOA3bXfVpTuxTj9djhFKDKyQzOUsw7kBRP+2/Ve4xqbgjf6GiSQKFxtvnIOA0hyR9Mkq1XWyvGv6LdmL3+GM7BxbNxm5CknQtCI6ekbruTahRHztd39Bs=
+	t=1769809418; cv=none; b=LgiMIoX0B4gnRwI5w7+/93KLDbZNDXs8Ix4n3OGdUKLYpD4Iv6UiqcDLu8LaBmQFEg9+wDy56WU5BJsQgAU5xEO6U7tSUxVMLHpPdVkreyviskKwu3Ouqg5z3MU/QrpTUxSkDjGLJyRhtOjvjzlFPATJj50uEdF//Z/PItmGaQw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769801715; c=relaxed/simple;
-	bh=YtPdTuWX7+Eu4QBGhtaUia2wJN2UIOd1S5Vv2sfiY7o=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=VznvGGcqufHCkZFWtz7EWLNeU795bGO9GRs+jR0KHpaa7Xm4KTpQj1uJzdcxA7Roz9WQ8n6CdQ8b2BD2SuRXQ3nfT1Ck/Md27Zr9bjg0LxlrGehA4Qw8hWmmNq5DUcCJxLw7052LIDXDSF+yZ79osHelqwOUPNnvQzoFs/86t74=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SYkIMnRZ; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1769809418; c=relaxed/simple;
+	bh=s1duCevx9ED8cwFST775ZmvAyciLKSI/4LpNZCByZU0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RzoZrMAoqQ862Ga3tw2PV2vyZR01KJ+GH74GwwBqdBUZR/DlyxBE0KXiqxmgiHNUJxGF0qOg5H4RLdTSLnRvi781xffK4hH0Ga5sHT7W7p3QA7VIv4SLaMu69CzfDsffyc0kGNTwMPIK2MVm+vG81+Lmb3gXIR4NBVokVgtdVzc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=nQaCULKs; arc=none smtp.client-ip=205.220.165.32
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SYkIMnRZ"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4806bf39419so22102425e9.1
-        for <linux-iio@vger.kernel.org>; Fri, 30 Jan 2026 11:35:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769801712; x=1770406512; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YtPdTuWX7+Eu4QBGhtaUia2wJN2UIOd1S5Vv2sfiY7o=;
-        b=SYkIMnRZU41qkdY5TPm6K7gH2Bib9R+99H4ORYhIlq/P92WnaERWNBnJB8164hzitO
-         wA93u4FW7Z4kiwum21EE+sKo59zx17nINKn3PGtflBwdFNqSoKIBT9eN+CJOtGB1TYDE
-         fU/Xmgt6fVTo7Bn+TJqWHzQKExn2wU5WTWrNhIy9DyTTsXv4GeF3A9p164zYL6L/mTX+
-         Fo6bw0dhyY0nIYLUDeMXdvf2QSsoFYkzJTv/zAHgKf88iBtmsQU/bMw5BoijJcSc07Jt
-         ujVaYDZnNsKPN40isYi4AxPaLisUd+8pc8pxlCd9EsyvcpYAyQmfBGT6B5ZZYvy00vOc
-         lZTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769801712; x=1770406512;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=YtPdTuWX7+Eu4QBGhtaUia2wJN2UIOd1S5Vv2sfiY7o=;
-        b=C6lnR0zFE1NGmuTph4MoFMxj+DtSZeIcjWrgQORrcMUnHQrgI5xAgSKsyb45pXjuse
-         qsJIk8v0KFYxLqkJ4gnSkyilZfqdQRVOWfQRyqeo5Z6elhkRlr9AYV6svGm+5SGLKanL
-         tBjWLGEvBR1P5oilqg0ytY9SNclr9ab96ErZ8x2VuV1kczELvZjKaqQV5NMe4uy9BPo2
-         3UKgOYi7s2dBsNw7xNynO/lnFb8Xzpe8HL2g+U1qbDmoL7ffStvpiBwXDsF67sEBymqq
-         hTrzmrR8wVoYrleWXS38XHUMV3Fr3tj9KkQrgdJCbdEVrr0MnnN9EiLxfK8SJgStIVLe
-         WNTw==
-X-Forwarded-Encrypted: i=1; AJvYcCXkVrnHnEDrEYXJizlWX1A/YEdbOemHySrCjjZFJEST29KeuSt01zWOysYHwFxB6gkH5f7OAwGY5wQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyGetOUJs5U9gDcC0H6mn5r6u/GNn+ESirjruUf3DU+koSTnkK/
-	wKlHLp9X+bKAY9P2Bk/oar+Mqb6FMboawu6P0pXZJhc5uQ1KaL20HUKA
-X-Gm-Gg: AZuq6aI5bOG5wz5XN0Ki8wO8qpnewSrQBinSiOK72yIn1ff4WbEwkuLb3BQJJrFIcM5
-	7Rrpv5F9XCc5ATEFMvUYTkyFoRlSDQbpQz0jdB/hIzlW25njlGTlJoLDy4zrPZ9FTbaE+HPtYYJ
-	kqIV0OjSh1Ev0QnRGJRmgGFSC2unSy9JLf8RrIzG3nQMG2xASnA4R6GAEcw9mn8ArrhTXuuEOzP
-	w9HV5RMzje7AHvc/Y7yx91whueLXwXwlsayrr6zvnG3nBSHzKJbtGnuXYKoogspueH/4NsF3P+a
-	np9C5vIY7fMoCKsc2Ih0r5uJGLZRiNQyOpbFr8DpkCjcNVgKRxObHqcuAFYIo/RxhKOezT/tqFa
-	fb1o3YgvEBlCA92VfaVjCdzFQYThAFC2MHAUSttev8Opj0/LGpk/SeQaBUnud3vgzsZoCZLnm50
-	vYMDD5vdgwiO+aoKKkOLREjocmMmLvUAcWRNgTaDFk9WG3LSdAvoIAa2YFNLFz
-X-Received: by 2002:a5d:5d07:0:b0:432:84f0:9683 with SMTP id ffacd0b85a97d-435ea210379mr10922542f8f.24.1769801712112;
-        Fri, 30 Jan 2026 11:35:12 -0800 (PST)
-Received: from DB-VM.1337.ma ([197.230.240.146])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e1323034sm24631728f8f.35.2026.01.30.11.35.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 30 Jan 2026 11:35:11 -0800 (PST)
-From: Taha Ed-Dafili <0rayn.dev@gmail.com>
-To: jic23@kernel.org
-Cc: 0rayn.dev@gmail.com,
-	andy@kernel.org,
-	corbet@lwn.net,
-	dlechner@baylibre.com,
-	linux-doc@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel-mentees-archive@lists.linuxfoundation.org,
-	linux-kernel@vger.kernel.org,
-	me@brighamcampbell.com,
-	nuno.sa@analog.com,
-	skhan@linuxfoundation.org
-Subject: Re: [PATCH] docs: iio: adxl345: Fix typos, units, and grammatical errors
-Date: Fri, 30 Jan 2026 14:35:09 -0500
-Message-ID: <20260130193509.5570-1-0rayn.dev@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260129173337.7fc2a4ad@jic23-huawei>
-References: <20260129173337.7fc2a4ad@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="nQaCULKs"
+Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 60UKDKPV3538474;
+	Fri, 30 Jan 2026 21:43:29 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	:content-transfer-encoding:date:from:message-id:mime-version
+	:subject:to; s=corp-2025-04-25; bh=ZnG6cFf1MkU1zbeE4QVhjFikCIte1
+	JZeHq5RQwlUEgo=; b=nQaCULKsA7vOqFX+73pOFwApMf8MxEpz3uPFZNLQWg6a5
+	c3up8bA+9Q0V2bBrSobHZXwJ/VxBs+ZrDxbsKlf50VRhFwu6wmyrzUJkNXaBH72x
+	VzF0ezaPmYpvUByBTjjBslWndt5BJgKklRJMEbsJ40TPVBYXMnffzfJABKg2W4UK
+	a8ZN0hDGbHiYDgK0UHXOonl76dlojVqm+0tJ9uI+0vevXukhMOBYvlbemxu/UPdj
+	NYZmdMCnYuOUgV9xkG83/jGP1UygrtCRN2DcuTqr2HmskFRgjHFv/LtYUQPqU2an
+	qCajW4wSBeepZGJJPXthtfsJCEdldtGRtTYSbERcA==
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.appoci.oracle.com [130.35.103.27])
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4c10b2reex-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 30 Jan 2026 21:43:29 +0000 (GMT)
+Received: from pps.filterd (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 60UJKVCa036073;
+	Fri, 30 Jan 2026 21:43:28 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4bvmhtg535-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+	Fri, 30 Jan 2026 21:43:28 +0000
+Received: from iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 60ULhRte035490;
+	Fri, 30 Jan 2026 21:43:27 GMT
+Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
+	by iadpaimrmta03.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 4bvmhtg52e-1;
+	Fri, 30 Jan 2026 21:43:27 +0000
+From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+        Andrew Ijano <andrew.ijano@gmail.com>,
+        Gustavo Bastos <gustavobastos@usp.br>,
+        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Cc: kernel-janitors@vger.kernel.org
+Subject: [PATCH next 0/4] IIO: sca3000: devm resource management
+Date: Fri, 30 Jan 2026 13:43:07 -0800
+Message-ID: <20260130214323.236389-1-harshit.m.mogalapalli@oracle.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -84,18 +65,58 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-01-30_03,2026-01-30_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 adultscore=0 bulkscore=0
+ mlxscore=0 mlxlogscore=933 phishscore=0 malwarescore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2601150000
+ definitions=main-2601300178
+X-Proofpoint-GUID: 24OWVxKle8S6t0pyqbVEUZctbceB6oBS
+X-Authority-Analysis: v=2.4 cv=BLK+bVQG c=1 sm=1 tr=0 ts=697d2601 b=1 cx=c_pps
+ a=qoll8+KPOyaMroiJ2sR5sw==:117 a=qoll8+KPOyaMroiJ2sR5sw==:17
+ a=vUbySO9Y5rIA:10 a=VkNPw1HP01LnGYTKEx00:22 a=u4Q87A9SPbUeVB_4iAEA:9 cc=ntf
+ awl=host:12104
+X-Proofpoint-ORIG-GUID: 24OWVxKle8S6t0pyqbVEUZctbceB6oBS
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMTMwMDE3OCBTYWx0ZWRfX9DxeOTGdmxcN
+ q32cXj9VY2iZqnKibdGWmFssZolIdT2DvuScdnaG2KOs09PHELmyaUORssqGnKjAAmy9sp6evKC
+ w9WFyEPibnS72ov337PuZYDDwnjfmBzqBupb1ycA7Ld6P61G5yITW59APFaHDWp58GGpm+fzw3f
+ r6bHVFjD0h2eLu2jq7AahEAs1vxTAR7xbO864e09fMX/oao3GJ6Z3SajX7sR55/mwpcQnJM6l8f
+ sOCj49O06737RzKgxn/8ktURJRGTBBXSy+fCc2JfKvNv0lbAN8uMSbX2hLqMC++XQKmOyPFO8y+
+ boZsOfVEoV2P9tqHy7HqZt2b/+TnqaJxAlXVMYBsShxXRrGEpge8Gvdrh//O05PGXxD7OQldgZ1
+ cbYjSUCKoyerepnAv2zOs+x4kq9TIN3xrNPL5LXZIjQGmkT3Mta1qhR5a7/57CaiR0FvzNbQlQT
+ o3MpIW14ChT8aymd0ePmxw/KxMEaPOGulP17uxpc=
 
-Hi Jonathan,
+Hi,
 
-An audit of adxl345_core.c confirms the documentation scale factor of 0.478899
-is incorrect. The driver's { 0, 4789 } correctly represents 0.004789 m/s^2
-per LSB for the 2g range.
+This is an attempt to update sca3000 accelerometer driver to make use
+of devm_ based helpers where needed. I have split it into 4 patches.
 
-I'll prepare a v2 series to reconcile the driver and documentation
-with the IIO ABI. This will include implementing in_accel_scale for events
-to resolve the threshold unit inconsistencies.
+Patch 1 does some refactoring and simplification.
+Patch 2 switches request_threaded_irq() over to the devm helper.
+Patch 3 converts iio_device_register() to its managed counterpart.
+Patch 4 replaces the remove() callback with devm_add_action_or_reset()
+        while preserving the existing iio_device_unregister() ->
+        disable interrupts sequence. I would welcome an extra look at
+	this patch.
 
-I will send the update once I have implemented
-and compile-tested the changes.
+The series builds cleanly and I have performed static analysis with
+smatch checker and haven't tested on actual hardware.
 
-Best regards, Taha
+Thanks for your time.
+
+Regards,
+Harshit
+
+Harshit Mogalapalli (4):
+  iio: sca3000: cache SPI device ID in probe
+  iio: sca3000: switch IRQ handling to devm helpers
+  iio: sca3000: manage device registration with devm helper
+  iio: sca3000: stop interrupts via devm_add_action_or_reset()
+
+ drivers/iio/accel/sca3000.c | 92 +++++++++++++++++--------------------
+ 1 file changed, 42 insertions(+), 50 deletions(-)
+
+-- 
+2.50.1
+
