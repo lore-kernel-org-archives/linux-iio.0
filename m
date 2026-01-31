@@ -1,43 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58E4D337B9D;
-	Sat, 31 Jan 2026 17:08:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78817239E65;
+	Sat, 31 Jan 2026 17:11:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769879295; cv=none; b=uilP72fAVpkezsSi4m7RR2BXsU1IxXy+L3RzDBmA3lRyfwVXE85AEIp0zM3v4I8I3mOZm/fOF8urTxm7Mh3i5GRkYcFgsjJt37KZLwzLo8wpe8vhvbf/ftE9A7A05lnPDjzcN70ohNIyTKf9gBdPwiXSjoiZF7tSU1gXJcBI5cQ=
+	t=1769879464; cv=none; b=DkrtpOe4uuHcShdjDC7NBWH7GMtOeian5EC5qFHWpGwgxN40ol3iGaluR6c/x1tJRe5z4Sdwx81wjSdtym8YYzsLHlBA3X5f7DjokDFd1Wtg8y6LDO0VY1XE8NvARS9tDgvEGkrU2OESQrOEUVDPv6O1HvlGBgNRP1DbNv4azgU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769879295; c=relaxed/simple;
-	bh=TvzEHX/5j6unP+CqymD6CcBHyV8EzGx4bDP7/EZCfkY=;
+	s=arc-20240116; t=1769879464; c=relaxed/simple;
+	bh=0wbxEMqgrxxmQZZicHWOMx4uuUU4g5CXnAjkLnP92yg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qZHPivER2RkiPQ+tOq9CP+4gmKpL2b2whJmYVMtLosaxjG4cZJKcBRkyN0wm9C8JUqBWtmTvhzQzrZKbGkqkyRHVXY8Y6n0nSiNIaxPaOdLtZWcU4+o0yDuJvbcLnCBKiXUnbM4l+MxalM7zIOan9c8bFNW3HSyVIbs2+Cv3Q8M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QuB3rkJY; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=XZwKfq+NOARfQWlJDkm4yuHIeaTo/5YsNPBM+N/HFjtXAx6OjWmi9REIMV8STIkdx1BSkOWhKAf5EfljANDeHwuiq7COguEB3ynNziknXcwY4XOOgAFhyQHpD5xxMmQcV8YuM3Kn1E/ulzSMKUoVAZwD+SM19lZZT2czkYPf7g8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p69zHsum; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QuB3rkJY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB14EC4CEF1;
-	Sat, 31 Jan 2026 17:08:11 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p69zHsum"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1283EC4CEF1;
+	Sat, 31 Jan 2026 17:10:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769879294;
-	bh=TvzEHX/5j6unP+CqymD6CcBHyV8EzGx4bDP7/EZCfkY=;
+	s=k20201202; t=1769879463;
+	bh=0wbxEMqgrxxmQZZicHWOMx4uuUU4g5CXnAjkLnP92yg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QuB3rkJYCMqrRuFIO/P7r2eykMlQBWpaEZOWZd6FDUXzRuzO8yhhHuQ1vt4cG/0An
-	 vysHnrKI3HWuVBz8bWGKdSSjPWKgMAvC6FlYV6OeZX5rjZa7igUcX2jXCez0YM2WyK
-	 ObvLUyA0A/vNzD7erQVKFPhNvw77hiyuCjo26d27J3z3p6X6PbQnH3V2n6i+sY6KMb
-	 1BBatMdq3JnkpEnP2fRdhXCXzeH81hJbTs5Jmy2fPIEP6Hu03uNUo3ut3exJmBl6Pe
-	 SN9tHrY9MCHD5DUJD6TFIP1raYS5MkdXoaDdv2YpIWHhtbJQOU8U2V30tFiO8Idetg
-	 U8yYka3qL23wA==
-Date: Sat, 31 Jan 2026 17:08:06 +0000
+	b=p69zHsumjjhX6NCCrZXmfUhKzux2IDLSktoma1iARLLQr+sIe6JQwlXujRmaXs2rs
+	 w6+W0WTgD4FRbwsbJLZKD0qvR0VwJ+s3u+yLes7X3aPjZHa9zaGP++CKAyRTPapqTb
+	 II5beglD4YSvSwP4gPY+6zq8EhGkrCyVqitA0uk+ye3x4oy1ZziWX/B9iB2+FNmBoW
+	 xA+vR28J16izTgV/WHLvAhly4tzs942Tm1PYlqr3eI3UqOUh82KuOgnjUm8XCuRnSc
+	 yTX4rOhI3nJ6kUeAqNmuOWLXc6AZrgKd4YPTq+5BzUqgTxTan0FJxmTIZUJDThdZSt
+	 tIlFp9U8A0Gng==
+Date: Sat, 31 Jan 2026 17:10:54 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: frequency: admv4420: return proper error code from
- admv4420_calc_parameters()
-Message-ID: <20260131170806.6fde32a0@jic23-huawei>
-In-Reply-To: <20260130135005.136363-1-antoniu.miclaus@analog.com>
-References: <20260130135005.136363-1-antoniu.miclaus@analog.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Nicolas Ferre
+ <nicolas.ferre@microchip.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ <linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: adc: at91_adc: return proper error code from
+ at91_ts_sample()
+Message-ID: <20260131171054.2b34e357@jic23-huawei>
+In-Reply-To: <20260130135126.136861-1-antoniu.miclaus@analog.com>
+References: <20260130135126.136861-1-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,36 +50,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 30 Jan 2026 15:50:05 +0200
+On Fri, 30 Jan 2026 15:51:22 +0200
 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-> Return -EINVAL instead of -1 when no valid PLL parameters solution is
-> found. Using standard kernel error codes ensures consistency and proper
-> error propagation through the call chain.
+> Return -EIO instead of -1 when xscale or yscale read from hardware
+> registers is zero. Using -EIO since this indicates unexpected data
+> from the hardware rather than an invalid argument.
 > 
 > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Applied to a local branch. I'll need to rebase on something sensible after
-the merge window. For now I'll push out as testing.
+This is a little pointless as nothing actually reads the return value.
+It might be better to either make that clear by changing the return type
+or figure out if it actually is useful for the caller to know this failed.
 
-Thanks
+On it's own this patch gets us very little even though it looks very
+sensible in isolation!
+
+Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/frequency/admv4420.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/adc/at91_adc.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/frequency/admv4420.c b/drivers/iio/frequency/admv4420.c
-> index 3ae462b4f5c9..8748d9747639 100644
-> --- a/drivers/iio/frequency/admv4420.c
-> +++ b/drivers/iio/frequency/admv4420.c
-> @@ -243,7 +243,7 @@ static int admv4420_calc_parameters(struct admv4420_state *st)
->  		st->n_counter.n_counter = 1;
->  	}
->  	if (!sol_found)
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index 920dd9ffd27a..5e8719d5ac01 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -323,7 +323,7 @@ static int at91_ts_sample(struct iio_dev *idev)
+>  	xscale = (reg >> 16) & xyz_mask;
+>  	if (xscale == 0) {
+>  		dev_err(&idev->dev, "Error: xscale == 0!\n");
 > -		return -1;
-> +		return -EINVAL;
+> +		return -EIO;
+>  	}
+>  	x /= xscale;
 >  
->  	st->n_counter.int_val = div_u64_rem(st->n_counter.n_counter, 10, &st->n_counter.frac_val);
->  	st->n_counter.mod_val = 10;
+> @@ -334,7 +334,7 @@ static int at91_ts_sample(struct iio_dev *idev)
+>  	yscale = (reg >> 16) & xyz_mask;
+>  	if (yscale == 0) {
+>  		dev_err(&idev->dev, "Error: yscale == 0!\n");
+> -		return -1;
+> +		return -EIO;
+>  	}
+>  	y /= yscale;
+>  
 
