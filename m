@@ -1,45 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 78817239E65;
-	Sat, 31 Jan 2026 17:11:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1D94A2F7ACA;
+	Sat, 31 Jan 2026 17:12:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769879464; cv=none; b=DkrtpOe4uuHcShdjDC7NBWH7GMtOeian5EC5qFHWpGwgxN40ol3iGaluR6c/x1tJRe5z4Sdwx81wjSdtym8YYzsLHlBA3X5f7DjokDFd1Wtg8y6LDO0VY1XE8NvARS9tDgvEGkrU2OESQrOEUVDPv6O1HvlGBgNRP1DbNv4azgU=
+	t=1769879527; cv=none; b=dPPgmyvZFX6boWv638hwklBQ5gCP5XMuIa6O5YVhfkboyPmFGfNSU975IfJS5GSsUWI7pHnJAVzIjaDPE/Fhf0tJ391QH6oMmu6ZLOSzp0zYwRKOy3gzEABBEub1Hd2+brodcp+cI4lLjioYrq+wI2voWcheR697AtO8zwKe6a4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769879464; c=relaxed/simple;
-	bh=0wbxEMqgrxxmQZZicHWOMx4uuUU4g5CXnAjkLnP92yg=;
+	s=arc-20240116; t=1769879527; c=relaxed/simple;
+	bh=VaEKrnm/XBpapGLqvfrWNcY+dtbEj2x0SCRWbumdbuE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=XZwKfq+NOARfQWlJDkm4yuHIeaTo/5YsNPBM+N/HFjtXAx6OjWmi9REIMV8STIkdx1BSkOWhKAf5EfljANDeHwuiq7COguEB3ynNziknXcwY4XOOgAFhyQHpD5xxMmQcV8YuM3Kn1E/ulzSMKUoVAZwD+SM19lZZT2czkYPf7g8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p69zHsum; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=AKFLx79qakf9/nK9aM5irFFNV/eRAkf/YjvnJ4YBxwCKjjFTgr1vz6Km3smxaR5adL+tlri9FnB+JFPgtOWzVOk9WhUGR/KTG7Xaj6FyWY/JOpbg0YqwG0/xOLCJzCcCuRrRzGLs6FH8ZjzEmCx9k8gfOi263KgMCL79XiyoQQQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=u/nsWHD+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p69zHsum"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1283EC4CEF1;
-	Sat, 31 Jan 2026 17:10:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="u/nsWHD+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F680C4CEF1;
+	Sat, 31 Jan 2026 17:12:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769879463;
-	bh=0wbxEMqgrxxmQZZicHWOMx4uuUU4g5CXnAjkLnP92yg=;
+	s=k20201202; t=1769879526;
+	bh=VaEKrnm/XBpapGLqvfrWNcY+dtbEj2x0SCRWbumdbuE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=p69zHsumjjhX6NCCrZXmfUhKzux2IDLSktoma1iARLLQr+sIe6JQwlXujRmaXs2rs
-	 w6+W0WTgD4FRbwsbJLZKD0qvR0VwJ+s3u+yLes7X3aPjZHa9zaGP++CKAyRTPapqTb
-	 II5beglD4YSvSwP4gPY+6zq8EhGkrCyVqitA0uk+ye3x4oy1ZziWX/B9iB2+FNmBoW
-	 xA+vR28J16izTgV/WHLvAhly4tzs942Tm1PYlqr3eI3UqOUh82KuOgnjUm8XCuRnSc
-	 yTX4rOhI3nJ6kUeAqNmuOWLXc6AZrgKd4YPTq+5BzUqgTxTan0FJxmTIZUJDThdZSt
-	 tIlFp9U8A0Gng==
-Date: Sat, 31 Jan 2026 17:10:54 +0000
+	b=u/nsWHD+s0OUPWxHalyqjQp7CEVdRHDfJyAURVdfjHhfrE58Sfdehob+sUygRGtoK
+	 Bpqw0w3nzDFg/B9/xgXsahBKFeODLNdi4kmUYP0SRsNf6oHvMSEAmfy987nbiipQju
+	 xo4NbaWSQDlJI4kPy5zz8EyPJStypXfrxMVBqEbEDg0ZC1GzI6zcXgrnaQmdp5raMY
+	 bvk1WKBwt50epRuiUMK+tfBz61Q2SZHbhW2dQakpDemmdyty5eWAdGNCaYhIkYmv8b
+	 VkvAu2AR65IF9uYVmDxhEj16jZcB6mjr7Bz5ZaU0rbJ1F/9/qMsAE/kcJpfwVXLkXr
+	 yUN6O71V1MVcQ==
+Date: Sat, 31 Jan 2026 17:11:58 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Nicolas Ferre
- <nicolas.ferre@microchip.com>, Alexandre Belloni
- <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
- <linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: at91_adc: return proper error code from
- at91_ts_sample()
-Message-ID: <20260131171054.2b34e357@jic23-huawei>
-In-Reply-To: <20260130135126.136861-1-antoniu.miclaus@analog.com>
-References: <20260130135126.136861-1-antoniu.miclaus@analog.com>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Waqar Hameed
+ <waqar.hameed@axis.com>, chuguangqing <chuguangqing@inspur.com>,
+ <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: light: ltr501: return proper error code from
+ ltr501_get_gain_index()
+Message-ID: <20260131171158.5c4b93f9@jic23-huawei>
+In-Reply-To: <20260130135241.137353-1-antoniu.miclaus@analog.com>
+References: <20260130135241.137353-1-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,49 +48,34 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 30 Jan 2026 15:51:22 +0200
+On Fri, 30 Jan 2026 15:52:38 +0200
 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-> Return -EIO instead of -1 when xscale or yscale read from hardware
-> registers is zero. Using -EIO since this indicates unexpected data
-> from the hardware rather than an invalid argument.
+> Return -EINVAL instead of -1 when no matching gain value is found
+> in the gain table. Using standard kernel error codes ensures
+> consistency and proper error handling.
 > 
 > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-This is a little pointless as nothing actually reads the return value.
-It might be better to either make that clear by changing the return type
-or figure out if it actually is useful for the caller to know this failed.
-
-On it's own this patch gets us very little even though it looks very
-sensible in isolation!
-
-Thanks,
-
-Jonathan
-
 > ---
->  drivers/iio/adc/at91_adc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iio/light/ltr501.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index 920dd9ffd27a..5e8719d5ac01 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -323,7 +323,7 @@ static int at91_ts_sample(struct iio_dev *idev)
->  	xscale = (reg >> 16) & xyz_mask;
->  	if (xscale == 0) {
->  		dev_err(&idev->dev, "Error: xscale == 0!\n");
-> -		return -1;
-> +		return -EIO;
->  	}
->  	x /= xscale;
+> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> index 022e0693983b..29e93986dea6 100644
+> --- a/drivers/iio/light/ltr501.c
+> +++ b/drivers/iio/light/ltr501.c
+> @@ -754,7 +754,7 @@ static int ltr501_get_gain_index(const struct ltr501_gain *gain, int size,
+>  		if (val == gain[i].scale && val2 == gain[i].uscale)
+>  			return i;
 >  
-> @@ -334,7 +334,7 @@ static int at91_ts_sample(struct iio_dev *idev)
->  	yscale = (reg >> 16) & xyz_mask;
->  	if (yscale == 0) {
->  		dev_err(&idev->dev, "Error: yscale == 0!\n");
-> -		return -1;
-> +		return -EIO;
->  	}
->  	y /= yscale;
+> -	return -1;
+> +	return -EINVAL;
+
+Look at how this is used. What you have here isn't wrong but I'd rather
+we returned the error this function provides than overwrite -EINVAL
+with -EINVAL at the caller.
+
+>  }
 >  
+>  static int __ltr501_write_raw(struct iio_dev *indio_dev,
 
