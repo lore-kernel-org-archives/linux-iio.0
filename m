@@ -1,42 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F1EB2253EE;
-	Sat, 31 Jan 2026 16:41:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 955A32DEA7A;
+	Sat, 31 Jan 2026 16:45:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769877704; cv=none; b=M+kxQn7EZG/zUN5iIckH/HoDz/gvMFbORlywffAjP6Quvd7/cxrusRpPjIgyTrzyBV8wBOkp5xv/GBkYPSnn7e4Zz/rYWC7RG3BvCpmP1XScQ5dDbRzPdDK4trvhIaL+Bo7nidR3BUbgWBZjLQzCiwIXHrGrm77/owaeYXWphGM=
+	t=1769877932; cv=none; b=rNTdHBIJBv2U75L8AqCQqAUjCVqZw765h8K4REmqueeY652W2+Lj20L3d1SCXHObnnbbfFf+rnebkcXRVO99NGnFZjqxQ7C8U4oqu9IaJs/IBQqPXxsDXNe7+NhiiI9CYONxs486L8rEcasM1YF9S9X2hZbGP2N7q7rQCHBuO7g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769877704; c=relaxed/simple;
-	bh=5+NOOTSK7C4iDIzKzINy076cViWrqMKQTQd97jMCdmI=;
+	s=arc-20240116; t=1769877932; c=relaxed/simple;
+	bh=YRNNboMA42Rg8JXJNEe3s09TLdrWGIdAUFc72lUOX0M=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bCxAnB76uncoLbb3E4eIg+DqoiZwub4Pr5WZ0oA2BBv1v8m8ntsdXwPB5jweLIF4OPDKmBYhwkmu9zb5+pPjylbBVs/sDx6VU2yVuPAydCaMoeyxcQFFHR9s3FaDX0/pnTWt2NWXFFeUgNJKn9W2JA/lIgc7LjAvstMcf19O/oI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UA2x136r; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=IkB8A5UHBX4eLYpupVZLAai4WZ5rKlv9u1db4hKrq9quVaCnftRRxyaAa3MB8zxdrnzdOeeVE0dChRm8X1+cMxbV7LNVwu33oKA7bIzqJ1bJrWrRYvACyF5KOJBRn/W3k8xYvViBnZ0615Kfdaj+1Q0FAPgL2Q3CloH5YprPUS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FRv89Blx; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UA2x136r"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F9D7C4CEF1;
-	Sat, 31 Jan 2026 16:41:40 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FRv89Blx"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 791D2C4CEF1;
+	Sat, 31 Jan 2026 16:45:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769877704;
-	bh=5+NOOTSK7C4iDIzKzINy076cViWrqMKQTQd97jMCdmI=;
+	s=k20201202; t=1769877932;
+	bh=YRNNboMA42Rg8JXJNEe3s09TLdrWGIdAUFc72lUOX0M=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=UA2x136rBklqKifcrOVMKuROYE46P0MraZB0nd18sOBa9RpOJCZdfCaW5EUKtMxCf
-	 jQ53QxIAxsWxiLvCIbCxYstZXExdO67RC5M0nca+yaEaegqVCSEgffNCMGOayLU3RV
-	 uxe4bbVnRQj5Qsb+8MZiDenxjSLc13JhdhffId0QNJdnKw20C2KlRvMMEy6r0dW1aJ
-	 7+hyLa8cVXpMQPP/dKsIKofLE1qyZwjU0QXLJlaSvpZgyL8+s8V7LCo1Ds7jyFXFDi
-	 KGIz6cPy0klcisrEjONkweh8ptBtts1XTGAU++ls4EEuV/qJgt/R5e/6MAK5ZKbGfv
-	 4uog/AHWhoShw==
-Date: Sat, 31 Jan 2026 16:41:35 +0000
+	b=FRv89Blxzku1tdaroBO1cASK5KDvnvnudJZ3CHfeI14xyEeSWjT3uOiBCwPAX5N4r
+	 y7QddbAwuC8GTNrxFIekSbCXP7edHxUxlrrzsWfTBTe5IKMLYltF7J2+u+GVHKc8uE
+	 e7I9LmhufIl5nW+ADAOki/49AdApE8+rTbt6mIVpWX/mn+X6xZCxtEBx/baj4Dimjv
+	 +oZSA+ChGInokaCcp+W+MmmehQaMTiZuVsFRMysZIjzqF9T9Vbzdgm2Qz+yhXatpcV
+	 5CbPoD9ZjcQVeSXLeKkbAHtVokN3ZO+RykrANDy9Iqyfj/2tt4lYyQMQrOLbsRMsz8
+	 inSQEf2WaCxAg==
+Date: Sat, 31 Jan 2026 16:45:23 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: gyro: mpu3050-i2c: use pm_runtime_resume_and_get()
-Message-ID: <20260131164135.35f07a27@jic23-huawei>
-In-Reply-To: <20260130153227.213413-1-antoniu.miclaus@analog.com>
-References: <20260130153227.213413-1-antoniu.miclaus@analog.com>
+To: Jean-Baptiste Maneyrol via B4 Relay
+ <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Cc: jean-baptiste.maneyrol@tdk.com, David Lechner <dlechner@baylibre.com>,
+ Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: inv_icm42600: fix odr switch to the same
+ value
+Message-ID: <20260131164523.18a9ecb1@jic23-huawei>
+In-Reply-To: <20260130-inv-icm42600-fix-odr-change-v1-1-347a03a57fa1@tdk.com>
+References: <20260130-inv-icm42600-fix-odr-change-v1-1-347a03a57fa1@tdk.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,37 +50,30 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 30 Jan 2026 17:32:26 +0200
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+On Fri, 30 Jan 2026 16:38:47 +0100
+Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
 
-> Use pm_runtime_resume_and_get() in bypass_select() and return its
-> result directly. Unlike pm_runtime_get_sync(), it doesn't increment
-> the refcount on failure.
+> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 > 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-
-Please always put a cover letter on anything with more than one patch.
-Provides both a nice name for the series in patchwork etc and a 
-single place to reply.
-
-Are these fixes?  What is side effect of the wrong ref count?
-
-> ---
->  drivers/iio/gyro/mpu3050-i2c.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> ODR switch is done in 2 steps when FIFO is on : change the ODR register
+> value and acknowledge change when reading the FIFO ODR change flag.
+> When we are switching to the same odr value, we end up waiting for a
+> FIFO ODR flag that is never happening.
 > 
-> diff --git a/drivers/iio/gyro/mpu3050-i2c.c b/drivers/iio/gyro/mpu3050-i2c.c
-> index 092878f2c886..6549b22e643d 100644
-> --- a/drivers/iio/gyro/mpu3050-i2c.c
-> +++ b/drivers/iio/gyro/mpu3050-i2c.c
-> @@ -19,8 +19,7 @@ static int mpu3050_i2c_bypass_select(struct i2c_mux_core *mux, u32 chan_id)
->  	struct mpu3050 *mpu3050 = i2c_mux_priv(mux);
->  
->  	/* Just power up the device, that is all that is needed */
-> -	pm_runtime_get_sync(mpu3050->dev);
-> -	return 0;
-> +	return pm_runtime_resume_and_get(mpu3050->dev);
->  }
->  
->  static int mpu3050_i2c_bypass_deselect(struct i2c_mux_core *mux, u32 chan_id)
+> Fix the issue by doing nothing and exiting properly when we are
+> switching to the same ODR value.
+> 
+> Fixes: ec74ae9fd37c ("iio: imu: inv_icm42600: add accurate timestamping")
+> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> Cc: stable@vger.kernel.org
+Given we are very close to the merge window and I have the main pull request
+set up already, I'm going to apply this to a local fixes branch that I'll
+rebase and push out in a few weeks time.
 
+So there should be nothing else to do here, but you won't see it in linux-next
+for a little while.  Maybe if I get a bunch of fixes I'll do a second pull
+request to Greg to line up for the merge window.
+
+thanks,
+
+Jonathan
