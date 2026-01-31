@@ -1,64 +1,64 @@
-Received: from mail-oi1-f194.google.com (mail-oi1-f194.google.com [209.85.167.194])
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E431B36A00D
-	for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 19:50:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.194
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D3E42D063E
+	for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 19:55:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769889046; cv=none; b=kW4cCg4Sl3+g5LM57p93zFfBOmFlNk0vv0smz1Ww1MWmM1rYR5HqtTv957h7bMMdL0cjlMdIODf7jp22Ql7BsWI9KpmldC0Gl7rSnkiH3cB4jXH078c5QLvcNDI6vynYK6f+uCLbyP5O0Og5JaHoYLlghFB12kXNANza8KgsDeE=
+	t=1769889330; cv=none; b=dtl7arfChE7ftL7ygIr6xve6sx5KutEV1EBVpGI/AJm4OaSksrZiVLq4qTKV96PC+JYy3toPFCkWjI41J7j9xcwirX+2YQ2pgl/lV00tsldwQ6Rh+XnXLDWzVMey9XsASuYE2gY1qmUaNDiaTXi2AlvjfYmpwbOvxmr6jj0ZYLk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769889046; c=relaxed/simple;
-	bh=C5HuJP/IjeG8MYwSuwdaWDcjCmDjLCEPWCcLYeFqHpM=;
+	s=arc-20240116; t=1769889330; c=relaxed/simple;
+	bh=t24mKOVNxxmWMKS1t9FekxYrZBCi//zHUHXDdl8G0I4=;
 	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=KMRnT9H32vo3FhlHmWc59R5aPf2c6DILAbPpu3bCifLPKi4wzVVK2GHBXZKIXGc6gBBRiiYPCOCQcV7TWdk61vgbTFRYmAGMYVP5qrh0m60RsT9jmFVQgaZgJjEUQvauVAWSGJxv2gPEi10DU+F+h7uBDP2xf8OvU7tgb1fN2Dg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=GWIiRwE0; arc=none smtp.client-ip=209.85.167.194
+	 In-Reply-To:Content-Type; b=ToBKrWDRQe/npEKfoddc4GnGHIlAc/iiNiw9mbYSjhqcrc3fDngkEzFW0kcdrE2TNnlxmeR0Qj4Lr28hJ1YYh2yOhbXETeeg/Ehq9fTzI6NCSVooiFusXj25HyccNQ7/5LJG4zkYdimBN4l/pv3KqFPSNzmdqbd6gh+00e0QesY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=rmw5E5Of; arc=none smtp.client-ip=209.85.161.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="GWIiRwE0"
-Received: by mail-oi1-f194.google.com with SMTP id 5614622812f47-45f171cb842so2145376b6e.1
-        for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 11:50:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="rmw5E5Of"
+Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-662fca4503cso1841786eaf.0
+        for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 11:55:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769889044; x=1770493844; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769889327; x=1770494127; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:content-language:references
          :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=C5HuJP/IjeG8MYwSuwdaWDcjCmDjLCEPWCcLYeFqHpM=;
-        b=GWIiRwE0swLPJFHbUxLmcXD7uZZgmXuGeN7oQvIG4uVEg+WJvCel0i0OAaks2afL9L
-         6uezKwjBgoreIu/valrw15ASQ53++7OzIN4roQntTgf7bq6IfTpp9hM7d0/S6d0Xfegy
-         cIgLOwoSZsv52q4SkXUrHLn4tqxBRjJAPrcwxYM1AdjdWfUtsQA1jz4qLp8E64gKgSOu
-         Sl3xyJDu0Hxz6aQZty2j9HO/8SGDs6t0YgYdwpX5wNwf29Xwnisl1QW39KwYSA4smoE5
-         uy8b7xlgItHHF/E/Ze27LEOd1ULSr9UK14LWeo5WqIJHH7pklFAzGSwJxO4n4cpQ+bna
-         i3gg==
+        bh=H+VFD3n9uqCeuR5oa2hiu8NEEffv6cHN447B+eVXKTM=;
+        b=rmw5E5OfI+f9amD6CdjrhJUpCNx27t7LETFfGMwZRE2lrMnm+9y2OQjwmxPrPW3man
+         V+6nlU0IVqBn+5Th+W5/mcOEgfotdTkizpd2otLJePaCosTzUajbyhOjOr03lyvDqS1L
+         0vGmSifl5cJkBqZKsOoRj7Ni7bioYTOOF+lhA0tesl//JzQduo+CUjDj4rbSKrgb7CpN
+         NG8VoLCp2bpkgTW7tN+JFY0GA8HV7zzcDFzp/LKq/NFzgTcHbwav50ItqfJBXsGFtsXk
+         oHeBuJ63edbLWvskebiTUHsHfVdTs+Wz7SVoouNmPdwCAO0HOuudFCchDS1w8pa1xZTF
+         lefg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769889044; x=1770493844;
+        d=1e100.net; s=20230601; t=1769889327; x=1770494127;
         h=content-transfer-encoding:in-reply-to:content-language:references
          :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=C5HuJP/IjeG8MYwSuwdaWDcjCmDjLCEPWCcLYeFqHpM=;
-        b=WsoSY8xX+ZsN438kHfsYaX9nXTpWGVMYlUvUhpFUttWQJwtkjObz78D3mvXBWCo0ev
-         k8k82CNT/rtVLbNzMDOohTz9iFH82VTqnddQSevFv+eb8lCRxuxnsAUm/tR2nxCIW2lM
-         U/feEfLd6bB7X/pEXVSF53E5GviGqXWFaIcxedxM8DHTY10EKrsfFYfYWFGBXAy8KhZG
-         9PeiTmk8osFzJeL0OaYcQE83EJ6ZG5lWneMxdvnmHJH6vmdUL1WcFFxlY+cpzxK63i4y
-         L2i3nuB7umyGTp8uZo1yw92rqlhXI0NTcT+0eMfbv7xXwAO9h2Q3+0as7nT79u0MgHI8
-         cDQw==
-X-Gm-Message-State: AOJu0YyCLwH836U4chGSBbXsuxA2obuN9ZZlC/RX1MFaImOngQtysFG1
-	oKCiwlGv+WygmvZ4jGUekqszi0TiIF21zvU8W+eT5vnDNvvd0nD8ZMkQ202DCvKAcl0=
-X-Gm-Gg: AZuq6aJ24Q3gGSTPEHBDgBRmpVXxSNshjpnsUQBGZ6L7gslEsgvYcg4rz9MZTo0lpLx
-	QmOGwTkWfHl5Ua2V9uT9A9VM+EZ4WfG6bZ20lqcwmBmgvmF22GpHL2KTuN83YWonAMFFvBvnOq+
-	ivUGcbDMdCcTnMMWT9+a6eaCHwY4K2VHMKci25tLJysGmiOk70NEt4GIxk1Lnf6QqMyIbWiPVhT
-	iyf5S6aaVLmIWDABkCk5xuqklaB/Kbn6ZSj7JNy/CJO4W3HT6YQl0WIs9wImFSF6iiiWvtgwSOQ
-	WK4F5bYiAgjUUd/yPOYJJ+vwuSPQDXXuUPcD7vULWPZXIxF3Gkh1EcKuSjTCrStU6ueBW0HxSmj
-	KVZMR+uX8yFBM/5sbFQCNLBb6UNFnacOxgruvDUug+gOBZpiJiOpkg4CzytlIRX1jE2FvvL8tqg
-	ofECdMFj2puMFFZpbiqp38TTUIe+m0XjHIDVSOZSWxX1Y0mNcDXKhEhSmrs0XO
-X-Received: by 2002:a05:6808:2222:b0:45e:fff5:89b4 with SMTP id 5614622812f47-45f1e280e98mr5623957b6e.10.1769889043924;
-        Sat, 31 Jan 2026 11:50:43 -0800 (PST)
+        bh=H+VFD3n9uqCeuR5oa2hiu8NEEffv6cHN447B+eVXKTM=;
+        b=buwFgLCuDdw7wdNMkl1saEzTaRFK82TWAngIRQINFbOU0mn0qnjgOJM7wxXQ9YNl4c
+         Q/6heim17fj4kPsOrIoXxm7XVJMJ2PcjncXTD4CJ1jsZgLA9JRUGCE+EKqugrp694Jqx
+         55Ts3vwSTR969qwGVuwQf45wRbfJpQWIf/Tr26TLLdNcRYMXTcV3vwQPwYMJP+1Ph/6X
+         VTQPVCOO0Bo2Ug8BGHu6SvTLwQmrEOMMfMTJYcET5byG3yINVlLxSwr7DZLlRfLkTV+0
+         WDYPSjHeQD2VegOjTsWAv9oBxe7EbnxXs70nZUK3UNuWY/KPcodZD/ZxI04dtO8YsDyG
+         ea4Q==
+X-Gm-Message-State: AOJu0Yx3h2mHsS7XpUzbf/d5vZr27Ix/i5GSdpr+xE6WEGW6mQR6+4JV
+	IVRp0/yxHl2TTIcPG0clDngHBJEI0wnu7JZEumxd8V2i3mR3/0B4MJ+91+gpiuZT+Jc=
+X-Gm-Gg: AZuq6aKotBSjAfPdZ419JXQCvjyDlpRyV89lN1RcsXxqoiRd6CETzQMGrbYyreesbEQ
+	77D11l9c1Lfzna/fragQJjqRFjrFts67vWFUYhsZbXKxRgNnX3HytEgsLvZRDzE5nGNaq5N3SeT
+	iIMSzAzpdYqO6Bgc0KYpE4wbwMshU6b3uC2STY8hSeSc6JcxYJ1PPxSYzzyxtqYdGr8jwpPnqeR
+	mRLW60txBja66KzZDoc401YiwsVf2pmtAxMHJ8Wo5bFkTRb6WYmizy1ZV1MQ4ayDc170fUA5Olk
+	Ev7tyfoTFJ7jTV+VSQ1iyx8thOQhyNEdAiZ7KcWJluODHjTw5Jvisdt+P8679q3J/+zUrcJ1Yw8
+	GrLEwa30YFkJnu5NF6vtIzLm5bFlxcsAEwlcqyZvrNHL1v6lsPiseMPrxgSGv2ZkNruXXWQHIzX
+	b+mLfEDz15xkYmstxBwFajE5ERIOoIMwFeQhPILS+zUDtIfhZ0JJTNzD7IeIuc
+X-Received: by 2002:a05:6820:2228:b0:663:8c2:feed with SMTP id 006d021491bc7-6630f3d4c04mr3300269eaf.83.1769889326973;
+        Sat, 31 Jan 2026 11:55:26 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:c7ef:51f2:4f7a:6cd7? ([2600:8803:e7e4:500:c7ef:51f2:4f7a:6cd7])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d18c7ffa49sm7655737a34.20.2026.01.31.11.50.42
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-662f9a49769sm6775854eaf.15.2026.01.31.11.55.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Jan 2026 11:50:43 -0800 (PST)
-Message-ID: <1ae1f69b-8a72-4831-a6f4-cd7dcf38f793@baylibre.com>
-Date: Sat, 31 Jan 2026 13:50:42 -0600
+        Sat, 31 Jan 2026 11:55:25 -0800 (PST)
+Message-ID: <8cedbb9c-9f72-43ae-a23e-705b3feb85fb@baylibre.com>
+Date: Sat, 31 Jan 2026 13:55:24 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,8 +66,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v1 03/10] dt-bindings: iio: adc: cpcap-adc: document Mot
- ADC
+Subject: Re: [PATCH v1 01/10] dt-bindings: regulator: cpcap-regulator: convert
+ to schema
 From: David Lechner <dlechner@baylibre.com>
 To: Svyatoslav Ryhel <clamor95@gmail.com>, Jonathan Cameron
  <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
@@ -82,21 +82,31 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
  linux-leds@vger.kernel.org, linux-rtc@vger.kernel.org
 References: <20260125134302.45958-1-clamor95@gmail.com>
- <20260125134302.45958-4-clamor95@gmail.com>
- <92858c73-1e11-4283-8ab6-1188e8bae0df@baylibre.com>
+ <20260125134302.45958-2-clamor95@gmail.com>
+ <d7938728-fded-4d5e-b23d-a8346e3fab46@baylibre.com>
 Content-Language: en-US
-In-Reply-To: <92858c73-1e11-4283-8ab6-1188e8bae0df@baylibre.com>
+In-Reply-To: <d7938728-fded-4d5e-b23d-a8346e3fab46@baylibre.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 1/31/26 1:48 PM, David Lechner wrote:
+On 1/31/26 1:46 PM, David Lechner wrote:
 > On 1/25/26 7:42 AM, Svyatoslav Ryhel wrote:
->> Add compatible for ADC used in Mot board. Separate compatible is required
->> since ADC in the Mot board uses a unique set of configurations.
+>> Convert devicetree bindings for the Motorola CPCAP MFD regulator subnode
+>> from TXT to YAML format. Main functionality preserved and added compatible
+>> for CPCAP regulator set found in the Mot board.
 >>
-> Logically, it makes more sense to readers to put the DT binding patch
-> before the driver change in the series.
 
-OK, I didn't read carefully enough that there are multiple devices
-in this series. So you already did what I suggested. :-)
+...
+
+>> +properties:
+>> +  compatible:
+>> +    enum:
+>> +      - motorola,cpcap-regulator
+>> +      - motorola,mapphone-cpcap-regulator
+>> +      - motorola,mot-cpcap-regulator
+
+This is what caused me to get confused on the order of the later patches.
+
+motorola,mot-cpcap-regulator is a new compatible, so would be better as
+a separate patch.
 
