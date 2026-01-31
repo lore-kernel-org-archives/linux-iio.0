@@ -1,65 +1,64 @@
-Received: from mail-oi1-f196.google.com (mail-oi1-f196.google.com [209.85.167.196])
+Received: from mail-oi1-f194.google.com (mail-oi1-f194.google.com [209.85.167.194])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 845F836A003
-	for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 19:48:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.196
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E431B36A00D
+	for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 19:50:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769888933; cv=none; b=s7A8Ly56DYceq0Elc+dGHISZ54rLfTVmzA65V0a1IhC9ZWuggn8ddhPhVeGYaIg+430j5tqQlDbElFCHQvYWU+xcTWqdEi0M2ERuE4hwiRwlpV2D/YQZuXZd8O0blPNmwvMShHHgqNioJ6tZLuT3Ug6DJGQq6UvEAxAiK3XsCZw=
+	t=1769889046; cv=none; b=kW4cCg4Sl3+g5LM57p93zFfBOmFlNk0vv0smz1Ww1MWmM1rYR5HqtTv957h7bMMdL0cjlMdIODf7jp22Ql7BsWI9KpmldC0Gl7rSnkiH3cB4jXH078c5QLvcNDI6vynYK6f+uCLbyP5O0Og5JaHoYLlghFB12kXNANza8KgsDeE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769888933; c=relaxed/simple;
-	bh=dPpm3l3WPw7+UtDy3mOZiDg1GUUhyRC4lyTEv3mW62I=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ISzfBol5u2AdH2jhAp1j2bLw9jyYuOkkQorlFQSYyQnu2L+FBYOTzOhpmYBue1hszUItqptw9ygzy+aC17G5h/K2Y8+lNTzNZIZHdSAHnUt20/5qBBnd76R3eRHiyzbwQ1pXhzq7rwgampRK5YZ95svRaJ90sVpqV8csFkQo+7w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=E0yl4gOO; arc=none smtp.client-ip=209.85.167.196
+	s=arc-20240116; t=1769889046; c=relaxed/simple;
+	bh=C5HuJP/IjeG8MYwSuwdaWDcjCmDjLCEPWCcLYeFqHpM=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=KMRnT9H32vo3FhlHmWc59R5aPf2c6DILAbPpu3bCifLPKi4wzVVK2GHBXZKIXGc6gBBRiiYPCOCQcV7TWdk61vgbTFRYmAGMYVP5qrh0m60RsT9jmFVQgaZgJjEUQvauVAWSGJxv2gPEi10DU+F+h7uBDP2xf8OvU7tgb1fN2Dg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=GWIiRwE0; arc=none smtp.client-ip=209.85.167.194
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="E0yl4gOO"
-Received: by mail-oi1-f196.google.com with SMTP id 5614622812f47-45f0dbe7dafso1271996b6e.3
-        for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 11:48:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="GWIiRwE0"
+Received: by mail-oi1-f194.google.com with SMTP id 5614622812f47-45f171cb842so2145376b6e.1
+        for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 11:50:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769888931; x=1770493731; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=xQ+TaOsJS1d5at3UMn582LZcj7u6OHzNvDSFQmdpmyc=;
-        b=E0yl4gOOFJpyySVsDmn/hpM5PSAkXhwDmN9vu9ibhwoX3SIpxHFAmf2pflTYaKtDtm
-         AYu4l00lCHJz1k7nAYHzHA58SXe6YDVPOgq3+K6ygl84RCCfWQNYwj1fCbmIVYcJ6QG6
-         urTM6ZT+706m23jvUGoDLMc2HgpxbbwWVqQpNXevw0ffTzxpQPaI5lqJK7qvVf3F8iYJ
-         T9ZDnE1wyUl96tjA1xkw26atNQphlfRMD9+EyoMYas37+ojq0jc3ZB2px2e90PpVQ2d+
-         J/2ClZEYAFJZjDkVIFqR40XT6+zEsnciAbNGJUVcJV3ZYTh2RveYHNroMvyjhaA4EgB1
-         qegg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769889044; x=1770493844; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=C5HuJP/IjeG8MYwSuwdaWDcjCmDjLCEPWCcLYeFqHpM=;
+        b=GWIiRwE0swLPJFHbUxLmcXD7uZZgmXuGeN7oQvIG4uVEg+WJvCel0i0OAaks2afL9L
+         6uezKwjBgoreIu/valrw15ASQ53++7OzIN4roQntTgf7bq6IfTpp9hM7d0/S6d0Xfegy
+         cIgLOwoSZsv52q4SkXUrHLn4tqxBRjJAPrcwxYM1AdjdWfUtsQA1jz4qLp8E64gKgSOu
+         Sl3xyJDu0Hxz6aQZty2j9HO/8SGDs6t0YgYdwpX5wNwf29Xwnisl1QW39KwYSA4smoE5
+         uy8b7xlgItHHF/E/Ze27LEOd1ULSr9UK14LWeo5WqIJHH7pklFAzGSwJxO4n4cpQ+bna
+         i3gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769888931; x=1770493731;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=xQ+TaOsJS1d5at3UMn582LZcj7u6OHzNvDSFQmdpmyc=;
-        b=X8NDBEhHuyZPBd569RaQS+2WV6tCeIA+nE6dZtysXDB7Dwfrvj7/GG4ZO4/tksg08M
-         ABsg9gkRHX1QxHHnysdJPf5knjMnTmx/41QoQz32fcfoXbv1a3AubvtrqeeMqXdkYJXd
-         oUEa4McYLVOhyJJf/DeQYZgv+/TMhH4PZvdNn9y459FjH6nkepIdheoOoEacRcDu1Sds
-         3jXBqLUjAoevc4qsHpsW9QGQx3/2zsDgk7M5BzTcpJMqP6cfdjZukjz5pBM4it7DNWNw
-         3WkKATvb0/ViGDC+0D7Bl6/gFHA5JRpGPzBnKCki9laNy/W8UQRU+zJEuvVTuAPYFs81
-         kE5w==
-X-Gm-Message-State: AOJu0Yxzua4niQ2YSRv14EuI4WnH2EZVGd+Jg4YL+y+3+rBL4Dgq15oB
-	9a2gBybkV1Mm5LEW9O4InROvt7N+0TiBNvt9DXaYCaKips8uJ5oi6wvTBxx0jniQi7Y=
-X-Gm-Gg: AZuq6aLjh4xJJGaFFbfbIicVIx8etV1FD5jdlGxonl7Q5ugphMTHMJp3YNADDWY0In9
-	h/rQUn0ZYO+0oY91LzLcsS2MkicDrmnGPloWAf52yMd90k4nxrUKct+Rn2mYmS1/RDYyStCx62d
-	ISC4S/IAXYgdn1voZXYHb5a/8U68ilShUtOOV+sWJRB31Ng0mKzxzDYkBleT4iK4RZUmiPFfwoo
-	WaDcLafR96IuNp6meMdk9uXqdTLDDtO0duQERlwr7kES6bs3wujFptNshcKpMitCmlllKh+fm6g
-	YjxebnZmTcofwXU8o2h7mYrLYdLHhMKc7vr5hDnlCbz33fQ/q37MaKJ9jup8uOQPg4TE/OSr04d
-	FvYLDR4Go4AhPzLceVOLFuMN7UEyzgjgjPQNK7yoLkNWdScXXzD3ofRrGGuiB+pg0FGzNOJND51
-	ubzCXu4hGUBrpFc5nM+HUJNo7lSOZOz7we0FNDvCk5+qRE+TE5arWW0A3hEsaq
-X-Received: by 2002:a05:6830:82a7:b0:7d1:91c9:9e5a with SMTP id 46e09a7af769-7d1a5232569mr4532126a34.8.1769888931469;
-        Sat, 31 Jan 2026 11:48:51 -0800 (PST)
+        d=1e100.net; s=20230601; t=1769889044; x=1770493844;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=C5HuJP/IjeG8MYwSuwdaWDcjCmDjLCEPWCcLYeFqHpM=;
+        b=WsoSY8xX+ZsN438kHfsYaX9nXTpWGVMYlUvUhpFUttWQJwtkjObz78D3mvXBWCo0ev
+         k8k82CNT/rtVLbNzMDOohTz9iFH82VTqnddQSevFv+eb8lCRxuxnsAUm/tR2nxCIW2lM
+         U/feEfLd6bB7X/pEXVSF53E5GviGqXWFaIcxedxM8DHTY10EKrsfFYfYWFGBXAy8KhZG
+         9PeiTmk8osFzJeL0OaYcQE83EJ6ZG5lWneMxdvnmHJH6vmdUL1WcFFxlY+cpzxK63i4y
+         L2i3nuB7umyGTp8uZo1yw92rqlhXI0NTcT+0eMfbv7xXwAO9h2Q3+0as7nT79u0MgHI8
+         cDQw==
+X-Gm-Message-State: AOJu0YyCLwH836U4chGSBbXsuxA2obuN9ZZlC/RX1MFaImOngQtysFG1
+	oKCiwlGv+WygmvZ4jGUekqszi0TiIF21zvU8W+eT5vnDNvvd0nD8ZMkQ202DCvKAcl0=
+X-Gm-Gg: AZuq6aJ24Q3gGSTPEHBDgBRmpVXxSNshjpnsUQBGZ6L7gslEsgvYcg4rz9MZTo0lpLx
+	QmOGwTkWfHl5Ua2V9uT9A9VM+EZ4WfG6bZ20lqcwmBmgvmF22GpHL2KTuN83YWonAMFFvBvnOq+
+	ivUGcbDMdCcTnMMWT9+a6eaCHwY4K2VHMKci25tLJysGmiOk70NEt4GIxk1Lnf6QqMyIbWiPVhT
+	iyf5S6aaVLmIWDABkCk5xuqklaB/Kbn6ZSj7JNy/CJO4W3HT6YQl0WIs9wImFSF6iiiWvtgwSOQ
+	WK4F5bYiAgjUUd/yPOYJJ+vwuSPQDXXuUPcD7vULWPZXIxF3Gkh1EcKuSjTCrStU6ueBW0HxSmj
+	KVZMR+uX8yFBM/5sbFQCNLBb6UNFnacOxgruvDUug+gOBZpiJiOpkg4CzytlIRX1jE2FvvL8tqg
+	ofECdMFj2puMFFZpbiqp38TTUIe+m0XjHIDVSOZSWxX1Y0mNcDXKhEhSmrs0XO
+X-Received: by 2002:a05:6808:2222:b0:45e:fff5:89b4 with SMTP id 5614622812f47-45f1e280e98mr5623957b6e.10.1769889043924;
+        Sat, 31 Jan 2026 11:50:43 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:c7ef:51f2:4f7a:6cd7? ([2600:8803:e7e4:500:c7ef:51f2:4f7a:6cd7])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d18c67065esm7778648a34.6.2026.01.31.11.48.49
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d18c7ffa49sm7655737a34.20.2026.01.31.11.50.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Jan 2026 11:48:50 -0800 (PST)
-Message-ID: <92858c73-1e11-4283-8ab6-1188e8bae0df@baylibre.com>
-Date: Sat, 31 Jan 2026 13:48:49 -0600
+        Sat, 31 Jan 2026 11:50:43 -0800 (PST)
+Message-ID: <1ae1f69b-8a72-4831-a6f4-cd7dcf38f793@baylibre.com>
+Date: Sat, 31 Jan 2026 13:50:42 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,6 +68,7 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v1 03/10] dt-bindings: iio: adc: cpcap-adc: document Mot
  ADC
+From: David Lechner <dlechner@baylibre.com>
 To: Svyatoslav Ryhel <clamor95@gmail.com>, Jonathan Cameron
  <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
@@ -83,15 +83,20 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-leds@vger.kernel.org, linux-rtc@vger.kernel.org
 References: <20260125134302.45958-1-clamor95@gmail.com>
  <20260125134302.45958-4-clamor95@gmail.com>
+ <92858c73-1e11-4283-8ab6-1188e8bae0df@baylibre.com>
 Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260125134302.45958-4-clamor95@gmail.com>
+In-Reply-To: <92858c73-1e11-4283-8ab6-1188e8bae0df@baylibre.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 1/25/26 7:42 AM, Svyatoslav Ryhel wrote:
-> Add compatible for ADC used in Mot board. Separate compatible is required
-> since ADC in the Mot board uses a unique set of configurations.
-> 
-Logically, it makes more sense to readers to put the DT binding patch
-before the driver change in the series.
+On 1/31/26 1:48 PM, David Lechner wrote:
+> On 1/25/26 7:42 AM, Svyatoslav Ryhel wrote:
+>> Add compatible for ADC used in Mot board. Separate compatible is required
+>> since ADC in the Mot board uses a unique set of configurations.
+>>
+> Logically, it makes more sense to readers to put the DT binding patch
+> before the driver change in the series.
+
+OK, I didn't read carefully enough that there are multiple devices
+in this series. So you already did what I suggested. :-)
+
