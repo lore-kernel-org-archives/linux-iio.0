@@ -1,52 +1,56 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D230135BDD5;
-	Sat, 31 Jan 2026 17:54:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D446A2DEA7A;
+	Sat, 31 Jan 2026 18:03:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769882067; cv=none; b=J5/gLAp/jFbTRPbrBN1JQ6+Wg0WSPLFPsFGRYN2dVsmuuvYgcW+GyZK9I6fKhZGTdiZFgif2hBHYgi1zvUxQmJV2BnfFKCSITC6bBVu8Qv5f6wNdL35vuI6aFeGWe6VMNQUKoLZhdkuBbbZuoItCb+MLcLCeUUDWwPJ25wqwvmw=
+	t=1769882615; cv=none; b=uaR8QKC7810zuSzVD0t7O6Z/v53TGR8jiPmsdZITMuB8JZvrKZyXER105UuQzwNgbnvbFSeUCXqCBG6bbFC8caXJO2ztycLS7D5fQ3guoq6ak+Zob4xr7JqRd/r3LnUic8WCBo9CkJz2oq1PXooL/SVE/K4/jGIdWe2phiI+8aI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769882067; c=relaxed/simple;
-	bh=nGBuNWH2C/cZMgf7p2YBdZH+AmwcRBcXXxsMIojsYmg=;
+	s=arc-20240116; t=1769882615; c=relaxed/simple;
+	bh=UJPEhEh2cez9JnPirLgqTvQBSdwrP7nhn31j+/gtkYA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=r9A7rgNWZ8cdUM12G28tuBjdkF2yFrEVmrc4pS7R09sG3s1OrWipzKtbV/UC9TFcUvZ8zlqDxAINUA/48c+/8UvNTtzG4zY8uBDFpRIOiLnWL4hsBIM/jxQmmsLD+GQJJvg2Rba1/xF6w6jj2sVTUjv930cByZWfs99PPcxjqAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jHDZEgMm; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=IgFjhiQ0p0i4BmnEcAuIF9GHRb8fRd8p80w5lfyqFTRRjXbPU24nXuLTWOOB/YbxZuWMhFLfbXGivi4Dc0FNpOtuqDDlCJw12egC/QN+oTAyUrkLUj2RZCv7aPH09pLCdcchOvu9YF0TsYAd54AZETGm0wwBvX4YE9QjJyOTmmE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QC0YfuzU; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jHDZEgMm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E84E5C4CEF1;
-	Sat, 31 Jan 2026 17:54:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QC0YfuzU"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 746C5C4CEF1;
+	Sat, 31 Jan 2026 18:03:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769882067;
-	bh=nGBuNWH2C/cZMgf7p2YBdZH+AmwcRBcXXxsMIojsYmg=;
+	s=k20201202; t=1769882615;
+	bh=UJPEhEh2cez9JnPirLgqTvQBSdwrP7nhn31j+/gtkYA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=jHDZEgMmOSm1+ACoua48V5qu5JtEL2bEpqEynRaJeNhxFPOenmjCB5LHHYDI/rbeJ
-	 M0FGtQFh3qT3620cc0aYTB3VePZk7Uao+PhreNKmA6g5RMAtR4CyTRBOHHmnfInKae
-	 hF696o9C8wsg7Ed6Spgixk7au60XGloAONZs/5ks/u/02dODkex4o01I6oiND9z9GR
-	 CUf0EMcT2Wr0bAI2q2iGScu/hTG+dlYVnNS973+SHsX1g2KcBn12ens0OTFMfwvRfi
-	 CZ/K937jZ58DvnNc9WXHFst9dexsAeqM0rTbpr+3v/yvDWvNdSDeNmUk/7n0fMtk0W
-	 6Qegw+26FaARQ==
-Date: Sat, 31 Jan 2026 17:54:12 +0000
+	b=QC0YfuzUXMFet3J/viPgBHT76UKFD8U8G1mWyyYvxhB3hTbZBgwt5ls8ScbGezOoj
+	 nz/CboulK08iCAk4X7sM/f+mnGB7WeNSFA2eBz+wRTq4+2ustioAyFVusPO+7l3FiR
+	 SnvzBNJZ9euyCEkBCN8nIgAquttC+mlTCodxX+k5V/0PG2aE/FsBGMYMbNk+IeFBgo
+	 Mgh51zWA0+ZyR1VpEy8tiq5cQNn8yXNM5Ps0ZzCuIToRY9QY3ZKmLDSKuBtiOLdMC2
+	 uXSRuSAFayH2obBNWg5X3tuxR0DQQuplaMosAF6b8+izhwm+6aWKKPz23GId7WAXdY
+	 litFcvJyWQ7Mg==
+Date: Sat, 31 Jan 2026 18:03:25 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- agross@kernel.org, andersson@kernel.org, lumag@kernel.org,
- dmitry.baryshkov@oss.qualcomm.com, konradybcio@kernel.org,
- daniel.lezcano@linaro.org, sboyd@kernel.org, amitk@kernel.org,
- thara.gopinath@gmail.com, lee@kernel.org, rafael@kernel.org,
- subbaraman.narayanamurthy@oss.qualcomm.com, david.collins@oss.qualcomm.com,
- anjelique.melendez@oss.qualcomm.com, kamal.wadhwa@oss.qualcomm.com,
- rui.zhang@intel.com, lukasz.luba@arm.com, devicetree@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
- cros-qcom-dts-watchers@chromium.org, quic_kotarake@quicinc.com,
- neil.armstrong@linaro.org, stephan.gerhold@linaro.org
-Subject: Re: [PATCH V10 4/4] thermal: qcom: add support for PMIC5 Gen3 ADC
- thermal monitoring
-Message-ID: <20260131175412.0ded39d4@jic23-huawei>
-In-Reply-To: <20260130115421.2197892-5-jishnu.prakash@oss.qualcomm.com>
-References: <20260130115421.2197892-1-jishnu.prakash@oss.qualcomm.com>
-	<20260130115421.2197892-5-jishnu.prakash@oss.qualcomm.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Dmitry Antipov
+ <dmantipov@yandex.ru>, Rasmus Villemoes <linux@rasmusvillemoes.dk>, Kees
+ Cook <kees@kernel.org>, Petr Mladek <pmladek@suse.com>,
+ rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH v5 2/8] iio: core: add fixed point parsing with 64-bit
+ parts
+Message-ID: <20260131180325.62520933@jic23-huawei>
+In-Reply-To: <bvdpwe7453udqml6rnrrgt64n3hpxcc77ygtpofuymqx56zhez@vko4me2vxotj>
+References: <aXdUvRZ9NmP5Nh95@smile.fi.intel.com>
+	<byitgzjli5gsq5v66topve7ip3inkk2udwhuihjdp6bknnkmos@tv226l7tek7s>
+	<aXdtpkL5QUhhB_hh@smile.fi.intel.com>
+	<ty6hptfh65k2rkqo6c6mg5z6vismuvyqsu3emvqarr2rbhpvcz@kn6tzjk5xi2o>
+	<aXd_0uNVm8c_Fhwd@smile.fi.intel.com>
+	<n2ms3esyxlegqibu4nluut3x4c4bkjxt5xrcd4gw35xxb2tipb@a2v73y25kroc>
+	<shsikp7hinoxzj7pzxopvmvgpaak4dioekh4tyvns4kv6xp46f@z5vgnisqskco>
+	<aXeRQ4AXmn1SxoNa@smile.fi.intel.com>
+	<anhtxco52jz2ktmxlittsjuvfqybwrwgy76bjhni3j5dzx2rh2@hpzf3sfwe7hf>
+	<aXhsu2DvG-5PLOEU@smile.fi.intel.com>
+	<bvdpwe7453udqml6rnrrgt64n3hpxcc77ygtpofuymqx56zhez@vko4me2vxotj>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,199 +61,161 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 30 Jan 2026 17:24:21 +0530
-Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
+On Tue, 27 Jan 2026 10:17:33 +0000
+Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
 
-> Add support for ADC_TM part of PMIC5 Gen3.
+> On 26/01/27 09:43AM, Andy Shevchenko wrote:
+> > 
+> > Remove DT related people and ML and add others based on the links I posted
+> > below.
+> > 
+> > On Mon, Jan 26, 2026 at 04:55:13PM +0000, Rodrigo Alencar wrote:  
+> > > On 26/01/26 06:07PM, Andy Shevchenko wrote:  
+> > > > On Mon, Jan 26, 2026 at 03:30:44PM +0000, Rodrigo Alencar wrote:  
+> > > > > On 26/01/26 03:20PM, Rodrigo Alencar wrote:  
+> > > > > > On 26/01/26 04:53PM, Andy Shevchenko wrote:  
+> > > > > > > On Mon, Jan 26, 2026 at 02:26:20PM +0000, Rodrigo Alencar wrote:  
+> > 
+> > ...
+> >   
+> > > > > > > Why? Can you elaborate how checking amount of digits is different to
+> > > > > > > check_mul_overflow()?  
+> > > > > > 
+> > > > > > consider U64_MAX = 18_446_744_073_709_551_615 as the limit:
+> > > > > > - 19_000_000_000_000_000_000 contains the same amount of digits but overflows.
+> > > > > > - 18_446_744_073_710_000_000 contains the same amount of digits but overflows.
+> > > > > > 
+> > > > > > to catch those cases, we need to check for the overflow, everytime we read a
+> > > > > > character and accumulate:
+> > > > > > 
+> > > > > > u64 acc;
+> > > > > > 
+> > > > > > while(isdigit(*str))
+> > > > > > 	if (check_mul_overflow(acc, 10, &acc) ||
+> > > > > > 	    check_add_overflow(acc, *str - '0', &acc))
+> > > > > > 		return -EOVERFLOW;
+> > > > > > 
+> > > > > > *res = acc;
+> > > > > > 
+> > > > > > acc can get weird results if not checked.   
+> > > > > 
+> > > > > Thinking about it again, that check could be done only in the last step
+> > > > > (20th for u64)  
+> > > > 
+> > > > Does kstrto*() also perform only last check? I think they do for each
+> > > > iteration.  
+> > > 
+> > > It does the following:
+> > > 
+> > > ...
+> > > 		if (unlikely(res & (~0ull << 60))) {
+> > > 			if (res > div_u64(ULLONG_MAX - val, base))
+> > > 				rv |= KSTRTOX_OVERFLOW;
+> > > 		}
+> > > ...
+> > > 
+> > > so overflow is checked when either one of the 4 MSbits are set.
+> > > 
+> > > for now, I am thinking of something like:
+> > > 
+> > > static ssize_t iio_safe_strtou64(const char *str, const char **endp,
+> > > 				 size_t max_chars, u64 *result)
+> > > {
+> > > 	u64 digit, acc = 0;
+> > > 	size_t idx = 0;
+> > > 
+> > > 	while (isdigit(*str) && idx < max_chars) {
+> > > 		digit = *str - '0';
+> > > 		if (unlikely(idx > 19)) {
+> > > 			if (check_mul_overflow(acc, 10, &acc) ||
+> > > 			    check_add_overflow(acc, digit, &acc))
+> > > 				return -EOVERFLOW;
+> > > 		} else {
+> > > 			acc = acc * 10 + digit;
+> > > 		}
+> > > 		str++;
+> > > 		idx++;
+> > > 	}
+> > > 
+> > > 	*endp = str;
+> > > 	*result = acc;
+> > > 	return idx;
+> > > }
+> > > 
+> > > which would help the truncation when parsing the fractional part
+> > > with max_chars, avoiding a div64_u64() to adjust precision:
+> > > 
+> > > ...
+> > > 	digit_count = iio_safe_strtou64(str, &end, SIZE_MAX, &i);
+> > > 	if (digit_count < 0)
+> > > 		return digit_count;
+> > > 
+> > > 	if (precision && *end == '.') {
+> > > 		str = end + 1;
+> > > 		digit_count = iio_safe_strtou64(str, &end, precision, &f);
+> > > 		if (digit_count < 0)
+> > > 			return digit_count;
+> > > 
+> > > 		if (digit_count < precision) /* scale up */
+> > > 			f *= int_pow(10, precision - digit_count);
+> > > 
+> > > 		while (isdigit(*end)) /* truncate */
+> > > 			end++;
+> > > 	}
+> > > ...
+> > > 
+> > > but I understand you would not like this approach, because it does not use
+> > > simple_strtoull() or kstrtoull(). Problem is simple_strtoull() is not
+> > > overflow-safe and kstrtoull() does not allow to track a pointer to end
+> > > of the string.
+> > > 
+> > > Given that the current implementation of iio_str_to_fixpoint() is not using
+> > > simple_strtoull() I am not seeing an issue with this approach.  
+> > 
+> > I believe this is the goal, id est to get rid of the code duplication.
+> > The idea is not exactly in _using_ simple_strto*() or kstrto*(), but
+> > deriving the common parts that can be reused here.  
 > 
-> This is an auxiliary driver under the Gen3 ADC driver, which implements the
-> threshold setting and interrupt generating functionalities of QCOM ADC_TM
-> drivers, used to support thermal trip points.
+> Let's recap:
+> - The real goal here is the PLL driver implementation;
+> - Such driver requires 64-bit parsing because frequencies are big values
+>   with sub-Hz resolutions.
+> - IIO helpers currently does not support that, so I added the code in driver;
+> - Duplication and reuse of code argument is valid, so I moved the code to IIO
+>   core.
+> - Existing functions simple_strtoull() and kstrtoull() have their limitations.
 > 
-> Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
+> About the current state of IIO core fixed-point parsing:
+> - Overflow-unsafe;
+> - Does not support 64-bit values;
+> - custom implementation, so does not reuse code;
+> 
+> > For simplicity, we
+> > may leave iio_str_to_fixpoint() alone for now (as you mentioned it
+> > doesn't share currently the code, so can be addressed later on)
+> > and try to provide a treewide available safe_strto*().  
+> 
+> For simplicity, if possible, I still think the work here should be
+> bound to the IIO subsystem. I would like get other pepole's opinion here,
+> As you are increasing the scope of this patch, again.
 
-Hi Jishnu.
+I'd go with what Andy suggests for looking at global unification
+but agree that might be split from what you need here.
 
-Some minor editorial style stuff below if you are spinning again.
-Otherwise this looks good to me
+> 
+> The scope I would like to push for this work:
+> - Add 64-bit parsing support into IIO core;
+Makes sense as it seems we have real users and if you improve the other
+cases along the way (tests etc) all the better!
 
-Reviewed-by: Jonathan Cameron <jonathan.cameron@huawei.com>
-Given I expect this patch will go through the thermal tree and not IIO.
-As mentioned in previous patch review, we've missed this cycle for IIO where
-I'd expect to spin an immutable branch for 1-3 so we can do this early
-next cycle.
+> - Add IIO kunit test for fixed point parsing;
+That sounds particularly good to have.
 
-Thanks,
+> - Get the code to be overflow-safe;
+Don't think anyone has really looked at that parser for a while
+so good to test it better and fix the corner cases.
 
 Jonathan
 
+> 
 
-> diff --git a/drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c b/drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c
-> new file mode 100644
-> index 000000000000..882355d6606d
-> --- /dev/null
-> +++ b/drivers/thermal/qcom/qcom-spmi-adc-tm5-gen3.c
-> @@ -0,0 +1,512 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * Copyright (c) Qualcomm Technologies, Inc. and/or its subsidiaries.
-> + */
-> +
-> +#include <linux/auxiliary_bus.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/bits.h>
-> +#include <linux/cleanup.h>
-> +#include <linux/container_of.h>
-> +#include <linux/device.h>
-
-Similar comment to previous.  It's rare we need device.h
-and if a forwards definition of struct device is enough it
-is better to just do that.
-
-> +#include <linux/device/devres.h>
-> +#include <linux/dev_printk.h>
-> +#include <linux/err.h>
-> +#include <linux/iio/adc/qcom-adc5-gen3-common.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/thermal.h>
-> +#include <linux/types.h>
-> +#include <linux/workqueue.h>
-> +#include <linux/unaligned.h>
-> +
-> +#include "../thermal_hwmon.h"
-
-> +
-> +static void tm_handler_work(struct work_struct *work)
-> +{
-> +	struct adc_tm5_gen3_chip *adc_tm5 = container_of(work, struct adc_tm5_gen3_chip,
-> +							 tm_handler_work);
-> +	int sdam_index = -1;
-> +	u8 tm_status[2] = { };
-> +	u8 buf[16] = { };
-> +
-> +	for (int i = 0; i < adc_tm5->nchannels; i++) {
-
-Not that important but you've been a bit inconsistent on this style
-of putting the loop iterator declaration in the for loop or not.
-You could definitely do it in a few more places.  I didn't comment on those
-because it's a style choice, but consistency is a good idea - hence I'm
-commenting here.
-
-> +		struct adc_tm5_gen3_channel_props *chan_prop = &adc_tm5->chan_props[i];
-> +		int offset = chan_prop->tm_chan_index;
-> +		bool upper_set, lower_set;
-> +		int ret, temp;
-> +		u16 code;
-> +
-> +		scoped_guard(adc5_gen3, adc_tm5) {
-> +			if (chan_prop->sdam_index != sdam_index) {
-> +				sdam_index = chan_prop->sdam_index;
-> +				ret = adc5_gen3_tm_status_check(adc_tm5, sdam_index,
-> +								tm_status, buf);
-> +				if (ret)
-> +					return;
-> +			}
-> +
-> +			upper_set = ((tm_status[0] & BIT(offset)) && chan_prop->high_thr_en);
-> +			lower_set = ((tm_status[1] & BIT(offset)) && chan_prop->low_thr_en);
-> +		}
-> +
-> +		if (!(upper_set || lower_set))
-> +			continue;
-> +
-> +		code = get_unaligned_le16(&buf[2 * offset]);
-> +		dev_dbg(adc_tm5->dev, "ADC_TM threshold code:%#x\n", code);
-> +
-> +		ret = adc5_gen3_therm_code_to_temp(adc_tm5->dev,
-> +						   &chan_prop->common_props,
-> +						   code, &temp);
-> +		if (ret) {
-> +			dev_err(adc_tm5->dev,
-> +				"Invalid temperature reading, ret = %d, code=%#x\n",
-> +				ret, code);
-> +			continue;
-> +		}
-> +
-> +		chan_prop->last_temp = temp;
-> +		chan_prop->last_temp_set = true;
-> +		thermal_zone_device_update(chan_prop->tzd, THERMAL_TRIP_VIOLATED);
-> +	}
-> +}
-
->
-
-> +static int adc_tm5_register_tzd(struct adc_tm5_gen3_chip *adc_tm5)
-> +{
-> +	unsigned int i, channel;
-> +	struct thermal_zone_device *tzd;
-> +	int ret;
-> +
-> +	for (i = 0; i < adc_tm5->nchannels; i++) {
-> +		channel = ADC5_GEN3_V_CHAN(adc_tm5->chan_props[i].common_props);
-> +		tzd = devm_thermal_of_zone_register(adc_tm5->dev, channel,
-> +						    &adc_tm5->chan_props[i],
-> +						    &adc_tm_ops);
-> +
-No blank line here.  Keep the function and the check on it's error tightly
-coupled by not having one.  Slightly improves readability.
-
-> +		if (IS_ERR(tzd)) {
-> +			if (PTR_ERR(tzd) == -ENODEV) {
-> +				dev_warn(adc_tm5->dev,
-> +					 "thermal sensor on channel %d is not used\n",
-> +					 channel);
-
-Why is it a warning?  Seems like maybe they'd sometimes not be used. In which case
-maybe dev_dbg() or dev_info() is more appropriate.
-
-> +				continue;
-> +			}
-> +			return dev_err_probe(adc_tm5->dev, PTR_ERR(tzd),
-> +					     "Error registering TZ zone:%ld for channel:%d\n",
-> +					     PTR_ERR(tzd), channel);
-> +		}
-> +		adc_tm5->chan_props[i].tzd = tzd;
-> +		ret = devm_thermal_add_hwmon_sysfs(adc_tm5->dev, tzd);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +	return 0;
-> +}
-> +
-> +static void adc5_gen3_clear_work(void *data)
-> +{
-> +	struct adc_tm5_gen3_chip *adc_tm5 = data;
-> +
-> +	cancel_work_sync(&adc_tm5->tm_handler_work);
-> +}
-
-> +
-> +static int adc_tm5_probe(struct auxiliary_device *aux_dev,
-> +			 const struct auxiliary_device_id *id)
-> +{
-
-> +	adc5_gen3_register_tm_event_notifier(dev, adctm_event_handler);
-> +
-> +	/*
-> +	 * This is to cancel any instances of tm_handler_work scheduled by
-> +	 * TM interrupt, at the time of module removal.
-> +	 */
-> +
-
-Drop this blank line to keep the association between the comment and the call
-it is talking about.
-
-> +	ret = devm_add_action(dev, adc5_gen3_clear_work, adc_tm5);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = adc_tm5_register_tzd(adc_tm5);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* This is to disable all ADC_TM channels in case of probe failure. */
-> +
-> +	return devm_add_action(dev, adc5_gen3_disable, adc_tm5);
-> +}
