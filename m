@@ -1,48 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E56230DEC0;
-	Sat, 31 Jan 2026 16:50:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2685B3033CA;
+	Sat, 31 Jan 2026 16:57:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769878252; cv=none; b=pxaTn+VOo/bzBRVlOc93NWcVkn41R3I92Kv7xLFADLNRJyCagMeainNqPXt8FD6VPPdlaE+9eky1RwEKx94C2AeEtyKYilBCQ6hc44RZJMilkh4Zfy11ndL3b+jNSL+9ni48VU8R32HGfNlwZCo5RAcF8BVNIWFWZISmwgqgYVU=
+	t=1769878655; cv=none; b=ncq9Reng1VWWCUcmEPgdlCYnd4KshnIuKwzwRZB6sORZh6jDfvVs4+KLEIkdC/PfviwAco962KKcOAQCqWxzxxAxpSlzxXftYhFCe4puRRn6dJ2JuaLHxp8YXoAAw0gsGi+A1ZW4ISrEPRzlcasC/b44rrFYVkFZeIuyNbD10mA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769878252; c=relaxed/simple;
-	bh=O3q+x+gwQ2TcuZN5vB4aSDUBiDxUNT/auhtstOa4Mlg=;
+	s=arc-20240116; t=1769878655; c=relaxed/simple;
+	bh=0HnjZNXfMnu9rOPdh1ZoJ8mpxdEsse0tBsJhDwnMipQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MKCiz3jOgxLU4PDnQd/UlX0S3gUcVLLGYiH4gOJBhC/qr7Ryb86xil3AOnygUU6i2pq9qRpRG6ZyaZDZzjySJ2mTYF8AfW8ZZff7pvtFrSH6TCAKCOIgO0UfhG4iey/cixdoMQw7uvgMJdwPeJR4CyZwTEbQD6yOJZKCnOdulOI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V1LCKBMU; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=YiIAf9ui+ZgqTExC/D1NsudTtgTkQY7BQpIH4SmlI6w6mXJE7AQvsGIAJhnWt1TWfqj3bBA4gZpfoBrLh/hbkxiXglBaRtnGvKZWcHpZsN/2EYBPj/koagIh1Apj457nBjCRPdO08JAqYniuaCD/DORURdfRoxbJrBgrb77xa0g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R0QiGzzG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V1LCKBMU"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEBE1C16AAE;
-	Sat, 31 Jan 2026 16:50:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R0QiGzzG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F742C4CEF1;
+	Sat, 31 Jan 2026 16:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769878251;
-	bh=O3q+x+gwQ2TcuZN5vB4aSDUBiDxUNT/auhtstOa4Mlg=;
+	s=k20201202; t=1769878654;
+	bh=0HnjZNXfMnu9rOPdh1ZoJ8mpxdEsse0tBsJhDwnMipQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=V1LCKBMUTtPUsbM4tE9hyIzDNBJMcc9JWDIYITx57VdgWXxyzF+8CDZPxIXXKgDUz
-	 h8BvAVW2x6y3SId2Ljsa+v2B+HOqxo8CYKpS7icYaDZNXL958njK7yUiIlI8J/kjQV
-	 AO3/5KcMaHcumycrh2iRDhMDCSdR++2+dZ9M7KUQQoX+56D/yMgWpHuSB6h9VkPvTk
-	 ALcjTRuT+Qbfr6mVX1UQytrY8FOr8So2xN1G7hRoqujE8bGfIbxyDlr+f8UhXrQwsZ
-	 HP9YKNiMnNc/IAaqUNdZVBOYYwT6L2D4Z9P1jLxSwpYxSgUONsqduDrTHCPV4nnWUp
-	 FjhQDiTh9mSnQ==
-Date: Sat, 31 Jan 2026 16:50:40 +0000
+	b=R0QiGzzGv6noMgUQyQTuWvgZ8V8HuvKMVCsCZLgoFV1mrvCos61r24vs+5ssEbGj7
+	 ZQSU9BNhZMTHTUmbTqx/H0FffAkapvWfPx/NBTCEr59Xu+5zJbd3CiXvjfSUqCm8uj
+	 tN1qCMdfeST0h79d5Dby8pCTts03bflh8QSoMQ5jRfArB9+NFoT+LNTFlA6xXoNy9A
+	 n0xrYCr0Ab1gJVZA6PHzD2PIuGZ871rudGCkM1vaA79sKzynA/QWAY/UuH4JUV2lQ5
+	 qNLTpXAgOeXJSMQN1B2UHWxhOom/bFcKm0talgpO9FYptPlh3j3CQo5RTXQ+KHaUcP
+	 sTmzNC9+QlfmA==
+Date: Sat, 31 Jan 2026 16:57:24 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Lars-Peter Clausen
- <lars@metafoo.de>, "Hennerich, Michael" <Michael.Hennerich@analog.com>,
- David Lechner <dlechner@baylibre.com>, "Sa, Nuno" <Nuno.Sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Matti Vaittinen
- <mazziesaccount@gmail.com>, Fabio Estevam <festevam@denx.de>, Sakari Ailus
+To: Jonathan Cameron <jonathan.cameron@huawei.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Matti Vaittinen <mazziesaccount@gmail.com>,
+ "Fabio Estevam" <festevam@denx.de>, Sakari Ailus
  <sakari.ailus@linux.intel.com>, Chen-Yu Tsai <wens@kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+ <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 Subject: Re: [PATCH] iio: adc: ad4080: remove unused dec_rate field
-Message-ID: <20260131165040.381d414b@jic23-huawei>
-In-Reply-To: <CY4PR03MB33992FFE27A9A7DB4D7BF9069B9FA@CY4PR03MB3399.namprd03.prod.outlook.com>
+Message-ID: <20260131165724.590bb48f@jic23-huawei>
+In-Reply-To: <20260130173849.00004447@huawei.com>
 References: <20260129172340.34216-1-antoniu.miclaus@analog.com>
-	<aXw_5nryp4dKHVfm@smile.fi.intel.com>
-	<CY4PR03MB33992FFE27A9A7DB4D7BF9069B9FA@CY4PR03MB3399.namprd03.prod.outlook.com>
+	<aXxAVIM3iTXdQJE8@smile.fi.intel.com>
+	<20260130173849.00004447@huawei.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,62 +53,47 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 30 Jan 2026 07:32:58 +0000
-"Miclaus, Antoniu" <Antoniu.Miclaus@analog.com> wrote:
+On Fri, 30 Jan 2026 17:38:49 +0000
+Jonathan Cameron <jonathan.cameron@huawei.com> wrote:
 
-> > -----Original Message-----
-> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > Sent: Friday, January 30, 2026 7:22 AM
-> > To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
-> > Cc: Lars-Peter Clausen <lars@metafoo.de>; Hennerich, Michael
-> > <Michael.Hennerich@analog.com>; Jonathan Cameron <jic23@kernel.org>;
-> > David Lechner <dlechner@baylibre.com>; Sa, Nuno <Nuno.Sa@analog.com>;
-> > Andy Shevchenko <andy@kernel.org>; Matti Vaittinen
-> > <mazziesaccount@gmail.com>; Fabio Estevam <festevam@denx.de>; Sakari
-> > Ailus <sakari.ailus@linux.intel.com>; Chen-Yu Tsai <wens@kernel.org>; linux-
-> > iio@vger.kernel.org; linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH] iio: adc: ad4080: remove unused dec_rate field
-> > 
-> > [External]
-> > 
+> On Fri, 30 Jan 2026 07:23:32 +0200
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> 
 > > On Thu, Jan 29, 2026 at 07:21:58PM +0200, Antoniu Miclaus wrote:  
 > > > Remove unused dec_rate field from ad4080_state struct.
 > > > The driver reads/writes decimation rate directly from
 > > > hardware registers via ad4080_get_dec_rate() and
-> > > ad4080_set_dec_rate() functions.  
+> > > ad4080_set_dec_rate() functions.    
 > > 
-> > It seems you missed my reply to one of your previous series.
-> > Do *not* thread emails which are independent!  
+> > Jonathan, the changes look good to me, but the process wise it made badly.
+> > Up to you, if you want to apply this, but it might be confusing as this is
+> > definitely *not* a series.  
 > 
-> Hi,
+> I'm not planning to queue anything else non urgent for the coming 
+> merge window, so we have plenty of time to do a v2 nicely.
 > 
-> I didn't miss your previous email. I checked now the command used for sending the patches and it didn't include the --thread option
+> I'd not be against having this lot of cleanup as a series if it
+> had a clear cover letter stating tooling used to find them etc.
+> Whilst not one driver, and can merge independently that sort of grouping
+> is fine if it provides some value (such as background info).
 > 
-> From terminal history:
-> `git send-email --to-cmd='./scripts/get_maintainer.pl --norolestats iio-unused/000*' iio-unused/000*`
+I looked through the patches and they all seem fine, but lets
+take the fact I'm not going to be merging anything for a while as
+an opportunity to clean up presentation of this series.
 
-Experiment a bit. These are threaded with all the later ones in reply to the first patch. 
-In-Reply-To: <20260129172340.34216-1-antoniu.miclaus@analog.com>
-is set in the header.
+So I'll wait for v2, as a proper series with a cover letter, patch
+numbering etc.
 
-As I mentioned in other branch of thread. I'd actually prefer sets of patches doing
-a similar thing bundled up in a thread with a cover letter and clear patch numbering.
-That cover letter can provide some brief background info on the common elements of
-the series. Even if it is trivial it puts a sensible grouping on them and reduces
-how commands are needed to apply them.
+Thanks
 
 Jonathan
 
-
 > 
-> Thanks, 
+> Jonathan
 > 
-> > Really, you should have something internally at the AD to explain the process
-> > and the simple things like this.
+> 
 > > 
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
+> > Also some patches should probably have a v2, I haven't checked that.
 > >   
 > 
 > 
