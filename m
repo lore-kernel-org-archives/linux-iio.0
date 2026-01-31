@@ -1,42 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB2E1F0994;
-	Sat, 31 Jan 2026 12:44:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D59BD3254BD;
+	Sat, 31 Jan 2026 15:54:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769863464; cv=none; b=auNQL2TNYwHLAuVIoHwBKk5cDcqyLKpyHQK+CoHK0aZ/DeNoINH6ryxlI+ny2f0ZqHtN8I8A+M1jNdTgYizZqBXeUkqQgQ1xpo352XQI5TFQMFSmhFI55fnYtelMiUl8GbYah2GrhiychdyJ0Nwmgp0nvlA8jkI6PgOAS7CjE40=
+	t=1769874862; cv=none; b=cgQKtGQ2Lpwd81p3+FOKBsu59ZPB/PJWoCKT+FEaBpN9PBX7oEVTs99ldX+gAjDgq1zhrc1fg5bZlOqRaNiPjmLNnThbSlaskfPVW8l59Ttm7M1ELFHwlNZCAY3l/k/G9qVcqECTHBPDyb4Tv8VcOLfCYVUs6qg33zhKtKvG8z0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769863464; c=relaxed/simple;
-	bh=j4jSBMN6WpOBjy0Z+2YjSWPh90OcjoZ7EkRtPnNT98I=;
+	s=arc-20240116; t=1769874862; c=relaxed/simple;
+	bh=D2qi3MpKf9EUAr6FXJLzWwHrp52zNY8AkmPWWxuabHw=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ektgeL2BHuREUupudXLjbMAZzsLajP0dRXqMArIrax3mrAsIcJw4T9ip29V2pBqK9YNKdVaZe4J7cEPLwfhfQTTtA0U26Qo52EI2Y+4siXkQuXqeIFCNLmqGUMNLfM/ebaUAYF0BQ03rzn3JzAAXh19t4NKrYKXVAGsg//DVDeo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E2Op+nPB; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=OIB0lY0UsLDPj4PG0RI1D0WYV5j2DzI9M5F9+zAw6U6O+Hl+k81x13oLbxEf5h1VrMvbeAqS0YLAtBtLSx8FNUyX0Sfq39XyIb0rnmPh7jAYoDB2DRURCGi/tDyfe1YZB11fOMOuqmW8RwiBbwPCj6R76gdvH6bm3NE9Gs1/T3w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Vr3xhK7/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E2Op+nPB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86EF6C4CEF1;
-	Sat, 31 Jan 2026 12:44:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Vr3xhK7/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C427EC4CEF1;
+	Sat, 31 Jan 2026 15:54:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769863464;
-	bh=j4jSBMN6WpOBjy0Z+2YjSWPh90OcjoZ7EkRtPnNT98I=;
+	s=k20201202; t=1769874862;
+	bh=D2qi3MpKf9EUAr6FXJLzWwHrp52zNY8AkmPWWxuabHw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=E2Op+nPBxySIhvV58TOwoXAthBkEk1qpBRvdW3lr3JIBCMw8AKLNLfaIqIox4O5Ug
-	 sS+sB1DfnUTDWKo+37GPFHUTIYtAD9G+Qvn22sseJ6Ssq2dji/2FAioekdmsgS4Xh6
-	 2tirJlgyp1KU2Bmq41yFjBdHv0qam0zo8sczrikVycRCWnfbNsLwKm/eFpidL7JcXb
-	 Myt/4Aep3Scbh9fg6IrZqOZPNPdLsjMIItP+Kswe7Ekr8EeWyqLKqh1O3jLnLdYCGy
-	 i8D5HJOzheMKX0dOuNDNgBP6N90kct+ZOnH5iD/FsHTmWh9aaK4B+tUr25IjjS50N+
-	 wBbvDFR9RrvEg==
-Date: Sat, 31 Jan 2026 12:44:16 +0000
+	b=Vr3xhK7/afDZehNePDSN02qA3bD108WTQ+/Auxr5cBxdwJjMDN683sFqt4YD65wlN
+	 4zr9ck0e2m+Fh15TUc3vbRpDM+Vo7mJXAyBlut4HJRIx095GIcsrEvCY7UKOERmd7a
+	 7x50HnfGWdtJv3p/hjftmIAPoSTb9scziOpG72wxZiwD379x9vJElC6rHCnL2tlGea
+	 xk8dqRuXZsedrtJhalevFvUdGjJ4o7BD3ojIkbV/IS4ezXl/9IcaaIq5YMx/pS+n4i
+	 3Q8K3DCt8r0VYzJdAbwlxBNfx3J6XvLFZVaIXeVc02pXtBdXKFv2SVHvhUUDlZyxfT
+	 NzW3zZ4Iv/3/A==
+Date: Sat, 31 Jan 2026 15:54:13 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Salah Triki <salah.triki@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: trigger: fix use-after-free in
- viio_trigger_alloc()
-Message-ID: <20260131124416.19576731@jic23-huawei>
-In-Reply-To: <20260131092333.247931-1-salah.triki@gmail.com>
-References: <20260131092333.247931-1-salah.triki@gmail.com>
+To: Michael Harris <michaelharriscode@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] staging: iio: adt7316: remove unused macros
+Message-ID: <20260131155413.28fcc701@jic23-huawei>
+In-Reply-To: <20260130-adt7316-correct-macros-v1-1-8a71df1e42f1@gmail.com>
+References: <20260130-adt7316-correct-macros-v1-0-8a71df1e42f1@gmail.com>
+	<20260130-adt7316-correct-macros-v1-1-8a71df1e42f1@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,57 +50,68 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 31 Jan 2026 10:23:33 +0100
-Salah Triki <salah.triki@gmail.com> wrote:
+On Fri, 30 Jan 2026 23:38:27 -0800
+Michael Harris <michaelharriscode@gmail.com> wrote:
 
-Hi Salah,
+> Delete macros that aren't in use
+Hi Michael,
 
-This is a definitely case of the fix not being anywhere as simple
-as it might look at first glance.
+Why?  
 
-> Once `device_initialize()` is called, the reference count of the device
-> is set to 1. The memory associated with the device must then be
-> managed by the kobject reference counting.
-> 
-> In `viio_trigger_alloc()`, if `irq_alloc_descs()` or `kvasprintf()` fails,
-> the code currently calls `kfree()`. Using `kfree()` in this case bypasses
-> the device's release callback and can lead to a use-after-free or memory
-> corruption.
+I'm not against driver authors only introducing register defines they
+are using, but I'm also not against them deciding on comprehensive defines
+or at least making sure they cover all the fields in a given register.
 
-In some cases yes it can cause problems, but please show me an actual
-path to this in the description. It should indeed be tidied up.
+Having only parts of a register defined sometimes makes people miss
+that they can't just write the whole thing because there may be other
+bits they do not indent to change. As such it can be useful to have them there.
 
-> 
-> Fix this by calling `put_device()` instead of `kfree()`. This ensures that
-> the memory is freed properly via `iio_trig_release()` when the reference
-> count drops to zero.
+Thanks,
 
-This change is not sufficient and causes some cleanup to happen twice
-thus introducing some bugs that weren't there before.
-So take another look.
+Jonathan
+
 
 > 
-> Fixes: 2c99f1a09da3d ("iio: trigger: clean up viio_trigger_alloc()")
-> 
-No blank line here.  Scripts that commonly run on the kernel tree rely
-on the the tags block having no blank lines in it to avoid false positives.
-
-> Signed-off-by: Salah Triki <salah.triki@gmail.com>
+> Signed-off-by: Michael Harris <michaelharriscode@gmail.com>
 > ---
->  drivers/iio/industrialio-trigger.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/staging/iio/addac/adt7316.c | 11 -----------
+>  1 file changed, 11 deletions(-)
 > 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 54416a384232..981e19757870 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -597,7 +597,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
->  free_descs:
->  	irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
->  free_trig:
-> -	kfree(trig);
-> +	put_device(&trig->dev);
->  	return NULL;
->  }
+> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> index 8a9a8262c2bec34f3c3e79d8174f492b9a23fb70..4173c8822fff495e8c69d9cf6c11be9e9227a8c1 100644
+> --- a/drivers/staging/iio/addac/adt7316.c
+> +++ b/drivers/staging/iio/addac/adt7316.c
+> @@ -111,7 +111,6 @@
+>  #define ADT7316_AD_SINGLE_CH_MODE	0x10
+>  #define ADT7316_DISABLE_AVERAGING	0x20
+>  #define ADT7316_EN_SMBUS_TIMEOUT	0x40
+> -#define ADT7316_RESET			0x80
 >  
+>  /*
+>   * ADT7316 config3
+> @@ -154,7 +153,6 @@
+>  /*
+>   * ADT7316 value masks
+>   */
+> -#define ADT7316_VALUE_MASK		0xfff
+>  #define ADT7316_T_VALUE_SIGN		0x400
+>  #define ADT7316_T_VALUE_FLOAT_OFFSET	2
+>  #define ADT7316_T_VALUE_FLOAT_MASK	0x2
+> @@ -194,15 +192,6 @@ struct adt7316_chip_info {
+>   * Logic interrupt mask for user application to enable
+>   * interrupts.
+>   */
+> -#define ADT7316_IN_TEMP_HIGH_INT_MASK	0x1
+> -#define ADT7316_IN_TEMP_LOW_INT_MASK	0x2
+> -#define ADT7316_EX_TEMP_HIGH_INT_MASK	0x4
+> -#define ADT7316_EX_TEMP_LOW_INT_MASK	0x8
+> -#define ADT7316_EX_TEMP_FAULT_INT_MASK	0x10
+> -#define ADT7516_AIN1_INT_MASK		0x4
+> -#define ADT7516_AIN2_INT_MASK		0x20
+> -#define ADT7516_AIN3_INT_MASK		0x40
+> -#define ADT7516_AIN4_INT_MASK		0x80
+>  #define ADT7316_VDD_INT_MASK		0x100
+>  #define ADT7316_TEMP_INT_MASK		0x1F
+>  #define ADT7516_AIN_INT_MASK		0xE0
+> 
 
