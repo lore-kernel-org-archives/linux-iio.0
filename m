@@ -1,43 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C07F5322B9F;
-	Sat, 31 Jan 2026 18:26:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C27E732D0EF;
+	Sat, 31 Jan 2026 18:38:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769883967; cv=none; b=QAfFQOgRbb5rVc0iEbOYFhQBYysgEBbswrqFLE0dO6ueQfPh/I3h/wHEqvkub7+tdL6gTf3B6bJ0gfric6lPmaCwcpB873DbwpgRBPaJLWa7TYeyvNYMuBTbHH3YX1TX4QnJE2iQoOCEp54z3hqkJYiJ7rrbkHWBCLWxiqpQEtk=
+	t=1769884706; cv=none; b=E5gid1jGxZWY7yLxHeo3XYf+/nO5TuqWNKuemx9/eSu3Cer/VKyRcunc/FuTU5xDWck+CXbreAbOqom90rbeYCWkeiPcOU7un6kJA2SXGY5J0urpUdOYvlSE3l39MCgBuUdpgIil93nEH9rO/Ia98ZkiuyyUAtN5IHTgaprBA7c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769883967; c=relaxed/simple;
-	bh=zGpOUmhC1t8dp9mcAaXTnujlA/5G8EcJI+Dd6yBMCAM=;
+	s=arc-20240116; t=1769884706; c=relaxed/simple;
+	bh=fgY0+0QZqw1tL+sY0eiNMfskEHFzz4IU7OG0Oh/1DJ0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=q74QSZV4TuSCrF5RecE1T0FUeN/33XE1xtCXbz44Z/9pu9CYCFl30+jHmsiz4tYqJOGYtn3s8QfThOAqPi3NaRyeOj0O5FnAw8qMghDaUetZU+X8PEVCvZPt+t1/dq32L9UH5t/T1z9VbV2KrlIdzJHeBCecQi1i0YBZl3iM+lA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dC5r7yCg; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=SuaOf9BKmEYo03wzwtGP0wTJzXFkiPA9IVLidDaahBN98fXCdTtEYH9ia7XE2vCK+GjavjS1iJ7mD0OugaCupnWEE620V/4AB/os6uOwaA8Vwi5RukR5BRHb19buw5Lz3fN17/ZGhgvgHrSFDUeWVdDsh471Q5udqv2VZuZ3Fjg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lSR+iu1/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dC5r7yCg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C626CC4CEF1;
-	Sat, 31 Jan 2026 18:26:03 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lSR+iu1/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D672C4CEF1;
+	Sat, 31 Jan 2026 18:38:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769883967;
-	bh=zGpOUmhC1t8dp9mcAaXTnujlA/5G8EcJI+Dd6yBMCAM=;
+	s=k20201202; t=1769884706;
+	bh=fgY0+0QZqw1tL+sY0eiNMfskEHFzz4IU7OG0Oh/1DJ0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=dC5r7yCgFd7t+6Qg1H+iIcEO/fwAHnB4veG5FihEVdcdj4oq/KlHw68jpB3lLLw3j
-	 xy6DDBv9lSIPEpSmAfeQAGD5H1BQ5xu7AhLrT2go16dvrOPGby59cr2wdbsAhopF8o
-	 FC8BjyHSebADNzYFVjm7WwB7EavwPHs6h+8ZyWXqvd5TLbodh03NWRDBCYw/Ro+e4h
-	 XANOnYLf65JtW/pKpnci6oHkjwcfDs0cenQKbe3c+9LVUD59EsBnT/Ludd5xhmofZ7
-	 iIdQu0Hgv2uHld07k0yq/uQCDc2bbBCQlodY7/9D/8bf1NnygZ5sOGgXnpP0kUmOWl
-	 u8iRmwAN9h7Lw==
-Date: Sat, 31 Jan 2026 18:25:58 +0000
+	b=lSR+iu1/KGJYow5YooE88q6p7aQdo9+yOws+EqUDTTc9EPA2ZqJUsg0xro4lNJDdB
+	 zdI5f1/BiVaaYUu2y+CF1/bBoSaEesoFij2ywBYJkZfLTt7B9/XAttEO3b8SE2xXfq
+	 W8zE+Eo97KbLTOeFzGMJSvOfnOLmMnbKY+Nh4Z3nfs/EJ2d+VpYzMY/KHUj5N3J5Hr
+	 L6vDVZVy2B8bARzarmMfvSqIqZRmPgC18qtmqR5gxbUZ7H/A7FIooST9+uSdR+7HsT
+	 /XHpqaKus3McNnjF50bgDRmr6D3SpfXwwn8v/ZYjSDHQdpOCG1drBTdBB2d3FR0LOZ
+	 ZH/W0AI3koC5Q==
+Date: Sat, 31 Jan 2026 18:38:18 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: SeungJu Cheon <suunj1331@gmail.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
- Michael.Hennerich@analog.com, andriy.shevchenko@intel.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+To: Francesco Lavra <flavra@baylibre.com>
+Cc: Jonathan Cameron <jonathan.cameron@huawei.com>, Lorenzo Bianconi
+ <lorenzo@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio:frequency:adf4377: Fix duplicated soft reset
- mask
-Message-ID: <20260131182558.464e534e@jic23-huawei>
-In-Reply-To: <20260123194758.15445-1-suunj1331@gmail.com>
-References: <20260123194758.15445-1-suunj1331@gmail.com>
+Subject: Re: [PATCH v5 4/4] iio: imu: st_lsm6dsx: Add support for rotation
+ sensor
+Message-ID: <20260131183818.29ac51e0@jic23-huawei>
+In-Reply-To: <6ae1019a543a744344720840d35c179d7fa3c43c.camel@baylibre.com>
+References: <20260122162335.2020006-1-flavra@baylibre.com>
+	<20260122162335.2020006-5-flavra@baylibre.com>
+	<20260122202943.344e7311@jic23-huawei>
+	<c722a6a28788ee36b5c87b0a98ec29f2f945470c.camel@baylibre.com>
+	<20260123174810.00007ce5@huawei.com>
+	<6ae1019a543a744344720840d35c179d7fa3c43c.camel@baylibre.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,55 +50,273 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, 24 Jan 2026 04:47:58 +0900
-SeungJu Cheon <suunj1331@gmail.com> wrote:
+On Mon, 26 Jan 2026 12:15:11 +0100
+Francesco Lavra <flavra@baylibre.com> wrote:
 
-> The regmap_read_poll_timeout() uses ADF4377_0000_SOFT_RESET_R_MSK
-> twice instead of checking both SOFT_RESET_MSK (bit 0) and
-> SOFT_RESET_R_MSK (bit 7). This causes an incomplete reset status check.
-> 
-> The code first sets both SOFT_RESET and SOFT_RESET_R bits to 1 via
-> regmap_update_bits(), then polls for them to be cleared. Since we set
-> both bits before polling, we should be waiting for both to clear.
-> 
-> Fix by using both masks as done in regmap_update_bits() above.
-> 
-> Fixes: eda549e2e524 ("iio:frequency:adf4377: add support for ADF4377")
-> Signed-off-by: SeungJu Cheon <suunj1331@gmail.com>
-For now I've applied this to a local branch which I'll push out once
-I have a suitable base (release, or rc1 depending on when I do it).
+> On Fri, 2026-01-23 at 17:48 +0000, Jonathan Cameron wrote:
+> > On Fri, 23 Jan 2026 12:03:29 +0100
+> > Francesco Lavra <flavra@baylibre.com> wrote:
+> >  =20
+> > > On Thu, 2026-01-22 at 20:29 +0000, Jonathan Cameron wrote: =20
+> > > > On Thu, 22 Jan 2026 17:23:35 +0100
+> > > > Francesco Lavra <flavra@baylibre.com> wrote:
+> > > > =C2=A0  =20
+> > > > > Some IMU chips in the LSM6DSX family have sensor fusion features
+> > > > > that
+> > > > > combine data from the accelerometer and gyroscope. One of these
+> > > > > features
+> > > > > generates rotation vector data and makes it available in the
+> > > > > hardware
+> > > > > FIFO as a quaternion (more specifically, the X, Y and Z components
+> > > > > of
+> > > > > the
+> > > > > quaternion vector, expressed as 16-bit half-precision floating-
+> > > > > point
+> > > > > numbers).
+> > > > >=20
+> > > > > Add support for a new sensor instance that allows receiving sensor
+> > > > > fusion
+> > > > > data, by defining a new struct st_lsm6dsx_sf_settings (which
+> > > > > contains
+> > > > > chip-specific details for the sensor fusion functionality), and
+> > > > > adding
+> > > > > this
+> > > > > struct as a new field in struct st_lsm6dsx_settings. In
+> > > > > st_lsm6dsx_core.c,
+> > > > > populate this new struct for the LSM6DSV and LSM6DSV16X chips, and
+> > > > > add
+> > > > > the
+> > > > > logic to initialize an additional IIO device if this struct is
+> > > > > populated
+> > > > > for the hardware type being probed.
+> > > > > Note: a new IIO device is being defined (as opposed to adding
+> > > > > channels
+> > > > > to
+> > > > > an existing device) because the rate at which sensor fusion data =
+is
+> > > > > generated may not match the data rate from any of the existing
+> > > > > devices.
+> > > > >=20
+> > > > > Tested on LSMDSV16X.
+> > > > >=20
+> > > > > Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+> > > > > Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>=C2=A0  =20
+> > > > =C2=A0  =20
+> > > > > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > > > > b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > > > > index ded9a96076e6..3b4fa57bf461 100644
+> > > > > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > > > > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c=C2=A0  =20
+> > > > =C2=A0  =20
+> > > > > @@ -580,6 +584,16 @@ st_lsm6dsx_push_tagged_data(struct
+> > > > > st_lsm6dsx_hw
+> > > > > *hw, u8 tag,
+> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0case ST_LSM6DSX_E=
+XT2_TAG:
+> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0iio_dev =3D hw->iio_devs[ST_LSM6DSX_ID_EXT=
+2];
+> > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0break;
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0case ST_LSM6DSX_ROT_TA=
+G:
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0/*
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 * The sensor reports only the {X, Y, Z} elements
+> > > > > of
+> > > > > the
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 * quaternion vector; set the W value to 0 (it c=
+an
+> > > > > be
+> > > > > derived
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 * from the {X, Y, Z} values due to the property
+> > > > > that
+> > > > > the vector
+> > > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0 * is normalized).=C2=A0  =20
+> > > >=20
+> > > > I'd missed this before.=C2=A0 This is going to really confuse user =
+space.
+> > > > I don't think we can just return it with a 0 in that last entry.
+> > > > At the very least we need an ABI doc update to reflect this oddity.
+> > > >=20
+> > > > I don't think that is enough though. This isn't a quaternion, but
+> > > > rather something we can derive one from. Annoying though it is,
+> > > > we can't realistically fix it up in kernel, so we are probably
+> > > > talking
+> > > > a new MOD_TYPE.=C2=A0  =20
+> > >=20
+> > > Quaternion data read from the sensor is expressed in floating-point
+> > > format,
+> > > and as such needs to be interpreted by userspace in a "non-standard"
+> > > way
+> > > (note there is no scale in the channel info, and this is intentional
+> > > because we are not dealing with integers) regardless of whether the W
+> > > value
+> > > is present or must be derived.
+> > > Isn't the absence of the scale info enough to let userspace know that
+> > > this
+> > > data is non-standard? =20
+> >=20
+> > Given both scale and offset are optional with defaults of 1.0 and 0 if
+> > not there, likely code won't notice that both are missing and under
+> > the ABI that would just make _raw =3D=3D _scale which is odd but not
+> > specifically
+> > excluded.
+> >  =20
+> > > Only applications that know how to deal specifically
+> > > with this sensor device can make sense of the data (and these
+> > > applications
+> > > know that the quaternion vector is normalized and the W value must be
+> > > derived from X, Y, Z). =20
+> >=20
+> > This is the sort of feature that I'm reluctant to support. The only thi=
+ng
+> > that we have let in (because it was truely obscure) that looks like this
+> > is pulse oximeters - the stuff in drivers/iio/health. It's a complex
+> > many reading maths thing to go from the data to the actual thing being
+> > measured.=C2=A0 The purpose of unified interfaces is being able to use =
+them
+> > across different sensors. Here we can't.=C2=A0 Hence this need some car=
+eful
+> > thought. =20
+>=20
 
-Given Antoniu and Andy's involvement in earlier discussion, still plenty of time
-to add tags or indeed suggest I drop it again for a v4!
+Took me a while to reply because I wanted to think about this a little.
 
-Thanks,
+> I see. So there are two things that need to be fixed:
+>=20
+> 1. the floating point format: as David suggested in the other post, the
+> specification of the scan type could be amended to allow floating point
+> formats; how about adding a new option to the ABI for the sign character
+> (which could perhaps be renamed to `format` in struct iio_scan_type)?
+> Currently we have 's' for signed and 'u' for unsigned: could we add 'f' f=
+or
+> IEEE 754 floats?
+> Then the 'bits' part can have values in the {16,32,64}
+> set, to indicate half-, single- or double-precision numbers, respectively;
+> but could also not specify what numbers of bits are allowed in the ABI, a=
+nd
+> just refer to the IEEE 754 standard for the available formats.
+
+I'd not thought of that approach. At first thought seems like a good idea
+given as you note we already have the precision.  Document it clearly as
+being IEEE 754 as I suspect if we open the door to floats we'll get some
+others given there are far too many formats out there and we care about
+small ones for sensors where it gets even messier!  So subject to seeing
+the code and ABI docs this sounds good to me.
+
+>=20
+> 2. the absence of the W value in the quaternion vector; possible solutions
+> to this issue could be:
+> - adding in_rot_{x,y,z}_* (and perhaps in_rot_w_*) to the ABI to represent
+> the individual components of the quaternion as separate channels; if the w
+> channel is not present, its sample values could be derived from the other
+> channels under the assumptions that the vector is normalized and the
+> rotation angle is in the [-180, 180] range
+> - adding something like in_rot_reduced_quaternion_*, which would be the
+> same as in_rot_quaternion_* with the exclusion of the W component, which
+> could be derived as above
+
+I've been mulling this over. Given quaternion components on their own are
+more or less meaningless and there isn't a clean way to describe a quaterni=
+on
+with missing bits, I don't think breaking it out into components makes sense
+(that's why we added the multi part channels in the first place).
+
+I think maybe we should just allow for a custom channel type and it's
+up to custom userspace to deal with it. that lets us just output this as
+a 3 part value for a channel of type IIO_CUSTOM.
+
+Expectation is anyone using the custom type must provide a per driver
+document to explain what it is actually is, preferably with links to usersp=
+ace
+code to interpret it etc.
+
+Getting those documents reviewed would be the gate on this getting abused
+in upstream drivers for things that really should be normal types.
+So when adding the type, add a comment on that being required as well.
+
+>=20
+> > >  =20
+> > > > Also it's been a long time since I did much with quaternions,
+> > > > but isn't the sign of w ambiguous if we are relying on only X, Y and
+> > > > Z?
+> > > > A bit of googling + AI suggests flipping it inverts the direction of
+> > > > rotation around a given axis. Feels like there is a constraint
+> > > > missing
+> > > > in this description.=C2=A0  =20
+> > >=20
+> > > Flipping the sign of W doesn't just invert the direction of rotation,
+> > > it
+> > > basically applies an offset of -360 degrees; if a value w0 indicates a
+> > > rotation by an angle theta0, the value -w0 indicates a rotation by
+> > > (theta0
+> > > - 360), which is basically the same as rotating by theta0. So knowing
+> > > the
+> > > {X, Y, Z} values is enough to have a non-ambiguous orientation. =20
+> >=20
+> > Ok. Taking a while to remember this stuff, but I'm fairly sure it isn't
+> > quite
+> > that.
+> > Inverting w is the difference between theta and (360 - theta) not (theta
+> > - 360)
+> > given the 360 doesn't matter as you say, it's a clockwise vs
+> > anticlockwise
+> > rotation.
+> >=20
+> > Lets take a vector to rotate (say representing up on a screen represnted
+> > as pure quaternion=C2=A0 v=3D (0 1 0 0). Apply rotation quaternion to r=
+otate
+> > that about the
+> > Y axis by 90 degrees in one direction (I'm too lazy to figure out which
+> > but doesn't
+> > matter!)
+> > q =3D (cos(theta/2), 0, sin(theta/2)j, 0)
+> > =C2=A0 =3D (sqrt(2)/2, 0, sqrt(2)/2, 0)
+> >=20
+> > Apply rotation is q v q'=20
+> >=20
+> > So multiplying it out=20
+> > (sqrt(2)/2, 0, (sqrt(2)/2)j, 0) (0, 1i, 0 0) (sqrt(2)/2, 0, -
+> > (sqrt(2)/2)j, 0)
+> > Given it's all multiples of (Sqrt(2)/2) Lets call that A
+> > =3D (A, 0, Aj, 0)(0, 1j, 0, 0)(A, 0, -Aj, 0)
+> > =3D (0, Ai, 0, -Ak) (A, 0, -Aj, 0)
+> > =3D (0, (A*A - (-A)*(-A))i, 0, (A *(-A) + (-A) * A)j)
+> > =3D (0, 0, 0, -1) or down on the z axis
+> >=20
+> > Same again, but now flip the W value
+> >=20
+> > (-A, 0, Aj, 0)(0, 1j, 0, 0)(-A, 0, -Aj, 0)
+> > =3D (0, (-A)i, 0, -(A)k)(-A, 0, -Aj, 0)
+> > =3D (0, ((-A)*(-A) -=C2=A0 (-A)*(-A))j, 0, (-A)*(-A) + (-A)*(-A)
+> > =3D (0, 0, 0, 1) or up on the z axis. =20
+>=20
+> OK, I got the math wrong, flipping the W value does indeed invert the
+> direction of rotation as you said. As alluded to above, the missing
+> constraint is that the amount of rotation is within the [-180, 180] range:
+> this ensures that cos(theta/2) is always non-negative and removes the
+> ambiguity, while still allowing all possible orientations in 3D space to =
+be
+> represented.
+
+Ok. We'll need to have that in the per driver doc.
+Thanks for chasing that down.
 
 Jonathan
 
-> ---
-> v3:
->  - Summarize discussion about why both bits need to be checked
-> 
-> v2:
->  - Add Fixes tag
-> 
->  drivers/iio/frequency/adf4377.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/frequency/adf4377.c b/drivers/iio/frequency/adf4377.c
-> index 08833b7035e4..48aa4b015a14 100644
-> --- a/drivers/iio/frequency/adf4377.c
-> +++ b/drivers/iio/frequency/adf4377.c
-> @@ -501,7 +501,7 @@ static int adf4377_soft_reset(struct adf4377_state *st)
->  		return ret;
->  
->  	return regmap_read_poll_timeout(st->regmap, 0x0, read_val,
-> -					!(read_val & (ADF4377_0000_SOFT_RESET_R_MSK |
-> +					!(read_val & (ADF4377_0000_SOFT_RESET_MSK |
->  					ADF4377_0000_SOFT_RESET_R_MSK)), 200, 200 * 100);
->  }
->  
+
+>=20
+> > Anyhow, that is moot if we don't figure out what to do about the fact
+> > we are forcing data into a representation a long way from what
+> > user space accepts.
+> >=20
+> > Jonathan =20
 
