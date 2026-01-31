@@ -1,46 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF6B376026;
-	Sat, 31 Jan 2026 16:21:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5546D2253EE;
+	Sat, 31 Jan 2026 16:28:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769876510; cv=none; b=DBnhr5PxrhudYVTNSpL8jCEJWB3smSvpZbynMjc8pkvtkHKHctClr35AbNyg+mn9xphJktB+lcGwTH0Yd4I1vPsGrz+bQdpvji+c89pa+xryGTCAgTO5d/UtXOL9N59kYiruSTK85kACRoWk1g50nYL6fh7a3XQ4N4uyUJAZLPk=
+	t=1769876896; cv=none; b=uO6vN6neLeLW6AXMj+dmWAAbA7p3Tpc7h1rzEAGomQtF0NXrbu0US2PJssp5Hzlu6W2aCYu0Mn5aM5cwEqizSAbYSYYrAcUJkFnq0HpATPDKsD2qAkckvWgFYLOF8I05OWftxUE5B5bWaYunMiMwuUl/rDZagAjiGjWgh5YVldw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769876510; c=relaxed/simple;
-	bh=OBCZg9KLn/ui3hSVhJykRlYumITd7LzKcJiWMbTKIjk=;
+	s=arc-20240116; t=1769876896; c=relaxed/simple;
+	bh=BEtBRfTit4dIELcxbKHdR2TWAhT9f10WCj8gNS10tk8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pvUoMbcw6WBlWF6emidAPa9eR5dUQfWq5F2E7JjmRt+gOR0bTG9py05kWz+WNLh0d+/gzubD8WsS0Qa/KDGpSaOt1yz8VbR5tJmn+IRmanh1rzty3Jrcj4BsDSJiPu2Y6R8PZC0NQto3meIadqaIM9mw1rFw7RIy9uaaBAllBko=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D8qE3GC4; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=l9D1ZfxeDW0rFebTbG6D0ghBJ061meAnwhGgBYWGATh+fpEAbiuFxs6oX9xGMwldQ14VMjdWhq8CKTZL9wjLUdv49mPhCXgGzAk79qb2agzQteMQRBJJkSabkajDmHcFK8rzrySzUnecGQS2GlaTTbbV6EB5ww0oL62qA69hEpY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=umsIXOJ1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D8qE3GC4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F6CAC4CEF1;
-	Sat, 31 Jan 2026 16:21:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="umsIXOJ1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E3E9C4CEF1;
+	Sat, 31 Jan 2026 16:28:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769876509;
-	bh=OBCZg9KLn/ui3hSVhJykRlYumITd7LzKcJiWMbTKIjk=;
+	s=k20201202; t=1769876895;
+	bh=BEtBRfTit4dIELcxbKHdR2TWAhT9f10WCj8gNS10tk8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=D8qE3GC46mgKxWZJr01qt0nROWO8dMfeDaAb74VJl1gk4I6QeG3Ue6sOAHiQeOZe8
-	 67gqW3gbZp3yG990ryDkFgNomj0rMJt/Za7liylBnvbutjRU+8FxEcBRneHao5d7PL
-	 rAsiowWVSbastKQjMm+Ry8XIoLYrzqe1qw+NJ1qWQE1pA3Hq6K+vB4981JsWRrTt7t
-	 McztmT/+sZw4N4Q0cbnsHsfmzHeAgpeEbk3g9grmy6AH5NohThgrPgyBCrcUyOzt0e
-	 XBGsXBk9d5RndJR3LIPjhFJNiCXZcZjezSxdiZ6xFppvUutzgrkqZK8V0A1q2E4arQ
-	 O3SAHyhqBc7hA==
-Date: Sat, 31 Jan 2026 16:21:40 +0000
+	b=umsIXOJ1gso9gHpoD5de8wAE+UnRgRoCTf5u00CVKCrzE+jMUmD9it+IR3epwtjJD
+	 GEtKpOCX4qutWejQHug4omdBT0r1WUrTYJRpgfnCkFWunaMniHY5WGC3A03zYZUeZW
+	 K72b+FQvMcf+YwQvbx+gJucQp79op08/Zzyi31J2hgOebkd/SeogwvTnFemUk+Ow/T
+	 tHWpmGxKTP6dFrq4dktET3WW9FagYOCyftq26CjtgnqNIs5JFgPzJeQ+II8+VKZGmE
+	 uxM06rsqGcGHyOr28MssaHgW2GIQH0SjQaguy+S7ATYiVWvlOwY3B9H272WNnRK57d
+	 /5nCf7XlCME8g==
+Date: Sat, 31 Jan 2026 16:28:07 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Michael Harris <michaelharriscode@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] staging: iio: adt7316: convert magic numbers to
- BIT() and GENMASK()
-Message-ID: <20260131162140.5abb833b@jic23-huawei>
-In-Reply-To: <20260130-adt7316-correct-macros-v1-2-8a71df1e42f1@gmail.com>
-References: <20260130-adt7316-correct-macros-v1-0-8a71df1e42f1@gmail.com>
-	<20260130-adt7316-correct-macros-v1-2-8a71df1e42f1@gmail.com>
+To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Andrew Ijano
+ <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org (open list:IIO
+ SUBSYSTEM AND DRIVERS), linux-kernel@vger.kernel.org (open list),
+ kernel-janitors@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH next 1/4] iio: sca3000: cache SPI device ID in probe
+Message-ID: <20260131162807.137bb92a@jic23-huawei>
+In-Reply-To: <20260130214323.236389-2-harshit.m.mogalapalli@oracle.com>
+References: <20260130214323.236389-1-harshit.m.mogalapalli@oracle.com>
+	<20260130214323.236389-2-harshit.m.mogalapalli@oracle.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,245 +48,88 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-On Fri, 30 Jan 2026 23:38:28 -0800
-Michael Harris <michaelharriscode@gmail.com> wrote:
+On Fri, 30 Jan 2026 13:43:08 -0800
+Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com> wrote:
 
-> Improve readability by converting raw hex macros to use BIT() or GENMASK()
-> instead.
->=20
-> Update a few sysfs_emit() string formats to expect the unsigned long type
-> given by BIT() and GENMASK() and prevent compiler errors.
->=20
-> Signed-off-by: Michael Harris <michaelharriscode@gmail.com>
+> Store the spi_device_id at probe entry and reuse it for the name and
+> chip info instead of calling spi_get_device_id() repeatedly.
+> 
+> Reuse the local dev pointer for resource managed helpers. While at it,
+> reshuffle variable list in a reverse Christmas tree order.
+> 
+> No functional change intended.
+> 
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Hi Harshit,
+
+A few comments inline but they are all about extra things to do rather
+than really being comments on this patch which is fine as a starting point.
+
 > ---
->  drivers/staging/iio/addac/adt7316.c | 80 ++++++++++++++++++-------------=
-------
->  1 file changed, 40 insertions(+), 40 deletions(-)
->=20
-> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/ad=
-dac/adt7316.c
-> index 4173c8822fff495e8c69d9cf6c11be9e9227a8c1..0af7e18ff9684993622a26811=
-0f0a17c0bff3616 100644
-> --- a/drivers/staging/iio/addac/adt7316.c
-> +++ b/drivers/staging/iio/addac/adt7316.c
-> @@ -29,11 +29,11 @@
+>  drivers/iio/accel/sca3000.c | 13 +++++++------
+>  1 file changed, 7 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
+> index 9ef4d6e27466..afe6ef61a53b 100644
+> --- a/drivers/iio/accel/sca3000.c
+> +++ b/drivers/iio/accel/sca3000.c
+> @@ -1439,11 +1439,13 @@ static const struct iio_info sca3000_info = {
+>  
+>  static int sca3000_probe(struct spi_device *spi)
+>  {
+> -	int ret;
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+
+This is probably ok as an intermediate step, but ultimately we
+shouldn't be using the spi_device_id at all.
+
+id->driver_data should be a pointer to a named (not in array)
+sca3000_chip_info structure and so should the data in the of_match_id
+table etc.
+
+Then we use spi_get_device_match_data() which prefers the of_device_id
+table entry (which would needed adding).
 
 
-> @@ -88,19 +88,19 @@
->  /*
->   * ADT7316 config1
->   */
-> -#define ADT7316_EN			0x1
-> -#define ADT7516_SEL_EX_TEMP		0x4
-> -#define ADT7516_SEL_AIN1_2_EX_TEMP_MASK	0x6
-> -#define ADT7516_SEL_AIN3		0x8
-> -#define ADT7316_INT_EN			0x20
-> -#define ADT7316_INT_POLARITY		0x40
-> -#define ADT7316_PD			0x80
-> +#define ADT7316_EN			BIT(0)
-Arguably its a separate change but I'd much prefer if these defines
-included what register they were found in. That is things like
+> +	struct device *dev = &spi->dev;
+>  	struct sca3000_state *st;
+>  	struct iio_dev *indio_dev;
+> +	int ret;
+>  
+> -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+>  
+> @@ -1451,10 +1453,9 @@ static int sca3000_probe(struct spi_device *spi)
+>  	spi_set_drvdata(spi, indio_dev);
+>  	st->us = spi;
+>  	mutex_init(&st->lock);
+> -	st->info = &sca3000_spi_chip_info_tbl[spi_get_device_id(spi)
+> -					      ->driver_data];  
+> +	st->info = &sca3000_spi_chip_info_tbl[id->driver_data];
+>  
+> -	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->name = id->name;
 
-#define ADT7316_CONFIG1_EN
-etc. It makes it a lot easier to spot mismatches in the code.
+This also needs an update to make it get the name from within the
+chip_info structure.  Whilst this works today it can be fragile
+if we have dt compatibles that don't match exactly with the spi_device_id
+table entries.
 
-Also this define sounds like it would be general enable / disable of capture
-but it seems to only be about monitoring modes.
-
-> +#define ADT7516_SEL_EX_TEMP		BIT(2)
-That's not a mask.  It is a value and it should clearly placed
-in the relevant field, so you can do things like
-FIELD_PREP(ADT7516_SEL_AIN1_2_EX_TEMP_MASK, ADT7516...TEMP)
-So it should take the value 2 =3D=3D b10 not BIT(2).
-
-> +#define ADT7516_SEL_AIN1_2_EX_TEMP_MASK	GENMASK(2, 1)
-I'd put the masks before the values.=20
-
-> +#define ADT7516_SEL_AIN3		BIT(3)
-> +#define ADT7316_INT_EN			BIT(5)
-> +#define ADT7316_INT_POLARITY		BIT(6)
-> +#define ADT7316_PD			BIT(7)
-> =20
->  /*
->   * ADT7316 config2
->   */
-> -#define ADT7316_AD_SINGLE_CH_MASK	0x3
-> -#define ADT7516_AD_SINGLE_CH_MASK	0x7
-> +#define ADT7316_AD_SINGLE_CH_MASK	GENMASK(1, 0)
-> +#define ADT7516_AD_SINGLE_CH_MASK	GENMASK(2, 0)
->  #define ADT7316_AD_SINGLE_CH_VDD	0
->  #define ADT7316_AD_SINGLE_CH_IN		1
->  #define ADT7316_AD_SINGLE_CH_EX		2
-> @@ -108,54 +108,54 @@
->  #define ADT7516_AD_SINGLE_CH_AIN2	3
->  #define ADT7516_AD_SINGLE_CH_AIN3	4
->  #define ADT7516_AD_SINGLE_CH_AIN4	5
-> -#define ADT7316_AD_SINGLE_CH_MODE	0x10
-> -#define ADT7316_DISABLE_AVERAGING	0x20
-> -#define ADT7316_EN_SMBUS_TIMEOUT	0x40
-> +#define ADT7316_AD_SINGLE_CH_MODE	BIT(4)
-> +#define ADT7316_DISABLE_AVERAGING	BIT(5)
-> +#define ADT7316_EN_SMBUS_TIMEOUT	BIT(6)
-As commented on previous patch I'd prefer a full register definition
-even if a few bits aren't used. Makes it easier to spot when they
-are being accidentally cleared.
-
-> =20
->  /*
->   * ADT7316 config3
->   */
-> -#define ADT7316_ADCLK_22_5		0x1
-> -#define ADT7316_DA_HIGH_RESOLUTION	0x2
-> -#define ADT7316_DA_EN_VIA_DAC_LDAC	0x8
-> -#define ADT7516_AIN_IN_VREF		0x10
-> -#define ADT7316_EN_IN_TEMP_PROP_DACA	0x20
-> -#define ADT7316_EN_EX_TEMP_PROP_DACB	0x40
-> +#define ADT7316_ADCLK_22_5		BIT(0)
-> +#define ADT7316_DA_HIGH_RESOLUTION	BIT(1)
-> +#define ADT7316_DA_EN_VIA_DAC_LDAC	BIT(3)
-> +#define ADT7516_AIN_IN_VREF		BIT(4)
-> +#define ADT7316_EN_IN_TEMP_PROP_DACA	BIT(5)
-> +#define ADT7316_EN_EX_TEMP_PROP_DACB	BIT(6)
-> =20
->  /*
->   * ADT7316 DAC config
->   */
-> -#define ADT7316_DA_2VREF_CH_MASK	0xF
-> -#define ADT7316_DA_EN_MODE_MASK		0x30
-> +#define ADT7316_DA_2VREF_CH_MASK	GENMASK(3, 0)
-> +#define ADT7316_DA_EN_MODE_MASK		GENMASK(5, 4)
->  #define ADT7316_DA_EN_MODE_SHIFT	4
->  #define ADT7316_DA_EN_MODE_SINGLE	0x00
->  #define ADT7316_DA_EN_MODE_AB_CD	0x10
->  #define ADT7316_DA_EN_MODE_ABCD		0x20
->  #define ADT7316_DA_EN_MODE_LDAC		0x30
-> -#define ADT7316_VREF_BYPASS_DAC_AB	0x40
-> -#define ADT7316_VREF_BYPASS_DAC_CD	0x80
-> +#define ADT7316_VREF_BYPASS_DAC_AB	BIT(6)
-> +#define ADT7316_VREF_BYPASS_DAC_CD	BIT(7)
-> =20
->  /*
->   * ADT7316 LDAC config
->   */
-> -#define ADT7316_LDAC_EN_DA_MASK		0xF
-> -#define ADT7316_DAC_IN_VREF		0x10
-> -#define ADT7516_DAC_AB_IN_VREF		0x10
-> -#define ADT7516_DAC_CD_IN_VREF		0x20
-> +#define ADT7316_LDAC_EN_DA_MASK		GENMASK(3, 0)
-> +#define ADT7316_DAC_IN_VREF		BIT(4)
-> +#define ADT7516_DAC_AB_IN_VREF		BIT(4)
-> +#define ADT7516_DAC_CD_IN_VREF		BIT(5)
->  #define ADT7516_DAC_IN_VREF_OFFSET	4
-Try and get rid of separate shifts / offsets.  (I think this
-is just a shift?)  Replace them with use of FIELD_GET()/ FIELD_PREP() and
-the mask.
-
-A precursor patch doing that might make this patch easier to
-read as all the shifts would likely be gone.
-
-> -#define ADT7516_DAC_IN_VREF_MASK	0x30
-> +#define ADT7516_DAC_IN_VREF_MASK	GENMASK(5, 4)
-> =20
->  /*
->   * ADT7316 INT_MASK2
->   */
-> -#define ADT7316_INT_MASK2_VDD		0x10
-> +#define ADT7316_INT_MASK2_VDD		BIT(4)
-> =20
->  /*
->   * ADT7316 value masks
->   */
-> -#define ADT7316_T_VALUE_SIGN		0x400
-> +#define ADT7316_T_VALUE_SIGN		BIT(10)
-
-=46rom a quick glance, these are all 2's complement.
-As such, using sign_extend32() or similar would be much nicer
-than the custom sign manipulation in here and the need for
-this macro would probably go away.
-
->  #define ADT7316_T_VALUE_FLOAT_OFFSET	2
-> -#define ADT7316_T_VALUE_FLOAT_MASK	0x2
-> +#define ADT7316_T_VALUE_FLOAT_MASK	BIT(1)
-The usage of these is also rather strange and more about
-a fixed point maths conversion than anything related to registers.
-I'd expect that to get cleaned up by reporting temperature as _raw
-and providing an appropriate scale.
-
-> =20
->  /*
->   * Chip ID
-> @@ -167,7 +167,7 @@
->  #define ID_ADT7517		0x12
->  #define ID_ADT7519		0x14
-> =20
-> -#define ID_FAMILY_MASK		0xF0
-> +#define ID_FAMILY_MASK		GENMASK(7, 4)
->  #define ID_ADT73XX		0x0
->  #define ID_ADT75XX		0x10
-> =20
-> @@ -192,9 +192,9 @@ struct adt7316_chip_info {
->   * Logic interrupt mask for user application to enable
->   * interrupts.
->   */
-> -#define ADT7316_VDD_INT_MASK		0x100
-> -#define ADT7316_TEMP_INT_MASK		0x1F
-> -#define ADT7516_AIN_INT_MASK		0xE0
-> +#define ADT7316_VDD_INT_MASK		BIT(8)
-> +#define ADT7316_TEMP_INT_MASK		GENMASK(4, 0)
-> +#define ADT7516_AIN_INT_MASK		GENMASK(7, 5)
->  #define ADT7316_TEMP_AIN_INT_MASK	\
->  	(ADT7316_TEMP_INT_MASK)
-> =20
-> @@ -783,7 +783,7 @@ static ssize_t adt7316_show_DAC_2Vref_ch_mask(struct =
-device *dev,
->  	struct iio_dev *dev_info =3D dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip =3D iio_priv(dev_info);
-> =20
-> -	return sysfs_emit(buf, "0x%x\n",
-> +	return sysfs_emit(buf, "0x%lx\n",
->  		chip->dac_config & ADT7316_DA_2VREF_CH_MASK);
-Is the compiler complaining about these? It really should be able to tell t=
-hat the masks
-are small enough that the original can always print the right thing.
-
->  }
-> =20
-> @@ -1023,7 +1023,7 @@ static ssize_t adt7316_show_DAC_internal_Vref(struc=
-t device *dev,
->  	struct adt7316_chip_info *chip =3D iio_priv(dev_info);
-> =20
->  	if ((chip->id & ID_FAMILY_MASK) =3D=3D ID_ADT75XX)
-> -		return sysfs_emit(buf, "0x%x\n",
-> +		return sysfs_emit(buf, "0x%lx\n",
->  			(chip->ldac_config & ADT7516_DAC_IN_VREF_MASK) >>
->  			ADT7516_DAC_IN_VREF_OFFSET);
->  	return sysfs_emit(buf, "%d\n",
-> @@ -1146,7 +1146,7 @@ static ssize_t adt7316_show_ad(struct adt7316_chip_=
-info *chip,
->  		sign =3D '-';
+>  	indio_dev->info = &sca3000_info;
+>  	if (st->info->temp_output) {
+>  		indio_dev->channels = sca3000_channels_with_temp;
+> @@ -1466,7 +1467,7 @@ static int sca3000_probe(struct spi_device *spi)
 >  	}
-> =20
-> -	return sysfs_emit(buf, "%c%d.%.2d\n", sign,
-> +	return sysfs_emit(buf, "%c%d.%.2ld\n", sign,
->  		(data >> ADT7316_T_VALUE_FLOAT_OFFSET),
->  		(data & ADT7316_T_VALUE_FLOAT_MASK) * 25);
-I mention this above.  This calculation is odd.  I'd just expect the maths =
-to be done
-with a multiplier, probably 100 such that the 1/4 per bit after the decimal=
- point
-gets buried in that and you can do a simple % 100 here to get the decimal p=
-laces.
-
-I've asked for a couple of different types of change in here. It is likely
-that some of them should be in separate patches.
-
-Thanks,
-
-Jonathan
-
->  }
->=20
-
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> -	ret = devm_iio_kfifo_buffer_setup(&spi->dev, indio_dev,
+> +	ret = devm_iio_kfifo_buffer_setup(dev, indio_dev,
+>  					  &sca3000_ring_setup_ops);
+>  	if (ret)
+>  		return ret;
 
