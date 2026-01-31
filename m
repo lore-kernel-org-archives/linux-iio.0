@@ -1,53 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 902B02AD10;
-	Sat, 31 Jan 2026 18:43:50 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C8CAC340DB1;
+	Sat, 31 Jan 2026 18:48:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769885030; cv=none; b=Op5TEo2sMEJyXe96iYFIYV0n264kW2Um/z4VpZe585LxSsHOFo0BxoC9G++8qCjK3rEwnosGq1dykCLeQIK6gczpGprRPs5WODKHTvqm45KkSkCOlvxpOh1N0Xwul3CiRzURvOC0XWodjXcukf7D3yEjfc1lR89Pp2HLvaBygIs=
+	t=1769885300; cv=none; b=U9bqdNjTA99UMA5Bbl7iZdyR80tZTTn5j5TYyXA9qasQFelnBlEg7K+eUpsf+mPnXHXa1dyX9q1UR8X4AYI6z4mYqoKQHDXLul+wJ7ecqd2t5cWTJLDlyqOXN9XnDyfKDNBa2Oo5GC8BrxlRruAUrDXvIzs5DaMwovoOQO5B4A4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769885030; c=relaxed/simple;
-	bh=V230ZpS3Au27KXeL9VcKAnrRH++doZJxrRUndqwRCGw=;
+	s=arc-20240116; t=1769885300; c=relaxed/simple;
+	bh=mZSU3phl76pEV6Vf27IrIqd4GEVz4oDi039S8tJTBPo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gPwrzlnUq6GWCd1AdfSTt18OzmS49JkI1y0SrsqraP0kXTrPqgm8Rz8oAeU0VtmvinTHnDyrR3QUsDPl2Jkb4jaXu1jG7zJXkCQx7Ljv90RhUBKMs1MV6uVgqCytNydgFEX/bHbyj5jDpE82n6Mg5uDleXeAQexftPDBdAJPMZQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q3A5UimO; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=I+XKqR2AU7xSBPLu1gVQ6V1LPD0O55gg1w45c4QQ9EjZ7fKVV4H3839myzJMp45+0YMcI2mOTwK10UZhYeX5Vb1F8fIhTZg94knrYHbwhzAbbLlORgp7q4rm5QMvUS9qKG5s0jLjilOP9yaUsaJ3PVomOZEDwiIle0YIykWqGeE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jqSn1p4m; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q3A5UimO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AFC4C4CEF1;
-	Sat, 31 Jan 2026 18:43:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jqSn1p4m"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D50E2C4CEF1;
+	Sat, 31 Jan 2026 18:48:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769885030;
-	bh=V230ZpS3Au27KXeL9VcKAnrRH++doZJxrRUndqwRCGw=;
+	s=k20201202; t=1769885300;
+	bh=mZSU3phl76pEV6Vf27IrIqd4GEVz4oDi039S8tJTBPo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Q3A5UimOzbnOf0E0TMf0I/u9xQp8IbAYPFGgAAe96j3D2AhB1OXTsShSoBCjAitcX
-	 jaD8i3kRWQajw7rC8kZi6A8rHN0dm4WAjUkTdI7yHMPJDjOZN3+ZQqRl4XMyLB3QF8
-	 8AK1siBeUcVVpkG3yFmGAijtR6Qcb8CUwN/0cCOEXtu4GkW1WEwPnNOcJtn13+zMDD
-	 W4s97FECeTHiwMO5uDxi4X/Pxn2QQIA5UamChcZyijpm/tCfEbMkvcuMhnpEXQOQIu
-	 NM1Aa8VzzKkQPKfPle+qqgaBES43Rb+KOLg3qbTxutEGl4R0AHdnyGVjXRjx93mXqT
-	 SYLNNnmTYeiXw==
-Date: Sat, 31 Jan 2026 18:43:37 +0000
+	b=jqSn1p4m/OdI1uulD9lA9ZoyNBsX3+auZ3J3p/dL5+JI/U+UBkIK98843j4P4p+Ax
+	 PfQIm/uYwn9WStZ0msfAgJGRvQ6riN5ts+/seiI0yzypIojhWIXWg9yXGAEOzZ6hL+
+	 HLuI3Sm5dFjUDZ+elAo7sgOBwvC/3iQfYpfqhfOKfB8v2izAis0gX2ObSHUN4DuMTz
+	 ZArh2T/Sp6EzcUqzEmFIh7RqteIYMOWrGmlu9BhBnqGwpTlWIMVojhbvW4LDfUWTlp
+	 idzPvqzv3aq7QaxYXKustN6lakY34SaC2d96pFZrrm3am7Lcm96NyISW0QF6znCq38
+	 5SSmWA+BcnRGA==
+Date: Sat, 31 Jan 2026 18:48:11 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc: "akemnade@kernel.org" <akemnade@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Aaro Koskinen <aaro.koskinen@iki.fi>, Andreas
- Kemnade <andreas@kemnade.info>, Kevin Hilman <khilman@baylibre.com>, Roger
- Quadros <rogerq@kernel.org>, Tony Lindgren <tony@atomide.com>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 1/2] iio: imu: inv-mpu9150: fix irq ack preventing irq
- storms
-Message-ID: <20260131184337.6e48c759@jic23-huawei>
-In-Reply-To: <FR3P281MB1757D391A1747D25E58471BBCE9FA@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
-References: <20251231-mpu9150-v1-0-08ecf085c4ae@kernel.org>
-	<20251231-mpu9150-v1-1-08ecf085c4ae@kernel.org>
-	<20260111123003.450bec98@jic23-huawei>
-	<FR3P281MB1757D391A1747D25E58471BBCE9FA@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>, Marcelo Schmitt
+ <marcelo.schmitt1@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Jonathan.Cameron@huawei.com,
+ nuno.sa@analog.com, andy@kernel.org
+Subject: Re: [RFC PATCH v1 0/9] iio: Expand IIO event interface for
+ real-world unit handling
+Message-ID: <20260131184811.1e86ffa0@jic23-huawei>
+In-Reply-To: <95b13260-0564-445d-bff7-b3b54fa15005@baylibre.com>
+References: <cover.1768759292.git.marcelo.schmitt1@gmail.com>
+	<4a04fa3f-c056-4443-a55a-e8622feb1c2a@baylibre.com>
+	<2f9e7172885c5dd20be198f013283c6ec0513ef1.camel@gmail.com>
+	<95b13260-0564-445d-bff7-b3b54fa15005@baylibre.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -58,163 +51,60 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, 30 Jan 2026 16:17:58 +0000
-Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com> wrote:
+On Wed, 21 Jan 2026 11:43:03 -0600
+David Lechner <dlechner@baylibre.com> wrote:
 
-> >
-> >________________________________________
-> >From:=C2=A0Jonathan Cameron <jic23@kernel.org>
-> >Sent:=C2=A0Sunday, January 11, 2026 13:30
-> >To:=C2=A0akemnade@kernel.org <akemnade@kernel.org>
-> >Cc:=C2=A0Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>; David =
-Lechner <dlechner@baylibre.com>; Nuno S=C3=A1 <nuno.sa@analog.com>; Andy Sh=
-evchenko <andy@kernel.org>; Aaro Koskinen <aaro.koskinen@iki.fi>; Andreas K=
-emnade <andreas@kemnade.info>; Kevin Hilman <khilman@baylibre.com>; Roger Q=
-uadros <rogerq@kernel.org>; Tony Lindgren <tony@atomide.com>; Rob Herring <=
-robh@kernel.org>; Krzysztof Kozlowski <krzk+dt@kernel.org>; Conor Dooley <c=
-onor+dt@kernel.org>; Jonathan Cameron <Jonathan.Cameron@huawei.com>; linux-=
-iio@vger.kernel.org <linux-iio@vger.kernel.org>; linux-kernel@vger.kernel.o=
-rg <linux-kernel@vger.kernel.org>; linux-omap@vger.kernel.org <linux-omap@v=
-ger.kernel.org>; devicetree@vger.kernel.org <devicetree@vger.kernel.org>
-> >Subject:=C2=A0Re: [PATCH 1/2] iio: imu: inv-mpu9150: fix irq ack prevent=
-ing irq storms
-> >=C2=A0
-> >On Wed, 31 Dec 2025 22:=E2=80=8A14:=E2=80=8A16 +0100 akemnade@=E2=80=8Ak=
-ernel.=E2=80=8Aorg wrote: > From: Andreas Kemnade <andreas@=E2=80=8Akemnade=
-.=E2=80=8Ainfo> > > IRQ needs to be acked. for some odd reasons, reading fr=
-om irq status does > not reliable help, enable acking from
-> >ZjQcmQRYFpfptBannerStart
-> >This Message Is From an External Sender
-> >This message came from outside your organization.
-> >=C2=A0
-> >ZjQcmQRYFpfptBannerEnd
-> >On Wed, 31 Dec 2025 22:14:16 +0100
-> >akemnade@kernel.org wrote:
-> > =20
-> >> From: Andreas Kemnade <andreas@kemnade.info>
-> >>=20
-> >> IRQ needs to be acked. for some odd reasons, reading from irq status d=
-oes
-> >> not reliable help, enable acking from any register to be on the safe s=
-ide
-> >> and read the irq status register. Comments in the code indicate a known
-> >> unreliability with that register.
-> >> The blamed commit was tested with mpu6050 in lg,p895 and lg,p880 accor=
-ding
-> >> to Tested-bys. But with the MPU9150 in the Epson Moverio BT-200 this l=
-eads
-> >> to irq storms without properly acking the irq.
-> >>=20
-> >> Fixes: 0a3b517c8089 ("iio: imu: inv_mpu6050: fix interrupt status read=
- for old buggy chips")
-> >> Signed-off-by: Andreas Kemnade <andreas@kemnade.info> =20
-> >Jean-Baptiste,
-> >
-> >If you have time to look at this that would be great.
-> >
-> >Whilst here I'll note the defines in this driver could really do with co=
-nsistency
-> >improvements. =C2=A0I'd like to see GENMASK() and BIT() used everywhere.
-> >Currently it's mostly the style used in this patch with a few fields in
-> >the newer style. =C2=A0
-> >
-> >Thanks
-> >
-> >Jonathan =20
+> On 1/21/26 3:33 AM, Nuno S=C3=A1 wrote:
+> > On Sun, 2026-01-18 at 14:33 -0600, David Lechner wrote: =20
+> >> On 1/18/26 12:18 PM, Marcelo Schmitt wrote: =20
+> >>> This patch set adjusts and complements the IIO event ABI docs making =
+them
+> >>> coherent with the fact that not all threshold value attributes had a =
+_raw/_input
+> >>> indicator set in their names. In addition that, the latter patches on=
+ this
+> >>> series update the IIO event infrastructure to actually enable drivers=
+ to provide
+> >>> _input threshold value attributes. =20
+> >> =20
+> >=20
+> > ...=20
+> >  =20
+> >>
+> >> Just throwing out an idea here without thinking about it too much...
+> >>
+> >> Instead of adding a new field/parameter for units, could we extend
+> >> enum iio_event_info to add IIO_EV_INFO_VALUE_RAW and IIO_EV_INFO_VALUE=
+_INPUT
+> >> (and same for HYSTERESIS). Really, the units only make sense for these
+> >> two info types anyway.
+> >> =20
+> >=20
+> > Makes sense to me.  Or we can just document that the old value is _INPU=
+T? Or just make
+> > it the same value in the enum.
+> >=20
+> > - Nuno S=C3=A1 =20
 >=20
-> Hello Jonathan,
+> I don't think that works since IIO_EV_INFO_VALUE could be _RAW or _INPUT
+> depending on the driver. And another point was that this should also
+> control the _raw or _input in the attribute name, and we can't change the
+> existing attribute names.
 >=20
-> sorry for the late response. This is a very old chip, I'm sorry I won't be
-> able to check the modification on my side.
->=20
-> By looking at it, it seems correct if it is indeed fixing the issue. I'm
-> giving my acknowledgement to the patch.
->=20
-> Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Good enough for me.
-Applied to my local tree for now as we are close to the merge window
-and I'll probably rebase before pushing these out.
 
-Thanks,
+Fully agree with David here.  To fix this up we need new ABI, with
+the old ABI remaining in place (including for new drivers) where the
+raw or processed nature of event values is derived from whether they have
+_raw or _input (and hopefully not the horrible case of both!)
+
+The new drivers keeping this bit is the only place I might be flexible
+if it is a real problem.  I'd still strongly prefer devices to match
+the channel presentation for these but if there is a really tricky
+corner case for a particular part then 'maybe' we can relax it.  Upshot
+is that it won't work with standard userspace code that is old.
+
+Not the first time we've had to add new ABI and keep the old
+(whilst telling people not to use it)
+The multiple buffers stuff is a good example.=20
 
 Jonathan
-
->=20
-> Thanks,
-> JB
->=20
-> > =20
-> >> ---
-> >> =C2=A0drivers/iio/imu/inv_mpu6050/inv_mpu_core.c =C2=A0 =C2=A0| 8 ++++=
-++++
-> >> =C2=A0drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h =C2=A0 =C2=A0 | 2 ++
-> >> =C2=A0drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c | 5 ++++-
-> >> =C2=A03 files changed, 14 insertions(+), 1 deletion(-)
-> >>=20
-> >> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/=
-imu/inv_mpu6050/inv_mpu_core.c
-> >> index b2fa1f4957a5b..5796896d54cd8 100644
-> >> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> >> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> >> @@ -1943,6 +1943,14 @@ int inv_mpu_core_probe(struct regmap *regmap, i=
-nt irq, const char *name,
-> >> =C2=A0			irq_type);
-> >> =C2=A0		return -EINVAL;
-> >> =C2=A0	}
-> >> +
-> >> +	/*
-> >> +	 * Acking interrupts by status register does not work reliably
-> >> +	 * but seem to work when this bit is set.
-> >> +	 */
-> >> +	if (st->chip_type =3D=3D INV_MPU9150)
-> >> +		st->irq_mask |=3D INV_MPU6050_INT_RD_CLEAR;
-> >> +
-> >> =C2=A0	device_set_wakeup_capable(dev, true);
-> >> =C2=A0
-> >> =C2=A0	st->vdd_supply =3D devm_regulator_get(dev, "vdd");
-> >> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/i=
-mu/inv_mpu6050/inv_mpu_iio.h
-> >> index 211901f8b8eb6..6239b1a803f77 100644
-> >> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> >> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> >> @@ -390,6 +390,8 @@ struct inv_mpu6050_state {
-> >> =C2=A0/* enable level triggering */
-> >> =C2=A0#define INV_MPU6050_LATCH_INT_EN	0x20
-> >> =C2=A0#define INV_MPU6050_BIT_BYPASS_EN	0x2
-> >> +/* allow acking interrupts by any register read */
-> >> +#define INV_MPU6050_INT_RD_CLEAR	0x10
-> >> =C2=A0
-> >> =C2=A0/* Allowed timestamp period jitter in percent */
-> >> =C2=A0#define INV_MPU6050_TS_PERIOD_JITTER	4
-> >> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c b/drivers/i=
-io/imu/inv_mpu6050/inv_mpu_trigger.c
-> >> index 10a4733420759..22c1ce66f99ee 100644
-> >> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> >> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
-> >> @@ -248,7 +248,6 @@ static irqreturn_t inv_mpu6050_interrupt_handle(in=
-t irq, void *p)
-> >> =C2=A0	switch (st->chip_type) {
-> >> =C2=A0	case INV_MPU6000:
-> >> =C2=A0	case INV_MPU6050:
-> >> -	case INV_MPU9150:
-> >> =C2=A0		/*
-> >> =C2=A0		 * WoM is not supported and interrupt status read seems to be =
-broken for
-> >> =C2=A0		 * some chips. Since data ready is the only interrupt, bypass =
-interrupt
-> >> @@ -257,6 +256,10 @@ static irqreturn_t inv_mpu6050_interrupt_handle(i=
-nt irq, void *p)
-> >> =C2=A0		wom_bits =3D 0;
-> >> =C2=A0		int_status =3D INV_MPU6050_BIT_RAW_DATA_RDY_INT;
-> >> =C2=A0		goto data_ready_interrupt;
-> >> +	case INV_MPU9150:
-> >> +		/* IRQ needs to be acked */
-> >> +		wom_bits =3D 0;
-> >> +		break;
-> >> =C2=A0	case INV_MPU6500:
-> >> =C2=A0	case INV_MPU6515:
-> >> =C2=A0	case INV_MPU6880:
-> >>  =20
-> >
->  =20
-
