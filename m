@@ -1,43 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACC703EBF39
-	for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 18:22:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C07F5322B9F;
+	Sat, 31 Jan 2026 18:26:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769883734; cv=none; b=nC/nvzpYptTo1wROxf9Ms+8RWeBGM3c8wgXBRGv5ExGMyXEAW0MdOLCLgYVsDfhubtUzFlp/X6iZxySKpzFj6b1i5SL43WIbZZjzdnWqBg+w1sVffZEvXXUQXDHG4cI8tV6lW/vVt082A1Rll5ANVrwUWILVoMOm7l83zEALT8g=
+	t=1769883967; cv=none; b=QAfFQOgRbb5rVc0iEbOYFhQBYysgEBbswrqFLE0dO6ueQfPh/I3h/wHEqvkub7+tdL6gTf3B6bJ0gfric6lPmaCwcpB873DbwpgRBPaJLWa7TYeyvNYMuBTbHH3YX1TX4QnJE2iQoOCEp54z3hqkJYiJ7rrbkHWBCLWxiqpQEtk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769883734; c=relaxed/simple;
-	bh=Xg0AZJ0Qv2Njmrx0kB8BwI3/jdyqbYtTyraOMga2K7I=;
+	s=arc-20240116; t=1769883967; c=relaxed/simple;
+	bh=zGpOUmhC1t8dp9mcAaXTnujlA/5G8EcJI+Dd6yBMCAM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Xv5pUkP2VpS8jA0HTdA7UJPWSxVKtsdXI+k4FgesO8G006zBVwOozNSiME7hwNxrI4nLtcJOydcU4yVOIyox/VsSsl+BVw5T/BRZxeCgnVoLePIW/7/Z2rNSYCwfH30jCYgysAhk4Z1/H+6+I5E38854D/3w1HY2j8bW54aZfME=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=D7G1HbGE; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=q74QSZV4TuSCrF5RecE1T0FUeN/33XE1xtCXbz44Z/9pu9CYCFl30+jHmsiz4tYqJOGYtn3s8QfThOAqPi3NaRyeOj0O5FnAw8qMghDaUetZU+X8PEVCvZPt+t1/dq32L9UH5t/T1z9VbV2KrlIdzJHeBCecQi1i0YBZl3iM+lA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dC5r7yCg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="D7G1HbGE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D062AC4CEF1;
-	Sat, 31 Jan 2026 18:22:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dC5r7yCg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C626CC4CEF1;
+	Sat, 31 Jan 2026 18:26:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1769883734;
-	bh=Xg0AZJ0Qv2Njmrx0kB8BwI3/jdyqbYtTyraOMga2K7I=;
+	s=k20201202; t=1769883967;
+	bh=zGpOUmhC1t8dp9mcAaXTnujlA/5G8EcJI+Dd6yBMCAM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=D7G1HbGE8olib+/j/P63iqa/i3gWK4pITTtUoD4O3wACoURPS+cGpRj/H1cn3+yoK
-	 WwnYrhihmluF2JPj5Bqhkw+DelpwN810T7FrH556ab5brcBxnM60QfcpJ65GA2IUQs
-	 FYhrHkkVmj03nWpIQlrJ34TvZ6AjAdHOhsArlgDH2lPAa2lPlJr6Zzbk/OWdTtlafd
-	 G/EXA0lzc+cnakX+z1dlhLZW+lB5Z8UpiIQgMvckUCskUaNsZqCW9ijQgg5rntlKo5
-	 Y0eero+jInBLnYh17rNM/msB2l57JUcrQ/BO8au7EBxNNIiNz3b4UXQT8I4GNIYQmG
-	 LO/EIVuKkcRhQ==
-Date: Sat, 31 Jan 2026 18:22:05 +0000
+	b=dC5r7yCgFd7t+6Qg1H+iIcEO/fwAHnB4veG5FihEVdcdj4oq/KlHw68jpB3lLLw3j
+	 xy6DDBv9lSIPEpSmAfeQAGD5H1BQ5xu7AhLrT2go16dvrOPGby59cr2wdbsAhopF8o
+	 FC8BjyHSebADNzYFVjm7WwB7EavwPHs6h+8ZyWXqvd5TLbodh03NWRDBCYw/Ro+e4h
+	 XANOnYLf65JtW/pKpnci6oHkjwcfDs0cenQKbe3c+9LVUD59EsBnT/Ludd5xhmofZ7
+	 iIdQu0Hgv2uHld07k0yq/uQCDc2bbBCQlodY7/9D/8bf1NnygZ5sOGgXnpP0kUmOWl
+	 u8iRmwAN9h7Lw==
+Date: Sat, 31 Jan 2026 18:25:58 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jun Yan <jerrysteve1101@gmail.com>
-Cc: andy@kernel.org, conor+dt@kernel.org, dlechner@baylibre.com,
- krzk+dt@kernel.org, linux-iio@vger.kernel.org, nuno.sa@analog.com,
- robh@kernel.org
-Subject: Re: [PATCH 5/6] dt-bindings: iio: gyroscope: bosch,bmg160: add
- bmx055 gyroscope binding
-Message-ID: <20260131182205.5b851204@jic23-huawei>
-In-Reply-To: <20260130022452.408784-1-jerrysteve1101@gmail.com>
-References: <20260129184621.749d6450@jic23-huawei>
-	<20260130022452.408784-1-jerrysteve1101@gmail.com>
+To: SeungJu Cheon <suunj1331@gmail.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
+ Michael.Hennerich@analog.com, andriy.shevchenko@intel.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iio:frequency:adf4377: Fix duplicated soft reset
+ mask
+Message-ID: <20260131182558.464e534e@jic23-huawei>
+In-Reply-To: <20260123194758.15445-1-suunj1331@gmail.com>
+References: <20260123194758.15445-1-suunj1331@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,81 +48,52 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 30 Jan 2026 10:24:52 +0800
-Jun Yan <jerrysteve1101@gmail.com> wrote:
+On Sat, 24 Jan 2026 04:47:58 +0900
+SeungJu Cheon <suunj1331@gmail.com> wrote:
 
-> > On Thu, 29 Jan 2026 15:11:01 +0800
-> > Jun Yan <jerrysteve1101@gmail.com> wrote:
-> >   
-> > > Add the device-tree binding for the bosch BMX055 IMU (gyroscope part).
-> > > 
-> > > Datasheet: https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_datasheet.pdf
-> > > Signed-off-by: Jun Yan <jerrysteve1101@gmail.com>  
-> > 
-> > Hi Jun,
-> > 
-> > Is there anything stopping the use of fallback compatibles? 
-> > It seems from the driver that even the chip ID matches.
-> > 
-> > That is, can we have
-> > compatible = 'bosch,bmx055_gyro', 'bosch,bmg160'.
-> > 
-> > or something like that (I can't remember exact syntax) so that
-> > if we have a newer DT, it will work on an older kernel?  
-> Yes, using fallback compatibles is a better approach. So from my
-> understanding, it should be modified to:
+> The regmap_read_poll_timeout() uses ADF4377_0000_SOFT_RESET_R_MSK
+> twice instead of checking both SOFT_RESET_MSK (bit 0) and
+> SOFT_RESET_R_MSK (bit 7). This causes an incomplete reset status check.
 > 
-> properties:                                                                                
->   compatible:                                                                              
->     oneOf:                                                                                 
->       - const: bosch,bmg160                                                                
->       - items:                                                                             
->         - enum:                                                                            
->           - bosch,bmg160                                                                   
->           - bosch,bmi055_gyro                                                              
->           - bosch,bmi088_gyro                                                              
->           - bosch,bmx055_gyro                                                              
->         - const: bosch,bmg160
+> The code first sets both SOFT_RESET and SOFT_RESET_R bits to 1 via
+> regmap_update_bits(), then polls for them to be cleared. Since we set
+> both bits before polling, we should be waiting for both to clear.
 > 
-> Or in a similar format?
+> Fix by using both masks as done in regmap_update_bits() above.
 > 
-> And drop the change in the driver?
-Explicit matching can still be a good idea so we name things
-correctly etc, but this driver doesn't bother so indeed
-there shouldn't need to be a change.
+> Fixes: eda549e2e524 ("iio:frequency:adf4377: add support for ADF4377")
+> Signed-off-by: SeungJu Cheon <suunj1331@gmail.com>
+For now I've applied this to a local branch which I'll push out once
+I have a suitable base (release, or rc1 depending on when I do it).
 
-Whether to add only the new device with the fallback is
-a question to the dt-maintainers. We'd also need to check
-if any DT files in tree need an update for that.
+Given Antoniu and Andy's involvement in earlier discussion, still plenty of time
+to add tags or indeed suggest I drop it again for a v4!
+
+Thanks,
 
 Jonathan
 
+> ---
+> v3:
+>  - Summarize discussion about why both bits need to be checked
 > 
-> Best Regrads,
+> v2:
+>  - Add Fixes tag
 > 
-> Jun Yan
-> > 
-> > Thanks,
-> > 
-> > Jonathan
-> >   
-> > > ---
-> > >  .../devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml          | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > > 
-> > > diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> > > index 3c6fe74af0b8..907fca4e5895 100644
-> > > --- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> > > +++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> > > @@ -15,6 +15,7 @@ properties:
-> > >        - bosch,bmg160
-> > >        - bosch,bmi055_gyro
-> > >        - bosch,bmi088_gyro
-> > > +      - bosch,bmx055_gyro
-> > >  
-> > >    reg:
-> > >      maxItems: 1  
+>  drivers/iio/frequency/adf4377.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> 
-> 
+> diff --git a/drivers/iio/frequency/adf4377.c b/drivers/iio/frequency/adf4377.c
+> index 08833b7035e4..48aa4b015a14 100644
+> --- a/drivers/iio/frequency/adf4377.c
+> +++ b/drivers/iio/frequency/adf4377.c
+> @@ -501,7 +501,7 @@ static int adf4377_soft_reset(struct adf4377_state *st)
+>  		return ret;
+>  
+>  	return regmap_read_poll_timeout(st->regmap, 0x0, read_val,
+> -					!(read_val & (ADF4377_0000_SOFT_RESET_R_MSK |
+> +					!(read_val & (ADF4377_0000_SOFT_RESET_MSK |
+>  					ADF4377_0000_SOFT_RESET_R_MSK)), 200, 200 * 100);
+>  }
+>  
 
