@@ -1,64 +1,64 @@
-Received: from mail-qv1-f54.google.com (mail-qv1-f54.google.com [209.85.219.54])
+Received: from mail-qk1-f179.google.com (mail-qk1-f179.google.com [209.85.222.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 756082DA750
-	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 22:55:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A9EA2EFD9C
+	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 22:55:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769986525; cv=none; b=ZQ16PnchmryD6CyIFfH1Grk1uoV0Soj0U3Vsl2n3aiME6gD58RutIbjpyL7gTsOUVO5wwf5gKt2+vqWnLA9pxNTkXb5qeJgvpzLDqhEC9qyJ9LHyEZtZypN/hJ+Z5m0pFEZgoTuJnI31truYWRmBnK4PhrSyn9knv3sjRFrDRYk=
+	t=1769986527; cv=none; b=YeSh+mRLB+i2u3u3bE/YpHonhxic6hg30HpMdvxkgx1k/C5rdrHWoEwjimwufB7kHHz+ljYeyGEjFDsjVhW+gE/iur4w0dZdYMIF4vOE7GUchUP8Os13VGEMRYal4k47dHQhmIEwr0gpQGoxBj6Rxi96j7JezgdROnqqohevbJg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769986525; c=relaxed/simple;
-	bh=2uBGwyPKg09Xl1QrADRzV51xy4gZyTiCD6K2R5tfW6g=;
+	s=arc-20240116; t=1769986527; c=relaxed/simple;
+	bh=wdAJSmDdkevTQvrbvEGoNggrcxZj8jV531QeQgd3CBE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=X+80adhccMDr7PlN0PVtExPjo8bCE6+mY28QAeej0i3IVnf4bBwXVzpy4kpZ4507ba1c9HqEkXgnWCZpJ6zyvclgDmXXZzIo8ie0csMxaU93AvvlmSiTUY3P3hsxpj3RfXvdQA0est9DoXN8+2xXGNSe9Q8SA52BcadRrsM7lwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dionne-riel.com; spf=pass smtp.mailfrom=dionne-riel.com; dkim=pass (2048-bit key) header.d=dionne-riel-com.20230601.gappssmtp.com header.i=@dionne-riel-com.20230601.gappssmtp.com header.b=RNy8yCNZ; arc=none smtp.client-ip=209.85.219.54
+	 MIME-Version; b=ZCw0xAsLujTo0MNVKHv+CZ3v+7dQ3mJwUBuQ+KGKvr9yehuYHnEMusEJOUpFaAHYjEpQ0QD7XCD04Pja8uFCX1qqH5/N49HbuiHGr3657iNu3uXRG9IJRs5myVRw/FY4Wp1ysGsWBakvhT3PJlt1IP+ICa8wnQwVUP54pQBAzbE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dionne-riel.com; spf=pass smtp.mailfrom=dionne-riel.com; dkim=pass (2048-bit key) header.d=dionne-riel-com.20230601.gappssmtp.com header.i=@dionne-riel-com.20230601.gappssmtp.com header.b=B+EH78wA; arc=none smtp.client-ip=209.85.222.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=dionne-riel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=dionne-riel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=dionne-riel-com.20230601.gappssmtp.com header.i=@dionne-riel-com.20230601.gappssmtp.com header.b="RNy8yCNZ"
-Received: by mail-qv1-f54.google.com with SMTP id 6a1803df08f44-88fca7bce90so50316106d6.3
-        for <linux-iio@vger.kernel.org>; Sun, 01 Feb 2026 14:55:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=dionne-riel-com.20230601.gappssmtp.com header.i=@dionne-riel-com.20230601.gappssmtp.com header.b="B+EH78wA"
+Received: by mail-qk1-f179.google.com with SMTP id af79cd13be357-8c07bc2ad13so291261985a.2
+        for <linux-iio@vger.kernel.org>; Sun, 01 Feb 2026 14:55:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dionne-riel-com.20230601.gappssmtp.com; s=20230601; t=1769986523; x=1770591323; darn=vger.kernel.org;
+        d=dionne-riel-com.20230601.gappssmtp.com; s=20230601; t=1769986525; x=1770591325; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=lLL9EDoklYU6EWGrSqPTm/RhT8uawPhepLIaInnkA7Y=;
-        b=RNy8yCNZNqAADPOyTL/3RYgMBQQDouF8AI7WFsQUJy4EA/Z9LtfVnljbs3/I921fcU
-         PvHPwc/l63m3iKqgqFSyXYNFgyvPilZlJ5/scz3Ff3m4nYU04eBHaPXsAGvgPNXMvYq+
-         9znNTWPU4aUQS1WV4yDUNB8Un55RxtL3IDVayrRYcWaVfa3C1hwn9UCve2tVnijM6KzV
-         H3RT2Yh86vQYkKlhF7ZVhvhcDIAbtIt9ER4SM47dnskmPRjFQiNSRlSddfHDhu50d3vr
-         KO0aKjq63QeLapauOGafAxEHLGYiU8A1+hz/0sMqdmMHK4p/8+nhnYPDd/TeUqAf/Aoy
-         hIrw==
+        bh=IfUc8fwnSb3Ej23lpsDntV4Xx+xIQN3dPI34pA88BYM=;
+        b=B+EH78wATdERK6Lu3L64lxTCked5NBbaiY9dbj1qJiraUV5EIkIKvBhwoVjitZbbsL
+         f4wGgl6QJ++1xO8Ns5+ETvW48OJ0HbuOqXelIgW+SEgU93gUL8czVB1wtiMbsiDAieM2
+         OwGwhtZhm9kiiAdUT/GSX2E303taEXMPPlukHjuYgsAiSdRt99zKDFdf4nx2DnX4Md//
+         ZK3tW+19cTbOwaBwejP2scHM0uPwWiAHPIwJw3F2j4l4ARyhtQz4jDzXdh/o2RUNa6is
+         nKP79sl2e5kqy29dyexUY/bNasXw8y2wEAuFwJXRtY3liCK4kDwVQ7GhQBmX5vBJD6To
+         It5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769986523; x=1770591323;
+        d=1e100.net; s=20230601; t=1769986525; x=1770591325;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=lLL9EDoklYU6EWGrSqPTm/RhT8uawPhepLIaInnkA7Y=;
-        b=GtYbv9qOhimF4TaI8gqCmvcinIrHN/l61HVWpVfh1qBP4hO4Aqh5i0UUQJK2y3V6Jn
-         2A1P44I8s7DnSYT1Xr6pLZHD71tcOoOQlz+ap1v+u4iK3swhrqLCtdXIgtFxTSpiYe5i
-         D01q1tYiA1bHyhjjWS4xVeYMkUPyhgthmbFZXsPbzyjuxak7G4WVcO2rRLh3RU/UdNfh
-         PXcIDmGP8Qc8E2Q4FvSCfmvrX8T3NvO0bUF+lJar3qWs7HdfJg/0aRJBs+PDeTW/yHSX
-         B63qSz3jd/R9zCFpmYPHwNx71rARl86z3yCU1tnEfrm+qngCERHYqYiLzgGKdsXyAcoe
-         5kWA==
-X-Forwarded-Encrypted: i=1; AJvYcCUHj81RXkf4bMDIrX/h8NdlJzwu1Hf1ZbrGLGEspggSTTWHcl7u+ugsWQJCcJAYujJ/tdX8E9XJBiU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw2KVmYIX/OpjlaTMxWfxD80U4N5Y3AlBcaxb5dSmpavelri+Js
-	wmu+whT2pIR8KjSPczgMSenKMa/zHLDkFw9qy5E0Peouo+kPV8e2DTu7iEAR7gfnug==
-X-Gm-Gg: AZuq6aLlUgqVd4YavQJuI1isL0pvg6y1xFp/ETaBxNon6RoVBuwNz60f3NKa6SlEY4I
-	X8v/mMRsYfIDWJ6LO/X8ke9EvwWDEBIkSardaSoNLp7o+h9FtIWJi+Ag93P8sdKAtaLDG4GqbU7
-	0k/aEWoFOWEeynJ9IprEPmk2PvNsuS6A9V71iQGN2qbPfhfSJbeOLDvNulrcE2Ap9lOGolVzRLM
-	+1Me/nB0j/ZLCH9sjZ6FRqRKJbTD7JQDu8k802nBkiUPiR5SUD5Egr+IYDUWgEf0lZpn675mknL
-	sV4L0daU5uVo6hy5KAfZKcWKOrlCjp6dzwUGTugwnPmzAXRaFoR3uqm+Y8p/yKtvjOQZ07xy7xN
-	Y76fW80LmpaVI8UWha9L1OhmKoHnW8LFdOkFS/rTPLBzjdvMhR10eRuT30ePL14QHZzOsRsNkEF
-	+/MAk4rpsovSYS5u8KGVT171/XJozN6mr/xkYNeJPvRMKR1czHIXtc/uoiYGTmcW2W+3Gu556BT
-	POZ
-X-Received: by 2002:ad4:4b6d:0:b0:895:829:48a1 with SMTP id 6a1803df08f44-8950829582fmr27286566d6.43.1769986523463;
-        Sun, 01 Feb 2026 14:55:23 -0800 (PST)
+        bh=IfUc8fwnSb3Ej23lpsDntV4Xx+xIQN3dPI34pA88BYM=;
+        b=Vfgsex85mkC8Xj7hcAbOVjl9kRGOouLcm7qCZdC7kCxXgH8lH4BmosWiUs0t9rQNnJ
+         FEC73nc4FOODDHUrnOOUinRMbnKA1R6zgABKBndY5hTNrnisteAA0KTlOFJHz60145mB
+         K+Qughj3M1eWQyyCXEZUBpKOlPrqtgChCuHJo4p08k7ly3jq3wY1RufYfWVijMAocR0X
+         q1dEekuNCapT+8ES5YBhsCDeXwdXhNVR/HcEbscGWKcpuKtgwWgPKjxCos5IEs/mRKKr
+         c6SaHSmR1zGijUYSAr3TI03EssdFrt1fqlqpCSV5H+aAo5SbbtzvOcuo6WeR5cHB4dtl
+         VG8g==
+X-Forwarded-Encrypted: i=1; AJvYcCUNPGsLDAYR2noZ+JgjN6nYIbkjX9Msvppm8cOqd3D3aAqOBjOfuOait7jEWDqRokul26rZBJ1UCpA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxENB7ELIgRXI8JuRB1cGN/9BKbmW4f4nHPdFSOGkko8z6WuvbT
+	wUATFwj+3DQ6OX1KAjXezcndY/81ZA726lpb8wXPlUO/z7+TsG+cbX+u0EV44XNDaRbJKCnBWpj
+	VXfg=
+X-Gm-Gg: AZuq6aJU1yqXu915tZEBF6qgSaW68G5dBMbjuLV6WNKv+L1dj6cBFP9rbtasB9OK3EZ
+	jML31Dzw47e9K5jS5ou34TAQz1AdVzzyLB51DTDbAxR+ZHQSlf/iAgtras+seya6pMXZfmhlqp2
+	odWpi4z+yh5eEwwVvQiY8iT5gRZMSkt9fUaKtcdnXwZFWFi9qrTfQb5nLJ2CRPDhUCBR6xmWSta
+	4DsrET/phCDRfrs0hhTSDHHZOXDoM+iuwURAl0W9hNqWAmdM60YQ5jam0g6BBJDXkZgvd8qvtdK
+	v1A1vsJEjrVy891Ii4YR8wCCL7aLPkjL9nrDcYMF6iTZf5Rn3zUfCizejHBVRbMxacvXaFLxBX0
+	thZTvX5LTWjCso4OO/fxQ1I997VW9ujb/lJZs5MY/7al9O6jVHCxaRvAtabDIDrq4tCDFJOhEt+
+	KHfmd7nyNlTPJU9Nn4SRsTtN769gfqSvSfINISLHKijjq9bg7b2Wx+oYV8F94+hVvcqA==
+X-Received: by 2002:a05:620a:4802:b0:80e:3af7:7a0c with SMTP id af79cd13be357-8c9eb2faff7mr1322884585a.43.1769986525019;
+        Sun, 01 Feb 2026 14:55:25 -0800 (PST)
 Received: from frankgrimes.elk-nominal.ts.net (135-23-195-66.cpe.pppoe.ca. [135.23.195.66])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-894d375ce71sm102146966d6.45.2026.02.01.14.55.22
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-894d375ce71sm102146966d6.45.2026.02.01.14.55.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Feb 2026 14:55:23 -0800 (PST)
+        Sun, 01 Feb 2026 14:55:24 -0800 (PST)
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 To: Lorenzo Bianconi <lorenzo@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
@@ -68,9 +68,9 @@ To: Lorenzo Bianconi <lorenzo@kernel.org>,
 Cc: Samuel Dionne-Riel <samuel@dionne-riel.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] iio: imu: lsm6dsx: Support SMOCF05 ACPI ID for LSM6DS3TR-C
-Date: Sun,  1 Feb 2026 17:54:49 -0500
-Message-ID: <20260201225450.1649001-3-samuel@dionne-riel.com>
+Subject: [PATCH v2 2/2] iio: imu: lsm6dsx: Add alternative ACPI mount matrix retrieval
+Date: Sun,  1 Feb 2026 17:54:50 -0500
+Message-ID: <20260201225450.1649001-4-samuel@dionne-riel.com>
 X-Mailer: git-send-email 2.51.0
 In-Reply-To: <20260201225450.1649001-2-samuel@dionne-riel.com>
 References: <20260201225450.1649001-2-samuel@dionne-riel.com>
@@ -82,34 +82,51 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Same device (LSM6DS3TR-C), different integration with the firmware.
+This uses the SLA0 matrix, which is how the SMOCF05 configuration
+exposes the mounting information for the accelerometer.
 
-The integration differs in that the firmware provides the SLA0 and SLG0
-mounting matrices. They are assumed to be Accelerometer and Gyroscope.
+On a limited sample size of one (1) unit, the SLG0 matrix is the
+identity matrix. It is unknown how the SLG0 mounting matrix would
+logically affect the data, if it differed from the identity matrix.
+After all, the IMU is mounted as one single unit, its mounting can't
+differ on the gyroscope compared to the accelerometer.
 
-Observations were made against the Windows driver, version
-`12/06/2023,1.0.4.3`. This driver supports both identifiers, but expose
-the device in different ways.
+The new `st_lsm6dsx_read_acpi_mount_matrix` function currently only
+implements the *known* ACPI methods found in the wild, but the windows
+driver seems to indicate more integration-specific methods could exist.
 
 Signed-off-by: Samuel Dionne-Riel <samuel@dionne-riel.com>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-index 7c933218036b8..10002f05b45f5 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-@@ -143,7 +143,8 @@ static const struct of_device_id st_lsm6dsx_i2c_of_match[] = {
- MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index dc78227952a7c..2278cbf2b711f 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -2635,6 +2635,13 @@ static int st_lsm6dsx_init_regulators(struct device *dev)
+ 	return 0;
+ }
  
- static const struct acpi_device_id st_lsm6dsx_i2c_acpi_match[] = {
--	{ "SMO8B30", ST_LSM6DS3TRC_ID, },
-+	{ "SMO8B30", ST_LSM6DS3TRC_ID },
-+	{ "SMOCF05", ST_LSM6DS3TRC_ID },
- 	{ }
- };
- MODULE_DEVICE_TABLE(acpi, st_lsm6dsx_i2c_acpi_match);
++static bool st_lsm6dsx_read_acpi_mount_matrix(struct device *dev,
++				      struct iio_mount_matrix *orientation)
++{
++	return iio_read_acpi_mount_matrix(dev, orientation, "ROTM") ||
++		iio_read_acpi_mount_matrix(dev, orientation, "SLA0");
++}
++
+ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
+ 		     struct regmap *regmap)
+ {
+@@ -2708,7 +2715,7 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
+ 			return err;
+ 	}
+ 
+-	if (!iio_read_acpi_mount_matrix(hw->dev, &hw->orientation, "ROTM")) {
++	if (!st_lsm6dsx_read_acpi_mount_matrix(hw->dev, &hw->orientation)) {
+ 		err = iio_read_mount_matrix(hw->dev, &hw->orientation);
+ 		if (err)
+ 			return err;
 -- 
 2.51.0
 
