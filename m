@@ -1,156 +1,120 @@
-Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4302426B2D2
-	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 17:24:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.16.241.116
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBB2D284672
+	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 18:33:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769966665; cv=none; b=rUn2wktwNZHkdW36a6nZ6sfXne/YjgBQk0psyNa4By7SAZ/BbOFpIdA3yQE+UUeQQR/Fx/UW390DE69sQ7YHoLGS738ImUQ1EZdKT8c/Yy508/vAHuddjAygKD4zBVrXZCW8FhisQOsXam68AnOSV5LXr1Z62/XFg++ZxnFt5/c=
+	t=1769970828; cv=none; b=LglV0Il8jRwDAH1u20pJr+m+65+QDkw7JuNIzG2dMQmLJKu3D6Fx1Trsts4RBlXrPFzKctsaxU54BBd62hNW3Z70UKgMhQK1A18Zh5LJhAzKjw3+QJ24ZdfE6OygJhsJJmzXCE9OpeKQJm7mUiHjoaQhO0j417TunWDYdknmN1o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769966665; c=relaxed/simple;
-	bh=zh8WZ4F4gEJQZ41bjYhvfck2CjOJ3lRui3sd8j3hWWU=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Sb5RD2Kvc77cvStENJOx7pfvMhrVjM2MmgE9H4qLSeMheqBR5YEP9wDbLWlgL3KsNkxZaY/zDD+/8baQO1x3UuKKzz6zmdfPT1uSwDiWnKqXKO5Azr5lRn0r+hafYFx2YjDwOpoX63wclUeVzKSRMfKWkrBpspdxRybZ17Pg0UA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svanheule.net; spf=pass smtp.mailfrom=svanheule.net; dkim=pass (2048-bit key) header.d=svanheule.net header.i=@svanheule.net header.b=2daN+YOP; arc=none smtp.client-ip=84.16.241.116
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svanheule.net
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=svanheule.net
+	s=arc-20240116; t=1769970828; c=relaxed/simple;
+	bh=9aHRWQRIj+vjq7aojPwZL22fm2LfK7+rNgxELwFuuaI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=QvZZtOtK0npS30ifx3GFPVqkmAmO/5F054mEUkrofU3D7eru0l8spUz5PZMvStRP1zbkPo+gLn8AifSPVTcYneRdray9tQjCpNPNqn70vs2tSxILFSahRhiHZA6Dg4eGUe0JHNN6VkUSJzJbvacOdOTqbC6FWmoQ+85Jn60P9Ns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BR0h5R6L; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=svanheule.net header.i=@svanheule.net header.b="2daN+YOP"
-Received: from [IPv6:2a02:1812:162c:8f00:1e2d:b404:3319:eba8] (2a02-1812-162c-8f00-1e2d-b404-3319-eba8.ip6.access.telenet.be [IPv6:2a02:1812:162c:8f00:1e2d:b404:3319:eba8])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-	(No client certificate requested)
-	(Authenticated sender: sander@svanheule.net)
-	by polaris.svanheule.net (Postfix) with ESMTPSA id D6FB86D6A5C;
-	Sun,  1 Feb 2026 18:24:20 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
-	s=mail1707; t=1769966661;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 content-transfer-encoding:content-transfer-encoding:
-	 in-reply-to:in-reply-to:references:references;
-	bh=KwTuiAwTBrsK+zpHa/TsYbtRzFGXAvdbwG3p6lnTSAg=;
-	b=2daN+YOPoS6skjfl+V0IB/BaYRVAq1bMBwCHU+jUP2R1WvrvzWEky5xYQA4KvGyiGS9jEp
-	yTtLdFQBrt6GQi46xGA7jJeuON21RmMwj+txmjgRn+jWKxoa1+7p1xIfohh98asYTIhky+
-	0fflzJO08bToOIbxfc+HUeyDzZbroTQ6nwBf3+3HTlLIkg/WRG7kv6JlOPFDBVIob4KjV8
-	yN6Ob+1zuGOx8n9iSgZflllYYNgmWYbDEODaPpx48t5fPKxfX9pgDeoLq2DYzoZiukH3Qn
-	E+nxhP2qjI9cB5aukhOYPUydDpCWharWvg1IqzpBMp2EwWIyeyn5Ovdmu6c8ww==
-Message-ID: <abeabd28e8ed4cfdfdf12e9c59cdbdc545c00e42.camel@svanheule.net>
-Subject: Re: [PATCH v2 5/8] iio: dac: ds4424: convert to regmap
-From: Sander Vanheule <sander@svanheule.net>
-To: Oleksij Rempel <o.rempel@pengutronix.de>, Andy Shevchenko
- <andy@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski	 <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, kernel@pengutronix.de, 
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, David Jander
- <david@protonic.nl>
-Date: Sun, 01 Feb 2026 18:24:19 +0100
-In-Reply-To: <aX98dbnCcFnFY3ks@pengutronix.de>
-References: <20260127060939.3914006-1-o.rempel@pengutronix.de>
-	 <20260127060939.3914006-6-o.rempel@pengutronix.de>
-	 <2cfd142fbaad3ddd3b3fb632c77a4e9f58d50f66.camel@svanheule.net>
-	 <aX98dbnCcFnFY3ks@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 (3.58.2-1.fc43) 
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BR0h5R6L"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-47ee07570deso30969315e9.1
+        for <linux-iio@vger.kernel.org>; Sun, 01 Feb 2026 10:33:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1769970825; x=1770575625; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=TcfKK1uOL+FesMU0XVhvzXmDqRlJZPCMwhVufj0BSo0=;
+        b=BR0h5R6LVGfH0tfCQCAEQb/0vWuK/xFRFuyNVwleUEo8l9QpiyVy7NlSx82+Dk8TbZ
+         0KeBwzLECaKNXmuHFSAhxK8NKmZQlIrdgtUfDE4m2LNDnKZZBFEHMOIIqK1g3sUcHuDd
+         /b67jfVidRmC8Ozue5HTCdzHU9Sf1naIlan5bX3AQkopetJ3dR0cFojzc9LQrWfHSiNe
+         aiV5/rEz2tjGnP/tAiBmRxuT1v+E9vkBZmB5P94BIsvaOBAnzzhq6CcHTUwiwEBQGwF7
+         Gz0TvASRdo38a0rdeznpf6+7keGJ8PbOo8X/dcwBeP171ns5U43qam3M/tvi6IQ9VyZd
+         ++WQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1769970825; x=1770575625;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=TcfKK1uOL+FesMU0XVhvzXmDqRlJZPCMwhVufj0BSo0=;
+        b=D01kt/Q2/aNjKug00CcXYyUu2m4l7XoEYpvn7cq8P4YbDhi4vTcrT8INjA9TcBjJ4U
+         q46fxrFV3LAwFEbZisAC0VUfmTi3FHOHyshPQaCrs+SoMnckFDbliOQyqAT1w8IZH5fT
+         9NieLlXqIge6z4u/3NZQbZBzeTxy0oEUtrkWroEGBc2q2NJkQr9tidvIFhZqbYlalbRE
+         uWDZEm2Or8O5Xd6+0Tc2E1J4Aa4lyoaOQSAxd14Z9Y1HTrnd/Hg0yZGRzaWUeX4g2grO
+         niOc6iB3PZXfWhP3AcZOWKj+zDu57D1/x5R0d299uHb4NODe/W9e9HsPCyDmIDc1pddd
+         W/JQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWGonGsszfmzt0DnjjJ2DgsoHSLT3DXLAWpTaTqmrH6+K3SZJiEd2apBJ1mGCvpUSR27D/IdpRV7Y4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywy4Y58E2nfB5qG1uYQD8OliUQCV3TWPV2yj2VubUQ1B/Hl0AyK
+	lb9Qgs84KneIOTeu33iOTzlnuf6vuW+XvNO/yJLEHp13+YR38bI29A6b
+X-Gm-Gg: AZuq6aJHhv0Sg77U/91QmAyaKN3GWHqytjx7629lykoXyjEBNjGSKniUOXadCNnbkNy
+	7tvm2AgK5+AeB4GWw4LYGLLbHn6KRuI+dK27FRkqpRCkFpqDg3ZmEI5d0BAOuzWp8kzadsSGN0t
+	SNEJ3ZYujB/OWbc7LXV1euxus//9toQW5KrGQeWzRfdrc82JbgcWPI8wydUrHSvRurBNZZ7dOV9
+	a9g8YlTNqqoFq3XSl/ZTHaFvbUi0P2+LU9C7UjfoKxdTLTEEtA8NxpLn0pL7xlclf0wmA+6dFkm
+	4ZwNBNX7n0g9i/7Dph7MkfPVI11g7fzjZq+mSszrRnIHSUuNb8aC2l/a7Rd4pkopUKcHO0p56sB
+	v/5qjyN81qySivZOPHpp/5vPXAZKUQ+NzM8geNlumlKz5F/j2dLF7Hy808apOh4Wb4Pv8rFBze9
+	2MUzYYG2+uqjmzXoVCA8LwXF0i20Ds9I2ahxCt1GhJsOK0bg==
+X-Received: by 2002:a05:600c:3586:b0:477:582e:7a81 with SMTP id 5b1f17b1804b1-482db45237cmr145131415e9.4.1769970824962;
+        Sun, 01 Feb 2026 10:33:44 -0800 (PST)
+Received: from DB-VM.1337.ma ([197.230.240.146])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10edf62sm41400084f8f.13.2026.02.01.10.33.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 Feb 2026 10:33:44 -0800 (PST)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: jic23@kernel.org
+Cc: me@brighamcampbell.com,
+	skhan@linuxfoundation.org,
+	linux-kernel-mentees-archive@lists.linuxfoundation.org,
+	rdunlap@infradead.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	corbet@lwn.net,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	linux-iio@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Taha Ed-Dafili <0rayn.dev@gmail.com>
+Subject: [PATCH v2 0/4] iio: accel: adxl345: Add event scaling and doc fixes
+Date: Sun,  1 Feb 2026 13:33:09 -0500
+Message-ID: <20260201183320.27023-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-Hi Oleksij,
+This series addresses ADXL345 driver non-compliance with the IIO ABI
+for event thresholds, following feedback from Jonathan Cameron on v1.
 
-Thanks for the quick reply!
+Core Changes: During development, I noticed IIO_EV_INFO_SCALE was missing
+from the internal IIO core. I've added this constant to the iio_event_info
+enum to allow proper ABI compliance. I would appreciate a sanity check on
+this infrastructure change.
 
-On Sun, 2026-02-01 at 17:16 +0100, Oleksij Rempel wrote:
-> Hi Sander,
->=20
-> On Sun, Feb 01, 2026 at 03:42:28PM +0100, Sander Vanheule wrote:
-> > Hi Oleksij,
-> >=20
-> > On Tue, 2026-01-27 at 07:09 +0100, Oleksij Rempel wrote:
-> > > +static const struct regmap_access_table ds44x4_table =3D {
-> > > + .yes_ranges =3D ds44x4_ranges,
-> > > + .n_yes_ranges =3D ARRAY_SIZE(ds44x4_ranges),
-> > > +};
-> > > =C2=A0
-> > > -static int ds4424_set_value(struct iio_dev *indio_dev,
-> > > - =C2=A0=C2=A0=C2=A0=C2=A0 int val, struct iio_chan_spec const *chan)
-> > > +static const struct regmap_config ds44x2_regmap_config =3D {
-> > > + .reg_bits =3D 8,
-> > > + .val_bits =3D 8,
-> > > + .cache_type =3D REGCACHE_FLAT,
-> > > + .max_register =3D DS4424_DAC_ADDR(1),
-> > > + .rd_table =3D &ds44x2_table,
-> > > + .wr_table =3D &ds44x2_table,
-> > > +};
-> >=20
-> > Note that REGCACHE_FLAT will allocate 0xF8 unsigned longs you will neve=
-r
-> > use.
-> > REGCACHE_MAPLE will probably be much closer to the size of the original
-> > value
-> > cache, for a small look-up performance penalty (but always fast compare=
-d to
-> > the
-> > I2C bus).
->=20
-> ACK, already migrated to REGCACHE_MAPLE in the v3:
-> https://lore.kernel.org/all/20260128153824.3679187-8-o.rempel@pengutronix=
-.de/
+Testing: This series is compile-tested only, as I do not have access to
+physical hardware. Implementation is based on the ADXL345 datasheet.
 
-Thanks for the link. I'm not on the IIO list, so I hadn't seen this version=
- yet.
+Changes since v1:
+- Added core infrastructure for IIO_EV_INFO_SCALE.
+- Implemented event scaling (0.612915 m/s2) for ADXL345.
+- Fixed technical math/decimal errors in existing documentation.
+- Cleaned up grammar and pluralization issues in .rst file.
 
-> Which works mostly fine except of the cache initialisation. If I use
-> num_reg_defaults_raw with REGCACHE_MAPLE as proposed by Andy
-> Shevchenko, first access to regmap values over debugfs will explode with
-> NULL pointer etc...
-> If I remove num_reg_defaults_raw, I need to read register manually
-> to init defaul values as implemented in v3.
+Many thanks to Jonathan Cameron for the detailed guidance on v1.
 
-num_reg_defaults_raw without a raw register value buffer is also problemati=
-c
-IMHO. If it is used without a buffer, values will be read from hardware. Th=
-is is
-indeed widely used to prime a (flat) cache, but if you want to maintain the
-documented behavior of regmap_sync() it should only be used if the hardware
-really just came out of reset.
+Taha Ed-Dafili (4):
+  docs: iio: adxl345: fix typos and grammar
+  iio: core: Add IIO_EV_INFO_SCALE to event info
+  iio: accel: adxl345: Implement event scaling for ABI compliance
+  docs: iio: adxl345: update math and examples for scaling
 
-Not sure how likely it is that not all channels values are written after pr=
-obe,
-but for this driver specifically you might see:
+ Documentation/iio/adxl345.rst    | 63 +++++++++++++++++++-------------
+ drivers/iio/accel/adxl345_core.c | 28 +++++++++++---
+ drivers/iio/industrialio-event.c |  1 +
+ include/linux/iio/types.h        |  1 +
+ 4 files changed, 62 insertions(+), 31 deletions(-)
 
-   1. Driver probes with num_reg_defaults_raw, using current HW values as
-      initial cache _and_ register defaults.
-   2. No updates were written before device is suspended. DAC registers are=
- set
-      to 0, cache marked dirty.
-   3. No updates were written before device comes out of suspend and
-      regmap_sync() is called. regmap_sync() sees a cache state which is st=
-ill
-      identical to the register defaults and omits (all) writes.
+-- 
+2.47.3
 
-After 3. your device is considered online again, but the HW registers are s=
-till
-set to 0 and your cache is out-of-sync.
-
-This also made me realize you do want to read all the channels at some poin=
-t to
-be able to resume to the same state after suspending.
-
-
-> The REGCACHE_FLAT has one more problem, the cache will be inited with
-> i2c NACKs (0xFF) if used with num_reg_defaults_raw.
-
-That's rather nasty. I don't suppose you investigated why that's happening?=
- (not
-saying you should, just wondering)
-
-Best,
-Sander
