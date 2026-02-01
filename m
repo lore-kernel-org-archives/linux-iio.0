@@ -1,63 +1,63 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 52BEA2749D9
-	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 18:33:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5463287268
+	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 18:33:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769970830; cv=none; b=hEXr2hpo2BSiuQyLVsIicixvfMIZJ8ogzZESpii7lXfBOKpa7liOWiMCpTV/NcfHlx+a+932C1+ImDtSx+/6uJW6ll5pk9X3p0/TqO2SW1fpXuhTZ4GR9+GSx+ws+Bs57I6vkdRCBeJUsl9nxe9JvGx9sGvlb3VP0GOfWAH1RDs=
+	t=1769970831; cv=none; b=nDgosb0KeAb0/QJYFjxs597I9HPQBe6+xW/kVGzZyiCaFM0qx4cJKKIfxOMJKk7yUbTFC4WRre9NSxFwL5ZHx2IwWHaLSmkkO7z/eNKLlP2gIPY+I+EbyRcHfTcDJ0IRBpdWy+NMJU1CYaQLZ9uY8uJrH4tmoVkgKe841TWhAsw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769970830; c=relaxed/simple;
-	bh=ZCpnkgLOatzf4jWZphZI1+PCO8fjiEtTsfpE3S5Xwmg=;
+	s=arc-20240116; t=1769970831; c=relaxed/simple;
+	bh=8s71L5/222QicynAznln9mN/6daQ6Flg3Ya1cwHbxeY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KK7WGQeTf+G6S4JtanXTb6WhpTVatr2SZpM22R/6xSCUtDvBfG0IalBcCwXsJr7c1blsjIXzuEQTcvq4z1IreuaMqhTUA1st87UWgNoHy6n0hmIZhFjFQU/F8bxTZ/oI4CVky49lWP0vabvpk70xwKebI/ST/Hlixyw/DB+S5XY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Tg+gA0jX; arc=none smtp.client-ip=209.85.221.42
+	 MIME-Version; b=eGBoVtrlpli6np3BCX0PVQL0or0MJlxBk0K+5aW/LgJxrEngZ2uUqWRCkj41E3WefYsOr8cFqZ3TnSuoBXD1On6v57xs8R0Ns9ivV9RYRtTVP+hoKpXSBe6sU6tP/DDnIAUEjzjAa8XVyby3focUT91IdXbINTK7H69u3LNmu9w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aO0w8p2x; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Tg+gA0jX"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-435a517be33so2197408f8f.0
-        for <linux-iio@vger.kernel.org>; Sun, 01 Feb 2026 10:33:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aO0w8p2x"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-43601e96f72so445715f8f.2
+        for <linux-iio@vger.kernel.org>; Sun, 01 Feb 2026 10:33:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769970827; x=1770575627; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1769970828; x=1770575628; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=kaaojGS173TnJlve70QP/+cu6NF4HjbgNLZcKgOyGYw=;
-        b=Tg+gA0jX2o+9qmJTtjBA1UC2afxELJv807VGWDjHZC7BWlapLfnBAILxexVO8i2MbI
-         28nCGzQ6CiQ1fB9l1zR1eMs41HKCwlz3TWmXERo7UlDCYxJF262aE7PrkFvB4OKrhDzS
-         m9BTUvuzRYxG2/BtTZimK7nrdvcLHnX6dckuMiaqugHxJ+YcICFcliXYTM+j7U9oIE/W
-         eT4PRH/0+8MSaZL/4n6+8rRaYwbTxqCBlj0NtiPEf1mxYcpnBybZpMqHsifv0HuPZ3VO
-         3ckNPDCFFbT8Y84HX3dACKcQcEHO/b7hJmSvfvwR7P5Btz23vYomi1gDP3Pm+l/FQ7Hk
-         5Okw==
+        bh=309CH24IybzBmjrd1Z1MDsc4bcv4TEJ+M8kIPobk7aI=;
+        b=aO0w8p2x6GjluCr6aSD40DL5zwcJDUrdkJdxw51wvhJTPHfanUShb0xY3ef8A88bHF
+         9nwpZDGBqR7iFStPYKtA/0AqcyiliaZ15JonrA6ftdvTbcJZZlcQYkBQos0dfv4B3Bmx
+         GAA++ptTLMsfQLG8aVRApZBrBN75Ldd8jQuc+T6gV73CbumCywjSregyHD4028dmsNvF
+         A27io7PtX94npGkKZV8PPoxXdQuVHrj5JhdEn8S0wjxwq2/z9Q8vuQLnb9xu27C8FzD7
+         uAkqK0oB6Ifh3yty2jbH+3E9JDZcoTkiBPMwdlbbzWgxp7PYbayBCs1s4l4iHgViotul
+         /d+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769970827; x=1770575627;
+        d=1e100.net; s=20230601; t=1769970828; x=1770575628;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=kaaojGS173TnJlve70QP/+cu6NF4HjbgNLZcKgOyGYw=;
-        b=FwH95TNiHFVJK4nGlfEwL/FP+7WR8fRPoMrKpeWQyO3fQb0yhRPVgmbGduaG0FHTPA
-         /hsSyZRM8lw/VKIpQLYjm6Xw1ImKJ3iSUFY8bPROXeZoDri2R/0gPoZRCPrVHt5U+CNG
-         kuZo0C+HBDu+3QqWnhUOdfMxqsWx2IcHctPoFJUPEO/cxWnOr+DQ2cP8Y9Ia6w2+vhlu
-         GGpBN4c+GmaI6jzeyge9OTle6nCX7/x+UWnsLG2tKvEGlmFIH36Pef7cuTileqK8esA6
-         7fIgOUDuq2Mvx350u5dZHEMvTLy4PEjWvtXaXQrLvN6qLjmoDK+Eb6kXsikbE7newUAC
-         N2fw==
-X-Forwarded-Encrypted: i=1; AJvYcCWddnuQtTG1s4dr56UtE1OAY7qnV8V/TwTm4YRJ8Tm9/q5z/Cd+7k20U67prpeL91+XmFv6fBscbj4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwADfFqPnuOOZZZ9x5xgczac4Nf7tI9p6HN6E3m4+1eYPp8mPBP
-	2eqwvJlULLPJukMB+r3ddApmf5td4A0f21aZ3qyYtttiMzbKmSvVRyhS
-X-Gm-Gg: AZuq6aKiQ7bJkXMJo47OE8/L2PNTUvJ3zeKMkYgwzqL97k28rlNLI3riddpN2i5JK03
-	cBs8GivgHV4cNLqvdKANkTnyyv3TNh9oi6t2dakmDDtQSFAkpjFEOzzYbM6dWtD4xyfqFBUWOwo
-	SA5h5iXUDmblrSTb7IvP00PLUFisCYJs5Fnw0p5JZHq7VPY4sITKNMbGNIpE7i6oQHUxYrB2c9x
-	a64JdGWlvEa5VsoyKV2n3kDbLwdmJ+fmzX+0xfRK/1EiWRClkTJfkJ+cDsuEdWfVBSEPjbzT2IU
-	xGmC4Kc6i895seJL5IlP3vSPYuFvigqF15Vq9Om86cRj05KKFo6+9Q0gSLZl6jlqNJYKYf+rFio
-	fpE6UAtiw+Fhd9xFM9julpTuZEhiwe8M5oMK7WAL4KpwGqQ4oQWJr5hpVO6P/9OWcmMB/oKcUOe
-	DssUa28dMpTxe8AjGsaPpWA0vhrUVsN0rqpfhV/q/3GcEmz6VMWILHIZol
-X-Received: by 2002:a05:6000:40c8:b0:431:104:6dc2 with SMTP id ffacd0b85a97d-435f3a674f5mr12407152f8f.8.1769970826540;
-        Sun, 01 Feb 2026 10:33:46 -0800 (PST)
+        bh=309CH24IybzBmjrd1Z1MDsc4bcv4TEJ+M8kIPobk7aI=;
+        b=t6jU3J1F0qcJjDYKs6nYkmHmFKusmv5mweC7eoU5mBhkxeRt1rr198twDT5mBPl28C
+         ih3nf58TdvRu8HON8nDvQZkJCxp6hXARbUfTHZTJIZ2+jCVTMyhYcUpc/FrlEBufEQUY
+         U0LN/0HUP1jaVqg0d3oEHSbiumFMbEN7HBoAnaNYugocHHWaOkvEakGn56l2oxKR8/GK
+         Y+nbWEFtL2WBxLMY0mLyF5NYuZ47uHeMA0FmoIQTJGzUxBffFVtvg3v6ZSmJIKHbP/Ex
+         KM5N7Ql9Tw3ske4ENOYxpckR2svJz/PVw1AMkvAYGuZA4/GijspWjs6y70c8OtQL/ssH
+         p9zQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUcdEloytWVDckXsUv5IKMtdGeiUa4lHqlq7HVrr0Erg5zYPqAiVQTAoTaKTJ0qDBh/3Cuosgvfaeg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YziNkUsxOa9TTwg5Mx6k5sR1Vh3/B4nLdU01IShsliGRLg2srVx
+	/hT+B9ivUe3Mc7xAL4hdSJrODFg3QOevW5sndo/A6PVWIrp/ZLMKBOF8
+X-Gm-Gg: AZuq6aLZ+4Z6M/5nQ4+KDXrNp/6VFMOtscKnbmmHQfwxDO+Cgs5M1kPZGn0iwIwrUHu
+	iN0XPc/c1Pccd39J7XhxZQtGEbxKZPnvU9Cr8zQIvp42WEY3vtxAqzhiPHTwgZ9WXNvVwRrNfuj
+	7lVdDVRoVxy9oR/PWS7RPYs2e/UAcnpGXTW+AgODT5h85VK0eM8uyP5VajVBDs3p5RP8uNlQPyN
+	ye1H2N4AhVhk7N0MPMMXrONhTVtk4LxShgf4+Lw43JySawpzq6em/EZMnFb5cE+FKSM3lgpRboK
+	IACW0kMEOtos2ksq0AiM+djzrOVUUoMbA4e5FKx0I6r1XsOFAmm4q4CI1K+5d+aLO/f64qvzgh0
+	jQvIXSCW7SLLPMBhK3pH7QvyQOuALAqSmv8o/wNiuNE8q0rPg6u8kEaMpdiN+C5seCP0Azo7XG8
+	RgyUACgR3KUKUEP0vipcZ3LogCmib1Mqro5UnHJAzPdXPzWQ==
+X-Received: by 2002:a05:6000:2088:b0:435:b7ca:7521 with SMTP id ffacd0b85a97d-435f3a763dbmr13149181f8f.15.1769970828099;
+        Sun, 01 Feb 2026 10:33:48 -0800 (PST)
 Received: from DB-VM.1337.ma ([197.230.240.146])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10edf62sm41400084f8f.13.2026.02.01.10.33.45
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10edf62sm41400084f8f.13.2026.02.01.10.33.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Feb 2026 10:33:46 -0800 (PST)
+        Sun, 01 Feb 2026 10:33:47 -0800 (PST)
 From: Taha Ed-Dafili <0rayn.dev@gmail.com>
 To: jic23@kernel.org
 Cc: me@brighamcampbell.com,
@@ -74,9 +74,9 @@ Cc: me@brighamcampbell.com,
 	linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Taha Ed-Dafili <0rayn.dev@gmail.com>
-Subject: [PATCH v2 1/4] docs: iio: adxl345: fix typos and grammar
-Date: Sun,  1 Feb 2026 13:33:10 -0500
-Message-ID: <20260201183320.27023-2-0rayn.dev@gmail.com>
+Subject: [PATCH v2 2/4] iio: core: Add IIO_EV_INFO_SCALE to event info
+Date: Sun,  1 Feb 2026 13:33:11 -0500
+Message-ID: <20260201183320.27023-3-0rayn.dev@gmail.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260201183320.27023-1-0rayn.dev@gmail.com>
 References: <20260201183320.27023-1-0rayn.dev@gmail.com>
@@ -86,107 +86,45 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Correct several grammatical errors, typos, and pluralization issues
-throughout the ADXL345 documentation. Key changes include:
-- Changing 'generic' to 'general-purpose'
-- Correcting 'axis' to 'axes' in multiple tables and descriptions
-- Improving phrasing in the device attributes section
-- Fixing 'latent' to 'latency' in usage examples
+While implementing event scaling for the ADXL345 to match
+the IIO ABI documentation, I noticed that IIO_EV_INFO_SCALE
+was missing from the internal enum iio_event_info.
+
+Add the constant and the "scale" sysfs string
+to allow drivers to expose these attributes correctly.
 
 Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
 ---
- Documentation/iio/adxl345.rst | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/iio/industrialio-event.c | 1 +
+ include/linux/iio/types.h        | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/Documentation/iio/adxl345.rst b/Documentation/iio/adxl345.rst
-index bb19d64f67c3..41d209a4dccf 100644
---- a/Documentation/iio/adxl345.rst
-+++ b/Documentation/iio/adxl345.rst
-@@ -12,16 +12,16 @@ This driver supports Analog Device's ADXL345/375 on SPI/I2C bus.
- * `ADXL345 <https://www.analog.com/ADXL345>`_
- * `ADXL375 <https://www.analog.com/ADXL375>`_
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index 06295cfc2da8..5096baf233f0 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -256,6 +256,7 @@ static const char * const iio_ev_info_text[] = {
+ 	[IIO_EV_INFO_TAP2_MIN_DELAY] = "tap2_min_delay",
+ 	[IIO_EV_INFO_RUNNING_PERIOD] = "runningperiod",
+ 	[IIO_EV_INFO_RUNNING_COUNT] = "runningcount",
++	[IIO_EV_INFO_SCALE] = "scale",
+ };
  
--The ADXL345 is a generic purpose low power, 3-axis accelerometer with selectable
-+The ADXL345 is a general-purpose, low-power, 3-axis accelerometer with selectable
- measurement ranges. The ADXL345 supports the ±2 g, ±4 g, ±8 g, and ±16 g ranges.
+ static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index 34eebad12d2c..4e3099defc1d 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -21,6 +21,7 @@ enum iio_event_info {
+ 	IIO_EV_INFO_TAP2_MIN_DELAY,
+ 	IIO_EV_INFO_RUNNING_PERIOD,
+ 	IIO_EV_INFO_RUNNING_COUNT,
++	IIO_EV_INFO_SCALE,
+ };
  
- 2. Device Attributes
- ====================
- 
--Each IIO device, has a device folder under ``/sys/bus/iio/devices/iio:deviceX``,
-+Each IIO device has a device folder under ``/sys/bus/iio/devices/iio:deviceX``,
- where X is the IIO index of the device. Under these folders reside a set of
- device files, depending on the characteristics and features of the hardware
--device in questions. These files are consistently generalized and documented in
-+device in question. These files are consistently generalized and documented in
- the IIO ABI documentation.
- 
- The following table shows the ADXL345 related device files, found in the
-@@ -42,7 +42,7 @@ specific device folder path ``/sys/bus/iio/devices/iio:deviceX``.
- +-------------------------------------------+----------------------------------------------------------+
- | in_accel_x_raw                            | Raw X-axis accelerometer channel value.                  |
- +-------------------------------------------+----------------------------------------------------------+
--| in_accel_y_calibbias                      | y-axis acceleration offset correction                    |
-+| in_accel_y_calibbias                      | Y-axis acceleration offset correction                    |
- +-------------------------------------------+----------------------------------------------------------+
- | in_accel_y_raw                            | Raw Y-axis accelerometer channel value.                  |
- +-------------------------------------------+----------------------------------------------------------+
-@@ -68,7 +68,7 @@ present, simply assume its value is 0.
- +-------------------------------------+---------------------------+
- | Channel type                        | Measurement unit          |
- +-------------------------------------+---------------------------+
--| Acceleration on X, Y, and Z axis    | Meters per second squared |
-+| Acceleration on X, Y, and Z axes    | Meters per second squared |
- +-------------------------------------+---------------------------+
- 
- Sensor Events
-@@ -78,7 +78,7 @@ Specific IIO events are triggered by their corresponding interrupts. The sensor
- driver supports either none or a single active interrupt (INT) line, selectable
- from the two available options: INT1 or INT2. The active INT line should be
- specified in the device tree. If no INT line is configured, the sensor defaults
--to FIFO bypass mode, where event detection is disabled and only X, Y, and Z axis
-+to FIFO bypass mode, where event detection is disabled and only X, Y, and Z axes
- measurements are available.
- 
- The table below lists the ADXL345-related device files located in the
-@@ -90,11 +90,11 @@ listed.
- +---------------------------------------------+---------------------------------------------+
- | Event handle                                | Description                                 |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_gesture_doubletap_en               | Enable double tap detection on all axis     |
-+| in_accel_gesture_doubletap_en               | Enable double tap detection on all axes     |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_gesture_doubletap_reset_timeout    | Double tap window in [us]                   |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_gesture_doubletap_tap2_min_delay   | Double tap latent in [us]                   |
-+| in_accel_gesture_doubletap_tap2_min_delay   | Double tap latency in [us]                  |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_gesture_singletap_timeout          | Single tap duration in [us]                 |
- +---------------------------------------------+---------------------------------------------+
-@@ -118,9 +118,9 @@ listed.
- +---------------------------------------------+---------------------------------------------+
- | in_accel_x_gesture_singletap_en             | Enable single tap detection on X axis       |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_x&y&z_mag_falling_en               | Enable inactivity detection on all axis     |
-+| in_accel_x&y&z_mag_falling_en               | Enable inactivity detection on all axes     |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_x&y&z_mag_adaptive_falling_en      | Enable AC coupled inactivity on all axis    |
-+| in_accel_x&y&z_mag_adaptive_falling_en      | Enable AC coupled inactivity on all axes    |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_y_gesture_singletap_en             | Enable single tap detection on Y axis       |
- +---------------------------------------------+---------------------------------------------+
-@@ -330,7 +330,7 @@ Configure one or several events:
-         ## doubletap, window [us]
-         root:/sys/bus/iio/devices/iio:device0> echo 0.025 > ./events/in_accel_gesture_doubletap_reset_timeout
- 
--        ## doubletap, latent [us]
-+        ## doubletap, latency [us]
-         root:/sys/bus/iio/devices/iio:device0> echo 0.025 > ./events/in_accel_gesture_doubletap_tap2_min_delay
- 
-         ## AC coupled activity, enable
+ #define IIO_VAL_INT 1
 -- 
 2.47.3
 
