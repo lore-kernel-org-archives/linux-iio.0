@@ -1,160 +1,94 @@
-Received: from mail-ot1-f65.google.com (mail-ot1-f65.google.com [209.85.210.65])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from polaris.svanheule.net (polaris.svanheule.net [84.16.241.116])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 296B11339A4
-	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 19:13:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.65
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DC81286D5E
+	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 19:35:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=84.16.241.116
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769973238; cv=none; b=IzZPW9icdfo6HUNMBFcZwY6GM1BpVl7USabIwtqJlIyVXf3gf99FM+JyfOj7t0wonXwYJcOnYZPthSZ3dWXDLPiwt+7EPgx1ftX+l8xKNfh0SAzZPzDZXy2T7yVckLfrk2kbxbTRzIlVwWVuwT3LppqXnmXhXC+4C3upX2OlGpM=
+	t=1769974556; cv=none; b=IQ0wMyQV78cp/vhDa3vSglfcPLGPNWlExguEcA0F7aTziKprpiq06Ux7IKWxgR8vg3752OVgKdS5ae7gWhEbnWtMt45NlA/AWZxsrq5BPu8D1JLi7zlbGNA3Ds17bWa+IcMx8IGDAjm4aa6um3lNmv6RBTgUm2llruuWF9YyCdU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769973238; c=relaxed/simple;
-	bh=LMDeSbQEzE960rQ43ZlJPj8QobL2TtSDuGRpOwr5CQk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ca0fFxuRxWTcNerD2tAWo9PhsTEIEz7Q2FaFp69VCb5/q+N6DIpmqidM/59Zj6X4Od9Ux5tDFO0sdEACnhoIH4tdkaX4tbv6Mj/UtGSPjDJLFwbDlz6OKW/2uED2SrpQHyju21qUviI1q6FBEtAyRzHV1DQKQjv1qm+n/pNNmoo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=m471btIH; arc=none smtp.client-ip=209.85.210.65
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1769974556; c=relaxed/simple;
+	bh=xC4JNj83DSwZKQi7KDrsXy/44m8OkG40SekgE4vI2lQ=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=pKUSfc00Pg/4vv2kSKnM8Z1WuWkTZNVWkzBwXMT1JeRt1dQ92TAzX/PW1LP4yOVZRe85ZyfCBEqVEYxmSuf1GJvOHCwd5cePOAilWprMdboS/4nP6lv6Of7huc4qhQBvs2L0DfYeKHE/iumeM8JUwP0m/WJKF+cTCKcGq8a0x7Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svanheule.net; spf=pass smtp.mailfrom=svanheule.net; dkim=pass (2048-bit key) header.d=svanheule.net header.i=@svanheule.net header.b=dd+jNqO9; arc=none smtp.client-ip=84.16.241.116
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=svanheule.net
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=svanheule.net
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="m471btIH"
-Received: by mail-ot1-f65.google.com with SMTP id 46e09a7af769-7d18a9d2b1aso3593883a34.2
-        for <linux-iio@vger.kernel.org>; Sun, 01 Feb 2026 11:13:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769973234; x=1770578034; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5SkDk2sKu2hL/PPwbaE144JaTsQSL8ycHjDsHXoFklA=;
-        b=m471btIHLDq5YxCFIotgejvGFRN4+s7brjKXJe+0hHuYakLIR7xZMh1gwoA7lrxtMI
-         K5pi848nCqul7sEgwKXnQoM0CHq7r4FnMj3opSjTdIhdBO7KxClgqIiZUOwaP6CJ3qJ0
-         kGR4QGy8sa+x2mvd2Mj58+c5tBPY2v1z2SCVXs6+0HCOd1ChceLKd/yqzQ4yYK9vpoeK
-         PcC07/DDfg5rkpWDzTqThU73BgX/T8asGK2ncb94soCOj4gP736Or/3HRxl6U2NqcuQ+
-         rkNK924JoB2pe/aW3M01H1UqNNVoCt0MiOcoTD9nCHcgeYaB4yPoHzfwx6GS5gdEZR0F
-         gB9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769973234; x=1770578034;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5SkDk2sKu2hL/PPwbaE144JaTsQSL8ycHjDsHXoFklA=;
-        b=Vo8Qi4zdY+Rr+ZGY9sAv7h1TvYw5tHLXdyfT+pVlhjSghLR+dJz9A/Jx4IxEfZ2NFx
-         1aqhNJC4WiOOapFObsIS8G9yDFiXB7tbi8QNc70g54p9H92RoC7ExEv+z/xo5k2tiiLo
-         Ak0b+AfoVLbnWz2F8GzHYOJO4pH6S1vK+g/Ff1Y9BC90zdfyyN9rQcqY34e9rW4beGd8
-         OHnu6CMYuL/I6/0MXNlGF5hEMqg5+J85OG/K5A1k1H96Yx9oia0/JcyMKh22LjEKSWQe
-         hhGXrBbO0Nme/J9BJW+c0IBW/6ntot59RXfRxVXB3gRxbusE8tBqwzhhIX1cgVUIDtz+
-         xKYw==
-X-Forwarded-Encrypted: i=1; AJvYcCVYliCynMnV88zF82qtYJpLM/xPzRyiw39TpxGwrnBwxBVcuEDDj9ocrBUadgi56rcqi9vhWEJAUm0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwtGag5oFpN7X1PhE394TIZDAAFm42zXzwC8jwjpwyCwh8H+gmj
-	75A95iAwvxuj4hTIAR/AvNi3atREoHmbBYdygL82EZ2Im3gTLzcRsKJQeCawkQEsKy8=
-X-Gm-Gg: AZuq6aIxkJhMRJbavNONtOsZlFJfpVyP4a96hurOU5WmSnNfEjrtNkznunqP/N6q8aV
-	qa2Xvm9HO5UQFbryYD70T2XD/cKla9N6jv2ErtjCooJcICyMO/Mkkqzl3MLEIJwMuX898NSWfTr
-	4UfZSFQCxx7GHTWk/Xm07hUmvkUe9vSYL/9qfpV+boBrZHjP5IngEtCDAC+eo+DFRR3tKhc7eAy
-	+7aPjY9NXdCVnCakUrqa1Cae+LPYoVDTOrSmKKPfkut1zMakPel7YapOckZcx/hdMpSOyttlYjM
-	Z+3ubhnq8U/qIrTcoJv9j8aRwdGD4fAvpkpgQRHWVUd2ffe1n0dLRuJMeCenmrjShbjXtnBiKEi
-	s4piASygsSwGcnHC6ptn2jxu9W4LsPrTj3IBNFjV1hOws7Sy3XejBStWm6d48crnrPlBfO5nXQM
-	mxX7CZEmckoj2m2BPVyzWROYQDo1M8AvMmjXQHsUr8pe8aEdi2Icx71t16VQVU
-X-Received: by 2002:a05:6830:6811:b0:7c7:59a1:48d7 with SMTP id 46e09a7af769-7d1a5233607mr5007579a34.2.1769973234082;
-        Sun, 01 Feb 2026 11:13:54 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:66ee:10f7:4858:7df6? ([2600:8803:e7e4:500:66ee:10f7:4858:7df6])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d18c6708e1sm9496319a34.5.2026.02.01.11.13.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Feb 2026 11:13:53 -0800 (PST)
-Message-ID: <8e46ce3c-41b4-4a6c-9b1c-a9ab56814d1a@baylibre.com>
-Date: Sun, 1 Feb 2026 13:13:51 -0600
+	dkim=pass (2048-bit key) header.d=svanheule.net header.i=@svanheule.net header.b="dd+jNqO9"
+Received: from [IPv6:2a02:1812:162c:8f00:1e2d:b404:3319:eba8] (2a02-1812-162c-8f00-1e2d-b404-3319-eba8.ip6.access.telenet.be [IPv6:2a02:1812:162c:8f00:1e2d:b404:3319:eba8])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+	 key-exchange ECDHE (prime256v1) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+	(No client certificate requested)
+	(Authenticated sender: sander@svanheule.net)
+	by polaris.svanheule.net (Postfix) with ESMTPSA id 3A36E6D6B6D;
+	Sun,  1 Feb 2026 20:35:51 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+	s=mail1707; t=1769974551;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lm4iZS+oXCLm1KU7ievUyN4UL/jPfvgVlKcZCbDt3GM=;
+	b=dd+jNqO9l2TrqwSoIX0d+XKQIOFIT3Z5jo+o7LJ2LRNyImfpmEo/mQtBYsz513QayIUI0a
+	EfZi/Y1adVLtX4wP+zL9yeErFGjW6/ARjpIzE4yGsZQi2u0fasvwKTlvVrA9end9TLX/L2
+	EeHwMnySgCdEhVIvk3CxEe3xDYMfxv5S52StdonOucIN6tmz/aOiDHDRLY4dmt9f23zGRV
+	fgaDEWS3HjllYWgG1FTUr1qpkgcOGsNodqaMdUYNED6opvNFpJYizHiaFniA6SvssG2BCy
+	NODfGIwpDThcUx+jBiUNuDGAC+DufvyS7rhuhGdSKscLWproeYx2b7ca5nzv9Q==
+Message-ID: <3b444835dcf4f4600bf5cbb9c079e4920137a960.camel@svanheule.net>
+Subject: Re: [PATCH v3 7/8] iio: dac: ds4424: convert to regmap
+From: Sander Vanheule <sander@svanheule.net>
+To: Oleksij Rempel <o.rempel@pengutronix.de>, Jonathan Cameron
+	 <jic23@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
+	 <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Cc: kernel@pengutronix.de, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Andy Shevchenko
+	 <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?=
+	 <nuno.sa@analog.com>, David Jander <david@protonic.nl>
+Date: Sun, 01 Feb 2026 20:35:50 +0100
+In-Reply-To: <20260128153824.3679187-8-o.rempel@pengutronix.de>
+References: <20260128153824.3679187-1-o.rempel@pengutronix.de>
+	 <20260128153824.3679187-8-o.rempel@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 (3.58.2-1.fc43) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 4/4] docs: iio: adxl345: update math and examples for
- scaling
-To: Taha Ed-Dafili <0rayn.dev@gmail.com>, jic23@kernel.org
-Cc: me@brighamcampbell.com, skhan@linuxfoundation.org,
- linux-kernel-mentees-archive@lists.linuxfoundation.org,
- rdunlap@infradead.org, nuno.sa@analog.com, andy@kernel.org, corbet@lwn.net,
- lars@metafoo.de, Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260201183320.27023-1-0rayn.dev@gmail.com>
- <20260201183320.27023-5-0rayn.dev@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260201183320.27023-5-0rayn.dev@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 
-On 2/1/26 12:33 PM, Taha Ed-Dafili wrote:
-> Update the documentation to reflect the addition of event scaling
-> and correct existing technical errors inscale values.
+Hi Oleksij,
 
-s/inscale/in scale/
+On Wed, 2026-01-28 at 16:38 +0100, Oleksij Rempel wrote:
+> +static const struct regmap_config ds44x2_regmap_config =3D {
+> +	.reg_bits =3D 8,
+> +	.val_bits =3D 8,
+> +	.cache_type =3D REGCACHE_MAPLE,
+> +	.max_register =3D DS4424_DAC_ADDR(1),
+> +	.rd_table =3D &ds44x2_table,
+> +	.wr_table =3D &ds44x2_table,
+> +	/* Seed cache from HW during regmap_init */
 
-> 
-> key changes:
-> - Fix the 62.5 g/LSB typo to 62.5 mg/LSB and add SI unit conversion.
-> - Correct decimal precision of in_accel_scale and
-> in_accel_scale_available to match actual SI unit (m/s^2)
-> values reported by the driver.
-> - Add sysfs example showing how to read and interpret the
-> newly implemented event scale factor.
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
-> ---
->  Documentation/iio/adxl345.rst | 41 +++++++++++++++++++++++------------
->  1 file changed, 27 insertions(+), 14 deletions(-)
-> 
-> diff --git a/Documentation/iio/adxl345.rst b/Documentation/iio/adxl345.rst
-> index 41d209a4dccf..2f51a2a4fbd0 100644
-> --- a/Documentation/iio/adxl345.rst
-> +++ b/Documentation/iio/adxl345.rst
-> @@ -13,7 +13,11 @@ This driver supports Analog Device's ADXL345/375 on SPI/I2C bus.
->  * `ADXL375 <https://www.analog.com/ADXL375>`_
->  
->  The ADXL345 is a general-purpose, low-power, 3-axis accelerometer with selectable
-> -measurement ranges. The ADXL345 supports the ±2 g, ±4 g, ±8 g, and ±16 g ranges.
-> +measurement ranges. The ADXL345 supports the following ranges:
-> +- ±2g  (approx. ±19.61 m/s^2)
-> +- ±4g  (approx. ±39.23 m/s^2)
-> +- ±8g  (approx. ±78.45 m/s^2)
-> +- ±16g (approx. ±156.91 m/s^2)
->  
->  2. Device Attributes
->  ====================
-> @@ -98,23 +102,28 @@ listed.
->  +---------------------------------------------+---------------------------------------------+
->  | in_accel_gesture_singletap_timeout          | Single tap duration in [us]                 |
->  +---------------------------------------------+---------------------------------------------+
-> -| in_accel_gesture_singletap_value            | Single tap threshold value in 62.5/LSB      |
-> +| in_accel_gesture_singletap_value            | Single tap threshold value in               |
-> +|                                             | 0.612915 m/s^2/LSB                          |
->  +---------------------------------------------+---------------------------------------------+
->  | in_accel_mag_falling_period                 | Inactivity time in seconds                  |
->  +---------------------------------------------+---------------------------------------------+
-> -| in_accel_mag_falling_value                  | Inactivity threshold value in 62.5/LSB      |
-> +| in_accel_mag_falling_value                  | Inactivity threshold value in               |
-> +|                                             | 0.612915 m/s^2/LSB                          |
->  +---------------------------------------------+---------------------------------------------+
->  | in_accel_mag_adaptive_rising_en             | Enable AC coupled activity on X axis        |
->  +---------------------------------------------+---------------------------------------------+
->  | in_accel_mag_adaptive_falling_period        | AC coupled inactivity time in seconds       |
->  +---------------------------------------------+---------------------------------------------+
-> -| in_accel_mag_adaptive_falling_value         | AC coupled inactivity threshold in 62.5/LSB |
-> +| in_accel_mag_adaptive_falling_value         | AC coupled inactivity threshold in          |
-> +|                                             | 0.612915 m/s^2/LSB                          |
->  +---------------------------------------------+---------------------------------------------+
-> -| in_accel_mag_adaptive_rising_value          | AC coupled activity threshold in 62.5/LSB   |
-> +| in_accel_mag_adaptive_rising_value          | AC coupled activity threshold in            |
-> +|                                             | 0.612915 m/s^2/LSB                          |
->  +---------------------------------------------+---------------------------------------------+
->  | in_accel_mag_rising_en                      | Enable activity detection on X axis         |
->  +---------------------------------------------+---------------------------------------------+
-> -| in_accel_mag_rising_value                   | Activity threshold value in 62.5/LSB        |
-> +| in_accel_mag_rising_value                   | Activity threshold value in                 |
-> +|                                             | 0.612915 m/s^2/LSB                          |
->  +---------------------------------------------+---------------------------------------------+
->  | in_accel_x_gesture_singletap_en             | Enable single tap detection on X axis       |
->  +---------------------------------------------+---------------------------------------------+
+Nit: You're seeding the cache (manually) in ds4424_init_regmap(). But you c=
+an
+also just drop this comment as far as I'm concerned. The comment in
+ds4424_init_regmap() explains it sufficiently.
 
-Why not also adding the new in_accel_*_scale attributes to the table?
+
+
+> +	if (ret)
+> +		return dev_err_probe(&client->dev, ret,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to read hardware defaults\n");
+
+Nit: "hardware defaults" -> "hardware values"
+
+
+Nothing too serious from my side, so FWIW, with these things addressed:
+
+Reviewed-by: Sander Vanheule <sander@svanheule.net>
+
+Best,
+Sander
