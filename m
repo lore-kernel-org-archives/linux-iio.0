@@ -1,208 +1,202 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-ot1-f67.google.com (mail-ot1-f67.google.com [209.85.210.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CF2852882C5
-	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 18:33:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7170F23D7FC
+	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 18:45:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769970834; cv=none; b=bP6pW2tn4olVCUXs3S3jZP8mqqN4ZUY7Ivx4zSrq/+CUKhvAwJDszFeECAueUnN1Y0ysMx1+i4LU2tyb0Ce2j8qar90yKK/4e4t4LGPZZOiDWt1F0JJNilsxSOF47LzykmkWEjT+07Sejoapi5ppgnJOKdguC9NS4NLQlGWmXCM=
+	t=1769971514; cv=none; b=cbzmBc4WowL7SEA8sqyPJSIYScCtmE2YTNox7uOki9qQ5ZAIx5FAGQyaP5lVdFDzV6waDdADuMDDBekx4x4jKYygBnQeWcda8NV9o5fkLNei4s9dlx6Il8NRrzEZ26dAPSISCSb1qVgNe7iXnm9m6THTSk65DDL2VQjs0j90WbA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769970834; c=relaxed/simple;
-	bh=NTtrU9ALUW0H2U3GdQ0runI6luxdsHByzTjH6ivbrbs=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=t3liXKrocuY1+KT1M7FWF9/ww2T9NG9Hrb7IEKss2b7dubHP59KmG4bjz8d5SUKCBhcIqbm1QoXkrdFBJkvd90YdiF05zujefi7UyGrbz0Cddbc+BX4/JovJuB8ffqHrdUJ4WhHPYvOL+BnN8IJRB2bD03Qd9SNDH+mX4zuls7k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ki5c8XGe; arc=none smtp.client-ip=209.85.128.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1769971514; c=relaxed/simple;
+	bh=LQgQQD9AmuPzorHnhKvFOzsRBup414VCck4EdvcVNLQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=m7l6jpDLmXPD/RrTalJV/8ORJzSsG3WVVvWKNAJPu9ZN0kXV5+E2PEMQFp6GZ/JK3A63x6vizdM3szFshNJdrV1/gUgHIZnjdEw9hRh52cpbX9YgtA8U6fGYKVo6hP8oLf8eyWzp0+mGFyUbHgNKTZVXTe4RPPBilNChM1ynbFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2AL3TAQ3; arc=none smtp.client-ip=209.85.210.67
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ki5c8XGe"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-482f454be5bso4345115e9.0
-        for <linux-iio@vger.kernel.org>; Sun, 01 Feb 2026 10:33:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2AL3TAQ3"
+Received: by mail-ot1-f67.google.com with SMTP id 46e09a7af769-7d122733808so1494227a34.2
+        for <linux-iio@vger.kernel.org>; Sun, 01 Feb 2026 10:45:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1769970831; x=1770575631; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HE8QDa+6YuW+XTKb20xWh2n+IRJ7xpzuDbFeuNPC7Q4=;
-        b=ki5c8XGePA382RFGWVi7BpJYx98HiLojahqpMeswg/TkGt82lic4rohm5jlTCc1lJy
-         mDpvq0a3b56yTpvlNc2LELiGaiF4Uhnhzo8daymxhgbPYjD5At0Zuxv1rNaygliySZhb
-         PiYveRyqo0deiKVzwVKQocrqHNY+uPewG6m+sPKo3rnF7u/3EWPdQQdpe9IphEhnUW5w
-         M1plSuhAC7+7X5ueylNV9wF2q6lfpRA19b2gnmmMrS6/HNCCdgNxRFZOvmjre3geI/rS
-         Lc99Ner9PyKFLXwWp61Gw+u0cdZaS12OZYoNUfHxaRaTB739tjFWKFLJ64Hgt7o6zorh
-         Ocvw==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769971509; x=1770576309; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=Akl38qoflsvYXDrfSQS4UdKQ+8WjmfeZhRt65gKmSWg=;
+        b=2AL3TAQ36k8/kME8b7gM6J0TI3/G9vFX5oPb6PJBT9JRSyY/Q8tplyzhCchG2AcCGX
+         UiuRIameoV5ChfR4wMML1uF/xrr20bTweofEmoh6vXOurUsqyzQXOfHDhMO8dzFTAqE6
+         d9XlFg2ySdpiiCEJnyQGrch2rBGIej32os8hwVbmdc+EdWsU9gUMrb/qB9fcOwoqTgTn
+         lbJYGrCmB/bhY8/4aBSEA5ByRb0fY+OVXAD6AgEtxIp68zddTsbzTHHqm7kCHWsS+sH6
+         A3wtfU+L0AhMjYQoo7kFdi2gt6C7oMJey9xJkEFAUnO6121QlbRQ5i26S3Lc526gO6y0
+         sALw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769970831; x=1770575631;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=HE8QDa+6YuW+XTKb20xWh2n+IRJ7xpzuDbFeuNPC7Q4=;
-        b=sMSKslXUcWD2sZkkMj0tRjNbK6c5O3xw76qtlYSgvWo/4JytdrRm3alwW3JrLgjFdk
-         wW4tUEv43ATbK/eYZEraWl9qiNIsvddkuh+5IatHVKLjXpS/7NC8CiFNeiOmOBoM8x2e
-         lLSjLRY84wnicRmsn4wrrqXSe61514Q6oHuhwEfp4TWu2sH3XqXE2DHDT8oHV1MQ9cA+
-         ZxEeQT6h8IIHNcy14jE63S02/65cpBrfIMJ5zrSOLjeCb1NsbM7R/oKocSZlWB8tzBrC
-         jB7g3OGQ9nr5SailOYyjShFwuh+t/HMeSRVZvzqIHy7g7bFAobgVlJ+fKGC5lMkB+AjU
-         +HRg==
-X-Forwarded-Encrypted: i=1; AJvYcCX0xgreRYGmCjkaAw+wbnjUlubBY9vROPE5njMX1s+SKKKzc+t58EAb56gouIu3zJtTcY31BXRP2Gs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzOy36oCmIOHWIlptK3HCLUvRXNSk/sVx7yoA70jdRZks49vPRl
-	nGvsuzSt7WCBZ+ybTucbIjHReaSjYCQ3se8rkGQckHTm3k6xBSf8IdqA
-X-Gm-Gg: AZuq6aKJbPjgNNr+bFqMRvqxgp4OsPcwM6GWGdjP7/7232nddHjnN1JeKcu3QCJO59I
-	kHTTE8dpDf51LGWiuyactJx07j28mPeDzeaz9esbgGWOVY0yg3aIQxKqOLJmGY2Oaex8VdvkPNI
-	xo0WVHf6EhAlC9q3n/ZcYs0u4Qa18RsQTXD8WYwebZ69awzZuBK+tAyy/UeBGDxzJ06Pc+Hj41s
-	bmbnnp/M4mqSZFTZTKa9yNy5iCMfa05VwFdb7ZwYyxCrdR8lrH6uedfp7JEvc+IDgnJrPz9dSZE
-	NvwIQWItKF4adjxEP56p1NzZlOYiBw2Vu5trVqeBa7TMlSnmrM9joEc/Km5bCcHOaYZWqatUeUf
-	8V4Rd+YJrslq0FpgwRpms6AZDgXvCL6t9oLtkRY+mu+ohVDUVcERgUrVNNzgcYemuZviAQFAa++
-	G44uGsoPcaCMwek8ztbv7IbaVdlOt3nMJr7c0eVfgCK8ZQrg==
-X-Received: by 2002:a05:6000:24c5:b0:435:aaba:b904 with SMTP id ffacd0b85a97d-435ea06715fmr17840324f8f.8.1769970831095;
-        Sun, 01 Feb 2026 10:33:51 -0800 (PST)
-Received: from DB-VM.1337.ma ([197.230.240.146])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10edf62sm41400084f8f.13.2026.02.01.10.33.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Feb 2026 10:33:50 -0800 (PST)
-From: Taha Ed-Dafili <0rayn.dev@gmail.com>
-To: jic23@kernel.org
-Cc: me@brighamcampbell.com,
-	skhan@linuxfoundation.org,
-	linux-kernel-mentees-archive@lists.linuxfoundation.org,
-	rdunlap@infradead.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	corbet@lwn.net,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Taha Ed-Dafili <0rayn.dev@gmail.com>
-Subject: [PATCH v2 4/4] docs: iio: adxl345: update math and examples for scaling
-Date: Sun,  1 Feb 2026 13:33:13 -0500
-Message-ID: <20260201183320.27023-5-0rayn.dev@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260201183320.27023-1-0rayn.dev@gmail.com>
-References: <20260201183320.27023-1-0rayn.dev@gmail.com>
+        d=1e100.net; s=20230601; t=1769971509; x=1770576309;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=Akl38qoflsvYXDrfSQS4UdKQ+8WjmfeZhRt65gKmSWg=;
+        b=QRz9r6CGyDx8U/bUvAXbOegR3sn0YoUbDgqMtk4IKGeNgXveUJpvb3Q7r6KwZXvFVo
+         hDLowTcOqANzdIn/ArFh67ETm7l+YhmA2v0Tu7uPU/gdWDofLbKHsVsj9i2iI648lnlc
+         z5eVr9M+oQnScdrTN/NGC8InWA+OoAovaXMaRxCLeTF2r+sopZeqSW6k/76r2TRw+Zgy
+         uurn6Af5gSV+fDzpNyW4mAmVlkWFIVcXt9qwuyNbI4/fFMdJuMen0e2lSosuVFM4GXvT
+         RZG+MrElUZ9sCbeHbQdyiivRvpcNAzVFbw0kvOB5yCWWLrhFCYiwaZDPa2zNa0SI+kNu
+         yXrQ==
+X-Gm-Message-State: AOJu0Yy1hZuCfJh6oZvAMCBVPQO7jQEmPzdJm6FIOgxl+Ew8XpiTl0cm
+	imt7bLdECiakEOBnfCDjOziBiJ/gkVYTyc0Js7kfy+74BbzUASYqShPR0qjVpj/QcMY=
+X-Gm-Gg: AZuq6aLVPJ9DoOlWusDZlBS+CgEJTKszSb5w2jKFyWgHziQsIwZBFrnDnXu5Q6F22rV
+	0xpWgPeqJhUqg+YJh8+3xgADkgYN3nnsL5OqWiNa02W6cmyMIDpz7Zxfk+kBUIVLLKK+MqM7wBr
+	xQFQWsqMppZWSqSRN6G7MhN/J1NPSFGAmlM+UQNZQF6Q80pwPveU4KRNIwVHufzgs0bhOPM44JK
+	SGyKrKbGok8aeJdtps/sDPjzTAaIZBpM6wSsNq7QjaBnBte+IygyqFgqTYt9gywU0yM7SMS0LEJ
+	+7/s8jv44a2+j3J7rXPsjVrm0Fp1HwTTp5ErCApkJkOsSpx7Xbe+EGuWq4GZ9ySKzwOSPvdB7QA
+	JgvTEDfYn55kvgk1HuiwMDm1mxCv5gRQkAORg7hXWEYcEEUNOZlyGp3vpxS/Xc3Q7k5xzFrOZ0M
+	wnTkYtdFh5WrSfzuUpmavvEJ5IaabR7RsSIo/JFWtNtMCqomXCYIDwaVoPp/wl
+X-Received: by 2002:a05:6830:650b:b0:7c7:5458:75f8 with SMTP id 46e09a7af769-7d1a53284e5mr4480816a34.29.1769971509098;
+        Sun, 01 Feb 2026 10:45:09 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:66ee:10f7:4858:7df6? ([2600:8803:e7e4:500:66ee:10f7:4858:7df6])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d18c67065esm9327775a34.6.2026.02.01.10.45.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 Feb 2026 10:45:08 -0800 (PST)
+Message-ID: <fe99b154-dd88-4fd0-86dd-a61db84d6bfd@baylibre.com>
+Date: Sun, 1 Feb 2026 12:45:07 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/2] dt-bindings: Add binding document for cm36686
+To: Erikas Bitovtas <xerikasxx@gmail.com>, Jonathan Cameron
+ <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Kevin Tsai <ktsai@capellamicro.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+References: <20260201-cm36686-v1-0-4949a2a9ba63@gmail.com>
+ <20260201-cm36686-v1-1-4949a2a9ba63@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260201-cm36686-v1-1-4949a2a9ba63@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-Update the documentation to reflect the addition of event scaling
-and correct existing technical errors inscale values.
+On 2/1/26 11:03 AM, Erikas Bitovtas wrote:
+> Document the Capella cm36686 ambient light and proximity sensor devicetree
+> bindings.
+> 
+> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+> ---
+>  .../bindings/iio/light/capella,cm36686.yaml        | 74 ++++++++++++++++++++++
+>  1 file changed, 74 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/capella,cm36686.yaml b/Documentation/devicetree/bindings/iio/light/capella,cm36686.yaml
+> new file mode 100644
+> index 000000000000..5f0a585e3d87
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/capella,cm36686.yaml
+> @@ -0,0 +1,74 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/light/capella,cm36686.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Capella cm36686 I2C Ambient Light and Proximity sensor
+> +
+> +maintainers:
+> +  - Erikas Bitovtas <xerikasxx@gmail.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - capella,cm36686
+> +      - capella,cm36672p
 
-key changes:
-- Fix the 62.5 g/LSB typo to 62.5 mg/LSB and add SI unit conversion.
-- Correct decimal precision of in_accel_scale and
-in_accel_scale_available to match actual SI unit (m/s^2)
-values reported by the driver.
-- Add sysfs example showing how to read and interpret the
-newly implemented event scale factor.
+The cover letter mentioned that one is fully compatible with the other,
+so we should have a fallback here.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
----
- Documentation/iio/adxl345.rst | 41 +++++++++++++++++++++++------------
- 1 file changed, 27 insertions(+), 14 deletions(-)
+  compatible:
+    oneOf:
+      - const: capella,cm36672p
+      - items:
+          -const: capella,cm36686
+         - const: capella,cm36672p
 
-diff --git a/Documentation/iio/adxl345.rst b/Documentation/iio/adxl345.rst
-index 41d209a4dccf..2f51a2a4fbd0 100644
---- a/Documentation/iio/adxl345.rst
-+++ b/Documentation/iio/adxl345.rst
-@@ -13,7 +13,11 @@ This driver supports Analog Device's ADXL345/375 on SPI/I2C bus.
- * `ADXL375 <https://www.analog.com/ADXL375>`_
- 
- The ADXL345 is a general-purpose, low-power, 3-axis accelerometer with selectable
--measurement ranges. The ADXL345 supports the ±2 g, ±4 g, ±8 g, and ±16 g ranges.
-+measurement ranges. The ADXL345 supports the following ranges:
-+- ±2g  (approx. ±19.61 m/s^2)
-+- ±4g  (approx. ±39.23 m/s^2)
-+- ±8g  (approx. ±78.45 m/s^2)
-+- ±16g (approx. ±156.91 m/s^2)
- 
- 2. Device Attributes
- ====================
-@@ -98,23 +102,28 @@ listed.
- +---------------------------------------------+---------------------------------------------+
- | in_accel_gesture_singletap_timeout          | Single tap duration in [us]                 |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_gesture_singletap_value            | Single tap threshold value in 62.5/LSB      |
-+| in_accel_gesture_singletap_value            | Single tap threshold value in               |
-+|                                             | 0.612915 m/s^2/LSB                          |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_mag_falling_period                 | Inactivity time in seconds                  |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_mag_falling_value                  | Inactivity threshold value in 62.5/LSB      |
-+| in_accel_mag_falling_value                  | Inactivity threshold value in               |
-+|                                             | 0.612915 m/s^2/LSB                          |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_mag_adaptive_rising_en             | Enable AC coupled activity on X axis        |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_mag_adaptive_falling_period        | AC coupled inactivity time in seconds       |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_mag_adaptive_falling_value         | AC coupled inactivity threshold in 62.5/LSB |
-+| in_accel_mag_adaptive_falling_value         | AC coupled inactivity threshold in          |
-+|                                             | 0.612915 m/s^2/LSB                          |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_mag_adaptive_rising_value          | AC coupled activity threshold in 62.5/LSB   |
-+| in_accel_mag_adaptive_rising_value          | AC coupled activity threshold in            |
-+|                                             | 0.612915 m/s^2/LSB                          |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_mag_rising_en                      | Enable activity detection on X axis         |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_mag_rising_value                   | Activity threshold value in 62.5/LSB        |
-+| in_accel_mag_rising_value                   | Activity threshold value in                 |
-+|                                             | 0.612915 m/s^2/LSB                          |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_x_gesture_singletap_en             | Enable single tap detection on X axis       |
- +---------------------------------------------+---------------------------------------------+
-@@ -140,8 +149,8 @@ When changing the **g range** configuration, the driver attempts to estimate
- appropriate activity and inactivity thresholds by scaling the default values
- based on the ratio of the previous range to the new one. The resulting threshold
- will never be zero and will always fall between 1 and 255, corresponding to up
--to 62.5 g/LSB as specified in the datasheet. However, you can override these
--estimated thresholds by setting explicit values.
-+to 62.5 mg/LSB (0.612915 m/s^2/LSB) as specified in the datasheet. However,
-+you can override these estimated thresholds by setting explicit values.
- 
- When **activity** and **inactivity** events are enabled, the driver
- automatically manages hysteresis behavior by setting the **link** and
-@@ -270,13 +279,13 @@ Scale range configuration:
- .. code-block:: bash
- 
-         root:/sys/bus/iio/devices/iio:device0> cat ./in_accel_scale
--        0.478899
-+        0.004789
-         root:/sys/bus/iio/devices/iio:device0> cat ./in_accel_scale_available
--        0.478899 0.957798 1.915595 3.831190
-+        0.004789 0.009578 0.019156 0.038312
- 
--        root:/sys/bus/iio/devices/iio:device0> echo 1.915595 > ./in_accel_scale
-+        root:/sys/bus/iio/devices/iio:device0> echo 0.019156 > ./in_accel_scale
-         root:/sys/bus/iio/devices/iio:device0> cat ./in_accel_scale
--        1.915595
-+        0.019156
- 
- Set output data rate (ODR):
- 
-@@ -312,10 +321,14 @@ Configure one or several events:
- 
-         root:/sys/bus/iio/devices/iio:device0> echo 24 > ./buffer0/length
- 
--        ## AC coupled activity, threshold [62.5/LSB]
-+        ## Check the event scale factor (0.0625 * 9.80665)
-+        root:/sys/bus/iio/devices/iio:device0> cat ./events/in_accel_gesture_scale
-+        0.612915
-+
-+        ## AC coupled activity, threshold [0.612915 m/s^2/LSB]
-         root:/sys/bus/iio/devices/iio:device0> echo 6 > ./events/in_accel_mag_adaptive_rising_value
- 
--        ## AC coupled inactivity, threshold, [62.5/LSB]
-+        ## AC coupled inactivity, threshold, [0.612915 m/s^2/LSB]
-         root:/sys/bus/iio/devices/iio:device0> echo 4 > ./events/in_accel_mag_adaptive_falling_value
- 
-         ## AC coupled inactivity, time [s]
--- 
-2.47.3
+> +
+> +  reg:
+> +    maxItems: 1
+> +    description:
+> +      I2C slave address of the device. Must be 0x60 for both cm36686
+> +      and cm36672p sensors.
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  vdd-supply:
+> +    description:
+> +      Regulator that provides power to the sensor.
+> +
+> +  vddio-supply:
+> +    description:
+> +      Regulator used to power IO and I2C bus.
+> +
+> +  vled-supply:
+> +    description:
+> +      Regulator used to power proximity LED
+> +
+> +  proximity-near-level: true
+> +
+> +  capella,proximity-led-current:
+
+Should use the standard -microamp suffix [1].
+
+[1]: https://github.com/devicetree-org/dt-schema/blob/d16dc68b093e59ec4ae6a32a2e1179cb9cc0fada/dtschema/schemas/property-units.yaml#L86C4-L86C13
+
+> +    description:
+> +      Current for proximity IR LED (in uA)
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+
+Then we don't need the $ref.
+
+> +    enum: [50, 75, 100, 120, 140, 160, 180, 200]
+
+Should have a default: value since this isn't a required property.
+
+> +
+> +additionalProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+
+Power supplies should be required.
+
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +    i2c {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      light-sensor@60 {
+> +        compatible = "capella,cm36686";
+> +        reg = <0x60>;
+> +
+> +        vdd-supply = <&pm8916_l8>;
+> +        vddio-supply = <&pm8916_l6>;
+> +        vled-supply = <&reg_prox_vled>;
+> +
+> +        interrupts-extended = <&tlmm 113 IRQ_TYPE_EDGE_FALLING>;
+> +
+> +        proximity-near-level = <30>;
+> +        capella,proximity-led-current = <100>;
+> +      };
+> +    };
+> 
 
