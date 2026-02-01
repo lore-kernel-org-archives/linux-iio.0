@@ -1,155 +1,275 @@
-Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 184D3332907
-	for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 21:31:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.174
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1769895097; cv=none; b=ZsPMo/0XAVU2aeqW47VBkrh3m8jWZfF+T0Gqm1o4U1zNU7I/Bpc2OZDBi0j6AbF5ovQCcBUW2EfA8bIYc1m+Xpt9B5fm0G5qZP8RZzqJTYfzeeo0ZfJj9f351wZKHdkJ5YZHxeajGRxI3dVJNbDxmwKjcbqLsYmgE9eWW89VTWo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1769895097; c=relaxed/simple;
-	bh=ERnv3otAcYg//bBxuwJmzFwm1JYlCphbavP5uFY2jcg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lU+H+3+3JdDOGDEO866LVVVn1M/PXkfQlnt6C6O2j7WoGTPuCcc1v/606ylS0xRFdciQ0NK+XD14tC+6FejyrJVRUZPNet+V9Gf7d3bsnhcpXYIUvGVEl0f8f6Eyjql/EBBZfy1jLnLN176D/6vku7hxyBAFzobOSFFa6nGYmA0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=wnDeEaXV; arc=none smtp.client-ip=209.85.167.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59E8D1CAA78
+	for <linux-iio@vger.kernel.org>; Sun,  1 Feb 2026 07:01:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.221.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1769929294; cv=pass; b=KkJBV7d4HgIxvSRs+feXmm3xkvntcB+ZuUbLUdadm9vgwHMe5lt7KbnK/JhM0YxkvpuNk8fx0x6jxyp5vEgC5KfPWT4czrk3wuTLtPTSeTn5mNwcjkEV1CtzG4yflFnQnr0LGJkLj3ez5oOv77aGS5kTu6B1zvo9V6a2cIISvb0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1769929294; c=relaxed/simple;
+	bh=4lwxL+MX5lYgnvQjumgh4AurnaGrE32hCgCl0vhDOYM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qFChUnq132Exfi9v4Xqf2CE4+4jIXbAnMVnfx+iWHCK2mkoCQI3WURYOLJKr8DszZHnZQrZ3/SoQN4DndXrGYZJk1FdWArSfexNe5uIKIiRn/sNECN5kyYjbySvMp8JXlC85ig4IbRFmmSos6rA68D+jMCLNdw1296DSXXP1Qas=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jn9EfSA6; arc=pass smtp.client-ip=209.85.221.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="wnDeEaXV"
-Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-45c93313721so2158122b6e.2
-        for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 13:31:34 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jn9EfSA6"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-43284ed32a0so1825551f8f.3
+        for <linux-iio@vger.kernel.org>; Sat, 31 Jan 2026 23:01:31 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1769929290; cv=none;
+        d=google.com; s=arc-20240605;
+        b=PvCpo4Tv7xjqTb/wwlMCad0TMhaWFYnH/ohWZaT+Mr0wKniLZsae2zwz27bLkrz06V
+         qza770pVsxnIpajAbhe0JAMMTTLJAcd2Wn3lOFVxdaqXEI94baEJY0u9qO6Rx5mA57LL
+         +B2T33L6B7BhHwMnJQ6kgAq3mUXvF3qV/lv2NeCL7C7uHNlauxT4rruxER5vayvjRtlC
+         W2IoIBer0zoa5jpTujiYSXqUXlKk9LUHuaan6JuS8hdYEZAxrza6Q2bIKVmXQhSiT4mT
+         Vr3tPMkuq7jPwr4TgB4t4QPJuSS/AwtbZorNY7mSU3PGOAjqufRBNyJDquvcj5d9SHG1
+         k4sw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ru6T+Kx+o+wF1O0sdT4WJIlvaSW/GAs5TSwcPEqdU2s=;
+        fh=PRLP68bEZWIpMzF/DxeojG3h2xMU6B/LKkndbei2+AA=;
+        b=J3vAhYTVUo9EpfIzJlWsdXRwRGQamYIM/kHZCVUGfcdqEpQ0ZwtqG8ALvmp1qWvPRG
+         H2ujmgFL9ZMwTkkx1G2oNvNCNKmEQI8O5kwYD6cioSars4sUZunpBcnWUkFoC39QW/Yx
+         H/dNrX1DjyuzlKavo8EMNCeSvBiXrxVQHVAdsTJUOpnfb1RnyBhPk1AA/MzQQFBooIp7
+         NpPTeUWtsX42qTkTrLkgmZSSgCBXptIkx/ykhfiWYOe1kiDNsGygyBUVi6zRzNeBM9X/
+         2hNX5Cu0av8BIAdSZnsVwAstILmufJ7Rfc8KLrcyB1mPBx9+jzThlDJWPpHSBN0wo8Pq
+         mz7A==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1769895094; x=1770499894; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=oN7nfsMLYgFLh50J5K6u/iWba/AywR5N7bpGoZqwJBw=;
-        b=wnDeEaXVLQN+ycjBxkW6hwwuh7FHoCypHz1GXYVtdx/OFAFeGZs8pojxxU+Lo/48iY
-         NR2ZVQbVSF6J6z8Ulw+JDhIo0VjXGAUIlPp1NfxHp15MQq46yalPPAQAE7wlaJctJd7i
-         21OqRyiGnlSMIR9ISZpIRY5IYXglot7P0D8Tup2qSA2fBZpWhvBOhHQj6GmpwikF1k15
-         DOwjw/TP/o5aPkcgD/vNmwRAIruyskVoqiIgAgUtzCPZPDMn6XgztlQkKfgUerjKbEPh
-         15tEPBT4+0G3v7w0wNT2nT9P0QpQI+iMWAzPD2TTFPbjaSLyrd8251U6kr4LZNJVEdp4
-         vYFw==
+        d=gmail.com; s=20230601; t=1769929290; x=1770534090; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ru6T+Kx+o+wF1O0sdT4WJIlvaSW/GAs5TSwcPEqdU2s=;
+        b=Jn9EfSA6fRuIVKLr4AaDLNSKBNL8pNLIzAn3ZvhMvVaTDKFsq+ipWeCMRNkekMrUgb
+         A0Ln5mZ3LggiURzzV2WBXJxP6cuuWXb9TNIlrGVNUxwCIIaEem1gpptyrSPCZ5IlMDzt
+         5fUbTS5GA6rBJL/oI1+pxmc1I/uBvhnJp+aO2sGBmNMcyl/Xyo7jAV9n5GbMdfk+o807
+         NMKhRMYdWew37MtphMm6TqfcCIju0X+RKLvk8Vsd43Yo681J0zRY+sepZFOjGN7tkDRF
+         PWC+YPRkx8zVPqfVGZwbFfwyirHPDJ+z/+3WyyRp0uY1XpuaRpWj7vuJVPrx6xv4dztz
+         aa4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1769895094; x=1770499894;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oN7nfsMLYgFLh50J5K6u/iWba/AywR5N7bpGoZqwJBw=;
-        b=t6q3F/diqxc8v3rjCRFfl/BhHD+nm38569Q7502NSqq6UEZ7womiSA+1YYTPwGRwJL
-         gcwoONKQtVJ9XKo6B+P0XZS7wHxIg9HfhvlPj3fwoJl3c31tL3ZwcSA/ZqJijiWLa0xl
-         OyLYqF+DOpxRPBaQhNQ4Q2AkJNRZ0+AzeNx2nvztMCrUR5yg47dz4aZe9hhruOJXRExg
-         pVsLnaxS0cSyA4M/DOIOK5M/FqAU1sdJQHee6ZlU89UmAbAPm1jVNmrvmZX5zBwmMwBo
-         HIx4AYo02YmIyB68ovCegjMdbAaXtnInGGuhN5l6zyuvdKnMvzJWHoMjvTLhrvMgXvFk
-         Qlew==
-X-Forwarded-Encrypted: i=1; AJvYcCUESUPZn5ceoMiIS//zjW+kv+XSJRCHdGaDEdmxGoHQaA9fGdN7oxZz3JiKPbbRgqp6I0Iaz1ypKOQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw8p1O6vJOpmZOf2nE+EQfe0ItwGCzMvwcPUkpHfRQ/HawMz2RZ
-	pOmgPyxvEoVMgyKDh8UIk2Zer3DrJCtauRFYRrvu9bq6I+0znVGju04Pfgotk1Z8TUs=
-X-Gm-Gg: AZuq6aLhSyexa8EUS5xWzDFuj4Qcq1hRCs05sxK7T23hol4MvqP4tJI+xwKUdd+Ei2J
-	vJBElBjyrhqCwjxuCF9B4eFgB+cONGjqmaFlC9Hwsrs/BC0PgXxl5oHbUcA6U8q+1rsvHyxNsr3
-	oJ7aP5zMlIDjUqo6uPshgKdr/3G6p5qldq0pSOkDbxq9+47wEbJOMit7zQjvr7UgewyICuy+abP
-	MgjL8X5oWj+uMr6E/bsWPrJezHET8Vj6yK4fBG81/TZuFdkZhm6aEAKLHMeB/rCdsrToeNE3V2M
-	bFpFUZSlm/s3OdDBUh4Kvp0KSoIZSrihJ+z4+kjPINNnWwOJNFL2kpptp2fW6pZ1Q5t1A4KtzzN
-	eZQKblyByDVGSm6oCCQbPkPQglvlGpgI+R3K9BhkWHos3InoDtfNrj2UbzL5uNx/zDYARUI+YMF
-	nAxDJQxGtVmmzf7o7wpciQ80yVCiniw7LB5tLsjuCGxGFlwvmPHcaDOL/6+iD5
-X-Received: by 2002:a05:6808:1a19:b0:45e:e52c:8a9b with SMTP id 5614622812f47-45f34d98b5amr3091519b6e.59.1769895093915;
-        Sat, 31 Jan 2026 13:31:33 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:c7ef:51f2:4f7a:6cd7? ([2600:8803:e7e4:500:c7ef:51f2:4f7a:6cd7])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-45f08d894f5sm7181770b6e.5.2026.01.31.13.31.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 31 Jan 2026 13:31:33 -0800 (PST)
-Message-ID: <629d8505-c4ba-4089-8dec-d627e3acd337@baylibre.com>
-Date: Sat, 31 Jan 2026 15:31:32 -0600
+        d=1e100.net; s=20230601; t=1769929290; x=1770534090;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ru6T+Kx+o+wF1O0sdT4WJIlvaSW/GAs5TSwcPEqdU2s=;
+        b=ZR2TxwRf8xQxAfJ7LCdDICDZDBp1J8YdDAFb4FHHoBwkXNY5meN+e73DVCcxdbhfKt
+         D6if7RUecqUj10pLxm4JInTNFtFfzQi0kjqdV3KT/EeusOhzued3Ae5U/5/fHUytgQ/q
+         knbP9GCHN6L5CekkbROQl6yXWCG+yo1pZknN/IKKxYe16DEamGxN7RhdRm/t9SxrBEfM
+         14lg5SlCqcfF6k/v5ju2koQJHFyRf8KrVCZR0//fZLpLx6jTNXSIh1XA145W7G0pkEj/
+         NMafNT/O0lh+sQe6BXw3ffzwqOORM+J+7vQEn00ETQMgGEWrVrzkx0MZVsp1jg9ufY9C
+         YbeQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXsciS0w9aQDV/W97yrHtMjuqoWILaRXbUWSkEl85EvFAnTTOrD23KygPwNMgVtStsVnbeAFryaLVs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz0hcufNpeHELhbUNgiGGQNADJGDFJfDG2gS09jcHhIu1Mo6LVj
+	igcEAJITOagnHGPT2Mepqzg5R2eovMI3TdZwklf3u9aiqA7aULZ80497oCNMjI3cSOjDTeTaz3V
+	4ha9iJJGiHGOrH4fDXjFH3GArEVh+GZw=
+X-Gm-Gg: AZuq6aLLE79eSmyZ3U1hV/9P81/QCn+kLGXtDwbsJntqpAsl/6EiZGpL2VKCnZw9EKh
+	VkbHlar5Yg6BtWg4ReHjgD6kf1fz+P2s899kcl+hqNQFXZizfl8xGbYaI95bOWFN6MRB6ga7XiW
+	m6tqBQ6LfvOsUhQ45SR36r/h6SsfFII74iEDP5CceapjMQXNvDnqdIkENl2H+f66cF+iagbjTe1
+	QK8jcIn8iopG1akRAfMG+xRLo8FgQ1uqEvfrlEWH3cpol4sO6hG0X0Wk3oEtUDVggXZr+Bw
+X-Received: by 2002:a5d:5f54:0:b0:435:693e:c03e with SMTP id
+ ffacd0b85a97d-435f3a7e60emr11130004f8f.19.1769929289499; Sat, 31 Jan 2026
+ 23:01:29 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 6/8] iio: dac: ds4424: add DS4402/DS4404 device IDs
-To: Oleksij Rempel <o.rempel@pengutronix.de>,
- Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: David Jander <david@protonic.nl>, kernel@pengutronix.de,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>
-References: <20260128153824.3679187-1-o.rempel@pengutronix.de>
- <20260128153824.3679187-7-o.rempel@pengutronix.de>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260128153824.3679187-7-o.rempel@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20260125134302.45958-1-clamor95@gmail.com> <20260125134302.45958-2-clamor95@gmail.com>
+ <d7938728-fded-4d5e-b23d-a8346e3fab46@baylibre.com>
+In-Reply-To: <d7938728-fded-4d5e-b23d-a8346e3fab46@baylibre.com>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Sun, 1 Feb 2026 09:01:18 +0200
+X-Gm-Features: AZwV_QgtHi-_En-5pR0mvFW293XW7g0IV-2szoIz-T-UyTapQDFggPFL8QY1fqE
+Message-ID: <CAPVz0n205rKSAq2Jbtahn6xW2MYgSm61qxjRbsSs_4RBSEs34Q@mail.gmail.com>
+Subject: Re: [PATCH v1 01/10] dt-bindings: regulator: cpcap-regulator: convert
+ to schema
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>, 
+	Pavel Machek <pavel@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
+	Alexandre Belloni <alexandre.belloni@bootlin.com>, Dixit Parmar <dixitparmar19@gmail.com>, 
+	Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-input@vger.kernel.org, 
+	linux-leds@vger.kernel.org, linux-rtc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 1/28/26 9:38 AM, Oleksij Rempel wrote:
-> From: David Jander <david@protonic.nl>
-> 
-> Add I2C/OF IDs for DS4402 and DS4404 and set the correct channel count.
-> Follow-up changes add per-variant scaling based on external Rfs.
-> 
-> Co-developed-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Signed-off-by: David Jander <david@protonic.nl>
-> ---
-> changes v3:
-> - Reset author to David Jander and added Co-developed-by tag for
->   Oleksij Rempel to clarify roles
-> changes v2:
->   - No changes.
-> ---
->  drivers/iio/dac/ds4424.c | 12 ++++++++++++
->  1 file changed, 12 insertions(+)
-> 
-> diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-> index c03051dc763e..f340d491fcc1 100644
-> --- a/drivers/iio/dac/ds4424.c
-> +++ b/drivers/iio/dac/ds4424.c
-> @@ -35,6 +35,8 @@
->  }
->  
->  enum ds4424_device_ids {
-> +	ID_DS4402,
-> +	ID_DS4404,
->  	ID_DS4422,
->  	ID_DS4424,
->  };
+=D1=81=D0=B1, 31 =D1=81=D1=96=D1=87. 2026=E2=80=AF=D1=80. =D0=BE 21:46 Davi=
+d Lechner <dlechner@baylibre.com> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On 1/25/26 7:42 AM, Svyatoslav Ryhel wrote:
+> > Convert devicetree bindings for the Motorola CPCAP MFD regulator subnod=
+e
+> > from TXT to YAML format. Main functionality preserved and added compati=
+ble
+> > for CPCAP regulator set found in the Mot board.
+> >
+> > Signed-off-by: Svyatoslav Ryhel <clamor95@gmail.com>
+> > ---
+> >  .../bindings/regulator/cpcap-regulator.txt    | 35 -------------
+> >  .../regulator/motorola,cpcap-regulator.yaml   | 51 +++++++++++++++++++
+> >  2 files changed, 51 insertions(+), 35 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/regulator/cpcap-r=
+egulator.txt
+> >  create mode 100644 Documentation/devicetree/bindings/regulator/motorol=
+a,cpcap-regulator.yaml
+> >
+> > diff --git a/Documentation/devicetree/bindings/regulator/cpcap-regulato=
+r.txt b/Documentation/devicetree/bindings/regulator/cpcap-regulator.txt
+> > deleted file mode 100644
+> > index 36f5e2f5cc0f..000000000000
+> > --- a/Documentation/devicetree/bindings/regulator/cpcap-regulator.txt
+> > +++ /dev/null
+> > @@ -1,35 +0,0 @@
+> > -Motorola CPCAP PMIC voltage regulators
+> > -------------------------------------
+> > -
+> > -Requires node properties:
+> > -- "compatible" value one of:
+> > -    "motorola,cpcap-regulator"
+> > -    "motorola,mapphone-cpcap-regulator"
+> > -    "motorola,xoom-cpcap-regulator"
+> > -
+> > -Required regulator properties:
+> > -- "regulator-name"
+> > -- "regulator-enable-ramp-delay"
+> > -- "regulator-min-microvolt"
+> > -- "regulator-max-microvolt"
+> > -
+> > -Optional regulator properties:
+> > -- "regulator-boot-on"
+> > -
+> > -See Documentation/devicetree/bindings/regulator/regulator.txt
+> > -for more details about the regulator properties.
+> > -
+> > -Example:
+> > -
+> > -cpcap_regulator: regulator {
+> > -     compatible =3D "motorola,cpcap-regulator";
+> > -
+> > -     cpcap_regulators: regulators {
+> > -             sw5: SW5 {
+>
+> Old example is missing the required regulator-names property.
+>
+> > -                     regulator-min-microvolt =3D <5050000>;
+> > -                     regulator-max-microvolt =3D <5050000>;
+> > -                     regulator-enable-ramp-delay =3D <50000>;
+> > -                     regulator-boot-on;
+> > -             };
+> > -     };
+> > -};
+> > diff --git a/Documentation/devicetree/bindings/regulator/motorola,cpcap=
+-regulator.yaml b/Documentation/devicetree/bindings/regulator/motorola,cpca=
+p-regulator.yaml
+> > new file mode 100644
+> > index 000000000000..b73d32a86904
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/regulator/motorola,cpcap-regula=
+tor.yaml
+> > @@ -0,0 +1,51 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/regulator/motorola,cpcap-regulator.=
+yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Motorola CPCAP PMIC regulators
+> > +
+> > +maintainers:
+> > +  - Svyatoslav Ryhel <clamor95@gmail.com>
+> > +
+> > +description:
+> > +  This module is part of the Motorola CPCAP MFD device. For more detai=
+ls
+> > +  see Documentation/devicetree/bindings/mfd/motorola,cpcap.yaml. The
+> > +  regulator controller is represented as a sub-node of the PMIC node
+> > +  on the device tree.
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - motorola,cpcap-regulator
+> > +      - motorola,mapphone-cpcap-regulator
+> > +      - motorola,mot-cpcap-regulator
+> > +      - motorola,xoom-cpcap-regulator
+> > +
+> > +  regulators:
+> > +    type: object
+> > +
+> > +    patternProperties:
+> > +      "$[A-Z0-9]+^":
+>
+> Why not put the valid names here? Or does the node name not actually matt=
+er?
+> (in which case lower case could be allowed too.)
+>
+>          "^(SW1|SW2|...)$":
+>
+> And $,^ are swapped.
+>
 
-I suppose it was already suggested in previous reviews that we should
-be dropping these IDs and using device info instead of expanding the
-switch statement below.
+This is an interesting suggestion, maybe schema maintainers can
+suggest how to approach this? Node name and case matters, list of
+possible names is in the description.
 
-> @@ -237,6 +239,12 @@ static int ds4424_probe(struct i2c_client *client)
->  		goto fail;
->  
->  	switch (id->driver_data) {
-> +	case ID_DS4402:
-> +		indio_dev->num_channels = DS4422_MAX_DAC_CHANNELS;
-> +		break;
-> +	case ID_DS4404:
-> +		indio_dev->num_channels = DS4424_MAX_DAC_CHANNELS;
-> +		break;
->  	case ID_DS4422:
->  		indio_dev->num_channels = DS4422_MAX_DAC_CHANNELS;
->  		break;
-> @@ -278,6 +286,8 @@ static void ds4424_remove(struct i2c_client *client)
->  }
->  
->  static const struct i2c_device_id ds4424_id[] = {
-> +	{ "ds4402", ID_DS4402 },
-> +	{ "ds4404", ID_DS4404 },
->  	{ "ds4422", ID_DS4422 },
->  	{ "ds4424", ID_DS4424 },
->  	{ }
-> @@ -286,6 +296,8 @@ static const struct i2c_device_id ds4424_id[] = {
->  MODULE_DEVICE_TABLE(i2c, ds4424_id);
->  
->  static const struct of_device_id ds4424_of_match[] = {
-> +	{ .compatible = "maxim,ds4402" },
-> +	{ .compatible = "maxim,ds4404" },
->  	{ .compatible = "maxim,ds4422" },
->  	{ .compatible = "maxim,ds4424" },
->  	{ }
+> > +        $ref: /schemas/regulator/regulator.yaml#
+> > +        type: object
+> > +        description:
+> > +          Valid regulator names are SW1, SW2, SW3, SW4, SW5, VCAM, VCS=
+I,
+> > +          VDAC, VDIG, VFUSE, VHVIO, VSDIO, VPLL, VRF1, VRF2, VRFREF, V=
+WLAN1,
+> > +          VWLAN2, VSIM, VSIMCARD, VVIB, VUSB, VAUDIO
+> > +
+>
+> If these apply to the regulator-name property, it can be written instead =
+as:
+>
 
+Regulator name does not matter, any name is acceptible.
+
+>   properties:
+>     regulator-name:
+>       enum:
+>         - SW1
+>         - SW2
+>         ...
+>
+>
+> Not sure if it is strictly needed, but this would document the optional
+> property:
+>
+>     regulator-boot-on: true
+>
+
+this is covered by common regulator schema, along with other possible
+regulator properties
+
+> > +        required:
+> > +          - regulator-name
+> > +          - regulator-enable-ramp-delay
+> > +          - regulator-min-microvolt
+> > +          - regulator-max-microvolt
+> > +
+> > +        unevaluatedProperties: false
+> > +
+> > +required:
+> > +  - compatible
+> > +
+> > +additionalProperties: false
+> > +
+>
+> Example should go here.
+>
+> > +...
+>
