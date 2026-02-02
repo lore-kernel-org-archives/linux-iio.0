@@ -1,191 +1,258 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from MRWPR03CU001.outbound.protection.outlook.com (mail-francesouthazon11021142.outbound.protection.outlook.com [40.107.130.142])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3083333A6ED
-	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 10:41:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770028900; cv=none; b=dkzkEYgBN2cOdPetpE/SoHKU+TwdramzoLmOYviaK4ejQu1Mr6xzLaHlEE+hkXVuoQOq0RJ23cXAPjY2n2QFY+XKAcmdidvoRrKm8i7empGmTda5jry5oEsXBmuEhZPKshC4yTC510DWXhDQvpPDcQeR1OPTMk8sc0SyduTsVkE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770028900; c=relaxed/simple;
-	bh=ViRGWuuvDrl90eV5/nE8carTQSedywy+qxymWha/vyQ=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=POnci8Ht5QPXMLFe7uny6kelRsE07BS8CwYPSfK94zX3Bz+D8bqcBGVP5HBU34PD3pmAJriJGXkaI1fV3RepcazzgpkCXuu4xfgtdvmvWxPO1j8isgRBsH2MnqD0o55cIaZr+zJDaOmz8TVDuUyFMBHFfxsnYPjCpeksIwxFj5U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QMlG4qoE; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F51C23EA99;
+	Mon,  2 Feb 2026 11:00:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.130.142
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770030033; cv=fail; b=HjyFOYFiy0R0ZvPmgdHp4A0mV1Ji2DdrxoCSBI9LHKWDyBPcdj7wy3C9RZ0Pi4bbV8PKZZzDlYC3k1f4uC4iQ4bFg9BS4F7jeGe68RNo8ukB+lxjiCidV8jvYHYZ1TthGtvxcoGj/pVt/4bPc70f7y79KO3uWBzfvys932zMxno=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770030033; c=relaxed/simple;
+	bh=h0vn3HbfaaabfCI/3hZMwoiaz0VQF0JQIGxcRiGVOSY=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=cRQ27sgY9Oicm8OZC3QeKSImRlsiO3p5M0LZgwsbKgIfKSEw0vAfojy+zcBLpCBRtuwXfuwiJMNkZjZINaRr7NzqYRkUm6pzqU1OqhDXpqjwdi14tOI/qR3VFSvBZY5Q9mUZw7w/krMadFg7+WGtHWNzQr4372FRehR165rKPNg=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=16KqvwON; arc=fail smtp.client-ip=40.107.130.142
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QMlG4qoE"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-480706554beso46532235e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 02:41:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770028897; x=1770633697; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=UYl2pUzvvp9t2N/Y2K82g77GjaXLm/CxD6ybNLYvRS8=;
-        b=QMlG4qoETXs5KqJ4kfr1JoqUSWdE8RH3pWZscBYcvVRj2ZZuAxjdx9net2QMfp6qbx
-         x2O9N92fw3lx4mre8yR6p7NB/n2h8Sto4GnlaVvXiekZMfHY/PhRBz7UJKWXghQFLKtB
-         RYMvJf/vmlhYKjMGcEOSFX5achLxmsgIrsBvjwxBSeXPGsQgBR06CHTiZdncyMpMG6F0
-         lcZhYsaoOkr9UFFTfp5naK90v58SWPUOsUFCCQxSXkI4O4lg26e7SAqc37UZI/9QmxBb
-         2PGeEyjiwmLr452oBlKZnq9Mj6Q05FjJfcefF5JPsYV9ceBKrR3pJuzb7foepuSjWMCX
-         9aXg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770028897; x=1770633697;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=UYl2pUzvvp9t2N/Y2K82g77GjaXLm/CxD6ybNLYvRS8=;
-        b=Mg6bSC4PmzhBB3t8ukdNJue3vJ7efuwZ3lsFYBpXZjxukNCPa8fbd4KuPMNqzKz2Du
-         juO87kDmEU5q89r/tCguGoFufcVQllt+GYjWF2Lr5lLB/re4FCFZORsPlRQSTJkmioD6
-         Th/dMf2dJww3YIei4gkMicASRBStTUGnurGENq6c8Wu7OBFrWD8VYtFHoofjVjzS+tZD
-         CcuwUg5x1jak6FQGqXUcMPt9ZPdP9C6ykNYhLLBrVXeyZe+4IYJGkdyHK+fkq2g0RwtN
-         dx60TAwsKd3Sr/ygUlkPTC3lJemjq9FY8uCWna3WewS/RukW5cpiOoKY16qmuatohJI2
-         CTcg==
-X-Gm-Message-State: AOJu0YxYMj6np7XbrGgd34l0LK4XqCTPiCy30AaHj7hH4H55dc2SRc+B
-	vNkxK25StUUXfkEkVJONmZvdhucU0r0VE0Su0wLTa9E/TxRmBXKtntE0
-X-Gm-Gg: AZuq6aJWCv8bOu08Zvcz+VDslg9cwx4L16H2xcOOEgC+VxLZgho/NQsqJntLJZsJ79k
-	XWWxJ/c5SLWCbNdUotx0emeRZd9OEFOJtt+w+PiOBgAYSS6pFwXEK7TXxuvfvmHw5TfMeMurPoj
-	kcPGKrZ0WtKWcQqrjUdglSSaoHHPBnMyDwVmC2abxcb3GLIm+LgX9bieFudiYpu8ezP4BgRRxYA
-	CLdlDaF5NPuBRNLbWpE6ad21UWbO5HDSAF39OL5ey4Nc69daJojMikwpOuPjVdDhSngA0pgwuIq
-	o62iuug2OXd2e6JRZ8LdK8Efbnsv8uaPQuNDUiXum9f7re1Tnbe7H5lE8NXR2OBABY+4X2HWtok
-	kqNcbF0qf1+V1emHQW6d+0qIenLPe3f6Y91ZlQCb6DZQ2M9SuES0T3cl0jE3/q2pM57j0S0asN5
-	50MLlE1OBT/2ozgieYhGA=
-X-Received: by 2002:a05:600c:3f0d:b0:480:1e9e:f9d with SMTP id 5b1f17b1804b1-482db45deccmr133700485e9.8.1770028897450;
-        Mon, 02 Feb 2026 02:41:37 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10e483asm41296782f8f.3.2026.02.02.02.41.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Feb 2026 02:41:37 -0800 (PST)
-Message-ID: <12b0fbc2f4c3a6be86089d9cab73cce1c3face0d.camel@gmail.com>
-Subject: Re: [PATCH v5 4/4] iio: adc: ad9467: check for backend capabilities
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Tomas Melin <tomas.melin@vaisala.com>, Michael Hennerich	
- <Michael.Hennerich@analog.com>, Nuno Sa <nuno.sa@analog.com>, Lars-Peter
- Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, David
- Lechner	 <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Olivier Moysan	 <olivier.moysan@foss.st.com>
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="16KqvwON"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=Kv7MMXcG+OwwXVPFL6U+oTSdxauwIpr3vBGugXS7SVm153hbNCFRfurscaSyaSMIYHp6Xe10NFPaUOL3csj808crLpBbjR8lK3nU6QddfxwLtZ1WO98N8vl0JaXt3i3Ggp2D9vBRuHlG6M5rSu2UwtXV9fcCnd14QMA93/fLTEpGsMrmkb9BFX7BdiVcQDiHMjs/Emf0det39SuwAYovLjWygBjVA1SyFRrYXOV8ttudM7SuaOg28mkxyEi6zrZSF0OVZ+Z8o0qHtoUnkt67LROc7DQ0SD5o716ViLfvp3+zwi0fZ8UhMwUcpk7IMSzfhfqxuBb27z11xnLjvjwLZw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ExuIoO/Q3l1V/lmDhuRP1w1XWfzyuqkDTfDFHFATqDg=;
+ b=rAGSj8trKwup+ejkkm3t1jlLThlQuTf01Hd+nUGIAWJ6pZg5R1wxZ3B3t4NeuRu+EXkswgW1OkgbSMOrO9aQYL8CBggWN84nyedF8vE0zLBguIpX2smVmiILIhTd4xv6gjq57l44R+zwUAccjBWyZRhS8BDtFMC/+Po5BqMgF3mSl9LnZV7J3UCCk5YrXu+/Q8AR5QowcCwjmaU2kab+8Rf19bav5jJJvM9qdec/QfAhPFpCAgZ8gdevWb0KRRijPWhc8/i8z31+peQgEq3Q61Peuzrdxw4k3OCQk0H3tnye3sDWJhlD/6rxS4OD8c2/K/2Xxyf7WCUSzYqfu1zOHQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
+ dkim=pass header.d=vaisala.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ExuIoO/Q3l1V/lmDhuRP1w1XWfzyuqkDTfDFHFATqDg=;
+ b=16KqvwONP8sB2ciGHBm2vB07yp1z9e/WUPf6Bwxp4tixU+W802crFdtrXTQgLWpitFQc1grMDXNnoz9MV4XexCEiTd3uKfn3ojopoy/ILBNu0YZ40C/FUh3qOXiB4cyGzVcJCWnI7mnhG+TDdk+YDMIBRg6lUQM930Xt3C4OZ2oLFnvhb4xGd8F9wJKqKE3r5lbjAHiNHfn/hs+UlydyoeA3jIQse4yJSxIrcI80V9tWmi8EVN1JwkSj/E26O7IQplZ18g676CP2XHwTj5ZuznQCf6cOwb2018XoUS6TZs4u11qzks4qwszCzxAqnV1iDQJ3Hfx1BkJnFTvthBgbWQ==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=vaisala.com;
+Received: from AMBPR06MB10365.eurprd06.prod.outlook.com (2603:10a6:20b:6f0::7)
+ by DU4PR06MB10187.eurprd06.prod.outlook.com (2603:10a6:10:622::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9564.15; Mon, 2 Feb
+ 2026 11:00:22 +0000
+Received: from AMBPR06MB10365.eurprd06.prod.outlook.com
+ ([fe80::addd:5e9b:7273:8049]) by AMBPR06MB10365.eurprd06.prod.outlook.com
+ ([fe80::addd:5e9b:7273:8049%6]) with mapi id 15.20.9564.016; Mon, 2 Feb 2026
+ 11:00:22 +0000
+Message-ID: <2b49eacb-c375-4b01-8cc1-325fb743daf6@vaisala.com>
+Date: Mon, 2 Feb 2026 12:58:55 +0200
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v5 1/4] iio: industrialio-backend: support backend
+ capabilities
+To: David Lechner <dlechner@baylibre.com>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
+ Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Mon, 02 Feb 2026 10:42:19 +0000
-In-Reply-To: <20260130-b4-ad9467-optional-backend-v5-4-7da803ba7326@vaisala.com>
-References: 
-	<20260130-b4-ad9467-optional-backend-v5-0-7da803ba7326@vaisala.com>
-	 <20260130-b4-ad9467-optional-backend-v5-4-7da803ba7326@vaisala.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 
+References: <20260130-b4-ad9467-optional-backend-v5-0-7da803ba7326@vaisala.com>
+ <20260130-b4-ad9467-optional-backend-v5-1-7da803ba7326@vaisala.com>
+ <688cbfb1-0944-492a-929d-91ebb9ab22fb@baylibre.com>
+Content-Language: en-US
+From: Tomas Melin <tomas.melin@vaisala.com>
+In-Reply-To: <688cbfb1-0944-492a-929d-91ebb9ab22fb@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: GV2PEPF00023A12.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:158:400::20a) To AMBPR06MB10365.eurprd06.prod.outlook.com
+ (2603:10a6:20b:6f0::7)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AMBPR06MB10365:EE_|DU4PR06MB10187:EE_
+X-MS-Office365-Filtering-Correlation-Id: bf8a6c41-949b-4cdc-e8d3-08de624a42d2
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
+X-Microsoft-Antispam-Message-Info:
+	=?utf-8?B?enJZOXNvOUJzWXh0dmFBZGsxV2ZDZU9VdHJYQnUrUDVITDFrbVZ1elpkYjI4?=
+ =?utf-8?B?Y2NHR3RXYlZzSlEwcTNhZEozNllVV1AzcGx2dnNvcnVaNkVVazNNckRVMlA5?=
+ =?utf-8?B?ejFNN3lTbGpHbmd3RzlUdEU5OUx1cnk3NG5ucysvdGZLTmI3dEdTUUtZRVR3?=
+ =?utf-8?B?WU9ldTJDQm1VMW9TYVRxNHo3ZURoRkt1YnZoUlBYbVNSMUFaMExBSklsQ2NT?=
+ =?utf-8?B?d3JwK2lqaXEyaWFnY3crbGEvOWlQN2xnazdTeUtKYitPajRuVnZCd3QxWG9F?=
+ =?utf-8?B?MGp2Wk9GRjlaeEMwckJwNkIvSno2aytaQkNvQXE4TnZvWEdtWTljSzVsN2lW?=
+ =?utf-8?B?ZUVmRFpXTC9PUFovUHlGMFo0K2J6Y2tuOGwwWnYrUEhBZ0l6TmU1b0VjNXFa?=
+ =?utf-8?B?c1NnOWNxL1pKUTJqWXRmVVo4RWNWQ2NVbkVRWi8yWTM1Z0FmUWpKS2lENFR1?=
+ =?utf-8?B?V1hJaVZoaU9QRUFjNHZFazZUUnFtZlFxdFZrOXMwbVVjZ2VEZ2tnaVd1TU9E?=
+ =?utf-8?B?UlBlaGpPZjNGUHJtK2dJeTJWZEd3dUNtN2pabXpTTWZOZHh4VHBYb0tMMW55?=
+ =?utf-8?B?YlZLQVBsSkQydzhXWjd6ZjVjWWdGWnJWVTQwSVR4VDdvYmc1cTJwZ2tkQWp2?=
+ =?utf-8?B?aWQzeWlMZHViMUN6alBobk02eEFNazBTa0lwRTJrejI1bU5JM0pjajRadlQ2?=
+ =?utf-8?B?MkV0NW1wRE41OWdOd0pNSFA0T0lPRGxIQTk1UkRYOWVqYmlZWUwzNG9ueEll?=
+ =?utf-8?B?ek1sNTAxd1dIeTRlbCs1UE9iWHhDTE1kNk43K3FMNkJ1blMrV3phS0IvTWl2?=
+ =?utf-8?B?OGYyQ0tUUXRHRHI4R3A1VlRVcXlReHQzSVBPN05ITERWK000WlVoMHpFSkhT?=
+ =?utf-8?B?WlJWV2piTzZYRk16emx1WG9nWDJ4WTlxUjByU20yZEduZE5FeEZjSng5VmFm?=
+ =?utf-8?B?aDVTUTc3Ymt2VlB0NGx0WmQzbEpGTkVNYTgwc3FQbGFIYVpRdENGdVJjS2xR?=
+ =?utf-8?B?eHJNWUNNWUJvSHluMmJSODRLS1dsSVN5YTl1b0lZQ1BXZlQzYUQrdjIrM2tR?=
+ =?utf-8?B?MnhKVzJJS1J4bnc0WWpFcW10bms0STVvWXViK1FEdlNYV0lKVStMb3U5Zkd6?=
+ =?utf-8?B?a2Z0VnhqQUJKV0h1WnVTUHZxL1NoTnZTQW9oMVNWdVRwWm1QcVRrSjFEMmVh?=
+ =?utf-8?B?L3I0cHNCWUlkalZ3cHhSaFQ5UVNBQnRZZXFjOTZNdFJJekhhVFJ6cWhJS3lX?=
+ =?utf-8?B?MVkwUDZXZ1M0TWpQVVNZR0dmM002RVA4Y0lRbmtiMUJkRVJXblVGUmlPdlFO?=
+ =?utf-8?B?RXBrWitIdlFqa2h3OGlPTW9EVEE3eHFLamorY3l1U3ppYnpPQUp0OFFSNTYw?=
+ =?utf-8?B?eHhIcnBHaVd5ZWEvSG1iWTMxRlZoNHZ5b2tFa2N1WkQrZXV4Rm5pakdzUEtG?=
+ =?utf-8?B?U2t3S1RVZFhkTDBTT0NWNW9iNEE0UEF6Q3ptKy9HVCs1czhvbEVwdExEc1JV?=
+ =?utf-8?B?d2Z1MEY4V1FObnRlams5QllpQXg3dnQwUUVIZkJFWm1kWFdxcndvQkpzd21W?=
+ =?utf-8?B?c3BDbTFCUVljWnRGL2h1eWtFMzZXSmJSTlFKdm5TN0FOWWNwejNiVjRaa0F0?=
+ =?utf-8?B?WUNOSWgrcDZoWG9wd0YybG1na3NJTmVGd29NbTE3aE04OVFtbVN6enVNVVBX?=
+ =?utf-8?B?RnZ3WjZwVFQxYURtUlN5WmRjbGdYU1hXeGE4cXBXSDUrUFZ6Y1VGeE9kcy9Q?=
+ =?utf-8?B?R0t2a0wrOEJCZ0o0L3Vjd3ZKS2ljQXpJanN4ZURxektnMWt1RzB2WnZpUjZK?=
+ =?utf-8?B?WWMxUlZkc2JNQ3BFQjE2RHl1VWRDNTZlazVzblo2OUF4a095cFdiUWZ1YThm?=
+ =?utf-8?B?Q09ncXQwbGg3QVJwUVRjN3N3NEtIT3h1Z1U5K2xNUWNtcTRSN3cvVU1LVXk4?=
+ =?utf-8?B?VEhXWlFVWDkvKzhKelg1aVVhVlVmMlJuYkpPeWk4eDZZWml0SisvYUdVWWlM?=
+ =?utf-8?B?VzBkRlg5U05tLzMyM3VRRlJKM050bGFGaVBtMCtsMVhhaU1mODZVc2hwd25G?=
+ =?utf-8?B?MTRBUi9nVVpLUjMwdmEzblNHaHBZdXVRMWNiN2cva1oxekliU01PY21tMDgv?=
+ =?utf-8?Q?vG5o=3D?=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMBPR06MB10365.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?dmNERVdpTk5kb05YUXJCWFRrZUJZSU1GNTVXeDRsZExWZE9lWVRrNG5Wckt4?=
+ =?utf-8?B?MThzNDF3TnJsakZXUEtDdUV5Nmx3Wk9Cc1dkV00yZG0xSThnL0ZPekwvVll4?=
+ =?utf-8?B?MER3V0FIZDRpdmxRYmV6ZTEwdU5kN3BJTEpwaHJMRlFwUXJZMG5nVjJ3ekQv?=
+ =?utf-8?B?ajYzeTlvK1FPZEN0ci9ML013aC80YmlYcEdGekVhdWFQUnVQOWVXUk9Jbm9M?=
+ =?utf-8?B?NXJyMytJR25hMk9NdGxRK2dYMElxNFl3LzFyRlVLUHlkUlgyS2hraDEzRlE2?=
+ =?utf-8?B?YnpYeGpHTllhRWFhSGU4NDJPM3FjOEw4ZDNPWGFzVlgwWFBzcFk3UFpsY3hM?=
+ =?utf-8?B?aENvcmg1T2NHMDN1aWI4NGx1VnNIbFU2K1B4cUNRTTEvSHJqNzRFdTN2OTNO?=
+ =?utf-8?B?SndxdFgxNnlzWUpVbnNIbU1xMGFZRHpxeUJDdUVneHFvN3JHVWI0SkRlakNT?=
+ =?utf-8?B?Q3Y1YWtwVmhZSWp2SjNOQkljVCtiMG03NjJQMlk5L2dpQmlsMWdES01RTWRh?=
+ =?utf-8?B?cGhFSnpmK2o3SE5NRmZob3lnWXBVYytjcWFxbUZKOFY3UkVSZW11dnVlMVRi?=
+ =?utf-8?B?citXTXBwUEVNdWVVRmNHY3hQUWpidGZvRFkwM2tuM2NLVzZnbWtjRHBOMi9x?=
+ =?utf-8?B?WlY0UXN2TXhzajhhYWVWdElSbFdDYmVhVjYvY2hJcVExdkFoTXZpNU56dWdI?=
+ =?utf-8?B?OEFmVm5vcGc4NHd1cXNEUmZGN1l1cmRJOC8rSzZ5Rnh4Z0VuWG9zSkJnbDFD?=
+ =?utf-8?B?bEVTWTAySjNpWjRsdE5BSjY3WGJmak5sQzdPa3JYZHNQQzFHWHh4WmpiUWYv?=
+ =?utf-8?B?R2VubEN4cFUzMFpNTVh2dURvQkxudzhnMUQ3YUg4cEdYQ1ErTXJHbzJaUHRD?=
+ =?utf-8?B?eWRvaC84N2I5M05FdCtlWWNMRVZsSys3allMbWo3am5iU2xBZE1LLzRkQUdu?=
+ =?utf-8?B?L0JLb055TnlySy9MeUZWM3FiUXdZZG5XZUFXanprQ3NIbCtoZmRCZlRRby9l?=
+ =?utf-8?B?d256aW03eDh1Wk5GR01qYitEWGdqQjVuZ2FUSkJzNzF3SUNlWTRNMHEvNjJL?=
+ =?utf-8?B?Y3lPSHFUR3hlckk5RTdtT01ReTlNZzZCLzZhekxUdGp3VkNBODdVbEpiMnJW?=
+ =?utf-8?B?Q2wxWHlnbmxpQnpkbzFoTys2Q2dqRm1BVzNmemtkVlFKZHpVS3R5UXhXQzBR?=
+ =?utf-8?B?aENOaTJ5MXVZT0NGSnNkWmgzdEdBS0JlRCswQWp2bTg3YTVmblBLRGpGelA1?=
+ =?utf-8?B?M1F3ZE1iVEIzNUkrQXlSU1dXVzVFc05zaGxJR1BkbDFmRERka0orUjJtbFJB?=
+ =?utf-8?B?QldVWkgwa1pnREJYY0xmcTZGWnFWWGgrU1lZY1drd3lxZlFGaGJuUjBvSmpi?=
+ =?utf-8?B?bElBWndWSFg2RDFlZ1MrL3FGbEFLRm9mb255R2JVQVg2ZnB4bzJkelU4TzMx?=
+ =?utf-8?B?V1dJQVpBVXFLUGRNcEtVOG9GN0ZtUERlNUtHU29ROGJWRmM5dmRCTkRBMEpR?=
+ =?utf-8?B?eDJoOS9aUUd3VWk0ZkJKZG9RUXZZZ3dnczlEM2hmUWZVZmFCTXJhUUZucGRl?=
+ =?utf-8?B?Mk9hUkhGYy9Bd2ZKbVhZaWRTWDZOZWc3Rk9kWFg4K002SnErQnloNW5jbS9p?=
+ =?utf-8?B?cUtVYUE3SSs1c0N0RjEvMmQreGJKNUhCOTAzVUpiaExuT3UvQUM2NmNFcE5K?=
+ =?utf-8?B?MElXS09GTXJTa2g2ekNHamtHSUpDRjk0QzJvc1Q4SHpCZjlLYkRDblpxRER6?=
+ =?utf-8?B?OWtYODRTZFhjRWRoZzRvamc5dHRFYzY2bHNqeHhyK2JxWmpsVUgveWU2TnBm?=
+ =?utf-8?B?VXJLcy9VZmNnYlV6TXg4cGl2OEVaZFdwa0NsSm9DYUZ0dk5zb2ZldUIyZ0tR?=
+ =?utf-8?B?U1NmNkZtUTlkc0dYNmlOWERSd2Q4clFZbWw2YVA0YTR1RnZkOTBBL2cxWmly?=
+ =?utf-8?B?dzhJK1FvS3lNZmFIMklsWHg0dDE1UGhUbWRSa3NaMk1qT0RKMXZrTVY4U09z?=
+ =?utf-8?B?cElPVmF6dXhYeDZzZXJra2hWeHNxdGc1OGh2NHpkNkg4YVg0ZU5hc0N4UjhP?=
+ =?utf-8?B?UmYzT2U3YTZKd1RFV2Zoczd0bW5YUCtqQk5nSGhydkpFZHFlMDZoMFVsb2d4?=
+ =?utf-8?B?UjNaNGhxRnBCV1hOK1FnRmRTNEJGY2FKbU5sK1pYSjJueG8yY28xK0JsTyty?=
+ =?utf-8?B?UjFvb21PM0I3WU9IYXpCekdwN09sK21XbWhwVGsyMEV5RzBCTVhGbmFrcU1t?=
+ =?utf-8?B?TE9jRWs4TUtEMmp4SEJpRVlNaU51bjhZWkR0WVRzc2c1SUV3WS9hT1EvRVN0?=
+ =?utf-8?B?VlFCbXN3b3dKZGp1V3lsZDJNZHFYVWdnaUM0SndVWVJNQllXTWlGTmhQalZl?=
+ =?utf-8?Q?G27P7I8KP1HBpRVg=3D?=
+X-OriginatorOrg: vaisala.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bf8a6c41-949b-4cdc-e8d3-08de624a42d2
+X-MS-Exchange-CrossTenant-AuthSource: AMBPR06MB10365.eurprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2026 11:00:22.2388
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: U8Yx7XQ5kp7jQC2Mo3lUdS4iLhIDnyUSwg/Mhhbdz29DjssHUYzK0UDww/v7+PacaDBFxfyN/AJ1WhEtmMF4hg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DU4PR06MB10187
 
-On Fri, 2026-01-30 at 09:17 +0000, Tomas Melin wrote:
-> Add capability checks for operation with backends that do not necessarily
-> support full set of features, but are otherwise compatible with the devic=
-e.
-> This ensures a fully functional device, but with limited capabilities.
->=20
-> Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
-> ---
-> =C2=A0drivers/iio/adc/ad9467.c | 69 ++++++++++++++++++++++++++++++-------=
------------
-> =C2=A01 file changed, 43 insertions(+), 26 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-> index 59c3fa3bcc9b..d768f7bf2a1c 100644
-> --- a/drivers/iio/adc/ad9467.c
-> +++ b/drivers/iio/adc/ad9467.c
-> @@ -913,7 +913,9 @@ static int __ad9467_update_clock(struct ad9467_state =
-*st, long r_clk)
-> =C2=A0		return ret;
-> =C2=A0
-> =C2=A0	guard(mutex)(&st->lock);
-> -	return ad9467_calibrate(st);
-> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
-> +		return ad9467_calibrate(st);
-> +	return 0;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static int ad9467_write_raw(struct iio_dev *indio_dev,
-> @@ -1119,12 +1121,15 @@ static ssize_t ad9467_chan_test_mode_read(struct =
-file *file,
-> =C2=A0		len =3D scnprintf(buf, sizeof(buf), "Running \"%s\" Test:\n\t",
-> =C2=A0				ad9467_test_modes[chan->mode]);
-> =C2=A0
-> -		ret =3D iio_backend_debugfs_print_chan_status(st->back, chan->idx,
-> -							=C2=A0=C2=A0=C2=A0 buf + len,
-> -							=C2=A0=C2=A0=C2=A0 sizeof(buf) - len);
-> -		if (ret < 0)
-> -			return ret;
-> -		len +=3D ret;
-> +		if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION)) {
-> +			ret =3D iio_backend_debugfs_print_chan_status(st->back,
-> +								=C2=A0=C2=A0=C2=A0 chan->idx,
-> +								=C2=A0=C2=A0=C2=A0 buf + len,
-> +								=C2=A0=C2=A0=C2=A0 sizeof(buf) - len);
-> +			if (ret < 0)
-> +				return ret;
-> +			len +=3D ret;
+Hi,
 
-Given that we can't really check the status we could maybe do this in a bet=
-ter way. See
-below...
-> +		}
-> =C2=A0	} else if (chan->mode =3D=3D AN877_ADC_TESTMODE_OFF) {
-> =C2=A0		len =3D scnprintf(buf, sizeof(buf), "No test Running...\n");
-> =C2=A0	} else {
-> @@ -1188,16 +1193,19 @@ static ssize_t ad9467_chan_test_mode_write(struct=
- file *file,
-> =C2=A0			return ret;
-> =C2=A0
-> =C2=A0		/*=C2=A0 some patterns have a backend matching monitoring block *=
-/
-> -		if (mode =3D=3D AN877_ADC_TESTMODE_PN9_SEQ) {
-> -			ret =3D ad9467_backend_testmode_on(st, chan->idx,
-> +		if (iio_backend_has_caps(st->back,
-> +					 IIO_BACKEND_CAP_CALIBRATION)) {
-> +			if (mode =3D=3D AN877_ADC_TESTMODE_PN9_SEQ) {
-> +				ret =3D ad9467_backend_testmode_on(st, chan->idx,
-> =C2=A0							 IIO_BACKEND_ADI_PRBS_9A);
-> -			if (ret)
-> -				return ret;
-> -		} else if (mode =3D=3D AN877_ADC_TESTMODE_PN23_SEQ) {
-> -			ret =3D ad9467_backend_testmode_on(st, chan->idx,
-> +				if (ret)
-> +					return ret;
-> +			} else if (mode =3D=3D AN877_ADC_TESTMODE_PN23_SEQ) {
-> +				ret =3D ad9467_backend_testmode_on(st, chan->idx,
-> =C2=A0							 IIO_BACKEND_ADI_PRBS_23A);
-> -			if (ret)
-> -				return ret;
-> +				if (ret)
-> +					return ret;
-> +			}
-> =C2=A0		}
-> =C2=A0	}
-> =C2=A0
-> @@ -1263,8 +1271,10 @@ static void ad9467_debugfs_init(struct iio_dev *in=
-dio_dev)
-> =C2=A0	if (!st->chan_test)
-> =C2=A0		return;
-> =C2=A0
-> -	debugfs_create_file("calibration_table_dump", 0400, d, st,
-> -			=C2=A0=C2=A0=C2=A0 &ad9467_calib_table_fops);
-> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION)) {
-> +		debugfs_create_file("calibration_table_dump", 0400, d, st,
-> +				=C2=A0=C2=A0=C2=A0 &ad9467_calib_table_fops);
-> +	}
-> =C2=A0
-> =C2=A0	for (chan =3D 0; chan < st->info->num_channels; chan++) {
-> =C2=A0		snprintf(attr_name, sizeof(attr_name), "in_voltage%u_test_mode",
+On 31/01/2026 22:30, David Lechner wrote:
+> On 1/30/26 3:16 AM, Tomas Melin wrote:
+>> Not all backends support the full set of capabilities provided by the
+>> industrialio-backend framework. Capability bits can be used in frontends
+>> and backends for checking for a certain feature set, or if using
+>> related functions can be expected to fail.
+>>
+>> Capability bits should be set by a compatible backend and provided when
+>> registering the backend.
+>>
+> 
+> ...
+> 
+>> +/**
+>> + * enum iio_backend_capabilities - Backend capabilities
+>> + * Backend capabilities can be used by frontends to check if a given
+>> + * functionality is supported by the backend. This is useful for frontend
+>> + * devices which are expected to work with alternative backend
+>> + * implementations. Capabilities are loosely coupled with operations,
+>> + * meaning that a capability requires certain operations to be implemented
+>> + * by the backend. A capability might be mapped to a single operation or
+>> + * multiple operations.
+> 
+> It would be helpful to list these operations explicitly for each
+> enum member.
 
-Change the permissions for in_voltage%u_test_mode so that is WO in case we =
-can't
-IIO_BACKEND_CAP_CALIBRATION. You can even reuse the above check to tweak th=
-e permissions
-accordingly. Then no need to check for the capability in ad9467_chan_test_m=
-ode_read()
+This has been discussed, the mapping might depend on the use case, i.e.
+the combination of backend-frontend. For example the calibration might
+be implemented in several ways depending on the device. Writing out the
+mapping here would create problems for that kind of situations.
+> 
+>> + *
+>> + * @IIO_BACKEND_CAP_CALIBRATION: Backend supports digital interface
+>> + * calibration. Calibration procedure is device specific.
+>> + * @IIO_BACKEND_CAP_BUFFERING: Backend supports buffering.
+> 
+> I assume this means it supports devm_iio_backend_request_buffer()?
+> 
+> In IIO, we usually say "buffer" and rarely "buffering" so this name and
+> description is a bit confusing to me.
 
-- Nuno S=C3=A1
+Sure, would this mean that name and comment should be?
+IIO_BACKEND_CAP_BUFFER: Backend has support for buffers
+
+> 
+>> + * @IIO_BACKEND_CAP_ALWAYS_ON: Backend does not need to be explicitly
+>> + * enabled/disabled. It is always on.
+> 
+> Do we actually need this one? Alternative could be, for example:
+> 
+> int iio_backend_enable(struct iio_backend *back)
+> {
+> 	int ret;
+> 
+> 	ret = iio_backend_op_call(back, enable);
+> 	
+> 	return ret == -EOPNOTSUPP ? 0 : ret;
+> }
+> 
+> Or make a iio_backend_optional_op_call() macro.
+> 
+> Or if there is some other nuance where this capability makes a
+> difference, it should be explained in more detail.
+One version in this series had that kind of approach where a single
+capability mapping instead was shorted to check for EOPNOTSUPP, but it
+was deemed better to have capability for everything needed and not in a
+mixed fashion.
+
+
+Thanks,
+Tomas
+
+> 
+> 
+>> + */
+>> +enum iio_backend_capabilities {
+> 
+> Documenting members like this works too (saves a bit of cross-referencing).
+> 
+> 	/** @IIO_BACKEND_CAP_CALIBRATION: ... */
+>> +	IIO_BACKEND_CAP_CALIBRATION = BIT(0),
+>> +	IIO_BACKEND_CAP_BUFFERING = BIT(1),
+>> +	IIO_BACKEND_CAP_ALWAYS_ON = BIT(2),
+>> +};
+
