@@ -1,141 +1,190 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013035.outbound.protection.outlook.com [40.107.159.35])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5EA172D8792;
-	Mon,  2 Feb 2026 12:14:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770034457; cv=none; b=I8/b8npztGRG4ffwDdhTrNLHMumRRdTFQngA7fWw/QkKnfWHJeJ/R+0J3IUdPdumIeQqk/7Rdkv3ea7nEuD6i7ttzCMCCaCWRLdfmjYVG7NbUsScyqTDJpmFHR6GZu3vrsNMa5amlIlGkWc44WmSJer0tNf97cPFnrc32TQEcmA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770034457; c=relaxed/simple;
-	bh=jCwz3ZuDUnlxovKMyWmfX42vKLteBDJkGR6hAKTfeiE=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=NsLE4P0uUxXe4zimkzlrWTWQr4oEuqbme7Y1pRMtPpSoOYdcUXlOGDVmM1R6SuN9lxm2NzeBdf5eDZm0oLfShjI0KGW0n5odB0KxPE3c3C7GWA0uHzo2swibn+qwcwYvBGJK9hHIt0ss5N264etpN1C0lEzeYSy9Z7/BRUuAyCQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=A1olbFIU; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5478359704;
+	Mon,  2 Feb 2026 12:25:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.35
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770035132; cv=fail; b=hYbJpbX4930XevIAuW4DiZfCXd+Ajkw1PjE/qfvD1NVPDJYkar64nXTNJJHNA2i82Ez50PJNt3YuesgI1yrLZC6fMBb4oWJ1WH6pw9XbFNcaiUIi+62mtdsMSoafInR/5fgVcmKIINzgiTo3Lx9UJo2X92D1KS0eXYRufnv6XdQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770035132; c=relaxed/simple;
+	bh=xo/p4Yyo9byD3NxLDXEosNWTLeOj41XV60LvKvMfVYM=;
+	h=From:To:CC:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=hX9ItdDlEn4WNs7XcLVRl00hOhwluB1nbmfBMQGB4gz91ZQCrpDFMBPBV5HMiDZ8+GPwo9zKp4S6oDG540dJR+iRGkIThKcOe325IoQNX6VyCPhhHQo2/1xB28FIWNOMtsbSV/Mw7muDlQwgBbVGDqFCaRRyyCoNdxpDSVqHSTQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=pyn6ORU1; arc=fail smtp.client-ip=40.107.159.35
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="A1olbFIU"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61290ZT2348455;
-	Mon, 2 Feb 2026 07:07:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=MeD7yFv1cHirGdysCykTkD4BKqS
-	8tbrB6+joc3E5HNk=; b=A1olbFIUWTaUo/r3chj5am8xnkrEADThskGxECshDpB
-	9DA8bEroOhOyqQoX8WxX04qb8k54viWy5sr5TZk+Gvv7nDAxLfX4jeyRX3PUGnX/
-	9OCec2/lg3z8KV2D1OtrQenNXsPzetxUvWy0iZ4+bB6p4muJ4F+u1aeL6WwdaOSm
-	Wv7CEsf90NZrlsGJGF1GWQJMNjnsJeMa2JfehJvyymx14Iw/BH9g3Bsm3PzDPv11
-	Nk7wYoTYoA87wmhTuWm/hV+VcH84ap35K/ozq4dk9xIUDlrlXDdSf+7ZxhwI/2Od
-	+dc8z9MdSiOvsbp9MsxXJ+6xYX8dOoPhst0fd/0PXVA==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4c2b8wtscs-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 02 Feb 2026 07:07:51 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 612C7osw053862
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 2 Feb 2026 07:07:50 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 2 Feb
- 2026 07:07:50 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 2 Feb 2026 07:07:50 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 612C7Zwa006857;
-	Mon, 2 Feb 2026 07:07:38 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        David Lechner
-	<dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Waqar Hameed <waqar.hameed@axis.com>,
-        chuguangqing <chuguangqing@inspur.com>,
-        Antoniu Miclaus
-	<antoniu.miclaus@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] iio: light: ltr501: return proper error code from ltr501_get_gain_index()
-Date: Mon, 2 Feb 2026 14:07:12 +0200
-Message-ID: <20260202120715.25625-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="pyn6ORU1"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=GwBFkgXigpc4bpxZ39kYEt+F2ealob+ut4VgMtfDSkggWeRFY/XxzTWsQY55rbtQM+5H3Jylj31T0uQqpfcUk3QKnQ/h89HJLYWiZWkxiSpNe7RkdD9qvkylGSztsLq+ZDpUxiJ3hRmEJrDtsx42R+ahtGrJi1Bm0lBFWBm8Hg1t5qhqI9ZWU7Mu/WZo3eIaEMnAhvdPJk5uRxchV3PQov/9YeZpn2u9W2GfWWvNOF55jZBGTI/H/DfOX7ayZFeOPaJnZmM627dKd2TK/n9jajP90lTagvAnsZ4W+ryNVMY8tAj6suqZwbfWqlyopoyxjuXo1t5zgnLzeoO2ydx+tQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8rbWKlF4D5s4roDuqHc4Pc1PGPVKVrdSJ5m8YTFM0kk=;
+ b=RHYikBuDkfD/jf+cFq7NfOa8Dc328Q5BrQnuinVZd5C6ZmijCn1PfZcZvT75ErsUrVK6cw0ZGh2hHDzcWn8IcENsm1rAbnQ3Y69kHgK4AAfdn7t0RouODW+Z/D/A/8vvOG/CJ+aItmaGiircvFowUJWalyESF1LIilsg+JBZtbdS5Gswgf9E1LFwXD36d26Re39rk5C6ibOjsBhJt7sppHb3ixXonZBLRZ0f6LI8OmngMZ9fpFyGYEEXq7z3NfyyQNsonH3rPP/VGne9jdmyo6StaXK+XWkfaeVrEsPp1meuw5DFHIwELNSHLm+zvVEmVWjg2oiGpFyFWIistUfu5w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 195.60.68.100) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axis.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8rbWKlF4D5s4roDuqHc4Pc1PGPVKVrdSJ5m8YTFM0kk=;
+ b=pyn6ORU14pcJOAPGX3qgXsSDr7gFZsddMeU3RRG+gOrCIfahGdRjb0hEj1PTzU2Molh2p3rWMyr+VjtQRdCpHvvrX/8Lb5UGc2RsQM4BVMt5diZhd6TT+B/3yzBQcV3On2QPQZ639CZWjLCbmKWkf1JBYRf2yuY8iMf7nINuUAI=
+Received: from AM0P309CA0018.EURP309.PROD.OUTLOOK.COM (2603:10a6:20b:28f::11)
+ by AS8PR02MB8615.eurprd02.prod.outlook.com (2603:10a6:20b:54d::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9564.16; Mon, 2 Feb
+ 2026 12:25:26 +0000
+Received: from AMS0EPF0000019A.eurprd05.prod.outlook.com
+ (2603:10a6:20b:28f:cafe::13) by AM0P309CA0018.outlook.office365.com
+ (2603:10a6:20b:28f::11) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9587.12 via Frontend Transport; Mon,
+ 2 Feb 2026 12:25:19 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
+ smtp.mailfrom=axis.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=axis.com;
+Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
+ 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
+ client-ip=195.60.68.100; helo=mail.axis.com; pr=C
+Received: from mail.axis.com (195.60.68.100) by
+ AMS0EPF0000019A.mail.protection.outlook.com (10.167.16.246) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9587.10 via Frontend Transport; Mon, 2 Feb 2026 12:25:25 +0000
+Received: from pc52311-2249 (10.4.0.13) by se-mail10w.axis.com (10.20.40.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.1748.39; Mon, 2 Feb
+ 2026 13:25:25 +0100
+From: Waqar Hameed <waqar.hameed@axis.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+CC: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, chuguangqing <chuguangqing@inspur.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: light: ltr501: return proper error code from
+ ltr501_get_gain_index()
+In-Reply-To: <20260202120715.25625-1-antoniu.miclaus@analog.com> (Antoniu
+	Miclaus's message of "Mon, 2 Feb 2026 14:07:12 +0200")
+References: <20260202120715.25625-1-antoniu.miclaus@analog.com>
+User-Agent: a.out
+Date: Mon, 2 Feb 2026 13:25:25 +0100
+Message-ID: <pnd8qdbl4cq.a.out@axis.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjAyMDA5MiBTYWx0ZWRfX8FKucwIj6LyE
- AkiRdn1kFBt3EYiCUs/RRNOYqA2/jH7EAMCwYHrIq9az0fHsj4Bymq7KmZIMys3XS1VdT3kH1kN
- cutfkbwjJu4oQvqoI9ia0MpqPyGaa4BeSDsfBWkO3Eyr4oT9SFinAIBLBSgnIQAmwxV/PZPICpQ
- tdKA2Q7/NRSnKNzI5Q1WNAdlbt8IKxQ2IjWAyL52P6udgJB5S5hd9pQ9L0SZ49uDCJPo4Rfg15U
- fShrGRjtnY7j5dWVbM9eYpNOi2d9f9fr8TNjKT1zGkjRiPEoTXjWf0WrPz8NGrrpkbj9x1urO3O
- oPygZ+wA3u8nYban4KOXrU5prSPSlBpVbVZa8hSK7aQwhN8euNnv78YRpryeinbBbWCkFkZmm6s
- Grr17pqeXE3qn0bRES9UyLrNh63HIhtpMkhCBfBko7qJnlQMwZCv/3F9aoPW73mXmEVPOjvmbVX
- JwpvZJCVS8HrMd1xkjw==
-X-Proofpoint-ORIG-GUID: AQW4a7KfOuhFl489fZM-M70cDeRf9gxY
-X-Authority-Analysis: v=2.4 cv=SK5PlevH c=1 sm=1 tr=0 ts=69809397 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=gAnH3GRIAAAA:8
- a=8a6jEeoJ9GT98JlJLVwA:9
-X-Proofpoint-GUID: AQW4a7KfOuhFl489fZM-M70cDeRf9gxY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-02_04,2026-01-30_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 bulkscore=0 clxscore=1015 spamscore=0 phishscore=0
- adultscore=0 impostorscore=0 malwarescore=0 lowpriorityscore=0 suspectscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602020092
+X-ClientProxiedBy: se-mail01w.axis.com (10.20.40.7) To se-mail10w.axis.com
+ (10.20.40.10)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: AMS0EPF0000019A:EE_|AS8PR02MB8615:EE_
+X-MS-Office365-Filtering-Correlation-Id: 0c8eb863-e2d6-4885-9fb7-08de625624d9
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|1800799024|82310400026|36860700013;
+X-Microsoft-Antispam-Message-Info:
+	=?us-ascii?Q?I+Ne9qQdOsl/uttIEDho5x07pUKG0NQS09wmOFsrVQhtKyIyBnx49hwbSUe7?=
+ =?us-ascii?Q?bwd1VHJlLfGActtzPt213RYlMS81zuFjGAeVnS2/F7pV5FvoNLUCILrZIiua?=
+ =?us-ascii?Q?EhY8dWrVLrro9ppnaZUUxVeAkgxs7AcfBcxwWEioP8zqIyTCPuMeAqIQLS0g?=
+ =?us-ascii?Q?yS6kGC0V3OPBU7SCFP0PMo4wiPbPl1p69xIj0czNx19il5J8iONRR1IJ4xKK?=
+ =?us-ascii?Q?h7i6oDiJn+cmpO21mRyl4e9YyvJQ9IPPu8aZTj8zt3+4Ln5181fSvOUDptw3?=
+ =?us-ascii?Q?R3vYyd+InwdwFe0SqPh9a9gZVSgd0QPuNTQdZzYqOLH6SoqVESMlDdpgpIOz?=
+ =?us-ascii?Q?8Y+3u7mPv3X+f3uvgRZn+6qqeLyI3cNtTk56pyQON++Avs+KjP0jmZRjOIiE?=
+ =?us-ascii?Q?Ltuh5cKj+Ul6g3FtSydydEAaeDVQWCNVh6fyWzC6lcGygC8mrHSRdzrasdlr?=
+ =?us-ascii?Q?FSSGp7YTazijLIMe4iB+/dS/uFoenfGZrewLNjaqs9gabHp5fXT01rlFR3mC?=
+ =?us-ascii?Q?Vv/kAlDuQdUHzXAb5ypzEgyLlna/BXCfsjY7Nm6N4OS7YZMEdq8eW1dLrKDW?=
+ =?us-ascii?Q?QXfRJ/mLRjzous0+DiDbd2pCOsvy0YGFtg0FT52a6+l4/pp7ypx9sB5jwRnP?=
+ =?us-ascii?Q?WETT9XLWizfQDnL32BH9K5Y4wulmt15LixoBGaRHneToWWCCM1fYBdLS9pXf?=
+ =?us-ascii?Q?lH/bJtLrlQXBYecolrr7b0tMmRfTRu/a27Bti50M/ZckbTy9PzBbq+OdXjgt?=
+ =?us-ascii?Q?TW5j+oFTm4FLrwwExz4WwxuqZW3oRCazrNlYx/IvTbuC35l9h8O1UGoWvacE?=
+ =?us-ascii?Q?+wKlnUEBWzIbOaTaTUX94vcN6hGkUJShWPgqIArc4keeaLqTzH2JannPv1mk?=
+ =?us-ascii?Q?I50ptBuy1QmB+sb357QCLXuuajqmFf5RtO41jdP9Bw3+YrSl4sJBEWUO1iVj?=
+ =?us-ascii?Q?thh7bQSS93T1sL5UNY1j/OGw0vRpCCWSGR0BwN1MuB100FoeYKKeaK+KgWDW?=
+ =?us-ascii?Q?oTPTdQnvyTaSTqw/BUJ0Szu7J9O5LRQEXXeD6vBY0VxWFoFSe13Qd/edPcDY?=
+ =?us-ascii?Q?NsOdES1GBrpPjMoH+2H13hpr0YvR9ZigAQ/8evPxMbb1ht4sWDbEF8WuuUEk?=
+ =?us-ascii?Q?+Jtydyfwgaj2w8nNrnItR8pcuCjNGda5UzQqoPr9BxIBk5HyXJmoeX7XpJcN?=
+ =?us-ascii?Q?tIW3UT4EmZrQu3NRDB2+4+aM23uDULFoa7Y/VhTMi97Smk4+vv5f6E1OuTWT?=
+ =?us-ascii?Q?YIPJBULTCn8cGeuv/QmrYd5FtZUXNaX8YgWgvK1xq8KcEkBeWc6TuH96ePVo?=
+ =?us-ascii?Q?HwkyIO6aYpc/Bc1Aje6vx6cALr9R75XqYKH6qIglGR3DKi2zNV0TStlJiIcl?=
+ =?us-ascii?Q?TC8oimmybbQPq5XuW701SexCU/UUXOj90ZgQAX6LRsaqz1P//zGiOJJQ+R8V?=
+ =?us-ascii?Q?ikigJnoARqk88eTkHTzQayuO7pydW3Ldss9qZp3UiEBDkkpuZMqjJx6gy7cv?=
+ =?us-ascii?Q?yRH8P61Q9jDMLKZnIL5V5x7a1LkUELpedA3mgevXhyetdFngS+mGcgDZq3iO?=
+ =?us-ascii?Q?sQ4bsePgCgs/R+xbPjLxFBPfMarHJnQukAMvqgPT8flVw4nq50MOD2RF5hZA?=
+ =?us-ascii?Q?mkZA/AJTZbcnXlxtW8BTQkb8wd2LQc2nqxo/pwgKjvrznO7E54J1VwyvFFI9?=
+ =?us-ascii?Q?Asijvg=3D=3D?=
+X-Forefront-Antispam-Report:
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(1800799024)(82310400026)(36860700013);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	4VMnaARHMRGhbzaihWaPrtlVlo+WHhXDjDTBj4SAoUaO2V9yEuYVnp0v323V/+uOW9OycyC6jl8RRxFF0cuVb1JIIBPX1tUxcuxB4NE4ArHdQpbTNTUty69ptWElvKZTPibYtX1wW6kHTzzKNmJt2cYHNTe6LNOIlmsMIRw776V/b/eRNPXnKk/Mw9KVm0PlBJY3nG4tf0ZhrG6iJcp1c4IPdrJdIoV7WP99/leEnXGqORhAeR63TVMXymn0FK6xf6m0yoQ0So9KJ6Hf+5XFKCKNufhrYfg02S46pffPb96WI7tXZpVuMYLR45o+NbSbFSk6jwwz/cHzWkfoUuykIFx5Nxjz42wXK2UKadqT6ewNMTA32xMxJ44Ciltc7HD2vCfVcctUJdvkX9J7C0ENT1orx7ebCK6ScUtp4cj9VJb+d3ecMd2AasQLRhbywcEb
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2026 12:25:25.7763
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c8eb863-e2d6-4885-9fb7-08de625624d9
+X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	AMS0EPF0000019A.eurprd05.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR02MB8615
 
-Return -EINVAL instead of -1 when no matching gain value is found
-in the gain table. Update the callers to propagate this error directly
-rather than overwriting it with -EINVAL.
+On Mon, Feb 02, 2026 at 14:07 +0200 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-Changes in v2:
- - Update callers to propagate the error directly instead of
-   overwriting it with -EINVAL.
+> Return -EINVAL instead of -1 when no matching gain value is found
+> in the gain table. Update the callers to propagate this error directly
+> rather than overwriting it with -EINVAL.
+>
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
+> Changes in v2:
+>  - Update callers to propagate the error directly instead of
+>    overwriting it with -EINVAL.
 
- drivers/iio/light/ltr501.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+For future reference, it's good practice to also have a link to v1. (No
+need to resend for that)
 
-diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 022e0693983b..4d99ae336f61 100644
---- a/drivers/iio/light/ltr501.c
-+++ b/drivers/iio/light/ltr501.c
-@@ -754,7 +754,7 @@ static int ltr501_get_gain_index(const struct ltr501_gain *gain, int size,
- 		if (val == gain[i].scale && val2 == gain[i].uscale)
- 			return i;
- 
--	return -1;
-+	return -EINVAL;
- }
- 
- static int __ltr501_write_raw(struct iio_dev *indio_dev,
-@@ -773,7 +773,7 @@ static int __ltr501_write_raw(struct iio_dev *indio_dev,
- 						  info->als_gain_tbl_size,
- 						  val, val2);
- 			if (i < 0)
--				return -EINVAL;
-+				return i;
- 
- 			data->als_contr &= ~info->als_gain_mask;
- 			data->als_contr |= i << info->als_gain_shift;
-@@ -785,7 +785,7 @@ static int __ltr501_write_raw(struct iio_dev *indio_dev,
- 						  info->ps_gain_tbl_size,
- 						  val, val2);
- 			if (i < 0)
--				return -EINVAL;
-+				return i;
- 
- 			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
- 			data->ps_contr |= i << LTR501_CONTR_PS_GAIN_SHIFT;
--- 
-2.43.0
+>
+>  drivers/iio/light/ltr501.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+> index 022e0693983b..4d99ae336f61 100644
+> --- a/drivers/iio/light/ltr501.c
+> +++ b/drivers/iio/light/ltr501.c
+> @@ -754,7 +754,7 @@ static int ltr501_get_gain_index(const struct ltr501_gain *gain, int size,
+>  		if (val == gain[i].scale && val2 == gain[i].uscale)
+>  			return i;
+>  
+> -	return -1;
+> +	return -EINVAL;
+>  }
+>  
+>  static int __ltr501_write_raw(struct iio_dev *indio_dev,
+> @@ -773,7 +773,7 @@ static int __ltr501_write_raw(struct iio_dev *indio_dev,
+>  						  info->als_gain_tbl_size,
+>  						  val, val2);
+>  			if (i < 0)
+> -				return -EINVAL;
+> +				return i;
+>  
+>  			data->als_contr &= ~info->als_gain_mask;
+>  			data->als_contr |= i << info->als_gain_shift;
+> @@ -785,7 +785,7 @@ static int __ltr501_write_raw(struct iio_dev *indio_dev,
+>  						  info->ps_gain_tbl_size,
+>  						  val, val2);
+>  			if (i < 0)
+> -				return -EINVAL;
+> +				return i;
+>  
+>  			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
+>  			data->ps_contr |= i << LTR501_CONTR_PS_GAIN_SHIFT;
 
+This return-pattern is similar to how it is used in the other `case`s in
+this function. Consistency is a nice trait to have in code :)
+
+Reviewed-by: Waqar Hameed <waqar.hameed@axis.com>
