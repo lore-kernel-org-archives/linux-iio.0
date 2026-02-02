@@ -1,100 +1,133 @@
-Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E27F313E1A
-	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 23:09:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E1292E1743;
+	Mon,  2 Feb 2026 23:23:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770073801; cv=none; b=dBXuxKYMe6dcDL1oAtH8+OoDPb0O4+c9YaXybjUWVq/s2YSezOs3RQ3JoouvGiOnmPCQMbkVjwu8BHf2s+QqdM4vgqI+0uGknUJFMTCFTqFFEgmUna2SDQVOagSqP25tn3+g0Rc1SAN/kth4KrGJU4i6ApCiXdAf8P9ApDZf3DM=
+	t=1770074586; cv=none; b=AUk+BuUDLyrPu6ZSwg4SdQQuRrUNlARumya3wQMiHZ7JQoKD1lZJlH+7v8wiDmfcqzOFowplUhXhqpHdd2PFBDjDLZz8kxqHF/Omp5txeiapzXVLMqFjmoMKt22oTBNJc3HQmuT/6Y+LMWYzhYQqbKukTi+thhbRVBlJPnoCRFw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770073801; c=relaxed/simple;
-	bh=5OwP7q4JflPXr1BxsMJT6j9uWfDTSyk/w2tuUQEZiBg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TW1JiHX33NgniX8x6cDVxD4QCjtp7qHonNnkfNsgri/vW4CampDgOvUgWYGD0bdlrOFoaYT2xIR1Qpje81ToYiXKAAONyObzadl+xNxLm5l+DrKNQadAo4GXaYz9Bn+T9Aw/BuTUYnM0SH8JnVElByDVL6AFXeKS3HSFHSxgVew=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=WDbKpL6R; arc=none smtp.client-ip=209.85.167.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1770074586; c=relaxed/simple;
+	bh=3Iu8brpI4tChFP4pMAm50wy5Qo2Vd2Ele1ye8TxHhc8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KD73MOVMqTXJUvsARIpSirJIyEzBimDafTQ4vT2SPydHNVzkb4LsdsMuetfgKyEM/Wv78WCdabjmqrGrFbkLbqIBCAaILSNfBair/6weVU+BcCOIffzfCLGVQzpYbgG89rA7q8MR6qyTeUlSlP68lVe3rjQu0l7vwnlD3MzXq9s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IlpdREAa; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="WDbKpL6R"
-Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-45f0dbe7dafso1903636b6e.3
-        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 15:09:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770073797; x=1770678597; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=tTPsyWXhp7gQeVnDTqTm1vjlVom157BoSWwibsPzNJQ=;
-        b=WDbKpL6RhMiQXem/sIvc5FhLzWF2nmBxVtNyQ1W9SVPCbtUL6VGUtytJel/wN+9GzK
-         ufYEvBqWOpcNkwO2RhqsPItiW9dpj2FBAsLFSNYhb5w4hAJagv5UiIr4e8t/SiwgRFoK
-         MH27RwRFYOjiPF9mOXU1xc7VyEUIFTfpdtLK1sJ3PRPkiJAe2uZNepoYLIiKdwq2JwaS
-         nXChOUwElKgL8bEKE9v0IaORNI8uH8plTiXKVQnaPWtFB9paKye3jiBjMwZjFfYzTHVr
-         4vqYKC41LQ8PbH6FPN/bfyxAZ3CghRhkF4eXcDjB5YKZbl2oMzAoxURAhNMgfgXHmbOx
-         z9XA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770073797; x=1770678597;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=tTPsyWXhp7gQeVnDTqTm1vjlVom157BoSWwibsPzNJQ=;
-        b=IbNykdvQSRoiJ8Cmcf96bRp2cTf/Qyg5JE8lWohd7dDExOJFViuyWhDEsYaKAo1ERQ
-         GY2GXv2Jvkd0tNqRoKRS7TLy9TLvxrjeRev4gkd4QDRhSnEaqbu8ieGEsyXGKB6+24mN
-         LHMvHkM2A69lzqVStsMawEBCnD8J/lUONZA2tvnA0SMi5ys0Dl2I9c+DrJPyKlTOnZ9W
-         hJe4kIWPNLLj2/74rzOZRtFAsWDzX39R5N5iSDn0kXDNbXzDaso7hkL7J30//rSiS2We
-         BS15xmyAvdp1QluAzrAXcV7dNI65peMUGniHYZHLBXchR2om9PrfquNJ6k2hYhvSLPsN
-         mYnQ==
-X-Forwarded-Encrypted: i=1; AJvYcCViT+9ycNRjj17bpYk/CaOjUoY8O/GMakzJh3RFoSk+Hxv0Q6GczubDxuHAubg1QZ6PJn1J5bVnVUs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzfb0oM+VZXUdTn8jtn1FRPHYqEHee4DjcokArz6cGDpmzcY9uM
-	ZxjIAwArP/5rY2JCB4Uiil+FPQN7XbwKQYlI29AAP8GV3bKgBF0RbCQxCv3vNuc5nRI=
-X-Gm-Gg: AZuq6aLTyeIbxmJWNXwi/EJ4bhX4X9zZFXvXby1S3CmT648lHd0CbWqvZqBWhenAdjz
-	jPwjnM7izTOyTaO8qr/mOKQpxZlNZLXFDiSHPEEBOpX1m34FFlalK0H1uE6ZdeCMDp3v1VGEqZl
-	YKtbWf++clgzfc6oWSPVeK3ZHwjmlkd83UcjI1jIvRXg/W+buqhuPEjG7IVTmtLGGDdmpPdFub2
-	O8kvFUkmjMh1WM6kr5ym260Yd9iAfqpPgCvl3J+hu26L7AH9R9zEX6HIcyRn+dlng5+m+BNc8Ux
-	au9lRke/I4N2bF7E9Q8pqsGCYxeaHEmMtDYaSHs05bYaEcDA+j48eWKPYEmr+nDEP30eYfSRo8m
-	q6UbWBLGHjDyn6Mv9p8QsntRE3Wxb+TK3cJEuhgi6nt0XEomKbRkUDTvIpZAIcawaLd+3q7hC/R
-	mMtg5miBrYFIn55XvlGQmUUA4wdw5l398QeASFarKfVx2o99CIVaflxtDXojyj
-X-Received: by 2002:a05:6808:11c9:b0:450:44b9:68e0 with SMTP id 5614622812f47-45f34b12ef3mr6948473b6e.11.1770073797185;
-        Mon, 02 Feb 2026 15:09:57 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:3695:6954:27c2:42ef? ([2600:8803:e7e4:500:3695:6954:27c2:42ef])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-45f08e23c09sm10292692b6e.9.2026.02.02.15.09.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Feb 2026 15:09:56 -0800 (PST)
-Message-ID: <737546d0-31ea-4d24-b097-f869451d1146@baylibre.com>
-Date: Mon, 2 Feb 2026 17:09:54 -0600
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IlpdREAa"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2EBEC116C6;
+	Mon,  2 Feb 2026 23:23:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770074585;
+	bh=3Iu8brpI4tChFP4pMAm50wy5Qo2Vd2Ele1ye8TxHhc8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=IlpdREAalrzMAm25i1T2HdjpGwznFedXcHWFxapntyqPyX2szYX23DSIoba/ShJMP
+	 6Uh5IWl/ColuRysV3TxmNqU4JtSqEp3ATY9FAT8rj/U9sKyIVdidqW/l+iSumP97A3
+	 XlUTz7Le1UC6lkfEM0RE8ZRAqNA1ykHjrcwpy42J3U56yaLqI51lECrSdzG/KBbH7y
+	 iEL5xM2jGvGEwQkYqPKeYOwLwUjK+U1cwf2/ZvC1mLaThoe+ifzzGHDhtFQewSTGIC
+	 2oszyHjsN1uG71kq9KophdTF11dP4ZYY8Cgmx0nXLdNPL2i3hEyX+bYf//JdFfGuTM
+	 Y4LOorDrGoSBg==
+Date: Mon, 2 Feb 2026 23:22:59 +0000
+From: Mark Brown <broonie@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Michael Hennerich <michael.hennerich@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>,
+	Sean Anderson <sean.anderson@linux.dev>, linux-spi@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	Jonathan Cameron <jonathan.cameron@huawei.com>
+Subject: Re: [PATCH v6 0/9] spi: add multi-lane support
+Message-ID: <ed1331d4-2e34-4b30-a0d7-f0e1d6093af8@sirena.org.uk>
+References: <20260123-spi-add-multi-bus-support-v6-0-12af183c06eb@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 next 5/5] iio: sca3000: use guard(mutex) to simplify
- return paths
-To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Gustavo Bastos <gustavobastos@usp.br>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Cc: kernel-janitors@vger.kernel.org, error27@gmail.com,
- andriy.shevchenko@intel.com
-References: <20260202194033.627967-1-harshit.m.mogalapalli@oracle.com>
- <20260202194033.627967-6-harshit.m.mogalapalli@oracle.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260202194033.627967-6-harshit.m.mogalapalli@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="0MMXqhB0JZpPctVx"
+Content-Disposition: inline
+In-Reply-To: <20260123-spi-add-multi-bus-support-v6-0-12af183c06eb@baylibre.com>
+X-Cookie: Bedfellows make strange politicians.
 
-On 2/2/26 1:40 PM, Harshit Mogalapalli wrote:
-> Switch sca3000_stop_all_interrupts() to use guard(mutex).
 
-Should always say why this patch should be considered in the commit
-message. E.g. in this one we simplify the code by avoiding a goto.
+--0MMXqhB0JZpPctVx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> ---
-Reviewed-by: David Lechner <dlechner@baylibe.com>
+On Fri, Jan 23, 2026 at 02:37:23PM -0600, David Lechner wrote:
+> This series is adding support for SPI controllers and peripherals that
+> have multiple SPI data lanes (data lanes being independent sets of
+> SDI/SDO lines, each with their own serializer/deserializer).
+
+The following changes since commit 8f0b4cce4481fb22653697cced8d0d04027cb1e8:
+
+  Linux 6.19-rc1 (2025-12-14 16:05:07 +1200)
+
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-multi-lane
+
+for you to fetch changes up to 0ec5ed7c95d1ba6a74491928ff38abb351dbed36:
+
+  spi: axi-spi-engine: support SPI_MULTI_LANE_MODE_STRIPE (2026-02-02 12:12:47 +0000)
+
+----------------------------------------------------------------
+spi: Add multi-lane support
+
+This series is adding support for SPI controllers and peripherals that
+have multiple SPI data lanes (data lanes being independent sets of
+SDI/SDO lines, each with their own serializer/deserializer).
+
+----------------------------------------------------------------
+CL Wang (1):
+      spi: dt-bindings: Add support for ATCSPI200 SPI controller
+
+David Lechner (7):
+      spi: dt-bindings: change spi-{rx,tx}-bus-width to arrays
+      spi: dt-bindings: add spi-{tx,rx}-lane-map properties
+      spi: support controllers with multiple data lanes
+      spi: add multi_lane_mode field to struct spi_transfer
+      spi: Documentation: add page on multi-lane support
+      spi: dt-bindings: adi,axi-spi-engine: add multi-lane support
+      spi: axi-spi-engine: support SPI_MULTI_LANE_MODE_STRIPE
+
+ .../bindings/display/panel/sitronix,st7789v.yaml   |   5 +-
+ .../devicetree/bindings/iio/adc/adi,ad4030.yaml    |  42 +++-
+ .../devicetree/bindings/iio/adc/adi,ad4695.yaml    |   5 +-
+ .../bindings/spi/adi,axi-spi-engine.yaml           |  15 ++
+ .../bindings/spi/allwinner,sun4i-a10-spi.yaml      |   6 +-
+ .../bindings/spi/allwinner,sun6i-a31-spi.yaml      |   6 +-
+ .../bindings/spi/andestech,ae350-spi.yaml          |  87 +++++++++
+ .../bindings/spi/nvidia,tegra210-quad.yaml         |   6 +-
+ .../bindings/spi/spi-peripheral-props.yaml         |  40 +++-
+ Documentation/spi/index.rst                        |   1 +
+ Documentation/spi/multiple-data-lanes.rst          | 217 +++++++++++++++++++++
+ drivers/spi/spi-axi-spi-engine.c                   | 145 +++++++++++++-
+ drivers/spi/spi.c                                  | 144 +++++++++++++-
+ include/linux/spi/spi.h                            |  30 +++
+ 14 files changed, 724 insertions(+), 25 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/spi/andestech,ae350-spi.yaml
+ create mode 100644 Documentation/spi/multiple-data-lanes.rst
+
+--0MMXqhB0JZpPctVx
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmmBMdMACgkQJNaLcl1U
+h9DFLAf/eDN1MHKzlDzHEkX7Kc/MuMXQ34+KLKm8zo8/idWiep9CDuUDVmzqf2Ig
+tgXs6Tj3jSvEwoXNDUYVZu6d5FOUmvHgla/qoYMgkOZq3IGuIcGJESeiJr5G+pBv
+FgfTyGv8Z2W2pup/pbFvj13osctJAg4DccA8i5zPqlIOFH6mbdpRKPVqLgJEFKyc
+aPhUkoo9y0TyysPK+1nDym8ZNMSv1EzCcn7c6paeZrExJzccu6XAbA99YTNzb5fC
+RESsFzN9eJCS1hc1oHtkfw7HxnFX/6Qm8lT3QD1332dsjSdnwa5pBY2L/6lt61dL
+aXTQ8FRPXxuJn0gphdi2oKoEkQpYwg==
+=11c/
+-----END PGP SIGNATURE-----
+
+--0MMXqhB0JZpPctVx--
