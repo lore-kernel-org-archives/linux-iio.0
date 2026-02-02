@@ -1,51 +1,51 @@
 Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E12503090D9;
-	Mon,  2 Feb 2026 19:40:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D1A23090D9;
+	Mon,  2 Feb 2026 19:40:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770061254; cv=none; b=TF+DIIsiuF/0A1BmXrWVbayYR1TtcqOj+PEWHrwuHoaxqcTNWAma20M5s4cWlqozHGmzx/S5nnrV6fryV/rM7a2go6xiB1ocv+99SSnCgOYzWFMSTJTw0LY+yt5D/WWvYnqtF9dEEYhZ1RyfaVgASO8VNt2JCVQsqpkyTqlK/14=
+	t=1770061259; cv=none; b=XBN9Hz2K3kLZWI/+OMVKOnDV3wrArRIOMpGK/f4H8KwbyY4rer7vcrNcWFrTrxWpDut/U57gg8KAZGfHHlhYEQSEk26xp4aDS175TEH0Ga9d6W8ZNYUJz2RMBsVA1gnYr1fVSE1x63Nhmc99F1hJfd8wrjVPEbFryVrT6klSP9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770061254; c=relaxed/simple;
-	bh=HVC9ArOx9WOxUBJqsf78/JGCJReRMpqOsXB0aZ+LDoY=;
+	s=arc-20240116; t=1770061259; c=relaxed/simple;
+	bh=sD0utbWyrvtmYNTdsIZBf2XSHsJzIvm4Q8xEOrwaYkQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=MzKyqaJJW6jxQryC14FWd+5M6uTgHr+OxwUdlSgBg42qtcYI8GaI8OIFKdK18Im3neTD06K0YACXpUuaXVJRx9P7EJFd4R+dY05DdXiZh6T024CkMmFiwNQ80mUXv7+lh2oE9Qnw9TrWByRigjuONSBY3OjBeJFXJRS34whskx0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=AfKg39PF; arc=none smtp.client-ip=205.220.177.32
+	 MIME-Version; b=ITGzkE6VmRxIZhL+IJIvCi2atvST8X9igtSP/4kK0AqgkqncMeS+AQcfH0uGBBOA5DINkzWheYQOZCMk2JHJgWBL6mJfX+fJBnRplouNm1NrvhuWUPBJTqZJhniDmLUkdy9mjkvqv93IAGuhwtRORV43/kCmRUPHTFEbym+XeFc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=ltpYBCYA; arc=none smtp.client-ip=205.220.177.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="AfKg39PF"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 612J6w0m1430165;
-	Mon, 2 Feb 2026 19:40:46 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="ltpYBCYA"
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 612JIoOT1385262;
+	Mon, 2 Feb 2026 19:40:51 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
 	:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=corp-2025-04-25; bh=aGYRa
-	zAzFESOV0UG63MxkTWbBoME3/WVsyh+DS4KLN0=; b=AfKg39PFdR/IgYyetAWF5
-	npN4aMZcCJ/kKZVF0NzruT1qPo10pqgcoz62QQQEf0TZgWnRL78IQ5pN4ywA/nMk
-	BTsUNN+ItZ+Z03b5PIkhAunLtsGJsYRf/wyUIdL1FmyqOIBzZ9Y0IfpCiuVvghep
-	iumAcQM7sT9Ey/zG6ZIOHGZJS2OF3ZzJY5jwHH80TQkm+IbvgZq0q3i+TJxHBPWf
-	SlJfqKi5iICsTwfkIvw8kZGD09g7AV5E3lSnApNe2801yP7xS/L8ei6tlNrbO4JU
-	kqH6/6jZ5KRNDqrGe624n9gpc0EuMvQih/tgni6JkZGCAfa+/C/kYwAFrLRbWKMe
-	Q==
+	:mime-version:references:subject:to; s=corp-2025-04-25; bh=jZIGW
+	dr7TYcOInlEBYPyl9CuinfHm0geUXksGpgjt44=; b=ltpYBCYAsfN0v+l+8l1t2
+	luarKTphfkDlgxxmFd4jhhUSiZu4p2U26LQy6I3fHmHglHJJrLVs8WxE/VQTbtoZ
+	S6Ult6j0fjWv/ENLXTezI7ZTBNTYLbbHePOJ9ErkgcDrybTSPbtZEih+CG/lUy82
+	zE/Th1emxuJiiJSz4ptXZ8vnarN5FZeRl2C6atkQWIRw/uApIvqcpip5/JmtUMy5
+	rMHL4+Jevz9cEOwZr0EpIoD1k6rPbtM6jhGtER8XNDlGyUPhtuSruc//GHycUovC
+	fJdJpVAqCTOxrcr+Rn/zhUYAtxW47azZoFi/7W/OcsEmgzhZ7T0jW4YWxwNPIbyx
+	A==
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4c1au62vg8-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4c1arhjuxg-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 02 Feb 2026 19:40:46 +0000 (GMT)
+	Mon, 02 Feb 2026 19:40:50 +0000 (GMT)
 Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 612JTTJb001228;
-	Mon, 2 Feb 2026 19:40:45 GMT
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 612JTTJd001228;
+	Mon, 2 Feb 2026 19:40:50 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4c1868us15-1
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4c1868us43-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 02 Feb 2026 19:40:45 +0000
+	Mon, 02 Feb 2026 19:40:50 +0000
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 612JeaU3019500;
-	Mon, 2 Feb 2026 19:40:45 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 612JeaU5019500;
+	Mon, 2 Feb 2026 19:40:49 GMT
 Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 4c1868ursy-3;
-	Mon, 02 Feb 2026 19:40:45 +0000
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 4c1868ursy-4;
+	Mon, 02 Feb 2026 19:40:49 +0000
 From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
@@ -56,9 +56,9 @@ To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: kernel-janitors@vger.kernel.org, error27@gmail.com,
         andriy.shevchenko@intel.com
-Subject: [PATCH v2 next 2/5] iio: sca3000: switch IRQ handling to devm helpers
-Date: Mon,  2 Feb 2026 11:40:09 -0800
-Message-ID: <20260202194033.627967-3-harshit.m.mogalapalli@oracle.com>
+Subject: [PATCH v2 next 3/5] iio: sca3000: stop interrupts via devm_add_action_or_reset()
+Date: Mon,  2 Feb 2026 11:40:10 -0800
+Message-ID: <20260202194033.627967-4-harshit.m.mogalapalli@oracle.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260202194033.627967-1-harshit.m.mogalapalli@oracle.com>
 References: <20260202194033.627967-1-harshit.m.mogalapalli@oracle.com>
@@ -76,88 +76,123 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 s
  mlxscore=0 adultscore=0 phishscore=0 bulkscore=0 malwarescore=0
  spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2601150000 definitions=main-2602020154
-X-Proofpoint-GUID: -1saqS-MAbzJ6eR3Z7MGiCau5gIFUBXn
-X-Proofpoint-ORIG-GUID: -1saqS-MAbzJ6eR3Z7MGiCau5gIFUBXn
-X-Authority-Analysis: v=2.4 cv=Nf7rFmD4 c=1 sm=1 tr=0 ts=6980fdbe cx=c_pps
+X-Proofpoint-ORIG-GUID: VAWc72KYQP86Sg77U16zdzgjDVfyHLVM
+X-Proofpoint-GUID: VAWc72KYQP86Sg77U16zdzgjDVfyHLVM
+X-Authority-Analysis: v=2.4 cv=fdmgCkQF c=1 sm=1 tr=0 ts=6980fdc3 cx=c_pps
  a=XiAAW1AwiKB2Y8Wsi+sD2Q==:117 a=XiAAW1AwiKB2Y8Wsi+sD2Q==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=QyXUC8HyAAAA:8 a=yPCof4ZbAAAA:8
- a=X8t9xCqtd0ov-FsuJpcA:9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjAyMDE1MyBTYWx0ZWRfXyvTQelgAQ7W0
- m8cC4Q9QXCaWQzdC8OYTkg4wbw64QxqMgCoejocksMeuCGt1oMkMMRH/BAAK9XPNwVddZ9nUtM8
- 0XJI98LLWetVx5EaeLGubMlpVGjQGK5JXYNoZGdEfGueifQez2OyZi/KrC6ywhRD70wmPHT3LOj
- A6B2SQeH2tKjgdQwebmb/2mXtrNL6Vc2RD+2cOQ0NHImEQugi1ZzVuE9xiEYs0ldb9kR0nWPcic
- NnXdpbDM0xYKDi5kEjgpqUA6cFFVIG+SftvblqXtf+wKYFHTAS7PMsSgUwlUeFtwkSXJ5Qfy0j2
- +Uj3MmK8kge9C6LWc6Xi/cUgQKRAh7VVm3Qwmgj7kgzZaN20sddSQE8OOmPl1wnPH0Uc+2RhP2u
- YJdq3uovhHKI/Hc4oXJ2RO0GF/60g1DzjjGLcm6hLAsC9Vl4Z7xyWGHDZ1gfy/TPOLrPjfhNdXT
- xMTffoCio7wRJuPoJoA==
+ a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8
+ a=yPCof4ZbAAAA:8 a=r7h_biJ6kzdeNql_50MA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjAyMDE1MyBTYWx0ZWRfX79McXTXnCRet
+ yOKw67WpMszGmS8zRCS7qx0y13q6t45qwtzy3USGOI/oBofiGFgRS+bosaE7h+6lM88dus6VPAH
+ HM/dvNsfvLd2fHbZc9nRafNzkI+iHDtboTzjCvZcTsRR+vNpHwDYzqQoz9jhy4TkteAEtlgZAY0
+ e7FXA/3KpueZvI2JqKscGsdwZeNzZt76EImOA7GksbrS1xrZz9ZNGNCzT0wlMkX/QvDIuIZ2m/v
+ UIPqvHynnBo9wBRzZ0zOT/+4+4x8+tlPR+7vzel/BbgsII4vIAqayKafF5fY8tj+P1v00UU2eb+
+ O2JeR1q5hSGWmZqtrDOlBxrKAJfSFfaAq1OrOA3s8Q1O1I04Aabto12ASOjDGGYZjDTu2p0pwRm
+ xhw9FZNa577con5U2w9XzLU66G4ptOftBO4M1rPNfbbYr07N1E2W+Ec+4JwgIfqzsTJjgz1ESkg
+ CPuwINpwXnOpFT4AcpA==
 
-Convert the threaded IRQ registration to devm_request_threaded_irq() so
-that the probe and remove paths can drop manual freeing of irqs.
+sca3000_stop_all_interrupts() is moved above the probe routine so the
+new function sca3000_disable_interrupts() used in probe can directly
+call it without additional declaration.
 
-No functionality change.
+Used devm_add_action_or_reset() for shutting down the interrupts.
+
+No functional change intended.
 
 Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 ---
-v1->v2: Fix indentation in devm_request_threaded_irq() call[ Thanks to
-Jonathan]
+v1->v2: Jonathan found a broken tear down sequence that was introduced
+by my ptach 3 in v1: https://lore.kernel.org/all/20260131163218.2a4b93e5@jic23-huawei/
+
+So first converted the interrupt disabling task to devm based call,
+order of tear down is as follows after this patch: iio_unregister_device
+is called in the remove() callback, post which any interrupts will be
+disabled with devm_add_action_or_reset() call.
 ---
- drivers/iio/accel/sca3000.c | 25 ++++++++-----------------
- 1 file changed, 8 insertions(+), 17 deletions(-)
+ drivers/iio/accel/sca3000.c | 53 ++++++++++++++++++++++---------------
+ 1 file changed, 31 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-index afe6ef61a53b..37ef724d5dc5 100644
+index 37ef724d5dc5..4faffeea328c 100644
 --- a/drivers/iio/accel/sca3000.c
 +++ b/drivers/iio/accel/sca3000.c
-@@ -1473,34 +1473,27 @@ static int sca3000_probe(struct spi_device *spi)
+@@ -1437,6 +1437,33 @@ static const struct iio_info sca3000_info = {
+ 	.write_event_config = &sca3000_write_event_config,
+ };
+ 
++static int sca3000_stop_all_interrupts(struct sca3000_state *st)
++{
++	int ret;
++
++	mutex_lock(&st->lock);
++	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
++	if (ret)
++		goto error_ret;
++	ret = sca3000_write_reg(st, SCA3000_REG_INT_MASK_ADDR,
++				(st->rx[0] &
++				 ~(SCA3000_REG_INT_MASK_RING_THREE_QUARTER |
++				   SCA3000_REG_INT_MASK_RING_HALF |
++				   SCA3000_REG_INT_MASK_ALL_INTS)));
++error_ret:
++	mutex_unlock(&st->lock);
++	return ret;
++}
++
++static void sca3000_disable_interrupts(void *data)
++{
++	struct iio_dev *indio_dev = data;
++	struct sca3000_state *st = iio_priv(indio_dev);
++
++	/* Must ensure no interrupts can be generated after this! */
++	sca3000_stop_all_interrupts(st);
++}
++
+ static int sca3000_probe(struct spi_device *spi)
+ {
+ 	const struct spi_device_id *id = spi_get_device_id(spi);
+@@ -1489,6 +1516,10 @@ static int sca3000_probe(struct spi_device *spi)
+ 	if (ret)
  		return ret;
  
- 	if (spi->irq) {
--		ret = request_threaded_irq(spi->irq,
--					   NULL,
--					   &sca3000_event_handler,
--					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
--					   "sca3000",
--					   indio_dev);
-+		ret = devm_request_threaded_irq(dev, spi->irq, NULL,
-+						&sca3000_event_handler,
-+						IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-+						"sca3000",
-+						indio_dev);
- 		if (ret)
- 			return ret;
- 	}
- 	ret = sca3000_clean_setup(st);
- 	if (ret)
--		goto error_free_irq;
++	ret = devm_add_action_or_reset(dev, sca3000_disable_interrupts, indio_dev);
++	if (ret)
 +		return ret;
- 
- 	ret = sca3000_print_rev(indio_dev);
- 	if (ret)
--		goto error_free_irq;
-+		return ret;
- 
++
  	ret = iio_device_register(indio_dev);
  	if (ret)
--		goto error_free_irq;
-+		return ret;
- 
+ 		return ret;
+@@ -1496,33 +1527,11 @@ static int sca3000_probe(struct spi_device *spi)
  	return 0;
--
--error_free_irq:
--	if (spi->irq)
--		free_irq(spi->irq, indio_dev);
--
--	return ret;
  }
  
- static int sca3000_stop_all_interrupts(struct sca3000_state *st)
-@@ -1530,8 +1523,6 @@ static void sca3000_remove(struct spi_device *spi)
+-static int sca3000_stop_all_interrupts(struct sca3000_state *st)
+-{
+-	int ret;
+-
+-	mutex_lock(&st->lock);
+-	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
+-	if (ret)
+-		goto error_ret;
+-	ret = sca3000_write_reg(st, SCA3000_REG_INT_MASK_ADDR,
+-				(st->rx[0] &
+-				 ~(SCA3000_REG_INT_MASK_RING_THREE_QUARTER |
+-				   SCA3000_REG_INT_MASK_RING_HALF |
+-				   SCA3000_REG_INT_MASK_ALL_INTS)));
+-error_ret:
+-	mutex_unlock(&st->lock);
+-	return ret;
+-}
+-
+ static void sca3000_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-	struct sca3000_state *st = iio_priv(indio_dev);
  
- 	/* Must ensure no interrupts can be generated after this! */
- 	sca3000_stop_all_interrupts(st);
--	if (spi->irq)
--		free_irq(spi->irq, indio_dev);
+ 	iio_device_unregister(indio_dev);
+-
+-	/* Must ensure no interrupts can be generated after this! */
+-	sca3000_stop_all_interrupts(st);
  }
  
  static const struct spi_device_id sca3000_id[] = {
