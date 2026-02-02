@@ -1,116 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86A4F330B30;
-	Mon,  2 Feb 2026 22:49:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3931313E1A
+	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 23:01:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770072543; cv=none; b=jDBraZw0QFp7pYCkRr05HBI49+Pk69l978Ix5EaqhYyyM1OgTzj1tk5Kde3qen/HGVZzNw/+T2YNSYqNHh4uwzvXDnvPeSlY+Cz+2e8z8aD8N1HxAUHzeUC8bAe/KmDJ47jpgVplryJ4Kt9uVXILdpzpUxUpYl0NAgsuY9qrtbI=
+	t=1770073300; cv=none; b=EHF7eaFONd4NYHRB+eTB8+SveEX2lfNnzJcZmL0ze9H/HC5/2zU0nO+18SO2m94HXQ/dl0ajY49H6QYSqx29JQFCpv8ddeMoj8AF8FO4k7134lA62duxUGEPcLPLJ1cHTvE6rDqOAPL797dwdiCNfa4PME9XWiq21j+3bpzCPew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770072543; c=relaxed/simple;
-	bh=ZsoD2vl1E06oYSAcnI6EVM/cXK5Ab1V7TGQu/No2s9o=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=mK9BkD8IgaExfretV2JJnhcLCqnGRM8kIAGh9Eic/iyz0HsUYrqRUtPtMFjRCEFxnmW6ace2OVh8/sjwLWHzdA0tf6m8n9qw0j5UeufD5HFHCzanJy90c4V30xK5To70cm9NBcq7PVJkp6IMWyU/cMLmM/nWj5U3ZPydtlIAwTk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dstfJg26; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770073300; c=relaxed/simple;
+	bh=Z6GqiyZap0TxD9V8wqrG7540asWNXM6u1cBE0RODAqw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=PvS/Or04jYoYw98Q4kjlIFUPv8AJAeoh0/q7L0ohweLoph6nN2/xT/NTLXnJmPn1RIwggKuNgJCCZw/cZkfFt0SdEKqZYBAP8R28doKT11COrfa/YwhOkMgjr80CzDEL+cZN8SLuVZLKNq28/FNdXXIngnK1G2DVRw2f3lgIZ6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=gGGJb/lb; arc=none smtp.client-ip=209.85.167.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dstfJg26"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8D32C116C6;
-	Mon,  2 Feb 2026 22:49:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770072543;
-	bh=ZsoD2vl1E06oYSAcnI6EVM/cXK5Ab1V7TGQu/No2s9o=;
-	h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
-	b=dstfJg26Ge6HFusPvD7+mzzfPJjvLq+jWT66JQI2ukQGkK0td0/8+vcyrtmwiDBQQ
-	 FW73CWg3oZO37COMCqQXRzGtvaGAc73tw/hvd/nN2m+faUe3ZJ5HItIRKVlPsxTgvd
-	 +ybxRizMS64c7PSWILAkZ9w14wg1jGejZH5t7R2wzJ2El0WEHKHOdk6QPFOOpFGcia
-	 7n7ar/YlEjorCSSoZMK6nC0Inl1+aZaagBo7YI8RW3tI1jRrgFsGV+d17qdzZ5EWZW
-	 gXoUtvaDlPWjGbm7pSVZd2lMu1svhb6DW+0O1IGalYDivpKqcQ3bq5zid1YUOygCOK
-	 YIeiS/g6NGTkw==
-From: Mark Brown <broonie@kernel.org>
-To: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Marcelo Schmitt <marcelo.schmitt@analog.com>, 
- Michael Hennerich <michael.hennerich@analog.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>, 
- David Lechner <dlechner@baylibre.com>
-Cc: Sean Anderson <sean.anderson@linux.dev>, linux-spi@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-iio@vger.kernel.org, Jonathan Cameron <jonathan.cameron@huawei.com>
-In-Reply-To: <20260123-spi-add-multi-bus-support-v6-0-12af183c06eb@baylibre.com>
-References: <20260123-spi-add-multi-bus-support-v6-0-12af183c06eb@baylibre.com>
-Subject: Re: (subset) [PATCH v6 0/9] spi: add multi-lane support
-Message-Id: <177007254040.964046.276664033882680983.b4-ty@kernel.org>
-Date: Mon, 02 Feb 2026 22:49:00 +0000
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="gGGJb/lb"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-45f04f1348cso3068663b6e.1
+        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 15:01:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770073298; x=1770678098; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SCzpKsUtNwK5udm8CfpcSaSMileQmrqYxikfvGaGy2w=;
+        b=gGGJb/lbZHxEdJf7JMnu6796aYjujU4HwxL3l+r+e8lg6eDZVjT3W2y+o7/oSCW1rB
+         7reF0434HRIYBG8zkIIyMmB8jKV7hZuZePZwB3xuxOCWTKz95ed6ZVIiRzOza2AT87qB
+         w8ivnNWqsKPVH6142JZXxIpAvEZ3iJU79O1SE66FpMY+kes45/I8oba6VS1zXXWbHoYY
+         VnPgndPSV4YFodsDHtOQsRgA9DHdB2HhEs/OZMYzmAs0caQjE3nSkMiT3TTsZbwvkjIj
+         P2KP+zvO+TRh36iVpk6bcGxun098gCi9TDpDsc366tYS8rHlLk+h+KEmsLE0R3KeXhNS
+         aasg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770073298; x=1770678098;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SCzpKsUtNwK5udm8CfpcSaSMileQmrqYxikfvGaGy2w=;
+        b=O7Y+CiS4DFT3DN/XuY72I5MA46bDGRXkUCil8flrfwYgne74o4LP/EmA4gD9qt9I0+
+         wSgJuLG01BLY+A+t1A/vZtR5j3b7Gm2YWuN5S8mp4M8QUAuEItFyAG32cgTY1xyjSe9A
+         PH1N7P6PP+QDPK0l0CMXd9kxMfYK/g9urcz0z2KTN7c/2nSGfb61FWZ9Te/8EB6vTWHy
+         YwhYxRRwSXKk1s7V2fqhEK9TmKbS4x4rXOtcDI2rCjG/x7WlYqp7ZHp/M8sXLnF9GYXt
+         SSWXoBeg13j/eEtu3ArIyfJTkbupl7mPnsSzUWjSRUw2C3jVslyC1BquiMr1PSR+HXjg
+         S+ag==
+X-Forwarded-Encrypted: i=1; AJvYcCX/r4LWFciMsm/MsE1G9ExXJFfQ70u2O3y+OBZctWtBJq/13D4gPlQeX4+kknqiR+65SLx0VHHat+w=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyaxnoJ7GyXhn92HDff/fHmkj06be95AIL5+azTkkxWmCsbb+9C
+	cw/wnRPNsk71lAYcNf7Gm9fwOgJvGkQ7ZBpGV1qcJc6nC/bRURz0uuetDCznJOyBRyJyfKCtPRf
+	Yqek4
+X-Gm-Gg: AZuq6aKlR5hxUkUhNw003JGAC8l2TVA8dMf/Hmpv/b1bJCEzs3JBFtR7tZr0E4GMZtz
+	8nv7hdNJWIcjVys5x47ykKC497zx74yp93Wln1hhw3qtg6OkfJZ48jCCC54loYLZUDWbfOot3rV
+	qxFQKpBR1d4CGGt6ZYcuY67NNGh/PFi2eohdBYsfgwijXcMgUkBzm547SzqEKXVICTIwLHtEOZ8
+	1yuPmUsHS2oMquj6USAWhm2Y96yLLexs/2vG17j7iYLI5TCBq70CJN3XXgDW+aQ3mTZgJ8icH58
+	k5o2CTTncYGM7or5JoKfCLOcedXf6l/xMcIzbHdihF5bh0+5YRH8KmLPL4DLTEaf4S3xj3ltlGw
+	bWv//UQlvEBM/d3w2YalY0Hg6bIlnvTJTV7fvBO6BRXeh1m2oFS+t2f3g8WFI/K3C4ZvdXi1YW2
+	jdQeb1DXTHOzXUrKX7a+G+1d3IRGt8dX5/SUovb/ncKKe8ANxrY3ctL4FpvfG5
+X-Received: by 2002:a05:6808:1313:b0:450:d0d8:aed0 with SMTP id 5614622812f47-45f34d0d02amr5853054b6e.40.1770073297618;
+        Mon, 02 Feb 2026 15:01:37 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:3695:6954:27c2:42ef? ([2600:8803:e7e4:500:3695:6954:27c2:42ef])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-45f08d894f5sm10614525b6e.5.2026.02.02.15.01.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Feb 2026 15:01:37 -0800 (PST)
+Message-ID: <38793c4d-e79a-4896-8b25-e20bc8ecbb74@baylibre.com>
+Date: Mon, 2 Feb 2026 17:01:36 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 next 1/5] iio: sca3000: cache SPI device ID in probe
+To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, error27@gmail.com,
+ andriy.shevchenko@intel.com
+References: <20260202194033.627967-1-harshit.m.mogalapalli@oracle.com>
+ <20260202194033.627967-2-harshit.m.mogalapalli@oracle.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260202194033.627967-2-harshit.m.mogalapalli@oracle.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-X-Mailer: b4 0.15-dev-47773
 
-On Fri, 23 Jan 2026 14:37:23 -0600, David Lechner wrote:
-> This series is adding support for SPI controllers and peripherals that
-> have multiple SPI data lanes (data lanes being independent sets of
-> SDI/SDO lines, each with their own serializer/deserializer).
+On 2/2/26 1:40 PM, Harshit Mogalapalli wrote:
+> Store the spi_device_id at probe entry and reuse it for the name and
+> chip info instead of calling spi_get_device_id() repeatedly.
+
+Even better would be to replace spi_get_device_id() with
+pi_get_device_match_data() and turn sca3000_spi_chip_info_tbl[]
+into individual structs that are used directly as the match
+data pointers.
+
 > 
-> This series covers this specific use case:
-> 
-> +--------------+    +---------+
-> | SPI          |    | SPI     |
-> | Controller   |    | ADC     |
-> |              |    |         |
-> |          CS0 |--->| CS      |
-> |         SCLK |--->| SCLK    |
-> |          SDO |--->| SDI     |
-> |         SDI0 |<---| SDOA    |
-> |         SDI1 |<---| SDOB    |
-> |         SDI2 |<---| SDOC    |
-> |         SDI3 |<---| SDOD    |
-> +--------------+     +--------+
-> 
-> [...]
+> Reuse the local dev pointer for resource managed helpers. While at it,
+> reshuffle variable list in a reverse Christmas tree order.
 
-Applied to
-
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
-
-Thanks!
-
-[1/9] spi: dt-bindings: change spi-{rx,tx}-bus-width to arrays
-      commit: 37bb4033e48b8a0ddee66fd77f9e12a9a930681b
-[2/9] spi: dt-bindings: add spi-{tx,rx}-lane-map properties
-      commit: 31eab8425110b933dd7c818809cb4ffa3b2c6d82
-[3/9] spi: support controllers with multiple data lanes
-      commit: 002d561f89c3a61ee17d38070e48ea4eb1243732
-[4/9] spi: add multi_lane_mode field to struct spi_transfer
-      commit: 5621a7bc851658ea2f8e015060f8bb5d27739b06
-[5/9] spi: Documentation: add page on multi-lane support
-      commit: 05c3bd745bb065223201824f0044455558541bdc
-[6/9] spi: dt-bindings: adi,axi-spi-engine: add multi-lane support
-      commit: 2e706f86a5aa94702694774efb7d8b151c6d724f
-[7/9] spi: axi-spi-engine: support SPI_MULTI_LANE_MODE_STRIPE
-      commit: 0ec5ed7c95d1ba6a74491928ff38abb351dbed36
-
-All being well this means that it will be integrated into the linux-next
-tree (usually sometime in the next 24 hours) and sent to Linus during
-the next merge window (or sooner if it is a bug fix), however if
-problems are discovered then the patch may be dropped or reverted.
-
-You may get further e-mails resulting from automated or manual testing
-and review of the tree, please engage with people reporting problems and
-send followup patches addressing any issues that are reported if needed.
-
-If any updates are required or you are submitting further changes they
-should be sent as incremental updates against current git, existing
-patches will not be replaced.
-
-Please add any relevant lists and maintainers to the CCs when replying
-to this mail.
-
-Thanks,
-Mark
+The dev cleanup sounds like a second unrelated change that can be split
+out from the spi_get_device_id() changes.
 
