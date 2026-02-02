@@ -1,67 +1,66 @@
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+Received: from mail-oi1-f193.google.com (mail-oi1-f193.google.com [209.85.167.193])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3931313E1A
-	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 23:01:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C217D357A25
+	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 23:04:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.193
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770073300; cv=none; b=EHF7eaFONd4NYHRB+eTB8+SveEX2lfNnzJcZmL0ze9H/HC5/2zU0nO+18SO2m94HXQ/dl0ajY49H6QYSqx29JQFCpv8ddeMoj8AF8FO4k7134lA62duxUGEPcLPLJ1cHTvE6rDqOAPL797dwdiCNfa4PME9XWiq21j+3bpzCPew=
+	t=1770073492; cv=none; b=CgHkI4Ontj46GoU2+jN2/DrzIVqICwjKPtXV8Epr3JAx6HaZ6WgK+FV0Yt7B8xyweTULAyhLFPefsmrHVVOHynWgdo7qEJw09+ipEDLFpZBRT9rGlyBoWRkV3hPZdj6z61lrLzV05sJs/cS+w/wmtqDp8jakKt6SWTu8fZCUv8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770073300; c=relaxed/simple;
-	bh=Z6GqiyZap0TxD9V8wqrG7540asWNXM6u1cBE0RODAqw=;
+	s=arc-20240116; t=1770073492; c=relaxed/simple;
+	bh=RrYK91e1d4Hg5dQpXBUERxUtJltrtqPXxfWMgFQ1YVQ=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=PvS/Or04jYoYw98Q4kjlIFUPv8AJAeoh0/q7L0ohweLoph6nN2/xT/NTLXnJmPn1RIwggKuNgJCCZw/cZkfFt0SdEKqZYBAP8R28doKT11COrfa/YwhOkMgjr80CzDEL+cZN8SLuVZLKNq28/FNdXXIngnK1G2DVRw2f3lgIZ6M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=gGGJb/lb; arc=none smtp.client-ip=209.85.167.175
+	 In-Reply-To:Content-Type; b=UONmg+mGsbbtMKFFRC2lw/3ipbrBhCbMWa7nQuNbRWq6gbmz5FKhGCOq2QNK1XpDTtYb3sbyzki3HXwA53+xs3oeBM1us4/V3XiblXBVuXxEg9V4kteESJA+F08Yc6gA8lMvg1pSznyc2nsrsvvHLnLvvW7G/zUV5iRENg8o1CM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=J1WoCkP4; arc=none smtp.client-ip=209.85.167.193
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="gGGJb/lb"
-Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-45f04f1348cso3068663b6e.1
-        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 15:01:38 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="J1WoCkP4"
+Received: by mail-oi1-f193.google.com with SMTP id 5614622812f47-45f18e8f2f5so3350341b6e.3
+        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 15:04:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770073298; x=1770678098; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770073490; x=1770678290; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=SCzpKsUtNwK5udm8CfpcSaSMileQmrqYxikfvGaGy2w=;
-        b=gGGJb/lbZHxEdJf7JMnu6796aYjujU4HwxL3l+r+e8lg6eDZVjT3W2y+o7/oSCW1rB
-         7reF0434HRIYBG8zkIIyMmB8jKV7hZuZePZwB3xuxOCWTKz95ed6ZVIiRzOza2AT87qB
-         w8ivnNWqsKPVH6142JZXxIpAvEZ3iJU79O1SE66FpMY+kes45/I8oba6VS1zXXWbHoYY
-         VnPgndPSV4YFodsDHtOQsRgA9DHdB2HhEs/OZMYzmAs0caQjE3nSkMiT3TTsZbwvkjIj
-         P2KP+zvO+TRh36iVpk6bcGxun098gCi9TDpDsc366tYS8rHlLk+h+KEmsLE0R3KeXhNS
-         aasg==
+        bh=ZNrvca2KmyrBJFwTPI4WrLSrUbTKwX2CYNCzHFOP/iM=;
+        b=J1WoCkP4t8JauuH3cH6Xqj3jZ3tHFTxoI/xNcDIb0iTh+aKivoy22zcXuWWNLzX008
+         Bd6A8/6fvTm+9v49UlEGdhRXkS4DMASYRuAIO7D6Cd8Xlt+oQIAX/fv6B6eXQL0qz6GY
+         EYtn7eJCr3E9gmEf9x8LUJOZR8F86yeUZO053Zo7kv2pN/cJqtOVQovgrMUJZD3gmUdo
+         ZXp8Hw4IKs2gz9VjCYlMFXW+GaXvM+M0aIQmEFoyxTFCntDpqzAdYaTEw5eWe1Aqnk5l
+         ahzC854TyqOD9c0qTLSVCZcwoUqtXXmC+MnrsbdMk5v44yNmjqvEuS3SQHC276/o4NbI
+         4Wfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770073298; x=1770678098;
+        d=1e100.net; s=20230601; t=1770073490; x=1770678290;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=SCzpKsUtNwK5udm8CfpcSaSMileQmrqYxikfvGaGy2w=;
-        b=O7Y+CiS4DFT3DN/XuY72I5MA46bDGRXkUCil8flrfwYgne74o4LP/EmA4gD9qt9I0+
-         wSgJuLG01BLY+A+t1A/vZtR5j3b7Gm2YWuN5S8mp4M8QUAuEItFyAG32cgTY1xyjSe9A
-         PH1N7P6PP+QDPK0l0CMXd9kxMfYK/g9urcz0z2KTN7c/2nSGfb61FWZ9Te/8EB6vTWHy
-         YwhYxRRwSXKk1s7V2fqhEK9TmKbS4x4rXOtcDI2rCjG/x7WlYqp7ZHp/M8sXLnF9GYXt
-         SSWXoBeg13j/eEtu3ArIyfJTkbupl7mPnsSzUWjSRUw2C3jVslyC1BquiMr1PSR+HXjg
-         S+ag==
-X-Forwarded-Encrypted: i=1; AJvYcCX/r4LWFciMsm/MsE1G9ExXJFfQ70u2O3y+OBZctWtBJq/13D4gPlQeX4+kknqiR+65SLx0VHHat+w=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyaxnoJ7GyXhn92HDff/fHmkj06be95AIL5+azTkkxWmCsbb+9C
-	cw/wnRPNsk71lAYcNf7Gm9fwOgJvGkQ7ZBpGV1qcJc6nC/bRURz0uuetDCznJOyBRyJyfKCtPRf
-	Yqek4
-X-Gm-Gg: AZuq6aKlR5hxUkUhNw003JGAC8l2TVA8dMf/Hmpv/b1bJCEzs3JBFtR7tZr0E4GMZtz
-	8nv7hdNJWIcjVys5x47ykKC497zx74yp93Wln1hhw3qtg6OkfJZ48jCCC54loYLZUDWbfOot3rV
-	qxFQKpBR1d4CGGt6ZYcuY67NNGh/PFi2eohdBYsfgwijXcMgUkBzm547SzqEKXVICTIwLHtEOZ8
-	1yuPmUsHS2oMquj6USAWhm2Y96yLLexs/2vG17j7iYLI5TCBq70CJN3XXgDW+aQ3mTZgJ8icH58
-	k5o2CTTncYGM7or5JoKfCLOcedXf6l/xMcIzbHdihF5bh0+5YRH8KmLPL4DLTEaf4S3xj3ltlGw
-	bWv//UQlvEBM/d3w2YalY0Hg6bIlnvTJTV7fvBO6BRXeh1m2oFS+t2f3g8WFI/K3C4ZvdXi1YW2
-	jdQeb1DXTHOzXUrKX7a+G+1d3IRGt8dX5/SUovb/ncKKe8ANxrY3ctL4FpvfG5
-X-Received: by 2002:a05:6808:1313:b0:450:d0d8:aed0 with SMTP id 5614622812f47-45f34d0d02amr5853054b6e.40.1770073297618;
-        Mon, 02 Feb 2026 15:01:37 -0800 (PST)
+        bh=ZNrvca2KmyrBJFwTPI4WrLSrUbTKwX2CYNCzHFOP/iM=;
+        b=Wx2Cfgfqa8P30f1yAQr6oLTj9sS3+2zZ4qI/KHHvAu76XN9URCn3NvZATgYwUF8RoI
+         Bk9fAXXFKT908y73AScK1pX3G3YZC47bbbw4437yc5xUgRjMW2xo48uBPiHBplt91P71
+         vvL7tl+uX3lR755yRjb8plIuvdv5PL9NtNhYVLBIggM3Oab7Ii104YdMqkg85Mgz7IAF
+         hQbWoGESCnZ41X/WzciyK/Kwm2KzKwEPumNOwYb1kYjJ4V7RSviTSz4WasYbu6XDZa1w
+         sbNy2e+DQjMzoeG1owXSpMrcSoi6S+MhThCBCBrMoweCnS6xdLgpjMynQ4z2gEL0uG5D
+         y1SQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWe+mUfjwVZ7ZRpMBlxkD9haqJ6lL7Igk09wxmMseR315rPWQXHmSqSbkhmf+srSy5KhKmhGvxBtWg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyWpGR+5nDqiwRlUpekapRk3Ra57uXaKrEETvUhQ2m1su48YBob
+	nOXLdMYNQ3T4fsBEjEULTMemzgdQQMoZmogGrLfl+QTVa8Jr6wDRwcC5mQEiYDd8iFM=
+X-Gm-Gg: AZuq6aL24Uxo7dXDYvbdjL96EuECYwyrCXsSoDI4aWvX/S3t/qLCNO61h+Shh17ohpP
+	KtgEjh1K5UM2geoUOjjuAFGjW5ErO3HWbaNvO20UXPp+4YASjRsqKFciSsNkdXEKxQe3EPFgVBf
+	XOGaeVeX1p1KcRTdVDQ4Gd+L8wLIULY7AbIAoDDvJsBAXG9//tcyTlDqVmP8nlpVsKxoX2ae+fe
+	ynLUvEp4Xce0XhYQhOFNTNi5RMjAtYSm6XeGBpEdDsatabZ77Tu7MbnME1lXY1DOLGbgZnIgWik
+	0AtZ08zuRzftrbWjQEwSjjzdgY1TyT84f6c1apdhVZXptmpwS0F0/jpbxYpVG+tKFOMjTeZ7tzO
+	eNg19MMaJ+7k1R/oyFqXZ45GghmVh71Q1sj5JEORHR3QYyTnWMeXunC1uQ4mzJfawhsaka1i4bS
+	5IkYMLggPvYh8aywwsVnVF1RNA9KYYF7WBWX9p2I8GGGij2k84nHtmAIjN63S3
+X-Received: by 2002:a05:6808:c177:b0:450:bab2:4ae9 with SMTP id 5614622812f47-45f34cd634dmr6082161b6e.36.1770073489742;
+        Mon, 02 Feb 2026 15:04:49 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:3695:6954:27c2:42ef? ([2600:8803:e7e4:500:3695:6954:27c2:42ef])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-45f08d894f5sm10614525b6e.5.2026.02.02.15.01.36
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-45f08fb82f5sm9957544b6e.22.2026.02.02.15.04.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Feb 2026 15:01:37 -0800 (PST)
-Message-ID: <38793c4d-e79a-4896-8b25-e20bc8ecbb74@baylibre.com>
-Date: Mon, 2 Feb 2026 17:01:36 -0600
+        Mon, 02 Feb 2026 15:04:48 -0800 (PST)
+Message-ID: <59105c6f-67b1-435c-aa08-5f440745b1b4@baylibre.com>
+Date: Mon, 2 Feb 2026 17:04:48 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,36 +68,85 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 next 1/5] iio: sca3000: cache SPI device ID in probe
+Subject: Re: [PATCH v2 next 3/5] iio: sca3000: stop interrupts via
+ devm_add_action_or_reset()
 To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
  Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org,
+ Andrew Ijano <andrew.ijano@gmail.com>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
 Cc: kernel-janitors@vger.kernel.org, error27@gmail.com,
  andriy.shevchenko@intel.com
 References: <20260202194033.627967-1-harshit.m.mogalapalli@oracle.com>
- <20260202194033.627967-2-harshit.m.mogalapalli@oracle.com>
+ <20260202194033.627967-4-harshit.m.mogalapalli@oracle.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260202194033.627967-2-harshit.m.mogalapalli@oracle.com>
+In-Reply-To: <20260202194033.627967-4-harshit.m.mogalapalli@oracle.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 2/2/26 1:40 PM, Harshit Mogalapalli wrote:
-> Store the spi_device_id at probe entry and reuse it for the name and
-> chip info instead of calling spi_get_device_id() repeatedly.
-
-Even better would be to replace spi_get_device_id() with
-pi_get_device_match_data() and turn sca3000_spi_chip_info_tbl[]
-into individual structs that are used directly as the match
-data pointers.
-
+> sca3000_stop_all_interrupts() is moved above the probe routine so the
+> new function sca3000_disable_interrupts() used in probe can directly
+> call it without additional declaration.
 > 
-> Reuse the local dev pointer for resource managed helpers. While at it,
-> reshuffle variable list in a reverse Christmas tree order.
+> Used devm_add_action_or_reset() for shutting down the interrupts.
+> 
+> No functional change intended.
+> 
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+> ---
+> v1->v2: Jonathan found a broken tear down sequence that was introduced
+> by my ptach 3 in v1: https://lore.kernel.org/all/20260131163218.2a4b93e5@jic23-huawei/
+> 
+> So first converted the interrupt disabling task to devm based call,
+> order of tear down is as follows after this patch: iio_unregister_device
+> is called in the remove() callback, post which any interrupts will be
+> disabled with devm_add_action_or_reset() call.
+> ---
+>  drivers/iio/accel/sca3000.c | 53 ++++++++++++++++++++++---------------
+>  1 file changed, 31 insertions(+), 22 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
+> index 37ef724d5dc5..4faffeea328c 100644
+> --- a/drivers/iio/accel/sca3000.c
+> +++ b/drivers/iio/accel/sca3000.c
+> @@ -1437,6 +1437,33 @@ static const struct iio_info sca3000_info = {
+>  	.write_event_config = &sca3000_write_event_config,
+>  };
+>  
+> +static int sca3000_stop_all_interrupts(struct sca3000_state *st)
 
-The dev cleanup sounds like a second unrelated change that can be split
-out from the spi_get_device_id() changes.
+Return value is ignored now, so we can make this void and not return.
+
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&st->lock);
+> +	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
+> +	if (ret)
+> +		goto error_ret;
+> +	ret = sca3000_write_reg(st, SCA3000_REG_INT_MASK_ADDR,
+> +				(st->rx[0] &
+> +				 ~(SCA3000_REG_INT_MASK_RING_THREE_QUARTER |
+> +				   SCA3000_REG_INT_MASK_RING_HALF |
+> +				   SCA3000_REG_INT_MASK_ALL_INTS)));
+> +error_ret:
+> +	mutex_unlock(&st->lock);
+> +	return ret;
+> +}
+> +
+> +static void sca3000_disable_interrupts(void *data)
+> +{
+> +	struct iio_dev *indio_dev = data;
+> +	struct sca3000_state *st = iio_priv(indio_dev);
+> +
+> +	/* Must ensure no interrupts can be generated after this! */
+> +	sca3000_stop_all_interrupts(st);
+> +}
+
+This wrapper doesn't seem necessary. We can combine to two functions
+above into one.
 
