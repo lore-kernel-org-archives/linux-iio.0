@@ -1,190 +1,140 @@
-Received: from OSPPR02CU001.outbound.protection.outlook.com (mail-norwayeastazon11013035.outbound.protection.outlook.com [40.107.159.35])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C5478359704;
-	Mon,  2 Feb 2026 12:25:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.159.35
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770035132; cv=fail; b=hYbJpbX4930XevIAuW4DiZfCXd+Ajkw1PjE/qfvD1NVPDJYkar64nXTNJJHNA2i82Ez50PJNt3YuesgI1yrLZC6fMBb4oWJ1WH6pw9XbFNcaiUIi+62mtdsMSoafInR/5fgVcmKIINzgiTo3Lx9UJo2X92D1KS0eXYRufnv6XdQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770035132; c=relaxed/simple;
-	bh=xo/p4Yyo9byD3NxLDXEosNWTLeOj41XV60LvKvMfVYM=;
-	h=From:To:CC:Subject:In-Reply-To:References:Date:Message-ID:
-	 MIME-Version:Content-Type; b=hX9ItdDlEn4WNs7XcLVRl00hOhwluB1nbmfBMQGB4gz91ZQCrpDFMBPBV5HMiDZ8+GPwo9zKp4S6oDG540dJR+iRGkIThKcOe325IoQNX6VyCPhhHQo2/1xB28FIWNOMtsbSV/Mw7muDlQwgBbVGDqFCaRRyyCoNdxpDSVqHSTQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=pyn6ORU1; arc=fail smtp.client-ip=40.107.159.35
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BDF319995E
+	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 12:39:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770035985; cv=none; b=f4ZYg0qdWmL9hsVXmM9naW8Ug9//Ntl3miC2nbowkQgpqBJs7uMc2jgg+vfsQIUEXAAXjiZiNVfSHRQ/46nl5wC4cHp4o51eFUgB0YRcHFQQG2t3px1FTVlr12x8jcoaXXUyzDu4dAaJoBqaqU846YQ1RftI0MqJ4jkOr43UUG4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770035985; c=relaxed/simple;
+	bh=SzpSp+VXA4zWBS9DbIosMysHlaQ8gZEAIvX5KtIuql0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=o2MtrtxDVv0utFy7s9qX9rDmX4XAr/iB3YZcjgLLx2bgJpGB2h9g0bxqajDBV8yc9U80VBd2IrIzh0Cq5n52sP8DfEEDul/6+Kqj7WlUXoC7QxltTouGOvQz+/q8HE3XIkVguPCGuMf45eUsnY4TCYcOG51WLkV7qpkzMhmYNtw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fa5Me3WT; arc=none smtp.client-ip=209.85.128.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="pyn6ORU1"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GwBFkgXigpc4bpxZ39kYEt+F2ealob+ut4VgMtfDSkggWeRFY/XxzTWsQY55rbtQM+5H3Jylj31T0uQqpfcUk3QKnQ/h89HJLYWiZWkxiSpNe7RkdD9qvkylGSztsLq+ZDpUxiJ3hRmEJrDtsx42R+ahtGrJi1Bm0lBFWBm8Hg1t5qhqI9ZWU7Mu/WZo3eIaEMnAhvdPJk5uRxchV3PQov/9YeZpn2u9W2GfWWvNOF55jZBGTI/H/DfOX7ayZFeOPaJnZmM627dKd2TK/n9jajP90lTagvAnsZ4W+ryNVMY8tAj6suqZwbfWqlyopoyxjuXo1t5zgnLzeoO2ydx+tQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8rbWKlF4D5s4roDuqHc4Pc1PGPVKVrdSJ5m8YTFM0kk=;
- b=RHYikBuDkfD/jf+cFq7NfOa8Dc328Q5BrQnuinVZd5C6ZmijCn1PfZcZvT75ErsUrVK6cw0ZGh2hHDzcWn8IcENsm1rAbnQ3Y69kHgK4AAfdn7t0RouODW+Z/D/A/8vvOG/CJ+aItmaGiircvFowUJWalyESF1LIilsg+JBZtbdS5Gswgf9E1LFwXD36d26Re39rk5C6ibOjsBhJt7sppHb3ixXonZBLRZ0f6LI8OmngMZ9fpFyGYEEXq7z3NfyyQNsonH3rPP/VGne9jdmyo6StaXK+XWkfaeVrEsPp1meuw5DFHIwELNSHLm+zvVEmVWjg2oiGpFyFWIistUfu5w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 195.60.68.100) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axis.com;
- dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8rbWKlF4D5s4roDuqHc4Pc1PGPVKVrdSJ5m8YTFM0kk=;
- b=pyn6ORU14pcJOAPGX3qgXsSDr7gFZsddMeU3RRG+gOrCIfahGdRjb0hEj1PTzU2Molh2p3rWMyr+VjtQRdCpHvvrX/8Lb5UGc2RsQM4BVMt5diZhd6TT+B/3yzBQcV3On2QPQZ639CZWjLCbmKWkf1JBYRf2yuY8iMf7nINuUAI=
-Received: from AM0P309CA0018.EURP309.PROD.OUTLOOK.COM (2603:10a6:20b:28f::11)
- by AS8PR02MB8615.eurprd02.prod.outlook.com (2603:10a6:20b:54d::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9564.16; Mon, 2 Feb
- 2026 12:25:26 +0000
-Received: from AMS0EPF0000019A.eurprd05.prod.outlook.com
- (2603:10a6:20b:28f:cafe::13) by AM0P309CA0018.outlook.office365.com
- (2603:10a6:20b:28f::11) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9587.12 via Frontend Transport; Mon,
- 2 Feb 2026 12:25:19 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
- smtp.mailfrom=axis.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=axis.com;
-Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
- 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
- client-ip=195.60.68.100; helo=mail.axis.com; pr=C
-Received: from mail.axis.com (195.60.68.100) by
- AMS0EPF0000019A.mail.protection.outlook.com (10.167.16.246) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9587.10 via Frontend Transport; Mon, 2 Feb 2026 12:25:25 +0000
-Received: from pc52311-2249 (10.4.0.13) by se-mail10w.axis.com (10.20.40.10)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.1748.39; Mon, 2 Feb
- 2026 13:25:25 +0100
-From: Waqar Hameed <waqar.hameed@axis.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-CC: Jonathan Cameron <jic23@kernel.org>, David Lechner
-	<dlechner@baylibre.com>, Nuno =?utf-8?Q?S=C3=A1?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, chuguangqing <chuguangqing@inspur.com>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: light: ltr501: return proper error code from
- ltr501_get_gain_index()
-In-Reply-To: <20260202120715.25625-1-antoniu.miclaus@analog.com> (Antoniu
-	Miclaus's message of "Mon, 2 Feb 2026 14:07:12 +0200")
-References: <20260202120715.25625-1-antoniu.miclaus@analog.com>
-User-Agent: a.out
-Date: Mon, 2 Feb 2026 13:25:25 +0100
-Message-ID: <pnd8qdbl4cq.a.out@axis.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fa5Me3WT"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4801d7c72a5so34748765e9.0
+        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 04:39:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770035983; x=1770640783; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=U63mIoeeyh89+/QbADYp0nSmnUBKi2a+w9TzrwbveTE=;
+        b=Fa5Me3WT3eqEl5quuS6p3j9HY8N5CKR3mMxY874vZYkYH/4w9YshLN639wSFLELVPe
+         Aglvsa4D6EswLSAqd79Mx3Lb/r6x+QQKXRYshcu+c/xoV3IqmIDq2/QroGrUMR3LR2vJ
+         e1xfrLpKz3I2Is+BXj9qrTb66dfVxtLHd00XMy+pAIRzAIcZ0H3dDSpnxc4AcQaqWmaz
+         AuZH8Zvb65IOgsR57PoYOd814vlAd5RaJemNIKLZp5TuS8Aee+iumaWaV29BFlP6yuk9
+         1tXi62hYud7dARX5mwi276yaS6OeDfs0QbskR+GI9wUZUAJDXgDb7GC0uKuD9quqWSy4
+         PcCg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770035983; x=1770640783;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=U63mIoeeyh89+/QbADYp0nSmnUBKi2a+w9TzrwbveTE=;
+        b=P76X+EBCDAEhBdkxiFC92dHOpC471RhA94iALUnjmzYwMYXwm5IZg48Fjj/oxad42B
+         4uJHAQvC9Px9fNYCKiEd2BHYt1tSG9t1/Hfbe9tuVu0fWGv/b/hr5C0c4bva3zGnBQDI
+         AZo3mhObzgGZBW4JzVuAwme3s/72tFYuCfqFPuHCE3tv0cmpNQdFsRvEeuJZlOcgROQK
+         q+m5hl2IYszEk8twkK4bQCPdSUVFCdDc8600PMBgZ09oaohpS2XBTPlX4ib7gL2JmO8m
+         gJU1/Y7XO5QLB1jj0/VSZJFScVG8//Nvv1NPgX/SV8S1LKh8pHNDEmDK3ljE78GR49qo
+         OCLQ==
+X-Gm-Message-State: AOJu0YxIZ4Hp5PzZVadrxv9BnQNEopmvZUDiZrwS3JBnspdNGtLw2GBK
+	kOmjkgBHsZRsKShTUQP4HfFrb1ya2ZPpJDiD34t0Ei9xo6XPisp34Vbm
+X-Gm-Gg: AZuq6aIXnJFVvCSibO9oiKdRb9Tf5JvthRR48ajWPmRTOIwXd0rwLEp4qroTe6P6xdO
+	SQSbmNkBKUmjzYK+qeUZdRxHrvNjoYgeAukIEcAByRlId0u7SqHUpVxivg3vfDWPrKSWyn4JJfa
+	EEPv2vLcLXmvuZ+Q6crJ/nJxbM6nOKzJ5uEioLBl3Aq52gTGqbUZThI9t93REdPYHfwtG2Dm6I6
+	HEEOHkRU4wfdvrsR3rgJQyQmv122D+sQ2ivdSXdwGlMMqWIdp63j0qPk0ddok8lKm1XHTjocGe4
+	P7ss/kqGtUzkJPEvNnilAbsXdiLo7go7qO6SJI2B87zahRhz3R/TemWF7tB0ijjZUhdHo55CdST
+	49zFdsxZrKq2++KuQVMkp6KuLufPCZ3myuCnQqCYPsVO6mvv508bKSeQ/4xc6Oh/a0TRko+q40K
+	J+L5JkyZxsO2zwg3qgLVw=
+X-Received: by 2002:a05:600c:198f:b0:477:54f9:6ac2 with SMTP id 5b1f17b1804b1-482db444e56mr141922565e9.0.1770035982458;
+        Mon, 02 Feb 2026 04:39:42 -0800 (PST)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10e490esm43778493f8f.9.2026.02.02.04.39.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Feb 2026 04:39:42 -0800 (PST)
+Message-ID: <177d62446d9c2098bbfe8b0f7fd9418d5afb60fc.camel@gmail.com>
+Subject: Re: [PATCH v5 1/4] iio: industrialio-backend: support backend
+ capabilities
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Tomas Melin <tomas.melin@vaisala.com>, David Lechner
+ <dlechner@baylibre.com>,  Michael Hennerich <Michael.Hennerich@analog.com>,
+ Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, 
+ Jonathan Cameron	 <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
+ Olivier Moysan	 <olivier.moysan@foss.st.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Mon, 02 Feb 2026 12:40:24 +0000
+In-Reply-To: <30cf63eb-50ba-445d-a78b-d6532aacdc8e@vaisala.com>
+References: 
+	<20260130-b4-ad9467-optional-backend-v5-0-7da803ba7326@vaisala.com>
+	 <20260130-b4-ad9467-optional-backend-v5-1-7da803ba7326@vaisala.com>
+	 <688cbfb1-0944-492a-929d-91ebb9ab22fb@baylibre.com>
+	 <812a8c408c2e3a87ebe1ddc983acdc2cebe3b36b.camel@gmail.com>
+	 <30cf63eb-50ba-445d-a78b-d6532aacdc8e@vaisala.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ClientProxiedBy: se-mail01w.axis.com (10.20.40.7) To se-mail10w.axis.com
- (10.20.40.10)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: AMS0EPF0000019A:EE_|AS8PR02MB8615:EE_
-X-MS-Office365-Filtering-Correlation-Id: 0c8eb863-e2d6-4885-9fb7-08de625624d9
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|82310400026|36860700013;
-X-Microsoft-Antispam-Message-Info:
-	=?us-ascii?Q?I+Ne9qQdOsl/uttIEDho5x07pUKG0NQS09wmOFsrVQhtKyIyBnx49hwbSUe7?=
- =?us-ascii?Q?bwd1VHJlLfGActtzPt213RYlMS81zuFjGAeVnS2/F7pV5FvoNLUCILrZIiua?=
- =?us-ascii?Q?EhY8dWrVLrro9ppnaZUUxVeAkgxs7AcfBcxwWEioP8zqIyTCPuMeAqIQLS0g?=
- =?us-ascii?Q?yS6kGC0V3OPBU7SCFP0PMo4wiPbPl1p69xIj0czNx19il5J8iONRR1IJ4xKK?=
- =?us-ascii?Q?h7i6oDiJn+cmpO21mRyl4e9YyvJQ9IPPu8aZTj8zt3+4Ln5181fSvOUDptw3?=
- =?us-ascii?Q?R3vYyd+InwdwFe0SqPh9a9gZVSgd0QPuNTQdZzYqOLH6SoqVESMlDdpgpIOz?=
- =?us-ascii?Q?8Y+3u7mPv3X+f3uvgRZn+6qqeLyI3cNtTk56pyQON++Avs+KjP0jmZRjOIiE?=
- =?us-ascii?Q?Ltuh5cKj+Ul6g3FtSydydEAaeDVQWCNVh6fyWzC6lcGygC8mrHSRdzrasdlr?=
- =?us-ascii?Q?FSSGp7YTazijLIMe4iB+/dS/uFoenfGZrewLNjaqs9gabHp5fXT01rlFR3mC?=
- =?us-ascii?Q?Vv/kAlDuQdUHzXAb5ypzEgyLlna/BXCfsjY7Nm6N4OS7YZMEdq8eW1dLrKDW?=
- =?us-ascii?Q?QXfRJ/mLRjzous0+DiDbd2pCOsvy0YGFtg0FT52a6+l4/pp7ypx9sB5jwRnP?=
- =?us-ascii?Q?WETT9XLWizfQDnL32BH9K5Y4wulmt15LixoBGaRHneToWWCCM1fYBdLS9pXf?=
- =?us-ascii?Q?lH/bJtLrlQXBYecolrr7b0tMmRfTRu/a27Bti50M/ZckbTy9PzBbq+OdXjgt?=
- =?us-ascii?Q?TW5j+oFTm4FLrwwExz4WwxuqZW3oRCazrNlYx/IvTbuC35l9h8O1UGoWvacE?=
- =?us-ascii?Q?+wKlnUEBWzIbOaTaTUX94vcN6hGkUJShWPgqIArc4keeaLqTzH2JannPv1mk?=
- =?us-ascii?Q?I50ptBuy1QmB+sb357QCLXuuajqmFf5RtO41jdP9Bw3+YrSl4sJBEWUO1iVj?=
- =?us-ascii?Q?thh7bQSS93T1sL5UNY1j/OGw0vRpCCWSGR0BwN1MuB100FoeYKKeaK+KgWDW?=
- =?us-ascii?Q?oTPTdQnvyTaSTqw/BUJ0Szu7J9O5LRQEXXeD6vBY0VxWFoFSe13Qd/edPcDY?=
- =?us-ascii?Q?NsOdES1GBrpPjMoH+2H13hpr0YvR9ZigAQ/8evPxMbb1ht4sWDbEF8WuuUEk?=
- =?us-ascii?Q?+Jtydyfwgaj2w8nNrnItR8pcuCjNGda5UzQqoPr9BxIBk5HyXJmoeX7XpJcN?=
- =?us-ascii?Q?tIW3UT4EmZrQu3NRDB2+4+aM23uDULFoa7Y/VhTMi97Smk4+vv5f6E1OuTWT?=
- =?us-ascii?Q?YIPJBULTCn8cGeuv/QmrYd5FtZUXNaX8YgWgvK1xq8KcEkBeWc6TuH96ePVo?=
- =?us-ascii?Q?HwkyIO6aYpc/Bc1Aje6vx6cALr9R75XqYKH6qIglGR3DKi2zNV0TStlJiIcl?=
- =?us-ascii?Q?TC8oimmybbQPq5XuW701SexCU/UUXOj90ZgQAX6LRsaqz1P//zGiOJJQ+R8V?=
- =?us-ascii?Q?ikigJnoARqk88eTkHTzQayuO7pydW3Ldss9qZp3UiEBDkkpuZMqjJx6gy7cv?=
- =?us-ascii?Q?yRH8P61Q9jDMLKZnIL5V5x7a1LkUELpedA3mgevXhyetdFngS+mGcgDZq3iO?=
- =?us-ascii?Q?sQ4bsePgCgs/R+xbPjLxFBPfMarHJnQukAMvqgPT8flVw4nq50MOD2RF5hZA?=
- =?us-ascii?Q?mkZA/AJTZbcnXlxtW8BTQkb8wd2LQc2nqxo/pwgKjvrznO7E54J1VwyvFFI9?=
- =?us-ascii?Q?Asijvg=3D=3D?=
-X-Forefront-Antispam-Report:
-	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(1800799024)(82310400026)(36860700013);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	4VMnaARHMRGhbzaihWaPrtlVlo+WHhXDjDTBj4SAoUaO2V9yEuYVnp0v323V/+uOW9OycyC6jl8RRxFF0cuVb1JIIBPX1tUxcuxB4NE4ArHdQpbTNTUty69ptWElvKZTPibYtX1wW6kHTzzKNmJt2cYHNTe6LNOIlmsMIRw776V/b/eRNPXnKk/Mw9KVm0PlBJY3nG4tf0ZhrG6iJcp1c4IPdrJdIoV7WP99/leEnXGqORhAeR63TVMXymn0FK6xf6m0yoQ0So9KJ6Hf+5XFKCKNufhrYfg02S46pffPb96WI7tXZpVuMYLR45o+NbSbFSk6jwwz/cHzWkfoUuykIFx5Nxjz42wXK2UKadqT6ewNMTA32xMxJ44Ciltc7HD2vCfVcctUJdvkX9J7C0ENT1orx7ebCK6ScUtp4cj9VJb+d3ecMd2AasQLRhbywcEb
-X-OriginatorOrg: axis.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Feb 2026 12:25:25.7763
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0c8eb863-e2d6-4885-9fb7-08de625624d9
-X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	AMS0EPF0000019A.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR02MB8615
 
-On Mon, Feb 02, 2026 at 14:07 +0200 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+On Mon, 2026-02-02 at 13:08 +0200, Tomas Melin wrote:
+> Hi,
+>=20
+> On 02/02/2026 12:28, Nuno S=C3=A1 wrote:
+> > On Sat, 2026-01-31 at 14:30 -0600, David Lechner wrote:
+>=20
+> > >=20
+> > > Do we actually need this one? Alternative could be, for example:
+> > >=20
+> > > int iio_backend_enable(struct iio_backend *back)
+> > > {
+> > > 	int ret;
+> > >=20
+> > > 	ret =3D iio_backend_op_call(back, enable);
+> > > =09
+> > > 	return ret =3D=3D -EOPNOTSUPP ? 0 : ret;
+> > > }
+> >=20
+> > I would prefer not to assume we can ignore the backend not supporting
+> > the call. It opens up the question for other operations.
+> >=20
+> > My preferred way for this kind of fundamental operation (enabling/disab=
+ling)
+> > would be to check with DT maintainers if we could have some kind of fix=
+ed-backend
+> > (fixed in the sense the HW is present but not controlled by Linux) dumm=
+y device that
+> > with implement a no-OP enable/disable().
+>=20
+> There is also use cases for the always_on cap with a configurable
+> non-dummy backend. Some applications are such that the driver should
+> leave the enabling/disabling up to the user space consuming the data.
+> For this case it's great to have the frontend leave the backend enable
+> alone using this capability.
+>=20
 
-> Return -EINVAL instead of -1 when no matching gain value is found
-> in the gain table. Update the callers to propagate this error directly
-> rather than overwriting it with -EINVAL.
->
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
-> Changes in v2:
->  - Update callers to propagate the error directly instead of
->    overwriting it with -EINVAL.
+I would argue the above would be something to take care at the frontend lev=
+el. The way
+I see it, the always_on cap is pretty much saying that we can't really cont=
+rol the on/off state
+of the backing device and we just assume it's on.=C2=A0
 
-For future reference, it's good practice to also have a link to v1. (No
-need to resend for that)
+If we can control it but we need it always on (for some specific usecase), =
+I would say that should
+be handled at the frontend and just enable the backend once. Also note that=
+ as of now, I think all
+of the users (or most at least) we have just enable the backend during prob=
+e and leave it on until
+we unbind the device.
 
->
->  drivers/iio/light/ltr501.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-> index 022e0693983b..4d99ae336f61 100644
-> --- a/drivers/iio/light/ltr501.c
-> +++ b/drivers/iio/light/ltr501.c
-> @@ -754,7 +754,7 @@ static int ltr501_get_gain_index(const struct ltr501_gain *gain, int size,
->  		if (val == gain[i].scale && val2 == gain[i].uscale)
->  			return i;
->  
-> -	return -1;
-> +	return -EINVAL;
->  }
->  
->  static int __ltr501_write_raw(struct iio_dev *indio_dev,
-> @@ -773,7 +773,7 @@ static int __ltr501_write_raw(struct iio_dev *indio_dev,
->  						  info->als_gain_tbl_size,
->  						  val, val2);
->  			if (i < 0)
-> -				return -EINVAL;
-> +				return i;
->  
->  			data->als_contr &= ~info->als_gain_mask;
->  			data->als_contr |= i << info->als_gain_shift;
-> @@ -785,7 +785,7 @@ static int __ltr501_write_raw(struct iio_dev *indio_dev,
->  						  info->ps_gain_tbl_size,
->  						  val, val2);
->  			if (i < 0)
-> -				return -EINVAL;
-> +				return i;
->  
->  			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
->  			data->ps_contr |= i << LTR501_CONTR_PS_GAIN_SHIFT;
+- Nuno S=C3=A1
 
-This return-pattern is similar to how it is used in the other `case`s in
-this function. Consistency is a nice trait to have in code :)
 
-Reviewed-by: Waqar Hameed <waqar.hameed@axis.com>
