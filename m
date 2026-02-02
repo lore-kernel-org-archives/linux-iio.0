@@ -1,160 +1,103 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ACD237C0F9;
-	Mon,  2 Feb 2026 16:05:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04B9121CC43
+	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 16:07:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770048356; cv=none; b=o/s+pKmuw3/6OY+Bq8xG9CYsQJMdpqhB1gKtQfOC48LvweWa7K7vib21Gszzlida39h1WKJKdfcsDfbFi+A7YfqSBtRHehPl6zwwDKtrqfr8pwFDtozBXenvl7K/UZF5bVsDBPcurJDJ1Kc2QIrISZ88TxNDBt6TpVTgF7oju6E=
+	t=1770048456; cv=none; b=bTB0/xthf94o473wCyql1yoXaJ96YIVRYzAtZ5eTycdR/5dpbJLhvim5dWS/ccfnZdVgvBsglosYJPstlAzepBrSnEt3xM3uK8Vcfi8kPgqWzclYaQiW/v9gS/OwRCaaGrMUlDos2Bx7oT+NUikn5drP7C81vKh6poV4u7AFUY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770048356; c=relaxed/simple;
-	bh=6zlsVMXoUs03fo4jscYWHBazLhYMUk5W8Pnd2ev5N9U=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=ZjZz348S4CV04Zv+IUktUTH12EtmStpHx8MKVaSQHuiVljBsInvE4Sg6n5SpLWDpT+MPi7JPNFFyTHbmcO4AeYKAbpdP9uhX6tw5kqb4J/xR8BL1LaMOTcW7eCu70nHlwwh6vDjaGHDK7s3QvMMds/JHF9d3vjTN+OEW1za2Dtc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NflDZ+jJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770048456; c=relaxed/simple;
+	bh=OpRGjz9IYT7GwHvfRb29Y3Eed+Zq/JbsDVAU7eqFrJU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XStoa+/ZNaao+4oRzXMJ/RDZWtqYT5FHKWoRdfxNzmiLIBb+W+usCe9vS04sCPJ+d+QsIKT7nSoPo7/7OBV5ND8KeZya6N045qci8QsOztcvHdTjMbsAyjqVe0nA8zNLvcAaIWizjuxyMdZcdGOvGW7zJjc39XmzsLkXVAeOBv0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=qbTRdEY4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NflDZ+jJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F472C116C6;
-	Mon,  2 Feb 2026 16:05:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770048355;
-	bh=6zlsVMXoUs03fo4jscYWHBazLhYMUk5W8Pnd2ev5N9U=;
-	h=From:To:Cc:Subject:Date:From;
-	b=NflDZ+jJyNzCNQ5uBXUGaoU0dnOedElD7wMf5eW+jLp0aNKeQXJavC3hUgPfyOJ8X
-	 MX6JX5kHiHfiFzR+zi8q5ukOMtbucuno/U1825rzpWzPROlWcAzFEuQaIH+Aadg4cE
-	 khJjW+cIYw66On/nMrElgj8tygtJnqA96wYHnNsDjJs59qappgtA3efC8wECo6CSDC
-	 ThQY+xCkchVi7AbRMtgPSOcpgmN5nYgiXwyKfxnzWPUTyPyT+cEDABQoXC9iTUmRcT
-	 H47Qw01Eywc4RGcA6F3lPDG6IA0TbKVEOJhgVpvR1aPO617iAy32diRFG4o4iALjOz
-	 +8UDml/hYKbUA==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Guenter Roeck <linux@roeck-us.net>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Frank Li <Frank.Li@nxp.com>,
-	Adrian Fluturel <fluturel.adrian@gmail.com>,
-	Carlos Song <carlos.song@nxp.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Jean Delvare <jdelvare@suse.de>,
-	linux-hwmon@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-i3c@lists.infradead.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] [v2] i3c, iio: fix i3c driver dependencies
-Date: Mon,  2 Feb 2026 17:04:46 +0100
-Message-Id: <20260202160543.3654499-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="qbTRdEY4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29493C19422;
+	Mon,  2 Feb 2026 16:07:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+	s=korg; t=1770048455;
+	bh=OpRGjz9IYT7GwHvfRb29Y3Eed+Zq/JbsDVAU7eqFrJU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=qbTRdEY4F5lImlG1lX8ENTM93Yl3OFCbA9HsYjV0FiiG+Z5Jla4ihLHt+fdnhwoen
+	 sYJncUC9Lk6MbSr90QDEgvyZKXwqMP+reculfNYxFrlJrlM15GzBSlQRsfroEoHEiB
+	 yEF+gV233GM/diDNtRgiC0wVRRadm/Vao2Yz5y0Y=
+Date: Mon, 2 Feb 2026 17:07:32 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [PULL] IIO: New device support, features and cleanup for 7.0
+Message-ID: <2026020249-neurotic-resolved-aad7@gregkh>
+References: <20260201165951.481378da@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260201165951.481378da@jic23-huawei>
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Sun, Feb 01, 2026 at 04:59:51PM +0000, Jonathan Cameron wrote:
+> The following changes since commit 8f0b4cce4481fb22653697cced8d0d04027cb1e8:
+> 
+>   Linux 6.19-rc1 (2025-12-14 16:05:07 +1200)
+> 
+> are available in the Git repository at:
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-7.0a
+> 
+> for you to fetch changes up to 0713b26190addfa3a774b386c8658952ef9f7faf:
+> 
+>   iio: magn: mmc5633: Fix Kconfig for combination of I3C as module and driver builtin (2026-02-01 16:53:35 +0000)
+> 
+> ----------------------------------------------------------------
+> IIO: New device support, features and cleanup for the 6.20/7.0 cycle.
+> 
+> Slightly messier than normal unfortunately due to some conflicts
+> and build config bugs related to I3C drivers.
+> 
+> One last minute Kconfig fix right at the top after a linux-next report.
+> I've simplified the Kconfig and made it match other instances in the kernel
+> so that should be safe enough despite short soak time in front of build bots.
+> 
+> Merge of an immutable branch from I3C to get some stubs that were missing
+> and caused build issues with dual I2C / I3C drivers. This also brought in a
+> drop of some deprecated interfaces so there is also one patch to update a
+> new driver to not use those.
+> 
+> We are having another go at using cleanup.h magic with the IIO mode claim
+> functions after backing out last try at this. This time we have wrappers
+> around the new ACQUIRE() and ACQUIRE_ERR() macros.
+> Having been burnt once, we will be taking it a bit more slowly this time
+> wrt to wide adoption of these! Thanks in particular to Kurt for taking
+> on this core IIO work.
 
-All combined i2c/i3c drivers appear to suffer from the same link
-time problem when CONFIG_I3C is set to 'm':
+I got a merge conflict in drivers/iio/adc/ad9467.c and resolved it this
+way:
 
-arm-linux-gnueabi-ld: drivers/iio/magnetometer/mmc5633.o: in function `mmc5633_i3c_driver_init':
-mmc5633.c:(.init.text+0x30): undefined reference to `i3c_driver_register_with_owner'
+diff --cc drivers/iio/adc/ad9467.c
+index 2d8f8da3671d,9cfe66425d4e..000000000000
+--- a/drivers/iio/adc/ad9467.c
++++ b/drivers/iio/adc/ad9467.c
+@@@ -94,8 -103,8 +103,8 @@@
+   */
+  
+  #define CHIPID_AD9434			0x6A
+- #define AD9434_DEF_OUTPUT_MODE		0x00
++ #define AD9434_DEF_OUTPUT_MODE		0x01
+ -#define AD9434_REG_VREF_MASK		0xC0
+ +#define AD9434_REG_VREF_MASK		GENMASK(4, 0)
+  
+  /*
+   * Analog Devices AD9467 16-Bit, 200/250 MSPS ADC
 
-This was previously fixed several times by marking individual
-drivers as 'depends on I2C; depends on I3C || !I3C', but this gets
-tedious and is somewhat confusing.
+Hopefully I did it right?
 
-Add a Kconfig symbol 'I3C_OR_I2C' to help replace those dependencies,
-and use this in all the existing drivers that had already fixed it
-as well as the new mmc5633 driver.
+If not, can you send a fix-up patch for me?
 
-Fixes: 6e5f6bf2e3f0 ("iio: magnetometer: Add mmc5633 sensor")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-v2: restore accidentally deleted lines
----
- drivers/hwmon/Kconfig            |  6 ++----
- drivers/i3c/Kconfig              | 12 ++++++++++++
- drivers/iio/magnetometer/Kconfig |  2 +-
- drivers/misc/amd-sbi/Kconfig     |  3 +--
- 4 files changed, 16 insertions(+), 7 deletions(-)
+thanks,
 
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 41c381764c2b..ecfba861f66d 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -1493,8 +1493,7 @@ config SENSORS_LM73
- 
- config SENSORS_LM75
- 	tristate "National Semiconductor LM75 and compatibles"
--	depends on I2C
--	depends on I3C || !I3C
-+	depends on I3C_OR_I2C
- 	select REGMAP_I2C
- 	select REGMAP_I3C if I3C
- 	help
-@@ -2392,8 +2391,7 @@ config SENSORS_TMP103
- 
- config SENSORS_TMP108
- 	tristate "Texas Instruments TMP108"
--	depends on I2C
--	depends on I3C || !I3C
-+	depends on I3C_OR_I2C
- 	select REGMAP_I2C
- 	select REGMAP_I3C if I3C
- 	help
-diff --git a/drivers/i3c/Kconfig b/drivers/i3c/Kconfig
-index 30a441506f61..626c54b386d5 100644
---- a/drivers/i3c/Kconfig
-+++ b/drivers/i3c/Kconfig
-@@ -22,3 +22,15 @@ menuconfig I3C
- if I3C
- source "drivers/i3c/master/Kconfig"
- endif # I3C
-+
-+config I3C_OR_I2C
-+	tristate
-+	default m if I3C=m
-+	default I2C
-+	help
-+	  Device drivers using module_i3c_i2c_driver() can use either
-+	  i2c or i3c hosts, but cannot be built-in for the kernel when
-+	  CONFIG_I3C=m.
-+
-+	  Add 'depends on I2C_OR_I3C' in Kconfig for those drivers to
-+	  get the correct dependencies.
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index 2b81b22c9550..448fef4e5716 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -143,7 +143,7 @@ config MMC5633
- 	tristate "MEMSIC MMC5633 3-axis magnetic sensor"
- 	select REGMAP_I2C if I2C
- 	select REGMAP_I3C if I3C
--	depends on I2C || I3C
-+	depends on I3C_OR_I2C
- 	help
- 	  Say yes here to build support for the MEMSIC MMC5633 3-axis
- 	  magnetic sensor.
-diff --git a/drivers/misc/amd-sbi/Kconfig b/drivers/misc/amd-sbi/Kconfig
-index be022c71a90c..30e7fad7356c 100644
---- a/drivers/misc/amd-sbi/Kconfig
-+++ b/drivers/misc/amd-sbi/Kconfig
-@@ -1,10 +1,9 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config AMD_SBRMI_I2C
- 	tristate "AMD side band RMI support"
--	depends on I2C
-+	depends on I3C_OR_I2C
- 	depends on ARM || ARM64 || COMPILE_TEST
- 	select REGMAP_I2C
--	depends on I3C || !I3C
- 	select REGMAP_I3C if I3C
- 	help
- 	  Side band RMI over I2C/I3C support for AMD out of band management.
--- 
-2.39.5
-
+greg k-h
