@@ -1,168 +1,351 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 988202BDC32;
-	Mon,  2 Feb 2026 09:56:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF8DA2E22AB
+	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 09:57:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770026195; cv=none; b=ae7MEM24RxsS1oWqUAmHQuvT7gKakHUhxJOpT4rGGgQLOLUuhT1Pt3ig8O3omt2DydLStEU2so/nEssTHw3vhlsUafnwFt2zHwKfMKIgpxU5kP69sDRTDZGlkGbzKKbUuzmbEQKckTQ2tv/J0UQ4DmgFriBvH+z69JmRkZoJ5A4=
+	t=1770026225; cv=none; b=qoIiXXcSGsCpy7aE3o0Af2zS0Mksx92ZwqemlDeEZt1zE90GS5YPiA1+x2YSNQia6Bsf6WxxhcuhjsublxApyBgYXbgM3bJvCq/BKQ7DlKGzO9Vmhk8gw3R1IwxW/zkuAuITIoaI6AwtJcI1whxTEmPLPGn6NFfZIbKKBv15FYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770026195; c=relaxed/simple;
-	bh=To2VkYEmJRA5edR97P1H5WOqIjJetFQipCH+TeuvDts=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=W8n4YB/WFfbaJt2q8xOAHK2E9zokq7mjuW5odStLFYog5s5023r8cR+lz/6v9K+0ya80UTRmm/ScIU8fsIOqCyqWo4DpmVcrFxd1rALzaQl673/txjmD8PjA7tWfnnLkpf2Wn7GDhuzbC8woPETHiMfkWggT/HMwqFQD9+OtEn8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nSt9BWUb; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770026225; c=relaxed/simple;
+	bh=aQyS+hE0k2g5HzJUxy2lGI++kpB0sDD0gMSMsx1vkYE=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=RmsHYScI8sMYCvECWCXb3Vton91UdEinAXRiQmwhkhYr9YA2hskTH2suoTLyqHt3C26iNwn9uWh+2Edg8PRXeveq8xTNpYd+9bw25vXqxFW2eaYrEyQ7oKoPzaLJaGs5BI4ygXLLWQvvxIi353DChsbNpu20XcT5DQPOVObGjiQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AhFPS8rS; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nSt9BWUb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04864C116C6;
-	Mon,  2 Feb 2026 09:56:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770026195;
-	bh=To2VkYEmJRA5edR97P1H5WOqIjJetFQipCH+TeuvDts=;
-	h=From:To:Cc:Subject:Date:From;
-	b=nSt9BWUbMiJWt4qXGFjiKVn+G4YzRpsAAXIRMaITA0qsHNCoL0T6YbzAR5yD5hhH2
-	 0cntAZEQ1TDGFa6bTKUaTWG/ffkX2sBBWHmjMuaXNTKy9TDSf+mAJKjNNkJLeFDI2/
-	 BczdybJXbPy4lmFX2Vh6JW1jKLl4aarTpIhveSDE/fJUgwBjwovtDvLf6tNW6tHxSp
-	 HeqyV5i5f/c1sXxrurNxkT0OS5oZl2E0qeRzlEGK6eeBtv/Mmme//Rj5OlFh2SCNR4
-	 vbl5M2aYbhJoBYvCUTEI9SJGVbk1D4nN1P02k5020Tq0jaLY4yyjyEeM4M2K4p1Nnv
-	 YNsIGZI8ZGSFQ==
-From: Arnd Bergmann <arnd@kernel.org>
-To: Guenter Roeck <linux@roeck-us.net>,
-	Alexandre Belloni <alexandre.belloni@bootlin.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Frank Li <Frank.Li@nxp.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Carlos Song <carlos.song@nxp.com>,
-	Adrian Fluturel <fluturel.adrian@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-hwmon@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-i3c@lists.infradead.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] i3c, iio: fix i3c driver dependencies
-Date: Mon,  2 Feb 2026 10:55:31 +0100
-Message-Id: <20260202095628.1254175-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.39.5
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AhFPS8rS"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-4359108fd24so2560783f8f.2
+        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 01:57:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770026222; x=1770631022; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=AFDYJ7q5ek+KQjUhD9TdsFNk97m/l5Paz0LDlGO6qOo=;
+        b=AhFPS8rSkzQLsTOupJ+6H0meExyi1Bz1CHUpTwrBTmp8xc9ZCXfAB3XhMDsFHXBRyx
+         7GXi9yOy1fVJryLASSDmr1BAwW27HZhgLvceQX9KQaE5blpqbfFDn9aJDitA0wAvT1ob
+         2zcYadrwjl8xlofawGgQ/FIwbsCIvvl0JFef3gRq6w1u2rwt/9Zv+AYRYjbLLgrwnGbN
+         RQ761QqXE8kMx6FMx54oh990Vw48Xpadhb4Ee4mO/3+lV3MfT8bqbtvIkJmzVkzd5LTg
+         q6NJbkIVvYI7xFRq/AKRAYPDbUwaPsIfXIfmebtI60H72Ewn6Oi50Lk/0zyPjgHMn1Mw
+         XLHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770026222; x=1770631022;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=AFDYJ7q5ek+KQjUhD9TdsFNk97m/l5Paz0LDlGO6qOo=;
+        b=bFEWs6Q7EB7xwsmf6EcyeY/bFqSdiq7nz1Ev32wg2V/Tl6V78mDemKcvBvMxNM/+5z
+         dlPtBC6+l5LRl36xN8dBJHfs9i3jKWUmxm7puaNye2yezuZZEEgPAXMd2UOiCxKjDSA6
+         EnXUpwUuZrJp5mw9d2Da/Dw0ci427PvEZ1JcG5d1zWL7MtSu9LEYAmUBeCc25HHOEgsV
+         Pg4mUCkysvlpq5Ai393Pv6g5vmLNEpZOJ/QAr/eEPJMM7XwAytH/y3jnuWU2uV1r9E2V
+         DoNH4wmqwURVfqOC1ntPDaN0K5WV95J2DnsKx63082gqLdV/8iQYZTqAS5Tz5Ecx5UgO
+         SlpQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWDHL8OHjRCOech8NOrr/kLIA7bHTbl7MR/ufGW/38Q1eyV6AbhCBGlS/ZykvcxzbMeGSmQw7BHqwM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxI+k3GPGITvauRQ5x1eAHVMWVtCdb0x/eGgUAeRm++2Pr6h/1I
+	bfJ4wBQJfJBdk6dl+0MMoWS6eUpXD+WFNVDBsj9Y4qnfuHWMJILaqcRj
+X-Gm-Gg: AZuq6aIoYZ0qhJEQPiOI04WvFlYmmk9YQKBoGGFTSGrsUuYuewpxj8LwSv4P+BlfwI7
+	kIRV3QLG/e+cMa+uuMH/9YLpfJEwKSiPeHokfsIL0/9X29f6a6LJmHew8JAWW0H3FXFN7dBltMJ
+	9DUqjFvEflMgPo8Nioxa8CE8R0raU4zpuOUIsYceXTKlOYGn2W7tnfqqaWfKOIG+lo3qxaNEzJu
+	zOdfSi9rLjJE53NSG9RKfOYGKSq+QxvoUOMlkeX0+H0tFV2n8gvMM1smUDSRqdgglYKDMrqqYPb
+	sv2TT5v03HtWiTwhP6/xezijNSy55VtRPyYS0GH7B/9pWtap0QQVrRM2IRyVMYx+C5YKgpuVAT+
+	GFJT/bd0LUa1qK1xhfS6DmVnS0JD1lAW2yAdjhKLOaSjm9FTVr51LXmvwBL+VrERSz4yS18KmT2
+	/nCQ6HaEORo9K4wKkubMg=
+X-Received: by 2002:a05:6000:61e:b0:432:8504:8d5b with SMTP id ffacd0b85a97d-435f3abb458mr15482339f8f.50.1770026221918;
+        Mon, 02 Feb 2026 01:57:01 -0800 (PST)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10e483asm41024865f8f.3.2026.02.02.01.57.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Feb 2026 01:57:01 -0800 (PST)
+Message-ID: <eb1d9b939f95888739ce4a70f516cec07393c6df.camel@gmail.com>
+Subject: Re: [PATCH v6 2/8] iio: core: add fixed point parsing with 64-bit
+ parts
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-doc@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>,  Andy Shevchenko	 <andy@kernel.org>, Lars-Peter
+ Clausen <lars@metafoo.de>, Michael Hennerich	
+ <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Jonathan Corbet <corbet@lwn.net>
+Date: Mon, 02 Feb 2026 09:57:44 +0000
+In-Reply-To: <20260130-adf41513-iio-driver-v6-2-cf46239026bc@analog.com>
+References: <20260130-adf41513-iio-driver-v6-0-cf46239026bc@analog.com>
+	 <20260130-adf41513-iio-driver-v6-2-cf46239026bc@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Fri, 2026-01-30 at 10:06 +0000, Rodrigo Alencar via B4 Relay wrote:
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+>=20
+> Add iio_str_to_fixpoint64() function that leverages simple_strtoull()
+> to parse numbers from a string.
+> A helper function __iio_str_to_fixpoint64() replaces
+> __iio_str_to_fixpoint() implementation, extending its usage for
+> 64-bit fixed-point parsing.
+>=20
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> ---
+> =C2=A0drivers/iio/industrialio-core.c | 211 +++++++++++++++++++++++++++++=
++----------
+> =C2=A0include/linux/iio/iio.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 |=C2=A0=C2=A0 2 +
+> =C2=A02 files changed, 163 insertions(+), 50 deletions(-)
+>=20
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-c=
+ore.c
+> index 3115d59c1372..37e9ed6b659b 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -21,6 +21,7 @@
+> =C2=A0#include <linux/kernel.h>
+> =C2=A0#include <linux/module.h>
+> =C2=A0#include <linux/mutex.h>
+> +#include <linux/overflow.h>
+> =C2=A0#include <linux/poll.h>
+> =C2=A0#include <linux/property.h>
+> =C2=A0#include <linux/sched.h>
+> @@ -881,6 +882,136 @@ static ssize_t iio_read_channel_info_avail(struct d=
+evice *dev,
+> =C2=A0	}
+> =C2=A0}
+> =C2=A0
+> +/**
+> + * iio_safe_strntou64() - Parse u64 from string checking for overflow sa=
+fety
+> + * @str: The string to parse
+> + * @endp: output pointer to the end parsing position
+> + * @result: parsed value
+> + * @max_chars: maximum number of digit characters to read
+> + *
+> + * This function is used in fixed-point parsing and it iterates over a c=
+onst
+> + * char array. It might duplicate behavior of simple_strtoull() or kstrt=
+oull(),
+> + * but those have their own limitations:
+> + * - simple_strtoull() is not overflow-safe and its usage is discouraged=
+;
+> + * - kstrtoull() is safe, but requires termination and it would required=
+ a copy
+> + *=C2=A0=C2=A0 of the string to a temporary buffer.
+> + *
+> + * The implementation of this function is similar to _parse_integer_limi=
+t()
+> + * available in lib/kstrtox.h, but that header/function is not available=
+ to be
+> + * used in kernel modules. Hence, this implementation may need to change=
+ or
+> + * removed to reuse a new suitable helper that is properly exposed.
+> + *
+> + * Returns:
+> + * number of parsed characters on success, -ERANGE on overflow
+> + */
+> +static ssize_t iio_safe_strntou64(const char *str, const char **endp,
+> +				=C2=A0 u64 *result, size_t max_chars)
+> +{
+> +	u64 digit, acc =3D 0;
+> +	ssize_t idx =3D 0;
+> +
+> +	while (isdigit(str[idx]) && idx < max_chars) {
+> +		digit =3D str[idx] - '0';
+> +		if (unlikely(acc & (~0ull << 60))) {
+> +			if (check_mul_overflow(acc, 10, &acc) ||
+> +			=C2=A0=C2=A0=C2=A0 check_add_overflow(acc, digit, &acc))
+> +				return -ERANGE;
+> +		} else {
+> +			acc =3D acc * 10 + digit;
+> +		}
+> +		idx++;
+> +	}
+> +
+> +	*endp =3D str + idx;
+> +	*result =3D acc;
+> +	return idx;
+> +}
+> +
+> +/**
+> + * __iio_str_to_fixpoint64() - Parse a fixed-point number from a string
+> + * @str: The string to parse
+> + * @fract_mult: Multiplier for the first decimal place, should be a powe=
+r of 10
+> + * @integer: The integer part of the number
+> + * @fract: The fractional part of the number
+> + * @scale_db: True if this should parse as dB
+> + *
+> + * This variant uses 64-bit integers for both integer and fractional par=
+ts.
+> + * Parsed positive values greater than S64_MAX are returned as-is. Parse=
+d
+> + * negative values less than S64_MIN are treated as range error, so -ERA=
+NGE is
+> + * returned.
+> + *
+> + * Returns:
+> + * 0 on success, or a negative error code if the string could not be par=
+sed.
+> + */
+> +static int __iio_str_to_fixpoint64(const char *str, u64 fract_mult,
+> +				=C2=A0=C2=A0 s64 *integer, s64 *fract, bool scale_db)
+> +{
+> +	u64 i =3D 0, f =3D 0;
+> +	int ret, precision =3D ffs(fract_mult);
+> +	bool negative =3D false;
+> +
+> +	if (precision > 20) /* ceil(log10(U64_MAX)) =3D 20 */
+> +		return -EINVAL;
+> +
+> +	if (str[0] =3D=3D '-') {
+> +		negative =3D true;
+> +		str++;
+> +	} else if (str[0] =3D=3D '+') {
+> +		str++;
+> +	}
+> +
+> +	ret =3D iio_safe_strntou64(str, &str, &i, SIZE_MAX);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (precision && *str =3D=3D '.') {
+> +		str++; /* skip decimal point */
+> +		ret =3D iio_safe_strntou64(str, &str, &f, precision);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		if (ret < precision) /* scale up */
+> +			f *=3D int_pow(10, precision - ret);
+> +
+> +		while (isdigit(*str)) /* truncate: ignore further digits */
+> +			str++;
+> +	}
+> +
+> +	if (!ret)
+> +		return -EINVAL;
+> +
+> +	if (scale_db) {
+> +		/* Ignore the dB suffix */
+> +		if (!strncmp(str, " dB", sizeof(" dB") - 1))
+> +			str +=3D sizeof(" dB") - 1;
+> +		else if (!strncmp(str, "dB", sizeof("dB") - 1))
+> +			str +=3D sizeof("dB") - 1;
+> +	}
+> +
+> +	if (*str =3D=3D '\n')
+> +		str++;
+> +
+> +	if (*str !=3D '\0')
+> +		return -EINVAL;
+> +
+> +	if (negative) {
+> +		if (i) {
+> +			if (i > (u64)S64_MIN)
+> +				return -ERANGE;
+> +			i =3D -i;
+> +		} else {
+> +			if (f > (u64)S64_MIN)
+> +				return -ERANGE;
+> +			f =3D -f;
+> +		}
+> +	}
+> +
+> +	*integer =3D i;
+> +	*fract =3D f;
+> +
+> +	return 0;
+> +}
+> +
+> =C2=A0/**
+> =C2=A0 * __iio_str_to_fixpoint() - Parse a fixed-point number from a stri=
+ng
+> =C2=A0 * @str: The string to parse
+> @@ -895,63 +1026,43 @@ static ssize_t iio_read_channel_info_avail(struct =
+device *dev,
+> =C2=A0static int __iio_str_to_fixpoint(const char *str, int fract_mult,
+> =C2=A0				 int *integer, int *fract, bool scale_db)
+> =C2=A0{
+> -	int i =3D 0, f =3D 0;
+> -	bool integer_part =3D true, negative =3D false;
+> +	s64 integer64, fract64;
+> +	int ret;
+> =C2=A0
+> -	if (fract_mult =3D=3D 0) {
+> -		*fract =3D 0;
+> +	ret =3D __iio_str_to_fixpoint64(str, fract_mult, &integer64, &fract64,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 scale_db);
+> +	if (ret)
+> +		return ret;
 
-All combined i2c/i3c drivers appear to suffer from the same link
-time problem when CONFIG_I3C is set to 'm':
+I know it feels tempting to do the above while adding the 64bit variant. Bu=
+t isn't the
+overflow safety also an issue on the 32bit variant? IMO, we should first ha=
+ve a patch
+adding the overflow safety with a Fixes tag and then add 64bit support.
 
-arm-linux-gnueabi-ld: drivers/iio/magnetometer/mmc5633.o: in function `mmc5633_i3c_driver_init':
-mmc5633.c:(.init.text+0x30): undefined reference to `i3c_driver_register_with_owner'
+=20
+> =C2=A0
+> -		return kstrtoint(str, 0, integer);
+> -	}
+> +	if (integer64 < INT_MIN || integer64 > UINT_MAX ||
+> +	=C2=A0=C2=A0=C2=A0 fract64 < INT_MIN || fract64 > UINT_MAX)
+> +		return -ERANGE;
+> =C2=A0
+> -	if (str[0] =3D=3D '-') {
+> -		negative =3D true;
+> -		str++;
+> -	} else if (str[0] =3D=3D '+') {
+> -		str++;
+> -	}
+> -
+> -	while (*str) {
+> -		if ('0' <=3D *str && *str <=3D '9') {
+> -			if (integer_part) {
+> -				i =3D i * 10 + *str - '0';
+> -			} else {
+> -				f +=3D fract_mult * (*str - '0');
+> -				fract_mult /=3D 10;
+> -			}
+> -		} else if (*str =3D=3D '\n') {
+> -			if (*(str + 1) =3D=3D '\0')
+> -				break;
+> -			return -EINVAL;
+> -		} else if (!strncmp(str, " dB", sizeof(" dB") - 1) && scale_db) {
+> -			/* Ignore the dB suffix */
+> -			str +=3D sizeof(" dB") - 1;
+> -			continue;
+> -		} else if (!strncmp(str, "dB", sizeof("dB") - 1) && scale_db) {
+> -			/* Ignore the dB suffix */
+> -			str +=3D sizeof("dB") - 1;
+> -			continue;
+> -		} else if (*str =3D=3D '.' && integer_part) {
+> -			integer_part =3D false;
+> -		} else {
+> -			return -EINVAL;
+> -		}
+> -		str++;
+> -	}
+> -
+> -	if (negative) {
+> -		if (i)
+> -			i =3D -i;
+> -		else
+> -			f =3D -f;
+> -	}
+> -
+> -	*integer =3D i;
+> -	*fract =3D f;
+> +	*integer =3D integer64;
+> +	*fract =3D fract64;
 
-This was previously fixed several times by marking individual
-drivers as 'depends on I2C; depends on I3C || !I3C', but this gets
-tedious and is somewhat confusing.
+Hmmm, aren't we truncating the values? They are still int pointers...
 
-Add a Kconfig symbol 'I3C_OR_I2C' to help replace those dependencies,
-and use this in all the existing drivers that had already fixed it
-as well as the new mmc5633 driver.
-
-Fixes: 6e5f6bf2e3f0 ("iio: magnetometer: Add mmc5633 sensor")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/hwmon/Kconfig            | 17 ++---------------
- drivers/i3c/Kconfig              | 12 ++++++++++++
- drivers/iio/magnetometer/Kconfig |  2 +-
- drivers/misc/amd-sbi/Kconfig     |  3 +--
- 4 files changed, 16 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 41c381764c2b..1ddb3f73fdc0 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -1493,8 +1493,7 @@ config SENSORS_LM73
- 
- config SENSORS_LM75
- 	tristate "National Semiconductor LM75 and compatibles"
--	depends on I2C
--	depends on I3C || !I3C
-+	depends on I3C_OR_I2C
- 	select REGMAP_I2C
- 	select REGMAP_I3C if I3C
- 	help
-@@ -2381,19 +2380,7 @@ config SENSORS_TMP102
- 
- config SENSORS_TMP103
- 	tristate "Texas Instruments TMP103"
--	depends on I2C
--	select REGMAP_I2C
--	help
--	  If you say yes here you get support for Texas Instruments TMP103
--	  sensor chips.
--
--	  This driver can also be built as a module. If so, the module
--	  will be called tmp103.
--
--config SENSORS_TMP108
--	tristate "Texas Instruments TMP108"
--	depends on I2C
--	depends on I3C || !I3C
-+	depends on I3C_OR_I2C
- 	select REGMAP_I2C
- 	select REGMAP_I3C if I3C
- 	help
-diff --git a/drivers/i3c/Kconfig b/drivers/i3c/Kconfig
-index 30a441506f61..626c54b386d5 100644
---- a/drivers/i3c/Kconfig
-+++ b/drivers/i3c/Kconfig
-@@ -22,3 +22,15 @@ menuconfig I3C
- if I3C
- source "drivers/i3c/master/Kconfig"
- endif # I3C
-+
-+config I3C_OR_I2C
-+	tristate
-+	default m if I3C=m
-+	default I2C
-+	help
-+	  Device drivers using module_i3c_i2c_driver() can use either
-+	  i2c or i3c hosts, but cannot be built-in for the kernel when
-+	  CONFIG_I3C=m.
-+
-+	  Add 'depends on I2C_OR_I3C' in Kconfig for those drivers to
-+	  get the correct dependencies.
-diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
-index 2b81b22c9550..448fef4e5716 100644
---- a/drivers/iio/magnetometer/Kconfig
-+++ b/drivers/iio/magnetometer/Kconfig
-@@ -143,7 +143,7 @@ config MMC5633
- 	tristate "MEMSIC MMC5633 3-axis magnetic sensor"
- 	select REGMAP_I2C if I2C
- 	select REGMAP_I3C if I3C
--	depends on I2C || I3C
-+	depends on I3C_OR_I2C
- 	help
- 	  Say yes here to build support for the MEMSIC MMC5633 3-axis
- 	  magnetic sensor.
-diff --git a/drivers/misc/amd-sbi/Kconfig b/drivers/misc/amd-sbi/Kconfig
-index be022c71a90c..30e7fad7356c 100644
---- a/drivers/misc/amd-sbi/Kconfig
-+++ b/drivers/misc/amd-sbi/Kconfig
-@@ -1,10 +1,9 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config AMD_SBRMI_I2C
- 	tristate "AMD side band RMI support"
--	depends on I2C
-+	depends on I3C_OR_I2C
- 	depends on ARM || ARM64 || COMPILE_TEST
- 	select REGMAP_I2C
--	depends on I3C || !I3C
- 	select REGMAP_I3C if I3C
- 	help
- 	  Side band RMI over I2C/I3C support for AMD out of band management.
--- 
-2.39.5
+- Nuno S=C3=A1
 
