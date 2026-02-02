@@ -1,79 +1,51 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37FD5258CD9
-	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 09:10:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 988202BDC32;
+	Mon,  2 Feb 2026 09:56:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770023411; cv=none; b=C8v5fCr4h1Vue97zSSny6sKD9OYLRavdfwG47iLA3ZpaXz+fNFNE7/rpswAYre6q3n8UyYf0vw08qEDXZVoRUj5L/kfoafeaO+4LymxTs5lOl0mc6okP3USI8wxmZPx/lc+sg0hMsXwiUwTFsj5sJJku6UeI9eXP7a2Q+zoofTE=
+	t=1770026195; cv=none; b=ae7MEM24RxsS1oWqUAmHQuvT7gKakHUhxJOpT4rGGgQLOLUuhT1Pt3ig8O3omt2DydLStEU2so/nEssTHw3vhlsUafnwFt2zHwKfMKIgpxU5kP69sDRTDZGlkGbzKKbUuzmbEQKckTQ2tv/J0UQ4DmgFriBvH+z69JmRkZoJ5A4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770023411; c=relaxed/simple;
-	bh=t8NJHcPK+pxmhW/ZiNEjiUTPapZ0kfKBoax9lUpdEOs=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ag0EnAZqVm0FXWInexQmXi47AWs5ejFkXQLgzrlepb529+L7lxCl/n3tJ80dB369fe9hLpZK3UPNyqG54eSDZfx1iq5aVPk2KzCfBKGBT5QesFMsCTYpo8yG/ShR92kZwCX8KVR9h5lSKyk5yCZnFxVrx9dW4FYg86lbPgvKxz8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F7F7BbRm; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770026195; c=relaxed/simple;
+	bh=To2VkYEmJRA5edR97P1H5WOqIjJetFQipCH+TeuvDts=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=W8n4YB/WFfbaJt2q8xOAHK2E9zokq7mjuW5odStLFYog5s5023r8cR+lz/6v9K+0ya80UTRmm/ScIU8fsIOqCyqWo4DpmVcrFxd1rALzaQl673/txjmD8PjA7tWfnnLkpf2Wn7GDhuzbC8woPETHiMfkWggT/HMwqFQD9+OtEn8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nSt9BWUb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F7F7BbRm"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2a0d67f1877so27610515ad.2
-        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 01:10:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770023409; x=1770628209; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Gs2hNgTK4MyFkwvTtu2AJ6nbAuS2KHy3U5iGkz1dHRc=;
-        b=F7F7BbRmkhM0cY6ua+2hCqKd2yc72YNTj/I1jeV0K/pT6+wEp6+cRh+Xw8KsNWHIxh
-         DQF3HdA3MtwRJabCVDAokkCIeyXNAMMftGhP9Zg7g4N5qxd+iHcN25UlomDN4zAODNnH
-         Y+QU9doj5UyvCrofsj3zJB0fPjo+KbLtUXS5QZFLYgev8RFHK+7B5rgSI8/iMtVCBnN4
-         ytDGqW0EIUKud8fwgOpGmyYvsmFMxebTwAYB5qJJJo/ia8B4n8X36sxTTOLayNe7o8tb
-         fuBzdRe3p+jAe5i2q73XcMJCaA/F7IqjsXT3u/vGAYi3G9OxoT/+sZG1WuvcwkQ7uRUN
-         4L8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770023409; x=1770628209;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=Gs2hNgTK4MyFkwvTtu2AJ6nbAuS2KHy3U5iGkz1dHRc=;
-        b=PPQYen82nRYpOUojbpVUuz/2M6Dz0oyz02WRH7AiFiPSVKAkdOF9gb14cQJlWEAf6G
-         czOqzgCEMMg2LHHX/RuV0ASKssDZQO0glvzgWp6lbnnox+WEZF4oE+Dt+LdmTnqiQG0+
-         9I3drbke3/9x34zxExf58Yo4rBBoyIPG6xGARL9csPeBk+cODihBNyZ9zb3I1wVTqbeK
-         EIQir9ztRMd1Zkfycbqfy8mAXhDzfVuRbBsRsfTeXbQS+wFFXIYl5FZHpVICUaBKhYf4
-         HqrJBg39AJWuBUVySBILzS+cb7uqVt/VLr81vUA74wJw7zpp7pdUUVHxvNdX/qoQ5rMC
-         RMJA==
-X-Forwarded-Encrypted: i=1; AJvYcCWHpxkYWaOxRreiVBi7aD8fIRXqnjzh3G+aqh42dulkcXPnaAS0M9AsUI441g6Gva0+JI0sQtUVSJU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwU+Fzngpp+rJh7gTH99xGR+O7Nz0nraJTEY6lQ0fynZ7tDGUtl
-	B+9c2OX5XR4Y2nhD1WwdxTMYqB1mJFD46GPC2X+bsm3LVPcPx+prwt7+
-X-Gm-Gg: AZuq6aLvODZd2NR9Jxvt0J18QPra9Az14HKuz0LIa0JUokSNUCXamyjnRA08Ij3Aeff
-	++93u8GKTXmjj/fHSF4KGqp0hGwxkQYk+V3EbJvmy7KJ9C9E0D6fhvAeVBjiRJ9JTdCKikacvCd
-	9kxxpn2b2qL9Ng0/mVnVhx1oSOqNhuUypUyBhH+OtV0dPPhVPk6X2kUIl09wdOGToIaX9xdUgH9
-	+XwNaCOBCElxDk5tp9/Z1Zsuh9yGVUBxcW3eHGYPB0w23IEH6tVfD94vj26y5GttwYyIF2BVHz8
-	/avYH+Ly1IOd3zVivwQw0ootjKKfuwL2C9Rv8y90C+huymznBT3jR3Ft2BkBkQL2sCEIFHBdgiT
-	ceWdHYKseSKiE+tGotwXYF+jc4A+yfbZEmAgzeSgfQNm1rBKtxHLry5nu7VeFznAQRorNSH6Hom
-	G5Iic5nGUJ
-X-Received: by 2002:a17:902:d50e:b0:2a4:8cd:c3cf with SMTP id d9443c01a7336-2a8d8181601mr115472795ad.49.1770023409408;
-        Mon, 02 Feb 2026 01:10:09 -0800 (PST)
-Received: from arch.localdomain ([2409:8a28:a52:d2b1::1004])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2a88b3eef68sm149413095ad.16.2026.02.02.01.10.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Feb 2026 01:10:08 -0800 (PST)
-From: Jun Yan <jerrysteve1101@gmail.com>
-To: jic23@kernel.org
-Cc: andy@kernel.org,
-	conor+dt@kernel.org,
-	dlechner@baylibre.com,
-	jerrysteve1101@gmail.com,
-	krzk+dt@kernel.org,
-	linux-iio@vger.kernel.org,
-	nuno.sa@analog.com,
-	robh@kernel.org
-Subject: Re: [PATCH 5/6] dt-bindings: iio: gyroscope: bosch,bmg160: add bmx055 gyroscope binding
-Date: Mon,  2 Feb 2026 17:09:57 +0800
-Message-ID: <20260202090957.228021-1-jerrysteve1101@gmail.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260131182205.5b851204@jic23-huawei>
-References: <20260131182205.5b851204@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nSt9BWUb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04864C116C6;
+	Mon,  2 Feb 2026 09:56:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770026195;
+	bh=To2VkYEmJRA5edR97P1H5WOqIjJetFQipCH+TeuvDts=;
+	h=From:To:Cc:Subject:Date:From;
+	b=nSt9BWUbMiJWt4qXGFjiKVn+G4YzRpsAAXIRMaITA0qsHNCoL0T6YbzAR5yD5hhH2
+	 0cntAZEQ1TDGFa6bTKUaTWG/ffkX2sBBWHmjMuaXNTKy9TDSf+mAJKjNNkJLeFDI2/
+	 BczdybJXbPy4lmFX2Vh6JW1jKLl4aarTpIhveSDE/fJUgwBjwovtDvLf6tNW6tHxSp
+	 HeqyV5i5f/c1sXxrurNxkT0OS5oZl2E0qeRzlEGK6eeBtv/Mmme//Rj5OlFh2SCNR4
+	 vbl5M2aYbhJoBYvCUTEI9SJGVbk1D4nN1P02k5020Tq0jaLY4yyjyEeM4M2K4p1Nnv
+	 YNsIGZI8ZGSFQ==
+From: Arnd Bergmann <arnd@kernel.org>
+To: Guenter Roeck <linux@roeck-us.net>,
+	Alexandre Belloni <alexandre.belloni@bootlin.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Frank Li <Frank.Li@nxp.com>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Carlos Song <carlos.song@nxp.com>,
+	Adrian Fluturel <fluturel.adrian@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-hwmon@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-i3c@lists.infradead.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] i3c, iio: fix i3c driver dependencies
+Date: Mon,  2 Feb 2026 10:55:31 +0100
+Message-Id: <20260202095628.1254175-1-arnd@kernel.org>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,88 +54,115 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-> On Fri, 30 Jan 2026 10:24:52 +0800
-> Jun Yan <jerrysteve1101@gmail.com> wrote:
-> 
-> > > On Thu, 29 Jan 2026 15:11:01 +0800
-> > > Jun Yan <jerrysteve1101@gmail.com> wrote:
-> > >   
-> > > > Add the device-tree binding for the bosch BMX055 IMU (gyroscope part).
-> > > > 
-> > > > Datasheet: https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_datasheet.pdf
-> > > > Signed-off-by: Jun Yan <jerrysteve1101@gmail.com>  
-> > > 
-> > > Hi Jun,
-> > > 
-> > > Is there anything stopping the use of fallback compatibles? 
-> > > It seems from the driver that even the chip ID matches.
-> > > 
-> > > That is, can we have
-> > > compatible = 'bosch,bmx055_gyro', 'bosch,bmg160'.
-> > > 
-> > > or something like that (I can't remember exact syntax) so that
-> > > if we have a newer DT, it will work on an older kernel?  
-> > Yes, using fallback compatibles is a better approach. So from my
-> > understanding, it should be modified to:
-> > 
-> > properties:                                                                                
-> >   compatible:                                                                              
-> >     oneOf:                                                                                 
-> >       - const: bosch,bmg160                                                                
-> >       - items:                                                                             
-> >         - enum:                                                                            
-> >           - bosch,bmg160                                                                   
-> >           - bosch,bmi055_gyro                                                              
-> >           - bosch,bmi088_gyro                                                              
-> >           - bosch,bmx055_gyro                                                              
-> >         - const: bosch,bmg160
-> > 
-> > Or in a similar format?
-> > 
-> > And drop the change in the driver?
-> Explicit matching can still be a good idea so we name things
-> correctly etc, but this driver doesn't bother so indeed
-> there shouldn't need to be a change.
-Got it
-> 
-> Whether to add only the new device with the fallback is
-> a question to the dt-maintainers. We'd also need to check
-> if any DT files in tree need an update for that.
-Alright, I'll redraft the patch and submit it to the corresponding
-dt-maintainer for review.
+From: Arnd Bergmann <arnd@arndb.de>
 
-Best Regards,
-Jun Yan
-> 
-> Jonathan
-> 
-> > 
-> > Best Regrads,
-> > 
-> > Jun Yan
-> > > 
-> > > Thanks,
-> > > 
-> > > Jonathan
-> > >   
-> > > > ---
-> > > >  .../devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml          | 1 +
-> > > >  1 file changed, 1 insertion(+)
-> > > > 
-> > > > diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> > > > index 3c6fe74af0b8..907fca4e5895 100644
-> > > > --- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> > > > +++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-> > > > @@ -15,6 +15,7 @@ properties:
-> > > >        - bosch,bmg160
-> > > >        - bosch,bmi055_gyro
-> > > >        - bosch,bmi088_gyro
-> > > > +      - bosch,bmx055_gyro
-> > > >  
-> > > >    reg:
-> > > >      maxItems: 1  
-> > 
-> > 
-> > 
+All combined i2c/i3c drivers appear to suffer from the same link
+time problem when CONFIG_I3C is set to 'm':
 
+arm-linux-gnueabi-ld: drivers/iio/magnetometer/mmc5633.o: in function `mmc5633_i3c_driver_init':
+mmc5633.c:(.init.text+0x30): undefined reference to `i3c_driver_register_with_owner'
+
+This was previously fixed several times by marking individual
+drivers as 'depends on I2C; depends on I3C || !I3C', but this gets
+tedious and is somewhat confusing.
+
+Add a Kconfig symbol 'I3C_OR_I2C' to help replace those dependencies,
+and use this in all the existing drivers that had already fixed it
+as well as the new mmc5633 driver.
+
+Fixes: 6e5f6bf2e3f0 ("iio: magnetometer: Add mmc5633 sensor")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/hwmon/Kconfig            | 17 ++---------------
+ drivers/i3c/Kconfig              | 12 ++++++++++++
+ drivers/iio/magnetometer/Kconfig |  2 +-
+ drivers/misc/amd-sbi/Kconfig     |  3 +--
+ 4 files changed, 16 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
+index 41c381764c2b..1ddb3f73fdc0 100644
+--- a/drivers/hwmon/Kconfig
++++ b/drivers/hwmon/Kconfig
+@@ -1493,8 +1493,7 @@ config SENSORS_LM73
+ 
+ config SENSORS_LM75
+ 	tristate "National Semiconductor LM75 and compatibles"
+-	depends on I2C
+-	depends on I3C || !I3C
++	depends on I3C_OR_I2C
+ 	select REGMAP_I2C
+ 	select REGMAP_I3C if I3C
+ 	help
+@@ -2381,19 +2380,7 @@ config SENSORS_TMP102
+ 
+ config SENSORS_TMP103
+ 	tristate "Texas Instruments TMP103"
+-	depends on I2C
+-	select REGMAP_I2C
+-	help
+-	  If you say yes here you get support for Texas Instruments TMP103
+-	  sensor chips.
+-
+-	  This driver can also be built as a module. If so, the module
+-	  will be called tmp103.
+-
+-config SENSORS_TMP108
+-	tristate "Texas Instruments TMP108"
+-	depends on I2C
+-	depends on I3C || !I3C
++	depends on I3C_OR_I2C
+ 	select REGMAP_I2C
+ 	select REGMAP_I3C if I3C
+ 	help
+diff --git a/drivers/i3c/Kconfig b/drivers/i3c/Kconfig
+index 30a441506f61..626c54b386d5 100644
+--- a/drivers/i3c/Kconfig
++++ b/drivers/i3c/Kconfig
+@@ -22,3 +22,15 @@ menuconfig I3C
+ if I3C
+ source "drivers/i3c/master/Kconfig"
+ endif # I3C
++
++config I3C_OR_I2C
++	tristate
++	default m if I3C=m
++	default I2C
++	help
++	  Device drivers using module_i3c_i2c_driver() can use either
++	  i2c or i3c hosts, but cannot be built-in for the kernel when
++	  CONFIG_I3C=m.
++
++	  Add 'depends on I2C_OR_I3C' in Kconfig for those drivers to
++	  get the correct dependencies.
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index 2b81b22c9550..448fef4e5716 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -143,7 +143,7 @@ config MMC5633
+ 	tristate "MEMSIC MMC5633 3-axis magnetic sensor"
+ 	select REGMAP_I2C if I2C
+ 	select REGMAP_I3C if I3C
+-	depends on I2C || I3C
++	depends on I3C_OR_I2C
+ 	help
+ 	  Say yes here to build support for the MEMSIC MMC5633 3-axis
+ 	  magnetic sensor.
+diff --git a/drivers/misc/amd-sbi/Kconfig b/drivers/misc/amd-sbi/Kconfig
+index be022c71a90c..30e7fad7356c 100644
+--- a/drivers/misc/amd-sbi/Kconfig
++++ b/drivers/misc/amd-sbi/Kconfig
+@@ -1,10 +1,9 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config AMD_SBRMI_I2C
+ 	tristate "AMD side band RMI support"
+-	depends on I2C
++	depends on I3C_OR_I2C
+ 	depends on ARM || ARM64 || COMPILE_TEST
+ 	select REGMAP_I2C
+-	depends on I3C || !I3C
+ 	select REGMAP_I3C if I3C
+ 	help
+ 	  Side band RMI over I2C/I3C support for AMD out of band management.
+-- 
+2.39.5
 
