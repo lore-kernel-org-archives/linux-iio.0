@@ -1,111 +1,116 @@
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1FC05366833
-	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 15:17:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3206E3793AF
+	for <linux-iio@vger.kernel.org>; Mon,  2 Feb 2026 15:19:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770045467; cv=none; b=H8oh20oJG+LHimvCY3NdB1NZOgrrBeWdTDGiNqpQYkLeWzimEa5txQNCemmRKudjnXmygxIB0bQGf7lkvhn2hXBbNHfvBcJ9bdotO32CNa1A8VsAN8CB48VmGzpb6BmE4irBide0k+w2Wd6ZqlfDg2VF+EFmCBppCk7rbE20ukE=
+	t=1770045585; cv=none; b=oa7qz8PPt23mspm8N8DxYsrfMOsVbWOHa1LUhFT+1CScD0sPASwSsaXRGQD5DX8TSFSyac57bquIUD720B049GoKNSFDF23ZEnZ2zUpV5zmWwNvys13iIGx7Y6z2iyyud0LdWaQwgROJDdK7yc/KP2/bAFre/HBS5cKAdKnES2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770045467; c=relaxed/simple;
-	bh=Lw+CdkWrNDCg1/AjmrE70CH2vLDd4ESEszCTUzmZUrU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=I3An7sZTeXRvvtxRiYhm45fvKhtT4IaKQUEwN49sVey2qPZdRFNUXjAK0QxhJldGT+V7E+23nIl74s+98/fGecOFD2lj/vtr1gSLl1dtZyJeglB6uB/xIUSimnkYpYgCvCI4En4h1Ij6zSNoFReL46JEzm6pnvCLs0Mk7h4fCGE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=NZQtgz8J; arc=none smtp.client-ip=209.85.167.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1770045585; c=relaxed/simple;
+	bh=uP35BjHP69iEkEReK/ap1DE7ub/2t/vOmSL1SXSsJfc=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VPcXnhQTW6KRoftMnh0E2HBmRWevkKVtYKbdb7jIjkGpxjd0yKFXOWmhd5gzPyjbLp27NwOGqO1VhBunl6IugzNGgfBIqEFxtm2XXI5e4wNZiCw/WlbWKoVI8mc5KwJFKu8zIN1skg0FSSHqSJTruqXn8OpDPP8z4aK3WdA0MfM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j0dnTX9T; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="NZQtgz8J"
-Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-45c962424daso1844282b6e.2
-        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 07:17:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j0dnTX9T"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48039fdc8aeso27352045e9.3
+        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 07:19:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770045465; x=1770650265; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=EsSha5Bi78vbCUKsfGavyZpVla65ggcaaghfokicSck=;
-        b=NZQtgz8JXaFxnJGFmY1492CVvShTyCPLvaaJ+/ELE1gG4X9I/HWxXSTeOgSywOt2Ei
-         DEkruhI2I3pavSNuava2q1tlOU/0PSeDLo2hvH1JYn6Ld7Q4IEcekwjh8niDU5s25EhE
-         VDKr/SzrgIkXCp2i1Zfv77wAQGvwWI9JK4eWh3lXABEGurZV1ZeW/7pbBSZNbSCC6XwJ
-         G8IoR9JPPh2/Irx0sQPStC9OJuLxufnlYjQfC9I8ebFJjrQPm5uAhN29G+aMd+SYL7QI
-         fFj/AePZG/wxSebH54Kq4ReO3WVPBvCBCcd1iyNg+xfK8MhXb6frVc4ZJ4UgMmM0SGci
-         8M0Q==
+        d=gmail.com; s=20230601; t=1770045582; x=1770650382; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uP35BjHP69iEkEReK/ap1DE7ub/2t/vOmSL1SXSsJfc=;
+        b=j0dnTX9THcxsVN9fsfMKvFc8kop3ZLIkMRS/Nv+h3JHVkz1K6V2j3Kp3yyEa9deGln
+         t2W/b5rGKWR0bWrt5vn2yIwHIG1zPJzin7+AnctU06qR0y/SZ3DbJdpjUpfnGvqb4zme
+         KdhWQPUvU4urdkEwQYNnPkoshlsmbpyLTq4dvmnQZIFb0cDHYBYxjQM/XTPsdI3B1ZQp
+         4/TeQWxLzXC1V1okzWOgBUhOzcyyDlD71tPzLSBlrDcG2FgFz0n/3IDb4rOKhbps5+R1
+         +R5lqNmDlZHyP1HG5YxCvnoLNZkds/Trbpx1nYk83HD5HxZUoU3JGUccDvLsaaZKBXDO
+         NqFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770045465; x=1770650265;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=EsSha5Bi78vbCUKsfGavyZpVla65ggcaaghfokicSck=;
-        b=pRk/qTwLeHrrVY2w3/Sy0T50J777/e6TBJp9FDQzkli+TshcNRT3jlSJvCJBd2oL72
-         AfcMwJbpn/NeAXblOUqZBWEsE5O/gnfvEmbSBGR7EuUSSlALSRYyOOKQPMLo9qtGUbZw
-         GP9sf5I0kAzLonXZLGlDuj/dl5c1YkadJ87DvDBSABtW/w0O498Ze/hMaWC3efCBVQDB
-         BrSgHvfsvI+Vc6nub8aIkAahzvzbIxYsx67vP3dLbJte6qneLM9LxEz73ORpCep0kDqp
-         FA6JldbQb7vg3UyLzWCt4J0OCC9divpq4lbyjKR0auU6nKKjinJDUTceyvkCxdp7G204
-         r44Q==
-X-Gm-Message-State: AOJu0Yzq8icYSN3WypMbMuOzDk5Vs9COTVFUQklW8rH1XTlJRgxAeOqm
-	HftfbcJxvUMQv2E8wjAUOGMJtFrSwflW0D3KSZmcr2Jh5SzSe4+0YZLjJ9Bmf8twbwUtHzdJki/
-	uuEA1
-X-Gm-Gg: AZuq6aLO4tnVsowdQbs8T6dPWDgn7pgkRFCyHYymZyiFfziVzoP4FCUMyV36J1oKg9w
-	gaLkGiej61hgX7A7rVC8ZSNfdmoCoveBAuKFvpC1J8rUU0BWXRQHyjak3e1jU++wzdy0gKbN/HW
-	R2z0Hicwd5d9negWXsECH3wotdsExwKj6pQrIK977ZffuDqGLz/FlZUjPdiwQDMFnyBWlPTMMIn
-	sw1uX5yL8jKBhqGD9LshkOl9cvg2T6EZBrqhyy8gKq0gBHSKH4FQYSekCBzI+7rjF37YASX+akc
-	Z494akGqjzlG2S9vzTQHG2EDVfF3KGr+e1RJDWgc8YoG4tpoE+vVhLokR+Yhmt3Btd8Hhmkq94W
-	uVEkOA2vQ48nxhLO0og3eVtuS0aSzJwjO+geDnmbStT1UrgcuXiECnk3fAD9y5wuXjHzZG2c+hA
-	ocVrOJkWAX0EigEbuROn33DGFuNvmq0YJOjM9LNcyT9K2QOeuETWWZVRUtDnAb
-X-Received: by 2002:a05:6808:c293:b0:450:c9ad:491b with SMTP id 5614622812f47-45f34b516d9mr5297901b6e.8.1770045464994;
-        Mon, 02 Feb 2026 07:17:44 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:3695:6954:27c2:42ef? ([2600:8803:e7e4:500:3695:6954:27c2:42ef])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4095749f274sm11881145fac.14.2026.02.02.07.17.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Feb 2026 07:17:44 -0800 (PST)
-Message-ID: <d74fc49a-dc9e-4b06-94db-66d5695b6faf@baylibre.com>
-Date: Mon, 2 Feb 2026 09:17:43 -0600
+        d=1e100.net; s=20230601; t=1770045582; x=1770650382;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=uP35BjHP69iEkEReK/ap1DE7ub/2t/vOmSL1SXSsJfc=;
+        b=YyC2+OXbDDw2HNQ8CGUsLTJFTrSH6HtPCC9uuw0a6MbRBYxxvVtRCLcqLabXTQdJur
+         nW0o7bCWMSHs5ACX+8CGtv5hYqbYTmZUIY29LzNnjgwDQoE66V1CkJA6rFEs8Vo9XNtd
+         lxBSoz8XVLYOpBheLvZWv5gjExAC7FpqlL7auock3Qj6V00Jlow3+86qpxRLjviiwCxm
+         MIXZQ457XAXfIAIayDx7fPXqeFlDn+JfREG2A6JuLEtIT3XMBMzLDbcT8uwuxTEBVkVs
+         dqcFyCMyG9+RIJcq6UazQ+64ZanWcrTH5Ywv687z9YYVOoj4PiTP7ofwyC9xDTYVgcs7
+         QsTA==
+X-Forwarded-Encrypted: i=1; AJvYcCUn+kjIXosRN3lF2tv2Sn7OYwIWWCVYm5T0AZZY/f6eF4bOC/gO9AnebGBidTySvxgD/b/JmOv4UMA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxSrWSLG1EzrepWcf0CgoCiYzzZWJ515xt6GFGoavpL7jpRc53T
+	DwacLm+dq4lt63zmGHqnYZh7qJDKIoDoX3SKLtiwfnP6k7piYVsQCXOp
+X-Gm-Gg: AZuq6aLJwI0lSIILeMgRFiFr+pcmyEmILQwhjfgDxKcyPKBOf7M13GqelKXnK0j80Fx
+	Yx7eMx+2JX74BeT6NINdCfDlfznwItu0FSRPaqJuekFqkQRWYu4fAt1DVhozfxNZa5LdjjSOKIV
+	taN0sPLecDYy3hNc2j1foUEKSIYvmXUG9BaNv97vB8EFkXQyX1/3HPVK+WnwsIufI4EnCb6w96J
+	d9PMpZy/1gxR7d6dZExrnQamvvoUmdciHTFAITcfeLmg9SKZUb/WSJQe7OLgvWLW3RbQZSI6R29
+	YH0+tCdec5tDURMtJ8ypO50rPq54dQ5VgMMEmG4m/hVOYXqa6la4UnEqA+A5A6PdRGBbFbfuAI0
+	bVBEboTnv0l7mfI7EfcT4jLPP3E2B4DRcPwAU2SC2MvKkpJRLkd5yn4pfjs6N8ecmQi6ugjjXtp
+	Vi2zpDxoPLgB/gqnFmCk9//LSv03FXp5iIaU1nnHvBPySSng==
+X-Received: by 2002:a05:600c:4e8a:b0:477:73e9:dc17 with SMTP id 5b1f17b1804b1-482db4992famr160196255e9.35.1770045582145;
+        Mon, 02 Feb 2026 07:19:42 -0800 (PST)
+Received: from DB-VM.1337.ma ([197.230.240.146])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4806cddffe9sm584093275e9.4.2026.02.02.07.19.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Feb 2026 07:19:41 -0800 (PST)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: dlechner@baylibre.com
+Cc: 0rayn.dev@gmail.com,
+	Michael.Hennerich@analog.com,
+	andy@kernel.org,
+	corbet@lwn.net,
+	jic23@kernel.org,
+	lars@metafoo.de,
+	linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel-mentees-archive@lists.linuxfoundation.org,
+	linux-kernel@vger.kernel.org,
+	me@brighamcampbell.com,
+	nuno.sa@analog.com,
+	rdunlap@infradead.org,
+	skhan@linuxfoundation.org
+Subject: Re: [PATCH v2 2/4] iio: core: Add IIO_EV_INFO_SCALE to event info
+Date: Mon,  2 Feb 2026 10:19:34 -0500
+Message-ID: <20260202151939.15893-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <afa85a59-07c7-46c9-990a-b0b34599cdc3@baylibre.com>
+References: <afa85a59-07c7-46c9-990a-b0b34599cdc3@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 1/4] iio: industrialio-backend: support backend
- capabilities
-To: Tomas Melin <tomas.melin@vaisala.com>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
- Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>,
- Olivier Moysan <olivier.moysan@foss.st.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260130-b4-ad9467-optional-backend-v5-0-7da803ba7326@vaisala.com>
- <20260130-b4-ad9467-optional-backend-v5-1-7da803ba7326@vaisala.com>
- <688cbfb1-0944-492a-929d-91ebb9ab22fb@baylibre.com>
- <2b49eacb-c375-4b01-8cc1-325fb743daf6@vaisala.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <2b49eacb-c375-4b01-8cc1-325fb743daf6@vaisala.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2/2/26 4:58 AM, Tomas Melin wrote:
-> Hi,
-> 
-> On 31/01/2026 22:30, David Lechner wrote:
->> On 1/30/26 3:16 AM, Tomas Melin wrote:
+Hi David,
 
-...
+Thanks for the feedback. You're right—"missing" was poor wording; I’ll
+rephrase to "implement support in the core" for v3 to reflect that this
+is an infrastructure addition.
 
->>> + *
->>> + * @IIO_BACKEND_CAP_CALIBRATION: Backend supports digital interface
->>> + * calibration. Calibration procedure is device specific.
->>> + * @IIO_BACKEND_CAP_BUFFERING: Backend supports buffering.
->>
->> I assume this means it supports devm_iio_backend_request_buffer()?
->>
->> In IIO, we usually say "buffer" and rarely "buffering" so this name and
->> description is a bit confusing to me.
-> 
-> Sure, would this mean that name and comment should be?
-> IIO_BACKEND_CAP_BUFFER: Backend has support for buffers
-> 
-Works for me. Or even more precise: "support for IIO buffers"
-or "support for IIO buffer interface".
+Regarding existing users, the current lack of IIO_EV_INFO_SCALE in the core
+forces developers into manual workarounds to stay ABI-compliant. For
+instance, in drivers/iio/accel/mma8452.c, the developer used
+IIO_CONST_ATTR_NAMED to create a manual in_accel_scale and linked it via
+.event_attrs. This approach is static and bypasses the standard event_spec
+infrastructure.
+
+My goal with adding IIO_EV_INFO_SCALE is to provide a standard path to
+report these scales dynamically through read_event_value(), ensuring ABI
+compliance without manual sysfs boilerplate.
+
+Does this core infrastructure approach seem like the right architectural
+path, or would you prefer I stick to a driver-level attribute for the
+ADXL345? Regardless of the path chosen, I will address your other comments
+in the next version: I'll fix the "in scale" typo and add the new scale
+entries to the adxl345 documentation table.
+
+Thanks,
+Taha
