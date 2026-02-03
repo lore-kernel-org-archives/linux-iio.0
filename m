@@ -1,116 +1,108 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB28D30EF83;
-	Tue,  3 Feb 2026 11:57:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CFDB33B97E
+	for <linux-iio@vger.kernel.org>; Tue,  3 Feb 2026 12:00:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770119836; cv=none; b=ga2P+AHtos2GUceXlfTDp92Zo39ioI6E/6Jhy+GwDl8YOpZKaGhWlJztGSbN34PV4AFm2W2hp1iRiWhJIhTBYxU/Ws056frR4SDUkiuPEc2YQw1U+tNan7+CjjpL0axNQsFUwb6Ss6Fk6G3vv5TnX56EVbkR4zei3fYFjvxKJxE=
+	t=1770120010; cv=none; b=Q1nLr4rrNyEICPZxDlmTEAivG6abBtAtghqCcrWyHOIVC8rs/wU7WySkLCIcb3Ck4suOhDHNqOCMo+rmt6i41VUrtTEPS8yja1X9bE9VUf5+119k24Gw0Uj7Wgyqau5fcXcpF6xiMNGip6lBk5nhJSz+eUbVbuET9YYYLy2X7Vw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770119836; c=relaxed/simple;
-	bh=RUnOUTk2GWsWt+UZmmAHOCxB8S5qdwIVX1ssHbFQ9Os=;
+	s=arc-20240116; t=1770120010; c=relaxed/simple;
+	bh=OhHw2xhKXIE2GbKn2kZmuYgDoMTvwTtviyTPHEQj9Dw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=vE8rfSzzhf9t+It+jGGb36KVdGZRFxrtnGWZuk6hEQKk2LL+qI90YlPoPnzcf58z7LHXevJtzgSeANPKWxz81WtqiCMgFo9DDZmvQGmldd7pYrD/zuKwHqEKgDKoXtbZ/EdiCo+9tT+CfurGs45gBgLdZ4TAWtC6qPs72INawf0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QyM1pRdR; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QyM1pRdR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770119835; x=1801655835;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RUnOUTk2GWsWt+UZmmAHOCxB8S5qdwIVX1ssHbFQ9Os=;
-  b=QyM1pRdRgDPMvQ66+2wHQAMZApN3wuzaP1SuQjibQOG4govue4b1s6hv
-   0tCrf6KFHcvPffqfAVqAeR32jUHeEwKB+iJhqg8KDuUkUMdoGQt4SWfj4
-   6RAIMeLEv6rY153qBd+nMkfn+68jiw6HC/OdZDtZj9pGkbT2NIEAULCb8
-   DyQwCC7ooyw0VkZApaZlLalFcUYikgak1LoJdo2iI7c3yuexKDCOf15Lm
-   B1SmMDZPFxjERLOcrWgp4ejlNyCWjr/PenjN3ZbbpbGiqz+bdKKy7IhN0
-   4P81vyGopqHRENMz5LgwgOBTJqfSHmsL4RoxHInwHWcBycXdQ88L11SUz
-   g==;
-X-CSE-ConnectionGUID: OxO1k1xyTym1VAWKOntluA==
-X-CSE-MsgGUID: gr6T1gKQRP6oAM+tme1StA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="71187818"
-X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
-   d="scan'208";a="71187818"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 03:57:14 -0800
-X-CSE-ConnectionGUID: hTyHqRm4QNaxFbABRAh58A==
-X-CSE-MsgGUID: T9QWwV2NQ2Kr2Ul3s4LK6g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
-   d="scan'208";a="209970009"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 03:57:10 -0800
-Date: Tue, 3 Feb 2026 13:57:08 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
+	 Content-Type:Content-Disposition:In-Reply-To; b=HTrJXxZFlqRUx4J/MvMdAMbLh4BWCMBsqZk+lOsgUlC3Qnwjby0x2O5AnxfQUIwt/+MQms9EezntK83WP0EaxEaTZ+cC7xcqrl5I2EhTbovphFtRPWlmZO4tdtVEph7jSCuwd1x5T0z2KH+TjcaVULAim7wq05VT87lskeMGxrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vnF4e-0005rI-5n; Tue, 03 Feb 2026 13:00:04 +0100
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vnF4d-003tmB-2R;
+	Tue, 03 Feb 2026 13:00:03 +0100
+Received: from ore by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vnF4c-00E3Ue-37;
+	Tue, 03 Feb 2026 13:00:02 +0100
+Date: Tue, 3 Feb 2026 13:00:02 +0100
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Sander Vanheule <sander@svanheule.net>, kernel@pengutronix.de,
+	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: Re: [PATCH v4 11/13] iio: dac: ds4424: convert to regmap
-Message-ID: <aYHilKjWHmNTH3jg@smile.fi.intel.com>
+Subject: Re: [PATCH v4 06/13] iio: dac: ds4424: use device match data for
+ chip info
+Message-ID: <aYHjQhO92yxoy_9o@pengutronix.de>
 References: <20260203093434.2548978-1-o.rempel@pengutronix.de>
- <20260203093434.2548978-12-o.rempel@pengutronix.de>
+ <20260203093434.2548978-7-o.rempel@pengutronix.de>
+ <aYHH69gXyuwmQR03@smile.fi.intel.com>
+ <aYHLRvfJH54XumUA@pengutronix.de>
+ <aYHhO7pJPEew7QMC@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260203093434.2548978-12-o.rempel@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <aYHhO7pJPEew7QMC@smile.fi.intel.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL: http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Tue, Feb 03, 2026 at 10:34:31AM +0100, Oleksij Rempel wrote:
-> Refactor the driver to use the regmap API.
+On Tue, Feb 03, 2026 at 01:51:23PM +0200, Andy Shevchenko wrote:
+> On Tue, Feb 03, 2026 at 11:17:42AM +0100, Oleksij Rempel wrote:
+> > On Tue, Feb 03, 2026 at 12:03:23PM +0200, Andy Shevchenko wrote:
+> > > On Tue, Feb 03, 2026 at 10:34:26AM +0100, Oleksij Rempel wrote:
 > 
-> Replace the driver-specific mutex and manual shadow buffers with the
-> standard regmap infrastructure for locking and caching.
+> ...
 > 
-> This ensures the cache is populated from hardware at probe, preventing
-> state desynchronization (e.g. across suspend/resume).
+> > > > -	indio_dev->name = id->name;
+> > > 
+> > > > +	indio_dev->name = client->name;
+> > > 
+> > > Isn't this an ABI breakage?
+> > 
+> > I can't confirm it.
+> > 
+> > before all patches:
+> > root@DistroKit:~ cat /sys/bus/iio/devices/iio:device3/name 
+> > ds4424
+> > 
+> > after:
+> > root@DistroKit:~ cat /sys/bus/iio/devices/iio:device3/name 
+> > ds4424
 > 
-> Define access tables to validate the different register maps of DS44x2
-> and DS44x4.
+> In ACPI case it might look differently, but I have no means to test this.
+> 
+> id->name comes strictly from an i2c table, while client->name is constructed
+> using specifics of the firmware enumeration. In DT due to some (historical?)
+> reasons the client->name has no vendor substring and hence matches 1:1 to
+> id->name. In ACPI, IIRC, the client->name is ACPI device instance name,
+> something like ABCD0123:00.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Ok, I see. Should I revert this line?
 
-...
-
-> +#include <linux/array_size.h>
->  #include <linux/bits.h>
->  #include <linux/delay.h>
->  #include <linux/err.h>
->  #include <linux/i2c.h>
-
->  #include <linux/kernel.h>
-
-Side note: I expect at some point see this inclusion to be gone.
-
->  #include <linux/module.h>
-> +#include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
-
-+ types.h // exempli gratia, u8 vals[] in the code
-
-...
-
-> +	u8 zero_buf[DS4424_MAX_DAC_CHANNELS] = { 0 };
-
-'0' is not needed.
-
+Thank you,
+Oleksij
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
