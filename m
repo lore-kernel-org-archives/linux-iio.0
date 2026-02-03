@@ -1,189 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4059136167C;
-	Tue,  3 Feb 2026 17:29:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAC0EF50F;
+	Tue,  3 Feb 2026 17:54:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770139768; cv=none; b=hsn/Brzl8to7AK419KQQezal1fthvU6ax1tlfGnjhpCr9RRPDmWPz38q7BBWHEyZhjmw5IpkYwgkAzwUGzQeivl/Dr6gqKRA11b9NTrFJC2zwjIU4FPOArhxctcQK7cGYnOYkxhCPQ73Ou9Ozx31OhWj2emxNomhfaghAfCoo88=
+	t=1770141280; cv=none; b=d6mcmPPsBoFCiKEiYYmbVAE2oOieu2crDVuWEoImYnDK1rUCoA9ZTgUD/Uj7LaHF7rBG2fbQfFwQIreUFv5XWK1j/MFUW5LjkcMV7AjromMuKFze/jMoPh+/1Wmq2c0L/e9+1fhV0wx0CMp9yYUT8YYiyroHjPj6J/9X0xFBa7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770139768; c=relaxed/simple;
-	bh=/27KvDUVJ+RN0F4dVRyGVqzNXWFUbANdZeNFMknt3SI=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=mDGJrY1CF8lvc7oJ+02JvBJfFJuG1mDC1LTDhhM1LvxqrDI5cQH6mkzHbw7nOuMNibuqSvoQB5bbV9y4ep1hVz92/rCMKpBkfFTjhCsZPjmzy/kAIQjROKB8bxqNKo7a91/7MkUb89tU8ob45UGSGZoCbQ3ESpGEMilym3pSJYE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=M+ZRHclF; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1770141280; c=relaxed/simple;
+	bh=VLetFPKwHcvjdVCavcZRFp1BoK4FCqP2UIToarHeHRE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Zf0IUJqK0xHpqm8vVY27p+wqh3jarcHonZUzV+u032tX4Q31CrDGp8EcI7wsTKdCFl2g7SjUfNh4v4n5l3ZnkQuBzSOczgZOR+VQI3x3uWapP3N5y4cqHrSGdALUEFh3WHhyKuaTx1hsD9dDJ+pfMoiv9Zd6l+76mGR5LpHEDSk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FY1Lykvt; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="M+ZRHclF"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FY1Lykvt"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770139766; x=1801675766;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:content-transfer-encoding:mime-version;
-  bh=/27KvDUVJ+RN0F4dVRyGVqzNXWFUbANdZeNFMknt3SI=;
-  b=M+ZRHclFcL8HTu3/3OoPHvHZkJOUx2I1FEd12PG9V7BI6Jju4lUP+CA1
-   IPVuy+6tFvayPh6dUjxs913lcc1Fzop+McG/TecWRWJuZQ4MyzFR1135F
-   DU2p8wN/y3UuiLo3umgEd31bWdG42tRhrdAXI/Cy0Z4DNtd8wJxHyav0j
-   ilnexjJFNt0wtD+tBgg0m6/rVijMOqYSDrbV7/xTafo37kflD2s1D3Zc2
-   w6EvNwnElroatQhgu4VyTrUkq6La89YE5NZKfBTC/tvuyj6jIc2GO+0lq
-   IGwD1KLBMw7vs3h57TmNvU35WR9g+dTTSzmUW94FvCB00qHJI8MEDqfI0
+  t=1770141278; x=1801677278;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=VLetFPKwHcvjdVCavcZRFp1BoK4FCqP2UIToarHeHRE=;
+  b=FY1LykvtERpLNhK65EcOs1ClLICcyXukqgo5rVrU3oSAuaEU0hj4xbcu
+   KrFw00EhfaQxzGLfATgolxi6Gxc3nSTeAxRXv1hvgz5LT1tEgPLQtbRkg
+   3gIUehVFh7wTn0B+UKOHxNoloi342MAb3u9fsGVUJnaqpk8rR8THuBURl
+   MMuruV+QV1h2h15myhm75FvXF+iN/4BE7YAudmb1zJy3vRuzppCEJXHLR
+   oRsknPidkPdUGARTdMIG2kooGMXrm2Fh45STqzQdBbmmnYJewEXdcQ7en
+   cFzg7fsd6TUeRsKEggt+Vq3si+8LV/M2vgIhZsGr9fIsUOyNnPzUxmYTa
    A==;
-X-CSE-ConnectionGUID: RX1D5fe/QmW+5Qo0r/mrhA==
-X-CSE-MsgGUID: VBYJlAuEQlSN1vYcqEpmEA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="82056637"
+X-CSE-ConnectionGUID: TbkUcnztSVWfiKRGus1MVA==
+X-CSE-MsgGUID: L1G8zWDaRzynogxtopGLbg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="81950685"
 X-IronPort-AV: E=Sophos;i="6.21,271,1763452800"; 
-   d="scan'208";a="82056637"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 09:29:25 -0800
-X-CSE-ConnectionGUID: SjdxNE5/SaG275IC+Pmb1g==
-X-CSE-MsgGUID: fosdHngvSuafuI3fuvUJdg==
+   d="scan'208";a="81950685"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 09:54:37 -0800
+X-CSE-ConnectionGUID: 7B4EOuIVR42ANZBIbnKxrA==
+X-CSE-MsgGUID: pm0K+k8LQE+CyXOEwsAAxQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,271,1763452800"; 
-   d="scan'208";a="232829317"
-Received: from spandruv-desk2.jf.intel.com ([10.88.27.176])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 09:29:25 -0800
-Message-ID: <0a3433112f0bec3d5bd76c7ae9b6774b455203a6.camel@linux.intel.com>
-Subject: Re: [tip: irq/core] genirq: Warn about using IRQF_ONESHOT without a
- threaded handler
-From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Sebastian Andrzej Siewior <bigeasy@linutronix.de>, Bert Karwatzki
-	 <spasswolf@web.de>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, Jiri Kosina
-	 <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, Thomas Gleixner
-	 <tglx@kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Date: Tue, 03 Feb 2026 09:29:25 -0800
-In-Reply-To: <20260203083826.1gOzxrwt@linutronix.de>
-References: <20260113120541.YVf2vRA3@linutronix.de>
-	 <20260202232741.13380-1-spasswolf@web.de>
-	 <20260203083826.1gOzxrwt@linutronix.de>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
+   d="scan'208";a="247515433"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 09:54:34 -0800
+Date: Tue, 3 Feb 2026 19:54:32 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc: David Lechner <dlechner@baylibre.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
+	error27@gmail.com
+Subject: Re: [PATCH v3 next 1/6] iio: sca3000: cache SPI device ID in probe
+Message-ID: <aYI2WANAXteA8Qxz@smile.fi.intel.com>
+References: <20260203122109.689669-1-harshit.m.mogalapalli@oracle.com>
+ <20260203122109.689669-2-harshit.m.mogalapalli@oracle.com>
+ <aYIR-LAq9iJETwjK@smile.fi.intel.com>
+ <a8eed14b-2baf-46f8-85c1-067481c02d7c@oracle.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <a8eed14b-2baf-46f8-85c1-067481c02d7c@oracle.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 2026-02-03 at 09:38 +0100, Sebastian Andrzej Siewior wrote:
-> On 2026-02-03 00:27:40 [+0100], Bert Karwatzki wrote:
-> >=20
-> > The warning appears because iio_triggered_buffer_setup_ext() (in=20
-> > drivers/iio/buffer/industrialio-triggered-buffer.c) is called with
-> > thread =3D NULL
-> > during the probe of the iio device and calls iio_alloc_pollfunc()
-> > (in drivers/iio/industrialio-trigger.c) with thread =3D NULL and type
-> > =3D IRQF_ONESHOT.
-> >=20
-> > A simple fix could be this:
-> >=20
-> > diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c
-> > b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> > index 9bf75dee7ff8..40eea3a44724 100644
-> > --- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-> > +++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> > @@ -64,7 +64,7 @@ int iio_triggered_buffer_setup_ext(struct iio_dev
-> > *indio_dev,
-> > =C2=A0
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio_dev->pollfunc =3D iio_=
-alloc_pollfunc(h,
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 threa=
-d,
-> > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 IRQF_ONESHO=
-T,
-> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 thread ?
-> > IRQF_ONESHOT : 0,
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio=
-_dev,
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "%s_c=
-onsumer%d",
-> > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 indio=
-_dev->name,
-> >=20
-> >=20
-> > Are there any problems with this?
->=20
-> Urgh. Haven't seen those.
->=20
-> Looking at all the users of of *iio_triggered_buffer_setup*() the
-> primary handler is either NULL or iio_pollfunc_store_time().=20
-> So IRQF_ONESHOST should work all the time.
->=20
-> Then there is=20
-> - drivers/iio/adc/vf610_adc.c=20
-> - drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->=20
-> They use iio_pollfunc_store_time() as primary and have no secondary.
-> This would trigger the warning but not having a secondary handler
-> while
-> returning IRQF_WAKE_THREAD should create a warning of its own.
-> What did I miss?
->=20
+On Tue, Feb 03, 2026 at 09:25:08PM +0530, Harshit Mogalapalli wrote:
+> On 03/02/26 20:49, Andy Shevchenko wrote:
+> > On Tue, Feb 03, 2026 at 04:20:45AM -0800, Harshit Mogalapalli wrote:
+> > > Store the spi_device_id at probe entry and reuse it for the name and
+> > > chip info instead of calling spi_get_device_id() repeatedly.
+> > > 
+> > > While at it, reshuffle variable list in a reverse Christmas tree
+> > > order. No functional change intended.
+> > 
+> > Did you miss David's comment? AFAIU the suggestion was to convert to
+> > chip_info(). With that done, this should use spi_device_get_match_data()
+> > (or something like that, I don't remember the correct spelling of that API).
+> 
+> I was thinking of dealing with it in a separate series(as documented in the
+> cover letter). Also David pointed out that if I am planning to do that
+> conversion separate, there is no neccesity of this patch, as it is anyway
+> going to be replaced soon when I have that ready. So I will drop this
+> simplification in my next version and leave the conversion to
+> spi_device_get_match_data() to another patch set. Will also include your
+> "irq > 0" check fixup in the following series. Hope you are okay with that ?
 
-hid-sensor doesn't need a bh handler. This patch can fix.=20
+As long as there is no added churn I'm fine with the approach.
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 5540e2d28f4a..b2b09b544f43 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -227,6 +227,11 @@ static const struct iio_trigger_ops
-hid_sensor_trigger_ops =3D {
-        .set_trigger_state =3D &hid_sensor_data_rdy_trigger_set_state,
- };
-=20
-+static irqreturn_t triggered_buffer_handler(int irq, void *p)
-+{
-+        return IRQ_HANDLED;
-+}
-+
- int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char
-*name,
-                                struct hid_sensor_common *attrb)
- {
-@@ -240,7 +245,8 @@ int hid_sensor_setup_trigger(struct iio_dev
-*indio_dev, const char *name,
-                fifo_attrs =3D NULL;
-=20
-        ret =3D iio_triggered_buffer_setup_ext(indio_dev,
--                                            &iio_pollfunc_store_time,
-NULL,
-+                                            &iio_pollfunc_store_time,
-+                                            triggered_buffer_handler,
-                                             IIO_BUFFER_DIRECTION_IN,
-                                             NULL, fifo_attrs);
-        if (ret) {
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Or add it to industrialio-triggered-buffer.c as a common handler for
-all caller with no bh, whatever Jonathan prefers.
-
-
-Thanks,
-Srinivas
-
-
-
-> > Bert Karwatzki
->=20
-> Sebastian
