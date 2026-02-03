@@ -1,90 +1,100 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1001A333451;
-	Tue,  3 Feb 2026 11:21:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5582F2652B6;
+	Tue,  3 Feb 2026 11:24:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770117679; cv=none; b=amjefPeAiMRylAD3H1y9RRWhro7HExxkGj3KxRkck5ZUhCz1pnjt3gkDR4L0J+Qj44gseF43e40AuRghqDzq7YrQe8hGbVQuAR14Q8qYjkvqrlww+koEkZRcef+ZJtbZk+khB0CTSrNRUwUJNY5D6nVZUf9lq3GANadiQaNK1j0=
+	t=1770117859; cv=none; b=ADIQmVSNsvcQ06OyObksDJ68j4Q/HUQtvZ1vqUtoDWH5hhYin+O7SKt0Kn5c5MCLjaJ3BCjcCgfScvknksH4uISYrp2JwW9tgIiBa5HFwG7CtYxaHjHKysOlhJI4VLZpJI9WU2fQ5/pRR5VwfXYE4rfNtwJD6mvWFtJ+2BsGHYg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770117679; c=relaxed/simple;
-	bh=nS1vjatkjXL9TqGf+XtG5dcMRQZ89WeW4bm26FUB6iM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HxI1dTRj4gWSSoXp0l/CHxOhq0hwoSRwHXcs072VHHj/xc8cpKGcyQ6DAObgec4K9/TpcjZ0sajMhR/u8J7U4+5HzJzU4kOBKtqKN4P+wZ7TyoYbyGhyV9lhlPWHCJLgImgwUf8zg4MCQx0wcE6XSjYuT0GFWlzKXrHUDboGXbs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SKqAbZ6O; arc=none smtp.client-ip=198.175.65.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1770117859; c=relaxed/simple;
+	bh=o3bvt5IVoPOuC7CuBgSGeBwzgK4Z/m9v9mxJ/tknRCE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=fT0ad1SMCuHhbOar1lU55Z7p7HGTC7wkEQHAGdh+vrOQNklKi+OT3PCU7WlZcsj4wsmXjeS7mIxStOONI800ZyfqI+nLi9aesv6TPKsgjcMUdNYMlYg79wTXpj/ahK3pnBufcOb6T6znDLvf5AXHLB6NptjLkqM7NntSEHd+LYo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mFnhsOG2; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SKqAbZ6O"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770117679; x=1801653679;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nS1vjatkjXL9TqGf+XtG5dcMRQZ89WeW4bm26FUB6iM=;
-  b=SKqAbZ6Oplg+9W7juvKOJZETo4shTmhHuaer1YUFyvCyzzAgmagyIv2x
-   T1aFwPT1kz4iJes8TUvixUXs5weu0hmNaEgyc7kCyFwGjnUYpb4lLqtJF
-   uDL9gN30iRMWSWPSryN0NBV4/sCruZuYhXorL0/rmZUH5BZrAiHbk/z4X
-   O7EOwODxH00msXRV1PeFK6qW1OuEM5U4KSoj6RH/pN3gz60at+Ltzy/re
-   PjPYGZIddEpG39vH/fRGGX//S2nXxcK7Z7OFZnGYKfIBqO2SdnxgNGWUv
-   B/eVTCoON9NF4aMrsALGnZu1kFLY8Xixiggs1Rf2RBzhq1Ung8Nf4IUS9
-   g==;
-X-CSE-ConnectionGUID: vZexTiAcTmqcf41MSnjDTw==
-X-CSE-MsgGUID: fkgSz+sKSVWY1X/HFM75lw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="71325662"
-X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
-   d="scan'208";a="71325662"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 03:21:18 -0800
-X-CSE-ConnectionGUID: GcUuBPrbTuCJBJeJSoqA1w==
-X-CSE-MsgGUID: j6aFqlI0SPCfj4gXcL/emw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
-   d="scan'208";a="247429023"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 03:21:16 -0800
-Date: Tue, 3 Feb 2026 13:21:13 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/1] iio: imu: inv_icm42600: Convert to uXX and sXX
- integer types
-Message-ID: <aYHaKYWNbrZchDn-@smile.fi.intel.com>
-References: <20251109192556.3163077-1-andriy.shevchenko@linux.intel.com>
- <20251115185001.01f2b148@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mFnhsOG2"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2DFF1C19422;
+	Tue,  3 Feb 2026 11:24:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770117859;
+	bh=o3bvt5IVoPOuC7CuBgSGeBwzgK4Z/m9v9mxJ/tknRCE=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=mFnhsOG2cjRfSBUBPBqR9mCYNj8fOs4ZITMNRiTl7xaMbofIyVKTt3lzxd6U/vm8k
+	 KS8nmGkjgMDEZfQm4kLqY6qUveEsWVoGSHcIP5bFZBfxiZ9RfnAiioj9eRUyyHL+V7
+	 jMfybIrm0w9shhxR2Rae6sc/kZCDwaIGh9AyTbSz80FwBFDU2hMr3fUyxTNYC0Zo+7
+	 nGp1R06fbB3/FiOfuSGTn6oQSo8UxUaIEw6YxzqrwDBfEHz28KmUCxhJsVf43x3FqG
+	 HE0AW0Aqx44hcxp74J0P5+3ZeKDh2s0HGyX+dEYQiTZhpE1FYuFMBqsdPuO2KDPA+/
+	 B7r/vEtRsjL+g==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A669E6E807;
+	Tue,  3 Feb 2026 11:24:19 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Tue, 03 Feb 2026 11:24:07 +0000
+Subject: [PATCH v3 1/9] MAINTAINERS: Add missing maintainer entry for
+ AD8366 driver
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20251115185001.01f2b148@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260203-iio-ad8366-update-v3-1-5d5636b5181a@analog.com>
+References: <20260203-iio-ad8366-update-v3-0-5d5636b5181a@analog.com>
+In-Reply-To: <20260203-iio-ad8366-update-v3-0-5d5636b5181a@analog.com>
+To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ devicetree@vger.kernel.org
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1770117857; l=890;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=IB6nsbVkeaHwQfGZNvFxArIH7f6StXcyc8CEVB24Hfs=;
+ b=Np2u20H0RWI9M63yBaqwlqKY5mgZF4mY77FQQ8nqYhbiowkUHpZoBb8llNwUtdE6KmrkuQmzp
+ ZdDinUBGHxzD7O4LDazec5qQojIHu4kn6Vq24/lx4/qpWu8g7A0udUF
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-On Sat, Nov 15, 2025 at 06:50:01PM +0000, Jonathan Cameron wrote:
-> On Sun,  9 Nov 2025 20:24:36 +0100
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > The driver code is full of intXX_t and uintXX_t types which is
-> > not the pattern we use in the IIO subsystem. Switch the driver
-> > to use kernel internal types for that. No functional changes.
-> No problem with the change but this description made me think
-> that this was going to be a huge patch touching lots of instances.
-> 
-> Probably needs a rewrite to not say 'full of' :)
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Can you tweak that whilst applying, please?
+Add maintainers entry for drivers/iio/amplifiers/ad8366.c
+
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ MAINTAINERS | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1251965d70bd..ec9a6beb7619 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1583,6 +1583,14 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml
+ F:	drivers/iio/adc/ad7780.c
+ 
++ANALOG DEVICES INC AD8366 DRIVER
++M:	Michael Hennerich <Michael.Hennerich@analog.com>
++M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	drivers/iio/amplifiers/ad8366.c
++
+ ANALOG DEVICES INC AD9467 DRIVER
+ M:	Michael Hennerich <Michael.Hennerich@analog.com>
+ M:	Nuno Sa <nuno.sa@analog.com>
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.43.0
 
 
