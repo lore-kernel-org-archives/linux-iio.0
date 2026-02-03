@@ -1,117 +1,119 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 363083A9DAD
-	for <linux-iio@vger.kernel.org>; Tue,  3 Feb 2026 14:40:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2A3753B8BDC;
+	Tue,  3 Feb 2026 14:56:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770129615; cv=none; b=nbkP5ZA0+Jj322rJAK/cYJ/Ysf2BffpIgBY5ELoiPCllTZn9yLlk6A2gSWbGN3jqdJSTblNN0xjlOuY+tBHeSTpr1/7cfineY99H3MXrlhsm20/hurlN8mDP7u6j1i2aASlSelP9hqyG1jYnJTc80L7rJfqjTjA1J6xprhaSi/8=
+	t=1770130572; cv=none; b=p34pxIQ1QPbG0J33u8BiCdCkoJ4l1dr/zvI5DbTTn3riRICwzBUI794HaKCJ7CYPfSEKrKLm4t3lkJMXUMs8GLUY8jCM73rnJ27LsWjhCDO2LfjOa7AKZeaJxm4LQ7U4wEW4DZGKTLHf6Fp+M8qrNToGPDW8GU6aSs5hcdqOndc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770129615; c=relaxed/simple;
-	bh=m/ziyU4HLGC5IQ7uzs5nBrRKBSwg2S1LdvZuY/kbNk8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=T5wRSUvQ/KqbbZzunBjheDc9QK/iXsy7x8CgCeWJFNVdGsFWVfNiO0LSG4EpERPsgYPwkNzB7Y0oQxp3NW4KZAq14/fvK2Y5SgCj6DNzDz5qfoww6/9MGsci9vQWmUKUYqIRuwvMb22dAGXjXmpZAU9VjzDSXQJJ7Bik2XYax8M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F6dH5K4M; arc=none smtp.client-ip=209.85.210.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770130572; c=relaxed/simple;
+	bh=j55JyfW5E2HlW1jVpfenFHxuN+CxSTvPC7IBLTzEJGQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LCD3GLaFM5t9X+JVWE/j74lYPUjWAC9IhIo68WhSsLTdEs+B2rbxu1z8DVzMufrScW6j6pk48D8iFmQ/rEFetjzjtEe2Wf2z48fXMqrBY1XXZ2RChXgcG1ImVuy5avifQye8weec6CZ33ecsTj/hAA9b4wT1H+OyR6pgffKhL00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ErSlCscp; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F6dH5K4M"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-823075fed75so679176b3a.1
-        for <linux-iio@vger.kernel.org>; Tue, 03 Feb 2026 06:40:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770129613; x=1770734413; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=YXDwaifGC6j2k9hfNfLuDwLHZpRvyVgqB/72HtEhxLQ=;
-        b=F6dH5K4MhImfzQ6+MU3AY4Lv3GcD+38wy6FokgXQYifU8f5lQRxOraF0BDAQ8S4kTL
-         I9a1o5o71o7RJf7r9jHTCwaDL/AhnR7em4Et7YwmkGfoRJnYciMNqqmvrtv7CyFniDgO
-         sHt72wN5h9g2yv1i1B/gosuB7aPbd+A8jq7SitAdUuU4apMCOeWCrZaJIHsVhIfLwGuV
-         SNIhIHoqZbzwlu57GK4fpmDtz64XMoqPHguE6pE3MUEAIQFn49xyoRTZnoVkhoqWHN55
-         NUuHJfEwcG/qHriBOviI2oPQ246CD9voQGY7iUIJWnVuEOXEhKtQbqz6RFjB+Od8Vemu
-         Dp1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770129613; x=1770734413;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=YXDwaifGC6j2k9hfNfLuDwLHZpRvyVgqB/72HtEhxLQ=;
-        b=fCiTrP67a5/KmkBe15E62Z5+8wUkGTNCZI7QO6tLKJX1IIBJU20Ck9QE1TN2BERPD6
-         qEFFgojUESzDSbiE0L4vuvwVKmfI++6DLCCGoqq9mpLw7n6cWKxTgi1P6gMKuCtCiQZx
-         +MUB5uu7VJ7gvf3IGJ3qbixIeKKbcbIjfuqv9D3VhkEmfUfbE67egDtm+NiiGMCJt2gg
-         1yc2dkQhsedFqSNv5sNfes1FrPCBBL52YuxyZj/g2DG/cQklxrIfALLd11R8MDAwmZwA
-         /9ZUexUqmHTrSOxo8Y372/spc5JZB5LbblJiJURgwQCMHqfmd8pCh1TbMp785AAx7L9b
-         EYaw==
-X-Forwarded-Encrypted: i=1; AJvYcCXQXwzYlcd3RhMetvKhLeRFTAgzCzLoCvsSXhUWcyWH6NH0ppKrA0ZsKqfH7DmXKIbfIeuMqkfL1oI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxFJTXF5kB69ApiHl1BfByvp1cAxVSogrNoofvuPDHlUsbX9VP7
-	OC9CkKjj0kB2y2bj4iujbmkyZQUpqErfLLxqZIZ91vZO5+kqpQixE86y
-X-Gm-Gg: AZuq6aJpksrzD979fP7dIiDjBcczHppP6/0hg4IaDC8BY4DP5O/ynzaWCWW+wh/L9Rx
-	e6bSpWRUiiXCtTk5WBKtRPn5WidirFvjc6ywbHTDTjlSSAwj86XVXZdrqZ4MyPOG+m3BkJRaHxI
-	2wlX3bNZWLhuCDikB/vljTqd+WrELll+dJ5aq0HYGb47DdUFN3atfAQdzyclJ85D8XhbRYLSikz
-	NyypUGb8VI7lJlXhzgpy8qCMhWsdS6dlPG4AdljnaR0AiqjY8jd5zX6BO3amHTMeBK84ecaNG8b
-	m60ai+UZHuu5MtULOGOOmOTbkNkJiIbtiZNo0KFV64JNoTfDYhyjlRsut/6coFGv1+o3NV0QiF/
-	m24mDNs3vZvBfE3k3T4ERbz1FiNvRGV3unpgESIaM7ArWAQDg2gZLo3Igd8lKoY7eCVKGFjJb76
-	TmscWx4/YW
-X-Received: by 2002:a05:6a00:1307:b0:81e:af19:34ac with SMTP id d2e1a72fcca58-82404325ea7mr2773928b3a.29.1770129613506;
-        Tue, 03 Feb 2026 06:40:13 -0800 (PST)
-Received: from arch.localdomain ([2409:8a28:a52:d2b1::1004])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82379b1ee89sm19810313b3a.14.2026.02.03.06.40.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Feb 2026 06:40:13 -0800 (PST)
-From: Jun Yan <jerrysteve1101@gmail.com>
-To: devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Cc: linusw@kernel.org,
-	stephan@gerhold.net,
-	hns@goldelico.com,
-	jic23@kernel.org,
-	Jun Yan <jerrysteve1101@gmail.com>
-Subject: [PATCH v3 3/3] dt-bindings: iio: gyroscope: bosch,bmg160: add bmx055 gyroscope binding
-Date: Tue,  3 Feb 2026 22:39:43 +0800
-Message-ID: <20260203143946.301233-4-jerrysteve1101@gmail.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260203143946.301233-1-jerrysteve1101@gmail.com>
-References: <20260203143946.301233-1-jerrysteve1101@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ErSlCscp"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770130569; x=1801666569;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=j55JyfW5E2HlW1jVpfenFHxuN+CxSTvPC7IBLTzEJGQ=;
+  b=ErSlCscphF51EpEHyN7AUfgNkN66rBfWorNcZxErk0Fe8u0zphQvM+qw
+   boEyW15ibcD/dOJXThtotbs6fFbHZFWQrfHVemR58TdBov/SBQSKsFtI5
+   7oohW5lEe7bsjqtbh5GMH+VnZcDvwLtm1zOGfkATDKA8IG+ylkMHcgYLo
+   dV4s5bp3v3egN8HvTBJIXQ8PkzPZv9UVflbZVKQB853eNlYBtCPkDsMiJ
+   wi+7vVai7ZnjNFZzj/YDABxVWvfNGTGzaSLucvtUpN6YbqPlgM5S+Oyef
+   omxlpedpYguAHVMy+hbEqorWqv6KlRbZ42h5tfwRUJiRZWRghGC+WUpuf
+   g==;
+X-CSE-ConnectionGUID: DAiJsptnR3aQWIZKFSYsJw==
+X-CSE-MsgGUID: C5OfcK4ZSY2p7pLZbjDN3A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="75159373"
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="75159373"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 06:56:05 -0800
+X-CSE-ConnectionGUID: T2lApN1/RtOJ+k85+n/Egg==
+X-CSE-MsgGUID: bl/CHXtsTY6/WkNSqz7oIA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="209159621"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 06:56:02 -0800
+Date: Tue, 3 Feb 2026 16:56:00 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	David Jander <david@protonic.nl>
+Subject: Re: [PATCH v4 06/13] iio: dac: ds4424: use device match data for
+ chip info
+Message-ID: <aYIMgEEDd8ZfLv71@smile.fi.intel.com>
+References: <20260203093434.2548978-1-o.rempel@pengutronix.de>
+ <20260203093434.2548978-7-o.rempel@pengutronix.de>
+ <aYHH69gXyuwmQR03@smile.fi.intel.com>
+ <aYHLRvfJH54XumUA@pengutronix.de>
+ <aYHhO7pJPEew7QMC@smile.fi.intel.com>
+ <aYHjQhO92yxoy_9o@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aYHjQhO92yxoy_9o@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Add the device-tree binding for the bosch BMX055 IMU (gyroscope part),
-which is compatible with bmg160.
+On Tue, Feb 03, 2026 at 01:00:02PM +0100, Oleksij Rempel wrote:
+> On Tue, Feb 03, 2026 at 01:51:23PM +0200, Andy Shevchenko wrote:
+> > On Tue, Feb 03, 2026 at 11:17:42AM +0100, Oleksij Rempel wrote:
+> > > On Tue, Feb 03, 2026 at 12:03:23PM +0200, Andy Shevchenko wrote:
+> > > > On Tue, Feb 03, 2026 at 10:34:26AM +0100, Oleksij Rempel wrote:
 
-Datasheet: https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_datasheet.pdf
-Signed-off-by: Jun Yan <jerrysteve1101@gmail.com>
----
- .../bindings/iio/gyroscope/bosch,bmg160.yaml         | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+...
 
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-index 3c6fe74af0b8..e19aa1797f14 100644
---- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-@@ -11,10 +11,14 @@ maintainers:
- 
- properties:
-   compatible:
--    enum:
--      - bosch,bmg160
--      - bosch,bmi055_gyro
--      - bosch,bmi088_gyro
-+    oneOf:
-+      - enum:
-+          - bosch,bmg160
-+          - bosch,bmi055_gyro
-+          - bosch,bmi088_gyro
-+      - items:
-+          - const: bosch,bmx055_gyro
-+          - const: bosch,bmg160
- 
-   reg:
-     maxItems: 1
+> > > > > -	indio_dev->name = id->name;
+> > > > 
+> > > > > +	indio_dev->name = client->name;
+> > > > 
+> > > > Isn't this an ABI breakage?
+> > > 
+> > > I can't confirm it.
+> > > 
+> > > before all patches:
+> > > root@DistroKit:~ cat /sys/bus/iio/devices/iio:device3/name 
+> > > ds4424
+> > > 
+> > > after:
+> > > root@DistroKit:~ cat /sys/bus/iio/devices/iio:device3/name 
+> > > ds4424
+> > 
+> > In ACPI case it might look differently, but I have no means to test this.
+> > 
+> > id->name comes strictly from an i2c table, while client->name is constructed
+> > using specifics of the firmware enumeration. In DT due to some (historical?)
+> > reasons the client->name has no vendor substring and hence matches 1:1 to
+> > id->name. In ACPI, IIRC, the client->name is ACPI device instance name,
+> > something like ABCD0123:00.
+> 
+> Ok, I see. Should I revert this line?
+
+Just do not introduce that change (change of the ->name field) in the original
+patch, in that case no revert churn would be needed.
+
 -- 
-2.52.0
+With Best Regards,
+Andy Shevchenko
+
 
