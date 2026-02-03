@@ -1,97 +1,105 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCA482DB797;
-	Tue,  3 Feb 2026 11:26:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 061D81E5205;
+	Tue,  3 Feb 2026 11:32:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770117982; cv=none; b=MSb/ujkpXOZP9p0fOgWMGzbiRQiQg2L5Exqv32EcUs9RO+FY+sR7YMR2MmzPLE508KO3vIjFAATK6l1HuG2v2Rqy0jPa8/m2EubAlinzCF/6eRhwjVDYzWKYNQucvdukcqOmEPAZdUNB7Y8RLjMYWq2p31OspxSsAC+5z+EZMCY=
+	t=1770118362; cv=none; b=STs2TKB6qDCuFLJ3JOc+o/YaNuyy3Yp8Ur/AEIdKgNbkI3GtbcJOaRU+ePTsnjRYzn5Fr8p2WTMSgATG1iwzPqdGCkJOofIqyu7kMCDS/hGuI0wVBmmRtRvOIIOfcD3sxxzzJKyaQIomi8pP+rgpO9eGtt1OK+OIaZ6XiQDHj30=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770117982; c=relaxed/simple;
-	bh=PXuRoEp+q48DXpZjLuTgpRgqybEHTarUKiAQ6ciBgF4=;
+	s=arc-20240116; t=1770118362; c=relaxed/simple;
+	bh=e+bR2bbnlwI/OASTh/92bVB/YcTPkIMP8b5WDKpM8D0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=AcZ5FVMcGpyT7a/TZnyyIdqTvdR0t5JdaFr0KY1SkXxA8LOua1ad7VeZOQLXU0qtc68szqc1lQR8VaWYPYl8KcW4ONlTmz2YXIiBvLvwOy2BHyjIyUUymyUyG9MjdohMvQDX5XZFOYEqu/UFDqgVuSSUIVkvX7hEcRhCwNIFvLE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=j2soV7AB; arc=none smtp.client-ip=192.198.163.8
+	 Content-Type:Content-Disposition:In-Reply-To; b=S+NhVw6THOGSzAB/6xk4z2s0MICpK7E7sZM/wcyZAFqrza9E0668oYhbF6FcdMtCKMKaOV9Qb+M+tw6CmkhoXLpYDnGGqp3HblZuyo/CLl61ybmNii0YjfwUd1J2Fg/FGsOb+OQJFvGsJLPWyyB+J1m85X8rLBpN2X1T9OaMdTM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Y3CqiymE; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="j2soV7AB"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Y3CqiymE"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770117981; x=1801653981;
+  t=1770118361; x=1801654361;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=PXuRoEp+q48DXpZjLuTgpRgqybEHTarUKiAQ6ciBgF4=;
-  b=j2soV7ABDZLk7DChtbdSxmV1zCPwnZ8iNEayawVhKGCu4XjqX1HE0s+c
-   vBrHss8u03a+cfqvnm46Vsv5QQrxtEIrq53bnRFPzlf4tc7emcw7+sIjq
-   G67l5P1veqpKES8PUiCLJatqHje6+5oN/RGIj2GYl4FjHZGVwrfE4QgpR
-   oxOpIdCOFRTP3RaQrepPr5sPXZtJmusNSFa+4QtUY6OiGkDMXEfn7O548
-   WcIuYyvbGrB0vQ7rZAdGO8ojS9raJsBUlKIQMYO4CUBC9E8mKV/rk+R1s
-   P8hhpMY7C0wFeIwcVMxIOJTZ1Ow4J/iWR5rU9mwHFjW8cYZBcLEN/o/wx
-   w==;
-X-CSE-ConnectionGUID: 8mjqR0gkQ/Cysfs9OUJz4g==
-X-CSE-MsgGUID: Nwy0baw/SP+4updvz0Ec1A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="88861477"
+   mime-version:in-reply-to;
+  bh=e+bR2bbnlwI/OASTh/92bVB/YcTPkIMP8b5WDKpM8D0=;
+  b=Y3CqiymERAkKXzLnTEwxSdZFmTazls/7fcySs48mzawUxeeevv47jAeU
+   8a19g71+Hg7gIltayXQHOs3mVQZM2xQJeZ6u+qgIEi57wkG+MgeRa5ZQ0
+   +qZKQLouiQYgNE738elWr2fRDowezqUCbpVhY0H92ijqAK8I0/PzUZKna
+   FKjZkmjK/qFlYkuxjdxw/LVlhzYaFXiUUvjAAFqpvQILCCo1EuqKduIhY
+   pOh4JlJbTONkjWFzQAJw+fq+m32jAllbKrcyuRGZWjcXOkEPpQtEA/HVp
+   VLPP/7ViKbENrZg0QkYquBhKy6VMX93cwToZbr1XyoNzqpqEjeomp5MYA
+   g==;
+X-CSE-ConnectionGUID: juY2i0RUQY239xdjpQ9k/g==
+X-CSE-MsgGUID: LFG2k5vLSJ6RYS46+hyphw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="82659579"
 X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
-   d="scan'208";a="88861477"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 03:26:20 -0800
-X-CSE-ConnectionGUID: 6GnxSa/8T3igudpH78nW6w==
-X-CSE-MsgGUID: QhDcBrkJTzaV5W/LFtfhmA==
+   d="scan'208";a="82659579"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 03:32:40 -0800
+X-CSE-ConnectionGUID: m/yjBmuqQ2SKqUEffv2WAw==
+X-CSE-MsgGUID: xJyKe79hTjaBu46CE6e/cg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
-   d="scan'208";a="213955865"
+   d="scan'208";a="208927854"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 03:26:18 -0800
-Date: Tue, 3 Feb 2026 13:26:15 +0200
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 03:32:38 -0800
+Date: Tue, 3 Feb 2026 13:32:35 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
-	Salah Triki <salah.triki@gmail.com>,
+To: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: trigger: fix use-after-free in viio_trigger_alloc()
-Message-ID: <aYHbVx_SHxvtWRdw@smile.fi.intel.com>
-References: <20260131092333.247931-1-salah.triki@gmail.com>
- <20260131124416.19576731@jic23-huawei>
- <b06bee455950f59ea3f2cdcd37ec4f6d1be68b39.camel@gmail.com>
- <20260202205217.3534d14e@jic23-huawei>
- <aYHZcmZUZApdmE5I@smile.fi.intel.com>
- <aYHZ4l8h_x6IdinI@smile.fi.intel.com>
+Subject: Re: [PATCH v2 2/2] iio: imu: lsm6dsx: Add alternative ACPI mount
+ matrix retrieval
+Message-ID: <aYHc08VZFQOlApIu@smile.fi.intel.com>
+References: <20260201225450.1649001-2-samuel@dionne-riel.com>
+ <20260201225450.1649001-4-samuel@dionne-riel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <aYHZ4l8h_x6IdinI@smile.fi.intel.com>
+In-Reply-To: <20260201225450.1649001-4-samuel@dionne-riel.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Feb 03, 2026 at 01:20:02PM +0200, Andy Shevchenko wrote:
-> On Tue, Feb 03, 2026 at 01:18:14PM +0200, Andy Shevchenko wrote:
-> > On Mon, Feb 02, 2026 at 08:52:17PM +0000, Jonathan Cameron wrote:
-> > > On Mon, 02 Feb 2026 10:12:10 +0000
-> > > Nuno Sá <noname.nuno@gmail.com> wrote:
-> > > > On Sat, 2026-01-31 at 12:44 +0000, Jonathan Cameron wrote:
+On Sun, Feb 01, 2026 at 05:54:50PM -0500, Samuel Dionne-Riel wrote:
+> This uses the SLA0 matrix, which is how the SMOCF05 configuration
+> exposes the mounting information for the accelerometer.
+> 
+> On a limited sample size of one (1) unit, the SLG0 matrix is the
+> identity matrix. It is unknown how the SLG0 mounting matrix would
+> logically affect the data, if it differed from the identity matrix.
+> After all, the IMU is mounted as one single unit, its mounting can't
+> differ on the gyroscope compared to the accelerometer.
+> 
+> The new `st_lsm6dsx_read_acpi_mount_matrix` function currently only
+
+st_lsm6dsx_read_acpi_mount_matrix()
+
+> implements the *known* ACPI methods found in the wild, but the windows
+
+Windows
+
+> driver seems to indicate more integration-specific methods could exist.
 
 ...
 
-> > > > Andy already fixed it for the main iio_dev allocation:
-> > > > 
-> > > > https://lore.kernel.org/linux-iio/20251112145735.2075527-3-andriy.shevchenko@linux.intel.com/
-> > 
-> > Right, and this thread makes me check the status and the series wasn't applied.
-> > Now I need to go to that thread to see why.
-> 
-> And there it was mentioned as being applied... Confused.
+> +static bool st_lsm6dsx_read_acpi_mount_matrix(struct device *dev,
+> +				      struct iio_mount_matrix *orientation)
+> +{
+> +	return iio_read_acpi_mount_matrix(dev, orientation, "ROTM") ||
+> +		iio_read_acpi_mount_matrix(dev, orientation, "SLA0");
 
-Ah, I have some leftovers, need to clean my local tree. Sorry for the noise.
+Indentation is incorrect.
+
+> +}
 
 -- 
 With Best Regards,
