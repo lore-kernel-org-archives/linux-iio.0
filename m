@@ -1,137 +1,108 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 655FB396D01
-	for <linux-iio@vger.kernel.org>; Tue,  3 Feb 2026 09:44:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7101399023;
+	Tue,  3 Feb 2026 09:48:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770111895; cv=none; b=h+MSdi1bkHXTBN061OdiSKLws7crQwbGk2SKB1vZYL2PxgXcHmTQP1i1T/hVWm0xc6U58tQMWiVTNzqwvELDRa1PDaTci+ixljBS+S8sqXri1pv6VamuV8Og0tN1pMuknR9losabs+/nsQw1XiTVvycbcJTEnNypK38IT6CZwvE=
+	t=1770112100; cv=none; b=hw+RlTbmGwuHNdB5V43HVurlagJeMgsmPcVfkiXGaL2hsWQVpGo7vFyctx3VUSP2HJaOCLnFYi2+IWU5+J/4xHte3rcImgej7CJs4cjWyPGxIkIaING6rb2UNS6wIilERRuli9KwjkHoPr2smPpIz8cqJ61DgjQPYgH/vMSxIqk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770111895; c=relaxed/simple;
-	bh=Cqs2ZJV6S+7Ur8W/eYJ9QXYkmA7dO/VTZ0ZHhCRoJ9E=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=hK90VMqhxwWTm7iIoXIh5OBDziQgy+7zAWcFLANJDn3izvqkWd4Ynnoo7AIwq9BuMzShygdMBUQozjId1BxVRM7HeGmQQQ9zYDRnEDREGnYctqQZtpl5YHjShr1U2pB5CT2giAIRPH/IsDSkZqOkKfEb/Wnlyn5U2WS0eEsYLyI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JrjJMUhF; arc=none smtp.client-ip=209.85.128.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770112100; c=relaxed/simple;
+	bh=CEq4LbWx/F8doQ6jmeGXZaCiv3sjboYjRC1sNgbWjqQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mjkC4R4H/t+UcgHedb0uaAtZesQwcbuxzPahypPPaDcyDyZsWvBQ5cNoTg655yC5ZMKf3HBUs9LWtdoPjf5mE8s/YN1QRGKRxHbga7GjPOJ3Nk8DEuzGm/YLv8cMkRqp0HlzNcXucMhPwP7gqsF8gQPWmpDdEaxpVtzb9yloPJ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EOj7H9B9; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JrjJMUhF"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-47ee0291921so51335545e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 03 Feb 2026 01:44:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770111892; x=1770716692; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iAfnD0LvqQD+kZ2dzGaSed0SZSeQIrOXUL16+cIH+I8=;
-        b=JrjJMUhFpkEbrHQNLUzNDqNaq/BTmaEyohByciMb9anH7IsUsMNY0WfPoeJlCsVok9
-         amQvOMguQDABkpr79cBnSuXigvCRfrNGEZ+JcVY0hQ8n1tNN8vX1WuwuRcqZgsJYbm5Y
-         B5yeXhS6JuyR3E180UE3QPTba+8pj0q7AU3qL/bHnNOGI6isPEDvst9eyY/CV6HrP45G
-         lslHm9YXiwM6DNXAExmMd80o3y7rXox3QanC/ySROf04alrxifol5RiWj2OQpf7IOFBd
-         UdQJBNcQsjv8N0bqjzUjXyGNMEPmUZnEb3LgPzLhVwn3Mh8w2AWUEMYeiuNXbien4Z6G
-         aQ/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770111892; x=1770716692;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=iAfnD0LvqQD+kZ2dzGaSed0SZSeQIrOXUL16+cIH+I8=;
-        b=cCHKbJoGij6X/rkbqzV9KQJ4U7riBDoINRTP9zQjoLTq+Wo1KV1h0Lk07a+HEl7k2i
-         d9hFeSwNDv/UBHq+2cJvS4WMcStu9eNSWkiY30PbrAH6dszTZVn347FzGysPqDdDXt+O
-         7hxig2BZpCXIGrmyD6T/Xzh5q4PZ247ofUlSx/JzxWa7t6h/2+v7cEqVJlLNEbMxA8nX
-         3WZL7moFYXqW3EnNPsxk0vB7AoDGnjMPeDCc3GpCRL+wVSmirT1T4fvzebjskDZr86jU
-         k2siZy2xyJJintX1ZnzxBK0/jvJ0QKunoKFn0pEsv5aUYjPIjZtJFMAIxx85JD/kkzrj
-         w1OQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUo8Tb34Syyjk4O3uNsG8y57KFd+DntpMbdnHpbbSsFl1REEruPvuS7MT2+73rxqXul34ZgeKZDA3g=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx5zaxkK7Sj8savkhr9j5o9AnQtAIroFt0LpDS2hVN7PgLvDK4X
-	LS49Y4HUbfvGET80uSAP5sd+PqgEkdF2MpqxUpjN4VhZgvDRUzYcgTrmkFbg/6OP
-X-Gm-Gg: AZuq6aLdyqKJDGvPEbEELuuzcR5joPBgJx/cBGex541DnX5qdWXJeNz9CcSo6tJzaE3
-	7qU136mCTFF2PZae6JP7LJA6Wj6l45KcVGfQKOLYdUL4Y7k/570GWipkXLYuzbXmlRuhIB2ffUD
-	nHoTF+kEbILSPxhO2+WU36xZFKmo2f6ttM/9zR/QV4RcHDDjihC8ytPZ9ZBJpO5nk+0o3/7TxO3
-	8GFXJXzlJ91kAoOLHuyTY1lEeLMruzfOm+nKXrBitjj/xl2IH0F9/Oai+7cfoY6na/JCIWHKy0t
-	7U1tZGktFVBMjWuBATcZY+XV0WuVU24IY4cwYb0bK9mqiIr/ErMIZFkO3GBvWX5YVcFzoS/ETj0
-	wQZiI2Uv2vorlZazzNK+e3BJWvx+fUDBdZ5Xl/dagVbjcGdYRI4bV2KKMZVZuq4kPHrBnIbiDsL
-	IckhpAdgyArcRWP9r8sJA=
-X-Received: by 2002:a05:600c:3b23:b0:47a:8cce:2940 with SMTP id 5b1f17b1804b1-482db49ff27mr199382875e9.14.1770111891490;
-        Tue, 03 Feb 2026 01:44:51 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-435e10edfccsm48545478f8f.17.2026.02.03.01.44.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Feb 2026 01:44:51 -0800 (PST)
-Message-ID: <a75be02da0b55997b2384a481d85b680d1372a78.camel@gmail.com>
-Subject: Re: [PATCH v2 2/2] iio: gyro: mpu3050-core: use
- pm_runtime_resume_and_get()
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>, Linus Walleij	
- <linus.walleij@linaro.org>, Jonathan Cameron <jic23@kernel.org>, Lars-Peter
- Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Date: Tue, 03 Feb 2026 09:45:34 +0000
-In-Reply-To: <3edc89e901fd9d55c5355c4ec007636b1c8d6801.1770039759.git.antoniu.miclaus@analog.com>
-References: <cover.1770039759.git.antoniu.miclaus@analog.com>
-	 <3edc89e901fd9d55c5355c4ec007636b1c8d6801.1770039759.git.antoniu.miclaus@analog.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EOj7H9B9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770112099; x=1801648099;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CEq4LbWx/F8doQ6jmeGXZaCiv3sjboYjRC1sNgbWjqQ=;
+  b=EOj7H9B9MvbXKEZhGpizK/zW/gs9y8UX9CJTsCoWRLeO+Ch8jwT0aYxO
+   pFIjZ7Ss4L3k7K5Nz0UkG2YBXXh41ZiUVqWv1HgvYPDodwlMs+xuSSNGh
+   6AUSHsoKHh7EkgH8Qwez8Vj9Pvp/G9aSdJt3561/+U4AmXR63Lv+G3V1H
+   tCAoHyFaxSu/1zSWVE5t9E0eSSbZbHTZe0Y0eEL4v++5nYSW0cOk3FCIK
+   vg0Kj0BdRpaAA/CwSY7PsMTWyakfTX6/MkcnBcMRYZR3XfLLHfBebX3yY
+   211xY2y9i2f7nAXIS1vZQtU+FXGAxkink7YZFE2yNoRHoYPF3VdygC1dO
+   A==;
+X-CSE-ConnectionGUID: /+/cQ19xRM2Sv2HUsW++wg==
+X-CSE-MsgGUID: Fl+vY/EgS+eWqkr0nhm42g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="75133408"
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="75133408"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 01:48:19 -0800
+X-CSE-ConnectionGUID: 4hZHrNRtRFOPNd5Kd+w3bA==
+X-CSE-MsgGUID: wNg7F1PgS3yOAqZf/jjMiw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="214282221"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 01:48:16 -0800
+Date: Tue, 3 Feb 2026 11:48:13 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Andrew Ijano <andrew.ijano@gmail.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	kernel-janitors@vger.kernel.org, error27@gmail.com
+Subject: Re: [PATCH v2 next 0/5] IIO: sca3000: devm resource management
+Message-ID: <aYHEXc2QjMAus5Bt@smile.fi.intel.com>
+References: <20260202194033.627967-1-harshit.m.mogalapalli@oracle.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260202194033.627967-1-harshit.m.mogalapalli@oracle.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 2026-02-02 at 16:56 +0200, Antoniu Miclaus wrote:
-> Replace pm_runtime_get_sync() with pm_runtime_resume_and_get() in
-> mpu3050_read_raw() and mpu3050_buffer_preenable(). Unlike
-> pm_runtime_get_sync(), the usage count is not incremented on error.
->=20
-> In preenable, call pm_runtime_put_autosuspend() if set_8khz_samplerate()
-> fails since postdisable won't be called on preenable failure.
->=20
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
+On Mon, Feb 02, 2026 at 11:40:07AM -0800, Harshit Mogalapalli wrote:
+> Hi,
+> 
+> This is an attempt to update sca3000 accelerometer driver to make use
+> of devm_ based helpers where needed. I have split it into 5 patches.
+> 
+> Patch 1 - some refactoring and simplification.
+> Patch 2 - switches request_threaded_irq() over to the devm helper
+> Patch 3 - Used devm_add_action_or_reset() for disabling interrupts.
+> (Ensured the ordering of teardown bits remain same)
+> Patch 4 - manage device registration with devm helper
+> Patch 5 - Make use of guard() in sca3000_stop_all_interrupts() function.
+> 
+> Thanks a lot to Jonathan for detailed review of V1.
+> 
+> During v1 review comments, Jonathan Cameron kindly provided some great
+> suggestions to improve this driver. One of them is making use of
+> gaurd(mutex) - autocleanup style, patch 5 does that for one function.
+> 
+> Yet to be addressed tasks:
+> 1. We shouldn't be using the spi_device_id at all.
+> 2. Modernize other fucntions to make use of autocleanup style locking
+> which simpifies the code and makes error paths cleaner.
+> 
+> I will be working on these two above tasks and will be sending a
+> different patches for those.
+> 
+> The series builds cleanly and I have performed static analysis with
+> smatch checker but haven't tested on actual hardware.
 
-To me this is more than just reference counting. It's also about proper err=
-or handling.
+David already reviewed and v3 is anticipated, so I try to look into that one.
 
-- Nuno S=C3=A1
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> =C2=A0drivers/iio/gyro/mpu3050-core.c | 17 +++++++++++++----
-> =C2=A01 file changed, 13 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-c=
-ore.c
-> index ee2fcd20545d..1cc421eb4782 100644
-> --- a/drivers/iio/gyro/mpu3050-core.c
-> +++ b/drivers/iio/gyro/mpu3050-core.c
-> @@ -322,7 +322,9 @@ static int mpu3050_read_raw(struct iio_dev *indio_dev=
-,
-> =C2=A0		}
-> =C2=A0	case IIO_CHAN_INFO_RAW:
-> =C2=A0		/* Resume device */
-> -		pm_runtime_get_sync(mpu3050->dev);
-> +		ret =3D pm_runtime_resume_and_get(mpu3050->dev);
-> +		if (ret)
-> +			return ret;
-> =C2=A0		mutex_lock(&mpu3050->lock);
-> =C2=A0
-> =C2=A0		ret =3D mpu3050_set_8khz_samplerate(mpu3050);
-> @@ -647,12 +649,19 @@ static irqreturn_t mpu3050_trigger_handler(int irq,=
- void *p)
-> =C2=A0static int mpu3050_buffer_preenable(struct iio_dev *indio_dev)
-> =C2=A0{
-> =C2=A0	struct mpu3050 *mpu3050 =3D iio_priv(indio_dev);
-> +	int ret;
-> =C2=A0
-> -	pm_runtime_get_sync(mpu3050->dev);
-> +	ret =3D pm_runtime_resume_and_get(mpu3050->dev);
-> +	if (ret)
-> +		return ret;
-> =C2=A0
-> =C2=A0	/* Unless we have OUR trigger active, run at full speed */
-> -	if (!mpu3050->hw_irq_trigger)
-> -		return mpu3050_set_8khz_samplerate(mpu3050);
-> +	if (!mpu3050->hw_irq_trigger) {
-> +		ret =3D mpu3050_set_8khz_samplerate(mpu3050);
-> +		if (ret)
-> +			pm_runtime_put_autosuspend(mpu3050->dev);
+
