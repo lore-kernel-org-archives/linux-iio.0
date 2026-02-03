@@ -1,74 +1,99 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2BA51A9FBD
-	for <linux-iio@vger.kernel.org>; Tue,  3 Feb 2026 00:27:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E626393DEC;
+	Tue,  3 Feb 2026 08:27:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770078450; cv=none; b=BX7LrXIP3OuVP/4m1SffT7p1r3jljec4keRp36Pv0PMhO0V8RClfDxh961CL+J7ub6GyITvTgk+yO+U/CurwpkH4clEBHJk2zSWBOsF+WI9kKLCm701fYLnvXEfExGzse8uH/W5WQL/LwWeDPUdQR5BMetKF8exn9l0uugLqpuM=
+	t=1770107253; cv=none; b=VstPF5mn7g0pREcc+09h3f21r39bCza+2VM7qko+/56nRY812h+0+OzEbzSps9POTMkyCxbXmXc8b4+VzUgjvF+7LMGMfKiqf3uKwHzu4nfGZ5dG8X31+Mtt0t6TtlUJboUueWyw2lZhUI1/p+xvstcVLt3vYLRNAO94ovsqQDo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770078450; c=relaxed/simple;
-	bh=X1dKeOc/P6I8oUv7+a1KPUZSaAiGr8VMKbdizFMZGjg=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=DJ/kLMX11JxE8AL4EZcJnYlaOFSIKSpe+Q+FOB9+0H/hyiS5tr/TUevRga6AYHRpbrLdmxN+KtHo3cxFcWSdMINFCRJwUJMRT93GkCNV8RUWdWByNakuqt+1/8SxrPsztvI8pxH6j27iCOnY85rQ8d4yNGLrksOecFMdXReLH/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HfHPJtjq; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770107253; c=relaxed/simple;
+	bh=wZTaHaiF/33npmdzG3+D2AHv/V6GwJLxWU605064i/E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=enusoHLPD/MuXLtVAAb9VVv6iQCoXOb3Mci9bMM99Nzv0NuqJ1RVibhSfhAy5bZ6AuExWMjbaKxNY6WbbnKD2SVgbCPv+1PLjbhDN1XxolyhWV8H7GLBcJV57pyRpLV0Qp8KVi8uyerKYCDakjSE8C0lG5jd9zyA4ESySGNzHgA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lVkHE7ao; arc=none smtp.client-ip=198.175.65.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HfHPJtjq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95317C2BC87
-	for <linux-iio@vger.kernel.org>; Tue,  3 Feb 2026 00:27:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770078449;
-	bh=X1dKeOc/P6I8oUv7+a1KPUZSaAiGr8VMKbdizFMZGjg=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=HfHPJtjq9EBXemCJ0NiQ87EkcaNo7owb5eh0Wg0pQpohNtwf/Jc1dT6Em02ZF5WId
-	 zx6v7ycU3VOmXT1IyRQ4Z+5CX0TsCpiq44YwfNPK9Zp8zH5rxtKooMrLdpWLHsSh5Q
-	 OQpR85vfFO7HMA8u25zBxXGEKE1+h6rnVCjnXfTGz9GWp5ay/woje3mhjSdJ8eV0gp
-	 Bc/U6ExenCI9pwfuGtIfl6BjGqEUvtOQMeq40dgu5rFvIn/PuCnGIEYja2tEPAzzmv
-	 E64dTUoOmW1/9pdm/w0aTe32zxb0bk7jT/6uVPNlJeUqhxLPPN6LO1Of0lOIgRF4SD
-	 +RQSYYW5wNhmw==
-Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-6481bd173c0so4393826d50.2
-        for <linux-iio@vger.kernel.org>; Mon, 02 Feb 2026 16:27:29 -0800 (PST)
-X-Gm-Message-State: AOJu0YzgaVn1eWopBDcWCFJjCjdVbqdRyyBV1mWE6VAkIyPwcUAZJ1vO
-	NYe/ILkEDYB2C9ztVi12Ep3pYbu03j448ags3BStThKuhS+Dwh50hGs9jaoVl7jd3hN7rtW7D2B
-	W7zpCaBKtu1BNchmN0AmMeynxBNA4OGM=
-X-Received: by 2002:a53:ef06:0:b0:649:55f6:75c9 with SMTP id
- 956f58d0204a3-649a84b96cemr8220578d50.58.1770078448972; Mon, 02 Feb 2026
- 16:27:28 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lVkHE7ao"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770107251; x=1801643251;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wZTaHaiF/33npmdzG3+D2AHv/V6GwJLxWU605064i/E=;
+  b=lVkHE7aolsXiq0IOPcDypYD7rCaFNjJ1YSd2G4N/d7LiqhUHJMXtojvb
+   Cae63JNBtv0oaPwP0S6GRih5OmKLOWh2aoKro9IPptsJQVDVBVxDDbG10
+   h824vU5IjhPn/khMWLERW38RqUlk7ugOLogrsQP/ClwHaITTax4GoerlK
+   pVG57q013ru0+ZNP++vhlNoUFZf3ZwNALECCu/ln/jrh/85ZaffjYALWA
+   Twzbdnz0ezBp80tkU/R2GkCLWS+RIrSV1yilCSbwCxG0IJsvNTQSMs5ZC
+   rzJzseVuEcpZ9XRGysTiR+tcnhpG+fWGuY9kqklm1LZBWIVnJyTXbrhAD
+   g==;
+X-CSE-ConnectionGUID: gfcqgRHUT4CybsTHJ2NVXw==
+X-CSE-MsgGUID: mJK3cd+yQAupbRVyhHz9mQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="71312039"
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="71312039"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 00:27:29 -0800
+X-CSE-ConnectionGUID: aD5McrngSIGmkzeMyGfegQ==
+X-CSE-MsgGUID: 97j4Y0uwQ+ah2PIPl84nZw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="209565370"
+Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.13])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 00:27:26 -0800
+Date: Tue, 3 Feb 2026 10:27:23 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Waqar Hameed <waqar.hameed@axis.com>,
+	chuguangqing <chuguangqing@inspur.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: ltr501: return proper error code from
+ ltr501_get_gain_index()
+Message-ID: <aYGxa1E9WnYLXlet@smile.fi.intel.com>
+References: <20260202120715.25625-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260202110304.236320-1-jerrysteve1101@gmail.com> <20260202110304.236320-4-jerrysteve1101@gmail.com>
-In-Reply-To: <20260202110304.236320-4-jerrysteve1101@gmail.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Tue, 3 Feb 2026 01:27:18 +0100
-X-Gmail-Original-Message-ID: <CAD++jLk=TxX-zMOudMTniydopMFcvWONBMahSFhmA-7CD4-xKQ@mail.gmail.com>
-X-Gm-Features: AZwV_QhOz72IXajNn806oefglpTpz4rdxYpe3f6YGHPcLGcouAU2fnPFNQ-6dFg
-Message-ID: <CAD++jLk=TxX-zMOudMTniydopMFcvWONBMahSFhmA-7CD4-xKQ@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] dt-bindings: iio: gyroscope: bosch,bmg160: add
- bmx055 gyroscope binding
-To: Jun Yan <jerrysteve1101@gmail.com>, 
-	"open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" <devicetree@vger.kernel.org>
-Cc: linux-iio@vger.kernel.org, stephan@gerhold.net, hns@goldelico.com, 
-	jic23@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260202120715.25625-1-antoniu.miclaus@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Feb 2, 2026 at 12:03=E2=80=AFPM Jun Yan <jerrysteve1101@gmail.com> =
-wrote:
+On Mon, Feb 02, 2026 at 02:07:12PM +0200, Antoniu Miclaus wrote:
+> Return -EINVAL instead of -1 when no matching gain value is found
+> in the gain table. Update the callers to propagate this error directly
+> rather than overwriting it with -EINVAL.
 
-> Add the device-tree binding for the bosch BMX055 IMU (gyroscope part),
-> which is compatible with bmg160.
->
-> Datasheet: https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_dat=
-asheet.pdf
-> Signed-off-by: Jun Yan <jerrysteve1101@gmail.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Same story, post to devicetree list.
+...
 
-Otherwise looks fine!
+> static int ltr501_get_gain_index(const struct ltr501_gain *gain, int size,
 
-Yours,
-Linus Walleij
+>  		if (val == gain[i].scale && val2 == gain[i].uscale)
+>  			return i;
+>  
+> -	return -1;
+> +	return -EINVAL;
+
+I would use -ENOENT, but I'm not sure if there is any ABI involved (id est we
+return this to user space).
+
+>  }
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
