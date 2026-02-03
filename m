@@ -1,16 +1,15 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1F1D30FF1E
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B23E831283E
 	for <linux-iio@vger.kernel.org>; Tue,  3 Feb 2026 09:34:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770111280; cv=none; b=SI+1Sv+KmJ5lrmZmZtMJk/YIMfowRMLlvCoxJ2m2KsoAW6BEcXl/TGeHglnbREWRy4/81dyu5fxnpOGu4OidPczRutC436hf71vANFMMvbvmQN9acUupePr+Y9mgFy+Uxd2HmiMlPgTa8PY/isJ3iz5UxXQrRNnB3Yhcwm3p8/U=
+	t=1770111280; cv=none; b=e1rabzgBrl2xxSvLil2l7yWE356uGzGzUjfwRldBc/bWIltY0g25aeo4dQ4Cb4bB7gr/pZAQ8JEDEr8lE0CqMB5C9rkkaygCQdW4k5OaNYsWeMH9+UQXSh9Bi5jurVKnQF0IxW030sXEJj/pQLrkJ5T9NLjwBBPlIM3x/MjEpvQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770111280; c=relaxed/simple;
-	bh=zwBYqkLNtbhXVbgrsrQaASQJCt7kvW7S2MFFwDgGVuw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=I1UD1AEP+lLXuldE0pNWk4GqkfAd8nA8GAztlTBzd9SdHIwS0C+rabAmWkuFJT/8HvjP9sLLxPqe7vA8dmgNhTLIf6iLED2W8NHwgs2AWxgDu4H+AzZPii1zkQ5VTgYXcEDOo4wWL9eU0VmbKV2qNgZuYnyC93YT10edtwv4nF8=
+	bh=FjIkp1eerslXxP2lvdCMeTHnwsoNdZv4xU1+6MVOItI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fN1u1egzw9su7MrGYG4gqSQ4PrORs9U4zZ2z9E1gdDgXtJGzjQRGZMVIJF1MHdKFuneikVsriq6RQIt5RbJZR4bYE4+e+vubeUfHocaUjrI6Zueli5MgSQyc4jFb4Y1uSLWOI3U/bSUewR8I7cAqasWYTYwASDceeCS9xsFcH58=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +17,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vnCnr-0003lc-Q9; Tue, 03 Feb 2026 10:34:35 +0100
+	id 1vnCnr-0003lW-QB; Tue, 03 Feb 2026 10:34:35 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vnCnr-003slV-36;
+	id 1vnCnr-003slM-2U;
 	Tue, 03 Feb 2026 10:34:35 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vnCnr-0000000Ah9c-0icp;
+	id 1vnCnr-0000000Ah8d-07Ee;
 	Tue, 03 Feb 2026 10:34:35 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -43,12 +42,10 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v4 06/13] iio: dac: ds4424: use device match data for chip info
-Date: Tue,  3 Feb 2026 10:34:26 +0100
-Message-ID: <20260203093434.2548978-7-o.rempel@pengutronix.de>
+Subject: [PATCH v4 00/13] iio: dac: ds4424: add DS4402/DS4404 support and scale
+Date: Tue,  3 Feb 2026 10:34:20 +0100
+Message-ID: <20260203093434.2548978-1-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260203093434.2548978-1-o.rempel@pengutronix.de>
-References: <20260203093434.2548978-1-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,120 +58,46 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-Refactor the driver to use device match data instead of checking ID enums
-in a switch statement.
+This series extends the ds4424 IIO DAC driver and its devicetree binding
+to support the DS4402 and DS4404 current DAC variants.
 
-Define a `ds4424_chip_info` structure to hold variant-specific attributes
-(currently just the channel count) and attach it directly to the I2C and
-OF device ID tables.
+DS440x devices share the same register map as DS442x but use a different
+resolution (5-bit vs 7-bit) and a different full-scale current formula.
+The full-scale current depends on external Rfs resistors connected to
+the FS pins, so a new optional DT property is added to provide the
+per-channel Rfs values and allow the driver to report a correct IIO
+SCALE (mA/step).
 
-Use `client->name` instead of `id->name` to decouple the probe function
-from the legacy `i2c_device_id` structure.
+While adding DS440x support, a few related issues were addressed:
+- Port to regmap
+- Reject -128 in RAW writes on DS442x, which cannot be represented with
+  sign-magnitude encoding and could silently program an unintended
+  output.
+- Preserve preconfigured values on probe.
+- Ratelimit read error logging and use device context.
 
-This simplifies the probe function and makes it easier to add support for
-new variants like DS4402/DS4404.
+David Jander (1):
+  iio: dac: ds4424: add DS4402/DS4404 device IDs
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v4:
-- New patch
----
- drivers/iio/dac/ds4424.c | 44 +++++++++++++++++++---------------------
- 1 file changed, 21 insertions(+), 23 deletions(-)
+Oleksij Rempel (12):
+  iio: dac: ds4424: reject -128 RAW value
+  iio: dac: ds4424: refactor raw access to use bitwise operations
+  iio: dac: ds4424: ratelimit read errors and use device context
+  iio: dac: ds4424: sort headers alphabetically
+  iio: dac: ds4424: rename iio_info struct to avoid ambiguity
+  iio: dac: ds4424: use device match data for chip info
+  iio: dac: ds4424: use fsleep() instead of usleep_range()
+  dt-bindings: iio: dac: maxim,ds4424: add ds4402/ds4404
+  iio: dac: ds4424: support per-variant output range limits
+  iio: dac: ds4424: convert to regmap
+  dt-bindings: iio: dac: maxim,ds4424: add maxim,rfs-ohms property
+  iio: dac: ds4424: add Rfs-based scale and per-variant limits
 
-diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-index 3385f39521d9..5709d8a39d7b 100644
---- a/drivers/iio/dac/ds4424.c
-+++ b/drivers/iio/dac/ds4424.c
-@@ -34,9 +34,16 @@
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
- }
- 
--enum ds4424_device_ids {
--	ID_DS4422,
--	ID_DS4424,
-+struct ds4424_chip_info {
-+	u8 num_channels;
-+};
-+
-+static const struct ds4424_chip_info ds4422_info = {
-+	.num_channels = DS4422_MAX_DAC_CHANNELS,
-+};
-+
-+static const struct ds4424_chip_info ds4424_info = {
-+	.num_channels = DS4424_MAX_DAC_CHANNELS,
- };
- 
- struct ds4424_data {
-@@ -204,11 +211,15 @@ static const struct iio_info ds4424_iio_info = {
- 
- static int ds4424_probe(struct i2c_client *client)
- {
--	const struct i2c_device_id *id = i2c_client_get_device_id(client);
-+	const struct ds4424_chip_info *chip_info;
- 	struct ds4424_data *data;
- 	struct iio_dev *indio_dev;
- 	int ret;
- 
-+	chip_info = i2c_get_match_data(client);
-+	if (!chip_info)
-+		return -ENODEV;
-+
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
-@@ -216,7 +227,6 @@ static int ds4424_probe(struct i2c_client *client)
- 	data = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
--	indio_dev->name = id->name;
- 
- 	data->vcc_reg = devm_regulator_get(&client->dev, "vcc");
- 	if (IS_ERR(data->vcc_reg))
-@@ -236,20 +246,8 @@ static int ds4424_probe(struct i2c_client *client)
- 	if (ret < 0)
- 		goto fail;
- 
--	switch (id->driver_data) {
--	case ID_DS4422:
--		indio_dev->num_channels = DS4422_MAX_DAC_CHANNELS;
--		break;
--	case ID_DS4424:
--		indio_dev->num_channels = DS4424_MAX_DAC_CHANNELS;
--		break;
--	default:
--		dev_err(&client->dev,
--				"ds4424: Invalid chip id.\n");
--		ret = -ENXIO;
--		goto fail;
--	}
--
-+	indio_dev->name = client->name;
-+	indio_dev->num_channels = chip_info->num_channels;
- 	indio_dev->channels = ds4424_channels;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &ds4424_iio_info;
-@@ -278,16 +276,16 @@ static void ds4424_remove(struct i2c_client *client)
- }
- 
- static const struct i2c_device_id ds4424_id[] = {
--	{ "ds4422", ID_DS4422 },
--	{ "ds4424", ID_DS4424 },
-+	{ "ds4422", (kernel_ulong_t)&ds4422_info },
-+	{ "ds4424", (kernel_ulong_t)&ds4424_info },
- 	{ }
- };
- 
- MODULE_DEVICE_TABLE(i2c, ds4424_id);
- 
- static const struct of_device_id ds4424_of_match[] = {
--	{ .compatible = "maxim,ds4422" },
--	{ .compatible = "maxim,ds4424" },
-+	{ .compatible = "maxim,ds4422", .data = &ds4422_info },
-+	{ .compatible = "maxim,ds4424", .data = &ds4424_info },
- 	{ }
- };
- 
--- 
+ .../bindings/iio/dac/maxim,ds4424.yaml        |  42 +-
+ drivers/iio/dac/Kconfig                       |   1 +
+ drivers/iio/dac/ds4424.c                      | 368 ++++++++++++------
+ 3 files changed, 280 insertions(+), 131 deletions(-)
+
+--
 2.47.3
 
