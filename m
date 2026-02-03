@@ -1,103 +1,114 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A7E32396B9F
-	for <linux-iio@vger.kernel.org>; Tue,  3 Feb 2026 09:39:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C31C138F232;
+	Tue,  3 Feb 2026 09:43:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770111556; cv=none; b=IsK9RDTr/O9MkCmv+rwfiSYMse+lTriIgBIdOj3ACLdTxDrVhrN7ev1CdJ0D3QS6fx1FYH3/8xBrU23ywLJJJzkulVCzUN3MeSbQ2/APZM3rnYvuw3AOobEHA2yTLUNTROoXR7s3ltSOhqw/YjxJvvHfc6ziATmhnNfhEKiQBho=
+	t=1770111823; cv=none; b=hW0fMiixMOm81NS5je1Vo6JEKeETniZosn/N4t5ZnM7tj2ub83toJ0bxySdoctUG1Y/0uasoaeey4muDA5vVwRz9VVJCgORfwKcmNkyqyCW0FEq+DzEx2t+Aasfst9WiE7w1TstamLWXT58NaWYwstnIa72SBlMBk4yps2GuWuQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770111556; c=relaxed/simple;
-	bh=bBG7TvcJENnFYMvO8BCiBF9gagryLSagHnDtoBiXlq0=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=hHV5GsseqTi0UuyzZNvRbp5L8kIH+Tm/XYpYjTWy2L85Nh2BHQ4oLWRvaYEleZR5m8f2bQK8lJIDfPp2XrASt+asi6ULeFMdNUDazyHvRVoVNGarOu/z59Rbv23JQ2nLRVWWDaVC88jb+SIIzv3fz1j+7GC1JISJY2Q6JSo304Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OD9mrJY4; arc=none smtp.client-ip=209.85.128.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770111823; c=relaxed/simple;
+	bh=aqj2T9Lj/osD64ehMNdKR3D52rwsXU01G6ZZtQWYTnE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=K4DXqPYIyUz5Je5v8+7nnROS00Xn1qoPchhDRug65SVsTM2hMf/VeetPq/b5UYH/0pSFoablpBKVmk6VAWtyorNrkRvpN1M/DwT2l8H2e+RK7u/Y6QWrH53LMbIdc4eDs+vG92MeRR5U+RkzZ9n6pEecmVruN6nFLD9H++4PAVE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jjV2ZsB2; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OD9mrJY4"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-47edd9024b1so43422605e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 03 Feb 2026 01:39:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770111553; x=1770716353; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=bBG7TvcJENnFYMvO8BCiBF9gagryLSagHnDtoBiXlq0=;
-        b=OD9mrJY46Lsw10a4CiMVG9aNmEJN+QdGlzXdExlf4aeMUyyEVeVF7jT+3Uv55KN1UG
-         QIDE1Xx328cmEXXwpCeQvh7iyy8Odsu2PGVZBprOFqLzyNXFRJSaxNBE6/2QppKyWI56
-         fUtp2B0a0jbrt9rpKN6S4qk6ddgljw24lEQkOq0sdMdK7Zr6OOkjvnJkC7ateWSlOx5f
-         epEmA5WjoVM2YPS6PzbY2yGt5iroajpaxUI6Oe07Yjq0iLLGJL0QVWsHbm+Gu3NeYdUW
-         dhcOZJS75jidppoF+Ji1N/uhjtYs4jrMtCK9Z+zbq+phq42/nJKRlSRbGdb4Mlmdwx2E
-         fkzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770111553; x=1770716353;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=bBG7TvcJENnFYMvO8BCiBF9gagryLSagHnDtoBiXlq0=;
-        b=UYiMzqh323ehyYxyXmhLm+gIUMs0DHHr6ZgYAVNwPGwGGT2XDPADS09rA0Cg/n5VKU
-         sf9wRn7x/vGMi22SQgfkOj5Q4Di0BlWzT2pZg95YWTqENlX6369E1XEjBMgbw1FXIxkd
-         t9XzzkXPtxlYr3hyPZq8dQ7pypUBGtoFPPoq5OCK0nvY0szLTIN37GflUAK+rz6BPZ2p
-         LRm7m+VOANxT5Lmw96dwN+zBtkbyY0kmutKHk12qB9Jfhz2VIuUvKb2ix4O0sm//WZW3
-         B9oN2IY11xn918tKMkXo93cDkqU2znT0tCeGlJSIsdtEDe8bVPclJBT14HJAH2kbZU+T
-         TctQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWG0rmyq+M0RHuo8dMfAvIODkcbWDy4UzP9UiIA4vK93/tzHDlvcABweXt7/3LdpwP4b3hsWu8tie0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzUYlrtRPeHK+vU0UZOMb4KA7kf44bi7JF5GDYujjwow0xQYK0g
-	4gR8SsMPcaj8gsjRLeV0AvJE1CTntqc8eAw1SBJu7zM4tYqLeYXRqTQ9
-X-Gm-Gg: AZuq6aLRctmquV0trjulurr2eMa4XXkYo+l/SLTdTeoLRfXvjKtCisUtXRFaU/jd8rS
-	ISSTXEt3xmFU5n3XFmjrbvCPkidmpQ0vA26z/z6MCXWEvPvtqbLjIGHyVPIDGzC2ZrKzUK4fZmC
-	nqIGlADDmDSiXybIDX2/xHk3IieLf6LEIg4bPZCt5V440pPyLOxlJag9efSVrhLTl5Yp7E8/wdf
-	Sg5S8x9YfokhvoW7lofEvPS3chJcfysDn6LqaXaZQPvZ15dc50TVV5SEK+qjwVkU/dDZgIQYcFV
-	+I+I7pvlo/Y2KC/+Imf7ejdSAjVd4n+dlxhsgHTqAG4hAh2JXugt0jMQkCp8ws33Ti6RGMBhNko
-	UvLkOu4JJgK9oY/v9qwv2FbBectF8kOpp7ZJtQRyslknRhNyb8yWWwf1UfoDakA5T+brhQQx84e
-	mbgctAhXUMXiaAbhDsRac=
-X-Received: by 2002:a05:600c:3e1b:b0:477:a978:3a7b with SMTP id 5b1f17b1804b1-482db491ea2mr185259255e9.22.1770111552791;
-        Tue, 03 Feb 2026 01:39:12 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4830512e0edsm54373425e9.7.2026.02.03.01.39.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Feb 2026 01:39:12 -0800 (PST)
-Message-ID: <0b16fc61249b507bb65f3f0f4a9c1e5eef4b41a4.camel@gmail.com>
-Subject: Re: [PATCH] iio: gyro: mpu3050-i2c: use pm_runtime_resume_and_get()
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Antoniu Miclaus
-	 <antoniu.miclaus@analog.com>
-Cc: Linus Walleij <linusw@kernel.org>, David Lechner
- <dlechner@baylibre.com>,  Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, 	linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Date: Tue, 03 Feb 2026 09:39:55 +0000
-In-Reply-To: <20260131164135.35f07a27@jic23-huawei>
-References: <20260130153227.213413-1-antoniu.miclaus@analog.com>
-	 <20260131164135.35f07a27@jic23-huawei>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jjV2ZsB2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770111822; x=1801647822;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=aqj2T9Lj/osD64ehMNdKR3D52rwsXU01G6ZZtQWYTnE=;
+  b=jjV2ZsB2pN71QVU9Z6z/ypkv21GzY+p+i9bMo91Ca8APCtkwqHAKY4N3
+   horD7389HZyWzYtSxiQoEQEbyGL50/Ivk/9umRor+VPFg2SeG3hqlmLKy
+   hnMvpdtqnalYBtTaj6rxogcgLmpwsViGxF2zU0WxBATSm8cZOW28YwuBy
+   E2OPNVUdWFN9k6w3tj/nB/ENuCbbivgqqj6cJfuyz23u1COCpsRDUWcYo
+   qUOuQ7pbv+RXozR1HASmQepOYQgOTBM1araHVCz72pbx0xKYXycVgInlZ
+   7+oZ05bi1k7sd6Mcosd43PxwHlAXywWz/Dr8jaacybTKJmleQ6L2a82SZ
+   g==;
+X-CSE-ConnectionGUID: rAFUk/AoQuaIlw8bqcS+mw==
+X-CSE-MsgGUID: K//RA+QZQuOoWqbKNzKwKw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="88700819"
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="88700819"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 01:43:42 -0800
+X-CSE-ConnectionGUID: M/+vltBMRUeZJSJ5/J/KHw==
+X-CSE-MsgGUID: zTXVQoDhSsm85Vc1V1aAdw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
+   d="scan'208";a="209813956"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 01:43:38 -0800
+Date: Tue, 3 Feb 2026 11:43:35 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Jagath Jog J <jagathjog1996@gmail.com>,
+	Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>,
+	Matti Vaittinen <mazziesaccount@gmail.com>,
+	Fabio Estevam <festevam@denx.de>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Sakari Ailus <sakari.ailus@linux.intel.com>,
+	Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+	Eugene Zaikonnikov <ez@norphonic.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 11/13] iio: imu: bmi323: remove unused
+ drdy_trigger_enabled
+Message-ID: <aYHDR8IS3PwXn9VF@smile.fi.intel.com>
+References: <cover.1770030812.git.antoniu.miclaus@analog.com>
+ <682cb9e687d1fcf76eb689d7292483c91e3b5b25.1770030812.git.antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <682cb9e687d1fcf76eb689d7292483c91e3b5b25.1770030812.git.antoniu.miclaus@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, 2026-01-31 at 16:41 +0000, Jonathan Cameron wrote:
-> On Fri, 30 Jan 2026 17:32:26 +0200
-> Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
->=20
-> > Use pm_runtime_resume_and_get() in bypass_select() and return its
-> > result directly. Unlike pm_runtime_get_sync(), it doesn't increment
-> > the refcount on failure.
-> >=20
-> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
->=20
-> Please always put a cover letter on anything with more than one patch.
-> Provides both a nice name for the series in patchwork etc and a=20
-> single place to reply.
->=20
-> Are these fixes?=C2=A0 What is side effect of the wrong ref count?
+On Mon, Feb 02, 2026 at 01:26:01PM +0200, Antoniu Miclaus wrote:
+> Remove unused drdy_trigger_enabled field from bmi323_data
+> struct. The field is declared but never accessed in the
+> driver.
 
-Yeps, at first glance I would count this as a fix...
+...
 
-- Nuno S=C3=A1
->=20
+> struct bmi323_data {
+
+>  	struct iio_mount_matrix orientation;
+>  	enum bmi323_irq_pin irq_pin;
+>  	struct iio_trigger *trig;
+> -	bool drdy_trigger_enabled;
+
+Hmm... Not directly related to your series, but with it applied it makes sense
+to revisit the structure layouts as they might be rearranged to occupy less
+space.
+
+>  	enum bmi323_state state;
+
+For example, this enum, if moved closer to irq_pin, might result in less gap on
+some architectures. (Probably not, as we use long, id est 'int' sized, enums.)
+
+In any way, `pahole` can hint about that, but as I said, it's not for this
+series.
+
+>  	s64 fifo_tstamp, old_fifo_tstamp;
+>  	u32 odrns[BMI323_SENSORS_CNT];
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
