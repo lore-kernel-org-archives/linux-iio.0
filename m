@@ -1,65 +1,59 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DAC0EF50F;
-	Tue,  3 Feb 2026 17:54:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A780F3ACEF5
+	for <linux-iio@vger.kernel.org>; Tue,  3 Feb 2026 18:12:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770141280; cv=none; b=d6mcmPPsBoFCiKEiYYmbVAE2oOieu2crDVuWEoImYnDK1rUCoA9ZTgUD/Uj7LaHF7rBG2fbQfFwQIreUFv5XWK1j/MFUW5LjkcMV7AjromMuKFze/jMoPh+/1Wmq2c0L/e9+1fhV0wx0CMp9yYUT8YYiyroHjPj6J/9X0xFBa7I=
+	t=1770142350; cv=none; b=Fa5UcWScfKKVvzYH+PscPyOWTUEm1+OocneNSt+BNaKUMIa0zDWp8uzKVPhl5KP8WAL1E9kel/CMEJWIet3C2nwUtlJ/Zz3xPHqr5ccd1sO9TxpNIDewHwi38Xr7kg0UXTr5AkL/48OzvDqVz6HksPX6rGI5XlDFqQkV9mTrGP4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770141280; c=relaxed/simple;
-	bh=VLetFPKwHcvjdVCavcZRFp1BoK4FCqP2UIToarHeHRE=;
+	s=arc-20240116; t=1770142350; c=relaxed/simple;
+	bh=xfRKmKa8pozKEwVu5o+5y889bZ3v/op31WzEdUK1kiU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Zf0IUJqK0xHpqm8vVY27p+wqh3jarcHonZUzV+u032tX4Q31CrDGp8EcI7wsTKdCFl2g7SjUfNh4v4n5l3ZnkQuBzSOczgZOR+VQI3x3uWapP3N5y4cqHrSGdALUEFh3WHhyKuaTx1hsD9dDJ+pfMoiv9Zd6l+76mGR5LpHEDSk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FY1Lykvt; arc=none smtp.client-ip=192.198.163.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=CA8piK23EuJLCPwCm2qZoYxy/6hIDtZcZF73HM/S8SXsQiEO7agoZfhdJpHnGEAXu1DiAYx7ytqVZmcSHp6l5fpr509P7Zyx53nVQbgH4x1I+7K1SDb8mzqCOBABMhiOLiVHAi2cEURemJm2nBzGQ/AF0TOv288Ceck+C6pmZYU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UyacBkLR; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FY1Lykvt"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UyacBkLR"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770141278; x=1801677278;
+  t=1770142348; x=1801678348;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=VLetFPKwHcvjdVCavcZRFp1BoK4FCqP2UIToarHeHRE=;
-  b=FY1LykvtERpLNhK65EcOs1ClLICcyXukqgo5rVrU3oSAuaEU0hj4xbcu
-   KrFw00EhfaQxzGLfATgolxi6Gxc3nSTeAxRXv1hvgz5LT1tEgPLQtbRkg
-   3gIUehVFh7wTn0B+UKOHxNoloi342MAb3u9fsGVUJnaqpk8rR8THuBURl
-   MMuruV+QV1h2h15myhm75FvXF+iN/4BE7YAudmb1zJy3vRuzppCEJXHLR
-   oRsknPidkPdUGARTdMIG2kooGMXrm2Fh45STqzQdBbmmnYJewEXdcQ7en
-   cFzg7fsd6TUeRsKEggt+Vq3si+8LV/M2vgIhZsGr9fIsUOyNnPzUxmYTa
-   A==;
-X-CSE-ConnectionGUID: TbkUcnztSVWfiKRGus1MVA==
-X-CSE-MsgGUID: L1G8zWDaRzynogxtopGLbg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="81950685"
+  bh=xfRKmKa8pozKEwVu5o+5y889bZ3v/op31WzEdUK1kiU=;
+  b=UyacBkLRyuDMqhAy9BcXdISv97nHBDqpelHYTBJ42z50VeXGiVfK+REN
+   vEIRz96ClZweFKts6d/Mq+i+tLcGLk5Aarv0gzW1oC6osQzf5zZy6QkQ9
+   IT165/B8jmYRF5b7V+cVjRmwdZw6vXLdBj0j+3SDKbMiWFM5UjZR39+X+
+   65csqeL6rI4ADfWnpUlpsaFh0u0yYghOE8hjAX7ykUqoozp/GpxqMRULX
+   DI7k/MZCT1xOK1T/FPZ3m6tOCVHA+oeRIAzqzNOkEJapvoi5obFXvEGPn
+   mQ7c8LXOa+XyTA5kJj1Jh4BKeQrgfWScb4WBQRgNICzcYLExm+RNl84dP
+   g==;
+X-CSE-ConnectionGUID: yxcPZUdzS3OP2UyO+hyHaQ==
+X-CSE-MsgGUID: +/hj0rApT+qekwHalY2Ffg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="82432613"
 X-IronPort-AV: E=Sophos;i="6.21,271,1763452800"; 
-   d="scan'208";a="81950685"
+   d="scan'208";a="82432613"
 Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 09:54:37 -0800
-X-CSE-ConnectionGUID: 7B4EOuIVR42ANZBIbnKxrA==
-X-CSE-MsgGUID: pm0K+k8LQE+CyXOEwsAAxQ==
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 10:12:28 -0800
+X-CSE-ConnectionGUID: 1CY0SDBwTcKxiejt+cz6Bg==
+X-CSE-MsgGUID: 5Jt0ZtAVTy+79tVmJ15DNg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,271,1763452800"; 
-   d="scan'208";a="247515433"
+   d="scan'208";a="247521718"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 09:54:34 -0800
-Date: Tue, 3 Feb 2026 19:54:32 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 10:12:26 -0800
+Date: Tue, 3 Feb 2026 20:12:23 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-	error27@gmail.com
-Subject: Re: [PATCH v3 next 1/6] iio: sca3000: cache SPI device ID in probe
-Message-ID: <aYI2WANAXteA8Qxz@smile.fi.intel.com>
-References: <20260203122109.689669-1-harshit.m.mogalapalli@oracle.com>
- <20260203122109.689669-2-harshit.m.mogalapalli@oracle.com>
- <aYIR-LAq9iJETwjK@smile.fi.intel.com>
- <a8eed14b-2baf-46f8-85c1-067481c02d7c@oracle.com>
+To: Jun Yan <jerrysteve1101@gmail.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
+	krzk+dt@kernel.org, conor+dt@kernel.org
+Subject: Re: [PATCH 2/6] iio: accel: bmc150-accel: add support for bmx055
+ accel
+Message-ID: <aYI6h3sbM1JPsbZ4@smile.fi.intel.com>
+References: <20260129071105.389493-1-jerrysteve1101@gmail.com>
+ <20260129071105.389493-3-jerrysteve1101@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,32 +62,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a8eed14b-2baf-46f8-85c1-067481c02d7c@oracle.com>
+In-Reply-To: <20260129071105.389493-3-jerrysteve1101@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Feb 03, 2026 at 09:25:08PM +0530, Harshit Mogalapalli wrote:
-> On 03/02/26 20:49, Andy Shevchenko wrote:
-> > On Tue, Feb 03, 2026 at 04:20:45AM -0800, Harshit Mogalapalli wrote:
-> > > Store the spi_device_id at probe entry and reuse it for the name and
-> > > chip info instead of calling spi_get_device_id() repeatedly.
-> > > 
-> > > While at it, reshuffle variable list in a reverse Christmas tree
-> > > order. No functional change intended.
-> > 
-> > Did you miss David's comment? AFAIU the suggestion was to convert to
-> > chip_info(). With that done, this should use spi_device_get_match_data()
-> > (or something like that, I don't remember the correct spelling of that API).
+On Thu, Jan 29, 2026 at 03:10:58PM +0800, Jun Yan wrote:
+> Add the accelerometer driver for the BMX055 IMU, which is an integrated
+> IMU including accelerometer, gyroscope and magnetometer.
 > 
-> I was thinking of dealing with it in a separate series(as documented in the
-> cover letter). Also David pointed out that if I am planning to do that
-> conversion separate, there is no neccesity of this patch, as it is anyway
-> going to be replaced soon when I have that ready. So I will drop this
-> simplification in my next version and leave the conversion to
-> spi_device_get_match_data() to another patch set. Will also include your
-> "irq > 0" check fixup in the following series. Hope you are okay with that ?
+> The gyroscope part of the device can be supported by the bmg160 driver,
+> while the magnetometer part can be supported by the bmc150_magn driver.
 
-As long as there is no added churn I'm fine with the approach.
+...
+
+>  	help
+>  	  Say yes here to build support for the following Bosch accelerometers:
+>  	  BMA222, BMA222E, BMA250E, BMA253, BMA254, BMA255, BMA280, BMC150, BMC156
+> -	  BMI055.
+> +	  BMI055, BMX055.
+
+Better to split this a bit. like:
+
+	  - BMA222, BMA222E, BMA250E, BMA253, BMA254, BMA255, BMA280
+	  - BMC150, BMC156
+	  - BMI055
+	  - BMX055
+
+>  	  Note that some of these are combo modules:
+>  	    - BMC150/BMC156: accelerometer and magnetometer
+>  	    - BMI055: accelerometer and gyroscope
+> +	    - BMX055: accelerometer, gyroscope and magnetometer
+
+Mind an Oxford comma.
 
 -- 
 With Best Regards,
