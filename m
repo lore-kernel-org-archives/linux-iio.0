@@ -1,108 +1,143 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7101399023;
-	Tue,  3 Feb 2026 09:48:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2AD5A39901B
+	for <linux-iio@vger.kernel.org>; Tue,  3 Feb 2026 09:51:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770112100; cv=none; b=hw+RlTbmGwuHNdB5V43HVurlagJeMgsmPcVfkiXGaL2hsWQVpGo7vFyctx3VUSP2HJaOCLnFYi2+IWU5+J/4xHte3rcImgej7CJs4cjWyPGxIkIaING6rb2UNS6wIilERRuli9KwjkHoPr2smPpIz8cqJ61DgjQPYgH/vMSxIqk=
+	t=1770112263; cv=none; b=kqvWdPb3gY0Z6UmaUhtCZUV+nUhPFsFx9chvnHLNzVA/C9skQ5KCL0oIs7wXpOLpuyypHA1saUSwqBqovqCMtan6oSthCh+5VnDowxhWbtwkAJD6/qHqDmzmhelgA8ekhIe2utdX/FwJ6bvTDE3g1MgguJ5RqqxSzG6i2ABseRo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770112100; c=relaxed/simple;
-	bh=CEq4LbWx/F8doQ6jmeGXZaCiv3sjboYjRC1sNgbWjqQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mjkC4R4H/t+UcgHedb0uaAtZesQwcbuxzPahypPPaDcyDyZsWvBQ5cNoTg655yC5ZMKf3HBUs9LWtdoPjf5mE8s/YN1QRGKRxHbga7GjPOJ3Nk8DEuzGm/YLv8cMkRqp0HlzNcXucMhPwP7gqsF8gQPWmpDdEaxpVtzb9yloPJ0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EOj7H9B9; arc=none smtp.client-ip=198.175.65.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770112263; c=relaxed/simple;
+	bh=DkSIKgWyIDG29wgSRrFPvcMAS6V7iLUJ2uWER05h1MM=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=qx9rJxDLIjXF7OR4PHB79ql1EktrImI7SNM/zTNvKe1tB74ous557FBbzlnDawjqevLrb+l8NaTDMjmJRqKWeB9UxDjC8YhWVpvREDj6KJm7vbk+/hzfLtxGhhBgd8yF4YZI9q+OmXBXW8GzBLsNK/qQrlFk9u/G8PEDklmYHuQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=G5Fh3S58; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EOj7H9B9"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770112099; x=1801648099;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=CEq4LbWx/F8doQ6jmeGXZaCiv3sjboYjRC1sNgbWjqQ=;
-  b=EOj7H9B9MvbXKEZhGpizK/zW/gs9y8UX9CJTsCoWRLeO+Ch8jwT0aYxO
-   pFIjZ7Ss4L3k7K5Nz0UkG2YBXXh41ZiUVqWv1HgvYPDodwlMs+xuSSNGh
-   6AUSHsoKHh7EkgH8Qwez8Vj9Pvp/G9aSdJt3561/+U4AmXR63Lv+G3V1H
-   tCAoHyFaxSu/1zSWVE5t9E0eSSbZbHTZe0Y0eEL4v++5nYSW0cOk3FCIK
-   vg0Kj0BdRpaAA/CwSY7PsMTWyakfTX6/MkcnBcMRYZR3XfLLHfBebX3yY
-   211xY2y9i2f7nAXIS1vZQtU+FXGAxkink7YZFE2yNoRHoYPF3VdygC1dO
-   A==;
-X-CSE-ConnectionGUID: /+/cQ19xRM2Sv2HUsW++wg==
-X-CSE-MsgGUID: Fl+vY/EgS+eWqkr0nhm42g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11690"; a="75133408"
-X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
-   d="scan'208";a="75133408"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 01:48:19 -0800
-X-CSE-ConnectionGUID: 4hZHrNRtRFOPNd5Kd+w3bA==
-X-CSE-MsgGUID: wNg7F1PgS3yOAqZf/jjMiw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,270,1763452800"; 
-   d="scan'208";a="214282221"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 01:48:16 -0800
-Date: Tue, 3 Feb 2026 11:48:13 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andrew Ijano <andrew.ijano@gmail.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org, error27@gmail.com
-Subject: Re: [PATCH v2 next 0/5] IIO: sca3000: devm resource management
-Message-ID: <aYHEXc2QjMAus5Bt@smile.fi.intel.com>
-References: <20260202194033.627967-1-harshit.m.mogalapalli@oracle.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G5Fh3S58"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-47d6a1f08bbso25494095e9.2
+        for <linux-iio@vger.kernel.org>; Tue, 03 Feb 2026 01:51:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770112260; x=1770717060; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=o6gokshVw0Ds9gKDXGs/xmtEdohipnM6SCAVUEq4GjY=;
+        b=G5Fh3S581YFpDjdafl8JlUMAH7e9nZmxrkHFVOiA+u0z1KLBo/CF6sYIYNScjcs2TP
+         ty6v6Dg+YG1LaVRa52LTsFPa1jVt3pOtSm/ehnA08wQ5ltA4qYwDe3SqyDtPBCrJ6gDQ
+         v648eoV2u52TiR/hHDVGKdlCYrvxcpJjuM2LVj2EuQP0ZCyPYENvQtTByOf0xK6aW2n2
+         bW//UVB3E+lC0ofWn0Khefqq3J/4PoxnzLGK5ydWenASH7KCYU5VOjUmnVnf1D/qSSZ4
+         a4Jm6Xzi7JhaSxu1XwUzzCXpYiHYGd+GM/sKjfMfzuyxKrtgwjeUS9aU5evqWnjE8KFr
+         H9dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770112260; x=1770717060;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=o6gokshVw0Ds9gKDXGs/xmtEdohipnM6SCAVUEq4GjY=;
+        b=OcH9cClIsQHGN3500ndfs3dcUaMZl7wKkeiikI6AU4bhVMA9Yo94nmMzYzU7UkueSn
+         tGuMTCej+AoOmivADaSIZeWxsaO4qITT+PEM6UXuNRVBM3CGN/yBCgQvvstfxI0r4dGk
+         /oy/QpAhAuX+H1noO+R6GKNjdM8CbAIcVUBDdUIU0HO2B9EW8oC1UDfxBX6Me//incwu
+         EpqkiOys6AG0fz3W5XkvDdNwudctFuM/5C7hkn2OMJLW5zlZUnAxAyimPd3RQ//yTVgA
+         c8ZANbmVNKwiAP5+2htRLYaLbpiE82uuOA9seFy9+YeXA7QjbofTEVwkSsN8X0myiPeC
+         cG0A==
+X-Gm-Message-State: AOJu0Yxlz6gAJ6abGlmQYRtCylGTYet5TtLWLC5fGA2/+Tpx462FMIGH
+	4HMw3nrL42i5hKqIhIyjDsYfgDh5dRfdVZc5NO5oduGJPONbD2AY+/Gt
+X-Gm-Gg: AZuq6aIHUb+jlSvPQ2Ce7GKuqtzNj4+CmkSLvu0X12m5tC/M/i1rIpDnx0XsrJ68hYc
+	McZtzI8EfO6FPZjiiMK/jGtrXrnKyTgyLdZUA3exGa7S9x8yyvT+a8hC3rWy3k8IkirL/3QNrRY
+	pLHwHtj5A4aMTyuPJveFhavh6me1Cq2/bWyEMG9sdHNqaLf8qYcxlDYzhBi13VPx3M9jNrLx9Xd
+	teIWl3K6rMYVAkj/TCKyoJqaRsuv7WPjQIgUJ4Na475grDExeKzCk4wS2u8j+X1nI671uR1eBKj
+	GR0AFSG4rqCX1NSGQRdgtaWwEkoEhujTnn7nHBqEKQ3/wUPVDsrBg66w6cHiRelPnsDw0H2GBSy
+	HLvjX2zV0xUbK3sjzkBNIeHKjdpyFy1hf/FHy0DpJIxemC1qMg3gtqIkQHBkVFzNn2LfGHSBmBS
+	DlabMZopomKeia5A2+8V0=
+X-Received: by 2002:a05:600c:8b26:b0:480:426e:9d38 with SMTP id 5b1f17b1804b1-482db4e5cb1mr190522935e9.27.1770112260126;
+        Tue, 03 Feb 2026 01:51:00 -0800 (PST)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4830512d634sm79886835e9.8.2026.02.03.01.50.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Feb 2026 01:50:59 -0800 (PST)
+Message-ID: <db4978d8a8c46844c6c80580af626e7340b28e1c.camel@gmail.com>
+Subject: Re: [PATCH v5 4/4] iio: adc: ad9467: check for backend capabilities
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Tomas Melin <tomas.melin@vaisala.com>, Michael Hennerich	
+ <Michael.Hennerich@analog.com>, Nuno Sa <nuno.sa@analog.com>, Lars-Peter
+ Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner	 <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Olivier Moysan	 <olivier.moysan@foss.st.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Tue, 03 Feb 2026 09:51:42 +0000
+In-Reply-To: <353d33f7-995d-459d-aaaf-64bf76df7e14@vaisala.com>
+References: 
+	<20260130-b4-ad9467-optional-backend-v5-0-7da803ba7326@vaisala.com>
+	 <20260130-b4-ad9467-optional-backend-v5-4-7da803ba7326@vaisala.com>
+	 <12b0fbc2f4c3a6be86089d9cab73cce1c3face0d.camel@gmail.com>
+	 <353d33f7-995d-459d-aaaf-64bf76df7e14@vaisala.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260202194033.627967-1-harshit.m.mogalapalli@oracle.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Feb 02, 2026 at 11:40:07AM -0800, Harshit Mogalapalli wrote:
+On Mon, 2026-02-02 at 14:03 +0200, Tomas Melin wrote:
 > Hi,
-> 
-> This is an attempt to update sca3000 accelerometer driver to make use
-> of devm_ based helpers where needed. I have split it into 5 patches.
-> 
-> Patch 1 - some refactoring and simplification.
-> Patch 2 - switches request_threaded_irq() over to the devm helper
-> Patch 3 - Used devm_add_action_or_reset() for disabling interrupts.
-> (Ensured the ordering of teardown bits remain same)
-> Patch 4 - manage device registration with devm helper
-> Patch 5 - Make use of guard() in sca3000_stop_all_interrupts() function.
-> 
-> Thanks a lot to Jonathan for detailed review of V1.
-> 
-> During v1 review comments, Jonathan Cameron kindly provided some great
-> suggestions to improve this driver. One of them is making use of
-> gaurd(mutex) - autocleanup style, patch 5 does that for one function.
-> 
-> Yet to be addressed tasks:
-> 1. We shouldn't be using the spi_device_id at all.
-> 2. Modernize other fucntions to make use of autocleanup style locking
-> which simpifies the code and makes error paths cleaner.
-> 
-> I will be working on these two above tasks and will be sending a
-> different patches for those.
-> 
-> The series builds cleanly and I have performed static analysis with
-> smatch checker but haven't tested on actual hardware.
+>=20
+> On 02/02/2026 12:42, Nuno S=C3=A1 wrote:
+> > On Fri, 2026-01-30 at 09:17 +0000, Tomas Melin wrote:
+> > > Add capability checks for operation with backends that do not necessa=
+rily
+> > > support full set of features, but are otherwise compatible with the d=
+evice.
+> > > This ensures a fully functional device, but with limited capabilities=
+.
+> ...
+> > > =C2=A0
+> > > @@ -1263,8 +1271,10 @@ static void ad9467_debugfs_init(struct iio_dev=
+ *indio_dev)
+> > > =C2=A0	if (!st->chan_test)
+> > > =C2=A0		return;
+> > > =C2=A0
+> > > -	debugfs_create_file("calibration_table_dump", 0400, d, st,
+> > > -			=C2=A0=C2=A0=C2=A0 &ad9467_calib_table_fops);
+> > > +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION)) {
+> > > +		debugfs_create_file("calibration_table_dump", 0400, d, st,
+> > > +				=C2=A0=C2=A0=C2=A0 &ad9467_calib_table_fops);
+> > > +	}
+> > > =C2=A0
+> > > =C2=A0	for (chan =3D 0; chan < st->info->num_channels; chan++) {
+> > > =C2=A0		snprintf(attr_name, sizeof(attr_name), "in_voltage%u_test_mod=
+e",
+> >=20
+> > Change the permissions for in_voltage%u_test_mode so that is WO in case=
+ we can't
+> > IIO_BACKEND_CAP_CALIBRATION. You can even reuse the above check to twea=
+k the permissions
+> > accordingly. Then no need to check for the capability in ad9467_chan_te=
+st_mode_read()
+>=20
+> This RO would be then only for cases PN9, PN23. For the other attributes
 
-David already reviewed and v3 is anticipated, so I try to look into that one.
+> RW would still be applicable. But basically I think the test modes in
+> the device are still available even if the backend status does not exist?
 
--- 
-With Best Regards,
-Andy Shevchenko
+Yeah, they are. The backend is only validating the pattern to make sure it =
+is what's
+expected. TBH, I'm not sure what's the utility without the backend but I gu=
+ess one might
+want to connect the interface somewhere and check the patterns.
 
+> IMHO the current approach is slightly cleaner, as all the test modes the
+> device supports are available and no need to think about which ones have
+> RW/RO inside this function. Please let me know, in case you insist on
+> this kind of approach.
+>=20
+>=20
+Ok, I reviewed the code and I see we still print some running status for al=
+l the patterns.
+Feel free to leave as-is then
 
+- Nuno S=C3=A1
