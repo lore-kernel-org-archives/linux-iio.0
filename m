@@ -1,122 +1,107 @@
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C93240B6E9;
-	Wed,  4 Feb 2026 13:53:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44C2B22CBC0
+	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 14:00:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770213200; cv=none; b=iYm31L7zHwpP721/Zv/4FGtEJml1wVeClA6wLV150bolbMrxPMcdqPCMJZkSJ9OLsMDKx/rwai9jKNqW6sInSb/VN13FGKjZCZ4usUPEDz/ccogOQmw5O45CwU1lqa2VhTg6pZkstzT1dNmMh0A1ADr5pnoBoKcggUVCV4r9fsE=
+	t=1770213652; cv=none; b=a494sK6j3/AmmQ9JHjExbhdtR3rxL65iaOwWu7Lgy9VK16NwRgLVzN53HlJLmGtJe/EaguPldUYsnP3dT9+6xyk78SkoHG7Qs4xO/D0hiBGuD2SDl0ty7VMYq9DOvxP2jQM5UFdu668VlrUlFGOhV5bZnE80LM8+eTCBAWShtRs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770213200; c=relaxed/simple;
-	bh=AyDdDS/jQ4yauqN/tXFOUgSOY6AXjL0WWGxl265xn9s=;
-	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Kwk9M953E/lyHrxDHcgu/MdZsF048heYr4XRKpJ0fYTs6nDKVzVZrcOFSL470E88PuuoFTVswENaUE1WO2ex2+kvjMaw4E3hmM1niIDQkvoQm8uhLahUY803H6Czc3ySOSr7OuXBOj7/hP+kTsWvBR5l5Abw0EQ3SVy8AiTii8Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
-Received: from mail.maildlp.com (unknown [172.18.224.83])
-	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4f5hcX2F2mzJ4692;
-	Wed,  4 Feb 2026 21:52:28 +0800 (CST)
-Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
-	by mail.maildlp.com (Postfix) with ESMTPS id 66D4540569;
-	Wed,  4 Feb 2026 21:53:17 +0800 (CST)
-Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
- (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Wed, 4 Feb
- 2026 13:53:16 +0000
-Date: Wed, 4 Feb 2026 13:53:15 +0000
-From: Jonathan Cameron <jonathan.cameron@huawei.com>
-To: Mark Brown <broonie@kernel.org>
-CC: David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>, Michael Hennerich
-	<michael.hennerich@analog.com>, Nuno =?ISO-8859-1?Q?S?= =?ISO-8859-1?Q?=E1?=
-	<nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko
-	<andy@kernel.org>, Sean Anderson <sean.anderson@linux.dev>,
-	<linux-spi@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v6 0/9] spi: add multi-lane support
-Message-ID: <20260204135315.0000580b@huawei.com>
-In-Reply-To: <ed1331d4-2e34-4b30-a0d7-f0e1d6093af8@sirena.org.uk>
-References: <20260123-spi-add-multi-bus-support-v6-0-12af183c06eb@baylibre.com>
-	<ed1331d4-2e34-4b30-a0d7-f0e1d6093af8@sirena.org.uk>
-X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
+	s=arc-20240116; t=1770213652; c=relaxed/simple;
+	bh=vOfPvsOG6cx3RT3EoUIw4rCEZHvSWFUEh7imvwz8rnA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=TRLknTpu1FAef4UxonvM4L72iJOdsxp2fFjEmphNJgrandzBk0vZ5UNj37MTDaBOGpzsEFGb+oNYz+pqPc9dtOstrFpttqx+GnV5Mw0teUgFXzo2A8F9yN3HkAj5cQUc3lIkWziYENTtrtp604QstDrmhn6MctzinNiHjBKTNpk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vndR1-0001Qm-HP; Wed, 04 Feb 2026 15:00:47 +0100
+Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vndR1-0045FL-1d;
+	Wed, 04 Feb 2026 15:00:46 +0100
+Received: from ore by dude04 with local (Exim 4.98.2)
+	(envelope-from <ore@pengutronix.de>)
+	id 1vndR0-00000001dg8-2vGb;
+	Wed, 04 Feb 2026 15:00:46 +0100
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	David Jander <david@protonic.nl>
+Subject: [PATCH v5 05/13] iio: dac: ds4424: rename iio_info struct to avoid ambiguity
+Date: Wed,  4 Feb 2026 15:00:37 +0100
+Message-ID: <20260204140045.390677-6-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <20260204140045.390677-1-o.rempel@pengutronix.de>
+References: <20260204140045.390677-1-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: lhrpeml100011.china.huawei.com (7.191.174.247) To
- dubpeml500005.china.huawei.com (7.214.145.207)
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Mon, 2 Feb 2026 23:22:59 +0000
-Mark Brown <broonie@kernel.org> wrote:
+Rename the static `ds4424_info` structure to `ds4424_iio_info`.
 
-> On Fri, Jan 23, 2026 at 02:37:23PM -0600, David Lechner wrote:
-> > This series is adding support for SPI controllers and peripherals that
-> > have multiple SPI data lanes (data lanes being independent sets of
-> > SDI/SDO lines, each with their own serializer/deserializer).  
-> 
-> The following changes since commit 8f0b4cce4481fb22653697cced8d0d04027cb1e8:
-> 
->   Linux 6.19-rc1 (2025-12-14 16:05:07 +1200)
-> 
-> are available in the Git repository at:
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-multi-lane
+The previous name was generic and could be confused with chip-specific
+data structures (like the upcoming `ds4424_chip_info`). The new name
+explicitly indicates that this structure holds the IIO framework
+callbacks.
 
-Thanks. Given timing, I plan to hold the last two patches until next cycle.
-I'll pick them up nice and early though so they'll be in next shortly after
-rc1.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+---
+changes v5:
+- add Reviewed-by: Andy
+changes v4:
+- New patch
+---
+ drivers/iio/dac/ds4424.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> 
-> for you to fetch changes up to 0ec5ed7c95d1ba6a74491928ff38abb351dbed36:
-> 
->   spi: axi-spi-engine: support SPI_MULTI_LANE_MODE_STRIPE (2026-02-02 12:12:47 +0000)
-> 
-> ----------------------------------------------------------------
-> spi: Add multi-lane support
-> 
-> This series is adding support for SPI controllers and peripherals that
-> have multiple SPI data lanes (data lanes being independent sets of
-> SDI/SDO lines, each with their own serializer/deserializer).
-> 
-> ----------------------------------------------------------------
-> CL Wang (1):
->       spi: dt-bindings: Add support for ATCSPI200 SPI controller
-> 
-> David Lechner (7):
->       spi: dt-bindings: change spi-{rx,tx}-bus-width to arrays
->       spi: dt-bindings: add spi-{tx,rx}-lane-map properties
->       spi: support controllers with multiple data lanes
->       spi: add multi_lane_mode field to struct spi_transfer
->       spi: Documentation: add page on multi-lane support
->       spi: dt-bindings: adi,axi-spi-engine: add multi-lane support
->       spi: axi-spi-engine: support SPI_MULTI_LANE_MODE_STRIPE
-> 
->  .../bindings/display/panel/sitronix,st7789v.yaml   |   5 +-
->  .../devicetree/bindings/iio/adc/adi,ad4030.yaml    |  42 +++-
->  .../devicetree/bindings/iio/adc/adi,ad4695.yaml    |   5 +-
->  .../bindings/spi/adi,axi-spi-engine.yaml           |  15 ++
->  .../bindings/spi/allwinner,sun4i-a10-spi.yaml      |   6 +-
->  .../bindings/spi/allwinner,sun6i-a31-spi.yaml      |   6 +-
->  .../bindings/spi/andestech,ae350-spi.yaml          |  87 +++++++++
->  .../bindings/spi/nvidia,tegra210-quad.yaml         |   6 +-
->  .../bindings/spi/spi-peripheral-props.yaml         |  40 +++-
->  Documentation/spi/index.rst                        |   1 +
->  Documentation/spi/multiple-data-lanes.rst          | 217 +++++++++++++++++++++
->  drivers/spi/spi-axi-spi-engine.c                   | 145 +++++++++++++-
->  drivers/spi/spi.c                                  | 144 +++++++++++++-
->  include/linux/spi/spi.h                            |  30 +++
->  14 files changed, 724 insertions(+), 25 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/spi/andestech,ae350-spi.yaml
->  create mode 100644 Documentation/spi/multiple-data-lanes.rst
-> 
+diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+index c03051dc763e..3385f39521d9 100644
+--- a/drivers/iio/dac/ds4424.c
++++ b/drivers/iio/dac/ds4424.c
+@@ -197,7 +197,7 @@ static int ds4424_resume(struct device *dev)
+ 
+ static DEFINE_SIMPLE_DEV_PM_OPS(ds4424_pm_ops, ds4424_suspend, ds4424_resume);
+ 
+-static const struct iio_info ds4424_info = {
++static const struct iio_info ds4424_iio_info = {
+ 	.read_raw = ds4424_read_raw,
+ 	.write_raw = ds4424_write_raw,
+ };
+@@ -252,7 +252,7 @@ static int ds4424_probe(struct i2c_client *client)
+ 
+ 	indio_dev->channels = ds4424_channels;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->info = &ds4424_info;
++	indio_dev->info = &ds4424_iio_info;
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+-- 
+2.47.3
 
