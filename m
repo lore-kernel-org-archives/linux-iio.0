@@ -1,169 +1,104 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A8D5E3F0768
-	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 14:17:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85E2C41323C;
+	Wed,  4 Feb 2026 14:20:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770214637; cv=none; b=Eke8c/FCu3gcM7FMAhR0V7+ps3QmkOYMiJ4PyTnHiQ02swmbeWknaxiV26ZZanzUk0DF0v1Tq5A6hQXpbdYKzDd6L3VzTYvicHO9LzmkrnEQ0+9KTWH649gA/GsZ2F1xX4M/nzr1GIDxh9w1EgzUXtJFxCWAAE/NETEgsP4Q3ag=
+	t=1770214818; cv=none; b=n/X+KgvL8bDuXIdyW1FboVvIIqE6EcYCHfasyKzohhdIpal0bH9nlVfE7qv9KDyGa8r9RwddM7/taf17Q1dNPL+VmYFgN4F/qwKVR2R6gmeJYkkCMjdB59qo17FZUsKr8WXnpORLBBXtGyEvVHocXWBDUidem1rE+Ed+TqQsGZ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770214637; c=relaxed/simple;
-	bh=56EXNUTDFHse8NqdweIFHbsmZRuvTlH93hBgq6Mzh6s=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=oOrh49JrhXDHpfALgc2fpNnyiWcWk20nrLNtab0su2uueF7OmV+qJClowZb17ouJaqSvwJxN6cVeJ/zhxNNKSBiDuqzPVGsPTWEvJnapf4CnfnB3pG8QL/XmUu0FAsDgmyYw4Ey9JmF/9MCcZwwC5JbmLuxCm3OfR/JxlcjmFS8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1vndR1-0001Qn-HO; Wed, 04 Feb 2026 15:00:47 +0100
-Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <ore@pengutronix.de>)
-	id 1vndR1-0045FM-1d;
-	Wed, 04 Feb 2026 15:00:46 +0100
-Received: from ore by dude04 with local (Exim 4.98.2)
-	(envelope-from <ore@pengutronix.de>)
-	id 1vndR0-00000001dgJ-30bJ;
-	Wed, 04 Feb 2026 15:00:46 +0100
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh@kernel.org>,
+	s=arc-20240116; t=1770214818; c=relaxed/simple;
+	bh=zmBwGLhDUiwZIdMPsi+sqb3oedtUAJYBCtug/uouMLM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=LgiqHI4YNHCn8ycLs0pZBuHvhZFfsA2MAWpFV+XRnyYaCX9SZWYcWfX+VLhLCj3/1ifHCdRyCUrgCznmIZaNEo5t3IyoJxYTV3LsgJFvLGQ/jC3B7BJW43GVDFSbSPICIReRFZDwe8oBGGGhT9anvbrr9sJtVbLQ1zLucAlleTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ND+CsL/Y; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ND+CsL/Y"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770214818; x=1801750818;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=zmBwGLhDUiwZIdMPsi+sqb3oedtUAJYBCtug/uouMLM=;
+  b=ND+CsL/Yag+ViWThYZJcD2wHJjbwh3AmI7RYW9h0fHG7TzDl2fcTp908
+   Kt+JZSszU73cIM9KJlFLsA23jh7EylFpviBJFMT2cl4+Rhsb+o2VzcHK5
+   3/h8dS2LQBPro7H9PxVS+1LMZ9ge375c0VrYBeGHYdTuO/d/nsEP5YNTB
+   ZrBB+MKVRz/rLr5mllAKOzeCQKPXuCvc4gcEj+2MRX886amjRkebnR5bc
+   zYvosC/5UVF95imGb1jkrWmumQ3uVHvwK+rswX/bd6o6DUGV2fFa5PwgV
+   tF6LJqjmmpvnteiu/3zdii+fQF9xyZOA0X5Gp3AQiyX7d+EpwQMpY4ZtY
+   w==;
+X-CSE-ConnectionGUID: 55yduEiGQVmHDnR83OjQLA==
+X-CSE-MsgGUID: yQqwwyejTriO0PH70G13+w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="58977311"
+X-IronPort-AV: E=Sophos;i="6.21,272,1763452800"; 
+   d="scan'208";a="58977311"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2026 06:20:17 -0800
+X-CSE-ConnectionGUID: j/YBXKVGRfmKYXOich9OPA==
+X-CSE-MsgGUID: 7CWQkiL2RgaakwgpEt963g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,272,1763452800"; 
+   d="scan'208";a="210191980"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.188])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2026 06:20:15 -0800
+Date: Wed, 4 Feb 2026 16:20:13 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
-	kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Andy Shevchenko <andy@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v5 06/13] iio: dac: ds4424: use device match data for chip info
-Date: Wed,  4 Feb 2026 15:00:38 +0100
-Message-ID: <20260204140045.390677-7-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260204140045.390677-1-o.rempel@pengutronix.de>
+Subject: Re: [PATCH v5 06/13] iio: dac: ds4424: use device match data for
+ chip info
+Message-ID: <aYNVndcMVRj3JsKL@smile.fi.intel.com>
 References: <20260204140045.390677-1-o.rempel@pengutronix.de>
+ <20260204140045.390677-7-o.rempel@pengutronix.de>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+In-Reply-To: <20260204140045.390677-7-o.rempel@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Refactor the driver to use device match data instead of checking ID enums
-in a switch statement.
+On Wed, Feb 04, 2026 at 03:00:38PM +0100, Oleksij Rempel wrote:
+> Refactor the driver to use device match data instead of checking ID enums
+> in a switch statement.
+> 
+> Define a `ds4424_chip_info` structure to hold variant-specific attributes
+> (currently just the channel count) and attach it directly to the I2C and
+> OF device ID tables.
+> 
+> This simplifies the probe function and makes it easier to add support for
+> new variants like DS4402/DS4404.
 
-Define a `ds4424_chip_info` structure to hold variant-specific attributes
-(currently just the channel count) and attach it directly to the I2C and
-OF device ID tables.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+with a hope that we get rid an I²C ID requirement at some point.
 
-This simplifies the probe function and makes it easier to add support for
-new variants like DS4402/DS4404.
+...
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
-changes v5:
-- drop client->name change
-changes v4:
-- New patch
----
- drivers/iio/dac/ds4424.c | 41 ++++++++++++++++++++--------------------
- 1 file changed, 20 insertions(+), 21 deletions(-)
+> +struct ds4424_chip_info {
+> +	u8 num_channels;
 
-diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-index 3385f39521d9..b6b8ab2d4b1f 100644
---- a/drivers/iio/dac/ds4424.c
-+++ b/drivers/iio/dac/ds4424.c
-@@ -34,9 +34,16 @@
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
- }
- 
--enum ds4424_device_ids {
--	ID_DS4422,
--	ID_DS4424,
-+struct ds4424_chip_info {
-+	u8 num_channels;
-+};
-+
-+static const struct ds4424_chip_info ds4422_info = {
-+	.num_channels = DS4422_MAX_DAC_CHANNELS,
-+};
-+
-+static const struct ds4424_chip_info ds4424_info = {
-+	.num_channels = DS4424_MAX_DAC_CHANNELS,
- };
- 
- struct ds4424_data {
-@@ -205,10 +212,15 @@ static const struct iio_info ds4424_iio_info = {
- static int ds4424_probe(struct i2c_client *client)
- {
- 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
-+	const struct ds4424_chip_info *chip_info;
- 	struct ds4424_data *data;
- 	struct iio_dev *indio_dev;
- 	int ret;
- 
-+	chip_info = i2c_get_match_data(client);
-+	if (!chip_info)
-+		return -ENODEV;
-+
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
-@@ -236,20 +248,7 @@ static int ds4424_probe(struct i2c_client *client)
- 	if (ret < 0)
- 		goto fail;
- 
--	switch (id->driver_data) {
--	case ID_DS4422:
--		indio_dev->num_channels = DS4422_MAX_DAC_CHANNELS;
--		break;
--	case ID_DS4424:
--		indio_dev->num_channels = DS4424_MAX_DAC_CHANNELS;
--		break;
--	default:
--		dev_err(&client->dev,
--				"ds4424: Invalid chip id.\n");
--		ret = -ENXIO;
--		goto fail;
--	}
--
-+	indio_dev->num_channels = chip_info->num_channels;
- 	indio_dev->channels = ds4424_channels;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &ds4424_iio_info;
-@@ -278,16 +277,16 @@ static void ds4424_remove(struct i2c_client *client)
- }
- 
- static const struct i2c_device_id ds4424_id[] = {
--	{ "ds4422", ID_DS4422 },
--	{ "ds4424", ID_DS4424 },
-+	{ "ds4422", (kernel_ulong_t)&ds4422_info },
-+	{ "ds4424", (kernel_ulong_t)&ds4424_info },
- 	{ }
- };
- 
- MODULE_DEVICE_TABLE(i2c, ds4424_id);
- 
- static const struct of_device_id ds4424_of_match[] = {
--	{ .compatible = "maxim,ds4422" },
--	{ .compatible = "maxim,ds4424" },
-+	{ .compatible = "maxim,ds4422", .data = &ds4422_info },
-+	{ .compatible = "maxim,ds4424", .data = &ds4424_info },
- 	{ }
- };
- 
+If you wish, you can provide name here that will go to ->name field.
+Linker dedups string literals, so it will be just an additional runtime
+pointer.
+
+> +};
+
 -- 
-2.47.3
+With Best Regards,
+Andy Shevchenko
+
 
