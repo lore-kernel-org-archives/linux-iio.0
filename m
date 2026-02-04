@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4494421FF4C
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 449BB22127A
 	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 14:00:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770213652; cv=none; b=B0Fbo+4IXU4nVy954fdGDkj90Cz5fMz+AI5TqgP9cPqEp0EKo0FW973dq5H8bsvsXFbEqUDvMKAg5RpfEcJ2UT+xAZenlmcSj+5x22ouz28whU90iPYHoQMoeMTgA7ptzRvV6xZeZb/cUp2iD5Gi/1SCZoo3Td8bl0K4kjSVfUA=
+	t=1770213652; cv=none; b=IoTd0/Z2badoS/4InHF4itobByML6yWE0F7Kv78FGRSzqnLUoEtAQeP/8VYwHcYK1cU0PCsQtvEHkBka31zXG+LkxBSWWwHcxQICNUBYtB4hrDQ0gx381cK9jxwvtZQ94bz6/+NoxlC51RiGxUO9KMXXG7C+QIDXDVAAgDq/TzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770213652; c=relaxed/simple;
-	bh=J8VEEpGK6fQEXh7dQ+A+V/sWX8djg2HIkzMrWlPT06o=;
+	bh=rPfE4515n+KZG273IiE6bLfVi2PtNGJOTQBPCKEkJ/U=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=CYP4lDc7NuHekAy+02jfrR0znEP32Xmr3PsavorI/V3K/rVh05CIcc2emkyh18xXjaDiTfDyRQg7GgK8xpGKU7NETl1bt65iqNEyXAqhzvt6h1qJ5qyucVxbRwpbqcdQ3/bdyOBa28AwIfxkb2eVnm4+RanpN5ZhvL336VQxWVU=
+	 MIME-Version; b=r83VtAjdlIFoEC9Qq+4BMckhe2ng+BYARz35lwO94Nc+SjMrgZiVvpuBliL72cFIqohA6faauV9XR9rNm8X6hKyp5C2FMtf8+DRf8lKNyXjSpYAI0b9DwYoE3PPDq1hSD7s8wnGRLwhueZpaCFfHgdR69nsCKgaecbgqd8qpwE0=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vndR1-0001Qr-HP; Wed, 04 Feb 2026 15:00:47 +0100
+	id 1vndR1-0001Qi-HP; Wed, 04 Feb 2026 15:00:47 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vndR1-0045FO-28;
-	Wed, 04 Feb 2026 15:00:47 +0100
+	id 1vndR1-0045FF-1E;
+	Wed, 04 Feb 2026 15:00:46 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vndR0-00000001dgU-36GH;
+	id 1vndR0-00000001dfe-2de9;
 	Wed, 04 Feb 2026 15:00:46 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -44,9 +44,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v5 07/13] iio: dac: ds4424: use fsleep() instead of usleep_range()
-Date: Wed,  4 Feb 2026 15:00:39 +0100
-Message-ID: <20260204140045.390677-8-o.rempel@pengutronix.de>
+Subject: [PATCH v5 02/13] iio: dac: ds4424: refactor raw access to use bitwise operations
+Date: Wed,  4 Feb 2026 15:00:34 +0100
+Message-ID: <20260204140045.390677-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260204140045.390677-1-o.rempel@pengutronix.de>
 References: <20260204140045.390677-1-o.rempel@pengutronix.de>
@@ -62,55 +62,148 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-The DS4422/DS4424 and DS4402/DS4404 datasheets do not specify a minimum
-delay between power-up (POR) and the availability of the I2C interface.
-
-The driver previously used `usleep_range(1000, 1200)` to enforce a ~1ms
-delay. Replace this with `fsleep(1000)` to allow the kernel to select
-the most efficient sleep mechanism while retaining the existing
-conservative delay to ensure device readiness.
+Refactor the raw access logic to use standard GENMASK() and BIT()
+macros. Use abs() for magnitude calculation to simplify the logic and
+make the data flow clearer.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 ---
 changes v5:
-- Add Reviewed-by: Andy ..
-- Remove "(usleep or msleep)" from the commit message
-- s/1000/1 * USEC_PER_MSEC
-- Include <linux/time64.h> for USEC_PER_MSEC
+- no changes
 changes v4:
-- New patch
+- Split patch: The functional fix for -128 was moved to the previous
+  patch (1/9) for stable backporting.
+- This patch now contains only the refactoring (GENMASK/BIT/abs) on top
+  of the fix.
+changes v3:
+- Remove "Rebase on top of regmap" note as this is now patch 1/8.
+- Add #include <linux/bits.h>
+- Clarify 0mA sink/source behavior in comments
+- Remove redundant blank line in write_raw
+changes v2:
+- Replace S8_MIN/MAX checks with abs() > DS4424_DAC_MASK to enforce the
+  correct [-127, 127] physical range.
+- Refactor read_raw/write_raw to use symmetrical bitwise operations,
+  removing the custom bitfield union.
+- Rebase on top of regmap port
 ---
- drivers/iio/dac/ds4424.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/iio/dac/ds4424.c | 55 +++++++++++++++-------------------------
+ 1 file changed, 21 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-index b6b8ab2d4b1f..00a719d43a17 100644
+index 059acca45f64..596ff5999271 100644
 --- a/drivers/iio/dac/ds4424.c
 +++ b/drivers/iio/dac/ds4424.c
-@@ -12,6 +12,7 @@
+@@ -5,6 +5,7 @@
+  * Copyright (C) 2017 Maxim Integrated
+  */
+ 
++#include <linux/bits.h>
  #include <linux/kernel.h>
  #include <linux/module.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/time64.h>
+ #include <linux/i2c.h>
+@@ -19,9 +20,10 @@
+ #define DS4422_MAX_DAC_CHANNELS		2
+ #define DS4424_MAX_DAC_CHANNELS		4
  
- #include <linux/iio/consumer.h>
- #include <linux/iio/driver.h>
-@@ -243,7 +244,13 @@ static int ds4424_probe(struct i2c_client *client)
- 		return ret;
- 	}
- 
--	usleep_range(1000, 1200);
-+	/*
-+	 * The datasheet does not specify a power-up to I2C ready time.
-+	 * Maintain the existing conservative 1ms delay to ensure the
-+	 * device is ready for communication.
-+	 */
-+	fsleep(1 * USEC_PER_MSEC);
++#define DS4424_DAC_MASK			GENMASK(6, 0)
++#define DS4424_DAC_SOURCE		BIT(7)
 +
- 	ret = ds4424_verify_chip(indio_dev);
- 	if (ret < 0)
- 		goto fail;
+ #define DS4424_DAC_ADDR(chan)   ((chan) + 0xf8)
+-#define DS4424_SOURCE_I		1
+-#define DS4424_SINK_I		0
+ 
+ #define DS4424_CHANNEL(chan) { \
+ 	.type = IIO_CURRENT, \
+@@ -31,22 +33,6 @@
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+ }
+ 
+-/*
+- * DS4424 DAC control register 8 bits
+- * [7]		0: to sink; 1: to source
+- * [6:0]	steps to sink/source
+- * bit[7] looks like a sign bit, but the value of the register is
+- * not a two's complement code considering the bit[6:0] is a absolute
+- * distance from the zero point.
+- */
+-union ds4424_raw_data {
+-	struct {
+-		u8 dx:7;
+-		u8 source_bit:1;
+-	};
+-	u8 bits;
+-};
+-
+ enum ds4424_device_ids {
+ 	ID_DS4422,
+ 	ID_DS4424,
+@@ -108,21 +94,21 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *chan,
+ 			   int *val, int *val2, long mask)
+ {
+-	union ds4424_raw_data raw;
+-	int ret;
++	int ret, regval;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		ret = ds4424_get_value(indio_dev, val, chan->channel);
++		ret = ds4424_get_value(indio_dev, &regval, chan->channel);
+ 		if (ret < 0) {
+ 			pr_err("%s : ds4424_get_value returned %d\n",
+ 							__func__, ret);
+ 			return ret;
+ 		}
+-		raw.bits = *val;
+-		*val = raw.dx;
+-		if (raw.source_bit == DS4424_SINK_I)
++
++		*val = regval & DS4424_DAC_MASK;
++		if (!(regval & DS4424_DAC_SOURCE))
+ 			*val = -*val;
++
+ 		return IIO_VAL_INT;
+ 
+ 	default:
+@@ -134,25 +120,26 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int val, int val2, long mask)
+ {
+-	union ds4424_raw_data raw;
++	unsigned int abs_val;
+ 
+ 	if (val2 != 0)
+ 		return -EINVAL;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		if (val <= S8_MIN || val > S8_MAX)
++		abs_val = abs(val);
++		if (abs_val > DS4424_DAC_MASK)
+ 			return -EINVAL;
+ 
+-		if (val > 0) {
+-			raw.source_bit = DS4424_SOURCE_I;
+-			raw.dx = val;
+-		} else {
+-			raw.source_bit = DS4424_SINK_I;
+-			raw.dx = -val;
+-		}
++		/*
++		 * Currents exiting the IC (Source) are positive. 0 is a valid
++		 * value for no current flow; the direction bit (Source vs Sink)
++		 * is treated as don't-care by the hardware at 0.
++		 */
++		if (val > 0)
++			abs_val |= DS4424_DAC_SOURCE;
+ 
+-		return ds4424_set_value(indio_dev, raw.bits, chan);
++		return ds4424_set_value(indio_dev, abs_val, chan);
+ 
+ 	default:
+ 		return -EINVAL;
 -- 
 2.47.3
 
