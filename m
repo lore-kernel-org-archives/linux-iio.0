@@ -1,107 +1,122 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BC652E92BC
-	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 13:36:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C93240B6E9;
+	Wed,  4 Feb 2026 13:53:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770212214; cv=none; b=ZcRAOpc2x/KYDN7Wa4lxVgDyxh/xISltsxG93uskSVzjR59xgqChcK6UxaXzZarwp/ogMby6JN+zMtc8Ey6lFkjFuRBFTkDZ+Tk5NAobmF9106h7mtN2HWn1wdxxz9rYFs9+NsmPJ8OUWDME2E3ih6Bg7SpmfT1YaAlaPcanDd4=
+	t=1770213200; cv=none; b=iYm31L7zHwpP721/Zv/4FGtEJml1wVeClA6wLV150bolbMrxPMcdqPCMJZkSJ9OLsMDKx/rwai9jKNqW6sInSb/VN13FGKjZCZ4usUPEDz/ccogOQmw5O45CwU1lqa2VhTg6pZkstzT1dNmMh0A1ADr5pnoBoKcggUVCV4r9fsE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770212214; c=relaxed/simple;
-	bh=f/iHOSt98VEql9k83HDuNZJgnWlJD811sHLH6piWGKU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=dhA+sMRpiq1hyx3ntPV9/+ClGTrKKLFuhgwOYRElj2/Pr5tetF9Th+GGWvX7ogFX+wDxuiz46wMUhrU3L/06ndUk9MNGoTljelzhWzje+4N4wejGZRETLEUQnA3b6Y/MosVk2PePxoJaqAKatfqsFSU2Zwf+qen0DefK8tdimss=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cUAk+Yum; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cUAk+Yum"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4806f80cac9so39011095e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 04 Feb 2026 05:36:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770212212; x=1770817012; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HObmXU3uBvxhP6GM9bDdwOd15Fnf+3qnP+5Sq0FpP0k=;
-        b=cUAk+YumvPJk6Myzv05e0EXNBF42SuMTH2mI4BDTI+XiKEJ5mN7pcYBRX1E707MtCP
-         s0rc/NSMWbpbQ6ZOPVIVrQO6q6x/5Gn015S+R3dh0LBC7D1gcMSfYWk86C6E2/kY/05/
-         j2Znrp4GK9GIIyG/UZRGJ5vVwS6vl8b14qCMS5IonF9lCroAm8YnMNVEIhAO18aAl4GX
-         1bJdsICoeYWj0zUfov1Rf56/+zeaNEt0+gIzX8OQ6/D3Eg5XaclSXfDq+Dj71yGiAONy
-         akX10BLCOKc3eqwu7W8lQ1y5LK70xFxslwYxyWYENzDh3v0PL5YoU+sXdGeRjoL3wJY9
-         kz+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770212212; x=1770817012;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=HObmXU3uBvxhP6GM9bDdwOd15Fnf+3qnP+5Sq0FpP0k=;
-        b=cvbyPcHhgiAMkYqaoHdoZUMy6H8P8INXb3qwTKPHZYHDpQT1xbmWXnfGdRmjqjs+h3
-         KAtH4VwTazSarnFKXIlbdFNJgVSEIV7sSK+XnO+rvb17M/mtzaTLWirx5Kdtz9eeP+Dg
-         YhudoyuqFSxHCgE9ASEgS70PN3gWitOiN+Yrn4c8BWJY7AM7LD7KJsJbmpsVCoYwM/r8
-         +rtvN4O4SBPS3ucXpNu1ZVPBBiVAkXUeDV0mHj724mFtUoLEZkWSSPFgWRaotCdAZCOq
-         +hilTaq1JwjUAJsbppCupk4YiUf9aBdXAlEyNsWdqzUnt1tzcRH8ZcqtTtOoLreWQLqo
-         ZFMw==
-X-Gm-Message-State: AOJu0Yz8M35K2AKvJMLoRGQexn6wPnXm55/SMZogUsDZXRh6THr4Nwsw
-	2biBOxEhpLPcD03y5OQpXXqfkU08fJ+beAAG7oNMCZI0FT3FK7wFecQI
-X-Gm-Gg: AZuq6aJ/Qf12DCkQUQY1GUnNAsF//Z/X2NiHsQk//e+JLf/FXd5Zkk42yAFCi0eFwVn
-	aZ+EaeJ0Qz0YnL/Bb0e/ye/394acv+Q5TzfmH9u3rI4+XG9pPdkdTMYOEPby8NgEgoY5QtuRSau
-	+gR4CA1Paz/bEoWgKKff4kXmfJcl+H+MyPJajBjZMSoJn1SzUrnfmDqCrBLvUH8DAHC0nZmMYYW
-	GYoUKOUrfNr2MEtGb7lCSnnLRcXPQbNBms0lbtnmKplXB2aqMuCgfN1mMhH/7wytagzgILedqUy
-	GhgOC+S3kL9bS83+O7xERXsi201m5kBReDNirKkw11AHUXIWGf4W3bbzvcjWDePT9tBhifkNyFM
-	Y6hdT7hACMwCnsvZo9VYaBcg/1rFX/DUQlMJGGo3tC3xr4+392XjPrA+JDjb7pw0+HXy4POvF1h
-	47bUjVanDyIC5ZBCg7obRO1SyZlUyWZYKmzcEEDbp/b1t/7sM2d1KLfzZpa84MXlL9SGQ=
-X-Received: by 2002:a05:600c:1f16:b0:47e:e71a:e13a with SMTP id 5b1f17b1804b1-4830e987b7fmr40251235e9.32.1770212212107;
-        Wed, 04 Feb 2026 05:36:52 -0800 (PST)
-Received: from chris-laptop.localdomain ([195.21.90.46])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483108e3ed5sm35389725e9.5.2026.02.04.05.36.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Feb 2026 05:36:51 -0800 (PST)
-From: Chris Spencer <spencercw@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	vassilisamir@gmail.com,
-	Chris Spencer <spencercw@gmail.com>
-Subject: [PATCH v2] iio: chemical: bme680: Fix measurement wait duration calculation
-Date: Wed,  4 Feb 2026 13:36:13 +0000
-Message-ID: <20260204133636.29361-1-spencercw@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	s=arc-20240116; t=1770213200; c=relaxed/simple;
+	bh=AyDdDS/jQ4yauqN/tXFOUgSOY6AXjL0WWGxl265xn9s=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=Kwk9M953E/lyHrxDHcgu/MdZsF048heYr4XRKpJ0fYTs6nDKVzVZrcOFSL470E88PuuoFTVswENaUE1WO2ex2+kvjMaw4E3hmM1niIDQkvoQm8uhLahUY803H6Czc3ySOSr7OuXBOj7/hP+kTsWvBR5l5Abw0EQ3SVy8AiTii8Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.224.83])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4f5hcX2F2mzJ4692;
+	Wed,  4 Feb 2026 21:52:28 +0800 (CST)
+Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
+	by mail.maildlp.com (Postfix) with ESMTPS id 66D4540569;
+	Wed,  4 Feb 2026 21:53:17 +0800 (CST)
+Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
+ (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Wed, 4 Feb
+ 2026 13:53:16 +0000
+Date: Wed, 4 Feb 2026 13:53:15 +0000
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Mark Brown <broonie@kernel.org>
+CC: David Lechner <dlechner@baylibre.com>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>, Michael Hennerich
+	<michael.hennerich@analog.com>, Nuno =?ISO-8859-1?Q?S?= =?ISO-8859-1?Q?=E1?=
+	<nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko
+	<andy@kernel.org>, Sean Anderson <sean.anderson@linux.dev>,
+	<linux-spi@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v6 0/9] spi: add multi-lane support
+Message-ID: <20260204135315.0000580b@huawei.com>
+In-Reply-To: <ed1331d4-2e34-4b30-a0d7-f0e1d6093af8@sirena.org.uk>
+References: <20260123-spi-add-multi-bus-support-v6-0-12af183c06eb@baylibre.com>
+	<ed1331d4-2e34-4b30-a0d7-f0e1d6093af8@sirena.org.uk>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml100011.china.huawei.com (7.191.174.247) To
+ dubpeml500005.china.huawei.com (7.214.145.207)
 
-This function refers to the Bosch BME680 API as the source of the
-calculation, but one of the constants does not match the Bosch
-implementation. This appears to be a simple transposition of two digits,
-resulting in a wait time that is too short. This can cause the following
-'device measurement cycle incomplete' check to occasionally fail.
+On Mon, 2 Feb 2026 23:22:59 +0000
+Mark Brown <broonie@kernel.org> wrote:
 
-Fixes: 4241665e6ea0 ("iio: chemical: bme680: Fix sensor data read operation")
-Link: https://github.com/boschsensortec/BME68x_SensorAPI/blob/v4.4.8/bme68x.c#L521
-Signed-off-by: Chris Spencer <spencercw@gmail.com>
-Acked-by: Vasileios Amoiridis <vassilisamir@gmail.com>
----
-v2: add Acked-by: Vasileios
----
- drivers/iio/chemical/bme680_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Fri, Jan 23, 2026 at 02:37:23PM -0600, David Lechner wrote:
+> > This series is adding support for SPI controllers and peripherals that
+> > have multiple SPI data lanes (data lanes being independent sets of
+> > SDI/SDO lines, each with their own serializer/deserializer).  
+> 
+> The following changes since commit 8f0b4cce4481fb22653697cced8d0d04027cb1e8:
+> 
+>   Linux 6.19-rc1 (2025-12-14 16:05:07 +1200)
+> 
+> are available in the Git repository at:
+> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-multi-lane
 
-diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
-index 70f81c4a96ba..24e0b59e2fdf 100644
---- a/drivers/iio/chemical/bme680_core.c
-+++ b/drivers/iio/chemical/bme680_core.c
-@@ -613,7 +613,7 @@ static int bme680_wait_for_eoc(struct bme680_data *data)
- 	 * + heater duration
- 	 */
- 	int wait_eoc_us = ((data->oversampling_temp + data->oversampling_press +
--			   data->oversampling_humid) * 1936) + (477 * 4) +
-+			   data->oversampling_humid) * 1963) + (477 * 4) +
- 			   (477 * 5) + 1000 + (data->heater_dur * 1000);
- 
- 	fsleep(wait_eoc_us);
--- 
-2.43.0
+Thanks. Given timing, I plan to hold the last two patches until next cycle.
+I'll pick them up nice and early though so they'll be in next shortly after
+rc1.
+
+Thanks,
+
+Jonathan
+
+> 
+> for you to fetch changes up to 0ec5ed7c95d1ba6a74491928ff38abb351dbed36:
+> 
+>   spi: axi-spi-engine: support SPI_MULTI_LANE_MODE_STRIPE (2026-02-02 12:12:47 +0000)
+> 
+> ----------------------------------------------------------------
+> spi: Add multi-lane support
+> 
+> This series is adding support for SPI controllers and peripherals that
+> have multiple SPI data lanes (data lanes being independent sets of
+> SDI/SDO lines, each with their own serializer/deserializer).
+> 
+> ----------------------------------------------------------------
+> CL Wang (1):
+>       spi: dt-bindings: Add support for ATCSPI200 SPI controller
+> 
+> David Lechner (7):
+>       spi: dt-bindings: change spi-{rx,tx}-bus-width to arrays
+>       spi: dt-bindings: add spi-{tx,rx}-lane-map properties
+>       spi: support controllers with multiple data lanes
+>       spi: add multi_lane_mode field to struct spi_transfer
+>       spi: Documentation: add page on multi-lane support
+>       spi: dt-bindings: adi,axi-spi-engine: add multi-lane support
+>       spi: axi-spi-engine: support SPI_MULTI_LANE_MODE_STRIPE
+> 
+>  .../bindings/display/panel/sitronix,st7789v.yaml   |   5 +-
+>  .../devicetree/bindings/iio/adc/adi,ad4030.yaml    |  42 +++-
+>  .../devicetree/bindings/iio/adc/adi,ad4695.yaml    |   5 +-
+>  .../bindings/spi/adi,axi-spi-engine.yaml           |  15 ++
+>  .../bindings/spi/allwinner,sun4i-a10-spi.yaml      |   6 +-
+>  .../bindings/spi/allwinner,sun6i-a31-spi.yaml      |   6 +-
+>  .../bindings/spi/andestech,ae350-spi.yaml          |  87 +++++++++
+>  .../bindings/spi/nvidia,tegra210-quad.yaml         |   6 +-
+>  .../bindings/spi/spi-peripheral-props.yaml         |  40 +++-
+>  Documentation/spi/index.rst                        |   1 +
+>  Documentation/spi/multiple-data-lanes.rst          | 217 +++++++++++++++++++++
+>  drivers/spi/spi-axi-spi-engine.c                   | 145 +++++++++++++-
+>  drivers/spi/spi.c                                  | 144 +++++++++++++-
+>  include/linux/spi/spi.h                            |  30 +++
+>  14 files changed, 724 insertions(+), 25 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/spi/andestech,ae350-spi.yaml
+>  create mode 100644 Documentation/spi/multiple-data-lanes.rst
+> 
 
