@@ -1,133 +1,147 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+Received: from mail-oi1-f174.google.com (mail-oi1-f174.google.com [209.85.167.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 185D610E3
-	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 00:04:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BF6A3EBF2D
+	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 00:49:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770163449; cv=none; b=iKt6/NopiA/P8EUDZzuzWhxKDTXxH4EfihJm68BfTBpOCR/k+2kpfId3d//FujRCB8kSe3NXnEg8IdOxX4Q1EhjaztPf3yPGsnnQlr8881IeH6WtnOvNnzB2/l1CKqCbjhwPZntgTYvHv/++dv9ztnhT8AEO8+t2SPp6Kxt7aSE=
+	t=1770166189; cv=none; b=mjb1NT8UeX/Gk2gB7I6Cs4HGRkiQUbI43Y075qGyfAHaXuHq7GT1eFy4TWfr7IAuyAoqjTgJIgaBOQLdb5r3HAWAEUJqH5ATTREQVD+e6qZTdVe/FyqID16z5pnjB+nMyT5xbGP411tfDqnM5SAACoFqWEAan4fgFq+SJ2QV+wc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770163449; c=relaxed/simple;
-	bh=Vl1dg9WukJqYTPC06lVnpHjD0vsq/0gDvQVBNUFmJh8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=RlekTYw/Yrc6bP/6Sk2ZLTDCo1GtdxcxOryJm1wDO47V5kmpSmpGxR5FE2J+zqA2BWQWNFMnV8SBkBLJvFvCZwct7HIELoEgd9vhQeHfVh2S62ckqU/ds4QeM5L+fTQTCPp+YFiA8HEaTc4t4Hnzpxd4jKaJPacmASUAH4yexxk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cSj+L81H; arc=none smtp.client-ip=209.85.222.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770166189; c=relaxed/simple;
+	bh=S5wqWJ/X9o7EGRxL5LCMmAmaRUc9szYlhY95kspTChI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=WeOpT5fCcJg2Ov3hcNxLVWrwJD5Pr4kzEJgZkzokF32sPsg36E4oNyxaVPdBIzBKK5MMDl7vD/aHrcjZnWkiIpPAypq8PnlzgiRXoi0+h8s/s/IfPgoyoiQoB2WAzLm6cWYWg8eaYF8qVrITjgFnGzlOEpDDfvqBDxP7/DLy7lg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Ik5pRCAq; arc=none smtp.client-ip=209.85.167.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cSj+L81H"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-8c6aaf3cd62so680609785a.3
-        for <linux-iio@vger.kernel.org>; Tue, 03 Feb 2026 16:04:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Ik5pRCAq"
+Received: by mail-oi1-f174.google.com with SMTP id 5614622812f47-45efd53148eso2261398b6e.0
+        for <linux-iio@vger.kernel.org>; Tue, 03 Feb 2026 16:49:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770163447; x=1770768247; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=dWP6YHUklSTvYW2OX4DByGvzjUzKq5UuPUF3ht+MFPM=;
-        b=cSj+L81HkWNenfrlLNAx0acgrN5kGQZs5kyGyAwjQYbqXyCgnpWyuRsCB3dSocZLbp
-         /wS1Z18lmN5k99qoE6G9o0L36oKkUFXZrX4SplJhBQHLneo8vyYV/OYIrgYQ07RnU2jT
-         uLC7dlG/y3vYmnJhXd6fFXN2yK22xogseZFKMRuFMP0DEzFSFRBrgSRD/aDVQTHzMnHf
-         AIYxusw8SVp16CANqbN8mMLOUcCpN0rKoIeDXhCh6wetxcE62wW810uabX2KDTq6ni+5
-         7stXIFhzU1PLNMw6fRk0Hyb9qNC7t9Lu2bvGlSnERj+DkxZFTqh2ggdFmjIUzCRWOmLV
-         e6Cg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770166186; x=1770770986; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=hMsM9JKT9K8kSTqNUb7Y1F/oUVnPtGz0MMvS4d5Lupw=;
+        b=Ik5pRCAqnJIoAtkNH4wQLIZyq6mnXY5ghF2AYhA8ZKZwhENukbhE171blQZ7eO1nZ/
+         jxV9CRzTAwgrLMrSM18OUFY6EaPocl9Nr+bicCtuvJSblXewPW3+91VNnVEA4PWV9SSI
+         Q3Dkw8QKW9tzdYvEV+gbTsGNT7TtSYqrkXAZD05038B+/Szd6u7BhG/MHb5nkvkx5aYW
+         99/k4kbzN0ilty5fTh+N9bIdbruMTc8RuKWl0fNAyjJmiN5+hbLDhErIQ9veFsGYkptP
+         rmY98xsq+jLx3hB200WY+DBOjmPbMlfkYXjwcW6PqrXSl9+dpbJY0AzmkgsiQzGKDSLV
+         mQrA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770163447; x=1770768247;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=dWP6YHUklSTvYW2OX4DByGvzjUzKq5UuPUF3ht+MFPM=;
-        b=lrrDK6N8bBGx7bRM+YRjy9l3JVCxoNS94znYLxzIg02XB6hHjfuoIXET+gbW+tDnv4
-         mi96OR79vYj5RhQY2h+1ydb45FhO2JFBbG+ND4bW1Os55+1BcQSew3AQ86KOEze/fL+S
-         8psy7PZ1jPN8YGD6PZ2GQ02SSmzC0god969m/42frQXuv0TpCSu/95qHfOnCHolAqZp9
-         rf0lFl3lLalEH58MhpOs4jMeHs8vHp5rB9fz5bOeLXMLg4W/Y3lmPiwwInFLO1YfSHhE
-         CQduhsbgbSdBTfeajtZuNvY0zHpNXmB5ktUU43hwgmx3h4hutrCsT6vpN8TUEiHWNarr
-         BLvw==
-X-Forwarded-Encrypted: i=1; AJvYcCUF9Z3jVHkpJxK1q5tn88vizNy+cJpS456FuEtDKxLdCHQCowL5vJdA6OMG90HFStZiALjaAp5zpW4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXP/oQ8F1IWmUZPND1j/wdpv5aTKhr1KTrb5fMFciG7b5qMyzB
-	j+jrZU0g0sXCMPw0X7Dg3oG7m/5n/6HJxcAOD9FpfQmZs7xR9ngS/QrL
-X-Gm-Gg: AZuq6aJSH0urQsbmQbi/uDbEdzf7hbGbhzEarWvUNaTDsLYgNY78U0G9NoMke/jpzJy
-	Nn1uw/93J5fnmVKH95dRHj5lHSnWS3A/p1dBfd5sT0Pm0r7gPgTCSxPgiOHoMX0ISdL+zYrBeIn
-	5ALkwBbQeFAwL3qgmjGazvLtTYQ+XLvvcn+BsGfj7JjDh1xCPGnzD9XCq0ZT/Rrh7GGnqCy3XWu
-	ep2wyhMYCL9QjpZ5TDyDFE4gJJ5deEwPC2HDeUvtPbmWnydVm4fGVAmVW4KSvcouYSmYoBT8dUY
-	VbTcMgp5acwOk5VKExxGK3pK1B0EZhsMf9xxbq6+nlV9kBgFiG45+HUghfKiwXy0CBxACQ9l1kr
-	TI6tmlmmwjrvX5XLQ6CZtejOHF4qHHYJXRC7Gzw4ld+e2AE+wlESTlMma+Trp/db3cJv4R4E8c6
-	jK5+izs+VuEkeTt+nyw2MzuKhP
-X-Received: by 2002:a05:620a:3193:b0:8a2:234a:17be with SMTP id af79cd13be357-8ca2f839c7amr200973585a.7.1770163446871;
-        Tue, 03 Feb 2026 16:04:06 -0800 (PST)
-Received: from Mac.home ([76.64.58.244])
-        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89521d13461sm8518666d6.42.2026.02.03.16.04.05
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 03 Feb 2026 16:04:06 -0800 (PST)
-From: Neel Bullywon <neelb2403@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Neel Bullywon <neelb2403@gmail.com>
-Subject: [PATCH] iio: magnetometer: bmc150_magn: Used guard() for mutex protection
-Date: Tue,  3 Feb 2026 19:03:50 -0500
-Message-ID: <20260204000350.25454-1-neelb2403@gmail.com>
-X-Mailer: git-send-email 2.44.0
+        d=1e100.net; s=20230601; t=1770166186; x=1770770986;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=hMsM9JKT9K8kSTqNUb7Y1F/oUVnPtGz0MMvS4d5Lupw=;
+        b=ulQr5tJebJELMjp2kdj/rD3GTNnquLthal621tyxpsYAFGLAquHHqIs1KRoZECsl+4
+         qZVK2BtJumjdWW2t15c5loPGJHLYG0Xf0eS3mOciX+rgT9wI+QC/Dz5qwynrzvSKFsTJ
+         rTPlpIKnQg4pcVuSv7yLiZ4CK9GZhMDmvzOcZZSOUf89NkEIxVeZ7OLOv5sP71Wwp2SH
+         D0GIuze7+5PNAZuwo4cMbP+9pXWUgblRt+iFWfxBkqh4mIm9K6Oi6p4oTSxZcr60ySaE
+         YKCpbA43sqz+nTvrk70Y74NTMl167Qbvr/KPjGgyyRrWJG0mPkymoXdq7clQyoa70ff8
+         XoEw==
+X-Forwarded-Encrypted: i=1; AJvYcCXSTA2V1WqIezqaK/RHlGSI4/RMyBzxHt8aFB1YnbaOiV7znjQLoVFNdnFD6Pxs3T2OBYBHtkBv6bg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzOBAXdZ16X9Irw8y0hV0dbEEvTkcY2sUl2y+U8emEvDDN1OW4J
+	p3zHopmiCw0mi3B+itIaeTj+3aEUQ06XZKtEDp4Bh3Wc6Qjj83t2ni/beH0edrDyMJR2e8xXMt7
+	cIET4
+X-Gm-Gg: AZuq6aIGOoW6kie5U8YAU6tqPX4wVKHJqgFtRW2O/CGPQmoL88KrDxmf8h53xAEAXkK
+	PJd4oTIfLgrqCdvpi7eomADwf1EHFiQl3dMsoXNx6+5NXfKIjlb6qY2HTDGA7qBJR4nbGaBy0bZ
+	YFzI55TxiO70xnnC6FsmGUbTWJr1W3yIdT8Etyhf2Ix2CfR9K2cFz5dU0b/LQiBppKNmApOE2FK
+	zBbGTLhg7jr6SLPWoSTkyw8msCqTDnyTLmUYfWOfZnHA3Iq6HUwqd/9Av23y+GMKN1LVzATk521
+	iFnXYjuhwe6KxkYv5nczzZe/Lq5sCZO56/aT/JmBY4KdO651VUas8ouVDQ9w8S7K7YuFwYh6qt3
+	toOQv+FboT69p+TJJx0JbHQEEQg7P6pcGe+AbYQJ12diIGylBKRcxQuEFyoJNBBFfUCHOEuMtge
+	P9QUGssaiYVdVsz3gmKteaZYpcihcTOV5URw9Bm0Gf2xaP1/MrmermmD4=
+X-Received: by 2002:a05:6808:1b11:b0:44f:e912:ea97 with SMTP id 5614622812f47-462d58a27c3mr685412b6e.18.1770166186017;
+        Tue, 03 Feb 2026 16:49:46 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:8e13:880:992:e796? ([2600:8803:e7e4:500:8e13:880:992:e796])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-462d6777405sm536198b6e.13.2026.02.03.16.49.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 03 Feb 2026 16:49:45 -0800 (PST)
+Message-ID: <04336665-1766-4d93-bbe9-9b99bba48e29@baylibre.com>
+Date: Tue, 3 Feb 2026 18:49:44 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: magnetometer: bmc150_magn: Used guard() for mutex
+ protection
+To: Neel Bullywon <neelb2403@gmail.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260204000350.25454-1-neelb2403@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260204000350.25454-1-neelb2403@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Replaced the manual mutex lock/unlock calls using guard() to simplify
-the error handling and reduce goto statement usage.
+On 2/3/26 6:03 PM, Neel Bullywon wrote:
+> Replaced the manual mutex lock/unlock calls using guard() to simplify
+> the error handling and reduce goto statement usage.
+> 
+> By using RAII-style cleanup, it ensures the mutex is always released
+> when exiting the function, regardless of the return path taken
+> 
+> This was compiled test only
+> 
+> Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
+> ---
+>  drivers/iio/magnetometer/bmc150_magn.c | 17 +++++------------
+>  1 file changed, 5 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+> index 6a73f6e2f1f0..73d9183a354b 100644
+> --- a/drivers/iio/magnetometer/bmc150_magn.c
+> +++ b/drivers/iio/magnetometer/bmc150_magn.c
+> @@ -796,29 +796,22 @@ static int bmc150_magn_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>  	struct bmc150_magn_data *data = iio_priv(indio_dev);
+>  	int ret = 0;
 
-By using RAII-style cleanup, it ensures the mutex is always released
-when exiting the function, regardless of the return path taken
+We can take this a bit farther and drop the init here.
 
-This was compiled test only
+>  
+> -	mutex_lock(&data->mutex);
+> +	guard(mutex)(&data->mutex);
+> +
+>  	if (state == data->dready_trigger_on)
+> -		goto err_unlock;
+> +		return 0;
+>  
+>  	ret = regmap_update_bits(data->regmap, BMC150_MAGN_REG_INT_DRDY,
+>  				 BMC150_MAGN_MASK_DRDY_EN,
+>  				 state << BMC150_MAGN_SHIFT_DRDY_EN);
+>  	if (ret < 0)
+> -		goto err_unlock;
+> +		return ret;
+>  
+>  	data->dready_trigger_on = state;
+>  
+> -	if (state) {
+> +	if (state)
+>  		ret = bmc150_magn_reset_intr(data);
 
-Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
----
- drivers/iio/magnetometer/bmc150_magn.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+return directly here
 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index 6a73f6e2f1f0..73d9183a354b 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -796,29 +796,22 @@ static int bmc150_magn_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	struct bmc150_magn_data *data = iio_priv(indio_dev);
- 	int ret = 0;
- 
--	mutex_lock(&data->mutex);
-+	guard(mutex)(&data->mutex);
-+
- 	if (state == data->dready_trigger_on)
--		goto err_unlock;
-+		return 0;
- 
- 	ret = regmap_update_bits(data->regmap, BMC150_MAGN_REG_INT_DRDY,
- 				 BMC150_MAGN_MASK_DRDY_EN,
- 				 state << BMC150_MAGN_SHIFT_DRDY_EN);
- 	if (ret < 0)
--		goto err_unlock;
-+		return ret;
- 
- 	data->dready_trigger_on = state;
- 
--	if (state) {
-+	if (state)
- 		ret = bmc150_magn_reset_intr(data);
--		if (ret < 0)
--			goto err_unlock;
--	}
--	mutex_unlock(&data->mutex);
- 
--	return 0;
--
--err_unlock:
--	mutex_unlock(&data->mutex);
- 	return ret;
- }
- 
--- 
-2.44.0
+> -		if (ret < 0)
+> -			goto err_unlock;
+> -	}
+> -	mutex_unlock(&data->mutex);
+>  
+> -	return 0;
+> -
+> -err_unlock:
+> -	mutex_unlock(&data->mutex);
+>  	return ret;
+
+and return 0 here.
+
+>  }
+>  
 
