@@ -1,67 +1,65 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F39022E65D;
-	Wed,  4 Feb 2026 01:45:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EF8827466A;
+	Wed,  4 Feb 2026 01:53:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770169543; cv=none; b=l5ntgBc7HFR+NdQBSZjHQkrLYxVI7gJqSsPHd9aE6/ADhMpcVUwfFMvxVBdjE50rc9ieG6B+6LJjtCjcOEImBWgGKyVCp4vwxz6wNFPQzcfPn+F5mO+Y+5AjWN5pjeW6HHjdJhZm477RhcsIEIjiCHlqImb+mFHfjONAUBG6SZ0=
+	t=1770170024; cv=none; b=P4MPB1t+xg1VU314IIjKb4CfLTdA/7W1lQhbNb1lxi3nkaheONQcZBzh7bSQNcFsjRk/4NimnNnF5G5/2XcBB2SgIdUig8oUm/Xv/WIxrXIgea6ycE+H0gtheO4W7h9IiKHuy6Y+UZHeyTPq1vZi1XibZp1lbK5BT3zjB7viTaI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770169543; c=relaxed/simple;
-	bh=YiABNjtqxGsl4v+Aef/koK3zybLExycxmkylXR0NkLM=;
+	s=arc-20240116; t=1770170024; c=relaxed/simple;
+	bh=Iua2EW2rZMgcqfVIwqgvYH/vE0LE1BI0SakI4zEtrLw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nNPMue3xp6e9nROWs2mryztTHVRkPROyzzW4k2XL7QMz//UsCLbobIWbszJfP7R5032bx2p+8fpfGJr2sbfZQDONoTd5bJQoONVwU9r8kceBdAy13OWpV+dKOyP6Qr4G43giu1P8Wi/XWq+tfS2AvrdS5cjNedbpbpsfxSXt5cM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WJTiDp34; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=NJGOEWJwE/Q0cEKAxjFBipkb0xUWL36fGze/6oWJwGHlAx//WEWut4UWhbttX/aX/HkvGkt577scZ3Hx91n8qRn7xSnCvb8qc+gDVbUBL23dOFxnPIUy2ONqy248mo6Ww/e6WrY3UlY8a4X6bRhxm6FY7MadPf4Nfw66FhW4/J8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QUTLzOKs; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WJTiDp34"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QUTLzOKs"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770169541; x=1801705541;
+  t=1770170022; x=1801706022;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=YiABNjtqxGsl4v+Aef/koK3zybLExycxmkylXR0NkLM=;
-  b=WJTiDp345RuZA91pJPPL0lnK0WKaqksgjEo24XBA0joW0JwTC8Z1Mvuo
-   haLNpq+M/0VjWlUufryZVzELI3+xkbXkppZDlHFg7F1R4aX/uIHNFUK2x
-   iz+Xzm+jY2drsQz2BWWb/6luXY3NOpovtihNWjC4uasWMLB+irtaF8o95
-   jds+gZ75eeCsHBPXdEigFunckRj58MODueWxAMG8m4cMqCq4aqxMcJdPW
-   ZoZAXLv6E/A5VJ5K291sn9CJoVYHAe4std4WC/tS1fciKge4aYyoWqA7Y
-   cToMojyhRpFFq4mEsD7mTdtn25/KKKRxZTQ4lGKJR53n43O++NIaxyECI
+  bh=Iua2EW2rZMgcqfVIwqgvYH/vE0LE1BI0SakI4zEtrLw=;
+  b=QUTLzOKsLHpKixzyhOInejfvH87FU4OdNq32hB6Ov68fDFEeUnCQsYUz
+   zc4U4XNZ2PdsIf9K3r8vFj+uuME6GvN1RgChPyG+/BqgBEDhmcdPozqKh
+   V525WGkInME8XITEgWk1NJW7U8mA0KNaZ3wLxvzzedpRqkPDKcdvYGKDf
+   EX+1Qfn8K7UUMvFHMU0a/JYvBX+a8ROesQUgGSklutYF17oz+Cj47g1Km
+   +zuE4FQYg5JfIXfInGGOIbh8oaYfwsBvqANJz/SwwhjmUYkEG3epXEpDj
+   Iesutr2IJvUGIpqXXlMIOaVkeMvrgdXfJb3nqhGmuIRBKaoA4a/pzG64n
    w==;
-X-CSE-ConnectionGUID: y2GWe0hiQlKCVBhEd++b/A==
-X-CSE-MsgGUID: rPGlRoRNRhucPB9FrErGPg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="70552212"
+X-CSE-ConnectionGUID: QUkZUjiXRCSjuIFK3UVSXw==
+X-CSE-MsgGUID: FfihBIBBRv6h1thQvsaUag==
+X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="94003896"
 X-IronPort-AV: E=Sophos;i="6.21,271,1763452800"; 
-   d="scan'208";a="70552212"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 17:45:40 -0800
-X-CSE-ConnectionGUID: VuQZQQs7Rf6DdquKrzRZQw==
-X-CSE-MsgGUID: j3ODpeaBSSmdHo+qaUY7pw==
+   d="scan'208";a="94003896"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 17:53:42 -0800
+X-CSE-ConnectionGUID: gPj2QvfwTh2uugEc89XFrA==
+X-CSE-MsgGUID: ZQpO3zJnQzy40vr1i6cXKA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,271,1763452800"; 
-   d="scan'208";a="210093354"
+   d="scan'208";a="210051538"
 Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.168])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 17:45:37 -0800
-Date: Wed, 4 Feb 2026 03:45:35 +0200
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 17:53:39 -0800
+Date: Wed, 4 Feb 2026 03:53:36 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: rodrigo.alencar@analog.com
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH v6 2/8] iio: core: add fixed point parsing with 64-bit
- parts
-Message-ID: <aYKkv3dq9Vkm3s_3@smile.fi.intel.com>
-References: <20260130-adf41513-iio-driver-v6-0-cf46239026bc@analog.com>
- <20260130-adf41513-iio-driver-v6-2-cf46239026bc@analog.com>
+	Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH v3 3/9] iio: amplifiers: ad8366: use devm_mutex_init()
+ and drop mutex_init()
+Message-ID: <aYKmoIe4sXNcMEYa@smile.fi.intel.com>
+References: <20260203-iio-ad8366-update-v3-0-5d5636b5181a@analog.com>
+ <20260203-iio-ad8366-update-v3-3-5d5636b5181a@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,69 +68,27 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260130-adf41513-iio-driver-v6-2-cf46239026bc@analog.com>
+In-Reply-To: <20260203-iio-ad8366-update-v3-3-5d5636b5181a@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Jan 30, 2026 at 10:06:43AM +0000, Rodrigo Alencar via B4 Relay wrote:
+On Tue, Feb 03, 2026 at 11:24:09AM +0000, Rodrigo Alencar via B4 Relay wrote:
 
-> Add iio_str_to_fixpoint64() function that leverages simple_strtoull()
-> to parse numbers from a string.
-> A helper function __iio_str_to_fixpoint64() replaces
-> __iio_str_to_fixpoint() implementation, extending its usage for
-> 64-bit fixed-point parsing.
+> Adopt proper mutex lifecycle with devm_mutex_init(),
+> replacing mutex_init().
 
 ...
 
-> +/**
-> + * iio_safe_strntou64() - Parse u64 from string checking for overflow safety
-> + * @str: The string to parse
-> + * @endp: output pointer to the end parsing position
-> + * @result: parsed value
-> + * @max_chars: maximum number of digit characters to read
-> + *
-> + * This function is used in fixed-point parsing and it iterates over a const
-> + * char array. It might duplicate behavior of simple_strtoull() or kstrtoull(),
-> + * but those have their own limitations:
-> + * - simple_strtoull() is not overflow-safe and its usage is discouraged;
-> + * - kstrtoull() is safe, but requires termination and it would required a copy
-> + *   of the string to a temporary buffer.
-> + *
-> + * The implementation of this function is similar to _parse_integer_limit()
-> + * available in lib/kstrtox.h, but that header/function is not available to be
-> + * used in kernel modules. Hence, this implementation may need to change or
-> + * removed to reuse a new suitable helper that is properly exposed.
-> + *
-> + * Returns:
-> + * number of parsed characters on success, -ERANGE on overflow
-> + */
-> +static ssize_t iio_safe_strntou64(const char *str, const char **endp,
-> +				  u64 *result, size_t max_chars)
-> +{
-> +	u64 digit, acc = 0;
-> +	ssize_t idx = 0;
-> +
-> +	while (isdigit(str[idx]) && idx < max_chars) {
-> +		digit = str[idx] - '0';
-> +		if (unlikely(acc & (~0ull << 60))) {
-> +			if (check_mul_overflow(acc, 10, &acc) ||
-> +			    check_add_overflow(acc, digit, &acc))
-> +				return -ERANGE;
-> +		} else {
-> +			acc = acc * 10 + digit;
-> +		}
-> +		idx++;
-> +	}
-> +
-> +	*endp = str + idx;
-> +	*result = acc;
-> +	return idx;
-> +}
+It's better to add here
 
-There is a development in the parse_integer in the lib/. I reviewed that series
-and hopefully it will go in. With that done, we better reuse the lib/ function.
+	struct device *dev = &spi->dev;
 
-https://lore.kernel.org/linux-hardening/20260202115451.290173-1-dmantipov@yandex.ru/
+and (re-)use it in all followup patches. This will make the code easier
+to read.
+
+> +	ret = devm_mutex_init(&spi->dev, &st->lock);
+> +	if (ret)
+> +		return ret;
 
 -- 
 With Best Regards,
