@@ -1,32 +1,34 @@
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 9947742317F;
-	Wed,  4 Feb 2026 18:06:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.171
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+	by smtp.subspace.kernel.org (Postfix) with ESMTP id 73AFD421EF2;
+	Wed,  4 Feb 2026 18:08:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=210.160.252.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770228394; cv=none; b=ZqFh9BVtYJF2vJLO2T45xAlD8yV1ZiL9nLWz8/dhEo7mjEabDld3cJeZeSQSANtPjekXlSxH17KgeobW9T9oBqfIF/0PQX0QK69SYHBaMBzGZSSYusUrBohkzkFXkoX96kPZE5O7L1Hi85rUJFRsu0M/6llR8y1OmKS5gU+SHcQ=
+	t=1770228485; cv=none; b=FQtbUOndcu+fAgTtZ8b9PNjLY2IXhC6vkQS/EgEVuBdHIcfGipugQCQnWVDvgd9VYW2BQzPpzZZEU3bFWEqWYFdbgeah7IPIpjGV+4TMNByfJ+KD0hKWqZ4IJkkGaNE+JL/5FagrwjB+dD+ew/t1hB/yWM1P7Y/FvMm1etKNXaE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770228394; c=relaxed/simple;
-	bh=23gI3CfLHbVYup6LCK2uSMk5qPT33yWeLiPz0/EECpI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=SzdzhrDq+9TOrsjKKj8QJQo7MuC3Sy2IAaM3VxxBbNUsdAyV3JGBKWl+OnLxJFC8dxwiLagVcC1vRYimmYYE6WCqb39V4xl/6J0YBjnFHxEGTABEYqvevII37h+RXQ5OBLhkwdcJMFowimt8pr0pc3oAvDNfP32SSBFrYx1XNjc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.171
+	s=arc-20240116; t=1770228485; c=relaxed/simple;
+	bh=yFIbO7FxEvT8QpPFsZUIbJAJ77HARMB8TeJArhgVyeg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=XZxUj8W7UcDxTbMLln3Z2L1HSv7AkWS5BlAQFUnaBVS/kyKlDUGFQrF9k2cOJBh7k4pd0oVPLSWsnQ+AQhpuwNheJuSFBjid1St2zWMxKtk4Upq009wHJxaEDxtV+x1nN/8t099ZOf6/PPvquQA201W2TJsLntgySOrAhbDuGu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; arc=none smtp.client-ip=210.160.252.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
-X-CSE-ConnectionGUID: 34ILyVG5Rzej1Vs/yWD6uA==
-X-CSE-MsgGUID: tv5O8Kr3TSyiD/r2y4Zv+A==
-Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
-  by relmlie5.idc.renesas.com with ESMTP; 05 Feb 2026 03:01:24 +0900
+X-CSE-ConnectionGUID: l9Ux9FX9TIaCLBhH7rIFJQ==
+X-CSE-MsgGUID: BWkzjjASQ+is0Dcu29fxsQ==
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 05 Feb 2026 03:02:55 +0900
 Received: from demon-pc.localdomain (unknown [10.226.92.27])
-	by relmlir5.idc.renesas.com (Postfix) with ESMTP id 0DD4E4072C22;
-	Thu,  5 Feb 2026 03:01:22 +0900 (JST)
+	by relmlir6.idc.renesas.com (Postfix) with ESMTP id 153EC4054E63;
+	Thu,  5 Feb 2026 03:02:52 +0900 (JST)
 From: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-To: William Breathitt Gray <wbg@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Subject: [PATCH] counter: sysfs: remove double return in counter_sysfs_attr_add()
-Date: Wed,  4 Feb 2026 20:00:32 +0200
-Message-ID: <20260204180032.514328-1-cosmin-gabriel.tanislav.xa@renesas.com>
+Subject: [PATCH] iio: ABI: fix current_trigger description
+Date: Wed,  4 Feb 2026 20:02:02 +0200
+Message-ID: <20260204180202.515393-1-cosmin-gabriel.tanislav.xa@renesas.com>
 X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -36,34 +38,27 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-sysfs attribute creation for counter extensions has been consolidated
-into a single function, counter_sysfs_exts_add().
+Triggers exist under /sys/bus/iio/devices/, not under /sys/class/iio.
+/sys/class/iio does not even exist. Use the current path.
 
-Inside counter_sysfs_attr_add(), although the code was changed to return
-the result of counter_sysfs_exts_add(), an unreachable return 0;
-statement was left at the end of the function.
-
-Remove it.
-
-Fixes: bb4bbbec664f ("counter: Consolidate Counter extension sysfs attribute creation")
 Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
 ---
- drivers/counter/counter-sysfs.c | 2 --
- 1 file changed, 2 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sysfs.c
-index 42c523343d32..ed85da907982 100644
---- a/drivers/counter/counter-sysfs.c
-+++ b/drivers/counter/counter-sysfs.c
-@@ -1101,8 +1101,6 @@ static int counter_sysfs_attr_add(struct counter_device *const counter,
- 	/* Add device extensions */
- 	return counter_sysfs_exts_add(dev, cattr_group, counter->ext,
- 				      counter->num_ext, scope, NULL);
--
--	return 0;
- }
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 5f87dcee78f7..4fc9f6bd4281 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1428,7 +1428,7 @@ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		The name of the trigger source being used, as per string given
+-		in /sys/class/iio/triggerY/name.
++		in /sys/bus/iio/devices/triggerY/name.
  
- /**
+ What:		/sys/bus/iio/devices/iio:deviceX/bufferY/length
+ KernelVersion:	5.11
 -- 
 2.52.0
 
