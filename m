@@ -1,140 +1,115 @@
-Received: from smtpout-03.galae.net (smtpout-03.galae.net [185.246.85.4])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com [74.125.224.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36BEA2D061B;
-	Wed,  4 Feb 2026 16:33:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.246.85.4
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45E342F6193
+	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 16:34:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770222809; cv=none; b=gOV3NqQ6xNYxD34PqorZat4rhCeehdSKN+P4Fh5xb7wZcGziNZ6bPZoC6lhtqOhTW/CjjSdqHke8masj6SuLGIPvavj3nH8ERnCEoVdYrBbzY1fVu9sH5szaApRC8OESCiFgR92jmpUlTrbqzTOt+gG3M/7u6PfHREGIpKU/JjY=
+	t=1770222897; cv=none; b=uNo+rYTUSkr9cf1inGGPL7WMAfEhcqjTIpAH54Ik7rufNTY5Psgpvp+5FqR0LPQKGVx8qrBWQPBJvAezr9dp84taJj302tNuhTKCW87kAGrOUwPIPlniTEHNf5eOktaPaDHLJH5vOexv5toYl1q3W8hBfo84KvcIkhrzd9ut6EI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770222809; c=relaxed/simple;
-	bh=Zs0YP6K9Q0EGP4ofnA/ABwNqhqDfedYgm32mmbwU5ys=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sSEmLIBIhWWlYCyJkeo6Os2Zn3I8B99x6bGdrObqtoOVaN0eWahkwWd8vDVAfuoUQCi3no0vVUvKYYKxaiB5cpJhhpdBGrc5ajFJ0az1ldTLXyKffi/EEutiWeqFa9Anc8MZD6ytHMRZEcgNBY7aS3+A0k1mSfRzf9wxJDei+Ig=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=fNN5vJT6; arc=none smtp.client-ip=185.246.85.4
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1770222897; c=relaxed/simple;
+	bh=aD3JG2CFG0c/0J99/RvgjjGJymEw45rYyKXCIerd8MA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=P2ETHwuBsZM5/ULtyqc+NyBLCa4MaIp7UQPltcviIUJasPBR+ULsVavLOqinVjXand7oK6JrjfyzCAkyXfdVKokydewGi9zwkhok2N22bWczALyalFmJ0ZBPrlUlmo3BxpKlEE2K7HiCrITj4uacGhTiRv/h6c1NQY4G+aPzCkU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Wjn9pUFz; arc=none smtp.client-ip=74.125.224.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="fNN5vJT6"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-03.galae.net (Postfix) with ESMTPS id 965D74E423F6;
-	Wed,  4 Feb 2026 16:33:26 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 6BAD560705;
-	Wed,  4 Feb 2026 16:33:26 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 9E592119A8891;
-	Wed,  4 Feb 2026 17:33:21 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1770222805; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=cqVQWuixltOR2U9WIWJOoLc/BjyLu9NBbrMspa4rCGU=;
-	b=fNN5vJT6GYXuE+usfUrGPuq6WlhNansxsKVlr/3EUK3lGEeq6o4FFZTc8zD8RXbjz/XmpC
-	NuvuUD/XcHlVXZlpdRVt7zgvOMS3dmqzHt6QThcvXyjuMSyCb1eLBpBEuY2x9oNBwVxEK5
-	Tv6dY6eeymai5ZOEOFZKE8mnun5VYgbMsuIJyWsRe2ysxNGc8bJEuErqeqJfz8Dvz54HCP
-	UmZdOj5teN7kC2cN/29BzS6l89IX+y3flBFyjyS99hNgp3FmjkAbR7t390yitYs/2voflL
-	YMORvq5obidGxB4CC4Q2/MFXG1rWUnpaLSEoJysxk9Yt3dwxmYCzPvc7UDmi4Q==
-Date: Wed, 4 Feb 2026 17:33:21 +0100
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Guenter Roeck <linux@roeck-us.net>, Jonathan Cameron <jic23@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Frank Li <Frank.Li@nxp.com>,
-	Adrian Fluturel <fluturel.adrian@gmail.com>,
-	Carlos Song <carlos.song@nxp.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jean Delvare <jdelvare@suse.de>,
-	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] [v2] i3c, iio: fix i3c driver dependencies
-Message-ID: <20260204163321cfaa320e@mail.local>
-References: <20260202160543.3654499-1-arnd@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Wjn9pUFz"
+Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-649db2b6cdcso90164d50.0
+        for <linux-iio@vger.kernel.org>; Wed, 04 Feb 2026 08:34:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770222896; x=1770827696; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=aD3JG2CFG0c/0J99/RvgjjGJymEw45rYyKXCIerd8MA=;
+        b=Wjn9pUFzWfE3RTBKprt0ESn5qv1wW0359wQg8otruxEO3bVNPhZyySwCx0Z4E99JkP
+         Mw/M8ll/4anNUm6QOjqhtkp6OTwZRzMegKPRT81TjhFoad3BulgU+eqFXTDmuApHgyBd
+         Xh6JsfLrHfj4NwalokwIeq0xSENo2rwRBWf8e3jTzJ1nxbsu6YVfr4ULenUEL3RijmTD
+         jrbEm35jBCIuSpoKerXunT3pWGQSW3yF5cMxN6NtG+SbK0pclHi3eHUetLqBMfJxgOtM
+         aK7Rnb2+Gc8lYizinjUe5qgkG/IcjlqO/eQFRoUMA/YbvpIt7/d8nJtripaNsau8X3C6
+         3U+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770222896; x=1770827696;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=aD3JG2CFG0c/0J99/RvgjjGJymEw45rYyKXCIerd8MA=;
+        b=sBSMlviuKCuWu6zAuPDND4AYoelM2KrkEvt8CggmuXlCmKGAwUKUlnD+w3BAwbtn9F
+         DqsqriZn9g5EV6J8a1Q5iIdhgenHxZix4n2TNFn+lALDgpdF2jWw3DrORQLlSj3470xa
+         xzK4h/7lHPTSONuMb7qyl0poDwonhF6W8Fv95uTlZV7fWh2fOZAswi8B+AtW+LvRncNC
+         HXWmBp6PWYrx594Y0Xdxv57HT+6Tuh3f+VTesKMbIu4S0qXHFs/1Dx7BYD5IWw5cn4jr
+         q5VtbZ0Y1zMdRMyQtCeSlkx0cbRDf7tPfqDvm1wiUY/3nEUZBggjJa0XUH2em1YbO6VP
+         xifQ==
+X-Gm-Message-State: AOJu0Yy72tt5EjzgYZSM7DFmqNlr8AA7/mHOqNfqDnqAz2TPjTHwSthN
+	31vpbIXhqh9ycP+fWoBGpDcAv/U7rcsc2Sv/DKDuvVnObaCUF8dbUUFB
+X-Gm-Gg: AZuq6aJShSYaNZHwYk3YU7CSjg+WJsvUZiaFs0TiWSiZrcCFVktkp5SN59L0HPvukTd
+	MS2pADPtC/NO3wpUhmqyV/IQpmhBvRKtrtNaPIgLCYubOQLcL5u2z7Nt3GFxx+i6wu584f+ZAVM
+	epzmqZMqpeU7PZunTL1kTa1GpUn8/h+AVHuECRYAT3VZuyFnPmNLDnWP/1xF9w5du8K6hCoOIKa
+	yA/z1JifjG8MSpar/+qvP5S5nYQUkPn6hz+SOwf2fgmRkZQjPwCeL6WPyYyHehSJSemd7ck0rNV
+	i04abAVjxDn1ZtfkGN4N8Pu5CccPcxpHC5kaDbWngUyDVbsacAkJpNfyqHBoUniXakdHkt0gcMU
+	9wWAsx9rGlverSyFj0TOeOXbCOcC7nZoKpnDFm4WJYdsnc23XzGl16YY4C5Hu78ckwpqUyVil1i
+	wOTLuBOUxuaAgeUA==
+X-Received: by 2002:a53:ebc1:0:b0:649:af6b:7427 with SMTP id 956f58d0204a3-649db4bd3aemr2658511d50.78.1770222895989;
+        Wed, 04 Feb 2026 08:34:55 -0800 (PST)
+Received: from [192.168.0.40] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-649dc4b7e06sm2822790d50.6.2026.02.04.08.34.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Feb 2026 08:34:55 -0800 (PST)
+Message-ID: <34824fc2-af03-48e3-98b8-04fae28c9a64@gmail.com>
+Date: Wed, 4 Feb 2026 18:34:50 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260202160543.3654499-1-arnd@kernel.org>
-X-Last-TLS-Session-Version: TLSv1.3
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 2/2] iio: light: Add support for Capella cm36686 and
+ cm36672p sensors
+To: David Lechner <dlechner@baylibre.com>, Jonathan Cameron
+ <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Kevin Tsai <ktsai@capellamicro.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+References: <20260201-cm36686-v1-0-4949a2a9ba63@gmail.com>
+ <20260201-cm36686-v1-2-4949a2a9ba63@gmail.com>
+ <eb922433-3951-409a-a397-b48efef57b7b@baylibre.com>
+ <b133521f-434d-4972-82a3-6e7978e557bd@gmail.com>
+ <086d6b35-8c19-4e92-9cd1-557b98991d35@baylibre.com>
+ <372c9172-ea01-4a3a-b737-3f7f14519791@gmail.com>
+ <0b001503-5882-446c-a0df-642a9f75e7e3@baylibre.com>
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+Content-Language: en-US
+In-Reply-To: <0b001503-5882-446c-a0df-642a9f75e7e3@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On 02/02/2026 17:04:46+0100, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> All combined i2c/i3c drivers appear to suffer from the same link
-> time problem when CONFIG_I3C is set to 'm':
-> 
-> arm-linux-gnueabi-ld: drivers/iio/magnetometer/mmc5633.o: in function `mmc5633_i3c_driver_init':
-> mmc5633.c:(.init.text+0x30): undefined reference to `i3c_driver_register_with_owner'
-> 
-> This was previously fixed several times by marking individual
-> drivers as 'depends on I2C; depends on I3C || !I3C', but this gets
-> tedious and is somewhat confusing.
-> 
-> Add a Kconfig symbol 'I3C_OR_I2C' to help replace those dependencies,
-> and use this in all the existing drivers that had already fixed it
-> as well as the new mmc5633 driver.
-> 
-> Fixes: 6e5f6bf2e3f0 ("iio: magnetometer: Add mmc5633 sensor")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> v2: restore accidentally deleted lines
-> ---
->  drivers/hwmon/Kconfig            |  6 ++----
->  drivers/i3c/Kconfig              | 12 ++++++++++++
->  drivers/iio/magnetometer/Kconfig |  2 +-
->  drivers/misc/amd-sbi/Kconfig     |  3 +--
->  4 files changed, 16 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-> index 41c381764c2b..ecfba861f66d 100644
-> --- a/drivers/hwmon/Kconfig
-> +++ b/drivers/hwmon/Kconfig
-> @@ -1493,8 +1493,7 @@ config SENSORS_LM73
->  
->  config SENSORS_LM75
->  	tristate "National Semiconductor LM75 and compatibles"
-> -	depends on I2C
-> -	depends on I3C || !I3C
-> +	depends on I3C_OR_I2C
->  	select REGMAP_I2C
->  	select REGMAP_I3C if I3C
->  	help
-> @@ -2392,8 +2391,7 @@ config SENSORS_TMP103
->  
->  config SENSORS_TMP108
->  	tristate "Texas Instruments TMP108"
-> -	depends on I2C
-> -	depends on I3C || !I3C
-> +	depends on I3C_OR_I2C
->  	select REGMAP_I2C
->  	select REGMAP_I3C if I3C
->  	help
-> diff --git a/drivers/i3c/Kconfig b/drivers/i3c/Kconfig
-> index 30a441506f61..626c54b386d5 100644
-> --- a/drivers/i3c/Kconfig
-> +++ b/drivers/i3c/Kconfig
-> @@ -22,3 +22,15 @@ menuconfig I3C
->  if I3C
->  source "drivers/i3c/master/Kconfig"
->  endif # I3C
-> +
-> +config I3C_OR_I2C
+> I assume you have the hardware and can do a test to confirm this. :-)
 
-I'm fine with this but I wanted to mention that we have RTC_I2C_AND_SPI
-the "and" being because it is from the point of view of the device (the
-device supports both bus) while we have I3C_OR_I2C, "or" being about the
-bus (the device can be on any bus).
-
-So I guess at some point we are going to need a combination of
-I3C_OR_I2C and SPI and this may be weird to have both OR and AND.
-
-
-
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+I tested the formula used in Xiaomi's driver in the mainline kernel and
+compared it against the downstream kernel, and the lux readings match between
+them. Therefore, I suppose this solution could be good for now.
+Although my formula for calculating scale is wrong - it should be inverse
+proportionate to integration time. So:
+80ms -> 1.28
+160ms -> 0.64 (what Xiaomi uses)
+320ms -> 0.32
+640ms -> 0.16
+This can be achieved by multiplying als_trans_ratio by integration time used in
+Xiaomi's driver, and then dividing by integration time we have set up at the
+given moment.
+For example, suppose we set our int time in mainline to 80ms
+16 (als_trans_ration) * 16 (160ms / 10000) = 256
+256 / 8 (80ms / 10000) = 32
+Starting here, we calculate based on how Xiaomi calculates scale for their values:
+32 * 40000 = 1280000
+val = 1280000 / 1000000 = 1
+val2 = 1280000 % 1000000 = 280000
+And that leaves us with scale of 1.280000.
+Of course, comments on how we came to this value would be included as well.
