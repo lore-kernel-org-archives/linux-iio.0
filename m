@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44D2223182D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446EF54723
 	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 14:00:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770213652; cv=none; b=iR93qLy4IChiXsD3R0h5jHGLVs6UgnoKp9cVy7+4P2+fCPq2BBNjk4IJOpx+BLJZK/8J5BrMXwPCsey2S4d53JCasN/tDeOu1YdbRgJx3dV1QIc3/PA5E43Jak9pzzQWGjPuD8efN5s7oAk889g9mGeOsj4YY7C/8i3lGkWQcjM=
+	t=1770213652; cv=none; b=LxR7tBEIlaauexNTFKmoqdgF5RILCEy1VAN3TDJx2meKyJUiyrW5eiJGZdvEiOAZPvndliWNPofx54gZ9DlfvOhSV7HkVOHK0jg8eqRPRAHksXb8gLtyY69YlIckKSk6qUYG/zxRWJ16TK2aOBRMp64h1Q7aliUAeK7iY2NpfQ8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770213652; c=relaxed/simple;
-	bh=7n9XSwRQfhQrXSZrqRXmhKpw36QOpOH/QJOxICG4Nf4=;
+	bh=FEXpCh8w3C/SL7XlA1uosNy4ATTwLM+5mvKIFu71tSc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Q6oLj80T8UddYZ/zGjoI9Lpru/QjiLsLEMxVM30FPjiLf1AizOtEOOHTmd3eAiHEEWTnesbBPCFIpuG+io4oYU1k9Rts3EuPJLM9yKXXMw3X3Db3IRGir8UfAl8g2Pfcl7cCgMRXnAIc0N5uQIAFGHGQ8glTn3JBm7h/RwRjPs4=
+	 MIME-Version; b=DO8nlHHmu/iGJQatrrzV5ARLqoxa7Trh91vPXrd7moSg7mg5g5bHb6kI9aIaWyh63s52wGtaAFUrK6UGlOfEWRhj6RnMOFHjY9342myHWJGWNsssq8aTwORlDn3Nn4lk/lXLMoujSliJsBkWvj5aMtzh2JwD6HgH2hLk3IRGvb4=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vndR1-0001Ql-HN; Wed, 04 Feb 2026 15:00:47 +0100
+	id 1vndR1-0001Qk-HO; Wed, 04 Feb 2026 15:00:47 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vndR1-0045FQ-1q;
+	id 1vndR1-0045FI-1R;
 	Wed, 04 Feb 2026 15:00:46 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vndR0-00000001dge-3BXi;
+	id 1vndR0-00000001dfy-2pgg;
 	Wed, 04 Feb 2026 15:00:46 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -35,7 +35,7 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>
 Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
-	Conor Dooley <conor.dooley@microchip.com>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>,
 	kernel@pengutronix.de,
 	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
@@ -44,9 +44,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v5 08/13] dt-bindings: iio: dac: maxim,ds4424: add ds4402/ds4404
-Date: Wed,  4 Feb 2026 15:00:40 +0100
-Message-ID: <20260204140045.390677-9-o.rempel@pengutronix.de>
+Subject: [PATCH v5 04/13] iio: dac: ds4424: sort headers alphabetically
+Date: Wed,  4 Feb 2026 15:00:36 +0100
+Message-ID: <20260204140045.390677-5-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260204140045.390677-1-o.rempel@pengutronix.de>
 References: <20260204140045.390677-1-o.rempel@pengutronix.de>
@@ -62,52 +62,54 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-Add compatible strings for Maxim DS4402 and DS4404 current DACs.
-These devices are 5-bit variants of the DS4422/DS4424 family.
+Sort the header inclusions alphabetically. This improves readability and
+simplifies adding new includes in the future.
+
+Group subsystem-specific headers (linux/iio/*) separately at the end
+to clarify subsystem context.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 ---
 changes v5:
 - no changes
 changes v4:
 - no changes
 changes v3:
-- No changes.
+- Keep linux/iio/* headers in a separate group at the end of the includes.
 changes v2:
-  - add Acked-by: Conor ..
+- new patch
 ---
- .../devicetree/bindings/iio/dac/maxim,ds4424.yaml          | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ds4424.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-index 264fa7c5fe3a..efe63e6cb55d 100644
---- a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-+++ b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
-@@ -4,18 +4,21 @@
- $id: http://devicetree.org/schemas/iio/dac/maxim,ds4424.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+index 36286e4923af..c03051dc763e 100644
+--- a/drivers/iio/dac/ds4424.c
++++ b/drivers/iio/dac/ds4424.c
+@@ -6,16 +6,17 @@
+  */
  
--title: Maxim Integrated DS4422/DS4424 7-bit Sink/Source Current DAC
-+title: Maxim Integrated DS4402/DS4404 and DS4422/DS4424 Current DACs
+ #include <linux/bits.h>
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+-#include <linux/i2c.h>
+ #include <linux/regulator/consumer.h>
+-#include <linux/err.h>
+-#include <linux/delay.h>
+-#include <linux/iio/iio.h>
++
++#include <linux/iio/consumer.h>
+ #include <linux/iio/driver.h>
++#include <linux/iio/iio.h>
+ #include <linux/iio/machine.h>
+-#include <linux/iio/consumer.h>
  
- maintainers:
-   - Ismail Kose <ihkose@gmail.com>
- 
- description: |
--  Datasheet publicly available at:
-+  Datasheets publicly available at:
-+  https://datasheets.maximintegrated.com/en/ds/DS4402-DS4404.pdf
-   https://datasheets.maximintegrated.com/en/ds/DS4422-DS4424.pdf
- 
- properties:
-   compatible:
-     enum:
-+      - maxim,ds4402
-+      - maxim,ds4404
-       - maxim,ds4422
-       - maxim,ds4424
- 
+ #define DS4422_MAX_DAC_CHANNELS		2
+ #define DS4424_MAX_DAC_CHANNELS		4
 -- 
 2.47.3
 
