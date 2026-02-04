@@ -1,95 +1,92 @@
-Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com [209.85.167.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DDCBE21576E
-	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 01:09:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 647A915CD7E;
+	Wed,  4 Feb 2026 01:16:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770167391; cv=none; b=Wi82JWI0IBql8SxjUWZs2+IgPY+rND4Mp3eCv4/tuRkncmQROPKec5MPv6zunS/hj7pIABztYU2uwlLNz2G77gVrJjptTEAVzVCpjPaip0b5JCiIq2oJ8bSOSbPLJW1D8VpmQPtIdL/59o46GQvsoDRbpcH+VboMhPztwbZCJrk=
+	t=1770167762; cv=none; b=AJcpMg/91G6tqwbYEUP671wpDlZbBmBSQ130gMTOkpxnypwFvAZOEnkC2w4SLLnZkADJCkUWWE+WRUyyegD+rQzH30YPep8qUNYr5Ugb80WPxGYS0WmGIo2JBIDMbOfwWDBGQIjezObL4P7HyZeYCx24OleIE589h4/pSkJpoe0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770167391; c=relaxed/simple;
-	bh=xjoTf+RdZbJXGzcATVakgVnBtZmgxlgPVRUtdNu5Y1s=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tHTT25iXibctiVNiHXtZYLH073XKVU4fgcQLZ9geIltox2VX8Umi5xm1As90TZv6RrqwBMxZsejJfJw5tTmQ31IF+6HE5XKIOr0pz7liUNwv2HEbQU277u1dWjQp905AwtzhpGGzl5XmOKvBfWcNF9o4/vWZJDl8cFdjG6MFYQw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=JxPKlCQJ; arc=none smtp.client-ip=209.85.167.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1770167762; c=relaxed/simple;
+	bh=OIg9LzYoShWXm4erIV62atml3qc5zYZmkx1j/2vlCw8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Jyaok7HuMLahxZBC6cGbbNXoQrkdXozy1q1G7U5g21NrqMNY4JqWqNO2GvNyUBnhWXt44NuEgD+PrdUC5HE51AoTCpBMETi5BIqG0kJDAAkShN6K2LURJTYxiaxchQaUDy25Tyk3axHRTvdw2lyoXsHkhxLQjJnXeY7LrT9sjK0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Z4Xg9SCu; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="JxPKlCQJ"
-Received: by mail-oi1-f181.google.com with SMTP id 5614622812f47-45f18e8f2f5so4203382b6e.3
-        for <linux-iio@vger.kernel.org>; Tue, 03 Feb 2026 17:09:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770167389; x=1770772189; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=kmZlgQDgh534OxFG8JZATRMPWrlFNsFCg2UONerEvKU=;
-        b=JxPKlCQJAZBwo6zPG9pzQlhFoKtTjStUYPUuE51kHjYd5s45tV4rkVAkuGyxvhSNtx
-         uJdMhxkmdZggRX/Cwt/DbarALHuRj65ZylUl4+uNtz2HReOmcgUrYJ7w2ObVYnhsss3i
-         dtSBsJQ78eHSOuMGFGdqFEhqqgtldm2nYpoahw0ZkNnaveQgnJ8HvD+9naDEOG9SjZpy
-         ML9j8UzLR8NabraaDv9W9PI6a3QuR3sYba8rHSpYezFvOYYOwFLWiWjSIWL/HRnaB/Fk
-         RKs7NJ0t+TfFa5vcVwqi2PRj4aVnNQ+XgnJX2n8dqhv/hGEAMtxMmUM2XiCposWaQgpT
-         82wQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770167389; x=1770772189;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=kmZlgQDgh534OxFG8JZATRMPWrlFNsFCg2UONerEvKU=;
-        b=caSBxYV2LZSuMDfgaOFDENvdSvk4YlqtFzXbQkSFxdQq5DM0mIMUXpqU9EqS39n/UU
-         eWchwpMoGj+7ZJtpP8n5AQRe6zEhaEc0UFxz8kj0WE3nFjDe8gDEdw8Ie3YxCMb81r7i
-         Fejuot68tKDl+ppQIz9KMGK1cRbLF332ORHhwTF157y0CIbQXKmUjLiiHc8T0xAuarJu
-         YUYXiFmLfBdPWY6ywkVg6T60kWhLzTrAI7U2miDOB5zj1Dro4wF5UuO662a0tqWOgO4V
-         8+B3fSMj0AkX12J1aiDwAhmi1/aKKOs7f7SnrROKyBP+5vYYDyc4sbytnslmMoCPn/+h
-         0wPA==
-X-Forwarded-Encrypted: i=1; AJvYcCUfBBEsBmusEKGSCwO2ariHxvN/7/+6kpHEUJejqtsfhhbBjdiv9mCDYs2oJVk9Q1013/PZfVMLmRs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzD40Nt2FwErQLezQlMSUy2SYxMhMLN91xHBbrTHTsoZKCJzS74
-	laR3ayT0zpHUuoNm0gaOX+GyKcTKu4+YpdMp5MQDjbt39JPKMnImMXS3VDHAJ4P2UHM=
-X-Gm-Gg: AZuq6aL3aE9Kjv1sXZwUtNaFkRfgzbdufVxa5t+kg08l53cpXnf17A3aB9fcnGJigr8
-	U4a9hj8QGQiSQ4DHFdPhcPdeVxTZaXT7Pvh087+isF7Fc33JbDb7VGB9FsDPff84p33U0sIDZhO
-	GVe37GF12NVmOtFCXr36FYyRYQsV2hXSo8tX6ZfMDUp8tKdQvzTtRrBznHofp5webkTWMqgZ+Ty
-	L4XIJRIe7jdT9n4MuK606GS0EzFHq1E4bv80/LgV/zku7igSesaw1rfaeUA+3sRmapm7P7/Bz8L
-	49q6o1J0+GmesgirOyL4L2FE5IasFv7HhCGuTYljdW36Fc+3yFhcVPWhT2gsgu5JrZjzrut5uHm
-	y/zM3Y+bVvarq574aUSuw7P07MFi5GmFxS4ve+7k9FZ/UZk7BBUWA7etS4XtLdNBvijDhyOVywj
-	6Ux2isfXO7Gbh4MOWahr08FhNQdg71x3fJvS9Fc/LvQFJlgmjicOnVi6k=
-X-Received: by 2002:a05:6808:4f4e:b0:45a:770c:d77b with SMTP id 5614622812f47-462d59edd49mr697702b6e.35.1770167388843;
-        Tue, 03 Feb 2026 17:09:48 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:8e13:880:992:e796? ([2600:8803:e7e4:500:8e13:880:992:e796])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-40a5447f36dsm706472fac.15.2026.02.03.17.09.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 03 Feb 2026 17:09:48 -0800 (PST)
-Message-ID: <f0dc4a8e-6833-402c-a2f9-8f344480af82@baylibre.com>
-Date: Tue, 3 Feb 2026 19:09:47 -0600
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Z4Xg9SCu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770167761; x=1801703761;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=OIg9LzYoShWXm4erIV62atml3qc5zYZmkx1j/2vlCw8=;
+  b=Z4Xg9SCu/IFJP505FiBmV0Xe922ccgP4+ZoLfnYtHKHpS3YH7C1gYhx7
+   YEuwpy+Pk2EYHk5mRi4lTcZvp07VdY9eAJVawsUmGkpSXwQadXkCYakBT
+   JWC5vX2Jk085ohX+FxRtD7dw5NlripnKGC1wj2d+28GSqQThanPWzUq97
+   WxCL7BHPiqfpHZHJUyr1CK+WkVwisNthUFXwmHksTSIgbciiKCB5syO2v
+   WpRZlMDxuINOlP7FBrrTKCDnTf+KTuQtjb9py8LZeqgWEesqC7Gm8kXUn
+   DuuNSynGMu9jSWo/MB60saRZpJtTyVecXDCd64oD4xObV4/DAPLcMpoZw
+   w==;
+X-CSE-ConnectionGUID: YAD4kyUgS6aNQfiZ1h+zkA==
+X-CSE-MsgGUID: xQWTLo5PT6alLhpk8N3vhQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="81982992"
+X-IronPort-AV: E=Sophos;i="6.21,271,1763452800"; 
+   d="scan'208";a="81982992"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 17:16:00 -0800
+X-CSE-ConnectionGUID: r8pPS+N/RbObAHA6HlEvnw==
+X-CSE-MsgGUID: 9dy4soOvSG63jyDkKIOx7g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,271,1763452800"; 
+   d="scan'208";a="210045787"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.99])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Feb 2026 17:15:58 -0800
+Date: Wed, 4 Feb 2026 03:15:55 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Neel Bullywon <neelb2403@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: magnetometer: bmc150_magn: Used guard() for
+ mutex protection
+Message-ID: <aYKdy_3lSQ0dfRtl@smile.fi.intel.com>
+References: <20260204010529.48000-1-neelb2403@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iio: magnetometer: bmc150_magn: Used guard() for mutex
- protection
-To: Neel Bullywon <neelb2403@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260204010529.48000-1-neelb2403@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20260204010529.48000-1-neelb2403@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 2/3/26 7:05 PM, Neel Bullywon wrote:
+On Tue, Feb 03, 2026 at 08:05:29PM -0500, Neel Bullywon wrote:
 > Replaced the manual mutex lock/unlock calls using guard() to simplify
 > the error handling and reduce goto statement usage.
 > 
 > By using RAII-style cleanup, it ensures the mutex is always released
 > when exiting the function, regardless of the return path taken
-> 
+
+Missed period.
+
 > This was compiled test only
-> 
-> Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
-> ---
-Reviewed-by: David Lechner <dlechner@baylibre.com>
+
+Ditto.
+
+No need to put this into commit message.
+
+Code wise looks good.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
