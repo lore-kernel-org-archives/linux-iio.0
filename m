@@ -1,133 +1,147 @@
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD47337F728
-	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 20:03:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CDCC34A3DA
+	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 20:34:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770235437; cv=none; b=RN+GKPdB8fzNWv7nj/VzIWJpJWYFvkbjUhki0J4To2OKb1cLcQhhbGrGAcxqw4PzabALQDm+12A4Nt2DQN5ilDmpOlfOA7icfzFCsNTWsiSIiQ2PPfFJ0TN3qo7wmsb9orssKdiBE/A69YcYy+NGn87Go49QfTICoMPTnA1i3mY=
+	t=1770237264; cv=none; b=azplE9keDqW+QVoVwoufoZxTOQbfNqOtxq3KFTmAyiX5eN1IuRMuCLPhZUoQlUeEfqKwSusNSdUrRiHVAGjcVqNVehYHCKfL7tCy5Iqg2lMGRCqawXjag6gKCrWzbYT13gDBlqE9vkdFIuEiKXplpqV7BrVRHYbMoUZHzX8vLTA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770235437; c=relaxed/simple;
-	bh=ZbjPQZxsawcIi9AE00bUE4mWPx5PaLFX85JY52XvYgw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=X6ZJ1Rm4C+MY9pPYMtS4iBpquA+LmpiKL35W658f04XnNUQUknSSW4Nks7vQtABEZ+T43r2O6okTtVmvzdojrQqexfZn8Fn0m5O58hHilCv/aSDur3GwUtySgJn89jUjnbuZ2WEUr93nmOqRaNnC2lNYT8ixT1YAb0T6OwUWOh0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EFojOTMz; arc=none smtp.client-ip=209.85.128.44
+	s=arc-20240116; t=1770237264; c=relaxed/simple;
+	bh=rvhVa3smICLx3UXNDdk4ydZcwdUWyxqatm62NxBVvZs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=imagcFVUPVywV5WLNFRtsep88NzClux4qR8rKZxdK9VG3RiYnYJWzjEljHQ3AK74z6qIa0liuDdbc318tEOWW5S97vv400Kjy2+VfPZ0hx4YL7ezitoipq3WWwJ9FXw5xu3Qw0EMiX0SnXyPxgP1Rd0hWSJaG8bLMIbJo2CKggw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C1AybAqI; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EFojOTMz"
-Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-47f5c2283b6so1527645e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 04 Feb 2026 12:03:56 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C1AybAqI"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-4359249bbacso864353f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 04 Feb 2026 12:34:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770235435; x=1770840235; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=o8jsa6rujwI1MDFtP7TZjZaBsvWUke/k2PYQ64bRKwo=;
-        b=EFojOTMzKPvqIAMBE+ITxRp2uQu+mu/7w4lPlJAWfvMgOi/RfTa5X+lbZt9dD6Nt7k
-         UZsvdHRnzWkqG6GJ6l2ymzrZ/LrB4CStt1DAuGwcFcuCFubUyFjn5OO7jjjCAnwHcFqq
-         TyhXAxc12Y0Op9SVduET0cwU96sE48za2BTZ4ViVrZRXdlTSX3HK3bW9TXM9Z1bMS/ty
-         QsNDxAFmElGSh1wphfOCCaeWA4tCQeBiRrb2mLlPAbLZZOmr6nEjsFYYIHtGH0EaSSkw
-         OQAI5hOKb//oRtEiPsbL5FLHyrJU9k6+ICSKnq6n/E3IPYxmnGM31eu8aDkzn1d/zttn
-         OS7w==
+        d=gmail.com; s=20230601; t=1770237262; x=1770842062; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Zm6pQ0n8k0aUMJnRRXuxnSNa9+Aku/yu04RgcWOPpwg=;
+        b=C1AybAqIB9ElnWPZBFVyWkNkrl8PPnahwzO53rSnNyg26cbtp496BDIH0LcXK7Sw+S
+         JB+X/o9F9ShGR54j3ANB7/Mn9VfbJ2MiRDV/0zUDpsmiaJuFTmTxPG76nqJVPU8U8G2Y
+         Bk5lmxq63qar3hb1v+IsmohVZT7m96q5z4H5UdYrJwFwE0iWisE6hronHpatLGpQWZ40
+         B05+uYxcry2a4cvj5Ja9C3/G/tOBacS5zvCsEzxBMGEq2IvXoQnMUyavtDAE63N3TL0b
+         dxqA9LCeUvmEfv9GOEv5TSjw4HdGSh4ziXLFhQiXDsiJxVHTie5ArIx5+asXVNPJu8x4
+         pxXQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770235435; x=1770840235;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=o8jsa6rujwI1MDFtP7TZjZaBsvWUke/k2PYQ64bRKwo=;
-        b=XVzqvjtxYT20r/k5S1J8WpNEABlVFzWbwntyGXsxj39ud9z+tqYzI4iG4oztkaqe0z
-         ZDim/IZk36GrAFluQ2M15VVmrY5KNoE0Ig1d9dC2SrEvBjjvYiVLs3gLIblJ7WWzdi1X
-         7HNT2L41gQjertGp01nagRAI0w52JW68igcy6xPwfyCX6a44RBUNWCgwc4YHJ7qfbcH8
-         Yiyf4vJ/BQBq/aC0jmFZ35gW8n2h+Dlchs3eXeod/zWt0K7dS3jsG7TOWuoWaJNA86Lj
-         anMtR9s1zlFcveKDsUxla3Z4O9lctkWPpznvUv4ZvZ9h5KuHNl23fKkXcbg7G8C1Me8C
-         GXOA==
-X-Forwarded-Encrypted: i=1; AJvYcCWaGY/qxl1xsvx6taROX4XOAf1n5Fmdo+eK74QCHS+qKbnqnl1oCPjisbRtB4m3NPs7pKe2SfwJIdw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwN+vjgIeO+TokVU7jCCqwFfT9bgoIEjmsYGff+tvfkXAGrPl7e
-	d4jTEZk5AAFL6c1fIUZaJXhvlst4Sa4F4KDMkJ9/VJfVQE6m5pu+v4As0iZBIQ==
-X-Gm-Gg: AZuq6aIbJgOsfsLFxbx7EJ3Ve2cbCmAn3vZ3KzQLVbtbWIh2GRq/O3Ja6NxihbZl/5X
-	8dr9edQkMeBtvSd8a4LSmeVA17asuDpt+WaxfjBkAmg9zhkzmnOoekPHZOcyzKoYY/R+cAFGTcQ
-	6RshHkKS1sffVIdymqljXNVpDFGGx7S4lZGpRklB4jNxfH8nEgpGvWhK1AOGi5se+yliFGsp1Yx
-	hyjBda+i8qcnIHQKf7NFPMTFtKhntrUj3DuiPZJ/oMUE2VCK9zpyCOjeFtmyJrN/gsLmQoqeZEv
-	P7OQAgrTICejgsNqMBEH9w2ASPsXBvKK50UJuuO9MEF3H+tRv5xx9UHOp2fGRn8oMZN3nw1k6EN
-	SLXkRaGBTwggprqgNrJCnxL2CgrPLd2mT/fBosuVD/VsG3pCZ2UO78f7RHx36xZuqybKkqzZhic
-	QQBQ==
-X-Received: by 2002:a05:6000:60f:b0:429:c851:69ab with SMTP id ffacd0b85a97d-43618061b83mr5243446f8f.55.1770235434995;
-        Wed, 04 Feb 2026 12:03:54 -0800 (PST)
-Received: from pc ([196.235.235.199])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43618057f93sm8303745f8f.24.2026.02.04.12.03.52
+        d=1e100.net; s=20230601; t=1770237262; x=1770842062;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Zm6pQ0n8k0aUMJnRRXuxnSNa9+Aku/yu04RgcWOPpwg=;
+        b=rjvV5Jk78TSaLAa0vEZbvyfO07p6u6bhoLK47j8Ffpa1FGfy3ginuQyfMGmxjqE97l
+         xpejE/FAWe3dUzRvaQ1BYXeKfNGfhiEbH10hKQNbvp04mRlFP3wxAADA1tp9GV6Ewn5u
+         PW2rwQNQhQ7R3ruXUB2F3X7KmaGU6VJG6zA6gClDG0LgvQzmXsCQMEwpwafstmsYH31t
+         D3vKTgQYTJYypv7RGrplJbdFfUQlaoxjlSna6iSYzE3u29OztgL3lE1uTfED7WFSKKYr
+         MI7LIYPDaEFQfP5QZ4VGDrzNqhNdotkOn/JORU3BlGLIQKqIrsOl3R53tQSMH7sfZ7kb
+         v5YQ==
+X-Gm-Message-State: AOJu0Ywd0ckxXqkpiSLhWu+D5nKQNyZAcz7fq63tN1ABlZDZt/C+pOEr
+	UFepH/3Hn8aLhmqSFS5DVeWNqLra3g6jXETSPXm5eCGyX1VMlCzZ5mi7
+X-Gm-Gg: AZuq6aJqfw63Fi6say36QdwNdxUFWWKqxSYq4Imxwh0e1liFuFy5g7A7ouUPtvsOpq6
+	KDOJlgG1uvv/XAkbSb1xyIRwAP0W54UmfhIg0A+DovcHYmaQRZWox7sCdm024mE6k889snS63aO
+	JHkKiXQXBcvdgF9xMrmYHgihai9ynsnMbW1YYGCIovU3dIVhR16b5pXnS1cL0aZtKyx+sec9RDX
+	d3DRbFZBGR0eqrbQIHgenIJnxukqnaj6qFn8uW/6soGB1Xhi5CMq84KSDE+59CQ0o4SjlZF/2Ys
+	UDHq0CbcXh32bAKCa309N+E00kpW2uEjEYfFBOYiMWImKGyszeBfh0be8O+E859bSUoymANBT24
+	M+RmFl4lRs5xlh/P9fr00VgvctXWwsVshRuMGf6OGiYa+0tIIlP2KQyOLOgVTSeauRJB/rOZvVB
+	VSMAoIsubEKW3y8TTh23KhVwV6Q7I=
+X-Received: by 2002:a05:6000:4201:b0:435:b674:c9b1 with SMTP id ffacd0b85a97d-436213d80b0mr874187f8f.11.1770237261689;
+        Wed, 04 Feb 2026 12:34:21 -0800 (PST)
+Received: from localhost.localdomain ([196.235.235.199])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43617e38fbbsm9275097f8f.13.2026.02.04.12.34.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Feb 2026 12:03:54 -0800 (PST)
-Date: Wed, 4 Feb 2026 21:03:49 +0100
+        Wed, 04 Feb 2026 12:34:21 -0800 (PST)
 From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: trigger: fix use-after-free in viio_trigger_alloc()
-Message-ID: <aYOmJeR3x0Mg4GLf@pc>
-References: <20260131092333.247931-1-salah.triki@gmail.com>
- <20260131124416.19576731@jic23-huawei>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v2] iio: trigger: fix use-after-free in viio_trigger_alloc()
+Date: Wed,  4 Feb 2026 21:34:13 +0100
+Message-ID: <20260204203414.89333-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260131124416.19576731@jic23-huawei>
 
-On Sat, Jan 31, 2026 at 12:44:16PM +0000, Jonathan Cameron wrote:
-> On Sat, 31 Jan 2026 10:23:33 +0100
-> Salah Triki <salah.triki@gmail.com> wrote:
-> 
-> Hi Salah,
-> 
-> This is a definitely case of the fix not being anywhere as simple
-> as it might look at first glance.
-> 
-> > Once `device_initialize()` is called, the reference count of the device
-> > is set to 1. The memory associated with the device must then be
-> > managed by the kobject reference counting.
-> > 
-> > In `viio_trigger_alloc()`, if `irq_alloc_descs()` or `kvasprintf()` fails,
-> > the code currently calls `kfree()`. Using `kfree()` in this case bypasses
-> > the device's release callback and can lead to a use-after-free or memory
-> > corruption.
-> 
-> In some cases yes it can cause problems, but please show me an actual
-> path to this in the description. It should indeed be tidied up.
-> 
-> > 
-> > Fix this by calling `put_device()` instead of `kfree()`. This ensures that
-> > the memory is freed properly via `iio_trig_release()` when the reference
-> > count drops to zero.
-> 
-> This change is not sufficient and causes some cleanup to happen twice
-> thus introducing some bugs that weren't there before.
-> So take another look.
-> 
-> > 
-> > Fixes: 2c99f1a09da3d ("iio: trigger: clean up viio_trigger_alloc()")
-> > 
-> No blank line here.  Scripts that commonly run on the kernel tree rely
-> on the the tags block having no blank lines in it to avoid false positives.
-> 
-Hi Jonathan,
+Once `device_initialize()` is called, the reference count of the device is
+set to 1. The memory associated with the device must then be managed by
+the kobject reference counting via `put_device()`.
 
-Thanks for the review!
+Currently, if `irq_alloc_descs()` or `kvasprintf()` fails, the code
+manually calls `irq_free_descs()` and `kfree()`. This is problematic for
+two reasons:
 
-You're right – my patch was incomplete and can lead to double cleanup
-between the error path and iio_trig_release(). I'll rework the error
-handling so that once device_initialize() has been called, all cleanup
-goes through put_device(), and resource freeing is centralized in the
-release callback.
+1. Calling `kfree()` directly bypasses the device's release callback
+   (`iio_trig_release()`), which could lead to resource leaks or
+   inconsistencies within the driver core.
 
-I’ll send a v2 fixing the double-free issue, showing the error path 
-and correcting the Fixes tag format.
+2. If we simply replace `kfree()` with `put_device()`, a double free
+   occurs because `iio_trig_release()` already calls `irq_free_descs()`.
 
-Thanks!
-Salah
+Fix this by:
+- Using `put_device()` to handle memory tearing down.
+- Removing the manual call to `irq_free_descs()` in the error path, as
+  it is already handled by the trigger's release function.
+
+Path to the issue:
+viio_trigger_alloc()
+  -> device_initialize() (refcount = 1)
+  -> kvasprintf() fails
+  -> goto free_descs
+  -> irq_free_descs() (first manual free)
+  -> kfree(trig) (refcount is still 1, release never called)
+
+Fixes: 2c99f1a09da3d ("iio: trigger: clean up viio_trigger_alloc()")
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+Changes in v2:
+- Remove the manual call to irq_free_descs() in the error path to avoid 
+  a double free, as this is already handled by iio_trig_release().
+- Clarify the error path and the potential for memory corruption in 
+  the commit description.
+- Remove the blank line in the tag block to comply with kernel script 
+  requirements.
+
+ drivers/iio/industrialio-trigger.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 54416a384232..7f53e2a5a101 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -576,7 +576,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+ 
+ 	trig->name = kvasprintf(GFP_KERNEL, fmt, vargs);
+ 	if (trig->name == NULL)
+-		goto free_descs;
++		goto free_trig;
+ 
+ 	INIT_LIST_HEAD(&trig->list);
+ 
+@@ -594,10 +594,8 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+ 
+ 	return trig;
+ 
+-free_descs:
+-	irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+ free_trig:
+-	kfree(trig);
++	put_device(&trig->dev);
+ 	return NULL;
+ }
+ 
+-- 
+2.43.0
+
