@@ -1,104 +1,236 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 85E2C41323C;
-	Wed,  4 Feb 2026 14:20:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5494A25776
+	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 15:38:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770214818; cv=none; b=n/X+KgvL8bDuXIdyW1FboVvIIqE6EcYCHfasyKzohhdIpal0bH9nlVfE7qv9KDyGa8r9RwddM7/taf17Q1dNPL+VmYFgN4F/qwKVR2R6gmeJYkkCMjdB59qo17FZUsKr8WXnpORLBBXtGyEvVHocXWBDUidem1rE+Ed+TqQsGZ0=
+	t=1770219490; cv=none; b=SJH5ySPFXAKDto2UdN89ue4bAPFHjG/SzPCMk6UABJxzX6bkbl6AzEPbC7hYODkj0v8zd78GTYMXy56Lzml2drNE+w0hMakk0CUCoyeyC8VStI3sobkf+Ocgqv/TzFN4b7Fm+kLiw4mz2SA5cLRQWb5uvbSzASjO0CunsMKPpLY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770214818; c=relaxed/simple;
-	bh=zmBwGLhDUiwZIdMPsi+sqb3oedtUAJYBCtug/uouMLM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LgiqHI4YNHCn8ycLs0pZBuHvhZFfsA2MAWpFV+XRnyYaCX9SZWYcWfX+VLhLCj3/1ifHCdRyCUrgCznmIZaNEo5t3IyoJxYTV3LsgJFvLGQ/jC3B7BJW43GVDFSbSPICIReRFZDwe8oBGGGhT9anvbrr9sJtVbLQ1zLucAlleTc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ND+CsL/Y; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770219490; c=relaxed/simple;
+	bh=2U0ZLbRGRuxcfWWhFBar0DXXzr1V5+bpp9z4zXRGikA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=HY5h6yUiwo5HQ2v27F41bwGc4GpBkWRk+x40rB0dubaEn7RJYzD8sbm8d+YOT0UfFLRY2sTEytV/79aWXZV9KxlPPAbnAAM6PVom/nbvaLDVZpMFFz8+d86KGsWbE65jYxssvQY6WQb/TPmY9N96vFkJ4zSbJIuxXZeEq+txL0c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=rFdMelO7; arc=none smtp.client-ip=209.85.210.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ND+CsL/Y"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770214818; x=1801750818;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=zmBwGLhDUiwZIdMPsi+sqb3oedtUAJYBCtug/uouMLM=;
-  b=ND+CsL/Yag+ViWThYZJcD2wHJjbwh3AmI7RYW9h0fHG7TzDl2fcTp908
-   Kt+JZSszU73cIM9KJlFLsA23jh7EylFpviBJFMT2cl4+Rhsb+o2VzcHK5
-   3/h8dS2LQBPro7H9PxVS+1LMZ9ge375c0VrYBeGHYdTuO/d/nsEP5YNTB
-   ZrBB+MKVRz/rLr5mllAKOzeCQKPXuCvc4gcEj+2MRX886amjRkebnR5bc
-   zYvosC/5UVF95imGb1jkrWmumQ3uVHvwK+rswX/bd6o6DUGV2fFa5PwgV
-   tF6LJqjmmpvnteiu/3zdii+fQF9xyZOA0X5Gp3AQiyX7d+EpwQMpY4ZtY
-   w==;
-X-CSE-ConnectionGUID: 55yduEiGQVmHDnR83OjQLA==
-X-CSE-MsgGUID: yQqwwyejTriO0PH70G13+w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="58977311"
-X-IronPort-AV: E=Sophos;i="6.21,272,1763452800"; 
-   d="scan'208";a="58977311"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2026 06:20:17 -0800
-X-CSE-ConnectionGUID: j/YBXKVGRfmKYXOich9OPA==
-X-CSE-MsgGUID: 7CWQkiL2RgaakwgpEt963g==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,272,1763452800"; 
-   d="scan'208";a="210191980"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.188])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2026 06:20:15 -0800
-Date: Wed, 4 Feb 2026 16:20:13 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	David Jander <david@protonic.nl>
-Subject: Re: [PATCH v5 06/13] iio: dac: ds4424: use device match data for
- chip info
-Message-ID: <aYNVndcMVRj3JsKL@smile.fi.intel.com>
-References: <20260204140045.390677-1-o.rempel@pengutronix.de>
- <20260204140045.390677-7-o.rempel@pengutronix.de>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="rFdMelO7"
+Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-7cfd95f77a3so4494099a34.0
+        for <linux-iio@vger.kernel.org>; Wed, 04 Feb 2026 07:38:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770219488; x=1770824288; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=blkfjw5Kfqdb7kT/8wrUlXk97uMbSySck24pBd+yHrc=;
+        b=rFdMelO7VKg0o2peev5uoTkOQwY8hCWrPxop6cnScyOcPjzih1/ii58WX8/+uAz2bL
+         HicdCo1mnE+cih5M5deOx+sCNoLUmboxw06qIPaAbz91GgQQyUEaY8BKz6YpqxsjSRIp
+         owvRvr+DQGb9urqR+GGyMLV0Y0endNq55GCoOARV3Hg5KUnZB3fKjQ7/XEx1yc2LfKwZ
+         L6MffVLYBm16BP6rwLe2aJf9DHluPKI34Mzbi/AbbsrxxFRrQohBfYTACcy7NgdPvxuK
+         +6tK9YCbCRTiBlLnD4XcAywdCgjPHFPruy3QItZ1LIoKrOpSc67XBjamyvDvgSRtaCDG
+         2jCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770219488; x=1770824288;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=blkfjw5Kfqdb7kT/8wrUlXk97uMbSySck24pBd+yHrc=;
+        b=nvObrNUC7pkzhBfufEcwfXD3J3uULjlPPhOcv06Ni4RcF/mdxvXfdEgfkoIFoEV9G4
+         CwtaA8Vj0O1fZJ7/+H4+f3DRpNoEgrWWt4sAbngvJrzjfi3tGq7+sHpmZSXxMjkmT703
+         YRbHrEIMiLYA0VB/QEwiFatIqgq9kem9Yqb/L9CXnMroAuwOopg4ONmnSLiJ7KH4hXL4
+         Lj6b2HCYB7piN1kWM2hbc3sMun/HidRwd57nrC9X137yYXcVsA+miuJq6PaBUOZBd8mC
+         ZlKoiDKY72LiVnF3kjRjOtMu1h7YWyHYETPsA8f+7z3aDWXeYsD0SeCMCM5ERfHbndq6
+         xZhw==
+X-Forwarded-Encrypted: i=1; AJvYcCXX57kAQWFFrC4aXrBroqLi/5+nhyLFB9DkFSDhzB0lpta/R1JltqKgad3CDRGW2CoWckXnoXTAdYw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YybpDS2Zb8tIa9qAEswb9HTyUuQzzgMv/sPQbKXbh/iQ1w1ndA+
+	R6MgsZvArH+N/jBGhewN7nPNzMe+q2ZPeq/KY3aQdZTfMDGiXtEWIYMiT7YCl1EDMow=
+X-Gm-Gg: AZuq6aJgOvFhXYa4Wnohhv6oIYCXgPcXFVK+SOHFCXiBeIQxlXZhHEKQhtJnMcf7huw
+	0IJJ22/YhvBQ/AXw/dE3aLrU/OkxduUoCIpxHb8qxVmmbZrca7emqK0h7AeLv8jUHJfEUAWsOvN
+	EZfX6+QIIkTHk6wljzvSQ9uHDet0sQwQNxpyROqO/FvM8IIleNcgE/iVDK136m76GyPoQ0jx8/G
+	AQ7NSAO3FffMdcksloBiMuENy62PRDGYM/GAjc4AjrZwsLAr6IU3GHrdPMiHvu8npTjWxS8V92A
+	k1XmmBeXqey4SzOhZw+BiSNWteVwQLTnW1/wduxPjc4kiHCAaQ4jxrHlhif6nRqKaWD2BZC1egi
+	p154ainieBKTudBVZGLarFtdtNPrph///nFNNZpZukEcJNoRgBLVxVrW9u9cQwFWbJHGc0bkx2X
+	7u7IInvN7uYeME1wq9/l2yep4Ty6cyr/1ptC20eCoiOWC3qzGLHHAfIpqeLA==
+X-Received: by 2002:a05:6830:2541:b0:7cf:e57f:def6 with SMTP id 46e09a7af769-7d448972675mr2135095a34.6.1770219488069;
+        Wed, 04 Feb 2026 07:38:08 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:319e:ed90:d5d:7e61? ([2600:8803:e7e4:500:319e:ed90:d5d:7e61])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d4490f3c06sm1849081a34.2.2026.02.04.07.38.06
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Feb 2026 07:38:07 -0800 (PST)
+Message-ID: <b52a3013-4878-4054-8b71-edc35f32c4e2@baylibre.com>
+Date: Wed, 4 Feb 2026 09:38:06 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260204140045.390677-7-o.rempel@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] iio: adc: ad7768-1: add support for SPI offload
+To: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Cc: Michael.Hennerich@analog.com, lars@metafoo.de, jic23@kernel.org,
+ nuno.sa@analog.com, andy@kernel.org
+References: <cover.1769889074.git.Jonathan.Santos@analog.com>
+ <9f9aedbe374461e48f1f1e64d5487b5b6c1fc992.1769889074.git.Jonathan.Santos@analog.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <9f9aedbe374461e48f1f1e64d5487b5b6c1fc992.1769889074.git.Jonathan.Santos@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Feb 04, 2026 at 03:00:38PM +0100, Oleksij Rempel wrote:
-> Refactor the driver to use device match data instead of checking ID enums
-> in a switch statement.
+On 1/31/26 7:35 PM, Jonathan Santos wrote:
+> The AD7768-1 family supports sampling rates up to 1 MSPS, which exceeds
+> the capabilities of conventional triggered buffer operations due to SPI
+> transaction overhead and interrupt latency.
 > 
-> Define a `ds4424_chip_info` structure to hold variant-specific attributes
-> (currently just the channel count) and attach it directly to the I2C and
-> OF device ID tables.
+> Add SPI offload support to enable hardware-accelerated data acquisition
+> that bypasses software SPI transactions using continuous data streaming.
 > 
-> This simplifies the probe function and makes it easier to add support for
-> new variants like DS4402/DS4404.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-with a hope that we get rid an I²C ID requirement at some point.
+> Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
+> ---
 
 ...
 
-> +struct ds4424_chip_info {
-> +	u8 num_channels;
+>  struct ad7768_state {
+>  	struct spi_device *spi;
+> +	struct spi_offload *offload;
+> +	struct spi_offload_trigger *offload_trigger;
+>  	struct regmap *regmap;
+>  	struct regmap *regmap24;
+>  	int vref_uv;
+> @@ -306,8 +325,11 @@ struct ad7768_state {
+>  	struct gpio_desc *gpio_reset;
+>  	const char *labels[AD7768_MAX_CHANNELS];
+>  	struct gpio_chip gpiochip;
+> +	struct spi_transfer offload_xfer;
+> +	struct spi_message offload_msg;
+>  	const struct ad7768_chip_info *chip;
+>  	bool en_spi_sync;
+> +	bool offload_en;
 
-If you wish, you can provide name here that will go to ->name field.
-Linker dedups string literals, so it will be just an additional runtime
-pointer.
+offload_en makes it sound like the offload could be enabled or disabled
+at runtime, but that doesn't seem to be the case. I would just check if
+offload != NULL rather than add a new field. Or change this to has_offload.
 
-> +};
+>  	struct mutex pga_lock; /* protect device internal state (PGA) */
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) may require the
+> @@ -1139,6 +1161,10 @@ static int ad7768_get_current_scan_type(const struct iio_dev *indio_dev,
+>  {
+>  	struct ad7768_state *st = iio_priv(indio_dev);
+>  
+> +	if (st->offload_en)
+> +		return st->oversampling_ratio == 8 ?
+> +			AD7768_SCAN_TYPE_OFFLOAD_HIGH_SPEED : AD7768_SCAN_TYPE_OFFLOAD_NORMAL;
+> +
+>  	return st->oversampling_ratio == 8 ?
+>  	       AD7768_SCAN_TYPE_HIGH_SPEED : AD7768_SCAN_TYPE_NORMAL;
+>  }
+> @@ -1320,7 +1346,7 @@ static irqreturn_t ad7768_interrupt(int irq, void *dev_id)
+>  	struct iio_dev *indio_dev = dev_id;
+>  	struct ad7768_state *st = iio_priv(indio_dev);
+>  
+> -	if (iio_buffer_enabled(indio_dev))
+> +	if (iio_buffer_enabled(indio_dev) && !st->offload_en)
 
--- 
-With Best Regards,
-Andy Shevchenko
+I would expect that the interrupt is just disabled when doing a buffered
+read with SPI offload. No sense in wasting CPU time. So no special handling
+should be needed here.
 
+>  		iio_trigger_poll(st->trig);
+>  	else
+>  		complete(&st->completion);
+> @@ -1357,6 +1383,72 @@ static const struct iio_buffer_setup_ops ad7768_buffer_ops = {
+>  	.predisable = &ad7768_buffer_predisable,
+>  };
+>  
+> +static int ad7768_offload_buffer_postenable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad7768_state *st = iio_priv(indio_dev);
+> +	struct spi_offload_trigger_config config = {
+> +		.type = SPI_OFFLOAD_TRIGGER_DATA_READY,
+> +	};
+> +	const struct iio_scan_type *scan_type;
+> +	int ret;
+> +
+> +	scan_type = iio_get_current_scan_type(indio_dev, &indio_dev->channels[0]);
+> +	if (IS_ERR(scan_type))
+> +		return PTR_ERR(scan_type);
+> +
+> +	st->offload_xfer.len = roundup_pow_of_two(BITS_TO_BYTES(scan_type->realbits));
 
+We have spi_bpw_to_bytes() for this.
+
+> +	st->offload_xfer.bits_per_word = scan_type->realbits;
+> +	st->offload_xfer.offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
+> +
+> +	/*
+> +	 * Write a 1 to the LSB of the INTERFACE_FORMAT register to enter
+> +	 * continuous read mode. Subsequent data reads do not require an
+> +	 * initial 8-bit write to query the ADC_DATA register.
+> +	 */
+> +	ret =  regmap_write(st->regmap, AD7768_REG_INTERFACE_FORMAT, 0x01);
+> +	if (ret)
+> +		return ret;
+> +
+> +	spi_message_init_with_transfers(&st->offload_msg, &st->offload_xfer, 1);
+> +	st->offload_msg.offload = st->offload;
+> +
+> +	ret = spi_optimize_message(st->spi, &st->offload_msg);
+> +	if (ret) {
+> +		dev_err(&st->spi->dev, "failed to prepare offload, err: %d\n", ret);
+
+Do we need to do someting to undo AD7768_REG_INTERFACE_FORMAT write if this fails?
+
+> +		return ret;
+> +	}
+> +
+> +	ret = spi_offload_trigger_enable(st->offload,
+> +					 st->offload_trigger,
+> +					 &config);
+> +	if (ret) {
+> +		spi_unoptimize_message(&st->offload_msg);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+
+...
+
+> +static bool ad7768_offload_trigger_match(struct spi_offload_trigger *trigger,
+> +					 enum spi_offload_trigger_type type,
+> +					 u64 *args, u32 nargs)
+> +{
+> +	if (type != SPI_OFFLOAD_TRIGGER_DATA_READY)
+> +		return false;
+> +
+> +	/* Requires 1 arg to indicate the trigger output signal */
+
+The DT bindings allow 1 or 2 args, so we should also allow nargs == 2 even (the
+2nd arg is just ignored).
+
+> +	if (nargs != 1 || args[0] != AD7768_TRIGGER_SOURCE_DRDY)
+> +		return false;
+> +
+> +	return true;
+> +}
+> +
+> +static int ad7768_offload_trigger_request(struct spi_offload_trigger *trigger,
+> +					  enum spi_offload_trigger_type type,
+> +					  u64 *args, u32 nargs)
+> +{
+> +	/* Should already be validated by match, but just in case. */
+> +	if (nargs != 1)
+
+As above.
+
+> +		return -EINVAL;
+> +
+> +	return 0;
+> +}
+> +
