@@ -1,44 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA9FB279DB3;
-	Thu,  5 Feb 2026 19:13:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 090212EAB6F;
+	Thu,  5 Feb 2026 19:26:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770318809; cv=none; b=LW+URbp+M5Ij8ACLAOv6ho6vq4SAS7FfXPe8Y0eaGOxoXFG6wZnU/mWxjv5onQXR4FM4ZkrbEVMDzcQcHc2r0t/J+ORXNXYLwAIVpYM92dWFWW6qYagak9DRoR3UH8zWHvuuwKiawIEmy64HL3ChWM1V5VXaAGhLeT45rcZR4G0=
+	t=1770319619; cv=none; b=KpVxfQg0u09AEZlcOwl9T6o8KrbC0O1hnZtw/wuApjTXF7YfqzTZloDOcrFxAeGAADmKn0gFjk8sv9cX2h8N6hDPLKKt1hfOUQs/LnwlvzIYacKJfYkt8WGw3PXJK3xvZLc8KC8YCTnwfjC5TsuBbV+DiCmkn5InTAnkDKoRTiY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770318809; c=relaxed/simple;
-	bh=tbP9h1k5B3yJWSPqrDUODMYf9Jvid9ANIt8ghdoN3/E=;
+	s=arc-20240116; t=1770319619; c=relaxed/simple;
+	bh=U4MKUfFI6DFpBMRrK587zNgEG4Th8lIO/6CXoEt2aMo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=uOUcnLE57kZ7nLfM27vi3zayQGYAjG19rn+8EN3VSnt5bcoOO9ucZf5MAt2tuIhlLIinj2oDYu7lC5Aju6rpnSJDPwU5ltC69e8YLnWmBYB3ojNyGMM2UAUWiklIh7f44/C+iiT4G6Ryo2cp570X2wUSUTq8w1Rk1oxU7APTP7I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AI/GyRR4; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=fAL88CUfKWudunUz0IqiYe072/3ZgO1ESEU8v6y2ygUrL/qK9IZXlbR5htctrJ3iUTacdyy2HHwaqSaus8JJDWkbSJAl/7EjYWmtN4qi5THGa/G2DjycZjzBrsAhBnUHp4ipZUr45FoxBgAlJr0BuIuXdkai6n1rwxJrOGZBfcA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j5X6RIDW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AI/GyRR4"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30E43C4CEF7;
-	Thu,  5 Feb 2026 19:13:26 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j5X6RIDW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2CA3C4CEF7;
+	Thu,  5 Feb 2026 19:26:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770318809;
-	bh=tbP9h1k5B3yJWSPqrDUODMYf9Jvid9ANIt8ghdoN3/E=;
+	s=k20201202; t=1770319618;
+	bh=U4MKUfFI6DFpBMRrK587zNgEG4Th8lIO/6CXoEt2aMo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=AI/GyRR4yvA9o/8v/j3DAv1n0c0wPVbf55qafkDTFU5w3mONpCZRxgiUFwTMdj33B
-	 dOXHBJz+KmjxOnBPPVja8barysKJoc2t106sUK/chAc6kY+ieKa4pMnfQq9rihtmpa
-	 YCVLEoxSr0Sl1hIO5rFZ77RV401EPxvAl+dwDuHTFEcx/fGKd4FxIo9JG9mUn5+QUE
-	 yS25l4NNgd1XjMWbTUab23E0kZ18/KcWg2tfS4t97yayAdSWe5PyteWkAcvtjeEV5M
-	 V+tEDa6XPMBhicd1k+xeCSxdLq+k5EBOBcXQGyk5Cs3BlQ13b84uR+f7h+MsviPDay
-	 Du6MM8YpKTzBA==
-Date: Thu, 5 Feb 2026 19:13:21 +0000
+	b=j5X6RIDWYLsTuF5XlVWpU13HyZPPz/wHyGcqmQ3X3N9MwQ6bM+l9ubhTxmOa60Mn6
+	 V5S4nhCT/smAjtNWVhzfy63/UCr2Q2QRagzp0M2bHQo2dGW2VIcCnzVf5ZEEiHsxkO
+	 JtlmK9cRSy74oGgT1u8RZdnxGNITP0FP4dtnxAyTyCb/7yqvUGurr2zC3JLlGP9oGO
+	 Y8uXtpEjw28u/LIWBLZzTdsKUC4xfE/yBtWH1PMspUYVXferMBp3fxwx28VohOhunm
+	 Bfw3xn3Af5hHUXUqXWnS8zmJo4f8uG62A2jYWRm/nIq7roBxvZ+s4o5EsTVEhYa9Fc
+	 Wh/e1wsDwZdVg==
+Date: Thu, 5 Feb 2026 19:26:49 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol via B4 Relay
- <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Cc: jean-baptiste.maneyrol@tdk.com, Remi Buisson <remi.buisson@tdk.com>,
- David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v3] iio: imu: inv_icm45600: fix INT1 drive bit inverted
-Message-ID: <20260205191321.7e5f7b49@jic23-huawei>
-In-Reply-To: <20260205-inv-icm45600-fix-int1-drive-bit-v3-1-9c60c354dadb@tdk.com>
-References: <20260205-inv-icm45600-fix-int1-drive-bit-v3-1-9c60c354dadb@tdk.com>
+To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Remi Buisson
+ <Remi.Buisson@tdk.com>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
+ <stable@vger.kernel.org>
+Subject: Re: [PATCH] iio: imu: inv_icm45600: fix regulator put warning when
+ probe fails
+Message-ID: <20260205192649.4df4b110@jic23-huawei>
+In-Reply-To: <FR3P281MB1757021D0A44A69C2940FC07CE99A@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+References: <20260205-inv-icm45600-fix-regulator-put-warning-v1-1-314ec12512cb@tdk.com>
+	<aYTDF9BNwzXmd2J8@smile.fi.intel.com>
+	<FR3P281MB1757021D0A44A69C2940FC07CE99A@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,78 +50,118 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 05 Feb 2026 17:59:14 +0100
-Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
+On Thu, 5 Feb 2026 17:19:28 +0000
+Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com> wrote:
 
-> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> 
-> Drive bit must be set for open-drain mode and be cleared for push-pull
-> mode.
-> 
-> Referring to datasheet DS-000576_ICM-45605.pdf section 17.23
-> INT1_CONFIG2.
-> 
-> Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
-> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> Reviewed-by: Andy Shevchenko <andy@kernel.org>
-> Cc: stable@vger.kernel.org
-Applied to the fixes-togreg branch of iio.git. Note that has a
-random base at the moment, so I'll wait for release or rc1 and then
-rebase on that before pushing out.
+> >From:=C2=A0Andy Shevchenko <andriy.shevchenko@intel.com>
+> >Sent:=C2=A0Thursday, February 5, 2026 17:19
+> >To:=C2=A0Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+> >Cc:=C2=A0Remi Buisson <Remi.Buisson@tdk.com>; Jonathan Cameron <jic23@ke=
+rnel.org>; David Lechner <dlechner@baylibre.com>; Nuno S=C3=A1 <nuno.sa@ana=
+log.com>; Andy Shevchenko <andy@kernel.org>; Jonathan Cameron <Jonathan.Cam=
+eron@huawei.com>; linux-iio@vger.kernel.org <linux-iio@vger.kernel.org>; li=
+nux-kernel@vger.kernel.org <linux-kernel@vger.kernel.org>; stable@vger.kern=
+el.org <stable@vger.kernel.org>
+> >Subject:=C2=A0Re: [PATCH] iio: imu: inv_icm45600: fix regulator put warn=
+ing when probe fails
+> >=C2=A0
+> >On Thu, Feb 05, 2026 at 02:=E2=80=8A35:=E2=80=8A33PM +0100, Jean-Baptist=
+e Maneyrol via B4 Relay wrote: > When the driver probe fails we encounter a=
+ regulator put warning > because vddio regulator is not stopped before rele=
+ase. The issue > comes from
+> >ZjQcmQRYFpfptBannerStart
+> >This Message Is From an External Sender
+> >This message came from outside your organization.
+> >=C2=A0
+> >ZjQcmQRYFpfptBannerEnd
+> >On Thu, Feb 05, 2026 at 02:35:33PM +0100, Jean-Baptiste Maneyrol via B4 =
+Relay wrote:
+> > =20
+> >> When the driver probe fails we encounter a regulator put warning
+> >> because vddio regulator is not stopped before release. The issue
+> >> comes from pm_runtime not already setup when core probe fails and
+> >> the vddio regulator disable callback is called.
+> >>=20
+> >> Fix the issue by deleting pm_runtime check in the vddio regulator
+> >> disable callback and handing over the vddio disable management to
+> >> pm_runtime by deleting the disable remove action before setting up
+> >> pm_runtime. =20
+> >
+> >...
+> > =20
+> >> +	/* hand over vddio management to pm_runtime */
+> >> +	devm_remove_action(dev, inv_icm45600_disable_vddio_reg, st); =20
+> >
+> >First of all, note "remove" vs. "release". Have you tried to remove and =
+insert
+> >module several times? Does kmemleak happy about this? =20
+>=20
+> Hello Andy,
+>=20
+> remove is used on purpose, since we want to avoid disabling the vddio reg=
+ulator
+> here.
+>=20
+> The problem we are facing here is that vddio regulator disable is handle =
+by 2
+> different resource managements: manually with devm_ and with pm_runtime. =
+It
+> is needed because we want pm_runtime to be able to disable vddio when the=
+ chip
+> is suspended. And we also want to avoid the manual vddio disable during t=
+he
+> driver probe for code clarity. To prevent vddio regulator to be disabled =
+2 times
+> when the driver unloads, the manual vddio disable has a check on pm_runti=
+me.
+> But when there is an issue in probe (like chip not responding), the vddio
+> disable callback is not working correctly because pm_runtime has not been=
+ setup.
 
-Thanks,
+I'm curious that pm_runtime_status_suspend() returns true under those circu=
+mstances.
+ah. pm_runtime_init() does that.  It's a bit ugly but maybe a commented
+extra all to pm_runtime_set_active() before registering the devm callback t=
+o turn
+the power off?
+
+>=20
+> The most easiest way to fix this is to remove the devm vddio disable when
+> pm_runtime is setup to avoid any double free resources. pm_runtime will d=
+isable
+> vddio, thus there is no risk of resource leak.
+
+This is making life rather complex.  Also what happens if runtime PM is not
+configured into the kernel?
+
+I'm really not keen on using devm then ripping it out again. That just
+makes a mess of the ordering.
+
+These devm / runtime pm interactions are rather unfortunate.
 
 Jonathan
 
-> ---
-> Changes in v3:
-> - Add precisions in datasheet reference
-> - Add missing reviewed-by tag
-> - Link to v2: https://lore.kernel.org/r/20260205-inv-icm45600-fix-int1-drive-bit-v2-1-5e72608ea154@tdk.com
-> 
-> Changes in v2:
-> - Add datasheet precision where to find the bits
-> - Link to v1: https://lore.kernel.org/r/20260205-inv-icm45600-fix-int1-drive-bit-v1-1-72a78cd07150@tdk.com
-> ---
->  drivers/iio/imu/inv_icm45600/inv_icm45600.h      | 2 +-
->  drivers/iio/imu/inv_icm45600/inv_icm45600_core.c | 4 ++--
->  2 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600.h b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
-> index c5b5446f6c3b43150512bcc4357cee385080b634..1c796d4b2a4038203f734f80d7bf7bad138c3497 100644
-> --- a/drivers/iio/imu/inv_icm45600/inv_icm45600.h
-> +++ b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
-> @@ -205,7 +205,7 @@ struct inv_icm45600_sensor_state {
->  #define INV_ICM45600_SPI_SLEW_RATE_38NS			0
->  
->  #define INV_ICM45600_REG_INT1_CONFIG2			0x0018
-> -#define INV_ICM45600_INT1_CONFIG2_PUSH_PULL		BIT(2)
-> +#define INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN		BIT(2)
->  #define INV_ICM45600_INT1_CONFIG2_LATCHED		BIT(1)
->  #define INV_ICM45600_INT1_CONFIG2_ACTIVE_HIGH		BIT(0)
->  #define INV_ICM45600_INT1_CONFIG2_ACTIVE_LOW		0x00
-> diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-> index ab1cb7b9dba435a3280e50ab77cd16e903c7816c..b028044d609a41f6d4b747383323130ded0d2e79 100644
-> --- a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-> +++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-> @@ -637,8 +637,8 @@ static int inv_icm45600_irq_init(struct inv_icm45600_state *st, int irq,
->  		break;
->  	}
->  
-> -	if (!open_drain)
-> -		val |= INV_ICM45600_INT1_CONFIG2_PUSH_PULL;
-> +	if (open_drain)
-> +		val |= INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN;
->  
->  	ret = regmap_write(st->map, INV_ICM45600_REG_INT1_CONFIG2, val);
->  	if (ret)
-> 
-> ---
-> base-commit: d820183f371d9aa8517a1cd21fe6edacf0f94b7f
-> change-id: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
-> 
-> Best regards,
+
+
+>=20
+> Hope I'm clear enough.
+>=20
+> Thanks,
+> JB
+>=20
+> >
+> >Second, calling devm_*() for release resources is very exceptional situa=
+tion.
+> >This usually means that something is wrong to begin with in the probe.
+> >
+> >Can you find a better way without calling devm_*() for releasing resourc=
+es?
+> >
+> >--=20
+> >With Best Regards,
+> >Andy Shevchenko
+>  =20
 
