@@ -1,121 +1,127 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C09B321CC51;
-	Thu,  5 Feb 2026 13:35:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770298540; cv=none; b=l9niNWQDwfs4BQ2ezzPe9QruZE4nRqEruf+KDic153plp9NF0/m858MNX+oSn51LkSVe9KsLnODCZY07mQfByeOcvxHvHpCYwz6oM51EK3p0ncHQsBzED9UL0CtKvOPKFdSuIP/zkRfk7xUYdGw0BNYnI/N7gi6WiuBGN8GXwH0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770298540; c=relaxed/simple;
-	bh=7H8x7+Vs9ncPRmSVekn0q1igZHbJe/1+HCqa5nbEupo=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=eR1/yBJLSk4PenvmM7ZSCQ6Z8phvNJal40cnr/ouiVWRnvQxOU3hVx50eu/+g3r7eqr1SEPBKrvLHJWOEZcKVr12wpWs6m6PB01HyQLb+r4lXhrSm4SWCu+gb4h9HZu/ZkmHNNGD66pDTR43DBFYI+w6OKFPeZ2GMQmtHtqcAiw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZFnZOSiR; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E60A3EF0C6
+	for <linux-iio@vger.kernel.org>; Thu,  5 Feb 2026 14:06:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770300360; cv=pass; b=eXwFm1rfHLiC8P8cO1Dakuh+AjOCtaJqarz+Bjo7gziLfwyCMvnl7poDn1IbMTo96NQYL4bggrE1bpLfv89yL2Zpoo5IwbEPf83SrwJUXt8Nualki6CsROMaD6wVM+9NsncQ2syi1IdFlN6F0J1trqgQbc7zkKVvNMpi8zDnNVs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770300360; c=relaxed/simple;
+	bh=j8FCb4vabMY+gKn/7Nb2ukANe8nmmjl0EEbQPlT7obQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ph0dUQJmJqeIYPVZ23oXMRwvodzX5ShMpS7qYr1O0CkxDG8t1hQjbNUHqkFenW6Rp+b+bN5d9auEPh61lvaxY36aFX/F3I/glg/K7bEAhrKYxd1E5K+tLKdVmKaHwdHrJnDEMKNxxRZcuuLnz6pEd7VsJMIldWBBQUgS8Ni5m4Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gYYcthU/; arc=pass smtp.client-ip=74.125.224.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZFnZOSiR"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 5AC29C4CEF7;
-	Thu,  5 Feb 2026 13:35:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770298540;
-	bh=7H8x7+Vs9ncPRmSVekn0q1igZHbJe/1+HCqa5nbEupo=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=ZFnZOSiR3ZnJEVu6D8EYzb5FQEtPzb3qldZ7e1JZ9wp4eMAvlYdJRsCPjq2jrA93T
-	 4zKupqDpaQynkbKkczCeRI9e4uJohWDxWFMcNnYFwcSBqWJCOVH/IGVrHN/aglKmXX
-	 3grHD8gLoe/bIUzQ/ryvwtJ99azQ4Fj3g86DOcb11r+ftSWWmC8+M52Xovxzn1KFgG
-	 bsT+ydIFFOTetXRKZpYs3A2sJl4MHuYpBXR/P/sA79o59brr5k35icomxVUF6s3MJW
-	 jYdZo6V5AGRj1KRyg8Vj2vebTzKI+71C0hlzWA/ODUp7QuntDO0dgTNrp2XVRunyOW
-	 bJADUSZVeb1hA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 435BCEC1E9B;
-	Thu,  5 Feb 2026 13:35:40 +0000 (UTC)
-From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Date: Thu, 05 Feb 2026 14:35:33 +0100
-Subject: [PATCH] iio: imu: inv_icm45600: fix regulator put warning when
- probe fails
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gYYcthU/"
+Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-64965ee303dso1077627d50.0
+        for <linux-iio@vger.kernel.org>; Thu, 05 Feb 2026 06:06:00 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770300359; cv=none;
+        d=google.com; s=arc-20240605;
+        b=dI6GP/UfnphgX22vh7ZIOL1KDl+FOV/eJr+uBgJh/Jqca6ewbbS+Uf2Wh+lm39ZEVa
+         dhkhrDgaxFIXz4VehZPvg5m80YwI/GxvNGsujr7wTkGpldZFEvosLo3Ho5Bwez0wyisj
+         2kAwbLkYzEGomoySU58n0QwZn/zht45st86O3lqvcyK5lVXTM8D1ONcY2yUybV6xSquU
+         K/0/By0WvnvvvA3uSZ1WP7+fjgyi3pTVWuYbU2kpUyM5RmlGTfS2CLryDs2FB8cGKeTo
+         BsKiCmfe79a846rlRm7r5+5laZSSa+i4Xw7fBWjsMYf8B1vGPXN7owPPCAZyqr0E1j25
+         i4OQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=eTuYUSmqaG1nhqzwiZ+mkZFjwLolxYQJvYVxP3N4y8w=;
+        fh=coa/baojGuKDc+U2MWD4bZh6v3vE5wnvQkPvDY3kvsU=;
+        b=OkNMBc3Y1zA+gy+OzsedZeLbiWNr40rAOQHlKKvUyZYuUGD2eUbfd6blHc9UK13LSe
+         c117WRDyEN51Jn+3f3FAObahGCOmhQVGgPI4lm9J45Pqs4PG0x6AYTgsJpQ1b0yn5mc+
+         7LpIKZiSlhW18Mac73JWi229Dtn8iXH+6TG27VcKaUIj6YR4KsfGQrTDWGd7uqiohUXr
+         m9tPmd/UdN7eb+vvZxaY+zfhPodusnBTFODv1hBYlZSfUoKujU5WiWetpDCFlOwTG1Lu
+         8QTItsgKa4nSkOwt2aUvQZ8XTFmh3XMp3FF22hXlMY65qi+VjTRgyGs1feAyz/yQidzV
+         LXKw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770300359; x=1770905159; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eTuYUSmqaG1nhqzwiZ+mkZFjwLolxYQJvYVxP3N4y8w=;
+        b=gYYcthU/pflcbIq1gCKFukycQH0ZB6aQM89TyWwNNNd315kg3KuGBwApsHLft1V5k5
+         NBYRLFgZ8XIQR1E2qi8Ya0S0q+xoZHTiTwFpvIaDheXqY3XRmVGcEft5GuxEysEv0Nwn
+         UJDWmCD4AgA4YIwRn6qx4VYqMGmRF3Vx0slykSx3BtOqFhogDChUvhwIgOegn7yR7qDJ
+         mJJWIz60NWv2CRjkobAmWZAtWAYfQ66kLYdDqC8nAqIm9798gUtVuAwdK6SH0Y21YAip
+         CirtBo8czGndPSk6Mm1JpnUT+nrwrZzEASbBUOY80emVX1k2EVpJXurJI4psn87+ulkm
+         SB4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770300359; x=1770905159;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=eTuYUSmqaG1nhqzwiZ+mkZFjwLolxYQJvYVxP3N4y8w=;
+        b=jCJ+kF/clFH3klk6oF+cls1wmyjmVnkuV0OjrhZo2gtHUYtRJVhXxMpbAD+bJY61fE
+         TU6XmKwmbji64FNKXnYr2j+gR9oQVG5I8THPTrQI1EreVlmxBVLqc4y94fU7OJax8vhx
+         KZ5zHbQayFZxVv3rmvAoRceTP9IFO/3IEyL190FVopZFiW/KocspI8Bxzm9T8mMnGKuQ
+         h4uyM+F5ZatYGHeaFf19MY2jzwmaLH3xBN5r/LnBbEK/YpDH2wz0lMTgiXtb8zcBekHg
+         pG/QVQeSmXuNy/q5gHAGGFyrIoujF9mDlkLW46OiB+EAHUtsiIbF9q3z28a9vpWjQlBK
+         jvbw==
+X-Gm-Message-State: AOJu0Yw6eITpqyhHhOv3VZPQoLLaAyEK6qCIOx1Gcxl3Pnds1Bj8V3Pr
+	yyQ61i95jJWC6Sb17ME3OR7+tiF+NLlqmIttOg7KuTRp5W633gs144Ye1rrHR99RdI4g/eivRsC
+	1nWWZRGyDlEO8qXb8JTGqKMMX9s1fE7V0Gp9rXt0=
+X-Gm-Gg: AZuq6aJM/oSWWU/7gAVxfVfv4coYnq3O1oeeWOxbZ0S+5bmVQiUYJBST8VwlebqtEOP
+	UowLI7+9GGxsVolmX42hiZ8DXOHh/JXbe90zWo94RQCLdX0U7p3DiRp7cT1A0LgCfurHEcE7P9q
+	ufmO4Tsu4Y045qm4FQ/lJutPxXvS3XrHNKcZCCOJIj2ZbhXYMSVbilBIpOisYY4Xrwp1Culio1P
+	BaO1dFAaA5/+4B9qCwvpm1v0dsJ1A8XC2t7mMgS7QBKRBHcaqHfJIwdoVo29CC96PJnhDwNLEIc
+	qIhJSu8vFaSk/B7+m5TEK/YoOHDPD4ylf6BhCbftWpwxAIaN5Fw/t1MLFGpvWQ==
+X-Received: by 2002:a53:c988:0:b0:647:108c:141 with SMTP id
+ 956f58d0204a3-649db48fe4amr4256512d50.56.1770300359115; Thu, 05 Feb 2026
+ 06:05:59 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260205-inv-icm45600-fix-regulator-put-warning-v1-1-314ec12512cb@tdk.com>
-X-B4-Tracking: v=1; b=H4sIAKSchGkC/x2N0QrCMAwAf2Xk2UCs7UR/RfZQYqwBzUa6TWHs3
- y0+Hhx3G1RxlQrXbgOXVauO1uB46ICf2Yqg3htDoNBToIRqKyq/Y+qJ8KFfdCnLK8+j47TM+Ml
- uagXPHFOOF46cTtBik0uT/6PbsO8/W6CSXHgAAAA=
-X-Change-ID: 20260205-inv-icm45600-fix-regulator-put-warning-7c45a49c4c53
-To: Remi Buisson <remi.buisson@tdk.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
- stable@vger.kernel.org
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1770298539; l=2036;
- i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=T/j7PYMV8Dkhv8t5z9e34UhoY7jumpJGzpjuK+CVlpM=;
- b=Z5aK5s1uCMhnxpxXvOFQx4RngBLnWPPbFd7r47gUprMEXOtUFxjOOHubekNAcYIa2JQcOUEw5
- 5h+2Ys5JxwUAWnWBVNp6+zM9/Maj+KvQUgvX4qFwGI0vEPTRXAzPsjB
-X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
- pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
-X-Endpoint-Received: by B4 Relay for
- jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
-X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Reply-To: jean-baptiste.maneyrol@tdk.com
+References: <20260204133636.29361-1-spencercw@gmail.com> <ca0c3d9c-eb09-4415-9fa9-b5ba274bd04d@web.de>
+In-Reply-To: <ca0c3d9c-eb09-4415-9fa9-b5ba274bd04d@web.de>
+From: Chris Spencer <spencercw@gmail.com>
+Date: Thu, 5 Feb 2026 14:05:48 +0000
+X-Gm-Features: AZwV_QiZNhW-V_rPN7iDA6epUMDqTvILO3_r6d8rBFf3GHCT3oMa6eiIGutiH0c
+Message-ID: <CAGUNXRQUuWiSJuqAmW6exdfR0R4WUoGJNDoNk3Om+tBN7uy-0w@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: chemical: bme680: Fix measurement wait duration calculation
+To: Markus Elfring <Markus.Elfring@web.de>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+	LKML <linux-kernel@vger.kernel.org>, Vasileios Amoiridis <vassilisamir@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Hi Markus,
 
-When the driver probe fails we encounter a regulator put warning
-because vddio regulator is not stopped before release. The issue
-comes from pm_runtime not already setup when core probe fails and
-the vddio regulator disable callback is called.
+On Thu, 5 Feb 2026 at 13:15, Markus Elfring <Markus.Elfring@web.de> wrote:
+>
+> =E2=80=A6
+> > resulting in a wait time that is too short. This can cause the followin=
+g
+> > 'device measurement cycle incomplete' check to occasionally fail.
+>
+> * Were any source code analysis tools involved here?
 
-Fix the issue by deleting pm_runtime check in the vddio regulator
-disable callback and handing over the vddio disable management to
-pm_runtime by deleting the disable remove action before setting up
-pm_runtime.
+No. I identified this issue myself while investigating the
+aforementioned 'device measurement cycle incomplete' error by manually
+comparing the kernel implementation against the linked Bosch
+implementation.
 
-Fixes: 7ff021a3faca ("iio: imu: inv_icm45600: add new inv_icm45600 driver")
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Cc: stable@vger.kernel.org
----
- drivers/iio/imu/inv_icm45600/inv_icm45600_core.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+> * See also once more:
+>   + https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tr=
+ee/Documentation/process/submitting-patches.rst?h=3Dv6.19-rc8#n94
 
-diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-index ab1cb7b9dba435a3280e50ab77cd16e903c7816c..18d613a025cb4f9cbb8d73f27a46fc1207f5820d 100644
---- a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-+++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-@@ -676,10 +676,6 @@ static int inv_icm45600_enable_regulator_vddio(struct inv_icm45600_state *st)
- static void inv_icm45600_disable_vddio_reg(void *_data)
- {
- 	struct inv_icm45600_state *st = _data;
--	struct device *dev = regmap_get_device(st->map);
--
--	if (pm_runtime_status_suspended(dev))
--		return;
- 
- 	regulator_disable(st->vddio_supply);
- }
-@@ -780,6 +776,8 @@ int inv_icm45600_core_probe(struct regmap *regmap, const struct inv_icm45600_chi
- 	if (ret)
- 		return ret;
- 
-+	/* hand over vddio management to pm_runtime */
-+	devm_remove_action(dev, inv_icm45600_disable_vddio_reg, st);
- 	pm_runtime_get_noresume(dev);
- 	pm_runtime_set_autosuspend_delay(dev, 2 * USEC_PER_MSEC);
- 	pm_runtime_use_autosuspend(dev);
+Can you please clarify what is wrong with the commit message? I have
+used the imperative mood in the subject, but the rest of the message
+is simply background information. How would you suggest rewording
+this?
 
----
-base-commit: d820183f371d9aa8517a1cd21fe6edacf0f94b7f
-change-id: 20260205-inv-icm45600-fix-regulator-put-warning-7c45a49c4c53
+>   + https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tr=
+ee/Documentation/process/stable-kernel-rules.rst?h=3Dv6.19-rc8#n34
 
-Best regards,
--- 
-Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Ok I will CC stable in the next revision.
 
-
+Thanks,
+Chris
