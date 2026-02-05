@@ -1,45 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93491257845;
-	Thu,  5 Feb 2026 20:21:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B3330B52B;
+	Thu,  5 Feb 2026 20:25:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770322912; cv=none; b=iMoyDMkF39sUaNTHbZquKh3wOhsmJ4dp7SVy4/Q8xTHLpD55SuVr2fECTJ2FC+6ZBJMLPG0ff5tu2KvG9j2KvtTnTwanQ3UOJGqB82BBkUXe0WaertYS4u/5QKkDbRDpEG/nWtP3OnoT1pfR1Hx3amrXfJY8EFAUzHYEvrJOBLs=
+	t=1770323159; cv=none; b=cJMHs+9eFXYRSKkEjK6P7UCBoTw0G/Qip3tAqEqzzAwob/eltaV89vP+HfBoxljMVqZXjpINo211RuTRqBCWoGKjLEAbjhy+NOUHwpfoInkIyLG96AARSW62h0tT6+3a9EE1vpYoa+htQd8/D7eTDpUkYXiObjnlHVgDyoguVbA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770322912; c=relaxed/simple;
-	bh=ev4k0vmwg1ndfY7N6a3n+0scnnNx7bQGCzMDRh8V/GU=;
+	s=arc-20240116; t=1770323159; c=relaxed/simple;
+	bh=0l/MyWtGlSbAgtqaFAyK7ClNqPfYXptecD1qySSTre4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Pd38NqWyBY/Y9BLUJUMs0vhedaNREiOy9KY/563cOi9ZaHoajSLfzajgBvbApx26+Zte4Tm/ik/dslo+UCSld6qNtR4gOsyfODn6PRL358En6awtX3BTjrHOK2abg3bZuLIU3ixtO+yv25rcCml1oEBtBxatCZdEN606O5zlr4U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FHOgyat8; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=tUuQvCWmhoTOiI/MdbGGcW+ZvWJJcm2X2S5u2Ah33NE3d+xHvoujX9JZsO78LVmE4+DzktEvSXRbrhhBjc1WcjI4rXo3dif2+vUMJd8CccNs5HfKmNFgsfOKUY1pzxqpFyE/HHaiapYielyYQiJgK3GcVQwiEPtDv4tjFrH50U8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ojbSmzrv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FHOgyat8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBCB3C4CEF7;
-	Thu,  5 Feb 2026 20:21:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ojbSmzrv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71DFCC4CEF7;
+	Thu,  5 Feb 2026 20:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770322912;
-	bh=ev4k0vmwg1ndfY7N6a3n+0scnnNx7bQGCzMDRh8V/GU=;
+	s=k20201202; t=1770323158;
+	bh=0l/MyWtGlSbAgtqaFAyK7ClNqPfYXptecD1qySSTre4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=FHOgyat82kXAQPpBM+I/ImHk1PYB08dB+BCAZvGv4W6d/YYLy5to+yK3n1cgFNmwB
-	 26/1VzLh/3gKmJIV95e73wkMtkpIEf+j5H/YwUysZaW3LmnRa7bfoigbza3UvLjXQO
-	 7IwCWLP54zL/u/bWjbMZBTKRjgdqOKOX7DS3pU7Tt4YufhXXUn5d5x9rlTvqGmuwfQ
-	 kRayvNt6YGCBIO5djSPCTE2yeUk0MisntEOmXKZDIJNU/PdKfp83kiExJg9iJoa2Ce
-	 p5jm0b4nDUT60234qFemmYMmTF9r+PKgmJW1Zjb4IlmTqE4Nwc2vXbxDfpIw2fEzBW
-	 qPqVyE6uR6ngg==
-Date: Thu, 5 Feb 2026 20:21:40 +0000
+	b=ojbSmzrv9bMnwxuxOeqMMYMw5jNs8FJxNK0ZYzyu4idJtl5few/rMPhK9FGBTSe9x
+	 1s/rxvyhZkjyfa5TQHynpFsyqS5K+SBVAxrOJH7k/LsgVs2R3fU2GKw1QxzF8VbhfD
+	 eUvMO+l1auw74RPJ8Sx8U4MCicqa9pqRxfQ5VMCbuiQ/zpFufcDQGJs2G6o6CQj3Sc
+	 SpAYiXdMavdXG0g4g45DsCxJxga/T7KJHNBf+vobs7wepO7ZJoLG6WtndXPCARatLi
+	 Hc5qWffhXpILNDpVCz8knO2hVe1i0Wja/pkj6YcgG3e16gQOOlDWX4UFQYvQWQuIgr
+	 tVOL7sE5Niqow==
+Date: Thu, 5 Feb 2026 20:25:50 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, David Jander <david@protonic.nl>
-Subject: Re: [PATCH v5 00/13] iio: dac: ds4424: add DS4402/DS4404 support
- and scale
-Message-ID: <20260205202140.73e9ff90@jic23-huawei>
-In-Reply-To: <20260204140045.390677-1-o.rempel@pengutronix.de>
-References: <20260204140045.390677-1-o.rempel@pengutronix.de>
+To: Neel Bullywon <neelb2403@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v3] iio: magnetometer: bmc150_magn: Used guard() for
+ mutex protection
+Message-ID: <20260205202550.7593ec18@jic23-huawei>
+In-Reply-To: <20260204021241.53891-1-neelb2403@gmail.com>
+References: <20260204010529.48000-1-neelb2403@gmail.com>
+	<20260204021241.53891-1-neelb2403@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,65 +47,83 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-On Wed,  4 Feb 2026 15:00:32 +0100
-Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+On Tue,  3 Feb 2026 21:12:41 -0500
+Neel Bullywon <neelb2403@gmail.com> wrote:
 
-> This series extends the ds4424 IIO DAC driver and its devicetree binding
-> to support the DS4402 and DS4404 current DAC variants.
-> 
-> DS440x devices share the same register map as DS442x but use a different
-> resolution (5-bit vs 7-bit) and a different full-scale current formula.
-> The full-scale current depends on external Rfs resistors connected to
-> the FS pins, so a new optional DT property is added to provide the
-> per-channel Rfs values and allow the driver to report a correct IIO
-> SCALE (mA/step).
-> 
-> While adding DS440x support, a few related issues were addressed:
-> - Port to regmap
-> - Reject -128 in RAW writes on DS442x, which cannot be represented with
->   sign-magnitude encoding and could silently program an unintended
->   output.
-> - Preserve preconfigured values on probe.
-> - Ratelimit read error logging and use device context.
+> Replaced the manual mutex lock/unlock calls using guard() to simplify
+> the error handling and reduce goto statement usage.
+>=20
+> By using RAII-style cleanup, it ensures the mutex is always released
+> when exiting the function, regardless of the return path taken.
+>=20
+> Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
+> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Looks like this needs to have=20
+#include <linux/cleanup.h>
+as first use of this stuff in this particular file.
 
-Nice series. Just that one thing about names in chip_info.
+=46rom a quick look it seems to me that there might be other potential
+similar cases in this file that would make sense to include as part of this
+patch.  Perhaps you could take a look at those?
 
-Given we are delayed anyway by me wanting to get the fix upstream
-before waiting for the next merge window, feel free to spin a new
-version. If not I'm fine doing the name thing as a tweak whilst applying
-(in a few weeks time).
+In some places it is in a switch statement so you'd have to
+add {} to define the scope, or use scoped_guard() as appropriate.
 
 Thanks,
 
 Jonathan
 
-> 
-> David Jander (1):
->   iio: dac: ds4424: add DS4402/DS4404 device IDs
-> 
-> Oleksij Rempel (12):
->   iio: dac: ds4424: reject -128 RAW value
->   iio: dac: ds4424: refactor raw access to use bitwise operations
->   iio: dac: ds4424: ratelimit read errors and use device context
->   iio: dac: ds4424: sort headers alphabetically
->   iio: dac: ds4424: rename iio_info struct to avoid ambiguity
->   iio: dac: ds4424: use device match data for chip info
->   iio: dac: ds4424: use fsleep() instead of usleep_range()
->   dt-bindings: iio: dac: maxim,ds4424: add ds4402/ds4404
->   iio: dac: ds4424: support per-variant output range limits
->   iio: dac: ds4424: convert to regmap
->   dt-bindings: iio: dac: maxim,ds4424: add maxim,rfs-ohms property
->   iio: dac: ds4424: add Rfs-based scale and per-variant limits
-> 
->  .../bindings/iio/dac/maxim,ds4424.yaml        |  42 +-
->  drivers/iio/dac/Kconfig                       |   1 +
->  drivers/iio/dac/ds4424.c                      | 367 ++++++++++++------
->  3 files changed, 281 insertions(+), 129 deletions(-)
-> 
-> --
-> 2.47.3
-> 
-> 
+> ---
+>  drivers/iio/magnetometer/bmc150_magn.c | 21 +++++++--------------
+>  1 file changed, 7 insertions(+), 14 deletions(-)
+>=20
+> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magneto=
+meter/bmc150_magn.c
+> index 6a73f6e2f1f0..bd2706c2078d 100644
+> --- a/drivers/iio/magnetometer/bmc150_magn.c
+> +++ b/drivers/iio/magnetometer/bmc150_magn.c
+> @@ -794,32 +794,25 @@ static int bmc150_magn_data_rdy_trigger_set_state(s=
+truct iio_trigger *trig,
+>  {
+>  	struct iio_dev *indio_dev =3D iio_trigger_get_drvdata(trig);
+>  	struct bmc150_magn_data *data =3D iio_priv(indio_dev);
+> -	int ret =3D 0;
+> +	int ret;
+> +
+> +	guard(mutex)(&data->mutex);
+> =20
+> -	mutex_lock(&data->mutex);
+>  	if (state =3D=3D data->dready_trigger_on)
+> -		goto err_unlock;
+> +		return 0;
+> =20
+>  	ret =3D regmap_update_bits(data->regmap, BMC150_MAGN_REG_INT_DRDY,
+>  				 BMC150_MAGN_MASK_DRDY_EN,
+>  				 state << BMC150_MAGN_SHIFT_DRDY_EN);
+>  	if (ret < 0)
+> -		goto err_unlock;
+> +		return ret;
+> =20
+>  	data->dready_trigger_on =3D state;
+> =20
+> -	if (state) {
+> -		ret =3D bmc150_magn_reset_intr(data);
+> -		if (ret < 0)
+> -			goto err_unlock;
+> -	}
+> -	mutex_unlock(&data->mutex);
+> +	if (state)
+> +		return bmc150_magn_reset_intr(data);
+> =20
+>  	return 0;
+> -
+> -err_unlock:
+> -	mutex_unlock(&data->mutex);
+> -	return ret;
+>  }
+> =20
+>  static const struct iio_trigger_ops bmc150_magn_trigger_ops =3D {
 
