@@ -1,48 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 090212EAB6F;
-	Thu,  5 Feb 2026 19:26:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C410232549A;
+	Thu,  5 Feb 2026 19:29:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770319619; cv=none; b=KpVxfQg0u09AEZlcOwl9T6o8KrbC0O1hnZtw/wuApjTXF7YfqzTZloDOcrFxAeGAADmKn0gFjk8sv9cX2h8N6hDPLKKt1hfOUQs/LnwlvzIYacKJfYkt8WGw3PXJK3xvZLc8KC8YCTnwfjC5TsuBbV+DiCmkn5InTAnkDKoRTiY=
+	t=1770319784; cv=none; b=IfR3LUFyfv/cWUsca/vrhMluwg38aSxF0M7iOduRTkSqBF8xfP+X5gHlUQPj/+ZtG2yLCsyZ6xPWVyN6yRFwTfwil7zYoVMyxMnqIbDABo7eos1/menBMX1+38JBwY6SC72UylTUTUGjhkMW76e3zcC8pyabOFxB3JLf0DTmnY8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770319619; c=relaxed/simple;
-	bh=U4MKUfFI6DFpBMRrK587zNgEG4Th8lIO/6CXoEt2aMo=;
+	s=arc-20240116; t=1770319784; c=relaxed/simple;
+	bh=BfbvNC3OLUalkerPL2Xobz5N81qzXVcDr43E5dRc+0o=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fAL88CUfKWudunUz0IqiYe072/3ZgO1ESEU8v6y2ygUrL/qK9IZXlbR5htctrJ3iUTacdyy2HHwaqSaus8JJDWkbSJAl/7EjYWmtN4qi5THGa/G2DjycZjzBrsAhBnUHp4ipZUr45FoxBgAlJr0BuIuXdkai6n1rwxJrOGZBfcA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j5X6RIDW; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=deYmU8euLRgx23A/RKh0dMwaeGJOxHPX9Ow5bqfsropmR7emNhd3Vwa/NxeRLQuJQ+umwAAf98V4T3EvTKbWRq2OPZAe+vEQg7esz1DatRSycNkxO8oEWM4vlKzZJDNsv8Uxyew+0F6jn8drwvbypN2MTX0Whb5/n13QQuaJdzM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jj7EwzGC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j5X6RIDW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2CA3C4CEF7;
-	Thu,  5 Feb 2026 19:26:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jj7EwzGC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D133C4CEF7;
+	Thu,  5 Feb 2026 19:29:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770319618;
-	bh=U4MKUfFI6DFpBMRrK587zNgEG4Th8lIO/6CXoEt2aMo=;
+	s=k20201202; t=1770319784;
+	bh=BfbvNC3OLUalkerPL2Xobz5N81qzXVcDr43E5dRc+0o=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=j5X6RIDWYLsTuF5XlVWpU13HyZPPz/wHyGcqmQ3X3N9MwQ6bM+l9ubhTxmOa60Mn6
-	 V5S4nhCT/smAjtNWVhzfy63/UCr2Q2QRagzp0M2bHQo2dGW2VIcCnzVf5ZEEiHsxkO
-	 JtlmK9cRSy74oGgT1u8RZdnxGNITP0FP4dtnxAyTyCb/7yqvUGurr2zC3JLlGP9oGO
-	 Y8uXtpEjw28u/LIWBLZzTdsKUC4xfE/yBtWH1PMspUYVXferMBp3fxwx28VohOhunm
-	 Bfw3xn3Af5hHUXUqXWnS8zmJo4f8uG62A2jYWRm/nIq7roBxvZ+s4o5EsTVEhYa9Fc
-	 Wh/e1wsDwZdVg==
-Date: Thu, 5 Feb 2026 19:26:49 +0000
+	b=jj7EwzGCCiYnkawIQ8P6cXN/767KoOeyYb5QJr3yCXiCErJvtmLcA7KTXLhlY3yP8
+	 t2hdnLopjfWYZRig7mP1y+wap9ZFm9/VwU/d7GEHSNYp4Ujg77MJHQi+yrQAAXjeHi
+	 Jf/bB3Zm3wj8lquYO2LWZxGaz6Jjpclh6iQAa4M7v3gBWTl+3YxJ7ELmI7kJzIYY6K
+	 44U+ZBPajoY6uFUI0IGw6lm4txjQNIIq/DOSZ3C5h4Nt5yKZXHZguc7j5GTnKt4Lq3
+	 xgDQi07ycFp7Biv5HevGytxOpr+HdOA4nY05XrEXj0oEw9AfCNh3549xxNDjcCWdr7
+	 yytRHx6olkUBQ==
+Date: Thu, 5 Feb 2026 19:29:35 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Remi Buisson
- <Remi.Buisson@tdk.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "stable@vger.kernel.org"
- <stable@vger.kernel.org>
-Subject: Re: [PATCH] iio: imu: inv_icm45600: fix regulator put warning when
- probe fails
-Message-ID: <20260205192649.4df4b110@jic23-huawei>
-In-Reply-To: <FR3P281MB1757021D0A44A69C2940FC07CE99A@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
-References: <20260205-inv-icm45600-fix-regulator-put-warning-v1-1-314ec12512cb@tdk.com>
-	<aYTDF9BNwzXmd2J8@smile.fi.intel.com>
-	<FR3P281MB1757021D0A44A69C2940FC07CE99A@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, Jean-Baptiste Maneyrol
+ <jean-baptiste.maneyrol@tdk.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio: imu: inv_icm42600: Convert to uXX and sXX
+ integer types
+Message-ID: <20260205192935.74bc7d92@jic23-huawei>
+In-Reply-To: <aYHaKYWNbrZchDn-@smile.fi.intel.com>
+References: <20251109192556.3163077-1-andriy.shevchenko@linux.intel.com>
+	<20251115185001.01f2b148@jic23-huawei>
+	<aYHaKYWNbrZchDn-@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,118 +47,30 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 5 Feb 2026 17:19:28 +0000
-Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com> wrote:
+On Tue, 3 Feb 2026 13:21:13 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> >From:=C2=A0Andy Shevchenko <andriy.shevchenko@intel.com>
-> >Sent:=C2=A0Thursday, February 5, 2026 17:19
-> >To:=C2=A0Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-> >Cc:=C2=A0Remi Buisson <Remi.Buisson@tdk.com>; Jonathan Cameron <jic23@ke=
-rnel.org>; David Lechner <dlechner@baylibre.com>; Nuno S=C3=A1 <nuno.sa@ana=
-log.com>; Andy Shevchenko <andy@kernel.org>; Jonathan Cameron <Jonathan.Cam=
-eron@huawei.com>; linux-iio@vger.kernel.org <linux-iio@vger.kernel.org>; li=
-nux-kernel@vger.kernel.org <linux-kernel@vger.kernel.org>; stable@vger.kern=
-el.org <stable@vger.kernel.org>
-> >Subject:=C2=A0Re: [PATCH] iio: imu: inv_icm45600: fix regulator put warn=
-ing when probe fails
-> >=C2=A0
-> >On Thu, Feb 05, 2026 at 02:=E2=80=8A35:=E2=80=8A33PM +0100, Jean-Baptist=
-e Maneyrol via B4 Relay wrote: > When the driver probe fails we encounter a=
- regulator put warning > because vddio regulator is not stopped before rele=
-ase. The issue > comes from
-> >ZjQcmQRYFpfptBannerStart
-> >This Message Is From an External Sender
-> >This message came from outside your organization.
-> >=C2=A0
-> >ZjQcmQRYFpfptBannerEnd
-> >On Thu, Feb 05, 2026 at 02:35:33PM +0100, Jean-Baptiste Maneyrol via B4 =
-Relay wrote:
-> > =20
-> >> When the driver probe fails we encounter a regulator put warning
-> >> because vddio regulator is not stopped before release. The issue
-> >> comes from pm_runtime not already setup when core probe fails and
-> >> the vddio regulator disable callback is called.
-> >>=20
-> >> Fix the issue by deleting pm_runtime check in the vddio regulator
-> >> disable callback and handing over the vddio disable management to
-> >> pm_runtime by deleting the disable remove action before setting up
-> >> pm_runtime. =20
-> >
-> >...
-> > =20
-> >> +	/* hand over vddio management to pm_runtime */
-> >> +	devm_remove_action(dev, inv_icm45600_disable_vddio_reg, st); =20
-> >
-> >First of all, note "remove" vs. "release". Have you tried to remove and =
-insert
-> >module several times? Does kmemleak happy about this? =20
->=20
-> Hello Andy,
->=20
-> remove is used on purpose, since we want to avoid disabling the vddio reg=
-ulator
-> here.
->=20
-> The problem we are facing here is that vddio regulator disable is handle =
-by 2
-> different resource managements: manually with devm_ and with pm_runtime. =
-It
-> is needed because we want pm_runtime to be able to disable vddio when the=
- chip
-> is suspended. And we also want to avoid the manual vddio disable during t=
-he
-> driver probe for code clarity. To prevent vddio regulator to be disabled =
-2 times
-> when the driver unloads, the manual vddio disable has a check on pm_runti=
-me.
-> But when there is an issue in probe (like chip not responding), the vddio
-> disable callback is not working correctly because pm_runtime has not been=
- setup.
+> On Sat, Nov 15, 2025 at 06:50:01PM +0000, Jonathan Cameron wrote:
+> > On Sun,  9 Nov 2025 20:24:36 +0100
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> >   
+> > > The driver code is full of intXX_t and uintXX_t types which is
+> > > not the pattern we use in the IIO subsystem. Switch the driver
+> > > to use kernel internal types for that. No functional changes.  
+> > No problem with the change but this description made me think
+> > that this was going to be a huge patch touching lots of instances.
+> > 
+> > Probably needs a rewrite to not say 'full of' :)  
+> 
+> Can you tweak that whilst applying, please?
+> 
 
-I'm curious that pm_runtime_status_suspend() returns true under those circu=
-mstances.
-ah. pm_runtime_init() does that.  It's a bit ugly but maybe a commented
-extra all to pm_runtime_set_active() before registering the devm callback t=
-o turn
-the power off?
+Ah. I'd accidentally marked this in patch work as handled and
+forgotten about it.
 
->=20
-> The most easiest way to fix this is to remove the devm vddio disable when
-> pm_runtime is setup to avoid any double free resources. pm_runtime will d=
-isable
-> vddio, thus there is no risk of resource leak.
+Anyhow picked it up now with a tweak to the description.
 
-This is making life rather complex.  Also what happens if runtime PM is not
-configured into the kernel?
-
-I'm really not keen on using devm then ripping it out again. That just
-makes a mess of the ordering.
-
-These devm / runtime pm interactions are rather unfortunate.
-
-Jonathan
-
-
-
->=20
-> Hope I'm clear enough.
->=20
-> Thanks,
-> JB
->=20
-> >
-> >Second, calling devm_*() for release resources is very exceptional situa=
-tion.
-> >This usually means that something is wrong to begin with in the probe.
-> >
-> >Can you find a better way without calling devm_*() for releasing resourc=
-es?
-> >
-> >--=20
-> >With Best Regards,
-> >Andy Shevchenko
->  =20
-
+Note I'll only be pushing that tree at as testing until rc1.
