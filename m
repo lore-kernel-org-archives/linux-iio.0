@@ -1,63 +1,64 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 514953A0B0E;
-	Thu,  5 Feb 2026 13:13:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 541DB3A0B0E;
+	Thu,  5 Feb 2026 13:13:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770297192; cv=none; b=Wy/5TtwFFa9Re7Jh4tCKgkmXzKDtqe2uSGvz0/02zz8lIiSxDEkrRNPAcJWPFEulh56K044Ica5OT/DHC/IyoAFo58mbnG7+YngQGMVy+KHsoPncFKrNq8YknPenvp2KwQ4WFxyGYRPRtMK1vCcFHw+857lx317T8ceJMsDh3ZI=
+	t=1770297199; cv=none; b=P/WUTOAw8db7V4tbTX1vThUPPcPT03l7G6LpzR2tTPRqLZh7SHrKxoduxyhiYKfS/zTOk5ueFCRhBMvYnfzkZgH1AYWlM1wc58/5iE7rkyfMkkQLBLzyTbDWtrb057/G4aRtxNTsxkfMUL4FelPkFfnWDDPFWSD8nA4egaZqIR0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770297192; c=relaxed/simple;
-	bh=cqx2EVfWHXbkjp/7PC0dXNOUYZ0rTWtw4elZE54WjUQ=;
+	s=arc-20240116; t=1770297199; c=relaxed/simple;
+	bh=W1l3BG66FZpu6RpW3YmOTfR1KhTLDujC/83K9BApQrw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=bsDAfVehpoSL37ECYpJxpm5fW/VEZi9KhoukwPXWWnE+1ntyWBZmkWfznYQDtR+Xamh7/I3nXY56skh0z8G7n7Rh4+8q7ffzOT7eZgqNV3s3w9OU2TkPE4fuVJphx9mtrBeL3dhgk6CjMC8hFN3jt6Hh7/6BdmnkZ4k20A372Bg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=YSnoWE0k; arc=none smtp.client-ip=205.220.177.32
+	 MIME-Version; b=CYaMxmgodEJg1MAjKF+TjT3mIRIQiltOsXHsDd6a7fAPnp0ecuoGQhyyPtB92zgrcHCL0ypKfoRlJUDgdnjdlTulmYEg8sgKpMwB35/DWxE/XTAwushLqfDtPKsDeZARuYtb7FYsKYEm/jvzcShfOOFJ9ebVvFKZuhRzUjQd89c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=ZdrJMSUN; arc=none smtp.client-ip=205.220.165.32
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="YSnoWE0k"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 614NGfYi2453238;
-	Thu, 5 Feb 2026 13:13:06 GMT
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="ZdrJMSUN"
+Received: from pps.filterd (m0333521.ppops.net [127.0.0.1])
+	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 614Ka1xe2730756;
+	Thu, 5 Feb 2026 13:13:10 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
 	:content-transfer-encoding:date:from:in-reply-to:message-id
-	:mime-version:references:subject:to; s=corp-2025-04-25; bh=xPkAT
-	GQtIoyKWOdZf6accwcFRfJmM/Cqq4uijf0YxXc=; b=YSnoWE0ko3lsWjkrtBuDC
-	mmQrakIJR7TzXtXoAqIwIYUQ8AO6ZeOM4vIK0yZ6bDpXO0YCWU97qEEzeYHS/GHj
-	18rd2/rrsC0vD4tzihu5yq1MeAhSDeaRYeRmGN5m4INF0FSZzgs2JVWDP09Yzmf2
-	38qENylUB0xlA1opKcsVWBKWBY/BRkVQztoztnLSIJqnud7F0L1CppDzTIbAwDg0
-	qkXEXWOLVAi6Bm4X9rGD6XkMFLKALaw8gl9MI1yfLsO23LjnngTGO7YzWnMd6meO
-	6dPjptkX0QcV9a8V195Yw0NGwirO7nU26fKWZ43ukjkP3EEF0g6JtzZD3su0Rpq9
-	A==
+	:mime-version:references:subject:to; s=corp-2025-04-25; bh=Fh9xo
+	OM903iacZumat+t8PuBkVN4UlB84F4tz2RNITw=; b=ZdrJMSUNbCe9gURycT/VS
+	8NJLtk6AgfsjiqsZtfHzVUJeBMeWHsCtbTdKnXti1Yy+bxNg1hgGSI7qVoKfUbAq
+	t54yJv78ljmAqIJAhrCWQZPeXMoiiRN3REza6rf44yTqGyOZclmUhIvNic70YNlk
+	zIrtdKg1gwv9b0J4dVxJlfH8fwQRmbkxSEzq1gbpUByqs1LAmlNqQSIm98VzbJyC
+	XF3ZSxyQfuuh0dOaVWDBK7QRHVYKwktM0I59yEf0o0QYeUouXj4Cvy/twTcfe5wg
+	iGAZL3S8I35PBo0d7GecmmIsgIRkZ/cHxMw1DW9LEsA/unbHC9uC/oTpN0lqIa7H
+	w==
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.appoci.oracle.com [138.1.114.2])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4c1au67pyd-1
+	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4c4d9v10ja-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 05 Feb 2026 13:13:05 +0000 (GMT)
+	Thu, 05 Feb 2026 13:13:09 +0000 (GMT)
 Received: from pps.filterd (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 615BZqjA003449;
-	Thu, 5 Feb 2026 13:13:05 GMT
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 615AvAea001347;
+	Thu, 5 Feb 2026 13:13:09 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4c186d55n9-1
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4c186d55qj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 05 Feb 2026 13:13:04 +0000
+	Thu, 05 Feb 2026 13:13:09 +0000
 Received: from phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 615DCbE7038070;
-	Thu, 5 Feb 2026 13:13:04 GMT
+	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 615DCbE9038070;
+	Thu, 5 Feb 2026 13:13:08 GMT
 Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 4c186d55b9-7;
-	Thu, 05 Feb 2026 13:13:04 +0000
+	by phxpaimrmta01.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 4c186d55b9-8;
+	Thu, 05 Feb 2026 13:13:08 +0000
 From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Andy Shevchenko <andy@kernel.org>,
         Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Andrew Ijano <andrew.ijano@gmail.com>,
         Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: kernel-janitors@vger.kernel.org, andriy.shevchenko@intel.com
-Subject: [PATCH v5 next 6/7] iio: sca3000: stop interrupts via devm_add_action_or_reset()
-Date: Thu,  5 Feb 2026 05:12:12 -0800
-Message-ID: <20260205131234.3244467-7-harshit.m.mogalapalli@oracle.com>
+        Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc: kernel-janitors@vger.kernel.org, andriy.shevchenko@intel.com,
+        David Lechner <dlechner@baylibe.com>
+Subject: [PATCH v5 next 7/7] iio: sca3000: manage device registration with devm helper
+Date: Thu,  5 Feb 2026 05:12:13 -0800
+Message-ID: <20260205131234.3244467-8-harshit.m.mogalapalli@oracle.com>
 X-Mailer: git-send-email 2.50.1
 In-Reply-To: <20260205131234.3244467-1-harshit.m.mogalapalli@oracle.com>
 References: <20260205131234.3244467-1-harshit.m.mogalapalli@oracle.com>
@@ -75,78 +76,70 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 s
  mlxscore=0 adultscore=0 phishscore=0 bulkscore=0 malwarescore=0
  spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2601150000 definitions=main-2602050098
-X-Proofpoint-GUID: bYEaDreFoJCnmHS6GFJ8whgE61D1ltLC
-X-Proofpoint-ORIG-GUID: bYEaDreFoJCnmHS6GFJ8whgE61D1ltLC
-X-Authority-Analysis: v=2.4 cv=Nf7rFmD4 c=1 sm=1 tr=0 ts=69849761 cx=c_pps
+X-Proofpoint-ORIG-GUID: VDoqOGYo96hI17KfRc2wn8NdfNtCffDl
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjA1MDA5OCBTYWx0ZWRfX68aNE5qPYO+G
+ 1jt6iOK0FA+qTh4muTZAeJy/3/fzJzhZjvIQRp+vuIS36Jb5DJrRt3FttTX/MjiJamVf5D38We/
+ TWyEhTQBQoCDUEnCdQhYvvvTsgU22z0/1oUMcoPE+QCUvCdHsWcOhcOwE+i69pNbmO4XXl9GuI6
+ CN8zpRBOcYyGEZvGait6ejaAKbOHCEsApt+qWmGD2jEhQns0mX0Ge94LmukdFv/YW8NrmW5mZwH
+ XqRwmZ5uvZ32wjaS8Giq2kHSiLIRMuG5BEnereuyxgjNrKDqPbFGY65fUAGhi3vUcjnnLfDIvxP
+ gFuxzUuy62VTWya8MWdgssoSjMU2S1gyIDm8nZ39vwGUoX544xuhIVUAyKSib/FAXHL/lIIqHkV
+ OqXEwRpEHaDWxpcKEFp/kEc1t00RCdaS59WQC/FtfVSo18XJtNicgdQ3EuD3gcEcS9xVm2DHjLI
+ 1AXAv8lQTF2tvi831tw==
+X-Proofpoint-GUID: VDoqOGYo96hI17KfRc2wn8NdfNtCffDl
+X-Authority-Analysis: v=2.4 cv=NprcssdJ c=1 sm=1 tr=0 ts=69849765 cx=c_pps
  a=XiAAW1AwiKB2Y8Wsi+sD2Q==:117 a=XiAAW1AwiKB2Y8Wsi+sD2Q==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=IpJZQVW2AAAA:8 a=QyXUC8HyAAAA:8
- a=yPCof4ZbAAAA:8 a=mjWuCRx8u4tSYEBlnWYA:9 a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjA1MDA5OCBTYWx0ZWRfX0iwe7O8rU6bf
- HrfLCS4ps1xHKg/GFyIKcYtP3z1RA+VVhSosEAZ78ZXLdsrNc7h6UODgSYsZFjZU+z0dgOfypjp
- /YPyVs0p2sLyFvVhKnCdgvRp/cjp1XOqNxOxaytXvLCp9UqKRShSp8Ae/U5bnGAyDPSJtdsFuVs
- 4I9g4qVlynX+HrpwTSfxWRc1Um9xu7KrlNhOnmdfXvepGR4e2val6n2e7/TYgt8Ll1Qb4a1Tvou
- T+cv+mLzjgBMYZHsTHg2gbMajt7h/wu1U+MIlMdBpaezTJ2JlYUcWcygk1QUDRnJ4gaB9WDGV0k
- vyzTlCs7gdJN4y8V5nCZXc7mwtxr4094QbPMKejGEm2qiTUSi1kHYQRbOGcBx993Gqn4MdjEGVK
- iOItMuOnClnXZmoYcCgE1+Wi4UdfOLer6d9WnHZIRqk62mTRcPyUDmUGoefE1kHV3iv85IJyDCs
- huL1ciRLC2NdcJ+sNMg==
+ a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=QyXUC8HyAAAA:8 a=AKfxoly6AAAA:8
+ a=yPCof4ZbAAAA:8 a=TX5tIiqRz0IEpTnFED8A:9 a=4Q71d_afUUiBcdzZNBSr:22
 
-Used devm_add_action_or_reset() for shutting down the interrupts.
-Make sca3000_stop_all_interrupts() return void now that it always hooks
-into devm cleanup.
+Convert the iio registration to use devm_* helpers so the probe no
+longer needs a separate cleanup path and remove callback can also drop
+the unregister. After this there is no need for having a remove
+callback, so remote it.
 
 No functional change intended.
 
-Suggested-by: David Lechner <dlechner@baylibre.com>
 Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Reviewed-by: David Lechner <dlechner@baylibe.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 ---
-v4->v5: Offloaded the move of the sca3000_stop_all_interrupts() above
-probe in a earlier patch, thanks to Andy for the suggestion of making
-this simple.
+v4->v5: Add RB from Andy.
 ---
- drivers/iio/accel/sca3000.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/iio/accel/sca3000.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
 diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-index 56ff646684c0..cfc3353f7ffd 100644
+index cfc3353f7ffd..49abe4ece233 100644
 --- a/drivers/iio/accel/sca3000.c
 +++ b/drivers/iio/accel/sca3000.c
-@@ -1436,8 +1436,10 @@ static const struct iio_info sca3000_info = {
- 	.write_event_config = &sca3000_write_event_config,
- };
- 
--static void sca3000_stop_all_interrupts(struct sca3000_state *st)
-+static void sca3000_stop_all_interrupts(void *data)
- {
-+	struct iio_dev *indio_dev = data;
-+	struct sca3000_state *st = iio_priv(indio_dev);
- 	int ret;
- 
- 	guard(mutex)(&st->lock);
-@@ -1504,6 +1506,10 @@ static int sca3000_probe(struct spi_device *spi)
+@@ -1510,18 +1510,7 @@ static int sca3000_probe(struct spi_device *spi)
  	if (ret)
  		return ret;
  
-+	ret = devm_add_action_or_reset(dev, sca3000_stop_all_interrupts, indio_dev);
-+	if (ret)
-+		return ret;
-+
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
- 		return ret;
-@@ -1514,12 +1520,8 @@ static int sca3000_probe(struct spi_device *spi)
- static void sca3000_remove(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
--	struct sca3000_state *st = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
+-	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		return ret;
 -
--	/* Must ensure no interrupts can be generated after this! */
--	sca3000_stop_all_interrupts(st);
+-	return 0;
+-}
+-
+-static void sca3000_remove(struct spi_device *spi)
+-{
+-	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-
+-	iio_device_unregister(indio_dev);
++	return devm_iio_device_register(dev, indio_dev);
  }
  
  static const struct spi_device_id sca3000_id[] = {
+@@ -1538,7 +1527,6 @@ static struct spi_driver sca3000_driver = {
+ 		.name = "sca3000",
+ 	},
+ 	.probe = sca3000_probe,
+-	.remove = sca3000_remove,
+ 	.id_table = sca3000_id,
+ };
+ module_spi_driver(sca3000_driver);
 -- 
 2.47.3
 
