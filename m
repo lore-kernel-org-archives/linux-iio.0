@@ -1,96 +1,118 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB27E355043;
-	Thu,  5 Feb 2026 06:44:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E07BD2D6409;
+	Thu,  5 Feb 2026 09:55:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770273896; cv=none; b=YgBGU8AVNwJoFCXyp1BpMwAaXgPQAOdvRhpty//s8NiiOMM1TY2q7+SHtVYH6ZUTSfa8mROvD6TNxZjg9LT2k92awPbAqIjjJxwAtdwmikNb8BdonFskbE9tgPeP8gcMY4zlYU64ZiUX9NfMmaebbnZgAg98C80J/0VppZ11IEk=
+	t=1770285347; cv=none; b=jr4fpRWJrH9bOZjTueflvLZpCwZ9jBQWE30U4IckIH+DTZ3xJDAZfg84rLwsXI+NC1uI/rDK9FIH2f0Zydjt41ujPSti4nQnntT54NRxtJr5xXP82UDJMUuN5T9qJJGXbonVnwSsjPW1gWn//MF9zH3ZZeiR+WnIMYl1HASw1yU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770273896; c=relaxed/simple;
-	bh=XGiKe0dJ3H2pbegt/Z9JDgLtcCYuEXGwYwRo8rRf2Ss=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=qZj1vaMLVPD8wzne/oG/CIk5iCK4QhQUzQyktDTy4lsqQHENjovncs/LgOHqfgEu9v6WrDP72qwe6uctsexRTXDFRUhJ+WaeDeTbrg0F2g3s4/YYE8ebFhcKFmI5qw0+xoh47dcj/bEym4EfaBeo7Y1yx/Fsw8q0Ihvt7C3ILSA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lRU0nFBY; arc=none smtp.client-ip=192.198.163.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770285347; c=relaxed/simple;
+	bh=jBuAOB8bdqvBnhj5fUSQazKsMCWV4Cz4HIYyuTqlq/s=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=qKoPNKyksfzHTYlvHbYL/OMoz/UO6Q51HhmUix//N46B9n+hzIHgfd9IuYTtU7KCZR1P/2jnfCMMcBHzwSR+9DsHvDCnIHUe6mfsegq3EWxlkK+SYp0mC5qMzHAGBkCBpIAFiPBXdcY3w/Tus9xNnp+xICphEk2zYFbdSWgN6FM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CCa3tlHY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lRU0nFBY"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770273896; x=1801809896;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XGiKe0dJ3H2pbegt/Z9JDgLtcCYuEXGwYwRo8rRf2Ss=;
-  b=lRU0nFBYW7saDlCMozH5BEbCsnsZksZ9Io/2eXiC/1gt8PTDf1yK7wRn
-   lTTtDYnovksfrvRYsyyn3nWslIpQevQ5fP/pFoEafdg/rwwS/GlZ97RvD
-   2cMn5IvSOpHfP/NJliFXzGM6FskyrPT62kFSdGYaY9sJVZzcvVNvtddij
-   X7BEW5GlsN5HJPsYcrDUqPP2G7rt7HHext9t2QSyOQRMevctqVGPBfRhW
-   gk5s3kJ84fi2UlfsvfGKff3WLQhuxXK6XCCKOyxlYPu+3r7L+f5tMhaA8
-   bvYfigjYTy2tZGKx1J7tcaz+K7mV9jtTGKQhLJg44TPbJG232Zy57/l2a
-   g==;
-X-CSE-ConnectionGUID: zWQsUhdGSFOhLpHhs4Ep/Q==
-X-CSE-MsgGUID: 3Sgm8fL0ReS8EtxrZPm8qg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="71563010"
-X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
-   d="scan'208";a="71563010"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2026 22:44:55 -0800
-X-CSE-ConnectionGUID: /SycwwG9StOfVQqEhnT5Wg==
-X-CSE-MsgGUID: S3InMRNfQ6iA08iuhxsDSg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
-   d="scan'208";a="215383903"
-Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by orviesa005.jf.intel.com with ESMTP; 04 Feb 2026 22:44:53 -0800
-Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vnt6g-00000000jVu-1Qux;
-	Thu, 05 Feb 2026 06:44:50 +0000
-Date: Thu, 5 Feb 2026 14:44:32 +0800
-From: kernel test robot <lkp@intel.com>
-To: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev,
-	Jonathan Santos <Jonathan.Santos@analog.com>,
-	Michael.Hennerich@analog.com, lars@metafoo.de, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org
-Subject: Re: [PATCH 3/3] iio: adc: ad7768-1: add support for SPI offload
-Message-ID: <202602051436.PfHU6nPa-lkp@intel.com>
-References: <9f9aedbe374461e48f1f1e64d5487b5b6c1fc992.1769889074.git.Jonathan.Santos@analog.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CCa3tlHY"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 7161DC4CEF7;
+	Thu,  5 Feb 2026 09:55:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770285346;
+	bh=jBuAOB8bdqvBnhj5fUSQazKsMCWV4Cz4HIYyuTqlq/s=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=CCa3tlHYW74kvgHYRDB0TPc+LPDzkPbaZ6B8rOtFcrro+q53kiRXSvIL1GFk+QjuA
+	 zRtLItsY/MjyC8FU1LvbWnNBgv4RvYpaICTFFYz2LdP+7/eHz5uPbuIEaQS2s9SOHB
+	 qhasp+FuMo/C7xhFp65jiREGj7n230spo64gTyp8Erfn/tjPVJqgg8uGQuAru0BL97
+	 fNWXYPpa0yrUqORtNXgiup8VFzs4bS/7jCKiWl8pGQwzWpcfJogZAKcGCLm5Yab6xZ
+	 jrzR1DcuZSxmR3sAxMQI6671cHKChdXnwsiyqsRbUueG7/QJBBQi4ueH31LJHmw0ML
+	 2P81/jIZ0PLAQ==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F33BEC1E89;
+	Thu,  5 Feb 2026 09:55:46 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Thu, 05 Feb 2026 10:55:38 +0100
+Subject: [PATCH] iio: imu: inv_icm45600: fix INT1 drive bit inverted
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <9f9aedbe374461e48f1f1e64d5487b5b6c1fc992.1769889074.git.Jonathan.Santos@analog.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260205-inv-icm45600-fix-int1-drive-bit-v1-1-72a78cd07150@tdk.com>
+X-B4-Tracking: v=1; b=H4sIABlphGkC/x2NQQrDMAwEvxJ0rkBWmhT6ldBDYqvtHuoGO5hAy
+ N8repxl2DmoWoFVuncHFWuo+GaHcOkovuf8MkZyJhUdRWVg5MaIn+swivATuw9b4FTQjBdsfEt
+ Bbe5NY1Lyl7WYW//C9DjPH2evK0pxAAAA
+X-Change-ID: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
+To: Remi Buisson <remi.buisson@tdk.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
+ stable@vger.kernel.org
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1770285345; l=2029;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=jonlpc2vCCKoNTffAcqdw9gt54oqvhg5uNYQzxvrOqc=;
+ b=5vsMRdNmsBMDk/bEXxMe0CHV8sOVUQ5BP6DYKkfDmmjilUh4irqWX5vYNYJUnCQ06gj6iVmPx
+ TmZGs1Xjzz+ADbgOMIgddjMr17moPL0PV9EPmuuF4y4pfMmvp//E53u
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
 
-Hi Jonathan,
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-kernel test robot noticed the following build errors:
+Drive bit must be set for open-drain mode and be cleared for push-pull
+mode.
 
-[auto build test ERROR on d820183f371d9aa8517a1cd21fe6edacf0f94b7f]
+Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Cc: stable@vger.kernel.org
+---
+ drivers/iio/imu/inv_icm45600/inv_icm45600.h      | 2 +-
+ drivers/iio/imu/inv_icm45600/inv_icm45600_core.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Jonathan-Santos/iio-adc-ad7768-1-fix-one-shot-mode-data-acquisition/20260204-203950
-base:   d820183f371d9aa8517a1cd21fe6edacf0f94b7f
-patch link:    https://lore.kernel.org/r/9f9aedbe374461e48f1f1e64d5487b5b6c1fc992.1769889074.git.Jonathan.Santos%40analog.com
-patch subject: [PATCH 3/3] iio: adc: ad7768-1: add support for SPI offload
-config: i386-randconfig-054-20260205 (https://download.01.org/0day-ci/archive/20260205/202602051436.PfHU6nPa-lkp@intel.com/config)
-compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260205/202602051436.PfHU6nPa-lkp@intel.com/reproduce)
+diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600.h b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
+index c5b5446f6c3b43150512bcc4357cee385080b634..1c796d4b2a4038203f734f80d7bf7bad138c3497 100644
+--- a/drivers/iio/imu/inv_icm45600/inv_icm45600.h
++++ b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
+@@ -205,7 +205,7 @@ struct inv_icm45600_sensor_state {
+ #define INV_ICM45600_SPI_SLEW_RATE_38NS			0
+ 
+ #define INV_ICM45600_REG_INT1_CONFIG2			0x0018
+-#define INV_ICM45600_INT1_CONFIG2_PUSH_PULL		BIT(2)
++#define INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN		BIT(2)
+ #define INV_ICM45600_INT1_CONFIG2_LATCHED		BIT(1)
+ #define INV_ICM45600_INT1_CONFIG2_ACTIVE_HIGH		BIT(0)
+ #define INV_ICM45600_INT1_CONFIG2_ACTIVE_LOW		0x00
+diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+index ab1cb7b9dba435a3280e50ab77cd16e903c7816c..b028044d609a41f6d4b747383323130ded0d2e79 100644
+--- a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
++++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+@@ -637,8 +637,8 @@ static int inv_icm45600_irq_init(struct inv_icm45600_state *st, int irq,
+ 		break;
+ 	}
+ 
+-	if (!open_drain)
+-		val |= INV_ICM45600_INT1_CONFIG2_PUSH_PULL;
++	if (open_drain)
++		val |= INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN;
+ 
+ 	ret = regmap_write(st->map, INV_ICM45600_REG_INT1_CONFIG2, val);
+ 	if (ret)
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202602051436.PfHU6nPa-lkp@intel.com/
+---
+base-commit: d820183f371d9aa8517a1cd21fe6edacf0f94b7f
+change-id: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: module ad7768-1 uses symbol devm_iio_dmaengine_buffer_setup_with_handle from namespace IIO_DMAENGINE_BUFFER, but does not import it.
-
+Best regards,
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+
+
