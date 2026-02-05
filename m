@@ -1,105 +1,125 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07EB83D3488;
-	Thu,  5 Feb 2026 16:30:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BD923D3488;
+	Thu,  5 Feb 2026 16:30:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770309021; cv=none; b=U6c3iI7TDEclRELXLAmg+70J4Ih1IbNNOkwmTymmNWDw9CI9g0YuX26QBO25V+qF92/vBxSKIhvzAscACgDPIL2KnLSmlFUfQZTtXpycMekR0ZtA2D+1MiaZUSmyVmn04b2x2SpDyuO6qOfoh6J6gQp8EzC7YUPUxgzViDaouJY=
+	t=1770309046; cv=none; b=LCbaEovneVmg50rlNMF7Xc+xLD8TLWIAxNKKNv9dp+23pNCKUJZSsllEOgpD0XfsUq0BzmDSSUw7+9CTHmVE4o8/oiVM5c0RUPmsQhA7NLkipQFYOhkXtWdBaP1WrHRw3PK1kHx4qpLYP7diOS5dTsHXItT9zdYapjHhDg5B7js=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770309021; c=relaxed/simple;
-	bh=vhWmuEznNCBRc4HTR9xoBKMUmjrJOp8UwBzP6DKHB4U=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CVuh74En+/mdESQVKAzmwHIJeox0/T7an3Inceri18RAXWfrbs/7iszAAIjirEXJynAh/woubBitoP4yxuMij87ADPrhKAhLqWM+u2Qm383HSrvdKMG0M+wSr4ofInlZveR2lNzE2WNAEniZ3RPjutCb32Xzy1zNjJg1+MiLxQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fkvq60do; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770309046; c=relaxed/simple;
+	bh=tjWEc+QIvDHg5HmIeJfrMw+WnRjBnZr25Lm4qlf17Rw=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=UeWTIvqioFCmdCsShZvR04gr4ujN4p0tkY6KefFQD524u6OqM/HjRvfNUxgsZ4Oq2o5f/A/E8gPEjOOkQCMqa9Hb8UdKxk8ttxZ4aY70+CuqsZLwpm08UKg3XBvpn5g1iB8+klmq//R9R1STSj87AkM1cua50mKW++sDyWGcLL0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qNVQAxVN; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fkvq60do"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770309021; x=1801845021;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vhWmuEznNCBRc4HTR9xoBKMUmjrJOp8UwBzP6DKHB4U=;
-  b=fkvq60doynWBEV358oKGyyohPdoM93XSp7g7G6C4qkvWdAbPIerP0Czv
-   /wVy8INhEOHX3uTk9iKV6Onn18rhFdWnP2D0KPzLv4VVgPNkwT3hs59g7
-   TotywBi3Mc0UKbj3zpWJ5E6fV0ht4NX2a7M1AHeZlZJNm5TZu65I1GBqN
-   0cyspy/AbY5CBre77cFHCa0HW570rfR54LuOrRdQemJSQ7xyn3guOSqun
-   Ydf54rzpysqc+EinFhSlN5jevgQxd9dwF3+ZhFg0AQWUR0CxJGF7SmKt1
-   uTSfBEfe/fDiPd4rZ9gDPV4UyfUZgzr78m11KCoHtqKYWy4lVHFbrsJAL
-   w==;
-X-CSE-ConnectionGUID: z7pJaYXzTV+nxMWkGqyT1w==
-X-CSE-MsgGUID: jExAIbtYTMq8s8ZmAzNrkA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="94157983"
-X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
-   d="scan'208";a="94157983"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 08:30:21 -0800
-X-CSE-ConnectionGUID: dyMYmGtpRYe3Ck/uminDQw==
-X-CSE-MsgGUID: ooMKzdQCSMqb2XgBdgFRZA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
-   d="scan'208";a="210408737"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.142])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 08:30:18 -0800
-Date: Thu, 5 Feb 2026 18:30:16 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andrew Ijano <andrew.ijano@gmail.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH v5 next 0/7] IIO: sca3000: devm resource management
-Message-ID: <aYTFmMWCd1QHLg_a@smile.fi.intel.com>
-References: <20260205131234.3244467-1-harshit.m.mogalapalli@oracle.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qNVQAxVN"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 29B33C4CEF7;
+	Thu,  5 Feb 2026 16:30:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770309046;
+	bh=tjWEc+QIvDHg5HmIeJfrMw+WnRjBnZr25Lm4qlf17Rw=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=qNVQAxVNEdduJ7Bf8AYB4iVLOuJeOW/QuRYCjTOdUCaHlNQzQBywKeKJFBt6gaH7T
+	 AV0Cc+PX6/Eso1TlhFjogToYXa8gsNlZlYyWYMptg/5QdUM+3q9s1hQh3bhUAxM2u0
+	 s87Ps86AqhB1vzN6iYsx9Ak7VHb1COa+aqqHG4Y6Lllcibh1IXLn7chJZdy8iS4MtP
+	 nIE8NWzR8TMCLWupVdSTWac9+ugpd8XLJyNPauWivebhfWqDSixlU2gOqq0LcAsDGQ
+	 XuBLl/A/0eUpdoL+VG08MkW3WAFBISGd5R/lJY2us0T0TluKapTdjYhf2x/lx3hHye
+	 sJ+/Ya0oWINqw==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15847ECD989;
+	Thu,  5 Feb 2026 16:30:46 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Thu, 05 Feb 2026 17:30:42 +0100
+Subject: [PATCH v2] iio: imu: inv_icm45600: fix INT1 drive bit inverted
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260205131234.3244467-1-harshit.m.mogalapalli@oracle.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260205-inv-icm45600-fix-int1-drive-bit-v2-1-5e72608ea154@tdk.com>
+X-B4-Tracking: v=1; b=H4sIALHFhGkC/42NQQrCMBBFr1Jm7chktI248h7SRUxGO0hbSUJQS
+ u9u7Alcvsfn/QWSRJUE52aBKEWTzlMF3jXgBzc9BDVUBibuiKlFnQqqH49tR4R3fVeRDYaoRfC
+ mGW0wLO4g7ANDrbyi1NX2cO0rD5ryHD/bYTE/+3+7GDRo2dmTD2RNS5ccnns/j9Cv6/oFpZEfh
+ swAAAA=
+X-Change-ID: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
+To: Remi Buisson <remi.buisson@tdk.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
+ stable@vger.kernel.org
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1770309045; l=2273;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=nOUJSmgm+rwCHt6TbRBvlTujMXE5wlAxMkqMG1Zhi8g=;
+ b=6soWHK27tMui4BudiatfCAUTsLTVV+cgKhFrD9V/2pTHxunNaPuoag+7YDiCCz2FlSTTHaULq
+ bnuKoNEGQ+ZDzxJZ5WeSjlA2Q7IJXqAeHorsSPcEfA2s1Xdloc685av
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
 
-On Thu, Feb 05, 2026 at 05:12:06AM -0800, Harshit Mogalapalli wrote:
-> This is an attempt to update sca3000 accelerometer driver to make use
-> of devm_ based helpers where needed. I have split it into 6 patches.
-> 
-> Patch 1 - some refactoring and simplification of dev.
-> Patch 2 - switches request_threaded_irq() over to the devm helper
-> {atch 3 - Move stop_all_interrupts() above probe
-> Patch 4 - make stop_all_interrupts() return void
-> Patch 5 - Make use of guard() in sca3000_stop_all_interrupts() function.
-> Patch 6 - Used devm_add_action_or_reset() for disabling interrupts.
-> (Ensured the ordering of teardown bits remain same)
-> Patch 7 - manage device registration with devm helper
-> 
-> Yet to be addressed tasks: (Would like to take this up as a separate
-> activity)
-> 1. We shouldn't be using the spi_device_id at all. [Thanks to onathan
-> and David]
-> 2. Modernize other functions to make use of autocleanup style locking
-> which simpifies the code and makes error paths cleaner.
-> 
-> I will be working on these two above tasks and will be sending a
-> different patches for those.
-> 
-> The series builds cleanly and I have performed static analysis with
-> smatch checker but haven't tested on actual hardware.
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-LGTM, but there are a couple of things I noticed while going thru the patches
-again. They maybe addressed later, or if, Jonathan asks, in the next version.
+Drive bit must be set for open-drain mode and be cleared for push-pull
+mode.
 
+Referring to datasheet DS-000576_ICM-45605.pdf section 17.23.
+
+Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Cc: stable@vger.kernel.org
+---
+Changes in v2:
+- Add datasheet precision where to find the bits
+- Link to v1: https://lore.kernel.org/r/20260205-inv-icm45600-fix-int1-drive-bit-v1-1-72a78cd07150@tdk.com
+---
+ drivers/iio/imu/inv_icm45600/inv_icm45600.h      | 2 +-
+ drivers/iio/imu/inv_icm45600/inv_icm45600_core.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600.h b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
+index c5b5446f6c3b43150512bcc4357cee385080b634..1c796d4b2a4038203f734f80d7bf7bad138c3497 100644
+--- a/drivers/iio/imu/inv_icm45600/inv_icm45600.h
++++ b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
+@@ -205,7 +205,7 @@ struct inv_icm45600_sensor_state {
+ #define INV_ICM45600_SPI_SLEW_RATE_38NS			0
+ 
+ #define INV_ICM45600_REG_INT1_CONFIG2			0x0018
+-#define INV_ICM45600_INT1_CONFIG2_PUSH_PULL		BIT(2)
++#define INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN		BIT(2)
+ #define INV_ICM45600_INT1_CONFIG2_LATCHED		BIT(1)
+ #define INV_ICM45600_INT1_CONFIG2_ACTIVE_HIGH		BIT(0)
+ #define INV_ICM45600_INT1_CONFIG2_ACTIVE_LOW		0x00
+diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+index ab1cb7b9dba435a3280e50ab77cd16e903c7816c..b028044d609a41f6d4b747383323130ded0d2e79 100644
+--- a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
++++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+@@ -637,8 +637,8 @@ static int inv_icm45600_irq_init(struct inv_icm45600_state *st, int irq,
+ 		break;
+ 	}
+ 
+-	if (!open_drain)
+-		val |= INV_ICM45600_INT1_CONFIG2_PUSH_PULL;
++	if (open_drain)
++		val |= INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN;
+ 
+ 	ret = regmap_write(st->map, INV_ICM45600_REG_INT1_CONFIG2, val);
+ 	if (ret)
+
+---
+base-commit: d820183f371d9aa8517a1cd21fe6edacf0f94b7f
+change-id: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
+
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
+Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
 
