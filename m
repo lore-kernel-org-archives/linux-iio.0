@@ -1,145 +1,126 @@
-Received: from mail-ej1-f43.google.com (mail-ej1-f43.google.com [209.85.218.43])
+Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 15948423A8F
-	for <linux-iio@vger.kernel.org>; Thu,  5 Feb 2026 16:54:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2F36439014
+	for <linux-iio@vger.kernel.org>; Thu,  5 Feb 2026 16:56:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.48
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770310457; cv=pass; b=qju+kU7aBW2kMl2TnFYx5oYQD2tnm7oiNRV9zOdDy8QnTnm9QxZtGYfuCuKNumcw4vTQB0YIu7KEK6aIjePFk+r2qud+BPYUa6+4Rqd+iK0DbvyULo1dQMJvqsiLUni/2B4508aun85czQxzZ5P+ZAW6sXEwv7P9iH4MqF8WaLg=
+	t=1770310619; cv=pass; b=VadlAtwFUtzknx+fKOm8gevPoMeNF4f85vjnTUGXFPtVY92zv48tGGSKI9AxqIjROTehbeVwC+w/bDuCZivww9D+cNEiWw9GcQXX0qlD4aaNZ8cPi8HwJ+GZ55umxwOKBv9tsmTeO8iLzYThNtAxk47uIPze5zFtUGOFDUiGUVI=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770310457; c=relaxed/simple;
-	bh=OpvS9XyVUoyw+oX1Lr7fUn152Rj180s+IMS/CRzzP4U=;
+	s=arc-20240116; t=1770310619; c=relaxed/simple;
+	bh=FubNU7Nwqx3hIcILlR6yYjmKrhWkkBVcmDPP+R5NhlU=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ZlFv7fxwKhcc03Sw8MbnEQ5ZhyYGzK0unLqn67njXcGCIDXL9TsyGuyBAgfPx18V79JJ9lWn2FiwIdti5RXUerdMWWcpHdC1+yTjhDSPFvv1b6SBdTk9lkzFMyAKT8TSmkjho5tkzMnzLhKI1zdMPt61C4mECBNYd8xM7tPaiMY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e50E3c+f; arc=pass smtp.client-ip=209.85.218.43
+	 To:Cc:Content-Type; b=m+grVzcSICNxKOWkmW3UhqW2badDOrugbfabL2eQbUj6JnMYX4GYjkLT/Q86Xd7Qfye09JSf59KbWkPG+7piQ1HTGK/P6/Rxt4x34iXdPAIkWXZ6Kb9B+OvklDR0L1Aq9EoD63M5ZwUdCuKBUaC9tV4olS25umsaoeCVKzdpizQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dXAqkjjl; arc=pass smtp.client-ip=209.85.218.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e50E3c+f"
-Received: by mail-ej1-f43.google.com with SMTP id a640c23a62f3a-b8850aa5b56so204688766b.2
-        for <linux-iio@vger.kernel.org>; Thu, 05 Feb 2026 08:54:16 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1770310455; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dXAqkjjl"
+Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-b8837152db5so176102066b.0
+        for <linux-iio@vger.kernel.org>; Thu, 05 Feb 2026 08:56:58 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770310617; cv=none;
         d=google.com; s=arc-20240605;
-        b=AoZexBcp20hnuowZnUSaqybUCA9mVeC+4PLIO+9UPlzQ+WuPUnWdm9SeesEMeW7j47
-         RfitUtqO7RS2shK2S4cvY+ZOQFnNkWbba7Ierg+gI2cXf9ZSaT0Qj/brF+GtKLd3ZbnZ
-         gbn50jMGJk1UYbouRaTmDaXjfZOhO8MX33JWNusd9ZGmTlk0u8VTw2ZbvkCdOBh+SgjE
-         XNk0Eri8JuTuZWn7uvsJiuQDuGzBFBDdZdfx1nOERiBa5757jLG5bKmDFt/TrKOW5Vd7
-         6PNPFZFUu9JK25TuBNsTCBgjqlg20NCz3av2u/ljhXetiod5u+hS0RE7ecab0THloBTW
-         3Mkg==
+        b=DYkLPqBqqkyjxgkn9eF+Gt/VS2lcCiGZBnTAhSGOn+BrM1RtOJeJx63FnNQSq0ukjy
+         7LbHGytDrd5zeoAEcqy1XqnXa7Ez8AQra8d9KxS1wydOy2afR2hySz1VMb020qvx6kBZ
+         8bBNv2bqEfp5yQ0J8GI3egNQH82sSgDqyJkyCan2BW+iBxpGZYSJTiIWVXGuPwdGzm8e
+         tGAt5HKajoph9br/L7AegWw+Azm0IqRB6gdXiMUTnW4YRrvAu4Y8IiTgA0UChv0n4EuB
+         R6w8f4VDWP1lrSConok3KlML18ud3fkLLnlw56xKTrvo/Bar7EkJEPrJl86SEyjAsd3G
+         KLdg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=Mok7tSoTC7RJ19nbmvu/1cT2bgwCt+f3Z/EsF+273Lw=;
-        fh=Fh4khrxS0iTMIVCykRMRepVCxm5v2uLd6UtRt5G+ElE=;
-        b=O6U5tXyIceMe4uq3ybkvxoeLK3oDEt/Ch8z9noVb9IO4oCe5CJqH33AwmsT+dL+Ge3
-         IG04xJhQ6D/icz2wd03rxZJ0GQIpiJkcCiiElN5MhJ3r6CM5IZmRB+T6+cbpESAd373f
-         2QqaeglA1voXAf53dyMMgT01khCPAsFEccVp467vCG8PDvBgiuOCPDuU7+Gtfl9k8RTj
-         qK6pi/gA+ERx/ULwSzxkFGBSf9SbF+uUGiUocZojMKxczv1RMjleNRx9RQ8Qrl3ilFxx
-         FqrJqbDzNIVNPYIPCH7ps5gKQdpi14meX+ant1hyLGAeJu2VDO8Cx68JEhiS0uQnQYNq
-         f7YA==;
+        bh=/3sQQzeXOoaPPSSsU2vRBnHaln2TVQn2cJYpZhDkrFA=;
+        fh=ldgSh2oxjaIqT7kjaj5Vv/IDsS58CoUvAu+MZy9lTMk=;
+        b=XbI6Zm2zdiFpgmDRL9BAW8ADkVLC1JBkrx8LFyim1PFgZDNJS71er9JrEIAd/8ziZ3
+         YV3/2jGLLH7WX9NwFrQD4pqH+0uxtPFRddVifGXWGiRLFNuxiawke70YLUeLHMCOysjB
+         VyIL5M48YY2p11eXQK/oN1ABbCq4wKZ/uZ5suJlf2z+S1JX5KE0Oqq/236OZ1ZgIIJpb
+         eHmhfgcxMoaqGi2EK/K61c5DaX1/xHpg36UXEodN/8PCQLcOgWatsBA/RPmAqri9HK9t
+         BnDUFL2t5/GwVfDTDjRW3zbpxZJqlVPk7Ixc1gxMtcpggSwCfZnSJNvXjJe2KaYD7n8U
+         AcBA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770310455; x=1770915255; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1770310617; x=1770915417; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Mok7tSoTC7RJ19nbmvu/1cT2bgwCt+f3Z/EsF+273Lw=;
-        b=e50E3c+f4Da0k+Q/3Q8f6VXWkUv03psrrJVDfQ58zas5t/ua/TaDNPhnW45UvQXMC0
-         lqBc9mXfZZ47u2gBxugXxViYfAInMRrfii3Kp7SC1f6o9Tq+tDdG8R2TpSpjJnc38YK4
-         BczhPHgOAkME6NwS5vmiuaUDkvTY3rFu19+pLgvpn80o7lHvUBzKybJaMsv5WgJ3alxD
-         tkd6idxlXtdq1blPngEQlk045RnApB6JkUxWLuU4W7bX2UGaRG5KnI3VGyvfRSz9g8lw
-         u2BaJhgG8zUA6k/Pm4ggSR8MSyFwBpe2AMhcx6+TGWTxy1OpL2fhE6TrHE+3HDsyBmGf
-         xHLg==
+        bh=/3sQQzeXOoaPPSSsU2vRBnHaln2TVQn2cJYpZhDkrFA=;
+        b=dXAqkjjlOQwDw2Y8mtbL5oqyX9d85WJRV6cvntFwEEIjq3w5ViBDDXYTy8WjZ3VnJM
+         00nVfFmZIKJGMv404DDgkGmRBIc9SqzGEFzLI/Xt4iTSAuv7EwyRmiYBjQPWUhvpig0R
+         9PBthrSamemMHlbqXnlMvK9XD5oLgoXeJqY/D/msQCinBd7UEvka3cMWzQrBcCB4Gml/
+         1ALWeA8sBw+tdUfBx0aPYDJCYLa9P2lja93YR9BvRaYOEyxFlfm8RYkqGdbI1ZKWjYGD
+         amd9L+2Lhw6JX05uCy77I1eV0e3R5UgYAXH4Qo9fJW/AStd4lXGrFjx/t/c9XEWzJBH0
+         n4Bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770310455; x=1770915255;
+        d=1e100.net; s=20230601; t=1770310617; x=1770915417;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=Mok7tSoTC7RJ19nbmvu/1cT2bgwCt+f3Z/EsF+273Lw=;
-        b=VcYBddk+KqVpc3DccnAm7d2oxTakcL+9liJTKfoZt/F5iDbrOUuMoNYu/47x47IoB+
-         toPsfoVh3jWteShc0vKXHmZ125Iu64LQgaBJ94WiKu8qLImG35CxzUvrQ4T2hGcG8PRo
-         qk3/lGSpfbr7oxlTXPGMnQ2aBZEOlts2/N7HPZS8kpq6p4YC4T6hUY1v2X2Gl/wB+CHv
-         AoHnmmvNvZcyjWTMX3zA2YBf8t0hLI/elu2gCRp0neP5D/BbgtbeTqKMDo5iI+eCcSbt
-         ZVZktr7ta/i/W3RJ3UKAp619OG8LpJneOlcd82K2gM0KwSu37bKIynGhx1ZyHaID2xSq
-         ruQg==
-X-Gm-Message-State: AOJu0YwHOKQNN8qkc6p6VZcMbThVVNjjprO8BAWr+PZehdOMYanGwwG1
-	yfqcvuqkISFR5K5NO9SgfqLWRr+s//qktFKQvLgKtBHbOKWlNJcKBfh+FHrGJvEWxBMaH7BP3d0
-	IR8BIdnIuHQICIVZQkv4YBkp/b9S2Um2L4u/s2Lysww==
-X-Gm-Gg: AZuq6aK7SJ2/fTJtLw0/i7iW7QoQCZ7vW5ADnkDPqUBm8xZfFjSzVyC+j3NzzvtJCtg
-	8n3FPi3np/464pXQs6ETTS41XO082DFVByjqjHHqqg3Jo7L+CKLDvVCIGJCmnb4sPV9IzNU5Hsi
-	1/ftI9KdixoAx+8ANs+/fryvdjRWxMTg3PgcG4gWw4baHfevRqzGDPPh+qp0FksbjDO4rSMEXBn
-	a6LIMGjzXJ0rlt+GR15ecmIDWggzih1BbepXlRgBhSoGSx5CLL6j1mSxubjWqFcuF+07Ew+ZJXI
-	hUubvsgi1wDA85Ib48EjUTfUQ1PWT2djsZeqxlhsfGGnGREGFYf3DchWStOLuLez0l/5uNo=
-X-Received: by 2002:a17:907:94d4:b0:b87:2fcd:1955 with SMTP id
- a640c23a62f3a-b8e9f40de76mr467741166b.50.1770310455075; Thu, 05 Feb 2026
- 08:54:15 -0800 (PST)
+        bh=/3sQQzeXOoaPPSSsU2vRBnHaln2TVQn2cJYpZhDkrFA=;
+        b=eLYWdkOQ1ZfHOZCPiFVSsCr/7PKZiLJIAThThxDJIyFfxOvil0SUHSlsSKzVGbcbkV
+         dom8NcZROgktrpz2wyGyp3b+bkU5Hx2l1N0JkR2obAzjoukeCzYXxnp2OX4FM8t8JMr2
+         RfN20hcLIp0NHQFwH3R6LKprP1jYUVOaL4K37doevX8+Hk89hdnCnyIxvqFhlIHZJT8h
+         QMr1NAz5PfW9YtPsu8eodpEcrJ95qqb8oJ3GO9ht5ezeDUjs91DHNUcBeres+L+LOYV0
+         kAWEkHFjwxFdBCH01lXV+otXwrs8DIrtkQAUymgoAgkHDFYYajM/zdG+u+jr3vMZFOGZ
+         wnZw==
+X-Forwarded-Encrypted: i=1; AJvYcCWMLo70rMxGsVxipEB1ApMH9a5r3YRqt/1bU4Pir9camgt3zrWH2dg/uLBuioumf4yAxqcqZbVDiXI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzoCA6NjwPW4yNxEYDM4fgrq/8PDP5/6ZF+lV+cTtbDps5xerD7
+	79WGlqst9lWAu391PZeB7cKdBkvmNCSEbcQeWZf4+543xFgN1pmmMmeTuMSnpsGpA9FiizyINq5
+	3I/R3Yl3HZZP2yqcGpiLFfM/Xwodfrfo=
+X-Gm-Gg: AZuq6aLB9BGZ7d6jHYahrv/F5gMnAsjF+Iyn+ko/AfdXVwY5GitVs9gp157dIyegHj2
+	YPcElHyabLodzs8cCxhcXi1IKlLFXBTPU7bc8D52MrB9+2JYyX33Hv+59Eo9NtqzAViRG1yZH81
+	YYRFXHI2UrHMnEGzzg3QEK1inrBB+9C5Bu357Ctz43RXuHXPkklaKsD7XzCHxRXvkQMvDkdZXDi
+	VSZqkEXyeP7i3CGnFK6VbL7DeBv3qO4JxNmK3UhabXMpIdLd8hvIL5fMQ48deQS/qkirnpC85gH
+	Tx5n4/bzlMeHJfH/wsbFK1Zaos+supXKFFWiFcSiuF4xqvvkenO5WOpGMEm6NYUnU5x/1Ts=
+X-Received: by 2002:a17:907:d0c:b0:b8d:d9a7:1b74 with SMTP id
+ a640c23a62f3a-b8e9f373a93mr420024366b.65.1770310616891; Thu, 05 Feb 2026
+ 08:56:56 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1770309522.git.marcelo.schmitt@analog.com> <a5721b31e7cbf8327c74d761757d9051c289297c.1770309522.git.marcelo.schmitt@analog.com>
-In-Reply-To: <a5721b31e7cbf8327c74d761757d9051c289297c.1770309522.git.marcelo.schmitt@analog.com>
+References: <20260205131234.3244467-1-harshit.m.mogalapalli@oracle.com>
+ <20260205131234.3244467-8-harshit.m.mogalapalli@oracle.com>
+ <aYTFUMe3jUO_bGCr@smile.fi.intel.com> <34bac81e-6a6c-4cf6-b370-beead4f705c1@oracle.com>
+In-Reply-To: <34bac81e-6a6c-4cf6-b370-beead4f705c1@oracle.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 5 Feb 2026 18:53:38 +0200
-X-Gm-Features: AZwV_QhA2nGFwsXuz10t8Kj4Zl8EbQywBy3FuQIW-ZrEVDmxdKmmWiomaychFD4
-Message-ID: <CAHp75VdFvVMBr6U40wQ-9Eo3e-svsdfOKhkEt0cfUbFoDbdA3g@mail.gmail.com>
-Subject: Re: [PATCH v7 7/8] iio: adc: ad4030: Add support for ADAQ4216 and ADAQ4224
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org, jic23@kernel.org, 
-	michael.hennerich@analog.com, nuno.sa@analog.com, eblanc@baylibre.com, 
-	dlechner@baylibre.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, corbet@lwn.net, marcelo.schmitt1@gmail.com
+Date: Thu, 5 Feb 2026 18:56:20 +0200
+X-Gm-Features: AZwV_Qi0HB7b0WeOF9-L3bHR_a1LclmNjzGpK8yNC1n2BCSBY2W5nybVUSREUUk
+Message-ID: <CAHp75VfSYGoNUTqDb9WLYNYeChkB4mM+LEBpyRVnLOEKkr==WQ@mail.gmail.com>
+Subject: Re: [PATCH v5 next 7/7] iio: sca3000: manage device registration with
+ devm helper
+To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Antoniu Miclaus <antoniu.miclaus@analog.com>, 
+	Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, 
+	David Lechner <dlechner@baylibe.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Feb 5, 2026 at 6:49=E2=80=AFPM Marcelo Schmitt
-<marcelo.schmitt@analog.com> wrote:
+On Thu, Feb 5, 2026 at 6:51=E2=80=AFPM Harshit Mogalapalli
+<harshit.m.mogalapalli@oracle.com> wrote:
+> On 05/02/26 21:59, Andy Shevchenko wrote:
+> > On Thu, Feb 05, 2026 at 05:12:13AM -0800, Harshit Mogalapalli wrote:
+
+...
+
+> >> -    struct iio_dev *indio_dev =3D spi_get_drvdata(spi);
+> >
+> > Do you still need spi_set_drvdata() or analogue in the ->probe()?
+> >
 >
-> ADAQ4216 and ADAQ4224 are similar to AD4030, but feature a PGA circuitry
-> that scales the analog input signal prior to it reaching the ADC. The PGA
-> is controlled through a pair of pins (A0 and A1) whose state define the
-> gain that is applied to the input signal.
+> That's a great catch, I don't see spi_get_drvdata() anymore after this
+> series, so yes I think we should get rid of this.
 >
-> Add support for ADAQ4216 and ADAQ4224. Provide a list of PGA options
-> through the IIO device channel scale available interface and enable contr=
-ol
-> of the PGA through the channel scale interface.
+> Should I fold that into this patch in v6, as spi_get_drvdata() is also
+> removed in this patch ?
 
-...
-
-> +static const int adaq4216_hw_gains_vpv[] =3D {
-> +       MILLI / 3,              /* 333 */
-
-I would go with
-
-  1 * MILLI / 3, ...
-
-for the sake of consistency.
-
-> +       5 * MILLI / 9,          /* 555 */
-> +       20 * MILLI / 9,         /* 2222 */
-> +       20 * MILLI / 3,         /* 6666 */
-> +};
-
-...
-
-> +       gain_nano =3D gain_int * NANO + gain_fract;
-
-> +
-
-Unneeded blank line.
-
-> +       if (!in_range(gain_nano, 1, ADAQ4616_PGA_GAIN_MAX_NANO))
-> +               return -EINVAL;
-
-...
-
-No need to resend, if Jonathan and others are okay with the series, he
-might be able to tweak this whilst applying.
+Ideally it should be done in this patch, but let's wait for Jonathan.
+He usually may tweak these small things when applying.
 
 --=20
 With Best Regards,
