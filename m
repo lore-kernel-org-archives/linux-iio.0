@@ -1,102 +1,123 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E319B305E01;
-	Thu,  5 Feb 2026 18:42:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA9FB279DB3;
+	Thu,  5 Feb 2026 19:13:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770316938; cv=none; b=jIBWDuKFASgPP8FPUYdPOMVEYOMTEfBrw4AdeO/W9oDoR/GMcMf5ygMk86n7SiJZmebFI92t6aRgE2eZs1YkctCHS/8OvuKS3wE7SdySCyEQcsvlWHWclfySfvcu0OUkqRnEZhyX7mHObZfFjosbc5kjh0R4D8qs/t3mwJaqUc4=
+	t=1770318809; cv=none; b=LW+URbp+M5Ij8ACLAOv6ho6vq4SAS7FfXPe8Y0eaGOxoXFG6wZnU/mWxjv5onQXR4FM4ZkrbEVMDzcQcHc2r0t/J+ORXNXYLwAIVpYM92dWFWW6qYagak9DRoR3UH8zWHvuuwKiawIEmy64HL3ChWM1V5VXaAGhLeT45rcZR4G0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770316938; c=relaxed/simple;
-	bh=Uyt29Sm4Nu3Uzv9llDir3IcWj7UstP5pqref+2nh6Bg=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=A9F8c0VBxR3HdayQSUZ582DXmjNWxsnHKRgoyrAd0eGFxYYNzuGacLhqtHJOc4s7ftNwTN3QREtRI6javdGqUYDkGww9DCc7kghWl+c+hs9tNtP9qV53pjB8pS6kZjeVeQXzlOraBolBTzxVd2+UyBAdcf0GMe/fVGIdeY8rlO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JUM7DQVY; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770318809; c=relaxed/simple;
+	bh=tbP9h1k5B3yJWSPqrDUODMYf9Jvid9ANIt8ghdoN3/E=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=uOUcnLE57kZ7nLfM27vi3zayQGYAjG19rn+8EN3VSnt5bcoOO9ucZf5MAt2tuIhlLIinj2oDYu7lC5Aju6rpnSJDPwU5ltC69e8YLnWmBYB3ojNyGMM2UAUWiklIh7f44/C+iiT4G6Ryo2cp570X2wUSUTq8w1Rk1oxU7APTP7I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AI/GyRR4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JUM7DQVY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55EB0C19421;
-	Thu,  5 Feb 2026 18:42:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AI/GyRR4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30E43C4CEF7;
+	Thu,  5 Feb 2026 19:13:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770316937;
-	bh=Uyt29Sm4Nu3Uzv9llDir3IcWj7UstP5pqref+2nh6Bg=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=JUM7DQVYQEQcQr0mhOUyuqBjFzvtAot2+3VM7iSCkKlpmVRxpPU8dztzYnUphTisg
-	 r5t3GrDguea7xLFcHA4FvLIoJ1hfbI9AAlfkWmOQfQi/Rxz2NYcV7sf0H58CXzHLCS
-	 dFTxuc70I8Yi19/6xyGb3Gb+v8he9bb1uAJyaoNu75Rk/g5mSElOx6dYbZL0NbYdLM
-	 Wdt3gqhwBsXiKPz37a46X9dbAyes7LpB4Hl3TAWn1GJAglCgZNC8dKEu0hOFRp1o9K
-	 yeSAHnYc8g44/ZaoT8DnUvY5FPPqSySULsw4GZKYbW3E5l6yHf1Y5trNM/XfJENJoo
-	 /szEotAPfluEw==
-Date: Thu, 05 Feb 2026 12:42:16 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	s=k20201202; t=1770318809;
+	bh=tbP9h1k5B3yJWSPqrDUODMYf9Jvid9ANIt8ghdoN3/E=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=AI/GyRR4yvA9o/8v/j3DAv1n0c0wPVbf55qafkDTFU5w3mONpCZRxgiUFwTMdj33B
+	 dOXHBJz+KmjxOnBPPVja8barysKJoc2t106sUK/chAc6kY+ieKa4pMnfQq9rihtmpa
+	 YCVLEoxSr0Sl1hIO5rFZ77RV401EPxvAl+dwDuHTFEcx/fGKd4FxIo9JG9mUn5+QUE
+	 yS25l4NNgd1XjMWbTUab23E0kZ18/KcWg2tfS4t97yayAdSWe5PyteWkAcvtjeEV5M
+	 V+tEDa6XPMBhicd1k+xeCSxdLq+k5EBOBcXQGyk5Cs3BlQ13b84uR+f7h+MsviPDay
+	 Du6MM8YpKTzBA==
+Date: Thu, 5 Feb 2026 19:13:21 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Jean-Baptiste Maneyrol via B4 Relay
+ <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Cc: jean-baptiste.maneyrol@tdk.com, Remi Buisson <remi.buisson@tdk.com>,
+ David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH v3] iio: imu: inv_icm45600: fix INT1 drive bit inverted
+Message-ID: <20260205191321.7e5f7b49@jic23-huawei>
+In-Reply-To: <20260205-inv-icm45600-fix-int1-drive-bit-v3-1-9c60c354dadb@tdk.com>
+References: <20260205-inv-icm45600-fix-int1-drive-bit-v3-1-9c60c354dadb@tdk.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: michael.hennerich@analog.com, conor+dt@kernel.org, 
- dlechner@baylibre.com, marcelo.schmitt1@gmail.com, eblanc@baylibre.com, 
- linux-doc@vger.kernel.org, krzk+dt@kernel.org, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, jic23@kernel.org, corbet@lwn.net, 
- nuno.sa@analog.com, andy@kernel.org, devicetree@vger.kernel.org, 
- Conor Dooley <conor.dooley@microchip.com>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-In-Reply-To: <4b879f53450e87739afc0dbd832dab5a3f83efb1.1770309522.git.marcelo.schmitt@analog.com>
-References: <cover.1770309522.git.marcelo.schmitt@analog.com>
- <4b879f53450e87739afc0dbd832dab5a3f83efb1.1770309522.git.marcelo.schmitt@analog.com>
-Message-Id: <177031693646.1530107.11962546739352301287.robh@kernel.org>
-Subject: Re: [PATCH v7 6/8] dt-bindings: iio: adc: adi,ad4030: Add ADAQ4216
- and ADAQ4224
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+On Thu, 05 Feb 2026 17:59:14 +0100
+Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
 
-On Thu, 05 Feb 2026 13:48:55 -0300, Marcelo Schmitt wrote:
-> ADAQ4216 and ADAQ4224 are similar to AD4030 except that ADAQ devices have a
-> PGA (programmable gain amplifier) that scales the input signal prior to it
-> reaching the ADC inputs. The PGA is controlled through a couple of pins (A0
-> and A1) that set one of four possible signal gain configurations.
+> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 > 
-> Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
-> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+> Drive bit must be set for open-drain mode and be cleared for push-pull
+> mode.
+> 
+> Referring to datasheet DS-000576_ICM-45605.pdf section 17.23
+> INT1_CONFIG2.
+> 
+> Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
+> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+> Reviewed-by: Andy Shevchenko <andy@kernel.org>
+> Cc: stable@vger.kernel.org
+Applied to the fixes-togreg branch of iio.git. Note that has a
+random base at the moment, so I'll wait for release or rc1 and then
+rebase on that before pushing out.
+
+Thanks,
+
+Jonathan
+
 > ---
-> Change log v6 -> v7
-> - No changes.
+> Changes in v3:
+> - Add precisions in datasheet reference
+> - Add missing reviewed-by tag
+> - Link to v2: https://lore.kernel.org/r/20260205-inv-icm45600-fix-int1-drive-bit-v2-1-5e72608ea154@tdk.com
 > 
->  .../bindings/iio/adc/adi,ad4030.yaml          | 70 +++++++++++++++++--
->  1 file changed, 65 insertions(+), 5 deletions(-)
+> Changes in v2:
+> - Add datasheet precision where to find the bits
+> - Link to v1: https://lore.kernel.org/r/20260205-inv-icm45600-fix-int1-drive-bit-v1-1-72a78cd07150@tdk.com
+> ---
+>  drivers/iio/imu/inv_icm45600/inv_icm45600.h      | 2 +-
+>  drivers/iio/imu/inv_icm45600/inv_icm45600_core.c | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
 > 
-
-My bot found errors running 'make dt_binding_check' on your patch:
-
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml:139:1: [warning] too many blank lines (2 > 1) (empty-lines)
-./Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml:142:1: [error] duplication of key "allOf" in mapping (key-duplicates)
-
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml: ignoring, error parsing file
-./Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml:142:1: found duplicate key "allOf" with value "[]" (original value: "[]")
-make[2]: *** Deleting file 'Documentation/devicetree/bindings/iio/adc/adi,ad4030.example.dts'
-Documentation/devicetree/bindings/iio/adc/adi,ad4030.yaml:142:1: found duplicate key "allOf" with value "[]" (original value: "[]")
-make[2]: *** [Documentation/devicetree/bindings/Makefile:26: Documentation/devicetree/bindings/iio/adc/adi,ad4030.example.dts] Error 1
-make[2]: *** Waiting for unfinished jobs....
-make[1]: *** [/builds/robherring/dt-review-ci/linux/Makefile:1587: dt_binding_check] Error 2
-make: *** [Makefile:248: __sub-make] Error 2
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.kernel.org/project/devicetree/patch/4b879f53450e87739afc0dbd832dab5a3f83efb1.1770309522.git.marcelo.schmitt@analog.com
-
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
+> diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600.h b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
+> index c5b5446f6c3b43150512bcc4357cee385080b634..1c796d4b2a4038203f734f80d7bf7bad138c3497 100644
+> --- a/drivers/iio/imu/inv_icm45600/inv_icm45600.h
+> +++ b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
+> @@ -205,7 +205,7 @@ struct inv_icm45600_sensor_state {
+>  #define INV_ICM45600_SPI_SLEW_RATE_38NS			0
+>  
+>  #define INV_ICM45600_REG_INT1_CONFIG2			0x0018
+> -#define INV_ICM45600_INT1_CONFIG2_PUSH_PULL		BIT(2)
+> +#define INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN		BIT(2)
+>  #define INV_ICM45600_INT1_CONFIG2_LATCHED		BIT(1)
+>  #define INV_ICM45600_INT1_CONFIG2_ACTIVE_HIGH		BIT(0)
+>  #define INV_ICM45600_INT1_CONFIG2_ACTIVE_LOW		0x00
+> diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+> index ab1cb7b9dba435a3280e50ab77cd16e903c7816c..b028044d609a41f6d4b747383323130ded0d2e79 100644
+> --- a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+> +++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+> @@ -637,8 +637,8 @@ static int inv_icm45600_irq_init(struct inv_icm45600_state *st, int irq,
+>  		break;
+>  	}
+>  
+> -	if (!open_drain)
+> -		val |= INV_ICM45600_INT1_CONFIG2_PUSH_PULL;
+> +	if (open_drain)
+> +		val |= INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN;
+>  
+>  	ret = regmap_write(st->map, INV_ICM45600_REG_INT1_CONFIG2, val);
+>  	if (ret)
+> 
+> ---
+> base-commit: d820183f371d9aa8517a1cd21fe6edacf0f94b7f
+> change-id: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
+> 
+> Best regards,
 
