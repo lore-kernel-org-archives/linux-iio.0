@@ -1,127 +1,132 @@
-Received: from mail-ej1-f48.google.com (mail-ej1-f48.google.com [209.85.218.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2F36439014
-	for <linux-iio@vger.kernel.org>; Thu,  5 Feb 2026 16:56:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.48
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770310619; cv=pass; b=VadlAtwFUtzknx+fKOm8gevPoMeNF4f85vjnTUGXFPtVY92zv48tGGSKI9AxqIjROTehbeVwC+w/bDuCZivww9D+cNEiWw9GcQXX0qlD4aaNZ8cPi8HwJ+GZ55umxwOKBv9tsmTeO8iLzYThNtAxk47uIPze5zFtUGOFDUiGUVI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770310619; c=relaxed/simple;
-	bh=FubNU7Nwqx3hIcILlR6yYjmKrhWkkBVcmDPP+R5NhlU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=m+grVzcSICNxKOWkmW3UhqW2badDOrugbfabL2eQbUj6JnMYX4GYjkLT/Q86Xd7Qfye09JSf59KbWkPG+7piQ1HTGK/P6/Rxt4x34iXdPAIkWXZ6Kb9B+OvklDR0L1Aq9EoD63M5ZwUdCuKBUaC9tV4olS25umsaoeCVKzdpizQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dXAqkjjl; arc=pass smtp.client-ip=209.85.218.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91AB3298CAB;
+	Thu,  5 Feb 2026 16:59:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770310757; cv=none; b=XtdUyYhTdMWEcrrpOHZnAafRUz5KkkKshg+eLkeaPQJYiZjQw8Iepn+MFJCl2stlFuyVxwBelYfDhPzokg16wR6iIcyG8kTjM05YlWz4Nf6cR1mBtug0ylRAPRXo2xEpedZsxwcwMys6JQEWUFl27ULJJBHNQj1xuOMHw/jxWeU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770310757; c=relaxed/simple;
+	bh=mP8yGokYfLGhlSi6K4RLbVXmFt5viXyUB2cY2x1bWKg=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=SClVEkhhnO78FEEg12iIHlH8fdR1m/HEe07f5a1jextPTRvqbHTIqruCMzrjwLETlSFbsZMgtU7ukgkkFJYBtZJvVjg3/jcAKDemAbCNDF5Mpt7ptsthH62gumkmchxln+grU1di20BRUgO5TCrUn94yXFSHGp0ADXcoZ4fZNqY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t0PpFXgg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dXAqkjjl"
-Received: by mail-ej1-f48.google.com with SMTP id a640c23a62f3a-b8837152db5so176102066b.0
-        for <linux-iio@vger.kernel.org>; Thu, 05 Feb 2026 08:56:58 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1770310617; cv=none;
-        d=google.com; s=arc-20240605;
-        b=DYkLPqBqqkyjxgkn9eF+Gt/VS2lcCiGZBnTAhSGOn+BrM1RtOJeJx63FnNQSq0ukjy
-         7LbHGytDrd5zeoAEcqy1XqnXa7Ez8AQra8d9KxS1wydOy2afR2hySz1VMb020qvx6kBZ
-         8bBNv2bqEfp5yQ0J8GI3egNQH82sSgDqyJkyCan2BW+iBxpGZYSJTiIWVXGuPwdGzm8e
-         tGAt5HKajoph9br/L7AegWw+Azm0IqRB6gdXiMUTnW4YRrvAu4Y8IiTgA0UChv0n4EuB
-         R6w8f4VDWP1lrSConok3KlML18ud3fkLLnlw56xKTrvo/Bar7EkJEPrJl86SEyjAsd3G
-         KLdg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=/3sQQzeXOoaPPSSsU2vRBnHaln2TVQn2cJYpZhDkrFA=;
-        fh=ldgSh2oxjaIqT7kjaj5Vv/IDsS58CoUvAu+MZy9lTMk=;
-        b=XbI6Zm2zdiFpgmDRL9BAW8ADkVLC1JBkrx8LFyim1PFgZDNJS71er9JrEIAd/8ziZ3
-         YV3/2jGLLH7WX9NwFrQD4pqH+0uxtPFRddVifGXWGiRLFNuxiawke70YLUeLHMCOysjB
-         VyIL5M48YY2p11eXQK/oN1ABbCq4wKZ/uZ5suJlf2z+S1JX5KE0Oqq/236OZ1ZgIIJpb
-         eHmhfgcxMoaqGi2EK/K61c5DaX1/xHpg36UXEodN/8PCQLcOgWatsBA/RPmAqri9HK9t
-         BnDUFL2t5/GwVfDTDjRW3zbpxZJqlVPk7Ixc1gxMtcpggSwCfZnSJNvXjJe2KaYD7n8U
-         AcBA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770310617; x=1770915417; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/3sQQzeXOoaPPSSsU2vRBnHaln2TVQn2cJYpZhDkrFA=;
-        b=dXAqkjjlOQwDw2Y8mtbL5oqyX9d85WJRV6cvntFwEEIjq3w5ViBDDXYTy8WjZ3VnJM
-         00nVfFmZIKJGMv404DDgkGmRBIc9SqzGEFzLI/Xt4iTSAuv7EwyRmiYBjQPWUhvpig0R
-         9PBthrSamemMHlbqXnlMvK9XD5oLgoXeJqY/D/msQCinBd7UEvka3cMWzQrBcCB4Gml/
-         1ALWeA8sBw+tdUfBx0aPYDJCYLa9P2lja93YR9BvRaYOEyxFlfm8RYkqGdbI1ZKWjYGD
-         amd9L+2Lhw6JX05uCy77I1eV0e3R5UgYAXH4Qo9fJW/AStd4lXGrFjx/t/c9XEWzJBH0
-         n4Bw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770310617; x=1770915417;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=/3sQQzeXOoaPPSSsU2vRBnHaln2TVQn2cJYpZhDkrFA=;
-        b=eLYWdkOQ1ZfHOZCPiFVSsCr/7PKZiLJIAThThxDJIyFfxOvil0SUHSlsSKzVGbcbkV
-         dom8NcZROgktrpz2wyGyp3b+bkU5Hx2l1N0JkR2obAzjoukeCzYXxnp2OX4FM8t8JMr2
-         RfN20hcLIp0NHQFwH3R6LKprP1jYUVOaL4K37doevX8+Hk89hdnCnyIxvqFhlIHZJT8h
-         QMr1NAz5PfW9YtPsu8eodpEcrJ95qqb8oJ3GO9ht5ezeDUjs91DHNUcBeres+L+LOYV0
-         kAWEkHFjwxFdBCH01lXV+otXwrs8DIrtkQAUymgoAgkHDFYYajM/zdG+u+jr3vMZFOGZ
-         wnZw==
-X-Forwarded-Encrypted: i=1; AJvYcCWMLo70rMxGsVxipEB1ApMH9a5r3YRqt/1bU4Pir9camgt3zrWH2dg/uLBuioumf4yAxqcqZbVDiXI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzoCA6NjwPW4yNxEYDM4fgrq/8PDP5/6ZF+lV+cTtbDps5xerD7
-	79WGlqst9lWAu391PZeB7cKdBkvmNCSEbcQeWZf4+543xFgN1pmmMmeTuMSnpsGpA9FiizyINq5
-	3I/R3Yl3HZZP2yqcGpiLFfM/Xwodfrfo=
-X-Gm-Gg: AZuq6aLB9BGZ7d6jHYahrv/F5gMnAsjF+Iyn+ko/AfdXVwY5GitVs9gp157dIyegHj2
-	YPcElHyabLodzs8cCxhcXi1IKlLFXBTPU7bc8D52MrB9+2JYyX33Hv+59Eo9NtqzAViRG1yZH81
-	YYRFXHI2UrHMnEGzzg3QEK1inrBB+9C5Bu357Ctz43RXuHXPkklaKsD7XzCHxRXvkQMvDkdZXDi
-	VSZqkEXyeP7i3CGnFK6VbL7DeBv3qO4JxNmK3UhabXMpIdLd8hvIL5fMQ48deQS/qkirnpC85gH
-	Tx5n4/bzlMeHJfH/wsbFK1Zaos+supXKFFWiFcSiuF4xqvvkenO5WOpGMEm6NYUnU5x/1Ts=
-X-Received: by 2002:a17:907:d0c:b0:b8d:d9a7:1b74 with SMTP id
- a640c23a62f3a-b8e9f373a93mr420024366b.65.1770310616891; Thu, 05 Feb 2026
- 08:56:56 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t0PpFXgg"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 13BC1C4CEF7;
+	Thu,  5 Feb 2026 16:59:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770310757;
+	bh=mP8yGokYfLGhlSi6K4RLbVXmFt5viXyUB2cY2x1bWKg=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=t0PpFXgghQDjNX0R/y5eKrLm4YNU1iHeCTD4gUyf8vfNJLdSXjALqcTXOyvQV6yfJ
+	 tC+LlfLi1eLmgm6w7kuU7u6Pbz/uPdhL4EOci1Te0LjbBTYHnh0N6OJXfXAdXYTQKH
+	 H7qsJ93VqfxRmHM/ksgIEpys2/1gSu4Us4VVLFKDaeA38fSiM8MuyuJYJZR9PX+WoX
+	 GKnk9W2EpFYwgFBkdWczl3PLW6em7mEMis7WoSBrsKzNzJx3Uq0ilUctwohROl6xeJ
+	 L5u71DhysmjqKnz/R5bVEJP5gyWtuk8Z/vF6goasFq1XB/FwWtC0aGWQHArC/0bPRR
+	 T03JYr2FyHFGA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCC8ECD988;
+	Thu,  5 Feb 2026 16:59:16 +0000 (UTC)
+From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
+Date: Thu, 05 Feb 2026 17:59:14 +0100
+Subject: [PATCH v3] iio: imu: inv_icm45600: fix INT1 drive bit inverted
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260205131234.3244467-1-harshit.m.mogalapalli@oracle.com>
- <20260205131234.3244467-8-harshit.m.mogalapalli@oracle.com>
- <aYTFUMe3jUO_bGCr@smile.fi.intel.com> <34bac81e-6a6c-4cf6-b370-beead4f705c1@oracle.com>
-In-Reply-To: <34bac81e-6a6c-4cf6-b370-beead4f705c1@oracle.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Thu, 5 Feb 2026 18:56:20 +0200
-X-Gm-Features: AZwV_Qi0HB7b0WeOF9-L3bHR_a1LclmNjzGpK8yNC1n2BCSBY2W5nybVUSREUUk
-Message-ID: <CAHp75VfSYGoNUTqDb9WLYNYeChkB4mM+LEBpyRVnLOEKkr==WQ@mail.gmail.com>
-Subject: Re: [PATCH v5 next 7/7] iio: sca3000: manage device registration with
- devm helper
-To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Antoniu Miclaus <antoniu.miclaus@analog.com>, 
-	Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org, 
-	David Lechner <dlechner@baylibe.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260205-inv-icm45600-fix-int1-drive-bit-v3-1-9c60c354dadb@tdk.com>
+X-B4-Tracking: v=1; b=H4sIAGHMhGkC/5XNwQ6CMBAE0F8xPbumXSglnvwP46G2q2wMYErTa
+ Aj/7sLFqx5nMnkzq4kS06SOu1klKjzxOEio9jsVOj/cCThKVqix0agt8FCAQ1/bRmu48UuKbCA
+ mLgRXzuCiQfIVYYioRHkmktX2cL5I7njKY3pvh8Ws7e92MWDAoXdtiNoZq085Pg5h7NUqF/xTQ
+ 9EsOZm35I2tv9qyLB+o1hhNGgEAAA==
+X-Change-ID: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
+To: Remi Buisson <remi.buisson@tdk.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
+ stable@vger.kernel.org
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1770310755; l=2533;
+ i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
+ bh=QGN91Pwgl8UMh04RqyiuclAgzRVc3mqHRx1WHkaYI5A=;
+ b=/jwqFXltzDkd5c6YB8QcLqBmbzGhn2UTjgkWON97MSMAKH/RrTfWV2Lf7evT6QNJHnt2wcPAi
+ js3C85/eo8KBWy8ZcU+SZo6bQ3xemS+oC246eqOjGHm/ljSDhcceTPq
+X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
+ pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
+X-Endpoint-Received: by B4 Relay for
+ jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
+X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reply-To: jean-baptiste.maneyrol@tdk.com
 
-On Thu, Feb 5, 2026 at 6:51=E2=80=AFPM Harshit Mogalapalli
-<harshit.m.mogalapalli@oracle.com> wrote:
-> On 05/02/26 21:59, Andy Shevchenko wrote:
-> > On Thu, Feb 05, 2026 at 05:12:13AM -0800, Harshit Mogalapalli wrote:
+From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 
-...
+Drive bit must be set for open-drain mode and be cleared for push-pull
+mode.
 
-> >> -    struct iio_dev *indio_dev =3D spi_get_drvdata(spi);
-> >
-> > Do you still need spi_set_drvdata() or analogue in the ->probe()?
-> >
->
-> That's a great catch, I don't see spi_get_drvdata() anymore after this
-> series, so yes I think we should get rid of this.
->
-> Should I fold that into this patch in v6, as spi_get_drvdata() is also
-> removed in this patch ?
+Referring to datasheet DS-000576_ICM-45605.pdf section 17.23
+INT1_CONFIG2.
 
-Ideally it should be done in this patch, but let's wait for Jonathan.
-He usually may tweak these small things when applying.
+Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
+Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
+Cc: stable@vger.kernel.org
+---
+Changes in v3:
+- Add precisions in datasheet reference
+- Add missing reviewed-by tag
+- Link to v2: https://lore.kernel.org/r/20260205-inv-icm45600-fix-int1-drive-bit-v2-1-5e72608ea154@tdk.com
 
---=20
-With Best Regards,
-Andy Shevchenko
+Changes in v2:
+- Add datasheet precision where to find the bits
+- Link to v1: https://lore.kernel.org/r/20260205-inv-icm45600-fix-int1-drive-bit-v1-1-72a78cd07150@tdk.com
+---
+ drivers/iio/imu/inv_icm45600/inv_icm45600.h      | 2 +-
+ drivers/iio/imu/inv_icm45600/inv_icm45600_core.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600.h b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
+index c5b5446f6c3b43150512bcc4357cee385080b634..1c796d4b2a4038203f734f80d7bf7bad138c3497 100644
+--- a/drivers/iio/imu/inv_icm45600/inv_icm45600.h
++++ b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
+@@ -205,7 +205,7 @@ struct inv_icm45600_sensor_state {
+ #define INV_ICM45600_SPI_SLEW_RATE_38NS			0
+ 
+ #define INV_ICM45600_REG_INT1_CONFIG2			0x0018
+-#define INV_ICM45600_INT1_CONFIG2_PUSH_PULL		BIT(2)
++#define INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN		BIT(2)
+ #define INV_ICM45600_INT1_CONFIG2_LATCHED		BIT(1)
+ #define INV_ICM45600_INT1_CONFIG2_ACTIVE_HIGH		BIT(0)
+ #define INV_ICM45600_INT1_CONFIG2_ACTIVE_LOW		0x00
+diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+index ab1cb7b9dba435a3280e50ab77cd16e903c7816c..b028044d609a41f6d4b747383323130ded0d2e79 100644
+--- a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
++++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
+@@ -637,8 +637,8 @@ static int inv_icm45600_irq_init(struct inv_icm45600_state *st, int irq,
+ 		break;
+ 	}
+ 
+-	if (!open_drain)
+-		val |= INV_ICM45600_INT1_CONFIG2_PUSH_PULL;
++	if (open_drain)
++		val |= INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN;
+ 
+ 	ret = regmap_write(st->map, INV_ICM45600_REG_INT1_CONFIG2, val);
+ 	if (ret)
+
+---
+base-commit: d820183f371d9aa8517a1cd21fe6edacf0f94b7f
+change-id: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
+
+Best regards,
+-- 
+Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+
+
