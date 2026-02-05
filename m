@@ -1,54 +1,54 @@
 Received: from DB3PR0202CU003.outbound.protection.outlook.com (mail-northeuropeazon11020122.outbound.protection.outlook.com [52.101.84.122])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8E3C3D3488;
-	Thu,  5 Feb 2026 12:24:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6093E3D34A8;
+	Thu,  5 Feb 2026 12:24:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.84.122
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770294262; cv=fail; b=KyODRm3KhdmI9kiECIH7t7ApsZ+dD78QphQ3dx3sObCIVOYZTPN+wFfIaS7w6SeEQDCezxiv+IMYRkWdhUyNof/uCSOPMm0LmYb5v8CzWSlBKItx9kQsiBBBvDE9DCm5vjCBK58MNEigcS+EfGwsVrZZG29qpwPMGbmUDvSxM70=
+	t=1770294266; cv=fail; b=Pg6iIcoaSKU+BGUzP0s/0nRkBfod+Q9S60WdGRNcyq0xsCgvcp710fKyJG95QMC+Isiech74rbMRf5E7cOwI9cYZqMQH2d0ka0Ub7aUNXgyjZUvDLh7xEhsVIgtqDdgu1ONIpXK+PmliGlmLdP5OIw0HR04A0y5uktFJ0ewH9Ds=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770294262; c=relaxed/simple;
-	bh=mxfzByvWTqKf1vS27qUdV/KAsfTBDZ7YIWcbiOjB+vU=;
+	s=arc-20240116; t=1770294266; c=relaxed/simple;
+	bh=w0qhn0Kl9Vuh0Itcc/jtn3JaLNWxkN03BOzdiI4tPYg=;
 	h=From:Date:Subject:Content-Type:Message-Id:References:In-Reply-To:
-	 To:Cc:MIME-Version; b=OZ+FKBsZeSiGWpbKcWTPoATCqMUWZNrbCt09Ze71LbTP9SVyBLKxzdDoE8c+kznuIeolbAXn5tMNsWZY/o4M3cLjXXH73yOxKFVrByfSWGtXoj/ol0807NixZfTT0RgPnKdu5hN6MJKHsDAmFbKG63wFIADRUMpS9q0C8ImuyeA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=Us82lOkd; arc=fail smtp.client-ip=52.101.84.122
+	 To:Cc:MIME-Version; b=tHmR4C9ZlZhCxJDg4mQ2sXKIs78ndyH11TkhqXHfHCYAQIs4F0pPFrDw097HC2/8L0Dg10xKde4l/czSuRmMq6c25XUtm9X4O0uCiUdwzb3Namrb5dc0XaLFG1CpECRhfyBN0Fuj4YKGOw7w6qOGwHjPhvJa/83eglH4y8dYfPw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com; spf=pass smtp.mailfrom=vaisala.com; dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b=bkCFhOjh; arc=fail smtp.client-ip=52.101.84.122
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=vaisala.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="Us82lOkd"
+	dkim=pass (2048-bit key) header.d=vaisala.com header.i=@vaisala.com header.b="bkCFhOjh"
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=kKywjo+nzlrSgNqPHssBsht3ush7DDiKXwIDN0COcjlOjkaL7AGtFJxlt5di5NpQqtSG6uX+jxIfU70xU0EQSY3FNOcu+fWNKQpJKZp9DHpcRfTAlSV6eq5baAMpeHmJLOWdnzht7gqlTyPsoHN5Unog/muNgRmKl1dIQF3VpOS9mr0kPYCAPa16aR49rWFp4UVKFVSpaz3y9gkiFNTFniqf2T2AXEAObqMvZ+kj2fgPzn66PKBSQn4dOslz0USJ0tL3MWAvWsQ5xR/dxYJ3LPOQzUGYWe0zuWsMHurRy0YkyJGpsazi/BgYimVWgx8p93JGw0k9Gdp6/bxedxwUSA==
+ b=FmYuWRpvuIfZvF/l3G+AO1/aeLzITv7tnSENHuZpa9EhgDl9vcdekzUj4Iznj0AB+XJy/orsN6M+SAhSoORwQ7gwHJYOaWFSOq3pxXGmKAodj3fcCm1DubKIZ+Ppmst+AerqGyvO38KrcWJPCUtt2wE4o7W2VHc6tzSTOmtr9nUgpKJLtP4b6ncgHGefzVcsuINoYuLfZ3NbA8VFYcYb53uIse9GwbvoOVfq+Ig9oL009nT6tAhtWwt+2iw2p4cWGu+equFReJ9Bi5bXUhTUee9V/GQhr/bRLqZTNv9RWBVe6GFnR+C5Sdk+RCJFRF2dXfCy04qKVk8GFxVVR0pRnw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=MQArJXZYP22Rhs/gDr6K7OxYMJGbsWaxv8Yn6a8FlVU=;
- b=nzheaPsY1GfVTovr1yJ1UhI2JoKefDJySCZoMUqdIz+eU3yVcP5ALEwV7lGjpbz367z/kYZhA83qPtfUsSF9Zqnt8yoAx2NuF4HTW0U6T5GmhL/ZQPKs8oBcjMl/PTl4B18hKhrI41QWyiKbxHlJC+9+TgjL/GULqtz7DlE5MwYH0iNiZqeS+GwkOrKRCyVw7Goi/6KQxfefo77ypkJIQ1G4oZe4APgKNKdNz10LwifTfV81EPw0NlgX0RXsyFuS3YEf6HU1cL1eLXVKQuuYAfy/uXo7CaxiE7leXkH3USU7ZLHmyyyDEcya+UBTFJMo6dxHLZ38mcRHKTeWtNhgyQ==
+ bh=uXCrMhagYj8vyOrt2VbSh4nhm0s0bevrrkko+Afj8R8=;
+ b=xz0Dx155YYhBXh1IDCqiW9LHFVQaXkssVwoZxZCFD/S5KHKWDGDziVGPz1gPAKkhqvOsYjQAgtjbvhlAiBZQ084bJhGjyM9qQUG/j9WXz/cs/IGadlIaJmPYn1/VKlS0dJlm9RSmCkhrb6O/wQ1PSXmxKoPByDwZVIJaqUcTNpUBhBww20wt1M1KNfUty6xmMiPXiuVgU5Zl8kiQyDQFwmZIWap6pyrQ0Sb/26S4YE1zI6i1uQpNwywlv7G4thEi2L+AYwAM8bcbW397IPgNOGaqvr8mAEGjnfmuVksf5axggiUo1c/otp/uW3Orhy+kQGsVA1ifE/jMOcSFcIWSOQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=vaisala.com; dmarc=pass action=none header.from=vaisala.com;
  dkim=pass header.d=vaisala.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vaisala.com;
  s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MQArJXZYP22Rhs/gDr6K7OxYMJGbsWaxv8Yn6a8FlVU=;
- b=Us82lOkdz1+KSfXm0IT/rFLsRkYP0Rzovymrb/mMR074T2cJI6FqNHMm0WySPUpEpGM+cSsaOuKVeXMm94NPnKujRqUo5PXw8eOWK1Lz29+RHCfFhkFafN4P/s81DoQUyOt0jAIaQcDqXFunb2+Kk6GIB07wXlWUMUHHiJ1O3m4v3dtfaAI0C346cn/gJjPknZAtzdMtXWa75bCi1pPWijy+9yXtOZLzH1pKin9pkcebebdoSNnteZaBsGDhzEjFQN9uMnpepRV2Ax04cN+Qosq0cheOlcwKS+ke1QAZ/4zj1aegoeIjR/0hgyI5kngbxCrKQR5b3n/bRpT8TydlfQ==
+ bh=uXCrMhagYj8vyOrt2VbSh4nhm0s0bevrrkko+Afj8R8=;
+ b=bkCFhOjh8WWndk72HhSPJFF5yUBe/gBuMYwdEoywR6n3RNiovDGI+DD2jodofHLYlcAgK6NZhtsiOyinJ3PmEDdqtxuIxHh4gdgb9Qcp0yfk3yto9GhX4JM4dfLZ0oSs2gqYeo0sgpcxf46/saKZoxdK923gZp7r51Cm3BeXjxxmD04ABuPPcDiem5pi8FXAz0SnRXFWW8DDbe1jKaB50+BFbJvr+EJyUUPaHxqZBjA2VFD5sKCa8W+iYWEHQh6XWLoEOiT+MeAOKrAPwQ8X/wNbW+UUNCCnLLhyB07BsIVkAKZL/iY+1L+6BU5kd40xIaL9y1/XWhnkOK6n6p9mmA==
 Authentication-Results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=vaisala.com;
 Received: from AMBPR06MB10365.eurprd06.prod.outlook.com (2603:10a6:20b:6f0::7)
  by VI0PR06MB9745.eurprd06.prod.outlook.com (2603:10a6:800:213::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.13; Thu, 5 Feb
- 2026 12:24:13 +0000
+ 2026 12:24:14 +0000
 Received: from AMBPR06MB10365.eurprd06.prod.outlook.com
  ([fe80::addd:5e9b:7273:8049]) by AMBPR06MB10365.eurprd06.prod.outlook.com
  ([fe80::addd:5e9b:7273:8049%6]) with mapi id 15.20.9587.010; Thu, 5 Feb 2026
- 12:24:13 +0000
+ 12:24:14 +0000
 From: Tomas Melin <tomas.melin@vaisala.com>
-Date: Thu, 05 Feb 2026 12:24:07 +0000
-Subject: [PATCH v6 1/5] iio: industrialio-backend: support backend
+Date: Thu, 05 Feb 2026 12:24:08 +0000
+Subject: [PATCH v6 2/5] iio: adc: adi-axi-adc: define supported iio-backend
  capabilities
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260205-b4-ad9467-optional-backend-v6-1-7ca20c40c59a@vaisala.com>
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260205-b4-ad9467-optional-backend-v6-2-7ca20c40c59a@vaisala.com>
 References: <20260205-b4-ad9467-optional-backend-v6-0-7ca20c40c59a@vaisala.com>
 In-Reply-To: <20260205-b4-ad9467-optional-backend-v6-0-7ca20c40c59a@vaisala.com>
 To: Michael Hennerich <Michael.Hennerich@analog.com>, 
@@ -59,11 +59,11 @@ To: Michael Hennerich <Michael.Hennerich@analog.com>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Tomas Melin <tomas.melin@vaisala.com>
 X-Mailer: b4 0.15-dev-c6abb
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1770294251; l=4202;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1770294252; l=1511;
  i=tomas.melin@vaisala.com; s=20251125; h=from:subject:message-id;
- bh=mxfzByvWTqKf1vS27qUdV/KAsfTBDZ7YIWcbiOjB+vU=;
- b=WOrdD76KHRfpnpmgSgwxZAkKsbaxE0zeObd7IvoHHB5HiSCYYMOfNo6egPM6PLekvQcf1LlG0
- CYft2QuuP6BD2GKD597BrSoenClnflK9ennclc5xq2Q91tuYD+MITsG
+ bh=w0qhn0Kl9Vuh0Itcc/jtn3JaLNWxkN03BOzdiI4tPYg=;
+ b=39s3Q8ONkTXGUL9wEL0KjQpYmugu7WGDFK15LeN3IQ/9l7YqL+Ei7Oi8L71qYx2z0F2eRjHlF
+ 1bWzJVp513mCvuUXOrS+/I4cpZcXRtTiww1lhGpmU6JS0FEd7+OZmK9
 X-Developer-Key: i=tomas.melin@vaisala.com; a=ed25519;
  pk=6lMiecjZ+OeyZuxYsDm/ADy9D1JKvYrKdsYv58PMepU=
 X-ClientProxiedBy: GV3PEPF0001DBC0.SWEP280.PROD.OUTLOOK.COM
@@ -77,211 +77,142 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: AMBPR06MB10365:EE_|VI0PR06MB9745:EE_
-X-MS-Office365-Filtering-Correlation-Id: 62e9468a-ff1d-4900-d42f-08de64b178d8
+X-MS-Office365-Filtering-Correlation-Id: e299cc65-1f9d-41ce-d429-08de64b1796c
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;ARA:13230040|1800799024|376014|366016;
 X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?clc5dXJ0aFAxNmlIUWdRcmphbkVubDZnTENDRHpMR2VMRGRQa1E4elhqSHg3?=
- =?utf-8?B?RTh4cU15cnNWaVF3REM1a0FQQmorVEJNV1pscmlFN1IzTjEvNGRIOHp5U3h6?=
- =?utf-8?B?VFR2VjltaTFWUkpYSWhZeENiY2RqT0ErMFRoNmpHeE44L0dxa28yS3VGNDZw?=
- =?utf-8?B?aWt2QXpWc240Zi9xTHA5bGRjK0dTc2hUazBQbzdId1lsTFdNL1RyamhkZlJL?=
- =?utf-8?B?eDUvQ2w1bmNFREFqMXROREEzU0RSbmZXemhyYk91MVVZbXo5SnVDVGM0Rkty?=
- =?utf-8?B?QitjU3MzTWVma1ZsQ3F6WTBCdmU5b3IvTXc1cTQvY1Z3cE5yUGFXRTZSdzM2?=
- =?utf-8?B?TnE3WDZSS3JXVXVlc1YzajRURlYvaTNNNjdOczB3dk1lMExmTC9qeXZEaVhm?=
- =?utf-8?B?ZEk3aVVCakk4U3R6T0pQNEZ3S3JWcHIxclIvRkMyT3RrcURHbmJzRHJuSUJR?=
- =?utf-8?B?eWxBRmJvcFF6WGVDMnJkQkZFa3NrVHp1ZGtwWUdhVFNqL1Bja2VZQTFYT1Q5?=
- =?utf-8?B?aUZRWkVQQ2Fjd2tFVERTN3d6SlBoZWVpWDI2b2dtVEN2Vys4eS8yUWl2U25W?=
- =?utf-8?B?ekxKUzQ4bmxDU0hLSFdRNXhEQzQwMTFIaHIyclJSM2ZicDRhU0hFUmNwdVp5?=
- =?utf-8?B?L3lNcy9CTldQazhuczkzTWRPWFJVclV2cllsdXhlWjlXZTdIR1ZEdWFxY2JG?=
- =?utf-8?B?SEdkaEd6RXRxRDY5T1ZKNWVvcmQ3OUo3NFFNYUFodmdhNVREdlIxa3pRbEJT?=
- =?utf-8?B?YUJ1VG5qUjZPbU4xVkFoUkIrVXVUUUMxNHdaQklkeDYxYjJVWnBLbTNNclBF?=
- =?utf-8?B?cFJOYzlHcXBNTktpa20wcnlxZnlEUElFazZzT2pYSm9DZHBLNjYzNTRLbjZt?=
- =?utf-8?B?ZjRLalVyYm1TYnRnSFVmQ3dqSXdzRG5DYjM5cGkvYmdRVHhYaUM1OENYc25j?=
- =?utf-8?B?Sld4OUN5N29meGpqZWwwVEFmUFNjWWhaUE04UlBFUGxlQ2VYTW9oY1B4dmVx?=
- =?utf-8?B?YU84WFZRMmtUY3NrT1B4QWQ2Z01kT1Q0N0RnbC9CQWtFeWs1bTd2dEdOUzdr?=
- =?utf-8?B?ejMzdU5uMm5tenFLMVltWFp4NlBtbm53MUVCSFVCanhqVUFrOTIxS2VJZGhM?=
- =?utf-8?B?WjNrejQ1Nlg2bU5keG16WTdrMFNpaDVJaTNDZXhDR2RHN0lOaE5SWSt6SGNN?=
- =?utf-8?B?L2FOVENBZDFNMFVTcURJbzFvcmYvZnVXaE9uaWlrMmJhVyt0bUJLV0RyNnI5?=
- =?utf-8?B?UThmZDkzSzRSZ1NWQnd4cjFBVStUTis5NmcvV2wwbWRYblo1c1FFRmI4TlNl?=
- =?utf-8?B?Yi9GcmNESGwxRkgrV1NkY1ZqYktHUytxb3VpOWdscFhKNWF2WWdoWmM0Z00v?=
- =?utf-8?B?NTNnN0FVR0hHdHlJaUlWbTlrc2JqWCt6amJNQzlPMVo2Y3E5eVBNbXJabEw0?=
- =?utf-8?B?WUFxNkptYnFROW9NN1lPb3ZqQ2E4R01UbmYwS01tcXl1S2dDTmE2eUhxdktL?=
- =?utf-8?B?bmNWUjc3dm9UTS92L0xpd2ZqQlU4ckIxTlVpZ3Z1azZmWG5JOEZ5MnB0cXJi?=
- =?utf-8?B?SUtQN2hHc2lTQ3crSjlOK2JMOExkWHU3UDJLenBBQklDTzc2UzA3WmJhVEJH?=
- =?utf-8?B?aWxWRDd5VkRBMDFWamNDQnJCOTE3UU9aNk9aaHYrb21xTjBSQWtRWkhmdWRw?=
- =?utf-8?B?eDVjemhud0ZnaHh5WjdxRXJ2R2dTcmsycFYzVFJlWGVFb1pwNUtqaHNnMW5S?=
- =?utf-8?B?YnVDeFE0Rm5pTHIyTnpQRUFWM3NGUTgxZ2w0NFFXVXc2c3ZyWGVEVGxvS0dS?=
- =?utf-8?B?aW82Ym45V3pUa3ZuSUx6RXZDT2UvRk56ZkUvOVFvQ0x2cGlvV2JvUzRxcXhR?=
- =?utf-8?B?ckNrU3Q0OTJHSEVaOE42aU0rb1lKcnh2dklOVVhwY3BINGR3TE9zelRNZGV5?=
- =?utf-8?B?QnY2RU1WYzdGK2p4UzNZdjBVMTA2OFBwMUxsaWRoKzkvQnJQT0ppbVNWRXkz?=
- =?utf-8?B?eXNrK3Y4ZFA0cG1NaENNcFk1WUtoWXM5T2Vsbk9WNDh3SGNkZ3RRYm1tVHFG?=
- =?utf-8?B?Qk1MSTE4a09CSWhrUXhFazluV21pOC94aFBaNmdsMm50MVIyWTRkYkFPWGdM?=
- =?utf-8?Q?8axQ=3D?=
+	=?utf-8?B?SnhCVlYvbUZSYUorVlZCNitpbjRaa2hLdzJaRW90dEduVE82TDAwUW45aUdm?=
+ =?utf-8?B?RXh6U2ZyS2pNWUtMb2RBK2prNy9lTjg4Ri8yckJtdWFoVDBqaEV6dW9wYmMy?=
+ =?utf-8?B?UWU1em1OZUtKRFZzMXhZS0IvVm1sYURiRE80RWIvSjV5MzNiSVRBL2Fya1Nw?=
+ =?utf-8?B?blF6Umk2Z3RlMUNOaWxRcUZheXFVd2F4U0Q1L0tvUFNzTy9pc0daUXpSN2NS?=
+ =?utf-8?B?WlFwR3IvcFBnSkJJajFDWHZaV1hKbU5YYTlDZFUzUk1VanhDQ0kxVmNKa1VX?=
+ =?utf-8?B?cEwxOEg4YWZYcklaZStoQjRUZ1RVckMrVHd5M1JMOVFTWkRtK2lmNTA0Yks1?=
+ =?utf-8?B?VTFkNEcxZmg1dEU0Q2pnSnpWR2x1VWNpNGFrRGtkWkU1U2c2U0RCWmNTdUUy?=
+ =?utf-8?B?Y1JNQkpqTHFFZUtMaU1Ma2NwcUtEMXdWR3VpbDYyNkMzN09BazRzM09PNk9D?=
+ =?utf-8?B?eHl6UE8rK0hDNmZSNHE5SW1LVFpBbGNTRVhYWVRvcTdscGdGbCtmRDFNb0VF?=
+ =?utf-8?B?cnA3cFY5RjhzMUhkakxjdHlOeldnVmhUQUkzcVJCQTU1ZWJPekp3NlNsTjha?=
+ =?utf-8?B?R3NOMFVwNFIwampkUW0yd0l3RTN5czZ6ZjgzT3E3NlVGQWNWbWFhQlhvTkxt?=
+ =?utf-8?B?aWMwY0lsQmY2ZzNuNDhyclVObDFZNHB0RTFUNHltV3M3aTRQdHhyMDdQRjh5?=
+ =?utf-8?B?Z3I3WSs2aGcxV0VKYVdheVQrczVCblFqaUZKcUp5UzVocWhITU1DSm04dTN0?=
+ =?utf-8?B?SW91SThycThhZ0pJNHgvNEhxY0JkZTRRZ2VxQnFSbXNaZnlkSG5Ma1RrRFB0?=
+ =?utf-8?B?US9qSm1LejhUU2RNYzcyNG1tZE9Hb1grUmZBYzlnV3RXSGNHV01ob21lUVR5?=
+ =?utf-8?B?bWkwMG8yUE5QVGIyQlZLU2pQRGNIeVhzVWdLRE1TcFRFOTB2NW5Wc1lIdXBV?=
+ =?utf-8?B?YzQxSW1pV3VWV0VIOUNBOE1SQXIvTFdZQTF4Q2ZZb2w1MmI3TUVTMEhnYzFN?=
+ =?utf-8?B?OTErWFgvdDd4QnhCcHFYdnhQdldtUFpBYXdjNFR2NTVqeWxyZFE3Z25CTFAv?=
+ =?utf-8?B?YnVIanVEekxHcm5WcEhzbjZlU09QQTJZU1NlMlJXSXVIdFpxS043U3JDM3Zv?=
+ =?utf-8?B?K2tOc1NibzVKVlpkNU1vQ1U0d1pJaEdIcnIzTW5yV3RFQTJSVm5pYnBERU9a?=
+ =?utf-8?B?Wi9MdU5pSkQyOTB3MGhJblRaK3Z4bDNzNkVKRjBraGZjaGtaVXJqRy9yVTh5?=
+ =?utf-8?B?TGdSdjlxNElIWVN1MnRLeEQ1UTVyR05ySDBmZmFDbDhqNTlNemdCRUttZlhi?=
+ =?utf-8?B?YWVKZ1NFK3A4L0ozSEoydy9wV2VhT0hIL0lrNkd6VndpeDJvZ0tsTU8rd3cx?=
+ =?utf-8?B?R21xNHVWN0l4WHBnT0cwanZpcDFIODJOWklSRHlVRkhNNng2UXZGOEcwRlRk?=
+ =?utf-8?B?T003UUlzOE1lekM5UHJpZVRLNVMvWnhQakdBTFUrWElsSUNTSXIwa0gyb3BQ?=
+ =?utf-8?B?YTRhbE1hODFUblhlUWdOTHpGU2VaakNNVk84dTVqbDB1QjZEQm0vTmNURE9I?=
+ =?utf-8?B?ZXdBYytqQUJzbFUyN0xMZld5UW0xWGEyUFdJWm0xdEV6MFh3VmJWOGsybUY4?=
+ =?utf-8?B?T3lqRHFRU3ZnbDg3Q3F4SkxKeTlEU0U3aW5md01DR3drYnI2N3pJcVo5cDFZ?=
+ =?utf-8?B?cnBGMlVnamR0SmtORWJBaGVraVpmd3B1YTZ2SlBwUlQzbmNwWVRUNndCV2N4?=
+ =?utf-8?B?K3Y3Mkl2ajEva1ZSbTV4TDdLaHN2Vndlb24zNmlRL1hReERBV1g4ZzJZWVdj?=
+ =?utf-8?B?Z0k1QTVtODVGTHRZL0k4ODlrbUpMOVdDTEE5OStTTVNCUHp0alVmSDhjL1Qx?=
+ =?utf-8?B?UHU1U0xkcHdnZTl0U0Fqd1hCYkJzUjdPMFRkSmFxcHNVSytDOVAwRjE4L29V?=
+ =?utf-8?B?UUVjKzBKK3k4ZEtzdzQ1enNISGI0bERuck5QSFcyYXJZZ2VINnFmRjlwV0dm?=
+ =?utf-8?B?YlNjd1BXNG4vcDJ0YUVUbE43NVN0NWRSYjY0WmJkSFRiaTQ0MjZrcDhoSGJ4?=
+ =?utf-8?B?YWJjN0RvcUNINE9SWno5RVc2WXoydE4xUWtYenN1aW9TVytOeVBqd3JLRWQx?=
+ =?utf-8?Q?j0l4=3D?=
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AMBPR06MB10365.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(376014)(366016);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?UmFoc241bFZNa2dHaFRJbVFiY0lxK1grU2FodnhrSkkxOHJ1REgvekVXcytm?=
- =?utf-8?B?WFhGM0FZWFM3Z29YVUtiMUNuZGp6RXRjd2RFaW8wY3FyWVI3d0JYQ2NHTEx3?=
- =?utf-8?B?QlFJOTRPdG9PRi82VHIrSVowYnE2b1pvNDhPTDY1QzMycG1BeWlFcXpxd3B3?=
- =?utf-8?B?d25YQ0wwRUlsTXhrZ08xcGM2dHp3aUl1a1ZSMW9xSU9yZlJwQjhWQ3V2OWJP?=
- =?utf-8?B?eDhhbE43NUQxQzZBOExyRkttK2pDeWUvVDZ4RW5RbVJPTFRRMTQ4MnJEWk5E?=
- =?utf-8?B?azd2T3U3NW1ZK3p4cUdNempock9HMmVJMVpuNGhYTk00M0d3MzZxeEFtNFF1?=
- =?utf-8?B?enhvNG42VnQ4bElxdHJCRzVxTlVDZk1SYklZQm1mZmJZSnp2ZjEzQXBoVHNZ?=
- =?utf-8?B?Nmc5WEJZSURyNGx5YSs3dHNuOFZIYm9nYStOQVpJWGVhQUorOGdzcHJQcExO?=
- =?utf-8?B?NVc3c1VLcDdOOHgxZ0N0eTVUMm8xbWpLT2tYdU5jMFJzT3NoaFY1R3ZDY3Rv?=
- =?utf-8?B?RUZrdVdBQ2NaQXp2bjVFMG9pRTVVdFlQTDRvTlYrZE5vYUQ3OEV4NVVVYVJP?=
- =?utf-8?B?djkvUE53ZThidlFQYVNZQy80MGRzQW9HYm93ckwzRy9hbksxZGtaaTlGZEdu?=
- =?utf-8?B?TllhcnhrN0plbEpSRGFPZ1RUUDg2ZmJJem9vQmZSV3I1TURGY04wVWZrS1d0?=
- =?utf-8?B?OU5IMTAwMWI5Y09HUERTc3U1ZDlsYS9mR1E2Rk0vczVsNHYxS29lRDNrRmdF?=
- =?utf-8?B?SG8rNHlJVzhNV0RUKzdTNWR6SlF5Z2F1SlJkNVJKUnhHZ2tWZVlod3dQekZX?=
- =?utf-8?B?eFBKZ3dTamU4QUkyaVlRUjNib0syOGF5VFJVc1o1SmF5ck81OEdnWk5JcG0z?=
- =?utf-8?B?NFRDbHlWTEF1MkduT0ZkQzRZYldGV0E3OHhUcjU5Zkc4VnArQTFkSmY5RG5m?=
- =?utf-8?B?cGJETEFDZHR5VmFsaDBvSDBXVUlOTXhyTit1RmJLeDluOEI2V0N4dzRKOVNj?=
- =?utf-8?B?b0RWZjZYVW9VUW5iaUhYR21BQkhGTndkdzNvZVI2NG9uQUtaVDl3a0ZTRDBS?=
- =?utf-8?B?OG81RjRtM3Q3YTJndHFJOGNLL3Z2VzA4VDhPK0F0S01ZS3ZPRVRyVUM1enph?=
- =?utf-8?B?OVo2a0NYelJJYlE5ZXhiTlpOUWRhRW5YMlZsS1JwUG5hNlM4MENYQ0FseG5Z?=
- =?utf-8?B?OElIaGpvOE05YkFROVg2WFBpSG9SQVpndlcxd0xKSUd6YVpHQ2hkclY2UjdF?=
- =?utf-8?B?US8wQktGaGoxS0FKbTRHTnhVaWNuQmh3UjhPSGJNWHRoL2V2T041Q0duMmxu?=
- =?utf-8?B?VkRVN3huTlNSWG1iTzZIeUtRVFl5V04razlqY0RBVjUzZWZ4Uzl6dEJRRmlP?=
- =?utf-8?B?L3ltcDVQMDE4T1dEU3ZNc3JHRzdGRysvdFA3Z0FWQ0d6cXUvNzA4QmlZUXg1?=
- =?utf-8?B?STlJdGtPTGF4ODRvL3FIbm05bytUa2NzUzhYVkZjdDJjamZCWGFBK3l2ZGJP?=
- =?utf-8?B?MXZxMEg0UjFFSWJJTDJkVXpMUFVISkhYY3k5K1dxK0dmNEJxdEtpSC9ET0hv?=
- =?utf-8?B?Lzg0ZU1KVjNvMFJKRzdCbXVISEpCUUJSTDlWbXB4SCtMM284L1RpSVlUbzZv?=
- =?utf-8?B?YW9oZzJhenY5aVBSWFFBeDd1cVdCeDhQNDMxN2d5OEhaRGxhYlhPMHo3ek0v?=
- =?utf-8?B?NWtGOW00a0M4bWErVi9wRFhoMk9QeCt6T0o3MGhiZEgzNWlHeWozNUExTUcw?=
- =?utf-8?B?S0Z5Zzh5bUt1cmZlVGdEeThNVVlmL0RLemF3Nzh5ZEREWW9CVWZoT3k0aDhn?=
- =?utf-8?B?a0NaNkZpVWs3NDlZT01ZandjWlVJMURWbEdLaXdwbExRQi83Umg1QWg3anZu?=
- =?utf-8?B?OUxCVXZGdytjMVJacjRrRTQwd0Jsa3VhZktWWE41eXVPUVF5QXdWZkJPOEZa?=
- =?utf-8?B?U1ViUFQ0VnhDRDdEcjJvNDFCRUlXWkFnSHJoNGF0Tks1Nk9zVEd0VmNESFRG?=
- =?utf-8?B?dllkcU9ySVQrZDZsYWZtTkU3UC8xSnQzZmVLYUtaVmc1eGQvQm1uSWpuUXdv?=
- =?utf-8?B?UEQyZkZLK3BLY0hwSk1DMFVCYXpzWGIvUmlUY0E2aFRaTEgvcDRheFNNS1U0?=
- =?utf-8?B?akV2UUR1SjNSOTluRDJ5MjRSTG1aSUNsZTJ4dlpuMEVEc0l3SDEyRVJvSnlF?=
- =?utf-8?B?L3VmenphaHBhb1J5dWg2SlN4NFFHNm5mbFhySUUzc3FFRlFnRm1HMExlYmhN?=
- =?utf-8?B?M2d2MFRPYkJaQjN3c0JubEFnY2J6MVJyMVZnWDg2b3Z4emdYQTE4UWFpd3Y0?=
- =?utf-8?B?T1hhQmFhU1NiTWU5c2JmWmhPYW1VY3ZicmVSTjlNbGNSNVJyNjViME5tODJh?=
- =?utf-8?Q?2g9cyWhLnr9AkZVc=3D?=
+	=?utf-8?B?MFhKbWozejYrMTZRUVJvdFpxWThHbkp4blRRMWJLYmRoQi9DU2MzMnkwYWl4?=
+ =?utf-8?B?UHF3ZEdvaEJtSzhCOUREN3JDNVBWWUM0c3BOSStCM0VzYnUwSVkwOUt3QnBV?=
+ =?utf-8?B?S1I1SGVUbEdNWUNVOElTNTNQQytxRUg5U3RPdzRQb1V5Y0lBVVovNTg4SzVo?=
+ =?utf-8?B?N0cwSU1FVjBpWkhsSWJHVHpDaXNWaWdnRXN2cnZBbFJzeXdERVkwZ1NmdnEr?=
+ =?utf-8?B?dXhxZTNFMk9xRHVwamY3NURXaWVBQ2tSbTRTZjNpVWY4WUtNbHpxbzU1SUtL?=
+ =?utf-8?B?SUJxeHV0MGF3MnhIYU5adVBVbytmN2ZKY0drZlNsNHNDSllhNzQvM3pZYWc4?=
+ =?utf-8?B?QjdwSjlPVFlvTTdCdGRGRmRSY3plcnVnYVhXNHgrd1VBYkJLVmhlbUJXbGlL?=
+ =?utf-8?B?NGZHcDV2OEh0ei9hNDZGdjdsSlJXS1AwRitaUzZvVkVyMjlkSHdxUGl3YS9v?=
+ =?utf-8?B?VTZVT2lOTW51Z0IwNUpjYWl4ODV0dnB3cmpYUUFCdHJzaDNRaDd0eTB0V0Fx?=
+ =?utf-8?B?YVVjWHF4MkxSNTFsRjdqK29IN0JTM2lPNXV2TW9vSWE4Q0w0dk1Cb1ZtZWIr?=
+ =?utf-8?B?RE1mUGZYQWVrVmlwRER5dWxqVHJsczN2bFJUdGt1UTBzaVZJNFplcnVUYTdH?=
+ =?utf-8?B?MmxON29wZlEvM0VEUDBkVzQvL3VvNU5aNXIwQWJXQ1p0ZEYyWWJTSDdTQks2?=
+ =?utf-8?B?bUxmT09oVHgwQUJwc3JNSEVFYlpURGFiUktWSm1zTFpEZHNMM3p0SmliT2dC?=
+ =?utf-8?B?L3Z3RVh6SytRcWFkcTdoWm5oY0NyZGg5WEhqOFA3amtnL3FvaXkzeVF6ZER4?=
+ =?utf-8?B?TmlqSGFzSG9SV3F5WDljWW5IT2dLVzdhQmdoUmdIY3VVK2ZzQ3Q5dldiR0lK?=
+ =?utf-8?B?RHZMVFFZNENHcE9KK29NMG5nK2E1VmNGa0hObXNHNVRLZVhnRDlJQnBieFM2?=
+ =?utf-8?B?UDdEWU1oUVAyTEFJd2lYQkFITVZJUDIrd3VIaTVwQTZyd0oyMVBLTXdvZGJD?=
+ =?utf-8?B?M3R5dGh0c3RBdVE5aGNhQkJleVBiZWlJcXBFMzN3NTZPZkoyeWlMNE1JcjI2?=
+ =?utf-8?B?VSs3U1lBMmtDRDFaaXRtQXFqNjVBWFNwcWRSZEY3REVSVmlCRkkxQldmelFu?=
+ =?utf-8?B?ZXIwRG1teUx0dlY2SHIyUWZnKytyRnFKSW1DY2NucFIzUmdDSmtOT08yN3pY?=
+ =?utf-8?B?S0RNMWlISmQzT3FmK2NJRlltV1M4eFd2aWFua2tZazhrd0Z4emo4bWpmVkl6?=
+ =?utf-8?B?dmlqeldUakRHa3Rid3lpVU5TWFZGRndudTh2dm12TXNCNUtKbmhCNkY1N0R4?=
+ =?utf-8?B?WHVUVmwyOFFhdW9FUDdHZTF6aVh5cERNeUhKSzVwK3k3SkNPa2VTd2hPdUow?=
+ =?utf-8?B?eXlSYURMUmVUcDUxUExPWXl0NWZzMGEwMTJ4RVM1WnJCelRucG5HajM4amZi?=
+ =?utf-8?B?VHdMU3pZd05wU3k4cG5ZbExBbitHZWJlemtBb3dzd2NjK2NsT282QVgwSFZX?=
+ =?utf-8?B?MDRSTXFxUlhLcFNSVDM4NWJ4dWhYUElnTmRnYVBXcHczejlMa3phT2lMUnFH?=
+ =?utf-8?B?Z1QvUkdEc3BiZDVoQzFLd1YxNytGemRqUlRvamRTeG5PMjVYTkk1Y3JPRlVD?=
+ =?utf-8?B?VU5PQmhGRTRMekRQOXpoL1FzNThWQm5ydnRmcWZGbkEvdWR5TVNWOUF2N0tQ?=
+ =?utf-8?B?UGNvZElQWjlTYXVmSUpYY3lSYjVlc2ZhMEhIcjAzZUo4UENYK01IRXlVMkNP?=
+ =?utf-8?B?SHVtNjlwZy83S280bEF4UjNKdU9hcEdQc01TVHhuM3F0ZU9Ua25Ya000OXUx?=
+ =?utf-8?B?U0syVUltY0JPRVVYNEpSaDVqN2dWWEcwWXZVWHVNUUFQZUg2dVJnUHBKeHFJ?=
+ =?utf-8?B?bGNYTWlQREVWY0diS0JPS0Z0dGhacUpQSmhXb2l2cU1UU1RMKzRWSVZnWFEw?=
+ =?utf-8?B?U2NXWHR6c05FMHVzR2J3U1F5OUMyVVNaUjRhZXR1S0N4VzRKeVB0T1pnUDJ4?=
+ =?utf-8?B?KzBrSmZuRDU4L2lPWlBjSnFZeFl3TFB1TWpRcEFMcGtYdTVXWlZSQlNvUHB4?=
+ =?utf-8?B?b3V2cUVtV21uRVBNUkRIRWZkNjFFcFBqcU56SUF6WEgvVG80RVBibWJ5a09U?=
+ =?utf-8?B?ME5ISVQ0MXl6MHA0Y3VsZHhnWWZJa3RvcVBBdzFmNVlIYVlOdko2YTlCUmY5?=
+ =?utf-8?B?QXdYWEI5bU4vRGpkYnBZTlBWOXdJZmJkYU4zNWRPUHlNZ1BpbkdFWmlYVVd4?=
+ =?utf-8?B?eWlqbzhNU0dxNmkxMWNlYjhpeUhSUk5WQm4wZE12ekJyVm5KSzFWTVpPdkVC?=
+ =?utf-8?B?bEFTbXJnNmhFTDFqLy9KM3c2NGxPOVdIdEhnVW02UkVuMlBIcmw5bWFENzM5?=
+ =?utf-8?Q?iKvMjUqwEXoPtp2A=3D?=
 X-OriginatorOrg: vaisala.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 62e9468a-ff1d-4900-d42f-08de64b178d8
+X-MS-Exchange-CrossTenant-Network-Message-Id: e299cc65-1f9d-41ce-d429-08de64b1796c
 X-MS-Exchange-CrossTenant-AuthSource: AMBPR06MB10365.eurprd06.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2026 12:24:13.4025
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2026 12:24:14.4141
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 6d7393e0-41f5-4c2e-9b12-4c2be5da5c57
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: OmDWfwCofujoFB/4fJSnWXfwSnFEILDe/E7jX3fkD8gvh37e6W8na8kgi7Ryrpn5C4s/1Chcz+2jjIO/MedAAg==
+X-MS-Exchange-CrossTenant-UserPrincipalName: +JE+v+KrwZHOUFWXrQ/tmB8ff3ju0wSgyTUuUV702mRpvADFbe+/5KsqXsHFB0WbattSW2HeHyLqbcnHEkO7MA==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI0PR06MB9745
 
-Not all backends support the full set of capabilities provided by the
-industrialio-backend framework. Capability bits can be used in frontends
-and backends for checking for a certain feature set, or if using
-related functions can be expected to fail.
+axi-adc and axi-ad485x backend variants provide calibration support,
+whereas the axi-ad408x does not. Set accordingly.
 
-Capability bits should be set by a compatible backend and provided when
-registering the backend.
-
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
 ---
- drivers/iio/industrialio-backend.c | 16 ++++++++++++++++
- include/linux/iio/backend.h        | 24 ++++++++++++++++++++++++
- 2 files changed, 40 insertions(+)
+ drivers/iio/adc/adi-axi-adc.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industrialio-backend.c
-index 447b694d6d5f..1afd00763da9 100644
---- a/drivers/iio/industrialio-backend.c
-+++ b/drivers/iio/industrialio-backend.c
-@@ -56,6 +56,7 @@ struct iio_backend {
- 	void *priv;
- 	const char *name;
- 	unsigned int cached_reg_addr;
-+	u32 caps;
- 	/*
- 	 * This index is relative to the frontend. Meaning that for
- 	 * frontends with multiple backends, this will be the index of this
-@@ -774,6 +775,20 @@ int iio_backend_extend_chan_spec(struct iio_backend *back,
- }
- EXPORT_SYMBOL_NS_GPL(iio_backend_extend_chan_spec, "IIO_BACKEND");
- 
-+/**
-+ * iio_backend_has_caps - Check if backend has specific capabilities
-+ * @back: Backend device
-+ * @caps: Capabilities to check
-+ *
-+ * RETURNS:
-+ * True if backend has all the requested capabilities, false otherwise.
-+ */
-+bool iio_backend_has_caps(struct iio_backend *back, u32 caps)
-+{
-+	return (back->caps & caps) == caps;
-+}
-+EXPORT_SYMBOL_NS_GPL(iio_backend_has_caps, "IIO_BACKEND");
-+
- static void iio_backend_release(void *arg)
- {
- 	struct iio_backend *back = arg;
-@@ -1114,6 +1129,7 @@ int devm_iio_backend_register(struct device *dev,
- 
- 	back->ops = info->ops;
- 	back->name = info->name;
-+	back->caps = info->caps;
- 	back->owner = dev->driver->owner;
- 	back->dev = dev;
- 	back->priv = priv;
-diff --git a/include/linux/iio/backend.h b/include/linux/iio/backend.h
-index 7f815f3fed6a..4d15c2a9802c 100644
---- a/include/linux/iio/backend.h
-+++ b/include/linux/iio/backend.h
-@@ -84,6 +84,27 @@ enum iio_backend_filter_type {
- 	IIO_BACKEND_FILTER_TYPE_MAX
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index 14fa4238c2b9..a27745695b7f 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -626,6 +626,8 @@ static const struct iio_backend_ops adi_axi_adc_ops = {
+ static const struct iio_backend_info adi_axi_adc_generic = {
+ 	.name = "axi-adc",
+ 	.ops = &adi_axi_adc_ops,
++	.caps = IIO_BACKEND_CAP_CALIBRATION | IIO_BACKEND_CAP_BUFFER |
++		IIO_BACKEND_CAP_ENABLE,
  };
  
-+/**
-+ * enum iio_backend_capabilities - Backend capabilities
-+ * Backend capabilities can be used by frontends to check if a given
-+ * functionality is supported by the backend. This is useful for frontend
-+ * devices which are expected to work with alternative backend
-+ * implementations. Capabilities are loosely coupled with operations,
-+ * meaning that a capability requires certain operations to be implemented
-+ * by the backend. A capability might be mapped to a single operation or
-+ * multiple operations.
-+ *
-+ * @IIO_BACKEND_CAP_CALIBRATION: Backend supports digital interface
-+ * calibration. Calibration procedure is device specific.
-+ * @IIO_BACKEND_CAP_BUFFER: Support for IIO buffer interface.
-+ * @IIO_BACKEND_CAP_ENABLE: Backend can be explicitly enabled/disabled.
-+ */
-+enum iio_backend_capabilities {
-+	IIO_BACKEND_CAP_CALIBRATION = BIT(0),
-+	IIO_BACKEND_CAP_BUFFER = BIT(1),
-+	IIO_BACKEND_CAP_ENABLE = BIT(2),
-+};
-+
- /**
-  * struct iio_backend_ops - operations structure for an iio_backend
-  * @enable: Enable backend.
-@@ -179,10 +200,12 @@ struct iio_backend_ops {
-  * struct iio_backend_info - info structure for an iio_backend
-  * @name: Backend name.
-  * @ops: Backend operations.
-+ * @caps: Backend capabilities. (bitmask of enum iio_backend_capabilities).
-  */
- struct iio_backend_info {
- 	const char *name;
- 	const struct iio_backend_ops *ops;
-+	u32 caps;
+ static const struct iio_backend_ops adi_ad485x_ops = {
+@@ -650,6 +652,8 @@ static const struct iio_backend_ops adi_ad485x_ops = {
+ static const struct iio_backend_info axi_ad485x = {
+ 	.name = "axi-ad485x",
+ 	.ops = &adi_ad485x_ops,
++	.caps = IIO_BACKEND_CAP_CALIBRATION | IIO_BACKEND_CAP_BUFFER |
++		IIO_BACKEND_CAP_ENABLE,
  };
  
- int iio_backend_chan_enable(struct iio_backend *back, unsigned int chan);
-@@ -235,6 +258,7 @@ int iio_backend_read_raw(struct iio_backend *back,
- 			 long mask);
- int iio_backend_extend_chan_spec(struct iio_backend *back,
- 				 struct iio_chan_spec *chan);
-+bool iio_backend_has_caps(struct iio_backend *back, u32 caps);
- void *iio_backend_get_priv(const struct iio_backend *conv);
- struct iio_backend *devm_iio_backend_get(struct device *dev, const char *name);
- struct iio_backend *devm_iio_backend_fwnode_get(struct device *dev,
+ static const struct iio_backend_ops adi_ad408x_ops = {
+@@ -670,6 +674,7 @@ static const struct iio_backend_ops adi_ad408x_ops = {
+ static const struct iio_backend_info axi_ad408x = {
+ 	.name = "axi-ad408x",
+ 	.ops = &adi_ad408x_ops,
++	.caps = IIO_BACKEND_CAP_BUFFER | IIO_BACKEND_CAP_ENABLE,
+ };
+ 
+ static int adi_axi_adc_probe(struct platform_device *pdev)
 
 -- 
 2.47.3
