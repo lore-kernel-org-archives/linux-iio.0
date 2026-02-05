@@ -1,147 +1,96 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CDCC34A3DA
-	for <linux-iio@vger.kernel.org>; Wed,  4 Feb 2026 20:34:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B75363242B1;
+	Thu,  5 Feb 2026 05:42:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770237264; cv=none; b=azplE9keDqW+QVoVwoufoZxTOQbfNqOtxq3KFTmAyiX5eN1IuRMuCLPhZUoQlUeEfqKwSusNSdUrRiHVAGjcVqNVehYHCKfL7tCy5Iqg2lMGRCqawXjag6gKCrWzbYT13gDBlqE9vkdFIuEiKXplpqV7BrVRHYbMoUZHzX8vLTA=
+	t=1770270173; cv=none; b=OLR9SOChGeM6hcRDYxqNS9Y9egDLHLOcSHAbLiwim4VzaULBUX4gkSL9p1PDw+qPRyPktxid9xRCrj1WqVCqRuqNKqWBUlsWMGfcsKdoz641Av62RJsAfp2wrkvbNumifugpiLVlYrlHJj52h/H7eOdC7PQsXAOAFAwnlt/Qqpw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770237264; c=relaxed/simple;
-	bh=rvhVa3smICLx3UXNDdk4ydZcwdUWyxqatm62NxBVvZs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=imagcFVUPVywV5WLNFRtsep88NzClux4qR8rKZxdK9VG3RiYnYJWzjEljHQ3AK74z6qIa0liuDdbc318tEOWW5S97vv400Kjy2+VfPZ0hx4YL7ezitoipq3WWwJ9FXw5xu3Qw0EMiX0SnXyPxgP1Rd0hWSJaG8bLMIbJo2CKggw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C1AybAqI; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770270173; c=relaxed/simple;
+	bh=E0b6d04eQN9Bs7RlGW5plZPXqmdKSUphUWpnAR+jmOg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=q/jfp2gzik/2NJ5e/Gi4gCgwcry8AS4ASnTCInkMLa/y7KQse8MPJvjH2/YnCB6R5v0QqQQcqT9srtP/ciXq4KHUzD5f1YMxH/U5cP1RSKteuzf5npesIpD1u/P7H79+1nsTW6xRYQWYk0BAb8rGd0nHRFEfCig8ayIhqzAWoEM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Tjwz231z; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C1AybAqI"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-4359249bbacso864353f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 04 Feb 2026 12:34:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770237262; x=1770842062; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Zm6pQ0n8k0aUMJnRRXuxnSNa9+Aku/yu04RgcWOPpwg=;
-        b=C1AybAqIB9ElnWPZBFVyWkNkrl8PPnahwzO53rSnNyg26cbtp496BDIH0LcXK7Sw+S
-         JB+X/o9F9ShGR54j3ANB7/Mn9VfbJ2MiRDV/0zUDpsmiaJuFTmTxPG76nqJVPU8U8G2Y
-         Bk5lmxq63qar3hb1v+IsmohVZT7m96q5z4H5UdYrJwFwE0iWisE6hronHpatLGpQWZ40
-         B05+uYxcry2a4cvj5Ja9C3/G/tOBacS5zvCsEzxBMGEq2IvXoQnMUyavtDAE63N3TL0b
-         dxqA9LCeUvmEfv9GOEv5TSjw4HdGSh4ziXLFhQiXDsiJxVHTie5ArIx5+asXVNPJu8x4
-         pxXQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770237262; x=1770842062;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Zm6pQ0n8k0aUMJnRRXuxnSNa9+Aku/yu04RgcWOPpwg=;
-        b=rjvV5Jk78TSaLAa0vEZbvyfO07p6u6bhoLK47j8Ffpa1FGfy3ginuQyfMGmxjqE97l
-         xpejE/FAWe3dUzRvaQ1BYXeKfNGfhiEbH10hKQNbvp04mRlFP3wxAADA1tp9GV6Ewn5u
-         PW2rwQNQhQ7R3ruXUB2F3X7KmaGU6VJG6zA6gClDG0LgvQzmXsCQMEwpwafstmsYH31t
-         D3vKTgQYTJYypv7RGrplJbdFfUQlaoxjlSna6iSYzE3u29OztgL3lE1uTfED7WFSKKYr
-         MI7LIYPDaEFQfP5QZ4VGDrzNqhNdotkOn/JORU3BlGLIQKqIrsOl3R53tQSMH7sfZ7kb
-         v5YQ==
-X-Gm-Message-State: AOJu0Ywd0ckxXqkpiSLhWu+D5nKQNyZAcz7fq63tN1ABlZDZt/C+pOEr
-	UFepH/3Hn8aLhmqSFS5DVeWNqLra3g6jXETSPXm5eCGyX1VMlCzZ5mi7
-X-Gm-Gg: AZuq6aJqfw63Fi6say36QdwNdxUFWWKqxSYq4Imxwh0e1liFuFy5g7A7ouUPtvsOpq6
-	KDOJlgG1uvv/XAkbSb1xyIRwAP0W54UmfhIg0A+DovcHYmaQRZWox7sCdm024mE6k889snS63aO
-	JHkKiXQXBcvdgF9xMrmYHgihai9ynsnMbW1YYGCIovU3dIVhR16b5pXnS1cL0aZtKyx+sec9RDX
-	d3DRbFZBGR0eqrbQIHgenIJnxukqnaj6qFn8uW/6soGB1Xhi5CMq84KSDE+59CQ0o4SjlZF/2Ys
-	UDHq0CbcXh32bAKCa309N+E00kpW2uEjEYfFBOYiMWImKGyszeBfh0be8O+E859bSUoymANBT24
-	M+RmFl4lRs5xlh/P9fr00VgvctXWwsVshRuMGf6OGiYa+0tIIlP2KQyOLOgVTSeauRJB/rOZvVB
-	VSMAoIsubEKW3y8TTh23KhVwV6Q7I=
-X-Received: by 2002:a05:6000:4201:b0:435:b674:c9b1 with SMTP id ffacd0b85a97d-436213d80b0mr874187f8f.11.1770237261689;
-        Wed, 04 Feb 2026 12:34:21 -0800 (PST)
-Received: from localhost.localdomain ([196.235.235.199])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43617e38fbbsm9275097f8f.13.2026.02.04.12.34.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Feb 2026 12:34:21 -0800 (PST)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH v2] iio: trigger: fix use-after-free in viio_trigger_alloc()
-Date: Wed,  4 Feb 2026 21:34:13 +0100
-Message-ID: <20260204203414.89333-1-salah.triki@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Tjwz231z"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770270172; x=1801806172;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=E0b6d04eQN9Bs7RlGW5plZPXqmdKSUphUWpnAR+jmOg=;
+  b=Tjwz231ze4Ytjm8HlLN+97QSvpgUBRnpKtnwJ5mP3+n7SQ7FjgTKvg1J
+   pyXlDDSCzMZhHbU4oCS7Xptn1h7POHbbSiDd2Oum6MFzv2itItDGw2N5F
+   U+V83JgSxkfUPkSKFaWkOTvYvFfOPkogUEKY18u7ism8x94BIQHA3/fdp
+   wmX7W0KSzSOJCQWqeSqvkLv9DKSzhvAwrs1J0G7wrY6p5GuzC9cFGA+ws
+   DBmuuTMt2SdU/hX3wK2rQg6aIDsj3FAC+oTLD3t/hGxni7jDnJmNolf6p
+   RoRHSgeLRuTduB/yxsaBcqW/goS0H9lsw1Fgkb9ZUMHVrvyVAXMXpHjxP
+   w==;
+X-CSE-ConnectionGUID: cqwUFL5rRcWkNn6tfqOKAg==
+X-CSE-MsgGUID: YWan7JE3TEOVMpoHe98wQQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11691"; a="94113414"
+X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
+   d="scan'208";a="94113414"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Feb 2026 21:42:52 -0800
+X-CSE-ConnectionGUID: 3X3TaCTKSTmovQzqn84I8Q==
+X-CSE-MsgGUID: +u9Lr1EWROCLdt0ZKDXeZQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
+   d="scan'208";a="210478187"
+Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
+  by orviesa007.jf.intel.com with ESMTP; 04 Feb 2026 21:42:51 -0800
+Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vns8d-00000000jRw-33Cb;
+	Thu, 05 Feb 2026 05:42:47 +0000
+Date: Thu, 5 Feb 2026 13:42:16 +0800
+From: kernel test robot <lkp@intel.com>
+To: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev,
+	Jonathan Santos <Jonathan.Santos@analog.com>,
+	Michael.Hennerich@analog.com, lars@metafoo.de, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org
+Subject: Re: [PATCH 3/3] iio: adc: ad7768-1: add support for SPI offload
+Message-ID: <202602051328.Qsu5tg2C-lkp@intel.com>
+References: <9f9aedbe374461e48f1f1e64d5487b5b6c1fc992.1769889074.git.Jonathan.Santos@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9f9aedbe374461e48f1f1e64d5487b5b6c1fc992.1769889074.git.Jonathan.Santos@analog.com>
 
-Once `device_initialize()` is called, the reference count of the device is
-set to 1. The memory associated with the device must then be managed by
-the kobject reference counting via `put_device()`.
+Hi Jonathan,
 
-Currently, if `irq_alloc_descs()` or `kvasprintf()` fails, the code
-manually calls `irq_free_descs()` and `kfree()`. This is problematic for
-two reasons:
+kernel test robot noticed the following build warnings:
 
-1. Calling `kfree()` directly bypasses the device's release callback
-   (`iio_trig_release()`), which could lead to resource leaks or
-   inconsistencies within the driver core.
+[auto build test WARNING on d820183f371d9aa8517a1cd21fe6edacf0f94b7f]
 
-2. If we simply replace `kfree()` with `put_device()`, a double free
-   occurs because `iio_trig_release()` already calls `irq_free_descs()`.
+url:    https://github.com/intel-lab-lkp/linux/commits/Jonathan-Santos/iio-adc-ad7768-1-fix-one-shot-mode-data-acquisition/20260204-203950
+base:   d820183f371d9aa8517a1cd21fe6edacf0f94b7f
+patch link:    https://lore.kernel.org/r/9f9aedbe374461e48f1f1e64d5487b5b6c1fc992.1769889074.git.Jonathan.Santos%40analog.com
+patch subject: [PATCH 3/3] iio: adc: ad7768-1: add support for SPI offload
+config: x86_64-randconfig-001-20260205 (https://download.01.org/0day-ci/archive/20260205/202602051328.Qsu5tg2C-lkp@intel.com/config)
+compiler: gcc-12 (Debian 12.4.0-5) 12.4.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260205/202602051328.Qsu5tg2C-lkp@intel.com/reproduce)
 
-Fix this by:
-- Using `put_device()` to handle memory tearing down.
-- Removing the manual call to `irq_free_descs()` in the error path, as
-  it is already handled by the trigger's release function.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202602051328.Qsu5tg2C-lkp@intel.com/
 
-Path to the issue:
-viio_trigger_alloc()
-  -> device_initialize() (refcount = 1)
-  -> kvasprintf() fails
-  -> goto free_descs
-  -> irq_free_descs() (first manual free)
-  -> kfree(trig) (refcount is still 1, release never called)
+All warnings (new ones prefixed by >>, old ones prefixed by <<):
 
-Fixes: 2c99f1a09da3d ("iio: trigger: clean up viio_trigger_alloc()")
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
----
-Changes in v2:
-- Remove the manual call to irq_free_descs() in the error path to avoid 
-  a double free, as this is already handled by iio_trig_release().
-- Clarify the error path and the potential for memory corruption in 
-  the commit description.
-- Remove the blank line in the tag block to comply with kernel script 
-  requirements.
+>> WARNING: modpost: module ad7768-1 uses symbol devm_iio_dmaengine_buffer_setup_with_handle from namespace IIO_DMAENGINE_BUFFER, but does not import it.
 
- drivers/iio/industrialio-trigger.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 54416a384232..7f53e2a5a101 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -576,7 +576,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
- 
- 	trig->name = kvasprintf(GFP_KERNEL, fmt, vargs);
- 	if (trig->name == NULL)
--		goto free_descs;
-+		goto free_trig;
- 
- 	INIT_LIST_HEAD(&trig->list);
- 
-@@ -594,10 +594,8 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
- 
- 	return trig;
- 
--free_descs:
--	irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
- free_trig:
--	kfree(trig);
-+	put_device(&trig->dev);
- 	return NULL;
- }
- 
 -- 
-2.43.0
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
