@@ -1,101 +1,78 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ua1-f43.google.com (mail-ua1-f43.google.com [209.85.222.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0928B243951;
-	Thu,  5 Feb 2026 15:59:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 663BD42EECC
+	for <linux-iio@vger.kernel.org>; Thu,  5 Feb 2026 16:00:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770307175; cv=none; b=FXeUFxhQWGeIGwFLp8HinfcoVtooNSd9byXVJIfZ2KaTa/jvYKRZ63I00WFsmYyMBkPcpLojkSWYS6Fsdba3BwoRDmJQGmL+5xNS7KDOyN+sEtl3593UFr7AJFkzA6XYCTxu5fW/eq26g0HjzINdLXvnVc4GPGS3on3Hlo9272g=
+	t=1770307260; cv=none; b=q/Bmr3vonFU6THkzOYzl0qjkbwzh0kWVoTw8TFS09XlqNpeq0bUGnKatxZdm/GNXAi9yztjCBLU5N/5TiS0iKDnF0kQZgfygV3B4FE/BOptuuOxX8cF75NN/+ufq4bRilaYN7+7gyzvzwYyKjEtrImBayMfOyvUECqqgBoAnHM8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770307175; c=relaxed/simple;
-	bh=P8ZSlzF8zoFJprfglbou2waU99w2SXYldEzFSEjzX50=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Kvl/6zXfSdm43RtDxri+gngUYlv274c5QjWhq0cQEEK7aXW8TovXDWJmVb0xGKecDn+jJ0r1VMjAu9IoTqqzZ/TyR7LY5AzLPu6JjW59G9qi5yiAENxAS7BzPABbjg9G+vuaEEh1rPgMi1+WfMBzQyttcQKIQiLdz5C+IlZVcz0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HCFCzBVD; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770307260; c=relaxed/simple;
+	bh=wjunn4+x2QEs4HRrQcozT7INn2DM0lGSHIZkmkDz3T0=;
+	h=Message-ID:Date:MIME-Version:To:From:Subject:Content-Type; b=s5sG8BwR4BO5FxZjZCc/zh8+nmflkHgk+QROqGcO1RML+pKCIs8QenlGjDmOTurBq/stY6R/VAx7sbBH32ovLm++t69PzU5YWqavGxcCIV8LxDCEQLUj8J28gskzoWYLEd4y28XuPjNBJVPz3xEOGfeF2DqVKcpNINx8AXgAoLE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=qLhvlEBT; arc=none smtp.client-ip=209.85.222.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HCFCzBVD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770307176; x=1801843176;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=P8ZSlzF8zoFJprfglbou2waU99w2SXYldEzFSEjzX50=;
-  b=HCFCzBVDL5ML+Y+pl9quVyt1dCKxbn5P6LaozS457faTY+DWKdDL2ADi
-   TMr87AGiElcc8b3QtGTZ07oMgKX8+Tx9c0iEohSX6Q625galRobCywked
-   CGx2JLaUwIUL4waLbOG99ui4HW2/c/JsNR54fELtoHuI71UO8DWUIfrSA
-   WIW672TSW3lssNzX+bD1KFXZ/PbQ7736zf3Ds6CIH58pCxo8dr2FTYreg
-   KS563sodXtOxa2nVl09P91+/ItcanxCqUGuYInhYplWePSS8KzORzc93b
-   0f0P0DrAQYoTLDwietB/z29e4Lu1bEXX8V5D67NEJlRtsB6OQS0J3nQvy
-   w==;
-X-CSE-ConnectionGUID: 2PrS/QR/Rve41swSOf13FQ==
-X-CSE-MsgGUID: glRS6Js2RU2qaq8QEEsEug==
-X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="71408552"
-X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
-   d="scan'208";a="71408552"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 07:59:35 -0800
-X-CSE-ConnectionGUID: WbSgYJxQQIy92njLYCUtLw==
-X-CSE-MsgGUID: f9tbAM3fQuamc+8Az6yD4w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
-   d="scan'208";a="215542146"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.142])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 07:59:32 -0800
-Date: Thu, 5 Feb 2026 17:59:29 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Remi Buisson <Remi.Buisson@tdk.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Subject: Re: [PATCH] iio: imu: inv_icm45600: fix INT1 drive bit inverted
-Message-ID: <aYS-Yb-Sey84CX9y@smile.fi.intel.com>
-References: <20260205-inv-icm45600-fix-int1-drive-bit-v1-1-72a78cd07150@tdk.com>
- <CAHp75VdmVP45+3r6HoC-Gf7FfXMJdmfTV739LLDAtdX_f_xu7Q@mail.gmail.com>
- <FR3P281MB1757F7C3B3820FF1568F4001CE99A@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="qLhvlEBT"
+Received: by mail-ua1-f43.google.com with SMTP id a1e0cc1a2514c-948c3ce4d35so730573241.2
+        for <linux-iio@vger.kernel.org>; Thu, 05 Feb 2026 08:00:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770307257; x=1770912057; darn=vger.kernel.org;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wjunn4+x2QEs4HRrQcozT7INn2DM0lGSHIZkmkDz3T0=;
+        b=qLhvlEBTF7TxhB1L3WbxW//ua5bdPAxYMCiDMKNtk0lb09HuU5pF9zJLLBGVA5LYtW
+         tnUjJDNIviqL1VH49SGLyJCbXmeapUxh7wCbQmKwenb9R5iRt8z8xF8L2z/3uqMPBW9p
+         0ln7bOgjp32ctMjvec4/V1OdcGuhv34dZ6CdPWLTMc57rzfy1hDJQVIUeY0HpZZynSwN
+         3mMvjPQIIgmLq79QA8wjXhr5I65YGFK5NBqUchCzDfRHwpSDjvOkzAJ/QoQJedPWCqji
+         8ybOxvU4FjRbD2VV6XB4l4q4PCXce11GTsCWGeEki4frKV9fa1YPRKvW7LfaKFJrojk3
+         AKXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770307257; x=1770912057;
+        h=content-transfer-encoding:subject:from:to:content-language
+         :user-agent:mime-version:date:message-id:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=wjunn4+x2QEs4HRrQcozT7INn2DM0lGSHIZkmkDz3T0=;
+        b=e4MVihS13owbBuf6Cn5RB1CILqFptVsOdrVkH9Z5VRIb1jQXdgPGgn0GQRdzuKekuh
+         DNyxwyExMLEAkQ93DrmX6ZB6o4m8vsnNNpedguqi4ItHbNXJZl2t+Z/E6aEAMu+ifuQk
+         BKJ+IhaXWL5hV+3MvhsSZiOFpZzijwKBJlH1jHyuTMgEOyOClEp7gp+BYXfC5O2sukCU
+         88eDSXlQbK6CEcv7EnqjPi3WIqNGFojDkGYwrDTOVP0Znkl6I88BwD9jfY/QFw2F1kBd
+         aYFQqXsY7bwE34xUoBizDq/bL4Bzkw7unJSYLNOyAyTaetMHzWMSyNeLGAp8tEUiq1DQ
+         ebtg==
+X-Gm-Message-State: AOJu0YyGsB0WdpQ+5kPacSs9GR3OcEkIPiUGQC6narzFVL8OteALNDu+
+	tSMsphS0Bmj+SHRAjSEakNcNFSsgMPshGo2WiV2WJxFGXourb9yFfuPjcAk1/SW1h2GyJUceux+
+	yUEBf
+X-Gm-Gg: AZuq6aIxiVBQor2bwE6PRmJ65yFJ8y/jGOQ1/ULaEOjRIRCi7bZatcA2oIo/ysg9t82
+	mtKTawfG0K92SjK9yeWabv6t011RKgK2177XD0QSSVw/uyqfkTg4mCDnMfz3u/7T2K9l4wEybj5
+	cwJHe3nk+ils8sca4RzUCLAfYPywe+DXfz3sLiOTBUwCVGeh6IVBy9Pm3HAxa1ZKiovg6JRNQ3t
+	xs3XlkVOoBrjESQlC7vkO0ccZVUHW1K04KCYnaQXMUyuWFn/jCbwmDhg/HIKE2HAMBazvuaq8qq
+	U9ZlUsL465j2hdvTGYldcfmx8v9pDc1N8KF9SpX4nPEd07spt0cJHIbP3k/oFPKmdHnqflhaoWd
+	pN9P/YB8FS4N5yNkkHwUEzmBDnrcpFxdjY4J6qD2dqdtfj550BPtTCYbpbq4qVE5Llyy70roX6S
+	1F6ZQ8EC98HtGBBz/KgzyNzEaiVt958OWeOUNG816TGY9shVZFKsmgdFdAMwGhWV5F
+X-Received: by 2002:a05:6102:d94:b0:5f9:f3d:69a4 with SMTP id ada2fe7eead31-5f9394c38a4mr2632540137.14.1770307256813;
+        Thu, 05 Feb 2026 08:00:56 -0800 (PST)
+Received: from ?IPV6:2001:1970:3847:e000:1977:be2f:4a71:2892? ([2001:1970:3847:e000:1977:be2f:4a71:2892])
+        by smtp.gmail.com with ESMTPSA id 6a1803df08f44-89521bff135sm42614656d6.10.2026.02.05.08.00.55
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 05 Feb 2026 08:00:56 -0800 (PST)
+Message-ID: <17007dc8-0bd5-45ce-9edb-e53b74e74f47@baylibre.com>
+Date: Thu, 5 Feb 2026 11:00:53 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <FR3P281MB1757F7C3B3820FF1568F4001CE99A@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Content-Language: en-US
+To: linux-iio@vger.kernel.org
+From: Trevor Gamblin <tgamblin@baylibre.com>
+Subject: unsubscribe
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Feb 05, 2026 at 12:29:32PM +0000, Jean-Baptiste Maneyrol wrote:
-> >From: Andy Shevchenko <andy.shevchenko@gmail.com>
-> >Sent: Thursday, February 5, 2026 12:32
-> >On Thu, Feb 5, 2026 at 11:55 AM Jean-Baptiste Maneyrol via B4 Relay
-> ><devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
-> >>
-> >> Drive bit must be set for open-drain mode and be cleared for push-pull
-> >> mode.
-> >
-> >Any pointers to the datasheet? (to the particular section / table that
-> >explains this bit)
-> 
-> here is a link to the datasheet:
-> https://invensense.tdk.com/wp-content/uploads/documentation/DS-000576_ICM-45605.pdf
-> 
-> The register bits are described in section 17.23 (page 72).
-
-Yes, please add this reference to the commit message
-(URL might not be needed, though; just free text).
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+unsubscribe
 
