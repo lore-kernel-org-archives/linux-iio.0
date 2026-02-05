@@ -1,118 +1,101 @@
-Received: from mail-dl1-f41.google.com (mail-dl1-f41.google.com [74.125.82.41])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFB2B4218B2
-	for <linux-iio@vger.kernel.org>; Thu,  5 Feb 2026 15:07:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0928B243951;
+	Thu,  5 Feb 2026 15:59:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770304080; cv=none; b=eW4cdC9/0r1uStYjZ9bmE1AdP2aJMoykA2dgZ0KVCu1XQkMbpeBhFF7GFsBtNp/SmbXyaCtlhLK+XEoqv1BKBFgT7SyQ4YRZ+Us1EJENJ1+iGO0qemxNI4/tYAMx/RlctOmZxc4eLehudQwRNQIa158p1h7LX1ZFk1FWyBx+sKM=
+	t=1770307175; cv=none; b=FXeUFxhQWGeIGwFLp8HinfcoVtooNSd9byXVJIfZ2KaTa/jvYKRZ63I00WFsmYyMBkPcpLojkSWYS6Fsdba3BwoRDmJQGmL+5xNS7KDOyN+sEtl3593UFr7AJFkzA6XYCTxu5fW/eq26g0HjzINdLXvnVc4GPGS3on3Hlo9272g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770304080; c=relaxed/simple;
-	bh=KNP9MKmZ7v5HGtrcDpSoxqegxyUQTo2VMxBFwhjMi6o=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=HN/+2aIEBNLrHwSNwEieLi8SA1y20/QtFKWAO+1OxGZQSyVeMWgBOWV53tEkqil38txwrwUKIcMUQXLAeMgNTfqt1+FsrYwxWvr9BJaZzht/vyNPt7zNVlCDO78UGerzHUQVS4wcSeG8hUie3i/RzDPKs9pp8RtVliF+Oq3AAng=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J/OkTY0x; arc=none smtp.client-ip=74.125.82.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770307175; c=relaxed/simple;
+	bh=P8ZSlzF8zoFJprfglbou2waU99w2SXYldEzFSEjzX50=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Kvl/6zXfSdm43RtDxri+gngUYlv274c5QjWhq0cQEEK7aXW8TovXDWJmVb0xGKecDn+jJ0r1VMjAu9IoTqqzZ/TyR7LY5AzLPu6JjW59G9qi5yiAENxAS7BzPABbjg9G+vuaEEh1rPgMi1+WfMBzQyttcQKIQiLdz5C+IlZVcz0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HCFCzBVD; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J/OkTY0x"
-Received: by mail-dl1-f41.google.com with SMTP id a92af1059eb24-126ea4e9694so203991c88.1
-        for <linux-iio@vger.kernel.org>; Thu, 05 Feb 2026 07:07:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770304079; x=1770908879; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/T7xe657/lQnGEkXy0hvPJYmvXm+qY+vU+kSTvh3POA=;
-        b=J/OkTY0xIrEOEYHbmUpuEN4Myd1NsiLAGCgXP1AeNNdgMhPjohsyEG876382QrSLQt
-         hWjH0KEniY8O2s3IsrT2H3KDMR8dejFmHgSu5XIOciHiC+RvpsYzAolgogA2uVXhVUPp
-         URg+RbcW2mMStr6lmuc8b00fwZNwVNEdWTPKIGUI3URRWhfCfWgaQF1gu4Yv0NF/dQhe
-         pZS8Uu81hxq5M7/D+OVBvhnchIL9nF0aAfJ4CpD5TasbUyauRmO7EEqOHTaIMtN5T7Iy
-         +CWaCetmAguzNbpCZTmjA6KZBUmi87xvlBYnFhWYUTMZcsQTtq4/mugpgXCxm905lmX3
-         qcmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770304079; x=1770908879;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=/T7xe657/lQnGEkXy0hvPJYmvXm+qY+vU+kSTvh3POA=;
-        b=wCeVYCBWDq5wV9KZ7uyT1gttFunVsfJq+2ZWgPmqx2107KaK43aOuJKlcbxVK7arDt
-         /kjm8u8A75OQDDKSmhtqvf68/0Ukl1J57NKwBc884GoN67sWZks2Rb9VbIn2PjBJTblC
-         utllGv0klm4f44JpPwfndwAYLHwaUrgItaj2XBlDO4wtmZ85U4+0Q7pXYtRc8eDB3T9K
-         g1YFk8UKm42gIhRAlQfHaWhav/SkPvZqLIepsNlxieEfB+SjECBm1yaw2WyXrPqzOw6+
-         pRIjnh27Xm8UUEKwt4Q6WHZnsbiO40o3JtiWwTzzt6UkpJTraHIKaXDC/tkZxEjyvXPf
-         wlhw==
-X-Forwarded-Encrypted: i=1; AJvYcCV+YawN/P0nriEEwyWYMyJaMxKPLQj3yHUSCLqd1vWgfoVb7RpD6J4eobFzK03ZAMD9/actOOMm1a8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyAwonWRiuTkdWz365a2+mth67n24/2DOAnOlSIQCOCTT69vU5s
-	nwSjt8Ve//QB5KMXEYk++BuqPvhL5kZFX1AKFJr9Hj/qZ772Jy6N9EF6
-X-Gm-Gg: AZuq6aIbB3VmA3gglj81k2pdsHMhaJCG8hK/cBQKywILFuuHOBZ4f9ABZ0fjEc4Y1+l
-	8EK8xO8z4F7koJ0oIlyw8Xoe+7QsI1+xRIznKFotQ50Ait7Vx/5BqMLrN2TZhxPV/GXMOmjAbTl
-	D7LVdbol/BjQrZYemNHAkyoLJZa0CmD5LW73KPJVWdk24ebL5B3QayqtpE3UR9NvjkqLKVn4G3U
-	vesYZoiA50/H5VfalxehSaikCv60FVVjPPP4712ojCkkA4iO4fif2+o7teA2QbIzQ/ULEG2ixSB
-	NtPvKwA0FCtHd6gCvjO6+JLwT7P3JNo0FfLN1Mm1pqpoH+bxcTaaMsqD4gy6dBZhR+VVdFz5jt9
-	o+NgfS3+ii79FKXWai+BL2N2U6mG3sJzfk9STTbqSmlADinf9klBu+JyWEQ9mujzFVHS0bCSzth
-	EMt8I01ZKd
-X-Received: by 2002:a05:7022:2506:b0:119:e56b:9590 with SMTP id a92af1059eb24-126f478d974mr3839400c88.21.1770304078556;
-        Thu, 05 Feb 2026 07:07:58 -0800 (PST)
-Received: from arch.localdomain ([2409:8a28:a52:d2b1::1004])
-        by smtp.gmail.com with ESMTPSA id a92af1059eb24-126f4e04467sm3909693c88.2.2026.02.05.07.07.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Feb 2026 07:07:58 -0800 (PST)
-From: Jun Yan <jerrysteve1101@gmail.com>
-To: devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Cc: linusw@kernel.org,
-	stephan@gerhold.net,
-	hns@goldelico.com,
-	jic23@kernel.org,
-	Jun Yan <jerrysteve1101@gmail.com>
-Subject: [PATCH v4 3/3] dt-bindings: iio: gyroscope: bosch,bmg160: add bmx055 gyroscope binding
-Date: Thu,  5 Feb 2026 23:07:30 +0800
-Message-ID: <20260205150734.525947-4-jerrysteve1101@gmail.com>
-X-Mailer: git-send-email 2.52.0
-In-Reply-To: <20260205150734.525947-1-jerrysteve1101@gmail.com>
-References: <20260205150734.525947-1-jerrysteve1101@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HCFCzBVD"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770307176; x=1801843176;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=P8ZSlzF8zoFJprfglbou2waU99w2SXYldEzFSEjzX50=;
+  b=HCFCzBVDL5ML+Y+pl9quVyt1dCKxbn5P6LaozS457faTY+DWKdDL2ADi
+   TMr87AGiElcc8b3QtGTZ07oMgKX8+Tx9c0iEohSX6Q625galRobCywked
+   CGx2JLaUwIUL4waLbOG99ui4HW2/c/JsNR54fELtoHuI71UO8DWUIfrSA
+   WIW672TSW3lssNzX+bD1KFXZ/PbQ7736zf3Ds6CIH58pCxo8dr2FTYreg
+   KS563sodXtOxa2nVl09P91+/ItcanxCqUGuYInhYplWePSS8KzORzc93b
+   0f0P0DrAQYoTLDwietB/z29e4Lu1bEXX8V5D67NEJlRtsB6OQS0J3nQvy
+   w==;
+X-CSE-ConnectionGUID: 2PrS/QR/Rve41swSOf13FQ==
+X-CSE-MsgGUID: glRS6Js2RU2qaq8QEEsEug==
+X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="71408552"
+X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
+   d="scan'208";a="71408552"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 07:59:35 -0800
+X-CSE-ConnectionGUID: WbSgYJxQQIy92njLYCUtLw==
+X-CSE-MsgGUID: f9tbAM3fQuamc+8Az6yD4w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
+   d="scan'208";a="215542146"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.142])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 07:59:32 -0800
+Date: Thu, 5 Feb 2026 17:59:29 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
+	Remi Buisson <Remi.Buisson@tdk.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH] iio: imu: inv_icm45600: fix INT1 drive bit inverted
+Message-ID: <aYS-Yb-Sey84CX9y@smile.fi.intel.com>
+References: <20260205-inv-icm45600-fix-int1-drive-bit-v1-1-72a78cd07150@tdk.com>
+ <CAHp75VdmVP45+3r6HoC-Gf7FfXMJdmfTV739LLDAtdX_f_xu7Q@mail.gmail.com>
+ <FR3P281MB1757F7C3B3820FF1568F4001CE99A@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <FR3P281MB1757F7C3B3820FF1568F4001CE99A@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Add the device-tree binding for the bosch BMX055 IMU (gyroscope part),
-which is compatible with bmg160.
+On Thu, Feb 05, 2026 at 12:29:32PM +0000, Jean-Baptiste Maneyrol wrote:
+> >From: Andy Shevchenko <andy.shevchenko@gmail.com>
+> >Sent: Thursday, February 5, 2026 12:32
+> >On Thu, Feb 5, 2026 at 11:55 AM Jean-Baptiste Maneyrol via B4 Relay
+> ><devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
+> >>
+> >> Drive bit must be set for open-drain mode and be cleared for push-pull
+> >> mode.
+> >
+> >Any pointers to the datasheet? (to the particular section / table that
+> >explains this bit)
+> 
+> here is a link to the datasheet:
+> https://invensense.tdk.com/wp-content/uploads/documentation/DS-000576_ICM-45605.pdf
+> 
+> The register bits are described in section 17.23 (page 72).
 
-Datasheet: https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_datasheet.pdf
-Signed-off-by: Jun Yan <jerrysteve1101@gmail.com>
-Reviewed-by: Linus Walleij <linusw@kernel.org>
----
- .../bindings/iio/gyroscope/bosch,bmg160.yaml         | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+Yes, please add this reference to the commit message
+(URL might not be needed, though; just free text).
 
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-index 3c6fe74af0b8..fcbd4b430e48 100644
---- a/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/bosch,bmg160.yaml
-@@ -11,10 +11,14 @@ maintainers:
- 
- properties:
-   compatible:
--    enum:
--      - bosch,bmg160
--      - bosch,bmi055_gyro
--      - bosch,bmi088_gyro
-+    oneOf:
-+      - enum:
-+          - bosch,bmg160
-+          - bosch,bmi055_gyro
-+          - bosch,bmi088_gyro
-+      - items:
-+          - const: bosch,bmx055-gyro
-+          - const: bosch,bmg160
- 
-   reg:
-     maxItems: 1
 -- 
-2.52.0
+With Best Regards,
+Andy Shevchenko
+
 
