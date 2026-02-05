@@ -1,252 +1,458 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E06822339;
-	Thu,  5 Feb 2026 16:49:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=205.220.177.32
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770310179; cv=fail; b=IxtSa46EHSb+cJ14Jj9NxZ0nTzT5f3JFf1FGMyKShcUmPcY8QyojMQWfopDIt9d/06hU3kM8jK1u7ioyX9egFD/9bWOcFpjuDqAgqRXI4igy/reHpCEZUAuc8kd6U+0ttRZlLF83P2B40pC65+XRgYSRlgT5WUn8As1PuGKQzsU=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770310179; c=relaxed/simple;
-	bh=ykFMs0Kk+7JXsmup+1ayaC44PRehYYwKgoh7pNZsly4=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=V6CRLlMtQUswlcUneZLIwLgvuxe1XMchXUUTkIT8Wg8okmYFGfhUTcGsGUoAcWhH3Sc0RFUu1aR8cz07CUasbIvblhWnrC4S77LsXcMyIETEoKuEzgQD4F5J72lU3u87A6NLgTWZxufWuby4uXf+ScvvhuViSQsKsKFnDczTG94=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=Nzmccc+q; dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b=VBOFTCmJ; arc=fail smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74A8B43C042;
+	Thu,  5 Feb 2026 16:49:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770310181; cv=none; b=e9RvWtJngnE5Cj+N7PERJyvt7y8dCR+suU62K0Ns3TWiQPllGnEXO1KAZZKT7MJiXmRSZ30GbTsJM3oYgKVQdP44owHCC61QuXEB2aMTFuisTJYjQdlAgSl+CSsn4cBMN01FemjwXYyuZGJunwGlYytO1X9FrydscNfB4cvpnmo=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770310181; c=relaxed/simple;
+	bh=MDnZ6+BU5ks1nIgKOiCHubdsXuxaY4uhwv1KoprDnDE=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WmdBnYBKBAi+eXV9yHHl4fKDxfKRsQhb7PU70eU0e+4ya7NzO+yoQqj3pb/cqW7MAPl+pWtO3OFPCurmGToW1rAltzcINk5iJw5epU6DyTGaEXDuH1dXPf5Jlk3tI9L4Dam9q6MmqlL0pNGTuln6JMrj6CglB6kyQcEn/TuhyHM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Kk39zYQd; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Nzmccc+q";
-	dkim=pass (1024-bit key) header.d=oracle.onmicrosoft.com header.i=@oracle.onmicrosoft.com header.b="VBOFTCmJ"
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 615Fu8Xn730851;
-	Thu, 5 Feb 2026 16:49:33 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Kk39zYQd"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 615GT6ha2446426;
+	Thu, 5 Feb 2026 11:49:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=
-	corp-2025-04-25; bh=XXLDmEwEN4ernp1Sk5Na60lB9F7/1e63ZFnM6MzqOp4=; b=
-	Nzmccc+qYUonnRwiuKiDj+AJmFLC9ZsDql0VmHFEPh2Ajt7HUdI3Nx4PYbOclESh
-	IqyJrnYcvGVxzBU19IORwtyInG/6FFRkAzo09C+bCOfwFLNp9aUC1GIOTthjiK0k
-	vO2onVPzKh6dWnpTvxAx9idtZiMNj+eERc/2QyYZzr+obBie6asMrnQVBbnRDlFu
-	W2yjiFy2ZTbDFWhZ9g/XgtZ9wNALBh3CcmqHq6lpUKxaiVpMLQM+1KeFUdDBOS2u
-	J8sECiZCcRY01SL8v39Rd6SO4f8Vf1BUuZKOt55sXdttNfP8r1Ltp4BXWygKdngl
-	95GtBSxcjJwl+Th4q75eAw==
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4c4dc3sd1h-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 05 Feb 2026 16:49:33 +0000 (GMT)
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 615GiZdJ006054;
-	Thu, 5 Feb 2026 16:49:32 GMT
-Received: from byapr05cu005.outbound.protection.outlook.com (mail-westusazon11010059.outbound.protection.outlook.com [52.101.85.59])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4c186dec3g-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Thu, 05 Feb 2026 16:49:32 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=IHx1BJYD5oETKeia23akldYVaqG3qLHbZbCh/pzyJmuR9gAvKuwQHgu4RiemGVMhdjzfhvXzFeYgYkpBsAfkT9zjSdYDQ3XT12/PNiDJ5fMEpgb9Ki0yofSFmZE8BPKSbGT2PPsuVahgc/+W3okkMCdCgNXdiyArttdT2tG5EPah3zauMp2L0k6z0S2lCoZrL6pbQcPjEm1vGgCs62wwiwgP1JBhw0Fzh+fu2aZ1DXlOg6FpzHQDQ87HIiD/jw4xBRjz5YRuprv8KJe/YVDAB0AwcaDuqzWoDX0amybo6D5Un66n00skr0nqmN2bf0/aLCOWMVb3qujKYwRLQG5xAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=XXLDmEwEN4ernp1Sk5Na60lB9F7/1e63ZFnM6MzqOp4=;
- b=k0SF5/FuL7NBkftYDdKF6D6zhKwHmZ2A+O901jDurppVvm3jaM7efXO4qWh7dPfCOQE2SYPXobFxKtQxnbIKak4slDnpCfVPeK1Jo8yAYZJ82BnhUBfdTJI7sfYLIDPyw0x5y0H7i0nvJLekvTFz3qnZzwK425nlgqZ3TU0gW+wj1bayde/PlinocKQx7KQexkgi5CwNvOA7rzyHoepAkJtbSd+LOEGcfVMNBEtOgU2krrlGnXR8ah/Hkt4y2RgiQmCOjCffS8wAIMPmr79nnPYTe8BMganaGIUQu+rYGGH7dPf05M6cqVbwS2SiAxo9aNxExBVh3UiPAoFDwAMSMg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=XXLDmEwEN4ernp1Sk5Na60lB9F7/1e63ZFnM6MzqOp4=;
- b=VBOFTCmJd+o+VPIe8gYwvzl0t1UCwjsdOGadLp/tleMl/EDYBAhZDu5oAu4eV4rVMpmCg61L+5Uf8ps3GRI8LOTMku+vibhgTuMdvsCs8CMacGBhxSUYUaj/4ESh9eMV0V8NaxXqkiu9rxzYZn2+JkdsLjwVW4LgJTr9d76FePc=
-Received: from DS3PR10MB997700.namprd10.prod.outlook.com (2603:10b6:8:347::19)
- by SA1PR10MB6496.namprd10.prod.outlook.com (2603:10b6:806:2b2::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9587.13; Thu, 5 Feb
- 2026 16:49:28 +0000
-Received: from DS3PR10MB997700.namprd10.prod.outlook.com
- ([fe80::4c1c:3bb:c4c9:8e7a]) by DS3PR10MB997700.namprd10.prod.outlook.com
- ([fe80::4c1c:3bb:c4c9:8e7a%6]) with mapi id 15.20.9587.013; Thu, 5 Feb 2026
- 16:49:28 +0000
-Message-ID: <0aa381e4-453d-4412-aec8-589f0f83c2fe@oracle.com>
-Date: Thu, 5 Feb 2026 22:19:21 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 next 2/7] iio: sca3000: switch IRQ handling to devm
- helpers
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        David Lechner
- <dlechner@baylibre.com>,
-        =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <20260205131234.3244467-1-harshit.m.mogalapalli@oracle.com>
- <20260205131234.3244467-3-harshit.m.mogalapalli@oracle.com>
- <aYTD96nmDAEZd-a8@smile.fi.intel.com>
- <88524db5-cda6-4529-83db-54ff3b3d5819@oracle.com>
- <aYTJKaSt6WkMRIJY@smile.fi.intel.com>
-Content-Language: en-US
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-In-Reply-To: <aYTJKaSt6WkMRIJY@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO4P123CA0131.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:193::10) To DS3PR10MB997700.namprd10.prod.outlook.com
- (2603:10b6:8:347::19)
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=YvxOR
+	hBvsgk/kLoQUyaITC4GDcI0PUDlmrQXHv7K3LU=; b=Kk39zYQdfQTN5kfNz1ddi
+	+qOTFOJRLRkE55yfkdCimHCiIVAObDO6BUeZ57nE0mm9KUCYC9+4WELQiJLvYTiG
+	o//SNyvnrYQYNU8GmopqG0H0ds9QW7rwpNGazw+gthIIeZYRu8xuOVhYe/3oCpUs
+	3Kz0DRFuyuFcI+0IbiroXuAuvqZoeHRWdl6MfcUHQUUJvRlkCDqKr8ryp5YEslSu
+	PUaXAzWK7pd9Fh2HTel6dgu8qYAEs/yMApanSb/djE1uIiMPofjR6D0HntIoBc2w
+	PaCfWqBcg0angDDEEoWAik/O/aZk4vPdvdHl8GafRc22sHsoJs/Fobz/9yb30rux
+	Q==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4c3vxvg27k-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 05 Feb 2026 11:49:36 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 615GnZWu045344
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 5 Feb 2026 11:49:35 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Thu, 5 Feb 2026 11:49:35 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Thu, 5 Feb 2026 11:49:35 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 5 Feb 2026 11:49:35 -0500
+Received: from work.ad.analog.com (HYB-hERzalRezfV.ad.analog.com [10.65.205.9])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 615GnKIW000481;
+	Thu, 5 Feb 2026 11:49:22 -0500
+From: Marcelo Schmitt <marcelo.schmitt@analog.com>
+To: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <michael.hennerich@analog.com>, <nuno.sa@analog.com>,
+        <eblanc@baylibre.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
+        <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+        <corbet@lwn.net>, <marcelo.schmitt1@gmail.com>
+Subject: [PATCH v7 7/8] iio: adc: ad4030: Add support for ADAQ4216 and ADAQ4224
+Date: Thu, 5 Feb 2026 13:49:19 -0300
+Message-ID: <a5721b31e7cbf8327c74d761757d9051c289297c.1770309522.git.marcelo.schmitt@analog.com>
+X-Mailer: git-send-email 2.39.2
+In-Reply-To: <cover.1770309522.git.marcelo.schmitt@analog.com>
+References: <cover.1770309522.git.marcelo.schmitt@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: DS3PR10MB997700:EE_|SA1PR10MB6496:EE_
-X-MS-Office365-Filtering-Correlation-Id: 55805907-082d-4174-c22c-08de64d686da
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;ARA:13230040|366016|376014|7416014|1800799024;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?MG9xZEtxVlR4NDh4WFZ0dld4ZUZVZ3ovRjNTak9jTFEyQ3R3eE5oeDlDbVBX?=
- =?utf-8?B?b293WTNXc0JrS0l4TmdvQVBiOGdld3FkbHFHYzcrUWlrMEJDQVFYY2c1UXJE?=
- =?utf-8?B?d3pnMnBGeWR1RHRKMi81Z211ZnI5ajEwM1pITzVMK0tGQmlYR29sVGIraGpD?=
- =?utf-8?B?aVQ4RVVIcm83cnNIdmFxUnhveGlBbW1CZUpZQzRpVWZpaENmVnBPOWVrd2x3?=
- =?utf-8?B?RVBBQzlnNkVod3p2aGFlTER0bURhc1lJZi9laVJXZFNhbjEyck1jSTByVEhC?=
- =?utf-8?B?ejBzRDgrR3htYU5XUGVkVU10RFRVbmt5T1RicVBNd0hHNndtTWRoamphaVRi?=
- =?utf-8?B?QXpCcjQ1RVd1L01Dc2x6OUI1S0ViaUJVRjhGdkhlakVEY0J6ZlM1UW1ZQm43?=
- =?utf-8?B?YzNXUkJWbUl2amwra2U2ZjlaeGFJM0tvcm1tNGR2dUhmYmsrZ2grTFlnZmts?=
- =?utf-8?B?NmRiSjJPWDMwWUEvSFpKYUZ2bDRnUmRHaGtqdHk2VlZNeXVaUnVxaFhTY09F?=
- =?utf-8?B?SjFDMkFOM0paVVVCM280K2hxMlQxeE00RUZLTVlUbnFsbEU1YS9EN3VEWWFY?=
- =?utf-8?B?UWVMRFc1RjFkUzhPYnpGN05OSzZUOG5rUktJQmNYZmFWSy9qYm1lS1Z3VjJi?=
- =?utf-8?B?U1JjSFJxZ0JaKzFyWGZKNlorRlZtOXdUK2Qzckk5dWlTT3ZmSllyRGFUTVUr?=
- =?utf-8?B?d096ajJEc0ozSkp0eEgvd3BzYnkvZXhCWDZIek96VkREOUhjcTV6UnhlNmVt?=
- =?utf-8?B?RHdkV3ZkWEo5OVloSjZMa3VGMVV2MTNWSzI5aVB2eFdGdUh3aEFmZmsvTFJ6?=
- =?utf-8?B?SFpCSkRiUmNLd0ZNTmEzQS94a2NxQk5od2VFTjdtVHVQZWV6Z2FMQzcrdDNF?=
- =?utf-8?B?aGswamM3am5oVHo5c0RNMVhia2VkWE8ybXJVcUY4UkNkcU8yQnlhZTVDbWNl?=
- =?utf-8?B?dW9GMHJCUFNvVlNYMm90ZEJDaVBIU25BeVI3RklWb2JrZkxaZTA3ZyttSnRD?=
- =?utf-8?B?L0Z2VFl0L2JrR2pKRjRvLzZsbVIvWllNM3ZNUTdrZjlGZnBLQStLUFJFeEVS?=
- =?utf-8?B?YUlmbHRSQVJvVDlxdWhndGVycWtjM015QlVZZW5vdU1vbjR0Zm5NUHpjdE4z?=
- =?utf-8?B?dStxbXIyMWZmM2NVUDVZMjhjN29QSUgxR05YbWtpZzZQZHNvenFEVEx1RktN?=
- =?utf-8?B?Unh3NmgwMGpJdUlidm9CYzRjM3U3cHFHZHJKTG9rdTZzRWt0c20xTWpqM2k5?=
- =?utf-8?B?clJkS3dHNFUvb0lDSDBzd1RhaWJqQVBvc3AzbCtHNjNnc3BXbSsrbGpQOHZ5?=
- =?utf-8?B?d0pqVGQyaDdkM2FxM2F0L1o3NTlKR3RlMjhwUFhSM1Bmd3RHdHNTVGlkVjJa?=
- =?utf-8?B?eHlVZXdjV3VseEZHYzRlRG9oSHZIejZpUXFaVWQxSjBtQTlwNi8zbnN1b3RF?=
- =?utf-8?B?VVRrejNDeVdEejRhZmlnY21xUGJBN3pFTWdNQ3paNVBwNXdkNGxUR0FnY0pn?=
- =?utf-8?B?SzVRb3NuZU5yd3lzQmlrVjlhMzhsWUlPUWFURzE5NmI3U0VaZlZRb2JnRG9T?=
- =?utf-8?B?TXlTUGVQaElVSU9yeDFXMS94N3UxVWpSekdzdnNBTkk0SFc0Mzd3QVlOcDQ4?=
- =?utf-8?B?UWw5a0todGVUUnpTV1hZOVlzWldpV2JuRXR5Ry9OdngyS3V6TkNRN0g2Q2VY?=
- =?utf-8?B?L1QvWlV6QUJzWXg3em9tdGszdWZLYlBOdzIzTURvQXdpbzFrN1c3dVlDZXRk?=
- =?utf-8?B?WlpOd3FNZmFQQ0diRnZ3cTNpNER0RnhUdUd4M2w3OTYya1lnWFdiRm95WFRh?=
- =?utf-8?B?aEs0NnlBeHA1VHVPa3dtVEp2TUlJZThwMVdOQlB6aURmNVl6THNlWlplT250?=
- =?utf-8?B?c0l4THRpSVdSTDVTRnlFdms1cVQyblhJZVNEK0NhMVJzanVTV0JZbnhFT21O?=
- =?utf-8?B?OEtZTEhoMGJQa0Iva1kvOFZrQkJaZnZKVktkODFiNjBuOUpGVFNveSt2cVN4?=
- =?utf-8?B?TmpYZnVrb0JjMkVPVit1Nnl2dGptTGVBSFZTSUFNaHNZOHZuSVhvenJZbUxL?=
- =?utf-8?B?d0FQcWRxMnVwd0RPSXJ5bm1NemJtV0I0K3p2SU9VbnZZTFpuQ2JiLzlLU1Yz?=
- =?utf-8?Q?O4+s=3D?=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS3PR10MB997700.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(7416014)(1800799024);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?WWFtZEtvNWUrNnRYZy9BdzRlcXBaR2hEM1ZMTGk0TnFzQkEvbUpubnZaS0o5?=
- =?utf-8?B?K2MydXNDS29KVVpqZVRFazh1SExBT2hMa0hDem9DVzhMd3ByYTBUS21oUzho?=
- =?utf-8?B?KzdPdkNYZU5kc2ZqVGI0c01EaUo0OUZOSEpmZEhoTEZsbWZaZUdlRkNTNlZN?=
- =?utf-8?B?Vkx0WE9vZXBBcTNVVk5QSG85QzhQMFI5VTJzUFlmd3ZFUXE5VFRlL21mb3Bj?=
- =?utf-8?B?a2pha0hSTUtKSXlUUldPSU5tNFJZaEk1MkdmQ0JrMFV1eDZFK0IxWElKMmJh?=
- =?utf-8?B?eElMYUNVdVgwdzBhQVpuc1pwdUpwTTRxK0cvTElZajNOU2EreEJwdm8xcldq?=
- =?utf-8?B?OTV4RVQranBZeklrdzJvd1YrQ093eFBLVnpyb05WRzBpRDRJcDMvalhVTVEr?=
- =?utf-8?B?WDMyVEdqZysrV3ZVdDIvM1kxNUFxYXllQ2VZMW50dkZUTG9IZnRqblN3Y0Vk?=
- =?utf-8?B?Y0Q0eWltSDh0eEhuVVdFa1lDTTJiOVA1TlVCSnZ0Nk8wSzdXcXhkcFlKUHJT?=
- =?utf-8?B?YlNOZnhHNW1MaVNKZC9iSGhtK3dpZmlRdnZyTGhObFdoaDFDV0gzbHZOZllC?=
- =?utf-8?B?WVMvemx5MCs0R3JRM1ZzWXovaWlibU84NkN3MTdsTXVLTTVmQkI0OW5xUDJC?=
- =?utf-8?B?NkdXd2J1cFhGcWRqUWpVSngzZmtWU0p2ZFY3bnF4WVVhUWhPOWdGQVY0c3Nr?=
- =?utf-8?B?UVdKUDJ1QUpmRTZxcDFUeUtrSGJZZG5iZVFZeFU5bmZubTFQd0ZVVkdpZlEy?=
- =?utf-8?B?WjhIQWhrTS9pY0lxZWdVUU5JZEloUHZmN04xSjFGWGlJbkw2TFhGYVFaUjJ3?=
- =?utf-8?B?ZWwvY05zckhid3FsM29xRnVBbWJPVXo1cDkza2NhcWZlbHlGYUt0VEl3UVV3?=
- =?utf-8?B?bk5KVHBzOXpBSHJ4dWtrRVMvRk1OMzJ6dnQyb2QxcE43ek14ZkZSQWZmenB0?=
- =?utf-8?B?alZIZnd2SVRzRlhXZ1pwaUJMTnBxMTBERHdkeTVuVnExVXNpUUZsTm5hMmgz?=
- =?utf-8?B?Y1EzNlhvZ2JQdkVOcFAycUtNMTB5WjNsQm1aM1JleHRLRzFhNFVMQVJiNjNC?=
- =?utf-8?B?VU14WWNXMW95WE9BenVFaUI3L21NMGRzZnBnYjM4K3hlNFFtMTYzdlVKQVo2?=
- =?utf-8?B?YmhoRmtKRTNYMjAvRkZYZmhacFFkYjc1SG4zL1dwUkorR1M0QmpLbTM1RXFk?=
- =?utf-8?B?T1IyRW8ybUVZclJFOG84STBDeFpjWExQTFNsSnladEVKdElJd2xrR2JMNnV4?=
- =?utf-8?B?U2RZalExVlRVb1I3OVAvaTBtMlg2T1lJeXlrdFdMaW5McTJSUlZiQkhySXdx?=
- =?utf-8?B?Z1hoQ1JlZ0F6b29uWm1nekhJRmQzTjBLQXVUVXRlWWduNkd3MXR6a20yanlr?=
- =?utf-8?B?NlFFWUJkTVM1STFGSktiVU0xL0VuR2JvaUpIQTZBSndUOXhNQ25nSUsvOHFn?=
- =?utf-8?B?TDBVRHg5Sjl1R29hRk1oK04xRkZUMGFvcXFBWnp2WGZyYkc4d2xQc3p4cXNX?=
- =?utf-8?B?MTJUa0N0WkdHVWlDcnMrS2NmZXZWVkdjNDl6NWFuOUNRdXZZaXU0bGhoWGsx?=
- =?utf-8?B?R1dNSGgyUHVjQ09WcTV2STBHRlZXb1Z6ZThYQytMRVBLZVdrZmVmYlIreWFN?=
- =?utf-8?B?SXpIWDBuRXBFREFqd1licXp4NCtPd2hyaTJmYnFJdFJhM2t2VXNIRElUcUVi?=
- =?utf-8?B?aTRiaXVObmM0bSt3N2p5dnY1dzFVQnQzR0kvMkxCZitZZS9nM0RONjJXT1Rh?=
- =?utf-8?B?MFNtVE9qNFNkeTR0anhWQWtTZXpPZ1I1SkRNaFdkd0pCRXY4aFAwTGFyOTI0?=
- =?utf-8?B?amN2am1uYXR0RHQ1Z0FERkkwNE9ISmxGVzFmcnhJUE9YcXVYSEp2dlhjTlpO?=
- =?utf-8?B?NnVmMmZNWm5hb2crQzBKcC9sSy8zbkdtR2hyV2xrZ1VSWXZFZlh6RDFLU1F4?=
- =?utf-8?B?bHJuWWJ4VGU3L2VsQkUyakNtNkpTRDduRnNxQ00wcWVleERQTUFVUlRmTkdT?=
- =?utf-8?B?b1FtWWt3RVJuTnl4aElnendqUlZXeGpZU3d3WlFZcmxDMTlqcEZ3TklVQ2o3?=
- =?utf-8?B?MWdqTDdoeGlHcEhJMXlVQlpjRzJXVGdMcDUyMlpzVmtXUzgrK0I0K1ZKQmh5?=
- =?utf-8?B?b2FHZmhSbFFEa0JRcm4xdnJ0Q2NaNmpXaFdMNzFUbThtaFhtbUF2U1pFTURo?=
- =?utf-8?B?K2JGRlJ5MXBBMXMvUkxhbWlqMGFXV0dzUEtEZzY2TTgrc3gybFI0c3JWZUxC?=
- =?utf-8?B?VGZYVzdmK0RzeHBJcFFCT3RSbkZhNi9VWDdVaHNDNk0va0ZZb0cvZUNlU2FH?=
- =?utf-8?B?WE1rRTFINmRvdVBGRzR6cVZady9YbnRzc0dFUnJPTUVYUGpRdW9mYlM2YkhL?=
- =?utf-8?Q?MgbJzpcf6EQIARybOFWe3BfSHERlo+dbwHZ7U?=
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-ExternalHop-MessageData-0:
-	+x/fBEk4OD4zLIpOFEwZyY8UN5pKskQmaSiXf8fV0RjPWzDcfzuAT+Pk+RbiNdDgNpkLFH8rofoyWJObPh1S1AbKcq4AcpYeclEg/tTAazz/x1q0xAmaQIleeeXDoreo5solYhWUVaEpFg1Qad8v8o0NdCaolBS2Su3/56p6wY70wKUosiCsbFoiMecS5dhUFHVI6uYkz1vEAY0DVwHiyNNyqWZCkfGlVvuc3FZAEufuhCZIsV/NEVRZSPMvQB9zhjJoievFKaPdXPmb5VInLo8VHBUnPVvZVXDc+UTG/sFl1qDIkLag11dsRiqmVtDa6Q9fbFXFxZROLWfqFL328gj2Xh7F2lVfZLu2AQTAp7lgaRleacB6gP9W3qhUyborP1iIYQrVrPXScHRvV+3Jh/dmNtoxHzJKE1HfwQsZAAanVWf2F9VxGFwg4UND1JksqPl6528PjlhaR4wV74T0o+OdZsnQMrZhk2skzTBoysok4UMxy6BroYcMHM+YzYgn2q17GvePoNspn2PUWY9gmqjnK1et66LFR6M2IGzlb/p4qpFqAtCI3DBWdbuuw4UL6G1jm4yDNfWnXV7+E4O3SXdMEcZS/KTNjfwVgDxGMTc=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 55805907-082d-4174-c22c-08de64d686da
-X-MS-Exchange-CrossTenant-AuthSource: DS3PR10MB997700.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Feb 2026 16:49:28.2295
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: L6g7dMpabI8/jnCEcceMDb1FHdcI4Go71S4foyORuRMEaZFK5CjI/lM8+eCwytCOpPxSJEPmVSIwEexf5Y6zZL22mJdtga8/E8m9Hd8svYLaaOSqYLyo1f19ljP2qXIE
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA1PR10MB6496
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: OlYwJEvTriwMQUWVMO687hSVyL41ctgk
+X-Proofpoint-ORIG-GUID: OlYwJEvTriwMQUWVMO687hSVyL41ctgk
+X-Authority-Analysis: v=2.4 cv=OrdCCi/t c=1 sm=1 tr=0 ts=6984ca20 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=gAnH3GRIAAAA:8 a=vBz0w1DY-RU6HqRekHsA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjA1MDEyNyBTYWx0ZWRfXw2vUPoOUTkB0
+ DM8T8Ht/509sFHZkDfej4ZyxgyPnH9KUpoOnS9EBLKWxiQxdssygilrfD4TWD9Uc1fDEXXPkPvm
+ 7XL0hTUSm78QPqzHCD5NCBUNu6l71DLi5uUSK4d78QlixBUrFz+KsW3sEIXJa1+VyCzUbSmBW54
+ CaOlRbaqajiWAJ4c3kpnkRhUZv9vfIcgkFFhYo14H28WLFqiFid1gw+YlWpCL//M7d9j/9j1cTE
+ 0g89mnGo1IuUjYRZxwIt5ZZQ+kIJjyUrkadJ8rQAN8Uclrt66a3wUDrdKnk1MNXEudY5aaH9uYy
+ EfYnTvu37XuWuU6q8VCC+o4WBubs4A/jfh6yUA5ewzV/yLFAfXtkZSlF2nZ0jtMvKqC2YNgriK3
+ nO6Bqfjh515PlwesrMTYRErOIoyJEOTTf4gfE5mP2KcK7rYdlkXkQqm/nPYRnwMgaA+PVA1YqUs
+ AZwIU6x6bzesfgVvpHQ==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-02-05_04,2026-02-05_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 mlxlogscore=819
- adultscore=0 suspectscore=0 mlxscore=0 phishscore=0 bulkscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2601150000 definitions=main-2602050127
-X-Authority-Analysis: v=2.4 cv=SMtPlevH c=1 sm=1 tr=0 ts=6984ca1d cx=c_pps
- a=OOZaFjgC48PWsiFpTAqLcw==:117 a=OOZaFjgC48PWsiFpTAqLcw==:17
- a=6eWqkTHjU83fiwn7nKZWdM+Sl24=:19 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
- a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=HzLeVaNsDn8A:10 a=GoEa3M9JfhUA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=BDJ_4VBMZPyBPifeRfUA:9 a=QEXdDO2ut3YA:10 a=zgiPjhLxNE0A:10
-X-Proofpoint-ORIG-GUID: irckQpcL4DqMhd5Dsk5gqHdddgMIbznI
-X-Proofpoint-GUID: irckQpcL4DqMhd5Dsk5gqHdddgMIbznI
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjA1MDEyNyBTYWx0ZWRfX7byxjx7mS5GS
- dWFHPGElKhX3DTTP50IxQAlvn2eYvEPjB0lMwytq0B+olG6NQ5kVrsY/DDNosncS+1p7Rb62zLx
- jBWgV58gGNvPrlaYHP0Bv87zwebrnBIgF4nFrZO+Db4sBK80aWsYx3I/5EcIZemBZXrhOcjsBd8
- X2OOxziMmT2SIywgtskHARhlDps4luIq0bE+IDx286zmB8Pkj9hUtL4mdqtJ1L2tvNYVQIYPrsy
- GmkRwVANbTlkb9ufbtVrh6FLe3Edwi/ckbF5W5Df6g+X6okvyxvUnZvorIclB+uIGAf4iLan14P
- I04I8i2Gd0Kg1TQd0spqx++r7YU3Kek+jwdr/ZtXC6dEfGMxfmtr0XsYoNwF77tIi21g4ZJBdzr
- /HObjbd9fpgnHgt3/3AIDOZSqqNG27o0afI4AZauqv0aJLpysLgfVc99kwXKSZXWNPKJjqIm4df
- V9GAjENSSiiGrVtHJHw==
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 priorityscore=1501 suspectscore=0 phishscore=0 impostorscore=0
+ malwarescore=0 bulkscore=0 lowpriorityscore=0 spamscore=0 adultscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602050127
 
-On 05/02/26 22:15, Andy Shevchenko wrote:
-> On Thu, Feb 05, 2026 at 10:09:45PM +0530, Harshit Mogalapalli wrote:
->> On 05/02/26 21:53, Andy Shevchenko wrote:
->>> On Thu, Feb 05, 2026 at 05:12:08AM -0800, Harshit Mogalapalli wrote:
-> 
-> ...
-> 
->>>> -	if (spi->irq)
->>>> -		free_irq(spi->irq, indio_dev);
->>>
->>> Do we need an irq member to be in the struct after this patch?
->>
->> I probably didn't understand that question fully.
->>
->> we still have a call to ret = devm_request_threaded_irq(dev, spi->irq,
->> NULL,...) so we can't relaly get rid of the irq member I think,
->> did I understand your question right ?
-> 
-> Yes. But now I realised that this is the external structure, and not the one
-> the driver defines. Sorry for the noise.
-> 
-Np, yes this is part of spi_device a more central structure. Thanks for 
-checking!
+ADAQ4216 and ADAQ4224 are similar to AD4030, but feature a PGA circuitry
+that scales the analog input signal prior to it reaching the ADC. The PGA
+is controlled through a pair of pins (A0 and A1) whose state define the
+gain that is applied to the input signal.
 
+Add support for ADAQ4216 and ADAQ4224. Provide a list of PGA options
+through the IIO device channel scale available interface and enable control
+of the PGA through the channel scale interface.
 
-Regards,
-Harshit
+Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
+---
+Change log v6 -> v7
+- No changes.
+
+ drivers/iio/adc/ad4030.c | 201 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 198 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/ad4030.c b/drivers/iio/adc/ad4030.c
+index d759fb35b977..4f521fe787d9 100644
+--- a/drivers/iio/adc/ad4030.c
++++ b/drivers/iio/adc/ad4030.c
+@@ -47,6 +47,8 @@
+ #define     AD4030_REG_CHIP_GRADE_AD4630_24_GRADE	0x00
+ #define     AD4030_REG_CHIP_GRADE_AD4632_16_GRADE	0x05
+ #define     AD4030_REG_CHIP_GRADE_AD4632_24_GRADE	0x02
++#define     AD4030_REG_CHIP_GRADE_ADAQ4216_GRADE	0x1E
++#define     AD4030_REG_CHIP_GRADE_ADAQ4224_GRADE	0x1C
+ #define     AD4030_REG_CHIP_GRADE_MASK_CHIP_GRADE	GENMASK(7, 3)
+ #define AD4030_REG_SCRATCH_PAD			0x0A
+ #define AD4030_REG_SPI_REVISION			0x0B
+@@ -124,6 +126,10 @@
+ /* Datasheet says 9.8ns, so use the closest integer value */
+ #define AD4030_TQUIET_CNV_DELAY_NS	10
+ 
++/* HARDWARE_GAIN */
++#define ADAQ4616_PGA_PINS		2
++#define ADAQ4616_PGA_GAIN_MAX_NANO	(NANO * 2 / 3)
++
+ enum ad4030_out_mode {
+ 	AD4030_OUT_DATA_MD_DIFF,
+ 	AD4030_OUT_DATA_MD_16_DIFF_8_COM,
+@@ -144,6 +150,23 @@ enum {
+ 	AD4030_SCAN_TYPE_AVG,
+ };
+ 
++/*
++ * Gains computed as fractions of 1000 so they can be expressed by integers.
++ */
++static const int adaq4216_hw_gains_vpv[] = {
++	MILLI / 3,		/* 333 */
++	5 * MILLI / 9,		/* 555 */
++	20 * MILLI / 9,		/* 2222 */
++	20 * MILLI / 3,		/* 6666 */
++};
++
++static const int adaq4216_hw_gains_frac[][2] = {
++	{ 1, 3 },  /* 1/3 V/V gain */
++	{ 5, 9 },  /* 5/9 V/V gain */
++	{ 20, 9 }, /* 20/9 V/V gain */
++	{ 20, 3 }, /* 20/3 V/V gain */
++};
++
+ struct ad4030_chip_info {
+ 	const char *name;
+ 	const unsigned long *available_masks;
+@@ -151,6 +174,7 @@ struct ad4030_chip_info {
+ 	const struct iio_chan_spec offload_channels[AD4030_MAX_IIO_CHANNEL_NB];
+ 	u8 grade;
+ 	u8 precision_bits;
++	bool has_pga;
+ 	/* Number of hardware channels */
+ 	int num_voltage_inputs;
+ 	unsigned int tcyc_ns;
+@@ -174,7 +198,11 @@ struct ad4030_state {
+ 	struct spi_offload_trigger *offload_trigger;
+ 	struct spi_offload_trigger_config offload_trigger_config;
+ 	struct pwm_device *cnv_trigger;
++	size_t scale_avail_size;
+ 	struct pwm_waveform cnv_wf;
++	unsigned int scale_avail[ARRAY_SIZE(adaq4216_hw_gains_vpv)][2];
++	struct gpio_descs *pga_gpios;
++	unsigned int pga_index;
+ 
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the transfer buffers
+@@ -231,7 +259,7 @@ struct ad4030_state {
+  * - voltage0-voltage1
+  * - voltage2-voltage3
+  */
+-#define __AD4030_CHAN_DIFF(_idx, _scan_type, _offload) {		\
++#define __AD4030_CHAN_DIFF(_idx, _scan_type, _offload, _pga) {		\
+ 	.info_mask_shared_by_all =					\
+ 		(_offload ? BIT(IIO_CHAN_INFO_SAMP_FREQ) : 0) |		\
+ 		BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),			\
+@@ -242,6 +270,7 @@ struct ad4030_state {
+ 		BIT(IIO_CHAN_INFO_CALIBBIAS) |				\
+ 		BIT(IIO_CHAN_INFO_RAW),					\
+ 	.info_mask_separate_available = BIT(IIO_CHAN_INFO_CALIBBIAS) |	\
++		(_pga ? BIT(IIO_CHAN_INFO_SCALE) : 0) |			\
+ 		BIT(IIO_CHAN_INFO_CALIBSCALE),				\
+ 	.type = IIO_VOLTAGE,						\
+ 	.indexed = 1,							\
+@@ -256,10 +285,16 @@ struct ad4030_state {
+ }
+ 
+ #define AD4030_CHAN_DIFF(_idx, _scan_type)				\
+-	__AD4030_CHAN_DIFF(_idx, _scan_type, 0)
++	__AD4030_CHAN_DIFF(_idx, _scan_type, 0, 0)
+ 
+ #define AD4030_OFFLOAD_CHAN_DIFF(_idx, _scan_type)			\
+-	__AD4030_CHAN_DIFF(_idx, _scan_type, 1)
++	__AD4030_CHAN_DIFF(_idx, _scan_type, 1, 0)
++
++#define ADAQ4216_CHAN_DIFF(_idx, _scan_type)				\
++	__AD4030_CHAN_DIFF(_idx, _scan_type, 0, 1)
++
++#define ADAQ4216_OFFLOAD_CHAN_DIFF(_idx, _scan_type)			\
++	__AD4030_CHAN_DIFF(_idx, _scan_type, 1, 1)
+ 
+ /*
+  * AD4030 can average over 2^N samples, where N = 1, 2, 3, ..., 16.
+@@ -417,6 +452,65 @@ static const struct regmap_config ad4030_regmap_config = {
+ 	.max_register = AD4030_REG_DIG_ERR,
+ };
+ 
++static void ad4030_fill_scale_avail(struct ad4030_state *st)
++{
++	unsigned int mag_bits, int_part, fract_part, i;
++	u64 range;
++
++	/*
++	 * The maximum precision of differential channels is retrieved from the
++	 * chip properties. The output code of differential channels is in two's
++	 * complement format (i.e. signed), so the MSB is the sign bit and only
++	 * (precision_bits - 1) bits express voltage magnitude.
++	 */
++	mag_bits = st->chip->precision_bits - 1;
++
++	for (i = 0; i < ARRAY_SIZE(adaq4216_hw_gains_frac); i++) {
++		range = mult_frac(st->vref_uv, adaq4216_hw_gains_frac[i][1],
++				  adaq4216_hw_gains_frac[i][0]);
++		/*
++		 * If range were in mV, we would multiply it by NANO below.
++		 * Though, range is in µV so multiply it by MICRO only so the
++		 * result after right shift and division scales output codes to
++		 * millivolts.
++		 */
++		int_part = div_u64_rem((range * MICRO) >> mag_bits, NANO, &fract_part);
++		st->scale_avail[i][0] = int_part;
++		st->scale_avail[i][1] = fract_part;
++	}
++}
++
++static int ad4030_set_pga_gain(struct ad4030_state *st)
++{
++	DECLARE_BITMAP(bitmap, ADAQ4616_PGA_PINS) = { };
++
++	bitmap_write(bitmap, st->pga_index, 0, ADAQ4616_PGA_PINS);
++
++	return gpiod_multi_set_value_cansleep(st->pga_gpios, bitmap);
++}
++
++static int ad4030_set_pga(struct iio_dev *indio_dev, int gain_int, int gain_fract)
++{
++	struct ad4030_state *st = iio_priv(indio_dev);
++	unsigned int mag_bits = st->chip->precision_bits - 1;
++	u64 gain_nano, tmp;
++
++	if (!st->pga_gpios)
++		return -EINVAL;
++
++	gain_nano = gain_int * NANO + gain_fract;
++
++	if (!in_range(gain_nano, 1, ADAQ4616_PGA_GAIN_MAX_NANO))
++		return -EINVAL;
++
++	tmp = DIV_ROUND_CLOSEST_ULL(gain_nano << mag_bits, NANO);
++	gain_nano = DIV_ROUND_CLOSEST_ULL(st->vref_uv, tmp);
++	st->pga_index = find_closest(gain_nano, adaq4216_hw_gains_vpv,
++				     ARRAY_SIZE(adaq4216_hw_gains_vpv));
++
++	return ad4030_set_pga_gain(st);
++}
++
+ static int ad4030_get_chan_scale(struct iio_dev *indio_dev,
+ 				 struct iio_chan_spec const *chan,
+ 				 int *val,
+@@ -429,6 +523,13 @@ static int ad4030_get_chan_scale(struct iio_dev *indio_dev,
+ 	if (IS_ERR(scan_type))
+ 		return PTR_ERR(scan_type);
+ 
++	/* The LSB of the 8-bit common-mode data is always vref/256. */
++	if (st->chip->has_pga && scan_type->realbits != 8) {
++		*val = st->scale_avail[st->pga_index][0];
++		*val2 = st->scale_avail[st->pga_index][1];
++		return IIO_VAL_INT_PLUS_NANO;
++	}
++
+ 	if (chan->differential)
+ 		*val = (st->vref_uv * 2) / MILLI;
+ 	else
+@@ -891,6 +992,15 @@ static int ad4030_read_avail(struct iio_dev *indio_dev,
+ 		*length = ARRAY_SIZE(ad4030_average_modes);
+ 		return IIO_AVAIL_LIST;
+ 
++	case IIO_CHAN_INFO_SCALE:
++		if (st->scale_avail_size == 1)
++			*vals = (int *)st->scale_avail[st->pga_index];
++		else
++			*vals = (int *)st->scale_avail;
++		*length = st->scale_avail_size * 2; /* print int and nano part */
++		*type = IIO_VAL_INT_PLUS_NANO;
++		return IIO_AVAIL_LIST;
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -963,6 +1073,9 @@ static int ad4030_write_raw_dispatch(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		return ad4030_set_sampling_freq(indio_dev, val);
+ 
++	case IIO_CHAN_INFO_SCALE:
++		return ad4030_set_pga(indio_dev, val, val2);
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -984,6 +1097,17 @@ static int ad4030_write_raw(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static int ad4030_write_raw_get_fmt(struct iio_dev *indio_dev,
++				    struct iio_chan_spec const *chan, long mask)
++{
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		return IIO_VAL_INT_PLUS_NANO;
++	default:
++		return IIO_VAL_INT_PLUS_MICRO;
++	}
++}
++
+ static int ad4030_reg_access(struct iio_dev *indio_dev, unsigned int reg,
+ 			     unsigned int writeval, unsigned int *readval)
+ {
+@@ -1030,6 +1154,7 @@ static const struct iio_info ad4030_iio_info = {
+ 	.read_avail = ad4030_read_avail,
+ 	.read_raw = ad4030_read_raw,
+ 	.write_raw = ad4030_write_raw,
++	.write_raw_get_fmt = &ad4030_write_raw_get_fmt,
+ 	.debugfs_reg_access = ad4030_reg_access,
+ 	.read_label = ad4030_read_label,
+ 	.get_current_scan_type = ad4030_get_current_scan_type,
+@@ -1271,6 +1396,26 @@ static int ad4030_spi_offload_setup(struct iio_dev *indio_dev,
+ 							   IIO_BUFFER_DIRECTION_IN);
+ }
+ 
++static int ad4030_setup_pga(struct device *dev, struct iio_dev *indio_dev,
++			    struct ad4030_state *st)
++{
++	/* Setup GPIOs for PGA control */
++	st->pga_gpios = devm_gpiod_get_array(dev, "pga", GPIOD_OUT_LOW);
++	if (IS_ERR(st->pga_gpios))
++		return dev_err_probe(dev, PTR_ERR(st->pga_gpios),
++				     "Failed to get PGA gpios.\n");
++
++	if (st->pga_gpios->ndescs != ADAQ4616_PGA_PINS)
++		return dev_err_probe(dev, -EINVAL,
++				     "Expected %d GPIOs for PGA control.\n",
++				     ADAQ4616_PGA_PINS);
++
++	st->scale_avail_size = ARRAY_SIZE(adaq4216_hw_gains_vpv);
++	st->pga_index = 0;
++
++	return 0;
++}
++
+ static int ad4030_probe(struct spi_device *spi)
+ {
+ 	struct device *dev = &spi->dev;
+@@ -1313,6 +1458,14 @@ static int ad4030_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
++	if (st->chip->has_pga) {
++		ret = ad4030_setup_pga(dev, indio_dev, st);
++		if (ret)
++			return ret;
++
++		ad4030_fill_scale_avail(st);
++	}
++
+ 	ret = ad4030_config(st);
+ 	if (ret)
+ 		return ret;
+@@ -1566,12 +1719,52 @@ static const struct ad4030_chip_info ad4632_24_chip_info = {
+ 	.max_sample_rate_hz = 500 * HZ_PER_KHZ,
+ };
+ 
++static const struct ad4030_chip_info adaq4216_chip_info = {
++	.name = "adaq4216",
++	.available_masks = ad4030_channel_masks,
++	.channels = {
++		ADAQ4216_CHAN_DIFF(0, ad4030_16_scan_types),
++		AD4030_CHAN_CMO(1, 0),
++		IIO_CHAN_SOFT_TIMESTAMP(2),
++	},
++	.offload_channels = {
++		ADAQ4216_OFFLOAD_CHAN_DIFF(0, ad4030_16_offload_scan_types),
++	},
++	.grade = AD4030_REG_CHIP_GRADE_ADAQ4216_GRADE,
++	.precision_bits = 16,
++	.has_pga = true,
++	.num_voltage_inputs = 1,
++	.tcyc_ns = AD4030_TCYC_ADJUSTED_NS,
++	.max_sample_rate_hz = 2 * HZ_PER_MHZ,
++};
++
++static const struct ad4030_chip_info adaq4224_chip_info = {
++	.name = "adaq4224",
++	.available_masks = ad4030_channel_masks,
++	.channels = {
++		ADAQ4216_CHAN_DIFF(0, ad4030_24_scan_types),
++		AD4030_CHAN_CMO(1, 0),
++		IIO_CHAN_SOFT_TIMESTAMP(2),
++	},
++	.offload_channels = {
++		ADAQ4216_OFFLOAD_CHAN_DIFF(0, ad4030_24_offload_scan_types),
++	},
++	.grade = AD4030_REG_CHIP_GRADE_ADAQ4224_GRADE,
++	.precision_bits = 24,
++	.has_pga = true,
++	.num_voltage_inputs = 1,
++	.tcyc_ns = AD4030_TCYC_ADJUSTED_NS,
++	.max_sample_rate_hz = 2 * HZ_PER_MHZ,
++};
++
+ static const struct spi_device_id ad4030_id_table[] = {
+ 	{ "ad4030-24", (kernel_ulong_t)&ad4030_24_chip_info },
+ 	{ "ad4630-16", (kernel_ulong_t)&ad4630_16_chip_info },
+ 	{ "ad4630-24", (kernel_ulong_t)&ad4630_24_chip_info },
+ 	{ "ad4632-16", (kernel_ulong_t)&ad4632_16_chip_info },
+ 	{ "ad4632-24", (kernel_ulong_t)&ad4632_24_chip_info },
++	{ "adaq4216", (kernel_ulong_t)&adaq4216_chip_info },
++	{ "adaq4224", (kernel_ulong_t)&adaq4224_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(spi, ad4030_id_table);
+@@ -1582,6 +1775,8 @@ static const struct of_device_id ad4030_of_match[] = {
+ 	{ .compatible = "adi,ad4630-24", .data = &ad4630_24_chip_info },
+ 	{ .compatible = "adi,ad4632-16", .data = &ad4632_16_chip_info },
+ 	{ .compatible = "adi,ad4632-24", .data = &ad4632_24_chip_info },
++	{ .compatible = "adi,adaq4216", .data = &adaq4216_chip_info },
++	{ .compatible = "adi,adaq4224", .data = &adaq4224_chip_info },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ad4030_of_match);
+-- 
+2.39.2
+
