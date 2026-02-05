@@ -1,125 +1,98 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BD923D3488;
-	Thu,  5 Feb 2026 16:30:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA3013D3488;
+	Thu,  5 Feb 2026 16:34:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770309046; cv=none; b=LCbaEovneVmg50rlNMF7Xc+xLD8TLWIAxNKKNv9dp+23pNCKUJZSsllEOgpD0XfsUq0BzmDSSUw7+9CTHmVE4o8/oiVM5c0RUPmsQhA7NLkipQFYOhkXtWdBaP1WrHRw3PK1kHx4qpLYP7diOS5dTsHXItT9zdYapjHhDg5B7js=
+	t=1770309270; cv=none; b=SW7JQUdBtjKtMb2vdoeszq73t4Ru2okyLT8wMCCx4Te3k1DCE6xb6wo7hzyd3B1ONBxef3xmk5g4P3cBiXAMJD/BBQtlmxJqvjYstSkj8P0FQh1oWnB05u4FP1jhlAAXvVN5thmMee39JdhV28GzLmliBiP62ZQhG229D6IXj4w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770309046; c=relaxed/simple;
-	bh=tjWEc+QIvDHg5HmIeJfrMw+WnRjBnZr25Lm4qlf17Rw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=UeWTIvqioFCmdCsShZvR04gr4ujN4p0tkY6KefFQD524u6OqM/HjRvfNUxgsZ4Oq2o5f/A/E8gPEjOOkQCMqa9Hb8UdKxk8ttxZ4aY70+CuqsZLwpm08UKg3XBvpn5g1iB8+klmq//R9R1STSj87AkM1cua50mKW++sDyWGcLL0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qNVQAxVN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770309270; c=relaxed/simple;
+	bh=LWnnECeP3tvpcBTKAiohhDhDfchHPoYxdJgj1zdGgXE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HleqO6+9fMEXWofk/y/Q9WMKhbw203EWzc840mnpQS2wVdmG1pmVldOCvxBKOsD+ivseMIku7fFw+3S1eaiGURHoMtpglLjPbJOWoqVlUIxWLeSr8278OdnN7EUtKA1Hs9zqo3m3hf17uO63oGlnbgCfoDTXxAmq6lHD/7DV9co=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GP01h2Gx; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qNVQAxVN"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 29B33C4CEF7;
-	Thu,  5 Feb 2026 16:30:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770309046;
-	bh=tjWEc+QIvDHg5HmIeJfrMw+WnRjBnZr25Lm4qlf17Rw=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=qNVQAxVNEdduJ7Bf8AYB4iVLOuJeOW/QuRYCjTOdUCaHlNQzQBywKeKJFBt6gaH7T
-	 AV0Cc+PX6/Eso1TlhFjogToYXa8gsNlZlYyWYMptg/5QdUM+3q9s1hQh3bhUAxM2u0
-	 s87Ps86AqhB1vzN6iYsx9Ak7VHb1COa+aqqHG4Y6Lllcibh1IXLn7chJZdy8iS4MtP
-	 nIE8NWzR8TMCLWupVdSTWac9+ugpd8XLJyNPauWivebhfWqDSixlU2gOqq0LcAsDGQ
-	 XuBLl/A/0eUpdoL+VG08MkW3WAFBISGd5R/lJY2us0T0TluKapTdjYhf2x/lx3hHye
-	 sJ+/Ya0oWINqw==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15847ECD989;
-	Thu,  5 Feb 2026 16:30:46 +0000 (UTC)
-From: Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Date: Thu, 05 Feb 2026 17:30:42 +0100
-Subject: [PATCH v2] iio: imu: inv_icm45600: fix INT1 drive bit inverted
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GP01h2Gx"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770309270; x=1801845270;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LWnnECeP3tvpcBTKAiohhDhDfchHPoYxdJgj1zdGgXE=;
+  b=GP01h2Gx/OAqrnANfl55auYOeFpWO7W6rgHzUiQv04hsB0TbH1FVB5zm
+   hgn9ol0CLOWXX2qzgqStRbhDT3fbenHQ3Zj3x34J/v51PcNhdZojrG4iv
+   mUJSaerdLo7ATtbXGDN4n/TO/4WHcKYOFKU7AjRnbqZ+KBmkayUFqqI/f
+   tXT80IPhyduNDY8EjhSA3H1KDv4/d7H2vcX86GGPutyXC2D+4mX7+7O7G
+   NknDmfh8yfe0xW5WvMX8N+taQVa/Gxp0COpj/W/dlemhxfB+ypgmKZHfV
+   wA/Q+rDJAqus66kgjCERvTMP6KVTG/BVNmXAf/XwEq+Prigy0LNH+GrF2
+   A==;
+X-CSE-ConnectionGUID: Zmy0fLBrQIy7aaTZxA5UZA==
+X-CSE-MsgGUID: gNG5NfXoTPO42/Hd7HTu9g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="82145336"
+X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
+   d="scan'208";a="82145336"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 08:34:29 -0800
+X-CSE-ConnectionGUID: ZIK8daLHSjO03UVWTgmsTw==
+X-CSE-MsgGUID: Sq0l2t3gQcaNhxloE36JXQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,274,1763452800"; 
+   d="scan'208";a="209863252"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.142])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 08:34:27 -0800
+Date: Thu, 5 Feb 2026 18:34:24 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Tomas Melin <tomas.melin@vaisala.com>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+	Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 5/5] iio: adc: ad9467: check for backend capabilities
+Message-ID: <aYTGkAf7Ue7goDnw@smile.fi.intel.com>
+References: <20260205-b4-ad9467-optional-backend-v6-0-7ca20c40c59a@vaisala.com>
+ <20260205-b4-ad9467-optional-backend-v6-5-7ca20c40c59a@vaisala.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260205-inv-icm45600-fix-int1-drive-bit-v2-1-5e72608ea154@tdk.com>
-X-B4-Tracking: v=1; b=H4sIALHFhGkC/42NQQrCMBBFr1Jm7chktI248h7SRUxGO0hbSUJQS
- u9u7Alcvsfn/QWSRJUE52aBKEWTzlMF3jXgBzc9BDVUBibuiKlFnQqqH49tR4R3fVeRDYaoRfC
- mGW0wLO4g7ANDrbyi1NX2cO0rD5ryHD/bYTE/+3+7GDRo2dmTD2RNS5ccnns/j9Cv6/oFpZEfh
- swAAAA=
-X-Change-ID: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
-To: Remi Buisson <remi.buisson@tdk.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>, 
- stable@vger.kernel.org
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1770309045; l=2273;
- i=jean-baptiste.maneyrol@tdk.com; s=20240923; h=from:subject:message-id;
- bh=nOUJSmgm+rwCHt6TbRBvlTujMXE5wlAxMkqMG1Zhi8g=;
- b=6soWHK27tMui4BudiatfCAUTsLTVV+cgKhFrD9V/2pTHxunNaPuoag+7YDiCCz2FlSTTHaULq
- bnuKoNEGQ+ZDzxJZ5WeSjlA2Q7IJXqAeHorsSPcEfA2s1Xdloc685av
-X-Developer-Key: i=jean-baptiste.maneyrol@tdk.com; a=ed25519;
- pk=bRqF1WYk0hR3qrnAithOLXSD0LvSu8DUd+quKLxCicI=
-X-Endpoint-Received: by B4 Relay for
- jean-baptiste.maneyrol@tdk.com/20240923 with auth_id=218
-X-Original-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Reply-To: jean-baptiste.maneyrol@tdk.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260205-b4-ad9467-optional-backend-v6-5-7ca20c40c59a@vaisala.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+On Thu, Feb 05, 2026 at 12:24:11PM +0000, Tomas Melin wrote:
+> Add capability checks for operation with backends that do not necessarily
+> support full set of features, but are otherwise compatible with the device.
+> This ensures a fully functional device, but with limited capabilities.
 
-Drive bit must be set for open-drain mode and be cleared for push-pull
-mode.
+...
 
-Referring to datasheet DS-000576_ICM-45605.pdf section 17.23.
+> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_BUFFER)) {
+> +		ret = devm_iio_backend_request_buffer(&spi->dev, st->back,
+> +						      indio_dev);
 
-Fixes: 06674a72cf7a ("iio: imu: inv_icm45600: add buffer support in iio devices")
-Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-Cc: stable@vger.kernel.org
----
-Changes in v2:
-- Add datasheet precision where to find the bits
-- Link to v1: https://lore.kernel.org/r/20260205-inv-icm45600-fix-int1-drive-bit-v1-1-72a78cd07150@tdk.com
----
- drivers/iio/imu/inv_icm45600/inv_icm45600.h      | 2 +-
- drivers/iio/imu/inv_icm45600/inv_icm45600_core.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+With
 
-diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600.h b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
-index c5b5446f6c3b43150512bcc4357cee385080b634..1c796d4b2a4038203f734f80d7bf7bad138c3497 100644
---- a/drivers/iio/imu/inv_icm45600/inv_icm45600.h
-+++ b/drivers/iio/imu/inv_icm45600/inv_icm45600.h
-@@ -205,7 +205,7 @@ struct inv_icm45600_sensor_state {
- #define INV_ICM45600_SPI_SLEW_RATE_38NS			0
- 
- #define INV_ICM45600_REG_INT1_CONFIG2			0x0018
--#define INV_ICM45600_INT1_CONFIG2_PUSH_PULL		BIT(2)
-+#define INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN		BIT(2)
- #define INV_ICM45600_INT1_CONFIG2_LATCHED		BIT(1)
- #define INV_ICM45600_INT1_CONFIG2_ACTIVE_HIGH		BIT(0)
- #define INV_ICM45600_INT1_CONFIG2_ACTIVE_LOW		0x00
-diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-index ab1cb7b9dba435a3280e50ab77cd16e903c7816c..b028044d609a41f6d4b747383323130ded0d2e79 100644
---- a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-+++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-@@ -637,8 +637,8 @@ static int inv_icm45600_irq_init(struct inv_icm45600_state *st, int irq,
- 		break;
- 	}
- 
--	if (!open_drain)
--		val |= INV_ICM45600_INT1_CONFIG2_PUSH_PULL;
-+	if (open_drain)
-+		val |= INV_ICM45600_INT1_CONFIG2_OPEN_DRAIN;
- 
- 	ret = regmap_write(st->map, INV_ICM45600_REG_INT1_CONFIG2, val);
- 	if (ret)
+	struct device *dev = &spi->dev;
 
----
-base-commit: d820183f371d9aa8517a1cd21fe6edacf0f94b7f
-change-id: 20260205-inv-icm45600-fix-int1-drive-bit-7d12ea3e2cd2
+at the top, this one becomes exactly a 80 character line.
+And in general it will help cleaning up the rest afterwards.
 
-Best regards,
+> +		if (ret)
+> +			return ret;
+> +	}
+
 -- 
-Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+With Best Regards,
+Andy Shevchenko
 
 
