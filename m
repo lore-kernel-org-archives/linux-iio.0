@@ -1,114 +1,119 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
+Received: from mail-dy1-f174.google.com (mail-dy1-f174.google.com [74.125.82.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 649DB34CFBE
-	for <linux-iio@vger.kernel.org>; Thu,  5 Feb 2026 14:57:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4697D410D0F
+	for <linux-iio@vger.kernel.org>; Thu,  5 Feb 2026 15:07:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770303467; cv=none; b=XxVTnZkloZOkoaHhRO8Y5dLn24f9gARCK01GuAwl8pNT2FhJBgR9QiTEn+hBfu32vGUqwCXzEqbDpAnZ9963VtQgs6Pb7Z1eimEOhhGchQGjZ7OliZf0dBPNQI3Dg5spEd6yG7ZWtRnjjgQqyASq/vRUvAkWLbHr31vk7T/NtjU=
+	t=1770304067; cv=none; b=ZjRu4FSDCrhLNv3n0ihN5AJ86XGkX35AXdDGvyD0eXeuoo/itJN1yS2vROLVT+cTgHccHmj80aLNQAeKaQFJmmt5zDXMFFiOgN60SIi1UiF4B3qjT8J2qfCHcQA/GXo/CmBvr4JXDRl5x7Nnt8sCD8kwoIrQW3gzVFJXYXE3xZE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770303467; c=relaxed/simple;
-	bh=mqJ1ieL1d6aAkCqbf5Vu4cEJZ6fZhddRL14J3DjLzok=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qSh1f8LsLzELuJMby7A9ibAX9OOsWwhPjFDDHodFHaz9q0veWYHlSZKI4ASOBbhn+lYJVtOkga99ylZS4dsh+C5Ed8BXi2z7W0uYCVy5yYIqQckXtM0L6OKtjkeWosdc2CYHfLTOaUln3kgRxx4c97U8nBCQ+8vlPazXAH1o7ZI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MIzYL+tj; arc=none smtp.client-ip=209.85.128.52
+	s=arc-20240116; t=1770304067; c=relaxed/simple;
+	bh=fqTz05JeHTFypfG0U1BlGozBV2lG3rX8sQTfDRxWegg=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=DBPH37cjntdz24yXB9OLE68+3Z1XzCVzIQvQz/O3Id4Ot6F1d0zh8CsQrykyanU2uJARWvMfsgJ3tVaQMf65CmZhLBHYOKR9QrkQqNwUqCw4DBdDPW7MN7ATAccDPrBMA6NFyLlyNQHZSGuFNXzhED3R1ruNTIE36z5JhNmyoxY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fra0zjtu; arc=none smtp.client-ip=74.125.82.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MIzYL+tj"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-47ee76e8656so15590515e9.0
-        for <linux-iio@vger.kernel.org>; Thu, 05 Feb 2026 06:57:46 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fra0zjtu"
+Received: by mail-dy1-f174.google.com with SMTP id 5a478bee46e88-2b834e17c3fso939570eec.0
+        for <linux-iio@vger.kernel.org>; Thu, 05 Feb 2026 07:07:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770303465; x=1770908265; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1770304066; x=1770908866; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=+/l1D3HoF3zgIcHFCwzxTOQvuCZS2NTOWIlmojy1gME=;
-        b=MIzYL+tjwhunIoNI0tKy3dUupMIzDCQZ505kZiUaajuVjPGivULTSikKfBhjNqYfNv
-         0rvxyqOsU2LrfxcNn9a5Mp9H54nDOM5HNibYTOuRwbS3sIYggBQx1Kl4FRINPJ8F5gQo
-         eY4aBNxb0mNq3FOBKkbRBXr76yD8Sj5ATK0toZ7s9uVzVruAQWCmdIZAthirlKTwKdpJ
-         nsflDt+Fwdbj7uvdYZg4ZXTBkPMt4XpC8a5GHpTJizMz0xGMSHaY75MYIxtlv9XJdCt+
-         B2e9En2JlzShcyhM1vIXaFR8kjqWyFy0AySc9U5w2I+PgrzFVpUDxf9tVFCe+h4sVfM6
-         P0rg==
+        bh=dF+tb1gguJoM1jCSGUZAY+vHVI+6s3nIhtyjPFjvk/4=;
+        b=Fra0zjtuYE6gorlSpxnwNjeHjkRjSjyvRbhYedoGDUg1inN5QBkTHPX0hIP6xOyw3T
+         oVIlpEHofGT/mnjDc0Ek71aGIsi32Zt6awxzu81+FHcUIiEwxRSh4l0ME7rdqJsBweRX
+         SUeCYDWnKAGBaCW9ObNu+X0HF+6CPuNbAGnlW0snHkXXaHWaE7dJlHQsLSu5i5eD8XLq
+         OLEAyPZM17vgwJ4bgrDglBmBIAEQy3csheDFeYoJBD8axEJst1iLLEEYsc2OK658KoVq
+         EK00QMUOgukHHqlZmxl2i7o1N97BKfowBqfYBFhu/Jccc0HbSmdztQg25XYIU7jzNsRM
+         Q3nQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770303465; x=1770908265;
+        d=1e100.net; s=20230601; t=1770304066; x=1770908866;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+/l1D3HoF3zgIcHFCwzxTOQvuCZS2NTOWIlmojy1gME=;
-        b=LKolpH4xsBtHO+BbyJ1bg2R3ZsT+f+ZcBw4qanocVCORE94D72cKrXCJo9ey7JKdRq
-         NgJw8qLvqStkXI6VnPMMwyewO+KA9fhfLiMuV7IyPXg7YpoxUo4SIRFZNdDfnyWKM+KM
-         +rF09QITLZcLpXsTTmn0oPaFfVNN2GbFfWi46K5XE+xiix5panprnl77rJIGEeliLNhT
-         yE/bLLTJEbYmmBrgfN8JaRRNHATd+MLexkoSOtucWCKDmQcBinwZ6mpJSHUBIhMkR7DW
-         Tr02W/r/RoCiTG1rcrX5vAS0oXxFk15zPOsN8OfZDKdJ/yZ757rzZ1GH/UiAD+qOJX9t
-         pD7Q==
-X-Gm-Message-State: AOJu0YzlWpWlCyyKPfHJVKRWya1OpSUKEz+lGKKoosFlEC8Pzz/xirZM
-	HMY+VJUei9YRXY++Nfq6jQG52/gL9ksYVJuiQ2UTtzUQFamSQTWUIqgb
-X-Gm-Gg: AZuq6aLWw/wugGVF/gw9BIeII0hWyk7D9V8BmLokOR3pXsMkUWXN772AFON/+mJaBxZ
-	DP9LHJ5n4OSHks3/aW5uHraiPR/l5806TfGTCz2DNHkre8kJ1aDJBgf/1g1KOSaXb4F6JtlZ6cG
-	r2++Zxhdi8akTF8UabQmVNQAymlbwblGFKgMfu0tN67fPqrT+t6043LyXucmkaS25RXlUu1ema2
-	PFaUhFDdEpzBy9Cw5T4rXpQo7PQLw4mad/iCeAT9ep5EqMPREcDIj2covAZ0wooVasgOQhWUSjc
-	mwbSdRMOP020eY1lZpfTXEyp5t7ZVZGWtA/qye+KK6iwV2x3/agVjGwedrTrstJFMIF/cmNhacg
-	1/5yEj5QTygZKVlkfIGgD8+83POe9CBWjWbexBZRLp/wsp+5iy2T3CfuJCl6OuXCQYDxHxOD/zs
-	7h2NlzM9XmBzm65qFCC+aaRSG5iwA4HSqapfMK7OsAhKN1J+hVNGPbb9StjP09
-X-Received: by 2002:a05:600c:800f:b0:477:af8d:203a with SMTP id 5b1f17b1804b1-4830e9709b4mr91969535e9.27.1770303465056;
-        Thu, 05 Feb 2026 06:57:45 -0800 (PST)
-Received: from chris-laptop.home.arpa ([2a0e:1d47:c905:1800:63e9:a31e:f6fe:74f8])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43618058473sm14464223f8f.22.2026.02.05.06.57.44
+        bh=dF+tb1gguJoM1jCSGUZAY+vHVI+6s3nIhtyjPFjvk/4=;
+        b=SRXr6vkBLTtjoi9FH3zraKfnXSvUeuLKbhtj6YWj3/Ikibu0enfEhPBJWAYJCod5Xe
+         XeHERu6x+5GeXRzJg07KGyc+zruKl9bulUglqBWYp+nq97/BHXxd4Z1JquuM4M4dGzR3
+         N2y4ensBz2ZhW+aHIKe/1My0eae0lT7mBqPiRbNLz7p0kmCS+EGG+7cGz+d4fGa1j4Lw
+         7hTE1O/KFaiEIbGbGsptN+Cp7YtQ+rBrOVeNHWGpt6ZuHTdhzdCuFPb8H9HlQvCNgmLt
+         QTTriTjx7WCAkg65bFdNh5/ZUXpLT2G7vvSQtkXThPDmaTh3BhRJmV3Zt44P0lQMld6q
+         VKdg==
+X-Forwarded-Encrypted: i=1; AJvYcCVcRyQ8z4nxi50kBLm0Cl8Z2zrs9OgVsaQM0olJMuG0fSwzLKK7tctegQCWPF+ZifmzHOCHfmjSDvY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLWuYYhew9T/9CdZp/5V2JXpyovG059+67T/uax7UrrlS2xHFR
+	3+LSOUEVwBv+X0t/TkHxyzp8sUNvSm67JYFSlLnGuF3kzxU6mTcDHxPV
+X-Gm-Gg: AZuq6aIS1we5CIDAGskWJzh9nBPkbPVNIOFmJmJVxjZC1W1Z8ENERabsyylmhzuMAnf
+	5iFsffx8v/4UmSDIO115t6wYGghrAHyz4ta+lpFksfPy1cSA1IbBFU0XckuqIoIuydsnDiPJ6/G
+	iIzyO3yq8RRbepo60kzCbIAEu6CuZ9V8olS9j+ykBbMdRGv4Gm9j2JLK/7H3BbRSbPYCXj0AMa4
+	1gFljGtb7FERaqd6jtK51BNck4RJNXIU2Z3q02g4vIIiW6eV0ILWVzF4dlb+/VexuHOrPPN6PP+
+	AOsRYXph4EuQfKRxOKyN1mFkmmJoUbt1VTnRbe26Av8PNsHmT8jYqRHijth5RnARc9P/dyadEcU
+	qgP8BKn7HqVYbRz1vvCZpJYhdu7uqSNycdGZ1XwJMnu0qwaqoBBbcDGsbSmXadJw05UdEgzBxu+
+	cFeReQ0x31
+X-Received: by 2002:a05:7300:6418:b0:2b7:857:db6a with SMTP id 5a478bee46e88-2b832979ecdmr3268252eec.21.1770304065550;
+        Thu, 05 Feb 2026 07:07:45 -0800 (PST)
+Received: from arch.localdomain ([2409:8a28:a52:d2b1::1004])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-126f4e04467sm3909693c88.2.2026.02.05.07.07.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Feb 2026 06:57:44 -0800 (PST)
-From: Chris Spencer <spencercw@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	vassilisamir@gmail.com,
-	Chris Spencer <spencercw@gmail.com>,
-	stable@vger.kernel.org
-Subject: [PATCH v3] iio: chemical: bme680: Fix measurement wait duration calculation
-Date: Thu,  5 Feb 2026 14:55:45 +0000
-Message-ID: <20260205145703.198609-1-spencercw@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        Thu, 05 Feb 2026 07:07:45 -0800 (PST)
+From: Jun Yan <jerrysteve1101@gmail.com>
+To: devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Cc: linusw@kernel.org,
+	stephan@gerhold.net,
+	hns@goldelico.com,
+	jic23@kernel.org,
+	Jun Yan <jerrysteve1101@gmail.com>
+Subject: [PATCH v4 0/3]  iio: add support for Bosch BMX055 IMU
+Date: Thu,  5 Feb 2026 23:07:27 +0800
+Message-ID: <20260205150734.525947-1-jerrysteve1101@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-This function refers to the Bosch BME680 API as the source of the
-calculation, but one of the constants does not match the Bosch
-implementation. This appears to be a simple transposition of two digits,
-resulting in a wait time that is too short. This can cause the following
-'device measurement cycle incomplete' check to occasionally fail, returning
-EBUSY to user space.
+The BMX055[1] is a Bosch 9-axis IMU integrating a 3-axis accelerometer,
+gyroscope and geomagnetic sensor.
 
-Adjust the constant to match the Bosch implementation and resolve the EBUSY
-errors.
+It supports SPI/I²C interfaces, and existing compatible drivers can
+be reused by simply adding the corresponding dt-bindings for fallback
+coompatibles as follows:
 
-Fixes: 4241665e6ea0 ("iio: chemical: bme680: Fix sensor data read operation")
-Link: https://github.com/boschsensortec/BME68x_SensorAPI/blob/v4.4.8/bme68x.c#L521
-Signed-off-by: Chris Spencer <spencercw@gmail.com>
-Acked-by: Vasileios Amoiridis <vassilisamir@gmail.com>
-Cc: stable@vger.kernel.org
----
-v2: add Acked-by: Vasileios
-v3: revise commit message; add Cc: stable
----
- drivers/iio/chemical/bme680_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+- accelerometer: bmc150_accel
+- gyroscope: bmg160
+- magnetometer: bmc150_magn
 
-diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
-index 70f81c4a96ba..24e0b59e2fdf 100644
---- a/drivers/iio/chemical/bme680_core.c
-+++ b/drivers/iio/chemical/bme680_core.c
-@@ -613,7 +613,7 @@ static int bme680_wait_for_eoc(struct bme680_data *data)
- 	 * + heater duration
- 	 */
- 	int wait_eoc_us = ((data->oversampling_temp + data->oversampling_press +
--			   data->oversampling_humid) * 1936) + (477 * 4) +
-+			   data->oversampling_humid) * 1963) + (477 * 4) +
- 			   (477 * 5) + 1000 + (data->heater_dur * 1000);
- 
- 	fsleep(wait_eoc_us);
+Changes in v4:
+- Please replace underscores with hyphens in the compatibles.
+- Link to v3: https://lore.kernel.org/all/20260203143946.301233-1-jerrysteve1101@gmail.com/
+
+Changes in v3:
+- Drop the Linux-related comments in the bosch,bma25 dt-bindings.
+- Link to v2: https://lore.kernel.org/all/20260202110304.236320-1-jerrysteve1101@gmail.com/
+
+Changes in v2:
+- Use fallback compatibles instead of introducing a new device ID in the driver.
+- Link to v1: https://lore.kernel.org/all/20260129071105.389493-1-jerrysteve1101@gmail.com/
+
+[1] https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_datasheet.pdf
+
+Jun Yan (3):
+  dt-bindings: iio: accel: bosch,bma255: add bmx055 accel binding
+  dt-bindings: iio: magnetometer: bosch,bmc150_magn: add bmx055
+    magnetometer binding
+  dt-bindings: iio: gyroscope: bosch,bmg160: add bmx055 gyroscope
+    binding
+
+ .../bindings/iio/accel/bosch,bma255.yaml      | 40 ++++++++++---------
+ .../bindings/iio/gyroscope/bosch,bmg160.yaml  | 12 ++++--
+ .../iio/magnetometer/bosch,bmc150_magn.yaml   | 14 ++++---
+ 3 files changed, 38 insertions(+), 28 deletions(-)
+
 -- 
-2.43.0
+2.52.0
 
