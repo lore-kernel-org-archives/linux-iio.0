@@ -1,103 +1,180 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B9F030F921;
-	Fri,  6 Feb 2026 07:32:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B865346AD6
+	for <linux-iio@vger.kernel.org>; Fri,  6 Feb 2026 07:57:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770363140; cv=none; b=uu7W1k8lOf4ZfQYTFqTX6cOW7IJJBbGhxRnwF1tctpfGAgZjEEaND4yr+4XAX4pYhTvvNDYNg+2d64j9szk3Xd5SX+oSAltpYpybTdbVX4M3uOF0PtyNcBzYAKNJzCZeyQgUR05CMrkbyjCB6s1TybcTkowimOdoSEKZGzeJ/2M=
+	t=1770364635; cv=none; b=FK7Bun/qSFdOflefkfJocaFagG2C6V8pgktpgxH3fZWy15KEZUUgMKiNWqxLosK3qBEFPlmqiodsc0aObojEbY9deJ15jCB6cKdWqrEHYohZ6PpER2JGCsAM5W8n+XsL4919NzAflkWDPtMFEaL6rU5DVZCw7HZWK+5OGEp9h6I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770363140; c=relaxed/simple;
-	bh=IY6m5C4I7UkfBFeMhxudZcsP+Qzs++eKo2eWARdfXWw=;
+	s=arc-20240116; t=1770364635; c=relaxed/simple;
+	bh=Zrm6fZQNVwJWfNL4nHVEXclBkofR1eTPAkyBjFQeq0s=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hOfvgG29rGyT+UoxbxlVbb9ku2/mXvahZNJv8W7lNoQIRJ0XEIrlQ7IHLI10Pyb7QVWWOrYwx4XANkBL8kGysuoBhPB7/R/8EsckC100WRxYr85erEM/vti0otl4yvILzI6g0vK3E8Slhtpu+veoAhq8CeTtvX0BQHsx/BJZhxM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R7f/go1r; arc=none smtp.client-ip=192.198.163.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R7f/go1r"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770363141; x=1801899141;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=IY6m5C4I7UkfBFeMhxudZcsP+Qzs++eKo2eWARdfXWw=;
-  b=R7f/go1rA/9JYGoXKpBArXY1kOuJplMIGJbuNguJPtYbB3H605jZ/bfF
-   1Nmpcrq4rCX9855YryYkwUKSCY/bsPYi2wCA+mwxgJzhC/clQVbiGLvGH
-   PykTi5g6bdVw3rF1Qqg19WCq/p+gFIXdOd0jxBaIBR1vcabOt/B18/vio
-   YdiNnv0PXpLoQPiiW+mjKsfm7nrrX6I/hnp3SmQF6COeUtDV/v1+OFyVa
-   zCWSpUS0PgP7eCKHjZ+rjau7aYErYQeuLZyG7DcqZrSEThsJRA0U/KbpV
-   uneMCZ4mkGDTO/YPWfPQVPMng0dr4WDgaCJqWtvL3mh3q5xnAcWEIe6ph
-   A==;
-X-CSE-ConnectionGUID: v/vrMHvER76udwk4ehqm1g==
-X-CSE-MsgGUID: rtOEoHElT8SB/7Y3ADy4oQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="70585448"
-X-IronPort-AV: E=Sophos;i="6.21,276,1763452800"; 
-   d="scan'208";a="70585448"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 23:32:20 -0800
-X-CSE-ConnectionGUID: STN1VNxDRxmE9YLDNRfnWA==
-X-CSE-MsgGUID: u3aK/zvDQ7qVDRsKAMGI0w==
-X-ExtLoop1: 1
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.202])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2026 23:32:16 -0800
-Date: Fri, 6 Feb 2026 09:32:14 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	 Content-Type:Content-Disposition:In-Reply-To; b=PYV922UEuDTAIypcywp/AnJ9BeGnO6rnTaSy4sWy0t1FdtCMLZbodJblhJeB5tmp5O7NK+z26YtTI1fECka4C1PP/wnXBgO7kkY7/P0MGOP6a2fqSU464LiwFsddVvf7JhG98XgfQH+3LeYtTj6jlzUTm9ITbWrZ7pz+UO4LB2U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <ore@pengutronix.de>)
+	id 1voGiD-0001ot-Ge; Fri, 06 Feb 2026 08:57:09 +0100
+Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
+	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1voGiC-004MvV-2F;
+	Fri, 06 Feb 2026 08:57:08 +0100
+Received: from ore by pty.whiteo.stw.pengutronix.de with local (Exim 4.96)
+	(envelope-from <ore@pengutronix.de>)
+	id 1voGiB-002Gt0-2x;
+	Fri, 06 Feb 2026 08:57:07 +0100
+Date: Fri, 6 Feb 2026 08:57:07 +0100
+From: Oleksij Rempel <o.rempel@pengutronix.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v3 4/9] iio: amplifiers: ad8366: drop reset_gpio from
- private struct
-Message-ID: <aYWY_jJ7JopVZoeq@smile.fi.intel.com>
-References: <20260203-iio-ad8366-update-v3-0-5d5636b5181a@analog.com>
- <20260203-iio-ad8366-update-v3-4-5d5636b5181a@analog.com>
- <aYKnIjBS5OT0MxuY@smile.fi.intel.com>
- <rp62czb4n3ag64cgluwsodubnqxecod3cuu2agyedqed2vwi3j@qs3e7xhf5ksk>
+	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	David Jander <david@protonic.nl>
+Subject: Re: [PATCH v4 06/13] iio: dac: ds4424: use device match data for
+ chip info
+Message-ID: <aYWe0-2KMLijFVh6@pengutronix.de>
+References: <20260203093434.2548978-1-o.rempel@pengutronix.de>
+ <20260203093434.2548978-7-o.rempel@pengutronix.de>
+ <aYHH69gXyuwmQR03@smile.fi.intel.com>
+ <aYHLRvfJH54XumUA@pengutronix.de>
+ <aYHhO7pJPEew7QMC@smile.fi.intel.com>
+ <aYHjQhO92yxoy_9o@pengutronix.de>
+ <aYIMgEEDd8ZfLv71@smile.fi.intel.com>
+ <20260205204325.5bd09d97@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <rp62czb4n3ag64cgluwsodubnqxecod3cuu2agyedqed2vwi3j@qs3e7xhf5ksk>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260205204325.5bd09d97@jic23-huawei>
+X-Sent-From: Pengutronix Hildesheim
+X-URL: http://www.pengutronix.de/
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-On Thu, Feb 05, 2026 at 06:12:23PM +0000, Rodrigo Alencar wrote:
-> On 26/02/04 03:55AM, Andy Shevchenko wrote:
-> > On Tue, Feb 03, 2026 at 11:24:10AM +0000, Rodrigo Alencar via B4 Relay wrote:
-> > 
-> > > Remove reset_gpio from the device state struct and turn it
-> > > into a local variable, as it is not being used anywhere else.
-> > 
-> > Why not switching to reset-gpio driver to begin with?
+On Thu, Feb 05, 2026 at 08:43:25PM +0000, Jonathan Cameron wrote:
+> On Tue, 3 Feb 2026 16:56:00 +0200
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 > 
-> No particular reason, consuming it as gpio was already there!
-> Is this a suggestion/recommendation or a mandatory thing for
-> now on?
+> > On Tue, Feb 03, 2026 at 01:00:02PM +0100, Oleksij Rempel wrote:
+> > > On Tue, Feb 03, 2026 at 01:51:23PM +0200, Andy Shevchenko wrote:  
+> > > > On Tue, Feb 03, 2026 at 11:17:42AM +0100, Oleksij Rempel wrote:  
+> > > > > On Tue, Feb 03, 2026 at 12:03:23PM +0200, Andy Shevchenko wrote:  
+> > > > > > On Tue, Feb 03, 2026 at 10:34:26AM +0100, Oleksij Rempel wrote:  
+> > 
+> > ...
+> > 
+> > > > > > > -	indio_dev->name = id->name;  
+> > > > > >   
+> > > > > > > +	indio_dev->name = client->name;  
+> > > > > > 
+> > > > > > Isn't this an ABI breakage?  
+> > > > > 
+> > > > > I can't confirm it.
+> > > > > 
+> > > > > before all patches:
+> > > > > root@DistroKit:~ cat /sys/bus/iio/devices/iio:device3/name 
+> > > > > ds4424
+> > > > > 
+> > > > > after:
+> > > > > root@DistroKit:~ cat /sys/bus/iio/devices/iio:device3/name 
+> > > > > ds4424  
+> > > > 
+> > > > In ACPI case it might look differently, but I have no means to test this.
+> > > > 
+> > > > id->name comes strictly from an i2c table, while client->name is constructed
+> > > > using specifics of the firmware enumeration. In DT due to some (historical?)
+> > > > reasons the client->name has no vendor substring and hence matches 1:1 to
+> > > > id->name. In ACPI, IIRC, the client->name is ACPI device instance name,
+> > > > something like ABCD0123:00.  
+> > > 
+> > > Ok, I see. Should I revert this line?  
+> > 
+> > Just do not introduce that change (change of the ->name field) in the original
+> > patch, in that case no revert churn would be needed.
+> > 
+> I think this got dealt with in discussion of next version but
+> safest route is just have an extra copy of the name in the
+> chip_info structure.  Then we know it's stable against different
+> firmware types etc.
 
-Not mandatory, just preferable since the reset line might be shared in some
-(future) PCB designs, with the reset-gpio in place, there will be no need
-to take care of that in the driver.
+Something like this?
 
-> looked over some examples, some are not updating dt-bindings with resets,
-> others don't have Kconfig requiring POWER_RESET or POWER_RESET_GPIO config.
-> Those things are necessary, right?
+diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+index ccf36d3e0443..ffa65b22a1fd 100644
+--- a/drivers/iio/dac/ds4424.c
++++ b/drivers/iio/dac/ds4424.c
+@@ -50,6 +50,7 @@
+ }
+ 
+ struct ds4424_chip_info {
++	const char *name;
+ 	int vref_mV;
+ 	int scale_denom;
+ 	u8 result_mask;
+@@ -57,6 +58,7 @@ struct ds4424_chip_info {
+ };
+ 
+ static const struct ds4424_chip_info ds4402_info = {
++	.name = "ds4402",
+ 	.vref_mV = 1230,
+ 	.scale_denom = 4,
+ 	.result_mask = DS4404_DAC_MASK,
+@@ -64,6 +66,7 @@ static const struct ds4424_chip_info ds4402_info = {
+ };
+ 
+ static const struct ds4424_chip_info ds4404_info = {
++	.name = "ds4404",
+ 	.vref_mV = 1230,
+ 	.scale_denom = 4,
+ 	.result_mask = DS4404_DAC_MASK,
+@@ -71,6 +74,7 @@ static const struct ds4424_chip_info ds4404_info = {
+ };
+ 
+ static const struct ds4424_chip_info ds4422_info = {
++	.name = "ds4422",
+ 	.vref_mV = 976,
+ 	.scale_denom = 16,
+ 	.result_mask = DS4424_DAC_MASK,
+@@ -78,6 +82,7 @@ static const struct ds4424_chip_info ds4422_info = {
+ };
+ 
+ static const struct ds4424_chip_info ds4424_info = {
++	.name = "ds4424",
+ 	.vref_mV = 976,
+ 	.scale_denom = 16,
+ 	.result_mask = DS4424_DAC_MASK,
+@@ -335,7 +340,7 @@ static int ds4424_probe(struct i2c_client *client)
+ 
+ 	data = iio_priv(indio_dev);
+ 	i2c_set_clientdata(client, indio_dev);
+-	indio_dev->name = id->name;
++	indio_dev->name = chip_info->name;
+ 	data->chip_info = chip_info;
+ 
+ 	data->vcc_reg = devm_regulator_get(&client->dev, "vcc");
 
-Depends on the optionality. If this resource is mandatory to have,
-the mentioned options will be needed, indeed.
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
