@@ -1,71 +1,64 @@
-Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com [209.85.128.67])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DD473D9043
-	for <linux-iio@vger.kernel.org>; Fri,  6 Feb 2026 13:40:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2268936C593;
+	Fri,  6 Feb 2026 13:56:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770385236; cv=none; b=cCAi2NV7ZKXze3BAaCDcE11732mJrikPTk9I5pzp2zrnVourC7xAbhWQdgsN/RnqqfGkqw12BTgMcmaPf86ZQ2e0iyt/boKzvBhPkLirBAzk+BRpJh2zKHYtBa2cwRLAIozAOi/AS4T2PPQLE1+UlgnBmVGt6nwRUcc0yQe7Zdo=
+	t=1770386174; cv=none; b=WFUUa0/r2eYE3mHN4BSjldgVRMFI/CGiqC6hY0OfO6asjNR3xrY6M+4sS//vnDGNwDjXsBT4NRZFuQahFj5cnZ0H8aEp5loY178q6c4B/pCwKUfnyUnuriyK0tvqLNetw+5iIhFUjtvpSMCvkHMN7S4cS4jPuQMXuj8rvscUo64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770385236; c=relaxed/simple;
-	bh=9xkfp/5sEkljnpwnbvMQYdsISAyCde7qxaq/u+bkt88=;
-	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=W6H9ajzlubcr7p8Ryc+PzMcHO9eCXyGKayEHVw0VROBfHAKq+XVR9I53YfvubS/P04qT1QFRMzxhqaXJEvIaR4qcyGjzN6x2znBuEgH0myCqZ1rNL0plxl/e7OWOMQoXSr+B7A7ZSn8FlSyJ/K6bai8TFbw7ywxYgb7f6LP0TGk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=u0K0oHRU; arc=none smtp.client-ip=209.85.128.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
+	s=arc-20240116; t=1770386174; c=relaxed/simple;
+	bh=I00eWFunBrXqPES26Gqkr70fAVbraKO2s8fjnHb+7jg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jR6WO+qnIUEE4GAhRDO1aYwj7pLBZtcOSJvrdCkRIK/QyyHNvded0oYRqJuQWBQgAyxgBr88nisCGQsv/qg8aw1L6vsP+XOB0cf6wfJLWb6meQ59pWPQQaE/FkwX6qyjp7ipit/aFSXtDTjKq+qy8Y11Buw/O9TwraYkrVMwSJU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nbxsCK7G; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="u0K0oHRU"
-Received: by mail-wm1-f67.google.com with SMTP id 5b1f17b1804b1-47ee76e8656so32248835e9.0
-        for <linux-iio@vger.kernel.org>; Fri, 06 Feb 2026 05:40:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1770385235; x=1770990035; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=ifQVd9mHvQ9A0LehS/GYxtjaFVzIJ5wDUx2GxDCApAQ=;
-        b=u0K0oHRU4twpWhfCIFHS4hMIl56+KOq90nW2Gok0oqVJ6g9mUmxWLsDI5FIjYbiGYS
-         ECCV2hVQBwlORiCxpHP3yf5mfYBreYc5ZMxBW5QW+PY6B8gPu53M+38+ZhzxuksM+Gvr
-         Sd4Fe7V0Pq4fnV2usYvtFpt+XiFjFv2TvG+euQS7Qyhh++xiPXhVGy2m7pyXFJnAj1T+
-         iJVxo6UvHopWnAEM5EtxqSCc9Eka8IYjLs1A1dLt1wBAZqGeV2/nssLp+lf0NIxaIvES
-         THTeFVCc6P8nx1wK+pLVvYy8nbcOhVEEH36gZheYXB0ygMqLg1vOOLIwwR52smUFCXaZ
-         Dctw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770385235; x=1770990035;
-        h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
-         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ifQVd9mHvQ9A0LehS/GYxtjaFVzIJ5wDUx2GxDCApAQ=;
-        b=n+m0qNeVs/WcspZ9UgI3YeecvOnaNamIl/Iy/awVD2ItO2OyTO99NPWXAC3SlmtGaE
-         gnHbf78ukWQKRa8gt+atmFCfv0AsAdP87QOHhdEThWvZPStfGDRQ8HlhW7Bf7jNd8JQQ
-         k+IuIWVkrb37lC9F0Tcjxvt/egypo94MTbxSoSfHlrTJxRo6MdeStzyx0hUtCj/09kTu
-         OOnxY8Xi4jCOFtLhKi4CEYzYHurXQqapdbQnz2M3zcUd/PZtXfFWrG+VIyHVdzw11rvg
-         JH9elt75QSDJPt5k7giomArwMMDIyWiXUhsOzjYRRjxoMciFs6rWZJeAosER5stXwRb2
-         kcLw==
-X-Forwarded-Encrypted: i=1; AJvYcCWdJtE9IkQNF9SjYKLMWECeLBcUt8rv63Dnd6KVE7OorqJmIQ6DwevPkCI6HXUzcIGjdWB6FEAhDFs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzoYWct78lgnRIgCjGDnzr8WtxUCUwpUChrg+LpBnAM2EUFq8yr
-	+vPhfvnM7fRe8Ncg9L1P2BlSkqcJi3QlF+g6mKy4uTEMty8JFPJ1f+fAU2pdG1K/Z4I=
-X-Gm-Gg: AZuq6aIyqfitUSBPRhUb6FPZYdQrdQSTzet4ReqnX5r5NBqghS851nTYlaCSyaJs726
-	yD4XP4fwfakckB/Qic7+bwTKH03L03yM2+N7vAJoH2/rk3adNGzsyXvhZ4D/SVLHsuG7p1GbMuF
-	+WbvNxMcTcZ7zb1leH1hZJvwKE5NrIBlvKjofUOkpRPHmyGQC9IQT5I5vdEFGnn4ztXiZGv0Iua
-	ynx0nVv+fDydEMKkqUAPTRVZDNwy/vBiMwzCTCVw1Tu9Ilq2ytY9SZTK6Otd9+swvBm8FcscaVV
-	VD3+m9K6SDnTDh2ZbHOHEZUY/5hV/ysA5EI1862t8GmMsk1OzUNgGbFS94OGs8Orfoh53byoaMr
-	NUNpkM8iF53tY2K5SuAnAGdJG0M6CwKxHfP4ilvA6bVnusJKDPdFMegEffB0J1UM/cw3NdpkGWF
-	RjFis7lJEfd/VDrZQf
-X-Received: by 2002:a05:600c:1d24:b0:477:7c7d:d9b2 with SMTP id 5b1f17b1804b1-48320236b1emr36327525e9.32.1770385234828;
-        Fri, 06 Feb 2026 05:40:34 -0800 (PST)
-Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483207286bcsm50480925e9.12.2026.02.06.05.40.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Feb 2026 05:40:34 -0800 (PST)
-Date: Fri, 6 Feb 2026 16:40:31 +0300
-From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Jorge Marques <jorge.marques@analog.com>
-Cc: David Lechner <dlechner@baylibre.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nbxsCK7G"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770386174; x=1801922174;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=I00eWFunBrXqPES26Gqkr70fAVbraKO2s8fjnHb+7jg=;
+  b=nbxsCK7Gt2CsEkYk7zHLGwwbRBkxHhfl6m8wLu64dvrs+ZxTa1gpY+oN
+   6SQNs2X73cBO7BH2/dsF1ayGFJeCX6oGfH3kImtkwb0938KYodM5rXsX9
+   cH7peIiPp++7gpvbXNA4nTPy807TBhYn+drroEqdRwDjtCHcocC1z34SG
+   6iiIA4A8cx56BHqOcpGKz4411z12PFP7/Ll+kDI8NjOEprJMpRNQGlJxy
+   8HYnbjsIlJfE6tyHncvCqJLAFCwDdG7E9BeZ7l09IwT1rlnbH0BvsmAfH
+   bWeam/TwZRpcuTKf6vDHbvZLAQjMc1PYKaF1GBb692pdvmr/5KCLqGpkW
+   w==;
+X-CSE-ConnectionGUID: wrmKu2VPR0ax+eejYN2fng==
+X-CSE-MsgGUID: rKPYAUZ4Rg+7cKeFQoeJFA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11693"; a="59164119"
+X-IronPort-AV: E=Sophos;i="6.21,276,1763452800"; 
+   d="scan'208";a="59164119"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2026 05:56:14 -0800
+X-CSE-ConnectionGUID: Iw2MqoxrSbK6YXxD6yVpqg==
+X-CSE-MsgGUID: e0LrdNdrQ0KE7RZDu6BRVQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,276,1763452800"; 
+   d="scan'208";a="210153369"
+Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.202])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2026 05:56:10 -0800
+Date: Fri, 6 Feb 2026 15:56:08 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel <linux-kernel@vger.kernel.org>
-Subject: [bug report] iio: adc: Add support for ad4062
-Message-ID: <aYXvT5FW0hXQwhm_@stanley.mountain>
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/6] iio: adc: ad4080: add support for AD4082
+Message-ID: <aYXy-B-b9CpUKZ7C@smile.fi.intel.com>
+References: <cover.1770382796.git.antoniu.miclaus@analog.com>
+ <51281e19fe2955cb10ffb77b62b0d7738e9b5a93.1770382796.git.antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -74,49 +67,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <caa37f28-a2e8-4e0a-a9ce-a365ce805e4b@stanley.mountain>
+In-Reply-To: <51281e19fe2955cb10ffb77b62b0d7738e9b5a93.1770382796.git.antoniu.miclaus@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-[ Smatch checking is paused while we raise funding.  #SadFace
-  https://lore.kernel.org/all/aTaiGSbWZ9DJaGo7@stanley.mountain/ -dan ]
+On Fri, Feb 06, 2026 at 03:08:21PM +0200, Antoniu Miclaus wrote:
+> Add support for AD4082 20-bit SAR ADC. The AD4082 has the same
+> resolution as AD4080 (20-bit) but differs in LVDS CNV clock count
+> maximum (8 vs 7).
 
-Hello Jorge Marques,
+> Changes:
+> - Add AD4082_CHIP_ID definition (0x0052)
+> - Create ad4082_channel with 20-bit resolution and 32-bit storage
+> - Add ad4082_chip_info with lvds_cnv_clk_cnt_max = 8
+> - Register AD4082 in device ID and OF match tables
 
-Commit d5284402d28f ("iio: adc: Add support for ad4062") from Dec 17,
-2025 (linux-next), leads to the following Smatch static checker
-warning:
+TBH, I think this section is too much for the commit message...
 
-	drivers/iio/adc/ad4062.c:1557 ad4062_probe()
-	warn: passing positive error code 's32min-(-1),1-3' to 'dev_err_probe'
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
 
-drivers/iio/adc/ad4062.c
-    1547         pm_runtime_set_active(dev);
-    1548         ret = devm_pm_runtime_enable(dev);
-    1549         if (ret)
-    1550                 return dev_err_probe(dev, ret, "Failed to enable pm_runtime\n");
-    1551 
-    1552         pm_runtime_set_autosuspend_delay(dev, 1000);
-    1553         pm_runtime_use_autosuspend(dev);
-    1554 
-    1555         ret = ad4062_request_ibi(i3cdev);
-    1556         if (ret)
---> 1557                 return dev_err_probe(dev, ret, "Failed to request i3c ibi\n");
+...and just as good to be placed here.
 
-The comments for ad4062_request_ibi() say it returns negative error codes
-but the comments for i3c_master_enec_locked() say it returns "a positive
-I3C error code if the error is one of the official Mx error codes, and
-a negative error code otherwise."
+Otherwise, LGTM,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-    1558 
-    1559         ret = ad4062_gpio_init(st);
-    1560         if (ret)
-    1561                 return ret;
-    1562 
-    1563         ret = devm_work_autocancel(dev, &st->trig_conv, ad4062_trigger_work);
-    1564         if (ret)
-    1565                 return ret;
-    1566 
-    1567         return devm_iio_device_register(dev, indio_dev);
-    1568 }
+-- 
+With Best Regards,
+Andy Shevchenko
 
-regards,
-dan carpenter
+
