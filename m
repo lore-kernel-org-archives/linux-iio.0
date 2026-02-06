@@ -1,102 +1,73 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA9702E541E;
-	Fri,  6 Feb 2026 09:59:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F110C330B12
+	for <linux-iio@vger.kernel.org>; Fri,  6 Feb 2026 12:47:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770371997; cv=none; b=cy/bVwDarNK9do0TavsmLJlexyBHK+02GhjSQCdf/FsZvQUQClPD1SlQOUaVAYLZyyCOI2UBFdnYVS80+EhOqxUOXknKhCvrxDFHbkjXu2gYtsKbNAM+e0f+pti53EPFKdzKSFPO3wEocl3iWsovHdo04w+PFUvDGKdv0vun2es=
+	t=1770382066; cv=none; b=MSLlN4ELN2VqLkqlg6dZYdZMzbsEwUCVLM4YsN1oFaWZzlQ5ZHLwtFkZu0+/gMGdcsoFnyI5T3BQXvwqtFMLwvnBs6n3nhpiKYDEF+Z2U8P3SBP7y9nMdxrr20dUi0orlV0SK7ETK9OHXkEwMwEzveBPTTjmWNRnpXjWaIH6Ouw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770371997; c=relaxed/simple;
-	bh=Ioc9p5YtiEcqW35zdtv23sb8Ov+SAaY8D3LlCTi6cxM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HKj0uw/81M4bFag639Dx2ReM7VWGtFAmup/Lo1roOivrxXB92B1RxEaLF7goGh8GrqmJUUJ02djX9HbkpDekv2a8MdjjhXRJBJQi1pqQVDkNfpbngC1yrNAs7wPjr42nxeR4ei7L68wrL/H5KOsB3bxnlrFkj17/BOL+dSPPyOg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mADMgl+v; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770382066; c=relaxed/simple;
+	bh=DmYewFQkG8Br+yJkli7xvaJVDKaHxnJu52vf06s7BMU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GtNijF/hPlrPVoZBlD7HPoHCzX6mshMDqpSoyeKGLHlYi6f45OSJJGk5WyZsMIi7BlYPrHNZ0CKnQnqIIDFnxg3Ev9iVCDWYitj237G6o5HOxHEFtChnWN/VNtCxxZRKS6tHJwa+qqssUZt3rGwN3OJMFC8LmcT194Qn2WeiNHw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K1DU+eoP; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mADMgl+v"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770371996; x=1801907996;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Ioc9p5YtiEcqW35zdtv23sb8Ov+SAaY8D3LlCTi6cxM=;
-  b=mADMgl+vjJ5TZnOR6xyQ9nA381S0/vfr0NCyX5LJSkh9dyRdVGwxpIC/
-   ZKNO52SBZwazt77HoXpxqu4KTWB61xtHQXoSGoeUWctpHzolhQnmr2TnG
-   MAMEvtFdo5sTDs+UB8HJLj6proFSeigmaQycqxkIMiVwAmpwQgfwdUCFl
-   KESWY1GXaeBWurmqsbRc1OEC4mRM2YIK0aMMuEcO2yl9zRKxCh6tkIU40
-   YuUaG5aQ84AX7RQIRd2d9g2q2vvmG6VnRAxlpcqpR8pTfUxUhrjVPOnN7
-   +i07Kpxw7Rzu8UnYZQtU/sjJvSAYnnhzzM8/PY3V46r2KfjiP8Utj0pas
-   A==;
-X-CSE-ConnectionGUID: QtyTshI2SgGsqh9mfDIFGw==
-X-CSE-MsgGUID: MTJaaWLPQpqgrFajCFm6kw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11692"; a="71471989"
-X-IronPort-AV: E=Sophos;i="6.21,276,1763452800"; 
-   d="scan'208";a="71471989"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2026 01:59:55 -0800
-X-CSE-ConnectionGUID: 7XfmnIOyRe+izLyvUeZh0g==
-X-CSE-MsgGUID: MvymTBfvR0yl9xgGOwXM7A==
-X-ExtLoop1: 1
-Received: from ijarvine-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.202])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Feb 2026 01:59:51 -0800
-Date: Fri, 6 Feb 2026 11:59:50 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	David Jander <david@protonic.nl>
-Subject: Re: [PATCH v4 06/13] iio: dac: ds4424: use device match data for
- chip info
-Message-ID: <aYW7lt26Tn-6Fgno@smile.fi.intel.com>
-References: <20260203093434.2548978-1-o.rempel@pengutronix.de>
- <20260203093434.2548978-7-o.rempel@pengutronix.de>
- <aYHH69gXyuwmQR03@smile.fi.intel.com>
- <aYHLRvfJH54XumUA@pengutronix.de>
- <aYHhO7pJPEew7QMC@smile.fi.intel.com>
- <aYHjQhO92yxoy_9o@pengutronix.de>
- <aYIMgEEDd8ZfLv71@smile.fi.intel.com>
- <20260205204325.5bd09d97@jic23-huawei>
- <aYWe0-2KMLijFVh6@pengutronix.de>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K1DU+eoP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5015C116C6
+	for <linux-iio@vger.kernel.org>; Fri,  6 Feb 2026 12:47:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770382065;
+	bh=DmYewFQkG8Br+yJkli7xvaJVDKaHxnJu52vf06s7BMU=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=K1DU+eoP8rIZpSx/tmtvQZiBNZ0PIui62dlkjpjAcpO4Cjt/RXugdT0t013M4RlSP
+	 MYOOOcXe7zE7QJ+JkRfLFQZCLusuABWp+yBM5hToI88UgsM3PL6F/CPVldc2FxWf4q
+	 RveHxLyhYSpjQflpkTVPVLnjW43ezUNkT2MW5xmIeOQGOK7S10gyAZfmlEnmpUqvQc
+	 HG0CCQmmFtGPbfDFyDocGcpHbPFbrtn8uJkSvRhxDX9G27u7VraEYUqUjIy5CnLn7c
+	 YtxVOWux8SjocbcwoZ8rjnVIbCXDaYSb1N5lbO5lmGFg7MnQ8On0rUMVEUS7qQ4qj9
+	 qgmLXBDKD0syg==
+Received: by mail-yx1-f43.google.com with SMTP id 956f58d0204a3-649bd1f08acso2111274d50.1
+        for <linux-iio@vger.kernel.org>; Fri, 06 Feb 2026 04:47:45 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCWageFtioZuI/l4C6HRWdbPgenBfdXO4zY/y0pgQQI7kB8gc//AnPCoN8KYUPzyrEox9L1SMAEpFzk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzknciW4jJbJNHU/VgdlFFKFDeni4nD0RYKYNzUhv3m/pHVYbKV
+	blqSLIESVxgDEQV0NsWsTwvkkP1QzciZT+zAMYEcp7cCDl30Sq/PhhCyHjIm1GzYhKtAoaX1kCF
+	o5mT8uD2egmH9KLW24QmaIKZs/ZtnE/I=
+X-Received: by 2002:a05:690e:144b:b0:645:520d:31bb with SMTP id
+ 956f58d0204a3-64a0b8f8c85mr1664544d50.23.1770382065009; Fri, 06 Feb 2026
+ 04:47:45 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aYWe0-2KMLijFVh6@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260203143946.301233-1-jerrysteve1101@gmail.com> <20260203143946.301233-2-jerrysteve1101@gmail.com>
+In-Reply-To: <20260203143946.301233-2-jerrysteve1101@gmail.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Fri, 6 Feb 2026 13:47:33 +0100
+X-Gmail-Original-Message-ID: <CAD++jLn4akBi7opOKdZjtAt17+FjK-y8UqKXbX3fQkAS7hC0_Q@mail.gmail.com>
+X-Gm-Features: AZwV_QhVy1-igVoJGFT_GiltoocheA0dz011h4GikRyAw3kiKYlAJeCgAPVYMoo
+Message-ID: <CAD++jLn4akBi7opOKdZjtAt17+FjK-y8UqKXbX3fQkAS7hC0_Q@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] dt-bindings: iio: accel: bosch,bma255: add bmx055
+ accel binding
+To: Jun Yan <jerrysteve1101@gmail.com>
+Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org, stephan@gerhold.net, 
+	hns@goldelico.com, jic23@kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 06, 2026 at 08:57:07AM +0100, Oleksij Rempel wrote:
-> On Thu, Feb 05, 2026 at 08:43:25PM +0000, Jonathan Cameron wrote:
-> > On Tue, 3 Feb 2026 16:56:00 +0200
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Tue, Feb 3, 2026 at 3:40=E2=80=AFPM Jun Yan <jerrysteve1101@gmail.com> w=
+rote:
 
-...
+> Add the device-tree binding for the Bosch BMX055 IMU (accelerometer part)=
+,
+> which is compatible with bmc150_accel.
+>
+> Datasheet: https://cdn.sparkfun.com/assets/b/9/1/f/4/bst-bmx055-ds000_dat=
+asheet.pdf
+> Signed-off-by: Jun Yan <jerrysteve1101@gmail.com>
 
-> > > Just do not introduce that change (change of the ->name field) in the original
-> > > patch, in that case no revert churn would be needed.
-> > > 
-> > I think this got dealt with in discussion of next version but
-> > safest route is just have an extra copy of the name in the
-> > chip_info structure.  Then we know it's stable against different
-> > firmware types etc.
-> 
-> Something like this?
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
-Yes, but make it in the patch that introduces DT support.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Yours,
+Linus Walleij
