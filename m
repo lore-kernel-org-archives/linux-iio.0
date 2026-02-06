@@ -1,71 +1,71 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
+Received: from mail-wm1-f67.google.com (mail-wm1-f67.google.com [209.85.128.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79F9C36CE02
-	for <linux-iio@vger.kernel.org>; Fri,  6 Feb 2026 13:40:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8DD473D9043
+	for <linux-iio@vger.kernel.org>; Fri,  6 Feb 2026 13:40:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770385220; cv=none; b=pIyrvX6OrmR8GpS4lvrNMQ7vqMtZlrY0ar430JGkQV2bkUxi1ptU0jObCGf35cs+UoI/wNWs8ZU3Lt7KTKPr1tNJR3U8cBczsUkgbvcNBUYBdwspeyC+iWbU+YHj4OnWJQRguCiHfiUt3csLOAKkEfooIoFMKABxDK3/p4O2Xko=
+	t=1770385236; cv=none; b=cCAi2NV7ZKXze3BAaCDcE11732mJrikPTk9I5pzp2zrnVourC7xAbhWQdgsN/RnqqfGkqw12BTgMcmaPf86ZQ2e0iyt/boKzvBhPkLirBAzk+BRpJh2zKHYtBa2cwRLAIozAOi/AS4T2PPQLE1+UlgnBmVGt6nwRUcc0yQe7Zdo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770385220; c=relaxed/simple;
-	bh=ATlhFGS0epSOhWwfAmwesm2WZpZ/6TNmM7ADuJJY0qg=;
+	s=arc-20240116; t=1770385236; c=relaxed/simple;
+	bh=9xkfp/5sEkljnpwnbvMQYdsISAyCde7qxaq/u+bkt88=;
 	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition:In-Reply-To; b=pMeuDRlKayojS9m44tERpO9jvy1S+Saa5aBVge6ieH1B6z28+48olfOwZ4G5VMHyhbi0oxgg0Wjt954bwYdBNAm5nfnkdw2iIDT9m+hFlSb4PofWw6fcRuv0XMq+bTOZ/2yvo8v+wCTNWtYB7B/nAMR2FrOTp5oKOV7krHAXqww=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=xXYnThNv; arc=none smtp.client-ip=209.85.221.50
+	 Content-Disposition:In-Reply-To; b=W6H9ajzlubcr7p8Ryc+PzMcHO9eCXyGKayEHVw0VROBfHAKq+XVR9I53YfvubS/P04qT1QFRMzxhqaXJEvIaR4qcyGjzN6x2znBuEgH0myCqZ1rNL0plxl/e7OWOMQoXSr+B7A7ZSn8FlSyJ/K6bai8TFbw7ywxYgb7f6LP0TGk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=u0K0oHRU; arc=none smtp.client-ip=209.85.128.67
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xXYnThNv"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-435f177a8f7so763256f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 06 Feb 2026 05:40:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="u0K0oHRU"
+Received: by mail-wm1-f67.google.com with SMTP id 5b1f17b1804b1-47ee76e8656so32248835e9.0
+        for <linux-iio@vger.kernel.org>; Fri, 06 Feb 2026 05:40:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google; t=1770385219; x=1770990019; darn=vger.kernel.org;
+        d=linaro.org; s=google; t=1770385235; x=1770990035; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
          :to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=qZEaDFtgFd37DlJ4dWpEVneMMIpWVukSb9jk36O2nM4=;
-        b=xXYnThNvDNlyJjQjAH3smf0o6mRv+HAM7DeNZtlMBNhHnSgZmMyv6+qxp0SIQrMowJ
-         6jy1kkW2g+bnbape2o9jpz9C+Ki700SSs+4D0Uw8wIeuqHIBJtJWH1C8lpv98JH0oJfi
-         +F9cN5tx7jQek/szBwzQ8Y/fXKmSm0zlkYWnZmjlel+S8F1aLzM4/l6xC3IwfCTMyBfs
-         je8haMIiWxKxJJ5VOar9lVWO252IRb0721ZyLqDLY61W9px/QQUyffixS/cUzfuUdXjT
-         I6MsbKnBGoorC6R91Yf4eVjt84OTBoPmPAw7QQZsLkwugmSU15ESr5uB6nk0cFLSujub
-         H7Fw==
+        bh=ifQVd9mHvQ9A0LehS/GYxtjaFVzIJ5wDUx2GxDCApAQ=;
+        b=u0K0oHRU4twpWhfCIFHS4hMIl56+KOq90nW2Gok0oqVJ6g9mUmxWLsDI5FIjYbiGYS
+         ECCV2hVQBwlORiCxpHP3yf5mfYBreYc5ZMxBW5QW+PY6B8gPu53M+38+ZhzxuksM+Gvr
+         Sd4Fe7V0Pq4fnV2usYvtFpt+XiFjFv2TvG+euQS7Qyhh++xiPXhVGy2m7pyXFJnAj1T+
+         iJVxo6UvHopWnAEM5EtxqSCc9Eka8IYjLs1A1dLt1wBAZqGeV2/nssLp+lf0NIxaIvES
+         THTeFVCc6P8nx1wK+pLVvYy8nbcOhVEEH36gZheYXB0ygMqLg1vOOLIwwR52smUFCXaZ
+         Dctw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770385219; x=1770990019;
+        d=1e100.net; s=20230601; t=1770385235; x=1770990035;
         h=in-reply-to:content-disposition:mime-version:message-id:subject:cc
          :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qZEaDFtgFd37DlJ4dWpEVneMMIpWVukSb9jk36O2nM4=;
-        b=pFPr6NjJmCnD9CdGnIJRMNuUTH/oxVGUxwghQfZrkgIXHWroCbqWwEz09TR73KKEiC
-         tiKAgBNuZtEfgRioFD4/NBbG6Owaxp/FgJYFRlGjSMzRBuooldibPyze5gLL48p2rrwC
-         9g6BmEcPSgURvoXqmXVWcVJPTnOSvdfTpts+lJ/zu4bKnLcaglM0DTM7yYhUIT8goL5G
-         SeyDLOC5vm25jtO4QaYSY2MtOievgHjPfq9D3W+2W/QshfIVyVa+ufCj37co35TuSOAg
-         PXoSXYFAzGlMt42dKhSBZJlJ/kq8KJNYt1Fjkcx7SEdJ/kk2HrwCjdIzgr/DpaZ7pCNS
-         XxTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVYLug4FrAH16MAosWs+Xx3DmYWFMydk4c+XgVomlghHza+sNXgSDh1tfhfry9HEG6mmr4YgKER+/I=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwtHFse8qdB9dR++CQXWaduFJ9XY4fufcRuUEerBpchp667n43b
-	YBiFBgn7TNjbEJPbcwfNN0dNrrewgmkIBnUZqA2mA2Yi8GgiSH16SKBNXeBXI4S3vK4=
-X-Gm-Gg: AZuq6aJ0fT0u54acL4BanZvWiP1l+U7ijgLv7IkyhugjM+vMRKz3QbFAVCh+zahoWAa
-	9Mr/xWZmE9tq6U4zFeZPJlnPMGU3oXhk226LewfAuT9pOBmaMKko1N5fiT0YCFnXsfk+BbYZVOD
-	zS4GB9DkKYItLiVC9XPh9EqGCeZx0LoHFjAHvQo5sK58ZpIA+CBq6i1UKnB9u6f3EPR8LnS9NDk
-	Q7BJhUmTIscD32bo4mtHvnzTNriGlLVV7wtGRr+K07rpPB6UsuHvOHtHzPQ2M8xjNcRfJPw4NSU
-	Him3GhlWwnt78yNK3tZhompRv/jAYqhAEsr7gJgObxi3eXeMCsjGUP5vfWfXnS4dX0V16hsU284
-	oh7p2enUWkzx4cgIp8WzvoS0ypcPQUOILG4bqFz58r+Iuelya2JAWpxZoyqAlWA+pyowgTKaPwZ
-	sjB7+b2dkj7qKSyQqh
-X-Received: by 2002:a05:6000:1a87:b0:436:233c:c7c0 with SMTP id ffacd0b85a97d-43629342249mr4824596f8f.26.1770385218723;
-        Fri, 06 Feb 2026 05:40:18 -0800 (PST)
+        bh=ifQVd9mHvQ9A0LehS/GYxtjaFVzIJ5wDUx2GxDCApAQ=;
+        b=n+m0qNeVs/WcspZ9UgI3YeecvOnaNamIl/Iy/awVD2ItO2OyTO99NPWXAC3SlmtGaE
+         gnHbf78ukWQKRa8gt+atmFCfv0AsAdP87QOHhdEThWvZPStfGDRQ8HlhW7Bf7jNd8JQQ
+         k+IuIWVkrb37lC9F0Tcjxvt/egypo94MTbxSoSfHlrTJxRo6MdeStzyx0hUtCj/09kTu
+         OOnxY8Xi4jCOFtLhKi4CEYzYHurXQqapdbQnz2M3zcUd/PZtXfFWrG+VIyHVdzw11rvg
+         JH9elt75QSDJPt5k7giomArwMMDIyWiXUhsOzjYRRjxoMciFs6rWZJeAosER5stXwRb2
+         kcLw==
+X-Forwarded-Encrypted: i=1; AJvYcCWdJtE9IkQNF9SjYKLMWECeLBcUt8rv63Dnd6KVE7OorqJmIQ6DwevPkCI6HXUzcIGjdWB6FEAhDFs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzoYWct78lgnRIgCjGDnzr8WtxUCUwpUChrg+LpBnAM2EUFq8yr
+	+vPhfvnM7fRe8Ncg9L1P2BlSkqcJi3QlF+g6mKy4uTEMty8JFPJ1f+fAU2pdG1K/Z4I=
+X-Gm-Gg: AZuq6aIyqfitUSBPRhUb6FPZYdQrdQSTzet4ReqnX5r5NBqghS851nTYlaCSyaJs726
+	yD4XP4fwfakckB/Qic7+bwTKH03L03yM2+N7vAJoH2/rk3adNGzsyXvhZ4D/SVLHsuG7p1GbMuF
+	+WbvNxMcTcZ7zb1leH1hZJvwKE5NrIBlvKjofUOkpRPHmyGQC9IQT5I5vdEFGnn4ztXiZGv0Iua
+	ynx0nVv+fDydEMKkqUAPTRVZDNwy/vBiMwzCTCVw1Tu9Ilq2ytY9SZTK6Otd9+swvBm8FcscaVV
+	VD3+m9K6SDnTDh2ZbHOHEZUY/5hV/ysA5EI1862t8GmMsk1OzUNgGbFS94OGs8Orfoh53byoaMr
+	NUNpkM8iF53tY2K5SuAnAGdJG0M6CwKxHfP4ilvA6bVnusJKDPdFMegEffB0J1UM/cw3NdpkGWF
+	RjFis7lJEfd/VDrZQf
+X-Received: by 2002:a05:600c:1d24:b0:477:7c7d:d9b2 with SMTP id 5b1f17b1804b1-48320236b1emr36327525e9.32.1770385234828;
+        Fri, 06 Feb 2026 05:40:34 -0800 (PST)
 Received: from localhost ([196.207.164.177])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-436296bd3b8sm5896607f8f.11.2026.02.06.05.40.18
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483207286bcsm50480925e9.12.2026.02.06.05.40.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Feb 2026 05:40:18 -0800 (PST)
-Date: Fri, 6 Feb 2026 16:40:15 +0300
+        Fri, 06 Feb 2026 05:40:34 -0800 (PST)
+Date: Fri, 6 Feb 2026 16:40:31 +0300
 From: Dan Carpenter <dan.carpenter@linaro.org>
-To: Ariana Lazar <ariana.lazar@microchip.com>
+To: Jorge Marques <jorge.marques@analog.com>
 Cc: David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel <linux-kernel@vger.kernel.org>
-Subject: [bug report] iio: dac: adding support for Microchip MCP47FEB02
-Message-ID: <aYXvP5FLA5BvkoVX@stanley.mountain>
+Subject: [bug report] iio: adc: Add support for ad4062
+Message-ID: <aYXvT5FW0hXQwhm_@stanley.mountain>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -79,54 +79,44 @@ In-Reply-To: <caa37f28-a2e8-4e0a-a9ce-a365ce805e4b@stanley.mountain>
 [ Smatch checking is paused while we raise funding.  #SadFace
   https://lore.kernel.org/all/aTaiGSbWZ9DJaGo7@stanley.mountain/ -dan ]
 
-Hello Ariana Lazar,
+Hello Jorge Marques,
 
-Commit bf394cc80369 ("iio: dac: adding support for Microchip
-MCP47FEB02") from Dec 16, 2025 (linux-next), leads to the following
-Smatch static checker warning:
+Commit d5284402d28f ("iio: adc: Add support for ad4062") from Dec 17,
+2025 (linux-next), leads to the following Smatch static checker
+warning:
 
-	drivers/iio/dac/mcp47feb02.c:732 mcp47feb02_init_scales_avail()
-	warn: passing zero to 'dev_err_probe'
+	drivers/iio/adc/ad4062.c:1557 ad4062_probe()
+	warn: passing positive error code 's32min-(-1),1-3' to 'dev_err_probe'
 
-drivers/iio/dac/mcp47feb02.c
-    712 static int mcp47feb02_init_scales_avail(struct mcp47feb02_data *data, int vdd_mV,
-    713                                         int vref_mV, int vref1_mV)
-    714 {
-    715         struct device *dev = regmap_get_device(data->regmap);
-    716         int tmp_vref;
-    717 
-    718         mcp47feb02_init_scale(data, MCP47FEB02_SCALE_VDD, vdd_mV, data->scale);
-    719 
-    720         if (data->use_vref)
-    721                 tmp_vref = vref_mV;
-    722         else
-    723                 tmp_vref = MCP47FEB02_INTERNAL_BAND_GAP_mV;
-    724 
-    725         mcp47feb02_init_scale(data, MCP47FEB02_SCALE_GAIN_X1, tmp_vref, data->scale);
-    726         mcp47feb02_init_scale(data, MCP47FEB02_SCALE_GAIN_X2, tmp_vref * 2, data->scale);
-    727 
-    728         if (data->phys_channels >= 4) {
-    729                 mcp47feb02_init_scale(data, MCP47FEB02_SCALE_VDD, vdd_mV, data->scale_1);
-    730 
-    731                 if (data->use_vref1 && vref1_mV <= 0)
---> 732                         return dev_err_probe(dev, vref1_mV, "Invalid voltage for Vref1\n");
-                                                          ^^^^^^^^
-vref1_mV is not a valid error code.  Return -EINVAL.
+drivers/iio/adc/ad4062.c
+    1547         pm_runtime_set_active(dev);
+    1548         ret = devm_pm_runtime_enable(dev);
+    1549         if (ret)
+    1550                 return dev_err_probe(dev, ret, "Failed to enable pm_runtime\n");
+    1551 
+    1552         pm_runtime_set_autosuspend_delay(dev, 1000);
+    1553         pm_runtime_use_autosuspend(dev);
+    1554 
+    1555         ret = ad4062_request_ibi(i3cdev);
+    1556         if (ret)
+--> 1557                 return dev_err_probe(dev, ret, "Failed to request i3c ibi\n");
 
-    733 
-    734                 if (data->use_vref1)
-    735                         tmp_vref = vref1_mV;
-    736                 else
-    737                         tmp_vref = MCP47FEB02_INTERNAL_BAND_GAP_mV;
-    738 
-    739                 mcp47feb02_init_scale(data, MCP47FEB02_SCALE_GAIN_X1,
-    740                                       tmp_vref, data->scale_1);
-    741                 mcp47feb02_init_scale(data, MCP47FEB02_SCALE_GAIN_X2,
-    742                                       tmp_vref * 2, data->scale_1);
-    743         }
-    744 
-    745         return 0;
-    746 }
+The comments for ad4062_request_ibi() say it returns negative error codes
+but the comments for i3c_master_enec_locked() say it returns "a positive
+I3C error code if the error is one of the official Mx error codes, and
+a negative error code otherwise."
+
+    1558 
+    1559         ret = ad4062_gpio_init(st);
+    1560         if (ret)
+    1561                 return ret;
+    1562 
+    1563         ret = devm_work_autocancel(dev, &st->trig_conv, ad4062_trigger_work);
+    1564         if (ret)
+    1565                 return ret;
+    1566 
+    1567         return devm_iio_device_register(dev, indio_dev);
+    1568 }
 
 regards,
 dan carpenter
