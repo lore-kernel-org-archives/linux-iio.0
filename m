@@ -1,44 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ED5F30F958;
-	Sat,  7 Feb 2026 15:50:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5051C33554C;
+	Sat,  7 Feb 2026 15:54:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770479405; cv=none; b=oh49OU/NsWfvGAAheiykM8UiaAYvDpr2IxTpSRtGKMaP3wvzHsCxOqaGe0GCJWwbgR83dxurWxTl9UG51uc32XaolSyEOfCuZbNZRvcpfX20xwA4S5omkx1WMO2YXBTc4nwpnuBzyQtIlnBtYfEykIeNGcn7ZjzWDruBSf7iL7U=
+	t=1770479649; cv=none; b=H0l2XyJ8n+jMqIwFX9ac43WRiu6D4XXdNNLEam0kduIiW46+Rs7ZFWmui5yl3j9jKMN5hlKk8KeuhnOevfs2zfHsBVS9LLk7mAIyrY1b+XmVmuXwZd/6ZOTww9scfOmkzD9xCRd73rIaRKeNT52RMO002lHo15bKMAnuByTovN8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770479405; c=relaxed/simple;
-	bh=zw45NeCFoqaPMli4y6cDm2YgadvaG3mxAX5JGumYly8=;
+	s=arc-20240116; t=1770479649; c=relaxed/simple;
+	bh=3Azq+Zp7/UoKc6Px2+hJKASgRkwUdIHCKXzBbjAtD9Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=G2W+fReaNQHhpxku9IPzQvlOu0dBzmVsCEIGYrMs+4IVWh+5GwjAbiVWzrl0GjeRgqQGp+BeXOWsa8iT+jLC9QhraMjFHwu077+7UjqplojIjLTCNmjH3cvrfzrPxHwdXdHjnrNA7o+SxZ5ZwrxmLgKpNruNymCm6Le6aFnuUO4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rWQ0UygD; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=cPYpvzrnSwg3KfF+p138ecNeKal9qSWycjV6TjECd5MejhPC4iXpo7xdJWU8NZ1Z86IY77r1ZPz2ikFpa4nVf0oUSvCz9hCfRdYTuRINZ2o1FUgT5UNc4ilsF9oauOzgFftMJ3p6vp+gau2AUZ902xEFgiyRuUlkbLn0qOwCK/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aaHKfCHw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rWQ0UygD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9566DC116D0;
-	Sat,  7 Feb 2026 15:50:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aaHKfCHw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CA3EC116D0;
+	Sat,  7 Feb 2026 15:54:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770479405;
-	bh=zw45NeCFoqaPMli4y6cDm2YgadvaG3mxAX5JGumYly8=;
+	s=k20201202; t=1770479648;
+	bh=3Azq+Zp7/UoKc6Px2+hJKASgRkwUdIHCKXzBbjAtD9Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=rWQ0UygD03X4yd0D9zQiNpygsvvEB3M1V2JmxqTgsHJ4HdD2XUn6jSLOHYR47x0T/
-	 pwpo7F9QlbYbnQs5npfv5R6eLqbAKzx9nQynq4bqeRfP3MaA/XWLW4Vhl8tx2MtW7A
-	 aQijfSXaFySTPdEpFFY++LLhxg1fwE3zaDbtVkxeKdTG1V/TC0I71tDhvCiyWAb/FD
-	 hEC93WgrFUNKtE9diVeVKUO0aTeJKclIKFCoamORcRCdEDMw3ic42winORahD/6rU5
-	 z129gDZqj3NLlOsXwNRtMwgy3UjcsYlohaNLPBqXMKCRMth5wHfJmk8B5PrWOTilbo
-	 ltDnjMKT9Dktw==
-Date: Sat, 7 Feb 2026 15:49:56 +0000
+	b=aaHKfCHwzu1CctyCTglne61iHObCZ+V7JOsQM8fsT7jHpF+FAZPxQEemQ79iP65nB
+	 ZoDcGq5ROSXViuolo4lLATSqc8vyI7qz4SxdI1cd+KuZ1Y7Hzain4pGKkoXk1vBeh0
+	 lzeB+ue/v+Fg9E6G7JpJAcuchq67EEg6EzH4Z1T8i6OZHBBnkRKg20ozfPBKrOwe7a
+	 mp1FrILSPBLsMKG5lNzlPJ8Ni5I+nMRGNQarq0PKhrIDI1+I5kAflwt7RnonKm4Sg2
+	 Q0NzFo4Gpx6pQXtMhSDuF7OshfO19jJE4oc0O4EJAd6l9ZGT42zMhJ7WzALH4hvUvg
+	 fgXf3Ac/+UBZA==
+Date: Sat, 7 Feb 2026 15:54:00 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Linus Walleij	
- <linus.walleij@linaro.org>, Lars-Peter Clausen <lars@metafoo.de>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: gyro: mpu3050-core: use
- pm_runtime_resume_and_get()
-Message-ID: <20260207154956.10bd4dff@jic23-huawei>
-In-Reply-To: <a75be02da0b55997b2384a481d85b680d1372a78.camel@gmail.com>
-References: <cover.1770039759.git.antoniu.miclaus@analog.com>
-	<3edc89e901fd9d55c5355c4ec007636b1c8d6801.1770039759.git.antoniu.miclaus@analog.com>
-	<a75be02da0b55997b2384a481d85b680d1372a78.camel@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Waqar Hameed <waqar.hameed@axis.com>,
+ chuguangqing <chuguangqing@inspur.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: light: ltr501: return proper error code from
+ ltr501_get_gain_index()
+Message-ID: <20260207155400.049906f0@jic23-huawei>
+In-Reply-To: <aYGxa1E9WnYLXlet@smile.fi.intel.com>
+References: <20260202120715.25625-1-antoniu.miclaus@analog.com>
+	<aYGxa1E9WnYLXlet@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,72 +47,40 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Tue, 03 Feb 2026 09:45:34 +0000
-Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+On Tue, 3 Feb 2026 10:27:23 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Mon, 2026-02-02 at 16:56 +0200, Antoniu Miclaus wrote:
-> > Replace pm_runtime_get_sync() with pm_runtime_resume_and_get() in
-> > mpu3050_read_raw() and mpu3050_buffer_preenable(). Unlike
-> > pm_runtime_get_sync(), the usage count is not incremented on error.
-> >=20
-> > In preenable, call pm_runtime_put_autosuspend() if set_8khz_samplerate()
-> > fails since postdisable won't be called on preenable failure.
-> >=20
-> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > --- =20
->=20
-> To me this is more than just reference counting. It's also about proper e=
-rror handling.
-Agreed. I think these should both have fixes tags
-and a commit message that calls out a little more clearly what is being fix=
-ed.
+> On Mon, Feb 02, 2026 at 02:07:12PM +0200, Antoniu Miclaus wrote:
+> > Return -EINVAL instead of -1 when no matching gain value is found
+> > in the gain table. Update the callers to propagate this error directly
+> > rather than overwriting it with -EINVAL.  
+> 
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+> ...
+> 
+> > static int ltr501_get_gain_index(const struct ltr501_gain *gain, int size,  
+> 
+> >  		if (val == gain[i].scale && val2 == gain[i].uscale)
+> >  			return i;
+> >  
+> > -	return -1;
+> > +	return -EINVAL;  
+> 
+> I would use -ENOENT, but I'm not sure if there is any ABI involved (id est we
+> return this to user space).
+It will surface.  Not sure anyone would notice the change, but lets
+keep things simple.
 
+Applied.
 
 Jonathan
 
->=20
-> - Nuno S=C3=A1
->=20
-> > =C2=A0drivers/iio/gyro/mpu3050-core.c | 17 +++++++++++++----
-> > =C2=A01 file changed, 13 insertions(+), 4 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050=
--core.c
-> > index ee2fcd20545d..1cc421eb4782 100644
-> > --- a/drivers/iio/gyro/mpu3050-core.c
-> > +++ b/drivers/iio/gyro/mpu3050-core.c
-> > @@ -322,7 +322,9 @@ static int mpu3050_read_raw(struct iio_dev *indio_d=
-ev,
-> > =C2=A0		}
-> > =C2=A0	case IIO_CHAN_INFO_RAW:
-> > =C2=A0		/* Resume device */
-> > -		pm_runtime_get_sync(mpu3050->dev);
-> > +		ret =3D pm_runtime_resume_and_get(mpu3050->dev);
-> > +		if (ret)
-> > +			return ret;
-> > =C2=A0		mutex_lock(&mpu3050->lock);
-> > =C2=A0
-> > =C2=A0		ret =3D mpu3050_set_8khz_samplerate(mpu3050);
-> > @@ -647,12 +649,19 @@ static irqreturn_t mpu3050_trigger_handler(int ir=
-q, void *p)
-> > =C2=A0static int mpu3050_buffer_preenable(struct iio_dev *indio_dev)
-> > =C2=A0{
-> > =C2=A0	struct mpu3050 *mpu3050 =3D iio_priv(indio_dev);
-> > +	int ret;
-> > =C2=A0
-> > -	pm_runtime_get_sync(mpu3050->dev);
-> > +	ret =3D pm_runtime_resume_and_get(mpu3050->dev);
-> > +	if (ret)
-> > +		return ret;
-> > =C2=A0
-> > =C2=A0	/* Unless we have OUR trigger active, run at full speed */
-> > -	if (!mpu3050->hw_irq_trigger)
-> > -		return mpu3050_set_8khz_samplerate(mpu3050);
-> > +	if (!mpu3050->hw_irq_trigger) {
-> > +		ret =3D mpu3050_set_8khz_samplerate(mpu3050);
-> > +		if (ret)
-> > +			pm_runtime_put_autosuspend(mpu3050->dev); =20
+> 
+> >  }  
+> 
+> 
 
