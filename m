@@ -1,66 +1,67 @@
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43C2C337104
-	for <linux-iio@vger.kernel.org>; Sat,  7 Feb 2026 17:32:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 322AB2DAFD7
+	for <linux-iio@vger.kernel.org>; Sat,  7 Feb 2026 18:09:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770485567; cv=none; b=LN1O28em6ZHwpn8kvH/hNv/o1tSUo9emJdRRoi+snqdDGKiqMDu6SbuTHte2asAXy445PgSyp3x2s79vUhXFwhgOXpOF86UQue0YIVYDlLyOwnWYvwsac7ShUTVVCvRedvNRF8W44Uasw5y29TBK6E7BiARRvGGsz5IWgGe4N9U=
+	t=1770487779; cv=none; b=ctyOkcgWIQGCJKHsQnt3MNByu/JUqbE8soEfeKapkOyrHaLpyYxqou3XT4x2FMgagmEXmND5n/kwyIdV/uTk0RkkWLI99X1//tpgW4hszqBFMvKqBuchEEi74JSeE4j4H2f2ss/zr5w4nBlEiBSsz0LnJ+9lKAFPix302wdzK9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770485567; c=relaxed/simple;
-	bh=mbdvc8VVIqopX1Vzy1e1gyb6kEFS8DeARiMueZ1xiBE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=YNXEYfvtevgwndictSlorCQNbBVzc8touLLjiQvTtTdVn4xaKrPYt2EYwuKseVlXBLSLx9JXt8PjRRN2ppsqCA5pMrbnrYZf3K/a8SC3AuBISFqn16rfU+2q1Z0lq/Gq/upjO8GAqm/LBpiw/dNGIJUTRCtDuf6DITk5yUwZrDg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=L+TniqAz; arc=none smtp.client-ip=209.85.160.45
+	s=arc-20240116; t=1770487779; c=relaxed/simple;
+	bh=Z1RlCkvjAKV6GMKhbwoWjgZvhZGNQ0TOlPqMxvRH9eY=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=NxjnGiGVo+TZNZUnz1u/9w3055IPnRibGoRzDsWn+hdyojSCvKWW6M2I1ieyqubZf4trD31stvicUZnejHXEJtqwr6Wex3bmPMZ1KTNsoxeBVOMzR8hqW6Tgk1bn8IN0Xnt6Gxjkpesk2UwgPdjjAXlzv67JEOkbBOpRAIid9zY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=YasdDXT+; arc=none smtp.client-ip=209.85.160.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="L+TniqAz"
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-409521ba360so2182851fac.2
-        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 09:32:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="YasdDXT+"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-4086661715cso2346123fac.2
+        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 10:09:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770485566; x=1771090366; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770487778; x=1771092578; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=04RyWScqmBoYy5xQezR1UYciFGs+VCZldXp8aMU72hU=;
-        b=L+TniqAzjlmXgglq63iWzuvmPEjakHCvixI4G4suUcVk2nTDU7JJAUsC8BAoMmgHBp
-         1Cvab7pHN2j7tMaqTCDNIdCxyGhDDbirTyLSCgpH0OCmtDcmZqLlu/BSBO5ac4K61kGF
-         X4CMGdFs1CmRljqOPgL44zIi/hSwZiCZ+vfU5qDNcML6U0ingjZ54Cp5UT7jR4pIgYwv
-         4dEgz/jnQYiohidAzxu9wD1EBlh36AacAZtqYwu+ZTg8IKqHgqFxG8i1FHZOJDrAWwKT
-         awjIuIsMXYTm0WZ7AWa3r2tqHdyujVb1GJ58bO1KR73vOooU++JoEJNMN5izEUurCBaG
-         /brA==
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=doeEscZbmqUzRLkmGbD2wulpXvhEwLpY3gZ7s/QLWDw=;
+        b=YasdDXT+PSQGxVL4yqiV6baqDWcuTn+aeYlC+08D6q3bByU6qswlUJW1KJvBtFfb8G
+         ddtfvmCXJoFMI8tHG61s7X+7EFfJD0mgiXEPxghWHI5g42E2/crplxnXzmXurq/drRAA
+         zek9l3gXbx1r0F8SPaEbUxDTGs/75oBfhJgLq8degjPmTGBWglKMfvPvQ9ZHA2UQsavj
+         yk9Hhw8lwi4K31syJ7STbd1o57+POIfmgrJfgYaSywTWdi4UVmeg7jgR+e1Oi/JkrSa0
+         /CikZAy0wJzfW6f/2MZ8A6EZvnzrahxEvfj/7YHUIHbATVWzqD0oBLLLwAkUnaUNF4Pb
+         WM/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770485566; x=1771090366;
+        d=1e100.net; s=20230601; t=1770487778; x=1771092578;
         h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :references:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=04RyWScqmBoYy5xQezR1UYciFGs+VCZldXp8aMU72hU=;
-        b=WoM229mpyLzN4m0uPw7lOs3Peeb310QR8F8HZ4+pYZVW1v1QXL4XD7QFAXpcL1LT1C
-         dcgaWKxCBm8wzLQK3M0JbuMRsmEgWynQU9Zl0hXtsqnKbqsNlV/sbYdCGu4yMKUit8DP
-         jef7rcJMwbGQSXn2uTlCTLdYXMLhenOetbnoHUdsTRDYIwE/z78x+Px3l7m1fnhD8ZnI
-         1etiwHg/8hwipO8zrO6jf3ZOJMPPFDoFDw0oDMwpjtyg2JX3IWOtUbrThQUtl9I15p94
-         MgX6juI6KDC0UYAzTuf7IvZ8xs7UZ1SGysA4sYk6T45eO/2lqZ3dOJ4imuzaPqV4dq7u
-         2hcQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWonMJ67G4S/iPdeaOdvs07Jq3gOZ0tXAJSu5q0L2TJ9nXpsjjNDpb6vet+6EJWI851MZrW1YsGv54=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywik8MPObksA8z6vIjqPvJbeudIDSznE+HqOfhjwC5JJYBzltSv
-	ZQ6thaBPkATBXpS23xZlHQX3guClHMM2QmL4E+ZOrb+ZGtUmMeRh7hJFcOZoro+aMmw=
-X-Gm-Gg: AZuq6aKt7os/v1KMQxO4bUVIXVP40pL8s9x/BO7oAY6CgfGfKZH2vct1n3cWs415MBl
-	lNaBgcDdGO6x0Dj1C1WTGGCOLWWBV/wNPMpH4v795mMMoj/fuiFh81U3D/QQqb6SuqGVopHO0s0
-	uFARdMk2Q7RB+fAx2Hp3ra02fChYTh8TniRNbio/CVOu2RDiRjOaE4+0+9HjPdUA7odJOsO4Qyd
-	TDbz6RRsQQLHcuDmDjRcf9tqB4Qi3LT3cm9yaM6qghzL4zxbXpK1PmNtWxtEAgXHFZc0xY6mPnp
-	NTlh1apAk4eHZVuwM8XMkiOn0MW7yKJboK1fwKF18UEj/tPVuxFZ8fUwc2UATAjGEtEkLFVFslr
-	DBf1lYjMwd7DX2edO3EZGHstThpgPiLl8CvOPujhDlBouT88LRYoPch4SgPu9vvVNKLI6sRKePd
-	w4r79BS7YHhNNbFBCbrBGn1+HbCG4xINkq2J+ubS7aW9uVND3M3IU75BDSVA==
-X-Received: by 2002:a05:6870:9e92:b0:409:4c35:a3ca with SMTP id 586e51a60fabf-40a96c96a6amr3389724fac.15.1770485565962;
-        Sat, 07 Feb 2026 09:32:45 -0800 (PST)
+        bh=doeEscZbmqUzRLkmGbD2wulpXvhEwLpY3gZ7s/QLWDw=;
+        b=hYaYGD0BxEHDBNN1zWKXRaZ8vjEQ2mkLbw8EVY9EjOvdNL6bbhVhS6NUVahwlrF2dy
+         SWEvChOoOAyfoRNkz7BjSO1JUDFgDSvMXlFeb6B9y777WaHHom/oUa8k/nKHKl5UASjn
+         b1UlkoCto5jBT/9CsihooLAYOw/4cmwdb5eJcyf+7EzwYhIEpYeK8x7wBsUYxpdeoxsL
+         Lr5QwoiHZuOHwrYARv1l8w7f5iNcU/q96y8QGq/qZNFHPQpHhJlQp/RL3fE5V7O8SLOl
+         byYDnufsJyVntDnCCeOiRYwYoSQYQJ+Ug3dMtTZ5KZ3uIIIt1L7KCF4jnm/AIExdieRE
+         lTzw==
+X-Forwarded-Encrypted: i=1; AJvYcCXYfEGqQlnmwbQ5iRP8hYgiIdOJ8suV28WOZIa9vR/V5RmhIIgOecYyfqt1H7lU5WoTR0pDbpZG/ic=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyYSsbWLtKO2/TK4BxF2cG5pWOwyhzrS0RsLczp9k9fYfDb1U2e
+	ZFbx/udnmfgmKUGHwqq3FkMcf4soVBfvSqsYfiDogUUx64WRSFbHksulYhsou8Yt6QS0lyFJJwp
+	szpay
+X-Gm-Gg: AZuq6aKpFF0uqNsIyniM8reocLUSxxfMwjo0eXIqpUi86fnrqyAgPC7t0Vt4IxJOmgt
+	kFpjyP0PBpTc02VJH5KWln+f2CYqA0BF3s2HNNOansvS9wx4ysbgpOLQBSKJIL0XMhOD73ZbEjR
+	aPp+KICxrMDT6wa+CUAP+pAI61slE19yl6MPK0O5b08O8OhRTt2i8FHyPQRQp36QeeIEGI9f9LM
+	INHsD6zkAwSPnrU1r2C/ZjBAmM0eT+Ei6q3xtz7WJf13g4rJEmyEpjFkywSVx/RSQxzlG+iH8NW
+	76syMDoRqHLx02TH2vKQ3RU0Sq2ur8Kopdhp0clCN0m1r7NlGjhoCDVqc6mwj80LmKbFcC4I0Ng
+	OiG1GCoLt8Klora3HPRp3Bpg+qTK311nDG24J5TSj0VisACNT+P5uTRvrxi1hq7Nh85LBsoixaF
+	lrRCIMEKBvNSZQz4djKEqj763AbX3CiCAlEdxpMcu0yrNKjQp62Y0xSya8IgGUVlPgGkKe
+X-Received: by 2002:a05:6870:799a:b0:3ec:321c:b2ac with SMTP id 586e51a60fabf-40a9777b8c4mr3621662fac.37.1770487778043;
+        Sat, 07 Feb 2026 10:09:38 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:74a6:843b:f33:21ae? ([2600:8803:e7e4:500:74a6:843b:f33:21ae])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-40a99787738sm4457915fac.15.2026.02.07.09.32.42
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-40a99787738sm4509503fac.15.2026.02.07.10.09.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Feb 2026 09:32:44 -0800 (PST)
-Message-ID: <51eddfc0-9f23-4a7f-8729-19775d834c0b@baylibre.com>
-Date: Sat, 7 Feb 2026 11:32:42 -0600
+        Sat, 07 Feb 2026 10:09:36 -0800 (PST)
+Message-ID: <8fbfcf7c-4acd-4a7f-a5a5-34baad84e1b2@baylibre.com>
+Date: Sat, 7 Feb 2026 12:09:34 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,126 +69,58 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 01/11] dt-bindings: regulator: cpcap-regulator: convert
- to DT schema
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Rob Herring <robh@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+Subject: Re: [PATCH v2 1/4] spi: allow ancillary devices to share parent's
+ chip selects
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>,
- Pavel Machek <pavel@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Dixit Parmar <dixitparmar19@gmail.com>,
- Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-input@vger.kernel.org, linux-leds@vger.kernel.org
-References: <20260206172845.145407-1-clamor95@gmail.com>
- <20260206172845.145407-2-clamor95@gmail.com>
- <20260206230922.GA254792-robh@kernel.org>
- <CAPVz0n3EGCSLUX7jTLve0x0z4uW1yexViCwkSQLY2d_4r4qkjg@mail.gmail.com>
- <db9115ca-2c8f-4b5e-89ce-f3b934071a59@baylibre.com>
- <CAPVz0n2KwqPw88JVcPzhTQ2n+GKzahkrEThjjrqm0CSdjKTEOw@mail.gmail.com>
+ Olivier Moysan <olivier.moysan@foss.st.com>, Mark Brown
+ <broonie@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
+References: <cover.1770393792.git.antoniu.miclaus@analog.com>
+ <bcb1eb34fc5e86fd5dbb4472ad1d3ea3cf3e9779.1770393792.git.antoniu.miclaus@analog.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <CAPVz0n2KwqPw88JVcPzhTQ2n+GKzahkrEThjjrqm0CSdjKTEOw@mail.gmail.com>
+In-Reply-To: <bcb1eb34fc5e86fd5dbb4472ad1d3ea3cf3e9779.1770393792.git.antoniu.miclaus@analog.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 2/7/26 11:25 AM, Svyatoslav Ryhel wrote:
-> сб, 7 лют. 2026 р. о 19:19 David Lechner <dlechner@baylibre.com> пише:
->>
->> On 2/7/26 3:20 AM, Svyatoslav Ryhel wrote:
->>> сб, 7 лют. 2026 р. о 01:09 Rob Herring <robh@kernel.org> пише:
->>>>
->>>> On Fri, Feb 06, 2026 at 07:28:35PM +0200, Svyatoslav Ryhel wrote:
->>>>> Convert devicetree bindings for the Motorola CPCAP MFD regulator subnode
->>>>> from TXT to YAML format. Main functionality preserved.
->>>>>
->>
->> ...
->>
->>>>> +properties:
->>>>> +  compatible:
->>>>> +    enum:
->>>>> +      - motorola,cpcap-regulator
->>>>> +      - motorola,mapphone-cpcap-regulator
->>>>> +      - motorola,xoom-cpcap-regulator
->>>>> +
->>>>> +  regulators:
->>>>> +    type: object
->>>>> +
->>>>> +    patternProperties:
->>>>> +      "$[A-Z0-9]+^":
->>>>
->>>> I thought it was said on the last version to list the names. Considering
->>>> you already have them below, better to put them in schema than prose.
->>>> And pretty much all regulator bindings define the names.
->>>>
->>>
->>> What exactly do you propose? All those names will not fit into a
->>> single unbreakable line (more than 125 columns in length btw). Patch
->>> checker will complain about this. Duplicate pattern properties for
->>> every few names? Please be a bit more specific. Thank you!
->>
->> Making checkpatch happy is not a hard requirement. If you have to
->> go over 125 characters for technical reasons, no one is going to
->> complain.
->>
->> I already gave an example on the last version. It is just a regex
->> expression. (And note that you didn't fix the $ and ^ either. ^
->> means beginning of the line and $ means the end of the line. So
->> the pattern currently won't match anything.)
->>
->> patternProperties:
->>   "^(SW1|SW2|SW3|SW4|SW5|...)$":
->>
->>
->> And I hope it is obvious that you are meant to replace ... with the
->> rest of the names separated by |.
->>
+On 2/6/26 10:07 AM, Antoniu Miclaus wrote:
+> When registering an ancillary SPI device, the current code flags a chip
+> select conflict with the parent device. This happens because the
+> ancillary device intentionally uses one of the parent's chip selects,
+> but __spi_add_device() checks against all existing devices including
+> the parent.
 > 
-> David, thank you for your suggestions and I did not want to offend you
-> nor Rob, or ignore. Using this large string IMHO feels a bit wrong. No
-> offence, I will use it if required. At the same time I was
-> experimenting with possible representation and come up with smth like
-> this:
+> Allow this by passing the parent device pointer to __spi_add_device()
+> and skipping the conflict check when the existing device is the parent.
 > 
->     patternProperties:
->       "^SW[1-6]$":
->         type: object
->         $ref: /schemas/regulator/regulator.yaml#
->         unevaluatedProperties: false
-> 
->         required:
->           - regulator-name
->           - regulator-enable-ramp-delay
->           - regulator-min-microvolt
->           - regulator-max-microvolt
-> 
->       "^V(CAM|CSI|DAC|DIG|FUSE|HVIO|SDIO|PLL|RF1|RF2|RFREF)$":
->         type: object
->         $ref: /schemas/regulator/regulator.yaml#
->         unevaluatedProperties: false
-> 
->         required:
->           - regulator-name
->           - regulator-enable-ramp-delay
->           - regulator-min-microvolt
->           - regulator-max-microvolt
-> 
->       "^V(WLAN1|WLAN2|SIM|SIMCARD|VIB|USB|AUDIO)$":
->         type: object
->         $ref: /schemas/regulator/regulator.yaml#
->         unevaluatedProperties: false
-> 
->         required:
->           - regulator-name
->           - regulator-enable-ramp-delay
->           - regulator-min-microvolt
->           - regulator-max-microvolt
-> 
-> Will this be acceptable? It passes checks
 
-I think we would rather have the long match string instead of
-repeating the rest of it multiple times.
+...
+
+>  static int spi_dev_check(struct device *dev, void *data)
+>  {
+>  	struct spi_device *spi = to_spi_device(dev);
+> -	struct spi_device *new_spi = data;
+> +	struct spi_dev_check_info *info = data;
+> +	struct spi_device *new_spi = info->new_spi;
+>  	int status, idx;
+>  
+> +	/*
+> +	 * When registering an ancillary device, skip checking against the
+> +	 * parent device since the ancillary is intentionally using one of
+> +	 * the parent's chip selects.
+> +	 */
+> +	if (info->parent && spi == info->parent)
+
+spi should never be NULL (or we would get a segfault later), so
+if `(spi == info->parent)` should be enough.
+
+> +		return 0;
+> +
+Reviewed-by: David Lechner <dlechner@baylibre.com>
 
