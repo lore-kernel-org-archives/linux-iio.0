@@ -1,152 +1,142 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f48.google.com (mail-oo1-f48.google.com [209.85.161.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1EB333A010;
-	Sat,  7 Feb 2026 17:14:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9194C2C08CA
+	for <linux-iio@vger.kernel.org>; Sat,  7 Feb 2026 17:19:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770484497; cv=none; b=eLYMWL/5dsC8SXeLWcyB5X8MKvDAW3CWZ9ilbvF4gZh3CYihqHkuWFUtLe+aL2YvXcBWnKbDpuflHGUTchdzvS0b6hz68vfmquwAoAV7WwNJlyqEv6VPoSKlFVEOPE27bhljzw8blbXumc0qv1gcRx5U7rws2LoFGiXvAZGrjzc=
+	t=1770484783; cv=none; b=uVkVudAhT+U20bVGbuINOn+rgLQ+5WOuOupjbbovhQSalVrtL84vA33HNCiFYXdmdbrDqSgowabY9T5DqKdzbmNhe1X5uTdEB6XcSgXExFaOFXxf0j6k+dJdoF5BtstAxe+Vftgv1uL2sjpIc0yZaj5Doa4k7OTN1Qs2kHCUzDQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770484497; c=relaxed/simple;
-	bh=zKw/AYb0/7FzcWHNukM1Pn4RE5MTCdV2hdJg1r0SlOQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WHWISlK3r2u1rUwefQXQXkkD24edes1h69uLIyYucw4jc3DddvsgLL0/NwGUNZZnkvzzmVKaygeTIiDa75zNBMw/O5KuGyh4+tqt6ZXnTH16l7PrD3/CiYxmBH4kJeyb+08dyygh0u+lFb7NdXuvmYcjF8yTPHjjVUjUQlQjuao=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ddvD1Lpa; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770484783; c=relaxed/simple;
+	bh=5tSv0K2xPLmp03qZ0ySPg6fhMYjNHkDNBp7DBZrnlwI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=qxYpAOMsszOxKYAELgZg3o79n0od7UqM1IWPESz25zyr03no6KNsK/Z7TPgDhGBH8PgcqNiwpqEpbj4WcaeL2D3HjtO33y92Ro5+qC4s/KCUkrFBMsgBmQWpIaqyu2luq1+D77qpHjfWy/Zzm3FO/DnEVfYqDzdqS2bx/z7S72U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=bFv0bPUA; arc=none smtp.client-ip=209.85.161.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ddvD1Lpa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770484496; x=1802020496;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=zKw/AYb0/7FzcWHNukM1Pn4RE5MTCdV2hdJg1r0SlOQ=;
-  b=ddvD1Lpa6Uzz/FHqwpIbyeNLmI3ISh3Etc2ArW8mEOUZDTi7yWh9xp+6
-   Ddg1WyQojtiGq0NwwEMZEa9/qsn3IeNO48fZ52Y/Erl5SH2ADdrPf1ktZ
-   w1YTo7Uw7OrD+TvKPybLxALlkW+gSHbhsn0uxdFn7OBQq4BuiOZncMYjx
-   xKtwSYbvgNStRKGcZz5wzgo32CjmvD78TP7bldwMLhS/hJPAbr1dZ6FlI
-   cDRQGFNLi5e54bfGYDqamgxi81SL+taUufpO0MnjkGclbXhyfCaS8NrC+
-   2OyQ+CwBNamtayXW1iIw9zPArjqROwitd1kUGEauH7ysxBSGsotyeS0x8
-   A==;
-X-CSE-ConnectionGUID: hYIzw2JgTLWkkSTyols08A==
-X-CSE-MsgGUID: EoJCpXTWRRm9Cvjfm/JmQw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11694"; a="70859053"
-X-IronPort-AV: E=Sophos;i="6.21,278,1763452800"; 
-   d="scan'208";a="70859053"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2026 09:14:55 -0800
-X-CSE-ConnectionGUID: iKezQjPSTNeDZ3nMz6tNgg==
-X-CSE-MsgGUID: CH8RI5QnSi29lqVxpEM0OQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,278,1763452800"; 
-   d="scan'208";a="211211830"
-Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by orviesa007.jf.intel.com with ESMTP; 07 Feb 2026 09:14:52 -0800
-Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1voltR-00000000lmq-1J6L;
-	Sat, 07 Feb 2026 17:14:49 +0000
-Date: Sun, 8 Feb 2026 01:13:53 +0800
-From: kernel test robot <lkp@intel.com>
-To: 434779359@qq.com, Jonathan Cameron <jic23@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	liufulin <frank.liu@faiot.com>,
-	Waqar Hameed <waqar.hameed@axis.com>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH] tof: Add VL53L4CX TOF drivers
-Message-ID: <202602080159.l0CRmkUf-lkp@intel.com>
-References: <tencent_326708D02875274DF25B10B91402B3828606@qq.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="bFv0bPUA"
+Received: by mail-oo1-f48.google.com with SMTP id 006d021491bc7-662f91bba0fso2631073eaf.0
+        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 09:19:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770484781; x=1771089581; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1W00zz5qVNYTH6MgjHmIYO/oSZsXOTum5yin9z3CGMg=;
+        b=bFv0bPUA4Ofv6wEr0EqxOkBc+vmD3AnYnxyA0Qk678SHkvpIeT6265hZHeFxKWvqHB
+         01AQi+I05chJ8BXxIclTtCpvXTyjdDUDIglhdoIkn2IzXlgc+A4WtlE3sfbQCHcB4P4e
+         e9DWPSGSpzONL2PwMxYgjUej94lrrTfGtO+HtaiuVdK8tnUPLBe53VkTm8HPaJjmVnr9
+         HKKUhDfweDqql9FQ68HGL5mLyMuOW4IWlwwBNSCcv+Gcchy2/oejnt/W2y7gSnZgKj1Q
+         xd3VHBk9S6FMfPANuG66d6cea1hLt7aeWCdBRykH6AGPjbaQWNNgeHmTFiII45/LSvAx
+         7DaA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770484781; x=1771089581;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1W00zz5qVNYTH6MgjHmIYO/oSZsXOTum5yin9z3CGMg=;
+        b=TI2noOQQvoGyxTn4m8ZlX79uEC9c6ZnBrjeVHddqy36odkZZRHGEAPUb9pcIWio4Vf
+         Mf5Vb55wZM0GBjEo+0pQaxvcgXC+E+1MZ/Vio9YT3+WawtTcY6+lpXa++jl41iXFKX4F
+         2YliCbHropX9uMmX/H+dD7TYCCye4o2rOcTNaZ/Hy2Hl51Ynm3rC6cKZV0a8s2O5iEO7
+         9O8YmdGOVBxrdrO2NSgAIe0qSde139hztmKNRKupXSKveSJive1Hau2oqYp5pEEDtJmX
+         wEwdi7x1/nN8pJJdu77lGb5IOhy6V/X+5U9iFn5p06LWcksHznmeRwawK9FT1nEd92Su
+         7gPw==
+X-Forwarded-Encrypted: i=1; AJvYcCVPaldJwsKDTCtowtC1C1m99eQtISALfhjMrmEozBAkEV9Fi/u82uoghgGr58NGAj/MYkj7K6R3z1g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyvglpDmSeG+0f+X7KCwNXQUdv+c7+Hh1iyMcSrGE9W2uUbXKRn
+	seXh71NQoHt5biANdcfLGRo5J2VjrD2Bv3vuavIj7drlmzNH7wTIQ6J7Yg9N2iUw0c8=
+X-Gm-Gg: AZuq6aKw8IEVeChDMA30wSO+j6/N6B0ZSA0fP0VT0697HHMERNZnO0QsZkbdUS5ijxR
+	hnPTlvrMeCIk2iqfMxO6MqgRF4nRdKYlMSqao7qnUda/SSFOdiD160guF4KuOl4ImQTfN9WbtSU
+	0MdRf+TUs3Q+Vm3pPH+LKCZU5ZP88uTAR9EWEE7CYAsepJspP7Re0AZgFE7f6i25KhR1dl1ZudG
+	tDGYwOgGJJWAIBPIjeKMUoYL2DjxThQDH07PlWZwNYh/4baeJRQwo4idFxSYPrT9aEIYyoVL7es
+	Sm56TiabJoF+RAoSnxKROuDVEZOHhy008Gv+EOO6Fl36QpxPsVg+pKULrZBWFSC20+jPqfur4Gu
+	Pw2USxpC/h8BgCkQuVzzsGo7sDgYLS1N6K6FZzYzYyjELb1QKT83vz0AU4tUvCo17DZ9BTrrDjA
+	XZQXpsZoAnID8ksEHxoiRiR5cx8AfxTlahQfgKNhMH++t0tswXp+bud/yiDSqeUARWTBZuAQ==
+X-Received: by 2002:a05:6820:3101:b0:662:bffb:41fc with SMTP id 006d021491bc7-66d13059c28mr2419479eaf.15.1770484781465;
+        Sat, 07 Feb 2026 09:19:41 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:74a6:843b:f33:21ae? ([2600:8803:e7e4:500:74a6:843b:f33:21ae])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-66d38bdeed5sm3004756eaf.4.2026.02.07.09.19.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 Feb 2026 09:19:39 -0800 (PST)
+Message-ID: <db9115ca-2c8f-4b5e-89ce-f3b934071a59@baylibre.com>
+Date: Sat, 7 Feb 2026 11:19:37 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <tencent_326708D02875274DF25B10B91402B3828606@qq.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 01/11] dt-bindings: regulator: cpcap-regulator: convert
+ to DT schema
+To: Svyatoslav Ryhel <clamor95@gmail.com>, Rob Herring <robh@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>,
+ Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
+ Dixit Parmar <dixitparmar19@gmail.com>, Tony Lindgren <tony@atomide.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+ linux-leds@vger.kernel.org
+References: <20260206172845.145407-1-clamor95@gmail.com>
+ <20260206172845.145407-2-clamor95@gmail.com>
+ <20260206230922.GA254792-robh@kernel.org>
+ <CAPVz0n3EGCSLUX7jTLve0x0z4uW1yexViCwkSQLY2d_4r4qkjg@mail.gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <CAPVz0n3EGCSLUX7jTLve0x0z4uW1yexViCwkSQLY2d_4r4qkjg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi,
+On 2/7/26 3:20 AM, Svyatoslav Ryhel wrote:
+> сб, 7 лют. 2026 р. о 01:09 Rob Herring <robh@kernel.org> пише:
+>>
+>> On Fri, Feb 06, 2026 at 07:28:35PM +0200, Svyatoslav Ryhel wrote:
+>>> Convert devicetree bindings for the Motorola CPCAP MFD regulator subnode
+>>> from TXT to YAML format. Main functionality preserved.
+>>>
 
-kernel test robot noticed the following build warnings:
+...
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on linus/master v6.19-rc8 next-20260205]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>>> +properties:
+>>> +  compatible:
+>>> +    enum:
+>>> +      - motorola,cpcap-regulator
+>>> +      - motorola,mapphone-cpcap-regulator
+>>> +      - motorola,xoom-cpcap-regulator
+>>> +
+>>> +  regulators:
+>>> +    type: object
+>>> +
+>>> +    patternProperties:
+>>> +      "$[A-Z0-9]+^":
+>>
+>> I thought it was said on the last version to list the names. Considering
+>> you already have them below, better to put them in schema than prose.
+>> And pretty much all regulator bindings define the names.
+>>
+> 
+> What exactly do you propose? All those names will not fit into a
+> single unbreakable line (more than 125 columns in length btw). Patch
+> checker will complain about this. Duplicate pattern properties for
+> every few names? Please be a bit more specific. Thank you!
 
-url:    https://github.com/intel-lab-lkp/linux/commits/434779359-qq-com/tof-Add-VL53L4CX-TOF-drivers/20260207-174646
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/tencent_326708D02875274DF25B10B91402B3828606%40qq.com
-patch subject: [PATCH] tof: Add VL53L4CX TOF drivers
-config: m68k-allmodconfig (https://download.01.org/0day-ci/archive/20260208/202602080159.l0CRmkUf-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 15.2.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260208/202602080159.l0CRmkUf-lkp@intel.com/reproduce)
+Making checkpatch happy is not a hard requirement. If you have to
+go over 125 characters for technical reasons, no one is going to
+complain.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202602080159.l0CRmkUf-lkp@intel.com/
+I already gave an example on the last version. It is just a regex
+expression. (And note that you didn't fix the $ and ^ either. ^
+means beginning of the line and $ means the end of the line. So
+the pattern currently won't match anything.)
 
-All warnings (new ones prefixed by >>):
-
-   drivers/iio/proximity/vl53l4cx-i2c.c: In function 'ctrl_mz_data_blocking_common':
->> drivers/iio/proximity/vl53l4cx-i2c.c:16100:13: warning: variable 'rc0' set but not used [-Wunused-but-set-variable]
-   16100 |         int rc0;
-         |             ^~~
+patternProperties:
+  "^(SW1|SW2|SW3|SW4|SW5|...)$":
 
 
-vim +/rc0 +16100 drivers/iio/proximity/vl53l4cx-i2c.c
+And I hope it is obvious that you are meant to replace ... with the
+rest of the names separated by |.
 
- 16096	
- 16097	static int ctrl_mz_data_blocking_common(struct stmvl53lx_data *data, void __user *p, bool is_additional)
- 16098	{
- 16099		int rc = 0;
- 16100		int rc0;
- 16101		struct stmvl53lx_data_with_additional __user *d = p;
- 16102		pid_t pid = current->pid;
- 16103	
- 16104		mutex_lock(&data->work_mutex);
- 16105		if (data->is_device_remove) {
- 16106			rc = -ENODEV;
- 16107			goto done;
- 16108		}
- 16109		if (!data->enable_sensor) {
- 16110			rc = -ENODEV;
- 16111			goto done;
- 16112		}
- 16113		if (!is_new_data_for_me(data, pid, &data->mz_data_reader_list))
- 16114			rc = sleep_for_data(data, pid, &data->mz_data_reader_list);
- 16115		if (rc) {
- 16116			kill_mz_data(&data->meas.multi_range_data);
- 16117			rc0 = copy_to_user(&d->data, &data->meas.multi_range_data, sizeof(VL53LX_MultiRangingData_t));
- 16118			goto done;
- 16119		}
- 16120	
- 16121		rc = copy_to_user(&d->data, &data->meas.multi_range_data, sizeof(VL53LX_MultiRangingData_t));
- 16122		if (rc)
- 16123			goto done;
- 16124		if (is_additional) {
- 16125			rc = copy_to_user(&d->additional_data, &data->meas.additional_data, sizeof(VL53LX_AdditionalData_t));
- 16126			if (rc)
- 16127				goto done;
- 16128		}
- 16129		rc = add_reader(pid, &data->mz_data_reader_list);
- 16130	
- 16131	done:
- 16132		mutex_unlock(&data->work_mutex);
- 16133	
- 16134		return rc;
- 16135	}
- 16136	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
