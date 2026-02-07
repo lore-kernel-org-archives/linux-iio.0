@@ -1,46 +1,53 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 221EA125A0;
-	Sat,  7 Feb 2026 16:20:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 825CE33469D;
+	Sat,  7 Feb 2026 16:26:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770481245; cv=none; b=TSydtHE10tmZ5eOOXj/sU1PDC/hupMgsEV+YeDCkZafHVlG/GtWjzd2JGVMbMTYPJrtftHP/SHJ0mLZ8jVCanhfIYwgjdACWbq7N9A/cZpY38dUj7oxtybh4xEJzFP9Ndo4QACIg8SW4ZfjzYXer5C4O+pKaayPBFOtd9UXIH2w=
+	t=1770481614; cv=none; b=HMGeZ4vIYGuhOUx3CpOQM7YRnuIcqU/y3yAI5hsVX1uTY4S1IDNPEXELaNjv0ybS6GD5oMKwO9ZjmgmYDXf3z9JTgnUsevZ1vM1WYt/lSa0cPHJiUcAcwz5BLqlXtjsRnk7DXGCxvQGky2Hu1oawvyupncPfTqNDhAR9TYtAvyQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770481245; c=relaxed/simple;
-	bh=ejJfSQFOA01ro05Yn7RiAuT1mEsViwjJwvaaoi8RfEo=;
+	s=arc-20240116; t=1770481614; c=relaxed/simple;
+	bh=951CCdYKz52bkrmdvtGjkZfHKmN0gQC7AGqBUbiwsdY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=m0xLSzKcChbonOpfy+lYZNRKPc3Um8TKTImdEvB4kWlJLREHdNt4AD+TZsyGGEqy0VbjvswvfspTbpZlxfNveq1Rt3gPkmXXh6yX2qz6K0KnRWHDeeTuX5RrTtlNF/9gl7LJEs7K4XcSkkfnx9lVkNNcrrqFmQENhlZJt9Uv2c8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rd/F6S0G; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=gKj8dqhsiL6DLzr1BBCPtv811HoVrLKsMBkoyaGOO6XubsFNAsAFWV7scsYOkoTs/0/pl//9jxMqR73E6HHONkY5WBy2xGuoGu5Idpp5djuo3ZJHa+aQu6GbyNNnJ/jAyvZUKT7uFNtc1V6a8cex4ksLkvNyamyi9026Blx4Q+0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TRJBHUXz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rd/F6S0G"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CFEBAC116D0;
-	Sat,  7 Feb 2026 16:20:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TRJBHUXz"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19F97C116D0;
+	Sat,  7 Feb 2026 16:26:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770481244;
-	bh=ejJfSQFOA01ro05Yn7RiAuT1mEsViwjJwvaaoi8RfEo=;
+	s=k20201202; t=1770481614;
+	bh=951CCdYKz52bkrmdvtGjkZfHKmN0gQC7AGqBUbiwsdY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Rd/F6S0GAlV2HjcPPhLbgHBVk4J/Rh4lQfHW63xSSBKKtL4fTG/x7M8PvQXnHISLY
-	 nOWFeaosdU51RhNCfVIw9pZilmty+WCUTIV1SSb7KXu/j5UD/lNdfq5G3XtEKRe19e
-	 3HL42m5d5gVw/oE1VxxsMSOqNya+HVQV7icBkikp4PcHgDLCEzVlWjWXUmzYsxJ5oo
-	 N7qFuHpicMnkhir7ZzjvAN/2LukL+kolA5WXgJR5tvEzgYQS2xfC3jHXKZUIWerRG5
-	 pWKEnghQVYdf3+Z157J6f5gD8Ej3G9zwI/1G9vOicM1yszNNX/MYjmz8/WpzalmxVl
-	 L5sOQ+QRZrIPw==
-Date: Sat, 7 Feb 2026 16:20:35 +0000
+	b=TRJBHUXzEJbNeBq8N7pqpkfGk74AXcHMsHPVg5Cu6wNQlBkNwkLW7sQ7amopX2rJe
+	 /E9nIs2VurQtDyHR3EbWDs77Q1BVbzjCmJqTOTp+XcqCBftsb5V0bCY+KUoILnxQOF
+	 Ay6zAaNFHyLjFx9mKRs8rYluMYHsDS3MfeuNsjr3lgnqkX5fNXzK4bsd4JspvvK1XE
+	 XaJjVtZMAHeDJBrVNgkSG4XKxg7PHl6xiXqk2S2UIUc7F8fn/Ylc3Xt1+RXl9kaqst
+	 A3XXFi10W17xFpMUXmhn37BNtS4OGD15hn16Zu4AWJe8LV7y59+kJDG/2brn5lX2HJ
+	 4r0EEsWwBCYWg==
+Date: Sat, 7 Feb 2026 16:26:43 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Taha Ed-Dafili <0rayn.dev@gmail.com>
-Cc: me@brighamcampbell.com, skhan@linuxfoundation.org,
- linux-kernel-mentees-archive@lists.linuxfoundation.org,
- rdunlap@infradead.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, corbet@lwn.net, lars@metafoo.de,
- Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] docs: iio: adxl345: update math and examples for
- scaling
-Message-ID: <20260207162035.16533a3e@jic23-huawei>
-In-Reply-To: <20260201183320.27023-5-0rayn.dev@gmail.com>
-References: <20260201183320.27023-1-0rayn.dev@gmail.com>
-	<20260201183320.27023-5-0rayn.dev@gmail.com>
+To: Erikas Bitovtas <xerikasxx@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Kevin Tsai <ktsai@capellamicro.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: light: Add support for Capella cm36686 and
+ cm36672p sensors
+Message-ID: <20260207162643.5599a3ac@jic23-huawei>
+In-Reply-To: <34824fc2-af03-48e3-98b8-04fae28c9a64@gmail.com>
+References: <20260201-cm36686-v1-0-4949a2a9ba63@gmail.com>
+	<20260201-cm36686-v1-2-4949a2a9ba63@gmail.com>
+	<eb922433-3951-409a-a397-b48efef57b7b@baylibre.com>
+	<b133521f-434d-4972-82a3-6e7978e557bd@gmail.com>
+	<086d6b35-8c19-4e92-9cd1-557b98991d35@baylibre.com>
+	<372c9172-ea01-4a3a-b737-3f7f14519791@gmail.com>
+	<0b001503-5882-446c-a0df-642a9f75e7e3@baylibre.com>
+	<34824fc2-af03-48e3-98b8-04fae28c9a64@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,28 +58,37 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun,  1 Feb 2026 13:33:13 -0500
-Taha Ed-Dafili <0rayn.dev@gmail.com> wrote:
+On Wed, 4 Feb 2026 18:34:50 +0200
+Erikas Bitovtas <xerikasxx@gmail.com> wrote:
 
-> Update the documentation to reflect the addition of event scaling
-> and correct existing technical errors inscale values.
-
-Trivial but please wrap commit messages to 75 chars.
-
+> > I assume you have the hardware and can do a test to confirm this. :-)  
 > 
-> key changes:
-> - Fix the 62.5 g/LSB typo to 62.5 mg/LSB and add SI unit conversion.
-> - Correct decimal precision of in_accel_scale and
-> in_accel_scale_available to match actual SI unit (m/s^2)
-> values reported by the driver.
-> - Add sysfs example showing how to read and interpret the
-> newly implemented event scale factor.
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
-As David suggested, better to just document the scale attribute and not
-add it to all the others.
+> I tested the formula used in Xiaomi's driver in the mainline kernel and
+> compared it against the downstream kernel, and the lux readings match between
+> them. Therefore, I suppose this solution could be good for now.
+> Although my formula for calculating scale is wrong - it should be inverse
+> proportionate to integration time. So:
+> 80ms -> 1.28
+> 160ms -> 0.64 (what Xiaomi uses)
+> 320ms -> 0.32
+> 640ms -> 0.16
+> This can be achieved by multiplying als_trans_ratio by integration time used in
+> Xiaomi's driver, and then dividing by integration time we have set up at the
+> given moment.
+> For example, suppose we set our int time in mainline to 80ms
+> 16 (als_trans_ration) * 16 (160ms / 10000) = 256
+> 256 / 8 (80ms / 10000) = 32
+> Starting here, we calculate based on how Xiaomi calculates scale for their values:
+> 32 * 40000 = 1280000
+> val = 1280000 / 1000000 = 1
+> val2 = 1280000 % 1000000 = 280000
+> And that leaves us with scale of 1.280000.
+> Of course, comments on how we came to this value would be included as well.
+
+Only think I'd add to this is that if we have numbers for
+a sensor in a specific device, it's common for that devices
+packaging to attenuate the measured light level a little.
+
+For that reason we do sometimes have a tweak factor in DT.
 
 Jonathan
-
-
