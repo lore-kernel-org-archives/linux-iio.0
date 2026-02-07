@@ -1,65 +1,65 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
+Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 374DD5FDA7
-	for <linux-iio@vger.kernel.org>; Sat,  7 Feb 2026 18:43:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FAEB2475CE
+	for <linux-iio@vger.kernel.org>; Sat,  7 Feb 2026 18:44:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770489790; cv=none; b=l5Ph6R3MWNz1OXWKOD48LEl5f003fIxzJs7g9KDbZyiYeUbQXWO8zmwG+Q0j2fGoNGQYh5cv7gbotXFtVw+f1N4xqzAsk8XttlRjJn7C5N0KpfSXMf2cvwkqnQi63E0PyBTT5YBvtYEwY3Q+266fcI9v5yheh4M/SnFkNr05T14=
+	t=1770489841; cv=none; b=U4NUBOKbqZ3fTnyTNOr/d+60F8vUmCaHSw3Ol2XRUmDwoGOaGTX9O2iB1ovDsZc0G2BdewulvkTa8kkL11YGDpHexClqjZgKTFl41qMz5RfJMp/ZuRWTtfzZBpJhngOkw6xrpXsnWi2I39rSVRdpT+Pt/VVOP7fZT1PeSg9Uafk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770489790; c=relaxed/simple;
-	bh=eobRWPX7V3mhzQ/jJ2aUjX2QqhN/EpRejhH5y6xfzB0=;
+	s=arc-20240116; t=1770489841; c=relaxed/simple;
+	bh=22neKB79fF7PF+NCRuGrpHzEtqUdhauQr7Y89Ve2PvU=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lNj4zV5Hfn8YKRMG+yr6J9JvM3V7yDMcW7cBOW/Yl9n/TnuuXSRzGVjJPcGFhOOosGQ0A/4IcUq6eLgQ5falvQxm6wFsILxIdGUOwJg4+ursImwR7UZmhwa+kaAZ3YA5Ht4k81p91pSwxWSHBJqN3gkefAZMxllL028e4uOLwTg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=J1UF2IPM; arc=none smtp.client-ip=209.85.210.51
+	 In-Reply-To:Content-Type; b=sBus6CQd3QWBBLh3m73s9oMoonVDfO9Xr2kQjDFGTqcrFpvgfzhDlx8W9vK9+g3DPlh5Zyd1lBINiVERPRhiK96lrqnJiEG0fV5zHkug+0o2kfCcmX6h88iU2DuJan2Ul8xOgb0gIG64o6aOtEGCBjdl2D4TNgbRyyUZ7wcnwdg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=1SApbZNz; arc=none smtp.client-ip=209.85.167.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="J1UF2IPM"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7d122733808so694886a34.2
-        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 10:43:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="1SApbZNz"
+Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-45c9f47e1e8so1124598b6e.0
+        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 10:44:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770489789; x=1771094589; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770489839; x=1771094639; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=prJ1YgnM4mOIBKQF9u4CXqDRUwbdBQdcuDtFU8rMz6k=;
-        b=J1UF2IPMwXCnQQDsKsX8Fk/cmOOoSBdnju3x2xy4ffWCbpuEYZS8Zr7gIO6VJgT3A4
-         TsZM6V1Dg7uEHz26lyhEND8AU4gi7DHN8c3qyufeGrqhWMQkuT3lMRenMcsB3Dwo0as8
-         a5nn+4OGW+sMUpSMIoGN0ujBh1cVODcmvwnWvfKrAsKagesmUmdPuYGwTDYZj5gOPNix
-         ECS1qhwXvZASFlRFw+JNWV5slGRmfci31tP+6Y8/o10ZRKrNEk5AhP0g/F09/OouJ+8c
-         OsEqk1TNrk0OMqlO9aBMpOV6UrTeiE/346tYLZ9hrAKd1oQ/BPs5q38ONO5MQFMxuNaD
-         gK7w==
+        bh=fhGHKBHX0mp4WhkPQ5KScP2KrjUHgqP7Fc/kWzxNrXo=;
+        b=1SApbZNzyzcqsYvT+yJCIevJ1cZ8P61FiP4bmqkzb0Xh2Xg/VSxLxf8IESdx3gPLPE
+         nRCkLle7OMlkBPD5odJYSyOlZ56j0v3oPGCNLcmPjOt7t82onC5QaggsxMm4T19iv66Q
+         atZZLYAbDIPgSPgDVsanCePsVOGIPo+bqUu2C/+IQFDY2eaGpSMMhUqpYuiehzNjQ6yr
+         CtLqvtQl8sxM1znNl+8l33IkVo5V9pRce6K64KXjBwHV0mkDO4Z0E3A+Xs4mjI5lzqW2
+         +kFnVIK4DWRkSB8VIMane1Jh2OlB6JwII1QBwl8BYJXd0XxXY09eMmYVcIquOJF69aUu
+         uM/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770489789; x=1771094589;
+        d=1e100.net; s=20230601; t=1770489839; x=1771094639;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=prJ1YgnM4mOIBKQF9u4CXqDRUwbdBQdcuDtFU8rMz6k=;
-        b=hKJuppn8E2Qn2bZrsTQ7ivlYOB3whKeGI46jQ/bBXwczyCzwPVf9X4As+fVi1IhbFu
-         PqLTNutxksJMDLi9Tn2zOFGhzKldMQb0Qlt+dJtBwg9qSJtU+05i6tTCI1wAyPTMPR/s
-         iUSSvEN3dkRdfYYij3/x5DoOW0Y1HD10SrUm00OKibUCy+6TVgm8oPGEG1Kg0IiHKdf0
-         yujtcpYZHmYMn4tCRvLAaJDQ5fJcfTTtglCKfWicXolihHoedaUkysJkYTE+Vau07kfp
-         3hlmmVgommy1yXRFcXLmbKk6hD47Va6g1ONboyt/jyPgXeAc3FovSFkTamuDHREjczY+
-         k8AQ==
-X-Gm-Message-State: AOJu0Yx5HVwGNwgEL0Ro3AuIZjgO8TL+mOayyhRBV7M33dYNY73fqrzq
-	r5ZAqDkVK2g9f8lPxYh3e2EPxHFKvPCUH5Udv+e3/Jmn1Ym6MGNGDX6xGmQKkceo2FE=
-X-Gm-Gg: AZuq6aLD3ZkIiC1bqk/z0LHy5G9dcS8+gSZZfs4qSvZCq9JPbZ2g8gl/9xINw370HCt
-	aN4Mn9wcguv6vlujiL+XBp/KGy0RF0Xu0YhLAsEfbsPHBeUbTcsX+1/Uh/ETpNb7u5+mFzbZWtB
-	9vUrewi1OeKRQ6y7Bfm9lZpSs3IrwmRcPRzJKjLl4nbhaaZ+yCILrVyUXjTkLsjIrOi8osr9AF9
-	o4RZZa5j9vxnyf2dfYC95bSxlSdsV3XSdAIuj/dI+bLvR5FWq6AfponpHEYU2KMhCxoj/0AFtlR
-	+H1XutcJVr/z5NEW/eBxKbOI5iyMJVYGPISaSBdA1cVPMisiRI1LwfA2o8AX+WE8mmVvDSlDDWs
-	3/QgGwe+YhO1Dw6WEzv9HE9AEmZnuyNrTYCU4/IP90OaaNqWEaYtBzN12st7FAU6jHV48cVw1zo
-	NRzNhXRl9BqavfXA/Mom3/uxW01bG1l0ydFzB8Z4cZxtUqCHVbHC0FzYytGg==
-X-Received: by 2002:a05:6830:3687:b0:7cf:da7d:5041 with SMTP id 46e09a7af769-7d46447f75dmr3415181a34.21.1770489789192;
-        Sat, 07 Feb 2026 10:43:09 -0800 (PST)
+        bh=fhGHKBHX0mp4WhkPQ5KScP2KrjUHgqP7Fc/kWzxNrXo=;
+        b=k/gWvMuchSOMi54Dpd2yOHfpKi8qyHM6kos5/L3HzReP5rt4vtpLUWJ/g3uNxd1Uhd
+         hoBVHQ30vPh7Rx3CHogzjvGgE2D86voNalhLkyWaxWGMtoexZWfEOF5XC23HURa4CeZI
+         ChjMIU+xO0TM1sdnHku2tAwYOWFOweno68fa5iwsHiBxAgUbQj4xTkJWFJb6MaLB8RGC
+         2qGcmktNsuZsQ6Tj2HEXtHawgKEnS9rGzf5+x7NPMsTV9Rn+dolyNsoFw53AhqGMlhey
+         fgIY2eci5dTB76JKpe1eUI6WH8jnCluKeWjH4KVUOsHTMbKUnJB8F4DbiMgmlkDid+fP
+         dvXg==
+X-Gm-Message-State: AOJu0YwS/D9c4jI0GuLOG4k+0HOEoJupoiSjwuxN7/PxolOA9wEmkLDJ
+	jgB7U4PGW3VEDNnovZ915bPKFMS8EjMrb58YQhLNoHk7BuKGK2qlrgTria9/uQ3D/uU=
+X-Gm-Gg: AZuq6aJzbzuTxky4CuON24iggaskEO82OtC9xvGKteQu4L54NWaCuw3usjXVN0aVMXj
+	DP1R+WAz1metzfJYM9hhQ3CgLoywPwXl9Z5IeHlgQSEfJpKisDxP6yWG6rEbqWiQMoil1MFzM+V
+	wbATFkxVcNmgJ3XvG/6JypklaCmPgLDUyFDqaUy8LrushkJinkEUBxkkrGT9O2hRY7mwyXllrNs
+	703YubvBXoCkKF1JVgWFtm7OXmMo0tB+5/sOCc6AIC+GLrsRRkIZTTJgT4ywGsqhO9t/BIHBx9R
+	aXcLeMSwa9jwlpmC6vw9emB9HUIszU5LZOgucMKUY37s2xj0zJ3p/QwTuGE8cewXzV2sH8YnT64
+	udLAwVMfaCfvd+NAXrdNDaGwtyh9SRTxk0LJjxpV2EuzVSaVfRhlzEbc1nOVzUib1/J+KKDqE7c
+	Yr6f0EoN8pEncfSPDa6Ar834nUevi+6AcgIwWg0xGI6lElvOPlhGyTA757tQ==
+X-Received: by 2002:a05:6820:22a4:b0:662:f4cb:208f with SMTP id 006d021491bc7-66d0bea66d8mr3312820eaf.51.1770489839460;
+        Sat, 07 Feb 2026 10:43:59 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:74a6:843b:f33:21ae? ([2600:8803:e7e4:500:74a6:843b:f33:21ae])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d46470dec3sm4260081a34.9.2026.02.07.10.43.08
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-66f0bceee89sm1025873eaf.8.2026.02.07.10.43.57
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Feb 2026 10:43:08 -0800 (PST)
-Message-ID: <45cbf569-6046-46a7-9a76-7411e89af99a@baylibre.com>
-Date: Sat, 7 Feb 2026 12:43:08 -0600
+        Sat, 07 Feb 2026 10:43:58 -0800 (PST)
+Message-ID: <e55ee581-efe7-4ee6-b0ad-df0ad32626af@baylibre.com>
+Date: Sat, 7 Feb 2026 12:43:57 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,7 +67,7 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 5/5] iio: adc: ad9467: check for backend capabilities
+Subject: Re: [PATCH v6 0/5] iio: adc: ad9467: Support alternative backends
 To: Tomas Melin <tomas.melin@vaisala.com>,
  Michael Hennerich <Michael.Hennerich@analog.com>,
  Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
@@ -75,38 +75,23 @@ To: Tomas Melin <tomas.melin@vaisala.com>,
  Olivier Moysan <olivier.moysan@foss.st.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20260205-b4-ad9467-optional-backend-v6-0-7ca20c40c59a@vaisala.com>
- <20260205-b4-ad9467-optional-backend-v6-5-7ca20c40c59a@vaisala.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260205-b4-ad9467-optional-backend-v6-5-7ca20c40c59a@vaisala.com>
+In-Reply-To: <20260205-b4-ad9467-optional-backend-v6-0-7ca20c40c59a@vaisala.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 2/5/26 6:24 AM, Tomas Melin wrote:
-> Add capability checks for operation with backends that do not necessarily
-> support full set of features, but are otherwise compatible with the device.
-> This ensures a fully functional device, but with limited capabilities.
+> To facilitate backends with different set of features, add support
+> for defining capabilities provided by the backend. These capabilities
+> typically extend beyond a single operation and are therefore not
+> directly linked to if a single function call is implemented or not.
+> Furthermore, the capabilities determine if a certain set of operations
+> should be attempted, or skipped by the frontend. This way
+> the frontend driver can work with a minimalistic set of features and
+> still have the device in fully functional state.
 > 
-> Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
-> ---
->  drivers/iio/adc/ad9467.c | 67 +++++++++++++++++++++++++++++-------------------
->  1 file changed, 41 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-> index 59c3fa3bcc9b..7a3db36121b0 100644
-> --- a/drivers/iio/adc/ad9467.c
-> +++ b/drivers/iio/adc/ad9467.c
-> @@ -913,7 +913,9 @@ static int __ad9467_update_clock(struct ad9467_state *st, long r_clk)
->  		return ret;
->  
->  	guard(mutex)(&st->lock);
-> -	return ad9467_calibrate(st);
-> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
-> +		return ad9467_calibrate(st);
-> +	return 0;
->  }
->  
-I would appreciate a blank line before and after the if statement
-if we end up needing a v7.
+Looks good to me now.
 
+Reviewed-by: David Lechner <dlechner@baylibre.com>
 
