@@ -1,107 +1,200 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 93A09299AAB;
-	Sat,  7 Feb 2026 17:25:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770485109; cv=none; b=fUUCMKX+nDau9/QyeemKjUPD1qkvp2zoS1iirbhc2yun18JZ9NDHjXIr+gFJz9lk1wsDh1+Jhn441mZIy9aXl7WYKrl3VYS53UIntl5W3BAyxc9nnXkNGjzkgppQJy3NDnvXRU3zGykcznuFjMBpdxB7l3u2jKsuh1v/BzGRphw=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770485109; c=relaxed/simple;
-	bh=h1oFhv/nEudSAq5PW00qDzY1t8sDxQg9k8HK1ITTZow=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ledz+2LbmgczKtAGqaWAaikVN6LHpLYIhRF1aIPnURgG8X1+KL3q9+7KWbBtdEM5W9VHU6+6hs7ZySQmUprOAkGJxdgRXHVIVSSab4ueGa87b2bWbFBdEIR4/bkGdMPkolqoxLyEMnk5KvpJS8Fvt8tboU0C5gWy0ZZqajl1CSg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gRxwEmMG; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7180233A6FB
+	for <linux-iio@vger.kernel.org>; Sat,  7 Feb 2026 17:25:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770485138; cv=pass; b=qwr1efmCKTLrC3SkfT+zq59xPBT+FbbHiJEOISW4xDyAZ+TZd6OtD6/JBz2XtIMw4/vjG2MNuSBPrcXrN50byXkGyjdBVyn9VhbLPu+cpDz/skUBqiR9woyUNqxaT7O7hB3EkWCdQCpY8fmHWU9QsB2HzJU6+QvmORXDVdDZNOQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770485138; c=relaxed/simple;
+	bh=HEIODAx2+Jyjm0uU9ELdLTTbA84lSwuzGWDVhw7tp58=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=TnvqNM3Kv2dwMTSwCfcgId5ROpABfNIDvz5Qq0KU3wMkqfYyzXPPx8c25NCWasIzHjiVqX4uGXveu5fAjm0yDOsG07QiMS/NKe1SQ32B/cBUX7jKLTYggLy3FNNqF144GSx05P63ltDOosVaqkk+hyHr7CaCEfrgNhh4BACnA3Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X5HDNnOg; arc=pass smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gRxwEmMG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C7675C116D0;
-	Sat,  7 Feb 2026 17:25:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770485108;
-	bh=h1oFhv/nEudSAq5PW00qDzY1t8sDxQg9k8HK1ITTZow=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=gRxwEmMG+QwY0MCUj8pqE7OKm2rsUqfx3VIspxPte5MplJ3P7/h6f/u/j5Kz0OvU2
-	 /m+l97dRfxaEcXoremhMS1C7n2Fh3bbPBsOJetC2IAcRaD3EgWeQnxDPJkHOnDXcw7
-	 r4uhHFLzq1u7f1prsE1D4i5+/JkIv5loYXMk7A5M7ek5LB93x57hWv7RfISirla/49
-	 lsQaZDH6scIC+vXvm8A+PaVVGj22AG7OlEETfYC2hlGwf7GVAN7rYGNbjbZoDyUGRE
-	 9EoXAVVA0dDIXCUScrJiTmDpSEqIbC80VgKX5BxUjZJxqAQwB3uMrGkkmasgzIIs7Z
-	 spMMsO0o2inuw==
-Date: Sat, 7 Feb 2026 17:24:58 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH v6 8/8] Documentation: ABI: testing: add common ABI file
- for iio/frequency
-Message-ID: <20260207172458.7f2cca90@jic23-huawei>
-In-Reply-To: <20260130-adf41513-iio-driver-v6-8-cf46239026bc@analog.com>
-References: <20260130-adf41513-iio-driver-v6-0-cf46239026bc@analog.com>
-	<20260130-adf41513-iio-driver-v6-8-cf46239026bc@analog.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X5HDNnOg"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-47ee3a63300so33687205e9.2
+        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 09:25:38 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770485137; cv=none;
+        d=google.com; s=arc-20240605;
+        b=klL3Y8KUf2iSuKD6fHtb5aDDsBP6hyKaGyATSiBNv2RS3L4uzSNxEjsLSZySOjcY6q
+         s7s+7adtMzGwFYOpqQjSTONRgaIJe9fdguDA0WnhHfxh5k9Qz5IeG/fElHjUjM6iryUv
+         6tkyXGsvV1nh5tNPSl3dgPZMWSnrraJyI/vLaYpAM1PAEKI49tmnnPFcjJwieeF+GK7V
+         wyyUlq3sdONPJLnDie6P5jvewwnLOQjoFsNGE7/EtAXxeGiyWkGCFW1oxa70sahA6ZS9
+         uCJ2AyXiOD0PeWWQTMi5cUZiwu0mlBEGR7f3IJuWrbV1HlTYYIcwiLq86qu0gjFyQNQJ
+         gu1Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=sI2SyZ4XJiIDdMOpKUZsjQ6ZCYdtN4FvLlZEhJIfteQ=;
+        fh=IPPGsv5UEpTyA+ldzWT3cJ5HKFC6JWbb8pBsv9FQYOA=;
+        b=a4taskv1dly3HO7rjiBW1ijacA9GnNIJiUsPyyKRa7srzm2OrQstEIjn5XANZd4P0T
+         NGUMhheaR8Z/KckraAtoP4gvYu42zsDFZTMe7KC+h8cp6ckciBeQdO2/p0KE62BjEgLG
+         Zoq8fazhyT7YmdxZxccuRa9/A4pvwghLnlQajZyVyeClAyiBTgtnEYKiQ1CPL4SjGG/a
+         bqS2PE/mhRw2htIKi9jMh9HwyIst57xAIDRaYAfbWnzm83QOJ/tBMB4clhkNOFGErPEW
+         TBS2ocvhLfCMmtei8Fu+TDdtb97ymGsQn2EmNjtWrkI36W2x1YLf9aoCdK1cUuof3762
+         9wSQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770485137; x=1771089937; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sI2SyZ4XJiIDdMOpKUZsjQ6ZCYdtN4FvLlZEhJIfteQ=;
+        b=X5HDNnOgmYojYmhxFSXk5RZ0YjP8oC0DqFnGB6dDKUql4/Qe97IJwHBVdPHRR7lyxa
+         AZXGPrbbytIvtHXgDtWnpF+AqktHR3RGBTFjKAYvoZAjt5+yUSCbbKl7aEse2Vvyf4He
+         V/XNxvM/aefGXoS7JJhERpOTwLoXP5tZH6QCur6HM980py7diD1fpnx3IfnzJ8jNXkUR
+         KAj/PGMn4jgWR13z2inFXANj+W6SIzP0iAwU+SSRnXKnVMm2fDKjG27LcoK84AoUZugz
+         pT7vK/TQjPJZpRCmSLinuNX0qCAkCL1kLTqcAGjk+UYP+qi7YSd49F9Ef7Fcqb/s/LO7
+         SZeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770485137; x=1771089937;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=sI2SyZ4XJiIDdMOpKUZsjQ6ZCYdtN4FvLlZEhJIfteQ=;
+        b=kNA+O+8bgc0QBX7xhsCEorQan0IXZMBllZAezpyC7lR6x/T/A+SpRSvZR+wZI2LKTl
+         DQbKd2svrHrkiiq6E6XgXC839/IhDQW0pnU09+JO6cfwDDpiDErHzxrR82TyIYpJyO20
+         PiT+7HYumPM9g19VXe+DzIjKi2dDTeB2nznW90+Snbwl0PLqD+mcg0YSH8wVOug6hJuL
+         lmyekiq1JRx0EYAPQRP2xNdx/oGym32++IS6AzQ8pnSDH000GOvsq6uo+Sq8jx/R5Bnk
+         qS4nw0Tl3X7fsYUuhmdOpMr3cry6coJo+V+yN0XufB6Cfx5ZxNFtkfSql0Lw3no9MAaK
+         u2FQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX/b7vx8H+wZusN7vfTpJSrE1U1Ze0hM7HAra5ktOtehN5NEZcn4gCxbjqMGKyX5JrUfcUrCLtVO00=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyvZcIeg6bsXfy8a68erorWt60EpXigMYbB0d164mkF63Uuopey
+	UMQOMsTHC9rypLwo8FVaucb2tqyfypkaPI4qpK6up84xGCWkoss7QM1AUhqUTmayl3zRMWd5tn2
+	oZcn9aP6KTPIGKl5ssSR9khyeZ/FnBR4=
+X-Gm-Gg: AZuq6aJX/XdXNeaIjsJ9I3/C69gqw64X9Xsm2HgGfVHQeVGCEQmxodQLfhk+fzDpwHM
+	3nuI1NwBVCXkiI+bhFgn3rXhpkSXNVxVEiKXxOw8KtwO3zUYmCwkhyomPelp2CKmPFtydkP3CVh
+	gAPGcN6EU1+k/i1GTb7XiWvt4Nsc8xeTFbfI0ONN5pFt/LexroXDGk4rrn9KLKL8Qo7wpqU211E
+	IXr1gU1I+vfKBtRrbe9m2+3Eu7r/0wYXD84PzsIV8aYPkW2arhpZYJ+izK6LzD0EFsQS9OB
+X-Received: by 2002:a05:600c:3b20:b0:47a:9560:ec28 with SMTP id
+ 5b1f17b1804b1-4832020df6amr86248735e9.13.1770485136527; Sat, 07 Feb 2026
+ 09:25:36 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260206172845.145407-1-clamor95@gmail.com> <20260206172845.145407-2-clamor95@gmail.com>
+ <20260206230922.GA254792-robh@kernel.org> <CAPVz0n3EGCSLUX7jTLve0x0z4uW1yexViCwkSQLY2d_4r4qkjg@mail.gmail.com>
+ <db9115ca-2c8f-4b5e-89ce-f3b934071a59@baylibre.com>
+In-Reply-To: <db9115ca-2c8f-4b5e-89ce-f3b934071a59@baylibre.com>
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+Date: Sat, 7 Feb 2026 19:25:25 +0200
+X-Gm-Features: AZwV_Qhk8RolsJvtdrDUiFlMwGmOTQ98t3Sh6iWn13yc2G3IUcR3Ke69B4Ocad0
+Message-ID: <CAPVz0n2KwqPw88JVcPzhTQ2n+GKzahkrEThjjrqm0CSdjKTEOw@mail.gmail.com>
+Subject: Re: [PATCH v2 01/11] dt-bindings: regulator: cpcap-regulator: convert
+ to DT schema
+To: David Lechner <dlechner@baylibre.com>
+Cc: Rob Herring <robh@kernel.org>, Jonathan Cameron <jic23@kernel.org>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>, 
+	Pavel Machek <pavel@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
+	Dixit Parmar <dixitparmar19@gmail.com>, Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-input@vger.kernel.org, linux-leds@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 30 Jan 2026 10:06:49 +0000
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+=D1=81=D0=B1, 7 =D0=BB=D1=8E=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 19:19 David=
+ Lechner <dlechner@baylibre.com> =D0=BF=D0=B8=D1=88=D0=B5:
+>
+> On 2/7/26 3:20 AM, Svyatoslav Ryhel wrote:
+> > =D1=81=D0=B1, 7 =D0=BB=D1=8E=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 01:09 R=
+ob Herring <robh@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
+> >>
+> >> On Fri, Feb 06, 2026 at 07:28:35PM +0200, Svyatoslav Ryhel wrote:
+> >>> Convert devicetree bindings for the Motorola CPCAP MFD regulator subn=
+ode
+> >>> from TXT to YAML format. Main functionality preserved.
+> >>>
+>
+> ...
+>
+> >>> +properties:
+> >>> +  compatible:
+> >>> +    enum:
+> >>> +      - motorola,cpcap-regulator
+> >>> +      - motorola,mapphone-cpcap-regulator
+> >>> +      - motorola,xoom-cpcap-regulator
+> >>> +
+> >>> +  regulators:
+> >>> +    type: object
+> >>> +
+> >>> +    patternProperties:
+> >>> +      "$[A-Z0-9]+^":
+> >>
+> >> I thought it was said on the last version to list the names. Consideri=
+ng
+> >> you already have them below, better to put them in schema than prose.
+> >> And pretty much all regulator bindings define the names.
+> >>
+> >
+> > What exactly do you propose? All those names will not fit into a
+> > single unbreakable line (more than 125 columns in length btw). Patch
+> > checker will complain about this. Duplicate pattern properties for
+> > every few names? Please be a bit more specific. Thank you!
+>
+> Making checkpatch happy is not a hard requirement. If you have to
+> go over 125 characters for technical reasons, no one is going to
+> complain.
+>
+> I already gave an example on the last version. It is just a regex
+> expression. (And note that you didn't fix the $ and ^ either. ^
+> means beginning of the line and $ means the end of the line. So
+> the pattern currently won't match anything.)
+>
+> patternProperties:
+>   "^(SW1|SW2|SW3|SW4|SW5|...)$":
+>
+>
+> And I hope it is obvious that you are meant to replace ... with the
+> rest of the names separated by |.
+>
 
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> 
-> Add ABI documentation file for PLL/DDS devices with frequency_resolution
-> sysfs entry attribute used by ADF4350 and ADF41513.
-> 
-> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio-frequency | 11 +++++++++++
->  MAINTAINERS                                       |  1 +
->  2 files changed, 12 insertions(+)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-> new file mode 100644
-> index 000000000000..1ce8ae578fd6
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-> @@ -0,0 +1,11 @@
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
-> +KernelVersion:	6.20
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Stores channel Y frequency resolution/channel spacing in Hz for PLL
-> +		devices. The given value directly influences the operating mode when
-> +		fractional-N synthesis is required, as it derives values for
-> +		configurable modulus parameters used in the calculation of the output
-> +		frequency. It is assumed that the algorithm that is used to compute
-> +		the various dividers, is able to generate proper values for multiples
-> +		of channel spacing.
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 0d9b7cf86aec..748eeb6f5bd2 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1639,6 +1639,7 @@ M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
->  L:	linux-iio@vger.kernel.org
->  S:	Supported
->  W:	https://ez.analog.com/linux-software-drivers
-> +F:	Documentation/ABI/testing/sysfs-bus-iio-frequency
-I wouldn't add this here. Whilst for now we only use the defined
-ABI in this one driver, I'd not expect it to stay that way.
+David, thank you for your suggestions and I did not want to offend you
+nor Rob, or ignore. Using this large string IMHO feels a bit wrong. No
+offence, I will use it if required. At the same time I was
+experimenting with possible representation and come up with smth like
+this:
 
-If we do think it is very drive specific move the file to
-sysfs-bus-iio-frequency-adf41513
+    patternProperties:
+      "^SW[1-6]$":
+        type: object
+        $ref: /schemas/regulator/regulator.yaml#
+        unevaluatedProperties: false
 
+        required:
+          - regulator-name
+          - regulator-enable-ramp-delay
+          - regulator-min-microvolt
+          - regulator-max-microvolt
 
->  F:	Documentation/devicetree/bindings/iio/frequency/adi,adf41513.yaml
->  F:	Documentation/iio/adf41513.rst
->  F:	drivers/iio/frequency/adf41513.c
-> 
+      "^V(CAM|CSI|DAC|DIG|FUSE|HVIO|SDIO|PLL|RF1|RF2|RFREF)$":
+        type: object
+        $ref: /schemas/regulator/regulator.yaml#
+        unevaluatedProperties: false
 
+        required:
+          - regulator-name
+          - regulator-enable-ramp-delay
+          - regulator-min-microvolt
+          - regulator-max-microvolt
+
+      "^V(WLAN1|WLAN2|SIM|SIMCARD|VIB|USB|AUDIO)$":
+        type: object
+        $ref: /schemas/regulator/regulator.yaml#
+        unevaluatedProperties: false
+
+        required:
+          - regulator-name
+          - regulator-enable-ramp-delay
+          - regulator-min-microvolt
+          - regulator-max-microvolt
+
+Will this be acceptable? It passes checks
