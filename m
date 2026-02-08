@@ -1,73 +1,121 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C3A602D3EEA
-	for <linux-iio@vger.kernel.org>; Sat,  7 Feb 2026 21:43:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6112E81AA8
+	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 01:17:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770500622; cv=none; b=L3UsdL5ecRg1AIWGPpOghHoxVCR4CC/yYpSS9BsefWQKEvaNIPAAp1uaIg9CrD9APEtiLaNhPbC+UZQ2uC0949vfoic1/MRrP34toZ4bO3f/8wa4xxYAPmF1fMrurY1hoJnb2IXQGJRwjYQE4gRNdtlvwqJZ4i1VT7QBSv3oeTU=
+	t=1770513434; cv=none; b=QRSJrtOikXQlncwpqnHdLxXe5CbdHNCrV+3XP2kNhD7nDzdCKognk3iVMDqmVUHokqCsqmSgUUjhybrnmiBO8xZzrAlag6he8FAudwEmfd0gTsv2BkHi0iJ8H4ixBLXYyNMeBnxyNeF/6xXEAU6fCoQnz+tvQsPYR6EGlUmcUC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770500622; c=relaxed/simple;
-	bh=JDD4EJhBReKiD9GZ5f+ATqGcTM/Xl0P9Utm5aKsH3LM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=tRSkkQGTn6ZhuJAk3lS1qVsMIL4/LzTc78gbREgt7/J+rYMxfS3+NRQH1AYVQNxDOLVwh+uEQ5CIAVy4J5qLWTjSOzNOVD5MqUXR17B5MXSUrcMDOyKMr1hBWvyHu3LYkeVtcjzSOHXiTLC1KbgkW9d/GItWnn3JeXs4+2BiLrI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qrcUIVKB; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770513434; c=relaxed/simple;
+	bh=hNbcW979ihJHJrFNsYCGWRpk6VOuCWOtihFqgwBwBmk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lapRRHjgAsRkQOXkmLZmTU5cB5bE8yRNZEdasEr8PMG0Xs8wCpikn/UcKLnNiItLC+gmI0TRdEelDRfdAQOOf/LwdXb0L06iM8sn2HFiA6acMbOmKjhyjOEyx1MYbjouVVTu7SIk6GCaLEH+h1IoEZ6l5sxZhi/ilmB2Htn8vZA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TAMdeLFJ; arc=none smtp.client-ip=209.85.222.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qrcUIVKB"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D065C116D0
-	for <linux-iio@vger.kernel.org>; Sat,  7 Feb 2026 21:43:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770500622;
-	bh=JDD4EJhBReKiD9GZ5f+ATqGcTM/Xl0P9Utm5aKsH3LM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=qrcUIVKBfgG7lc4P015rdTCxmX4sJqhlHILIW+JR3br4njf33TTrWFquofAMIfA3R
-	 qXwxY6bJlPg1mZoSisYwq5wPycfiqqkbdZhcLNijfsMwxmYBHcwmvFMH+qt6TPt+fV
-	 Cr7Mpm2NgWdXQ2VvrU2YKKr2pYun/MCrfqVHgKWAkLpoPFGBf6aS9SNwdwsMxbyB+p
-	 vlpM0fMTZ+kG2ZSTJ9Lasb7xJ4JnYaMdZTksrMdFw2lSEabYlg4fIqS3IIV49RZuHl
-	 JpQKPPV08g5xqQJGdpA25MD4eLlZPPzFdGa5G1cCluMsX9I2f1s6XK8ylLmhuHCl3d
-	 FePbAvh2XtkYw==
-Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-64937edbc9eso1748346d50.2
-        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 13:43:42 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVouB2QwAVoUm+w027NZVzpMr4edQfCKUYM1qHqgU9D2AxKF3Ocpz4sPsVuGgS1vJzqgwNYnHm/H0I=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzEOjsz34xEZRPjRN99QVuUsw1iNYdrnJhMzIulmOg6GmXDSPyW
-	wTzaFlahL9GAZN45gQf2mdFz8F2ndErR7go6W4IThvZ9m8D2UUB7JyYwWRdGYYnuhENO4tZSn5Z
-	2M+OZrSAjMtbVfxb+nIRWAhQoWhYx4q4=
-X-Received: by 2002:a53:d105:0:b0:649:bdfa:6338 with SMTP id
- 956f58d0204a3-649f1e949a9mr4783566d50.35.1770500621941; Sat, 07 Feb 2026
- 13:43:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TAMdeLFJ"
+Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-8ca3807494eso211976485a.2
+        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 17:17:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770513433; x=1771118233; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=U5R5FCkRpkHOWC9qpnp9FIHeczKhdG5CqcavMu4NqD4=;
+        b=TAMdeLFJznAW6AQVUOrXhrGiHz/G+z0fu3RsIHqHQv835cl8kVRWNlO8UlU0u9xDG/
+         y8wCQCAk/iqyBV/pWmjh8hs12/GcrKsmBMPf05o1oaLIBs1LQXjwpb8JB0lS457f9q4n
+         il0XtkzQph58vdCXv3F7HBfep7KwXYDRTCYpC5EDy4WJWcrYxz1Rsooa8oLYRW+sgqK4
+         vmeMwzSqKWPVPL0dnmGxBQr4E8sdOzRfCQyFdV4cJ3ouxqpIkr29ZjEaUjtUg52wr3+f
+         UwaOpUDxFKRiLDzd8ZNpFB2MkJ3dM0FlAG1AYkOB/3lZaqpNlkW6srcrT4PVfqAd+xOC
+         U3EQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770513433; x=1771118233;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=U5R5FCkRpkHOWC9qpnp9FIHeczKhdG5CqcavMu4NqD4=;
+        b=hlZv4Tk4O69shbKcofeB2umSP92bbmMZncjaOIoB7MBfwClOQ5FcAAX8FkvNAWGued
+         NgQ6L2l6tk5aaoswzcQgnHFRLkvvykHb5mhb7Wk7rdhnToTZKi/MMV50em3VpZ/iFIIk
+         tc3K4z97aX5QQ0pLYeg+9OYN/XmfpygdcDc7YzpTaL23AVvTw+zrlDlTuOLbP2O3F9dW
+         9JxRpGkLfLD9M5/42BuyQAI3ZmhNmKteAC/jtxo0cz4qkEp94y5E9tBLeA2JN+BcIBNc
+         544SGbVRCVGAySgb3s3WsF7C1Zm6TeQ8dtGjrrandehLujnzSPu/lwE/df/ON6krLDYL
+         OPqA==
+X-Forwarded-Encrypted: i=1; AJvYcCWv8ydNQBFLHPeoc22u7TVBS/gHArp49ALRxzyrg9l0H4BsQZdFgz/+xlt51C0QNFwoXBLCf1ghGyE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy8mTmu3BdmRvTUczVAbB9f5lJD1ugeQxCvniY8iDhntYmnnMmT
+	Fq1/gskJ/kdNYSNoETu57ERevksZh4FH9bFwPfaP9/8wvjomyU8x9k2r
+X-Gm-Gg: AZuq6aLmaOV2vD3H5Km07pbmZaDhQRMMdLJ0U0XJ3WOQ10O3gqKW28zSx8vZJ4RfzNn
+	vC7nDsKVcR00MMNhG7Q0TMPc0mhfx6qRMF/vc3r2jGyPmDwkQO9sK4mcQAWRH+YQvf79NLkDYsv
+	ukMbhwxEugDBBZ1cGIDxPPW2HrSVvfQQiLKvjeZn6g+Qi21X/M+8+hVSZI2GLCyQOTmgbuo2mXV
+	7u8QEuDYbRBYtIAekqRS/Lgbi66RpqnWN/UZxoelm3XqNRh4kclU0KpCvHyYV/3jAjI5+4lTEiy
+	eWd2FkarsbSXgCq5bji67RDJg3qxohAed8gWgohBfPJ5PxTg6DsVMN/Mrqdq3Z7rYm4HcO6FVsS
+	vISdK7sLhatlxb1PXDJn6X/Tel26TpI5jWmhYopg9tGFWcGEdsPszsXl/D2toILterNyVN4Q759
+	Gof4PS8dBYEtK0foEQP4hSW71CukmtwQ==
+X-Received: by 2002:a05:620a:bc5:b0:8c5:1fd2:e9ef with SMTP id af79cd13be357-8caef40974cmr993269185a.28.1770513433097;
+        Sat, 07 Feb 2026 17:17:13 -0800 (PST)
+Received: from localhost.localdomain ([50.21.71.60])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8caf4a97997sm481364385a.0.2026.02.07.17.17.12
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Sat, 07 Feb 2026 17:17:12 -0800 (PST)
+From: Neel Bullywon <neelb2403@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Neel Bullywon <neelb2403@gmail.com>
+Subject: [PATCH v5 0/2] iio: magnetometer: bmc150_magn: cleanup and formatting
+Date: Sat,  7 Feb 2026 20:16:57 -0500
+Message-ID: <20260208011659.53722-1-neelb2403@gmail.com>
+X-Mailer: git-send-email 2.44.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <cover.1770039759.git.antoniu.miclaus@analog.com> <3edc89e901fd9d55c5355c4ec007636b1c8d6801.1770039759.git.antoniu.miclaus@analog.com>
-In-Reply-To: <3edc89e901fd9d55c5355c4ec007636b1c8d6801.1770039759.git.antoniu.miclaus@analog.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Sat, 7 Feb 2026 22:43:30 +0100
-X-Gmail-Original-Message-ID: <CAD++jLmokwGhd3m89uf7Xa3wVp-J0GcELRVWj2FR-x_wYEvdFw@mail.gmail.com>
-X-Gm-Features: AZwV_QgTAFd0RbqTpPsyl0UP7kRpIzGAE4PDNyyjtmxjQlUnuA4ffqyMq8KlWrs
-Message-ID: <CAD++jLmokwGhd3m89uf7Xa3wVp-J0GcELRVWj2FR-x_wYEvdFw@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] iio: gyro: mpu3050-core: use pm_runtime_resume_and_get()
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>, Jonathan Cameron <jic23@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, Feb 2, 2026 at 3:57=E2=80=AFPM Antoniu Miclaus
-<antoniu.miclaus@analog.com> wrote:
+This v5 series refactors the bmc150_magn driver to use automated cleanup
+helpers for mutex operations and modernizes the delay function usage.
 
-> Replace pm_runtime_get_sync() with pm_runtime_resume_and_get() in
-> mpu3050_read_raw() and mpu3050_buffer_preenable(). Unlike
-> pm_runtime_get_sync(), the usage count is not incremented on error.
->
-> In preenable, call pm_runtime_put_autosuspend() if set_8khz_samplerate()
-> fails since postdisable won't be called on preenable failure.
->
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Changes in v5:
+- Split into two patches as requested by maintainer:
+  - Patch 1/2: All functional changes (guard/scoped_guard, fsleep)
+  - Patch 2/2: Pure formatting/style cleanups
+- Use scoped_guard() instead of { guard(); ... } for short scopes
+- Left trigger_handler unchanged per maintainer feedback
+- Use fsleep() instead of usleep_range() per maintainer feedback
+- Dropped formatting changes that did not improve readability
+- Added braces around guard() in case blocks for clear scope
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+Changes in v4:
+- Replace scoped_guard() with guard() to avoid lexical scope issues with goto
+  and return values which caused logic errors in previous versions.
+- Replace msleep(5) with usleep_range(5000, 6000) to avoid checkpatch
+  warning.
+- Fix indentation and line wrapping to cleanliness.
+- Extend guard() usage to all mutex_lock() instances in the driver.
 
-Yours,
-Linus Walleij
+Changes in v3:
+- Add Reviewed-by tags.
+
+Changes in v2:
+- Use guard() for mutex protection in bmc150_magn_data_rdy_trigger_set_state.
+
+[Patch 1/2] Converts manual mutex_lock/unlock patterns to guard() and
+scoped_guard() helpers, and replaces msleep(5) with fsleep(5000).
+
+[Patch 2/2] Adds spaces inside braces for initializer lists and fixes
+scan_masks array indentation. No functional changes.
+
+Neel Bullywon (2):
+  iio: magnetometer: bmc150_magn: use automated cleanup for mutex
+  iio: magnetometer: bmc150_magn: minor formatting cleanup
+
+ drivers/iio/magnetometer/bmc150_magn.c | 161 +++++++++++--------------
+ 1 file changed, 69 insertions(+), 92 deletions(-)
+
+-- 
+2.44.0
+
