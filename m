@@ -1,150 +1,112 @@
-Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 243B72FE071
-	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 01:17:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B18953009EE;
+	Sun,  8 Feb 2026 02:20:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770513441; cv=none; b=ELT+w1vHSaZindSLcrUPcEskJoBBpgulFaZYXk4Dtg3usUutbdF9uCikqujiPRZ0bz3DRG2C/BaZ0lFVPQRunpcjPQSsAjnp/JSYtcIjQvu9YSyzzyM5Oe7U241Zu1BJfm5AMPbM98O7lLQZ85krPlM6E3b7elq2zpL/2nnYQss=
+	t=1770517207; cv=none; b=E7YG8X2mpYBhhD6sVHxk3hnbHM3p3GQdEB1ZfXHV+Ea3a4RKPnQY5p72Uv7Q+v6Mv7TvDg6HWj1bf3wUfWqQoWHh3sZxoZwb3CQAj0n57R7x82/XYkBBNEveu6NbLpHgshpPeTypczIWZXk0qXT/SjKi/p1ocliB9eehI2AwyZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770513441; c=relaxed/simple;
-	bh=hTMJMKgPKAcjJwsvkc1cKtMsNmA+nLdiKGssW1qJWY8=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Mz6un9B+TXImIRD1zgsNSlZ69W+dJptsL4CtSuvKn9slpIRMT8vZLPxkw2OXnGQ5H+cxahIQ0feSHAQNBkGB0lKh/ufySJw327Gu3r6xK242kk7QztWUNr2OJHo5jb9BhVbXrgS4a/rIwyIYHwPehDhOpyN6/W/L5VS036zIqoQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DyQQCa3a; arc=none smtp.client-ip=209.85.222.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770517207; c=relaxed/simple;
+	bh=DXnfPHWS0SoqDznXZb4pTv7mp6X9bZbcaLNr2tdznqw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=l1ehpD7Gpc/iqGLVqzorVw7kh9LKy1LpryjgjAIMlZxgi2H7O1+M7+F4K69U2olmicSSYdy3sji90lm93x9A4mWOxTgchgprzfSpRIMi41lXFpzQIHwQ2zI74rGHr5lEbivXtmecxC7C2xOiwYaNO6BRmg3hbQYd8un+KePLpl8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gMfl4/a5; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DyQQCa3a"
-Received: by mail-qk1-f172.google.com with SMTP id af79cd13be357-8c6aaf3cd62so331038385a.3
-        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 17:17:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770513440; x=1771118240; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CQKUWbk2kffWFGeitl+6R3tmkJKGHBOuzEDPgFGOhGU=;
-        b=DyQQCa3a1F1ph6Zbe0WBp+9irDUZjEl0FnIjuOQ7orNZSCPxT53e+EOyZ1V2uX/DRo
-         CjlxwLCnYmHlPrbogro5byoxlQb4gJjdsqqOpP3TPoSAd4KyMV1QMn7z35kuNe+2o+HP
-         fBQ7RrqjoaBpLb1OXl9lNZ9U973OPYhPYWs200PVFLAxcXaahhWMksxrlEKic5/qyXcF
-         ktINcIFgJO0WSIKmsTT5TCcW9byPHYp1MzeOD/ydSOEFjkbxsEnm2dpdtbJkVn0N5jXw
-         3k60V4Pt87FmMr9Zo5XUR6eOhDgZdk1WvvzDXaHH74c982AvgjmcDMfFow9yZA253B6f
-         qgYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770513440; x=1771118240;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=CQKUWbk2kffWFGeitl+6R3tmkJKGHBOuzEDPgFGOhGU=;
-        b=kjL9G+KWDWvknGQeaxbLx9eCeYFSVB1WsyIJcTfjNoFQv/6b5H2fRCzJNKagXawSR1
-         4w3N4bGm7h9vk5zLSkpvmnJeCL0O1CrrveMIX4BUi5XqfAzu9OqsvcGUJbjCn43uFqJz
-         GdWA/MvA+H14RgNQP67BM5Oo3G2ybKhq+KzyXcQRrycz4Rs2+MrjeUEnTGCK/qGLH1ky
-         suBaOEd/VHIOp/oUb8vw04DwtjbZsuwE0slOaF4Io1ytKB1vngQdiu6uQaREQWGd9xeO
-         xRvqFY6FZ6yKPwXwANV5KPSkFtx2vRv46r6rvLBOaUUFLyvSQ1K8+GnX0mkRYrYfUWZd
-         RP9g==
-X-Forwarded-Encrypted: i=1; AJvYcCUgIsalsb7KsGmeiiwDuAvWmKWPZucgQeiH4TmPhS5vcPfz5KYmKFLGs5qZ92PWGoDNkqmD7jrp5yg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwZWhG7qDNGUObLn+5krPi3ko5HlNtGIOPnFSt66X+/D0v7S1+D
-	1TEI3j9svF+Wfar0BPbE5jcadUjmsf7revILQmC0H2DzO8qS+6YrMVIs
-X-Gm-Gg: AZuq6aIYELTs4SF96McmLEyB5c3P/sb8C2sTFl9hY3DxL9fX0RkYVIbtP+TTqohEHNI
-	hOXmBaV43cn8wUQBxS8tXOdQpw8EIKV42FGOZpw+FqoOYQnjfDAH/765NyAzMqYoo0hnvFaB+OC
-	xGdx+pgYgJEHPnM+MPdOuWSwUub7A+SyOaKQYoxICQW0nqUZ4pFL34gfUhIpfjT1tE2OH1mhOib
-	uLoC7mw2OrI5twF8k9CdNrGSSNj24gyT984PIsjS+btp73TCle14e01B+9lvCQ2OwaxsbFcgoHg
-	Exq+WIiSKPZq4qeRK4jvRKC5WWnUgXMRNxx/wOGEPXjwRFh7+4T9Sc8SpO6MJcxaUPN4+jsSFsa
-	XBn3VpXkvml8KAdZxPZ3UgTkr2s0FB3qXtvx7ulmbeyA0foqAdPnvtmHgpBVYsUlTvhjAE9X8HZ
-	9IheFD5Lsxl2FxNdqHJPSNkvskRTfsRjIv+RiEcrt3
-X-Received: by 2002:a05:620a:45ab:b0:8b1:8858:6ead with SMTP id af79cd13be357-8caefccac1emr1005834385a.11.1770513440056;
-        Sat, 07 Feb 2026 17:17:20 -0800 (PST)
-Received: from localhost.localdomain ([50.21.71.60])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8caf4a97997sm481364385a.0.2026.02.07.17.17.18
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sat, 07 Feb 2026 17:17:19 -0800 (PST)
-From: Neel Bullywon <neelb2403@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gMfl4/a5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770517207; x=1802053207;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=DXnfPHWS0SoqDznXZb4pTv7mp6X9bZbcaLNr2tdznqw=;
+  b=gMfl4/a5TUZqLjAIxVzT09kTnSONo9mHb0jkAs94/AltmUMZ+SOhghFw
+   rwoB2KdfmL0e8YgHZxY8Qky5nYHzfKSrnopuWLUPaqHio4tTd3Ctg2Pzq
+   4t1syYhVc+zDSyWIXUh9HqIPOBtEM9pNYZZ1/22aPPatyZFeQo4nR6kRf
+   8UkyJZGXwPrmNQrid4Wz4toMhzYX/lr6j7RKNuMBlRRf/Pn/Ejc7Y6h/n
+   +BfZTb5SdeuHSyVMCbkx0sLEhuHJ0KNrsEsvGHN5fTamVYq2ahpq1q/yS
+   Ejt+y4bmWsSzBTp3BHRafPx5wRbf3aXYqhY2VKo5knUXX7qexdcWa9qYl
+   A==;
+X-CSE-ConnectionGUID: aMfnHzvnRt+JL772jSFX6g==
+X-CSE-MsgGUID: fdQqJmNhTmynuZJuPGn0oQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11694"; a="94322278"
+X-IronPort-AV: E=Sophos;i="6.21,279,1763452800"; 
+   d="scan'208";a="94322278"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2026 18:20:06 -0800
+X-CSE-ConnectionGUID: 2ZUGKOx+Soq58pug647SPw==
+X-CSE-MsgGUID: rJOWAXWmS76q6MaTicNHTA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,279,1763452800"; 
+   d="scan'208";a="215752594"
+Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
+  by orviesa004.jf.intel.com with ESMTP; 07 Feb 2026 18:20:03 -0800
+Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vouP2-00000000m0q-2GxQ;
+	Sun, 08 Feb 2026 02:20:00 +0000
+Date: Sun, 8 Feb 2026 10:19:45 +0800
+From: kernel test robot <lkp@intel.com>
+To: 434779359@qq.com, Jonathan Cameron <jic23@kernel.org>
+Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Neel Bullywon <neelb2403@gmail.com>
-Subject: [PATCH v5 2/2] iio: magnetometer: bmc150_magn: minor formatting cleanup
-Date: Sat,  7 Feb 2026 20:16:59 -0500
-Message-ID: <20260208011659.53722-3-neelb2403@gmail.com>
-X-Mailer: git-send-email 2.44.0
-In-Reply-To: <20260208011659.53722-1-neelb2403@gmail.com>
-References: <20260208011659.53722-1-neelb2403@gmail.com>
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	liufulin <frank.liu@faiot.com>,
+	Waqar Hameed <waqar.hameed@axis.com>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH] tof: Add VL53L4CX TOF drivers
+Message-ID: <202602081057.kWswynEJ-lkp@intel.com>
+References: <tencent_326708D02875274DF25B10B91402B3828606@qq.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <tencent_326708D02875274DF25B10B91402B3828606@qq.com>
 
-Add spaces inside braces for initializer lists in the sampling
-frequency and preset tables for consistency.
+Hi,
 
-Fix indentation of bmc150_magn_scan_masks array and add trailing
-comma. No functional changes.
+kernel test robot noticed the following build errors:
 
-Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
----
- drivers/iio/magnetometer/bmc150_magn.c | 29 +++++++++++++-------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on linus/master v6.19-rc8 next-20260205]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index 117bf70d6899..8e249e25b799 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -149,14 +149,14 @@ struct bmc150_magn_data {
- static const struct {
- 	int freq;
- 	u8 reg_val;
--} bmc150_magn_samp_freq_table[] = { {2, 0x01},
--				    {6, 0x02},
--				    {8, 0x03},
--				    {10, 0x00},
--				    {15, 0x04},
--				    {20, 0x05},
--				    {25, 0x06},
--				    {30, 0x07} };
-+} bmc150_magn_samp_freq_table[] = { { 2, 0x01 },
-+				    { 6, 0x02 },
-+				    { 8, 0x03 },
-+				    { 10, 0x00 },
-+				    { 15, 0x04 },
-+				    { 20, 0x05 },
-+				    { 25, 0x06 },
-+				    { 30, 0x07 } };
- 
- enum bmc150_magn_presets {
- 	LOW_POWER_PRESET,
-@@ -170,10 +170,10 @@ static const struct bmc150_magn_preset {
- 	u8 rep_z;
- 	u8 odr;
- } bmc150_magn_presets_table[] = {
--	[LOW_POWER_PRESET] = {3, 3, 10},
--	[REGULAR_PRESET] =  {9, 15, 10},
--	[ENHANCED_REGULAR_PRESET] =  {15, 27, 10},
--	[HIGH_ACCURACY_PRESET] =  {47, 83, 20},
-+	[LOW_POWER_PRESET] = { 3, 3, 10 },
-+	[REGULAR_PRESET] = { 9, 15, 10 },
-+	[ENHANCED_REGULAR_PRESET] = { 15, 27, 10 },
-+	[HIGH_ACCURACY_PRESET] = { 47, 83, 20 },
- };
- 
- #define BMC150_MAGN_DEFAULT_PRESET REGULAR_PRESET
-@@ -643,8 +643,9 @@ static const struct iio_info bmc150_magn_info = {
- };
- 
- static const unsigned long bmc150_magn_scan_masks[] = {
--					BIT(AXIS_X) | BIT(AXIS_Y) | BIT(AXIS_Z),
--					0};
-+	BIT(AXIS_X) | BIT(AXIS_Y) | BIT(AXIS_Z),
-+	0,
-+};
- 
- static irqreturn_t bmc150_magn_trigger_handler(int irq, void *p)
- {
+url:    https://github.com/intel-lab-lkp/linux/commits/434779359-qq-com/tof-Add-VL53L4CX-TOF-drivers/20260207-174646
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/tencent_326708D02875274DF25B10B91402B3828606%40qq.com
+patch subject: [PATCH] tof: Add VL53L4CX TOF drivers
+config: loongarch-randconfig-r122-20260208 (https://download.01.org/0day-ci/archive/20260208/202602081057.kWswynEJ-lkp@intel.com/config)
+compiler: clang version 18.1.8 (https://github.com/llvm/llvm-project 3b5b5c1ec4a3095ab096dd780e84d7ab81f3d7ff)
+rustc: rustc 1.88.0 (6b00bc388 2025-06-23)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260208/202602081057.kWswynEJ-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202602081057.kWswynEJ-lkp@intel.com/
+
+All errors (new ones prefixed by >>):
+
+>> ld.lld: error: undefined symbol: input_set_abs_params
+   >>> referenced by vl53l4cx-i2c.c:5614 (drivers/iio/proximity/vl53l4cx-i2c.c:5614)
+   >>>               drivers/iio/proximity/vl53l4cx-i2c.o:(stmvl53lx_setup) in archive vmlinux.a
+   >>> referenced by vl53l4cx-i2c.c:5615 (drivers/iio/proximity/vl53l4cx-i2c.c:5615)
+   >>>               drivers/iio/proximity/vl53l4cx-i2c.o:(stmvl53lx_setup) in archive vmlinux.a
+   >>> referenced by vl53l4cx-i2c.c:5616 (drivers/iio/proximity/vl53l4cx-i2c.c:5616)
+   >>>               drivers/iio/proximity/vl53l4cx-i2c.o:(stmvl53lx_setup) in archive vmlinux.a
+   >>> referenced 16 more times
+
 -- 
-2.44.0
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
