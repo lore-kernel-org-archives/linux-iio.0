@@ -1,65 +1,66 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14FD6346769
-	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 09:35:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D965E33B6E8
+	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 09:36:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770543350; cv=none; b=FbJGJbPjArDoy20AuzeoDBSRnz3cHgZlw2P3K8toCYmucX2eXsqyF2pY9Ejkvnq6bBuPhXWRCNd0Kn4ujxsMGg1E7TowSUJ7wjOE1nYK3b5bdS1VVCclB7g7AbRmWvKgyKv0PkB27TJQ7HScYEFBono0Ch+SEBzF3YMPVx/gsB0=
+	t=1770543373; cv=none; b=e1X5PvpDySabZ1lZ4T2GF+0jMrK0iyZdrX0ZlH3x3BoQuGMWnvzSS6l0HYAhVHyZXA+GjcWe4FP2LayeGNOphp8lvxr93jI1yJCvOVJvtkcEFEClSrEouJUbapnJGKni7G+evQyex+KM1+vUKdXD+OqKArL8wIwBeqCjk3OQ15Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770543350; c=relaxed/simple;
-	bh=WCHl5DemabpyhnLUWX76It/3sUfmDTuYSHpdsEv6jLQ=;
+	s=arc-20240116; t=1770543373; c=relaxed/simple;
+	bh=pE7CiEFSdb6v/uYQYBQ1kZRVHgJMUmJKY9hKT379fuw=;
 	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=IfRHGAWi1dvPwHN+NFy69h1mLffcnsf/pd8i8wAEpGLShg7lWMHgsBjdP2HKGaORMbpjDMZW7eCcT7y/qpiSFZNPvXLR6BqWP0QV7+vB8qAHwKt+VXIwRH27/kQqJLp/q+mWBS8kROUwgn0qTQ3wN6vxe0djhZnrjQSC27/QoHY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IOhci8oS; arc=none smtp.client-ip=209.85.128.53
+	 Content-Type:MIME-Version; b=gzJ7zKU7THYa1Rb8Sw6Pq/TPzIbH1JQrKiaghX/dyRgaq9DxgOz/ZT6xQCi2V9rxqkTxNco1BZUlLi+Vym1+vKKqHNpMaywD/paQsABiWWZvtcK4bTzE2JpY1oIqG0/Hc69VHMMB6WcgPh4+v5tCLt95AcadcXoOjB/nNWJxoms=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MmC9lTdX; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IOhci8oS"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-47ee937ecf2so32595635e9.0
-        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 01:35:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MmC9lTdX"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4806e0f6b69so26485345e9.3
+        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 01:36:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770543348; x=1771148148; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1770543371; x=1771148171; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=5iZc9RqfK4a3YMrmNhUt/9wGJJUw6bZ4CSVXQbmLO10=;
-        b=IOhci8oSb5rEScOpVnzbokVP4gr3kaAptBYXlExtxnrG8eXPgWccftd5NJ1aGDE5hs
-         ojGvvanUsuea7MN0r1vQ3D+5E8f6e8hWeflOqHXsNW3QyM6nUQRm+LOMKn5f3E8uCm7C
-         2AncIYhI4jnggB7nYJloOKWXFukMZci21ppiEw6J2/mqv6ASgDydxQe7OlwaN+iG0Eel
-         LbbLVoXIyVpzKHTia3ClCOusNefQW1rEU4vhPmlPL+pVdRbyOV24Efx+cnbeKEkYQHuN
-         Fht0SpYMMg/FZchpCTbcLeaXVg2k6IW+EH8KRJGTehqzgnwmatKqH1XnbydP1s7bQQYn
-         TigQ==
+        bh=eDjghK/iJ9nqQDNybxcg0smSRXSwudwROS1YKOK31/8=;
+        b=MmC9lTdXVySKpVonzFQQURNoS7p/iL5KjjNmvcXuqFnYalpQ27abrQCRYsaS6i9P2u
+         p/1c2ovPcBj3djpkr1rrw8pPY0xnDXleCVmevpeP7KiTzf26MuFWLbdVrEBDQJNvZZ//
+         mrnpfGqAu8cRNXI5bf51l8bh2fPefYSfjAx5P2c/34Ukynbswk01Y3C57rw52x44N7lb
+         gWAIbXU5veH7gO1oXKai6iAtvdrkVczA3A3nNyyGeLTDbutGdF+2Zpk/tmvxJPueOnRS
+         RETPOsb1dGWPWgKpn/Idd3TzK+QgAEJ4Xjv+1fQjNL4NymkiqxERyDS65/I73dMiFr20
+         l4ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770543348; x=1771148148;
+        d=1e100.net; s=20230601; t=1770543371; x=1771148171;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:to:from:subject:message-id:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=5iZc9RqfK4a3YMrmNhUt/9wGJJUw6bZ4CSVXQbmLO10=;
-        b=XzeQsoaJ7c69PZU53heJI7HPOw0RYWiVzWkzS8XKFulDKqap2CaBqS5hQiYoLk7tzL
-         Ah7gLjiyclwpny97Ckevc7DrUeZ5sGPZDaC+P8+QIoy/+zKF2krfksZs+g2n5kUq7Ul5
-         gsUMwUuVtBBLTrdSsbDXO0D96TZ8yN2VJXOlgYreqdUPU4KQEfpirfZRD3nFRV1yUE4O
-         fnic2OC4iAtzBWxt8h5Tsf1X4s+log+nchhvjQEo8REsGlIehuP+1KFN41Tj1VVqm+hP
-         HCRb2HoLB2qYab3Q7TlakkdqJsxq3idjSEEvP+FlKDAYRxYMgt/pOvp7d9eoojCNzy1t
-         rBwg==
-X-Forwarded-Encrypted: i=1; AJvYcCUUDN1xH9nAvs16z6wyerzI1K0u0AzLeOlVpIe/rEUtGdGXSTTq1r/QoXW37VXbM7pZ02zJRcu9deU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzCHUMVtB4TjUKKyVsTopXlOst5RTgdFjajtgmF4rIzbrjzQLKr
-	w+3QRhPWviXboPqucZu6XZavii3n63t9UvvUv8Rh76az+V7syo7NAW4I
-X-Gm-Gg: AZuq6aKE7NXlwD9HF03ftNJ+Nsyv7bWhHqyQ0rQ8li9Dsx95J/wHsxB5LBLlY1dMNtg
-	idEOT0jawqm6NHNcQAlSGd3Wme6NQEx2DWkjQIvJ3+1pxilO5DknSumPmHHYwx0u42u6JhgBKEw
-	v92/Ec/0vplthyggvv5texXb1XWcye6Q90LXu5yeo1d2f+3gamQ4nmjfx+pUZqlRMHQZ5Iafe91
-	xTdVKJBKO1BEw6VeZfOjFeCNvUoa5JlggnYHrQFyK/qUpI2FVMke/r4DSgoFxysUhauJtNXx051
-	awx1InOo7Pm6bbTZED+MrUEgagagJ1/u6zaztKE+hxTl5muNxhjTc7UiSV7QYTnu/jb3tk4jCQs
-	56W3NSqO/SUrx7h4O7NRR0CVsZySlkUlxpck4pxBp7bR7TPsKY70jmyVd00H97Cr4vRvuubEmXa
-	n/YfSjnKChzdfTgfaYPjDh2k1/0SAXfIbnL0TQ/Ortmu6K//eWto2fZPzT+2JnetHEwyYODg==
-X-Received: by 2002:a05:600c:3588:b0:481:a662:b3f3 with SMTP id 5b1f17b1804b1-483203ab7b0mr132212605e9.7.1770543348179;
-        Sun, 08 Feb 2026 01:35:48 -0800 (PST)
+        bh=eDjghK/iJ9nqQDNybxcg0smSRXSwudwROS1YKOK31/8=;
+        b=wd+pFwE+lxHK6MpISyltbYUq/3rTkKpYN5+bHyHnfPOHbmOKxuO3Xwlb3UGnHFGoSB
+         gx8wRckQhgpRb81EkBydVeJ+n5xnQHK+rfbw/CyTdAHdjXKYlRle6Frsn9z8cKpMXLs7
+         v/56FXl/Yid9AIQG7NHP57vw0mdi7Cwk57kTbz3gfWwaOPyvN6M9Hc86+5qqWBHsTIJP
+         yvGkfNGkPLch6QVu/M1N3kGQSrDq43o80CbQqFuX1bGnGZDz+V3v483WFQhijTHRSsoJ
+         U/esxtl76Ue1iJB20zn32DqTNPTOhmNnJOrIF0R5xMQgqyjXrO8ijhiWl73cT8XRQ7VS
+         ddrg==
+X-Forwarded-Encrypted: i=1; AJvYcCWrQVDyqo3WGqjjFHBjcf2YYkE7cuRhk9bfJIZQIqjQRLwBuol3TV3LGoZaMIJdw3DdBCjRZtRTK+Q=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx7ANcyDMX7Xv3hWJ9FcflGPyR6qOztS1Ijg7EMalvqoioA+cNk
+	nsmnEslOra42TxjAkB/By4aUYpj2b5kDWCCsk9iKlUds+a63RG6DG6yD
+X-Gm-Gg: AZuq6aLhjnuqqeB+G3+dFnuVdrkVZqatXmfKkihUjHL8mPsaxpe2hgw888GyIePGZUC
+	87dsvlIdoze6GntvYCoxbupw7/ncyXy+Uh2QbQtiqIRbk2EZzFDTJz/AvDsMcU2C3lwaJgwfH2I
+	C+IAMfucciYkwrL2JKWXfJ8mj8Yyl6f7YYY9x2GDhLRRk5rW9VV4YWQlVyC8BzrQ4K9FqHNvpBR
+	jbwle+UFjrFlWD5nRAS4NSXPtbaDB1WMd4VpV+YTW2C3ezTRoj08XUd4JSUou+2cfb1Gns8+alf
+	PR8p+fnJ4Z6QQ/e3o9quQpnOeTll/L26UdIEYeXqVkqaKNtqBqBR/XCqPM0trR2Bv4a0GlQKTp5
+	noP7VGQQzAx1LReskDiVQDwPZ5fA8MCiJF5RTpl5Xg+lqAhZmZjNMmOIgF9kLQtrJD7WJueBSng
+	62vMLuYeIZWuJb8lfjI4Bwg5DZnsKb152niBVOFsEOPIpGgrV/WTLbPJOEcC7s1A2B/F2JF/RYp
+	lugX+G08g==
+X-Received: by 2002:a05:600c:c4b8:b0:479:2a09:9262 with SMTP id 5b1f17b1804b1-483201dd20bmr106922795e9.9.1770543371209;
+        Sun, 08 Feb 2026 01:36:11 -0800 (PST)
 Received: from ?IPv6:2001:818:ea56:d000:94c4:fb0e:28f:2a8d? ([2001:818:ea56:d000:94c4:fb0e:28f:2a8d])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-436297462a8sm16785577f8f.30.2026.02.08.01.35.47
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483209af8e0sm103494245e9.5.2026.02.08.01.36.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Feb 2026 01:35:47 -0800 (PST)
-Message-ID: <c71d3ed0baffe4fc2d03a37d38aa3f03aeba7d6f.camel@gmail.com>
-Subject: Re: [PATCH 6/6] iio: adc: ad4080: add support for AD4088
+        Sun, 08 Feb 2026 01:36:10 -0800 (PST)
+Message-ID: <3baf38e130d84cd18a313439191597bdea1fca6e.camel@gmail.com>
+Subject: Re: [PATCH 2/6] iio: adc: ad4080: add support for AD4082
 From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>, Lars-Peter Clausen	
  <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
@@ -69,10 +70,10 @@ To: Antoniu Miclaus <antoniu.miclaus@analog.com>, Lars-Peter Clausen
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley	
  <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, 	linux-kernel@vger.kernel.org
-Date: Sun, 08 Feb 2026 09:36:52 +0000
-In-Reply-To: <afcd7b733511ddf5e96d0b539fd3593edf3d8c45.1770382796.git.antoniu.miclaus@analog.com>
+Date: Sun, 08 Feb 2026 09:37:15 +0000
+In-Reply-To: <51281e19fe2955cb10ffb77b62b0d7738e9b5a93.1770382796.git.antoniu.miclaus@analog.com>
 References: <cover.1770382796.git.antoniu.miclaus@analog.com>
-	 <afcd7b733511ddf5e96d0b539fd3593edf3d8c45.1770382796.git.antoniu.miclaus@analog.com>
+	 <51281e19fe2955cb10ffb77b62b0d7738e9b5a93.1770382796.git.antoniu.miclaus@analog.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
@@ -84,20 +85,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 
 On Fri, 2026-02-06 at 15:08 +0200, Antoniu Miclaus wrote:
-> Add support for AD4088 14-bit SAR ADC. The AD4088 has the same
-> resolution as AD4087 (14-bit) but differs in LVDS CNV clock count
-> maximum (8 vs 1).
+> Add support for AD4082 20-bit SAR ADC. The AD4082 has the same
+> resolution as AD4080 (20-bit) but differs in LVDS CNV clock count
+> maximum (8 vs 7).
 >=20
 > Changes:
-> - Add AD4088_CHIP_ID definition (0x0058)
-> - Create ad4088_channel with 14-bit resolution and 16-bit storage
-> - Add ad4088_chip_info with lvds_cnv_clk_cnt_max =3D 8
-> - Register AD4088 in device ID and OF match tables
+> - Add AD4082_CHIP_ID definition (0x0052)
+> - Create ad4082_channel with 20-bit resolution and 32-bit storage
+> - Add ad4082_chip_info with lvds_cnv_clk_cnt_max =3D 8
+> - Register AD4082 in device ID and OF match tables
 >=20
 > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 > ---
 
-Same,
+And same,
 
 Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 
@@ -105,61 +106,62 @@ Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 > =C2=A01 file changed, 15 insertions(+)
 >=20
 > diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
-> index 728df626f09e..fc261d3d7687 100644
+> index 7cf3b6ed7940..7cbbe284dea7 100644
 > --- a/drivers/iio/adc/ad4080.c
 > +++ b/drivers/iio/adc/ad4080.c
-> @@ -133,6 +133,7 @@
-> =C2=A0#define AD4085_CHIP_ID						0x0055
+> @@ -127,6 +127,7 @@
+> =C2=A0#define AD4080_SPI_READ						BIT(7)
+> =C2=A0#define AD4080_CHIP_ID						0x0050
+> =C2=A0#define AD4081_CHIP_ID						0x0051
+> +#define AD4082_CHIP_ID						0x0052
+> =C2=A0#define AD4083_CHIP_ID						0x0053
+> =C2=A0#define AD4084_CHIP_ID						0x0054
 > =C2=A0#define AD4086_CHIP_ID						0x0056
-> =C2=A0#define AD4087_CHIP_ID						0x0057
-> +#define AD4088_CHIP_ID						0x0058
+> @@ -442,6 +443,8 @@ static const struct iio_chan_spec ad4080_channel =3D
+> AD4080_CHANNEL_DEFINE(20, 32)
 > =C2=A0
-> =C2=A0#define AD4080_LVDS_CNV_CLK_CNT_MAX				7
+> =C2=A0static const struct iio_chan_spec ad4081_channel =3D AD4080_CHANNEL=
+_DEFINE(20, 32);
 > =C2=A0
-> @@ -456,6 +457,8 @@ static const struct iio_chan_spec ad4086_channel =3D
-> AD4080_CHANNEL_DEFINE(14, 16)
-> =C2=A0
-> =C2=A0static const struct iio_chan_spec ad4087_channel =3D AD4080_CHANNEL=
-_DEFINE(14, 16);
-> =C2=A0
-> +static const struct iio_chan_spec ad4088_channel =3D AD4080_CHANNEL_DEFI=
-NE(14, 16);
+> +static const struct iio_chan_spec ad4082_channel =3D AD4080_CHANNEL_DEFI=
+NE(20, 32);
 > +
-> =C2=A0static const struct ad4080_chip_info ad4080_chip_info =3D {
-> =C2=A0	.name =3D "ad4080",
-> =C2=A0	.product_id =3D AD4080_CHIP_ID,
-> @@ -536,6 +539,16 @@ static const struct ad4080_chip_info ad4087_chip_inf=
+> =C2=A0static const struct iio_chan_spec ad4083_channel =3D AD4080_CHANNEL=
+_DEFINE(16, 16);
+> =C2=A0
+> =C2=A0static const struct iio_chan_spec ad4084_channel =3D AD4080_CHANNEL=
+_DEFINE(16, 16);
+> @@ -470,6 +473,16 @@ static const struct ad4080_chip_info ad4081_chip_inf=
 o =3D {
-> =C2=A0	.lvds_cnv_clk_cnt_max =3D 1,
+> =C2=A0	.lvds_cnv_clk_cnt_max =3D 2,
 > =C2=A0};
 > =C2=A0
-> +static const struct ad4080_chip_info ad4088_chip_info =3D {
-> +	.name =3D "ad4088",
-> +	.product_id =3D AD4088_CHIP_ID,
+> +static const struct ad4080_chip_info ad4082_chip_info =3D {
+> +	.name =3D "ad4082",
+> +	.product_id =3D AD4082_CHIP_ID,
 > +	.scale_table =3D ad4080_scale_table,
 > +	.num_scales =3D ARRAY_SIZE(ad4080_scale_table),
 > +	.num_channels =3D 1,
-> +	.channels =3D &ad4088_channel,
+> +	.channels =3D &ad4082_channel,
 > +	.lvds_cnv_clk_cnt_max =3D 8,
 > +};
 > +
-> =C2=A0static int ad4080_setup(struct iio_dev *indio_dev)
-> =C2=A0{
-> =C2=A0	struct ad4080_state *st =3D iio_priv(indio_dev);
-> @@ -698,6 +711,7 @@ static const struct spi_device_id ad4080_id[] =3D {
-> =C2=A0	{ "ad4085", (kernel_ulong_t)&ad4085_chip_info },
+> =C2=A0static const struct ad4080_chip_info ad4083_chip_info =3D {
+> =C2=A0	.name =3D "ad4083",
+> =C2=A0	.product_id =3D AD4083_CHIP_ID,
+> @@ -666,6 +679,7 @@ static int ad4080_probe(struct spi_device *spi)
+> =C2=A0static const struct spi_device_id ad4080_id[] =3D {
+> =C2=A0	{ "ad4080", (kernel_ulong_t)&ad4080_chip_info },
+> =C2=A0	{ "ad4081", (kernel_ulong_t)&ad4081_chip_info },
+> +	{ "ad4082", (kernel_ulong_t)&ad4082_chip_info },
+> =C2=A0	{ "ad4083", (kernel_ulong_t)&ad4083_chip_info },
+> =C2=A0	{ "ad4084", (kernel_ulong_t)&ad4084_chip_info },
 > =C2=A0	{ "ad4086", (kernel_ulong_t)&ad4086_chip_info },
-> =C2=A0	{ "ad4087", (kernel_ulong_t)&ad4087_chip_info },
-> +	{ "ad4088", (kernel_ulong_t)&ad4088_chip_info },
-> =C2=A0	{ }
-> =C2=A0};
-> =C2=A0MODULE_DEVICE_TABLE(spi, ad4080_id);
-> @@ -711,6 +725,7 @@ static const struct of_device_id ad4080_of_match[] =
-=3D {
-> =C2=A0	{ .compatible =3D "adi,ad4085", &ad4085_chip_info },
+> @@ -677,6 +691,7 @@ MODULE_DEVICE_TABLE(spi, ad4080_id);
+> =C2=A0static const struct of_device_id ad4080_of_match[] =3D {
+> =C2=A0	{ .compatible =3D "adi,ad4080", &ad4080_chip_info },
+> =C2=A0	{ .compatible =3D "adi,ad4081", &ad4081_chip_info },
+> +	{ .compatible =3D "adi,ad4082", &ad4082_chip_info },
+> =C2=A0	{ .compatible =3D "adi,ad4083", &ad4083_chip_info },
+> =C2=A0	{ .compatible =3D "adi,ad4084", &ad4084_chip_info },
 > =C2=A0	{ .compatible =3D "adi,ad4086", &ad4086_chip_info },
-> =C2=A0	{ .compatible =3D "adi,ad4087", &ad4087_chip_info },
-> +	{ .compatible =3D "adi,ad4088", &ad4088_chip_info },
-> =C2=A0	{ }
-> =C2=A0};
-> =C2=A0MODULE_DEVICE_TABLE(of, ad4080_of_match);
