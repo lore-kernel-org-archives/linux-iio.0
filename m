@@ -1,112 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B18953009EE;
-	Sun,  8 Feb 2026 02:20:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6CE52701C4
+	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 05:14:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770517207; cv=none; b=E7YG8X2mpYBhhD6sVHxk3hnbHM3p3GQdEB1ZfXHV+Ea3a4RKPnQY5p72Uv7Q+v6Mv7TvDg6HWj1bf3wUfWqQoWHh3sZxoZwb3CQAj0n57R7x82/XYkBBNEveu6NbLpHgshpPeTypczIWZXk0qXT/SjKi/p1ocliB9eehI2AwyZ4=
+	t=1770527693; cv=none; b=rAeUIAE+5rWcfZ4uNaA7OoUL5kfdKu7GpV4u3DZr3T6LgaosVBiEM9+MLPRcu61yQk2nV68cCOgWwjRq2elSRMeQrhMGahDNqwFj/j9f0S6CWqScmQhnYrMjsrfraNXgnf/gspKqrHptZgkpbZbxNar2G5X8ie1zBYSey4aa6JY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770517207; c=relaxed/simple;
-	bh=DXnfPHWS0SoqDznXZb4pTv7mp6X9bZbcaLNr2tdznqw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=l1ehpD7Gpc/iqGLVqzorVw7kh9LKy1LpryjgjAIMlZxgi2H7O1+M7+F4K69U2olmicSSYdy3sji90lm93x9A4mWOxTgchgprzfSpRIMi41lXFpzQIHwQ2zI74rGHr5lEbivXtmecxC7C2xOiwYaNO6BRmg3hbQYd8un+KePLpl8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gMfl4/a5; arc=none smtp.client-ip=198.175.65.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770527693; c=relaxed/simple;
+	bh=PYqOTEy1Bun6QiXI4hjiw7WhkNUrL3SPjkRw6BohOmw=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=tMkIMpWY5NrnsUH8TtAE1XKom0aRDcUOTDadyo7Ubq7pv20l8KBFxWsKB3Qb7yqgn9BDXVuISMAtwX76Ch6vGkZu8Rf5//7LPCTW7R6w8O4x2REY+oqcm2OCKJbY+6RKqHYcjCh5fm3dn+6UuNkGADm4EwpRWQsIFAPwjId+vuc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Umru/KtN; arc=none smtp.client-ip=209.85.210.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gMfl4/a5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770517207; x=1802053207;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DXnfPHWS0SoqDznXZb4pTv7mp6X9bZbcaLNr2tdznqw=;
-  b=gMfl4/a5TUZqLjAIxVzT09kTnSONo9mHb0jkAs94/AltmUMZ+SOhghFw
-   rwoB2KdfmL0e8YgHZxY8Qky5nYHzfKSrnopuWLUPaqHio4tTd3Ctg2Pzq
-   4t1syYhVc+zDSyWIXUh9HqIPOBtEM9pNYZZ1/22aPPatyZFeQo4nR6kRf
-   8UkyJZGXwPrmNQrid4Wz4toMhzYX/lr6j7RKNuMBlRRf/Pn/Ejc7Y6h/n
-   +BfZTb5SdeuHSyVMCbkx0sLEhuHJ0KNrsEsvGHN5fTamVYq2ahpq1q/yS
-   Ejt+y4bmWsSzBTp3BHRafPx5wRbf3aXYqhY2VKo5knUXX7qexdcWa9qYl
-   A==;
-X-CSE-ConnectionGUID: aMfnHzvnRt+JL772jSFX6g==
-X-CSE-MsgGUID: fdQqJmNhTmynuZJuPGn0oQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11694"; a="94322278"
-X-IronPort-AV: E=Sophos;i="6.21,279,1763452800"; 
-   d="scan'208";a="94322278"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2026 18:20:06 -0800
-X-CSE-ConnectionGUID: 2ZUGKOx+Soq58pug647SPw==
-X-CSE-MsgGUID: rJOWAXWmS76q6MaTicNHTA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,279,1763452800"; 
-   d="scan'208";a="215752594"
-Received: from lkp-server01.sh.intel.com (HELO 765f4a05e27f) ([10.239.97.150])
-  by orviesa004.jf.intel.com with ESMTP; 07 Feb 2026 18:20:03 -0800
-Received: from kbuild by 765f4a05e27f with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vouP2-00000000m0q-2GxQ;
-	Sun, 08 Feb 2026 02:20:00 +0000
-Date: Sun, 8 Feb 2026 10:19:45 +0800
-From: kernel test robot <lkp@intel.com>
-To: 434779359@qq.com, Jonathan Cameron <jic23@kernel.org>
-Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	liufulin <frank.liu@faiot.com>,
-	Waqar Hameed <waqar.hameed@axis.com>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH] tof: Add VL53L4CX TOF drivers
-Message-ID: <202602081057.kWswynEJ-lkp@intel.com>
-References: <tencent_326708D02875274DF25B10B91402B3828606@qq.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Umru/KtN"
+Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-7d18cf89e72so2688532a34.1
+        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 21:14:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770527692; x=1771132492; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PYqOTEy1Bun6QiXI4hjiw7WhkNUrL3SPjkRw6BohOmw=;
+        b=Umru/KtNKkyprFYJPqnCugoKT+sf+BCkxFz0MUeFddecIZAfzN2y80B7IIxeu6clSk
+         gVrCcNa5ebvqQ53o3C4lS5T/ZdEHWFRANQMg2JYFh2Mect0UfPBCCDyZcu3SXyxgiKX1
+         4hg6AYFrqo5t6ASd58IriRoUrVZWnHMhQ8EAvfGVT/9YT9BNYYLO9DE9XisfUMLf+y+r
+         zIkHSbTKtI4Bf4oQbj4M4jx4RqIN2d/MpuaPi9kwA51knaMg4wQq8D93TQuBEwJMsB3N
+         RlBkqs1kzy1iJBU4ersk/PcDcxm6UsyPTv8Dv+CFewxpFphp28Dxt+6Av6OpYljnFcMU
+         DOuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770527692; x=1771132492;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PYqOTEy1Bun6QiXI4hjiw7WhkNUrL3SPjkRw6BohOmw=;
+        b=owWvL5d6cxpNl+Fm2CS0VuKNsj56zfzlkLECKQtwq0CfaJJ0gSC3ktKza5xX1YmYfs
+         nDaWTOdMQtrjTqTw/BMMkFa913crpVvHGPFiGkpoVTtA4+SlNCN+cAPOWl0Ci/7lwFs5
+         h5Ufcqo9kx71LS8W9Omgy1LaDKrLK0un4U/xaGSckVRhu/NDp32/8OdVrx4nqjyrpoh+
+         BLFCNiYcQwPcXJN07khJbAoGY+sIdoVOBz+84Jb2B9jiVO0eyG0FjSrICbOY6TSd7YvI
+         TQasbwtO/lTdSoiOgIUt4Mes8RFM9pWR0fYEBofnWI0sg4gIoax1MN9HbaGS0V8C8QBg
+         QCuQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWIJhDxucFF9rcYCInK1ubBmSFKGpqwPGlo3z3mNkq63Xevts1NIE/dCX2unZZBx2p0OLMjjyt/CDY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx2e9p+UNO1L8UIwcOGjnuuY86M+ppWg85oTpVOsoTzG512yYo6
+	75MEmEH4u5uQQUMZlmHZEFq/iRl2fOvwMMntMzobmVBG9nB2lWYS1I4h
+X-Gm-Gg: AZuq6aKkL9gHUHIiM26LbIg2P/uRpMo48F7WgOTsaExo628ZMWIrN8jyMF+QrfUXV3I
+	SMvqR0IYjK6DcgxT2Hs4kLYg/+e/fy1pFgeWWeMIVTps5x/Gc1HirX6DxuIR12W1RRWyKPCmcTa
+	dEFF69znBdGLhZY9baVhuP9LdVxA5gJcmCyzbzkzmCmPQF7cwdie7HDL5zTgjn4NA0/VCTooiYe
+	MtuhBiRZo0+Tc6u+Ljqi2bgem4Bvgy+DgyuLNi0n9SlXayXwroRI/ZxiZ1mkOyn6Q/3wflXiWyq
+	isOe2fPf0eYTiKVcSgl0wqDZG5AoFgb6mYyvutB2y5PBv15GJHBffZyPdpOpwR/X0szTr8RjsWB
+	DtIrAOnE4qC0KuXcpdjARZlAZWDUGrGbJdNL3XzP0fPYlxWkJLRp1lBYCYavDGLJk504Or9yUmC
+	qRmHz0i5b7b1A0kIcIFei4t0FygOn6f1CK+NazT3K+X66dmAfhKsCdeHShmi3TPFRY+DiQdAUBS
+	kYe/T0YOYtxtB/eMvmtabrvSF1Kcd9WOpbIp6IxB5QMqa32L0Ffho6x
+X-Received: by 2002:a05:6830:82be:b0:7d1:4f21:ff79 with SMTP id 46e09a7af769-7d464485844mr4657169a34.22.1770527692530;
+        Sat, 07 Feb 2026 21:14:52 -0800 (PST)
+Received: from localhost ([2600:100d:b16d:c41f:8d6c:e914:6c96:3df])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d4646fb636sm4965368a34.5.2026.02.07.21.14.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 Feb 2026 21:14:52 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <tencent_326708D02875274DF25B10B91402B3828606@qq.com>
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sat, 07 Feb 2026 23:14:50 -0600
+Message-Id: <DG9BOO7V828W.2QYTAGRZ0BUNY@gmail.com>
+Cc: "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
+ <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 1/2] iio: magnetometer: bmc150_magn: use automated
+ cleanup for mutex
+From: "Ethan Tidmore" <ethantidmore06@gmail.com>
+To: "Neel Bullywon" <neelb2403@gmail.com>, "Jonathan Cameron"
+ <jic23@kernel.org>
+X-Mailer: aerc 0.21.0
+References: <20260208011659.53722-1-neelb2403@gmail.com>
+ <20260208011659.53722-2-neelb2403@gmail.com>
+In-Reply-To: <20260208011659.53722-2-neelb2403@gmail.com>
 
-Hi,
+On Sat Feb 7, 2026 at 7:16 PM CST, Neel Bullywon wrote:
+> Use guard() and scoped_guard() to replace manual mutex lock/unlock
+> calls. This simplifies error handling and ensures RAII-style cleanup.
+>
+> Additionally, replace msleep(5) with fsleep(5000) to allow the kernel
+> to select the most appropriate delay mechanism based on duration.
 
-kernel test robot noticed the following build errors:
+This should be its own patch. Please keep one logical change per patch.
 
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on linus/master v6.19-rc8 next-20260205]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+>
+> guard() is used in read_raw, write_raw, trig_reen, trigger_set_state,
+> and resume. Case blocks in read_raw and write_raw are wrapped in braces
+> to ensure clear scope for the cleanup guards.
+>
+> scoped_guard() is used in remove, runtime_suspend, and suspend where a
+> short mutex-protected scope is needed for a single function call.
+>
+> The trigger_handler function is left unchanged as mixing guard() with
+> goto error paths can be fragile.
+>
+> Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
 
-url:    https://github.com/intel-lab-lkp/linux/commits/434779359-qq-com/tof-Add-VL53L4CX-TOF-drivers/20260207-174646
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/tencent_326708D02875274DF25B10B91402B3828606%40qq.com
-patch subject: [PATCH] tof: Add VL53L4CX TOF drivers
-config: loongarch-randconfig-r122-20260208 (https://download.01.org/0day-ci/archive/20260208/202602081057.kWswynEJ-lkp@intel.com/config)
-compiler: clang version 18.1.8 (https://github.com/llvm/llvm-project 3b5b5c1ec4a3095ab096dd780e84d7ab81f3d7ff)
-rustc: rustc 1.88.0 (6b00bc388 2025-06-23)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260208/202602081057.kWswynEJ-lkp@intel.com/reproduce)
+Thanks,
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202602081057.kWswynEJ-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> ld.lld: error: undefined symbol: input_set_abs_params
-   >>> referenced by vl53l4cx-i2c.c:5614 (drivers/iio/proximity/vl53l4cx-i2c.c:5614)
-   >>>               drivers/iio/proximity/vl53l4cx-i2c.o:(stmvl53lx_setup) in archive vmlinux.a
-   >>> referenced by vl53l4cx-i2c.c:5615 (drivers/iio/proximity/vl53l4cx-i2c.c:5615)
-   >>>               drivers/iio/proximity/vl53l4cx-i2c.o:(stmvl53lx_setup) in archive vmlinux.a
-   >>> referenced by vl53l4cx-i2c.c:5616 (drivers/iio/proximity/vl53l4cx-i2c.c:5616)
-   >>>               drivers/iio/proximity/vl53l4cx-i2c.o:(stmvl53lx_setup) in archive vmlinux.a
-   >>> referenced 16 more times
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+ET
