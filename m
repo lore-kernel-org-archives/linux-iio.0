@@ -1,60 +1,73 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1818B2459EA;
-	Sun,  8 Feb 2026 13:19:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F28A27D77D;
+	Sun,  8 Feb 2026 13:24:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770556790; cv=none; b=joeQ3Dy5Rm0v2NdbQXYNWcnt441aNyobzSAo7B2WobRLi2luXPUWnTBGh4kl1gM3pUyGGAyu9Sm0O5Uu5We3yIoLslaeVfLIChx6UE03fh+qM6GphJef3kbXit69E7TaqbnXJD2aceNDwy/PrcieMdde0Wn/Pt5VEteLQl4pDX4=
+	t=1770557095; cv=none; b=PzvlvRfto2cM3uAGdXTZJyW1Jk9r3eqgd/H5G1vFUBKt1m7o8ADt/uVPOtJe/ps85O3zPNkeHSzgm2XZ2acFsj9io+EKtDMnem7zf40joqDWCmFCgjVhdxgTX24VrKirURtSrYsTTO5XgYBEI6u6ain/9eD5a4M/712lLf2yJKk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770556790; c=relaxed/simple;
-	bh=Tj371pu4cAH4gGgRjV1HIlVR0BYUPrvBRS8IOHX+Wbw=;
+	s=arc-20240116; t=1770557095; c=relaxed/simple;
+	bh=r9gkFRCzEOb1h4nKqkUwgVKmowLhlaAuvj7Xx2k+NcA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lrPWpYkqnvSD7l6KXvL4WlEiH/VaRys5O54XU/vU7bvfjll+aA/DAptfEWKLVlkgsdAF4xL39y/jorJ1JiW/N3ZYjkb309KjE3mntV6S2MHjTG6u/8CJQTMTWUMIM71iUULGlKn44seqLtkCs9rds9zuZKZJ0ZjauMrjP6Fa98o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IOfE6Z0U; arc=none smtp.client-ip=192.198.163.7
+	 Content-Type:Content-Disposition:In-Reply-To; b=eshuFm/U1DaN0Se4g7qi3EFbfu4qq960+zj4KNyOvo9ih86nLaMAanBNHGUAuIY59he4NydArCVKSoQWcVvj5HNrQ+2YbhFrDfWoO5JB+NI086VsSbfRiZI3mrvS3/ibEpzjlP161KSdzkID+Nlxt9b0BauudWvI1fAzaBBGNYY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oANrs1Ub; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IOfE6Z0U"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oANrs1Ub"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770556790; x=1802092790;
+  t=1770557095; x=1802093095;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Tj371pu4cAH4gGgRjV1HIlVR0BYUPrvBRS8IOHX+Wbw=;
-  b=IOfE6Z0UWdO/SgRExbRCs+xjEBQoyFs2IKNDl5TF9dHYz2rc8uYSYOjF
-   6A5uOXE3OCvKNzQARSthGZ9Xx3XLVJz4UMRMEAaBpwD2+Ir5n5sfb6nPq
-   UN026aYtl2dGtuY46AP65O7Kx8C7LPY9RTLKRbKiCL+vhsOMn/itvXYMs
-   bLOd7c6d1dD5a8REnoa1IxzhV9mECaCIt49+3dklYdLrtp777QN3uFFek
-   vYMThDht/Uw2s6WdNqssbioJKf82dzbvbiiGMC34DfDpV41Z43875aXHo
-   ui4pXaW2YDklnVtodeTBcVR3NWangnMBw4I0JLAH2HLQ956QlujVpH9wA
+  bh=r9gkFRCzEOb1h4nKqkUwgVKmowLhlaAuvj7Xx2k+NcA=;
+  b=oANrs1Ub4VLJYVk3hf+s+HOI07qISO3kScQlalgZev5vIG6zSyoxhfn7
+   kJ2+5lZa/4whPDb58JrJCvWVRRkASsLv+RZZIPL/NJJnVf6zgWmlSqadC
+   hCvaVnwSkEYRjbbFOEIqLdkmYDCZdxW91VInbkXuXXRAcW6ehNaOAWews
+   bAeQtKHfOhCMtQ58cbw490cBGKBG0P068PqpTBj76gbkdr61z25We6QFJ
+   V8ljJ66i/h/LvR/OXDjT7/nd804mzJp+q8gyWs1N91nEi1O2imm9cxXPa
+   OoAwf7TCXKkSjkKsO6GHb0+nnY4tc/TJlWTmvblQUVmYQ1KjDRWlEigO4
    w==;
-X-CSE-ConnectionGUID: skQzvR7PSUuE2RkyLUEFDA==
-X-CSE-MsgGUID: lxBBZKqESNOJTcWND5G7EQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11695"; a="97148636"
+X-CSE-ConnectionGUID: YfhyvntIQQukSAbPRR6+Yw==
+X-CSE-MsgGUID: WJl2OnLVQ3iYKfTeCn94aw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11695"; a="83064599"
 X-IronPort-AV: E=Sophos;i="6.21,280,1763452800"; 
-   d="scan'208";a="97148636"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 05:19:49 -0800
-X-CSE-ConnectionGUID: oboy5xueT66BB9yzolEhHw==
-X-CSE-MsgGUID: QIhlzshsQH+wpoyUhHF49Q==
+   d="scan'208";a="83064599"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 05:24:55 -0800
+X-CSE-ConnectionGUID: GgxqGVi1Q+iso5D2FbD6+Q==
+X-CSE-MsgGUID: uKX408q9StamNKiXcMNe2w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,280,1763452800"; 
-   d="scan'208";a="210771553"
+   d="scan'208";a="210566497"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.245.100])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 05:19:47 -0800
-Date: Sun, 8 Feb 2026 15:19:45 +0200
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 05:24:51 -0800
+Date: Sun, 8 Feb 2026 15:24:49 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Neel Bullywon <neelb2403@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] iio: magnetometer: bmc150_magn: cleanup mutex usage
- and coding style
-Message-ID: <aYiNcWJyCl71FyEa@smile.fi.intel.com>
-References: <20260206171814.91064-1-neelb2403@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
+	rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>
+Subject: Re: [PATCH v6 2/8] iio: core: add fixed point parsing with 64-bit
+ parts
+Message-ID: <aYiOoZMkq_d48vCZ@smile.fi.intel.com>
+References: <20260130-adf41513-iio-driver-v6-0-cf46239026bc@analog.com>
+ <20260130-adf41513-iio-driver-v6-2-cf46239026bc@analog.com>
+ <aYKkv3dq9Vkm3s_3@smile.fi.intel.com>
+ <7tiv33i65unu5ypk7puj3buzybykyhv2qbwp54bhcem5t4rawq@dpfedqmmxbhx>
+ <aYMYJppigidPeLH4@smile.fi.intel.com>
+ <hrhgmum6zdww7etc6ztchivfqecaaqeeul2bbagzyongkxpaeh@q7x4popwel6d>
+ <aYMgzMVcv_QALJtF@smile.fi.intel.com>
+ <20260207170228.2f2bfb35@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,41 +76,64 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260206171814.91064-1-neelb2403@gmail.com>
+In-Reply-To: <20260207170228.2f2bfb35@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Feb 06, 2026 at 12:18:14PM -0500, Neel Bullywon wrote:
-> Replace manual mutex lock/unlock calls with guard() to simplify error
-> 
-> handling and reduce goto usage. This ensures RAII-style cleanup where
-> 
-> the mutex is always released automatically.
-> 
-> Replace msleep(5) with usleep_range(5000, 6000) to avoid checkpatch
-> 
-> warnings about short msleep delays.
-> 
-> Also fix several indentation and line wrapping style issues to verify
-> 
-> cleanly with checkpatch.
+On Sat, Feb 07, 2026 at 05:02:28PM +0000, Jonathan Cameron wrote:
+> On Wed, 4 Feb 2026 12:34:52 +0200
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Wed, Feb 04, 2026 at 10:28:05AM +0000, Rodrigo Alencar wrote:
+> > > On 26/02/04 11:57AM, Andy Shevchenko wrote:  
+> > > > On Wed, Feb 04, 2026 at 09:42:55AM +0000, Rodrigo Alencar wrote:  
+> > > > > On 26/02/04 03:45AM, Andy Shevchenko wrote:  
+> > > > > > On Fri, Jan 30, 2026 at 10:06:43AM +0000, Rodrigo Alencar via B4 Relay wrote:  
 
-You commit message is interleaved with unneeded blank lines. Something is wrong
-on your side.
+...
 
-> Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
-> ---
-> Changes in v4:
-> - Replace scoped_guard() with guard() to avoid lexical scope issues with goto
->   and return values which caused logic errors in previous versions.
-> - Replace msleep(5) with usleep_range(5000, 6000) to avoid checkpatch
->   warning.
+> > > > > > There is a development in the parse_integer in the lib/. I reviewed that series
+> > > > > > and hopefully it will go in. With that done, we better reuse the lib/ function.
+> > > > > > 
+> > > > > > https://lore.kernel.org/linux-hardening/20260202115451.290173-1-dmantipov@yandex.ru/  
+> > > > > 
+> > > > > In this patch, I see that it updates the overflow check, but I am not
+> > > > > seeing that function being exposed to other kernel modules.  
+> > > > 
+> > > > Can the IIO be compiled as a module? If so, then we would need to export that
+> > > > function. (Note, we may export only for the exact module(s) in question, so
+> > > > nobody else will be able to use it. See EXPORT_SYMBOL_FOR_MODULES() macro.)  
+> > > 
+> > > Yes, one can have an industrialio.ko.
+> > > Then, would it be fine to use:
+> > > 
+> > > EXPORT_SYMBOL_FOR_MODULES(_parse_integer_limit, "industrialio");
+> > > 
+> > > in lib/kstrtox.c; and:
+> > > 
+> > > #include "../../lib/kstrtox.h"
+> > > 
+> > > in drivers/iio/industrialio-core.c
+> > > 
+> > > that does not look pretty.  
+> > 
+> > Yeah, but I think it's fine as long as we have an associated FIXME.
+> > In any case Jonathan is the one who makes a decision here.
+> 
+> You've lost me. Why do we need to restrict this function to use
+> by specific modules?
 
-No, please, fix checkpatch first, it should suggest fsleep() and that is
-what you should use.
+Because it should not be used outside the lib/* to begin with.
+The mentioned series relaxed that a bit, but the idea behind is
+still the same. We rather should have a front-end wrappers like
+safe_strtox() or so to do the job, not the parse_integer*() one(s).
 
-> - Fix indentation and line wrapping to cleanliness.
-> - Extend guard() usage to all mutex_lock() instances in the driver.
+> We normally only bother with that dance when
+> there is a big footgun or something deep in core kernel code where
+> we want to be very careful who uses it.
+
+That's exactly the case.
+
+> To me it doesn't seem appropriate here.
 
 -- 
 With Best Regards,
