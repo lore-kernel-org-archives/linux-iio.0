@@ -1,204 +1,183 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4414A22154B;
-	Sun,  8 Feb 2026 19:30:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57111B665
+	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 22:37:54 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770579044; cv=none; b=EsQokgYf2xFGRqhMEneD93LqwZH7TW5Ov+gOV4bXR167Lgw17l4MvlvYAGmKEJUr1Rzg07B5jelhStR0XX/6+ysoBdVCe2H+750KLHCueW18/Ym5W9YTpevCPqLSar555nhvjxnTHTXgfpFcL7nr7Lp3sukH+xVED956e0o7/+Q=
+	t=1770590274; cv=none; b=KLboQbQ8mOoFPOCnmA56Tb58vlVzOeVfIKSpML3NEkC+/8DSWzcbjXo7Zd56D96yVY3cG9YR6lXy1Pdo0mFuJn4cwh8kkfl+bYuig+0yvhWZQX6rzJ9AKwprTT7PJAjzoh7MjBE1YHTWqfNeckKCifTT6I4Va8bkybDtWqZa2O0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770579044; c=relaxed/simple;
-	bh=lpvhvi+Dl7vLZAGqjMjtZIiGObqGttalcfkjxgZpNcE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RuEwTBuUSabu+1j0wGWq5AixbfmVofR6FGn2BVARv9aqbbZchowhUNX8tjM3fEANjPmnYtSvG+bdOdfTPYzzApc9lF60LHmDcGqHxRnpDqtSH/1To9eAxkPoYDT6j4SfwGZJHb3wK1E3zxbmf7l8Z3b2gQaI5djQDbQ6Apj7LIU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oYWNYc8S; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770590274; c=relaxed/simple;
+	bh=9zzQCS0ZD52rCJwUkgpOBtKinN566jajYieUXkw0Tlo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qkY0YzGv7gn7f0pyzusjEAYXfoaod1MatIMGMgJ8NGjj5GnyqcVe1oiCOkwSSi8V1EaKAmE9/hDGkgf6xAm4wPs7nvqwJq9b+s3PC9XhpQflmRdeIKNByEtAzbrGO/KShkGUzHjQxwm8scmKdijxfowDkK6D56VnT4kJZpeanZU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bdZFWtvS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oYWNYc8S"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29DC5C4CEF7;
-	Sun,  8 Feb 2026 19:30:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bdZFWtvS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1451C4CEF7
+	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 22:37:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770579043;
-	bh=lpvhvi+Dl7vLZAGqjMjtZIiGObqGttalcfkjxgZpNcE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=oYWNYc8SUZTi5ttnCcrpyR5DgZoskKHtFPki+h6pPoGR0n8gD/cABsf7NetHAz2DM
-	 HfktywoaIDcfvIWa6hffKkUV1Yb9gS5LdTX+iCZU6mMW5Bx82A1136cn0zY5Po80rw
-	 9TCG2LxyRlVNba99NrTFaTznCZHT4xw16AlDvddhSP+hNBRdXLghiGPtwG0pQi+HLH
-	 3YAe4/tLyR9nv9y0mqESWyL26iFR+7bYd6yNb7R+tB8DhJTdzcxbRBX8uQD0YYBEuX
-	 mvMNMMxf6/CBDgLhbcS1C0WMwc9P0KGJfARMYWibX6YpIfjAi3S5T1W/xTs9CK8dUX
-	 nUjQ9zlW7H/UA==
-Date: Sun, 8 Feb 2026 19:30:34 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Tomas Melin <tomas.melin@vaisala.com>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>, Nuno Sa
- <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Olivier Moysan
- <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Chris Mason <clm@meta.com>
-Subject: Re: [PATCH v6 5/5] iio: adc: ad9467: check for backend capabilities
-Message-ID: <20260208193034.7c780426@jic23-huawei>
-In-Reply-To: <20260205-b4-ad9467-optional-backend-v6-5-7ca20c40c59a@vaisala.com>
-References: <20260205-b4-ad9467-optional-backend-v6-0-7ca20c40c59a@vaisala.com>
-	<20260205-b4-ad9467-optional-backend-v6-5-7ca20c40c59a@vaisala.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	s=k20201202; t=1770590274;
+	bh=9zzQCS0ZD52rCJwUkgpOBtKinN566jajYieUXkw0Tlo=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=bdZFWtvSBGcOKmB+GRti5ic9lxm+I/CAY64eIdpyy//cr2tHE6pTcd5XwIXKPKwzg
+	 5TZwprXaQqtXFSTWWy9KQgtn9nJBf0aDHKLKzpRQBNpnsFeZWLyRUyoiDUEbVZuYq3
+	 j+qOqLQJCUJhTskWdTAnRgLQphy2OjUyu1uuEY4MoGUWURAj8h3jyxFexi9h3WKxfU
+	 R3eG/QP6QbtNf28Ere07+bTG8wT59PtlSICg29/TfIfz1hl/2XB5Mw4jWi19OdrFdh
+	 GVL9zNU+++tAsNN3Q/mRYT5TBXyWLQxZSr3MHYbbI3SgWK861hK+nIqLLGe7KFOKI5
+	 BWbCv2bm9VdTg==
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-b8e9f89a8e3so419188566b.1
+        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 14:37:53 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCVm8/k8DAPrzDC7XtkKV4eIm8gcNknSuVQrxHiCngF5EmUFDpcjoBO3dZ3P2emXtTSotJZV5BBBnc4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzIjzVGDUUjpiMvfqKTae9UV5xf/KBF91LbfbVer9H/bJZzSszu
+	B4NEtqRQOeMF3STKO26dwKpGl1SLF4DHyXbn73NGQofWwviF+KSB+cTMp+5HHFyVDbrlPDMXgHJ
+	9WQ6gbfCSBpnQgzVgdaTFPBIAdK1INQ==
+X-Received: by 2002:a17:906:6a18:b0:b8d:f859:d228 with SMTP id
+ a640c23a62f3a-b8edf1a942amr477887566b.17.1770590272539; Sun, 08 Feb 2026
+ 14:37:52 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260206172845.145407-1-clamor95@gmail.com> <20260206172845.145407-2-clamor95@gmail.com>
+ <20260206230922.GA254792-robh@kernel.org> <CAPVz0n3EGCSLUX7jTLve0x0z4uW1yexViCwkSQLY2d_4r4qkjg@mail.gmail.com>
+ <db9115ca-2c8f-4b5e-89ce-f3b934071a59@baylibre.com> <CAPVz0n2KwqPw88JVcPzhTQ2n+GKzahkrEThjjrqm0CSdjKTEOw@mail.gmail.com>
+ <51eddfc0-9f23-4a7f-8729-19775d834c0b@baylibre.com>
+In-Reply-To: <51eddfc0-9f23-4a7f-8729-19775d834c0b@baylibre.com>
+From: Rob Herring <robh@kernel.org>
+Date: Sun, 8 Feb 2026 16:37:41 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+JzAnvW3zSC7Y=dpWTKMUwFfTOuAnMS21d+F_W=5ONeg@mail.gmail.com>
+X-Gm-Features: AZwV_QiXE7FF0AsUcBwXkZ1sUoiJVr-4CydnqWTJFagZ120T9XrMYxQRlj7pE10
+Message-ID: <CAL_Jsq+JzAnvW3zSC7Y=dpWTKMUwFfTOuAnMS21d+F_W=5ONeg@mail.gmail.com>
+Subject: Re: [PATCH v2 01/11] dt-bindings: regulator: cpcap-regulator: convert
+ to DT schema
+To: David Lechner <dlechner@baylibre.com>
+Cc: Svyatoslav Ryhel <clamor95@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>, 
+	Pavel Machek <pavel@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
+	Dixit Parmar <dixitparmar19@gmail.com>, Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-input@vger.kernel.org, linux-leds@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 05 Feb 2026 12:24:11 +0000
-Tomas Melin <tomas.melin@vaisala.com> wrote:
+On Sat, Feb 7, 2026 at 11:32=E2=80=AFAM David Lechner <dlechner@baylibre.co=
+m> wrote:
+>
+> On 2/7/26 11:25 AM, Svyatoslav Ryhel wrote:
+> > =D1=81=D0=B1, 7 =D0=BB=D1=8E=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 19:19 D=
+avid Lechner <dlechner@baylibre.com> =D0=BF=D0=B8=D1=88=D0=B5:
+> >>
+> >> On 2/7/26 3:20 AM, Svyatoslav Ryhel wrote:
+> >>> =D1=81=D0=B1, 7 =D0=BB=D1=8E=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 01:09=
+ Rob Herring <robh@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
+> >>>>
+> >>>> On Fri, Feb 06, 2026 at 07:28:35PM +0200, Svyatoslav Ryhel wrote:
+> >>>>> Convert devicetree bindings for the Motorola CPCAP MFD regulator su=
+bnode
+> >>>>> from TXT to YAML format. Main functionality preserved.
+> >>>>>
+> >>
+> >> ...
+> >>
+> >>>>> +properties:
+> >>>>> +  compatible:
+> >>>>> +    enum:
+> >>>>> +      - motorola,cpcap-regulator
+> >>>>> +      - motorola,mapphone-cpcap-regulator
+> >>>>> +      - motorola,xoom-cpcap-regulator
+> >>>>> +
+> >>>>> +  regulators:
+> >>>>> +    type: object
+> >>>>> +
+> >>>>> +    patternProperties:
+> >>>>> +      "$[A-Z0-9]+^":
+> >>>>
+> >>>> I thought it was said on the last version to list the names. Conside=
+ring
+> >>>> you already have them below, better to put them in schema than prose=
+.
+> >>>> And pretty much all regulator bindings define the names.
+> >>>>
+> >>>
+> >>> What exactly do you propose? All those names will not fit into a
+> >>> single unbreakable line (more than 125 columns in length btw). Patch
+> >>> checker will complain about this. Duplicate pattern properties for
+> >>> every few names? Please be a bit more specific. Thank you!
+> >>
+> >> Making checkpatch happy is not a hard requirement. If you have to
+> >> go over 125 characters for technical reasons, no one is going to
+> >> complain.
+> >>
+> >> I already gave an example on the last version. It is just a regex
+> >> expression. (And note that you didn't fix the $ and ^ either. ^
+> >> means beginning of the line and $ means the end of the line. So
+> >> the pattern currently won't match anything.)
+> >>
+> >> patternProperties:
+> >>   "^(SW1|SW2|SW3|SW4|SW5|...)$":
+> >>
+> >>
+> >> And I hope it is obvious that you are meant to replace ... with the
+> >> rest of the names separated by |.
+> >>
+> >
+> > David, thank you for your suggestions and I did not want to offend you
+> > nor Rob, or ignore. Using this large string IMHO feels a bit wrong. No
+> > offence, I will use it if required. At the same time I was
+> > experimenting with possible representation and come up with smth like
+> > this:
+> >
+> >     patternProperties:
+> >       "^SW[1-6]$":
+> >         type: object
+> >         $ref: /schemas/regulator/regulator.yaml#
+> >         unevaluatedProperties: false
+> >
+> >         required:
+> >           - regulator-name
+> >           - regulator-enable-ramp-delay
+> >           - regulator-min-microvolt
+> >           - regulator-max-microvolt
+> >
+> >       "^V(CAM|CSI|DAC|DIG|FUSE|HVIO|SDIO|PLL|RF1|RF2|RFREF)$":
+> >         type: object
+> >         $ref: /schemas/regulator/regulator.yaml#
+> >         unevaluatedProperties: false
+> >
+> >         required:
+> >           - regulator-name
+> >           - regulator-enable-ramp-delay
+> >           - regulator-min-microvolt
+> >           - regulator-max-microvolt
+> >
+> >       "^V(WLAN1|WLAN2|SIM|SIMCARD|VIB|USB|AUDIO)$":
+> >         type: object
+> >         $ref: /schemas/regulator/regulator.yaml#
+> >         unevaluatedProperties: false
+> >
+> >         required:
+> >           - regulator-name
+> >           - regulator-enable-ramp-delay
+> >           - regulator-min-microvolt
+> >           - regulator-max-microvolt
+> >
+> > Will this be acceptable? It passes checks
+>
+> I think we would rather have the long match string instead of
+> repeating the rest of it multiple times.
 
-> Add capability checks for operation with backends that do not necessarily
-> support full set of features, but are otherwise compatible with the device.
-> This ensures a fully functional device, but with limited capabilities.
-> 
-> Signed-off-by: Tomas Melin <tomas.melin@vaisala.com>
-I've mentioned before that I've started messing around with Chris Mason's
-set of Claude Code prompts and today I was trying out the new stuff mentioned in:
-https://lore.kernel.org/all/b187e0c1-1df8-4529-bfe4-0a1d65221adc@meta.com/
+Yes.
 
+105 chars:
 
-Given this patch set is pretty much ready to merge I asked it to take a look
-and it came up with something that certainly merited me taking a look.
+    "^(SW[1-6]|V(CAM|CSI|DAC|DIG|FUSE|HVIO|SDIO|PLL|RF[12]|RFREF|WLAN[12]|S=
+IM|SIMCARD|VIB|USB|AUDIO))$":
 
- Issue: In ad9467_chan_test_mode_write(), the testmode_on path is guarded
-  by IIO_BACKEND_CAP_CALIBRATION but the matching testmode_off path is not.
-  On backends without that capability, entering PN test mode succeeds but
-  exiting fails with -EOPNOTSUPP, leaving the ADC stuck in test mode.
+There is the yamllint of 110 which does have to be followed.
 
-I may be missing some protection path, but I think it is right and if you
-were to set up the test modes with a backend that doesn't support the
-relevant functionality you would indeed be able to turn them on but never
-off again.
-
-So this might be the first bug in IIO that the LLM found and human's, including
-me, missed!  
-
-Thanks Chris! I won't +CC you every time but wanted to acknowledge that your
-hard work taming these tools is very useful to me.
-
-Jonathan
-
-
-
-
-> ---
->  drivers/iio/adc/ad9467.c | 67 +++++++++++++++++++++++++++++-------------------
->  1 file changed, 41 insertions(+), 26 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-> index 59c3fa3bcc9b..7a3db36121b0 100644
-> --- a/drivers/iio/adc/ad9467.c
-> +++ b/drivers/iio/adc/ad9467.c
-> @@ -913,7 +913,9 @@ static int __ad9467_update_clock(struct ad9467_state *st, long r_clk)
->  		return ret;
->  
->  	guard(mutex)(&st->lock);
-> -	return ad9467_calibrate(st);
-> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
-> +		return ad9467_calibrate(st);
-> +	return 0;
->  }
->  
->  static int ad9467_write_raw(struct iio_dev *indio_dev,
-> @@ -1119,12 +1121,15 @@ static ssize_t ad9467_chan_test_mode_read(struct file *file,
->  		len = scnprintf(buf, sizeof(buf), "Running \"%s\" Test:\n\t",
->  				ad9467_test_modes[chan->mode]);
->  
-> -		ret = iio_backend_debugfs_print_chan_status(st->back, chan->idx,
-> -							    buf + len,
-> -							    sizeof(buf) - len);
-> -		if (ret < 0)
-> -			return ret;
-> -		len += ret;
-> +		if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION)) {
-> +			ret = iio_backend_debugfs_print_chan_status(st->back,
-> +								    chan->idx,
-> +								    buf + len,
-> +								    sizeof(buf) - len);
-> +			if (ret < 0)
-> +				return ret;
-> +			len += ret;
-> +		}
->  	} else if (chan->mode == AN877_ADC_TESTMODE_OFF) {
->  		len = scnprintf(buf, sizeof(buf), "No test Running...\n");
->  	} else {
-> @@ -1188,16 +1193,18 @@ static ssize_t ad9467_chan_test_mode_write(struct file *file,
->  			return ret;
->  
->  		/*  some patterns have a backend matching monitoring block */
-> -		if (mode == AN877_ADC_TESTMODE_PN9_SEQ) {
-> -			ret = ad9467_backend_testmode_on(st, chan->idx,
-> +		if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION)) {
-> +			if (mode == AN877_ADC_TESTMODE_PN9_SEQ) {
-> +				ret = ad9467_backend_testmode_on(st, chan->idx,
->  							 IIO_BACKEND_ADI_PRBS_9A);
-> -			if (ret)
-> -				return ret;
-> -		} else if (mode == AN877_ADC_TESTMODE_PN23_SEQ) {
-> -			ret = ad9467_backend_testmode_on(st, chan->idx,
-> +				if (ret)
-> +					return ret;
-> +			} else if (mode == AN877_ADC_TESTMODE_PN23_SEQ) {
-> +				ret = ad9467_backend_testmode_on(st, chan->idx,
->  							 IIO_BACKEND_ADI_PRBS_23A);
-> -			if (ret)
-> -				return ret;
-> +				if (ret)
-> +					return ret;
-> +			}
->  		}
->  	}
->  
-> @@ -1263,8 +1270,9 @@ static void ad9467_debugfs_init(struct iio_dev *indio_dev)
->  	if (!st->chan_test)
->  		return;
->  
-> -	debugfs_create_file("calibration_table_dump", 0400, d, st,
-> -			    &ad9467_calib_table_fops);
-> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION))
-> +		debugfs_create_file("calibration_table_dump", 0400, d, st,
-> +				    &ad9467_calib_table_fops);
->  
->  	for (chan = 0; chan < st->info->num_channels; chan++) {
->  		snprintf(attr_name, sizeof(attr_name), "in_voltage%u_test_mode",
-> @@ -1339,17 +1347,24 @@ static int ad9467_probe(struct spi_device *spi)
->  	if (ret)
->  		return ret;
->  
-> -	ret = devm_iio_backend_request_buffer(&spi->dev, st->back, indio_dev);
-> -	if (ret)
-> -		return ret;
-> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_BUFFER)) {
-> +		ret = devm_iio_backend_request_buffer(&spi->dev, st->back,
-> +						      indio_dev);
-> +		if (ret)
-> +			return ret;
-> +	}
->  
-> -	ret = devm_iio_backend_enable(&spi->dev, st->back);
-> -	if (ret)
-> -		return ret;
-> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_ENABLE)) {
-> +		ret = devm_iio_backend_enable(&spi->dev, st->back);
-> +		if (ret)
-> +			return ret;
-> +	}
->  
-> -	ret = ad9467_calibrate(st);
-> -	if (ret)
-> -		return ret;
-> +	if (iio_backend_has_caps(st->back, IIO_BACKEND_CAP_CALIBRATION)) {
-> +		ret = ad9467_calibrate(st);
-> +		if (ret)
-> +			return ret;
-> +	}
->  
->  	ret = devm_iio_device_register(&spi->dev, indio_dev);
->  	if (ret)
-> 
-
+Rob
