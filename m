@@ -1,70 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6DAC21019E;
-	Sun,  8 Feb 2026 12:56:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 510B21FBEB0;
+	Sun,  8 Feb 2026 13:13:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770555386; cv=none; b=VOy2jj8yIeYL3tKnDCIN7pGvOEE19y1rRO7I+aRQ7tFYC4HSK50+pGQOifbwLdw2kXi437o9VaOAsFKCvHP2KyoMp3JpfkiA6NCJPyJBUwcplg3Pb6U/AwP+wxBoHmkP2lfNpyEJjLKSr2s7VQ5UJBIFw+LyY4zEjyWa145RbVk=
+	t=1770556410; cv=none; b=E6/ZEtuKzaaJB7T6WUtPhhuvMtppNImNUYTdDcoNSJNPQT5pzlsi7FEz1MtD5voUrkxEh8bnvo9Ex45kWv8t6WgXF9eY23g+u2RqHNkUzlRFTto/7k7iTP4BqWsMn2wavqOsV2KfORCY2PqWvQ7hSqKQRgbuU/2aLl3HScQsMGs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770555386; c=relaxed/simple;
-	bh=aLd9l6VkAyHVpK9L2eE7+aB1geV7OxU1mtgjLgYs4HY=;
+	s=arc-20240116; t=1770556410; c=relaxed/simple;
+	bh=oO+Q8be8GLa+jo0nT3jaaPZEtFfRABAUfxfamrBqeiA=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=E51TZChBiP0/Ux+iyd0pi8mE7PH4zcZEHkXf7Ai9OMb6TgnVGBPZGgl43BgrUZw1j9w95LB4mM2bCo5rNrx/IQD/x+RJcW31+TYQK1JpTEi2bZ+FoYQPpeXsV/lxu7GpfdQIk4juAyI/H3DJaYyHPbH7HGjAnQDrFssIoId6XzU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GeFSN8GR; arc=none smtp.client-ip=198.175.65.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZVmrLLP4RZUwMUchF+o3qohmtHRyjgs7tpPDho65POwGQCNGZlSBywPxaXzcCqd2iV0S5OPoN2geJ6c9ezOWJjncz4lqOgvHGPGV18UJddQxBlISPoAQXE/btKn2rJVTpSC7Udg5/7Yu40cL4S/J2bxcsflm0gWlooCkVhL3pgc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=h7tFfBUz; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GeFSN8GR"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="h7tFfBUz"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770555386; x=1802091386;
+  t=1770556410; x=1802092410;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=aLd9l6VkAyHVpK9L2eE7+aB1geV7OxU1mtgjLgYs4HY=;
-  b=GeFSN8GRAPoWDR2EEnIkye52GiSf4EpT0MZfzPCFfMBEVYpifDHES8D7
-   iJqY2zVAapxI0bMq6w0H+b9qL1TtonYpPP52v0D4sl/KR/Qo6ckaQNPH4
-   SVZnHuRKRrF+3/Ew3Mm9UipZwndg2U80yDxeg+D6e1h6XTITaQ6bevT1A
-   U9zPp+Du+qd8k1mE6xntPhu7kHx5A5LA5NOE+1WYWhKcstVnsvlByU8TI
-   byDrIxQfjBIWbhhwEcEJ/tWQAFuVuM4uOo8walIrieb6qmqtmnCOPDSte
-   6x/xXdGwiqaJgCmMoQYuDpPXVcjMGGumOdBTokM2VSSP6Noi3aRcxHVNn
-   A==;
-X-CSE-ConnectionGUID: ILNl/FpWR52ddHNfFTKcsQ==
-X-CSE-MsgGUID: Hs9/6pt1TcWUqip1ZkiLkA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11694"; a="75309658"
+  bh=oO+Q8be8GLa+jo0nT3jaaPZEtFfRABAUfxfamrBqeiA=;
+  b=h7tFfBUzvUX4T8ONJsZTH4gXdo6KUa4lIs9yC8JwGbgGFdtw/dyLreYj
+   DIvxRlbbfUJph41LPz9taQXodg0lpFGu3A1WCHC+7Frd9MddUlN0cIMGH
+   6wdcf/ghGZkX7kf8+u2oPo6E8zOP0OyVm0n9s6Vl0i6HZst4/EYbVoJWo
+   TK8Ryh7iyn+PhMp0mGxw837Rg1kPr/nAaSih+YZgNzhu4lS2qHWMQ1tmI
+   le6mKV+On5RfhCQ/hgY8fzlQZG+LJfk2gNKsVChDy8CyWjDYD1I/sWTkP
+   rfP9hrkt5PCkpBE4FWRPiOzd6etL07orytkWLXeLXxZGDFChx1lCu2Va7
+   w==;
+X-CSE-ConnectionGUID: aSpPQEALSLS4qu6Qawj6QQ==
+X-CSE-MsgGUID: KHx7WaaBSkyy9ADe+RLUAw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11695"; a="71730004"
 X-IronPort-AV: E=Sophos;i="6.21,280,1763452800"; 
-   d="scan'208";a="75309658"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 04:56:26 -0800
-X-CSE-ConnectionGUID: uPMNcQYeTTmopmfKNNfrig==
-X-CSE-MsgGUID: ZNxNWNeOSzGBijUbvr8dLg==
+   d="scan'208";a="71730004"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 05:13:29 -0800
+X-CSE-ConnectionGUID: G3HWxfq7S9+UcVDRif80mg==
+X-CSE-MsgGUID: VTFA5JmRQjOTwz81B9cWbw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,280,1763452800"; 
-   d="scan'208";a="215511551"
+   d="scan'208";a="248963283"
 Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.245.100])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 04:56:21 -0800
-Date: Sun, 8 Feb 2026 14:56:18 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 05:13:25 -0800
+Date: Sun, 8 Feb 2026 15:13:23 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Svyatoslav Ryhel <clamor95@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: 434779359@qq.com, David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>,
 	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>,
-	Dixit Parmar <dixitparmar19@gmail.com>,
-	Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-input@vger.kernel.org, linux-leds@vger.kernel.org
-Subject: Re: [PATCH v2 11/11] mfd: motorola-cpcap: add support for Mot CPCAP
- composition
-Message-ID: <aYiH8iwetvRfWxGI@smile.fi.intel.com>
-References: <20260206172845.145407-1-clamor95@gmail.com>
- <20260206172845.145407-12-clamor95@gmail.com>
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	liufulin <frank.liu@faiot.com>,
+	Waqar Hameed <waqar.hameed@axis.com>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH] tof: Add VL53L4CX TOF drivers
+Message-ID: <aYiL89Lx9r8tJT0K@smile.fi.intel.com>
+References: <tencent_326708D02875274DF25B10B91402B3828606@qq.com>
+ <20260207134950.0f064905@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -73,31 +67,49 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260206172845.145407-12-clamor95@gmail.com>
+In-Reply-To: <20260207134950.0f064905@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Feb 06, 2026 at 07:28:45PM +0200, Svyatoslav Ryhel wrote:
-> Add a MFD subdevice composition used in Tegra20 based Mot board
-> (Motorola Atrix 4G and Droid X2).
+On Sat, Feb 07, 2026 at 01:49:50PM +0000, Jonathan Cameron wrote:
+> On Sat,  7 Feb 2026 17:42:35 +0800
+> 434779359@qq.com wrote:
+
+> > This patch adds support for the vl53l4cx tof ic
+> > ICs used in Qualcomm reference designs
+> > 
+> > Signed-off-by: liufulin <frank.liu@faiot.com>
+> Hi Frank and welcome to IIO.
+> 
+> This is a massive commit.  Normally roughly speaking each commit should
+> be an absolute maximum of 500-1000 lines of code because this what
+> people can realistically review in one go.
+> 
+> I'll take a superficial look at what you have here but to make any
+> progress towards upstream it will need stripping back to a much more
+> minimalist base.  From that we we can then look at adding more features
+> in future patch sets.
+> 
+> Note the largest drivers for what I'd expect to be a lot more complex
+> than a time of flight sensor are not as large as this in terms of
+> lines of code.
+
+Yeah, this is even barely satisfies requirement to put into staging/iio.
+It has so-o-o many style issues and other small things (I just pressed PgDn
+several times within 5 seconds). You need to take your time and invest into:
+- creating an upstream plan (roadmap)
+- as Jonathan said, start with a minimalistic setup (not more than a couple of
+  thousands of LoCs
+- be sure the style follows the Coding Style and IIO subsystem specifics
+- be sure the code uses modern APIs from kernel and not some outdated stuff
 
 ...
 
->  	{ .name = "cpcap", },
->  	{ .name = "6556002", },
->  	{ .name = "mapphone-cpcap", },
-> +	{ .name = "mot-cpcap", },
+> For the full series, stay under 2000 lines or in practice it won't get
+> reviewed.
 
-Drop inner trailing comma.
+Fun fact, I answered above without looking at the rest of the message.
 
->  	{},
-
-Drop a comma at the terminator.
-
->  };
->  MODULE_DEVICE_TABLE(spi, cpcap_spi_ids);
-
-This can be done in the patch that adds driver data.
 
 -- 
 With Best Regards,
