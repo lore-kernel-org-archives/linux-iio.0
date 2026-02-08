@@ -1,109 +1,75 @@
-Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from hosting4.idealhosting.org (hosting4.idealhosting.org [185.87.26.194])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6CE52701C4
-	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 05:14:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA5C822F01
+	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 07:40:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.87.26.194
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770527693; cv=none; b=rAeUIAE+5rWcfZ4uNaA7OoUL5kfdKu7GpV4u3DZr3T6LgaosVBiEM9+MLPRcu61yQk2nV68cCOgWwjRq2elSRMeQrhMGahDNqwFj/j9f0S6CWqScmQhnYrMjsrfraNXgnf/gspKqrHptZgkpbZbxNar2G5X8ie1zBYSey4aa6JY=
+	t=1770536441; cv=none; b=pdhkDA+jXas06ThfG4WGpGufhJj9jFBgINsNi8wRDOI/Ji8D+k9k4Oq6NLNHkeh5mHmg+V6PyRSkF5RhZOkNsV1Pj2ISmzJnd32ozObg3Dy2jkLq7sy6X5mwJ0ZAQSM7N/QYJc/HpQ7HkH3R832AIzV4xrdWJbGF8BtxjJHWzVM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770527693; c=relaxed/simple;
-	bh=PYqOTEy1Bun6QiXI4hjiw7WhkNUrL3SPjkRw6BohOmw=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
-	 References:In-Reply-To; b=tMkIMpWY5NrnsUH8TtAE1XKom0aRDcUOTDadyo7Ubq7pv20l8KBFxWsKB3Qb7yqgn9BDXVuISMAtwX76Ch6vGkZu8Rf5//7LPCTW7R6w8O4x2REY+oqcm2OCKJbY+6RKqHYcjCh5fm3dn+6UuNkGADm4EwpRWQsIFAPwjId+vuc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Umru/KtN; arc=none smtp.client-ip=209.85.210.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770536441; c=relaxed/simple;
+	bh=JExkBDb+FhnDhbnHIRgecQ7xFnq9d0/tC0z32LDSHDY=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=aMOZsuG1WVs4OBQWBplQDC6FCPM/y8218sAUN/YQFMR63gZJ3+yjbc9Kxu9DeWLQs4HPdPpIwHZ7B79/EC/uS/TxRoX0S7sdyVd8Y2eO2v+6lsyk2P19PBJVO+v1mfj+kQG3eb9kSQ5gEINckfLB6BhsAOy/Ulkqqc+1kZqu/zc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=investurk.com.tr; spf=fail smtp.mailfrom=investurk.com.tr; dkim=pass (2048-bit key) header.d=investurk.com.tr header.i=@investurk.com.tr header.b=BUq/DBXl; arc=none smtp.client-ip=185.87.26.194
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=investurk.com.tr
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=investurk.com.tr
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Umru/KtN"
-Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-7d18cf89e72so2688532a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 07 Feb 2026 21:14:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770527692; x=1771132492; darn=vger.kernel.org;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PYqOTEy1Bun6QiXI4hjiw7WhkNUrL3SPjkRw6BohOmw=;
-        b=Umru/KtNKkyprFYJPqnCugoKT+sf+BCkxFz0MUeFddecIZAfzN2y80B7IIxeu6clSk
-         gVrCcNa5ebvqQ53o3C4lS5T/ZdEHWFRANQMg2JYFh2Mect0UfPBCCDyZcu3SXyxgiKX1
-         4hg6AYFrqo5t6ASd58IriRoUrVZWnHMhQ8EAvfGVT/9YT9BNYYLO9DE9XisfUMLf+y+r
-         zIkHSbTKtI4Bf4oQbj4M4jx4RqIN2d/MpuaPi9kwA51knaMg4wQq8D93TQuBEwJMsB3N
-         RlBkqs1kzy1iJBU4ersk/PcDcxm6UsyPTv8Dv+CFewxpFphp28Dxt+6Av6OpYljnFcMU
-         DOuw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770527692; x=1771132492;
-        h=in-reply-to:references:to:from:subject:cc:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=PYqOTEy1Bun6QiXI4hjiw7WhkNUrL3SPjkRw6BohOmw=;
-        b=owWvL5d6cxpNl+Fm2CS0VuKNsj56zfzlkLECKQtwq0CfaJJ0gSC3ktKza5xX1YmYfs
-         nDaWTOdMQtrjTqTw/BMMkFa913crpVvHGPFiGkpoVTtA4+SlNCN+cAPOWl0Ci/7lwFs5
-         h5Ufcqo9kx71LS8W9Omgy1LaDKrLK0un4U/xaGSckVRhu/NDp32/8OdVrx4nqjyrpoh+
-         BLFCNiYcQwPcXJN07khJbAoGY+sIdoVOBz+84Jb2B9jiVO0eyG0FjSrICbOY6TSd7YvI
-         TQasbwtO/lTdSoiOgIUt4Mes8RFM9pWR0fYEBofnWI0sg4gIoax1MN9HbaGS0V8C8QBg
-         QCuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWIJhDxucFF9rcYCInK1ubBmSFKGpqwPGlo3z3mNkq63Xevts1NIE/dCX2unZZBx2p0OLMjjyt/CDY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx2e9p+UNO1L8UIwcOGjnuuY86M+ppWg85oTpVOsoTzG512yYo6
-	75MEmEH4u5uQQUMZlmHZEFq/iRl2fOvwMMntMzobmVBG9nB2lWYS1I4h
-X-Gm-Gg: AZuq6aKkL9gHUHIiM26LbIg2P/uRpMo48F7WgOTsaExo628ZMWIrN8jyMF+QrfUXV3I
-	SMvqR0IYjK6DcgxT2Hs4kLYg/+e/fy1pFgeWWeMIVTps5x/Gc1HirX6DxuIR12W1RRWyKPCmcTa
-	dEFF69znBdGLhZY9baVhuP9LdVxA5gJcmCyzbzkzmCmPQF7cwdie7HDL5zTgjn4NA0/VCTooiYe
-	MtuhBiRZo0+Tc6u+Ljqi2bgem4Bvgy+DgyuLNi0n9SlXayXwroRI/ZxiZ1mkOyn6Q/3wflXiWyq
-	isOe2fPf0eYTiKVcSgl0wqDZG5AoFgb6mYyvutB2y5PBv15GJHBffZyPdpOpwR/X0szTr8RjsWB
-	DtIrAOnE4qC0KuXcpdjARZlAZWDUGrGbJdNL3XzP0fPYlxWkJLRp1lBYCYavDGLJk504Or9yUmC
-	qRmHz0i5b7b1A0kIcIFei4t0FygOn6f1CK+NazT3K+X66dmAfhKsCdeHShmi3TPFRY+DiQdAUBS
-	kYe/T0YOYtxtB/eMvmtabrvSF1Kcd9WOpbIp6IxB5QMqa32L0Ffho6x
-X-Received: by 2002:a05:6830:82be:b0:7d1:4f21:ff79 with SMTP id 46e09a7af769-7d464485844mr4657169a34.22.1770527692530;
-        Sat, 07 Feb 2026 21:14:52 -0800 (PST)
-Received: from localhost ([2600:100d:b16d:c41f:8d6c:e914:6c96:3df])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d4646fb636sm4965368a34.5.2026.02.07.21.14.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Feb 2026 21:14:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=investurk.com.tr header.i=@investurk.com.tr header.b="BUq/DBXl"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=investurk.com.tr; s=default; h=Content-Transfer-Encoding:Content-Type:
+	MIME-Version:Message-ID:Date:Subject:To:From:Reply-To:Sender:Cc:Content-ID:
+	Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+	:Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+	List-Subscribe:List-Post:List-Owner:List-Archive;
+	bh=JExkBDb+FhnDhbnHIRgecQ7xFnq9d0/tC0z32LDSHDY=; b=BUq/DBXlcb/aV7vXyNce6tioQ2
+	KS6shbdErdOxuaj5FcB6sOmD4+ROF6AdPwv/sD3e0+qsUgQESWb5NPJUnAVZZj2RGxSgPwpSoLiGR
+	ExjTkftjXiu7bIk1TGiPvOMItDFQyklHAKoWbhbO14Yo97PAiySEYc+6tmIe7gufipJB1Gg+KOLOz
+	jfZWuflPV8vOqwdkkTEH8ZQ6iOMRMxtUWZwAnshrFrdWZb4Jng1sdLMzPBuSLdyMDsExv+jIqAvjZ
+	NJk+qHABsrs8rxC8pYmLvDKR1mVO5JdhG4qs15bYAH5VBPyf8hJyxvMvrldjDgNfGwcpJe+j0KkjL
+	NXKh/zdQ==;
+Received: from [130.131.125.197] (port=57707)
+	by hosting4.idealhosting.org with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96.2)
+	(envelope-from <emreaydin@investurk.com.tr>)
+	id 1vozPB-008RWV-2U
+	for linux-iio@vger.kernel.org;
+	Sun, 08 Feb 2026 10:40:30 +0300
+Reply-To: mrdhakergnaba@centfinancialslt.com
+From: emreaydin@investurk.com.tr
+To: linux-iio@vger.kernel.org
+Subject: 2.5% Interest Rate financing
+Date: 8 Feb 2026 07:40:30 +0000
+Message-ID: <20260208074030.25C22A694BA8393C@investurk.com.tr>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
+MIME-Version: 1.0
+Content-Type: text/plain;
+	charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Sat, 07 Feb 2026 23:14:50 -0600
-Message-Id: <DG9BOO7V828W.2QYTAGRZ0BUNY@gmail.com>
-Cc: "David Lechner" <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 1/2] iio: magnetometer: bmc150_magn: use automated
- cleanup for mutex
-From: "Ethan Tidmore" <ethantidmore06@gmail.com>
-To: "Neel Bullywon" <neelb2403@gmail.com>, "Jonathan Cameron"
- <jic23@kernel.org>
-X-Mailer: aerc 0.21.0
-References: <20260208011659.53722-1-neelb2403@gmail.com>
- <20260208011659.53722-2-neelb2403@gmail.com>
-In-Reply-To: <20260208011659.53722-2-neelb2403@gmail.com>
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - hosting4.idealhosting.org
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - investurk.com.tr
+X-Get-Message-Sender-Via: hosting4.idealhosting.org: authenticated_id: emreaydin@investurk.com.tr
+X-Authenticated-Sender: hosting4.idealhosting.org: emreaydin@investurk.com.tr
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 
-On Sat Feb 7, 2026 at 7:16 PM CST, Neel Bullywon wrote:
-> Use guard() and scoped_guard() to replace manual mutex lock/unlock
-> calls. This simplifies error handling and ensures RAII-style cleanup.
->
-> Additionally, replace msleep(5) with fsleep(5000) to allow the kernel
-> to select the most appropriate delay mechanism based on duration.
+Dear Sir/Madam,
 
-This should be its own patch. Please keep one logical change per patch.
+Warm greetings from Cent Financial Solution LLC.
 
->
-> guard() is used in read_raw, write_raw, trig_reen, trigger_set_state,
-> and resume. Case blocks in read_raw and write_raw are wrapped in braces
-> to ensure clear scope for the cleanup guards.
->
-> scoped_guard() is used in remove, runtime_suspend, and suspend where a
-> short mutex-protected scope is needed for a single function call.
->
-> The trigger_handler function is left unchanged as mixing guard() with
-> goto error paths can be fragile.
->
-> Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
+We would be pleased to hear from you should you or your client
+have a viable project requiring funding. Please feel free to
+contact us to discuss potential opportunities for collaboration.
 
-Thanks,
+Yours sincerely,
 
-ET
+Mr. Dhaker Gnaba
+Director
+Cent Financial Solution LLC
