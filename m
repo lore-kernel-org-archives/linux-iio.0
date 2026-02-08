@@ -1,214 +1,136 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-lf1-f44.google.com (mail-lf1-f44.google.com [209.85.167.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F60E35D617
-	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 15:05:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A88B33D509
+	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 15:19:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770563140; cv=none; b=u5MdoKJi8EQlkDrSqsOkOQb9P0HRixOLfmwH+GTZtiKwBUW/wBcEv+ypE9xzH7ovpmym2p3HcebB94cbVk4Ejtg3cp0ldlZStfH4uKIiO7oA8KfRXRrZVhTO8VF3rqDx/fQknNTV8HUwfRxTMFkTvVcfW6Qp7oXI8SvN7ItLMuU=
+	t=1770563992; cv=none; b=LAS3eUAWh8x4kpMGhh8RCwb732+tSAotS91P/MbNkaTREs/x7Xc2/RO4nVmD+GIkSh+h+q3E1c+d+jh8keNVJvWPVgVuIYX0wxvTCNV7l9iwN7+K4aDbdApyOjS5AFAZd0Vl2rGU1Fa8usQjrSEA1SaVtWVVFclBnyJWl2w9haU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770563140; c=relaxed/simple;
-	bh=U0yREyMuA9zF5E01tEeHmGWl8udIXIY+aolKf/33vzg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=i54zyJwYCnvYEo8gbFATUrrZoG1nionsjf7+/9u2gq+xQjvwRFCglmUsFxz8D+tftkNm6xPCfM+Kp02LD2HkKIeebv4O/mPaKLp8lBoX4qdLFzrfMIB6zA7CG2eXQHf63bMAlzEW6WxldZJYb5MwGygbe0M4XbK3DZR4zHTINQg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lPUq4mkG; arc=none smtp.client-ip=209.85.128.54
+	s=arc-20240116; t=1770563992; c=relaxed/simple;
+	bh=+xzriWSR5iGt8WjlG2DY92+pZ7PIMUvY0YdgOUgFfco=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=QDSoDJ/k57kBZoc36QR5zBPYlGUzZeCQh9fQHMtcDN7kpoyqXfUWZ3XVs4PyXxCfE49eqxdC9xesEZaf+rtvGXBxl2tbHn/64jO+LnJ7zyPdv+i9j5OkvQhsjPi95CC7DpWPoFFd27ITv9vmAW9DecOSOVaOUmYs+skghrA+0pE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SUCxohCm; arc=none smtp.client-ip=209.85.167.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lPUq4mkG"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-4833115090dso9035855e9.3
-        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 07:05:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SUCxohCm"
+Received: by mail-lf1-f44.google.com with SMTP id 2adb3069b0e04-59dd9aef51eso4836600e87.2
+        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 07:19:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770563136; x=1771167936; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=d13IbX+Pqr5mAXxfWBXXantCifGt3HSpLvwuk8HyZUQ=;
-        b=lPUq4mkGcr/7J0GR91QQiJZaymr0jwOb4S27tBhjuNy/yl7ht0LJt1akYK8mcTSaH1
-         SD98gJ858oXXo4cxQDZ0T1elWELnm0dkM7v1vou//gC3YtwyjkmxRr+4oY8l8HC+ksjN
-         dkXoJbrIqbXA1ZiHU/UyUgo4Z0eiBhKbSp41JZV5wY3YnDuSEC1lqHyw8m+xct0ESg1d
-         9qiR16m1nmxqGvCAQ0bILcZfycM5/qVxE6gn1H8YE3EAy1RiE8RrghplZbw4psyDDqqD
-         iPK40nYdRvB3ps9LRAA8fgrTja5dB9ywxUFDf8nCI5l3z3vO0Ko9/WCp0qMQTjGqmNq+
-         1B5A==
+        d=gmail.com; s=20230601; t=1770563990; x=1771168790; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=W15qM4zjUo3jkGGj+XoI8VU/D/d6+cRvXAz+lQ/6Xi0=;
+        b=SUCxohCmgYBUg1Doaa0sWREY1ExnWioYyxlVQOjTgL/iEYFU0UG4XsHNsQ6OCVhkvK
+         bcPooG5fPikQ/ygZmJ+40ys7Jm1U7Y0rVs8LIAZ5nDfY9HSAl+SxuUy5rkhVSaiznFJv
+         fxCefGGML/XdtYQKKou9qYYX9hAbN4TggSDpGr2zcdXeFpOqRs697S+iKY4mwki660KK
+         IPLaKC1kx5zzhMQvGVIBJb4JXEf/6hu38tqoGDYeQnp07jL2lBHSYuYV34nTMncZ+gna
+         g8lM6F/P1M2AM+DrcWXvZAfCIh5j+dJbd4GvGgpq3NhlzeZHvKIKOALiU59mz8ODEzK1
+         LEuw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770563136; x=1771167936;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=d13IbX+Pqr5mAXxfWBXXantCifGt3HSpLvwuk8HyZUQ=;
-        b=mOqgusivNDtyfkJAU31PjB5E0DG0X2YTu8cuto8OGUXGB2wkpMi0ulc3SWGazBa5Hx
-         HZtatGK3tAfSXGBZn11QJIV5t4PCxt62FBJih845+AedscmrsuIjM+sEraKcNWWVZ1BC
-         wL3Qb1dvQr/tb9LgzRe9gCw6S55QxGiCUbHciINxJKPC0GYGmIvmXtTRtfa3PfsRwOZ7
-         Vue1g7/bb9k3r4H0KbBXddX9m+u6cuigT8E8qjpzgP1EDdy9e6j/+tqpef2cIT2rAU4S
-         esEITA45196TmISy7A1Sn9M2E2RkY4aP6bI5HlGXISySWEsS0HAsHoLQwpM5d6aWC+fQ
-         z1kA==
-X-Forwarded-Encrypted: i=1; AJvYcCVozMLMQlyAz9x/GQ5qzQvEZRA01MZ17nbTGnjmNma8eCMWjQbETPMvV5ysup2kfYuTw4RlmFOIR5A=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxc9uUQkfbK0JbcQ/PMqKXj1FnUE3nbwFbzn21sqC33b09nSpDb
-	I+uXPkf+2U8biSRiZ2CAMm3wfu5uYIGcjM8QpDt6Tcs+mvM6/YRr8eTz
-X-Gm-Gg: AZuq6aKfx0dpkDqK2WIh14QAv3f4fvu7t0S4pQWfhRpW7Azs9viLllUjaR/uwnP4t33
-	BaoMZ19kvtka/y9qjlN5oYg9LZg32t3tgcEVULOBxr3mn2A0fnz4WesLvMhAXxFixu3xSvRyXnp
-	LmqQApCUQQ5Vt2Thrf8FSN2Q1c5bLJWURaSD2aPXbxPuauGt/cFl0p2c3S1PwVAvbzSKoVoQ59n
-	iEd4cXoE++m1WbZ26+zZn7AVwAGSp93iJgwiC56usZTFm5jGSEUzBI+ZHAUEkn3nMFB3uXEeiRL
-	mBNTSne68fG/Bpuv0uzbTt9rkwIDwfW9GI5b58ur0KpIM9lcYksRW+rFYFvR1kBt9eFa0zGKt/o
-	mnUeG1MbWQM11uULDb1XfTdwUgUkN1S3V/yqAmZ3WoMv5GwozVxX1TN4G5GYtvfLZfDky8aiade
-	jiE4DmcwGx8EcBEFgQu4aSj9i3GD+Ib5/R3+SjZy8n7pgC3oGVeQ==
-X-Received: by 2002:a05:600c:a10b:b0:483:361b:deff with SMTP id 5b1f17b1804b1-483361be0aemr32845895e9.14.1770563136324;
-        Sun, 08 Feb 2026 07:05:36 -0800 (PST)
-Received: from DB-VM.1337.ma ([197.230.240.146])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483206cc7d3sm179326255e9.5.2026.02.08.07.05.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Feb 2026 07:05:35 -0800 (PST)
-From: Taha Ed-Dafili <0rayn.dev@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	rdunlap@infradead.org,
-	skhan@linuxfoundation.org,
-	linux-kernel-mentees-archive@lists.linuxfoundation.org,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	corbet@lwn.net,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	linux-iio@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Taha Ed-Dafili <0rayn.dev@gmail.com>
-Subject: [PATCH v3 4/4] docs: iio: adxl345: update math and examples for scaling
-Date: Sun,  8 Feb 2026 10:05:05 -0500
-Message-ID: <20260208150515.14798-5-0rayn.dev@gmail.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260208150515.14798-1-0rayn.dev@gmail.com>
-References: <20260208150515.14798-1-0rayn.dev@gmail.com>
+        d=1e100.net; s=20230601; t=1770563991; x=1771168791;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=W15qM4zjUo3jkGGj+XoI8VU/D/d6+cRvXAz+lQ/6Xi0=;
+        b=Q/jqtnxvyA0FVzk/QOHvqleFqYwx1Eu6BxRKQ2qiImGT4PueIM1tD5kI6GTn+FEfMq
+         S1TstmjfC01izOtQlvDrnTa0D88B8oqi8k/KPh5ugMCcDt3rRfff+dsrWvKLNd4xHFEl
+         xz//IoM3Hi8HEPUvlD597/847xLxzP7QrvbN/zWaN+AhDXZRfyvYjO24eutf/G2+77Qs
+         oDUh5x8Wbk206SREKyDS1gqhWO0UQHbJPIkjiThHTpmZSUi0/l/h6GixzmvGkSisdkng
+         pDE66zpYxVy/TQS1vEuCrfnXs9Eu3DRRxEeCfvo7Fe6STXMRiRuFqM3es3quq5xNDqje
+         exmA==
+X-Forwarded-Encrypted: i=1; AJvYcCXw42XrBVLt4p8yI+xWawICZSMA2a2OElxUrOVCiD38oEhp4DiAndvsojUZUYkdAhp/dHFnpI9Qfjw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwmRj5G6z3mJYNNmXZ8owa7+tqRzAjMxEApkFcblmnKxv2wMZWC
+	NtJ+YJDn/DJ279By7SMvjpeV1RgWdgeFhTQSN6dQ4/j7kL8sk3uAa+SY
+X-Gm-Gg: AZuq6aIzRin8nlit7ueA1rSElI+iFZ2H52PUVtYIIt6DS3cSzzcfIHsuyjmXe7hIKrG
+	WhcNUiIfq9rkKfUafpNAgU7vzKQhO0VFePe6/XYnC5fxrH6/npgZOGCtphbyMA/EXUfBQnmxVXy
+	8usdZPjaFb8IRSgoHYQSDBw1Vl20ckn8d8NR/eebISoEpLgbtpcT5VlMlgd2QpyblTyYQVqZpEj
+	h7SVsE97IL5F3HjnzccoCxHYQRxUjr9sck9EJeaFAnTboU0LotIRa2D+Z08llJzd+RvYKTq/adh
+	m6BYrTcqDOFFU/YU/eExqyNle3GvyyGFbdh6piFiO+X7+0z17tBFjmI1v4Jkf+LMc4FWR/3RRIU
+	0dT2tLuL53dRDuvW9SrVMq1thTKIxUuTKWd0MPb3A5ukMAdna6Tn5eUEKHzmqIlrSG03x0d0M0Q
+	KF0YlWdvFSp6lorQa57lMO
+X-Received: by 2002:a05:6512:2508:b0:59e:4f97:ad59 with SMTP id 2adb3069b0e04-59e4f97af15mr263855e87.10.1770563990386;
+        Sun, 08 Feb 2026 07:19:50 -0800 (PST)
+Received: from ehlo.thunderbird.net ([178.137.246.208])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59e44cf6e8fsm1963107e87.9.2026.02.08.07.19.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Feb 2026 07:19:49 -0800 (PST)
+Date: Sun, 08 Feb 2026 17:19:49 +0200
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>,
+ Pavel Machek <pavel@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Dixit Parmar <dixitparmar19@gmail.com>,
+ Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_10/11=5D_mfd=3A_motorola-c?=
+ =?US-ASCII?Q?pcap=3A_diverge_configuration_per-board?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <aYiHnUW93AB0ARJH@smile.fi.intel.com>
+References: <20260206172845.145407-1-clamor95@gmail.com> <20260206172845.145407-11-clamor95@gmail.com> <aYiHnUW93AB0ARJH@smile.fi.intel.com>
+Message-ID: <D8B3E97F-3405-4EBD-882D-677F530E4EDB@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Update the documentation to reflect the addition of event scaling
-and correct existing technical errors in scale values.
 
-key changes:
-- Fix the 62.5 g/LSB typo to 62.5 mg/LSB and add SI unit conversion.
-- Correct decimal precision of in_accel_scale and
-in_accel_scale_available to match actual SI unit (m/s^2)
-values reported by the driver.
-- Add sysfs example showing how to read and interpret the
-newly implemented event scale factor.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
----
- Documentation/iio/adxl345.rst | 41 +++++++++++++++++++++++------------
- 1 file changed, 27 insertions(+), 14 deletions(-)
+8 =D0=BB=D1=8E=D1=82=D0=BE=D0=B3=D0=BE 2026=E2=80=AF=D1=80=2E 14:54:53 GMT=
++02:00, Andy Shevchenko <andriy=2Eshevchenko@intel=2Ecom> =D0=BF=D0=B8=D1=
+=88=D0=B5:
+>On Fri, Feb 06, 2026 at 07:28:44PM +0200, Svyatoslav Ryhel wrote:
+>> MFD have rigid subdevice structure which does not allow flexible dynami=
+c
+>> subdevice linking=2E Address this by diverging CPCAP subdevice composit=
+ion
+>> to take into account board specific configuration=2E
+>>=20
+>> Create a common default subdevice composition, rename existing subdevic=
+e
+>> composition into cpcap_mapphone_mfd_devices since it targets mainly
+>> Mapphone board=2E
+>
+>=2E=2E=2E
+>
+>> -static const struct of_device_id cpcap_of_match[] =3D {
+>> -	{ =2Ecompatible =3D "motorola,cpcap", },
+>> -	{ =2Ecompatible =3D "st,6556002", },
+>> -	{},
+>> -};
+>> -MODULE_DEVICE_TABLE(of, cpcap_of_match);
+>> -
+>>  static const struct spi_device_id cpcap_spi_ids[] =3D {
+>>  	{ =2Ename =3D "cpcap", },
+>>  	{ =2Ename =3D "6556002", },
+>> +	{ =2Ename =3D "mapphone-cpcap", },
+>>  	{},
+>>  };
+>
+>This  also needs to be converted to use driver data=2E
+>
 
-diff --git a/Documentation/iio/adxl345.rst b/Documentation/iio/adxl345.rst
-index 3ca6a78feb5b..321565699817 100644
---- a/Documentation/iio/adxl345.rst
-+++ b/Documentation/iio/adxl345.rst
-@@ -13,7 +13,12 @@ This driver supports Analog Device's ADXL345/375 on SPI/I2C bus.
- * `ADXL375 <https://www.analog.com/ADXL375>`_
- 
- The ADXL345 is a general-purpose, low-power, 3-axis accelerometer with selectable
--measurement ranges. The ADXL345 supports the ±2 g, ±4 g, ±8 g, and ±16 g ranges.
-+measurement ranges. The ADXL345 supports the following ranges:
-+
-+- ±2g  (approx. ±19.61 m/s^2)
-+- ±4g  (approx. ±39.23 m/s^2)
-+- ±8g  (approx. ±78.45 m/s^2)
-+- ±16g (approx. ±156.91 m/s^2)
- 
- 2. Device Attributes
- ====================
-@@ -98,23 +103,23 @@ listed.
- +---------------------------------------------+---------------------------------------------+
- | in_accel_gesture_singletap_timeout          | Single tap duration in [us]                 |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_gesture_singletap_value            | Single tap threshold value in 62.5/LSB      |
-+| in_accel_gesture_singletap_value            | Single tap threshold value                  |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_mag_falling_period                 | Inactivity time in seconds                  |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_mag_falling_value                  | Inactivity threshold value in 62.5/LSB      |
-+| in_accel_mag_falling_value                  | Inactivity threshold value                  |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_mag_adaptive_rising_en             | Enable AC coupled activity on X axis        |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_mag_adaptive_falling_period        | AC coupled inactivity time in seconds       |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_mag_adaptive_falling_value         | AC coupled inactivity threshold in 62.5/LSB |
-+| in_accel_mag_adaptive_falling_value         | AC coupled inactivity threshold             |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_mag_adaptive_rising_value          | AC coupled activity threshold in 62.5/LSB   |
-+| in_accel_mag_adaptive_rising_value          | AC coupled activity threshold               |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_mag_rising_en                      | Enable activity detection on X axis         |
- +---------------------------------------------+---------------------------------------------+
--| in_accel_mag_rising_value                   | Activity threshold value in 62.5/LSB        |
-+| in_accel_mag_rising_value                   | Activity threshold value                    |
- +---------------------------------------------+---------------------------------------------+
- | in_accel_x_gesture_singletap_en             | Enable single tap detection on X axis       |
- +---------------------------------------------+---------------------------------------------+
-@@ -126,6 +131,10 @@ listed.
- +---------------------------------------------+---------------------------------------------+
- | in_accel_z_gesture_singletap_en             | Enable single tap detection on Z axis       |
- +---------------------------------------------+---------------------------------------------+
-+| in_accel_gesture_scale                      | Tap threshold scale (0.612915 m/s^2).       |
-++---------------------------------------------+---------------------------------------------+
-+| in_accel_mag_scale                          | Activity threshold scale (0.612915 m/s^2).  |
-++---------------------------------------------+---------------------------------------------+
- 
- Please refer to the sensor's datasheet for a detailed description of this
- functionality.
-@@ -140,8 +149,8 @@ When changing the **g range** configuration, the driver attempts to estimate
- appropriate activity and inactivity thresholds by scaling the default values
- based on the ratio of the previous range to the new one. The resulting threshold
- will never be zero and will always fall between 1 and 255, corresponding to up
--to 62.5 g/LSB as specified in the datasheet. However, you can override these
--estimated thresholds by setting explicit values.
-+to 62.5 mg/LSB (0.612915 m/s^2/LSB) as specified in the datasheet. However,
-+you can override these estimated thresholds by setting explicit values.
- 
- When **activity** and **inactivity** events are enabled, the driver
- automatically manages hysteresis behavior by setting the **link** and
-@@ -270,13 +279,13 @@ Scale range configuration:
- .. code-block:: bash
- 
-         root:/sys/bus/iio/devices/iio:device0> cat ./in_accel_scale
--        0.478899
-+        0.004789
-         root:/sys/bus/iio/devices/iio:device0> cat ./in_accel_scale_available
--        0.478899 0.957798 1.915595 3.831190
-+        0.004789 0.009578 0.019156 0.038312
- 
--        root:/sys/bus/iio/devices/iio:device0> echo 1.915595 > ./in_accel_scale
-+        root:/sys/bus/iio/devices/iio:device0> echo 0.019156 > ./in_accel_scale
-         root:/sys/bus/iio/devices/iio:device0> cat ./in_accel_scale
--        1.915595
-+        0.019156
- 
- Set output data rate (ODR):
- 
-@@ -312,10 +321,14 @@ Configure one or several events:
- 
-         root:/sys/bus/iio/devices/iio:device0> echo 24 > ./buffer0/length
- 
--        ## AC coupled activity, threshold [62.5/LSB]
-+        ## Check the event scale factor (0.0625 * 9.80665)
-+        root:/sys/bus/iio/devices/iio:device0> cat ./events/in_accel_gesture_scale
-+        0.612915
-+
-+        ## AC coupled activity, threshold [0.612915 m/s^2/LSB]
-         root:/sys/bus/iio/devices/iio:device0> echo 6 > ./events/in_accel_mag_adaptive_rising_value
- 
--        ## AC coupled inactivity, threshold, [62.5/LSB]
-+        ## AC coupled inactivity, threshold, [0.612915 m/s^2/LSB]
-         root:/sys/bus/iio/devices/iio:device0> echo 4 > ./events/in_accel_mag_adaptive_falling_value
- 
-         ## AC coupled inactivity, time [s]
--- 
-2.47.3
+I can do that, but is it needed? This id table, if I understand correctly,=
+ is here solely to silence warnings about missing spi id table=2E Driver it=
+self does not use it in any way and will never use since all available devi=
+ces that use this driver rely solely on the device tree, all possible futur=
+e devices will be relying on device tree too due to obvious reasons=2E
 
+And please, may you contain all your reviewing in one iteration=2E Then bo=
+th of us will spend less time working on the patch=2E Thank you!
+
+>>  MODULE_DEVICE_TABLE(spi, cpcap_spi_ids);
+>
