@@ -1,109 +1,124 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BF001E8337;
-	Sun,  8 Feb 2026 14:02:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AC80355813
+	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 14:41:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770559380; cv=none; b=Ce0VRSKquAp/fx8UJzVdkXV8yx1VmU3wNeATja2V2cmWqsgkhHGGT+wL45ocvHI7+uYjQjoH3sHlU7pRwOq9UYXceDzf+Vn3YIDjdKmNgPGQIa3+pGwtm3Raps3hFHOFkohEXSNWRrYc1c/rkznVyJr86obHHg7WqrPLfhC8pIY=
+	t=1770561696; cv=none; b=lMR+j8xxvITdhumi/u9NgxIxMdJlR8jxv8POQrJirQERjEq7c6VBAKtlP+pksN3MiJiaCj1xIA5E01RknQGLcGTh2uzp/d7/2+joQI2IteBJEmR5esSrOS/tbIKJioAZjB0wI1EuNNGnAmsoYz3Jgf+RhFBklCVrJd//GkwP8V4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770559380; c=relaxed/simple;
-	bh=nMGK0BP6OuOVOKaBgR69rVIqcHG7H2GkskKr9RXV4Oc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Fq0CklFwsMzqjw9/1zWCY1wAW1aP+dZzErOE7n7rvqxXbWGN81IKJwb/U3oYNU5tBaiwvHf1Q38MbUG9UAxhg7WQ7W22d2LhNJMpxWptaayHby2Y6YJlEQOSfhkFaEIs7BusyyI+p3jmnWGATNk3oItAefS9s2chMA0/VJ7LwHs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=k0b2r4fl; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770561696; c=relaxed/simple;
+	bh=CZs6W4qtgovICtv3aQ4MI/35xymWjYMW9FmKLgGvuPQ=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=B0gO7KjU8dp1uBwBo/S9NsFLCo9w7sIeou7bjdRjsTpeCNsfDCaCH8VrMFc06TkjEcOjnYdN9XW8FVIE3H1oYlcIAcjXt52juVuoY9I8gOlbRSDnLqD5pyufXt0dzv0PkDZ2wigIoVdzHXh8jXs//4SG3Bkdd0mkX9i5hGnzEjE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iuSFG1Rp; arc=none smtp.client-ip=209.85.167.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="k0b2r4fl"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770559379; x=1802095379;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nMGK0BP6OuOVOKaBgR69rVIqcHG7H2GkskKr9RXV4Oc=;
-  b=k0b2r4fl5zpZKn1aw5kb/mKKsQ9iZzcownfBZntMJ8X0BcXMafcraqGT
-   DUa5+ovAvFGYWyb3kWpH3atksmFaOmDYEN5VZoYm9hHsqg+SpWXiQlcrY
-   sLaPbyksIInYpJG0dASgTjJ9kWFJ0OrwabrOctRElrSXegA6e5jnbzJOu
-   tgwNYOWiRQMCC7oCiiPIcXvzQt3xwIaXyzI1JZcWs0kQEb/bb8eBbw7UY
-   BXMHxj+DdklA95Jf6KR+z53OPG+aZS6OORjHg7uLmZo5hQPVYAVly6iEo
-   iHZhtjpIaD1Jk+0l774HF4hUY8LGc9/ZuNxV2tyD8lvFe3WFXj5j0X7Wl
-   A==;
-X-CSE-ConnectionGUID: hFrywRTWQ5GuYymcznCkeQ==
-X-CSE-MsgGUID: 7PTNbqyAQfKGNGL7cfyecw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11695"; a="83066187"
-X-IronPort-AV: E=Sophos;i="6.21,280,1763452800"; 
-   d="scan'208";a="83066187"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 06:02:59 -0800
-X-CSE-ConnectionGUID: YlsWcOOaQc2zJnmi4ZFP4A==
-X-CSE-MsgGUID: RlvpBCsHTzWaXv4afxqvOQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,280,1763452800"; 
-   d="scan'208";a="215848786"
-Received: from fpallare-mobl4.ger.corp.intel.com (HELO localhost) ([10.245.245.100])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 06:02:55 -0800
-Date: Sun, 8 Feb 2026 16:02:52 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-	jic23@kernel.org, michael.hennerich@analog.com, nuno.sa@analog.com,
-	eblanc@baylibre.com, dlechner@baylibre.com, andy@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	corbet@lwn.net, marcelo.schmitt1@gmail.com
-Subject: Re: [PATCH v8 8/8] iio: adc: ad4030: Support common-mode channels
- with SPI offloading
-Message-ID: <aYiXjCpiMQ_h9Ao4@smile.fi.intel.com>
-References: <cover.1770403407.git.marcelo.schmitt@analog.com>
- <1f05069e25e9ea28db2cef9fa3856456be3c2614.1770403407.git.marcelo.schmitt@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iuSFG1Rp"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-59de8155501so4017765e87.3
+        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 06:41:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770561694; x=1771166494; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=rYIWPdf9Ppa+RCJ5xZ0bnUhEJapRTVibnTDn3MDdLKE=;
+        b=iuSFG1Rp7qDdoQS1exGm06yTiEKE8Ut9Sby3ZZLF/zCWH4LkssqaC3tX0QAvid2tDZ
+         VnSHPoGkzaL+5sn2ZUpiaMdEjLhk53Nm2u2SyT1u1KyMVFz8swBc8zQz7RVPbK/fOJ56
+         pEQOvQFR+dfhtTOTfHVmo2apfkd8UMJD7IajkDhVKME/rByfKkbfB9mle0n8li2B+E6P
+         DPi7HGy3NVWGdWqFeGnjQkxhq2ZhzNR3xPl0lifC556ugcm0En8cd7ia7TAXTqjv9Pf7
+         xnk/ay0/30ZjEGbiUoa+ejygg92xWM6xypLs/rRzgWt9C/856NQMTxWCoYnEPNpZLJWM
+         c1Xg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770561694; x=1771166494;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=rYIWPdf9Ppa+RCJ5xZ0bnUhEJapRTVibnTDn3MDdLKE=;
+        b=ChNouFMoCzIGd0TQM2OTWhaeqrfInaM0R933zpUofrOCrgXAmU/NcDshBpIDlI6hFA
+         BslRzZd375ItNz8WmKGushxw9EKledfukzxbilz0w4TrFCh/vovB4HyyqFEquUgK8pXj
+         ds7l7We1mGppNqAHP0DYLFRND24kXHhvgBZQh1PMLhXHyW543lkEcP6dpHaIA0rTNgjt
+         Q20rfxvNA3DesCbApARl6IDlYufCLxmeznYVf0xeaziMotPAXk3rpr2NaSQ5/8pOV1vW
+         1lMswxEWYq0MpEfzUD73eb99rAjCpbdBQsRZuWVFzlMCXLOqdxMPpeeMAppw21nT4IHL
+         AJjQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVcnw4Jtf8rK97wNBIaYW92Fieecw9N4ms3Du19fhpNsvsox5gAAJXpb6hmXUSt1GnVWY/CERXfrcE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz9KkKgIWIGFxemkdkd0xqDoRTfAXbgiN1YqSxcm0PuhdZlRzJg
+	9EEBfpPdheZYoUnHHMrnI/ielAA/v62z5QLDvartMMywwutoqBEJa9Yu
+X-Gm-Gg: AZuq6aJadF8eU4ub6a1fVB0nLqC8w7kem0oQkR85mGVUKEU6DGuU+hWmMv2OfVsXCHs
+	TaJPPS8UmLI7dfTUM2XWe2zPo+obMzJ3JeOwXTfTvHM3nvC5L8bSD2BWGFmybQZTQ0/TBAblQsW
+	4miPXzX8OX/Yx0bOGCc2+s+hrbq26NscjzZNA+Nko4dOekEhBSWcDWHnOdcOmTDo/0HlXmLxfYK
+	MLz730N8yddzk0R5BO8NVR/9EWmGDfV5/WxerYZHUbDMPfsS6FqAeeaX70SOcSn9k5sKG/s5wRa
+	aWaXK3L+z5K+fh7N7LsWwpTkeA5nQr1BVLIi8StMTa8hk7jJNGWGcGGVCRsAC1jfxvv2ycfV9KU
+	IfLr6qpFsFtsYtFhA9e/GRof/75/+id+kxbwANbV7MwLk9Ug+6JWjk3l1EIHRSfdaGpj2WPkMY6
+	/VqdcYl0Ys0LAvtouL6t8L8aVll+/wFco=
+X-Received: by 2002:a05:6512:1302:b0:59e:39af:a70f with SMTP id 2adb3069b0e04-59e45156d7emr2557460e87.35.1770561693903;
+        Sun, 08 Feb 2026 06:41:33 -0800 (PST)
+Received: from ehlo.thunderbird.net ([178.137.246.208])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59e44cfd475sm1948495e87.29.2026.02.08.06.41.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Feb 2026 06:41:33 -0800 (PST)
+Date: Sun, 08 Feb 2026 16:41:32 +0200
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>,
+ Pavel Machek <pavel@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Dixit Parmar <dixitparmar19@gmail.com>,
+ Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_11/11=5D_mfd=3A_motorola-cpca?=
+ =?US-ASCII?Q?p=3A_add_support_for_Mot_CPCAP_composition?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <aYiH8iwetvRfWxGI@smile.fi.intel.com>
+References: <20260206172845.145407-1-clamor95@gmail.com> <20260206172845.145407-12-clamor95@gmail.com> <aYiH8iwetvRfWxGI@smile.fi.intel.com>
+Message-ID: <39B7F089-5B4A-47F7-B2EA-A526B290FA77@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1f05069e25e9ea28db2cef9fa3856456be3c2614.1770403407.git.marcelo.schmitt@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
-
-On Fri, Feb 06, 2026 at 04:02:42PM -0300, Marcelo Schmitt wrote:
-> AD4030 and similar devices can read common-mode voltage together with
-> ADC sample data. When enabled, common-mode voltage data is provided in a
-> separate IIO channel since it measures something other than the primary
-> ADC input signal and requires separate scaling to convert to voltage
-> units. The initial SPI offload support patch for AD4030 only provided
-> differential channels. Now, extend the AD4030 driver to also provide
-> common-mode IIO channels when setup with SPI offloading capability.
-
-...
-
-> -#define AD4030_CHAN_CMO(_idx, _ch)  {					\
-> +#define __AD4030_CHAN_CMO(_idx, _ch, _offload)  {			\
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
->  		BIT(IIO_CHAN_INFO_SCALE),				\
->  	.type = IIO_VOLTAGE,						\
-
->  	.scan_index = (_idx),						\
->  	.scan_type = {							\
->  		.sign = 'u',						\
-> -		.storagebits = 8,					\
-> +		.storagebits = (_offload ? 32 : 8),			\
->  		.realbits = 8,						\
-> -		.endianness = IIO_BE,					\
-> +		.endianness = (_offload ? IIO_CPU : IIO_BE),		\
-
-Hmm... This is interesting. Does it mean it's designed like this for any
-offloaded SPI case? Wouldn't be better to follow the same endianess in both?
-
->  	},								\
->  }
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
 
--- 
-With Best Regards,
-Andy Shevchenko
 
+8 =D0=BB=D1=8E=D1=82=D0=BE=D0=B3=D0=BE 2026=E2=80=AF=D1=80=2E 14:56:18 GMT=
++02:00, Andy Shevchenko <andriy=2Eshevchenko@intel=2Ecom> =D0=BF=D0=B8=D1=
+=88=D0=B5:
+>On Fri, Feb 06, 2026 at 07:28:45PM +0200, Svyatoslav Ryhel wrote:
+>> Add a MFD subdevice composition used in Tegra20 based Mot board
+>> (Motorola Atrix 4G and Droid X2)=2E
+>
+>=2E=2E=2E
+>
+>>  	{ =2Ename =3D "cpcap", },
+>>  	{ =2Ename =3D "6556002", },
+>>  	{ =2Ename =3D "mapphone-cpcap", },
+>> +	{ =2Ename =3D "mot-cpcap", },
+>
+>Drop inner trailing comma=2E
+>
 
+That would be a stray change, wouldn't it?
+
+>>  	{},
+>
+>Drop a comma at the terminator=2E
+>
+
+That would be a stray change as well, wouldn't it?
+
+>>  };
+>>  MODULE_DEVICE_TABLE(spi, cpcap_spi_ids);
+>
+>This can be done in the patch that adds driver data=2E
+>
+
+Then lets move there=2E
