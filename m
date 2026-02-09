@@ -1,44 +1,72 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59766332EB7;
-	Mon,  9 Feb 2026 08:02:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07D7B1917ED;
+	Mon,  9 Feb 2026 08:19:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770624169; cv=none; b=SNn3aPYDM3s9u1R9Sezv3xRTqJkq1Io29htBbuWrYEYB7tKhcB4FAkT8SsQol/XuS48Zn/sPvn5/FUH0kyTYExJ4Pe0/ZYj8c5BFwsygq1mtk2Y5oy40PT1b+weBeVi/1TqBdIPRbwo8MUi9RjJYLR6sLdtBFJI5uksiek0yPnY=
+	t=1770625145; cv=none; b=pNx+v91oxSyYUVHmU3O4Uv4/0+AkBmkRehLEgEzEpSEIppySgExHAa5fAf7NW8K8rxcQbtiA6zstWf9g30CeSKwrFp1+stMi1Xo1f+aImzX2v9gDGFDCL3w1HLxbJ46hQiyAEU66dEtI1N8xzUWCBUCbSN/E3CAMI7LScmILXpA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770624169; c=relaxed/simple;
-	bh=5IltqV2phVSHgfzKUFG56gdUorRF6ZM81UajNODgFDE=;
+	s=arc-20240116; t=1770625145; c=relaxed/simple;
+	bh=v4+gioVzpmtpOGpUk+G0irz2D9GY7eKMbeUGrW55+yk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=upH0kWx2HkSOju6hkCkygO0pPlqrRLB/JNfiHtelriM8c7bOn3Vp8HVdrvk7RgStOPx4sPCtobz2fLPuWjhwVQ8kCVKlyOthR2rAC6blxh6cX5skKZnwQC7EIWp3XTV7NyQyszAk250uvP0UF1V5y+9xKYviIbwra3JB/To1p/o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UaVkQmw+; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=DI8ZyoCbqewICrS9G+DnBFtjCLxNWOCZKMo2EM+SCyJbTDaujvBAV2U2J19Fm/dp+GPTLzjMFfBJwRdczkKmrn+ZEx3I/ohHXiMhfzWrWsFb63/MHwcL9JO+/jbiZ7ugNyXrj5Fn6dklf+V/wQrcYmdtiCoEOoGMpX/U5GVXB4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YJqIkIf2; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UaVkQmw+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6994EC19422;
-	Mon,  9 Feb 2026 08:02:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770624169;
-	bh=5IltqV2phVSHgfzKUFG56gdUorRF6ZM81UajNODgFDE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UaVkQmw+c7CFGaVoTWBoLL2MY8vwNspF3DtSJynNxwf9hXsedC7IOwofpYoY9Nnu+
-	 X4aVErUB9UrlAuHsjvWQszs6phX2a7XSh7Q+6qTD09iEAF5ttiLEHMCHVv0NPruohg
-	 LMBgOtFvCxR7tAHolhIPPr1yG+Yei0nxszSfsTvvsinFhJe/k2fekhF27npCHzfQbE
-	 8K6VqPNv2v22Yyi9RiI1N3dFiYGKW61zbF2O53R8Dcsr//dCErf0NiWwGE/cN1hOVc
-	 4TgR1FaagMteO9b7soG08aLdIWK277Y262eFh1OGgNEOabdbj2E1As2sjv+DyWGlou
-	 cDsaQMPR2Op7w==
-Date: Mon, 9 Feb 2026 09:02:46 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Yasin Lee <yasin.lee.x@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, yasin.lee.x@outlook.com, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/5] iio: proximity: hx9023s: support firmware-name
- property
-Message-ID: <20260209-masterful-fluffy-pegasus-bcc0de@quoll>
-References: <20260209-upstream-20260219-v1-0-2b4d74e309d1@gmail.com>
- <20260209-upstream-20260219-v1-3-2b4d74e309d1@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YJqIkIf2"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770625145; x=1802161145;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=v4+gioVzpmtpOGpUk+G0irz2D9GY7eKMbeUGrW55+yk=;
+  b=YJqIkIf2ojg4CWIJf9DbTDdzS4eBtQsL1xZ+PO0Pn9p65TePynCEYsbR
+   PkiPUpg0rIcgPC1pQToKTXpDRQSIB5diQCImzmiVUMkJJwQ8Y/fzLJvti
+   cQG/dZz8/kRawUPQzXksz/l+2XDMTi4ZPf7lZiNRGurC307f+fPjSmGVX
+   k1KeEZDLd6uZE+UJiLXMlmvfj757COKfdRtXEm03zssPfk6xVX2gwhlnH
+   W4EqAadCa0aAPNaSDtACEoawp9tB8oySfvnCquJBc0sep4XBjc0dJb1wy
+   kRQs9B2afRNzDon/hujimVfAAHkyusI2Hh3ictT7wmbNGO8k0Sq6cC/vJ
+   A==;
+X-CSE-ConnectionGUID: 5FpaSrHLQGuthp+ziVvWGA==
+X-CSE-MsgGUID: FfZqHRd5S4yqLlL+TwiXGw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11695"; a="82465464"
+X-IronPort-AV: E=Sophos;i="6.21,281,1763452800"; 
+   d="scan'208";a="82465464"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2026 00:19:04 -0800
+X-CSE-ConnectionGUID: GemA8WHCSOacCXQ5QuuqCA==
+X-CSE-MsgGUID: JpaDVtz5Qa2PnJz4Q/Sfrg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,281,1763452800"; 
+   d="scan'208";a="210600232"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.128])
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2026 00:18:59 -0800
+Date: Mon, 9 Feb 2026 10:18:57 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Svyatoslav Ryhel <clamor95@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Lee Jones <lee@kernel.org>, Pavel Machek <pavel@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>,
+	Dixit Parmar <dixitparmar19@gmail.com>,
+	Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-input@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [PATCH v2 10/11] mfd: motorola-cpcap: diverge configuration
+ per-board
+Message-ID: <aYmYcd0431P5sUtq@smile.fi.intel.com>
+References: <20260206172845.145407-1-clamor95@gmail.com>
+ <20260206172845.145407-11-clamor95@gmail.com>
+ <aYiHnUW93AB0ARJH@smile.fi.intel.com>
+ <D8B3E97F-3405-4EBD-882D-677F530E4EDB@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -47,38 +75,62 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260209-upstream-20260219-v1-3-2b4d74e309d1@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <D8B3E97F-3405-4EBD-882D-677F530E4EDB@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Feb 09, 2026 at 11:37:04AM +0800, Yasin Lee wrote:
-> Add an optional firmware-name property to specify the firmware file.
-> If not provided, the driver falls back to the default firmware name.
+On Sun, Feb 08, 2026 at 05:19:49PM +0200, Svyatoslav Ryhel wrote:
+> 8 лютого 2026 р. 14:54:53 GMT+02:00, Andy Shevchenko <andriy.shevchenko@intel.com> пише:
+> >On Fri, Feb 06, 2026 at 07:28:44PM +0200, Svyatoslav Ryhel wrote:
+
+...
+
+> >> -static const struct of_device_id cpcap_of_match[] = {
+> >> -	{ .compatible = "motorola,cpcap", },
+> >> -	{ .compatible = "st,6556002", },
+> >> -	{},
+> >> -};
+> >> -MODULE_DEVICE_TABLE(of, cpcap_of_match);
+> >> -
+> >>  static const struct spi_device_id cpcap_spi_ids[] = {
+> >>  	{ .name = "cpcap", },
+> >>  	{ .name = "6556002", },
+> >> +	{ .name = "mapphone-cpcap", },
+> >>  	{},
+> >>  };
+> >
+> >This  also needs to be converted to use driver data.
 > 
-> Signed-off-by: Yasin Lee <yasin.lee.x@gmail.com>
-> ---
->  drivers/iio/proximity/hx9023s.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
-> index eb4902d18d74..b680b89956bd 100644
-> --- a/drivers/iio/proximity/hx9023s.c
-> +++ b/drivers/iio/proximity/hx9023s.c
-> @@ -1089,6 +1089,7 @@ static int hx9023s_probe(struct i2c_client *client)
->  	struct device *dev = &client->dev;
->  	struct iio_dev *indio_dev;
->  	struct hx9023s_data *data;
-> +	const char *fw_name = "hx9023s.bin";
->  	int ret;
->  
->  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> @@ -1111,6 +1112,10 @@ static int hx9023s_probe(struct i2c_client *client)
->  	if (ret)
->  		return dev_err_probe(dev, ret, "regulator get failed\n");
->  
-> +	ret = device_property_read_string(dev, "firmware-name", &fw_name);
+> I can do that, but is it needed?
 
-Incorrect order of patches, see submitting patches in DT dir about the
-order - documentation always comes first. This is here an undocumented ABI.
+For the consistency's sake.
+Also brief look at MFD SPI drivers I see that most of them use driver data.
+All that is redundancy? Maybe clean them up as well to show the point?
 
-Best regards,
-Krzysztof
+> This id table, if I understand correctly, is here solely to silence warnings
+> about missing spi id table. Driver itself does not use it in any way and will
+> never use since all available devices that use this driver rely solely on the
+> device tree, all possible future devices will be relying on device tree too
+> due to obvious reasons.
+
+Then maybe SPI should be fixed to avoid this table to be present? (But don't
+waste your time, it will be a rabbit hole.)
+
+> >>  MODULE_DEVICE_TABLE(spi, cpcap_spi_ids);
+
+...
+
+> And please, may you contain all your reviewing in one iteration. Then both of
+> us will spend less time working on the patch. Thank you!
+
+It's an impossible request, you should understand that. If you want, use AI
+or your robot colleagues for that, I'm just a human being, I can't see
+everything at once.
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
