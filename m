@@ -1,145 +1,217 @@
-Received: from mail-dy1-f179.google.com (mail-dy1-f179.google.com [74.125.82.179])
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com [209.85.167.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7606236A73
-	for <linux-iio@vger.kernel.org>; Mon,  9 Feb 2026 03:40:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6D9B2F9D9A
+	for <linux-iio@vger.kernel.org>; Mon,  9 Feb 2026 07:13:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770608423; cv=none; b=o7XWKrPTXUp7V1lsWKwDlDAUtcabTWg0t7sIqdQdv7qm3B+bF1unTYMfUOpYdNV60JIntibB7IhAhEQ8vAZPIwV03kYgb7AQ+fSG3/7lQWXiA/bMQXbRBJ9Cl8ly0VwKA+XQKz/MQvAAPzDKxDm3p5D6lJ22aIjBJXzfcW8NTbQ=
+	t=1770621220; cv=none; b=EagZzkV/NPpAzkqr09e5SkgIn3hXTf1oC2qWG2gHzN1OyZswihxu9zBgswgRDVdQ4F3sz0TXwbgnwLVm+gPOT2VxKaSvVXwZ8cHhopsYQRAgIP77Sm1lNjfaMfHcTIY/Z6AASekprOuBDo81GXn9S/vgTTaqxpA1a4a8mLN8R8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770608423; c=relaxed/simple;
-	bh=VzX6g3lIajNovlrTefHtsXrHHczuBrvgOnSyCfqNkC4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=hYI78Px8fTqzcqHGtONFUXeFyiHk1aoLhEHZT3sxY6ov/DSjcisxG7bvLrpCXa0M3Hu1gilUjzzJMOw0Q6DNC1fN/sD9V6kFIgWhubrTf46z7o+ZZh0dJmrwyEq4x0SnwZh4PeaCTgUs11unW/abHpgY484vLSQNb8FTJmV/FpY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kD7/1WZa; arc=none smtp.client-ip=74.125.82.179
+	s=arc-20240116; t=1770621220; c=relaxed/simple;
+	bh=wjhPJySClgeUMyCJuXTdPR22ZbR2363nYldOD0ul2/0=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=q2mxrtxuSoCfGPl8j8C9tLFbHgFVnRBr+aaMUTv4rRQh5z+RrLbWRA/JtRV/7KQRweXAzo+G6wujgo5N3wwZvSAHqx8qAJ2MBhqb/KioitAl6oJPEMxrPH6cfa4UrNjf2Lg6/cHK2EnQ9G+14Mh5AUqLCKDbXyb5cH2ynTVJBXM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eRooKwF0; arc=none smtp.client-ip=209.85.167.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kD7/1WZa"
-Received: by mail-dy1-f179.google.com with SMTP id 5a478bee46e88-2ba6737fafbso32520eec.3
-        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 19:40:23 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eRooKwF0"
+Received: by mail-lf1-f43.google.com with SMTP id 2adb3069b0e04-59de0b7c28aso4742877e87.1
+        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 23:13:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770608423; x=1771213223; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=fzi8pCQ8Ziy85qehusmKDlTJyyfVwuNngkRLpKcT0QY=;
-        b=kD7/1WZa6QYal6IYD4L+n96w8jc37uKV/88UJ/EbR0kkBz40sb5qroFLwBJ5OA6vSv
-         Co12k/4SvElzCQZPv0zp+qTTO7a+k6ehz/DjzIRs8c2NjdIjyB2Ae2gG+fuYNqnpGRDE
-         2ASjXdbw7vIqSZsiNUV+rARYf+pfJpZcZkyLsUdsxCQ124a8kCW4a0zGFPz9Teqd4RyF
-         LQEPQFlF6IZj99l2Nxp5Ha1womgZqW4ApxumJkcbOiqEzlLq/gaVL2D0wqvkBUXURnTD
-         bRE3J3CPzfoAj0ivCzCuU5NpKaoxljo5q4NWAhv0/TgDQj1SUzR8Ejjc1SMZwlkwCOQ1
-         YMZw==
+        d=gmail.com; s=20230601; t=1770621218; x=1771226018; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=gJTcZlZbFHgUhIybFH4cWwk7Nh3ta/uxgKGllk07sVY=;
+        b=eRooKwF0vCfpmtbR5z7o7JrYBoQ3suRDgEGIIh3ia554zWhryLlSc5nwMgjkVIuivr
+         l2kbaO6rE2HXqw2VoJwORSshlBHbFw2gmKRMFRBuMY4wvbwmlxgZBWhQecUZPnBQNquu
+         w8B4o19nfDZbaIJ1j4+OgNLmk42FhSmxFKhEv7ZBhSvE8oD0T/QcEsM+lLWlqv15ZdN6
+         Et+FsptXbXtwLYo4t3Urk2UTpPZO+kdyU9z+0bAmonHSlHqwzI5FEIN3wiVeno2GfTrb
+         /ZXOrk9I8WBhTEifYiyEuC6sP6+pOBhqS7Z/wK23E7u3bleduzQAm++OPs7xl8AvSLZ/
+         eSHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770608423; x=1771213223;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=fzi8pCQ8Ziy85qehusmKDlTJyyfVwuNngkRLpKcT0QY=;
-        b=kNxbL3Ww/cMb2Rj8eAa/jDm5wJ8VsqSZrx8rXu/Xm/2xUFd9lmuvUUGTjddYCtr2wH
-         5qjk0UNrIK+7TQ3IBA+tQ+MkmNRLwI2jvj6FXsY7UdQJQpSXDiww/kVL5Bj3nd4EVagg
-         3yZVe2iKKZcJyeDcn4Ishg5P7F8RIN0OPkk+ulshQGO0gUbW7oXK9KHt3n6rKeBwxG9B
-         RncJfq3VkPmXo5Qu2Kk1VDC+sdsJZKJoVaMns+sVMka/mBE0W8Euv0zTZXylRr0KS4YT
-         Wdjp8Fgn9zVL/wBzkVQ5gtgiCmuvULiNx31kQTmZ7AUd+r6WoG7cQlc93B7+74e+0NRZ
-         MoZA==
-X-Gm-Message-State: AOJu0Yz6DwfgYXAtAhWic/rgXgHp/yyuw1myZlrqlETcde+ODmmj/k9w
-	jzWPREbCZGYF9Ts1kdFAhYNwat1dkNTFpM7ACFNU/zBegQQjW0nxsDSt
-X-Gm-Gg: AZuq6aLYB+ZUmN80t/+r8dnQgWStCsnKvsFFDe1ko5UPzVDnpV46Dc1EKkYu1bLOMr+
-	wJsxoEhUafj6AJyi7zl/SkYkDR8cVdaliZ5vclauRAnE/TysjqtF5/fM80fYkc0GNkJIMsaVclV
-	QJjnawrG3X6jq4YjQBWheh5XwYqvv/CXqOHE+PFBlFMakTv1pDelqzldVZJ7b6NVLesENoa6qPm
-	brV3CLqWnWWHJ6aPVuuyLYZ5OCg4nvvLnw5eFHGolg0p+UgxZZyvM8ZHrrMOEWDIvic7iAXekmY
-	/E812ZRUAg8wkFXeh8RnkxOCPDF+FhtV++9jwvgxGGFWGSSBR/Pig2a4U2foUlCN778nHB7nGic
-	Ccupq6cnCllHnyrmUk2OvMo+1YevHoI8du+Z41jPA5VdF2U42LZfORFk/xqbst/6U/fLsHHOUWC
-	m1LRM6D47AfUk=
-X-Received: by 2002:a05:7300:8812:b0:2ba:6978:2b0 with SMTP id 5a478bee46e88-2ba697806damr442444eec.4.1770608422761;
-        Sun, 08 Feb 2026 19:40:22 -0800 (PST)
-Received: from [127.0.1.1] ([45.32.86.188])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2b855af5ca2sm7682073eec.8.2026.02.08.19.40.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Feb 2026 19:40:22 -0800 (PST)
-From: Yasin Lee <yasin.lee.x@gmail.com>
-Date: Mon, 09 Feb 2026 11:37:06 +0800
-Subject: [PATCH 5/5] iio: proximity: hx9023s: add ACPI support
+        d=1e100.net; s=20230601; t=1770621218; x=1771226018;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=gJTcZlZbFHgUhIybFH4cWwk7Nh3ta/uxgKGllk07sVY=;
+        b=IeXGkBobqnNZbZcbux/GEXUBFyP9dBmbz2rGypSE4Ovu4tRBLICKKvtQ5ivrlmNck+
+         c3SaKBKZR7BxG35hJBJxqPnRtF6LKE82b0S+yIWZfoDx5sXBjkTKcBGmBSxthZuv0elB
+         8X/+sQiEbeoVCUaTKydeGjcdIsav8zaibuboSraZ72Q0pVXUo17des6MkPCqNwlQFLbG
+         Fru4rYUkk/WXvAGti2qjKXMyz4SiS6dWND0CCjQBpwlWK8J6kg238cVsqMUwEbauD0G4
+         Wg50eK4vtUfXAEci0i0KP1N11flkZ6H5BLzQqQFQgS4pAdIr6r/9DPpx+0viiEfu5mTy
+         /g1A==
+X-Forwarded-Encrypted: i=1; AJvYcCXFV0P2cxqO2QHPBXjSKy8ZXxCfASR1wRPJcBz1m0BbivBmLYo/H2maG89DoqANYG6mMui4J6SvLqQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz+e6t1TGDWU/rYqbRLy20qpMHwTPte5/j3n4m1GUbQ72QdglOW
+	+vvM4GOVb0ACHdKed3sioQBxcfPmK8SQUUYLI6krw1gvI4Zgk9z1jEi3
+X-Gm-Gg: AZuq6aKUlUVUPNaiIKte1QMVyaTYQ0jkPH7g7z2mZBLoY3ChNJhQ4O3E9tMSajP/gZQ
+	tM4jfVoXb66chpoipjU22SIlA9Dp6E7N0o3Flgvcp8p2mVw449ly5fL4Irz1phc/QR0AybzueNI
+	nkBcv5xm3V5DLA2HCJ5MXXCMMrMPE6xFPbAUoufphotqd89LiQst6y2/mbW7UJNKwEr0pqaMoS/
+	TH1l5OI5eXFSepZoDGrPw5QFFdYvm2SdL/6KJ1U5pA4lXSrV5CFeH5+vtg5AvjDqEDCrY3gsFpD
+	1EEIrBLXrcAuow1EFpzP7TQh3kNfskmDUCgtTrwL24kvBtlmkkUV1U9cVnSaxOq8EKEIRvfvc0t
+	4P29n8f8++P6oE0cWW4cBQoI36oLMHzMEFFX0Dd8uBPzZq2tbFslqqh+8rtKN793xvoML4Q+Pau
+	CrU+iSeZTqwV8aV+8oFYYt
+X-Received: by 2002:a05:6512:a90:b0:59e:49f3:658c with SMTP id 2adb3069b0e04-59e49f36647mr2144179e87.49.1770621217578;
+        Sun, 08 Feb 2026 23:13:37 -0800 (PST)
+Received: from ehlo.thunderbird.net ([178.137.105.239])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-59e44d29975sm2395771e87.66.2026.02.08.23.13.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Feb 2026 23:13:36 -0800 (PST)
+Date: Mon, 09 Feb 2026 09:13:35 +0200
+From: Svyatoslav Ryhel <clamor95@gmail.com>
+To: Rob Herring <robh@kernel.org>, David Lechner <dlechner@baylibre.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
+ =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>,
+ Pavel Machek <pavel@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Dixit Parmar <dixitparmar19@gmail.com>,
+ Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-input@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v2_01/11=5D_dt-bindings=3A_regulat?=
+ =?US-ASCII?Q?or=3A_cpcap-regulator=3A_convert_to_DT_schema?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <CAL_Jsq+JzAnvW3zSC7Y=dpWTKMUwFfTOuAnMS21d+F_W=5ONeg@mail.gmail.com>
+References: <20260206172845.145407-1-clamor95@gmail.com> <20260206172845.145407-2-clamor95@gmail.com> <20260206230922.GA254792-robh@kernel.org> <CAPVz0n3EGCSLUX7jTLve0x0z4uW1yexViCwkSQLY2d_4r4qkjg@mail.gmail.com> <db9115ca-2c8f-4b5e-89ce-f3b934071a59@baylibre.com> <CAPVz0n2KwqPw88JVcPzhTQ2n+GKzahkrEThjjrqm0CSdjKTEOw@mail.gmail.com> <51eddfc0-9f23-4a7f-8729-19775d834c0b@baylibre.com> <CAL_Jsq+JzAnvW3zSC7Y=dpWTKMUwFfTOuAnMS21d+F_W=5ONeg@mail.gmail.com>
+Message-ID: <20E2821E-3A3B-425B-8E5A-AEC36A2AB9CE@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260209-upstream-20260219-v1-5-2b4d74e309d1@gmail.com>
-References: <20260209-upstream-20260219-v1-0-2b4d74e309d1@gmail.com>
-In-Reply-To: <20260209-upstream-20260219-v1-0-2b4d74e309d1@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, yasin.lee.x@outlook.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- devicetree@vger.kernel.org, Yasin Lee <yasin.lee.x@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1694; i=yasin.lee.x@gmail.com;
- h=from:subject:message-id; bh=VzX6g3lIajNovlrTefHtsXrHHczuBrvgOnSyCfqNkC4=;
- b=owGbwMvMwCEYyfeRr6Zs90zG02pJDJmdYT9dhMrjVk4/Xr6ToV34eco7Bf5K48X6dZvEVd7du
- 3XAvz6jo5SFQZCDQVZMkeXM6zes+aoP9wT/ds2AmcPKBDKEgYtTACbydSrD/4zGKpmdmyyzcncK
- pO9w9vrwLeCuq/98N5kzeVo+AaJPxRj+F83TW2Lst3Tq/gWR0zM5qq43/7SQqVGPjtutH3rY4It
- vBAA=
-X-Developer-Key: i=yasin.lee.x@gmail.com; a=openpgp;
- fpr=CCEBEC056F25E1BC53FB4568590EF10E7C76BB99
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Extend the hx9023s driver to support ACPI matching by adding TYHX9023
-to the ACPI device ID table.
 
-Signed-off-by: Yasin Lee <yasin.lee.x@gmail.com>
----
- drivers/iio/proximity/hx9023s.c | 10 +++++++++-
- 1 file changed, 9 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
-index b680b89956bd..6bf5a02c3615 100644
---- a/drivers/iio/proximity/hx9023s.c
-+++ b/drivers/iio/proximity/hx9023s.c
-@@ -8,6 +8,7 @@
-  * http://www.tianyihexin.com/ueditor/php/upload/file/20240614/1718336303992081.pdf
-  */
- 
-+#include <linux/acpi.h>
- #include <linux/array_size.h>
- #include <linux/bitfield.h>
- #include <linux/bitops.h>
-@@ -1106,7 +1107,7 @@ static int hx9023s_probe(struct i2c_client *client)
- 
- 	ret = hx9023s_property_get(data);
- 	if (ret)
--		return dev_err_probe(dev, ret, "dts phase failed\n");
-+		return dev_err_probe(dev, ret, "failed to get device properties\n");
- 
- 	ret = devm_regulator_get_enable(dev, "vdd");
- 	if (ret)
-@@ -1195,6 +1196,12 @@ static int hx9023s_resume(struct device *dev)
- static DEFINE_SIMPLE_DEV_PM_OPS(hx9023s_pm_ops, hx9023s_suspend,
- 				hx9023s_resume);
- 
-+static const struct acpi_device_id hx9023s_acpi_match[] = {
-+	{ "TYHX9023", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(acpi, hx9023s_acpi_match);
-+
- static const struct of_device_id hx9023s_of_match[] = {
- 	{ .compatible = "tyhx,hx9023s" },
- 	{ }
-@@ -1210,6 +1217,7 @@ MODULE_DEVICE_TABLE(i2c, hx9023s_id);
- static struct i2c_driver hx9023s_driver = {
- 	.driver = {
- 		.name = "hx9023s",
-+		.acpi_match_table = hx9023s_acpi_match,
- 		.of_match_table = hx9023s_of_match,
- 		.pm = &hx9023s_pm_ops,
- 
+9 =D0=BB=D1=8E=D1=82=D0=BE=D0=B3=D0=BE 2026=E2=80=AF=D1=80=2E 00:37:41 GMT=
++02:00, Rob Herring <robh@kernel=2Eorg> =D0=BF=D0=B8=D1=88=D0=B5:
+>On Sat, Feb 7, 2026 at 11:32=E2=80=AFAM David Lechner <dlechner@baylibre=
+=2Ecom> wrote:
+>>
+>> On 2/7/26 11:25 AM, Svyatoslav Ryhel wrote:
+>> > =D1=81=D0=B1, 7 =D0=BB=D1=8E=D1=82=2E 2026=E2=80=AF=D1=80=2E =D0=BE 1=
+9:19 David Lechner <dlechner@baylibre=2Ecom> =D0=BF=D0=B8=D1=88=D0=B5:
+>> >>
+>> >> On 2/7/26 3:20 AM, Svyatoslav Ryhel wrote:
+>> >>> =D1=81=D0=B1, 7 =D0=BB=D1=8E=D1=82=2E 2026=E2=80=AF=D1=80=2E =D0=BE=
+ 01:09 Rob Herring <robh@kernel=2Eorg> =D0=BF=D0=B8=D1=88=D0=B5:
+>> >>>>
+>> >>>> On Fri, Feb 06, 2026 at 07:28:35PM +0200, Svyatoslav Ryhel wrote:
+>> >>>>> Convert devicetree bindings for the Motorola CPCAP MFD regulator =
+subnode
+>> >>>>> from TXT to YAML format=2E Main functionality preserved=2E
+>> >>>>>
+>> >>
+>> >> =2E=2E=2E
+>> >>
+>> >>>>> +properties:
+>> >>>>> +  compatible:
+>> >>>>> +    enum:
+>> >>>>> +      - motorola,cpcap-regulator
+>> >>>>> +      - motorola,mapphone-cpcap-regulator
+>> >>>>> +      - motorola,xoom-cpcap-regulator
+>> >>>>> +
+>> >>>>> +  regulators:
+>> >>>>> +    type: object
+>> >>>>> +
+>> >>>>> +    patternProperties:
+>> >>>>> +      "$[A-Z0-9]+^":
+>> >>>>
+>> >>>> I thought it was said on the last version to list the names=2E Con=
+sidering
+>> >>>> you already have them below, better to put them in schema than pro=
+se=2E
+>> >>>> And pretty much all regulator bindings define the names=2E
+>> >>>>
+>> >>>
+>> >>> What exactly do you propose? All those names will not fit into a
+>> >>> single unbreakable line (more than 125 columns in length btw)=2E Pa=
+tch
+>> >>> checker will complain about this=2E Duplicate pattern properties fo=
+r
+>> >>> every few names? Please be a bit more specific=2E Thank you!
+>> >>
+>> >> Making checkpatch happy is not a hard requirement=2E If you have to
+>> >> go over 125 characters for technical reasons, no one is going to
+>> >> complain=2E
+>> >>
+>> >> I already gave an example on the last version=2E It is just a regex
+>> >> expression=2E (And note that you didn't fix the $ and ^ either=2E ^
+>> >> means beginning of the line and $ means the end of the line=2E So
+>> >> the pattern currently won't match anything=2E)
+>> >>
+>> >> patternProperties:
+>> >>   "^(SW1|SW2|SW3|SW4|SW5|=2E=2E=2E)$":
+>> >>
+>> >>
+>> >> And I hope it is obvious that you are meant to replace =2E=2E=2E wit=
+h the
+>> >> rest of the names separated by |=2E
+>> >>
+>> >
+>> > David, thank you for your suggestions and I did not want to offend yo=
+u
+>> > nor Rob, or ignore=2E Using this large string IMHO feels a bit wrong=
+=2E No
+>> > offence, I will use it if required=2E At the same time I was
+>> > experimenting with possible representation and come up with smth like
+>> > this:
+>> >
+>> >     patternProperties:
+>> >       "^SW[1-6]$":
+>> >         type: object
+>> >         $ref: /schemas/regulator/regulator=2Eyaml#
+>> >         unevaluatedProperties: false
+>> >
+>> >         required:
+>> >           - regulator-name
+>> >           - regulator-enable-ramp-delay
+>> >           - regulator-min-microvolt
+>> >           - regulator-max-microvolt
+>> >
+>> >       "^V(CAM|CSI|DAC|DIG|FUSE|HVIO|SDIO|PLL|RF1|RF2|RFREF)$":
+>> >         type: object
+>> >         $ref: /schemas/regulator/regulator=2Eyaml#
+>> >         unevaluatedProperties: false
+>> >
+>> >         required:
+>> >           - regulator-name
+>> >           - regulator-enable-ramp-delay
+>> >           - regulator-min-microvolt
+>> >           - regulator-max-microvolt
+>> >
+>> >       "^V(WLAN1|WLAN2|SIM|SIMCARD|VIB|USB|AUDIO)$":
+>> >         type: object
+>> >         $ref: /schemas/regulator/regulator=2Eyaml#
+>> >         unevaluatedProperties: false
+>> >
+>> >         required:
+>> >           - regulator-name
+>> >           - regulator-enable-ramp-delay
+>> >           - regulator-min-microvolt
+>> >           - regulator-max-microvolt
+>> >
+>> > Will this be acceptable? It passes checks
+>>
+>> I think we would rather have the long match string instead of
+>> repeating the rest of it multiple times=2E
+>
+>Yes=2E
+>
+>105 chars:
+>
+>    "^(SW[1-6]|V(CAM|CSI|DAC|DIG|FUSE|HVIO|SDIO|PLL|RF[12]|RFREF|WLAN[12]=
+|SIM|SIMCARD|VIB|USB|AUDIO))$":
+>
+>There is the yamllint of 110 which does have to be followed=2E
+>
 
--- 
-2.43.0
+Amazing! Thank you both for your suggestions=2E
 
+>Rob
