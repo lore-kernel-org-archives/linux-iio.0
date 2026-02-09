@@ -1,66 +1,66 @@
-Received: from mail-dy1-f178.google.com (mail-dy1-f178.google.com [74.125.82.178])
+Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9272236A73
-	for <linux-iio@vger.kernel.org>; Mon,  9 Feb 2026 03:40:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FEE32868A9
+	for <linux-iio@vger.kernel.org>; Mon,  9 Feb 2026 03:40:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770608409; cv=none; b=uTH2KSZ6UCIalEGFIpkh//oE9nOsIBofQinm/BhGVXUiDsNF25ehGiwWL47YZu6Wkl8GHVdJt6Hsg8+2LfKoKGSAGb5GAM+EQrCS0JVAc5ZjtH1mShSAkUVu97H/Wao7svXPle/nfc5ZcivjJFmj5m3RNZwlo9ibSLaYZxXBVII=
+	t=1770608417; cv=none; b=dHQg5oZs8dZCd8Mar53HTS++YYYqPqg7yBqVPuimnsYTFHWzYoute/sOGtUNftHjN7yx1+LKMyszZ5b8ljTnSt2XqRAW9hLyfNP7uwaZq0pg9NuDzAvVnao2fDk+mRxEVLkpiLgv5Uzul53zgNbkvV3+2ZDkkB7IFwp1d5jmmbQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770608409; c=relaxed/simple;
-	bh=FRQMDMtmr6RuDCT3QnoTS6pq66M/4574XQAa6lYWU3w=;
+	s=arc-20240116; t=1770608417; c=relaxed/simple;
+	bh=lTyWo1eRqW5DX8yvyPANL+LdjOU0rOclI0glDjp/zjY=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=nQ3yjcP3dOWrvmol54yQx/66pxiuak+c254Rr5qPBNi6NRi+jC4Y2rSX4fhwxH4RIc0uIeTXqjZbdbc2dcsfp6yjoGqej/ZUGYeI90P0M06+nnqPi6EgQwTsjvXdUe1YtD/AyW6634/CaLA6k1ZvHtPNUouG6ClmQfdmQdX76sU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EmW02srT; arc=none smtp.client-ip=74.125.82.178
+	 In-Reply-To:To:Cc; b=JI/TVpnkSZjMVIl2iwWze6sYXwhcy3BexzLjgM8YLWCnaYFSQnPSFpIxcIwy44rOW6DqPbOsx6tAZh8O9rKnt23aiyvYPCr9iAvG3Kaso0OUT2yK2NPTI2oVkydjx4wF8iFRd+mWO50w3G0c/uaxVUFra+qPY48uXulT9MxDfFA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AcjeOIit; arc=none smtp.client-ip=74.125.82.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EmW02srT"
-Received: by mail-dy1-f178.google.com with SMTP id 5a478bee46e88-2ba716126f5so29997eec.3
-        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 19:40:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AcjeOIit"
+Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-2b8095668ebso347513eec.2
+        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 19:40:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770608409; x=1771213209; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1770608417; x=1771213217; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=MXcQdRWHKbSzK5H4HbSkBU6Vxa0xKwilMdxaH54zctE=;
-        b=EmW02srTNKFQJucAEdWl49q1JdPXFhhu6cc9UTEEgo9ORrdA693kqDbX0+MjF96+GT
-         vuAXNghzLPtMP3r7cO+vdiFk9xZi20b2RKDpOzeBcqieDHnPWbZGHW100ZxxFFBQTt81
-         cL5lGfJCsOcJX+fM56bdu6uWLNEWs6BkCPw/9ItlWEpPe67d3dWYRTCqD0Mf+KnWLrYL
-         Onsvmfz0pU5dZ+Af3ehsC2TeK7nULwv6HrxgLSLHTuHrjSGDkTYMvQgzqVtriGWQb5Sj
-         6oqv4PuYQ8CAC1ZXaTWAR8IXzEUA4b+KZXKoxn06C3bYsNYCEQ11sO7dnLlv8r9mR/Mi
-         uvbQ==
+        bh=Q7q7E97msZ/8P2TSodtOWgOAxfPDU8GUA1EnXOIGpS0=;
+        b=AcjeOIitcgH4PTipgb36UlpWjPr3pfFP435xd67nQnD6fnGOHYaUuehbjAS8SBmfJ3
+         WBli1qqapoExjSDKRP3UmfbL3qONON96HviGg9I/RoQ2oln0gwHkkp/yC2V2WI8eq+Zd
+         7asZGWyPz5ncY6kzbXAJ0FnLbJhUvh5D6jPBBITEqY6STbnOG4uqDIkFy35orOjRPN/C
+         9X2BOLSJ+5SvWkh60uTS9Qy1ZNXfXu3AM1NGiXq2E/ArDztCAeZd4tvs4PxIxUo57Mc8
+         H8QuAeJ63bLeDHmh0qi7haH6T7NhsSnoyNwzct5lgfkvvF+2u6U43minvfxNXIW+7WB4
+         iNgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770608409; x=1771213209;
+        d=1e100.net; s=20230601; t=1770608417; x=1771213217;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=MXcQdRWHKbSzK5H4HbSkBU6Vxa0xKwilMdxaH54zctE=;
-        b=eZBfuFZ6Wl+vcThep9jO87K1DgAfxwiyxt803cb8T/lSqXElYufHdywlH/5+7sWZMn
-         Y/jhkspHQiEMOGjJbmzGvcwhAkzfNMh0jCI9ywdLPZp6hinqM6Xt4CduCnb7eev59Xog
-         nI/zU2iLeos8XjTruFU0Hz79PYqV8kCKeSgWmAuDiUMHWu91KnyOuZx+tjHvOstlnw/i
-         VvS2AR//vwaHOONd804XKee/dR/9ffS50/fp8d7XZoF2kQ92wnGpU+Zhj9JCKXM+uTq6
-         JJWOp/tKbDHBVsL7zFfKGx48Qp4jHJEfMH6B5Uigx+QmHVQoXJcVZBzyVTSt9V1E9pY8
-         5sbA==
-X-Gm-Message-State: AOJu0YwXBhnFRDHOVWe3V1De6ZqPE7oCvVDyMEhWrw4cj+MUWn14UFCv
-	lTA8cr2Qi1ifB/KebBMocyRotNFPvE+0gQMuqxV+8D1JrVMYtjjPCpxLRKEcJA==
-X-Gm-Gg: AZuq6aLm31QIjGDemuUVH6zw1W+N74AuqkI8AlfqzJiBivNBeHkD3ajiekZMg+g4Jbu
-	ZZ+iRUBjXSOgHduNuQBrpRWtxud40Scck+MPcKJmyHp+w7kdLV3VybSGPDdYNpMAZ/QGSzCzoB5
-	ltKkp8TRZHqMhUZkkAyWjQsZkuCZmCBG0ShiciBS5McJ/qi+Vfl4VwRkgzLEvF3yrL56Xzb810G
-	LUto7xvBQWtFFJCYIQJ5VaMqNJg+qX+irPSUZsgbOmqmD3Pnyuebpwpb2q1CtoOJYtZ5utwp1xr
-	P78A7a593UJpqgHsRdGfsd7DDGZMzReX6PPKCGcHSspfnVl+UJFLVV+QeiZX1eOyX5t2lWpQnH1
-	yQHZsYqBDLD/+UZWk2zPc1KBGZd0tfERFupDQwi9uBjgKgZlTlwgNbIKx74ueD1eN89nhW+Jsud
-	91in6kBfGhcHXeDw8KDrPgCg==
-X-Received: by 2002:a05:7300:6425:b0:2ba:7321:cf91 with SMTP id 5a478bee46e88-2ba7321d1fcmr339913eec.3.1770608408975;
-        Sun, 08 Feb 2026 19:40:08 -0800 (PST)
+        bh=Q7q7E97msZ/8P2TSodtOWgOAxfPDU8GUA1EnXOIGpS0=;
+        b=iVtsPvvjaBNBzMY8Ru+waWdi15vhWu3VrJVbsO1TRVvPJdZyLfpg6lMcsZcse7Gtv/
+         7V1DO2nT27NxVo40nlzMIjOAx+5ut8AVfCQ8sAnPveSqwTy/D2jiaTEc9mq93TDKhBGi
+         BmZ2m3dnInQDj06nowsy8Re71Jn7UGAUfASgADwCQm5i8J3dExuZNB6w23gY5iDfj3f9
+         dpHydbz2zVRLEWUYlarLvchDqHT1I3DnT98XjL2zTZFJCI4pMKUvMEy7Xfe4Gw0xvM4g
+         X6fd5yZJFpZEgC6VyfMVVVKI5fIeCEHwj8bcv2TLkdY32wPs95TrV2NCjtu0HwsESTLo
+         i0Jw==
+X-Gm-Message-State: AOJu0YxKtQOEnDOMmRtDSWCv5qB2MBH22bvvZSTdp7XazQ2WtOsM8mms
+	bAgpr1m+56bAMd1zNBrZoNuRPIT5/4RvvDTQl6j/0Pr8Q+3/z31uP+nF
+X-Gm-Gg: AZuq6aKFp+1Xo21k4C3+i0Gj/CjwEB3ynv0ZvddWeD4EzjgUMBLAAiyCtG0QmQcvVqL
+	ESRT51I5JEDmk0vMWKCPCpOF+DKBBhimkk6EfUPt99vtDdXXjHx/ZJd5HNW3VmLcrny5eO2Tc/6
+	UElcFGy6TMMG0UVMhky9cRk3ItphQpfPt1SIMITpYs73iNzQ6GFebz/EQZG2ftMi+MKMxL3b18J
+	KDxWmaCezv/0d9wxfy3NHoGIPk1GUg+nCDSzT5MJJ3nkZ41DBM9Dhzna52x4CqVcZvg81hwf5IZ
+	haVFl2Btv9MJO5euc+G12CaSLvtacbrhzymHaqQBonezSmk58tSWyg+Ymv0ie9Me1iqIieExy7G
+	zNEGjPchp71P5UCI1Vi+t82iIIOY/Z9hdDoWjoH4o95N0m+TyH/bGH6roVADUHS8yev2ZmVhcRt
+	2iM9C/275N6/I=
+X-Received: by 2002:a05:693c:37c7:b0:2b7:3678:2d1a with SMTP id 5a478bee46e88-2b8565160dcmr2739568eec.6.1770608416595;
+        Sun, 08 Feb 2026 19:40:16 -0800 (PST)
 Received: from [127.0.1.1] ([45.32.86.188])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2b855af5ca2sm7682073eec.8.2026.02.08.19.39.58
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2b855af5ca2sm7682073eec.8.2026.02.08.19.40.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Feb 2026 19:40:08 -0800 (PST)
+        Sun, 08 Feb 2026 19:40:16 -0800 (PST)
 From: Yasin Lee <yasin.lee.x@gmail.com>
-Date: Mon, 09 Feb 2026 11:37:04 +0800
-Subject: [PATCH 3/5] iio: proximity: hx9023s: support firmware-name
- property
+Date: Mon, 09 Feb 2026 11:37:05 +0800
+Subject: [PATCH 4/5] dt-bindings: iio: proximity: hx9023s: support
+ firmware-name property
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,7 +69,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260209-upstream-20260219-v1-3-2b4d74e309d1@gmail.com>
+Message-Id: <20260209-upstream-20260219-v1-4-2b4d74e309d1@gmail.com>
 References: <20260209-upstream-20260219-v1-0-2b4d74e309d1@gmail.com>
 In-Reply-To: <20260209-upstream-20260219-v1-0-2b4d74e309d1@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -81,55 +81,47 @@ To: Jonathan Cameron <jic23@kernel.org>,
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  devicetree@vger.kernel.org, Yasin Lee <yasin.lee.x@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1640; i=yasin.lee.x@gmail.com;
- h=from:subject:message-id; bh=FRQMDMtmr6RuDCT3QnoTS6pq66M/4574XQAa6lYWU3w=;
- b=owGbwMvMwCEYyfeRr6Zs90zG02pJDJmdYT9XLZPkMXd4Fc5muEj5n9jMcJv8RdauEZ88sjm2P
- OIKsCrqKGFhEORgkBVTZDnz+g1rvurDPcG/XTNg5rAygQxh4OIUgIn8nszwVdphqxlbD7+US1DF
- houvVJ4c/BywSiS/59nSG1uVmpyWMjJcLt3tMzfmz/8XlvOWLfu3vdrM7PYMa5a5/qVvHx/iWid
- UDwA=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1109; i=yasin.lee.x@gmail.com;
+ h=from:subject:message-id; bh=lTyWo1eRqW5DX8yvyPANL+LdjOU0rOclI0glDjp/zjY=;
+ b=owGbwMvMwCEYyfeRr6Zs90zG02pJDJmdYT83dhi0L6wvDXt1ef2nXU4L13tc0D/84NH54J7DB
+ 9War5j6dpSyMAhyMMiKKbKcef2GNV/14Z7g364ZMHNYmUCGMHBxCsBEnLMZGY65WFbFXOsWKJic
+ 8cJN4hHv45tWj/rWnbohrfGJrfPY3I8M/6zluT5WbLlV/ZTf6qYGz+HrAW7LeA6fOsV9+TWHSM/
+ r7SEA
 X-Developer-Key: i=yasin.lee.x@gmail.com; a=openpgp;
  fpr=CCEBEC056F25E1BC53FB4568590EF10E7C76BB99
 
-Add an optional firmware-name property to specify the firmware file.
-If not provided, the driver falls back to the default firmware name.
+Allow specifying the firmware file name via device tree.
 
 Signed-off-by: Yasin Lee <yasin.lee.x@gmail.com>
 ---
- drivers/iio/proximity/hx9023s.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iio/proximity/hx9023s.c b/drivers/iio/proximity/hx9023s.c
-index eb4902d18d74..b680b89956bd 100644
---- a/drivers/iio/proximity/hx9023s.c
-+++ b/drivers/iio/proximity/hx9023s.c
-@@ -1089,6 +1089,7 @@ static int hx9023s_probe(struct i2c_client *client)
- 	struct device *dev = &client->dev;
- 	struct iio_dev *indio_dev;
- 	struct hx9023s_data *data;
-+	const char *fw_name = "hx9023s.bin";
- 	int ret;
+diff --git a/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml b/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml
+index 64ce8bc8bd36..7e516fc011c6 100644
+--- a/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml
++++ b/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml
+@@ -28,6 +28,12 @@ properties:
  
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-@@ -1111,6 +1112,10 @@ static int hx9023s_probe(struct i2c_client *client)
- 	if (ret)
- 		return dev_err_probe(dev, ret, "regulator get failed\n");
+   vdd-supply: true
  
-+	ret = device_property_read_string(dev, "firmware-name", &fw_name);
-+	if (ret && ret != -EINVAL)
-+		return dev_err_probe(dev, ret, "failed to read firmware-name\n");
++  firmware-name:
++    description:
++      Name of the firmware file to be requested by the driver using
++      the firmware loader interface.
++    maxItems: 1
 +
- 	ret = hx9023s_id_check(indio_dev);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "id check failed\n");
-@@ -1126,7 +1131,7 @@ static int hx9023s_probe(struct i2c_client *client)
- 	if (ret)
- 		return dev_err_probe(dev, ret, "channel config failed\n");
+   "#address-cells":
+     const: 1
  
--	ret = request_firmware_nowait(THIS_MODULE, true, "hx9023s.bin", dev,
-+	ret = request_firmware_nowait(THIS_MODULE, true, fw_name, dev,
- 				      GFP_KERNEL, data, hx9023s_cfg_update);
- 	if (ret)
- 		return dev_err_probe(dev, ret, "reg config failed\n");
+@@ -65,6 +71,7 @@ examples:
+         interrupt-parent = <&pio>;
+         interrupts = <16 IRQ_TYPE_EDGE_FALLING>;
+         vdd-supply = <&pp1800_prox>;
++        firmware-name = "hx9023s.bin";
+ 
+         #address-cells = <1>;
+         #size-cells = <0>;
 
 -- 
 2.43.0
