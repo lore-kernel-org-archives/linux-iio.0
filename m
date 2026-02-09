@@ -1,212 +1,114 @@
-Received: from mail-wm1-f54.google.com (mail-wm1-f54.google.com [209.85.128.54])
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E6DE217648
-	for <linux-iio@vger.kernel.org>; Mon,  9 Feb 2026 17:47:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1A762874F5
+	for <linux-iio@vger.kernel.org>; Mon,  9 Feb 2026 18:20:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770659251; cv=none; b=d/0+wehrqRYhi2Z2wAaq7U2WLGwadjVjblhJcXSbAkRz2hiKgRTB7W4AczLD7d2zIHgL8ZHEaRJ3xDwxReMxJEFYKJqcQn+GCeHp3wExz44Vzlj+sZrRrR/jju2ZzFgmpj4d7YiXK6vxEXYXYcTp/jf7qiQrIBslUGreP6mQ6Jc=
+	t=1770661213; cv=none; b=Qba73piCbUWgWRrR9a0TtljG2LF28mz178OOyJmSARJvMCXi7UmCQDGdcFcD1rDWCqw0/TPuMhJam84Zrx3fak9v3B5sJhKHR1M2CwwvdZk4OqzC+CxpWjowlrczCY1C4ZEa0W/ICrKrL5LMDVAuPmJpTFf09E0sKeX6FWyZjBg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770659251; c=relaxed/simple;
-	bh=08CBwNSSgBiOal2WtMi393bKTsGkbdSqACFq9WdNEL8=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=m0I13bSIZ/ba6j+/iQ/KFeB+zIhuSzXl7Fhg3UrYUCsC9id8JWD5bzAo3h4iD9TlBKAw3EZg9z7V+ca3bgLeYpfi7QmBC8kYSm9fFTB6pRY6BPZklqgcKdE/R1gOX7vrFoMIOaSc7HEHGCp6QkkyAeYva32/cHYvDF0RHQOPynY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=VCodYy1Y; arc=none smtp.client-ip=209.85.128.54
+	s=arc-20240116; t=1770661213; c=relaxed/simple;
+	bh=/Z5yt2oWOmU2bfIIiNcrfDmA9qc3h8e+hqkPxC3U1HQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=r4o1mcefm/GHjw0mgsXQorc+i9LqzrueGYlaw5/hPN0UEvtBZRsQ953Ve49cBwNoZwvgSB2QreI4w9pd0/gvX0C2UYARErk4HzCxXV8wMXFwjVmoBGrSLSN+rwyLz3fg6wM8uuOJ3K49YtaEUnM6/Srl283RzNpw4yCqSXPKw6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Lgl5AE0d; arc=none smtp.client-ip=209.85.128.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VCodYy1Y"
-Received: by mail-wm1-f54.google.com with SMTP id 5b1f17b1804b1-481188b7760so33556755e9.0
-        for <linux-iio@vger.kernel.org>; Mon, 09 Feb 2026 09:47:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lgl5AE0d"
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-790992528f6so43972327b3.1
+        for <linux-iio@vger.kernel.org>; Mon, 09 Feb 2026 10:20:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770659250; x=1771264050; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NFqSPbMQY4EjZSJSplWP+ILGSKihZ3lOjOFtMZsQEWI=;
-        b=VCodYy1YWvSgoZ2RI6BnGJ7e9OcTeuDHG2FTCOA8RsDZR8eY9NPLLhF9IBjox7/Cxk
-         ohQSjK4M9WkyljW0ZgAVdn06/88mq0HBns58cnOuFxUGQsr06xamYN0JD8ONYL9MOHqg
-         g948dAQUxf2orpoJuIgWSXo/mmIIH+pHCz6IPQuvjlF/loySnLvW0NDhFEQET36lnE9p
-         /SMQta1dwdIh2zNk3aMgMmlIm4LZ14pdL9/hSoSK32mYILwgYgA9Xpk7pNUp2qcwfuVM
-         LweT19iPhYDWqI7/qtx3vIVQtfn3LdejUbIiyco84YIp98qWczddKb0wS95pPXYKwhz8
-         ThDQ==
+        d=gmail.com; s=20230601; t=1770661213; x=1771266013; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=FGFByPnEFRf0LM/uYZGp1EI046vvWPTETytQcURquF0=;
+        b=Lgl5AE0dK/pmu+tRGL/wSPK6dGdzc6bb/poFAFlYGS+ljwgD8DAxhnFEUJp5rSVUfH
+         ycH4H5EiBn5BbHTHhP/AGrCn2oO0JfjaXpcw9LVt2/HTB6mSHXy5rKXV/EEegx50P2mI
+         n94JrirOKC+/bD75svYgwcWX3fPMkNDhtDnlojLUb1FZlJyc6FYL00MJlgoeRjd2dFpB
+         GVcJvlOPDoep56rezbcb//dQ9vYGh3UNSv26yxedW1OqIOQmgJUE/IKvKfnf6gBMwZs5
+         G4k4cNhN4RgLWLEKHSaUlYYq/vGo8G7vIj//X7JUig0nGpq02Z7KyqsYJPr8t2RLXY7f
+         rjXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770659250; x=1771264050;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=NFqSPbMQY4EjZSJSplWP+ILGSKihZ3lOjOFtMZsQEWI=;
-        b=a6UPQcBdAbqETjkYhM4NlRLG6MDmnIF8ARWvVirF2N1fupzbHVEhCNwLW5A8tyGtDV
-         vOfdsRTNScr61N5heSnaJsSGdC4q1DrKaVaIE1QI4a9WetZFk9z6vx5EFy7Z6SgpZ9N7
-         J8IFxdDuG+lkDXJ0VGrIrBmb6h4p+PVxOVKmajagewT3dD6Bqqm1ngp1PRZu2yQ0A+2/
-         jrBp1w1UMj3UB/J1YKp+jJbcWCzrp6DtnalkLoDnrYzqvFHMKjxYcZJ+4kOW1JxwWU62
-         +OdcLzSlSTRrJE92YA4++rqLxfgzwGTGPoPV5EF941jvVdqqR4Zcg6gVg7N+aTCcHYaN
-         ULeg==
-X-Forwarded-Encrypted: i=1; AJvYcCVWrv0ttKkUo7ePxhMFZo9jCQgIzsNUyuSf/X6S7S1GuvGFy+26Q1SwZIGP5Gd5uClWeCJJ0RHuQcE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyMkuny1QSk0+lYiQMGc9GzbQ8+yoJTNsRANqEmkUCGNl21PatR
-	MQmAim+MU0kCv7soP+BIA6FwIWb55QDmH17I76dfsLktEpn+5VxMRIVi
-X-Gm-Gg: AZuq6aIoYPfE5o7XeOJ14o8uNJkRZ4vzGC6yQIzXciw5myvZdCYS9IoqvUTZsVNDJBA
-	W2qX+s3xJ+OeVbZzc659KphrrpbSo3uPu5QzBwOWL9U4cr8i7CnN5L2/klL3w+Sz7EPxHuWE19H
-	Cpcg1tLtdkGrtVeIejCj3v9JU2P5EQAc3BWIC+2c0isFIuPdBBCWQ03F0e126OsR3RsjeSpwpID
-	R+ljUfsm5Q6aqF3KRoT/DRFK+kNB92zpoou05lEuZxJ4VF5ZpvxAVzNSznH3a99hcBJxAjX4kUj
-	rEl1DKH7y8t+HzOxeFbUat0n/e8NAW4c+XdKrB+1B6fiHsw7L/A3CV69zEm7UW4ZfGTpGl3lBKM
-	qdwt1bmF+ophn7w4NQhP8P65EFPdJl63jjPZ9sbl7Acsw6m03qfjFFQn5orMx4HDCBSaM0iS0II
-	VopJnOMz2ymSTFPcxzlHk=
-X-Received: by 2002:a05:600c:3b99:b0:480:5951:fc1e with SMTP id 5b1f17b1804b1-48320933765mr165570205e9.11.1770659249660;
-        Mon, 09 Feb 2026 09:47:29 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48320978108sm141792595e9.7.2026.02.09.09.47.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Feb 2026 09:47:29 -0800 (PST)
-Message-ID: <c25fced275d861f89f6885e83b9f9d3abfdc7810.camel@gmail.com>
-Subject: Re: [PATCH v2 2/4] iio: backend: add devm_iio_backend_get_by_index()
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>, Antoniu Miclaus	
- <antoniu.miclaus@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron
- <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring	 <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley	 <conor+dt@kernel.org>,
- Olivier Moysan <olivier.moysan@foss.st.com>, Mark Brown	
- <broonie@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, 	linux-kernel@vger.kernel.org,
- linux-spi@vger.kernel.org
-Date: Mon, 09 Feb 2026 17:48:12 +0000
-In-Reply-To: <be8457799b32d420228df5e2841c5547023ec515.camel@gmail.com>
-References: <cover.1770393792.git.antoniu.miclaus@analog.com>
-		 <550323d752213f177b7673bdd42e667f1d2228cb.1770393792.git.antoniu.miclaus@analog.com>
-		 <c731b6fba72286707821ea6e7722835ba45f089c.camel@gmail.com>
-		 <becd9db1-818f-4aa8-8362-91a711861839@baylibre.com>
-	 <be8457799b32d420228df5e2841c5547023ec515.camel@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 
+        d=1e100.net; s=20230601; t=1770661213; x=1771266013;
+        h=content-transfer-encoding:in-reply-to:content-language:from
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=FGFByPnEFRf0LM/uYZGp1EI046vvWPTETytQcURquF0=;
+        b=m4nXKybhmf4yCCWc3zkwYrrJtLozqsPTqBE3wvHR+vn9FSm7pHVOhXxHk8aXKzq8jQ
+         ixncTQ/D0jTriBE8SYYHvl4OTrcz8g7J1f5qrYSAEh6vgzcGtoHLm497W5EVephHGsD2
+         DVcH3tYn3+iwVQENN2OXDLl+408lgAH57ojoFP6Pi9m1I40dmfT58/NWmEieZANfF8IB
+         X3AYUaVC6xq+ju8s0zmOctydTCYEMW9kU0Kl7pQ+G+ak0sBQSf5J9ypC444x9Aw1DPIf
+         kSSqNeRQctR0LRyJPvj1kBu2d6qFh6wXAPjAb3BRJ0t3sUoVkSD0wGzA/L5H04wjaOQu
+         BweQ==
+X-Forwarded-Encrypted: i=1; AJvYcCV8Ik//NocczWoAOQ1sP0undvSD3TyO/HZ7qkGPZ8OKSifTDsgNyTRSO28I4uoY75AQg/B61eNeo+8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwdtnqWKYP2hTVJeV2JNabyuXczT3E6ymR2jVVTqD+hGikcvP9Z
+	/EbQbqNV+wHSdXQJ4J7G62qMK02b18nBJ3Ri+i2kFGFTIbrCtjV1l5uQ
+X-Gm-Gg: AZuq6aII3udkkxDCe9f2OfxGEbeHa2N4vcrnUwpJ2bVC+bmTVyZhjScFOoP+7o6WSRK
+	YbfjEMG96nfnIbUklKKJVyvH3+xPE/RKvtCXsQC7C4OTWiEW/7iEfsVEO2GNrd1OMCmpYG6XFvX
+	0lVu480zRZWt7EUJZgWjQObVIWcCk4wbpwz33YfRnyY2jMe4uYa+NcY67JjByRvmiUsNM2PSub6
+	+oZykHs7ErLq2Y0GDkRxoJXdEwkRBPqbJwWg1+SNrzr6FdHfRYuxBTa2GgA/Vv6HL0trdzCimbt
+	eDP7lnMH7XUfHnD20+B2BiSKtbEuo9s0ayN/XRQBlPG5/zKZgbA8Pjrh4eyI1MaFa7mMejs0+hu
+	lNHvr0jJv7c/mDFNkKRw8iax9Hg7k7siFa1d0hwZ1AhtYWR66JTArY4lUBLviSI9QhnNr7TwdrW
+	r4jz1OF2qrYtjRXDCW4IoC0K6s
+X-Received: by 2002:a05:690c:6c06:b0:796:5974:2a19 with SMTP id 00721157ae682-79659742b7cmr12456307b3.8.1770661212669;
+        Mon, 09 Feb 2026 10:20:12 -0800 (PST)
+Received: from [192.168.0.40] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7965705d5a1sm12602447b3.46.2026.02.09.10.20.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Feb 2026 10:20:12 -0800 (PST)
+Message-ID: <73ec81de-86f8-477c-a5ca-aae83528dfab@gmail.com>
+Date: Mon, 9 Feb 2026 20:20:07 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/2] iio: light: Add support for Capella cm36686 and
+ cm36672p sensors
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Kevin Tsai <ktsai@capellamicro.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+References: <20260209-cm36686-v2-0-a48126d2b124@gmail.com>
+ <aYoBwFW4ZDFhmlvy@smile.fi.intel.com> <aYoCJMlaaPO8auIm@smile.fi.intel.com>
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+Content-Language: en-US
+In-Reply-To: <aYoCJMlaaPO8auIm@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, 2026-02-09 at 16:47 +0000, Nuno S=C3=A1 wrote:
-> On Mon, 2026-02-09 at 09:28 -0600, David Lechner wrote:
-> > On 2/8/26 3:24 AM, Nuno S=C3=A1 wrote:
-> > > On Fri, 2026-02-06 at 18:07 +0200, Antoniu Miclaus wrote:
-> > > > Add a new function to get an IIO backend by its index in the
-> > > > io-backends device tree property. This is useful for multi-channel
-> > > > devices that have multiple backends, where looking up by index is
-> > > > more straightforward than using named backends.
-> > > >=20
-> > > > The new function directly uses the index to find the backend refere=
-nce
-> > > > in the io-backends property, avoiding the need for io-backend-names=
-.
-> > > >=20
-> > > > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > > > ---
-> > > > =C2=A0drivers/iio/industrialio-backend.c | 51 +++++++++++++++++++++=
-+++++++++
-> > > > =C2=A0include/linux/iio/backend.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0 |=C2=A0 2 ++
-> > > > =C2=A02 files changed, 53 insertions(+)
-> > > >=20
-> > > > diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/indus=
-trialio-
-> > > > backend.c
-> > > > index 447b694d6d5f..3b692d48481e 100644
-> > > > --- a/drivers/iio/industrialio-backend.c
-> > > > +++ b/drivers/iio/industrialio-backend.c
-> > > > @@ -1008,6 +1008,57 @@ struct iio_backend *devm_iio_backend_get(str=
-uct device *dev,
-> > > > const char *name)
-> > > > =C2=A0}
-> > > > =C2=A0EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get, "IIO_BACKEND");
-> > > > =C2=A0
-> > > > +static struct iio_backend *
-> > > > +__devm_iio_backend_fwnode_get_by_index(struct device *dev,
-> > > > +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct fwnode_handle *fwn=
-ode,
-> > > > +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int index)
-> > > > +{
-> > > > +	struct fwnode_handle *fwnode_back;
-> > > > +	struct iio_backend *back;
-> > > > +	int ret;
-> > > > +
-> > > > +	fwnode_back =3D fwnode_find_reference(fwnode, "", index);
-> > > > +	if (IS_ERR(fwnode_back))
-> > > > +		return dev_err_cast_probe(dev, fwnode_back,
-> > > > +					=C2=A0 "Cannot get Firmware reference\n");
-> > > > +
-> > > > +	guard(mutex)(&iio_back_lock);
-> > > > +	list_for_each_entry(back, &iio_back_list, entry) {
-> > > > +		if (!device_match_fwnode(back->dev, fwnode_back))
-> > > > +			continue;
-> > > > +
-> > > > +		fwnode_handle_put(fwnode_back);
-> > > > +		ret =3D __devm_iio_backend_get(dev, back);
-> > > > +		if (ret)
-> > > > +			return ERR_PTR(ret);
-> > > > +
-> > > > +		back->idx =3D index;
-> > > > +
-> > > > +		return back;
-> > > > +	}
-> > > > +
-> > > > +	fwnode_handle_put(fwnode_back);
-> > > > +	return ERR_PTR(-EPROBE_DEFER);
-> > > > +}
-> > >=20
-> > > I believe we don't necessarily need this. Why can't we use io-backend=
--names? I get
-> > > that in here we just want something matching the number of channels w=
-e have so giving
-> > > names is probably does not add much added value. But still, I would p=
-refer t have
-> > > more simplicity in the API and it should be fairly easy for the front=
-end to use the
-> > > names argument.
-> > >=20
-> > > _ Nuno S=C3=A1
-> > >=20
-> >=20
-> > IMHO, using names in this case would just be annoying because we would =
-have to
-> > sprintf the string to add the index to the string. And also have to spe=
-nd time
-> > coming up with more complex DT bindings. Using the index seems much sim=
-pler.
-> >=20
-> > If you really feel strongly about it though, maybe we could make a
-> > devm_iio_backend_fwnode_get_fmt() function instead that handles the
-> > sprintf() part so that we only have to write that once?
-> >=20
->=20
-> uHu? Maybe I'm completely missing your point but what I had in mind was j=
-ust something like:=C2=A0
->=20
->=20
-> // from the frontend:
->=20
-> static const char * const names[] =3D { "adc1", "adc2" }
->=20
-> for (c =3D 0; c < ARRAY_SIZE(names); c++) {
-> 	back =3D devm_iio_backend_get(dev, names[c]);
-> }
->=20
-> So yes, I agree we would have a bit more complex bindings and more comple=
-xity in the
-> frontend. But on the bright side, no need to change backend code at all. =
-And the
-> -names property is already used like the above fairly often If I'm not mi=
-staken.
->=20
-> But again, I can agree that for this usecase getting things by index make=
-s sense. Given
-> that we just want n backends for n channels, the name does not add much.
->=20
 
-Given Krzysztof's feedback, let's not do the above. So, Antoniu, disregard =
-my comments about using
-io-backend-name.
 
-- Nuno S=C3=A1
+On 2/9/26 5:49 PM, Andy Shevchenko wrote:
+> On Mon, Feb 09, 2026 at 05:48:22PM +0200, Andy Shevchenko wrote:
+>> On Mon, Feb 09, 2026 at 04:23:40PM +0200, Erikas Bitovtas wrote:
+>>> This patch series adds support for Capella cm36686 and cm36672p ambient
+>>> light and proximity sensors.
+>>>
+>>> Capella cm36686 is a combined ambient light and proximity sensor with
+>>> adjustable integration time, interrupt and hysteresis support. It has
+>>> the slave address of 0x60. cm36672p is fully compatible with cm36686,
+>>> except that it is a proximity-only sensor.
+>>
+>> So, can we share the code (assuming there is a driver and it already
+>> uses or may be converted to regmap APIs)?
+> 
+> Ah, it's being added with the same driver... So, have you checked if there is
+> any similar HW with the available driver in upstream?
+> 
+
+I checked only for other Capella sensors, I forgot that Vishay acquired Capella
+Microsystems. Now that I checked, vcnl4040 uses the same registers and regfields
+as cm36686 and can be used instead...
+I am sorry for wasting your time. Should I add a fallback to vcnl4040's
+devicetree schema and add cm36672p support by excluding the light channels instead?
