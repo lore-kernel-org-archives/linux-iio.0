@@ -1,205 +1,137 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F04653859CF
-	for <linux-iio@vger.kernel.org>; Mon,  9 Feb 2026 16:46:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 646361FE44B;
+	Mon,  9 Feb 2026 17:13:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770655586; cv=none; b=V43j/ykIFOaHCHjB6Dfq4WhohwM7ZoV51qxh3Og6MaTWuG0mmPJYrxqa1b1mc6qz+SJw5KbJbpn1eRw3txgaNNycPTIqxhbs+XIXMCpPBpn4HtC2it3x/pIrteB5w5SdDWk4ol27HPF1XBL/0VWqRFti1pZUBB9xaEE5gfgBEsc=
+	t=1770657190; cv=none; b=pZgIOYBJCiUdjtjE4B5hoB4kuGkpb5ThiPpnUBEpg7FqDEatFP7MxV4+gW8Fwm8wb73BH1iKEPvzmC1ewY/QWJxf9XSVuIlLogUdTA/dN0y187JPvjMb0d+C+/WzikFc/5KnaOuFOHNTvPNNF6n9o3RRtcluPKCZxKrOJFgPOiM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770655586; c=relaxed/simple;
-	bh=CwohizHSnVaA2NNgNrCByNQlZ1oJaWWA0GxEuHaseKg=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=Ea5g4bI41N/5JrmC94h7aAixrChk0L0s5gDYSZAdVE2F4+OIUMHJ6jjWt8gCyUK9UAvDuRY+BVoS8HzNy5XDZb1v0GuS4nB4IAIK5hlHbW8GPGbpMJxIPnPq8Y9P4Z8puWlWV7I88lGt/o/c59LX4Dm5QiA9RS0ZldHja8cygC4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=CtyEMc4G; arc=none smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770657190; c=relaxed/simple;
+	bh=7/0wVgIfNAPZHsPbUJAcjPLXyhrfYzKByVrG/oMCg9o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=KqY8JHFdmYxXIaboJ/NDJT9xwDaF0u5N//lr8r1Z+M5ZEB5ojKDnzcy2p7FHlweFxSEeQ1KC60Wb3hhiYjtN0SIv086E+lsqPdmO6uUfzgZ0QrigRBL3kmn7K+benDrlkvZsncJ5TGVrFkuNFX+4ybEnIaFTUSVvBYzUUfHObJk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Wuc3IGEb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CtyEMc4G"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4806cc07ce7so47160315e9.1
-        for <linux-iio@vger.kernel.org>; Mon, 09 Feb 2026 08:46:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770655584; x=1771260384; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=lLb8ag3ra6IO++ksPTcs7qsE4fbhw6boR1CyaCV8y8M=;
-        b=CtyEMc4GwyVBEzvrQEIciduy2i4+EtGAxYgjt3wFjCosVAoyBNl7oOKNDjIz9W3sT7
-         84syF377CGo9ImIx2b9ZGlR0qZ/wIsbxCHqENnSUfjviyYRz6wb5nE7mgS3ZdafYH0hw
-         b4D0E1IbYYVS8y9XAYyKMDuKhHAx/y6yYFL73FJbDPOZuXq0ztVG4OoG7zG+Lr8hOfa0
-         iKubVufqn/GVW7UuRmuR5Ry+bJ0NyuZQnzgREWMmzepaNbBZV5zXGddC3+uzz7TVSOgc
-         2ZTlXC+1EBoh1THLXy9T+l+m+w/102Mjkj6HfGrORZA2qt0FtOoTzaL/vifxxdBH2Fdv
-         1IVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770655584; x=1771260384;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=lLb8ag3ra6IO++ksPTcs7qsE4fbhw6boR1CyaCV8y8M=;
-        b=O1Z6CNUDzOS1wo0k6ZK/jm/u/C/yrkOVAnOiePK9FXPeCEODYnlO8vqAMuuhOuGHdE
-         isggwRtnSnb7ktRtHtpdcWHPraQKOlggN5jxuRDV5XM8pSfZbyFLv7PdMXF4kj4xMNC3
-         fG82Oze66ZbVkFRRQb0PhI8FrAlYWDwAia/hsPZYlE3Yk69kkBDkDyG+V6sqDwV1tO12
-         Uv0+1uurhOmnV9M8ZIUPP88+60onyWxwW7mdH9Tuuda3+2gc8fpHsSzVG9eSkd6PHqb0
-         J4mf7j2iL9ZEMaA14v4VARdCThFdLBI7ygXWM196AQ3nf72OjUQl0Egy7ufDI+Y15T/B
-         8huw==
-X-Forwarded-Encrypted: i=1; AJvYcCVfdSxP9UebonWOaQ9BhEv0vOdpdh8G3EkP3ZF3Siovf4quDNfesnGuslKuR2y0uCUjNeqRhPIVO1o=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyA6dTYFTwvOqCm77Gky1clV5dg3GTiUE9vv/OHCdl+tTnhtLpn
-	dJ59i1Wc/5oiQzDPHFv38ypk3dwv5IfUkl7YJFqWTa46KfHuKvk+GAel
-X-Gm-Gg: AZuq6aIB7qwGvut4+FRW84ZdhiClsmSO4eLEVFSXeu5m3JoPC6ZnvuuCIGrTTHCr08F
-	D4DmzAljTJXq+//jIf/RsxLLSTw/iydfO5rMhrLdivURiieA5JJuvGfU+/toGuCXRznlHg88y1w
-	V+vA+dGVi2Ga+CpREvKZ7nJTP/QZHlvYWX57+rgryauUG9Rr88sRZLKc2xXCdZZSFuehOEwLxDP
-	hJYsCBYpTm8iEEcypISryqcuX/x+9bpR+9e1OgjY3Nq4CRgs1zayTceRmHNLg6iR74wi5M9HX44
-	39v2qEz0wX952Uzf77ywxkMxJyZBMeeUxC3MBu2Z5WDdiwWLLDVFJMH2Rfpqd6IzbvOS812brkX
-	ZOUYUcVR8Vt2mYGvtq6YlfNdR9iLhjLBDSEFoppHpRYo9wgYLaF9Nyrz62otlOAuDJlP6N7g+7V
-	JSe+G4uS7oFERYnFkixULs4B1KR80q9O4=
-X-Received: by 2002:a05:600c:45cb:b0:477:8985:4036 with SMTP id 5b1f17b1804b1-483201dd216mr157441135e9.1.1770655584079;
-        Mon, 09 Feb 2026 08:46:24 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4834d5d78cfsm1924275e9.1.2026.02.09.08.46.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Feb 2026 08:46:23 -0800 (PST)
-Message-ID: <be8457799b32d420228df5e2841c5547023ec515.camel@gmail.com>
-Subject: Re: [PATCH v2 2/4] iio: backend: add devm_iio_backend_get_by_index()
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>, Antoniu Miclaus	
- <antoniu.miclaus@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron
- <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring	 <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley	 <conor+dt@kernel.org>,
- Olivier Moysan <olivier.moysan@foss.st.com>, Mark Brown	
- <broonie@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, 	linux-kernel@vger.kernel.org,
- linux-spi@vger.kernel.org
-Date: Mon, 09 Feb 2026 16:47:06 +0000
-In-Reply-To: <becd9db1-818f-4aa8-8362-91a711861839@baylibre.com>
-References: <cover.1770393792.git.antoniu.miclaus@analog.com>
-	 <550323d752213f177b7673bdd42e667f1d2228cb.1770393792.git.antoniu.miclaus@analog.com>
-	 <c731b6fba72286707821ea6e7722835ba45f089c.camel@gmail.com>
-	 <becd9db1-818f-4aa8-8362-91a711861839@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.2 
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Wuc3IGEb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88212C116C6;
+	Mon,  9 Feb 2026 17:13:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770657190;
+	bh=7/0wVgIfNAPZHsPbUJAcjPLXyhrfYzKByVrG/oMCg9o=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Wuc3IGEbYL9wDkaqs0c8lW+hvVuf07JrCUGdcRcBDEAyHLoPLHu1luwr/O6Y7ybm/
+	 mbFtNqKNs+e/hu7haE9O1ExZKfUiIuSl4fsizPyzUAUozVVJ6CUx5t5QNvjscsrDbY
+	 0VeZS0cVEyYvOVXKDz83pLd3EbB/Kz/noysMhWgaUhRbj5GuU7+tGA37DB00e0iGhP
+	 4XYUp+XE1GjA+Kv6cufkb3Xe2prp/08OPZrfAr6bEiWAtw7D9j2/Y0Q2NToD5rEmmb
+	 piLr9xHhe6USHx4vXtM936xL686fuHDNstMReLZTMLyIlwXNG/4s82Lh455YvVtQgh
+	 MZaFrObScODWw==
+Message-ID: <79c21d77-32c0-401a-94e2-ba4349a7a616@kernel.org>
+Date: Mon, 9 Feb 2026 18:13:04 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/4] dt-bindings: iio: adc: ad4080: add AD4880 support
+To: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
+ Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-spi@vger.kernel.org
+References: <cover.1770393792.git.antoniu.miclaus@analog.com>
+ <290f35bcbd2f1ee68333ff65f89b54ec7fbb9c53.1770393792.git.antoniu.miclaus@analog.com>
+ <20260207-evasive-mastodon-of-apotheosis-e663a1@quoll>
+ <b3571244f058133a7a0f3b5ca6ef7dc377e3fac8.camel@gmail.com>
+ <be3808e2-ef17-4191-8c1c-5acb53114863@kernel.org>
+ <6b33ddfce874006bd10e223701802dec52fdddf9.camel@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <6b33ddfce874006bd10e223701802dec52fdddf9.camel@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, 2026-02-09 at 09:28 -0600, David Lechner wrote:
-> On 2/8/26 3:24 AM, Nuno S=C3=A1 wrote:
-> > On Fri, 2026-02-06 at 18:07 +0200, Antoniu Miclaus wrote:
-> > > Add a new function to get an IIO backend by its index in the
-> > > io-backends device tree property. This is useful for multi-channel
-> > > devices that have multiple backends, where looking up by index is
-> > > more straightforward than using named backends.
-> > >=20
-> > > The new function directly uses the index to find the backend referenc=
-e
-> > > in the io-backends property, avoiding the need for io-backend-names.
-> > >=20
-> > > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > > ---
-> > > =C2=A0drivers/iio/industrialio-backend.c | 51 +++++++++++++++++++++++=
-+++++++
-> > > =C2=A0include/linux/iio/backend.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0 |=C2=A0 2 ++
-> > > =C2=A02 files changed, 53 insertions(+)
-> > >=20
-> > > diff --git a/drivers/iio/industrialio-backend.c b/drivers/iio/industr=
-ialio-
-> > > backend.c
-> > > index 447b694d6d5f..3b692d48481e 100644
-> > > --- a/drivers/iio/industrialio-backend.c
-> > > +++ b/drivers/iio/industrialio-backend.c
-> > > @@ -1008,6 +1008,57 @@ struct iio_backend *devm_iio_backend_get(struc=
-t device *dev,
-> > > const char *name)
-> > > =C2=A0}
-> > > =C2=A0EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get, "IIO_BACKEND");
-> > > =C2=A0
-> > > +static struct iio_backend *
-> > > +__devm_iio_backend_fwnode_get_by_index(struct device *dev,
-> > > +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct fwnode_handle *fwnod=
-e,
-> > > +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int index)
-> > > +{
-> > > +	struct fwnode_handle *fwnode_back;
-> > > +	struct iio_backend *back;
-> > > +	int ret;
-> > > +
-> > > +	fwnode_back =3D fwnode_find_reference(fwnode, "io-backends", index)=
-;
-> > > +	if (IS_ERR(fwnode_back))
-> > > +		return dev_err_cast_probe(dev, fwnode_back,
-> > > +					=C2=A0 "Cannot get Firmware reference\n");
-> > > +
-> > > +	guard(mutex)(&iio_back_lock);
-> > > +	list_for_each_entry(back, &iio_back_list, entry) {
-> > > +		if (!device_match_fwnode(back->dev, fwnode_back))
-> > > +			continue;
-> > > +
-> > > +		fwnode_handle_put(fwnode_back);
-> > > +		ret =3D __devm_iio_backend_get(dev, back);
-> > > +		if (ret)
-> > > +			return ERR_PTR(ret);
-> > > +
-> > > +		back->idx =3D index;
-> > > +
-> > > +		return back;
-> > > +	}
-> > > +
-> > > +	fwnode_handle_put(fwnode_back);
-> > > +	return ERR_PTR(-EPROBE_DEFER);
-> > > +}
-> >=20
-> > I believe we don't necessarily need this. Why can't we use io-backend-n=
-ames? I get
-> > that in here we just want something matching the number of channels we =
-have so giving
-> > names is probably does not add much added value. But still, I would pre=
-fer t have
-> > more simplicity in the API and it should be fairly easy for the fronten=
-d to use the
-> > names argument.
-> >=20
-> > _ Nuno S=C3=A1
-> >=20
->=20
-> IMHO, using names in this case would just be annoying because we would ha=
-ve to
-> sprintf the string to add the index to the string. And also have to spend=
- time
-> coming up with more complex DT bindings. Using the index seems much simpl=
-er.
->=20
-> If you really feel strongly about it though, maybe we could make a
-> devm_iio_backend_fwnode_get_fmt() function instead that handles the
-> sprintf() part so that we only have to write that once?
->=20
+On 09/02/2026 17:43, Nuno Sá wrote:
+> On Sun, 2026-02-08 at 10:20 +0100, Krzysztof Kozlowski wrote:
+>> On 08/02/2026 10:16, Nuno Sá wrote:
+>>>>>  
+>>>>>    io-backends:
+>>>>> -    maxItems: 1
+>>>>> +    minItems: 1
+>>>>> +    maxItems: 2
+>>>>
+>>>> Instead list the items with minItems, so the order is defined.
+>>>>
+>>>
+>>> Also looks like we now need 'io-backend-names'.
+>>
+>> No. Just define the order here.
+>>
+> 
+> Things are still not really defined on the code side (I know bindings don't care about the driver
+> side) but io-backend-names is a standard property and we might actually end up using it so that
 
-uHu? Maybe I'm completely missing your point but what I had in mind was jus=
-t something like:=C2=A0
+And names do not change that at all. Actually they might make it worse,
+because they allow drivers to fetch item by name which people think
+means "order is flexible".
 
+> we know how to map the backend to a given channel. Unless what you're saying is that in here, -names
+> doesn't really makes sense given that we just want n io-backends for n adc channels and having 
+> -names as "adc1", "adc2", "adcn" is arguably useless.
 
-// from the frontend:
+Names like adcX indeed would not make much sense.
 
-static const char * const names[] =3D { "adc1", "adc2" }
-
-for (c =3D 0; c < ARRAY_SIZE(names); c++) {
-	back =3D devm_iio_backend_get(dev, names[c]);
-}
-
-So yes, I agree we would have a bit more complex bindings and more complexi=
-ty in the
-frontend. But on the bright side, no need to change backend code at all. An=
-d the
--names property is already used like the above fairly often If I'm not mist=
-aken.
-
-But again, I can agree that for this usecase getting things by index makes =
-sense. Given
-that we just want n backends for n channels, the name does not add much.
-
-- Nuno S=C3=A1
+Best regards,
+Krzysztof
