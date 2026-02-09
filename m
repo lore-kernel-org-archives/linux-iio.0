@@ -1,183 +1,145 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57111B665
-	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 22:37:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88D244414;
+	Mon,  9 Feb 2026 02:00:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770590274; cv=none; b=KLboQbQ8mOoFPOCnmA56Tb58vlVzOeVfIKSpML3NEkC+/8DSWzcbjXo7Zd56D96yVY3cG9YR6lXy1Pdo0mFuJn4cwh8kkfl+bYuig+0yvhWZQX6rzJ9AKwprTT7PJAjzoh7MjBE1YHTWqfNeckKCifTT6I4Va8bkybDtWqZa2O0=
+	t=1770602456; cv=none; b=LgFYTm6jfXjGYoK5qf3fjMicqjlv+lX1ZkZbYlpF3XXUjUDH9VwD4S2JMpx59pmBz2W1mb0kQ37sOV8kIm8UUXzi2akj3jWcOiExF+Yh4aR4y1prcb3PeoK5z5nC+tJfA/N6VPN3qn9omXc0pX56LnHxNSGwlXii9J4wRSyt8Ws=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770590274; c=relaxed/simple;
-	bh=9zzQCS0ZD52rCJwUkgpOBtKinN566jajYieUXkw0Tlo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qkY0YzGv7gn7f0pyzusjEAYXfoaod1MatIMGMgJ8NGjj5GnyqcVe1oiCOkwSSi8V1EaKAmE9/hDGkgf6xAm4wPs7nvqwJq9b+s3PC9XhpQflmRdeIKNByEtAzbrGO/KShkGUzHjQxwm8scmKdijxfowDkK6D56VnT4kJZpeanZU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=bdZFWtvS; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770602456; c=relaxed/simple;
+	bh=7otLzrkC61uGm/9r5kJcqEAzwDUQ+4uTVyKg0uxYzrA=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=me083cBNEz5eaIETnOj9DRn1x6uL3ME1qpG8bJBUCPPGOr7OzlXFxyhkis9HpJeFff1zm/3oHj/MTa+iycoTkTnfSoAKPWDUOSwGWNTvobmgAiuOdtW+5U4AYfrNVjYvBQnShk9RI/aML5KAP4NuGAjb1mqSLTFnFe+84vdGljo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=X/lx3lWi; arc=none smtp.client-ip=192.198.163.15
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="bdZFWtvS"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1451C4CEF7
-	for <linux-iio@vger.kernel.org>; Sun,  8 Feb 2026 22:37:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770590274;
-	bh=9zzQCS0ZD52rCJwUkgpOBtKinN566jajYieUXkw0Tlo=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=bdZFWtvSBGcOKmB+GRti5ic9lxm+I/CAY64eIdpyy//cr2tHE6pTcd5XwIXKPKwzg
-	 5TZwprXaQqtXFSTWWy9KQgtn9nJBf0aDHKLKzpRQBNpnsFeZWLyRUyoiDUEbVZuYq3
-	 j+qOqLQJCUJhTskWdTAnRgLQphy2OjUyu1uuEY4MoGUWURAj8h3jyxFexi9h3WKxfU
-	 R3eG/QP6QbtNf28Ere07+bTG8wT59PtlSICg29/TfIfz1hl/2XB5Mw4jWi19OdrFdh
-	 GVL9zNU+++tAsNN3Q/mRYT5TBXyWLQxZSr3MHYbbI3SgWK861hK+nIqLLGe7KFOKI5
-	 BWbCv2bm9VdTg==
-Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-b8e9f89a8e3so419188566b.1
-        for <linux-iio@vger.kernel.org>; Sun, 08 Feb 2026 14:37:53 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCVm8/k8DAPrzDC7XtkKV4eIm8gcNknSuVQrxHiCngF5EmUFDpcjoBO3dZ3P2emXtTSotJZV5BBBnc4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzIjzVGDUUjpiMvfqKTae9UV5xf/KBF91LbfbVer9H/bJZzSszu
-	B4NEtqRQOeMF3STKO26dwKpGl1SLF4DHyXbn73NGQofWwviF+KSB+cTMp+5HHFyVDbrlPDMXgHJ
-	9WQ6gbfCSBpnQgzVgdaTFPBIAdK1INQ==
-X-Received: by 2002:a17:906:6a18:b0:b8d:f859:d228 with SMTP id
- a640c23a62f3a-b8edf1a942amr477887566b.17.1770590272539; Sun, 08 Feb 2026
- 14:37:52 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="X/lx3lWi"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770602456; x=1802138456;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=7otLzrkC61uGm/9r5kJcqEAzwDUQ+4uTVyKg0uxYzrA=;
+  b=X/lx3lWiRJ2mdc2KsxITQoUMNlT7w3JNvMiW/3XzrH1PhXDKQiCIAmZ/
+   3fXqbFzY0If7vAP69nJqrmMbAdUlZdN8EowLP795gbideFoA5JkyZk3TL
+   Xu/+u8DtEldd/KsUdBOesXt3UgUaIY8zh/V5FMELCQQVwkKs0mInZHuI3
+   MSILqQGwQLPHU2baM127Lys0W3WVP/8xFrzAoppAFTuinqQcUrxv/zxe7
+   0wC5d1VZEySoTriFdo3WOEMhQ0yhzDy4aY4KDDCisJK2PtWajppoCkYUk
+   ZExxtX8l7b117tpiOIxvE53Ab6onUpAbz8GKJx7D4CMjv25Hpg+OdWKBS
+   Q==;
+X-CSE-ConnectionGUID: HdhAl0mySHy6w5wTkC/8og==
+X-CSE-MsgGUID: iZDdgg8WQkCrN6EW4xceJw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11695"; a="71813757"
+X-IronPort-AV: E=Sophos;i="6.21,281,1763452800"; 
+   d="scan'208";a="71813757"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 18:00:55 -0800
+X-CSE-ConnectionGUID: KVwL6CbDTh+w8X7BIC/Gsw==
+X-CSE-MsgGUID: bz/NbrIATky9ceqMt8fY8Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,281,1763452800"; 
+   d="scan'208";a="210650595"
+Received: from spandruv-mobl5.amr.corp.intel.com (HELO [10.125.111.220]) ([10.125.111.220])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Feb 2026 18:00:54 -0800
+Message-ID: <a69abd18ea5a30fdb32478183ad16d9aaacd73a3.camel@linux.intel.com>
+Subject: Re: [tip: irq/core] genirq: Warn about using IRQF_ONESHOT without a
+ threaded handler
+From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, Sebastian Andrzej Siewior
+	 <bigeasy@linutronix.de>
+Cc: Bert Karwatzki <spasswolf@web.de>, linux-kernel@vger.kernel.org, 
+	linux-iio@vger.kernel.org, Jiri Kosina <jikos@kernel.org>, Thomas Gleixner
+	 <tglx@kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Date: Sun, 08 Feb 2026 18:00:53 -0800
+In-Reply-To: <20260207154638.30f3b47b@jic23-huawei>
+References: <20260113120541.YVf2vRA3@linutronix.de>
+		<20260202232741.13380-1-spasswolf@web.de>
+		<20260203083826.1gOzxrwt@linutronix.de>
+		<476cf5e072259332676c431c19ca3188705a86f1.camel@web.de>
+		<20260203145856.Rc52LIS5@linutronix.de>
+	 <20260207154638.30f3b47b@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.2 (3.58.2-1.fc43) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260206172845.145407-1-clamor95@gmail.com> <20260206172845.145407-2-clamor95@gmail.com>
- <20260206230922.GA254792-robh@kernel.org> <CAPVz0n3EGCSLUX7jTLve0x0z4uW1yexViCwkSQLY2d_4r4qkjg@mail.gmail.com>
- <db9115ca-2c8f-4b5e-89ce-f3b934071a59@baylibre.com> <CAPVz0n2KwqPw88JVcPzhTQ2n+GKzahkrEThjjrqm0CSdjKTEOw@mail.gmail.com>
- <51eddfc0-9f23-4a7f-8729-19775d834c0b@baylibre.com>
-In-Reply-To: <51eddfc0-9f23-4a7f-8729-19775d834c0b@baylibre.com>
-From: Rob Herring <robh@kernel.org>
-Date: Sun, 8 Feb 2026 16:37:41 -0600
-X-Gmail-Original-Message-ID: <CAL_Jsq+JzAnvW3zSC7Y=dpWTKMUwFfTOuAnMS21d+F_W=5ONeg@mail.gmail.com>
-X-Gm-Features: AZwV_QiXE7FF0AsUcBwXkZ1sUoiJVr-4CydnqWTJFagZ120T9XrMYxQRlj7pE10
-Message-ID: <CAL_Jsq+JzAnvW3zSC7Y=dpWTKMUwFfTOuAnMS21d+F_W=5ONeg@mail.gmail.com>
-Subject: Re: [PATCH v2 01/11] dt-bindings: regulator: cpcap-regulator: convert
- to DT schema
-To: David Lechner <dlechner@baylibre.com>
-Cc: Svyatoslav Ryhel <clamor95@gmail.com>, Jonathan Cameron <jic23@kernel.org>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Lee Jones <lee@kernel.org>, 
-	Pavel Machek <pavel@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, 
-	Dixit Parmar <dixitparmar19@gmail.com>, Tony Lindgren <tony@atomide.com>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-input@vger.kernel.org, linux-leds@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 
-On Sat, Feb 7, 2026 at 11:32=E2=80=AFAM David Lechner <dlechner@baylibre.co=
-m> wrote:
->
-> On 2/7/26 11:25 AM, Svyatoslav Ryhel wrote:
-> > =D1=81=D0=B1, 7 =D0=BB=D1=8E=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 19:19 D=
-avid Lechner <dlechner@baylibre.com> =D0=BF=D0=B8=D1=88=D0=B5:
-> >>
-> >> On 2/7/26 3:20 AM, Svyatoslav Ryhel wrote:
-> >>> =D1=81=D0=B1, 7 =D0=BB=D1=8E=D1=82. 2026=E2=80=AF=D1=80. =D0=BE 01:09=
- Rob Herring <robh@kernel.org> =D0=BF=D0=B8=D1=88=D0=B5:
-> >>>>
-> >>>> On Fri, Feb 06, 2026 at 07:28:35PM +0200, Svyatoslav Ryhel wrote:
-> >>>>> Convert devicetree bindings for the Motorola CPCAP MFD regulator su=
-bnode
-> >>>>> from TXT to YAML format. Main functionality preserved.
-> >>>>>
-> >>
-> >> ...
-> >>
-> >>>>> +properties:
-> >>>>> +  compatible:
-> >>>>> +    enum:
-> >>>>> +      - motorola,cpcap-regulator
-> >>>>> +      - motorola,mapphone-cpcap-regulator
-> >>>>> +      - motorola,xoom-cpcap-regulator
-> >>>>> +
-> >>>>> +  regulators:
-> >>>>> +    type: object
-> >>>>> +
-> >>>>> +    patternProperties:
-> >>>>> +      "$[A-Z0-9]+^":
-> >>>>
-> >>>> I thought it was said on the last version to list the names. Conside=
-ring
-> >>>> you already have them below, better to put them in schema than prose=
-.
-> >>>> And pretty much all regulator bindings define the names.
-> >>>>
-> >>>
-> >>> What exactly do you propose? All those names will not fit into a
-> >>> single unbreakable line (more than 125 columns in length btw). Patch
-> >>> checker will complain about this. Duplicate pattern properties for
-> >>> every few names? Please be a bit more specific. Thank you!
-> >>
-> >> Making checkpatch happy is not a hard requirement. If you have to
-> >> go over 125 characters for technical reasons, no one is going to
-> >> complain.
-> >>
-> >> I already gave an example on the last version. It is just a regex
-> >> expression. (And note that you didn't fix the $ and ^ either. ^
-> >> means beginning of the line and $ means the end of the line. So
-> >> the pattern currently won't match anything.)
-> >>
-> >> patternProperties:
-> >>   "^(SW1|SW2|SW3|SW4|SW5|...)$":
-> >>
-> >>
-> >> And I hope it is obvious that you are meant to replace ... with the
-> >> rest of the names separated by |.
-> >>
-> >
-> > David, thank you for your suggestions and I did not want to offend you
-> > nor Rob, or ignore. Using this large string IMHO feels a bit wrong. No
-> > offence, I will use it if required. At the same time I was
-> > experimenting with possible representation and come up with smth like
-> > this:
-> >
-> >     patternProperties:
-> >       "^SW[1-6]$":
-> >         type: object
-> >         $ref: /schemas/regulator/regulator.yaml#
-> >         unevaluatedProperties: false
-> >
-> >         required:
-> >           - regulator-name
-> >           - regulator-enable-ramp-delay
-> >           - regulator-min-microvolt
-> >           - regulator-max-microvolt
-> >
-> >       "^V(CAM|CSI|DAC|DIG|FUSE|HVIO|SDIO|PLL|RF1|RF2|RFREF)$":
-> >         type: object
-> >         $ref: /schemas/regulator/regulator.yaml#
-> >         unevaluatedProperties: false
-> >
-> >         required:
-> >           - regulator-name
-> >           - regulator-enable-ramp-delay
-> >           - regulator-min-microvolt
-> >           - regulator-max-microvolt
-> >
-> >       "^V(WLAN1|WLAN2|SIM|SIMCARD|VIB|USB|AUDIO)$":
-> >         type: object
-> >         $ref: /schemas/regulator/regulator.yaml#
-> >         unevaluatedProperties: false
-> >
-> >         required:
-> >           - regulator-name
-> >           - regulator-enable-ramp-delay
-> >           - regulator-min-microvolt
-> >           - regulator-max-microvolt
-> >
-> > Will this be acceptable? It passes checks
->
-> I think we would rather have the long match string instead of
-> repeating the rest of it multiple times.
+On Sat, 2026-02-07 at 15:46 +0000, Jonathan Cameron wrote:
+> On Tue, 3 Feb 2026 15:58:56 +0100
+> Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
+>=20
+> > On 2026-02-03 11:43:53 [+0100], Bert Karwatzki wrote:
+> > > Yes, this should call warn_no_thread() when the interrupt is
+> > > triggered, but
+> > > I don't know if these sensors are actually functional on my
+> > > laptop (I've never
+> > > tried to use them).
+> > >=20
+> > > So I installed libiio-utils from debian and this is the output
+> > > from
+> > > iio_info:=C2=A0=20
+> > =E2=80=A6
+> > >=20
+> > > The iio:device* sensors all report 0 for the "offset value", so
+> > > these
+> > > sensors are maybe non-fuctional.
+> > >=20
+> > > =C2=A0=20
+> > > > What did I miss?=C2=A0=20
+> > >=20
+> > > I don't think you missed something, but the thread function being
+> > > NULL here
+> > > could a problem on devices where these sensors actually work. (Or
+> > > perhaps these sensors
+> > > need to be polled and the interrupts never trigger (?))=C2=A0=20
+> >=20
+> > I only found one handler where the thread handler was NULL and it
+> > returned WAKE_THREAD. So this _is_ broken.
+> > Was it one of the driver I mentioned? If so I suggest to fix those
+> > first. I have no idea how this should work=E2=80=A6
+> Both the drivers that are called out in this discussion look to
+> be registering a triggered buffer, but are not using a trigger to
+> fill
+> it. So they should not be doing that in the first place.
 
-Yes.
+Replacing with devm_iio_kfifo_buffer_setup_ext() breaks user space on
+laptops as they expect current_trigger. This is not available for
+INDIO_BUFFER_SOFTWARE. Using INDIO_BUFFER_TRIGGERED doesn't help
+without poll function. Still breaks user space. This all works from
+Linux 3.1x in this mode.
 
-105 chars:
+Sensors are powered off till user space writes to current_trigger which
+results in call to .set_trigger_state() via
+iio_trigger_attach_poll_func().=20
 
-    "^(SW[1-6]|V(CAM|CSI|DAC|DIG|FUSE|HVIO|SDIO|PLL|RF[12]|RFREF|WLAN[12]|S=
-IM|SIMCARD|VIB|USB|AUDIO))$":
+Here the hub is pushing data, not pulled to register a thread handler
+and read.
 
-There is the yamllint of 110 which does have to be followed.
+So not sure what to add to thread handler other than dummy function.
+=20
 
-Rob
+Thanks,
+Srinivas
+
+>=20
+> The right fix is either to not use those helpers at all and register
+> the kfifo directly (so none of the problem infrastructure is used) or
+> implement a proper trigger / buffer separation by having their
+> interrupt
+> handlers as the trigger then moving the data reading into the
+> pollfuncs.
+> At that point there would be a thread here to do that read and we'd
+> not have the bug.
+>=20
+> Jonathan
+>=20
+> >=20
+> > > Bert Karwatzki=C2=A0=20
+> >=20
+> > Sebastian
