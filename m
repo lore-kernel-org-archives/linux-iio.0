@@ -1,72 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF1B4322A;
-	Mon,  9 Feb 2026 10:29:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04847309DDC;
+	Mon,  9 Feb 2026 10:35:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770632991; cv=none; b=RM8/CYfFA4mH3oVjTfr1VbgjtaZuTIszJRyx30epYUd0R1NNtz2lc6c0s1ko3cOH9uWl5tmqREkCMvMJt6v4bpYxMYUEdmFOULJGo2DyXr2HMWAAu/41Ddz7LvFhaM7+yE2/Fck5IM2NqpFArkxh5TIIqfWyhXmLsFcaIWxZxQA=
+	t=1770633318; cv=none; b=WXsA1Hb+05FPvMMfC+I4Az2CkGknorKZ8nQfy3zMArv7Mkjn/c7gIUomE9oEX14HqHAhstLTtRwjYkPSR+cYG5A6GZKe42YgKOunAuS5MmLrRShUz5DzfIWLQh9gvATv2M9P1g7eJ7zZYzBSbg+q9WpIsKmgWoPT4WRWbfj0lto=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770632991; c=relaxed/simple;
-	bh=xZAYrTTulIZUYoCgEfQWTg7GfovcesjeRz77/U3qLpw=;
+	s=arc-20240116; t=1770633318; c=relaxed/simple;
+	bh=WvsfdJ+ue6Mtpy/LELCmBQXU1/dKfYVF5vU6urZbX4A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Agq3ygZ9unIHc+sY6/LzYwpFBazvDaNaoWeXcp5F5Ll2zfoG45u8xfH73+LP+cpaRdIgtQUW4Avf2zxTEYI2QS4S9lsLVEDPqH2np/QgWTNd0WyyVk58RDxCQ3KoJTyxOotSoTDMGPzV+9kZfspfWIAsE9fz0KNKS/t2nYrzX/0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AuHYdjzQ; arc=none smtp.client-ip=192.198.163.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=JVJTfZxa5Uo6cVq0h5fw7OYP4RW1fCqzfjYkDGaVYHIkIDVZmLrb7OgGyKK/Sjt+bIx3g/C+1U72WdqPkEqJTsRb8fv/w2nIa1G6aPWvu0tsF6rkOJjwykHRM/JOn0vv5WavFkI116lvUsecJ6CJo1h8fLwLskpQ/oC+lzpEyRQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SDBX0Zik; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AuHYdjzQ"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SDBX0Zik"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770632991; x=1802168991;
+  t=1770633319; x=1802169319;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=xZAYrTTulIZUYoCgEfQWTg7GfovcesjeRz77/U3qLpw=;
-  b=AuHYdjzQCkoVb7/uJiKqNr8c+FrmvZeX06JoDfBEg67ELXQ6pfLLT00Q
-   BRPZOeWj3+ER7ExkMAjTLlk/b1OecQHRbtUgGuF/Ye4+KdX1FBkfxUCDr
-   Ymp0lPpy3DMmqG23RP698HYWymWX2fKVpNDkwem8I8XnWJ/4InuJs2+P8
-   TMB8pZYlRcKf58Ea71U+xRd/JJu9ElBuRzIltbhLUOXfNf29G81RwM1Z8
-   PWJ1SWBhg/52Vwtd/gACe2p1/w/V6JBlQPH9AVH7IX6mXFeWzZv20jLQq
-   a3HFE5mZy4rDOzR59LHJKzQ63VylM6vuiO29uFEqQyfNc4CY9txqQMI3W
-   g==;
-X-CSE-ConnectionGUID: fMGkYcOUT2eUJ+pHrmr/Nw==
-X-CSE-MsgGUID: Z6trS8AdRXmEE1Ado0l4MA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11695"; a="59307693"
+  bh=WvsfdJ+ue6Mtpy/LELCmBQXU1/dKfYVF5vU6urZbX4A=;
+  b=SDBX0Zik7ny88QXRlUsX1iNA/siq8iN0Q4n8oO6CHG2TRtJCYI7t26f2
+   1MDiMX2/2dBHM+jWsPZ/Lncb7UDVXElwaKwwO5GFljg8rAs74Ct5S/dEb
+   lNgdgPzd3gsRZPMef7/JfK9LfY7Z8nM20MD2Pg74B6JW2QxzQ3ADtO6lA
+   FySVUZvnSHj7XCMZ6gbRgCiwYpqLGtvvotKqVxIHwnTCzrIuRJ7SEQ/hq
+   d8n0/mbU11XIHMyR25jx5tyZ14Lwbj0sbxygImvOZkmVmmY3Xi1aSsesc
+   87rAQ2h8oVn4zmq5HNDpMsYRs8MmJVc/FfdH0OyxGY9sLouvd+sFz20/A
+   w==;
+X-CSE-ConnectionGUID: x+mDjdOFSk6NhWJ8AoMmKA==
+X-CSE-MsgGUID: 8ZadD6itT1S4vLHj9CkJcg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11695"; a="89159771"
 X-IronPort-AV: E=Sophos;i="6.21,282,1763452800"; 
-   d="scan'208";a="59307693"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2026 02:29:50 -0800
-X-CSE-ConnectionGUID: wPkm/+a5QT+WbU9iN08AwQ==
-X-CSE-MsgGUID: aGNt7k67TQa/UZrfTT3jng==
+   d="scan'208";a="89159771"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2026 02:35:18 -0800
+X-CSE-ConnectionGUID: GMcjnr7ARamS7sjvi+yqgw==
+X-CSE-MsgGUID: KgpDIGJgReKrvC44fCBsiA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,282,1763452800"; 
-   d="scan'208";a="210855132"
+   d="scan'208";a="234491363"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.128])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2026 02:29:47 -0800
-Date: Mon, 9 Feb 2026 12:29:44 +0200
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Feb 2026 02:35:15 -0800
+Date: Mon, 9 Feb 2026 12:35:12 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, kernel@pengutronix.de,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+To: Tomas Melin <tomas.melin@vaisala.com>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+	Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	David Jander <david@protonic.nl>
-Subject: Re: [PATCH v4 06/13] iio: dac: ds4424: use device match data for
- chip info
-Message-ID: <aYm3GBNKalUWloA2@smile.fi.intel.com>
-References: <20260203093434.2548978-7-o.rempel@pengutronix.de>
- <aYHH69gXyuwmQR03@smile.fi.intel.com>
- <aYHLRvfJH54XumUA@pengutronix.de>
- <aYHhO7pJPEew7QMC@smile.fi.intel.com>
- <aYHjQhO92yxoy_9o@pengutronix.de>
- <aYIMgEEDd8ZfLv71@smile.fi.intel.com>
- <20260205204325.5bd09d97@jic23-huawei>
- <aYWe0-2KMLijFVh6@pengutronix.de>
- <aYW7lt26Tn-6Fgno@smile.fi.intel.com>
- <aYmnRXp6ChsUAjnB@pengutronix.de>
+	Andy Shevchenko <andy@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 5/5] iio: adc: ad9467: check for backend capabilities
+Message-ID: <aYm4YLcKzDnGGS9V@smile.fi.intel.com>
+References: <20260205-b4-ad9467-optional-backend-v6-0-7ca20c40c59a@vaisala.com>
+ <20260205-b4-ad9467-optional-backend-v6-5-7ca20c40c59a@vaisala.com>
+ <aYTGkAf7Ue7goDnw@smile.fi.intel.com>
+ <56254198-c45d-427b-bcfb-fa9c60f11e71@vaisala.com>
+ <aYmdn4sHxxD1KK0k@smile.fi.intel.com>
+ <c3f7ce0e-4661-4542-9ea0-168d28a483c8@vaisala.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,40 +69,52 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aYmnRXp6ChsUAjnB@pengutronix.de>
+In-Reply-To: <c3f7ce0e-4661-4542-9ea0-168d28a483c8@vaisala.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Feb 09, 2026 at 10:22:13AM +0100, Oleksij Rempel wrote:
-> On Fri, Feb 06, 2026 at 11:59:50AM +0200, Andy Shevchenko wrote:
-> > On Fri, Feb 06, 2026 at 08:57:07AM +0100, Oleksij Rempel wrote:
-> > > On Thu, Feb 05, 2026 at 08:43:25PM +0000, Jonathan Cameron wrote:
-> > > > On Tue, 3 Feb 2026 16:56:00 +0200
-> > > > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, Feb 09, 2026 at 12:01:07PM +0200, Tomas Melin wrote:
+> On 09/02/2026 10:41, Andy Shevchenko wrote:
+> > On Mon, Feb 09, 2026 at 09:24:09AM +0200, Tomas Melin wrote:
+> >> On 05/02/2026 18:34, Andy Shevchenko wrote:
+> >>> On Thu, Feb 05, 2026 at 12:24:11PM +0000, Tomas Melin wrote:
 
 ...
 
-> > > > > Just do not introduce that change (change of the ->name field) in the original
-> > > > > patch, in that case no revert churn would be needed.
-> > > > > 
-> > > > I think this got dealt with in discussion of next version but
-> > > > safest route is just have an extra copy of the name in the
-> > > > chip_info structure.  Then we know it's stable against different
-> > > > firmware types etc.
-> > > 
-> > > Something like this?
+> >>>> +		ret = devm_iio_backend_request_buffer(&spi->dev, st->back,
+> >>>> +						      indio_dev);
+> >>>
+> >>> With
+> >>>
+> >>> 	struct device *dev = &spi->dev;
+> >>>
+> >>> at the top, this one becomes exactly a 80 character line.
+> >>> And in general it will help cleaning up the rest afterwards.
+> >>
+> >> Given it seems it would still be 81 characters long I would like to
+> >> leave this change as it also creates a bit of noise.
 > > 
-> > Yes, but make it in the patch that introduces DT support.
+> > 		ret = devm_iio_backend_request_buffer(dev, st->back, indio_dev);
+> > 
+> > We have different arithmetics for sure, I have it 80.
 > 
-> Hm, I'm not sure what do you mean. There is no patch which "introduces
-> DT support" in this series. Do you mean, this one:
-> https://lore.kernel.org/all/20260204140045.390677-7-o.rempel@pengutronix.de/
+> Indeed this seems to be the case, different editors count this
+> differently :D
 
-Yes, I meant that one.
+It depends if your cursor is under the last character or after, and depending
+on the meaning of the value: position of the cursor versus the line length
+it may be off-by-one.
 
-> Or should it be better a separate patch?
+In VIM in the default mode it shows the position under the cursor and with
+starting column number equal to 1 the line length is calculated as
 
-Perhaps just after the above mentioned one. Either works for me.
+	position of the cursor - 1 + 1
+
+I believe I have in the bar the length of the line in bytes and columns
+(these numbers are different due to tabs versus spaces)
+
+> > "There are *two* problems in programming: naming, cache invalidation,
+> >  and off-by-one error."
 
 -- 
 With Best Regards,
