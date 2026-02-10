@@ -1,163 +1,120 @@
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AF332E7657
-	for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 16:45:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E3531985B;
+	Tue, 10 Feb 2026 16:50:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770741945; cv=none; b=e8KUcvgW4uqMuYF9Y6FKwkYeF3733bTCeVbe/mZBeWRCdNWt4E/iPtyMalgobWryEVdyOjnCe43vuUJiZBhGepftytG1MPYPZxO9VQ6/36UxbjBfewTLjWHtcuSvJN+IA373YW/UDtcUuqqg2L06jWu5BLR8oy+bvg4powi1n1I=
+	t=1770742240; cv=none; b=qpkDIOdrPXG53HqXWewFwYyMmlQJJE6SZfZmvOJTXgbM9/r2YO+8DaY3vYxAJdVyVCHyCjtd8lC58lQxtVkNCgBLU2I10dHuNYeFeyjFbE9r7JD6315GDD0ubxPhWWUVrlVejdZ5M89CN1amTl4RcNAc6FvvDsuSPwC7bWQV0gg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770741945; c=relaxed/simple;
-	bh=jflO+h77l5hCKpuSGsC+NJK2xLN6Lv+FUfY/QtI5Q9k=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cei52Hn6Kr53V7XaIVxDeUxOJ8eN2EUBUIn1hRMGeTtsGtWzOyaha4CZM75ddinuXGyGgj44PIg4eLOW0x/SfgB9odvCzJsmlTqX/6WZVLPh5ieS1f60XiNHCgmVeObM8kg/aD56vV8dVVLoWEJufNjpakg9WM9bbk30Wchpni4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=WPFvsIGG; arc=none smtp.client-ip=209.85.160.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1770742240; c=relaxed/simple;
+	bh=yeepTlDoWvkDKdGGRfynvPj4vNY66YGV6vmhFiXiQIk=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Mf4EfIX5eA/GyWGW1xYM3X2UYN8ODyBsNegErLJ3V0NxmxTBQPjyxxiDFWk+1Yf1XBDLFcjgBRnOTgmubA3gHgkWKuZT2YwW9+etC9oBApfXsr8XC76nsWtY721+oWwPXOR0aoawBso3PgNrbTxUGMlt+kcd2yFjQ2zUqkmXIcs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=f8WSeAts; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="WPFvsIGG"
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-40ea611d1a4so75829fac.2
-        for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 08:45:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1770741942; x=1771346742; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=5oI2/srRdfJUB5ychoQIsRom7VtloN/SQlK8U2PiMXo=;
-        b=WPFvsIGGRA0lvAkXhbjSqwKaE7mxQCalCnFjHaoZORbeqixmFqQQlR6xLOBTSjXAS8
-         ZuoWE+xpv59jdLJDaQ3KP6Unmvzy3pyMuyxS1TLhXEdG2vqbdNbMIsv2jYd5Ksi+CsWR
-         pKnYeTr2rXCRoivlH4i+0joPkulOCtsEMdDLGzepZQx/1XkAUJJzNO/zn9foGEl0oz17
-         wTyM1FJpF0dafaDvWken+JM5otDCChtWG35nRrTffMeijqEkHEmL/29NryWmw/c2d5xo
-         ITY7g36/hg2wDeuOeItSP2srcmnS+2TS43BDv6DlWBSwCkH8uF2lexaeTmcSSD7gkBkr
-         HAHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770741942; x=1771346742;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=5oI2/srRdfJUB5ychoQIsRom7VtloN/SQlK8U2PiMXo=;
-        b=w4O540w1xdEJBvX2xjiJJlSEiMbJX+ZgtDf6ALhcAD+YniOObAOy83ScvA+tYD2veI
-         bVZGlzkxoz6idbjCUYyNjzgi6OAAe2/h52p3nrlI88kDzeSpzTTligjnUJkICrwWB3qo
-         6a/NQrRGIK/vZL7FeHhs6NBmSBqyHNeLXSg2yIA1jSHaj36crYU5JCx4eqfwCP5QvVRF
-         vz+/TSAhmueOyew0XSfwA02dXl2Pp8XJ/ss7eCAQnifNjaeUEY3PW2xJxROof+viF090
-         Uo1Ihj6qxNOWdAnWj0/VOrtZyp/YJICA0ie+1G3eQw9ZPVWwHN0K7gxMB8TDv7FzAKBG
-         fboQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVMo1uLYOnt2s/h38Q3Zc0NcGBVcze0gX7EEMBgozjCqDElBemOSScWrYg3tCZyBSI3ySkt6mhiNRM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw2T3Pp1mCsIw9ft08Qv4pYMD9j34FWtfwQjQA6FHYS7MJWliSC
-	egJm0ZFp0mOnOMKSyf8fYrkgeDQTAufyAcEypAAFAhrwik9LBx0o+kH8p0EtMYgEcVQ=
-X-Gm-Gg: AZuq6aK9/aeDw1nbACqyKryLrBm2rOnPN/lu3qxKC89wX4hH7N3P686+mnrJhKddrcK
-	mjK1VyKwqEPM1hTYO6rFunaCWfGRasCsAabEwhVBSjdJFelLCLLXDMKa07evP2dxvK2dOf1gHZL
-	/Hj0AMwVKcfxC1wMEtZ51pcmwztNS0FHWdA0PZ6C0gUp6SJW0Mzin3PgJfi0/fiYNRkyh2CPbFc
-	ur0IMxjQERl4UF4crhXQW5MeYq7+mvUCD+/F8o+A08A+ILu/AB/E8/kmsy5LGIZ3ZkrvRof1GGZ
-	9x2LbGMXyG9gAhHMnnWU7LYgg+BeBG2Hq/WNsZ32FyqGf0bhSzYyo2PU/CEUwndo1Zwqh6Ymcb6
-	aPgxWeojyaxLk+Gno0C1ri7bEaYit/eX5stSTtDhacFswJTzaF1BC0o2YlgZTE8GHlL0mTqHVhT
-	MJikJzQHlqIOKJzuPMAgVvsAoTZ2LNbpEakwpizhS8WK0D0im7/kDSI5dqe+iCwe1ja4kEi47MJ
-	yj80TnSGeQ=
-X-Received: by 2002:a05:6870:5cc5:b0:409:4195:5c25 with SMTP id 586e51a60fabf-40a96cab343mr7279214fac.20.1770741941669;
-        Tue, 10 Feb 2026 08:45:41 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:97d4:ac5c:3288:2238? ([2600:8803:e7e4:500:97d4:ac5c:3288:2238])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-40a99355b7fsm10253452fac.8.2026.02.10.08.45.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Feb 2026 08:45:41 -0800 (PST)
-Message-ID: <81fa8ae9-3c72-482f-a998-911acaa89a8f@baylibre.com>
-Date: Tue, 10 Feb 2026 10:45:40 -0600
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="f8WSeAts"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61ACLhkb2180263;
+	Tue, 10 Feb 2026 11:50:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=krUSIKmaWPwUzfoiepts3Kiw+ib
+	pjFiWl8vdjhvlbMM=; b=f8WSeAts4fzEG/VHgY69JwGzKS8ka8PKNeXzIYqFg9z
+	mgjbtihMsXDYZEHs6llmemp4Sh7tsAxqwFbbZzcfeS5xcuhrcEkUV340ewVEI+a6
+	oOOUMfjeC1YEZe2BmLg2WwyUn4rD+0tA93DXBhZ1Fw5DheqqxdUy7cHJLfESSNPe
+	zPddmXwjMwo5jRaktphzhAVNV+ENMJ9TFAB4eYEP9jf0O93Poz3A6/sUtxDKX0hc
+	SD6XHS9ReiaKsTwxxx49GY77R+hMFaXYZdiengpeXQqEi4VRrYpPwGIWyYVUitsC
+	QeF+8QXjDzANIcP/KEcnsEw7bn1PtUKRVf3EiMhtnuw==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4c84m58wma-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 10 Feb 2026 11:50:22 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61AGoLLC063299
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 10 Feb 2026 11:50:21 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 10 Feb
+ 2026 11:50:21 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Tue, 10 Feb 2026 11:50:21 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61AGo8jY028558;
+	Tue, 10 Feb 2026 11:50:11 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Dixit Parmar <dixitparmar19@gmail.com>,
+        Jonathan Cameron
+	<jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH] iio: magnetometer: tlv493d: remove erroneous shift in X-axis data
+Date: Tue, 10 Feb 2026 18:49:50 +0200
+Message-ID: <20260210164951.8511-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC] iio: dac: ad5504: Inquiry regarding voltage scale
- calculation
-To: Taha Ed-Dafili <0rayn.dev@gmail.com>, linux-iio@vger.kernel.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
- nuno.sa@analog.com, andy@kernel.org
-References: <20260210121032.4630-1-0rayn.dev@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260210121032.4630-1-0rayn.dev@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjEwMDE0MCBTYWx0ZWRfXygjLmicJbEzh
+ Nt3kyE/LDnRkFoJ2KLtdlmM8THeYxhaqF9EpvBMo87teykZEwvwnmP0jO52gGFU6Bw81NKSln5W
+ XCgdL4UQ6MSvIdO/w1FLIxnL3OOPBiYi3n4yYSd+geywjr/cxA0PT2tkYcDbm2ncS1j1dfCe9e7
+ 8uuca2nMl+eUl31eTSnpgq6MP5OsBkuOO02n1n7fzhoDiZCKkqzs0MVtqIK4e+UZK0plbpCete2
+ p+JUjBJ9NdHDThbLeZjEomn4qZN88qDvWXhca5thQeEwqzxowx/WaHa1w34Jn469Q1fUbUTvQAt
+ jcgwnLrFnaB6MddeJF7kbG4zk4GlEtteo8IpyQKLMcgYrc3BpNBJOI7A6MilPK3v6+D0nesxn3J
+ dHMZP6eezJx+6gO/FOPKeCoflizinLGtn5xaBCie8m4XDMMBhl/yZFhKd2T4zsE9nNdw+vlcqe9
+ uiS0Se+OlsAhu3SNZ5w==
+X-Proofpoint-GUID: f5dIjSHVIeWFY0xXOAIfsfkBQy7etB3m
+X-Proofpoint-ORIG-GUID: f5dIjSHVIeWFY0xXOAIfsfkBQy7etB3m
+X-Authority-Analysis: v=2.4 cv=Fa86BZ+6 c=1 sm=1 tr=0 ts=698b61ce cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
+ a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=4v5TOFE3i8q4BdtMRhUA:9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-10_01,2026-02-10_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ phishscore=0 priorityscore=1501 impostorscore=0 spamscore=0 bulkscore=0
+ clxscore=1011 suspectscore=0 adultscore=0 lowpriorityscore=0 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602100140
 
-On 2/10/26 6:10 AM, Taha Ed-Dafili wrote:
-> Greetings everyone,
-> 
-> I've been reviewing the ad5504 driver and comparing it with
-> the datasheet, and I want to verify my understanding of a potential
-> discrepancy.
-> 
-> Datasheet:
-> 
-> https://www.analog.com/media/en/technical-documentation/data-sheets/ad5504.pdf
-> 
-> The Issue:
-> 
-> The driver currently uses the vcc regulator voltage to calculate the
-> output scale. However, the datasheet (Rev B, Page 1) states the device has
-> an integrated precision reference. The output range (0-30V or 0-60V) is
-> determined by the R_SEL pin, not the supply voltage.
-> 
-> If my understanding is correct, using vcc for scaling is flawed.
-> For example, a 40V supply currently results in a ~9.7mV scale
-> (40V / 4096), whereas the hardware output (in 30V mode) is fixed
-> at ~7.32mV (30V / 4096).
-> 
-> My Questions:
-> 
-> 1. Is it correct to replace the VCC-based scaling with fixed constants?
+TLV493D_BX2_MAG_X_AXIS_LSB is defined as GENMASK(7, 4). FIELD_GET()
+already right-shifts bits [7:4] to [3:0], so the additional >> 4
+discards most of the X-axis low nibble. The Y and Z axes correctly
+omit this extra shift. Remove it.
 
-Yes, I think you are reading the datasheet correctly. I'm guessing past
-users just put in raw values and didn't use the scale attribute.
+Fixes: 106511d280c7 ("iio: magnetometer: add support for Infineon TLV493D 3D Magentic sensor")
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+ drivers/iio/magnetometer/tlv493d.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 2. To support the 60V range, the driver needs to know the state of the
-> `R_SEL` pin. What is the preferred way to handle this hardware
-> configuration in the bindings?
-
-This is another one of those cases where the pin could be hard-wired or
-controlled by a GPIO. We don't have to implement both cases in the driver,
-but we should try to make the DT bindings complete.
-
-properties:
-  output-range-gpios:
-    description:
-      A GPIO connected to the /R_SEL pin to select the output voltage
-      range.
-  output-range-volts:
-    description:
-      Hard-wired /R_SEL pin state. 30 V when pin is high and 60 V when
-      pin is low.
-    enum: [30, 60]
-    default: 60
-
-allOf:
-   # Can't have GPIO and hard-wired at the same time.
-   - if:
-       required: output-range-gpios
-     then:
-       output-range-volts: false
-   - if:
-       required: output-range-volts
-     then:
-       output-range-gpios: false
-    
-
-> 
-> If you can confirm this and provide guidance on the binding, I would
-> be happy to prepare a patch to address it.
-
-And we should fix other trivial missing things in the bindings while we
-are at it.
-
-vlogic-supply: true
-
-clear-gpios:
-  description: GPIO that controls the /CLR pin
-
-ldac-gpios: true
-
-> 
-> Thanks,
-> Taha
+diff --git a/drivers/iio/magnetometer/tlv493d.c b/drivers/iio/magnetometer/tlv493d.c
+index ec53fd40277b..e5e050af2b74 100644
+--- a/drivers/iio/magnetometer/tlv493d.c
++++ b/drivers/iio/magnetometer/tlv493d.c
+@@ -171,7 +171,7 @@ static s16 tlv493d_get_channel_data(u8 *b, enum tlv493d_channels ch)
+ 	switch (ch) {
+ 	case TLV493D_AXIS_X:
+ 		val = FIELD_GET(TLV493D_BX_MAG_X_AXIS_MSB, b[TLV493D_RD_REG_BX]) << 4 |
+-		      FIELD_GET(TLV493D_BX2_MAG_X_AXIS_LSB, b[TLV493D_RD_REG_BX2]) >> 4;
++		      FIELD_GET(TLV493D_BX2_MAG_X_AXIS_LSB, b[TLV493D_RD_REG_BX2]);
+ 		break;
+ 	case TLV493D_AXIS_Y:
+ 		val = FIELD_GET(TLV493D_BY_MAG_Y_AXIS_MSB, b[TLV493D_RD_REG_BY]) << 4 |
+-- 
+2.43.0
 
