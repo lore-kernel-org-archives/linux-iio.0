@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0F8131A072;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE2DD322B88;
 	Tue, 10 Feb 2026 19:42:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770752537; cv=none; b=G4kzo/wlWyuiIXo0dHdQPjfZIGj8JU929p/G0l5AO1Butuo+Oj+xXZTxQdNF+H/YmlVDPrwhurI1xpyJKfZ6qLg2BJS8OO50+uvSQTObKWF42mlQL8rZBnDRf3Xxf6NJVmjJS9LWbZk3DNVAiYSLqRhxfkJd/jqjLwjKCqAEl5c=
+	t=1770752537; cv=none; b=FBA9UOSrhey/13IikP8I9+XzAiauVahynKsyqJjVchSGaubYAGl+PZImryGqeuc+4PY7RfUO095hVapvE5hQKjnpVHiGZXNb83xrD0SJTsSZ2mxXu3GM2x+CEMTN6eVaxav257FT3YarkJiouLcyUII+l6sX/qp/kRVoP3xlmQc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770752537; c=relaxed/simple;
-	bh=yoR1fzWyBOkzBi+MwYVZ4VC+/LI5ohoCGPMQMCFSYCg=;
+	bh=HnXuDL6EUjqkpXjKEAnK3sdeskqhNnNnUmEFEmQP8fU=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=BGCg2vLlWwxbP7bR2HCJYhljZX5UvVt11Eqeyo87V8sGrPnfk09M3LSFSS/id9b8eD9LNuW8ck8voqnu4FuNmvq0wPl0hQBoAsS6s8MbzF6sTU5ViJtpLjoT9fQAj8qRrHfO73LvTnl6Lj7gmUWGW+M0tGDJX/de5EfeBGM0ydg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hyrU1TDv; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=UqLSod8Vm+dsdSiCytBV1b00bp2RcKBw540rdGlE/S8UUdp/nxj/B7RCUZZhqRnTjr2zTArswxLRZQ4A9gJe0uf+GiMLx99P7BJfdgboWtfv11WgpNwGLxXx2Vq0O97ETBzfQ5/t+cDrBN9coasy6BAttoGDN07RTmjhAtpUIVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YZAjwwXK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hyrU1TDv"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 83E3DC4AF0F;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YZAjwwXK"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 8FC23C4AF11;
 	Tue, 10 Feb 2026 19:42:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1770752537;
-	bh=yoR1fzWyBOkzBi+MwYVZ4VC+/LI5ohoCGPMQMCFSYCg=;
+	bh=HnXuDL6EUjqkpXjKEAnK3sdeskqhNnNnUmEFEmQP8fU=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=hyrU1TDv6ZQkRxUvDONN+3ADdtypTIxP2sTGiyHoA9EcdQeQiro3jD08kQUSD2I9w
-	 s2/mpjqx5pq9+nJHGJIugLdry78sZWH3g8jywoM45/7m4EN1Xnd+2tyip0fqtmkOz+
-	 MABXPEabr/HnSG5YhIkVtucerl2qYLgOtR9esXQbeSYyTVeKa14bL6QJtvOXz1GZc/
-	 412WITrqrBl1Fcpt+obEyIkqY0lzdnig4IRX1Yl82tEX7I+gfWtLZLfM3tGzdJxSyT
-	 Wgx+XN1s4L41hiMSpNfqVnqGDAz5TbsApAcHrwlOtxsQW/Wang5Dwl6jLbZ7Td9vW1
-	 wqzMSPqdfdg2w==
+	b=YZAjwwXKxqc3guNEJVZYBkgUAiDJpRv5SUsnAX3nMPNGrFGIyKs/ask4jtm0vP3nr
+	 +6/3StJiCt1hgef18MTU61NawmOk2Kiq5JyIm6thWJ5bj+ZvyhwwzDKlyQPTlTsRhX
+	 bIistFcd8VTIyEvPJ0mknnrLp18q4dDvVYyEnfp/m7pw+b0gtI0nJIZXPerQsFxENR
+	 goiBTgzoPemepK4nqb4DNCdJ5BPUa0Yb9TzyTqC+Gnhk2OgtbEAS4wkWZtRwgsichv
+	 /yTaU/7bzbfexTRlFIBkniA631XMX+CTndoChvlCVpybhfRqEuNS8YThzy6mezhsyF
+	 x/z8udVfN9VTw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7057DEB2709;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85D11EB270A;
 	Tue, 10 Feb 2026 19:42:17 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 10 Feb 2026 19:42:03 +0000
-Subject: [PATCH v4 03/11] iio: amplifiers: ad8366: remove unused include
- headers
+Date: Tue, 10 Feb 2026 19:42:04 +0000
+Subject: [PATCH v4 04/11] iio: amplifiers: ad8366: add local dev pointer to
+ the probe function
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260210-iio-ad8366-update-v4-3-15505f7b15b4@analog.com>
+Message-Id: <20260210-iio-ad8366-update-v4-4-15505f7b15b4@analog.com>
 References: <20260210-iio-ad8366-update-v4-0-15505f7b15b4@analog.com>
 In-Reply-To: <20260210-iio-ad8366-update-v4-0-15505f7b15b4@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -53,11 +53,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Conor Dooley <conor+dt@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1770752535; l=1638;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1770752535; l=889;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=CGbPKYHJlOJ9rYJnPGo0vg0Ptr//Gt2yLe6uykPVd2o=;
- b=3mPIYJQagyjOmd+0ojbhmRX/JbMX/TvzF24B3xqT5vy4n4kq+O9L0k/s4WCzVamj7hSc55pdi
- c+h4s2TTZ10BOP99kLBplrLssqY16/wSUdx07v06+ORihfZDGRxuqao
+ bh=JmFUgvP/u+bpyvqN7DVDvcGwocNFLn+PaOaZRRviA1w=;
+ b=584fxEGTc98Iyh2c5wyNxfeEZUj5uTEhH/qfrQIsFQtLMGoZjcN0tkP02tGbZwVVO3GvBo8Jv
+ OUFeYiB13X6BpR4UC7+wcFdiLBKeccHnKv5OY0uWz+vDJeHG8v7+/aH
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -67,52 +67,32 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Apply IWYU principle, removing the following headers:
-- linux/device.h: no usage of devm_add_action_or_reset, device_attr...
-- linux/kernel.h: no usage of container_of, kasprintf, ...
-- linux/slab.h: memory management handled by iio
-- linux/sysfs.h: sysfs interaction is managed by iio
-- linux/iio/sysfs.h: not using iio device attributes in this driver
-
-Being a small patch, the remaining includes are alphabetically sorted.
-In gcc, compiling with -H allows for dependency visualization,
-which indicates that except for linux/iio/sysfs.h, all removed
-headers are indirectly included by the remaining headers.
+Create local device pointer in the probe function to shorten lines,
+making the code easier to read.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/amplifiers/ad8366.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/iio/amplifiers/ad8366.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
-index d06ac786501c..6382106ee6c7 100644
+index 6382106ee6c7..3456a31cb1ee 100644
 --- a/drivers/iio/amplifiers/ad8366.c
 +++ b/drivers/iio/amplifiers/ad8366.c
-@@ -11,19 +11,14 @@
-  * Copyright 2012-2019 Analog Devices Inc.
-  */
+@@ -240,11 +240,12 @@ static const struct iio_chan_spec ada4961_channels[] = {
  
--#include <linux/device.h>
--#include <linux/kernel.h>
--#include <linux/slab.h>
--#include <linux/sysfs.h>
--#include <linux/spi/spi.h>
--#include <linux/regulator/consumer.h>
--#include <linux/gpio/consumer.h>
--#include <linux/err.h>
--#include <linux/module.h>
- #include <linux/bitrev.h>
-+#include <linux/err.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/module.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/spi/spi.h>
+ static int ad8366_probe(struct spi_device *spi)
+ {
++	struct device *dev = &spi->dev;
+ 	struct iio_dev *indio_dev;
+ 	struct ad8366_state *st;
+ 	int ret;
  
- #include <linux/iio/iio.h>
--#include <linux/iio/sysfs.h>
+-	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
  
- enum ad8366_type {
- 	ID_AD8366,
 
 -- 
 2.43.0
