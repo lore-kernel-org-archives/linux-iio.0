@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8837E3624D9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5A5B363C52
 	for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 13:51:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770731481; cv=none; b=ojUlSFZIXom7X/gQEibQaEh/8E3DOkJyZla8aLkNvd62oj7MKj28jxqZVR3doqpDIndI7aSJ65FEBcIx0NQe3rfE7vB/XZAaO9rIjsCmEL75PgxB0fyaPCF3/YPsqaqgxy78IAC05eZRFfu/S6S4Nm0ALMua79ecuk3kAz/7Ceg=
+	t=1770731481; cv=none; b=lerCRmoR9AcTX+6LFqnsXZTEm8x/ydkleWy8jAHFzyWJM+4BHvI5CkcI8zVKd5LCpiiO1a65PSTAHWr3Xfwo9agtAZAftL25Us5vZwzv5oGif7uBMTrCLWIvcx8+PAaz/dYCkigkg2kYxGgy6jPF30vsMpk87oq6CjhcTejAiY4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770731481; c=relaxed/simple;
-	bh=865g6smS9cgT9tTPJhnXcg9f2kVhaAOxZjiYFpV+EiA=;
+	bh=3RSByb88Ihwjm/PlaKAu+VLa9VXDDk4QKiZB4tVun1Q=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=us2YPxhko8wWutWKVMLPRRXbj9gjvi0Mjlg7FQ/uFECCTwPRCkwX/C4j+5TBukNRpk2TuvrsCXBqKtd9BT9x+EOoUFJNVwVnHymMaDdmIls+mUQwvkCoz7LWYkMw/7Z37Sp78+/EjWCu+mhqfbOzmiYT2NWQq3dZ1bqUODIRS1U=
+	 MIME-Version; b=AH8qO/DSe3yHopTX8FOCnPEdbFJEQLvJ2t1mhTdY1dZzgIcPasTOUFQkSDmPM6fWr9VKNhIIb2mb/EQ433rryqvgElcb77aGKL8Ag6Vfgca+36CkvJBGsCsywhd39wh9hUsuhFxrg/1vTkb+jAGAaXGXP1bMhbtVPYkYZhG+/HU=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo93-0005dL-HX; Tue, 10 Feb 2026 14:51:13 +0100
+	id 1vpo93-0005dQ-HX; Tue, 10 Feb 2026 14:51:13 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo92-0005d7-0i;
+	id 1vpo92-0005dA-0r;
 	Tue, 10 Feb 2026 14:51:12 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo92-00000008VO1-3Tuf;
+	id 1vpo92-00000008VOC-3Zeg;
 	Tue, 10 Feb 2026 14:51:12 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -35,7 +35,7 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>
 Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Conor Dooley <conor.dooley@microchip.com>,
 	kernel@pengutronix.de,
 	linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org,
@@ -44,9 +44,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v6 06/12] iio: dac: ds4424: use fsleep() instead of usleep_range()
-Date: Tue, 10 Feb 2026 14:51:04 +0100
-Message-ID: <20260210135110.2027073-7-o.rempel@pengutronix.de>
+Subject: [PATCH v6 07/12] dt-bindings: iio: dac: maxim,ds4424: add ds4402/ds4404
+Date: Tue, 10 Feb 2026 14:51:05 +0100
+Message-ID: <20260210135110.2027073-8-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260210135110.2027073-1-o.rempel@pengutronix.de>
 References: <20260210135110.2027073-1-o.rempel@pengutronix.de>
@@ -62,57 +62,54 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-The DS4422/DS4424 and DS4402/DS4404 datasheets do not specify a minimum
-delay between power-up (POR) and the availability of the I2C interface.
-
-The driver previously used `usleep_range(1000, 1200)` to enforce a ~1ms
-delay. Replace this with `fsleep(1000)` to allow the kernel to select
-the most efficient sleep mechanism while retaining the existing
-conservative delay to ensure device readiness.
+Add compatible strings for Maxim DS4402 and DS4404 current DACs.
+These devices are 5-bit variants of the DS4422/DS4424 family.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 ---
 changes v6:
 - no changes
 changes v5:
-- Add Reviewed-by: Andy ..
-- Remove "(usleep or msleep)" from the commit message
-- s/1000/1 * USEC_PER_MSEC
-- Include <linux/time64.h> for USEC_PER_MSEC
+- no changes
 changes v4:
-- New patch
+- no changes
+changes v3:
+- No changes.
+changes v2:
+  - add Acked-by: Conor ..
 ---
- drivers/iio/dac/ds4424.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ .../devicetree/bindings/iio/dac/maxim,ds4424.yaml          | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-index c9d3110eac28..d3bf0dc02b1a 100644
---- a/drivers/iio/dac/ds4424.c
-+++ b/drivers/iio/dac/ds4424.c
-@@ -12,6 +12,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/time64.h>
+diff --git a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
+index 264fa7c5fe3a..efe63e6cb55d 100644
+--- a/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
++++ b/Documentation/devicetree/bindings/iio/dac/maxim,ds4424.yaml
+@@ -4,18 +4,21 @@
+ $id: http://devicetree.org/schemas/iio/dac/maxim,ds4424.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
- #include <linux/iio/consumer.h>
- #include <linux/iio/driver.h>
-@@ -245,7 +246,13 @@ static int ds4424_probe(struct i2c_client *client)
- 		return ret;
- 	}
+-title: Maxim Integrated DS4422/DS4424 7-bit Sink/Source Current DAC
++title: Maxim Integrated DS4402/DS4404 and DS4422/DS4424 Current DACs
  
--	usleep_range(1000, 1200);
-+	/*
-+	 * The datasheet does not specify a power-up to I2C ready time.
-+	 * Maintain the existing conservative 1ms delay to ensure the
-+	 * device is ready for communication.
-+	 */
-+	fsleep(1 * USEC_PER_MSEC);
-+
- 	ret = ds4424_verify_chip(indio_dev);
- 	if (ret < 0)
- 		goto fail;
+ maintainers:
+   - Ismail Kose <ihkose@gmail.com>
+ 
+ description: |
+-  Datasheet publicly available at:
++  Datasheets publicly available at:
++  https://datasheets.maximintegrated.com/en/ds/DS4402-DS4404.pdf
+   https://datasheets.maximintegrated.com/en/ds/DS4422-DS4424.pdf
+ 
+ properties:
+   compatible:
+     enum:
++      - maxim,ds4402
++      - maxim,ds4404
+       - maxim,ds4422
+       - maxim,ds4424
+ 
 -- 
 2.47.3
 
