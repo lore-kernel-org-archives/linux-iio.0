@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C25B330317;
-	Tue, 10 Feb 2026 19:57:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07D8032E724;
+	Tue, 10 Feb 2026 19:58:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770753467; cv=none; b=IHeOoK4SNcr5axOO2L+X9bE5YbVCYEjCNwDAAgwqhOhSLsnAejwbX5XeqWpt4L3cJVgcM3jbe4PpG9DQ8KAmWa7qnnUgDsc/1kWwcQXUdFXR6+pXa4Vp3OIZOKrzCGDE5jTfnzw+0KpV2dfqqSbW29oB0n1MYoCJMnsyjM3vVdI=
+	t=1770753539; cv=none; b=ItCzaMqze9FBjy26ja6NYRCK/Kv9UPQHjmYEXetmdK0Kqnq2TvcT65KP4iOdYWVkQI1T0XwtnGG5lX1ggA5M4ePkYixO82sznUV5qafh1kOwFjx2Jvrf94IrHy907Co+MOhGoRipm2K5KPXR7bj3/L+eN2blFw1XubqgSioG5FM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770753467; c=relaxed/simple;
-	bh=jIwkzBg3gcHokPK7nHBbf3C9XLmbxnOoagP8vsGpWAo=;
+	s=arc-20240116; t=1770753539; c=relaxed/simple;
+	bh=WPFq6SllYyOYsUcQYAJyxioaRfS4N1Z6Tao8akvXjYw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nRDbXgTNd0rRWOgq/SdLz2dLu5VUQgMbzVwCB5BnHzO8whT5VxkgWmnloBJKeZiSJv+goXYlzdgsgQv0zSrbgFi8joyAUHLebED0nnkWh92Y14JqlKbNdU9k4pyEHOTP+Kn1XZ6UOnawKLUgBknNk9Ho/ollQQmfGaE7JaQ3lpo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LV4F1WV1; arc=none smtp.client-ip=192.198.163.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=q5bfbK32QyP1uO8dwJI2KoV8aTubJbEHVJriuZM0ogreBGy5NlPt11FlVflx81yBF7G24DApYsvav42xQoxeznFuLeNjk4N9CuhEW+b90nq97esDZEcayEPTl9K6Yu8zir86WDCoxjIx5kwdnO2uqOcb7zHvB7qDXMSjiwVF5vU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=df3fItbS; arc=none smtp.client-ip=198.175.65.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LV4F1WV1"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="df3fItbS"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770753465; x=1802289465;
+  t=1770753538; x=1802289538;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=jIwkzBg3gcHokPK7nHBbf3C9XLmbxnOoagP8vsGpWAo=;
-  b=LV4F1WV1geuBxdyD/8+XUvdVvnjalnMobW1L/fuGSeY3TUydtGl7PYaL
-   JUwoEYl0GlXwrS0M4JST/c/pNbHAiB/175MGq51wrna2ev8WTqBQc8Emg
-   m61ozRzaIHAVIpUM1EvFy48vvRHquvK/DWHW+8XAntc0Q0nYVk88GiaHl
-   BII8PBwfGj21q8z2CIB+KCYIQ+ijJz39kVX1gHHiv8TEnR1Mfn1XULRsm
-   9aPFX00CePawZjYNg0AAz0pAPPTUpnEb32rYdfMB8VktWv0Zvi8/u7tE1
-   3bej5CeOY8ILPv0LIWaYp1YYBA+bChWi1iSTvmL3SE8MM44HgBqbhpY+6
-   g==;
-X-CSE-ConnectionGUID: AMr+RHUzS7ec/r9Ciznl+g==
-X-CSE-MsgGUID: OSpdcRlpSxaAvTQwJgBn6Q==
-X-IronPort-AV: E=McAfee;i="6800,10657,11697"; a="75740684"
+  bh=WPFq6SllYyOYsUcQYAJyxioaRfS4N1Z6Tao8akvXjYw=;
+  b=df3fItbS/a3TZ2e9y0LmOAaYKYISITZZYT0qMsG5n58tviE6FieSGX6r
+   CHy4tH51aOBtSnjhIUlpihWBDBMwxl70r0liVhGKOrPEwdOYKIaRRSh7H
+   BIBKGxdp7i6SnZjnXMP/+uGTqHKJgfKyeHmPV/TqODyNmKHsJwy2u2V/Y
+   7j8KLFAdqnPNQLkuO+ZfoSmur0wbOryA7Nlp1GPVIUkM7CSMLk8GIVICh
+   czLRvnXFHasmE53LGSIhE66FiJobp77rGaCQpxfMs7QBog39V94HtaGPc
+   vg2spFGzm8CEm/ERckVRVZiROBEHJSPyrg2SgNYWB2KLoq27ypz6AlLFo
+   A==;
+X-CSE-ConnectionGUID: kMVer5G2RRWeWhvUve47Sg==
+X-CSE-MsgGUID: Ly8hJnU0SSSsPuUPPkdv9g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11697"; a="89306286"
 X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="75740684"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 11:57:44 -0800
-X-CSE-ConnectionGUID: EljGVXRhSc2GNxu5FqS2+A==
-X-CSE-MsgGUID: qcG6DOwWSsGNoCQ/91xSRg==
+   d="scan'208";a="89306286"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 11:58:57 -0800
+X-CSE-ConnectionGUID: vP7EMDIvQzWCU+R0caLgbg==
+X-CSE-MsgGUID: vvhhQq/XTYePZcdcU9FgbA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="234991223"
+   d="scan'208";a="211482835"
 Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.131])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 11:57:38 -0800
-Date: Tue, 10 Feb 2026 21:57:35 +0200
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 11:58:55 -0800
+Date: Tue, 10 Feb 2026 21:58:52 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: rodrigo.alencar@analog.com
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -55,11 +55,11 @@ Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v4 03/11] iio: amplifiers: ad8366: remove unused include
- headers
-Message-ID: <aYuNr8alZt-mjd5x@smile.fi.intel.com>
+Subject: Re: [PATCH v4 04/11] iio: amplifiers: ad8366: add local dev pointer
+ to the probe function
+Message-ID: <aYuN_Myx3FhmyQf0@smile.fi.intel.com>
 References: <20260210-iio-ad8366-update-v4-0-15505f7b15b4@analog.com>
- <20260210-iio-ad8366-update-v4-3-15505f7b15b4@analog.com>
+ <20260210-iio-ad8366-update-v4-4-15505f7b15b4@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,33 +68,16 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260210-iio-ad8366-update-v4-3-15505f7b15b4@analog.com>
+In-Reply-To: <20260210-iio-ad8366-update-v4-4-15505f7b15b4@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Feb 10, 2026 at 07:42:03PM +0000, Rodrigo Alencar via B4 Relay wrote:
+On Tue, Feb 10, 2026 at 07:42:04PM +0000, Rodrigo Alencar via B4 Relay wrote:
 
-> Apply IWYU principle, removing the following headers:
-> - linux/device.h: no usage of devm_add_action_or_reset, device_attr...
-> - linux/kernel.h: no usage of container_of, kasprintf, ...
-> - linux/slab.h: memory management handled by iio
-> - linux/sysfs.h: sysfs interaction is managed by iio
-> - linux/iio/sysfs.h: not using iio device attributes in this driver
+> Create local device pointer in the probe function to shorten lines,
+> making the code easier to read.
 
-Yeah, but it also means to add (a lot of) missed headers...
-
-array_size,h
-dev_printk.h
-mod_devicetable.h
-mutex.h
-stddef.h
-
-(might be even more, this list was made just at the first glance).
-
-> Being a small patch, the remaining includes are alphabetically sorted.
-> In gcc, compiling with -H allows for dependency visualization,
-> which indicates that except for linux/iio/sysfs.h, all removed
-> headers are indirectly included by the remaining headers.
+Only a single place to convert?
 
 -- 
 With Best Regards,
