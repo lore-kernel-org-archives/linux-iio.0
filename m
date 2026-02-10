@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4E8B332C33C;
-	Tue, 10 Feb 2026 20:03:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C29232E126;
+	Tue, 10 Feb 2026 20:05:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770753798; cv=none; b=ojDgaqEUOlzv5pxliVbhTjjdBWU2T5xt53KA318W6JYbd8VE7gNbBIvRCaqcNTC6hVqpwwmfesNy4MuU18YBMMKk0X+FiTPcnM4tFeTEItZvgys1HPCIhMqg1CDN8tIr1oCQW2izM9HWwAhw+HE4Uv48KKXsWcvT93C8iZ1+XWw=
+	t=1770753931; cv=none; b=FlS+2mTR1vMZCr2U7R+dqM8YQ9gyVjSxHMMLZK80AqgtgM8Uh+CB0+lpPu9ouHVSVRcI8zH7oGvu9G9A3cKofxfhWKdAMOqtm6T8cRDU1ee9WaZJ3fzTE0wOJB4QDA6RimgKBSvvJfCHRyodN686soWta5+60kzRSBuno2azNYk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770753798; c=relaxed/simple;
-	bh=y4F/y6D5AFvy0zqZ8NnIuBIvrOWxnBA2C2j8AD9KPy4=;
+	s=arc-20240116; t=1770753931; c=relaxed/simple;
+	bh=7NF/NMO9NmFb4sERswHkU4tsfUJu0ywTAY7+eT4qWzU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dVn/nlgqjIDQlr9kUuXC8O4XlhMopKzG0ZbdLFccRbBAdRJvEC60ZXOWCW+kpymZzEiIMe6so3fUZBKMCJsShVsa+h/ooa+lOFNw5LTJSZkFcWNGVcDRDwyp+kYp+hsxusp92fK8MAu9EjTAuX/vynKV2VZNHNjRI5vBjhiePWM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=c/NTGlXF; arc=none smtp.client-ip=198.175.65.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=WvfvuY2tukIeyL7Wv6hDf/vMtAH3VRafBW+4Py0RTBK0aPw0ca0OX0a/jPpefhzVw2ZMqK848eWFNbW7RiO+sEieFpXQWwpZgKATDmSz7WtpFLQS9W409K6Xc3oFXFMkkkR12IeAVXsmIuhMvFoKdaZcT9l/TrnIbdvmXp681sc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kSnzDYxd; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="c/NTGlXF"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kSnzDYxd"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770753797; x=1802289797;
+  t=1770753930; x=1802289930;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=y4F/y6D5AFvy0zqZ8NnIuBIvrOWxnBA2C2j8AD9KPy4=;
-  b=c/NTGlXFwP19B3h8jqtTPZf4jjKHehU+o+xcwk1u8Iny38R++y79Lt5G
-   0coFTTBYPp2UHR2JZd6xCyF5VMSkMIgb1sjPiaI8zs6WSipKsyddHDISj
-   0N6cWg42piBipXABCTZr/l5apSyp6Nbjb4K5zuarcJlnYt9dLgjl5nDKW
-   Eck5+g2IcPtVZ68JLfrkFCLOFMbKk2Qz2tMKK60zwVV5zD2X+wXH7WRaJ
-   YfzMSKxyNR4dhdiSCYtzwWy5xtCh6KEYuIEB+Ey2ohAaOz9crlu2HkfoR
-   lmZHAUHJV4irWRXSMJJghAGWpVZbDiv62CYztxEKzMMz/2Vv5BpNqYBjY
+  bh=7NF/NMO9NmFb4sERswHkU4tsfUJu0ywTAY7+eT4qWzU=;
+  b=kSnzDYxdJSgZ+LgSZwSZJz8u6+CM29EXPJEbHhC/A5AE/j3QYvok+cfG
+   NeYy5t9JasvI7O2G7RJ+VzTic6IcAHf0rbOkdakJpFKxS5zshB5hTkglR
+   1Q+EydtCJ7Sojh6FcK2mN+exJY8MlnKfdRQan55dzflG7/CvSFx7vxr9d
+   m77VL3niBquB57F8P0xDc9AfJYvbdEKeBiOhqMQGt0TYQm3TLUURTOVEF
+   y7bEBHApQegQStL+5QydwiQ63/BdQzxIVLNAPITnw06iR4oze+A0ES3c2
+   tHzbUur6n262Oa64OmFvSxYRbnIacPzrDrgR+WSJaSTv3JwKZM0r8LM5w
    w==;
-X-CSE-ConnectionGUID: XHTjkMJ3QtO92VhtsCQgcQ==
-X-CSE-MsgGUID: jJTCwd+hTjKhqQRBSS4XtA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11697"; a="89306809"
+X-CSE-ConnectionGUID: Iw6yRsp/TN2WrOrPqHHJHQ==
+X-CSE-MsgGUID: oENPT5UwQsujDDBlmUYYOw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11697"; a="75521833"
 X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="89306809"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 12:03:17 -0800
-X-CSE-ConnectionGUID: KCVAWijXQWyM/ZTwrqHyCw==
-X-CSE-MsgGUID: I+cYhgZ4RzKNnIpOg79DRg==
+   d="scan'208";a="75521833"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 12:05:29 -0800
+X-CSE-ConnectionGUID: YM/FttBkQXikQv1OHVi4RA==
+X-CSE-MsgGUID: GZjw9gtdQiWcUoKOPv0zRg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="211483520"
+   d="scan'208";a="216973532"
 Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.131])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 12:03:14 -0800
-Date: Tue, 10 Feb 2026 22:03:11 +0200
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 12:05:27 -0800
+Date: Tue, 10 Feb 2026 22:05:24 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: rodrigo.alencar@analog.com
 Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -55,12 +55,11 @@ Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v4 04/11] iio: amplifiers: ad8366: add local dev pointer
- to the probe function
-Message-ID: <aYuO_7cot_MAVyPh@smile.fi.intel.com>
+Subject: Re: [PATCH v4 07/11] iio: amplifiers: ad8366: refactor device
+ resource management
+Message-ID: <aYuPhB_e14orrZ64@smile.fi.intel.com>
 References: <20260210-iio-ad8366-update-v4-0-15505f7b15b4@analog.com>
- <20260210-iio-ad8366-update-v4-4-15505f7b15b4@analog.com>
- <aYuN_Myx3FhmyQf0@smile.fi.intel.com>
+ <20260210-iio-ad8366-update-v4-7-15505f7b15b4@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,20 +68,24 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aYuN_Myx3FhmyQf0@smile.fi.intel.com>
+In-Reply-To: <20260210-iio-ad8366-update-v4-7-15505f7b15b4@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Feb 10, 2026 at 09:58:52PM +0200, Andy Shevchenko wrote:
-> On Tue, Feb 10, 2026 at 07:42:04PM +0000, Rodrigo Alencar via B4 Relay wrote:
-> 
-> > Create local device pointer in the probe function to shorten lines,
-> > making the code easier to read.
-> 
-> Only a single place to convert?
+On Tue, Feb 10, 2026 at 07:42:07PM +0000, Rodrigo Alencar via B4 Relay wrote:
 
-*Yes, I understand the intention, you need to explain that in the cover letter
-and/or here in the comment block.
+> Adhere modern device resource management with the following:
+> - Voltage regulator managed and enabled internally;
+> - IIO device registration handled with devm_iio_device_register();
+> - removal of goto's from the probe function;
+> - ad8366_remove() removed as it is not needed anymore;
+> 
+> With the drop of goto's dev_err_probe() is used to report probe errors.
+
+I think the regulator change should be split and go before the previous patch,
+because that one affects the ordering in the error path and remove stage.
+
+Otherwise LGTM.
 
 -- 
 With Best Regards,
