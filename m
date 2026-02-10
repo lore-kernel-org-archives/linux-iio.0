@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B63136607A
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84A2936654E
 	for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 13:51:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770731482; cv=none; b=SguFLHt+kFYKX+ZA9L3Lw9V6uQDQU9yrDNSvPt7xhayNoiTooMgOz6dZ0dIF06qHaeGSeN/8OTeWQRtRemeaq/wZ/DB1vCd2Dp89JwrfHCXYsSDUTYqNgjQcr5VX7Qlrtg/YfjqqX+utjJlfrqaTwa64WYpFkAipD2CYt3SDhYQ=
+	t=1770731482; cv=none; b=UwtHfEFT8krL3QMv/zvrymGdCZd5AXKbA2d0cpaIoe192Mo9pBCqPeiE7EWQrXNGLaqVmjBPJUzBkdX43Nz0BmSWojYvSexvwXaaj7fvC4jdqHF84YFEwTHfdSO3DiF8Ffeiz76gZrWJoI/0uaAEdkf9P1tglY9I7fcAY9CwVWo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770731482; c=relaxed/simple;
-	bh=jRf2iO2tRAl/oQKlTgLi5mreQQ1i9qqO8otfRBReonE=;
+	bh=+rqvg27v8pxK14HPLogSisNdDT4go7iA15kgpg74nVQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Gjt32Q9pmFPxyk2eEHF3Mh8CTkvmIlKqNo7k9PBowD82yKU9UG+2xo8PRY/o8OZO6L5lvtasGX0BlyufPgtFclR2VUV3F8lFOezMckWXgEf71vhQieqELqspTdv7ObuW3ep0zzGTkk6LhRQ9Fu2lsGllsXb/HzB/ceES6LhqPi4=
+	 MIME-Version; b=p4XJjtu1LJw3BeNCtWCZcFQwDrfi4HaKF1F5QODxdGlz0JmRfMg4cnTSaQ85j3932tr9rblZ91+7DqPZXuRxQwFCoVMoS04exuF7ndV92xNUnL7PD6cIiunQJ6hVzKk264hqZJQDCCW17GpflNGkbKn/htj+csOtcIlIkwT9k1Q=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo93-0005dG-HX; Tue, 10 Feb 2026 14:51:13 +0100
+	id 1vpo93-0005dJ-HX; Tue, 10 Feb 2026 14:51:13 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo92-0005cy-05;
+	id 1vpo92-0005d3-0M;
 	Tue, 10 Feb 2026 14:51:12 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo92-00000008VNL-30fw;
+	id 1vpo92-00000008VNf-3HvE;
 	Tue, 10 Feb 2026 14:51:12 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -44,9 +44,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v6 02/12] iio: dac: ds4424: ratelimit read errors and use device context
-Date: Tue, 10 Feb 2026 14:51:00 +0100
-Message-ID: <20260210135110.2027073-3-o.rempel@pengutronix.de>
+Subject: [PATCH v6 04/12] iio: dac: ds4424: rename iio_info struct to avoid ambiguity
+Date: Tue, 10 Feb 2026 14:51:02 +0100
+Message-ID: <20260210135110.2027073-5-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260210135110.2027073-1-o.rempel@pengutronix.de>
 References: <20260210135110.2027073-1-o.rempel@pengutronix.de>
@@ -62,11 +62,12 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-Replace pr_err() with dev_err_ratelimited() in the RAW read path to avoid
-log spam on repeated I2C failures and to include the device context.
+Rename the static `ds4424_info` structure to `ds4424_iio_info`.
 
-Use %pe to print errno names for faster debugging. Use the parent
-device context to identify the physical hardware causing the error.
+The previous name was generic and could be confused with chip-specific
+data structures (like the upcoming `ds4424_chip_info`). The new name
+explicitly indicates that this structure holds the IIO framework
+callbacks.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
@@ -74,36 +75,35 @@ Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 changes v6:
 - no changes
 changes v5:
-- no changes
+- add Reviewed-by: Andy
 changes v4:
-- no changes
-changes v3:
-- Use indio_dev->dev.parent to reference the physical device.
-- Remove redundant space in error message: "channel %d: %pe".
-- This patch now precedes regmap refactoring.
-changes v2:
-- Update error message
-- Rebase against regmap refactoring
+- New patch
 ---
- drivers/iio/dac/ds4424.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ds4424.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-index 596ff5999271..36286e4923af 100644
+index c03051dc763e..3385f39521d9 100644
 --- a/drivers/iio/dac/ds4424.c
 +++ b/drivers/iio/dac/ds4424.c
-@@ -100,8 +100,9 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_RAW:
- 		ret = ds4424_get_value(indio_dev, &regval, chan->channel);
- 		if (ret < 0) {
--			pr_err("%s : ds4424_get_value returned %d\n",
--							__func__, ret);
-+			dev_err_ratelimited(indio_dev->dev.parent,
-+					    "Failed to read channel %d: %pe\n",
-+					    chan->channel, ERR_PTR(ret));
- 			return ret;
- 		}
+@@ -197,7 +197,7 @@ static int ds4424_resume(struct device *dev)
  
+ static DEFINE_SIMPLE_DEV_PM_OPS(ds4424_pm_ops, ds4424_suspend, ds4424_resume);
+ 
+-static const struct iio_info ds4424_info = {
++static const struct iio_info ds4424_iio_info = {
+ 	.read_raw = ds4424_read_raw,
+ 	.write_raw = ds4424_write_raw,
+ };
+@@ -252,7 +252,7 @@ static int ds4424_probe(struct i2c_client *client)
+ 
+ 	indio_dev->channels = ds4424_channels;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->info = &ds4424_info;
++	indio_dev->info = &ds4424_iio_info;
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
 -- 
 2.47.3
 
