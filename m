@@ -1,81 +1,80 @@
-Received: from mail-qv1-f45.google.com (mail-qv1-f45.google.com [209.85.219.45])
+Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5198B38A299
-	for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 16:15:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4330E389471
+	for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 16:29:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.46
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770740115; cv=pass; b=i9rLr3jBcAo2M4YiooThRUu1i/fg1Wbz1av8c+l0d+9oIFE6Q+Ea6wqD1SQdTE4mcSw+igVDF73JZ1mDUczZwOYKt7O4BgqLz+fqsCsn30lM5IxWubHbxAcoVKZwrpceJnv7RsVCmrZTjgwjY9sBs3uqJfMYkY4iqz7WI5xlF6E=
+	t=1770740968; cv=pass; b=nFMYH12ClMZSEwHYWk5WYwXUxxmNxKsKE6/AIxgHQYxltgDMAyQie91BjB/sG2CaahufFS7NPO2x6AE7NwVKfhxy3KKQoEu0K+PzART6eV71TjhYFPXelD9xRhp8nseD7NWw4sEFLwwJl8UXLV9M6C6hEfNqzMRdJir67KAavD4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770740115; c=relaxed/simple;
-	bh=iH4e5Jowcat2Bj14dBv+UFq9ySSKQcMntdR6j2k3xG8=;
+	s=arc-20240116; t=1770740968; c=relaxed/simple;
+	bh=J+VWldTcfADnTCCUyOQu7hy6eXpc6fT/7vFN7R/c++4=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NHCA34i+LBZBxsJNeBoBMdizeInVLS0vUb/Flr8YmMJl6KQyQUQpNtLEBwVKFje98sKZdjROkyurvdml8nT24yOqlIY8ZGelY/K55d664h+chOTATXElxvFzhfPKwWqexn/nVjS8QA9v9BtqH8uUpkR2KDhj7hLIIO8chkw49k4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JTfVn+XI; arc=pass smtp.client-ip=209.85.219.45
+	 To:Cc:Content-Type; b=raGgbcUwWN8Kun7wbrC8Eiu3FhOVtL5fV5G4U/1nPo8aBJkvTwbIQn+Z/rxCaoV7tFgflbAUf5fHd5QyNUWJlTkM8nu4i4uhEEwipGILxoyrSvl3uFXTJJ0IUdAaNMposFrpKWbgczXU5WkFEQGjiD4HF5i9ygjDqwJVqeK1Lzo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=huf9W+Rl; arc=pass smtp.client-ip=209.85.219.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JTfVn+XI"
-Received: by mail-qv1-f45.google.com with SMTP id 6a1803df08f44-895495b5b81so6289606d6.0
-        for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 08:15:14 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1770740113; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="huf9W+Rl"
+Received: by mail-qv1-f46.google.com with SMTP id 6a1803df08f44-8946421dd8fso10875786d6.0
+        for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 08:29:27 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770740966; cv=none;
         d=google.com; s=arc-20240605;
-        b=Z/YPcBPA0Q9d9Wyn6CjVVRQdxamAtwU+yOQ1vN/ZXILOs0340jismstyDseF8NrieZ
-         LHES9IbF7X+QhPjbFyzPsgwbaHeb8Te6cytfKERFzvtUJv+SFTuTElAWGdvzCP0D7ueP
-         r8r010nIaQhburvB9YDmFOwFIGNkFmKSYGxcpKieDxV7amvAanQ8zzqfNEr0SWr5zwPF
-         fqCE7qE4GWhna7cBqPN7obtWZctB0zITFU84/41Lm2g+q8AMp0eTBla/Pz1qLvZ4kSL0
-         CDMh/yFDa2UeNGqLHS/lTW9g61jB8loAwPYgp1Rn7Bzshx7TRolU77yBIr/Y8XgO0Xy2
-         EhaQ==
+        b=Gel0HWmWpgMz1XoUnRqVanCqVFf/vee/JVZXSibQEcU0VoeiNvvE2Z/o7h8074Y4Zf
+         ndwGiIjvwwSLXTpdIoyjc7Q+havLvwWYC5iJEYloBjS+fu5x3Vbn1/F0hKR4Z60mKCHV
+         nGIon9mdoYZmuHcfkVCLgjnSr9jSO4pJCvo57vBhaLovnfSj6b4AC6JOub7xiKN2CGfV
+         ZuoCHwUOCJ1BHl3uyO/Hp8+SV8mX/qiyjD8dihPHS5Z7Ymn8ojrD+/RfkEbgju1+sAk7
+         QiPRlJ7dCH4PKI3zlGcj2dHavd09rFNrGdJvXSfuJn/41/WnS2feKpZar71NvN9hBSEM
+         yKiw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=K2812jiuGlQ5vn+WoZtEaqHAJ1LIQ42eAqZWJrwtTGk=;
-        fh=j5EH7PXkWPfFjKofIxgw9dRGUIgARVMQbJLXz7wRSs8=;
-        b=G7MRRCH3gGwLsFjga66BIkxvxNyZl5HUtwbSdUKdWG1QRL6Dk3nHDj+CUV/gy4tz/8
-         8a/GBN2w4HQ1k+jsD7b5HiyvzfDgVdqWGNMtxx0zIEPHvEWwGM93jG79J3ugSjv/uivs
-         2wX8CbuP6KzM+FKhTHo/hO8rxZLzr9eLfyYC0r7JjYuIl3xSKSBO+uUCZdSZIcYm+Onp
-         nKMnJK2SmaW7PhTmLH+9bp4izVyoR8h0ziJtClZVgqEsO36zm7jX8CnqMtnP5h0F9n8z
-         LfxOwYDNvb+PqSRQPfAyTC2hTZj5msgFmFgMjpcfcRb6MHSDPXMha+3xFdY6NPIpboH0
-         FKcw==;
+        bh=8NxRSBhGtuOsPJckNjVFGcti/Wl/9Q1xvm8JfNXImag=;
+        fh=/iVVM+ioKFxSAmsweuYKF4sGWS8ojRWEA5I0CprrBWQ=;
+        b=EDJT/lXdV+Ye7zYN7B5ZAmO95/YIq3BD4pLbYfhxgw3ci/67XAG1Q2ODF8nBxOvRPh
+         0RWdRZVu/zGd9gLoCS8TxPS7FPY87gc0RrRfqa3meYNIS+GEZzOxCtO2ViKuUyldhoBt
+         8FOnEcUMrd7WfR0mXSmHFJcfoayJsfEqPeA3sKFb214Ktc0RZ/WLl/T2mSeOIzR04QsT
+         gJPaa2vbNogBQKml8Nuaetq3b9dhUFLXS/aIXn1oMiT+J4Ri6gxIOjqIoC6q3jhdKjnp
+         Wb3EsgXZzI21jhV/6M4fj0hq2+xKnOjIEjVu94oeZRJQTZLFEyp9Ga0kkqG+LxcxCIYh
+         xjTA==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770740113; x=1771344913; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1770740966; x=1771345766; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=K2812jiuGlQ5vn+WoZtEaqHAJ1LIQ42eAqZWJrwtTGk=;
-        b=JTfVn+XInD6lkZVxrpcWAgMKqDEbN9Yoq4O9LkwGtkp2zQ2ynu53KA/UKF/G26Ky6b
-         mLBsSUGcRstyrVwaNFhUbQBQ2oSFUmA0lYK/EYaQ5xEGQUy0murv/97AFVmOg83rZ7Ux
-         lbKsxeO75gXx8iEqBmIaijB13gm4+opNppOnGvJhKA4KmNCeZdopGIkCVKGCCZ+pqENZ
-         pKTTu2utye4sRuOpl2KC64W7CI+m8IBWjG0ok2WjbBTDKShMKOE68JtDnRvPNvKuF30Q
-         u+r1Fv+edLwP80r5RJXVeSuWwSLuJBtJez1UWBC9EV28M1zfOtfeMKONg61fOcvR1qH1
-         VZXQ==
+        bh=8NxRSBhGtuOsPJckNjVFGcti/Wl/9Q1xvm8JfNXImag=;
+        b=huf9W+RlyF6a/8NrxDSmAkKC83Y3Ax8Hd1JQuVbI+ylAKeKjejwLE28xcOOO6JWLjd
+         YldsRWDIqf8jYvl5DT2lr+JFpXUuBvRUv24LNWBqRcm9C7fGjCdlXr67wC5Cz8s19V/z
+         0ol00eMr0YH0+qB+7Q0ZRyaZ9DCSz+pYvNgfb67SXClF39tEdtwlluroaWmYECWi3Eyi
+         I/vS2PPQOHlBEGEQ5SRd2lIVb6EHOP9MbMohzPFE+krqtgx3LNSXUfCtQ1Rer+LKSw2x
+         NukUY7ggDKrw3U/pOJyiUm+gc5fZO6nB0Ignywhd+2mzCkYiqBPK7+wGuVHScdtR6HfY
+         Rbxw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770740113; x=1771344913;
+        d=1e100.net; s=20230601; t=1770740966; x=1771345766;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=K2812jiuGlQ5vn+WoZtEaqHAJ1LIQ42eAqZWJrwtTGk=;
-        b=GT9R0E7y73XUcAk4U45lsys37UlRpsJju9Ca/G3S1XoYNUazsdX1w8/Npm+SJgmgCF
-         KCrkHWCzk4sdtu3cffSp5ldNHh/bmujPPsZMsgww2Woydy5OA8Sse4Pf9armTVnX0sqV
-         Fg3SjUgg0w0WHrU8s4q1vv8FRcMuIlKrkKdBTqgkijJAWKiWglfryJh4sBDM6Kdpa33H
-         SfuQ2k0/4lOJWn9DixEKoPSWhpK7NKw25qd47MunDubrD6WHAAphy4bsyrO6WmhJBPxy
-         YLv72WMgCjPvGPnIZLOhTp96Bmfz7ec8q6vxT46ymDv6c+6f8kdHNjQrb6XTz3Xp9pyk
-         e82w==
-X-Forwarded-Encrypted: i=1; AJvYcCXeseHYmhv4ac2tbTZP29m3gZQN4paDXCRBi5ounRsadzpjDE9FZgFtr1yuzvnyz0bGKFtCPIKtTvA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyhIy7eUOsatAahSb5TKs4jliES6GM007Zl1yTLJpxi85uRHoYf
-	xK/aEMfs5Khf67oZYU3mQg/Hfr0rdVoGAL4B7FowxkwdU4ERoNsiFYaw85c4v2E43dAczNVJYoj
-	C6+DL3pamFMAuCPDEDlcCRmMI9P5GGIc=
-X-Gm-Gg: AZuq6aKBIROkqwfjXQdTVnZT7mwP6y3G4MHYfoZo2ou+CBg9eIYQYuGz8zmXKIrFdhd
-	DJT/M37OuYISL6bX4QdWnUMuoCm1Y15C1h2h8oq2flRlGDwEw32btY6jAl6UR6PJAEl2ayCxlp2
-	2bopX2E0zJF9XzxGkWC5ZWRxoQe+1D/3FeZy3lkuzylqn9dieJGzLU7g3RDpJw2Qat8KyK68AGB
-	DKW4ZmybOeKhPNOO0M1R0lmW5/tKGLvezVidLIGZ1jeq+NimKDEn4332uhs1hwfzR3DhWBgsaZD
-	ToxnaK/KrvVGpHIeoUZ0UXei1gZ7KwjgbShzrfgF3XRSYOyt9L/e3ewiAm4AWnT/DN0flY9d1p6
-	t7BtIUUs=
-X-Received: by 2002:a05:6214:4708:b0:896:f523:155a with SMTP id
- 6a1803df08f44-8970febb062mr21085446d6.6.1770740112834; Tue, 10 Feb 2026
- 08:15:12 -0800 (PST)
+        bh=8NxRSBhGtuOsPJckNjVFGcti/Wl/9Q1xvm8JfNXImag=;
+        b=S7FkfTiKQdH+GRtvbeLK3qSglh/nlLdZips5ZQFixrnZiVIKlHCw93ckPrKLjPI2LB
+         PnyKaDmXn8gkI5b49FdzItbWrwtAF8iErZV5GoAA2epAflvGOgNBUzAYNcXl7lPgFgE8
+         XxPan2U+0Css8ErNKJwUR7IYaQ2miYjAdviPa4MeWMTFFUHG+A7yW5qTjtge0z8+/7U5
+         Xo1U6ABZhLmVS5v3N8U6T9x8K5aejiz0qFsCq3EhtPYAvr2NrAe5Ie3tvukSn90f98UJ
+         NBRndWmrGA6govR8B2N8gSPBS1/11kEbcTYlN0/35TVYoCBh01rzkCrR+By3o+OjycjC
+         R00Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVu5Ugvz6Rzo1rLT6GuMM3dxH66fpbOPrYTfY9FcP6rZZ0VUFm55xTpncwi6/4gO6s8LjwSQ98/85g=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxTcB+8fCi8v4J/66cnCFEYy56LdBYzqxwNJrVU49BrEAVMo6ay
+	/m9VQq5xOmMLghI8VMUwdH2wEvFhICeNmG89Y/WTKkusiCZUdJVG1tkfVBvcaOwWYVXwa5Q5GE7
+	fLelXWfXADxLySAhoOn1sWnaiLsd5Tus=
+X-Gm-Gg: AZuq6aIbxCfgqeTP4ws5NBY/phx7H190MPfV2brf5+P4NXbz1jQOnUIrVnc+oozdxwr
+	4OZx3R1NnXwp8XygCh3/GjlQVR3WWUAN6sQDfVoUItpQdP7JexVZ6gwRGMmaKyJ8bQLcofngxCQ
+	NLNeI+J3PnNGDPkpuKtjhbj0aupkPvd5jiB7kHu+/zuzWoC9uRlo6kMr1ipS2xxCjwK/pyMT/tG
+	yHHz0fL3yqncae2GGqqQQdqYk4wms+FpHYNKrIY+UjVZD78IYPxWCaMVkuWp3nhOos3LgxBFvrc
+	iaIu7JgMxWo87loa80Lh8ky2toVZrXwy7Yxc/XnO9/C9JWU9heKBzvPmGbGzpUfmgRl8PAWQ
+X-Received: by 2002:a05:6214:808e:b0:896:f317:17dd with SMTP id
+ 6a1803df08f44-8970fbd8d08mr22667816d6.0.1770740966165; Tue, 10 Feb 2026
+ 08:29:26 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -83,13 +82,14 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 References: <20260209-upstream-20260219-v1-0-2b4d74e309d1@gmail.com>
- <20260209-upstream-20260219-v1-3-2b4d74e309d1@gmail.com> <aYmf4MtCBmwZBuAV@smile.fi.intel.com>
-In-Reply-To: <aYmf4MtCBmwZBuAV@smile.fi.intel.com>
+ <20260209-upstream-20260219-v1-2-2b4d74e309d1@gmail.com> <aYme6jXNyPM_AHo-@smile.fi.intel.com>
+In-Reply-To: <aYme6jXNyPM_AHo-@smile.fi.intel.com>
 From: Yasin Lee <yasin.lee.x@gmail.com>
-Date: Wed, 11 Feb 2026 00:14:59 +0800
-X-Gm-Features: AZwV_Qj5NaqNtf0Z9zN-OvR7xN3-iTpFXdm4oagK87YM9LtQiYsrqJb1rM-G7kU
-Message-ID: <CA+NOmz+cH_5C4T2S+UPeSFJdxSdz5fimbmp6XmovUqKMcfYV+Q@mail.gmail.com>
-Subject: Re: [PATCH 3/5] iio: proximity: hx9023s: support firmware-name property
+Date: Wed, 11 Feb 2026 00:29:15 +0800
+X-Gm-Features: AZwV_QhOyNJgQd7vK0x9FealX_MphwskI8gr5HBDi_wedHBJB44eLUiKvIXsZck
+Message-ID: <CA+NOmz+KKhSAX8cEUhcS=GPCTtagyFZS4Pszj895bf-07ii7bw@mail.gmail.com>
+Subject: Re: [PATCH 2/5] iio: proximity: hx9023s: Protect against division by
+ zero in set_samp_freq
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
 	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
@@ -100,50 +100,36 @@ Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Feb 9, 2026 at 4:50=E2=80=AFPM Andy Shevchenko
+On Mon, Feb 9, 2026 at 4:46=E2=80=AFPM Andy Shevchenko
 <andriy.shevchenko@intel.com> wrote:
 >
-> On Mon, Feb 09, 2026 at 11:37:04AM +0800, Yasin Lee wrote:
-> > Add an optional firmware-name property to specify the firmware file.
-> > If not provided, the driver falls back to the default firmware name.
+> On Mon, Feb 09, 2026 at 11:37:03AM +0800, Yasin Lee wrote:
+> > Avoid division by zero when sampling frequency is unspecified by
+> > falling back to a default 100ms sampling period.
 >
+> Fixes tag?
+>
+ This is a proactive fix for an original implementation issue I found
+as maintainer.
+
 > ...
 >
-> >       struct device *dev =3D &client->dev;
-> >       struct iio_dev *indio_dev;
-> >       struct hx9023s_data *data;
+> > +     if (!val && !val2)
 >
-> > +     const char *fw_name =3D "hx9023s.bin";
+> What's wrong with the positive conditional?
 >
-> Preserve reversed xmas tree order.
-> And looking at the usage, please split the definition and assignment.
->
-Ack. Will fix this in v2.
+Agreed. Positive conditional will be present in v2.
 
-> >       int ret;
+>         if (val || val2)
+>                 ...
+>         else
+>                 ...
 >
-> ...
+> > +             /* Fallback to a safe default sampling period */
+> > +             period_ms =3D 100;
+> > +     else
+> > +             period_ms =3D div_u64(NANO, (val * MEGA + val2));
 >
-> > +     ret =3D device_property_read_string(dev, "firmware-name", &fw_nam=
-e);
-> > +     if (ret && ret !=3D -EINVAL)
->
-> Why is this special error code check?
->
-Good point. I will simplify the logic as you suggested and remove the
-redundant check.
-
-> > +             return dev_err_probe(dev, ret, "failed to read firmware-n=
-ame\n");
->
->         fw_name =3D "...";
->         device_property_read_string(dev, "firmware-name", &fw_name);
->
-> I believe if wondering one can get a debug information from
-> request_firmware_nowait() on what firmware file has been actually used.
->
-Agreed. Thanks.
-
 > --
 > With Best Regards,
 > Andy Shevchenko
