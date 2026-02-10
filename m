@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4410D365A0D
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61CF4352952
 	for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 13:51:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770731482; cv=none; b=pAcfKt2X3AbtihRqOuqJuWLGd4jt1ODv9GVk8QYlNI7o9wy0kRSxpmbzM3Xw4jBwyvlJLmMJA0v4ZA0sZfm1LUKFLQdXLnsIu4OhEBUtImjzxt4xmvO+jTrvCHnkNV31q3WnMm/QBLR48CsBjGapmKyqm6V48QR9+6oMckNhbT4=
+	t=1770731482; cv=none; b=IppKUkWEq4P43xjbiQK42tKKCI/KQ+ea3assZ/cQ9ux5uLDAq9h9ERhECMRuKMgTF3Lmbb+GzHo79M+bkxouqHCTuB9fJDAxFf0qFpIn0Qdo97UUkATknQoXue/fhsYCfYTu7+gO2oYHrrVoq/WmJUM8LRn0m2QzmhgpTSDyiiw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770731482; c=relaxed/simple;
-	bh=thQFYrehlflnzoIUmGK6mMLizKsqQA7Qp/k5KFQIaMg=;
+	bh=maiF87Z+tWT2i62tyBrdaHYynkB4XZI1YnRMda3lBSw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mUNi4+Rp6CTFl1X0zGUblhWutPXh9Ch8OfSt7dIFtUaggLmjAbtRILX1glEedICMpZu3Zpj4hMsn/LMWqjOFfGaLyzLqs1WkjpNnrfYtt+OPxhmloom3TGI0a0PROmlkn7ppLVaIqnkvaQAL+UJ2csXXAaJ7euAktofMkaAtVA0=
+	 MIME-Version; b=D6iECKw/rlVDsHyahGaHJPs6F6ZS7s2YcNn/mH890i9P0KuL7x2SI2o00Q8zuuna/DmyEpOWer7I52wSdkMXq5a5zUQYL7tt6J8+c4FzNOEpVJvTccS+JouNfoqBIzakl6K29DRKFVs2qQCNcgBb3dD4d8C8IVTgp8cjE25AZ7Q=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo93-0005dN-HY; Tue, 10 Feb 2026 14:51:13 +0100
+	id 1vpo93-0005dE-HX; Tue, 10 Feb 2026 14:51:13 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo92-0005dD-0m;
+	id 1vpo91-0005cx-3C;
 	Tue, 10 Feb 2026 14:51:12 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo92-00000008VOX-3kjo;
+	id 1vpo92-00000008VNB-2rfb;
 	Tue, 10 Feb 2026 14:51:12 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -44,9 +44,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v6 09/12] iio: dac: ds4424: support per-variant output range limits
-Date: Tue, 10 Feb 2026 14:51:07 +0100
-Message-ID: <20260210135110.2027073-10-o.rempel@pengutronix.de>
+Subject: [PATCH v6 01/12] iio: dac: ds4424: refactor raw access to use bitwise operations
+Date: Tue, 10 Feb 2026 14:50:59 +0100
+Message-ID: <20260210135110.2027073-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260210135110.2027073-1-o.rempel@pengutronix.de>
 References: <20260210135110.2027073-1-o.rempel@pengutronix.de>
@@ -62,19 +62,9 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-The DS4402/DS4404 variants operate with a 5-bit resolution (31 steps),
-whereas the DS4422/DS4424 support 7-bit (127 steps).
-
-Previously, the driver enforced a hardcoded 7-bit mask (DS4424_DAC_MASK)
-for all variants. This allowed users to write values exceeding the 5-bit
-range to DS4402/DS4404 devices, resulting in silent truncation or
-undefined behavior.
-
-Add a `result_mask` field to the chip_info structure to define the valid
-data range for each variant. Use this mask to:
-1. Correctly mask register values in read_raw().
-2. Return -EINVAL in write_raw() if the input value exceeds the
-   variant's capabilities.
+Refactor the raw access logic to use standard GENMASK() and BIT()
+macros. Use abs() for magnitude calculation to simplify the logic and
+make the data flow clearer.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
@@ -82,108 +72,140 @@ Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 changes v6:
 - no changes
 changes v5:
-- add Reviewed-by: Andy ..
+- no changes
 changes v4:
-- New patch
-- Split from the original patch (v3) to isolate 5-bit vs 7-bit handling.
+- Split patch: The functional fix for -128 was moved to the previous
+  patch (1/9) for stable backporting.
+- This patch now contains only the refactoring (GENMASK/BIT/abs) on top
+  of the fix.
+changes v3:
+- Remove "Rebase on top of regmap" note as this is now patch 1/8.
+- Add #include <linux/bits.h>
+- Clarify 0mA sink/source behavior in comments
+- Remove redundant blank line in write_raw
+changes v2:
+- Replace S8_MIN/MAX checks with abs() > DS4424_DAC_MASK to enforce the
+  correct [-127, 127] physical range.
+- Refactor read_raw/write_raw to use symmetrical bitwise operations,
+  removing the custom bitfield union.
+- Rebase on top of regmap port
 ---
- drivers/iio/dac/ds4424.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ds4424.c | 55 +++++++++++++++-------------------------
+ 1 file changed, 21 insertions(+), 34 deletions(-)
 
 diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-index 20031639e753..3560b151192b 100644
+index 059acca45f64..596ff5999271 100644
 --- a/drivers/iio/dac/ds4424.c
 +++ b/drivers/iio/dac/ds4424.c
-@@ -23,6 +23,7 @@
+@@ -5,6 +5,7 @@
+  * Copyright (C) 2017 Maxim Integrated
+  */
+ 
++#include <linux/bits.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/i2c.h>
+@@ -19,9 +20,10 @@
+ #define DS4422_MAX_DAC_CHANNELS		2
  #define DS4424_MAX_DAC_CHANNELS		4
  
- #define DS4424_DAC_MASK			GENMASK(6, 0)
-+#define DS4404_DAC_MASK			GENMASK(4, 0)
- #define DS4424_DAC_SOURCE		BIT(7)
- 
++#define DS4424_DAC_MASK			GENMASK(6, 0)
++#define DS4424_DAC_SOURCE		BIT(7)
++
  #define DS4424_DAC_ADDR(chan)   ((chan) + 0xf8)
-@@ -37,26 +38,31 @@
+-#define DS4424_SOURCE_I		1
+-#define DS4424_SINK_I		0
  
- struct ds4424_chip_info {
- 	const char *name;
-+	u8 result_mask;
- 	u8 num_channels;
- };
+ #define DS4424_CHANNEL(chan) { \
+ 	.type = IIO_CURRENT, \
+@@ -31,22 +33,6 @@
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+ }
  
- static const struct ds4424_chip_info ds4402_info = {
- 	.name = "ds4402",
-+	.result_mask = DS4404_DAC_MASK,
- 	.num_channels = DS4422_MAX_DAC_CHANNELS,
- };
- 
- static const struct ds4424_chip_info ds4404_info = {
- 	.name = "ds4404",
-+	.result_mask = DS4404_DAC_MASK,
- 	.num_channels = DS4424_MAX_DAC_CHANNELS,
- };
- 
- static const struct ds4424_chip_info ds4422_info = {
- 	.name = "ds4422",
-+	.result_mask = DS4424_DAC_MASK,
- 	.num_channels = DS4422_MAX_DAC_CHANNELS,
- };
- 
- static const struct ds4424_chip_info ds4424_info = {
- 	.name = "ds4424",
-+	.result_mask = DS4424_DAC_MASK,
- 	.num_channels = DS4424_MAX_DAC_CHANNELS,
- };
- 
-@@ -66,6 +72,7 @@ struct ds4424_data {
- 	uint8_t save[DS4424_MAX_DAC_CHANNELS];
- 	struct regulator *vcc_reg;
- 	uint8_t raw[DS4424_MAX_DAC_CHANNELS];
-+	const struct ds4424_chip_info *chip_info;
- };
- 
- static const struct iio_chan_spec ds4424_channels[] = {
-@@ -116,6 +123,7 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
+-/*
+- * DS4424 DAC control register 8 bits
+- * [7]		0: to sink; 1: to source
+- * [6:0]	steps to sink/source
+- * bit[7] looks like a sign bit, but the value of the register is
+- * not a two's complement code considering the bit[6:0] is a absolute
+- * distance from the zero point.
+- */
+-union ds4424_raw_data {
+-	struct {
+-		u8 dx:7;
+-		u8 source_bit:1;
+-	};
+-	u8 bits;
+-};
+-
+ enum ds4424_device_ids {
+ 	ID_DS4422,
+ 	ID_DS4424,
+@@ -108,21 +94,21 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
  			   struct iio_chan_spec const *chan,
  			   int *val, int *val2, long mask)
  {
-+	struct ds4424_data *data = iio_priv(indio_dev);
- 	int ret, regval;
+-	union ds4424_raw_data raw;
+-	int ret;
++	int ret, regval;
  
  	switch (mask) {
-@@ -128,7 +136,7 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_RAW:
+-		ret = ds4424_get_value(indio_dev, val, chan->channel);
++		ret = ds4424_get_value(indio_dev, &regval, chan->channel);
+ 		if (ret < 0) {
+ 			pr_err("%s : ds4424_get_value returned %d\n",
+ 							__func__, ret);
  			return ret;
  		}
- 
--		*val = regval & DS4424_DAC_MASK;
-+		*val = regval & data->chip_info->result_mask;
- 		if (!(regval & DS4424_DAC_SOURCE))
+-		raw.bits = *val;
+-		*val = raw.dx;
+-		if (raw.source_bit == DS4424_SINK_I)
++
++		*val = regval & DS4424_DAC_MASK;
++		if (!(regval & DS4424_DAC_SOURCE))
  			*val = -*val;
++
+ 		return IIO_VAL_INT;
  
-@@ -143,6 +151,7 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
+ 	default:
+@@ -134,25 +120,26 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
  			     struct iio_chan_spec const *chan,
  			     int val, int val2, long mask)
  {
-+	struct ds4424_data *data = iio_priv(indio_dev);
- 	unsigned int abs_val;
+-	union ds4424_raw_data raw;
++	unsigned int abs_val;
  
  	if (val2 != 0)
-@@ -151,7 +160,7 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
+ 		return -EINVAL;
+ 
  	switch (mask) {
  	case IIO_CHAN_INFO_RAW:
- 		abs_val = abs(val);
--		if (abs_val > DS4424_DAC_MASK)
-+		if (abs_val > data->chip_info->result_mask)
+-		if (val <= S8_MIN || val > S8_MAX)
++		abs_val = abs(val);
++		if (abs_val > DS4424_DAC_MASK)
  			return -EINVAL;
  
- 		/*
-@@ -242,6 +251,7 @@ static int ds4424_probe(struct i2c_client *client)
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
- 	indio_dev->name = chip_info->name;
-+	data->chip_info = chip_info;
+-		if (val > 0) {
+-			raw.source_bit = DS4424_SOURCE_I;
+-			raw.dx = val;
+-		} else {
+-			raw.source_bit = DS4424_SINK_I;
+-			raw.dx = -val;
+-		}
++		/*
++		 * Currents exiting the IC (Source) are positive. 0 is a valid
++		 * value for no current flow; the direction bit (Source vs Sink)
++		 * is treated as don't-care by the hardware at 0.
++		 */
++		if (val > 0)
++			abs_val |= DS4424_DAC_SOURCE;
  
- 	data->vcc_reg = devm_regulator_get(&client->dev, "vcc");
- 	if (IS_ERR(data->vcc_reg))
+-		return ds4424_set_value(indio_dev, raw.bits, chan);
++		return ds4424_set_value(indio_dev, abs_val, chan);
+ 
+ 	default:
+ 		return -EINVAL;
 -- 
 2.47.3
 
