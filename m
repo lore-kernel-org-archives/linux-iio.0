@@ -1,62 +1,99 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3CC228DC4;
-	Tue, 10 Feb 2026 15:00:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43C9D374724;
+	Tue, 10 Feb 2026 15:14:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770735614; cv=none; b=sSsH6SDPwa4W8hJ77rIvEPTv8cle/boH+Neq9sR/iIK7PhU9mrGHWcGjs0yJBM2pXD+/ro1cGpLshvDqcZIEsEoriSd0JkZfjurHDcowdsXrK507ULX7NFeJYxUVTOzqgaAe/9VjLvhBm0yuNwKsdHYLqlgj6p8+gNJzHXVNh5o=
+	t=1770736458; cv=none; b=cjoxXJhPZFg+gZOy+4yAz+CqvsUhz/2gRx7/0EIeYsLnXnE2U0k/YAVv86zw0NsPOpuSMYt7u/cf9X0Bcp36aUG+BpHtDTK+ykxwPv+2tjxhQ3m4Bos2qbNWwI4kmijzxvhaDLV9IsnkaKgQUsCyYblLIQ5CTFRpxdbVHjZGC1o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770735614; c=relaxed/simple;
-	bh=5fxG3AN5kBshZOmolvQD2/FQYXT5f0YL+r915QIR30U=;
+	s=arc-20240116; t=1770736458; c=relaxed/simple;
+	bh=5XHstcK3GNmPCCnMCyYj61+dg73mEfAPf1RQMlNT978=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pWSkrx+raE21fsGop//kFpscSdIOZeUtiAek3TIGv89y9v4HEIMHHrksotEG/78l59ZW4uuB8AVIsgbj7Wgy5BUyoPrhBfqUryq0Q9YUwdvbYKCXATLobXEigifhfwYB+IU0EurR1oyhdM6Qg07epRCKKRojaK5ZDCiKF5qX36Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H/SpxpiD; arc=none smtp.client-ip=198.175.65.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=J+wGropnpKZWPJKmR3p27aKG47OnVrpergeOvAoIU3K7FsvWVPYKoDDLXQ0c5lhvPwnqh8RaLkcPQTvg6hei3dOENsDzgVf5UZX7AwkpsPE3p9piV8V9Tv/V+qhMgDLoEuz9ZfFvc3gaLsFbpwET1pcZpoBFN9LULPHViQMHeSY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OSQnuzSg; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H/SpxpiD"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OSQnuzSg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770735612; x=1802271612;
+  t=1770736458; x=1802272458;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=5fxG3AN5kBshZOmolvQD2/FQYXT5f0YL+r915QIR30U=;
-  b=H/SpxpiDzIdxalEvlN5D5fbMRpPlwYvtILQAU4qXXlFn3Dfw/Sq8MFEs
-   goAx9ftSsbEH+wUDfJl/GQq+UUKM6sjiTM4ucEh3g+AG9tIxyxjZEcdq5
-   etZAklHgi3PuLHWQZ7QSGb/aQmc4Xad+3YQ7uhf0tW8PK2WHA9u5redDv
-   GdTTpHJTQdk/FytGjPjCfqHwudBRtD+BqvrcAU0xYoUciN/d6ZrfXHONA
-   /VkddshZMt/nV4T50D/q6Tq8fZSs8HVnnr9p24k2GoDv7+aAEVUpYfIdg
-   tdSDBEWTjSxg7AMoKIztQ+3jJCxCZPkwixl90B8RAKCjyQVa261mB6i1/
+  bh=5XHstcK3GNmPCCnMCyYj61+dg73mEfAPf1RQMlNT978=;
+  b=OSQnuzSg5WZqJFW9A3B/2TlHUCGhhR4xdYEwcnexMzQOr7w2JVnGLYfe
+   VcCZe4PEOJnJ0VrM4ZmzLnOB5W7PRV3IsHEkpgUWW0g/gRh6CExvibJ+Q
+   grGKGqoDkzV5WrEC8LFmwMOdzAquitfP+9MPLtEkiGqUEhKBIQLPOQVNE
+   Tl2h87ES70u+rz8y8gNDY7qPFru6eSuxlNiToJ9TUHw1Zs9wlxe4gwO6J
+   NCy+7wG18t0rc6ntSTibCipCprWgFGCXyOIy2Yu13V4PGNGVBvsfmVtd2
+   HxlrKqWG+oTj44jAOQ5/7R1XuJQ8WISjgIirz7NyCtOaJUykzsTMBz/kU
    Q==;
-X-CSE-ConnectionGUID: lxKK5nqWS3eqqOsAuH5oNA==
-X-CSE-MsgGUID: u0NVKiE2Rtmcv7FlReuIYQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11697"; a="75488965"
+X-CSE-ConnectionGUID: LsmFXGVNQC6B3xsfHQMW/Q==
+X-CSE-MsgGUID: U/l5H4XdTJObaefFa95t3w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11697"; a="82505014"
 X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="75488965"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 07:00:12 -0800
-X-CSE-ConnectionGUID: U3jk4mctSAKorE5ReEzO9w==
-X-CSE-MsgGUID: n48koewPRRuroLH6AcmlfQ==
+   d="scan'208";a="82505014"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 07:14:16 -0800
+X-CSE-ConnectionGUID: PLTW0sgvRr+sZIyjb4ObHQ==
+X-CSE-MsgGUID: 0j9FHxy/Qi2fCSVgALjwlg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="211430915"
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.39])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 07:00:10 -0800
-Date: Tue, 10 Feb 2026 17:00:07 +0200
+   d="scan'208";a="211778201"
+Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.131])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2026 07:14:08 -0800
+Date: Tue, 10 Feb 2026 17:14:04 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Tomas Melin <tomas.melin@vaisala.com>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
-	Nuno Sa <nuno.sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+To: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: Bjorn Andersson <andersson@kernel.org>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	linux-renesas-soc@vger.kernel.org,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 5/6] iio: adc: ad9467: simplify device pointer in probe
-Message-ID: <aYtH96TZ7Wwcd1QZ@smile.fi.intel.com>
-References: <20260210-b4-ad9467-optional-backend-v7-0-7a590ffe02df@vaisala.com>
- <20260210-b4-ad9467-optional-backend-v7-5-7a590ffe02df@vaisala.com>
+	Antonio Borneo <antonio.borneo@foss.st.com>,
+	Arnd Bergmann <arnd@arndb.de>, Boqun Feng <boqun.feng@gmail.com>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Danilo Krummrich <dakr@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-remoteproc@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-sunxi@lists.linux.dev, Mark Brown <broonie@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Samuel Holland <samuel@sholland.org>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>, Waiman Long <longman@redhat.com>,
+	Wilken Gottwalt <wilken.gottwalt@posteo.net>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [RFC PATCH 0/4] hwspinlock: refactor headers into public
+ provider/consumer pair
+Message-ID: <aYtLPHmZTg8oFxfL@smile.fi.intel.com>
+References: <aXc7DxsqiCGdfzxi@smile.fi.intel.com>
+ <aXc-Zxw05XQLb1Dy@ninjato>
+ <aXdAB2bLTy6u8G8c@smile.fi.intel.com>
+ <aXdCBu6kzdw1NWay@ninjato>
+ <aXikZ5wc6bvgRqF6@ninjato>
+ <aYnBrN0JRCf9-UjB@ninjato>
+ <yl4bbbev7lgrmnqys2izkolo5egzg24faukvqar5eh26q5ra7p@42rcegfpqqt6>
+ <aYo60vooftdem4Lt@ninjato>
+ <aYrcVE9HsDNAwqIB@smile.fi.intel.com>
+ <aYsMCVf1qpLSCXTs@shikoro>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,39 +102,30 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260210-b4-ad9467-optional-backend-v7-5-7a590ffe02df@vaisala.com>
+In-Reply-To: <aYsMCVf1qpLSCXTs@shikoro>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Feb 10, 2026 at 10:53:38AM +0000, Tomas Melin wrote:
-> Create alias for the device pointer to simplify referencing
-> and keeping syntax and column width shorter.
+On Tue, Feb 10, 2026 at 11:44:25AM +0100, Wolfram Sang wrote:
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > > And if so, would be this series acceptable
+> > > as-is then (modulo the better include-sorting mentioned by Andy)?
+> > 
+> > *From my experience it's not the Q "will they or not?", the Q is "when?"
+> >  they start abusing it. I really prefer to hide as much as possible from
+> 
+> I totally agree with you on that.
+> 
+> >  day 1. Maybe the structure can be split to two? Currently IIO has a
+> 
+> I also thought that keeping some internal header might provide that
+> safety. When looking into it, I didn't see an obvious and somewhat
+> elegant way. Even more, I got a better picture of why Bjorn named the
+> current approach "unergonomic". I got some ideas which look doable in my
+> time frame. I will try going the full route, after all.
 
-Some nit-picks in case it will be a new version or Jonathan will be keen to
-tweak it.
-
-...
-
-> -	st->pwrdown_gpio = devm_gpiod_get_optional(&spi->dev, "powerdown",
-> +	st->pwrdown_gpio = devm_gpiod_get_optional(dev, "powerdown",
->  						   GPIOD_OUT_LOW);
-
-I would dare to make it a single line.
-
->  	if (IS_ERR(st->pwrdown_gpio))
->  		return PTR_ERR(st->pwrdown_gpio);
-
-...
-
-> -		dev_err(&spi->dev, "Mismatch CHIP_ID, got 0x%X, expected 0x%X\n",
-> -			id, st->info->id);
-> +		dev_err(dev, "Mismatch CHIP_ID, got 0x%X, expected 0x%X\n", id,
-
-> +			st->info->id);
-
-I would not touch the second line as it makes a logical split.
+Thanks!
+Looking forward for the rest, the cleanup is quite good, no added lines.
 
 -- 
 With Best Regards,
