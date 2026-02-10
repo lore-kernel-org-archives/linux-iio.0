@@ -1,16 +1,16 @@
 Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61CF4352952
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B63136607A
 	for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 13:51:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770731482; cv=none; b=IppKUkWEq4P43xjbiQK42tKKCI/KQ+ea3assZ/cQ9ux5uLDAq9h9ERhECMRuKMgTF3Lmbb+GzHo79M+bkxouqHCTuB9fJDAxFf0qFpIn0Qdo97UUkATknQoXue/fhsYCfYTu7+gO2oYHrrVoq/WmJUM8LRn0m2QzmhgpTSDyiiw=
+	t=1770731482; cv=none; b=SguFLHt+kFYKX+ZA9L3Lw9V6uQDQU9yrDNSvPt7xhayNoiTooMgOz6dZ0dIF06qHaeGSeN/8OTeWQRtRemeaq/wZ/DB1vCd2Dp89JwrfHCXYsSDUTYqNgjQcr5VX7Qlrtg/YfjqqX+utjJlfrqaTwa64WYpFkAipD2CYt3SDhYQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1770731482; c=relaxed/simple;
-	bh=maiF87Z+tWT2i62tyBrdaHYynkB4XZI1YnRMda3lBSw=;
+	bh=jRf2iO2tRAl/oQKlTgLi5mreQQ1i9qqO8otfRBReonE=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=D6iECKw/rlVDsHyahGaHJPs6F6ZS7s2YcNn/mH890i9P0KuL7x2SI2o00Q8zuuna/DmyEpOWer7I52wSdkMXq5a5zUQYL7tt6J8+c4FzNOEpVJvTccS+JouNfoqBIzakl6K29DRKFVs2qQCNcgBb3dD4d8C8IVTgp8cjE25AZ7Q=
+	 MIME-Version; b=Gjt32Q9pmFPxyk2eEHF3Mh8CTkvmIlKqNo7k9PBowD82yKU9UG+2xo8PRY/o8OZO6L5lvtasGX0BlyufPgtFclR2VUV3F8lFOezMckWXgEf71vhQieqELqspTdv7ObuW3ep0zzGTkk6LhRQ9Fu2lsGllsXb/HzB/ceES6LhqPi4=
 ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
@@ -18,16 +18,16 @@ Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
 	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
 	(Exim 4.92)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo93-0005dE-HX; Tue, 10 Feb 2026 14:51:13 +0100
+	id 1vpo93-0005dG-HX; Tue, 10 Feb 2026 14:51:13 +0100
 Received: from dude04.red.stw.pengutronix.de ([2a0a:edc0:0:1101:1d::ac] helo=dude04)
 	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
 	(Exim 4.96)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo91-0005cx-3C;
+	id 1vpo92-0005cy-05;
 	Tue, 10 Feb 2026 14:51:12 +0100
 Received: from ore by dude04 with local (Exim 4.98.2)
 	(envelope-from <ore@pengutronix.de>)
-	id 1vpo92-00000008VNB-2rfb;
+	id 1vpo92-00000008VNL-30fw;
 	Tue, 10 Feb 2026 14:51:12 +0100
 From: Oleksij Rempel <o.rempel@pengutronix.de>
 To: Jonathan Cameron <jic23@kernel.org>,
@@ -44,9 +44,9 @@ Cc: Oleksij Rempel <o.rempel@pengutronix.de>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	David Jander <david@protonic.nl>
-Subject: [PATCH v6 01/12] iio: dac: ds4424: refactor raw access to use bitwise operations
-Date: Tue, 10 Feb 2026 14:50:59 +0100
-Message-ID: <20260210135110.2027073-2-o.rempel@pengutronix.de>
+Subject: [PATCH v6 02/12] iio: dac: ds4424: ratelimit read errors and use device context
+Date: Tue, 10 Feb 2026 14:51:00 +0100
+Message-ID: <20260210135110.2027073-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260210135110.2027073-1-o.rempel@pengutronix.de>
 References: <20260210135110.2027073-1-o.rempel@pengutronix.de>
@@ -62,9 +62,11 @@ X-SA-Exim-Mail-From: ore@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
 X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 
-Refactor the raw access logic to use standard GENMASK() and BIT()
-macros. Use abs() for magnitude calculation to simplify the logic and
-make the data flow clearer.
+Replace pr_err() with dev_err_ratelimited() in the RAW read path to avoid
+log spam on repeated I2C failures and to include the device context.
+
+Use %pe to print errno names for faster debugging. Use the parent
+device context to identify the physical hardware causing the error.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
@@ -74,138 +76,34 @@ changes v6:
 changes v5:
 - no changes
 changes v4:
-- Split patch: The functional fix for -128 was moved to the previous
-  patch (1/9) for stable backporting.
-- This patch now contains only the refactoring (GENMASK/BIT/abs) on top
-  of the fix.
+- no changes
 changes v3:
-- Remove "Rebase on top of regmap" note as this is now patch 1/8.
-- Add #include <linux/bits.h>
-- Clarify 0mA sink/source behavior in comments
-- Remove redundant blank line in write_raw
+- Use indio_dev->dev.parent to reference the physical device.
+- Remove redundant space in error message: "channel %d: %pe".
+- This patch now precedes regmap refactoring.
 changes v2:
-- Replace S8_MIN/MAX checks with abs() > DS4424_DAC_MASK to enforce the
-  correct [-127, 127] physical range.
-- Refactor read_raw/write_raw to use symmetrical bitwise operations,
-  removing the custom bitfield union.
-- Rebase on top of regmap port
+- Update error message
+- Rebase against regmap refactoring
 ---
- drivers/iio/dac/ds4424.c | 55 +++++++++++++++-------------------------
- 1 file changed, 21 insertions(+), 34 deletions(-)
+ drivers/iio/dac/ds4424.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
-index 059acca45f64..596ff5999271 100644
+index 596ff5999271..36286e4923af 100644
 --- a/drivers/iio/dac/ds4424.c
 +++ b/drivers/iio/dac/ds4424.c
-@@ -5,6 +5,7 @@
-  * Copyright (C) 2017 Maxim Integrated
-  */
- 
-+#include <linux/bits.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/i2c.h>
-@@ -19,9 +20,10 @@
- #define DS4422_MAX_DAC_CHANNELS		2
- #define DS4424_MAX_DAC_CHANNELS		4
- 
-+#define DS4424_DAC_MASK			GENMASK(6, 0)
-+#define DS4424_DAC_SOURCE		BIT(7)
-+
- #define DS4424_DAC_ADDR(chan)   ((chan) + 0xf8)
--#define DS4424_SOURCE_I		1
--#define DS4424_SINK_I		0
- 
- #define DS4424_CHANNEL(chan) { \
- 	.type = IIO_CURRENT, \
-@@ -31,22 +33,6 @@
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
- }
- 
--/*
-- * DS4424 DAC control register 8 bits
-- * [7]		0: to sink; 1: to source
-- * [6:0]	steps to sink/source
-- * bit[7] looks like a sign bit, but the value of the register is
-- * not a two's complement code considering the bit[6:0] is a absolute
-- * distance from the zero point.
-- */
--union ds4424_raw_data {
--	struct {
--		u8 dx:7;
--		u8 source_bit:1;
--	};
--	u8 bits;
--};
--
- enum ds4424_device_ids {
- 	ID_DS4422,
- 	ID_DS4424,
-@@ -108,21 +94,21 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
- {
--	union ds4424_raw_data raw;
--	int ret;
-+	int ret, regval;
- 
- 	switch (mask) {
+@@ -100,8 +100,9 @@ static int ds4424_read_raw(struct iio_dev *indio_dev,
  	case IIO_CHAN_INFO_RAW:
--		ret = ds4424_get_value(indio_dev, val, chan->channel);
-+		ret = ds4424_get_value(indio_dev, &regval, chan->channel);
+ 		ret = ds4424_get_value(indio_dev, &regval, chan->channel);
  		if (ret < 0) {
- 			pr_err("%s : ds4424_get_value returned %d\n",
- 							__func__, ret);
+-			pr_err("%s : ds4424_get_value returned %d\n",
+-							__func__, ret);
++			dev_err_ratelimited(indio_dev->dev.parent,
++					    "Failed to read channel %d: %pe\n",
++					    chan->channel, ERR_PTR(ret));
  			return ret;
  		}
--		raw.bits = *val;
--		*val = raw.dx;
--		if (raw.source_bit == DS4424_SINK_I)
-+
-+		*val = regval & DS4424_DAC_MASK;
-+		if (!(regval & DS4424_DAC_SOURCE))
- 			*val = -*val;
-+
- 		return IIO_VAL_INT;
  
- 	default:
-@@ -134,25 +120,26 @@ static int ds4424_write_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     int val, int val2, long mask)
- {
--	union ds4424_raw_data raw;
-+	unsigned int abs_val;
- 
- 	if (val2 != 0)
- 		return -EINVAL;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val <= S8_MIN || val > S8_MAX)
-+		abs_val = abs(val);
-+		if (abs_val > DS4424_DAC_MASK)
- 			return -EINVAL;
- 
--		if (val > 0) {
--			raw.source_bit = DS4424_SOURCE_I;
--			raw.dx = val;
--		} else {
--			raw.source_bit = DS4424_SINK_I;
--			raw.dx = -val;
--		}
-+		/*
-+		 * Currents exiting the IC (Source) are positive. 0 is a valid
-+		 * value for no current flow; the direction bit (Source vs Sink)
-+		 * is treated as don't-care by the hardware at 0.
-+		 */
-+		if (val > 0)
-+			abs_val |= DS4424_DAC_SOURCE;
- 
--		return ds4424_set_value(indio_dev, raw.bits, chan);
-+		return ds4424_set_value(indio_dev, abs_val, chan);
- 
- 	default:
- 		return -EINVAL;
 -- 
 2.47.3
 
