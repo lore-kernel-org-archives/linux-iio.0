@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D751532E751;
-	Tue, 10 Feb 2026 19:42:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F36232FA28;
+	Tue, 10 Feb 2026 19:42:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770752537; cv=none; b=iHG9QJa/FLqUq7w+XPR8VxSvWRrN5L5Thx3ZcK02KRJd6GGQ10gc2eIyMydhZ6RcQHcYOBFZ7iEVc5AZacFun+Gth69M6Mh8F09jGYTQjs9o8xwcBg2DQBWbb529kAA1xJsWRqDt2aQgg5Ak4nPw/Q6Qvv9h1Yr7EishxsBtov0=
+	t=1770752538; cv=none; b=hRyh5K9tUO4LErSKlBdM9JBNpb5jZDAW3QWv2rc+qF0PADLHHuASD+vuzSnsBLAn3Cz3HJSmUaiEXMFzy3PRfWL18i6/GgcjE9nnu5ZlY2eZ8POsiNedC/zobbgv3H7YKUwnHrP3mi/UTh0/n5yEqYuFHkwAG56ZYFdH/32RQ4o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770752537; c=relaxed/simple;
-	bh=t+MFc6Y6ftKJJVBy3r8wUyzt4+z9BRslvNWo6wZERl8=;
+	s=arc-20240116; t=1770752538; c=relaxed/simple;
+	bh=gFisofjRmRDkCElxihVrUt91J4Goj29Lj706xglJ8+E=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=DB3qZJepZi0uIidmDsLDvjvHhL75GNFMyPu/yYto5J0ScUclnNrQ/XdlFFzH4KXJlkRt9QHqiWJZr0nB1rBcAe4ZTpIgRtJGVv+KZHRf7SAYdhgeG5pU60uP+1L8vvKTqVcrotJec0KDGFBLTYTwaVqzTpYgioyr6WVYB5H1ylQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HcsrR+GG; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=f5fwoOq97E+yaQxxu/s5VvM6MssSxUzkYF3+8tiIPtpg6fBEXJPuKrWK6H+nqgJyRyDuxQL7qVkDIfDYZQmDaRSnc/GwWP4EnirDPsC+F5sPLUQufe5I7OdA3oo003vCQkb8Q89kCK9THEQPnEgIi2uXdbwh2Rx9K0+a6BfUK5s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=gfKCgE3e; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HcsrR+GG"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B732CC2BCB2;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="gfKCgE3e"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E392BC2BCAF;
 	Tue, 10 Feb 2026 19:42:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1770752537;
-	bh=t+MFc6Y6ftKJJVBy3r8wUyzt4+z9BRslvNWo6wZERl8=;
+	bh=gFisofjRmRDkCElxihVrUt91J4Goj29Lj706xglJ8+E=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=HcsrR+GG7nVa9PKqsbxImGIPhg/CDoPVpHK29h9Wp+CsLlVNwFbGQoy4/jkhPEDfS
-	 bIZIOUyTK0n0DKa59U19d/fmnU2kT6QhYxp2IvPpHOKYYD41aQSDUrhtbgWAdmwtE/
-	 YI5YzSntt/CXEzQgZmonqUQn16Xfn3DCjIx28zbortGC1LcEZumuOmvzD5NqBtjqJi
-	 UX4X9ntuMvTL7pvX8Zf9/Rn8MR/z4gtcqQd1fCMt3UJ6DMLHoIdZiBWXLfqgFq7To0
-	 bniFglUVtiwAJdhprwS0OpLg4/7st7rQz2lGO9SSBCEfVehWuZDr5QR6ViAnNlPs5U
-	 bqQZGAWL9dnOA==
+	b=gfKCgE3e5pbICWl4GW+IBvgezP48EPwEIiFubKnU0fXtGZEyQz4c7Iv0rtt6J6xrh
+	 8g/Vx/A2xxKK9sG67H/Atgb3NQkYVBKPgGhqs/qP/xFvbps9lpJmO095XXS/DcaxbF
+	 6VWpbzFdJI7UiT3xaNWdClCYJH8NNBDXVq76XFQsmiPHza0GgticcTqWxI0IGmbZZA
+	 5u3wWoXb4KPwPDPMwe5jrks7oGoz25IYb6mMqoW+urB/YI6oXyn8z806k1SHdQFDxN
+	 MCh53/f9tmnfzaSidWE8Yuw5ZeYbYoeM4zYpHiF0Z5ctYYgSGzw5yKzlzVCbhrs6iy
+	 AdwvGhC8zS9Rw==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7FBEB2705;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC756EB2706;
 	Tue, 10 Feb 2026 19:42:17 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 10 Feb 2026 19:42:06 +0000
-Subject: [PATCH v4 06/11] iio: amplifiers: ad8366: replace reset-gpio with
- reset controller
+Date: Tue, 10 Feb 2026 19:42:08 +0000
+Subject: [PATCH v4 08/11] iio: amplifiers: ad8366: prepare for device-tree
+ support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260210-iio-ad8366-update-v4-6-15505f7b15b4@analog.com>
+Message-Id: <20260210-iio-ad8366-update-v4-8-15505f7b15b4@analog.com>
 References: <20260210-iio-ad8366-update-v4-0-15505f7b15b4@analog.com>
 In-Reply-To: <20260210-iio-ad8366-update-v4-0-15505f7b15b4@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -53,11 +53,11 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
  Conor Dooley <conor+dt@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1770752535; l=1768;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1770752535; l=7157;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=xxSuKq9E/6bGxE6XgUkOFI+Qx13kgVsTJFs9X9iiQRc=;
- b=dcB2HBQADW0sFtiSzhEK2yJtDD8iig7v+7Xgvf5rjLDEUT3obH+6oIRmcXverU7+0qfG0sNR6
- ziDzhGVfElqBjyssVwVTjhFQU9ReFlABf/kXoAkzP3pocd9D5BOi+8l
+ bh=Zdn1IjVL+LQBedLBJP4SxLg0QqdNykisF4eKilB9Xc4=;
+ b=JrMfelEnl3N9RfcUtZKGo+WOxkU4yccNxAYuUHxU/1MuiyMyMc3HLkwfSx7RhM3fwVNVD6EYE
+ WEFJ3ejZp/zBLy6U7UYQqhlQZgClhTC6DHdlWlCJf/L3ZglukZ1VUnb
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -67,56 +67,265 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Remove reset_gpio from the device state struct and use the
-reset_control interface instead, using a local variable,
-as it is not being used anywhere else.
+Drop switch case on the enum ID in favor of extended chip info table,
+containing:
+- gain_step, indicating with sign the start of the code range;
+- num_channels, to indicate the number IIO channels;
+- pack_code() function to describe how SPI buffer is populated;
+
+Which allowed for a simplified read_raw() and write_raw() callbacks.
+The probe() function was adjusted accordingly.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/amplifiers/ad8366.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/iio/amplifiers/ad8366.c | 139 +++++++++++++---------------------------
+ 1 file changed, 46 insertions(+), 93 deletions(-)
 
 diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
-index f0053a09cbb6..67817dedd75d 100644
+index 343f370eae65..1ae75643e89b 100644
 --- a/drivers/iio/amplifiers/ad8366.c
 +++ b/drivers/iio/amplifiers/ad8366.c
-@@ -17,6 +17,7 @@
- #include <linux/module.h>
- #include <linux/mutex.h>
+@@ -19,6 +19,7 @@
  #include <linux/regulator/consumer.h>
-+#include <linux/reset.h>
+ #include <linux/reset.h>
  #include <linux/spi/spi.h>
++#include <linux/unaligned.h>
  
  #include <linux/iio/iio.h>
-@@ -38,7 +39,6 @@ struct ad8366_state {
+ 
+@@ -30,16 +31,20 @@ enum ad8366_type {
+ 	ID_HMC1119,
+ };
+ 
++struct ad8366_state;
++
+ struct ad8366_info {
+ 	int gain_min;
+ 	int gain_max;
++	int gain_step;
++	int num_channels;
++	size_t (*pack_code)(struct ad8366_state *st);
+ };
+ 
+ struct ad8366_state {
  	struct spi_device	*spi;
- 	struct regulator	*reg;
  	struct mutex            lock; /* protect sensor state */
--	struct gpio_desc	*reset_gpio;
  	unsigned char		ch[2];
- 	enum ad8366_type	type;
+-	enum ad8366_type	type;
  	const struct ad8366_info *info;
-@@ -242,6 +242,7 @@ static const struct iio_chan_spec ada4961_channels[] = {
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) may require the
+@@ -48,60 +53,58 @@ struct ad8366_state {
+ 	unsigned char		data[2] __aligned(IIO_DMA_MINALIGN);
+ };
+ 
++static size_t ad8366_pack_code(struct ad8366_state *st)
++{
++	u8 ch_a = bitrev8(st->ch[0]) >> 2;
++	u8 ch_b = bitrev8(st->ch[1]) >> 2;
++
++	put_unaligned_be16((ch_b << 6) | ch_a, &st->data[0]);
++	return sizeof(__be16);
++}
++
+ static const struct ad8366_info ad8366_infos[] = {
+ 	[ID_AD8366] = {
+ 		.gain_min = 4500,
+ 		.gain_max = 20500,
++		.gain_step = 253,
++		.num_channels = 2,
++		.pack_code = ad8366_pack_code,
+ 	},
+ 	[ID_ADA4961] = {
+ 		.gain_min = -6000,
+ 		.gain_max = 15000,
++		.gain_step = -1000,
++		.num_channels = 1,
+ 	},
+ 	[ID_ADL5240] = {
+ 		.gain_min = -11500,
+ 		.gain_max = 20000,
++		.gain_step = 500,
++		.num_channels = 1,
+ 	},
+ 	[ID_HMC792] = {
+ 		.gain_min = -15750,
+ 		.gain_max = 0,
++		.gain_step = 250,
++		.num_channels = 1,
+ 	},
+ 	[ID_HMC1119] = {
+ 		.gain_min = -31750,
+ 		.gain_max = 0,
++		.gain_step = -250,
++		.num_channels = 1,
+ 	},
+ };
+ 
+-static int ad8366_write(struct iio_dev *indio_dev,
+-			unsigned char ch_a, unsigned char ch_b)
++static int ad8366_write_code(struct ad8366_state *st)
+ {
+-	struct ad8366_state *st = iio_priv(indio_dev);
+-	int ret;
++	const struct ad8366_info *inf = st->info;
+ 
+-	switch (st->type) {
+-	case ID_AD8366:
+-		ch_a = bitrev8(ch_a & 0x3F);
+-		ch_b = bitrev8(ch_b & 0x3F);
++	if (inf->pack_code)
++		spi_write(st->spi, st->data, inf->pack_code(st));
+ 
+-		st->data[0] = ch_b >> 4;
+-		st->data[1] = (ch_b << 4) | (ch_a >> 2);
+-		break;
+-	case ID_ADA4961:
+-		st->data[0] = ch_a & 0x1F;
+-		break;
+-	case ID_ADL5240:
+-		st->data[0] = (ch_a & 0x3F);
+-		break;
+-	case ID_HMC792:
+-	case ID_HMC1119:
+-		st->data[0] = ch_a;
+-		break;
+-	}
+-
+-	ret = spi_write(st->spi, st->data, indio_dev->num_channels);
+-	if (ret < 0)
+-		dev_err(&indio_dev->dev, "write failed (%d)", ret);
+-
+-	return ret;
++	st->data[0] = st->ch[0];
++	return spi_write(st->spi, st->data, 1);
+ }
+ 
+ static int ad8366_read_raw(struct iio_dev *indio_dev,
+@@ -111,6 +114,7 @@ static int ad8366_read_raw(struct iio_dev *indio_dev,
+ 			   long m)
+ {
+ 	struct ad8366_state *st = iio_priv(indio_dev);
++	const struct ad8366_info *inf = st->info;
+ 	int ret;
+ 	int code, gain = 0;
+ 
+@@ -118,25 +122,8 @@ static int ad8366_read_raw(struct iio_dev *indio_dev,
+ 	switch (m) {
+ 	case IIO_CHAN_INFO_HARDWAREGAIN:
+ 		code = st->ch[chan->channel];
+-
+-		switch (st->type) {
+-		case ID_AD8366:
+-			gain = code * 253 + 4500;
+-			break;
+-		case ID_ADA4961:
+-			gain = 15000 - code * 1000;
+-			break;
+-		case ID_ADL5240:
+-			gain = 20000 - 31500 + code * 500;
+-			break;
+-		case ID_HMC792:
+-			gain = -1 * code * 500;
+-			break;
+-		case ID_HMC1119:
+-			gain = -1 * code * 250;
+-			break;
+-		}
+-
++		gain = inf->gain_step > 0 ? inf->gain_min : inf->gain_max;
++		gain += inf->gain_step * code;
+ 		/* Values in dB */
+ 		*val = gain / 1000;
+ 		*val2 = (gain % 1000) * 1000;
+@@ -171,29 +158,14 @@ static int ad8366_write_raw(struct iio_dev *indio_dev,
+ 	if (gain > inf->gain_max || gain < inf->gain_min)
+ 		return -EINVAL;
+ 
+-	switch (st->type) {
+-	case ID_AD8366:
+-		code = (gain - 4500) / 253;
+-		break;
+-	case ID_ADA4961:
+-		code = (15000 - gain) / 1000;
+-		break;
+-	case ID_ADL5240:
+-		code = ((gain - 500 - 20000) / 500) & 0x3F;
+-		break;
+-	case ID_HMC792:
+-		code = (abs(gain) / 500) & 0x3F;
+-		break;
+-	case ID_HMC1119:
+-		code = (abs(gain) / 250) & 0x7F;
+-		break;
+-	}
++	gain -= inf->gain_step > 0 ? inf->gain_min : inf->gain_max;
++	code = DIV_ROUND_CLOSEST(gain, inf->gain_step);
+ 
+ 	mutex_lock(&st->lock);
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_HARDWAREGAIN:
+ 		st->ch[chan->channel] = code;
+-		ret = ad8366_write(indio_dev, st->ch[0], st->ch[1]);
++		ret = ad8366_write_code(st);
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -234,10 +206,6 @@ static const struct iio_chan_spec ad8366_channels[] = {
+ 	AD8366_CHAN(1),
+ };
+ 
+-static const struct iio_chan_spec ada4961_channels[] = {
+-	AD8366_CHAN(0),
+-};
+-
  static int ad8366_probe(struct spi_device *spi)
  {
  	struct device *dev = &spi->dev;
-+	struct reset_control *rstc;
- 	struct iio_dev *indio_dev;
- 	struct ad8366_state *st;
- 	int ret;
-@@ -276,9 +277,9 @@ static int ad8366_probe(struct spi_device *spi)
- 	case ID_ADL5240:
- 	case ID_HMC792:
- 	case ID_HMC1119:
--		st->reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset", GPIOD_OUT_HIGH);
--		if (IS_ERR(st->reset_gpio)) {
--			ret = PTR_ERR(st->reset_gpio);
-+		rstc = devm_reset_control_get_optional_exclusive_deasserted(dev, NULL);
-+		if (IS_ERR(rstc)) {
-+			ret = PTR_ERR(rstc);
- 			goto error_disable_reg;
- 		}
- 		indio_dev->channels = ada4961_channels;
+@@ -261,35 +229,20 @@ static int ad8366_probe(struct spi_device *spi)
+ 		return dev_err_probe(dev, ret, "Failed to get regulator\n");
+ 
+ 	st->spi = spi;
+-	st->type = spi_get_device_id(spi)->driver_data;
++	st->info = &ad8366_infos[spi_get_device_id(spi)->driver_data];
+ 
+-	switch (st->type) {
+-	case ID_AD8366:
+-		indio_dev->channels = ad8366_channels;
+-		indio_dev->num_channels = ARRAY_SIZE(ad8366_channels);
+-		break;
+-	case ID_ADA4961:
+-	case ID_ADL5240:
+-	case ID_HMC792:
+-	case ID_HMC1119:
+-		rstc = devm_reset_control_get_optional_exclusive_deasserted(dev, NULL);
+-		if (IS_ERR(rstc))
+-			return dev_err_probe(dev, PTR_ERR(rstc),
+-					     "Failed to get reset controller\n");
++	rstc = devm_reset_control_get_optional_exclusive_deasserted(dev, NULL);
++	if (IS_ERR(rstc))
++		return dev_err_probe(dev, PTR_ERR(rstc),
++				     "Failed to get reset controller\n");
+ 
+-		indio_dev->channels = ada4961_channels;
+-		indio_dev->num_channels = ARRAY_SIZE(ada4961_channels);
+-		break;
+-	default:
+-		return dev_err_probe(dev, -EINVAL, "Invalid device ID\n");
+-	}
+-
+-	st->info = &ad8366_infos[st->type];
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+ 	indio_dev->info = &ad8366_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad8366_channels;
++	indio_dev->num_channels = st->info->num_channels;
+ 
+-	ret = ad8366_write(indio_dev, 0, 0);
++	ret = ad8366_write_code(st);
+ 	if (ret < 0)
+ 		return dev_err_probe(dev, ret, "failed to write initial gain\n");
+ 
 
 -- 
 2.43.0
