@@ -1,65 +1,66 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CEBD32ED2A
-	for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 20:46:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DCBA332903
+	for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 20:46:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770756403; cv=none; b=HlA6mZGNNziBP3tIbBPE+z1F9dZaFhIdm1gRoU/418nLZqFO5iAARKX/CenqO/kFD+eTV/qQHZF8qP4OoV0dOntHlXNifMbDhOoc+y8/nKZC3+dGRbty7BNaj2yEc2Mq0KTg/VBTSRL/dTSpO+1W++fWw6mWWcqh75iH/VYkxCA=
+	t=1770756405; cv=none; b=g+a37e4v9WFSajUM+K/nRnV3nAPCMqeeeQVtJYU/a4Vl3kwxmhx1QY0C6GVnW4CBsTbX2qZIAObNsjfpBG5pA3OUTYrreiEjQbAf5WZoIdDtAa18cnzpjupwPNmhGqTsHhb2uwgdtdKjcpl9jo2L1Wgot4gFVRQFvdrphsJOkcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770756403; c=relaxed/simple;
-	bh=tsO/mYFaEUMvZc2LAc3OA4nmB8LFQ/GJH7pow3bd52A=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=iYtzs4xX+TJ+vzEUuaX1PE7aPDhsuGk5f8UJ3JJ5FZsvvOrhR9qtLAOLX5j+692TlxPE4AimrV4iDDyqKOiiO2+RiM+ktsNof23xbcguH3mDovrHwrm+lqBH3abvo5OHLvSLYQ0fMIdnVeZejxt+dUiZeiN14ENy+IcGv5o13So=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a7WUl8oV; arc=none smtp.client-ip=209.85.128.46
+	s=arc-20240116; t=1770756405; c=relaxed/simple;
+	bh=lazVxl8WJKg/jltTmr7HFjMBJRcsa2eV7m49E9VAdAc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=quwg5YO9EF726GV6gH9p9PtNOyWXtjaJTG3kcCPw5meGXNv4uGf14yuAP+EFpYDbr3VXpSHbyoLeCj01wueM6c4F7y7kmxeKJ4Jffo7/aqMn1qqe+0Z11GaO0QJ6z3jhsQJ5cQOkNzdm8g1irzRkjyX0n35jxLklaqOyQLSxoks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mp01AMXc; arc=none smtp.client-ip=209.85.128.52
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a7WUl8oV"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4806bf39419so1351375e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 12:46:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mp01AMXc"
+Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4801c2fae63so50411945e9.2
+        for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 12:46:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770756401; x=1771361201; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=mMGv2vQvKQYUADdNnCmAW/VA3ahvinln9Fwhr3ZpQZ0=;
-        b=a7WUl8oV5jjPJ9+PoeXKjCw1fby6IUc8JoUGNUEKBVnRhDDLH8gPKC5SI+VUFYovEz
-         Cp3GSsasX+MbKoqjs3o9Kilus4StV0gUs0KnQmQE4tAe50aPfEf17niTqXsGT4V5qUUn
-         bPlAPsdwnJQusezDm99XtQxtR6asF07gLwaq9kHlcKNo0YUp54HH3qetrN08z0NnXHYZ
-         GgJ0zJCvmxLTIKX8PCCcpN4I5PhTbc1ykJUooB9aQXy5JV5CTaj6U+aHnNIdi6whr1Yj
-         dJXFif+1aRIJsIp19Y//jNEnclnn1HpPu33nBhVP2skw2BbpKEBO/XXrORqBBcKknfeU
-         IRRA==
+        d=gmail.com; s=20230601; t=1770756403; x=1771361203; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=OiO+nVc5IO8Z6Ent3/Ayytw2yL90H0wfU2AM1rR7mW8=;
+        b=mp01AMXcKR10K0OhAWfgwPK1bDdtge5Degg31vKzuO3SocUaPCZPWximJKT/itRnHX
+         NztSwcB2vF+lQUiNVKGQ7rdEH/RQFGCdc/1Hl5IlsQC20/+l9xfIMhBwUDz6mnEjDwPu
+         xdTfYW5JOwXCaZUVrxpFC/AYXEMv1L5XOnKuH13X5dygs4dvTPR5ojpD44xj680CtwDj
+         xG6Y+jmWsDpYQ9CyqBxJPY/K24HL0lWKCz3duOHchJK5bvtkiZjJKHJ96dWLenSYq9CL
+         gSDzYJKRbiyXn9R0d7dUqTROxoMQlrTknwzkSYWGgm8G9GKI5//6YiRMiryfTMvwvcD7
+         Fb1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770756401; x=1771361201;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=mMGv2vQvKQYUADdNnCmAW/VA3ahvinln9Fwhr3ZpQZ0=;
-        b=tYI3mq9pd35iZkkz50rcngmvhjpXZDZrTMSDys+AIK28P9EaISkceaFPrkhaUJJWZ8
-         9FN8iouL2lwV3SPI4fGNjvsiOE6PZp32eFpyNG/OqnlncMwfAxl/KoVR/FvUGMc4n6mg
-         ltWhcTAYw4Jubox3FHXZC8o0oA4TSdHmWBSXYITcDwCXzyq4gycacjMqxRqaVircssVL
-         DCHPIB2yXcNXI/CWkXeesVLbExg+D94h6xnWe2xuvfoNs0vYrYOInx5EmvcoEsGnhAHK
-         wmkmMgLVF2eKROFkdPe5JyelrUPEh7deoVTR9zlhDCDqW0mAGPKa/WHHi3CtaEQ9AmAS
-         lhpA==
-X-Gm-Message-State: AOJu0Yww6Ip6klRvCZLytbb7Mc0khZmoEZTSOs6tDqdgXoZ4qy864TO+
-	sVi45qNslFMg4pYjG1Zb/dGwgSRCfIVFBtiFqhu08uqZJwBb5EqF0IQF
-X-Gm-Gg: AZuq6aLRrVW+xoNQH9OhO/QVwB1g6IkDMuffbQCNH1ncNVgHU8ETXO9r5khbgKbK/xM
-	rg/mMhJSf/DNK9NDrlGNKSE1Ij/IaP0Tm/gtwC0ZyG45+Eo6wVAo7ffZKMng6xTl+4DvqXNkQan
-	BHdocqwUaZSwOkgaXFU1O/W8Tc20GjUJ7duO3Z5NTSl9odkFVqTaojZdR25bDHe9ytJo3V1Y72H
-	cfpww8rhLNN536y1a4BfiwGtAXjT9lE0wEMNRceYdBFZzT/FED6ff3SKfBRLQqvQdjgf1FHw037
-	sWQvdi82PU2OjQdSSeVqAnvrSvOpKV077nFP7BZtg78rGGr08nxd2xNHsSt0HUaDc+MdpAu8tdS
-	Yj0ohBCF8Jp4oNdHRJlZGeJ4IQMORYlZT6HBAr6GxWV5k9D4S2793W53/c7DJCnkmey53LBUs7h
-	KWcTA/ubqiNInMeAEJbmuO39vclA==
-X-Received: by 2002:a05:600c:3b8b:b0:477:a289:d854 with SMTP id 5b1f17b1804b1-48350511771mr58266075e9.5.1770756400685;
-        Tue, 10 Feb 2026 12:46:40 -0800 (PST)
+        d=1e100.net; s=20230601; t=1770756403; x=1771361203;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=OiO+nVc5IO8Z6Ent3/Ayytw2yL90H0wfU2AM1rR7mW8=;
+        b=opFChXvFmXDylMp5j20GbTUSsbfNJRiTlqMkUH8GTQzA+AwV3k2rF2+GGc24bIWQxq
+         OhLj59irwpAxEY0PaU1FvwHEaZ41bYvpVP/sNngdx9FJspE7Pm5LeAaWwDdHJeSW/2Um
+         WHYcPbLG6x9bj1J/6FyGv/RsCoZHRZKxahgU8KpbDPX9kJ8XVEQZYFnxfoTPW3qpO6jX
+         B3Vnf9hT5n+bCVFtPGkH8kdQ3pSz0X6o1ApqeceGD685M0c8m5XY0XhGDC3vkm4nGfnf
+         ihLJNsWDdRYRJGkYDbV0qxGsDqQPknUE7OjfQl6NI7ATshm9jAQM5Q7QDb5Zsqq9v1NZ
+         CMCw==
+X-Gm-Message-State: AOJu0Yx5GiZFE+ng4FNXMb2+kqhX0xwdqbzMdfYLgbDqbeGOxdQCbgLt
+	ATJWP2LEQyjiVGmPfNaLnC24LiETYPtR5Gjcj/sWmfAHi9vFqSbcjfea
+X-Gm-Gg: AZuq6aKTec/0i6dG66U7gZpGh9z2FRQU2zHSssgsntLV+LePOeSi9ios480j0rvBby3
+	M1nJE9MTBLvub5hE4pRvWmjZhCGuDAOpuQ4U0K9Pr1ZdYaFcObLUmkQFuQTSOds+JQ9QSn5ikY3
+	AoBQW4pp/8WFzgEFUVrRxM1Y/DoZUBZ4eLdRtp7wIRjVbThkaz3nbVhRP3ylhSpXNew4euvJ/IA
+	XQWAkZgniiX8rPSOhetqtdlrxUSaP1y35QTfYd6QPrcxFKX4rtVqTNnXUKbIREtvToHdA3ihtpP
+	5A3k8qrrZX39etk5lyA/EqMLqaOqA11U83QMiMcleltJsCzTZTEaeljnuh4V2avhWjw/DdfSs8a
+	pGcvVpuUxGOwLRx37nM12q6g9d5xIeMfVy7YCw0A8VykbP1J0Xg1TGvgCzH6VATPaJ7H63h1b6s
+	Hkrs/UmTvyzQdn6od6xw6etbc8l0YnYNdUozDa
+X-Received: by 2002:a05:600c:548d:b0:480:4b59:9327 with SMTP id 5b1f17b1804b1-483507d0344mr48000965e9.1.1770756402734;
+        Tue, 10 Feb 2026 12:46:42 -0800 (PST)
 Received: from [192.168.8.10] ([2a00:f502:160:28bc:a26c:adcb:8da8:2])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4834d7d6f3esm71451965e9.9.2026.02.10.12.46.39
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4834d7d6f3esm71451965e9.9.2026.02.10.12.46.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Feb 2026 12:46:40 -0800 (PST)
+        Tue, 10 Feb 2026 12:46:42 -0800 (PST)
 From: Erikas Bitovtas <xerikasxx@gmail.com>
-Subject: [PATCH 0/2] iio: light: vcnl4000: Add support for Capella CM36686
+Date: Tue, 10 Feb 2026 22:46:10 +0200
+Subject: [PATCH 1/2] dt-bindings: iio: light: vcnl4000: add Capella CM36686
  and CM36672P
-Date: Tue, 10 Feb 2026 22:46:09 +0200
-Message-Id: <20260210-cm36686-v1-0-aef68dd46ad4@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,10 +69,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDI0MD3eRcYzMzCzNdkxRjI4skC/MksxQjJaDqgqLUtMwKsEnRsbW1AOy
- VWSpZAAAA
-X-Change-ID: 20260210-cm36686-4d328b87b6d2
+Message-Id: <20260210-cm36686-v1-1-aef68dd46ad4@gmail.com>
+References: <20260210-cm36686-v1-0-aef68dd46ad4@gmail.com>
+In-Reply-To: <20260210-cm36686-v1-0-aef68dd46ad4@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -83,31 +83,48 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>
 X-Mailer: b4 0.14.3
 
-Capella CM36686 is a combined ambient light and proximity sensor
-developed by Capella Microsystems, now a subsidiary of Vishay
-Intertechnology Inc. It is fully compatible with Vishay VCNL4040 and its
-driver can be used for Capella CM36686.
-
-Capella CM36672P is a proximity sensor which is fully compatible with
-CM36686, and in turn, with VCNL4040.
-
-This patch series adds compatibles for cm36686 and cm36672p, as well as
-disables the light channel for cm36672p.
+Capella CM36686 is an ambient light and proximity sensor developed by
+Capella Microsystems, now a subsidiary of Vishay Intertechnology Inc. It
+has an I2C address of 0x60 and is fully compatible with an existing
+driver for VCNL4040. Capella CM36672P is a proximity-only sensor that
+is fully compatible with CM36686, and therefore with VCNL4040. Add
+compatibles for cm36672p and cm36686, with a fallback for cm36686 of
+vcnl4040.
 
 Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
 ---
-Erikas Bitovtas (2):
-      dt-bindings: iio: light: vcnl4000: add Capella CM36686 and CM36672P
-      iio: light: vcnl4000: add support for Capella CM36686 and CM36672P
+ .../devicetree/bindings/iio/light/vishay,vcnl4000.yaml  | 17 +++++++++++------
+ 1 file changed, 11 insertions(+), 6 deletions(-)
 
- .../bindings/iio/light/vishay,vcnl4000.yaml        | 17 +++++----
- drivers/iio/light/vcnl4000.c                       | 40 ++++++++++++++++++++++
- 2 files changed, 51 insertions(+), 6 deletions(-)
----
-base-commit: 132737e360b4c0daa7f473faf0f55cb04ee3e15c
-change-id: 20260210-cm36686-4d328b87b6d2
+diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+index 4d1a225e8868..2ba4d5de4ec4 100644
+--- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
++++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+@@ -18,12 +18,17 @@ allOf:
+ 
+ properties:
+   compatible:
+-    enum:
+-      - vishay,vcnl4000
+-      - vishay,vcnl4010
+-      - vishay,vcnl4020
+-      - vishay,vcnl4040
+-      - vishay,vcnl4200
++    oneOf:
++      - enum:
++          - capella,cm36672p
++          - vishay,vcnl4000
++          - vishay,vcnl4010
++          - vishay,vcnl4020
++          - vishay,vcnl4040
++          - vishay,vcnl4200
++      - items:
++          - const: capella,cm36686
++          - const: vishay,vcnl4040
+ 
+   interrupts:
+     maxItems: 1
 
-Best regards,
 -- 
-Erikas Bitovtas <xerikasxx@gmail.com>
+2.53.0
 
