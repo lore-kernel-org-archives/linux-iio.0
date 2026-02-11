@@ -1,144 +1,93 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97B4F366827;
-	Wed, 11 Feb 2026 10:11:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D9F7313E20
+	for <linux-iio@vger.kernel.org>; Wed, 11 Feb 2026 11:06:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770804661; cv=none; b=sO3mTu62tj7v0PxnGbMJP08n8zmTdinPOXkCZYpZQqfvpb66OEL9RdAHZzV6wlCj1Vht6jYMqpV3UOVpmXVQHlD1QJMDE03wIP9lYcoWpWSzUGuyl2VBrDAd6jauYwEFU8wkkzZbJXPwhiWMsSQNlUiaYmB0a0u6mxHLt6h6wFQ=
+	t=1770807972; cv=none; b=aS3cLNAKS+jWHMtUEwl2ejIeBQGyUTnkeDcxJdu9DWvZaPVjci9awXDZi4mYXAX0Zsbe1clL9aVdx+zExHuMWeZ2nhBYWbHxS+AdI2uMcbYGHFIAYJ3Fzxv83//5CeXxmKekHWKvOvlW3hbcU2CnNRPFzZOo9V18gFbmHv+c6Rk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770804661; c=relaxed/simple;
-	bh=UI3E6x+qfcV5tPmVFvSkSbIbzmQTV/SjwJS4GDRttx0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=X1I0Q/L21pPzZ/WxoQS0IKSDUSC25TEx3GN3dQKv1OEXeySenomM7Wtk8B03CCIYt+pxMFDRFts9+5DETpwueNZ9FZ2SRmfH8em5ahsTMmM9zBJeE01tYe61/YqToyArSGe1SA61diGHuUp7Ng96qaY53xXeGG4Run513GfYAAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=e4pgoLse; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1770807972; c=relaxed/simple;
+	bh=HvMwN5NONdCSCa0ZMWtKwPRDsjEEIFgBlh6+5R6BvUI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=SgCBd/LEiR9moWCyYYdMKgIe3XJ5FbkYASiZjMoQ211G6RD3Vo0T8wnCaQptUhSSZDmi/oozxaIaZV6qrfoHMmrxgZAJ6sHmOhLoZBZZuVGdkcBULqb7pPmXiYmTwsgPnrCSz4cacJlLXRdoeth9GC+YOEZzbEIedHfp+D+BBUA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DvQOoOzi; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="e4pgoLse"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E8356C4CEF7;
-	Wed, 11 Feb 2026 10:10:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770804661;
-	bh=UI3E6x+qfcV5tPmVFvSkSbIbzmQTV/SjwJS4GDRttx0=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=e4pgoLseg5C5+K3tWOCNyR7uXq74n7f/pWOybfIzI0rxRKucuAWNt/CtdfQWNZ8Rv
-	 t312U50B/r0md/ZymQyL6jdmGb/TX8mrD+I0wr+HoYPLlaoinWTb76zFzG2QTuEJ2D
-	 o+FYIAJrdmJrGfI/1/gf3BLzRmGsYTMMiEZnOiD+i0NW9cRsSZmuxruJw9chxQhAMc
-	 vjFlcjylMRmB37iWZl//bQJqzBoybYztc+o01UPN57HNsCG4tofy2syc833pkNlHe3
-	 2FHVulrNCkIYvhULNBJCdOiosmtjKmEI0/BZkGageSrS+fLqNMW7IjO54GetYZTvrs
-	 uqmNUuu4Pn+Ug==
-Message-ID: <6f97c68d-0236-4d04-8199-768ecee7c4dd@kernel.org>
-Date: Wed, 11 Feb 2026 11:10:56 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DvQOoOzi"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4833115090dso17028475e9.3
+        for <linux-iio@vger.kernel.org>; Wed, 11 Feb 2026 03:06:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770807970; x=1771412770; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HvMwN5NONdCSCa0ZMWtKwPRDsjEEIFgBlh6+5R6BvUI=;
+        b=DvQOoOziOAqqFzIahB96UncdPg4glMVZATxgMrofuHWrJ77vrDU9Lz6Y2ac4zS0kBP
+         AYqitwbDDj+0LFJVL1Ah0jF1Ud5ronyQ4tKmkhztlcLagCcBnv+BdWRHdHQ8e+8kQ+du
+         rM6HllktD1A5p8oWCHdJJ8AVrbaDs30peFGgcGnU+LTqIPUpr6XkTjbZUdHG1f3/mSfh
+         XmARFMIY5g27ZpUB5jkCc5rHwKR4vSAgn9UkBdWs3VZgw00ySG/GCcjvOu5YLFs44mbo
+         sF4RlSadMMSLxi9FBxKSIzGY0T7i8KXuz2Z/NMNtp/Dj0ADciBadIqTN/QYUHqG+W1FS
+         XMHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770807970; x=1771412770;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=HvMwN5NONdCSCa0ZMWtKwPRDsjEEIFgBlh6+5R6BvUI=;
+        b=ShyvTnaulByEkT+DpWoRBhfZnv1x9vTWTcGYGgCkNRJ1wEbYoWnJX5b0rDrC6XXc/R
+         5IIusU49N6goXH93bxG+qXAGf2LZwGjWDlP8i8P/kTRoIB2+vGzAhgCgEaTm+EngFeWo
+         33ui40XoqWO2GJlzOxlk7y7bem5phXJytsG8SoAREl61zO7bFrXabZ1uVeNaZkfjf6xJ
+         Y+kpTHRT64GN8iYz+loJZmuuQWvC2hDBhMcWYT+tGoDZ70C4ZNzaI1QYYoxn/+i/gspc
+         GkXeMvMCQ25C3NLYdfvhXzGixqKhaYDoNmTlEpBfZ5boBPsvpO/5hleUnT0OOm1MynYB
+         JG9g==
+X-Forwarded-Encrypted: i=1; AJvYcCVc3wK405LzX81ItG2ms6vtVDXIDOMRrM1puefiOW1tQaXhaQxziclp0E8+xtVbERBk4z58DO5eR7c=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzIV/cNLkWtB/AjLcynodjClBTwVNk+vKGDeOLzkNMme1pkuPge
+	/25wiTcErBhdQ1I4wGcnaOMLEqR6YVyho2sFogwmf7b2qkIgtscDcnnZAdz+Hw==
+X-Gm-Gg: AZuq6aIWPTEz7cSLjcir6exeHOLRlz7R2s6ZV4oWUTTbODwrnZMCgcpjWAU9A+iJX+d
+	+I/78RE9j5KyN98fNe+K4cdLe0sTYQuPG1aSX0a/zeUwmGiKFW/qENmi15Hq2bBc5Z7ibX69hqo
+	NFvOscwo34dneHYge0g26KTZEAl5okxa8lAZMJPX0jACrWhDtkII/cw4tctqi1J/iK6zJl8r9kI
+	8oVfFHuWfZuG+2SZvH8WFBGnzZkh5QRNL5Io4XGjhBJk1BrYr7LWZfYpyIHBtzJlk2ZT/+98TLQ
+	axEAC1dDnfmtf3Nxyc/4cB7RqTgHoZ3VOTHizn7vNS/tNM8k0BBx1xYSm1/HOs35aYkgdULaq5l
+	zJtVW+7B8wISBO0l9qZc67InMLazZ+rZ71Ccut0my0IzNFvvSMBh8hDWj/mP47Wib4N5PD3KY0n
+	Um8v6rPBqjyNcPp9FVKUMCWRZnoC9RQRCvs6VUCr06qIzRnbB5bmoiObPYQnd2
+X-Received: by 2002:a05:600c:4f0e:b0:477:9eb8:97d2 with SMTP id 5b1f17b1804b1-483201dce33mr293325425e9.8.1770807969449;
+        Wed, 11 Feb 2026 03:06:09 -0800 (PST)
+Received: from db07.1337.ma ([197.230.240.146])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4835d989165sm41940855e9.2.2026.02.11.03.06.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Feb 2026 03:06:08 -0800 (PST)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: dlechner@baylibre.com
+Cc: 0rayn.dev@gmail.com,
+	Michael.Hennerich@analog.com,
+	andy@kernel.org,
+	jic23@kernel.org,
+	lars@metafoo.de,
+	linux-iio@vger.kernel.org,
+	nuno.sa@analog.com
+Subject: Re: [RFC] iio: dac: ad5504: Inquiry regarding voltage scale calculation
+Date: Wed, 11 Feb 2026 12:06:06 +0100
+Message-ID: <20260211110606.3468-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <81fa8ae9-3c72-482f-a998-911acaa89a8f@baylibre.com>
+References: <81fa8ae9-3c72-482f-a998-911acaa89a8f@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: iio: light: vcnl4000: add Capella
- CM36686 and CM36672P
-To: Erikas Bitovtas <xerikasxx@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
- phone-devel@vger.kernel.org
-References: <20260210-cm36686-v1-0-aef68dd46ad4@gmail.com>
- <20260210-cm36686-v1-1-aef68dd46ad4@gmail.com>
- <20260211-sceptical-frog-of-revolution-fc3cf4@quoll>
- <b95d7a49-6191-4d85-b725-4a941505b40d@gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <b95d7a49-6191-4d85-b725-4a941505b40d@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 11/02/2026 11:07, Erikas Bitovtas wrote:
-> 
-> 
-> On 2/11/26 8:49 AM, Krzysztof Kozlowski wrote:
->>
->> There was CM36686 v1 and v2, so I do not understand versioning here.
->> Also, lack of any changelog.
->>
->> And how is it supposed to work for us? Try yourself:
->>
->>   $ b4 diff 20260210-cm36686-v1-1-aef68dd46ad4@gmail.com
->>   Could not find lower series to compare against.
+Hi David,
 
-Look here.
+Thank you for confirming the issue and for the detailed guidance
+on the bindings.
 
->>
->> Please implement previous feedback.
->>
->> Best regards,
->> Krzysztof
->>
-> 
-> Since I am making changes to the existing driver instead of creating a new one,
-> I introduced a new patch series. As I mentioned in the cover letter, cm36686 is
-> fully compatible with vcnl4040, so instead of creating a new binding, I create a
-> fallback compatible for the device. I probably should have named this patch
-> series something else.
-
-That's fine, but that's v3 of previous patches. Your work was to add
-CM36686 support. How you do it, evolves, but patchset/work is one
-continuous work. When you rework approach next time, you also start from
-v1? And then you go back to previous solution of new driver it will jump
-from v1 to v3?
-
-> As for the previous feedback, I added the subject prefix and removed the
-> redundant phrasing.
-
-And how do I know it if there is no changelog with list of changes? Look
-how many patches is here:
-https://lore.kernel.org/linux-devicetree/
+I will prepare a patch series following your suggestions and send it as
+soon as it is ready for review.
 
 Best regards,
-Krzysztof
+Taha
