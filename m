@@ -1,169 +1,160 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qv1-f49.google.com (mail-qv1-f49.google.com [209.85.219.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 108CD26290
-	for <linux-iio@vger.kernel.org>; Wed, 11 Feb 2026 05:12:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770786757; cv=none; b=Tm7052PKzzPDeyl/Lv/mTCctWws5BKTZ59U9wmY3q0+ala0kV/cIQzMntKY8PUyzz+iggKd6CtTs8XdO0+F6AbXPaqGFYf9gmcD/ICkTTowoMQ0flCu1wOo+8CHDxt8ycoxb+cULWmnxaXH/GKaKB8OAuPpjgluxLSFnCATWfGU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770786757; c=relaxed/simple;
-	bh=QwpQm8wix04yr3v52+BxyQ6jLiG3vjJKPinGsaNCtFA=;
-	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=XDzzZLHqYH/NqFwLigLuOx4b0x3a+PrTUd/PIivU4pUIqurLoI+6/PmUcm4xTLvqLlsU8PmUGNarE++QBBeFrUJSHDzHg/eveT+0tYM1Z9lUYEbwCzsIoc0E/zJQliQBrTPi9hu29N26hObpdskYdd6GN2C/y0oZUCh4EaTZ9k4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NoDb1Svy; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C260A325716
+	for <linux-iio@vger.kernel.org>; Wed, 11 Feb 2026 06:44:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.219.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770792258; cv=pass; b=drV0WsjFRL77oTG4yqSSrL8y+VihKyrHOTFn0fIyh6HJd2JBZNm1qAmeDawqwZ+P6EYUSGJythLjyUkTeDUhjaVoHoUiuFSuWNm/r1VpjOVnEban06Kq8mzPFofg6zfr79Mxv4jZw4CbZSl1tNvsPXmGDGVhlFAR/pVcWbuJxGg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770792258; c=relaxed/simple;
+	bh=VgJF+Kg3vwW+bEStkfTJ7tw8D3X5eP5It/SJf1PDS74=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Gu+9M7BG9uPvBxtTCxkrMKZwg4R/eR11YOB6vKnI/ltiTF+nWDPzn54kEBUcDej7Khdbrts9eckEnDI/uwOhKPZAs47LrNbGhomrmTplTKPEznS8guPm0ra+SJvYILpUO0GpyKuB2RZlZ9PpoH2LOQF7fzCsD6FrtxoYZmsZH3Q=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aMQpEA1Y; arc=pass smtp.client-ip=209.85.219.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NoDb1Svy"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 9DE37C4CEF7
-	for <linux-iio@vger.kernel.org>; Wed, 11 Feb 2026 05:12:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770786756;
-	bh=QwpQm8wix04yr3v52+BxyQ6jLiG3vjJKPinGsaNCtFA=;
-	h=From:To:Subject:Date:From;
-	b=NoDb1SvyrdB5TKV6h6NTaDk9PkAs2mSWvHyxLfwRGiXv3Dl3gAgRppl7sVqHLakf8
-	 juEgXIb5oD9pF0Ioy1bNR7JgbkYwZnT++myZ1TyZE+jVHkM6uVVk4d6bpl7H5yRN+p
-	 druk6ehcl5ayoy8yWwr2YVV21xvYiydfbwYtxxlG/36/7dSO2VuWg2p987uwgaEmAC
-	 MepT8bTfrMt61qpIKOBurw181k3KDVs0HoX/IYHzQzm+wRozy9BKK+CtMmOoxHDlZA
-	 nJJCcBPj9+y8yS2ia5b/9eTJmf4DVi4MF3id8S6WytO4IFTeA2Y+so5J5KZ1P/ck6i
-	 iRq7sWteJiZcA==
-Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
-	id 8CB68C4160E; Wed, 11 Feb 2026 05:12:36 +0000 (UTC)
-From: bugzilla-daemon@kernel.org
-To: linux-iio@vger.kernel.org
-Subject: [Bug 221077] New: [iio] [hid-sensor-rotation] Memory corruption due
- to alignment mismatch in scan buffer
-Date: Wed, 11 Feb 2026 05:12:36 +0000
-X-Bugzilla-Reason: None
-X-Bugzilla-Type: new
-X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Product: Drivers
-X-Bugzilla-Component: IIO
-X-Bugzilla-Version: 2.5
-X-Bugzilla-Keywords: 
-X-Bugzilla-Severity: normal
-X-Bugzilla-Who: lixu.zhang@intel.com
-X-Bugzilla-Status: NEW
-X-Bugzilla-Resolution: 
-X-Bugzilla-Priority: P3
-X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Flags: 
-X-Bugzilla-Changed-Fields: bug_id short_desc product version rep_platform
- op_sys bug_status bug_severity priority component assigned_to reporter
- cf_regression cf_bisect_commit
-Message-ID: <bug-221077-217253@https.bugzilla.kernel.org/>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Bugzilla-URL: https://bugzilla.kernel.org/
-Auto-Submitted: auto-generated
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aMQpEA1Y"
+Received: by mail-qv1-f49.google.com with SMTP id 6a1803df08f44-8946d9872ebso11563586d6.1
+        for <linux-iio@vger.kernel.org>; Tue, 10 Feb 2026 22:44:16 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770792256; cv=none;
+        d=google.com; s=arc-20240605;
+        b=cB1wDzN9VXiDJdfJQc1ZgiTlmttFW2g/RP6DOXDVY8nttIHdH6xCVkeQDAD8dU+tTg
+         jTHXX6Vz7O8CTo/wSYVBlfTGBW7Imy0PBZzD54f9AGdWQq3+gZPfsw2XaCZIRv7NYArW
+         4qUV/9Bh6jB8pFO7K0Ur+ZuRPnVaJrMWm68K2rjseP8nhjrH/4DEOJOPtFKGQ3BqVK8e
+         Nc4f8yi4DDLElNnR/7l8JOOHfDdIs5ulO0ipxiG8ra3q+cZFiAFvyoEHl36DzfvCO3F/
+         iYt+bWM6Nz9N0OU0eE2bv9xN1TRuqBI2izlVUFn+mqpRREOQoBhQz8pgZPZcLHg/Nw6j
+         L/gg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=eLreIYfnvJ87jvw+CSoCIEz9jlwWvkw50GfPsZngcE8=;
+        fh=A+UIZkGg62LO+VKfc67XxLM8wt4o0bYuSsIx7ZwQq6k=;
+        b=aQT8bCfn+V3nrdJ7hU5LTN1esNiza1THYlqSyEIq4VSBaE0vG9AF4RbPqFGUZ8ryNB
+         qUs7S3uFwCVrOuxrQPvJ/faOkV56pmjXH4nJwMZeW78NVkjxJuuqYiL5+L/drtXW5EtS
+         ScyoBpDEI5Ty74q/Tklf/0y/T1sJu7q2IGrha5EI/y31Fc56xY2HIQkbehirMXqqn5f4
+         OIRHIso6hzYgX4jpHQ0UOpqEayTdIkbqThuq2/ySyWn7dHorIoXIYu44nzHn0uHGVGG9
+         gvPEqojmWX2geqKNH8LP1qfbqTk1pZIKA6RupOBAdEprCWXsFeBYHJv0oTchSCepk3SH
+         dkwQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770792256; x=1771397056; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eLreIYfnvJ87jvw+CSoCIEz9jlwWvkw50GfPsZngcE8=;
+        b=aMQpEA1YFsjccnlRwXMz+wkJ1ATxYdgi502dnptWKIEhmtjxbN+N5+b6UqufOl0rhh
+         yVVwflS/xV9NHcrjqg7nrnFF//YA37fVuTH9IQQyjG/6oSSkEcxPViNA3equEcDAo4K/
+         0OfnQMwbk1cOo97iNqDc/KlD9e7WBWKXqC7ZSTEk0tWV1A+fQw+S68PzqpWI+pC/atrQ
+         twZx6GTaf3E5mwHMjVpobsQcZOBHV90Skp17WNmhRwY53+MUoOT1PhhAIpyLzHmWPZmB
+         kEwhwlZKiZbIW1uCp2QRHor/3cOOL4yKN2d2Ai9+3EEgQQjZ3M2n46RKO+cXEwY+d2em
+         e6CQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770792256; x=1771397056;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=eLreIYfnvJ87jvw+CSoCIEz9jlwWvkw50GfPsZngcE8=;
+        b=DGpSDYeXxAh7Rrizfvd8cP/Hve2RJV4GLBmXEaBsrJ2pQhrsHbjpMctUp2SJHQNWgR
+         jB5GxZUg+UzwB2tmRrP3cbG0JrncdxyvtWI5Jb69+vTjDjJf7ib3ZonWjlx4xfbKv0Sx
+         fEAlUUbQ7L4fiaU/NUz0Jtl4QmWykTUmjcpzC/Jeqn4SKFXvtO+wFYWs3PSeyJFMc87j
+         XEBNg5J64aEpfxaZBdsM958JYAZcWsvYwW8W+LaLzJW44Yzmqke6pN6HdHPcfYY+c7vA
+         aseybWqXGmQlCPgI+aF14GtPjtdqxoDGsymptMXlRnCha/R6klh9wj272/50vQONLwLq
+         mP8Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWyCPwq2QB5kfWNp0gKXaqabzfkeiF4fkGLgpKFVy+dpgpa//PaeQ0TFIUWG1wzWt51t5W8iCMoISk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzmZMBEvj6hLHB1fR5+kMvHe9lsSqEE6EEiV1uxrTbqV76mSkoY
+	qLfRORnIZsm7spZ3vRVEbt4fgkT/l0dmED76T3eyXISG9YPM9PLLljcafVjQvaCAX7Qp7VamHxu
+	NFKRXmZaOJv86uYW1cgjYrZBPrLeEY8b4T8UtGXt4hYfE
+X-Gm-Gg: AZuq6aKFm30foNlMwaWdufvQfvgqKTfjEHw2OJqLeKDWa2mIK3feSNMo+/SnnrershD
+	ZkwB1wQK/F1nKOIKxjg5xFmG9iqy3Y0pbhj+YjPv2oaJEk4DygYE0ykR6kPJT3tdY6J9u25mhPC
+	lDSfMBHQjR+Q3cuKouRYrn+HggDz0ML+6dXBoGSkQ6uxk82IQjszueQBeItfXRjrmJs+zB24E0U
+	3iLxFJzSNhiA7v2lZiXMY0SlLpoeBgF6QjN22o94DdaaZ/9ug50OVoytY/7Q5vVTTYgvwp9i/Os
+	WXzEfkcvymLEzw57RO/G9mrEDVwUKD/o7zm+pSOGIdT2XW/TSfjWXlhuKJRat0mdoqlzwna4
+X-Received: by 2002:a05:6214:4d08:b0:894:f706:a5f2 with SMTP id
+ 6a1803df08f44-8971dbab2cemr5997196d6.3.1770792255772; Tue, 10 Feb 2026
+ 22:44:15 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+References: <20260209-upstream-20260219-v1-0-2b4d74e309d1@gmail.com>
+ <20260209-upstream-20260219-v1-4-2b4d74e309d1@gmail.com> <20260209-active-quetzal-of-prowess-47a4ae@quoll>
+In-Reply-To: <20260209-active-quetzal-of-prowess-47a4ae@quoll>
+From: Yasin Lee <yasin.lee.x@gmail.com>
+Date: Wed, 11 Feb 2026 14:44:03 +0800
+X-Gm-Features: AZwV_QhlMxU8w85uidx-EcDi69OZd3J1_IrmSRDNDsR5ouwCrnGYIFmlGKaQ6JY
+Message-ID: <CA+NOmzKaJPHpUZgUVWVKC72m=fCf5wBEsSErq+JmYNWHobax-g@mail.gmail.com>
+Subject: Re: [PATCH 4/5] dt-bindings: iio: proximity: hx9023s: support
+ firmware-name property
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, yasin.lee.x@outlook.com, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-https://bugzilla.kernel.org/show_bug.cgi?id=3D221077
+On Mon, Feb 9, 2026 at 4:01=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.org=
+> wrote:
+>
+> On Mon, Feb 09, 2026 at 11:37:05AM +0800, Yasin Lee wrote:
+> > Allow specifying the firmware file name via device tree.
+>
+> For what purpose? What's in the firmware?
+>
 
-            Bug ID: 221077
-           Summary: [iio] [hid-sensor-rotation] Memory corruption due to
-                    alignment mismatch in scan buffer
-           Product: Drivers
-           Version: 2.5
-          Hardware: All
-                OS: Linux
-            Status: NEW
-          Severity: normal
-          Priority: P3
-         Component: IIO
-          Assignee: drivers_iio@kernel-bugs.kernel.org
-          Reporter: lixu.zhang@intel.com
-        Regression: Yes
-           Bisected b31a74075cb4ca2bb202a2e17d133ef3c9ee891f
-         commit-id:
+Hi Krzysztof,
 
-### Problem
-In `drivers/iio/orientation/hid-sensor-rotation.c`, the `scale_pre_decml` a=
-nd
-`scale_post_decml` fields in `struct dev_rot_state` get corrupted after the
-first read from the device. This issue results in invalid scale values being
-reported to userspace.
+Thanks for the review.
 
-### Root Cause Analysis
-The issue is caused by a size mismatch between what the IIO core expects for
-the scan buffer and the actual size of the driver's scan structure.
+The firmware contains device-specific configuration data required to
+properly initialize the internal sensing engine of the hx9023s.
 
-1.  **Driver Structure**: The `scan` struct in `dev_rot_state` consists of a
-quaternion (4 * s32 =3D 16 bytes) and a timestamp (8 bytes).
-    ```c
-    struct {
-            s32 sampled_vals[4];
-            aligned_s64 timestamp;
-    } scan;
-    ```
-    Without explicit alignment, this structure is packed to **24 bytes**.
+Although the silicon is identical, different board designs use different
+electrode layouts and mechanical structures, which require different
+calibration and register configuration tables for correct operation.
+Without the appropriate configuration data, the sensor does not function
+as intended on a given hardware design.
 
-2.  **IIO Core Expectation**: The `iio_compute_scan_bytes` function calcula=
-tes
-the buffer size required. It aligns the total size to the size of the *larg=
-est
-element* in the scan.
-    - The quaternion channel is treated as a single 16-byte element.
-    - Therefore, the core aligns the total size to 16 bytes: `ALIGN(24, 16)=
- =3D
-32 bytes`.
+The default firmware name remains unchanged for existing platforms.
+The firmware-name property is intended only to allow selecting the
+correct hardware-specific configuration when the physical design differs.
 
-3.  **Corruption**: When `iio_push_to_buffers_with_timestamp()` is called:
-    - It assumes a 32-byte buffer.
-    - It writes the timestamp at the end of the aligned buffer (offset 24).
-    - Since the driver allocated only 24 bytes for `scan`, the write at off=
-set
-24 overwrites the adjacent `scale_pre_decml` field in `struct dev_rot_state=
-`.
+Best regards,
+Yasin Lee
 
-### Evidence (Ftrace)
-I verified this by tracing the return values of `iio_storage_bytes_for_si` =
-and
-`iio_compute_scan_bytes` using kretprobes:
+> >
+> > Signed-off-by: Yasin Lee <yasin.lee.x@gmail.com>
+> > ---
+> >  Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml | 7 =
++++++++
+> >  1 file changed, 7 insertions(+)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/proximity/tyhx,hx902=
+3s.yaml b/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml
+> > index 64ce8bc8bd36..7e516fc011c6 100644
+> > --- a/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml
+> > +++ b/Documentation/devicetree/bindings/iio/proximity/tyhx,hx9023s.yaml
+> > @@ -28,6 +28,12 @@ properties:
+> >
+> >    vdd-supply: true
+> >
+> > +  firmware-name:
+> > +    description:
+> > +      Name of the firmware file to be requested by the driver using
+> > +      the firmware loader interface.
+>
+> Drop description, obvious. It cannot be anything else.
+>
 
-```log
-$ cat /sys/kernel/tracing/trace_pipe
-r_store_bytes: (iio_compute_scan_bytes+0x30/0xd0 [industrialio] <-
-iio_storage_bytes_for_si) arg1=3D0x10
-r_store_bytes: (iio_compute_scan_bytes+0xa1/0xd0 [industrialio] <-
-iio_storage_bytes_for_si) arg1=3D0x8
-r_calc_bytes: (__iio_update_buffers+0x99d/0xd40 [industrialio] <-
-iio_compute_scan_bytes) arg1=3D0x20
-```
+Agreed. Thanks.
 
-The trace confirms:
-- Largest element =3D 16 bytes.
-- Total raw size =3D 16 (quat) + 8 (ts) =3D 24 bytes.
-- Final aligned size =3D ALIGN(24, 16) =3D 32 bytes.
-
-The memory layout mismatch is:
-- IIO Core needs: 32 bytes
-- Driver struct has: 24 bytes
-
-### Regression
-This issue was introduced by commit `b31a74075cb4 ("iio: orientation:
-hid-sensor-rotation: remove unnecessary alignment")`, which removed the
-`__aligned(16)` attribute that previously ensured the struct was padded to =
-32
-bytes.
-
-### Proposed Fix
-Revert the removal of `__aligned(16)` to ensure `struct dev_rot_state` has =
-the
-correct padding to match the IIO core's expectations.
-
-```c
-struct {
-        s32 sampled_vals[4] __aligned(16);
-        aligned_s64 timestamp;
-} scan;
-```
-
---=20
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are watching the assignee of the bug.=
+> Best regards,
+> Krzysztof
+>
