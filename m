@@ -1,50 +1,50 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84CB333E36F;
-	Wed, 11 Feb 2026 17:11:07 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B001733EAEC;
+	Wed, 11 Feb 2026 17:11:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770829868; cv=none; b=bAQgyNbSI/mr7/Szj1ZFvkaxWAgv90Wj1ebVuFaBKMUzplXHbo85kRqNc7zbiH608/e/nUSNjLzuS7GXm/cCOQvP4v2IinVuRD6pu6HZq0M2GKdE8IdkxslC+0runCi2Olx3fiVX0iOTF0Rs/gdKVhD/rH9PWQtbd52/c9BzkAU=
+	t=1770829869; cv=none; b=V0v/HyjxFBbc0sWfmrYHO6rauBO2Esxv8vFFT02+9OVJT59iKrDH3UWTtVHYbyZaNrW1VpixpuizIMhJpe1freMGfTHQVxEMUdm7nY1gDSLEoL5SVzUO+e7lczBw7W7oC6s1DW/rdwgRQ5iQ9RpWbWqEPpb/g0dL/NbBUyavFNA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770829868; c=relaxed/simple;
-	bh=vdnJBkQ0sZ6UHdkDS4aLuzjV46wGmFp1ixq615IbRBE=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=br7LgIbqYBlhsWvp95WlBgSG7Fx2zenlS+IRbJP1rMsoiZVHS/Eqx8RV+h+L9XP9EDVljRFGHVk0m2kRPbfH22cpxm+5vewekqW1SCKaPzRpQ2l8l+GUR8dN3+dbje5nHCWPdDFLWrlromrlU+pRZ9VKBNRTTzQtTr+QPeH72nM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Bqy4LwHD; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1770829869; c=relaxed/simple;
+	bh=FMj6emkm8c8MAwn8LkGucaVoITbW8Xb+gc0SKdXkzpc=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=eiN1n+Q2Qneb49h4u6iTRYgZBDC8Kt42AMw/+ZVlF6KPE1lUuWdyWRejcaF9Ritp18mQX8sCIZ5yC4uNZbFuvg4RGdHbYvYWbDXHRyRpKmTLnIDDRZ3md/dmYTANL1OEXr3GyBOYzJ0n6ftaOShpuPUzhZIqAi1ghlyOaXYWm3k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Ny/rkt7G; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Bqy4LwHD"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61BG5Rvq4152778;
-	Wed, 11 Feb 2026 12:10:41 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Ny/rkt7G"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61BH3ftv097012;
+	Wed, 11 Feb 2026 12:10:43 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
 	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=8u6/f2qxJKK7Z1loM8hqj3avDw+
-	zVOV4vpCXNROBkTw=; b=Bqy4LwHDRiUYLxViPTQV0t+wBemYx07xaRenWDz98rW
-	KobW9wsGR29iFvQoeFUJOvlAsBG4z8VIjzfj5YIhQsedXLy6x9oPvZ9sxQXO2SvP
-	oDuZfCcuKxL9O4b5ED5HCG0JleAagjdKCxiPKFvIE0JEJh+d3rxR6fLZLfCyI4rq
-	RyHyR0fET6x4+DXIGRUjieoqob3rdIWjmp9alNp7KKtxiHQuTM/mXx1Dgaef8Sa2
-	MgqPBE7/9XxwGAWqHa0Qd62vK1WEwnQYck6efaxWIYqD18fxuj6FiaGNDm0zdeJJ
-	+II5NYmJs/oPquES3wbbFMvoel+9ZsbPSx52goE96yA==
+	:mime-version:subject:to; s=DKIM; bh=hhEcHWfuWtUbCzJideul4tZ4Ph6
+	DqrxXfQWx8e5AAt8=; b=Ny/rkt7GfY5qPCxvubB7u6rsXsYSWMImXjmpxveg5WD
+	Whc7I9wutt8msRNmYGBvHqoMQSz4gPC5ewTWR2CbuCPgPd4R+JQn179I2rUGlOwK
+	0aZFXXqHJw1B/EZ4nmIuuD0CGgRJ8+qirxjfkjBEOYhmazeJvCbR7NaQGiRLCrJc
+	tVdAqFpd1z4QOO4N3QxB2tDxfzPzNITCSOzSvt9XUtz8wN+Z1hiIrL37N3+1rCU+
+	NwtZk6Hz3ZGsWOFN0iGi61dHs4FkcjdfU9giXoXyfrDJWDca8wE/SG5FWSatcQAh
+	4Z2IUHKPJchGkliww8ivyMYgk/7mGaXkN6uP6xAc2rw==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4c8qnasg0u-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4c8ctmbhf7-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 11 Feb 2026 12:10:40 -0500 (EST)
+	Wed, 11 Feb 2026 12:10:43 -0500 (EST)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61BHAdIx024925
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61BHAg9M024938
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 11 Feb 2026 12:10:39 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+	Wed, 11 Feb 2026 12:10:42 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 11 Feb
- 2026 12:10:39 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 11 Feb 2026 12:10:39 -0500
+ 2026 12:10:42 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Wed, 11 Feb 2026 12:10:42 -0500
 Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61BHAPZB027285;
-	Wed, 11 Feb 2026 12:10:27 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61BHAPZC027285;
+	Wed, 11 Feb 2026 12:10:33 -0500
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: Marius Cristea <marius.cristea@microchip.com>,
         Jonathan Cameron
@@ -58,9 +58,9 @@ To: Marius Cristea <marius.cristea@microchip.com>,
 	<Michael.Hennerich@analog.com>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH] iio: adc: pac1934: Return -ENOMEM on memory allocation failure
-Date: Wed, 11 Feb 2026 19:10:05 +0200
-Message-ID: <20260211171007.143527-1-antoniu.miclaus@analog.com>
+Subject: [PATCH] iio: frequency: adf4350: Return -ENOMEM on memory allocation failure
+Date: Wed, 11 Feb 2026 19:10:06 +0200
+Message-ID: <20260211171007.143527-2-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -71,52 +71,51 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=W/I1lBWk c=1 sm=1 tr=0 ts=698cb810 cx=c_pps
+X-Proofpoint-ORIG-GUID: qzgArreuq0S5sVzWM70gKGBu6Qc2-0xR
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjExMDEzMyBTYWx0ZWRfX2OlZOErOIx2p
+ WXKPpbME1ta1x8LbY4zmUqNNV0+cPFRp7v+BDs3htcwFXhtNKEEmj4e71eO7egxyHp2N0Sgeumc
+ parCaF1crowuzNjnDI6MCUgkPKMzFTWAkMMXR7aEDJJ1PDlUPymi2GsNK1L1jbXuazbvCi+CM4I
+ +Q/DbgnRWvWxO/82/NLyRqPC4bfO3CJLds+WW2Q17mJuTL8eNcvg3sABX7acPO259weZfbCZ3M0
+ yuKJPfCW5Ac6aanjDcR4X4MFV8LX7VgwQZ2GRvQACeH5C1AWvHgEWw60UFyUxyAK9vSyhNOu49d
+ 9d3CrNc440HtDBKNcBZaUSEFfIPMli10RFuH0w7UiE2jc73V7xK+GMto+NcbjQNh6KY0Uce01Zu
+ ikiL21MGuAA2IggciEG18eWRryFexYgJ11A6CoB0Ibu5TTkHxsPjnD9oq2bi9ltQs2uiWUDUPCZ
+ 7Bi2UvfVvHeWB4yfTOg==
+X-Authority-Analysis: v=2.4 cv=aPP9aL9m c=1 sm=1 tr=0 ts=698cb813 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
- a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=k1q7hAl77BwvRpyjn-YA:9
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjExMDEzMyBTYWx0ZWRfX/GCw4Q91MNx8
- Hiv3v/Un2g8CzxUNHK1td6CQwgHp+67Jvy/ZFdk8qtBp8UgpNmWd0l9Y31vP5BTbxnf2lKR3w4c
- 0Nr0o1jZchDRkJKz3Y7/s9j/3NDpgWzl1FYNZIgZwjnvsqjrIQxS5I0vtk117m6gE3QKKcLNloh
- chUSAZOkSpsKisXL39zm7R8s3Qk1OfTOU0//+96xiVm2JuNjJ7/KouEyX7+vcXmUIyUOi3x3EqO
- a4vJexpq7V/wBtQjopvmsANHl8GSGTiVeSGWoU1aNLYx6Rn1Vo7nJZJ3oTvLXoOYIF7W46EsIxp
- Vq/Xd8a/cYy4s/h6CGO6zPoZ81lss57Oh7QKmlpEaO4Iu01MbN93USWuOSL5lIQfe8U7oYiaj61
- 9Q0qXO3FgywMmy/dVpYbuQ3J5OX0eBXldTCVQAngJttX6UyC3JaUPsQvlvdEyrTeQK/7m7Bb6Pi
- ergkh5wLr6kQpFbBq6A==
-X-Proofpoint-ORIG-GUID: HkWryNtkPq1alyyvBAlqyRzkFuwRyPgq
-X-Proofpoint-GUID: HkWryNtkPq1alyyvBAlqyRzkFuwRyPgq
+ a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=LfP5wX08JTcHcR5a2gYA:9
+X-Proofpoint-GUID: qzgArreuq0S5sVzWM70gKGBu6Qc2-0xR
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-02-11_02,2026-02-11_04,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 suspectscore=0 lowpriorityscore=0 priorityscore=1501
- spamscore=0 clxscore=1011 bulkscore=0 adultscore=0 phishscore=0
- malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
- definitions=main-2602110133
+ adultscore=0 suspectscore=0 bulkscore=0 clxscore=1015 impostorscore=0
+ phishscore=0 spamscore=0 lowpriorityscore=0 priorityscore=1501 malwarescore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602110133
 
-devm_kzalloc() returns NULL on allocation failure. The appropriate error
-code for this condition is -ENOMEM, not -EINVAL.
+adf4350_parse_dt() returns NULL only when devm_kzalloc() fails. The
+caller should return -ENOMEM in this case, not -EINVAL.
 
-Fixes: 0fb528c8255b ("iio: adc: adding support for PAC193x")
+Fixes: e764df679639 ("iio: frequency: adf4350: Add support for dt bindings")
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/adc/pac1934.c | 2 +-
+ drivers/iio/frequency/adf4350.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/pac1934.c b/drivers/iio/adc/pac1934.c
-index ec96bb0f2ed6..b791ce23f3fd 100644
---- a/drivers/iio/adc/pac1934.c
-+++ b/drivers/iio/adc/pac1934.c
-@@ -1351,7 +1351,7 @@ static int pac1934_prep_iio_channels(struct pac1934_chip_info *info, struct iio_
- 
- 	dyn_ch_struct = devm_kzalloc(dev, channel_size, GFP_KERNEL);
- 	if (!dyn_ch_struct)
--		return -EINVAL;
-+		return -ENOMEM;
- 
- 	tmp_data = dyn_ch_struct;
- 
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index ed1741165f55..3883b63dcc3c 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -607,7 +607,7 @@ static int adf4350_probe(struct spi_device *spi)
+ 	if (dev_fwnode(&spi->dev)) {
+ 		pdata = adf4350_parse_dt(&spi->dev);
+ 		if (pdata == NULL)
+-			return -EINVAL;
++			return -ENOMEM;
+ 	} else {
+ 		pdata = dev_get_platdata(&spi->dev);
+ 	}
 -- 
 2.43.0
 
