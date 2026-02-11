@@ -1,121 +1,112 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B001733EAEC;
-	Wed, 11 Feb 2026 17:11:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770829869; cv=none; b=V0v/HyjxFBbc0sWfmrYHO6rauBO2Esxv8vFFT02+9OVJT59iKrDH3UWTtVHYbyZaNrW1VpixpuizIMhJpe1freMGfTHQVxEMUdm7nY1gDSLEoL5SVzUO+e7lczBw7W7oC6s1DW/rdwgRQ5iQ9RpWbWqEPpb/g0dL/NbBUyavFNA=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770829869; c=relaxed/simple;
-	bh=FMj6emkm8c8MAwn8LkGucaVoITbW8Xb+gc0SKdXkzpc=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=eiN1n+Q2Qneb49h4u6iTRYgZBDC8Kt42AMw/+ZVlF6KPE1lUuWdyWRejcaF9Ritp18mQX8sCIZ5yC4uNZbFuvg4RGdHbYvYWbDXHRyRpKmTLnIDDRZ3md/dmYTANL1OEXr3GyBOYzJ0n6ftaOShpuPUzhZIqAi1ghlyOaXYWm3k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Ny/rkt7G; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5810834DCE0
+	for <linux-iio@vger.kernel.org>; Wed, 11 Feb 2026 17:39:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.49
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770831554; cv=pass; b=rS9R0R/s6pVKNMvjEOjAqvLQgBuanL2oQ7dViXdgGJf1F9RS95g5sZCP8zsZarQ2YPUazy6vrWGJyEnmRDq82Cv+H785Ha3pZRBU3KLyARXyFEnpfWTGNBlPhffzgs90IAWXIstlrHYbKOq8OsGgjApg+ULyf2DbfqEQv/L0sIs=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770831554; c=relaxed/simple;
+	bh=txoFtShxYqv5nevDGaa/KJbgyBUsQAmKHKBVp8/44ZA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=sPObNwaH70D2vI5znqUJ/8CeHTlFCRGS36C18Lnm5VYpVt1LogRrzoNNQctY/6V2DxETCXvoaUfIZgA47hbXlnIMsdqHJfj4uanyY1TMZStBpSAuhUGVlIrYGkpK3y8Vgoz1K1L84aM13Lhe8HPZs4G/lnfIEhPv1MhSf+9VT2s=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eJmxJyAe; arc=pass smtp.client-ip=209.85.218.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Ny/rkt7G"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61BH3ftv097012;
-	Wed, 11 Feb 2026 12:10:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=hhEcHWfuWtUbCzJideul4tZ4Ph6
-	DqrxXfQWx8e5AAt8=; b=Ny/rkt7GfY5qPCxvubB7u6rsXsYSWMImXjmpxveg5WD
-	Whc7I9wutt8msRNmYGBvHqoMQSz4gPC5ewTWR2CbuCPgPd4R+JQn179I2rUGlOwK
-	0aZFXXqHJw1B/EZ4nmIuuD0CGgRJ8+qirxjfkjBEOYhmazeJvCbR7NaQGiRLCrJc
-	tVdAqFpd1z4QOO4N3QxB2tDxfzPzNITCSOzSvt9XUtz8wN+Z1hiIrL37N3+1rCU+
-	NwtZk6Hz3ZGsWOFN0iGi61dHs4FkcjdfU9giXoXyfrDJWDca8wE/SG5FWSatcQAh
-	4Z2IUHKPJchGkliww8ivyMYgk/7mGaXkN6uP6xAc2rw==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4c8ctmbhf7-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 11 Feb 2026 12:10:43 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61BHAg9M024938
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 11 Feb 2026 12:10:42 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 11 Feb
- 2026 12:10:42 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 11 Feb 2026 12:10:42 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61BHAPZC027285;
-	Wed, 11 Feb 2026 12:10:33 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Marius Cristea <marius.cristea@microchip.com>,
-        Jonathan Cameron
-	<jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
-	<andy@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH] iio: frequency: adf4350: Return -ENOMEM on memory allocation failure
-Date: Wed, 11 Feb 2026 19:10:06 +0200
-Message-ID: <20260211171007.143527-2-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eJmxJyAe"
+Received: by mail-ej1-f49.google.com with SMTP id a640c23a62f3a-b8e9f89a8e3so772953366b.1
+        for <linux-iio@vger.kernel.org>; Wed, 11 Feb 2026 09:39:13 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1770831552; cv=none;
+        d=google.com; s=arc-20240605;
+        b=c1ciKz2RkD9/FVouqFhYlvB7Kf8fsGX00CS/7fveMd683RfssY4fSv4pU+rgjviLTH
+         PFLZ4AI6SbURZF8TMD2ajHYHJgyqw6e2u4/ydh31w4/PG9fOGmJ9SscyWmxcmyp+q2aZ
+         nydP1tiHuozPvFU9mOZMNjSTyno6co6g2TZ4FSn89A/vEMU/hzcAYJ8wk4ii7qAtbR8U
+         5ZONDvjwDY+w+nrSvQW8QzxbCuXIhhoZ03q8omLuA/qJ6HHbKJoUGuc9VuFles3Gvhfq
+         FSa9T8Jd2jh2GmGNJHrEnwDIsfMNN4C4LnVeKVkvuc1JMp1sAAsY6h44Ydi9PS0VoMlJ
+         0eCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=txoFtShxYqv5nevDGaa/KJbgyBUsQAmKHKBVp8/44ZA=;
+        fh=SofPH2xzy1IUU1dTOGJLFMrgacLNGY36lkvCc4eBXKA=;
+        b=LfYaIMU1bTmhTaoQ003Gnb4Toi6c9KMsPetkkXfXLhAVWl+Vca8/ufCDgQte1VD08e
+         aLv/6lbRxgv2dtc73pq+gC1GxhyoaE1kaWCjDtqd/akud5tPjqyQOoTJ1g1VpcRBFB0/
+         EPTCZeZ1xgssfrnzGDhruS/ZYjwYYRqxLBMBiqvZGuA/81CJG/Ce1Zt5o4NXlnlM/Kbh
+         ZABGCkUXTadi2cCB6LxysosOg0ptAzFfuS5o5a7is2TbQcxRo2LZkpK6LG3jjiDLCMGl
+         qeloxwIxJ2rHabeiEMfdi//YCmJ3tHE7yeiaZjCnlgtkj/rGXclM/g5vKyZ7GW9YJzX4
+         bhaQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770831552; x=1771436352; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=txoFtShxYqv5nevDGaa/KJbgyBUsQAmKHKBVp8/44ZA=;
+        b=eJmxJyAeBii5BEdww+pv0x2xEij+O+0+VPRw8i1A1iyD6gTY2VAB7ui5XGa8UKwWXp
+         WaBq4BPAG+51hkDjoibIYgarZevTHMrbDRLE2wgT8bqD7+64JaplGYSnwiA26RC1yeWd
+         OHnW3TVnQxHrhYU/CqN3epkrO75CS/BqF/4/qAEoWvNJeCLMGbXkO+WVh4eeM6TSlJXW
+         aSUTk1sXz3b+94dme6fnhpl0fN/RaXhlNatgfD4+o2Nb3l5cHgbTiGy7K8/F0tV1Un6S
+         4zCprNQv/y0UxTMcyVjBK/8afnR2s1y1xO6HUHu8In25YKmSNLOVJfB/eBY24phxbxpW
+         d0eQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770831552; x=1771436352;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=txoFtShxYqv5nevDGaa/KJbgyBUsQAmKHKBVp8/44ZA=;
+        b=BfKcdq30p/yVl76c8U8QAWoa3LVE92clae7ZCEkM8FHu52BXHXTy7rkecexXwFC+ai
+         j/Ld4H6/LbpsK4XsNAT3nDjmjvN7NpiHMtKBk1BQDBkjAaMJzIZ4pZfSHH+0UJXvHErH
+         Qso60q3HIMEORjlDGGNLVLMhpjyGPE4JllLL4EW5dR8uvwtQpq/fEkS1uI+uexX6m6xd
+         5/qudCIPpp4kzgkiOKvKV52lZ+GcImsk64fdciRu//njnyFKztMgkBp2/hATUw3qgD2i
+         e0lO1s1M7prYiQT1kntYnelnrC25ZZWElXoZW9aNYCC1olEcb3mge9gD8kJwKJG8lJtp
+         HCNA==
+X-Forwarded-Encrypted: i=1; AJvYcCUvh+ZHGkeE8yo+kpqrXTsaSyq2MX5uBpFb/y3ktWmjrV9zqQvE7ePK4lO10GfMrfYruXZIkHeq5g8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx5mIqb5cf7w0l+kNNiSwT1TAM4S03rL88tjIRPmyVgT8Spv9CN
+	HqrdCRRkmUCPUCrGopWkH0dp6zUK7arWx3hQPgDnYs/Y4s0l1BmlstNwDMSqu2bhl0SsHpsRZNo
+	Fz1MBGHvjMhiIs40Jg9O1IHGLLDz1u50=
+X-Gm-Gg: AZuq6aJYZX5kFUXVIz69Ns9ozzNsQY+VBluZtSCJJOsI8RfDy+1rfxO9aKeyI4JbNik
+	x8sWBlarn9xEDMDjxTU5nASITKPekwdSG/rxbjr9aOjf9MKbppltatwcD2VYaDJfjWWgKTb4J4z
+	4fxzRxZsPl0T2NU9w7rc3Xv4rRkYBd+1C9EzFgdHTKcPN9RCoiGoM65+i/fQ5KbLPV6ipTsQDcm
+	lEdbhFGAz+eaXIdt78lvVoUQFmMXgbFPCPbXbOfp5pCW87wrUt3Mcz6+ebpQboi4HCL9jiKYgr7
+	OnorrmdJGnp5dGVwhuiSPQkcOCI9KC/b17h46ITH8zRFrZAdUz4y/dr32MUYXx54KzUsFkw935g
+	iYvwpgsA=
+X-Received: by 2002:a17:907:728a:b0:b87:115:a714 with SMTP id
+ a640c23a62f3a-b8f545d776cmr408238666b.30.1770831551374; Wed, 11 Feb 2026
+ 09:39:11 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: qzgArreuq0S5sVzWM70gKGBu6Qc2-0xR
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjExMDEzMyBTYWx0ZWRfX2OlZOErOIx2p
- WXKPpbME1ta1x8LbY4zmUqNNV0+cPFRp7v+BDs3htcwFXhtNKEEmj4e71eO7egxyHp2N0Sgeumc
- parCaF1crowuzNjnDI6MCUgkPKMzFTWAkMMXR7aEDJJ1PDlUPymi2GsNK1L1jbXuazbvCi+CM4I
- +Q/DbgnRWvWxO/82/NLyRqPC4bfO3CJLds+WW2Q17mJuTL8eNcvg3sABX7acPO259weZfbCZ3M0
- yuKJPfCW5Ac6aanjDcR4X4MFV8LX7VgwQZ2GRvQACeH5C1AWvHgEWw60UFyUxyAK9vSyhNOu49d
- 9d3CrNc440HtDBKNcBZaUSEFfIPMli10RFuH0w7UiE2jc73V7xK+GMto+NcbjQNh6KY0Uce01Zu
- ikiL21MGuAA2IggciEG18eWRryFexYgJ11A6CoB0Ibu5TTkHxsPjnD9oq2bi9ltQs2uiWUDUPCZ
- 7Bi2UvfVvHeWB4yfTOg==
-X-Authority-Analysis: v=2.4 cv=aPP9aL9m c=1 sm=1 tr=0 ts=698cb813 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
- a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=LfP5wX08JTcHcR5a2gYA:9
-X-Proofpoint-GUID: qzgArreuq0S5sVzWM70gKGBu6Qc2-0xR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-11_02,2026-02-11_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- adultscore=0 suspectscore=0 bulkscore=0 clxscore=1015 impostorscore=0
- phishscore=0 spamscore=0 lowpriorityscore=0 priorityscore=1501 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602110133
+References: <20260211171007.143527-1-antoniu.miclaus@analog.com>
+In-Reply-To: <20260211171007.143527-1-antoniu.miclaus@analog.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 11 Feb 2026 19:38:33 +0200
+X-Gm-Features: AZwV_QjWLt7KrpEQPeW-H0mml65-ony8jEGhmWKEefZCzIDq1H8Nj5TlMkV8g0c
+Message-ID: <CAHp75VeiWPrXi_-yP7We8V99GbpC2s+D66gfXZd=ojHxxH9EZA@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: pac1934: Return -ENOMEM on memory allocation failure
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Marius Cristea <marius.cristea@microchip.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-adf4350_parse_dt() returns NULL only when devm_kzalloc() fails. The
-caller should return -ENOMEM in this case, not -EINVAL.
+On Wed, Feb 11, 2026 at 7:10=E2=80=AFPM Antoniu Miclaus
+<antoniu.miclaus@analog.com> wrote:
+>
+> devm_kzalloc() returns NULL on allocation failure. The appropriate error
+> code for this condition is -ENOMEM, not -EINVAL.
 
-Fixes: e764df679639 ("iio: frequency: adf4350: Add support for dt bindings")
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/frequency/adf4350.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Right, and the memory allocator dumps enough info if it happens.
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
 
-diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-index ed1741165f55..3883b63dcc3c 100644
---- a/drivers/iio/frequency/adf4350.c
-+++ b/drivers/iio/frequency/adf4350.c
-@@ -607,7 +607,7 @@ static int adf4350_probe(struct spi_device *spi)
- 	if (dev_fwnode(&spi->dev)) {
- 		pdata = adf4350_parse_dt(&spi->dev);
- 		if (pdata == NULL)
--			return -EINVAL;
-+			return -ENOMEM;
- 	} else {
- 		pdata = dev_get_platdata(&spi->dev);
- 	}
--- 
-2.43.0
-
+--=20
+With Best Regards,
+Andy Shevchenko
