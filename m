@@ -1,137 +1,122 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4ECF58460;
-	Wed, 11 Feb 2026 13:59:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 84CB333E36F;
+	Wed, 11 Feb 2026 17:11:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770818357; cv=none; b=SxG92Xd9glyI9vsHDnL+ckuw9Q0YlfIbFZSQ/n940dNbPmUPPEiel8R+Ci5xeQ57Ws9cQBZILc0gnYiEg4aMnJ9GmBUyI5XaXJNwRq6GMfjUfDVsTuPpT2Ie3kucRtq3gOk+vp2toZmP1OHZfVXaYk1tAk7PdXa6APLeOW6I+7I=
+	t=1770829868; cv=none; b=bAQgyNbSI/mr7/Szj1ZFvkaxWAgv90Wj1ebVuFaBKMUzplXHbo85kRqNc7zbiH608/e/nUSNjLzuS7GXm/cCOQvP4v2IinVuRD6pu6HZq0M2GKdE8IdkxslC+0runCi2Olx3fiVX0iOTF0Rs/gdKVhD/rH9PWQtbd52/c9BzkAU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770818357; c=relaxed/simple;
-	bh=q7puB9U/jRd2gvc6qPVaVmnw/tbUaNeFgx2ECtRXlKI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SYEksljAaWB0qgBebgxKWpTxZGI0U/qf8ZuotAzjxqe8UUgCav1areUug+yGonqZJLwwHXVYIOG1wyP5PeQe9Cja+OfU3EKN0JeqjEikJjmP/tVAss04rzEvbuYOvRZ0ckdGRTacDayCqMN0sGLo5KP7taWVZ+7SBEL1Uv66BbQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZXaIDyYJ; arc=none smtp.client-ip=192.198.163.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770829868; c=relaxed/simple;
+	bh=vdnJBkQ0sZ6UHdkDS4aLuzjV46wGmFp1ixq615IbRBE=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=br7LgIbqYBlhsWvp95WlBgSG7Fx2zenlS+IRbJP1rMsoiZVHS/Eqx8RV+h+L9XP9EDVljRFGHVk0m2kRPbfH22cpxm+5vewekqW1SCKaPzRpQ2l8l+GUR8dN3+dbje5nHCWPdDFLWrlromrlU+pRZ9VKBNRTTzQtTr+QPeH72nM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Bqy4LwHD; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZXaIDyYJ"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770818355; x=1802354355;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=q7puB9U/jRd2gvc6qPVaVmnw/tbUaNeFgx2ECtRXlKI=;
-  b=ZXaIDyYJDnnui9/fDU7gO0k8KZy8qMMvaIJzsV/0XvLoLe5zACOzkmb3
-   di774pFc/6RV4l4lBPG2bbn+APy4f7vRLRnbqXDgQucX5Rccsom/3uDLO
-   C4NAkq11HgP8R342H5F507vnYacOF9/8+7EaozOzIYApiDFlpDlWYumXn
-   TfXwH6sUVqc/cfAERKMLIvvKV8PG3xWeMuV7cq1SDrdnTooSF/2EoNHM3
-   SOX35bmxLvP8omCTpHR9UvwHJSYi6Qyqc+Z37YmqZXd3MgNXLkle4Lwq1
-   v+rhGgxjcbwQG/5EZF84WvC9tPquIK136y1in3xDXNHEAdtFSN2Z/Cy0x
-   A==;
-X-CSE-ConnectionGUID: u8lJmtH0SQ6AlweQ7OPj0Q==
-X-CSE-MsgGUID: YqkzuzoIRVKG5JItPj/qLQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11698"; a="83333193"
-X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="83333193"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2026 05:59:14 -0800
-X-CSE-ConnectionGUID: ri3JGDD7RViYQGobnltM+w==
-X-CSE-MsgGUID: 1/HIFqCYQDS4zRHzF1fTVA==
-X-ExtLoop1: 1
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.220])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2026 05:59:11 -0800
-Date: Wed, 11 Feb 2026 15:59:09 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Erikas Bitovtas <xerikasxx@gmail.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: light: vcnl4000: add Capella
- CM36686 and CM36672P
-Message-ID: <aYyLLbD1oy48sMGW@smile.fi.intel.com>
-References: <20260210-cm36686-v1-0-aef68dd46ad4@gmail.com>
- <20260210-cm36686-v1-1-aef68dd46ad4@gmail.com>
- <20260211-sceptical-frog-of-revolution-fc3cf4@quoll>
- <b95d7a49-6191-4d85-b725-4a941505b40d@gmail.com>
- <6f97c68d-0236-4d04-8199-768ecee7c4dd@kernel.org>
- <242d5502-bf58-4e25-8258-8a6c75ff3623@gmail.com>
- <aYyGIPNeHWpluaoF@smile.fi.intel.com>
- <59d12283-28c0-446e-b591-a7c3d022f50e@gmail.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Bqy4LwHD"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61BG5Rvq4152778;
+	Wed, 11 Feb 2026 12:10:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=8u6/f2qxJKK7Z1loM8hqj3avDw+
+	zVOV4vpCXNROBkTw=; b=Bqy4LwHDRiUYLxViPTQV0t+wBemYx07xaRenWDz98rW
+	KobW9wsGR29iFvQoeFUJOvlAsBG4z8VIjzfj5YIhQsedXLy6x9oPvZ9sxQXO2SvP
+	oDuZfCcuKxL9O4b5ED5HCG0JleAagjdKCxiPKFvIE0JEJh+d3rxR6fLZLfCyI4rq
+	RyHyR0fET6x4+DXIGRUjieoqob3rdIWjmp9alNp7KKtxiHQuTM/mXx1Dgaef8Sa2
+	MgqPBE7/9XxwGAWqHa0Qd62vK1WEwnQYck6efaxWIYqD18fxuj6FiaGNDm0zdeJJ
+	+II5NYmJs/oPquES3wbbFMvoel+9ZsbPSx52goE96yA==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4c8qnasg0u-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Wed, 11 Feb 2026 12:10:40 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61BHAdIx024925
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Wed, 11 Feb 2026 12:10:39 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Wed, 11 Feb
+ 2026 12:10:39 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Wed, 11 Feb 2026 12:10:39 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61BHAPZB027285;
+	Wed, 11 Feb 2026 12:10:27 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Marius Cristea <marius.cristea@microchip.com>,
+        Jonathan Cameron
+	<jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH] iio: adc: pac1934: Return -ENOMEM on memory allocation failure
+Date: Wed, 11 Feb 2026 19:10:05 +0200
+Message-ID: <20260211171007.143527-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <59d12283-28c0-446e-b591-a7c3d022f50e@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=W/I1lBWk c=1 sm=1 tr=0 ts=698cb810 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
+ a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=k1q7hAl77BwvRpyjn-YA:9
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjExMDEzMyBTYWx0ZWRfX/GCw4Q91MNx8
+ Hiv3v/Un2g8CzxUNHK1td6CQwgHp+67Jvy/ZFdk8qtBp8UgpNmWd0l9Y31vP5BTbxnf2lKR3w4c
+ 0Nr0o1jZchDRkJKz3Y7/s9j/3NDpgWzl1FYNZIgZwjnvsqjrIQxS5I0vtk117m6gE3QKKcLNloh
+ chUSAZOkSpsKisXL39zm7R8s3Qk1OfTOU0//+96xiVm2JuNjJ7/KouEyX7+vcXmUIyUOi3x3EqO
+ a4vJexpq7V/wBtQjopvmsANHl8GSGTiVeSGWoU1aNLYx6Rn1Vo7nJZJ3oTvLXoOYIF7W46EsIxp
+ Vq/Xd8a/cYy4s/h6CGO6zPoZ81lss57Oh7QKmlpEaO4Iu01MbN93USWuOSL5lIQfe8U7oYiaj61
+ 9Q0qXO3FgywMmy/dVpYbuQ3J5OX0eBXldTCVQAngJttX6UyC3JaUPsQvlvdEyrTeQK/7m7Bb6Pi
+ ergkh5wLr6kQpFbBq6A==
+X-Proofpoint-ORIG-GUID: HkWryNtkPq1alyyvBAlqyRzkFuwRyPgq
+X-Proofpoint-GUID: HkWryNtkPq1alyyvBAlqyRzkFuwRyPgq
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-11_02,2026-02-11_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 suspectscore=0 lowpriorityscore=0 priorityscore=1501
+ spamscore=0 clxscore=1011 bulkscore=0 adultscore=0 phishscore=0
+ malwarescore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
+ definitions=main-2602110133
 
-On Wed, Feb 11, 2026 at 03:44:37PM +0200, Erikas Bitovtas wrote:
-> On 2/11/26 3:37 PM, Andy Shevchenko wrote:
-> > On Wed, Feb 11, 2026 at 03:32:41PM +0200, Erikas Bitovtas wrote:
+devm_kzalloc() returns NULL on allocation failure. The appropriate error
+code for this condition is -ENOMEM, not -EINVAL.
 
-...
+Fixes: 0fb528c8255b ("iio: adc: adding support for PAC193x")
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+ drivers/iio/adc/pac1934.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> >>>>> Please implement previous feedback.
-> >>>>
-> >>>> Since I am making changes to the existing driver instead of creating a new one,
-> >>>> I introduced a new patch series. As I mentioned in the cover letter, cm36686 is
-> >>>> fully compatible with vcnl4040, so instead of creating a new binding, I create a
-> >>>> fallback compatible for the device. I probably should have named this patch
-> >>>> series something else.
-> >>>
-> >>> That's fine, but that's v3 of previous patches. Your work was to add
-> >>> CM36686 support. How you do it, evolves, but patchset/work is one
-> >>> continuous work. When you rework approach next time, you also start from
-> >>> v1? And then you go back to previous solution of new driver it will jump
-> >>> from v1 to v3?
-> >>>
-> >>
-> >> There has been a misunderstanding. I assumed that since I will no longer
-> >> be developing that driver, this warrants a new patch series. I apologize
-> >> for this.
-> >> Here is the changelog since v2:
-> >> - Remove the previous unnecessary proposed driver and bindings.
-> >> - Add a fallback compatible for cm36686 of vcnl4040.
-> >> - Add a new compatible for cm36672p.
-> >> - Add channel info for cm36672p.
-> >> - Remove redundant information in the dt-bindings commit message.
-> >> Here is the link to v2:
-> >> https://lore.kernel.org/linux-iio/20260209182432.00006c3c@huawei.com/
-> >>
-> >> I have received some feedback regarding the changes I made to the
-> >> existing vcnl4000 driver. Shall I submit the implementation of it as a
-> >> v3 to that series of patches?
-> > 
-> > I guess v4 would be better as this is assumed misversioned v3, if I got
-> > the situation correctly.
-> 
-> Yes, I started a new patch series when I should have continued previous
-> one. I will submit an implementation of your feedback as a v4 to the
-> patch series I started initially. Thank you!
-
-Do not forget to include the _full_ changelog per version
-
-  ...from v<N>:
-  ...
-  ...from v2:
-  ...
-  ...from v1:
-  ...
-
+diff --git a/drivers/iio/adc/pac1934.c b/drivers/iio/adc/pac1934.c
+index ec96bb0f2ed6..b791ce23f3fd 100644
+--- a/drivers/iio/adc/pac1934.c
++++ b/drivers/iio/adc/pac1934.c
+@@ -1351,7 +1351,7 @@ static int pac1934_prep_iio_channels(struct pac1934_chip_info *info, struct iio_
+ 
+ 	dyn_ch_struct = devm_kzalloc(dev, channel_size, GFP_KERNEL);
+ 	if (!dyn_ch_struct)
+-		return -EINVAL;
++		return -ENOMEM;
+ 
+ 	tmp_data = dyn_ch_struct;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.43.0
 
