@@ -1,115 +1,114 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7A8F350D78;
-	Wed, 11 Feb 2026 08:53:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 083C0350A09
+	for <linux-iio@vger.kernel.org>; Wed, 11 Feb 2026 10:07:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770800035; cv=none; b=E3OSzN8nkx1dur/Unj+EaDf/0CXETzgn9kKzUb8rs4w+nuQnSNK59kmNkb+X4JTLs7qBA4iAD6T6HG/rqfOw5dsj1G0kdCRLuX5Ir1yXuCzfuLhzEGpDjLgvo0bEXSmND179eyU77I20cyS8zq3rU9du7Modh+jG9tZn74qzMI8=
+	t=1770804471; cv=none; b=lu/4OnNOmQB1KbBKVjfNYV0GoZs9DMj1PTBV1mrSCdppnVibeFeH5bgnA3a/k2lWT8RuqPx9Fo62OTd6tJ+ltBSnojBTKFypKafoNU9aHGNuy71fNs2J4KPZfzItwKbkNuHP6IIghLik7YJrql9scctHih5V/jrs8MXCh5V/DsQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770800035; c=relaxed/simple;
-	bh=d0IcTBDQtWjFGCyRJUk/HboharjexEM40KDCgEFaDB8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iDHGCi+gzYivVQ8zubqzTAmzheN5fZ5rochdRu//fea2MwSlGgouz6z1cL8ddoS5ZmNDG3cML1rqHaa26DLC+F5FtwFcArRmrWzFJHGNqbeDQhgKnw2UJwyAbcsEO2dLQBfV3AHv+rhoj4BSRpKRgIkCqhXIGGuNNmKMQSmI5m0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RWZcYntt; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770804471; c=relaxed/simple;
+	bh=Z/GZBqQCmQqhyUddNtRKYVJhCP5a/7Enct9wdD8/d5o=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=f5jkNDxO/q2h2GyRG1xFTP40BsEjBpV9l4811kDFjz8vUNieMzCOqgs85y5GDXXk9ZBXSBMxmhHziKS5NKJ59uilJKECq9Uc6JaSsqP1Fei5SVdg6T33rJt/3bDfZhzw7MAszARs5qZNVwyNCKAvzZmzNbw1cW++uBFwleyXtck=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eXT/v1WS; arc=none smtp.client-ip=209.85.128.41
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RWZcYntt"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770800034; x=1802336034;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=d0IcTBDQtWjFGCyRJUk/HboharjexEM40KDCgEFaDB8=;
-  b=RWZcYnttn1/k1dddBfwwpNM0ViZMnDUTCOf0jjwcbIMedyPpRY5ZcSQe
-   +KvylFU9c6Vd2uv+ElKAQnVNnBXNLtRqACQXWpjr+fOmzhj4rkEoVUqAx
-   3EBrBQrCQU6H871IyQNAWmjVtSOBtJT7CgghBA6K0XukEHJF31Oh9kq+7
-   Fe9ELzcsamGrgdOXaAtzHXsbTobyHLFFK3LT5Uc+yZ81Yqr8TilNEqsku
-   YFfD1PnImlXjDqCYuQDGahkUTkDCL1sWrGyKAI36uiNytJd0G0c1bSYXq
-   IXcPC5w9FXzAlZhxrD2MKtKC+El7WWmT+5sd2N949V4ZSD0dr54LOv5md
-   A==;
-X-CSE-ConnectionGUID: eVv4w1cNQzyONdzwiiCOUw==
-X-CSE-MsgGUID: 3vZnX+dOSAiVwvG/Lt7AxA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11697"; a="59510644"
-X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="59510644"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2026 00:53:53 -0800
-X-CSE-ConnectionGUID: fu+YF55vQNewD3czdgaXww==
-X-CSE-MsgGUID: wgqRTewhTme7ZO+qyMPsCw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,283,1763452800"; 
-   d="scan'208";a="249829695"
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.220])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2026 00:53:51 -0800
-Date: Wed, 11 Feb 2026 10:53:48 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: magnetometer: si7210: use
- devm_regulator_get_enable_read_voltage()
-Message-ID: <aYxDnAsWLqIWEza4@smile.fi.intel.com>
-References: <20260211081837.8169-2-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eXT/v1WS"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4834826e555so27795465e9.2
+        for <linux-iio@vger.kernel.org>; Wed, 11 Feb 2026 02:07:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770804468; x=1771409268; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=DBJ0NKlYQHSTcX5I6AxqwzGVfI3Ct5XxPEslgPpmVnc=;
+        b=eXT/v1WSL5Zz3bFDNqpQsuLgfHFORzAM5e6JQCrZgRQjBP1E5oZHSGzAAjsLo3F6Bs
+         7dvRSOfVdhqMIsYskNnh6b+bH07uwfMmPtAwa+A4bHkDLITdmTKPCyZ9a8mU73+KN+41
+         LDP/3TRNGjVNiMfoWl1D4nhqiw+qZNjNv4+p1CbDMgYZHs6+2sBflZqSQqNMi/zI6Adl
+         syBOzAvFYxkeMXiRQtr+LfzXsVtegLzX3mABmseNuaiXMysBVqOGpCfGOa5ksA3BkBK2
+         lnzZGeHvJLohoo1p6zWR+2BDuDUAxaGtBynzMyYDs/w/lQHQonndcr8dHGWqz2mBgETd
+         4amw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770804468; x=1771409268;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:subject:from:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=DBJ0NKlYQHSTcX5I6AxqwzGVfI3Ct5XxPEslgPpmVnc=;
+        b=AxQaHRTwGT+O4OMAXKw/viKjmRRXxO6kmDC62SNrxnmkUEJRtXwwUkmj2lOsO/G+u4
+         jqe4L1dF0xf8nfTxMFFSV7MgE7ZUToxAF/j08IrjdMY6/vBocd5CTZMjVxh5UW0b3Ry1
+         Tkvs08nYKo/cpKHUJS8LE6YgiRnbsupIQLVqCfEP9k7ZdUotb+o9PKDoA6Rm/uGFQLmF
+         kNyE7KC/AcXrqbI+vowOQLPXGCaf7ypdeLJGxj/tdynT/Gl83yxU4flZoIYZUrrdpQuD
+         d0Ks6iTl6rhP/0QrM8QJTY5qx61m2pFqMVlzGLJOF2nJN3qHiuEg/dS/FYb/Unqtvkal
+         4Heg==
+X-Forwarded-Encrypted: i=1; AJvYcCXsl8/n6ZrRExeinIpp9luLSumma9JrJXWBnUwVCsJ19Ky7to57jFcYYk8v1BkyFTOKX8vxMs6IEho=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw413lXh27l1g/K4p9JgcpnNbWVIRoKXB73vhisggE0W2iEP3M3
+	WqkqcA6fx5/++80XrNRM658BVGtYMVzWzbat+hiLZHFiIXGjHV9YmjKm
+X-Gm-Gg: AZuq6aKmedtQ4ggkRP06O5nGjMuDjBsliHyeDG0wQV4aut5J1K/hixuIyB/jXES5f3s
+	SUqXECy+1HfUgDwK9qce3Lq97lxVXU/Tm9ttg+BNxojyz9loJ7JQPOvDOf1HOpgQMZvf+th1AU6
+	iv20eEt4pXABSRSfLULrkrd67FPGWKGtgo8wsE+xQ1lSfa4EzRzU2KneHx+sSg0aZGxgntxrBxz
+	bQaV8D7SD79wOWvgDqV2VZ+2rrqLQvAe0V2fDTILHf7BmhZMVD4Wub8hLFUmxL8dvaGKEvHD7HM
+	LE9kgKlevufL3W+VGxNjs4RermXQ+aPP6EKyN6REmTF9eJ1upmAcdLK8skw8TPKAghJfWO5x+zB
+	1W4YgxlLJpQWzc28zcTaKEdKtNC94ERf3LnWh9V8qBb9tKyBJhVgxWva6pNvIqjIvlFKRzziMPs
+	wD/ibJmRWD36Rfw5FXPrVLRdoGHnTBKm79jOtuZAfY/2rQeR9yRQAE4Qbxob8hH6HyY600
+X-Received: by 2002:a05:600c:5288:b0:47d:403e:4eaf with SMTP id 5b1f17b1804b1-4835b90c34emr27593875e9.10.1770804468157;
+        Wed, 11 Feb 2026 02:07:48 -0800 (PST)
+Received: from ?IPV6:2a00:f502:160:28bc:50b:5000:8e7d:e760? ([2a00:f502:160:28bc:50b:5000:8e7d:e760])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4835a5c7c4csm55048775e9.0.2026.02.11.02.07.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 11 Feb 2026 02:07:47 -0800 (PST)
+Message-ID: <b95d7a49-6191-4d85-b725-4a941505b40d@gmail.com>
+Date: Wed, 11 Feb 2026 12:07:45 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260211081837.8169-2-antoniu.miclaus@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
-
-On Wed, Feb 11, 2026 at 10:18:28AM +0200, Antoniu Miclaus wrote:
-> Simplify probe by using devm_regulator_get_enable_read_voltage() to
-> get, enable and read the regulator voltage in a single call.
-
-One nit-pick below, otherwise LGTM,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
-...
-
->  struct si7210_data {
->  	struct regmap *regmap;
->  	struct i2c_client *client;
-> -	struct regulator *vdd;
->  	struct mutex fetch_lock; /* lock for a single measurement fetch */
->  	s8 temp_offset;
->  	s8 temp_gain;
->  	s8 scale_20_a[A_REGS_COUNT];
->  	s8 scale_200_a[A_REGS_COUNT];
->  	u8 curr_scale;
-> +	unsigned int vdd_uV;
->  };
-
-Haven't noticed, but I believe this is not the best place to put a new member.
-Does `pahole` agree with me or with you?
-
-...
-
->  		/* temp -= 0.222 * VDD */
-> -		temp -= 222 * div_s64(ret, MILLI);
-> +		temp -= 222 * (data->vdd_uV / MILLI);
-
-Just a side note: Here is a possible loss in precision, wouldn't be better to
-have it as
-
-		temp -= 222 * data->vdd_uV / MILLI;
-
-?
-
-Note, if you agree this needs to be checked with the datasheet, etc. and sent
-in a separate patch. For now the original way seems okay to me.
-
--- 
-With Best Regards,
-Andy Shevchenko
+User-Agent: Mozilla Thunderbird
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: light: vcnl4000: add Capella
+ CM36686 and CM36672P
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+References: <20260210-cm36686-v1-0-aef68dd46ad4@gmail.com>
+ <20260210-cm36686-v1-1-aef68dd46ad4@gmail.com>
+ <20260211-sceptical-frog-of-revolution-fc3cf4@quoll>
+Content-Language: en-US
+In-Reply-To: <20260211-sceptical-frog-of-revolution-fc3cf4@quoll>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
 
+
+On 2/11/26 8:49 AM, Krzysztof Kozlowski wrote:
+> 
+> There was CM36686 v1 and v2, so I do not understand versioning here.
+> Also, lack of any changelog.
+> 
+> And how is it supposed to work for us? Try yourself:
+> 
+>   $ b4 diff 20260210-cm36686-v1-1-aef68dd46ad4@gmail.com
+>   Could not find lower series to compare against.
+> 
+> Please implement previous feedback.
+> 
+> Best regards,
+> Krzysztof
+> 
+
+Since I am making changes to the existing driver instead of creating a new one,
+I introduced a new patch series. As I mentioned in the cover letter, cm36686 is
+fully compatible with vcnl4040, so instead of creating a new binding, I create a
+fallback compatible for the device. I probably should have named this patch
+series something else.
+As for the previous feedback, I added the subject prefix and removed the
+redundant phrasing.
