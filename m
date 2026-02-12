@@ -1,62 +1,65 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A165C3451CE;
-	Thu, 12 Feb 2026 13:39:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3495B284672;
+	Thu, 12 Feb 2026 13:48:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770903566; cv=none; b=BnI82ZWSv30MQXe73iumRgSial2SuPfWP+pMFeBsqbA4/y3fKvBsjMKFk270Xw5RBzAr5TA6RK7Qhp+MB1wrSpTM17QKTO62v0ZfJAp9FxxeA+bHYvibRUO3Vh0ZJ+Rkq+aOCtMRLXePUMiZMPSGyo5dm0Isg5eR1Ohd3NE45IM=
+	t=1770904127; cv=none; b=g4FQ0IZAMyU0gtjkfzg4Zrpjl1+BieOLpl4m1TI451lx96bMo+3oZX0IsJFaGKPdrEQVXEYjFNOC2Ry3uJOlRVs3ITMBKfwZH3MZqPHLCs8Y3+h5ZvNTDghXYJmMHHBYtf8yjNqSge0GKWUq9W/QU3QIBuZWCzGkMI/eBJvmfg4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770903566; c=relaxed/simple;
-	bh=utyaYBiIGi7UzJmfMxgD2vkdv+j61T4B/YtQfUgtvkQ=;
+	s=arc-20240116; t=1770904127; c=relaxed/simple;
+	bh=G6CewyQM0iyQBtz+5m+6B7XFVTgo6HLMvUfuGTCRy9g=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KkmltovHW9SWlisLAL97Z2wvaVW9nulop0oPZi9tjAaGPTikOWBPhPzldWtSEP38JnEIux3Mc62zfYbrbWMoOvj3gxilfejFusqEYWNdc95BOHyLXpRjJe4L0UEMqcShU8Wgpq78CNxNucr9B0p+cQpY72oKnjmOa1Rgy2yLEI8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OXGHMup/; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=FJiYwS8Q5eaSdoBNrj12/vTKCJ3TFDIm6gLHra1eyR4T/ekzAc5FjHB1tOQMSxZq1vCElTkzHSEwOJTR4LFN0N6jzpP0ipYYCw2W1M58A5L0CBc6JgplbABltY3+ICVsxFCYzQqyvJNWezwfpoR0T6bL9wxlT/qEB049f7jJn+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AXCfm8Q6; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OXGHMup/"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AXCfm8Q6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770903565; x=1802439565;
+  t=1770904124; x=1802440124;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=utyaYBiIGi7UzJmfMxgD2vkdv+j61T4B/YtQfUgtvkQ=;
-  b=OXGHMup/8xuTUEK6AzqweQxAxNeIQaiJLWZjUuZ46JYDH1VDaVtv8At9
-   1EjD3LSASPoDqIOxqFJMo661HTjmwrZT7tlp6OS+9ZDtsog1I9s+L6gUj
-   +s7PGe/G/W6FBni2uN0YeGmmqK5B08uYapwK4ynR8ecIUrO0+NE8wpZ3c
-   Ib4Dz+SXN2jplanDO/TfLRRUWZ2j7wBhvKcvyZ9VGoyC7avCzu/G8qEGs
-   QtiZRE1cR4q9Skowi6U3cpDAqyjTikQ7UmK59OR6VwXm/35P0Lv9cH4P/
-   xA+GZ276HroxczNxDlXOTxP4tg7V2dR+d9oIb8GS+xIwb4fi9oA5s8njY
+  bh=G6CewyQM0iyQBtz+5m+6B7XFVTgo6HLMvUfuGTCRy9g=;
+  b=AXCfm8Q6asGp2IgjuwF7+wOqZ4H8aIzmmHbNLr3ET9uzTAaM2jds5efG
+   BCzDxNLWbMAdkft5J7uOPxao9LCXNDFQM5XNsy3pRVACGkqlyfkPHLDL3
+   AA8tr9IAo+6nwV7zHki5htm/LwGmoExwZCFcOmvGQgb2lgkBAVGhgCHPX
+   at4XGOaX8Gpe5MSXoo+A2Iizv3Fk4AKpI0YxdHO0f15cZ5ljNceU3Xwr7
+   Jqx5YvLvzz31Bn8ESbNpknkbE7rdBWpgdRthzu8FgvMVBp8cYKokndu5c
+   S6LtROmZR0XVQMSWUcE/pHjn/lWzYzqBMTUlgptrtLnAr08n+2UhOd+tS
    Q==;
-X-CSE-ConnectionGUID: LTEklVKRRjSmrdVVwI0tjQ==
-X-CSE-MsgGUID: Wkn/+j9WSauTw8l6GGwmlg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11699"; a="71788646"
+X-CSE-ConnectionGUID: fnrw4WgQTyOTUkqLpNJ5LA==
+X-CSE-MsgGUID: pMLrbwEdS1yEq38hZ4GXzg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11699"; a="71977919"
 X-IronPort-AV: E=Sophos;i="6.21,286,1763452800"; 
-   d="scan'208";a="71788646"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 05:39:24 -0800
-X-CSE-ConnectionGUID: RUaq1lFlTImvcGnzmzdRLQ==
-X-CSE-MsgGUID: yZDvEoNkTaqUNOQt2wM3bw==
+   d="scan'208";a="71977919"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 05:48:44 -0800
+X-CSE-ConnectionGUID: w+OZq9+vSnKTbpUFab5EHQ==
+X-CSE-MsgGUID: VWNV2VzaSL6tVekUWgRxwQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,286,1763452800"; 
-   d="scan'208";a="211419698"
+   d="scan'208";a="212707836"
 Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.145])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 05:39:21 -0800
-Date: Thu, 12 Feb 2026 15:39:19 +0200
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 05:48:40 -0800
+Date: Thu, 12 Feb 2026 15:48:38 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ariana Lazar <ariana.lazar@microchip.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Yasin Lee <yasin.lee.x@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/2] Add support for Microchip MCP48FxBy1/2/4/8 DAC with
- an SPI Interface
-Message-ID: <aY3YB1MyNnSUszJN@smile.fi.intel.com>
-References: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
+	Conor Dooley <conor+dt@kernel.org>, yasin.lee.x@outlook.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] iio: proximity: hx9023s: fix out-of-bounds access
+ when copying firmware
+Message-ID: <aY3aNubqU4_41ohi@smile.fi.intel.com>
+References: <20260212-upstream-20260219-v2-0-2b28fce5d09e@gmail.com>
+ <20260212-upstream-20260219-v2-1-2b28fce5d09e@gmail.com>
+ <20260212-lush-monumental-grouse-e3903d@quoll>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,28 +68,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
+In-Reply-To: <20260212-lush-monumental-grouse-e3903d@quoll>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Feb 12, 2026 at 02:48:33PM +0200, Ariana Lazar wrote:
-> Add support for Microchip MCP48FxBy1/2/4/8 series of buffered voltage
-> output Digital-to-Analog converters with an SPI Interface. This driver
-> covers the following part numbers: 
-> - With nonvolatile memory:
->    - MCP48FEB01, MCP48FEB02, MCP48FEB04, MCP48FEB08,
->      MCP48FEB11, MCP48FEB12, MCP48FEB14, MCP48FEB18,
->      MCP48FEB21, MCP48FEB22, MCP48FEB24, MCP48FEB28
->  - With volatile memory:
->    - MCP48FVB01, MCP48FVB02, MCP48FVB04, MCP48FVB08,
->      MCP48FVB11, MCP48FVB12, MCP48FVB14, MCP48FVB18,
->      MCP48FVB21, MCP48FVB22, MCP48FVB24, MCP48FVB28
+On Thu, Feb 12, 2026 at 12:25:54PM +0100, Krzysztof Kozlowski wrote:
+> On Thu, Feb 12, 2026 at 02:26:52PM +0800, Yasin Lee wrote:
+> > Initialize fw_size before copying firmware data into the flexible
+> > array member to match the __counted_by() annotation. This fixes a
+> > potential out-of-bounds access that could lead to a kernel crash.
 > 
-> The families support up to 8 output channels. The devices can be 8-bit,
-> 10-bit and 12-bit resolution.
+> I don't think so. Code is equivalent and this was just false positive
+> because compiler could not deduce that in this case counted_by can be by
+> fw->size.
 
-Is it really v1? I am under impression that I have seen this patch already
-several times...
+In accordance with [1]:
+
+   When finding the element count assignment, it must be reordered
+   to before any accesses of the PTR->ARRAY itself, otherwise runtime
+   checking will trigger (i.e. the index of ARRAY will be checked against
+   COUNTER before COUNTER has been assigned the correct COUNT value).
+
+[1]: https://github.com/kees/kernel-tools/blob/trunk/coccinelle/examples/counted_by.cocci#L3
 
 -- 
 With Best Regards,
