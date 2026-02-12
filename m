@@ -1,178 +1,108 @@
-Received: from mail-yw1-f170.google.com (mail-yw1-f170.google.com [209.85.128.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C589E35D5F2
-	for <linux-iio@vger.kernel.org>; Thu, 12 Feb 2026 14:45:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 094981DF26E;
+	Thu, 12 Feb 2026 16:20:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770907560; cv=none; b=EZfjUXZ5nmHJFfv26u2IVQTsRjmnd09MWO76bRKiuStJFfFZhtxafbSAxLGayl/gZ2qp3+hvLjPzjo+tQ/DITS9schI8+l6ewD27vYpYScCNtEeIs3k90iWblMRKmfDnLcFYmc6ltXQE7r1MCyJR5vP6IE54+igeRdLaY6gUXe0=
+	t=1770913207; cv=none; b=Nu7WDDxvZWy9eOzw7umB0O7pm7gIoHv8fvQf+F8TL3SFdu3e1RrHKUxusGj/EEG2iwCKOVGH5ZDqccJhxCxvhETevYnmbOC4FyN94jZ8wiSl7ufz0N0+q54zPHmE+HuN8t0qPFsMa5zZhkFxIlU4qLteaFJBUhGbkNANGFuqQrE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770907560; c=relaxed/simple;
-	bh=fy4LXU/WUrRSUNC3KYSIjdzX5OzOC+ZS//OJBVtQK7U=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=MTV4HvyyIp4PlV0R4WqwRnW3Vvo5kahId2y4r6O77XFRWpLrlYaazV8hP/HfKfinqOtje6nO6wxlp76DeV+MgHUsUjxF7x866kVHZ5mFoCvNrJBWZpUatJxUTuw/yd/QKQYIlrFsPi980YHaBU6D86NG3zT8u4GhUF6WdV0TuEc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ij2FT/i6; arc=none smtp.client-ip=209.85.128.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1770913207; c=relaxed/simple;
+	bh=F2EAYbF/oqKf8gjFBBL25jfi3ENVzTueJMcflbSwVPY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qM/0LhgnPOqgnQe+sqp/IMySlkvG+OuEZ0tRrvl3fQf5YeIo7/+nrrTyZPQejrjIXbPefhD1gtozDO9vPeLp9Zf+AlBfxWQeN64lXTNICunhhs3l4w/YRKIPtjZvaqllh7qSDBUcd2QL1aW/VQ2BFbR9P0NBoko78OlM4M5fY8Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JnXZV+b8; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ij2FT/i6"
-Received: by mail-yw1-f170.google.com with SMTP id 00721157ae682-7950afac0ffso20398657b3.1
-        for <linux-iio@vger.kernel.org>; Thu, 12 Feb 2026 06:45:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770907558; x=1771512358; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=+JG1I3xYlNRfZ4lCELzjfItlxHeuT4mtPnRcvecqAwg=;
-        b=ij2FT/i6ctE7yOV/dNstWG7kJntnWslehKJtkBctgjhWLobYRfIxA0yohUJWFDJNv2
-         N0GSMGXtNU4NAEnfBe1LHfoNR19e0DR73IkHjH7mspRoQ2ryX5iyUB8Eh0hSA3PvFTuX
-         lSMZbHBXmEK/hLeSD6IjN+7cqWisp9HshVL6P/5t+Yl7i80nFcl9zs1JR7r5J5iVoEoG
-         vKHy8kpo01NF4HmyS3vCtxIu8x70tLyd/iVzzlT6xc2IGBoNYJ91bALAYMsa40e2hU4v
-         QqoOQwGqMcxUHwNWh1h8irfsysXQLfZm5tAy9a4rzltPyliS2NnqbVF1HojXeUd5qY8X
-         oGCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770907558; x=1771512358;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=+JG1I3xYlNRfZ4lCELzjfItlxHeuT4mtPnRcvecqAwg=;
-        b=U+1Yd6QRMIcyINr91LicICT6Yz+N4THMgWzZboQUX06MqQixDnrV3UcwmatWLvjnu8
-         4GZEsydnD32XiiVwgWjfGYjB37M3/FfZY3/MCNyhv/sY3G+SCVvTFPY2wX/mXaDaHWFc
-         0GhRk58dKwzmxt9hl84cIpWDKhkpKKwCxTgfd6Ysb+zBsAu4WqwmfsC3kscSnpyWHVSD
-         wjtd6o7TZHgNAqoxjcSqbZXFdlNnN5TqlYS3YeAK4rhas/Jw+Y75OpsGTIhMBIrlmSH8
-         UeUDP29TaxPdjzWtYqVPLuHfy4VmS90CA7Dd7vLtttLvKZc5KEdgbx4bLePPal7E9Kd8
-         vUtA==
-X-Gm-Message-State: AOJu0Yw/ql8J5OxohS7VgNKVb4b1p1dsqPVGC2W+IT54zo17TDcOrCiU
-	+w+QH5H7tfUGcUeYxvbNQrrLrGHhKdB7UgWi2Ppy0oIRcsk/d84V2g2q
-X-Gm-Gg: AZuq6aL3Eq1JpVDfELGVbr5F/5jY9ND+k+uOTwdHDuCtbJBouknSP4wN67fZYJGpiZV
-	9XTGt26dQ1Xg5m/QFYtUSbSm8xX1X7Y7yHgYgUMCJrRHtoakl3ntS8y3a1vpfMtWBbT+FEYrqve
-	GNeURhH+qVkwxWlTch/kHupj8gMg0VFB5m81a4RA1fcWJ77EbmcuCBnAWPkwGHEh+9YMXfu4r8z
-	dgABwPNNUmnmmouoGbQR8YdcQLeoGED/ZMoyV1VjUgfZs5mzZzmyV1YHsC/DFOwZ1eMUhhpjqNu
-	1ge6lO1Aim7TfUrWd9W2ZFKZh4vy2uiQ6aU7Th8+hwOjNZN9ir+0tcD0NqcxWSyIJlLVI9lsXbW
-	3S7IfQ3obSy5LtNn9L1eX1kmkXTeF6c/1MxDuB2j1a9/8w2rfXB88i9Gyi89hkGBGEmtQbeHH3q
-	BBClPRnPXoGn7n/L33wS6pC3SKQw==
-X-Received: by 2002:a05:690e:144f:b0:64a:d716:c8e8 with SMTP id 956f58d0204a3-64bdf2f7ce1mr2097988d50.13.1770907557758;
-        Thu, 12 Feb 2026 06:45:57 -0800 (PST)
-Received: from [192.168.0.40] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-64afc83c201sm4897318d50.3.2026.02.12.06.45.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Feb 2026 06:45:57 -0800 (PST)
-From: Erikas Bitovtas <xerikasxx@gmail.com>
-Date: Thu, 12 Feb 2026 16:42:48 +0200
-Subject: [PATCH v4 2/2] iio: light: vcnl4000: add support for Capella
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JnXZV+b8"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1770913206; x=1802449206;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=F2EAYbF/oqKf8gjFBBL25jfi3ENVzTueJMcflbSwVPY=;
+  b=JnXZV+b8c1pwOVIOJFYVR9m2INrpP6cZW1ZoTc4RudmG/TztoYQtYvuT
+   8Oe2S/OUjGhH3ikdruV2xXZc87vR/uWjW55rJ4HHkHYJlmbFE+eA+rMNz
+   i5eLgQl83BMQoTlUpW92Nzf6upp35/l8JnkvTRPrV6NwUfHmbq68ISLN+
+   bebNGAK6ie8I0TZte46JZfWSE0Zrh+pjo+kanqwXF8JXR6OZBqOzN1Hve
+   gs+4xQSsohsT58NeBeFRapt1gOgGpCmL93xcrV6sq3Pz/Ujsrrx4sIBeB
+   Cd+z+zeKDtOyw+plHiK13U1bHOARFk7ObWPLMk/uVSbXBHlqny+s6hEPp
+   w==;
+X-CSE-ConnectionGUID: B0B/dF5zQU22x2U4gfqpJQ==
+X-CSE-MsgGUID: 6OI6j1JxTVmc852l2f+SQQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11699"; a="83184218"
+X-IronPort-AV: E=Sophos;i="6.21,287,1763452800"; 
+   d="scan'208";a="83184218"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 08:20:05 -0800
+X-CSE-ConnectionGUID: iQsdunTcTACOa8xJFAUU/Q==
+X-CSE-MsgGUID: D+paQF5vRqiWLcAyRhaoZA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,287,1763452800"; 
+   d="scan'208";a="217119627"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.145])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 08:20:02 -0800
+Date: Thu, 12 Feb 2026 18:20:00 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Erikas Bitovtas <xerikasxx@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: light: vcnl4000: add support for Capella
  CM36686 and CM36672P
+Message-ID: <aY39sDF8NXXhtljJ@smile.fi.intel.com>
+References: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
+ <20260212-cm36686-v4-2-8f587d4a72bf@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260212-cm36686-v4-2-8f587d4a72bf@gmail.com>
-References: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
-In-Reply-To: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
- phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>
-X-Mailer: b4 0.14.3
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260212-cm36686-v4-2-8f587d4a72bf@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Add support for Capella's CM36686 and CM36672P sensors. Capella
-CM36686 is an ambient light and proximity sensor that is fully
-compatible with VCNL4040 and can be used as is. For CM36672P, which is
-a proximity-only sensor, also remove the IIO_LIGHT channel.
+On Thu, Feb 12, 2026 at 04:42:48PM +0200, Erikas Bitovtas wrote:
+> Add support for Capella's CM36686 and CM36672P sensors. Capella
+> CM36686 is an ambient light and proximity sensor that is fully
+> compatible with VCNL4040 and can be used as is. For CM36672P, which is
+> a proximity-only sensor, also remove the IIO_LIGHT channel.
 
-Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
----
- drivers/iio/light/vcnl4000.c | 40 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 40 insertions(+)
+Perfect!
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index a36c23813679..1f8f4e4586f4 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -185,6 +185,7 @@ static const int vcnl4040_ps_oversampling_ratio[] = {1, 2, 4, 8};
- #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
- 
- enum vcnl4000_device_ids {
-+	CM36672P,
- 	VCNL4000,
- 	VCNL4010,
- 	VCNL4040,
-@@ -235,6 +236,8 @@ struct vcnl4000_chip_spec {
- };
- 
- static const struct i2c_device_id vcnl4000_id[] = {
-+	{ "cm36672p", CM36672P },
-+	{ "cm36686", VCNL4040 },
- 	{ "vcnl4000", VCNL4000 },
- 	{ "vcnl4010", VCNL4010 },
- 	{ "vcnl4020", VCNL4010 },
-@@ -1842,6 +1845,22 @@ static const struct iio_chan_spec vcnl4040_channels[] = {
- 	}
- };
- 
-+static const struct iio_chan_spec cm36672p_channels[] = {
-+	{
-+		.type = IIO_PROXIMITY,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_INT_TIME) |
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO) |
-+			BIT(IIO_CHAN_INFO_CALIBBIAS),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME) |
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO) |
-+			BIT(IIO_CHAN_INFO_CALIBBIAS),
-+		.ext_info = vcnl4000_ext_info,
-+		.event_spec = vcnl4040_event_spec,
-+		.num_event_specs = ARRAY_SIZE(vcnl4040_event_spec),
-+	},
-+};
-+
- static const struct iio_info vcnl4000_info = {
- 	.read_raw = vcnl4000_read_raw,
- };
-@@ -1867,6 +1886,19 @@ static const struct iio_info vcnl4040_info = {
- };
- 
- static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
-+	[CM36672P] = {
-+		.prod = "CM36672P",
-+		.init = vcnl4200_init,
-+		.measure_proximity = vcnl4200_measure_proximity,
-+		.set_power_state = vcnl4200_set_power_state,
-+		.channels = cm36672p_channels,
-+		.num_channels = ARRAY_SIZE(cm36672p_channels),
-+		.info = &vcnl4040_info,
-+		.irq_thread = vcnl4040_irq_thread,
-+		.int_reg = VCNL4040_INT_FLAGS,
-+		.ps_it_times = &vcnl4040_ps_it_times,
-+		.num_ps_it_times = ARRAY_SIZE(vcnl4040_ps_it_times),
-+	},
- 	[VCNL4000] = {
- 		.prod = "VCNL4000",
- 		.init = vcnl4000_init,
-@@ -2033,6 +2065,14 @@ static int vcnl4000_probe(struct i2c_client *client)
- }
- 
- static const struct of_device_id vcnl_4000_of_match[] = {
-+	{
-+		.compatible = "capella,cm36672p",
-+		.data = (void *)CM36672P,
-+	},
-+	{
-+		.compatible = "capella,cm36686",
-+		.data = (void *)VCNL4040,
-+	},
- 	{
- 		.compatible = "vishay,vcnl4000",
- 		.data = (void *)VCNL4000,
+...
+
+> +	{
+> +		.compatible = "capella,cm36672p",
+> +		.data = (void *)CM36672P,
+
+Side note: Consider at some point to switch to chip_info, id est use
+pointers directly instead of integer indices as pointers here and in
+other ID tables. It's for a future development, and not required for
+this series.
+
+> +	},
+> +	{
+> +		.compatible = "capella,cm36686",
+> +		.data = (void *)VCNL4040,
+> +	},
+>  	{
+>  		.compatible = "vishay,vcnl4000",
+>  		.data = (void *)VCNL4000,
 
 -- 
-2.53.0
+With Best Regards,
+Andy Shevchenko
+
 
