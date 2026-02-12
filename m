@@ -1,143 +1,93 @@
-Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB98135DCE2
-	for <linux-iio@vger.kernel.org>; Thu, 12 Feb 2026 16:45:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.160.171
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770914711; cv=pass; b=Zqy6kriiudAnNgC7cX/P4auiAS6/FZ8x3KfhqGoHGeVbUm0oPK43+MuYEj1Eg33awwB4pkAp5L10hn5HxpBfAlu6Fn5Zr+uFEQ6vflpsQtffWvHcIpkcWNevxtMz+dWgW+rw0LYdUWq6PTGHsMU0vI0ntv/KZI7bZYr4BFD+bts=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770914711; c=relaxed/simple;
-	bh=mVz8IS+qtYRUFdoEXlWVKM1ynn8gALHxW9se9wNJTwo=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=ahqSryzxwXY2ldYVyPcglw3ILxiV7MyI9wmfmlMX61Et8px6Ox3z6wv4bKZvmTsnU9JZa+NrZ5HDXwwiN/kXTJoYFRJ5bpCwRjVTelqtuYI+O1lg/nnfpkBtMcICjAKDpJ/ep+nnmUzWlcmCbg4pr7uI/lpGtSYAulPtiqG23yE=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Gy2dXe7o; arc=pass smtp.client-ip=209.85.160.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 83EB025B1DA;
+	Thu, 12 Feb 2026 17:31:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1770917516; cv=none; b=mOMlRWVtPKOoH0PezlAQZwBa/NbwxK9ICzSJegZhgJV7ASnnCiZjUMdWGRMmrH+TUilp6l+Z2Sohz3m0Nt8WPx+/qNcJ3ZeOEDAGCqYT/Ep3Dqm4R9tjnQnXg89jmm9q5raBdyKz/ueaQb5olOptbg1aAdmBWjWJi5QOvmOryOY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1770917516; c=relaxed/simple;
+	bh=TrYRVRvH7Nj0gYOh2vxI9kZs3a5bJivRNMzIp57hql0=;
+	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
+	 Message-Id:Subject; b=mKKbM6FMvOvQa2kcL7gbW8TgWmSsASSPQ38nhbef0cPVVbylamFheiqzJ+q82mKFdZ9B5HHCciNjDZ8lL633Wrh9f+regIF3S3j3fe360zDIqnZBPRiYKTDvu9kIqk2SRRpdgC0YVaNcUbetXp5RwRjzo1l/sQCdV5sQ46e5wvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Hf6KdEVW; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Gy2dXe7o"
-Received: by mail-qt1-f171.google.com with SMTP id d75a77b69052e-50146605f2cso28841cf.3
-        for <linux-iio@vger.kernel.org>; Thu, 12 Feb 2026 08:45:10 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1770914709; cv=none;
-        d=google.com; s=arc-20240605;
-        b=XHd7CvDQza2kWSOyIvGBycTHO061G778uKSxTgZP49+a29K+Ez04UoEvHQcSqdYtVl
-         Cw4brmAW6jobulDs4Dj8I4IIVr9N9TIaHTVBrkd5JTqBidvHiA/uQmOMo8kIIoLDOTi0
-         KDmdshjbQBE3JdQlhr4gM/Wtmx7lbHrcITePi7SpseODdmMZEe1wDAnRQvb6f7G/w4N+
-         Jj8+6yvP/mNjZzYPEsxgL5fQj/FTsEHJfd0ztZCwtFPMa9NDDKdEsIzg6gEGITcqzgQb
-         Gtc1niUTm/9jeH4Ki73moWpf7q+tMD17Gsa+oaeN6971BP7tnG+SBW4CcP4Jf6lwWhLV
-         mAnQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=gj7ggEui4cc7j68lFz5SKmVnl+iFUxBpJ//HV9UMauA=;
-        fh=UgWxsEGGblIjwLqVWRurQoKDUgBrtV2SQeiHia6j68s=;
-        b=ioRQgRpaJmfjOPWa6Yee3MMMM3FP5zwQJJY0kNCrAo6hOXF1Pg/zdLEEORUXLFztFp
-         DgGU0KKSX/0dRmLLaF0WUKuQfQQzYdIOZ4fVhS8nQeVNR9sv7mmv8VOEemyB+Ac0Xotw
-         iML3AiU+SHrPcNI6YMU0AVrSkvqHpyUpMRlFo7x+wFhigbnKmHdWcXAnyt0eyrLz579J
-         PVKiw1V2ooe94Z6goKkuGC6SN7vxRJoA1UOfActr7qbyeAX5g+XFfknxe7hAIhdsTS9e
-         LyVmR8A2LkbOfyOsSHJG9HSp5oi62oi9/0l3W5WuxeeUmx7dIbhsMcWaJrfmBqd4P7Bb
-         lBsA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1770914709; x=1771519509; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=gj7ggEui4cc7j68lFz5SKmVnl+iFUxBpJ//HV9UMauA=;
-        b=Gy2dXe7omhQnhlwBIDoj7YVO9fGjUCwXELoYSXvdiaI+CeiJc6D4GwEoOOyQeer66K
-         1M03IVbQuwy/cGHMvLDvQdaMPS9v2rEsIcerAgtGr4Qce0CPqdFmUXYBe1wHbfP5toKn
-         xWqCfesxHMJcR6lDjI9LLOlGWmLjEAPqAEFtg52tF0Ir3v6cPZoWeLBknHe3UfN2QXWG
-         6MqotJThXzwgxoGQ+qI2TTNU2WGpNKf+L2zTgV0mZlX4MZwnHQhhI2lQcHrvonAhfqOO
-         qN2073ytyHS//3p5Vr5HDsLI5QnQMfFDkWMHFKiSxl6idHl2nc6YAhnzXTwRyHl5tNaz
-         3+/g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1770914709; x=1771519509;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=gj7ggEui4cc7j68lFz5SKmVnl+iFUxBpJ//HV9UMauA=;
-        b=ZhN4ppn9exw/Mf4ecqJM2K4lueDSjnJitcVC/GCjRUvgt/Pe45e8C4X6sq4rmzG0l3
-         vCnPBZpmkTcKIEEujL3h+xXe0lXUhFCPq2ex5L26//wKzGEgLb5CFeHWtc/LmBM41pj3
-         gwiGIelwIbzinWipTvmtE1z/kFEcHsLoDrhicNmrEnALp4jjWCJi2GRmVsw6MrGcWfeV
-         Ef7FlsezHcyQqPpQO2cZQQNL2qmnRymEGhq7+A0hHl2VStBsE7/ZhWawaLz6r0D1BDnn
-         CIj4liNE5YbNFYqWen6h0IKlF4F5tyCzNE6qDzNu74xvivpejKYGtdq6+/3vpHivK4dK
-         rgaQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWzcQsRzQoRwsc6OXND23vaZd4ExQqt0H1hRXsvvBORP4n7+T/95c4q7xnJo77K4IBSARI166egKDc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyldYKRw8vgC7d6c08hlu8rwP9TtFKBXyhj1ZnUF7TVGgYa7+q/
-	mGZGU74wUcXCigvALCjOTtCWPW+pcy4M5fj+dcz4Ccz4b8NK1Lq60AyVWI2yZR20nFfNWmo8Mwb
-	/aIL17/WTorcywB8X4XXq6xypav6QrAk=
-X-Gm-Gg: AZuq6aIbKmbnTqOxQuIUYcrcChwr1K0dx0Coa5pEdCNmKH5MyqWmZUe06uD9Xk+jx3w
-	q5wpPIpQK1JZjX335QcH7jPV8q1V3ZNO5XTZlhqImi7SVMlfemwV2BTsrZdoOxiIwNODxNLGvnb
-	gHfcLIbqUw919Y6Plz7DoU3WpG+PboLHEyDpsxZE+SEC7JZT/hoAU/6I2itDRyQTTA31ojj6HH7
-	xyhHmsQ+0NvmrLlSio0BXE8n4mwYuHXAVrltGcJzy503yC0GulkuL9tE1tOAkeFz7xM4VNCPyKj
-	llIu23S5GaBprbhWoEh/NFoSF189n9bklukGD8KvVka7YvJJDrv1pHJyH7XqlAji0jt2flH0kbJ
-	wzdzwh6E=
-X-Received: by 2002:ac8:5f53:0:b0:4f1:dffa:7834 with SMTP id
- d75a77b69052e-506a3daf0cbmr1576121cf.7.1770914709532; Thu, 12 Feb 2026
- 08:45:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Hf6KdEVW"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2A4AC4CEF7;
+	Thu, 12 Feb 2026 17:31:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1770917516;
+	bh=TrYRVRvH7Nj0gYOh2vxI9kZs3a5bJivRNMzIp57hql0=;
+	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
+	b=Hf6KdEVWiXJJX8PRf3NCMFpdvhiQ3bP3Y5No9R1b1JNkBJHvdL3xd+Hbavr+cY6ag
+	 zuBIi2ynkFFuQC8XqSigaErlJvHWZ2peVXnbKnbcYLZfl7Ub4o0ZO+bOd2gb2pvBZ9
+	 atafwJl9TYNueQk1ceyAufQBchCWJeKrvvYNSA+FPTm2cBwBJLvzIXn0314sVypPUv
+	 pNQHWBXxv5XpYCJZVr8cr5iPl7Regrof6HBC2R6/Et2yx0Rg8xxB/fi003py0gjLAM
+	 RjB0lTfDGIqUfNNrC3rd9U3nd1lPih9j0gBuRJMLmqH47PFUs7XM6Wpx6Vcj5oR6hk
+	 5itxzU9nslxlQ==
+Date: Thu, 12 Feb 2026 11:31:55 -0600
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260212-upstream-20260219-v2-0-2b28fce5d09e@gmail.com>
- <20260212-upstream-20260219-v2-2-2b28fce5d09e@gmail.com> <aY2xveYRXEKIBV92@smile.fi.intel.com>
-In-Reply-To: <aY2xveYRXEKIBV92@smile.fi.intel.com>
-From: Yasin Lee <yasin.lee.x@gmail.com>
-Date: Fri, 13 Feb 2026 00:44:57 +0800
-X-Gm-Features: AZwV_QjHOnmm6-5h1DYEbnqx6tXX_BYSSafMUuswi91q9J0VBXGSzjrV23N4ftY
-Message-ID: <CA+NOmzLMzWqnS0B9B96qJUU2EoYppDKO6_Rdu52_dPqWTSS+ig@mail.gmail.com>
-Subject: Re: [PATCH v2 2/4] iio: proximity: hx9023s: Protect against division
- by zero in set_samp_freq
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, yasin.lee.x@outlook.com, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+From: "Rob Herring (Arm)" <robh@kernel.org>
+Cc: linux-iio@vger.kernel.org, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, linux-kernel@vger.kernel.org, 
+ Conor Dooley <conor+dt@kernel.org>, Andy Shevchenko <andy@kernel.org>, 
+ Jonathan Cameron <jic23@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, devicetree@vger.kernel.org
+To: Ariana Lazar <ariana.lazar@microchip.com>
+In-Reply-To: <20260212-mcp48feb02-v1-1-ce5843db65db@microchip.com>
+References: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
+ <20260212-mcp48feb02-v1-1-ce5843db65db@microchip.com>
+Message-Id: <177091751536.449067.3108703544618306687.robh@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: dac: add support for Microchip
+ MCP48FEB02
 
-On Thu, Feb 12, 2026 at 6:56=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Thu, Feb 12, 2026 at 02:26:53PM +0800, Yasin Lee wrote:
-> > Avoid division by zero when sampling frequency is unspecified by
-> > falling back to a default 100ms sampling period.
->
-> ...
->
-> > -     period_ms =3D div_u64(NANO, (val * MEGA + val2));
-> > +     if (val || val2)
-> > +             period_ms =3D div_u64(NANO, (val * MEGA + val2));
->
-> While at it, drop unneeded parentheses.
->
-> > +     else
-> > +             /* Fallback to a safe default sampling period */
-> > +             period_ms =3D 100;
->
-> Not sure about this. Perhaps we should rather do
->
->         if (!val || !val2)
->                 return -EINVAL;
->
-> ?
->
 
-Agreed. I will update this in v3 as below .
-...
-if (!val && !val2)
-    return -EINVAL;
+On Thu, 12 Feb 2026 14:48:34 +0200, Ariana Lazar wrote:
+> This is the device tree schema for iio driver for Microchip
+> MCP48FxBy1/2/4/8 series of buffered voltage output Digital-to-Analog
+> Converters with nonvolatile or volatile memory and an SPI Interface.
+> 
+> The families support up to 8 output channels.
+> 
+> The devices can be 8-bit, 10-bit and 12-bit.
+> 
+> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+> ---
+>  .../bindings/iio/dac/microchip,mcp48feb02.yaml     | 299 +++++++++++++++++++++
+>  MAINTAINERS                                        |   6 +
+>  2 files changed, 305 insertions(+)
+> 
 
-period_ms =3D div_u64(NANO, val * MEGA + val2);
-...
+My bot found errors running 'make dt_binding_check' on your patch:
 
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/iio/dac/microchip,mcp48feb02.yaml:275:5: [warning] wrong indentation: expected 2 but found 4 (indentation)
+
+dtschema/dtc warnings/errors:
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.kernel.org/project/devicetree/patch/20260212-mcp48feb02-v1-1-ce5843db65db@microchip.com
+
+The base for the series is generally the latest rc1. A different dependency
+should be noted in *this* patch.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit after running the above command yourself. Note
+that DT_SCHEMA_FILES can be set to your schema file to speed up checking
+your schema. However, it must be unset to test all examples with your schema.
+
