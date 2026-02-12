@@ -1,751 +1,166 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f47.google.com (mail-yx1-f47.google.com [74.125.224.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC85229CE9;
-	Thu, 12 Feb 2026 14:42:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C3D535C180
+	for <linux-iio@vger.kernel.org>; Thu, 12 Feb 2026 14:45:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770907373; cv=none; b=XVkMuHzr6fSJqZR99W06SbljsnES2JYYMlNbnYUWWHHt3NvSAw2dSoi2sJFUBrBljMt/qJL2OCwV8a17XpsVS6IvvXWCsxFwOnImSOEU7JI0X7QunCdjv8thDvYNjiVnU7dTF7T9Qre3WC47sBDudZh7kejctiGHALN1hcuPqYQ=
+	t=1770907552; cv=none; b=mN04wGzAs6O3A6xuBCG71uYLNdRtTpLe0GLyNYpX2HNxBVmn5pW2iOJkPfnAv92zuuR/u+nt4rYuzLEnX5Yt3A3wgApsT/XafGz7fE29aF9d5Flf+sK7dyH4XLwCOjhd5g8/7jyWfCpVTrJbHuqX5rgrlJDlBTl7xQjgTdtReSM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770907373; c=relaxed/simple;
-	bh=Pr/tib4fASi/UYLbu6R6hoz2q1KHQakaSCHzu93cmsI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Yf6o8XScigFuQohRa2yAKDvrmCh1sewkigtE/9RFc8pJzKxScK6CA0ykdtJtFmCye57c0EsSwyUrRjNbsG+2kNB3wKjHKroAvX/Vo9pbheMImEtpHkJNEBM0g+eZam21SJNCI9hcq9t34TB4qgrdTxwMwcpP/k6aewH4GvhU5Fg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZcY5sQdm; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1770907552; c=relaxed/simple;
+	bh=ztzWfLugSvt8j6TU74+8rEShDoaqsOXJUBug2RAETNY=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=scaT/ldWd/2z04WS98hF1i34mPk7UodoyNCVRDb6tB7HvZvMhI82UcJOrtYAp7iWF3ynRoGFYBZqoUtQB1QEJqkL645YeOC58rK83eyNMEVliA8U0bK2tmpfVmdVSjY2NszQ6/HyUlzDchFlOxcRuqets+3ZvTG42XXiUYk9YKA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Kyf129lE; arc=none smtp.client-ip=74.125.224.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZcY5sQdm"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770907371; x=1802443371;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=Pr/tib4fASi/UYLbu6R6hoz2q1KHQakaSCHzu93cmsI=;
-  b=ZcY5sQdmneZyPbnIsRp0wLKkZzaolLchfM9JgL1yB3CfEQ+F/clk2WyF
-   tit5+INtquF/vRjBqC3m5GyK4iwQ74jjk49AkVzTvzmTmNW8RfxiKmE2V
-   eXQMClie3Ov76OXB9GCaNrpXoWoh7P38fJcEolmaa+8q1LwI3yKkApBfs
-   wKQ2u0hSo+1QNaIZ08GjM7eOwp/nw5tTX+8XcvdJzS8gn2MMBWrO5COiP
-   pkQ2kvuvPbUk5S1ePdz4ipWhhVldRi3OKr3Js1sgcdyZU2iixnAdHKTjC
-   rfMUlTwJg3E5EedTXNwuquv8C08aQ3fOVVN7IwVDG/nuj/SdWN7bqrtj1
-   w==;
-X-CSE-ConnectionGUID: ZEBJPWAXRluF+nNa2ezmMw==
-X-CSE-MsgGUID: k6sk310rR1u250U1EkyVjA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11699"; a="89663378"
-X-IronPort-AV: E=Sophos;i="6.21,286,1763452800"; 
-   d="scan'208";a="89663378"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 06:42:50 -0800
-X-CSE-ConnectionGUID: dNWECkuaRQupgcywimIsJg==
-X-CSE-MsgGUID: fKzVznzxRVS2ZA5cob3lug==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,286,1763452800"; 
-   d="scan'208";a="211428783"
-Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.145])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 06:42:47 -0800
-Date: Thu, 12 Feb 2026 16:42:45 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ariana Lazar <ariana.lazar@microchip.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: dac: add support for Microchip MCP48FEB02
-Message-ID: <aY3m5V05FOH5sut6@smile.fi.intel.com>
-References: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
- <20260212-mcp48feb02-v1-2-ce5843db65db@microchip.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Kyf129lE"
+Received: by mail-yx1-f47.google.com with SMTP id 956f58d0204a3-649d4690174so6098208d50.3
+        for <linux-iio@vger.kernel.org>; Thu, 12 Feb 2026 06:45:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1770907550; x=1771512350; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=xkab2DdyEe+Pi5CQKEjli4RcLlAn8ftg9dt9hgOYnmw=;
+        b=Kyf129lEFeKhoB1soRRuuR7SEFLjEPB/i/MuJhuo+cMU+n4gOqCnL7/uf8r77m9XM2
+         6Ulz1bNzgAvUmrGscLRNCECCitILKgKwL5wpiouEhaSVMmKVgvCik6ECxzCtawt/VGW3
+         pqGI2WTXFUYtBSjlMwO1Tuncn2J8ZQC3hTwQiAXYZeFJz87dkCJJ5Y1QmhvqhgMXyDK5
+         gBT2V1cmOKF0hlxTr/2CwbV+iQqXh/kSpJYcbqv1cFuC5UPAOJZLBl7J5if8LhWH36pG
+         ktjHqF/5n3jzdjACnrTK5lwBQtksl7nmVQH8AhXgeD8zq77pWxzUfXq/97nxKTL1+LKD
+         NGTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1770907550; x=1771512350;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=xkab2DdyEe+Pi5CQKEjli4RcLlAn8ftg9dt9hgOYnmw=;
+        b=JNgZde3+ZeD8+YTXxsSqgzTMl2dxT++DLJW+6+mj9H6YTR/Vkncmkvcqxeo+H8EF06
+         TGj6zL4nW1u8+DJkkNS6psAW8y03aEDSPObJ0gJio5lLg9muVIxWoOJL+201rquQkkWu
+         gQ74/dW+ne6gdXOlgUGfA4NYMx77+Sdr9Evy0LEvXiMbgHNfSO/d+trIDPREhrkzg3w7
+         YqGD/sYv9J4qGb7jJasaQjJUcWs0TQLq/vznRwiyj3g2gUIFuVkv/CNniWNKLyv1K7U0
+         C2BvXcSOVp55naJvGMUAJQbPfcVp0OzmUNTJSJBHXixKAZE22O0tpeYkIe/49wpCUmhx
+         qPsw==
+X-Gm-Message-State: AOJu0YxdQVWLpLCex7YkIJ4A+g+XWOz8pcKHKHB1ervOyhYI+tkztrtn
+	fXw8AkQDTuMm4djn11tlUpJOn5V+EFyjIxcoykRh0+sg/wye9eR5zrdv
+X-Gm-Gg: AZuq6aLm6CYHoV77JlyYlJWVQJmmmrcqIV4/I9PFiAlQGibA0RR526gxDDy7lzrh9+H
+	zR0ZfPtqpX0gq4tB/NYiXAoU5495myGvkyOMifFiNuf0f97WPz0uOpWlxk6Ja6aJamNQ799tJPU
+	okXFLut4Y83qGAkxqCocDCBHuCqMmM5HgzTGdC5mtx2xsmuyNTR7wsMRmLZTWvrxF5c70QnXLvW
+	Rq/WG6vBUE5L8SHXlSYR9MKdB7yf9RAFDXAE8AGBoh2iVoVgLMIyHGGkRUF1cOSQ8ELvUYvECFF
+	JWAtaW6Pfe9MbWHuSmt4JWhWuGx5KhQR3ReI8R5Suy/lAql6PnnLUFUMNRymRDdGpJgGlrO0y1s
+	vN8jP+nUkEsbiuMjW5rITAqHt7S/h0s9z3RrMMs3rlGknYm52c5o0iv8jSIjH3xb9SntkyxRgSb
+	UlUca60uB5EsEAgUM0GLql8IuBpA==
+X-Received: by 2002:a53:d041:0:20b0:64a:ea66:bb2a with SMTP id 956f58d0204a3-64bbaa47b0emr2230772d50.21.1770907550339;
+        Thu, 12 Feb 2026 06:45:50 -0800 (PST)
+Received: from [192.168.0.40] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-64afc83c201sm4897318d50.3.2026.02.12.06.45.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Feb 2026 06:45:50 -0800 (PST)
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+Subject: [PATCH v4 0/2] iio: light: Add support for Capella cm36686 and
+ cm36672p sensors
+Date: Thu, 12 Feb 2026 16:42:46 +0200
+Message-Id: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260212-mcp48feb02-v1-2-ce5843db65db@microchip.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
-
-On Thu, Feb 12, 2026 at 02:48:35PM +0200, Ariana Lazar wrote:
-> This is the iio driver for Microchip MCP48FxBy1/2/4/8 series of buffered
-> voltage output Digital-to-Analog Converters with nonvolatile or volatile
-> memory and an SPI Interface.
-> 
-> The families support up to 8 output channels.
-> 
-> The devices can be 8-bit, 10-bit and 12-bit.
-
-...
-
-> +#include <linux/array_size.h>
-> +#include <linux/bits.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/cleanup.h>
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
-
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-
-I would split this group...
-
-> +#include <linux/kstrtox.h>
-> +#include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/mutex.h>
-> +#include <linux/property.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/time64.h>
-> +#include <linux/types.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/units.h>
-> +
-
-...to be here as other IIO drivers do.
-
-...
-
-> +/* Gain Control and I2C Slave Address Reguster fields */
-> +#define DAC_GAIN_MASK(ch)				(BIT(0) << (8 + (ch)))
-
-Just BIT(8 + (ch)) should suffice.
-
-> +#define DAC_GAIN_VAL(ch, val)				((val) << (8 + (ch)))
-
-For the sake of consistency this may be also rewritten to
-
-#define DAC_GAIN_VAL(ch, val)				((val) * BIT(8 + (ch)))
-
-...
-
-> +/**
-> + * struct mcp48feb02_channel_data - channel configuration
-> + * @ref_mode: chosen voltage for reference
-> + * @use_2x_gain: output driver gain control
-> + * @powerdown: is false if the channel is in normal operation mode
-> + * @powerdown_mode: selected power-down mode
-> + * @dac_data: dac value
-
-DAC
-
-> + */
-> +struct mcp48feb02_channel_data {
-> +	u8 ref_mode;
-> +	bool use_2x_gain;
-> +	bool powerdown;
-> +	u8 powerdown_mode;
-> +	u16 dac_data;
-
-Wondering if the following arrangement is slightly better:
-
-	u16 dac_data;
-	u8 ref_mode;
-	u8 powerdown_mode;
-	bool powerdown;
-	bool use_2x_gain;
-
-> +};
-
-...
-
-> +/**
-> + * struct mcp48feb02_data - chip configuration
-> + * @chdata: options configured for each channel on the device
-> + * @lock: prevents concurrent reads/writes to driver's state members
-> + * @chip_features: pointer to features struct
-> + * @scale_1: scales set on channels that are based on Vref1
-> + * @scale: scales set on channels that are based on Vref/Vref0
-> + * @active_channels_mask: enabled channels
-> + * @regmap: regmap for directly accessing device register
-> + * @labels: table with channels labels
-> + * @phys_channels: physical channels on the device
-> + * @vref1_buffered: Vref1 buffer is enabled
-> + * @vref_buffered: Vref/Vref0 buffer is enabled
-> + * @use_vref1: vref1-supply is defined
-> + * @use_vref: vref-supply is defined
-> + */
-> +struct mcp48feb02_data {
-> +	struct mcp48feb02_channel_data chdata[MCP48FEB02_MAX_CH];
-> +	struct mutex lock; /* prevents concurrent reads/writes to driver's state members */
-> +	const struct mcp48feb02_features *chip_features;
-> +	int scale_1[2 * MCP48FEB02_MAX_SCALES_CH];
-> +	int scale[2 * MCP48FEB02_MAX_SCALES_CH];
-
-I would name it scale1 and scale0. This will increase readability to see that
-the sizes are equal and that the first digit is the part of the name.
-
-> +	unsigned long active_channels_mask;
-> +	struct regmap *regmap;
-> +	const char *labels[MCP48FEB02_MAX_CH];
-> +	u16 phys_channels;
-> +	bool vref1_buffered;
-> +	bool vref_buffered;
-> +	bool use_vref1;
-> +	bool use_vref;
-> +};
-
-...
-
-> +static int mcp48feb02_write_to_eeprom(struct mcp48feb02_data *data, unsigned int reg,
-> +				      unsigned int val)
-> +{
-> +	int eewa_val, ret;
-
-Is it okay that the eewa_val is signed?
-
-> +	ret = regmap_read_poll_timeout(data->regmap, MCP48FEB02_GAIN_CTRL_STATUS_REG_ADDR,
-> +				       eewa_val,
-> +				       !(eewa_val & MCP48FEB02_GAIN_BIT_STATUS_EEWA_MASK),
-> +				       USEC_PER_MSEC, USEC_PER_MSEC * 5);
-
-I would rather put it as
-
-				       1 * USEC_PER_MSEC, 5 * USEC_PER_MSEC);
-
-This follows the natural (from physics) reading — 1ms, 5ms.
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	return regmap_write(data->regmap, reg, val);
-> +}
-
-...
-
-> +static ssize_t store_eeprom_store(struct device *dev, struct device_attribute *attr,
-> +				  const char *buf, size_t len)
-> +{
-> +	struct mcp48feb02_data *data = iio_priv(dev_to_iio_dev(dev));
-> +	unsigned int i, val, val1, eewa_val;
-> +	bool state;
-> +	int ret;
-> +
-> +	ret = kstrtobool(buf, &state);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (!state)
-> +		return 0;
-> +
-> +	/*
-> +	 * Wait until the currently occurring EEPROM Write Cycle is completed.
-> +	 * Only serial commands to the volatile memory are allowed.
-> +	 */
-> +	guard(mutex)(&data->lock);
-> +
-> +	/*
-> +	 * Verify DAC Wiper and DAC Configuration are unlocked. If both are disabled,
-> +	 * writing to EEPROM is available.
-> +	 */
-> +	ret = regmap_read(data->regmap, MCP48FEB02_WIPERLOCK_STATUS_REG_ADDR, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (val) {
-> +		dev_err(dev, "DAC Wiper and DAC Configuration not are unlocked.\n");
-
-"are not"
-
-> +		return -EINVAL;
-> +	}
-> +
-> +	for_each_set_bit(i, &data->active_channels_mask, data->phys_channels) {
-> +		ret = mcp48feb02_write_to_eeprom(data, NV_REG_ADDR(i),
-> +						 data->chdata[i].dac_data);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	ret = regmap_read(data->regmap, MCP48FEB02_VREF_REG_ADDR, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = mcp48feb02_write_to_eeprom(data, MCP48FEB02_NV_VREF_REG_ADDR, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read(data->regmap, MCP48FEB02_POWER_DOWN_REG_ADDR, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = mcp48feb02_write_to_eeprom(data, MCP48FEB02_NV_POWER_DOWN_REG_ADDR, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read_poll_timeout(data->regmap, MCP48FEB02_GAIN_CTRL_STATUS_REG_ADDR, eewa_val,
-> +				       !(eewa_val & MCP48FEB02_GAIN_BIT_STATUS_EEWA_MASK),
-> +				       USEC_PER_MSEC, USEC_PER_MSEC * 5);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read(data->regmap, MCP48FEB02_NV_GAIN_CTRL_I2C_SLAVE_REG_ADDR, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read(data->regmap, MCP48FEB02_GAIN_CTRL_STATUS_REG_ADDR, &val1);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = mcp48feb02_write_to_eeprom(data, MCP48FEB02_NV_GAIN_CTRL_I2C_SLAVE_REG_ADDR,
-> +					 (val1 & MCP48FEB02_GAIN_BITS_MASK) |
-> +					 (val & MCP48FEB02_NV_I2C_SLAVE_ADDR_MASK));
-> +	if (ret)
-> +		return ret;
-> +
-> +	return len;
-> +}
-
-> +
-
-Unneeded blank line.
-
-> +static IIO_DEVICE_ATTR_WO(store_eeprom, 0);
-
-...
-
-> +static void mcp48feb02_init_scale(struct mcp48feb02_data *data, enum mcp48feb02_scale scale,
-> +				  int vref_uV, int scale_avail[])
-> +{
-> +	u32 value_micro, value_int;
-> +	u64 tmp;
-> +
-> +	/* vref_uV should not be negative */
-> +	tmp = (u64)vref_uV * MILLI >> data->chip_features->resolution;
-
-If vref_uV is guaranteed to be less than ~33V, this code can be transformed to
-avoid 64-bit division. Hints: resolution is always great than 3; MILLI equals
-to 2³*5³.
-
-> +	value_int = div_u64_rem(tmp, MICRO, &value_micro);
-> +	scale_avail[scale * 2] = value_int;
-> +	scale_avail[scale * 2 + 1] = value_micro;
-> +}
-
-Since it's kinda a common stuff, perhaps one wants to add a helper
-to include/linux/math.h.
-
-...
-
-> +static int mcp48feb02_read_avail(struct iio_dev *indio_dev, struct iio_chan_spec const *ch,
-> +				 const int **vals, int *type, int *length, long info)
-> +{
-> +	struct mcp48feb02_data *data = iio_priv(indio_dev);
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (ch->type) {
-> +		case IIO_VOLTAGE:
-> +			if (data->phys_channels >= 4 && (ch->address % 2))
-> +				*vals = data->scale_1;
-> +			else
-> +				*vals = data->scale;
-
-Actually, if you put the scales as
-
-	int scales[2][2 * MCP48FEB02_MAX_SCALES_CH];
-
-this will become as simple as
-
-			if (data->phys_channels >= 4)
-				*vals = data->scales[ch->address];
-			else
-				*vals = data->scales[0];
-
-OTOH, I am not sure if it can be always as
-
-			*vals = data->scales[ch->address];
-
-which would be the best approach.
-
-> +			*length = 2 * MCP48FEB02_MAX_SCALES_CH;
-> +			*type = IIO_VAL_INT_PLUS_MICRO;
-> +			return IIO_AVAIL_LIST;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-...
-
-> +static void mcp48feb02_get_scale(int ch, struct mcp48feb02_data *data, int *val, int *val2)
-> +{
-> +	enum mcp48feb02_scale current_scale;
-> +
-> +	if (data->chdata[ch].ref_mode == MCP48FEB02_VREF_VDD)
-> +		current_scale = MCP48FEB02_SCALE_VDD;
-> +	else if (data->chdata[ch].use_2x_gain)
-> +		current_scale = MCP48FEB02_SCALE_GAIN_X2;
-> +	else
-> +		current_scale = MCP48FEB02_SCALE_GAIN_X1;
-> +
-> +	if (data->phys_channels >= 4 && (ch % 2)) {
-> +		*val = data->scale_1[current_scale * 2];
-> +		*val2 = data->scale_1[current_scale * 2 + 1];
-> +	} else {
-> +		*val = data->scale[current_scale * 2];
-> +		*val2 = data->scale[current_scale * 2 + 1];
-> +	}
-
-Ditto. I.o.w. you can avoid (ch % 2) for good.
-
-> +}
-
-...
-
-> +static int mcp48feb02_set_scale(struct mcp48feb02_data *data, int ch, int scale)
-> +{
-> +	int tmp_val, ret;
-
-Why is 'tmp_val' signed?
-
-> +	ret = mcp48feb02_ch_scale(data, ch, scale);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (scale == MCP48FEB02_SCALE_GAIN_X2)
-> +		tmp_val = MCP48FEB02_GAIN_BIT_X2;
-> +	else
-> +		tmp_val = MCP48FEB02_GAIN_BIT_X1;
-> +
-> +	ret = regmap_update_bits(data->regmap, MCP48FEB02_GAIN_CTRL_STATUS_REG_ADDR,
-> +				 DAC_GAIN_MASK(ch), DAC_GAIN_VAL(ch, tmp_val));
-> +	if (ret)
-> +		return ret;
-> +
-> +	data->chdata[ch].use_2x_gain = tmp_val;
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int mcp48feb02_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec const *ch,
-> +				int val, int val2, long mask)
-> +{
-> +	struct mcp48feb02_data *data = iio_priv(indio_dev);
-> +	int *tmp_scale, ret;
-> +
-> +	guard(mutex)(&data->lock);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = regmap_write(data->regmap, REG_ADDR(ch->address), val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		data->chdata[ch->address].dac_data = val;
-> +		return 0;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (data->phys_channels >= 4 && (ch->address % 2))
-> +			tmp_scale = data->scale_1;
-> +		else
-> +			tmp_scale = data->scale;
-
-Same, (ch->address % 2) can be avoided.
-
-> +		ret = mcp48feb02_check_scale(data, val, val2, tmp_scale);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		return mcp48feb02_set_scale(data, ch->address, ret);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-...
-
-> +static int mcp48feb02_parse_fw(struct iio_dev *indio_dev,
-> +			       const struct mcp48feb02_features *chip_features)
-> +{
-> +	struct iio_chan_spec chanspec = mcp48febxx_ch_template;
-> +	struct mcp48feb02_data *data = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(data->regmap);
-> +	struct iio_chan_spec *channels;
-> +	u32 num_channels;
-
-> +	u8 chan_idx = 0;
-
-Assignments like this are harder to maintain and prone to subtle mistakes in
-case the variable gets reused. Please, split it...
-
-> +	guard(mutex)(&data->lock);
-> +
-> +	num_channels = device_get_child_node_count(dev);
-> +	if (num_channels > chip_features->phys_channels)
-> +		return dev_err_probe(dev, -EINVAL, "More channels than the chip supports\n");
-> +
-> +	if (!num_channels)
-
-While this is standard pattern, I find == 0 is more explicit when we compare
-counters, but it's up to you and maintainers.
-
-> +		return dev_err_probe(dev, -EINVAL, "No channel specified in the devicetree.\n");
-> +
-> +	channels = devm_kcalloc(dev, num_channels, sizeof(*channels), GFP_KERNEL);
-> +	if (!channels)
-> +		return -ENOMEM;
-
-...to be here as
-
-	chan_idx = 0;
-
-> +	device_for_each_child_node_scoped(dev, child) {
-> +		u32 reg = 0;
-
-Redundant assignment. "reg" is a mandatory property AFAICS from the below code.
-
-> +		int ret;
-> +
-> +		ret = fwnode_property_read_u32(child, "reg", &reg);
-> +		if (ret)
-> +			return dev_err_probe(dev, ret, "Invalid channel number\n");
-> +
-> +		if (reg >= chip_features->phys_channels)
-> +			return dev_err_probe(dev, -EINVAL,
-> +					     "The index of the channels does not match the chip\n");
-
-> +		set_bit(reg, &data->active_channels_mask);
-
-Is atomic bit operation required here?
-
-> +		ret = fwnode_property_read_string(child, "label", &data->labels[reg]);
-> +		if (ret)
-
-> +			return dev_err_probe(dev, ret, "%pfw: invalid label\n",
-> +					     fwnode_get_name(child));
-
-Something is really wrong here. Please, fix accordingly.
-
-> +		chanspec.address = reg;
-> +		chanspec.channel = reg;
-> +		channels[chan_idx] = chanspec;
-> +		chan_idx++;
-> +	}
-> +
-> +	indio_dev->num_channels = num_channels;
-> +	indio_dev->channels = channels;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	data->phys_channels = chip_features->phys_channels;
-> +
-> +	data->vref_buffered = device_property_read_bool(dev, "microchip,vref-buffered");
-
-> +	if (chip_features->have_ext_vref1)
-> +		data->vref1_buffered = device_property_read_bool(dev, "microchip,vref1-buffered");
-
-Alternatively can be
-
-	if (device_property_read_bool(dev, "microchip,vref1-buffered"))
-		data->vref1_buffered = chip_features->have_ext_vref1;
-
-the difference is that vref1_buffered can be filled with "false", but I don't see
-if it can be true before that. You may stick with your variant to avoid this side
-effect.
-
-> +	return 0;
-> +}
-
-...
-
-> +static int mcp48feb02_init_ctrl_regs(struct mcp48feb02_data *data)
-> +{
-> +	unsigned int i, vref_ch, gain_ch, pd_ch;
-> +	int ret;
-> +
-> +	ret = regmap_read(data->regmap, MCP48FEB02_VREF_REG_ADDR, &vref_ch);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read(data->regmap, MCP48FEB02_GAIN_CTRL_STATUS_REG_ADDR, &gain_ch);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read(data->regmap, MCP48FEB02_POWER_DOWN_REG_ADDR, &pd_ch);
-> +	if (ret)
-> +		return ret;
-> +
-> +	gain_ch = gain_ch & MCP48FEB02_GAIN_BITS_MASK;
-> +	for_each_set_bit(i, &data->active_channels_mask, data->phys_channels) {
-> +		struct device *dev = regmap_get_device(data->regmap);
-> +		unsigned int pd_tmp;
-> +
-> +		data->chdata[i].ref_mode = (vref_ch >> (2 * i)) & MCP48FEB02_DAC_CTRL_MASK;
-> +		data->chdata[i].use_2x_gain = (gain_ch >> i)  & MCP48FEB02_GAIN_BIT_MASK;
-> +
-> +		/*
-> +		 * Inform the user that the current voltage reference read from the volatile
-> +		 * register of the chip is different from the one specified in the device tree.
-> +		 * Considering that the user cannot have an external voltage reference connected
-> +		 * to the pin and select the internal Band Gap at the same time, in order to avoid
-> +		 * miscofiguring the reference voltage, the volatile register will not be written.
-> +		 * In order to overwrite the setting from volatile register with the one from the
-> +		 * device tree, the user needs to write the chosen scale.
-> +		 */
-> +		switch (data->chdata[i].ref_mode) {
-> +		case MCP48FEB02_INTERNAL_BAND_GAP:
-> +			if (data->phys_channels >= 4 && (i % 2) && data->use_vref1) {
-> +				dev_dbg(dev, "ch[%u]: was configured to use internal band gap", i);
-> +				dev_dbg(dev, "ch[%u]: reference voltage set to VREF1", i);
-> +				break;
-
-> +			}
-> +			if ((data->phys_channels < 4 || (data->phys_channels >= 4 && !(i % 2))) &&
-> +			    data->use_vref) {
-
-I don't see how these two conditionals can be run both.
-
-> +				dev_dbg(dev, "ch[%u]: was configured to use internal band gap", i);
-> +				dev_dbg(dev, "ch[%u]: reference voltage set to VREF", i);
-> +				break;
-> +			}
-
-With that in mind, the above can be simplified a bit.
-
-			if (data->use_vref && ((data->phys_channels >= 4 && !(i % 2)) ||
-					       (data->phys_channels < 4))) {
-				dev_dbg(dev, "ch[%u]: was configured to use internal band gap\n", i);
-				dev_dbg(dev, "ch[%u]: reference voltage set to Vref\n", i);
-			} else if (data->use_vref1 && data->phys_channels >= 4 && (i % 2)) {
-				dev_dbg(dev, "ch[%u]: was configured to use internal band gap\n", i);
-				dev_dbg(dev, "ch[%u]: reference voltage set to Vref1\n", i);
-			}
-
-The conditionals were reshuffled to make it shorter and easier to compare
-(yes, there is a pair of unneeded parentheses for the sake of good looking
- code, a.k.a. readability).
-
-Also note, the messages were missing trailing '\n'; I lowered REF --> ref
-in them.
-
-> +			break;
-> +		case MCP48FEB02_EXTERNAL_VREF_UNBUFFERED:
-> +		case MCP48FEB02_EXTERNAL_VREF_BUFFERED:
-> +			if (data->phys_channels >= 4 && (i % 2) && !data->use_vref1) {
-> +				dev_dbg(dev, "ch[%u]: was configured to use VREF1", i);
-> +				dev_dbg(dev,
-> +					"ch[%u]: reference voltage set to internal band gap", i);
-> +				break;
-> +			}
-> +			if ((data->phys_channels < 4 || (data->phys_channels >= 4 && !(i % 2))) &&
-> +			    !data->use_vref) {
-> +				dev_dbg(dev, "ch[%u]: was configured to use VREF", i);
-> +				dev_dbg(dev,
-> +					"ch[%u]: reference voltage set to internal band gap", i);
-> +				break;
-> +			}
-> +			break;
-
-Ditto.
-
-> +		}
-> +
-> +		pd_tmp = (pd_ch >> (2 * i)) & MCP48FEB02_DAC_CTRL_MASK;
-> +		data->chdata[i].powerdown_mode = pd_tmp ? (pd_tmp - 1) : pd_tmp;
-> +		data->chdata[i].powerdown = !!(data->chdata[i].powerdown_mode);
-> +	}
-> +
-> +	return 0;
-> +}
-
-...
-
-> +static int mcp48feb02_probe(struct spi_device *spi)
-> +{
-> +	const struct mcp48feb02_features *chip_features;
-> +	struct device *dev = &spi->dev;
-> +	struct mcp48feb02_data *data;
-> +	struct iio_dev *indio_dev;
-
-> +	int vref1_uV = 0;
-> +	int vref_uV = 0;
-
-Please, split the assignments (the rationale was given somewhere above).
-
-> +	int vdd_uV;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +
-> +	chip_features = spi_get_device_match_data(spi);
-> +	if (!chip_features)
-> +		return -EINVAL;
-> +
-> +	data->chip_features = chip_features;
-> +
-> +	if (chip_features->have_eeprom) {
-> +		data->regmap = devm_regmap_init_spi(spi, &mcp48feb02_regmap_config);
-> +		indio_dev->info = &mcp48feb02_info;
-> +	} else {
-> +		data->regmap = devm_regmap_init_spi(spi, &mcp48fvb02_regmap_config);
-> +		indio_dev->info = &mcp48fvb02_info;
-> +	}
-> +	if (IS_ERR(data->regmap))
-> +		return dev_err_probe(dev, PTR_ERR(data->regmap), "Error initializing spi regmap\n");
-
-SPI
-
-> +	indio_dev->name = chip_features->name;
-> +
-> +	ret = mcp48feb02_parse_fw(indio_dev, chip_features);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Error parsing firmware data\n");
-> +
-> +	ret = devm_mutex_init(dev, &data->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_regulator_get_enable_read_voltage(dev, "vdd");
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	vdd_uV = ret;
-> +
-> +	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
-> +	if (ret > 0) {
-> +		vref_uV = ret;
-> +		data->use_vref = true;
-> +	} else {
-> +		dev_dbg(dev, "using internal band gap as voltage reference.\n");
-> +		dev_dbg(dev, "External Vref is unavailable.\n");
-> +	}
-> +
-> +	if (chip_features->have_ext_vref1) {
-> +		ret = devm_regulator_get_enable_read_voltage(dev, "vref1");
-> +		if (ret > 0) {
-> +			vref1_uV = ret;
-> +			data->use_vref1 = true;
-> +		} else {
-> +			dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
-> +			dev_dbg(dev, "External Vref1 is unavailable.\n");
-> +		}
-> +	}
-> +
-> +	ret = mcp48feb02_init_ctrl_regs(data);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Error initialising vref register\n");
-> +
-> +	ret = mcp48feb02_init_ch_scales(data, vdd_uV, vref_uV, vref1_uV);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-
-
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyTHQUlJIzE
+ vPSU3UzU4B8JSMDIzMDIwND3eRcYzMzCzPdtGTzRAtjC9M0w+QUJaDqgqLUtMwKsEnRsbW1AJ5
+ 1bepZAAAA
+X-Change-ID: 20260201-cm36686-fc7a8385f1cd
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
+ phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>
+X-Mailer: b4 0.14.3
+
+This patch series adds support for Capella cm36686 and cm36672p ambient
+light and proximity sensors.
+
+Capella cm36686 is a combined ambient light and proximity sensor with
+adjustable integration time, interrupt and hysteresis support. It has
+the slave address of 0x60. cm36672p is fully compatible with cm36686,
+except that it is a proximity-only sensor.
+
+Unfortunately, datasheets for these sensors are not publicly
+available. Initially, this patch series introduced a new driver, which
+had code based on Android downstream kernels for devices which did use
+these sensors and a previous submission for cm36672p to mailing lists:
+https://github.com/LineageOS/android_kernel_xiaomi_msm8992/blob/cm-14.1/drivers/iio/light/cm36686.c
+https://github.com/shakalaca/ASUS_ZenFone_ZD551KL/blob/android-6.0/kernel/drivers/input/misc/cm36283.c
+https://lore.kernel.org/linux-iio/1465462845-1571-1-git-send-email-capellamicro@gmail.com/
+
+However, a compatible driver has been found which is already upstream
+and can be used instead. Hence, this patch series adds support for
+Capella CM36686 and CM36672P to an existing driver for VCNL4040.
+
+The following code has been tested on Asus ZenFone 2 Laser/Selfie, which
+uses cm36686 as its ambient light and proximity sensor.
+
+Changes since v3 (misversioned as v1):
+- Move Capella enum IDs up so device IDs are sorted by string literal.
+- Move device tree table entries up so they are sorted by string
+  literal.
+- Add a trailing comma to the cm36672p_channels proximity channel entry.
+- Link to v3:
+https://lore.kernel.org/linux-iio/20260210-cm36686-v1-0-aef68dd46ad4@gmail.com/
+
+Changes since v2:
+- Remove the previous unnecessary proposed driver and bindings.
+- Add a fallback compatible for cm36686 of vcnl4040.
+- Add a new compatible for cm36672p.
+- Add channel info for cm36672p.
+- Remove redundant information in the dt-bindings commit message.
+- Link to v2:
+https://lore.kernel.org/linux-iio/20260209-cm36686-v2-0-a48126d2b124@gmail.com/
+
+Changes since v1:
+- Add copyright information.
+- Sort includes in alphabetical order.
+- Add trailing commas.
+- Remove blank spaces where unnecessary.
+- Add a fallback for capella,cm36686 compatible.
+- Make power supplies required.
+- Add '-microamp' suffix for capella,proximity-led-current.
+- Replace local caching and i2c_smbus calls with regmap API.
+- Make interrupt optional.
+- Add action or reset only after setup is done.
+- Replace mutex_[un]lock calls with guard(mutex)
+- Add comments on where mutex is used.
+- Add comments on proximity register defaults.
+- Remove default proximity sensor duty ratio and integration time. Those
+  were taken from the testing device and had no real reason to be there.
+- Replace dev_err_probe on device's part ID with a warning.
+- Replace chip->supplies property with a single
+  devm_regulator_bulk_get_enable call.
+- Use individual structs instead of array-style device info
+- Remove enums which are no longer used.
+- Link to v1:
+https://lore.kernel.org/linux-iio/20260201-cm36686-v1-0-4949a2a9ba63@gmail.com/
+
+Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+---
+Erikas Bitovtas (2):
+      dt-bindings: iio: light: vcnl4000: add Capella CM36686 and CM36672P
+      iio: light: vcnl4000: add support for Capella CM36686 and CM36672P
+
+ .../bindings/iio/light/vishay,vcnl4000.yaml        | 17 +++++----
+ drivers/iio/light/vcnl4000.c                       | 40 ++++++++++++++++++++++
+ 2 files changed, 51 insertions(+), 6 deletions(-)
+---
+base-commit: 9152bc8cebcb14dc16b03ec81f2377ee8ce12268
+change-id: 20260201-cm36686-fc7a8385f1cd
+
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Erikas Bitovtas <xerikasxx@gmail.com>
 
