@@ -1,65 +1,66 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87D906A001;
-	Thu, 12 Feb 2026 20:05:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F3BA33EC;
+	Thu, 12 Feb 2026 20:16:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770926703; cv=none; b=OTZk4w4AobQ7eQItVE1Wu7tnmZilxBlj3HAmxfrO72bhhblzN2z65DI2KYngoATG5K6IBxM6N3PzHrLfuyO8MdTAWqTtNcM+5paeBhd22dkdh+B4fhrs1GcAYs2ghBt9BBhuv549TT8OBEnKkTbWCLZ37Y6C3pE6Yda/wQv6pFM=
+	t=1770927366; cv=none; b=RHBFNI/DYl3kKFuDbxtKsKx3rNfz/jzHUcqG/iC9foIGrZhkW7VelVxNcjNolwv7sTc+nMDisI8RXALiq5+UJ9BtZaSbsY/LoqOYFqZcplYZOfqZeXvWy1HvWNcDXoaebDc6zezhOoc34RJMaRy8UZ3elTc5K7GFspsk1Qd2yFU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770926703; c=relaxed/simple;
-	bh=uyTy8rtGm67fhbLp1EoWNhIRmFKTSkTNcIevE479EaY=;
+	s=arc-20240116; t=1770927366; c=relaxed/simple;
+	bh=wwE34Bgtgf/Gw15HIRaM25Es13ztP8iFuewv1sRvQzM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=brhykPLVu30EfITeYLJH0uiMXJcfLKKrbEVN0ozIw3Z67Ylm4iemsNecLPZ4wVdxOLQck+DbWBxQBBI0GWJ36HgmnRzEXr4RxIs1tiN9CicM9opqXRKEW4PfB3vj498o81EKi520byBGJdANRCiRB+94WRWPE7tcmAHMUGLJ1S4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QBcF5xEx; arc=none smtp.client-ip=198.175.65.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=iiZsgpJwwjBuPisGp7vfQZ4M48pnmEFduZist3Hvk8GxwtcGcNlwGJXcgNLqG2PrqF6l05EJWndQ+XAZqW6wTT+OEmdgbMROQP96zSiXKFR0BeX/SwK0/URVTj//erRD5MpHQppE9rI0jQ63PGzzsRZ4lWcU3NUT4JhLm0DeXfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=kkfH6GHr; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QBcF5xEx"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="kkfH6GHr"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1770926703; x=1802462703;
+  t=1770927366; x=1802463366;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=uyTy8rtGm67fhbLp1EoWNhIRmFKTSkTNcIevE479EaY=;
-  b=QBcF5xEx3kuE6f51d4jXxgSi9Mxj00vhQT9lD4ogJbUWf1LiJAd1nvv8
-   hq3i/H9iSJBdJDh3qvIlVIY7fyMbRj2I9MSEGVfiSItaOLNCd255Dfw/A
-   PNWjnAyEEzvCtB6rc5DaiLXUYXiOBH65Xt40EPmoah9pndcnrQqwz2WUO
-   icy+ZPdY/atQqPV+gdaW0jTVzYY4qWc3hoOHNBSInEqx7NS5gmqeNsMaT
-   3e407F5Obre1diEGvCXbnUbkdd7ZmOXALcCKxgBd+s345J3HXTSKDktoO
-   A4hivoF7r7/UkFlNdcFE7d/QEGAOL1OqOew+p5wUoSjwZYtjetT8QdE0R
-   g==;
-X-CSE-ConnectionGUID: yUgNaK06Tdm//DEg0WP1yA==
-X-CSE-MsgGUID: xKzpfqm1QH+LRJgEr7maKw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11699"; a="83553917"
+  bh=wwE34Bgtgf/Gw15HIRaM25Es13ztP8iFuewv1sRvQzM=;
+  b=kkfH6GHrGYHuEySzIdttNVjgTVgMPFEkg+LdAUbsc43ROwWQxDbuXZYL
+   DTxpaAHpLaN+TNKRi/SaGqKJUw6Xna6hVEZkspk1Qv0/gzlxqr633Hb0I
+   85TW+WR/au3IdfUicshzDxv7iwI0ZRlFzTl5iqFKI6Ob9X1MMnUPbwKpd
+   7MevOQTphWu/rrD3VE6Q3cNlmfd4+OcNCMsFebXVICUU3iPsWNKIHTd4F
+   NCsBSsfh6Vu9XH9hx1IBmIYIEXkO9kVzP9LemnL5XQAX6Xjc6HD/8Rlcw
+   y/u/WfLzreEsn2xKW9gqkOxbdBGpoQ9fj64t6NHMakg25+/AwTXXYQ++X
+   w==;
+X-CSE-ConnectionGUID: ZoC829s2ScSx4Z6xFI2jPA==
+X-CSE-MsgGUID: x62EbK4lQ92cD5EfWfsOTQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11699"; a="82437197"
 X-IronPort-AV: E=Sophos;i="6.21,287,1763452800"; 
-   d="scan'208";a="83553917"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 12:05:02 -0800
-X-CSE-ConnectionGUID: L1BYOUiwQtebn8s5qOCiVQ==
-X-CSE-MsgGUID: odSCEUENT6SSVO8DABrKEw==
+   d="scan'208";a="82437197"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 12:16:02 -0800
+X-CSE-ConnectionGUID: QQ+/vSBZS8iRbZzHMcNc3Q==
+X-CSE-MsgGUID: /M3411vERveUAiSaZNIT1A==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,287,1763452800"; 
-   d="scan'208";a="235688431"
 Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.145])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 12:04:59 -0800
-Date: Thu, 12 Feb 2026 22:04:57 +0200
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Feb 2026 12:15:58 -0800
+Date: Thu, 12 Feb 2026 22:15:55 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Conor Dooley <conor@kernel.org>
-Cc: Ariana Lazar <ariana.lazar@microchip.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: dac: add support for Microchip
- MCP48FEB02
-Message-ID: <aY4yaVP2TQFRI1E4@smile.fi.intel.com>
-References: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
- <20260212-mcp48feb02-v1-1-ce5843db65db@microchip.com>
- <20260212-germless-favoring-c27ab4c53128@spud>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-mentees@lists.linuxfoundation.org, me@brighamcampbell.com,
+	skhan@linuxfoundation.org
+Subject: Re: [PATCH v1 2/2] iio: dac: ad5504: use adi,output-range-volts for
+ scale calculation
+Message-ID: <aY40-0v9tbXC4tPY@smile.fi.intel.com>
+References: <20260212181955.42724-1-0rayn.dev@gmail.com>
+ <20260212181955.42724-3-0rayn.dev@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,27 +69,62 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260212-germless-favoring-c27ab4c53128@spud>
+In-Reply-To: <20260212181955.42724-3-0rayn.dev@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Feb 12, 2026 at 06:00:06PM +0000, Conor Dooley wrote:
-> On Thu, Feb 12, 2026 at 02:48:34PM +0200, Ariana Lazar wrote:
-> > This is the device tree schema for iio driver for Microchip
-> > MCP48FxBy1/2/4/8 series of buffered voltage output Digital-to-Analog
-> > Converters with nonvolatile or volatile memory and an SPI Interface.
-> > 
-> > The families support up to 8 output channels.
-> > 
-> > The devices can be 8-bit, 10-bit and 12-bit.
-> > 
-> > Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+On Thu, Feb 12, 2026 at 07:19:55PM +0100, Taha Ed-Dafili wrote:
+> The driver previously used VCC to calculate the scale, but the datasheet
+> states the output range is fixed by the R_SEL pin (0-30V or 0-60V).
 > 
-> Other than the interface, what's actually different between this and the
-> 47? Could they share the same binding?
+> Update probe to read `adi,output-range-volts` for the scale. Default
+> to the 60V range if the property is missing, while keeping the VCC
+> regulator enable for power.
 
-If that is the case, I don't think we even need a brand new driver, the
-existing one should be refactored to adapt SPI interface.
+...
+
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/module.h>
+>  #include <linux/bitops.h>
+> +#include <linux/property.h>
+
+Add it before 'linux/s*.h' includes to make less ordering issues.
+Ideally one additional patch to sort the headers and one to replace
+"proxy" headers (following IWYU principle).
+
+...
+
+> +	ret = device_property_read_u32(&spi->dev, "adi,output-range-volts", &val);
+
+You can pack this into 80 limit with help of
+
+	struct device *dev = &spi->dev;
+
+being defined in the top of the function.
+
+> +	if (ret)
+> +		val = 60;
+
+Also this seems an optional, so
+
+	val = 60;
+	device_property_read_u32(dev, "adi,output-range-volts", &val);
+
+would be enough.
+
+...
+
+> +	if (val == 60)
+> +		st->vref_mv = 60000;
+
+60 * MILLI;
+
+> +	else
+> +		st->vref_mv = 30000;
+
+30 * MILLI;
+
+Needs units.h.
 
 -- 
 With Best Regards,
