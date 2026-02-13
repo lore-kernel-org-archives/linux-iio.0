@@ -1,118 +1,99 @@
-Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8AC52773F7
-	for <linux-iio@vger.kernel.org>; Fri, 13 Feb 2026 16:46:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 60E30362135
+	for <linux-iio@vger.kernel.org>; Fri, 13 Feb 2026 17:05:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771001226; cv=none; b=eGoWiKx8sEysOyq8QxxPqcCpUTno4xP/nNhhIMHVosplw/J/Lb72MV2LxRL3U0BjPUt0WTQlDNXbniTUhgsTL9hW8dfXljUa13ZrChT7OzFKqgJq5Kw49vP7nmEJoBsZOF2SN8b737M9pAhJnu78vBNalEGX9A+bJpTOz2nCHVw=
+	t=1771002310; cv=none; b=a7m73zkTisqSUiQFfcNuQKDCliZhOYI8uVSzsbbFyzaXTuOlr/JtCgV3bMSZ/xRKYb3WNVuPgiBnWGXoqhj2risPQt/pDfqehPZFumEE3DbWgYIpwMtZHvbUKfLV4maf0JonlEBfUtSWoZd8VguXpu3c6EYxBgw4Nr+uEEqC+FU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771001226; c=relaxed/simple;
-	bh=TEDdPlaEpnW7WaNXhFAsw4ldmvR29Oedig7dlA21uFw=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=YDGIswb5eyOzBED+AkdyodWaEWGUvkTD+J4N4AJ584GDeibufSubHKpFKO2uDfhl/TeOcjLxgBCpJ5P5Y5xs6qimeTiPC57JIQJCPjNnjNZ7AS8fC2Ya0SnEy0ODXt6D8oqIoPygPnx1xIZnp2q71rJLOS4OpU23Zoeka8m53YI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=V5gX8JfU; arc=none smtp.client-ip=209.85.128.51
+	s=arc-20240116; t=1771002310; c=relaxed/simple;
+	bh=KwNeEzFfWpRzRcqhfUMoelVTv6pBfRhBCYE/TnDdz7Y=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=p22G4uhe4U5g2DjnMXM2/SXgBIzkQUcZGzTIy8oIM+Ty909s7cdSjyT4h+o9hWHHyXJNnNzzoLDmBhWfCluztoenYljE6pHs8fe4y6RxZv34JSnOOykAoahBvkromZo9n59lU7jyrMEtg4d2vOus722gwlL8mpxURW7+hYWyfxk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j3swaOtr; arc=none smtp.client-ip=209.85.128.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="V5gX8JfU"
-Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48379a42f76so40275e9.0
-        for <linux-iio@vger.kernel.org>; Fri, 13 Feb 2026 08:46:55 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j3swaOtr"
+Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4836f363ad2so13091465e9.1
+        for <linux-iio@vger.kernel.org>; Fri, 13 Feb 2026 09:05:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771001214; x=1771606014; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=TuMWoNcNJvwge2oM1K5CKUPuWI2oL9A2iyuZQ+8bSTk=;
-        b=V5gX8JfUqgRJdyMSycwBm4aAcYbm5s0oPdlrIdS5PNuj7zhK1EBMZYGwkph4LsFmrU
-         RqlbI7kXjpu5WLSrFCLAy3n4lo2CH36/AHPdowI9Ti9d1N2y/T1jOxoM/R6ssvLEMycv
-         dGGZLS3h5mLFZwvk3JsqVHaGAAkcNaPOjVHIlEqnonR7emyqrEfwgPtLnd/Wv1mNg4yE
-         CLUx+X7UeUEK1rU/YX4RCA4kbv1RblShxLlEo/hMtgXpOpdQskbEz0OuqHeSHXogJLDE
-         N/D7DJGxpWcZcb7apkcKay19jHHaQmsG099xpYqBzVatTX1W6FhBj2b1s2FZUe94VKF1
-         ySSQ==
+        d=gmail.com; s=20230601; t=1771002308; x=1771607108; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=KwNeEzFfWpRzRcqhfUMoelVTv6pBfRhBCYE/TnDdz7Y=;
+        b=j3swaOtrWX+ICcmlGpYBGFVBPi7vYPYEOJlXoJcb075ywwrI+FZgG/mrTxSthH1D48
+         cyAnDA8IiyZoYK+pcNgaBh1nXbICKVaXg/UYvmUyxMqhtUv4JsHjwHcU/tIFQcT3BtHu
+         Juk6oSrP8SfW559YWFhhXiGCbx81QugVRJmMTu7XAn4hVW26KRjv3v/v97qmv5Kygw9y
+         Jvz2t/3q3kjnOTXTZnVrig0gym06dc3e/ar8e8mPzXox2g222NBVzzADTmCxGR4cjWGM
+         qzCniwlo0v0ZuqFuJ92lq2ePo1aYfFb4ttm2orRxxVsgkpXAlQOrjsPmUKoCaqGzM7Cu
+         yPKw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771001214; x=1771606014;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=TuMWoNcNJvwge2oM1K5CKUPuWI2oL9A2iyuZQ+8bSTk=;
-        b=nVFKajV5bxD5aZIK6B8WzbgAVcxFDpRHqdyQk6m2u486Pn0XrT6QMj2VXKJcfsgJA1
-         YBydvoRaFuLPugMgVMR8bEECvINB3BvcPI62e8uIIpzYe474e86EgopY/bn5edxPMcIA
-         DJjPvHWQht4HVlL/XT1vVCQFp+SiraiKGrU7G6BjtBELnNFxZ+nqigHcGRxejvbExn2e
-         5vl4Dy2XC0fYUg/Zv2BWGnmVA+v5CJ8ZGdZtJ2kC+BGCkaIYRp9qrql8gtUq4HZVQRoV
-         HUy3LgbNQHcU78QZodORvtrImJacbaa7GDxT3OVWJkP6Tzpbh+aQW4SqRiPa1XcqDdiI
-         arDw==
-X-Forwarded-Encrypted: i=1; AJvYcCWnpSy4tU0WHHrqzkeQ7l67YxnUBPXUVvA9ZtddJykVMvVGyWBGdWoSaV9yb0ZR6x/vIh29bdeDQi0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyYIwBDWkOITG+lU1K1w0Ad0Qk7Zz0ci81eHSqTHLc5yTOiB2qG
-	bgxfR+QWZBMj87YjgEq2MdOxOETaRzeiO3tV5xJ7QurjJ5CDKcaTjJFr/WsMUhtE
-X-Gm-Gg: AZuq6aLHWxX22gKn0923jCzGiAVDjKJO5t0mhTB/KrjfnxCGExCIgVl0zaTaV5pJiXl
-	PTTpoeJyWkp8NoUUVAIYsdFLHhlYMN61VWUrxhiv9UX7DcQN89nq676YkYU+XYGM9Z2kf3J2uo3
-	qy3VrHNrWHracKfQyY3dXlkxpe0NOhu0fOgYPVKIksMlJN9HgbD6orK/NyV+6UuL1ovHJLFRqjM
-	yEkyjTcR+rM9+YyYjFXpsfXsSF05qh0udY/l3vVB25iZMvi/glkdkXZzXl8+klTHosdEYsn+HbS
-	CC0CPOEFiXMT54X5rs3giiNHqKp6NylXouzqRnNL/Z5qGF1ZRfP2F/lb9Jto2vyySfDyybl3GMc
-	qqhMpomNdnCwrhYE5qTCF6UyWCj0HAG2V3E+4A2jU7bxZ2awKqA814gZ/uLF80gLcChoQzTXw1l
-	K6W5aQhQ4iHtdoSRg7lp4oMd6wKmpvuuU=
-X-Received: by 2002:a05:600c:4753:b0:477:561f:6fc8 with SMTP id 5b1f17b1804b1-48373a15e72mr43771295e9.5.1771001214115;
-        Fri, 13 Feb 2026 08:46:54 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48371a34d66sm24238785e9.20.2026.02.13.08.46.53
+        d=1e100.net; s=20230601; t=1771002308; x=1771607108;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=KwNeEzFfWpRzRcqhfUMoelVTv6pBfRhBCYE/TnDdz7Y=;
+        b=q49mNXOvZbwjzD3MoKyPVEfGYOeF5fZHEfR4xroMoynQHY2TMLFiMjvuzNo8UhQ4Vr
+         lJUkt2gr8DxQTgSQrK1FcFEU7b7m/omo4KI/eP1JTyD+BQce9/xDht7Zx95KpiJoQKbP
+         3ogfY5JEUbT658/RFk5lDlEKVg68z5EmdogufTUVtd2YGC0PS54aPlJn6ql7eWx0uyx7
+         s5lxq4SY3Jux3KYOjvqT7svN5mIqT7gDqt9iDMKkd0QtY/ApFTj2L7GT4JPLDILhHxoc
+         Rk9ovdct8gODInxXwWk2TfRHbf3980vHfwrmpanCTxHQZT9zSRKfCcLYyfkf4lDUMexj
+         8z7w==
+X-Forwarded-Encrypted: i=1; AJvYcCUFD2kkmJ5CeAGxi0rrySqjbsMouZAz8dEjcHffLfEk4HV8DjVkT2HeIYQoKhwecR6QCbRxs3zu4mY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxtCCI1+QdqL7s6QizNWOAK5bcCDDpdNflRetdYBaGRAReHsXzw
+	rt24LwJviE4Vr8wC+XeE7WOlm7C2OEjBrytsZGnvmiO0yz/G3IiJVxIt
+X-Gm-Gg: AZuq6aJ1ZcbH+Gpu8RHT/BEoQNcQUyytNChTQ5Cx1sYTK0tG9WikZUT0MXLZxjPB1Aj
+	/VFq3wOs2ejf6Amcd/e1xrkkMKf2x3Szxae7ArGDNnukyAKOmgCLWpLIYT/PlYwzEGCDnnrmGse
+	onBdIQlW3ZA+5lCJsckLauA8lQvO+iPIqtQZZuW23sv7vU7dchcxcH/eCaqqn8IBtuNMa8yqCZ5
+	5judLOzcR7JwmQwdWHbDSiOfFwbnRAY199Rl8g0/dcsD618iYrv70LRD6atUhCShLFuhCnIFAyS
+	iXL2IBJ3Z/iwvvjztZnuwLoZNggXHSm2xmZLW+B5ESZ9MysGIeMxv0JZMcgC4xBRyCyNmjwfWXb
+	7TNR9ytUMSjEMbCWyv35vzZMkJB4dGEaW1OOryBujc3GgtHnw/5Bt83RBNDwMABQ17fmypvtirp
+	GqC3k1OFkoG+wx2i0s+qyElbS9cGt4f2tYxxHz9xIjMYIwxRH0m6gRUZ8u/rxoyT6i
+X-Received: by 2002:a05:600c:4f86:b0:477:63b5:7148 with SMTP id 5b1f17b1804b1-483739ff886mr38808915e9.6.1771002307427;
+        Fri, 13 Feb 2026 09:05:07 -0800 (PST)
+Received: from db07.UM6P.local ([196.200.180.25])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43796a5b4cdsm7701637f8f.8.2026.02.13.09.05.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 Feb 2026 08:46:53 -0800 (PST)
-Message-ID: <61edeb390553a8e7419a8cce6d92af53123b9960.camel@gmail.com>
-Subject: Re: [PATCH] iio: adc: ad7768-1: Fix ERR_PTR dereference in
- ad7768_fill_scale_tbl
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Ethan Tidmore <ethantidmore06@gmail.com>, Jonathan Cameron
-	 <jic23@kernel.org>, Jonathan Santos <Jonathan.Santos@analog.com>
-Cc: Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Date: Fri, 13 Feb 2026 16:47:36 +0000
-In-Reply-To: <20260213031207.21291-1-ethantidmore06@gmail.com>
-References: <20260213031207.21291-1-ethantidmore06@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+        Fri, 13 Feb 2026 09:05:06 -0800 (PST)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: andriy.shevchenko@intel.com
+Cc: 0rayn.dev@gmail.com,
+	Michael.Hennerich@analog.com,
+	andy@kernel.org,
+	conor+dt@kernel.org,
+	devicetree@vger.kernel.org,
+	dlechner@baylibre.com,
+	jic23@kernel.org,
+	krzk+dt@kernel.org,
+	lars@metafoo.de,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-mentees@lists.linuxfoundation.org,
+	me@brighamcampbell.com,
+	nuno.sa@analog.com,
+	robh@kernel.org,
+	skhan@linuxfoundation.org
+Subject: Re: [PATCH v1 2/2] iio: dac: ad5504: use adi,output-range-volts for scale calculation
+Date: Fri, 13 Feb 2026 18:05:02 +0100
+Message-ID: <20260213170502.28465-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <aY40-0v9tbXC4tPY@smile.fi.intel.com>
+References: <aY40-0v9tbXC4tPY@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Thu, 2026-02-12 at 21:12 -0600, Ethan Tidmore wrote:
-> The function iio_get_current_scan_type() can return ERR_PTR, the return
-> value scan_type is not checked for this and immediately dereferenced
-> which can cause a kernel panic.
->=20
-> Add check for IS_ERR() and return early to avoid crash.
->=20
-> Fixes: ff085189cb17 ("iio: adc: ad7768-1: add support for ADAQ776x-1 ADC =
-Family")
-> Signed-off-by: Ethan Tidmore <ethantidmore06@gmail.com>
-> ---
-> =C2=A0drivers/iio/adc/ad7768-1.c | 5 +++++
-> =C2=A01 file changed, 5 insertions(+)
->=20
-> diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
-> index fcd8aea7152e..f45a09e39367 100644
-> --- a/drivers/iio/adc/ad7768-1.c
-> +++ b/drivers/iio/adc/ad7768-1.c
-> @@ -541,6 +541,11 @@ static void ad7768_fill_scale_tbl(struct iio_dev *de=
-v)
-> =C2=A0	u64 tmp2;
-> =C2=A0
-> =C2=A0	scan_type =3D iio_get_current_scan_type(dev, &dev->channels[0]);
-> +	if (IS_ERR(scan_type)) {
-> +		dev_err(&st->spi->dev, "Failed to get scan type.\n");
-> +		return;
-> +	}
-> +
+Hi Andy,
 
-With the above, it could make sense to change the function to propagate the=
- error back...
+Thank you for the detailed feedback, I'll make sure to add those changes
+in the upcoming v2 series.
 
-- Nuno S=C3=A1
-
-> =C2=A0	if (scan_type->sign =3D=3D 's')
-> =C2=A0		val2 =3D scan_type->realbits - 1;
-> =C2=A0	else
+Best regards,
+Taha
