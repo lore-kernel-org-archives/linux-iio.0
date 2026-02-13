@@ -1,46 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D088305E32;
-	Fri, 13 Feb 2026 07:54:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA93A31282E;
+	Fri, 13 Feb 2026 08:11:50 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1770969249; cv=none; b=L/WWzXkmbns2JAIB15xF00E6S/Zp6kBEhTK2LzD1RWUzY9SWABInk0fbeAb3m4HKwwEOCRhw1bbg8UOeB1uVx4qzj/xJ8qVmlL3h7JlphwRHpPbV3xa4k5x4f1Li2yjUEZfynsxvnov5ew7CqNcQNXwQiUK2TdoOPkqI7Je2Eok=
+	t=1770970311; cv=none; b=A/1eZqkKxLK3jNJVfuBuwyA/b19VhR5u15QrfqOSQFZ/jeDtV0m9LYM7hZ+zCtvd18ViH2Sc8cfR+Wq0Y/2dri7YsB655AGTh6O2l+OGKHtQ7aIPAv7CyEdlD+KivD6Va07YmmWfTycrdJ2sCH/IbqJvAy974bKX2bYuWiMrmwQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1770969249; c=relaxed/simple;
-	bh=fyBZBOvRm63EDEk40xoiwwcRMLnqBiSK5e6jEdumIhU=;
+	s=arc-20240116; t=1770970311; c=relaxed/simple;
+	bh=T6X3ulDE7VDmHxw4vxRh9yuGxDXS803YkGNJmrBHt54=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Z16OxnT3t2cWH79oc5Q7/AiDvConL+0p3XKnYX93lyiqfqy0mysP86U+Cn2froMRoEY/Vhc3Uob4xc18en8VBMP6avDdgc73+ZXQX38mp/QVQkWST096yBuO2EWg8jZWikBFY7M1G146aofnPsdQm9Rd34kLdzFgqwv/D+48174=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WSQER7Qt; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=rj1XB5kXwH1VcE3NnYSbeLNT6otRzDrmL5cSjN2VjQkJGNXibBackdgzsC7CtUEsExQazq+tns4AQI4x/GGgj1Vd3KNl6QRVBRBGaAOhXS+46KMcKyRa+TKhCmSMncNYgnf42BjqbhceijJMfRfyMtknywwHBKVAzhH0J8IURU8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=d8hypevb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WSQER7Qt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57AC0C116C6;
-	Fri, 13 Feb 2026 07:54:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="d8hypevb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37262C116C6;
+	Fri, 13 Feb 2026 08:11:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1770969248;
-	bh=fyBZBOvRm63EDEk40xoiwwcRMLnqBiSK5e6jEdumIhU=;
+	s=k20201202; t=1770970310;
+	bh=T6X3ulDE7VDmHxw4vxRh9yuGxDXS803YkGNJmrBHt54=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=WSQER7QtxLkW6KVIUaosZ3F51+neBscYBbgVcl7FtPjEYXEMLrpEU8FIVDGnLnp1N
-	 ngJsm96F+rnE7CgNshR/woYsGthxTNLDK6Wr/xEzoMAto/jhgZJ2QtKyr5lL0KpSzD
-	 pTb4ZfsnvHDgpnvnY8UA7rX45ZYvjeC5vmFUXrrq/avmSjwKQp4QDzm16R7lhIwynf
-	 /yKDSF8fg/8SdNPiGsYPbOHciVSQlPxFaocZWEYsJtLGnCbsuHbfRqo/DVXkku49a1
-	 ZYKcrutfDRksF+pNqQQD4N0iRApLbTqnQdtlh1/hXafDt2Gay0ljxf3ykfIhSZWpN3
-	 P0h03W4Y0CnJA==
-Date: Fri, 13 Feb 2026 08:54:06 +0100
+	b=d8hypevbuIL7J9LboRe7zqKdMBAVDLg0G3aGIco5IgykNCeBVthv2m05MKyu2z5+3
+	 LFZcDryuwhfDxQE6ykKGxRn8sJLrVaT+H6IFW9PExnd43qJ98ptNBLqgNE5CmjsVi+
+	 ivJg5nB03iiWRjC85f//kQRhq+cwehMwLp3aqtlmDwUAy9ThIyAez38StouhfaUaAp
+	 kpSf0ruP4RZ0hVlm953yJUm/pvGCyKYVuk2LRl8xuTj3komR7k0vmAnmwEPtMkG0HL
+	 zL7PeLTRy6kafcbDOchAykEUP6xygH8UeahMJgbAuYygUoV+nc0vU600utCxhJ8x8z
+	 KP7Q3S0TqSsXg==
+Date: Fri, 13 Feb 2026 09:11:48 +0100
 From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Erikas Bitovtas <xerikasxx@gmail.com>
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
-	phone-devel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: vcnl4000: add Capella
- CM36686 and CM36672P
-Message-ID: <20260213-unyielding-pistachio-ape-deda74@quoll>
-References: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
- <20260212-cm36686-v4-1-8f587d4a72bf@gmail.com>
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+	Conor Dooley <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-mentees@lists.linuxfoundation.org, me@brighamcampbell.com, skhan@linuxfoundation.org
+Subject: Re: [PATCH v1 1/2] dt-bindings: iio: dac: ad5504: add output-range
+ and missing gpios
+Message-ID: <20260213-curvy-voracious-yak-cc13ec@quoll>
+References: <20260212181955.42724-1-0rayn.dev@gmail.com>
+ <20260212181955.42724-2-0rayn.dev@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -49,52 +49,100 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260212-cm36686-v4-1-8f587d4a72bf@gmail.com>
+In-Reply-To: <20260212181955.42724-2-0rayn.dev@gmail.com>
 
-On Thu, Feb 12, 2026 at 04:42:47PM +0200, Erikas Bitovtas wrote:
-> Capella CM36686 is an ambient light and proximity sensor developed by
-> Capella Microsystems, now a subsidiary of Vishay Intertechnology Inc. It
-> has an I2C address of 0x60 and is fully compatible with an existing
-> driver for VCNL4040.
-
-I wonder why and how...
-
-> Capella CM36672P is a proximity-only sensor that
-> is fully compatible with CM36686, and therefore with VCNL4040. Add
-> compatibles for cm36672p and cm36686, with a fallback for cm36686 of
-> vcnl4040.
+On Thu, Feb 12, 2026 at 07:19:54PM +0100, Taha Ed-Dafili wrote:
+> The AD5504 output range (0-30V or 0-60V) is determined by the R_SEL pin.
 > 
-> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+> Add `adi,output-range-volts` and `adi,output-range-gpios` to describe
+> this hardware state, using `allOf` to enforce mutual exclusivity.
+> Also add `vlogic-supply`, `clear-gpios`, and `ldac-gpios` to complete
+> the hardware description.
+> 
+> Suggested-by: David Lechner <dlechner@baylibre.com>
+> Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
 > ---
->  .../devicetree/bindings/iio/light/vishay,vcnl4000.yaml  | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
+>  .../bindings/iio/dac/adi,ad5504.yaml          | 38 +++++++++++++++++++
+>  1 file changed, 38 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> index 4d1a225e8868..2ba4d5de4ec4 100644
-> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> @@ -18,12 +18,17 @@ allOf:
+> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> index 9c2c038683b4..3e832e501b0e 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> @@ -27,12 +27,50 @@ properties:
+>      maxItems: 1
 >  
->  properties:
->    compatible:
-> -    enum:
-> -      - vishay,vcnl4000
-> -      - vishay,vcnl4010
-> -      - vishay,vcnl4020
-> -      - vishay,vcnl4040
-> -      - vishay,vcnl4200
-> +    oneOf:
-> +      - enum:
-> +          - capella,cm36672p
+>    vcc-supply: true
+> +  vlogic-supply: true
+> +
+> +  adi,output-range-volts:
 
-CM36672P is compatible with CM36686, but this is not expressed.
-Confusing commit msg and code.
+Use proper property unit suffix, see dt-schema.
 
-> +          - vishay,vcnl4000
-> +          - vishay,vcnl4010
-> +          - vishay,vcnl4020
-> +          - vishay,vcnl4040
 
-Best regards,
-Krzysztof
+And really, you should have checked - you already have properties for
+this! See dac schema.
 
+> +    description:
+> +      Hard-wired /R_SEL pin state. 30 V when pin is high and 60 V when
+> +      pin is low.
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    enum: [30, 60]
+> +    default: 60
+> +
+> +  adi,output-range-gpios:
+
+So another same roperty? If you looked around you would find
+adi,range-gpios, which would be better than multiplying properties.
+Anyway, gpios do not take vendor prefixes, so you want range-sel-gpios
+or range-gpios. I guess the latter.
+
+
+> +    description:
+> +      GPIO connected to the R_SEL pin to select the output voltage range.
+> +    maxItems: 1
+> +
+> +  clear-gpios:
+> +    description: GPIO that controls the /CLR pin (active low).
+> +    maxItems: 1
+> +
+> +  ldac-gpios:
+> +    description: GPIO that controls the /LDAC pin (active low).
+> +    maxItems: 1
+>  
+>  additionalProperties: false
+>  
+>  required:
+>    - compatible
+>    - reg
+> +  - vcc-supply
+> +
+> +allOf:
+
+allOf:
+  - not:
+      required:
+        - foo
+	- bar
+
+Should give you exactly same result, with less code.
+
+> +  - if:
+> +      required:
+> +        - adi,output-range-gpios
+> +    then:
+> +      properties:
+> +        adi,output-range-volts: false
+> +
+> +  - if:
+> +      required:
+> +        - adi,output-range-volts
+> +    then:
+> +      properties:
+> +        adi,output-range-gpios: false
+>  
+>  examples:
+>    - |
+> -- 
+> 2.47.3
+> 
