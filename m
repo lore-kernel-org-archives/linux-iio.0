@@ -1,96 +1,154 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E00B22FE11;
-	Sat, 14 Feb 2026 21:49:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6514314A65
+	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 22:10:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771105764; cv=none; b=KijjZNLg12b90BFeCZqyAPRgBIrOluXFRxEbUY5u9aNKikmw4i2l4namFysmnJY1KPGDOmOG6Ztaz0HxN4QqIa9zk8l4GxLzWzaj0tbGwqqmhQV7RynOS/xtWVv47V3eoLGLE2gtjQUsA/AgUS3ct/tP+i4hQK/GJ7VH4Sq/0Fs=
+	t=1771107054; cv=none; b=tz2YeeMDJjwoxQYKZ06rlIcSAN/6tfzriSSAAmGWfrMkVoz/nu/9jeaMLcyvXkOHLcju/sTMDQBWgUmXKCuvVztlQq1wIiP7Qa5bjMN9wCgD9nivpwE/JYJ5OBQQM1e6vr3n8S21o6r2Jl+yopBMzaTxEr9VCYGhduUNEJ0aV2g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771105764; c=relaxed/simple;
-	bh=vj05nLtQb7DrjERJOyo3kRE/GUvlOdE47Hus2HioXtg=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tsVvMPjIlU0s0JATzyyRGjeVuzcmdEkqnhM4wsmjdIHwmy4UaHqXrqTrHjGpxkg0wZdwKoZP3RJsEhlonDMU02yMeGcnp2YFibQfy+hq5h6j8AvonwrfFbmQWE1MCpIaHX1AjZKVgZtc9c5vvNL+Qw1A//48PtrOXjGgVvJbkec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=XY6X4pdA; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1771107054; c=relaxed/simple;
+	bh=ODrZgpweP48EKYZknvbUzaE4n0zuYcFxL/c5awbHz3U=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ZL/HABljhdn1WtsDnEiDM7GP6Ij/O6sDkdJwWzwKvrayeQuV1nPQ35UJA7NXN+v3ltS293rE65sbVc2OKWW4UajjbkC+m/jJrDU4C90VRsTU4YGlXIKRTd2tCpIoIlbrURS79DZgGJpECMEtcNbpWbttsxh3er+0tfWjCQKb1CM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=f9fnhETm; arc=none smtp.client-ip=209.85.160.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="XY6X4pdA"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
-	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
-	bh=i7A2tZ9yUt1THaiXwiZeIYfWekSAu4mB39tfmge43xo=; b=XY6X4pdAmyz/1k+orPz1Ywsxf8
-	zJpyzIGRjlDx0XAUlNTiY8/qB2xSIJC9dYIqyfq/7dPcla8+18b4gA5SZMhu5EncNh0hP1B3TxfRk
-	C+6sQPXMXuA4D7e8braMbB2ol4ai7tvLk9w52yhY2ZjXqfpbGI4eBR/I4NgsGbxAXXbwt/PgSB3cg
-	NdCqOZw19Ffn7wd51X62HTL7FlQWcuoQYLTbkWYcjNLAf8WyFsPGbaRMIqIJBRvnqBJB2nWyMRBmN
-	kp246nl2L7eLSz3nIvJgQc/tGN7VLALtec/JZyWkZGp8tXpN4WSwvWKjoinLXNN5wrc/+DkgWbEyY
-	OlCiVt5g==;
-Received: from [50.53.43.113] (helo=[192.168.254.34])
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vrNVn-00000004yDs-2vLL;
-	Sat, 14 Feb 2026 21:49:11 +0000
-Message-ID: <3bcbd428-2314-4b01-b846-2ab2572d9d5d@infradead.org>
-Date: Sat, 14 Feb 2026 13:49:10 -0800
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="f9fnhETm"
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-40ef10ec84cso1224296fac.2
+        for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 14:10:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771107049; x=1771711849; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=I6BugSQ/CL65rE3opDOxux3g1OYZ7rPOULymJCM9Yvw=;
+        b=f9fnhETmAqmnjznEUX8PVTRqHYecBaJKcZR04WSnZsioYpwVr8d+qYLNIsodAR1S4P
+         edtfAeH57bhrRx8KTu59xoXKh1MzXDvGjCl1SLPMN6sVQfdWPtiERcP5ZY0IR6eD/T/r
+         vtapsowSnkidSfkGgg4cv9bl1ridgfocjDZ4IRw56IRyp8O4WSyt0wKwlm3tppr+pl71
+         m9eU4bRNueaKiReKtp2vY4SHhy1rRv2JuHz6ocAwbbe/vmeoNMYOlsOm/C3wZnRdaW+d
+         UPtqEK2wOuEiRJ28Ch7RERwL2Lq5dY4Mmian0mufM4BOHYF37k+OXhFd6HbzWPjE6quk
+         yHjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771107049; x=1771711849;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=I6BugSQ/CL65rE3opDOxux3g1OYZ7rPOULymJCM9Yvw=;
+        b=NJ28iWH8ppiNAjXS8ft/B+YF6uHwie2sRtE5XrPxlwUFeVODl1yNWFT3kQ16NkKgZ4
+         kgxdJJBL+n8JzwHr4YqSVVDxUbfE74ijuB8jr/D5l3EadNUft5MVI5i5Kc1c0qWXIfzh
+         aQq72jZKC3N9Z5+co1UMmzPHdmnrlWFdaePHU4ITzyqx6f8MqYAuzIJNEIlxbZWCwSjW
+         ncAhlIjaVcoou6HcMt2PvTyI8CMq1WKVgw+ga5rOeJ2O5ZzxCjINEX2LbTgln0SkqRVH
+         CQBtT1qJH8d8ONfHOIbJXxnlRYvX7JnDadRqa3ttRuagn+qqtYd2HH6ha9DXepCxw7rq
+         eDiw==
+X-Gm-Message-State: AOJu0YyztP8g4bRhNQYW+SRzRCMaDkHMunbZ+NoYq+faE+I33VasrycD
+	B3tpgKVXR7zZLxxMrn2KMAD3pl7iI57Xx9G8P+PcaOniZJb5cocLkhfVUdhwFxBt3Vg=
+X-Gm-Gg: AZuq6aLEISVcMZLQIPYFDvztYb40dR44wEUGIsSPKFat+TsBgCUq72GYYF4r5w7Tphn
+	IfItpdRGZ0Z3ZUKQmPGJiVCiTV9BibKfKOzc49gv0X8E/Z9AnPOyv4AyP4HiHHgmbc/43wtdsP1
+	V/a34u90Ox8E7DxcS/AajuebIF7R0cy+mKJFGdlRQfRPiI/a4y78q8RKGNqZdFvi+myTNZOB75R
+	CA/TJpmeIaTr9SvrolAmNxJif9fTX7/IM1cJ+AaZDFvfEkx2+7/hkJcWlGWddF7+eZ0WBQnaGce
+	db3k2d4jro2AKUWVW6iNfbV8G5J1w8O3Q1o14emlDpKLwBHr4hC0OVuNzKpImuGzXTkoPqjJRci
+	h29UBa8Ixwf3gDWToW7x8m3M7N9INn5+IPH0XQOz8QX/kWQsU0eEWZc3tUuaprAbz2tro+hiMAo
+	YYwfcaySiwwD8VyAygu23hOUh0RQ==
+X-Received: by 2002:a05:6820:450f:b0:65d:88b:c00d with SMTP id 006d021491bc7-677694a0f8emr2397144eaf.66.1771107048786;
+        Sat, 14 Feb 2026 14:10:48 -0800 (PST)
+Received: from [127.0.1.1] ([2600:8803:e7e4:500:109:393c:254e:962e])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-40eaee45d12sm10686339fac.1.2026.02.14.14.10.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 Feb 2026 14:10:47 -0800 (PST)
+From: David Lechner <dlechner@baylibre.com>
+Date: Sat, 14 Feb 2026 16:10:38 -0600
+Subject: [PATCH] iio: imu: bno055: add explicit scan buf layout
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/4] iio: accel: adxl345: Implement event scaling for
- ABI compliance
-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
- David Lechner <dlechner@baylibre.com>
-Cc: Taha Ed-Dafili <0rayn.dev@gmail.com>, jic23@kernel.org,
- skhan@linuxfoundation.org,
- linux-kernel-mentees-archive@lists.linuxfoundation.org, nuno.sa@analog.com,
- andy@kernel.org, corbet@lwn.net, lars@metafoo.de,
- Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
- linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260208150515.14798-1-0rayn.dev@gmail.com>
- <20260208150515.14798-4-0rayn.dev@gmail.com>
- <af774bb9-817d-4d88-9fe3-54468949ea54@baylibre.com>
- <aZC9Xurq1KcVHuMT@smile.fi.intel.com>
-Content-Language: en-US
-From: Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <aZC9Xurq1KcVHuMT@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260214-iio-imu-bno055-repeated-element-v1-1-b57b08efd566@baylibre.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/1WNywrCMBBFf6Vk7dAkNIr9Fekirdc6YBJNogjFf
+ 3d8gLgazsA9Z1EFmVFU3ywq48aFUxQwq0ZNRx9nEO+FldV2ra3piDkRhyuNMWnnKOMMX7EnnBA
+ QK5nJOGfhN90IJZZzxoHv78Ju+HDG5Sqh+nn+On3zV5HZV0/+xHN8693GjXbSegvr+pt5FUZfQ
+ FMKgWvfSK20GSGJvRVLK7dynNXweDwBjWK22u0AAAA=
+X-Change-ID: 20260214-iio-imu-bno055-repeated-element-1c1552ea74be
+To: Jonathan Cameron <jic23@kernel.org>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ David Lechner <dlechner@baylibre.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2194; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=ODrZgpweP48EKYZknvbUzaE4n0zuYcFxL/c5awbHz3U=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBpkPLg23z87PbR/7sLSokPCvF3KgUEMzMenMyJn
+ +xBaOZPdy6JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaZDy4AAKCRDCzCAB/wGP
+ wFuXCACBGoa1XPdvLFz2zU1wlb689rUGm76QE7w8BWpsyH4FFpC+fquDNGAx+I2zUckZth75tOw
+ HGG/krBudEhBOgo1NJlmDoIqJFg78CuhzI/oO2ARgOn7831Tsi/DuB8CzY6gWFWoeiv1RhUdHb2
+ XqtwGPg0kIqgCVYt1IW+iNlcSxJu2x4w+XYt1ou+zmNJ58qHXYGq5+vRpO//mOt5uzzKv7xTT0v
+ 4sdx+NnaQxIva2t90Z899A8KrgeQUt+XjDr+TwX9tF37ZOIlaU+HRvI5esGLttB3MxYl2caa9AV
+ rTujGmGuoQwzEjquaqeUMWXJBah9EJz00/cP0EmegsXUMNB9
+X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
+ fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
+Move the scan buf.chans array into a union along with a struct that
+gives the layout of the buffer with all channels enabled.
 
+Although not technically required in this case, if there had been a
+different number of items before the quaternion, there could have been
+a subtle bug with the special alignment needed for the quaternion
+channel data and the array would have been too small.
 
-On 2/14/26 10:22 AM, Andy Shevchenko wrote:
-> On Sat, Feb 14, 2026 at 11:02:22AM -0600, David Lechner wrote:
->> On 2/8/26 9:05 AM, Taha Ed-Dafili wrote:
->>> The ADXL345 uses a fixed threshold resolution of 62.5 mg/LSB for
->>> event-related registers. Previously, the driver reported raw
->>> values without a scale factor.
->>>
->>> Implement IIO_EV_INFO_SCALE for all event types to provide the
->>> conversion factor (0.612915 m/s^2) as required by the IIO ABI.
-> 
-> ...
-> 
->>> -			BIT(IIO_EV_INFO_ENABLE) |
->>> +			BIT(IIO_EV_INFO_ENABLE)	|
-> 
-> What's the difference here?
+Signed-off-by: David Lechner <dlechner@baylibre.com>
+---
+This depends on [1] that introduces the IIO_DECLARE_REPEATED_ELEMENT()
+macro. I didn't include it in the same series because the other series
+contains a fix and should be backported while this one ins't a fix.
 
-Space replaced by Tab just before the ending '|' character.
-An undesirable change.
+[1]: https://lore.kernel.org/linux-iio/20260214-iio-fix-repeat-alignment-v1-1-47f01288c803@baylibre.com/
+---
+ drivers/iio/imu/bno055/bno055.c | 20 +++++++++++++++++++-
+ 1 file changed, 19 insertions(+), 1 deletion(-)
 
-> 
->>> +			BIT(IIO_EV_INFO_SCALE)	|
->>>  			BIT(IIO_EV_INFO_VALUE),
->>
->> Would be nice to be consistent and put scale after value as the ones
->> at the end.
-> 
-> Would it be better other way around to avoid unneeded churn with touching
-> the last line?
-> 
+diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
+index 303bc308f80a..47afda01229f 100644
+--- a/drivers/iio/imu/bno055/bno055.c
++++ b/drivers/iio/imu/bno055/bno055.c
+@@ -211,7 +211,25 @@ struct bno055_priv {
+ 	struct gpio_desc *reset_gpio;
+ 	bool sw_reset;
+ 	struct {
+-		__le16 chans[BNO055_SCAN_CH_COUNT];
++		union {
++			__le16 chans[BNO055_SCAN_CH_COUNT];
++			/*
++			 * Struct is to ensure proper size in case any padding
++			 * is needed. Technically not needed in this case, but
++			 * better to be explicit about the requirements.
++			 */
++			struct {
++				__le16 acc[3];
++				__le16 magn[3];
++				__le16 gyr[3];
++				__le16 yaw;
++				__le16 pitch;
++				__le16 roll;
++				IIO_DECLARE_REPEATED_ELEMENT(__le16, quaternion, 4);
++				__le16 lia[3];
++				__le16 gravity[3];
++			};
++		};
+ 		aligned_s64 timestamp;
+ 	} buf;
+ 	struct dentry *debugfs;
 
+---
+base-commit: 0713b26190addfa3a774b386c8658952ef9f7faf
+change-id: 20260214-iio-imu-bno055-repeated-element-1c1552ea74be
+prerequisite-change-id: 20260214-iio-fix-repeat-alignment-575b2c009e25:v1
+prerequisite-patch-id: f7d2b3c87791f50de610900f5680d1b9b503702a
+prerequisite-patch-id: 28aed7da5bbcd16f83256bbe2d4c209fc26888bc
+
+Best regards,
 -- 
-~Randy
+David Lechner <dlechner@baylibre.com>
+
