@@ -1,256 +1,96 @@
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36B2928134C
-	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 21:25:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E00B22FE11;
+	Sat, 14 Feb 2026 21:49:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771104313; cv=none; b=sCkR3HQzEsLTg1g37rxYIxMGJ/qAe+MVRoyAB88bw2h5gNxVTcw8defgwLxDGywb99i0rG+t/iH5w02ycZHg06TVeL3DL7iQCbrWKH4vwosEcwBLFckriguJPHVoROzc1Tp/JyD+aDJFPsgL4qyDEn3iER7k86++XMyQZ/c7xAc=
+	t=1771105764; cv=none; b=KijjZNLg12b90BFeCZqyAPRgBIrOluXFRxEbUY5u9aNKikmw4i2l4namFysmnJY1KPGDOmOG6Ztaz0HxN4QqIa9zk8l4GxLzWzaj0tbGwqqmhQV7RynOS/xtWVv47V3eoLGLE2gtjQUsA/AgUS3ct/tP+i4hQK/GJ7VH4Sq/0Fs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771104313; c=relaxed/simple;
-	bh=wNFqVlvuIkp+YVh4Q6ynzOaCsNnKtGcWs352JQ7G1II=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=oG5j2D+XEqHtLQKRtxxob4uqkoEbGdBxlTh1EtJUdii8zLXpniv2eVUkrDm4FD3uyisKecphT2jK2phT1Kbt//OA2R/KQcgDH+Mgm0LBxm+sjuHOoOE6GkFFxH3h6elA2grpQg1K7OCnHgylqb2jm9evH5W3W6fPHCzI8J1O8Ck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=zOSLIxXs; arc=none smtp.client-ip=209.85.210.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1771105764; c=relaxed/simple;
+	bh=vj05nLtQb7DrjERJOyo3kRE/GUvlOdE47Hus2HioXtg=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tsVvMPjIlU0s0JATzyyRGjeVuzcmdEkqnhM4wsmjdIHwmy4UaHqXrqTrHjGpxkg0wZdwKoZP3RJsEhlonDMU02yMeGcnp2YFibQfy+hq5h6j8AvonwrfFbmQWE1MCpIaHX1AjZKVgZtc9c5vvNL+Qw1A//48PtrOXjGgVvJbkec=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=XY6X4pdA; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="zOSLIxXs"
-Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-7d196a2334fso1771564a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 13:25:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771104310; x=1771709110; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=PiSlYn5AXCQAcaElveJtUAJuu7BjjuAo+2c/8DlyUXs=;
-        b=zOSLIxXsGp787xW2kjDgej5HPVq8LlA1XDcofzWboFd73IoU3NWq2uGhb6lHK/UASj
-         vZkz3pOUwqinW7XiDjxatW4EHzCrT5xU4s05IiV2epNwROUMPAUnWd8UtHvLiqnzsMbk
-         2RleZyzvI8jPgC1GtWCO6wo9tMiBiZWEbn8j+sAscu+NjQnXcfpxN79RSWnKNjU1K0ps
-         gjk2fzDG4hwRMU6oHWP5iHUh6YC9y5TuHXyJItafLfbovquINEiR8npOKD0doDDFGiBf
-         PjbJu31SknIUykKHX7GC8l3EwoljTDrljh2SrnwQw5VTb7lMz26EpkBDC4Ug9l9UoMGE
-         8VnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771104310; x=1771709110;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=PiSlYn5AXCQAcaElveJtUAJuu7BjjuAo+2c/8DlyUXs=;
-        b=WYICsy4AbyCtG5iosAx8857ButJokiokWUki1Yg38Id5bx0a/BqEn/80Xbt3pOIZB3
-         LrPOLLjI34ODi3SnJRKXnrm2eHCNHhoQughI6YG9D+Xl1D3ozsKq6JignLGGG8Si3UwO
-         OCTndmkDxjj7AmEVYP/zL4wIkeDQmqrwV3yBB/oJsU5vbvSVErLlrds6Dz3cZUA9LzJT
-         1E9Ki876PZ4HJcVAEHYbFd98miXIX+Fj77t3pFiaCeRLekWSGBU+rld6YUHRL8TbrAw9
-         HAI//zm3r1HJO+UugOR+bpeAdBZ3H6OTLF4Nf0KKyEuH9ltlKsw4sIOwqUqyBfeLZAjK
-         Z3XQ==
-X-Forwarded-Encrypted: i=1; AJvYcCX4DHWa4sCsuyu+CUPS+lsQgKBJl+EIiY4pi39yjyrMUisjt7yrWKCbrnx0e8ok6hRqTpCWTHOof8g=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz1mq+6j8CRVEAJTkugaUPnrXMnQc4w+vL7aWus3Wv5SGZZEpqa
-	CM+LZiQQdBMvZ0Td2P6MvjQU86Aqns0bcPil/C247JLhj9OTSkcxx5VPuDpJCM6s6/k=
-X-Gm-Gg: AZuq6aLoVaKp1/Dt22MHUPkT/IL4buJEqZAELx3Y4QNPFA3CFvJhWDgYytV0n0ObV3/
-	jhYlf/5ECFD7qB+Zgbh17cneSsnASMb9WAMBipmyyufbtvDLe9CQu7RTTBgt8bITix3wFfiaYr4
-	g9SqFElY3kugLY6OjZSGKhpfu3HmeZYDt5o46HbA02HuXvx2xQguDBFq6B8loWvx+YG3uMH6rTY
-	xcp4SDpYC1lJsbPMqmCeZ3FFVHOvWEFkn3tDyvKhzUmlfKCLhffwQ3BYLDiWfTNPr6NmGTXmlQI
-	Y48dtCHuEDfZCLZTnhgXpC47XzL+qqXbB3ZHdQA7J0stUEjcSGi8NMdMYtq9VkjRM9FvP9lO8kA
-	3tZtWUGQeuqzNQYjunNWp3rGNrgST5WwT+ebban7rOgviXa38kR8a6WYEVYDPDeQjlmShiBwKHN
-	54w5+aVjCgR10yFicJiTpioiAkXA==
-X-Received: by 2002:a05:6830:811a:b0:7d1:5253:a0b6 with SMTP id 46e09a7af769-7d4cde099b3mr1480065a34.2.1771104310140;
-        Sat, 14 Feb 2026 13:25:10 -0800 (PST)
-Received: from [127.0.1.1] ([2600:8803:e7e4:500:109:393c:254e:962e])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d4a7530d08sm9169456a34.2.2026.02.14.13.25.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Feb 2026 13:25:09 -0800 (PST)
-From: David Lechner <dlechner@baylibre.com>
-Date: Sat, 14 Feb 2026 15:25:01 -0600
-Subject: [PATCH] iio: orientation: hid-sensor-rotation: use ext_scan_type
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="XY6X4pdA"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=i7A2tZ9yUt1THaiXwiZeIYfWekSAu4mB39tfmge43xo=; b=XY6X4pdAmyz/1k+orPz1Ywsxf8
+	zJpyzIGRjlDx0XAUlNTiY8/qB2xSIJC9dYIqyfq/7dPcla8+18b4gA5SZMhu5EncNh0hP1B3TxfRk
+	C+6sQPXMXuA4D7e8braMbB2ol4ai7tvLk9w52yhY2ZjXqfpbGI4eBR/I4NgsGbxAXXbwt/PgSB3cg
+	NdCqOZw19Ffn7wd51X62HTL7FlQWcuoQYLTbkWYcjNLAf8WyFsPGbaRMIqIJBRvnqBJB2nWyMRBmN
+	kp246nl2L7eLSz3nIvJgQc/tGN7VLALtec/JZyWkZGp8tXpN4WSwvWKjoinLXNN5wrc/+DkgWbEyY
+	OlCiVt5g==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1vrNVn-00000004yDs-2vLL;
+	Sat, 14 Feb 2026 21:49:11 +0000
+Message-ID: <3bcbd428-2314-4b01-b846-2ab2572d9d5d@infradead.org>
+Date: Sat, 14 Feb 2026 13:49:10 -0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 3/4] iio: accel: adxl345: Implement event scaling for
+ ABI compliance
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ David Lechner <dlechner@baylibre.com>
+Cc: Taha Ed-Dafili <0rayn.dev@gmail.com>, jic23@kernel.org,
+ skhan@linuxfoundation.org,
+ linux-kernel-mentees-archive@lists.linuxfoundation.org, nuno.sa@analog.com,
+ andy@kernel.org, corbet@lwn.net, lars@metafoo.de,
+ Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260208150515.14798-1-0rayn.dev@gmail.com>
+ <20260208150515.14798-4-0rayn.dev@gmail.com>
+ <af774bb9-817d-4d88-9fe3-54468949ea54@baylibre.com>
+ <aZC9Xurq1KcVHuMT@smile.fi.intel.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <aZC9Xurq1KcVHuMT@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260214-iio-hid-sensor-rotation-cleanup-v1-1-3aec9a533c0f@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/y2N0QrCMBAEf6XcswdJCKX6K+JDaLf2QJJ6l4pQ+
- u8G9XEWdmYngwqMLt1OipeYlNzAnzoal5TvYJkaU3Chd8FHFim8yMSGbEVZS021fXh8IOVt5SF
- iiN6dQ4+ZmmVVzPL+Fq63HyueWwvV/3gcH9KrE8GGAAAA
-X-Change-ID: 20260214-iio-hid-sensor-rotation-cleanup-84e8410926ef
-To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5275; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=wNFqVlvuIkp+YVh4Q6ynzOaCsNnKtGcWs352JQ7G1II=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBpkOgu7Jb75qdh3V/sBZFOoB8KnJxMeKJpF6deL
- nRTm0uI/IOJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaZDoLgAKCRDCzCAB/wGP
- wP1WCACcCuAhhnZfuGOM1usX39FsSfm9DwwvK+FfFQZquxvAFBPdkUc4z53yhCPyZaaRog7dDSs
- 3qQYBsU2nikCmQUSSqrTqT7HgJtKQ82RNUz097EDFp+OF4EfObIXHsvPjlUKn8QG7ebwG9vmchf
- QabAAFHZVMvLnlLGEOMx/+Wl7AYdfw/VSEij7/9MNqplRLXvCQfsoPJ1ktvLnbAeg+zu3oTFa0W
- VCWiH9vKkM5vUKYpdqfxF9ZUJ4OZ0HSpG7iQ4VJAXujrJqNpwNUCxYIiBLjrn6eEFhmKkuCnsmB
- m3wsjQFz1CsDSa83ReIpGwvf4lGMT9jVeaAD9Go7bmDmZZip
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Make use of ext_scan_type to handle the dynamic realbits size of the
-quaternion data. This lets us implement it using static data rather than
-having to duplicate the channel info for each driver instance.
 
-Signed-off-by: David Lechner <dlechner@baylibre.com>
----
-This is something I noticed we could do while looking at an unrelated
-bug. I'm not sure I have hardware I could test this on, so it is only
-compile-tested. It would be good to get a Tested-by: from someone before
-applying this. Also, I'm not sure if 8, 16 and 32-bit data are all
-possible, so if someone knows, please chime in.
----
- drivers/iio/orientation/hid-sensor-rotation.c | 81 ++++++++++++++++++---------
- 1 file changed, 53 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
-index e759f91a710a..2634ebf4eeb7 100644
---- a/drivers/iio/orientation/hid-sensor-rotation.c
-+++ b/drivers/iio/orientation/hid-sensor-rotation.c
-@@ -34,6 +34,35 @@ static const u32 rotation_sensitivity_addresses[] = {
- 	HID_USAGE_SENSOR_ORIENT_QUATERNION,
- };
- 
-+enum {
-+	DEV_ROT_SCAN_TYPE_8BIT,
-+	DEV_ROT_SCAN_TYPE_16BIT,
-+	DEV_ROT_SCAN_TYPE_32BIT,
-+};
-+
-+static const struct iio_scan_type dev_rot_scan_types[] = {
-+	[DEV_ROT_SCAN_TYPE_8BIT] = {
-+		.sign = 's',
-+		.realbits = 8,
-+		/* Storage bits has to stay 32 to not break userspace. */
-+		.storagebits = 32,
-+		.repeat = 4,
-+	},
-+	[DEV_ROT_SCAN_TYPE_16BIT] = {
-+		.sign = 's',
-+		.realbits = 16,
-+		/* Storage bits has to stay 32 to not break userspace. */
-+		.storagebits = 32,
-+		.repeat = 4,
-+	},
-+	[DEV_ROT_SCAN_TYPE_32BIT] = {
-+		.sign = 's',
-+		.realbits = 32,
-+		.storagebits = 32,
-+		.repeat = 4,
-+	},
-+};
-+
- /* Channel definitions */
- static const struct iio_chan_spec dev_rot_channels[] = {
- 	{
-@@ -45,23 +74,14 @@ static const struct iio_chan_spec dev_rot_channels[] = {
- 					BIT(IIO_CHAN_INFO_OFFSET) |
- 					BIT(IIO_CHAN_INFO_SCALE) |
- 					BIT(IIO_CHAN_INFO_HYSTERESIS),
--		.scan_index = 0
-+		.scan_index = 0,
-+		.has_ext_scan_type = 1,
-+		.ext_scan_type = dev_rot_scan_types,
-+		.num_ext_scan_type = ARRAY_SIZE(dev_rot_scan_types),
- 	},
- 	IIO_CHAN_SOFT_TIMESTAMP(1)
- };
- 
--/* Adjust channel real bits based on report descriptor */
--static void dev_rot_adjust_channel_bit_mask(struct iio_chan_spec *chan,
--						int size)
--{
--	chan->scan_type.sign = 's';
--	/* Real storage bits will change based on the report desc. */
--	chan->scan_type.realbits = size * 8;
--	/* Maximum size of a sample to capture is u32 */
--	chan->scan_type.storagebits = sizeof(u32) * 8;
--	chan->scan_type.repeat = 4;
--}
--
- /* Channel read_raw handler */
- static int dev_rot_read_raw(struct iio_dev *indio_dev,
- 				struct iio_chan_spec const *chan,
-@@ -136,9 +156,27 @@ static int dev_rot_write_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int dev_rot_get_current_scan_type(const struct iio_dev *indio_dev,
-+					 const struct iio_chan_spec *chan)
-+{
-+	struct dev_rot_state *rot_state = iio_priv(indio_dev);
-+
-+	switch (rot_state->quaternion.size) {
-+	case sizeof(s8) * 4:
-+		return DEV_ROT_SCAN_TYPE_8BIT;
-+	case sizeof(s16) * 4:
-+		return DEV_ROT_SCAN_TYPE_16BIT;
-+	case sizeof(s32) * 4:
-+		return DEV_ROT_SCAN_TYPE_32BIT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static const struct iio_info dev_rot_info = {
- 	.read_raw_multi = &dev_rot_read_raw,
- 	.write_raw = &dev_rot_write_raw,
-+	.get_current_scan_type = &dev_rot_get_current_scan_type,
- };
- 
- /* Callback handler to send event after all samples are received and captured */
-@@ -196,7 +234,6 @@ static int dev_rot_capture_sample(struct hid_sensor_hub_device *hsdev,
- /* Parse report which is specific to an usage id*/
- static int dev_rot_parse_report(struct platform_device *pdev,
- 				struct hid_sensor_hub_device *hsdev,
--				struct iio_chan_spec *channels,
- 				unsigned usage_id,
- 				struct dev_rot_state *st)
- {
-@@ -210,9 +247,6 @@ static int dev_rot_parse_report(struct platform_device *pdev,
- 	if (ret)
- 		return ret;
- 
--	dev_rot_adjust_channel_bit_mask(&channels[0],
--		st->quaternion.size / 4);
--
- 	dev_dbg(&pdev->dev, "dev_rot %x:%x\n", st->quaternion.index,
- 		st->quaternion.report_id);
- 
-@@ -271,22 +305,13 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	indio_dev->channels = devm_kmemdup(&pdev->dev, dev_rot_channels,
--					   sizeof(dev_rot_channels),
--					   GFP_KERNEL);
--	if (!indio_dev->channels) {
--		dev_err(&pdev->dev, "failed to duplicate channels\n");
--		return -ENOMEM;
--	}
--
--	ret = dev_rot_parse_report(pdev, hsdev,
--				   (struct iio_chan_spec *)indio_dev->channels,
--					hsdev->usage, rot_state);
-+	ret = dev_rot_parse_report(pdev, hsdev, hsdev->usage, rot_state);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to setup attributes\n");
- 		return ret;
- 	}
- 
-+	indio_dev->channels = dev_rot_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(dev_rot_channels);
- 	indio_dev->info = &dev_rot_info;
- 	indio_dev->name = name;
+On 2/14/26 10:22 AM, Andy Shevchenko wrote:
+> On Sat, Feb 14, 2026 at 11:02:22AM -0600, David Lechner wrote:
+>> On 2/8/26 9:05 AM, Taha Ed-Dafili wrote:
+>>> The ADXL345 uses a fixed threshold resolution of 62.5 mg/LSB for
+>>> event-related registers. Previously, the driver reported raw
+>>> values without a scale factor.
+>>>
+>>> Implement IIO_EV_INFO_SCALE for all event types to provide the
+>>> conversion factor (0.612915 m/s^2) as required by the IIO ABI.
+> 
+> ...
+> 
+>>> -			BIT(IIO_EV_INFO_ENABLE) |
+>>> +			BIT(IIO_EV_INFO_ENABLE)	|
+> 
+> What's the difference here?
 
----
-base-commit: 0f11bb7985ceef2aeeb5c45c3c7bfff3f5a16e03
-change-id: 20260214-iio-hid-sensor-rotation-cleanup-84e8410926ef
+Space replaced by Tab just before the ending '|' character.
+An undesirable change.
 
-Best regards,
+> 
+>>> +			BIT(IIO_EV_INFO_SCALE)	|
+>>>  			BIT(IIO_EV_INFO_VALUE),
+>>
+>> Would be nice to be consistent and put scale after value as the ones
+>> at the end.
+> 
+> Would it be better other way around to avoid unneeded churn with touching
+> the last line?
+> 
+
 -- 
-David Lechner <dlechner@baylibre.com>
-
+~Randy
