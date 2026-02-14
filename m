@@ -1,144 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C21DB3EBF11;
-	Sat, 14 Feb 2026 18:31:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1ABD32D47F4;
+	Sat, 14 Feb 2026 18:31:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771093861; cv=none; b=XkjWAZgnxEpFUtaD+jMHlrv5yKrokO9pA1MsF8h/6ulLPWL1Bpd5GlIofubFGXnXA4FR1yX8reL73aeindKMydAZVosyT3xrWcSjpxMeh7DKSQmkG6FKI8oOGkBAYxFIQKEn6dIciYzkl9/odFKGoGqoUW00CTaz9sy4nDJ1r10=
+	t=1771093871; cv=none; b=ftD2h/+raphJOcPT1/ocDN9QsE0zZE7zo3PBzQE+73PyrASIHnKdwMZsi4enVHjQ/f3qSv4X8/n+Vdv7umIIH9N3lR9BcBGZjAkhHShNTYvIj0VhT6uGecaHO4rzUoultLdf5arqfo7b9VgaotLx46L32ozxSlC3rrYQbE0mrbQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771093861; c=relaxed/simple;
-	bh=Ua4l3xJp7hde7/JLEqCM/G5dmZFB+E+3EMbzDdjE3D0=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=qCarZ34iXoxh4JqKCNuUXVG+2sVDRbeIPwS/4o6jpdnoiOdf0q7VnYVoYFuzzzNfVJPU7wWozYgEDJ5ogn0SmLKSwXxb59UxSNreluCkGi6btRT2oG6LBTtIYDIsH3wTVtjqAGtpof1qKI9j3orMoYLTWOea7NjDTs7h1NRgfQM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ll6lbfYy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771093871; c=relaxed/simple;
+	bh=yzm3ai97SgwFktRFZQ+h0tpIzz3c+Zmid+Neym99VOY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Jjf+dATtRujaMhkmux5pwPNIObhv8HnJFfk/qhwWeMA4znrVGrBv0h/wSH79RgCBxFkGriLwFVN+7OnyQbBxZl7H6S8B789vfTx+otIreK6lBgVu25bNXf1ASWJZFYHuT9yf+8/KyTs5EHrxThsXyTiafyGeRvIJxw0nrIKDmsA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cdkEdB84; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ll6lbfYy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A43FC16AAE;
-	Sat, 14 Feb 2026 18:30:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771093861;
-	bh=Ua4l3xJp7hde7/JLEqCM/G5dmZFB+E+3EMbzDdjE3D0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ll6lbfYy2UIp8Gy+gAdoYbfcgtb+tfYzqwUvUpFXhsu0u4TMG4uuDBcanN2l18T/Q
-	 Mw6MWA9BEHfpdUuCeim+U7ur/L1a9apvncBuw9ExeogWFpcI5nycCdBksuQ4dnL/ds
-	 tsuKCPvJZQyuIAiy4tX3oYPsYMRShyUyYojwiikPTbDprMfbF2HnEBNKm3ph2OLrO4
-	 JMZd242TihpRvNWGMXEKnFfRVErArBGy3fSnWKGMlGjS0ceLWknAm3cEQwi+OTYJ7G
-	 /MWk1o6WKsUDK0vTToYveckZxtQLSoOtvGl1DclFbBbnQp0r55lt8d1g6BeRUpmBm7
-	 ECdE8zHOkKFxQ==
-Date: Sat, 14 Feb 2026 18:30:51 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
- rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Michael Hennerich
- <Michael.Hennerich@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>
-Subject: Re: [PATCH v4 03/11] iio: amplifiers: ad8366: remove unused include
- headers
-Message-ID: <20260214183051.712c8c4b@jic23-huawei>
-In-Reply-To: <aYyFpFAQcfn7Qifn@smile.fi.intel.com>
-References: <20260210-iio-ad8366-update-v4-0-15505f7b15b4@analog.com>
-	<20260210-iio-ad8366-update-v4-3-15505f7b15b4@analog.com>
-	<aYuNr8alZt-mjd5x@smile.fi.intel.com>
-	<appnjr2asjxadbvcf2fosrkvfwj3dkcnvq7tk74i4xa4ku5zr3@c7qedqneukyn>
-	<aYyFpFAQcfn7Qifn@smile.fi.intel.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cdkEdB84"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771093870; x=1802629870;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=yzm3ai97SgwFktRFZQ+h0tpIzz3c+Zmid+Neym99VOY=;
+  b=cdkEdB84R8bVaMWRioLPRVhsdG0DZGt8cGNV3g9XbhSC4AUq642IOG3F
+   YANBddjglVC7k32JEPB+JVHbgn374EJ7ypNDO0xY+1fwH7FME3T7kj83B
+   cKlaBM+x+lNGvBVD/h00NUD3px/YKdzTEaz2OEiz1T+CTR3FeT1rGIo3E
+   DvM0XH1hy7mxQ0hTiErGBDxbbi/0fXl3zW1aD/pU8X/h+8CLdsifrE9OQ
+   6Jwm74asJa2N6vQFkoikQ92txYfevzFnhZHRn594myNWS/6H2rtoUyew4
+   QBgRLadGMVdoqllseZMgM2ujzcyWcsG29IcUQVPgDWYgEVjx/9hld2nk8
+   g==;
+X-CSE-ConnectionGUID: kaa4L91xQla9/en2OBVoPQ==
+X-CSE-MsgGUID: G001VPVfTzi9ksgRTuE3Pw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11701"; a="83611078"
+X-IronPort-AV: E=Sophos;i="6.21,291,1763452800"; 
+   d="scan'208";a="83611078"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2026 10:31:09 -0800
+X-CSE-ConnectionGUID: Hs/TplpCQq+CXLBg3LpggA==
+X-CSE-MsgGUID: rRyIqCVNQ0+QTFzo0sAQdQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,291,1763452800"; 
+   d="scan'208";a="250880277"
+Received: from hrotuna-mobl2.ger.corp.intel.com (HELO localhost) ([10.245.244.136])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2026 10:31:07 -0800
+Date: Sat, 14 Feb 2026 20:31:05 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: dac: max5522: use
+ devm_regulator_get_enable_read_voltage()
+Message-ID: <aZC_ab454PTqFPsO@smile.fi.intel.com>
+References: <20260210175137.44178-1-antoniu.miclaus@analog.com>
+ <aYuIftCDo5O0IF9F@smile.fi.intel.com>
+ <20260214182052.14c6f8ee@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260214182052.14c6f8ee@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 11 Feb 2026 15:35:32 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Sat, Feb 14, 2026 at 06:20:52PM +0000, Jonathan Cameron wrote:
+> On Tue, 10 Feb 2026 21:35:26 +0200
+> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > On Tue, Feb 10, 2026 at 07:51:27PM +0200, Antoniu Miclaus wrote:
 
-> On Wed, Feb 11, 2026 at 12:55:30PM +0000, Rodrigo Alencar wrote:
-> > On 26/02/10 09:57PM, Andy Shevchenko wrote:  
-> > > On Tue, Feb 10, 2026 at 07:42:03PM +0000, Rodrigo Alencar via B4 Relay wrote:
-> > >   
-> > > > Apply IWYU principle, removing the following headers:
-> > > > - linux/device.h: no usage of devm_add_action_or_reset, device_attr...
-> > > > - linux/kernel.h: no usage of container_of, kasprintf, ...
-> > > > - linux/slab.h: memory management handled by iio
-> > > > - linux/sysfs.h: sysfs interaction is managed by iio
-> > > > - linux/iio/sysfs.h: not using iio device attributes in this driver  
-> > > 
-> > > Yeah, but it also means to add (a lot of) missed headers...
-> > > 
-> > > array_size,h
-> > > dev_printk.h
-> > > mod_devicetable.h
-> > > mutex.h
-> > > stddef.h  
+...
+
+> > > +	state->vref_mv = ret / 1000;  
 > > 
-> > Are there proper guidelines for IWYU in the kernel?
-> > Include headers end up including a bunch of others, so
-> > the build finishes successfully anyways.  
+> > "1000" --> "(MICRO / MILLI)" ?
+> > (yes, this way with the parentheses).
 > 
-> This is global stuff, no need to repeat this in the kernel documentation.
-> It's the same as asking documentation for KISS principle.
+> I know I've argued against proliferation of the X_PER_Y macros
+> but this one does seem to be very common. Maybe it's time to bring in
 > 
-> > I understand that the concern is build time, so we better
-> > include all small parts that are needed rather than a generic
-> > header that includes that and much more.  
+> MICROVOLTS_PER_MILLIVOLT even if it's longer than the open coded version?
 > 
-> > This is the output of the iwyu tool without this patch series:  
-> 
-> Have you applied the configuration Jonathan made for this tool in relation
-> to the Linux kernel project? By default the tool has a lot of noise, indeed.
+> Andy, what do you think?  I do worry that people will see it as fine
+> to add many many others if we start with this one though. So maybe not.
 
-Worth noting that I'm still evolving my config and suspect there will still
-be a bit of 'taste' applied to the output even once I conclude what the
-best combinations are.  So to give my view on the following..
+IIRC (sorry, if I am wrong) it was you who objected in the first place
+and I proposed that from day 1 discussing the "(MICRO / MILLI)" approach
+a year (?) or so ago. Answering to the Q: I am in favour of having that
+definition.
 
-> 	#include <stddef.h>                     // for NULL
-Not this one.
+> Anyhow, doesn't need to be in this series.
 
-> 	#include "asm-generic/errno-base.h"     // for EINVAL, ENOMEM
-Something to get to errnos is good, but not that one.
+True.
 
-> 	#include "linux/array_size.h"           // for ARRAY_SIZE
-Yes - this is part of the kernel.h split up work.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> 	#include "linux/compiler_attributes.h"  // for __aligned
-Never that one, but I sometimes feel compiler.h is fine.
-
-> 	#include "linux/dev_printk.h"           // for dev_err
-Yes if device.h doesn't have to be there for other reasons.
-
-> 	#include "linux/iio/types.h"            // for iio_chan_info_enum, iio_chan_...
-No. We always need iio.h which will always include that.
-
-> 	#include "linux/math.h"                 // for abs
-yes
-> 	#include "linux/minmax.h"               // for __cmp_op_max
-yes
-
-> 	#include "linux/mod_devicetable.h"      // for spi_device_id
-yes
-> 	#include "linux/mutex.h"                // for mutex_lock, mutex_unlock, mut...
-yes
-> 	#include "linux/mutex_types.h"          // for mutex
-no as mutex.h will alays include that.
-
-> 	#include "vdso/bits.h"                  // for BIT
-
-Usually via bitops.h or similar. But if none of those are there anyway linux/bits.h
-
-Jonathan
-
-> 
-> And note, tool != principle. The tool is just an implementation of the helper
-> to enforce the principle in practice, but it may be not always suitable for
-> the certain project "as is".
-> 
-> In the below output some are valid, but some are just noise as there are
-> guarantees for the "proxying".
-> 
 
