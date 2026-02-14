@@ -1,213 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0CC326B755
-	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 19:24:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C50916EB42
+	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 19:25:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771097052; cv=none; b=EJhONnYdtpk/KfF6qUEhMREkNVp/R/DQ2NpIXzjQCGHmhE/3kfDcBg114WcCVlyxiayh+FfGAznnVJhAVunGPcOL00QsSPWmcQkouWq5MxIHdDPuUOcaSXgycnIeA98bzKcd9NC59AOQUe0bzXtn2tAyksv2hx6l5jYN4GOv3eU=
+	t=1771097125; cv=none; b=LbpUerB6UFEmekDY7oehK4LvfT8UERRy8XdZeI5g7qNpmH392bBX/1MfAphC905U2Gdy7/wLaGpoKjsKxjYLfrC06X7DuMiTM5BvhAqpBjCIE4/YI2+NjiC14EtGaZmHg0cfDKCGGYThwVq8mhnqHhXxXMRD3AKrtMZa9GwQZ4s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771097052; c=relaxed/simple;
-	bh=a/ZA6sjCUKqdxw4wvPaq8Dxh7KaTwJBXVARu4Bv36rM=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=j4cFEJ5xhoJgLVtqWYZ6/rs2fR8EX4kzq5JIbgpRlLSmxolFPD4GixG0nZOW6aYMKesna3CNHc+VkKVPSGgFn78fIH7XBwZd8hAEwSTbf7NnU9Os9zWRNqq+VLbPIn4yCeeV109JOlvKS3J+Dvu76Jzkmpu32Kg475n78rKDTMY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RSaAqaA9; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771097125; c=relaxed/simple;
+	bh=sjBmtYgoNm2L/egRL+9KTyUHzNMn9Pvq3RGushi4848=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=DQa6Wo1z3YQDFOss1PVAGANZZSUfY28m+WoRLKHPCLQpQylku7qVOQhWRHYUYkX0mfn69lzlIcqmBK66ABCmnP9odcCJWWvjA1YpjPBcLfD487mn7y9xYuUkbKRBlnQvAV0rAaLiSI+5fup5cje/sf9AWO7tQ+b4zkGEq9vcECg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NecvcYei; arc=none smtp.client-ip=209.85.128.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RSaAqaA9"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id C3A2AC19425
-	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 19:24:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771097051;
-	bh=a/ZA6sjCUKqdxw4wvPaq8Dxh7KaTwJBXVARu4Bv36rM=;
-	h=From:To:Subject:Date:In-Reply-To:References:From;
-	b=RSaAqaA9+wuOYD5aSG6KmAt7Flre3rEsX/BayAy1X1eQjbAnSc+Yb+jPePqq66bid
-	 Y7ewg/MEzWUxGS8CMC+9fIm8BTIJASwFoATMs80g6rH7Qg9QYcQ9roa9PNTXp3fgeB
-	 aXld958Pr0WMjy8EfSVgKzBpYIqVtFDxRGRdXJ/EJgDfh4ZnifGMewuUnaob2R4/Mk
-	 jfAZVoTAPCjs3u4puavCp9neY7uQFqK9Qa+C22fzL4js0pz801DT1mesH+GPraLtBP
-	 p3eN6+XwPkUf8FzH4wJqkJKZvg3UI4quv5iyxk7yh6SX3obIm+W84skEDmNjCpqUgJ
-	 IaNY1+k+ZRLeA==
-Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
-	id B8166C53BC9; Sat, 14 Feb 2026 19:24:11 +0000 (UTC)
-From: bugzilla-daemon@kernel.org
-To: linux-iio@vger.kernel.org
-Subject: [Bug 221077] [iio] [hid-sensor-rotation] Memory corruption due to
- alignment mismatch in scan buffer
-Date: Sat, 14 Feb 2026 19:24:11 +0000
-X-Bugzilla-Reason: None
-X-Bugzilla-Type: changed
-X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Product: Drivers
-X-Bugzilla-Component: IIO
-X-Bugzilla-Version: 2.5
-X-Bugzilla-Keywords: 
-X-Bugzilla-Severity: normal
-X-Bugzilla-Who: jic23@kernel.org
-X-Bugzilla-Status: NEW
-X-Bugzilla-Resolution: 
-X-Bugzilla-Priority: P3
-X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Flags: 
-X-Bugzilla-Changed-Fields: 
-Message-ID: <bug-221077-217253-qbnh7eccIv@https.bugzilla.kernel.org/>
-In-Reply-To: <bug-221077-217253@https.bugzilla.kernel.org/>
-References: <bug-221077-217253@https.bugzilla.kernel.org/>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Bugzilla-URL: https://bugzilla.kernel.org/
-Auto-Submitted: auto-generated
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NecvcYei"
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-794f701a3e6so17828837b3.2
+        for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 11:25:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771097123; x=1771701923; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=sjBmtYgoNm2L/egRL+9KTyUHzNMn9Pvq3RGushi4848=;
+        b=NecvcYeiWbwbdMtgH575khy0llKMnh4albeDm503ydMITLMUl+t0n3AQa1QDEN2VQz
+         /lAqGWh5TA2w/Wta7cJlEntYJpPayAccHQy5FmJoNiATrEqVG/bb3fTT9kmT9oruswHb
+         QgHptCuKb1G0CroBlHu5MM6gzm5N8wDFbEJDZYqj3OMbE6ioAjj6ybgSP+jOdB+3dIDT
+         mW+If09G8w0ndeE9CBsjZGW+8LDw+krRtTe5cf9WDrb0RyVN+AyTH9tUPtsh2JSdF7hB
+         1ehe8mYJ+EKhbKXJGeGyu2MT7hrrO3iQXb8/1pPRJMwEyZYoR5guxjeJt18D+AMZjUKN
+         07CA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771097123; x=1771701923;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=sjBmtYgoNm2L/egRL+9KTyUHzNMn9Pvq3RGushi4848=;
+        b=D+k9fWTDh12ypT+WvVxdc6TbNKOsdcIlYYh83n7lyjoVUC4MZUzwB+QOPhQrLqCPe+
+         H5+46/hZ1pk4L+MQR4GQBuBFLVD/5FV87DC2xFXb1igeVNpi/91vb5uj6YRTha+mkzZB
+         3mV1vQo2yNGGGAxCzrDuvsbAIk++/EGQC3KEZ1Ytlm2tj1FbuQ7jxCHIefRizSeWYRtX
+         xfDsFGsbHQhkmanSnZW3hY4G2Un8niQhxiWS88sP6J04w3Ef7XV3U2DGHHfLdnTtY6uW
+         J6j6qHW4RG3XpxkU7x8n8xDEc9Gzeu22HcN5WJQRoHUf9XrXXy56yR2CIgGgrEfF3KD/
+         01MA==
+X-Forwarded-Encrypted: i=1; AJvYcCV0V88cD1qaykEdNVPLMd7yo5yFWj7HW3KJUe6AYYBbUZy2LDFAAAXBfyNs203e2n3oJGcgRLn47tQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyK/xUvVjfwkMszDF4pBZtH3foLsk4g1d/ZeujW4/RX43RIAokx
+	oqdsVpD1EeNylns4UJ5B02HG95QBqdRaleWDrjX+Xc6serc4f9vBkaL0
+X-Gm-Gg: AZuq6aKwBVmrpBnaRYvAdh9kjesnEZqslRP0NhXy8vDvTPwUiTdjxsPDidtaswQBO46
+	WY864rg+vTWwozrgnMOVHpOS1EqxGqZ2WAs47qz94Ngn+ztrx382NpZxsO0g0ZUn5TsIlvLW+5j
+	3wu8bpuMEaFuuKje79/kTVIxBxYJ3796nxwsiIkcvN4C9goGfEac9LE5CEdcg/oCqT045Rh6rFC
+	biBOpIKUUrLez2Wdoi0N0bbRy7WW702lO2RikoZEEiM0+DuvoCthpZvB9odqlD/9VIE1FkLSEhL
+	HPrANc0RONjN3++8F6jE8K9cCUsU2Iu3c+hR8TOv6528pCg3L/k3jvWViEM+x7MKCOFU+pHDIYF
+	8UCPDgp/jijRibBrPJXBx/KUxdUyvioLUScOPMXdk4+vMhU1GGqczlkoUy+pxf3Ld+KV3yleasY
+	P0EUlT9b/0M7m6Qbod9grMAvHPeGXNULFDuUgvCaetV/d8sNztvLUxvNmQM8cPNkvFbwz1+7hXn
+	G83P8QWLynobTU/cb1XmisWemYRXn68VqoozypGaHEMHH0nvK3nIw+1rRUmeQ==
+X-Received: by 2002:a05:690c:c50e:b0:797:ab82:7521 with SMTP id 00721157ae682-797ab82791fmr28435937b3.34.1771097123191;
+        Sat, 14 Feb 2026 11:25:23 -0800 (PST)
+Received: from localhost ([2601:7c0:c37c:4c00:e3a8:26f7:7e08:88e1])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7966c18a935sm81141787b3.12.2026.02.14.11.25.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 14 Feb 2026 11:25:23 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sat, 14 Feb 2026 13:25:07 -0600
+Message-Id: <DGEXIYVWABUD.2RSBMFJHUGAIY@gmail.com>
+Cc: "Andy Shevchenko" <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: light: gp2ap020a00f: Correct return type to int
+From: "Ethan Tidmore" <ethantidmore06@gmail.com>
+To: "Jonathan Cameron" <jic23@kernel.org>, "Ethan Tidmore"
+ <ethantidmore06@gmail.com>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260211004819.854169-1-ethantidmore06@gmail.com>
+ <20260214190829.018b057e@jic23-huawei>
+In-Reply-To: <20260214190829.018b057e@jic23-huawei>
 
-https://bugzilla.kernel.org/show_bug.cgi?id=3D221077
+On Sat Feb 14, 2026 at 1:08 PM CST, Jonathan Cameron wrote:
+> On Tue, 10 Feb 2026 18:48:19 -0600
+> Ethan Tidmore <ethantidmore06@gmail.com> wrote:
 
---- Comment #1 from Jonathan Cameron (jic23@kernel.org) ---
-On Wed, 11 Feb 2026 05:12:36 +0000
-bugzilla-daemon@kernel.org wrote:
+...
 
-> https://bugzilla.kernel.org/show_bug.cgi?id=3D221077
->=20
->             Bug ID: 221077
->            Summary: [iio] [hid-sensor-rotation] Memory corruption due to
->                     alignment mismatch in scan buffer
->            Product: Drivers
->            Version: 2.5
->           Hardware: All
->                 OS: Linux
->             Status: NEW
->           Severity: normal
->           Priority: P3
->          Component: IIO
->           Assignee: drivers_iio@kernel-bugs.kernel.org
->           Reporter: lixu.zhang@intel.com
->         Regression: Yes
->            Bisected b31a74075cb4ca2bb202a2e17d133ef3c9ee891f
->          commit-id:
->=20
-> ### Problem
-> In `drivers/iio/orientation/hid-sensor-rotation.c`, the `scale_pre_decml`=
- and
-> `scale_post_decml` fields in `struct dev_rot_state` get corrupted after t=
-he
-> first read from the device. This issue results in invalid scale values be=
-ing
-> reported to userspace.
->=20
-> ### Root Cause Analysis
-> The issue is caused by a size mismatch between what the IIO core expects =
-for
-> the scan buffer and the actual size of the driver's scan structure.
->=20
-> 1.  **Driver Structure**: The `scan` struct in `dev_rot_state` consists o=
-f a
-> quaternion (4 * s32 =3D 16 bytes) and a timestamp (8 bytes).
->     ```c
->     struct {
->             s32 sampled_vals[4];
->             aligned_s64 timestamp;
->     } scan;
->     ```
->     Without explicit alignment, this structure is packed to **24 bytes**.
-
-I agree it's 24 bytes, but worth being clear it has explicit alignment to 8
-bytes. Without that on some platforms it would be 4 byte aligned only.
-
->=20
-> 2.  **IIO Core Expectation**: The `iio_compute_scan_bytes` function
-> calculates
-> the buffer size required. It aligns the total size to the size of the
-> *largest
-> element* in the scan.
->     - The quaternion channel is treated as a single 16-byte element.
->     - Therefore, the core aligns the total size to 16 bytes: `ALIGN(24, 1=
-6) =3D
-> 32 bytes`.
-
-Ah. That is indeed a corner case and the ABI is IIRC not well documented
-around that, let alone what we do in the kernel. We probably need to tighten
-that
-up as well as fixing this. What userspace were you using to test this?
-
-
->=20
-> 3.  **Corruption**: When `iio_push_to_buffers_with_timestamp()` is called:
->     - It assumes a 32-byte buffer.
->     - It writes the timestamp at the end of the aligned buffer (offset 24=
-).
->     - Since the driver allocated only 24 bytes for `scan`, the write at
->     offset
-> 24 overwrites the adjacent `scale_pre_decml` field in `struct dev_rot_sta=
-te`.
->=20
-> ### Evidence (Ftrace)
-> I verified this by tracing the return values of `iio_storage_bytes_for_si`
-> and
-> `iio_compute_scan_bytes` using kretprobes:
->=20
-> ```log
-> $ cat /sys/kernel/tracing/trace_pipe
-> r_store_bytes: (iio_compute_scan_bytes+0x30/0xd0 [industrialio] <-
-> iio_storage_bytes_for_si) arg1=3D0x10
-> r_store_bytes: (iio_compute_scan_bytes+0xa1/0xd0 [industrialio] <-
-> iio_storage_bytes_for_si) arg1=3D0x8
-> r_calc_bytes: (__iio_update_buffers+0x99d/0xd40 [industrialio] <-
-> iio_compute_scan_bytes) arg1=3D0x20
-> ```
->=20
-> The trace confirms:
-> - Largest element =3D 16 bytes.
-> - Total raw size =3D 16 (quat) + 8 (ts) =3D 24 bytes.
-> - Final aligned size =3D ALIGN(24, 16) =3D 32 bytes.
->=20
-> The memory layout mismatch is:
-> - IIO Core needs: 32 bytes
-> - Driver struct has: 24 bytes
->=20
-> ### Regression
-> This issue was introduced by commit `b31a74075cb4 ("iio: orientation:
-> hid-sensor-rotation: remove unnecessary alignment")`, which removed the
-> `__aligned(16)` attribute that previously ensured the struct was padded t=
-o 32
-> bytes.
->=20
-> ### Proposed Fix
-> Revert the removal of `__aligned(16)` to ensure `struct dev_rot_state` has
-> the
-> correct padding to match the IIO core's expectations.
->=20
-> ```c
-> struct {
->         s32 sampled_vals[4] __aligned(16);
-Agreed that fix is correct.
-However, we definitely also need to add some documentation on why it is the=
-re.
-
-It's not actually an alignment force on sampled_vals, but rather on the
-timestamp.
-We can't just mark the timestamp as then it will have two aligned markings =
-on
-x86_32.
-
-David, given we both missed this when 'tidying' this up wrongly what do you
-think
-would make this clearest?
-
-
-Thanks for reporting this with such a thorough and detailed investigation!
-Makes our lives a lot easier.
-
-Jonathan
-
->         aligned_s64 timestamp;
-> } scan;
-> ```
+> Did you find a path via which it can actually return an error? char
+> and dir are tightly constrained inputs.
 >
+> I think the error return is probably just defensive coding against future=
+ bugs
+> and compiler warning supression.
 
---=20
-You may reply to this email to add a comment.
+Yes you're right. I was just correcting a signness warning from smatch
+and just added the extra checks.
 
-You are receiving this mail because:
-You are watching the assignee of the bug.=
+>
+> If so it's still a good thing to clean up but Fixes tag and backports
+> probably not appropriate.
+>
+> And best of all, once it's not a fix we can use some guard()
+> magic to make these functions and your new checks cleaner.
+> guard() usage would be a precursor patch with this one on top to minimize
+> churn.
+
+I'll send a series adding these checks and using guard() and will drop
+the Fixes: tag.
+
+Thanks,=20
+
+ET
