@@ -1,153 +1,202 @@
-Received: from mail-yx1-f54.google.com (mail-yx1-f54.google.com [74.125.224.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81E2323C8A0
-	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 18:46:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 80A0513C918;
+	Sat, 14 Feb 2026 18:56:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771094816; cv=none; b=a/3WRaZlQQy30tgAeDQFSfdlncq+zjjWVCleCi+T3Yg8X3w8s3NaQ2AOxAbLl45DT+2yCsZoxOxYFX3xu7570E5cPNF9lqnvmd3nemYzJj5EmzpSyGPTz8O/eqLKHfxs9OPlyAqLDy+BvTth+rU2zmWRGpuuF+zzQf+X7hhuIRU=
+	t=1771095406; cv=none; b=MwBsHYb/tvNZZ+p+an6qUpXiAHOSpjFzBKWwn85lv1DbmkRK50MMwRwxA0WKPdpE49g2kKRg0BnetmIeQXNPtdjiTBSgC5nXxREqIaOROcoPTeuAEpszUTTZniKK6XLtXT2GNN6czwoQsIitGReSx0MYqCFPX9agRn30IuUHfkk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771094816; c=relaxed/simple;
-	bh=PWt5A979gquISWmjM7f7KHwIRvk4VF7v3XQUNs8S3zc=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=tF0ULatsiRePvruuaWnraSgZeUrsA6+soa+LPImXFXDu7BH8cj1qq2TuufrjlMU9802oOc81hQVDyTygtnaI+P1Mo6sZniLr0upTWK9RQDPsTvNrLBQ7Vmvj3rjJmfJuNYiA3V8QTNbQ/enJbNKP+Z/kcT/a9REdnQ4K9UToFzk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TU/V9pVU; arc=none smtp.client-ip=74.125.224.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1771095406; c=relaxed/simple;
+	bh=bOMrpaRNjBkWQjmA+5Kl6gah9Aa7BdY2gF3122mjPx4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ediDNw4t2p1GBfqwKvISP2PlsLHJk6I2X8vlPZqXRCvPdm+lJdT5jHur7sJXFnvDb6ZPYII3vuAUmoriCKFjyzAFQtim6557LD/1PxBiO77QiELuZajJDIXMwUULPMAD7iHKfzrekAWNfrtKA1wxl+FJ8cqH8NFOU6ZqUijO090=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j1/pkLno; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TU/V9pVU"
-Received: by mail-yx1-f54.google.com with SMTP id 956f58d0204a3-64ad2a2851cso1867905d50.0
-        for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 10:46:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771094814; x=1771699614; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=kIuq6pEzWYh2fE6reqj+zT5+zDErtmRcMuJdTOpJN4U=;
-        b=TU/V9pVU9gxIDh93IB0xktIpjG05J3Qd5C0AqBrfLcRl8xjAJtLclHfLXO9T3paeh+
-         5BdL3u+MDiSNzW3ROvK3HBsn2IPrEN/jgT1bWwIY2Iss867DsXiGMSb60UXQwSCHTsbf
-         YRK55bfHuf3oA2WUMxerBsENWfsRCvrWITGVH6uI9iY1yE4YPhTb3Wpb9VQVY/yxWd+V
-         dReLWHM6IEFUOd1lkfQ5DqJWM4K42cPvx9IpWCFBKqjoOdUEwiAQNJSf1iZZuXOwu7kZ
-         w3ozJymK6+fInlzaupk0QzlHGXwysX5Lr5DHJSMJQ9WFYoo1cq5PBKDkbNyerGLW2m/b
-         FgRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771094814; x=1771699614;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=kIuq6pEzWYh2fE6reqj+zT5+zDErtmRcMuJdTOpJN4U=;
-        b=vajOIa12j7crBwLNOO3EySaowPFjnTXn8A5XqW+gZUgIWStsqet+sIzsI9oIy0hvAJ
-         gCzTQUjKNQYq8dJOJKjO8FsLjVLdBIzYBEEeCBqkuhpCAxAv/Ah6Nq/BcTGN4+gciwtY
-         bqQSfJRtUeWYx1Bbd7zkJCWlhya6eg82xjUSO3da8MsSiFykDfo9+vrVgigV0+0fWTNo
-         S6LgOFD+LB30G83HAEK7UxaMNOQaiG0z6mKybc1kOJa2KomDpUrs+guz/rbPGfcAg7Om
-         BVCyePluF151CJpaCmn9RBipj1Gtai3uBP79q0lUZeMvc8zPnyDI/p7HO9js9tcM4Rcv
-         JSpA==
-X-Forwarded-Encrypted: i=1; AJvYcCU38LfzdEMfnS9cOTvdgJM3OeNtDLOdm/pyfyLU1YgCBg8VF0gff1jM9o7t0rtDyd5ErXjh9xKRH+g=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzP8qpjfSVM+wzjph6vydUEKaKYrIo7VSj+Zx6hYS5g+JNQDwLr
-	hJMiCtZ0mDSXkqWNpFWcuQgz61qzw/E/9PsGug3rKN+sA40L7uq1zW+l
-X-Gm-Gg: AZuq6aIow3FW3puEl+yDW7H7EyaHJGudK+4EOB19FYjMKuprIpyUJZL+L00nXyCJfy7
-	r9Li6L8+h0ItPePnHdCRu3ig819PWGmAVfZ1tWJIux384UwhHt83WoUdNbo2QCzTHmZN5okEJRs
-	uITvzLv1IR+BbHu3wkdsX3gOEcu687ZTwCBoUkTisQ6tjaOjcOyDLFMzmTIJ23+yTxGTyoekiVI
-	aiF3rl/n0pnquTa/6sUXL27mcvHEb4p2ganfGyVXj+DSBiLkOay2guzTvp83g9wqD/gK/21/d4E
-	16iLb/G7Cav7Z8vEmvQ80YEWrIbZdYtDDSlbslUDyfBV5qn+4HfFExG7oq1NkXxhRGVi6SVYI7I
-	XLbs8bbIu3I4MWpxLoT0I2l2w3LzNRkutsJ68FBZaNZ2CZ2eVNlB12RktlFeMCCZ6btiqb1/kuz
-	2eOoCYZ8QZolkW3FuSH8Fp6c2t5eaH9/1yayA12aHOJElXRzo2l7U7I1BmSFiLTzMfGNDvSX1Kk
-	dU/c4c1hOp4TIHnh6pbMLaqPlTpsrhIcBWPx5hW4ms=
-X-Received: by 2002:a05:690e:400a:b0:64a:fd80:85d with SMTP id 956f58d0204a3-64c21b58c19mr2401923d50.65.1771094814508;
-        Sat, 14 Feb 2026 10:46:54 -0800 (PST)
-Received: from tux ([2601:7c0:c37c:4c00:e3a8:26f7:7e08:88e1])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-64c22fd6ca2sm1539684d50.23.2026.02.14.10.46.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Feb 2026 10:46:54 -0800 (PST)
-From: Ethan Tidmore <ethantidmore06@gmail.com>
-To: Jonathan Santos <Jonathan.Santos@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Ethan Tidmore <ethantidmore06@gmail.com>,
-	kernel test robot <lkp@intel.com>,
-	Dan Carpenter <error27@gmail.com>
-Subject: [PATCH v3] iio: adc: ad7768-1: Fix ERR_PTR dereference in ad7768_fill_scale_tbl
-Date: Sat, 14 Feb 2026 12:46:37 -0600
-Message-ID: <20260214184637.16985-1-ethantidmore06@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j1/pkLno"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B136FC16AAE;
+	Sat, 14 Feb 2026 18:56:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771095406;
+	bh=bOMrpaRNjBkWQjmA+5Kl6gah9Aa7BdY2gF3122mjPx4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=j1/pkLno1CeineWtm3xFnE8mDFd7h0K8gtpZSG9TuOECfmNsgSttz8YG2P9LIvydB
+	 osbcjGTOPxWHSbeklzRyiPaCPk9+isSMwizf9VBN2LBknYY/NiQzKntLK5mpSG4x8p
+	 /kt2ZWtlGMdD5wuc9M75rqQMN7ksHL+K7JJOjUiJfGJVuNh7BCPPCc37vM56SPWZsw
+	 8J/Ay604MhR3rghct5Vt6Ylbs6rEqCMuQZvDpt1JWwtvO+6adQhPNyX7s6D4T3m9xj
+	 ff1M1B3pMyoQk+UCINNtc16HUQsxfouOSPer/Yg+ePRVr0OOemq93gKz/lj8dWxsf4
+	 1O6kGHBWj+qIQ==
+Date: Sat, 14 Feb 2026 18:56:36 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
+ Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH v4 08/11] iio: amplifiers: ad8366: prepare for
+ device-tree support
+Message-ID: <20260214185636.6b7e2c7d@jic23-huawei>
+In-Reply-To: <20260210-iio-ad8366-update-v4-8-15505f7b15b4@analog.com>
+References: <20260210-iio-ad8366-update-v4-0-15505f7b15b4@analog.com>
+	<20260210-iio-ad8366-update-v4-8-15505f7b15b4@analog.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The function iio_get_current_scan_type() can return an error pointer,
-the return value scan_type is not checked for this and immediately
-dereferenced which can cause a kernel panic.
+On Tue, 10 Feb 2026 19:42:08 +0000
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-Add check for IS_ERR() and propagate the error back.
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> 
+> Drop switch case on the enum ID in favor of extended chip info table,
+> containing:
+> - gain_step, indicating with sign the start of the code range;
+> - num_channels, to indicate the number IIO channels;
+> - pack_code() function to describe how SPI buffer is populated;
+> 
+> Which allowed for a simplified read_raw() and write_raw() callbacks.
+> The probe() function was adjusted accordingly.
 
-Fixes: ff085189cb17 ("iio: adc: ad7768-1: add support for ADAQ776x-1 ADC Family")
-Reported-by: kernel test robot <lkp@intel.com>
-Reported-by: Dan Carpenter <error27@gmail.com>
-Closes: https://lore.kernel.org/r/202602051234.5gArzLyZ-lkp@intel.com/
-Signed-off-by: Ethan Tidmore <ethantidmore06@gmail.com>
----
-v3:
-- Fix typo and added changelog.
-v2:
-- Add credit to bots and Dan Carpenter.
-- Propgate the error back instead of just returning.
+Making the reset call on all devices is a material change (probably fine)
+that should be called out here.
 
- drivers/iio/adc/ad7768-1.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+> 
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
-index fcd8aea7152e..e16dede687d3 100644
---- a/drivers/iio/adc/ad7768-1.c
-+++ b/drivers/iio/adc/ad7768-1.c
-@@ -531,7 +531,7 @@ static int ad7768_reg_access(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
--static void ad7768_fill_scale_tbl(struct iio_dev *dev)
-+static int ad7768_fill_scale_tbl(struct iio_dev *dev)
- {
- 	struct ad7768_state *st = iio_priv(dev);
- 	const struct iio_scan_type *scan_type;
-@@ -541,6 +541,11 @@ static void ad7768_fill_scale_tbl(struct iio_dev *dev)
- 	u64 tmp2;
- 
- 	scan_type = iio_get_current_scan_type(dev, &dev->channels[0]);
-+	if (IS_ERR(scan_type)) {
-+		dev_err(&st->spi->dev, "Failed to get scan type.\n");
-+		return PTR_ERR(scan_type);
-+	}
-+
- 	if (scan_type->sign == 's')
- 		val2 = scan_type->realbits - 1;
- 	else
-@@ -565,6 +570,8 @@ static void ad7768_fill_scale_tbl(struct iio_dev *dev)
- 		st->scale_tbl[i][0] = tmp0; /* Integer part */
- 		st->scale_tbl[i][1] = abs(tmp1); /* Fractional part */
- 	}
-+
-+	return 0;
- }
- 
- static int ad7768_set_sinc3_dec_rate(struct ad7768_state *st,
-@@ -669,7 +676,9 @@ static int ad7768_configure_dig_fil(struct iio_dev *dev,
- 	}
- 
- 	/* Update scale table: scale values vary according to the precision */
--	ad7768_fill_scale_tbl(dev);
-+	ret = ad7768_fill_scale_tbl(dev);
-+	if (ret)
-+		return ret;
- 
- 	ad7768_fill_samp_freq_tbl(st);
- 
--- 
-2.53.0
+> @@ -48,60 +53,58 @@ struct ad8366_state {
+>  	unsigned char		data[2] __aligned(IIO_DMA_MINALIGN);
+>  };
+>  
+> +static size_t ad8366_pack_code(struct ad8366_state *st)
+
+See below. To me this is doing too much hidden stuff from point
+of view of the caller. I think it needs some more explicit parameters.
+
+> +{
+> +	u8 ch_a = bitrev8(st->ch[0]) >> 2;
+> +	u8 ch_b = bitrev8(st->ch[1]) >> 2;
+> +
+> +	put_unaligned_be16((ch_b << 6) | ch_a, &st->data[0]);
+> +	return sizeof(__be16);
+> +}
+
+>  
+> -static int ad8366_write(struct iio_dev *indio_dev,
+> -			unsigned char ch_a, unsigned char ch_b)
+> +static int ad8366_write_code(struct ad8366_state *st)
+>  {
+> -	struct ad8366_state *st = iio_priv(indio_dev);
+> -	int ret;
+> +	const struct ad8366_info *inf = st->info;
+>  
+> -	switch (st->type) {
+> -	case ID_AD8366:
+> -		ch_a = bitrev8(ch_a & 0x3F);
+> -		ch_b = bitrev8(ch_b & 0x3F);
+> +	if (inf->pack_code)
+> +		spi_write(st->spi, st->data, inf->pack_code(st));
+
+Check return value?
+
+I'm also confused that this function now does two writes whereas it only
+used to do one. 
+
+This is a really confusing call as inf->pack_code() has side effects
+that might not be obvious out here.  I'd have that callback explicitly
+take the inputs and the output array so it's obvious what it can affect.
+		count = inf->pack_code(st->chan, 2, st->chan_data);
+or something along those lines.
+
+>  
+> -		st->data[0] = ch_b >> 4;
+> -		st->data[1] = (ch_b << 4) | (ch_a >> 2);
+> -		break;
+> -	case ID_ADA4961:
+> -		st->data[0] = ch_a & 0x1F;
+> -		break;
+> -	case ID_ADL5240:
+> -		st->data[0] = (ch_a & 0x3F);
+> -		break;
+> -	case ID_HMC792:
+> -	case ID_HMC1119:
+> -		st->data[0] = ch_a;
+> -		break;
+> -	}
+> -
+> -	ret = spi_write(st->spi, st->data, indio_dev->num_channels);
+> -	if (ret < 0)
+> -		dev_err(&indio_dev->dev, "write failed (%d)", ret);
+> -
+> -	return ret;
+> +	st->data[0] = st->ch[0];
+> +	return spi_write(st->spi, st->data, 1);
+>  }
+
+>  static int ad8366_probe(struct spi_device *spi)
+>  {
+>  	struct device *dev = &spi->dev;
+> @@ -261,35 +229,20 @@ static int ad8366_probe(struct spi_device *spi)
+>  		return dev_err_probe(dev, ret, "Failed to get regulator\n");
+>  
+>  	st->spi = spi;
+> -	st->type = spi_get_device_id(spi)->driver_data;
+> +	st->info = &ad8366_infos[spi_get_device_id(spi)->driver_data];
+>  
+> -	switch (st->type) {
+> -	case ID_AD8366:
+> -		indio_dev->channels = ad8366_channels;
+> -		indio_dev->num_channels = ARRAY_SIZE(ad8366_channels);
+> -		break;
+> -	case ID_ADA4961:
+> -	case ID_ADL5240:
+> -	case ID_HMC792:
+> -	case ID_HMC1119:
+> -		rstc = devm_reset_control_get_optional_exclusive_deasserted(dev, NULL);
+> -		if (IS_ERR(rstc))
+> -			return dev_err_probe(dev, PTR_ERR(rstc),
+> -					     "Failed to get reset controller\n");
+> +	rstc = devm_reset_control_get_optional_exclusive_deasserted(dev, NULL);
+
+I was surprised not to see this change in the patch description.
+
+I guess it's fine because if the chip doesn't have a reset it looks the same
+as one that isn't wired?  Add a comment to say not all devices have resets or
+add a flag to the info structure and go back to calling it only for devices
+that at least have a reset pin.
+
+
+
+> +	if (IS_ERR(rstc))
+> +		return dev_err_probe(dev, PTR_ERR(rstc),
+> +				     "Failed to get reset controller\n");
+>  
+> -		indio_dev->channels = ada4961_channels;
+> -		indio_dev->num_channels = ARRAY_SIZE(ada4961_channels);
+> -		break;
+> -	default:
+> -		return dev_err_probe(dev, -EINVAL, "Invalid device ID\n");
+> -	}
+> -
+> -	st->info = &ad8366_infos[st->type];
+>  	indio_dev->name = spi_get_device_id(spi)->name;
+>  	indio_dev->info = &ad8366_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = ad8366_channels;
+> +	indio_dev->num_channels = st->info->num_channels;
+>  
+> -	ret = ad8366_write(indio_dev, 0, 0);
+> +	ret = ad8366_write_code(st);
+>  	if (ret < 0)
+>  		return dev_err_probe(dev, ret, "failed to write initial gain\n");
+>  
+> 
 
