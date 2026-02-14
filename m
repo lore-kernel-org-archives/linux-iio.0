@@ -1,48 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 29A2C299950;
-	Sat, 14 Feb 2026 17:24:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59FC920C461;
+	Sat, 14 Feb 2026 17:43:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771089879; cv=none; b=tTeE+DIktezYDStwTzGD1kg225b2Jui9YfA2e2Z981mTJp9o2Fb2AyplddwPNYPou8Awflg0Uo2JMz2HSUemt51sM5UltHlM2qBFWW4XXDAHZvsBufYsE4PuhfF6nliuJKHAQBVKhPc1SWDyAp/cdOYHvtsREpaE8BskblhNLks=
+	t=1771091002; cv=none; b=M8KMWpObW0QlMoiF3Jx6AsS/fv8Lyf5U9wqJRAsyAHF3Vwy+7eRqE7OD1Kt0XocWoZezbT5I73BPL8CCqh+jB4z51KAbvdGLjcWSUshRvJBIO4HuTOFGhZOklN9WMtYDxYCyTna17QwM+fJBWF+WJU6X9QyeNxLbOrdxLLzbQxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771089879; c=relaxed/simple;
-	bh=55R8VS4W3Nw5PtJ9oaFQmCCjycBecJUF2P2c8LC/UNU=;
+	s=arc-20240116; t=1771091002; c=relaxed/simple;
+	bh=LrraUdxh+9Xmfu3AnFcCt3uJHTANTmtR1eAiz2CEjsk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NKVw+HP86Lk/bN+Di8RPQ93bmBfb+8zMPKwH/TlTrsQEEQQn6yEp5FftX5C9YqlCgoQln4yF/ZIFJb6y7YmRd9gtVMOOjS+KPXIvEE5QcK1THvZ3uvAXbF2HME80bRDtI6gqYTJ9kQaQk1COpi+1Y7meVnTElqdYL6AyvqIDM4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V/PlZ0/d; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=AqphDGXeGbFt5xyKw5qVFxFexPrlO4HpxW4uEgqcLcJxaip754yCs2R+SdbV8I8a6fjOw8z7HYgTd64Y4TgdVYLrDvc705sEX/rm7PWCZFzY/1WwrJtpwnkFHAY1IuVrw/bsCn5djxrwIwBS+ADY8fMWWPF+E+BDUsePcTcPL44=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=svOyzcXA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V/PlZ0/d"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3DAC16AAE;
-	Sat, 14 Feb 2026 17:24:33 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="svOyzcXA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6267C16AAE;
+	Sat, 14 Feb 2026 17:43:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771089878;
-	bh=55R8VS4W3Nw5PtJ9oaFQmCCjycBecJUF2P2c8LC/UNU=;
+	s=k20201202; t=1771091001;
+	bh=LrraUdxh+9Xmfu3AnFcCt3uJHTANTmtR1eAiz2CEjsk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=V/PlZ0/dLy5sUQkaptpbhuo5AUTPiokBB8az0asj79X0PF9FVQWcrv8ngDGyZbl7+
-	 gariAz5/iMWXM+8coPUX33pBguphydLV8Lic/qPJQDNP1Rp91mUwvOSrUZzjuHdJeP
-	 vPlcEjoFFqYyLKIQPppY7gmTpCMURDZdVoo+B27wcF6uvYVCqB6FAfDvtFmeQl8Lkt
-	 KPBDZQzEMA1ojCXmII0IsDbCqDbZckp78sjDYEWzjcXxQB+vy3DU0bNgaexzPMgAs1
-	 rRQ0ZuAE/EW9Mrrhtp2du4IKoeRisvn8+xUzdJ2bisE6spmcl+jhDJOYCZHQfTyMG7
-	 4YOmLJ0BWUvEQ==
-Date: Sat, 14 Feb 2026 17:24:28 +0000
+	b=svOyzcXAoLsp1T7xT1in+7BqyXFiHTDk+fyye8rFxv/ASej5tyxZRgRiWkhXA/w3I
+	 b03KTnF/iJU5whjpCXDY7d3dFoYuKeguY1T8TAvQfO55TNUNy1ezLUDlQP6A0zN8z1
+	 lqId3U0I2Hn9O4E384jUXy4qKvJiFlo6l4pedAEjUee8YocXYXUXh0aRWZCVVAUZSU
+	 oXsJyp3Zag16zigzwXf6Bm8lyM4nG9xkLr4/am6vvM+x68GR2N+ll9ixfvFFAJGuyU
+	 OrYGk7w3uRlddyekae0sDzgl1J2BJImEXyZyuaIn6HgL9ePVw2vNN/EhX//BkpLyl3
+	 EO8AIFojuDwyg==
+Date: Sat, 14 Feb 2026 17:43:12 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Yasin Lee <yasin.lee.x@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, David Lechner
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Yasin Lee <yasin.lee.x@gmail.com>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
  Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
  Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
  yasin.lee.x@outlook.com, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/5] iio: proximity: hx9023s: fix out-of-bounds access
- when copying firmware
-Message-ID: <20260214172428.480af8bb@jic23-huawei>
-In-Reply-To: <CA+NOmzKZy=8WhsN6w3B195pp10JunZA7ZVjRmwD21Q1CeOBYvw@mail.gmail.com>
-References: <20260209-upstream-20260219-v1-0-2b4d74e309d1@gmail.com>
-	<20260209-upstream-20260219-v1-1-2b4d74e309d1@gmail.com>
-	<aYmeoZIlY2HCueKO@smile.fi.intel.com>
-	<CA+NOmzKZy=8WhsN6w3B195pp10JunZA7ZVjRmwD21Q1CeOBYvw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/4] iio: proximity: hx9023s: Protect against
+ division by zero in set_samp_freq
+Message-ID: <20260214174312.7f6e299f@jic23-huawei>
+In-Reply-To: <aY9TtJQoIyLVqqR-@smile.fi.intel.com>
+References: <20260213-upstream-20260219-v3-0-df9371d29f5c@gmail.com>
+	<20260213-upstream-20260219-v3-2-df9371d29f5c@gmail.com>
+	<aY9TtJQoIyLVqqR-@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,43 +49,27 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Wed, 11 Feb 2026 00:35:19 +0800
-Yasin Lee <yasin.lee.x@gmail.com> wrote:
+On Fri, 13 Feb 2026 18:39:16 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Mon, Feb 9, 2026 at 4:45=E2=80=AFPM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
-> >
-> > On Mon, Feb 09, 2026 at 11:37:02AM +0800, Yasin Lee wrote: =20
-> > > Initialize fw_size before copying firmware data into the flexible
-> > > array member to match the __counted_by() annotation. This fixes a
-> > > potential out-of-bounds access that could lead to a kernel crash. =20
-> >
-> > Fixes tag?
-> > =20
->=20
-> This is a proactive fix for an original implementation issue I found
-> as maintainer.
-Hi Yasin,
+> On Fri, Feb 13, 2026 at 11:14:44PM +0800, Yasin Lee wrote:
+> > Avoid division by zero when sampling frequency is unspecified.  
+> 
+> In case of agreement this is the desired behaviour you can add
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+It seems sensible to me as avoids undefined behaviour + is
+unlikely to make any functional difference as I assume that whatever
+we got from the undef never in practice matched a valid input.
 
-I think there is a misunderstanding here.
+So applied patches 1 and 2 to my fixes-togreg branch. I'm not pushing
+that out just now though as I want rc1 to rebase it on first.
 
-The fixes tag requested reflects which patch originally introduced
-the code with the bug. Its separate from Closes tag for which your
-reply makes more sense.
-
-The aim of a fixes tag is is to allow stable and individual vendors
-who might be carrying your driver to figure out how far back
-to backport a fix.
+Thanks,
 
 Jonathan
 
->=20
-> > --
-> > With Best Regards,
-> > Andy Shevchenko
-> >
-> > =20
+> 
 
