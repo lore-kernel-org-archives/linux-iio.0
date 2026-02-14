@@ -1,67 +1,66 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+Received: from mail-oi1-f182.google.com (mail-oi1-f182.google.com [209.85.167.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F1D2B277C86
-	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 16:28:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 961B281724
+	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 16:31:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771086493; cv=none; b=uVQtBqahr8ruk/ailZgtHhM4Mt4DuHYVCnaf4x79I1yxYKXR5yB48BwlU+ZAxV1X8kYzxBTCE6iUKSrHgV/L3xJwlSUCI1cl67m+S0V4HT3JjmcWL7OUc3+VP/Tjad2zaNPxuNtJsYtvRn+msLYzJg0QvwUGjjPma2+CRbidoqU=
+	t=1771086709; cv=none; b=hG/B3TUpgjSTxnbJgq9ufl3rbVZ8I6vB4YrNArpgfR6sEBhkO9pFL9yPzwKdI8s5RJ0qjURXNKipj0srTlfnx0fVtZbuxnY02binqGMAQjECGynICRo5jQqrTJKrQPk7iP4zStetpJZVSMx5zPCLbyRZzVUDKpDDjER9hU60EU0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771086493; c=relaxed/simple;
-	bh=PmDN7Am92anJ3w+2U6QHfhG7MjAie5xXtL2rRG62c+A=;
+	s=arc-20240116; t=1771086709; c=relaxed/simple;
+	bh=3wLisE9N3ryCQYKierZz44zZcJUqejuAHNCQnCumPvo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=h5QDEO2t+0X3oh64KimCE3XQBHWOwdg3Bvho9xANL2RtjWXoCVnLOYpNGUl3DSD77yyId7EGnw+K+TnEt1kQYbcVmHy8IZsJU6Axn7Hl/lCEJgGtj2kCsF7dzimm5LAEYR3F/zASpG7DYVrQAdfC9mlBC/4O6AvaqUV7VN0RpUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=F+EgUh73; arc=none smtp.client-ip=209.85.210.49
+	 In-Reply-To:Content-Type; b=jEo5KEoiFbHj7wngP4lqSwd2gYh6DBU1PoAMGfNL0HDxGzWajhPp3HvQymD9BS744AjYRTjzOCsWstAqV+nOh6s2hrctP6XgnWkjVMV1jpWUjDb65anVkDikZaGARFvl6/q0KKEzHQFFbmluyquFyS3LuSb3/jvHjplSI80CIJI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=XnAqX1bA; arc=none smtp.client-ip=209.85.167.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="F+EgUh73"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-7d4c68f0e47so835919a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 08:28:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="XnAqX1bA"
+Received: by mail-oi1-f182.google.com with SMTP id 5614622812f47-463ba60966aso89272b6e.1
+        for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 08:31:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771086489; x=1771691289; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771086707; x=1771691507; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=T+8pno1sBRzUIHg5L96yyIS/XItd6cwvwphuXPZkTb8=;
-        b=F+EgUh7392wzMqvDX+7AIZf4JrKmuOq7vo/q/USjfC8LYhXQOxraA2GiUgMpdqwWWa
-         w6wAuCOMeeWrEVAH/Iev2mws+jK2q6p+pdCt4I/XDzvomJzdAbTR24V7Cu3uHNqRfynU
-         ZLnzIDBThoxH+c8ht0xJBcTXuCGlHpofFAsqA9nT7Y1HtDGuETbJkNDOZjKNIiHczBG+
-         7Tf/0naDS0c2fp4ghTXpCcZShtNC4pLMAriRQjnL+f98fRfUoJWOnSgw2ETDPAOD075Z
-         IF2e2LES2KxSI5BeAwV2450JpEs28tjF0QLjdef1ZqdB69cHrzTHYSFPLeSM3IXHUtV4
-         /LNg==
+        bh=lJy+Z/rRGwPXFjLImK1xc39BIpSyCco5gJE0Pp8mGj8=;
+        b=XnAqX1bAgvn8byCdESvR+3ddoC36xUD0XOWtX0A6I44bdpIf1XVJExgJLxTTysZad6
+         BjH15LyfxOnV27QXi8j6HjKBTKgPgXdS7vsyr5YUh02mEQ039alAdQrYZ1KGuddHrkza
+         yb2m8p6hjsfMusU+J61Q+t7gz8IBnSiJqzgdpDtZLip2YcT7GgMMqbUvtBDOePWtR/DL
+         x5hQGCmhhcRE5ODPRa+zcDNF4zDtY6MkRQz+rDcAdFcj5DdJRSowaJ6wb80U2rK51SxU
+         lJRL65+t+Lgp3GhSiO267Hv5culwsE1B/rQAafO193vGwDbti1T7knNrzd02GhvebpTa
+         ya3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771086489; x=1771691289;
+        d=1e100.net; s=20230601; t=1771086707; x=1771691507;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=T+8pno1sBRzUIHg5L96yyIS/XItd6cwvwphuXPZkTb8=;
-        b=oSZrhvan4u2Z1wA5KZIn239p73IsECkfIdid40/EBrwvSv6+rcglX5xP7IHBqI3s27
-         x/wIjTXeWSWZm12RsMI6FwvVEDEZyWlZOHrC16/jbdqN+CIrASeLFCs3CLYQECiNJUXX
-         tzT/xylSglvYq63raY4W5LZsmqU5uRoH3EhRc4sHqiU6pW/NrPF0X2ODpizK9VVCtVM0
-         MS1vRx4/ihrUgGfMLutFSYO4uFpcWQQTAlFIfCpbNXyV0eKRN/gTWp2zEBdVDGnowgT4
-         8G18GbDk3C85Gg2WbqUq9UPCm1Lwzjf0fvaqtSShOH6OdsmH3G1Wf4+7s130FSlrQ2ZW
-         A+qA==
-X-Forwarded-Encrypted: i=1; AJvYcCX/AVZcTvjz3F4U9DH5fYKbXKkN0ZDryuBXKmzs5Kw7+bXT7svWDtf4CjPADtjyhqw7otuskGtq/VU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxGGrug+HcZMHqcWHB6sF196lY46A9cUwyfmK8/4hXz7BZ0djCJ
-	NwsBFTeoJ25SeFuzG0N9pdO/T6qdzZU7k1oOZUfHCZQP8+joHEI+dJTV7r2FYHyXce/q+UUoIe7
-	mIrNA
-X-Gm-Gg: AZuq6aI2zckiqNbqW584K8eBXMt+SaBKa0V2yb0xfzzRue3ADifDPtS8o3SXRMrXtkA
-	NlToGhkwXM4j8W6pk5f81ZKusFsCFcVVuvp0IGht7ztJrwAc1QTE4eUaHd+OSzB8D1inVUqN2ta
-	vYYqEBJxdZ9Hf/IZgZzffdIKy6UbLfUmjYGgamwEQV25HuWcBJYFLSrjL/9CBsKOqBpR0NYcMMY
-	Py3sGgjy5kyL09jSxM93f84RCP943oC3SrsSm/hXKj6grmZRjsh610Y7ysBBSBqkOlweGOtHXXs
-	jkIfxHsMAPfL6/X7OEY4dnnQWbGGpj9mWElqpHEGpnG0q8xyg+PRObVKZ6qmT10WS9FFkIlSkQp
-	1f/wgUVRAo2uIqKtnW5f6oZZ18AzVpVonKOTwZep6YPAbLW9gDGRnHKxrWBBfjlKSeJ4q8WZarm
-	ett76Wra5qPexYc6Mqa/hBy9sQrkr2cLmWOIa1WzTTYSk7q3748fg91+tjT+fcsecYOKWijg==
-X-Received: by 2002:a05:6830:82bd:b0:7cf:d742:9d79 with SMTP id 46e09a7af769-7d4d0c42385mr1394916a34.30.1771086488880;
-        Sat, 14 Feb 2026 08:28:08 -0800 (PST)
+        bh=lJy+Z/rRGwPXFjLImK1xc39BIpSyCco5gJE0Pp8mGj8=;
+        b=RO/t6BdZ4oukQJmBEpE6IEm+BegrkX3CzSlbIwZR7CtkVO5f312tlRVzFmKQx0xXtC
+         xOd/jxOBHY40//+5ZvFILR0Imzzdig71QO0bgYeRoyJXl4QFm9BcYFiWSEZvKEPLfCKu
+         VEstUIPNq+z6AIWDR0ftqwfZqsrc29p8tUJ3fYX9TkNsjyrnX+E5vqAi8RupwtnKBt+b
+         IFudMH2odToiFrt+pxG4EM6OQu1c+tuyFCqpWFo2VJIUBTUt7JJdehNjHg0M6gmWj+aO
+         +0G39qYiytHtI4GBdK8lr73CpWjxSfnnI+35i/Pk2xA7yT1OHTo4IhceuuURenSjUzvn
+         c5Fw==
+X-Forwarded-Encrypted: i=1; AJvYcCU/gKb7J27PP8YS+BSenAVL3fJu9exir+4GGKbVY6Z1ixLnpAqCCidshHt884hWzXP66sxSxWldHdQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwMa67lXZ1yKqmdQ2bA2psUefbJsZnvgFGyedCjaIPz+sb62ecv
+	G4zELP6AM2sRQ0jQTHjIbKN9Z7bvZGBdwIIgRZnupCbV2w2Qrp5jjrRb2ixQIidz+QE=
+X-Gm-Gg: AZuq6aJ9IEWhpsCr9y5gx2el8RI4OMFwYQkRFYvLzGEpDnB234JUkQlD0T+ZXrSNgbQ
+	8Ay5q6kzmOuMuD4CHLdjPbJJKKzqr8pvsu7M9QapldAUmQIJztA23JkRMcUqL1RzWwyItJp/Baq
+	QBe/clna7akRQeRQ2SsuHdJxsZu2R3gLRPW4eHtP2sdcStphUSUZ34PR0Q2HqgUq6thxbrO8/bL
+	UTzvxgLfPqs+aF2L+fRrq0XscET62gWe5SLN89bx4NwqKTCX42I9vtVp8pdxz64b0m1XVe2yR+x
+	aSehgpjqOLBW0ues4216wYSTrUclWOZtGU23t4lZkEdANgnk35+SbGByhXKkdVwjEolDCIj5zvv
+	xL1LR7z5U2MeTiIyQJvyfUGgOh8tu6L5dsiYZ6JY8E7PpcsaxVWyPdkQGLsqenp1oLE79rJCIPO
+	nyiZ92MHx83EwlOv46qbrU36o2fIW+soImkOXGhBRSPzh/GFcPHTpBnCYH8KzOcdTlkOGL6Q==
+X-Received: by 2002:a05:6808:6411:b0:45e:d113:ed38 with SMTP id 5614622812f47-463b403b1b3mr1468474b6e.36.1771086707423;
+        Sat, 14 Feb 2026 08:31:47 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:109:393c:254e:962e? ([2600:8803:e7e4:500:109:393c:254e:962e])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d4a75309bcsm8614464a34.1.2026.02.14.08.28.08
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-463a4ede045sm2744429b6e.9.2026.02.14.08.31.44
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 Feb 2026 08:28:08 -0800 (PST)
-Message-ID: <39707e67-c184-47ef-9e42-fe322f237081@baylibre.com>
-Date: Sat, 14 Feb 2026 10:28:07 -0600
+        Sat, 14 Feb 2026 08:31:45 -0800 (PST)
+Message-ID: <f53438af-0177-4326-acc5-aa653046052b@baylibre.com>
+Date: Sat, 14 Feb 2026 10:31:44 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,121 +68,55 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 1/3] iio: magnetometer: bmc150_magn: use automated
- cleanup for mutex
+Subject: Re: [PATCH v6 3/3] iio: magnetometer: bmc150_magn: minor formatting
+ cleanup
 To: Neel Bullywon <neelb2403@gmail.com>, jic23@kernel.org
 Cc: nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20260210233945.40975-1-neelb2403@gmail.com>
- <20260210233945.40975-2-neelb2403@gmail.com>
+ <20260210233945.40975-4-neelb2403@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260210233945.40975-2-neelb2403@gmail.com>
+In-Reply-To: <20260210233945.40975-4-neelb2403@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 2/10/26 5:39 PM, Neel Bullywon wrote:
-> Use guard() and scoped_guard() to replace manual mutex lock/unlock
-> calls. This simplifies error handling and ensures RAII-style cleanup.
+> Improve initializer list style for bmc150_magn_samp_freq_table by
+> moving the opening brace to its own line and grouping four entries
+> per line with index comments.
 > 
-> scoped_guard() is used in read_raw IIO_CHAN_INFO_RAW case for a
-> multi-statement mutex-protected block, as well as in remove,
-> runtime_suspend, and suspend where a short mutex-protected scope
-> is needed for a single function call.
+> Add spaces inside braces for initializer lists in the preset table
+> for consistency.
 > 
-> guard() is used in write_raw and trig_reen where the mutex scope
-> extends to the end of the function or case block. Case blocks in
-> write_raw are wrapped in braces to ensure clear scope for the
-> cleanup guards.
-> 
-> The trigger_handler function is left unchanged as mixing guard()
-> with goto error paths can be fragile.
+> Fix indentation of bmc150_magn_scan_masks array. No functional changes.
 > 
 > Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
 > ---
->  drivers/iio/magnetometer/bmc150_magn.c | 130 ++++++++++---------------
->  1 file changed, 52 insertions(+), 78 deletions(-)
+>  drivers/iio/magnetometer/bmc150_magn.c | 25 +++++++++++--------------
+>  1 file changed, 11 insertions(+), 14 deletions(-)
 > 
 > diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-> index 6a73f6e2f1f0..5eb710eb020d 100644
+> index f254774d28e5..942c2f5e97e1 100644
 > --- a/drivers/iio/magnetometer/bmc150_magn.c
 > +++ b/drivers/iio/magnetometer/bmc150_magn.c
-> @@ -11,6 +11,7 @@
+> @@ -149,14 +149,10 @@ struct bmc150_magn_data {
+>  static const struct {
+>  	int freq;
+>  	u8 reg_val;
+> -} bmc150_magn_samp_freq_table[] = { {2, 0x01},
+> -				    {6, 0x02},
+> -				    {8, 0x03},
+> -				    {10, 0x00},
+> -				    {15, 0x04},
+> -				    {20, 0x05},
+> -				    {25, 0x06},
+> -				    {30, 0x07} };
+> +} bmc150_magn_samp_freq_table[] = {
+> +	{ 2, 0x01 }, { 6, 0x02 }, { 8, 0x03 }, { 10, 0x00 },		/* 0 - 3 */
+> +	{ 15, 0x04 }, { 20, 0x05 }, { 25, 0x06 }, { 30, 0x07 },	    /* 4 - 7 */
+> +};
 >  
->  #include <linux/module.h>
->  #include <linux/i2c.h>
-> +#include <linux/cleanup.h>
->  #include <linux/interrupt.h>
->  #include <linux/delay.h>
->  #include <linux/slab.h>
-> @@ -456,29 +457,22 @@ static int bmc150_magn_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_RAW:
->  		if (iio_buffer_enabled(indio_dev))
->  			return -EBUSY;
-> -		mutex_lock(&data->mutex);
-> -
-> -		ret = bmc150_magn_set_power_state(data, true);
-> -		if (ret < 0) {
-> -			mutex_unlock(&data->mutex);
-> -			return ret;
-> -		}
-> +		scoped_guard(mutex, &data->mutex) {
-
-I am very wary of scoped_guard(), especially in case statements.
-There is a hidden for loop in the macro, so if `break;` is used
-inside of the scoped_guard() {}, it will only break out of the
-guard scope (for loop) and not the case.
-
-It would be better if we could use `guard()` instead (in the style
-that Andy suggested).
-
-
->  static const struct iio_trigger_ops bmc150_magn_trigger_ops = {
-> @@ -980,9 +961,8 @@ void bmc150_magn_remove(struct device *dev)
->  	if (data->dready_trig)
->  		iio_trigger_unregister(data->dready_trig);
->  
-> -	mutex_lock(&data->mutex);
-> -	bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SUSPEND, true);
-> -	mutex_unlock(&data->mutex);
-> +	scoped_guard(mutex, &data->mutex)
-> +		bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SUSPEND, true);
->  
->  	regulator_bulk_disable(ARRAY_SIZE(data->regulators), data->regulators);
->  }
-> @@ -995,10 +975,9 @@ static int bmc150_magn_runtime_suspend(struct device *dev)
->  	struct bmc150_magn_data *data = iio_priv(indio_dev);
->  	int ret;
->  
-> -	mutex_lock(&data->mutex);
-> -	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SLEEP,
-> -					 true);
-> -	mutex_unlock(&data->mutex);
-> +	scoped_guard(mutex, &data->mutex)
-> +		ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SLEEP,
-> +						 true);
-
-
-This way of using scoped_guard() is OK since there is no { }.
-
-
->  	if (ret < 0) {
->  		dev_err(dev, "powering off device failed\n");
->  		return ret;
-> @@ -1026,10 +1005,9 @@ static int bmc150_magn_suspend(struct device *dev)
->  	struct bmc150_magn_data *data = iio_priv(indio_dev);
->  	int ret;
->  
-> -	mutex_lock(&data->mutex);
-> -	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SLEEP,
-> -					 true);
-> -	mutex_unlock(&data->mutex);
-> +	scoped_guard(mutex, &data->mutex)
-> +		ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SLEEP,
-> +						 true);
-
-This one can be regular guard() and return directly.
-
->  
->  	return ret;
->  }
+Just an opinion: I think it is easier to see the patterns in
+the numbers if we leave it as one struct per line. (Fixing
+the indent and padding is still an improvement.)
