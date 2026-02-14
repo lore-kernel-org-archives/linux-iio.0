@@ -1,45 +1,49 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C249285C4A;
-	Sat, 14 Feb 2026 14:47:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99B66221FB6;
+	Sat, 14 Feb 2026 15:00:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771080462; cv=none; b=vEQQ/OCC2ksoDdHriLr1oO56xyK9uLl3vr4Nf8BGJ3Gse7QsHEh71GDPS94g/K1gipG9kbuVEwlbKKEK/AcBvJzsNrJ4EeB6Mjsxws2u6+P1E44qLp4GVhkbOiV8boR59hwvkS3q5zEnl+jkDmEbxNCSYC2cPdl6qgRcWHJeq9I=
+	t=1771081251; cv=none; b=m6wQLlvWFEArTXR41bhijYZeDIvcKB6n2MA5NL2ljAcub+DBNmjtYzeXRyJQpv6wqBgxRpMplCtuYlV35InGEloTz7Fu8W50WduJ73ByMuW8mNedTWWJMMS2ehjO7fT71zFBJKiJNEyclP3T4Wil01dGEBmX0RVlhYtL3wsy3Lg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771080462; c=relaxed/simple;
-	bh=Pv2QAS9hr7X5nS1x4xzWvayvLcOMsTA6lFWQcoISNp8=;
+	s=arc-20240116; t=1771081251; c=relaxed/simple;
+	bh=Qqif6tztr8r3Sltn2DQnwP37JCCOQ5d7Q2GRL5eElys=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Mhv7rB6QsDg6X5py11vyjNqNiI7CWeOA8GgoLdul6GV+XK7OvBX9XN0GpLcTR92xVwCGNUNsseYOoZWOaI1sNQKKSiFfUvEE9/pZue2TjcTFChn0Hi/x+g0hb6GEQHqMbBRccQ4fiAlopEpd7h7wvNWwh21FlekYY8w+8HjVsck=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qvgT4UYt; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=i/C0ZiHbECf8Px9M9pVucbARZeCeC8+Tg1J2lMV1VGddjff5dw0i39I9W0cnlVgejSYt9jpMfVAf6AAx4ED3K2bXHT+aTjg/JclFUhunIUdg9lHt8jfG7jrFpje8VYr2rgETEUykQi/x5UvJ10ko99uOWqN8wcDlsdybIi9+Xbg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=obxSIQT3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qvgT4UYt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7CAAC16AAE;
-	Sat, 14 Feb 2026 14:47:38 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="obxSIQT3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B68FAC16AAE;
+	Sat, 14 Feb 2026 15:00:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771080462;
-	bh=Pv2QAS9hr7X5nS1x4xzWvayvLcOMsTA6lFWQcoISNp8=;
+	s=k20201202; t=1771081251;
+	bh=Qqif6tztr8r3Sltn2DQnwP37JCCOQ5d7Q2GRL5eElys=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=qvgT4UYtCUnEhVWCWKMdderNNEuaHcpBt35JH3eUO29lUFnyQQs9Es9YTGr4foUzc
-	 nuyH3fW5Vk3sYNY9/XBIjDnwkO7nbxRE2oUKlWzyTcyeBYmlECXn8JMYA94skuhb1Z
-	 DTDOmqxTe1mwprU0sBqn0pVd71dSLzOlwGzopUHjMpjoSeekBusu0jex5YWpw5uo7U
-	 KHFVWk+9TlWjtL/XvGBU6qMT2dy50xu+cA3yF7TG/UjNxEnR41vLMC9BvBCxHxRhZZ
-	 N+59fyXGgnkiFruI2psc2VBByIlZWQ3S6lCiThNElDHgY379g5FX7FieH2pjXD00Pb
-	 Scu9m3TBGDbDA==
-Date: Sat, 14 Feb 2026 14:47:33 +0000
+	b=obxSIQT3N0ZkJNk13g945R0dJ2m1xWJJHCfgWkUWSQizkrly2QxipRJXZOcMzLYNS
+	 DC/Q4JMivRFow+aJOlLtvdzz66acPhB52Ttj+8wNZ42TOGQK7i0GYRarnHAhVmtXBa
+	 6b9xlovSwW7FTeNWQmXCAOCnFD1GnrlK73ElQ/VwBuNUyhxaKIdTLyig34i4Xo1/vu
+	 2hTKtL9j5Serb0oegjxBftX7+V3xyy/A9fSMqmkU3pwizYN4AUOYNu6oRW3ac7ul40
+	 bpXxjNyYRfYpLajLoWi/fb8fQkovrHXJabbgt9+EyqmBNYnMQmpn9PBLSwPQpFgnDx
+	 iti7ErJICWjQg==
+Date: Sat, 14 Feb 2026 15:00:42 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jonathan Santos <jonath4nns@gmail.com>
-Cc: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Michael.Hennerich@analog.com,
- lars@metafoo.de, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org
-Subject: Re: [PATCH 1/3] iio: adc: ad7768-1: fix one-shot mode data
- acquisition
-Message-ID: <20260214144733.5a6534de@jic23-huawei>
-In-Reply-To: <aYpT1zES5la/8TTb@JSANTO12-L01.ad.analog.com>
-References: <cover.1769889074.git.Jonathan.Santos@analog.com>
-	<c4af45393ec299d0fbf853fa8ec224f475e5901e.1769889074.git.Jonathan.Santos@analog.com>
-	<20260207164851.51874c46@jic23-huawei>
-	<aYpT1zES5la/8TTb@JSANTO12-L01.ad.analog.com>
+To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Sebastian Andrzej Siewior  <bigeasy@linutronix.de>, Bert Karwatzki
+ <spasswolf@web.de>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, Jiri Kosina <jikos@kernel.org>, Thomas Gleixner
+  <tglx@kernel.org>, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Subject: Re: [tip: irq/core] genirq: Warn about using IRQF_ONESHOT without a
+ threaded handler
+Message-ID: <20260214150042.51a14483@jic23-huawei>
+In-Reply-To: <a69abd18ea5a30fdb32478183ad16d9aaacd73a3.camel@linux.intel.com>
+References: <20260113120541.YVf2vRA3@linutronix.de>
+	<20260202232741.13380-1-spasswolf@web.de>
+	<20260203083826.1gOzxrwt@linutronix.de>
+	<476cf5e072259332676c431c19ca3188705a86f1.camel@web.de>
+	<20260203145856.Rc52LIS5@linutronix.de>
+	<20260207154638.30f3b47b@jic23-huawei>
+	<a69abd18ea5a30fdb32478183ad16d9aaacd73a3.camel@linux.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,91 +51,115 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 9 Feb 2026 18:38:31 -0300
-Jonathan Santos <jonath4nns@gmail.com> wrote:
+On Sun, 08 Feb 2026 18:00:53 -0800
+srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
 
-> On 02/07, Jonathan Cameron wrote:
-> > On Sat, 31 Jan 2026 22:35:20 -0300
-> > Jonathan Santos <Jonathan.Santos@analog.com> wrote:
-> >   
-> > > According to the datasheet, one-shot mode requires a SYNC_IN pulse to
-> > > trigger a new sample conversion. In the current implementation, No sync
-> > > pulse was sent after switching to one-shot mode and reinit_completion()
-> > > was called before mode switching, creating a race condition where spurious
-> > > interrupts during mode change could trigger completion prematurely.
-> > > 
-> > > Fix by sending a sync pulse after configuring one-shot mode and moving
-> > > reinit_completion() after the pulse to ensure it only waits for the
-> > > actual conversion completion.  
-> > That smells like a race...
-> > 
-> > What stops us taking a long break between ending that sync pulse and
-> > the reinit_completition() such that we have initialized if before the
-> > complete()?
-> >   
-> 
-> Yes, you are right, we have a race here. The inital problem was having 
-> the ad7768_set_mode() before the reinit_completion() because, almost 
-> everytime, a new conversion is done before setting the one-shot mode, 
-> so the complete() happens before the expected trigger (that never
-> happened because ad7768_send_sync_pulse() was not present).
-> 
-> > You always have to do it before what ever ultimately makes the complete()
-> > happen. Have you seen an sign of the spurious interrupts or is that
-> > more a conjecture of what might happen? 
-> >   
-> 
-> Agreed, I can put reinit_completion() before sending the sync pulse to
-> avoid this situation. But maybe it is better just to remove the one-shot
-> mode as discussed in the patch 2/3. What do you think?
-I don't have a strong view either way as the trade offs of
-using continuous type modes for oneshot and not tend to be rather driver
-and usecase specific.  So I'll leave that decision to the driver author
-and anyone else who cares about a particular part.
+> On Sat, 2026-02-07 at 15:46 +0000, Jonathan Cameron wrote:
+> > On Tue, 3 Feb 2026 15:58:56 +0100
+> > Sebastian Andrzej Siewior <bigeasy@linutronix.de> wrote:
+> >  =20
+> > > On 2026-02-03 11:43:53 [+0100], Bert Karwatzki wrote: =20
+> > > > Yes, this should call warn_no_thread() when the interrupt is
+> > > > triggered, but
+> > > > I don't know if these sensors are actually functional on my
+> > > > laptop (I've never
+> > > > tried to use them).
+> > > >=20
+> > > > So I installed libiio-utils from debian and this is the output
+> > > > from
+> > > > iio_info:=C2=A0  =20
+> > > =E2=80=A6 =20
+> > > >=20
+> > > > The iio:device* sensors all report 0 for the "offset value", so
+> > > > these
+> > > > sensors are maybe non-fuctional.
+> > > >=20
+> > > > =C2=A0  =20
+> > > > > What did I miss?=C2=A0  =20
+> > > >=20
+> > > > I don't think you missed something, but the thread function being
+> > > > NULL here
+> > > > could a problem on devices where these sensors actually work. (Or
+> > > > perhaps these sensors
+> > > > need to be polled and the interrupts never trigger (?))=C2=A0  =20
+> > >=20
+> > > I only found one handler where the thread handler was NULL and it
+> > > returned WAKE_THREAD. So this _is_ broken.
+> > > Was it one of the driver I mentioned? If so I suggest to fix those
+> > > first. I have no idea how this should work=E2=80=A6 =20
+> > Both the drivers that are called out in this discussion look to
+> > be registering a triggered buffer, but are not using a trigger to
+> > fill
+> > it. So they should not be doing that in the first place. =20
+>=20
+> Replacing with devm_iio_kfifo_buffer_setup_ext() breaks user space on
+> laptops as they expect current_trigger. This is not available for
+> INDIO_BUFFER_SOFTWARE. Using INDIO_BUFFER_TRIGGERED doesn't help
+> without poll function. Still breaks user space. This all works from
+> Linux 3.1x in this mode.
 
-Fix wise you probably want the minor change of adding the reinit before
-the pulse as that gives us something small to backport, even if you then
-rip the code out again.
+Ah ok.  So I wouldn't have gone in this direction in the first
+place. Obviously I missed it at the time ;(
+Given where we are we can't remove it without breaking backwards compatibil=
+ity.
+I thought we'd long ago taught userspace to handle devices with untriggered
+buffers but as ever with ABI we can never assume that's universal (and maybe
+not even common!)  IIRC the reason untriggered buffers became common
+was when device with hardware FIFOs came along and the trigger is still the=
+re
+but never visible to software.  Which is kind of similar to the cases you
+are referring to I think.
 
-Thanks,
+>=20
+> Sensors are powered off till user space writes to current_trigger which
+> results in call to .set_trigger_state() via
+> iio_trigger_attach_poll_func().=20
+
+With hindsight I'm not sure why we'd do that rather than doing it in the
+buffer enable, but we are stuck so that doesn't matter now.
+
+>=20
+> Here the hub is pushing data, not pulled to register a thread handler
+> and read.
+>=20
+> So not sure what to add to thread handler other than dummy function.
+
+Yes, let's do that but add a note to it saying that it should not
+be copied into new drivers + can we throw a big warning print in the
+dummy handler and stop proving a meaningless top half?
+
+We have a few really annoying corner cases where a 'fake' current trigger
+is used to switch between types of trigger. This is usually for wiring
+up various in device signals rather than having software in the path.
+Those would need a different rethink if we get a new one of those.
+They aren't common.
 
 Jonathan
 
-> 
+
+> =20
+>=20
+> Thanks,
+> Srinivas
+>=20
+> >=20
+> > The right fix is either to not use those helpers at all and register
+> > the kfifo directly (so none of the problem infrastructure is used) or
+> > implement a proper trigger / buffer separation by having their
+> > interrupt
+> > handlers as the trigger then moving the data reading into the
+> > pollfuncs.
+> > At that point there would be a thread here to do that read and we'd
+> > not have the bug.
+> >=20
 > > Jonathan
-> >   
-> > > 
-> > > Fixes: a5f8c7da3dbe ("iio: adc: Add AD7768-1 ADC basic support")
-> > > Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
-> > > ---
-> > >  drivers/iio/adc/ad7768-1.c | 9 +++++++--
-> > >  1 file changed, 7 insertions(+), 2 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
-> > > index fcd8aea7152e..8d39b71703ae 100644
-> > > --- a/drivers/iio/adc/ad7768-1.c
-> > > +++ b/drivers/iio/adc/ad7768-1.c
-> > > @@ -463,12 +463,17 @@ static int ad7768_scan_direct(struct iio_dev *indio_dev)
-> > >  	struct ad7768_state *st = iio_priv(indio_dev);
-> > >  	int readval, ret;
-> > >  
-> > > -	reinit_completion(&st->completion);
-> > > -
-> > >  	ret = ad7768_set_mode(st, AD7768_ONE_SHOT);
-> > >  	if (ret < 0)
-> > >  		return ret;
-> > >  
-> > > +	/* One-shot mode requires a SYNC pulse to generate a new sample */
-> > > +	ret = ad7768_send_sync_pulse(st);
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	reinit_completion(&st->completion);
-> > > +
-> > >  	ret = wait_for_completion_timeout(&st->completion,
-> > >  					  msecs_to_jiffies(1000));
-> > >  	if (!ret)  
+> >  =20
+> > >  =20
+> > > > Bert Karwatzki=C2=A0  =20
+> > >=20
+> > > Sebastian =20
+>=20
 
