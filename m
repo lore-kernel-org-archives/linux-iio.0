@@ -1,120 +1,165 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7807F32FA00;
-	Sat, 14 Feb 2026 08:54:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D6EF91EDA2C
+	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 14:36:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771059297; cv=none; b=VKsqPAHQswV3VryV/9WoIzrQGotQJO/4T6WQUzMaY+fAGwpjrQhN042Ppc/41wzGcg8FQ8zO2lGAj/rH55y12gP1y3AlkaQ6QXJz9mbZClnFeFgLhRmiA0U6MDQ7H8b642pEJlLVuzqmwYcgD22EPFERyY+acs3pDYb7pCBi6D4=
+	t=1771079804; cv=none; b=lj4XuAufpc0tTom7ucFPfY4MLzQodRenLa3skUpkqZH4oxRiDYL/JPW+s+HcBAmyk4u9nLGsEqYNRZ1wUBovkNrdR/dmAcQfKs8qfcYG3YM1+Cds62y1hF0vZX5KsvUDHmA5jtnmqta+g7uI9ZB45gQBwK0bQfMoVQEM5GDXWVk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771059297; c=relaxed/simple;
-	bh=Fvv9QKMOahMW98MbW/c4WwcdcJ1BmMD+hGalWQFWzQo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=IPsvBsBgKdHZMt0WAd9iSV/l0X3xqhtRDzCvKgrdUTKKQCE88lLoZ+Dc8NF0PZuncBfYMNuMtaVR2RGePR+Ftj2aUKvwH4yKQ6xJOEkRfTycfeBr7T9Fnre6dkEyBrb5zbuEREG7B5djJIwIf0REv6YLDZwbOIo9Gsylc5f8Zw0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WqqLxoY6; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771079804; c=relaxed/simple;
+	bh=lifma1fkyJXoFbZdvaO3brzG5uu9xrpqnFcJ2/UiypU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=W4/utKWk1gO5GKzn79+7/fUf4Lc6oQ4qtB44TBBGp8Y1dat2MU5qq3szzG83uZ5aqDlPPiMBRd28NUDm68LIwpCl2Lq7ghsPsCIAYUknqFSqN7oiTotUcUJ2jfpifE8zlvusCUltz5tvJt+JHdcY+Tka+/mB9/hNmowgMsV3K0o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YBEhq7gq; arc=none smtp.client-ip=209.85.221.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WqqLxoY6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DBE9C19421;
-	Sat, 14 Feb 2026 08:54:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771059296;
-	bh=Fvv9QKMOahMW98MbW/c4WwcdcJ1BmMD+hGalWQFWzQo=;
-	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=WqqLxoY6NEgNfOb+CV8kKCjYH9bhPrq5OqzK2rCBV/4mTRbTV0IO5CZ/kBuYekazr
-	 P4VJndhUyjZv5n/WVrBXBXx6HlCkeM+HGLo4Oe/ho2E3MnLzjd6jTqgSvltVaKCgVO
-	 1AlF6hXtKsIFKUH8vj+dqvGMNdE1XTGd4mkBvw5E0cY6mYYQwGyQiu87AqdpV+tjiq
-	 gyk4DrH2ifb4u4qnyo34p/FMCVGdU3u/wK+XDgCR7iTkYV9lpDHY3Ip6IlK7XKmU9r
-	 hfLYo91CY2Uv1DBTwTLvJtZVEPgaGqlTtvEBH2dQpVqixglkCQ4ofe/Wl4BoRHjmqd
-	 Q4O5krRrA43Ng==
-Message-ID: <8ec3d74b-56a7-4ee4-b24f-2d5f1217d1b6@kernel.org>
-Date: Sat, 14 Feb 2026 09:54:51 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YBEhq7gq"
+Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-43767807cf3so1280264f8f.1
+        for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 06:36:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771079800; x=1771684600; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=IX7asOCrGHlCJ3M/QOueVKWeSthQ1ahRVKGbE340Z6E=;
+        b=YBEhq7gqGpZDqcxl3gzWIMTtdURVnSm80NlXvuKP2wJm+uAzlQ7+4DjkLYQ/lQoslq
+         KExUq6zMI5achh3QeHwWKI9EVjuvJ80GqQ6uDK3zAcLK5+CAVC7J2JgsegynYmkit779
+         5W47Bz4i+4DcU9OBDL0V3+ESbvOTao5TEqtucnJz4QKl9nmpXb9X6CQjgg3jU27Sa2lK
+         cTXzAB/ZH9xQg+gWdIKTPauFdLFqFK+tlUnUwpS5eGJDba21jKtNoAGdnQsXyik7IVTg
+         yjPry9jcC7Ns2484jzyXOhXJLy9aFzlBWsRGpEieSFNrr02wGCKx1E0idOz6JyGBOUpn
+         RhTg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771079800; x=1771684600;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=IX7asOCrGHlCJ3M/QOueVKWeSthQ1ahRVKGbE340Z6E=;
+        b=d3ig+q/lHA4O/isvT2CbccrdU8vu3gMpURLQy02aEx2rRleO5I6PCeVAGe1vArO4nO
+         QZw/UCDiSF7sPQD9jIvfoVhpYID6DMgzM/XTIFJIPNh1uxiuFPB5uOyqTTVEYeirCJVv
+         MbpelvXJjr409FwgTzUwJbAiaX4IRpO5eo/BvEsD5BLSkvOIU9XvJUGqtnr6uiSVDUjA
+         M9cOfElRyOD9T6lt7wp0yoEVVuTZait+cb7BLTCmy+qumOfnzcXS2VfYObKSFmv4NrXE
+         onmpauJDIyMatLhFW0UwoHRfOk8C5dUz0Et/a3JeJyNXjcNe2ze4D2OFoHmcmf/0nfyX
+         cicg==
+X-Forwarded-Encrypted: i=1; AJvYcCUJifo2PiolzCKKyq32EUXFVeTP8IEG1Bi7dQMn5nCnnF4uLvOqW9pdGO2KuF/n3eqtyhz3CzZh6Sc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YweZsfGoc64gJrQduP9AYN1dE64jwlFPi8nwzAtItB6KyCS8oX9
+	yn0VPWzbaQVHpUia7e1TY/t+vKegF3dq7Xmz+90Sn5E1sl6WMNW8iGRz
+X-Gm-Gg: AZuq6aIEXSyrrBdug+/7+GfsOMsCOjQKo+zvG2/4aMap2h6RGPt2c+iNZjzxQ/ZKfxH
+	60tfnFsqbj4WRn3jPDXQ6r9avy1IH8QeFay3vCLeJ5so7Wa3iHgO8RDw4QU9gbnTz1biUZtuykc
+	ShLWrn0Tqbz/ig4zUkOO38dV91J6+kWMK+Iaf/1ZRrto/nXEbMgg/D26w7NL3SpNblY3QoS8kuX
+	u3fSbXQH3INLLiXiaeTImsURnt+qKTthT9LRmd8uBk96K93Ln78hlOc2fAuqe52lyExekxMyADo
+	cczvMvRouYZ5uDkmo2NtDw3jxLa8Phsbb9vw7GR6wobsRgC6BBnletIWo0WWCHqX9swrTotoPlQ
+	u6i4EpNRL5DYyCMDJICvEChDWblPPaqTvJ1HfjnojBMPWByJa2Tlg7zuJruIIBBQrZl/iklJKNS
+	tKZAC8k4Mghf4+f/c2rJ/dT0ArRt1yHd2S6tv8KWL10tVHG6luvzLNYd9qPsLB42CnSARleALP2
+	Fbc60BusC0GMwFSfQpUrNvRO4IXywKJ4gOJhe0ziNoLFOHvg2EU5HWp0jeG67buFT0=
+X-Received: by 2002:a05:6000:2210:b0:435:b7b9:afe5 with SMTP id ffacd0b85a97d-4379db25e60mr4795742f8f.1.1771079799955;
+        Sat, 14 Feb 2026 06:36:39 -0800 (PST)
+Received: from HYB-DlYm71t3hSl.ad.analog.com ([2001:a61:1224:8901:285b:c5a:cad2:ba54])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43796a6a6desm12994658f8f.10.2026.02.14.06.36.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 Feb 2026 06:36:39 -0800 (PST)
+Date: Sat, 14 Feb 2026 15:36:35 +0100
+From: Jorge Marques <gastmaier@gmail.com>
+To: Ethan Tidmore <ethantidmore06@gmail.com>
+Cc: jorge.marques@analog.com, jic23@kernel.org, lars@metafoo.de, 
+	Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>, 
+	Dan Carpenter <error27@gmail.com>
+Subject: Re: [PATCH] iio: adc: ad4062: Add missing IS_ERR() check
+Message-ID: <jy7aadqr7zblpoh2qvdelzjiqqjl5zpofckbuhhfeer3pjvcbb@ee47xydwo36f>
+References: <20260214005332.29608-1-ethantidmore06@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 4/5] dt-bindings: iio: adc: ad4080: add AD4880 support
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
- Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-spi@vger.kernel.org
-References: <20260213144742.16394-1-antoniu.miclaus@analog.com>
- <20260213144742.16394-5-antoniu.miclaus@analog.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20260213144742.16394-5-antoniu.miclaus@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260214005332.29608-1-ethantidmore06@gmail.com>
 
-On 13/02/2026 15:47, Antoniu Miclaus wrote:
-> Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC
-> with integrated fully differential amplifiers (FDA).
+On Fri, Feb 13, 2026 at 06:53:32PM -0600, Ethan Tidmore wrote:
+> In the function ad4062_sizeof_storagebits() iio_get_current_scan_type()
+> is called which can return an error pointer and is not checked for it.
+> Also the function ad4062_sizeof_storagebits() returns type size_t but,
+> is only used once and the variable assigned from it is type u8.
 > 
-> The AD4880 has two independent ADC channels, each with its own SPI
-> configuration interface. This requires:
-> - Two entries in reg property for primary and secondary channel
->   chip selects
-> - Two io-backends entries for the two data channels
+> Add check for error pointer in ad4062_sizeof_storagebits() and change
+> return type to int so the error code can be properly propagated and then
+> checked.
 > 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+
+Hi Ethan,
+
+Thank you for adding the check.
+
+Reviewed-by: Jorge Marques <jorge.marques@analog.com>
+
+For risk assessment of the bug:
+
+  static int ad4062_get_current_scan_type(const struct iio_dev *indio_dev,
+  					const struct iio_chan_spec *chan)
+  {
+  	struct ad4062_state *st = iio_priv(indio_dev);
+  
+  	return st->mode == AD4062_BURST_AVERAGING_MODE ?
+  			   AD4062_SCAN_TYPE_BURST_AVG :
+  			   AD4062_SCAN_TYPE_SAMPLE;
+  }
+
+  There is no path where the method returns an error.
+
+It definitely makes sense to add the inexpensive check, since the
+*_get_current_scan_type could be patched with an error case (e.g., added
+support to other devices) and the lack of check could slip through (due
+to previously marked as false positive).
+
+Thanks,
+Jorge
+
+> Fixes: 23cc92280302d ("iio: adc: ad4062: Add IIO Trigger support")
+> Reported-by: kernel test robot <lkp@intel.com>
+> Reported-by: Dan Carpenter <error27@gmail.com>
+> Closes: https://lore.kernel.org/r/202512280539.AholFF7m-lkp@intel.com/
+> Signed-off-by: Ethan Tidmore <ethantidmore06@gmail.com>
 > ---
-> Changes in v3:
->   - Add items descriptions for io-backends entries
->   - Fix reg example format: reg = <0 1> -> reg = <0>, <1>
-
-Not tested.
-
-Best regards,
-Krzysztof
+>  drivers/iio/adc/ad4062.c | 12 ++++++++++--
+>  1 file changed, 10 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad4062.c b/drivers/iio/adc/ad4062.c
+> index dd4ad32aa6f5..c864de3b46ba 100644
+> --- a/drivers/iio/adc/ad4062.c
+> +++ b/drivers/iio/adc/ad4062.c
+> @@ -1199,11 +1199,14 @@ static int ad4062_write_event_value(struct iio_dev *indio_dev,
+>   * The AD4062 in burst averaging mode increases realbits from 16-bits to
+>   * 20-bits, increasing the storagebits from 16-bits to 32-bits.
+>   */
+> -static inline size_t ad4062_sizeof_storagebits(struct ad4062_state *st)
+> +static inline int ad4062_sizeof_storagebits(struct ad4062_state *st)
+>  {
+>  	const struct iio_scan_type *scan_type =
+>  		iio_get_current_scan_type(st->indio_dev, st->chip->channels);
+>  
+> +	if (IS_ERR(scan_type))
+> +		return PTR_ERR(scan_type);
+> +
+>  	return BITS_TO_BYTES(scan_type->storagebits);
+>  }
+>  
+> @@ -1233,7 +1236,12 @@ static int pm_ad4062_triggered_buffer_postenable(struct ad4062_state *st)
+>  	if (ret)
+>  		return ret;
+>  
+> -	st->conv_sizeof = ad4062_sizeof_storagebits(st);
+> +	ret = ad4062_sizeof_storagebits(st);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	st->conv_sizeof = ret;
+> +
+>  	st->conv_addr = ad4062_get_conv_addr(st, st->conv_sizeof);
+>  	/* CONV_READ requires read to trigger first sample. */
+>  	struct i3c_xfer xfer_sample[2] = {
+> -- 
+> 2.53.0
+>o 
