@@ -1,42 +1,50 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B6042FFDE3;
-	Sat, 14 Feb 2026 18:23:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C21DB3EBF11;
+	Sat, 14 Feb 2026 18:31:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771093392; cv=none; b=Tv0YA5ICguQqqlDpwQQwiJxk2K+U6bpnoci70zglTpg1nwWRblwxW/BaNL1yYzuDhdXKmfAYdV+qEvqUVS4dgv49w/9OOFN4LPFRRDacuUFGc+1LVhKNemO3hXVRlaaZyGeo7iOqbR9JFIfEJ4O80DdZm4dy6HUlgt8DzyXnFBk=
+	t=1771093861; cv=none; b=XkjWAZgnxEpFUtaD+jMHlrv5yKrokO9pA1MsF8h/6ulLPWL1Bpd5GlIofubFGXnXA4FR1yX8reL73aeindKMydAZVosyT3xrWcSjpxMeh7DKSQmkG6FKI8oOGkBAYxFIQKEn6dIciYzkl9/odFKGoGqoUW00CTaz9sy4nDJ1r10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771093392; c=relaxed/simple;
-	bh=PcsekXIafi+CaNO3Zi+VGqmAciXAsQfdIWHcJJnheXA=;
+	s=arc-20240116; t=1771093861; c=relaxed/simple;
+	bh=Ua4l3xJp7hde7/JLEqCM/G5dmZFB+E+3EMbzDdjE3D0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=pEWZfv8D8XsvfEIAwBPeVhYrNUr80P5FhMACS28j/hPOz6p/dHiDCxxj9+skI/xZqF0g8s7fiGz+nb6l8ka1uha/x1/Y1hIHMG4f5JFykp3vQwzAOVgDgNvnI50DlId7GYw/7zu1ctEfsjdDVytPPA1rELSUsSPQfZQPtFdIJbM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lDRPY1yn; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=qCarZ34iXoxh4JqKCNuUXVG+2sVDRbeIPwS/4o6jpdnoiOdf0q7VnYVoYFuzzzNfVJPU7wWozYgEDJ5ogn0SmLKSwXxb59UxSNreluCkGi6btRT2oG6LBTtIYDIsH3wTVtjqAGtpof1qKI9j3orMoYLTWOea7NjDTs7h1NRgfQM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ll6lbfYy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lDRPY1yn"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E06C6C16AAE;
-	Sat, 14 Feb 2026 18:23:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ll6lbfYy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A43FC16AAE;
+	Sat, 14 Feb 2026 18:30:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771093391;
-	bh=PcsekXIafi+CaNO3Zi+VGqmAciXAsQfdIWHcJJnheXA=;
+	s=k20201202; t=1771093861;
+	bh=Ua4l3xJp7hde7/JLEqCM/G5dmZFB+E+3EMbzDdjE3D0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=lDRPY1ynObFUtx5u2/elRtw0rq1dLjENcMzaxu3Xxn8i5+FuzQcc0BW7eRXoPA7IX
-	 ModJ5HnheL66UR29i3tD0igrOSeeXvWByW4dc8BaAwzfskXIxfuhBnIvpR5/pQoMUl
-	 PrpZoVUJ9Ve8Fu8JhOmS5pJpxHwFqvRkrMB6cKi43TY5FnwB4WemPXzHYU//onIj2y
-	 kfRHQD73IWpdaxOYypXo0HbyZMJJSf1gRltPASmLEa9rKATQsVfc2ktIjxYkzw6gY2
-	 4UzDZdcs6yEeqL0MQ4V9ppsw3+57d4IgAAecDbotltGAPuvTXe0xyviQ9SF1awGLL5
-	 bUShARl64KROA==
-Date: Sat, 14 Feb 2026 18:23:03 +0000
+	b=ll6lbfYy2UIp8Gy+gAdoYbfcgtb+tfYzqwUvUpFXhsu0u4TMG4uuDBcanN2l18T/Q
+	 Mw6MWA9BEHfpdUuCeim+U7ur/L1a9apvncBuw9ExeogWFpcI5nycCdBksuQ4dnL/ds
+	 tsuKCPvJZQyuIAiy4tX3oYPsYMRShyUyYojwiikPTbDprMfbF2HnEBNKm3ph2OLrO4
+	 JMZd242TihpRvNWGMXEKnFfRVErArBGy3fSnWKGMlGjS0ceLWknAm3cEQwi+OTYJ7G
+	 /MWk1o6WKsUDK0vTToYveckZxtQLSoOtvGl1DclFbBbnQp0r55lt8d1g6BeRUpmBm7
+	 ECdE8zHOkKFxQ==
+Date: Sat, 14 Feb 2026 18:30:51 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: magnetometer: si7210: use
- devm_regulator_get_enable_read_voltage()
-Message-ID: <20260214182303.74466e0f@jic23-huawei>
-In-Reply-To: <20260210175137.44178-2-antoniu.miclaus@analog.com>
-References: <20260210175137.44178-2-antoniu.miclaus@analog.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
+ rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
+ Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH v4 03/11] iio: amplifiers: ad8366: remove unused include
+ headers
+Message-ID: <20260214183051.712c8c4b@jic23-huawei>
+In-Reply-To: <aYyFpFAQcfn7Qifn@smile.fi.intel.com>
+References: <20260210-iio-ad8366-update-v4-0-15505f7b15b4@analog.com>
+	<20260210-iio-ad8366-update-v4-3-15505f7b15b4@analog.com>
+	<aYuNr8alZt-mjd5x@smile.fi.intel.com>
+	<appnjr2asjxadbvcf2fosrkvfwj3dkcnvq7tk74i4xa4ku5zr3@c7qedqneukyn>
+	<aYyFpFAQcfn7Qifn@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,76 +55,90 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 10 Feb 2026 19:51:28 +0200
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+On Wed, 11 Feb 2026 15:35:32 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Simplify probe by using devm_regulator_get_enable_read_voltage() to
-> get, enable and read the regulator voltage in a single call, caching
-> the value at probe time.
+> On Wed, Feb 11, 2026 at 12:55:30PM +0000, Rodrigo Alencar wrote:
+> > On 26/02/10 09:57PM, Andy Shevchenko wrote:  
+> > > On Tue, Feb 10, 2026 at 07:42:03PM +0000, Rodrigo Alencar via B4 Relay wrote:
+> > >   
+> > > > Apply IWYU principle, removing the following headers:
+> > > > - linux/device.h: no usage of devm_add_action_or_reset, device_attr...
+> > > > - linux/kernel.h: no usage of container_of, kasprintf, ...
+> > > > - linux/slab.h: memory management handled by iio
+> > > > - linux/sysfs.h: sysfs interaction is managed by iio
+> > > > - linux/iio/sysfs.h: not using iio device attributes in this driver  
+> > > 
+> > > Yeah, but it also means to add (a lot of) missed headers...
+> > > 
+> > > array_size,h
+> > > dev_printk.h
+> > > mod_devicetable.h
+> > > mutex.h
+> > > stddef.h  
+> > 
+> > Are there proper guidelines for IWYU in the kernel?
+> > Include headers end up including a bunch of others, so
+> > the build finishes successfully anyways.  
+> 
+> This is global stuff, no need to repeat this in the kernel documentation.
+> It's the same as asking documentation for KISS principle.
+> 
+> > I understand that the concern is build time, so we better
+> > include all small parts that are needed rather than a generic
+> > header that includes that and much more.  
+> 
+> > This is the output of the iwyu tool without this patch series:  
+> 
+> Have you applied the configuration Jonathan made for this tool in relation
+> to the Linux kernel project? By default the tool has a lot of noise, indeed.
 
-I think it would be good to shout a bit more about this in theory
-being a functional change and the fact that in practice it is exceedingly
-rare for anyone to change voltages on running parts.
+Worth noting that I'm still evolving my config and suspect there will still
+be a bit of 'taste' applied to the output even once I conclude what the
+best combinations are.  So to give my view on the following..
+
+> 	#include <stddef.h>                     // for NULL
+Not this one.
+
+> 	#include "asm-generic/errno-base.h"     // for EINVAL, ENOMEM
+Something to get to errnos is good, but not that one.
+
+> 	#include "linux/array_size.h"           // for ARRAY_SIZE
+Yes - this is part of the kernel.h split up work.
+
+> 	#include "linux/compiler_attributes.h"  // for __aligned
+Never that one, but I sometimes feel compiler.h is fine.
+
+> 	#include "linux/dev_printk.h"           // for dev_err
+Yes if device.h doesn't have to be there for other reasons.
+
+> 	#include "linux/iio/types.h"            // for iio_chan_info_enum, iio_chan_...
+No. We always need iio.h which will always include that.
+
+> 	#include "linux/math.h"                 // for abs
+yes
+> 	#include "linux/minmax.h"               // for __cmp_op_max
+yes
+
+> 	#include "linux/mod_devicetable.h"      // for spi_device_id
+yes
+> 	#include "linux/mutex.h"                // for mutex_lock, mutex_unlock, mut...
+yes
+> 	#include "linux/mutex_types.h"          // for mutex
+no as mutex.h will alays include that.
+
+> 	#include "vdso/bits.h"                  // for BIT
+
+Usually via bitops.h or similar. But if none of those are there anyway linux/bits.h
 
 Jonathan
 
 > 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
->  drivers/iio/magnetometer/si7210.c | 21 +++++++--------------
->  1 file changed, 7 insertions(+), 14 deletions(-)
+> And note, tool != principle. The tool is just an implementation of the helper
+> to enforce the principle in practice, but it may be not always suitable for
+> the certain project "as is".
 > 
-> diff --git a/drivers/iio/magnetometer/si7210.c b/drivers/iio/magnetometer/si7210.c
-> index 27e3feba7a0f..0a7a610fbe24 100644
-> --- a/drivers/iio/magnetometer/si7210.c
-> +++ b/drivers/iio/magnetometer/si7210.c
-> @@ -128,13 +128,13 @@ static const struct regmap_config si7210_regmap_conf = {
->  struct si7210_data {
->  	struct regmap *regmap;
->  	struct i2c_client *client;
-> -	struct regulator *vdd;
->  	struct mutex fetch_lock; /* lock for a single measurement fetch */
->  	s8 temp_offset;
->  	s8 temp_gain;
->  	s8 scale_20_a[A_REGS_COUNT];
->  	s8 scale_200_a[A_REGS_COUNT];
->  	u8 curr_scale;
-> +	unsigned int vdd_uv;
->  };
->  
->  static const struct iio_chan_spec si7210_channels[] = {
-> @@ -221,12 +221,8 @@ static int si7210_read_raw(struct iio_dev *indio_dev,
->  		temp *= (1 + (data->temp_gain / 2048));
->  		temp += (int)(MICRO / 16) * data->temp_offset;
->  
-> -		ret = regulator_get_voltage(data->vdd);
-> -		if (ret < 0)
-> -			return ret;
-> -
->  		/* temp -= 0.222 * VDD */
-> -		temp -= 222 * div_s64(ret, MILLI);
-> +		temp -= 222 * div_s64(data->vdd_uv, MILLI);
->  
->  		*val = div_s64(temp, MILLI);
->  
-> @@ -396,14 +392,11 @@ static int si7210_probe(struct i2c_client *client)
->  		return dev_err_probe(&client->dev, PTR_ERR(data->regmap),
->  				     "failed to register regmap\n");
->  
-> -	data->vdd = devm_regulator_get(&client->dev, "vdd");
-> -	if (IS_ERR(data->vdd))
-> -		return dev_err_probe(&client->dev, PTR_ERR(data->vdd),
-> -				     "failed to get VDD regulator\n");
-> -
-> -	ret = regulator_enable(data->vdd);
-> -	if (ret)
-> -		return ret;
-> +	ret = devm_regulator_get_enable_read_voltage(&client->dev, "vdd");
-> +	if (ret < 0)
-> +		return dev_err_probe(&client->dev, ret,
-> +				     "Failed to get vdd regulator\n");
-> +	data->vdd_uv = ret;
->  
->  	indio_dev->name = dev_name(&client->dev);
->  	indio_dev->modes = INDIO_DIRECT_MODE;
+> In the below output some are valid, but some are just noise as there are
+> guarantees for the "proxying".
+> 
 
