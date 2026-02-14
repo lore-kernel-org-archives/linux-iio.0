@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F6D21EA84;
-	Sat, 14 Feb 2026 08:52:44 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7807F32FA00;
+	Sat, 14 Feb 2026 08:54:57 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771059165; cv=none; b=pxgRWaq816gDUrXL4n4AARyAZwEGDMJVtaj9IBNxmNweaSzocVGSF6AL6qwip0qBE+3CKKxQionQTLwFT7FShsZyHvykIM0P8ZHULSX4DrWlu4n7hs8LcIs94CaalZxMipgd7QkiKKqOw3hlCO6a4wDbtwF2PVuyENTrNTZa85U=
+	t=1771059297; cv=none; b=VKsqPAHQswV3VryV/9WoIzrQGotQJO/4T6WQUzMaY+fAGwpjrQhN042Ppc/41wzGcg8FQ8zO2lGAj/rH55y12gP1y3AlkaQ6QXJz9mbZClnFeFgLhRmiA0U6MDQ7H8b642pEJlLVuzqmwYcgD22EPFERyY+acs3pDYb7pCBi6D4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771059165; c=relaxed/simple;
-	bh=ZqB5eEq9kZYLfYGrkhKMJXz9JCAuloRrJckUkbQ8ZDU=;
+	s=arc-20240116; t=1771059297; c=relaxed/simple;
+	bh=Fvv9QKMOahMW98MbW/c4WwcdcJ1BmMD+hGalWQFWzQo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=U3AfAqDZdJEIwZC4GRZ2JDkKQvuNOcesoof5o+VoqrFIIBbhEbfjXZCfoU9vEE1nO8aV+FnNavHQgyCJj+49g38DZOckuP2nZtSJf0HeDzV9R3GnuxVEktEerv0inVPZ1jxjTx8qf3Lv9eCEQQkQZIbeVk7lVpR4VGJ2cMVRwwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pQpf3IqX; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=IPsvBsBgKdHZMt0WAd9iSV/l0X3xqhtRDzCvKgrdUTKKQCE88lLoZ+Dc8NF0PZuncBfYMNuMtaVR2RGePR+Ftj2aUKvwH4yKQ6xJOEkRfTycfeBr7T9Fnre6dkEyBrb5zbuEREG7B5djJIwIf0REv6YLDZwbOIo9Gsylc5f8Zw0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WqqLxoY6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pQpf3IqX"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09383C19421;
-	Sat, 14 Feb 2026 08:52:41 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WqqLxoY6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DBE9C19421;
+	Sat, 14 Feb 2026 08:54:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771059164;
-	bh=ZqB5eEq9kZYLfYGrkhKMJXz9JCAuloRrJckUkbQ8ZDU=;
+	s=k20201202; t=1771059296;
+	bh=Fvv9QKMOahMW98MbW/c4WwcdcJ1BmMD+hGalWQFWzQo=;
 	h=Date:Subject:To:References:From:In-Reply-To:From;
-	b=pQpf3IqXUm7otrSyn1ONAhxQ1JLwtOyV7pEdyhoScFcIK5LqTTy8dnPDQzIcf9EnM
-	 v5TgkRha/SM5m2LG4LudojwQHY/2WK0UOt2zeaSaYUnlb7rx0tIjMyecYfTmYwShwD
-	 KwA9qZeG//Vhz4YPWKXpldeX5595H57SB547sBmE5Iv9SdQoE1ESZ/w+1ZuwfKJtpS
-	 orTZE9dBeN9B+hXMX++bruFr/z7T9p5AFkpeZ+2/CkTmUMqxpn2UgD3eeqiopNBcQ8
-	 8CMQDIJIIdKWtWCqC5LzCFcY52anEqztSSlOToPAyfaHN0vbOODa6UFcNAskWhcfFx
-	 gYxS1FYZY5FTA==
-Message-ID: <fc308487-4e42-436e-a47f-b76b785ba5f8@kernel.org>
-Date: Sat, 14 Feb 2026 09:52:40 +0100
+	b=WqqLxoY6NEgNfOb+CV8kKCjYH9bhPrq5OqzK2rCBV/4mTRbTV0IO5CZ/kBuYekazr
+	 P4VJndhUyjZv5n/WVrBXBXx6HlCkeM+HGLo4Oe/ho2E3MnLzjd6jTqgSvltVaKCgVO
+	 1AlF6hXtKsIFKUH8vj+dqvGMNdE1XTGd4mkBvw5E0cY6mYYQwGyQiu87AqdpV+tjiq
+	 gyk4DrH2ifb4u4qnyo34p/FMCVGdU3u/wK+XDgCR7iTkYV9lpDHY3Ip6IlK7XKmU9r
+	 hfLYo91CY2Uv1DBTwTLvJtZVEPgaGqlTtvEBH2dQpVqixglkCQ4ofe/Wl4BoRHjmqd
+	 Q4O5krRrA43Ng==
+Message-ID: <8ec3d74b-56a7-4ee4-b24f-2d5f1217d1b6@kernel.org>
+Date: Sat, 14 Feb 2026 09:54:51 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,8 +35,7 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/6] dt-bindings: iio: adc: adi,ad4080: add support for
- AD4088
+Subject: Re: [PATCH v3 4/5] dt-bindings: iio: adc: ad4080: add AD4880 support
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
  Lars-Peter Clausen <lars@metafoo.de>,
  Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -44,10 +43,12 @@ To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
  =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
  Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260213144629.16001-1-antoniu.miclaus@analog.com>
- <20260213144629.16001-6-antoniu.miclaus@analog.com>
+ <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
+ Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-spi@vger.kernel.org
+References: <20260213144742.16394-1-antoniu.miclaus@analog.com>
+ <20260213144742.16394-5-antoniu.miclaus@analog.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -93,23 +94,27 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20260213144629.16001-6-antoniu.miclaus@analog.com>
+In-Reply-To: <20260213144742.16394-5-antoniu.miclaus@analog.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 13/02/2026 15:46, Antoniu Miclaus wrote:
-> Add device tree binding support for the AD4088 14-bit SAR ADC.
-> Add adi,ad4088 to the compatible enum.
+On 13/02/2026 15:47, Antoniu Miclaus wrote:
+> Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC
+> with integrated fully differential amplifiers (FDA).
 > 
-> A fallback compatible string to adi,ad4080 is not appropriate as the
-> AD4088 has a different LVDS CNV clock count maximum (8 vs 7), requiring
-> different driver configuration.
+> The AD4880 has two independent ADC channels, each with its own SPI
+> configuration interface. This requires:
+> - Two entries in reg property for primary and secondary channel
+>   chip selects
+> - Two io-backends entries for the two data channels
 > 
 > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 > ---
-> No changes since v1.
+> Changes in v3:
+>   - Add items descriptions for io-backends entries
+>   - Fix reg example format: reg = <0 1> -> reg = <0>, <1>
 
-Not really acceptable. You ignored feedback and never responded to it.
+Not tested.
 
 Best regards,
 Krzysztof
