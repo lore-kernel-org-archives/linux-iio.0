@@ -1,190 +1,148 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D014D256C8B;
-	Sat, 14 Feb 2026 16:34:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DB3F82C3245
+	for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 16:44:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771086861; cv=none; b=dWgvC7FxIXSHTcj3ii6btHCKKWX86KILtsxPJUjoGnKdYVlkP6FqydI11dsae5ESXicvWuER9jjQmZdMzNh3Lc0PTAzDxOgSujmMKK+6/JrL/TvxUFtfVnsdukjrUDQ0COsS3zjapDfinr1R1JI6FSK30UrAj9K8OuHc8cABqHA=
+	t=1771087468; cv=none; b=W+sqZ+//oS/5DwzwLVeShRbfze2P5/tBNlD+f7f5KOWiwkXVovzlDffk1Pktxkt5xv9AVsrXEYVc+cBDrn8Q2ww/VoAc+9FUsccJeu9yFojBpidxGjdbhcG80U7y4I9P8zrENuZI+ADMbuOma5els74h4SlrZS9cb0E7rCymTmA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771086861; c=relaxed/simple;
-	bh=aaJHONTVu1oBYbCd11xREYrlOSzzyzHYma5hnZpqe9s=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HFYJE39C9X0/hTGq+uePJRbsd8NDdhD1kuuAD0JCQ2jrXQbfp4GRyL/gNOEjn77XgExYrM59DCUtulIWZdZUtsHH2bEQNq+uztYgBTz260HKEoqbQMOJJ997M8yRIOx+CyoB259eeALKEuXnGjVr2G8Sqjud0/8iOM1GjY7wpLo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=uiixixvj; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771087468; c=relaxed/simple;
+	bh=5M74aqtSckhkCFRe9Mo0Ybki6y+La8FS64rrC4ZViZA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=G6s7taaj94qO/YT5gtD97/lA02T0SNZAwNNG5LavjW2CtdSDSD3Vdt+FS5mc6CcZPamGdmwUdKyD/nzDGHMBQhsQdFzvOxUG3WKxwDm+vcdrlV4vS5p3WaDIskecFoQf8RnLENHgQIHpHqGlV6vVkiVnBHOuA++c67kP8YfNvwc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=cD+VED4p; arc=none smtp.client-ip=209.85.210.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="uiixixvj"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 160A5C16AAE;
-	Sat, 14 Feb 2026 16:34:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771086861;
-	bh=aaJHONTVu1oBYbCd11xREYrlOSzzyzHYma5hnZpqe9s=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=uiixixvjfyZUywwd4LsU06qUaHcwnGpvKKuOWxzMgc1WZrYtkpsaYE6rkvbSbPJ63
-	 XjSRimOip65ufXWe6Vl7gPMcQaCDUMtGeRc4MBGvq3RqtnVDTsSggTIMYOL1ulWocy
-	 Tk5E02MZahnusuQmN90ZgDqco8zD+2+xywuB9u8ja2XcypLst5jJY6Xb920FEM4kfq
-	 nxRV869gP96Oa1Psr0nwGYAIKL2JNq2wgdSbNOGXMBQg0Ilf5V3IY0YNBLThxHrLiB
-	 qdt+R13V4URXp1zBpwPbukoiyMEeWEhPRWbt1Z84JRdh3fRdpQnaQ8LYj5P8g/Szsu
-	 0a1Tp4/Qf03xQ==
-Date: Sat, 14 Feb 2026 16:34:12 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: kernel test robot <lkp@intel.com>
-Cc: Neel Bullywon <neelb2403@gmail.com>, llvm@lists.linux.dev,
- oe-kbuild-all@lists.linux.dev, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 1/3] iio: magnetometer: bmc150_magn: use automated
- cleanup for mutex
-Message-ID: <20260214163412.1039fdd9@jic23-huawei>
-In-Reply-To: <202602140708.3KGC8ZJJ-lkp@intel.com>
-References: <20260210233945.40975-2-neelb2403@gmail.com>
-	<202602140708.3KGC8ZJJ-lkp@intel.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="cD+VED4p"
+Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7d4be7c4ebeso1036836a34.1
+        for <linux-iio@vger.kernel.org>; Sat, 14 Feb 2026 08:44:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771087465; x=1771692265; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=1f3FaAfJ8qGEhkE04fqgomCWXCa7hwpoZ04n55k5H08=;
+        b=cD+VED4p1ADwFS8CCrEPkxelQtcgzzhxX4PQdh9iGp2MtE2TNrl8m++Qp7VPjzha18
+         0kUpoHj2G48U7JmUGfGlDcztDmfm3S4nJBnAQl2dxqhI/jMjuUk6aY0VJpYnMsTjrSAX
+         fZmQICX/572P8q8xP2BXloOasMscfHNgGKtdiZnJfoqDqBME4ps6T+K2VgO/kz62maKS
+         QwI1lb5A/HGNps3KTTJzX6PbqAGDAMUha1mjoIWjbmUxFy+URY9fGg8LVea1e8q/PJAP
+         yu2km6QKfhWXJL+EIRlGN1C3Z6KW+z13xPDFfmlL7znozugc4k19GtQrmUtONZpOmIKx
+         9sdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771087465; x=1771692265;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=1f3FaAfJ8qGEhkE04fqgomCWXCa7hwpoZ04n55k5H08=;
+        b=AGqGuI69+PcFpGmQRbCDDc++4mr4+UpFAE6Gq6xqZ4WXzxDP1qObMd/lmtR4sCMLMX
+         dLmUcF1f7vDL8l343vTzwE5JUR1If+xrLQZXrzWSlrmFj1lVbaltTUcXQvaHGtFBAWq0
+         Hs2HB7SRGu/Yk48AZXj/1/e09zDP0AhvznndCCIO90jfBcolQkMX4hWh09Dx9Iny8lku
+         ClsagwGMbnWCwUUNdoqhBeDQjVu4ahCT6sX+a0KlX57Wz9n91dX7bPvcE6h4V1jEQ3aS
+         8RcOS9fa0lT1PMH9NeLl1M4thZglJ+vzGvsY+sNB4TWGYBW/5CP20/zsLKbC84QPx8R3
+         r62Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUfJGFzwbBBDPBJ4IO0jWSZ8f6JqZXp/buMHPVbHK4uzoROmCl0HMx2308+2g/aLF6FxXiPq8vjxys=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwBRxJ5ataJB9l8r4xcn9maCGIG9AKaJ3RmhSBfsHovnhwTu6PO
+	eYUZONo8OGCIng9W8ScSCsqSYU5ze5ktQwZS8v6UQ10vOM6QMKZMGVe7u0+qhiuAe5U=
+X-Gm-Gg: AZuq6aKXDQoOKP82uWuT6AaepOPRSA3AtXuI6298cBTfyGEKtfROJduaXs5MZ7VInmz
+	Hn0sV/FHO42XIR4NjOvstNXEZd39tu6h1ZbDI1LocCpIoUyEE2LDEzVmSzbR4Y/wB/kJSpgWG2H
+	jcLgBE/W9NS7SKyV/Gamp6sgJXYmaq8QAKLRVTfO15RYMyXRfGGakeriyjjK3CQVqSP7aET35Fu
+	yAU0i+thNn8T4JmO1QghVBbQ3Det4t6Wle5iNjaCmBY8HXnoLCTT+voSlQa+459zZ3oj3pt8bzD
+	dlZIVUg3hZBKgFrAV/OYZZ7eixIGbth3abW7jE50T47e6eZU7cTQyW6CqvfQob+/tctsg778f0E
+	mKVBGTuplRSSEDj4LeJMaQutahAUZuAxKvn0OIbr9yfMe1uGyeKJO2s2xUjFhzPfrWb/GSO6ggD
+	IFMFk6zEEo/oBU6+jsJ1fCaSPfqeNc+MC2a9fCvB5ukbake7OU/e32TYV9gusJegu4p45oBUJ1o
+	G4uAaZO
+X-Received: by 2002:a05:6830:2682:b0:7d1:95c7:f4cf with SMTP id 46e09a7af769-7d4c4a3becbmr3507186a34.14.1771087464786;
+        Sat, 14 Feb 2026 08:44:24 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:109:393c:254e:962e? ([2600:8803:e7e4:500:109:393c:254e:962e])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d4a75309bcsm8641964a34.1.2026.02.14.08.44.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 14 Feb 2026 08:44:24 -0800 (PST)
+Message-ID: <880ddcad-a92e-43bb-ad5c-d6f2f353d182@baylibre.com>
+Date: Sat, 14 Feb 2026 10:44:23 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: vcnl4000: add Capella
+ CM36686 and CM36672P
+To: Erikas Bitovtas <xerikasxx@gmail.com>,
+ Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+References: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
+ <20260212-cm36686-v4-1-8f587d4a72bf@gmail.com>
+ <20260213-unyielding-pistachio-ape-deda74@quoll>
+ <3a20c906-647c-458f-a118-c7927495e7ef@gmail.com>
+ <8fb27a7a-82dc-443b-bcc4-21007783fc54@kernel.org>
+ <f014078c-6e4d-48b0-a814-45898b005c44@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <f014078c-6e4d-48b0-a814-45898b005c44@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Sat, 14 Feb 2026 07:31:03 +0800
-kernel test robot <lkp@intel.com> wrote:
+On 2/13/26 2:56 AM, Erikas Bitovtas wrote:
+> 
+> 
+> On 2/13/26 10:51 AM, Krzysztof Kozlowski wrote:
+>> On 13/02/2026 09:29, Erikas Bitovtas wrote:
+>>>>> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+>>>>> ---
+>>>>>  .../devicetree/bindings/iio/light/vishay,vcnl4000.yaml  | 17 +++++++++++------
+>>>>>  1 file changed, 11 insertions(+), 6 deletions(-)
+>>>>>
+>>>>> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+>>>>> index 4d1a225e8868..2ba4d5de4ec4 100644
+>>>>> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+>>>>> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+>>>>> @@ -18,12 +18,17 @@ allOf:
+>>>>>  
+>>>>>  properties:
+>>>>>    compatible:
+>>>>> -    enum:
+>>>>> -      - vishay,vcnl4000
+>>>>> -      - vishay,vcnl4010
+>>>>> -      - vishay,vcnl4020
+>>>>> -      - vishay,vcnl4040
+>>>>> -      - vishay,vcnl4200
+>>>>> +    oneOf:
+>>>>> +      - enum:
+>>>>> +          - capella,cm36672p
+>>>>
+>>>> CM36672P is compatible with CM36686, but this is not expressed.
+>>>> Confusing commit msg and code. 
+>>>
+>>> For CM36672P we create a dedicated compatible because it is a
+>>> proximity-only sensor which has the same proximity sensor configuration,
+>>> but ambient light sensor registers are missing (reserved).
+>>
+>> I don't understand this. You just wrote "fully compatible with CM36686"
+>> and now you imply that not.
+>>
+>> Decide.
+>>
+> It is not. CM36672P supports only a subset of CM36686 features, in
+> particular the proximity sensor. That is what I meant initially.
+> I am sorry if the previous phrasing caused any confusion.
 
-> Hi Neel,
-> 
-> kernel test robot noticed the following build errors:
+But CM36686 is fully compatible with CM36672P, right?
 
-Just replying to this to highlight what I the whole scope thing is about.
+So this would make sense?
 
-> 
-> [auto build test ERROR on e7aa57247700733e52a8e2e4dee6a52c2a76de02]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Neel-Bullywon/iio-magnetometer-bmc150_magn-use-automated-cleanup-for-mutex/20260211-074324
-> base:   e7aa57247700733e52a8e2e4dee6a52c2a76de02
-> patch link:    https://lore.kernel.org/r/20260210233945.40975-2-neelb2403%40gmail.com
-> patch subject: [PATCH v6 1/3] iio: magnetometer: bmc150_magn: use automated cleanup for mutex
-> config: loongarch-allmodconfig (https://download.01.org/0day-ci/archive/20260214/202602140708.3KGC8ZJJ-lkp@intel.com/config)
-> compiler: clang version 19.1.7 (https://github.com/llvm/llvm-project cd708029e0b2869e80abe31ddb175f7c35361f90)
-> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260214/202602140708.3KGC8ZJJ-lkp@intel.com/reproduce)
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202602140708.3KGC8ZJJ-lkp@intel.com/
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> drivers/iio/magnetometer/bmc150_magn.c:561:2: error: cannot jump from switch statement to this case label  
->      561 |         default:
->          |         ^
->    drivers/iio/magnetometer/bmc150_magn.c:527:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
->      527 |                 guard(mutex)(&data->mutex);
->          |                 ^
->    include/linux/cleanup.h:414:15: note: expanded from macro 'guard'
->      414 |         CLASS(_name, __UNIQUE_ID(guard))
->          |                      ^
->    include/linux/compiler.h:168:2: note: expanded from macro '__UNIQUE_ID'
->      168 |         __PASTE(__UNIQUE_ID_,                                   \
->          |         ^
->    include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
->       16 | #define __PASTE(a, b) ___PASTE(a, b)
->          |                       ^
->    include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
->       15 | #define ___PASTE(a, b) a##b
->          |                        ^
->    <scratch space>:122:1: note: expanded from here
->      122 | __UNIQUE_ID_guard_677
->          | ^
->    drivers/iio/magnetometer/bmc150_magn.c:529:2: error: cannot jump from switch statement to this case label
->      529 |         case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
->          |         ^
->    drivers/iio/magnetometer/bmc150_magn.c:527:3: note: jump bypasses initialization of variable with __attribute__((cleanup))
->      527 |                 guard(mutex)(&data->mutex);
->          |                 ^
->    include/linux/cleanup.h:414:15: note: expanded from macro 'guard'
->      414 |         CLASS(_name, __UNIQUE_ID(guard))
->          |                      ^
->    include/linux/compiler.h:168:2: note: expanded from macro '__UNIQUE_ID'
->      168 |         __PASTE(__UNIQUE_ID_,                                   \
->          |         ^
->    include/linux/compiler_types.h:16:23: note: expanded from macro '__PASTE'
->       16 | #define __PASTE(a, b) ___PASTE(a, b)
->          |                       ^
->    include/linux/compiler_types.h:15:24: note: expanded from macro '___PASTE'
->       15 | #define ___PASTE(a, b) a##b
->          |                        ^
->    <scratch space>:122:1: note: expanded from here
->      122 | __UNIQUE_ID_guard_677
->          | ^
->    2 errors generated.
-> 
-> 
-> vim +561 drivers/iio/magnetometer/bmc150_magn.c
-> 
-> c91746a2361d75 Irina Tirdea   2015-04-29  515  
-> c91746a2361d75 Irina Tirdea   2015-04-29  516  static int bmc150_magn_write_raw(struct iio_dev *indio_dev,
-> c91746a2361d75 Irina Tirdea   2015-04-29  517  				 struct iio_chan_spec const *chan,
-> c91746a2361d75 Irina Tirdea   2015-04-29  518  				 int val, int val2, long mask)
-> c91746a2361d75 Irina Tirdea   2015-04-29  519  {
-> c91746a2361d75 Irina Tirdea   2015-04-29  520  	struct bmc150_magn_data *data = iio_priv(indio_dev);
-> c91746a2361d75 Irina Tirdea   2015-04-29  521  	int ret;
-> c91746a2361d75 Irina Tirdea   2015-04-29  522  
-> c91746a2361d75 Irina Tirdea   2015-04-29  523  	switch (mask) {
-> c91746a2361d75 Irina Tirdea   2015-04-29  524  	case IIO_CHAN_INFO_SAMP_FREQ:
-> 5990dc9703679a Irina Tirdea   2015-04-29  525  		if (val > data->max_odr)
-> 5990dc9703679a Irina Tirdea   2015-04-29  526  			return -EINVAL;
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  527  		guard(mutex)(&data->mutex);
+      - items:
+          - const: capella,cm36686
+          - const: vishay,vcnl4040
+          - const: capella,cm36686p
 
-It's hard to spot from the error message, but here is the bug.  This is in the same
-scope as default label below that is hightlighted.
-Thus wonderfully the __free() that hides under the guard() magic is
-initialized but because we don't go down this path to reach that
-default, we can the __free() (ultimately mutex_unlock())
-on an unassigned pointer.
-
-Hence scope for these really matters!
-
-Jonathan
-
-
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  528  		return bmc150_magn_set_odr(data, val);
-> 5990dc9703679a Irina Tirdea   2015-04-29  529  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> 5990dc9703679a Irina Tirdea   2015-04-29  530  		switch (chan->channel2) {
-> 5990dc9703679a Irina Tirdea   2015-04-29  531  		case IIO_MOD_X:
-> 5990dc9703679a Irina Tirdea   2015-04-29  532  		case IIO_MOD_Y:
-> 5990dc9703679a Irina Tirdea   2015-04-29  533  			if (val < 1 || val > 511)
-> 5990dc9703679a Irina Tirdea   2015-04-29  534  				return -EINVAL;
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  535  			{
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  536  				guard(mutex)(&data->mutex);
-> 5990dc9703679a Irina Tirdea   2015-04-29  537  				ret = bmc150_magn_set_max_odr(data, val, 0, 0);
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  538  				if (ret < 0)
-> 5990dc9703679a Irina Tirdea   2015-04-29  539  					return ret;
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  540  				return regmap_update_bits(data->regmap,
-> 5990dc9703679a Irina Tirdea   2015-04-29  541  							 BMC150_MAGN_REG_REP_XY,
-> 1506f3cd0b8169 Hartmut Knaack 2015-07-17  542  							 BMC150_MAGN_REG_REP_DATAMASK,
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  543  							 BMC150_MAGN_REPXY_TO_REGVAL(val));
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  544  			}
-> 5990dc9703679a Irina Tirdea   2015-04-29  545  		case IIO_MOD_Z:
-> 5990dc9703679a Irina Tirdea   2015-04-29  546  			if (val < 1 || val > 256)
-> 5990dc9703679a Irina Tirdea   2015-04-29  547  				return -EINVAL;
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  548  			{
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  549  				guard(mutex)(&data->mutex);
-> 5990dc9703679a Irina Tirdea   2015-04-29  550  				ret = bmc150_magn_set_max_odr(data, 0, val, 0);
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  551  				if (ret < 0)
-> 5990dc9703679a Irina Tirdea   2015-04-29  552  					return ret;
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  553  				return regmap_update_bits(data->regmap,
-> 5990dc9703679a Irina Tirdea   2015-04-29  554  							 BMC150_MAGN_REG_REP_Z,
-> 1506f3cd0b8169 Hartmut Knaack 2015-07-17  555  							 BMC150_MAGN_REG_REP_DATAMASK,
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  556  							 BMC150_MAGN_REPZ_TO_REGVAL(val));
-> d65a37daae6aa8 Neel Bullywon  2026-02-10  557  			}
-> 5990dc9703679a Irina Tirdea   2015-04-29  558  		default:
-> 5990dc9703679a Irina Tirdea   2015-04-29  559  			return -EINVAL;
-> 5990dc9703679a Irina Tirdea   2015-04-29  560  		}
-> c91746a2361d75 Irina Tirdea   2015-04-29 @561  	default:
-> c91746a2361d75 Irina Tirdea   2015-04-29  562  		return -EINVAL;
-> c91746a2361d75 Irina Tirdea   2015-04-29  563  	}
-> c91746a2361d75 Irina Tirdea   2015-04-29  564  }
-> c91746a2361d75 Irina Tirdea   2015-04-29  565  
-> 
 
