@@ -1,44 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7838284A35;
-	Sat, 14 Feb 2026 16:21:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E49527F01B;
+	Sat, 14 Feb 2026 16:25:37 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771086094; cv=none; b=Yu20Su52WVeXCZfN6c3c6k5ubKWfkTsaNo5FN+7D5KKNSBc2XsTTad9NSyzbJZN6+JRaXJLXWLP99fL/5cE8pxIUrpRgoKjkQD5/l5MYzmaE2TkB1Tg2/cPGdR1rSI+KLXNIQwHamivzIhpzcBz7lRRWp+sYCpdPVg5o2+8RMwk=
+	t=1771086337; cv=none; b=U9BweXKBQkfkP0m8WnJ4cjMNUkoBwYrW51rtBMkYS0MyaEhWSSwzsXOPaTBlh5Bg/aBzsm2vzM0TqkkiJ1+xnhMbtGAxNYTygbTe2PZERH9I73VYVZYjNlJWyMctEQlT5aHBMSuw4XWewMvKA3FjYwL0cyRimThic5x/p7VAcQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771086094; c=relaxed/simple;
-	bh=5tCH8v41cn5DQP2RhchcGnH3MRx8Xz90M7PpUTlhoCg=;
+	s=arc-20240116; t=1771086337; c=relaxed/simple;
+	bh=++K7Jh2/PdXRpr5vpBiYZxaBs2vCGEUXKFF6g8fxMKk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QRY7FrOARmOyZHpRRsFuAOVePbJhK+5LZyYijSA/rXq6qEQFzr/XHtjiZw+z+85W2heu+5nIdtxFwubopic2nJIWMB5qblu3A2TOwjSg8P71EJr7Zav20l0F+941z24c3nuOBDtdl743vQ8JazV772GlzNTv9YAqRlFQTX11WKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R5i27zGF; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=OuGnIhYVGN8zOjWE4pQNCMBUpmHBceSqReVN8CofJxDvsQlsqUWP7lSd4UcovTGI/nHg99Hrr8wNgGU0/4DSUcLQ+GLGf4QXAOunX1cPZYE2mVTnpbsYR+hNlM543djXpJ0FbRJh0dksfzXoGuIB1upTo0HmwCNR/j9MJavpdR4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RuZDC4L6; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R5i27zGF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DCC6C16AAE;
-	Sat, 14 Feb 2026 16:21:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RuZDC4L6"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B68A6C16AAE;
+	Sat, 14 Feb 2026 16:25:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771086094;
-	bh=5tCH8v41cn5DQP2RhchcGnH3MRx8Xz90M7PpUTlhoCg=;
+	s=k20201202; t=1771086337;
+	bh=++K7Jh2/PdXRpr5vpBiYZxaBs2vCGEUXKFF6g8fxMKk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=R5i27zGFDdusZc6t/3X+qxejzTR9lcWMNoRcDb8+bgAl/M9SwC2H3K8h86FpYSFR1
-	 7O/IQRBSgZLWlmFHbmt7OWSOyps441gIhNJ2hzqyrEj/qzYpcCKfK6hW8fPLSA6Pi4
-	 uFoNYqR4lM8wCCpu+VsWedJWe76wYUS5joLdueo/Rel94Cc8qOtIz5jW2DefDHQ0YZ
-	 7lsRZviShO918YZOFMrBXAyWSIQe81UPyS5L00kcTcXzQoCF9sbxW5Ik4tqCqJbnr8
-	 3rQDcH5D89MYFVPYUD+RjgfRbUG/mESHCZfbHI0fZ7mQJxt/60E5iO22V2v80mSy9Y
-	 Hzs6R3yOK2poA==
-Date: Sat, 14 Feb 2026 16:21:23 +0000
+	b=RuZDC4L6qWNYU/RQJ/8V1IDzFWNAkpRJ1GKLqTuP8wxkGoSal9GfJtg1ZVfjybv7z
+	 8cQNpwZUgMgJ/0xwiVQC84+VahGCZdU74AvEoK7mls5FVR+JboTozi1fB+YDNsEA0W
+	 1DtWDFvzCsjnA65/FR++bnJA8iJbDD9kZjLIrFfkA3UJYgQnoeRb1JJfqrCrLK2MOc
+	 GIgLhDdusw+NExykSKjbzBOW0lWOFDm48lLng92VnNdWA/msOX9dLwA+yl2hWDyuj0
+	 4nJjB4SIJOfC3HPlH6vmL2pO6Mp+KIjASJMvfAUbSGYQmu/DVpMPaMYhd2zXXXuY36
+	 ZlOkxcQvdw0og==
+Date: Sat, 14 Feb 2026 16:25:26 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Marcelo Schmitt <marcelo.schmitt@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <michael.hennerich@analog.com>, <nuno.sa@analog.com>,
- <eblanc@baylibre.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
- <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
- <corbet@lwn.net>, <marcelo.schmitt1@gmail.com>
-Subject: Re: [PATCH v8 0/8] Add SPI offload support to AD4030
-Message-ID: <20260214162123.5a8772a6@jic23-huawei>
-In-Reply-To: <cover.1770403407.git.marcelo.schmitt@analog.com>
-References: <cover.1770403407.git.marcelo.schmitt@analog.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: 434779359@qq.com, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Liam Girdwood <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus
+ Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ liufulin <frank.liu@faiot.com>, Waqar Hameed <waqar.hameed@axis.com>,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-gpio@vger.kernel.org
+Subject: Re: [PATCH] tof: Add VL53L4CX TOF drivers
+Message-ID: <20260214162526.01e1e336@jic23-huawei>
+In-Reply-To: <aYiL89Lx9r8tJT0K@smile.fi.intel.com>
+References: <tencent_326708D02875274DF25B10B91402B3828606@qq.com>
+	<20260207134950.0f064905@jic23-huawei>
+	<aYiL89Lx9r8tJT0K@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,23 +52,60 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 6 Feb 2026 15:59:58 -0300
-Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
+On Sun, 8 Feb 2026 15:13:23 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> This set adds high speed data capture with AD4030/AD4630 and similar ADCs. It
-> also adds support for ADAQ4216 and ADAQ4224.
+> On Sat, Feb 07, 2026 at 01:49:50PM +0000, Jonathan Cameron wrote:
+> > On Sat,  7 Feb 2026 17:42:35 +0800
+> > 434779359@qq.com wrote:  
 > 
-> Change log v7 -> v8
-> Rebased on top of spi-multi-lane change set [1].
-> Requires ("units: Add HZ_PER_GHZ") patch to build [2].
-> [1]: https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-multi-lane
-> [2]: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/include/linux/units.h?h=next-20260204&id=5083dba0fde5446c00ee1a82a3911c8f88a2c72e
+> > > This patch adds support for the vl53l4cx tof ic
+> > > ICs used in Qualcomm reference designs
+> > > 
+> > > Signed-off-by: liufulin <frank.liu@faiot.com>  
+> > Hi Frank and welcome to IIO.
+> > 
+> > This is a massive commit.  Normally roughly speaking each commit should
+> > be an absolute maximum of 500-1000 lines of code because this what
+> > people can realistically review in one go.
+> > 
+> > I'll take a superficial look at what you have here but to make any
+> > progress towards upstream it will need stripping back to a much more
+> > minimalist base.  From that we we can then look at adding more features
+> > in future patch sets.
+> > 
+> > Note the largest drivers for what I'd expect to be a lot more complex
+> > than a time of flight sensor are not as large as this in terms of
+> > lines of code.  
+> 
+> Yeah, this is even barely satisfies requirement to put into staging/iio.
 
-Given I'm going to be waiting on these anyway and there are just enough
-comments that I'm not overly keen on tweaking whilst applying, please
-do a v9 with the last few changes from the discussion with Andy.
+Just to cut off any chance of wrong interpretation: We don't put new devices
+through staging/iio any more.  There is little reason to do so now that the core
+is out of there and mass refactors and ABI changes are a thing of the distant
+past.
 
-FWIW I took a look through and didn't find anything to comment on :)
-Looks to be in a good shape to me.
+Now it's much swifter to clean a driver up on list.
+
+Maybe there is a reason we might consider drivers/staging again for IIO
+device drivers, but I've not thought of it yet!
 
 Jonathan
+
+> It has so-o-o many style issues and other small things (I just pressed PgDn
+> several times within 5 seconds). You need to take your time and invest into:
+> - creating an upstream plan (roadmap)
+> - as Jonathan said, start with a minimalistic setup (not more than a couple of
+>   thousands of LoCs
+> - be sure the style follows the Coding Style and IIO subsystem specifics
+> - be sure the code uses modern APIs from kernel and not some outdated stuff
+> 
+> ...
+> 
+> > For the full series, stay under 2000 lines or in practice it won't get
+> > reviewed.  
+> 
+> Fun fact, I answered above without looking at the rest of the message.
+> 
+> 
+
