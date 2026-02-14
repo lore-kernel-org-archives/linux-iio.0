@@ -1,42 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 072D0218E91;
-	Sat, 14 Feb 2026 19:32:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3915C15687D;
+	Sat, 14 Feb 2026 19:35:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771097561; cv=none; b=ajdJaGcVlwVThZzoDRXSfEPovg8xKtEmyHCUatlQyeIxM1FOZ8mEWZF8naf9v7y1xZlsp6KyxRoVJ7EpZ7B4+RaGFX8MM2fc+w2uahRkpXKOD/uVhNqXUtwEWqbB5mD39USrAbtOBJzphtVKTWF9RCREEc6SbEi8fK9HX6MyOqI=
+	t=1771097702; cv=none; b=J9vZqm+/IhGU7Lx01wDLQ1sYKthTGomrgY4dOuYymeIcCty1wZTEzRt0DMS7278T2JuLzvvlc7KNQ2XIVcEztZ3L2acue1z8L1YM9uJK3sIYjFF/h0CJVWG8F4WopMo7Pt2JjbDwPz8H8N8ksh5yWrY6zGvU+ATBYgrvElwrCZ0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771097561; c=relaxed/simple;
-	bh=KJzLbCYltnc+ZG63YQJI1D72avDko0btnEVpPbd6f+c=;
+	s=arc-20240116; t=1771097702; c=relaxed/simple;
+	bh=OXjBP34Sk+PTJvbWM5ydA3i6zAodEgMnSsDOlJPRf2w=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AzYjZxJCHYxSwOKtjWb7470j302Ma1HF55yztddlu3wDF6YV2HPG19MyM1O8+BhaOrQfAE7kAOiAn3tZoQ0/NJ78HJQ09Ubqh+2rrmjPjNit6+I/J7NJiGGPyKCDvqd71jeD1pnjCqd/ZWfCRTrN6XkUF8B2mkDLNiRHb4M016M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XwscN4j5; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=AY4nEqI800xF0qXV6TQ2uDpEQkmNOIw3PJcC0OsWqyRN3w6dOv3hTMZn4kWZF1Je+lZdKeHxW7me4VtUOv10sQHppCB4vrJcUsJ5x4N11gLwlShUUE3klDM6OQBaKuoiMnyf1PFNZq39M5YFx6F6b3vJBu0i7nnJZl0ThgKL/lM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NxsJsC8t; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XwscN4j5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F288EC16AAE;
-	Sat, 14 Feb 2026 19:32:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NxsJsC8t"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ACEEC16AAE;
+	Sat, 14 Feb 2026 19:34:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771097560;
-	bh=KJzLbCYltnc+ZG63YQJI1D72avDko0btnEVpPbd6f+c=;
+	s=k20201202; t=1771097701;
+	bh=OXjBP34Sk+PTJvbWM5ydA3i6zAodEgMnSsDOlJPRf2w=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=XwscN4j5zaqy0mabH1hO9yOM1QuXWREXJGnJ8/mGPtoo58TlRbtlFzqfne9JPlmh6
-	 HxnCsHmxf0l/rQb5sRNypmA5JWihmjp8fwmq2QHmBMFch9wh0AM2XOpaMAFb87h2kp
-	 gnQwUZRw4V81Irjk3ZU0FICUPsnw99cJ1Xu4VW6b9/WDmWLXnv7RctJ+F3p0w/AhDt
-	 IGMHxKj1VC5pekYDwaw4rbsZ5aABQ6XXRg2FXJJWFihrZJp7zwlO+ORihYolQZb66q
-	 +d+VJbR+eWSqWDEGgO8RdaXg/acyvOYWdjgYyyShbVp3ZzuEbFOUBigNxekMAiMUeP
-	 C6YNSjFU9hfEw==
-Date: Sat, 14 Feb 2026 19:32:32 +0000
+	b=NxsJsC8t2NLZUk3wFSaid3tL+2Y4sa/Cyyj1GBEnXX3iSw+q+bsclVzsmJQKTyiOc
+	 LwwLNAAqzGxZ1rSAHTaq8OLNwUAyl7v0A04qQX/xzplREPiDnNnTk0XM+Bs2T9Hd/0
+	 OHhnsuRRXhU1VU5jlKA3MT+rXnQmfYeHWTOFQ2mkaYnthL3RmBIH5EjelDhysMEzHk
+	 bNM/SRZtoOoNK2/Xh9rX1bwFJQWG5rBkS1byyf5ejmx9nMZrh8DTUHl1kSs7WTWJhh
+	 DvzlZ2CpRmhzw1wjF9+JTHHA7Rct3kbcodIujxfdzYAEr8QQAyi4Ix0z3JzNjy4tw6
+	 lpazMysPu0Qtw==
+Date: Sat, 14 Feb 2026 19:34:52 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: magnetometer: si7210: use
- devm_regulator_get_enable_read_voltage()
-Message-ID: <20260214193232.60ca4464@jic23-huawei>
-In-Reply-To: <20260211081837.8169-2-antoniu.miclaus@analog.com>
-References: <20260211081837.8169-2-antoniu.miclaus@analog.com>
+Cc: Marius Cristea <marius.cristea@microchip.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, <linux-iio@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: adc: pac1934: Return -ENOMEM on memory allocation
+ failure
+Message-ID: <20260214193452.6169704f@jic23-huawei>
+In-Reply-To: <20260211171007.143527-1-antoniu.miclaus@analog.com>
+References: <20260211171007.143527-1-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,81 +49,36 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 11 Feb 2026 10:18:28 +0200
+On Wed, 11 Feb 2026 19:10:05 +0200
 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-> Simplify probe by using devm_regulator_get_enable_read_voltage() to
-> get, enable and read the regulator voltage in a single call.
-This needs to state that this is a functional change, but in real
-deployments it is very rare for VDD to change after initial probe.
-
-Note I once had a board where it did depending on driver
-probe ordering as devices had slightly different requirements and
-it was cut and paste from the driver I wrote for that which probably
-led to so many drivers assuming it was dynamic.
-
-Jonathan
-
+> devm_kzalloc() returns NULL on allocation failure. The appropriate error
+> code for this condition is -ENOMEM, not -EINVAL.
 > 
+> Fixes: 0fb528c8255b ("iio: adc: adding support for PAC193x")
+
+Given it's a small alloc and in practice those don't fail if you machine
+is likely to boot and at worst you get a slightly misleading error code,
+I don't think backports are appropriate, so I've applied this
+dropping the fixes tag.
+
+
 > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 > ---
-> Changes in v2:
->  - use vdd_uV naming convention
->  - remove unnecessary div_s64() for 32-bit division
->  drivers/iio/magnetometer/si7210.c | 21 +++++++--------------
->  1 file changed, 7 insertions(+), 14 deletions(-)
+>  drivers/iio/adc/pac1934.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/magnetometer/si7210.c b/drivers/iio/magnetometer/si7210.c
-> index 27e3feba7a0f..8b98dd4dafa4 100644
-> --- a/drivers/iio/magnetometer/si7210.c
-> +++ b/drivers/iio/magnetometer/si7210.c
-> @@ -128,13 +128,13 @@ static const struct regmap_config si7210_regmap_conf = {
->  struct si7210_data {
->  	struct regmap *regmap;
->  	struct i2c_client *client;
-> -	struct regulator *vdd;
->  	struct mutex fetch_lock; /* lock for a single measurement fetch */
->  	s8 temp_offset;
->  	s8 temp_gain;
->  	s8 scale_20_a[A_REGS_COUNT];
->  	s8 scale_200_a[A_REGS_COUNT];
->  	u8 curr_scale;
-> +	unsigned int vdd_uV;
->  };
+> diff --git a/drivers/iio/adc/pac1934.c b/drivers/iio/adc/pac1934.c
+> index ec96bb0f2ed6..b791ce23f3fd 100644
+> --- a/drivers/iio/adc/pac1934.c
+> +++ b/drivers/iio/adc/pac1934.c
+> @@ -1351,7 +1351,7 @@ static int pac1934_prep_iio_channels(struct pac1934_chip_info *info, struct iio_
 >  
->  static const struct iio_chan_spec si7210_channels[] = {
-> @@ -221,12 +221,8 @@ static int si7210_read_raw(struct iio_dev *indio_dev,
->  		temp *= (1 + (data->temp_gain / 2048));
->  		temp += (int)(MICRO / 16) * data->temp_offset;
+>  	dyn_ch_struct = devm_kzalloc(dev, channel_size, GFP_KERNEL);
+>  	if (!dyn_ch_struct)
+> -		return -EINVAL;
+> +		return -ENOMEM;
 >  
-> -		ret = regulator_get_voltage(data->vdd);
-> -		if (ret < 0)
-> -			return ret;
-> -
->  		/* temp -= 0.222 * VDD */
-> -		temp -= 222 * div_s64(ret, MILLI);
-> +		temp -= 222 * (data->vdd_uV / MILLI);
+>  	tmp_data = dyn_ch_struct;
 >  
->  		*val = div_s64(temp, MILLI);
->  
-> @@ -396,14 +392,11 @@ static int si7210_probe(struct i2c_client *client)
->  		return dev_err_probe(&client->dev, PTR_ERR(data->regmap),
->  				     "failed to register regmap\n");
->  
-> -	data->vdd = devm_regulator_get(&client->dev, "vdd");
-> -	if (IS_ERR(data->vdd))
-> -		return dev_err_probe(&client->dev, PTR_ERR(data->vdd),
-> -				     "failed to get VDD regulator\n");
-> -
-> -	ret = regulator_enable(data->vdd);
-> -	if (ret)
-> -		return ret;
-> +	ret = devm_regulator_get_enable_read_voltage(&client->dev, "vdd");
-> +	if (ret < 0)
-> +		return dev_err_probe(&client->dev, ret,
-> +				     "Failed to get vdd regulator\n");
-> +	data->vdd_uV = ret;
->  
->  	indio_dev->name = dev_name(&client->dev);
->  	indio_dev->modes = INDIO_DIRECT_MODE;
 
