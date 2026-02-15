@@ -1,313 +1,176 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC6A23043C9
-	for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 22:55:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3ED8F248F72
+	for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 23:16:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771196149; cv=none; b=IxJLkr0EW/8gwSQsCvCajBM31Pevh7EroUuB7HlwyaQIgxcvEm0kUTcrpBRKdx2g1xLuTv7lcqG7/rKJvvsjktM9oFZijwgzGMxPYMmSvRbsq1SWgtlmaAu0zMHMF38igKotQ7q/n8B3oWkR1kjz7KQr/PgCg0jdtoZ1eFbn72I=
+	t=1771197414; cv=none; b=jSldEE45OyJqTl4tfp/rnIfea5t3yUBRwReMJKeCgtEPabKr+RC9hwlFTnReoAWGygfH6iYKEZ8JqJMGJZprd0SGgx8fTbLwbu8AgHnnpz8Z65CYnyN9H2jxpnK5Rts3HNO6yh1ekCzGnkELQiKx8hyjYC2pM0OB+fYPMwswZHA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771196149; c=relaxed/simple;
-	bh=Asjb0neNHRskCehaI2tbprIvH7xzFuR5HTp96o2NrOY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rW291QgEEZjXt3nirxYlGNVEUjmvNchTOzhbSfeSQVsc8mIMzLNJCFHFEysU6YHKQQRtZRbI+nk6cL9m3DgAUn1zuoWhw7iHfDn0DfXsmq1vcBYtzK7UnMhwrnEsnfbbQmVEGmRZyqKD8bzMa+YTK6LTt+F7YsoUt+smvhm4f3M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=HsL6Kboi; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	s=arc-20240116; t=1771197414; c=relaxed/simple;
+	bh=IIxZfD2J0H7/pfKT+MMLWR55fWvYhFDMw9U/IiMvqyQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=CxsZUA+YxS5DtdQ2MKbITdznB1hm0mM76gWK3ATlyG2120m0agvNjvMg2etwnRKD1XayOnblzabFtDIqsuA10zbR4Io1UuL/AT8PB4bIlhWr4s9kBntx/RM3jNZPkMgHDxv+NnbrjPICb/ZcwECrU9d7+Rkn9zda14DYMSeaCm8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=wZYGGvRF; arc=none smtp.client-ip=209.85.160.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="HsL6Kboi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=from:to:cc:subject:date:message-id
-	:in-reply-to:references:mime-version:content-transfer-encoding;
-	 s=k1; bh=f63y7Wq2UjRJwaDurNk5EkD4fofDVgyaXt3x3vGItDA=; b=HsL6Kb
-	oidDyjlA5DER1h1Z56zGsiZ/6NJLRuwIOww7Dc6aGPZWz6LWUs4qR7Ys/ezJMn91
-	LiRJy4XDaPgHdGPCBkTF8zxI60/6w9E1c8KV4vAM6ep0Z2g27S3Gdv4QXkF3HhjU
-	MCtmVaUdAu7r6PaRVvEE3/iTa4ziWloP4eokLNJ1F6ThkzxMVP6E2N/i/rKVzCzj
-	/h50Zx+lD9zECGJZ72Kb1uva6TqLRW8kEyp+PWv7suKzg2y5AIj6wCHQ4pxvdEkX
-	0B0rSikBDybvLhXumFb77OHI7nw1EbK72/QF+y51mCKDBulQmr532oTNREZNgD76
-	oX10FSLJEvNERQew==
-Received: (qmail 3011809 invoked from network); 15 Feb 2026 23:55:22 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 15 Feb 2026 23:55:22 +0100
-X-UD-Smtp-Session: l3s3148p1@V3+qu+RKdOUujns5
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: linux-renesas-soc@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
-	linux-arm-kernel@lists.infradead.org,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Will Deacon <will@kernel.org>,
-	Boqun Feng <boqun@kernel.org>,
-	Waiman Long <longman@redhat.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Mark Brown <broonie@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Lee Jones <lee@kernel.org>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Antonio Borneo <antonio.borneo@foss.st.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	linux-remoteproc@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	linux-iio@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-gpio@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-spi@vger.kernel.org
-Subject: [RFC PATCH v2 13/13] hwspinlock: refactor consumer.h from public header
-Date: Sun, 15 Feb 2026 23:54:53 +0100
-Message-ID: <20260215225501.6365-14-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260215225501.6365-1-wsa+renesas@sang-engineering.com>
-References: <20260215225501.6365-1-wsa+renesas@sang-engineering.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="wZYGGvRF"
+Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-3f9ebb269c3so1315397fac.3
+        for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 15:16:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771197411; x=1771802211; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=PADUDw8CNAAL1tlEty9cxWnxu4Azyh2rgAcU1OiEhYE=;
+        b=wZYGGvRFyPAd0gzMdZoFvK3FmPHZ6xsL3GBYayIQ/CzgaNn7XTwWsk955rbvLm4x6d
+         gmAb65+/oDwYXHrsWSloXt/RCiUNg6kN7E9Lnm/XIBLZQs6E+oSRbqPKzql8UKstDJiX
+         /HgnXZdkAcQ80hqitHqBAOeBjimLNGpLMeNZae7cb9S7u1ZWkktjAOZQdUEMZBqKu0OI
+         fPf2FbG74jZ12oYawtmM4kHRofEWmNvNtBSe0aKgDoFgAUqStLJuSn8dW8YNugsPKsBu
+         hvmUdxuYcftf2cNl6BSagJtNQvqGEG7Zy81GNifKVqB3aJzY7HxSoHPyLPUHj3YvXPgt
+         VLwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771197411; x=1771802211;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=PADUDw8CNAAL1tlEty9cxWnxu4Azyh2rgAcU1OiEhYE=;
+        b=cfwNP2Rg0cSOOMJArIPuSW3yksmcSpBh8Kyv6KnKLm5vVpz1CRK6ukyDxFvNK5V0Qz
+         qLpXxikrRBuKDCz/WKdkYYHKEv9OelUOxHkeBhHVMtsnn7+bcFYG9IfguWU64GHNGldE
+         0XN57pvcMm26xf7EIAoGUiNIfCT4OMU1gdowWK2N949aGcmn4mEfSoybPqs8LGK0P4Mq
+         l+4xEEwosJoaJklsYLyylwV22bItqxIkbApxoXXoL28HBMEqVbtDUoCJJfOdRKBjlGLX
+         84/ZFzVSbEuBIPRLxFbDtP4cnVS74BRGyXVIS0qOHx3sFXWb1x1XKsxF5+aGm24wciTC
+         BUSg==
+X-Forwarded-Encrypted: i=1; AJvYcCUFt1iHMwU179hW2W6whvwlycgf77hU470W29EgZe5106hOO9WmXZSdLKr2WhgU7N7SAmgYXWufXlM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywy+Kr4OdM7GrM55KC9Sa/0ORQx3jyTBJc2cuEQDLWJkVeIt0Up
+	BoiacNUFTndHNod55iv4vY6XaHAmnc7lidjw1rp7kYUqHOfWMC3yYF9/gQhMGvS12E6qTsOdwU6
+	cvZKo
+X-Gm-Gg: AZuq6aKHDLgJ5bYnUvuzVgO4Q+mYjDowaBIEw425zhsPweCe8ZhPB/nqjGIbAg/dKzh
+	o/FLk0LcM2FtRNX5SLI2ostcELNqxbhiSbw79L08bVF9DZlnOzTjY2XZP6tsKAKRHMEkx7Ms3tz
+	FnUrZJ+0iEy7IxwYdqMzbSZ1s1pVGbk/khYchueK1jDjrg5oW+finlHVyt4/0NZEN7MTqENAL3K
+	TDFpc56j2Hotkf7Nl1pZAPDn+PW3z5O5308SuViP7keaUYF7r0sbmFyA3LHi9hzYroVTrRF+ZS7
+	49o+skA5Wci4B6/TKzGgZYMSrI1DN3YwxoGwK2Q4rKUAXYFcAE8PdXYOhjyImMHIElpnC83n7r9
+	GKbURjCLfgrgoOZQVL1m0y8+C58ZiSefp6uW2A3R+qixbmlNYxZE25FNTHsIGfQCeP1iEhLoqzm
+	feGuByufqcb9xJudALOgAlk99CE0mAMJLd4AmvwGAz2IeScs6vnV1VeT+/3HzyDmjbiaMqIVKf
+X-Received: by 2002:a05:6820:8c1:b0:659:9a49:90a6 with SMTP id 006d021491bc7-67767b50eddmr4473140eaf.37.1771197411024;
+        Sun, 15 Feb 2026 15:16:51 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:796e:98be:f757:2021? ([2600:8803:e7e4:500:796e:98be:f757:2021])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67817ccdb97sm4392500eaf.2.2026.02.15.15.16.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 15 Feb 2026 15:16:49 -0800 (PST)
+Message-ID: <dce24f01-2a8e-4b36-9685-6ff4293e2d5a@baylibre.com>
+Date: Sun, 15 Feb 2026 17:16:47 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/4] iio: adc: ad4080: add support for AD4880
+ dual-channel ADC
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
+ Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-spi@vger.kernel.org
+References: <cover.1770393792.git.antoniu.miclaus@analog.com>
+ <aYiGj_TYelvJdVaR@smile.fi.intel.com> <20260214160852.6862b58d@jic23-huawei>
+ <aZC6wIWDdS8J_1eJ@smile.fi.intel.com>
+ <897bd4d4-bbdf-4cbf-84f6-05c110d75d03@baylibre.com>
+ <aZF9zoWHL9iHSK3q@smile.fi.intel.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <aZF9zoWHL9iHSK3q@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Factor out the entries only needed for consumers from the generic public
-header. This allows for a clean separation between providers and
-consumers.
+On 2/15/26 2:03 AM, Andy Shevchenko wrote:
+> On Sat, Feb 14, 2026 at 12:31:12PM -0600, David Lechner wrote:
+>> On 2/14/26 12:11 PM, Andy Shevchenko wrote:
+>>> On Sat, Feb 14, 2026 at 04:08:52PM +0000, Jonathan Cameron wrote:
+>>>> On Sun, 8 Feb 2026 14:50:23 +0200
+>>>> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+>>>>> On Fri, Feb 06, 2026 at 06:07:12PM +0200, Antoniu Miclaus wrote:
+> 
+> ...
+> 
+>>>>> I believe there is a better approach, what you need is rather a flag
+>>>>> to SPI core to tell that this is the device with shared CS.
+>>>>
+>>>> Antoniu, this comment from Andy needs addressing before we move
+>>>> on. It seems fairly fundamental and I'm not seeing a reply to it on list.
+>>>>
+>>>> I'm not entirely sure what Andy is suggesting will work but this
+>>>> is perhaps a mismatch in really understanding what is going on here.
+>>>> Andy, how would a flag work given they seem to be separately addressable
+>>>> SPI buses. I think this isn't a shared SPI CS, but rather a device
+>>>> with two entirely separate SPI buses. I think the only reason
+>>>> we are bothering to implement it as a single device at all is the
+>>>> shared backend.
+>>>
+>>> My understanding that there are two devices that for whatever reason share
+>>
+>> It is the opposite. It is a _single_ device with _two_ CS lines.
+> 
+> Don't we have already support for that? This changes the picture even more towards
+> NAKing this. See below why.
 
-FIXME: separate driver changes?
+Yes, spi_new_ancillary_device() was introduced exactly for this sort
+of thing, which is why I think it makes sense to use it.
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
- Documentation/locking/hwspinlock.rst              |  2 +-
- MAINTAINERS                                       |  1 -
- drivers/base/regmap/regmap.c                      |  2 +-
- drivers/hwspinlock/hwspinlock_core.c              |  2 +-
- drivers/iio/adc/sc27xx_adc.c                      |  2 +-
- drivers/irqchip/irq-stm32mp-exti.c                |  2 +-
- drivers/mfd/syscon.c                              |  2 +-
- drivers/nvmem/sc27xx-efuse.c                      |  2 +-
- drivers/nvmem/sprd-efuse.c                        |  2 +-
- drivers/pinctrl/stm32/pinctrl-stm32.c             |  2 +-
- drivers/soc/qcom/smem.c                           |  2 +-
- drivers/spi/spi-sprd-adi.c                        |  2 +-
- .../linux/{hwspinlock.h => hwspinlock/consumer.h} | 15 ++++++---------
- 13 files changed, 17 insertions(+), 21 deletions(-)
- rename include/linux/{hwspinlock.h => hwspinlock/consumer.h} (98%)
+> 
+>> adc@0 {
+>> 	reg = <0>, <1>;
+>> 	...
+>> };
+>>
+>>> the same CS line. Yes, I probably misread the idea behind, but I meant
+>>> some flag for SPI device that tells SPI core that the CS it wants is shared
+>>> (maybe a high bit in the cs field or so), then CS core won't complain on
+>>> validation about using the same cs number which is "already in use".
+>>
+>> There was one existing user in the kernel of spi_new_ancillary_device()
+>> that looked like this, so it seemed the right way to approach it. However,
+>> code was added later that caused the primary SPI device to "claim" both
+>> CS lines for itself and probably broke the one existing user of
+>> spi_new_ancillary_device() (hard to tell without hardware to test).
+>>
+>> The idea here was to unbreak that so we could use spi_new_ancillary_device()
+>> just as in the existing use case.
+>>
+>> The patch for that could have been a bit more strict to only allow the
+>> spi_new_ancillary_device() to take CS 1 and fail otherwise, but users
+>> are going to notice if it isn't working right anyway, so I didn't ask
+>> for more checking.
+> 
+>>>> There is an argument that maybe we should be looking at how
+>>>> to do data muxing backends to support the more general case of two
+>>>> separate chips feeding into a single buffer, but that's a complex
+>>>> beast and I'm not sure if it is something we actually need.
+>>
+>> I think it would actually be quite similar to what is done in this
+>> series.
+> 
+> TBH, the change sounds to me like a hack. It doesn't cover other potential ways
+> of the multi-cs devices come into play. Given that SPI core supports multi-cs
+> I don't see a good justification for this patch.
+> 
+> What did I miss?
 
-diff --git a/Documentation/locking/hwspinlock.rst b/Documentation/locking/hwspinlock.rst
-index a737c702a7d1..001bcab86690 100644
---- a/Documentation/locking/hwspinlock.rst
-+++ b/Documentation/locking/hwspinlock.rst
-@@ -306,7 +306,7 @@ Typical usage
- 
- ::
- 
--	#include <linux/hwspinlock.h>
-+	#include <linux/hwspinlock/consumer.h>
- 	#include <linux/err.h>
- 
- 	int hwspinlock_example(void)
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f9131b8cd5d2..8141a8a5ea01 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11216,7 +11216,6 @@ F:	Documentation/devicetree/bindings/hwlock/
- F:	Documentation/locking/hwspinlock.rst
- F:	drivers/hwspinlock/
- F:	include/linux/hwspinlock/
--F:	include/linux/hwspinlock.h
- 
- HARDWARE TRACING FACILITIES
- M:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
-diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index 4231e9d4b8ff..3f4c254e8ac7 100644
---- a/drivers/base/regmap/regmap.c
-+++ b/drivers/base/regmap/regmap.c
-@@ -16,7 +16,7 @@
- #include <linux/sched.h>
- #include <linux/delay.h>
- #include <linux/log2.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/unaligned.h>
- 
- #define CREATE_TRACE_POINTS
-diff --git a/drivers/hwspinlock/hwspinlock_core.c b/drivers/hwspinlock/hwspinlock_core.c
-index 6c8a03deb00c..e78ec4b5cfa3 100644
---- a/drivers/hwspinlock/hwspinlock_core.c
-+++ b/drivers/hwspinlock/hwspinlock_core.c
-@@ -12,7 +12,7 @@
- #include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/err.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/hwspinlock/provider.h>
- #include <linux/jiffies.h>
- #include <linux/kernel.h>
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index 6209499c5c37..8a881d63b7dd 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (C) 2018 Spreadtrum Communications Inc.
- 
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/iio/iio.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-diff --git a/drivers/irqchip/irq-stm32mp-exti.c b/drivers/irqchip/irq-stm32mp-exti.c
-index a24f4f1a4f8f..25d5aa67728a 100644
---- a/drivers/irqchip/irq-stm32mp-exti.c
-+++ b/drivers/irqchip/irq-stm32mp-exti.c
-@@ -6,7 +6,7 @@
-  */
- 
- #include <linux/bitops.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/irq.h>
-diff --git a/drivers/mfd/syscon.c b/drivers/mfd/syscon.c
-index e5d5def594f6..49473669e84e 100644
---- a/drivers/mfd/syscon.c
-+++ b/drivers/mfd/syscon.c
-@@ -11,7 +11,7 @@
- #include <linux/cleanup.h>
- #include <linux/clk.h>
- #include <linux/err.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/list.h>
- #include <linux/mutex.h>
- #include <linux/of.h>
-diff --git a/drivers/nvmem/sc27xx-efuse.c b/drivers/nvmem/sc27xx-efuse.c
-index 4e2ffefac96c..309090cd4ff0 100644
---- a/drivers/nvmem/sc27xx-efuse.c
-+++ b/drivers/nvmem/sc27xx-efuse.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (C) 2018 Spreadtrum Communications Inc.
- 
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
-diff --git a/drivers/nvmem/sprd-efuse.c b/drivers/nvmem/sprd-efuse.c
-index 1a7e4e5d8b86..92e3092719ba 100644
---- a/drivers/nvmem/sprd-efuse.c
-+++ b/drivers/nvmem/sprd-efuse.c
-@@ -3,7 +3,7 @@
- 
- #include <linux/clk.h>
- #include <linux/delay.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/nvmem-provider.h>
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-index 6a99708a5a23..17b2072d609e 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -10,7 +10,7 @@
- #include <linux/clk.h>
- #include <linux/export.h>
- #include <linux/gpio/driver.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/irq.h>
- #include <linux/mfd/syscon.h>
-diff --git a/drivers/soc/qcom/smem.c b/drivers/soc/qcom/smem.c
-index d5c94b47f431..6d574d65b4a3 100644
---- a/drivers/soc/qcom/smem.c
-+++ b/drivers/soc/qcom/smem.c
-@@ -4,7 +4,7 @@
-  * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
-  */
- 
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/of.h>
-diff --git a/drivers/spi/spi-sprd-adi.c b/drivers/spi/spi-sprd-adi.c
-index e7d83c16b46c..04313e4a63dd 100644
---- a/drivers/spi/spi-sprd-adi.c
-+++ b/drivers/spi/spi-sprd-adi.c
-@@ -5,7 +5,7 @@
-  */
- 
- #include <linux/delay.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/init.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-diff --git a/include/linux/hwspinlock.h b/include/linux/hwspinlock/consumer.h
-similarity index 98%
-rename from include/linux/hwspinlock.h
-rename to include/linux/hwspinlock/consumer.h
-index 4fe1c8831cd1..f476222ec924 100644
---- a/include/linux/hwspinlock.h
-+++ b/include/linux/hwspinlock/consumer.h
-@@ -1,17 +1,16 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /*
-- * Hardware spinlock public header
-+ * Hardware spinlock public header for consumers
-  *
-  * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com
-- *
-- * Contact: Ohad Ben-Cohen <ohad@wizery.com>
-+ * Copyright (C) 2026 Sang Engineering
-+ * Copyright (C) 2026 Renesas Solutions Corp.
-  */
- 
--#ifndef __LINUX_HWSPINLOCK_H
--#define __LINUX_HWSPINLOCK_H
-+#ifndef __LINUX_HWSPINLOCK_CONSUMER_H
-+#define __LINUX_HWSPINLOCK_CONSUMER_H
- 
- #include <linux/err.h>
--#include <linux/sched.h>
- 
- /* hwspinlock mode argument */
- #define HWLOCK_IRQSTATE		0x01 /* Disable interrupts, save state */
-@@ -22,8 +21,6 @@
- struct device;
- struct device_node;
- struct hwspinlock;
--struct hwspinlock_device;
--struct hwspinlock_ops;
- 
- #ifdef CONFIG_HWSPINLOCK
- 
-@@ -403,4 +400,4 @@ static inline void hwspin_unlock(struct hwspinlock *hwlock)
- 	__hwspin_unlock(hwlock, 0, NULL);
- }
- 
--#endif /* __LINUX_HWSPINLOCK_H */
-+#endif /* __LINUX_HWSPINLOCK_CONSUMER_H */
--- 
-2.51.0
+As far as I can tell, other than the one existing user of
+spi_new_ancillary_device(), other SPI multi-CS stuff is only used
+by SPI flash memory devices, not general SPI devices. There code
+that is being modified here was introduced to support the SPI
+flash memory devices, so that use case is already covered by
+existing code.
 
