@@ -1,92 +1,144 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9277E2475CB
-	for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 19:34:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1AB2D8287E;
+	Sun, 15 Feb 2026 19:36:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771184094; cv=none; b=LaHT7qN2LZ6qIjmpeLiiFPZGAKxDSEhyd1cA9hezEPYD/JsueShzc/j0ha00Yk4GwylklILnsggLsw3SqTooukLr5tZlRWaW6VlQUm+ogHs4rVKLRyElg1yYbTKbHlodBj45Ryt9aQ1zb1FffvYFJ+A5dWHcxSdkg+Z3krS3T9E=
+	t=1771184168; cv=none; b=OEZQL0bC2+xnWIrGO3SjS5s5903ZWJi45cluwcuRXcLBoIi4Kc6qiZjkeamHQejS6sLDiaVo6Qb3ykixs2dk4S/DZZrbYoP1KJQS0v83QOCgowY/T0VqKVNjcCHX9KooI83YusuiDt6EWcpg8AvWhvDeye7DMuB8XbKeMRGiAJo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771184094; c=relaxed/simple;
-	bh=ND+vNhOmmKZdFwXEgJjFRvo5zyQyLvxZnNtAE7Sc35M=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LX8e7kdml5/Vx61wX9xknTJeBOgqvdleNIvIZ60zWQcaKOyuIMvyDd/RLen4TPxqkyXVQVL62UP89WCc0U9jSJQ3Ngzw0IAfF5b9nj/a505TKixkrH3jnRlHGaKWq5dNiqZuhKwoU1by1JD9ZHe0ZLtYfvOns2YERqhRVvVTnL4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BJiK0I3g; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1771184168; c=relaxed/simple;
+	bh=QBiV9NdAm4Ymnf+cZF3juzjoLYiPTM6xuHMwfWmGaww=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=dox4lyzPl5BAPak3tbogfxx0imIfywKnj2H50FryYLZz4Oa3TWds9++n8/MLyAJu1EvHawZgYbhLynL1guXJj1dunNErg3uXabVgvDpM284KF4voITx5hKCEu0WykaCHgiMnVhnkWOwJiuZYgrFtLlnUrCwk6ce7so4wJ/aHSlQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=V7fnWKtv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BJiK0I3g"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4837907f535so13227205e9.3
-        for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 11:34:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771184092; x=1771788892; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=smgnUyl/+KHFYfvdMgtCO0R17kfguRU0f4H0nIqil0U=;
-        b=BJiK0I3gME9u0ijCLFByPdREdjhEmwkI3yrTqc6biPeJT0vDgZxV4Akyb7g9+6bF3U
-         vifYYSeQ+WY94vA0QtaBan5S+zHtP1uKEm6LV4WYHW5Av0vgOM3ahfbpBRRoxwxIc4Nh
-         EAAP3454eG/BVnXeQnIrQy6RS2gEs+gb93mZiYTfwvHuB0RlEOyIkD2aUTT9udr8BMl+
-         rRzFIUrMrU9oQU5bPpGUrknjEsTNjO/tWgPtHIyl9ZWKqUbKnwF/u38u4/G/zYOjVtyj
-         G0X6JDaFFmbDd8mNsWN/jg15NDKU/fdIe0EocAkcJ8t07g9QY6ZNQ9R1o4FDWXW+vdMu
-         tYNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771184092; x=1771788892;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=smgnUyl/+KHFYfvdMgtCO0R17kfguRU0f4H0nIqil0U=;
-        b=OSIhx8SVnAuKfqWQxQQF0jHlSlpqlX+Z8y7+WVJmIOW3Eo+fI6Jdtvba0813bFr3fe
-         NElFa0yi1Oj6/eP85uhgrlW/ZROpHN7GxrhtXJ0myN0kQQgpANF8wZxloGjaKqkHOB9l
-         Kph4O9YN/O+hPX94N0HNcw7hwXR1UrF9xTRLo7hlMc5epkHfRMY0kKacSitam7qAuM31
-         INIljiCcZ3T6h1qpano/NpHkt1far0FlABKVYVgoonxZr0bcwkoVVwJjXI3SzZ/nJgML
-         WjV15rqUShiPHe/iAZEhReGxJ/pwNg6KUl/f0h9Q3Xa+rbWSTp/W2ZRQP4gtG7uh+D7u
-         aovA==
-X-Forwarded-Encrypted: i=1; AJvYcCWKnPO/YBQxCH7LSOW6c/PTbpVJEPuxolxnTb7NTbR52ZUHIZIGhzQiUCgpv8mPWNzIN6ZisS9mCjk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxMpbZPGl+i003nguGxL9flp2cQQb9Fsg1aPlp+D7lD3QG9mMNd
-	9K/BcyeP7nPBbYynPs0lr/52E3sewL171g81SvfGKz9mXZLKJCw1B5FI1xlTCw==
-X-Gm-Gg: AZuq6aIO6H/9MD3DCAYKctJTZm+dsgIgHliN3KZDdhvDgX9PqT018l2uHIFO/wZ3+0K
-	LmbqXuE10Ap/ZSBmidmuYYZb0uq5HfgoNQiY2rWVFJ6/5idVUullXHvGcQvDJk/RG0G1zXETBYD
-	6OL99ESBVIVzW7k4ufRfFZP49ktI34rIkYJSDCvZfqE85QtfGIxDValdzYvXfCmCckPkpXJdrgY
-	ex49CqO1/Ls2izU2SEiZ7DFmfphiEAIB5XEJsSRpGFVYj1D3Au4NKVZkLqPAMa7du5QlZEpi5Jm
-	DweRVwYFhRs8ON4R5FZPY9eMeD9i8h+SkpgPPkaOA3/eHsxVoB0UANPeYzZyNl9m7lBoEX1prPB
-	olDjbUJZ4Y+mjbBrXtfrY79bYxfXPudbYe98ybWV6fhakzqp0059cHKUQWVUqvgPswubuBCz94H
-	LzZt9Dt/2YnPhhaKWYMMkq8b0=
-X-Received: by 2002:a05:600c:1912:b0:480:69ae:f0e9 with SMTP id 5b1f17b1804b1-48379ba54aemr100058875e9.16.1771184091750;
-        Sun, 15 Feb 2026 11:34:51 -0800 (PST)
-Received: from pc ([196.235.191.39])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48371a2392bsm123594785e9.6.2026.02.15.11.34.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Feb 2026 11:34:51 -0800 (PST)
-Date: Sun, 15 Feb 2026 20:34:48 +0100
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: trigger: fix use-after-free in
- viio_trigger_alloc()
-Message-ID: <aZIf2MJ6M3bGRn9W@pc>
-References: <20260204203414.89333-1-salah.triki@gmail.com>
- <20260207153546.74d4fc2b@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="V7fnWKtv"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAF1BC4CEF7;
+	Sun, 15 Feb 2026 19:36:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771184167;
+	bh=QBiV9NdAm4Ymnf+cZF3juzjoLYiPTM6xuHMwfWmGaww=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=V7fnWKtvWUldefWbTPngsOwPVd7oK7xP7VULIiKD957xbVnrW4fTGDrSwNJR09hUF
+	 LNwcl816/VG4JtDng0UJG+wMX9YXQ7VD+cZTiB2iQdyG6fguRSGS1hFJZmzvFVA18l
+	 Dq6a8JCHtoxMTT5yJN0Le+8WKTZHOhwgqyzrPr8J/7wgxVfIdstmqVP9TgrMggbx+v
+	 6ek6eH+Uu47Ft0PdHGhzUtOROccuab8bDedO88Q1hpOXQZdKSeK2X9EPNOugit6+0/
+	 ZJkmK8dTmMuq18AW0fYs7mMkkxY0qV5NmJFSJkBeJu38kRwsQEWcHJqh/WYDhoECsG
+	 AcJ7xrit+cEFg==
+Date: Sun, 15 Feb 2026 19:35:57 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Erikas Bitovtas <xerikasxx@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Krzysztof Kozlowski
+ <krzk@kernel.org>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Peter
+ Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: vcnl4000: add Capella
+ CM36686 and CM36672P
+Message-ID: <20260215193557.1ddd2adf@jic23-huawei>
+In-Reply-To: <eea4cf8c-4126-49a8-ada8-1b1893a406c2@gmail.com>
+References: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
+	<20260212-cm36686-v4-1-8f587d4a72bf@gmail.com>
+	<20260213-unyielding-pistachio-ape-deda74@quoll>
+	<3a20c906-647c-458f-a118-c7927495e7ef@gmail.com>
+	<8fb27a7a-82dc-443b-bcc4-21007783fc54@kernel.org>
+	<f014078c-6e4d-48b0-a814-45898b005c44@gmail.com>
+	<880ddcad-a92e-43bb-ad5c-d6f2f353d182@baylibre.com>
+	<eea4cf8c-4126-49a8-ada8-1b1893a406c2@gmail.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260207153546.74d4fc2b@jic23-huawei>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Jonathan,
+On Sun, 15 Feb 2026 18:16:45 +0200
+Erikas Bitovtas <xerikasxx@gmail.com> wrote:
 
-You're right, the explanation was too wordy. I'll send a v3 focusing on the
-fact that using put_device() follows the standard design pattern and avoids
-duplicating the cleanup logic already present in the release callback.
-I will also remove the Fixes tag as this is more of a robustness 
-improvement than a critical bug fix.
+> On 2/14/26 6:44 PM, David Lechner wrote:
+> > On 2/13/26 2:56 AM, Erikas Bitovtas wrote:  
+> >>
+> >>
+> >> On 2/13/26 10:51 AM, Krzysztof Kozlowski wrote:  
+> >>> On 13/02/2026 09:29, Erikas Bitovtas wrote:  
+> >>>>>> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+> >>>>>> ---
+> >>>>>>  .../devicetree/bindings/iio/light/vishay,vcnl4000.yaml  | 17 +++++++++++------
+> >>>>>>  1 file changed, 11 insertions(+), 6 deletions(-)
+> >>>>>>
+> >>>>>> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+> >>>>>> index 4d1a225e8868..2ba4d5de4ec4 100644
+> >>>>>> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+> >>>>>> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+> >>>>>> @@ -18,12 +18,17 @@ allOf:
+> >>>>>>  
+> >>>>>>  properties:
+> >>>>>>    compatible:
+> >>>>>> -    enum:
+> >>>>>> -      - vishay,vcnl4000
+> >>>>>> -      - vishay,vcnl4010
+> >>>>>> -      - vishay,vcnl4020
+> >>>>>> -      - vishay,vcnl4040
+> >>>>>> -      - vishay,vcnl4200
+> >>>>>> +    oneOf:
+> >>>>>> +      - enum:
+> >>>>>> +          - capella,cm36672p  
+> >>>>>
+> >>>>> CM36672P is compatible with CM36686, but this is not expressed.
+> >>>>> Confusing commit msg and code.   
+> >>>>
+> >>>> For CM36672P we create a dedicated compatible because it is a
+> >>>> proximity-only sensor which has the same proximity sensor configuration,
+> >>>> but ambient light sensor registers are missing (reserved).  
+> >>>
+> >>> I don't understand this. You just wrote "fully compatible with CM36686"
+> >>> and now you imply that not.
+> >>>
+> >>> Decide.
+> >>>  
+> >> It is not. CM36672P supports only a subset of CM36686 features, in
+> >> particular the proximity sensor. That is what I meant initially.
+> >> I am sorry if the previous phrasing caused any confusion.  
+> > 
+> > But CM36686 is fully compatible with CM36672P, right?
+> > 
+> > So this would make sense?
+> > 
+> >       - items:
+> >           - const: capella,cm36686
+> >           - const: vishay,vcnl4040
+> >           - const: capella,cm36686p
+> > 
+> >   
+> If you try to use CM36686 compatible for CM36672P, proximity channels
+> will work, but in_illuminance_raw will return 0 and changing illuminance
+> parameters will have no effect. 
 
-Best regards,
+Look at the ordering above.  The key I think is it's not saying the cm36672p can
+fallback to the cm36686, but the other way around.
 
-Salah
+If that fallback was used (because we'd actually had the driver evolve in
+a different order and older versions only supported the cm36672p) then we'd
+see a proximity only device presented with the ambient light parts hidden
+away. 
+
+> That is because CM36672P is a proximity
+> sensor only and the register fields for ambient light are reserved.
+> And if you try to use CM36672P compatible with CM36686, it will work,
+> but only proximity channel will be available, even though CM36686 also
+> can sense light.
+Understood.  So in one direction it is correctly considered backwards compatible
+but not the other way round.  The ambient light can be thought of as 'value add'
+new features on a 'newer' device (obviously that's not actually the case but
+it's an easier way to think about how fallback compatibles are often used).
+
+Jonathan
+
+> 
+
