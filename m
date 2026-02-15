@@ -1,159 +1,234 @@
-Received: from mail-yw1-f175.google.com (mail-yw1-f175.google.com [209.85.128.175])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E6B4F21638D
-	for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 16:16:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26270EEC0
+	for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 16:23:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771172214; cv=none; b=XVXbsdreGhhVm5RlrtHEwlVF6zWfVvmMQWHrx2N1trkF1tW0D//OhWRE9vdEHDp7SutX4IBZHL8ovtjB3EGH8WDxyONbmZrRhtaxnq57lDpmJkthf/qmI1z5lP8vTKKIDwC1SKODDY1Q7ymSWqfyimYO3luGEb420t/ccFyqYaU=
+	t=1771172639; cv=none; b=bES/gvTcyJNsRj0YS8CrXK6/7BmAHzrWhUgJ+gAn+kZBrPxswvrv/cV/CAYjruW9dD+RhYyeMIE/qGXOEUB/vhZt3qqoKx7NkKOQskOLZrzpmU6WKipIzM4l7dDGShkHOVOQbzk/vL2H5F1WdYNvPYK4wr3y+oxMNBU4K1yMu4M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771172214; c=relaxed/simple;
-	bh=QkftsrPYieFk9d+UCflvzlWm6/5nK+3y4WbIIuVt1C0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CJ1fami2irU/51ve1SWy1/z1blPf05ed7yL5TUtZZRhOty6eHLhCi+JtetrXgKcmjMx1qvFuMnqwBECWCn/N1cpV81NrIshk2XndJrEqO5kP8pQzaYjabe4gr3l1EX0y+JAQLGMpsnq332nrSLfMFuHa9VyklcdEhY18g9YcDaQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ODlXG0Ad; arc=none smtp.client-ip=209.85.128.175
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1771172639; c=relaxed/simple;
+	bh=yXoJp5j4URnzEf/KbOPPN7PMzoqLlTQ27YxPXB7yWH4=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=gRttzADOvP3yO2S7tOrxvn4Wsyu45LxYl8+98WJQQMbpJ89d2MnVvUJUDbEZZ7H4aRHb6WKQMn5AQWlmz2gSFon+AjekqrWTMhK+Ib3TyUvs+gwPJeLFJtu8fBa1YqHkCzf/pwE6A8FitsH+92iK7F0sX+VV9QJ9L+D2gAcew+Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YU1po8Xg; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ODlXG0Ad"
-Received: by mail-yw1-f175.google.com with SMTP id 00721157ae682-79430ef54c3so20399907b3.2
-        for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 08:16:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771172212; x=1771777012; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=0MzbHaBcl2BA9jnP7VQLQ7usDren2db0/Uzo8UfIv1Y=;
-        b=ODlXG0AdjtizbMudBbgltHy8QNPfO4yVR4s3wvfqsVfqK1KIEoakV9yihdFrSx7Cf3
-         92woa7QdDoAQz6qzpZDs10fTP7hIIMG/eBZXZuTO5xb0HD/YIG8JkEdZWuPfvPILOVSz
-         4h8CLwpqjWyKH12PsqGcDQIs+/+uwMmKSa4IDwPlZIoTxQSBmnbFtJZCwz+ZEXgxvZuh
-         WdgxsTl4KmvJP7ygFO3p8j64Pf09gFNqFiaxC22iBAvEWihNVbB2A+vZv9WP1c6tiqbD
-         hwtF0IZi+9+HZXMmAUS47LLIZxzTZ8yh7tP1KIZmbg+D0qVV8gXbya9StW4VO3pCoSUR
-         Kbqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771172212; x=1771777012;
-        h=content-transfer-encoding:in-reply-to:content-language:from
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=0MzbHaBcl2BA9jnP7VQLQ7usDren2db0/Uzo8UfIv1Y=;
-        b=XlLV1PA2gBTtTzUgIHh703l9Md22EzBQKUIDI8hnGdAwedHNXulamC4Qnpd4+A5vmX
-         I03uXQV/zNYy4Atlc8ApI+a0Do9cRUdzJ7Cz1DA8f2kIIfKSei7d369x9aykCKxZFwWw
-         FJNsmTurA2LI6iQyDosaSVTMaSzSraqLELQy29kfetGeT2nF6TZKaR2B49WMLhWOHlG6
-         ANwGFhqvzB5s387hnoOmviNI6/Kv1UViLuO01RP4OG+CbK1gFwomfVnkDcUg3zPdUHk7
-         KKvJw3Do52xVduKdgFeVs7XPUqjY4vM8KXKPDtyvcpvBTBJPzYpbLW2oVsnGEdhPwL6V
-         aMFw==
-X-Forwarded-Encrypted: i=1; AJvYcCVrGep2Igy84yAvpHIstVnYUFCBkLtvaNeEZLyIYaY3yXFFXdw3pIN2Ghba8sb606rje7FCsdrXgvY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwdQbZQYLwBk+vQ4NB/HBilGOChIB89cSxhYOwD6tt4YVlHwYbo
-	LFBFCHHlG2J3tvYcNgT78d6sq//TKmW7PBQ1Jvp5cmYgrKkSoSThC1su
-X-Gm-Gg: AZuq6aKW7fkNNPjzTJcZcArkwZnsHffxijHlJB/+aueQIw9AVe/Kt6It2PF0PiELwXu
-	YAv48oxmA9heAe4wUoCIik9vK4YKZc2XWMoOrKqzcyrLG8PX57mW9G2wqiWPebuQ7b1k2yCzdnZ
-	gc37k4Fa2WuO70y0huupmmy1IL6djNqdZCDCC30LJvVU1Q52BVR6BIVnRoV34Zo6Tamy4YV3VWY
-	HLS7Y13egUewhAj/EbN99tZpPVjy5ZYfn875UjwEA7Kd1s4hIR3mNxstxnd+4ZjgzeukRNEqa/J
-	ehEUKLEkcHuiWGDU4h7OFOLwQUgM/yPuDO3vSjAJnAtPOJk2eTDxe8Hwyo4RuZnK6VgRVcH9XZ9
-	qSrS4MVyV6vucgVhPl8iuPNdIk+2W3U31UKP2W2mfsA2htAXVrP0JxAVH25UEDh8NVSs5TKpS98
-	a9hOwUrXBcobencUCvVUxonHWf5Q==
-X-Received: by 2002:a05:690c:ed6:b0:796:37bb:9eaf with SMTP id 00721157ae682-797ac4ddaa0mr37247267b3.7.1771172211823;
-        Sun, 15 Feb 2026 08:16:51 -0800 (PST)
-Received: from [192.168.0.40] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7966c267f40sm90580437b3.52.2026.02.15.08.16.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 15 Feb 2026 08:16:51 -0800 (PST)
-Message-ID: <eea4cf8c-4126-49a8-ada8-1b1893a406c2@gmail.com>
-Date: Sun, 15 Feb 2026 18:16:45 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YU1po8Xg"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3132AC4CEF7;
+	Sun, 15 Feb 2026 16:23:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771172638;
+	bh=yXoJp5j4URnzEf/KbOPPN7PMzoqLlTQ27YxPXB7yWH4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=YU1po8XgUZ/C5FodDefNWQ9KASVEPfXPyvc037sORR13ZV1b51r5Nm7tITCcKSBMT
+	 lsXobk72qhZTwOnnjPuMIHkyphdz9DujiuiBQSCL0Bshfk0chkVnGIxuSSPXavseTt
+	 V9dIhAdSI8Y1ADuwpi7RZVBPfpafEyhhkl4h4EQAAbg8xYyzIeCUUPrIPzVTPLbEa7
+	 ewZa10A9Ugxn8zirOQDhdOFygKswDVRqx0RD9P0vmTd08oDk69IrwXyIEsVXr5KYAw
+	 K/QtZDVNbz6pKIuPOjf7co/4ZrP30vdA0yxtChhD0Jg3e7uu4dAPeygQ2UEHKUV1Xg
+	 PFmcjUEcu0gyA==
+Date: Sun, 15 Feb 2026 16:23:51 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: bugzilla-daemon@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [Bug 221077] New: [iio] [hid-sensor-rotation] Memory corruption
+ due to alignment mismatch in scan buffer
+Message-ID: <20260215162351.79f40b32@jic23-huawei>
+In-Reply-To: <b24cc218-1bb5-4272-8e44-054a983ec558@baylibre.com>
+References: <bug-221077-217253@https.bugzilla.kernel.org/>
+	<20260214192404.1240b351@jic23-huawei>
+	<b24cc218-1bb5-4272-8e44-054a983ec558@baylibre.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: vcnl4000: add Capella
- CM36686 and CM36672P
-To: David Lechner <dlechner@baylibre.com>,
- Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
- phone-devel@vger.kernel.org
-References: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
- <20260212-cm36686-v4-1-8f587d4a72bf@gmail.com>
- <20260213-unyielding-pistachio-ape-deda74@quoll>
- <3a20c906-647c-458f-a118-c7927495e7ef@gmail.com>
- <8fb27a7a-82dc-443b-bcc4-21007783fc54@kernel.org>
- <f014078c-6e4d-48b0-a814-45898b005c44@gmail.com>
- <880ddcad-a92e-43bb-ad5c-d6f2f353d182@baylibre.com>
-From: Erikas Bitovtas <xerikasxx@gmail.com>
-Content-Language: en-US
-In-Reply-To: <880ddcad-a92e-43bb-ad5c-d6f2f353d182@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
+On Sat, 14 Feb 2026 14:29:19 -0600
+David Lechner <dlechner@baylibre.com> wrote:
 
+> On 2/14/26 1:24 PM, Jonathan Cameron wrote:
+> > On Wed, 11 Feb 2026 05:12:36 +0000
+> > bugzilla-daemon@kernel.org wrote:
+> >   
+> >> https://bugzilla.kernel.org/show_bug.cgi?id=221077
+> >>
+> >>             Bug ID: 221077
+> >>            Summary: [iio] [hid-sensor-rotation] Memory corruption due to
+> >>                     alignment mismatch in scan buffer
+> >>            Product: Drivers
+> >>            Version: 2.5
+> >>           Hardware: All
+> >>                 OS: Linux
+> >>             Status: NEW
+> >>           Severity: normal
+> >>           Priority: P3
+> >>          Component: IIO
+> >>           Assignee: drivers_iio@kernel-bugs.kernel.org
+> >>           Reporter: lixu.zhang@intel.com
+> >>         Regression: Yes
+> >>            Bisected b31a74075cb4ca2bb202a2e17d133ef3c9ee891f
+> >>          commit-id:
+> >>
+> >> ### Problem
+> >> In `drivers/iio/orientation/hid-sensor-rotation.c`, the `scale_pre_decml` and
+> >> `scale_post_decml` fields in `struct dev_rot_state` get corrupted after the
+> >> first read from the device. This issue results in invalid scale values being
+> >> reported to userspace.
+> >>
+> >> ### Root Cause Analysis
+> >> The issue is caused by a size mismatch between what the IIO core expects for
+> >> the scan buffer and the actual size of the driver's scan structure.
+> >>
+> >> 1.  **Driver Structure**: The `scan` struct in `dev_rot_state` consists of a
+> >> quaternion (4 * s32 = 16 bytes) and a timestamp (8 bytes).
+> >>     ```c
+> >>     struct {
+> >>             s32 sampled_vals[4];
+> >>             aligned_s64 timestamp;
+> >>     } scan;
+> >>     ```
+> >>     Without explicit alignment, this structure is packed to **24 bytes**.  
+> > 
+> > I agree it's 24 bytes, but worth being clear it has explicit alignment to 8
+> > bytes. Without that on some platforms it would be 4 byte aligned only.
+> >   
+> >>
+> >> 2.  **IIO Core Expectation**: The `iio_compute_scan_bytes` function calculates
+> >> the buffer size required. It aligns the total size to the size of the *largest
+> >> element* in the scan.
+> >>     - The quaternion channel is treated as a single 16-byte element.
+> >>     - Therefore, the core aligns the total size to 16 bytes: `ALIGN(24, 16) =
+> >> 32 bytes`.  
+> > 
+> > Ah. That is indeed a corner case and the ABI is IIRC not well documented
+> > around that, let alone what we do in the kernel. We probably need to tighten that
+> > up as well as fixing this. What userspace were you using to test this?  
+> 
+> I didn't even know we had IIO_MOD_QUATERNION as a special data type until
+> Francesco's recent patches. :-o
 
-On 2/14/26 6:44 PM, David Lechner wrote:
-> On 2/13/26 2:56 AM, Erikas Bitovtas wrote:
->>
->>
->> On 2/13/26 10:51 AM, Krzysztof Kozlowski wrote:
->>> On 13/02/2026 09:29, Erikas Bitovtas wrote:
->>>>>> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
->>>>>> ---
->>>>>>  .../devicetree/bindings/iio/light/vishay,vcnl4000.yaml  | 17 +++++++++++------
->>>>>>  1 file changed, 11 insertions(+), 6 deletions(-)
->>>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
->>>>>> index 4d1a225e8868..2ba4d5de4ec4 100644
->>>>>> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
->>>>>> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
->>>>>> @@ -18,12 +18,17 @@ allOf:
->>>>>>  
->>>>>>  properties:
->>>>>>    compatible:
->>>>>> -    enum:
->>>>>> -      - vishay,vcnl4000
->>>>>> -      - vishay,vcnl4010
->>>>>> -      - vishay,vcnl4020
->>>>>> -      - vishay,vcnl4040
->>>>>> -      - vishay,vcnl4200
->>>>>> +    oneOf:
->>>>>> +      - enum:
->>>>>> +          - capella,cm36672p
->>>>>
->>>>> CM36672P is compatible with CM36686, but this is not expressed.
->>>>> Confusing commit msg and code. 
->>>>
->>>> For CM36672P we create a dedicated compatible because it is a
->>>> proximity-only sensor which has the same proximity sensor configuration,
->>>> but ambient light sensor registers are missing (reserved).
->>>
->>> I don't understand this. You just wrote "fully compatible with CM36686"
->>> and now you imply that not.
->>>
->>> Decide.
->>>
->> It is not. CM36672P supports only a subset of CM36686 features, in
->> particular the proximity sensor. That is what I meant initially.
->> I am sorry if the previous phrasing caused any confusion.
+It's not common.  Was interestingly something that looked likely to be so
+in relatively early IMUs but then faded away -> probably because the algorithms
+to get a good estimate are complex and best done on the host CPU or somewhere
+off sensor.
+
 > 
-> But CM36686 is fully compatible with CM36672P, right?
+> > 
+> >   
+> >>
+> >> 3.  **Corruption**: When `iio_push_to_buffers_with_timestamp()` is called:
+> >>     - It assumes a 32-byte buffer.
+> >>     - It writes the timestamp at the end of the aligned buffer (offset 24).
+> >>     - Since the driver allocated only 24 bytes for `scan`, the write at offset
+> >> 24 overwrites the adjacent `scale_pre_decml` field in `struct dev_rot_state`.
+> >>
+> >> ### Evidence (Ftrace)
+> >> I verified this by tracing the return values of `iio_storage_bytes_for_si` and
+> >> `iio_compute_scan_bytes` using kretprobes:
+> >>
+> >> ```log
+> >> $ cat /sys/kernel/tracing/trace_pipe
+> >> r_store_bytes: (iio_compute_scan_bytes+0x30/0xd0 [industrialio] <-
+> >> iio_storage_bytes_for_si) arg1=0x10
+> >> r_store_bytes: (iio_compute_scan_bytes+0xa1/0xd0 [industrialio] <-
+> >> iio_storage_bytes_for_si) arg1=0x8
+> >> r_calc_bytes: (__iio_update_buffers+0x99d/0xd40 [industrialio] <-
+> >> iio_compute_scan_bytes) arg1=0x20
+> >> ```
+> >>
+> >> The trace confirms:
+> >> - Largest element = 16 bytes.
+> >> - Total raw size = 16 (quat) + 8 (ts) = 24 bytes.
+> >> - Final aligned size = ALIGN(24, 16) = 32 bytes.
+> >>
+> >> The memory layout mismatch is:
+> >> - IIO Core needs: 32 bytes
+> >> - Driver struct has: 24 bytes
+> >>
+> >> ### Regression
+> >> This issue was introduced by commit `b31a74075cb4 ("iio: orientation:
+> >> hid-sensor-rotation: remove unnecessary alignment")`, which removed the
+> >> `__aligned(16)` attribute that previously ensured the struct was padded to 32
+> >> bytes.
+> >>
+> >> ### Proposed Fix
+> >> Revert the removal of `__aligned(16)` to ensure `struct dev_rot_state` has the
+> >> correct padding to match the IIO core's expectations.
+> >>
+> >> ```c
+> >> struct {
+> >>         s32 sampled_vals[4] __aligned(16);  
+> > Agreed that fix is correct.
+> > However, we definitely also need to add some documentation on why it is there.
+> > 
+> > It's not actually an alignment force on sampled_vals, but rather on the timestamp.
+> > We can't just mark the timestamp as then it will have two aligned markings on x86_32.
+> > 
+> > David, given we both missed this when 'tidying' this up wrongly what do you think
+> > would make this clearest?  
 > 
-> So this would make sense?
+> I think it would make sense to have an IIO_DECLARE_REPEAT_ELEMENT()
+> similar to IIO_DECLARE_BUFFER_WITH_TS().
+
+It will be worth checking if we have more than one user.  When quaternion's
+turn up there are always other channels.  The oddity is that sometimes the fusion
+algorithms used produce the data at a different rate to the underlying channel
+types (or like in HID's case) don't tell you what that relationship is, data just
+shows up tagged with what type it is and we split it to the different IIO devices.
+
+As such they at least sometimes share a buffer with non repeated channels.
 > 
->       - items:
->           - const: capella,cm36686
->           - const: vishay,vcnl4040
->           - const: capella,cm36686p
+> #define IIO_DECLARE_REPEAT_ELEMENT(type, name, count) \
+> 	type name[count] __aligned(sizeof(type) * count)
 > 
+> And it would be used like:
 > 
-If you try to use CM36686 compatible for CM36672P, proximity channels
-will work, but in_illuminance_raw will return 0 and changing illuminance
-parameters will have no effect. That is because CM36672P is a proximity
-sensor only and the register fields for ambient light are reserved.
-And if you try to use CM36672P compatible with CM36686, it will work,
-but only proximity channel will be available, even though CM36686 also
-can sense light.
+> struct {
+> 	IIO_DECLARE_REPEAT_ELEMENT(s32, sampled_vals, 4);
+> 	aligned_s64 timestamp;
+
+Isn't our timestamp ending up in the wrong place anyway vs that
+definition (and the original one pre bug)? There is a lazy hack in
+iio_push_to_buffers_with_ts() that assumes the structure is 8 byte aligned :(
+and puts the timestamp in the last 8 bytes but per normal channel packing each
+element is naturally aligned so it should be buffer + 16, not buffer + 32 - 8
+
+We still need the extra padding the aligned is bringing because the kfifo when
+the configuration matches this layout has 32 byte entries, but the timestamp
+should be where it this structure says it is not where it's currently going.
+
+Given how common that iio_push_to_buffers_with_timestamp()/ts() is
+(and fiddly computing the timestamp position is) I'd suggest in this case we
+open code iio_push_to_buffers_with_ts().  We can swing by after this bug is
+fixed and try to work out if there is a cleaner solution (probably compute as
+part of the demux setup and stash it for reuse).
+
++ Change to _ts() version as it would have screamed about this without the
+corruption see by the reporter as the buffer would have been smaller than the
+kfifo was expecting.
+
+This is a userspace ABI bug fix / change. So we need to know what userspace is making
+use of quaternion channels and fix it as well.
+
+Jonathan
+ 
+
+> } scan;
+> 
+> > 
+> > 
+> > Thanks for reporting this with such a thorough and detailed investigation!
+> > Makes our lives a lot easier.  
+> 
+> Should I spin up a fix?
+> 
+If you have time to take on also landing the timestamp in the right place then
+that would be great. I'm a touch snowed under for the next week or two.
+
+Jonathan
+
 
