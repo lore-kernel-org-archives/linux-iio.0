@@ -1,164 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69E1114A4F9;
-	Sun, 15 Feb 2026 21:55:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B860261393
+	for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 22:24:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771192529; cv=none; b=kB8LMhbK8vzy1nQLj3XXTtIrX8v0VW8rRoJm09KmkA25g6SgukpIra8i76cadfogZ2bp8jACJrQTXeEmBpklzP+5us4x4ol+pNVStBakCbtMBWdt9OxhOWmnDFz4IEQci2pSflp1U2QJzZmy2HJ8jnLZHUyQLYxaQix0o2QKjnw=
+	t=1771194248; cv=none; b=k79sruTj118oIY3dhnOXEXwPamEl74J+BymwfHP7roIMtohum5gn3BIcs1J/pOG7ZuDwHoyrX0x+5JsS2FaHQmJvjUcdWvroiHIZFszv5zAQGuP4AyD/pyb/W2GpMzlAOgiie4za6u/GUdUteTTMajr6+NF5caMNyUKGNTB98uM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771192529; c=relaxed/simple;
-	bh=OsrXSR4TAr7r5OEDbdtcLofIPw/h6O/aaMftNJnb2nY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=b/S0wg1sa8O9/875IP/SmrW/PRrQw/UVhp7b7V+k7TpeEihzlVGrKcDoa9G+jDKa2ffol630PSlTE09fM/GXDdKkqoRAKx4LFWg+aGl4O7UwT0xCe/888RB7VaVlkSouq6cuRMVtTP84pM89jk4RTINIYFX/d78xx4O9RRAJlUs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DuS26j/D; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771194248; c=relaxed/simple;
+	bh=rDzme/Q5Rl0/Ur4R6FppbNBFAQBVwz+8CH62eaR53k8=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Lx03QkqaF+5ftM7CnJAHK2ugv3gsOTgvjchr2tyyEP5KGal/tNjBBcnVQErwFnXTb5U9DJQV7jbebTA5VsW3ZI2aKTE8zGxBY5Wpsi+oh4ZC69EvyocoVS+h0Xovq7IhVextpuOgMIVqy6Eh/2tcTkHYV9sGY9ZGWBocYLtWSjw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Sy2HlMpK; arc=none smtp.client-ip=209.85.221.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DuS26j/D"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 021C6C4CEF7;
-	Sun, 15 Feb 2026 21:55:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771192529;
-	bh=OsrXSR4TAr7r5OEDbdtcLofIPw/h6O/aaMftNJnb2nY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=DuS26j/DBFRhmxG455T4F6ORKbRVGDTl3fHSJxlr6qDuSoad0z3RQxd2JOnn8JYDl
-	 sALveOKIXgKocm5np3mv+KIvkHDqIlg62GyssIa40AJ1gkfB7bd15H9/Bixc+DEH0d
-	 1/MIGNU43XSHwK5kPGgWZu/Jmn89O2qWNDuiwzUrMOYFv/Tlk6k7tGSQEd8YA6jsMJ
-	 eveyvjQ8rV26qkNYVbu3wgu7jgQ9U/z8T1h4O+sR4xfqYVIsM3Sd43b96z6Hl9ZB36
-	 W7Kslk0kmXS2mBjegDdEM7gHEEIlkV21XQWmCFmxZTFS4J4B7XwoXEDlBpwWD9BVh6
-	 wB2rsCDMoy4yg==
-Date: Sun, 15 Feb 2026 21:55:19 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Erikas Bitovtas <xerikasxx@gmail.com>
-Cc: andy@kernel.org, conor+dt@kernel.org, devicetree@vger.kernel.org,
- dlechner@baylibre.com, krzk+dt@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, nuno.sa@analog.com,
- phone-devel@vger.kernel.org, pmeerw@pmeerw.net, robh@kernel.org,
- ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: [PATCH v4 2/2] iio: light: vcnl4000: add support for Capella
- CM36686 and CM36672P
-Message-ID: <20260215215519.23126ef3@jic23-huawei>
-In-Reply-To: <20260215200628.53841-1-xerikasxx@gmail.com>
-References: <20260215193114.2a1010a8@jic23-huawei>
-	<20260215200628.53841-1-xerikasxx@gmail.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sy2HlMpK"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-4359a302794so1716773f8f.1
+        for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 14:24:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771194245; x=1771799045; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=66Vmwy4Sh5Yol6CcoKobP9N7ecyBQmrCDQEcpTKoAGI=;
+        b=Sy2HlMpKXKD35HWh/3dFf/GpoafnrAJgAQRWQ4H82zdxDYM5ojJtxFUmbqGZq2F9r4
+         9KOO60fOmJ/FTYFMeygAZqYyi7HeScSvltkRJwppMD9BGS/HEUqjNuvrpBax98vPmH3c
+         s1FybGQULcEvyRVyCxUuBJYZcBQb0dvulNa/HVAUsEKsu7i+mWgLKaMPzhgaWahtXm06
+         T67oI1yuoEs/mEAdKIrppUzNmkAeMTPvSn7ckuj6g+L7AQH+klUncJZG2IS1mt8YOHHX
+         3DWHo8LBJvQV56n9qIXHwcGnUU9meMswirH0YZqqiDgf3uCXjhKwlQgzHVLyOE8Li9PK
+         rulA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771194245; x=1771799045;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=66Vmwy4Sh5Yol6CcoKobP9N7ecyBQmrCDQEcpTKoAGI=;
+        b=YqeG9WXxVZbksF2J+mjtAAooMJTsS4FDQt7aowZSXmMNppkOeUAlDsV6VozjqXFQj4
+         QCV/7ZPQdTNsAaPZ7OlEY+G7gwDTd32jQGaRFd2gMFF/wwlG99zu36XVTvc+ENMvsF9u
+         U10ZiHhNOICll+xcmTJQrsP7PLp5U+IKGChlJ57sHSGEBysVZIyNe+fCP84DQAXv4/a2
+         LBq/Fncx72eJZctxN1UK/a13/kAdQXexjsxvf/A14XMHw8zDpeCkC4Uo8YKiTZ7n6BJv
+         ZVNplGkm7mxkuPaf3xzPQlDhacbLIE0bAdUxpEaqVd8HWzGA8jwBgMFtIVHGbRD7aKw8
+         SKdQ==
+X-Gm-Message-State: AOJu0YyUc7e9PYYo28ZRV+e4S5lRvqMC21dxF9RRIbDQe0SI1xDJ0B9F
+	7VANx2J48ciqB8dpKYD+yQunZ2HAj3Zs3hifMGwkvHFRsQdYFW1TXv8p
+X-Gm-Gg: AZuq6aIexM+Sea4jIYgQOsmUqFPFUjbAV6JA38Qq/ACVK1+9vBGb1Iu4BGRe8wjUH4T
+	MtLeh7MEkxUImITHDF+DgWqpqfGDXFGZCNBTgErHRCsexeWm1ecez/VcjTevbRoCgoM2gNX5qMo
+	mLRawGL+ArckogWHOK9zS2sxTZ7Gd2MaBPtzpvFnw9HVZHna+ZaTQaoN/5VQzwqOgO1PjvvlLym
+	HDl0DEFsHZB9MX1yMMSyW4T/xTa8b6O6SHR/wVKoep4ddRRQYEKfiUM970k2qCKftkiFfXL1WUf
+	QP7zGfPdh0iz83wJ29/viZBwOH3h3gjbiaA5rAD73lToruY4EfkqX3HifNruGJ5qnid3pMzKu9Y
+	TbY5i1s7Vt4bgeqxmyi0wXDva3tUSMMnTUkuulTW6rl3mG+kQMpjW/QM9lpNhdfeuGLR9KzU73W
+	3eUAzaDCRdKnNCQ79gGmtk9X4UIhr54Z2wFes7
+X-Received: by 2002:a05:600c:5285:b0:480:1dc6:2686 with SMTP id 5b1f17b1804b1-48379b990fdmr103216285e9.13.1771194244437;
+        Sun, 15 Feb 2026 14:24:04 -0800 (PST)
+Received: from localhost.localdomain ([196.235.85.27])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483709f8812sm124548495e9.0.2026.02.15.14.24.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Feb 2026 14:24:03 -0800 (PST)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v3] iio: trigger: use put_device() in viio_trigger_alloc() error path
+Date: Sun, 15 Feb 2026 23:23:47 +0100
+Message-ID: <20260215222348.186806-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sun, 15 Feb 2026 22:06:28 +0200
-Erikas Bitovtas <xerikasxx@gmail.com> wrote:
+Once `device_initialize()` is called, the lifecycle of the trigger must be
+managed by the kobject reference counting. Currently, if `kvasprintf()`
+fails, the code manually calls kfree() and `irq_free_descs()`.
 
-> On 2/15/26 9:31 PM, Jonathan Cameron wrote:
-> > On Sun, 15 Feb 2026 19:28:56 +0200
-> > Erikas Bitovtas <xerikasxx@gmail.com> wrote:
-> >   
-> >> On 2/14/26 8:09 PM, Jonathan Cameron wrote:  
-> >>>> ---
-> >>>>  drivers/iio/light/vcnl4000.c | 40 ++++++++++++++++++++++++++++++++++++++++
-> >>>>  1 file changed, 40 insertions(+)
-> >>>>
-> >>>> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> >>>> index a36c23813679..1f8f4e4586f4 100644
-> >>>> --- a/drivers/iio/light/vcnl4000.c
-> >>>> +++ b/drivers/iio/light/vcnl4000.c
-> >>>> @@ -185,6 +185,7 @@ static const int vcnl4040_ps_oversampling_ratio[] = {1, 2, 4, 8};
-> >>>>  #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
-> >>>>  
-> >>>>  enum vcnl4000_device_ids {
-> >>>> +	CM36672P,
-> >>>>  	VCNL4000,
-> >>>>  	VCNL4010,
-> >>>>  	VCNL4040,
-> >>>> @@ -235,6 +236,8 @@ struct vcnl4000_chip_spec {
-> >>>>  };
-> >>>>  
-> >>>>  static const struct i2c_device_id vcnl4000_id[] = {
-> >>>> +	{ "cm36672p", CM36672P },
-> >>>> +	{ "cm36686", VCNL4040 },
-> >>>>  	{ "vcnl4000", VCNL4000 },
-> >>>>  	{ "vcnl4010", VCNL4010 },
-> >>>>  	{ "vcnl4020", VCNL4010 },
-> >>>> @@ -1842,6 +1845,22 @@ static const struct iio_chan_spec vcnl4040_channels[] = {
-> >>>>  	}
-> >>>>  };    
-> >>>
-> >>> ...
-> >>>     
-> >>>>  	[VCNL4000] = {
-> >>>>  		.prod = "VCNL4000",
-> >>>>  		.init = vcnl4000_init,
-> >>>> @@ -2033,6 +2065,14 @@ static int vcnl4000_probe(struct i2c_client *client)
-> >>>>  }
-> >>>>  
-> >>>>  static const struct of_device_id vcnl_4000_of_match[] = {
-> >>>> +	{
-> >>>> +		.compatible = "capella,cm36672p",
-> >>>> +		.data = (void *)CM36672P,
-> >>>> +	},
-> >>>> +	{
-> >>>> +		.compatible = "capella,cm36686",
-> >>>> +		.data = (void *)VCNL4040,    
-> >>>
-> >>> Is this necessary? I 'think' if you drop it we'll match instead
-> >>> on the vcnl4040 fallback and then the access to the data will be
-> >>> through the stripped name only bit of the compatible (first entry, not
-> >>> the fallback so cm36686 in this case). So you do need the cm36686
-> >>> entry in the i2c_device_id table above. Probably better to keep
-> >>> this here to avoid having to reason this out - but perhaps a
-> >>> comment to that affect would be useful (assuming you verify my
-> >>> reasoning).
-> >>>    
-> >> After I removed the entry for "capella,cm36686", I received the "Unable
-> >> to handle kernel NULL pointer dereference" error in dmesg. And at least
-> >> stk3310 driver includes a compatible entry both for the device (stk3013)
-> >> and for the fallback (stk3310). So my assumption is that this entry is
-> >> needed.
-> >> I could include a comment explaining that cm36686 is fully compatible
-> >> with vcnl4040, however, if that is necessary.  
-> > 
-> > Thanks for checking.
-> > 
-> > What did you get as the backtrace?  I'm hoping it'll explain what I'm
-> > misunderstanding!  The hacks around using the wrong table for compatible
-> > matches have tripped me up before.
-> > 
-> > Jonathan
-> >   
-> 
-> I am attaching a link to the dmesg. There were quite a lot of lines in
-> the stack trace and I am not sure what is the right way to post logs in
-> the mailing list.
-> 
-> https://pastebin.com/QgeTdNEP
+Switching to `put_device()` ensures that the device's release callback
+(`iio_trig_release()`) is properly invoked. This simplifies the error
+path by centralizing the cleanup logic (including `irq_free_descs()`)
+inside the release handler, following the standard driver model pattern.
 
-Thanks. only relevant bit is probably:
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+Changes in v3:
+- Rewrite commit message to focus on standard design patterns.
+- Remove the "Fixes" tag as the change is a cleanup/robustness improvement.
+- Simplify the description of the fix as requested by the maintainer.
+- Change title to better reflect the change (not a use-after-free).
 
-[   15.566076]  vcnl4000_probe+0x54/0x288 [vcnl4000] (P)
-[   15.566102]  i2c_device_probe+0x2b0/0x358
-[   15.566121]  really_probe+0x154/0x448
+Changes in v2:
+- Remove the manual call to irq_free_descs() in the error path to avoid
+  a double free, as this is already handled by iio_trig_release().
+- Clarify the error path and the potential for memory corruption in
+  the commit description.
+- Remove the blank line in the tag block to comply with kernel script
+  requirements.
 
-My guess is my understanding of i2c_client_get_device_id() is wrong and that
-is returning NULL.  That can only happen if client->name is not a match for
-anything the i2_device_id table.  If you have a chance, can you dump
-what client->name is in this case? I thought it ended up as
-cm36686 (stripped first entry in compatible) but seems I'm probably wrong on
-that :(
+ drivers/iio/industrialio-trigger.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-The path I thought worked was via info->type (which gets copied to client->name)
-set via of_alias_from_compatible() here.
-https://elixir.bootlin.com/linux/v6.19-rc4/source/drivers/i2c/i2c-core-of.c#L30
-Which should just return the first compatible without that vendor prefix.
-
-Meh, this doesn't really matter anyway as once we refactor to actually use
-the data in the of_device_id table, we will need the entry and in the meantime
-it's sort of documentation.
-
-J
-
-> 
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 54416a384232..7f53e2a5a101 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -576,7 +576,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+ 
+ 	trig->name = kvasprintf(GFP_KERNEL, fmt, vargs);
+ 	if (trig->name == NULL)
+-		goto free_descs;
++		goto free_trig;
+ 
+ 	INIT_LIST_HEAD(&trig->list);
+ 
+@@ -594,10 +594,8 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+ 
+ 	return trig;
+ 
+-free_descs:
+-	irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+ free_trig:
+-	kfree(trig);
++	put_device(&trig->dev);
+ 	return NULL;
+ }
+ 
+-- 
+2.43.0
 
