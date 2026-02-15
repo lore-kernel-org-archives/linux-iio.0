@@ -1,52 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71BD28632A;
-	Sun, 15 Feb 2026 17:49:12 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B24623BCED;
+	Sun, 15 Feb 2026 17:59:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771177752; cv=none; b=D4B9hUt9t3FrV+AdIWR60DOIta/LHsPhgWy4p53ZdHK1Mrvt4GEjduYPZq/gi7OxzWhE+QSZtAQlQT6J2pN49HPRESSr4PAyR+03EIvAzfF9PpCrPQZphNdiUsl4TGx9BP7i7uPdnoh6zk3p0Xn9CRa3hJBqAR7lLHYUOEc1WqM=
+	t=1771178346; cv=none; b=P1CkLvigKRkxI9tYUAEdNGh5uzeCkJLQkTcLi60i0tiBk2E2V3WjIoFjQoFJhDeLHi4v/sRP1+k/e54ldL3rMM6b0LdLk0aAT8MPdIpIw79SO7hU9onaCsgbdwew5pIuVhtIZQ/tQA7k2MQmuZ9IYXgADGF5yoMv7egdKpLirwQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771177752; c=relaxed/simple;
-	bh=H6lxOjHPHAE88MtSDG8NKtWRXd9fHQ/QkuZEw2j7BXE=;
+	s=arc-20240116; t=1771178346; c=relaxed/simple;
+	bh=AK8bkY1Hzt0K1o+QkAdUXIn+RKmgl6uBFyfeLad4pZk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ljnV7A7kP4dJh2WbL4bwy/vVQEKQ1Sp+M/60XIYJhkJK2RWjy9cfNDZ8LJORZIjp6GYBAS5ccA8aCJx5TavErytFh6bO22I4Dp674VEFf6ZEgcEizGxrvQqH1uDGiy4oDjXGrt5RMilHp2SmeBU3q6jdmPA9p2r0O1urnov39/s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UFJCJ53N; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ssWR4sNEj75TjVCpXQj8R45fSgt3YpYpNVJzWPGPb/DKbWdrLzoz92kNHcGPgiSIlUvnBtXeSoD+rb97jWPB3dIaMGkCFNMb5/LSnhc9vbk4VDuarx458k98rpAhOmHEvpFhqRD1Vw3Yz5rNByKA6RLRQHRD94gWbYOF3fN+FbU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BTtTGAxR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UFJCJ53N"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 012F9C4CEF7;
-	Sun, 15 Feb 2026 17:49:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BTtTGAxR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 757DEC4CEF7;
+	Sun, 15 Feb 2026 17:59:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771177752;
-	bh=H6lxOjHPHAE88MtSDG8NKtWRXd9fHQ/QkuZEw2j7BXE=;
+	s=k20201202; t=1771178346;
+	bh=AK8bkY1Hzt0K1o+QkAdUXIn+RKmgl6uBFyfeLad4pZk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=UFJCJ53NxGZZOPkG6h2iz8XGqWDe8HtcrfGoLupbaYEnyBvaQ9B+D1R71+jrQdm/N
-	 0wf9/o6i6WyaQYYrWh88EEpLGWoq8evRxk8FDriUscWuMn0yxi/hwUOLY77xEgymAJ
-	 GlF5/DIrmAFqadPJ71QHbnNcgQsuPu7LG0htMWqgUWnZl+7E95siDvkdOHGFT5BByw
-	 NFa2LfsnZ48QprW2jEkAYFBXNAW1PR5giv5Q8TJSXERYb1vL8+JolpTOOsHl54TgsM
-	 NsvB8cZoD4Kast48Yt4ERWu5YAMQ4WPUNXGo84Xh3UqBtIpNMFJJAEhHwFWHtGf3vB
-	 4Vg81iMjwgXmQ==
-Date: Sun, 15 Feb 2026 17:49:01 +0000
+	b=BTtTGAxRx3+RSFDTWOjTVaaNt1CPCqhB+emH7/ElizjcPZCUVRmpx2t+UIRbPDYTq
+	 JauumOsGxip/kCZ9PAOUJYK8nHz8KNMlR3FgoqR7RIMqg0dWxYBUD92gso+zNZcIph
+	 Lsa0W26vfOPVzOd5uzrC0jTuOSZBs3nrK1aLW47w1ond1TR14tVkjQcMHe+fNToiUa
+	 gfnIkyKqQib8fm9WizJqIjfhm9G2q3+U+jnY1MXyL9A8eNAwo2WleGzPyiH+8d9DY1
+	 wYxb1DceIMoPM1ZM8g+oOepKLz2nm/ehEYXOY0bdmxF0BONT2hLu3ls2uAea/HHs0F
+	 Z1OyHEzli/B4w==
+Date: Sun, 15 Feb 2026 17:58:57 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Erikas Bitovtas <xerikasxx@gmail.com>, Krzysztof Kozlowski
- <krzk@kernel.org>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Peter
- Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: vcnl4000: add Capella
- CM36686 and CM36672P
-Message-ID: <20260215174901.11f6fd6a@jic23-huawei>
-In-Reply-To: <880ddcad-a92e-43bb-ad5c-d6f2f353d182@baylibre.com>
-References: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
-	<20260212-cm36686-v4-1-8f587d4a72bf@gmail.com>
-	<20260213-unyielding-pistachio-ape-deda74@quoll>
-	<3a20c906-647c-458f-a118-c7927495e7ef@gmail.com>
-	<8fb27a7a-82dc-443b-bcc4-21007783fc54@kernel.org>
-	<f014078c-6e4d-48b0-a814-45898b005c44@gmail.com>
-	<880ddcad-a92e-43bb-ad5c-d6f2f353d182@baylibre.com>
+To: Ariana Lazar <ariana.lazar@microchip.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, "Andy Shevchenko" <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, "Krzysztof Kozlowski" <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+ <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: dac: add support for Microchip MCP48FEB02
+Message-ID: <20260215175857.4085bc2c@jic23-huawei>
+In-Reply-To: <20260212-mcp48feb02-v1-2-ce5843db65db@microchip.com>
+References: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
+	<20260212-mcp48feb02-v1-2-ce5843db65db@microchip.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,75 +49,90 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 14 Feb 2026 10:44:23 -0600
-David Lechner <dlechner@baylibre.com> wrote:
+On Thu, 12 Feb 2026 14:48:35 +0200
+Ariana Lazar <ariana.lazar@microchip.com> wrote:
 
-> On 2/13/26 2:56 AM, Erikas Bitovtas wrote:
-> > 
-> > 
-> > On 2/13/26 10:51 AM, Krzysztof Kozlowski wrote:  
-> >> On 13/02/2026 09:29, Erikas Bitovtas wrote:  
-> >>>>> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
-> >>>>> ---
-> >>>>>  .../devicetree/bindings/iio/light/vishay,vcnl4000.yaml  | 17 +++++++++++------
-> >>>>>  1 file changed, 11 insertions(+), 6 deletions(-)
-> >>>>>
-> >>>>> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> >>>>> index 4d1a225e8868..2ba4d5de4ec4 100644
-> >>>>> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> >>>>> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> >>>>> @@ -18,12 +18,17 @@ allOf:
-> >>>>>  
-> >>>>>  properties:
-> >>>>>    compatible:
-> >>>>> -    enum:
-> >>>>> -      - vishay,vcnl4000
-> >>>>> -      - vishay,vcnl4010
-> >>>>> -      - vishay,vcnl4020
-> >>>>> -      - vishay,vcnl4040
-> >>>>> -      - vishay,vcnl4200
-> >>>>> +    oneOf:
-> >>>>> +      - enum:
-> >>>>> +          - capella,cm36672p  
-> >>>>
-> >>>> CM36672P is compatible with CM36686, but this is not expressed.
-> >>>> Confusing commit msg and code.   
-> >>>
-> >>> For CM36672P we create a dedicated compatible because it is a
-> >>> proximity-only sensor which has the same proximity sensor configuration,
-> >>> but ambient light sensor registers are missing (reserved).  
-> >>
-> >> I don't understand this. You just wrote "fully compatible with CM36686"
-> >> and now you imply that not.
-> >>
-> >> Decide.
-> >>  
-> > It is not. CM36672P supports only a subset of CM36686 features, in
-> > particular the proximity sensor. That is what I meant initially.
-> > I am sorry if the previous phrasing caused any confusion.  
+> This is the iio driver for Microchip MCP48FxBy1/2/4/8 series of buffered
+> voltage output Digital-to-Analog Converters with nonvolatile or volatile
+> memory and an SPI Interface.
 > 
-> But CM36686 is fully compatible with CM36672P, right?
-
-I'd be clear in this discussion that the P version is a subset.
-So it's very much one way compatibility (your ordering below reflects
-that right)
-
+> The families support up to 8 output channels.
 > 
-> So this would make sense?
+> The devices can be 8-bit, 10-bit and 12-bit.
 > 
->       - items:
->           - const: capella,cm36686
->           - const: vishay,vcnl4040
->           - const: capella,cm36686p
+> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+Hi Ariana,
+Given the much larger outstanding question on whether this can share a driver
+with other similar parts I only took a very quick look at this version.
 
-I'm not sure we can do that now given we'd also need the option
-of vcnl4040 falling back to cm36686p for it to feel logical and
-retrofitting fallbacks is a bit odd.
+Comments inline.
+
+Thanks,
 
 Jonathan
 
+> diff --git a/drivers/iio/dac/mcp48feb02.c b/drivers/iio/dac/mcp48feb02.c
+> new file mode 100644
+> index 0000000000000000000000000000000000000000..20955f77053329a9c385f55c7314032eb6b04dfd
+> --- /dev/null
+> +++ b/drivers/iio/dac/mcp48feb02.c
+
+> +
+> +static int mcp48feb02_init_ctrl_regs(struct mcp48feb02_data *data)
+> +{
+> +	unsigned int i, vref_ch, gain_ch, pd_ch;
+> +	int ret;
+> +
+> +	ret = regmap_read(data->regmap, MCP48FEB02_VREF_REG_ADDR, &vref_ch);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(data->regmap, MCP48FEB02_GAIN_CTRL_STATUS_REG_ADDR, &gain_ch);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(data->regmap, MCP48FEB02_POWER_DOWN_REG_ADDR, &pd_ch);
+> +	if (ret)
+> +		return ret;
+> +
+> +	gain_ch = gain_ch & MCP48FEB02_GAIN_BITS_MASK;
+> +	for_each_set_bit(i, &data->active_channels_mask, data->phys_channels) {
+> +		struct device *dev = regmap_get_device(data->regmap);
+> +		unsigned int pd_tmp;
+> +
+> +		data->chdata[i].ref_mode = (vref_ch >> (2 * i)) & MCP48FEB02_DAC_CTRL_MASK;
+> +		data->chdata[i].use_2x_gain = (gain_ch >> i)  & MCP48FEB02_GAIN_BIT_MASK;
+> +
+> +		/*
+> +		 * Inform the user that the current voltage reference read from the volatile
+> +		 * register of the chip is different from the one specified in the device tree.
+> +		 * Considering that the user cannot have an external voltage reference connected
+> +		 * to the pin and select the internal Band Gap at the same time, in order to avoid
+> +		 * miscofiguring the reference voltage, the volatile register will not be written.
+
+Spell check comments.  misconfiguring
+
+> +		 * In order to overwrite the setting from volatile register with the one from the
+> +		 * device tree, the user needs to write the chosen scale.
+
+I'm a little unsure of why we need this extra gate on updating things to match
+the device tree provided config.  Why should the volatile register at this point
+match what DT says?  If it does seems to me we should be noisier about it than dev_dbg()
 
 
-> 
-> 
+> +		 */
+> +		switch (data->chdata[i].ref_mode) {
+> +		case MCP48FEB02_INTERNAL_BAND_GAP:
+> +			if (data->phys_channels >= 4 && (i % 2) && data->use_vref1) {
+> +				dev_dbg(dev, "ch[%u]: was configured to use internal band gap", i);
+> +				dev_dbg(dev, "ch[%u]: reference voltage set to VREF1", i);
+> +				break;
+> +			}
+> +			if ((data->phys_channels < 4 || (data->phys_channels >= 4 && !(i % 2))) &&
+> +			    data->use_vref) {
+> +				dev_dbg(dev, "ch[%u]: was configured to use internal band gap", i);
+> +				dev_dbg(dev, "ch[%u]: reference voltage set to VREF", i);
+> +				break;
+> +			}
+
 
