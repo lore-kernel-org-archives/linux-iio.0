@@ -1,72 +1,83 @@
-Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B860261393
-	for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 22:24:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04A8930BF58
+	for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 22:55:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771194248; cv=none; b=k79sruTj118oIY3dhnOXEXwPamEl74J+BymwfHP7roIMtohum5gn3BIcs1J/pOG7ZuDwHoyrX0x+5JsS2FaHQmJvjUcdWvroiHIZFszv5zAQGuP4AyD/pyb/W2GpMzlAOgiie4za6u/GUdUteTTMajr6+NF5caMNyUKGNTB98uM=
+	t=1771196118; cv=none; b=VXnQXcFG1NoR9pjhyj4b+o/HcWHKTvVEuHJpt8npltEKVItX7sVVlFJJqdomHteR1rnnIR4Pv6P4tA7FUm/9ipq1GGrj9bDeUS1VqDlqJ0jnLs1+56ejX7KXG3xNQkVS6g8OhmdpNathe7+WKaktPhM2p3Jp1xg/dyls4SWkqlA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771194248; c=relaxed/simple;
-	bh=rDzme/Q5Rl0/Ur4R6FppbNBFAQBVwz+8CH62eaR53k8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Lx03QkqaF+5ftM7CnJAHK2ugv3gsOTgvjchr2tyyEP5KGal/tNjBBcnVQErwFnXTb5U9DJQV7jbebTA5VsW3ZI2aKTE8zGxBY5Wpsi+oh4ZC69EvyocoVS+h0Xovq7IhVextpuOgMIVqy6Eh/2tcTkHYV9sGY9ZGWBocYLtWSjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Sy2HlMpK; arc=none smtp.client-ip=209.85.221.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1771196118; c=relaxed/simple;
+	bh=TNyRzSBr/AtNCce67q749OZFUSphAmrWNkHgydf587w=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=pugB8OQTiyO4HNQhVnv4qw314ZAVN9a4y/7FwFLPXPd8NtIelrk1mOzhrSzDma42gEcS71akiQbCOPiCDY9N8TrSYrfbMOAty2CR5pNhcold81mFcdj4BgcyygLplKJtugNLinv95qFpx88x6V46W6QpcwV2FmUmtQGjMKHWx0E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=Khem6T/L; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sy2HlMpK"
-Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-4359a302794so1716773f8f.1
-        for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 14:24:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771194245; x=1771799045; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=66Vmwy4Sh5Yol6CcoKobP9N7ecyBQmrCDQEcpTKoAGI=;
-        b=Sy2HlMpKXKD35HWh/3dFf/GpoafnrAJgAQRWQ4H82zdxDYM5ojJtxFUmbqGZq2F9r4
-         9KOO60fOmJ/FTYFMeygAZqYyi7HeScSvltkRJwppMD9BGS/HEUqjNuvrpBax98vPmH3c
-         s1FybGQULcEvyRVyCxUuBJYZcBQb0dvulNa/HVAUsEKsu7i+mWgLKaMPzhgaWahtXm06
-         T67oI1yuoEs/mEAdKIrppUzNmkAeMTPvSn7ckuj6g+L7AQH+klUncJZG2IS1mt8YOHHX
-         3DWHo8LBJvQV56n9qIXHwcGnUU9meMswirH0YZqqiDgf3uCXjhKwlQgzHVLyOE8Li9PK
-         rulA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771194245; x=1771799045;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=66Vmwy4Sh5Yol6CcoKobP9N7ecyBQmrCDQEcpTKoAGI=;
-        b=YqeG9WXxVZbksF2J+mjtAAooMJTsS4FDQt7aowZSXmMNppkOeUAlDsV6VozjqXFQj4
-         QCV/7ZPQdTNsAaPZ7OlEY+G7gwDTd32jQGaRFd2gMFF/wwlG99zu36XVTvc+ENMvsF9u
-         U10ZiHhNOICll+xcmTJQrsP7PLp5U+IKGChlJ57sHSGEBysVZIyNe+fCP84DQAXv4/a2
-         LBq/Fncx72eJZctxN1UK/a13/kAdQXexjsxvf/A14XMHw8zDpeCkC4Uo8YKiTZ7n6BJv
-         ZVNplGkm7mxkuPaf3xzPQlDhacbLIE0bAdUxpEaqVd8HWzGA8jwBgMFtIVHGbRD7aKw8
-         SKdQ==
-X-Gm-Message-State: AOJu0YyUc7e9PYYo28ZRV+e4S5lRvqMC21dxF9RRIbDQe0SI1xDJ0B9F
-	7VANx2J48ciqB8dpKYD+yQunZ2HAj3Zs3hifMGwkvHFRsQdYFW1TXv8p
-X-Gm-Gg: AZuq6aIexM+Sea4jIYgQOsmUqFPFUjbAV6JA38Qq/ACVK1+9vBGb1Iu4BGRe8wjUH4T
-	MtLeh7MEkxUImITHDF+DgWqpqfGDXFGZCNBTgErHRCsexeWm1ecez/VcjTevbRoCgoM2gNX5qMo
-	mLRawGL+ArckogWHOK9zS2sxTZ7Gd2MaBPtzpvFnw9HVZHna+ZaTQaoN/5VQzwqOgO1PjvvlLym
-	HDl0DEFsHZB9MX1yMMSyW4T/xTa8b6O6SHR/wVKoep4ddRRQYEKfiUM970k2qCKftkiFfXL1WUf
-	QP7zGfPdh0iz83wJ29/viZBwOH3h3gjbiaA5rAD73lToruY4EfkqX3HifNruGJ5qnid3pMzKu9Y
-	TbY5i1s7Vt4bgeqxmyi0wXDva3tUSMMnTUkuulTW6rl3mG+kQMpjW/QM9lpNhdfeuGLR9KzU73W
-	3eUAzaDCRdKnNCQ79gGmtk9X4UIhr54Z2wFes7
-X-Received: by 2002:a05:600c:5285:b0:480:1dc6:2686 with SMTP id 5b1f17b1804b1-48379b990fdmr103216285e9.13.1771194244437;
-        Sun, 15 Feb 2026 14:24:04 -0800 (PST)
-Received: from localhost.localdomain ([196.235.85.27])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483709f8812sm124548495e9.0.2026.02.15.14.24.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Feb 2026 14:24:03 -0800 (PST)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="Khem6T/L"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=from:to:cc:subject:date:message-id
+	:mime-version:content-transfer-encoding; s=k1; bh=fjqK1CnmMLnynK
+	mUkq2NGNXQxQWHiqDXRDV1cxXQMFc=; b=Khem6T/LPXw9DcbGo2IAw6sOzSG6U5
+	H+3X7IjRDdV59N8cB8IV56DQabVc5sY0EGs7isNQKWgzIcrflS0xfTsyWykrOCIN
+	uXqpNDup5wRHcdl/ovjJEz4Kph6I3yNxxllxraRzP/cLNeSBfT24ixK4hIpVTbFu
+	KPhRq0XDDSGz0w/xy9Jv1AYH2A9nrni1JQ2Z+U+GiSqkbGNbWo9dEOvx68PTFusm
+	BA+a4Gt8A7K2lky5w3aEzE14WxR8ylMT5G5nh+AxRcgKht+aPrFfq2KQigyR28W+
+	r4SDphAActIw7+YT8hOnwMb1RpfMPbwjCPddRcsyeOy0MBMvVqYD3Zag==
+Received: (qmail 3011230 invoked from network); 15 Feb 2026 23:55:04 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 15 Feb 2026 23:55:04 +0100
+X-UD-Smtp-Session: l3s3148p1@reycuuRKXIQujns5
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-renesas-soc@vger.kernel.org
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	linux-arm-kernel@lists.infradead.org,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Antonio Borneo <antonio.borneo@foss.st.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Boqun Feng <boqun@kernel.org>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Danilo Krummrich <dakr@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
+	driver-core@lists.linux.dev,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	linux-arm-msm@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	linux-remoteproc@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-sunxi@lists.linux.dev,
+	Mark Brown <broonie@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH v3] iio: trigger: use put_device() in viio_trigger_alloc() error path
-Date: Sun, 15 Feb 2026 23:23:47 +0100
-Message-ID: <20260215222348.186806-1-salah.triki@gmail.com>
-X-Mailer: git-send-email 2.43.0
+	Orson Zhai <orsonzhai@gmail.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Samuel Holland <samuel@sholland.org>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Waiman Long <longman@redhat.com>,
+	Wilken Gottwalt <wilken.gottwalt@posteo.net>,
+	Will Deacon <will@kernel.org>
+Subject: [RFC v2 PATCH 00/13] hwspinlock: move device alloc into core and refactor includes
+Date: Sun, 15 Feb 2026 23:54:40 +0100
+Message-ID: <20260215225501.6365-1-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,59 +86,87 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Once `device_initialize()` is called, the lifecycle of the trigger must be
-managed by the kobject reference counting. Currently, if `kvasprintf()`
-fails, the code manually calls kfree() and `irq_free_descs()`.
+My ultimate goal is to allow hwspinlock provider drivers outside of the
+subsystem directory. It turned out that a simple split of the headers
+files into a public provider and a public consumer header file is not
+enough because core internal structure need to stay hidden. Even more,
+their opaqueness could and should even be increased. That would also
+allow the core to handle the de-/allocation of the hwspinlock device
+itself.
 
-Switching to `put_device()` ensures that the device's release callback
-(`iio_trig_release()`) is properly invoked. This simplifies the error
-path by centralizing the cleanup logic (including `irq_free_descs()`)
-inside the release handler, following the standard driver model pattern.
+This series does all that. Patches 1-7 abstract access to internal
+structures away using helpers. Patch 8 then move hwspinlock device
+handling to the core, simplifying drivers. The remaining patches
+refactor the headers until the internal one is gone and the public ones
+are divided into provider and consumer parts. More details are given in
+the patch descriptions.
 
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
----
-Changes in v3:
-- Rewrite commit message to focus on standard design patterns.
-- Remove the "Fixes" tag as the change is a cleanup/robustness improvement.
-- Simplify the description of the fix as requested by the maintainer.
-- Change title to better reflect the change (not a use-after-free).
+One note about using a callback to initialize hwspinlock priv: I also
+experimented with a dedicated 'set_priv' helper function. It felt a bit
+clumsy to me. Drivers would need to save the 'bank' pointer again and
+iterate over it. Because most drivers will only have a simple callback
+anyhow, it looked leaner to me.
 
-Changes in v2:
-- Remove the manual call to irq_free_descs() in the error path to avoid
-  a double free, as this is already handled by iio_trig_release().
-- Clarify the error path and the potential for memory corruption in
-  the commit description.
-- Remove the blank line in the tag block to comply with kernel script
-  requirements.
+This series is based on the cleanup series "hwspinlock: remove
+platform_data from subsystem" and has been tested on a Renesas
+SparrowHawk board (R-Car V4H) with a yet-to-be-upstreamed hwspinlock
+driver for the MFIS IP core. A branch can be found here (the MFIS driver
+is still WIP):
 
- drivers/iio/industrialio-trigger.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/hwspinlock/refactor-alloc-buildtest
 
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 54416a384232..7f53e2a5a101 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -576,7 +576,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
- 
- 	trig->name = kvasprintf(GFP_KERNEL, fmt, vargs);
- 	if (trig->name == NULL)
--		goto free_descs;
-+		goto free_trig;
- 
- 	INIT_LIST_HEAD(&trig->list);
- 
-@@ -594,10 +594,8 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
- 
- 	return trig;
- 
--free_descs:
--	irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
- free_trig:
--	kfree(trig);
-+	put_device(&trig->dev);
- 	return NULL;
- }
- 
+Buildbots seem to be happy, too.
+
+Looking forward to comments. I especially wonder if the last patch
+should stay as-is or if it should be broken out, so individual
+subsystems can pick up their part (with a fallback in place, of course,
+until the last user is converted).
+
+Happy hacking,
+
+   Wolfram
+
+
+Wolfram Sang (13):
+  hwspinlock: add helpers to retrieve core data
+  hwspinlock: add callback to fill private data of a hwspinlock
+  hwspinlock: omap: use new callback to initialize hwspinlock priv
+  hwspinlock: qcom: use new callback to initialize hwspinlock priv
+  hwspinlock: sprd: use new callback to initialize hwspinlock priv
+  hwspinlock: stm32: use new callback to initialize hwspinlock priv
+  hwspinlock: sun6i: use new callback to initialize hwspinlock priv
+  hwspinlock: handle hwspinlock device allocation in the core
+  hwspinlock: move entries from internal to public header
+  hwspinlock: remove internal header
+  hwspinlock: sort include and update copyright
+  hwspinlock: refactor provider.h from public header
+  hwspinlock: refactor consumer.h from public header
+
+ Documentation/locking/hwspinlock.rst          |   2 +-
+ MAINTAINERS                                   |   2 +-
+ drivers/base/regmap/regmap.c                  |   2 +-
+ drivers/hwspinlock/hwspinlock_core.c          | 129 +++++++++++++-----
+ drivers/hwspinlock/hwspinlock_internal.h      |  72 ----------
+ drivers/hwspinlock/omap_hwspinlock.c          |  29 ++--
+ drivers/hwspinlock/qcom_hwspinlock.c          |  69 +++++-----
+ drivers/hwspinlock/sprd_hwspinlock.c          |  41 +++---
+ drivers/hwspinlock/stm32_hwspinlock.c         |  28 ++--
+ drivers/hwspinlock/sun6i_hwspinlock.c         |  38 ++----
+ drivers/iio/adc/sc27xx_adc.c                  |   2 +-
+ drivers/irqchip/irq-stm32mp-exti.c            |   2 +-
+ drivers/mfd/syscon.c                          |   2 +-
+ drivers/nvmem/sc27xx-efuse.c                  |   2 +-
+ drivers/nvmem/sprd-efuse.c                    |   2 +-
+ drivers/pinctrl/stm32/pinctrl-stm32.c         |   2 +-
+ drivers/soc/qcom/smem.c                       |   2 +-
+ drivers/spi/spi-sprd-adi.c                    |   2 +-
+ .../{hwspinlock.h => hwspinlock/consumer.h}   |  29 +---
+ include/linux/hwspinlock/provider.h           |  60 ++++++++
+ 20 files changed, 268 insertions(+), 249 deletions(-)
+ delete mode 100644 drivers/hwspinlock/hwspinlock_internal.h
+ rename include/linux/{hwspinlock.h => hwspinlock/consumer.h} (93%)
+ create mode 100644 include/linux/hwspinlock/provider.h
+
 -- 
-2.43.0
+2.51.0
 
