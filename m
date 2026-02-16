@@ -1,58 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7562F22D792;
-	Mon, 16 Feb 2026 07:49:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C197F26B777;
+	Mon, 16 Feb 2026 07:55:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771228169; cv=none; b=AaF5BWapVzGXjA+MdVyDOBb+fcdRyIrbae0Y1NNWViHnRkWecYoaUIMRmOuOwXuvMxFe/3CvPrVop6WPS9yzQJbW6RbO+92a5xPg/CiRusP1ygWp1vRRPDlvpYCJNlw3KdfV815SOI5T/XstE8DRafhz7tcxf1LrRJoZkFbfdOs=
+	t=1771228517; cv=none; b=QvIHTa0tq09v5BbDUpoh9Ht3RC8lSvce7OPNyYXeQRpCC4QMBMLlnWBsyjmHVdlY9UJ5fWxavBx0T8MPV0Y4a+ylSehBSahi5Von//eulcsSKPSK4eALXNy3ml1+QsijRGoLBKd4+77IrnxBnmzvQnQau3xzD/OOINT5ygbhLM4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771228169; c=relaxed/simple;
-	bh=Z/z4WzCbf15Sfh6GRYbABA7O+ZBY6ibHRRDWFYs5xdI=;
+	s=arc-20240116; t=1771228517; c=relaxed/simple;
+	bh=0fYhSAk4HLX9L0EAeeFOZ8be86bDjs6lkQA6J6/zWhI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=d1HcT+jfxkJAArWRmFy/pfBD0EIwK20BIIF4sC4q71fCNerBUBDoHkRHjbtTzYEaewFVki277YTCPLTEvdFY04Uq9oolSnvZiNQPpKaKk78ltWRJEWSZRSIFsejuQCjNW2iFsUcyz8o0url9ebSFbD8C1sImjoyicqhetBAfUOE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=idN3B3/Z; arc=none smtp.client-ip=192.198.163.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=KMUffNX79SJJrsRFW04D8j8+mC/d4XaHjJPFx1nAkSLyG28l7ZvyT1wp9lUyM4PDwwTQhVeDC4Ylj/a+5Qe9H9WMoibRfOGYmF/CS5use5Egbaf+sckh7Lenp7QBnjIhWy2EZXp1uYnIznqKoFYBU2By1B27ri2+QiuApqFzjBY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=FypHCj8o; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="idN3B3/Z"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="FypHCj8o"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771228168; x=1802764168;
+  t=1771228516; x=1802764516;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Z/z4WzCbf15Sfh6GRYbABA7O+ZBY6ibHRRDWFYs5xdI=;
-  b=idN3B3/Zun5v9Q4Y5q4zVOy6+QIsloTgv2EIPMBJZXuy+vB5US4fTHcM
-   U1jnSOZuc2Lhbwo68B46qJBokCtxTGi/Pn2MmJZ8qXsr+IQcvvj5Kii+b
-   oB2nR8dlpmCfokM438LM9AgWEnwueKh3ZxEZvz7xSDZy3pJzg3bbjlN66
-   HzOhLpZwO5WJqDtEHjVNiAl2tmHMmADUPuyxP/QDztFBUg8oIYcM+vGXH
-   3NBeXW/9ytYts0iecJ80RItHgKtNSaYdbpPdHhe0HYn1XXJ6aYHkrCRA3
-   NkJM27GmMZZlj62q/0GZlkE7pK7SYz/OOMWDHHHpY+k2b4JcU1BeaQA86
-   Q==;
-X-CSE-ConnectionGUID: d6VLEc6oSNutfKvJb0cCtg==
-X-CSE-MsgGUID: Nm+l+6mjSnaBVRO+sWY/lw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11702"; a="72209748"
+  bh=0fYhSAk4HLX9L0EAeeFOZ8be86bDjs6lkQA6J6/zWhI=;
+  b=FypHCj8ovrpLL7CPlUiOOwBH/bbz3nRUbWo3Up7uYHfN+aUKzo7p/3lR
+   eRKsH9tc2obJ8WpW9OUUT0E31Lybdc27FQYkd03LRtqqAnJRMt0O8ooeO
+   xQcOP9Kli6xyz3w/bEoSvSufOkOBN4PpP/lQIEV+jxE0IwBLRTlqoByws
+   au0m8TA0Xpuiu2iA1mz+9XAEe9Rq7EKRV80vODsJ1VBOs9v85EEHeMiwV
+   D1HudBDEKvBgM3UFhsXUiGYlAKWVm6TtReYTPJLlAAeLIlBEnaGHm4xap
+   8QPsDTET1SrPvyZKlKBOpgwrOWZwRTNvTdyTA/h45CD1lJMSrqmKBAgjZ
+   A==;
+X-CSE-ConnectionGUID: ygARkbBiTdaEF4/++96QSA==
+X-CSE-MsgGUID: KsGaQIbtT+KfBHwy8Z2pQg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11702"; a="83668660"
 X-IronPort-AV: E=Sophos;i="6.21,293,1763452800"; 
-   d="scan'208";a="72209748"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:49:28 -0800
-X-CSE-ConnectionGUID: WUzt8KVlQueA1Srk3t3WrQ==
-X-CSE-MsgGUID: +9/+a/faRhuugiAMttTH2Q==
+   d="scan'208";a="83668660"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:55:15 -0800
+X-CSE-ConnectionGUID: wYT818NwRT2qHa0bSwiMaQ==
+X-CSE-MsgGUID: FWTc2eJhRr6wXuxw52+VMA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,293,1763452800"; 
-   d="scan'208";a="218503794"
+   d="scan'208";a="212772783"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.188])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:49:26 -0800
-Date: Mon, 16 Feb 2026 09:49:23 +0200
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:55:13 -0800
+Date: Mon, 16 Feb 2026 09:55:11 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: David Lechner <dlechner@baylibre.com>
+To: Salah Triki <salah.triki@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: bno055: add explicit scan buf layout
-Message-ID: <aZLMA0KjwLOX_BKE@smile.fi.intel.com>
-References: <20260214-iio-imu-bno055-repeated-element-v1-1-b57b08efd566@baylibre.com>
+Subject: Re: [PATCH v3] iio: trigger: use put_device() in
+ viio_trigger_alloc() error path
+Message-ID: <aZLNX6Ifw68k-zu5@smile.fi.intel.com>
+References: <20260215222348.186806-1-salah.triki@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,38 +63,48 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260214-iio-imu-bno055-repeated-element-v1-1-b57b08efd566@baylibre.com>
+In-Reply-To: <20260215222348.186806-1-salah.triki@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Feb 14, 2026 at 04:10:38PM -0600, David Lechner wrote:
-> Move the scan buf.chans array into a union along with a struct that
-> gives the layout of the buffer with all channels enabled.
+On Sun, Feb 15, 2026 at 11:23:47PM +0100, Salah Triki wrote:
+> Once `device_initialize()` is called, the lifecycle of the trigger must be
+> managed by the kobject reference counting. Currently, if `kvasprintf()`
+> fails, the code manually calls kfree() and `irq_free_descs()`.
 > 
-> Although not technically required in this case, if there had been a
-> different number of items before the quaternion, there could have been
-> a subtle bug with the special alignment needed for the quaternion
-> channel data and the array would have been too small.
+> Switching to `put_device()` ensures that the device's release callback
+> (`iio_trig_release()`) is properly invoked. This simplifies the error
+> path by centralizing the cleanup logic (including `irq_free_descs()`)
+> inside the release handler, following the standard driver model pattern.
+
+How did you test this, please?
 
 ...
 
-> +			struct {
-> +				__le16 acc[3];
-> +				__le16 magn[3];
-> +				__le16 gyr[3];
-> +				__le16 yaw;
-> +				__le16 pitch;
-> +				__le16 roll;
+> struct iio_trigger *viio_trigger_alloc(struct device *parent,
 
-> +				IIO_DECLARE_REPEATED_ELEMENT(__le16, quaternion, 4);
+>  	trig->name = kvasprintf(GFP_KERNEL, fmt, vargs);
+>  	if (trig->name == NULL)
+> -		goto free_descs;
+> +		goto free_trig;
+>  
+>  	INIT_LIST_HEAD(&trig->list);
 
-Right, and like I suggested:
+>  	return trig;
+>  
+> -free_descs:
+> -	irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+>  free_trig:
+> -	kfree(trig);
+> +	put_device(&trig->dev);
 
-				IIO_DECLARE_QUATERNION(__le16, quaternion);
+Now, in iio_trig_release() you will call a bunch of code with
+trig->subirq_base != 0.
 
-> +				__le16 lia[3];
-> +				__le16 gravity[3];
-> +			};
+Please, test your changes before submitting.
+
+>  	return NULL;
+>  }
 
 -- 
 With Best Regards,
