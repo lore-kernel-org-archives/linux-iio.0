@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 356811FE45A
-	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 06:58:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CCAF18C2C
+	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 07:03:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771225104; cv=none; b=ppj7GNWOf6yV4P4HrPEGux1Shr2dPdKavMuyL8fMtPJJXUlBO3GnW3qeWo/aZMQiJk6gSZk34B0eYemsF/hc0zQ0eD/+UzPFAz8Ztof4Ct3w/C6iSL77OWIxMonO7Stqhykpg+NFgvf3GEfcB1ehgN2h9xJQWUzIz82sPnrSgWw=
+	t=1771225424; cv=none; b=ncg2ZQDAK9IfesNIzYTqqt14KwYcg9piP6ZQJR2mnAjALS1t8GevEY8nodKtvXUcLi/zY2pNDNOe3hvsSfEMjiaa2T/60oUcpdfvxcJQaQXMXyw2DcKdTwfAfSgAYCIX1nNR7qO46oDw18xWbhrdpQ6xCRXFRFVdrm4iziqqplo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771225104; c=relaxed/simple;
-	bh=hSE1sXOxu1ObaUUBEf3HcM6Brga2QfIsFW6vemeVT1A=;
+	s=arc-20240116; t=1771225424; c=relaxed/simple;
+	bh=9NVBaXXgFwAKP9+TOIKQsHJ/JbEzC5lRuZLEk7c5/LM=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=TbZVpK/jym0u6CgCM7bdgQ4rnFG9ZlcqsD5xFtifLQY2lsCngcEJ1lv9Ab+eeRULanAuri+wjxf0+V/zepNcu9HOBHiyFcIpZrLHBqrOxcYldrgyGCjBtXdXWl1/C/nJHBGIinVKazo3TOAWNOS2H0nCBSE/1vqQ4LMo7jOalQA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P2aN6Mzj; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:MIME-Version; b=h6P1ZfuJu6ohkldLynqt/CVLqLkH7ZXcJvuYqrvDKzVLr9ij++CX9PvMXDBUxDsi7vKSKzlrOsOy83dUFmeAy9BEQgmizw5VxT/DSs1vUXONqAaxWwCiAz+2I8fn5jVR0wHVFpQZhIaJv3ILFvh5WkagsJ/opm3XKOIu8yoWqNg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HWk498EI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P2aN6Mzj"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D1767C116C6
-	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 06:58:23 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HWk498EI"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id AAEEFC19425
+	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 07:03:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771225103;
-	bh=hSE1sXOxu1ObaUUBEf3HcM6Brga2QfIsFW6vemeVT1A=;
+	s=k20201202; t=1771225423;
+	bh=9NVBaXXgFwAKP9+TOIKQsHJ/JbEzC5lRuZLEk7c5/LM=;
 	h=From:To:Subject:Date:In-Reply-To:References:From;
-	b=P2aN6MzjbWJh5xsa0CTWJYfiwrnLjnld57PJqg4coOUB+dhOcG51bSIX8OlGadQzV
-	 V7uVo8DDeKjFQDM6mVdsWuBXYVtvYZF71C7aGw6lXavLjckWtNV0uGK0KNsbbvhirK
-	 UDaGODBoxGZ+CGy72ipkk+ok46+ZAnFd8mo12M4lREGFBVhYl0evO82vgnze8FaL1D
-	 WwZLuW4Hwgp6TfcGSlGnwyHd3I8oJyHF4pwRwXAUfTTp6cvfsJk0cR60ZP/HpO2+q7
-	 tY7ofNaXcrjBVlA/vjVANIn8F0sdNGip1z05LWSfnIVct2xx1DGWkrndPrCTwdifgc
-	 WkrtQK8ZM+x8w==
+	b=HWk498EIdGgKrZb5WBefRSSeGjbD4iK0oW30N4TUqMkWGsJ4tvnEIKSDSKHypX7PH
+	 RJ/TbxXwyJ06PrLcL0BI/bLSAaPaeDi3CWHjYemPrEg8LIxRz8J6F0Ku0ZPHlNQMRC
+	 oKtmWc9L6pjdaSeFt3LTLvh2Y/7p+3KixPTtAPl6eeyfCbUQHMHA0ezfZmwTFJc5Cr
+	 Y1Et1AZp6nahC/jKJH+7/oCkZbOJbt5y3P6M7teX5bpcph/oGI1C6DlngdVCmTxs9G
+	 x4bW3IBcE56SK9MTqH1JxDczjMmCR0fxbFvaZ51eqBeL4K1ZkHZGsi25G4mPFqAPVD
+	 uYGufSu1+k++g==
 Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
-	id CC1B1C4160E; Mon, 16 Feb 2026 06:58:23 +0000 (UTC)
+	id 9E02CC4160E; Mon, 16 Feb 2026 07:03:43 +0000 (UTC)
 From: bugzilla-daemon@kernel.org
 To: linux-iio@vger.kernel.org
 Subject: [Bug 221077] [iio] [hid-sensor-rotation] Memory corruption due to
  alignment mismatch in scan buffer
-Date: Mon, 16 Feb 2026 06:58:23 +0000
+Date: Mon, 16 Feb 2026 07:03:43 +0000
 X-Bugzilla-Reason: None
 X-Bugzilla-Type: changed
 X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
@@ -48,7 +48,7 @@ X-Bugzilla-Priority: P3
 X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
 X-Bugzilla-Flags: 
 X-Bugzilla-Changed-Fields: 
-Message-ID: <bug-221077-217253-7ZwcMBlkTK@https.bugzilla.kernel.org/>
+Message-ID: <bug-221077-217253-nZhcrXDtrY@https.bugzilla.kernel.org/>
 In-Reply-To: <bug-221077-217253@https.bugzilla.kernel.org/>
 References: <bug-221077-217253@https.bugzilla.kernel.org/>
 Content-Type: text/plain; charset="UTF-8"
@@ -64,11 +64,17 @@ MIME-Version: 1.0
 
 https://bugzilla.kernel.org/show_bug.cgi?id=3D221077
 
---- Comment #4 from Lixu Zhang (lixu.zhang@intel.com) ---
-> What userspace were you using to test this?
+--- Comment #5 from Lixu Zhang (lixu.zhang@intel.com) ---
+Hi David,=20=20
 
-An internal test tool similar to iio_generic_buffer.
+Thank you for the patch! I'm currently on Chinese New Year holiday and
+attempted to remotely access my test machine to verify the fix, but
+unfortunately couldn't establish a connection.
 
+I will test the patch as soon as I'm back in the office and provide feedbac=
+k.
+
+Best regards,
 Lixu
 
 --=20
