@@ -1,119 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B863531B81B;
-	Mon, 16 Feb 2026 15:02:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6769F314D23;
+	Mon, 16 Feb 2026 15:11:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771254153; cv=none; b=q4Ng80UPiqhzustBW14peSmveho4O0I7mHTM2Pb4JCp6FcTTsElPA9sHXguX/cwGL8s6pCmuqm/9+T/Uad3GVpN2vnCi63IuKoU8L5cnhSFz2wPAHunCLjAVYpP+EiDmrIeris3uGlA4/cQIX9YcEvyig/kU3HJoyUgQP8k/mF8=
+	t=1771254717; cv=none; b=SGtNVmQswmBGv2Rg928pWOuARMtBBtv0XsWaU9UVDTX5FyowVp/7ItZUWjZnL+r6Gd8HYX/fWQdjvNzfAT9oYOsItOq8uVtsuGnVECc+gHMa7OpsIks5cp5boggVltSPNT7wllzPY+jtnwU3FZeU6l6JWbfudSOVv2mTV2ahMdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771254153; c=relaxed/simple;
-	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=c5CfxMZzjOTmR3emtHsIR0KTSa6MPAToyID9P/MHg4rx4u/96uENKUe0jV//sYAJW/h9JJZ7pbN2dZeowa0/kh9DNAfLkD3rCd8KTZbmf7aSWbrLfNRCWT2aBGmazcYlr8kBn45SrKwQhR1jgw8lbE7Jo9wRAMSDQl103sM/9M4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ewNkusdc; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771254717; c=relaxed/simple;
+	bh=V2UhE7AQ1pweQO+m/RqdrE1U5kBNKnDMgrzrQXIip0g=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Fv6nDqSa0E+3BhPoPSrqEZ4eK3ki4sWs3bTxsQbddnQYXN41WkWKK5ZLf/7Pl6S8v6eS/o62TDbF1MVKYLt1hvVLybFw/V9qGv8l+K3Z7mjuh9BxGx7GHR0ztnT2dVfJzahXGpg+47kkVFzCSpqmuIw1lvPs1iw5o8eY7IO9DcU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=vVElV3yP; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ewNkusdc"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 81C67C4AF0C;
-	Mon, 16 Feb 2026 15:02:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771254153;
-	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=ewNkusdcYdMIJYeq1FaOW/JBZNQx+dZNkrpIaRd161LolyglI1Dy95Xu6kmF0zs65
-	 4m0gF3RTPwDnlfq+k0gkszCg1QSRA6e2/FR26mGQxFOFI6z380IkqFjLzCymkwhsUm
-	 WD/3T8iJ/l3ZgTIi3I8aCovcSAvQ4F95/TxTr3AM99/k6s458zvhwiYm2ZAPiX2fKl
-	 yJzejl6NdyuaFT9cYMuLNdgnMIyjnk9K0seaSjevseHjOIn4JaryGfc/NCAmF4FrDO
-	 iquzT+SYDVyVmQW51S/ZbHXuecVG1R/l8wsGXuSIevgT7GGzA12ZvOQDxPKezaQ/eJ
-	 iRsZFIx1VOTHw==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D38E81A34;
-	Mon, 16 Feb 2026 15:02:33 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Mon, 16 Feb 2026 15:02:23 +0000
-Subject: [PATCH v7 8/8] Documentation: ABI: testing: add common ABI file
- for iio/frequency
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="vVElV3yP"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61G9qT1T1305905;
+	Mon, 16 Feb 2026 10:11:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=m7sNZVihJxPVQjhrCP/BH/s5I9l
+	O/zkYTuI0twVq/7Y=; b=vVElV3yPJowe/wpR0rEe9cGPd7D/uGqJtRr4A8AVxqM
+	/VD4oFj04uManxDT8n4xwdH/dCmN1RlaUoJhf76ll7ADKMRlR7dkwRqcA6myMEiv
+	ZUWImCKNJFiurfCQc6yWW/pvcryRY9y/e/zG5dp2GU2rn9zKXkJ8RmPoOlknG2p6
+	ACVNThRgKrJGDIj9dYmzhxxlIUKFcAUb6qhXY3cYuTgFzORzBb6Z+qwsbv4Dd3M7
+	E0f9M908Kx2rwwAvnu1dVzO14adyxjvczdld6RhBpolN4fHdZ8c/qvWPbx2Aulj5
+	kvulu5cZX80aZJFxuh49epu3kg9LkR3tmIWsaUJ/D0g==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4caks2g1s2-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 16 Feb 2026 10:11:41 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61GFBesC021583
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 16 Feb 2026 10:11:40 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 16 Feb
+ 2026 10:11:40 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Mon, 16 Feb 2026 10:11:40 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61GFBT9B017396;
+	Mon, 16 Feb 2026 10:11:31 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Lars-Peter Clausen
+	<lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan
+ Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 0/2] iio: adc: ad4080: add support for AD4082, AD4085 and AD4088
+Date: Mon, 16 Feb 2026 17:11:09 +0200
+Message-ID: <20260216151112.139359-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260216-adf41513-iio-driver-v7-8-b0ed387ab559@analog.com>
-References: <20260216-adf41513-iio-driver-v7-0-b0ed387ab559@analog.com>
-In-Reply-To: <20260216-adf41513-iio-driver-v7-0-b0ed387ab559@analog.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1771254149; l=2210;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=OhPLAamt4hmbeCatH+/iPHehi/HIntujTnWeOacWI/A=;
- b=zMWov313jJAPxJoLTV3cqUJZR5Qs0cN3C8o16gQHmNa44YhZENc6CUOLaya9XdzoG9Zr1PO2x
- HDSkg8wirb+AV5wA1dKJKRD80KQZreeW2vUu06S+l3yI1JsUXWsqMDs
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjE2MDEyOSBTYWx0ZWRfX06Q1V6arXviY
+ kk+YHaS4p6YmYBgUnXfGKP7mdvzv40AeRd/xHUXzXzZ/vcj8/Oshqu6/T5ZfB6F82r6gqqXxjJ7
+ bMJxv4O0nL+GS3CUuhTHFsH53XXAPa5VLeu0sQR2Woy/R5nK2elVmm5NqqNZN513LQuNziDZqrm
+ 8q8l6t7zR1NctaTGV+iMKBYun2aUEqsrUr9ztV/ectPJ7iAO9YJO6UwC99M/hv3FWSptJHq3Qx8
+ OxGarJsp2P1hTebD7/0Mp8CisUgDDwmnzrv9wpDpYXBb+l3tSQl81wSkT6mgB4rAgFDFFCBFumH
+ lFnHH+1B1SuoR6ZzVr/0F8lgqq/+LJjAedwPrgAvDHIuh/qi1/Qlug5ZpK/bZQ5pkyzgMmyNvyY
+ oL6rr7QoOz9hiYHRelddwVaWgIpcmbZ7m9HJvSO2QwDocjX81xYerQUfcyLjiLKzzOhjkgzJ43P
+ fje3QICP5MJ3NtNBv2Q==
+X-Proofpoint-ORIG-GUID: 1J3YMqVVt6fo21xqGF1INjfNoIhQfJMQ
+X-Proofpoint-GUID: 1J3YMqVVt6fo21xqGF1INjfNoIhQfJMQ
+X-Authority-Analysis: v=2.4 cv=TYSbdBQh c=1 sm=1 tr=0 ts=699333ad cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
+ a=GgsMoib0sEa3-_RKJdDe:22 a=4GZ7O7lbiYnNbMRglawA:9
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-16_04,2026-02-16_03,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ bulkscore=0 malwarescore=0 adultscore=0 priorityscore=1501 lowpriorityscore=0
+ phishscore=0 spamscore=0 clxscore=1015 suspectscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602160129
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Add support for AD4082, AD4085 and AD4088 SAR ADCs to the existing
+ad4080 driver:
 
-Add ABI documentation file for PLL/DDS devices with frequency_resolution
-sysfs entry attribute used by both ADF4350 and ADF41513.
+- AD4082: 20-bit SAR ADC with LVDS CNV clock count max of 8
+- AD4085: 16-bit SAR ADC with LVDS CNV clock count max of 8
+- AD4088: 14-bit SAR ADC with LVDS CNV clock count max of 8
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- Documentation/ABI/testing/sysfs-bus-iio-frequency         | 11 +++++++++++
- Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 | 10 ----------
- 2 files changed, 11 insertions(+), 10 deletions(-)
+These devices share the same register map as AD4080 but differ in
+resolution and LVDS CNV clock count maximum values.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-new file mode 100644
-index 000000000000..1ce8ae578fd6
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-@@ -0,0 +1,11 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
-+KernelVersion:	6.20
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Stores channel Y frequency resolution/channel spacing in Hz for PLL
-+		devices. The given value directly influences the operating mode when
-+		fractional-N synthesis is required, as it derives values for
-+		configurable modulus parameters used in the calculation of the output
-+		frequency. It is assumed that the algorithm that is used to compute
-+		the various dividers, is able to generate proper values for multiples
-+		of channel spacing.
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-index 1254457a726e..76987a119feb 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-@@ -1,13 +1,3 @@
--What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
--KernelVersion:	3.4.0
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Stores channel Y frequency resolution/channel spacing in Hz.
--		The value given directly influences the MODULUS used by
--		the fractional-N PLL. It is assumed that the algorithm
--		that is used to compute the various dividers, is able to
--		generate proper values for multiples of channel spacing.
--
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_refin_frequency
- KernelVersion:	3.4.0
- Contact:	linux-iio@vger.kernel.org
+Changes in v3:
+  - Merged individual per-device dt-bindings patches into a single
+    patch.
+  - Merged individual per-device driver patches into a single patch.
+  - Collected Acked-by tag.
+
+Antoniu Miclaus (2):
+  dt-bindings: iio: adc: adi,ad4080: add support for AD4082, AD4085 and
+    AD4088
+  iio: adc: ad4080: add support for AD4082, AD4085 and AD4088
+
+ .../bindings/iio/adc/adi,ad4080.yaml          |  3 ++
+ drivers/iio/adc/ad4080.c                      | 45 +++++++++++++++++++
+ 2 files changed, 48 insertions(+)
 
 -- 
 2.43.0
-
 
