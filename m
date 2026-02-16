@@ -1,244 +1,113 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 694DD313272;
-	Mon, 16 Feb 2026 15:12:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D23B832A3C8
+	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 15:26:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771254724; cv=none; b=r+j15uX60HBQ2eJURdHBsXeXF6pJ1cAoKDgQxTrKDXW58rFvqIpnSEOrP8fLmDpYWYv3504qsTymYbFsg7bnqnYrYfCOQkOfM+9RVzGQa51TytxjWjcUEwjh0voG/T+tEfndsin6MxHcJYf/+9iYIsiTZjuaDEtuUd+CBD9anYk=
+	t=1771255562; cv=none; b=rNO0bGQ3qgW0ytBrWHyoCTE8VUV7zKZwaS/1wJ3xwwoHmqIR2cOhqSmefnpa+AxBhBdNDq7MUAI79M0yuurYeIEXyirGqotUknL5ERu2AL9gEA3k8y7EHB3Xd8CpWGqNFFrYawmy2CnH26pEVg7vl8E0xPr/HHt3Q41buNpxyNc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771254724; c=relaxed/simple;
-	bh=K6q2uvUFNe74IlsTDGrMP4E+PlT8aZ9Rg6OHl6Ov8wA=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GEpDvOVZ6vRAqf8xH5y8el8zCcqDoJ76SiIOh59bwrBik0EbaT9YBfU0RlnQP5EcxbEM3wrWmnB1W+QVBklI8/Z75oMH6H9w16OqtLCJ2s5DiIrFXuiayUpvF9zS7jTr3/9xNg9tv/JH8iXxLtlCwUyL/psHqVi0MsbiOj07zFI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=MUcA5Z6e; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1771255562; c=relaxed/simple;
+	bh=s/u9a7RFxBkreXqZx0ZwHqcPArovGyAc5UL+kxKtdg0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=P0YAarXEgh4JSbkzLxHzv3LFBp0OFDB3eFLXimJvSp/T0+cMZGaLoZmQ+pIPZzPJZAOGG0dBiX8cnPV0w29XDjViZcuitngW1FIFAmvwpxWGzAWAbasFfVmGaRMeuOf7pVL50H4MWCHDJ5ot6EhtAxSYWENpznrgKiI+EsN6IHU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=PpW5tVCi; arc=none smtp.client-ip=209.85.167.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="MUcA5Z6e"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61GDRsV34079294;
-	Mon, 16 Feb 2026 10:11:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=5PvLE
-	OsRpHbflBCStESm7hryd52QgpUq4ThFgSnBS3g=; b=MUcA5Z6edSBiwr+yqOfCv
-	IPiKb/Vlk0h7bA9Hm6oZPn/WeQGTK5nRdto+BbYfLjS5IgxS1079NFogKlmkVC/M
-	rznFBBsblVYqMM2NvniRcthFKgKzul6t95n0nJtS+7a3gp+D9IJT5D32Yx+cx4vW
-	w86YOd4tC0EWdO+0cxLkFuKTvkHnUzsE/7PO7/SoWXufC3jMM6TRGxyHuzC9cF13
-	HQRDx9zuA3t8vgqRv2IbpQufLTwNCpCjA9r/ydPP3CpEN6cFxKaBiAjeHLXthnem
-	zdRQ3gPMh51fp2yKz0AnpllJmhwuj/jad+I459eYMoLvUEEjbSLxyR/b8ihqNqHP
-	A==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cbn8r3et1-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 16 Feb 2026 10:11:48 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61GFBloJ021598
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 16 Feb 2026 10:11:47 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 16 Feb
- 2026 10:11:47 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 16 Feb 2026 10:11:47 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61GFBT9D017396;
-	Mon, 16 Feb 2026 10:11:40 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Lars-Peter Clausen
-	<lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan
- Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
-	<andy@kernel.org>, Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski
-	<krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v3 2/2] iio: adc: ad4080: add support for AD4082, AD4085 and AD4088
-Date: Mon, 16 Feb 2026 17:11:11 +0200
-Message-ID: <20260216151112.139359-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260216151112.139359-1-antoniu.miclaus@analog.com>
-References: <20260216151112.139359-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="PpW5tVCi"
+Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-45f194e9a98so893342b6e.3
+        for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 07:26:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771255560; x=1771860360; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=WDY1pgwN95gNKwiq9tVCFy3TSoHft79BSNGMSnMpMmY=;
+        b=PpW5tVCicIKPqMAOlJwMhEr1fYa2vvWqmJy57HILg5XA9v6Wk+lEjJ91+YfohWAxN2
+         X7da4y74D2oov7MaxOm32ntYHnvMZp0MMszj5MmTrmQ5Cv5k/HdQBjuJ13rdr59GRkAX
+         DtoUCqzikSMmSdOuok2h8tFgtFS7qsrt/ETz3ehY3lrf1HXUag9EqM4QNrMQaTwSpoSo
+         Fs5tRGapW5Jgl+YdGNihNhlfJZ304fgV9XsrzBkz/8nYVBx2GI78c3VfCoPrVqkf8CBG
+         TiOlmze9rUSgCa5MwzuDFTJHE77dgXUoJa1BnDKXnD2snWTPNynE9CpcaLIr1N6TIDlA
+         3xVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771255560; x=1771860360;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=WDY1pgwN95gNKwiq9tVCFy3TSoHft79BSNGMSnMpMmY=;
+        b=uSUo3v6EmFWfAu4o9abxOFkDYIFJTDXItpnS4jN+xARr9D3VDrpNkRldloyFtm3HiW
+         8ih3mkg93mB1VXI22zdsEAIY+kyCkeFoJb82sa/Fel3O2SCqx3xuaYtdFS782SUx+Uol
+         R2LNLJMSSNdwmTO4nTAJ8D8VB+kfDpCIs3WOban0wTt5WgdBJ6A1ffGxqL8ZbbCN/gKU
+         KeXAaMGYOrbIDEkz4oK2vBvV5XEQuyrjh43Bsx3iecwAXkyM2QkhGvP/B7KzqV/AvSv8
+         4IbLNzkFqlAeQpjL3qKJ919thEKOg2WQ/XQSEJxy98gYOuWZwVuJm5ck0Vod7m2HY+xa
+         1xsg==
+X-Forwarded-Encrypted: i=1; AJvYcCXBcSiYlQmeUrawrNOn0TN7VF3YoglZs/7idrEU593qx7W37as5nKvtDxb60BhVGZ4eNWuDeNyJsk8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzBxZ0bz3/DvbpwDTbMbdtDQxfaPJhjfB2YaXHSSG9xvsMUWbZ/
+	65+8NJ576eceTpvRMoL1DK+MjtZbvxKUHykdMRb5lZF3a8U0EtrMdTCItVoYfUlU9ZU=
+X-Gm-Gg: AZuq6aIP43Tsrv3M4P4Cwmt4UIzqGfP9vcGt9bismT01fBJpSjiRiQrw4mT4Plw75Hs
+	vW+m4b5yJ8rtDJkBsH5KkV2EykHODwOuImaLtQJGreuowM6PcACfgsUzSUwvP9rjqOM1pGAFDO6
+	yEaAqyHqKuBkRWK0+5HqOqnY4KL2qqCKZE4mvN+HubRicR837FY4srY/22WP3TT7cx+wUR/1j6i
+	Om0crnHvCwmvAHkIcD5/yDi6Sk5GE5Dn+HiGnozcbUfTe9M/qGgNyvhRQ98e934pJr92CQdChoJ
+	NQ56MuamOlVr90cugoS8HK545vfH3JOluQOy7myK5bgtYDXkkBNABx/2dCfERgc4+/XSiTxPUSy
+	fuPmfxnFWfRNODpau4XSN1Ga9NMGQZ+SE8GFfXfhI40dohmJSx7l+iwD4XSMgjdjSXyD410dKad
+	6Bk0cCpvm+lanTD69oPi3Xl88i3H0QACOi5Kp52s+fC5xZCnuNDDi1Gg22X27KRIH8JzO/IIi4
+X-Received: by 2002:a05:6808:c29b:b0:45e:e07c:3fd8 with SMTP id 5614622812f47-4639f1bd0cdmr4633325b6e.43.1771255559738;
+        Mon, 16 Feb 2026 07:25:59 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:2d75:8cf2:6289:6a96? ([2600:8803:e7e4:500:2d75:8cf2:6289:6a96])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-463a4ede045sm6507701b6e.9.2026.02.16.07.25.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 16 Feb 2026 07:25:59 -0800 (PST)
+Message-ID: <bcfc711c-a02a-4470-a2a6-de43c71e7c2e@baylibre.com>
+Date: Mon, 16 Feb 2026 09:25:58 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: wFIm4DDa3sB_8STTGME2W2tyXz0Fnabi
-X-Proofpoint-ORIG-GUID: wFIm4DDa3sB_8STTGME2W2tyXz0Fnabi
-X-Authority-Analysis: v=2.4 cv=aIb9aL9m c=1 sm=1 tr=0 ts=699333b4 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22
- a=Mpw57Om8IfrbqaoTuvik:22 a=GgsMoib0sEa3-_RKJdDe:22 a=QyXUC8HyAAAA:8
- a=gAnH3GRIAAAA:8 a=N7TgUSQySV4cBu0JIyQA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjE2MDEyOSBTYWx0ZWRfXy+QAoObLmga9
- 3AcSUE+Ab3EefMWQd7OQQC4Ypu3sfsEaI6NMcxh4TCQgXP7w4cN40NNIpSZHcyCJ2JPBjJvNYn8
- qLL/A8JRJUwTIRrrCnqd4thyCnovi2KbGwsfZ6HsfhFszfzKSSmGj+rrqr69wxyukbsNJkMpPre
- bu0QfP7nznNrS2FxMFJH5HMO5uz/ldidAxpj1YnPk2M/M1rjneAmPyyI8XyoUOwHjj8AhFxROVf
- j3zTRqAZKk09RY4BO+bFusXxNTscZhT8EJQQLsafsunTDED5nYtY/tRuKN/yG7oYrzJT214wC+h
- e8BiZVpmTxoxPnjSLnUuZLmkiU/EiLy98lhx2v0bIuYwrcRncDf78SeTD50jkpbbCoLEO3k40K8
- 2Td8ur7nw3Dj4E+lmxviEOQ194yP6CRIYjCt85i1LCQYoMQrbWQO24KgBkxM3s+FeL3WtPOTM4c
- cMz5kiRSwebZnckUt7Q==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-16_04,2026-02-16_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- phishscore=0 adultscore=0 clxscore=1015 bulkscore=0 malwarescore=0
- priorityscore=1501 suspectscore=0 spamscore=0 lowpriorityscore=0
- impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
- definitions=main-2602160129
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/2] iio: orientation: hid-sensor-rotation: fix quaternion
+ alignment
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-input@vger.kernel.org,
+ Lixu Zhang <lixu.zhang@intel.com>
+References: <20260214-iio-fix-repeat-alignment-v1-0-47f01288c803@baylibre.com>
+ <aZLKy4l6OlPgIkZx@smile.fi.intel.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <aZLKy4l6OlPgIkZx@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Add support for the AD4082, AD4085 and AD4088 SAR ADCs. These devices
-share the same resolution as their base variants but differ in LVDS CNV
-clock count maximum:
-  - AD4082 (20-bit, like AD4080): lvds_cnv_clk_cnt_max 8 vs 7
-  - AD4085 (16-bit, like AD4084): lvds_cnv_clk_cnt_max 8 vs 2
-  - AD4088 (14-bit, like AD4087): lvds_cnv_clk_cnt_max 8 vs 1
+On 2/16/26 1:44 AM, Andy Shevchenko wrote:
+> On Sat, Feb 14, 2026 at 03:00:19PM -0600, David Lechner wrote:
+>> The main point of this series is to fix a regression reported in
+>> hid-sensor-rotation where the alignment of the quaternion field in the
+>> data was inadvertently changed from 16 bytes to 8 bytes. This is an
+>> unusually case (one of only 2 in the kernel) where the .repeat field of
+>> struct iio_scan_type is used and we have such a requirement. (The other
+>> case uses u16 instead of u32, so it wasn't affected.)
+>>
+>> To make the reason for the alignment more explicit to future readers,
+>> we introduce a new macro, IIO_DECLARE_REPEATED_ELEMENT, to declare the
+>> array with proper allignment. This is meant to follow the pattern of
+>> the similar IIO_DECLARE_BUFFER_WITH_TS() macro.
+> 
+> In both cases it's quaternion, maybe be more explicit and define
+> IIO_DECLARE_QUATERNION() ?
+> 
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-Changes in v3:
-  - Merged individual per-device driver patches into a single patch
-    adding AD4082, AD4085 and AD4088.
+It is really the fact that the scan_type has .repeat > 1 that requires
+this, so I was trying to make a name that shows that link.
 
- drivers/iio/adc/ad4080.c | 45 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 45 insertions(+)
-
-diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
-index 7cf3b6ed7940..fc261d3d7687 100644
---- a/drivers/iio/adc/ad4080.c
-+++ b/drivers/iio/adc/ad4080.c
-@@ -127,10 +127,13 @@
- #define AD4080_SPI_READ						BIT(7)
- #define AD4080_CHIP_ID						0x0050
- #define AD4081_CHIP_ID						0x0051
-+#define AD4082_CHIP_ID						0x0052
- #define AD4083_CHIP_ID						0x0053
- #define AD4084_CHIP_ID						0x0054
-+#define AD4085_CHIP_ID						0x0055
- #define AD4086_CHIP_ID						0x0056
- #define AD4087_CHIP_ID						0x0057
-+#define AD4088_CHIP_ID						0x0058
- 
- #define AD4080_LVDS_CNV_CLK_CNT_MAX				7
- 
-@@ -442,14 +445,20 @@ static const struct iio_chan_spec ad4080_channel = AD4080_CHANNEL_DEFINE(20, 32)
- 
- static const struct iio_chan_spec ad4081_channel = AD4080_CHANNEL_DEFINE(20, 32);
- 
-+static const struct iio_chan_spec ad4082_channel = AD4080_CHANNEL_DEFINE(20, 32);
-+
- static const struct iio_chan_spec ad4083_channel = AD4080_CHANNEL_DEFINE(16, 16);
- 
- static const struct iio_chan_spec ad4084_channel = AD4080_CHANNEL_DEFINE(16, 16);
- 
-+static const struct iio_chan_spec ad4085_channel = AD4080_CHANNEL_DEFINE(16, 16);
-+
- static const struct iio_chan_spec ad4086_channel = AD4080_CHANNEL_DEFINE(14, 16);
- 
- static const struct iio_chan_spec ad4087_channel = AD4080_CHANNEL_DEFINE(14, 16);
- 
-+static const struct iio_chan_spec ad4088_channel = AD4080_CHANNEL_DEFINE(14, 16);
-+
- static const struct ad4080_chip_info ad4080_chip_info = {
- 	.name = "ad4080",
- 	.product_id = AD4080_CHIP_ID,
-@@ -470,6 +479,16 @@ static const struct ad4080_chip_info ad4081_chip_info = {
- 	.lvds_cnv_clk_cnt_max = 2,
- };
- 
-+static const struct ad4080_chip_info ad4082_chip_info = {
-+	.name = "ad4082",
-+	.product_id = AD4082_CHIP_ID,
-+	.scale_table = ad4080_scale_table,
-+	.num_scales = ARRAY_SIZE(ad4080_scale_table),
-+	.num_channels = 1,
-+	.channels = &ad4082_channel,
-+	.lvds_cnv_clk_cnt_max = 8,
-+};
-+
- static const struct ad4080_chip_info ad4083_chip_info = {
- 	.name = "ad4083",
- 	.product_id = AD4083_CHIP_ID,
-@@ -490,6 +509,16 @@ static const struct ad4080_chip_info ad4084_chip_info = {
- 	.lvds_cnv_clk_cnt_max = 2,
- };
- 
-+static const struct ad4080_chip_info ad4085_chip_info = {
-+	.name = "ad4085",
-+	.product_id = AD4085_CHIP_ID,
-+	.scale_table = ad4080_scale_table,
-+	.num_scales = ARRAY_SIZE(ad4080_scale_table),
-+	.num_channels = 1,
-+	.channels = &ad4085_channel,
-+	.lvds_cnv_clk_cnt_max = 8,
-+};
-+
- static const struct ad4080_chip_info ad4086_chip_info = {
- 	.name = "ad4086",
- 	.product_id = AD4086_CHIP_ID,
-@@ -510,6 +539,16 @@ static const struct ad4080_chip_info ad4087_chip_info = {
- 	.lvds_cnv_clk_cnt_max = 1,
- };
- 
-+static const struct ad4080_chip_info ad4088_chip_info = {
-+	.name = "ad4088",
-+	.product_id = AD4088_CHIP_ID,
-+	.scale_table = ad4080_scale_table,
-+	.num_scales = ARRAY_SIZE(ad4080_scale_table),
-+	.num_channels = 1,
-+	.channels = &ad4088_channel,
-+	.lvds_cnv_clk_cnt_max = 8,
-+};
-+
- static int ad4080_setup(struct iio_dev *indio_dev)
- {
- 	struct ad4080_state *st = iio_priv(indio_dev);
-@@ -666,10 +705,13 @@ static int ad4080_probe(struct spi_device *spi)
- static const struct spi_device_id ad4080_id[] = {
- 	{ "ad4080", (kernel_ulong_t)&ad4080_chip_info },
- 	{ "ad4081", (kernel_ulong_t)&ad4081_chip_info },
-+	{ "ad4082", (kernel_ulong_t)&ad4082_chip_info },
- 	{ "ad4083", (kernel_ulong_t)&ad4083_chip_info },
- 	{ "ad4084", (kernel_ulong_t)&ad4084_chip_info },
-+	{ "ad4085", (kernel_ulong_t)&ad4085_chip_info },
- 	{ "ad4086", (kernel_ulong_t)&ad4086_chip_info },
- 	{ "ad4087", (kernel_ulong_t)&ad4087_chip_info },
-+	{ "ad4088", (kernel_ulong_t)&ad4088_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, ad4080_id);
-@@ -677,10 +719,13 @@ MODULE_DEVICE_TABLE(spi, ad4080_id);
- static const struct of_device_id ad4080_of_match[] = {
- 	{ .compatible = "adi,ad4080", &ad4080_chip_info },
- 	{ .compatible = "adi,ad4081", &ad4081_chip_info },
-+	{ .compatible = "adi,ad4082", &ad4082_chip_info },
- 	{ .compatible = "adi,ad4083", &ad4083_chip_info },
- 	{ .compatible = "adi,ad4084", &ad4084_chip_info },
-+	{ .compatible = "adi,ad4085", &ad4085_chip_info },
- 	{ .compatible = "adi,ad4086", &ad4086_chip_info },
- 	{ .compatible = "adi,ad4087", &ad4087_chip_info },
-+	{ .compatible = "adi,ad4088", &ad4088_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ad4080_of_match);
--- 
-2.43.0
+But right now, quaternion is the only thing that has .repeat > 1, so
+I guess it would be OK either way. We'll see if Jonathan has an
+opinion on the naming.
 
