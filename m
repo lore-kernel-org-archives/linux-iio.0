@@ -1,54 +1,52 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A55C283FE3;
-	Mon, 16 Feb 2026 09:58:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25DFA2F12C5;
+	Mon, 16 Feb 2026 09:58:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771235894; cv=none; b=prciINB3EE6GbRF7/Jac9lVcWyZ56Qg8CGsusXlg4pAa0n+L32Dfvol3VEh9XwOao6SQHu48Jfpja1OxrrtWj7P6GHQZhU9ciwFx7Ua6Y0H1kd0f0q2MzRier0BWsG85puRw9C1S+6bKo4pbq4KvbYvST1av6f/UaT71TvLhLvo=
+	t=1771235896; cv=none; b=ETn/o+8L+EFCUK4jqOTcMVY6N1b35O2PD6DrGWYA2xVHX7utnU2Fezs215up37A9uBb1HZQt0pXZVuuFqrOBKbSd12tlEL5y5FjT8+sw2K2Jyzv+yGmEq70J+5UFW25NezdYIZi1KW6TY/RqvP06Pu3UW4SwjHprjPsMSjQSNvw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771235894; c=relaxed/simple;
-	bh=T+YA9CNteuvdPZtiekpS6U+obA8pOETrKAcN3a+Jpy0=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=cVzZTrfytGPy88NfsVMTbxNELBY817WcKYPEW4e0i4pY37tK/U7FjwUVnm8Do7BLmdIqL4tmGwZRKDGdWFkOoFHOZzhjq3QrorEgn6c1Hb7leUp0fPn5u9r1j9Xvt3+2mLzyXeI7t7n5OShYpImbyhjvaTCCsQ23UKBhKwDtYH0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Kvhubcq0; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1771235896; c=relaxed/simple;
+	bh=AJ2T1um/Zkk+Kz+dFf3+1xEtUcIgbooGYYzVi85Cgrw=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=rPQWB5nfRPuI5stKDKG9lD9JqHMZBP6+dkOPIradYtgQ8T6r7Ni2JHEpQPe0c8BH4+10EsKyZwFCgH73vOg/eoenFQ7hVo1f7jkitYkfJn3DlNxXVVk2m2eRH6i3QnUOJqicN38Ocoy/fGN+6EuCMlK38EiBRzSOu4AFK5LBaUs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=WnEromqU; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Kvhubcq0"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61G48KaA3569098;
-	Mon, 16 Feb 2026 04:58:09 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="WnEromqU"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61G9mh7e3758413;
+	Mon, 16 Feb 2026 04:58:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=4cD4t/VCUBR6n9pT+ZykYxgHScw
-	m7yPsqvhoA0SFvXc=; b=Kvhubcq0/4+I5IWfmwjKAMHmLsJ+4l2pnvhu+pUswNp
-	1D4UHZ3aXT4sbvfKSrx6pX8tlVkLSXVrLHLLszsOwwd/nQ1lFmA7AW8SIgH7weNK
-	E4SLvb2BFU9TZIE6/wAvT8D6VZ6VEya/PL7XbKgY3CqLKFBMJrkPO8qOkwgkTF1Y
-	bxxBnJCqig4jnkiWCopEF5M3MmD9AV8DPsZsXlRsJiP+YvzVSU9+dbVKcBYtoDJC
-	+D7s39k+tOdwGGZCKel2iybagmt8XD3B5Dv79qugGfg3p0Iccqv5+bWkfwdzTcHK
-	pRS9Y4xspYQymb31ppNAZ2/mqBuewBbQ7DN0Ews8xyQ==
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=R+pht
+	iwDNNH+QWmFEjKa+vmXObFfA3aTxGOZr4LjD5g=; b=WnEromqU2lWFT2Xn7OUlr
+	o3FTjcrw1WJqgods+2N/3XBknifjOcXmrplACTFNVJqD+gFJqyRsEAopab9c9KXS
+	pDb0VM00HPMRjAHcn7gZujwp4QKxJ/eem8HfMWouWuGABlqWztKLngLjDid8Xd4y
+	bOjZE6c9v3mPSfTXitY1S+IFwYzmZo2lpYNrmjMxA3rir00xX0MGM5jRoGRbmsXE
+	YE133vrlltFzpCtlr67tEsfO/o51mA7Slg2ZGjC2t3yz1JWm/BiBNlbO61bs5GUL
+	2MWSD4NkWehJKjJWNaLGDi6Xsyt/jcm+qx99fWYaMMlYvbcdq/Udnwc9zltbH5W/
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cb88hm13y-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4capu4edn0-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 16 Feb 2026 04:58:09 -0500 (EST)
+	Mon, 16 Feb 2026 04:58:10 -0500 (EST)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61G9w8Yh045722
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61G9w92x045728
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 16 Feb 2026 04:58:08 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 16 Feb 2026 04:58:08 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Mon, 16 Feb 2026 04:58:08 -0500
+	Mon, 16 Feb 2026 04:58:09 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 16 Feb
+ 2026 04:58:09 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 16 Feb 2026 04:58:08 -0500
+ Transport; Mon, 16 Feb 2026 04:58:09 -0500
 Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61G9vwKb017405;
-	Mon, 16 Feb 2026 04:58:00 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61G9vwKc017405;
+	Mon, 16 Feb 2026 04:58:04 -0500
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
         David Lechner <dlechner@baylibre.com>,
@@ -57,10 +55,12 @@ To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
         Andy Shevchenko <andy@kernel.org>, <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v4 0/2] iio: gyro: mpu3050: fix pm_runtime error handling
-Date: Mon, 16 Feb 2026 11:57:54 +0200
-Message-ID: <cover.1771233915.git.antoniu.miclaus@analog.com>
+Subject: [PATCH v4 1/2] iio: gyro: mpu3050-i2c: fix pm_runtime error handling
+Date: Mon, 16 Feb 2026 11:57:55 +0200
+Message-ID: <753f8cce2d3d91c359fd78fbdaed419f48c49988.1771233915.git.antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <cover.1771233915.git.antoniu.miclaus@analog.com>
+References: <cover.1771233915.git.antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -70,50 +70,59 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjE2MDA4MyBTYWx0ZWRfX39V9+1tDl3St
- zcNo/ihXaVg6DjlyIu1hJXiK4/u2CbtIMEG5grxM/V5jAPluzknuDPzQMaiFF8GE4iTYkw1mZor
- sd9dr6XblO2vmGLTfTip1EE1YKG/UUUDR+XW97d/aXjJW80J3w/HOAOY9Vhz3Hm8pDz0pEG5prG
- CK16zByvvpLuelAIZd7nIx4kAFIOSbRxgoAE4uEbquw8xNRXW5UYzDObJhjkABfXbYhhF1Ny0sf
- 4+Mp+Rc5pDedIYiLXmNIdO7+7D+5PqrBMtPj14FhCEPatSfehJT4I5NJAzs2qUpDgOUo1ed7p/4
- 3hMkyrL436/DL4xLKL9ZEYcoGlD0Ec6zt2oihcszQH1p0MaMpezUTjuJJDNQi1ZNvk10OZPHZeU
- ggU/fqULr5QCDIjNei5rkAFVcWfHiKtENeGXzecjc6v65m0c8qYPjWrQrODDdcjb/ez2GbgvPAi
- E03BRG4rbP8EXuzBwyA==
-X-Proofpoint-GUID: HfulgtG543NWZ7xP1VWRk7d54akm_GVV
-X-Authority-Analysis: v=2.4 cv=TeubdBQh c=1 sm=1 tr=0 ts=6992ea31 cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjE2MDA4MyBTYWx0ZWRfX6xjdhBVtXxnf
+ 35QmV1F+pVECwMiECOb0Ibo5DeirM69P/61wDVsQoKmWrgC0LxumrtOH+R35jC3UqeX0pv8EgDC
+ z+glr/KMfzQbbcPhgCHg9oQ2JoUIi5cZNboFbKlMhinkh4o9XgzuKHIVhCnc3fgdSUQP7n52nDh
+ s7dnYrjb8RxRQ0nT9g2nY0jFSRK/4Ms4UxEL6jUy4bS3vum3W7kIPZ2lfhUKB67XAvXrcUcP96V
+ Fv5kgOw8p0eNBtH0PpxnU/vpqxv9so3Lsx5zFveE205pLrwaWMjzucJzz9+Umk/WX3ubRYH1HOc
+ Dw0/oTe51xDM2/+jP4dmRZCf4E9gBaN4vBhkIZui2S+nGca+eAPJzi9qmJ2oKXfGUz10OdJ17kf
+ 9VOUDcgXk0rG2CPGbNm+E9Did3XuO01Ip1kYcikreVB2QoG2SNsxyBqXBSztJNOT1YS1d837Eme
+ WlEXBIFotuP0rXmXwGg==
+X-Proofpoint-ORIG-GUID: 9m9Ver2ZcnRpKvefxs9RDd5Yn2wQ7I_2
+X-Proofpoint-GUID: 9m9Ver2ZcnRpKvefxs9RDd5Yn2wQ7I_2
+X-Authority-Analysis: v=2.4 cv=EZnFgfmC c=1 sm=1 tr=0 ts=6992ea32 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
- a=GgsMoib0sEa3-_RKJdDe:22 a=qMukpJIgz0f2LLvR2MMA:9 a=zgiPjhLxNE0A:10
-X-Proofpoint-ORIG-GUID: HfulgtG543NWZ7xP1VWRk7d54akm_GVV
+ a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=pDhQm6m3o-9xxzphXXkA:9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-02-16_03,2026-02-16_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 adultscore=0 bulkscore=0 clxscore=1015 suspectscore=0
- lowpriorityscore=0 malwarescore=0 priorityscore=1501 spamscore=0 phishscore=0
+ priorityscore=1501 malwarescore=0 spamscore=0 suspectscore=0 bulkscore=0
+ adultscore=0 clxscore=1015 lowpriorityscore=0 phishscore=0 impostorscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602160083
 
-Fix pm_runtime error handling across the mpu3050 driver. The existing
-code uses pm_runtime_get_sync() without checking return values, allowing
-operations to proceed even when the device fails to resume.
+The return value of pm_runtime_get_sync() is not checked, and the
+function always returns success. This allows I2C mux operations to
+proceed even when the device fails to resume.
 
-Replace pm_runtime_get_sync() with pm_runtime_resume_and_get() and
-propagate errors appropriately. Unlike pm_runtime_get_sync(), the usage
-count is not incremented on error.
+Use pm_runtime_resume_and_get() and propagate its return value to
+properly handle resume failures.
 
+Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
 Changes in v4:
-- Reword commit messages to correctly attribute the unchecked return
-  value to the caller rather than pm_runtime_get_sync() itself
-- Simplify preenable by collapsing the trailing return statements
+- Reword commit message
 
-Antoniu Miclaus (2):
-  iio: gyro: mpu3050-i2c: fix pm_runtime error handling
-  iio: gyro: mpu3050-core: fix pm_runtime error handling
+ drivers/iio/gyro/mpu3050-i2c.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
- drivers/iio/gyro/mpu3050-core.c | 18 +++++++++++++-----
- drivers/iio/gyro/mpu3050-i2c.c  |  3 +--
- 2 files changed, 14 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/iio/gyro/mpu3050-i2c.c b/drivers/iio/gyro/mpu3050-i2c.c
+index 092878f2c886..6549b22e643d 100644
+--- a/drivers/iio/gyro/mpu3050-i2c.c
++++ b/drivers/iio/gyro/mpu3050-i2c.c
+@@ -19,8 +19,7 @@ static int mpu3050_i2c_bypass_select(struct i2c_mux_core *mux, u32 chan_id)
+ 	struct mpu3050 *mpu3050 = i2c_mux_priv(mux);
+ 
+ 	/* Just power up the device, that is all that is needed */
+-	pm_runtime_get_sync(mpu3050->dev);
+-	return 0;
++	return pm_runtime_resume_and_get(mpu3050->dev);
+ }
+ 
+ static int mpu3050_i2c_bypass_deselect(struct i2c_mux_core *mux, u32 chan_id)
 -- 
 2.43.0
 
