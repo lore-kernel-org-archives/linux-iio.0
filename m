@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95B1A3191BF;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95BB63191C8;
 	Mon, 16 Feb 2026 15:02:32 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771254152; cv=none; b=JyPJuEUGN3fk8VPw3i5j8DzT8pZk/LmiU0iscDqIhojvgVirqQc9oGIccIkgsoGEfM7S5CsqqIO+763tP/6zUot0EO3OY04VzEMzt4D7hnfvQwl1PNzIAtAtZgJWLJIyvWTJQ1i5gFA9Jz6VlByxc2/leWArlj4+I7gn8tn43UY=
+	t=1771254152; cv=none; b=fZAPCQfWxP2imU+WHhjc04JNlc5i8mrPL902vduWGZLiRDaI2LpnxA1p8//rpiYwbbBTc0ki6ZyVO3KXuJdVDQkNLn+SbvBDnclR4dZUx9bKdHxKkbR5tQYrwMRkL2Es54jW/Pggx4ss5JVDXKca0D6cKCXDj7x0HjX1QIm+7pY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1771254152; c=relaxed/simple;
-	bh=U1lEfjI+z1Avgj2/tKUt7srl6TH1jOcXtS/244eTisA=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=PPPnLM41L6dqmMMjIZFpLfmJ6Bfgmojixa8xgmVxH8kSI94JJ/tLDqhNrYtyjzFNvqbOYmeDi3uCVca0ojMub6/r1uHNc9uxo2P/2BTlmU51R4W8Y/ZpdtoNRrqxZSufWxjp5a+3VKBnxffxhexKCE33iCIDV8Gvh2TwqELFLZE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FOfMMph/; arc=none smtp.client-ip=10.30.226.201
+	bh=85W6n240JRf0BCSsqd1Fe1PozjJU5RPZly+V0LpXUg4=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=qzuuDaG2lbohSLlMrFayhEb1zhgEGJmZyhJAkn8fEuoHaHvLvrVKKlifNbAHFJmt1IS36AenVzDtcKk4J+f8FjZWS+uOx0EBJWoGOchrqf8VR/s0aQ5ps/d40/5IGO0CYrlkm/7FxNDqOYiPPiWwrum2R3YOKKFDE5w9dyIPm/s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LgyVKpIz; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FOfMMph/"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2605BC116C6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LgyVKpIz"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 6E6F1C19424;
 	Mon, 16 Feb 2026 15:02:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1771254152;
-	bh=U1lEfjI+z1Avgj2/tKUt7srl6TH1jOcXtS/244eTisA=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=FOfMMph/MpEYak99/f18Rs78wjDoSqu0J1IspD9aKpfnt4jtgjyG0O4skn1zpwMIU
-	 RSW9Bjg3wMviiexajpgLOVXLq+c5Ypx95piPw23AhjO2ipm4q/26U9ph7nfrVU8mxc
-	 z2uOKNLlxjk2j6fIXFgoJO/bg6aMYo360YcerpMrntsDJTTCgRizp0ySAuuOUHoQ1k
-	 s/oPETV89LgZRLe1EaTvVWw9q8lbvj7MdZuo8zfIoZQdzdBlGzjCxj9Bm0X3xoCy50
-	 p2KrNMoJBRbGMMIVZ03kP8jhEWC6SyWGCfh9Dm1U0s9TTXSMj2FedD7q+mYGomEuic
-	 O2IlcAzNPbVzw==
+	bh=85W6n240JRf0BCSsqd1Fe1PozjJU5RPZly+V0LpXUg4=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=LgyVKpIzHULnXk5ygUNEyJ7I/Cx/tmHVF3GNhthRsZo0wumjMBo0WweCAZFPFA6YZ
+	 BzUHHriiWLZ4Ldjf5sVVo4/jBUx8MVJ90iKplUT5kdT9HcHmG0mq32d81yq66/ik7Q
+	 xEGDNvrVHlwx2QDYt8Ffuws+e7dMHqMitL1TRgx1lhyRc1JYc1m1Cvda5gwE0rIGng
+	 KACEfzSBOMlJUVOThWSALrzehncJLxl16ktPPhR7pJ5bM6A56NwHn6erU/DlPTVvxe
+	 f04AkpO+kNIleXLe7uh0EusyaCcYLKuJmiM2SJkGyoarB2BagjrIW3/0zaEK/+HltH
+	 z243xoBmGVf/w==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1564E81A2F;
-	Mon, 16 Feb 2026 15:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65CE0E81A33;
+	Mon, 16 Feb 2026 15:02:32 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH v7 0/8] ADF41513/ADF41510 PLL frequency synthesizers
-Date: Mon, 16 Feb 2026 15:02:15 +0000
-Message-Id: <20260216-adf41513-iio-driver-v7-0-b0ed387ab559@analog.com>
+Date: Mon, 16 Feb 2026 15:02:17 +0000
+Subject: [PATCH v7 2/8] iio: core: add fixed point parsing with 64-bit
+ parts
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,12 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAHcxk2kC/33Q0UrFMAwG4Fc59NpKk25t55XvIV5kTXpOQc+kk
- 6Ec9u52A3Gy6eUfki8hNzVKyTKqh9NNFZnymIdrDf7upOKFrmfRmWtWaLAFAKOJUwMtWJ3zoLn
- kSYomihTIp2CCqDr5ViTlj1V9eq75ksf3oXyuSyZYqv97E2ijkVPoxSSOTh7pSi/D+T4Or2oBJ
- /xBELpjBCvSC3YULLe+szvEfiPOgAnHiF0usQzWA0lqwg5pNgi4Y6SpCPe9Z+cDIvgd0m4QtMd
- Iu/4kSgAkZKYd4jaI/eOxriIxNQ5tV/v6+AuZ5/kL3s7b9RACAAA=
-X-Change-ID: 20251110-adf41513-iio-driver-aaca8a7f808e
+Message-Id: <20260216-adf41513-iio-driver-v7-2-b0ed387ab559@analog.com>
+References: <20260216-adf41513-iio-driver-v7-0-b0ed387ab559@analog.com>
+In-Reply-To: <20260216-adf41513-iio-driver-v7-0-b0ed387ab559@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
  devicetree@vger.kernel.org, linux-doc@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>, 
@@ -54,15 +52,13 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Michael Hennerich <Michael.Hennerich@analog.com>, 
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>, 
- Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>, 
- Andy Shevchenko <andriy.shevchenko@intel.com>
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1771254149; l=4379;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1771254149; l=7786;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=U1lEfjI+z1Avgj2/tKUt7srl6TH1jOcXtS/244eTisA=;
- b=t+H06vNT/wXjrrPVwzezii81kDmoZMdlDfHD6g/VMLUh1wtkCJ4FjmsXMcM/M1trwDzBI0Lha
- 6PhsnEMwfTCD31/nE/8293B/Uy5kRnH40QeejT1RMU63/fS7oZF7gjL
+ bh=cUyqu8aKsZMI5PrdQO6dpsnsWP9WegoLugfDe7Kurh0=;
+ b=AzhsEHLavGUWTEW31BmLAlbhg+BIB3N3l4QcMlSTypZUAFEoUEt5vBNRTxJr+mg/orqSuwszW
+ D7fdwWxYl6yD8vrOPI41sC5iUdsVGGmu5oSTyiblwWW6qAe3jE41y9e
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -70,100 +66,278 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-This patch series adds support for the Analog Devices ADF41513 and ADF41510
-ultralow noise PLL frequency synthesizers. These devices are designed for
-implementing local oscillators (LOs) in high-frequency applications.
-The ADF41513 covers frequencies from 1 GHz to 26.5 GHz, while the ADF41510
-operates from 1 GHz to 10 GHz.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Key features supported by this driver:
-- Integer-N and fractional-N operation modes
-- High maximum PFD frequency (250 MHz integer-N, 125 MHz fractional-N)
-- 25-bit fixed modulus or 49-bit variable modulus fractional modes
-- Digital lock detect functionality
-- Phase resync capability for consistent output phase
-- Load Enable vs Reference signal syncronization
-
-The series includes:
-1. PLL driver implementation
-2. Device tree bindings documentation
-3. IIO ABI documentation
+Add iio_str_to_fixpoint64() function that leverages simple_strtoull()
+to parse numbers from a string.
+A helper function __iio_str_to_fixpoint64() replaces
+__iio_str_to_fixpoint() implementation, extending its usage for
+64-bit fixed-point parsing.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Changes in v7:
-- Addressed minor suggestions.
-- frequency_resolution ABI for AD4350 removed in favor of generic one.
-- Link to v6: https://lore.kernel.org/r/20260130-adf41513-iio-driver-v6-0-cf46239026bc@analog.com
+ drivers/iio/industrialio-core.c | 211 ++++++++++++++++++++++++++++++----------
+ include/linux/iio/iio.h         |   2 +
+ 2 files changed, 163 insertions(+), 50 deletions(-)
 
-Changes in v6:
-- Drop usage of simple_strtoull().
-- Implement better overflow checks with iio_safe_strntou64().
-- Link to v5: https://lore.kernel.org/r/20260123-adf41513-iio-driver-v5-0-2dce812a2dda@analog.com
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 3115d59c1372..37e9ed6b659b 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -21,6 +21,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/overflow.h>
+ #include <linux/poll.h>
+ #include <linux/property.h>
+ #include <linux/sched.h>
+@@ -881,6 +882,136 @@ static ssize_t iio_read_channel_info_avail(struct device *dev,
+ 	}
+ }
+ 
++/**
++ * iio_safe_strntou64() - Parse u64 from string checking for overflow safety
++ * @str: The string to parse
++ * @endp: output pointer to the end parsing position
++ * @result: parsed value
++ * @max_chars: maximum number of digit characters to read
++ *
++ * This function is used in fixed-point parsing and it iterates over a const
++ * char array. It might duplicate behavior of simple_strtoull() or kstrtoull(),
++ * but those have their own limitations:
++ * - simple_strtoull() is not overflow-safe and its usage is discouraged;
++ * - kstrtoull() is safe, but requires termination and it would required a copy
++ *   of the string to a temporary buffer.
++ *
++ * The implementation of this function is similar to _parse_integer_limit()
++ * available in lib/kstrtox.h, but that header/function is not available to be
++ * used in kernel modules. Hence, this implementation may need to change or
++ * removed to reuse a new suitable helper that is properly exposed.
++ *
++ * Returns:
++ * number of parsed characters on success, -ERANGE on overflow
++ */
++static ssize_t iio_safe_strntou64(const char *str, const char **endp,
++				  u64 *result, size_t max_chars)
++{
++	u64 digit, acc = 0;
++	ssize_t idx = 0;
++
++	while (isdigit(str[idx]) && idx < max_chars) {
++		digit = str[idx] - '0';
++		if (unlikely(acc & (~0ull << 60))) {
++			if (check_mul_overflow(acc, 10, &acc) ||
++			    check_add_overflow(acc, digit, &acc))
++				return -ERANGE;
++		} else {
++			acc = acc * 10 + digit;
++		}
++		idx++;
++	}
++
++	*endp = str + idx;
++	*result = acc;
++	return idx;
++}
++
++/**
++ * __iio_str_to_fixpoint64() - Parse a fixed-point number from a string
++ * @str: The string to parse
++ * @fract_mult: Multiplier for the first decimal place, should be a power of 10
++ * @integer: The integer part of the number
++ * @fract: The fractional part of the number
++ * @scale_db: True if this should parse as dB
++ *
++ * This variant uses 64-bit integers for both integer and fractional parts.
++ * Parsed positive values greater than S64_MAX are returned as-is. Parsed
++ * negative values less than S64_MIN are treated as range error, so -ERANGE is
++ * returned.
++ *
++ * Returns:
++ * 0 on success, or a negative error code if the string could not be parsed.
++ */
++static int __iio_str_to_fixpoint64(const char *str, u64 fract_mult,
++				   s64 *integer, s64 *fract, bool scale_db)
++{
++	u64 i = 0, f = 0;
++	int ret, precision = ffs(fract_mult);
++	bool negative = false;
++
++	if (precision > 20) /* ceil(log10(U64_MAX)) = 20 */
++		return -EINVAL;
++
++	if (str[0] == '-') {
++		negative = true;
++		str++;
++	} else if (str[0] == '+') {
++		str++;
++	}
++
++	ret = iio_safe_strntou64(str, &str, &i, SIZE_MAX);
++	if (ret < 0)
++		return ret;
++
++	if (precision && *str == '.') {
++		str++; /* skip decimal point */
++		ret = iio_safe_strntou64(str, &str, &f, precision);
++		if (ret < 0)
++			return ret;
++
++		if (ret < precision) /* scale up */
++			f *= int_pow(10, precision - ret);
++
++		while (isdigit(*str)) /* truncate: ignore further digits */
++			str++;
++	}
++
++	if (!ret)
++		return -EINVAL;
++
++	if (scale_db) {
++		/* Ignore the dB suffix */
++		if (!strncmp(str, " dB", sizeof(" dB") - 1))
++			str += sizeof(" dB") - 1;
++		else if (!strncmp(str, "dB", sizeof("dB") - 1))
++			str += sizeof("dB") - 1;
++	}
++
++	if (*str == '\n')
++		str++;
++
++	if (*str != '\0')
++		return -EINVAL;
++
++	if (negative) {
++		if (i) {
++			if (i > (u64)S64_MIN)
++				return -ERANGE;
++			i = -i;
++		} else {
++			if (f > (u64)S64_MIN)
++				return -ERANGE;
++			f = -f;
++		}
++	}
++
++	*integer = i;
++	*fract = f;
++
++	return 0;
++}
++
+ /**
+  * __iio_str_to_fixpoint() - Parse a fixed-point number from a string
+  * @str: The string to parse
+@@ -895,63 +1026,43 @@ static ssize_t iio_read_channel_info_avail(struct device *dev,
+ static int __iio_str_to_fixpoint(const char *str, int fract_mult,
+ 				 int *integer, int *fract, bool scale_db)
+ {
+-	int i = 0, f = 0;
+-	bool integer_part = true, negative = false;
++	s64 integer64, fract64;
++	int ret;
+ 
+-	if (fract_mult == 0) {
+-		*fract = 0;
++	ret = __iio_str_to_fixpoint64(str, fract_mult, &integer64, &fract64,
++				      scale_db);
++	if (ret)
++		return ret;
+ 
+-		return kstrtoint(str, 0, integer);
+-	}
++	if (integer64 < INT_MIN || integer64 > UINT_MAX ||
++	    fract64 < INT_MIN || fract64 > UINT_MAX)
++		return -ERANGE;
+ 
+-	if (str[0] == '-') {
+-		negative = true;
+-		str++;
+-	} else if (str[0] == '+') {
+-		str++;
+-	}
+-
+-	while (*str) {
+-		if ('0' <= *str && *str <= '9') {
+-			if (integer_part) {
+-				i = i * 10 + *str - '0';
+-			} else {
+-				f += fract_mult * (*str - '0');
+-				fract_mult /= 10;
+-			}
+-		} else if (*str == '\n') {
+-			if (*(str + 1) == '\0')
+-				break;
+-			return -EINVAL;
+-		} else if (!strncmp(str, " dB", sizeof(" dB") - 1) && scale_db) {
+-			/* Ignore the dB suffix */
+-			str += sizeof(" dB") - 1;
+-			continue;
+-		} else if (!strncmp(str, "dB", sizeof("dB") - 1) && scale_db) {
+-			/* Ignore the dB suffix */
+-			str += sizeof("dB") - 1;
+-			continue;
+-		} else if (*str == '.' && integer_part) {
+-			integer_part = false;
+-		} else {
+-			return -EINVAL;
+-		}
+-		str++;
+-	}
+-
+-	if (negative) {
+-		if (i)
+-			i = -i;
+-		else
+-			f = -f;
+-	}
+-
+-	*integer = i;
+-	*fract = f;
++	*integer = integer64;
++	*fract = fract64;
+ 
+ 	return 0;
+ }
+ 
++/**
++ * iio_str_to_fixpoint64() - Parse a fixed-point number from a string
++ * @str: The string to parse
++ * @fract_mult: Multiplier for the first decimal place, should be a power of 10
++ * @integer: The integer part of the number
++ * @fract: The fractional part of the number
++ *
++ * This variant uses 64-bit integers for both integer and fractional parts.
++ *
++ * Returns:
++ * 0 on success, or a negative error code if the string could not be parsed.
++ */
++int iio_str_to_fixpoint64(const char *str, u64 fract_mult, s64 *integer,
++			  s64 *fract)
++{
++	return __iio_str_to_fixpoint64(str, fract_mult, integer, fract, false);
++}
++EXPORT_SYMBOL_GPL(iio_str_to_fixpoint64);
++
+ /**
+  * iio_str_to_fixpoint() - Parse a fixed-point number from a string
+  * @str: The string to parse
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index a9ecff191bd9..cb30d153465a 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -1055,6 +1055,8 @@ int iio_active_scan_mask_index(struct iio_dev *indio_dev);
+ 
+ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals);
+ 
++int iio_str_to_fixpoint64(const char *str, u64 fract_mult, s64 *integer,
++			  s64 *fract);
+ int iio_str_to_fixpoint(const char *str, int fract_mult, int *integer,
+ 	int *fract);
+ 
 
-Changes in v5:
-- Drop local parsing of 64-bit plus fractional parts
-- Add iio_str_to_fixpoint64() to iio core with parsing tests
-- Add DT property dependency for adi,charge-pump-resistor-ohms
-- Add local definition for ADF41513_HZ_PER_GHZ and drop units.h patch
-- Link to v4: https://lore.kernel.org/r/20260116-adf41513-iio-driver-v4-0-dbb7d6782217@analog.com
-
-Changes in v4:
-- Proper usage of units.h macros
-- Simplifications to DT property parsing
-- Adjustments to return value handling
-- Drop of simple DT property node example
-- Link to v3: https://lore.kernel.org/r/20260108-adf41513-iio-driver-v3-0-23d1371aef48@analog.com
-
-Changes in v3:
-- Use FIELD_MODIFY macro in driver implementation
-- Drop refin_frequency iio attribute
-- Drop muxout-select property from dt-bindings (and rename logic-level property)
-- Use -mhz suffix in power-up frequency property
-- Address documentation issues
-- Link to v2: https://lore.kernel.org/r/20251219-adf41513-iio-driver-v2-0-be29a83d5793@analog.com
-
-Changes in v2:
-- separate driver implementation from extra features and improve commit messages
-- use macros from units.h
-- explanation of custom parse function: adf41513_parse_uhz
-- reorganize driver data structures
-- drop clock framework support for now
-- reorganize documentation
-- Link to v1: https://lore.kernel.org/r/20251110-adf41513-iio-driver-v1-0-2df8be0fdc6e@analog.com
-
----
-Rodrigo Alencar (8):
-      dt-bindings: iio: frequency: add adf41513
-      iio: core: add fixed point parsing with 64-bit parts
-      iio: test: add kunit test for fixed-point parsing
-      iio: frequency: adf41513: driver implementation
-      iio: frequency: adf41513: handle LE synchronization feature
-      iio: frequency: adf41513: features on frequency change
-      docs: iio: add documentation for adf41513 driver
-      Documentation: ABI: testing: add common ABI file for iio/frequency
-
- Documentation/ABI/testing/sysfs-bus-iio-frequency  |   11 +
- .../ABI/testing/sysfs-bus-iio-frequency-adf4350    |   10 -
- .../bindings/iio/frequency/adi,adf41513.yaml       |  215 ++++
- Documentation/iio/adf41513.rst                     |  199 ++++
- Documentation/iio/index.rst                        |    1 +
- MAINTAINERS                                        |   10 +
- drivers/iio/frequency/Kconfig                      |   10 +
- drivers/iio/frequency/Makefile                     |    1 +
- drivers/iio/frequency/adf41513.c                   | 1240 ++++++++++++++++++++
- drivers/iio/industrialio-core.c                    |  211 +++-
- drivers/iio/test/Kconfig                           |   12 +
- drivers/iio/test/Makefile                          |    1 +
- drivers/iio/test/iio-test-fixpoint-parse.c         |  470 ++++++++
- include/linux/iio/iio.h                            |    2 +
- 14 files changed, 2333 insertions(+), 60 deletions(-)
----
-base-commit: cce8de7f9744a210a4441ca8a667a9950515eea7
-change-id: 20251110-adf41513-iio-driver-aaca8a7f808e
-
-Best regards,
 -- 
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+2.43.0
 
 
