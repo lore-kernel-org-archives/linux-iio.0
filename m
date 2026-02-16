@@ -1,62 +1,64 @@
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDC4D29E101;
-	Mon, 16 Feb 2026 10:25:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.165.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A86D530CDB0;
+	Mon, 16 Feb 2026 13:17:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771237510; cv=none; b=qIa8rpt3192kX2ZjIHDeO5bFhwd7HFW8k3TdKYCj4R30cczNSotNEBITyT9nISAI1R2fwuq7AAPM/X+YiTD+cwosV4RgPZsYr15l15dacAfeHxCXsM4DJ5lbF7uGxjFbatXu9J3/XeDVWolOVOKjEOk2j9fjhyGZaInBZXLvEtU=
+	t=1771247855; cv=none; b=u6p8dQlm1IEAFz6Vk4qeu+fEs1fFUvXZeuv6VzbJqLfE7DJkU6GW8620gZ7cK44z2DrMXEbYUDmrF+oMZJqou+rcfVx0EBUaeSPJNecCcsEGDxdzVgmifRQmUR6isoef6sIOJHLpHy1pfFXqAAL52/I/TRwJu3cZUBDr3dJefuc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771237510; c=relaxed/simple;
-	bh=8DROzJZ+0rYeEPmwsGBfdpOldzRINQE0QDPwJptpmUI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=a+N2DdwUPfB8SnMIEhXLUAAnZyTsfJmZFu0XLYkuTiwA9dXIs6yBehVNQhA2/0Rux3ThqTJ3M9/n858g0NTfV8RNuPfdLrPfpB3QzfQW6nEInx5Xc/ghQyGMv31vmhpfV6N9XVtOnrqkzZUq7ZhoS7R9wmqfmAf14tqE8gnfARY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=oXQqLnTV; arc=none smtp.client-ip=205.220.165.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1771247855; c=relaxed/simple;
+	bh=/zy9uQTgm9LSTatUlHVi02xJB1WTssZZhquV6eNN1uQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=OyK/iYmCA4sxT2i4meRQMsE7iq8p0L/zdrIWtciCVZknivEdo0DK7hyidYEy3BYmBg2ZcM3fCHWxm5as7sDsxNAho5lSwlILYkIbTiclsY16U+XVEgfi6HPfS2MMdW4GbJayw8fObKZvaaTM1LqkNtS2rMWsDFAv+uSuJkB588c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=X38IEj9X; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="oXQqLnTV"
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61FNk9IM266556;
-	Mon, 16 Feb 2026 10:24:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=corp-2025-04-25; bh=JBi171xcQMNHPUomFzkoHrzLNyxGz
-	Kdu4OVAaBTgUCw=; b=oXQqLnTVpMqUQuWV0Fztyv9EYiWm96JY/Rbco6ZQroaeE
-	4ffbj97kNO+3D+zi7IiznslS5lHGAyFx80Vl2xXzDWym72J6+ln5W5oTXQ4DWulL
-	vDXLdXEtmmMpHDMQCxRsfvxVGkUt43tRqam5TOUkZcdFY3PV/IKZUmkjEW7ZvIrt
-	xQXTKr47pCdUDJy4es+DrpLuXSFkWzI9yfxuBQntBLerWAi1IZN86Hd4fEWYHJk+
-	5OvnBDXLfzMbAree7v0I57S3wN3sYNGuJuZMvYfKK6X49kR7W8QIVnqIhjnA6Jv5
-	oZYaGmdJsxrcKmJNtFUvNwf4Ik22OzGGO1FSgSqAg==
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4caj041uxj-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 16 Feb 2026 10:24:58 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 61GA5x0t029631;
-	Mon, 16 Feb 2026 10:24:57 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4cafgjghb8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 16 Feb 2026 10:24:57 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 61GAOvbi002807;
-	Mon, 16 Feb 2026 10:24:57 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 4cafgjghah-1;
-	Mon, 16 Feb 2026 10:24:57 +0000
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="X38IEj9X"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61G9fWNQ3758125;
+	Mon, 16 Feb 2026 08:17:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=+9sf0dbpUl2lsH6Q5ofo7tCc1KK
+	4DnGS89mv+ykXUJY=; b=X38IEj9XKJaRzI/1Ot+hg8yi6DlAnF8We9ydGY6PW73
+	gNL9uS67jlIycufYSH5IdXpyagHA+KeFILeJXLq7IVkdAdjbqtpXS8f3F3DlorFy
+	BKIeiGXc03cEAPSwmv+ICOBzt4+pNg+YPX7r0DyyAlm9IZsHBFruGZeflU6IhXj/
+	Uvd8q1uqNNK+dmwCMztiN8pIziUE6Y9CcwW3uwUOJL/mJoUp7WMU0m+3tKLz/RMh
+	lrgPJ6M/3lkvTrGfGMWX7in0p/dHCY7hQhVgL7LgaYlqqA0B5fp4dA40wcDz6W5t
+	CF/l2WV/C8K+YuHlkg13/f4pPbDw2/jiUEDIVEP6g5w==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4capu4eyh3-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 16 Feb 2026 08:17:29 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61GDHSNM004223
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 16 Feb 2026 08:17:28 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 16 Feb
+ 2026 08:17:28 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Mon, 16 Feb 2026 08:17:28 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61GDHHT5011700;
+	Mon, 16 Feb 2026 08:17:20 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        David Lechner
+	<dlechner@baylibre.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
         Andy Shevchenko <andy@kernel.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Andrew Ijano <andrew.ijano@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH next v2] iio: sca3000: simplify with spi_get_device_match_data()
-Date: Mon, 16 Feb 2026 02:24:48 -0800
-Message-ID: <20260216102453.1063866-1-harshit.m.mogalapalli@oracle.com>
-X-Mailer: git-send-email 2.50.1
+        Antoniu Miclaus
+	<antoniu.miclaus@analog.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v3] iio: magnetometer: si7210: simplify probe with devm_regulator_get_enable_read_voltage()
+Date: Mon, 16 Feb 2026 15:17:04 +0200
+Message-ID: <20260216131714.90508-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,215 +66,99 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjE2MDExMSBTYWx0ZWRfX4wW6Twr0eHO4
+ aO/HI742ttt03F+mShv/6qxu+arwcX+Tk0KZ9g/qiMljcm1DqgHDfXsQwz/WKaxkb62+lXHfGNl
+ RkeFKSc7+E8yjpzqRdgcYIpIThZ7VyEGroONyiezpbY3YCqvLuXGAzR2jk9u5E48+u8AXgZLkbv
+ doC2ezIAz2mm+gLeDWFf9tXvxsQhA/UGK568IiC2T76kio12kkB5CbkZ02EQoex68ZvkaU65LJa
+ IuJGF38tcSPRcCnSViDWsRNFh9hSv/mAIpWqAVBVudt/QjwfN3g4fFR9a9vaxre2Q6TBuVhUs/F
+ Jt77dPzaK9Mxs3gtxl53WKMnZhCxy9S7YLGLg7IYwWM8AyN604Cif0Mll8ynYeq4GCuenVNaT91
+ O6wdf5QieCyu5qTuE2Q4MBuWHR64OrIgIt1lvoYi4Pdfj2zWj9c4qhssREesL1fhSAL+yQi04XK
+ eLHA6Dvn4QPd+0Ixslg==
+X-Proofpoint-ORIG-GUID: 4TazA8Whhhcx37ZU_3tV8-Z0vL1eMhvt
+X-Proofpoint-GUID: 4TazA8Whhhcx37ZU_3tV8-Z0vL1eMhvt
+X-Authority-Analysis: v=2.4 cv=EZnFgfmC c=1 sm=1 tr=0 ts=699318e9 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
+ a=GgsMoib0sEa3-_RKJdDe:22 a=QyXUC8HyAAAA:8 a=gAnH3GRIAAAA:8
+ a=2vWDxPHOmwhglf-1WF0A:9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-16_04,2026-02-16_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
- suspectscore=0 adultscore=0 bulkscore=0 phishscore=0 malwarescore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2601150000 definitions=main-2602160087
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjE2MDA4NyBTYWx0ZWRfX6z1+t59LWgd+
- IUzORACna5ZZivyiZw0eYQjvkijpp2us0C/9r8P+2jwCvI8oudpMj5ui4ar3jXa5v21DDzY/FcU
- pGq+RdDPNXNcOva97QjiVzMAQsRkki+4+PtPXk5RiGp8GgS7KjyZQAfltBZdS+ZWxmREo4HmYwD
- 3zWrwdFKCdWc8JPvFy1s1v41r+p5p4CkzoyICg/Kfn+9H8qvq+jpunexNJH+keQXJgeRtni9CZT
- YL2TrggRhwi6AkRpmGZSZiK9igdGH5EIb29Vwi5TMBCDLaFi/oZqwYaLeMdbji4JMi6iiGigMph
- hsYLRkwk8ex7r3UoYSnvDxo977NDZpGw6huDuafDq2T6XPEyiGxuo2L4WxWqWD6ESHnClQi6Pz+
- hur3tgfY/Qke8CYFqMJ/h/dioaUQ9LZoyvZ4Q97ZnSpTpXnPhyAp4qT6lZQDKuZAxWt0fcBSvD9
- oIAJ4byrf5BB5Y1Tw9JkbU67t5RoL1SJ1skitClE=
-X-Authority-Analysis: v=2.4 cv=O+w0fR9W c=1 sm=1 tr=0 ts=6992f07b b=1 cx=c_pps
- a=zPCbziy225d3KhSqZt3L1A==:117 a=zPCbziy225d3KhSqZt3L1A==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
- a=GgsMoib0sEa3-_RKJdDe:22 a=IpJZQVW2AAAA:8 a=QyXUC8HyAAAA:8 a=yPCof4ZbAAAA:8
- a=lsRt6yUIgdeWpme2pw8A:9 a=IawgGOuG5U0WyFbmm1f5:22 a=zq9cQQxCjHtRaWh5T9cX:22
- cc=ntf awl=host:12148
-X-Proofpoint-GUID: EGXUYyRB6KN1bmsmE-UMvE7jH_M53x8N
-X-Proofpoint-ORIG-GUID: EGXUYyRB6KN1bmsmE-UMvE7jH_M53x8N
+ definitions=2026-02-16_04,2026-02-16_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 malwarescore=0 spamscore=0 suspectscore=0 bulkscore=0
+ adultscore=0 clxscore=1015 lowpriorityscore=0 phishscore=0 impostorscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602160111
 
-Refactor each sca3000 variant with it's own chip_info struct, update the
-sca3000_probe() to use spi_get_device_match_data().
+Simplify probe by using devm_regulator_get_enable_read_voltage() to
+get, enable and read the regulator voltage in a single call, caching
+the value at probe time.
 
-Suggested-by: David Lechner <dlechner@baylibre.com>
-Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+This is a functional change as VDD voltage is now read once at probe
+rather than dynamically on each temperature measurement. However, in
+real deployments it is very rare for VDD to change after initial probe.
+
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
-Only compile tested.
+Changes in v3:
+ - reorder vdd_uV struct member placement (after fetch_lock instead of
+   at the end) to maintain proper struct field ordering
+ - update commit message to clarify the functional change
 
-v1->v2: Andy suggested we drop a NULL check on
-spi_get_device_match_data() failure. Also added Andy's RB.
----
- drivers/iio/accel/sca3000.c | 127 +++++++++++++++++-------------------
- 1 file changed, 59 insertions(+), 68 deletions(-)
+ drivers/iio/magnetometer/si7210.c | 21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-index d4c117f54a07..eeb313056259 100644
---- a/drivers/iio/accel/sca3000.c
-+++ b/drivers/iio/accel/sca3000.c
-@@ -172,6 +172,7 @@ struct sca3000_state {
+diff --git a/drivers/iio/magnetometer/si7210.c b/drivers/iio/magnetometer/si7210.c
+index 27e3feba7a0f..2a36abd1c99d 100644
+--- a/drivers/iio/magnetometer/si7210.c
++++ b/drivers/iio/magnetometer/si7210.c
+@@ -128,8 +128,8 @@ static const struct regmap_config si7210_regmap_conf = {
+ struct si7210_data {
+ 	struct regmap *regmap;
+ 	struct i2c_client *client;
+-	struct regulator *vdd;
+ 	struct mutex fetch_lock; /* lock for a single measurement fetch */
++	unsigned int vdd_uV;
+ 	s8 temp_offset;
+ 	s8 temp_gain;
+ 	s8 scale_20_a[A_REGS_COUNT];
+@@ -221,12 +221,8 @@ static int si7210_read_raw(struct iio_dev *indio_dev,
+ 		temp *= (1 + (data->temp_gain / 2048));
+ 		temp += (int)(MICRO / 16) * data->temp_offset;
  
- /**
-  * struct sca3000_chip_info - model dependent parameters
-+ * @name:			name of the chip
-  * @scale:			scale * 10^-6
-  * @temp_output:		some devices have temperature sensors.
-  * @measurement_mode_freq:	normal mode sampling frequency
-@@ -194,6 +195,7 @@ struct sca3000_state {
-  * sca3000 variant.
-  **/
- struct sca3000_chip_info {
-+	const char		*name;
- 	unsigned int		scale;
- 	bool			temp_output;
- 	int			measurement_mode_freq;
-@@ -208,69 +210,59 @@ struct sca3000_chip_info {
- 	int			mot_det_mult_y[7];
- };
+-		ret = regulator_get_voltage(data->vdd);
+-		if (ret < 0)
+-			return ret;
+-
+ 		/* temp -= 0.222 * VDD */
+-		temp -= 222 * div_s64(ret, MILLI);
++		temp -= 222 * (data->vdd_uV / MILLI);
  
--enum sca3000_variant {
--	d01,
--	e02,
--	e04,
--	e05,
-+static const struct sca3000_chip_info sca3000_chip_info_d01 = {
-+	.name = "sca3000_d01",
-+	.scale = 7357,
-+	.temp_output = true,
-+	.measurement_mode_freq = 250,
-+	.measurement_mode_3db_freq = 45,
-+	.option_mode_1 = SCA3000_OP_MODE_BYPASS,
-+	.option_mode_1_freq = 250,
-+	.option_mode_1_3db_freq = 70,
-+	.mot_det_mult_xz = {50, 100, 200, 350, 650, 1300},
-+	.mot_det_mult_y = {50, 100, 150, 250, 450, 850, 1750},
- };
+ 		*val = div_s64(temp, MILLI);
  
--/*
-- * Note where option modes are not defined, the chip simply does not
-- * support any.
-- * Other chips in the sca3000 series use i2c and are not included here.
-- *
-- * Some of these devices are only listed in the family data sheet and
-- * do not actually appear to be available.
-- */
--static const struct sca3000_chip_info sca3000_spi_chip_info_tbl[] = {
--	[d01] = {
--		.scale = 7357,
--		.temp_output = true,
--		.measurement_mode_freq = 250,
--		.measurement_mode_3db_freq = 45,
--		.option_mode_1 = SCA3000_OP_MODE_BYPASS,
--		.option_mode_1_freq = 250,
--		.option_mode_1_3db_freq = 70,
--		.mot_det_mult_xz = {50, 100, 200, 350, 650, 1300},
--		.mot_det_mult_y = {50, 100, 150, 250, 450, 850, 1750},
--	},
--	[e02] = {
--		.scale = 9810,
--		.measurement_mode_freq = 125,
--		.measurement_mode_3db_freq = 40,
--		.option_mode_1 = SCA3000_OP_MODE_NARROW,
--		.option_mode_1_freq = 63,
--		.option_mode_1_3db_freq = 11,
--		.mot_det_mult_xz = {100, 150, 300, 550, 1050, 2050},
--		.mot_det_mult_y = {50, 100, 200, 350, 700, 1350, 2700},
--	},
--	[e04] = {
--		.scale = 19620,
--		.measurement_mode_freq = 100,
--		.measurement_mode_3db_freq = 38,
--		.option_mode_1 = SCA3000_OP_MODE_NARROW,
--		.option_mode_1_freq = 50,
--		.option_mode_1_3db_freq = 9,
--		.option_mode_2 = SCA3000_OP_MODE_WIDE,
--		.option_mode_2_freq = 400,
--		.option_mode_2_3db_freq = 70,
--		.mot_det_mult_xz = {200, 300, 600, 1100, 2100, 4100},
--		.mot_det_mult_y = {100, 200, 400, 7000, 1400, 2700, 54000},
--	},
--	[e05] = {
--		.scale = 61313,
--		.measurement_mode_freq = 200,
--		.measurement_mode_3db_freq = 60,
--		.option_mode_1 = SCA3000_OP_MODE_NARROW,
--		.option_mode_1_freq = 50,
--		.option_mode_1_3db_freq = 9,
--		.option_mode_2 = SCA3000_OP_MODE_WIDE,
--		.option_mode_2_freq = 400,
--		.option_mode_2_3db_freq = 75,
--		.mot_det_mult_xz = {600, 900, 1700, 3200, 6100, 11900},
--		.mot_det_mult_y = {300, 600, 1200, 2000, 4100, 7800, 15600},
--	},
-+static const struct sca3000_chip_info sca3000_chip_info_e02 = {
-+	.name = "sca3000_e02",
-+	.scale = 9810,
-+	.measurement_mode_freq = 125,
-+	.measurement_mode_3db_freq = 40,
-+	.option_mode_1 = SCA3000_OP_MODE_NARROW,
-+	.option_mode_1_freq = 63,
-+	.option_mode_1_3db_freq = 11,
-+	.mot_det_mult_xz = {100, 150, 300, 550, 1050, 2050},
-+	.mot_det_mult_y = {50, 100, 200, 350, 700, 1350, 2700},
-+};
-+
-+static const struct sca3000_chip_info sca3000_chip_info_e04 = {
-+	.name = "sca3000_e04",
-+	.scale = 19620,
-+	.measurement_mode_freq = 100,
-+	.measurement_mode_3db_freq = 38,
-+	.option_mode_1 = SCA3000_OP_MODE_NARROW,
-+	.option_mode_1_freq = 50,
-+	.option_mode_1_3db_freq = 9,
-+	.option_mode_2 = SCA3000_OP_MODE_WIDE,
-+	.option_mode_2_freq = 400,
-+	.option_mode_2_3db_freq = 70,
-+	.mot_det_mult_xz = {200, 300, 600, 1100, 2100, 4100},
-+	.mot_det_mult_y = {100, 200, 400, 7000, 1400, 2700, 54000},
-+};
-+
-+static const struct sca3000_chip_info sca3000_chip_info_e05 = {
-+	.name = "sca3000_e05",
-+	.scale = 61313,
-+	.measurement_mode_freq = 200,
-+	.measurement_mode_3db_freq = 60,
-+	.option_mode_1 = SCA3000_OP_MODE_NARROW,
-+	.option_mode_1_freq = 50,
-+	.option_mode_1_3db_freq = 9,
-+	.option_mode_2 = SCA3000_OP_MODE_WIDE,
-+	.option_mode_2_freq = 400,
-+	.option_mode_2_3db_freq = 75,
-+	.mot_det_mult_xz = {600, 900, 1700, 3200, 6100, 11900},
-+	.mot_det_mult_y = {300, 600, 1200, 2000, 4100, 7800, 15600},
- };
+@@ -396,14 +392,11 @@ static int si7210_probe(struct i2c_client *client)
+ 		return dev_err_probe(&client->dev, PTR_ERR(data->regmap),
+ 				     "failed to register regmap\n");
  
- static int sca3000_write_reg(struct sca3000_state *st, u8 address, u8 val)
-@@ -1469,10 +1461,9 @@ static int sca3000_probe(struct spi_device *spi)
- 	st = iio_priv(indio_dev);
- 	st->us = spi;
- 	mutex_init(&st->lock);
--	st->info = &sca3000_spi_chip_info_tbl[spi_get_device_id(spi)
--					      ->driver_data];
-+	st->info = spi_get_device_match_data(spi);
+-	data->vdd = devm_regulator_get(&client->dev, "vdd");
+-	if (IS_ERR(data->vdd))
+-		return dev_err_probe(&client->dev, PTR_ERR(data->vdd),
+-				     "failed to get VDD regulator\n");
+-
+-	ret = regulator_enable(data->vdd);
+-	if (ret)
+-		return ret;
++	ret = devm_regulator_get_enable_read_voltage(&client->dev, "vdd");
++	if (ret < 0)
++		return dev_err_probe(&client->dev, ret,
++				     "Failed to get vdd regulator\n");
++	data->vdd_uV = ret;
  
--	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->name = st->info->name;
- 	indio_dev->info = &sca3000_info;
- 	if (st->info->temp_output) {
- 		indio_dev->channels = sca3000_channels_with_temp;
-@@ -1513,10 +1504,10 @@ static int sca3000_probe(struct spi_device *spi)
- }
- 
- static const struct spi_device_id sca3000_id[] = {
--	{"sca3000_d01", d01},
--	{"sca3000_e02", e02},
--	{"sca3000_e04", e04},
--	{"sca3000_e05", e05},
-+	{"sca3000_d01", (kernel_ulong_t)&sca3000_chip_info_d01},
-+	{"sca3000_e02", (kernel_ulong_t)&sca3000_chip_info_e02},
-+	{"sca3000_e04", (kernel_ulong_t)&sca3000_chip_info_e04},
-+	{"sca3000_e05", (kernel_ulong_t)&sca3000_chip_info_e05},
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, sca3000_id);
+ 	indio_dev->name = dev_name(&client->dev);
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
 -- 
-2.50.1
+2.43.0
 
