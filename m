@@ -1,155 +1,133 @@
-Received: from mail-qv1-f51.google.com (mail-qv1-f51.google.com [209.85.219.51])
+Received: from mail-dl1-f47.google.com (mail-dl1-f47.google.com [74.125.82.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 769072BE031
-	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 01:55:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771206906; cv=none; b=EAsSizAKdyRGXZofz0vCtqeQ9QRVkj2Ml/aIe1CU2JE6tCGNR61HILRqL06v+tmrHjvY5n6XZgsP5eeihslRhScVdf0hzzb8CmLuxD6ZtoCmXG2igwhXJgOVJgkIE8C3N4MMF33+gE4TtN5pRm7nS49LS8SfIlQj5MA5tvXoteU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771206906; c=relaxed/simple;
-	bh=dFB59mytzmRWRnKqQQNge2zn1BGrXq7oA9vprg2lXio=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=PIqhiZEajGzG39KdVz7yIz/Y8hLKbXjI69DeTpZF/WOEABELstPOm0RvXEF6ARNdBpMV1gK07LxEmHV89MUq7ZHOvD2EG7lf8zCbVn4nWxen8DJxfvKzWdUXP4HfzzBRvjw17z2TpLpIge7fvWX+5Ph3/zV6Ti2tirxBZQwDeHM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ax4Utkva; arc=none smtp.client-ip=209.85.219.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CE4C28C2BF
+	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 06:06:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.82.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771221998; cv=pass; b=YJK1V82NtEvCgxh2ndDzbhnZgjw8m5jwqM18ieIuwD2GAzAdiYlh3eTmVJFLryt+hewt2zc/S4FED1fSJ/6ycShKUqdPGQiOanzuFQS0E2Yz9P75ykvms6A60RIJuA33/qfbLVvt48JIFVd+k8U36FKDrm9EHvEiY6fZyUUHePY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771221998; c=relaxed/simple;
+	bh=w6oUnDj8mS1GIYBszh3L1atKbMxJn292y9Z61m2Eg2M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=M1xJjQZu9w8RPgIbIGytXKe8wKAtf5em4Jka00n6S8fTLTDZg+0M74o4SM+/AFWb9eluP/+/IdM0BRRr52dDgVDtmPeI6NosdTODDgCaMKondB9vF1HhgUuDtgdaCjuvuzZO8XnwCDYO+AK4U+OqMDHnKk2RlxgGsn6p17YlKxQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eYb8O+6n; arc=pass smtp.client-ip=74.125.82.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ax4Utkva"
-Received: by mail-qv1-f51.google.com with SMTP id 6a1803df08f44-8946e0884afso50296676d6.1
-        for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 17:55:05 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eYb8O+6n"
+Received: by mail-dl1-f47.google.com with SMTP id a92af1059eb24-1270be4d125so1230356c88.1
+        for <linux-iio@vger.kernel.org>; Sun, 15 Feb 2026 22:06:37 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1771221996; cv=none;
+        d=google.com; s=arc-20240605;
+        b=IOFI5V3+A1Q2HSpD6a8tvsY5VLVucx3IEhwPUixbfMo/FrB/dreMFQsdsEOeV07sQE
+         7+/B/fP11OOQIlwLGzvJE3jpQ1FUDycv2O5BwZhhTKa1xynxRvitBZUR+cRDofiOCv9R
+         JgfDkmj9cA7qbcbndpLPIbevSk5Jr7K4TXixhkvq/Kb4KJrSEDsUjoqxqtUI2iok4IFr
+         F8C8kFDnXknJn2tlznRAJgL3Nk2R4GgrmHRP5IIxtxB2Ohq2diIKXK1x7j20iplY4Bih
+         yr2ndf6saIVGr9+otBebmsBmaB75dVrBH46P4fI0aWtW+J809kaXUJ5oTlrcy07sgQ4p
+         EQIw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=KN4FR1nZnYa1IkW8oy31g64ThWxjZHfPWxGnRqBqNoQ=;
+        fh=wGT/LyHDV1qVS8zd3JqUSx9s2wNU2lX1pUmU8ODmjBs=;
+        b=CMACmF9THuRQtgh0KWk5nUD9uzkyx0CbriKHoCpuHeoAzIvpZdcMbr1lLaT+6pkiRO
+         HA0vlrT4AAinxWNw0RLwCnAZTflPtUWkK3IWT5cT7mXZlu4nztbY9BZdpsfaPHdMoKIG
+         feGICbTsgglmVgQxrQIznCgRgI25aZC+i37kE6OHIn3Ag310eSLT6h4CRomgddkyKpR2
+         GciBr1SH1Fw9q8Fm9Y7RdmKZqQbGE8aZrYyp3i47A3xO7XXWgRWveYCZS+sUBejibfAc
+         HBcTv2CYzBd0jKJ+80FAXH8Pn1Z5Da/XTEo1aVb2PPl0E2ExQJsBMBOVpD9bEzgaQHVb
+         I+2Q==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771206904; x=1771811704; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1771221996; x=1771826796; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=rsSw2N0mFOfL7A7wPIuvu1J4Yi6uMDkONpE+mB9hBTo=;
-        b=ax4UtkvaVOENp1WQ9UPLKYpiOuqiASGk7cag5uXTIbQywuoBKzYcqU7ZBfw9OYs5K+
-         pG6CsbQvQC705czXssnmBmj3eiPEO7I7jQmw6EK5IdJ4G68SIveh/N325OkSeYPc4Li8
-         NrJPJzC1JyyntofoLYgI71H7guND6+/tbbOyS88x7ruO3C1Ml8LS0UPSwgu5ynvt2OlG
-         0lVy7slqe0oh+Xr1NpZvYd9xpDmBr3vzCF8pyiEM/33gMrq7tRYq3OGpB+Qdt45XYg4L
-         CV6JjerybS6/kfXFgOUOb/G+H1HnarizDr5iDXNyWXO1zaPO+mVaxryIl6rLnal0aiqu
-         tdIg==
+        bh=KN4FR1nZnYa1IkW8oy31g64ThWxjZHfPWxGnRqBqNoQ=;
+        b=eYb8O+6nG+jmxxlkXJkvsZ054XFB21mJ3yNBWV9SY9EFuLO/Er4ZWTw9whw4rwviIW
+         I5uhpEhWbcnn3f685UjClAzsaYHtfA2Wtl2TZLlQxT0gddrYIwy050jOMul8vp1Gs2P9
+         KSBwCvPI3ICmdNO+9nsZoaExMqTtXWAJrFXj7u8DvwlF7Wzubqjr5g+1oe4uK65QtCGJ
+         XDex2MogrmLYF5Vx1QKXBB6yVioxukY3uBXKnZjZC2LCj1ikKUX+H5nTsRr2hoU8BQm+
+         pd1PtoWiWNNRsSJBJqjeSwjLj4NNewPpVD7E787IHfwWOGVa9EW/7aXKh/A0G9ROD5TP
+         XLeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771206904; x=1771811704;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20230601; t=1771221996; x=1771826796;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=rsSw2N0mFOfL7A7wPIuvu1J4Yi6uMDkONpE+mB9hBTo=;
-        b=RTVCsUhx/L/Ikb1DlAI6og6Xm8RtnW996u3nAP4C/t20pIfCd4H3/MdI+T/GV0jbpm
-         VcSwpi+1IGzs5m4wpohzLiNUSGTaLJRiI26UBugLarBw9UimrPWOC5LJmsuqvSR8pf7X
-         RdYQ2ybW1G1XtQkGrbu8IbaUl/mqfKZ4j5yACM68eoy7GO6ekeWfzTmzweISDit7Xynl
-         TnStTsQJHGUTEwBEeQGR20DP05Rdv4kLb6Ocv0TZQl4d52879uasdi89OaTUcsQUHWMb
-         A8SnKzSoFz/xycmzSsnJMIXMRDyoT6I5kuFAn6O4zCMInnLdlJq4lM922RSlAvZFQ77u
-         8ZZg==
-X-Forwarded-Encrypted: i=1; AJvYcCUfpBTgIDQOftpYEiA7KLdDfn7+fbRAJggToQ/y+kv1gDdu2aRXM5FiD3YXKCnCt+pcF/f8KjHMFLM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx0Zc+dEXfIADodeGSXSEBRtm1KK7gYBg+pXy10GhKye9UNUUiq
-	q0Tt9Yc1yLov6BDYArDxsoVxme0F6DpISm4qnBgg7wUoOq2PxzQtMQNQUJ4Tlg==
-X-Gm-Gg: AZuq6aLfBel4zaD+NndS8AbFHQhYjGZI9SS9U/1ZJr0yDZyiKQPRTh7jlyt5OZQCZ3p
-	y7MnbJdr+qYypE6e1NNQXtDgR3XmwboQv6W/JfAk+QrFtFXNk6hEi7j+SZUqw/P+mmO+wDI3cVI
-	ksC7Lx/piWTQG9kxiwrwHr7Qfie2W6sCPDj4yAUffT2Jf3lw40vl5d0DRQUzQuIWcyGDqoy0nGU
-	r89sV86ajjXtPsj9qXZ1wPdRazDyU86r95A7J99bVn7nfK8TAZHfapF77TNs98yS62h34Jo6RGL
-	/xO2Arlu/8vhKXOLtjwrXpJgZ6NluKtlq12duJoZGbINpE0zes1LJsIUlpLVUeBODdjQm/RXEOR
-	PjYOj7woT4OXR7syK1QGUsWSGjeTh9WebkNNx/P+zAYrc39jf4xNe0uc5soEPV2pO3XRYRr/mdh
-	Vhkwep2WhPOkuyKyCcreCpenYmCn1UQTH7oFxYFtx1zw==
-X-Received: by 2002:a05:6214:da1:b0:888:89fd:a727 with SMTP id 6a1803df08f44-897404b6a0bmr104838776d6.49.1771206904509;
-        Sun, 15 Feb 2026 17:55:04 -0800 (PST)
-Received: from localhost.localdomain ([50.21.71.60])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-506849fbb9dsm126926161cf.15.2026.02.15.17.55.03
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sun, 15 Feb 2026 17:55:04 -0800 (PST)
-From: Neel Bullywon <neelb2403@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Neel Bullywon <neelb2403@gmail.com>
-Subject: [PATCH v7 3/3] iio: magnetometer: bmc150_magn: minor formatting cleanup
-Date: Sun, 15 Feb 2026 20:54:54 -0500
-Message-ID: <20260216015454.61836-4-neelb2403@gmail.com>
-X-Mailer: git-send-email 2.44.0
-In-Reply-To: <20260216015454.61836-1-neelb2403@gmail.com>
-References: <20260216015454.61836-1-neelb2403@gmail.com>
+        bh=KN4FR1nZnYa1IkW8oy31g64ThWxjZHfPWxGnRqBqNoQ=;
+        b=eblKBAtAceD2GRYIKlGwIhUPIE2uTJjcCSQgKaS6vaq+jUK/2uYc6sLmLBdBkM8f2v
+         Wa+oPwiMsNaixAU7bLsawQZMx/dUG5U+v28IAK/+yU2a9/QGQ7HaNcLvzz7j1ktKIJ9s
+         WppB01RIyJkkLEM/51GfucpJniVBPlTUHJQWy/CaHBeVOuE91ME/ZmFtj1s4fX9P6ZSY
+         Qfk0ZVp3QpYcbeypOJpCl6OZh7mfCSVDVQIAgpVZskJ8IAP/39i8Mq+GQ1dkTeSjO4hf
+         zb3DsQn61VgGhIrV4Wc77Ud0lRofCWFUD2htQnWrFJMoiz6KVcjWaPveLAEuOn5eiuA6
+         rFew==
+X-Forwarded-Encrypted: i=1; AJvYcCV4ReolKr0UG+f5mrn1TdAqshYFqcjZEnNBMldjc9zS5deOc/gWa+0X2/iM2lyzBvBmM0n4n2ZKRNc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwP3qZfZ46TDpRCyWTijU42aPGqDvItqLhOjFLLtdiuYxRxtNYA
+	UpAbk6ubzv7YxdgBZoTvdLnpJZlQcGM++kousq99YPMu7/QjVlGqOJHhhYjNaO1EzxorInAQ4dJ
+	pd9GXCsVMwf+3Hc/M99uZMK5TU8H4zls=
+X-Gm-Gg: AZuq6aKQwAbMkhY1hKYOhWEWR62kBV93VPT/rM4I81yOdRvPB5Vj+Pc/2QipWyDDH9L
+	/e6Xmhq8WLJi0WFqtdAQtq7f5Qa5Py1xzPIDYbfQsZazqps1xAdmHzOSSOnjzNSDUx2MDBhGyPf
+	7ZeAFXAJIDT//Dr9Q4egGDNyTvaJ8o9+Q9Gx3xKhBPYmhnJF1tIbP7sDiiET1V8aLP0CSXa8RnU
+	ajVNnpqklFF+JpepLiXOGBETLPItEoqPsrHzmH6y+VG3/nYum/dBCj62jF+ttmU9aBZ72o6fT2e
+	Fp8FvbQ=
+X-Received: by 2002:a05:7022:e1d:b0:127:3214:c868 with SMTP id
+ a92af1059eb24-12741beaa84mr2827136c88.47.1771221996384; Sun, 15 Feb 2026
+ 22:06:36 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260212124609.24745-1-antoniu.miclaus@analog.com> <20260212124609.24745-2-antoniu.miclaus@analog.com>
+In-Reply-To: <20260212124609.24745-2-antoniu.miclaus@analog.com>
+From: =?UTF-8?Q?Tomasz_Duszy=C5=84ski?= <tduszyns@gmail.com>
+Date: Mon, 16 Feb 2026 07:06:22 +0100
+X-Gm-Features: AaiRm53pjrAnbv1Mr6ApvXPdu8uPWcs4S1N1OQKyL5yNhvVeCfoqZhln-Cswmd4
+Message-ID: <CAObtm8zff-pnU=Y7GugU3kg_ucWSrTJuYz1iATUQuPvVfgqi1Q@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iio: chemical: sps30_i2c: fix buffer size in sps30_i2c_read_meas()
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Improve initializer list style for bmc150_magn_samp_freq_table by
-moving the opening brace to its own line and using one entry per line
-with proper indentation and spaces inside braces.
+On Thu, Feb 12, 2026 at 1:46=E2=80=AFPM Antoniu Miclaus
+<antoniu.miclaus@analog.com> wrote:
+>
+> sizeof(num) evaluates to sizeof(size_t) (8 bytes on 64-bit) instead
+> of the intended __be32 element size (4 bytes). Use sizeof(*meas) to
+> correctly match the buffer element type.
+>
+> Fixes: 8f3f13085278 ("iio: sps30: separate core and interface specific co=
+de")
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
+>  drivers/iio/chemical/sps30_i2c.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/chemical/sps30_i2c.c b/drivers/iio/chemical/sps3=
+0_i2c.c
+> index f692c089d17b..c92f04990c34 100644
+> --- a/drivers/iio/chemical/sps30_i2c.c
+> +++ b/drivers/iio/chemical/sps30_i2c.c
+> @@ -171,7 +171,7 @@ static int sps30_i2c_read_meas(struct sps30_state *st=
+ate, __be32 *meas, size_t n
+>         if (!sps30_i2c_meas_ready(state))
+>                 return -ETIMEDOUT;
+>
+> -       return sps30_i2c_command(state, SPS30_I2C_READ_MEAS, NULL, 0, mea=
+s, sizeof(num) * num);
+> +       return sps30_i2c_command(state, SPS30_I2C_READ_MEAS, NULL, 0, mea=
+s, sizeof(*meas) * num);
+>  }
+>
+>  static int sps30_i2c_clean_fan(struct sps30_state *state)
+> --
+> 2.43.0
+>
 
-Add spaces inside braces for initializer lists in the preset table
-for consistency.
-
-Fix indentation of bmc150_magn_scan_masks array. No functional changes.
-
-Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
----
- drivers/iio/magnetometer/bmc150_magn.c | 31 ++++++++++++++------------
- 1 file changed, 17 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index e7f8d118242b..6e154b55ca18 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -149,14 +149,16 @@ struct bmc150_magn_data {
- static const struct {
- 	int freq;
- 	u8 reg_val;
--} bmc150_magn_samp_freq_table[] = { {2, 0x01},
--				    {6, 0x02},
--				    {8, 0x03},
--				    {10, 0x00},
--				    {15, 0x04},
--				    {20, 0x05},
--				    {25, 0x06},
--				    {30, 0x07} };
-+} bmc150_magn_samp_freq_table[] = {
-+	{ 2, 0x01 },
-+	{ 6, 0x02 },
-+	{ 8, 0x03 },
-+	{ 10, 0x00 },
-+	{ 15, 0x04 },
-+	{ 20, 0x05 },
-+	{ 25, 0x06 },
-+	{ 30, 0x07 },
-+};
- 
- enum bmc150_magn_presets {
- 	LOW_POWER_PRESET,
-@@ -170,10 +172,10 @@ static const struct bmc150_magn_preset {
- 	u8 rep_z;
- 	u8 odr;
- } bmc150_magn_presets_table[] = {
--	[LOW_POWER_PRESET] = {3, 3, 10},
--	[REGULAR_PRESET] =  {9, 15, 10},
--	[ENHANCED_REGULAR_PRESET] =  {15, 27, 10},
--	[HIGH_ACCURACY_PRESET] =  {47, 83, 20},
-+	[LOW_POWER_PRESET] = { 3, 3, 10 },
-+	[REGULAR_PRESET] = { 9, 15, 10 },
-+	[ENHANCED_REGULAR_PRESET] = { 15, 27, 10 },
-+	[HIGH_ACCURACY_PRESET] = { 47, 83, 20 },
- };
- 
- #define BMC150_MAGN_DEFAULT_PRESET REGULAR_PRESET
-@@ -643,8 +645,9 @@ static const struct iio_info bmc150_magn_info = {
- };
- 
- static const unsigned long bmc150_magn_scan_masks[] = {
--					BIT(AXIS_X) | BIT(AXIS_Y) | BIT(AXIS_Z),
--					0};
-+	BIT(AXIS_X) | BIT(AXIS_Y) | BIT(AXIS_Z),
-+	0
-+};
- 
- static irqreturn_t bmc150_magn_trigger_handler(int irq, void *p)
- {
--- 
-2.44.0
-
+Acked-by: Tomasz Duszynski <tduszyns@gmail.com>
