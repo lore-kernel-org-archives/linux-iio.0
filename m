@@ -1,161 +1,194 @@
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
+Received: from mail-yx1-f54.google.com (mail-yx1-f54.google.com [74.125.224.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CAF32EC0AA
-	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 15:37:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771256260; cv=none; b=IFYIU1gni7ydttZVrUO5ItnlEMY9W0xgp95tunJjcwhY802JURK9duIMIW22XY2K5/mndqqxwrNWbzsAophtn86UlXwMS/kMrIGBJ3LZcY+6/ZhkyrnujFHODA64iTgxD1CWtvUYfgk/RL6CaS+pvBnkVFHu76fYocP0/j9hilM=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771256260; c=relaxed/simple;
-	bh=jLE5YYy+MDiih1RJ6gcLTrV1hmCmgEQPsAZQSUozZQU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=C+QvbP7jfUzo8xjHI7WD6aC6FLSCj/y3W/8JJXtx8+4gnlVFhRVH/ssdsW8jSzFLwVhoeUEp/M2d320IveboARn/v9r9Ay/yYy5Vfvpqi+qX81U9Xjqsi/US754I6yGJT4W9KllEuwrJT17S97V0aOE3uekI7uCjuvoGzc7mbL8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=JZ3JqGMg; arc=none smtp.client-ip=209.85.210.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6ED99331237
+	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 15:52:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.54
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771257166; cv=pass; b=mE6IrH5Q/3RyiOm8HXrbWYOmq5Uxb0UotSKz2CHdcORTntlDZGOnNpe2A881pAwWWz5OTu1MPHJTdpN/UMnzTU9gDH72MASRpfCgW8MtzXLkbRpahqTqEF0G1V1fW2V93lrqAFQr910HqWPzTlIsHexQ69sAfDEVG+MdIiZWBGQ=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771257166; c=relaxed/simple;
+	bh=WtNg8/l1eqg1/NegOwlpY7SzuGpHu6ScT3AQG3qCNFQ=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=ZCru+dduvHiZzMOWx6xlVJ2byAgI1Xv81blt+E7GSzb6UJ0fpYh2+Kpdpq+oUmRDQR+83yDIR2euIPUwU0B25KqZ+YsZzDXkKYlM4/XpCBRMWKptb4/MZ4iqAcaF2XTVvbCk9DGiVKLqsHTRpyS+sDsx5CiSxBmtun3pDqnydnA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bh+MUeF0; arc=pass smtp.client-ip=74.125.224.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="JZ3JqGMg"
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7d18c654458so1325620a34.3
-        for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 07:37:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bh+MUeF0"
+Received: by mail-yx1-f54.google.com with SMTP id 956f58d0204a3-64937edbc9eso2829047d50.2
+        for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 07:52:45 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1771257164; cv=none;
+        d=google.com; s=arc-20240605;
+        b=U48O1J1GE5qlIgmSK87YuuvHU9BCjDybgBwIMfEf1Phn/mTHvi0LFM9Qe6OyI8pOK/
+         cFLqDlNBuz2D3x4L4mDDvcRwFFLQJSW/qKBmSCh8T7UmLgK3A8OFOxMJnk9rG+1QluBy
+         BnqXmUQtRofV3Qu52/fLwxKli8/lRzIV06+9o0U7IX7S+W4Wr/eE16duA9KGYKpM5Y+v
+         gVaq7rGoZptTyjFjvrJG4I5yfbJs9BqJzE6e+VMTNsYm3wBOucwRdOUxg5nBntmyuGXd
+         pfzG5zYzVVKtaKjdrkVwNESXEsOnR56Aka2Ls8DDUJUtawdXNX3W3bKvAbF6QxrtIe3m
+         edDQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ot2mU0yu83xeq0xqLkly0xKYSkvAdLvXToIN6WuukKc=;
+        fh=VZAjx4EyuQ31LaI6fiBcNxMgXunCXWLQNiAazybl/kk=;
+        b=Z5EBw9LGh8htoCaJNw8i8RAn2of7+w5jELdizzx+kIi7IVakZiZdrvfdEz+rHXiM0j
+         L7faaCPuAMkUaizbDtSVtReu+snvRlfdJ7pKNK4FRvQkvcWmf3fVsFjbWtDW9wv4PHgA
+         dC2zwbruO9MlstTA9PR+xk3DhU0FKApB4Ihal7HkhWtq1rxa6nnSkS3JMU+ODX1Hxr3p
+         CrfS3NCckwrjO+onsfuiOVUECv6NWnh3kbBXjL9+jC10p/zvPx5YAtAaL7gkxytEOyLL
+         9fkkGSEpvZw+DH6yvJCh834HuntmDCdzNExXJn6h8893kTaEiZu5mYhCvkgHFNj6QuxC
+         S8kA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771256256; x=1771861056; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=J0DKips6ivFwUBeIMB5IKo4Bf8gok8QOHPMtvnL1jZI=;
-        b=JZ3JqGMg6U2zz4/X/ScINoR5WJmZALROCPOVUTlk4xaMku/FRN0/Bl9zJ0nZohMfOS
-         NhCLYnpp1UF7jKOc8tLWqYK9SQyMcVmxuFmVJctlMBt7Y9iRpALw3+CSSRtGyzTfshA3
-         MGV18ROg3zgsNuPRN4He8Sf6N8UI9mKrOky8ZRgTPYu5r/by4ugR8NSt75F9FMBb5++r
-         PQcTrONpCIo1B7pmHDtySTtVXfpnNZ0hrl1gJl4Xlba3n6cWkSseTlbPMvbZKdIer3wH
-         Wb6S0nYjWn7pi6cYk2L0v/w0Zm7FjSqiiRZbjKYTQhif9Tgygoy5LxWIyu09nipxK2BF
-         V+Eg==
+        d=gmail.com; s=20230601; t=1771257164; x=1771861964; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ot2mU0yu83xeq0xqLkly0xKYSkvAdLvXToIN6WuukKc=;
+        b=bh+MUeF0t+pF9ZXbH9J6R+jYIdRAmwh4whXAcbOVXkcczA7qEBdqxaOu6CNmqTUibe
+         Bausm6mjPfgZEeghxkrnsVhO3op14FYJI+GiLF8ifAFP0Ts3/7pkqoIBVrcv0eAT3H/K
+         c9DOvJwT0zLCNiP7cV3Cr074n3dbsuE29Dh2rGQCA++wTXHxIbGDSyMGsQJV+hFzcXMt
+         yXR2Owx2mYoRaiQRcat0o6feNS8rFLKs3euBSzOHoF2zIk8ebJkPfGUgomqNDq50kKJd
+         U8HpX1sS7GO3JX0C/76VyZfgo9jPr6DWhO0kHv47lWwmXxeehpfBM1h8hn3TxAl/QRqR
+         QFmg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771256256; x=1771861056;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=J0DKips6ivFwUBeIMB5IKo4Bf8gok8QOHPMtvnL1jZI=;
-        b=dmV9VW0YL8t5fww1+IJQho+U5jPB6CWaciEgBTYw6tpM7nN+pS2hLq+/9epvY79JRZ
-         oRokKe7XNnDx1gmiMnnDGKgM9mUqyCH+jY61n4DSi8fF8Kkb+ZKf52osxGV+GIbynmfs
-         JMiihVeqrVHnHDV2V3YMUV1irUTFSkPxX8Bf3zwJqsN3xMImfTXF6aLAoh7msvjJ0klL
-         CTGGnLV7OD7TWnBZ3IHAw3yGvUGew2TtfxD7gAD3QAMfSeTOeNCDJ2Bgjbq3bocw0Y/l
-         SAbdDsOhfL9O4fTVwmDRMZ141N6LhwZ6tdPOen8gv6yczCgM5rTp2t9X+NtqBEF+UgZG
-         BbuA==
-X-Forwarded-Encrypted: i=1; AJvYcCUhq/xvAA1gFxy9LZYHz3IvBvYwujhOv7CjFCVg2Jm6teCcOolcRSDbJzeQVn26UFB56kZF4qiiKqg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyiZZzX4p+lvU9cN8qRzoxE6JfXUuh37S45UkurLalGcoqKSk04
-	dALKBBDQtibojqOUV5jXWgJJbZp+oeT6hBfhsasl2DZcDOysM+40zMcc0XLJIRTAr14=
-X-Gm-Gg: AZuq6aJdEYiDjYE0noNSY+IyhiSMxnmqp25SHpHFHM7HbaHLP263tRHNJYWqwUP9Hgm
-	7nfxwNryMtbA4xu9Xc16oBA4OphvsYQ0Q3rlViKdB/fFKLPn/2w+iisLGpC+Ouc86usNmJoHurX
-	y4OnofOvaCPtmvQ7oEXawON1jPXKVHKaKnitZYBeMpLQ6kYxSkxxrh4GcPqG+UihkMktflE6eYk
-	EGse1o4FQf3PGceItNzVsBgt3sbgh3JWvRGDNcObC26ODHVfNhAKgmtpCMqjmoIdurpes6N6MNn
-	AqIL2X1LL3nW/Xb76BAYo0Qs+XZUUU7Cvhk+TYpFEBOchJWWdrwwnXNEAFIhlyI8GvfY3K/RQy2
-	Q2nxQ2XvNbeNpstoq2/ojHeefX3XpGhtMMRIj6KUntl1H2HTHnqONtixHx7eqJdhbMuoWfuqH72
-	30gbLxIKE7gypVv/YEJ1iCHmOjZGcjC2j307hPje5B1/3SlK9PLYpJzufKBIZWwl5hMYP9lcdD
-X-Received: by 2002:a05:6830:398a:b0:7c7:2df4:faa3 with SMTP id 46e09a7af769-7d4c4b18aaemr5980060a34.33.1771256256446;
-        Mon, 16 Feb 2026 07:37:36 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:2d75:8cf2:6289:6a96? ([2600:8803:e7e4:500:2d75:8cf2:6289:6a96])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d4bb66a066sm9693597a34.19.2026.02.16.07.37.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Feb 2026 07:37:36 -0800 (PST)
-Message-ID: <5818b02c-4456-4484-9443-da7429cea3dc@baylibre.com>
-Date: Mon, 16 Feb 2026 09:37:35 -0600
+        d=1e100.net; s=20230601; t=1771257164; x=1771861964;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ot2mU0yu83xeq0xqLkly0xKYSkvAdLvXToIN6WuukKc=;
+        b=EPqyRQGzQi89Ru4NAVF5zLzX/Kl+7UqY3GjkZqe0L4U/Edx3N3urfHGSqAW0GzHhCQ
+         ul5jinogYoOs/UygiJ+YN4B7MfFnIKdJmJOgXHkGVFDcmmYP6U6wOys91zlmTWZ4/ZiH
+         HAdWd3UEg9+U3DIF1Lx5Y2JNoD8U/XLhhXIZo8k7wGgN/mz6AY5KrFl6mVA4o/A2FXS7
+         z32yoWoHzc+Uq/UQCa3NzVCxcy0brgus81iLO41XPGIvUU8FLN93qRTqDRWunmLEYwzv
+         vyhFe/kmbZcbKpTLjIkogXUIsnMGp8sC/WajLrr0zlj2IHM176UvTm/IMigkff8F0S60
+         7I/w==
+X-Forwarded-Encrypted: i=1; AJvYcCXoh/NuAPJ9MUckG3jHHxY+QTNJ8dfwqQgy3yfvBV48VZDvyX/XhNthxPwGJ/2Txo8yM5QctN6k610=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzlYaaeZCEuFokZapSkzVJRSYTeQAwom3nltCzskt/7ig3VHjG4
+	mednuJMpxPuCmX07G9ijKEQbyvsJR7OdPsPji3TShkNoeXuIZVrTcf9KKmU2B2LX15Bz5xLPqY5
+	3FLIkABj15Hb0322Hj+6V77zx4hHSbJU=
+X-Gm-Gg: AZuq6aLTtgYNq6a0A/WUBnaZQE+kgfRyzjPx/QLJ46sNgqebg66sg//aAlti8c4LXKl
+	IBGRJD1YXB6PV9HzKSupsVzW/H5uRxGnHQQosCNPJmO4SPVlg2A4yi9OEE9D6G76Sus5Y7hAyd0
+	DVppuK+Gft2Jy9Eig+FOB752Wc33ifg7c8pf/v467S7a06+81+7dx9MCLyZtCvpKySQ972bao+G
+	vu0NSfkSLOqrzPcqnkgDBfXqUQBPscM2y3G/74cAzfMEpq1s0naPYJ8JxFAuFkPjlo8nHoyUIXQ
+	Dfovz92zmJwVQedcKjsvmcsKq+xsGzmZN5K2g7/A+Q==
+X-Received: by 2002:a05:690e:4146:b0:64a:db1d:2d57 with SMTP id
+ 956f58d0204a3-64c21a44454mr6338152d50.2.1771257164397; Mon, 16 Feb 2026
+ 07:52:44 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/2] dt-bindings: iio: dac: add support for Microchip
- MCP48FEB02
-To: Ariana.Lazar@microchip.com, conor@kernel.org, andriy.shevchenko@intel.com
-Cc: nuno.sa@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, robh@kernel.org, jic23@kernel.org,
- andy@kernel.org, krzk+dt@kernel.org, linux-kernel@vger.kernel.org,
- conor+dt@kernel.org
-References: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
- <20260212-mcp48feb02-v1-1-ce5843db65db@microchip.com>
- <20260212-germless-favoring-c27ab4c53128@spud>
- <aY4yaVP2TQFRI1E4@smile.fi.intel.com>
- <a3bab395580cd83410c1c7364283285586c9b128.camel@microchip.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <a3bab395580cd83410c1c7364283285586c9b128.camel@microchip.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20260122145633.14938-1-architanant5@gmail.com>
+ <aXI-ZV4uAd5GyFLz@smile.fi.intel.com> <aXI_HnvDNbX68-lq@smile.fi.intel.com>
+ <CADJHxWB3b+bH2+HBP+SG0jxhGNcozstBeWeDH_3dgS-4c2G-6g@mail.gmail.com> <aXJmYAZ-8KkXCFI9@smile.fi.intel.com>
+In-Reply-To: <aXJmYAZ-8KkXCFI9@smile.fi.intel.com>
+From: Archit Anant <architanant5@gmail.com>
+Date: Mon, 16 Feb 2026 21:22:32 +0530
+X-Gm-Features: AZwV_QhGPY-D69MH0lGVyOerHPtqCOXaIaKC2LSoy8MQRUla2KLfpWELTuP0yyM
+Message-ID: <CADJHxWDCer97pMNHV-69B9AEVY0NfimTcxo8k8yFBbstg0wMQw@mail.gmail.com>
+Subject: Re: [PATCH] staging: iio: impedance-analyzer: ad5933: use div64_ul()
+ instead of do_div()
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com, 
+	gregkh@linuxfoundation.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 2/16/26 7:31 AM, Ariana.Lazar@microchip.com wrote:
-> Hi all,
-> 
-> Thank you for your reviews.
-> 
-> 
-> On Thu, 2026-02-12 at 22:04 +0200, Andy Shevchenko wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you
->> know the content is safe
->>
->> On Thu, Feb 12, 2026 at 06:00:06PM +0000, Conor Dooley wrote:
->>> On Thu, Feb 12, 2026 at 02:48:34PM +0200, Ariana Lazar wrote:
->>>> This is the device tree schema for iio driver for Microchip
->>>> MCP48FxBy1/2/4/8 series of buffered voltage output Digital-to-
->>>> Analog
->>>> Converters with nonvolatile or volatile memory and an SPI
->>>> Interface.
->>>>
->>>> The families support up to 8 output channels.
->>>>
->>>> The devices can be 8-bit, 10-bit and 12-bit.
->>>>
->>>> Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
->>>
->>> Other than the interface, what's actually different between this
->>> and the
->>> 47? Could they share the same binding?
->>
->> If that is the case, I don't think we even need a brand new driver,
->> the
->> existing one should be refactored to adapt SPI interface.
->>
->> --
->> With Best Regards,
->> Andy Shevchenko
->>
->>
-> 
-> 
-> I have decided to submit two separate drivers, even though the chips
-> share similar functionality, in order to make it easier for the client
-> to identify the supported chips.
-> 
-> For example the I2C family of devices has: 3 different resolutions,
-> with 4 different channel numbers available for a particular part and
-> most important you can get the same part with or without EEPROM.
-> That means the I2C driver will cover 24 different devices. The SPI
-> family follows the same pattern, covering another 24 devices.
-> 
-> Microchip also has some devices (I2C and SPI) with Nonvolatile Memory
-> (similar to EEPROM but limited to fewer than 32 writes) and I want to
-> add these families to the existing drivers while maintaining the split
-> by interface.
-> 
-> Please tell me if you have anything against this approach (having 2
-> different drivers split based on interface and each of them to support
-> at least 24 different part numbers).
-> 
-> Best regards,
-> Ariana
+Gentle ping on this.
 
-The usual way we support parts with the same register map that can have
-an I2C or a SPI bus it to make three modules: <name>_core.c, <name>_i2c.c
-and <name>_spi.c. If you look through the iio folders, you will see many
-drivers like this.
+Has anyone from AD had a chance to confirm whether the original
+truncation via (mclk / 4) was intentional?
 
-The _i2c.c and _spi.c files will just contain the chip info tables that
-contain all of the differences between the chips and pass that to a
-common probe function in the _core.c module.
+If there are no objections, I can prepare a v2 using the BIT_ULL(29)
+form as suggested.
 
-It seems like this approach should work in your case as well.
+Thanks,
+Archit
+
+On Thu, Jan 22, 2026 at 11:33=E2=80=AFPM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Thu, Jan 22, 2026 at 10:27:52PM +0530, Archit Anant wrote:
+> > (Resending to the list, apologies for the private reply earlier.)
+>
+> First of all, do no top post!
+>
+> > Thanks for the review and the detailed math breakdown.
+> >
+> > I agree that `(freq * BIT_ULL(29)) / mclk` is algebraically superior an=
+d
+> > improves precision.
+> >
+> > However, regarding your concern about the original code:
+> > > "why the original code drops precision, was it deliberate?"
+> >
+> > Since I do not have the AD5933 hardware to test if the register expects=
+ the
+> > truncated value from `(mclk / 4)`, I am hesitant to change the logic in
+> > this patch.
+> >
+> > Would you prefer I:
+> > 1. Stick to a purely mechanical change (keep the logic equivalent, just=
+ use
+> > `div64_ul` and `BIT_ULL(27)` for readability)?
+> > 2. Or proceed with the `BIT_ULL(29)` simplification assuming the precis=
+ion
+> > loss was unintentional?
+>
+> I definitely prefer #2. That's why I plead to AD people to confirm.
+>
+> > I'm leaning towards #1 for safety, but happy to do #2 if the maintainer=
+s
+> > (Lars/Michael) think it's safe.
+>
+> > On Thu, Jan 22, 2026 at 8:45=E2=80=AFPM Andy Shevchenko <andriy.shevche=
+nko@intel.com>
+> > wrote:
+> >
+> > > On Thu, Jan 22, 2026 at 05:12:42PM +0200, Andy Shevchenko wrote:
+> > > > On Thu, Jan 22, 2026 at 08:26:33PM +0530, Archit Anant wrote:
+> > >
+> > > ...
+> > >
+> > > > > -   freqreg =3D (u64)freq * (u64)(1 << 27);
+> > > > > -   do_div(freqreg, st->mclk_hz / 4);
+> > > > > +   freqreg =3D div64_ul((u64)freq * (u64)(1 << 27),
+> > > > > +                      st->mclk_hz / 4);
+> > > >
+> > > > It can be one line to begin with.
+> > > > Then drop that ugly castings and explicit big shifts.
+> > > >
+> > > >       freqreg =3D div64_ul(BIT_ULL(27) * freq, st->mclk_hz / 4);
+> > > >
+> > > > Now you can see That 4 is only 2 bits, so this can be written in
+> > > > simpler way:
+> > > >
+> > > >       freqreg =3D div64_ul(BIT_ULL(29) * freq, st->mclk_hz);
+> > > >
+> > > > which may give a better precision at the end of the day.
+> > >
+> > > It also might be worth to add a comment on top to explain (with given
+> > > context
+> > > I don't know if there is already one on top of the function, though).
+> > >
+> > > And I think we want AD people to comment on this and maybe explain be=
+tter
+> > > the calculations done (and why the original code drops precision, was=
+ it
+> > > deliberate?).
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
 
 
+--=20
+Sincerely,
+Archit Anant
