@@ -1,131 +1,131 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DB09381C4;
-	Mon, 16 Feb 2026 07:22:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A986F230BEC;
+	Mon, 16 Feb 2026 07:27:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771226527; cv=none; b=dO7KA8CRkp0PDMrcAZzcAqoVp6vk3x34JshDhVw1WDjJtX5hg4tMaQSNt8YqO2Di6jl7KTLcZdeSJMRIw9uS7c2NKvRq+dbZz7BUvJ374Kyhd7rA+O6XEMZ5L8wBQkxc06KAkzkELVQCXvvX9JUGT87AWe8bsSi0/Lh4I8X7ykU=
+	t=1771226877; cv=none; b=rfpV6uUM1pjtXw3F3MdqS8NFMomsOX5zfIXgPb3kb6CI0jwoV8cltoSQlVcoiJ8YRvkoTxc3XtaBpeVOINPBWL/IDXMkeh9+OowkPViV4XlaR0X8OZyn/ZZNWXxFRH67cJoNygglJuiJsWQsdAQZfD/HcXhC0fQhXFB2pH42WnI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771226527; c=relaxed/simple;
-	bh=Nb4Y2Owg+oPm3X2J5pjWGTxhA6QRDx3KxXgrNhZlQJw=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ImTdAz7jMMAiKJ+PXDgUjOB3F6OT5YOzPAQtH7jgTuhQkNppV2pTYk7f+sSErqrQEQj34t8ZqJWD5itxguxH6soSQA36jiIFkg46Kr/piXfNW6BZrN34ckHpg9WOcTwusC1NwdHCAhKUEMrDuRIruDb8ksh5Rpg3eWdXFKmm5rY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=inomXu9L; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1771226877; c=relaxed/simple;
+	bh=ooR1hGotVLqFb7LsE1CMvjK8LxRyPmIRZls0jbAyCWI=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=dZcka7h9fqvkjH3389wbg2siGIPdnBFX41wlObwzm9JNKwoKnRJOnOubDRs37P447KOIEGitWCpVnxqit/Xzx0yWJfF38S+hLg+zFFVi3ummMXcSTcou+0znJ/i9lOhttvqnC4lnL+qw5J+Gn7BkTNSJsXrKt61dSmR+NjdbM+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ne1IqysA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="inomXu9L"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771226527; x=1802762527;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Nb4Y2Owg+oPm3X2J5pjWGTxhA6QRDx3KxXgrNhZlQJw=;
-  b=inomXu9Lbn89ITKmvkYHfvXkoUe1nOGNVpUCPmwix14zq4OgKV4yW/iQ
-   UCN2Golyh9FNaxfFAo9tlQ96/wa2qb9hD/nm3FCPhf4K0cVRz2oZN5Cs+
-   09bYtORNFWidnBkczASbiynlKlGMGr7ERYZAIuMnvJejb5chaCv0jxorQ
-   xOrJ3NZf78R1RXweh5rYjWWvze720pQsMOHJbjdAP2XAutHneWqtm8N1a
-   S3r2msLHYZ6bi9F46CjJ+G03dD9R8iF0tdZ93kPl3UWcyahRbKdVb2Dky
-   XsZV4qnK5AEKJREXWZeQiMqeB5sJl1yvXTeaujrJvxnEeXkKKqQ8rvt00
-   g==;
-X-CSE-ConnectionGUID: CGiQQnliTtm/wk5gET2QWQ==
-X-CSE-MsgGUID: vqoKXCUdTSKoQmDJSEZzJw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11702"; a="89715662"
-X-IronPort-AV: E=Sophos;i="6.21,293,1763452800"; 
-   d="scan'208";a="89715662"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:22:06 -0800
-X-CSE-ConnectionGUID: w5v6uKX1QJWBC5A7UwSRiA==
-X-CSE-MsgGUID: 8BgrnQS+TUeKRf5yIUJo6A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,293,1763452800"; 
-   d="scan'208";a="218499365"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.188])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:22:01 -0800
-Date: Mon, 16 Feb 2026 09:21:59 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Taha Ed-Dafili <0rayn.dev@gmail.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-mentees@lists.linuxfoundation.org, me@brighamcampbell.com,
-	skhan@linuxfoundation.org
-Subject: Re: [PATCH v1 2/2] iio: dac: ad5504: use adi,output-range-volts for
- scale calculation
-Message-ID: <aZLFl5YmByDTqjmL@smile.fi.intel.com>
-References: <20260212181955.42724-1-0rayn.dev@gmail.com>
- <20260212181955.42724-3-0rayn.dev@gmail.com>
- <aY40-0v9tbXC4tPY@smile.fi.intel.com>
- <20260215180538.36f536aa@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ne1IqysA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D6DAC116C6;
+	Mon, 16 Feb 2026 07:27:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771226877;
+	bh=ooR1hGotVLqFb7LsE1CMvjK8LxRyPmIRZls0jbAyCWI=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=Ne1IqysAwEcXBsu9OjBQG141la6rW5u2NQlvmeVu2eSlsrAph0uTkebC+uTq3IB3M
+	 aUsHpWFdf6IsyTRxtfCfu0LjGpc6/chexi5bT07PMOLLIpWFykOxY4MbyrUSa5xKS7
+	 S6dY3l326EjGFzxPdV8PEUeLfwquDlVVWIiAhYaDWtsqRCD2D/JlGE1rMo9Y7gvZep
+	 qlnhwAtNyKP3SFDzrWpLOk7PmIxshh2RR0IOZToCC42vJvLxbx9TNtmugloVN9ziMH
+	 9+Yujs3iqj8lrorKIpsJZNjXsgTzMvcCZXvPhjqXpkZYrISxK23Or33zVpm4SraCzq
+	 rQzt4cmFQM5mA==
+Message-ID: <1326c41d-e4cf-493e-a758-364edaddd04f@kernel.org>
+Date: Mon, 16 Feb 2026 08:27:52 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260215180538.36f536aa@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: light: vcnl4000: add Capella
+ CM36686 and CM36672P
+To: Erikas Bitovtas <xerikasxx@gmail.com>,
+ David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+References: <20260212-cm36686-v4-0-8f587d4a72bf@gmail.com>
+ <20260212-cm36686-v4-1-8f587d4a72bf@gmail.com>
+ <20260213-unyielding-pistachio-ape-deda74@quoll>
+ <3a20c906-647c-458f-a118-c7927495e7ef@gmail.com>
+ <8fb27a7a-82dc-443b-bcc4-21007783fc54@kernel.org>
+ <f014078c-6e4d-48b0-a814-45898b005c44@gmail.com>
+ <880ddcad-a92e-43bb-ad5c-d6f2f353d182@baylibre.com>
+ <eea4cf8c-4126-49a8-ada8-1b1893a406c2@gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <eea4cf8c-4126-49a8-ada8-1b1893a406c2@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Feb 15, 2026 at 06:05:38PM +0000, Jonathan Cameron wrote:
-> On Thu, 12 Feb 2026 22:15:55 +0200
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> > On Thu, Feb 12, 2026 at 07:19:55PM +0100, Taha Ed-Dafili wrote:
+On 15/02/2026 17:16, Erikas Bitovtas wrote:
+>> But CM36686 is fully compatible with CM36672P, right?
+>>
+>> So this would make sense?
+>>
+>>       - items:
+>>           - const: capella,cm36686
+>>           - const: vishay,vcnl4040
+>>           - const: capella,cm36686p
+>>
+>>
+> If you try to use CM36686 compatible for CM36672P, proximity channels
+> will work, but in_illuminance_raw will return 0 and changing illuminance
+> parameters will have no effect. That is because CM36672P is a proximity
+> sensor only and the register fields for ambient light are reserved.
+> And if you try to use CM36672P compatible with CM36686, it will work,
+> but only proximity channel will be available, even though CM36686 also
+> can sense light.
 
-...
+So clearly CM36672P is the superset and should be used with CM36686
+fallback.
 
-> > > +	ret = device_property_read_u32(&spi->dev, "adi,output-range-volts", &val);  
-> > 
-> > You can pack this into 80 limit with help of
-> > 
-> > 	struct device *dev = &spi->dev;
-> > 
-> > being defined in the top of the function.
-> > 
-> > > +	if (ret)
-> > > +		val = 60;  
-> > 
-> > Also this seems an optional, so
-> > 
-> > 	val = 60;
-> > 	device_property_read_u32(dev, "adi,output-range-volts", &val);
-> > 
-> > would be enough.
-> > 
-> > ...
-> > 
-> > > +	if (val == 60)
-> > > +		st->vref_mv = 60000;  
-> > 
-> > 60 * MILLI;
-> 
-> val * MILLI
-> given it only takes the values 30 and 60 I think. If you want to protect
-> against other values, then check it explicitly rather than everything than
-> isn't 60 being assumed to be 30.
+Lack of the fallback how the patch is written now is a mistake.
 
-With comment on DT in mind I think this multiplication will gone
-(as IIUC the DT units is microvolts or so).
-
-> > > +	else
-> > > +		st->vref_mv = 30000;  
-> > 
-> > 30 * MILLI;
-> > 
-> > Needs units.h.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best regards,
+Krzysztof
