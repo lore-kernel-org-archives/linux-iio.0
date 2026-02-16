@@ -1,62 +1,66 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D9D31F2BAD;
-	Mon, 16 Feb 2026 09:51:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A55C283FE3;
+	Mon, 16 Feb 2026 09:58:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771235495; cv=none; b=PX4G4hYLKRKAjF8/9JwR0UelahuzY8OHWnCiKv8POe/c3Pjc1t75ysr9F6V156z2EPgd9PkzwT935Txmyv8BIcSLIi/wzSShTZuIJ3QDGvRGmaYsU6vusDXMCu6BKSIdCeVBkpgUhypTcaqZmgjOvkJisEEbsHV7Ac2jpqM6hx8=
+	t=1771235894; cv=none; b=prciINB3EE6GbRF7/Jac9lVcWyZ56Qg8CGsusXlg4pAa0n+L32Dfvol3VEh9XwOao6SQHu48Jfpja1OxrrtWj7P6GHQZhU9ciwFx7Ua6Y0H1kd0f0q2MzRier0BWsG85puRw9C1S+6bKo4pbq4KvbYvST1av6f/UaT71TvLhLvo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771235495; c=relaxed/simple;
-	bh=D3v7/sXyD0jGBAqByjwaJDkuX8eMSK2kHPn117Mji44=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MzfqTo/XaUhbA9LjPAPsDTIxkV5YiYxWiqm8KdPBXuGPY3TIioNiDNLHJmGVwGXHGEzPvhDyoCZlxkp8D/T4AfFlLlYsrdGPueW2FJNanbOZprqV+RLGD0YeMtGlCDu5f5vLJVXgibjfpmdkpsGeWMF/aIkbXpIiKSUqr0oIyw0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=ihGV0110; arc=none smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
+	s=arc-20240116; t=1771235894; c=relaxed/simple;
+	bh=T+YA9CNteuvdPZtiekpS6U+obA8pOETrKAcN3a+Jpy0=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=cVzZTrfytGPy88NfsVMTbxNELBY817WcKYPEW4e0i4pY37tK/U7FjwUVnm8Do7BLmdIqL4tmGwZRKDGdWFkOoFHOZzhjq3QrorEgn6c1Hb7leUp0fPn5u9r1j9Xvt3+2mLzyXeI7t7n5OShYpImbyhjvaTCCsQ23UKBhKwDtYH0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Kvhubcq0; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="ihGV0110"
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61FNxfwd730281;
-	Mon, 16 Feb 2026 09:51:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:date:from:message-id:mime-version
-	:subject:to; s=corp-2025-04-25; bh=8Jd7ztAgpZFaztKeAqo297ra9fHRo
-	SgkJcdOPGyVxig=; b=ihGV0110BEShvSq3DWvLZIeUsXaUhamBnRChIgkNYZ83d
-	n4GldE63XkcNKzSKt0idcY7b8xrrposS/h+5ArKzvp0ykDPFODrs3Q63Qqgfm3Pk
-	TacawoGmdYGeyUQllntr1inHfQzEdhm7gikI6cHlMTYoziuAk2hLuerwFL5qTupe
-	H5YZDy7aQjWPcmOXUHqYl5uBdLQgZ3U0CT2MyBdOyZ6usxjOwHQswP+9sjeto+8A
-	W3Rq8ihr2rVNXUITz69LvAKvhbe0xLp8vrbTNluKDykL7WxhnCLjpq2z1BaMLL89
-	b6PndcZ5AWRWknka/2YfrZI77a4p07isuPoQ5wpIA==
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.appoci.oracle.com [130.35.100.223])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4caj6m9tc8-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 16 Feb 2026 09:51:16 +0000 (GMT)
-Received: from pps.filterd (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 61G7R0lS029631;
-	Mon, 16 Feb 2026 09:51:15 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTPS id 4cafgjfgdf-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Mon, 16 Feb 2026 09:51:15 +0000
-Received: from iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 61G9pEHA034713;
-	Mon, 16 Feb 2026 09:51:14 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-	by iadpaimrmta01.imrmtpd1.prodappiadaev1.oraclevcn.com (PPS) with ESMTP id 4cafgjfgcj-1;
-	Mon, 16 Feb 2026 09:51:14 +0000
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Andrew Ijano <andrew.ijano@gmail.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH next] iio: sca3000: simplify with spi_get_device_match_data()
-Date: Mon, 16 Feb 2026 01:51:05 -0800
-Message-ID: <20260216095110.1062611-1-harshit.m.mogalapalli@oracle.com>
-X-Mailer: git-send-email 2.50.1
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Kvhubcq0"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61G48KaA3569098;
+	Mon, 16 Feb 2026 04:58:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=4cD4t/VCUBR6n9pT+ZykYxgHScw
+	m7yPsqvhoA0SFvXc=; b=Kvhubcq0/4+I5IWfmwjKAMHmLsJ+4l2pnvhu+pUswNp
+	1D4UHZ3aXT4sbvfKSrx6pX8tlVkLSXVrLHLLszsOwwd/nQ1lFmA7AW8SIgH7weNK
+	E4SLvb2BFU9TZIE6/wAvT8D6VZ6VEya/PL7XbKgY3CqLKFBMJrkPO8qOkwgkTF1Y
+	bxxBnJCqig4jnkiWCopEF5M3MmD9AV8DPsZsXlRsJiP+YvzVSU9+dbVKcBYtoDJC
+	+D7s39k+tOdwGGZCKel2iybagmt8XD3B5Dv79qugGfg3p0Iccqv5+bWkfwdzTcHK
+	pRS9Y4xspYQymb31ppNAZ2/mqBuewBbQ7DN0Ews8xyQ==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cb88hm13y-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Mon, 16 Feb 2026 04:58:09 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61G9w8Yh045722
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Mon, 16 Feb 2026 04:58:08 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Mon, 16 Feb 2026 04:58:08 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Mon, 16 Feb 2026 04:58:08 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Mon, 16 Feb 2026 04:58:08 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61G9vwKb017405;
+	Mon, 16 Feb 2026 04:58:00 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Linus Walleij <linusw@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v4 0/2] iio: gyro: mpu3050: fix pm_runtime error handling
+Date: Mon, 16 Feb 2026 11:57:54 +0200
+Message-ID: <cover.1771233915.git.antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,213 +68,52 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjE2MDA4MyBTYWx0ZWRfX39V9+1tDl3St
+ zcNo/ihXaVg6DjlyIu1hJXiK4/u2CbtIMEG5grxM/V5jAPluzknuDPzQMaiFF8GE4iTYkw1mZor
+ sd9dr6XblO2vmGLTfTip1EE1YKG/UUUDR+XW97d/aXjJW80J3w/HOAOY9Vhz3Hm8pDz0pEG5prG
+ CK16zByvvpLuelAIZd7nIx4kAFIOSbRxgoAE4uEbquw8xNRXW5UYzDObJhjkABfXbYhhF1Ny0sf
+ 4+Mp+Rc5pDedIYiLXmNIdO7+7D+5PqrBMtPj14FhCEPatSfehJT4I5NJAzs2qUpDgOUo1ed7p/4
+ 3hMkyrL436/DL4xLKL9ZEYcoGlD0Ec6zt2oihcszQH1p0MaMpezUTjuJJDNQi1ZNvk10OZPHZeU
+ ggU/fqULr5QCDIjNei5rkAFVcWfHiKtENeGXzecjc6v65m0c8qYPjWrQrODDdcjb/ez2GbgvPAi
+ E03BRG4rbP8EXuzBwyA==
+X-Proofpoint-GUID: HfulgtG543NWZ7xP1VWRk7d54akm_GVV
+X-Authority-Analysis: v=2.4 cv=TeubdBQh c=1 sm=1 tr=0 ts=6992ea31 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
+ a=GgsMoib0sEa3-_RKJdDe:22 a=qMukpJIgz0f2LLvR2MMA:9 a=zgiPjhLxNE0A:10
+X-Proofpoint-ORIG-GUID: HfulgtG543NWZ7xP1VWRk7d54akm_GVV
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-02-16_03,2026-02-16_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxlogscore=999
- suspectscore=0 adultscore=0 bulkscore=0 phishscore=0 malwarescore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2601150000 definitions=main-2602160082
-X-Proofpoint-GUID: VtgzPaGxJf08Z1BDrHdb9YJpLOy76pen
-X-Proofpoint-ORIG-GUID: VtgzPaGxJf08Z1BDrHdb9YJpLOy76pen
-X-Authority-Analysis: v=2.4 cv=JO82csKb c=1 sm=1 tr=0 ts=6992e894 b=1 cx=c_pps
- a=zPCbziy225d3KhSqZt3L1A==:117 a=zPCbziy225d3KhSqZt3L1A==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
- a=GgsMoib0sEa3-_RKJdDe:22 a=IpJZQVW2AAAA:8 a=QyXUC8HyAAAA:8 a=yPCof4ZbAAAA:8
- a=lsRt6yUIgdeWpme2pw8A:9 a=IawgGOuG5U0WyFbmm1f5:22 a=zq9cQQxCjHtRaWh5T9cX:22
- cc=ntf awl=host:12148
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjE2MDA4MiBTYWx0ZWRfX/Am8gd43BtFu
- QwCSPKrtT5K+mMvDFtz9zOxLHS8r5/UAt1+NyKGd3VTXiVm6VeodcRoEzebCIsqMO3CzE2it5P+
- OtQRv3TrWkpISVAWY9yTh43S7zkKgQjYxEOHGdxc3u902bDVsXDoZIcilP5S80Hy4osMHBfFttQ
- QYla+ooH86Xl/L0U8ZKQlxD4a6/IZBy9wYLHbQlB1o6eDhKncAiG476YXhke2yC9zGmaNyo0MAT
- bROqHTC7LOfbr17cxwI8kA+bKPT6Twvlzhjx5ojCkIXm+sM1ohHSFheMm90RCvSdyA1haSso79V
- y48A4Sx6qwvcvmtb/w/5EjM2fy4UnmEwxNPqh6K1+rVaGN/1rvk8+RrBPFRVBYFXWFL9vE3RiZI
- xshxVzHKon6Lqzgie513utvAKSJ0SOJ6FHsNK5j6si37qNm/HG2KH2Qimi8Ai7YrhwO2Ttc+t76
- YdBvPPpEUgEXVFoN7O8KLy8m68JQfMcAKNltk5Oc=
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 adultscore=0 bulkscore=0 clxscore=1015 suspectscore=0
+ lowpriorityscore=0 malwarescore=0 priorityscore=1501 spamscore=0 phishscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602160083
 
-Refactor each sca3000 variant with it's own chip_info struct, update the
-sca3000_probe() to use spi_get_device_match_data().
+Fix pm_runtime error handling across the mpu3050 driver. The existing
+code uses pm_runtime_get_sync() without checking return values, allowing
+operations to proceed even when the device fails to resume.
 
-Suggested-by: David Lechner <dlechner@baylibre.com>
-Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
----
-Only compile tested.
----
- drivers/iio/accel/sca3000.c | 129 +++++++++++++++++-------------------
- 1 file changed, 61 insertions(+), 68 deletions(-)
+Replace pm_runtime_get_sync() with pm_runtime_resume_and_get() and
+propagate errors appropriately. Unlike pm_runtime_get_sync(), the usage
+count is not incremented on error.
 
-diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-index d4c117f54a07..9d6ee83f48ae 100644
---- a/drivers/iio/accel/sca3000.c
-+++ b/drivers/iio/accel/sca3000.c
-@@ -172,6 +172,7 @@ struct sca3000_state {
- 
- /**
-  * struct sca3000_chip_info - model dependent parameters
-+ * @name:			name of the chip
-  * @scale:			scale * 10^-6
-  * @temp_output:		some devices have temperature sensors.
-  * @measurement_mode_freq:	normal mode sampling frequency
-@@ -194,6 +195,7 @@ struct sca3000_state {
-  * sca3000 variant.
-  **/
- struct sca3000_chip_info {
-+	const char		*name;
- 	unsigned int		scale;
- 	bool			temp_output;
- 	int			measurement_mode_freq;
-@@ -208,69 +210,59 @@ struct sca3000_chip_info {
- 	int			mot_det_mult_y[7];
- };
- 
--enum sca3000_variant {
--	d01,
--	e02,
--	e04,
--	e05,
-+static const struct sca3000_chip_info sca3000_chip_info_d01 = {
-+	.name = "sca3000_d01",
-+	.scale = 7357,
-+	.temp_output = true,
-+	.measurement_mode_freq = 250,
-+	.measurement_mode_3db_freq = 45,
-+	.option_mode_1 = SCA3000_OP_MODE_BYPASS,
-+	.option_mode_1_freq = 250,
-+	.option_mode_1_3db_freq = 70,
-+	.mot_det_mult_xz = {50, 100, 200, 350, 650, 1300},
-+	.mot_det_mult_y = {50, 100, 150, 250, 450, 850, 1750},
- };
- 
--/*
-- * Note where option modes are not defined, the chip simply does not
-- * support any.
-- * Other chips in the sca3000 series use i2c and are not included here.
-- *
-- * Some of these devices are only listed in the family data sheet and
-- * do not actually appear to be available.
-- */
--static const struct sca3000_chip_info sca3000_spi_chip_info_tbl[] = {
--	[d01] = {
--		.scale = 7357,
--		.temp_output = true,
--		.measurement_mode_freq = 250,
--		.measurement_mode_3db_freq = 45,
--		.option_mode_1 = SCA3000_OP_MODE_BYPASS,
--		.option_mode_1_freq = 250,
--		.option_mode_1_3db_freq = 70,
--		.mot_det_mult_xz = {50, 100, 200, 350, 650, 1300},
--		.mot_det_mult_y = {50, 100, 150, 250, 450, 850, 1750},
--	},
--	[e02] = {
--		.scale = 9810,
--		.measurement_mode_freq = 125,
--		.measurement_mode_3db_freq = 40,
--		.option_mode_1 = SCA3000_OP_MODE_NARROW,
--		.option_mode_1_freq = 63,
--		.option_mode_1_3db_freq = 11,
--		.mot_det_mult_xz = {100, 150, 300, 550, 1050, 2050},
--		.mot_det_mult_y = {50, 100, 200, 350, 700, 1350, 2700},
--	},
--	[e04] = {
--		.scale = 19620,
--		.measurement_mode_freq = 100,
--		.measurement_mode_3db_freq = 38,
--		.option_mode_1 = SCA3000_OP_MODE_NARROW,
--		.option_mode_1_freq = 50,
--		.option_mode_1_3db_freq = 9,
--		.option_mode_2 = SCA3000_OP_MODE_WIDE,
--		.option_mode_2_freq = 400,
--		.option_mode_2_3db_freq = 70,
--		.mot_det_mult_xz = {200, 300, 600, 1100, 2100, 4100},
--		.mot_det_mult_y = {100, 200, 400, 7000, 1400, 2700, 54000},
--	},
--	[e05] = {
--		.scale = 61313,
--		.measurement_mode_freq = 200,
--		.measurement_mode_3db_freq = 60,
--		.option_mode_1 = SCA3000_OP_MODE_NARROW,
--		.option_mode_1_freq = 50,
--		.option_mode_1_3db_freq = 9,
--		.option_mode_2 = SCA3000_OP_MODE_WIDE,
--		.option_mode_2_freq = 400,
--		.option_mode_2_3db_freq = 75,
--		.mot_det_mult_xz = {600, 900, 1700, 3200, 6100, 11900},
--		.mot_det_mult_y = {300, 600, 1200, 2000, 4100, 7800, 15600},
--	},
-+static const struct sca3000_chip_info sca3000_chip_info_e02 = {
-+	.name = "sca3000_e02",
-+	.scale = 9810,
-+	.measurement_mode_freq = 125,
-+	.measurement_mode_3db_freq = 40,
-+	.option_mode_1 = SCA3000_OP_MODE_NARROW,
-+	.option_mode_1_freq = 63,
-+	.option_mode_1_3db_freq = 11,
-+	.mot_det_mult_xz = {100, 150, 300, 550, 1050, 2050},
-+	.mot_det_mult_y = {50, 100, 200, 350, 700, 1350, 2700},
-+};
-+
-+static const struct sca3000_chip_info sca3000_chip_info_e04 = {
-+	.name = "sca3000_e04",
-+	.scale = 19620,
-+	.measurement_mode_freq = 100,
-+	.measurement_mode_3db_freq = 38,
-+	.option_mode_1 = SCA3000_OP_MODE_NARROW,
-+	.option_mode_1_freq = 50,
-+	.option_mode_1_3db_freq = 9,
-+	.option_mode_2 = SCA3000_OP_MODE_WIDE,
-+	.option_mode_2_freq = 400,
-+	.option_mode_2_3db_freq = 70,
-+	.mot_det_mult_xz = {200, 300, 600, 1100, 2100, 4100},
-+	.mot_det_mult_y = {100, 200, 400, 7000, 1400, 2700, 54000},
-+};
-+
-+static const struct sca3000_chip_info sca3000_chip_info_e05 = {
-+	.name = "sca3000_e05",
-+	.scale = 61313,
-+	.measurement_mode_freq = 200,
-+	.measurement_mode_3db_freq = 60,
-+	.option_mode_1 = SCA3000_OP_MODE_NARROW,
-+	.option_mode_1_freq = 50,
-+	.option_mode_1_3db_freq = 9,
-+	.option_mode_2 = SCA3000_OP_MODE_WIDE,
-+	.option_mode_2_freq = 400,
-+	.option_mode_2_3db_freq = 75,
-+	.mot_det_mult_xz = {600, 900, 1700, 3200, 6100, 11900},
-+	.mot_det_mult_y = {300, 600, 1200, 2000, 4100, 7800, 15600},
- };
- 
- static int sca3000_write_reg(struct sca3000_state *st, u8 address, u8 val)
-@@ -1469,10 +1461,11 @@ static int sca3000_probe(struct spi_device *spi)
- 	st = iio_priv(indio_dev);
- 	st->us = spi;
- 	mutex_init(&st->lock);
--	st->info = &sca3000_spi_chip_info_tbl[spi_get_device_id(spi)
--					      ->driver_data];
-+	st->info = spi_get_device_match_data(spi);
-+	if (!st->info)
-+		return -EINVAL;
- 
--	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->name = st->info->name;
- 	indio_dev->info = &sca3000_info;
- 	if (st->info->temp_output) {
- 		indio_dev->channels = sca3000_channels_with_temp;
-@@ -1513,10 +1506,10 @@ static int sca3000_probe(struct spi_device *spi)
- }
- 
- static const struct spi_device_id sca3000_id[] = {
--	{"sca3000_d01", d01},
--	{"sca3000_e02", e02},
--	{"sca3000_e04", e04},
--	{"sca3000_e05", e05},
-+	{"sca3000_d01", (kernel_ulong_t)&sca3000_chip_info_d01},
-+	{"sca3000_e02", (kernel_ulong_t)&sca3000_chip_info_e02},
-+	{"sca3000_e04", (kernel_ulong_t)&sca3000_chip_info_e04},
-+	{"sca3000_e05", (kernel_ulong_t)&sca3000_chip_info_e05},
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, sca3000_id);
+Changes in v4:
+- Reword commit messages to correctly attribute the unchecked return
+  value to the caller rather than pm_runtime_get_sync() itself
+- Simplify preenable by collapsing the trailing return statements
+
+Antoniu Miclaus (2):
+  iio: gyro: mpu3050-i2c: fix pm_runtime error handling
+  iio: gyro: mpu3050-core: fix pm_runtime error handling
+
+ drivers/iio/gyro/mpu3050-core.c | 18 +++++++++++++-----
+ drivers/iio/gyro/mpu3050-i2c.c  |  3 +--
+ 2 files changed, 14 insertions(+), 7 deletions(-)
+
 -- 
-2.50.1
+2.43.0
 
