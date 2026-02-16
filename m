@@ -1,84 +1,166 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2CCAF18C2C
-	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 07:03:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 019412475E3;
+	Mon, 16 Feb 2026 07:08:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771225424; cv=none; b=ncg2ZQDAK9IfesNIzYTqqt14KwYcg9piP6ZQJR2mnAjALS1t8GevEY8nodKtvXUcLi/zY2pNDNOe3hvsSfEMjiaa2T/60oUcpdfvxcJQaQXMXyw2DcKdTwfAfSgAYCIX1nNR7qO46oDw18xWbhrdpQ6xCRXFRFVdrm4iziqqplo=
+	t=1771225734; cv=none; b=bdoBdKbNHnPiPVKAN/dfNFkFVJsO0hMaNMWnEprMaNWV4ouhkxk50B+vCL0r8513EE4Gk23+Jkdd/OFrQJsFt2+s+Gef5pM052o9zm3UgmngHDBnXd3BjvRW/A3g+37/L2CaaK+DjdRPOY4V116VGdWGXGTmBzaVKCpccwx+b7U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771225424; c=relaxed/simple;
-	bh=9NVBaXXgFwAKP9+TOIKQsHJ/JbEzC5lRuZLEk7c5/LM=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=h6P1ZfuJu6ohkldLynqt/CVLqLkH7ZXcJvuYqrvDKzVLr9ij++CX9PvMXDBUxDsi7vKSKzlrOsOy83dUFmeAy9BEQgmizw5VxT/DSs1vUXONqAaxWwCiAz+2I8fn5jVR0wHVFpQZhIaJv3ILFvh5WkagsJ/opm3XKOIu8yoWqNg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HWk498EI; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771225734; c=relaxed/simple;
+	bh=JL3ykH7IcR2KoMNMNvAtEtQ/B6QqzgxTm7FFKlzLUCk=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Ip0d43f4rd7Zvg8WytlAAOJEATcKK4idMqeJkA5TLTE3e3HS7Na1tSF8RiDssXx/4s3brm4Ax173Zqu35vF8MSM2VqZ8I1ziLNbetSNxXdFczbLYQ9qudnqVtgTdhlnKsLY/osgEcxxmdOGdR1w+JoL+c/hdYrAnAE31CBA+y+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hoQcctTW; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HWk498EI"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id AAEEFC19425
-	for <linux-iio@vger.kernel.org>; Mon, 16 Feb 2026 07:03:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771225423;
-	bh=9NVBaXXgFwAKP9+TOIKQsHJ/JbEzC5lRuZLEk7c5/LM=;
-	h=From:To:Subject:Date:In-Reply-To:References:From;
-	b=HWk498EIdGgKrZb5WBefRSSeGjbD4iK0oW30N4TUqMkWGsJ4tvnEIKSDSKHypX7PH
-	 RJ/TbxXwyJ06PrLcL0BI/bLSAaPaeDi3CWHjYemPrEg8LIxRz8J6F0Ku0ZPHlNQMRC
-	 oKtmWc9L6pjdaSeFt3LTLvh2Y/7p+3KixPTtAPl6eeyfCbUQHMHA0ezfZmwTFJc5Cr
-	 Y1Et1AZp6nahC/jKJH+7/oCkZbOJbt5y3P6M7teX5bpcph/oGI1C6DlngdVCmTxs9G
-	 x4bW3IBcE56SK9MTqH1JxDczjMmCR0fxbFvaZ51eqBeL4K1ZkHZGsi25G4mPFqAPVD
-	 uYGufSu1+k++g==
-Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
-	id 9E02CC4160E; Mon, 16 Feb 2026 07:03:43 +0000 (UTC)
-From: bugzilla-daemon@kernel.org
-To: linux-iio@vger.kernel.org
-Subject: [Bug 221077] [iio] [hid-sensor-rotation] Memory corruption due to
- alignment mismatch in scan buffer
-Date: Mon, 16 Feb 2026 07:03:43 +0000
-X-Bugzilla-Reason: None
-X-Bugzilla-Type: changed
-X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Product: Drivers
-X-Bugzilla-Component: IIO
-X-Bugzilla-Version: 2.5
-X-Bugzilla-Keywords: 
-X-Bugzilla-Severity: normal
-X-Bugzilla-Who: lixu.zhang@intel.com
-X-Bugzilla-Status: NEW
-X-Bugzilla-Resolution: 
-X-Bugzilla-Priority: P3
-X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Flags: 
-X-Bugzilla-Changed-Fields: 
-Message-ID: <bug-221077-217253-nZhcrXDtrY@https.bugzilla.kernel.org/>
-In-Reply-To: <bug-221077-217253@https.bugzilla.kernel.org/>
-References: <bug-221077-217253@https.bugzilla.kernel.org/>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Bugzilla-URL: https://bugzilla.kernel.org/
-Auto-Submitted: auto-generated
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hoQcctTW"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771225733; x=1802761733;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JL3ykH7IcR2KoMNMNvAtEtQ/B6QqzgxTm7FFKlzLUCk=;
+  b=hoQcctTWIGa+DqVAqHq20AZtXpqzE2ZtIODWU2yze9Zds7680BqeFyws
+   XGbZeufU5fZDLFKC5zjoaGroUiRbnMbu8Q34eQhUZOpL2xqf+SLzdjl53
+   ZF5S8IXO2q19hwWaWs2uA0aZQA4P/uxGvEYk93+GdfiN39TcLMYPo0HMv
+   zpP29lVIBwZ9wLxaxSoA5QptYEHQjxZnr8LDEx94c6oQs971nW9KHENsM
+   RGs1qz+23iXmdhrELAPBYdth3DmtmdMoHwFRuqGn9m5c0ZY/qJuZlEUBa
+   Dq0AGMEbj8HqbEalhBirIwUXQuwNklht/0iyeajErZFP+vMWXc1v17+Jq
+   w==;
+X-CSE-ConnectionGUID: EWLmzWwjSAWjG74sdV384Q==
+X-CSE-MsgGUID: qQ0nOjMoR6Gn/J+PQ5HOlw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11702"; a="89715024"
+X-IronPort-AV: E=Sophos;i="6.21,293,1763452800"; 
+   d="scan'208";a="89715024"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:08:47 -0800
+X-CSE-ConnectionGUID: 0HsviaQAS9WfH9d8uoVc4A==
+X-CSE-MsgGUID: 5rwT76a3TjOZGyBuPzMdog==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,293,1763452800"; 
+   d="scan'208";a="212762812"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.188])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:08:45 -0800
+Date: Mon, 16 Feb 2026 09:08:43 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Ethan Tidmore <ethantidmore06@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] iio: light: gp2ap020a00f: simplify locking with
+ guard()
+Message-ID: <aZLCe_5C8e82EMGO@smile.fi.intel.com>
+References: <20260216005317.11763-1-ethantidmore06@gmail.com>
+ <20260216005317.11763-2-ethantidmore06@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260216005317.11763-2-ethantidmore06@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-https://bugzilla.kernel.org/show_bug.cgi?id=3D221077
+On Sun, Feb 15, 2026 at 06:53:16PM -0600, Ethan Tidmore wrote:
+> Use the guard() cleanup handler to manage the device lock.
+> This simplifies the code by removing the need for manual unlocking
+> and goto error handling paths.
 
---- Comment #5 from Lixu Zhang (lixu.zhang@intel.com) ---
-Hi David,=20=20
+...
 
-Thank you for the patch! I'm currently on Chinese New Year holiday and
-attempted to remotely access my test machine to verify the fix, but
-unfortunately couldn't establish a connection.
+>  	thresh_reg_l = gp2ap020a00f_get_thresh_reg(chan, dir);
+>  	thresh_val_id = GP2AP020A00F_THRESH_VAL_ID(thresh_reg_l);
 
-I will test the patch as soon as I'm back in the office and provide feedbac=
-k.
+>  
 
-Best regards,
-Lixu
+Also drop this blank line, it will be aligned with the similar style in the
+next patch.
 
---=20
-You may reply to this email to add a comment.
+> -	if (thresh_val_id > GP2AP020A00F_THRESH_PH) {
+> -		err = -EINVAL;
+> -		goto error_unlock;
+> -	}
+> +	if (thresh_val_id > GP2AP020A00F_THRESH_PH)
+> +		return -EINVAL;
 
-You are receiving this mail because:
-You are watching the assignee of the bug.=
+...
+
+>  	thresh_reg_l = gp2ap020a00f_get_thresh_reg(chan, dir);
+
+>  
+
+Ditto.
+
+> -	if (thresh_reg_l > GP2AP020A00F_PH_L_REG) {
+> -		err = -EINVAL;
+> -		goto error_unlock;
+> -	}
+> +	if (thresh_reg_l > GP2AP020A00F_PH_L_REG)
+> +		return -EINVAL;
+
+...
+
+>  	data->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+>  	if (!data->buffer)
+
+>  		err = -ENOMEM;
+
+Now simply
+
+		return -ENOMEM;
+
+> -error_unlock:
+> -	mutex_unlock(&data->lock);
+> -
+>  	return err;
+
+And with the above I believe this becomes
+
+	return 0;
+
+>  }
+
+...
+
+>  	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
+>  	int i, err = 0;
+
+Would you need the err assignment now?
+
+> -	mutex_lock(&data->lock);
+> +	guard(mutex)(&data->lock);
+>  
+>  	iio_for_each_active_channel(indio_dev, i) {
+>  		switch (i) {
+
+...
+
+>  	if (err == 0)
+>  		kfree(data->buffer);
+
+With the guard()() in place this can be inverted to have something
+(I haven't seen the full context, though) like
+
+	if (err)
+		return err;
+
+	kfree(...);
+
+> -	mutex_unlock(&data->lock);
+> -
+>  	return err;
+
+Ideally this should become
+
+	return 0;
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
