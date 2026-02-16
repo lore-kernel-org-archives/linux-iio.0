@@ -1,62 +1,84 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 268A62F1FCA;
-	Mon, 16 Feb 2026 07:35:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F06F2D29AA;
+	Mon, 16 Feb 2026 07:38:07 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771227312; cv=none; b=WocD65aWKHpmMY2GwRbltyYu+RiYiWq5Dh77hFM2T0vh3lf+EJ4PTiiDTxUyPqLDKk8F9a3gnYozwozrJ4BCCS349dpwyi8SvO5BO9/Hhz2TpH6VaQ2zS3hVYPqm32dj3n5JdAgBxIFMt1k36Dxm0RodAxFxNi7w2C/+nMFp5xY=
+	t=1771227489; cv=none; b=LYdS1zc6aMK3/cS+9fb66Etu1STGXXjbNOJGqFzciZHpWQDJ8qsKm4h8chI/pCWTaClkfnpkEFPwjW/W3p4gJbej5IIeRVFWyFiAHWCNqtVl+pRufJaG50V3vO3Ic2VhKWkuikAxoLYJZ71X8hOvOzSlcUQhRUN60L8PR0NjytI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771227312; c=relaxed/simple;
-	bh=ieCocgSzOlNHPZjWVTp189qHBlXFBhXeTlQRdNOAbEs=;
+	s=arc-20240116; t=1771227489; c=relaxed/simple;
+	bh=nCZ4NiwuDsoLiBa20YbgHZ5csgZ2EwKqPA1Cf/2HJSY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OqxiZsxAHahzwnXFjFJmiy9+9bKkUeLrtHYqMYeUjJTookTzdsP7PbvtAleQ2kSg570xomJ1SdZKrjH9SSj0OY4xfaj97UFIBsMeuTCAaKUxDMkly/Ej6wxYBEsd8EDIIIuD/IiMGAGleDVBJnjxGEojaJM3buuJuMIc/Fb+EpU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iMxKjGE9; arc=none smtp.client-ip=198.175.65.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=VyJRuX+qXMzEfwFE8unO2+ODb+MZ5oAK/GRqSqrcXc1B92mOEWblyUCD6JienDfParRjhfpx0k/osoRNi37rEBiPvSj1V9bWJa/D6+P5rsmJUGPxq/emJ5S0iXhJKLxxqq6et2uWo6C9EqsZf5qIuz0M8xYtvcNAOgnMr2faNEw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R3GfvLkO; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iMxKjGE9"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R3GfvLkO"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771227312; x=1802763312;
+  t=1771227488; x=1802763488;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ieCocgSzOlNHPZjWVTp189qHBlXFBhXeTlQRdNOAbEs=;
-  b=iMxKjGE9213F6zyuPXxMFSSTglhXnMoF2uoulB1MfQdfI8p/03Uv8gqo
-   aIlN3Rr0/sK42ydIWqwLQ+JRmjKDOyOFZNyp/rPPbtS4ImtifYU2PRrR1
-   2yVtBUThmUCfNBezzJ7iqEFj1Ajfys/Nb23tR8oicbRRrx1N8wujAIDxe
-   YiZw1oKSyWXB0+67z7SMxA/bl5fE66xwRiwfmLYpoX7Alw/BvEnIBG7vX
-   rPYonROj0BcYDF7BN8jbZbvw83gxqQQ/0sjByv99F6YHTKCNYRnftGppy
-   5BwMhcNCJ5BnUOVCPJhweYFnHU6qwBM7aW/G5m1LHD+zdgGmDpHmy48t1
+  bh=nCZ4NiwuDsoLiBa20YbgHZ5csgZ2EwKqPA1Cf/2HJSY=;
+  b=R3GfvLkOiyAg72CtGBq91E/WButfCgWNiFN521JwpsnFhbT9VolsS46S
+   ovYvS+cagh+wMcvDHS1z7GJCJyZeScGV71pwbCfKrmTDn/3P2AWXiiP+c
+   HqYnhS2MqMyn1gwHndCAp3AJa+YTn+swBVM8YzJqKqQqVsdb5qX4KPsLR
+   82coDlnbwp5LBo/N1ZQmM021gWcIw9PH31km6UCQjaFOXG6QFGLayGZe/
+   lyJKZEMbkLG6WJO5sqJAu+vwERJmnvnLgMQDdB/iqjALAY6K6g4Fohfqv
+   mBB5qDAb0HG8FSCG/lFt74UhYbPOH7OO1VaLNz8dKZS0hHPl8WUItyf8A
    g==;
-X-CSE-ConnectionGUID: 7eBKPtNdRgu5UzN/hgeapg==
-X-CSE-MsgGUID: rldzbBJISfWZNtRg9jsU6g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11702"; a="72476969"
+X-CSE-ConnectionGUID: WEfowuxeR5KO/blScZQLZw==
+X-CSE-MsgGUID: ou6Ntsv5Tky0EIil/SNDmA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11702"; a="72477183"
 X-IronPort-AV: E=Sophos;i="6.21,293,1763452800"; 
-   d="scan'208";a="72476969"
+   d="scan'208";a="72477183"
 Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:35:11 -0800
-X-CSE-ConnectionGUID: hKu1DboWSXS/7xbsmEujww==
-X-CSE-MsgGUID: 0H0lUgxvRG+uJo6n2jlu7Q==
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:38:07 -0800
+X-CSE-ConnectionGUID: EdsirQxuThy4pZ//UAUwww==
+X-CSE-MsgGUID: 4FbVnXzOReaqw6nAKXK6Tg==
 X-ExtLoop1: 1
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.188])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:35:07 -0800
-Date: Mon, 16 Feb 2026 09:35:05 +0200
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Feb 2026 23:37:59 -0800
+Date: Mon, 16 Feb 2026 09:37:57 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ethan Tidmore <ethantidmore06@gmail.com>
-Cc: Jonathan Santos <Jonathan.Santos@analog.com>,
+To: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: linux-renesas-soc@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Bjorn Andersson <andersson@kernel.org>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+	Boqun Feng <boqun@kernel.org>, Waiman Long <longman@redhat.com>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Mark Brown <broonie@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Danilo Krummrich <dakr@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-	Dan Carpenter <error27@gmail.com>
-Subject: Re: [PATCH v3] iio: adc: ad7768-1: Fix ERR_PTR dereference in
- ad7768_fill_scale_tbl
-Message-ID: <aZLIqW1JN34xvQun@smile.fi.intel.com>
-References: <20260214184637.16985-1-ethantidmore06@gmail.com>
+	Andy Shevchenko <andy@kernel.org>, Orson Zhai <orsonzhai@gmail.com>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Lee Jones <lee@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Antonio Borneo <antonio.borneo@foss.st.com>,
+	Linus Walleij <linusw@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	linux-remoteproc@vger.kernel.org, linux-doc@vger.kernel.org,
+	driver-core@lists.linux.dev, linux-iio@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-gpio@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+	linux-spi@vger.kernel.org
+Subject: Re: [RFC PATCH v2 13/13] hwspinlock: refactor consumer.h from public
+ header
+Message-ID: <aZLJVfTe0-oZzb3w@smile.fi.intel.com>
+References: <20260215225501.6365-1-wsa+renesas@sang-engineering.com>
+ <20260215225501.6365-14-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,18 +87,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260214184637.16985-1-ethantidmore06@gmail.com>
+In-Reply-To: <20260215225501.6365-14-wsa+renesas@sang-engineering.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Feb 14, 2026 at 12:46:37PM -0600, Ethan Tidmore wrote:
-> The function iio_get_current_scan_type() can return an error pointer,
-> the return value scan_type is not checked for this and immediately
-> dereferenced which can cause a kernel panic.
-> 
-> Add check for IS_ERR() and propagate the error back.
+On Sun, Feb 15, 2026 at 11:54:53PM +0100, Wolfram Sang wrote:
+> Factor out the entries only needed for consumers from the generic public
+> header. This allows for a clean separation between providers and
+> consumers.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> FIXME: separate driver changes?
+
+To me the change sounds quite small and unlikely to conflict in the future, I
+would just mark it
+
+  treewide: refactor hwspinlock/consumer.h from public header
 
 -- 
 With Best Regards,
