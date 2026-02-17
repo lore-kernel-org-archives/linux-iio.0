@@ -1,105 +1,133 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CB34113AF2;
-	Tue, 17 Feb 2026 07:49:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CFC82D7392;
+	Tue, 17 Feb 2026 07:54:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771314560; cv=none; b=Ldml6x3vxSBYjsgeisSZJhmOndb0TCFXv2KHwAbMIr5zq4IebTPjFKM5qmSjl2rObKYrZc1Ak6DAjbbBuxeWlA5UXV9LW/3LDOmSJVWGd2rinZvbqHPDVUwxQPcKQHYh7fj0dVBsfz46ogKpt68zi0LJrrTxAVmYMJEH6lPbJLQ=
+	t=1771314859; cv=none; b=GhR5WZwr2Gku4Gz8y6gVHdRIQBYSLg4mGSGyigd8k85uBLUrYG6g4TJflF8+NmgQc78m5BscofCXU0RZdE/f1TrVhq+Lr5M8oYzafHbKaoNWp7B6QFkBHUzuKDsEHCEajEenPm4sSwNp6F7lLPw/79eCUGFbiKZxzJcVuwT/vW8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771314560; c=relaxed/simple;
-	bh=BWOw4zr6uW3cI7jgXvHmTlxLMbpQHnpj0syvdwH3a2c=;
+	s=arc-20240116; t=1771314859; c=relaxed/simple;
+	bh=/T9s6SgDIcUJ77yD7qCEjbsPbIBB8hVIiGK9LLe5g+c=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UAgR3S3eYUKzDIwccgH5feQpOn89zbd/D0DepxVfaNZNE/iBqC1QQzeS/O6gUbOdKe+8nyIQNsoq4LBvUwjSCnxsld/lB57w3M90M8yvYCbgeudgYBsmC9qXTm7m3NerYwk/Uh4BIGPlyFBQoCFaLG6BTWI4sFZaFUZK/6gTOOM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HDrh5IXI; arc=none smtp.client-ip=192.198.163.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=iXSInzUONx4yxPdzfhRIBRSYBH1OYny30kCydvAF5Fl2d7Acdfpz17V5lmZhi2tk2U9H8x8llyuH5Zdlm9nk8qK9Yf8nAmt2syAcbTcQZrVa0KSwkxSumUipK56FVo4Zb+UGDBDhpMU+Ro5J4X06X35bBP/0WhBG4U3F2FFkYQs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KXHxOA5t; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HDrh5IXI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KXHxOA5t"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771314559; x=1802850559;
+  t=1771314857; x=1802850857;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=BWOw4zr6uW3cI7jgXvHmTlxLMbpQHnpj0syvdwH3a2c=;
-  b=HDrh5IXIRjDJ2S0+hCN5BSq+8wFGAYb5TQ3/OWU7yGO35hOGakcFnhP0
-   zzYDFWfhJcDawnh8vy+092AFXr1mqz3N9Lvn/XGsSDAaD7C8ErlEaTkny
-   JxuWjGjhhy5DfzuII2FUb/eYD7eU7lXmUWc4hxmp0K527y9mvLxkHZK2p
-   s1aPXrXWcYuvyt2qZld9nY0Si5lFxq81KWAuF7TktYtZAHqJmwU7unDuC
-   EfJ8h+kTr1uMCMPNTlIJXFzOZ7e9fOglkLoTecLxm+xenx5qgxsiU+urt
-   mfbUWcApxuIW3Yw5+q5yMQrLW6hFH7HZL2WyueRWvXykhqJbyHnyCFFkf
-   w==;
-X-CSE-ConnectionGUID: xST4qn6RQleAer95YhrRnw==
-X-CSE-MsgGUID: /Wsg0nutSeOe6+6G2CBWOw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11703"; a="83101814"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=/T9s6SgDIcUJ77yD7qCEjbsPbIBB8hVIiGK9LLe5g+c=;
+  b=KXHxOA5tdorklsU+gkGOc4Y5mOaz2YfKZ1oZMROyxnE1XwxGVf5qSrus
+   zxTgn7Nbn2z72n+fD6ttTdf/ojeUZDiUX9t4q8/jVJwFsi5B6vUcFIUtJ
+   1iaLH/U9Fq8b1yZuDFeiEs5cHYQPpM6GZBQR2B763/CLIMQBtxXiulsAw
+   W9vj0T/Azgg0L3mK7ZFhcaPKW4UUnIFwXXMXALXQoBQzd88pULjJxR12O
+   sTf3jTIyESrH1mwoDBIVf121dgQPUZMVpItVC1NnPnikCObp20mtvCejY
+   dmxHTQDdYaD9H8S/zweD7XBfBAGqZmWPA3CecK5a3qUq/Ok5E3B+CXRSm
+   A==;
+X-CSE-ConnectionGUID: tg53sXOvRPOwL9JzgDhYQg==
+X-CSE-MsgGUID: I1/AWXL6R0u9lblYQzSw9w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11703"; a="59946718"
 X-IronPort-AV: E=Sophos;i="6.21,295,1763452800"; 
-   d="scan'208";a="83101814"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2026 23:49:18 -0800
-X-CSE-ConnectionGUID: CFGoUJGjTxuGIxyF0Fe0NQ==
-X-CSE-MsgGUID: hb6djyB1TVOwFlZvAa89wA==
+   d="scan'208";a="59946718"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2026 23:54:17 -0800
+X-CSE-ConnectionGUID: v6Wt1x+aTFS9Rw+LMuFhAQ==
+X-CSE-MsgGUID: kUF5bsJnQyid8FjHFw25dg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,295,1763452800"; 
-   d="scan'208";a="213641218"
+   d="scan'208";a="212044800"
 Received: from lstrano-mobl6.amr.corp.intel.com (HELO localhost) ([10.124.220.245])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2026 23:49:16 -0800
-Date: Tue, 17 Feb 2026 09:49:13 +0200
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2026 23:54:14 -0800
+Date: Tue, 17 Feb 2026 09:54:12 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andrew Ijano <andrew.ijano@gmail.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH next] iio: sca3000: simplify with
- spi_get_device_match_data()
-Message-ID: <aZQdeejX3ntHFWdM@smile.fi.intel.com>
-References: <20260216095110.1062611-1-harshit.m.mogalapalli@oracle.com>
- <aZLrb943-fnkyB7s@smile.fi.intel.com>
- <74d31a2c-d515-46d2-90f0-46ff816ee3a0@oracle.com>
+To: Ariana.Lazar@microchip.com
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, robh@kernel.org, jic23@kernel.org,
+	andy@kernel.org, krzk+dt@kernel.org, linux-kernel@vger.kernel.org,
+	conor+dt@kernel.org
+Subject: Re: [PATCH 2/2] iio: dac: add support for Microchip MCP48FEB02
+Message-ID: <aZQepHXptVvBsQuL@smile.fi.intel.com>
+References: <20260212-mcp48feb02-v1-0-ce5843db65db@microchip.com>
+ <20260212-mcp48feb02-v1-2-ce5843db65db@microchip.com>
+ <aY3m5V05FOH5sut6@smile.fi.intel.com>
+ <f8e45b0ef7af336dbde04ce53d117c6e47d2190d.camel@microchip.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <74d31a2c-d515-46d2-90f0-46ff816ee3a0@oracle.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f8e45b0ef7af336dbde04ce53d117c6e47d2190d.camel@microchip.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Feb 16, 2026 at 03:45:34PM +0530, Harshit Mogalapalli wrote:
-> On 16/02/26 15:33, Andy Shevchenko wrote:
-> > On Mon, Feb 16, 2026 at 01:51:05AM -0800, Harshit Mogalapalli wrote:
+On Mon, Feb 16, 2026 at 02:29:19PM +0000, Ariana.Lazar@microchip.com wrote:
 
 ...
 
-> > > -	st->info = &sca3000_spi_chip_info_tbl[spi_get_device_id(spi)
-> > > -					      ->driver_data];
-> > > +	st->info = spi_get_device_match_data(spi);
+> > > +static int mcp48feb02_read_avail(struct iio_dev *indio_dev, struct
+> > > iio_chan_spec const *ch,
+> > > +                              const int **vals, int *type, int
+> > > *length, long info)
+> > > +{
+> > > +     struct mcp48feb02_data *data = iio_priv(indio_dev);
+> > > +
+> > > +     switch (info) {
+> > > +     case IIO_CHAN_INFO_SCALE:
+> > > +             switch (ch->type) {
+> > > +             case IIO_VOLTAGE:
+> > > +                     if (data->phys_channels >= 4 && (ch->address
+> > > % 2))
+> > > +                             *vals = data->scale_1;
+> > > +                     else
+> > > +                             *vals = data->scale;
 > > 
-> > > +	if (!st->info)
-> > > +		return -EINVAL;
+> > Actually, if you put the scales as
 > > 
-> > This is a dead check. Just make it a requirement and drop dead code.
-> > The support of a new HW will be assumed not tested at all if there
-> > is no driver_data.
+> >         int scales[2][2 * MCP48FEB02_MAX_SCALES_CH];
+> > 
+> > this will become as simple as
+> > 
+> >                         if (data->phys_channels >= 4)
+> >                                 *vals = data->scales[ch->address];
+> >                         else
+> >                                 *vals = data->scales[0];
+> > 
+> > OTOH, I am not sure if it can be always as
+> > 
+> >                         *vals = data->scales[ch->address];
+> > 
+> > which would be the best approach.
 > 
-> I agree, will drop the check in V2.
+> I am not quite sure I have understood your point of view. In order to
+> remove the channel parity check, I would have to declare int
+> scales[MCP48FEB02_MAX_CH][2 * MCP48FEB02_MAX_SCALES_CH] (int
+> scales[8][6])
+> regardless of device's number of channels and number of voltage
+> references. This will be quite a lot unnecessary space allocated
+> compared to using only two arrays of [2 * MCP48FEB02_MAX_SCALES_CH].
 > 
-> There are a few commits like this which added NULL checks, so I was not
-> fully sure.
+> Another way to avoid these checks is to use a dynamically allocated
+> array of scales. Each member points to an array of [2 *
+> MCP48FEB02_MAX_SCALES_CH]
+> and stores corresponding scale values for each channel, while allowing
+> to allocate the actual number of channels the device has rather than
+> the maximum.
 > 
-> commit: c5d8facf107a ("iio: adc: ad7192: properly check
-> spi_get_device_match_data()")
+> Please tell me which version you prefer.
 
-Nice catch!
-
-That change is unneeded churn that adds a dead code as it looks like.
-Nuno, can you elaborate the motivation behind that?
+I think something like a second variant. But as it seems going to be an
+agreement that this driver is not needed and rather we need to refactor
+existing one to add the support for SPI chips, these comments won't make
+much value.
 
 -- 
 With Best Regards,
