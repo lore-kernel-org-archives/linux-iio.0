@@ -1,100 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45F9E26FA5B;
-	Tue, 17 Feb 2026 08:05:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 315912D59FA;
+	Tue, 17 Feb 2026 08:10:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771315521; cv=none; b=O52/uGBW9QpOel6ebj9GhtYKNKKK48b+B6RAXOD0soAH2B5VLn9ZIexJFr8c2VS1pPXk4EDpTXEBnObPjhHJTOX1IGO6rPHSoIACOkZob4bCui9JU2/PU0oZDGinzkVNcQ9MEkD+S5xt8piRxV/yJTgUdC7bMYHNxNDnYRIErHc=
+	t=1771315860; cv=none; b=Ea3aTTilW/UzM4ybTo3Vb1YVR8J2gIDVn55WKQndQ4zy0Nlia3Ec4y9mmXpjAeUc3/GPeA5y20cNxJgs2cTZYTMG/9oanE4G3H5DE4q/hbsT+0+i1KbFlNBHKhU9mJFtKB+8BZr9ISpnX8yAQlk6qhidfY1ymUWAqFcEs/bg4vk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771315521; c=relaxed/simple;
-	bh=HZYglLDL0lMK4wCaYUTSaYqepcpecMW3fm5yM1/Ihkw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=WLtPll/2G9CvJ0xt3G4wF0vsr0tboQJsLUom6DAU+D2WcryZ+nEW5UdKkDmNvkXivy0T6/Md2GkNhog7Ddrn7ek5jCr6yo9mOIjPBrH/DT6/KQkTh/Q+ifZkzFM+xHJgXPmJKRDUT9ZCI5r9IOxAkGEiOoJ/7cA7giyoz9xMOek=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jdmTwgFp; arc=none smtp.client-ip=198.175.65.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1771315860; c=relaxed/simple;
+	bh=oA2rZARAQUJ6xB0VC+dSDepaOhpDSPUotQBPBumMN2A=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DPgWx57ly51IeahFbxxwy1WKuSBWP8gOWu7Ce/49ka3Q6SfAd8If3bDA70N3pHgYQ0LPgB7FBK/f8edrXo+fIGwlrbLYaaFG1wvSln0oyNcEeY93iaV4uzafh2UnnKEW74JdSsLz1oX27kjefbfShMDVajP6J6jaoIdOlZ66koM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aOPYOqx6; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jdmTwgFp"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aOPYOqx6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771315521; x=1802851521;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=HZYglLDL0lMK4wCaYUTSaYqepcpecMW3fm5yM1/Ihkw=;
-  b=jdmTwgFpc58KgFGPRSKVDK0pBFCgHBl3FPhcDok/Gk3wi0pg/dbTsb0F
-   tzBsa0d7B4OTHfPSxm8YbuZuDrupXfFnYnJNPRcjYNlJHImCmQPWC9RKB
-   hh13OXfxqngwgtBwmDSOvufMv+tF90XwKJWUx4d113HIXzLv/Z4QwEeHY
-   gWaUp4IpsjwQDft4/TZ4Jbh09nyNmZlHTRypCDATMZSwvKhAQURMQVU4p
-   8eFS7Gs6EiJBCvc1bgeE0X9sKGvE578+0hx+ZXSarm27xR97wGZfFS4Vh
-   /SVACec0HTShpkaKqbo1G6GdBSojB7OspupkQEyxWgcPAGeG8ZWZYYeHd
-   A==;
-X-CSE-ConnectionGUID: Qq3WQcljTTmC2mCKvaLxXg==
-X-CSE-MsgGUID: PMXXkXB5QzaLBlIT933aAw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11703"; a="83480527"
+  t=1771315859; x=1802851859;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=oA2rZARAQUJ6xB0VC+dSDepaOhpDSPUotQBPBumMN2A=;
+  b=aOPYOqx6WfJ7kP8uJQ5HkE/Dx64imXA7oN4ovhRHAq71DmqzvqN5hGob
+   7hlNLlLiR+t2iTfjlPsa3KeN9TN06qVdUdMq7hMHTUWMD1c7rrTvNjbgf
+   1+LFJ61Lilgh9m8FAameswIyvl4kWWfWJ4YAW2Ft7e2GXhIs0LUvXZBN2
+   cfRG1fbNKoQMkI764eoH5fur0aT5UTzB3vjIJliUBJxMIfykRSQU4R4CX
+   noBMYY0TUSkNcZ6PT2gXvYyFL0Rde+tr226JsUBekAoRoUFFDe1PhBonu
+   S28MxANG4JsJaOazWT8ONUiXvHPrCY8iiyw6y/1ra9Ogw6mLcmrb1ShQx
+   Q==;
+X-CSE-ConnectionGUID: BWnWYkbHRAyuQ1kB6fKh3w==
+X-CSE-MsgGUID: zGYqCZ3aTRC8NA4u11xU0w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11703"; a="59947721"
 X-IronPort-AV: E=Sophos;i="6.21,295,1763452800"; 
-   d="scan'208";a="83480527"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2026 00:05:20 -0800
-X-CSE-ConnectionGUID: 7xlTmhuwSKK9OX9wA6UbGQ==
-X-CSE-MsgGUID: VdTpCjC7TQK6s4x3l+CaHg==
+   d="scan'208";a="59947721"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2026 00:10:59 -0800
+X-CSE-ConnectionGUID: iEgWq6ynSSqyVOfFGrxebw==
+X-CSE-MsgGUID: rtpeFw+zRmStTDhIOL9/Rw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,295,1763452800"; 
-   d="scan'208";a="213055990"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by orviesa010.jf.intel.com with ESMTP; 17 Feb 2026 00:05:17 -0800
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id A9E0795; Tue, 17 Feb 2026 09:05:15 +0100 (CET)
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Alisa-Dariana Roman <alisa.roman@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: [PATCH v1 1/1] iio: adc: ad7192: Revert "properly check spi_get_device_match_data()"
-Date: Tue, 17 Feb 2026 09:05:14 +0100
-Message-ID: <20260217080514.1288115-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
+   d="scan'208";a="251490522"
+Received: from lstrano-mobl6.amr.corp.intel.com (HELO localhost) ([10.124.220.245])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2026 00:10:56 -0800
+Date: Tue, 17 Feb 2026 10:10:53 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-input@vger.kernel.org, Lixu Zhang <lixu.zhang@intel.com>
+Subject: Re: [PATCH 0/2] iio: orientation: hid-sensor-rotation: fix
+ quaternion alignment
+Message-ID: <aZQijRLVjzuWcU2W@smile.fi.intel.com>
+References: <20260214-iio-fix-repeat-alignment-v1-0-47f01288c803@baylibre.com>
+ <aZLKy4l6OlPgIkZx@smile.fi.intel.com>
+ <bcfc711c-a02a-4470-a2a6-de43c71e7c2e@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <bcfc711c-a02a-4470-a2a6-de43c71e7c2e@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-This reverts commit b7f99fa1b64af2f696b13cec581cb4cd7d3982b8.
+On Mon, Feb 16, 2026 at 09:25:58AM -0600, David Lechner wrote:
+> On 2/16/26 1:44 AM, Andy Shevchenko wrote:
+> > On Sat, Feb 14, 2026 at 03:00:19PM -0600, David Lechner wrote:
+> >> The main point of this series is to fix a regression reported in
+> >> hid-sensor-rotation where the alignment of the quaternion field in the
+> >> data was inadvertently changed from 16 bytes to 8 bytes. This is an
+> >> unusually case (one of only 2 in the kernel) where the .repeat field of
+> >> struct iio_scan_type is used and we have such a requirement. (The other
+> >> case uses u16 instead of u32, so it wasn't affected.)
+> >>
+> >> To make the reason for the alignment more explicit to future readers,
+> >> we introduce a new macro, IIO_DECLARE_REPEATED_ELEMENT, to declare the
+> >> array with proper allignment. This is meant to follow the pattern of
+> >> the similar IIO_DECLARE_BUFFER_WITH_TS() macro.
+> > 
+> > In both cases it's quaternion, maybe be more explicit and define
+> > IIO_DECLARE_QUATERNION() ?
+> 
+> It is really the fact that the scan_type has .repeat > 1 that requires
+> this, so I was trying to make a name that shows that link.
+> 
+> But right now, quaternion is the only thing that has .repeat > 1, so
+> I guess it would be OK either way. We'll see if Jonathan has an
+> opinion on the naming.
 
-The added code is currently a dead code. Moreover, the driver is not
-designed to have any defaults effectively making driver data a mandatory
-information to work with. Taking all together, revert unneeded change.
+I think we should solve the problems when they appear. Naming explicitly
+for quaternion makes it easier to get from the core reading without having
+a variable name to repeat that. Magic 4  might not always be a quaternion.
 
-Reported-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/adc/ad7192.c | 3 ---
- 1 file changed, 3 deletions(-)
+Do we have "repeat" to be used in other cases, btw?
 
-diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
-index 530e1d307860..8b1664f6b102 100644
---- a/drivers/iio/adc/ad7192.c
-+++ b/drivers/iio/adc/ad7192.c
-@@ -1402,9 +1402,6 @@ static int ad7192_probe(struct spi_device *spi)
- 	st->int_vref_mv = ret == -ENODEV ? avdd_mv : ret / MILLI;
- 
- 	st->chip_info = spi_get_device_match_data(spi);
--	if (!st->chip_info)
--		return -ENODEV;
--
- 	indio_dev->name = st->chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = st->chip_info->info;
 -- 
-2.50.1
+With Best Regards,
+Andy Shevchenko
+
 
