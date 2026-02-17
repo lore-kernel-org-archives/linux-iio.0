@@ -1,115 +1,100 @@
-Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64D302DF6E9
-	for <linux-iio@vger.kernel.org>; Tue, 17 Feb 2026 13:28:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D29C1DF27F;
+	Tue, 17 Feb 2026 13:32:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771334907; cv=none; b=URFidMlYuu/2OxqXgMPh1Wygn6w6blBY4J0ODxwIjS7y6JQfhX2t/g4Br0HWD2tbUYeMI6JWCOqjDGom6udAdgGk/AiEB/+lUzySh+UG/eAw3tON4+qRmPC96dAX2Pvmmi/+Pu7vqidmNYVHMRPk/oVSC0rr8LkR6bDm8Um5D10=
+	t=1771335143; cv=none; b=WVq0DAxP63gHe3f0N+lS7rtF7sIJOh4fq/166nIh0enVzlHAmvurtoDLmE/SZDxc/K6GJ9pMMYkZfm4bkuWRDGIog9PQReOR7kKa6lbKUWpHVWNAoFU/d3bR2lI/SwXVZnvjRScOkUKPmA5BU0fQuYXmZIoP1y+NXgQs9E3E1Sw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771334907; c=relaxed/simple;
-	bh=cFF52qz0PD8aczZoib1i23aZ9w/Zx2t4N+NgXu2ufjg=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=lrAMrha9me3mkmD12vwnvrPRQhfcx0OKia69olQXdr3FlVciYSQ72ZKjxrq5ch4HqnB65Lmrmul7vTzW2hozKvsCHY9wUaVnxa11JYjfS4Tj3vWlXpBuVMQm1SoS25kSSZHWr/3FIJyfmgYDZLKwjTm6JLZCyPYMv3mlkfNWGqI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EqqNDseO; arc=none smtp.client-ip=209.85.221.44
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1771335143; c=relaxed/simple;
+	bh=zPLfs+A6UoEnfutdGYWDC3SegbGcKZn5rwwQzrHs76E=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=HoFiwF5Pebj9rmlE2Mj9mLoJ90+zv7uGIBNCrEjF54qCg02Ttj5PPgGFCt643tCNrNJ5Oh1U4OxXMBW5B8ZQqvfrwNZ3iPsept1EC2lhs16YpaSqs1dHcBLDBfr+n/jIBvMcDKnq+4VS8MRQfN3dlJiHkDv0tKmES+9YcHic7Dk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ay2C4hbH; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EqqNDseO"
-Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-43626796202so3890443f8f.3
-        for <linux-iio@vger.kernel.org>; Tue, 17 Feb 2026 05:28:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771334905; x=1771939705; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=aOWNrVRUU5sVLN+DLhuo4oI/n0WRUiVr3FUn821tZYo=;
-        b=EqqNDseOQRY/8PIsZ2uk9PE3Jp0ec5+fckOJ/kwiuJSwstzO8+adW3HBv36ZFCwUaL
-         Wxw0QrFUGvhU2yojXFlVpmXoDr6WLoaLdOcd391AfVBhYGufepZHD6DNhxW07daA0f+p
-         G8qYV+u91AvQMBGaRjcejeGqY90ITUFv7mRO5tLReGy/PsUcDGTkH6/KiMALtZe6Ch8J
-         d9b7MsTGea09eawJX8WdDDth9cD9d/ZuLrZtHZLvCOSTtFZhfW9az6Sg6BtAr/nVY1iR
-         d3UU4TJ0qk3YseKVk15ySt7bmuqsP0xEhZ4AWzQ0Ej+JAJyybFtn0AqnTbFqgGzYGOuS
-         qqaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771334905; x=1771939705;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=aOWNrVRUU5sVLN+DLhuo4oI/n0WRUiVr3FUn821tZYo=;
-        b=dtVVEyb+7A0FjIOBCekGIJmb4KS4V7lvEUCu1jgk3zffc3m2kifqPN2ByIj7E+7sFk
-         DKWzickhynP0K9Z5LN60l0WiCojGrrOeyqobCTUDQFDMZlEhyM/PlEPZxAz3NkYBBxZQ
-         kacrnWW0fK4ZpLusA6EEyN0UgvckAJPRAv3cxPqPVskY+uYRT8qHUKVEznwMaU9M493a
-         /zCujCkNOmOXR0BaYqClwi009Ei0zor8owV9gxJIVW+jQyD/5mpPwcff2t1TufgBs77N
-         88r0ZBd3BszmeNT39vj/ptRtg0+H8jRX4sZjYQZ10ZYFm6t7hgC2JITdtAs6uDzXnqrI
-         QnBQ==
-X-Gm-Message-State: AOJu0YyJxDnz+yclaEtelH86mcSzFsokYpx5Nm4idsFzVMRlNiwSc7//
-	cG3oc9AGAJefCHmczBbbGV3/iF70ak2Wto8Xe+KrE61JVjo6n0sh1b2a
-X-Gm-Gg: AZuq6aK3csho5LTGN81ax5w9I7/1RyP3xDFPOnx204EWCRaTpXSUoEOX/aD0gw5YEbG
-	PfysY12Qj9b56eheRsWZHG+9IrI4NX5rxfBR5CXCGR7bliDcZGp/MZpyBQD7+3o+25NskW0Saun
-	eS5UuiBvukxWJyGe0HJsGO4cNs9Gv5Eq55CTSLWQYE1PAYvKAcVFaj6Z4OpsR7vZuvckBnQOkd9
-	955gJHhJ928B6A01yikc7wN1anJ7SmXLNOZjIrbM3EqEV5wpx3t+sTftGwVWXEjdOOVeruG8NGM
-	kI2b2pL9zCHPyjnYaSXaQKxzO70WTZJJ4EClxk6CQKmvFfjrTYha71Wjy92UXuapz6hQE4IF7J3
-	DGU7fvct1Fvx/KASGlwdcHhX7jvy6BQ7dfBINuhLtAfWyc9WbGSKcsIhDJEwqmZeUkuCWsSPh17
-	OEbj53AWldXlZz0rVR5Vqr6RYtj/OlWvoWM6DCVV0w5g==
-X-Received: by 2002:a05:6000:2283:b0:435:e451:39d4 with SMTP id ffacd0b85a97d-4379792bf73mr26224243f8f.44.1771334904551;
-        Tue, 17 Feb 2026 05:28:24 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43796ad009bsm33511634f8f.39.2026.02.17.05.28.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Feb 2026 05:28:24 -0800 (PST)
-Message-ID: <c27fd07403ed790902bc9ef5a863beeb7b7429be.camel@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ay2C4hbH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771335141; x=1802871141;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=zPLfs+A6UoEnfutdGYWDC3SegbGcKZn5rwwQzrHs76E=;
+  b=ay2C4hbHOviM6+YFpLyQvXnXQpYplWIgY+LlIw/uCaUBf8LzjHaiJXP4
+   I44230Cefv3rFhgWYgDaLOGfp9+Cf0K4N2x6a7WJmwXkZ2mMxr6BTrlML
+   jhu3akmuKje5FNHWEkUvoch47I+10WG3a+ed1hlRy9NoUVheH7H7fKEVB
+   iUo8GsIBaL5TurYX7gHUlx7ba8ca4zgj2wGCyb7MLB7XpJUOIH07FOwcb
+   8mWC8962waIllyqRZs46l6mbQ/ePGjnGRC0JLl9hRNYTibw+oqNrnKt0v
+   EuochRdUu1udedRjRtEKbdkIOjt6VtkAIgkmep199dpC5pxfG/I8gvYfF
+   g==;
+X-CSE-ConnectionGUID: VX52lmoYRyimQaWJNvp/3Q==
+X-CSE-MsgGUID: Yzm7FwzFTCKzGvuvpvz0Aw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11703"; a="83842256"
+X-IronPort-AV: E=Sophos;i="6.21,296,1763452800"; 
+   d="scan'208";a="83842256"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2026 05:32:20 -0800
+X-CSE-ConnectionGUID: PxU0AO+LReuWco3WhCBmBQ==
+X-CSE-MsgGUID: QmY6dY6CQgaXqKU7jszaRw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,296,1763452800"; 
+   d="scan'208";a="213980597"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.245.123])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2026 05:32:19 -0800
+Date: Tue, 17 Feb 2026 15:32:15 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
 Subject: Re: [PATCH v1 1/1] iio: core: Simplify IIO core managed APIs
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Jonathan
- Cameron	 <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>
-Date: Tue, 17 Feb 2026 13:29:07 +0000
-In-Reply-To: <aZQcpJV2GQ8vWnA_@smile.fi.intel.com>
+Message-ID: <aZRt38PTZYzQv8Si@smile.fi.intel.com>
 References: <20260216081412.1118599-1-andriy.shevchenko@linux.intel.com>
-	 <525a30ed9127b689549bfaedc086638e2e3b5670.camel@gmail.com>
-	 <aZQcpJV2GQ8vWnA_@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+ <525a30ed9127b689549bfaedc086638e2e3b5670.camel@gmail.com>
+ <aZQcpJV2GQ8vWnA_@smile.fi.intel.com>
+ <c27fd07403ed790902bc9ef5a863beeb7b7429be.camel@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c27fd07403ed790902bc9ef5a863beeb7b7429be.camel@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 2026-02-17 at 09:45 +0200, Andy Shevchenko wrote:
-> On Mon, Feb 16, 2026 at 02:31:57PM +0000, Nuno S=C3=A1 wrote:
-> > On Mon, 2026-02-16 at 09:14 +0100, Andy Shevchenko wrote:
-> > > Use devm_add_action_or_reset() instead of devres_alloc() and
-> > > devres_add(), which works the same. This will simplify the
-> > > code. There is no functional changes.
->=20
-> > LGTM. Just one minor "complain". Anyways:
->=20
-> My answer below.
->=20
-> > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
->=20
-> Thanks!
->=20
-> ...
->=20
-> > > -	if (!buffer)
-> > > -		return -ENOMEM;
-> > > +	if (IS_ERR(buffer))
-> > > +		return PTR_ERR(buffer);
-> >=20
-> > Subtle change that could have been mentioned in the commit message.
->=20
-> Actually not really a change. Currently the error code is shadowed to -EN=
-OMEM,
+On Tue, Feb 17, 2026 at 01:29:07PM +0000, Nuno Sá wrote:
+> On Tue, 2026-02-17 at 09:45 +0200, Andy Shevchenko wrote:
+> > On Mon, Feb 16, 2026 at 02:31:57PM +0000, Nuno Sá wrote:
+> > > On Mon, 2026-02-16 at 09:14 +0100, Andy Shevchenko wrote:
 
-Well before that was explicit. Now it also depends on the internals of  __d=
-evm_add_action().
-That is why I said it was subtle. But yes, no functional change.
+...
 
-- Nuno S=C3=A1
->=20
+> > > > -	if (!buffer)
+> > > > -		return -ENOMEM;
+> > > > +	if (IS_ERR(buffer))
+> > > > +		return PTR_ERR(buffer);
+> > > 
+> > > Subtle change that could have been mentioned in the commit message.
+> > 
+> > Actually not really a change. Currently the error code is shadowed to -ENOMEM,
+> 
+> Well before that was explicit. Now it also depends on the internals of  __devm_add_action().
+
+True, but if that ever changed, we will have a new error code coming from
+->probe() and that's fine. ->probe() is not stricted to the certain error codes.
+
+> That is why I said it was subtle. But yes, no functional change.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
