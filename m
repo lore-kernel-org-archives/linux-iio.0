@@ -1,218 +1,107 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC69D22E3E9;
-	Mon, 16 Feb 2026 23:51:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16CC2134CF;
+	Tue, 17 Feb 2026 07:45:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771285894; cv=none; b=F17YSRyJTbMVADZPPAeUVNFaISldEKvB9p0HCYN4l9i8uVUhPRd9RLsgowa9DnbKyxvALM9ivs3AhdWRDyvygzC8eOJ14l0LKsYe7tn7knN45vVMub2m2cy/R5yeexwRyqffgTehbjF66Wqv4klExlzpu0YKiVrCD7WUcclSc6U=
+	t=1771314346; cv=none; b=J5h2WPARFGFGDW0uogJWIIXn58NcAh4ruvu5w95V5FNUo1yI0J70TVI2hJrWW8qsi6/CwfcFvgk78ZJsF6KfZXQS0y3J3QGMgnKgvckBreufxeB7HzFpPsEB+zNXFuIf7lMkLipnQTvVD6Gz9oS8m3OM76tXs5T4X+cELanPvm0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771285894; c=relaxed/simple;
-	bh=CX+sUyHZo2CERmp8VLGYfajFFTlz7YK5kxIz7mWaarQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rSEkQT6rvhhvZQ3CVutkAaMJjR58ldeyj55Xf5MqNS+uJRCk6FcvJxepzg/3ASFL6duO72Nl9vW2ysOP6DIKmzLfSwDbHrZuZ9Bccoi9WhfDlyB75WFVALFXAb20qempbdgZHT9qA3bhaIAwNVOtVVaPuk4Xx1L20mB/PYcve54=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YjGdulcM; arc=none smtp.client-ip=192.198.163.12
+	s=arc-20240116; t=1771314346; c=relaxed/simple;
+	bh=KT4R3+dQ/+s1qRbkm5fwajt/CKP/UWZLygHnEURbo0I=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nTDOjyyEKdcKEfW1js8Lz9g0Unss/VoCBYYPQZyppkZhieU5RgSG5pYEfDSlX+oU+z911zhaWL9YpY3BA6b+iPexODesdrrYmVik7b4K/hkZlkHCHmnsrmu33Pf/m3coQP4ZyNs0NRERrhgYR+mY5Iil22FGZN5ta7MdZLwZhGo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KwhdCT/3; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YjGdulcM"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KwhdCT/3"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771285892; x=1802821892;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=CX+sUyHZo2CERmp8VLGYfajFFTlz7YK5kxIz7mWaarQ=;
-  b=YjGdulcMl1BZH/WUL7gLwdlkh8s2OVrT1RshBJRqOX3L0mbyY8D6dv8y
-   uV4y4lIGcs0pXMJtcbTczuAXec9rjBuJJxe5S4nwOFsmOV3nmYSHVHcT2
-   FmyOHdCoyVdFVgsZ8+rZtc8SYTuOu2biwHbofYMC5NThQVaQY88Rpjg91
-   QoqV8FiafU0/eNIAHwPbMLYwVVIwaSsuHVeJFJQ6FnR+uy+UbcvDXKQNM
-   sYWQWa7keGXxHyiH0Mz8NUjbscge+mkmUVFGIgrFKcmw/6QgMNQomucsU
-   u72sNXbguk347erV9iXgZ1whoHe3JKlK8M6by0FkTWzFStOYAdg6K1If7
+  t=1771314345; x=1802850345;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=KT4R3+dQ/+s1qRbkm5fwajt/CKP/UWZLygHnEURbo0I=;
+  b=KwhdCT/3TKyFMBzPplp5iitQf1grGoPm5Kv7hDBc8imVf5Z9S19CsYya
+   ApTXvka7lGLY8/ZPgUgbilmEsBwv/yuelh3is4Nmv7rFTkSSlC3HRLIWr
+   M7qzr73w6v8xf7P1tg0j5MPzvDNhD9hcxxh9y9hSfsctbFxvU9ygu6mTh
+   p7/ovwzHWWzSzNR7LU6XMao+qpiw/wmU0ATQs0/SSihxn9LNsfDspdPVE
+   FpHDPvxhmNknXt2pgvnjXA/HLlwGhYTxlujM2p7L/6cWyvYl97Qx9NZjC
+   Q2Q4Ntk+TH3MfRQYhdYQX8vzewV5y5geQdLm00kOdUkB2yAwnapEeFpGL
    w==;
-X-CSE-ConnectionGUID: Pr++xTHJSv+G7wzBWVHRCw==
-X-CSE-MsgGUID: N62lG3WQTTaCYvBWcVh4lQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11703"; a="76213257"
+X-CSE-ConnectionGUID: xybsna5BRHK5HnbFoPTiZw==
+X-CSE-MsgGUID: EVC2YiT1R4mwuO+4AAkG6Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11703"; a="83101715"
 X-IronPort-AV: E=Sophos;i="6.21,295,1763452800"; 
-   d="scan'208";a="76213257"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2026 15:51:32 -0800
-X-CSE-ConnectionGUID: n7lmL5UPQCyPIxyylSel0g==
-X-CSE-MsgGUID: KhZFGN6PQ2CKzgl6l58QUg==
+   d="scan'208";a="83101715"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2026 23:45:44 -0800
+X-CSE-ConnectionGUID: r75+d6CEQ2GDPrYsEYk5nQ==
+X-CSE-MsgGUID: i6GYj8hwRDu6DK3CRL79xA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,295,1763452800"; 
-   d="scan'208";a="242790502"
-Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
-  by fmviesa001.fm.intel.com with ESMTP; 16 Feb 2026 15:51:31 -0800
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	bigeasy@linutronix.de,
-	spasswolf@web.de,
-	linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] iio: hid-sensors: Use software trigger
-Date: Mon, 16 Feb 2026 15:51:29 -0800
-Message-ID: <20260216235129.286639-1-srinivas.pandruvada@linux.intel.com>
-X-Mailer: git-send-email 2.52.0
+   d="scan'208";a="213640462"
+Received: from lstrano-mobl6.amr.corp.intel.com (HELO localhost) ([10.124.220.245])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Feb 2026 23:45:42 -0800
+Date: Tue, 17 Feb 2026 09:45:40 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio: core: Simplify IIO core managed APIs
+Message-ID: <aZQcpJV2GQ8vWnA_@smile.fi.intel.com>
+References: <20260216081412.1118599-1-andriy.shevchenko@linux.intel.com>
+ <525a30ed9127b689549bfaedc086638e2e3b5670.camel@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <525a30ed9127b689549bfaedc086638e2e3b5670.camel@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Recent changes linux mainline resulted in warning:
-"genirq: Warn about using IRQF_ONESHOT without a threaded handler"
-when HID sensor hub is used.
+On Mon, Feb 16, 2026 at 02:31:57PM +0000, Nuno Sá wrote:
+> On Mon, 2026-02-16 at 09:14 +0100, Andy Shevchenko wrote:
+> > Use devm_add_action_or_reset() instead of devres_alloc() and
+> > devres_add(), which works the same. This will simplify the
+> > code. There is no functional changes.
 
-When INDIO_BUFFER_TRIGGERED is used, the core attaches a poll function
-when enabling the buffer. This poll function uses request_threaded_irq()
-with both bottom half and top half handlers. But when using HID
-sensor hub, bottom half (thread handler) is not registered.
+> LGTM. Just one minor "complain". Anyways:
 
-In HID sensors, once a sensor is powered on, the hub collects samples
-and pushes data to the host when programmed thresholds are met. When
-this data is received for a sensor, it is pushed using
-iio_push_to_buffers_with_ts().
+My answer below.
 
-The sensor is powered ON or OFF based on the trigger callback
-set_trigger_state() when the poll function is attached. During the call
-to iio_triggered_buffer_setup_ext(), the HID sensor specifies only a
-handler function but provides no thread handler, as there is no data
-to read from the hub in thread context. Internally, this results in
-calling request_threaded_irq(). Recent kernel changes now warn when
-request_threaded_irq() is called without a thread handler.
+> Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 
-To address this issue, fundamental changes are required to avoid using
-iio_triggered_buffer_setup_ext(). HID sensors can use
-INDIO_BUFFER_SOFTWARE instead of INDIO_BUFFER_TRIGGERED, as this can
-work in trigger-less mode.
+Thanks!
 
-In this approach, when user space opens the buffer, the sensor is powered
-on, and when the buffer is closed, the sensor is powered off using
-iio_buffer_setup_ops callbacks.
+...
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
-Changes:
-From RFC
-- The trigger alloc and register is still kept as old code with
-additional
-indio_dev->modes |= INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
+> > -	if (!buffer)
+> > -		return -ENOMEM;
+> > +	if (IS_ERR(buffer))
+> > +		return PTR_ERR(buffer);
+> 
+> Subtle change that could have been mentioned in the commit message.
 
- .../common/hid-sensors/hid-sensor-trigger.c   | 47 ++++++++++++-------
- 1 file changed, 29 insertions(+), 18 deletions(-)
+Actually not really a change. Currently the error code is shadowed to -ENOMEM,
+but again currently the callee can't return anything else. So, it's just a use
+of the regular pattern. TL;DR: there is no functional change currently. If
+anything in the future comes returning different error codes here, that will
+bring the difference.
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 5540e2d28f4a..147de9134e34 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -14,6 +14,7 @@
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/kfifo_buf.h>
- #include "hid-sensor-trigger.h"
- 
- static ssize_t _hid_sensor_set_report_latency(struct device *dev,
-@@ -202,12 +203,21 @@ static void hid_sensor_set_power_work(struct work_struct *work)
- 		_hid_sensor_power_state(attrb, true);
- }
- 
--static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
--						bool state)
-+static int buffer_postenable(struct iio_dev *indio_dev)
- {
--	return hid_sensor_power_state(iio_trigger_get_drvdata(trig), state);
-+	return hid_sensor_power_state(iio_device_get_drvdata(indio_dev), 1);
- }
- 
-+static int buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	return hid_sensor_power_state(iio_device_get_drvdata(indio_dev), 0);
-+}
-+
-+static const struct iio_buffer_setup_ops hid_sensor_buffer_ops = {
-+	.postenable = buffer_postenable,
-+	.predisable = buffer_predisable,
-+};
-+
- void hid_sensor_remove_trigger(struct iio_dev *indio_dev,
- 			       struct hid_sensor_common *attrb)
- {
-@@ -219,14 +229,9 @@ void hid_sensor_remove_trigger(struct iio_dev *indio_dev,
- 	cancel_work_sync(&attrb->work);
- 	iio_trigger_unregister(attrb->trigger);
- 	iio_trigger_free(attrb->trigger);
--	iio_triggered_buffer_cleanup(indio_dev);
- }
- EXPORT_SYMBOL_NS(hid_sensor_remove_trigger, "IIO_HID");
- 
--static const struct iio_trigger_ops hid_sensor_trigger_ops = {
--	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
--};
--
- int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 				struct hid_sensor_common *attrb)
- {
-@@ -239,25 +244,32 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 	else
- 		fifo_attrs = NULL;
- 
--	ret = iio_triggered_buffer_setup_ext(indio_dev,
--					     &iio_pollfunc_store_time, NULL,
--					     IIO_BUFFER_DIRECTION_IN,
--					     NULL, fifo_attrs);
-+	ret = devm_iio_kfifo_buffer_setup_ext(&indio_dev->dev, indio_dev,
-+					      &hid_sensor_buffer_ops,
-+					      fifo_attrs);
- 	if (ret) {
--		dev_err(&indio_dev->dev, "Triggered Buffer Setup Failed\n");
-+		dev_err(&indio_dev->dev, "Kfifo Buffer Setup Failed\n");
- 		return ret;
- 	}
- 
-+	/*
-+	 * The current user space in distro "iio-sensor-proxy" is not working in
-+	 * trigerless mode and it expects
-+	 * /sys/bus/iio/devices/iio:device0/trigger/current_trigger.
-+	 * The change replacing iio_triggered_buffer_setup_ext() with
-+	 * devm_iio_kfifo_buffer_setup_ext() will not create attribute without
-+	 * registering a trigger with INDIO_HARDWARE_TRIGGERED.
-+	 * So the below code fragment is still required.
-+	 */
-+
- 	trig = iio_trigger_alloc(indio_dev->dev.parent,
- 				 "%s-dev%d", name, iio_device_id(indio_dev));
- 	if (trig == NULL) {
- 		dev_err(&indio_dev->dev, "Trigger Allocate Failed\n");
--		ret = -ENOMEM;
--		goto error_triggered_buffer_cleanup;
-+		return -ENOMEM;
- 	}
- 
- 	iio_trigger_set_drvdata(trig, attrb);
--	trig->ops = &hid_sensor_trigger_ops;
- 	ret = iio_trigger_register(trig);
- 
- 	if (ret) {
-@@ -265,6 +277,7 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 		goto error_free_trig;
- 	}
- 	attrb->trigger = trig;
-+	indio_dev->modes |= INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
- 	indio_dev->trig = iio_trigger_get(trig);
- 
- 	ret = pm_runtime_set_active(&indio_dev->dev);
-@@ -284,8 +297,6 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 	iio_trigger_unregister(trig);
- error_free_trig:
- 	iio_trigger_free(trig);
--error_triggered_buffer_cleanup:
--	iio_triggered_buffer_cleanup(indio_dev);
- 	return ret;
- }
- EXPORT_SYMBOL_NS(hid_sensor_setup_trigger, "IIO_HID");
+Anyways, if Jonathan asks to elaborate and send a new version, I will do for
+sure.
+
 -- 
-2.52.0
+With Best Regards,
+Andy Shevchenko
+
 
