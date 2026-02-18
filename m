@@ -1,87 +1,105 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dl1-f52.google.com (mail-dl1-f52.google.com [74.125.82.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C19D345741;
-	Wed, 18 Feb 2026 19:57:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 01AE2309EE9
+	for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 20:52:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771444630; cv=none; b=VuKklZuxmTXk5cNmNAfOdBK438PNJAdQJXKCPejoFjI3PA0Xd10MCJjCaPOWq13pJH+naW5cR/rR27JW1vBHtXEMo5IX+TGvdGCJ7HAK6caY1BgDkJ4BEDnTdPeMg26iwgjC0wbvdlZXNwgwMqZ9H6bDY4Uj0sIxbi7hKO46eWM=
+	t=1771447971; cv=none; b=qlqVwQHebFjwwisj2NfHhaZ7HICzrsRW20tNdw+8/NulxKApS8uqJ77FAzju5iW5wlYgm/8cFbIlyipcmXJzK2hQQBkH+5Ea5xWIlC7AWCl8w2veoR5fFyssublVEatVsqUOF6HZKvspHIGBNqygqqo5eWF7wRDzXvq6NB2r3h0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771444630; c=relaxed/simple;
-	bh=gat+rnnrUbK/Y6WytC8CslzBWIw44IxAUqnSKe3YTrY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=RbZUhAVcZA6bX/0Q9gFSDztrWQRZ1xL4wluKxnNK8VRg++AX/BZoOEWC6n6Ikuo7nx4p+TIgZgB1nmA/iAuDK0BPdL1/ceFgfmd5wzaJ+DxUZA0tguXqO/ecb8mwpT64kd2eQMSu4xJmY2LG4ZY/i6btWuX1HiHpwJ7rGhpXXLI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aU14TGs1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771447971; c=relaxed/simple;
+	bh=gVUXNAx5ipEs7JptNelgk7joR/9IsRhTWKeYYuuu/B0=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=gcxLiRmBrlvA6bFdgY3WoGyeKeeISRKy+X1GHUav4E1BMR2e4vPozQPXGSrGnZGSVu2tW5Q6FfifoRwEYNdmJ4Y8WYtPCbTZcCXQxWLPvPXD922ZhZ0X3Rxtx+BJsFKaYvKRVzBCx+TzZkmO14nLV31nRyVoe37XXKuI65RxzoA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Ku4N/NdQ; arc=none smtp.client-ip=74.125.82.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aU14TGs1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBA95C19422;
-	Wed, 18 Feb 2026 19:56:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771444630;
-	bh=gat+rnnrUbK/Y6WytC8CslzBWIw44IxAUqnSKe3YTrY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=aU14TGs1bcBdcieOvY4AjyQhrda6+MkmVlhMOuzrvau4aRL1lBtCrYeKF/2apBpWE
-	 mtVLTp11y3++lF+DvWTLWjTb3rlyub4/6jOkIIVa5jeoZLNmR0DC96Ra7y7J1/lxuZ
-	 2GVQh9+zp74dG9vcowhY3oIVqAYtnMacHVkIUgmCIYAltAz/P72ZBvohIaHePwfsqv
-	 Yu/fx6ueqX3LNWeImBl2d5Z60hIyYgqacrdddRFOO+r45TjKGzXtYHZ9QeMOub1KOH
-	 iDZxYI8pQ4LyAQeZ1R2jHqYJit4AjCi3njx2mjkvP8M/su6w101t1y/Y32+YMWQ0rs
-	 qpK63qWL1ooJg==
-Date: Wed, 18 Feb 2026 19:56:51 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Cc: linux-renesas-soc@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@intel.com>, linux-arm-kernel@lists.infradead.org, Bjorn
- Andersson <andersson@kernel.org>, Baolin Wang
- <baolin.wang@linux.alibaba.com>, Peter Zijlstra <peterz@infradead.org>,
- Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>, Boqun Feng
- <boqun@kernel.org>, Waiman Long <longman@redhat.com>, Jonathan Corbet
- <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, Mark Brown
- <broonie@kernel.org>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
- "Rafael J. Wysocki" <rafael@kernel.org>, Danilo Krummrich
- <dakr@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Orson Zhai <orsonzhai@gmail.com>, Chunyan Zhang <zhang.lyra@gmail.com>,
- Thomas Gleixner <tglx@kernel.org>, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Alexandre Torgue
- <alexandre.torgue@foss.st.com>, Lee Jones <lee@kernel.org>, Arnd Bergmann
- <arnd@arndb.de>, Srinivas Kandagatla <srini@kernel.org>, Antonio Borneo
- <antonio.borneo@foss.st.com>, Linus Walleij <linusw@kernel.org>, Konrad
- Dybcio <konradybcio@kernel.org>, linux-remoteproc@vger.kernel.org,
- linux-doc@vger.kernel.org, driver-core@lists.linux.dev,
- linux-iio@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
- linux-gpio@vger.kernel.org, linux-arm-msm@vger.kernel.org,
- linux-spi@vger.kernel.org
-Subject: Re: [RFC PATCH v2 13/13] hwspinlock: refactor consumer.h from
- public header
-Message-ID: <20260218195651.6a3fe5e8@jic23-huawei>
-In-Reply-To: <20260215225501.6365-14-wsa+renesas@sang-engineering.com>
-References: <20260215225501.6365-1-wsa+renesas@sang-engineering.com>
-	<20260215225501.6365-14-wsa+renesas@sang-engineering.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ku4N/NdQ"
+Received: by mail-dl1-f52.google.com with SMTP id a92af1059eb24-1275750cfc7so331057c88.0
+        for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 12:52:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771447968; x=1772052768; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=d/0FpU8lXYfK4+auQs6w7slKU7OvSIPS213kGUpKbqQ=;
+        b=Ku4N/NdQyCKydwhBSzVw33EAt3oL2BbBZNh2xTgT7H8Ag7hQJ8O7OFrsECzPf1Qw8z
+         0v/EaH9yw6N2xPmy6z+u8H6h+KlOkyO9K9JHmYhnH9Q6SiIVIjRhahNx4mLxZmQICued
+         Pn+uzBtE4BrlvH7+/7tOaPtoLxEoqQrGD8jlTzafbimK5DGvftZt/v6hrPssFAkg0edQ
+         oIEs0iIoD7AwTt3wyvqKbyeX+nMFELwzeC50OlIKbfMw3fBU3RTbhUhC4LfTegLDzSmN
+         lFnY/vqLrR+8VOZLawwrRXWM8E2hGVIz6QUghvY+nc39JMGoE0zr8pku7BfIeWFOFqgy
+         CvCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771447968; x=1772052768;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=d/0FpU8lXYfK4+auQs6w7slKU7OvSIPS213kGUpKbqQ=;
+        b=ERX4BR7h7a8gJRw2LXQ5KOREKI/WTjOqt+5IPU4PICL8l3EZzMfHQAawI0H4YDES1s
+         jFRFsdDrSQhnbbknpSNLB4LoWhZSNNELMbk9zxrqg6zAzUmqlaWRbmp5GWBiQnrw/0vj
+         4yCTwI0jmbLm9O40+n0oh5LJ6iHQppPDuw/flAjiDS11YnfJ9RGfU7i/mL+gNg/He8qw
+         C+jS9aNDiMS85/1KqdAPyNxzJs4pwWR8da7+QYmt//4JAJ/W6urtJfwT46hp2bsXG1iS
+         wEHEU+NfdHH3JwSCCpZtxIacSnbEn4SL9jJqxi6Hbkn+pPpV8BXOhKwjJqrX/d2JbXgy
+         ibig==
+X-Forwarded-Encrypted: i=1; AJvYcCU+fUqn7QspVKMsFk2/8ApXJJLmEsWsQ105a0ekeUHBHvXLEZxlHsZxdqHTDH4mhPCDLzHqwrTqjeY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzFdiuOwFwEPSRbeJcTUe8bhEi2jL3eUk9YAg4I1pZFCrFR6AU/
+	8avLtC1y3LlYhSSYQaBddvALt7bA8H3ox5VTUxf4pvdhffOQ4gbllJwg
+X-Gm-Gg: AZuq6aJQ8e27cHh+GVBa7cmPG9Z1cK5TsZaSDz7FJ03c90wLNDck4z0wrelqyJ0TqTV
+	mMD9lPHd1l0nTj3hQkI0tSSaQ6ewAt7rz+FjIG98ZgibzslUjmMsb0fn5QcMdYYpU6H30uyl4QA
+	HEHETRMEMJsky18h4KuWr3khVhjXbwRHxki+Fl9Ph0ilVC6hyOllZYoOUxD9Zmzyw1Zk5GBCoed
+	VdYY6adAzi/fuHrWXmMUVK+o2883TBqSK0oNDA81PcAz8I4uULK4biIU9Nny/n67FMmQ9aeh12f
+	4rZYKOPTd+vmUFAjWdqpMKV9xryif6AlcllKn2mHA2YCxndn6VGNGkOHtgkpFH3HGapvKQ+DhAw
+	TMtFq0qOkC/0IKbK+9T9aPQyto9vLMkpjZ8yG4Swj/7WGWMz35qXcn9Jd5MjtNeO0y6UrhmTduY
+	N1dvTmphIjo2blIqojy8j+vS1zi5t8nNMWiYGZKLKqtjnTpvcnI/Lhz3iFj8a+LTh/
+X-Received: by 2002:a05:7022:2212:b0:11b:bf3f:5240 with SMTP id a92af1059eb24-12759a103e5mr1793279c88.9.1771447968052;
+        Wed, 18 Feb 2026 12:52:48 -0800 (PST)
+Received: from google.com ([2a00:79e0:2ebe:8:265b:f5ad:9e03:677e])
+        by smtp.gmail.com with ESMTPSA id a92af1059eb24-12742cada1csm19332477c88.9.2026.02.18.12.52.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Feb 2026 12:52:47 -0800 (PST)
+Date: Wed, 18 Feb 2026 12:52:44 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
+	Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: [PATCH] iio: adc: ti-ads7950: normalize return value of gpio_get
+Message-ID: <aZYmemDCcVzPB1RM@google.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Sun, 15 Feb 2026 23:54:53 +0100
-Wolfram Sang <wsa+renesas@sang-engineering.com> wrote:
+The GPIO get callback is expected to return 0 or 1 (or a negative error
+code). Ensure that the value returned by ti_ads7950_get() for output
+pins is normalized to the [0, 1] range.
 
-> Factor out the entries only needed for consumers from the generic public
-> header. This allows for a clean separation between providers and
-> consumers.
-> 
-> FIXME: separate driver changes?
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Acked-by: Jonathan Cameron <jonathan.cameron@huawei.com>
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+---
+ drivers/iio/adc/ti-ads7950.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-for the IIO one.
+diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+index bbe1ce577789..0c4db18ec4d7 100644
+--- a/drivers/iio/adc/ti-ads7950.c
++++ b/drivers/iio/adc/ti-ads7950.c
+@@ -433,7 +433,7 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+ 
+ 	/* If set as output, return the output */
+ 	if (st->gpio_cmd_settings_bitmask & BIT(offset)) {
+-		ret = st->cmd_settings_bitmask & BIT(offset);
++		ret = !!(st->cmd_settings_bitmask & BIT(offset));
+ 		goto out;
+ 	}
+ 
+-- 
+2.53.0.335.g19a08e0c02-goog
 
-Thanks,
 
-Jonathan
-
+-- 
+Dmitry
