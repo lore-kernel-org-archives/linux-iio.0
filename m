@@ -1,62 +1,64 @@
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+Received: from mail-yw1-f182.google.com (mail-yw1-f182.google.com [209.85.128.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A19A81E8320
-	for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 04:37:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 09E682F0673
+	for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 04:37:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771389471; cv=none; b=mpzkRq/xjaFigO+7AQvbK0TOdKE+FGdyRSxTabByOnaIASdRleXwoHJC7qyVZTXuaNZ7Di2ahn4N6zzkhx8GzWayYh0qi3LBjQ+9FCQzh4BtziWV4ybYa5iXpndVCGT/SgGBpFFCVHqfMUkNVbyZhEHvWwNZCRLsoTOL3Wfw+hg=
+	t=1771389471; cv=none; b=XY601qs/KBW3Jix3RLWWt2Yw9voPkKg+KyGauaKs2ySNMwkD6nTMTnaEubiBgKIZUYa+LKRczLS7GcWizSws1bL35qCWSPoZ4X4IlxUXxAnf3F7ZG/Ocp7lulysrrDwMoqps8puKYnMYqyVEumdRQAe20ewOgibra6OZB/AjlH0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1771389471; c=relaxed/simple;
-	bh=JN8PduOnqm+b69G4LhqEI+v7hY7lXf76IbAo59XBbmQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TolqncTu3L8ygUq41/02vrwV1dpQmc9pv5J2kNn2VpPwmo8nwdtmIRwdbqVQN/hRbnOb1UpVeS6Y/eejMnH1xDem0VzGacvYXCVLAiciQLzA9hJi5fnObRTDWp9ttYWi5fEVtbSgJ8Niqh+www+pFO1dw7ztdt36bpAPPrK39Xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OS/V5RIt; arc=none smtp.client-ip=209.85.128.176
+	bh=pagHrvqBbwrKpiRdGecFFOqcw3gp13P/UHq0LoGCMuY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=dxCVKdzcmjDo1oWcOH3+VXR1Ab1kcw8WsBzHEmEvQpPsC/pYx3pS9iZ9EfWkVfGzsibEKn04CVm7TqAram24c8/xO0VWo/oXFVYDRlsIfDwRfIY9ixbJ/z8apXY2uvhusL99ws2eDB2K+Pbwa0vDpCQZpjjbXJKW6fFw4tWpU94=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QdMZkTtl; arc=none smtp.client-ip=209.85.128.182
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OS/V5RIt"
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-790992528f6so42244527b3.1
-        for <linux-iio@vger.kernel.org>; Tue, 17 Feb 2026 20:37:48 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QdMZkTtl"
+Received: by mail-yw1-f182.google.com with SMTP id 00721157ae682-794fe698e36so44578647b3.2
+        for <linux-iio@vger.kernel.org>; Tue, 17 Feb 2026 20:37:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771389467; x=1771994267; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=kbuDijcWciVVjzkbQF6mJ+gztIZX1FbNQNBTLwdc6cU=;
-        b=OS/V5RItWjj7lRtzDnwyjfCgOUrdrFOPglxOt2LaZCyh33IfzSwS32RW0Y2SHqyv9M
-         yvtMXO6Ng5PHuBqI6fPcGbSvAiBM10Z6zQdmKZup2dS33prtV6yl6q8jsVVuUNq1pRG5
-         S71JFjTWcs32Kb6qorjctKZjWVpz8rmTZQmGdZTJh1OM2eDp08iHt78RG2uvMaNaUTfu
-         CQ7T7V5WxFq6NPBeeFQr34hvoiAw1R11nyLbi2qrzjAkHdy5lNmlUmmIhVjmF8wU2qka
-         bGcBo8V62z2sZT6a+g9J5xloLgBJMKAlkoYBxUDEuB6mwG6xyVEcCnr0qopZSE+7kXaw
-         IOKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771389467; x=1771994267;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1771389469; x=1771994269; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=kbuDijcWciVVjzkbQF6mJ+gztIZX1FbNQNBTLwdc6cU=;
-        b=rxc/yyjTJG6MECzQiPEU5zvjpQ/Y592pBvU2o5wv7+m1ZMndRQyFKvtr2IKbHkVtHm
-         wkDhigWn4b4RUOADUHgU5CiHbXPM2IAG1uNF+r130u7VVh7BhztKm3cGvmG2KXLDuezG
-         xvFgGfERf0kOujVFQu4/cSothzaFx5J3/PFvJdpzU9r5X7ordsE18fMeS8s7WYPtBQWk
-         cpGTzhxtpCyddxXtrWI+SP49fProuLXyWOlnBfjrK/T2OMiU7i2xQHfOKBSAKh63L+01
-         XxDLzm7sIKKu2gL1ZY7xLySfCoTPRf2MDR7ba/ebXwLEn0//x0t79zWEWyElpwaC9PZv
-         mV5Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVhZZnuJGvgPaxbXfY8hdgdDOPLoLWyT2d6HdIo/XmofwWA0hQiJJxBlVjMvkkUWGnDu7+5gfOayYk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxAsApwLVNk5QvPV0hGPAC/9C2KhmoXYOT9VzHjfPa68fPSlnAp
-	Cl659m0Qey6vWVg9omxpeI6xM/6Ql9bn+5pK7Gy7KDGBdH9fIwNzSvBH
-X-Gm-Gg: AZuq6aLEalwPC1ag1qlO2wwAMsyDEbwloJozaX9aH90ap7D7YyrTMZd6edQlhloKaQZ
-	3r2EEen3X8yu7xal45EMWqkyi4An1Dt1hQorcQI9G1eSHzYQHvWyEBwP5DYtXSLqgb7+FRSKMSe
-	23qJ2gGRYrxG66Z08VtxLCixSe+xIxE+xcEPwoO7aeZUFYnjtHgspJEXnM0/lThLEWiRiXRre8k
-	8opAufrMWuGXMvzeCoDhIK9K5ITP3NWeC5PhcUU6Z0IdxkjwogaawFKpiWj4HUtChAGcSWP3ih/
-	roRfnNFNVrwQ/6lNEi3b2/E+wEIQrI6V6+jK7Nx3q5eRHTxUjFzMK3bWwkf6liun92RnlRDugkD
-	bwuNqYblTDiURwpmxZ+HI0YJ8sWpRrjhj5wa0Af1KkbmyDfV3+wAvVE8FhXWWRm6CC2byjVxOED
-	VILGnELIwEx7DiQISjleQ+Zbi7/0MlG+nmx0Ymmv9+YIQDE8O7LjuOXU+UqykF6F7531SAIpvYx
-	lthxdAE4jGQGPti3dbmJGzH6nK6PnpqrEgJBAdcLc4=
-X-Received: by 2002:a05:690c:e34b:b0:795:1ad3:26be with SMTP id 00721157ae682-797f73a50d4mr4764207b3.52.1771389467432;
-        Tue, 17 Feb 2026 20:37:47 -0800 (PST)
+        bh=wbfCSCPWbYKBtZ/X2FNoHWhz4WNydDjl7xPuqNagV4U=;
+        b=QdMZkTtlTqwOTj87ABapGsm8sl47ti8IVF1b4LHt7uLoSmuMI76nTmpvOPoiP8Pkr4
+         q+2wFzswPmvmQUbgV5jsX9IJWi7M/PujvhkvzN2eEWCpnSd8ss5XCBB/f/UEvd0IYsr8
+         LecZhBkGSGxqQFR5PIvac+c5QPgV9YvmynlQ+Wf8+tFYT4sKS6XfKCe6zht5+aGfN7cK
+         F3IsPl3AqEX/l9S3VxB6cV+r9Dx1pzglQCOpXLaWtxpbQeECnnAxks9TGHuQn1MueomQ
+         zeY4sd8JsaL2Ks6ebZ5apz3hBD8M9SHA0ZK5R6Sg64g9yO/T8I0Aeiosc7r//vL/IRjr
+         St/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771389469; x=1771994269;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=wbfCSCPWbYKBtZ/X2FNoHWhz4WNydDjl7xPuqNagV4U=;
+        b=QkwtfRBJeudxSWlfkARsYL5jQqFnMhsQG+WVB3Mo9gtlsPBdKWoj0egOlLXJubGGdG
+         T5MHKDK5+Cc9kshS1/XL59Ts33BssS40i/U8iADET/tk9Rn0KRpmizKtKcTy190e+JVK
+         2Y++cbUKtRSoAjsDM8IY0ntgmS2XsoCGKUObe6Po0J2vAqky5Amu2F/Grt+j6eujtvoM
+         5hBW8h922AbiUq1GLUfZLXkX5mW3ZeDfO/GF0P42K7O2/xQe4Urq17gRpg9VcyYXl5Po
+         ya8SrbOW6aVEICGpYUlZvci11jkDV0et7TKr/SOXmGeRihnhVOr6cA0sRmR9+x8rvxwT
+         W4DA==
+X-Forwarded-Encrypted: i=1; AJvYcCWhXQh3vyjwNCgjIwXB/VebVtvoDB523BoqEfyQpX+eVdt6+p5fMyRONd2L0IJDP3MGPsyofYGvBv8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyfzVxfO/PwCmPIHcBn8N3hxosWMJMflccDp8tuTHOyknRazjN2
+	lXnEKECX+0O/sdiZqMKqjeR3Oc6q09SIiKLCqiWX4+tbMuJ+9D8trfuw
+X-Gm-Gg: AZuq6aJgzwnYaK2AyOr1iaIhTVH3C+vB2YcjTKsyFSJw94e4n0zK1qfhVHGoNnMxtny
+	sf9sY2TlFdut34C3Wl8as2fY06T83ZkuSUqkoyJiQweE5+ICZE9QwQxEVzT7mKvHyCz1s8FgRV3
+	xtas5PBofZbQtsjijVRZ2EYxuoyE8uEQMI5ssR3F6Ol9k/64eaVkXAAo16/pigY9dzzisTY75yF
+	Rz9mhwQdIYIad1fYRHWY3G4BQdre58rIOI70QvDyFJItPN+hHCnJMoGdeL0kR2f0Q6okVUCCg0D
+	1ihsZA/NBb0yGvS408w6mKEwJ7F7ApKta9OfaalyIEfaUVKCwDWttyAF7wgwp+C/GFyG5NSBs65
+	NCTNnMSZCMLXujywZkgpETURLGsEwslQ4icmtX2OCrlcdm8rQykX8aY4YMhgysBFVOuoL+K56T0
+	kiRceDrnws27MDFtrrUPlnKHbAsDvoifJJPbEThc/8nZeMPIPW0Fgo1TSF2DTjzuz5GJJUXNmyc
+	U+UtOQDCzEpgUz6MFjQo+BjmVsyzn+FQT+W50Zx01E=
+X-Received: by 2002:a05:690c:2607:b0:797:e0ec:b8df with SMTP id 00721157ae682-797f71c12a3mr4865877b3.18.1771389469023;
+        Tue, 17 Feb 2026 20:37:49 -0800 (PST)
 Received: from tux ([2601:7c0:c37c:4c00:e3a8:26f7:7e08:88e1])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7966c23e4bdsm119850617b3.32.2026.02.17.20.37.46
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7966c23e4bdsm119850617b3.32.2026.02.17.20.37.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Feb 2026 20:37:47 -0800 (PST)
+        Tue, 17 Feb 2026 20:37:48 -0800 (PST)
 From: Ethan Tidmore <ethantidmore06@gmail.com>
 To: jic23@kernel.org,
 	andy@kernel.org
@@ -64,11 +66,14 @@ Cc: dlechner@baylibre.com,
 	nuno.sa@analog.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Ethan Tidmore <ethantidmore06@gmail.com>
-Subject: [PATCH v4 0/9] iio: light: gp2ap020a00f: General cleanup and
-Date: Tue, 17 Feb 2026 22:37:19 -0600
-Message-ID: <20260218043728.609659-1-ethantidmore06@gmail.com>
+	Ethan Tidmore <ethantidmore06@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v4 2/9] iio: light: gp2ap020a00f: correct return type to int
+Date: Tue, 17 Feb 2026 22:37:21 -0600
+Message-ID: <20260218043728.609659-3-ethantidmore06@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260218043728.609659-1-ethantidmore06@gmail.com>
+References: <20260218043728.609659-1-ethantidmore06@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,41 +82,75 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series performs a general cleanup of the gp2ap020a00f IIO driver.
+The function gp2ap020a00f_get_thresh_reg() can return -EINVAL in its
+error path. Yet, the function has return type of u8. Added error
+checking for gp2ap020a00f_get_thresh_reg() return value.
 
-It integrates my original work switching to the guard() cleanup handler,
-fixing a signedness warning from Smatch, and cleanups provided by 
-Andy Shevchenko [1].
+Detected by Smatch:
+drivers/iio/light/gp2ap020a00f.c:1013 gp2ap020a00f_get_thresh_reg() warn:
+signedness bug returning '(-22)'
 
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Ethan Tidmore <ethantidmore06@gmail.com>
+---
 v4:
- - Integrated Andy Shevchenko's 7-patch cleanup series.
- - Patch 1: Removed redundant 'err' variable and whitespace issues as
-   suggested by Andy.
- - Patch 2: Added Reviewed-by tag from Andy Shevchenko.
- - Patch 5: Updated commit message to describe the pre-existing bug fix
-   in gp2ap020a00f_buffer_predisable() where errors could be swallowed.
+- Added Reviewed-by: tag from Andy Shevchenko.
 v3:
- - Addressed initial feedback and simplified locking logic.
+- Remove Fixes: tag.
+- Added Smatch warning.
+v2:
+- Fixed gp2ap020a00f_get_thresh_reg() parameter alignment.
+- Removed unneeded whitespace between assignment and check.
 
-[1] https://lore.kernel.org/all/20260217102318.1354103-1-andriy.shevchenko@linux.intel.com/
+ drivers/iio/light/gp2ap020a00f.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-Andy Shevchenko (7):
-  iio: light: gp2ap020a00f: Use correct types for 16-bit LE data
-  iio: light: gp2ap020a00f: Replace custom implementation of min()
-  iio: light: gp2ap020a00f: Return directly from the switch cases
-  iio: light: gp2ap020a00f: Use temporary variable for struct device
-  iio: light: gp2ap020a00f: Explicitly use string literal for driver
-    name
-  iio: light: gp2ap020a00f: Remove trailing comma in termination entry
-  iio: light: gp2ap020a00f: Join some lines of code to be a single line
-
-Ethan Tidmore (2):
-  iio: light: gp2ap020a00f: simplify locking with guard()
-  iio: light: gp2ap020a00f: correct return type to int
-
- drivers/iio/light/gp2ap020a00f.c | 287 ++++++++++++-------------------
- 1 file changed, 112 insertions(+), 175 deletions(-)
-
+diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+index 91fdcb980111..deca9fd77fdd 100644
+--- a/drivers/iio/light/gp2ap020a00f.c
++++ b/drivers/iio/light/gp2ap020a00f.c
+@@ -993,8 +993,8 @@ static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static u8 gp2ap020a00f_get_thresh_reg(const struct iio_chan_spec *chan,
+-					     enum iio_event_direction event_dir)
++static int gp2ap020a00f_get_thresh_reg(const struct iio_chan_spec *chan,
++				       enum iio_event_direction event_dir)
+ {
+ 	switch (chan->type) {
+ 	case IIO_PROXIMITY:
+@@ -1024,11 +1024,14 @@ static int gp2ap020a00f_write_event_val(struct iio_dev *indio_dev,
+ 	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
+ 	bool event_en = false;
+ 	u8 thresh_val_id;
+-	u8 thresh_reg_l;
++	int thresh_reg_l;
+ 
+ 	guard(mutex)(&data->lock);
+ 
+ 	thresh_reg_l = gp2ap020a00f_get_thresh_reg(chan, dir);
++	if (thresh_reg_l < 0)
++		return thresh_reg_l;
++
+ 	thresh_val_id = GP2AP020A00F_THRESH_VAL_ID(thresh_reg_l);
+ 	if (thresh_val_id > GP2AP020A00F_THRESH_PH)
+ 		return -EINVAL;
+@@ -1070,11 +1073,13 @@ static int gp2ap020a00f_read_event_val(struct iio_dev *indio_dev,
+ 				       int *val, int *val2)
+ {
+ 	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
+-	u8 thresh_reg_l;
++	int thresh_reg_l;
+ 
+ 	guard(mutex)(&data->lock);
+ 
+ 	thresh_reg_l = gp2ap020a00f_get_thresh_reg(chan, dir);
++	if (thresh_reg_l < 0)
++		return thresh_reg_l;
+ 	if (thresh_reg_l > GP2AP020A00F_PH_L_REG)
+ 		return -EINVAL;
+ 
 -- 
 2.53.0
 
