@@ -1,46 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9D4A6346FDA;
-	Wed, 18 Feb 2026 19:39:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DEB330DEC1;
+	Wed, 18 Feb 2026 19:44:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771443591; cv=none; b=HZP5Bl55AQ6GqtBzbX6mzTBHbbfWZ5RZOF5LRkOsy5UCxx1l/1zmRQGFBIG4+WDed37VgnHKew8VYNPgSHJUuYtPDQZkXGeYev+YHJZ2zpyt6SsHoZ453wJXGGacaJIRLKbM3Y9DT0q0usePVxb80G/HQ34LAfc2GgIE3+6ZQpM=
+	t=1771443851; cv=none; b=VvuJ5x50/pAC0t8ozXc1627TM5wiOfhnLKLM3G2BODjSItlZRyQPG599hawRTpcmCkOC6/v0aMFLi+EHxKtxW78Qv3QdCZ98FtOY7P7d/Avjkq2xLZODMRkFks6lJUeepM1Dqa782ccWr39zKRiBu+AS9KP/YH4AMSMvBLP5bg8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771443591; c=relaxed/simple;
-	bh=D+sEqreT8KH5MvuumZ7pq26QX38YMqgmFXHC5MpUHIU=;
+	s=arc-20240116; t=1771443851; c=relaxed/simple;
+	bh=//qnuWIx2dCsg7BwpRG1Kkg8Q9Vcgf4iee1ksND5Q48=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OVUYC9PGjNuL2+Ku8LF4ZkXxadlc5wT0IGWUrPKSJgVYJcHfvgypKr0J4QzE/Kpf10df9yNojIy5Vua5p6f53eSL85XcnGcRPMWahHMt471SOot1+LhkHXs5bq6/oDr75QWFHCNclSgjKvXQRX61gjQJ2GbyEY9wvI4/jdaNIyc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RI+hyUgq; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=FfJmY8A2lE8UDEnQzYGJxVVR3qE5xhMH/WeARZsbzsUEmvAGfBsHyq0U8GQ5ysbccMILeVZDgEp9YNadzfn9Nl9/GSA0jGqqipG7Adp+xc90noHTIxVg8wVwSghpS5neZDrL9K2CZ/Ssbk0GSymlyGRO1BHCom95wiFeIxTT3x8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=j5G9R0PG; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RI+hyUgq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B24AC116D0;
-	Wed, 18 Feb 2026 19:39:46 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="j5G9R0PG"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E9F2C116D0;
+	Wed, 18 Feb 2026 19:44:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771443591;
-	bh=D+sEqreT8KH5MvuumZ7pq26QX38YMqgmFXHC5MpUHIU=;
+	s=k20201202; t=1771443850;
+	bh=//qnuWIx2dCsg7BwpRG1Kkg8Q9Vcgf4iee1ksND5Q48=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=RI+hyUgqI5cailj1bpFIIXs3zptVPHPX93Xkr5Re4wSoXIbRLMHjD1aXMwKbjKs+B
-	 mTiCFNEElZy8jB3/lGLMeqqbGycz97SV30exS2xB0bRGwJdsvVz8QpEs0tUS7HadqQ
-	 6XV8TTrPIoa8ALF3yZ3RQ22OYVirOye9ACou8eRzXmz82R2plyhgC4qKdBBaDB1+f4
-	 C3Di2Z9/fv8xVrwfBt0LMQZ3G/HMSIMSgvnN2/KQXZ1Z/7c6FlOmu3o23atMYzQzH3
-	 CpwM//95xUMlqGIuiE18JZ2zmfEtgkEP6UFCB+zob/w9FnW+qxKY+0ShKMUSBVCLhP
-	 X/xBG9aWgtpbQ==
-Date: Wed, 18 Feb 2026 19:39:42 +0000
+	b=j5G9R0PGvs+JFAUCcxBcVJmK4/OtzPmDiXunJ7wWRCI2g01kN94IkcDh1e/GtPojO
+	 o8qSSr55EKdLMLfXEPkq8eB7UuXU928ZD8F9JHs5+MUO2jrklvmik06uXBaapKtOuI
+	 zqfpgfFmQocInqnp0LMCsZracBYX7EDT9zCCkuDQTraA24ytjSxQgujbWW6r/XGbpA
+	 6R4tcrZgo5LLOlsXB6DP7cMZmAsauvBb/m9aT3o4ojTjD3SZ+a+M0MPP9wBAqPVKp2
+	 U5H8mRzdCgGyYWOH/x1OdWyVi6Nu7WxdMFNP3FLg0LQe4dWrG+7u2qNPB1wtO60Wh9
+	 4sAhmksOdYseA==
+Date: Wed, 18 Feb 2026 19:44:00 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Erikas Bitovtas <xerikasxx@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
- phone-devel@vger.kernel.org, Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v5 0/2] iio: light: Add support for Capella cm36686 and
- cm36672p sensors
-Message-ID: <20260218193942.192faeef@jic23-huawei>
-In-Reply-To: <20260217-cm36686-v5-0-63c2de9709d8@gmail.com>
-References: <20260217-cm36686-v5-0-63c2de9709d8@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Ethan Tidmore <ethantidmore06@gmail.com>, Jonathan Santos
+ <Jonathan.Santos@analog.com>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, kernel test robot
+ <lkp@intel.com>, Dan Carpenter <error27@gmail.com>
+Subject: Re: [PATCH v3] iio: adc: ad7768-1: Fix ERR_PTR dereference in
+ ad7768_fill_scale_tbl
+Message-ID: <20260218194400.5196cd80@jic23-huawei>
+In-Reply-To: <aZLIqW1JN34xvQun@smile.fi.intel.com>
+References: <20260214184637.16985-1-ethantidmore06@gmail.com>
+	<aZLIqW1JN34xvQun@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,16 +52,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 17 Feb 2026 14:13:14 +0200
-Erikas Bitovtas <xerikasxx@gmail.com> wrote:
+On Mon, 16 Feb 2026 09:35:05 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> This patch series adds support for Capella cm36686 and cm36672p ambient
-> light and proximity sensors.
+> On Sat, Feb 14, 2026 at 12:46:37PM -0600, Ethan Tidmore wrote:
+> > The function iio_get_current_scan_type() can return an error pointer,
+> > the return value scan_type is not checked for this and immediately
+> > dereferenced which can cause a kernel panic.
+> > 
+> > Add check for IS_ERR() and propagate the error back.  
 > 
-Series applied to the testing branch of iio.git.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
 
-I'll be rebasing on rc1 after the weekend and then pushing out as togreg for
-linux-next to pick up.
+Applied to the fixes-togreg branch of iio.git.
 
 Thanks,
 
