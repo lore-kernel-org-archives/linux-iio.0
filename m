@@ -1,103 +1,95 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA110328617;
-	Wed, 18 Feb 2026 13:51:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F95E1DF271;
+	Wed, 18 Feb 2026 18:19:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771422680; cv=none; b=Krf7uHIfcrfULrU1dJpiIHaM3jht0V2LX8/Q/rW6UVMrjlhdJZhPt+ByzYM+n3kix+Pje3qyy4GPbfB3Xyg1moXy5ZsdfaxxTCTnAku9/lGW1Fi8Uv2nEcdnbxLuyrBW1UDSkI5q8h4o+X1QXciK5SVxKSfP6qKMBxHEY42OPyE=
+	t=1771438753; cv=none; b=V6936f6d6zGQhHJ/Vvx5Q0BBUEi9/rvUX6eOExDNoE4iVuygXf8VMNboOWzzxt4NICPMefVg146unCyuVmrXfPvrK+URvHG31zIlO8CfH89j5OSfVveUFFrVGPABIB7gj6hZziCKV3zPXF6xby98AUhV9yoF1YEb3kQWzXmFof4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771422680; c=relaxed/simple;
-	bh=VuhjXbFaI3Meq1zJLwSUXFLnMLGJbhF6SjJfiBaGhe4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jWaIE3YwIZ62r1RCNgEdjPtdyNYWOfX6k6t79736ANnu8hbr/JS0NL0x7gkdN53zVxyyyxrtySBqTiPWkQ8B16qpczefIYzxp/xyitUw9kawEakPH0coBpK8WHEIlGTuw+6/KSLd5urTt8WeSDSH7j/6zvbOiIb32gjRYya1iI4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZpDrtAuD; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1771438753; c=relaxed/simple;
+	bh=6aTTV2D4GFbT9AcSSsbxK6cVpicgRb5RWvt/cwVA1sk=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=NSM6TuKhi4myB4csU1B82fa+mjp/xRvnt+VYM/pJqEcqCOf1a4AqMpnzHs0aOW/iSfxpAeT8Lf+MAozPLhWcntm+ifZXcsV/vj8hjHUBvl0M7DOHSZIOVaySyMRltokTLC4B547Av9AqVcG5B+BVTeq9aj4Q+ceVrfGH7CuzRH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LmBMhBeB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZpDrtAuD"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771422680; x=1802958680;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=VuhjXbFaI3Meq1zJLwSUXFLnMLGJbhF6SjJfiBaGhe4=;
-  b=ZpDrtAuDUp/DUkkmt/msN8oD1AJL9NNj8zpW7ry05IpCxZSO76AwU0Xb
-   UPPPYahqOFl27goQESZVpqr798BHAtGdKTTQqJTeJW1Hjyi5/5mNIbVWU
-   ACg3U7vBQmZsYWj1cCBD0V7l5NqxEzqGzgqIntIPtujozId57A+76M/ox
-   GgGkVbOqDN3uB705ZNxLXzHlTqROpRLwL2BfNCB2v6bcFJByBjWGKT+6q
-   vbKqNX4Q9vOAh7thq1UNLGTWgaXZlDELu4OQqBCrY3aMCXI/WTzxU1i5l
-   +Jql9to5GxUypoMQHZHGfh6Y7ozq72xAMmE5Uyug7fVNO2hcPM89e+8Y8
-   Q==;
-X-CSE-ConnectionGUID: HfersVxGSyObeh08bM4TaQ==
-X-CSE-MsgGUID: SGhZvn3AROSaBcQIx/9zNA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11704"; a="83944122"
-X-IronPort-AV: E=Sophos;i="6.21,298,1763452800"; 
-   d="scan'208";a="83944122"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2026 05:51:20 -0800
-X-CSE-ConnectionGUID: q0eJNcUzSfSAy1FN7BgCiQ==
-X-CSE-MsgGUID: 7O3wrIAMT0yUybwniHgnLQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,298,1763452800"; 
-   d="scan'208";a="244790540"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.215])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2026 05:51:16 -0800
-Date: Wed, 18 Feb 2026 15:51:14 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LmBMhBeB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BF70C116D0;
+	Wed, 18 Feb 2026 18:19:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771438753;
+	bh=6aTTV2D4GFbT9AcSSsbxK6cVpicgRb5RWvt/cwVA1sk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=LmBMhBeB71qKwrUWyVjfoZbTWAZ5eDvXzTjLaF96LYav+WSumGPi+qzADjZqVj1dS
+	 6EeaVMrvMq76zep+//Mly6I+q3BCnHoQYTI/A1Ql7GJmL1TqcaSn3XDJac6guRK/Is
+	 ixGXDNIHL7U6Dx3VUKTXDDVctL0uEDVCL7uH6Vs0vkkOm/NFgwx0DT2+ho5YprzH7N
+	 Cicb8Pr3hjo1pAYYKmIndY511wZoCB1I/8XCTH+eO6cJgkypXRW4t/oieTAUmHhA6R
+	 mDr0g4NQPvScp79nxDcGksK40BfM6Tor5xMieBs88YG9z88exWktDNUP/PVXkk4+y0
+	 Z/XeNtU7w+NgQ==
+Date: Wed, 18 Feb 2026 18:19:03 +0000
+From: Jonathan Cameron <jic23@kernel.org>
 To: Archit Anant <architanant5@gmail.com>
-Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-	gregkh@linuxfoundation.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: iio: impedance-analyzer: ad5933: use
+Cc: David Lechner <dlechner@baylibre.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, lars@metafoo.de,
+ Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org, Gabriel
+ Shahrouzi <gshahrouzi@gmail.com>
+Subject: Re: [PATCH] staging: iio: impedance-analyzer: ad5933: use
  div64_ul() instead of do_div()
-Message-ID: <aZXD0smUd3CRgPcv@smile.fi.intel.com>
-References: <20260218125327.21467-1-architanant5@gmail.com>
+Message-ID: <20260218181851.46b339a7@jic23-huawei>
+In-Reply-To: <CADJHxWDXqgpbK1+cffhPeTEz95L0zeCGGWb96_QwuxjEofBNKg@mail.gmail.com>
+References: <20260122145633.14938-1-architanant5@gmail.com>
+	<aXI-ZV4uAd5GyFLz@smile.fi.intel.com>
+	<aXI_HnvDNbX68-lq@smile.fi.intel.com>
+	<CADJHxWB3b+bH2+HBP+SG0jxhGNcozstBeWeDH_3dgS-4c2G-6g@mail.gmail.com>
+	<aXJmYAZ-8KkXCFI9@smile.fi.intel.com>
+	<CADJHxWDCer97pMNHV-69B9AEVY0NfimTcxo8k8yFBbstg0wMQw@mail.gmail.com>
+	<b27c638e-f0fb-42af-978f-89e38dea2b23@baylibre.com>
+	<ca488ef9-f4f1-4f7e-9656-8c5d132d0d1c@baylibre.com>
+	<CADJHxWDXqgpbK1+cffhPeTEz95L0zeCGGWb96_QwuxjEofBNKg@mail.gmail.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260218125327.21467-1-architanant5@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Wed, Feb 18, 2026 at 06:23:27PM +0530, Archit Anant wrote:
-> Replace do_div() with div64_ul() since the remainder is not used.
-> div64_ul() is the preferred API for 64-bit by 32-bit division when
-> only the quotient is needed.
-> 
-> Also replace explicit casting and shifting with the BIT_ULL(27) macro
-> for clarity.
-> 
-> Note: A mathematical simplification to `(freq * BIT_ULL(29)) / mclk` was
-> suggested during review to improve precision. However, as confirmed by
-> maintainers, the original driver's truncation via `(mclk / 4)` might
-> be intentional or relied upon by userspace. Since hardware is not
-> available for verification, this patch preserves the original logic
-> to avoid regression risk in the absence of testing.
-> 
-> Issue identified by coccicheck using do_div.cocci.
+On Tue, 17 Feb 2026 22:16:19 +0530
+Archit Anant <architanant5@gmail.com> wrote:
 
-> Changes in v2:
-> - Replaced explicit `(u64)(1 << 27)` with `BIT_ULL(27)` as suggested by Andy Shevchenko.
-> - Kept original arithmetic logic `(mclk / 4)` to preserve behavior.
+> On Tue, Feb 17, 2026 at 12:34=E2=80=AFAM David Lechner <dlechner@baylibre=
+.com> wrote:
+> > Actually, I just saw this was in staging, so I guess not breaking users=
+pace
+> > isn't the top priority if there the other way is objectively better. I =
+would
+> > assume that testing/measurement could show which is actually correct. =
+=20
+>=20
+> Since I don't have the hardware to perform those measurements and confirm
+> if the precision improvement is valid or a regression, I will take the
+> conservative
+> approach for v2.
+>=20
+> I will send a v2 that only replaces do_div() with div64_ul() and uses
+> BIT_ULL(27), preserving the original (mclk / 4) logic to guarantee no
+> behavioral change.
+>=20
 
-The place for changelog (and comments)...
+I started writing that I didn't care either way and given the chances of
+not having to fix some ABI up on the way out of staging is near zero
+(which would break any userspace anyway) but then I took at look at the
+log.  We've had a fixes for this fairly recently!
 
-> Signed-off-by: Archit Anant <architanant5@gmail.com>
-> ---
+Might imply Gabriel has hardware? (or a 'healthy' interest in
+reading data sheets! :)
 
-...is here.
+So +CC Gabriel who might have some insight.
 
-But do not resend until maintainers explicitly ask for that.
+Thanks,
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Jonathan
