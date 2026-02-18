@@ -1,107 +1,130 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 768A6194C95;
-	Wed, 18 Feb 2026 07:10:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 74513335061
+	for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 09:11:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771398608; cv=none; b=p17bkVfBnnkPsMIm1ce7nx7uWyQZUGqSsA0H3IIZ26Hbd+4xtvfSvPXrkh24y0Fq1zcsVwY+3wpCyefs+JWkFMj4mTbiJtxtZPnuYssbo25hn9QB0nTo6P5UtUA1Y06WbRHVWo0g6UHS/7G1Dkur+aOrqQPmN0M1ac6YISVHBig=
+	t=1771405883; cv=none; b=EpyLlyo1vrzJlGbxmxEUxMDbhmWzY+WVjqdphZqYtq87t1/BHr/3fUStBUxq5qErViszq3lL5xy1gBuMZ8Oeue2x/qVBC3cTiW41OMy9vSFwLxzrjZ3ufBy7bU4J6RRj5fitZZt/VMterJVlotViQHvbwUB4Tj2u0MNIllwYDvw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771398608; c=relaxed/simple;
-	bh=The0KleRDhuafabtv8KA3SpElAZrStUsMoo/dw/HD6c=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UBLDVSdmyoDNVN8CGpoBgBHNynmLvscSCI54t+syNurnyjVboMpT184wuIPKqi8ZXs0aEo97CgCgj4WGd13nsbHs8o6cC9jx4sieytFw3MMb87Wms1lqm8Lq1UCji01mFyUBcpQdiCQ07X69Y54SjeUPL9h4A8IvH0fdKkm7WMM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=P/XEfYhb; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1771405883; c=relaxed/simple;
+	bh=K81aBw9PHTIyTGzm0ahYqyXP39Z6oxa3Bkh+nhvpzUg=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=mJMRjia1cKZhFYt/Rs1c/+nNO/mFKnjjLLD5eO8ifWxtp267/9BzFporsWVhbF14O1kvFEL48FJPyJYJBcKzug6bUNU1E94x8iPzMNeGuIUlZxUavIrS1NCcdwR1jNMaN69WCrYUzgO5ZIwCE8yb6Me5rczKqjBOHmgEVn0WVmM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BqF3/XhR; arc=none smtp.client-ip=209.85.128.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="P/XEfYhb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771398607; x=1802934607;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=The0KleRDhuafabtv8KA3SpElAZrStUsMoo/dw/HD6c=;
-  b=P/XEfYhbE9JNMsCLr3YDIriiNsTU2XcIZ0fwKMLLK3sCF+Q6CN2gkuKc
-   rwLRJKNeYo2oC1J2tUHYDa3qXrK0vr45RjU/tQs0wluByGJpKZY92jII5
-   b449lS06pawgPCuoWT/is1zK/hh7G4YC5TlqQbHJAWKW0JpANnbKLTBEU
-   /lceWOM/k2p4qD0bZwqtKQpYIoHJvDwIntjSqxyBE5E1O1D6meAuEHr97
-   Zy0pzwe2CbEnLfgQVRaIrfOY/VG1hJY0bvOtzTIXHw6kOAnwJ9R7Wj7Ft
-   YhovUfSp7u9YN9kgZ91W9DHBVdIuOJFYqK9IEY8ToLTkyRNfF6Xenyirg
-   w==;
-X-CSE-ConnectionGUID: TGnyj1h/TlKacLT+G6/0Zw==
-X-CSE-MsgGUID: 2D5kywesSWCZBnV1KYCbXw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11704"; a="72648741"
-X-IronPort-AV: E=Sophos;i="6.21,297,1763452800"; 
-   d="scan'208";a="72648741"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2026 23:10:07 -0800
-X-CSE-ConnectionGUID: Je110nv4Tou/m866ktATwQ==
-X-CSE-MsgGUID: OFYkSDSrRwGQeyKSIDcPzQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,297,1763452800"; 
-   d="scan'208";a="214226193"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.215])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Feb 2026 23:10:05 -0800
-Date: Wed, 18 Feb 2026 09:10:02 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ethan Tidmore <ethantidmore06@gmail.com>
-Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 0/9] iio: light: gp2ap020a00f: General cleanup and
-Message-ID: <aZVlyiC8WOrYoDWy@smile.fi.intel.com>
-References: <20260218043728.609659-1-ethantidmore06@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BqF3/XhR"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4834826e555so50433335e9.2
+        for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 01:11:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771405881; x=1772010681; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=tLcrjjQRa0M8vJiWefRWPzwInBQOVnFBnP/W42lQU04=;
+        b=BqF3/XhRmbo04dZImlN1YUiSSt9icApzttyE4jdyq92ax7RTM57NvYKhjpNqQaBmBA
+         xGqyzsm4a+KzdHcTQvwTmwyOtjbTvxSmBvoBp+6WXHrRUA4JQe/gzd5SDUD4P1x0rM07
+         skX9IJoIXZbG1RiqSsbJKlbHJ4+ItwwPEvvS7lzvDOPHctNjy/PFYuZkZVEyjgwlj/TL
+         1dtTbA5l+aXpK0Ymi37b0QdpInw0K4tceepRbPbt1X7Vim+3oinFTNRjiZOTW+PoeVE6
+         u2eaBgJh43CoB8j80n7p/Cf89SnXwuT4lIzKxTNYPWMvzFaEX4dcSwqVn3+kpKe1JEkh
+         Viwg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771405881; x=1772010681;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=tLcrjjQRa0M8vJiWefRWPzwInBQOVnFBnP/W42lQU04=;
+        b=OD6N2gfGyEoBbMCgb8yJNRc3tIY0JeLM6xaZcJWTmNjf5IPKSwwEajgfwKVg77pctJ
+         1JrGZ9b9pYIditQKCf78diV8N69fK+6QJa8OQE9VU7IIltYegD5r1CRd2wVXC0RTStvX
+         SXtfoEKqwOYZOhnr8lQ393sa0q4GGWFoV/MCNbwmM6JWtmAlLW7pNFpYlvVdSoBx09M8
+         m2RpkwIQTCTNQ+G4O4viBoGljg++H4foiMugRi8FV6vGsOHKdrXoKb4PKNmLhacQNUz5
+         YKI0iohjSeGe4DFKufw1kR3HMOzMT1yf7O1vLsWDx53Z3SGq6j+QrUPdiaLx/05Ex9IE
+         RN3w==
+X-Forwarded-Encrypted: i=1; AJvYcCWoclXZ7cKPXWU0D8bo+N1jURCabN/g+QoL6Ys6YkN13+uRH5QZu1i3swLQ9mnnHN9ArfqgtduKRdg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzL9cx323LVvBG/sKEJdqaGAUbQQ7s1I7fp39lnmnkvsx8FIfgE
+	GWfnYnYNlMwa9iHz/vN5uP5Qb9XLVvc2MnrCw8I35SIFxtXXCfiFIcAH
+X-Gm-Gg: AZuq6aJUfuhfQ9p1VQZf6j/f+7E5RFm1rg67r1eqN8I285HLRTkWtPbgtnlB3KcWIov
+	C2g0tnRHzkAhSozww+pSqt9fmjATHcBCEiZxattGWRGL3gxviYvHtgItV1mY2lsJompFKIk82GN
+	ZvyRFvjDl5oYMCsZZqq7DodJIVw/y7ovGvTOc7svYX+o8d2AwaY8MMOfcnCP/tvdmmFsSeJPPFu
+	kmO6QkyOPazl0e+RMyr/ac1jFIJ/nOj3tt91suhiB3euPuNOIgo88v536VvlL50iYDbCQzWoscK
+	YzVS3NaHRh9EIB9CjSaIUlPqzMity30RuIlxrosS4WJoZUZ4VfdS8l887HPqWFrDoYuvVm+kw2I
+	Gq1jDZ64+pIr3s1UNNQ+Loe68YXTRFML69uHpqgTNfh/d6hmktOviWGy911bjZgokGrJvuGuupC
+	lQ6aK4OinT8TNoSW1o8bqBKSc1tQhcO1U=
+X-Received: by 2002:a05:600c:4e45:b0:47e:e48b:506d with SMTP id 5b1f17b1804b1-48379bab48bmr283637085e9.16.1771405880574;
+        Wed, 18 Feb 2026 01:11:20 -0800 (PST)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4834d835f6bsm555595975e9.14.2026.02.18.01.11.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 18 Feb 2026 01:11:20 -0800 (PST)
+Message-ID: <a823c9b72fcc3b1d88ff9dd93580be6241826153.camel@gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: adc: ad7192: Revert "properly check
+ spi_get_device_match_data()"
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ linux-iio@vger.kernel.org, 	linux-kernel@vger.kernel.org, Alisa-Dariana
+ Roman <alisa.roman@analog.com>,  Lars-Peter Clausen	 <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,  Jonathan Cameron	
+ <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Harshit Mogalapalli	 <harshit.m.mogalapalli@oracle.com>
+Date: Wed, 18 Feb 2026 09:12:03 +0000
+In-Reply-To: <aZSD-3WIVwT6XYWX@smile.fi.intel.com>
+References: <20260217080514.1288115-1-andriy.shevchenko@linux.intel.com>
+	 <aebc2f13040d97e6e3b9797d3fa580198125e3f5.camel@gmail.com>
+	 <aZSD-3WIVwT6XYWX@smile.fi.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260218043728.609659-1-ethantidmore06@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Feb 17, 2026 at 10:37:19PM -0600, Ethan Tidmore wrote:
-> This series performs a general cleanup of the gp2ap020a00f IIO driver.
-> 
-> It integrates my original work switching to the guard() cleanup handler,
-> fixing a signedness warning from Smatch, and cleanups provided by
-> Andy Shevchenko [1].
+On Tue, 2026-02-17 at 17:06 +0200, Andy Shevchenko wrote:
+> On Tue, Feb 17, 2026 at 01:47:59PM +0000, Nuno S=C3=A1 wrote:
+> > On Tue, 2026-02-17 at 09:05 +0100, Andy Shevchenko wrote:
+> > > This reverts commit b7f99fa1b64af2f696b13cec581cb4cd7d3982b8.
+> > >=20
+> > > The added code is currently a dead code. Moreover, the driver is not
+> > > designed to have any defaults effectively making driver data a mandat=
+ory
+> > > information to work with. Taking all together, revert unneeded change=
+.
+> > >=20
+> > > Reported-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > ---
+> > > =C2=A0drivers/iio/adc/ad7192.c | 3 ---
+> > > =C2=A01 file changed, 3 deletions(-)
+> > >=20
+> > > diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
+> > > index 530e1d307860..8b1664f6b102 100644
+> > > --- a/drivers/iio/adc/ad7192.c
+> > > +++ b/drivers/iio/adc/ad7192.c
+> > > @@ -1402,9 +1402,6 @@ static int ad7192_probe(struct spi_device *spi)
+> > > =C2=A0	st->int_vref_mv =3D ret =3D=3D -ENODEV ? avdd_mv : ret / MILLI=
+;
+> > > =C2=A0
+> > > =C2=A0	st->chip_info =3D spi_get_device_match_data(spi);
+> > > -	if (!st->chip_info)
+> > > -		return -ENODEV;
+> >=20
+> > I'm ok with this but as long as we get some consistency agreed on. So f=
+ar,
+> > IIRC, the policy was to check for the NULL case even for the cases wher=
+e that
+> > was not possible to happen.
+>=20
+> Is it kernel-wide policy?
 
-Thanks, my comments below and in patch 1/9.
+Nope... Just IIO IIRC. Actually, I'm pretty sure we had patches in the past=
+ just adding the
+check. But again, I'm fine with the above as long as we are consistent from=
+ now on.
 
-> v4:
->  - Integrated Andy Shevchenko's 7-patch cleanup series.
->  - Patch 1: Removed redundant 'err' variable and whitespace issues as
->    suggested by Andy.
->  - Patch 2: Added Reviewed-by tag from Andy Shevchenko.
-
->  - Patch 5: Updated commit message to describe the pre-existing bug fix
->    in gp2ap020a00f_buffer_predisable() where errors could be swallowed.
-
-As I mentioned this perhaps better to split to a separate change as
-a prerequisite to the mentioned patch.
-
-> v3:
->  - Addressed initial feedback and simplified locking logic.
-> 
-> [1] https://lore.kernel.org/all/20260217102318.1354103-1-andriy.shevchenko@linux.intel.com/
-> 
-> Andy Shevchenko (7):
->   iio: light: gp2ap020a00f: Use correct types for 16-bit LE data
->   iio: light: gp2ap020a00f: Replace custom implementation of min()
->   iio: light: gp2ap020a00f: Return directly from the switch cases
->   iio: light: gp2ap020a00f: Use temporary variable for struct device
->   iio: light: gp2ap020a00f: Explicitly use string literal for driver
->     name
->   iio: light: gp2ap020a00f: Remove trailing comma in termination entry
->   iio: light: gp2ap020a00f: Join some lines of code to be a single line
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+- Nuno S=C3=A1
