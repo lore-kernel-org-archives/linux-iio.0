@@ -1,123 +1,106 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 13A04339B34
-	for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 09:14:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67B703148B4;
+	Wed, 18 Feb 2026 09:40:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771406059; cv=none; b=XbVuXptoMEFi0OzP+58OPYiz8+rMffaJaKBmvQzL2XNSiq50zE/6Pj3Y4Urpt7bPDhw3w0tLjESe6r6fakUbIIVXK3t5ZEIvrKRXyWe+vaXbmafiaYpRmWyC1OrqApM24gpeKrbA2LlnET7Xg+v+yNDHDeS/XwyI059crJDxZpQ=
+	t=1771407619; cv=none; b=mPoa93MZ1ADSTA+w6zhn4WoU8T3kx5naWvBX+9KeiPn0NINo+dMVso2Kit8walMBlYelLAGKVA+oWePzV5oy/DG9bSYD+dQekMrV1b005mekTDWfdQHrGWiGyR0tH6tHZqS7ZHnk7o5Ent14n9woFvTT6ZcuR11zhJ0EXYOgNPs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771406059; c=relaxed/simple;
-	bh=K1fkG5xJAYeAu2Jz3+lOBCdudWVHy6/ylSrbbO0iXBs=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=swWKhF/K+fzx8o4MxozCzp+h260UykPB7twr9JCnIXnBcDen7fHdfGfW1lIUiXv7WVRj+FGdkM8ZMyzuUp0gW9hopUdr0FUXmMLMISIjPq/+GOGhsfl68tbk/koBIYRGC1JXAdnMW/ndgu3VaIh4sPpHSsu/8AZQvXnB+r39YCc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kOMf9NuY; arc=none smtp.client-ip=209.85.221.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1771407619; c=relaxed/simple;
+	bh=sQo/XFFKxtOS3X6r2R7c8dsr7U5boxWgad9w41Rg2DY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=AdzmNnt198ZqtQefQ4Z0QJiYuO7fj9wag6q1T+Uuu8Drk+nUBUnQaW0nSENsHen2SfbBquKHgYuAVOBDjPyW9TMJuMelpbO9umbZgvn0Ky8lNiht7FT0hdy86EuKfoMS7LhNvwtFHabIwfd7K/+pbt+k+OBBWh/HBAg/qg2e2g8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=M6yc6PJf; arc=none smtp.client-ip=198.175.65.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kOMf9NuY"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-4359228b7c6so3869837f8f.2
-        for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 01:14:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771406055; x=1772010855; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=K1fkG5xJAYeAu2Jz3+lOBCdudWVHy6/ylSrbbO0iXBs=;
-        b=kOMf9NuYg5Ir/TEv8MD93LQO4gNblmeWdXEUI7bQgf9+dHUekb/CowPyny8OrhHoEq
-         YUT6DiFjA5hO/kP9cEyvcW7qkr6syjqjLWcn98o8BJRST3F1iKReWErTJYNrrV5yqy9O
-         9p9p27Gf8n/AACGoKR37elouiLumTEnXXP+Bz69vj9Ux9J7W/J7kE+yyLbwTdYX8LKQR
-         e43xvN2I9dWXjaSmhgbbcK1+XSOvpXXKtsWduPsiMySDKOeEpSD9671v+f4g9Zi93I6R
-         p2LiAsHopHxSKZzKmkk4GZ6ECsnC5533t4ieI8XTFh2Kg4asYMipYltFQhmg2ubZbyZY
-         p+Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771406055; x=1772010855;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=K1fkG5xJAYeAu2Jz3+lOBCdudWVHy6/ylSrbbO0iXBs=;
-        b=mnQRV0IC0RqDVzrgysVqMPXTi1szsiqeeDt65LcUDadDoVKGNUnZxGcJJv6+4hun/I
-         QihuyZIv/pxibtkgBS1DU9BgQVMgjoUeX6Wji94y4wQ+ptD8oPg0NPd4j2KO02dJztd8
-         9HO84KVCUfXrWE4T+S3QKLHOMNObrAJBncbN5SDokSIsT3jU9iNohrrGi5HG7Q51pSTb
-         C/j2lajLPvLd4p3F21AxMlEvUZ8LCkVw9HTYEkpXa4OotxA9moEfmpbDZ37CJnvzBw6V
-         +o4d0zdRflUwNYZwayggndzn5jHFM+NKQiszysSY9/ZCcT9C4/et1CrmppRIWgOhfZXT
-         3C/Q==
-X-Forwarded-Encrypted: i=1; AJvYcCVo9nlU0gHgoOtxdIGw3M1FUWAmlmkxhWCiy8mbz7W43kEmG8ADEmGr4JHTfUo6o88/H+c51QywnvQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxtdAwbStoI6bt0rFcFkUvMDvsGAvalgu6m+Uq154Z85GIxafmu
-	wntaPagWReHFeizY3pFWgtQ++uqq2g8zpmR+k4BEe38qFp+/qMDM8aRc
-X-Gm-Gg: AZuq6aIJOTfrfREqbqvO12UPUxxr5O6V0I4nvRHAtx4qUbXo7jIheZa8n4ASdvs6UO9
-	gEiSHgFNTnM7OXbQJviVktokF6JNcF+bjwkdoaa68icTcC6L7wWfMiR8vDt+QsAsiyN4MQhqfOt
-	ZiPTGV68KrHkEfm6g08bvM4mbMsYGQ3Yv60UoxmlCneLj/4GywLGz5mCMv+XoCKLMt29kJ3qAY3
-	iVDO54r+Z7y0PM9JYwWhSpziBwWH+SpZpDZLVJ3RReAarQXoPd6vxBZaDCV7+XsgLm461pAf/FN
-	6UedtcG2FTwQCsFv1G7uoT7P7E47bw26jZ3HSnErnLRjqsA92H+qFzC5+vmo09xMaDFFVPHX+Cr
-	RdFwuCeeGzGkHUCTFeC2CpzKrFAi1Ew/MjGGzJ81W/U2cW1CeFfkLqp3Zlruv7jHldhrBUs+wYT
-	rI+yNlR/ELaQRxT+2aZWdZCajz8ElG0IQ=
-X-Received: by 2002:a5d:64e7:0:b0:437:8f98:8c91 with SMTP id ffacd0b85a97d-4379db34172mr23918370f8f.3.1771406054907;
-        Wed, 18 Feb 2026 01:14:14 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43796ad009bsm39228886f8f.39.2026.02.18.01.14.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Feb 2026 01:14:14 -0800 (PST)
-Message-ID: <f8292da100b987808c943821b48690002345724a.camel@gmail.com>
-Subject: Re: [PATCH v3] iio: trigger: use put_device() in
- viio_trigger_alloc() error path
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Salah Triki <salah.triki@gmail.com>, Jonathan Cameron
- <jic23@kernel.org>,  David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy Shevchenko	
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Wed, 18 Feb 2026 09:14:57 +0000
-In-Reply-To: <aZSEVpQBgHlRHbeW@smile.fi.intel.com>
-References: <20260215222348.186806-1-salah.triki@gmail.com>
-	 <aZLNX6Ifw68k-zu5@smile.fi.intel.com> <aZLZN6sD9H9dF8Np@pc>
-	 <96b05a514d229b23ea0917447607dd7390ec0e2e.camel@gmail.com>
-	 <aZSEVpQBgHlRHbeW@smile.fi.intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="M6yc6PJf"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771407618; x=1802943618;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=sQo/XFFKxtOS3X6r2R7c8dsr7U5boxWgad9w41Rg2DY=;
+  b=M6yc6PJf4gDoihFPCO6xgTgMQUBIlH4vur/5X67c9cYcSoru0rDM51ux
+   zTjoApSBDeyVMJjePR6pJ5W07tkbg304JMf5l+z3yaeRbgClOr1DPkDAN
+   rSfriYCk7A228/6Q5xrP5O6ACInVtAODCRSm/C/uJdVLtst+H6pN7pwge
+   4toI8b67tj1OI69OYU6kFcz+yAV3b/QCp173pNnrFxCvYz65Ofvyb2BaN
+   0MtMFZaFJpZbUQtjfva06bdywPdBGXVmFDP3pYiZCz5Sm/+Vg+GEdtlpW
+   vlpLCnDvFK0E+DocIz/ZSthspynhBR2pSXGGEkdXhH7VyH1Dq9k8DjBLt
+   Q==;
+X-CSE-ConnectionGUID: w7qhOMHdSq60m8GNnDlKhQ==
+X-CSE-MsgGUID: 9cZ7Aa0xTjuwSP9LVFK39A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11704"; a="89893374"
+X-IronPort-AV: E=Sophos;i="6.21,298,1763452800"; 
+   d="scan'208";a="89893374"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2026 01:40:17 -0800
+X-CSE-ConnectionGUID: LMe9yMB+Tg2vGFs51w5SXw==
+X-CSE-MsgGUID: szCNQYpQSm+VP5YPF+VgEg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,298,1763452800"; 
+   d="scan'208";a="218683432"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.215])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Feb 2026 01:40:14 -0800
+Date: Wed, 18 Feb 2026 11:40:11 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Alisa-Dariana Roman <alisa.roman@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: Re: [PATCH v1 1/1] iio: adc: ad7192: Revert "properly check
+ spi_get_device_match_data()"
+Message-ID: <aZWI-80-K7xfuEBY@smile.fi.intel.com>
+References: <20260217080514.1288115-1-andriy.shevchenko@linux.intel.com>
+ <aebc2f13040d97e6e3b9797d3fa580198125e3f5.camel@gmail.com>
+ <aZSD-3WIVwT6XYWX@smile.fi.intel.com>
+ <a823c9b72fcc3b1d88ff9dd93580be6241826153.camel@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <a823c9b72fcc3b1d88ff9dd93580be6241826153.camel@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 2026-02-17 at 17:08 +0200, Andy Shevchenko wrote:
-> On Tue, Feb 17, 2026 at 01:51:08PM +0000, Nuno S=C3=A1 wrote:
-> > On Mon, 2026-02-16 at 09:45 +0100, Salah Triki wrote:
-> > >=20
-> > > You are absolutely right. My previous version (v3) was logically flaw=
-ed as
-> > > it could trigger the release callback before the necessary fields wer=
-e
-> > > initialized, leading to an unsafe irq_free_descs() call.
-> > >=20
-> > > Since I don't have the physical hardware to perform runtime injection
-> > > tests,I relied on manual code path analysis and clearly failed to acc=
-ount
-> > > for the side effects of put_device().
-> > >=20
-> > > I'm sending a v4 which takes the safer approach: moving
-> > > device_initialize() after all potential failure points. This way, we =
-can
-> > > safely use kfree() and irq_free_descs() in the error path without
-> > > involving the device lifecycle prematurely.
-> > >=20
-> > > Thank you for the catch.
-> >=20
-> > Please just use the same approach Andy did for iio_device_alloc(). I po=
-sted
-> > links (in one of your versions) to that and for the discussion we alrea=
-dy had
-> > on this same function some time ago.
->=20
-> I believe this is the approach mentioned above, id est move device_initia=
-lize()
-> further in the code. But I might misread something...
+On Wed, Feb 18, 2026 at 09:12:03AM +0000, Nuno Sá wrote:
+> On Tue, 2026-02-17 at 17:06 +0200, Andy Shevchenko wrote:
+> > On Tue, Feb 17, 2026 at 01:47:59PM +0000, Nuno Sá wrote:
+> > > On Tue, 2026-02-17 at 09:05 +0100, Andy Shevchenko wrote:
 
-Me too. But if that was the case, I would not expect any put_device() call.=
- Ah, but I just read
-Salah's reply. It will be done in v4.
+...
 
-- Nuno S=C3=A1
+> > > I'm ok with this but as long as we get some consistency agreed on. So far,
+> > > IIRC, the policy was to check for the NULL case even for the cases where that
+> > > was not possible to happen.
+> > 
+> > Is it kernel-wide policy?
+> 
+> Nope... Just IIO IIRC. Actually, I'm pretty sure we had patches in the past
+> just adding the check.
+
+Like you said we need clearer policy.
+
+> But again, I'm fine with the above as long as we are consistent from now on.
+
+Exactly!
+Jonathan, David, others?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
