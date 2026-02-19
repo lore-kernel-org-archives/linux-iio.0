@@ -1,63 +1,63 @@
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA7E030DD1D
-	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 20:33:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC6C0307AF0
+	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 20:34:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771533232; cv=none; b=cqF5jJmPH3QekhFavHIJuhMMAwzyjAV6DiX4ta4HUEX5C/a0Pbw1oO4uFVf2WAEvjtklQnskVpBr0j3l6FFdEw3ZmXpL8QXJxE+t50SEBP1lFzOZbksYm02woYnOmiQDCgTrfQTDc96WI9ijEO7qbNz7sU2bOSlR9SKbZrEL1kY=
+	t=1771533242; cv=none; b=XbL1TWWKomZSfbWc40QrWddIZUFgS19WISrPJeEBDjJIKlqS4wjHjxBKArit38NqItqvEfm59D7raZHb0ohlC/iznncApseBbkvjIJqM5xuZuL8ytsOhJoRKMStke23ewifjvmeHucznS0aS6WoQq8niZZaC7klaxuEbF//3kWo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771533232; c=relaxed/simple;
-	bh=cKXXqkuHdb/6PVrhi193Kpkk1MRt/bN7Gazuqm4hFTI=;
+	s=arc-20240116; t=1771533242; c=relaxed/simple;
+	bh=MFsqeaI3f9penNDTUHKZULsatT4hpvovywGhQC/KZAc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Cy+sQ/RRC2+zHiBQU42FDee9HfSjyaK2/rDv+CzKBbl6GH7tt2h/aCuB3pSR5gxI2lJ9AhigHeDG0ZWWucosJccG9n0TROIKAvJA1iqfH06OuAdpw1B9YbILfnjhD2cbWaC6xSoXZEJCqDnrAoU94haw1eq7UcRi99mCVeL6aHQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iPxWi4TW; arc=none smtp.client-ip=209.85.210.181
+	 MIME-Version; b=hGAPEUDBNaceyOrUaww/X0jYF28j/hDPw2CHDMSOH8jTW+3Z6i3R93K5NPhLoTDXmNdHVOINiQK3zCWGlsNGhl+e+4oXl8D9wKxS4Ewf8iJCHb4KD6emNUmA2RK1omuNwK5pFikbQ9rsm3Ouh2kmM5/ymW7DZyxxQ3QPJexf5D4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=esdiTmJK; arc=none smtp.client-ip=209.85.210.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iPxWi4TW"
-Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-824b5f015bcso1288279b3a.1
-        for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 12:33:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="esdiTmJK"
+Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-8249cb73792so1221734b3a.3
+        for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 12:34:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771533231; x=1772138031; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771533241; x=1772138041; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BIi+OMPIEGzkATcR3nbeDpG++Q/GFRTfTECN7DMuE60=;
-        b=iPxWi4TW7O7Tj7gcsYwBPsnFNBkceHZHuofKPsqT55nVzGM9wyAfyZarjFPi46MQkt
-         LwuLxthqBiXYLVUNBJWVR4qebJhhYiqwfwSrZU0uiI8awCSy+b3xI0dxVlbFXagsBJvz
-         +4BVlV7Y2mKR0wApzy+aUNXE7r0lvy8iYbr1LJnS8ogIYK9pnDlTCgm8+k1ZzIjSEL+H
-         l1pfiKs3SkELVWBcUa7TjulVJMK79dax/qFJPfYBgNj1WINWxmK4ywqUsLoSUS6JXN/F
-         8vNlvWyCaEnPzqRxHKKnV0bIVclg2xwJnbY3pBW7Vr3/PsAiyLJojmnhffOz0cG3p21Y
-         6f3g==
+        bh=26gzJtloJijZDesoemSh9i7X2im5JgocENjBucao4eA=;
+        b=esdiTmJK5gYXxj8bxNtiE/H8L8V/jKrmw8d2dfOUeZLt4X+xZKCnriiml5fVblYktf
+         54X2paXYs/CFAN5XtQz7Ua1dhueEX4JVYCUaLDqk9F8PSq/GpNi7zmNcbLg08W1eztxn
+         NIjaKVqXykSxQRsnlRTS8L9rYLqX/zda56+B29DwX0RSO5KPOEynrVSTz++XcRLUz+pa
+         WdirOKZY1HL8xlc4B2al7+SWK3pqUJLuI9ZqwU2JM4grMcBGHEyNeTmNMmVRMsxAdEIJ
+         zz79fwRHTw8BTdu6WhBEfbbgkSDQABcT9f6wlRI7UPeSBifk7ccTt689in61IB/Ogml1
+         j+ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771533231; x=1772138031;
+        d=1e100.net; s=20230601; t=1771533241; x=1772138041;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=BIi+OMPIEGzkATcR3nbeDpG++Q/GFRTfTECN7DMuE60=;
-        b=WSw3765NuLKICDAnncAL+t06W0EWjc6I/Wk92ylKxHpRnuon1hnZ6peqh2au4hDj5i
-         bIrADacLz/uDJbZCDFI7CA6CCayQ0zkShVFcIvqO8IQsqOkbD+hUWjp3fRp3VNdLOufO
-         22M5DclBtjvh4krW/UDsi9esboP0xTtS3QALDT8+MKRLi4u2ewzthg2BQv0jLdFo6XxX
-         coKe9WufG3cwtY16NkCtJI8X/NwqxrQ4wP8FWNFJscErWYec6OQQx6ah+BR2DjdAm69D
-         8WqFbIPOSAR+PLSp8ibnF4opEbvYr4LE9wb9F8bvbQC1YjNqkahPOn/J3GAd1XBNha7h
-         obeQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVn70oaLtuwj9cyxjcZL5uzsK6Xc1MfesY4SBTQSW6SGufwZ+hlkq33NHiG+tVGl3j1dBkUsgiCJHo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzNWRMEOfRzzd2niAKaBNb227OjUo7qCPkdmYwQaa55/oZ0jVx9
-	xWVdQBl5TiCn2jys8mAIeI4Ix5DAQV8BjQdgYZc+zi5shk1+u7CzgxRc
-X-Gm-Gg: AZuq6aIM+5QdzY/1pA7IU/WrZr9rGiPB6q8CqCe1f5QsRLI0ZObSHBLX7+DuQenVJb6
-	86M+OoN/ckzCTOSCNeFeSdoseWYFyH4/qMbE3FFb2vY6i9FPfHaiU1cCnPOwzJs701ucC6RmfvH
-	72ID90fS8SSWDEMpdUKXAISa+kAHGg7PqDuPeB6EQaNuWgysHYCoSqr1Rhd/7RCJNlJA+VCvsHy
-	gSf0LBbmHgQxVwHYnJID+GS9yvK7tc6/IKI4mJApp1p6IwashCHSttvkue6oivPBZDVBP2/5Yh0
-	vybNazlcNb9vxan0RF7EMRss+ByLyk0iP1HDWv/Se4l3G6U+7d7lM9uLsIn3bceqNcUm6MAqeZB
-	Ud911Cgl5iIwBd+p1s97tdutAj1jN2idwit32vU0kILt31rLeUUxiBG0ECThtZDmiqjD9ayfP5D
-	tPLczQyMMR3AkMwD7T0l8OT0s3
-X-Received: by 2002:a05:6a00:7584:b0:81f:997e:59a0 with SMTP id d2e1a72fcca58-824c615e2bfmr17662092b3a.64.1771533231072;
-        Thu, 19 Feb 2026 12:33:51 -0800 (PST)
+        bh=26gzJtloJijZDesoemSh9i7X2im5JgocENjBucao4eA=;
+        b=X4zad9EGmgLnfYa0nSwGsuzebU2ZB/0j3dxjcjVm4xaL+GwzU0rQpzbTg0mQsBb1Du
+         HFI3dL3nkrYHcPLAqKoobUBgSphiGdV5JcnNg2TL27J3uFx0UjZfFox10YeIzhel/s0s
+         0hqX/iPdvJnvjjKvlohzWoZGv5+xq5LKdDySVIc8Zw+hneRyT0lwO+uX0ddfWNiflEkP
+         cZQPVfqFDc0NaiNO+zthBodhiiQd+p1iI+Gw5U3EiPDd6I/e+knMBBNB6lBeeClGx8+k
+         UFQ88cOiQNXgB3uHe8VU3ctOAdAzEAic0RPJQOL3TWvZabLTRkS3Vl04AQwzZQ68Nq7l
+         e63A==
+X-Forwarded-Encrypted: i=1; AJvYcCVP/+fHVxI2h6l9rpar5wLqcfRjP8bBUWjrwnG0xO+85TX/WEeumZXDqXALuG+ztAeORa93q2c6I7U=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx9xP9h+RkUJ5hb2xapCOCZlMrgm/O/9+xXypGFH9zeMuyJs1pn
+	9GFJJknCUFGZZwzlbZ7in1PQuv1FXm4mtqZn17Lqllu8eIMvioS0rRox
+X-Gm-Gg: AZuq6aIE7kVnHpFlT+eoiGeDlKgrrNUkvSZJlat0qRU7M92dOwcXUvkiG0f5ZmP/jmw
+	rt4E16qaCgdfKZm+cvasjmaroqQHKVcagrFwKkk0EXswtMGGVLiAVFoYllqlz9ZAj5bkOCwBzDR
+	JlaD0vKZAUodtZeaSKBi1yeFl0lmo8yWIaFvCe2cEIt0Gx24lX+pbzbRT9XSY0VrrxR3gKCkQmy
+	APxnhSnpofnP/4YfkZwDcqc2k68KOC8e83gIJSmqIDWgls3m6VrScSPX8bdoCuI08TZnXDMwdCp
+	L4fe9FbA4agPZREP2IUKFsrhWPrrLQj5aN+2lNBoNECC2BmfjvhitGHD3jdEZQOexZ5U8MF7yLp
+	v2yM3b0WWahjHahcxEOXyzlcLEbQepVVp9UPgL5Nd8IKHgHPULADw/OISGK4riVV3Js0NDs3dBG
+	NwY4YCGCMVOoy4PrjJz2hdJGSh
+X-Received: by 2002:a05:6a00:992:b0:7f1:4:66b with SMTP id d2e1a72fcca58-824d95e6759mr20544408b3a.44.1771533241192;
+        Thu, 19 Feb 2026 12:34:01 -0800 (PST)
 Received: from arch ([2409:40c2:5415:8e16:49a5:aac1:3b74:3ed7])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-824c6b94b80sm20339278b3a.55.2026.02.19.12.33.43
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-824c6b94b80sm20339278b3a.55.2026.02.19.12.33.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Feb 2026 12:33:50 -0800 (PST)
+        Thu, 19 Feb 2026 12:34:00 -0800 (PST)
 From: bhargav <rougueprince47@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -68,9 +68,9 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	rougueprince47@gmail.com
-Subject: [PATCH v2 2/3] iio: frequency: ad9523: avoid multiple line dereferences for pdata
-Date: Fri, 20 Feb 2026 02:02:14 +0530
-Message-ID: <20260219203215.15566-3-rougueprince47@gmail.com>
+Subject: [PATCH v2 3/3] iio: frequency: ad9523: fix checkpatch warnings for symbolic permissions
+Date: Fri, 20 Feb 2026 02:02:15 +0530
+Message-ID: <20260219203215.15566-4-rougueprince47@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260219203215.15566-1-rougueprince47@gmail.com>
 References: <aZa_QbwCumULvTf7@smile.fi.intel.com>
@@ -83,43 +83,93 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Platform data pointer dereferences for pll1_charge_pump_current_nA
-and pll2_charge_pump_current_nA were split across multiple lines.
-Bring the dereference chains onto a single line.
-
-This resolves the following checkpatch.pl warnings:
-WARNING: Avoid multiple line dereference - prefer 'pdata->pll1_charge_pump_current_nA'
-WARNING: Avoid multiple line dereference - prefer 'pdata->pll2_charge_pump_current_nA'
+The driver currently defines device attributes using
+symbolic permission flags (S_IRUGO and S_IWUSR).
+Update these to use octal permissions (0444 and 0200) to resolve
+checkpatch warnings.
 
 Signed-off-by: bhargav <rougueprince47@gmail.com>
 ---
- drivers/iio/frequency/ad9523.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+Changes in v2:
+- It was suggested in v1 to convert these to 
+  IIO_DEVICE_ATTR_RO() and _WO(). However, those helper macros 
+  expect uniquely named callbacks (e.g. pll1_locked_show), 
+  whereas this driver uses shared multiplexed callbacks 
+  (eg. ad9523_show). Converting to the helpers would require 
+  generating wrapper functions. 
+  Therefore, this v2 keeps IIO_DEVICE_ATTR but updates the 
+  permissions to standard octal format.
+
+ drivers/iio/frequency/ad9523.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index d127f3aa6cb8..4d0556ff5601 100644
+index 4d0556ff5601..2a075d09ab83 100644
 --- a/drivers/iio/frequency/ad9523.c
 +++ b/drivers/iio/frequency/ad9523.c
-@@ -797,8 +797,7 @@ static int ad9523_setup(struct iio_dev *indio_dev)
- 		return ret;
+@@ -558,52 +558,52 @@ static ssize_t ad9523_show(struct device *dev,
+ 	return ret;
+ }
  
- 	ret = ad9523_write(indio_dev, AD9523_PLL1_CHARGE_PUMP_CTRL,
--		AD9523_PLL1_CHARGE_PUMP_CURRENT_nA(pdata->
--			pll1_charge_pump_current_nA) |
-+		AD9523_PLL1_CHARGE_PUMP_CURRENT_nA(pdata->pll1_charge_pump_current_nA) |
- 		AD9523_PLL1_CHARGE_PUMP_MODE_NORMAL |
- 		AD9523_PLL1_BACKLASH_PW_MIN);
- 	if (ret < 0)
-@@ -842,8 +841,7 @@ static int ad9523_setup(struct iio_dev *indio_dev)
- 	 */
+-static IIO_DEVICE_ATTR(pll1_locked, S_IRUGO,
++static IIO_DEVICE_ATTR(pll1_locked, 0444,
+ 			ad9523_show,
+ 			NULL,
+ 			AD9523_STAT_PLL1_LD);
  
- 	ret = ad9523_write(indio_dev, AD9523_PLL2_CHARGE_PUMP,
--		AD9523_PLL2_CHARGE_PUMP_CURRENT_nA(pdata->
--			pll2_charge_pump_current_nA));
-+		AD9523_PLL2_CHARGE_PUMP_CURRENT_nA(pdata->pll2_charge_pump_current_nA));
- 	if (ret < 0)
- 		return ret;
+-static IIO_DEVICE_ATTR(pll2_locked, S_IRUGO,
++static IIO_DEVICE_ATTR(pll2_locked, 0444,
+ 			ad9523_show,
+ 			NULL,
+ 			AD9523_STAT_PLL2_LD);
  
+-static IIO_DEVICE_ATTR(pll1_reference_clk_a_present, S_IRUGO,
++static IIO_DEVICE_ATTR(pll1_reference_clk_a_present, 0444,
+ 			ad9523_show,
+ 			NULL,
+ 			AD9523_STAT_REFA);
+ 
+-static IIO_DEVICE_ATTR(pll1_reference_clk_b_present, S_IRUGO,
++static IIO_DEVICE_ATTR(pll1_reference_clk_b_present, 0444,
+ 			ad9523_show,
+ 			NULL,
+ 			AD9523_STAT_REFB);
+ 
+-static IIO_DEVICE_ATTR(pll1_reference_clk_test_present, S_IRUGO,
++static IIO_DEVICE_ATTR(pll1_reference_clk_test_present, 0444,
+ 			ad9523_show,
+ 			NULL,
+ 			AD9523_STAT_REF_TEST);
+ 
+-static IIO_DEVICE_ATTR(vcxo_clk_present, S_IRUGO,
++static IIO_DEVICE_ATTR(vcxo_clk_present, 0444,
+ 			ad9523_show,
+ 			NULL,
+ 			AD9523_STAT_VCXO);
+ 
+-static IIO_DEVICE_ATTR(pll2_feedback_clk_present, S_IRUGO,
++static IIO_DEVICE_ATTR(pll2_feedback_clk_present, 0444,
+ 			ad9523_show,
+ 			NULL,
+ 			AD9523_STAT_PLL2_FB_CLK);
+ 
+-static IIO_DEVICE_ATTR(pll2_reference_clk_present, S_IRUGO,
++static IIO_DEVICE_ATTR(pll2_reference_clk_present, 0444,
+ 			ad9523_show,
+ 			NULL,
+ 			AD9523_STAT_PLL2_REF_CLK);
+ 
+-static IIO_DEVICE_ATTR(sync_dividers, S_IWUSR,
++static IIO_DEVICE_ATTR(sync_dividers, 0200,
+ 			NULL,
+ 			ad9523_store,
+ 			AD9523_SYNC);
+ 
+-static IIO_DEVICE_ATTR(store_eeprom, S_IWUSR,
++static IIO_DEVICE_ATTR(store_eeprom, 0200,
+ 			NULL,
+ 			ad9523_store,
+ 			AD9523_EEPROM);
 -- 
 2.53.0
 
