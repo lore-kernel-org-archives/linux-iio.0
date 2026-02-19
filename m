@@ -1,64 +1,64 @@
-Received: from mail-dl1-f50.google.com (mail-dl1-f50.google.com [74.125.82.50])
+Received: from mail-dl1-f41.google.com (mail-dl1-f41.google.com [74.125.82.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CE1B713B58A
-	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 02:29:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6CEF26ED3C
+	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 02:29:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.41
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771468178; cv=none; b=ArYsBYMMogWVzgfLuJ7e/zC+aK/rAwwk9Ijz5VwR6ZnpdqtLAcifaDtDqRa6i8omG5iq/1/E84i2Ay6G/ud/8CFttiV1p7ro1mjbmkTsIabJ5ogdYgy+NCTzC7Gd9aoiUCS7dL1y8JbMF6x4DCtgDlm15P9CP4FWHa8Ijhslz9Y=
+	t=1771468181; cv=none; b=jHh0EHUHLHzDdqFWNrUifyXsZdIqDaxVou1J2HEQ7aFo24hNE8uyABHM+SZDD7UwghciyfSrILwV8NT8ShfkXuAk5Kz6tIvHoEVaEXoECxT0+AcyqsNQoAAa8T3nX8GoDCAzlQSXgbZZu/QKdiKhLzsXHVVFP5lXiI4CsaXorFA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771468178; c=relaxed/simple;
-	bh=U85fY+I300/oFLus60isN6QH9G2vXciZReaIa9B6Y1M=;
+	s=arc-20240116; t=1771468181; c=relaxed/simple;
+	bh=2ptV1Xx56QfDBrLdYoSATcUoNP/8s/g1i+FnXCc7fjY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=XJBBENq79tFmUrwzm61DW7Jzfz3Gia/vh3WE658LmSA1UbvwKKUTiXVJWpHcDc8Ef4HtTqMGqVIGtIkP1fi0/BzQ1VuuNCsedtdMkqWCfmSUCrajrBszWymq4DGuwhe7E0YvSVCSCFs/2oQttq0VDJTpge6WrfBvxvhWOoJ9dVU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SkuWoMtM; arc=none smtp.client-ip=74.125.82.50
+	 MIME-Version; b=MmbA7bUKAbIKfEhO6pipLcjHnbprmecgI95m5/BZ+fGWYXM9JBV/bZJty5qzazUDBVTmideB1Li2Hlqyg2fCV+kKmHeGRny3OsxKZrCsQbmZ9+BoyP2euRlVit6Z5R7qyk/tNDy3MCbrNg+7w7fGkFfX1J+fXgeFV5IkaGQBelU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TGgnh/Bo; arc=none smtp.client-ip=74.125.82.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SkuWoMtM"
-Received: by mail-dl1-f50.google.com with SMTP id a92af1059eb24-1275750cf9cso422947c88.0
-        for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 18:29:37 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TGgnh/Bo"
+Received: by mail-dl1-f41.google.com with SMTP id a92af1059eb24-1273349c56bso584785c88.0
+        for <linux-iio@vger.kernel.org>; Wed, 18 Feb 2026 18:29:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771468177; x=1772072977; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771468178; x=1772072978; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=DP7f7+vHuIRyxHFGE/u5+51f2GQdsjDkgx7ouhpfqiw=;
-        b=SkuWoMtMkKT50I6DZMWwuI/wpFLK5pzabM7nDwjG5Ku4xxplFaEeMM3Mv/d4hXR+19
-         pqlfyvpj/h08XgByAVtMcwTXnHIIxrc5Qn2wpp5YKyNbk6l8+OYnC1pd+i2vSI40Iubk
-         zynCla9cmjgWM0uU5lCAzZoLjmuyt6b0eCC3clnYyDHDUzlZMj9UzXICpxpdHjkNjN2G
-         tKB14PDldLCd0w/O6iiJ98tTU9PXXMtQIBsaQ/IXs2ABZECETwvlHyOHBiBqjNzuobvO
-         EoUfqn33gO2JVsMmQckcEOp6Vtj9GCVNAsnr5v4fi1t6JD8CDuttpEb8ptXu9wILqI09
-         4SQg==
+        bh=3VoJX5vAwTEOYnmz7o7D9xEfXbcGfOzpGSFIbfxsNUg=;
+        b=TGgnh/Boe6QQ+iF+sZfeqDa9Wi4yFH1/5ElXDenkc7mwKG37f88y9geMJZXtsAEK19
+         b8HaQpzDuL9S4AEd7jmuWYeKLWElhJmXerEusM0ya1zkLhd+yxzWaewXK9+CRdelDtBe
+         a4X/ivCm0IhyfuVxU78C0ZLgO1JT2WwPMOZcqKwbfCNz/B4sHVeSrHjZvfrSizHPnfZt
+         Ub6Cu36wgSM0/sA6dsx43AdUN5OGh52nsFBLmXU00dVdc5xeKWFp0rJBHZLDt932ZoWM
+         as9GuBhog2TyFF+7s84/HjheYU6VOx4eqs1RZRkQHT+LU976XMXKrmVlPSlOMakiUm8a
+         QD4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771468177; x=1772072977;
+        d=1e100.net; s=20230601; t=1771468178; x=1772072978;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=DP7f7+vHuIRyxHFGE/u5+51f2GQdsjDkgx7ouhpfqiw=;
-        b=kntvU5AnJfBRguhK5DxxVvkOQymNmm7YGm8LgLWOT+TMdJjgRM5h5wJFZslo+yGXUO
-         l3aefvRLE45yDbF3A2RhoDncyQOcOAgoO4NFBjwzf4NQ7Lh4+xIZH0OCff84JGAKOOcR
-         sqt0XjLNxqrazQdEYZokUxIvH8CV6DQxPRaym2Qpcfdwa0EVc03cuIvzAAyvMozxt2lg
-         F8I4lziyKMOLe2+R3hlwvx10JF3zhP25uGuwwSgN/BdnyTZhYpPhZPppeeZBzoo9+mUk
-         77n5PXXRTFL3eL+JWFM768MTQAHSOR6NNe4VscIaTwbVK/pE43M6rzu9tkL3A9nxkqbP
-         bOyw==
-X-Forwarded-Encrypted: i=1; AJvYcCVhPnmiMBbl8s76tK9VI9jpabuqkFN3cLxHTAS3wyRy9f+v1GZprDUiBc4mITY4hAzhwvHHnrHp6PU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzUPC/fp55FYnaWfJ2VMkIV3MDmgSW0Tkb5nqbTEt60SUztxUx7
-	I4WxZ2dRHo1m7auCne8dALF+xtuFFYr/Zhp/VqYH4bv7DYn+TQ1vqCCF
-X-Gm-Gg: AZuq6aJZ/m9UrCsWdwB5cfxpU9Tk/LZeLO67lLpQLBVuIVLELbkVYlYmWIzoORi/NVi
-	GDOplKY0wmEJBOAke6lAEiKkSrzggaqS2QZprmrFkTNTBA6SoH7ZmU86KhNc9xqPi/kCaNehGz4
-	WpK7d6TxvYMWnFiGkHHdqRXirPPfNytTMZ5zyGQ04xkbROZNpMC0FPs2TPGbIHeqb4THOAqA5Sw
-	zrNEIujDnueujb5R5Gh1r3kG/MHiZvBsnb9fNCs0R/DKyjJhI+C4AYByfmg+aLCcz33fmXUC8jx
-	HrWdYRqZXqA5KjnhhON3J4gjy6+TiNGlSyIQ8Fhv7O5sknt4PEz3ugZQ5gQ90XS8dSxJudo21M9
-	tgj0MQ/avwa91jDdZm0b3cNxtR2jBdmUNKyRcqWB27/rRaz+YMNs/cP9gTal5ti0Zv8EM7YjGMG
-	RMCSKeesizZQL9JaYLFlj8xI7fM+RqHx7pM0kssNrr/ODOWiblJj5/DKyPyXO1LJYjSx9+SIT65
-	0i8Me4xvlkD4Ws=
-X-Received: by 2002:a05:7022:6b8e:b0:119:e56c:18be with SMTP id a92af1059eb24-1273982a33bmr6911896c88.38.1771468176909;
-        Wed, 18 Feb 2026 18:29:36 -0800 (PST)
+        bh=3VoJX5vAwTEOYnmz7o7D9xEfXbcGfOzpGSFIbfxsNUg=;
+        b=E8Gl2oYjrb1BYwG9LyQN8ox2HX0FDbCtS4DPV4MeJnXkTZW915yVWhYGBIpWgOaHuc
+         rtHA2RovNE0FWioQU2EI4c7dw5POlVL07fmvkJ+Kx29TBLbajHQXvtyLd2p17q4MPEnp
+         A/SnR4I3tAWPR7DIbRdBiDbp0HixurKxfEH2cCwDTbQfnjECHI/EzVXP4UGBZDFVXVi+
+         bwLSMofZC29QiUpyFonk9gwNaCeQbATqwYw0rMpJS5+T3ANp4riNCnJE10QaVQk5e71b
+         I90azZYC0Vxk1wLnrDCvGgSno5EhhQEyAbT9c06oQCcNXZhhEWadvyFOa5672li8Zyq3
+         s9sA==
+X-Forwarded-Encrypted: i=1; AJvYcCVO8H2/w1RPYJ+KjbeUe8hU7I+SlK8y3eCdlRarA+K6EU4C71AIPuzAoiNJzfjqJ7IUb9WoTQ4WlAw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwDR3txnKvTQGh/Wo5v67alqWl89LbjZRMJ1TvKjcnZYQiUuKAz
+	z/CMXdj+5elNXuS+DAORtUxXYwC0iFpI5EhNM8HDe9+3hvQoVNP99SDd
+X-Gm-Gg: AZuq6aJBvnqMtKa/9ha1Rdhf7MIXEBvAfP2i9xwmM7pHWUPemeFFR07Co8vqU2o7W1x
+	NKlN5qQy4vnzTNkxeS4gh0NTjdhw3DqStZwqXjhFk97fAeJqf4XRcKCYzQvFNGPVXwrCYFmpjWj
+	B9o/nXkKvV/l7roduQgmdya1BdS3tpdJ37t2+AMi3GGVTl+zkUy5f+JHyrNwh0qx+znCtvO4lc0
+	YyUOYSIijaijuQavZSVTxPw8LFqpcJ8ZbNeGgvDnvAqhkffNtLuI9G2HgnuU7aJqgvVN5gVMDyH
+	4G+yv8qHbUctaDCclHLF1g7PwmrsMvRBq6q6r636DbqgT59c2/wi4gR29LkHMv7oQZCTcKNQbBC
+	wF7NkIWKNEhvtC4pktqAWN3go0BsRsz/fJ2sbv9A6KYkkCa+6CSnVa5L3M7NiuOIvSnNGpu0ao8
+	WL9/gdEoQCZUitxJTTNwVU9UnBdS72wkiRWZnBw6CIJkq7j+THcWQYQnclH76QnwqVdtP0GDkVK
+	FO2GI+JI5GvDpU=
+X-Received: by 2002:a05:7022:160a:b0:11a:2f10:fa46 with SMTP id a92af1059eb24-12741ae3323mr7734818c88.0.1771468177903;
+        Wed, 18 Feb 2026 18:29:37 -0800 (PST)
 Received: from dtor-ws.sjc.corp.google.com ([2a00:79e0:2ebe:8:265b:f5ad:9e03:677e])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2bacb577bcasm19609433eec.12.2026.02.18.18.29.36
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2bacb577bcasm19609433eec.12.2026.02.18.18.29.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Feb 2026 18:29:36 -0800 (PST)
+        Wed, 18 Feb 2026 18:29:37 -0800 (PST)
 From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: David Lechner <dlechner@baylibre.com>,
@@ -69,9 +69,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	linux-gpio@vger.kernel.org
-Subject: [PATCH v2 1/4] iio: adc: ti-ads7950: normalize return value of gpio_get
-Date: Wed, 18 Feb 2026 18:29:25 -0800
-Message-ID: <20260219022929.3558081-2-dmitry.torokhov@gmail.com>
+Subject: [PATCH v2 2/4] iio: adc: ti-ads7950: do not clobber gpio state in ti_ads7950_get()
+Date: Wed, 18 Feb 2026 18:29:26 -0800
+Message-ID: <20260219022929.3558081-3-dmitry.torokhov@gmail.com>
 X-Mailer: git-send-email 2.53.0.335.g19a08e0c02-goog
 In-Reply-To: <20260219022929.3558081-1-dmitry.torokhov@gmail.com>
 References: <20260219022929.3558081-1-dmitry.torokhov@gmail.com>
@@ -83,28 +83,56 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The GPIO get callback is expected to return 0 or 1 (or a negative error
-code). Ensure that the value returned by ti_ads7950_get() for output
-pins is normalized to the [0, 1] range.
+GPIO state was inadvertently overwritten by the result of sip_sync,
+reuniting in ti_ads7950_get() only returning 0 as gpio state (or error).
 
+Fix this by introducing a separate variable to hold the state.
+
+Reported-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 ---
- drivers/iio/adc/ti-ads7950.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ti-ads7950.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index bbe1ce577789..b8cc39fc39fb 100644
+index b8cc39fc39fb..2a7d4a1d9fa9 100644
 --- a/drivers/iio/adc/ti-ads7950.c
 +++ b/drivers/iio/adc/ti-ads7950.c
-@@ -433,7 +433,7 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+@@ -427,13 +427,14 @@ static int ti_ads7950_set(struct gpio_chip *chip, unsigned int offset,
+ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	struct ti_ads7950_state *st = gpiochip_get_data(chip);
+-	int ret;
++	int ret = 0;
++	bool state;
+ 
+ 	mutex_lock(&st->slock);
  
  	/* If set as output, return the output */
  	if (st->gpio_cmd_settings_bitmask & BIT(offset)) {
--		ret = st->cmd_settings_bitmask & BIT(offset);
-+		ret = (st->cmd_settings_bitmask & BIT(offset)) ? 1 : 0;
+-		ret = (st->cmd_settings_bitmask & BIT(offset)) ? 1 : 0;
++		state = st->cmd_settings_bitmask & BIT(offset);
  		goto out;
  	}
  
+@@ -444,7 +445,7 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = ((st->single_rx >> 12) & BIT(offset)) ? 1 : 0;
++	state = (st->single_rx >> 12) & BIT(offset);
+ 
+ 	/* Revert back to original settings */
+ 	st->cmd_settings_bitmask &= ~TI_ADS7950_CR_GPIO_DATA;
+@@ -456,7 +457,7 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+ out:
+ 	mutex_unlock(&st->slock);
+ 
+-	return ret;
++	return ret ?: state;
+ }
+ 
+ static int ti_ads7950_get_direction(struct gpio_chip *chip,
 -- 
 2.53.0.335.g19a08e0c02-goog
 
