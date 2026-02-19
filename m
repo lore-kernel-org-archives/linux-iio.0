@@ -1,63 +1,63 @@
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1367E2C1589
-	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 21:36:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC4652C1589
+	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 21:36:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771536984; cv=none; b=I5bsyZWoPxZflRxmtYq3AdWnxTgqZOxJV9XG6oK6RgOlLUAxwpW2JPHCDffGREjEHFxVY75padKsK8+5pruO7UHHSXIV+nNuVJ/4HuOeHPQhtrhNyGgIzY8MTef936sQm9zMYgegwiUSaMLQq+v8XSEheiRYhXyLWVdBGB/CKJk=
+	t=1771536996; cv=none; b=oqaiJRmtWSUnLjZNEi04th9i1sKa6rA4tk9n13AqN74qN7EcAH0cHBeCa8QiUUwM/++iZFvoFCDBjFoUPSt1T7HuVDo09m7VvOJswjSk0PDAQutWKPwQDXt61tLDdKYas+cgoWKx+1vJTKOEI7rmTZehlKtHCyd5WKdAyI5asuw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771536984; c=relaxed/simple;
-	bh=oXvAdN2AtcWVRwwQBrKaem6YW+NGB+zO/K1Zlwao3CQ=;
+	s=arc-20240116; t=1771536996; c=relaxed/simple;
+	bh=FA4WOPgvDycyyHB2/mEGb4o0SEvbAYbqtnEqBnxYnHs=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=S1s80htRDN7xypLu807NCbmQcoZrE9HrI2L8IGxbVVrzvwgDQ+UkhXtZ8n7EDRkwZNvomyH3p1QS3Or9PxxPJJwBeB6bQ5mK0PFG8y1TBPCHVOx/TWzSombm4FOHhs83h7Rnnz26QKwe8mB1TW46CkiscMrDv0AayTkp442y1po=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KOjVLtPY; arc=none smtp.client-ip=209.85.215.171
+	 MIME-Version; b=iQY4/1qG6nc3EsnKq68Z/GWRQiiFVp95tEi7ihj73mucrLM5ZbdRdK8cbkikn3cfQ2IwJnDQrM1mcQC2gs2I2F9yNPD2Hub9al6DXbiHfhTXoaKlJEJ/MjnyMaWWCenZgk3aCS2rsJx9YfzLG3BoGI1dABD9bExzyinxLBZSOxs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SyB5sL30; arc=none smtp.client-ip=209.85.215.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KOjVLtPY"
-Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-b6ce6d1d3dcso525751a12.3
-        for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 13:36:22 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SyB5sL30"
+Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-c6e2355739dso477584a12.2
+        for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 13:36:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771536982; x=1772141782; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771536994; x=1772141794; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=yRjmtmqlhxUMat6OJrfhRoijlU84UH5Ws0UPOOfI92s=;
-        b=KOjVLtPYDJCSi/wiRB8Rg4qKu+Ddo5eeYr73/WMNGa4M0XCrg3Bwbn32ilUuloRj3X
-         60lqoQZJVxPcDwr6ciqu8XASrl7GaJxYSxRLfOvUR9iBp9PUQugKccGhHKaLcDY/eDvJ
-         KSFN0/pYw47qoM0aW2Ra0w6A9vwjbgu0sFWJcuHv6TCaLdAmLYQCZFsgFXl9HtgNACvm
-         OXs/5ncKjehR33yC5VxWu0pOuhz85bXiPCsG2nNAKAIeSY74gBRERxhmNsoaEXzCqZ0S
-         aV4CBjxjOPMd0XkWkgVRaZqWujCut8nYENwqAxhWb5agZY8/Cozyo0acH6jNnw3E7HVp
-         qxOg==
+        bh=snfBJanBL4Z/KaYXmLO1nWQ2apjpeu56D3VSCWFakAo=;
+        b=SyB5sL30vcLonMVB9mNLy0NWoeKac1OVFYfW+mlzeq3Kikh3qFuOkMUbHG29LIkm5D
+         xveuy3dWAtY4JyVBnt/LwluX0sOWqEYBYlb+xwmnEuSbYmgl5tnP9VahNlgASMW81oJ0
+         kZ+uRiHWJh73T7gqIjd2xdozQIsZZWAbpTM1JOGpVTqeB3VOkvj9AZJgfNHJTJLdrJcT
+         1uBPtru3TZwDjCA5hGAKqY0eSbwTI1+x8Hhj5OcfQ5RNBDqMvu06NOA8ihGZNyhiGMKJ
+         pm8damdJSNxTcC38qbeO38ryNK8QwQC3mpNd/NHLScglC8nqoDU1CBT4cgu1N9fyx7Hl
+         t9vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771536982; x=1772141782;
+        d=1e100.net; s=20230601; t=1771536994; x=1772141794;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=yRjmtmqlhxUMat6OJrfhRoijlU84UH5Ws0UPOOfI92s=;
-        b=Z1fZjkge21zWgOPrup2VeXtbSg3F4VsY+D1kyvKdHdJag3nkmQZtzF0c0N6vDyBrWh
-         yH3S9CuzhLFHrZYC3TUbNWsLSDxbNWa0q9E2bwWj+bQ+A77xlUt1wJYv2i3lXDipwTyl
-         6BtH8P0uz1L6bf/2GxFBTyP/+rabQLJb3xq3JtAltOM47fPayI1N3swN64OhSEEAVKNe
-         665qmKdVRtkgN3qPUeSzGdy4Jnhsfjw0ShNvSY8pwPYVQ/jKpb8N0vuDVuqQ7em1212Y
-         9BmFirmSyJQ3d6WdKYzUvRTu/Lku+SCbwxrrzPS5xj9JJterkzPaeh0gzWWefGzzcps0
-         Jcsg==
-X-Forwarded-Encrypted: i=1; AJvYcCWxT2F4ZtDejMNSEXbu3OjlM7u9ntu5pNpLRsOcqgVeF/OWZ+BQP4ghTMhi9s0whs7Yf7fsZyOUE9E=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzSuU7rwYT+4gWPwW0+EW9rCK6V4njFFr1usPiLbXrr4aOYacKi
-	H+HY1LKIG5oqkJyc8lnM2y1+AsQtNDiaBsr1mf8Fkt2ZrXelLM5G8Bsg
-X-Gm-Gg: AZuq6aJcCthVPths3DJFk7oqcyiBCL1fn12wH3tJLlMfJPkwgMSsVVCwtJgmEccx0HT
-	P6wzxQQ3o78MrygQdUIow3LYi0/EGTbtVhLWpYZwk5FnTcguOQ5YAEQvJCNaW5QMoqLL1I7/7K8
-	fdlFQYcLzuZcilnt0QsCaDHQYo6vYNJVuPk60bG1fpuLVyEbNE8HwQ74jYvKZQsag4iLxyObYPI
-	LWQIH324zO9swaKhDYkcQlJnEQek6ntbeVqWMlI/4KPEn0GLX8zDnWxWSv79JgXumElpeUgWr89
-	jLY/3qlATHLaMpsrybB9f/TxG3I10B5hxIrwdjgEN+zDCIFPY9e+SL5eD0B6wsTLgxvPWI2Scw1
-	i9VEOAMX5rjiRbPLQ7RJAB1J18aH6QBtosM1kjO6bzEPvJb9zSUmUYaLc9dqbBAaDVtBZt3dE/U
-	9JpjJ/Dqztt/+bqyoY2Y854BEc
-X-Received: by 2002:a17:902:f612:b0:295:8a2a:9595 with SMTP id d9443c01a7336-2ab505d7b3cmr227428925ad.39.1771536982412;
-        Thu, 19 Feb 2026 13:36:22 -0800 (PST)
+        bh=snfBJanBL4Z/KaYXmLO1nWQ2apjpeu56D3VSCWFakAo=;
+        b=eUp3mqsEjBYmT6Va8c7JxyKLL84eRrVn4QK1C4sC86sQlradcMqvXw8msahBJczxk6
+         dPgZAqnqwnR8AJMO3fZKA/stplPq9zMOxddTMTJk9DQ9ykx4jNveez0YF/E40qxu+zqH
+         txrQqWuL4GSQiBXHYbr76ka6UPLGcwEq2OQkGZFp1GBBKmAsBnyBxsnv8gXXTuTID8QI
+         TUFrGxrylTP8GzZ4E0MuuZWEs6h25dbRLhXxvxctSge8p8ybgJhssRmWKUV29mGY1c5d
+         kpWS95Belo7yc/qwdzcZz4EgVn9R4IH0ZStz4P/a8+SxHzBxjABT59WQDQoRdWlGDP4z
+         ORgg==
+X-Forwarded-Encrypted: i=1; AJvYcCWg+RIGB5tCoy28mUGVWKTDHFSfyWXyesFjvMF8Y+MKvpaGi2gi27UCjVkj6e2UqMKiRBjqAoioSe8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzA4y/dJNIuzZBmoBBkQhz4LtofJ6ix6Y4xrW1Rg53Qx9gzT0mo
+	NieKyMx2akFSj5ZWemZCDYFCSvOXMjza05Lf3DO45Oynm4tXUJMOeqWL
+X-Gm-Gg: AZuq6aL3rfLAUuHhW+HGJzwbFV2nFu6u4Fay2Qziq0utpsm/3jokdpGOzCloYznnp3Z
+	HeFDLhfNLlGYZEbFa5WKbIB1Ro7/pxnm1eHIgoVFQCjlNnGOtGDUxEKgGkTI2Q4A2DCXI1cbVcO
+	mU2Dyb2U+mqdoDXNbiC11tFACKUtwnYreGdV8jSZWmVqSyM51pJ83qH7eCDK0TSPymZC8utXm4I
+	JLojHUqrS92mK1T1wvIMd4bksqvfT4mPDqlh11WMbwwKqEOo/ua5YCVo2g5usgCjRAWSDRHeTit
+	bxGvTm8sA3qQj997BSuHJVJmdCHgp2kROcDf48qtVKzg/aoSRuuyT+p/ko/MJyFB6wkbTNfgjqK
+	U9VJo7ViH3q3O5sLgmngyRsjHIGmCGHTrCSfao6DP3zsgPj/YSH5tZShjdP2mVehUn1TXZhvONG
+	3IetUIjMZa81dPAAtAGCQJmyvN
+X-Received: by 2002:a17:902:f651:b0:2a7:d5c0:c661 with SMTP id d9443c01a7336-2ad50e9dd43mr67541685ad.15.1771536994270;
+        Thu, 19 Feb 2026 13:36:34 -0800 (PST)
 Received: from arch ([2409:40c2:5415:8e16:49a5:aac1:3b74:3ed7])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ad1a7145cbsm238938475ad.30.2026.02.19.13.36.15
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ad1a7145cbsm238938475ad.30.2026.02.19.13.36.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Feb 2026 13:36:22 -0800 (PST)
+        Thu, 19 Feb 2026 13:36:33 -0800 (PST)
 From: bhargav <rougueprince47@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -68,12 +68,13 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	rougueprince47@gmail.com
-Subject: [PATCH v3 0/3] iio: frequency: ad9523: fix checkpatch warnings
-Date: Fri, 20 Feb 2026 03:05:46 +0530
-Message-ID: <20260219213549.59645-1-rougueprince47@gmail.com>
+Subject: [PATCH v3 1/3] iio: frequency: ad9523: fix implicit variable usage in macros
+Date: Fri, 20 Feb 2026 03:05:47 +0530
+Message-ID: <20260219213549.59645-2-rougueprince47@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <aZd2jAVnTIuz2o7h@smile.fi.intel.com>
+In-Reply-To: <20260219213549.59645-1-rougueprince47@gmail.com>
 References: <aZd2jAVnTIuz2o7h@smile.fi.intel.com>
+ <20260219213549.59645-1-rougueprince47@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,26 +83,41 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
+macros AD9523_CLK_DIST_DIV_PHASE_REV(x) and
+AD9523_CLK_DIST_DIV_REV(x) implicitly relied on variable
+named 'ret' instead of using passed argument '(x)'.
+
+Update the macros to explicitly
+use the argument '(x)' for their operations.
+
+This also resolves the following checkpatch.pl warning:
+WARNING: Argument '(x)' is not used in function-like macro
+
+Signed-off-by: bhargav <rougueprince47@gmail.com>
+---
 Changes in v3:
--Patch 1: updated macros to use '(x)' instead of 'x'.
--Patch 2: collected reviewed-by (no code changes).
--Patch 3: fixed vertical spacing and broken indentation.
+-replaced 'x' with '(x)' in AD9523_CLK_DIST_DIV_PHASE_REV(x) and
+AD9523_CLK_DIST_DIV_REV(x)
 
-These patches address several checkpatch warnings in the ad9523 driver.
+ drivers/iio/frequency/ad9523.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Patch 1: Updated the macros to properly use their argument x.
-Patch 2: Fixed the multi-line pointer dereferences.
-Patch 3: Updated symbolic permissions to octal (0444/0200).
-
-bhargav (3):
-  iio: frequency: ad9523: fix implicit variable usage in macros
-  iio: frequency: ad9523: avoid multiple line dereferences for pdata
-  iio: frequency: ad9523: fix checkpatch warnings for symbolic
-    permissions
-
- drivers/iio/frequency/ad9523.c | 88 +++++++++++++---------------------
- 1 file changed, 33 insertions(+), 55 deletions(-)
-
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index 63c485e9e44c..5725ab62e0fd 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -167,9 +167,9 @@
+ 
+ /* AD9523_CHANNEL_CLOCK_DIST */
+ #define AD9523_CLK_DIST_DIV_PHASE(x)		(((x) & 0x3F) << 18)
+-#define AD9523_CLK_DIST_DIV_PHASE_REV(x)	((ret >> 18) & 0x3F)
++#define AD9523_CLK_DIST_DIV_PHASE_REV(x)	(((x) >> 18) & 0x3F)
+ #define AD9523_CLK_DIST_DIV(x)			((((x) - 1) & 0x3FF) << 8)
+-#define AD9523_CLK_DIST_DIV_REV(x)		(((ret >> 8) & 0x3FF) + 1)
++#define AD9523_CLK_DIST_DIV_REV(x)		((((x) >> 8) & 0x3FF) + 1)
+ #define AD9523_CLK_DIST_INV_DIV_OUTPUT_EN	(1 << 7)
+ #define AD9523_CLK_DIST_IGNORE_SYNC_EN		(1 << 6)
+ #define AD9523_CLK_DIST_PWR_DOWN_EN		(1 << 5)
 -- 
 2.53.0
 
