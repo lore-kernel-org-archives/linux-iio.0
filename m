@@ -1,149 +1,184 @@
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD6A2F3C22
-	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 12:38:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AEEB2248F47;
+	Thu, 19 Feb 2026 14:39:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771504740; cv=none; b=UshmSLoZrLOIbefqtpC0pnTii/KAkucHwpTa060T/s29yj+TGsVpfIVkBClLYtu18cwtxJAxB1ncfkUyB1Hz6DKU2e5qVOITNZN3+adZtrX9xUnfLxYkg3oUAHXNA3UD4pGecoErTRDgwyb3RNDlaovv8HFMLfW6qU1gehhLksU=
+	t=1771511989; cv=none; b=DYXzrV7zelNv0uIqPmOGYip6O80AROS1OuyGatmr3bH7voYUVXcLITgRpLy+cryw5RU+Bnbd8MZSEFi+mzfwqCMHvXxaAQZDRHQA5GXjJzk2cjiJSZDoAD/Y+k/zuaIaG/C8U9dd2HueKVph60Y+lnt/nhKYEqriQCQJGDvks10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771504740; c=relaxed/simple;
-	bh=zaEyoKufr8kJjMPlauNC6hFcaNXmh0VL7nMLWJY7Dms=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=il7hePE+AzLp53fFiaxxsKzAgsQzT3VOuLpHhWA+2unOePy8wHngRIYceQrVwmQoTypw8/YMqRjsb/UbHpDwBR6oPernqNwsHPHGRECozDCjo/M97f9FcAMvLiX9tjX3KiD8FWF066Wmxjt7yKCSn7sJjNUNsqwQG5DGGqRpFU4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OIZSOYoD; arc=none smtp.client-ip=209.85.221.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1771511989; c=relaxed/simple;
+	bh=s9MXV7lH4hCfZovIakXUYCiLrJA9JvNf2AURQ3N1JBU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IeaZqc9X1QI2Xi/bWXTevqDqPkXciGKKiPuB0hEXNwbrMTXpR9k4izjOSJKOFVVASEFZ3VlkJi+33j+LAtv6BEY2RT7d215yJ8I0eOyS4nNR6RgT35j9X0rJi5R2K8dpkG9So6chvEQ13B3Hx+SET1UpU7gwCmR58+RzKe+sojg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=nnYwQ5fU; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OIZSOYoD"
-Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-56641200d6eso1098466e0c.0
-        for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 04:38:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771504738; x=1772109538; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=b/Yeq/h1sK2QWMwvAHMWW/0uWsIY9PKo2xaxo2nKMJU=;
-        b=OIZSOYoDia7EmFVoG/umYjRoJBDojJiGAhfJ2qIV0YfcFtDj2LOzj7355Y9RyCy06+
-         6R1e0lQpXVUktj6MSO0XosuRbH3vD6/ymlv5R2erRNRish3i8SUtPYfB0GQgHR10t71T
-         ctai1O588nyTR+igdUDogAr1KWcBG8UQqhZbwT4HrumZjPnoW66YYEWpSKujmFGsNNwx
-         h+a44NyBcqdFQUgl71rMn5ZPylsTHkoxAkpKOSDzDYmuEnvkHIhwtRjdho3dpjG1s7O3
-         ADspgEDvZDyT0Lq4A3QGMjfeCaxTtyZuwcf8RBqipgZjIm+0dZP70Stx9q1aHD+us2XI
-         +W4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771504738; x=1772109538;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=b/Yeq/h1sK2QWMwvAHMWW/0uWsIY9PKo2xaxo2nKMJU=;
-        b=RTYSFk8Q8mgPU8YtHLTqtdmKzhAC2TSfzsRgHJtAORlWzE7YzGTnYF5dmtFMhCeBlv
-         5GdUtdxOWIcvyA/I4VMDUVCoVmofNxRnP5Bg3M7dfAKtyUMxLAiQJdTu4LyNtXaY2MQo
-         fxmhOEmtDXKgELQuOt06qEqlVwQ1tzb+uB+pxoJsAWfsRwGiWXzJ0lEwhvyMWJ+e6n3f
-         xBpozmHNjhrsFRNg3c/5ejFfSEigaP0aPpCk+vmYJfna3ThSa6qUn+Ph2sBYKcwvXP9F
-         FdXM+ygnD6CpV8bzHqWi/RNqiO/O7LUGrJaKG/k4gMMW9JUhB3sXC6DipnvU+JZtHLTV
-         1lEQ==
-X-Forwarded-Encrypted: i=1; AJvYcCUrou9c46W73dT2UxHwZJUJs8AlnXFwFlm7LcwA5AKqzzlxgtvjeEKrZBlFUkCIwkccb4hqdR89ZPs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxrgK5EyZPdb+9DTgh/R36qQhVXSc7ADZpcNj93p/PVDGSUSJG1
-	xkpOvIBzG02lG0k8Bb0G9TzHFgxUR6a3zgfTqALVOLn98K0Km8cvafay
-X-Gm-Gg: AZuq6aL+dIlxzi9j591znyVW3cMnHbYKXnsxSeXF9QPhe7oku+G94HMqiVK8GXVh4bG
-	re2UUTMWvA8hJIP0U2cZ76KE6jN6kWDQWkQoPT1zjKOxB5Y9J0JFu+o363Yg7YmaZjYppXHnd/m
-	QJRY/2MVkYH/O4ZGR9DXoEdbH81U/4VjwUaEO3WvPnTpdByCnqYUrPPIIQwcWfCd/1v9IgC2gHj
-	b4HbnCMZW70uiUCVJ8A7MU2epX0ysX9rCpISMvY+Av5zBvFPkjoOJ0Vvh7B6TQX1bBYj/e7uRXp
-	zBLYiCYlD9UcW6oa7Pe1/V2wW6V3QtaZDpBrELKVw1b/Z5k/Jo+iJh9VvzLVbtvtXlKLbQjJVZ2
-	iOXQfqupERr31vbpxlOZkMt80b1fDS/Xu87RQuSRgC145gV7vxMbkEL5huAs1J/76NpSXqLnPCo
-	RQUhREqV3whs+23itS9yElkPt7PFldgGI=
-X-Received: by 2002:a05:6122:3214:b0:566:271c:b48d with SMTP id 71dfb90a1353d-56889d4a600mr7345546e0c.18.1771504737800;
-        Thu, 19 Feb 2026 04:38:57 -0800 (PST)
-Received: from localhost ([2804:30c:942:5700:6773:2626:ab8c:582e])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-5674bfe5ec0sm13742463e0c.5.2026.02.19.04.38.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Feb 2026 04:38:56 -0800 (PST)
-Date: Thu, 19 Feb 2026 09:39:27 -0300
-From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Marcelo Schmitt <marcelo.schmitt@analog.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org,
-	linux-kernel@vger.kernel.org, jic23@kernel.org,
-	michael.hennerich@analog.com, nuno.sa@analog.com,
-	eblanc@baylibre.com, dlechner@baylibre.com, andy@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	corbet@lwn.net
-Subject: Re: [PATCH v9 7/8] iio: adc: ad4030: Add support for ADAQ4216 and
- ADAQ4224
-Message-ID: <aZcEf75cOHXLKvNm@debian-BULLSEYE-live-builder-AMD64>
-References: <cover.1771253601.git.marcelo.schmitt@analog.com>
- <39ebbb49619d5d588efe590560046d747dd46ad5.1771253601.git.marcelo.schmitt@analog.com>
- <aZRikNMXKxW0JjTC@smile.fi.intel.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="nnYwQ5fU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771511988; x=1803047988;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=s9MXV7lH4hCfZovIakXUYCiLrJA9JvNf2AURQ3N1JBU=;
+  b=nnYwQ5fUf/CCTxKHmbjyGJ9JoceNezSwfz16/ih12RMgAcAvJBmVRKNz
+   x/QvF5rwx4Y19CYAa6Q1wllubaZwezYryJj4wR2SJKf5t2ZCSmaDZT03e
+   G/LalIWHArfqn5+LnpWSa+6WdnPPgdLIBfOQqxPm5ez32taE3gZ91UL45
+   0fX8UAHIupBYy3ZXQXJEgmeOokmC9oVqoYmcA9knYq+aXxnz4pV50R34y
+   zNg19t+eXt2cEQy1YBYrx5TNiRD78M3QBLCai1ny2MhpERhf6wQnpRlS6
+   rAT9nw+TzuKU6NQRzW6uHhDKFsr2grN7ryOGn45RE/zartmp8yNwgWbqy
+   g==;
+X-CSE-ConnectionGUID: 5dopiqupTZ2HMF214v1Bng==
+X-CSE-MsgGUID: k6buo5iUQhWYZVmKE+FYhQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11706"; a="72482203"
+X-IronPort-AV: E=Sophos;i="6.21,300,1763452800"; 
+   d="scan'208";a="72482203"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2026 06:39:47 -0800
+X-CSE-ConnectionGUID: pMerpM0pS52QP3kPtayLTg==
+X-CSE-MsgGUID: ErtpXLDiRHGtZ3H6kq6GSw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,300,1763452800"; 
+   d="scan'208";a="213622108"
+Received: from black.igk.intel.com ([10.91.253.5])
+  by orviesa006.jf.intel.com with ESMTP; 19 Feb 2026 06:39:44 -0800
+Received: by black.igk.intel.com (Postfix, from userid 1003)
+	id CA64695; Thu, 19 Feb 2026 15:39:37 +0100 (CET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Alisa-Dariana Roman <alisadariana@gmail.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Alisa-Dariana Roman <alisa.roman@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v1 1/1] iio: adc: ad7191: Don't check for specific errors when parsing properties
+Date: Thu, 19 Feb 2026 15:39:36 +0100
+Message-ID: <20260219143936.2276366-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aZRikNMXKxW0JjTC@smile.fi.intel.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Andy,
+Instead of checking for the specific error codes (that can be considered
+a layering violation to some extent) check for the property existence first
+and then either parse it, or apply a default value.
 
-On 02/17, Andy Shevchenko wrote:
-> On Mon, Feb 16, 2026 at 12:01:12PM -0300, Marcelo Schmitt wrote:
-> > ADAQ4216 and ADAQ4224 are similar to AD4030, but feature a PGA circuitry
-> > that scales the analog input signal prior to it reaching the ADC. The PGA
-> > is controlled through a pair of pins (A0 and A1) whose state define the
-> > gain that is applied to the input signal.
-> > 
-> > Add support for ADAQ4216 and ADAQ4224. Provide a list of PGA options
-> > through the IIO device channel scale available interface and enable control
-> > of the PGA through the channel scale interface.
-> 
-...
-> > +static int ad4030_setup_pga(struct device *dev, struct iio_dev *indio_dev,
-> > +			    struct ad4030_state *st)
-> > +{
-> > +	unsigned int i;
-> > +	int pga_gain_dB;
-> > +	int ret;
-> > +
-> > +	ret = device_property_read_u32(dev, "adi,pga-gain-db", &pga_gain_dB);
-> > +	if (ret == -EINVAL) {
-> 
-> Actually instead of custom error hunting, this should be rather
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/adc/ad7191.c | 63 +++++++++++++++++++++-------------------
+ 1 file changed, 33 insertions(+), 30 deletions(-)
 
-Sorry, I messed up when preparing the patches. "adi,pga-gain-db" is not going
-to be a dt property and this should have been just the 'GPIOs for PGA control'
-below. Anyway, thanks for reviewing this. I'll hopefully recall this error
-handling pattern in future contributions.
+diff --git a/drivers/iio/adc/ad7191.c b/drivers/iio/adc/ad7191.c
+index d9cd903ffdd2..51ec199fb06f 100644
+--- a/drivers/iio/adc/ad7191.c
++++ b/drivers/iio/adc/ad7191.c
+@@ -154,27 +154,18 @@ static int ad7191_config_setup(struct iio_dev *indio_dev)
+ 	const u32 gain[4] = { 1, 8, 64, 128 };
+ 	static u32 scale_buffer[4][2];
+ 	int odr_value, odr_index = 0, pga_value, pga_index = 0, i, ret;
++	const char *propname;
+ 	u64 scale_uv;
+ 
+ 	st->samp_freq_index = 0;
+ 	st->scale_index = 0;
+ 
+-	ret = device_property_read_u32(dev, "adi,odr-value", &odr_value);
+-	if (ret && ret != -EINVAL)
+-		return dev_err_probe(dev, ret, "Failed to get odr value.\n");
++	propname = "adi,odr-value";
++	if (device_property_present(dev, propname)) {
++		ret = device_property_read_u32(dev, propname, &odr_value);
++		if (ret)
++			return dev_err_probe(dev, ret, "Failed to get %s.\n", propname);
+ 
+-	if (ret == -EINVAL) {
+-		st->odr_gpios = devm_gpiod_get_array(dev, "odr", GPIOD_OUT_LOW);
+-		if (IS_ERR(st->odr_gpios))
+-			return dev_err_probe(dev, PTR_ERR(st->odr_gpios),
+-					     "Failed to get odr gpios.\n");
+-
+-		if (st->odr_gpios->ndescs != 2)
+-			return dev_err_probe(dev, -EINVAL, "Expected 2 odr gpio pins.\n");
+-
+-		st->samp_freq_avail = samp_freq;
+-		st->samp_freq_avail_size = ARRAY_SIZE(samp_freq);
+-	} else {
+ 		for (i = 0; i < ARRAY_SIZE(samp_freq); i++) {
+ 			if (odr_value != samp_freq[i])
+ 				continue;
+@@ -186,6 +177,17 @@ static int ad7191_config_setup(struct iio_dev *indio_dev)
+ 		st->samp_freq_avail_size = 1;
+ 
+ 		st->odr_gpios = NULL;
++	} else {
++		st->odr_gpios = devm_gpiod_get_array(dev, "odr", GPIOD_OUT_LOW);
++		if (IS_ERR(st->odr_gpios))
++			return dev_err_probe(dev, PTR_ERR(st->odr_gpios),
++					     "Failed to get odr gpios.\n");
++
++		if (st->odr_gpios->ndescs != 2)
++			return dev_err_probe(dev, -EINVAL, "Expected 2 odr gpio pins.\n");
++
++		st->samp_freq_avail = samp_freq;
++		st->samp_freq_avail_size = ARRAY_SIZE(samp_freq);
+ 	}
+ 
+ 	mutex_lock(&st->lock);
+@@ -200,22 +202,12 @@ static int ad7191_config_setup(struct iio_dev *indio_dev)
+ 
+ 	mutex_unlock(&st->lock);
+ 
+-	ret = device_property_read_u32(dev, "adi,pga-value", &pga_value);
+-	if (ret && ret != -EINVAL)
+-		return dev_err_probe(dev, ret, "Failed to get pga value.\n");
++	propname = "adi,pga-value";
++	if (device_property_present(dev, propname)) {
++		ret = device_property_read_u32(dev, propname, &pga_value);
++		if (ret)
++			return dev_err_probe(dev, ret, "Failed to get %s.\n", propname);
+ 
+-	if (ret == -EINVAL) {
+-		st->pga_gpios = devm_gpiod_get_array(dev, "pga", GPIOD_OUT_LOW);
+-		if (IS_ERR(st->pga_gpios))
+-			return dev_err_probe(dev, PTR_ERR(st->pga_gpios),
+-					     "Failed to get pga gpios.\n");
+-
+-		if (st->pga_gpios->ndescs != 2)
+-			return dev_err_probe(dev, -EINVAL, "Expected 2 pga gpio pins.\n");
+-
+-		st->scale_avail = scale_buffer;
+-		st->scale_avail_size = ARRAY_SIZE(scale_buffer);
+-	} else {
+ 		for (i = 0; i < ARRAY_SIZE(gain); i++) {
+ 			if (pga_value != gain[i])
+ 				continue;
+@@ -227,6 +219,17 @@ static int ad7191_config_setup(struct iio_dev *indio_dev)
+ 		st->scale_avail_size = 1;
+ 
+ 		st->pga_gpios = NULL;
++	} else {
++		st->pga_gpios = devm_gpiod_get_array(dev, "pga", GPIOD_OUT_LOW);
++		if (IS_ERR(st->pga_gpios))
++			return dev_err_probe(dev, PTR_ERR(st->pga_gpios),
++					     "Failed to get pga gpios.\n");
++
++		if (st->pga_gpios->ndescs != 2)
++			return dev_err_probe(dev, -EINVAL, "Expected 2 pga gpio pins.\n");
++
++		st->scale_avail = scale_buffer;
++		st->scale_avail_size = ARRAY_SIZE(scale_buffer);
+ 	}
+ 
+ 	st->temp_gpio = devm_gpiod_get(dev, "temp", GPIOD_OUT_LOW);
+-- 
+2.50.1
 
-The other suggestions look good but I'll wait a bit more before sending v10.
-> 
-> 	if (device_property_present(dev, "adi,pga-gain-db")) {
-> 		ret = device_property_read_u32(dev, "adi,pga-gain-db", &pga_gain_dB);
-> 		if (ret)
-> 			return dev_err_probe(dev, ret, "Failed to get PGA value.\n");
-> 	} else {
-> 
-> > +		/* Setup GPIOs for PGA control */
-> > +		st->pga_gpios = devm_gpiod_get_array(dev, "pga", GPIOD_OUT_LOW);
-> > +		if (IS_ERR(st->pga_gpios))
-> > +			return dev_err_probe(dev, PTR_ERR(st->pga_gpios),
-> > +					     "Failed to get PGA gpios.\n");
-> > +
-> > +		if (st->pga_gpios->ndescs != ADAQ4616_PGA_PINS)
-> > +			return dev_err_probe(dev, -EINVAL,
-> > +					     "Expected 2 GPIOs for PGA control.\n");
-> > +
-> > +		st->scale_avail_size = ARRAY_SIZE(adaq4216_hw_gains_db);
-> > +		st->pga_index = 0;
-> > +		return 0;
-> 
-> > +	} else if (ret) {
-> > +		return dev_err_probe(dev, ret, "Failed to get PGA value.\n");
-> > +	}
-> 
-... 
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-> 
-Thanks,
-Marcelo
