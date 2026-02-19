@@ -1,63 +1,63 @@
-Received: from mail-pg1-f178.google.com (mail-pg1-f178.google.com [209.85.215.178])
+Received: from mail-pl1-f176.google.com (mail-pl1-f176.google.com [209.85.214.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F08FF306480
-	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 21:36:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.178
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9534432AAB6
+	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 21:36:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771537006; cv=none; b=bI3UpU7fgX+8Uf99OJuQdewRzT41MtIGi8umRA4l6RtLC50yzS/1N6Xx/LvbC1rFdxHUhboemssOPx+bKPscynRSOkUmwzJ/vggQyKAS3MokBmaxv5DUrrqysFsKdW+CeQJ+9o3hZl/5NzCWUVhYP5DjbieIThJL4EI0fTgoROU=
+	t=1771537016; cv=none; b=JIVNb+D9Vhyi5MpMoW8Mvp6dleCUCvAEGxEq49wWz7YYkkCHHHu1n1UD5+s0AXOGPm+WxjeefDIDBKhs6HNuR1fxbuy1VNuG7mvRetD6dA9tdSbPigbuJiDHbDMlJSY76UAfxP/1F5w+LEH2LOiJA8tE++mGeQ8Clct3JDSah/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771537006; c=relaxed/simple;
-	bh=i42XsvsRKtXY5Ms1pYkF7Kk9twF4AYiXPGCpkIeUt4o=;
+	s=arc-20240116; t=1771537016; c=relaxed/simple;
+	bh=6M+XGC7yqyyv+3XDNyCsRg+HgWbHFVYQ0w+W77xeb18=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hNOg+v7vdzDcJVP4AAicFtZHhKBa744RAAHhg6juS8Jf5Ot2f5k0VO7E/l2qMEdvBqixaqtSkslC+IClkKfXJB/jXjwhtY1QbRHlMBBQCNmDoDdwT7lLjZcdWf6BtjnwSPLKWn7iBkieqCvDFoHXiPw+1gwfvM+X2ltPTOKajHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QWYBKumB; arc=none smtp.client-ip=209.85.215.178
+	 MIME-Version; b=BCEykjIK+JPrfu4qNekR3pQq15jZxQ+8R+8TDcb+umPJpMDGGvcmbh1aMWKN2Y3E9WCFtVycu8q8uxm+qaCgbGPfmDtZngfs8b2p+rHsSVjt1LdikBs/iejuEfGP9FpccgzvUo7U9uIngOnOHW2df6OZkwBnWGZq+bFsIZ++DdE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KjCEaX8N; arc=none smtp.client-ip=209.85.214.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QWYBKumB"
-Received: by mail-pg1-f178.google.com with SMTP id 41be03b00d2f7-c70378ddaafso792170a12.3
-        for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 13:36:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KjCEaX8N"
+Received: by mail-pl1-f176.google.com with SMTP id d9443c01a7336-2a7a9b8ed69so12787025ad.2
+        for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 13:36:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771537004; x=1772141804; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771537014; x=1772141814; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=VrKO3/k5oDaHRjx6Mg3pvGaxTLwHymALHGO1vCKBisg=;
-        b=QWYBKumBxi0WeK0svfl7Ad02tJTBFt+Zo9of2LKliRyX3+K6FRiC877lGqS23VjNRD
-         il19OolD21uvf9giNeGUSFqF2R2w9bqAWjc+N2lMREgs+YuoJySkeUvyyI4b74y50q2v
-         slZ6Bg2tqLJf2I6R9lFjQ+Qdehn1o6LMbfzkXVUP2LMFf066hBtNo0ujNxQR4r1v2Bxs
-         xBihaWQ5ozccJZ3XvamUitLGyd3jw4DcOyTLf7Zxgm6PrcPbst/l/uN1lkvmf/6Z82Pk
-         T/nSl0TW1TzfQhJwiYjc8S8WMrhzki5KNhtO0il3vnFM8mplQ51+uEWWvBFwnEq0nGYh
-         gBaA==
+        bh=Zc96RPM8zuz0aUXS6dx1Rqoun9U6kSuSBbcKRBldkQs=;
+        b=KjCEaX8NJn1VH/eoC6ecxtpZQh7rkcOfu9V3W0F19xRCDKUBKKEPq1OhYkN34yG2a4
+         ersmOj0iYTkeQRWkCyTkndhOrDkKJb4xNjYQHUJDA95JGNOFAELUfN9VxWXPA4cm5JbY
+         9kSiri+D7HLVd9q6Wz9Xb2PUgkhkenHVFmtWGm1vKuU8QHv+pHzvr5xsbvGasE1Y3Gto
+         pAlq+JG/T0g+DyJIK2+zv3/3PA+w/BO2/C6bvYD7ZidYvP63EH4q8EeviIwVG6yRiB1B
+         yn+9e1f8UdPG4kI4nBQ7eq3w5IZznausobEVIgBkcG8F/wYvotu7W95Htdim2mG8ZjDM
+         6RFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771537004; x=1772141804;
+        d=1e100.net; s=20230601; t=1771537014; x=1772141814;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=VrKO3/k5oDaHRjx6Mg3pvGaxTLwHymALHGO1vCKBisg=;
-        b=aGfSA9CHToh9D273osIfYJtGCO/2rOzsHtR53qYQlLUtQ9QNA4R6CAQpnMmo2Cx1Yr
-         +gSlUXDrQIEwyIGdiPzZ7loIf0TmGcAfjS/J24OaDhgTjpoZvq7ET9wdV7BbeCFv+Cja
-         +F6+bigOV1v3y4zmU5UEij3AXY/NjL7SLtlTD+4gfghW6101q3CUi3C3fXgaqO7dnFKu
-         hSm33kAnHwFmZBHjSIB+8WzFmCxpr39aSYAslLvO08CXhFNPJDvSGydTMc/j4CDwzfIg
-         X+CiogXW1sPiSYqMKpTpTjWFiTC3kod20ZL9NYCNDFFYT9QU7mKke16r7FLOjuI34/n3
-         i7xg==
-X-Forwarded-Encrypted: i=1; AJvYcCUVq0mpxR5XYmNt0R0zszT7KXiAO/pDL52hE8YboJT97mCaJqkx9R8o9vu5zLs+wPFuQGas40gFTxI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy3jPABgTDFt8oqMDg7rpMHC6YhFuT4VInmssJgvuvmuYt/htkD
-	ASmfGmaL5ano4MwxiD6RQlm+wEeVbmyOfPh5HLLu1RGLtb1GoBuoToVw
-X-Gm-Gg: AZuq6aLMxXIo38zbDZqiZIOtTJkDlDFCElhVqo+oeTHr0bvfnDdFxZZGKyVvPfYd2vr
-	4i8EmjZuAYc8NjoLFTkBKvbPSzELbqWD5nxp1PH+UdNyZx6kHETPSMyf49cDYgjUyruy3W4fTWT
-	LTVXtHZEyQEMgASqRZMMUMafSfPzC5uITMa+w3a+EjMxtYGx/EAgQo3zEEvgjkAgVZ6Z3xJgAIm
-	of/af5L00ArG2q0+7DUq3JKwfzkD1MbTcTYUD9kVAT3H+YAFbcRCO9AIS2x493liLFIcehi03vV
-	O6IvmHRhe7/otNLakBDlvCBx7SF3zaRZdH8lDOcesohEilqLan4gahd596q9Z5mTxXs9hzTV4kS
-	yTAua6D4KNxfsl688RtxM3BIv0SShcUm+jcHd/fnDf1RQzbRNjtqUQCEqmwpaYv4SjCGOxA0JMS
-	5V4WFw6NEVsdkOn1Hs+KM/+r43UHF+95pXCAg=
-X-Received: by 2002:a17:903:3bad:b0:2a7:9592:210a with SMTP id d9443c01a7336-2ad175019cfmr167804435ad.33.1771537004295;
-        Thu, 19 Feb 2026 13:36:44 -0800 (PST)
+        bh=Zc96RPM8zuz0aUXS6dx1Rqoun9U6kSuSBbcKRBldkQs=;
+        b=IV9juJqNM18jrSjUj+7CmHZcsbiIPnzP6V/Iu3KliBtq892MTyvcjHJl6pUoU7UZbK
+         F4mTan75tDR/Q/mLccBRqB/TJLi3Lz2+njbTyX8beVms+1gTkQvUJCWGVdJyJG8tVu1K
+         nicZIc3A2lF39nnEsAxlv9855B3Dl0qtplcS/7wXodvYESSYzsRTSdL9Ee+9xiYGvg5o
+         6L7DxmFFrCrNqjYg88lcbl3G/RuYNqXXlnQJW9ZMWmMUHBTEE8jZEayYbWXwGgVYb/ox
+         dORbS2n5ppK+o7GitB8LHVPZmrqJvmjOL95uLC8DCkzRAzh2X2USmDo578XA0k8y2Qmp
+         DVAA==
+X-Forwarded-Encrypted: i=1; AJvYcCVUmiCMMlk0wXUnht7jsAuUADFQDQrcWIhg6XJe8Rc7jKpAgC7P8/HSdDSR54UoulNFqp7WkPiJ8CM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyLLjZPIMC49eAYULQab+7+ngdEkW10SR6P3VJ34RL0OgLyP0Ym
+	QBeaVeqRdWPTmWNawVtj3+iMKD4AIqVdWQpDGN12Q1CckA6pmUx6/crJRKP2MA==
+X-Gm-Gg: AZuq6aLh/KJYRYRczSORrBWXXSPE4YLtR7HS/WuI9SHC23xRRtbY08OHQMRITWjXC0K
+	kKoM1h4XxI+J6XvrlU1HIBkDHUCcHu4xOmRRgKQ8ODu82LVW4oMTcDJARbMBvAxZyPtuTFqXH0v
+	IgKABZcosCJvw1M0kuH43NRB5L494Sm9SDbHjVeWBRX7oRUSW3y452qIPHE9FARmU/ciQMAvQiI
+	bVHIbotQJvG0i6gcvHhB5/YqA1raWR6mxeI5StZHkyOBDIjZhUn95FkJWnZbkZf6T4aqG0uGoBt
+	LX3dqCOIhPvsUR2HOnOhM4CqZqXcIW+fWMOAbFQ7oLmptDXQFz64Ho4tOoPOkDXHFM7bmUCZ/L3
+	tiYqjCVpEzgW9Qkfurh9z0mpnKwwYvV3nR4I4itiGXpJTSazUU/z5rxLcpCGuPu1dTtuh5I2CF4
+	d+uEg2tuXK2aubgiMeKLRx48xE
+X-Received: by 2002:a17:902:ce09:b0:2ab:1dad:e500 with SMTP id d9443c01a7336-2ad50e8dd66mr66367645ad.18.1771537014082;
+        Thu, 19 Feb 2026 13:36:54 -0800 (PST)
 Received: from arch ([2409:40c2:5415:8e16:49a5:aac1:3b74:3ed7])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ad1a7145cbsm238938475ad.30.2026.02.19.13.36.36
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ad1a7145cbsm238938475ad.30.2026.02.19.13.36.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Feb 2026 13:36:44 -0800 (PST)
+        Thu, 19 Feb 2026 13:36:53 -0800 (PST)
 From: bhargav <rougueprince47@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -67,11 +67,10 @@ Cc: dlechner@baylibre.com,
 	andy@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	rougueprince47@gmail.com,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v3 2/3] iio: frequency: ad9523: avoid multiple line dereferences for pdata
-Date: Fri, 20 Feb 2026 03:05:48 +0530
-Message-ID: <20260219213549.59645-3-rougueprince47@gmail.com>
+	rougueprince47@gmail.com
+Subject: [PATCH v3 3/3] iio: frequency: ad9523: fix checkpatch warnings for symbolic permissions
+Date: Fri, 20 Feb 2026 03:05:49 +0530
+Message-ID: <20260219213549.59645-4-rougueprince47@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260219213549.59645-1-rougueprince47@gmail.com>
 References: <aZd2jAVnTIuz2o7h@smile.fi.intel.com>
@@ -84,44 +83,109 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Platform data pointer dereferences for pll1_charge_pump_current_nA
-and pll2_charge_pump_current_nA were split across multiple lines.
-Bring the dereference chains onto a single line.
-
-This resolves the following checkpatch.pl warnings:
-WARNING: Avoid multiple line dereference - prefer 'pdata->pll1_charge_pump_current_nA'
-WARNING: Avoid multiple line dereference - prefer 'pdata->pll2_charge_pump_current_nA'
+The driver currently defines device attributes using
+symbolic permission flags (S_IRUGO and S_IWUSR).
+Update these to use octal permissions (0444 and 0200) to resolve
+checkpatch warnings.
 
 Signed-off-by: bhargav <rougueprince47@gmail.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 ---
- drivers/iio/frequency/ad9523.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+Changes in v3:
+-reduced unwanted vertical spacing 
+-fixed broken indentation
+
+ drivers/iio/frequency/ad9523.c | 78 +++++++++++++---------------------
+ 1 file changed, 29 insertions(+), 49 deletions(-)
 
 diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index 5725ab62e0fd..6daa2ea354a8 100644
+index 6daa2ea354a8..ad32eb66edca 100644
 --- a/drivers/iio/frequency/ad9523.c
 +++ b/drivers/iio/frequency/ad9523.c
-@@ -797,8 +797,7 @@ static int ad9523_setup(struct iio_dev *indio_dev)
- 		return ret;
+@@ -558,55 +558,35 @@ static ssize_t ad9523_show(struct device *dev,
+ 	return ret;
+ }
  
- 	ret = ad9523_write(indio_dev, AD9523_PLL1_CHARGE_PUMP_CTRL,
--		AD9523_PLL1_CHARGE_PUMP_CURRENT_nA(pdata->
--			pll1_charge_pump_current_nA) |
-+		AD9523_PLL1_CHARGE_PUMP_CURRENT_nA(pdata->pll1_charge_pump_current_nA) |
- 		AD9523_PLL1_CHARGE_PUMP_MODE_NORMAL |
- 		AD9523_PLL1_BACKLASH_PW_MIN);
- 	if (ret < 0)
-@@ -842,8 +841,7 @@ static int ad9523_setup(struct iio_dev *indio_dev)
- 	 */
+-static IIO_DEVICE_ATTR(pll1_locked, S_IRUGO,
+-			ad9523_show,
+-			NULL,
+-			AD9523_STAT_PLL1_LD);
+-
+-static IIO_DEVICE_ATTR(pll2_locked, S_IRUGO,
+-			ad9523_show,
+-			NULL,
+-			AD9523_STAT_PLL2_LD);
+-
+-static IIO_DEVICE_ATTR(pll1_reference_clk_a_present, S_IRUGO,
+-			ad9523_show,
+-			NULL,
+-			AD9523_STAT_REFA);
+-
+-static IIO_DEVICE_ATTR(pll1_reference_clk_b_present, S_IRUGO,
+-			ad9523_show,
+-			NULL,
+-			AD9523_STAT_REFB);
+-
+-static IIO_DEVICE_ATTR(pll1_reference_clk_test_present, S_IRUGO,
+-			ad9523_show,
+-			NULL,
+-			AD9523_STAT_REF_TEST);
+-
+-static IIO_DEVICE_ATTR(vcxo_clk_present, S_IRUGO,
+-			ad9523_show,
+-			NULL,
+-			AD9523_STAT_VCXO);
+-
+-static IIO_DEVICE_ATTR(pll2_feedback_clk_present, S_IRUGO,
+-			ad9523_show,
+-			NULL,
+-			AD9523_STAT_PLL2_FB_CLK);
+-
+-static IIO_DEVICE_ATTR(pll2_reference_clk_present, S_IRUGO,
+-			ad9523_show,
+-			NULL,
+-			AD9523_STAT_PLL2_REF_CLK);
+-
+-static IIO_DEVICE_ATTR(sync_dividers, S_IWUSR,
+-			NULL,
+-			ad9523_store,
+-			AD9523_SYNC);
+-
+-static IIO_DEVICE_ATTR(store_eeprom, S_IWUSR,
+-			NULL,
+-			ad9523_store,
+-			AD9523_EEPROM);
++static IIO_DEVICE_ATTR(pll1_locked, 0444, ad9523_show, NULL,
++		       AD9523_STAT_PLL1_LD);
++
++static IIO_DEVICE_ATTR(pll2_locked, 0444, ad9523_show, NULL,
++		       AD9523_STAT_PLL2_LD);
++
++static IIO_DEVICE_ATTR(pll1_reference_clk_a_present, 0444, ad9523_show, NULL,
++		       AD9523_STAT_REFA);
++
++static IIO_DEVICE_ATTR(pll1_reference_clk_b_present, 0444, ad9523_show, NULL,
++		       AD9523_STAT_REFB);
++
++static IIO_DEVICE_ATTR(pll1_reference_clk_test_present, 0444, ad9523_show, NULL,
++		       AD9523_STAT_REF_TEST);
++
++static IIO_DEVICE_ATTR(vcxo_clk_present, 0444, ad9523_show, NULL,
++		       AD9523_STAT_VCXO);
++
++static IIO_DEVICE_ATTR(pll2_feedback_clk_present, 0444, ad9523_show, NULL,
++		       AD9523_STAT_PLL2_FB_CLK);
++
++static IIO_DEVICE_ATTR(pll2_reference_clk_present, 0444, ad9523_show, NULL,
++		       AD9523_STAT_PLL2_REF_CLK);
++
++static IIO_DEVICE_ATTR(sync_dividers, 0200, NULL, ad9523_store,
++		       AD9523_SYNC);
++
++static IIO_DEVICE_ATTR(store_eeprom, 0200, NULL, ad9523_store,
++		       AD9523_EEPROM);
  
- 	ret = ad9523_write(indio_dev, AD9523_PLL2_CHARGE_PUMP,
--		AD9523_PLL2_CHARGE_PUMP_CURRENT_nA(pdata->
--			pll2_charge_pump_current_nA));
-+		AD9523_PLL2_CHARGE_PUMP_CURRENT_nA(pdata->pll2_charge_pump_current_nA));
- 	if (ret < 0)
- 		return ret;
- 
+ static struct attribute *ad9523_attributes[] = {
+ 	&iio_dev_attr_sync_dividers.dev_attr.attr,
 -- 
 2.53.0
 
