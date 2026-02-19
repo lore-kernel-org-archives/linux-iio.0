@@ -1,134 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03E26280336;
-	Thu, 19 Feb 2026 20:00:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A5EBF2820A9
+	for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 20:33:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771531224; cv=none; b=p7VITWIZvuLa+UWxPmZ+/FBmfv6EaUmQSZfTAEQf3taf75WBF492DHrR3mDk+KUqbIUwxDU5MLFa6YoELeIB+gO15K/PCygqizwphP0QaLQxMwffMqpsY5NSOQAR8EiUNuotXAF2KrIQoyib0gIWADBJS3hJ9ODsoBgm0v5D588=
+	t=1771533183; cv=none; b=IQugRxipX+l09nUhj6FPka6RWFhd8D3pmj6E6eVaerf29l6eaHoOKzpH61iNEx8kx/ztqdcEcQvcepNslKWxEf1QZI7i0DD9/Bv9WX/8KC1Hc9uMYyULcco9Sgm2OEGHNZsYLIYgdiTlU08/WgBL7K356bmE4FrmJL3mmZDRW64=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771531224; c=relaxed/simple;
-	bh=EyJk/kgd0d5BFToXc2vCXn6y89e75By6Y9sGCSZa38o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W1i7ju0PKiZRJF6FREKIwodY7Lt2dNv6IwKrnvVgaCgxe3cT7WU6iL/sUNKXI7B4PpSOVqAf89ToCfnB8HvgRxQcRnDtqJjCOzJ4mna4QWZ6a6FIAvU7KykRoifbm4v0tzZo7cHIAt1DnxGoKaAqCqrLqXGVf/8qLChIvl5ybVI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bE1P6Ahw; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1771533183; c=relaxed/simple;
+	bh=zurSHM2O3dUZxj60XdWAS/6udk1I5SqanvzVClgDWHI=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=gh44qeKclltwxWLomU+NvjbSuk/f8r0shlD+GTMxSATV0d5XhSMC1BL86Dky/UBb6DPp22kWU8uL+NWg/mP05YxnTXDhStzYB0bbxtO5Tc7/zpY9kccdsvNTd3J1++vpaSJaHHSLOB9hlnhjQsHNL9NsRsZ2JHrjmgxXh0ZguE4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OJb5NjR9; arc=none smtp.client-ip=209.85.210.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bE1P6Ahw"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771531223; x=1803067223;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EyJk/kgd0d5BFToXc2vCXn6y89e75By6Y9sGCSZa38o=;
-  b=bE1P6AhwDXx1PjESl8p24f3G78f83ESQx62OQkaD9XILDjo31QrPk5il
-   Y5LqeResYWp9ndtI7U5zz5pJJ3QGjLXmx7EF9rcY29jg77nhGozcA7Nyy
-   zd7SgCLtSKiGlhR4mjMgc7q+a3L0hT3to889YRnRQ+ueevDoD6PJmrjgV
-   r2L62CBgsOoo0CqGJGjVDNst64B74NjnerTcX/58nH4ZXqJQi3pcNY6jQ
-   yzwtSf8kgDMSP5Nl/k2y00icGa58sCv0UAxYjIVDThK8SP8DtD1MgTUB0
-   A44jFcGGrogrK5IH0mxwnm2CCDXpya9ak1h7teRi9fP59JZpLrR8CLgv/
-   w==;
-X-CSE-ConnectionGUID: rYibxSyfTtC0SMNiMBQrZA==
-X-CSE-MsgGUID: Lz8O+dA0T9qls6Fzkj+JEw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11706"; a="72691040"
-X-IronPort-AV: E=Sophos;i="6.21,300,1763452800"; 
-   d="scan'208";a="72691040"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2026 12:00:22 -0800
-X-CSE-ConnectionGUID: hC46u1yLQFSkhTUHI5pNyQ==
-X-CSE-MsgGUID: /Q/3CI86SJGp/L25J63BhA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,300,1763452800"; 
-   d="scan'208";a="213869912"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.114])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2026 12:00:20 -0800
-Date: Thu, 19 Feb 2026 22:00:17 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Ethan Tidmore <ethantidmore06@gmail.com>
-Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 5/9] iio: light: gp2ap020a00f: Return directly from
- the switch cases
-Message-ID: <aZdr0TyLmLfkcdzp@smile.fi.intel.com>
-References: <20260218043728.609659-1-ethantidmore06@gmail.com>
- <20260218043728.609659-6-ethantidmore06@gmail.com>
- <DGJ6T7SUJBFE.1BHJKFRV7IPTT@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OJb5NjR9"
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-8220bd582ddso685420b3a.2
+        for <linux-iio@vger.kernel.org>; Thu, 19 Feb 2026 12:33:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771533181; x=1772137981; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IGipjKzRkKk8a6B9UIUbo0n60PHe2qTPntOmo0YjjLE=;
+        b=OJb5NjR9hjO/YOXI8J9O7HSfKyKkhUisiB6x8xLjktpdEzRVnaTzEzSSYqhOHtnU1S
+         HgWyxrgoRGfU3FQ00subwguZS+Xg2DnZuwslfd+bVRxFVH3twHurRxulDNBETDprjC/g
+         0XZReHyGSmlnH2WYoG33Ps1zNnqYNlaFIkcvkMiFO0t+Lc7wiSeSKakuoFWilAmrmyqK
+         rZBA79JCwz5fMtaEvQDSqd2ktvmMveH4k5xnRhKUlrD9w3i4v1TcERf+HuU6XukwWwEr
+         n/VaUVUUxbypklk7fBRMm3fivULBbT1hSGux7iYn+ggRGUGh4hwmsjaO+/SSvjAp5bh1
+         p15g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771533181; x=1772137981;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=IGipjKzRkKk8a6B9UIUbo0n60PHe2qTPntOmo0YjjLE=;
+        b=Wt4Pv+2UiVn/blh/Wzgba4cvD2i2+j+ghPaBTjnwe8gpoACdLd/t3a5LPZe/OJUxEw
+         Gc8bBdIoUDrws29iKXAT7/aE+xSUydP689gK1TPjh0Vk85dTLpuj5I2cp8UMOz3FUS43
+         GVa6qlJUSc1N+zKT0QKUgBlAsM/C7LenbHiNs8498Tk9xxpNk8DChtbUUKvuP4sgCUCt
+         QLVtMfIUm5AWUhvYkgywD3/MlmkgUvaymfoOnOYsjKjEBO18iMtedDbJnfZqB6V+7GuZ
+         Asjnkfp/DhPO1tALJ6ls7bgX1Wwa0gNAGXJ9jx+O62TrR9Vj4qTFfruonvBfjAHeKhMR
+         zpIQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUtiNgHJzVZR3H7jFmEyq48e86e885XiNeQ05V3f1oDrysjNsuuszlFiDJDOKQZg5XXiNqbXmByEZs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy6uHNIFj9DACF0M+/G6abPgjQfFSOD39iidbjEDS0qQGf2aqvT
+	nZK4bgHgkfUI56KUBAFj9fSplO06mJGTPfoe7//LiXMF8a3eBmP1+Xz0
+X-Gm-Gg: AZuq6aLmOmPSVsiiqFSWEOrPd0Ox3Cvt52MjOMkutbrqedu9VG5GWWkQuS59DN5rzqC
+	vmCjX7BeudZlHFDu1WxvJFRuIhpo/TLLx1IMAWvxZBQtEhBhLtNT4KMbzmTaE+vfeUJQYGEKqgE
+	Sb9PXW2ZplipsklQFvfL+P8S0FdFByIO4+5+7rtReklQeeWHopIv+3CaaK1WbGS3eqS5fMos9A6
+	ZZuPfGPsqkikvvkSnLp87cMv9jpSUJ0/oqW2UV6kZuks+RGOXYQBgD/5Dm76fuwjRll+5XM1eWL
+	RVjBjCdiIQnrsM+j+poj5E5nXaFo90aP0BHT4sqygn5/wyG82dwnD4wdA47ksdrod7ZtAHykrJn
+	nalFyi0vXEkqxZxZhbwxDT8ehZW9vDfliEoMZrdiWrUyAd4ve+9Y9G3wkf8RFZgR6ow5ZqpVPmr
+	5+KIsQTr1kuiHrGo6b40+An/q7
+X-Received: by 2002:a05:6a00:1903:b0:81f:17b:c70f with SMTP id d2e1a72fcca58-825274df33bmr5699691b3a.29.1771533181005;
+        Thu, 19 Feb 2026 12:33:01 -0800 (PST)
+Received: from arch ([2409:40c2:5415:8e16:49a5:aac1:3b74:3ed7])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-824c6b94b80sm20339278b3a.55.2026.02.19.12.32.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Feb 2026 12:33:00 -0800 (PST)
+From: bhargav <rougueprince47@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	rougueprince47@gmail.com
+Subject: [PATCH v2 0/3] iio: frequency: ad9523: fix checkpatch warnings
+Date: Fri, 20 Feb 2026 02:02:12 +0530
+Message-ID: <20260219203215.15566-1-rougueprince47@gmail.com>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <aZa_QbwCumULvTf7@smile.fi.intel.com>
+References: <aZa_QbwCumULvTf7@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <DGJ6T7SUJBFE.1BHJKFRV7IPTT@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Feb 19, 2026 at 01:32:20PM -0600, Ethan Tidmore wrote:
-> On Tue Feb 17, 2026 at 10:37 PM CST, Ethan Tidmore wrote:
+These patches address several checkpatch warnings in the ad9523 driver.
 
-...
+Patch 1: Updated the macros to properly use their argument x.
+Patch 2: Updated symbolic permissions to octal (0444/0200).
+Patch 3: Fixed the multi-line pointer dereferences.
 
-> > By doing this, it appears to have fixed a preexisting bug, the variable
-> > err in  gp2ap020a00f_buffer_predisable() is only checked once for errors
-> > after the for loop is finished. This could allow errors to be swallowed.
+bhargav (3):
+  iio: frequency: ad9523: fix implicit variable usage in macros
+  iio: frequency: ad9523: avoid multiple line dereferences for pdata
+  iio: frequency: ad9523: fix checkpatch warnings for symbolic
+    permissions
 
-...
-
-> >  static int gp2ap020a00f_buffer_postenable(struct iio_dev *indio_dev)
-> >  {
-> >  	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
-> > -	int i, err = 0;
-> > +	int i, err;
-> >  
-> >  	guard(mutex)(&data->lock);
-> >  
-> > @@ -1400,15 +1378,15 @@ static int gp2ap020a00f_buffer_postenable(struct iio_dev *indio_dev)
-> >  
-> >  	data->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-> >  	if (!data->buffer)
-> > -		err = -ENOMEM;
-> > +		return -ENOMEM;
-> >  
-> > -	return err;
-> > +	return 0;
-> >  }
-> 
-> Looking over the code again it looks like 
-> gp2ap020a00f_buffer_postenable() contains the same bug you mentioned
-> where the error check should have been inside of the loop?
-> 
-> 
-> 	iio_for_each_active_channel(indio_dev, i) {
-> 		switch (i) {
-> 		case GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR:
-> 			err = gp2ap020a00f_exec_cmd(data,
-> 					GP2AP020A00F_CMD_TRIGGER_CLEAR_EN);
-> 			break;
-> 		case GP2AP020A00F_SCAN_MODE_LIGHT_IR:
-> 			err = gp2ap020a00f_exec_cmd(data,
-> 					GP2AP020A00F_CMD_TRIGGER_IR_EN);
-> 			break;
-> 		case GP2AP020A00F_SCAN_MODE_PROXIMITY:
-> 			err = gp2ap020a00f_exec_cmd(data,
-> 					GP2AP020A00F_CMD_TRIGGER_PROX_EN);
-> 			break;
-> 		}
-> 	}
-> 
-> 	if (err < 0)
-> 		goto error_unlock;
-> 
-> Just wanted to confirm before putting it in the v5.
-
-Good catch! So, these two should be split into a separate change explaining
-the change in behaviour.
+ drivers/iio/frequency/ad9523.c | 30 ++++++++++++++----------------
+ 1 file changed, 14 insertions(+), 16 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.53.0
 
