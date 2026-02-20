@@ -1,150 +1,121 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9816B343D91;
-	Fri, 20 Feb 2026 13:36:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7118A313281;
+	Fri, 20 Feb 2026 13:36:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771594584; cv=none; b=OBCga0gPlsvzf3RCOYZQXezo1vouBcvo/fy9IsaESXj8eZsvyu+0I8Vtp4SPcIp8R9+/mWYFkokUEarcPhFKblWqxXe3TAxf32u4QSHcbiVNwKM74Q+djsiHexWcz0pVwXVYBuqsSX23RC7Ui0u96Y4elhFyyyb3a69sr5hl7cA=
+	t=1771594591; cv=none; b=bbXtITJlDlpdGzACYk687lIB7NnSHmyxkPpXUDk40ZJxCijyOaGfHxAMbyDotlg4HSyQEMzVvTcBJOpphIerG2bs1TULYTuGH7/DJTHXjQEkjgnGADJlGmuPVDm/syCfgW87JhTXqO3YC9flqe/a7UM5tGbLn+9ZQ8WPZPcJAQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771594584; c=relaxed/simple;
-	bh=dMId3ZV9kqzUHPVu1T1WTkrU1f5ZyLlqLFUV3S1K8fM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=mpxfK5O5MA1KKibBKNDQ64ZxLl4MrfVRWkaSeLtA1synR/539XsTpIZSgF7CIbpJ1xxlUthbp8kBeDuf4qW37tm0+mP6YoagKGPxxIRSoCJw/i4cf9/yCXzhKTSvA90PtEwXppzXI6ilyllwfdXhJIF+TRJcJyfuZJSBOaVQ2is=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N4fuZX5I; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771594591; c=relaxed/simple;
+	bh=tvjTSm5uq0phtm17U41US3qFniV4o0D2UMNWuGab85s=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ozU05RQHdKQ2FE3WSMdGVju5L24lFc30xraxmq8IIJ+/m92WBReMReKls/IP9j66k2y99Y9hfLNx3+DzrqMzw+EPDYc+3WVxCstzK5eJAEyV3fDkS5pLusXysRWsKtEXGRa0OJs/5G9yLbidB6qXgJt26en20/+8J7Q7Mr+Q+eI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=eEAZhFxa; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N4fuZX5I"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 686D4C19421;
-	Fri, 20 Feb 2026 13:36:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771594584;
-	bh=dMId3ZV9kqzUHPVu1T1WTkrU1f5ZyLlqLFUV3S1K8fM=;
-	h=From:Date:Subject:To:Cc:Reply-To:From;
-	b=N4fuZX5Iu7eNACpyRg3r1cNaYF4JlCv9AZN94Mo8D3kLgEDECfK1pgqUzilCPa+or
-	 JxLHKvMwH0QeymPZaHvmNzasV9BdhAZyK7TaZbL0wmi683MndAXzoRFtPXLBCj9mps
-	 Pozu74Q9m3boyNqNiNWwFMw6oSo/CaJcWgaNZkCJJJPZSKO8dSBbuT4CbE8N1dFrmP
-	 amYSMQst/xs0Y2yXMs/s1bsbEr7Bm7btz3Tr+P+DBdX1CjlJBH61kVPH8+sEJwjlIs
-	 C5nIfObsXMdZ1ddLR/YsnEsktd2e7ImJMKgJbc3zHhGugTuiUa/w9PFuPSuxfeGF6b
-	 DIBopJghhwaBA==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAE9C54FD3;
-	Fri, 20 Feb 2026 13:36:23 +0000 (UTC)
-From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Date: Fri, 20 Feb 2026 15:36:17 +0200
-Subject: [PATCH] iio: imu: adis: Fix NULL pointer dereference in adis_init
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="eEAZhFxa"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61K87J9L631937;
+	Fri, 20 Feb 2026 08:36:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=GDV6eVr9yc7gtIK8NHtJXDs0sb1
+	vbv8Aoz24IzbB0tk=; b=eEAZhFxaRyWxYGOv9lXTdEj/MJT0KfrHz/VHHPhO78P
+	Ebs5wDPA9zZa2KuoSKLugZulIaLMMgqhh1DDL98EtzvBJWzD9fhDqH8hLtbpPhOi
+	UiiuxS1DlvaRJci3F7RCNY4xtCaFH5GIIN9T4N5bWFo0aC1daBDhsZvTx7LI7BXd
+	Gn+9N70Ghm3mwEOOMvYS7G4bUN8pnXmTtv7zRrjRpztgV+zSBoqA7ebwmxV2heeS
+	7FY6xIs8fn6EynTpdjirQ+56J4ICebSWfJ21xI1cZPcWVIYbIACoKHkBhxQL2ye5
+	jEhZlI7Jg5ptFhJ5JdV2dCrn+uGmSRiAPAmbbBhWKEg==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4ced6fa9rm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 20 Feb 2026 08:36:15 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61KDaEJr002400
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 20 Feb 2026 08:36:14 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 20 Feb 2026 08:36:14 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Fri, 20 Feb 2026 08:36:14 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 20 Feb 2026 08:36:14 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61KDa2Q2010396;
+	Fri, 20 Feb 2026 08:36:04 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "David
+ Lechner" <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Antoniu Miclaus
+	<antoniu.miclaus@analog.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/5] iio: remove redundant else after return
+Date: Fri, 20 Feb 2026 15:33:29 +0200
+Message-ID: <20260220133337.85216-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260220-adis-fix-v1-1-9fa10cce812f@analog.com>
-X-B4-Tracking: v=1; b=H4sIAFBjmGkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDIyMD3cSUzGLdtMwKXUNz8+REAxMD0xSLRCWg8oKiVKAw2Kjo2NpaAHI
- rlHRaAAAA
-X-Change-ID: 20260220-adis-fix-177ca0405d8a
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Robert Budai <robert.budai@analog.com>, 
- Antoniu Miclaus <antoniu.miclaus@analog.com>, 
- Ramona Gradinariu <ramona.gradinariu@analog.com>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Radu Sabau <radu.sabau@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1771594577; l=3182;
- i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
- bh=kI9J4huE67pPn8S62AKdcWN4aDigHYDhih5UlDtH0k0=;
- b=ZXARvjyJBgjz2RcOFZjWD6TZfC3HJXy6WSBHXtA3RpnFyh1ztKAsMTMEF9bVX3Wg8CfrqDTKV
- tf1LGmXCHgZDfhSj4ntdlyCnoMFS3EjUG29tEMK7TYyM/ivT4ocS8ac
-X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
- pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
-X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
- auth_id=642
-X-Original-From: Radu Sabau <radu.sabau@analog.com>
-Reply-To: radu.sabau@analog.com
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: 6lQuvpHZ6AmzXFP1OYvNY829H-rLC5cG
+X-Authority-Analysis: v=2.4 cv=fPg0HJae c=1 sm=1 tr=0 ts=6998634f cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
+ a=GgsMoib0sEa3-_RKJdDe:22 a=OBryuAIN34OxiQJIbK4A:9
+X-Proofpoint-GUID: 6lQuvpHZ6AmzXFP1OYvNY829H-rLC5cG
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIwMDExOCBTYWx0ZWRfX89RWmYvRIIEn
+ 872/dpvowxL7G76XBKhSGMXrxPJmp4SceArNUqtfrwvTC4erk7DfA4PjdjAVX8lVEktDFMD00mh
+ U6Y1F2IdeAFHpsVrjclPPtTWoCzT1zeRrFV/TqqDmAx2QrzWPf0QP3LWx53YOVnNrV2DReC7CcN
+ CBC/4HiF8paAGs94bKOgQSH4HJFWTGfNWAtVVXWz76VRz8+PWFjwPXGF8gxN3uRRUaIUv+qzON3
+ MA51997h90xgNIhOdKmkyltgEiKQqHKy+J/OIHoyvabesxXcYsGs0bF/LlNrbIGQjq/KnjXJZvs
+ yLJqC0A3mcXnBM+6hpiUymgFmgJAue30Lj2jqCREBs1WL/eDaMbiuyETj/L6fXxKUBhqZ7CRxhu
+ zGuRBGvl56Ysq+mXCzRHLeQdD2uCWygbG/woYYtISNeuJmo4X88tFTITf0Ajx+RaKCfZ2RQBf6S
+ hrmglEeRjmVs4GaGa9g==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-20_01,2026-02-20_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 impostorscore=0 adultscore=0 suspectscore=0 clxscore=1015
+ bulkscore=0 phishscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602200118
 
-From: Radu Sabau <radu.sabau@analog.com>
+Remove redundant else branches after return statements across several
+IIO drivers (ad7298, ad7606, ad5592r, ad5758, admv8818) to simplify
+control flow.
 
-The adis_init() function dereferences adis->ops to check if the
-individual function pointers (write, read, reset) are NULL, but does
-not first check if adis->ops itself is NULL.
+Antoniu Miclaus (5):
+  iio: adc: ad7298: remove redundant else after return
+  iio: adc: ad7606: remove redundant else after return
+  iio: dac: ad5592r-base: remove redundant else after return
+  iio: dac: ad5758: remove redundant else after return
+  iio: filter: admv8818: remove redundant else after return
 
-Drivers like adis16480, adis16490, adis16545 and others do not set
-custom ops and rely on adis_init() assigning the defaults. Since struct
-adis is zero-initialized by devm_iio_device_alloc(), adis->ops is NULL
-when adis_init() is called, causing a NULL pointer dereference:
+ drivers/iio/adc/ad7298.c       | 4 ++--
+ drivers/iio/adc/ad7606.c       | 4 ++--
+ drivers/iio/dac/ad5592r-base.c | 4 ++--
+ drivers/iio/dac/ad5758.c       | 6 +++---
+ drivers/iio/filter/admv8818.c  | 4 ++--
+ 5 files changed, 11 insertions(+), 11 deletions(-)
 
-    Unable to handle kernel NULL pointer dereference at virtual
-    address 0000000000000000
-    pc : adis_init+0xc0/0x118
-    Call trace:
-     adis_init+0xc0/0x118
-     adis16480_probe+0xe0/0x670
-
-Fix this by checking if adis->ops is NULL before dereferencing it,
-falling through to assign the default ops in that case.
-
-Fixes: 7f15d7a7d12d ("iio: imu: adis: Add reset to custom ops")
-Signed-off-by: Radu Sabau <radu.sabau@analog.com>
----
-adis_init() dereferences adis->ops to validate its function pointers
-  before checking whether adis->ops itself is NULL. Drivers that rely on
-  the default ops (adis16480, adis16490, adis16545, among others) never
-  set adis->ops prior to calling adis_init(), so the field is NULL due to
-  zero-initialisation by devm_iio_device_alloc(). The result is a kernel
-  crash on probe:
-
-      Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
-      Hardware name: Raspberry Pi 5 Model B Rev 1.0 (DT)
-      pc : adis_init+0xc0/0x118
-      lr : adis_init+0x50/0x118
-      Call trace:
-       adis_init+0xc0/0x118
-       adis16480_probe+0xe0/0x670
-       spi_probe+0x8c/0xf8
-       really_probe+0xc4/0x2b0
-
-  The bug was introduced in 7f15d7 ("iio: imu: adis: Add reset to custom ops")
-  which added the ops validation logic without a prior NULL check
-  on the pointer itself.
-
-  The fix is a one-line addition of !adis->ops to the condition, so that
-  a NULL ops pointer is treated the same as an ops struct with all-NULL
-  function pointers, both falling through to the default ops assignment.
-  The validation path for partially-populated custom ops structs is
-  unchanged.
-
-  Tested on Raspberry Pi 5 with adis16545-3 connected over SPI. Without
-  the fix the kernel crashes at adis_init+0xc0. With the fix the driver
-  probes successfully and the device is accessible via the IIO subsystem.
----
- drivers/iio/imu/adis.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-index d160147cce0b..e68bc1c36ed1 100644
---- a/drivers/iio/imu/adis.c
-+++ b/drivers/iio/imu/adis.c
-@@ -526,7 +526,7 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
- 
- 	adis->spi = spi;
- 	adis->data = data;
--	if (!adis->ops->write && !adis->ops->read && !adis->ops->reset)
-+	if (!adis->ops || (!adis->ops->write && !adis->ops->read && !adis->ops->reset))
- 		adis->ops = &adis_default_ops;
- 	else if (!adis->ops->write || !adis->ops->read || !adis->ops->reset)
- 		return -EINVAL;
-
----
-base-commit: 8bf22c33e7a172fbc72464f4cc484d23a6b412ba
-change-id: 20260220-adis-fix-177ca0405d8a
-
-Best regards,
 -- 
-Radu Sabau <radu.sabau@analog.com>
-
+2.43.0
 
