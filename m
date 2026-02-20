@@ -1,43 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EDF419D07A;
-	Fri, 20 Feb 2026 10:37:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 642B63314C4;
+	Fri, 20 Feb 2026 10:37:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771583832; cv=none; b=r/jpViDikUvNu8ozt/X+r3q3/LDxohRO9Hyhef6LigsXcz779t2OuFT8lbR2NBtNzyQJGFTevZTI8E+Tgv4xnE0DQ9LNgscJNkGcHPRQDX++kI2n9Y6YvkfMPZF5ajbdDMgMILK+zrCrofn/aQdGa0HY+e4FM2qtMESeKDy4LoU=
+	t=1771583876; cv=none; b=HkRWypb2ThOXuDhGIfarKY87FSw5iqvGYCvLLSftsDdMe7sQoiiNxXnfJSe+NxSCwvY49g3/RS8tppM8efjepei7LWyGID++6U0G4w6F/0eN6ZVCNQk3HHtDV2uJmUXoE353Iqw2KCnjkxcCi94l+/MxcuNX7NjgJR+K6zRykBU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771583832; c=relaxed/simple;
-	bh=CcOvDfx8ZPkM3O9CYT74vSNWqQifKiKPaPemsVk3cT4=;
+	s=arc-20240116; t=1771583876; c=relaxed/simple;
+	bh=XUzizJeszt9o9lm8mIzInNTxAR55zKLGCV8e73yIPjk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EAXsZs9dp6UKDdOg8aBbtk1rWDYcQhqChF6eDkDC11czJiZg/HeKvnnBc4guxrt0ZPOkjj/vhKwkqmdyrhlk0UwIfXi6FmfQMZaB5/gL98IBq+kwAIhnynHNek1ahrhKkr9Gg3hh454KBl2Ef5j6Txmd/BiHLmgxOJ3DUwkIXks=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CnibrK+o; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=QkUdK0qLaQ0Jk8JD8Q0ZtfcHOfPWd5sOzJGd+255p2hex0ws1Ln7bI6yUOfRcSdVUpIUGh9fzV8BCiWwmrJ6UYC9dSJSFVA2dUVLQc/sqtN0FmN8R46LMwbKppvLo8ButzALq+eqELs1sGsTE/Vs6yFlBUeaBellBBmJTGhZzQ0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qZL9jWzA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CnibrK+o"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4BDA3C116C6;
-	Fri, 20 Feb 2026 10:37:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qZL9jWzA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09C20C116C6;
+	Fri, 20 Feb 2026 10:37:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771583831;
-	bh=CcOvDfx8ZPkM3O9CYT74vSNWqQifKiKPaPemsVk3cT4=;
+	s=k20201202; t=1771583876;
+	bh=XUzizJeszt9o9lm8mIzInNTxAR55zKLGCV8e73yIPjk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CnibrK+oVGgdViBSisrEGlNZijCiGVk2d96S4EtfwBk1gPVArQXfhT5Znt0kGUbRd
-	 S+3WpnjkURrDoADr30Gck3B8dqU2HTzaDYPNsLQcQZSAzqMYjgCz0KJ4IhyoQSHJ/j
-	 iynp4ir7XUo1mGE1lLW4kVoIVpWL5kGHR0eA9/yZcNB6UuJhrEUjWmBynqRow3tYpp
-	 kaj2njQbta2ty++FKic0p5WNaO5+E5NJ8siLEfU6HTgTfzyBwTCZv9EjcsWvGIJBIK
-	 1j3ABKwl0ol7v+D01mol8It3xUv1uMVBPjWlsH65K8+Vn59hAZVGNmKIN5l9K4XDFi
-	 YjLa4L+Ugxebg==
-Date: Fri, 20 Feb 2026 10:37:00 +0000
+	b=qZL9jWzA+w0/o3nVIqT+OnPK9UNkGnu2TgVWV8jUlzxT4HEKpwuGB41Ao4edG8Ysr
+	 Ozvm/Ln2LMJC8RhDRuDwOT0RmqHJkntWedMVSVzuBz7GeB6JuzaqmNJgwl0OYq1+Ct
+	 W9xyEtbOrHcM13OhMGiYT9c1lX2ws/LBaG5eZ4WLEK8RsQBot5usG1xKePLqYymUxQ
+	 ID9F58Tx/qsQtbW/WHn82YulRWvYPKgJUqHTvNO2Sxb1SmikO7bHWrOh4PVwkvjgcU
+	 foEel+jqAF6oojpFv2kDSbEjN2xbMdGQmexAb48DuiN365KwuLAY9eOBRsT/ClDvIl
+	 JCCNeA5fr0jYA==
+Date: Fri, 20 Feb 2026 10:37:36 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Neel Bullywon <neelb2403@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
- <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v7 2/3] iio: magnetometer: bmc150_magn: replace msleep
- with fsleep
-Message-ID: <20260220103700.5acd36c2@jic23-huawei>
-In-Reply-To: <20260216015454.61836-3-neelb2403@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Neel Bullywon <neelb2403@gmail.com>, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 3/3] iio: magnetometer: bmc150_magn: minor formatting
+ cleanup
+Message-ID: <20260220103736.70639aa8@jic23-huawei>
+In-Reply-To: <aZLWu_7ozsmUZbtg@smile.fi.intel.com>
 References: <20260216015454.61836-1-neelb2403@gmail.com>
-	<20260216015454.61836-3-neelb2403@gmail.com>
+	<20260216015454.61836-4-neelb2403@gmail.com>
+	<aZLWu_7ozsmUZbtg@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,44 +49,27 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 15 Feb 2026 20:54:53 -0500
-Neel Bullywon <neelb2403@gmail.com> wrote:
+On Mon, 16 Feb 2026 10:35:07 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Replace msleep(5) with fsleep(5 * USEC_PER_MSEC) to allow the kernel
-> to select the most appropriate delay mechanism based on duration.
-> Using USEC_PER_MSEC makes the unit conversion explicit.
+> On Sun, Feb 15, 2026 at 08:54:54PM -0500, Neel Bullywon wrote:
+> > Improve initializer list style for bmc150_magn_samp_freq_table by
+> > moving the opening brace to its own line and using one entry per line
+> > with proper indentation and spaces inside braces.
+> > 
+> > Add spaces inside braces for initializer lists in the preset table
+> > for consistency.
+> > 
+> > Fix indentation of bmc150_magn_scan_masks array. No functional changes.  
 > 
-> Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
+> LGTM, FWIW,
 > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
 
-This is independent of patch 1, so I'll pick it up now.
-Please base next version of patch 1 on top of the testing branch
-of iio.git (or just reorder the patches locally and only post
-that one for v8!)
+This is also independent of patch 1 so I've picked it up now.
 
-Applied to the testing branch of iio.git.  Note I'll rebase
-that on rc1 sometime next week and then it'll go out for linux-next
-to pick up.
+Applied to the testing branch of iio.git
 
 Thanks,
 
 Jonathan
-> ---
->  drivers/iio/magnetometer/bmc150_magn.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-> index ff6196c86e6b..e7f8d118242b 100644
-> --- a/drivers/iio/magnetometer/bmc150_magn.c
-> +++ b/drivers/iio/magnetometer/bmc150_magn.c
-> @@ -683,7 +683,7 @@ static int bmc150_magn_init(struct bmc150_magn_data *data)
->  	 * 3ms power-on time according to datasheet, let's better
->  	 * be safe than sorry and set this delay to 5ms.
->  	 */
-> -	msleep(5);
-> +	fsleep(5 * USEC_PER_MSEC);
->  
->  	ret = bmc150_magn_set_power_mode(data, BMC150_MAGN_POWER_MODE_SUSPEND,
->  					 false);
-
-#
