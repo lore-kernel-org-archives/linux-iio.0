@@ -1,139 +1,98 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 019D53382EC;
-	Fri, 20 Feb 2026 11:05:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AD85341654;
+	Fri, 20 Feb 2026 11:05:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771585509; cv=none; b=Gxo8BZ6tAnNfEbaiFTHLRzbBjBXP5SoxKJVPTddOXejmGEKo4xaBh7utfKj8FmdunmUYyAwQijyw+kZaiHP3SNN+fctfcFm1Jqz9AE5ebJDEax+ARrKdN4Ns5xeEEHhdcYTxVKz2sq/Ck/l4MK+/QWLvZZrwmZWHYkssEr9wEMM=
+	t=1771585512; cv=none; b=EooBxhwb59Gmk9Yuv7e6lZyBhbdk/VLffI4PV+HzVUuWoKPnfcNcc3UvXjKwBPA7c+bP/GM6e39THQeS9/Is5QL1h8c2GvcP9Bkcl8A7ZGc7jplyhTy/iQS7FY/ydkt/2FjTpxv1xetpPPoWtR2ns6B6APwTayZOqpcofxWXHB8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771585509; c=relaxed/simple;
-	bh=EyASrblwRuoIRhf3qMO8oB6Buse1cw1nyRtXw6SnXZ4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=s/c46/fcfZUIk14b2TpiENtxZMla3YoaWiZ7bUTj4DOyVQE25sa4vH2Q0PCndyKk6bKyOoFB7tdhSgX2y+TONMCEjDOfy9T41xlod/zQrWcFx8H+8Lt2mZX85XnesvCxlRPHJiEhHpe31Une1ceRLow8jHdyVmy7IkK2FeEE4Oc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=frZxePja; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771585512; c=relaxed/simple;
+	bh=CJvh3c65/vnvwWbY4d5rHHjRzVOL+joh43OL8JXb/OY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=aqcqRDrP5VSPm9W9ZXsDtxLr62D3RNt/C3MJwEbsBxf31DKnljry7B2X/oVGprvlNCcOK/fILAXawlesfSC2glJR708HxY/g0WQw0i04ae27UqoRzwp0rRAybXQJ8wiZsy+1rqPiO3YJxkbBsgDaBpDeCnpAlwaGpmljWi6aDr0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jSiAX+Bv; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="frZxePja"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6EBFC116C6;
-	Fri, 20 Feb 2026 11:05:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771585508;
-	bh=EyASrblwRuoIRhf3qMO8oB6Buse1cw1nyRtXw6SnXZ4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=frZxePjazzVK7GKGkda4BmMbNywBgoZA/M6vbdPhQu9IXOdX+YQP1Ar55qmjPeeRG
-	 ntru1usUDCoIPM0hPP41bc/B/UyXWjLSAxqaMRJa7mkVUNEqzs7G+00e6GbyklIkWV
-	 uqUKxjVGdW6LxElWCedJaV6KKwkZIVoRdPeDjnpCrtSEhsls/vD787lTxugrbxDzVI
-	 KLup56d7eScQpCXELisQEovS/WShpdeRqeB9P8JQtCklsTt6VF6qPHBlqFxD7l9Fkx
-	 nQo1rmIQXaceDLkF9HS9t4lx3X242g1c8H6wVy7x5Rr9CwOMX4/E5ltnxXsYg2PTbF
-	 ccis8E8lZSi+w==
-Date: Fri, 20 Feb 2026 11:04:59 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Andy
- Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v3] iio: dac: max5522: simplify probe with
- devm_regulator_get_enable_read_voltage()
-Message-ID: <20260220110459.2c11f1ff@jic23-huawei>
-In-Reply-To: <20260216131714.90508-2-antoniu.miclaus@analog.com>
-References: <20260216131714.90508-2-antoniu.miclaus@analog.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jSiAX+Bv"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771585510; x=1803121510;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=CJvh3c65/vnvwWbY4d5rHHjRzVOL+joh43OL8JXb/OY=;
+  b=jSiAX+BvLVuZluuqzObnKDpqgxVTcIU68yjLR669Kkb31Aevj3H8R+TC
+   EQmi3EIL5UZq9NgwJTgtK1a9QDHlsZ60plxqpz7xJ5Qm6D+OgEEjcQ9vX
+   JG5v51VGb2tfXDIEHpEaFHKQTL0BDCrGllxH3TEDNnW3D5fwMbMq3yOX2
+   vw7qzxKmZ+qeiiVYq9/dOn8MrDVbsH8bkbZhk9dpNUizd5AQyTIQlLQQ7
+   n69WWDtXOGhoR9OmCkXEK+L/aPVF/0RZ/5gZ6J+x2Xhs0c2KUXim9RyzV
+   fAwQ7K2RXu3vg/j9rE9fwNKYyIpa5DtouOmUz1ks+GH4YSayEvnYNuheP
+   w==;
+X-CSE-ConnectionGUID: q7QFQxU1Qs61F9qsFvwqmQ==
+X-CSE-MsgGUID: D0fY6uEiR+Gj1tErSrbqvw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11706"; a="72853509"
+X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
+   d="scan'208";a="72853509"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 03:05:10 -0800
+X-CSE-ConnectionGUID: tIMLGw3uSFu5q/5CMbs3Kg==
+X-CSE-MsgGUID: dtt+2mBsQzSiR3QZPdsw/w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
+   d="scan'208";a="219369995"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 03:05:06 -0800
+Date: Fri, 20 Feb 2026 13:05:04 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Cameron <jonathan.cameron@huawei.com>,
+	Alisa-Dariana Roman <alisa.roman@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: Re: [PATCH v1 1/1] iio: adc: ad7192: Revert "properly check
+ spi_get_device_match_data()"
+Message-ID: <aZg_4KQ6hDqBeSJw@smile.fi.intel.com>
+References: <20260217080514.1288115-1-andriy.shevchenko@linux.intel.com>
+ <aebc2f13040d97e6e3b9797d3fa580198125e3f5.camel@gmail.com>
+ <aZSD-3WIVwT6XYWX@smile.fi.intel.com>
+ <a823c9b72fcc3b1d88ff9dd93580be6241826153.camel@gmail.com>
+ <aZWI-80-K7xfuEBY@smile.fi.intel.com>
+ <20260218095820.00005750@huawei.com>
+ <20260220105507.30a2f7ec@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260220105507.30a2f7ec@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, 16 Feb 2026 15:17:05 +0200
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+On Fri, Feb 20, 2026 at 10:55:07AM +0000, Jonathan Cameron wrote:
+> On Wed, 18 Feb 2026 09:58:20 +0000
+> Jonathan Cameron <jonathan.cameron@huawei.com> wrote:
 
-> Simplify probe by using devm_regulator_get_enable_read_voltage() to
-> get, enable and read the regulator voltage in a single call, caching
-> the value at probe time.
-> 
-> The reference voltage for this DAC is a fixed hardware configuration
-> that is not expected to change at runtime, so reading it once during
-> probe and caching the millivolt value is sufficient.
-> 
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Applied.  Thanks,
+...
 
-Jonathan
+> Applied.  I also added a link tag to this thread, to say we had
+> agreed to make it policy in IIO to not have these checks.
 
-> ---
-> Changes in v3:
->  - change vref_mV type from unsigned short to int to avoid potential
->    precision loss
->  - update commit message to clarify why caching voltage at probe is
->    sufficient
-> 
->  drivers/iio/dac/max5522.c | 22 +++++++---------------
->  1 file changed, 7 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/max5522.c b/drivers/iio/dac/max5522.c
-> index 1b8fe6b8d26e..b52a9cc1da79 100644
-> --- a/drivers/iio/dac/max5522.c
-> +++ b/drivers/iio/dac/max5522.c
-> @@ -14,6 +14,7 @@
->  #include <linux/regulator/consumer.h>
->  #include <linux/slab.h>
->  #include <linux/spi/spi.h>
-> +#include <linux/units.h>
->  
->  #include <linux/iio/iio.h>
->  
-> @@ -34,7 +35,7 @@ struct max5522_state {
->  	struct regmap *regmap;
->  	const struct max5522_chip_info *chip_info;
->  	unsigned short dac_cache[2];
-> -	struct regulator *vrefin_reg;
-> +	int vref_mV;
->  };
->  
->  #define MAX5522_CHANNEL(chan) {	\
-> @@ -79,17 +80,13 @@ static int max5522_read_raw(struct iio_dev *indio_dev,
->  			    int *val, int *val2, long info)
->  {
->  	struct max5522_state *state = iio_priv(indio_dev);
-> -	int ret;
->  
->  	switch (info) {
->  	case IIO_CHAN_INFO_RAW:
->  		*val = state->dac_cache[chan->channel];
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
-> -		ret = regulator_get_voltage(state->vrefin_reg);
-> -		if (ret < 0)
-> -			return -EINVAL;
-> -		*val = ret / 1000;
-> +		*val = state->vref_mV;
->  		*val2 = 10;
->  		return IIO_VAL_FRACTIONAL_LOG2;
->  	default:
-> @@ -147,16 +144,11 @@ static int max5522_spi_probe(struct spi_device *spi)
->  	if (!state->chip_info)
->  		return -EINVAL;
->  
-> -	state->vrefin_reg = devm_regulator_get(&spi->dev, "vrefin");
-> -	if (IS_ERR(state->vrefin_reg))
-> -		return dev_err_probe(&spi->dev, PTR_ERR(state->vrefin_reg),
-> -				     "Vrefin regulator not specified\n");
-> -
-> -	ret = regulator_enable(state->vrefin_reg);
-> -	if (ret) {
-> +	ret = devm_regulator_get_enable_read_voltage(&spi->dev, "vrefin");
-> +	if (ret < 0)
->  		return dev_err_probe(&spi->dev, ret,
-> -				     "Failed to enable vref regulators\n");
-> -	}
-> +				     "Failed to get vrefin regulator\n");
-> +	state->vref_mV = ret / (MICRO / MILLI);
->  
->  	state->regmap = devm_regmap_init_spi(spi, &max5522_regmap_config);
->  
+Thanks!
+
+Do we still need a process/maintainer-iio.rst?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
