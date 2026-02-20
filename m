@@ -1,134 +1,204 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 713A8346A05;
-	Fri, 20 Feb 2026 13:19:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C78621CC58;
+	Fri, 20 Feb 2026 13:29:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771593559; cv=none; b=pXCtl5kXwvOLNyP3sAt9SjEfVkjdU7mw+xijkrzzhu1S9tQX3j6igWYIfo6z1DkBhiVPMPKquT2eq7+A6Op/W8sd8aLI6LMtYbfmPsRkU600S032kjkP9XKrakQDPAzZDk4+Uz6BQmA+QDUU5+qpdqcSI1VU+rSeYnm+rAM4Ae8=
+	t=1771594168; cv=none; b=LSRtKq9vJ+k9UMN1S4VJ/uI/fw6ee9XUBR3m1swD9qaAZnPXHWr+u7A7FqjXDLon+CEyMoMB0PKSDtvKzFVgShvoY5sErNHhsJYto9xDRYyKz7RXwviJwzhcVIbMfcOzcuTgYg9WW8ScdnNwDipCeutxaiWidOq3DFrcNCrw/fc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771593559; c=relaxed/simple;
-	bh=+kW43sbRnDwsi/EE16n0LQdGU7Dk9YRZeN/6MDenzqk=;
-	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cI9035jb//1O4+rKTOOQ4fqdxevrtpB5AZdQs08VCFFZpKBLkfIbfpEml/MTMt+rYjWT/7POqRrxKboSWziETsBK79noGy8tNAaISqgJUI9KUOJ7KOZ5YF5d6LqSqsSdHjAuSLlKllly36dnmz4wLyg0rEYXmUWf5fJjyw2vtGQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=b+zRli1v; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1771594168; c=relaxed/simple;
+	bh=AQjZXXatpHZSStwTlIQJE4Gi7G56uTODReuyq+4fDXs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Dx+xiXZQP3Or5pekyxpYwXpTUUaDm6qpLkN3fdWQ9cw0OCZWIbA/KnSNcstPB3bMNXoNgvDlhvbdrwfFiRJEXJWN+Mtpd7IKeuhp1h3lQmnCzq3MDe5AaNHrCEvqkbxDv52EqdAHp7up+jmcU/5zRUWMTZ2DnKoCCY74KhQUxdc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mPREUoJK; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="b+zRli1v"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61K87H173823412;
-	Fri, 20 Feb 2026 08:19:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=Dkjtn
-	mXjsJ2aKKVifkwvZNRCXm2uh8j+ijqqq31l4AE=; b=b+zRli1vjKbIE6hd+26bK
-	rWtjk52NFiphwLj5Ac3crUrRYkLdKbM+J/pJ/5Hg9hKwORE44hTango/mIt3msMb
-	RjsBzmsOq7wLc737FnD/IFNuBW+6cqL8lpNoDU412HQBH3zcC6jnBktE7BXDArI6
-	keDhco9F8/aBfTiO0G0C8MYvg91OzNHDNBhlPLLJtstho/qlCAbJvzVxgOx4cwHT
-	E9ygGJ9lvqnxpV4Xg/rs20nLkVhxsYbmSFOjP6BtZ+DXo7qppW78O1rjHimLu42L
-	kfxJkwus2sTvggshar+IYt1fyghVi9Mw7mJYTj8BRRJPFUjg6qzICyQS/8Xwhmwg
-	g==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ce0xvw1aa-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 20 Feb 2026 08:19:04 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61KDJ3CN000444
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 20 Feb 2026 08:19:03 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 20 Feb 2026 08:19:03 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 20 Feb 2026 08:19:03 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 20 Feb 2026 08:19:03 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61KDInCx009733;
-	Fri, 20 Feb 2026 08:18:59 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "David
- Lechner" <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?=
-	<nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Cosmin Tanislav
-	<cosmin.tanislav@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH 2/2] iio: addac: ad74413r: simplify timeout return
-Date: Fri, 20 Feb 2026 15:18:47 +0200
-Message-ID: <20260220131847.76968-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260220131847.76968-1-antoniu.miclaus@analog.com>
-References: <20260220131847.76968-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mPREUoJK"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771594167; x=1803130167;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=AQjZXXatpHZSStwTlIQJE4Gi7G56uTODReuyq+4fDXs=;
+  b=mPREUoJKBAcZKuHS0s7DS3JrHIFAcgNNW9WBNu16yGD/Y285hHPRMlzm
+   bBW+OuHoYW4ygjlqZLAaIW9raBaWdDgjYVxtasB1taoAczlKWO7jU5TRf
+   6vd0tECM7UvraN7gsnSARNHjGU43rARuxnhFSrtZs1q7tapCSH0Qkolyg
+   WY5qaMS/LtOq7TX+QPv9AYCKsSJVjF+/JthxfuoJNjagzMhFZkEmk4/Ke
+   5cDzXB6eCAGWzubYrbVTlR85SMwoGtTohhuMRfiYT9JUeI4iH4fkZl7zD
+   BxenhP5Sd8OzoxxulFRjGZl5yat2vbX5YPio0hQ6CYk8Czq0abbjTMdhC
+   Q==;
+X-CSE-ConnectionGUID: Lq3bb5goRESwkYqcvLRMAQ==
+X-CSE-MsgGUID: 3fe/SFpZTgasUkryI/GhbQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="71710573"
+X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
+   d="scan'208";a="71710573"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:29:20 -0800
+X-CSE-ConnectionGUID: K5BslAP0QLmbdVDFb3QXQw==
+X-CSE-MsgGUID: jTqcqt1aSjubJLycJWsl5g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
+   d="scan'208";a="214703442"
+Received: from black.igk.intel.com ([10.91.253.5])
+  by orviesa009.jf.intel.com with ESMTP; 20 Feb 2026 05:29:17 -0800
+Received: by black.igk.intel.com (Postfix, from userid 1003)
+	id D9B8095; Fri, 20 Feb 2026 14:29:15 +0100 (CET)
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: [PATCH v2 1/1] iio: core: Simplify IIO core managed APIs
+Date: Fri, 20 Feb 2026 14:25:19 +0100
+Message-ID: <20260220132912.2392102-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.50.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=AeK83nXG c=1 sm=1 tr=0 ts=69985f48 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
- a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=siTM0RE-lesR_banQTkA:9
-X-Proofpoint-ORIG-GUID: MvWn2wJXagTzKa0iTGGKjbhunHRixJ9q
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIwMDExNiBTYWx0ZWRfX17kG4yinzTXL
- Lh/PZNh9pjiNnY1y5pAfk89Nqco6USt1imhLVexo90MrfvfCA88vk5M3YUewuhj2LtDjMIpOnNm
- vJ72INd+NpH8E1GEVqHC57PtQIP7ykkEyLkiWQBF2jWi0fNq87urkQJd4LSbaLCrnhnurlzJJ7X
- LhADJTPzmcArVL5bBFi/fhLzXcKTj1Fe/bXw0E2Oi7nbMTRNPGEfR8HitRVBDiagsrdegjfao3a
- +6Z9Ztai5IK9t2vASS03NxJvHJJi03TiElIXG649KkTZvkudrXYwMHj3at+PY5Je7pN99vLbYh1
- Y3jQdqN66HhdbBwXnXk+6bta3ONA+jaZsEvQJsfv3JGahz2bkMb1RysTBkEsr8CO+Sjc9Ibf8/Z
- n0eTN2YraPZ/IABjkaNCtrbWir4j3Ix5C/22/JhJMNvmbLuzd9/ednju3kN4K6jAqnNCxF9vnII
- gvrncBqIO5ZAYXePIFQ==
-X-Proofpoint-GUID: MvWn2wJXagTzKa0iTGGKjbhunHRixJ9q
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-20_01,2026-02-20_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 lowpriorityscore=0 impostorscore=0 malwarescore=0
- priorityscore=1501 bulkscore=0 suspectscore=0 adultscore=0 phishscore=0
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
- definitions=main-2602200116
 
-Return -ETIMEDOUT directly instead of assigning it to an intermediate
-variable first.
+Use devm_add_action_or_reset() instead of devres_alloc() and
+devres_add(), which works the same. This will simplify the
+code. There is no functional changes.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+While at it, inline devm_iio_kfifo_allocate() into its only user.
+
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/addac/ad74413r.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/addac/ad74413r.c b/drivers/iio/addac/ad74413r.c
-index a20b4d48c5f7..b1cf8a011277 100644
---- a/drivers/iio/addac/ad74413r.c
-+++ b/drivers/iio/addac/ad74413r.c
-@@ -841,10 +841,8 @@ static int _ad74413r_get_single_adc_result(struct ad74413r_state *st,
+v2: squashed some code (Jonathan), amended commit message & added tag (Nuno)
+
+ drivers/iio/buffer/kfifo_buf.c     | 39 ++++++++----------------------
+ drivers/iio/industrialio-trigger.c | 24 ++++++++----------
+ 2 files changed, 20 insertions(+), 43 deletions(-)
+
+diff --git a/drivers/iio/buffer/kfifo_buf.c b/drivers/iio/buffer/kfifo_buf.c
+index 38034c8bcc04..92ffe9131190 100644
+--- a/drivers/iio/buffer/kfifo_buf.c
++++ b/drivers/iio/buffer/kfifo_buf.c
+@@ -224,35 +224,9 @@ void iio_kfifo_free(struct iio_buffer *r)
+ }
+ EXPORT_SYMBOL(iio_kfifo_free);
  
- 	ret = wait_for_completion_timeout(&st->adc_data_completion,
- 					  msecs_to_jiffies(1000));
--	if (!ret) {
--		ret = -ETIMEDOUT;
--		return ret;
+-static void devm_iio_kfifo_release(struct device *dev, void *res)
++static void devm_iio_kfifo_release(void *r)
+ {
+-	iio_kfifo_free(*(struct iio_buffer **)res);
+-}
+-
+-/**
+- * devm_iio_kfifo_allocate - Resource-managed iio_kfifo_allocate()
+- * @dev:		Device to allocate kfifo buffer for
+- *
+- * RETURNS:
+- * Pointer to allocated iio_buffer on success, NULL on failure.
+- */
+-static struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev)
+-{
+-	struct iio_buffer **ptr, *r;
+-
+-	ptr = devres_alloc(devm_iio_kfifo_release, sizeof(*ptr), GFP_KERNEL);
+-	if (!ptr)
+-		return NULL;
+-
+-	r = iio_kfifo_allocate();
+-	if (r) {
+-		*ptr = r;
+-		devres_add(dev, ptr);
+-	} else {
+-		devres_free(ptr);
 -	}
-+	if (!ret)
-+		return -ETIMEDOUT;
+-
+-	return r;
++	iio_kfifo_free(r);
+ }
  
- 	ret = regmap_read(st->regmap, AD74413R_REG_ADC_RESULT_X(channel),
- 			  &uval);
+ /**
+@@ -266,6 +240,8 @@ static struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev)
+  * attaches it to the IIO device via iio_device_attach_buffer().
+  * This is meant to be a bit of a short-hand/helper function as there are a few
+  * drivers that seem to do this.
++ *
++ * Return: 0 on success, negative error code on failure.
+  */
+ int devm_iio_kfifo_buffer_setup_ext(struct device *dev,
+ 				    struct iio_dev *indio_dev,
+@@ -273,11 +249,16 @@ int devm_iio_kfifo_buffer_setup_ext(struct device *dev,
+ 				    const struct iio_dev_attr **buffer_attrs)
+ {
+ 	struct iio_buffer *buffer;
++	int ret;
+ 
+-	buffer = devm_iio_kfifo_allocate(dev);
++	buffer = iio_kfifo_allocate();
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
++	ret = devm_add_action_or_reset(dev, devm_iio_kfifo_release, buffer);
++	if (ret)
++		return ret;
++
+ 	indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
+ 	indio_dev->setup_ops = setup_ops;
+ 
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 54416a384232..00c8b7e5c8b9 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -634,9 +634,9 @@ void iio_trigger_free(struct iio_trigger *trig)
+ }
+ EXPORT_SYMBOL(iio_trigger_free);
+ 
+-static void devm_iio_trigger_release(struct device *dev, void *res)
++static void devm_iio_trigger_release(void *trig)
+ {
+-	iio_trigger_free(*(struct iio_trigger **)res);
++	iio_trigger_free(trig);
+ }
+ 
+ /**
+@@ -658,24 +658,20 @@ struct iio_trigger *__devm_iio_trigger_alloc(struct device *parent,
+ 					     struct module *this_mod,
+ 					     const char *fmt, ...)
+ {
+-	struct iio_trigger **ptr, *trig;
++	struct iio_trigger *trig;
+ 	va_list vargs;
+-
+-	ptr = devres_alloc(devm_iio_trigger_release, sizeof(*ptr),
+-			   GFP_KERNEL);
+-	if (!ptr)
+-		return NULL;
++	int ret;
+ 
+ 	/* use raw alloc_dr for kmalloc caller tracing */
+ 	va_start(vargs, fmt);
+ 	trig = viio_trigger_alloc(parent, this_mod, fmt, vargs);
+ 	va_end(vargs);
+-	if (trig) {
+-		*ptr = trig;
+-		devres_add(parent, ptr);
+-	} else {
+-		devres_free(ptr);
+-	}
++	if (!trig)
++		return NULL;
++
++	ret = devm_add_action_or_reset(parent, devm_iio_trigger_release, trig);
++	if (ret)
++		return NULL;
+ 
+ 	return trig;
+ }
 -- 
-2.43.0
+2.50.1
 
