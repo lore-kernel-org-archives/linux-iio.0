@@ -1,90 +1,81 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C04AA330672;
-	Fri, 20 Feb 2026 11:58:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE3E12405ED;
+	Fri, 20 Feb 2026 12:15:08 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771588703; cv=none; b=pOH2pU9ql6kC+zFXaESMbSTrtUv73s0nK7tw0B9vvKv7eQSjl27FspifPXXuO827EKQ+kWhbkkD1v9H9D7NahhOVoz+gMNHsVTvSAxGNvocsP+cTgMx0QPX6P9khBNqDRAUgPDYdCofOFzu1RCbg+u7Zujb0UoU5auvGy0zDZU4=
+	t=1771589708; cv=none; b=gLgUX4heJEIO9f5tsdrW8FDWkOeq8cs7w7kBNeBCI2HHAVCYgWWY5ptI5K2lBNQ5I5x5HrY+O8nFAqoHd/oWxofwGz8FZsCh+RQoOjgE7Jq+FP5OB22Og2tpgMhY37KahbuGxhMMmhhUWM6j5ON120Czq2Bbyw86LHglECbYvgw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771588703; c=relaxed/simple;
-	bh=zxJ10CPWNenVjOytvEp2o8sITibPES2ZbboQs8lwLBQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=BBX5bzApP6kgexD+vZhhAdoSTfi+zrJiBk2IN8IFhmIaD7hRRyFpvBIFU2xZXHTfIT1z3NuqgIXImXp/NzfnOBVzdzCx312+gxoSnRD7HcyJT+MFR5Od5COeEBKQBXGmdoxSWdGbsW2ZG13AmnSamff3ntb0EvF869PS+ZOS5Dw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=H3LBGCre; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771589708; c=relaxed/simple;
+	bh=0o9IW6EKqd4Vq8sUK5914JF6ZzNgkbx9lFcrfjsLYeg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=FlXUrQPcaycb5WZZzG5NNaSJXPbNGl6GZc4odsiZjYCoz60mZSSVVXOn2vP/NDQLfsIB3NtRb6Jb8ZS4OSDpwFotwBOUA9yAW8iDAp5OhOXra5YWDEza65sxkHO8BskewuEZ9dfnptCXW+4PoIMyT3l0w/FaF93ld+Uk0s6Jjtk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oOZwv5mw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="H3LBGCre"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9102BC116C6;
-	Fri, 20 Feb 2026 11:58:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oOZwv5mw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6FDCC116C6;
+	Fri, 20 Feb 2026 12:14:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771588703;
-	bh=zxJ10CPWNenVjOytvEp2o8sITibPES2ZbboQs8lwLBQ=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=H3LBGCre+QnYZCgpiFlnCLZlGip5xhDmJZJ4rJvQeDi9ffJQMQryqoMsmgbYgUgk9
-	 IqD9ySuu+lL+WTVhEMIx7BKkECAxKPjs1cDbDl7N9+Q5wm5OgXNWXs0gJMOWXwWQDA
-	 XfybsvujIGtqxp6wVRgAjyZbJhMIiWZj8SY1LZ/P3cnu2sziC/MXkH7tFyyz8PzAWq
-	 hLEF/z1hDqBNr7nak1jfAuv2KhrfTK5zqFrukEKil3oKvbEVouMUC7mMYB3htzCk9H
-	 MWxQQQTKPGIcWvbbmt9KuLKovkBazn4FPWNMi3otc10QQ2L98qgmV6tDzP1QVxMofn
-	 TOpVADeeelEEg==
-Message-ID: <23cd47a7-75a6-4ed7-af8e-c0ecedcda6ef@kernel.org>
-Date: Fri, 20 Feb 2026 12:58:16 +0100
+	s=k20201202; t=1771589708;
+	bh=0o9IW6EKqd4Vq8sUK5914JF6ZzNgkbx9lFcrfjsLYeg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=oOZwv5mwvpQQN4VQkUdCqusXpbBt7ESO0eqqIzhElruWRJ5RApq4QcWI45sujXb84
+	 etFZs1opKE7qutBadLCuURXzo8ElfrsGmhrjcXgPjKYEQw2n/kz1YW17L3gHMOHsTe
+	 mNfswUm3he0obQN8kkm0AZ+Nfeuq9UAE8hkS4haKeacr6a1riZtYWzOeTvHHzcb0MQ
+	 jAA9mUi79nd3XEco0R4hapGpS4EYGcjjlQukstx768FLzV4gzr5Dyu6X+P1zvwOpBU
+	 /gP/eVndL8VRDnlDLCeV3zUSokx2tJowONx0cj90eAYt+o0hdnyDU/G3/VLGFClfed
+	 6Fo/RhoFpwrRQ==
+Date: Fri, 20 Feb 2026 12:14:50 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio: core: Simplify IIO core managed APIs
+Message-ID: <20260220121450.74586f44@jic23-huawei>
+In-Reply-To: <CAHp75VdQufe2ANMm=FWvnGAfpe4Y-U_oocs-ax+tY39=z81g4A@mail.gmail.com>
+References: <20260216081412.1118599-1-andriy.shevchenko@linux.intel.com>
+	<20260220101844.17f3bc63@jic23-huawei>
+	<CAHp75VdQufe2ANMm=FWvnGAfpe4Y-U_oocs-ax+tY39=z81g4A@mail.gmail.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/5] Battery temperature ADC plumbing on Qualcomm
- platforms
-To: Luca Weiss <luca.weiss@fairphone.com>, Jonathan Cameron
- <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, "Rafael J. Wysocki" <rafael@kernel.org>,
- Daniel Lezcano <daniel.lezcano@linaro.org>, Zhang Rui <rui.zhang@intel.com>,
- Lukasz Luba <lukasz.luba@arm.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Laxman Dewangan <ldewangan@nvidia.com>,
- Bjorn Andersson <andersson@kernel.org>,
- Konrad Dybcio <konradybcio@kernel.org>, Jens Reidel <adrian@mainlining.org>,
- Casey Connolly <casey.connolly@linaro.org>
-Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
- devicetree@vger.kernel.org
-References: <20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com>
-From: Hans de Goede <hansg@kernel.org>
-Content-Language: en-US, nl
-In-Reply-To: <20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-Hi All,
+On Fri, 20 Feb 2026 12:27:40 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-On 20-Feb-26 10:19, Luca Weiss wrote:
-> This implements a solution to get battery temperature readings working
-> on (for example) smartphones with Qualcomm SoCs.
-> 
-> The solution chosen in downstream Qualcomm kernels is exposing
-> ADC_BAT_THERM_PU* in the ADC driver as temperature channels with the
-> lookup table ("struct vadc_map_pt") for the specific NTC found in a
-> device's battery patched to adjust the lookup table. Patching a kernel
-> per-device is obviously nothing we can put upstream.
-> 
-> The high level solution proposed here:
-> * ADC driver provides temperature channel in (milli)volt as IIO channel
-> * generic-adc-thermal driver converts voltage to temperature based on
->   provided lookup table from DT (driver has one IIO channel input, one
->   IIO channel output)
-> * The fuel gauge driver can use that temperature IIO channel to expose
->   battery temperature via the power supply device
+> On Fri, Feb 20, 2026 at 12:18=E2=80=AFPM Jonathan Cameron <jic23@kernel.o=
+rg> wrote:
+> > On Mon, 16 Feb 2026 09:14:12 +0100
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote: =20
+>=20
+> ...
+>=20
+> > This had me briefly confused as I failed to notice it was static
+> > (no idea why I gave such a simple internal function kernel-doc!)
+> >
+> > However that brings the obvious follow up question.  Given your
+> > simplification does having a helper make sense given only a single call=
+er?
+> >
+> > Let's just squash it and have the two calls inline + some resulting docs
+> > updates to get rid of the references to this function. =20
+>=20
+> Do you want to have this change inside the proposed patch? Or in a
+> separate (pre/post) one?
+Same patch would be fine I think.  It's small and coupled to the code
+getting simpler because of the main change here.  Seems like a pointless
+dance to refactor same code twice.
 
-Nice, I agree that this seems the best way forward, especially
-taking into account that the generic-adc-thermal driver now
-already supports the IIO -> IIO path case.
+Jonathan
 
-Regards,
-
-Hans
-
+>=20
 
