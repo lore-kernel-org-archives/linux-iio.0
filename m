@@ -1,138 +1,255 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D921C1DE3B7;
-	Fri, 20 Feb 2026 10:50:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F160B33DEFA;
+	Fri, 20 Feb 2026 10:51:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771584624; cv=none; b=j4eCe1Xnz8eUOb7WHS621Ng2XocTEbpG4GK4sBa2xYr737S38uP9hi2WcHHisXZKXz04/52dpaVl8JZt5IGx4kTgACfWlWIoaW+9Q9sboPSs4dfj5fU6KxKqHzeLeAa8wIVm8XBvjO5Fwb6p6Rgtj6dC9DuF4FGrYH2qV/TJcCs=
+	t=1771584677; cv=none; b=o1/Vzx6SuwR3V115WojrhK247gQ5yXLMUpGrDFRVdYl4I2gMVQ7ljy8j4bBm330+GWYE99rrGwVOjYC3aeVBRKC3iDG8Rw0rZNxxL8cDMGOhFB0SPsVJ+BiKcUyt8wTqFqi9+uz2xjRE5FPxvvABAAh1Vn7w+H9huh3DKZrOuK8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771584624; c=relaxed/simple;
-	bh=+UZBJw/BXCNSn9kcbG/zZMo2iDvH8/ZoMIB+O39xZM8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=oWHx9Nd6uWBoTQuUhhek0ALgzoeXzKzH8eNqXGEc550/tN5FPP4pW65yUo5TAo4QAXdldOpycARvhe20j0/SvJPW/B8YS9OlrZgpoi7uZEjdnMQz/fCIEnet9xMQOqEht7LjufTRiDHFqvDXRoFEJ66sSHhUdYkfjjrEbAPCyQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EoVp4+b3; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1771584677; c=relaxed/simple;
+	bh=JQBMZyX1vn8vTY4cAJ82bSj3kuQolH9qygZRULgtXKU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ij65kQWMymFCdsJfGQf72buCvm0GTGF72elUXG52c3r+UJggmqsCnN6lQEGyy3sYY7ZY+pp70g1YjtiQVICJcWMtb5uLQqO3H0yVvOCufz7mVSYzBSG2mKIUyN/1fveOQyO77e3/Z3RORlKJRrRAsWZyGeHE+DG6TyjGTYFI2+8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jMX3pLcb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EoVp4+b3"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771584623; x=1803120623;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=+UZBJw/BXCNSn9kcbG/zZMo2iDvH8/ZoMIB+O39xZM8=;
-  b=EoVp4+b3RYtGw2oXOFVxRk3qaWuMjIvYfwYhib7xLDaKn/WR4eyXfFQv
-   af+eRjp+t97yttcuXfafZnIm7qjHDHhdBV5tlNpnHL109pbt39fhtgIXy
-   TkBLDc9qrZjjWtmNRDzl/P2+cJrwqHLXKyF3qEzKm+aTo3uxler5xOMOe
-   TaNSeg/DLtZUX4Na02OUzUbv9b0nkm5GLMarc3smLkWe1lyOCmtie3G4h
-   9suui4yuI8r+BwXLj7KQn8dwnKlhHjcT+VAnhcUBAIa5ExNt4dU1SDAbB
-   gzYieiHxrbqkpcDE26Ev4IwCaGUArQLaGQr2YH9LiE2hjUvioMuEl7pdH
-   Q==;
-X-CSE-ConnectionGUID: eGQjVpJWRzy5arDN0DWavg==
-X-CSE-MsgGUID: 4h7vjWSaS0uAeO1/hYNaYA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11706"; a="60251129"
-X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
-   d="scan'208";a="60251129"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 02:50:22 -0800
-X-CSE-ConnectionGUID: SLG868wDSgSsOv3FEOMpsw==
-X-CSE-MsgGUID: izd9q49QRYWVWpK0SfUvGQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
-   d="scan'208";a="212602197"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 02:50:16 -0800
-Date: Fri, 20 Feb 2026 12:50:14 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Luca Weiss <luca.weiss@fairphone.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Laxman Dewangan <ldewangan@nvidia.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Hans de Goede <hansg@kernel.org>,
-	Jens Reidel <adrian@mainlining.org>,
-	Casey Connolly <casey.connolly@linaro.org>,
-	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] thermal/drivers/generic-adc: Allow probe without
- TZ registration
-Message-ID: <aZg8ZqckhGbvkdel@smile.fi.intel.com>
-References: <20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com>
- <20260220-bat-temp-adc-v2-3-fe34ed4ea851@fairphone.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jMX3pLcb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03C25C116C6;
+	Fri, 20 Feb 2026 10:51:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771584676;
+	bh=JQBMZyX1vn8vTY4cAJ82bSj3kuQolH9qygZRULgtXKU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=jMX3pLcbqSCUXdIH+rJJLJ2mbzGFjjMk7krQtIwLLnrRyVuKIbg2ecIWorhCa/ovg
+	 baAUFSGeqEB81spHkDoVYYTca/dRTmdFpOhcHnSum2AR8kOl9CKreZs/MT+ldgEd1g
+	 /aJ4URoAUcqREzFYQ78tzVQoYwQtB02xQiNF06LDV5Kwu2aWqRO4PdALNYEQF5ywoI
+	 5ZwaBmsOrBJUJNfZguOhjcodB80JB9/fkmxuzkyMmcy7ra/clJVKytcCTB6YQVDCcF
+	 lnPN5s+HzHSs8ytGlgWDMc0rp3HqqmJAZLdX/2kBFmu7/gCpTdcRhx8luRYqpR7E8Q
+	 KHZ6fFRsoC2cw==
+Date: Fri, 20 Feb 2026 10:51:07 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, Andrew Ijano <andrew.ijano@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Andy Shevchenko
+ <andriy.shevchenko@intel.com>
+Subject: Re: [PATCH next v2] iio: sca3000: simplify with
+ spi_get_device_match_data()
+Message-ID: <20260220105001.7fce6c3c@jic23-huawei>
+In-Reply-To: <20260216102453.1063866-1-harshit.m.mogalapalli@oracle.com>
+References: <20260216102453.1063866-1-harshit.m.mogalapalli@oracle.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260220-bat-temp-adc-v2-3-fe34ed4ea851@fairphone.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Fri, Feb 20, 2026 at 10:19:07AM +0100, Luca Weiss wrote:
-> If the devicetree node is not referenced in a zone under /thermal-zones,
-> devm_thermal_of_zone_register will fail with -ENODEV.
+On Mon, 16 Feb 2026 02:24:48 -0800
+Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com> wrote:
 
-devm_thermal_of_zone_register()
+> Refactor each sca3000 variant with it's own chip_info struct, update the
+> sca3000_probe() to use spi_get_device_match_data().
+> 
+> Suggested-by: David Lechner <dlechner@baylibre.com>
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 
-> Since the driver is now also registering as an IIO device[0], allow the
-> probe to continue without the thermal zone.
+I made a couple of white space tweaks whilst applying.
 
-Isn't it dangerous?
+Applied to the testing branch of iio.git.  There was quite
+a bit of fuzz (line changes) but was all straight forward.
 
-> We also can't use gadc_thermal_get_temp anymore because we haven't
+thanks,
 
-gadc_thermal_get_temp()
+Jonathan
 
-> necessarily initialized tz_dev.
+> ---
+> Only compile tested.
+> 
+> v1->v2: Andy suggested we drop a NULL check on
+> spi_get_device_match_data() failure. Also added Andy's RB.
+> ---
+>  drivers/iio/accel/sca3000.c | 127 +++++++++++++++++-------------------
+>  1 file changed, 59 insertions(+), 68 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
+> index d4c117f54a07..eeb313056259 100644
+> --- a/drivers/iio/accel/sca3000.c
+> +++ b/drivers/iio/accel/sca3000.c
+> @@ -172,6 +172,7 @@ struct sca3000_state {
+>  
+>  /**
+>   * struct sca3000_chip_info - model dependent parameters
+> + * @name:			name of the chip
+>   * @scale:			scale * 10^-6
+>   * @temp_output:		some devices have temperature sensors.
+>   * @measurement_mode_freq:	normal mode sampling frequency
+> @@ -194,6 +195,7 @@ struct sca3000_state {
+>   * sca3000 variant.
+>   **/
+>  struct sca3000_chip_info {
+> +	const char		*name;
+>  	unsigned int		scale;
+>  	bool			temp_output;
+>  	int			measurement_mode_freq;
+> @@ -208,69 +210,59 @@ struct sca3000_chip_info {
+>  	int			mot_det_mult_y[7];
+>  };
+>  
+> -enum sca3000_variant {
+> -	d01,
+> -	e02,
+> -	e04,
+> -	e05,
+> +static const struct sca3000_chip_info sca3000_chip_info_d01 = {
+> +	.name = "sca3000_d01",
+> +	.scale = 7357,
+> +	.temp_output = true,
+> +	.measurement_mode_freq = 250,
+> +	.measurement_mode_3db_freq = 45,
+> +	.option_mode_1 = SCA3000_OP_MODE_BYPASS,
+> +	.option_mode_1_freq = 250,
+> +	.option_mode_1_3db_freq = 70,
+> +	.mot_det_mult_xz = {50, 100, 200, 350, 650, 1300},
 
-> [0] commit 3762f5851ac5 ("thermal/drivers/thermal-generic-adc: Add temperature sensor channel")
+Trivial but whilst we are here, lets add spaces after { and before }
 
-You can make it a Link tag:
+> +	.mot_det_mult_y = {50, 100, 150, 250, 450, 850, 1750},
+>  };
+>  
+> -/*
+> - * Note where option modes are not defined, the chip simply does not
+> - * support any.
+> - * Other chips in the sca3000 series use i2c and are not included here.
+> - *
+> - * Some of these devices are only listed in the family data sheet and
+> - * do not actually appear to be available.
+> - */
+> -static const struct sca3000_chip_info sca3000_spi_chip_info_tbl[] = {
+> -	[d01] = {
+> -		.scale = 7357,
+> -		.temp_output = true,
+> -		.measurement_mode_freq = 250,
+> -		.measurement_mode_3db_freq = 45,
+> -		.option_mode_1 = SCA3000_OP_MODE_BYPASS,
+> -		.option_mode_1_freq = 250,
+> -		.option_mode_1_3db_freq = 70,
+> -		.mot_det_mult_xz = {50, 100, 200, 350, 650, 1300},
+> -		.mot_det_mult_y = {50, 100, 150, 250, 450, 850, 1750},
+> -	},
+> -	[e02] = {
+> -		.scale = 9810,
+> -		.measurement_mode_freq = 125,
+> -		.measurement_mode_3db_freq = 40,
+> -		.option_mode_1 = SCA3000_OP_MODE_NARROW,
+> -		.option_mode_1_freq = 63,
+> -		.option_mode_1_3db_freq = 11,
+> -		.mot_det_mult_xz = {100, 150, 300, 550, 1050, 2050},
+> -		.mot_det_mult_y = {50, 100, 200, 350, 700, 1350, 2700},
+> -	},
+> -	[e04] = {
+> -		.scale = 19620,
+> -		.measurement_mode_freq = 100,
+> -		.measurement_mode_3db_freq = 38,
+> -		.option_mode_1 = SCA3000_OP_MODE_NARROW,
+> -		.option_mode_1_freq = 50,
+> -		.option_mode_1_3db_freq = 9,
+> -		.option_mode_2 = SCA3000_OP_MODE_WIDE,
+> -		.option_mode_2_freq = 400,
+> -		.option_mode_2_3db_freq = 70,
+> -		.mot_det_mult_xz = {200, 300, 600, 1100, 2100, 4100},
+> -		.mot_det_mult_y = {100, 200, 400, 7000, 1400, 2700, 54000},
+> -	},
+> -	[e05] = {
+> -		.scale = 61313,
+> -		.measurement_mode_freq = 200,
+> -		.measurement_mode_3db_freq = 60,
+> -		.option_mode_1 = SCA3000_OP_MODE_NARROW,
+> -		.option_mode_1_freq = 50,
+> -		.option_mode_1_3db_freq = 9,
+> -		.option_mode_2 = SCA3000_OP_MODE_WIDE,
+> -		.option_mode_2_freq = 400,
+> -		.option_mode_2_3db_freq = 75,
+> -		.mot_det_mult_xz = {600, 900, 1700, 3200, 6100, 11900},
+> -		.mot_det_mult_y = {300, 600, 1200, 2000, 4100, 7800, 15600},
+> -	},
+> +static const struct sca3000_chip_info sca3000_chip_info_e02 = {
+> +	.name = "sca3000_e02",
+> +	.scale = 9810,
+> +	.measurement_mode_freq = 125,
+> +	.measurement_mode_3db_freq = 40,
+> +	.option_mode_1 = SCA3000_OP_MODE_NARROW,
+> +	.option_mode_1_freq = 63,
+> +	.option_mode_1_3db_freq = 11,
+> +	.mot_det_mult_xz = {100, 150, 300, 550, 1050, 2050},
+> +	.mot_det_mult_y = {50, 100, 200, 350, 700, 1350, 2700},
+> +};
+> +
+> +static const struct sca3000_chip_info sca3000_chip_info_e04 = {
+> +	.name = "sca3000_e04",
+> +	.scale = 19620,
+> +	.measurement_mode_freq = 100,
+> +	.measurement_mode_3db_freq = 38,
+> +	.option_mode_1 = SCA3000_OP_MODE_NARROW,
+> +	.option_mode_1_freq = 50,
+> +	.option_mode_1_3db_freq = 9,
+> +	.option_mode_2 = SCA3000_OP_MODE_WIDE,
+> +	.option_mode_2_freq = 400,
+> +	.option_mode_2_3db_freq = 70,
+> +	.mot_det_mult_xz = {200, 300, 600, 1100, 2100, 4100},
+> +	.mot_det_mult_y = {100, 200, 400, 7000, 1400, 2700, 54000},
+> +};
+> +
+> +static const struct sca3000_chip_info sca3000_chip_info_e05 = {
+> +	.name = "sca3000_e05",
+> +	.scale = 61313,
+> +	.measurement_mode_freq = 200,
+> +	.measurement_mode_3db_freq = 60,
+> +	.option_mode_1 = SCA3000_OP_MODE_NARROW,
+> +	.option_mode_1_freq = 50,
+> +	.option_mode_1_3db_freq = 9,
+> +	.option_mode_2 = SCA3000_OP_MODE_WIDE,
+> +	.option_mode_2_freq = 400,
+> +	.option_mode_2_3db_freq = 75,
+> +	.mot_det_mult_xz = {600, 900, 1700, 3200, 6100, 11900},
+> +	.mot_det_mult_y = {300, 600, 1200, 2000, 4100, 7800, 15600},
+>  };
+>  
+>  static int sca3000_write_reg(struct sca3000_state *st, u8 address, u8 val)
+> @@ -1469,10 +1461,9 @@ static int sca3000_probe(struct spi_device *spi)
+>  	st = iio_priv(indio_dev);
+>  	st->us = spi;
+>  	mutex_init(&st->lock);
+> -	st->info = &sca3000_spi_chip_info_tbl[spi_get_device_id(spi)
+> -					      ->driver_data];  
+> +	st->info = spi_get_device_match_data(spi);
+>  
+> -	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->name = st->info->name;
+>  	indio_dev->info = &sca3000_info;
+>  	if (st->info->temp_output) {
+>  		indio_dev->channels = sca3000_channels_with_temp;
+> @@ -1513,10 +1504,10 @@ static int sca3000_probe(struct spi_device *spi)
+>  }
+>  
+>  static const struct spi_device_id sca3000_id[] = {
+> -	{"sca3000_d01", d01},
+> -	{"sca3000_e02", e02},
+> -	{"sca3000_e04", e04},
+> -	{"sca3000_e05", e05},
+> +	{"sca3000_d01", (kernel_ulong_t)&sca3000_chip_info_d01},
+> +	{"sca3000_e02", (kernel_ulong_t)&sca3000_chip_info_e02},
+> +	{"sca3000_e04", (kernel_ulong_t)&sca3000_chip_info_e04},
+> +	{"sca3000_e05", (kernel_ulong_t)&sca3000_chip_info_e05},
+Similarly let's add some spaces to these.
 
-Link: https://git.kernel.org/torvalds/c/3762f5851ac5 [0]
-
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-
-...
-
->  	if (IS_ERR(gti->tz_dev)) {
->  		ret = PTR_ERR(gti->tz_dev);
-> -		if (ret != -EPROBE_DEFER)
-> -			dev_err(dev,
-> -				"Thermal zone sensor register failed: %d\n",
-> -				ret);
-> -		return ret;
-> -	}
-> +		if (ret == -EPROBE_DEFER)
-> +			return ret;
-
-I believe it's better to return all possible errors. If you see the
-similarities with regulator APIs, then use an explicit check for -ENODEV.
-
-> -	devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
-> +		dev_info(dev, "Thermal zone sensor register failed: %d\n",
-> +			 ret);
-> +	} else {
-> +		devm_thermal_add_hwmon_sysfs(dev, gti->tz_dev);
-> +	}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(spi, sca3000_id);
 
