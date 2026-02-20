@@ -1,78 +1,63 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AD7C347BB9;
-	Fri, 20 Feb 2026 13:43:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3AD2A35979;
+	Fri, 20 Feb 2026 13:56:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771594991; cv=none; b=Pfb5CNnRsxptLqiMzjiOSN5PBie61bhJHMdAY1Gk+C3A7KbAHF5zPREW/N1pHLl9Z4P665zcPkAje8FVAPPL1hPfuIIVULJv5p+etyftJFa1gQfZ6KsqKXRXS4cEi9qOxL0NR+p1LMxSiO5L7M0vP+rL1CVHwnl+Y7CvUeX8Zag=
+	t=1771595820; cv=none; b=Cm3zKOpOEXbpeIPvPsyRywEJJ6GKT939m1fQS911ooYLxqdAgJ3sXuv5A0AZ6M2y+kLM39ADUXLcvpYjnohWujbSswAcQS55lb+fQcL+VQVrkLzle3wH2R0Kz6tmVNOR8Zsh4S176sqNZeiLwdiXZqKeovu+8YzL7OJLf7kP5e8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771594991; c=relaxed/simple;
-	bh=J/CnWjz0/XEWMkvW599pnkojtxcOQdayQ/SGTMGqFmE=;
+	s=arc-20240116; t=1771595820; c=relaxed/simple;
+	bh=YwFsm4FIQUskyd8676lcG6vAt1KiEic0QJKtFxcKl00=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nbFnaQ4++9VRgSuQ0TQERFwBi3TrNZbB+sfHyXZg8+msV+I6wJVSratJODj6Ml8zsDSx1nnA4aNJynrT5oRQ2k4tQuP2MAHhi+3qXR0dWvIquA36KbVjZaR1KYZSv456cLq/BykNMrGYS+IzNAw8/OC/XJAqux1O5E9W6AtWuRg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K8mwEc1C; arc=none smtp.client-ip=198.175.65.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=MH++ZEHo7MwhoX4zoN//1esAoudUXDwncu0+OBEGsSFXq5ntKm1jgaVg9tD1kzBG2N5eq3GRJT31yIJqmCZjc8z32L3ANmiS0Mt3mFlYawgbJwRqcGJPqigjUQ6eeZzjdcMwGnrck/qp1xavoEvJow3dl44TwytAwLfFtOOYLic=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QiUaqfyn; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K8mwEc1C"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QiUaqfyn"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771594990; x=1803130990;
+  t=1771595819; x=1803131819;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=J/CnWjz0/XEWMkvW599pnkojtxcOQdayQ/SGTMGqFmE=;
-  b=K8mwEc1CepglGtnHdqd3tYQnouZra5ZClO+dtXm+6yuJ0AhWV1ycX5KB
-   /S/7yr/wBC0wMvUTHspgU3D1urnOgKY/aYJ3OROId54gORsOW1tXHb0IW
-   bApHk33SP/ZJL6EGRXcvJ0vAg3OXY0wG4BfUnCkt+eKhjj96sMx7WJ6YY
-   5yv/RdQ47gEsf90aLHm/RE1mAhDBm/K1eXLbj0rJWaZSzKryGJztDNlNQ
-   +90NBpypac9Ac+4UOV1eFK7bjEGitDcpyMxxexlaTdcX0MGCvb4rq/dvZ
-   wLiDZT7hWzz0ZzFh2F5EeqvFYGOpQVhiHlzy+bhb350vkDKVAgqCaKbpA
-   g==;
-X-CSE-ConnectionGUID: mGDzl+8iQQCUUX38jdFOeQ==
-X-CSE-MsgGUID: Rv+nk2dMQYa2DcsXCf5U1A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="95306368"
+  bh=YwFsm4FIQUskyd8676lcG6vAt1KiEic0QJKtFxcKl00=;
+  b=QiUaqfynGChPsw791ghAuduLn4SXvjRpP4NnLreHwc9d+vKj7a/dZkqk
+   1RshoPjiylOf4xmQyOz7QEhVUfWF/2mqONQdkbsqwyS+b6zYmvfVQ/Qw2
+   5Ykh0+DpT4lgsodf70MV6IEHbYxZJPcfbG+ah7p/riP1hNhYZICuxh3TZ
+   BbTFLHTvzhqDRFxLrT0uWOnQzTfVK98SPkpcVyLTACCAKwmKZJdcP8hdW
+   sMjj1BEyb2maZxXprn/YxnindtFR3dkWbeO6TJQ4JZeAojdo2hSZoyp7d
+   6Q0QsFcmtH/KCPCluaF/4fojWM94d3hADZQNxekBYZ2AhDe7yUnoAt1sE
+   A==;
+X-CSE-ConnectionGUID: dDAqvfKWTA2Ta4tzh+ccRg==
+X-CSE-MsgGUID: c/B7vBdjSKWSEgyuiPwcbg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="72749749"
 X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="95306368"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:43:09 -0800
-X-CSE-ConnectionGUID: 01Gs0n/1RLC3lsYNqVo0lQ==
-X-CSE-MsgGUID: PCNeRVOUQ3e/9I+1NA/6FQ==
+   d="scan'208";a="72749749"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:56:59 -0800
+X-CSE-ConnectionGUID: +rKToOEUTL2IBqnxd2pKxg==
+X-CSE-MsgGUID: vCPLkQ5sShip0Peqgtop3w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="219855760"
+   d="scan'208";a="214710304"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:43:04 -0800
-Date: Fri, 20 Feb 2026 15:43:01 +0200
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:56:56 -0800
+Date: Fri, 20 Feb 2026 15:56:54 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Luca Weiss <luca.weiss@fairphone.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Laxman Dewangan <ldewangan@nvidia.com>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	Hans de Goede <hansg@kernel.org>,
-	Jens Reidel <adrian@mainlining.org>,
-	Casey Connolly <casey.connolly@linaro.org>,
-	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 3/5] thermal/drivers/generic-adc: Allow probe without
- TZ registration
-Message-ID: <aZhk5Qn0vJmtxbtG@smile.fi.intel.com>
-References: <20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com>
- <20260220-bat-temp-adc-v2-3-fe34ed4ea851@fairphone.com>
- <aZg8ZqckhGbvkdel@smile.fi.intel.com>
- <DGJR7OIPI2ZS.ZTJ1IJWB3Z61@fairphone.com>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/7] iio: frequency: adrf6780: use dev_err_probe in probe
+ path
+Message-ID: <aZhoJlYUzuHXSGXL@smile.fi.intel.com>
+References: <20260220131151.74329-1-antoniu.miclaus@analog.com>
+ <20260220131151.74329-2-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -81,38 +66,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <DGJR7OIPI2ZS.ZTJ1IJWB3Z61@fairphone.com>
+In-Reply-To: <20260220131151.74329-2-antoniu.miclaus@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Feb 20, 2026 at 12:31:36PM +0100, Luca Weiss wrote:
-> On Fri Feb 20, 2026 at 11:50 AM CET, Andy Shevchenko wrote:
-> > On Fri, Feb 20, 2026 at 10:19:07AM +0100, Luca Weiss wrote:
+On Fri, Feb 20, 2026 at 03:11:39PM +0200, Antoniu Miclaus wrote:
+> Replace dev_err() + return with dev_err_probe() in adrf6780_reset()
+> and adrf6780_init(), which are called during probe. This simplifies
+> error handling.
 
 ...
 
-> >> Since the driver is now also registering as an IIO device[0], allow the
-> >> probe to continue without the thermal zone.
-> >
-> > Isn't it dangerous?
+>  	ret = __adrf6780_spi_update_bits(st, ADRF6780_REG_CONTROL,
+>  					 ADRF6780_SOFT_RESET_MSK,
+>  					 FIELD_PREP(ADRF6780_SOFT_RESET_MSK, 1));
+> -	if (ret) {
+> -		dev_err(&spi->dev, "ADRF6780 SPI software reset failed.\n");
+> -		return ret;
+> -	}
+> +	if (ret)
+> +		return dev_err_probe(&spi->dev, ret,
+> +				     "ADRF6780 SPI software reset failed.\n");
 
-> Why?
+Consider adding
 
-Just asking to see if haven't missed anything potentially dangerous for HW
-at run-time.
+	struct device *dev = &spi->dev;
 
-> The idea is that generic-adc-thermal is the middleman to convert
-> from one IIO input to one IIO output, and is purely informational, so
-> that user space can get some temperature value to display somewhere.
-> 
-> How thermal management will be hooked up in the future to charger
-> drivers is a bit out of scope here I'd say. There's not even any cooling
-> support in the power supply core anymore, that was ripped out a while
-> ago if I'm not mistaken.
+at the top, so this line becomes
 
-Okay, so there is no possibility to get some thermal issues on running
-legacy HW (that relies on thermal to be present). If it's the case, no
-worries then.
+		return dev_err_probe(dev, ret, "ADRF6780 SPI software reset failed.\n");
+
+(while at it, I would dare to drop 'SPI' from the message as is easy to derive that
+ the device in question is connected to SPI bus.)
+
+		return dev_err_probe(dev, ret, "ADRF6780 software reset failed.\n");
+
+...
+
+Ditto for the rest.
 
 -- 
 With Best Regards,
