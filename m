@@ -1,77 +1,79 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B1854337B8F
-	for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 10:08:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC46F33B6CC
+	for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 10:17:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771582106; cv=none; b=JQ9vcqYXz27fMq5fHkJ3tQfGXm/g343eHRZKpiOsQ+1Iem/5lQmyz02yjCu5NT3tiOcNcMajBKkdJ66ceoYQWy/JxUD8Ozlm6Ww42gOQe8EbSkuWOWitTgPf63QcNpPEc+CvfpQ3i704niiUYWYRZzAyFG+Y+u6aiuN8GcsAHh4=
+	t=1771582667; cv=none; b=V54MIzIQMOXp2kat80KFH+3XPkBY4nu7Gx2cpmC/BH25i61UbpWAJ1UAVE6Bg46ZUMhSIQRXVLIssFovQiJk2UxvI33BFcMMToQD4OY0Dnihs/h9UZ3R3WhZEhZm3nIy1aafwH8QCSa0+B2+kTgfKbZ7r63KXdwRCZvATfFmHkQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771582106; c=relaxed/simple;
-	bh=vVqzlXAKvy6TnK1gPKeaDTYznYyhDiXtvnha857CiOU=;
+	s=arc-20240116; t=1771582667; c=relaxed/simple;
+	bh=8JPAPEZguacmifSWCnnDXUVYRogc7fx9Jf3HfyYCE3Y=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=tAVWfbEpAsWUao5QFhP/Mzz6SqIpi/XAFYXQ6GIOeWg3OyYAdhpQTWs5+XVIdO9y6T6XfqKXVcDd6pAk07IGyaQD/QqnPEqJWAwgtxWDh/7MxcuKMxsc7G3gkvZQ3D9v3in4KVacYSqf2NpmexZgVT+XXFYTyK9lZUN0i+3KZ1w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MEqyncJ9; arc=none smtp.client-ip=209.85.221.51
+	 Content-Type:MIME-Version; b=XLfGltrU25IwUSTDg6toxqa2QSXkRXld4sqRBebkk/KWnBSAmk3R/m6fX2Z297ZfO2+Y/HoCqBPrdNwLgNFWchrKgARo3/elCyKwErGd9v3IdHdFub8kcukdDNZFBD7Bz60tpB+thmNJ6BnvPPz3doJhmYn1665PBOZVtwWXa5I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iuHW5xgN; arc=none smtp.client-ip=209.85.221.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MEqyncJ9"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-4359108fd24so1157241f8f.2
-        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 02:08:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iuHW5xgN"
+Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-4362507f396so1924843f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 02:17:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771582103; x=1772186903; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771582664; x=1772187464; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=N7njb9Dlot5JVPaQKTXSPXh31mLIMwVNAtxSxfji2V0=;
-        b=MEqyncJ93Ar15pWVhjZr5KdP0bGQXR9YqMeaXTVWHXkvzbwa131b6/6OY6kCVxE+5X
-         XPyO4Sq8cWFdsTvyXcBz6mufPDJEBBRlDPMHvSS3WnT/EBzUkVWAOuOCOETY0T1LWmCf
-         v19wgBiJXiwM/K0FruCvF6fKqA9cn1NCPiS2FjvlZyQHpYXN7ZrCwoQTgJi8hB/s5xej
-         1xdjJNlUjzseGD4ysUCg5dUtDQb/B3mCA3NVio5gKaYJJmxgIRcqlPT7b1J2ex+7NK0z
-         BfGXBXOPB2nQ+puYETxESTChn4Hah52Chfa3pKEDzR8e7fphWysMQtEYhMC5ENEOLE/t
-         faSw==
+        bh=foa7kGkA11ij00nt3xJx3lBVlw2GastjEXv+CSxW2yk=;
+        b=iuHW5xgNXlMkYa5na6xVFsFvMgX/y+z0qv99LuwzI8lHpFPtsx5OcI9a87+oqUuNwj
+         Mk+SGUZGdTiCrs2xadCfd1d6xPxMu7AOhyF6n6WqZvo47+3T/VfTx5ZY54d+kwT88m0M
+         hfRd5J4dEYL6EILboAPm5wPpLo7c80Q5sU/hVoZdGcQMVHTkNpg9MvqHZby8X3Dn7xyN
+         UESxVZ8Aue+81XHBsJYdA7aqR0/4Zg1wIQuCKXVqQdcJEenBnGv7ClPxWAgXiiNPaMhf
+         l3zb9byU00RccX1i3rPoM/Anlce6rTCNnJr9Ss8qk7WItarMWm8vTOhT6XLmLKOhRDLy
+         G9yg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771582103; x=1772186903;
+        d=1e100.net; s=20230601; t=1771582664; x=1772187464;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=N7njb9Dlot5JVPaQKTXSPXh31mLIMwVNAtxSxfji2V0=;
-        b=FwMTlcIMCi5wiS83xchZH1tIGkxu+lO70q5uOPY+D+C08VEopY37rvNjWRM+PYOr5z
-         EpCSG7Bs3aZr7VgTeF2VZ1RsCa+uJEzsPdCHYMPqnJl2ALZ5VCCl99xtvePP+81I/LL/
-         fbasCoTecOqWFSpLR3NSJApswmfEDqS44pZkDiFV29h99t/vNORiU0XAg94AWd/+cVGU
-         od4yJmDt0kdzUT5wtxfDw2X0zN7JTBLLFeT4xTVUOV/NXc+c2hD8czqcHV6u4c3ZhrlE
-         VAnEwSKScAq3UCHAFUP6UpQNYdsF7B1ZzVUYBkx10Dz3mR3fWlf2gykBPS9TPlgRqkP2
-         EldQ==
-X-Gm-Message-State: AOJu0YyFnuuj0lVfnQpMi49yUD4CCnAXE7M9bHddvPAg2SnBcDG4xPO/
-	digPNyGGbqiSZ64Bbc5YHTsEm/5e5Wz4YKjNnnjB4JF3jEHeIiT03hVq
-X-Gm-Gg: AZuq6aLgHHuwfADNodE6OPtylfc78uUGk1yZLPdG4UcVuxSAlUzrjfjrt7HNFUydlSe
-	5zwf+g9V+y+xYyYXdA7cej27yNH6v+7fjcUGPu8916e/cF40QTbu2fgC8be2biTwndMUf/EOb5m
-	qdxrEyphAwWiDqP9C/nnT14e7MGWTsk3j4mO7ZlWLVMvFcaL7Bc3I/W7Oql0QkotpBX2y0rDvGm
-	N4NcrDuVJQUV3SOxjnFSHdp5psRJmxXR5BPEfnu0QIaQYa2PnfKihcKqB4O9BKZdlf5w6rmSzTM
-	OC1xwFdzxZZV8O9uGNEdlJfLw1vruGXOilUKBmPx5ySMxMgLPjMlDIHLuklf37GrVJeSiiWwTs1
-	88QGQtj6pu8fobBTaTXD0ffF21dOee2K9EyYtxJRc+IBknvHWD3ApTqzXh9zFumeQ3JmCzevkN7
-	wo2uYz0GLQUi9d+1suNVsRIi95WdbxwcM=
-X-Received: by 2002:a05:6000:2511:b0:432:dc1f:6982 with SMTP id ffacd0b85a97d-4395fd35462mr9901455f8f.16.1771582102696;
-        Fri, 20 Feb 2026 02:08:22 -0800 (PST)
+        bh=foa7kGkA11ij00nt3xJx3lBVlw2GastjEXv+CSxW2yk=;
+        b=VLkCXhUdD2ZwSDIYZHtX91WM0q4ewWPIH8N5V4WEOg8/Mq8yImzbZNEnsN8qDXtV66
+         AJ3FHq9u0QZekHZPtdvJZIg0xoeVI6CBEcPI7nQWer4SXvxuRhqYjfXE8d3g/oXYr/k2
+         /gYUX1HltiQ9wydbKgUE/hoXt+pHsGQzF9r4E/PHvM2w340Vu7GoruegRslOJl1QuZEb
+         HGj+rRsYetyDozp9f5vS8nRPVMX2O51hvxYoIOTK2W+EIfXe54gf3s1WfFs+2g5K3csW
+         N1RvfKTFawid1GragdMhg/RUZATNZf4QK+vp+bSo9KS6zaDYN21CSP9zfpeSLQSh+Q9U
+         rS9w==
+X-Gm-Message-State: AOJu0YwzuqqlK3TKzqyJdn5WIs6lJdmVvoc6Yeh+DlTXqccCnnfi2mYo
+	u2GEcBkCLn9Eoj5l2FkMBfxzK99n0eRnm5VLeG8rXs2FqwJWMDNG19Tn
+X-Gm-Gg: AZuq6aLhsbJ52sj8dc0Cg/7rsdTimqxA/cdfNkij+yzw6BNp+tEs6LD9fQ1sa+HNiir
+	h8sdTMZ82crogcAH7qftWV5qTisCrx/YymFsTUsCN0Vf79cchRo+sIvfUZ86G45C06QpmviT6jw
+	YGz09m1+9Ehvws3gFiz2Y1FbhLODLPktXHX3rfAVAZhfJcUAild1JuKNSK6wVM+V74pHowFCWAX
+	0aKBmDNKwHxIWpkcgyQSKC8Qu4mLnFSRylpT5A+U0SjThe82gU9W+wxNIx1x+AjOZMSDfAgFCHE
+	DIw7d6Iu+oJ0zvcR3NE59NO7OqRlBpLtBspg4KiQKTlyaXuTZXiLppDIPZ51zfWG1mh2QzUFB9u
+	GNmNlw/goplzjckUky9ib4qTASsmSteim0ZxWn+DhH+RbJJCcdg68Sr1QY833mJZ7YV2bEuSkdr
+	DMdgRJhFCFY8qh1QDRKdsDgJ+Qsl1SrOI=
+X-Received: by 2002:a05:6000:2911:b0:437:71b2:6f34 with SMTP id ffacd0b85a97d-43958df112cmr13666718f8f.1.1771582663829;
+        Fri, 20 Feb 2026 02:17:43 -0800 (PST)
 Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43796ac8209sm55886120f8f.30.2026.02.20.02.08.22
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43796abe3b3sm62452448f8f.18.2026.02.20.02.17.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Feb 2026 02:08:22 -0800 (PST)
-Message-ID: <e755b0e07f276327af68c7b0b223d4dff7b8ed32.camel@gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: core: Simplify IIO core managed APIs
+        Fri, 20 Feb 2026 02:17:43 -0800 (PST)
+Message-ID: <9951c2fc9bbca27e0a5e7d953a31a0f802bac38f.camel@gmail.com>
+Subject: Re: [PATCH 3/3] MAINTAINERS: Add entry for AD5706R DAC driver
 From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Jonathan
- Cameron	 <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?=	 <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>
-Date: Fri, 20 Feb 2026 10:09:05 +0000
-In-Reply-To: <aZRt38PTZYzQv8Si@smile.fi.intel.com>
-References: <20260216081412.1118599-1-andriy.shevchenko@linux.intel.com>
-	 <525a30ed9127b689549bfaedc086638e2e3b5670.camel@gmail.com>
-	 <aZQcpJV2GQ8vWnA_@smile.fi.intel.com>
-	 <c27fd07403ed790902bc9ef5a863beeb7b7429be.camel@gmail.com>
-	 <aZRt38PTZYzQv8Si@smile.fi.intel.com>
+To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>, Lars-Peter
+ Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Jonathan Cameron	 <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring	
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley	
+ <conor+dt@kernel.org>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
+ <ukleinek@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Date: Fri, 20 Feb 2026 10:18:26 +0000
+In-Reply-To: <20260220-dev_ad5706r-v1-3-7253bbd74889@analog.com>
+References: <20260220-dev_ad5706r-v1-0-7253bbd74889@analog.com>
+	 <20260220-dev_ad5706r-v1-3-7253bbd74889@analog.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.58.3 
@@ -82,34 +84,41 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 
-On Tue, 2026-02-17 at 15:32 +0200, Andy Shevchenko wrote:
-> On Tue, Feb 17, 2026 at 01:29:07PM +0000, Nuno S=C3=A1 wrote:
-> > On Tue, 2026-02-17 at 09:45 +0200, Andy Shevchenko wrote:
-> > > On Mon, Feb 16, 2026 at 02:31:57PM +0000, Nuno S=C3=A1 wrote:
-> > > > On Mon, 2026-02-16 at 09:14 +0100, Andy Shevchenko wrote:
+On Fri, 2026-02-20 at 16:02 +0800, Alexis Czezar Torreno wrote:
+> Add maintainer entry for the Analog Devices AD5706R DAC driver
+> and device tree binding.
 >=20
-> ...
->=20
-> > > > > -	if (!buffer)
-> > > > > -		return -ENOMEM;
-> > > > > +	if (IS_ERR(buffer))
-> > > > > +		return PTR_ERR(buffer);
-> > > >=20
-> > > > Subtle change that could have been mentioned in the commit message.
-> > >=20
-> > > Actually not really a change. Currently the error code is shadowed to=
- -ENOMEM,
-> >=20
-> > Well before that was explicit. Now it also depends on the internals of=
-=C2=A0 __devm_add_action().
->=20
-> True, but if that ever changed, we will have a new error code coming from
-> ->probe() and that's fine. ->probe() is not stricted to the certain error=
- codes.
+> Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+> ---
 
-Note that I'm not complaining about the change. Just that it could have bee=
-n mentioned
-in the commit :)
+Hi Alexis,
+
+Fairly sure checkpatch will complain in other patches as files are being ad=
+ded. Need to
+speak with Jorge as I just saw this was not triggered in internal CI.
 
 - Nuno S=C3=A1
+
+> =C2=A0MAINTAINERS | 8 ++++++++
+> =C2=A01 file changed, 8 insertions(+)
 >=20
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1251965d70bdfa990c66966cd77f7ab52ae3385f..3d7bd98b4d1b55836e40687a9=
+a3ac9f4935a8acb 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1496,6 +1496,14 @@ W:	https://ez.analog.com/linux-software-drivers
+> =C2=A0F:	Documentation/devicetree/bindings/iio/adc/adi,ad4851.yaml
+> =C2=A0F:	drivers/iio/adc/ad4851.c
+> =C2=A0
+> +ANALOG DEVICES INC AD5706R DRIVER
+> +M:	Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Supported
+> +W:	https://ez.analog.com/linux-software-drivers
+> +F:	Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml
+> +F:	drivers/iio/dac/ad5706r.c
+> +
+> =C2=A0ANALOG DEVICES INC AD7091R DRIVER
+> =C2=A0M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
+> =C2=A0L:	linux-iio@vger.kernel.org
