@@ -1,58 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A8A94C97;
-	Fri, 20 Feb 2026 07:22:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6EA2B4C97;
+	Fri, 20 Feb 2026 07:24:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771572161; cv=none; b=jQZ/dzMsQmlxvbhVRIgDzruzzJ57K1XpdXmWlG0HCMcxSdqiMXBXV6CFFl12N7BdRaN20hK70BlxnihlyVQlY1IWPAPtmqL/aw8RixzaWOdmd/0PiwHXt0NaH7K+baMQfL1B8nFvCSV3eH4GD2u/PzwnS73A50Q14+KY6a83kIw=
+	t=1771572291; cv=none; b=Ixovp8ib1yBC8jecOGDw0FX/fYc+XzzKnseJ0bwjxGfBGRzgN/mkaeV7lx3zOeEfKH2S/3jtM8V75DneOFNvToJQmq73ODxRZ62fWX9JLxe27W9z0s3tTCsBx6jBMZNFcM7QOO26MEGgPf9ahNHqHLgq3lFxAyFC0XnMCcNAj04=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771572161; c=relaxed/simple;
-	bh=8UzCEGHZ8iaHLF66WyyIG1Siu9lRz3cm2vCnVeVsuBw=;
+	s=arc-20240116; t=1771572291; c=relaxed/simple;
+	bh=fXOR4Xz2pe/nQ5N86PCT/PnHFOiNYtQz9Y7bVsnwViY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=az3IDRRsAcn/t8OFe0Jlj4zlrgXbafvsKw7E2eXXuHxL7cLjouYfcjah4O772ADC8eK5c25ppmishzM77nYgUakTd6SmniA3dY2S/OwbqZnLmwc92s+xUrcSJkGAf7hamDv6UomRUtFUPQlFusyNKWXsInznjS3M8x9Hl8yA5e4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eu9uuB3F; arc=none smtp.client-ip=198.175.65.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=hNiGvgWdvifzyLzpUFg1tUHN3XLAYokWpGRLAQvxClb3IQAlm0VTvLs2o6UIss5TMkwrvJkIvd/vq2EeHzH/2uBL8DUWSTIHHDs+qRcCCa0d4U7A2q1oK1fN6v0StxigHhbFJ/AICPv9kBEAs+1EgzcIK0LDlg4mmU4YkpUAf98=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZT+z3496; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eu9uuB3F"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZT+z3496"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771572161; x=1803108161;
+  t=1771572290; x=1803108290;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=8UzCEGHZ8iaHLF66WyyIG1Siu9lRz3cm2vCnVeVsuBw=;
-  b=eu9uuB3F6xTnN/vAblU9taUSIyh+ZCL//6ye4MN/BW67h5WwxW2z+NBY
-   E5SmYEjML7jfWnAdM88nr5pSpoJginl0ZcxMgC478B0XT+z/nKn94N8gA
-   iTqjKulFZhYOs5u5Gk3EjbYOpJZcL63I5ovHhdk4SV3RT+l8qxvSnr8rW
-   T4zXyzgDb0gq4iuZu4Xui6dmCHZXhLZJUN3NXzDirKGgMCMV1g7W1MpHO
-   kKm+RiWsfr3quhKJOhMB1lqf2D6XlwW9EMXOIWkCiaIplb6VplSryGMEe
-   qPOtkxhCaen+l9kbuuI40fMB/HdVxK1NpTIrrKqmw+IIfEg+p2iuVUs5g
+  bh=fXOR4Xz2pe/nQ5N86PCT/PnHFOiNYtQz9Y7bVsnwViY=;
+  b=ZT+z3496OdeLLolzeFDJRWKejC+IQ8/U5eh/a+pndv3ukYhKgArBRyjt
+   /gTvxRbgLP1Fdo00ohDMpkeBDk7lc2yPPYRedW1wHbCMP5Femw6xd1FxA
+   ql6JAzIaRrsqFQdKbEffZh5SU2l6I6ZBbVQu5qGCGmkxoZYJxZZxaf3qM
+   1PMsscIAaJNus2cK1o9uAHABpZ/ag15EQaGjp8v3AIfWDSs8ojbKR3DJk
+   qFmOyGHmSgj3PSsPvxtSqRUeqbVR2o6qa4U1IsttK7ARyl8huoYA4qpg0
+   0Z1mXckUecQk8mqn8Z9ytUJHGJnY1HvQB7YL6QpPSnIrwEH4sjbhTu3Vq
    Q==;
-X-CSE-ConnectionGUID: AhIpAecrTzKikBaU3z+RhQ==
-X-CSE-MsgGUID: C3+HEOnvRxmVL2vwRix1qQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11706"; a="95286218"
+X-CSE-ConnectionGUID: kZzjZT2TRBOBxERt2GI9uA==
+X-CSE-MsgGUID: +bCk1W8USgmEMnDswJ+a/w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11706"; a="83769499"
 X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
-   d="scan'208";a="95286218"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2026 23:22:40 -0800
-X-CSE-ConnectionGUID: ndZNxDucTei3/JWgyhsAJQ==
-X-CSE-MsgGUID: oERVx9j0Toq1UxemNSrofQ==
+   d="scan'208";a="83769499"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2026 23:24:50 -0800
+X-CSE-ConnectionGUID: dZ+0ct6GRjW+OrK23Daojg==
+X-CSE-MsgGUID: /w+weJ7FSFGurrHgJtWDzg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
-   d="scan'208";a="212926113"
+   d="scan'208";a="213366813"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2026 23:22:37 -0800
-Date: Fri, 20 Feb 2026 09:22:34 +0200
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Feb 2026 23:24:47 -0800
+Date: Fri, 20 Feb 2026 09:24:45 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: bhargav <rougueprince47@gmail.com>
 Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
 	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] iio: frequency: ad9523: fix checkpatch warnings
-Message-ID: <aZgLutMih65WdesN@smile.fi.intel.com>
+Subject: Re: [PATCH v3 3/3] iio: frequency: ad9523: fix checkpatch warnings
+ for symbolic permissions
+Message-ID: <aZgMPcv4EYsrrjY3@smile.fi.intel.com>
 References: <aZd2jAVnTIuz2o7h@smile.fi.intel.com>
  <20260219213549.59645-1-rougueprince47@gmail.com>
+ <20260219213549.59645-4-rougueprince47@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,22 +63,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260219213549.59645-1-rougueprince47@gmail.com>
+In-Reply-To: <20260219213549.59645-4-rougueprince47@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Feb 20, 2026 at 03:05:46AM +0530, bhargav wrote:
-> Changes in v3:
-> -Patch 1: updated macros to use '(x)' instead of 'x'.
-> -Patch 2: collected reviewed-by (no code changes).
-> -Patch 3: fixed vertical spacing and broken indentation.
-> 
-> These patches address several checkpatch warnings in the ad9523 driver.
+On Fri, Feb 20, 2026 at 03:05:49AM +0530, bhargav wrote:
+> The driver currently defines device attributes using
+> symbolic permission flags (S_IRUGO and S_IWUSR).
+> Update these to use octal permissions (0444 and 0200) to resolve
+> checkpatch warnings.
 
-Do a new email thread for each new version of the series.
-Do not send a new version more often than a couple of days.
-(The very bare minimum is 24h.)
+Same for the line lengths in the commit message, use up to ~72 characters
+per line.
 
+Otherwise looks good to me,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
