@@ -1,130 +1,121 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 765AB3469E0;
-	Fri, 20 Feb 2026 13:36:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5AD7C347BB9;
+	Fri, 20 Feb 2026 13:43:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771594607; cv=none; b=UulYj9dH+WtxXa5IRrDRSWHck6FDihdlTRv2WcGYrZLlY5WhPs1lOLaEh+QSavuuxXj5XGvgSLTSfhdE7qKjC3N2Os8VDzrKHhs0IPNwAXH1TGGVVYE0uzwnWOz7RxrqfmTK3+P6UjeFurTnLcLAo/zkeUsJotu3Gqr7vSqSSKI=
+	t=1771594991; cv=none; b=Pfb5CNnRsxptLqiMzjiOSN5PBie61bhJHMdAY1Gk+C3A7KbAHF5zPREW/N1pHLl9Z4P665zcPkAje8FVAPPL1hPfuIIVULJv5p+etyftJFa1gQfZ6KsqKXRXS4cEi9qOxL0NR+p1LMxSiO5L7M0vP+rL1CVHwnl+Y7CvUeX8Zag=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771594607; c=relaxed/simple;
-	bh=dvKGRevL/x6bsH9JdEE0de9qu9JxjC79J7tLsupmvho=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VPnKMw8/EinpfqZoLOBf1FLGtX79/zgQ1y5xw3S1x6nTAqu1+qM+lnEBQBG3n3CMPObhk1pF4JRAqQOWm/DpV/RfdEXBWNv6EVZpsUYYticGhdAh/K9bBJLGz0nOWvQdAiFul8CiwqMUermyo8uapeMA4kf4SnCXMPkeczTa2sI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=bpxGHLS8; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1771594991; c=relaxed/simple;
+	bh=J/CnWjz0/XEWMkvW599pnkojtxcOQdayQ/SGTMGqFmE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=nbFnaQ4++9VRgSuQ0TQERFwBi3TrNZbB+sfHyXZg8+msV+I6wJVSratJODj6Ml8zsDSx1nnA4aNJynrT5oRQ2k4tQuP2MAHhi+3qXR0dWvIquA36KbVjZaR1KYZSv456cLq/BykNMrGYS+IzNAw8/OC/XJAqux1O5E9W6AtWuRg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=K8mwEc1C; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="bpxGHLS8"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61K87FUv631909;
-	Fri, 20 Feb 2026 08:36:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=8QLhC
-	HKo2Hiad1IXkq2vQp+XFeaNrM9r7m6N9m7+72I=; b=bpxGHLS8jTfuANB3ZvJ7b
-	Vp1CmrXSkUt5TWc5NNHGV9499/F+Biv0iVowfptf/sWqMosOKk7F89OZ5vNxNeaZ
-	EC0azdI+q43aOehofN0ow9MgGgQbLU23BP5UtppEfwsrrvgd1qOQ3pGGUM19ol+H
-	Tuhr78bXnXWpOZuDwIqICkKq4n1Mprm9gVlGPPJwvXEp2EjAHIUy5Mj9Anvm9j7f
-	eNsPqbHb0MJGcBOE4FWnjB4k76rOTcaDU1Dl3uqyyQeeHil9QQq3/8Tc2YuzEOvl
-	cPaSeqBPVJoKadsAOZp4YBXkrN4meC0blbWudbMXLfrGbZDPeexeIa3n1WOI8e9w
-	g==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4ced6fa9rw-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 20 Feb 2026 08:36:25 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61KDaORk002414
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 20 Feb 2026 08:36:24 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 20 Feb 2026 08:36:24 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 20 Feb 2026 08:36:24 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 20 Feb 2026 08:36:24 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61KDa2Q7010396;
-	Fri, 20 Feb 2026 08:36:18 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "David
- Lechner" <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?=
-	<nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Antoniu Miclaus
-	<antoniu.miclaus@analog.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 5/5] iio: filter: admv8818: remove redundant else after return
-Date: Fri, 20 Feb 2026 15:33:34 +0200
-Message-ID: <20260220133337.85216-6-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260220133337.85216-1-antoniu.miclaus@analog.com>
-References: <20260220133337.85216-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="K8mwEc1C"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771594990; x=1803130990;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=J/CnWjz0/XEWMkvW599pnkojtxcOQdayQ/SGTMGqFmE=;
+  b=K8mwEc1CepglGtnHdqd3tYQnouZra5ZClO+dtXm+6yuJ0AhWV1ycX5KB
+   /S/7yr/wBC0wMvUTHspgU3D1urnOgKY/aYJ3OROId54gORsOW1tXHb0IW
+   bApHk33SP/ZJL6EGRXcvJ0vAg3OXY0wG4BfUnCkt+eKhjj96sMx7WJ6YY
+   5yv/RdQ47gEsf90aLHm/RE1mAhDBm/K1eXLbj0rJWaZSzKryGJztDNlNQ
+   +90NBpypac9Ac+4UOV1eFK7bjEGitDcpyMxxexlaTdcX0MGCvb4rq/dvZ
+   wLiDZT7hWzz0ZzFh2F5EeqvFYGOpQVhiHlzy+bhb350vkDKVAgqCaKbpA
+   g==;
+X-CSE-ConnectionGUID: mGDzl+8iQQCUUX38jdFOeQ==
+X-CSE-MsgGUID: Rv+nk2dMQYa2DcsXCf5U1A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="95306368"
+X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
+   d="scan'208";a="95306368"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:43:09 -0800
+X-CSE-ConnectionGUID: 01Gs0n/1RLC3lsYNqVo0lQ==
+X-CSE-MsgGUID: PCNeRVOUQ3e/9I+1NA/6FQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
+   d="scan'208";a="219855760"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:43:04 -0800
+Date: Fri, 20 Feb 2026 15:43:01 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Luca Weiss <luca.weiss@fairphone.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Daniel Lezcano <daniel.lezcano@linaro.org>,
+	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Laxman Dewangan <ldewangan@nvidia.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Hans de Goede <hansg@kernel.org>,
+	Jens Reidel <adrian@mainlining.org>,
+	Casey Connolly <casey.connolly@linaro.org>,
+	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+	linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 3/5] thermal/drivers/generic-adc: Allow probe without
+ TZ registration
+Message-ID: <aZhk5Qn0vJmtxbtG@smile.fi.intel.com>
+References: <20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com>
+ <20260220-bat-temp-adc-v2-3-fe34ed4ea851@fairphone.com>
+ <aZg8ZqckhGbvkdel@smile.fi.intel.com>
+ <DGJR7OIPI2ZS.ZTJ1IJWB3Z61@fairphone.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: ZEPEmIAVqrVgW5mrwUb9xcU1nDATCL7a
-X-Authority-Analysis: v=2.4 cv=fPg0HJae c=1 sm=1 tr=0 ts=69986359 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
- a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=HqiKlNrAw5ovnjWXBcYA:9
-X-Proofpoint-GUID: ZEPEmIAVqrVgW5mrwUb9xcU1nDATCL7a
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIwMDExOCBTYWx0ZWRfX69yIcJyy/dwU
- uGm89/YPQzRB3WEvjUk+etoYzZOTNq236eq2S0P8035mD5Dfs8dx210vQugBiyugOcWOVQUD1GS
- JZTHdJKen1um91iLssFpHw9jAPOqJCAXLWHGrPT6kN/lIJiHqZi8MdoxvPIur69OlQOz5IT39+Q
- HHczWolifiqTnp2p3zLj3c9lpofoyYCBNrzdEafDatNjktixVCXXN8ewsrQZj3IhnAU63j+y+e5
- LEAUUvRxdgBexb86EBwbrit0UheV6EmfpXxrRO/pq6P4smiMGzUbk/Qh8nnGOEh2cI/y3vkJcK+
- +fIdlhPUaNVFiKewq60VP77hY8m3b0QM9WYUY+qiMdugLpapAVZt539MzTj53YkMBVqNPnJnkAW
- a/FbJ7QOZnRDVV/djfg9Q+OAWg/ucpNhq8+fUDKn2GPLkvGmIS1Vr1bAlmzctZOMIu4MEmYlq6c
- SHd3mAkXRUodEPnCTmg==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-20_01,2026-02-20_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 impostorscore=0 adultscore=0 suspectscore=0 clxscore=1015
- bulkscore=0 phishscore=0 malwarescore=0 lowpriorityscore=0 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602200118
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DGJR7OIPI2ZS.ZTJ1IJWB3Z61@fairphone.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The else in admv8818_init() is unnecessary since the if block already
-returns after calling admv8818_rfin_band_select() when clkin is present.
+On Fri, Feb 20, 2026 at 12:31:36PM +0100, Luca Weiss wrote:
+> On Fri Feb 20, 2026 at 11:50 AM CET, Andy Shevchenko wrote:
+> > On Fri, Feb 20, 2026 at 10:19:07AM +0100, Luca Weiss wrote:
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/filter/admv8818.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+...
 
-diff --git a/drivers/iio/filter/admv8818.c b/drivers/iio/filter/admv8818.c
-index 19f823446cda..e494fd33911b 100644
---- a/drivers/iio/filter/admv8818.c
-+++ b/drivers/iio/filter/admv8818.c
-@@ -695,8 +695,8 @@ static int admv8818_init(struct admv8818_state *st)
- 
- 	if (st->clkin)
- 		return admv8818_rfin_band_select(st);
--	else
--		return 0;
-+
-+	return 0;
- }
- 
- static int admv8818_clk_setup(struct admv8818_state *st)
+> >> Since the driver is now also registering as an IIO device[0], allow the
+> >> probe to continue without the thermal zone.
+> >
+> > Isn't it dangerous?
+
+> Why?
+
+Just asking to see if haven't missed anything potentially dangerous for HW
+at run-time.
+
+> The idea is that generic-adc-thermal is the middleman to convert
+> from one IIO input to one IIO output, and is purely informational, so
+> that user space can get some temperature value to display somewhere.
+> 
+> How thermal management will be hooked up in the future to charger
+> drivers is a bit out of scope here I'd say. There's not even any cooling
+> support in the power supply core anymore, that was ripped out a while
+> ago if I'm not mistaken.
+
+Okay, so there is no possibility to get some thermal issues on running
+legacy HW (that relies on thermal to be present). If it's the case, no
+worries then.
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
