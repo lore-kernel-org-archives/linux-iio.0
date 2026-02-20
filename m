@@ -1,52 +1,52 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C89E346A1C;
-	Fri, 20 Feb 2026 13:13:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 46198346AC6;
+	Fri, 20 Feb 2026 13:13:25 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771593206; cv=none; b=Et0kV/L3CiwBh4lcmaDqwzvL7oGEKIZ4PAFYP/Ci3qLJ+uOdCQFgS0dM0by+z1rNEK/7LswQsDp2UTD66eC/cF5yGwG3MxTdW69yT4/cdDL05oZHA2w+Z6qECmr2Yd33iltcjLAN5teOt/xit0i/k/SX6Y6hyMdZp8tfhnh1i24=
+	t=1771593206; cv=none; b=sLzuu7aBZPx0SzLvQ/uAGHgGnzU78YYpph8N6D5r7YtMx4+AYWaRxopletA5NIhOBeFtGhsPF37mEr1GnOQ+q+ijKrH+b54djwKrVbeoQ1/v/LRA2ytkxHIjz1FEDbffU0jmz3u8KDaPUV6tRgsdDmZina18iWVuUnQ9rX9AYII=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1771593206; c=relaxed/simple;
-	bh=1fA/QhxTz9c2lIvElxS1lIKLaYwaXASLBCsTi/Mrj30=;
+	bh=wLhJLSu0aVKoGTWm/9Egmm8iOfhh9dXCdrrthOGhdwQ=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=kCgFWUmJLQlacKD8OOEC9JZ2Z+sPt2XB0nLWmyKdJShJ7nAw8IL4kzWWuWwI+fEzAFckrWEzWfbIJx3WH7JW+hDaPIC3XCp/O10xDS5c6NB7Qo3BG3g/olIXIelY4GYhZHPRW0nC2UN8sdpuNi6UHhziIfr6U5+1XJ/y0c10kIc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=qhYNujS7; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=LCqoZ6pllAjZqKQY/e4FbIq8XaqZ4PHEmTF3M+fTRQOAsJmtjtJ9EAg86OGhmpoz/J0tUfSDq8hEChXWraFV0nRNZfNCJI1COOkyJJ5eDsmUt7ShWx0QPzzLw2eHQP3mMsVhOzoM7XrGW/jGJW9WZoKY9Rd1RlcrX4SSMFhmsKk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=sZDk8GZE; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="qhYNujS7"
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61K890Gj897178;
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="sZDk8GZE"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61K87Eoj3823368;
 	Fri, 20 Feb 2026 08:13:10 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
 	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=4Kcoc
-	pnGwE68A9yG4p2Sj7hi2Upe2GSSf3vrdrZ4ccA=; b=qhYNujS7ZohTzpTmaFhfj
-	sysn/9IyiLL9jhjMaT5nT5l/otl1Ekwd9dBtkdQ8G1b0w85vMMqyXWbrv/FP61oc
-	Qg1MqZ4ym03Ve+rp94eMxKuhopOBoq0r/k8D9SwuU5viUfADb7MgIPH/g/fyLPVa
-	e+q0xCz7bYel8T1IDCA7jUsjcQsNaUofD69JcyO1Immmz9TKfgezQshyttHjhytp
-	c3FIzz98QJo3NoZUzrSh42T2oOndQ3KQPJ5C4HxKQaI5SCfOGDaltXXWlE1AkpFE
-	KLtXTbTous0LEVOQnmXn9Y4duLtxrfi+e86FPuOPTDtUmxyQIvQrpJP0KflCIgo7
-	w==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=DEuFm
+	NafNVsXKll4VaSZ6Pz+4oDilUnQ2SU67Xp29do=; b=sZDk8GZEFMFrps0jpeEeK
+	BUiRD1yfQVQorxwffhKwsA0EYMVb9aIXyHCcFZ92gdnKfiqy7nTzR1KVEOt7uFg6
+	a4IpOwtNKWvqjkuI3TVMNpisA3K5+z2/IIIQTTEB4n/bkph4EY4ynvLLUZAJWVkb
+	ZJ4f2idomo6RXIdNxJj7+VmgFewPP3FQ3nY4e2JbEYOfoNyE3qDSaEVGVXLwwYAf
+	4qhRA3fyhmlrBS00gaY/OYvSKS2nwtAOMZQr/Ih0ZzpmH3sdIr4FY0cPds6iOSJd
+	U3u7OvrEtrWeU70Sm5tmFmsUNYRhtRFeth/y3tHFQ+FOSxdWyV7hYwP7Dn4Yg0x3
+	Q==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ce69kkrmm-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ce0xvw0hv-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
 	Fri, 20 Feb 2026 08:13:10 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61KDD9Gk064740
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61KDD9Qj064737
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
 	Fri, 20 Feb 2026 08:13:09 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 20 Feb
  2026 08:13:09 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
  Transport; Fri, 20 Feb 2026 08:13:09 -0500
 Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61KDCsHT009613;
-	Fri, 20 Feb 2026 08:13:05 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61KDCsHS009613;
+	Fri, 20 Feb 2026 08:13:03 -0500
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich
@@ -58,9 +58,9 @@ To: Lars-Peter Clausen <lars@metafoo.de>,
         Andy Shevchenko
 	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 2/7] iio: frequency: admv1014: use dev_err_probe in probe path
-Date: Fri, 20 Feb 2026 15:11:40 +0200
-Message-ID: <20260220131151.74329-3-antoniu.miclaus@analog.com>
+Subject: [PATCH 1/7] iio: frequency: adrf6780: use dev_err_probe in probe path
+Date: Fri, 20 Feb 2026 15:11:39 +0200
+Message-ID: <20260220131151.74329-2-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260220131151.74329-1-antoniu.miclaus@analog.com>
 References: <20260220131151.74329-1-antoniu.miclaus@analog.com>
@@ -73,148 +73,82 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=Z//h3XRA c=1 sm=1 tr=0 ts=69985de6 cx=c_pps
+X-Authority-Analysis: v=2.4 cv=AeK83nXG c=1 sm=1 tr=0 ts=69985de6 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
- a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=v94z4MtexB56KsHqelIA:9
-X-Proofpoint-ORIG-GUID: -0k24L0tjMImaLPVI2V0CWyEjnDI8tQW
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIwMDExNSBTYWx0ZWRfXwFRlJkbCmSjt
- vid/WWot6e+5xGLk71T1hSDbMrZprFHpMJZ24yzbiiHBykDhP8iTewdHnNf0kD2ZqqN7KDSlhm8
- kx3hv13u0fpULASjK26/ak14Q5qPK8BTZeKBmZuQ/jWjSk4HP6hHsN7rRh4WqXPXz4p+3rYBzxE
- BVeGAufYIn1pObk2XB2HvJBvOZ/b1CdTGXyts0/p12iyMrVUtrxK0fAYub0enKhydl6EKZuacMI
- dKIM6MAYKXgWn4s0a33emk+TF3COct6ef4vZuCf0rVMjLP/RVPOnn03u25V7oJ+6nk+zWXU3+3K
- f31eGuoet6eWiwvTzW/3Jltcv2Tl+fMjvLlxLJbbHCIWJzpQzlqWFDBEP4hYVBQX23hxr/6RuZq
- srwZVHRTQ06LkhzuCYNmdvgkYuQg4oOnvElu3V4TjxCiBZfU2mzS87YZbWqy2ADt/g8Ni6Fjxf6
- 8640r3zZGjY8CDrXk4w==
-X-Proofpoint-GUID: -0k24L0tjMImaLPVI2V0CWyEjnDI8tQW
+ a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=QrChBGosppEjk4s3f_0A:9
+X-Proofpoint-ORIG-GUID: RNYexWOfVUYrzW2yAn6mSeBvdNp8v7Zb
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIwMDExNSBTYWx0ZWRfXwn/IHCt2JoGf
+ ZzVFEBVmFRiJLy2EK6Py7Ts/8h+8m02s5+mPo+H49NvFfwTean2OjD9eUSOs4uGHINsp9N4lIEe
+ cN8/tA/L2na5O4bYhCvlekWJILEE/il7Ed+5xgzjJNc89B5tLZJoDv7hhB99wEIkIUPlIW7q+ll
+ 0j1OmPVaBu/jCi8rbLMd8Ba9eTJdmAZNlJIc7whoF3TV9G5OvO1T0Hf9yE2Nz9M6TqdATxKV58k
+ uP/dz3uSHDavxLjRtA08y8C2l+4A0T1mr2q++m5q6Ot1CAJMFaoP9mgirwsFadRas0LvbSL5M0H
+ tStuJVANp8N7G72orPedrWOOOBsR/RZccCNyn6DdHScFONo6KrHmdqpZwgkgBGhicgAd2wf8sGB
+ 49ZQEICpmcDPSjfipQl2qMNpsKqODwwuBw1YEcgFsa/Eo5Fw/Y0z0DG7WgLW2ECmxGRi+h3N6iZ
+ 2LLXboN/lF0YG1Y6kDA==
+X-Proofpoint-GUID: RNYexWOfVUYrzW2yAn6mSeBvdNp8v7Zb
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-02-20_01,2026-02-20_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- impostorscore=0 adultscore=0 clxscore=1015 spamscore=0 bulkscore=0
- lowpriorityscore=0 suspectscore=0 malwarescore=0 phishscore=0
- priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
+ clxscore=1015 lowpriorityscore=0 impostorscore=0 malwarescore=0
+ priorityscore=1501 bulkscore=0 suspectscore=0 adultscore=0 phishscore=0
+ spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
  definitions=main-2602200115
 
-Replace dev_err() + return with dev_err_probe() in admv1014_init()
-and admv1014_properties_parse(), which are called during probe. This
-simplifies error handling.
+Replace dev_err() + return with dev_err_probe() in adrf6780_reset()
+and adrf6780_init(), which are called during probe. This simplifies
+error handling.
 
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/frequency/admv1014.c | 63 ++++++++++++++------------------
- 1 file changed, 27 insertions(+), 36 deletions(-)
+ drivers/iio/frequency/adrf6780.c | 21 +++++++++------------
+ 1 file changed, 9 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iio/frequency/admv1014.c b/drivers/iio/frequency/admv1014.c
-index 7a8f92ec80a2..5fc7c9fdf2e3 100644
---- a/drivers/iio/frequency/admv1014.c
-+++ b/drivers/iio/frequency/admv1014.c
-@@ -613,10 +613,9 @@ static int admv1014_init(struct admv1014_state *st)
- 	int ret;
- 
- 	ret = regulator_bulk_enable(ADMV1014_NUM_REGULATORS, st->regulators);
+diff --git a/drivers/iio/frequency/adrf6780.c b/drivers/iio/frequency/adrf6780.c
+index a7a21f929970..bdb922667bc2 100644
+--- a/drivers/iio/frequency/adrf6780.c
++++ b/drivers/iio/frequency/adrf6780.c
+@@ -351,18 +351,16 @@ static int adrf6780_reset(struct adrf6780_state *st)
+ 	ret = __adrf6780_spi_update_bits(st, ADRF6780_REG_CONTROL,
+ 					 ADRF6780_SOFT_RESET_MSK,
+ 					 FIELD_PREP(ADRF6780_SOFT_RESET_MSK, 1));
 -	if (ret) {
--		dev_err(&spi->dev, "Failed to enable regulators");
+-		dev_err(&spi->dev, "ADRF6780 SPI software reset failed.\n");
 -		return ret;
 -	}
 +	if (ret)
 +		return dev_err_probe(&spi->dev, ret,
-+				     "Failed to enable regulators");
++				     "ADRF6780 SPI software reset failed.\n");
  
- 	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->regulators);
- 	if (ret)
-@@ -643,55 +642,48 @@ static int admv1014_init(struct admv1014_state *st)
- 	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
- 					 ADMV1014_SPI_SOFT_RESET_MSK,
- 					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 1));
+ 	ret = __adrf6780_spi_update_bits(st, ADRF6780_REG_CONTROL,
+ 					 ADRF6780_SOFT_RESET_MSK,
+ 					 FIELD_PREP(ADRF6780_SOFT_RESET_MSK, 0));
 -	if (ret) {
--		dev_err(&spi->dev, "ADMV1014 SPI software reset failed.\n");
+-		dev_err(&spi->dev, "ADRF6780 SPI software reset disable failed.\n");
 -		return ret;
 -	}
 +	if (ret)
 +		return dev_err_probe(&spi->dev, ret,
-+				     "ADMV1014 SPI software reset failed.\n");
++				     "ADRF6780 SPI software reset disable failed.\n");
  
- 	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
- 					 ADMV1014_SPI_SOFT_RESET_MSK,
- 					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 0));
--	if (ret) {
--		dev_err(&spi->dev, "ADMV1014 SPI software reset disable failed.\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&spi->dev, ret,
-+				     "ADMV1014 SPI software reset disable failed.\n");
- 
- 	ret = __admv1014_spi_write(st, ADMV1014_REG_VVA_TEMP_COMP, 0x727C);
--	if (ret) {
--		dev_err(&spi->dev, "Writing default Temperature Compensation value failed.\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&spi->dev, ret,
-+				     "Writing default Temperature Compensation value failed.\n");
- 
- 	ret = __admv1014_spi_read(st, ADMV1014_REG_SPI_CONTROL, &chip_id);
- 	if (ret)
+ 	return 0;
+ }
+@@ -383,10 +381,9 @@ static int adrf6780_init(struct adrf6780_state *st)
  		return ret;
  
- 	chip_id = FIELD_GET(ADMV1014_CHIP_ID_MSK, chip_id);
--	if (chip_id != ADMV1014_CHIP_ID) {
--		dev_err(&spi->dev, "Invalid Chip ID.\n");
+ 	chip_id = FIELD_GET(ADRF6780_CHIP_ID_MSK, chip_id);
+-	if (chip_id != ADRF6780_CHIP_ID) {
+-		dev_err(&spi->dev, "ADRF6780 Invalid Chip ID.\n");
 -		return -EINVAL;
 -	}
-+	if (chip_id != ADMV1014_CHIP_ID)
++	if (chip_id != ADRF6780_CHIP_ID)
 +		return dev_err_probe(&spi->dev, -EINVAL,
-+				     "Invalid Chip ID.\n");
++				     "ADRF6780 Invalid Chip ID.\n");
  
- 	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_QUAD,
- 					 ADMV1014_QUAD_SE_MODE_MSK,
- 					 FIELD_PREP(ADMV1014_QUAD_SE_MODE_MSK,
- 						    st->quad_se_mode));
--	if (ret) {
--		dev_err(&spi->dev, "Writing Quad SE Mode failed.\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&spi->dev, ret,
-+				     "Writing Quad SE Mode failed.\n");
- 
- 	ret = admv1014_update_quad_filters(st);
--	if (ret) {
--		dev_err(&spi->dev, "Update Quad Filters failed.\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&spi->dev, ret,
-+				     "Update Quad Filters failed.\n");
- 
- 	ret = admv1014_update_vcm_settings(st);
--	if (ret) {
--		dev_err(&spi->dev, "Update VCM Settings failed.\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&spi->dev, ret,
-+				     "Update VCM Settings failed.\n");
- 
- 	enable_reg_msk = ADMV1014_P1DB_COMPENSATION_MSK |
- 			 ADMV1014_IF_AMP_PD_MSK |
-@@ -739,10 +731,9 @@ static int admv1014_properties_parse(struct admv1014_state *st)
- 
- 	ret = devm_regulator_bulk_get(&st->spi->dev, ADMV1014_NUM_REGULATORS,
- 				      st->regulators);
--	if (ret) {
--		dev_err(&spi->dev, "Failed to request regulators");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(&spi->dev, ret,
-+				     "Failed to request regulators");
- 
- 	st->clkin = devm_clk_get(&spi->dev, "lo_in");
- 	if (IS_ERR(st->clkin))
+ 	enable_reg_msk = ADRF6780_VGA_BUFFER_EN_MSK |
+ 			ADRF6780_DETECTOR_EN_MSK |
 -- 
 2.43.0
 
