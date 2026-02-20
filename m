@@ -1,255 +1,1050 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1B6A933D6FD;
-	Fri, 20 Feb 2026 10:45:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49C0133EB13
+	for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 10:48:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771584318; cv=none; b=OXFBIJe+qamZJ2ZrMPhUkzP/KDoz4qHrt8mL8YMAaCbDa9aGxOC+2xpOqj+Q6ZB7/OcCDKgw9Am5w+apPn6dMc7dlcz9AbCqqCBoTXzOe/Z2+gQkkPnQy5q2lGF+63g7+tAJl94Iy4q3PzmrwOCKk+NLhst7HupvPxxahPChGuI=
+	t=1771584501; cv=none; b=p3iBfgsa5QjpPfqxDcIoB8yMGdsE4q+705uWQ8C6h1hn+ZMMjVw6E6cZ9f45WrmPpOm/b2YwG9k3Bsazy6fF9dJZWxpWhN8KBPLEjlsjfHcDEan4V6d6puC8Rmw4N3pDLHBSYEHtjQ0as4S49vcog3hHdT6CSIEEpCoJY0XYhgk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771584318; c=relaxed/simple;
-	bh=QZkT8ScrA199o1IIilaCEXHWoRsbZ25lr/JvvJWHqrs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BSaIhC3U3PpX0aAJ5EdcsJFabtqm/D7oX1ZpxZ3aqdaJLP2RkUGmlqNqwkzuVe1wOyTEVl/kVcw5e9IqFIe4d//AxDErWEloEpZZ/kcRy26QYo/tNQk1UmgobvKP8GYbTRgRm4+scCLKsqSN84rNgBqb7419B3WhX3wjPFDM9jM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Qxr6wche; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1771584501; c=relaxed/simple;
+	bh=b5mrx+4/SzKHFzqLVGnrWqzNAOzhQAhr8LSk8FiIxy4=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=MyciJR9bj1oa7QUTdfTFXUhR5fYSoPGJzo62ynBh5cT1pZ0mt0mW1xmjFMVnD8/6GZgcbeTKgeTtxcN52X2A8SrNL5TIozHvs/fqe1Ogs193hnmdvBvTfC6rsTuVqUiTmPdyMpFyjdRPLGT3HgrwQtCw3BtgJAJxy3MGuxBFOlE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FUcyJddt; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Qxr6wche"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771584317; x=1803120317;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=QZkT8ScrA199o1IIilaCEXHWoRsbZ25lr/JvvJWHqrs=;
-  b=Qxr6wche2RsHY90DctNwdPzD49ftp3ZOt9G1Qu58dqpDb0ODlV92TzsY
-   L+7xmMOwqfYwXzCeV/SWFr2orW5eZNdtgsnBXN3CSVo8R1WjBKYTGnJ/H
-   AXfL4/qiBTzRfqnrIzPZSQrP6gy2TQuy1tDOufVea3H21evEkW7hhYiOH
-   X7XYfHqOdUTQBI2M2R8NLOVE/IbHsUDKymGzhMP9qJe61e/1M1LEQUnie
-   JD48EmDVTU4gKimOLSbpHbaLNfAyjrDQdSx+ONmEYsR1qeswLMA0pI/nk
-   Ix2sDNMRfaD2bnmuXWaCtmbonRYFz4NEgiGhz0v3WL9/zvg0hIRbntA+P
-   w==;
-X-CSE-ConnectionGUID: hyIF8V4kSKeY+ipX+oWU/A==
-X-CSE-MsgGUID: fqtATK0fSYeAs4aIzsC9QQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11706"; a="90259648"
-X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
-   d="scan'208";a="90259648"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 02:45:16 -0800
-X-CSE-ConnectionGUID: XxMsNIndSs2MpMoP0xq24w==
-X-CSE-MsgGUID: vesYNkFtRaKkd3olEAkpXw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
-   d="scan'208";a="214047400"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 02:45:12 -0800
-Date: Fri, 20 Feb 2026 12:45:10 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-spi@vger.kernel.org
-Subject: Re: [PATCH v2 0/4] iio: adc: ad4080: add support for AD4880
- dual-channel ADC
-Message-ID: <aZg7NmyVoFE4_UKt@smile.fi.intel.com>
-References: <20260214160852.6862b58d@jic23-huawei>
- <aZC6wIWDdS8J_1eJ@smile.fi.intel.com>
- <897bd4d4-bbdf-4cbf-84f6-05c110d75d03@baylibre.com>
- <aZF9zoWHL9iHSK3q@smile.fi.intel.com>
- <dce24f01-2a8e-4b36-9685-6ff4293e2d5a@baylibre.com>
- <aZLDyWICGB_j0Z1Y@smile.fi.intel.com>
- <2f9fc7fa-dd55-44f2-9b78-c9902b8b1bbf@baylibre.com>
- <aZQmkm9Xt3PivqmX@smile.fi.intel.com>
- <d22c8fa8-1e8b-4f0a-80a1-3f13d75cd52c@baylibre.com>
- <20260218190834.642caae0@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FUcyJddt"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-4837907f535so17103965e9.3
+        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 02:48:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771584497; x=1772189297; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=QZUlr31kdJFCgIJj1oSW6x1p/jTovi7hwuS3GxWZv9c=;
+        b=FUcyJddtmAmhkRodWguKRkFbXzoJSrOvEdpILCG2cm0ZnM4IHsdo0UHBCR//Iyz+NT
+         nYzPR7Mk4/VNDAPaylCp/8B9YGcBMVuyHjS5VuXIk4JnnlYfY9nUXZ51sdo/c1pB1FtH
+         3PJTVALhR1lWHvO9Hyj3OTmaXupHNRz3zwgWoHAXGiua6JF249+Jxl6wl/zIoffc0g7i
+         kOeS5D9XyCObTvrByWm96h4K/q6RgpE6/qaHFHnU57mjsA8ChVSG9/KwK+g08Jtl0ErD
+         HvHPa8Udq0VADYPBV14rKKzHk9v9297cKQ6qQNGLnYazi1om+luAE7PyENP1pAuaW8+m
+         JmtA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771584497; x=1772189297;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QZUlr31kdJFCgIJj1oSW6x1p/jTovi7hwuS3GxWZv9c=;
+        b=KZd3ke9qTZCftzOCon+e6y/idxK61VmSeMUx/b0RdIbsTQXh3pzEMBjP/YnhzvzXd/
+         Pa1ynNQyF7FSGxGpxnNJklc68mV51bZuztZYfI3kAi9tj5zPctUNr44N27+ru2YiP8b0
+         OB1JiB5IxkfzRSqfxuhMMvN8nsXAJFdq7TUSFfZaC/qOCwHJo2xmRaL1pMGQ/t0Lvfia
+         iWbBQrqOrMlKBHoecgXbtY8nLntLxvCR8EhtSFqqdqb095xeJR+BOa+sG8+Pn+mcW+c4
+         pG+I/sWerQZLqTiY1N9yv1BXMZLnMLyYw5ESLiizC2SeVa5Dpvb8uP40eEsWkILdCqZj
+         vRJw==
+X-Gm-Message-State: AOJu0YyXuhogc5Zu3aqac/x5gQMjCxG7ZqcmNh9I5yTzhJpxjY7EGzqH
+	QvYiWSfJV9PtsBe5Ga3K4gRtvnSile4zFgtXo3ijM6gxA033COBIzm3H
+X-Gm-Gg: AZuq6aIIZgxpqHlbFATvDFhoycAUGvPUcRyi70m7HRt5kBLowddNLoeRRwzpviMOvth
+	T9jVTnNmeXfGWc8LAdgmQITrSAFOvEwTEiptYXXIvaLhrfllnEcn2FZ34Bo7L62wy6HdQf8sA6a
+	l5/bmW/FdZBZtE649dfJw+EXMvOnrKBkJf9UvjR/8CgHZR+haNtNRYELMgfSYqYnANPdRZoyGjk
+	mPJb1Bwl5Zr47jGdTStTnb8lK7/1TBYCTRN7tnDdT+FMCR5vq4vpOoY1b9EyuQ6q1aoQl1IMkiK
+	dC6bPengzHjDruSxJfZ2mYsP0fBwchu4LIYKgAJL9trtJeqcdh9OjsC2VYRJTrkY2fyDMvqKokg
+	mO1zJZttn3CNLQtcN0Lfnld2gAUshPqs8JSi078rxTVxcXyy8NW/EpDoPy9wJMkKvUCMVzRnWi5
+	gJkP7xbt8gDfMsaLopaRoyBONtpQag1Hs=
+X-Received: by 2002:a05:600c:1912:b0:480:69ae:f0e9 with SMTP id 5b1f17b1804b1-48379ba54aemr379784485e9.16.1771584497127;
+        Fri, 20 Feb 2026 02:48:17 -0800 (PST)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483a31f9475sm56279875e9.14.2026.02.20.02.48.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Feb 2026 02:48:16 -0800 (PST)
+Message-ID: <4fd329ed6416fd2f8e2a72adfa5a77f73107948b.camel@gmail.com>
+Subject: Re: [PATCH 2/3] iio: dac: ad5706r: Add support for AD5706R DAC
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>, Lars-Peter
+ Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Jonathan Cameron	 <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring	
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley	
+ <conor+dt@kernel.org>, Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?=
+ <ukleinek@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Date: Fri, 20 Feb 2026 10:48:59 +0000
+In-Reply-To: <20260220-dev_ad5706r-v1-2-7253bbd74889@analog.com>
+References: <20260220-dev_ad5706r-v1-0-7253bbd74889@analog.com>
+	 <20260220-dev_ad5706r-v1-2-7253bbd74889@analog.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260218190834.642caae0@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Feb 18, 2026 at 07:08:34PM +0000, Jonathan Cameron wrote:
-> On Tue, 17 Feb 2026 16:55:56 -0600
-> David Lechner <dlechner@baylibre.com> wrote:
-> > On 2/17/26 2:28 AM, Andy Shevchenko wrote:
-> > > On Mon, Feb 16, 2026 at 12:53:10PM -0600, David Lechner wrote:  
-> > >> On 2/16/26 1:14 AM, Andy Shevchenko wrote:  
-> > >>> On Sun, Feb 15, 2026 at 05:16:47PM -0600, David Lechner wrote:  
-> > >>>> On 2/15/26 2:03 AM, Andy Shevchenko wrote:  
-> > >>>>> On Sat, Feb 14, 2026 at 12:31:12PM -0600, David Lechner wrote:  
-> > >>>>>> On 2/14/26 12:11 PM, Andy Shevchenko wrote:  
-> > >>>>>>> On Sat, Feb 14, 2026 at 04:08:52PM +0000, Jonathan Cameron wrote:  
-> > >>>>>>>> On Sun, 8 Feb 2026 14:50:23 +0200
-> > >>>>>>>> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
-> > >>>>>>>>> On Fri, Feb 06, 2026 at 06:07:12PM +0200, Antoniu Miclaus wrote:  
+Hi Alexis,
 
-...
+Some initial feedback. I guess some discussion will be needed on the ABI yo=
+u have.
+From a quick look it seems that at least some of it can fit in standard one=
+ and=20
+some might be DT.
 
-> > >>>>>>>>> I believe there is a better approach, what you need is rather a flag
-> > >>>>>>>>> to SPI core to tell that this is the device with shared CS.  
-> > >>>>>>>>
-> > >>>>>>>> Antoniu, this comment from Andy needs addressing before we move
-> > >>>>>>>> on. It seems fairly fundamental and I'm not seeing a reply to it on list.
-> > >>>>>>>>
-> > >>>>>>>> I'm not entirely sure what Andy is suggesting will work but this
-> > >>>>>>>> is perhaps a mismatch in really understanding what is going on here.
-> > >>>>>>>> Andy, how would a flag work given they seem to be separately addressable
-> > >>>>>>>> SPI buses. I think this isn't a shared SPI CS, but rather a device
-> > >>>>>>>> with two entirely separate SPI buses. I think the only reason
-> > >>>>>>>> we are bothering to implement it as a single device at all is the
-> > >>>>>>>> shared backend.  
-> > >>>>>>>
-> > >>>>>>> My understanding that there are two devices that for whatever reason share  
-> > >>>>>>
-> > >>>>>> It is the opposite. It is a _single_ device with _two_ CS lines.  
-> > >>>>>
-> > >>>>> Don't we have already support for that? This changes the picture even more towards
-> > >>>>> NAKing this. See below why.  
-> > >>>>
-> > >>>> Yes, spi_new_ancillary_device() was introduced exactly for this sort
-> > >>>> of thing, which is why I think it makes sense to use it.
-> > >>>>  
-> > >>>>>> adc@0 {
-> > >>>>>> 	reg = <0>, <1>;
-> > >>>>>> 	...
-> > >>>>>> };
-> > >>>>>>  
-> > >>>>>>> the same CS line. Yes, I probably misread the idea behind, but I meant
-> > >>>>>>> some flag for SPI device that tells SPI core that the CS it wants is shared
-> > >>>>>>> (maybe a high bit in the cs field or so), then CS core won't complain on
-> > >>>>>>> validation about using the same cs number which is "already in use".  
-> > >>>>>>
-> > >>>>>> There was one existing user in the kernel of spi_new_ancillary_device()
-> > >>>>>> that looked like this, so it seemed the right way to approach it. However,
-> > >>>>>> code was added later that caused the primary SPI device to "claim" both
-> > >>>>>> CS lines for itself and probably broke the one existing user of
-> > >>>>>> spi_new_ancillary_device() (hard to tell without hardware to test).
-> > >>>>>>
-> > >>>>>> The idea here was to unbreak that so we could use spi_new_ancillary_device()
-> > >>>>>> just as in the existing use case.
-> > >>>>>>
-> > >>>>>> The patch for that could have been a bit more strict to only allow the
-> > >>>>>> spi_new_ancillary_device() to take CS 1 and fail otherwise, but users
-> > >>>>>> are going to notice if it isn't working right anyway, so I didn't ask
-> > >>>>>> for more checking.  
-> > >>>>>  
-> > >>>>>>>> There is an argument that maybe we should be looking at how
-> > >>>>>>>> to do data muxing backends to support the more general case of two
-> > >>>>>>>> separate chips feeding into a single buffer, but that's a complex
-> > >>>>>>>> beast and I'm not sure if it is something we actually need.  
-> > >>>>>>
-> > >>>>>> I think it would actually be quite similar to what is done in this
-> > >>>>>> series.  
-> > >>>>>
-> > >>>>> TBH, the change sounds to me like a hack. It doesn't cover other potential ways
-> > >>>>> of the multi-cs devices come into play. Given that SPI core supports multi-cs
-> > >>>>> I don't see a good justification for this patch.
-> > >>>>>
-> > >>>>> What did I miss?  
-> > >>>>
-> > >>>> As far as I can tell, other than the one existing user of
-> > >>>> spi_new_ancillary_device(), other SPI multi-CS stuff is only used
-> > >>>> by SPI flash memory devices, not general SPI devices. There code
-> > >>>> that is being modified here was introduced to support the SPI
-> > >>>> flash memory devices, so that use case is already covered by
-> > >>>> existing code.  
-> > >>>
-> > >>> Right. And obvious question why can't we apply the same approach
-> > >>> to any SPI device? Like extending existing code to cover generic
-> > >>> cases.  
-> > >>
-> > >> spi_new_ancillary_device() was already accepted in the kernel as the
-> > >> solution for this sort of use case, so isn't it already the generic
-> > >> approach?  
-> > > 
-> > > I don't think the single user functionality is considered generic.
-> > >   
-> > >> I can see that it could possibly be nice if the SPI core saw that
-> > >> there was more than one CS and called spi_new_ancillary_device()
-> > >> automatically and somehow passed that along with the main SPI device
-> > >> to the driver probe function. But since this is only the second user
-> > >> of spi_new_ancillary_device(), I don't think we have enough data
-> > >> points to be able to say if this is really what all peripheral drivers
-> > >> would want.  
-> > > 
-> > > Also, if that one designed for the case, why is needed patching?  
-> > 
-> > Because the multi-CS stuff for SPI flash memory was added later
-> > and broke it. There is only one obscure user, so it is not entirely
-> > surprising if no one noticed yet.
-
-Sounds to me like fixing multi-CS for SPI (flash mem) to make sure it
-works for that case as well is a good idea. Another approach can be to
-reconsider both existing ones (pros & cons) and come up with the better
-idea and replace them with that.
-
-But fixing an one hack by another hack seems to me not the best strategy.
+On Fri, 2026-02-20 at 16:02 +0800, Alexis Czezar Torreno wrote:
+> Add support for the Analog Devices AD5706R, a 4-channel 16-bit
+> current output digital-to-analog converter with SPI interface.
+>=20
+> Features:
+> =C2=A0 - 4 independent DAC channels
+> =C2=A0 - Hardware and software LDAC trigger
+> =C2=A0 - Configurable output range
+> =C2=A0 - PWM-based LDAC control
+> =C2=A0 - Dither and toggle modes
+> =C2=A0 - Dynamically configurable SPI speed
+>=20
+> Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+> ---
+> =C2=A0drivers/iio/dac/Kconfig=C2=A0=C2=A0 |=C2=A0=C2=A0 11 +
+> =C2=A0drivers/iio/dac/Makefile=C2=A0 |=C2=A0=C2=A0=C2=A0 1 +
+> =C2=A0drivers/iio/dac/ad5706r.c | 2290 ++++++++++++++++++++++++++++++++++=
++++++++++++
+> =C2=A03 files changed, 2302 insertions(+)
+>=20
 
 ...
 
-> > > The  mentioned approach predates the SPI memory chip support being
-> > > integrated into SPI core. I think we should consider to kill
-> > > spi_new_ancillary_device() in favour of using the same mechanism
-> > > as being used for SPI mem chips.
-> > 
-> > I'm not sure the SPI mem work ever actually got finished. In the code, see:
-> > 
-> > 	if ((of_property_present(nc, "parallel-memories")) &&
-> > 	    (!(ctlr->flags & SPI_CONTROLLER_MULTI_CS))) {
-> > 		dev_err(&ctlr->dev, "SPI controller doesn't support multi CS\n");
-> > 		return -EINVAL;
-> > 	}
-> > 
-> > But there is no SPI controller that has that flag. So I'm not sure if
-> > anyone is actually using this yet. And anyway I think the aim there was
-> > to be able to assert two CS at the same time, which is not what we are
-> > aiming to do here.
+>=20
+> +
+> +static void ad5706r_debugs_init(struct iio_dev *indio_dev)
+> +{
+> +	struct dentry *d =3D iio_get_debugfs_dentry(indio_dev);
+> +
 
-Good catch!
+It should have:
 
-Taking what I wrote in the above section, maybe it's the best to remove it
-and we go to understand what to do with the spi_new_ancillary_device?
+if (!IS_ENABLED(CONFIG_DEBUGFS))
+	return
 
-> > And the other potential user of multi-cs is stacked-memories, but this
-> > is only mentioned in dt-bindings docs and nowhere else.
-> > 
-> > There doesn't seem to be any other code besides the validation that is
-> > done when the SPI device is added that makes use of more than one CS line.
-> > 
-> > I would like to agree with you that there should be a better way, but I
-> > still don't see an obvious way to do it if there is one (other than the
-> > suggestion I already gave that probe should somehow give you two spi
-> > devices instead of one).
-> 
-> I wonder a bit if a single SPI device but with explicit control of which
-> CS index in the spi_messages or similar would work?  The disadvantage is you'd
-> probably want a lot of helpers to have variants with a selection parameter.
-> 
-> Would end up smelling like paged registers, just with a chip select to pick
-> the page rather than a page register.
-> 
-> If this isn't common, may not be worth the effort.
+> +	debugfs_create_file_unsafe("streaming_addr", 0600, d,
+> +				=C2=A0=C2=A0 indio_dev, &ad5706r_streaming_addr_fops);
+> +	debugfs_create_file_unsafe("streaming_len", 0600, d,
+> +				=C2=A0=C2=A0 indio_dev, &ad5706r_streaming_len_fops);
+> +	debugfs_create_file_unsafe("streaming_data", 0600, d,
+> +				=C2=A0=C2=A0 indio_dev, &ad5706r_streaming_data_fops);
+> +	debugfs_create_file_unsafe("streaming_reg_access", 0600, d,
+> +				=C2=A0=C2=A0 indio_dev, &ad5706r_streaming_reg_access_fops);
+> +	debugfs_create_file_unsafe("spi_speed_hz_write", 0600, d,
+> +				=C2=A0=C2=A0 indio_dev, &ad5706r_spi_speed_write_fops);
+> +	debugfs_create_file_unsafe("spi_speed_hz_read", 0600, d,
+> +				=C2=A0=C2=A0 indio_dev, &ad5706r_spi_speed_read_fops);
+> +}
 
-At least that's common for I²C EEPROMs.
+...
 
--- 
-With Best Regards,
-Andy Shevchenko
+>=20
+> +
+> +static int ad5706r_mux_out_sel_write(struct iio_dev *indio_dev,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0 unsigned int item)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	unsigned int reg_value;
+> +	int ret;
+> +
+> +	/* Validate index */
+> +	if (item >=3D ARRAY_SIZE(mux_out_sel_reg_values))
+> +		return -EINVAL;
+> +
+> +	/* Convert index to register value */
+> +	reg_value =3D mux_out_sel_reg_values[item];
+> +
+> +	ret =3D ad5706r_spi_write(st, AD5706R_REG_MUX_OUT_SEL,
+> +				reg_value << st->shift_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->mux_out_sel =3D item;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5706r_mux_out_sel_read(struct iio_dev *indio_dev,
+> +				=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	u16 reg_val;
+> +	u8 reg_byte;
+> +	int ret;
+> +	int i;
+> +
+> +	ret =3D ad5706r_spi_read(st, AD5706R_REG_MUX_OUT_SEL, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Extract the 8-bit value */
+> +	reg_byte =3D (reg_val >> st->shift_val) & 0xFF;
+> +
+> +	/* Find which index has this register value */
+> +	for (i =3D 0; i < ARRAY_SIZE(mux_out_sel_reg_values); i++) {
+> +		if (mux_out_sel_reg_values[i] =3D=3D reg_byte) {
+> +			st->mux_out_sel =3D i;
+> +			return i;=C2=A0 /* Return index, not register value */
+> +		}
+> +	}
+> +
+> +	/* Unknown value - default to disabled */
+> +	st->mux_out_sel =3D MUX_OUT_SEL_DISABLED;
+> +	return MUX_OUT_SEL_DISABLED;
+> +}
+
+We already have other parts with a similar setting (in frequency with this)=
+. There it
+supported in DT:
+
+https://elixir.bootlin.com/linux/v6.19-rc5/source/Documentation/devicetree/=
+bindings/iio/frequency/adi,adf4350.yaml#L82
 
 
+Any benefit for this to be a runtime toggle?
+
+> +
+> +static const struct iio_enum ad5706r_mux_out_sel_enum =3D {
+> +	.items =3D mux_out_sel_iio_dev_attr_vals,
+> +	.num_items =3D ARRAY_SIZE(mux_out_sel_iio_dev_attr_vals),
+> +	.set =3D ad5706r_mux_out_sel_write,
+> +	.get =3D ad5706r_mux_out_sel_read,
+> +};
+> +
+> +static ssize_t ad5706r_multi_dac_input_a_write(struct iio_dev *indio_dev=
+,
+> +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 uintptr_t private, const struc=
+t iio_chan_spec
+> *chan,
+> +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const char *buf, size_t len)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	unsigned int reg_val;
+> +	int ret;
+> +
+> +	ret =3D kstrtou32(buf, 16, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D ad5706r_spi_write(st, AD5706R_REG_MULTI_DAC_INPUT_A,
+> +				AD5706R_MASK_MULTI_DAC_INPUT_A(reg_val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	return ret ? ret : len;
+> +}
+> +
+> +static ssize_t ad5706r_multi_dac_input_a_read(struct iio_dev *indio_dev,
+> +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 uintptr_t private, const struct iio_=
+chan_spec
+> *chan,
+> +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 char *buf)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	u16 reg_val;
+> +	int ret;
+> +
+> +	ret =3D ad5706r_spi_read(st, AD5706R_REG_MULTI_DAC_INPUT_A, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return sysfs_emit(buf, "0x%lx\n", AD5706R_MASK_MULTI_DAC_INPUT_A(reg_va=
+l));
+> +}
+> +
+> +static int ad5706r_multi_dac_sw_ldac_trigger_write(struct iio_dev *indio=
+_dev,
+> +						=C2=A0=C2=A0 const struct iio_chan_spec *chan,
+> +						=C2=A0=C2=A0 unsigned int item)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret =3D ad5706r_spi_write(st, AD5706R_REG_MULTI_DAC_SW_LDAC, item << st=
+->shift_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5706r_multi_dac_sw_ldac_trigger_read(struct iio_dev *indio_=
+dev,
+> +						=C2=A0 const struct iio_chan_spec *chan)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	u16 reg_val;
+> +	int ret;
+> +
+> +	ret =3D ad5706r_spi_read(st, AD5706R_REG_MULTI_DAC_SW_LDAC, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return reg_val;
+> +}
+> +
+> +static const struct iio_enum ad5706r_multi_dac_sw_ldac_trigger_enum =3D =
+{
+> +	.items =3D multi_dac_sw_ldac_trigger_iio_dev_attr_vals,
+> +	.num_items =3D ARRAY_SIZE(multi_dac_sw_ldac_trigger_iio_dev_attr_vals),
+> +	.set =3D ad5706r_multi_dac_sw_ldac_trigger_write,
+> +	.get =3D ad5706r_multi_dac_sw_ldac_trigger_read,
+> +};
+> +
+> +static ssize_t ad5706r_reference_volts_write(struct iio_dev *indio_dev,
+> +					=C2=A0=C2=A0=C2=A0=C2=A0 uintptr_t private, const struct iio_chan_s=
+pec *chan,
+> +					=C2=A0=C2=A0=C2=A0=C2=A0 const char *buf, size_t len)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	unsigned int reg_val;
+> +	int ret;
+> +
+> +	ret =3D kstrtou32(buf, 10, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->reference_volts =3D reg_val;
+
+Really, can we get anything the user gives us :)?
+
+> +
+> +	return ret ? ret : len;
+> +}
+> +
+> +static ssize_t ad5706r_reference_volts_read(struct iio_dev *indio_dev,
+> +					=C2=A0=C2=A0=C2=A0 uintptr_t private, const struct iio_chan_spec *c=
+han,
+> +					=C2=A0=C2=A0=C2=A0 char *buf)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +
+> +	return sysfs_emit(buf, "%u\n", st->reference_volts);
+> +}
+
+Ditto for the above. For DACs, we typically don't mess with the reference l=
+evel at runtime
+at the device can be in control of other HW.
+
+> +
+> +static int ad5706r_ref_select_write(struct iio_dev *indio_dev,
+> +				=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan,
+> +				=C2=A0=C2=A0=C2=A0 unsigned int item)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret =3D ad5706r_spi_write(st, AD5706R_REG_BANDGAP_CONTROL, item);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->ref_select =3D item;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5706r_ref_select_read(struct iio_dev *indio_dev,
+> +				=C2=A0=C2=A0 const struct iio_chan_spec *chan)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	u16 reg_val;
+> +	int ret;
+> +
+> +	ret =3D ad5706r_spi_read(st, AD5706R_REG_BANDGAP_CONTROL, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (reg_val)
+> +		st->ref_select =3D REF_SELECT_INTERNAL;
+> +	else
+> +		st->ref_select =3D REF_SELECT_EXTERNAL;
+> +
+> +	return st->ref_select;
+> +}
+> +
+> +static const struct iio_enum ad5706r_ref_select_enum =3D {
+> +	.items =3D ref_select_iio_dev_attr_vals,
+> +	.num_items =3D ARRAY_SIZE(ref_select_iio_dev_attr_vals),
+> +	.set =3D ad5706r_ref_select_write,
+> +	.get =3D ad5706r_ref_select_read,
+> +};
+
+The above does not look like a good idea IIUC. It seems this needs to be su=
+pported using
+regulators.
+
+...
+
+>=20
+> +
+> +static int ad5706r_output_state_read(struct iio_dev *indio_dev,
+> +				=C2=A0=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	u16 reg_val;
+> +	u16 reg_val2;
+> +	u16 reg_val3;
+> +	u16 gpio_val;
+> +	u16 mask_val;
+> +	int ret;
+> +
+> +	ret =3D ad5706r_spi_read(st, AD5706R_REG_OUT_OPERATING_MODE, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D ad5706r_spi_read(st, AD5706R_REG_OUT_SWITCH_EN, &reg_val2);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret =3D ad5706r_spi_read(st, AD5706R_REG_SHDN_EN, &reg_val3);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mask_val =3D 1 << (chan->channel + st->shift_val);
+> +	reg_val =3D mask_val & reg_val;
+> +	reg_val2 =3D mask_val & reg_val2;
+> +	reg_val3 =3D mask_val & reg_val3;
+> +	gpio_val =3D gpiod_get_value_cansleep(st->shdn_gpio);
+> +
+> +	if (reg_val && !reg_val3)
+> +		st->output_state[chan->channel] =3D OUTPUT_STATE_NORMAL_SW;
+> +	else if (!reg_val && !reg_val2)
+> +		st->output_state[chan->channel] =3D OUTPUT_STATE_SHUTDOWN_TO_TRISTATE_=
+SW;
+> +	else if (!reg_val && reg_val2)
+> +		st->output_state[chan->channel] =3D OUTPUT_STATE_SHUTDOWN_TO_GND_SW;
+> +	else if (reg_val && reg_val3 && gpio_val)
+> +		st->output_state[chan->channel] =3D OUTPUT_STATE_NORMAL_HW;
+> +	else if (reg_val && !reg_val2 && reg_val3 && !gpio_val)
+> +		st->output_state[chan->channel] =3D OUTPUT_STATE_SHUTDOWN_TO_TRISTATE_=
+HW;
+> +	else if (reg_val && reg_val2 && reg_val3 && !gpio_val)
+> +		st->output_state[chan->channel] =3D OUTPUT_STATE_SHUTDOWN_TO_GND_HW;
+> +
+> +	return st->output_state[chan->channel];
+> +}
+
+Also think we already have some standard ABI that seems to fit the above:
+
+https://elixir.bootlin.com/linux/v6.19-rc5/source/Documentation/ABI/testing=
+/sysfs-bus-iio#L758
+
+> +
+> +static const struct iio_enum ad5706r_output_state_enum =3D {
+> +	.items =3D output_state_iio_dev_attr_vals,
+> +	.num_items =3D ARRAY_SIZE(output_state_iio_dev_attr_vals),
+> +	.set =3D ad5706r_output_state_write,
+> +	.get =3D ad5706r_output_state_read,
+> +};
+> +
+> +static int ad5706r_ldac_trigger_chn_write(struct iio_dev *indio_dev,
+> +					=C2=A0 const struct iio_chan_spec *chan,
+> +					=C2=A0 unsigned int item)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	bool val_func_en =3D 0;
+> +	bool val_func_mode =3D 0;
+> +	bool val_sync_async =3D 0;
+> +	bool val_hw_sw =3D 0;
+> +	int ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	st->ldac_trigger_chn[chan->channel] =3D LDAC_TRIGGER_CHN_NONE;
+> +	st->toggle_trigger_chn[chan->channel] =3D TOGGLE_TRIGGER_CHN_NONE;
+> +	st->dither_trigger_chn[chan->channel] =3D DITHER_TRIGGER_CHN_NONE;
+> +
+> +	if (item !=3D LDAC_TRIGGER_CHN_NONE)
+> +		val_sync_async =3D 1;	/* Write 1 LDAC_SYNC_ASYNC */
+> +
+> +	if (item =3D=3D LDAC_TRIGGER_CHN_SW_TRIGGER)
+> +		val_hw_sw =3D 1;		/* Write 1 LDAC_HW_SW for SW */
+> +
+> +	ret =3D _set_reg_channel_mode(st, chan->channel, val_func_en, val_func_=
+mode,
+> +				=C2=A0=C2=A0=C2=A0 val_sync_async, val_hw_sw);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->ldac_trigger_chn[chan->channel] =3D item;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5706r_ldac_trigger_chn_read(struct iio_dev *indio_dev,
+> +					 const struct iio_chan_spec *chan)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +
+> +	return st->ldac_trigger_chn[chan->channel];
+> +}
+> +
+> +static const struct iio_enum ad5706r_ldac_trigger_chn_enum =3D {
+> +	.items =3D ldac_trigger_chn_iio_dev_attr_vals,
+> +	.num_items =3D ARRAY_SIZE(ldac_trigger_chn_iio_dev_attr_vals),
+> +	.set =3D ad5706r_ldac_trigger_chn_write,
+> +	.get =3D ad5706r_ldac_trigger_chn_read,
+> +};
+> +
+> +static int ad5706r_toggle_trigger_chn_write(struct iio_dev *indio_dev,
+> +					=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan,
+> +					=C2=A0=C2=A0=C2=A0 unsigned int item)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	bool val_func_en =3D 0;
+> +	bool val_func_mode =3D 0;
+> +	bool val_sync_async =3D 0;
+> +	bool val_hw_sw =3D 0;
+> +	int ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	st->ldac_trigger_chn[chan->channel] =3D LDAC_TRIGGER_CHN_NONE;
+> +	st->toggle_trigger_chn[chan->channel] =3D TOGGLE_TRIGGER_CHN_NONE;
+> +	st->dither_trigger_chn[chan->channel] =3D DITHER_TRIGGER_CHN_NONE;
+> +
+> +	if (item !=3D TOGGLE_TRIGGER_CHN_NONE)
+> +		val_func_en =3D 1;	/* Write 1 FUNC_EN */
+> +	if (item =3D=3D TOGGLE_TRIGGER_CHN_SW_TRIGGER)
+> +		val_hw_sw =3D 1;		/* Write 1 LDAC_HW_SW for SW */
+> +
+> +	ret =3D _set_reg_channel_mode(st, chan->channel, val_func_en, val_func_=
+mode,
+> +				=C2=A0=C2=A0=C2=A0 val_sync_async, val_hw_sw);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->toggle_trigger_chn[chan->channel] =3D item;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5706r_toggle_trigger_chn_read(struct iio_dev *indio_dev,
+> +					=C2=A0=C2=A0 const struct iio_chan_spec *chan)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +
+> +	return st->toggle_trigger_chn[chan->channel];
+> +}
+> +
+> +static const struct iio_enum ad5706r_toggle_trigger_chn_enum =3D {
+> +	.items =3D toggle_trigger_chn_iio_dev_attr_vals,
+> +	.num_items =3D ARRAY_SIZE(toggle_trigger_chn_iio_dev_attr_vals),
+> +	.set =3D ad5706r_toggle_trigger_chn_write,
+> +	.get =3D ad5706r_toggle_trigger_chn_read,
+> +};
+> +
+> +static int ad5706r_dither_trigger_chn_write(struct iio_dev *indio_dev,
+> +					=C2=A0=C2=A0=C2=A0 const struct iio_chan_spec *chan,
+> +					=C2=A0=C2=A0=C2=A0 unsigned int item)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	bool val_func_en =3D 0;
+> +	bool val_func_mode =3D 1;
+> +	bool val_sync_async =3D 0;
+> +	bool val_hw_sw =3D 0;
+> +	int ret;
+> +
+> +	guard(mutex)(&st->lock);
+> +
+> +	st->ldac_trigger_chn[chan->channel] =3D LDAC_TRIGGER_CHN_NONE;
+> +	st->toggle_trigger_chn[chan->channel] =3D TOGGLE_TRIGGER_CHN_NONE;
+> +	st->dither_trigger_chn[chan->channel] =3D DITHER_TRIGGER_CHN_NONE;
+> +
+> +	if (item !=3D DITHER_TRIGGER_CHN_NONE)
+> +		val_func_en =3D 1;	/* Write 1 FUNC_EN */
+> +	if (item =3D=3D DITHER_TRIGGER_CHN_SW_TRIGGER)
+> +		val_hw_sw =3D 1;		/* Write 1 LDAC_HW_SW for SW */
+> +
+> +	ret =3D _set_reg_channel_mode(st, chan->channel, val_func_en, val_func_=
+mode,
+> +				=C2=A0=C2=A0=C2=A0 val_sync_async, val_hw_sw);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->dither_trigger_chn[chan->channel] =3D item;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5706r_dither_trigger_chn_read(struct iio_dev *indio_dev,
+> +					=C2=A0=C2=A0 const struct iio_chan_spec *chan)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +
+> +	return st->dither_trigger_chn[chan->channel];
+> +}
+> +
+> +static const struct iio_enum ad5706r_dither_trigger_chn_enum =3D {
+> +	.items =3D dither_trigger_chn_iio_dev_attr_vals,
+> +	.num_items =3D ARRAY_SIZE(dither_trigger_chn_iio_dev_attr_vals),
+> +	.set =3D ad5706r_dither_trigger_chn_write,
+> +	.get =3D ad5706r_dither_trigger_chn_read,
+> +};
+
+
+There are already some defined ABI for DACs which have toggle and dither mo=
+des:
+
+https://elixir.bootlin.com/linux/v6.19-rc5/source/Documentation/ABI/testing=
+/sysfs-bus-iio-dac
+
+Make sure to see what can be reused and what needs to be added.
+
+> +
+> +static int ad5706r_multi_dac_sel_ch_write(struct iio_dev *indio_dev,
+> +					=C2=A0 const struct iio_chan_spec *chan,
+> +					=C2=A0 unsigned int item)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	u16 reg_val;
+> +	u16 mask_val;
+> +	int ret;
+> +
+> +	ret =3D ad5706r_spi_read(st, AD5706R_REG_MULTI_DAC_SEL_CH, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mask_val =3D BIT(chan->channel + st->shift_val);
+> +	reg_val =3D ~mask_val & reg_val;
+> +
+> +	if (item =3D=3D MULTI_DAC_SEL_CH_EXCLUDE)
+> +		ret =3D ad5706r_spi_write(st, AD5706R_REG_MULTI_DAC_SEL_CH,
+> +					reg_val);
+> +	else
+> +		ret =3D ad5706r_spi_write(st, AD5706R_REG_MULTI_DAC_SEL_CH,
+> +					reg_val | mask_val);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ad5706r_multi_dac_sel_ch_read(struct iio_dev *indio_dev,
+> +					 const struct iio_chan_spec *chan)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	u16 reg_val;
+> +	u16 mask_val;
+> +	int ret;
+> +
+> +	ret =3D ad5706r_spi_read(st, AD5706R_REG_MULTI_DAC_SEL_CH, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mask_val =3D BIT(chan->channel + st->shift_val);
+> +	reg_val =3D mask_val & reg_val;
+> +
+> +	if (reg_val)
+> +		st->multi_dac_sel_ch[chan->channel] =3D MULTI_DAC_SEL_CH_INCLUDE;
+> +	else
+> +		st->multi_dac_sel_ch[chan->channel] =3D MULTI_DAC_SEL_CH_EXCLUDE;
+> +
+> +	return st->multi_dac_sel_ch[chan->channel];
+> +}
+> +
+> +static const struct iio_enum ad5706r_multi_dac_sel_ch_enum =3D {
+> +	.items =3D multi_dac_sel_ch_iio_chan_attr_vals,
+> +	.num_items =3D ARRAY_SIZE(multi_dac_sel_ch_iio_chan_attr_vals),
+> +	.set =3D ad5706r_multi_dac_sel_ch_write,
+> +	.get =3D ad5706r_multi_dac_sel_ch_read,
+> +};
+> +
+> +#define AD5706R_CHAN_EXT_INFO(_name, _what, _shared, _read, _write) {	\
+> +	.name =3D _name,							\
+> +	.read =3D (_read),						\
+> +	.write =3D (_write),						\
+> +	.private =3D (_what),						\
+> +	.shared =3D (_shared),						\
+> +}
+> +
+> +static struct iio_chan_spec_ext_info ad5706r_ext_info[] =3D {
+> +	/* device_attribute */
+> +	AD5706R_CHAN_EXT_INFO("dev_addr", 0, IIO_SHARED_BY_ALL,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ad5706r_dev_addr_read, ad5706r_dev_add=
+r_write),
+> +
+> +	IIO_ENUM("addr_ascension", IIO_SHARED_BY_ALL, &ad5706r_addr_ascension_e=
+num),
+> +	IIO_ENUM_AVAILABLE("addr_ascension", IIO_SHARED_BY_ALL, &ad5706r_addr_a=
+scension_enum),
+> +
+> +	IIO_ENUM("single_instr", IIO_SHARED_BY_ALL, &ad5706r_single_instr_enum)=
+,
+> +	IIO_ENUM_AVAILABLE("single_instr", IIO_SHARED_BY_ALL, &ad5706r_single_i=
+nstr_enum),
+> +
+> +	IIO_ENUM("hw_ldac_tg_state", IIO_SHARED_BY_ALL, &ad5706r_hw_ldac_tg_sta=
+te_enum),
+> +	IIO_ENUM_AVAILABLE("hw_ldac_tg_state", IIO_SHARED_BY_ALL,
+> &ad5706r_hw_ldac_tg_state_enum),
+> +
+> +	/* Sampling Frequency part of read/write RAW */
+> +
+> +	IIO_ENUM("hw_ldac_tg_pwm", IIO_SHARED_BY_ALL, &ad5706r_hw_ldac_tg_pwm_e=
+num),
+> +	IIO_ENUM_AVAILABLE("hw_ldac_tg_pwm", IIO_SHARED_BY_ALL, &ad5706r_hw_lda=
+c_tg_pwm_enum),
+> +
+> +	IIO_ENUM("mux_out_sel", IIO_SHARED_BY_ALL, &ad5706r_mux_out_sel_enum),
+> +	IIO_ENUM_AVAILABLE("mux_out_sel", IIO_SHARED_BY_ALL, &ad5706r_mux_out_s=
+el_enum),
+> +
+> +	AD5706R_CHAN_EXT_INFO("multi_dac_input_a", 0, IIO_SHARED_BY_ALL,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ad5706r_multi_dac_input_a_read, ad5706=
+r_multi_dac_input_a_write),
+> +
+> +	IIO_ENUM("multi_dac_sw_ldac_trigger", IIO_SHARED_BY_ALL,
+> +		 &ad5706r_multi_dac_sw_ldac_trigger_enum),
+> +	IIO_ENUM_AVAILABLE("multi_dac_sw_ldac_trigger", IIO_SHARED_BY_ALL,
+> +			=C2=A0=C2=A0 &ad5706r_multi_dac_sw_ldac_trigger_enum),
+> +
+> +	AD5706R_CHAN_EXT_INFO("reference_volts", 0, IIO_SHARED_BY_ALL,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ad5706r_reference_volts_read, ad5706r_=
+reference_volts_write),
+> +
+> +	IIO_ENUM("ref_select", IIO_SHARED_BY_ALL, &ad5706r_ref_select_enum),
+> +	IIO_ENUM_AVAILABLE("ref_select", IIO_SHARED_BY_ALL, &ad5706r_ref_select=
+_enum),
+> +
+> +	IIO_ENUM("hw_shutdown_state", IIO_SHARED_BY_ALL, &ad5706r_hw_shutdown_s=
+tate_enum),
+> +	IIO_ENUM_AVAILABLE("hw_shutdown_state", IIO_SHARED_BY_ALL,
+> &ad5706r_hw_shutdown_state_enum),
+> +
+> +	/* Channel Attributes */
+> +	AD5706R_CHAN_EXT_INFO("input_register_a", 0, IIO_SEPARATE,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ad5706r_input_register_a_read, ad5706r=
+_input_register_a_write),
+> +
+> +	AD5706R_CHAN_EXT_INFO("input_register_b", 0, IIO_SEPARATE,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ad5706r_input_register_b_read, ad5706r=
+_input_register_b_write),
+> +
+> +	IIO_ENUM("hw_active_edge", IIO_SEPARATE, &ad5706r_hw_active_edge_enum),
+> +	IIO_ENUM_AVAILABLE("hw_active_edge", IIO_SEPARATE, &ad5706r_hw_active_e=
+dge_enum),
+> +
+> +	IIO_ENUM("range_sel", IIO_SEPARATE, &ad5706r_range_sel_enum),
+> +	IIO_ENUM_AVAILABLE("range_sel", IIO_SEPARATE, &ad5706r_range_sel_enum),
+> +
+> +	IIO_ENUM("output_state", IIO_SEPARATE, &ad5706r_output_state_enum),
+> +	IIO_ENUM_AVAILABLE("output_state", IIO_SEPARATE, &ad5706r_output_state_=
+enum),
+> +
+> +	IIO_ENUM("ldac_trigger_chn", IIO_SEPARATE, &ad5706r_ldac_trigger_chn_en=
+um),
+> +	IIO_ENUM_AVAILABLE("ldac_trigger_chn", IIO_SEPARATE, &ad5706r_ldac_trig=
+ger_chn_enum),
+> +
+> +	IIO_ENUM("toggle_trigger_chn", IIO_SEPARATE, &ad5706r_toggle_trigger_ch=
+n_enum),
+> +	IIO_ENUM_AVAILABLE("toggle_trigger_chn", IIO_SEPARATE, &ad5706r_toggle_=
+trigger_chn_enum),
+> +
+> +	IIO_ENUM("dither_trigger_chn", IIO_SEPARATE, &ad5706r_dither_trigger_ch=
+n_enum),
+> +	IIO_ENUM_AVAILABLE("dither_trigger_chn", IIO_SEPARATE, &ad5706r_dither_=
+trigger_chn_enum),
+> +
+> +	IIO_ENUM("multi_dac_sel_ch", IIO_SEPARATE, &ad5706r_multi_dac_sel_ch_en=
+um),
+> +	IIO_ENUM_AVAILABLE("multi_dac_sel_ch", IIO_SEPARATE, &ad5706r_multi_dac=
+_sel_ch_enum),
+
+Oh boy, not going through all of the above now but that's a lot of custom A=
+BI. It definitely needs
+and ABI doc explaining what's being done.
+
+> +
+> +	{},
+> +};
+> +
+> +/* Channel */
+> +static int ad5706r_read_raw(struct iio_dev *indio_dev,
+> +			=C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *chan,
+> +			=C2=A0=C2=A0=C2=A0 int *val,
+> +			=C2=A0=C2=A0=C2=A0 int *val2,
+> +			=C2=A0=C2=A0=C2=A0 long mask)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	u16 reg_val;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		scoped_guard(mutex, &st->lock) {
+> +			ret =3D ad5706r_spi_read(st, AD5706R_REG_DAC_DATA_READBACK_CH(chan-
+> >channel),
+> +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &reg_val);
+> +
+> +			if (ret)
+> +				return ret;
+> +
+> +			*val =3D reg_val;
+> +		}
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (st->range_sel[chan->channel]) {
+> +		case RANGE_SEL_50:
+> +			*val =3D 50 * HZ_PER_MHZ / AD5706R_DAC_MAX_CODE;
+> +			break;
+> +		case RANGE_SEL_150:
+> +			*val =3D 150 * HZ_PER_MHZ / AD5706R_DAC_MAX_CODE;
+> +			break;
+> +		case RANGE_SEL_200:
+> +			*val =3D 200 * HZ_PER_MHZ / AD5706R_DAC_MAX_CODE;
+> +			break;
+> +		case RANGE_SEL_300:
+
+Same comment about the prefix.
+
+> +		default:
+> +			*val =3D 300 * HZ_PER_MHZ / AD5706R_DAC_MAX_CODE;
+> +			break;
+> +		}
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		*val =3D 0;
+> +		return IIO_VAL_INT;
+
+If offset is 0 we should not need it.
+
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*val =3D st->sampling_frequency;
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ad5706r_write_raw(struct iio_dev *indio_dev,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *chan,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0 int val,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0 int val2,
+> +			=C2=A0=C2=A0=C2=A0=C2=A0 long mask)
+> +{
+> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
+> +	struct pwm_state ldacb_pwm_state;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		/* Sets minimum and maximum frequency */
+> +		val =3D clamp(val, SAMPLING_FREQUENCY_MIN_HZ, SAMPLING_FREQUENCY_MAX_H=
+Z);
+
+
+Typically the macros should have the device name as prefix.
+
+> +
+> +		scoped_guard(mutex, &st->lock) {
+> +			pwm_get_state(st->ldacb_pwm, &ldacb_pwm_state);
+> +			ldacb_pwm_state.duty_cycle =3D DIV_ROUND_CLOSEST_ULL(NANO, 2 * val);
+> +			ldacb_pwm_state.period =3D DIV_ROUND_CLOSEST_ULL(NANO, val);
+> +			ldacb_pwm_state.enabled =3D true;
+> +
+> +			ret =3D pwm_apply_might_sleep(st->ldacb_pwm, &ldacb_pwm_state);
+> +			if (ret)
+> +				return ret;
+> +
+> +			st->sampling_frequency =3D val;
+> +		}
+> +		return 0;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info ad5706r_info =3D {
+> +	.read_raw =3D &ad5706r_read_raw,
+> +	.write_raw =3D &ad5706r_write_raw,
+> +	.debugfs_reg_access =3D &ad5706r_reg_access,
+> +};
+> +
+> +#define AD5706R_CHAN(_channel) {				\
+> +	.type =3D IIO_CURRENT,					\
+> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |		\
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 BIT(IIO_CHAN_INFO_SCALE) |	\
+> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 BIT(IIO_CHAN_INFO_OFFSET),	\
+> +	.info_mask_shared_by_all =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),\
+> +	.output =3D 1,						\
+> +	.indexed =3D 1,						\
+> +	.channel =3D _channel,					\
+> +	.ext_info =3D ad5706r_ext_info,				\
+> +}
+> +
+> +static const struct iio_chan_spec ad5706r_channels[] =3D {
+> +	AD5706R_CHAN(0),
+> +	AD5706R_CHAN(1),
+> +	AD5706R_CHAN(2),
+> +	AD5706R_CHAN(3),
+> +};
+> +
+> +static int _ad5706r_setup(struct ad5706r_state *st)
+> +{
+> +	struct pwm_state ldacb_pwm_state;
+> +	struct device *dev =3D &st->spi->dev;
+> +	int ret;
+> +	int i;
+> +
+> +	guard(mutex)(&st->lock);
+
+Hmm, why the above?
+
+> +
+> +	st->debug_streaming_len =3D 0;
+> +	st->debug_streaming_data =3D 0;
+> +	st->debug_streaming_addr =3D 0;
+
+The above should not be needed.
+
+> +	st->debug_spi_speed_hz_write =3D 10000000;
+> +	st->debug_spi_speed_hz_read =3D 10000000;
+> +
+> +	st->dev_addr =3D 0x00;
+> +	st->addr_ascension =3D ADDR_ASCENSION_DECREMENT;
+> +	st->single_instr =3D SINGLE_INSTR_STREAMING;
+> +	st->shift_val =3D 0;
+> +	st->addr_desc =3D 1;
+> +	st->hw_ldac_tg_state =3D HW_LDAC_TG_STATE_LOW;
+> +	st->sampling_frequency =3D 1000000;
+> +	st->hw_ldac_tg_pwm =3D HW_LDAC_TG_PWM_DISABLED;
+> +	st->mux_out_sel =3D MUX_OUT_SEL_DISABLED;
+> +	st->multi_dac_input_a =3D 0;
+> +	st->reference_volts =3D 2500;
+> +	st->ref_select =3D REF_SELECT_EXTERNAL;
+> +	st->hw_shutdown_state =3D HW_SHUTDOWN_STATE_LOW;
+> +
+> +	for (i =3D 0; i < 4; i++) {
+> +		st->hw_active_edge[i] =3D HW_ACTIVE_EDGE_RISING_EDGE;
+> +		st->range_sel[i] =3D RANGE_SEL_50;
+> +		st->output_state[i] =3D OUTPUT_STATE_NORMAL_SW;
+> +		st->ldac_trigger_chn[i] =3D LDAC_TRIGGER_CHN_HW_TRIGGER;
+> +		st->toggle_trigger_chn[i] =3D TOGGLE_TRIGGER_CHN_HW_TRIGGER;
+> +		st->dither_trigger_chn[i] =3D DITHER_TRIGGER_CHN_HW_TRIGGER;
+> +		st->multi_dac_sel_ch[i] =3D MULTI_DAC_SEL_CH_EXCLUDE;
+> +	}
+> +
+> +	/* get spi_clk axi_clkgen, no enable as spi_engine driver enables it */
+> +	st->reference_clk =3D devm_clk_get(dev, "spi_clk");
+> +	if (IS_ERR(st->reference_clk))
+> +		return dev_err_probe(dev, PTR_ERR(st->reference_clk),
+> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get AXI CLKGEN clock\n");
+> +
+> +	st->ldacb_pwm =3D devm_pwm_get(dev, "ad5706r_ldacb");
+> +	if (IS_ERR(st->ldacb_pwm))
+> +		return dev_err_probe(dev, PTR_ERR(st->ldacb_pwm),
+> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get LDACB PWM\n");
+
+nit: new line
+
+> +	pwm_get_state(st->ldacb_pwm, &ldacb_pwm_state);
+> +	ldacb_pwm_state.duty_cycle =3D 0;
+> +	ldacb_pwm_state.period =3D DIV_ROUND_CLOSEST_ULL(NANO, st->sampling_fre=
+quency);
+> +	ldacb_pwm_state.enabled =3D true;
+> +	ret =3D pwm_apply_might_sleep(st->ldacb_pwm, &ldacb_pwm_state);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to apply PWM state\n");
+> +
+> +	st->resetb_gpio =3D devm_gpiod_get_optional(dev, "dac-resetb", GPIOD_OU=
+T_LOW);
+> +	if (IS_ERR(st->resetb_gpio)) {
+> +		return dev_err_probe(dev, PTR_ERR(st->resetb_gpio),
+> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get RESET_B GPIO\n");
+> +	}
+
+
+reset gpios can now be handled using the reset subsystem.
+
+> +
+> +	st->shdn_gpio =3D devm_gpiod_get_optional(dev, "dac-shdn", GPIOD_OUT_HI=
+GH);
+> +	if (IS_ERR(st->shdn_gpio)) {
+> +		return dev_err_probe(dev, PTR_ERR(st->shdn_gpio),
+> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get SHDN GPIO\n");
+> +	}
+> +
+> +	/*
+> +	 * Get SPI max speed from device tree. Allows up to 100MHz.
+> +	 * If value is taken from spi->max_speed_hz, it is capped at 25MHz.
+> +	 */
+> +	ret =3D device_property_read_u32(dev, "spi-max-frequency", &st->spi_max=
+_speed_hz);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to set SPI Max Speed\n");
+> +
+> +	st->spi_max_speed_hz =3D clamp(st->spi_max_speed_hz, SPI_MIN_SPEED_HZ, =
+SPI_MAX_SPEED_HZ);
+> +
+
+Hmm, why do we need the above? The spi core should handle it. Why is it cap=
+ped? Maybe because
+the controller you tested this on can't handle it?
+
+> +	return 0;
+> +}
+> +
+> +static int ad5706r_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct ad5706r_state *st;
+> +	int ret;
+> +
+> +	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st =3D iio_priv(indio_dev);
+> +	mutex_init(&st->lock);
+
+These days, devm_mutex_init()
+
+> +	st->spi =3D spi;
+> +
+> +	ret =3D _ad5706r_setup(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->name =3D "ad5706r";
+> +	indio_dev->info =3D &ad5706r_info;
+> +	indio_dev->modes =3D INDIO_DIRECT_MODE;
+> +	indio_dev->channels =3D ad5706r_channels;
+> +	indio_dev->num_channels =3D ARRAY_SIZE(ad5706r_channels);
+> +
+> +	ret =3D devm_iio_device_register(&spi->dev, indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ad5706r_debugs_init(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id ad5706r_of_match[] =3D {
+> +	{ .compatible =3D "adi,ad5706r" },
+> +	{ },
+> +};
+
+No need for comma.
+
+> +MODULE_DEVICE_TABLE(of, ad5706r_of_match);
+> +
+> +static const struct spi_device_id ad5706r_id[] =3D {
+> +	{ "ad5706r", 0 },
+> +	{ }
+> +};
+
+
+Drop the 0.
+
+- Nuno S=C3=A1
+> ;
