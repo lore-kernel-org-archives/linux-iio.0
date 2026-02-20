@@ -1,102 +1,150 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59D4734678D;
-	Fri, 20 Feb 2026 13:29:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9816B343D91;
+	Fri, 20 Feb 2026 13:36:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771594176; cv=none; b=WvOuSOLN0l8zGVewQ0DuCynL2AtcJfEwn5BHP6WKQll2R/06rALGYt+/KL3HLk1m4NWJvNir9ZUcQxULpraBaLBhmweMCtptDNWmNxcxHtKPUptjxGS6YaRyRiVSh3Xbr5lnRSlT2AQjTwUeSdhlmBa324gOfoHnxUruwOWqyn0=
+	t=1771594584; cv=none; b=OBCga0gPlsvzf3RCOYZQXezo1vouBcvo/fy9IsaESXj8eZsvyu+0I8Vtp4SPcIp8R9+/mWYFkokUEarcPhFKblWqxXe3TAxf32u4QSHcbiVNwKM74Q+djsiHexWcz0pVwXVYBuqsSX23RC7Ui0u96Y4elhFyyyb3a69sr5hl7cA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771594176; c=relaxed/simple;
-	bh=I8PwNEaD9hidzUf9f0KgwEbqYHly+IpZ+BznSjfFjw0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tEXwqcivumVNwFu1HP4wJ2mrsm1v/eWGYkIwFImK2eCpNxNyGrqeDgSl/pVCuFzNAGfQKiH7qxqflM3L/PVPo0RPLdMJvLE8j3uDEnwO3voW7PmMdsLyKSNMVNlz77WjEpPcXGhBw1a5Q1gEPmfh/0I4T+LrmgS2n3I+7UlPXvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZkTXZmEj; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1771594584; c=relaxed/simple;
+	bh=dMId3ZV9kqzUHPVu1T1WTkrU1f5ZyLlqLFUV3S1K8fM=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=mpxfK5O5MA1KKibBKNDQ64ZxLl4MrfVRWkaSeLtA1synR/539XsTpIZSgF7CIbpJ1xxlUthbp8kBeDuf4qW37tm0+mP6YoagKGPxxIRSoCJw/i4cf9/yCXzhKTSvA90PtEwXppzXI6ilyllwfdXhJIF+TRJcJyfuZJSBOaVQ2is=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=N4fuZX5I; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZkTXZmEj"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771594175; x=1803130175;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=I8PwNEaD9hidzUf9f0KgwEbqYHly+IpZ+BznSjfFjw0=;
-  b=ZkTXZmEjH3ZtApas9yyKt+td9XrTMOZp8lBBMH5Sc8gFdlPWrSWFDNKq
-   wwMmrIe5gM5hhSj+5u9fOqhXt48y3PPQaa92Ha8O27yF5TWOwUMkcz7Ho
-   QWeJ4UlBtSyeEI5T99FpGDkiEyHFW+vhybhhrI2exmKE4x+VsGZp+uhql
-   wTLbu8HL5o9f8Iq91VEL9jWcnle6gl6UAPdmvcASQwtJ+9RgK4iWURmNx
-   sCGthGfNhh+xeT0Na9rHOzFW9/To3lTfrZXvhBzVlQa/e4tnuicqOGcJQ
-   7gZiPPfUx6/6yhijvV1B0TVAwv9AWWoxq0BNqsfjEDing9uHA9Sw/PlGU
-   A==;
-X-CSE-ConnectionGUID: tBOAo/H6QZCiQz3K0rBygQ==
-X-CSE-MsgGUID: nm6JOlBcQrqLfk35u10Dqw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="72747467"
-X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="72747467"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:29:35 -0800
-X-CSE-ConnectionGUID: lB4HFlBeRyCeW90hvermXA==
-X-CSE-MsgGUID: WvM8gAqYTzCT2AMZ0OiRkw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="213412294"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:29:33 -0800
-Date: Fri, 20 Feb 2026 15:29:31 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/1] iio: core: Simplify IIO core managed APIs
-Message-ID: <aZhhuxD9YWefCAuY@smile.fi.intel.com>
-References: <20260216081412.1118599-1-andriy.shevchenko@linux.intel.com>
- <20260220101844.17f3bc63@jic23-huawei>
- <CAHp75VdQufe2ANMm=FWvnGAfpe4Y-U_oocs-ax+tY39=z81g4A@mail.gmail.com>
- <20260220121450.74586f44@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="N4fuZX5I"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 686D4C19421;
+	Fri, 20 Feb 2026 13:36:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771594584;
+	bh=dMId3ZV9kqzUHPVu1T1WTkrU1f5ZyLlqLFUV3S1K8fM=;
+	h=From:Date:Subject:To:Cc:Reply-To:From;
+	b=N4fuZX5Iu7eNACpyRg3r1cNaYF4JlCv9AZN94Mo8D3kLgEDECfK1pgqUzilCPa+or
+	 JxLHKvMwH0QeymPZaHvmNzasV9BdhAZyK7TaZbL0wmi683MndAXzoRFtPXLBCj9mps
+	 Pozu74Q9m3boyNqNiNWwFMw6oSo/CaJcWgaNZkCJJJPZSKO8dSBbuT4CbE8N1dFrmP
+	 amYSMQst/xs0Y2yXMs/s1bsbEr7Bm7btz3Tr+P+DBdX1CjlJBH61kVPH8+sEJwjlIs
+	 C5nIfObsXMdZ1ddLR/YsnEsktd2e7ImJMKgJbc3zHhGugTuiUa/w9PFuPSuxfeGF6b
+	 DIBopJghhwaBA==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAE9C54FD3;
+	Fri, 20 Feb 2026 13:36:23 +0000 (UTC)
+From: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
+Date: Fri, 20 Feb 2026 15:36:17 +0200
+Subject: [PATCH] iio: imu: adis: Fix NULL pointer dereference in adis_init
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260220121450.74586f44@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260220-adis-fix-v1-1-9fa10cce812f@analog.com>
+X-B4-Tracking: v=1; b=H4sIAFBjmGkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDIyMD3cSUzGLdtMwKXUNz8+REAxMD0xSLRCWg8oKiVKAw2Kjo2NpaAHI
+ rlHRaAAAA
+X-Change-ID: 20260220-adis-fix-177ca0405d8a
+To: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
+ Robert Budai <robert.budai@analog.com>, 
+ Antoniu Miclaus <antoniu.miclaus@analog.com>, 
+ Ramona Gradinariu <ramona.gradinariu@analog.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Radu Sabau <radu.sabau@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1771594577; l=3182;
+ i=radu.sabau@analog.com; s=20260220; h=from:subject:message-id;
+ bh=kI9J4huE67pPn8S62AKdcWN4aDigHYDhih5UlDtH0k0=;
+ b=ZXARvjyJBgjz2RcOFZjWD6TZfC3HJXy6WSBHXtA3RpnFyh1ztKAsMTMEF9bVX3Wg8CfrqDTKV
+ tf1LGmXCHgZDfhSj4ntdlyCnoMFS3EjUG29tEMK7TYyM/ivT4ocS8ac
+X-Developer-Key: i=radu.sabau@analog.com; a=ed25519;
+ pk=lDPQHgn9jTdt0vo58Na9lLxLaE2mb330if71Cn+EvFU=
+X-Endpoint-Received: by B4 Relay for radu.sabau@analog.com/20260220 with
+ auth_id=642
+X-Original-From: Radu Sabau <radu.sabau@analog.com>
+Reply-To: radu.sabau@analog.com
 
-On Fri, Feb 20, 2026 at 12:14:50PM +0000, Jonathan Cameron wrote:
-> On Fri, 20 Feb 2026 12:27:40 +0200
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> > On Fri, Feb 20, 2026 at 12:18 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> > > On Mon, 16 Feb 2026 09:14:12 +0100
-> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:  
+From: Radu Sabau <radu.sabau@analog.com>
 
-...
+The adis_init() function dereferences adis->ops to check if the
+individual function pointers (write, read, reset) are NULL, but does
+not first check if adis->ops itself is NULL.
 
-> > > This had me briefly confused as I failed to notice it was static
-> > > (no idea why I gave such a simple internal function kernel-doc!)
-> > >
-> > > However that brings the obvious follow up question.  Given your
-> > > simplification does having a helper make sense given only a single caller?
-> > >
-> > > Let's just squash it and have the two calls inline + some resulting docs
-> > > updates to get rid of the references to this function.  
-> > 
-> > Do you want to have this change inside the proposed patch? Or in a
-> > separate (pre/post) one?
-> Same patch would be fine I think.  It's small and coupled to the code
-> getting simpler because of the main change here.  Seems like a pointless
-> dance to refactor same code twice.
+Drivers like adis16480, adis16490, adis16545 and others do not set
+custom ops and rely on adis_init() assigning the defaults. Since struct
+adis is zero-initialized by devm_iio_device_alloc(), adis->ops is NULL
+when adis_init() is called, causing a NULL pointer dereference:
 
-v2 has just been sent.
+    Unable to handle kernel NULL pointer dereference at virtual
+    address 0000000000000000
+    pc : adis_init+0xc0/0x118
+    Call trace:
+     adis_init+0xc0/0x118
+     adis16480_probe+0xe0/0x670
 
+Fix this by checking if adis->ops is NULL before dereferencing it,
+falling through to assign the default ops in that case.
+
+Fixes: 7f15d7a7d12d ("iio: imu: adis: Add reset to custom ops")
+Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+---
+adis_init() dereferences adis->ops to validate its function pointers
+  before checking whether adis->ops itself is NULL. Drivers that rely on
+  the default ops (adis16480, adis16490, adis16545, among others) never
+  set adis->ops prior to calling adis_init(), so the field is NULL due to
+  zero-initialisation by devm_iio_device_alloc(). The result is a kernel
+  crash on probe:
+
+      Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+      Hardware name: Raspberry Pi 5 Model B Rev 1.0 (DT)
+      pc : adis_init+0xc0/0x118
+      lr : adis_init+0x50/0x118
+      Call trace:
+       adis_init+0xc0/0x118
+       adis16480_probe+0xe0/0x670
+       spi_probe+0x8c/0xf8
+       really_probe+0xc4/0x2b0
+
+  The bug was introduced in 7f15d7 ("iio: imu: adis: Add reset to custom ops")
+  which added the ops validation logic without a prior NULL check
+  on the pointer itself.
+
+  The fix is a one-line addition of !adis->ops to the condition, so that
+  a NULL ops pointer is treated the same as an ops struct with all-NULL
+  function pointers, both falling through to the default ops assignment.
+  The validation path for partially-populated custom ops structs is
+  unchanged.
+
+  Tested on Raspberry Pi 5 with adis16545-3 connected over SPI. Without
+  the fix the kernel crashes at adis_init+0xc0. With the fix the driver
+  probes successfully and the device is accessible via the IIO subsystem.
+---
+ drivers/iio/imu/adis.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+index d160147cce0b..e68bc1c36ed1 100644
+--- a/drivers/iio/imu/adis.c
++++ b/drivers/iio/imu/adis.c
+@@ -526,7 +526,7 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
+ 
+ 	adis->spi = spi;
+ 	adis->data = data;
+-	if (!adis->ops->write && !adis->ops->read && !adis->ops->reset)
++	if (!adis->ops || (!adis->ops->write && !adis->ops->read && !adis->ops->reset))
+ 		adis->ops = &adis_default_ops;
+ 	else if (!adis->ops->write || !adis->ops->read || !adis->ops->reset)
+ 		return -EINVAL;
+
+---
+base-commit: 8bf22c33e7a172fbc72464f4cc484d23a6b412ba
+change-id: 20260220-adis-fix-177ca0405d8a
+
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
+Radu Sabau <radu.sabau@analog.com>
 
 
