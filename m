@@ -1,62 +1,65 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B93B227EB9;
-	Fri, 20 Feb 2026 14:16:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F10B34D4CE;
+	Fri, 20 Feb 2026 14:25:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771597019; cv=none; b=bWqi7iAvOnBy6Bd+fwUfhtiIGUWwhGb5KPkOYCWtf+gpCwPXYA6o/xsNwnLs6TjS1q0c7L1XDuWUfcg2bbcZfyfGbPxSwlxLO9NSBsauLo59hgYa4/m1KJUagELV23l6VNa376OcHXzGkoSe8yTwC8gAVrWfYUbwAwipufxpkTw=
+	t=1771597521; cv=none; b=eaRmAIxrP3R2Ld3SxLLINd9HiKLngmjO2bImX9mU4kfX6ojUq4Gd5zrl5Qhu0abhf/bBCkoxtDQRxLJxR/PwksqwoAVc5lUBv9f2YmeljGF89gx3ReJyXRSiKNLUWtBfptr+poheDUnE6aAeSqM64CgwPvvfTBkJ7kDD2LfhmKg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771597019; c=relaxed/simple;
-	bh=l+sOo5t9bxdIxZAr/Ylp+JWnpziXkpFBxsv9S+fIBQI=;
+	s=arc-20240116; t=1771597521; c=relaxed/simple;
+	bh=R9rjh+XKbXO+nFSsRhb1NyABSBqSkWkVk9xLr3276j8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=MYt0ZcEdXB7Kn7FPBTaNiL1H1Lo0GZveeq5R8QMTj4kW2OAS33FJvmIJlAZT+ospFBfm+d34CP2ancCjO8PwXg7xAnd1RLx+jd8oays5KjH3KKY9S0rgLA0mIV62LhbFpIPBLpBtN7N+g4ltD8PNoHFYVxwFR90RsTb4sRf4JXk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WW/5E3Dr; arc=none smtp.client-ip=198.175.65.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=QLkrqfsWzcodeHguVdut+fnh5DMn9D9R91rv0Qfr5NUrDkqCJSDGLm1HycEpHQ2jOWkRNdhYZ+qPJw8ZZBLWcAct07VEXuQWEI4PlDIAfFwRbBkmph/Ww9kSIE2dxJgYosWmE3devGsBfjOWydKeuGx49YYfEmIsUAdlT3EN8nQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fbJT3eKG; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WW/5E3Dr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fbJT3eKG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771597018; x=1803133018;
+  t=1771597520; x=1803133520;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=l+sOo5t9bxdIxZAr/Ylp+JWnpziXkpFBxsv9S+fIBQI=;
-  b=WW/5E3DrBEWFiJn/ZRHq8nL83o+HjF6udgVxqyjOFr9czdI7flJ1sJRo
-   vOFBY6qb1APp+zyabSAiRASe8TeEi6t8yJmPh+uKs0CMQnfaHqM1+c2Sg
-   zG3ki8Wc6l1XzuN8s5LCQkoljP/rBmkktGzyKEE8o9A2r3BfiwdFtTeo5
-   dXdSDyp+0gHaxiHEIYGIjW5aJeNEsf8Nr+QKcQ90E6Rx+gYoAF6SgVCk3
-   VCA1I1eTQ6+00ObnYzgl0Wu0CwRSitzAOK2Y8Qryd7z1rd9I0KI4BXPfw
-   +UgbQF3TN4b7LD69YXD9ztXRWmkRa42mTMHvxl6A7vIZwqvzuj4fxF+go
-   g==;
-X-CSE-ConnectionGUID: 9QsH6GPoS4eP/zJsmnWCLQ==
-X-CSE-MsgGUID: tyUWYdtcRLa1+A3h/vrNEA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="72672433"
+  bh=R9rjh+XKbXO+nFSsRhb1NyABSBqSkWkVk9xLr3276j8=;
+  b=fbJT3eKGgDLC4Jh8MlfAjL3njYltjP7Vd65cj1XiFd3nY4TZ32bA/Iv7
+   wPqCUJ+rpLuUtErmfkn+c1q61UP6IB5biLRV3L37Jag6DpIHjdWLbJDY0
+   2hsiDp2sDVs40UGPSmQc1Z/XMktmqKhRP6oNFfXZjLxkae7HvpuNKmev7
+   uxjLpHrIRqjqMXWQl3QOCRiO/qekk04QFQQ4LQch5TE562TziOcPdUVbx
+   QWodJoxYBgtntYwNucKWtVukPzvMSLyHx7d0d0RH/KPkDZcireULVPh7E
+   C8mDqkPUDqLZIctiFAv49iZguLQUgJztUfKocd+aO1F9t4d9rVCWZEbNK
+   w==;
+X-CSE-ConnectionGUID: VIWpKGeBTva+Jbrc9Bn4Mw==
+X-CSE-MsgGUID: fNMjeke1S5SB/MnjLgP7yA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="72865700"
 X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="72672433"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 06:16:58 -0800
-X-CSE-ConnectionGUID: 2Fg0gNFcTuS8P1BRmNha3A==
-X-CSE-MsgGUID: 7JzA8/RiS8GPCppPp4J5Sg==
+   d="scan'208";a="72865700"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 06:24:46 -0800
+X-CSE-ConnectionGUID: KY1g1FGsS8uZoAlgDgJ31g==
+X-CSE-MsgGUID: ayKxMDgIS4+0FN1WZjClSA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="214083557"
+   d="scan'208";a="214715465"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 06:16:55 -0800
-Date: Fri, 20 Feb 2026 16:16:53 +0200
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 06:24:44 -0800
+Date: Fri, 20 Feb 2026 16:24:40 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: radu.sabau@analog.com
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
+	Nuno Sa <nuno.sa@analog.com>, Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/5] iio: remove redundant else after return
-Message-ID: <aZhs1XSOP1FMXzi5@smile.fi.intel.com>
-References: <20260220133337.85216-1-antoniu.miclaus@analog.com>
- <aZhsCm4W5ZjLHh0J@smile.fi.intel.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Robert Budai <robert.budai@analog.com>,
+	Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Ramona Gradinariu <ramona.gradinariu@analog.com>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: imu: adis: Fix NULL pointer dereference in
+ adis_init
+Message-ID: <aZhuqJuPuBHSyGLk@smile.fi.intel.com>
+References: <20260220-adis-fix-v2-1-4cc24a261306@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,28 +68,51 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aZhsCm4W5ZjLHh0J@smile.fi.intel.com>
+In-Reply-To: <20260220-adis-fix-v2-1-4cc24a261306@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Feb 20, 2026 at 04:13:35PM +0200, Andy Shevchenko wrote:
-> On Fri, Feb 20, 2026 at 03:33:29PM +0200, Antoniu Miclaus wrote:
-> > Remove redundant else branches after return statements across several
-> > IIO drivers (ad7298, ad7606, ad5592r, ad5758, admv8818) to simplify
-> > control flow.
-> 
-> While technically you are correct, the only patch 5 makes sense to me.
-> The rest might be better with 'else' be present. It depends on the logic
-> between the lines, if they are of the same semantics and it's not about
-> returning error code vs. 0 (success), it may be better to read them
-> if they are started on the same column.
-> 
-> TL;DR: I am not going to NAK, but patches 1-4 is an unneeded churn to me.
+On Fri, Feb 20, 2026 at 04:16:41PM +0200, Radu Sabau via B4 Relay wrote:
 
-For the record you may look at my patches in the Git history on the same
-matter, they do not kill all 'else':s in such cases.
+> The adis_init() function dereferences adis->ops to check if the
+> individual function pointers (write, read, reset) are NULL, but does
+> not first check if adis->ops itself is NULL.
+> 
+> Drivers like adis16480, adis16490, adis16545 and others do not set
+> custom ops and rely on adis_init() assigning the defaults. Since struct
+> adis is zero-initialized by devm_iio_device_alloc(), adis->ops is NULL
+> when adis_init() is called, causing a NULL pointer dereference:
+> 
+>     Unable to handle kernel NULL pointer dereference at virtual address 0000000000000000
+>     pc : adis_init+0xc0/0x118
+>     Call trace:
+>      adis_init+0xc0/0x118
+>      adis16480_probe+0xe0/0x670
+> 
+> Fix this by checking if adis->ops is NULL before dereferencing it,
+> falling through to assign the default ops in that case.
 
-git log --no-merges -p --author="Andy Shevchenko" --grep "redundant 'else'"
+Don't throw versions too quickly. You missed a tag from colleague of yours.
+
+> Fixes: 3b29bcee8f6f ("iio: imu: adis: Add custom ops struct")
+
+...
+
+> -	if (!adis->ops->write && !adis->ops->read && !adis->ops->reset)
+> +	if (!adis->ops)
+
+I hope you have checked that this is indeed the case and we don't need this
+check anymore. (I would be glad to see it being replaced as in this patch!)
+
+Assuming this is confirmed,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+
+Collect the tags and issue a new version only on demand, and not earlier
+than 24h from previous one.
+
+>  		adis->ops = &adis_default_ops;
+>  	else if (!adis->ops->write || !adis->ops->read || !adis->ops->reset)
+>  		return -EINVAL;
 
 -- 
 With Best Regards,
