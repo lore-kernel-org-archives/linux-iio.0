@@ -1,52 +1,52 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DAE4346E55;
-	Fri, 20 Feb 2026 13:13:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 663DA347BD1;
+	Fri, 20 Feb 2026 13:13:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771593209; cv=none; b=QCqEPEucpf8D4cNbd2yybU288LGk1pCfMfpUC/h2YhH7op9Z4dhAMd6X8ckBD88WxmtB76DCUa7vvOWVy/55bU9UFW8AsA7Aq/Df+LfTG1mAvQrXWKh3k7MC7JxMu4uR1uqnvFWmZfv8X51QUWLHrScunzigqpRnmTI7eIPiBZ8=
+	t=1771593211; cv=none; b=Exyf/ZyThjO/ShLk73C37mFtuoalaCFnlvXzGd+K73UseCZmcNR/zoQA0cg84NeP81nxsGIqWVnt4Irn7hsCSEh8vKLi/loz0wq0MHEHph864BIfdMeiVcj4q6HqXO4v4DWncktXa/Ruh+8MAwE5OEhYfRACt63zWA/aP+JIAC8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771593209; c=relaxed/simple;
-	bh=I+0MI7+p9k2zIKVwh20XGhhZHjJRVGZ8A4tR2ykS+G4=;
+	s=arc-20240116; t=1771593211; c=relaxed/simple;
+	bh=VJqEdk4RNwf6HD2vCqOoPdgHs+BN3YS6SpqBJjU9q+s=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F41n89/JPysNCrzHnf/xmpXW0KvneR6FXHgCsZhgE0dfpA7IE70vE6gnOQLGs0zSsC/lipCgDhsBS44SnhEvaxqbfpNw2vF5I+lcfRQXhczJ8lb8jcBPYLoz9p73aJhCMbHIe04uWZnyfhu0wTwWBW163J17Lm+YiBDTgLL27Vc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=xbrCvEZS; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=XmfMIW7WIi00jtKKiNqEgrtvNrjdOO1ZmmbvsKB3wJsohvQc6M0fAn1fwLZKxrKvBhjv8MueNV/hq9TKdrmNiCH1irpIwc4fcuKQIPBFI7B6axYXV4FVMYGnCMO0ZM/5FnI2DP4coOfSNWMROUy9jB4bt78lS48nlKxRrGH3D/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=q1ZGt8Mx; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="xbrCvEZS"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61K87Kv63823499;
-	Fri, 20 Feb 2026 08:13:14 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="q1ZGt8Mx"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61K87W7e2962780;
+	Fri, 20 Feb 2026 08:13:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
 	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=yM8Je
-	lkQUF5DCFyNHSUHRRY+1jKrXIVKcZwRRco+HdM=; b=xbrCvEZSW82Hs7JYai7xB
-	mElva3w6Efgs+FicjVjl4tiVJ4nng2WYtHEnLm5jeEkFHjMSK+19k3KZKSI6iIrB
-	w1fjYGZPsdO970YEaZb/0pMqzmkDs4fgGgqAE8liWdh0EjMpUk0+8rqO0uq42ZGq
-	R1kYu8VcQo7RrIzsGNMn/5MVKm0akEWRCLfCfTe2O71J07cfHzsMAULAIjVNJ3JZ
-	rHcSFDAlc+5uHJpZVXDBWCcY09Xg80TcP+WgfkIM//ucD4os2vyI+/gKaaeiqkqU
-	CVYlx4KsMTFj6kcC16Sk56tl6JxRmVEayGpyPI7NDtCukklqElI+Db9TI1G1qWdV
-	Q==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=cJ9v6
+	xlXujLoH2/eMWvOisOyZdtpd+d27fWyHWKDWOw=; b=q1ZGt8MxDm4dg2DaEamlb
+	Iw4ZstFFexTPuMM+tEkZ4equU19QYT3TFKqg9CmPmGgeVzS0gOi4GlEgKVVPLgEK
+	1qPvYuNrR1mBjznHH/pQsERkPsvwxHxcLOA1R+RtyVh0er8E5w4vaSV6Ss8WoA5N
+	M8Iq8rMmcGt8k3fSVeWGLAj5i4nBVvPVTQwkUFDYZ/miqsmVJgbGcWUsc0XyAV25
+	9duJ9G1anElztkktqGae4a3c5w2yTyX9rLul29OcMk7Y3ykibZboeqim2H/k6OyX
+	5DINqVmSuzHsJzA/rg9YZX3d8QjNqIWyizyG/k06uMIAbf3OJ+XM0UXqSMIbib9X
+	g==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ce0xvw0j2-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cdanw9wtd-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 20 Feb 2026 08:13:14 -0500 (EST)
+	Fri, 20 Feb 2026 08:13:16 -0500 (EST)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61KDDDVi064746
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61KDDFYp064752
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 20 Feb 2026 08:13:13 -0500
+	Fri, 20 Feb 2026 08:13:15 -0500
 Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 20 Feb
- 2026 08:13:13 -0500
+ 2026 08:13:15 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 20 Feb 2026 08:13:13 -0500
+ Transport; Fri, 20 Feb 2026 08:13:15 -0500
 Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61KDCsHU009613;
-	Fri, 20 Feb 2026 08:13:07 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61KDCsHV009613;
+	Fri, 20 Feb 2026 08:13:09 -0500
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
         Lars-Peter Clausen
@@ -59,9 +59,9 @@ To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
         Andy Shevchenko
 	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 3/7] iio: frequency: admv1013: use dev_err_probe in probe path
-Date: Fri, 20 Feb 2026 15:11:41 +0200
-Message-ID: <20260220131151.74329-4-antoniu.miclaus@analog.com>
+Subject: [PATCH 4/7] iio: frequency: adf4377: use dev_err_probe in probe path
+Date: Fri, 20 Feb 2026 15:11:42 +0200
+Message-ID: <20260220131151.74329-5-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260220131151.74329-1-antoniu.miclaus@analog.com>
 References: <20260220131151.74329-1-antoniu.miclaus@analog.com>
@@ -74,86 +74,93 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=AeK83nXG c=1 sm=1 tr=0 ts=69985dea cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIwMDExNSBTYWx0ZWRfX21AyfLat4+8C
+ TZJj3vqGFAjimk+UYJyOFBLFoaJFHgFCUS5YLVpAdHonopiG3VK9RzNiHnNhRPci2006KLIFbHw
+ 0HmW2a+Yso3BWL7tEEFAeU8DrUN7K+B0ASaZlM+225K2W2juj/dwhZbLLZboweVaIS6xXn0OlyF
+ sB3OyVpYekaxtAZlfcpx16IYzyINf7uG5/TNTXzttOhoGOs8EdReCCVY6jQQYRP0Y6JVd1ScDPj
+ 162MjYjsURfYXegkSxqi4Wmcecfy0/A5mzcr/9rTbQyzlkaEVlEe5j9oGWPe1ZNXc1p62SOjH1j
+ GWCYoq/IFnXjVit2Kgwk0tIlZdTB4VDwNcWuvj3fO4ars8tECmr5aJLRHsZVfktRmH2TWT7SOJQ
+ zYAR11Dv87s78WOTV2kumVcOkJz7HFSkmCpoddAWIOsM7uqO4/+uq9rsJmhBrDvEQ13r0as+zfF
+ /BlFqaLlSVSkvCKYJeg==
+X-Authority-Analysis: v=2.4 cv=TtvrRTXh c=1 sm=1 tr=0 ts=69985dec cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
- a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=SYtYyVRKRuBxfkzjSfcA:9
-X-Proofpoint-ORIG-GUID: axqia_kY4NS9Hcgi84gdd_hN30oMltuT
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIwMDExNSBTYWx0ZWRfX1cN23K9EnAC7
- h2PwaowHQlx3g0QKTjwi6xxuYqpfjM/Bdx7EWWD/Cf4nExKlXOv8tDhkUpIQvCiVmv8yOsxO7xJ
- UVqIG7W0ohTK5xozc/GVbSrxJ7kgWIelAuj9M0C32BkVwkTgFTzaGqSBxQqmLJdAQUOnw2hesMA
- pgzFnr4Dv9QrkuGV6Ft9YOtyWmke9RsxwcSnx1TjYpnMfOAkmVdEqa8cKzy+jRJod0exQlOJUUE
- EDZt+8nickNYjYpOSAtE2HqK7lBspen4mrCT1xg7TTW8Ch822XFIW/SN6o/PsMQLJtlBupP2eoF
- +PR7h7Kzi/W+6nxc+lX/GTljzEV+7/ORraqAtF+iViVIJO7IQ4KHpTUNDj9aYODsv8ziwZRsAGG
- h7/s97ftyoT5E3R+x/2nbrpm0DmrCduuO8sE6HHpgsZwBIZ2zf/3yb8c6fqhLXig/CtwGaDbY8i
- 2qNyIb5djUgWWgeC3EA==
-X-Proofpoint-GUID: axqia_kY4NS9Hcgi84gdd_hN30oMltuT
+ a=GgsMoib0sEa3-_RKJdDe:22 a=gAnH3GRIAAAA:8 a=B8pQ3PUFIzGLwB8xx_sA:9
+X-Proofpoint-GUID: chntGoqEzKw7qS6BnezA7R8MNhvhGFvR
+X-Proofpoint-ORIG-GUID: chntGoqEzKw7qS6BnezA7R8MNhvhGFvR
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-02-20_01,2026-02-20_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 lowpriorityscore=0 impostorscore=0 malwarescore=0
- priorityscore=1501 bulkscore=0 suspectscore=0 adultscore=0 phishscore=0
- spamscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
- adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
- definitions=main-2602200115
+ priorityscore=1501 phishscore=0 clxscore=1015 impostorscore=0 adultscore=0
+ suspectscore=0 bulkscore=0 lowpriorityscore=0 malwarescore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602200115
 
-Replace dev_err() + return with dev_err_probe() in admv1013_init(),
-admv1013_probe(), and admv1013_properties_parse(), which are called
-during probe. This simplifies error handling.
+Replace dev_err() + return with dev_err_probe() in adf4377_init(),
+which is called during probe. This simplifies error handling.
 
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/frequency/admv1013.c | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+ drivers/iio/frequency/adf4377.c | 28 ++++++++++++----------------
+ 1 file changed, 12 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/iio/frequency/admv1013.c b/drivers/iio/frequency/admv1013.c
-index d8e8d541990f..6e8beea51c25 100644
---- a/drivers/iio/frequency/admv1013.c
-+++ b/drivers/iio/frequency/admv1013.c
-@@ -461,10 +461,9 @@ static int admv1013_init(struct admv1013_state *st, int vcm_uv)
- 		return ret;
+diff --git a/drivers/iio/frequency/adf4377.c b/drivers/iio/frequency/adf4377.c
+index fa686f785fa4..7420eb98822a 100644
+--- a/drivers/iio/frequency/adf4377.c
++++ b/drivers/iio/frequency/adf4377.c
+@@ -712,17 +712,15 @@ static int adf4377_init(struct adf4377_state *st)
+ 	adf4377_gpio_init(st);
  
- 	data = FIELD_GET(ADMV1013_CHIP_ID_MSK, data);
--	if (data != ADMV1013_CHIP_ID) {
--		dev_err(&spi->dev, "Invalid Chip ID.\n");
--		return -EINVAL;
--	}
-+	if (data != ADMV1013_CHIP_ID)
-+		return dev_err_probe(&spi->dev, -EINVAL,
-+				     "Invalid Chip ID.\n");
- 
- 	ret = __admv1013_spi_write(st, ADMV1013_REG_VVA_TEMP_COMP, 0xE700);
- 	if (ret)
-@@ -549,11 +548,9 @@ static int admv1013_properties_parse(struct admv1013_state *st)
- 	ret = devm_regulator_bulk_get_enable(&st->spi->dev,
- 					     ARRAY_SIZE(admv1013_vcc_regs),
- 					     admv1013_vcc_regs);
+ 	ret = adf4377_soft_reset(st);
 -	if (ret) {
--		dev_err_probe(&spi->dev, ret,
--			      "Failed to request VCC regulators\n");
+-		dev_err(&spi->dev, "Failed to soft reset.\n");
 -		return ret;
 -	}
 +	if (ret)
 +		return dev_err_probe(&spi->dev, ret,
-+				     "Failed to request VCC regulators\n");
++				     "Failed to soft reset.\n");
  
- 	return 0;
- }
-@@ -601,10 +598,9 @@ static int admv1013_probe(struct spi_device *spi)
- 	mutex_init(&st->lock);
- 
- 	ret = admv1013_init(st, vcm_uv);
+ 	ret = regmap_multi_reg_write(st->regmap, adf4377_reg_defaults,
+ 				     ARRAY_SIZE(adf4377_reg_defaults));
 -	if (ret) {
--		dev_err(&spi->dev, "admv1013 init failed\n");
+-		dev_err(&spi->dev, "Failed to set default registers.\n");
 -		return ret;
 -	}
 +	if (ret)
 +		return dev_err_probe(&spi->dev, ret,
-+				     "admv1013 init failed\n");
++				     "Failed to set default registers.\n");
  
- 	ret = devm_add_action_or_reset(&spi->dev, admv1013_powerdown, st);
- 	if (ret)
+ 	ret = regmap_update_bits(st->regmap, 0x00,
+ 				 ADF4377_0000_SDO_ACTIVE_MSK | ADF4377_0000_SDO_ACTIVE_R_MSK,
+@@ -730,10 +728,9 @@ static int adf4377_init(struct adf4377_state *st)
+ 					    ADF4377_0000_SDO_ACTIVE_SPI_4W) |
+ 				 FIELD_PREP(ADF4377_0000_SDO_ACTIVE_R_MSK,
+ 					    ADF4377_0000_SDO_ACTIVE_SPI_4W));
+-	if (ret) {
+-		dev_err(&spi->dev, "Failed to set 4-Wire Operation.\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(&spi->dev, ret,
++				     "Failed to set 4-Wire Operation.\n");
+ 
+ 	st->clkin_freq = clk_get_rate(st->clkin);
+ 
+@@ -747,10 +744,9 @@ static int adf4377_init(struct adf4377_state *st)
+ 			   FIELD_PREP(ADF4377_001A_PD_PFDCP_MSK, 0) |
+ 			   FIELD_PREP(ADF4377_001A_PD_CLKOUT1_MSK, 0) |
+ 			   FIELD_PREP(ADF4377_001A_PD_CLKOUT2_MSK, 0));
+-	if (ret) {
+-		dev_err(&spi->dev, "Failed to set power down registers.\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(&spi->dev, ret,
++				     "Failed to set power down registers.\n");
+ 
+ 	/* Set Mux Output */
+ 	ret = regmap_update_bits(st->regmap, 0x1D,
 -- 
 2.43.0
 
