@@ -1,114 +1,133 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 738A219D07A;
-	Fri, 20 Feb 2026 10:32:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771583536; cv=none; b=YUXj4NCl7iSNNJXAvrP3E+867BpuGr5Rfx5Xhc7jVv31RCjJjwWnYAgG9hwtINR/OPlT9dGwl1Wcx4GVJBsEbZEPMQlsGt0x5VXEjvsWCSG5j0H1REjxW2TiHfgMpmgzRg+9qV+v6M8iLf8DzRrzQI3SP/TzMY4Fs0dKJTt2EhI=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771583536; c=relaxed/simple;
-	bh=izOszyZ0PL+gLuOygoLMHD/rSH5k99mu8J6k5Xqzz+o=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ZYP3mG0vntnA0v/36yvociQXqXB7HQcIbD0bbi+y/SyzYL8bSEZEf6DU4T1xYZiXJ2z1a3AEPrB/LZoXVgtJ4g9PNWQFovWeZyyggb9StcbbQZi5KvlTXYHEMYMR1Ztp2YNvJKD+MMPLfMxJE3tj9+e8HQOF+42ZRcbqFzudNyA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B8bj/pZp; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 524AF320CA9
+	for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 10:34:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.46
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771583648; cv=pass; b=cLr0BNW1jf3P14FtfVvVuTsomKZDBaKYLMj0guM6HAfLWCa8yeqpPuxDWVHSn7tAfu76wCKJ2NMPAOdOpoxFJIiqW3h7SAzVTsSiQkPOX6rgHTgurr7a2oMTa2u73Sb1v0mIlaf0CNmw0HQDFYnXNoA1V7BRr6hmyD5Vfh8GtKA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771583648; c=relaxed/simple;
+	bh=aIBxCjbNEvU/9BlmrPzfmRH5ttDeLxBNaihWTJd3IfA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=rIhfNdbcP/bhYOtmeyjgY5KK3xaRGzAEgoFoQFyqX8uHrsnnS2BYNw0Vu7GllzJrLYJPHlrYMUxQ0Y22E1k+Ko3MKeh3bFo3kUf3eMs4LnrNej27ieNBDEWkHdXnf5vmqxQo2N6kMIt7QfDY50ySpm5a1a0yn16qCo2dCZogRd0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hzgcw3dY; arc=pass smtp.client-ip=209.85.208.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B8bj/pZp"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771583535; x=1803119535;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=izOszyZ0PL+gLuOygoLMHD/rSH5k99mu8J6k5Xqzz+o=;
-  b=B8bj/pZpZ9uQp3vYweub9K1QB3AYR1pbA9m/EGnIPbnraEPqfqNYygn/
-   hqRsYhEMOg79YvK8cnbjEvSWegugb26u7ZlQF3SBI4zSQY6vMlLutv+h+
-   /I5gU59wVKZXcZE9nWPWe+WiJvDqrvGfYg/q13Zyk3CLIqpIYJNJmOGuM
-   ULvdz8QkhphO7QVVVm5dTyVQSaYy4qDIyaLuy0MHNyygGOXnJNMm33hVv
-   miTCWXEcojBMi3jMu1AZTnhpQq33XSgOpjp9r+uBSFou8vlgXMKJuNpx+
-   YaXQdZc+1sQ79DVPQ/nJd87uLWq5zMiKWnACb0yjkwOkEkX6fEjPaQoy9
-   w==;
-X-CSE-ConnectionGUID: E+sToR/mRyC1bRUo4SyWLg==
-X-CSE-MsgGUID: 7V/C4RFAQcejeoXobCHIfg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11706"; a="71880941"
-X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
-   d="scan'208";a="71880941"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 02:32:14 -0800
-X-CSE-ConnectionGUID: lG8QlSvFSpKVOIGzNWtxwQ==
-X-CSE-MsgGUID: +TgXSV34QzGgSeZgymbLZw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,301,1763452800"; 
-   d="scan'208";a="218949595"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 02:31:52 -0800
-Date: Fri, 20 Feb 2026 12:31:49 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 0/3] Add support for AD5706R DAC
-Message-ID: <aZg4FRx9z4ObwJ7q@smile.fi.intel.com>
-References: <20260220-dev_ad5706r-v1-0-7253bbd74889@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hzgcw3dY"
+Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-65baa72399fso2563995a12.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 02:34:07 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1771583645; cv=none;
+        d=google.com; s=arc-20240605;
+        b=kc957mHM12GVciCIOxEnjHVvMwC8a8scWF2C2IPJcqjsqfw2ID42HEacyqbbPx36Hl
+         +w2IIFGRT9Irkif1xgFUoDJHM2KRTtLUApYUxZktiLQ8H0HgeOl3GHvRx/Z7DS3JVmup
+         u7fxkuOwdj94yUVRf8BepmIBVLlECdcVhuK6m8Bo0z/Mo8YYku2CCVYEvK+uEdN6jfdf
+         ugoHKfmUO8486Ue+40GPVcoESbCzBcOgnir/1aiMs2RXsNf0ngWFU94uBU8ItM8slWpq
+         tLVzdlYVQCVF7uLXVoCJKfANk+Z9pe1y6tKxbwccfdi01+SYlY3oVbplLjwWFIMALdvm
+         Ga3g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=aIBxCjbNEvU/9BlmrPzfmRH5ttDeLxBNaihWTJd3IfA=;
+        fh=0gLzE/xe24lWSfMUvohSCwIRN0oRJw5DNMxu0doIbbw=;
+        b=QpN0oiWv8f0SddKkyAOqHqiL1NZbI6QcFaLz0CkRmx8cehIXJDduQbpea6SXtxqomt
+         P/w1jz9A2dVmlA5i3/r3Ide5PrC3g3XZQa4KpqzYy/th6a3/+w/XAEFozr84NpJQ7ExW
+         QhwjgtmoL95z+a388YsEaKth+4qDj6Wl4JAwn9Bm0T7pYK2LaP9epVGr328a1LUYD6Kj
+         zYDLJ+50OJrp8tAGQJeW6/mNzZwDnA3aw7J2QXsoGDYoWLp47vsiKL3o7ZssUU7W/N6g
+         DiGRmIE8plnjuVy5nSeA7Juqs8a3zDNhe6wsXlzNlZeMNJ8YQKbAmiwpCL9XFezho8sG
+         hdAg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771583645; x=1772188445; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aIBxCjbNEvU/9BlmrPzfmRH5ttDeLxBNaihWTJd3IfA=;
+        b=hzgcw3dYqx+J/YdENou8gjNcynDJqCliI2yAAydn/U0RlGDBG9P0fLiLCkYx9v7AX+
+         UYoNKIVh9WXjDIe6JdYJTfufzJxpmGppOmvgLhGrTfQMKY/kr9xbgw/KnZSqyoRYJFKH
+         gi1vHOONEv95gUBNnMzJlnGDhpqZlTfZY9sOBKcN+NIyDfo1lbzapDvw2h49fDpr8KBm
+         MG26jRLhRNUHZNwX0Nuz8RB4EFwRued/bxsTQR3VEB9DwkgSumL4AAY1GyISLTUHcQys
+         tvAt0ZKMAJi0AX5l+lk3/a6qZwS6SMKOhIu+nNzg+HUCdiFOR1K4lkEUu7Cfmhkwlwh6
+         qpNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771583645; x=1772188445;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=aIBxCjbNEvU/9BlmrPzfmRH5ttDeLxBNaihWTJd3IfA=;
+        b=rbKH2Oh/BpkDwCllfh+3rUK2OcJ+goO0Xo8W7JDqY+F6f0BzcWJB/ykiqVbcVscaIK
+         Bp9qW5o24Up94HU+n+ls5xbG/mSBxccCZ7QnjzV4gkdw9ZNkaTAKHgcooihfAwKKeC1N
+         u2oz6WuqT05smyV2odxpPVrQnOQJPIq8RAL6H6g1rlENpcnihZWE2/GoBvSo7q+4LAjj
+         HC4j0MuNRPWI2+rchvzv/9YLdEV37zhLsZIaY0HvhC6DG6e1SKOy+eWb9xHgEZ6uIw/B
+         ouf417YpGx2JgAsdhI/oYHWc9MaIK3dG2ML2yU8PG0Yy8xlUekLsJTVqpgBdWIe34ZGt
+         xqUQ==
+X-Forwarded-Encrypted: i=1; AJvYcCUfbnIg0BqqDz/slNOnzQtLTHhNzlFNcDSFN4nAL+MBWw6VXzU7ZFSA9/zeDYNw+Kb1/HGbBhEQHkU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxnLqIagP5NlcH6jhMlJCyT787ekIUyFRBNzwRARme+u1JPy7tp
+	agk12f3gW70uKiHgiQdKus/tBi9tngYoplqVwmUAbLZvWRVgos2HP9qY6DJyxpa6Ewy6RZ0itFn
+	zmNkNh0QIkCpfmeVJMm+6SSp4eNE5PwA=
+X-Gm-Gg: AZuq6aJjh5HGlEUgTdY1s616hzPk7zCfweErMQiOXSc++IQ8LhySmGZmxar4pCA4U9b
+	Pm8QDNnb02Kec+ZTqzxJ4sKNEVEK4rIvQBkevblEzNrKk6ny019k11whLrCQyFq66t9z+dPp6X1
+	1Hv31fGn6byWP1dll2SsM33VR4UPQCk3/WIH2v1GyMHbcpOJolsR4HaXDR3GgkOgvkTRjN6Zr6s
+	Gh6SODt5KVlXgRX6nS6XfzS8MDyryHB5S/Z/mdrsGm+3EbHmt8aXKL0IqZRGSBFqQ9eGzROUwSL
+	NeEStg83mHbjKWlGnyuzMW0ssqI1hxXf2uKfA3oHadJ/JhQtryog0i6sElDST6BkEna2jSu9npB
+	Qj4itEyU=
+X-Received: by 2002:a17:906:dc8c:b0:b7a:18ba:a63 with SMTP id
+ a640c23a62f3a-b8fc3a3a05amr1038281866b.19.1771583645167; Fri, 20 Feb 2026
+ 02:34:05 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260220-dev_ad5706r-v1-0-7253bbd74889@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+References: <20260219143936.2276366-1-andriy.shevchenko@linux.intel.com> <c59c19d923d369eac2a0a46405e13e41836591c2.camel@gmail.com>
+In-Reply-To: <c59c19d923d369eac2a0a46405e13e41836591c2.camel@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Fri, 20 Feb 2026 12:33:28 +0200
+X-Gm-Features: AaiRm53B_9owAyBR-f28XDM2J6hjuEWQ-yg2OKGno4jj5g-Lmors125ZoJ6HZMk
+Message-ID: <CAHp75VcpuxP=3cGuVrJoSuirQ3vPNR9LLWkf5CyaGcghJ2hzag@mail.gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: adc: ad7191: Don't check for specific errors
+ when parsing properties
+To: =?UTF-8?B?TnVubyBTw6E=?= <noname.nuno@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
+	Alisa-Dariana Roman <alisadariana@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Alisa-Dariana Roman <alisa.roman@analog.com>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 20, 2026 at 04:02:55PM +0800, Alexis Czezar Torreno wrote:
-> This series adds support for the Analog Devices AD5706R, a 4-channel
-> 16-bit current output digital-to-analog converter with SPI interface.
-> 
-> The AD5706R features:
->   - 4 independent current output DAC channels
->   - Configurable output ranges (50mA, 150mA, 200mA, 300mA)
->   - Hardware and software LDAC trigger with configurable edge selection
->   - Toggle and dither modes per channel
->   - Internal or external voltage reference selection
->   - PWM-controlled LDAC
->   - Dynamic change SPI speed
+On Fri, Feb 20, 2026 at 12:04=E2=80=AFPM Nuno S=C3=A1 <noname.nuno@gmail.co=
+m> wrote:
+> On Thu, 2026-02-19 at 15:39 +0100, Andy Shevchenko wrote:
+> > Instead of checking for the specific error codes (that can be considere=
+d
+> > a layering violation to some extent) check for the property existence f=
+irst
+> > and then either parse it, or apply a default value.
+>
+> Not really sure how I feel about this one. Checking for specific errors i=
+s a very common
+> pattern and this change just makes it we check for the property presence =
+twice. That said,
+> this makes it more "future proof" (though I find it very unlikely for ret=
+ value o change).
 
-It's ~2300 LoC file, please split by features, so the first patch brings basics
-and a few followups that add the rest.
+I already have an answer to this:
+https://lore.kernel.org/r/aZcenabXYsOdBu84@smile.fi.intel.com
 
-> The driver exposes standard IIO raw/scale/offset channel attributes for
-> DAC output control, sampling frequency for PWM-based LDAC timing, and
-> extended attributes for device configuration including output range
-> selection, trigger mode, and multiplexer output.
-> 
-> This driver is developed and tested on the Cora Z7S platform using
-> the AXI SPI Engine and AXI CLKGEN IP cores. The 'clocks' property
-> enables dynamic SPI clock rate management via the CLKGEN.
-> 
-> Datasheet: https://www.analog.com/en/products/ad5706r.html
+> Anyways, even if we choose to go down this route, I don't see much benefi=
+t in starting
+> converting the drivers with the pattern below (which should be a consider=
+able number).
 
-> 
+There is not a big number of them, so I prefer to have common patterns
+without exact error code checks.
 
-No blank lines in the tag block.
-(Not sure if `b4` can spread it over the series either way.)
-
-> Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-
-
--- 
+--=20
 With Best Regards,
 Andy Shevchenko
-
-
