@@ -1,186 +1,219 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f49.google.com (mail-wr1-f49.google.com [209.85.221.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 734F7311964
-	for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 10:00:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 865D533554F
+	for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 10:04:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771581651; cv=none; b=HZRfo7zwUiX/axK+0HP7u0P3zxOwcxvQNpD0mZsaftld89hogL2z13wyDNvr7NeRlG12pUok/ppUFmz0nEcMNr+LUNM7d8UAMokuX7CKgCCuywNWpGlhgVAb/A0cxf5AFm5rkPGIC2XI+agLvYd+h1HsDe6noPR6NqrrE15hL4E=
+	t=1771581852; cv=none; b=eIBbfptG7cdXYwMYUayG28hWx6ckCTaz6GTSufNy2eaIMuPY8G4r4gmRWXHGg0qd7s3v5o0NCYhqeeJLFzVv8mV6hKZ2GrXRIclIXH78OGX9GChwTEAWRWAC/o/OLQT/UF7oiXKeoYhcRfa2uzApjJdIn4uMM9+mEXO0Ep0+u5A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771581651; c=relaxed/simple;
-	bh=ALv+Y4MazO7kBQC/n25Bvu/WdhV9xJoS4dScH4XjcXI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Ab0zTaUA0J6I/KAvI05jgY7LYNMU0dIJP0ZcnguRJcv13q2LYeOzHc3XKKDcxwsGlJENbkStg9ubjFFZJWWVMQhsHluHXPEJK1F9fmIWA8n5aiZAKFH40oqEXS3BVgpFRu4CBcJZmP7TQQ0rc+4NUG+R71L2F2e0DRjG0RueGS0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=j9+1vcW9; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=S67XPS8I; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1771581852; c=relaxed/simple;
+	bh=kTreZf2G/97kGIQp4wKr1mOla33C1fYbtBD8CfkTbUk=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=DpkJhg3OEvtyABMQN4Qp+ioCN95ZUhDHl3AqLcLyqn1lM1T08GF8vrQ561rzpYSHy5JEicSsqTYeZNx2aandsWy9Z+OiiDLabJxS+ZCoeAinTv2RGcmL1eU0OUOCZviox/ixpo8N8SufPNAWQ4RpfyaF4JLuxTK75obUGMprMxA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IU0sfIsh; arc=none smtp.client-ip=209.85.221.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="j9+1vcW9";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="S67XPS8I"
-Received: from pps.filterd (m0279863.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61K5Rpil2552606
-	for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 10:00:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	ddo+U4gF3xTQh78RUVFL3FgkhoVPcyhxFLNelU0/ITw=; b=j9+1vcW9GTqa1ay/
-	BXhTEz6glwDILfEnCfWUGItTE1+SXCH8rLdVzkirf713jCD35xCTM5xG1od6XcjY
-	QOP6grijJG2smmA0QmKzlARJDTRjNKAwPpzUjqKoyqW3ChiDFizLjCNt65hlgrKG
-	6XRJnQaO7UeYK679pTA9/qrIbIbP+gIxoiRyyxP7zvxLF387ia0Vvdanv0FufmMo
-	WkIi3d1HgYroHZdXpfGHL6jLYy8whGtwQFUZ9TxxoFAbMo23GcxDfY/KChUjYNCU
-	7ytuSLny5E/Umy2N2ieBusd5+saPSWeFOzBgTnsqP8Hjb/fPVw0Ji6tdYK2KM9q2
-	Sul2cw==
-Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com [209.85.219.71])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ceh7t0nmp-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 10:00:49 +0000 (GMT)
-Received: by mail-qv1-f71.google.com with SMTP id 6a1803df08f44-8954ab64c65so22833906d6.3
-        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 02:00:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IU0sfIsh"
+Received: by mail-wr1-f49.google.com with SMTP id ffacd0b85a97d-4376de3f128so1249494f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 02:04:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1771581648; x=1772186448; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ddo+U4gF3xTQh78RUVFL3FgkhoVPcyhxFLNelU0/ITw=;
-        b=S67XPS8I104hm+O+CmKQ6nhxIYHmOQ+/yZ35aNLvx9Q4KeW2L8f4wpf02xzhtb0nkr
-         36zAYNcXXSq2SMS/HRvBA2RulCct/dFaDZeTCc7h1NudJ6f2ia1eTuE+5FgrN6MMwrtC
-         csyTfYp8F48FMUKiDNxT53NQ7zUgdzp7zhUoqWwGf0aRAP/FVOgOplBFaODA5ebFCOKi
-         prLvUnChxiJxXTFATLNjtqUnnciok5jRV8x8FAmSwB4jGnET31g0YG18rbbp7lUNOJ9J
-         BJHsTzv5V9G/6MF9A+V/lxALIVVRPR3WEdmsoeWA97/j6diJ2sws8INjPpQh28RODHp7
-         ZU9A==
+        d=gmail.com; s=20230601; t=1771581850; x=1772186650; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=Ec7rjtcrNRVfu8jxhe2PQ7sdVPGB1y7/JEmMOhmbg8I=;
+        b=IU0sfIsh62dFAVswfBGjyWSyrU+NEeG8yLzJjfZHTnlJ63xR1PH2t2CETkSKr/VZbZ
+         ug/9sqICP2773UJ5XDgSBU3xVTg7nzTH8wckDQmhpQdyrAHgc0TC5jKARb3916xGVhLz
+         iGQaXBzfLsjfybX/XV0C1T/B3SGn+RU//V7EYsW/a1RmCk9h1hfUJ/Wl6x6raQknIFF3
+         iYq35PWqWfrYSm/c94kyaLGVrRTqqxt3a1FRUNk9WYUgXt2PyuMX+SDcXqt5TxYVR7gy
+         57qOzV/o0z6qVUUWdNc43Wq4SqVch2TykSg2Ngccfvb90HlmHdV5Rrz+wKYDuTJb6qIl
+         I+rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771581648; x=1772186448;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ddo+U4gF3xTQh78RUVFL3FgkhoVPcyhxFLNelU0/ITw=;
-        b=njneCVBLBGikLGxjfE/y5/biRnf+MoJQKv8nOGrfDtpm4rTVg90OyceNqz7LOHVDpU
-         6pvEuAzaGswBJIcwUmcU1HB+jLasI9O35jIgm4b5wbRF59W4PjyAuu97heRVKX8QMpAy
-         N51S8h6QEWbzqA6VTZ2+8BwLJoHFdwDCOedRODKvJ93lg9Eu9+teHWEThiV6rQHsKDrC
-         TxADlUsPm+NOrMEx05fjo4YEfduwdsNQCihXkAk2DQV/vJ9pWqyZZnDoSGlHbJRQTmz5
-         II0l0O6aVfXgLxI1vUvzvKp8c+W0WHuI/jPPX+DKbYtdF0e+Nt6nMjuXM3BwKJGFzp0i
-         5MZw==
-X-Forwarded-Encrypted: i=1; AJvYcCXZTMsyFBg8DZTkn+y7q4+pr3Tvi9TcgmpdTHnYWAdakFo8H2Lf/n40oHkEkCbN2ZJEH77juuWNZxM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz+g82yHHLyf+B57RUH4g844oVmQn3IiYz4wdqiS8eTtDfZJ+mn
-	WUxAFe2slC1Oj7W6QPGAdyVDyNCQSYT3ma2DNlLPILGkivTDtc6lItP8T65PCzL3A2OFhqLkG0y
-	wVB85E4Du0hXYSeqL64QZTRs+K7tOuHKU8gB9LgHCiWTl0OPORj3bj7krgoAMFX0=
-X-Gm-Gg: AZuq6aJmF5IrvraKKJeKtpeh+vy9jYW1BoXg+StGYmBgmmswbkOTKd9LlQuPKRDHZrO
-	n9C5TjGY7NlVaU8BVBF/Mbgz3dUThf+VeWgyclnge7rQnwwKpQT2zI4kRCKs5dMx7amBKbwDUvm
-	Y4tAioOtd6czKXbZpBSYZ7518wAMrbUoFcZB+Q+TJyKWAKp1CuGhkgct/Chel0PEucwmInMhxjI
-	E1C8RB9hYtDqISyZWnxuMjmcArM1eAcVctAiLitBmi87mo+acp4NxpShjAUNqkJgg4ZkSsfSmiP
-	oDts14lXtcUXQs5RFcpUYvJKcOaHBUO4GAuQte4F0lwLUyWlFqVcO9Y3y/eq2/VZeWFNAqpcOI+
-	sgJma/EA2sqH8FryI8tN8NlRpoVKpCbC7IVP/shh6HzDk0UQn5YQ8qyy1zycsZAGavunJ17uwQf
-	TjFXw=
-X-Received: by 2002:a05:620a:4809:b0:8cb:1c69:b7e9 with SMTP id af79cd13be357-8cb40869db3mr2446728185a.5.1771581647657;
-        Fri, 20 Feb 2026 02:00:47 -0800 (PST)
-X-Received: by 2002:a05:620a:4809:b0:8cb:1c69:b7e9 with SMTP id af79cd13be357-8cb40869db3mr2446721985a.5.1771581647140;
-        Fri, 20 Feb 2026 02:00:47 -0800 (PST)
-Received: from [192.168.119.254] (078088045245.garwolin.vectranet.pl. [78.88.45.245])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b8fc735e579sm667828666b.9.2026.02.20.02.00.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Feb 2026 02:00:46 -0800 (PST)
-Message-ID: <85ce1f2c-f5cf-4e97-9611-4aed03f69cd7@oss.qualcomm.com>
-Date: Fri, 20 Feb 2026 11:00:41 +0100
+        d=1e100.net; s=20230601; t=1771581850; x=1772186650;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=Ec7rjtcrNRVfu8jxhe2PQ7sdVPGB1y7/JEmMOhmbg8I=;
+        b=SD4MEDLTWN1+kiq0C5mM6vj3smZmz7C3mn9a1i11dJYLhGabiEpY8eMhtxV+InQ2xb
+         SME3AqHuGM5TDyebByBVtSjJEAAyMN6BbxeDmp+Cl/YwTAHrCXj/BAyYGxwQTvwr/p8v
+         yGecAKIY4mZz6NdmMUYeRDN07SIH0KYaGbRjtj5Yjzppfo12gctIKso+ocBzKBVEWEq5
+         QXoGsOgU6NUcFsFk/6i2HuRnpjcFjSuFH+ALf+FMmMoo8ZO4Y3KCwglS2BwWFu9JoUMO
+         zvAuMDqVC4yDMviBsCPegYUEXSY2yU89n9URHlaco24flJcPg9M3d/cM+sRWgpmMLutO
+         D2kA==
+X-Forwarded-Encrypted: i=1; AJvYcCWjZfUdyH6T4PWMUpuMxssCz2/4eJgrupdJBicomr7t4AfJ9mrz5qHXImQZlJRoHjoswTusNaII9Pw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YziUuhHXkkEPVJTsyM9CsFmtJKbfl7vpxq+Gxp/RYSOvGQR7GOg
+	3U9n84hMPHQr9AczlzIrDAHC8Q/bqhDTeiD0nq3NXPHCYVHgfGaS5+fi8gDw8g==
+X-Gm-Gg: AZuq6aIAmAbr7nHm2gGoVNgQtzWza8a6IMq/HfEDS/YxfHifzaT9/LheIVNtFyo/sw6
+	+QYRmRnxXFX8xRx2cKFcFMVHIQcbhSgiSKe/mgQtDdIwqDsYgk1bn1SFd8Uw5bLAXDBhT0NOReE
+	rQBYmia4lzZuwWtf/mzXmrZihx7w/TC5YmthmAccbWs3eZnWX9G2w0e5g8xZ2nbpzbq8C8/d30M
+	hASip4f2iwNYfUO4unyPDynOAwtqEHbM2ua0o38YD3oHpa42k65zaSmXIVturojbElbOSG19mie
+	qAbeKe9FI0cIys22SXnSNMbbBTzqME3xS+GdFWOCeKqhGqT/CQ6bu8z+dQRnMJYirj67ctK+4LD
+	unDbQOocNhp/uTd9jGOJmWKg9B/WrXJggUgeur17Is68TumBoB1A8r6IG1D1q/wC8QwK1OBHMPW
+	TJ+LEMN78rs/+v3ZbZemHUXMGFSLvsCCo=
+X-Received: by 2002:a5d:5d83:0:b0:436:3707:2bf0 with SMTP id ffacd0b85a97d-4379db98594mr36063010f8f.35.1771581849452;
+        Fri, 20 Feb 2026 02:04:09 -0800 (PST)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43796abc85csm54159523f8f.22.2026.02.20.02.04.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Feb 2026 02:04:09 -0800 (PST)
+Message-ID: <c59c19d923d369eac2a0a46405e13e41836591c2.camel@gmail.com>
+Subject: Re: [PATCH v1 1/1] iio: adc: ad7191: Don't check for specific
+ errors when parsing properties
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>, Alisa-Dariana Roman
+	 <alisadariana@gmail.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich	
+ <Michael.Hennerich@analog.com>, Alisa-Dariana Roman
+ <alisa.roman@analog.com>,  Jonathan Cameron	 <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Date: Fri, 20 Feb 2026 10:04:52 +0000
+In-Reply-To: <20260219143936.2276366-1-andriy.shevchenko@linux.intel.com>
+References: <20260219143936.2276366-1-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 5/5] arm64: dts: qcom: sm7225-fairphone-fp4: Add
- battery temperature node
-To: Luca Weiss <luca.weiss@fairphone.com>,
-        Jonathan Cameron
- <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
- <conor+dt@kernel.org>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Hans de Goede <hansg@kernel.org>, Jens Reidel <adrian@mainlining.org>,
-        Casey Connolly <casey.connolly@linaro.org>
-Cc: ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org
-References: <20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com>
- <20260220-bat-temp-adc-v2-5-fe34ed4ea851@fairphone.com>
-Content-Language: en-US
-From: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
-In-Reply-To: <20260220-bat-temp-adc-v2-5-fe34ed4ea851@fairphone.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: n76drGpRKek0klnY_8ROBUhiwbQ3nrrl
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIwMDA4NiBTYWx0ZWRfX9B+7IyD0wh29
- 3NkOtVovjs8kaS6fHvYinyvef6zIodqfYOscoKnG+OBoG5Shsqrg/ygEKvtUF9FDt07WgX+/O7h
- xNWEdeNGavIpC57G/F3hcO1R9tToflrHwfWqWDvzzFyn5fPAEu8rPN/KdONF3/+2VQK3SVunRzR
- 4rNBxwAP4hmZAdFu4+gY4zIZytXSv3vJfkYQn87POghYcXZIFNzYMjWq3F3lM3TcxOE2gkYTT/d
- u9Dundd0/I4MQRb+XfrqzPjX1EHO4L8kPDRKM05c2V1oSXOTvamqNwCRzaCybHoGHljisFrkXiE
- nR3XUWbSseD3hGswPi5ab4mrlSgAjeN7Cqg4DHEv3wNDZqqiG3on6UAj/o/yP+zfsnuw4v6B70Q
- Y/Q+vV/vv/mHHC3ZtOZzZnnycHfR/1zMmZKkxYJtNK2X1qkM5z6bJsTCg+Mmyqc2xO6AbNke5tl
- af04iHrhZWXkVV4K5MA==
-X-Authority-Analysis: v=2.4 cv=PcTyRyhd c=1 sm=1 tr=0 ts=699830d1 cx=c_pps
- a=UgVkIMxJMSkC9lv97toC5g==:117 a=FpWmc02/iXfjRdCD7H54yg==:17
- a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22 a=GgsMoib0sEa3-_RKJdDe:22
- a=6H0WHjuAAAAA:8 a=8l1bqfnc6EbWCU14WoQA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=1HOtulTD9v-eNWfpl4qZ:22 a=Soq9LBFxuPC4vsCAQt-j:22
-X-Proofpoint-ORIG-GUID: n76drGpRKek0klnY_8ROBUhiwbQ3nrrl
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-20_01,2026-02-20_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- lowpriorityscore=0 impostorscore=0 bulkscore=0 clxscore=1015 phishscore=0
- adultscore=0 suspectscore=0 spamscore=0 priorityscore=1501 malwarescore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602200086
 
-On 2/20/26 10:19 AM, Luca Weiss wrote:
-> Add a generic-adc-thermal node to convert the voltage read by the
-> battery temperature ADC into degree Celsius using the provided lookup
-> table.
-> 
-> This will later be used as input for the fuel gauge node (QGauge on the
-> PM7250B).
-> 
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+On Thu, 2026-02-19 at 15:39 +0100, Andy Shevchenko wrote:
+> Instead of checking for the specific error codes (that can be considered
+> a layering violation to some extent) check for the property existence fir=
+st
+> and then either parse it, or apply a default value.
+>=20
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 > ---
->  arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts | 83 +++++++++++++++++++++++
->  1 file changed, 83 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-> index b697051a0aaa..7857003099a6 100644
-> --- a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-> +++ b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-> @@ -108,6 +108,89 @@ rear_cam_sensor: thermal-sensor-rear-cam {
->  		io-channel-names = "sensor-channel";
->  	};
->  
-> +	bat_therm_sensor: thermal-sensor-bat-therm {
 
-nit: this should be a little higher
+Not really sure how I feel about this one. Checking for specific errors is =
+a very common
+pattern and this change just makes it we check for the property presence tw=
+ice. That said,
+this makes it more "future proof" (though I find it very unlikely for ret v=
+alue o change).
 
-> +		compatible = "generic-adc-thermal";
-> +		#thermal-sensor-cells = <0>;
-> +		#io-channel-cells = <0>;
-> +		io-channels = <&pm7250b_adc ADC5_BAT_THERM_30K_PU>;
-> +		io-channel-names = "sensor-channel";
-> +		/*
-> +		 * Voltage to temperature table for 10kΩ (B=3435K) NTC with a
-> +		 * 1.875V reference and 30kΩ pull-up.
-> +		 */
+Anyways, even if we choose to go down this route, I don't see much benefit =
+in starting
+converting the drivers with the pattern below (which should be a considerab=
+le number).
 
-I think this looks good. Is this data going to be correct for all/most
-devices (i.e. is there a single battery sku)?
-
-Konrad
+- Nuno S=C3=A1
+=20
+> =C2=A0drivers/iio/adc/ad7191.c | 63 +++++++++++++++++++++----------------=
+---
+> =C2=A01 file changed, 33 insertions(+), 30 deletions(-)
+>=20
+> diff --git a/drivers/iio/adc/ad7191.c b/drivers/iio/adc/ad7191.c
+> index d9cd903ffdd2..51ec199fb06f 100644
+> --- a/drivers/iio/adc/ad7191.c
+> +++ b/drivers/iio/adc/ad7191.c
+> @@ -154,27 +154,18 @@ static int ad7191_config_setup(struct iio_dev *indi=
+o_dev)
+> =C2=A0	const u32 gain[4] =3D { 1, 8, 64, 128 };
+> =C2=A0	static u32 scale_buffer[4][2];
+> =C2=A0	int odr_value, odr_index =3D 0, pga_value, pga_index =3D 0, i, ret=
+;
+> +	const char *propname;
+> =C2=A0	u64 scale_uv;
+> =C2=A0
+> =C2=A0	st->samp_freq_index =3D 0;
+> =C2=A0	st->scale_index =3D 0;
+> =C2=A0
+> -	ret =3D device_property_read_u32(dev, "adi,odr-value", &odr_value);
+> -	if (ret && ret !=3D -EINVAL)
+> -		return dev_err_probe(dev, ret, "Failed to get odr value.\n");
+> +	propname =3D "adi,odr-value";
+> +	if (device_property_present(dev, propname)) {
+> +		ret =3D device_property_read_u32(dev, propname, &odr_value);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret, "Failed to get %s.\n", propname);
+> =C2=A0
+> -	if (ret =3D=3D -EINVAL) {
+> -		st->odr_gpios =3D devm_gpiod_get_array(dev, "odr", GPIOD_OUT_LOW);
+> -		if (IS_ERR(st->odr_gpios))
+> -			return dev_err_probe(dev, PTR_ERR(st->odr_gpios),
+> -					=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get odr gpios.\n");
+> -
+> -		if (st->odr_gpios->ndescs !=3D 2)
+> -			return dev_err_probe(dev, -EINVAL, "Expected 2 odr gpio pins.\n");
+> -
+> -		st->samp_freq_avail =3D samp_freq;
+> -		st->samp_freq_avail_size =3D ARRAY_SIZE(samp_freq);
+> -	} else {
+> =C2=A0		for (i =3D 0; i < ARRAY_SIZE(samp_freq); i++) {
+> =C2=A0			if (odr_value !=3D samp_freq[i])
+> =C2=A0				continue;
+> @@ -186,6 +177,17 @@ static int ad7191_config_setup(struct iio_dev *indio=
+_dev)
+> =C2=A0		st->samp_freq_avail_size =3D 1;
+> =C2=A0
+> =C2=A0		st->odr_gpios =3D NULL;
+> +	} else {
+> +		st->odr_gpios =3D devm_gpiod_get_array(dev, "odr", GPIOD_OUT_LOW);
+> +		if (IS_ERR(st->odr_gpios))
+> +			return dev_err_probe(dev, PTR_ERR(st->odr_gpios),
+> +					=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get odr gpios.\n");
+> +
+> +		if (st->odr_gpios->ndescs !=3D 2)
+> +			return dev_err_probe(dev, -EINVAL, "Expected 2 odr gpio pins.\n");
+> +
+> +		st->samp_freq_avail =3D samp_freq;
+> +		st->samp_freq_avail_size =3D ARRAY_SIZE(samp_freq);
+> =C2=A0	}
+> =C2=A0
+> =C2=A0	mutex_lock(&st->lock);
+> @@ -200,22 +202,12 @@ static int ad7191_config_setup(struct iio_dev *indi=
+o_dev)
+> =C2=A0
+> =C2=A0	mutex_unlock(&st->lock);
+> =C2=A0
+> -	ret =3D device_property_read_u32(dev, "adi,pga-value", &pga_value);
+> -	if (ret && ret !=3D -EINVAL)
+> -		return dev_err_probe(dev, ret, "Failed to get pga value.\n");
+> +	propname =3D "adi,pga-value";
+> +	if (device_property_present(dev, propname)) {
+> +		ret =3D device_property_read_u32(dev, propname, &pga_value);
+> +		if (ret)
+> +			return dev_err_probe(dev, ret, "Failed to get %s.\n", propname);
+> =C2=A0
+> -	if (ret =3D=3D -EINVAL) {
+> -		st->pga_gpios =3D devm_gpiod_get_array(dev, "pga", GPIOD_OUT_LOW);
+> -		if (IS_ERR(st->pga_gpios))
+> -			return dev_err_probe(dev, PTR_ERR(st->pga_gpios),
+> -					=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get pga gpios.\n");
+> -
+> -		if (st->pga_gpios->ndescs !=3D 2)
+> -			return dev_err_probe(dev, -EINVAL, "Expected 2 pga gpio pins.\n");
+> -
+> -		st->scale_avail =3D scale_buffer;
+> -		st->scale_avail_size =3D ARRAY_SIZE(scale_buffer);
+> -	} else {
+> =C2=A0		for (i =3D 0; i < ARRAY_SIZE(gain); i++) {
+> =C2=A0			if (pga_value !=3D gain[i])
+> =C2=A0				continue;
+> @@ -227,6 +219,17 @@ static int ad7191_config_setup(struct iio_dev *indio=
+_dev)
+> =C2=A0		st->scale_avail_size =3D 1;
+> =C2=A0
+> =C2=A0		st->pga_gpios =3D NULL;
+> +	} else {
+> +		st->pga_gpios =3D devm_gpiod_get_array(dev, "pga", GPIOD_OUT_LOW);
+> +		if (IS_ERR(st->pga_gpios))
+> +			return dev_err_probe(dev, PTR_ERR(st->pga_gpios),
+> +					=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get pga gpios.\n");
+> +
+> +		if (st->pga_gpios->ndescs !=3D 2)
+> +			return dev_err_probe(dev, -EINVAL, "Expected 2 pga gpio pins.\n");
+> +
+> +		st->scale_avail =3D scale_buffer;
+> +		st->scale_avail_size =3D ARRAY_SIZE(scale_buffer);
+> =C2=A0	}
+> =C2=A0
+> =C2=A0	st->temp_gpio =3D devm_gpiod_get(dev, "temp", GPIOD_OUT_LOW);
