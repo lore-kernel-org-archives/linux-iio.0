@@ -1,81 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE3E12405ED;
-	Fri, 20 Feb 2026 12:15:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0831D31D375;
+	Fri, 20 Feb 2026 13:13:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771589708; cv=none; b=gLgUX4heJEIO9f5tsdrW8FDWkOeq8cs7w7kBNeBCI2HHAVCYgWWY5ptI5K2lBNQ5I5x5HrY+O8nFAqoHd/oWxofwGz8FZsCh+RQoOjgE7Jq+FP5OB22Og2tpgMhY37KahbuGxhMMmhhUWM6j5ON120Czq2Bbyw86LHglECbYvgw=
+	t=1771593203; cv=none; b=YcMsZSwSVycsWfZf5vxic55FdvrIOPjLQzSMi0KZlD6Kj06F4TCHTO0RAWTzpzNEL2uD6DjquRAdRRZRHWS1S9cQCmLOSiphD/X3YrUPomyP+wWr8zaShQB7pBfWf7ERtZYE4D4sOru0kzaMtY9BGSKCVLAcxzrqTwj/1GMrIoU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771589708; c=relaxed/simple;
-	bh=0o9IW6EKqd4Vq8sUK5914JF6ZzNgkbx9lFcrfjsLYeg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FlXUrQPcaycb5WZZzG5NNaSJXPbNGl6GZc4odsiZjYCoz60mZSSVVXOn2vP/NDQLfsIB3NtRb6Jb8ZS4OSDpwFotwBOUA9yAW8iDAp5OhOXra5YWDEza65sxkHO8BskewuEZ9dfnptCXW+4PoIMyT3l0w/FaF93ld+Uk0s6Jjtk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oOZwv5mw; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771593203; c=relaxed/simple;
+	bh=cLjCo+mu/lPz7LnfScWmnzqtMOQ54eInHIH0e59C32g=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=HyjEdr0stX810cMwl119ABDjXJ8aU+I/6sQfwyrw73+yB36EKxGc2hlYqNKd0GRDHuRMK+c5SrzUEBdAIFUbc2LZ/TD/D/+4mn+lfjRltnje5YmUZPTQm4971HvTaetx6RcqaLMq15NudfwR0+mHzj9VGAl4HHS2DkXQXa6gFeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=TJblm2pK; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oOZwv5mw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6FDCC116C6;
-	Fri, 20 Feb 2026 12:14:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771589708;
-	bh=0o9IW6EKqd4Vq8sUK5914JF6ZzNgkbx9lFcrfjsLYeg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=oOZwv5mwvpQQN4VQkUdCqusXpbBt7ESO0eqqIzhElruWRJ5RApq4QcWI45sujXb84
-	 etFZs1opKE7qutBadLCuURXzo8ElfrsGmhrjcXgPjKYEQw2n/kz1YW17L3gHMOHsTe
-	 mNfswUm3he0obQN8kkm0AZ+Nfeuq9UAE8hkS4haKeacr6a1riZtYWzOeTvHHzcb0MQ
-	 jAA9mUi79nd3XEco0R4hapGpS4EYGcjjlQukstx768FLzV4gzr5Dyu6X+P1zvwOpBU
-	 /gP/eVndL8VRDnlDLCeV3zUSokx2tJowONx0cj90eAYt+o0hdnyDU/G3/VLGFClfed
-	 6Fo/RhoFpwrRQ==
-Date: Fri, 20 Feb 2026 12:14:50 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v1 1/1] iio: core: Simplify IIO core managed APIs
-Message-ID: <20260220121450.74586f44@jic23-huawei>
-In-Reply-To: <CAHp75VdQufe2ANMm=FWvnGAfpe4Y-U_oocs-ax+tY39=z81g4A@mail.gmail.com>
-References: <20260216081412.1118599-1-andriy.shevchenko@linux.intel.com>
-	<20260220101844.17f3bc63@jic23-huawei>
-	<CAHp75VdQufe2ANMm=FWvnGAfpe4Y-U_oocs-ax+tY39=z81g4A@mail.gmail.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="TJblm2pK"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61K897r5898207;
+	Fri, 20 Feb 2026 08:13:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=8jdjFHyBsQW2XkEbTszZc46YQ8x
+	t6xL7SzkY3rmZl/c=; b=TJblm2pKoZuussmCT4jOWV6hfQP1CONqa60YSKgcjgD
+	JTdqpKkmu092D3NoMoz62SRt+yYpNersxQ8c1TLqXCGpNzOl82Wag3EdwiW0fb0/
+	hEt9nUim43Q8lk9qapcafR9L+99XAeKhsN3B6swD0bngIUS4R4t3i+mkZWY5Z2B4
+	IIUs8J/F0M9frhGJjE+GRfwlNUBvktKNe8J1/kEjilHNJHt/ACBeeWk8KsPtpUEJ
+	AXQMmDVYw6fMN7ossbewzswsEXbWdlUI/XKqAKbeRpTdX2sm3msDCf+fpJCzfLft
+	7RT++U9V1tRBXtTqZMjihj+8KUiIMZJtXg/GwmHWJ5g==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ce69kkrme-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 20 Feb 2026 08:13:05 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61KDD4uA064734
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 20 Feb 2026 08:13:04 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 20 Feb
+ 2026 08:13:04 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 20 Feb 2026 08:13:04 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61KDCsHR009613;
+	Fri, 20 Feb 2026 08:12:57 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Lars-Peter Clausen
+	<lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan
+ Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/7] iio: use dev_err_probe in probe path for ADI drivers
+Date: Fri, 20 Feb 2026 15:11:38 +0200
+Message-ID: <20260220131151.74329-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=Z//h3XRA c=1 sm=1 tr=0 ts=69985de1 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=Mpw57Om8IfrbqaoTuvik:22
+ a=GgsMoib0sEa3-_RKJdDe:22 a=IA88mgySg3KGAzZw5awA:9
+X-Proofpoint-ORIG-GUID: uIVN4lmIrfweuSdAZ8NU-tEMMb7FBalS
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIwMDExNSBTYWx0ZWRfX2w4fBS8opqQq
+ XEXzgUAETkZzsZniWbjt01OIf1UcT3gDDTbYVxp2ff1zRz7fVMzCYY6302pGNhyxwCufU70p/6R
+ hFA/mz2JLUGoU5mrb1mFUPa8p4Rp36pWlCIkKy43y9eHYINciLX3or5hOfLmLsjwCs9cTX02kDH
+ F02uTpbWTskGtmvuGuiN9ngIl0jpnSpelvlUHqAmhotkF3l1pt/sNw0ZXqqXlvwOUbiZRALd4tN
+ jDlGxCnUdjhmHx0Fmd9J3ed8BN2+CFhfxNMX4/dZ7HLNlnw2vuw7rlVB1Gj+AXuqeDeLg+5GQmi
+ xHFw9Zqq/jPuyXQ9gqXPVL17XXofh2H1MHaUN5Z3jBihrYSvZAkijwTIDan+mKBcLSotIuvXA0f
+ 9IILCbdlJob8u4yJ3r3OLHQ4AbZ8aKXhW+woJ5m6lpzpjbX6oKKbLfUP7bFbYhZzPy4sPg+1nPn
+ rsC/c6c4Jb7bqT2ssLw==
+X-Proofpoint-GUID: uIVN4lmIrfweuSdAZ8NU-tEMMb7FBalS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-20_01,2026-02-20_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ impostorscore=0 adultscore=0 clxscore=1015 spamscore=0 bulkscore=0
+ lowpriorityscore=0 suspectscore=0 malwarescore=0 phishscore=0
+ priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2601150000
+ definitions=main-2602200115
 
-On Fri, 20 Feb 2026 12:27:40 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+Use dev_err_probe() consistently in the probe path of several ADI IIO
+drivers. This simplifies error handling and ensures proper logging of
+deferred probes.
 
-> On Fri, Feb 20, 2026 at 12:18=E2=80=AFPM Jonathan Cameron <jic23@kernel.o=
-rg> wrote:
-> > On Mon, 16 Feb 2026 09:14:12 +0100
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote: =20
->=20
-> ...
->=20
-> > This had me briefly confused as I failed to notice it was static
-> > (no idea why I gave such a simple internal function kernel-doc!)
-> >
-> > However that brings the obvious follow up question.  Given your
-> > simplification does having a helper make sense given only a single call=
-er?
-> >
-> > Let's just squash it and have the two calls inline + some resulting docs
-> > updates to get rid of the references to this function. =20
->=20
-> Do you want to have this change inside the proposed patch? Or in a
-> separate (pre/post) one?
-Same patch would be fine I think.  It's small and coupled to the code
-getting simpler because of the main change here.  Seems like a pointless
-dance to refactor same code twice.
+Drivers updated:
+ - adrf6780
+ - admv1014
+ - admv1013
+ - adf4377
+ - ade9000
+ - ad7293
+ - admv8818
 
-Jonathan
+Antoniu Miclaus (7):
+  iio: frequency: adrf6780: use dev_err_probe in probe path
+  iio: frequency: admv1014: use dev_err_probe in probe path
+  iio: frequency: admv1013: use dev_err_probe in probe path
+  iio: frequency: adf4377: use dev_err_probe in probe path
+  iio: adc: ade9000: use dev_err_probe in probe path
+  iio: dac: ad7293: use dev_err_probe in probe path
+  iio: filter: admv8818: use dev_err_probe in probe path
 
->=20
+ drivers/iio/adc/ade9000.c        |  7 ++--
+ drivers/iio/dac/ad7293.c         |  7 ++--
+ drivers/iio/filter/admv8818.c    | 38 +++++++++----------
+ drivers/iio/frequency/adf4377.c  | 28 ++++++--------
+ drivers/iio/frequency/admv1013.c | 22 +++++------
+ drivers/iio/frequency/admv1014.c | 63 ++++++++++++++------------------
+ drivers/iio/frequency/adrf6780.c | 21 +++++------
+ 7 files changed, 80 insertions(+), 106 deletions(-)
+
+-- 
+2.43.0
 
