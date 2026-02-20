@@ -1,204 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C78621CC58;
-	Fri, 20 Feb 2026 13:29:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59D4734678D;
+	Fri, 20 Feb 2026 13:29:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771594168; cv=none; b=LSRtKq9vJ+k9UMN1S4VJ/uI/fw6ee9XUBR3m1swD9qaAZnPXHWr+u7A7FqjXDLon+CEyMoMB0PKSDtvKzFVgShvoY5sErNHhsJYto9xDRYyKz7RXwviJwzhcVIbMfcOzcuTgYg9WW8ScdnNwDipCeutxaiWidOq3DFrcNCrw/fc=
+	t=1771594176; cv=none; b=WvOuSOLN0l8zGVewQ0DuCynL2AtcJfEwn5BHP6WKQll2R/06rALGYt+/KL3HLk1m4NWJvNir9ZUcQxULpraBaLBhmweMCtptDNWmNxcxHtKPUptjxGS6YaRyRiVSh3Xbr5lnRSlT2AQjTwUeSdhlmBa324gOfoHnxUruwOWqyn0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771594168; c=relaxed/simple;
-	bh=AQjZXXatpHZSStwTlIQJE4Gi7G56uTODReuyq+4fDXs=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Dx+xiXZQP3Or5pekyxpYwXpTUUaDm6qpLkN3fdWQ9cw0OCZWIbA/KnSNcstPB3bMNXoNgvDlhvbdrwfFiRJEXJWN+Mtpd7IKeuhp1h3lQmnCzq3MDe5AaNHrCEvqkbxDv52EqdAHp7up+jmcU/5zRUWMTZ2DnKoCCY74KhQUxdc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mPREUoJK; arc=none smtp.client-ip=192.198.163.19
+	s=arc-20240116; t=1771594176; c=relaxed/simple;
+	bh=I8PwNEaD9hidzUf9f0KgwEbqYHly+IpZ+BznSjfFjw0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tEXwqcivumVNwFu1HP4wJ2mrsm1v/eWGYkIwFImK2eCpNxNyGrqeDgSl/pVCuFzNAGfQKiH7qxqflM3L/PVPo0RPLdMJvLE8j3uDEnwO3voW7PmMdsLyKSNMVNlz77WjEpPcXGhBw1a5Q1gEPmfh/0I4T+LrmgS2n3I+7UlPXvQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZkTXZmEj; arc=none smtp.client-ip=192.198.163.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mPREUoJK"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZkTXZmEj"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771594167; x=1803130167;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=AQjZXXatpHZSStwTlIQJE4Gi7G56uTODReuyq+4fDXs=;
-  b=mPREUoJKBAcZKuHS0s7DS3JrHIFAcgNNW9WBNu16yGD/Y285hHPRMlzm
-   bBW+OuHoYW4ygjlqZLAaIW9raBaWdDgjYVxtasB1taoAczlKWO7jU5TRf
-   6vd0tECM7UvraN7gsnSARNHjGU43rARuxnhFSrtZs1q7tapCSH0Qkolyg
-   WY5qaMS/LtOq7TX+QPv9AYCKsSJVjF+/JthxfuoJNjagzMhFZkEmk4/Ke
-   5cDzXB6eCAGWzubYrbVTlR85SMwoGtTohhuMRfiYT9JUeI4iH4fkZl7zD
-   BxenhP5Sd8OzoxxulFRjGZl5yat2vbX5YPio0hQ6CYk8Czq0abbjTMdhC
-   Q==;
-X-CSE-ConnectionGUID: Lq3bb5goRESwkYqcvLRMAQ==
-X-CSE-MsgGUID: 3fe/SFpZTgasUkryI/GhbQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="71710573"
+  t=1771594175; x=1803130175;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=I8PwNEaD9hidzUf9f0KgwEbqYHly+IpZ+BznSjfFjw0=;
+  b=ZkTXZmEjH3ZtApas9yyKt+td9XrTMOZp8lBBMH5Sc8gFdlPWrSWFDNKq
+   wwMmrIe5gM5hhSj+5u9fOqhXt48y3PPQaa92Ha8O27yF5TWOwUMkcz7Ho
+   QWeJ4UlBtSyeEI5T99FpGDkiEyHFW+vhybhhrI2exmKE4x+VsGZp+uhql
+   wTLbu8HL5o9f8Iq91VEL9jWcnle6gl6UAPdmvcASQwtJ+9RgK4iWURmNx
+   sCGthGfNhh+xeT0Na9rHOzFW9/To3lTfrZXvhBzVlQa/e4tnuicqOGcJQ
+   7gZiPPfUx6/6yhijvV1B0TVAwv9AWWoxq0BNqsfjEDing9uHA9Sw/PlGU
+   A==;
+X-CSE-ConnectionGUID: tBOAo/H6QZCiQz3K0rBygQ==
+X-CSE-MsgGUID: nm6JOlBcQrqLfk35u10Dqw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="72747467"
 X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="71710573"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:29:20 -0800
-X-CSE-ConnectionGUID: K5BslAP0QLmbdVDFb3QXQw==
-X-CSE-MsgGUID: jTqcqt1aSjubJLycJWsl5g==
+   d="scan'208";a="72747467"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:29:35 -0800
+X-CSE-ConnectionGUID: lB4HFlBeRyCeW90hvermXA==
+X-CSE-MsgGUID: WvM8gAqYTzCT2AMZ0OiRkw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="214703442"
-Received: from black.igk.intel.com ([10.91.253.5])
-  by orviesa009.jf.intel.com with ESMTP; 20 Feb 2026 05:29:17 -0800
-Received: by black.igk.intel.com (Postfix, from userid 1003)
-	id D9B8095; Fri, 20 Feb 2026 14:29:15 +0100 (CET)
+   d="scan'208";a="213412294"
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 05:29:33 -0800
+Date: Fri, 20 Feb 2026 15:29:31 +0200
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>
-Subject: [PATCH v2 1/1] iio: core: Simplify IIO core managed APIs
-Date: Fri, 20 Feb 2026 14:25:19 +0100
-Message-ID: <20260220132912.2392102-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.50.1
+Subject: Re: [PATCH v1 1/1] iio: core: Simplify IIO core managed APIs
+Message-ID: <aZhhuxD9YWefCAuY@smile.fi.intel.com>
+References: <20260216081412.1118599-1-andriy.shevchenko@linux.intel.com>
+ <20260220101844.17f3bc63@jic23-huawei>
+ <CAHp75VdQufe2ANMm=FWvnGAfpe4Y-U_oocs-ax+tY39=z81g4A@mail.gmail.com>
+ <20260220121450.74586f44@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260220121450.74586f44@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Use devm_add_action_or_reset() instead of devres_alloc() and
-devres_add(), which works the same. This will simplify the
-code. There is no functional changes.
+On Fri, Feb 20, 2026 at 12:14:50PM +0000, Jonathan Cameron wrote:
+> On Fri, 20 Feb 2026 12:27:40 +0200
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Fri, Feb 20, 2026 at 12:18 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> > > On Mon, 16 Feb 2026 09:14:12 +0100
+> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:  
 
-While at it, inline devm_iio_kfifo_allocate() into its only user.
+...
 
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
+> > > This had me briefly confused as I failed to notice it was static
+> > > (no idea why I gave such a simple internal function kernel-doc!)
+> > >
+> > > However that brings the obvious follow up question.  Given your
+> > > simplification does having a helper make sense given only a single caller?
+> > >
+> > > Let's just squash it and have the two calls inline + some resulting docs
+> > > updates to get rid of the references to this function.  
+> > 
+> > Do you want to have this change inside the proposed patch? Or in a
+> > separate (pre/post) one?
+> Same patch would be fine I think.  It's small and coupled to the code
+> getting simpler because of the main change here.  Seems like a pointless
+> dance to refactor same code twice.
 
-v2: squashed some code (Jonathan), amended commit message & added tag (Nuno)
+v2 has just been sent.
 
- drivers/iio/buffer/kfifo_buf.c     | 39 ++++++++----------------------
- drivers/iio/industrialio-trigger.c | 24 ++++++++----------
- 2 files changed, 20 insertions(+), 43 deletions(-)
-
-diff --git a/drivers/iio/buffer/kfifo_buf.c b/drivers/iio/buffer/kfifo_buf.c
-index 38034c8bcc04..92ffe9131190 100644
---- a/drivers/iio/buffer/kfifo_buf.c
-+++ b/drivers/iio/buffer/kfifo_buf.c
-@@ -224,35 +224,9 @@ void iio_kfifo_free(struct iio_buffer *r)
- }
- EXPORT_SYMBOL(iio_kfifo_free);
- 
--static void devm_iio_kfifo_release(struct device *dev, void *res)
-+static void devm_iio_kfifo_release(void *r)
- {
--	iio_kfifo_free(*(struct iio_buffer **)res);
--}
--
--/**
-- * devm_iio_kfifo_allocate - Resource-managed iio_kfifo_allocate()
-- * @dev:		Device to allocate kfifo buffer for
-- *
-- * RETURNS:
-- * Pointer to allocated iio_buffer on success, NULL on failure.
-- */
--static struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev)
--{
--	struct iio_buffer **ptr, *r;
--
--	ptr = devres_alloc(devm_iio_kfifo_release, sizeof(*ptr), GFP_KERNEL);
--	if (!ptr)
--		return NULL;
--
--	r = iio_kfifo_allocate();
--	if (r) {
--		*ptr = r;
--		devres_add(dev, ptr);
--	} else {
--		devres_free(ptr);
--	}
--
--	return r;
-+	iio_kfifo_free(r);
- }
- 
- /**
-@@ -266,6 +240,8 @@ static struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev)
-  * attaches it to the IIO device via iio_device_attach_buffer().
-  * This is meant to be a bit of a short-hand/helper function as there are a few
-  * drivers that seem to do this.
-+ *
-+ * Return: 0 on success, negative error code on failure.
-  */
- int devm_iio_kfifo_buffer_setup_ext(struct device *dev,
- 				    struct iio_dev *indio_dev,
-@@ -273,11 +249,16 @@ int devm_iio_kfifo_buffer_setup_ext(struct device *dev,
- 				    const struct iio_dev_attr **buffer_attrs)
- {
- 	struct iio_buffer *buffer;
-+	int ret;
- 
--	buffer = devm_iio_kfifo_allocate(dev);
-+	buffer = iio_kfifo_allocate();
- 	if (!buffer)
- 		return -ENOMEM;
- 
-+	ret = devm_add_action_or_reset(dev, devm_iio_kfifo_release, buffer);
-+	if (ret)
-+		return ret;
-+
- 	indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
- 	indio_dev->setup_ops = setup_ops;
- 
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 54416a384232..00c8b7e5c8b9 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -634,9 +634,9 @@ void iio_trigger_free(struct iio_trigger *trig)
- }
- EXPORT_SYMBOL(iio_trigger_free);
- 
--static void devm_iio_trigger_release(struct device *dev, void *res)
-+static void devm_iio_trigger_release(void *trig)
- {
--	iio_trigger_free(*(struct iio_trigger **)res);
-+	iio_trigger_free(trig);
- }
- 
- /**
-@@ -658,24 +658,20 @@ struct iio_trigger *__devm_iio_trigger_alloc(struct device *parent,
- 					     struct module *this_mod,
- 					     const char *fmt, ...)
- {
--	struct iio_trigger **ptr, *trig;
-+	struct iio_trigger *trig;
- 	va_list vargs;
--
--	ptr = devres_alloc(devm_iio_trigger_release, sizeof(*ptr),
--			   GFP_KERNEL);
--	if (!ptr)
--		return NULL;
-+	int ret;
- 
- 	/* use raw alloc_dr for kmalloc caller tracing */
- 	va_start(vargs, fmt);
- 	trig = viio_trigger_alloc(parent, this_mod, fmt, vargs);
- 	va_end(vargs);
--	if (trig) {
--		*ptr = trig;
--		devres_add(parent, ptr);
--	} else {
--		devres_free(ptr);
--	}
-+	if (!trig)
-+		return NULL;
-+
-+	ret = devm_add_action_or_reset(parent, devm_iio_trigger_release, trig);
-+	if (ret)
-+		return NULL;
- 
- 	return trig;
- }
 -- 
-2.50.1
+With Best Regards,
+Andy Shevchenko
+
 
