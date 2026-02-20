@@ -1,121 +1,93 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qk1-f178.google.com (mail-qk1-f178.google.com [209.85.222.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4CC6E2F49F0;
-	Fri, 20 Feb 2026 16:56:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 569BF366542
+	for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 19:29:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771606621; cv=none; b=BIPGmXc7ouQVdR1tL3yrNTrP+P8y2JfJHdI0te23p+P7utMokmPJZz8dP8Q7yeCZyQkZK5jFqOn974mtcS2KSiqVUmWND+j65wc8qYck/rmTtrcglo3LSLXV428x0huTvs3g63xesBEDbcQ/RFVkJ8g33mcyytyb8UJ3Bt9Hrnc=
+	t=1771615747; cv=none; b=KUDT5gEmzPYcgt3WlPo0ggf2SxnzCR/kPjhb7jWTkXFSDkgSEjZ+CzEM+CKLiWyCXIB6WycsKE2ZrV8j79ot9kwx9cgfHMv6Ez37PQbFwUTURF139ninLnV7DwLHFBR7iuGrzEj7wzbjMmbLYh94bX4G9KYpU8Y3+wGjHaCXxlo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771606621; c=relaxed/simple;
-	bh=h0roktZ6hh9v4RmiXDWicExfqn4gtwVXGM/LZlgJDEc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=hYKPaSbaS5zMCEzVoefbvZQ9YCuSGGcol/P5RIdpnXQW4fYDr3IO3twKE8LUTBpTWdn17xk/D0o+lML48Pb48g7/6wO9Xl8oFs6+7Tf7Tp+82v/XeezADkgeJ/jcVxiyc49Y72OSb+3HMRpXLeDVygkTk97A+Pd0TlRg33ztIyQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HuERNVJ/; arc=none smtp.client-ip=192.198.163.9
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1771615747; c=relaxed/simple;
+	bh=ndBy/UTl8yqLz2FYSmSDbHs5J3U/slvt6uXC0nIf+aE=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UAiGqY8WFr/FpyoyYtfZRYACqv9bgn8BJZ+biz/yUTkHITyPc1jbi9SC5ERDKF733AJs7VRjyW5VZRGQprYWTs7IxW/wFxUQgHZWQq208lNU/OvC6fVWUQvnGnuM2IiAXPWadZ8lsIsMe8zP9dev5nGndtjcCzvPz8TgHOWUFTU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kLcsMzso; arc=none smtp.client-ip=209.85.222.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HuERNVJ/"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771606620; x=1803142620;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=h0roktZ6hh9v4RmiXDWicExfqn4gtwVXGM/LZlgJDEc=;
-  b=HuERNVJ/l5zzD35pwiVzPmqH36ARBmwlr5yWUIIe9/NzHjjURTFZ2iZo
-   RlT5twqBTw5IqQqYxmq26Q0j/912m5nPQetO3o5FbY800N/lDNdZQEtjq
-   gScMx1TlpazlU8Ezqjg2QhNvwa8sGT/H2Gq5Lz2la+lVPLv6wO3GebNse
-   7Ld9WX1paZX1k3sHcXX/CFnnTudw4WCJufmS3GQp6o77UUlempwlIRXAS
-   jBSZfQVOChZ+meTVuKo6+/4yA0CdCqm30ZhKEGCbP66+uxzZ6DtREiSOh
-   s6jv8xurLyEjlflSBqBinK752Bh6gPXA3CU2VpYzIaOzToyG62qnjT7X5
-   Q==;
-X-CSE-ConnectionGUID: qM7P8bjRT3CGmho2IQiikg==
-X-CSE-MsgGUID: +r7sWX5uS06dx0nJoOsviQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="83416513"
-X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="83416513"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 08:56:59 -0800
-X-CSE-ConnectionGUID: vv4hx5r+SU2MoIFwH3PBCQ==
-X-CSE-MsgGUID: mHJv1OxTRfao46F0857R6Q==
-X-ExtLoop1: 1
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.25])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 08:56:56 -0800
-Date: Fri, 20 Feb 2026 18:56:53 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-Cc: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 2/3] iio: dac: ad5706r: Add support for AD5706R DAC
-Message-ID: <aZiSVSvCOS4MvcGt@smile.fi.intel.com>
-References: <20260220-dev_ad5706r-v1-0-7253bbd74889@analog.com>
- <20260220-dev_ad5706r-v1-2-7253bbd74889@analog.com>
- <4fd329ed6416fd2f8e2a72adfa5a77f73107948b.camel@gmail.com>
- <aZg-vtenBU2rKKX_@smile.fi.intel.com>
- <a6a2fc3ebb45fa4d7b379d552196d56eb13fa8d3.camel@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kLcsMzso"
+Received: by mail-qk1-f178.google.com with SMTP id af79cd13be357-8cb7edbcde6so205324985a.3
+        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 11:29:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771615745; x=1772220545; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ndBy/UTl8yqLz2FYSmSDbHs5J3U/slvt6uXC0nIf+aE=;
+        b=kLcsMzsokRJDVoF7f9BR5AUB98vaHDPawErYrEf5rCkLVvRj6HdNuXuUnSw2zb6aqj
+         5a5B5nOekvgVVzWrgxYICEuu1/C87IY7SPzsJNVrP2mZk7pY0b11G9Ux5dtZ9XZPi0GO
+         JSqineIp8lHcLTsgOj4n0aQfvBuBtHSaXc4IDUGDm3tsyY5YMesu4TqtULx0jMRP51Mr
+         aSo2FMh5hgd7qbM453+ezeyZxBejm2IMictnS5oKx1GitURiRuPSmtVhFEr9fySijzU6
+         Fri2sWpGc6ftk4B+I1f6RazvIftheeqL0meSx4LKR1vTCNjQZBn4eqGyfBrePmfPKMti
+         fi9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771615745; x=1772220545;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ndBy/UTl8yqLz2FYSmSDbHs5J3U/slvt6uXC0nIf+aE=;
+        b=SVMKrXIridL7knqOrbdp0CMpO+IAOFVATLpovUeMNBWJpVRlNZuAxkLHKWJ6i9aPzQ
+         CRKk8chPMwcDsM3WY4nP+SzODsuHUPljqE+dNMWJ0CaobPV5WbyPAFtKAJQrGbPv8TQ4
+         ZVCxt1VuHfvdVn9lnrbuWNtJZSNM7UR1SydDQiLCej7BHlPIVsT3XCO+gL6k+pb322yG
+         teci5b8Zn1jyIwR88uIbSDHprceSrkzGzhEJjzHF7fr4NjBxrurJj6VacW7CwL7WItG8
+         Twm8z14nZlc4bg+TK7HQsC6v14lxdhScTU1/TIWyneIqtb+4eik1LN9GTO70BHxug0ai
+         NpdQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXBTlz5D4vryC7bcb498S+DEiAwIRxsSSfgu3tRSbj+NfdRtI/uk18CC79fbIOE1la9KfmpjuvTUaM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzo9NjqPE0aiJg3/CAyqpQGtzuVKDqWeHaLYdjmtAg0RVC/CSx7
+	G6Gxr65DHuMJ0HMAe8qBhXAOP7IXNLKt+Uw4eIlZcglC9KbCTeFHNK0+HJaROA==
+X-Gm-Gg: AZuq6aJoWKmYWpB1FJKDvNgvgdaDbqOm9qtQKqBSlZAYDNqFVc042xVNOdIZTu1f+cV
+	CnubD0TMuNqfWyK4e5E0L9Km8K5ifAoCvvTDH+vUJcI8G4aUmtA1t2QQ8Nt0hVgmubWOPVnJRYy
+	v7w6tkaRQJkWt5UCWsI6fIaEoF023dXihJkM1jDCr4k0keu96w+ki1xOpXQesLcMt1WsB+supAN
+	ZaNnVex/5toJfZi0dNcJ++0bfTOJT2i7VeUM3BABip1XdmYPFqN8KuNoGCnGT5LD4wlD38F1aOa
+	AZ9l+QUcWsVz8KfhMJC5B6PIvmKJaO0pbhEiMg/vRj0pr+ukTlhb0is0ZcdW3//picXo86bLt3c
+	hLUz9jYVJPfiOFgKr9rNMuMTSiiSGyRitKrC9IuDwGRtIFocIntJRyBSxHBhAyLGM330d7hKHe8
+	D+wgwqYAk1ZNs8Mis2UlY6/JHCtmlAy0E5ljX25Tx3osZd4de3CL2dUcqpacoFf9w6twVfKE5MY
+	3y55cNLhWBghbrpLyiFXQ==
+X-Received: by 2002:a05:620a:25ce:b0:89e:b0bd:ced9 with SMTP id af79cd13be357-8cb8ca67641mr80753985a.43.1771615745126;
+        Fri, 20 Feb 2026 11:29:05 -0800 (PST)
+Received: from Mac.home (bras-base-ktnron0818w-grc-05-142-198-109-43.dsl.bell.ca. [142.198.109.43])
+        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cb8d0729a3sm23068785a.22.2026.02.20.11.29.03
+        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
+        Fri, 20 Feb 2026 11:29:04 -0800 (PST)
+From: Neel Bullywon <neelb2403@gmail.com>
+To: jic23@kernel.org
+Cc: andriy.shevchenko@intel.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 1/3] iio: magnetometer: bmc150_magn: use automated cleanup for mutex
+Date: Fri, 20 Feb 2026 14:29:00 -0500
+Message-ID: <20260220192900.79326-1-neelb2403@gmail.com>
+X-Mailer: git-send-email 2.44.0
+In-Reply-To: <20260220103429.22c9eeca@jic23-huawei>
+References: <20260220103429.22c9eeca@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <a6a2fc3ebb45fa4d7b379d552196d56eb13fa8d3.camel@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Feb 20, 2026 at 03:02:37PM +0000, Nuno Sá wrote:
-> On Fri, 2026-02-20 at 13:00 +0200, Andy Shevchenko wrote:
-> > On Fri, Feb 20, 2026 at 10:48:59AM +0000, Nuno Sá wrote:
-> > > On Fri, 2026-02-20 at 16:02 +0800, Alexis Czezar Torreno wrote:
+I don't have the BMC150 hardware unfortunately, so I can't test runtime PM behavior changes directly.
 
-...
+For the v8 of patch 1, I see two approaches based on the feedback given:
 
-> > > > +static void ad5706r_debugs_init(struct iio_dev *indio_dev)
-> > > > +{
-> > > > +	struct dentry *d = iio_get_debugfs_dentry(indio_dev);
-> > > 
-> > > It should have:
-> > > 
-> > > if (!IS_ENABLED(CONFIG_DEBUGFS))
-> > > 	return
-> > 
-> > But why? The debugfs is a stub when disabled, nobody should do that
-> > in the cases when the main purpose is not the debugfs code.
-> 
-> Because the compiler can then optimize away all of the above code...
+Andy's suggestion: add a bmc150_magn_set_power_mode_locked() helper to deduplicate the lock+call pattern in remove, runtime_suspend, suspend, and resume.
+Your suggestion: move the guard() unconditionally into bmc150_magn_set_power_mode() itself, which is cleaner but touches the runtime PM locking that you flagged as suspicious.
+Given I can't test runtime PM, would you prefer I go with Andy's suggestion for now, and leave the deeper runtime PM cleanup for a separate series if someone with hardware can verify it?
 
-How is it different to the code elimination part that is inside in each of
-the below calls?
-
-> > > > +	debugfs_create_file_unsafe("streaming_addr", 0600, d,
-> > > > +				   indio_dev, &ad5706r_streaming_addr_fops);
-> > > > +	debugfs_create_file_unsafe("streaming_len", 0600, d,
-> > > > +				   indio_dev, &ad5706r_streaming_len_fops);
-> > > > +	debugfs_create_file_unsafe("streaming_data", 0600, d,
-> > > > +				   indio_dev, &ad5706r_streaming_data_fops);
-> > > > +	debugfs_create_file_unsafe("streaming_reg_access", 0600, d,
-> > > > +				   indio_dev, &ad5706r_streaming_reg_access_fops);
-> > > > +	debugfs_create_file_unsafe("spi_speed_hz_write", 0600, d,
-> > > > +				   indio_dev, &ad5706r_spi_speed_write_fops);
-> > > > +	debugfs_create_file_unsafe("spi_speed_hz_read", 0600, d,
-> > > > +				   indio_dev, &ad5706r_spi_speed_read_fops);
-> > > > +}
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Or if you'd rather I take a shot at yours with the read_raw() rework you described, I'm happy to do that â€” just would need someone to test it.
