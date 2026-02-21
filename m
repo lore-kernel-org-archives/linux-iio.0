@@ -1,135 +1,247 @@
-Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E8DF8834
-	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 00:09:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49C8F31985B
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 02:49:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771632592; cv=none; b=hCmracNzqD9Nj4rRgqpywOOyq30W3Rc1tdwmFj5NRN8kUWdPN87fmHRnIOd03gngnmnYlmKilsA36GkbY/sEZLmuKEcTQXtfR3EDPg/ZdZ1mtmddRkFXR5y60uWRCnixRs8WfW6/YxiwRrX/6gRPWKAYy6KIFqOTvLfT9FgL5TE=
+	t=1771642181; cv=none; b=UklJx+viYabVwt6JXyRc1rTRN+71gEDN0n4DkUtuz43Z79sSf3JheEFSiaEJSCc0JUVnTAxUfcfhr21XCtq3gES2VujhuSQpWdtDQhvkHfXlMQSMFoUjCBNn84dyfzuA1vtCeGLUJXxQPMNpNuMiBMcqQdpJjPdajaPzf5+P3/4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771632592; c=relaxed/simple;
-	bh=8JNOX9dWuFwDz+EmMsHW8yfFbSy5aoeUIhaCQe4LJiI=;
+	s=arc-20240116; t=1771642181; c=relaxed/simple;
+	bh=uq92ycsM47Jo3q4lAh30+sbvRyqWHRljr1zKiEWutzc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ezuNL/03+hA/Ksnsx8RAxrcySwOrRIVC/4mdcKW0A+e37S35ACyQlBOKOF4CHwGX1Xm9wIkpfsmzRb3RsS4EaQ98Iv6KsXrHCYlPi+EBwnb/DpX5RbvMBch2qUhBIslZP9Ty4gsPpXjMIyllyYpFGPD3AcPvOf92TzSngOmg01U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RIAK9CjN; arc=none smtp.client-ip=74.125.82.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=brHLQQz5IaifDSU305rZ9IC5YrwQo2rDPlEkVdAoyZ1GaK5F4RhNv/007lcelZy2UaWbqADxZhDbc8fHteGtIxhfBkvqARteSZQOt+8wjfDF7UrfcPoJYcdf76E2UlQvdufa7ydio3t51Epk2B/0edkM7lg7jtE13YlrWRW870M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Zbrur7YM; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ayU4VO+j; arc=none smtp.client-ip=205.220.168.131
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RIAK9CjN"
-Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-2ba90683995so1243455eec.1
-        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 16:09:51 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Zbrur7YM";
+	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ayU4VO+j"
+Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
+	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61KNTn7D1914983
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 02:49:39 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
+	cc:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
+	BmWwSyvtQgL34OEqTM20cBfqvgI2QWHHCJgEeagqLDo=; b=Zbrur7YMuFsAtxgl
+	ZpG+MMTRvPm6XqWhMA1Ukb4OavUa/TsVFx9pZXgp54AeaRplZb/PjaiGgnI/GXNR
+	bwoRxRbu/ole69KAiIu2IhOCh4Arh14MtlwsjVRXpf7Shb3njsZ+ShajScnzhngH
+	ygc2/CNALxCschU2e+xiIxqTNbz/DJ6SPDjJAY7NMe3JHnR9fRMZJlcnEOQ9wN3v
+	YO2jhYMu42cqKkav9Iq37LzcOiDVKfFw912380YcxmT6l3JonCqmtvC2f604t96r
+	h4hFSNiIX2uiifLhBQY6UG0n6b/46WEGKmfkR1qG5UMdtie1ifuOoJqLh+v+Hbjn
+	PC3lWg==
+Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
+	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ces849qvf-1
+	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 02:49:39 +0000 (GMT)
+Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-8c71500f274so330304985a.1
+        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 18:49:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771632590; x=1772237390; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=3SZ9VJ/eluyKCRvTt3Ztw07OUgb5OwU6SNdkdl2r0CY=;
-        b=RIAK9CjN+n058lN37QCxcczi465WJgp9jMXPBDZawoIJ90S+2qP/a6CjpfF8X1f+AP
-         JW2DVpdUzw44+zESbA/kDrMUAfbDUv0ytNfDGoY0bxmmo7Xlb36jFwOyfIXq0qEQnO2e
-         XxfRaUpfVET+3xLdC/oB4EHvBMKh+tnWwtvRB/GJIzam/YeaFDJbfGeEd7gyX0dFyoLw
-         +oG6YJ+AD3o4WuihuwpeHuKXCp3fJwZJIwlHssmtgu70wUwjEal7J4Y4CS24ldrW1tCG
-         cb6ltDF1voGiTYWfw73Vv6pfHisC3mzZ6QpJQ9n+pORbNblHO55J9uArvjEsCLIpzojG
-         LoCA==
+        d=oss.qualcomm.com; s=google; t=1771642173; x=1772246973; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=BmWwSyvtQgL34OEqTM20cBfqvgI2QWHHCJgEeagqLDo=;
+        b=ayU4VO+jPo2fCWEKsdD9PtYTeUq2N7fQLzeShwIVShqBaVgczSNHed+3A5pfHvvE/8
+         +nY9uQnu449ZPczMr41AJL68subWuUreDac7rLp298rosiGC01wJSHaxb7JD/58zuGic
+         WoX2RYdly+clzg6FPP8ExhWb6ZSTB5EH0qTXjR34lrFgYCUsCskclzMXKkxe9WGLgzC0
+         z3928+1qX0l+qukA1Gs4/SJEdDbKQAXoaIrRPVLf/oJ/OeqQIO8zgq5IE6DWab8pnNw+
+         YcpHKVD3DivFV1O0ZTpN28xUezT6V9x/WazUC9fKKCb5gcqKIud0kqswSR/8mE4FkPRm
+         f1bQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771632590; x=1772237390;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=3SZ9VJ/eluyKCRvTt3Ztw07OUgb5OwU6SNdkdl2r0CY=;
-        b=cpdSDYbJT+SrX+QnQq4Y9J7AdTcua+pTgzGwaE8BPoFP23gEK6+s77CRNSrhdSh9Fg
-         x3gEottdlKi80RKbL3rvq5TmF/ECsMA+yHMITYAbroNnh0jTXc+QnljXrg2lQ+ctMZPp
-         pZxcxCvX0T3l0klJs49KTiWQP/hLXfI84tURYBYvI7x8132R410l5rSzIfG/4GEa0bL6
-         gQw3shmE3s0arsfbzZJlmJ8NQkxzlTPhZObLAaMnhBFbq9keYxQKNdEKmRy504AyEhDq
-         VWvB4GRDR1yyq53mNZE1EsVV+Weh+RT/ZVGEbwrZXpSOzFonDCBta0tZbBnDyH0KoY5Y
-         XWrw==
-X-Forwarded-Encrypted: i=1; AJvYcCU1HFhAM9BHMJZzGrCxsyv5fDwk4ZFwvkjwaq7i3aMsvyxmgozYNW5CaFakqex7pXGUKM/UJKlDSHw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwNRE/MyweJpeqTk1C6uRYkTxCvt/c39tmWbuVXC4e2KiA+nB3r
-	yI5y7diSt7vGxBvHO9WmeZAASzQzQJhgRZKZHZRyKuqLTWmP9y3zdoZurDfDng==
-X-Gm-Gg: AZuq6aKfUhmXGJUDKwmAB85FW5/PMjcF5zIdZVITLhUwLFTCz0gQVgollTEb8wqxYuY
-	/F2sq/yY1Ry1eMK1/ltsXl0rI8JZ5A7z88EWQl720DBkcLBOTp66Q6Rp7g0EfiFCZTrDqsUlJSm
-	8s1fZ3o2apJx1wu6WGa1asulob0KqAgfvaCiPHsVk7LuD3P+Fv0sUSQqNBvvjqzsH29pY6Cz3rd
-	uTpNGDl0IlmpBX9XwrVHhFvcwKVQ+rnCAnOtc+67ZgcfTsFnTAL/9dBd/sZx9FFmUWQFF7mLcQY
-	YwcMyOlcz+LdNnrs2LduU9f6tvbJS7PP6BZwetM3wsAvzRNx9dqY3E+ypphD/BsEG4OK6CgkOki
-	Lq4kYrSpymclZh9Nj4CwOF1ziFmgedNQAL2dqOHdpiwvUHCRq+GMxno/LAv+GeEDCrwzdR5qgTW
-	kVxOzXQOX5WJRsScJF+lnKWkALiY2yy4k953OPePcui3qynCpkmNRj15uo2qBrpT9h
-X-Received: by 2002:a05:693c:3009:b0:2ba:7b2a:6a5f with SMTP id 5a478bee46e88-2bd6076dbb8mr2561244eec.8.1771632590304;
-        Fri, 20 Feb 2026 16:09:50 -0800 (PST)
-Received: from google.com ([2a00:79e0:2ebe:8:30e0:64af:2b48:14be])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2bd7dc35362sm408486eec.30.2026.02.20.16.09.49
+        d=1e100.net; s=20230601; t=1771642173; x=1772246973;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=BmWwSyvtQgL34OEqTM20cBfqvgI2QWHHCJgEeagqLDo=;
+        b=DB/kKfTuSq/onlSRlH02dm+jOwFhcc2rggmz6BhLDzOIt7sIEPsdW74ihy9MPu/Kcy
+         +x1NVllfEm5grOVxY76RWFmJL2TRB+4puZVm33IyhBrJesJeiOzA8BVE3iRq/M+HJS2O
+         fA3mkmoChiO/xA4/xLxT5i2HM9E6kxVpNbSoIc1XjLLAUN+CucZhIzMxCl+GLHUABPVs
+         4fPQDsBp3p1YSl1JE8tUaU4kLdYzBUk3CyDyiMdltUZpSu17q4Yc/j4+haCcDQiZXBG5
+         R/P2FQxbvbIxb6ipvwqBC7hrky8zPWpp44Pl68hJBDE9vTYNIJX7tpgx70Wk9O1ENEHq
+         IA8A==
+X-Forwarded-Encrypted: i=1; AJvYcCW3h5N0KbO8G8eHPlwk0NByl9B9l1/ythvpNjreOyEaTR/XdLuD16KnUmvl3hRR72kXY7ws1bXMMlY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx5C6kGrLRBgzVjShserFkad7B4ydOjzpVy/+btIwTSL1TkdKrD
+	a+RKkz8IpAs2cS9/1LoTdj21CSkFQsImErBCflXiT4eJB8NRl1BQA8t4Hwa2vpCBHGTPasonPbg
+	/S/ts8sjgZWg1Sgv8yZ1C4BJp7haDxqdynCwVMErQzCA99DscAnP37ToFTjBqwj8=
+X-Gm-Gg: AZuq6aKFg2EzmP7yvrJ4hdqeoXGYMqgVOqLvoSiXSz5FHAdZtcLmxAawNdUoI/4IgW5
+	w4GQY0A5RIFhAWMrVSSBSUSNJjZkjnbCMzSad5wb30Tpw0nnRYv5qB0Uh4TB6Zon3Z3n/D9Buwx
+	nBLTPSdsTpSOdHZQERkKWgIBQSAYqjxrHhd/azMvF9m74h4llGUkfrVFXtrunsbbleLp+MU7cP+
+	gwa10TJ/ZC8pWNXplz8xKAR0UfLbZ/zMfQM/bwffyiqE3m9iv3043/zYowWwcsP1vnaE7TwgJzb
+	LiuYzQcUWYdpSAvmTnPUCR33tXIVZn8LHa0i/8hl3ZCpZo19Lm0yYRYNt1UfY1DK4mMMACPYIaR
+	d+QDDgWX+tmfkkhNX1Po5VVK7NPtSec9uy/jKRiwFfd04oYXXBh+D6T0IjoSn/4FoINxQxQAy15
+	DvPaFP6VAGGTl+w/F/F2QhFGA6C5KNvv0IJ5c=
+X-Received: by 2002:a05:620a:1a0f:b0:8c6:b45b:9e2d with SMTP id af79cd13be357-8cb8c9fc7a1mr245188485a.26.1771642172462;
+        Fri, 20 Feb 2026 18:49:32 -0800 (PST)
+X-Received: by 2002:a05:620a:1a0f:b0:8c6:b45b:9e2d with SMTP id af79cd13be357-8cb8c9fc7a1mr245185185a.26.1771642171899;
+        Fri, 20 Feb 2026 18:49:31 -0800 (PST)
+Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a0eeb1be5fsm179895e87.39.2026.02.20.18.49.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Feb 2026 16:09:49 -0800 (PST)
-Date: Fri, 20 Feb 2026 16:09:47 -0800
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] iio: adc: ti-ads7950: complete conversion to
- using managed resources
-Message-ID: <aZj3deh1Em1rz3au@google.com>
-References: <20260219022929.3558081-1-dmitry.torokhov@gmail.com>
- <20260219022929.3558081-5-dmitry.torokhov@gmail.com>
- <aZbC51ezuaT5Nwq7@smile.fi.intel.com>
+        Fri, 20 Feb 2026 18:49:31 -0800 (PST)
+Date: Sat, 21 Feb 2026 04:49:29 +0200
+From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
+To: Luca Weiss <luca.weiss@fairphone.com>
+Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Konrad Dybcio <konradybcio@kernel.org>,
+        Hans de Goede <hansg@kernel.org>, Jens Reidel <adrian@mainlining.org>,
+        Casey Connolly <casey.connolly@linaro.org>,
+        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 5/5] arm64: dts: qcom: sm7225-fairphone-fp4: Add
+ battery temperature node
+Message-ID: <yikwygc5gasmr3cdyv5emfr2flaoraxcz7ap3j55wn4ib6wfqx@4yxoly5zrucx>
+References: <20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com>
+ <20260220-bat-temp-adc-v2-5-fe34ed4ea851@fairphone.com>
+ <85ce1f2c-f5cf-4e97-9611-4aed03f69cd7@oss.qualcomm.com>
+ <DGJQ4WLIML3H.GAO7T4L3MCJM@fairphone.com>
+ <a422e087-a91c-4bb2-9d95-e1cefc9a91bf@oss.qualcomm.com>
+ <DGJR40B5R6MB.1V4ZK5SW1PXAV@fairphone.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <aZbC51ezuaT5Nwq7@smile.fi.intel.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <DGJR40B5R6MB.1V4ZK5SW1PXAV@fairphone.com>
+X-Proofpoint-GUID: U1EZRjWH7Sw8llyd226X92imTywtgI8X
+X-Authority-Analysis: v=2.4 cv=PoyergM3 c=1 sm=1 tr=0 ts=69991d43 cx=c_pps
+ a=HLyN3IcIa5EE8TELMZ618Q==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
+ a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=Mpw57Om8IfrbqaoTuvik:22 a=GgsMoib0sEa3-_RKJdDe:22 a=6H0WHjuAAAAA:8
+ a=Wrfmzfmk65d1CdvWbAUA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+ a=bTQJ7kPSJx9SKPbeHEYW:22 a=Soq9LBFxuPC4vsCAQt-j:22
+X-Proofpoint-ORIG-GUID: U1EZRjWH7Sw8llyd226X92imTywtgI8X
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIxMDAyOCBTYWx0ZWRfX/yNJkt7ngA4Z
+ Z49vlKakYReFYv3SUMaorUdvPEB9a2yekutxZLtmdDMSvNd/mSGfZDzuawnWK7ZLBqqnkXgWHLv
+ tIaAZ1ZnVYx8prUZxk2XOq+YEwjYUDqbONImwU1XEGbKpW/o3eva8zELZZMWmQhJDid4QVLUZlv
+ LPu2LNA3yym6rWZNpL2eEV5RbbtJm+xe+7vpWN4BMEVaHd+ynuWNp0jv9Q6EMjVTnOhI49ve7ff
+ ICLvrSgK1fa9JKxYSjW1Vm1Q0U1i6nD/wYXeaOIf1mExHt4yaiS0Hpx5l47TLdU7Ob5zba1FdLv
+ Ccrq0+YILGy34X7u17eVRcgeP6GIq9VKmWhE1hXPjLYjlEr3kt1507uxdBVA/kPqlTbCR9KKtyD
+ ERR8/sDXXAC0x4NfNUTLYT3XqRYZ5YYHpwZ/xTDCuCu7/uUnI9SxCMorGxtAM8n8mEDQ48AWn60
+ ePmzN19zUpVRcsRnLdw==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-21_01,2026-02-20_04,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ clxscore=1015 suspectscore=0 impostorscore=0 priorityscore=1501 adultscore=0
+ malwarescore=0 bulkscore=0 phishscore=0 lowpriorityscore=0 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602210028
 
-On Thu, Feb 19, 2026 at 09:59:35AM +0200, Andy Shevchenko wrote:
-> On Wed, Feb 18, 2026 at 06:29:28PM -0800, Dmitry Torokhov wrote:
-> > All resources that the driver needs have managed API now. Switch to
-> > using them to make code clearer and drop ti_ads7950_remove().
+On Fri, Feb 20, 2026 at 12:26:48PM +0100, Luca Weiss wrote:
+> On Fri Feb 20, 2026 at 11:51 AM CET, Konrad Dybcio wrote:
+> > On 2/20/26 11:40 AM, Luca Weiss wrote:
+> >> On Fri Feb 20, 2026 at 11:00 AM CET, Konrad Dybcio wrote:
+> >>> On 2/20/26 10:19 AM, Luca Weiss wrote:
+> >>>> Add a generic-adc-thermal node to convert the voltage read by the
+> >>>> battery temperature ADC into degree Celsius using the provided lookup
+> >>>> table.
+> >>>>
+> >>>> This will later be used as input for the fuel gauge node (QGauge on the
+> >>>> PM7250B).
+> >>>>
+> >>>> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+> >>>> ---
+> >>>>  arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts | 83 +++++++++++++++++++++++
+> >>>>  1 file changed, 83 insertions(+)
+> >>>>
+> >>>> diff --git a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
+> >>>> index b697051a0aaa..7857003099a6 100644
+> >>>> --- a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
+> >>>> +++ b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
+> >>>> @@ -108,6 +108,89 @@ rear_cam_sensor: thermal-sensor-rear-cam {
+> >>>>  		io-channel-names = "sensor-channel";
+> >>>>  	};
+> >>>>  
+> >>>> +	bat_therm_sensor: thermal-sensor-bat-therm {
+> >>>
+> >>> nit: this should be a little higher
+> >> 
+> >> meh, it's surprisingly easy to miss this sorting stuff. Will fix in v3.
+> >> 
+> >>>
+> >>>> +		compatible = "generic-adc-thermal";
+> >>>> +		#thermal-sensor-cells = <0>;
+> >>>> +		#io-channel-cells = <0>;
+> >>>> +		io-channels = <&pm7250b_adc ADC5_BAT_THERM_30K_PU>;
+> >>>> +		io-channel-names = "sensor-channel";
+> >>>> +		/*
+> >>>> +		 * Voltage to temperature table for 10kΩ (B=3435K) NTC with a
+> >>>> +		 * 1.875V reference and 30kΩ pull-up.
+> >>>> +		 */
+> >>>
+> >>> I think this looks good. Is this data going to be correct for all/most
+> >>> devices (i.e. is there a single battery sku)?
+> >> 
+> >> Yes, from my info there's just a single battery SKU, so that makes it
+> >> easy here.
+> >> 
+> >> For Fairphone 3 there's two battery SKUs:
+> >> 
+> >> * (Fuji) F3AC with NTC 100kOhm B=4100, ID resistor 10kOhm
+> >> * (Kayo) F3AC1 with NTC 100kOhm B=4050, ID resistor 49.9kOhm
+> >> 
+> >> In reality, one can probably ignore the difference between the LUT for
+> >> either B value since it only differs by a marginal amount, but
+> >> conceptually I'm not sure how this should really be resolved.
+> >> 
+> >> We could have both battery definitions in the dtb, and then the charging
+> >> driver could determine the battery that's actually present in the
+> >> system (based on the BATT_ID measurement), but given the design here
+> >> now, I'm not sure how this temperature lookup table would be propagated
+> >> to the rest of the system...
+> >
+> > The path of least resistance (pun intended) would probably be to make
+> > generic-adc-thermal consume an ID channel and accept a number of LUTs..
 > 
-> ...
+> Not the worst idea ;)
 > 
-> >  static int ti_ads7950_probe(struct spi_device *spi)
-> >  {
-> >  	struct ti_ads7950_state *st;
-> >  	struct iio_dev *indio_dev;
-> >  	const struct ti_ads7950_chip_info *info;
-> > -	int ret;
-> > +	int error;
+> >
+> > That sounds sensible since most battery ID mechanisms are probably also
+> > ADC-based and one would hope (tm) that the values output by these ADC channels
+> > would then be distinct enough for the driver to have an easy time confidently
+> > selecting one of the options (or a fallback)
 > 
-> Unrelated change.
+> Charger / fuel guage and everything else battery-related would also need
+> to get the correct battery properties for the actual one present, not
+> just this generic-adc-thermal driver.
 > 
-> ...
-> 
-> >  	spi->bits_per_word = 16;
-> >  	spi->mode |= SPI_CS_WORD;
-> > -	ret = spi_setup(spi);
-> > -	if (ret < 0) {
-> > +	error = spi_setup(spi);
-> > +	if (error) {
-> >  		dev_err(&spi->dev, "Error in spi setup\n");
-> > -		return ret;
-> > +		return error;
-> >  	}
-> 
-> Ditto.
-> 
-> And since there is already dev_err_probe() in use, I would expect this
-> also be converted.
+> But I feel like soon DT maintainers will say that Linux shouldn't
+> dynamically detect hardware that's present and the DT should be the
+> absolute source of truth. That works fine in simple cases, but in case
+> of interchangeable batteries, display panels, camera sensors, this won't
+> work. *Something* needs to determine what's actually there.
 
-But that would be unrelated change ;)
+How is it handled for the Android boots? I assume there are (at least)
+two DTBOs and the correct one is being selected somehow (via the msm-id
+/ board-id?). Or does ABL pass some kind of battery identifier to the
+kernel?
 
 > 
-> Would be also nice to use
-> 
-> 	struct device *dev = &spi->dev;
-> 
-> to make less LoCs and/or make them shorter.
-
-I actually dislike introducing such temporaries in majority of the
-cases. It makes it hard to follow what device we are dealing with and
-does not make the code significantly shorter.
-
-Thanks.
+> And for most of the ways to detect which of those are present in the
+> device that is booting, you need half a kernel to power up the various
+> hardware and do some basic communication to figure out what's there. Of
+> course you could say that's U-Boot's job for example but not sure you
+> want to add a CCI (I2C), ADC driver and much more...
 
 -- 
+With best wishes
 Dmitry
