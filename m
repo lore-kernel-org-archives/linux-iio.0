@@ -1,92 +1,96 @@
-Received: from mail-oa1-f48.google.com (mail-oa1-f48.google.com [209.85.160.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 14CF83D76
-	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 21:27:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76E87286881;
+	Sat, 21 Feb 2026 22:43:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771709268; cv=none; b=HX47rkr7x8xjlrmvd0ejKrLQxgOf4IZR1aB1tUfvmwlc/VlmoeUotLOEp8782tMUeuijOuszXDxDd1WtGTnRtJqGeWSDmA04FImGuLMHFpfzTtjD1cVGot/8Kv8naAmkczb+HK3g7gE5vENwjNyM2Xx5OA8WJpMrdCqxPcFAYqE=
+	t=1771713796; cv=none; b=ttN/qEYaGAj8lVkgJTJordlbVBBLo5va4Zd+6VB1dWS1NqQExCE2MO6lwnG4mwx6x1NWUuKpOp2zPuW5cX24bONx7tviNy80sasUgNg0sCHlVYQIVBWDWCc58hrZf7i/OYLS5PxzT0hto/KhAk/ywPYh4rVL+rp0o4GU3dXpEKY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771709268; c=relaxed/simple;
-	bh=G4M5z9ETgThBka0v0FNp5eZpnyZM6BtTFa7GXKtukvk=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=sr/Y0cDoQ/0C70Sp+nkhCLnRGHWQupo34Uc5eWjN5kBCMfMT68kcdmG0Uoqh13gk98VyMV1+m4apNEmVLgYkT9B/Jd5T6bU3vhBGdtd/mnnAucbPYZRqNmBqnQ6EwWP5I9p5rQbFJEKpLoKJQ5r253wNT+mvvue2aWKeeNLWeDY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=ohXx+8IA; arc=none smtp.client-ip=209.85.160.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1771713796; c=relaxed/simple;
+	bh=l1mLttXcMUKU0fqnl6vPAmjLOeTpuvTMHgBKn7H5Qa0=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fRaemHoJagjwpmSA3NIJfknDYEjCZhENwKyOS0FLP5C7W4X0VtxpNUhcr5OeO1fNbhW20FghH5AUVIZd02mSu+DCSeITMLtn7xZ+++RcKMfoz01NUUw15uROx7R9WiSWaTjbO1nR9ndZDbKsdU94XlP6eNy3QMSGembWpwlBQ4o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fa3bBdp7; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="ohXx+8IA"
-Received: by mail-oa1-f48.google.com with SMTP id 586e51a60fabf-40423dbe98bso1351533fac.2
-        for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 13:27:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771709265; x=1772314065; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=b/FLGdRPt6ip2RkNJ6TMOEBWjjsAFgfTikB0pBywg9s=;
-        b=ohXx+8IAC4SjhlnIal2TMCa49gQ4VFwoZPfcf35MQRKc+AxBoVhq2PTGwfiuWQt4CL
-         aTPy63sGzox3owBXwBpkFjSxwAFf/l/N5FvFNcXuXMmCyrHJZcPenzd2dRJ2vwvPwmrW
-         urdFoiYzHcm3B60h2tcdBP6PAL+tfM+TAY5h1TmtiGZ1Erh1VfeGFpeeV0CviooE3dZn
-         Bgdboe3AbFzxi0JoPl6jKXI8fckhi1ssrM7R5IxMqz4idYPPMoJi5F/IVXbymzsHU6dK
-         dqjFqpoipyx152L9+colcfAl+3HIF+MBfnIYlDHQPHpZy6NMoFnts3J5G3kJz/7mvcdw
-         Mxeg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771709265; x=1772314065;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=b/FLGdRPt6ip2RkNJ6TMOEBWjjsAFgfTikB0pBywg9s=;
-        b=tycz/L5EG6EX72TmNYy6NIJDYd7+gry1/m9HakPd8k/Z0LeAdRLay5AbB/C3FBUrM0
-         ykpiirydoCObbgGwIVeo6Zqw92bCNpBlgku+w+uzrKvI/wHnDQi/LCNN2XXvNrmcN+9l
-         1HpUZjLStjMlIRftxl41dIVQnH/RT+aqrqG15fa/ERi/oMHvbLPlY79bfIUZY2VcdW0E
-         GsDdSWqb4tIckHBi8k7mZvwzWk17ppdfkjQVs+xP3XMnu1Ps3bVJbG16xno0+q6ARNAG
-         PvqJU1Pe0P6mnPUtyYk+0H9VTQgSgyseIPq7pigWyYP2X6deyTO/pl0pW9W10a7zKjuq
-         KPyA==
-X-Forwarded-Encrypted: i=1; AJvYcCWhVwKatOaZmwVhXT+ObFgHhue8P+akslR9tZvk1ukTKwAzorQ5ck8z0NwYQWq/WcqkiJMYfifjAYo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyelb3XEhPYsBRZDCGdCuZwcemZwokAeNKhHFQNa0LlDQ/Uibkp
-	kVh1buvUlBg8vuvyX4v3nEvH6iOctL+eFhlsbCewhup0lXO5796eeW3gn+fek0Co1q4=
-X-Gm-Gg: AZuq6aInmHs23feSjUaTmmMGdzADG7yvDeMBnf50RyOF8rxc28GV8MLr+6mTSDPTZdU
-	sFxzohVu9toW2mwVVLVnI9038e2zFG+5x+jB+GK7pGKZ17tcJqHK+mWyO+egPsBgNIMxfzb6N0M
-	bsZfbM9kN0Da+Ng1aXl1MPwOR/Qi+zu5O0fpbMTcsZv6Ou65BL2gZeaRAqCp5ecVEaG2CqqmUby
-	7y9bpNaKl1JUp5r1uHUh1WFLHt0kyFypMiSXr/Ttm/nmsKSGFyxmb4/zEyI0lFvwS8PGqD1ZA5J
-	6Aw6OrpXZK3SK9x2/I/J95Wl7OymzcmFOVCSMep7Qn+EoGMzpBXMg8BgNPKhDTNMqRxaB/rso0T
-	Z4TC/IaB0pWbLc/NZlgyfNy0V/41j5sx0gSv0nLib3ZB157y9xuVG7/HSjwnaJ5WTXryB4m8FRi
-	F5UqNLrO0E0tRxywee6rydgoioUnGepzA/gn6SMh0dG1KTNNxdMMO0IMWS2b9QrxcfNjZFXA==
-X-Received: by 2002:a05:6870:860a:b0:40e:e5c4:a4b2 with SMTP id 586e51a60fabf-4157ac27b72mr2412115fac.14.1771709264728;
-        Sat, 21 Feb 2026 13:27:44 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:611:96af:f385:64bf? ([2600:8803:e7e4:500:611:96af:f385:64bf])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4157d3a91absm3343204fac.20.2026.02.21.13.27.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Feb 2026 13:27:44 -0800 (PST)
-Message-ID: <6f5158e3-84e1-4159-9c61-789c2b198af2@baylibre.com>
-Date: Sat, 21 Feb 2026 15:27:42 -0600
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fa3bBdp7"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83C69C4CEF7;
+	Sat, 21 Feb 2026 22:43:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771713796;
+	bh=l1mLttXcMUKU0fqnl6vPAmjLOeTpuvTMHgBKn7H5Qa0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=fa3bBdp7wK/NbCA2tMCiIWYD1D6FSWGoCXK+gXnCSds1q5aiy6e8GAA+ktxPhGu2+
+	 oEFIPezMf+XB0z9hCbuX15I1721tL5DjgtRFwcUUJhR/3RbiXiY/ku7ihZEiGMFdLM
+	 K+DUcrVgLyKq0DUoCGLUlcq4QyCHfaDK1Ye8uM6JCcViE7KPQ9X2++aDbJIQyzj280
+	 ShmF+1uMQkLIjACjg73Vp44sAlDoG3Y270xuZCcUElv5yGCQ8KbPCoHTmeG98wjQbM
+	 yrsaEcxBIm/JU2pj9m2a6Np5J4QxtQsbmv5K9W52eL5iieOSHD/3dmXiVsVQPoTEBt
+	 NcedIOUHZ6VQA==
+Date: Sat, 21 Feb 2026 22:43:11 +0000
+From: Conor Dooley <conor@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH RFC 1/8] dt-bindings: iio: frequency: add ad9910
+Message-ID: <20260221-batting-amiable-fc01ae386789@spud>
+References: <20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com>
+ <20260220-ad9910-iio-driver-v1-1-3b264aa48a10@analog.com>
+ <41190a42-70ab-45b9-922f-317e792b25a0@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: buffer: Fix wait_queue not being removed
-To: nuno.sa@analog.com, linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko <andy@kernel.org>
-References: <20260216-iio-buffer-write-fix-v1-1-bc08b239f37a@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260216-iio-buffer-write-fix-v1-1-bc08b239f37a@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="FdGph1zvow74waEI"
+Content-Disposition: inline
+In-Reply-To: <41190a42-70ab-45b9-922f-317e792b25a0@baylibre.com>
 
-On 2/16/26 7:24 AM, Nuno Sá via B4 Relay wrote:
-> From: Nuno Sá <nuno.sa@analog.com>
-> 
-> In the edge case where the IIO device is unregistered while we're
-> buffering, we were directly returning an error without removing the wait
-> queue. Instead, set 'ret' and break out of the loop.
-> 
-> Fixes: 9eeee3b0bf19 ("iio: Add output buffer support")
-> Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-> ---
-Reviewed-by: David Lechner <dlechner@baylibre.com>
 
+--FdGph1zvow74waEI
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Sat, Feb 21, 2026 at 02:43:02PM -0600, David Lechner wrote:
+> On 2/20/26 10:46 AM, Rodrigo Alencar via B4 Relay wrote:
+
+> > +dependentSchemas:
+> > +  resets:
+> > +    properties:
+> > +      reset-gpios: false
+> > +  reset-gpios:
+> > +    properties:
+> > +      resets: false
+>=20
+> This seems too strict. Couldn't we have some resets from a reset
+> controller and others from gpios?
+>=20
+> Or maybe the reset bindings are enough and we don't need the gpio
+> bindings for the same pin?
+
+Actually, I'd be interested in seeing evidence for the resets property
+ever being used with this device. I think every single reset-controller
+that's currently documented is an on-chip device for resetting
+peripherals.
+
+--FdGph1zvow74waEI
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaZo0/gAKCRB4tDGHoIJi
+0l26AQDR3ZVj0FXwPKdQMJzQ5DAH9j6w3UqQs2++/xuFnGbjHgEAh9aLwGPduncW
+ITaX2/mpnyBdPmyszgUdZfQM1oS5Kwc=
+=mGrX
+-----END PGP SIGNATURE-----
+
+--FdGph1zvow74waEI--
