@@ -1,87 +1,121 @@
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F0E24204C36
-	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 17:46:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7736C4A32
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 18:09:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771696015; cv=none; b=WSxmVgCHGeDJR9AROmTgYt18XnYXlf9M5lDStuRFzM6s271MRlu4SVJxKAS4fLbXAYz8gDuXdv6pRAXkFC8gOYykgHgtTPz9Icr1l3OW4pBD24GIZrwIy90nNi03FpxIF1Pxoqs+zOEAOlZMVPu3O+Lq2Qynb0eBfCfgjDpnDiM=
+	t=1771697355; cv=none; b=fh7HMMr2Xvb+ZlGmdCA621Vad+owQpnmqchNKv8LW3Z8D2WMLHuiMXxb3/ZpKlHGOjNs3r9pNh7RlaB2bilfOiZtwCiHDiposmt4xA/IUs6G05UUdF8FE+4o6Tc6o4HT31Y1C+KLelATHR9TIHslTx2A/DQW4IrE3ZDWOL44BwY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771696015; c=relaxed/simple;
-	bh=ZrxFx6kVDvd1icQj9WlMBkt47n8G+r+zQnMgQJcx9vI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=COZikdOaWF26WUy1VeGo7Xl2HdtBkLtbLpPWIPriBkQiHm2L7diNIU2JLWzaOz/B5NAIqQ8yH0YvK483IeZvDPosp8OUr0I4rppMwv5dPuaaZ6iDftTx5eWnbdU7asSGgo8iyrwLSJmzswl3GYBv63Bjj/JvW+ai+k+d4R5Qf4s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=zjtzUiM7; arc=none smtp.client-ip=209.85.161.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1771697355; c=relaxed/simple;
+	bh=Y/RkG0UfYfithP+xjMMMzezYHNYm5gglQYGINrugAO8=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=g9irv2oWR6Rc0GWV1D8tIr9gZuXCnyG+iostukQf74N0K5hqgHxlX2z01sRHj3dxCaD2xx5xp1AnO+5wI2Y1gGiESl7MHLB4JSMmVBUxWQ6agBRVLJhSpUe2zrQNOme/WLQaZol8N/rBbH4hVbVLYLLiXSz1b60UZHwMJF3fEwI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jm3FBTtq; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="zjtzUiM7"
-Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-679b072ed3aso1574346eaf.1
-        for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 09:46:53 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jm3FBTtq"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2ad617d5b80so18445175ad.1
+        for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 10:09:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771696013; x=1772300813; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZrxFx6kVDvd1icQj9WlMBkt47n8G+r+zQnMgQJcx9vI=;
-        b=zjtzUiM70RkpyPmay2O/ST8QcnhYVVdNh3jOd1GjQ0D46F5cuX+cPo29Qaj5VL58bT
-         dHT9UryYptxTBAtNU68SiAyw47tp6o0Gy8DrtJ9wTgLxd8gj8zH49J1KmAfoYFweCjUY
-         /bszy6v1/2+PYEIarW3iBBCe/Wd88nHuBBjW2iEmczoqBq1fjMPJvxqPxj/9CGAx21Cw
-         2LIHDpgVsTtebmtZPDK/j1ta6I8LCupZZtM29/UWAlg6hygw1p9pyf+wGWkurJ/ZPsgc
-         bFFlSzSUsHfUNzd+QSqErH9D32N6g0PaEKc6CAzWBjmWN+Tn9KSQEj6ABtBbQQpvLHx2
-         6zIQ==
+        d=gmail.com; s=20230601; t=1771697354; x=1772302154; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=5VDYBtsi3uJgUFJuA1Pc21GGucvtIIUrrdyTVKdBHoY=;
+        b=jm3FBTtqpOytjUtPJVYL/mp78SrC8LcaSKPlwn3WOZ6/oM1ywMKJ9nC35eIo2pPfb5
+         63MOyphoJFfZSF3U6TR0QKjzUDhriNUjsTVFTw7MeZHYcZKoA2k1DqjA1SSqIoKdAlEf
+         4b2lOi5RX5+3M0OtE9kzO7XNP4juwO9eDO2oz0sCXaL2zpA6cS2pfdqE/Uxi9mPjbc5C
+         XdG/G21dXQy5cljOCJc0UwSFwIHo9HTUt1QKLB/b0ggQIfS8aGv3golH+P0S1VHEm1xe
+         ftHMd1aRz8txNC0rPZxnubnXC8b/6O3UMEfvoHuUMFiFUdVXqyShIBwvpipi2k7fl8pA
+         CtHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771696013; x=1772300813;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ZrxFx6kVDvd1icQj9WlMBkt47n8G+r+zQnMgQJcx9vI=;
-        b=XJNvihYgtzS+Oh87MOCjHOuLg3tKhdapUmW1oIWaM7E7ZvTg3SlhWmtTrMORswlzOH
-         dPZwldLKOHL6QPyM6OOAigbfogAwN/U/HUPGHk0QdxbP87/QiWqJ3OIOkUEhKNPL7rmK
-         NbsOvrMDf8VVfBFYdb5Y8nqKVLoF3DtmTfcSpoj639rIUulZH23V+pgmRZqZq12uDRZ5
-         hi4DJ15E/e4AVI34QfepPUmijOycOU0UT7JweFX/AkYmXAcqbH5ZlYfVM0jHkYAJlm7C
-         tIHsGy6pbMk5r+TEGAnO/VuaONrGvGF23An0Z7j+WTyLlhpEK0Kw6z5cjsHQwgH+p5MJ
-         raNA==
-X-Gm-Message-State: AOJu0YwF02zEJJclVOdU1N8EvPH01YfTNafda19J5E8cU2blVSe38ScB
-	IXn7Yv3GkRKqKGVc4EwZFqR5y8AxR9UvCNjsSBJ/OuhhrcocBvPrbsEn1J4dmFlk7KE=
-X-Gm-Gg: AZuq6aK7g+bgjz2s8CHwMGYH1C0VgMLnFrBDzO1DjNO8K08ajcwBX2axV5fvBi/d2EC
-	id+sb1gpVi8uhgzcqQu2RNEh2zV9sfbyIC1pHtpapjtyS1/xYp8kiUjge7gwQZumSU37FC/y1PV
-	d89O8OZI2Kk6Acn7gyMfndODUODvDIGNEpnX7T3esKMxxGOY2E82jzaW92Tf8ygCx8v+imq3Gy3
-	hxu+rI3kd3xrn97qyospzV3bROnd4YXrc7gJQ3gcnmYRcyKvLeai6ORwzksWvk3LICmm7rmtJze
-	eBDDfsRH3JMhUpeW9RTDlqdow/WQHfx8whyeTpOBoKil1lm/19PD0SYT1OzKrf2WmydCvNv4Nfq
-	T7rAjTLs9ZwlDkRdqde0oYrxo5JmU6jDxt90yBVO5GiuNf/KUm6AmKjH8x3H3OiUAE6VZTZG9OI
-	/dI3BiMWpJUMRp3+cf/deZ0ifYA1eeuSjFIFcLrttnMjVm1KEe5wdFMFJ1XwwXQEBXSE6s8A==
-X-Received: by 2002:a05:6820:6ac1:b0:663:12b4:959f with SMTP id 006d021491bc7-679c44e5a36mr2138594eaf.42.1771696012812;
-        Sat, 21 Feb 2026 09:46:52 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:611:96af:f385:64bf? ([2600:8803:e7e4:500:611:96af:f385:64bf])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4157cf9a231sm3004319fac.5.2026.02.21.09.46.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Feb 2026 09:46:52 -0800 (PST)
-Message-ID: <bc226921-03c5-4780-a6e2-5db1c21b19ff@baylibre.com>
-Date: Sat, 21 Feb 2026 11:46:50 -0600
+        d=1e100.net; s=20230601; t=1771697354; x=1772302154;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=5VDYBtsi3uJgUFJuA1Pc21GGucvtIIUrrdyTVKdBHoY=;
+        b=TSICdBHYhQJicgU4e7cvSwZ52xcggvdVn1P1eeHS4gN2y6VCu7Gp8B6KWvqfM5coxj
+         78aUIwh9a2Q/n8hXCrAlWuBI0xXapOWJTWucsT0WA7mcPRIaiCk7lNE53R8vacVTuk6B
+         /9N9k5jxgrxFpl6wwB1kVUttDJHkwlpRN+pKqftOLq9QWSSj40MGcumlkf7iYP4/eTQr
+         UqFNLKfcadL8BJR1XfabQbiJ05vMqrisCYC/KQhVUSl22J1ADV2vqtCd5IfSPxc2MK+Z
+         A4p/NUSgIdv3eyRi3ZPTx2bcpS3SG0axWWQ4Y7wlNRrAN9Yz8UmXxKuPmqXj85XBIVWf
+         bcXA==
+X-Gm-Message-State: AOJu0YzAexIPsdcmTkGyatAYKrWX4HxazyV+emKRWpKlL7YhVegwBPs7
+	/Yx8yOV3vLX+7JtKUxezLDr2q1HZtWM4wbPLxGOJwfX/66EFzz1mbAlM9v9HWyhErDw=
+X-Gm-Gg: AZuq6aJnVOdBx4UhAXCJBSQ7WpgdYnkhWW2lOilfWIYtfYNcQkzdlkX4k4JP8ZBFBLE
+	1Cpvx7rwsp2jPgN8lK3JFzSeK4WIaoIhyMRq8wzvCRsEPBcUz3TcBy0cfKZYWPUZv389sciwyF5
+	09PXcocZPnmYnXTv7IndLC1qYr1K6MuRPfEKu1ygShrVRvuO4leofNaDOd/J2sF0X1lJPNFlSmE
+	vv1GZY2tSLeTPd63hnuPO2qREijU6W/IGb8Js/Y0CzkJL0XTeVPHzcn4NM1fh4d6I5PaAdsrXkQ
+	hcdv1lqw22M+PBx1qLafDY04e4v49Sg6FkI5fo2FHb5t16VXdBN5EaajcjOJIFhX2k7AzSJ/lFJ
+	ph0u8YyaGSEIFmb4SU2NcCL4LwTveDIXjZXUrsL7nGw0r8/2GI0W+PTPI5RgiVXvbWKeXnPXH9s
+	6eQrZ7w2QdwfStfTcZKLngSrynT6SsdPfJimtoXA==
+X-Received: by 2002:a17:902:e750:b0:297:cf96:45bd with SMTP id d9443c01a7336-2ad7446412dmr27068775ad.19.1771697353810;
+        Sat, 21 Feb 2026 10:09:13 -0800 (PST)
+Received: from junjungu-PC.localdomain ([2408:820c:9008:ba52:cd9e:8578:84b4:4918])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ad7503fcc5sm28023175ad.76.2026.02.21.10.09.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Feb 2026 10:09:13 -0800 (PST)
+From: Felix Gu <ustc.gu@gmail.com>
+Date: Sun, 22 Feb 2026 02:09:08 +0800
+Subject: [PATCH] iio: adc: nxp-sar-adc: Remove unnecessary type casting
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iio: pressure: mpl115: remove stale TODO comment
-To: Neel Bullywon <neelb2403@gmail.com>, jic23@kernel.org,
- nuno.sa@analog.com, andy@kernel.org
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260221172601.77818-1-neelb2403@gmail.com>
- <20260221172601.77818-2-neelb2403@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260221172601.77818-2-neelb2403@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+Message-Id: <20260222-nxp-sar-adc-v1-1-75e4cdb3ffb7@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAMT0mWkC/x3MQQqAIBBA0avIrBvQAYW6SrQwm2o2JgohiHdPW
+ r7F/w0KZ+ECi2qQ+ZUiTxwwk4Jw+3gxyjEMpMlpIsJYExaf0R8Bzayddzaw3R2MImU+pf63dev
+ 9AyWQyildAAAA
+X-Change-ID: 20260222-nxp-sar-adc-1906a65ce5b6
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Felix Gu <ustc.gu@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1771697351; l=1003;
+ i=ustc.gu@gmail.com; h=from:subject:message-id;
+ bh=Y/RkG0UfYfithP+xjMMMzezYHNYm5gglQYGINrugAO8=;
+ b=tlMoKCkEiQG9BUQzdHRjzL1jYmKghIrBr2morPpwFHAJ+uATBWjNiCyJvRiwKOcKfI3mUaTOi
+ gbxD6cVByhyDn1RUuJrvNPaKSjIvYg28JGkybJoikTjywnMri5wCKbw
+X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
+ pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
 
-On 2/21/26 11:26 AM, Neel Bullywon wrote:
-> System suspend/resume support has been added in the previous commit,
-> so remove the TODO comment that was requesting it.
+The readl_poll_timeout() macro returns a signed integer error code.
 
-Why not include this in the same patch?
+In nxp_sar_adc_calibration_wait(), the return value is casted to u32
+before being returned as int, which is unnecessary.
+
+Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+---
+ drivers/iio/adc/nxp-sar-adc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
+index 9efa883c277d..a6e4888a8464 100644
+--- a/drivers/iio/adc/nxp-sar-adc.c
++++ b/drivers/iio/adc/nxp-sar-adc.c
+@@ -247,7 +247,8 @@ static inline void nxp_sar_adc_calibration_start(void __iomem *base)
+ 
+ static inline int nxp_sar_adc_calibration_wait(void __iomem *base)
+ {
+-	u32 msr, ret;
++	u32 msr;
++	int ret;
+ 
+ 	ret = readl_poll_timeout(NXP_SAR_ADC_MSR(base), msr,
+ 				 !FIELD_GET(NXP_SAR_ADC_MSR_CALBUSY, msr),
+
+---
+base-commit: d4906ae14a5f136ceb671bb14cedbf13fa560da6
+change-id: 20260222-nxp-sar-adc-1906a65ce5b6
+
+Best regards,
+-- 
+Felix Gu <ustc.gu@gmail.com>
 
