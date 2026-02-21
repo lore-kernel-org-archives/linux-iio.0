@@ -1,218 +1,135 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-dy1-f169.google.com (mail-dy1-f169.google.com [74.125.82.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8101E266B67;
-	Fri, 20 Feb 2026 22:45:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E8DF8834
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 00:09:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771627520; cv=none; b=dnCMUbEcPSkkx4IgLQ1fz6Ce0cQGczWbFKUOLEeS1MzikSHQRmRkWlg1vKzkzpdVVRweDr8QwueGYC91GhE/Fd0FXE1iqiwva6oCUB8pHtDP9vWZmhmSL3InmmWsgZeUS3abxZwb7uHlyEvN1QMe2auTPQTzRcuPBnLkbQR5Hfs=
+	t=1771632592; cv=none; b=hCmracNzqD9Nj4rRgqpywOOyq30W3Rc1tdwmFj5NRN8kUWdPN87fmHRnIOd03gngnmnYlmKilsA36GkbY/sEZLmuKEcTQXtfR3EDPg/ZdZ1mtmddRkFXR5y60uWRCnixRs8WfW6/YxiwRrX/6gRPWKAYy6KIFqOTvLfT9FgL5TE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771627520; c=relaxed/simple;
-	bh=UTBkj8VT+688mCqyc8UEZ0XrbKTQqGCIcVdEzPwcqD8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=fbgsXJf36BXsKYj9zWBEAqFd4Jhovpyw7i4Cp+3eNzdlssPgOGst69KRn1qRHc10HkW/IN3siKmeEucg3KcynR3pepvokt6iC2r8CEgSKGOdi6at4BCAMXMM3/jCccALk7WRSsvGPVz2WnFJOVbT8SC5zkX1mGX+N4HFgb8g18c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MpgXigd5; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	s=arc-20240116; t=1771632592; c=relaxed/simple;
+	bh=8JNOX9dWuFwDz+EmMsHW8yfFbSy5aoeUIhaCQe4LJiI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ezuNL/03+hA/Ksnsx8RAxrcySwOrRIVC/4mdcKW0A+e37S35ACyQlBOKOF4CHwGX1Xm9wIkpfsmzRb3RsS4EaQ98Iv6KsXrHCYlPi+EBwnb/DpX5RbvMBch2qUhBIslZP9Ty4gsPpXjMIyllyYpFGPD3AcPvOf92TzSngOmg01U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RIAK9CjN; arc=none smtp.client-ip=74.125.82.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MpgXigd5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771627518; x=1803163518;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=UTBkj8VT+688mCqyc8UEZ0XrbKTQqGCIcVdEzPwcqD8=;
-  b=MpgXigd5UBmJiluFrPcND1mxeVP62L4cmqpzd5jbjODWCA0to3fAsj0+
-   5LJ9IYkthcgQME/N2ZAVza9xp9k5v7SjePyiXssc95iWDO2ynKfgisAsX
-   eLKftdGb6C9G/leuMEMxBRhMD/T9k5mV2u87+Z8gM9Z2v680gIaE2lwkj
-   kRrX0q4B2147Kzo2HQhnYHnCjhog0JpX+clHutua54R7yVyVT1gRFF23z
-   U6L4mQDbMWB3iPmbFfQ1VQNIz+YpaesIQWsyTirh5AbNMi71HmJi6jXz3
-   WBNjRWeYrIFDWh0nCLtkg+NOSW4iyZN98xnWaBaPvUj9IQjqUnUr1NDIU
-   w==;
-X-CSE-ConnectionGUID: lgc+eszRQ3a3SUxZbdzZgA==
-X-CSE-MsgGUID: MLeyRhaaRnGTxqMHMmhyXA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11707"; a="76336755"
-X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="76336755"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Feb 2026 14:45:18 -0800
-X-CSE-ConnectionGUID: DdRLQ9YXRNGgmxmt0d/OHw==
-X-CSE-MsgGUID: wDmCrjgwQL6FXFPeVEDykg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,302,1763452800"; 
-   d="scan'208";a="252663742"
-Received: from spandruv-desk.jf.intel.com ([10.54.55.20])
-  by orviesa001.jf.intel.com with ESMTP; 20 Feb 2026 14:45:18 -0800
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	bigeasy@linutronix.de,
-	spasswolf@web.de,
-	linux-kernel@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH v2] iio: hid-sensors: Use software trigger
-Date: Fri, 20 Feb 2026 14:45:14 -0800
-Message-ID: <20260220224514.471348-1-srinivas.pandruvada@linux.intel.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RIAK9CjN"
+Received: by mail-dy1-f169.google.com with SMTP id 5a478bee46e88-2ba90683995so1243455eec.1
+        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 16:09:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771632590; x=1772237390; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3SZ9VJ/eluyKCRvTt3Ztw07OUgb5OwU6SNdkdl2r0CY=;
+        b=RIAK9CjN+n058lN37QCxcczi465WJgp9jMXPBDZawoIJ90S+2qP/a6CjpfF8X1f+AP
+         JW2DVpdUzw44+zESbA/kDrMUAfbDUv0ytNfDGoY0bxmmo7Xlb36jFwOyfIXq0qEQnO2e
+         XxfRaUpfVET+3xLdC/oB4EHvBMKh+tnWwtvRB/GJIzam/YeaFDJbfGeEd7gyX0dFyoLw
+         +oG6YJ+AD3o4WuihuwpeHuKXCp3fJwZJIwlHssmtgu70wUwjEal7J4Y4CS24ldrW1tCG
+         cb6ltDF1voGiTYWfw73Vv6pfHisC3mzZ6QpJQ9n+pORbNblHO55J9uArvjEsCLIpzojG
+         LoCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771632590; x=1772237390;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3SZ9VJ/eluyKCRvTt3Ztw07OUgb5OwU6SNdkdl2r0CY=;
+        b=cpdSDYbJT+SrX+QnQq4Y9J7AdTcua+pTgzGwaE8BPoFP23gEK6+s77CRNSrhdSh9Fg
+         x3gEottdlKi80RKbL3rvq5TmF/ECsMA+yHMITYAbroNnh0jTXc+QnljXrg2lQ+ctMZPp
+         pZxcxCvX0T3l0klJs49KTiWQP/hLXfI84tURYBYvI7x8132R410l5rSzIfG/4GEa0bL6
+         gQw3shmE3s0arsfbzZJlmJ8NQkxzlTPhZObLAaMnhBFbq9keYxQKNdEKmRy504AyEhDq
+         VWvB4GRDR1yyq53mNZE1EsVV+Weh+RT/ZVGEbwrZXpSOzFonDCBta0tZbBnDyH0KoY5Y
+         XWrw==
+X-Forwarded-Encrypted: i=1; AJvYcCU1HFhAM9BHMJZzGrCxsyv5fDwk4ZFwvkjwaq7i3aMsvyxmgozYNW5CaFakqex7pXGUKM/UJKlDSHw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwNRE/MyweJpeqTk1C6uRYkTxCvt/c39tmWbuVXC4e2KiA+nB3r
+	yI5y7diSt7vGxBvHO9WmeZAASzQzQJhgRZKZHZRyKuqLTWmP9y3zdoZurDfDng==
+X-Gm-Gg: AZuq6aKfUhmXGJUDKwmAB85FW5/PMjcF5zIdZVITLhUwLFTCz0gQVgollTEb8wqxYuY
+	/F2sq/yY1Ry1eMK1/ltsXl0rI8JZ5A7z88EWQl720DBkcLBOTp66Q6Rp7g0EfiFCZTrDqsUlJSm
+	8s1fZ3o2apJx1wu6WGa1asulob0KqAgfvaCiPHsVk7LuD3P+Fv0sUSQqNBvvjqzsH29pY6Cz3rd
+	uTpNGDl0IlmpBX9XwrVHhFvcwKVQ+rnCAnOtc+67ZgcfTsFnTAL/9dBd/sZx9FFmUWQFF7mLcQY
+	YwcMyOlcz+LdNnrs2LduU9f6tvbJS7PP6BZwetM3wsAvzRNx9dqY3E+ypphD/BsEG4OK6CgkOki
+	Lq4kYrSpymclZh9Nj4CwOF1ziFmgedNQAL2dqOHdpiwvUHCRq+GMxno/LAv+GeEDCrwzdR5qgTW
+	kVxOzXQOX5WJRsScJF+lnKWkALiY2yy4k953OPePcui3qynCpkmNRj15uo2qBrpT9h
+X-Received: by 2002:a05:693c:3009:b0:2ba:7b2a:6a5f with SMTP id 5a478bee46e88-2bd6076dbb8mr2561244eec.8.1771632590304;
+        Fri, 20 Feb 2026 16:09:50 -0800 (PST)
+Received: from google.com ([2a00:79e0:2ebe:8:30e0:64af:2b48:14be])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2bd7dc35362sm408486eec.30.2026.02.20.16.09.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 20 Feb 2026 16:09:49 -0800 (PST)
+Date: Fri, 20 Feb 2026 16:09:47 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>, 
+	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] iio: adc: ti-ads7950: complete conversion to
+ using managed resources
+Message-ID: <aZj3deh1Em1rz3au@google.com>
+References: <20260219022929.3558081-1-dmitry.torokhov@gmail.com>
+ <20260219022929.3558081-5-dmitry.torokhov@gmail.com>
+ <aZbC51ezuaT5Nwq7@smile.fi.intel.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <aZbC51ezuaT5Nwq7@smile.fi.intel.com>
 
-Recent changes linux mainline resulted in warning:
-"genirq: Warn about using IRQF_ONESHOT without a threaded handler"
-when HID sensor hub is used.
+On Thu, Feb 19, 2026 at 09:59:35AM +0200, Andy Shevchenko wrote:
+> On Wed, Feb 18, 2026 at 06:29:28PM -0800, Dmitry Torokhov wrote:
+> > All resources that the driver needs have managed API now. Switch to
+> > using them to make code clearer and drop ti_ads7950_remove().
+> 
+> ...
+> 
+> >  static int ti_ads7950_probe(struct spi_device *spi)
+> >  {
+> >  	struct ti_ads7950_state *st;
+> >  	struct iio_dev *indio_dev;
+> >  	const struct ti_ads7950_chip_info *info;
+> > -	int ret;
+> > +	int error;
+> 
+> Unrelated change.
+> 
+> ...
+> 
+> >  	spi->bits_per_word = 16;
+> >  	spi->mode |= SPI_CS_WORD;
+> > -	ret = spi_setup(spi);
+> > -	if (ret < 0) {
+> > +	error = spi_setup(spi);
+> > +	if (error) {
+> >  		dev_err(&spi->dev, "Error in spi setup\n");
+> > -		return ret;
+> > +		return error;
+> >  	}
+> 
+> Ditto.
+> 
+> And since there is already dev_err_probe() in use, I would expect this
+> also be converted.
 
-When INDIO_BUFFER_TRIGGERED is used, the core attaches a poll function
-when enabling the buffer. This poll function uses request_threaded_irq()
-with both bottom half and top half handlers. But when using HID
-sensor hub, bottom half (thread handler) is not registered.
+But that would be unrelated change ;)
 
-In HID sensors, once a sensor is powered on, the hub collects samples
-and pushes data to the host when programmed thresholds are met. When
-this data is received for a sensor, it is pushed using
-iio_push_to_buffers_with_ts().
+> 
+> Would be also nice to use
+> 
+> 	struct device *dev = &spi->dev;
+> 
+> to make less LoCs and/or make them shorter.
 
-The sensor is powered ON or OFF based on the trigger callback
-set_trigger_state() when the poll function is attached. During the call
-to iio_triggered_buffer_setup_ext(), the HID sensor specifies only a
-handler function but provides no thread handler, as there is no data
-to read from the hub in thread context. Internally, this results in
-calling request_threaded_irq(). Recent kernel changes now warn when
-request_threaded_irq() is called without a thread handler.
+I actually dislike introducing such temporaries in majority of the
+cases. It makes it hard to follow what device we are dealing with and
+does not make the code significantly shorter.
 
-To address this issue, fundamental changes are required to avoid using
-iio_triggered_buffer_setup_ext(). HID sensors can use
-INDIO_BUFFER_SOFTWARE instead of INDIO_BUFFER_TRIGGERED, as this can
-work in trigger-less mode.
+Thanks.
 
-In this approach, when user space opens the buffer, the sensor is powered
-on, and when the buffer is closed, the sensor is powered off using
-iio_buffer_setup_ops callbacks.
-
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
-Changes:
-v2:
-changed 
-indio_dev->modes |= INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
-to 
-indio_dev->modes = INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
-
-From RFC
-- The trigger alloc and register is still kept as old code with
-additional
-indio_dev->modes |= INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
-
- .../common/hid-sensors/hid-sensor-trigger.c   | 48 ++++++++++++-------
- 1 file changed, 30 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 5540e2d28f4a..417c4ab8c1b2 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -14,6 +14,7 @@
- #include <linux/iio/triggered_buffer.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/sysfs.h>
-+#include <linux/iio/kfifo_buf.h>
- #include "hid-sensor-trigger.h"
- 
- static ssize_t _hid_sensor_set_report_latency(struct device *dev,
-@@ -202,12 +203,21 @@ static void hid_sensor_set_power_work(struct work_struct *work)
- 		_hid_sensor_power_state(attrb, true);
- }
- 
--static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
--						bool state)
-+static int buffer_postenable(struct iio_dev *indio_dev)
- {
--	return hid_sensor_power_state(iio_trigger_get_drvdata(trig), state);
-+	return hid_sensor_power_state(iio_device_get_drvdata(indio_dev), 1);
- }
- 
-+static int buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	return hid_sensor_power_state(iio_device_get_drvdata(indio_dev), 0);
-+}
-+
-+static const struct iio_buffer_setup_ops hid_sensor_buffer_ops = {
-+	.postenable = buffer_postenable,
-+	.predisable = buffer_predisable,
-+};
-+
- void hid_sensor_remove_trigger(struct iio_dev *indio_dev,
- 			       struct hid_sensor_common *attrb)
- {
-@@ -219,14 +229,9 @@ void hid_sensor_remove_trigger(struct iio_dev *indio_dev,
- 	cancel_work_sync(&attrb->work);
- 	iio_trigger_unregister(attrb->trigger);
- 	iio_trigger_free(attrb->trigger);
--	iio_triggered_buffer_cleanup(indio_dev);
- }
- EXPORT_SYMBOL_NS(hid_sensor_remove_trigger, "IIO_HID");
- 
--static const struct iio_trigger_ops hid_sensor_trigger_ops = {
--	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
--};
--
- int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 				struct hid_sensor_common *attrb)
- {
-@@ -239,25 +244,34 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 	else
- 		fifo_attrs = NULL;
- 
--	ret = iio_triggered_buffer_setup_ext(indio_dev,
--					     &iio_pollfunc_store_time, NULL,
--					     IIO_BUFFER_DIRECTION_IN,
--					     NULL, fifo_attrs);
-+	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
-+
-+	ret = devm_iio_kfifo_buffer_setup_ext(&indio_dev->dev, indio_dev,
-+					      &hid_sensor_buffer_ops,
-+					      fifo_attrs);
- 	if (ret) {
--		dev_err(&indio_dev->dev, "Triggered Buffer Setup Failed\n");
-+		dev_err(&indio_dev->dev, "Kfifo Buffer Setup Failed\n");
- 		return ret;
- 	}
- 
-+	/*
-+	 * The current user space in distro "iio-sensor-proxy" is not working in
-+	 * trigerless mode and it expects
-+	 * /sys/bus/iio/devices/iio:device0/trigger/current_trigger.
-+	 * The change replacing iio_triggered_buffer_setup_ext() with
-+	 * devm_iio_kfifo_buffer_setup_ext() will not create attribute without
-+	 * registering a trigger with INDIO_HARDWARE_TRIGGERED.
-+	 * So the below code fragment is still required.
-+	 */
-+
- 	trig = iio_trigger_alloc(indio_dev->dev.parent,
- 				 "%s-dev%d", name, iio_device_id(indio_dev));
- 	if (trig == NULL) {
- 		dev_err(&indio_dev->dev, "Trigger Allocate Failed\n");
--		ret = -ENOMEM;
--		goto error_triggered_buffer_cleanup;
-+		return -ENOMEM;
- 	}
- 
- 	iio_trigger_set_drvdata(trig, attrb);
--	trig->ops = &hid_sensor_trigger_ops;
- 	ret = iio_trigger_register(trig);
- 
- 	if (ret) {
-@@ -284,8 +298,6 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 	iio_trigger_unregister(trig);
- error_free_trig:
- 	iio_trigger_free(trig);
--error_triggered_buffer_cleanup:
--	iio_triggered_buffer_cleanup(indio_dev);
- 	return ret;
- }
- EXPORT_SYMBOL_NS(hid_sensor_setup_trigger, "IIO_HID");
 -- 
-2.52.0
-
+Dmitry
