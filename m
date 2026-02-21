@@ -1,71 +1,71 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+Received: from sonic314-21.consmr.mail.gq1.yahoo.com (sonic314-21.consmr.mail.gq1.yahoo.com [98.137.69.84])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9425E237707
-	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 07:33:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 95570BA34
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 09:34:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=98.137.69.84
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771659198; cv=none; b=mx2J4HSIMKjQkm7tYavq8j3CGvTZIfRFsRBwr2Bho8KWD63KYa5XxQV0D/ohFsUwNiqc+yfJnWGl3hVk3MxOV5IiNfHzw+TBmczVHAwaiKa/1BDYNq5xl9pd1Z5/me3m5H7mcVihwog8ixtFyU/XCXuUM24Mm2O/Ipzbyir35Pw=
+	t=1771666490; cv=none; b=h0c6n6kDr2V5tuk7SK77b0Xo0wh71SQKmZ4+H/Lbg0wmDNxvXABPl32UYPfUdZY5iUd1OJ848PLUzQk37C8H0s97qOd8BCWFaBeTyagx7nGqs5OP7YmJcYcW39vt+nanF3kOOHoPpfjtr+HBZZYgvLVCpPIMc2RQHMEyYU46xhc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771659198; c=relaxed/simple;
-	bh=JBLp57T2rH1A64A7q8apja8cyBEzsnE2qvklYDn1YJ0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=K8ATqyMRjZZJZNdpraHow7Vc4AhLEE29pIa6OMQuZ6j/OIvWLk+dY0Bugfhd47lU6sAKHlzxcceDw4cvAXdD+6pBwCXd1Ss4RowlzbW3GXz5K+MHfmr087oBjU4+LsleYp8DzvZNvDQmQbfghOMmMBnv3lDcRH678LIoOzwad2I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hNn03214; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1771666490; c=relaxed/simple;
+	bh=TLPRgoabyxRfFQDpQRq6bd2NxQKi1/Tov5MD/p+7mAQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:References; b=Ij/l443KpFNPnAzH5aWEQTZFIl6yWuihtBfTE55eIHxNLdQ9i6BxJsPoB1CE6rIuYVu/gYoEXGNXQCly1SG4GpvQWtum3j+7KYevtwxUXXQm7si/2FUkb8v/75DsyYcO8AcOY8twxpQ6Xf3OpJ4Csu2sinXCENiGjIX1gyb7US0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com; spf=pass smtp.mailfrom=yahoo.com; dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b=kKPG0IX9; arc=none smtp.client-ip=98.137.69.84
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=yahoo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=yahoo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hNn03214"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-48370174e18so16070805e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 23:33:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771659196; x=1772263996; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=DIDvOyw8CGCfP65CRhRJUSgrBkLbuDLQEI5t55r/3B4=;
-        b=hNn03214BnPZM8zDQA2OWXjaTm6kROnGpAqXfahWbXiTeq13zAwu9fsbnK1IvjCZ8g
-         GSsjgvQsVD0nhnI+PpVUbwN73rcDtr1vrw/gstrlcX2utXUDku2CBIiHi4rricJIOPHe
-         gNEeKvKvC/u/x2WbesWdVOmVQdI4aSHH1epik6m0g6XmYT0JOj4yKDLdk9UXcwhFi6Ib
-         ra+WUTT2b90gYvAVyZEtkej44IJYXQU/FEbKV2803zzNijTnM/W2xnjo1AoZ44Kvlnhs
-         kgkNp2jJ0iD9bCfb2k+Mm6OPNCYglkcLgJ8n2O9KbFCp2dxpx/0TAmL0Eu+u2EZXAKEG
-         uUdw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771659196; x=1772263996;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=DIDvOyw8CGCfP65CRhRJUSgrBkLbuDLQEI5t55r/3B4=;
-        b=Rwr0pHPccUJx0AZJl3ehEk3cDNboxYxSktCNdV6fGokSiI1AmUI28pRM5EYVaGxymd
-         4pZeLu6yI7YQnBLmzhYRNvtvUbo3CdB7sIksnEJ2Fcno7TH1Bt+ZEsW/yP9OOAV2BpqW
-         jz5ANepMYMFGafczX7HCi16UBy4nKXW39UQu4NgnVVJTpugEY8YLkLBG7R0cY65+TGgn
-         fd7/032v3lsrW7UveSOuGEBL587E4QImcx9QhodAELN3pg46jH5RLXJb8jSXwaAOayWD
-         zfvAGiFAJcPwPVVBoBvt7VD8YPReRDOfx5vkKu9aiyXraZrdkpu+goucbnDVI0Ubn0AT
-         ISRA==
-X-Gm-Message-State: AOJu0Yyry1y+wdkc5D0+Vs8qYp4XRqe8wfrm250EIbjH70mIw/bT7Mqw
-	pSsdrgNIh/q5t339SxY7hl5wmDGZqAihCnx2bjnWJw/tScFKG+3djGEz
-X-Gm-Gg: AZuq6aL+ML0tmQpKlL8QhlRqugsXBoDXZEOiW9YgDYz/Okn6v9pNZ1V57KbNy55T1f/
-	Fd8FqNJskDUNILchH6YjK9n3qcDmH5OZsyYda/rHp0ADU2kw9ar4O8aiR0ElPYMaWOr3BHiNTcL
-	ZspOihzMwc68BMmHrI7SFfdZcQA5D8Dx3pwwC8sclI+x5axouydbd320ZjiVZyANXRULwZK/kAT
-	wsa5FIM1LIl1h5Byt0zeo3eMJIMh4u67yAPZwofimWcnNmsugFq+2itwewbiequ8BS4ixKc5FJm
-	pKzLOVmuwMGHounf0BFuHzP61cNrwbZk9n4SN6xPmbEgboye90HAFt0MbgjPwx+ksfU8gPmu2/4
-	pUiNe+IcBpaNOqLvWmytVkwHREyUJ2B5dV6aCyUJb3bUlMUH4NZh3F+TSGS8ve+SUiJsTThaai0
-	9ER3Ag3TxlM+tEU54b9qouK7R+v/IDIS5xgleUWTg=
-X-Received: by 2002:a05:600c:6296:b0:47a:81b7:9a20 with SMTP id 5b1f17b1804b1-483a95c6774mr35319915e9.9.1771659195647;
-        Fri, 20 Feb 2026 23:33:15 -0800 (PST)
-Received: from localhost.localdomain ([196.235.238.153])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483a31f0330sm103093365e9.9.2026.02.20.23.33.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Feb 2026 23:33:14 -0800 (PST)
-From: Salah Triki <salah.triki@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+	dkim=pass (2048-bit key) header.d=yahoo.com header.i=@yahoo.com header.b="kKPG0IX9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1771666489; bh=sVPECrLP0xNuNvLA9loArm1ZMF7Fvf+SaWapsBmumOw=; h=From:To:Cc:Subject:Date:References:From:Subject:Reply-To; b=kKPG0IX9w+yPoAjZOdNYUg4nsiCeStW2nY/gwXVT9TpWEoEha5szRcKgb+YXmLmoWRIl43PRK414eVnFnxTPG6PqRxhNMBrsq9web90JsT7wA8138hoTd66nT90oOVbI4/Dgt0AUjWJilPdD3QRG3v47OUrR3PSb8wHrtWi6mVRH6tNmQzagDSdKQUgknXTa3hlDK+OD0gVGpTttZ4A615ybFGpyn062ZbOp06Xu/0qc2y1Ef+D+5yeAnSxdawEA1Hvr/xK5mRQXL/Nf/QznyVb9ZzebeLCYrXT7PI7w5Ezn/pwGLhaBdZo0T/TK9wEazytynQpuNWIKqpi1+IgFpQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1771666489; bh=bREslll3pZkfFK/ha96IvAPmcaHZqU1z5bHHgm1ugOo=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=Af2PY01svfG/ri3xYEpSXptsLC9iruvKT7JlC8KWVwNONywHwFOrwifHqW7t+p0LNy7Oj9eyAjk1T/VCu8w2vsDVAeVwEtDMS+VY3NNE4nVRsjZUxJH7rRnsy/n05Y41yvIGpaTo27ymzMB3xnR3zPtEpe4Ws4jJjxj9Ecwuz3aSW6PtANXwS6QN9A43D/ngOr2GoHFe7fry/d1mmCdGc7UyUrQ86pAWY7KPig5ARuybBTFAVWu7tKDdeTeQLMCdBFR/lHZZnJ21Iv3DKsEDOSvc6vmYc8dFaJkY3iEzpURaxxjgVl2b1HHiAG1OUEAaBthdHtubpFhqYA3pDxnhVA==
+X-YMail-OSG: dZuY_h8VM1lVYgDlI6bEmTNkuIbY8Sch5Ci8XXvNHnQ5Crg2nzxkYVLjaj2Ezd0
+ hjbbMEJp2UrtH6bgUIxIjwXVaS8SWKY39VtxdfrNGcIExopdEiW_a5BEYvo5VB198s73cR5.B1pF
+ 7iyRVACIe.eRm_rwp.yFR4qItVcfgOpJsZwpcBvlSls9ahgZeK0kZUVcvgwZf6xi0rzRJ_uRM.IV
+ xebphSeZ8nvlnXI9J6Wy.5WEbk6OfFyYod4XpCCSuwi73evvvcgmt.ErP77dNytiTlY1ODxiX8Yo
+ PL9FBE.T1zJDUaM4Km64ouTtX3mCJAoXvUxoYmxugYaH9GtKK.UsrABVpa5D1BZBb.NCzgm9Bo4W
+ Tp4iYVzWAIJ0xUJv_e.ByynZbYyxZLL5uQQN_56YMfckLW.U4IK3.vKSzfnKe4JY_uASfvwScSTC
+ qmBQNvdPIwG8q.4wLebWCSyhC4IvWnXSkR2KDvo2QiOh1Hx11CpGHrXLAD6VFG6P58F7rMPBX6Wy
+ TjSTmWBmNFxtfCw9OtvxnqTR.EPprN9ZfMyzYcOP2GUe..WykHfKjV.F47EYPQaewfMUF9BoYo_X
+ mE2qdpWr6ySwT8.JFUH1Qr4Qv6iZY4Ekfb6vnOd1fi60W.DgMYIsBFbdNaSD1WJxgxeTM81.KVXG
+ Oo2JkGdT_KWD6QRjsG1sr.k9tHUCWEFG5ooBaZmNpXiDZuxIqz4WjRCoJA.CMZz0WeMH_NJb2Nie
+ EJj_JLfKEx4CYVYcqvsiys7wRoul18PEFryGZKNsqTXjsmqf35uIwCS44vyFP9vrJMuYCxsP9pHD
+ Z8hT16uzs.ziBk_0diKiJX1JZLAsamBertI.19vCzByIRkwXBk3kMPkKELJwdbz4vMEZweUwvLTx
+ 3lbmcertcEn9A1T3Qc1n7jZMUjdilkFFk1vhTzGXjvh3BSwhkaYHfJTfDSmoJKjTyqJ2SOLrmsZa
+ sJVshkdwogp0xfPbso.OO8E49RXUThePZWtX0FHralgnA1r6vU.qiFggiqAFDZ5KD2dJALuPcXYr
+ 7U58hoUrgJmrMneV8eav1VhxILHEba2BRfQlc0p.QN3CWEd3RYHGxs85GZmmUkuhBYUmamGLHTlm
+ 0dhzlAWTTiDb48uKr__ZhQLBfwSlPeCQyffOW01rV1pP6pI8UfH6_gIxqgmflkG0LqulLMYnUven
+ J.bosNO5Gc_sHSHiH2QzZ1SdpqRw0d3i86nIQ61YeDIonJleN7F8rToPRTAm8YybCP.PP.rpjtmc
+ KLKkw8xcLC8DtS_roVyyF8fGTiye5Uqk.OWkrzh4bNRa6Aqto0Kveq8su7luj1phhnNMcygMbZJk
+ O_qVnQP8mDKDq1rol2esGNRIM4hJsj9xU4c62d8XwbiR3g8UTBQluhBCf5ZVMWcwL1iVq3Glm9YP
+ .l0QmxZiFipRQIQ.AgP2ne7WleTvq_Bze3q64UZaduPvqeYcmI6Zw.Nsog.M9y9JldEPXJfKbdUC
+ yp0.moHZ.pdXn.dhf5Gtk2ws1lEN6Gq5aQCGHqmEG5igp5ui9zkrwidIMVO0wRuPColql7WbOPZ3
+ xYK0BrSkwNaXzpng_kfncaz.k55.CVPSd.o_y6GmG68oOHdMo_RFvJULtuvZwb6TC1jAHLY8pm3.
+ C00k0jU_QTKSfUuHr5L9GuycYnS6izbVxGpIsMOQxhG0QzPBMmmcfLp78P6uoAwowPbUfLlNNxfW
+ xf3nkQAVY9TrZgRBzVAOVjbD3V7jzC0RblSREriECN6W5Wrq4vA70.zsgtqyFbO2ui_BjEmWkSlw
+ y7GXvDh6OTXCxl34kWQGDmP0ABGDmiTQNkhibAx4kGBKOJTn7E_EUTxWPgzKrzI6Z4KUmq9JZee_
+ Ztxqu27XPVLLUz2XsmPTQgGXRyWTT3S86IIiZ_6EdivwOwPL0L0122liQtmEb9XJ_e3GR9gj6oLv
+ W7QiZqbk6iWpXegeRDp63QoPjrtFJILBn3zNK4Q5w2lHHSKmwGpxZsFnFdWteMvEN0k0LzbRbZGv
+ wi1r2g3gb0baov5KAyrijd0UJh66OBb73uTBwvmpqGreSo1.03c1.1QRsDOE.2Zj9WiwYe.YR4Zp
+ Lxk.tc7.wLYrRmDYswymJzPz_aPZqRVd._wCTs72IKcotl0qfIUtOEvAFzJQC3sHTjnlT3DGyEXx
+ 5oz4hP2YRUZQ.YeabHfttESIysTRGoy4_PwDvk5HzKhGTEnJ04xrL4MbkIidHUa19QvKqkdgldjf
+ _hhRI0ZGfIaJuPwEIouY6C20u1JqXD2UfmA_JeWs_gph.As0UtKlGIqmCMT7aJkEN2nU2ujI8rIP
+ fQoJFgQkaDaQrTXOCxJDfkxPJUiO2.bfCpDk3
+X-Sonic-MF: <sainiharpreet29@yahoo.com>
+X-Sonic-ID: 1b17b6a8-3598-4858-b17e-d5dbc2f82fd4
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic314.consmr.mail.gq1.yahoo.com with HTTP; Sat, 21 Feb 2026 09:34:49 +0000
+Received: by hermes--production-bf1-697f88457-2mcdh (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 52a3f7a5619beba03832f884773a0064;
+          Sat, 21 Feb 2026 09:14:29 +0000 (UTC)
+From: Harpreet Saini <sainiharpreet29@yahoo.com>
+To: Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Salah Triki <salah.triki@gmail.com>
-Subject: [PATCH v4] iio: core: Clean up device correctly on viio_trigger_alloc() failure
-Date: Sat, 21 Feb 2026 08:32:42 +0100
-Message-ID: <20260221073301.105080-1-salah.triki@gmail.com>
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	Harpreet Saini <sainiharpreet29@yahoo.com>
+Subject: [PATCH] staging:iio:impedance-analyzer rename camel case text
+Date: Sat, 21 Feb 2026 04:14:24 -0500
+Message-ID: <20260221091424.56822-1-sainiharpreet29@yahoo.com>
 X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -73,66 +73,64 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+References: <20260221091424.56822-1-sainiharpreet29.ref@yahoo.com>
 
-Once we called device_initialize() we have to call put_device()
-on it. Refactor the code to make it in the right order.
+Rename camel case text. This was reported by checkpatch.pl
 
-Signed-off-by: Salah Triki <salah.triki@gmail.com>
+Signed-off-by: Harpreet Saini <sainiharpreet29@yahoo.com>
 ---
-Changes in v4:
-- Move device_initialize() after all potential failure points (kvasprintf and 
-  irq_alloc_descs) to avoid premature lifecycle management via kobject.
-- Revert the use of put_device() in the error path and use kfree() instead, 
-  as the device is not yet initialized.
-- Align the implementation with the pattern used in iio_device_alloc(), 
-  as suggested by Nuno Sá.
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-Changes in v3:
-- Rewrite commit message to focus on standard design patterns.
-- Remove the "Fixes" tag as the change is a cleanup/robustness improvement.
-- Simplify the description of the fix as requested by the maintainer.
-- Change title to better reflect the change (not a use-after-free).
-
-Changes in v2:
-- Remove the manual call to irq_free_descs() in the error path to avoid
-  a double free, as this is already handled by iio_trig_release().
-- Clarify the error path and the potential for memory corruption in
-  the commit description.
-- Remove the blank line in the tag block to comply with kernel script
-  requirements.
-
- drivers/iio/industrialio-trigger.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 54416a384232..c995311bf699 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -561,10 +561,6 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
- 	if (!trig)
- 		return NULL;
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 85a4223295cd..f38d94613ea1 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -43,10 +43,10 @@
+ #define AD5933_CTRL_POWER_DOWN		(0xA << 4)
+ #define AD5933_CTRL_STANDBY		(0xB << 4)
  
--	trig->dev.parent = parent;
--	trig->dev.type = &iio_trig_type;
--	trig->dev.bus = &iio_bus_type;
--	device_initialize(&trig->dev);
- 	INIT_WORK(&trig->reenable_work, iio_reenable_work_fn);
+-#define AD5933_CTRL_RANGE_2000mVpp	(0x0 << 1)
+-#define AD5933_CTRL_RANGE_200mVpp	(0x1 << 1)
+-#define AD5933_CTRL_RANGE_400mVpp	(0x2 << 1)
+-#define AD5933_CTRL_RANGE_1000mVpp	(0x3 << 1)
++#define AD5933_CTRL_RANGE_2000_M_VPP	(0x0 << 1)
++#define AD5933_CTRL_RANGE_200_M_VPP	(0x1 << 1)
++#define AD5933_CTRL_RANGE_400_M_VPP	(0x2 << 1)
++#define AD5933_CTRL_RANGE_1000_M_VPP	(0x3 << 1)
+ #define AD5933_CTRL_RANGE(x)		((x) << 1)
  
- 	mutex_init(&trig->pool_lock);
-@@ -592,6 +588,11 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
- 				  IRQ_NOREQUEST | IRQ_NOAUTOEN, IRQ_NOPROBE);
+ #define AD5933_CTRL_PGA_GAIN_1		(0x1 << 0)
+@@ -68,8 +68,8 @@
+ #define AD5933_I2C_ADDR_POINTER		0xB0
+ 
+ /* Device Specs */
+-#define AD5933_INT_OSC_FREQ_Hz		16776000
+-#define AD5933_MAX_OUTPUT_FREQ_Hz	100000
++#define AD5933_INT_OSC_FREQ_HZ		16776000
++#define AD5933_MAX_OUTPUT_FREQ_HZ	100000
+ #define AD5933_MAX_RETRIES		100
+ 
+ #define AD5933_OUT_RANGE		1
+@@ -303,7 +303,7 @@ static ssize_t ad5933_store_frequency(struct device *dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	if (val > AD5933_MAX_OUTPUT_FREQ_Hz)
++	if (val > AD5933_MAX_OUTPUT_FREQ_HZ)
+ 		return -EINVAL;
+ 
+ 	if (!iio_device_claim_direct(indio_dev))
+@@ -699,7 +699,7 @@ static int ad5933_probe(struct i2c_client *client)
+ 		st->mclk_hz = ext_clk_hz;
+ 		st->ctrl_lb = AD5933_CTRL_EXT_SYSCLK;
+ 	} else {
+-		st->mclk_hz = AD5933_INT_OSC_FREQ_Hz;
++		st->mclk_hz = AD5933_INT_OSC_FREQ_HZ;
+ 		st->ctrl_lb = AD5933_CTRL_INT_SYSCLK;
  	}
  
-+	trig->dev.parent = parent;
-+	trig->dev.type = &iio_trig_type;
-+	trig->dev.bus = &iio_bus_type;
-+	device_initialize(&trig->dev);
-+
- 	return trig;
- 
- free_descs:
 -- 
 2.43.0
 
