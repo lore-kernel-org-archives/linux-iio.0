@@ -1,180 +1,139 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D62E97478;
-	Sat, 21 Feb 2026 10:45:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BE50C1A5B8B
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 14:13:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771670747; cv=none; b=YQ1MS7rboxz2rL6ZQesH13yo4cw+mGLm52SWU9DOICWGALP8Xz7ZmgG7VfCN7t0sfWupvG4+DYkQpxb3Mdp9IIDaSk2Bm5sWhwjxsqtBBKEnFbHJYS3D+lcWAR3Jku93sAWOruCi8f7GdeSJvdGVMPgd8RbDEWGKKQXvSpmVI14=
+	t=1771683184; cv=none; b=jNw1Nrabvj+CVo+hBnneSI560M2+lbno6dND1bZ/mQb9fRb9U3Hn5xTBFauGjwKu/9fPiLZ9LAbqI/g/NI5qn4KsJ5dNXOQYiYwNTFnnv3L10ZcDafkWrchUSKImEtcWo2rgI98i2xjz349UM98K6ZBgL5mvzsQcIbz+pNiGcM0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771670747; c=relaxed/simple;
-	bh=6w5AFWGESxVsJxi5o5K/W9EDj8OY0DHZFLXqiDlNzf0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WDFUNafMuFw00JJhdembI/sVAPUuX9xGNANtuYpkdvcIQ6vtsxSUzlcA4mvECIJdT9MtQBu+aEF5TDd5wXcPkLAWKAgFt74ZSnsFbBPsD9hZGIB3p9IwnSTr0mFCGMKPJRF3euxx5R7tu52mzhHDw8dmK+8cNGswev1VQr9LTWQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kP/jLBuy; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771683184; c=relaxed/simple;
+	bh=NIUoJr1XY5gdclV6RiHFGBT9P8aW+Ke2Acc0QjgcK1U=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UVSfglVvVFousiGx/fhyO0xkJ2LlMFKTMZMmE0FuYP+DmgdXtT3ngt09LZ242k03mX5MDut2J+QyOSraMTOiHh9Mq38wvfWqnKgwPubgrCfZwO4Cta4eC3tEW+ywepbYrx2lHCifBxbQR4BC9a68NV7i6uZhhoCL6N1K1aeRCeE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f/HR9H4T; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kP/jLBuy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29944C4CEF7;
-	Sat, 21 Feb 2026 10:45:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771670747;
-	bh=6w5AFWGESxVsJxi5o5K/W9EDj8OY0DHZFLXqiDlNzf0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kP/jLBuyJ7mG2T8bWHP+cZEt95GmMiQo2WKailkAe3G3+HU5LKNQ3wuRgWZzrIhCf
-	 zlzUmJwDLGBV0O4iIplMgFOX/bffpa+cBDAslMcF0Zkf27WA4Y0eSPGl71KytT7ByM
-	 NwGRI0fJBEIj/5XbPi4Eh0lQcKtHKtIyRlTjNYGv2xcUWWp/Qaq2yVMGcfy1cDgxbG
-	 lagH74t5bJZ5fVP0NML3YuqvyzzRmhEAj9fSdUVDAQ2UbWBYpCZwMU/py7mFKKPmHr
-	 rWLD5HdmTbUBgnuuyoile58Zw/wmXm9223jaM08aRf/LzUPO2u4a8grjzhnQjcfjOs
-	 WvjauG0d+BvOg==
-Date: Sat, 21 Feb 2026 11:45:45 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: iio: dac: Add binding for AD5706R
-Message-ID: <20260221-slick-belligerent-trout-3f897c@quoll>
-References: <20260220-dev_ad5706r-v1-0-7253bbd74889@analog.com>
- <20260220-dev_ad5706r-v1-1-7253bbd74889@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f/HR9H4T"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4836f363ad2so31913355e9.1
+        for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 06:13:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771683181; x=1772287981; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=qaomPLaqyB2XegpBtyCcwnlVmceyjniRY76DonELa74=;
+        b=f/HR9H4TRytclwOhPHDC+sydNGO0mbSRc0NzIVUYL5BktxHT/AJXziT+3dtTiib04b
+         llWg2Gyb++WUlZb9RsMxW1ZRX/xeW2/ZZ/ZHOJ7fR7rPDCFLr+QXMctV1o985Zefsyh6
+         Thmi0yxCgU0qsHm1W2xNr8XBmZDRguo5nKeY6ydBZXsRxJcmfGzsIZ76dcK7ss8aq3tN
+         iYUV9YT3JMBgp2bDBPvGY1US8palIGJuA8FibS8NQRC/U9BpoD4at6RdMbjcHg6Jaqy9
+         66yfNPtiGJmY6DwC3q42m3yIg9Wb3I4cmbf5FHgiGsTj3bamuPmCNfLPhxfjjpNc4aMS
+         eLxQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771683181; x=1772287981;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=qaomPLaqyB2XegpBtyCcwnlVmceyjniRY76DonELa74=;
+        b=gopYDP8yf0kypTaRq+7i2gpjXJS8irzghhO/gnGpmOwskMA+ZVjDT/Hr9Btlbc2Sk0
+         fpN2MqXAMcoY+fpF5179SdXQ1RORipLJQqcmsJdG64Ihy19wWApPoZPLusqNiwlVn+pt
+         bFe18lqKPhTH0P9/+ZUQFJ3RePb3zp+mTG/fpIBhuty7fz6OBXEL1PEr3nFeuEwguKVJ
+         zi/KvGHDrY7qoeDgQzTcIu6RstyN4b+h3qns/37JpF8O9H9UeJ3I/8UcT+Qd6n8j6u1x
+         XN7h2z+t1PDR5Xc+QKMn+ZTdH0OXb9m2JjEaE6YGVVhs1t8G/rg17k5PPTChS1bLA4UW
+         qkyw==
+X-Gm-Message-State: AOJu0YwfoFLMYe3tcHZWcuGLeMXw/uxyQqeYjKl6LAgEUaq8hxj/htOr
+	JPPPstiq6nHA3L8HD8UTTOoMQwgO3m6FPuulY4vdh2oDbYsNJXMldACjyYx4LsmC
+X-Gm-Gg: AZuq6aJes1e3ndfDwiuci+wg+F/Uy+84xqB0rW2T5Fg7ORfiNv/3NdZ8tJQFfTRcSr4
+	8/RAbAfMhztJmhXGpwoo219kktZR7imAbHx2mBrMC2RWHfDFwdgErp+Jd8aGn2wIbyxFB5/9dBp
+	w+hg+hxzVb+8r9PVTdRtEz3vm9BwVB5qknf2SShSmk05cXHG5QXf6mEjv17dR89WD48XFn1cQKr
+	qzgD4MS+EfHyQjzGlavFuFv6bvnORDEhnpbe0WIeJCiy5x9Uc1Yj+05tytbU6ODyaW2qj1BRQ1A
+	sPQW1Y/1PED0tr2nrJ1ekFMi9hnwowkt5B5eOZqxRFOUnJqgckPuigRdu9Iq3sHi0MRI2RrvGqE
+	aII0cOcOdTvMo1ua37mFAx/MCE4PdCWaZSCQucGz8Xb0WhWBlLQsgMaueEpstYvtTaE1UlxOw2P
+	SuKhEmoRIQ1be9JcllJkWs/et/O70gOroyAD0nbkPU8LGbgs6TH6TbDzPLoESPQh9rHeeYsrdb
+X-Received: by 2002:a05:600c:45ce:b0:477:93f7:bbc5 with SMTP id 5b1f17b1804b1-483a95b5835mr47780805e9.10.1771683180862;
+        Sat, 21 Feb 2026 06:13:00 -0800 (PST)
+Received: from db07.1337.ma ([197.230.240.146])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483a3e01c27sm50169825e9.9.2026.02.21.06.12.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Feb 2026 06:13:00 -0800 (PST)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	rdunlap@infradead.org,
+	skhan@linuxfoundation.org,
+	linux-kernel-mentees-archive@lists.linuxfoundation.org,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	corbet@lwn.net,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Taha Ed-Dafili <0rayn.dev@gmail.com>
+Subject: [PATCH v4 0/4] iio: accel: adxl345: Implement event scaling and ABI compliance
+Date: Sat, 21 Feb 2026 14:12:43 +0000
+Message-ID: <20260221141251.34855-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.47.3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260220-dev_ad5706r-v1-1-7253bbd74889@analog.com>
+Content-Transfer-Encoding: 8bit
 
-On Fri, Feb 20, 2026 at 04:02:56PM +0800, Alexis Czezar Torreno wrote:
-> Add device tree binding documentation for the Analog Devices
-> AD5706R 4-channel 16-bit current output digital-to-analog converter.
+This series addresses ADXL345 driver non-compliance with the IIO ABI for
+event thresholds.
 
-A nit, subject: drop second/last, redundant "binding for". The
-"dt-bindings" prefix is already stating that these are bindings.
-See also:
-https://elixir.bootlin.com/linux/v6.17-rc3/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
+Currently, the driver exposes raw values for thresholds
+(e.g., tap, activity) without providing the necessary scale factor to
+convert them to SI units (m/s^2), as mandated by the ABI.
 
-> 
-> Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-> ---
->  .../devicetree/bindings/iio/dac/adi,ad5706r.yaml   | 96 ++++++++++++++++++++++
->  1 file changed, 96 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..dabaf2195a07d2c66d44f69ca60e32e6bc37cf55
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml
-> @@ -0,0 +1,96 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/dac/adi,ad5706r.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD5706R 4-Channel Current Output DAC
-> +
-> +maintainers:
-> +  - Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-> +
-> +description: |
-> +  The AD5706R is a 16-bit, 4-channel current output digital-to-analog
-> +  converter with SPI interface.
-> +
-> +  The driver supports dynamic SPI clock rate management via an external
+This series implements `IIO_EV_INFO_SCALE` in the IIO core and applies it
+to the ADXL345 driver, ensuring that userspace can correctly interpret
+threshold values. It also cleans up existing documentation errors and
+typos.
 
-So this is DAC or driver? If driver, what does it drive?
+Changes in v4:
+- Patch 3: Fix missing IIO_EV_INFO_SCALE handling for MAG/MAG_ADAPTIVE
+  events by moving the check to the top of adxl345_read_event_value().
+- Patch 3: Explicitly reject writes to IIO_EV_INFO_SCALE with -EINVAL.
+- Patch 3: Fix bitmask ordering and whitespace alignment in event spec
+  arrays.
+- Patch 4: Update documentation table with the exact sysfs scale
+  attributes generated by the IIO core.
+- Patch 4: Sort the entire event attribute table alphabetically
+  (David Lechner).
 
-> +  clock generator (e.g., AXI CLKGEN) referenced by the 'clocks' property.
-> +  This allows separate read and write SPI speeds to be configured at
-> +  runtime.
+Changes in v3:
+- Patch 1: Revert "axis" to "axes" in documentation.
+- Patch 2: Reword commit message to "Implement support for".
+- Patch 4: Remove repetitive scale values from every table row.
+- Patch 4: Fix typo in commit message.
 
-How binding has anything to do with runtime? What are you describing
-here?
+Changes in v2:
+- Add core infrastructure for IIO_EV_INFO_SCALE.
+- Implement event scaling (0.612915 m/s^2) for ADXL345.
+- Fix technical math and decimal errors in documentation.
+- Clean up grammar and pluralization in .rst file.
 
-> +
-> +  Datasheet:
-> +    https://www.analog.com/en/products/ad5706r.html
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad5706r
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
+I would like to thank Jonathan Cameron for catching the missing MAG scale
+handling via static analysis, David Lechner for the alphabetical and
+bitmask ordering feedback, and Andy Shevchenko and Randy Dunlap for
+catching the whitespace inconsistencies.
 
-So that's SPI then you miss $ref and unevaluatedProps. Look at other
-bindings.
+Taha Ed-Dafili (4):
+  docs: iio: adxl345: fix typos and grammar
+  iio: core: Add IIO_EV_INFO_SCALE to event info
+  iio: accel: adxl345: Implement event scaling for ABI compliance
+  docs: iio: adxl345: update math and examples for scaling
 
-> +    maximum: 100000000
-> +
-> +  clocks:
-> +    maxItems: 1
-> +    description:
-> +      Reference clock for SPI clock rate management.
-> +
-> +  clock-names:
-> +    items:
-> +      - const: spi_clk
+ Documentation/iio/adxl345.rst    | 79 ++++++++++++++++++++------------
+ drivers/iio/accel/adxl345_core.c | 37 ++++++++++-----
+ drivers/iio/industrialio-event.c |  1 +
+ include/linux/iio/types.h        |  1 +
+ 4 files changed, 78 insertions(+), 40 deletions(-)
 
-Drop clock names, pretty redundant.
-
-> +
-> +  pwms:
-> +    maxItems: 1
-> +
-> +  pwm-names:
-> +    items:
-> +      - const: ad5706r_ldacb
-
-No point to add device name in the input name.
-
-> +
-> +  dac-resetb-gpios:
-
-So reset-gpios?
-
-> +    maxItems: 1
-> +    description: GPIO connected to the active-low reset pin.
-> +
-> +  dac-shdn-gpios:
-
-Please read gpio-consumer-common.yaml
-
-> +    maxItems: 1
-> +    description: GPIO connected to the active-high shutdown pin.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - spi-max-frequency
-> +  - clocks
-> +  - clock-names
-> +  - pwms
-> +  - pwm-names
-> +  - dac-resetb-gpios
-> +  - dac-shdn-gpios
-
-No supplies? How does it get power or reference voltage?
-
-> +
-
-Here, missing allOf with ref
-
-
-> +additionalProperties: false
-
-And that is unevaluated.
-
-
-Best regards,
-Krzysztof
+-- 
+2.47.3
 
