@@ -1,247 +1,138 @@
-Received: from mx0a-0031df01.pphosted.com (mx0a-0031df01.pphosted.com [205.220.168.131])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49C8F31985B
-	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 02:49:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.168.131
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9425E237707
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 07:33:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771642181; cv=none; b=UklJx+viYabVwt6JXyRc1rTRN+71gEDN0n4DkUtuz43Z79sSf3JheEFSiaEJSCc0JUVnTAxUfcfhr21XCtq3gES2VujhuSQpWdtDQhvkHfXlMQSMFoUjCBNn84dyfzuA1vtCeGLUJXxQPMNpNuMiBMcqQdpJjPdajaPzf5+P3/4=
+	t=1771659198; cv=none; b=mx2J4HSIMKjQkm7tYavq8j3CGvTZIfRFsRBwr2Bho8KWD63KYa5XxQV0D/ohFsUwNiqc+yfJnWGl3hVk3MxOV5IiNfHzw+TBmczVHAwaiKa/1BDYNq5xl9pd1Z5/me3m5H7mcVihwog8ixtFyU/XCXuUM24Mm2O/Ipzbyir35Pw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771642181; c=relaxed/simple;
-	bh=uq92ycsM47Jo3q4lAh30+sbvRyqWHRljr1zKiEWutzc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=brHLQQz5IaifDSU305rZ9IC5YrwQo2rDPlEkVdAoyZ1GaK5F4RhNv/007lcelZy2UaWbqADxZhDbc8fHteGtIxhfBkvqARteSZQOt+8wjfDF7UrfcPoJYcdf76E2UlQvdufa7ydio3t51Epk2B/0edkM7lg7jtE13YlrWRW870M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com; spf=pass smtp.mailfrom=oss.qualcomm.com; dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b=Zbrur7YM; dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b=ayU4VO+j; arc=none smtp.client-ip=205.220.168.131
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oss.qualcomm.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oss.qualcomm.com
+	s=arc-20240116; t=1771659198; c=relaxed/simple;
+	bh=JBLp57T2rH1A64A7q8apja8cyBEzsnE2qvklYDn1YJ0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=K8ATqyMRjZZJZNdpraHow7Vc4AhLEE29pIa6OMQuZ6j/OIvWLk+dY0Bugfhd47lU6sAKHlzxcceDw4cvAXdD+6pBwCXd1Ss4RowlzbW3GXz5K+MHfmr087oBjU4+LsleYp8DzvZNvDQmQbfghOMmMBnv3lDcRH678LIoOzwad2I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hNn03214; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=qualcomm.com header.i=@qualcomm.com header.b="Zbrur7YM";
-	dkim=pass (2048-bit key) header.d=oss.qualcomm.com header.i=@oss.qualcomm.com header.b="ayU4VO+j"
-Received: from pps.filterd (m0279864.ppops.net [127.0.0.1])
-	by mx0a-0031df01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61KNTn7D1914983
-	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 02:49:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=qualcomm.com; h=
-	cc:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=qcppdkim1; bh=
-	BmWwSyvtQgL34OEqTM20cBfqvgI2QWHHCJgEeagqLDo=; b=Zbrur7YMuFsAtxgl
-	ZpG+MMTRvPm6XqWhMA1Ukb4OavUa/TsVFx9pZXgp54AeaRplZb/PjaiGgnI/GXNR
-	bwoRxRbu/ole69KAiIu2IhOCh4Arh14MtlwsjVRXpf7Shb3njsZ+ShajScnzhngH
-	ygc2/CNALxCschU2e+xiIxqTNbz/DJ6SPDjJAY7NMe3JHnR9fRMZJlcnEOQ9wN3v
-	YO2jhYMu42cqKkav9Iq37LzcOiDVKfFw912380YcxmT6l3JonCqmtvC2f604t96r
-	h4hFSNiIX2uiifLhBQY6UG0n6b/46WEGKmfkR1qG5UMdtie1ifuOoJqLh+v+Hbjn
-	PC3lWg==
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com [209.85.222.199])
-	by mx0a-0031df01.pphosted.com (PPS) with ESMTPS id 4ces849qvf-1
-	(version=TLSv1.3 cipher=TLS_AES_128_GCM_SHA256 bits=128 verify=NOT)
-	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 02:49:39 +0000 (GMT)
-Received: by mail-qk1-f199.google.com with SMTP id af79cd13be357-8c71500f274so330304985a.1
-        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 18:49:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hNn03214"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-48370174e18so16070805e9.2
+        for <linux-iio@vger.kernel.org>; Fri, 20 Feb 2026 23:33:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=oss.qualcomm.com; s=google; t=1771642173; x=1772246973; darn=vger.kernel.org;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=BmWwSyvtQgL34OEqTM20cBfqvgI2QWHHCJgEeagqLDo=;
-        b=ayU4VO+jPo2fCWEKsdD9PtYTeUq2N7fQLzeShwIVShqBaVgczSNHed+3A5pfHvvE/8
-         +nY9uQnu449ZPczMr41AJL68subWuUreDac7rLp298rosiGC01wJSHaxb7JD/58zuGic
-         WoX2RYdly+clzg6FPP8ExhWb6ZSTB5EH0qTXjR34lrFgYCUsCskclzMXKkxe9WGLgzC0
-         z3928+1qX0l+qukA1Gs4/SJEdDbKQAXoaIrRPVLf/oJ/OeqQIO8zgq5IE6DWab8pnNw+
-         YcpHKVD3DivFV1O0ZTpN28xUezT6V9x/WazUC9fKKCb5gcqKIud0kqswSR/8mE4FkPRm
-         f1bQ==
+        d=gmail.com; s=20230601; t=1771659196; x=1772263996; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=DIDvOyw8CGCfP65CRhRJUSgrBkLbuDLQEI5t55r/3B4=;
+        b=hNn03214BnPZM8zDQA2OWXjaTm6kROnGpAqXfahWbXiTeq13zAwu9fsbnK1IvjCZ8g
+         GSsjgvQsVD0nhnI+PpVUbwN73rcDtr1vrw/gstrlcX2utXUDku2CBIiHi4rricJIOPHe
+         gNEeKvKvC/u/x2WbesWdVOmVQdI4aSHH1epik6m0g6XmYT0JOj4yKDLdk9UXcwhFi6Ib
+         ra+WUTT2b90gYvAVyZEtkej44IJYXQU/FEbKV2803zzNijTnM/W2xnjo1AoZ44Kvlnhs
+         kgkNp2jJ0iD9bCfb2k+Mm6OPNCYglkcLgJ8n2O9KbFCp2dxpx/0TAmL0Eu+u2EZXAKEG
+         uUdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771642173; x=1772246973;
-        h=in-reply-to:content-transfer-encoding:content-disposition
-         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=BmWwSyvtQgL34OEqTM20cBfqvgI2QWHHCJgEeagqLDo=;
-        b=DB/kKfTuSq/onlSRlH02dm+jOwFhcc2rggmz6BhLDzOIt7sIEPsdW74ihy9MPu/Kcy
-         +x1NVllfEm5grOVxY76RWFmJL2TRB+4puZVm33IyhBrJesJeiOzA8BVE3iRq/M+HJS2O
-         fA3mkmoChiO/xA4/xLxT5i2HM9E6kxVpNbSoIc1XjLLAUN+CucZhIzMxCl+GLHUABPVs
-         4fPQDsBp3p1YSl1JE8tUaU4kLdYzBUk3CyDyiMdltUZpSu17q4Yc/j4+haCcDQiZXBG5
-         R/P2FQxbvbIxb6ipvwqBC7hrky8zPWpp44Pl68hJBDE9vTYNIJX7tpgx70Wk9O1ENEHq
-         IA8A==
-X-Forwarded-Encrypted: i=1; AJvYcCW3h5N0KbO8G8eHPlwk0NByl9B9l1/ythvpNjreOyEaTR/XdLuD16KnUmvl3hRR72kXY7ws1bXMMlY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx5C6kGrLRBgzVjShserFkad7B4ydOjzpVy/+btIwTSL1TkdKrD
-	a+RKkz8IpAs2cS9/1LoTdj21CSkFQsImErBCflXiT4eJB8NRl1BQA8t4Hwa2vpCBHGTPasonPbg
-	/S/ts8sjgZWg1Sgv8yZ1C4BJp7haDxqdynCwVMErQzCA99DscAnP37ToFTjBqwj8=
-X-Gm-Gg: AZuq6aKFg2EzmP7yvrJ4hdqeoXGYMqgVOqLvoSiXSz5FHAdZtcLmxAawNdUoI/4IgW5
-	w4GQY0A5RIFhAWMrVSSBSUSNJjZkjnbCMzSad5wb30Tpw0nnRYv5qB0Uh4TB6Zon3Z3n/D9Buwx
-	nBLTPSdsTpSOdHZQERkKWgIBQSAYqjxrHhd/azMvF9m74h4llGUkfrVFXtrunsbbleLp+MU7cP+
-	gwa10TJ/ZC8pWNXplz8xKAR0UfLbZ/zMfQM/bwffyiqE3m9iv3043/zYowWwcsP1vnaE7TwgJzb
-	LiuYzQcUWYdpSAvmTnPUCR33tXIVZn8LHa0i/8hl3ZCpZo19Lm0yYRYNt1UfY1DK4mMMACPYIaR
-	d+QDDgWX+tmfkkhNX1Po5VVK7NPtSec9uy/jKRiwFfd04oYXXBh+D6T0IjoSn/4FoINxQxQAy15
-	DvPaFP6VAGGTl+w/F/F2QhFGA6C5KNvv0IJ5c=
-X-Received: by 2002:a05:620a:1a0f:b0:8c6:b45b:9e2d with SMTP id af79cd13be357-8cb8c9fc7a1mr245188485a.26.1771642172462;
-        Fri, 20 Feb 2026 18:49:32 -0800 (PST)
-X-Received: by 2002:a05:620a:1a0f:b0:8c6:b45b:9e2d with SMTP id af79cd13be357-8cb8c9fc7a1mr245185185a.26.1771642171899;
-        Fri, 20 Feb 2026 18:49:31 -0800 (PST)
-Received: from umbar.lan (2001-14ba-a073-af00-264b-feff-fe8b-be8a.rev.dnainternet.fi. [2001:14ba:a073:af00:264b:feff:fe8b:be8a])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a0eeb1be5fsm179895e87.39.2026.02.20.18.49.30
+        d=1e100.net; s=20230601; t=1771659196; x=1772263996;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=DIDvOyw8CGCfP65CRhRJUSgrBkLbuDLQEI5t55r/3B4=;
+        b=Rwr0pHPccUJx0AZJl3ehEk3cDNboxYxSktCNdV6fGokSiI1AmUI28pRM5EYVaGxymd
+         4pZeLu6yI7YQnBLmzhYRNvtvUbo3CdB7sIksnEJ2Fcno7TH1Bt+ZEsW/yP9OOAV2BpqW
+         jz5ANepMYMFGafczX7HCi16UBy4nKXW39UQu4NgnVVJTpugEY8YLkLBG7R0cY65+TGgn
+         fd7/032v3lsrW7UveSOuGEBL587E4QImcx9QhodAELN3pg46jH5RLXJb8jSXwaAOayWD
+         zfvAGiFAJcPwPVVBoBvt7VD8YPReRDOfx5vkKu9aiyXraZrdkpu+goucbnDVI0Ubn0AT
+         ISRA==
+X-Gm-Message-State: AOJu0Yyry1y+wdkc5D0+Vs8qYp4XRqe8wfrm250EIbjH70mIw/bT7Mqw
+	pSsdrgNIh/q5t339SxY7hl5wmDGZqAihCnx2bjnWJw/tScFKG+3djGEz
+X-Gm-Gg: AZuq6aL+ML0tmQpKlL8QhlRqugsXBoDXZEOiW9YgDYz/Okn6v9pNZ1V57KbNy55T1f/
+	Fd8FqNJskDUNILchH6YjK9n3qcDmH5OZsyYda/rHp0ADU2kw9ar4O8aiR0ElPYMaWOr3BHiNTcL
+	ZspOihzMwc68BMmHrI7SFfdZcQA5D8Dx3pwwC8sclI+x5axouydbd320ZjiVZyANXRULwZK/kAT
+	wsa5FIM1LIl1h5Byt0zeo3eMJIMh4u67yAPZwofimWcnNmsugFq+2itwewbiequ8BS4ixKc5FJm
+	pKzLOVmuwMGHounf0BFuHzP61cNrwbZk9n4SN6xPmbEgboye90HAFt0MbgjPwx+ksfU8gPmu2/4
+	pUiNe+IcBpaNOqLvWmytVkwHREyUJ2B5dV6aCyUJb3bUlMUH4NZh3F+TSGS8ve+SUiJsTThaai0
+	9ER3Ag3TxlM+tEU54b9qouK7R+v/IDIS5xgleUWTg=
+X-Received: by 2002:a05:600c:6296:b0:47a:81b7:9a20 with SMTP id 5b1f17b1804b1-483a95c6774mr35319915e9.9.1771659195647;
+        Fri, 20 Feb 2026 23:33:15 -0800 (PST)
+Received: from localhost.localdomain ([196.235.238.153])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483a31f0330sm103093365e9.9.2026.02.20.23.33.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Feb 2026 18:49:31 -0800 (PST)
-Date: Sat, 21 Feb 2026 04:49:29 +0200
-From: Dmitry Baryshkov <dmitry.baryshkov@oss.qualcomm.com>
-To: Luca Weiss <luca.weiss@fairphone.com>
-Cc: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Bjorn Andersson <andersson@kernel.org>,
-        Konrad Dybcio <konradybcio@kernel.org>,
-        Hans de Goede <hansg@kernel.org>, Jens Reidel <adrian@mainlining.org>,
-        Casey Connolly <casey.connolly@linaro.org>,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] arm64: dts: qcom: sm7225-fairphone-fp4: Add
- battery temperature node
-Message-ID: <yikwygc5gasmr3cdyv5emfr2flaoraxcz7ap3j55wn4ib6wfqx@4yxoly5zrucx>
-References: <20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com>
- <20260220-bat-temp-adc-v2-5-fe34ed4ea851@fairphone.com>
- <85ce1f2c-f5cf-4e97-9611-4aed03f69cd7@oss.qualcomm.com>
- <DGJQ4WLIML3H.GAO7T4L3MCJM@fairphone.com>
- <a422e087-a91c-4bb2-9d95-e1cefc9a91bf@oss.qualcomm.com>
- <DGJR40B5R6MB.1V4ZK5SW1PXAV@fairphone.com>
+        Fri, 20 Feb 2026 23:33:14 -0800 (PST)
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Salah Triki <salah.triki@gmail.com>
+Subject: [PATCH v4] iio: core: Clean up device correctly on viio_trigger_alloc() failure
+Date: Sat, 21 Feb 2026 08:32:42 +0100
+Message-ID: <20260221073301.105080-1-salah.triki@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <DGJR40B5R6MB.1V4ZK5SW1PXAV@fairphone.com>
-X-Proofpoint-GUID: U1EZRjWH7Sw8llyd226X92imTywtgI8X
-X-Authority-Analysis: v=2.4 cv=PoyergM3 c=1 sm=1 tr=0 ts=69991d43 cx=c_pps
- a=HLyN3IcIa5EE8TELMZ618Q==:117 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=HzLeVaNsDn8A:10 a=s4-Qcg_JpJYA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=Mpw57Om8IfrbqaoTuvik:22 a=GgsMoib0sEa3-_RKJdDe:22 a=6H0WHjuAAAAA:8
- a=Wrfmzfmk65d1CdvWbAUA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=bTQJ7kPSJx9SKPbeHEYW:22 a=Soq9LBFxuPC4vsCAQt-j:22
-X-Proofpoint-ORIG-GUID: U1EZRjWH7Sw8llyd226X92imTywtgI8X
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIxMDAyOCBTYWx0ZWRfX/yNJkt7ngA4Z
- Z49vlKakYReFYv3SUMaorUdvPEB9a2yekutxZLtmdDMSvNd/mSGfZDzuawnWK7ZLBqqnkXgWHLv
- tIaAZ1ZnVYx8prUZxk2XOq+YEwjYUDqbONImwU1XEGbKpW/o3eva8zELZZMWmQhJDid4QVLUZlv
- LPu2LNA3yym6rWZNpL2eEV5RbbtJm+xe+7vpWN4BMEVaHd+ynuWNp0jv9Q6EMjVTnOhI49ve7ff
- ICLvrSgK1fa9JKxYSjW1Vm1Q0U1i6nD/wYXeaOIf1mExHt4yaiS0Hpx5l47TLdU7Ob5zba1FdLv
- Ccrq0+YILGy34X7u17eVRcgeP6GIq9VKmWhE1hXPjLYjlEr3kt1507uxdBVA/kPqlTbCR9KKtyD
- ERR8/sDXXAC0x4NfNUTLYT3XqRYZ5YYHpwZ/xTDCuCu7/uUnI9SxCMorGxtAM8n8mEDQ48AWn60
- ePmzN19zUpVRcsRnLdw==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-21_01,2026-02-20_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 suspectscore=0 impostorscore=0 priorityscore=1501 adultscore=0
- malwarescore=0 bulkscore=0 phishscore=0 lowpriorityscore=0 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2601150000 definitions=main-2602210028
 
-On Fri, Feb 20, 2026 at 12:26:48PM +0100, Luca Weiss wrote:
-> On Fri Feb 20, 2026 at 11:51 AM CET, Konrad Dybcio wrote:
-> > On 2/20/26 11:40 AM, Luca Weiss wrote:
-> >> On Fri Feb 20, 2026 at 11:00 AM CET, Konrad Dybcio wrote:
-> >>> On 2/20/26 10:19 AM, Luca Weiss wrote:
-> >>>> Add a generic-adc-thermal node to convert the voltage read by the
-> >>>> battery temperature ADC into degree Celsius using the provided lookup
-> >>>> table.
-> >>>>
-> >>>> This will later be used as input for the fuel gauge node (QGauge on the
-> >>>> PM7250B).
-> >>>>
-> >>>> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> >>>> ---
-> >>>>  arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts | 83 +++++++++++++++++++++++
-> >>>>  1 file changed, 83 insertions(+)
-> >>>>
-> >>>> diff --git a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-> >>>> index b697051a0aaa..7857003099a6 100644
-> >>>> --- a/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-> >>>> +++ b/arch/arm64/boot/dts/qcom/sm7225-fairphone-fp4.dts
-> >>>> @@ -108,6 +108,89 @@ rear_cam_sensor: thermal-sensor-rear-cam {
-> >>>>  		io-channel-names = "sensor-channel";
-> >>>>  	};
-> >>>>  
-> >>>> +	bat_therm_sensor: thermal-sensor-bat-therm {
-> >>>
-> >>> nit: this should be a little higher
-> >> 
-> >> meh, it's surprisingly easy to miss this sorting stuff. Will fix in v3.
-> >> 
-> >>>
-> >>>> +		compatible = "generic-adc-thermal";
-> >>>> +		#thermal-sensor-cells = <0>;
-> >>>> +		#io-channel-cells = <0>;
-> >>>> +		io-channels = <&pm7250b_adc ADC5_BAT_THERM_30K_PU>;
-> >>>> +		io-channel-names = "sensor-channel";
-> >>>> +		/*
-> >>>> +		 * Voltage to temperature table for 10kΩ (B=3435K) NTC with a
-> >>>> +		 * 1.875V reference and 30kΩ pull-up.
-> >>>> +		 */
-> >>>
-> >>> I think this looks good. Is this data going to be correct for all/most
-> >>> devices (i.e. is there a single battery sku)?
-> >> 
-> >> Yes, from my info there's just a single battery SKU, so that makes it
-> >> easy here.
-> >> 
-> >> For Fairphone 3 there's two battery SKUs:
-> >> 
-> >> * (Fuji) F3AC with NTC 100kOhm B=4100, ID resistor 10kOhm
-> >> * (Kayo) F3AC1 with NTC 100kOhm B=4050, ID resistor 49.9kOhm
-> >> 
-> >> In reality, one can probably ignore the difference between the LUT for
-> >> either B value since it only differs by a marginal amount, but
-> >> conceptually I'm not sure how this should really be resolved.
-> >> 
-> >> We could have both battery definitions in the dtb, and then the charging
-> >> driver could determine the battery that's actually present in the
-> >> system (based on the BATT_ID measurement), but given the design here
-> >> now, I'm not sure how this temperature lookup table would be propagated
-> >> to the rest of the system...
-> >
-> > The path of least resistance (pun intended) would probably be to make
-> > generic-adc-thermal consume an ID channel and accept a number of LUTs..
-> 
-> Not the worst idea ;)
-> 
-> >
-> > That sounds sensible since most battery ID mechanisms are probably also
-> > ADC-based and one would hope (tm) that the values output by these ADC channels
-> > would then be distinct enough for the driver to have an easy time confidently
-> > selecting one of the options (or a fallback)
-> 
-> Charger / fuel guage and everything else battery-related would also need
-> to get the correct battery properties for the actual one present, not
-> just this generic-adc-thermal driver.
-> 
-> But I feel like soon DT maintainers will say that Linux shouldn't
-> dynamically detect hardware that's present and the DT should be the
-> absolute source of truth. That works fine in simple cases, but in case
-> of interchangeable batteries, display panels, camera sensors, this won't
-> work. *Something* needs to determine what's actually there.
+Once we called device_initialize() we have to call put_device()
+on it. Refactor the code to make it in the right order.
 
-How is it handled for the Android boots? I assume there are (at least)
-two DTBOs and the correct one is being selected somehow (via the msm-id
-/ board-id?). Or does ABL pass some kind of battery identifier to the
-kernel?
+Signed-off-by: Salah Triki <salah.triki@gmail.com>
+---
+Changes in v4:
+- Move device_initialize() after all potential failure points (kvasprintf and 
+  irq_alloc_descs) to avoid premature lifecycle management via kobject.
+- Revert the use of put_device() in the error path and use kfree() instead, 
+  as the device is not yet initialized.
+- Align the implementation with the pattern used in iio_device_alloc(), 
+  as suggested by Nuno Sá.
 
-> 
-> And for most of the ways to detect which of those are present in the
-> device that is booting, you need half a kernel to power up the various
-> hardware and do some basic communication to figure out what's there. Of
-> course you could say that's U-Boot's job for example but not sure you
-> want to add a CCI (I2C), ADC driver and much more...
+Changes in v3:
+- Rewrite commit message to focus on standard design patterns.
+- Remove the "Fixes" tag as the change is a cleanup/robustness improvement.
+- Simplify the description of the fix as requested by the maintainer.
+- Change title to better reflect the change (not a use-after-free).
 
+Changes in v2:
+- Remove the manual call to irq_free_descs() in the error path to avoid
+  a double free, as this is already handled by iio_trig_release().
+- Clarify the error path and the potential for memory corruption in
+  the commit description.
+- Remove the blank line in the tag block to comply with kernel script
+  requirements.
+
+ drivers/iio/industrialio-trigger.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 54416a384232..c995311bf699 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -561,10 +561,6 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+ 	if (!trig)
+ 		return NULL;
+ 
+-	trig->dev.parent = parent;
+-	trig->dev.type = &iio_trig_type;
+-	trig->dev.bus = &iio_bus_type;
+-	device_initialize(&trig->dev);
+ 	INIT_WORK(&trig->reenable_work, iio_reenable_work_fn);
+ 
+ 	mutex_init(&trig->pool_lock);
+@@ -592,6 +588,11 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+ 				  IRQ_NOREQUEST | IRQ_NOAUTOEN, IRQ_NOPROBE);
+ 	}
+ 
++	trig->dev.parent = parent;
++	trig->dev.type = &iio_trig_type;
++	trig->dev.bus = &iio_bus_type;
++	device_initialize(&trig->dev);
++
+ 	return trig;
+ 
+ free_descs:
 -- 
-With best wishes
-Dmitry
+2.43.0
+
