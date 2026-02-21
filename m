@@ -1,113 +1,98 @@
-Received: from mail-oi1-f176.google.com (mail-oi1-f176.google.com [209.85.167.176])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 012D018872A
-	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 17:20:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A88E428750B
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 17:21:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771694447; cv=none; b=Eojz57ws4322xrRMvQB8+Gy17upINLJVdBkyH4k2ymXrPejHIL6yc5HeAwKg2zqlA0oXDxSPXCXY0t/E/Vj52Zd1ocM6SfWNb4md7pxD2p5pz2ZjN3wdb+UwRjYAA9uoK34qZG0B19olkm6tQ5tGjei2PKDrW3V4Q0GS9Ls7rGs=
+	t=1771694491; cv=none; b=UY91T9LFyXunBODO2RhxAgv4tHwO4S6s7HiXCT+K3zYBlYOGl70x8D73S85NMCKSC73p8RU6nXj0frdnX7rWyzhFOXP9IQG4VUTGlsjORLOKPXjFlvbuFtmUC2HfN9H/vX3pJsu6q9PizPUYl7pjrCzFHqD//pL4gWD+nFZuBPI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771694447; c=relaxed/simple;
-	bh=XR1dfhSVli1Pid5SiGZLLVjDw59pUdaRkrY0seSKhbs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fB7ZXPDXISb/6fCWAqtVRH12MNuiw+9EgEyuZJzBYSXTTXrgAbpsBnLa/FO2P8Y3XY37V2zsx5qdN96xjgC5UnB4xS3648JQ+QV9v3ozwaIQEeEcVtI/i9AGSxYyFLxbl8iYFI6NCcsGQh0B1u1zuPD0LMlwJ036W7qfQp1aXpk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=djUMbE/T; arc=none smtp.client-ip=209.85.167.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1771694491; c=relaxed/simple;
+	bh=MWGoq0D+Wj3dmGxH/U1RNB0L9/ZrR5Fqx8GX3kwl/zk=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=Xh+p+kmRqBLRd6Q9OuQ9joGxUCVOHqVq3KBL00+A0YZHDzxW1P0O4gpbmhuAgRXhU6MCRPF7uClMfy7X+XpAembKrpPUqkcbiTe4Nj4nK0H3zInyfvpoPR/6T8ORRDxyP+9Kr4OdDpGNgKLveTNxpZKgIOL8hDLC6GAtHMm1c+k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HEQoevrl; arc=none smtp.client-ip=209.85.128.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="djUMbE/T"
-Received: by mail-oi1-f176.google.com with SMTP id 5614622812f47-45f015a3259so1033063b6e.2
-        for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 09:20:45 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HEQoevrl"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-483770e0b25so29953665e9.0
+        for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 09:21:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771694445; x=1772299245; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=y1EwBHrT2F5QUtAJqsFuE4k23yzqTehZiQCEqa4Nn1M=;
-        b=djUMbE/TVh4H9VWSalEa3NJUaGoKYJdYa1AE2mH+P01K5wy6Kj2Xx5bsQSOr5vorY1
-         /UYdvezmio1+o4D0ye66j4fsNlvcpNlBVlhdPL6jsc5WPKV40jjdsHprkvWF1Ma8JH5B
-         xmeRqjvXlF3nsTiUCk0tWaBhj2lsVi1OR+TYOtozGDkKjkoxt53rkwEJhPy1dNP9pEta
-         /iHQj71HfWot2dyiDzp1JOQMdKDrHRPrZkqZ4R1xy5dkB9t6R9Km57gSog2rGWTRP5pN
-         nj8qXUFXCPmrJU5kjQkdWQTz3ORKfjSbQrR0eDPQ7HplH318mXnSUp/l2J1BTEq9zDRM
-         6bDg==
+        d=gmail.com; s=20230601; t=1771694487; x=1772299287; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=MWGoq0D+Wj3dmGxH/U1RNB0L9/ZrR5Fqx8GX3kwl/zk=;
+        b=HEQoevrlnhmFbf1iLFViks1znYvYZDtIrHHIVauKY83iAmaAPpH/zTz8JDNLkopKiJ
+         1XRxxQ1u1U4iNam316T0xZNQp+7MT4RTnth46vQNkK4+Oum9bsFbYvTXDGNLXIZW26UZ
+         W302X3dOLeS2/WTIf+MuNVMzS5UJZuDLU82Q9onRpynfuCnd9btfDeT0/m7y554PWHlN
+         DnUWmlIkxgqJfR6Sr7DpD+1ZJDdhkOlNq+Xu/KrHxFaZZnSDTn9Kk9V3Z5KpDGa7MTRY
+         Wns5WCDOsLHhaLPfX8QSnd2k7RNOV8UGc0m9bTFlbh/7yjnb3R2ZzaXbdAHdpt/FMBUu
+         Gbgw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771694445; x=1772299245;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=y1EwBHrT2F5QUtAJqsFuE4k23yzqTehZiQCEqa4Nn1M=;
-        b=Ygxb7zRyS4QmjWmfWfSE8KnJPr7Cl0rVe7VNxzc0c+tkYuo9IrLW94XOPzTBNd6EJz
-         +XxwCOBacblqJw6Y9FBqLNsUtZXFGPTbpWxiXHZS6sMuUAwjg0uR775jpamUmdUxOc9n
-         6HJ0sXDecUhdr9GvwzbTO0MQ6VeaqyFY/dNW63hvR/9B2SHGNsmR8y+VQ09/bqLp6ZIz
-         HuG0Ch4xLOm12bXR1X5GgdBvoz9YhaiIPMQIEV9xTXgKMMZILhB4E467uJ9GZUemj4Sr
-         VzLbqOaJ+SDu2ol5W4Ejss9PvfS+OvBpNPwPgrPSZ2hamvTY6yICYya0ff0TqWoOamx1
-         4Jzw==
-X-Forwarded-Encrypted: i=1; AJvYcCXpmjnGCFUsg4TpfpGylM33/hLMWrtBGlvW60RbQS46O740hreDkfwil+gd3usYtxhYrFSoQ+n5sfQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfbLs8yuxDWi/HDFu9MZB4Jz40mjV3V/RJZmBpG5fThKfiA31f
-	sdCofeuPkfRycsAryKUbVgI49+e00uH/Aqr/9VYH2kdh8rFO5NfywiNE8Cx5nKMFoAg=
-X-Gm-Gg: AZuq6aK0zsHmjbKti1hQaqugvqxABVFY93br32UgPOsHYs02MG/8+Q3BD80oerdKuTr
-	zxwusNTPZvuGaNlfESwAvGbmT+KFuT0+V1WFJ8YQRIa0VWmw/GWHUniqa7xGgzayqsMxJSAdU//
-	aGg6+Xrbzyf4nxPNubaDdGMe9+v9ms5eSGUIhvdS5+l0fKADvwx9K1yn2R+fUGSp5izIMaU/hLi
-	ywAk+9+dT+AdLbsg6ipe0/L5wR6NSyLGfEHkFNpHVnuYPFw9CZMjcshg4nJaQR89CQ20nct4fjo
-	go9yB0PKG2p1IzZ/XCpW+mk7l0N9p5kZqnPwIm6d5YsvGUpe0+t5am3wbiOJPjskKTjUfCflu7d
-	0d5AyOVkv4xv2dE1L2UxwFvrYIuJGdnKQJFu0mSXi0UawqGCeODhMF1e347fggkXYBSdA6KGq2P
-	KdwGySlomzTiYc7E5Fs09rHC8KX/asxetun2d3iRYdZZTt6QMEWf8356JRdx+7wi53TLQr6w==
-X-Received: by 2002:a05:6808:6507:b0:45e:a749:81ed with SMTP id 5614622812f47-4644619a0fdmr1930872b6e.25.1771694444784;
-        Sat, 21 Feb 2026 09:20:44 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:611:96af:f385:64bf? ([2600:8803:e7e4:500:611:96af:f385:64bf])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-4644a17aea2sm1847935b6e.12.2026.02.21.09.20.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Feb 2026 09:20:43 -0800 (PST)
-Message-ID: <b36307f9-c4b6-4242-9cf1-838799a926ea@baylibre.com>
-Date: Sat, 21 Feb 2026 11:20:42 -0600
+        d=1e100.net; s=20230601; t=1771694487; x=1772299287;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=MWGoq0D+Wj3dmGxH/U1RNB0L9/ZrR5Fqx8GX3kwl/zk=;
+        b=o/1ntgYuwYigZWCXPKebwIsXOYiNAuO0DInlwj8upX/Vy4tTWVWSLxANrh5Lmrnczy
+         NdD7UySk9xr/ye+m1F2K7DHoyX2LmKITqJD6c8OFuZ0B4Piqdcpg0GCuoMwa/WgdZVOl
+         RE6LyWf/GhQ/bJCCcgfhfZJAh5xuuwbFjpORdEPUXDsgx4dTFWYPf8qRxM4HzmwOuTus
+         nZi+tqPuTIwt/g7F4APHJSCKHmdLa54A5sWlmjt/UURyJ5fQcD3J5c9i7LQMTjBr1PVO
+         WNlouHRxyayYZhHbLwDV/8fhDplYtTobuvot2C+Eh3tyj4so3OGAKn0HkmMTJtDx2g7l
+         GKEg==
+X-Forwarded-Encrypted: i=1; AJvYcCWY1qQ79ovu60vFts3o1PIvVD2xxQunu3ihtUH2hQ7AvZsW5Og3aiYDSLmC2hhQTLCHltJ9G4yFdX8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxe9YngGEWzOR57GU8vSBrV7oDfxu+15825z9Km89LQsNTkJlYL
+	0tz0GcITsBkBOUwV8F8eC9+8F2218sSNdhjElxoxTKoOSvren75A9pxy
+X-Gm-Gg: AZuq6aITVvAlo/9qjbLlJekzCQcLQWnOyRBf4dFyAiLp7bjuY/Y3DFJy4kAYb8ROQFY
+	Hhe2LhvyVV8Py2fCz1e9TGhILrkW57CAxZwpVUcWD7G8on7m6JJsubhTPLtkBxvlzyv/Svz3pV7
+	vIGFUblMDm14pKodE4/amZZ5tEnc2nVzBFoSfT5cxcAeqQ3vDcncFvIcAkgXyPqZRvyyYxnVr8K
+	gaqZxzcVmsEnuYX3ROi234tGEdk6++MgQiu8+Sh4ust0r0UubhorOEoivP3UovnNvVMtZIz3uBM
+	I2l0f1ORrMs17KbNBFoOiRuucV8L3MXwtKmzSj2c0rdXFjK48FlYD7n77Sxn1G2znMk/sgcmzm2
+	Ji2onYX+jpiRuuWHg79JxKEPcUYUjmv2N4LVhkRNao4N8+yyFiBTcXUKOD7dr5w0hGllY8zkXlB
+	j91rsujGysbrHPaolMdy2Kxq32csZfycRhc3V5qdFS83cjCjiw/fW4HWE3v/HD3w==
+X-Received: by 2002:a05:600c:6217:b0:471:14af:c715 with SMTP id 5b1f17b1804b1-483a95eb550mr51020795e9.3.1771694486784;
+        Sat, 21 Feb 2026 09:21:26 -0800 (PST)
+Received: from db07.1337.ma ([197.230.240.146])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483a9cb3f31sm63610955e9.13.2026.02.21.09.21.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Feb 2026 09:21:26 -0800 (PST)
+From: Taha Ed-Dafili <0rayn.dev@gmail.com>
+To: dlechner@baylibre.com
+Cc: 0rayn.dev@gmail.com,
+	Michael.Hennerich@analog.com,
+	andy@kernel.org,
+	corbet@lwn.net,
+	jic23@kernel.org,
+	lars@metafoo.de,
+	linux-doc@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel-mentees-archive@lists.linuxfoundation.org,
+	linux-kernel@vger.kernel.org,
+	nuno.sa@analog.com,
+	rdunlap@infradead.org,
+	skhan@linuxfoundation.org
+Subject: Re: [PATCH v4 3/4] iio: accel: adxl345: Implement event scaling for ABI compliance
+Date: Sat, 21 Feb 2026 17:21:23 +0000
+Message-ID: <20260221172123.57134-1-0rayn.dev@gmail.com>
+X-Mailer: git-send-email 2.47.3
+In-Reply-To: <e2c74e7f-d851-457f-88f8-d80a8d17c51f@baylibre.com>
+References: <e2c74e7f-d851-457f-88f8-d80a8d17c51f@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/4] iio: adc: ti-ads7950: switch to using guard()
- notation
-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org
-References: <20260219022929.3558081-1-dmitry.torokhov@gmail.com>
- <20260219022929.3558081-4-dmitry.torokhov@gmail.com>
- <aZbBGomQi0l84An_@smile.fi.intel.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <aZbBGomQi0l84An_@smile.fi.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 2/19/26 1:51 AM, Andy Shevchenko wrote:
-> On Wed, Feb 18, 2026 at 06:29:27PM -0800, Dmitry Torokhov wrote:
->> guard() notation allows early returns when encountering errors, making
-> 
-> guard()()
-> 
-> // strictly speaking
-> 
->> control flow more obvious. Use it.
-> 
-> I like the change, but...
-> 
->> Also variables that now only hold error codes (or 0) are renamed to
->> "error" to make their purpose clearer.
+I did go over the datasheet and found the hardware uses a single
+register for both tap thresholds, so I assume the VALUE was intentionally
+omitted from DOUBLETAP to avoid duplicate sysfs attributes.
 
-Normally I would not give my opinion on this, but since I wrote the driver
-originally, I will say please don't rename. I prefer to always use "ret".
+I mechanically added the scale attribute without realizing this. I will
+drop BIT(IIO_EV_INFO_SCALE) for double tap and update the docs in v5.
 
-> 
-> ...this does not belong to the patch. If you wish to rename, better doing
-> it separately. This, in particular, adds undesired churn in the change making
-> it unclear.
-> 
-
-
+I'll wait a couple of days for any other feedback before sending the
+next version.
