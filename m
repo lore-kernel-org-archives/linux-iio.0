@@ -1,67 +1,66 @@
-Received: from mail-oo1-f42.google.com (mail-oo1-f42.google.com [209.85.161.42])
+Received: from mail-ot1-f67.google.com (mail-ot1-f67.google.com [209.85.210.67])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DD06368290
-	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 20:16:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B5C52DEA7B
+	for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 20:43:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.67
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771704993; cv=none; b=pmF9c4vZ04HdeUtmfahCdAXjOQ5y4lq7xOUwZgoFko/0z6C42QHpXEf5bT5NOBtU8V+hzDNZ3GbW+badtc60vBR/1dJ+Mp6Mf6bX2TPtxChzQLBNq4p1ntWBXHQy5uCHqMSwibwRaXxAWBxWxzXRVqw3baD9nRJnKa3GRRGAJI4=
+	t=1771706589; cv=none; b=F9wcNKCrxzUBhvr6n4Z6Xk7nl6/Ars167g37aK2ebwzfJSn/mqsTmcqNIdzex3WLKv99IVoe9VtIaXpHGBu9JY91I7MLpHpWh+CiZ1JaS7b769in5uTnpI44h2nYeIYv6+yobh4hiHJtPgV0H2n8wxVTd53WA6Y5ODbvkKvsAe0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771704993; c=relaxed/simple;
-	bh=zdcXgNKeKEfRKlOnRnW4Kgj5oyAcUTSPtMveGZzeAc0=;
+	s=arc-20240116; t=1771706589; c=relaxed/simple;
+	bh=VE6eeUmX/aNvzhie5dJ8Y2YArM7BifAAR7+HRiM4tNg=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LgepA6vyqHo/oEBAUBTFWxcP1mIqyDiPRRvakqO0YpoJQfYyyhaOFYF+UVoc1EFPEQ/n+T0Pk0YeElnVDUjeimjkyQtHnuwTdQBLtoVe4sR0gcp8FPw8xqpmzIvoqVlTXB9AQgbUuyWR3CbXGQd9N28ZiKcbdHAaiYLR6mjIp0s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=zLJU7iNP; arc=none smtp.client-ip=209.85.161.42
+	 In-Reply-To:Content-Type; b=dlyAEomRAyAoGarknC2i7xyNdanG05OoZ87RBHT5P2ttXrrjd+7QdUmoDo1iDRhTYLyclCZQk04NuHYuvoB1axXinZFGBmM2/LEOTfTefbnfxQSwYBWGodbo1NggwdLivOnlHP4TyKUu/+HSON2+1CyOeDXyIQgdA7njnvlK/zw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2nbDrKY0; arc=none smtp.client-ip=209.85.210.67
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="zLJU7iNP"
-Received: by mail-oo1-f42.google.com with SMTP id 006d021491bc7-662f30d3f1fso2342068eaf.1
-        for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 12:16:31 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2nbDrKY0"
+Received: by mail-ot1-f67.google.com with SMTP id 46e09a7af769-7d4c7d04890so2879260a34.3
+        for <linux-iio@vger.kernel.org>; Sat, 21 Feb 2026 12:43:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771704990; x=1772309790; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1771706584; x=1772311384; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=YRvVYIE/kEJ4fmfM87fkDRD4HKgLVo/aCg4EBjq67A0=;
-        b=zLJU7iNP90EA33g12Q8nG4Wuzw1Fp4vKNHCsYV3fCCQLJtKm+5E0OL8NbA9wynYSlm
-         lOhCQwWOka3w7FGBzprxWvyIWBVMO/hM5EX8/8LZV5Ta69a19KNlNV96xfyUHM6gW5lN
-         ECwgAMTvO3fptRraemkj/K51jJCJ0slgE+vnf+08e3oWSUVbKiUwgEFgnCW7nYEYrU7j
-         oNoVvSpyHHlKfBmviFZzSx6P3dtyU4taSCDz9UfVXy3Pz4MxSoK5qN4EYOHALdjTGW1v
-         IeUrNvMPJAkvcNHI/djU5dboRgFbERLPEAFhKXi8G7nhmHUBG5mvXFPwmDQRwldQ+Ijd
-         sSfA==
+        bh=PvKpCMRTgeYg3+BVQGMPDnKEFwtzJ8PAAHOztYiNYDo=;
+        b=2nbDrKY0kyRpoilQYVhLaLfwZd6VVtXv5zZNkbCC2pMKfksSARf+5HJNceyy9PdTfS
+         XcQtyNd6vF+/X1si0Z+YX0b1WvfcV3O5TdbP8SM4SfPUaw7nUbU+DtpcxBHk98p7nCha
+         5cLTcls9B/FTXezpZUm6II9+vlyfvNoFnu9Cvq2ggTsy3Kg5hDWDpL22EWLLPQTrCa34
+         0Q9KAjgSOF56pXgq4m3c/KYYNBkHnnTDfl37aXfy0jv7Br4ymaT5r2BmZPA1rBffkqAi
+         6T6vYieKfVkiT56rU9ocHlu+77KmIKLcFd0Wst4GjjqO7BetAuXic3Ek1JUT0rPy/uqg
+         oqdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771704990; x=1772309790;
+        d=1e100.net; s=20230601; t=1771706584; x=1772311384;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=YRvVYIE/kEJ4fmfM87fkDRD4HKgLVo/aCg4EBjq67A0=;
-        b=qJrn9SnSWYw1e47fczuYp1x4iRcxzF3AbS0OyboswY93q6PgMJpwH76+DyY9JjaE9f
-         9BYGrDkLVBXV+c5AvSteHhX9w6NAT+TWkTMkuCMlJ5NflJu3WGN8fy+MzlBZQe9YL76f
-         ndopa51bFH0LPtSOBXU23XOj/7VM9DqZP7lDWwDZ7F6pW5p2Az3ReEeextgm/fsM5ORl
-         ONlPvDKUSFEVShMGW9PE4LtW8FveiozDXVY65qQYpP0mTPNr7eell4U9UXs7lBzjY/TM
-         m12Hje9s8qt4Ds4ZP457le8SvHCHbClGkqATdXAOh0v/lxQhMe/5iN3eAJ8wXMbsT9OW
-         OWLg==
-X-Forwarded-Encrypted: i=1; AJvYcCVXvocGbM/10SR4nnlW36GNlj2kHHGnbxsIA4xaymdQN3oKUYpfQ+pwyhuhnWxtHvS07K7ps8onRM4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwtSTpjO4Oak1DM2ql+0NWa5H1Q7hsIfXxXiBwrCUNdSklBSggB
-	3FjatDpXiH9BvYGjmBhZ2ewivswLwww9ykvviRZ15Oc0dl7imaFP9/IXT9iPYZ9I1jJHxVzYWzN
-	SPaJ1
-X-Gm-Gg: AZuq6aKGnH29IpuB7n2sD/CigOGMKzz0oZDkhEnjE2NxyESeZ7SajZVHwbnfE9+HcKA
-	f66iyf2kTx2QE5FVOJOt8uDFTrl/ST54NZcwstMPRj4hBdNKPE1co2o6fwuRtbyEepH/b0gLuJE
-	PLSzqTyZ6yMGNzD4GrY4uoHs0CxkNyxtYDy7e5oLvZuMUCyhU+HYkrhqZFGUwx1Lo2iTWduFG4L
-	Xkm/7GQGQL/Rxj6tzlL+CGeGNvpEISJxqMP3Zksxc+bHeNdOYyp/WDMlVmwDxwf27Vg3pq625lQ
-	8+D/nLglLzqo79abIJM2hpVTvvp5q3qk8dcRHz7qIbf6XzIMk/suCZCAAZQ5LgdE6vmK9Gd/WK4
-	lGvcOYKJf5UWQsGEGvB08Kf5d5pThkSxoojmrB848HK1xLAG+3GlFEBlvltonvKBgWkSdv19G6v
-	+5xoPf7adrubGV2kP1fQW4LVWsVJIqNHH3mEapfVyaAgYsDnB0ffDIV2UdDqLfmhAE+coMAw==
-X-Received: by 2002:a05:6820:16aa:b0:674:db9f:2e2a with SMTP id 006d021491bc7-679c4aecd20mr2273215eaf.35.1771704990051;
-        Sat, 21 Feb 2026 12:16:30 -0800 (PST)
+        bh=PvKpCMRTgeYg3+BVQGMPDnKEFwtzJ8PAAHOztYiNYDo=;
+        b=VsOZdhJCHGOv8NSPCDFhFfhcNoE5AeWtxuZgiMurgVI9JbXrQJcA8VuDRGVHujr2/S
+         k4yRJiPARA+4F3ddwXjMcfln/aELmqxMKgkTtdSG/6PDCFZeWRyaVYLgnTvWzkwboeSC
+         5kkYhknCAmNuHS+oV39jEiRR7VJZpsctrVdQDA9vz/CT5vpVT9u6qnq6ukdgMUTqBkEE
+         yzoYnUum06DByzEo6DoZzGA2Cc8KczqLeLTSDJzF5+06LJqORasNqdKwUp8AKSUBSvjh
+         LBh/Qiad2t7Z0JpqM8SeC3LR4FgoHalK1aQTkwX4DHlIJZzUR3wHX5ANYRU3GijNF56y
+         LUMw==
+X-Forwarded-Encrypted: i=1; AJvYcCU4fgchGJRuQ/T1gAPVXONBxL28nCaCRTmsSbUSPqKFC1lxEhltA9pN2GNICVm+uXR5asobGiXoBpA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwOg42xsaYNRFhO67FDqJAunvKfK+1c68kh7iZQVF0m48JANCmU
+	dge0eG+p+Oq3vjZVnnb4qqQGs2swmj/MTdbczHXsKNyXRTiP/ZWNuN0e1G3Z06ji4eU=
+X-Gm-Gg: AZuq6aIuUjzVjQDLfZmVg+ZwEdD0qP8kwmCOFx9mhk3LNfuSmmsiADU77hXZfgGeEEO
+	T+9Mwss+ppA14GzFtqBmD2Y2+Z/DIxH+/G9j5Ym3a7GxFoDx+fg1vQAKixH/n+5fVScdppSE8D6
+	Qh0NpatEv2CALu0tRXlSvBi0XoLK7tzkNwRO3jF9Tqgm7VPknM5FDnVApBQPn6dzdztS4g6TPmB
+	sGcwAqogY9V7yTOrhj7tjcqssPvlJKK3bKo9zurk0DTggjeXfNB4exE9m4yqu1nWotkUGu8n0u1
+	aM9aKXpJis3VGSAopnFMCQGbdGZxbqzQ38vNcm9imm9a2Jeg0ZbiW5vF2kY/mmqCoxSIIHjq3lN
+	TjOkVQ3Cr2rYIf/yxXVPGwzTQnuzJfb8v7OSIdoYAoCYcC7uMs2jHT1PLrVughsG6Vo5Ixy4X+9
+	9ZcTpugZUzbJ+weyMrAnsB48pukdJYg4iTaRqgHSc6moHpP1Yz7uQC/4u+mU5ubX6e1qgXOQ==
+X-Received: by 2002:a05:6808:5093:b0:45e:8554:1f14 with SMTP id 5614622812f47-464463ff054mr2361330b6e.59.1771706584270;
+        Sat, 21 Feb 2026 12:43:04 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:611:96af:f385:64bf? ([2600:8803:e7e4:500:611:96af:f385:64bf])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4157d2d77e3sm3423233fac.13.2026.02.21.12.16.28
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4644a013cddsm2118373b6e.8.2026.02.21.12.43.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Feb 2026 12:16:29 -0800 (PST)
-Message-ID: <a72b2d62-3b91-4789-a1b1-ff1429e80ed5@baylibre.com>
-Date: Sat, 21 Feb 2026 14:16:28 -0600
+        Sat, 21 Feb 2026 12:43:03 -0800 (PST)
+Message-ID: <41190a42-70ab-45b9-922f-317e792b25a0@baylibre.com>
+Date: Sat, 21 Feb 2026 14:43:02 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,7 +68,7 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 0/8] AD9910 Direct Digital Synthesizer
+Subject: Re: [PATCH RFC 1/8] dt-bindings: iio: frequency: add ad9910
 To: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
@@ -78,215 +77,319 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
 References: <20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com>
+ <20260220-ad9910-iio-driver-v1-1-3b264aa48a10@analog.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com>
+In-Reply-To: <20260220-ad9910-iio-driver-v1-1-3b264aa48a10@analog.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 2/20/26 10:46 AM, Rodrigo Alencar via B4 Relay wrote:
-> This patch series adds support for the Analog Devices AD9910 DDS.
-> This is an RFC so that we can agree/discuss on the design that follows:
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> The AD9910 DDS core can be driven through several independent mechanisms:
-> single tone profiles, a digital ramp generator, an internal RAM playback
-> engine, a parallel data port, and output shift keying. Each of these
-
-This makes is sound more like a DAC than a frequency generator. altvoltage
-specifically means an AC voltage (sine wave), so these arbitrary outputs
-don't fit that.
-
-> represents a distinct signal path into the DDS accumulator, so the driver
-> models them as separate IIO output channels (all IIO_ALTVOLTAGE type).
-
-Generally IIO channels represent the physical input/output, not the
-internal channels.
-
-Ideally we would just have the one channel here with a mode selection
-attribute. Documentation can tell us which modes use which attributes.
-
-> This per-channel separation allows userspace to configure each mode
-> independently through its own set of sysfs attributes, and to
-> enable/disable modes individually via IIO_CHAN_INFO_ENABLE, relying on
-> the hardware's own mode selection architecture.
-> 
-> The AD9910 register map is not suited for the regmap framework: register
-> widths vary across the map (16, 32, and 64 bits). The driver instead
-
-Does it break things if you read/write 64 bits from/to non-64-bit registers?
-
-In other drivers for chips like this, we've just created 2 regmaps, i.e.
-one for 16-bit regs and one for 32-bit regs. Seems better than
-re-implementing a reg cache.
-
-> implements direct SPI access helpers with a software register cache, using
-> type-specific read/write/update functions (ad9910_reg{16,32,64}_{read,
-> write,update}) that handle endianness conversion and cache coherency.
-> 
-> Registers are cached for several reasons. The control/function registers
-> (CFR1, CFR2) are frequently queried to determine the current operating
-> mode (e.g., checking RAM_ENABLE before every profile register access),
-> and caching avoids repeated SPI read transactions for what are
-> essentially state checks. The cache also enables efficient
-> read-modify-write updates on multi-byte registers: the update functions
-> merge new field values with the cached register content without issuing
-> a SPI read, and skip the write entirely when the value is unchanged.
-> Finally, the profile registers serve dual purposes depending on whether
-> RAM mode is active -- they hold single tone parameters (FTW, POW, ASF)
-> in normal operation but are repurposed for RAM playback configuration
-> (start/end address, step rate, operating mode) when RAM is enabled. A
-> shadow register array (reg_profile[]) preserves the inactive mode's
-> settings across transitions, so no state is lost when switching between
-> single tone and RAM operation.
-> 
-> RAM data is loaded through a write-only binary sysfs attribute
-> (ram_data). Userspace writes the waveform data as a raw binary buffer
-> (up to 4096 bytes for the full 1024x32-bit RAM), and the driver
-> transfers it to the device in a single SPI transaction. Per-profile
-> start/end addresses and playback parameters (operating mode, step rate,
-> no-dwell control) are configured through the RAM channel's ext_info
-> attributes.
-> 
-> Streaming data to the DDS core through the parallel data port at the
-> PD_CLK rate is not covered by this series. That functionality would
-> be added in a separate patch series, building on top of the IIO backend
-> infrastructure to provide a proper buffered data path.
-> 
-> As I am pushing implementation, as lot has been done already without much
-> supervision or agreement, still I would be interested on hearing about
-> the design choices discussed above. Here is the output for the iio_info
-> at this point:
-> 
-> 5 channels found:
->     altvoltage1:  (output)
->     9 channel-specific attributes found:
->         attr  0: en value: 0
->         attr  1: frequency_offset value: 0.000000
->         attr  2: frequency_scale value: 1
->         attr  3: label value: parallel_port
->         attr  4: phase_offset value: 0.000000
->         attr  5: powerdown value: 0
->         attr  6: profile value: 0
->         attr  7: sampling_frequency value: 100000000.000000
->         attr  8: scale_offset value: 0.000000
->     altvoltage3:  (output)
->     13 channel-specific attributes found:
->         attr  0: address_end value: 1023
->         attr  1: address_start value: 0
->         attr  2: destination value: frequency
->         attr  3: destination_available value:
->           frequency phase amplitude polar
->         attr  4: en value: 0
->         attr  5: frequency value: 0.000000
->         attr  6: label value: ram_control
->         attr  7: operating_mode value: direct_switch
->         attr  8: operating_mode_available value:
->           direct_switch ramp_up bidirectional
->           bidirectional_continuous ramp_up_continuous
->           sequenced sequenced_continuous
->         attr  9: phase value: 0.000000
->         attr 10: powerdown value: 0
->         attr 11: profile value: 0
->         attr 12: sampling_frequency value: 100000000.000000
->     altvoltage2:  (output)
->     27 channel-specific attributes found:
->         attr  0: burst_count value: 0
->         attr  1: burst_delay value: 0.000000030
->         attr  2: control_en value: 0
->         attr  3: decrement_sampling_frequency value: 100000000.000000
->         attr  4: destination value: frequency
->         attr  5: destination_available value: frequency phase amplitude
->         attr  6: en value: 0
->         attr  7: frequency_decrement value: 0.000000
->         attr  8: frequency_increment value: 0.000000
->         attr  9: frequency_max value: 0.000000
->         attr 10: frequency_min value: 0.000000
->         attr 11: increment_sampling_frequency value: 100000000.000000
->         attr 12: label value: digital_ramp_generator
->         attr 13: operating_mode value: bidirectional_continuous
->         attr 14: operating_mode_available value:
-> 		  bidirectional ramp_down ramp_up bidirectional_continuous
->         attr 15: phase_decrement value: 0.000000000
->         attr 16: phase_increment value: 0.000000000
->         attr 17: phase_max value: 0.000000000
->         attr 18: phase_min value: 0.000000000
->         attr 19: powerdown value: 0
->         attr 20: profile value: 0
->         attr 21: ramp_delay value: 0.000000020
->         attr 22: scale_decrement value: 0.000000000
->         attr 23: scale_increment value: 0.000000000
->         attr 24: scale_max value: 0.000000000
->         attr 25: scale_min value: 0.000000000
->         attr 26: toggle_en value: 0
->     altvoltage0:  (output)
->     6 channel-specific attributes found:
->         attr  0: frequency value: 0.000000
->         attr  1: label value: single_tone
->         attr  2: phase value: 0.000000
->         attr  3: powerdown value: 0
->         attr  4: profile value: 0
->         attr  5: scale value: 0.000000
->     altvoltage4:  (output)
->     8 channel-specific attributes found:
->         attr  0: en value: 0
->         attr  1: label value: output_shift_keying
->         attr  2: pinctrl_en value: 0
->         attr  3: powerdown value: 0
->         attr  4: profile value: 0
->         attr  5: sampling_frequency value: 100000000.000000
->         attr  6: scale value: 0.000000
->         attr  7: scale_increment value: 0.000000
-> 3 device-specific attributes found:
->         attr  0: ram_data ERROR: Permission denied (13)
->         attr  1: sysclk_frequency value: 400000000
->         attr  2: waiting_for_supplier value: 0
-> 1 debug attributes found:
->         debug attr  0: direct_reg_access value: 0x2
-
-
-This is a lot of custom attributes!
-
-It looks like a lot of these are just exposing registers directly, which
-usually isn't the best if we want something that can be reused. However,
-this looks pretty complex so coming up with something generic is probably
-not worth the effort. 
-
-Instead, I would suggest to create a firmware file format that
-describes how the chip should be programmed. And in the driver call
-firmware_upload_register() to create a sysfs interface where the
-firmware can be loaded/replaced at runtime. This way, there is just
-one attribute write needed to set all of the parameters at once.
-
-This could probably be as simple as something that just contains
-the value of each register to be programmed and the driver can
-write all of the registers just before enabling the output.
-
-> 
-> Kind regards,
-> 
-> Rodrigo Alencar
+> DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
+> configurations for the reference clock path, DAC current, reset and basic
+> GPIO control.
 > 
 > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > ---
-> Rodrigo Alencar (8):
->       dt-bindings: iio: frequency: add ad9910
->       iio: frequency: ad9910: initial driver implementation
->       iio: frequency: ad9910: add simple parallel port mode support
->       iio: frequency: ad9910: expose sysclk_frequency device attribute
->       iio: frequency: ad9910: add digital ramp generator support
->       iio: frequency: ad9910: add RAM mode support
->       iio: frequency: ad9910: add output shift keying support
->       iio: frequency: ad9910: add channel labels
+>  .../bindings/iio/frequency/adi,ad9910.yaml         | 236 +++++++++++++++++++++
+>  MAINTAINERS                                        |   7 +
+>  2 files changed, 243 insertions(+)
 > 
->  .../bindings/iio/frequency/adi,ad9910.yaml         |  236 +++
->  MAINTAINERS                                        |    8 +
->  drivers/iio/frequency/Kconfig                      |   18 +
->  drivers/iio/frequency/Makefile                     |    1 +
->  drivers/iio/frequency/ad9910.c                     | 2153 ++++++++++++++++++++
->  5 files changed, 2416 insertions(+)
-> ---
-> base-commit: cce8de7f9744a210a4441ca8a667a9950515eea7
-> change-id: 20260218-ad9910-iio-driver-9b3d214c251f
+> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+> new file mode 100644
+> index 000000000000..43b21d1428ba
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+> @@ -0,0 +1,236 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices AD9910 Direct Digital Synthesizer
+> +
+> +maintainers:
+> +  - Rodrigo Alencar <rodrigo.alencar@analog.com>
+> +
+> +description:
+> +  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
+> +  14-bit DAC. It features single tone mode with 8 configurable profiles,
+> +  a digital ramp generator, RAM control, OSK, and a parallel data port for
+> +  high-speed streaming.
+> +
+> +  https://www.analog.com/en/products/ad9910.html
+> +
+> +properties:
+> +  compatible:
+> +    const: adi,ad9910
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 70000000
+> +
+> +  clocks:
+> +    maxItems: 1
+> +    description:
+> +      Reference clock input (REFCLK). When the PLL is enabled, this is
+> +      multiplied by adi,pll-multiplier to produce the system clock.
+> +      When the PLL is bypassed, the reference clock is used directly or divided
+> +      by 2 based on adi,reference-div2-enable to produce the system clock.
+
+Devicetree is just concerned with how it is wired up. The first
+sentence is enough.
+
+> +
+> +  dvdd-io33-supply:
+> +    description: 3.3V Digital I/O supply.
+> +
+> +  avdd33-supply:
+> +    description: 3.3V Analog DAC supply.
+> +
+> +  dvdd18-supply:
+> +    description: 1.8V Digital Core supply.
+> +
+> +  avdd18-supply:
+> +    description: 1.8V Analog Core supply.
+> +
+> +  resets:
+> +    minItems: 1
+> +    maxItems: 2
+> +
+> +  reset-names:
+> +    oneOf:
+> +      - items:
+> +          - const: dev
+> +      - items:
+> +          - const: dev
+> +          - const: io
+
+This could be a bit more clear. Does dev == MASTER_RESET pin?
+And what about DAC_RSET?
+
+> +
+> +  reset-gpios:
+> +    maxItems: 2
+> +    description:
+> +      GPIOs controlling the device reset and the I/O_RESET pins. This is only
+> +      used if resets property is not defined.
+> +
+> +  powerdown-gpios:
+> +    maxItems: 1
+> +    description:
+> +      GPIO controlling the EXT_PWR_DWN pin.
+> +
+> +  update-gpios:
+> +    maxItems: 1
+> +    description:
+> +      GPIO controlling the I/O_UPDATE pin.
+> +
+> +  profile-gpios:
+> +    minItems: 3
+> +    maxItems: 3
+> +    description:
+> +      GPIOs controlling the PROFILE[2:0] pins for profile selection.
+> +
+
+Looks like possibly some interrupts as well: RAM_SWP_OVR and SYNC_SMP_ERR
+
+> +  adi,pll-multiplier:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    minimum: 12
+> +    maximum: 127
+> +    description:
+> +      PLL feedback divider value (N). The system clock frequency is
+> +      REFCLK * N. When not specified, the PLL is bypassed.
+
+What determines the value that should be selected here? This doesn't seem like
+something we would normally put in the devicetree. (Smells like configuration
+rather than describing what is wired up.)
+
+> +
+> +  adi,pll-vco-select:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    minimum: 0
+> +    maximum: 5
+> +    description: |
+> +      VCO frequency range selection (0-5). When not specified and the PLL
+> +      is enabled, the VCO range is automatically selected based on the
+> +      computed system clock frequency. Typical VCO frequency ranges are:
+> +      - Range 0: 370 MHz to 510 MHz (Auto-selected when <= 465 MHz)
+> +      - Range 1: 420 MHz to 590 MHz (Auto-selected when > 465 MHz and <= 545 MHz)
+> +      - Range 2: 500 MHz to 700 MHz (Auto-selected when > 545 MHz and <= 650 MHz)
+> +      - Range 3: 600 MHz to 880 MHz (Auto-selected when > 650 MHz and <= 790 MHz)
+> +      - Range 4: 700 MHz to 950 MHz (Auto-selected when > 790 MHz and <= 885 MHz)
+> +      - Range 5: 820 MHz to 1050 MHz (Auto-selected when > 885 MHz)
+> +
+
+Same here. How does this depend on how the chip is wired up?
+
+> +  adi,charge-pump-current-microamp:
+> +    minimum: 212
+> +    maximum: 387
+> +    default: 387
+> +    description:
+> +      PLL charge pump current in microamps. Only applicable when the PLL
+> +      is enabled. The value is rounded to the nearest supported step.
+> +
+> +  adi,refclk-out-drive-strength:
+> +    $ref: /schemas/types.yaml#/definitions/string
+> +    enum: [ disabled, low, medium, high ]
+> +    default: disabled
+> +    description:
+> +      Reference clock output (DRV0) drive strength. Only applicable when
+> +      the PLL is enabled.
+> +
+> +  adi,reference-div2-enable:
+> +    type: boolean
+> +    description:
+> +      Enable the reference clock input divider. When enabled, the input
+> +      reference frequency is halved before deriving the system clock.
+> +      This is only applicable when the PLL is bypassed.
+> +
+> +  adi,inverse-sinc-enable:
+> +    type: boolean
+> +    description:
+> +      Enable the inverse sinc filter that compensates for the sinc roll-off
+> +      of the DAC output. When it is enabled, the filter introduces up to 3 dB
+> +      of insertion loss.
+> +
+> +  adi,sine-output-enable:
+> +    type: boolean
+> +    description:
+> +      Select sine wave output from the DDS core. When not set, the
+> +      output is a cosine wave.
+
+And these last few are really getting into things that are typically
+controlled by the IIO driver and not hard-coded.
+
+> +
+> +  adi,sync-clk-disable:
+> +    type: boolean
+> +    description:
+> +      Disable the SYNC_CLK output pin. SYNC_CLK runs at one quarter
+> +      of the system clock frequency.
+
+Clock outputs should be described as clock-controller and #clock-cells.
+The actual enabling/disabling can be done at runtime.
+
+> +
+> +  adi,pdclk-disable:
+> +    type: boolean
+> +    description:
+> +      Disable the parallel data clock (PDCLK) output. PDCLK runs at
+> +      one quarter of the system clock frequency.
+> +
+> +  adi,pdclk-invert:
+> +    type: boolean
+> +    description:
+> +      Invert the polarity of the PDCLK output.
+> +
+> +  adi,tx-enable-invert:
+> +    type: boolean
+> +    description:
+> +      Invert the polarity of the TX_ENABLE input pin.
+> +
+> +  adi,dac-output-current-microamp:
+> +    minimum: 8640
+> +    maximum: 31590
+> +    default: 20070
+> +    description:
+> +      DAC full-scale output current in microamps.
+> +
+> +dependencies:
+> +  adi,pll-vco-select: [ 'adi,pll-multiplier' ]
+> +  adi,charge-pump-current-microamp: [ 'adi,pll-multiplier' ]
+> +  adi,refclk-out-drive-strength: [ 'adi,pll-multiplier' ]
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - dvdd-io33-supply
+> +  - avdd33-supply
+> +  - dvdd18-supply
+> +  - avdd18-supply
+> +
+> +dependentSchemas:
+> +  resets:
+> +    properties:
+> +      reset-gpios: false
+> +  reset-gpios:
+> +    properties:
+> +      resets: false
+
+This seems too strict. Couldn't we have some resets from a reset
+controller and others from gpios?
+
+Or maybe the reset bindings are enough and we don't need the gpio
+bindings for the same pin?
+
+> +  adi,reference-div2-enable:
+> +    properties:
+> +      adi,pll-multiplier: false
+> +  adi,pll-multiplier:
+> +    properties:
+> +      adi,reference-div2-enable: false
+> +
+> +allOf:
+> +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+> +
+> +unevaluatedProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        dds@0 {
+> +            compatible = "adi,ad9910";
+> +            reg = <0>;
+> +            spi-max-frequency = <1000000>;
+> +            clocks = <&ad9910_refclk>;
+> +
+> +            dvdd-io33-supply = <&vdd_io33>;
+> +            avdd33-supply = <&vdd_a33>;
+> +            dvdd18-supply = <&vdd_d18>;
+> +            avdd18-supply = <&vdd_a18>;
+> +
+> +            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>,
+> +                          <&gpio 1 GPIO_ACTIVE_HIGH>;
+> +            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
+> +            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
+> +            profile-gpios = <&gpio 4 GPIO_ACTIVE_HIGH>,
+> +                            <&gpio 5 GPIO_ACTIVE_HIGH>,
+> +                            <&gpio 6 GPIO_ACTIVE_HIGH>;
+> +
+> +            adi,pll-multiplier = <40>;
+> +            adi,charge-pump-current-microamp = <387>;
+> +            adi,refclk-out-drive-strength = "disabled";
+> +            adi,inverse-sinc-enable;
+> +        };
+> +    };
+> +...
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1251965d70bd..79b4180e2334 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1610,6 +1610,13 @@ W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
+>  F:	drivers/iio/dac/ad9739a.c
+>  
+> +ANALOG DEVICES INC AD9910 DRIVER
+> +M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Supported
+> +W:	https://ez.analog.com/linux-software-drivers
+> +F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+> +
+>  ANALOG DEVICES INC MAX22007 DRIVER
+>  M:	Janani Sunil <janani.sunil@analog.com>
+>  L:	linux-iio@vger.kernel.org
 > 
-> Best regards,
 
