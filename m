@@ -1,94 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD158B67A;
-	Sun, 22 Feb 2026 19:07:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 446CE34F498;
+	Sun, 22 Feb 2026 19:12:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771787236; cv=none; b=ZLN3HyBwLFzdzJt0aZGPSLRkGk9ukiCXM/novEsiMPsix9wXiAC6aZRp6kAhoZ7wdIWPwXLmScxcgeihPFEMQyePUybDNCck69KoxVy2PuxSgp4A5rMYCQv2SiGSAk6AyUszAl5jhyDOqPgH8zvix99dhgwO3UecvuXF0ZymIU8=
+	t=1771787545; cv=none; b=gmleYexmTjUNpnz4JQR8kqFqNb/9BOmxN5pypJwUfEzYjFmRkelCx4cGCS9wzH/iqzQ5mcTfWLs/XNLQ7rnI4gT0efoYr2WYNwsR+z2fm495eNV1cvpaW4YAUk4sDd0lsq5zewK2MNniVjKBRCMW8m4Vp8YyKpd7uciEjuP04qU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771787236; c=relaxed/simple;
-	bh=GIcyxd12EPmrgd4WiuBKngaOZtiVXYNloCriw7mYZyA=;
+	s=arc-20240116; t=1771787545; c=relaxed/simple;
+	bh=oBO4M9vSigHp2cMcVMsbdryITkk7+TuQZxjvoHiAfT4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DcE1t0Dlb9Y9TK+s1YjPrIaqi9156c8qcBfcvaGZObW8DZuIrgb3ybhLuBbFGexJIbHmb1OT5MJJ/k6/3G2JAZ13CrdquRgMkim6GrlzGSYM75lTg8zpRYUCFleggY5uqFGQUuIHRDHBo7yujlb1Po0qNMdVOloLAlpP4f6Pl9I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MuUXd+Lc; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=GakHgR+F2xTk7I/6f1dJJhgxZVcANPYeBwudP7XRfuN9IRKyezSQTU/wAjYEUVz6qzbO7UEw6Tm90Chgf96riPD7X91GZyDm75HzVxzRKqGBQJzd4v/PmDCtAoSxeG9xNs3gTRKYqhkTrEip1tuzIOHThC3+bry1eSRq4vVvwcw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=n+k0EH+6; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MuUXd+Lc"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="n+k0EH+6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771787235; x=1803323235;
+  t=1771787543; x=1803323543;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=GIcyxd12EPmrgd4WiuBKngaOZtiVXYNloCriw7mYZyA=;
-  b=MuUXd+LcxIMQw3pLiO8qWNa/C0CMGw2X8+kh1BBHapGu6yKuNEcCaBKk
-   RFf1YcLoxVjvrCqqq7W8c31LZ2ggM0l8Nawl1B7eA69xmm0fkAXUlJykO
-   1zqBpagTQhnjpFikZYkrwr+9uAhH18Cpsl9gZ7bhBbMSZI7ztznM3P4ik
-   P46PMvqyGEc+O6KSlEW/7N9qHdhBqP0O9Hw/3gu3PdiwnzRANdsDZq4Nl
-   pNDhtF5rE6hZwpowdiyAZP4eyHlOgdQ15H8w92CHV+YmphE4Ky2ZQXsln
-   /9uRmu8tSnNOkqlFSex8acyLtrWGDRSYg3HH1qNKr1Hfewy/wiaKzMEAl
-   w==;
-X-CSE-ConnectionGUID: IHi6DnSiTXKyuLwOnuUJtw==
-X-CSE-MsgGUID: sfkIlHn3Q5SXXQkMxWTx2w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11709"; a="98254181"
+   mime-version:in-reply-to;
+  bh=oBO4M9vSigHp2cMcVMsbdryITkk7+TuQZxjvoHiAfT4=;
+  b=n+k0EH+6qARiivhri4KPHHdCitIvtFa7JuIhhv4S07owHD1MlWveIMfQ
+   yHXMaulcp01vGU2+lceUYXFig8lmzh77MFGIkFfov2Z41AiFfmYSuhyAx
+   /kzqN65h/bHaON5XJNuUZF5b8elu/dhi2VXrAxnKAv0ZpcJGPrmjjY+v4
+   sH98/5RRrpNumlim4KZRN5hVhnOyU67jA/j7hTZzhY0+ai2/TEh8tLC8i
+   sIbJ/cJEL3KXuWe6ABNm9CauJ+qSDgECjZNVYS+OLXflWNJ+w1escKTOd
+   H6zJ5ktBo8SJaoA0MrAEvB5+Tfep0LFhhhTNl3TfZjA4lxc+/auM5kpZe
+   A==;
+X-CSE-ConnectionGUID: bqZb7ucjQHmxEebivHxkLg==
+X-CSE-MsgGUID: kp8CT1L9SV6+9NtWrFVwSQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11709"; a="60366408"
 X-IronPort-AV: E=Sophos;i="6.21,305,1763452800"; 
-   d="scan'208";a="98254181"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2026 11:07:14 -0800
-X-CSE-ConnectionGUID: paco3JdpRNiHea9wjzG4wg==
-X-CSE-MsgGUID: 8QJBAGA0TaaMHxE84w3xxw==
+   d="scan'208";a="60366408"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2026 11:12:23 -0800
+X-CSE-ConnectionGUID: ma16+aahQFiGBDi4OeZOaA==
+X-CSE-MsgGUID: bnlfcrF0RkeuAz3ai5s8Kw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,305,1763452800"; 
-   d="scan'208";a="213777483"
+   d="scan'208";a="214593616"
 Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.245.171])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2026 11:07:12 -0800
-Date: Sun, 22 Feb 2026 21:07:10 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2026 11:12:20 -0800
+Date: Sun, 22 Feb 2026 21:12:17 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH v2 1/1] iio: core: Simplify IIO core managed APIs
-Message-ID: <aZtT3pDS9X6pGVnT@smile.fi.intel.com>
-References: <20260220132912.2392102-1-andriy.shevchenko@linux.intel.com>
- <20260222165411.427e6a9c@jic23-huawei>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] iio: adc: ti-ads7950: complete conversion to
+ using managed resources
+Message-ID: <aZtVEdFoGUMx4olM@smile.fi.intel.com>
+References: <20260219022929.3558081-1-dmitry.torokhov@gmail.com>
+ <20260219022929.3558081-5-dmitry.torokhov@gmail.com>
+ <aZbC51ezuaT5Nwq7@smile.fi.intel.com>
+ <aZj3deh1Em1rz3au@google.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260222165411.427e6a9c@jic23-huawei>
+In-Reply-To: <aZj3deh1Em1rz3au@google.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Feb 22, 2026 at 04:54:11PM +0000, Jonathan Cameron wrote:
-> On Fri, 20 Feb 2026 14:25:19 +0100
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Fri, Feb 20, 2026 at 04:09:47PM -0800, Dmitry Torokhov wrote:
+> On Thu, Feb 19, 2026 at 09:59:35AM +0200, Andy Shevchenko wrote:
+> > On Wed, Feb 18, 2026 at 06:29:28PM -0800, Dmitry Torokhov wrote:
+
+...
+
+> > > +	if (error) {
+> > >  		dev_err(&spi->dev, "Error in spi setup\n");
+> > > -		return ret;
+> > > +		return error;
+> > >  	}
+> > 
+> > And since there is already dev_err_probe() in use, I would expect this
+> > also be converted.
 > 
-> > Use devm_add_action_or_reset() instead of devres_alloc() and
-> > devres_add(), which works the same. This will simplify the
-> > code. There is no functional changes.
-> > 
-> > While at it, inline devm_iio_kfifo_allocate() into its only user.
-> > 
-> > Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Nice.  Applied
+> But that would be unrelated change ;)
 
-Thanks!
+I never told that this should be done here.
 
-One minor thing though. The iio_kfifo_alloc()/free() uses variable name 'r'
-while devm_iio_kfifo_alloc() uses 'buffer'. I was thinking again and now
-I probably would go with 'buffer' in devm_iio_kfifo_release() as well
-to have a symmetry with the devm_*_alloc(). If you think it worth changing,
-may you fold it? (AFAIU the applied patch is still in the pending/testing
-queue that is okay for rebase, squash, et cetera.)
+...
+
+> > Would be also nice to use
+> > 
+> > 	struct device *dev = &spi->dev;
+> > 
+> > to make less LoCs and/or make them shorter.
+> 
+> I actually dislike introducing such temporaries in majority of the
+> cases. It makes it hard to follow what device we are dealing with and
+> does not make the code significantly shorter.
+
+May be, but my experience is telling me different story.
+So we have a disagreement here, I leave it to Jonathan
+to mediate.
 
 -- 
 With Best Regards,
