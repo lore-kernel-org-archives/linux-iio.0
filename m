@@ -1,42 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2453EBF17;
-	Sun, 22 Feb 2026 16:03:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 698AF3D561;
+	Sun, 22 Feb 2026 16:09:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771776213; cv=none; b=nv5lRO/o0Q14LCR7V5P14JKWDckls+/tza0lz2o+Tg58tAqbwPoet3eaODrA3/vljk+AlpligBn67WLYm4HbyUyZZ7QWjYUM4QQb0Gpro/6ZgtZjqMKVUePmyoWtCTDE+biC53SmnjU9Eoz/7G0CbaX9ra43lDc/eWitPqqZdeo=
+	t=1771776546; cv=none; b=PwxeMl7mEKITWpMz7xrOTFLJiTxz0lbcovdF5kDyle+m7pRFJlwrSBdBD+pLscP1I33kBqm1LN5xw4rFQpamQP43ZJU4tWxKuJ/IN1vMHYzR+NTpydXlAtufR3Sij1YI1DvbBjLSOYZfxmi5VWCiBESBAhoB5zUV5us4whdCL/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771776213; c=relaxed/simple;
-	bh=+IgpTjECc13FjaSobMmGOE984uaTEmXItdEyEE09khU=;
+	s=arc-20240116; t=1771776546; c=relaxed/simple;
+	bh=hEa0F63UXXrV9GhmxzVhsplup7OYdf7PzcwXYV+8GSY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=A2710/G6+nkjBSLMgciAsp/wv3CIs6e25vGid8btpk0bxGfmRSDpJPc/E2S9RSTEhDgeJBznk+EqTHwybXJL39PfnxxPcZ5y5Y4hOD1ZRtxRq4r3DDfKUuLtXgY0WcXL2lPTUBUAAV5z0i8ww0qWT8sSJBIa9jY5sdRydOXAuXo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YXdE7krq; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Czg+X9VUqEzitl299hKxvP7eV+jii4PUskQDqPrSagxpYE9iH16qHik+bHatn7KyHFXHJMjerXwMJcE0d0Vg11cbRqpZG9ZogtKTjDnidljNgbLESxGgDM0Tp9hqrN7Fvs23y+QssH3Ur3Mmt9g/rs4G3oFMa/n2ZReVsg/F9Qo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=aPa8hRhw; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YXdE7krq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 774A5C116D0;
-	Sun, 22 Feb 2026 16:03:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="aPa8hRhw"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37C84C116D0;
+	Sun, 22 Feb 2026 16:09:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771776212;
-	bh=+IgpTjECc13FjaSobMmGOE984uaTEmXItdEyEE09khU=;
+	s=k20201202; t=1771776546;
+	bh=hEa0F63UXXrV9GhmxzVhsplup7OYdf7PzcwXYV+8GSY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=YXdE7krqtogy3O5iGPlu1MQLcIZbPCeYSigyno2rrnaVdWYS0ve3BajIjw5ZNP7j2
-	 G3wbreCOpXC5YjQ7HsOB70RpICkXhiG7t+MAl1Z9DSKP6cWeUnSCqqU9E2LkdRZ6Yu
-	 bEkdF8RSHA2n1CjB0K683mHqyuOU/toBeWfIWQxmWbP7E0lxlurs6zKeB1MKhJGkdX
-	 n7SX0LQ052iLP5Dvh70krtmlBi0yVIav7KL8e1dbd5sMrYkdGjFruTfFbAEemb93Vt
-	 HXnGRbKtAubDFziL8RG5hLfOaNNz5hZGqpn320Tqv/+r90rbEUuNhV1uD2ErLzjqZQ
-	 bT8m0P7axfRKg==
-Date: Sun, 22 Feb 2026 16:03:25 +0000
+	b=aPa8hRhwSNz9ANJDh7iRUHO8oLSEzfEYghAouGP3ydv4fpZJtaj5Fzw/b331kSZ7S
+	 jwYGdEl/Z5HEribDiOxPc5ydpL2GP3qLMtK+8FbvZAKshCCSVZf+ZawnuUw5IXWY+z
+	 AUAqWnf6l+/FUT2p+j2uRk+2dNBiS0jCL5STrhHUmhPxl+hBbMWlGzeTEVy/HYI89T
+	 sIoiKbMJd2EnWQP8R9WEGXmojrr0rAUtYI/9G2hKLvD6gH+yQbFMftQ2UBcOsDufe9
+	 FaAWWimTwOG7Y7vOWd+48wjAWiyRixVbT4kSKhuBgs8g8hCz4vY88VC8kQ8na2iNAL
+	 DfWGwTp30L6Dw==
+Date: Sun, 22 Feb 2026 16:08:57 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Felix Gu <ustc.gu@gmail.com>
 Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Daniel Lezcano
- <daniel.lezcano@linaro.org>
-Subject: Re: [PATCH] iio: adc: nxp-sar-adc: Remove unnecessary type casting
-Message-ID: <20260222160325.1e4d1f49@jic23-huawei>
-In-Reply-To: <20260222-nxp-sar-adc-v1-1-75e4cdb3ffb7@gmail.com>
-References: <20260222-nxp-sar-adc-v1-1-75e4cdb3ffb7@gmail.com>
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Ciprian Costea
+ <ciprianmarian.costea@nxp.com>, Alexandru-Catalin Ionita
+ <alexandru-catalin.ionita@nxp.com>, Daniel Lezcano
+ <daniel.lezcano@linaro.org>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>, "Radu Pirea (NXP OSS)"
+ <radu-nicolae.pirea@oss.nxp.com>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: nxp-sar-adc: Fix DMA channel leak in trigger
+ mode
+Message-ID: <20260222160857.1e0368f0@jic23-huawei>
+In-Reply-To: <20260222-nxp-sar-adc-1-v1-1-0ec0e00b25cb@gmail.com>
+References: <20260222-nxp-sar-adc-1-v1-1-0ec0e00b25cb@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,52 +52,81 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 22 Feb 2026 02:09:08 +0800
+On Sun, 22 Feb 2026 17:45:39 +0800
 Felix Gu <ustc.gu@gmail.com> wrote:
 
-> The readl_poll_timeout() macro returns a signed integer error code.
+> The DMA channel was requested in nxp_sar_adc_buffer_postenable() but
+> was only released in nxp_sar_adc_buffer_software_do_predisable().
+> This caused a DMA channel resource leak when operating in trigger mode.
 > 
-> In nxp_sar_adc_calibration_wait(), the return value is casted to u32
-> before being returned as int, which is unnecessary.
+> Fix this by moving dma_request_chan() from
+> nxp_sar_adc_buffer_postenable() into
+> nxp_sar_adc_buffer_software_do_postenable(), ensuring the DMA channel
+> is only requested in software mode.
 > 
+> Fixes: 4434072a893e ("iio: adc: Add the NXP SAR ADC support for the s32g2/3 platforms")
 > Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+
 Hi Felix,
 
-Make sure to include the author of the code you are touching in the +CC list.
-Added Daniel.
+Just a trivial comment from me inline.  If that's all that comes up
+I can make that changes when I apply it.
 
-I think this is simple enough, so I've picked it up now but I'm fine adding
-tags or indeed dropping it if other reviews come in.  I'll be rebasing
-or rc1 later in the week.
-
-Applied to the testing branch of iio.git
+I'm looking for Daniel and maybe one or two others to take a look
+at this before I pick it up.
 
 Thanks,
 
 Jonathan
 
+
 > ---
->  drivers/iio/adc/nxp-sar-adc.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
+>  drivers/iio/adc/nxp-sar-adc.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
 > 
 > diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
-> index 9efa883c277d..a6e4888a8464 100644
+> index 9efa883c277d..890c8ef3132f 100644
 > --- a/drivers/iio/adc/nxp-sar-adc.c
 > +++ b/drivers/iio/adc/nxp-sar-adc.c
-> @@ -247,7 +247,8 @@ static inline void nxp_sar_adc_calibration_start(void __iomem *base)
+> @@ -718,6 +718,10 @@ static int nxp_sar_adc_buffer_software_do_postenable(struct iio_dev *indio_dev)
+>  	struct nxp_sar_adc *info = iio_priv(indio_dev);
+>  	int ret;
 >  
->  static inline int nxp_sar_adc_calibration_wait(void __iomem *base)
->  {
-> -	u32 msr, ret;
-> +	u32 msr;
-> +	int ret;
+> +	info->dma_chan = dma_request_chan(indio_dev->dev.parent, "rx");
+> +	if (IS_ERR(info->dma_chan))
+> +		return PTR_ERR(info->dma_chan);
+> +
+>  	nxp_sar_adc_dma_channels_enable(info, *indio_dev->active_scan_mask);
 >  
->  	ret = readl_poll_timeout(NXP_SAR_ADC_MSR(base), msr,
->  				 !FIELD_GET(NXP_SAR_ADC_MSR_CALBUSY, msr),
+>  	nxp_sar_adc_dma_cfg(info, true);
+> @@ -738,7 +742,7 @@ static int nxp_sar_adc_buffer_software_do_postenable(struct iio_dev *indio_dev)
+>  out_dma_channels_disable:
+>  	nxp_sar_adc_dma_cfg(info, false);
+>  	nxp_sar_adc_dma_channels_disable(info, *indio_dev->active_scan_mask);
+> -
+> +	dma_release_channel(info->dma_chan);
+
+Keep the blank line.  Having one just before a 'bare' return like this can help readability
+a little so is common practice.
+
+>  	return ret;
+>  }
+>  
+> @@ -765,10 +769,6 @@ static int nxp_sar_adc_buffer_postenable(struct iio_dev *indio_dev)
+>  	unsigned long channel;
+>  	int ret;
+>  
+> -	info->dma_chan = dma_request_chan(indio_dev->dev.parent, "rx");
+> -	if (IS_ERR(info->dma_chan))
+> -		return PTR_ERR(info->dma_chan);
+> -
+>  	info->channels_used = 0;
+>  
+>  	/*
 > 
 > ---
 > base-commit: d4906ae14a5f136ceb671bb14cedbf13fa560da6
-> change-id: 20260222-nxp-sar-adc-1906a65ce5b6
+> change-id: 20260222-nxp-sar-adc-1-bca71f089bc8
 > 
 > Best regards,
 
