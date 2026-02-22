@@ -1,116 +1,85 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 969D822370A;
-	Sun, 22 Feb 2026 11:07:31 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E28A1DDC1B
+	for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 12:38:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771758453; cv=none; b=sFo6zOt72hVH6WByXEdNdwKoxEQaOPAnJqOcznU56NtrEU/UT6Kdno7D3aTa2Z9xCtKHx6SFgSaFJ5xKzcSyrl8DwVP8ZqYyAytHj6/cEBNxgjOMRaEB5DRgRIk1oQkKs6E2Uutyw36lCYDGGvWu9hyz9hRIOxuy/m1ceiz0I3s=
+	t=1771763888; cv=none; b=ox7sK1VgY3BTAkrIquw3rf9OoX6B3Wb4qfuETev0cud5Hwm92tq/GbG2SbnJV/CfOizHr5e7Aipxxom3zywzfpkDyuvlpqbNUkckSxK/js0C8Up94rOVwMYcfUzMAwT2UwIhOoeFFVT3Gax7RThBN+xpYEleMTv/0bF4f5HbCXM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771758453; c=relaxed/simple;
-	bh=1I6ou9k0sJ40FtkGW/L+M4qVjKzr/vsuMMUpxsTK7Rs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=sKFt2EPH3/Z+vb0tKN/xn+duJc4dIxHPC2jARlGwN+Q7tU9uggdU2py1X/HQOvhQ/30j7jvJmNGW2fdcQSvVDM4jssukAo8mKsRJQ0hRiW4W86svtU6IuoS0iUI8IugNb6uil0Q3oIl4Y5W0WmUq2bP4YKf+9Kt8DMVVLMqfDjc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DgJeda+Z; arc=none smtp.client-ip=192.198.163.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1771763888; c=relaxed/simple;
+	bh=hqCFZlB+ez6slMPuD1THeNbVEZ6ahIBSkqNhaoFMQRc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=e8olCHLnzg2eh/PkcxLQvkuObXN8mFvdMVLAE0zNo2570+sT2occa+J5Re7Kdis56/mHDY4Fm+Sd1c8Vj3jh8CCNlmyl66aCnoEA0v4Tz/qmH5ZAuaZS6bw6jEU1KcIy0p/Ah/lE63mTTFrsT6V+bjs06RnBZVMDFQwCVT0Tgf0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iIZWceKC; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DgJeda+Z"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771758451; x=1803294451;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=1I6ou9k0sJ40FtkGW/L+M4qVjKzr/vsuMMUpxsTK7Rs=;
-  b=DgJeda+Z1IPFX2UwA7l28a+i/mTW7IMun7Lve/ny0jeDrKndPa8K7wpy
-   kEFr3sKExD1kOm++4KCBYtJApnkjHJd/EMJZz1td6VeTFQAWCKe9SumA9
-   /bU/V67+O9iwVgW7pdGmHvnSr5vWQI92pr5M7Dkl7I5/eH99LMm7jzm4L
-   uJz9l2i9OkFn674WAW6pmoj620PiZicPEmhBcJU2fa26D+mTt7+s1WTtK
-   5qyfZCV8Px7F/nBIfLxc9yduZ4Qq8OqKITI/s2JsF37R/xo7bmZSCfa4J
-   WzrBPU0F1ELp3jOlsEWPvHm9PsULHsQ+B11ufw44Y2H0UWWZbanZyPr+O
-   Q==;
-X-CSE-ConnectionGUID: Gt26Bvk4Sk2R04tvkpPMTA==
-X-CSE-MsgGUID: YL0A0nBgQwiW+z+eE3Q5mQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11708"; a="98238992"
-X-IronPort-AV: E=Sophos;i="6.21,304,1763452800"; 
-   d="scan'208";a="98238992"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2026 03:07:31 -0800
-X-CSE-ConnectionGUID: Dv5UTNkoQ6KYruK02U4awg==
-X-CSE-MsgGUID: ZTVWWBVvT+meoIqmm8FsQA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,304,1763452800"; 
-   d="scan'208";a="219411524"
-Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.245.171])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2026 03:07:29 -0800
-Date: Sun, 22 Feb 2026 13:07:26 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ethan Tidmore <ethantidmore06@gmail.com>
-Cc: linusw@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: mpu3050: Fix resource leak
-Message-ID: <aZrjbmU8Vt98Sjwr@smile.fi.intel.com>
-References: <20260220200522.19967-1-ethantidmore06@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iIZWceKC"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DC9BC116D0;
+	Sun, 22 Feb 2026 12:38:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1771763888;
+	bh=hqCFZlB+ez6slMPuD1THeNbVEZ6ahIBSkqNhaoFMQRc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=iIZWceKC1rKVzjYjWwdEXopvqFiv46aAnFnTbIIbCIL5F0Cn0ewspqD4zlge2338r
+	 MO1LPEbOCOlT99E1w886JvXfpE490BUicDju9YGOUwf00Vw2b8p6ldlad6yGaSdFRP
+	 Qjg9PclT2QHCi1J/hClxYopP3uieuJIpEAkfRAz4qj9e62v9cvT0elCgUNbJH7siBf
+	 MGxGeVIfw0fJ44YK+4RwECrXvL+z3EpYQFMqr5ObH5T/3b/wjEfX3HsuOOFkAJfuYc
+	 lNnq70avHg9JhxQ76Oqq1FP1ah1QFgkeMQWVs4C3aTWQYctAiBTcqX4g4Ie0Ev9n/u
+	 UcZPoztluSqrA==
+Date: Sun, 22 Feb 2026 12:37:56 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: nuno.sa@analog.com, linux-iio@vger.kernel.org, Andy Shevchenko
+ <andy@kernel.org>
+Subject: Re: [PATCH] iio: buffer: Fix wait_queue not being removed
+Message-ID: <20260222123756.59273a33@jic23-huawei>
+In-Reply-To: <6f5158e3-84e1-4159-9c61-789c2b198af2@baylibre.com>
+References: <20260216-iio-buffer-write-fix-v1-1-bc08b239f37a@analog.com>
+	<6f5158e3-84e1-4159-9c61-789c2b198af2@baylibre.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260220200522.19967-1-ethantidmore06@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, Feb 20, 2026 at 02:05:22PM -0600, Ethan Tidmore wrote:
-> The interrupt handler is setup but only a few lines down if
-> iio_trigger_register() fails the function returns without properly
-> releasing the handler:
-> 
-> 	ret = request_threaded_irq(irq,
-> 				   mpu3050_irq_handler,
-> 				   mpu3050_irq_thread,
-> 				   irq_trig,
-> 				   mpu3050->trig->name,
-> 				   mpu3050->trig);
-> 
-> ...
-> 
-> 	ret = iio_trigger_register(mpu3050->trig);
-> 	if (ret)
-> 		return ret;
-> 
-> 	indio_dev->trig = iio_trigger_get(mpu3050->trig);
-> 
-> 	return 0;
-> }
-> 
-> Change request_threaded_irq() to devm_request_threaded_irq() to resolve
-> resource leak and use current API.
-> 
-> Detected by Smatch:
-> drivers/iio/gyro/mpu3050-core.c:1128 mpu3050_trigger_probe() warn:
-> 'irq' from request_threaded_irq() not released on lines: 1124.
+On Sat, 21 Feb 2026 15:27:42 -0600
+David Lechner <dlechner@baylibre.com> wrote:
 
-...
+> On 2/16/26 7:24 AM, Nuno S=C3=A1 via B4 Relay wrote:
+> > From: Nuno S=C3=A1 <nuno.sa@analog.com>
+> >=20
+> > In the edge case where the IIO device is unregistered while we're
+> > buffering, we were directly returning an error without removing the wait
+> > queue. Instead, set 'ret' and break out of the loop.
+> >=20
+> > Fixes: 9eeee3b0bf19 ("iio: Add output buffer support")
+> > Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> > --- =20
+> Reviewed-by: David Lechner <dlechner@baylibre.com>
+>=20
+This brings the code inline with the near identical
+flow in the read path.
 
-> +	ret = devm_request_threaded_irq(dev,
-> +					irq,
-> +					mpu3050_irq_handler,
-> +					mpu3050_irq_thread,
-> +					irq_trig,
-> +					mpu3050->trig->name,
-> +					mpu3050->trig);
->  	if (ret) {
->  		dev_err(dev, "can't get IRQ %d, error %d\n", irq, ret);
->  		return ret;
+It's been a while since I last looked at the locking / tear
+down (what that ->info check is all about).  I'll add actually
+documenting all the corner cases to the todo list as IIRC
+there are some non obvious ordering constraints.  IIRC,
+in the buffer paths, it is fairly straight forward
+as it's just an optimization to avoid queuing or draining
+data when the device is going down - nothing about the buffers
+themselves involves interacting directly with the hardware.
 
-Now this prints two messages on the error path...
+Applied to the fixes-togreg branch of iio.git and marked
+for stable.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+
+Jonathan
+
+
 
 
