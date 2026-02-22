@@ -1,96 +1,154 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 76E87286881;
-	Sat, 21 Feb 2026 22:43:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44BBCFC0A
+	for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 09:45:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771713796; cv=none; b=ttN/qEYaGAj8lVkgJTJordlbVBBLo5va4Zd+6VB1dWS1NqQExCE2MO6lwnG4mwx6x1NWUuKpOp2zPuW5cX24bONx7tviNy80sasUgNg0sCHlVYQIVBWDWCc58hrZf7i/OYLS5PxzT0hto/KhAk/ywPYh4rVL+rp0o4GU3dXpEKY=
+	t=1771753547; cv=none; b=m4N4jQENac3cqNWpe6/8hIe7WwzHJ/Lm3QdrAzs1tneR61POQYdAzsYu7HsJG5gyM9yPg1Ot2rMzKOTFkffgiy1e79L0DIzsnGHJ08goUCYHnZVhhq3lrqLpSJOX7FjsG52GTiPjzDUBtwQ5qFlGBy2EgWT9tnuAo/qSLFmJHaI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771713796; c=relaxed/simple;
-	bh=l1mLttXcMUKU0fqnl6vPAmjLOeTpuvTMHgBKn7H5Qa0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fRaemHoJagjwpmSA3NIJfknDYEjCZhENwKyOS0FLP5C7W4X0VtxpNUhcr5OeO1fNbhW20FghH5AUVIZd02mSu+DCSeITMLtn7xZ+++RcKMfoz01NUUw15uROx7R9WiSWaTjbO1nR9ndZDbKsdU94XlP6eNy3QMSGembWpwlBQ4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fa3bBdp7; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771753547; c=relaxed/simple;
+	bh=Q58s3FaYS+W1+PdVhrq3Ap+aQAsxjqwX2JUo4/L8TAE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=XNk4uSKp+Tsrz/UZzug6fh/o9MnZzEFx0T9GX6K+zCHnOXaFYDcedhkG3cIQhbqyTsnIU2anIRQoHRsz4blMiAxKmY5dVM4ZYuqk9UOCD+zYat9/svkGBUmRsGdxnYkRL4fWEHV3WdMhJ/TW7Y4ITD+3jxdRgREvfrKnQS0MiEc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a2/rz2E2; arc=none smtp.client-ip=209.85.216.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fa3bBdp7"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83C69C4CEF7;
-	Sat, 21 Feb 2026 22:43:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771713796;
-	bh=l1mLttXcMUKU0fqnl6vPAmjLOeTpuvTMHgBKn7H5Qa0=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fa3bBdp7wK/NbCA2tMCiIWYD1D6FSWGoCXK+gXnCSds1q5aiy6e8GAA+ktxPhGu2+
-	 oEFIPezMf+XB0z9hCbuX15I1721tL5DjgtRFwcUUJhR/3RbiXiY/ku7ihZEiGMFdLM
-	 K+DUcrVgLyKq0DUoCGLUlcq4QyCHfaDK1Ye8uM6JCcViE7KPQ9X2++aDbJIQyzj280
-	 ShmF+1uMQkLIjACjg73Vp44sAlDoG3Y270xuZCcUElv5yGCQ8KbPCoHTmeG98wjQbM
-	 yrsaEcxBIm/JU2pj9m2a6Np5J4QxtQsbmv5K9W52eL5iieOSHD/3dmXiVsVQPoTEBt
-	 NcedIOUHZ6VQA==
-Date: Sat, 21 Feb 2026 22:43:11 +0000
-From: Conor Dooley <conor@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH RFC 1/8] dt-bindings: iio: frequency: add ad9910
-Message-ID: <20260221-batting-amiable-fc01ae386789@spud>
-References: <20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com>
- <20260220-ad9910-iio-driver-v1-1-3b264aa48a10@analog.com>
- <41190a42-70ab-45b9-922f-317e792b25a0@baylibre.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a2/rz2E2"
+Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-3585ec417f6so2165020a91.1
+        for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 01:45:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771753545; x=1772358345; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=e02DHxFr8gMzpHf2FtukLIqFujOEG5T0tla5YfzjmpI=;
+        b=a2/rz2E2Lk2HmCXne5LELh1plK/cmmoNbr2Nfy5DNpBD33Tq/jWChXf0LNJ4lu0qfa
+         mewa5Mc5Y7KC1sgKNGYkcBKRNgwxgcSyTo3zK6MhOYIsI7R00wY072hn2DaCVz9BTkvE
+         yi/z15um7YFbOxhJC+huFvIPSwiwCslUzbyR3Gye/N4DEOdA5GhTxRghojGrog6qtdiM
+         Nld4yE9oW7iGR9sFwSSMQb835oN8dlqolcWtVZgV7KRPwiNWtPclAO3J98Wi1pHXnzND
+         cHse4UXtmHu0R6XrUZEqDsLd7vRg1fCq6quwSXeulyG7hHUr/NZ/EXN0KsNbDD4Uq/eh
+         r//Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771753545; x=1772358345;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=e02DHxFr8gMzpHf2FtukLIqFujOEG5T0tla5YfzjmpI=;
+        b=KHQvsD4QODi1Cm5s+NWK/HZcfyGQE5V4mvdTxQwz3KJlEaaiIcjFo15NcLm48sn5it
+         9qDcGr6Dz3VbLw4l1RdG4RQOcF8YL13duAj3GiMwWtB4c8BDrVcmT0LST78CEwmTasgR
+         uQqg3T+igVlu+guxt9CFxr3iVIFj8yuLwutpvCcSd4b3nnfKHLo1ARnQs37rbg1vTPzq
+         +UioHqdZAH69VMOi589gjxIv+7JZjybFprXz5u4SEAtki+b4fj6Vd0tBI30oE8GV6OS3
+         naHFMeyk8+ia37pAqt2dHlxCQrMi/J2ux9K+BdUnI5qrRQSpPwNamYEGA3Lhi/ajCrcP
+         lSSg==
+X-Forwarded-Encrypted: i=1; AJvYcCXbNzTd5qMoBS5JxzBwKm2LRDVLKPkhLatW93CAGbL1sCnplEHenA0lrAxl+ULZJSh8r6efJUTLXec=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwHJlV4rCz8iV6G1e6pEzp4jAQzyu/rOTtMYlhXYx2wbw1pkX5C
+	V70vC4v2/ntkKLsJNoTnS/OJ+6SXe0KHlm/2PCyNu8CY5VzdEMTS7PmF
+X-Gm-Gg: AZuq6aKKODZI3UT+V18wqvHU5oHMC+CH3TFk02utx8sryuhCpnI0lbDcSbe9skXTnMS
+	P4Ol2em7l7FdNndqzxqWkGJpgLO5iXu+l1/6lcfEsmK+gHx/I4F5KCN+mcH7nz1uU8rbLofu1ph
+	+5UyePZkQnU3VGU/XKcJVOMjuuAikcOBg6gZ9e84QKCPofgo7nnImy/Dpl4qesDGmUxQdo5yWEw
+	cqwiRY0MNICsXauracMLbXqCm8+QSejuPx0LzHzQQoWA8yDdwrkD+KQObS7n3oVF2HIY9LsBs4I
+	vYOsrh8GgHwO1JpKxfhMEuQrMKss/9tgkHOX5ZF2weavi3FLQtjffZv63wqPt6V1sCLwE3bZyxM
+	HN1Q1rPvzkTI6yVZ/+LHBsuofSGbiSSbAUbptX5ErmY9f22+l2x4on7KybybIyZWpr1jtjJBnB2
+	OgMwAWeXt7/Nj1r+T0kXJ+ayS+m3xzXvyYYg==
+X-Received: by 2002:a17:90b:4cc7:b0:34c:718c:5448 with SMTP id 98e67ed59e1d1-358984ea764mr7749218a91.4.1771753545462;
+        Sun, 22 Feb 2026 01:45:45 -0800 (PST)
+Received: from junjungu-PC.localdomain ([2408:820c:9008:ba52:1:8bf1:8197:6d5f])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-358a2b39b66sm3278995a91.11.2026.02.22.01.45.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Feb 2026 01:45:45 -0800 (PST)
+From: Felix Gu <ustc.gu@gmail.com>
+Date: Sun, 22 Feb 2026 17:45:39 +0800
+Subject: [PATCH] iio: adc: nxp-sar-adc: Fix DMA channel leak in trigger
+ mode
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="FdGph1zvow74waEI"
-Content-Disposition: inline
-In-Reply-To: <41190a42-70ab-45b9-922f-317e792b25a0@baylibre.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260222-nxp-sar-adc-1-v1-1-0ec0e00b25cb@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAELQmmkC/x3MQQqAIBBA0avIrBvQWZR1lWhhNtVsTBRCEO+et
+ HyL/ytkTsIZFlUh8StZntBhBgX+duFilKMbSNOoiQhDiZhdQnd4NLh7N5lT23n3FnoTE59S/t+
+ 6tfYBluUCdF8AAAA=
+X-Change-ID: 20260222-nxp-sar-adc-1-bca71f089bc8
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, 
+ Ciprian Costea <ciprianmarian.costea@nxp.com>, 
+ Alexandru-Catalin Ionita <alexandru-catalin.ionita@nxp.com>, 
+ Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ "Radu Pirea (NXP OSS)" <radu-nicolae.pirea@oss.nxp.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Felix Gu <ustc.gu@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1771753541; l=2021;
+ i=ustc.gu@gmail.com; h=from:subject:message-id;
+ bh=Q58s3FaYS+W1+PdVhrq3Ap+aQAsxjqwX2JUo4/L8TAE=;
+ b=5xmjjIQ/cHPtbQPy2j6CtxJ7urk8r2qt1qoTlij1+jRB9PJkPG0E1vRI3b+DMPAmsEW20amqR
+ HBIhxgNd7GFBzQuZowMSNZq4NDKk40C3nXcuMKar05qwirtGhLIe2S8
+X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
+ pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
 
+The DMA channel was requested in nxp_sar_adc_buffer_postenable() but
+was only released in nxp_sar_adc_buffer_software_do_predisable().
+This caused a DMA channel resource leak when operating in trigger mode.
 
---FdGph1zvow74waEI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Fix this by moving dma_request_chan() from
+nxp_sar_adc_buffer_postenable() into
+nxp_sar_adc_buffer_software_do_postenable(), ensuring the DMA channel
+is only requested in software mode.
 
-On Sat, Feb 21, 2026 at 02:43:02PM -0600, David Lechner wrote:
-> On 2/20/26 10:46 AM, Rodrigo Alencar via B4 Relay wrote:
+Fixes: 4434072a893e ("iio: adc: Add the NXP SAR ADC support for the s32g2/3 platforms")
+Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+---
+ drivers/iio/adc/nxp-sar-adc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-> > +dependentSchemas:
-> > +  resets:
-> > +    properties:
-> > +      reset-gpios: false
-> > +  reset-gpios:
-> > +    properties:
-> > +      resets: false
->=20
-> This seems too strict. Couldn't we have some resets from a reset
-> controller and others from gpios?
->=20
-> Or maybe the reset bindings are enough and we don't need the gpio
-> bindings for the same pin?
+diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
+index 9efa883c277d..890c8ef3132f 100644
+--- a/drivers/iio/adc/nxp-sar-adc.c
++++ b/drivers/iio/adc/nxp-sar-adc.c
+@@ -718,6 +718,10 @@ static int nxp_sar_adc_buffer_software_do_postenable(struct iio_dev *indio_dev)
+ 	struct nxp_sar_adc *info = iio_priv(indio_dev);
+ 	int ret;
+ 
++	info->dma_chan = dma_request_chan(indio_dev->dev.parent, "rx");
++	if (IS_ERR(info->dma_chan))
++		return PTR_ERR(info->dma_chan);
++
+ 	nxp_sar_adc_dma_channels_enable(info, *indio_dev->active_scan_mask);
+ 
+ 	nxp_sar_adc_dma_cfg(info, true);
+@@ -738,7 +742,7 @@ static int nxp_sar_adc_buffer_software_do_postenable(struct iio_dev *indio_dev)
+ out_dma_channels_disable:
+ 	nxp_sar_adc_dma_cfg(info, false);
+ 	nxp_sar_adc_dma_channels_disable(info, *indio_dev->active_scan_mask);
+-
++	dma_release_channel(info->dma_chan);
+ 	return ret;
+ }
+ 
+@@ -765,10 +769,6 @@ static int nxp_sar_adc_buffer_postenable(struct iio_dev *indio_dev)
+ 	unsigned long channel;
+ 	int ret;
+ 
+-	info->dma_chan = dma_request_chan(indio_dev->dev.parent, "rx");
+-	if (IS_ERR(info->dma_chan))
+-		return PTR_ERR(info->dma_chan);
+-
+ 	info->channels_used = 0;
+ 
+ 	/*
 
-Actually, I'd be interested in seeing evidence for the resets property
-ever being used with this device. I think every single reset-controller
-that's currently documented is an on-chip device for resetting
-peripherals.
+---
+base-commit: d4906ae14a5f136ceb671bb14cedbf13fa560da6
+change-id: 20260222-nxp-sar-adc-1-bca71f089bc8
 
---FdGph1zvow74waEI
-Content-Type: application/pgp-signature; name="signature.asc"
+Best regards,
+-- 
+Felix Gu <ustc.gu@gmail.com>
 
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaZo0/gAKCRB4tDGHoIJi
-0l26AQDR3ZVj0FXwPKdQMJzQ5DAH9j6w3UqQs2++/xuFnGbjHgEAh9aLwGPduncW
-ITaX2/mpnyBdPmyszgUdZfQM1oS5Kwc=
-=mGrX
------END PGP SIGNATURE-----
-
---FdGph1zvow74waEI--
