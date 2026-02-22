@@ -1,44 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 39E8626F291;
-	Sun, 22 Feb 2026 13:58:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0BFB21B808;
+	Sun, 22 Feb 2026 14:03:24 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771768737; cv=none; b=ZdMhALGrvS1UxKMYts6/YXigwYygnrTNlM9DG1U60zO1m9ejCo9eljETIhAmh919g+Nm/mQQ5jYoxN0mQCKseFDk1Lk45XVQdVTYQZQEAkR9qPdFp1dAsFwDGow33pgb4KZTLiOuto8Mi+Ect6+ltiVP4UCXIu2bK/rxb6FMF74=
+	t=1771769005; cv=none; b=WOxj0Q8OROK3ye0gVBOV1t3Ft1sqrATBmOth3dk6aDq3iYgiZN2seIY1tPhqlx+SL6OWa7ZNqVfhCnDkTnsgvXU7e4R0emdBlByo1xv09d584Lo4632gEEymrGg+HlqT4AZLSS9zM3wROuH5YsmZBxfRsEHyA8pZaByTNXp/fK4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771768737; c=relaxed/simple;
-	bh=g2HcNtWbc/QAGjodBwlubcmmR1PFFF4LLxUP8cEtz4w=;
+	s=arc-20240116; t=1771769005; c=relaxed/simple;
+	bh=Api/KXx3CyA+l/V9RndsWfXqZ3HkT3hfiByk6SG7laI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=nlO2wviQIRbkBdIn9gvNQcMoDctZoRo6vzKgp33SgHYMldSuikToWwKE1Hye0nlRcLfXeRnzX+XmmODH5t97o2PCbPkJHT0i2O7rqP7166td1SIK9NOF8K7szhzYRk43Fqo9fptzT+eGACKPNOR6lmrq3PUkYDaBla4BaJFN6Jk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E7VDX8lI; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=JGA7jaT8QE+F/LjEfN572Kx0YskwLPF3H2ZxUyysEn3kt6ulZoM/GD3SJ4x6qMdOm72QwRDatTIc4i8GrqjdQtoupHE5m+9zI9jEsN+oor1osYRNpa3wAvtHe913U52pd0v29h0CRLA3lOA2XOI2x1LPmOWq1mCV9k3XCOMuFHk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WsK5ZbJ5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E7VDX8lI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D18D9C19424;
-	Sun, 22 Feb 2026 13:58:53 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WsK5ZbJ5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EEDBC116D0;
+	Sun, 22 Feb 2026 14:03:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771768736;
-	bh=g2HcNtWbc/QAGjodBwlubcmmR1PFFF4LLxUP8cEtz4w=;
+	s=k20201202; t=1771769004;
+	bh=Api/KXx3CyA+l/V9RndsWfXqZ3HkT3hfiByk6SG7laI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=E7VDX8lIxCKeEN7/RfHDU8D3ADB/0U+uFTWKZdNm1yK22aSCxvx841c4//yZsNRaO
-	 qHBV3vlBOGfBXggrHLMRD9KO46KFZSgNwGXSUJic673lvfgo5cDdvmpNJKM2Bhsrgh
-	 0b2nQ/bKFK+k/2GsqvIc/vcU5h+ah4HpiLYECOa1Omb6R1Pp9Xx3YxWkC/7lO4JANe
-	 gnpCBHF+qCSqyLe3IBH29K67ap7AvtixPoSdrCdUpou8VwwYMeBtS61iw/KEIOcOkK
-	 RGhFHFXrVe+rtlVLbdHJ2jajJn16TVZni9UFnGxxuX6DFs4Ogs4Rkiu6rsfxBw/MQ2
-	 ez5WDcFmB9pCg==
-Date: Sun, 22 Feb 2026 13:58:48 +0000
+	b=WsK5ZbJ5yuNUns3FvgD0OGA2XWT7V6BxwCn6JUMEBsx4N0U0tVQn8gVXD4trgog2W
+	 7p/AkEA6H6joA0WjfiLQs0AjpqM8q6hkVwf4kZppBVwvAhgwCt8b0Fw7XxNhC3jcJc
+	 mHCLZKu++Kuvn6Dv4jOFgzhSHXQJoGUDE3HLAx+QKspQiWwIWjm8kNg6txHDcoSxCe
+	 YyB0fSG6pwfau1bCcv9rh0SC1kT3ODGq2IDUVsk0aV2ova2m2C2DiYLyDKecqYBNi6
+	 iNMvqEw2B7MNT8sQk8UiGPPwhnyiGZAHgr8TXVvhpe5h9lC/X/n4YuSIqwWDae61S0
+	 ObEnQGxmllQBQ==
+Date: Sun, 22 Feb 2026 14:03:15 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: bhargav <rougueprince47@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] iio: frequency: ad9523: fix checkpatch warnings
-Message-ID: <20260222135836.3f8d7a38@jic23-huawei>
-In-Reply-To: <20260222135054.2e2012aa@jic23-huawei>
-References: <aZd2jAVnTIuz2o7h@smile.fi.intel.com>
-	<20260219213549.59645-1-rougueprince47@gmail.com>
-	<aZgLutMih65WdesN@smile.fi.intel.com>
-	<20260222135054.2e2012aa@jic23-huawei>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] iio: adc: ti-ads7950: normalize return value of
+ gpio_get
+Message-ID: <20260222140315.33e5e97c@jic23-huawei>
+In-Reply-To: <20260219022929.3558081-2-dmitry.torokhov@gmail.com>
+References: <20260219022929.3558081-1-dmitry.torokhov@gmail.com>
+	<20260219022929.3558081-2-dmitry.torokhov@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,55 +50,33 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 22 Feb 2026 13:50:54 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 18 Feb 2026 18:29:25 -0800
+Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
 
-> On Fri, 20 Feb 2026 09:22:34 +0200
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> 
-> > On Fri, Feb 20, 2026 at 03:05:46AM +0530, bhargav wrote:  
-> > > Changes in v3:
-> > > -Patch 1: updated macros to use '(x)' instead of 'x'.
-> > > -Patch 2: collected reviewed-by (no code changes).
-> > > -Patch 3: fixed vertical spacing and broken indentation.
-> > > 
-> > > These patches address several checkpatch warnings in the ad9523 driver.    
-> > 
-> > Do a new email thread for each new version of the series.
-> > Do not send a new version more often than a couple of days.
-> > (The very bare minimum is 24h.)
-> >   
-> 
-> Series is simple enough I'm not going to wait on Michael
-> giving it a quick look (as the driver maintainer).  Still
-> time for more feedback though given I'll be rebasing the tree
-> anyway on rc1 later this week.
-> 
-> Applied to the testing branch of iio.git.
-Pulled again.  Just a small thing I need to check.
-
-For sign off we need a "known identity" - see submitting patches.
-Mostly that's a legal name, but if people are commonly known
-by other names that's acceptable as well.
-
-Given short nature of your SoB and that this is (I think?) your
-first upstream commit I just wanted to check that bhargav is 
-sufficient to meet this level.  
-
-What counts for this varies a lot by culture or country so if
-that is the right level of identification to use that that's
-fine, just reply to let me know.
-
-Thanks,
+> The GPIO get callback is expected to return 0 or 1 (or a negative error
+> code). Ensure that the value returned by ti_ads7950_get() for output
+> pins is normalized to the [0, 1] range.
+Fixes?  I'm not quite sure with something that says 'expected'
 
 Jonathan
 
-
 > 
-> Thanks,
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> ---
+>  drivers/iio/adc/ti-ads7950.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Jonathan
-> 
-> >   
-> 
+> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+> index bbe1ce577789..b8cc39fc39fb 100644
+> --- a/drivers/iio/adc/ti-ads7950.c
+> +++ b/drivers/iio/adc/ti-ads7950.c
+> @@ -433,7 +433,7 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+>  
+>  	/* If set as output, return the output */
+>  	if (st->gpio_cmd_settings_bitmask & BIT(offset)) {
+> -		ret = st->cmd_settings_bitmask & BIT(offset);
+> +		ret = (st->cmd_settings_bitmask & BIT(offset)) ? 1 : 0;
+>  		goto out;
+>  	}
+>  
 
