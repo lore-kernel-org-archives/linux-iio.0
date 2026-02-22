@@ -1,66 +1,66 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BCAC1B6527
-	for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 10:01:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 773661A0712
+	for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 10:47:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771754476; cv=none; b=M+gH1/L+bO6EooZpEB4KN4xOia+ZezjLp5CfEXhoYwKx72DM002IbtW4FBJEqLgADdlmmJ/5Npf6Qpw4ZVwe54IJR5HxBfQ4Tz8rCcbElaYGPSjb34I9MHpfP0XZCoNePIgsQZbA8/EZorygp58zB7V7S3lDRzVjPD2lFJzo+V4=
+	t=1771757271; cv=none; b=ZHc5vJcS2QKPnTY5nlY/+JRZUlv+OKcE579KNg5A8JRTzJbi5QQcPkYLc1s49GMmur5LgTckkAPuToSTuRqg8ET8X3vbYS03Me8uMKwoi5W/1huHZG3hQCVk7YcZc5FoRwrEbn07wqoMXodQ/xqoxQgRlf61UG/icyULORkSPTs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771754476; c=relaxed/simple;
-	bh=UJ58ZtPtWKCa+LTOvGOjw26gzTFytJa7PejQgGVSY1A=;
+	s=arc-20240116; t=1771757271; c=relaxed/simple;
+	bh=FZtMsnt02eppF/38LL0dDrpegbd1QTjbVPOUWIDXCeA=;
 	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A3V1n1i29yFasYuxizy5tOi1hFpa9zh8xABFE47MTMXsskPEi+bu1I0PwW8cmDaq92xDDj0doVcRQJ221iTbO7x5KgJ1qUtetq18CGqjovWwGKjNF7nIrpksuQAdM1E/V7A58XaQFdd2pZnCkayi+n5AsobbHdbgvUBa3/JHaQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PTuWuP+B; arc=none smtp.client-ip=209.85.221.45
+	 Content-Type:Content-Disposition:In-Reply-To; b=VOv1bPUa4aCe64wKlrQ9q6XfAezlUpMYqOhqq+Rg5nSLOBymlUgt+taKW65ieKLnvkYYIodBRpofdYVsBI9QGIUbigYfcaECeQs0CRj95Tvb/B60q6ylOAuf4gfgAO08AB3/z7BNgzy1jII6+WzIGynSfzRpKJPsRHiVMT8qZ6U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j9wXNW5k; arc=none smtp.client-ip=209.85.221.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PTuWuP+B"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-4359a16a400so3153511f8f.1
-        for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 02:01:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j9wXNW5k"
+Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-4362197d174so2156494f8f.3
+        for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 02:47:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771754473; x=1772359273; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771757268; x=1772362068; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=P4BA9m7stgw+QUUpwZn/xgPy8Z/NcUc9HLfI6tL9Gcc=;
-        b=PTuWuP+B29OjZ1jzV9DRI60iwq+HDw0rdYyXhsNZX9Nqz1qfx9WbbDHK7adgdRgSp/
-         ZIIAPQCawvqlPGtPQR/OmyEkEe2vNa+b3kQ8/4o86ncuwLVMOdJhdQOf8qXS4RMKSwas
-         6JAFAcahyIGQO/4dTVsyF6hm2PvAId1Iva6nDTAxzXs1RnJUntkGmhNSme8KRHA136Nw
-         C5fbi1XDo1C/e7IbFQxYpz09SAGx0+3CZJSQqrxAS2jWtHlUYK8SPAZiICNCZ6hp3rKz
-         Qx2xdz3chqF7910sBwJlu2x5HJdB30mHblnNBEv5Dpewohpqa9titi/E3SEuPc/G0uca
-         q6Jw==
+        bh=i1lDCkSDNtVJMG1W9w9h0e2Oqigo/C84t+Cu7jky8SA=;
+        b=j9wXNW5kL20zKjWTOJRxEL/uca2aMOKL2BqbzbyWLxy+SJi7IE2CMpjz7L0fYvRcoy
+         UXuHfuseGEYg0/uHkC6y2GqLsXUrrcPv49Zb9yZKSekQFFsuKZhtlNs99+TCO+vnFBKf
+         Zu86xvnc9C2yTvlhFf1ymNOJyUhUCIcFZlksvTiUkKe65SUi6VJXy7gE1UPneLaD+Pcq
+         jGvt4WOCDJ53Nch39iZkfKNtOJu6xHQPwtmSzth55L+sV71ZyON5VBTJvFbd2g81lLYR
+         jds0A46xQ7FJ4sI4obTqtsTzgSf5mx+/PM0RMOVGnVfBt5UstD/ewWPce6Ce7R29aW4a
+         0BxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771754473; x=1772359273;
+        d=1e100.net; s=20230601; t=1771757268; x=1772362068;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=P4BA9m7stgw+QUUpwZn/xgPy8Z/NcUc9HLfI6tL9Gcc=;
-        b=YLfmKA+ODE+b77cDlDpnj6KnQzG9p1N2d6CyizueY4jeqZomod/5Ygh+3v7PRpFEnM
-         Uzjx58RpPZVtZPquug0UdpRb20rEy7Hituw/za0plrvv5PfSvN7i0MZ7wku2vkoLQ6bJ
-         Ojh35DcMIQ5snaFJy8SwvMfl/J7Ls4r5cWtrcCcPQwAhlOCZBkLoQoGy7Mta0C7RZ0Ap
-         tgANvikFkyPeP7bn9tVwjsEXaKu0AwyNfoisJV7VsDc/GUWJ5bp6F6Tm9c6BaInhl2z/
-         zp93XJ7QmbsfMCwR3F8XWqBmbQT1Zb+PuWuG8VpXvg45mfEzyQre3EwLniQNecEZAOdP
-         Nj7w==
-X-Forwarded-Encrypted: i=1; AJvYcCVQ2FBB5eJmqltlXXFsTcWFhCbVnPQtJNYnqtXhK/FnhvNCj0GnTL4v3gz93w9yuu8YMRqH8UnbrO4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxwX8DYLj2VApD9ztdsvl3EuG93AyZuGnZA+z/joDzN7p/kHvAS
-	ZB5k+Q7VJVpwEkZdYFjtXqE5LPj4Cbh7wePyXAIPW15fFYYxv3nQ6AAcdAVNag==
-X-Gm-Gg: AZuq6aLpSEytwdhC6bOg8UCkj+PYcNUFMul/JLZ7qlMxF5ifkf7N7RauT91zWyN16fa
-	OvIZ6xLjoFU7JmESkWMvfjl6R7CCnuFSbN0EFigaxjxE+ysw85Rq+At58FP8quN2VgEUjvp5FRX
-	4N8FbNlmkHe6/FmenAyVqpu414QQrVuQk2Z0Vo8CZCpsQD5TgWORryXQXYdHmG6SUL5aXbZH82m
-	ljgv3PkUuM9KT9zgeUTJhmDD/zKt1TaiV3JHJ/glMtxX2FxweGbuHxiiVS8YGrkDtDlA84Pqyhh
-	RjmFiA5TpTzHGQRB30P3gDCfiob5vf0VOYYHbe1Uayt709m4dqib3gdtwGcA2wU6/E7TEfmU947
-	GfNH9LGO/VZDzwE7C18UrQuDnB7HkBw/BOFgcdvPLWgqd1+o03byhMI8M38xEnDsT05iuKSfOLy
-	+k9QwQBoIVrcSjB+S3yJFjo3WAfRVSLNQiJHb9ReDE+3hfkYEJG0M9gjW1TCaBAAOwQ3m/eA76d
-	PZkyWxt9fmCmidSe8kJA5WhMFQ4cLut6lBvLmKAEp9yTQiMzOQ=
-X-Received: by 2002:a05:6000:2283:b0:437:81b0:6650 with SMTP id ffacd0b85a97d-4396f189ffbmr10513863f8f.56.1771754473210;
-        Sun, 22 Feb 2026 02:01:13 -0800 (PST)
+        bh=i1lDCkSDNtVJMG1W9w9h0e2Oqigo/C84t+Cu7jky8SA=;
+        b=TLIJah6v4o4yxejA51mhxqfq+KSWPZtBSuf7u1r5c0GTmriVQjw4Ez7EayliTck6bv
+         CsclhApGEDHSa0bWyTrJWuJ8EkH0MFm3i+rq4vGFYcS4JaZ5LKya+Jd0NvqDFHTDnbQb
+         +z0O1au2/cUBnKD0tEXXi5hvZnI1rLB6nhNEYC9KaL1KmLLYF5Zxn8alBqrpnJXfzJVv
+         JpPeMnDTF8Y5S3X2zgqlKnf6DQg1iBkg6MbwT7t2vL2eEoEG8SkRvOnzvQFt3V9NRvJk
+         uXL7aZhB857WxtzSg/G6qJ9cS1tgpw1tKUiv8XGHx08FBq8eaU1Y8fRQK61uQno6LiKm
+         zp6Q==
+X-Forwarded-Encrypted: i=1; AJvYcCX1oLmBuxTBBmnkgxCrQ6gv+99vIPztokZTwBZYuN3vmg5NMplrCbtqLkWlcA8uMCnRKufc0nhKpAM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxBzcwjVWNEH7ocLmzrhhLrQ2dyERfzZTA5l/er0JZsDUToc59q
+	wrm1t7PAYqtSXF+gXQwfcftrio35hSYBQI3I+UYT9BjMRFmP5xyCj1ep
+X-Gm-Gg: AZuq6aLccpzk8GDB5mxkHgwrRL2rrlLVek+Xc2ny+kzn5dT7zPr3pK16YE7Y5rOMzly
+	nEqqH+oYWqlGAHyD0hj2NmnsaeUHW7bphL0POClZ7tdF/YQo6IVqBc/Dk8EYUwD1EjTaPAP0UmS
+	rd/sgVTZpKiRezOb4Vm9OBC8Z4zm/AodTAXcO9s2dY+qDh+KSAxlkGDBaQvJp/dyI0/5Q3cZnSH
+	gpE0b5wzey+v9RGCgZKjkwxrRHAr+j8LObDWNhJI3FYbnFUCgi7ZCK8zhZLA+lcWMhJWTOmDsBK
+	8pbcL+2yc77fbRoJOx07wOfZKB9AUID4C91X0IH4eXWiSIFzPAa1iCrxd02R6tDvcmzkKs+apIx
+	gA0SsFDkmg5VZyfg2m0sLMuZXkZm4poaX6hvHFGgpw4OMtuJeLuKwLcJVqcPmFWfs0FNk2fmpLM
+	xIoucJUoBdnOBZSQcekCvQHlWg7PUMlVDxUp9W3kRiugoDYn5UlHh/YuAQAYvXzNJm5mqqtUyzu
+	L1SycPBQEJWpqeMebmx/wMJyVjIyt38gv37aF9ugTz1QwLGi95rg32+zWZZhQ==
+X-Received: by 2002:a05:6000:1883:b0:437:893f:3361 with SMTP id ffacd0b85a97d-4396f15ae17mr9757394f8f.20.1771757267581;
+        Sun, 22 Feb 2026 02:47:47 -0800 (PST)
 Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43970c00768sm11530327f8f.10.2026.02.22.02.01.11
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43970d54a73sm11954992f8f.37.2026.02.22.02.47.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Feb 2026 02:01:12 -0800 (PST)
+        Sun, 22 Feb 2026 02:47:47 -0800 (PST)
 From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
 X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Sun, 22 Feb 2026 10:01:06 +0000
+Date: Sun, 22 Feb 2026 10:47:41 +0000
 To: David Lechner <dlechner@baylibre.com>, rodrigo.alencar@analog.com, 
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -68,10 +68,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
 	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
 	Philipp Zabel <p.zabel@pengutronix.de>
-Subject: Re: [PATCH RFC 0/8] AD9910 Direct Digital Synthesizer
-Message-ID: <2k4ouimpaxjuhnk67qmrues2375zj43ehru7h5as6w6kf7yak3@2ndr72co5trh>
+Subject: Re: [PATCH RFC 1/8] dt-bindings: iio: frequency: add ad9910
+Message-ID: <n5oxnxatgdqpomuijz6avvautkndg7r52kmobakemcgggdkjh2@q7m6h2ndjx7w>
 References: <20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com>
- <a72b2d62-3b91-4789-a1b1-ff1429e80ed5@baylibre.com>
+ <20260220-ad9910-iio-driver-v1-1-3b264aa48a10@analog.com>
+ <41190a42-70ab-45b9-922f-317e792b25a0@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -80,210 +81,229 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a72b2d62-3b91-4789-a1b1-ff1429e80ed5@baylibre.com>
+In-Reply-To: <41190a42-70ab-45b9-922f-317e792b25a0@baylibre.com>
 
-On 26/02/21 02:16PM, David Lechner wrote:
+On 26/02/21 02:43PM, David Lechner wrote:
 > On 2/20/26 10:46 AM, Rodrigo Alencar via B4 Relay wrote:
-> > This patch series adds support for the Analog Devices AD9910 DDS.
-> > This is an RFC so that we can agree/discuss on the design that follows:
-> > 
-> > The AD9910 DDS core can be driven through several independent mechanisms:
-> > single tone profiles, a digital ramp generator, an internal RAM playback
-> > engine, a parallel data port, and output shift keying. Each of these
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+
+...
+
+> > +  resets:
+> > +    minItems: 1
+> > +    maxItems: 2
+> > +
+> > +  reset-names:
+> > +    oneOf:
+> > +      - items:
+> > +          - const: dev
+> > +      - items:
+> > +          - const: dev
+> > +          - const: io
 > 
-> This makes is sound more like a DAC than a frequency generator. altvoltage
-> specifically means an AC voltage (sine wave), so these arbitrary outputs
-> don't fit that.
+> This could be a bit more clear. Does dev == MASTER_RESET pin?
 
-Most applications for this part are in fact for frequency generation, like:
-- Agile local oscillator (LO) frequency synthesis
-- Programmable clock generators
-- FM chirp source for radar and scanning systems
-- Fast frequency hopping
+Correct.
 
-The device has been made to be too flexible, so that its operation modes
-have sub-operation modes that allows to handle frequency, scale and phase.
-But at a specific timestamp, the output signal will always be a CW, i.e.
-a sine or cosine wave.
+> And what about DAC_RSET?
+
+DAC_RSET is not a reset, it is a pin for a 10K omh resistor.
  
-> > represents a distinct signal path into the DDS accumulator, so the driver
-> > models them as separate IIO output channels (all IIO_ALTVOLTAGE type).
+> > +
+> > +  reset-gpios:
+> > +    maxItems: 2
+> > +    description:
+> > +      GPIOs controlling the device reset and the I/O_RESET pins. This is only
+> > +      used if resets property is not defined.
+> > +
+> > +  powerdown-gpios:
+> > +    maxItems: 1
+> > +    description:
+> > +      GPIO controlling the EXT_PWR_DWN pin.
+> > +
+> > +  update-gpios:
+> > +    maxItems: 1
+> > +    description:
+> > +      GPIO controlling the I/O_UPDATE pin.
+> > +
+> > +  profile-gpios:
+> > +    minItems: 3
+> > +    maxItems: 3
+> > +    description:
+> > +      GPIOs controlling the PROFILE[2:0] pins for profile selection.
+> > +
 > 
-> Generally IIO channels represent the physical input/output, not the
-> internal channels.
+> Looks like possibly some interrupts as well: RAM_SWP_OVR and SYNC_SMP_ERR
 
-That is part of the reason for this RFC. Dividing those top-level modes
-into channels allows for better organization, as they can operate together,
-i.e., phase or scale can be provided by single-tone profile, while
-frequency is controlled by the digital ramp generator (see Mode Priority
-section in the datasheet). Also, it allows to explore the most of standard
-ABIs like, scale, frequency, phase, sampling_frequency and enable.
-Putting everything into a single channel would make things a lot messy
-to interface with.
+Interrupts are not handled by the driver at this point, so they were not added
+here. The device is meant to have some features exposed through SPI, but to
+extract the most of it needs to interface with an FPGA. For that, an IIO
+backend is in the works.
 
-> Ideally we would just have the one channel here with a mode selection
-> attribute. Documentation can tell us which modes use which attributes.
+> > +  adi,pll-multiplier:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    minimum: 12
+> > +    maximum: 127
+> > +    description:
+> > +      PLL feedback divider value (N). The system clock frequency is
+> > +      REFCLK * N. When not specified, the PLL is bypassed.
 > 
-> > This per-channel separation allows userspace to configure each mode
-> > independently through its own set of sysfs attributes, and to
-> > enable/disable modes individually via IIO_CHAN_INFO_ENABLE, relying on
-> > the hardware's own mode selection architecture.
-> > 
-> > The AD9910 register map is not suited for the regmap framework: register
-> > widths vary across the map (16, 32, and 64 bits). The driver instead
+> What determines the value that should be selected here? This doesn't seem like
+> something we would normally put in the devicetree. (Smells like configuration
+> rather than describing what is wired up.)
+
+The sysclk frequency is something we want fixed because it derives the sync_clk
+and pd_clk which can be constraints for FPGA desing or when interfacing with
+the parallel port (high-speed up to 250 MHz). Also, when using the PLL path to
+derive the sysclk, the external loop filter will pretty much define the values
+to be used here, as it would be optimized for a certain frequency range.
+
+> > +
+> > +  adi,pll-vco-select:
+> > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > +    minimum: 0
+> > +    maximum: 5
+> > +    description: |
+> > +      VCO frequency range selection (0-5). When not specified and the PLL
+> > +      is enabled, the VCO range is automatically selected based on the
+> > +      computed system clock frequency. Typical VCO frequency ranges are:
+> > +      - Range 0: 370 MHz to 510 MHz (Auto-selected when <= 465 MHz)
+> > +      - Range 1: 420 MHz to 590 MHz (Auto-selected when > 465 MHz and <= 545 MHz)
+> > +      - Range 2: 500 MHz to 700 MHz (Auto-selected when > 545 MHz and <= 650 MHz)
+> > +      - Range 3: 600 MHz to 880 MHz (Auto-selected when > 650 MHz and <= 790 MHz)
+> > +      - Range 4: 700 MHz to 950 MHz (Auto-selected when > 790 MHz and <= 885 MHz)
+> > +      - Range 5: 820 MHz to 1050 MHz (Auto-selected when > 885 MHz)
+> > +
 > 
-> Does it break things if you read/write 64 bits from/to non-64-bit registers?
+> Same here. How does this depend on how the chip is wired up?
 
-Yes, the exact amount of bytes needs to be sent when writing specific registers.
+That applies to when the PLL path is used. FPGA interface and loop filter design.
+I can write those details as part of the description.
 
-> In other drivers for chips like this, we've just created 2 regmaps, i.e.
-> one for 16-bit regs and one for 32-bit regs. Seems better than
-> re-implementing a reg cache.
-
-I would have to have 3 configs, one of them for a single 16-bit register.
-Also, regmap_spi does not seem to support 64-bit registers (maybe I am wrong).
-Additionally, single tone modes and RAM control modes are profile based and
-they share the same registers, so I suppose that having to control the
-register cache manually would be beneficial to switch RAM mode ON/OFF.
-I understand that the digital design of the chip is not one of the best,
-and a lot of unneeded complications are pushed to be handled in software.
-
-> > implements direct SPI access helpers with a software register cache, using
-> > type-specific read/write/update functions (ad9910_reg{16,32,64}_{read,
-> > write,update}) that handle endianness conversion and cache coherency.
-> > 
-> > Registers are cached for several reasons. The control/function registers
-> > (CFR1, CFR2) are frequently queried to determine the current operating
-> > mode (e.g., checking RAM_ENABLE before every profile register access),
-> > and caching avoids repeated SPI read transactions for what are
-> > essentially state checks. The cache also enables efficient
-> > read-modify-write updates on multi-byte registers: the update functions
-> > merge new field values with the cached register content without issuing
-> > a SPI read, and skip the write entirely when the value is unchanged.
-> > Finally, the profile registers serve dual purposes depending on whether
-> > RAM mode is active -- they hold single tone parameters (FTW, POW, ASF)
-> > in normal operation but are repurposed for RAM playback configuration
-> > (start/end address, step rate, operating mode) when RAM is enabled. A
-> > shadow register array (reg_profile[]) preserves the inactive mode's
-> > settings across transitions, so no state is lost when switching between
-> > single tone and RAM operation.
-> > 
-> > RAM data is loaded through a write-only binary sysfs attribute
-> > (ram_data). Userspace writes the waveform data as a raw binary buffer
-> > (up to 4096 bytes for the full 1024x32-bit RAM), and the driver
-> > transfers it to the device in a single SPI transaction. Per-profile
-> > start/end addresses and playback parameters (operating mode, step rate,
-> > no-dwell control) are configured through the RAM channel's ext_info
-> > attributes.
-> > 
-> > Streaming data to the DDS core through the parallel data port at the
-> > PD_CLK rate is not covered by this series. That functionality would
-> > be added in a separate patch series, building on top of the IIO backend
-> > infrastructure to provide a proper buffered data path.
-> > 
-> > As I am pushing implementation, as lot has been done already without much
-> > supervision or agreement, still I would be interested on hearing about
-> > the design choices discussed above. Here is the output for the iio_info
-> > at this point:
-> > 
-> > 5 channels found:
-> >     altvoltage1:  (output)
-> >     9 channel-specific attributes found:
-> >         attr  0: en value: 0
-> >         attr  1: frequency_offset value: 0.000000
-> >         attr  2: frequency_scale value: 1
-> >         attr  3: label value: parallel_port
-> >         attr  4: phase_offset value: 0.000000
-> >         attr  7: sampling_frequency value: 100000000.000000
-> >         attr  8: scale_offset value: 0.000000
-> >     altvoltage3:  (output)
-> >     13 channel-specific attributes found:
-> >         attr  0: address_end value: 1023
-> >         attr  1: address_start value: 0
-> >         attr  2: destination value: frequency
-> >         attr  3: destination_available value:
-> >           frequency phase amplitude polar
-> >         attr  4: en value: 0
-> >         attr  5: frequency value: 0.000000
-> >         attr  6: label value: ram_control
-> >         attr  7: operating_mode value: direct_switch
-> >         attr  8: operating_mode_available value:
-> >           direct_switch ramp_up bidirectional
-> >           bidirectional_continuous ramp_up_continuous
-> >           sequenced sequenced_continuous
-> >         attr  9: phase value: 0.000000
-> >         attr 12: sampling_frequency value: 100000000.000000
-> >     altvoltage2:  (output)
-> >     27 channel-specific attributes found:
-> >         attr  3: decrement_sampling_frequency value: 100000000.000000
-> >         attr  4: destination value: frequency
-> >         attr  5: destination_available value: frequency phase amplitude
-> >         attr  6: en value: 0
-> >         attr  7: frequency_decrement value: 0.000000
-> >         attr  8: frequency_increment value: 0.000000
-> >         attr  9: frequency_max value: 0.000000
-> >         attr 10: frequency_min value: 0.000000
-> >         attr 11: increment_sampling_frequency value: 100000000.000000
-> >         attr 12: label value: digital_ramp_generator
-> >         attr 13: operating_mode value: bidirectional_continuous
-> >         attr 14: operating_mode_available value:
-> > 		  bidirectional ramp_down ramp_up bidirectional_continuous
-> >         attr 15: phase_decrement value: 0.000000000
-> >         attr 16: phase_increment value: 0.000000000
-> >         attr 17: phase_max value: 0.000000000
-> >         attr 18: phase_min value: 0.000000000
-> >         attr 22: scale_decrement value: 0.000000000
-> >         attr 23: scale_increment value: 0.000000000
-> >         attr 24: scale_max value: 0.000000000
-> >         attr 25: scale_min value: 0.000000000
-> >     altvoltage0:  (output)
-> >     6 channel-specific attributes found:
-> >         attr  0: frequency value: 0.000000
-> >         attr  1: label value: single_tone
-> >         attr  2: phase value: 0.000000
-> >         attr  5: scale value: 0.000000
-> >     altvoltage4:  (output)
-> >     8 channel-specific attributes found:
-> >         attr  0: en value: 0
-> >         attr  1: label value: output_shift_keying
-> >         attr  2: pinctrl_en value: 0
-> >         attr  5: sampling_frequency value: 100000000.000000
-> >         attr  6: scale value: 0.000000
-> >         attr  7: scale_increment value: 0.000000
-> > 3 device-specific attributes found:
-> >         attr  0: ram_data ERROR: Permission denied (13)
-> >         attr  1: sysclk_frequency value: 400000000
-> > 1 debug attributes found:
-> >         debug attr  0: direct_reg_access value: 0x2
+> > +  adi,charge-pump-current-microamp:
+> > +    minimum: 212
+> > +    maximum: 387
+> > +    default: 387
+> > +    description:
+> > +      PLL charge pump current in microamps. Only applicable when the PLL
+> > +      is enabled. The value is rounded to the nearest supported step.
+> > +
+> > +  adi,refclk-out-drive-strength:
+> > +    $ref: /schemas/types.yaml#/definitions/string
+> > +    enum: [ disabled, low, medium, high ]
+> > +    default: disabled
+> > +    description:
+> > +      Reference clock output (DRV0) drive strength. Only applicable when
+> > +      the PLL is enabled.
+> > +
+> > +  adi,reference-div2-enable:
+> > +    type: boolean
+> > +    description:
+> > +      Enable the reference clock input divider. When enabled, the input
+> > +      reference frequency is halved before deriving the system clock.
+> > +      This is only applicable when the PLL is bypassed.
+> > +
+> > +  adi,inverse-sinc-enable:
+> > +    type: boolean
+> > +    description:
+> > +      Enable the inverse sinc filter that compensates for the sinc roll-off
+> > +      of the DAC output. When it is enabled, the filter introduces up to 3 dB
+> > +      of insertion loss.
+> > +
+> > +  adi,sine-output-enable:
+> > +    type: boolean
+> > +    description:
+> > +      Select sine wave output from the DDS core. When not set, the
+> > +      output is a cosine wave.
 > 
+> And these last few are really getting into things that are typically
+> controlled by the IIO driver and not hard-coded.
+
+indeed, adi,sine-output-enable could be removed from here.
+
+> > +
+> > +  adi,sync-clk-disable:
+> > +    type: boolean
+> > +    description:
+> > +      Disable the SYNC_CLK output pin. SYNC_CLK runs at one quarter
+> > +      of the system clock frequency.
 > 
-> This is a lot of custom attributes!
+> Clock outputs should be described as clock-controller and #clock-cells.
+> The actual enabling/disabling can be done at runtime.
 
-yes, specially for the digital ramp generator, where we have range
-sets of increment, decrement, min and max for each DDS parameter:
-scale, phase, frequency.
+I thought of that, but when interfacing with an FPGA, the clock consumer
+will be the IIO backend itself, which this device driver would depend on.
+It would create a cyclic dependency during the probe of the drivers:
+- This device being a clock provider and an IIO backend consumer
+- The FPGA IP being a IIO backend provider and a clock consumer.
 
-> It looks like a lot of these are just exposing registers directly, which
-> usually isn't the best if we want something that can be reused. However,
-> this looks pretty complex so coming up with something generic is probably
-> not worth the effort. 
+This would be just save some power when not interfacing with an FPGA,
+there would not be a clock consumer to get the clock disabled.
+Normally, clock consumers would want to have clock enabled, which is
+already the case by default.
 
-Not directly, there is often a conversion whenever we are dealing
-with scale, phase, frequency or sampling frequency.
+I would add the FPGA/IIO backend support in a separate patch series,
+as it would bring more stuff here.
 
-> Instead, I would suggest to create a firmware file format that
-> describes how the chip should be programmed. And in the driver call
-> firmware_upload_register() to create a sysfs interface where the
-> firmware can be loaded/replaced at runtime. This way, there is just
-> one attribute write needed to set all of the parameters at once.
+> > +
+> > +  adi,pdclk-disable:
+> > +    type: boolean
+> > +    description:
+> > +      Disable the parallel data clock (PDCLK) output. PDCLK runs at
+> > +      one quarter of the system clock frequency.
+> > +
+> > +  adi,pdclk-invert:
+> > +    type: boolean
+> > +    description:
+> > +      Invert the polarity of the PDCLK output.
+> > +
+> > +  adi,tx-enable-invert:
+> > +    type: boolean
+> > +    description:
+> > +      Invert the polarity of the TX_ENABLE input pin.
+> > +
+> > +  adi,dac-output-current-microamp:
+> > +    minimum: 8640
+> > +    maximum: 31590
+> > +    default: 20070
+> > +    description:
+> > +      DAC full-scale output current in microamps.
+> > +
+> > +dependencies:
+> > +  adi,pll-vco-select: [ 'adi,pll-multiplier' ]
+> > +  adi,charge-pump-current-microamp: [ 'adi,pll-multiplier' ]
+> > +  adi,refclk-out-drive-strength: [ 'adi,pll-multiplier' ]
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - clocks
+> > +  - dvdd-io33-supply
+> > +  - avdd33-supply
+> > +  - dvdd18-supply
+> > +  - avdd18-supply
+> > +
+> > +dependentSchemas:
+> > +  resets:
+> > +    properties:
+> > +      reset-gpios: false
+> > +  reset-gpios:
+> > +    properties:
+> > +      resets: false
 > 
-> This could probably be as simple as something that just contains
-> the value of each register to be programmed and the driver can
-> write all of the registers just before enabling the output.
+> This seems too strict. Couldn't we have some resets from a reset
+> controller and others from gpios?
 
-Not sure, if that makes things simpler, specially for the application
-the would interface with this. I think having the attributes as is
-would be the whole point of using the IIO subsystem.
+I suppose that would be confusing. using reset-gpios is the case where
+we are NOT interfacing with an FPGA. Otherwise, using resets would be the
+case when the IIO backend also implements the reset controller interface.
+
+> Or maybe the reset bindings are enough and we don't need the gpio
+> bindings for the same pin?
+
+normally reset-gpios are enough as it can be used to instantiate a
+reset controller too. I could introduce resets when adding the IIO backend
+support.
 
 -- 
 Kind regards,
