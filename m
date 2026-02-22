@@ -1,45 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45A01255F57;
-	Sun, 22 Feb 2026 14:09:42 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68FC111CAF;
+	Sun, 22 Feb 2026 15:58:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771769382; cv=none; b=RYhNnZqZNCTHNULcnOxuWMWcEtvV9kWvdX1R30p7bDJOjhM378Toh8Z6EeB4Gk4S2uvSwmKk7E1fktmSBrTTk5EnqRqDDoagQwADUhNqqXya8sjYIVqO8NvVDRW5IVvabBKyk86ONIS8713P/qvCjwIIEA9dbxLD0BNqdJvg7/A=
+	t=1771775933; cv=none; b=Po4i+lBtVLGqRuHOP7K6yr9a4Ev2Pi8rFKMimS0rN/kGaLQxjBl5XXz6PoOSIL+lonQqxsG0gTTDXIroXrWF0/jTYgwVVnD5UWIoAe8euDHNOqVPIP77TNRTBMG+zyoO6gzC8yvIhcKd2kQyUbGXy0G4sBH2ElVmfQARvEVfOIc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771769382; c=relaxed/simple;
-	bh=BUJJWN8r851+HbTXeBPI/4ofaQUF/5/AaQuMbKrOvkI=;
+	s=arc-20240116; t=1771775933; c=relaxed/simple;
+	bh=DmBnfXE4CVqDHt/3NcmzWpj8z5uDA6PaSlwMJkGpaGU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=dHiyDzEqmZpcKGbxwLldcYghAg3olWbtM8UvsBgTtfGfv35RhZD9TYMDk8k+1QFYWfPN55W8Rln5zgSWQJayGJTDS33Ml9wvJk0UpolOoGWCBwsMIeXHX6LUySig6jFS6ryOU3dX9UpzR0EJLCj1pDPfYyRYNM4aOFHlDQev/6A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k+jJNbiq; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=GYWzscV/P7jsVTA4EYopYkn8aVG1/rt34fC+4zqdOeEiVMT9cGrAAoY2xj9f5dUGI4ffmfa2eBlJsFc3sHq/VOh1eks15lWnzY4y9dgAePmdnRaLgxANoKCBMBjuFlHvPZsUA2b9PVKxvnk/senJ3F347y39NBrtayjC2mJMzQ4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eHhqIUsb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k+jJNbiq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4FD9C116D0;
-	Sun, 22 Feb 2026 14:09:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eHhqIUsb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75498C116D0;
+	Sun, 22 Feb 2026 15:58:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771769381;
-	bh=BUJJWN8r851+HbTXeBPI/4ofaQUF/5/AaQuMbKrOvkI=;
+	s=k20201202; t=1771775932;
+	bh=DmBnfXE4CVqDHt/3NcmzWpj8z5uDA6PaSlwMJkGpaGU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=k+jJNbiqHnbUDCRpS/SZ0CUVqe8XMY1Pk3PKsBqZwNuFG+YQGqkeLh8yuUz82EDi1
-	 LGqReyBbjWOTZtoQTF50J5SEUwptwTli+9sIAE/Ro6BVhuL+bpuauhMml/Ktdc+oVv
-	 6Z1w8XypkHl6605V5OR98MkL+ISJmzozDpd7F3V6SGndwOT//R9n0zqYc+RaudYXeK
-	 +dDRQP81hS0GIfxRImQCjX2a+II60/fYxAdwU2ZU5EI2z7ql9LI2Vdg54ltjUfGg9j
-	 OEfzPszOhWqhtxui8nB+qkTBfIKwRkcxUkaPFeCOvHx/BvECM7SkLsA/LDExXfb/u0
-	 mM1AJd+W8MBOw==
-Date: Sun, 22 Feb 2026 14:09:23 +0000
+	b=eHhqIUsblaH213121b9EJi1j5HU5QXN6ZqAl+HLWT+25EibBa9Zme9ZgOOaL13DtX
+	 SUpIYtmaLk44TcbyiB7zKiKhX653UV5ioySNufg2Lm8d1TzDzquHnLS4p8L6VttzCf
+	 aNJ4b1cAYjMgFH2cgEptNvn6BAYm4gNTZ0JlKWmLJrqDedKa0UjdBtwffk1VnENQgm
+	 tnR/+2dqNQCA0u31K6m32o0KZiTKYZPGfOYOtiJUJV2uzhRYIPx6CDSOXDoISodI7i
+	 94zmUqA0kDyZGw5coA1ZTCHy99ZJDDA1AkE9PaAtNK3D+lI7z4w05RWQXDz7YEc+vP
+	 DDUeA/vc009Bw==
+Date: Sun, 22 Feb 2026 15:58:45 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] iio: adc: ti-ads7950: complete conversion to
- using managed resources
-Message-ID: <20260222140923.10bd9b7a@jic23-huawei>
-In-Reply-To: <20260219022929.3558081-5-dmitry.torokhov@gmail.com>
-References: <20260219022929.3558081-1-dmitry.torokhov@gmail.com>
-	<20260219022929.3558081-5-dmitry.torokhov@gmail.com>
+To: Tabrez Ahmed <tabreztalks@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-ads1015: Use scoped_guard() in trigger
+ handler
+Message-ID: <20260222155845.2b0b7824@jic23-huawei>
+In-Reply-To: <20260221142500.87016-1-tabreztalks@gmail.com>
+References: <20260221142500.87016-1-tabreztalks@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,44 +46,83 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Feb 2026 18:29:28 -0800
-Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
+On Sat, 21 Feb 2026 19:55:00 +0530
+Tabrez Ahmed <tabreztalks@gmail.com> wrote:
 
-> All resources that the driver needs have managed API now. Switch to
-> using them to make code clearer and drop ti_ads7950_remove().
+> Replace the manual mutex_lock() and mutex_unlock() calls with the
+> scoped_guard() macro in ads1015_trigger_handler(). This simplifies
+> the locking logic by ensuring the mutex is always properly released
+> out of scope, while maintaining the trigger notification on the
+> error path.
 > 
-> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Signed-off-by: Tabrez Ahmed <tabreztalks@gmail.com>
+Hi Tabrez,
 
-Hi Dmitry
+Take a look at the comments in cleanup.h 
 
-One additional comment from me.
+Basic rule is don't combine guard() or __free() with
+gotos.  The actual bugs that avoids aren't present in your patch
+but to keep things simple for review, that rule stands anyway.
 
->  static int ti_ads7950_probe(struct spi_device *spi)
->  {
+See below for alternative.
 
->  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> @@ -598,36 +605,36 @@ static int ti_ads7950_probe(struct spi_device *spi)
->  	mutex_init(&st->slock);
+> ---
+> Compile-tested only.
+>  drivers/iio/adc/ti-ads1015.c | 18 ++++++++----------
+>  1 file changed, 8 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+> index f2a93c63ca14..582d30c07874 100644
+> --- a/drivers/iio/adc/ti-ads1015.c
+> +++ b/drivers/iio/adc/ti-ads1015.c
+> @@ -451,18 +451,16 @@ static irqreturn_t ads1015_trigger_handler(int irq, void *p)
+>  	} scan = { };
+>  	int chan, ret, res;
 >  
->  	st->reg = devm_regulator_get(&spi->dev, "vref");
-> -	if (IS_ERR(st->reg)) {
-> -		ret = dev_err_probe(&spi->dev, PTR_ERR(st->reg),
-> +	error = PTR_ERR_OR_ZERO(st->reg);
-
-To me this reads worse than original IS_ERR() / PTR_ERR() pair.
-
-> +	if (error)
-> +		return dev_err_probe(&spi->dev, error,
->  				     "Failed to get regulator \"vref\"\n");
-> -		goto error_destroy_mutex;
-> -	}
+> -	mutex_lock(&data->lock);
+> -	chan = find_first_bit(indio_dev->active_scan_mask,
+> -			      iio_get_masklength(indio_dev));
+> -	ret = ads1015_get_adc_result(data, chan, &res);
+> -	if (ret < 0) {
+> -		mutex_unlock(&data->lock);
+> -		goto err;
+> +	scoped_guard(mutex, &data->lock) {
+> +		chan = find_first_bit(indio_dev->active_scan_mask,
+> +				      iio_get_masklength(indio_dev));
+> +		ret = ads1015_get_adc_result(data, chan, &res);
+> +		if (ret < 0)
+> +			goto err;
+> +
+> +		scan.chan = res;
+>  	}
 >  
-> -	ret = regulator_enable(st->reg);
-> -	if (ret) {
-> -		dev_err(&spi->dev, "Failed to enable regulator \"vref\"\n");
-> -		goto error_destroy_mutex;
-> -	}
-> +	error = regulator_enable(st->reg);
-> +	if (error)
-> +		return dev_err_probe(&spi->dev, error,
-> +				     "Failed to enable regulator \"vref\"\n");
+> -	scan.chan = res;
+
+There was never any reason to hold the lock over this assignment as
+scan.chan and res are both local variables.
+
+Hence, this can become something like
+
+	mutex_lock(&data->lock);
+	chan = find_first_bit(indio_dev->active_scan_mask,
+			      iio_get_masklength(indio_dev));
+	ret = ads1015_get_adc_result(data, chan, &res);
+	mutex_unlock(data->lock);
+	if (ret < 0)
+		goto err;
+
+	scan_chan = res;
+...
+
+Which gets you most of the advantages of using scoped_guard()
+(no need to unlock in multiple paths) without running into problems
+due to the goto.
+
+Jonathan
+
+> -	mutex_unlock(&data->lock);
+> -
+>  	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
+>  				    iio_get_time_ns(indio_dev));
+>  
+
