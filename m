@@ -1,45 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD6E3331A4B;
-	Sun, 22 Feb 2026 13:25:55 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 53EC83382FC;
+	Sun, 22 Feb 2026 13:28:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771766756; cv=none; b=j3AZhfokXZz2RL85Y3rpdCZ10VydydkL73MeZT0d6xqu6fxuLYhStirFUQxUa+imhF8TQs6++FjthCXaqocSlUiBoZesWbkjxj7k7+OFnbERoFyTJHCF9GD1hbNO/jYTGjc3C296SNhhTVZ8HUnmXNSTYkPI93EoQAd7xKQoQ5w=
+	t=1771766915; cv=none; b=Qwk39MPLPUoav+dheejcehfYaJsnPVp6PdGUfiKbZLMa49fP49X5XW1pL8JOz7QyYPL0JxVhJ04cCe00JoWXjy9Dkjy0AqD7OxPSdIRHJ2D9pmkZjfW0jZQNgsaNNGR+lDOOec+J5ehhUCcXcVfyR2Uw3tLZ8tX/XiEYLXzkSto=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771766756; c=relaxed/simple;
-	bh=MvZPMoyGaIgVmDQJdwrZgE47Hm5SuVzFeNLAh5sPhZw=;
+	s=arc-20240116; t=1771766915; c=relaxed/simple;
+	bh=uwW3vVVhwJp7bD75hFNGPQlKDNix2vQrKdMbPukK0M0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PkkyjAd69wUl/+QxiVA3SKuRlaftqZWzAYYO9WdMy9w2YD+5YsxxEetN/5Wp/OlbK73N8tDiNLWmFm+zmFHd0DTbEMJS3Th4xNDRQjWH7iuDWOlmppQbigviipdouwAkH7W74WuULkmKoieyMWPz6Mreu70L7dk7Seevxg62eAg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PYnYMlxu; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=VuYoDWpUW+Z/8DCb7hpfbgniY72EChd+rWGQ1DUf9H6DAMP29yL8L9JHB8f1+4Pr2zP1W/6Vw6nxefsm74GB1l+eMqB7WrLCQw2cP/uYFcHqNjdtuDmGr7ZFHIBd31qSQ3EzZViQHdOzZRgUNaGgLUU1a6mFqPp7b4QRc9+QtPQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=KNSl4zYu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PYnYMlxu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62B76C116D0;
-	Sun, 22 Feb 2026 13:25:52 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="KNSl4zYu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E46F5C116D0;
+	Sun, 22 Feb 2026 13:28:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771766755;
-	bh=MvZPMoyGaIgVmDQJdwrZgE47Hm5SuVzFeNLAh5sPhZw=;
+	s=k20201202; t=1771766914;
+	bh=uwW3vVVhwJp7bD75hFNGPQlKDNix2vQrKdMbPukK0M0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=PYnYMlxu4vOH1JTqm+SLUmV44cdK3vhgg15zsOKfXkVanSpoQBhjKclp0Qd/n2VG5
-	 GttKU+E/9te25bqR/9tYMMuAci1072Uc4kJxXEwKYzTObQA7zDCAqZlO6ErADZCrEl
-	 PCaBen7nHwZg/d2yBS7EaaElnhhdZiEPqe70zR8ZBq7+GNN5tObNpY4O30Hi/Mnich
-	 gkGk+zsQklPSheDn7Q3fj+pqTQ10RZn8jObJxHceG2IpdNbb/lyNJkU7u58DAEUNLI
-	 Db5VhAT8Ljni1VBF/yO9GxXuTlvPO5Fv17zf67gP75qdWhDAMkSFhMLyMDlgtw7m5C
-	 cdAlZQSlNv1AA==
-Date: Sun, 22 Feb 2026 13:25:47 +0000
+	b=KNSl4zYuEZLNYGPeMljneQWKWo6xz/TIQIM+aZlp8o7sAWzvD5vli8P2ucmuUqU5C
+	 TrZ+Nzzh0B2YJjmasDQ81cQJsSR+z3XZvnDJ7Tl3HPFBwVC7LnP+zL/cgxzd/2SxXk
+	 sK5yuoNZt1HapO3yU3jrr2FYx8Mfiie9QYdWVubBuz3XGn0l7ZQUUSMQ2fA2zkwgKe
+	 MPC/A4YZmdUbqetSrILni6HVIWFgZtJTB9oSpoDk86Y7EymzKMLkE26cNS8g21h9VF
+	 ESIHycSzs6Pwzj/0ZHCkXbR18f4c4f4HU1YqUkduItuQM4vwFPERZf8fhYGcKPfk9i
+	 D/3EQexJSOXDA==
+Date: Sun, 22 Feb 2026 13:28:27 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jean-Baptiste Maneyrol via B4 Relay
- <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org>
-Cc: jean-baptiste.maneyrol@tdk.com, Remi Buisson <remi.buisson@tdk.com>,
- David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH v2] iio: imu: inv_icm45600: fix regulator put warning
- when probe fails
-Message-ID: <20260222132547.34d4134e@jic23-huawei>
-In-Reply-To: <20260217-inv-icm45600-fix-regulator-put-warning-v2-1-08ad62b1dcdb@tdk.com>
-References: <20260217-inv-icm45600-fix-regulator-put-warning-v2-1-08ad62b1dcdb@tdk.com>
+To: Ricardo Ribalda Delgado <ribalda@kernel.org>
+Cc: Pranav Kharche <pranavkharche7@gmail.com>, conor@kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, Conor Dooley
+ <conor.dooley@microchip.com>
+Subject: Re: [PATCH v2] dt-bindings: iio: dac: Fix typo in ti,dac7612.yaml
+Message-ID: <20260222132827.3b477dff@jic23-huawei>
+In-Reply-To: <CAPybu_24T+1e0C9Bw9GSv5ErmV4AZ-EZoEe5VZc8AZoCCJw8Aw@mail.gmail.com>
+References: <20260218035549.17871-1-pranavkharche7@gmail.com>
+	<CAPybu_24T+1e0C9Bw9GSv5ErmV4AZ-EZoEe5VZc8AZoCCJw8Aw@mail.gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,71 +44,22 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Tue, 17 Feb 2026 11:44:50 +0100
-Jean-Baptiste Maneyrol via B4 Relay <devnull+jean-baptiste.maneyrol.tdk.com@kernel.org> wrote:
+On Thu, 19 Feb 2026 08:57:29 +0100
+Ricardo Ribalda Delgado <ribalda@kernel.org> wrote:
 
-> From: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> 
-> When the driver probe fails we encounter a regulator put warning
-> because vddio regulator is not stopped before release. The issue
-> comes from pm_runtime not already setup when core probe fails and
-> the vddio regulator disable callback is called.
-> 
-> Fix the issue by setting pm_runtime active early before vddio
-> regulator resource cleanup. This requires to cut pm_runtime
-> set_active and enable in 2 function calls.
-> 
-> Fixes: 7ff021a3faca ("iio: imu: inv_icm45600: add new inv_icm45600 driver")
-> Signed-off-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
-> Cc: stable@vger.kernel.org
-Applied to the fixes-togreg branch of iio.git.
-Note I'll rebase that on rc1 once available and then spin a pull request.
+> On Wed, Feb 18, 2026 at 4:56=E2=80=AFAM Pranav Kharche <pranavkharche7@gm=
+ail.com> wrote:
+> >
+> > Fix a typo in the description where "Is is" should be "It is".
+> >
+> > Signed-off-by: Pranav Kharche <pranavkharche7@gmail.com>
+> > Acked-by: Conor Dooley <conor.dooley@microchip.com> =20
+> Acked-by: Ricardo Ribalda <ribalda@chromium.org>
+Applied.
 
 Thanks,
 
 Jonathan
-
-> ---
-> Changes in v2:
-> - Rework patch to move pm_runtime set active early.
-> - Requires to cut pm_runtime set active and enable in 2 functions.
-> - Link to v1: https://lore.kernel.org/r/20260205-inv-icm45600-fix-regulator-put-warning-v1-1-314ec12512cb@tdk.com
-> ---
->  drivers/iio/imu/inv_icm45600/inv_icm45600_core.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-> index ab1cb7b9dba435a3280e50ab77cd16e903c7816c..811ff80a2e626b4c2bb7b718899abe77488c7745 100644
-> --- a/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-> +++ b/drivers/iio/imu/inv_icm45600/inv_icm45600_core.c
-> @@ -744,6 +744,11 @@ int inv_icm45600_core_probe(struct regmap *regmap, const struct inv_icm45600_chi
->  	 */
->  	fsleep(5 * USEC_PER_MSEC);
->  
-> +	/* set pm_runtime active early for disable vddio resource cleanup */
-> +	ret = pm_runtime_set_active(dev);
-> +	if (ret)
-> +		return ret;
-> +
->  	ret = inv_icm45600_enable_regulator_vddio(st);
->  	if (ret)
->  		return ret;
-> @@ -776,7 +781,7 @@ int inv_icm45600_core_probe(struct regmap *regmap, const struct inv_icm45600_chi
->  	if (ret)
->  		return ret;
->  
-> -	ret = devm_pm_runtime_set_active_enabled(dev);
-> +	ret = devm_pm_runtime_enable(dev);
->  	if (ret)
->  		return ret;
->  
-> 
-> ---
-> base-commit: d820183f371d9aa8517a1cd21fe6edacf0f94b7f
-> change-id: 20260205-inv-icm45600-fix-regulator-put-warning-7c45a49c4c53
-> 
-> Best regards,
-
