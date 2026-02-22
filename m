@@ -1,84 +1,106 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D8E20310779;
-	Sun, 22 Feb 2026 13:22:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F3632470D;
+	Sun, 22 Feb 2026 13:24:15 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771766577; cv=none; b=AAzHCLsesbXuogd6DCR6DdLNvQl6yWof6YB4OCpJRohv6tst9XnMzOMzoSHMZuohMK6jMmeWkcIMZbnp/VOTvX/CQ4p448d1l6txPIH58XwnOKy9aKogCVGnE8X2bQ0B6W+y/Hhkqwp6DVESjmG0SScgDLfMTExhFyN/BRAqUec=
+	t=1771766655; cv=none; b=rk4GFfznLSF/ou0DCVk50OGeBNNEmvG30sRa/4c8jMSzzYcajOaOk21Y+/9ZiJWisFjcUkyHkO4CDtZUlNrr1HqNqTCRu84L/Wa3vmViT5fmA3xSOx9h36JXSJ6vokcRYZdjSNWFXZTjqWkRomtiwWvd0rLjECjP0Z6X3r7FYWY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771766577; c=relaxed/simple;
-	bh=0mbMX9BtqtnvxjQR8l+kExQENImpF3fn0WEWshLOcIg=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KPY8E+D/EYo1UOfPK4bMGs5yVzEuq5oJyLRwyxfyif0TtrlptzDd4wJ5jvhrDreGrxPMkoDSiQ3hajRnRjkQelW7JinzHHhw3aBkxnd+noWgQdZxjU5rsqNpPqojnVBAz+7VbznOdbnS5+rRhtTgT9sGuts/7YlJlwBp7V0BkJo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=R9sNBa2E; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771766655; c=relaxed/simple;
+	bh=u8GpRGUNuYz/wGXgnCq/A7vQELRTOzXH9bEVX/UA49s=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=TQlk6b0p1+dFPQrj5yYjSEG88Wc/STmXhcCvRy1gEaLDSIzyDSH7WfR9wJeZPioZLkmA8PSZeQ8lk5QvYT9NVApxNxFF6eT2WNMWkGasq67zCRuz1YJnZTMEIveGqQaPlowq/GZWcTm6DWVe1sux5PgRmg/munsbew2RzMiZuhg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LpW0i/rM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="R9sNBa2E"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2030BC116D0;
-	Sun, 22 Feb 2026 13:22:51 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LpW0i/rM"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41349C116D0;
+	Sun, 22 Feb 2026 13:24:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771766576;
-	bh=0mbMX9BtqtnvxjQR8l+kExQENImpF3fn0WEWshLOcIg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=R9sNBa2Eb8hYLRQ45rCdtDokkK8KLjW5T73Y+pb3o6FmvDoDHEizKjNLnS2kGFWZY
-	 zM3bUtxLJv8pEQ9vT7gqfgziiztATqgLxdBU4214XixqfijBhTn5WucaDIM8Vrk/IJ
-	 MSM8//AVzV5/CVVaQWpTMlJIS6wKDFBI0eLtmRxAEh95HRNYIYEiEqs8szagf+mJ4k
-	 sdN4C1l/1R+b3OXA1IvSx0eNo94nCeaYjQW+65uoZsQtOBqdiLk6wpX1R20DcoG6Uj
-	 52G9cS1mhOzpQP6VjIsClI+J+qIxZgWY4nzYpJILsc4NH4WT9/dx52G30ZoG5SBt0n
-	 iIuRK0rFua+Rg==
-Date: Sun, 22 Feb 2026 13:22:46 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Jonathan Cameron <jonathan.cameron@huawei.com>, Alisa-Dariana Roman
- <alisa.roman@analog.com>, Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Harshit
- Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Subject: Re: [PATCH v1 1/1] iio: adc: ad7192: Revert "properly check
- spi_get_device_match_data()"
-Message-ID: <20260222132246.6447d539@jic23-huawei>
-In-Reply-To: <aZg_4KQ6hDqBeSJw@smile.fi.intel.com>
-References: <20260217080514.1288115-1-andriy.shevchenko@linux.intel.com>
-	<aebc2f13040d97e6e3b9797d3fa580198125e3f5.camel@gmail.com>
-	<aZSD-3WIVwT6XYWX@smile.fi.intel.com>
-	<a823c9b72fcc3b1d88ff9dd93580be6241826153.camel@gmail.com>
-	<aZWI-80-K7xfuEBY@smile.fi.intel.com>
-	<20260218095820.00005750@huawei.com>
-	<20260220105507.30a2f7ec@jic23-huawei>
-	<aZg_4KQ6hDqBeSJw@smile.fi.intel.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	s=k20201202; t=1771766654;
+	bh=u8GpRGUNuYz/wGXgnCq/A7vQELRTOzXH9bEVX/UA49s=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LpW0i/rM3Tkl79FEQHinlnb2NJkEyjj7nGeVX+s7uqaj3u/SiUy5JO45ARoo2Cl/J
+	 v6HN0t0wJ8YKczNHzbPKPTyL87fe1WFJ2Rc+CaztVtOh08zb8bXGDq5leFknDklG+m
+	 zp/U+i4xsf/OnrrCJnpMpQAWYu1RJH5CpDPqgRueJt1zzbY4t6OuLbth21/Jl6F6H/
+	 ATeYXxRrHnFfdbuBO8WGQe6gZLSF/aB86LF0LWi/j960fU9Y/YCd4Q5+BZo664NbMQ
+	 j3GCOr8A6KvnuXYkU7K8v67igqO5ezq8W7RXcm5xztoHhwe3ClwZWiFoFDCYfTJNRt
+	 7KeamLty/2WmQ==
+Date: Sun, 22 Feb 2026 13:24:09 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, rodrigo.alencar@analog.com,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH RFC 1/8] dt-bindings: iio: frequency: add ad9910
+Message-ID: <20260222-lucid-spirited-b665fe3524b7@spud>
+References: <20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com>
+ <20260220-ad9910-iio-driver-v1-1-3b264aa48a10@analog.com>
+ <41190a42-70ab-45b9-922f-317e792b25a0@baylibre.com>
+ <20260221-batting-amiable-fc01ae386789@spud>
+ <rvsygiakolyb6gtinpwojn3atj6i627zmpxecbs4b2z6urllp4@iaxemesawckd>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="j8JF6CTG3uyWGCfE"
+Content-Disposition: inline
+In-Reply-To: <rvsygiakolyb6gtinpwojn3atj6i627zmpxecbs4b2z6urllp4@iaxemesawckd>
 
-On Fri, 20 Feb 2026 13:05:04 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> On Fri, Feb 20, 2026 at 10:55:07AM +0000, Jonathan Cameron wrote:
-> > On Wed, 18 Feb 2026 09:58:20 +0000
-> > Jonathan Cameron <jonathan.cameron@huawei.com> wrote:  
-> 
-> ...
-> 
-> > Applied.  I also added a link tag to this thread, to say we had
-> > agreed to make it policy in IIO to not have these checks.  
-> 
-> Thanks!
-> 
-> Do we still need a process/maintainer-iio.rst?
-Yes. Been meaning to start drawing one up for a long time but
-there is always something else that takes higher priority :(
+--j8JF6CTG3uyWGCfE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-If you want to propose something as a straw man that would be great!
+On Sun, Feb 22, 2026 at 10:49:35AM +0000, Rodrigo Alencar wrote:
+> On 26/02/21 10:43PM, Conor Dooley wrote:
+> > On Sat, Feb 21, 2026 at 02:43:02PM -0600, David Lechner wrote:
+> > > On 2/20/26 10:46 AM, Rodrigo Alencar via B4 Relay wrote:
+> >=20
+> > > > +dependentSchemas:
+> > > > +  resets:
+> > > > +    properties:
+> > > > +      reset-gpios: false
+> > > > +  reset-gpios:
+> > > > +    properties:
+> > > > +      resets: false
+> > >=20
+> > > This seems too strict. Couldn't we have some resets from a reset
+> > > controller and others from gpios?
+> > >=20
+> > > Or maybe the reset bindings are enough and we don't need the gpio
+> > > bindings for the same pin?
+> >=20
+> > Actually, I'd be interested in seeing evidence for the resets property
+> > ever being used with this device. I think every single reset-controller
+> > that's currently documented is an on-chip device for resetting
+> > peripherals.
+>=20
+> As mentioned, an FPGA IP as an IIO backend (MMIO platform_device) will
+> implement the reset controller interface.
 
-Jonathan
+I think you're confusing this with some other patch, I don't see any
+mention of FPGA IPs or io-backends here.
 
-> 
+--j8JF6CTG3uyWGCfE
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaZsDYgAKCRB4tDGHoIJi
+0mERAP4y1f99OAX2wlGGzDorDAtVG3rVOS/1CL7NeGUcW5N17QEAxFxERwZU/5X0
++kilmA5TUhLNPOeIRDrJtj0LLeFPaAA=
+=JWpZ
+-----END PGP SIGNATURE-----
+
+--j8JF6CTG3uyWGCfE--
