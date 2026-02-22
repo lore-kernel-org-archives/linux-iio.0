@@ -1,41 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68FC111CAF;
-	Sun, 22 Feb 2026 15:58:53 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D2453EBF17;
+	Sun, 22 Feb 2026 16:03:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771775933; cv=none; b=Po4i+lBtVLGqRuHOP7K6yr9a4Ev2Pi8rFKMimS0rN/kGaLQxjBl5XXz6PoOSIL+lonQqxsG0gTTDXIroXrWF0/jTYgwVVnD5UWIoAe8euDHNOqVPIP77TNRTBMG+zyoO6gzC8yvIhcKd2kQyUbGXy0G4sBH2ElVmfQARvEVfOIc=
+	t=1771776213; cv=none; b=nv5lRO/o0Q14LCR7V5P14JKWDckls+/tza0lz2o+Tg58tAqbwPoet3eaODrA3/vljk+AlpligBn67WLYm4HbyUyZZ7QWjYUM4QQb0Gpro/6ZgtZjqMKVUePmyoWtCTDE+biC53SmnjU9Eoz/7G0CbaX9ra43lDc/eWitPqqZdeo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771775933; c=relaxed/simple;
-	bh=DmBnfXE4CVqDHt/3NcmzWpj8z5uDA6PaSlwMJkGpaGU=;
+	s=arc-20240116; t=1771776213; c=relaxed/simple;
+	bh=+IgpTjECc13FjaSobMmGOE984uaTEmXItdEyEE09khU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=GYWzscV/P7jsVTA4EYopYkn8aVG1/rt34fC+4zqdOeEiVMT9cGrAAoY2xj9f5dUGI4ffmfa2eBlJsFc3sHq/VOh1eks15lWnzY4y9dgAePmdnRaLgxANoKCBMBjuFlHvPZsUA2b9PVKxvnk/senJ3F347y39NBrtayjC2mJMzQ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eHhqIUsb; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=A2710/G6+nkjBSLMgciAsp/wv3CIs6e25vGid8btpk0bxGfmRSDpJPc/E2S9RSTEhDgeJBznk+EqTHwybXJL39PfnxxPcZ5y5Y4hOD1ZRtxRq4r3DDfKUuLtXgY0WcXL2lPTUBUAAV5z0i8ww0qWT8sSJBIa9jY5sdRydOXAuXo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YXdE7krq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eHhqIUsb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75498C116D0;
-	Sun, 22 Feb 2026 15:58:50 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YXdE7krq"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 774A5C116D0;
+	Sun, 22 Feb 2026 16:03:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771775932;
-	bh=DmBnfXE4CVqDHt/3NcmzWpj8z5uDA6PaSlwMJkGpaGU=;
+	s=k20201202; t=1771776212;
+	bh=+IgpTjECc13FjaSobMmGOE984uaTEmXItdEyEE09khU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=eHhqIUsblaH213121b9EJi1j5HU5QXN6ZqAl+HLWT+25EibBa9Zme9ZgOOaL13DtX
-	 SUpIYtmaLk44TcbyiB7zKiKhX653UV5ioySNufg2Lm8d1TzDzquHnLS4p8L6VttzCf
-	 aNJ4b1cAYjMgFH2cgEptNvn6BAYm4gNTZ0JlKWmLJrqDedKa0UjdBtwffk1VnENQgm
-	 tnR/+2dqNQCA0u31K6m32o0KZiTKYZPGfOYOtiJUJV2uzhRYIPx6CDSOXDoISodI7i
-	 94zmUqA0kDyZGw5coA1ZTCHy99ZJDDA1AkE9PaAtNK3D+lI7z4w05RWQXDz7YEc+vP
-	 DDUeA/vc009Bw==
-Date: Sun, 22 Feb 2026 15:58:45 +0000
+	b=YXdE7krqtogy3O5iGPlu1MQLcIZbPCeYSigyno2rrnaVdWYS0ve3BajIjw5ZNP7j2
+	 G3wbreCOpXC5YjQ7HsOB70RpICkXhiG7t+MAl1Z9DSKP6cWeUnSCqqU9E2LkdRZ6Yu
+	 bEkdF8RSHA2n1CjB0K683mHqyuOU/toBeWfIWQxmWbP7E0lxlurs6zKeB1MKhJGkdX
+	 n7SX0LQ052iLP5Dvh70krtmlBi0yVIav7KL8e1dbd5sMrYkdGjFruTfFbAEemb93Vt
+	 HXnGRbKtAubDFziL8RG5hLfOaNNz5hZGqpn320Tqv/+r90rbEUuNhV1uD2ErLzjqZQ
+	 bT8m0P7axfRKg==
+Date: Sun, 22 Feb 2026 16:03:25 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Tabrez Ahmed <tabreztalks@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-ads1015: Use scoped_guard() in trigger
- handler
-Message-ID: <20260222155845.2b0b7824@jic23-huawei>
-In-Reply-To: <20260221142500.87016-1-tabreztalks@gmail.com>
-References: <20260221142500.87016-1-tabreztalks@gmail.com>
+To: Felix Gu <ustc.gu@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Daniel Lezcano
+ <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH] iio: adc: nxp-sar-adc: Remove unnecessary type casting
+Message-ID: <20260222160325.1e4d1f49@jic23-huawei>
+In-Reply-To: <20260222-nxp-sar-adc-v1-1-75e4cdb3ffb7@gmail.com>
+References: <20260222-nxp-sar-adc-v1-1-75e4cdb3ffb7@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,83 +47,52 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 21 Feb 2026 19:55:00 +0530
-Tabrez Ahmed <tabreztalks@gmail.com> wrote:
+On Sun, 22 Feb 2026 02:09:08 +0800
+Felix Gu <ustc.gu@gmail.com> wrote:
 
-> Replace the manual mutex_lock() and mutex_unlock() calls with the
-> scoped_guard() macro in ads1015_trigger_handler(). This simplifies
-> the locking logic by ensuring the mutex is always properly released
-> out of scope, while maintaining the trigger notification on the
-> error path.
+> The readl_poll_timeout() macro returns a signed integer error code.
 > 
-> Signed-off-by: Tabrez Ahmed <tabreztalks@gmail.com>
-Hi Tabrez,
-
-Take a look at the comments in cleanup.h 
-
-Basic rule is don't combine guard() or __free() with
-gotos.  The actual bugs that avoids aren't present in your patch
-but to keep things simple for review, that rule stands anyway.
-
-See below for alternative.
-
-> ---
-> Compile-tested only.
->  drivers/iio/adc/ti-ads1015.c | 18 ++++++++----------
->  1 file changed, 8 insertions(+), 10 deletions(-)
+> In nxp_sar_adc_calibration_wait(), the return value is casted to u32
+> before being returned as int, which is unnecessary.
 > 
-> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-> index f2a93c63ca14..582d30c07874 100644
-> --- a/drivers/iio/adc/ti-ads1015.c
-> +++ b/drivers/iio/adc/ti-ads1015.c
-> @@ -451,18 +451,16 @@ static irqreturn_t ads1015_trigger_handler(int irq, void *p)
->  	} scan = { };
->  	int chan, ret, res;
->  
-> -	mutex_lock(&data->lock);
-> -	chan = find_first_bit(indio_dev->active_scan_mask,
-> -			      iio_get_masklength(indio_dev));
-> -	ret = ads1015_get_adc_result(data, chan, &res);
-> -	if (ret < 0) {
-> -		mutex_unlock(&data->lock);
-> -		goto err;
-> +	scoped_guard(mutex, &data->lock) {
-> +		chan = find_first_bit(indio_dev->active_scan_mask,
-> +				      iio_get_masklength(indio_dev));
-> +		ret = ads1015_get_adc_result(data, chan, &res);
-> +		if (ret < 0)
-> +			goto err;
-> +
-> +		scan.chan = res;
->  	}
->  
-> -	scan.chan = res;
+> Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+Hi Felix,
 
-There was never any reason to hold the lock over this assignment as
-scan.chan and res are both local variables.
+Make sure to include the author of the code you are touching in the +CC list.
+Added Daniel.
 
-Hence, this can become something like
+I think this is simple enough, so I've picked it up now but I'm fine adding
+tags or indeed dropping it if other reviews come in.  I'll be rebasing
+or rc1 later in the week.
 
-	mutex_lock(&data->lock);
-	chan = find_first_bit(indio_dev->active_scan_mask,
-			      iio_get_masklength(indio_dev));
-	ret = ads1015_get_adc_result(data, chan, &res);
-	mutex_unlock(data->lock);
-	if (ret < 0)
-		goto err;
+Applied to the testing branch of iio.git
 
-	scan_chan = res;
-...
-
-Which gets you most of the advantages of using scoped_guard()
-(no need to unlock in multiple paths) without running into problems
-due to the goto.
+Thanks,
 
 Jonathan
 
-> -	mutex_unlock(&data->lock);
-> -
->  	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
->  				    iio_get_time_ns(indio_dev));
+> ---
+>  drivers/iio/adc/nxp-sar-adc.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/nxp-sar-adc.c b/drivers/iio/adc/nxp-sar-adc.c
+> index 9efa883c277d..a6e4888a8464 100644
+> --- a/drivers/iio/adc/nxp-sar-adc.c
+> +++ b/drivers/iio/adc/nxp-sar-adc.c
+> @@ -247,7 +247,8 @@ static inline void nxp_sar_adc_calibration_start(void __iomem *base)
 >  
+>  static inline int nxp_sar_adc_calibration_wait(void __iomem *base)
+>  {
+> -	u32 msr, ret;
+> +	u32 msr;
+> +	int ret;
+>  
+>  	ret = readl_poll_timeout(NXP_SAR_ADC_MSR(base), msr,
+>  				 !FIELD_GET(NXP_SAR_ADC_MSR_CALBUSY, msr),
+> 
+> ---
+> base-commit: d4906ae14a5f136ceb671bb14cedbf13fa560da6
+> change-id: 20260222-nxp-sar-adc-1906a65ce5b6
+> 
+> Best regards,
 
