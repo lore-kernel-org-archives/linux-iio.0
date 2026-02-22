@@ -1,41 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E28A1DDC1B
-	for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 12:38:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 56182CA6F;
+	Sun, 22 Feb 2026 12:57:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771763888; cv=none; b=ox7sK1VgY3BTAkrIquw3rf9OoX6B3Wb4qfuETev0cud5Hwm92tq/GbG2SbnJV/CfOizHr5e7Aipxxom3zywzfpkDyuvlpqbNUkckSxK/js0C8Up94rOVwMYcfUzMAwT2UwIhOoeFFVT3Gax7RThBN+xpYEleMTv/0bF4f5HbCXM=
+	t=1771765040; cv=none; b=Q6Msr4eF2sazmmUEL8mhW3KB2lUGhw80/sbIIUT0VsQG3X7ymz3lyUlTla7AO3FOcLNcofbNVXtImIrE7f+iEKMGubNNGACL+yrenoWwTHnxpjetfVn2HVzWK3QewuSbQc0Zcfd6YnnRWGv0gqyewdAYTUODly8yb+1VH3AaWw4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771763888; c=relaxed/simple;
-	bh=hqCFZlB+ez6slMPuD1THeNbVEZ6ahIBSkqNhaoFMQRc=;
+	s=arc-20240116; t=1771765040; c=relaxed/simple;
+	bh=J1r46UicWupRVFBjJAGR5ikJeJ/wp4qNjFbIYUPpkhQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=e8olCHLnzg2eh/PkcxLQvkuObXN8mFvdMVLAE0zNo2570+sT2occa+J5Re7Kdis56/mHDY4Fm+Sd1c8Vj3jh8CCNlmyl66aCnoEA0v4Tz/qmH5ZAuaZS6bw6jEU1KcIy0p/Ah/lE63mTTFrsT6V+bjs06RnBZVMDFQwCVT0Tgf0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iIZWceKC; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Hpn6Ws9bgMTnNmjt7Hs7v684MnyUIyD75sd9ukMXyviLhDKLgjaADvsokdm4DkTwsCF2tHkeswhPRpgxrTG/Zg3BWFn7UklvZN4Kj22nqKcjM9eTemzHiQ4HWde50xsoN+UnaVpazIXmFLnydCDPbLi1bDWcrsHJeE8Pfm/7hMQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rvm2B9Z/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iIZWceKC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DC9BC116D0;
-	Sun, 22 Feb 2026 12:38:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rvm2B9Z/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D442C116D0;
+	Sun, 22 Feb 2026 12:57:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771763888;
-	bh=hqCFZlB+ez6slMPuD1THeNbVEZ6ahIBSkqNhaoFMQRc=;
+	s=k20201202; t=1771765039;
+	bh=J1r46UicWupRVFBjJAGR5ikJeJ/wp4qNjFbIYUPpkhQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=iIZWceKC1rKVzjYjWwdEXopvqFiv46aAnFnTbIIbCIL5F0Cn0ewspqD4zlge2338r
-	 MO1LPEbOCOlT99E1w886JvXfpE490BUicDju9YGOUwf00Vw2b8p6ldlad6yGaSdFRP
-	 Qjg9PclT2QHCi1J/hClxYopP3uieuJIpEAkfRAz4qj9e62v9cvT0elCgUNbJH7siBf
-	 MGxGeVIfw0fJ44YK+4RwECrXvL+z3EpYQFMqr5ObH5T/3b/wjEfX3HsuOOFkAJfuYc
-	 lNnq70avHg9JhxQ76Oqq1FP1ah1QFgkeMQWVs4C3aTWQYctAiBTcqX4g4Ie0Ev9n/u
-	 UcZPoztluSqrA==
-Date: Sun, 22 Feb 2026 12:37:56 +0000
+	b=rvm2B9Z/g5dssuhFpwcZPY1SxTV3NjRJFLcHcSZ/6AAQkd6CTuFzzQrWs5il0gPze
+	 V7LIGZUbcCUJghDDl43bzPnQ9yIs6XIIUZCsdL8mlKgpAywdJ72/qoPpaV3oMmaaex
+	 xMfA6weV5YawI8Z54e1AwB3shKnY3NchqeVyWk0fizfjzOLr96EiVmJgcZUd39fHk6
+	 XSEMXX3Lo/2w0RkzIAOrWtWkXF8OMaQDrWRvpfF6STXps2GT4SRBJmvcxYgt8MmtKt
+	 PqiDZ8v24qIfTrtFwgRzsSPUqWwiQrhOUTZQ6JoK7vhW6e4RfBn/1sjp+tqnVuVtTE
+	 +181xK1PRFTew==
+Date: Sun, 22 Feb 2026 12:57:03 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: nuno.sa@analog.com, linux-iio@vger.kernel.org, Andy Shevchenko
- <andy@kernel.org>
-Subject: Re: [PATCH] iio: buffer: Fix wait_queue not being removed
-Message-ID: <20260222123756.59273a33@jic23-huawei>
-In-Reply-To: <6f5158e3-84e1-4159-9c61-789c2b198af2@baylibre.com>
-References: <20260216-iio-buffer-write-fix-v1-1-bc08b239f37a@analog.com>
-	<6f5158e3-84e1-4159-9c61-789c2b198af2@baylibre.com>
+To: Marcelo Schmitt <marcelo.schmitt@analog.com>
+Cc: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-doc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <michael.hennerich@analog.com>, <nuno.sa@analog.com>,
+ <eblanc@baylibre.com>, <dlechner@baylibre.com>, <andy@kernel.org>,
+ <robh@kernel.org>, <krzk+dt@kernel.org>, <conor+dt@kernel.org>,
+ <corbet@lwn.net>, <marcelo.schmitt1@gmail.com>, Trevor Gamblin
+ <tgamblin@baylibre.com>, Axel Haslam <ahaslam@baylibre.com>
+Subject: Re: [PATCH v9 5/8] iio: adc: ad4030: Add SPI offload support
+Message-ID: <20260222125703.00e3152a@jic23-huawei>
+In-Reply-To: <20f1dc8eb6bb692eb6eb814a49e54309d973a9e4.1771253601.git.marcelo.schmitt@analog.com>
+References: <cover.1771253601.git.marcelo.schmitt@analog.com>
+	<20f1dc8eb6bb692eb6eb814a49e54309d973a9e4.1771253601.git.marcelo.schmitt@analog.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -43,43 +48,84 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sat, 21 Feb 2026 15:27:42 -0600
-David Lechner <dlechner@baylibre.com> wrote:
+On Mon, 16 Feb 2026 12:00:39 -0300
+Marcelo Schmitt <marcelo.schmitt@analog.com> wrote:
 
-> On 2/16/26 7:24 AM, Nuno S=C3=A1 via B4 Relay wrote:
-> > From: Nuno S=C3=A1 <nuno.sa@analog.com>
-> >=20
-> > In the edge case where the IIO device is unregistered while we're
-> > buffering, we were directly returning an error without removing the wait
-> > queue. Instead, set 'ret' and break out of the loop.
-> >=20
-> > Fixes: 9eeee3b0bf19 ("iio: Add output buffer support")
-> > Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-> > --- =20
+> AD4030 and similar ADCs can capture data at sample rates up to 2 mega
+> samples per second (MSPS). Not all SPI controllers are able to achieve such
+> high throughputs and even when the controller is fast enough to run
+> transfers at the required speed, it may be costly to the CPU to handle
+> transfer data at such high sample rates. Add SPI offload support for AD4030
+> and similar ADCs to enable data capture at maximum sample rates.
+> 
 > Reviewed-by: David Lechner <dlechner@baylibre.com>
->=20
-This brings the code inline with the near identical
-flow in the read path.
+> Co-developed-by: Trevor Gamblin <tgamblin@baylibre.com>
+> Signed-off-by: Trevor Gamblin <tgamblin@baylibre.com>
+> Co-developed-by: Axel Haslam <ahaslam@baylibre.com>
+> Signed-off-by: Axel Haslam <ahaslam@baylibre.com>
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt@analog.com>
 
-It's been a while since I last looked at the locking / tear
-down (what that ->info check is all about).  I'll add actually
-documenting all the corner cases to the todo list as IIRC
-there are some non obvious ordering constraints.  IIRC,
-in the buffer paths, it is fairly straight forward
-as it's just an optimization to avoid queuing or draining
-data when the device is going down - nothing about the buffers
-themselves involves interacting directly with the hardware.
-
-Applied to the fixes-togreg branch of iio.git and marked
-for stable.
+Hi. One really small question on ordering inline. The other thing is mostly
+me expressing surprise around the PWM handling being necessary rather
+than any request to change anything.
 
 Thanks,
 
 Jonathan
 
+> @@ -971,6 +1205,24 @@ static int ad4030_detect_chip_info(const struct ad4030_state *st)
+>  	return 0;
+>  }
+>  
+> +static int ad4030_pwm_get(struct ad4030_state *st)
+> +{
+> +	struct device *dev = &st->spi->dev;
+> +
+> +	st->cnv_trigger = devm_pwm_get(dev, NULL);
+> +	if (IS_ERR(st->cnv_trigger))
+> +		return dev_err_probe(dev, PTR_ERR(st->cnv_trigger),
+> +				     "Failed to get CNV PWM\n");
+> +
+> +	/*
+> +	 * Preemptively disable the PWM, since we only want to enable it with
+> +	 * the buffer.
+> +	 */
+> +	pwm_disable(st->cnv_trigger);
+
+Feels like there should really be a way to get a pwm disabled in one call
+so there isn't an edge case of it being on briefly.
+I'm a bit surprised it defaults to on.  I guess this is because DT can provide
+the parameters?
+
+
+> +
+> +	return 0;
+> +}
 
 
 
+
+> +static const struct iio_scan_type ad4030_24_offload_scan_types[] = {
+> +	[AD4030_SCAN_TYPE_NORMAL] = {
+> +		.sign = 's',
+> +		.storagebits = 32,
+> +		.realbits = 24,
+
+Really trivial, but why this order?  To me keeping to the
+order of the fields in the structure definition makes a tiny
+bit more sense here.   So realbits, then storagebits, then shift.
+
+> +		.shift = 0,
+> +		.endianness = IIO_CPU,
+> +	},
+> +	[AD4030_SCAN_TYPE_AVG] = {
+> +		.sign = 's',
+> +		.storagebits = 32,
+> +		.realbits = 30,
+> +		.shift = 2,
+> +		.endianness = IIO_CPU,
+> +	},
+> +};
