@@ -1,40 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 201BCEACD
-	for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 13:38:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 44D95EACD;
+	Sun, 22 Feb 2026 13:43:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771767530; cv=none; b=e4u+S7GDi3LQ+ai1/b25Uz/E3Dq57K9unvKypTi70whKLjJHwHbJT64y6yI//Dx9Gy1GMr3FM8BODvF7ibI7pp9fV3awJlPc/8wLaM4x/S27WUc+jWkQvYc3q0qm3tZMzB4kNzVXHaFpJ8tIECNv5o05wKPocgTpa/19Mn8+/w4=
+	t=1771767816; cv=none; b=guynvF2+wfM3Ejh4WnRCeBD4023/9r+2pJTZaO4bKfgKBmczCJPId4dP9YfnnlyDyuCB362/2FpgZsQgyG9PUxaY1VRYBNxCmZdVbps8Ybu+gREtrcWlNVVgxK2HSSI7qabrLiMYOZBY+VaCfdhwtkpeJGwcWSo63tIFJY+J5zk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771767530; c=relaxed/simple;
-	bh=GxMAZi94AnKSqGudzInNd74GulMvvvOmq/tVGSbhNO4=;
+	s=arc-20240116; t=1771767816; c=relaxed/simple;
+	bh=2Q+BHkaVfNpXGP7MtgMP8pPOuYDXW7/eZDJPKhJ2IuE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cRqEA5smxGy0BDu/t5OFhXkPlVlwKSiMDIAOV1xAw2Xt8hvx/fKPEEn/IHwBwqagn5ZEt2ckdzmOGtMgblXJ+qv4nqaKxipBcEBp/E2qP8kVBCQMQF/tv0dzVffGiuDGa3uv9kcTcETf9eBgRAOaKU9Xi+tDtpox7YQODOn+8SM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=asqjtfh9; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Y5pgWpOiWf446DOedRj50fwkspratsiJRXMhJBTrSMYGOjqvkm6bDMEOs7xNM2+6LZ/lXQq1sSlkW6YDXvK0uYCdQvBtEo/ta9FGGULqe9WPDWW3/KmalAmgq86FRliaDFgqUYXFzx2Q6LAfiqWSjyCO562/n2lk+Ihc2BW3PDE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eXu4mJpy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="asqjtfh9"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA9BAC116D0;
-	Sun, 22 Feb 2026 13:38:48 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eXu4mJpy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65FB1C116D0;
+	Sun, 22 Feb 2026 13:43:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771767529;
-	bh=GxMAZi94AnKSqGudzInNd74GulMvvvOmq/tVGSbhNO4=;
+	s=k20201202; t=1771767815;
+	bh=2Q+BHkaVfNpXGP7MtgMP8pPOuYDXW7/eZDJPKhJ2IuE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=asqjtfh94rx3zha1BY3njJd6nhjZkjKPwzgLUqz2UIFNzk1MZ6o1EIkDKYUjCIajh
-	 6UNX1Rv5DZazUGzYnRkilQ5WJEWtgmtyGZfUub5UjcxGG6Vn2r1XBhS/el2oy9CIXG
-	 PK8E5l6Dwl2k9TmfkR3/uZaTS3HrLH5JLKp8bh3BP2ybhlws53QaaFR8eN3EFoOhUH
-	 VQYz4GSQy3VswMaPv5bt4F0aGde2BbMk76BcWD/tOFhHF9DpUfTPcd7CTrQ0TaGmOA
-	 3QIbaqpqX4dNZxDAyztuOF11OdMh0XsxCIvzWh8cbHqpEzbW09FD/ns+azL/+PuPiL
-	 21ExrfB5XfmhA==
-Date: Sun, 22 Feb 2026 13:38:42 +0000
+	b=eXu4mJpyxrw7D30vb5aPp3oTS0S4aKA7uODJCk0ms14D94JvlFVoD+zQlnqlKvS4G
+	 UyGOdC8oldvr+FQnveQIWuIRz9OdkaoOqlx53YlyzVGcGGBerB3oeQ5aYtomWSJziO
+	 A0WaoKtL8YWtG2+uq6yUtY2beLPpambVwd7a9qrDEM5PS0NFYh74yJhYECrcAq3J4I
+	 qR+murqC1lOvNWfkRNtb5dopJJQ1oVFOsy3hSl4ULz5I+qst8LCkABDb6497vQkmSk
+	 kCcG0j9W+2JqMFXg+D1OfDoYt3WXudLy9ppDyq3OGfXjEhf7QtjKfl21cMP5g3unKP
+	 aRxDtEjrAm7/g==
+Date: Sun, 22 Feb 2026 13:43:26 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Gabriel Almeida <gabrielsousa230@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] iio: light: zopt2201: Convert mutex usage to
- lock guards
-Message-ID: <20260222133842.075a3899@jic23-huawei>
-In-Reply-To: <20260217143157.132799-1-gabrielsousa230@gmail.com>
-References: <20260217143157.132799-1-gabrielsousa230@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Archit Anant <architanant5@gmail.com>, lars@metafoo.de,
+ Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: impedance-analyzer: ad5933: use
+ div64_ul() instead of do_div()
+Message-ID: <20260222134326.7fc1f45a@jic23-huawei>
+In-Reply-To: <aZXD0smUd3CRgPcv@smile.fi.intel.com>
+References: <20260218125327.21467-1-architanant5@gmail.com>
+	<aZXD0smUd3CRgPcv@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,43 +50,48 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 17 Feb 2026 11:31:55 -0300
-Gabriel Almeida <gabrielsousa230@gmail.com> wrote:
+On Wed, 18 Feb 2026 15:51:14 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> This series replaces mutex_lock()/mutex_unlock()
-> pairs with the guard() and scoped_guard() helpers in the
-> zopt2201 driver.
+> On Wed, Feb 18, 2026 at 06:23:27PM +0530, Archit Anant wrote:
+> > Replace do_div() with div64_ul() since the remainder is not used.
+> > div64_ul() is the preferred API for 64-bit by 32-bit division when
+> > only the quotient is needed.
+> > 
+> > Also replace explicit casting and shifting with the BIT_ULL(27) macro
+> > for clarity.
+> > 
+> > Note: A mathematical simplification to `(freq * BIT_ULL(29)) / mclk` was
+> > suggested during review to improve precision. However, as confirmed by
+> > maintainers, the original driver's truncation via `(mclk / 4)` might
+> > be intentional or relied upon by userspace. Since hardware is not
+> > available for verification, this patch preserves the original logic
+> > to avoid regression risk in the absence of testing.
+> > 
+> > Issue identified by coccicheck using do_div.cocci.  
 > 
-> The first patch reorders the header includes to follow kernel
-> style conventions. The second patch converts the remaining
-> mutex usage to lock guards and simplifies the control flow
-> accordingly.
+> > Changes in v2:
+> > - Replaced explicit `(u64)(1 << 27)` with `BIT_ULL(27)` as suggested by Andy Shevchenko.
+> > - Kept original arithmetic logic `(mclk / 4)` to preserve behavior.  
 > 
-Series applied with tweaks as mentioned in the replies to each 
-patch.
+> The place for changelog (and comments)...
+> 
+> > Signed-off-by: Archit Anant <architanant5@gmail.com>
+> > ---  
+> 
+> ...is here.
+> 
+> But do not resend until maintainers explicitly ask for that.
+> 
+Tweaked commit message as Andy pointed out was needed.
+
+Applied to the togreg branch of iio.git
+
+Andy, if you want to give a tag I can role that in for now as need
+to rebase anyway on rc1.  This mail felt like an 'almost tag' ;)
 
 Thanks,
 
 Jonathan
 
-> Changes in v3:
-> - Split header reordering into a separate patch
-> - Simplified control flow in zopt2201_write_scale_by_idx()
-> 
-> Changes in v2:
-> - Reordered headers
-> - Added required <linux/cleanup.h> include
-> - Used lock guards in zopt2201_read()
-> - Used scoped_guard() in zopt2201_write_resolution()
-> 
-> Changes in v1:
-> - Initial version
-> 
-> Gabriel Almeida (2):
->   iio: light: zopt2201: Reorder header includes
->   iio: light: zopt2201: use lock guards
-> 
->  drivers/iio/light/zopt2201.c | 44 ++++++++++++++----------------------
->  1 file changed, 17 insertions(+), 27 deletions(-)
-> 
 
