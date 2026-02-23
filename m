@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 08A0321CFEF;
-	Mon, 23 Feb 2026 13:57:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6904425CC63;
+	Mon, 23 Feb 2026 14:03:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771855031; cv=none; b=Ed/gHhqOULMnbf/nEPiOXIxlIiXBxkcwXwvMnBYVRPsq8d1ALsS078wVnhc2SdtNDrIkV6V3YivpWGgt2XidcdnSY2mZoXTkWfckBPArHVGuGIihvy2EM3i6ikcUfSMJvGoEXTv/BOkbeN3MiHjI+P0m7r2ufteFT+rKnQFrmcw=
+	t=1771855396; cv=none; b=tsXbR6SxpHDuRy6/SYgbtKpH0cyoDgTvW7TYFq+M32eHJmDA9+oewbIFfsYTpPx3/j6W7Ij7JaAq4lt3EAZ3Bye4VCVgBlYotudjKQK5LHVRqbeh4Vu8ijpCpy8DP60XzJkjJSypydOY9ACwb9ZaPOEhT4Hj5lI85RM6DdiDrG4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771855031; c=relaxed/simple;
-	bh=/MVsSFcFz6u+t0/3QPecpmXWT5CQDGWG3KUz/FKUY3Y=;
+	s=arc-20240116; t=1771855396; c=relaxed/simple;
+	bh=jcgawmlEYfMoE3y6SdWZVUOvputiZsY5rrn2Qz701xs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Tbd6r3n4XyfTOaamAaGOoDD8ieKsY2otUyi5gSLtkTrW0IR+uojXzOrEcUOo6ei8ynzmJpxMSeJtuJpHyQNyp/QGRs5vhNDw/ZVKTGBhdh7rVZMT05d3gqYA3ZlBN94jJ4+3v3BhUvOrw53RyNEFJWfF6btpSZO71kIk3/LUjPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IO32UegB; arc=none smtp.client-ip=198.175.65.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=n+kPFWgk5krCR03DYlAi3sDqGS5hSKi0OxesYJJZWWrOsP4AoN4UYOISBGL0cPs+8klhtoX71dCROX+XYtmUtkbl4v0tjQuD1BPUynLU0YxAslxYGgw7T9hK8Zh9tU36alQO7rL7Tjyd+1KELUtB+I3Xueu5xo38MsDd4OjBoXI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ns6xy/5o; arc=none smtp.client-ip=192.198.163.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IO32UegB"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ns6xy/5o"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771855030; x=1803391030;
+  t=1771855394; x=1803391394;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=/MVsSFcFz6u+t0/3QPecpmXWT5CQDGWG3KUz/FKUY3Y=;
-  b=IO32UegBxzfG59AJz61yZoOtuZI/bNzzF5diYHiE1bhxl3OdeIaLi0Di
-   STn+U24heQcuKyLLk5HY7pH/+TwtNhsLFDJoyDWCcKNqKXbnUuW+rNbya
-   2RYkDNOLdEujudLSwPOKOMYvkhIZX0sJEA9p2aeZYXIWE5cEAyaQBkIXG
-   nd/5E8Nc66B2PCTg4xRFp7m8y/+KB1trwyawbQ6m96Kcm0ITiVG5Tzuz/
-   B4OP3WpgSo2Rzn40Gp8Fct3O6cDMCii2SCo81GnxgmUG3c8r5gc9KLwXl
-   EAyYrIVRgqMEi3rp4zR1a/ez7p7J+0qQDfxR5YjYn9l+OTtfYTWFoJiUO
+  bh=jcgawmlEYfMoE3y6SdWZVUOvputiZsY5rrn2Qz701xs=;
+  b=Ns6xy/5oADYnzihIVE4i/52zoHCBOxklc2v3wojTTXwIOCbiAPKDuayF
+   u9xdNTaFk7vMQ0CAe8luv4LYHmZsCn1kwffPtlSFA/Rzzqg6BxISrtjM9
+   FkR6iF4rPKZ8HsMW5d79DTS4kBaaDyHDiEBFxF3kO75z+22e4Llvl5MmY
+   c8FkZcMISs5out5BzzKySPiT1Cg44spfj4ao1cGVz2EWjAVWhDCWsaPm0
+   jX0TKB+KS5SmrNw9caHOFT7v3/wc6a81ALlcRbBzIap44N8mMXDtCjUrc
+   RecCt42pX7qs6YgsYcDxA3lCR79YmnpPHJ05yDfdRZtbn2b5MJVQxAYgd
    w==;
-X-CSE-ConnectionGUID: aPMXU6zcScavyqbwmdxI7Q==
-X-CSE-MsgGUID: npMQCSLRTACF9YILH4TEvA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11709"; a="84301177"
+X-CSE-ConnectionGUID: 64sGocqkQy68LnjXZr2c1A==
+X-CSE-MsgGUID: 7nAy9uCXSGaG2vvl2lP5gw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11709"; a="76712297"
 X-IronPort-AV: E=Sophos;i="6.21,306,1763452800"; 
-   d="scan'208";a="84301177"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 05:57:10 -0800
-X-CSE-ConnectionGUID: UT5HvjjBQAOE7M/WY78IUQ==
-X-CSE-MsgGUID: 2xyPzFXRSmyJl5RikMlxhg==
+   d="scan'208";a="76712297"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 06:03:14 -0800
+X-CSE-ConnectionGUID: t3CvY18+T8qYNTf3ZPhblg==
+X-CSE-MsgGUID: FGQDZK8WRpm593yJgCAiDw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,306,1763452800"; 
-   d="scan'208";a="220115111"
+   d="scan'208";a="253289463"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.222])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 05:57:07 -0800
-Date: Mon, 23 Feb 2026 15:57:05 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 06:03:11 -0800
+Date: Mon, 23 Feb 2026 16:03:09 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
@@ -53,11 +53,10 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 04/12] iio: frequency: admv1014: use dev_err_probe in
- probe path
-Message-ID: <aZxcsUme6mom-LKV@smile.fi.intel.com>
+Subject: Re: [PATCH v2 00/12] iio: use dev_err_probe in probe path for ADI
+ drivers
+Message-ID: <aZxeHdygT2rXdcZT@smile.fi.intel.com>
 References: <20260223131418.55414-1-antoniu.miclaus@analog.com>
- <20260223131418.55414-5-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,21 +65,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260223131418.55414-5-antoniu.miclaus@analog.com>
+In-Reply-To: <20260223131418.55414-1-antoniu.miclaus@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Feb 23, 2026 at 03:13:55PM +0200, Antoniu Miclaus wrote:
-> Replace dev_err() + return with dev_err_probe() in the probe path
-> to simplify error handling and to ensure the error code is logged.
+On Mon, Feb 23, 2026 at 03:13:51PM +0200, Antoniu Miclaus wrote:
+> Use dev_err_probe() consistently in the probe path of several ADI IIO
+> drivers. This simplifies error handling and ensures proper logging of
+> deferred probes.
 > 
-> Drop 'SPI' from error messages since the bus type is evident.
+> Each driver is updated in two patches: first introducing a local
+> struct device variable to simplify repeated &spi->dev / &client->dev
+> references, then converting error paths to use dev_err_probe().
+> 
+> Drivers updated:
+>  - adrf6780
+>  - admv1014
+>  - admv1013
+>  - adf4377
+>  - ad7293
+>  - admv8818
 
-Okay, it seems that conversion to use struct dev should not touch messages
-that are going to be converted to dev_err_probe().
+As I mentioned, use a rule of thumb:
 
-In that case it won't give an unneeded churn. Now all those lines become
-touched twice in the sequential changes.
+- when devm_ is used in the function, error messages may be converted to
+dev_err_probe() as devm_ is supposed to be used only at ->probe() stage
+
+- try to avoid ping-pong type of changes when the same line is modified
+2+ times in a row in the same series (there are exceptions, but not here)
 
 -- 
 With Best Regards,
