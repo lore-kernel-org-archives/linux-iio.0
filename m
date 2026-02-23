@@ -1,55 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F1A41BC46;
-	Mon, 23 Feb 2026 20:31:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2455924C076;
+	Mon, 23 Feb 2026 20:35:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771878719; cv=none; b=ZnMZWCLNvDLte8idJJ1ogC3d12sSjZI16Mc1exxUhqRFvMswoY6PpYOV+wJ6AFnjrk/mdTLfU2Q4lXOt6zMhhdeX/t4AvxbGgtHnTPwkshrsbB4yU0YjOzc/tYAnqFQp8izftjyXZNHlpMEC8nh0LDGNBNNJXaaW01X+gxnATeM=
+	t=1771878911; cv=none; b=K1mFDbdZF0I5EzFkl58IDWrCU8L/mZlbVyHOpynmcNvnyF3qtH+3MPBM5tSYqzzXz7Gy4gh4q1eFVtpTYQ1g3E41UVUnamkRLYI14zxLB4TlhG6ZtGw4JggSFTwdWFVvWWFjfG96o10Aj1hqVqdS8+yf/T1aX5e0i4rVNJRgIl8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771878719; c=relaxed/simple;
-	bh=JVFoYP6O1GtQxzGkQymbRgfqEOvg8wZWDd9t5Qjwppk=;
+	s=arc-20240116; t=1771878911; c=relaxed/simple;
+	bh=CwxESDdtZJgoW3sP5uhrwNZpdjX22fZ573QnSEijARk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=BS0irhC/+pDY5rF4RloMJd/g332ba2tKoJDr14Ljkvw2za3BAVbYGj5qcEHBSqal+h7Ni56G+kRe+tazLWEXVO9piC8M+nzSIeRtTfPmCOv89vINFxAejz67MmT/ojZIB4VP7NqUyzt1lMDNr4do6xFcAXy841nZCQtOnh579dU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nOe5FCym; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=lEBlZUrCISzveTBxO7WIrXD8YlGVwc8N+9E86Cjg8PJ9CqL6tnGFZD2wgzxHdnIlbSBAq0iSyI8N/voUq0PyVFKlzXb90dW3U5O6X0Tii8gdBYTz6CAuC2Lem3r6ObFJhhsnxpTwvYpkGJgQocvrlh4fih0tSW0Kd0K2NW6jmTM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nwnJee4F; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nOe5FCym"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6254AC116C6;
-	Mon, 23 Feb 2026 20:31:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nwnJee4F"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9DAC116C6;
+	Mon, 23 Feb 2026 20:35:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771878718;
-	bh=JVFoYP6O1GtQxzGkQymbRgfqEOvg8wZWDd9t5Qjwppk=;
+	s=k20201202; t=1771878910;
+	bh=CwxESDdtZJgoW3sP5uhrwNZpdjX22fZ573QnSEijARk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=nOe5FCymJvzvQhrorcqcuC9zWVQ+MxE5R4ZC88A57t9/fGFGDxeFznV2QmIIkEH0K
-	 Yb4FPzgc1AyBsVZs2rm3J0yAREi7wPCleMjttHhZsvgpBkuWi95EOBYpxaRLnvVk10
-	 sDFG4uiZXnDgQPyZKIUvUV/hUzjNY1lnSlnvh5CkmP0SrwfsHYAHwmbc38Ix5y2Op5
-	 09TpgNmdJy9dvRinFE7HGyTg2g34pLSNvr+5p4pPzKitt2gkvrYR2xaInKKh4hQVxz
-	 73FY04gRJsziFxShzjFUbycBWvRlifyJD1nhFSR+Qt6Yee+CQWHrojMGMORsWzlbiG
-	 PDtVvM6N9MSSg==
-Date: Mon, 23 Feb 2026 20:31:45 +0000
+	b=nwnJee4FZwjPtLsiu0Jh+qAmoXIXWPXPYHB+whFVL1Hj8CczHmczxO5juOPlPaHUg
+	 lPxVF/08RxGGYPNGNLuyeEDPVMJTtcapLYTjByBnsQaIk10ag0cWOVKJdql+o13UzY
+	 fg4bUZyzlZwFcy5mGQPEMednfv/BID/A0k6XyMJD4GnUXTDBxLfpUHIZ+7UYND+P6e
+	 6lbnR9LzPpdD7j4HpNziqUX9pjIjNFyBD+Ursz9A8g8ETJKncIPCJLtoHOmvgGmq0j
+	 eNp+tmhKpqQ/Tpdu6OCdIqMZ2I0v8YBwJo1NFO12Nh+orLd9Y3n+B3+CUjYguO0Q36
+	 xQGMQWTamOdiQ==
+Date: Mon, 23 Feb 2026 20:35:01 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>
-Cc: robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- agross@kernel.org, andersson@kernel.org, lumag@kernel.org,
- dmitry.baryshkov@oss.qualcomm.com, konradybcio@kernel.org,
- daniel.lezcano@linaro.org, sboyd@kernel.org, amitk@kernel.org,
- thara.gopinath@gmail.com, lee@kernel.org, rafael@kernel.org,
- subbaraman.narayanamurthy@oss.qualcomm.com, david.collins@oss.qualcomm.com,
- anjelique.melendez@oss.qualcomm.com, kamal.wadhwa@oss.qualcomm.com,
- rui.zhang@intel.com, lukasz.luba@arm.com, devicetree@vger.kernel.org,
- linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
- cros-qcom-dts-watchers@chromium.org, quic_kotarake@quicinc.com,
- neil.armstrong@linaro.org, stephan.gerhold@linaro.org
-Subject: Re: [PATCH V10 3/4] iio: adc: Add support for QCOM PMIC5 Gen3 ADC
-Message-ID: <20260223203145.4a4493a7@jic23-huawei>
-In-Reply-To: <70b77d54-a6ab-426e-a7e1-3e011adad6d4@oss.qualcomm.com>
-References: <20260130115421.2197892-1-jishnu.prakash@oss.qualcomm.com>
-	<20260130115421.2197892-4-jishnu.prakash@oss.qualcomm.com>
-	<20260131173941.68b8116d@jic23-huawei>
-	<6012ad64-3a10-4f05-9f37-f2d0c36df582@oss.qualcomm.com>
-	<20260207165638.0ed27302@jic23-huawei>
-	<70b77d54-a6ab-426e-a7e1-3e011adad6d4@oss.qualcomm.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Rogue prince <rougueprince47@gmail.com>, lars@metafoo.de,
+ Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] iio: frequency: ad9523: fix checkpatch warnings
+Message-ID: <20260223203501.6c0583fc@jic23-huawei>
+In-Reply-To: <aZwRbUyaILTZZvGH@smile.fi.intel.com>
+References: <aZd2jAVnTIuz2o7h@smile.fi.intel.com>
+	<20260219213549.59645-1-rougueprince47@gmail.com>
+	<aZgLutMih65WdesN@smile.fi.intel.com>
+	<20260222135054.2e2012aa@jic23-huawei>
+	<20260222135836.3f8d7a38@jic23-huawei>
+	<CAPC4XCQQcvsyNQKkU9vLdRaJSQRbVxa5DGExoBv5H1Vt4fChKQ@mail.gmail.com>
+	<aZwRbUyaILTZZvGH@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,99 +49,45 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 23 Feb 2026 17:49:18 +0530
-Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
+On Mon, 23 Feb 2026 10:35:57 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Hi Jonathan,
-> 
-> On 2/7/2026 10:26 PM, Jonathan Cameron wrote:
-> > On Fri, 6 Feb 2026 18:45:02 +0530
-> > Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
-> >   
-> >> Hi Jonathan,
-> >>
-> >> On 1/31/2026 11:09 PM, Jonathan Cameron wrote:  
-> >>> On Fri, 30 Jan 2026 17:24:20 +0530
-> >>> Jishnu Prakash <jishnu.prakash@oss.qualcomm.com> wrote:
-> >>>     
-> >>>> The ADC architecture on PMIC5 Gen3 is similar to that on PMIC5 Gen2,
-> >>>> with all SW communication to ADC going through PMK8550 which
-> >>>> communicates with other PMICs through PBS.
-> >>>>
-> >>>> One major difference is that the register interface used here is that
-> >>>> of an SDAM (Shared Direct Access Memory) peripheral present on PMK8550.
-> >>>> There may be more than one SDAM used for ADC5 Gen3 and each has eight
-> >>>> channels, which may be used for either immediate reads (same functionality
-> >>>> as previous PMIC5 and PMIC5 Gen2 ADC peripherals) or recurring measurements
-> >>>> (same as ADC_TM functionality).
-> >>>>
-> >>>> By convention, we reserve the first channel of the first SDAM for all
-> >>>> immediate reads and use the remaining channels across all SDAMs for
-> >>>> ADC_TM monitoring functionality.
-> >>>>
-> >>>> Add support for PMIC5 Gen3 ADC driver for immediate read functionality.
-> >>>> ADC_TM is implemented as an auxiliary thermal driver under this ADC
-> >>>> driver.
-> >>>>
-> >>>> Signed-off-by: Jishnu Prakash <jishnu.prakash@oss.qualcomm.com>    
-> >>> Hi Jishnu
-> >>>
-> >>> Whilst there are a couple of comments below, I think this is ready to go.
-> >>> Unfortunately this is just a few days too late to merge for this coming
-> >>> cycle as I need to send the IIO pull request today or tomorrow (due to going
-> >>> through char-misc) so this would get no soak time in next.
-> >>>
-> >>> Also, I'm not sure how we actually want to merge this given close coupling with
-> >>> the thermal driver.  Perhaps best bet is I do an immutable branch of next rc1
-> >>> once available that we pull into both trees. That would have the first 3 patches
-> >>> on it. 
-> >>>
-> >>> Jonathan
-> >>>     
-> >>>> diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
-> >>>> new file mode 100644
-> >>>> index 000000000000..f8168a14b907
-> >>>> --- /dev/null
-> >>>> +++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c  
-> 
-> ....
-> 
-> >>
-> >> Also, is it alright if I push the next series to address
-> >> your comments immediately? Would you be able to include patches 1-3
-> >> in the immutable branch you mentioned, once it's available?  
-> > It's fine to post a v11.  I'll only be building that immutable tree
-> > after 7.0-rc1 is out (or 6.20-rc1 depending on Linus' decision on naming
-> > for the cycle that is about to start)
-> >   
-> 
-> It looks like kernel 7.0-rc1 is out now and I had posted v11 here earlier:
-> https://lore.kernel.org/all/20260209105438.596339-1-jishnu.prakash@oss.qualcomm.com/,
-> 
-> so can you please check this latest series and pick patches 1-3 if there
-> are no issues?
-
-Sure.  Immutable branch created. However, I'd suggest the thermal folk don't
-pick this up until it's had a little soak time. Today I've pushed it out for
-0-day to have a look (as part of the testing branch of iio.git). Once those
-results come in I'll push it out as togreg and linux-next will pick it up.
-
-https://web.git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=ib-iio-thermal-qcom-pmic5
-https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git  ib-iio-thermal-qcom-pmic5
-
-Thanks,
+> On Mon, Feb 23, 2026 at 02:49:12AM +0530, Rogue prince wrote:
+> > On Sun, Feb 22, 2026 at 7:28=E2=80=AFPM Jonathan Cameron <jic23@kernel.=
+org> wrote: =20
+> > > On Sun, 22 Feb 2026 13:50:54 +0000
+> > > Jonathan Cameron <jic23@kernel.org> wrote: =20
+>=20
+> ...
+>=20
+> > > Given short nature of your SoB and that this is (I think?) your
+> > > first upstream commit I just wanted to check that bhargav is
+> > > sufficient to meet this level.
+> > >
+> > > What counts for this varies a lot by culture or country so if
+> > > that is the right level of identification to use that that's
+> > > fine, just reply to let me know. =20
+>=20
+> > Thank you for checking! Yes, this is my first patch.
+> > Actually "bhargav" is fine for me , but if you need my full name on
+> > signed-off (i.e Bhargav Joshi) then please let me if i need to send a
+> > v4 with updated signature or it is possible for you to amend the
+> > Signed-off-by line to "Bhargav Joshi " rougueprince47@gmail.com" on
+> > your end while applying. =20
+>=20
+> Please, make sure you send patches with this SoB (using Bhargav Joshi).
+> Also make sure there are no double quotes. It's all documented, please
+> take your time to study Submitting Patches and Submitting Patches Checkli=
+st
+> documentation.
+>=20
+>=20
+Just to confirm. Please send a v4.
+SoB have legal meaning so best to have a clean record on list.
 
 Jonathan
 
-> 
-> Thanks,
-> Jishnu
-> 
-> > Thanks,
-> > 
-> > Jonathan  
-> 
 
