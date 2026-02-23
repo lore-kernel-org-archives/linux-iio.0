@@ -1,47 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DDD737FF47;
-	Mon, 23 Feb 2026 20:44:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 228642BEFF6;
+	Mon, 23 Feb 2026 20:53:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771879492; cv=none; b=RClt7H5PD3OX/q01h9Q2vzFNSjQdIlzb5ifxIWw7F/Tmw4W+UtUBtmA4YlX+LYbRlkR06KXoHspEx/a57LrCyuKERwkzbQ+3kM9bjgJlsub2C2sjo01snGfQyDYQ0kEg+TVyeZGmlmdMufjWb0HWadR7KYDAoI8BCtItSGCeazY=
+	t=1771879985; cv=none; b=DIy49EMxoX8O4oPM+MqLqQrRVGsx7vggoMvBrn3ZUSFrO59AGQrvLgA1fkeydmElPATiX7wT8llADYvozfmshqbQ9MbJxqaRUnB+3d1OtPJChaefT8VUBU9enQuFrDCpiaoKKAfqqJsof4LkONzZux5qmuZ6GoTNUQYH/TTR7oI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771879492; c=relaxed/simple;
-	bh=5qStVCqsaxcLwloex/fifxFkrBqG3eM3SckTb5NwC7k=;
+	s=arc-20240116; t=1771879985; c=relaxed/simple;
+	bh=9ZwCRUkSygSWXdebgAt63Ndk3TSqeMDqho4QjUTbPeg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=KPJacWIXjgJt2Zp5w3o25PQITp+1zdnZhL62N4+TZ2wx4oydnAD6mtvcH9dZTeS+jezxB2VdRVcfWIEelEj3PyiaQETNXQXQ+CR7l2a2pTcBJ5VBcziBigPqGlieOzaWSsCkmaO42ASyaU/TzPiseHWaHG+UbvSA+LOlNropq08=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=so33GO5J; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=aPpsPvWl2LO3a22SNzDeB2hj4j2zqFSITlYUFYxdOQw7HgcXuAwXaYESqyiQ678cqmCX6S3P1eqYka3JP91hje1rj37LILcF2tImr5LCO/vCJ6LZW3HpILl+nrjG0N0LiSZsnCsa1fpNGKAxawlYgRF//fkA7FT7L6437mgK1g0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dFbomPaX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="so33GO5J"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8365AC19421;
-	Mon, 23 Feb 2026 20:44:47 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dFbomPaX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C30E3C19421;
+	Mon, 23 Feb 2026 20:53:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771879491;
-	bh=5qStVCqsaxcLwloex/fifxFkrBqG3eM3SckTb5NwC7k=;
+	s=k20201202; t=1771879984;
+	bh=9ZwCRUkSygSWXdebgAt63Ndk3TSqeMDqho4QjUTbPeg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=so33GO5JKVhsaHCigceCyqm5XTUQTc8Jn7aaq3ZUGWJXUHt7Rc9fO3Z6ZvK3C43PP
-	 UA4gzGk7VJbkRuMnBw89H72pb9sAa0Vz7FM+GEGXVWJiUV35AZQO0eqc4NqOqdkaFA
-	 xBH5OtWyH96AocryVKcvBkNCFWAebm/MVDQVRdP0PfxfklwPEQ5xxVRRxVNCx5UDNo
-	 mzI3e2sD3FlE5T1WR54/9uXLa7Xmmr9UdanYQsRdkTzVfwLqm0thKbiv5X1feJ1eYc
-	 5RyZD1YOE4X8ypXsxJ0JTrUH+7WaEl4BdR69GjswPRKRAdsQHFvqq7Fa4U+P+QucKr
-	 BU5QA4dNYmXkQ==
-Date: Mon, 23 Feb 2026 20:44:42 +0000
+	b=dFbomPaXdm1lhsiCRGW4tHCyrO1zxgCcTPi/MDxnyMPCkNf3RBffybbw/qXjqk+CP
+	 xpth8RfSTShWo/87AJ7NTbvLjgO0oNvvB6o8Ujv9pgZYqMH6gZPTQ36szCplmgoMRw
+	 VsBcIZrsnIHZdZFBakvl6EOARXQszb/lyVMbMKkWBuZIoRh9xS0hv51VDmD6H/WwAe
+	 JWhjCMiph2crYJceBDyWSnlB3jmJEnFJue7aUqZXucHI5imdJ7NB1oB2I+zONFeoBg
+	 hhZnIPQJh1g2vEMDfXtnEQBlAHnHTJXjxl4A1WJ4nMKeODuQKyCnng8iPr9fy93EbR
+	 qkqkN/33uj18w==
+Date: Mon, 23 Feb 2026 20:52:54 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Archit Anant <architanant5@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: iio: impedance-analyzer: ad5933: use
- div64_ul() instead of do_div()
-Message-ID: <20260223204442.444c7503@jic23-huawei>
-In-Reply-To: <aZwRt7ws7PeHyuPM@smile.fi.intel.com>
-References: <20260218125327.21467-1-architanant5@gmail.com>
-	<aZXD0smUd3CRgPcv@smile.fi.intel.com>
-	<20260222134326.7fc1f45a@jic23-huawei>
-	<aZwRt7ws7PeHyuPM@smile.fi.intel.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>, Bartosz
+ Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] iio: adc: ti-ads7950: complete conversion to
+ using managed resources
+Message-ID: <20260223205254.472ee2b1@jic23-huawei>
+In-Reply-To: <aZtVEdFoGUMx4olM@smile.fi.intel.com>
+References: <20260219022929.3558081-1-dmitry.torokhov@gmail.com>
+	<20260219022929.3558081-5-dmitry.torokhov@gmail.com>
+	<aZbC51ezuaT5Nwq7@smile.fi.intel.com>
+	<aZj3deh1Em1rz3au@google.com>
+	<aZtVEdFoGUMx4olM@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,51 +53,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 23 Feb 2026 10:37:11 +0200
+On Sun, 22 Feb 2026 21:12:17 +0200
 Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Sun, Feb 22, 2026 at 01:43:26PM +0000, Jonathan Cameron wrote:
-> > On Wed, 18 Feb 2026 15:51:14 +0200
-> > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:  
-> > > On Wed, Feb 18, 2026 at 06:23:27PM +0530, Archit Anant wrote:  
-> > > > Replace do_div() with div64_ul() since the remainder is not used.
-> > > > div64_ul() is the preferred API for 64-bit by 32-bit division when
-> > > > only the quotient is needed.
-> > > > 
-> > > > Also replace explicit casting and shifting with the BIT_ULL(27) macro
-> > > > for clarity.
-> > > > 
-> > > > Note: A mathematical simplification to `(freq * BIT_ULL(29)) / mclk` was
-> > > > suggested during review to improve precision. However, as confirmed by
-> > > > maintainers, the original driver's truncation via `(mclk / 4)` might
-> > > > be intentional or relied upon by userspace. Since hardware is not
-> > > > available for verification, this patch preserves the original logic
-> > > > to avoid regression risk in the absence of testing.
-> > > > 
-> > > > Issue identified by coccicheck using do_div.cocci.    
-> > >   
-> > > > Changes in v2:
-> > > > - Replaced explicit `(u64)(1 << 27)` with `BIT_ULL(27)` as suggested by Andy Shevchenko.
-> > > > - Kept original arithmetic logic `(mclk / 4)` to preserve behavior.    
-> > > 
-> > > The place for changelog (and comments)...
-> > >   
-> > > > Signed-off-by: Archit Anant <architanant5@gmail.com>
-> > > > ---    
-> > > 
-> > > ...is here.
-> > > 
-> > > But do not resend until maintainers explicitly ask for that.
-> > >   
-> > Tweaked commit message as Andy pointed out was needed.
-> > 
-> > Applied to the togreg branch of iio.git
-> > 
-> > Andy, if you want to give a tag I can role that in for now as need
-> > to rebase anyway on rc1.  This mail felt like an 'almost tag' ;)  
+> On Fri, Feb 20, 2026 at 04:09:47PM -0800, Dmitry Torokhov wrote:
+> > On Thu, Feb 19, 2026 at 09:59:35AM +0200, Andy Shevchenko wrote:  
+> > > On Wed, Feb 18, 2026 at 06:29:28PM -0800, Dmitry Torokhov wrote:  
 > 
-> I think you are talking about my Rb? Sure
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> ...
 > 
-Added. Thanks,
+> > > > +	if (error) {
+> > > >  		dev_err(&spi->dev, "Error in spi setup\n");
+> > > > -		return ret;
+> > > > +		return error;
+> > > >  	}  
+> > > 
+> > > And since there is already dev_err_probe() in use, I would expect this
+> > > also be converted.  
+> > 
+> > But that would be unrelated change ;)  
+> 
+> I never told that this should be done here.
+> 
+> ...
+> 
+> > > Would be also nice to use
+> > > 
+> > > 	struct device *dev = &spi->dev;
+> > > 
+> > > to make less LoCs and/or make them shorter.  
+> > 
+> > I actually dislike introducing such temporaries in majority of the
+> > cases. It makes it hard to follow what device we are dealing with and
+> > does not make the code significantly shorter.  
+> 
+> May be, but my experience is telling me different story.
+> So we have a disagreement here, I leave it to Jonathan
+> to mediate.
+> 
+When there are multiple struct device isntances that we access
+in the driver I fully agree with Dmitry that it is helpful to
+fully enumerate them.  However, for IIO drivers we keep the
+one buried in struct iio_dev fairly well hidden so the confusion
+"opportunity" doesn't tend to occur.  As such I tend to come down just
+on the "have a local variable" side of things.
 
+Jonathan
