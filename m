@@ -1,64 +1,64 @@
-Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 157B513B5AE
-	for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 03:40:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA0853446A5
+	for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 03:40:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771818043; cv=none; b=b3Ccy7rIgaqVNtJvfTCWp9C9LxvT0PqibQh6eJVLldD7YleyRmJ5xTgrK/K+WHYIgEPqZ94e3ApNzGlbWNDlGRmG5TnXxbr+d93AlPrxCnmHSgbb9fxJ4WIgcIgYtV6SROzN5sPvj9to81WXWxRCFnW2HMWUe+CjlCMTOyy3AGE=
+	t=1771818045; cv=none; b=oJ2DOMF4MLsftt1h39OuKrpCCapAFcVCdSY2lbFs0oip8+7awxCPAX86yOV9CHoCiTzAsuW2ksq8jevkpwYeqTjceTf1PwD2f3uiHsWUc3JviVr137LvYX1w7qydBJ+1qhn47Ke9lSFI/f82Gj6RZPoO+ZcbD6X7gvPzpRirry4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771818043; c=relaxed/simple;
-	bh=MHTAdA0p3yx096g9IicyqQnRBWRyNknXQhvTuGz80UY=;
+	s=arc-20240116; t=1771818045; c=relaxed/simple;
+	bh=SGTNQIHXd2l45qUTlPXuJMT7dV8mZHGFRewKet2Zehk=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=fZV2jcRS7uxLRiPfusOkcebRdQpTJlI1DFaN8sSpZd4qtT0TC7f4TmgzifyeRMGba1jfKsZc5X/87Pqpdhge1wtDEXxXkmPKiQEKfevT7c2ilVSAXWhD+KtB9fvgzPsd+4KcfIQXzopZ6mhlgCmjxEXbtn9r9Mo5WiNQMis0KhM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IFd7Upvl; arc=none smtp.client-ip=209.85.128.176
+	 MIME-Version; b=fUtGG5wssz8XpZaZIUpiKZBijdC4g7kSr8C/5fmbPFWzsyAxOIiUQ458CuH4NUATMkAn0aSgeufeWWTJ1C+OvWOUNOJjwW41aR9pXh5UGXZtALrePzi25QiIyOr32O1PNDf+y5WrC7FktHaV1FUfotfmWjaM0SdXJkk+RDDzXWA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lqhwtF73; arc=none smtp.client-ip=209.85.128.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IFd7Upvl"
-Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-7964f1405a0so38132557b3.1
-        for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 19:40:41 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lqhwtF73"
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-7927261a3acso33538127b3.0
+        for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 19:40:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771818041; x=1772422841; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771818043; x=1772422843; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=QkUJsJ1p8D5fQxyBrpC9/cW9Unihi8QuVXvCcGPqhEk=;
-        b=IFd7UpvlyUHKjivxiMrCBIX6IhI0Hb0NN1h61dpTvCdMF84n7qhdJ9qud98I7nh+dQ
-         O/pepywlFa0h00wwcWgCUWnydX6daFetRSZgIoOeWmIOHciw5ru7N5H77McxbLR+l2w8
-         0ZXHzKQ1kK5EzILzAIieT9sd/+Mg+nAcI8TlwdIUlW0eVjrCZb/p4dYAfn4T4sZ/4M8w
-         UoNowWi4hpMa/Z7CCWcKK9cINT3OZWCqG/pq48oRjoX+6+rcLHkuN9Wlny2+fSMBT2Pj
-         T6tfQM1trEX/e7mIm9NHj5RfEkolyczZTMIm8olduhYKE2tl3htSKBPdXjMRkdImmCNA
-         e28A==
+        bh=llBR4+ajSqeSvY9ajnO7OKctHCvK1f4bcOFt4jCCGI8=;
+        b=lqhwtF73E07gSl7/j5nOw3mqLKMzctgm7P3ztBCo5BowSpJqI+u3lEha28djHCgVNC
+         c1RpVtG7OIja0FR4J4yWXQbamdo9TRjGlCDRItSbxdRc62EnJd4RlolTiWgbqGjnJDBI
+         Nt/hbu3jGDJuHpO0uxQyMGiL7rhfXfdrGXTRJdw87JJwX8RzktuVmEnWudoUf5WJ4wJN
+         SBrbbUBRXdYi4EpP82DUEp+E35gwpgzklbcmrO5vpjxMVV/nQM/UxH6yxpdKQSgjytOd
+         19BM3LxsTTufsncrAiTuZM4sqN6SzNilPKzgIyeGky76inCmUqzomZtuVXLP9mCpsEiH
+         kk8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771818041; x=1772422841;
+        d=1e100.net; s=20230601; t=1771818043; x=1772422843;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=QkUJsJ1p8D5fQxyBrpC9/cW9Unihi8QuVXvCcGPqhEk=;
-        b=TdDTKdTMtxr1vlYytnnFJAcVrjrC0nWQabQP2oAihmZfzxQA0LKTx2nRYKtj529EZu
-         iyiJqp3Mx7fziW60FBgcuSQS/6kMptL/Sxsx+Ls4Faw+x2XAFXSr4sUZz51NQel6IFEn
-         w0z/JqJMXP0FOOSNjsadnq3uHd8SkE6ZJ/C6XlbQzYlfJcP8PBU3lpQIHeyskP1+078f
-         tsEDQSV+iBjcxxy9c23CO+AR9WSMjxjPIbTTpt2VVCciRrzM4qFMvRMa8IhmAMVuWjNl
-         wdFJWlNaWOTXf/gmXzqq8lnMi5WAy01hSUyvwA+7z4xSfovgf2n3EEzGeS7A2G5RYAjk
-         LnQQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU6WBH0YpwtFU3m2zHQtJVf7OnNRLctTP3Qw9Toa68M8/QTR5IXz+RkYMEFxLTONaKLkKQcd34XtRU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxCEQVqBij9OYfv9762EhSpUGu0qRqu3vrS0UymgQHzD4H1vH8j
-	brZN9FVlTkuel6QtgE/bIT9MM6sZjz7itF9y++8725/O42xLQ8s7pgWl
-X-Gm-Gg: ATEYQzxITcQmRpuU31GCwMY2LFQ+/4BBX/7L07q55P6JndI8SunhKYWx1YnqrZ4wLqX
-	Qdxdf314MwIcnQrUYKlB8mB8VaNMUAkgsW3a5YQf1lLHf5Jug3nlzBlgllka5bF09pBoCtG9VKY
-	fuIPt4aalbkgVz3eQF4ee3+M9hOSMrgiMYAxMqmqDCgYDQtwYobg1R6bjEO8eP8AJL8iNgt2B72
-	eGyUGs5CLnygtYKFfWAXv7JVMpt/ASTKTRvqFaHITWDX7MBZC+GUcjZHVJ8aJp6I7FO/CP3dIc4
-	tivvK4QYVVMg4+oWLJPPoLkVlRFf7YGm66UoStLjhHV0s9qjqRSL5Eo0+veiQVprQWC4omWO4S7
-	MbhFzdtw+TDZ8Q+VrgvmQXOpzNRJ+LiUuZRjXTKzR0oouOi9hafVnzvkl/s8Vea6FBDAFvrGoEn
-	D3d9Dxsb61rNOXWLqAOmn6cZv6SyZdHdekOtrBtleUVcuI2k/3ZGSToyEkQF9cODSMhNXt+Zq6N
-	WG+r/iIqVEnVRjK47/fVgZe
-X-Received: by 2002:a05:690c:ed6:b0:794:d80f:d035 with SMTP id 00721157ae682-798290489e0mr60364847b3.49.1771818041119;
-        Sun, 22 Feb 2026 19:40:41 -0800 (PST)
+        bh=llBR4+ajSqeSvY9ajnO7OKctHCvK1f4bcOFt4jCCGI8=;
+        b=d+hW1BbagSmArQMN6dkaDzZtZxVgcGvqLRt8vG8f1irgjoF3dwjvdXeEP1zcAOxVkK
+         aQl9qqTzS1BLgejBHI/7n7/5XvF3tK2latqJ1/Ds/ESTDHFwtDkPPueyg6RVMO9AFx76
+         +5/8rgRxWhnVUYWBmI6qATlacnoyq6Tl3w6/EUd4nJ3Pus2tUABQgGrSUeftzg/xEbVJ
+         f/9lIAmKLXsZulP1wjj/i9zpWVwGJiI+NybMh1IsI3zHxkqv2xoZPtDQB3Gq/7QouWw2
+         DYWHV0p0DMpSYqf2xZpnfuN2GkRyCg/pr8VZWMC5eIADcPSkfuMIePJjzqcqZlGcPny4
+         qp1g==
+X-Forwarded-Encrypted: i=1; AJvYcCUAsqjOTq1DSYj6NH2/ob1CsbJz86EE4/0P5MtWYRABtePbsDxX2nOAaYjyrpqDoLIMQMf47fywGRA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx28pAPJ2aXdV4oj9EIgNbDjeaOHrwpW4ZjjxeDG0ro5EwulXMn
+	1jzyKiHtNLv1O+VeT/ZIRiiQGre7esERbOzgb/UVCysiqXAzsR63kX6P
+X-Gm-Gg: ATEYQzx7wDQ5T6PCP5F6GABy707pp1DlUsAGNNHW5J0+rwq1fGeVNP0yMIeZo/LfOZ/
+	uT/zQm57dk8iDYD0eDJY5do89M+GbnQnGxZqYTldhlbiuEFAruBy2129ZH+sibeZteOeHAXp8z7
+	is4VfIII4di4teQ9ZdNUXSxxAOyuKaVkcScneRE9XlQPcEPJjjyTcciH7ASOROTqVXJh7bOe2TW
+	8HuGvaQS/Yy+Vm5eGaRyMkfo/S4DbnXVgt8aNI0kSztlo0ig3SqxjWGH0NA0zu16/aHrmg9NJ08
+	RedyBlcRUbQkd2sVYLvpPVpxGqcnG0VRsh1SVltXs+CPAEw0inYSZ7CKwTvQvLM4iXiBHXZ38Vh
+	etxreXIp2r6mJdBzhSlZjIbyFfdJi6pBIzOe+oQlJd/VnhoHS/dVcTVOSSTATnPjA08GsvOUCdl
+	7LKAVUC0BvttQ5RoQ8VPVlrspp9kaGmyxYyfwDbSeF+fx9oh8l9w5WMKLBaYhHtr30Rh2hE0AKm
+	wE5JjrY4tn8XCYyPIotBONuYWFsbCpTX2U=
+X-Received: by 2002:a05:690c:e3e8:b0:798:270:fec0 with SMTP id 00721157ae682-79828cf8c2bmr59182167b3.5.1771818042816;
+        Sun, 22 Feb 2026 19:40:42 -0800 (PST)
 Received: from tux ([2601:7c0:c37c:4c00::5c0b])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7982dbd5939sm27285237b3.15.2026.02.22.19.40.40
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7982dbd5939sm27285237b3.15.2026.02.22.19.40.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Feb 2026 19:40:40 -0800 (PST)
+        Sun, 22 Feb 2026 19:40:42 -0800 (PST)
 From: Ethan Tidmore <ethantidmore06@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Andy Shevchenko <andy@kernel.org>
@@ -66,11 +66,11 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	Ethan Tidmore <ethantidmore06@gmail.com>,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v5 02/10] iio: light: gp2ap020a00f: correct return type to int
-Date: Sun, 22 Feb 2026 21:40:12 -0600
-Message-ID: <20260223034020.27625-3-ethantidmore06@gmail.com>
+	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+	Ethan Tidmore <ethantidmore06@gmail.com>
+Subject: [PATCH v5 03/10] iio: light: gp2ap020a00f: Use correct types for 16-bit LE data
+Date: Sun, 22 Feb 2026 21:40:13 -0600
+Message-ID: <20260223034020.27625-4-ethantidmore06@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260223034020.27625-1-ethantidmore06@gmail.com>
 References: <20260223034020.27625-1-ethantidmore06@gmail.com>
@@ -82,77 +82,104 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The function gp2ap020a00f_get_thresh_reg() can return -EINVAL in its
-error path. Yet, the function has return type of u8. Added error
-checking for gp2ap020a00f_get_thresh_reg() return value.
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Detected by Smatch:
-drivers/iio/light/gp2ap020a00f.c:1013 gp2ap020a00f_get_thresh_reg() warn:
-signedness bug returning '(-22)'
+Instead of using byte arrays and then explicit castings, change
+the types of byte arrays to be __le16 and update the endianness
+conversions accordingly.
 
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Ethan Tidmore <ethantidmore06@gmail.com>
 ---
 v5:
 - No change.
 v4:
-- Added Reviewed-by: tag from Andy Shevchenko.
-v3:
-- Remove Fixes: tag.
-- Added Smatch warning.
-v2:
-- Fixed gp2ap020a00f_get_thresh_reg() parameter alignment.
-- Removed unneeded whitespace between assignment and check.
+- Integrate Andy Shevchenko's cleanups.
 
- drivers/iio/light/gp2ap020a00f.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/iio/light/gp2ap020a00f.c | 23 +++++++++++------------
+ 1 file changed, 11 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index 7cee15db3a1a..6fe4486101b8 100644
+index 6fe4486101b8..8558c4c3ef7a 100644
 --- a/drivers/iio/light/gp2ap020a00f.c
 +++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -993,8 +993,8 @@ static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
- 	return IRQ_HANDLED;
+@@ -462,7 +462,7 @@ static int gp2ap020a00f_write_event_threshold(struct gp2ap020a00f_data *data,
+ 
+ 	return regmap_bulk_write(data->regmap,
+ 				 GP2AP020A00F_THRESH_REG(th_val_id),
+-				 (u8 *)&thresh_buf, 2);
++				 &thresh_buf, sizeof(thresh_buf));
  }
  
--static u8 gp2ap020a00f_get_thresh_reg(const struct iio_chan_spec *chan,
--					     enum iio_event_direction event_dir)
-+static int gp2ap020a00f_get_thresh_reg(const struct iio_chan_spec *chan,
-+				       enum iio_event_direction event_dir)
+ static int gp2ap020a00f_alter_opmode(struct gp2ap020a00f_data *data,
+@@ -698,18 +698,18 @@ static int wait_conversion_complete_irq(struct gp2ap020a00f_data *data)
+ static int gp2ap020a00f_read_output(struct gp2ap020a00f_data *data,
+ 					unsigned int output_reg, int *val)
  {
- 	switch (chan->type) {
- 	case IIO_PROXIMITY:
-@@ -1024,11 +1024,14 @@ static int gp2ap020a00f_write_event_val(struct iio_dev *indio_dev,
- 	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
- 	bool event_en = false;
- 	u8 thresh_val_id;
--	u8 thresh_reg_l;
-+	int thresh_reg_l;
+-	u8 reg_buf[2];
++	__le16 reg_buf;
+ 	int err;
  
- 	guard(mutex)(&data->lock);
+ 	err = wait_conversion_complete_irq(data);
+ 	if (err < 0)
+ 		dev_dbg(&data->client->dev, "data ready timeout\n");
  
- 	thresh_reg_l = gp2ap020a00f_get_thresh_reg(chan, dir);
-+	if (thresh_reg_l < 0)
-+		return thresh_reg_l;
-+
- 	thresh_val_id = GP2AP020A00F_THRESH_VAL_ID(thresh_reg_l);
- 	if (thresh_val_id > GP2AP020A00F_THRESH_PH)
- 		return -EINVAL;
-@@ -1070,11 +1073,13 @@ static int gp2ap020a00f_read_event_val(struct iio_dev *indio_dev,
- 				       int *val, int *val2)
+-	err = regmap_bulk_read(data->regmap, output_reg, reg_buf, 2);
++	err = regmap_bulk_read(data->regmap, output_reg, &reg_buf, sizeof(reg_buf));
+ 	if (err < 0)
+ 		return err;
+ 
+-	*val = le16_to_cpup((__le16 *)reg_buf);
++	*val = le16_to_cpu(reg_buf);
+ 
+ 	return err;
+ }
+@@ -867,8 +867,9 @@ static irqreturn_t gp2ap020a00f_thresh_event_handler(int irq, void *data)
  {
- 	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
--	u8 thresh_reg_l;
-+	int thresh_reg_l;
+ 	struct iio_dev *indio_dev = data;
+ 	struct gp2ap020a00f_data *priv = iio_priv(indio_dev);
+-	u8 op_reg_flags, d0_reg_buf[2];
+ 	unsigned int output_val, op_reg_val;
++	__le16 d0_reg_buf;
++	u8 op_reg_flags;
+ 	int thresh_val_id, ret;
  
- 	guard(mutex)(&data->lock);
+ 	/* Read interrupt flags */
+@@ -896,11 +897,11 @@ static irqreturn_t gp2ap020a00f_thresh_event_handler(int irq, void *data)
+ 		 * transition is required.
+ 		 */
+ 		ret = regmap_bulk_read(priv->regmap, GP2AP020A00F_D0_L_REG,
+-							d0_reg_buf, 2);
++				       &d0_reg_buf, sizeof(d0_reg_buf));
+ 		if (ret < 0)
+ 			goto done;
  
- 	thresh_reg_l = gp2ap020a00f_get_thresh_reg(chan, dir);
-+	if (thresh_reg_l < 0)
-+		return thresh_reg_l;
- 	if (thresh_reg_l > GP2AP020A00F_PH_L_REG)
- 		return -EINVAL;
+-		output_val = le16_to_cpup((__le16 *)d0_reg_buf);
++		output_val = le16_to_cpu(d0_reg_buf);
  
+ 		if (gp2ap020a00f_adjust_lux_mode(priv, output_val))
+ 			goto done;
+@@ -967,17 +968,15 @@ static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
+ 	int i, out_val, ret;
+ 
+ 	iio_for_each_active_channel(indio_dev, i) {
+-		ret = regmap_bulk_read(priv->regmap,
+-				GP2AP020A00F_DATA_REG(i),
+-				&priv->buffer[d_size], 2);
++		ret = regmap_bulk_read(priv->regmap, GP2AP020A00F_DATA_REG(i),
++				       &priv->buffer[d_size], 2);
+ 		if (ret < 0)
+ 			goto done;
+ 
+ 		if (i == GP2AP020A00F_SCAN_MODE_LIGHT_CLEAR ||
+ 		    i == GP2AP020A00F_SCAN_MODE_LIGHT_IR) {
+-			out_val = le16_to_cpup((__le16 *)&priv->buffer[d_size]);
++			out_val = get_unaligned_le16(&priv->buffer[d_size]);
+ 			gp2ap020a00f_output_to_lux(priv, &out_val);
+-
+ 			put_unaligned_le32(out_val, &priv->buffer[d_size]);
+ 			d_size += 4;
+ 		} else {
 -- 
 2.53.0
 
