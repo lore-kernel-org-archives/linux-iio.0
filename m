@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6949925393B;
-	Mon, 23 Feb 2026 21:21:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC67134AB16;
+	Mon, 23 Feb 2026 21:22:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771881685; cv=none; b=km2guzq1Hc8yzeYzkCS7gI0raW7Cm8rIwnZvDmYFwvA92h9p74fjomeZDBuXEMmxits5wLwfrzZntovFgdi2I3pP8crfYsFaSeAEHLQL5SelbuNanT6kLAelZ/n4BDbWTj7phm/kPmfqOwWAA/+1USdj0wnOpLZBZF16r66bTZI=
+	t=1771881750; cv=none; b=rt+hGEIOR+iBroP9lJ1Pu2LxXGOBPS/sVpsXmYXZpF+gd/pA1srxDLd+8c3+/gOrNGe/1xvj1M5TVdunfoz3k/Ivj5J/aaeygvrA8qjJMTKBS5eyvY4R03zv9ZEmQf9NTyFR8S55NyDK2aRs9BjqhxxNTRaDE3UfT6XMXfHQBUo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771881685; c=relaxed/simple;
-	bh=j6kYNMWpQpeeeC7D6u7GaL4PlVDNob1jSMhAKPnJ+Yo=;
+	s=arc-20240116; t=1771881750; c=relaxed/simple;
+	bh=iHgra+uFkEbnwBpp0WYF10LCEYcCHaeuGWxtQbCqpag=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=X1p0iPVJrKL3tT9DZXboWCUrU5HF4FdcWKRaAK4UzxvQWf9BMaSJxrib3kebJwgXICCAUCldvVY4yX8R1SIUjyGd5O3dqFzAeHLiH7D/A51PXvLrRGY+CySuPYh0kpFehfZAlk3qL7qsFP2YgRB8bwViVvsIl/jfyXpC2wDK6Lw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oARCLiyw; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=YU4xk39ub6rykvI4dzdFB7JwYPl4PhZaKiGPuRP3X2i3aj8/JaRk6SRAbhq2g3JVChMfxgCmZXafY172lTDMXVIxpQsg+0RcH3dDg+nvvxOdJOb54GdgFr29Dsjd6C2KsGX4qeWckslHcwxDGu0JE2pcW11vnBHshKxgBw6JM+c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HRKBUKsV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oARCLiyw"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3C20C116C6;
-	Mon, 23 Feb 2026 21:21:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HRKBUKsV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A7D3C116C6;
+	Mon, 23 Feb 2026 21:22:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771881685;
-	bh=j6kYNMWpQpeeeC7D6u7GaL4PlVDNob1jSMhAKPnJ+Yo=;
+	s=k20201202; t=1771881750;
+	bh=iHgra+uFkEbnwBpp0WYF10LCEYcCHaeuGWxtQbCqpag=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=oARCLiywCOoembq/P64iOJw7FVNwdX9cy9meZu8VKWWWr0C610vZ5aSG55f/V5m0L
-	 J5a1RhfCUi/M9wQYiNo25cnbhWxj1hn3D6bAXYvJsLHFxlJw/ngvg3LbHVP8xOLeG0
-	 MayHpg51w4ZIWiUmidxhfCCJ4cf6ryX1QLB6XzPyGRkOJ/9nfeDKGEf6be4XcnQs9m
-	 up/qdNktKGVRpSnjoYnVnEIAxBD59/SSPMZ5gU3tq/yA/z/HkaIsizanRnmLmGzoli
-	 aZHAVmB8/KdJA6/zEdAi6c6Hvfawd60uTKo3LMibSqTvQXRYdm3QD7lxIYLaIren5i
-	 2PVpGBmzocDdg==
-Date: Mon, 23 Feb 2026 21:21:16 +0000
+	b=HRKBUKsVbAswUe/SU5430cfMAsR91NR2VCdVSkWgVhl1+D21E2GAGEZJKB/YeH23Q
+	 WdRyfsNeM8cEWu+zCnXb+bTfisobW+0LCNhCGK5i6xy4GKBYI5uxT96G2/4zQVz98i
+	 KFIEHXQ/HJ31NPN7dNGMASk0Ib1nVZ3x1Neo42l0v58e2Iq6vtM7dGu6h4cMjv0H0D
+	 OW8rF0rA11YzEomTQKAE+g0+bZnYm3Ho2UpgkXzxIDW4tTlWJCbMRPdcdP1ZUMupR5
+	 o6ymNubTotVPuCmRIHEI2q7UJ7oN1S81FFLPi8/znMrYJTSHoW695wK/Go8o4n0oku
+	 ZCCRG/f62flgA==
+Date: Mon, 23 Feb 2026 21:22:21 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
- lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Cosmin Tanislav
+ <cosmin.tanislav@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad7173: move opening brace to a separate line
-Message-ID: <20260223212116.32bd2486@jic23-huawei>
-In-Reply-To: <aZwVEd9LUt4Nsooa@smile.fi.intel.com>
-References: <20260223082359.46403-2-giorgitchankvetadze1997@gmail.com>
-	<aZwQszq2o4MlXpOS@smile.fi.intel.com>
-	<CAE7dp2oVSDKM2FArSfLtjjUTBm1RPWQNXrsvOgDNvg9G+URogQ@mail.gmail.com>
-	<aZwVEd9LUt4Nsooa@smile.fi.intel.com>
+Subject: Re: [PATCH v2] iio: addac: ad74413r: simplify timeout return
+Message-ID: <20260223212221.4e43b0ca@jic23-huawei>
+In-Reply-To: <CAHp75Vci3N+2iH1UZwnWb-pe9EYGq=Q0NA-fTuAf4sOMv6db9A@mail.gmail.com>
+References: <20260223101440.4872-1-antoniu.miclaus@analog.com>
+	<CAHp75Vci3N+2iH1UZwnWb-pe9EYGq=Q0NA-fTuAf4sOMv6db9A@mail.gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,37 +50,20 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 23 Feb 2026 10:51:29 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 23 Feb 2026 12:34:08 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-> On Mon, Feb 23, 2026 at 12:40:10PM +0400, Giorgi Tchankvetadze wrote:
-> > On Mon, Feb 23, 2026 at 12:32=E2=80=AFPM Andy Shevchenko
-> > <andriy.shevchenko@intel.com> wrote: =20
-> > >
-> > > On Mon, Feb 23, 2026 at 12:24:00PM +0400, Giorgi Tchankvetadze wrote:=
- =20
-> > > > Place the opening brace of ad7173_calc_openwire_thrsh_raw() on its =
-own
-> > > > line to comply with the kernel coding style for function definition=
-s.
-> > > > Issue found by checkpatch. =20
-> > >
-> > > Is it the only problem like this in the entire driver?
-> > > If so, feel free to add
-> > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com> =20
-> >=20
-> > Thanks for the review, Andy. Yes, it is the only instance of this
-> > issue in the driver. I verified with checkpatch and a manual grep for
-> > function definitions with opening braces on the same line. =20
+> On Mon, Feb 23, 2026 at 12:15=E2=80=AFPM Antoniu Miclaus
+> <antoniu.miclaus@analog.com> wrote:
+> >
+> > Return -ETIMEDOUT directly instead of assigning it to an intermediate
+> > variable first. =20
 >=20
-> Thanks for confirming, no need to resend with my tag, the tooling
-> Jonathan uses picks this up.
+> Reviewed-by: Andy Shevchenko <andy@kernel.org>
 >=20
-Applied to the testing branch of iio.git.  I have a bunch of other
-stuff I applied tonight that I want the autobuilders to play with
-before I push this out as something linux-next will pick up
+Applied.
 
-Thanks,
+Ta
 
-Jonathan
+J
 
