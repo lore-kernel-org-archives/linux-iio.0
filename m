@@ -1,64 +1,64 @@
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8557C345757
-	for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 03:40:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C942345CD9
+	for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 03:40:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771818048; cv=none; b=OwH/FRMAb7rAYRNf4809lvKb92MsKD7c8r+L39+ba9vukdHzJOm7T0hIY0je2Ln+D2x7wDhJVnGPoM3gOkcEJpGNA2pQNUlKxTEe+GuzvuiFdzdu7jKWS3NQ0Kp+hlk88PwK8JhW6S9PSIqN7XClow8VTJ9AIpNiAmePGOeP0IA=
+	t=1771818049; cv=none; b=h5NMycFH+bN+XgZ5XRkrksYKRz+vNLKPTopWPPkJ42/EaybQDd/pNGMF085Q312MlMueSneYdWeMaNNUdaPGPj3918oKXsA7cRqCPsc593i/9TIWqqvpy04qBkpxgGI63+1NzZWsCtnC9Bh1zUmRsChPsxP6K3Ov2eo2wPvszZ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771818048; c=relaxed/simple;
-	bh=I485GX0Pog1oelKG+Cg/Ejzrxtfwd894VBCKnHl1O+s=;
+	s=arc-20240116; t=1771818049; c=relaxed/simple;
+	bh=u8tJfTiMhFLOgBGY/qJjB7+tG3jV629MS3lZouBe+Tc=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=rxIw6MPbbPz2fd6ntIWgKuypN5mQfxVbw0PS1uhTFgqeWWqkTgaoc4NcNUeeLhmktoi8Eib/1MTrFUlS9iWFLJ9KTN/+9vZzaHkYfeOrVGtGbxvg+KhU/YBBUqtzugdUhxvUCDeWFVi9DyBpK9RKwdv57WpwpfwZwyZYW7wZTf8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eqA4azGQ; arc=none smtp.client-ip=209.85.128.171
+	 MIME-Version; b=J3/hmwVyjJRoLAISMJ2CnZw2ruQV7UtC3EqbMwUQUd55M3Ay/uYbQdXADGdvNg5VFMEBnVpAcewiSpsZQACckEY3KuevBupbQOdrzfRAuzHEtli2PdkI1A/q/puCHC9LwlWn8xvvjVx+BPyrR/j2Vn6kqSSYqRqLmwcCJmxMTgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b0qPSCR1; arc=none smtp.client-ip=209.85.128.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eqA4azGQ"
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-79801df3e21so35769777b3.2
-        for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 19:40:47 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b0qPSCR1"
+Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-793fdbb8d3aso31184827b3.3
+        for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 19:40:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771818046; x=1772422846; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771818047; x=1772422847; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=pCgYbsV8y/lXIHufgVowxyqz38jANK3ZckW9ccKdzyk=;
-        b=eqA4azGQV5dumcrWYZCLN6rIVTKbb7O68xE/jYkNx6UAOOj6u9jN5kzYBaxS1tw757
-         pVhlqab2gm0mTY3QNH6D2IR5ORTdOtFMi4aH2WIEOmkF1i5c11EWjY2y7RCjtpv1XykB
-         yrtkVhi1izRpPHHPHTwYWdBQjtMSBxnkXOjf7PYGM/44DA7EIp+s6Gb+L8oDbrUA8Fgj
-         tE+bkJseoe/fm/LUATjS+VxUvbu6QRj9Kif+OeX/LO0XiOeI58HsGxaQj/AljxExhHTy
-         2543eTc2nm6K5UBF+g8x43dZqMkfqL4Bj5K8Py1HFr22kBa/AfYNVIs9Xqnv7PUPzzxi
-         W1BQ==
+        bh=SFIDfb+fiqqkIYg8UaViqwuxTwVr1uGT5nI/+TRKG8o=;
+        b=b0qPSCR1SV1AG21ZNatWXh3e8QLSAIdlWXaQDSD3YSVBxGuUig5uqjr6dBCWV8+OhV
+         K+NxlGwBf3jjSRzMu5XUCB2sSRAUBk7Bged7NKuXXdkDwX/G4BciR7ka1Dk6ULTqC16C
+         i/EJtUT84h7g+g2zlBlHNaoz1gsYwGkr8BzaLuTVc9hZUen4gEsbnq+XAHW+XmLxutxF
+         NrPkUltgufXV83gs2AcTY6w5ojq0SdhRreNOQDUouJwuot2Zy6dBHbJ6Bot+55tImsb0
+         uu2+vrVw0ctU0wkO4nkkRwhUAtME6CqAwLB3PCL2GgstbrMWGJ/O+Q1WegV4Hgr5lrGx
+         tHhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771818046; x=1772422846;
+        d=1e100.net; s=20230601; t=1771818047; x=1772422847;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=pCgYbsV8y/lXIHufgVowxyqz38jANK3ZckW9ccKdzyk=;
-        b=reHDa8DS3LtHefEc6CbKSvTIINBvZhDrl0lB7NnK+n4pe81CEHhswz/aGNtCt/s1aX
-         enF+5txXU2ZNO6fypPef23p05fHUur5Vy+zbb9JDR9ycaxyaeVQd8u4BYta8atkmeFec
-         ybpF5c6926dEoK3Zss0Oa0fpNaMPnzWjRs/l71YMmqLxI5nhE0tSNy1d/UxcxwQ2Nb+z
-         q31Va3q5s4AEt7IiE21lEVIBP4XK3CplC9vpnYlOf177CYQL0B3sfxdO63FUGfJLPNyL
-         sth2yiIf1qWM+VKbcvpzIAtC1FbBEyKlklLDpQ08Y5D0jbm8noHWbGH++592NMj1vqe9
-         nq3Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWRlHj/HzRe/6M7w6sdDUVqbKQZSOp56f+a/O/yhhXT1lLHao1m//h8ZINBPLfpUODrafpwINj2Ei0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwhrX54Jpm6Pp61+Kv9+QzwKasmwKTJQrSddoOpx9oKjUwn7z4/
-	lLrOAr82zr9MHp0DsUipVLGXvfGRT3mNKyvJsoRVTa9J9FdaEnW7ECu6
-X-Gm-Gg: ATEYQzw7KNZS7nnhsmse2c8XemSgsRKzJp8NXENEFajDQukRXfQRRt16WaerzlcXVXO
-	5LLwSQoXIJGGa99YcsUABZmZ3yuFNcz72eKbyDrlOMUbkBlE+x+D4RYDuQXnbhJG3PedoJlWHxI
-	U5DZrIF9Stp9bW60MXXEIqN9aINxhYHctBcxuWD7J1D8rwF2qkmMK6MDmHT06g7k3TB9w5urJU6
-	K3/Am/28pZs2idfbcFxHvNbF7wG6pAbeLepY2CZXA8AAmyLNvGE4H/jBPvF7ZqZf0yPzXVnKH5e
-	cyiwtcQu5x0hvlCqOpI6DNesrqKzHA4ePqzebPX8kzhfg1DFbAXr+cA2sDegURjesfciQd+9wJr
-	tPjOU0XZIM9z4vZKXjpehFUqdGJcL0Rf6IEkeVaq2ifPeRWBBFUH+fKZ2VNLye1+fpgsCMz69O6
-	ixMoeyXEEaA0XSk0I0qaBE9sOtmh4QBguE4v2R/q0ZK3knrdGShjonnUo9HbuiuimLTWt25XgUd
-	xdX3lYYGtZYyPdiVKkt+T76
-X-Received: by 2002:a05:690c:6706:b0:794:8d58:cac0 with SMTP id 00721157ae682-79828eed47cmr62376017b3.16.1771818046404;
-        Sun, 22 Feb 2026 19:40:46 -0800 (PST)
+        bh=SFIDfb+fiqqkIYg8UaViqwuxTwVr1uGT5nI/+TRKG8o=;
+        b=Hk6opjm0HRaUh11neVIv8sNKeUHp+5XDr0bvSrp6STFQGPIbetcAHlzNOAdQxHXAFE
+         usfqaBvqVPJHAZNT/aRD5p9Fr5iHsE6VXVC+E0SvOa28SIJ6z3t+Y52tNd3uT6vKqTLe
+         3pwBJgOLXqYFBwTTJDXpNx6cPYFljymwYxlWagseIYWqi7M2V/IZ6i/+0jrftUoOqo7o
+         9Fi8YAx9/58EjL6lrRxb2pmMzjNyrMmVDe3S1Krk8XkeewyGsGABRBuozY115c/gNz2x
+         YAs+Cd4dNxWTqAsveSNPt+t3XVjoRFDvWwwrbJ5WgaSGtXE/H9fxWaJJp6bmt0+mjeiS
+         MzYA==
+X-Forwarded-Encrypted: i=1; AJvYcCUbRMrVBS2bs5hHnTpwgQJlPjgsesA2o8kLPCg67n3/s015021wYLqYHvbQAOrV9cW6MhnO06maaYE=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxoi64b8VlGelGY/0V29qJQTM5+G95wkVpdVFp9CX/BILNfWvQF
+	0TPqbXWQ2kmXO3rkxzPtcCaOyo/EkVNv7k7f2widcJcHPlq8Ycnv7c1Y
+X-Gm-Gg: ATEYQzyysgGO7OyPXJDGVikvFDXZdel1G+vwdpfoAXHxXQLCruxi8gvkpticsFBZhAF
+	yLvAhP7mIrW+KxI3QAZN10TCFD2wDO+ciP6j9gcB8d6vOtu7mwejS9Xx4NYioRGJ13O4Q9y4ZAC
+	9vbWLDKsu9Q7mpDm/NDOpt6iVUYUaHjDzttboT5Mvun1SOI0EbHdOIB+7L9YyoU+jyV5GJSuWyc
+	wyR122FV7gW1Ojq7nudvnec80D2OoztK3y8nfQm1X/MkWzy2v0obns3xrSWyl09/KUlbUy/CHNW
+	Qv6LtE/u1a118X5RsEAuNvp8t2bfH3K82TrUjKIqkTtJGKRsM3B4BCk8vrpWQGNRDrkxTsglfy8
+	5qc6kGwojjwuNifX+O0Y/SPK7NP8atBAvwhZZw4jmpZZV93G0oOjoAmufra1a9MnJIOJV2Ww195
+	dsXKbHFjzqvLQuNkXNnhwDNS0+TE/eGounURUQkyPSo5V5PL/5wYEyqraq4fUwhnvarpoVAphaB
+	btwboFDG9zu4a3e7DMY4R6y
+X-Received: by 2002:a05:690c:a92:b0:797:df7c:3e1b with SMTP id 00721157ae682-79828ef29afmr63385657b3.4.1771818047348;
+        Sun, 22 Feb 2026 19:40:47 -0800 (PST)
 Received: from tux ([2601:7c0:c37c:4c00::5c0b])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7982dbd5939sm27285237b3.15.2026.02.22.19.40.45
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7982dbd5939sm27285237b3.15.2026.02.22.19.40.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Feb 2026 19:40:45 -0800 (PST)
+        Sun, 22 Feb 2026 19:40:46 -0800 (PST)
 From: Ethan Tidmore <ethantidmore06@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Andy Shevchenko <andy@kernel.org>
@@ -68,9 +68,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-kernel@vger.kernel.org,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Ethan Tidmore <ethantidmore06@gmail.com>
-Subject: [PATCH v5 06/10] iio: light: gp2ap020a00f: Replace custom implementation of min()
-Date: Sun, 22 Feb 2026 21:40:16 -0600
-Message-ID: <20260223034020.27625-7-ethantidmore06@gmail.com>
+Subject: [PATCH v5 07/10] iio: light: gp2ap020a00f: Use temporary variable for struct device
+Date: Sun, 22 Feb 2026 21:40:17 -0600
+Message-ID: <20260223034020.27625-8-ethantidmore06@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260223034020.27625-1-ethantidmore06@gmail.com>
 References: <20260223034020.27625-1-ethantidmore06@gmail.com>
@@ -84,7 +84,7 @@ Content-Transfer-Encoding: 8bit
 
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Replace custom implementation of min() to save a few lines of code.
+Use temporary variable for struct device to make code neater.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Ethan Tidmore <ethantidmore06@gmail.com>
@@ -94,40 +94,140 @@ v5:
 v4:
 - Integrate Andy Shevchenko's cleanups.
 
- drivers/iio/light/gp2ap020a00f.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/light/gp2ap020a00f.c | 34 +++++++++++++++-----------------
+ 1 file changed, 16 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index d2156e133b75..b2434d00e10a 100644
+index b2434d00e10a..97630ce9ade0 100644
 --- a/drivers/iio/light/gp2ap020a00f.c
 +++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -38,6 +38,7 @@
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/irq_work.h>
-+#include <linux/minmax.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
- #include <linux/mutex.h>
-@@ -45,6 +46,7 @@
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/unaligned.h>
-+
- #include <linux/iio/buffer.h>
- #include <linux/iio/events.h>
- #include <linux/iio/iio.h>
-@@ -454,9 +456,7 @@ static int gp2ap020a00f_write_event_threshold(struct gp2ap020a00f_data *data,
- 		 */
- 		thresh_reg_val = data->thresh_val[th_val_id] / 16;
- 	else
--		thresh_reg_val = data->thresh_val[th_val_id] > 16000 ?
--					16000 :
--					data->thresh_val[th_val_id];
-+		thresh_reg_val = min(data->thresh_val[th_val_id], 16000U);
+@@ -1187,6 +1187,7 @@ static int gp2ap020a00f_read_event_config(struct iio_dev *indio_dev,
+ static int gp2ap020a00f_read_channel(struct gp2ap020a00f_data *data,
+ 				struct iio_chan_spec const *chan, int *val)
+ {
++	struct device *dev = &data->client->dev;
+ 	enum gp2ap020a00f_cmd cmd;
+ 	int err;
  
- 	thresh_buf = cpu_to_le16(thresh_reg_val);
+@@ -1206,27 +1207,23 @@ static int gp2ap020a00f_read_channel(struct gp2ap020a00f_data *data,
  
+ 	err = gp2ap020a00f_exec_cmd(data, cmd);
+ 	if (err < 0) {
+-		dev_err(&data->client->dev,
+-			"gp2ap020a00f_exec_cmd failed\n");
+-		goto error_ret;
++		dev_err(dev, "gp2ap020a00f_exec_cmd failed\n");
++		return err;
+ 	}
+ 
+ 	err = gp2ap020a00f_read_output(data, chan->address, val);
+ 	if (err < 0)
+-		dev_err(&data->client->dev,
+-			"gp2ap020a00f_read_output failed\n");
++		dev_err(dev, "gp2ap020a00f_read_output failed\n");
+ 
+ 	err = gp2ap020a00f_set_operation_mode(data,
+ 					GP2AP020A00F_OPMODE_SHUTDOWN);
+ 	if (err < 0)
+-		dev_err(&data->client->dev,
+-			"Failed to shut down the device.\n");
++		dev_err(dev, "Failed to shut down the device.\n");
+ 
+ 	if (cmd == GP2AP020A00F_CMD_READ_RAW_CLEAR ||
+ 	    cmd == GP2AP020A00F_CMD_READ_RAW_IR)
+ 		gp2ap020a00f_output_to_lux(data, val);
+ 
+-error_ret:
+ 	return err;
+ }
+ 
+@@ -1415,18 +1412,19 @@ static const struct iio_buffer_setup_ops gp2ap020a00f_buffer_setup_ops = {
+ static int gp2ap020a00f_probe(struct i2c_client *client)
+ {
+ 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
++	struct device *dev = &client->dev;
+ 	struct gp2ap020a00f_data *data;
+ 	struct iio_dev *indio_dev;
+ 	struct regmap *regmap;
+ 	int err;
+ 
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+ 	data = iio_priv(indio_dev);
+ 
+-	data->vled_reg = devm_regulator_get(&client->dev, "vled");
++	data->vled_reg = devm_regulator_get(dev, "vled");
+ 	if (IS_ERR(data->vled_reg))
+ 		return PTR_ERR(data->vled_reg);
+ 
+@@ -1436,7 +1434,7 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
+ 
+ 	regmap = devm_regmap_init_i2c(client, &gp2ap020a00f_regmap_config);
+ 	if (IS_ERR(regmap)) {
+-		dev_err(&client->dev, "Regmap initialization failed.\n");
++		dev_err(dev, "Regmap initialization failed.\n");
+ 		err = PTR_ERR(regmap);
+ 		goto error_regulator_disable;
+ 	}
+@@ -1447,7 +1445,7 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
+ 			ARRAY_SIZE(gp2ap020a00f_reg_init_tab));
+ 
+ 	if (err < 0) {
+-		dev_err(&client->dev, "Device initialization failed.\n");
++		dev_err(dev, "Device initialization failed.\n");
+ 		goto error_regulator_disable;
+ 	}
+ 
+@@ -1472,11 +1470,10 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
+ 		goto error_regulator_disable;
+ 
+ 	/* Allocate trigger */
+-	data->trig = devm_iio_trigger_alloc(&client->dev, "%s-trigger",
+-							indio_dev->name);
++	data->trig = devm_iio_trigger_alloc(dev, "%s-trigger", indio_dev->name);
+ 	if (data->trig == NULL) {
+ 		err = -ENOMEM;
+-		dev_err(&indio_dev->dev, "Failed to allocate iio trigger.\n");
++		dev_err(dev, "Failed to allocate iio trigger.\n");
+ 		goto error_uninit_buffer;
+ 	}
+ 
+@@ -1488,7 +1485,7 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
+ 				   "gp2ap020a00f_als_event",
+ 				   indio_dev);
+ 	if (err < 0) {
+-		dev_err(&client->dev, "Irq request failed.\n");
++		dev_err(dev, "Irq request failed.\n");
+ 		goto error_uninit_buffer;
+ 	}
+ 
+@@ -1496,7 +1493,7 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
+ 
+ 	err = iio_trigger_register(data->trig);
+ 	if (err < 0) {
+-		dev_err(&client->dev, "Failed to register iio trigger.\n");
++		dev_err(dev, "Failed to register iio trigger.\n");
+ 		goto error_free_irq;
+ 	}
+ 
+@@ -1522,12 +1519,13 @@ static void gp2ap020a00f_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
++	struct device *dev = &client->dev;
+ 	int err;
+ 
+ 	err = gp2ap020a00f_set_operation_mode(data,
+ 					GP2AP020A00F_OPMODE_SHUTDOWN);
+ 	if (err < 0)
+-		dev_err(&indio_dev->dev, "Failed to power off the device.\n");
++		dev_err(dev, "Failed to power off the device.\n");
+ 
+ 	iio_device_unregister(indio_dev);
+ 	iio_trigger_unregister(data->trig);
 -- 
 2.53.0
 
