@@ -1,62 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6904425CC63;
-	Mon, 23 Feb 2026 14:03:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E3DF361DB2
+	for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 15:03:11 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771855396; cv=none; b=tsXbR6SxpHDuRy6/SYgbtKpH0cyoDgTvW7TYFq+M32eHJmDA9+oewbIFfsYTpPx3/j6W7Ij7JaAq4lt3EAZ3Bye4VCVgBlYotudjKQK5LHVRqbeh4Vu8ijpCpy8DP60XzJkjJSypydOY9ACwb9ZaPOEhT4Hj5lI85RM6DdiDrG4=
+	t=1771858992; cv=none; b=XJhQ9mNq6avUUBcHQP7Vqr/Izl9fbY4FyuiL4VfzfbfeVgwnvd7/Gv5QoZY0H6N8lLi1eH4nCIhxz6i95vm8pLwnA16+rmQEfdK+SRFQsz4woF3LEW8EleRreQxRBKwmdb/P9yp+l8BFRv10ouTUVNEZvSS2RWBo+u+Yvx0MpTk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771855396; c=relaxed/simple;
-	bh=jcgawmlEYfMoE3y6SdWZVUOvputiZsY5rrn2Qz701xs=;
+	s=arc-20240116; t=1771858992; c=relaxed/simple;
+	bh=pn+rpUJIKeXi+YrPzLehJJgfIVEmZzFiakrrlP6LgS4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n+kPFWgk5krCR03DYlAi3sDqGS5hSKi0OxesYJJZWWrOsP4AoN4UYOISBGL0cPs+8klhtoX71dCROX+XYtmUtkbl4v0tjQuD1BPUynLU0YxAslxYGgw7T9hK8Zh9tU36alQO7rL7Tjyd+1KELUtB+I3Xueu5xo38MsDd4OjBoXI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Ns6xy/5o; arc=none smtp.client-ip=192.198.163.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=kDuZefr8cT9bpLhqvhAOdwRA1Bh3Mbp3HgSXHS1P67ATFvjHZhnCRbtI9Gq6Q/B6Lp+qHGKFyukDoXtmFSoJNdSxbYWrhwubRYfby6XELbqsOQ6VGbKiybXD8lF01fHAy7hXczKdpR1Or4wJGrftiUSO/ERgifSFBy1GFZ8C+ks=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gu1T0cVs; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Ns6xy/5o"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gu1T0cVs"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771855394; x=1803391394;
+  t=1771858992; x=1803394992;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=jcgawmlEYfMoE3y6SdWZVUOvputiZsY5rrn2Qz701xs=;
-  b=Ns6xy/5oADYnzihIVE4i/52zoHCBOxklc2v3wojTTXwIOCbiAPKDuayF
-   u9xdNTaFk7vMQ0CAe8luv4LYHmZsCn1kwffPtlSFA/Rzzqg6BxISrtjM9
-   FkR6iF4rPKZ8HsMW5d79DTS4kBaaDyHDiEBFxF3kO75z+22e4Llvl5MmY
-   c8FkZcMISs5out5BzzKySPiT1Cg44spfj4ao1cGVz2EWjAVWhDCWsaPm0
-   jX0TKB+KS5SmrNw9caHOFT7v3/wc6a81ALlcRbBzIap44N8mMXDtCjUrc
-   RecCt42pX7qs6YgsYcDxA3lCR79YmnpPHJ05yDfdRZtbn2b5MJVQxAYgd
-   w==;
-X-CSE-ConnectionGUID: 64sGocqkQy68LnjXZr2c1A==
-X-CSE-MsgGUID: 7nAy9uCXSGaG2vvl2lP5gw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11709"; a="76712297"
+  bh=pn+rpUJIKeXi+YrPzLehJJgfIVEmZzFiakrrlP6LgS4=;
+  b=gu1T0cVsxGbhd9mWA1fh7M4Ukzm5mDq7Sz7byOMTU9hjmwwnDJjznYY4
+   phYOP5uEXX+wMRw2mk7Z5as8KYhdmXjTGZCFq2bJM3rHRB+cJOcH7qPmX
+   hJNsHGoc4O/yDdQjaT5BjfWO813aEjrOQaDItXJ3NjXKRTSO1zMeKDdvt
+   x+Z7FiWp91aYu1+Qfz9h553k74pnu3iM6/97rhn3ojLtpVRgdJ0/WjVUT
+   nxsS84WT0eHo1t7SUaTh0Jc2qzAbuo/gETbHzV+BvZT/V38gCH6u90Upg
+   9MSTX0bmpo/i21TGGhjLG6+NTeaWDUzcZbmpE/JTck2x90gvG7AbRiuqv
+   A==;
+X-CSE-ConnectionGUID: a1qomPmXQdmFxm2Z+lw0LA==
+X-CSE-MsgGUID: 2gmzgg03R3a/vdHNmxrm1A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11710"; a="72756380"
 X-IronPort-AV: E=Sophos;i="6.21,306,1763452800"; 
-   d="scan'208";a="76712297"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 06:03:14 -0800
-X-CSE-ConnectionGUID: t3CvY18+T8qYNTf3ZPhblg==
-X-CSE-MsgGUID: FGQDZK8WRpm593yJgCAiDw==
+   d="scan'208";a="72756380"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 07:03:11 -0800
+X-CSE-ConnectionGUID: OeCZyrtOS1ybSy/s1gA1VQ==
+X-CSE-MsgGUID: utcy5WK7RQOsyBDDz1Co2A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,306,1763452800"; 
-   d="scan'208";a="253289463"
+   d="scan'208";a="220583740"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.222])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 06:03:11 -0800
-Date: Mon, 23 Feb 2026 16:03:09 +0200
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 07:03:09 -0800
+Date: Mon, 23 Feb 2026 17:03:06 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
+To: Harpreet Saini <sainiharpreet29@yahoo.com>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 00/12] iio: use dev_err_probe in probe path for ADI
- drivers
-Message-ID: <aZxeHdygT2rXdcZT@smile.fi.intel.com>
-References: <20260223131418.55414-1-antoniu.miclaus@analog.com>
+	linux-staging@lists.linux.dev
+Subject: Re: [PATCH] staging:iio:impedance-analyzer rename camel case text
+Message-ID: <aZxsKlQXkB4or9-d@smile.fi.intel.com>
+References: <20260221091424.56822-1-sainiharpreet29.ref@yahoo.com>
+ <20260221091424.56822-1-sainiharpreet29@yahoo.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,34 +64,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260223131418.55414-1-antoniu.miclaus@analog.com>
+In-Reply-To: <20260221091424.56822-1-sainiharpreet29@yahoo.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Feb 23, 2026 at 03:13:51PM +0200, Antoniu Miclaus wrote:
-> Use dev_err_probe() consistently in the probe path of several ADI IIO
-> drivers. This simplifies error handling and ensures proper logging of
-> deferred probes.
-> 
-> Each driver is updated in two patches: first introducing a local
-> struct device variable to simplify repeated &spi->dev / &client->dev
-> references, then converting error paths to use dev_err_probe().
-> 
-> Drivers updated:
->  - adrf6780
->  - admv1014
->  - admv1013
->  - adf4377
->  - ad7293
->  - admv8818
+On Sat, Feb 21, 2026 at 04:14:24AM -0500, Harpreet Saini wrote:
+> Rename camel case text. This was reported by checkpatch.pl
 
-As I mentioned, use a rule of thumb:
+CamelCase
+:-)
 
-- when devm_ is used in the function, error messages may be converted to
-dev_err_probe() as devm_ is supposed to be used only at ->probe() stage
+Missed period.
 
-- try to avoid ping-pong type of changes when the same line is modified
-2+ times in a row in the same series (there are exceptions, but not here)
+...
+
+> -#define AD5933_CTRL_RANGE_2000mVpp	(0x0 << 1)
+> -#define AD5933_CTRL_RANGE_200mVpp	(0x1 << 1)
+> -#define AD5933_CTRL_RANGE_400mVpp	(0x2 << 1)
+> -#define AD5933_CTRL_RANGE_1000mVpp	(0x3 << 1)
+> +#define AD5933_CTRL_RANGE_2000_M_VPP	(0x0 << 1)
+> +#define AD5933_CTRL_RANGE_200_M_VPP	(0x1 << 1)
+> +#define AD5933_CTRL_RANGE_400_M_VPP	(0x2 << 1)
+> +#define AD5933_CTRL_RANGE_1000_M_VPP	(0x3 << 1)
+
+No, these all are pretty much fine, they are for physical units.
+
+...
+
+> -#define AD5933_INT_OSC_FREQ_Hz		16776000
+> -#define AD5933_MAX_OUTPUT_FREQ_Hz	100000
+> +#define AD5933_INT_OSC_FREQ_HZ		16776000
+> +#define AD5933_MAX_OUTPUT_FREQ_HZ	100000
+
+These are okay, as it's historical suffix for Hz in capital letters.
 
 -- 
 With Best Regards,
