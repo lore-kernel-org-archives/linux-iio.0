@@ -1,64 +1,64 @@
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3C942345CD9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0435B34404B
 	for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 03:40:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771818049; cv=none; b=h5NMycFH+bN+XgZ5XRkrksYKRz+vNLKPTopWPPkJ42/EaybQDd/pNGMF085Q312MlMueSneYdWeMaNNUdaPGPj3918oKXsA7cRqCPsc593i/9TIWqqvpy04qBkpxgGI63+1NzZWsCtnC9Bh1zUmRsChPsxP6K3Ov2eo2wPvszZ4=
+	t=1771818050; cv=none; b=FGbZntZ2vwABiOQHxp669XJG/StiVjPhPaFRgGQc8Vzha90m0ikbT0CbnY+9zzpRA1HD3n0auVTSOazfifnHr/B93E/X6qoclZPdthBsqB8007+nAnjZVjv6khPLqeeEtJEUqbBs1XpM8HGFmzA9+imZaPa4FFy+c3MTzwxvimM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771818049; c=relaxed/simple;
-	bh=u8tJfTiMhFLOgBGY/qJjB7+tG3jV629MS3lZouBe+Tc=;
+	s=arc-20240116; t=1771818050; c=relaxed/simple;
+	bh=ojkJ6HR611cjx7257sMX31BsGcwTLb0wr5jxnZQGNKA=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=J3/hmwVyjJRoLAISMJ2CnZw2ruQV7UtC3EqbMwUQUd55M3Ay/uYbQdXADGdvNg5VFMEBnVpAcewiSpsZQACckEY3KuevBupbQOdrzfRAuzHEtli2PdkI1A/q/puCHC9LwlWn8xvvjVx+BPyrR/j2Vn6kqSSYqRqLmwcCJmxMTgg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=b0qPSCR1; arc=none smtp.client-ip=209.85.128.173
+	 MIME-Version; b=UeCOLfdEugHxuiJJBCKuznkbrEujGjxHIvybXb5aarEG4JHcViwHTUrnjuFlkRh+dQHnQbLYORk4Ou34HV793C426g0MZGk6I+Apj7iV0rQxI2cTFeVGBbELVpxP7ceQXRrw4i283PqxVViae/fqYiuPTSgDE/82rRGf4OX164I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=W6YsYNX4; arc=none smtp.client-ip=209.85.128.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b0qPSCR1"
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-793fdbb8d3aso31184827b3.3
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W6YsYNX4"
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-797d36fdb96so60975417b3.1
         for <linux-iio@vger.kernel.org>; Sun, 22 Feb 2026 19:40:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771818047; x=1772422847; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771818048; x=1772422848; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=SFIDfb+fiqqkIYg8UaViqwuxTwVr1uGT5nI/+TRKG8o=;
-        b=b0qPSCR1SV1AG21ZNatWXh3e8QLSAIdlWXaQDSD3YSVBxGuUig5uqjr6dBCWV8+OhV
-         K+NxlGwBf3jjSRzMu5XUCB2sSRAUBk7Bged7NKuXXdkDwX/G4BciR7ka1Dk6ULTqC16C
-         i/EJtUT84h7g+g2zlBlHNaoz1gsYwGkr8BzaLuTVc9hZUen4gEsbnq+XAHW+XmLxutxF
-         NrPkUltgufXV83gs2AcTY6w5ojq0SdhRreNOQDUouJwuot2Zy6dBHbJ6Bot+55tImsb0
-         uu2+vrVw0ctU0wkO4nkkRwhUAtME6CqAwLB3PCL2GgstbrMWGJ/O+Q1WegV4Hgr5lrGx
-         tHhw==
+        bh=ZddAUHyZfeURC2k1s53wLgt+CwTc0WLUD/YiA8Cx2cY=;
+        b=W6YsYNX4yDQJIG8vKTciqbE0BJ14g7y7hwFES4PDXeblYzE9zZnmGARtrVQWVYCx/V
+         ig+AIhLVFkJhhjv+8toIgEElsvmT0bC0AymWEzu/QE/+dlMtebDLGV5q+z7vOOBPzBJK
+         XI/cQBbKRAjSVlqyKtXqL6PW/VV12df9LmwE3wPqO+ghNcYV/cZ026dKWLZsfDR6zs6Z
+         4S8XXiFoWbxmVIvKN6I3sLr8DolF13fVdb4B7mXacWnoHYQCFp7BOma+vSB/g0lBgna4
+         X5z7dwvVGI56JuM0ghgfR/0aYOfkfh7j0w3Bhk5SQDJG6NMHTruoj9iaIHitwVtGa2Vh
+         Y7pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771818047; x=1772422847;
+        d=1e100.net; s=20230601; t=1771818048; x=1772422848;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=SFIDfb+fiqqkIYg8UaViqwuxTwVr1uGT5nI/+TRKG8o=;
-        b=Hk6opjm0HRaUh11neVIv8sNKeUHp+5XDr0bvSrp6STFQGPIbetcAHlzNOAdQxHXAFE
-         usfqaBvqVPJHAZNT/aRD5p9Fr5iHsE6VXVC+E0SvOa28SIJ6z3t+Y52tNd3uT6vKqTLe
-         3pwBJgOLXqYFBwTTJDXpNx6cPYFljymwYxlWagseIYWqi7M2V/IZ6i/+0jrftUoOqo7o
-         9Fi8YAx9/58EjL6lrRxb2pmMzjNyrMmVDe3S1Krk8XkeewyGsGABRBuozY115c/gNz2x
-         YAs+Cd4dNxWTqAsveSNPt+t3XVjoRFDvWwwrbJ5WgaSGtXE/H9fxWaJJp6bmt0+mjeiS
-         MzYA==
-X-Forwarded-Encrypted: i=1; AJvYcCUbRMrVBS2bs5hHnTpwgQJlPjgsesA2o8kLPCg67n3/s015021wYLqYHvbQAOrV9cW6MhnO06maaYE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxoi64b8VlGelGY/0V29qJQTM5+G95wkVpdVFp9CX/BILNfWvQF
-	0TPqbXWQ2kmXO3rkxzPtcCaOyo/EkVNv7k7f2widcJcHPlq8Ycnv7c1Y
-X-Gm-Gg: ATEYQzyysgGO7OyPXJDGVikvFDXZdel1G+vwdpfoAXHxXQLCruxi8gvkpticsFBZhAF
-	yLvAhP7mIrW+KxI3QAZN10TCFD2wDO+ciP6j9gcB8d6vOtu7mwejS9Xx4NYioRGJ13O4Q9y4ZAC
-	9vbWLDKsu9Q7mpDm/NDOpt6iVUYUaHjDzttboT5Mvun1SOI0EbHdOIB+7L9YyoU+jyV5GJSuWyc
-	wyR122FV7gW1Ojq7nudvnec80D2OoztK3y8nfQm1X/MkWzy2v0obns3xrSWyl09/KUlbUy/CHNW
-	Qv6LtE/u1a118X5RsEAuNvp8t2bfH3K82TrUjKIqkTtJGKRsM3B4BCk8vrpWQGNRDrkxTsglfy8
-	5qc6kGwojjwuNifX+O0Y/SPK7NP8atBAvwhZZw4jmpZZV93G0oOjoAmufra1a9MnJIOJV2Ww195
-	dsXKbHFjzqvLQuNkXNnhwDNS0+TE/eGounURUQkyPSo5V5PL/5wYEyqraq4fUwhnvarpoVAphaB
-	btwboFDG9zu4a3e7DMY4R6y
-X-Received: by 2002:a05:690c:a92:b0:797:df7c:3e1b with SMTP id 00721157ae682-79828ef29afmr63385657b3.4.1771818047348;
-        Sun, 22 Feb 2026 19:40:47 -0800 (PST)
+        bh=ZddAUHyZfeURC2k1s53wLgt+CwTc0WLUD/YiA8Cx2cY=;
+        b=t/C9ITu1/V8FIIEWz0iKDd3ST5o9b37pHJ3VA2fri6jmC+Iya32g24tfwbcRoXFwVR
+         lh4+0705rUqr+H8NDEzGoloecIr+/6uraI+WupoDyq3xND0O9Y93ACA30eT5vbuF/CJz
+         3eYH0z0i4/RVNza2BI7zQoKBiVmD9Ej1u2M3lEcDUi7C8RWhQZabVcSNCkYhkN/V8bmL
+         xqPO7MS+54cFp08MqmZAdg1DvFQKLlt3lHC6Qoo9E+PolmgXq245jnLWUxHedW1TYWcR
+         B4LeCE8RCO23TVLmTYIN71mUeuzVh3wMkacZDYo/7vHqc95Iy2z+bKgNqTnlkd0553eW
+         7jOw==
+X-Forwarded-Encrypted: i=1; AJvYcCWBIHWQOPQQ8jjhRImyYkFu4ZKa9cfsmHNy9vTTGyHwj65kjPJ4QmcLSeVuJLOFUco3ko1R9tQS1C4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzVYpufiWnhP3Shi4iLhQAs+jtCp+Cpf2MupbRjHAbE7KXEMZX5
+	iRcXwjgTieWT8aYE9lSs9RLTDBs/eZD6WjC5sOee2B3YyeoQfqry11LwJ6J/kjp/FlA=
+X-Gm-Gg: ATEYQzxukuIzC1tEuSPB1ETKRb6IbFuqOHMrX0ZqHz8PF6E1us6oBsr3oXAfMmh5N8E
+	ZzTPlpCPYn1YOr1LbOUVTcNvzLFXkg8WUWsOOg+InwZ0axJDY/vH2RpB68Jxl4Y0JYfw6gvu1wB
+	i66mGApIWk3NkCI4AawGY+ZM88CZgOCDuFUiwGVdKfvRxcmDeC+siD1Ci6AI0nGy8CBO6OeqHtO
+	N7V2iFRASoSgXbCI1M0KLGegv5+iI3DUhGbeckRucIzcHoU8qAWcn89gPs5B3CsnK/H4pnAumiQ
+	a6DMK/kCv3nKdyhgEFQ8BzIVCSoioqq8lgGLkzjE/nathyCYWKsBKcPrTw/TnxpilTl61ppyMkp
+	xgftmFwl8/oaAZEHWyrUxfgO7swQk8w8/ZAO8/J32elY2rx7gjr0F4BmCXvusQ3CU4ODJCNTedA
+	jC/v1lSk3uiULSY86mE1jNRCaJyjj9KivmJSXD5wfgTHNsa4Cnuh64yhpoBELWyO+LBr8pOy8ux
+	f0tExNnAL5VzbJI5WlxJ6rC
+X-Received: by 2002:a05:690c:620a:b0:797:e635:697a with SMTP id 00721157ae682-7982b69aac8mr56754847b3.1.1771818048111;
+        Sun, 22 Feb 2026 19:40:48 -0800 (PST)
 Received: from tux ([2601:7c0:c37c:4c00::5c0b])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7982dbd5939sm27285237b3.15.2026.02.22.19.40.46
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7982dbd5939sm27285237b3.15.2026.02.22.19.40.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Feb 2026 19:40:46 -0800 (PST)
+        Sun, 22 Feb 2026 19:40:47 -0800 (PST)
 From: Ethan Tidmore <ethantidmore06@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Andy Shevchenko <andy@kernel.org>
@@ -68,9 +68,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-kernel@vger.kernel.org,
 	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Ethan Tidmore <ethantidmore06@gmail.com>
-Subject: [PATCH v5 07/10] iio: light: gp2ap020a00f: Use temporary variable for struct device
-Date: Sun, 22 Feb 2026 21:40:17 -0600
-Message-ID: <20260223034020.27625-8-ethantidmore06@gmail.com>
+Subject: [PATCH v5 08/10] iio: light: gp2ap020a00f: Explicitly use string literal for driver name
+Date: Sun, 22 Feb 2026 21:40:18 -0600
+Message-ID: <20260223034020.27625-9-ethantidmore06@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260223034020.27625-1-ethantidmore06@gmail.com>
 References: <20260223034020.27625-1-ethantidmore06@gmail.com>
@@ -84,7 +84,11 @@ Content-Transfer-Encoding: 8bit
 
 From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Use temporary variable for struct device to make code neater.
+The driver name should be easily greppable and clearly spelled.
+Replace a level of indirection and explicitly use string literal.
+
+While at it, remove useless blank lines before module_*() and
+MODULE_*() macros.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Ethan Tidmore <ethantidmore06@gmail.com>
@@ -94,140 +98,50 @@ v5:
 v4:
 - Integrate Andy Shevchenko's cleanups.
 
- drivers/iio/light/gp2ap020a00f.c | 34 +++++++++++++++-----------------
- 1 file changed, 16 insertions(+), 18 deletions(-)
+ drivers/iio/light/gp2ap020a00f.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index b2434d00e10a..97630ce9ade0 100644
+index 97630ce9ade0..0d7262e1c5c9 100644
 --- a/drivers/iio/light/gp2ap020a00f.c
 +++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -1187,6 +1187,7 @@ static int gp2ap020a00f_read_event_config(struct iio_dev *indio_dev,
- static int gp2ap020a00f_read_channel(struct gp2ap020a00f_data *data,
- 				struct iio_chan_spec const *chan, int *val)
- {
-+	struct device *dev = &data->client->dev;
- 	enum gp2ap020a00f_cmd cmd;
- 	int err;
+@@ -55,8 +55,6 @@
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
  
-@@ -1206,27 +1207,23 @@ static int gp2ap020a00f_read_channel(struct gp2ap020a00f_data *data,
- 
- 	err = gp2ap020a00f_exec_cmd(data, cmd);
- 	if (err < 0) {
--		dev_err(&data->client->dev,
--			"gp2ap020a00f_exec_cmd failed\n");
--		goto error_ret;
-+		dev_err(dev, "gp2ap020a00f_exec_cmd failed\n");
-+		return err;
- 	}
- 
- 	err = gp2ap020a00f_read_output(data, chan->address, val);
- 	if (err < 0)
--		dev_err(&data->client->dev,
--			"gp2ap020a00f_read_output failed\n");
-+		dev_err(dev, "gp2ap020a00f_read_output failed\n");
- 
- 	err = gp2ap020a00f_set_operation_mode(data,
- 					GP2AP020A00F_OPMODE_SHUTDOWN);
- 	if (err < 0)
--		dev_err(&data->client->dev,
--			"Failed to shut down the device.\n");
-+		dev_err(dev, "Failed to shut down the device.\n");
- 
- 	if (cmd == GP2AP020A00F_CMD_READ_RAW_CLEAR ||
- 	    cmd == GP2AP020A00F_CMD_READ_RAW_IR)
- 		gp2ap020a00f_output_to_lux(data, val);
- 
--error_ret:
- 	return err;
+-#define GP2A_I2C_NAME "gp2ap020a00f"
+-
+ /* Registers */
+ #define GP2AP020A00F_OP_REG	0x00 /* Basic operations */
+ #define GP2AP020A00F_ALS_REG	0x01 /* ALS related settings */
+@@ -1535,10 +1533,9 @@ static void gp2ap020a00f_remove(struct i2c_client *client)
  }
  
-@@ -1415,18 +1412,19 @@ static const struct iio_buffer_setup_ops gp2ap020a00f_buffer_setup_ops = {
- static int gp2ap020a00f_probe(struct i2c_client *client)
- {
- 	const struct i2c_device_id *id = i2c_client_get_device_id(client);
-+	struct device *dev = &client->dev;
- 	struct gp2ap020a00f_data *data;
- 	struct iio_dev *indio_dev;
- 	struct regmap *regmap;
- 	int err;
+ static const struct i2c_device_id gp2ap020a00f_id[] = {
+-	{ GP2A_I2C_NAME },
++	{ "gp2ap020a00f" },
+ 	{ }
+ };
+-
+ MODULE_DEVICE_TABLE(i2c, gp2ap020a00f_id);
  
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
+ static const struct of_device_id gp2ap020a00f_of_match[] = {
+@@ -1549,14 +1546,13 @@ MODULE_DEVICE_TABLE(of, gp2ap020a00f_of_match);
  
- 	data = iio_priv(indio_dev);
+ static struct i2c_driver gp2ap020a00f_driver = {
+ 	.driver = {
+-		.name	= GP2A_I2C_NAME,
++		.name	= "gp2ap020a00f",
+ 		.of_match_table = gp2ap020a00f_of_match,
+ 	},
+ 	.probe		= gp2ap020a00f_probe,
+ 	.remove		= gp2ap020a00f_remove,
+ 	.id_table	= gp2ap020a00f_id,
+ };
+-
+ module_i2c_driver(gp2ap020a00f_driver);
  
--	data->vled_reg = devm_regulator_get(&client->dev, "vled");
-+	data->vled_reg = devm_regulator_get(dev, "vled");
- 	if (IS_ERR(data->vled_reg))
- 		return PTR_ERR(data->vled_reg);
- 
-@@ -1436,7 +1434,7 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
- 
- 	regmap = devm_regmap_init_i2c(client, &gp2ap020a00f_regmap_config);
- 	if (IS_ERR(regmap)) {
--		dev_err(&client->dev, "Regmap initialization failed.\n");
-+		dev_err(dev, "Regmap initialization failed.\n");
- 		err = PTR_ERR(regmap);
- 		goto error_regulator_disable;
- 	}
-@@ -1447,7 +1445,7 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
- 			ARRAY_SIZE(gp2ap020a00f_reg_init_tab));
- 
- 	if (err < 0) {
--		dev_err(&client->dev, "Device initialization failed.\n");
-+		dev_err(dev, "Device initialization failed.\n");
- 		goto error_regulator_disable;
- 	}
- 
-@@ -1472,11 +1470,10 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
- 		goto error_regulator_disable;
- 
- 	/* Allocate trigger */
--	data->trig = devm_iio_trigger_alloc(&client->dev, "%s-trigger",
--							indio_dev->name);
-+	data->trig = devm_iio_trigger_alloc(dev, "%s-trigger", indio_dev->name);
- 	if (data->trig == NULL) {
- 		err = -ENOMEM;
--		dev_err(&indio_dev->dev, "Failed to allocate iio trigger.\n");
-+		dev_err(dev, "Failed to allocate iio trigger.\n");
- 		goto error_uninit_buffer;
- 	}
- 
-@@ -1488,7 +1485,7 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
- 				   "gp2ap020a00f_als_event",
- 				   indio_dev);
- 	if (err < 0) {
--		dev_err(&client->dev, "Irq request failed.\n");
-+		dev_err(dev, "Irq request failed.\n");
- 		goto error_uninit_buffer;
- 	}
- 
-@@ -1496,7 +1493,7 @@ static int gp2ap020a00f_probe(struct i2c_client *client)
- 
- 	err = iio_trigger_register(data->trig);
- 	if (err < 0) {
--		dev_err(&client->dev, "Failed to register iio trigger.\n");
-+		dev_err(dev, "Failed to register iio trigger.\n");
- 		goto error_free_irq;
- 	}
- 
-@@ -1522,12 +1519,13 @@ static void gp2ap020a00f_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
-+	struct device *dev = &client->dev;
- 	int err;
- 
- 	err = gp2ap020a00f_set_operation_mode(data,
- 					GP2AP020A00F_OPMODE_SHUTDOWN);
- 	if (err < 0)
--		dev_err(&indio_dev->dev, "Failed to power off the device.\n");
-+		dev_err(dev, "Failed to power off the device.\n");
- 
- 	iio_device_unregister(indio_dev);
- 	iio_trigger_unregister(data->trig);
+ MODULE_AUTHOR("Jacek Anaszewski <j.anaszewski@samsung.com>");
 -- 
 2.53.0
 
