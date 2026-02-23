@@ -1,131 +1,94 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F1DDDF76;
-	Mon, 23 Feb 2026 08:48:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28DB417BB21;
+	Mon, 23 Feb 2026 08:49:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771836485; cv=none; b=ImcPPdnMnckav6FWcuHagJ3+pX02gdrmetyLjYIJPNJ+CxcL3cfIbN2tba+kf/r1lZ8LcWKqPZs/BqcFVGIh/7lnfdW+yrVi7Ph8YgFcbCBGf7CdAXTM1/Eb+yYGGrKhWIdZM3CTQXhTeDlIbpEC6P0e+x2zcMKW7WVmWrjNpNg=
+	t=1771836581; cv=none; b=vCD35eMznOYtuv/aBFZHKpkKXo+qb3e1CLnWI+daeu4OifRw3ns0CB1RIV1LaiBwQbA1WgePl42Wh43x1yFQEzklvAqzYIhjxMlPnqrdbIMcORL7YAMkQf4V9cyHlUMZbXGllnm6T228givZOlnnFnqt3RZlnHys+iOZtWlaj6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771836485; c=relaxed/simple;
-	bh=z+kXThslhG2AyYgr/jT4aZbPeF6AcBYD56qROwdY0Rk=;
+	s=arc-20240116; t=1771836581; c=relaxed/simple;
+	bh=Za6kNTROafhD0NJ3tD8R7Xtjb4CL21cNyc8p+KMT5tU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=fW8bntSFy0MAzeEx37rlzFSnykIQcfSFDjMQh0yrkvEELnGBiWOqFEL+7D6oVu9Q+0ht+2GmQ1YUcQOrmKQwDS8b8PIHiBPRuloB3G/BSNcUF/2RS3Rpl1KZ2eP5G9O1Lbo4rLSvcS7oiRdAYTkdxHIojW/uO+p3YgS5Leks064=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ka1gUbDa; arc=none smtp.client-ip=192.198.163.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=skgOvR7Cb0mtR4XQ5sz0z99eK+/WvhZQZ6M8xoV++OCmtjNkdUS15Euv6/rZm55i45gRwcIFYwF1yyxUzvyNUoPKaq4R1gpGePnxl8fkQpkZZhMr+qATdqC3q1tsYXmNW+INtsNLuwXGQygrMEBzQXyaeyIklEnYLCQBYdo3Cns=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ECFonCKm; arc=none smtp.client-ip=192.198.163.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ka1gUbDa"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ECFonCKm"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771836483; x=1803372483;
+  t=1771836580; x=1803372580;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=z+kXThslhG2AyYgr/jT4aZbPeF6AcBYD56qROwdY0Rk=;
-  b=ka1gUbDaYlsEJNBONWPGAB0nWxW6y7fXH6Vo8S8JNc9emlHi+wl6QNoU
-   Pbslte5+rNZjMS4p4dQbGMz5ah02RdQp0xGQpjuqo8acGOrNvcUIdy04r
-   s0VDZKIUx4Jqlp8z3yvQnbdtRqNuub46Foc9iP9ASnhPTK1LVcM9yeAmX
-   6mPUzWTGDO8X9wtsgIJ0RZtoKgx31O8GrS6gjHOwpt6l+//A+90wntx/r
-   IA4J7K34f4668Rm+KwGbcHwESgbKmqJWohopSM8rOD0AF9Za36Ca6WfGq
-   HD/HkPb+Nx8uzkW++UZDOdrWDb2NdSXgebUSDYFNOw4gdOaAyOcYJ8GoU
-   Q==;
-X-CSE-ConnectionGUID: sdDDOnvASMiFDbtkWxz6hA==
-X-CSE-MsgGUID: ZOKH8nPzRoi0x7m+6NtfXQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11709"; a="83538695"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=Za6kNTROafhD0NJ3tD8R7Xtjb4CL21cNyc8p+KMT5tU=;
+  b=ECFonCKmrVePyuCKkWyTRIpZj/CeAiultTSUz/73i6F8e+ctL1Vj7F4C
+   9Jua++rSdFsgyK1vs05sT69IlDv2H79ufBRB4wAyc1/oeogJjUZrIsh8v
+   nmv8ayxALaGfe7vBuEr2Et1Nq9aAPCjre/CKe5bWFIbg3/BRfcTEcdTUj
+   yk6eW4BpVijm06hnSgsXGMeCI65GXEOBTCG+LBekHf35e/06CpyLdlZMx
+   +znHGWkjUX94YYNTth5eHfyuXi/LTzsDBtHvJFrqE0W6Fkh338BBw4Zow
+   Q4hANmcwwEY/n0OIrzHSOsPNSc9m72tdZnPW16UZPUVXj6+njmpoq5+nI
+   g==;
+X-CSE-ConnectionGUID: pEyd5BcpSdWpSRX86onLvw==
+X-CSE-MsgGUID: Nli5BblFQc6H3yGVP+SkyA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11709"; a="72925270"
 X-IronPort-AV: E=Sophos;i="6.21,306,1763452800"; 
-   d="scan'208";a="83538695"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 00:48:02 -0800
-X-CSE-ConnectionGUID: riLOn9xtRsWaCqi0dYDx1g==
-X-CSE-MsgGUID: 85d6+7KnTWqEum4PO7INxQ==
+   d="scan'208";a="72925270"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa109.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 00:49:40 -0800
+X-CSE-ConnectionGUID: bsopCJfuQB2qDr6Of6mFdA==
+X-CSE-MsgGUID: ea36aQCrRF+vwDc/e7Bg9w==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,306,1763452800"; 
-   d="scan'208";a="215512214"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.222])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 00:47:58 -0800
-Date: Mon, 23 Feb 2026 10:47:56 +0200
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 00:49:37 -0800
+Date: Mon, 23 Feb 2026 10:49:35 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Torreno, Alexis Czezar" <AlexisCzezar.Torreno@analog.com>
+To: Felix Gu <ustc.gu@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
-Subject: Re: [PATCH 2/3] iio: dac: ad5706r: Add support for AD5706R DAC
-Message-ID: <aZwUPKL4wGWyKBE6@smile.fi.intel.com>
-References: <20260220-dev_ad5706r-v1-0-7253bbd74889@analog.com>
- <20260220-dev_ad5706r-v1-2-7253bbd74889@analog.com>
- <20260222185704.375a2a0b@jic23-huawei>
- <PH0PR03MB63517AE635266411B18E1BD7F177A@PH0PR03MB6351.namprd03.prod.outlook.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Daniel Lezcano <daniel.lezcano@linaro.org>
+Subject: Re: [PATCH] iio: adc: nxp-sar-adc: Remove unnecessary type casting
+Message-ID: <aZwUn9LMaqb_tHeu@smile.fi.intel.com>
+References: <20260222-nxp-sar-adc-v1-1-75e4cdb3ffb7@gmail.com>
+ <20260222160325.1e4d1f49@jic23-huawei>
+ <CAN4SLj2a9o_OBe-5AAbYKwaUpJrU17XBRgbJFt7XOOeBw8-UMQ@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <PH0PR03MB63517AE635266411B18E1BD7F177A@PH0PR03MB6351.namprd03.prod.outlook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAN4SLj2a9o_OBe-5AAbYKwaUpJrU17XBRgbJFt7XOOeBw8-UMQ@mail.gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Feb 23, 2026 at 04:49:38AM +0000, Torreno, Alexis Czezar wrote:
-> > > Add support for the Analog Devices AD5706R, a 4-channel 16-bit current
-> > > output digital-to-analog converter with SPI interface.
-> > >
-> > > Features:
-> > >   - 4 independent DAC channels
-> > >   - Hardware and software LDAC trigger
-> > >   - Configurable output range
-> > >   - PWM-based LDAC control
-> > >   - Dither and toggle modes
-> > >   - Dynamically configurable SPI speed
-> > >
-> > > Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-> > 
-> > Hi Alexis
-> > 
-> > Welcome to IIO.  A few quick comments inline, but as others have observed
-> > the patch is too large and needs breaking up.  Also there is a lot of custom ABI.
-> > Given we are reluctant to merge that at all, it definitely needs documentation
-> > and careful consideration of whether it can be done with existing ABI or is
-> > more appropriate in DT.
-> > 
-> > Thanks,
-> > 
-> > Jonathan
-> 
-> Using this reply to acknowledge all the emails/feedback.
+On Mon, Feb 23, 2026 at 12:38:58AM +0800, Felix Gu wrote:
+> On Mon, Feb 23, 2026 at 12:03 AM Jonathan Cameron <jic23@kernel.org> wrote:
+> > On Sun, 22 Feb 2026 02:09:08 +0800
+> > Felix Gu <ustc.gu@gmail.com> wrote:
 
-> Thanks for the time you spent on this large patch.
-> 
-> It seems I will have to split this up first. I think it would be the basic driver,
-> the ABI + docu, then the debugfs. Merge 1 before I submit the others.
-> Will apply each feedback as I go.
-> 
-> Some naming schemes need to be updated, to properly reflect the datasheet
-> terms rather than the one internally agreed upon.
-> 
-> The most unusual that a lot pointed out is related to the clock/.speed_hz/
-> spi_engine. I was asked to make it work a bit beyond 50MHz, using a cora
-> fpga. The cora processor spi is limited to 50MHz due to HW, hence the need
-> to use an spi-engine. However, this is limited to the resolution on how small
-> the frequencies can be changed, the spi engine only does integer division, thus
-> leading me to change the clock driver of the spi_engine itself.
-> I'll try to see if the implementation can be changed to something simpler and
-> will make it easier for us.
+> > Make sure to include the author of the code you are touching in the +CC list.
+> > Added Daniel.
+> >
+> > I think this is simple enough, so I've picked it up now but I'm fine adding
+> > tags or indeed dropping it if other reviews come in.  I'll be rebasing
+> > or rc1 later in the week.
+> >
+> > Applied to the testing branch of iio.git
 
-Please, do remove the context you are not commenting on!
-I have listed ~500 lines to understand if there is anything below.
-Waste of time for each reviewer / follower...
+> Thank you for the reminder.
+> 
+> I used b4 prep --auto-to-cc and am not sure why Daniel's email was
+> missed in this patch, as it was correctly included in another patch.
+
+Please, do *remove* the context that is unrelated to the reply. See this email
+as an example. Do not waste others' time on this.
 
 -- 
 With Best Regards,
