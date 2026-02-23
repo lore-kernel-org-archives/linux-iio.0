@@ -1,52 +1,56 @@
 Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CE0530EF86;
-	Mon, 23 Feb 2026 16:23:01 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EB6E830E0F5;
+	Mon, 23 Feb 2026 16:23:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771863782; cv=none; b=Q1XFveImJV4VJ0j4aLaHS7lqOqfSXbHzaLXq8uOzow62SH1nEbQFVePmizLW+DWwSM8a/6E98Ln5j4VsfAeMsO7N6rjFHMWxgJC9G0M9sRojISQzmz4rJDkTL6uS6KnaAi905zIllHKcToRblJs8+ouHA93U0BZKQ0TtbphQV4Q=
+	t=1771863785; cv=none; b=PDEWFGL1ucZjggB4LEk8KXHnsRorKM36mndUMSLvtdHkmslIvclzVClUpqd2FiGQTCgIW4xp52h73oCgioTZUs0ZkOXqmbXVITbwBheMpzk3P0RCfb/4AohcijVB/zkBOs7VrOB2EAwTvUSc3Jr92JdtU29Uq+4zjcIxIaAIjNo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771863782; c=relaxed/simple;
-	bh=SV7W4fnjFcezDK3AHJj9/tpEokgD76c3PddPVFJsBtc=;
+	s=arc-20240116; t=1771863785; c=relaxed/simple;
+	bh=lYp2/cg+kOvLJGjbg0xKDVtE1cRK1C/NgMicQN3K1UQ=;
 	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=UDcbKDJPFFvvNakhyGgZazIOjWJVz4UZyrn5k+z2XRujabmWJGtg2xTVHsXwmfZcu0JFkgP0EKCkbV6xBopw1iZjCpuMK4/PFiqMdCEYdsPvPRfv/aJt+1ZhsGcR1ZVwnI2G9WcbCWLeBeTMOkVJZghuHZKimgpPfO17Q2gYjPk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Dwd4lKBQ; arc=none smtp.client-ip=148.163.135.77
+	 MIME-Version:Content-Type; b=VFeY/FJchslDLmXi27tOo8DiLwmZLi4Mt14pMtHcXOtHv47STXE2q98gMiBkBygKCNkwbCErkwHNdIp2vluvS09cZ8w/8f3KVBx3oPoPe/kXxw1Ycd7ZR2XJXDP0fVnf+1Fb3X7rbOpE/dhBDS+8G8+J4x2FZJ+wfXPndGmwrH0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=BCAfkqjF; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Dwd4lKBQ"
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="BCAfkqjF"
 Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61NDxXR32668516;
-	Mon, 23 Feb 2026 11:22:41 -0500
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61NDxXR42668516;
+	Mon, 23 Feb 2026 11:22:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
 	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=P24n3
-	5u3npM9iCfs3A1VCmCQr0Fy7jcLyEihCd3IxVE=; b=Dwd4lKBQZcQOV2rMNUkBu
-	4ag40mN31gUjTS7/4Y7+2NKMauCsni5WUtqmghH7b64OpztSsQwhdAB/c5/p8Mhd
-	RiVgnrN7MOq0MCxWT7dasBsOVg8AA94cuzy6W5L33HFsRxcgEldwhvgUsl+yxvQ0
-	jErPCKcRyTPXjRmDhU+P8fdDkKPzn2cGFbKfClfHUUkb3619O1ZQbtaGcs6vzk6V
-	9yhxJAJmVg3x+L28cEepzBl92XW9pvIBlmMS/aoxvqDWYv/Frw1BiR1jrD7++Z1k
-	XqgnnhsMURoKGMNXumO6YORNv1NK9XSFsEPnokW/8EPXSsxEgd4w6mko7+4q/15m
-	g==
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=way3k
+	9gfqlZm3D3nBh3+Typjj/TASv1er/RHfkEpR58=; b=BCAfkqjFO2Ea2agxguq9+
+	yicRSo050kjn0VLFiO0bo86Q0lbAdVQiaNmrh7+uJMeJJMcCC0lIs8WgQn7JUCF9
+	FAg7jyEHyIIJ8AkSkgitkFQH4Jpc2Fz90bn/lU+QL9LmIRihFHlRCZGVOiScvTyd
+	9uUcJrwrGgjqL2/w6TqEa8QpxbApTOQgdGxssUnE7nf0ZgZKmWhBaFIMsfVU1v3/
+	UwF12Gbtgx5c9EdFIshIeqkoAA0iiVDXvSLC14usNK9KHOhtdyExOmAnyfC7THtz
+	auimSxFZ6oKEP+Sbe+AjCzsFh3UgcuPqCG0sl9SOxNuKA3sk7eZ828DeAiq8KuPy
+	Q==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cg7pbbngb-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cg7pbbngj-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 23 Feb 2026 11:22:41 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61NGMeQa031804
+	Mon, 23 Feb 2026 11:22:44 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61NGMh9n031807
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 23 Feb 2026 11:22:40 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 23 Feb
- 2026 11:22:40 -0500
+	Mon, 23 Feb 2026 11:22:44 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Mon, 23 Feb 2026 11:22:43 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Mon, 23 Feb 2026 11:22:43 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 23 Feb 2026 11:22:40 -0500
+ Transport; Mon, 23 Feb 2026 11:22:43 -0500
 Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61NGMJUc015342;
-	Mon, 23 Feb 2026 11:22:31 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61NGMJUd015342;
+	Mon, 23 Feb 2026 11:22:34 -0500
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich
@@ -63,13 +67,13 @@ To: Lars-Peter Clausen <lars@metafoo.de>,
         Olivier Moysan
 	<olivier.moysan@foss.st.com>,
         Mark Brown <broonie@kernel.org>,
-        Sebastian
- Reichel <sebastian.reichel@collabora.com>,
+        "Sebastian
+ Reichel" <sebastian.reichel@collabora.com>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <linux-spi@vger.kernel.org>
-Subject: [PATCH v4 1/5] spi: allow ancillary devices to share parent's chip selects
-Date: Mon, 23 Feb 2026 18:21:00 +0200
-Message-ID: <20260223162110.156746-2-antoniu.miclaus@analog.com>
+Subject: [PATCH v4 2/5] spi: add devm_spi_new_ancillary_device()
+Date: Mon, 23 Feb 2026 18:21:01 +0200
+Message-ID: <20260223162110.156746-3-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260223162110.156746-1-antoniu.miclaus@analog.com>
 References: <20260223162110.156746-1-antoniu.miclaus@analog.com>
@@ -82,128 +86,112 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 9ZNKzmb3SmSWDW5ruQZh0Ngdw9im299n
-X-Authority-Analysis: v=2.4 cv=RPK+3oi+ c=1 sm=1 tr=0 ts=699c7ed1 cx=c_pps
+X-Proofpoint-GUID: TvdlpOuPdYfz8Hd6-WkXS81e-O-cPPoU
+X-Authority-Analysis: v=2.4 cv=RPK+3oi+ c=1 sm=1 tr=0 ts=699c7ed5 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22
  a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8
- a=IpJZQVW2AAAA:8 a=Brvx10Sw2QwnUvu3_sIA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
- a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-ORIG-GUID: 9ZNKzmb3SmSWDW5ruQZh0Ngdw9im299n
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIzMDE0MCBTYWx0ZWRfXxHxtdFnD0ODV
- SKPYc8wwCD4WiLbrB8t91ICK0vllt1OiSywjBOU34xpUrIoGsC/H3diMj4I/y1VAilykuoOYkva
- Z/GAmyaa1Ji+Yz2tmfsH6IZE8YxuMo5HoIAZGEbR+YGlG+lXqNGksz6Q4wsxo/b6roS0FChrJaQ
- lHPKTU3TX/5DsHjGmORvQiedP2rlRDKwQUhhJdY0emTukAhIGvHlBk4rIZHeLm8rEbwITm9gaT5
- dl5IBFLwR5KQhbYHB8XpXfXR8kMFrT8ywr00K4j7C15MWEvCeKuSm0T5usuDiVgLX/69jfG4jGX
- 89kXz3hVX6p0RzoDCzkcJ0BKSizdaxdWkMjG2p5MupgjMOsGwmEju6t1RAiuTsAtBJOEJpjo41N
- CaMioIZzPA8wCOSzKiatCCAzXL/LGPl6Z7AcFpyk6CjSSVZBhXw8Zf0K9r4X7X7+WGhvCQ6sOHP
- f8H1aN+6gxgx342NeaA==
+ a=8fGt7KVEpqQUrG_l--wA:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: TvdlpOuPdYfz8Hd6-WkXS81e-O-cPPoU
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIzMDE0MCBTYWx0ZWRfX4WrH1N79a1W1
+ dKwPGpeCYXAHAwvWTVVMoR5rAQ0FKBqtY+qjEFfn8jHW9G29BMV8NgA9LN8kSy+zuxzwPeS/3Z2
+ eio05VQlw8rU3KGY38OQ0qg9cLQ2F6Hf7sThkdV5vw0IGNUuGIs6K0gz1kkQdi23cE6qYet2GX3
+ P8ZDho0wVIppnVZ3TQ+zn+saHBTkAafS33dEun/pqXXC7VnXbL0mI2YZTkiCl6Ig1BKaij3gg5q
+ +6VigVpWbdf0N0w9KaJhs0e4ETMP4q5BV0ga3k3aQFADj6jR76VTieWHnUSPT7z1bzpeU2bkyLB
+ X3E2RnTxzljrEmiCDQpNtXhJRXuhsMj8a8YoxUgrBsElQEqmugsSosuI0xfaeNipWft0zTKu2/y
+ GFKbrfnMyT3xC2b1xFHcu1Dhs0I3nzHwxCrQ15okRgLa6vJTDNYZQ5KQpl/lhGqubDM7FxBa4IO
+ vmnCu9rUSnA76rr5UnA==
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-02-23_03,2026-02-23_03,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1011 impostorscore=0 adultscore=0 priorityscore=1501 spamscore=0
+ clxscore=1015 impostorscore=0 adultscore=0 priorityscore=1501 spamscore=0
  malwarescore=0 lowpriorityscore=0 bulkscore=0 suspectscore=0 phishscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602230140
 
-When registering an ancillary SPI device, the current code flags a chip
-select conflict with the parent device. This happens because the
-ancillary device intentionally uses one of the parent's chip selects,
-but __spi_add_device() checks against all existing devices including
-the parent.
+Add a devres-managed version of spi_new_ancillary_device() that
+automatically unregisters the ancillary SPI device when the parent
+device is removed.
 
-Allow this by passing the parent device pointer to __spi_add_device()
-and skipping the conflict check when the existing device is the parent.
+This follows the same devm_add_action_or_reset() pattern used by the
+other managed SPI functions (devm_spi_optimize_message,
+devm_spi_register_controller, etc.) and eliminates the need for drivers
+to open-code their own devm cleanup callbacks for ancillary devices.
 
-Fixes: 0c79378c0199 ("spi: add ancillary device support")
 Acked-by: Nuno Sá <nuno.sa@analog.com>
-Reviewed-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
 Changes in v4:
-  - Add Fixes tag
   - Add Acked-by from Nuno Sá
 
- drivers/spi/spi.c | 29 +++++++++++++++++++++++------
- 1 file changed, 23 insertions(+), 6 deletions(-)
+ drivers/spi/spi.c       | 40 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/spi/spi.h |  1 +
+ 2 files changed, 41 insertions(+)
 
 diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index e25df9990f82..693bdcc5a12a 100644
+index 693bdcc5a12a..1b48ec67b8e0 100644
 --- a/drivers/spi/spi.c
 +++ b/drivers/spi/spi.c
-@@ -641,12 +641,26 @@ static inline int spi_dev_check_cs(struct device *dev,
- 	return 0;
+@@ -2612,6 +2612,46 @@ struct spi_device *spi_new_ancillary_device(struct spi_device *spi,
  }
+ EXPORT_SYMBOL_GPL(spi_new_ancillary_device);
  
-+struct spi_dev_check_info {
-+	struct spi_device *new_spi;
-+	struct spi_device *parent;	/* set for ancillary devices */
-+};
++static void devm_spi_unregister_device(void *spi)
++{
++	spi_unregister_device(spi);
++}
 +
- static int spi_dev_check(struct device *dev, void *data)
- {
- 	struct spi_device *spi = to_spi_device(dev);
--	struct spi_device *new_spi = data;
-+	struct spi_dev_check_info *info = data;
-+	struct spi_device *new_spi = info->new_spi;
- 	int status, idx;
- 
-+	/*
-+	 * When registering an ancillary device, skip checking against the
-+	 * parent device since the ancillary is intentionally using one of
-+	 * the parent's chip selects.
-+	 */
-+	if (spi == info->parent)
-+		return 0;
++/**
++ * devm_spi_new_ancillary_device() - Register managed ancillary SPI device
++ * @spi:         Pointer to the main SPI device registering the ancillary device
++ * @chip_select: Chip Select of the ancillary device
++ *
++ * Register an ancillary SPI device; for example some chips have a chip-select
++ * for normal device usage and another one for setup/firmware upload.
++ *
++ * This is the managed version of spi_new_ancillary_device(). The ancillary
++ * device will be unregistered automatically when the parent SPI device is
++ * unregistered.
++ *
++ * This may only be called from main SPI device's probe routine.
++ *
++ * Return: Pointer to new ancillary device on success; ERR_PTR on failure
++ */
++struct spi_device *devm_spi_new_ancillary_device(struct spi_device *spi,
++						 u8 chip_select)
++{
++	struct spi_device *ancillary;
++	int ret;
 +
- 	if (spi->controller == new_spi->controller) {
- 		for (idx = 0; idx < spi->num_chipselect; idx++) {
- 			status = spi_dev_check_cs(dev, spi, idx, new_spi, 0);
-@@ -663,10 +677,11 @@ static void spi_cleanup(struct spi_device *spi)
- 		spi->controller->cleanup(spi);
++	ancillary = spi_new_ancillary_device(spi, chip_select);
++	if (IS_ERR(ancillary))
++		return ancillary;
++
++	ret = devm_add_action_or_reset(&spi->dev, devm_spi_unregister_device,
++				       ancillary);
++	if (ret)
++		return ERR_PTR(ret);
++
++	return ancillary;
++}
++EXPORT_SYMBOL_GPL(devm_spi_new_ancillary_device);
++
+ #ifdef CONFIG_ACPI
+ struct acpi_spi_lookup {
+ 	struct spi_controller 	*ctlr;
+diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+index cb2c2df31089..9aef1987b12f 100644
+--- a/include/linux/spi/spi.h
++++ b/include/linux/spi/spi.h
+@@ -374,6 +374,7 @@ static inline void spi_unregister_driver(struct spi_driver *sdrv)
  }
  
--static int __spi_add_device(struct spi_device *spi)
-+static int __spi_add_device(struct spi_device *spi, struct spi_device *parent)
- {
- 	struct spi_controller *ctlr = spi->controller;
- 	struct device *dev = ctlr->dev.parent;
-+	struct spi_dev_check_info check_info;
- 	int status, idx;
- 	u8 cs;
+ extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 chip_select);
++extern struct spi_device *devm_spi_new_ancillary_device(struct spi_device *spi, u8 chip_select);
  
-@@ -710,7 +725,9 @@ static int __spi_add_device(struct spi_device *spi)
- 	 * chipselect **BEFORE** we call setup(), else we'll trash
- 	 * its configuration.
- 	 */
--	status = bus_for_each_dev(&spi_bus_type, NULL, spi, spi_dev_check);
-+	check_info.new_spi = spi;
-+	check_info.parent = parent;
-+	status = bus_for_each_dev(&spi_bus_type, NULL, &check_info, spi_dev_check);
- 	if (status)
- 		return status;
- 
-@@ -772,7 +789,7 @@ int spi_add_device(struct spi_device *spi)
- 	spi_dev_set_name(spi);
- 
- 	mutex_lock(&ctlr->add_lock);
--	status = __spi_add_device(spi);
-+	status = __spi_add_device(spi, NULL);
- 	mutex_unlock(&ctlr->add_lock);
- 	return status;
- }
-@@ -2580,8 +2597,8 @@ struct spi_device *spi_new_ancillary_device(struct spi_device *spi,
- 
- 	WARN_ON(!mutex_is_locked(&ctlr->add_lock));
- 
--	/* Register the new device */
--	rc = __spi_add_device(ancillary);
-+	/* Register the new device, passing the parent to skip CS conflict check */
-+	rc = __spi_add_device(ancillary, spi);
- 	if (rc) {
- 		dev_err(&spi->dev, "failed to register ancillary device\n");
- 		goto err_out;
+ /* Use a define to avoid include chaining to get THIS_MODULE */
+ #define spi_register_driver(driver) \
 -- 
 2.43.0
 
