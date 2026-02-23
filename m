@@ -1,45 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A521AF4F1;
-	Mon, 23 Feb 2026 21:15:52 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F905331200;
+	Mon, 23 Feb 2026 21:18:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771881352; cv=none; b=S8lGd0TfD2T7PdeMMl+0VCl+2/b1w7HWIcWGdumDynu71+EtO1WnRYq03z495BDhJFUqqDoJKSYdDZl6dAd22phmMwotnQ7mcdWNYVtKMCsm2SsvDWi2Mr4IdoGNxrMyCVO8iNXskaPWEFuRKHmuH+h770T/np/9rk9Y6hpNQjw=
+	t=1771881498; cv=none; b=Qbv6dpXc3MUkz+YWRc7JfaX6MASZD9fUc2YzGtfoTnPTe87SMv3ytO3JKklvF7o16LJxPD2lm9nhNz8ofCS0hhv61dgrUMfMA9DBz53zWFdFBKJ8cUjQLOBN7qIJ6Y6/AjXKy6kvYiNl+8ZDIaNcg0Prl/Y7g9ZH+0N8wFO+nnU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771881352; c=relaxed/simple;
-	bh=m7v/OTbCrNzxO4spqV66OJCmgv7ApB5+98zMrSh5OcY=;
+	s=arc-20240116; t=1771881498; c=relaxed/simple;
+	bh=kmDwqq82f60vdECvT1e1GdFjGynZ2MW+gChhpxU70B4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=NCnXqzizOp48EH1wjDLygrWGuOKqFPhvnLc0I1ceu3IPxcgiy+JRhjLeFtbLmI4LvBxoBWNGeVT6W7PTijQQ2uZYUBPNqi7PfDVCzz9HAR3MM8Mak+WqHWNmp/knn7jHoKHvh2bAF0tuCLiX/Bma0kQTxWvk4Fgya7MdYPnK6MI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CHNBvGfm; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=EUpF9O8OcRYn05owszK00sdzo8JKAorVNpX5jICxo8k/ogQMl/31/zqC66HdzFprqlqKI9RvFXr2DEYoAylxvnn1ue3hwVBOk8exl1j5BpanAAFvyryP/s4iO0GaP4vNtOz7h8n339AHfvyR6q2mXfkvVVshbXaUeyMOxk7nU1A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ASldDNLc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CHNBvGfm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FCA6C116C6;
-	Mon, 23 Feb 2026 21:15:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ASldDNLc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B6BC116C6;
+	Mon, 23 Feb 2026 21:18:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771881352;
-	bh=m7v/OTbCrNzxO4spqV66OJCmgv7ApB5+98zMrSh5OcY=;
+	s=k20201202; t=1771881498;
+	bh=kmDwqq82f60vdECvT1e1GdFjGynZ2MW+gChhpxU70B4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CHNBvGfmEC2nv65T6c/3HmdzIqssNjJlfesI63Wte3NjEqEO2fhCnsSmrn7Wv1WyP
-	 JUvspbUSVUInN0Ou2/9jvtAtNwARO1XypKBqr0Z8GKlr1bi0SK0ncgDoFXt3ceU7TO
-	 HDX+Nf45AXpvpQU+ZQm9taGcPs92ZK38HZ//cnZVsZBKeU/kVgBRKP8BDhu1VL23GK
-	 Mx5rbqvVDzscf/atWbLutjn6mqXXXyxL8lVrGO8zQ48psudiWtBrFo5lck1BCHM07i
-	 DJFxwaQgWGk1a28WgyvtbImueT8ugHNIeZE3hI3bP64VhVX0xp468Ixu+rpoHdyfoh
-	 mh4K5/d/B1Ksw==
-Date: Mon, 23 Feb 2026 21:15:44 +0000
+	b=ASldDNLc2U0yHprc/neX3ibMKC8olY53bWGgk8C4mYuPnjwDCnn/g+y1H0OpctulK
+	 2qswpwfJzLNuSgP+qW0aJZP4QrizVDcp63sAZMp0TvzSFLSgGyGyHSs+5ii4On13IP
+	 RhNWBXPjd9q4bybKAXwnn9e5vosIzFIr+sFn7OPTdoLDx863oRSdlXDUffq2SksBvU
+	 KJv5lmDxxqTH96MonlcJ/2WMKaXgeXjxVoQ8Ivlns+qYpshCKMPJ6so91fw8AYdvOj
+	 ksWrNd4C6f9ookpW0wf8DFoTHzQdYy7Nl6JgKM/uppXA5HJbiBsJlmtGfRIaireKLe
+	 Exhv7Y9BVrs1A==
+Date: Mon, 23 Feb 2026 21:18:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: Ethan Tidmore <ethantidmore06@gmail.com>, Andy Shevchenko
  <andy@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
  =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 05/10] iio: light: gp2ap020a00f: Fix possible error
- swallow
-Message-ID: <20260223211544.7eeb67c2@jic23-huawei>
-In-Reply-To: <aZxCf3zD7m3nxaH5@smile.fi.intel.com>
+Subject: Re: [PATCH v5 00/10] General clean up and bug fixes
+Message-ID: <20260223211810.63ecc189@jic23-huawei>
+In-Reply-To: <aZxFSoTwIpDKNU4N@smile.fi.intel.com>
 References: <20260223034020.27625-1-ethantidmore06@gmail.com>
-	<20260223034020.27625-6-ethantidmore06@gmail.com>
-	<aZxCf3zD7m3nxaH5@smile.fi.intel.com>
+	<aZxFDIaOiqSqAbd9@smile.fi.intel.com>
+	<aZxFSoTwIpDKNU4N@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,99 +49,39 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 23 Feb 2026 14:05:19 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Mon, 23 Feb 2026 14:17:14 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Sun, Feb 22, 2026 at 09:40:15PM -0600, Ethan Tidmore wrote:
-> > Move error check into for loop in gp2ap020a00f_buffer_postenable() and
-> > gp2ap020a00f_buffer_predisable(), this fixes a possible error swallow.  
+> On Mon, Feb 23, 2026 at 02:16:17PM +0200, Andy Shevchenko wrote:
+> > On Sun, Feb 22, 2026 at 09:40:10PM -0600, Ethan Tidmore wrote:  
+> > > This series performs a general cleanup of the gp2ap020a00f IIO driver.
+> > > 
+> > > It integrates my original work switching to the guard() cleanup handler,
+> > > fixing a signedness warning from Smatch, an error swallow bug originally
+> > > spotted by Andy Shevchenko which I expanded to cover both buffer setup
+> > > functions and general cleanups written by Andy Shevchenko [1].  
 > 
 > ...
 > 
-> > -	int i, err = 0;
-> > +	int i, err;  
+> > > v5:
+> > > - Patch 1: Integrate some of Andy Shevchenko's changes.
+> > > - Patch 4: Split patch up as requested by Andy Shevchenko.
+> > > - Patch 5: Split this patch from the patch number 4, to keep bug fix
+> > >   separate from style fix.  
+> > 
+> > Jonathan, this version is good to go in my opinion except patch 6
+> > ("iio: light: gp2ap020a00f: Fix possible error swallow").
+> > 
+> > Ethan, do *not* send a new version until we decide what to do with patch 6,
+> > and actually the rest may be applied by Jonathan if he is okay with them.  
 > 
-> I believe we can't do that without introducing a 'default' case.
+> It's patch 5, sorry for the confusion.
 
-I agree. I'm a bit confused why LLVM at least isn't moaning about this.
+I tweaked it and applied the series to the testing branch of iio.git
 
-Anyhow, I'm not sure why it defaulted to 0 previously...
-
-diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
-index d2156e133b75..64be9b8ca5e3 100644
---- a/drivers/iio/light/gp2ap020a00f.c
-+++ b/drivers/iio/light/gp2ap020a00f.c
-@@ -1365,6 +1365,9 @@ static int gp2ap020a00f_buffer_postenable(struct iio_dev *indio_dev)
-                        err = gp2ap020a00f_exec_cmd(data,
-                                        GP2AP020A00F_CMD_TRIGGER_PROX_EN);
-                        break;
-+               default:
-+                       err = -EINVAL;
-+                       break;
-                }
-                if (err)
-                        return err;
-@@ -1398,6 +1401,9 @@ static int gp2ap020a00f_buffer_predisable(struct iio_dev *indio_dev)
-                        err = gp2ap020a00f_exec_cmd(data,
-                                        GP2AP020A00F_CMD_TRIGGER_PROX_DIS);
-                        break;
-+               default:
-+                       err = -EINVAL;
-+                       break;
-                }
-                if (err)
-                        return err;
-
-Is the tweak I applied to resolve this.
-
-Thanks,
+thanks!
 
 Jonathan
 
-> 
-> >  	guard(mutex)(&data->lock);
-> >  
-> > @@ -1366,11 +1366,10 @@ static int gp2ap020a00f_buffer_postenable(struct iio_dev *indio_dev)
-> >  					GP2AP020A00F_CMD_TRIGGER_PROX_EN);
-> >  			break;
-> >  		}
-> > +		if (err)
-> > +			return err;
-> >  	}
-> >  
-> > -	if (err < 0)
-> > -		return err;  
-> 
-> (Also you might want to mention dropping '< 0' for making the style consistent
->  taking into account that those functions won't return any positive values.)
-> 
-> >  	data->buffer = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-> >  	if (!data->buffer)
-> >  		return -ENOMEM;
-> > @@ -1381,7 +1380,7 @@ static int gp2ap020a00f_buffer_postenable(struct iio_dev *indio_dev)
-> >  static int gp2ap020a00f_buffer_predisable(struct iio_dev *indio_dev)
-> >  {
-> >  	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
-> > -	int i, err = 0;
-> > +	int i, err;  
-> 
-> Ditto.
-> 
-> >  	guard(mutex)(&data->lock);
-> >  
-> > @@ -1400,11 +1399,10 @@ static int gp2ap020a00f_buffer_predisable(struct iio_dev *indio_dev)
-> >  					GP2AP020A00F_CMD_TRIGGER_PROX_DIS);
-> >  			break;
-> >  		}
-> > +		if (err)
-> > +			return err;
-> >  	}
-> >  
-> > -	if (err)
-> > -		return err;
-> > -
-> >  	kfree(data->buffer);
-> >  	return 0;
-> >  }  
 > 
 
