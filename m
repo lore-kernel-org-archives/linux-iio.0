@@ -1,121 +1,119 @@
-Received: from mail-yx1-f47.google.com (mail-yx1-f47.google.com [74.125.224.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69F8834D4DE
-	for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 08:40:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771836023; cv=pass; b=SRdBGknpm/dK2TcplrLM8h4FX+vvYAKPIBTtmqbXu2Sf9qd7z982WYHIstKy5WMSix3DtMWP/adPlfnA3f6LbG9u8FmFA8gug7/1/zRIsq4zY7Yj3Qgkvo2VLDHFfUV+LsvrMiu/QMCIXvLzceJbiW36RolzZDatc1sSeE6nvug=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771836023; c=relaxed/simple;
-	bh=msvXvD9vEVbfHJYNoQCFj7m522i9hYbLGsmY8TSHNCE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=UvxAzmeQi8yPfE7f3ZAPuP3etax3B62u9xTY+Wx6aCwZN3kytiygQcFqcNwcJJcHqEWf7AV0om6XgwSEzoxnjV95cu/JXka97tgDY7jL5memrrPwIXEpb6bopAoeuy+rzNIHkYdrhRAMXliDFfrnDnt9u9xL1qIRJU0FBsWUSeI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Xvm2BP1w; arc=pass smtp.client-ip=74.125.224.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D13C275AE4;
+	Mon, 23 Feb 2026 08:45:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771836358; cv=none; b=HGCP/VLE/mhw84STER2BhMPozPVCYDLVwoLq0a+55W0jAu6nfiQ1F5n3BSehiEf2KV8PNkApVGGJyl0GwPHQSibR7H9nDtkiEf9p6jGvlYmpXA7jOIU+QU57gYKQVqZyElUt6E2LbC9/tot6+m/uw5jJaP3I+KzfsMSghfqCLqg=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771836358; c=relaxed/simple;
+	bh=TdBg/QLlZHVi+4kXOp9uwPw2/1rT6BHnzdGB82m3m58=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=atC57xljWK+osuduiD4Rx+ZzgrhUITCbDl0wzj0wWoNfNQKB1dqp2mrXzHN9KA8wa9pZVWyXmcdUY6W3C2IZ79yn7RWOgs+JxezGSpgQeAJtI1Pjzs48R7icPqjv4JGVzt8iSu1LpHlB8vPdMk6RU2e10puauONYolxPFJs62PE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=B3JoohH5; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xvm2BP1w"
-Received: by mail-yx1-f47.google.com with SMTP id 956f58d0204a3-649ddc91c05so548486d50.0
-        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 00:40:22 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1771836021; cv=none;
-        d=google.com; s=arc-20240605;
-        b=kgpCTM5hEIuM8d8/h2fmATXR22n72lj8qeKnRUGj5baOyOd0N3P5QEFUOBRri/9M4h
-         LUGy6J8h71VmCG7/6+Ufyo1V2wxq33k61xdOYXFv4cZwBG9ipx7za3wDm4xtWL2SFikr
-         1ACrz4UWAfKxQZHRxd1DUuYus8JCxXSNaV1Npg304WBcFmu3v2Xxc2zAsxu5ChNQUeCZ
-         CTwLb9vXN6nEYERpCBaqWRn3AOPR7VTWIsOjAp1jsu4CTElRcfKFVG79o3K/ZwJI280V
-         nf0bLZEEmi2FrR3odiJBr/VqSYcEqzaF1gc694el1r/S0y2oTNB7lxq7ySOWc/F2Qp4H
-         2BJQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=msvXvD9vEVbfHJYNoQCFj7m522i9hYbLGsmY8TSHNCE=;
-        fh=TJOzYdwEAA3euaBex7OVVOwONTga2OMLtOHl5Dl9KZc=;
-        b=Lw0sYNnz8h/tZ1Q3mqVLkoMRPVNMOajUlekSKoxJyz2J4EWV17W4ZsTynuTxLKRG9c
-         XmkxHZK1pRCfZVOIhY7CFsDVOSqQN+zsheJZlW1JVpP5KBw+Vjj9BxOucBo/wyjLzwvl
-         g+SX/6L9JpO4TDoYWH918iwKnsQPUE/EDSHokB+tCywI0WHX6N2LlVzi60Bp4CuLVP1I
-         /bKu/nyOY3oOPTkFfm8/q316owjwEeFRgoCYx3KDfgNNecEJtyrRta2VFWizogm+D57c
-         nDr9i8E/vcmvPETlNF9J+Hd9OSrFXrYWlbzrXDr8qeLdE9cJT1Hqd2Y84qUNZ3EDdRB5
-         DuFQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771836021; x=1772440821; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=msvXvD9vEVbfHJYNoQCFj7m522i9hYbLGsmY8TSHNCE=;
-        b=Xvm2BP1wnnWeJh4Pbrn6IPHnYyqB4gZkP2shw0tF0+NT6/4Ws7dXiL78PLngQiu4Xy
-         3CkeAWk409CetRZHujL7y6c+w3tQkjTpmjxgQC4yWUzEmtDfFwsslIF1UnmveCLq/4ss
-         XVZIDPJhG83DZQV64U1If/tOKtYiv+BawV8mPfdnTk4Onvi4G9KMVlZW4f6OUWBWaNz1
-         PMWepnVju/sDGZkhYmsDtP6ZDkDRb3REngKcQfwrLuWYsyYR9DubIz9EfT4h/oNPH0gw
-         RfVFqXEYD2YKjYNBFu/NAAH1OVGwvRGoBzKsewbgKrGpFCg0p4BUEzDT2ogom+4Xrmd0
-         FHgw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771836021; x=1772440821;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=msvXvD9vEVbfHJYNoQCFj7m522i9hYbLGsmY8TSHNCE=;
-        b=V608IZjBDqGVhsVHJAtA91hNhur52UoLonAAODa42up9K82xpD0lqcOpuCPMGfn/zI
-         eODz3Da9EC5KoWRuL6/J4mZlRkaqKesDJCVoxd+wqMRJY92zEsSt1DIA5psqsgFwGYEb
-         YkkEG4meaCMuYDplpRzYw0Qtv+zk6zMrmmOs6SikzMC9tQmhFHk9cfMsdxEHCFpu0pcA
-         8J6yMNGAHuWS/c/o8zK2/lCXE/F3vc6fbdTsgMdKSAKA+0cM0tco2GLgy+y2ouqnSyyW
-         GQZZVbRw3Cz4ZGEWiUCVF3ulNwyWeiJcp84ggGcMEEMRUUr8NDbekcOWFpyWS2+iUsc4
-         w0aw==
-X-Forwarded-Encrypted: i=1; AJvYcCVuSgk6GR/G2qxrZFkTXSiuxUH2PXd6ezXH1rVeRvMQK9ZtNVU/ru5FrI8n7Gin/1q8a8je6xep/oM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy1gv5J88j7geS6c8izp85g5fI8Li6eGu7ipUF2ZsLkXMb5imz8
-	llpb8sESHkc11ZtK4L1wfvY6Q/EnZ92StJTBFzmQXwYFWCnC4M15NnfPNb0h4W9baHTgYAU3PQa
-	o7+lYfscV9RlsAlz56E5TpWGm/Fld76Y=
-X-Gm-Gg: ATEYQzyq9IrVD1v48UNxk1dz4W0h73U+Sxy8Fn18RioNkmOs3zsb0T+5iVsguPQXlI4
-	uEn6GFB6ODuJnVGniWvl8MNjQM1h14bo3pH/aWJWOaZ51vgcKvFDkSYW5Kna0IWGzWavA3MfCkz
-	njuFyYVW5B+JQsn06Tq6J+7uMl8BZ3x8IPF9CVl65OVeixHeY0RQPx4sPVK+1lkNS/9LeignLeB
-	0EKK9YS25sN8ciWfIvJxvp4vnGASqN+R03arMN0CoqA0rsneu4Rl2LdDa1rd9rLufX72ulYa6UO
-	2C4rIADA3YfRzG9iZ2lR07eLcnMtIYFoqB65CP2AXui6Wiu+23iq0e9UZpf+BHJvd34EhtxhUgp
-	A5tB2bVKQ6Sv3D9WBFfhcXg==
-X-Received: by 2002:a53:ecd9:0:b0:64a:ce9a:acd6 with SMTP id
- 956f58d0204a3-64c78e377e7mr4653537d50.4.1771836021322; Mon, 23 Feb 2026
- 00:40:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="B3JoohH5"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771836357; x=1803372357;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TdBg/QLlZHVi+4kXOp9uwPw2/1rT6BHnzdGB82m3m58=;
+  b=B3JoohH5FCtWEFrwo/bsR7BSYn0Y1JsqEtMcTxD1eal+Nya0PLr2SdoF
+   kpN4SvbqeCGlxO+v02WPOWfd8EeRpEjS5PusyE0SxNfHOW2OPzNxudv75
+   Yw6ic4Xhry4+uumZ5Loe1nsVdiDg3MveSwXVRT9QvtkQ5w9dBTWXCi5G/
+   t2/1NxjOAoTmTPW2kzj3NOAjg0Y/BjuRaHC4Kv1YZNlBPF/MvaIysTEFR
+   TP8SosCsbv4fYpuuvah+nOAQgDedyfKXQzEtwZxI0YKHENHGbXmR16Pn5
+   VaB3W+g8HLe3qIiNrxCh+QBqoG1T8FMsdaXltx0rfRvxqrXjAoVQKhVfX
+   Q==;
+X-CSE-ConnectionGUID: xSWLe4y5SoqMiknJXTPezw==
+X-CSE-MsgGUID: 51ZfJf2ITMSd56CP9LaODg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11709"; a="72530587"
+X-IronPort-AV: E=Sophos;i="6.21,306,1763452800"; 
+   d="scan'208";a="72530587"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 00:45:57 -0800
+X-CSE-ConnectionGUID: b+oMMMxOS8CZd3NzrAHmEg==
+X-CSE-MsgGUID: bB4UROmDRLaKglvIgtVmfA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,306,1763452800"; 
+   d="scan'208";a="215632967"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.222])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Feb 2026 00:45:53 -0800
+Date: Mon, 23 Feb 2026 10:45:51 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Cameron <jonathan.cameron@huawei.com>,
+	Alisa-Dariana Roman <alisa.roman@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Subject: Re: [PATCH v1 1/1] iio: adc: ad7192: Revert "properly check
+ spi_get_device_match_data()"
+Message-ID: <aZwTv3rB89km7rEI@smile.fi.intel.com>
+References: <20260217080514.1288115-1-andriy.shevchenko@linux.intel.com>
+ <aebc2f13040d97e6e3b9797d3fa580198125e3f5.camel@gmail.com>
+ <aZSD-3WIVwT6XYWX@smile.fi.intel.com>
+ <a823c9b72fcc3b1d88ff9dd93580be6241826153.camel@gmail.com>
+ <aZWI-80-K7xfuEBY@smile.fi.intel.com>
+ <20260218095820.00005750@huawei.com>
+ <20260220105507.30a2f7ec@jic23-huawei>
+ <aZg_4KQ6hDqBeSJw@smile.fi.intel.com>
+ <20260222132246.6447d539@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260223082359.46403-2-giorgitchankvetadze1997@gmail.com> <aZwQszq2o4MlXpOS@smile.fi.intel.com>
-In-Reply-To: <aZwQszq2o4MlXpOS@smile.fi.intel.com>
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Date: Mon, 23 Feb 2026 12:40:10 +0400
-X-Gm-Features: AaiRm50tYad8YggrYbnO90IgnECipThY_sy9bELtl4XfhJdx96BShUn7f9Sq09w
-Message-ID: <CAE7dp2oVSDKM2FArSfLtjjUTBm1RPWQNXrsvOgDNvg9G+URogQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: ad7173: move opening brace to a separate line
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260222132246.6447d539@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Feb 23, 2026 at 12:32=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Mon, Feb 23, 2026 at 12:24:00PM +0400, Giorgi Tchankvetadze wrote:
-> > Place the opening brace of ad7173_calc_openwire_thrsh_raw() on its own
-> > line to comply with the kernel coding style for function definitions.
-> > Issue found by checkpatch.
->
-> Is it the only problem like this in the entire driver?
-> If so, feel free to add
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+On Sun, Feb 22, 2026 at 01:22:46PM +0000, Jonathan Cameron wrote:
+> On Fri, 20 Feb 2026 13:05:04 +0200
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Fri, Feb 20, 2026 at 10:55:07AM +0000, Jonathan Cameron wrote:
+> > > On Wed, 18 Feb 2026 09:58:20 +0000
+> > > Jonathan Cameron <jonathan.cameron@huawei.com> wrote:  
 
-Thanks for the review, Andy. Yes, it is the only instance of this
-issue in the driver. I verified with checkpatch and a manual grep for
-function definitions with opening braces on the same line.
+...
 
-Giorgi
+> > > Applied.  I also added a link tag to this thread, to say we had
+> > > agreed to make it policy in IIO to not have these checks.  
+> > 
+> > Thanks!
+> > 
+> > Do we still need a process/maintainer-iio.rst?
+> Yes. Been meaning to start drawing one up for a long time but
+> there is always something else that takes higher priority :(
+> 
+> If you want to propose something as a straw man that would be great!
+
+Taking into account my constant lack of time and not being a native
+speaker I would like somebody else to draft a skeleton. I would be
+happy to throw ideas how to amend and/or extend it.
+
+OTOH, somebody like David, knowing more about depth of the IIO and
+the style can also draft if he feels like doing it. David?
+
+At least, existence of that document drops quite a burden of repeating
+something which can only be scrapped now from the ML archives and
+IIO existing drivers (taking the date of pulling it in the upstream,
+the newer the better).
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
