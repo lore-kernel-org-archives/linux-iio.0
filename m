@@ -1,130 +1,110 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ej1-f52.google.com (mail-ej1-f52.google.com [209.85.218.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B54C134E74E;
-	Mon, 23 Feb 2026 10:15:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771841725; cv=none; b=iZPfZEgL+knRYd77rxkV3pYbDeY1p9FeDTQ7yEj+kq4VSFu3mqqL1wATcDsmeonFSRw4LvqpM6YZxEmpB3bcC+10e9koK70eE/vstjLgx5jTX8bavkX/IUpBbJhd6oxC0cLBGoCieC1wFMNra/Y1XHFui8tcD8sV/EQmP8P8y9Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771841725; c=relaxed/simple;
-	bh=4CbWvFMTewN0CQNeHIQETdza2vAPMhV0aVQhvd9E5Fo=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=CaeGIM1uqdaU9iLqGZO6BEbytBRU2DOnlpBmW0RcgheCtfg8rWweDOWrPGhF8BjtW98s0+O92Qv/8yqihho46ouxgi7w5Nm5p7/MTVLS09bL8CdxTy2dxqPYWtbh6C9jxN9vp5+gcGOE7r77ZkXE3JkjVDlr0OhVLHw9rYvcBPc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=fjOdTCFC; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7F1DD34E74D
+	for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 10:34:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.52
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771842889; cv=pass; b=GFAc/oLAiGOGlU3Yo6Q9FnUVsPT1BN5xP+7h5sQvkW/D+UF7OyFExB6q0i4F/Wl2K+iGlsUwefAMaPtwQ5SeCOFofuv9dyRSrYpdSyxki5mFEUPfKg2Fg26Gu6HUiF+TKSozNkwNn4e9EoLcUp+ksnsNw/CWoJP+PqtZDipHBfo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771842889; c=relaxed/simple;
+	bh=c+7mrFBaJC57oBSCLhfStS/HZndzkkBQmbQSX+RP2jA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=HZce0P1Wibd14RzjU73SLBtQ7uFe9FnX0nJ4Q9OVimE0NtRvZa/8BQ6KS/DYAmiYdHG4Y+e3YnQr4tMSqdQvV0NnJbPc1v+6p3kHyo2neOwzWjeCtGrDhQMFPF7MeXWxm85SvQp96Zu28WmaQOQaU/NS7tUV+1+RDZ2cvwwINp0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LW3vbsRK; arc=pass smtp.client-ip=209.85.218.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="fjOdTCFC"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61N7AMX62668516;
-	Mon, 23 Feb 2026 05:15:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=u+q2lWUVn+Dj/O72fiM5nwnufEX
-	64wNLdIJYrf2EU3I=; b=fjOdTCFC9O1OtLv9aAbaGms96hettPICN25XkFX/s2e
-	8Ur0GASq/aK8Xm2t8rLLgA/007DY6hh0eEhlllf9f9Oe9gLTaqv91I1CGowbuzmN
-	gscShG8ZYCzzC8zzviYglhZQwDtgkHd5XodvW4QzKonVk6RdnfkyHZP5f+8DWkzg
-	wQXZDAjSHoMtCnAtBkL5m37hJv6NWa3snf50UTvESXFrO97IKPzN8tCBtET1Jjco
-	iUYV6JPzFVRZ12rGZZht840sWvH/w53eIy0ck4Un9R5Uq7fAaQoqpwrwIpkLhmM6
-	zzYSYcjHW0sQyEwaOn2TShHBklHlnjU4UPdCox38M9w==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cg7pbajws-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Mon, 23 Feb 2026 05:15:02 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61NAF17N055941
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Mon, 23 Feb 2026 05:15:01 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Mon, 23 Feb
- 2026 05:15:01 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Mon, 23 Feb 2026 05:15:01 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61NAEoJY013609;
-	Mon, 23 Feb 2026 05:14:53 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Lars-Peter Clausen
-	<lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan
- Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
-	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v2] iio: addac: ad74413r: simplify timeout return
-Date: Mon, 23 Feb 2026 12:14:40 +0200
-Message-ID: <20260223101440.4872-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LW3vbsRK"
+Received: by mail-ej1-f52.google.com with SMTP id a640c23a62f3a-b8f97c626aaso576949466b.2
+        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 02:34:47 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1771842886; cv=none;
+        d=google.com; s=arc-20240605;
+        b=bnZ6JLykC3UG8LM5a2dRESwvMJo1wyVnRKMijfGi+Hwk3x9jbhc0Xj/Y9wnLvmz3ty
+         XNde82tGr08BbTEUdWptlWTZt03oSGXjH6HZ8VA5HDrCO/6wWy7tXaqIGNPAWvIZ0Pma
+         +au9b6Aa51HuL6srdIFVzqAEnMMngfO7OmzN6wPtd9zzPy5ZXf2p+Bjtj/wtmQplFLdN
+         N4P2yO6lunz5s6slY+vKPbxsO5ZzVzySeZNzrS2LtWtbFNuFV3AkqEUmnD4xN+dXuF0g
+         XZENKUIbFEeaEsB0Gs0KI7k6RCNldphYqbrtPhz7tm3BmpxrzI+1VpYgYXNVQKuM0hzB
+         Bbrg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=c+7mrFBaJC57oBSCLhfStS/HZndzkkBQmbQSX+RP2jA=;
+        fh=6SQbLUTUJDnr/SqNANrKrOYMSeTOnHlsXwuBi99FQwY=;
+        b=Fk+JogwjflJT7YU1cqsibVIA7NKWTnn4yWSIAt/Ma5nKzxf6aB5NwCMNx9I0UetZH8
+         8jUzOj5MGTG6p3Csch4/79JH8Ay8QNxXxaPYHTeJaNRGul0fXdu9rQz2EfYKkdYmXz0c
+         l1ysYALzG5pqJRJgLH5NcVV0+UBWvqtBLw8UpxNAMBnyBGjEzlaY7BFpzBxN7MrhZBbc
+         S1+8Q1K1uZd3iJRrU02YckeS8SR4KtHrIi0Gk4VA+ZGL0XAX6xkpt6XxIN679h8HARZk
+         QuO5Fpyiuq/K7PaGZu+ZTn/n6G69bhSuW2dHna3JdT4nZ92XPkNXhf8Z+KS3js9zUl0m
+         WVjA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771842886; x=1772447686; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=c+7mrFBaJC57oBSCLhfStS/HZndzkkBQmbQSX+RP2jA=;
+        b=LW3vbsRKKx7lQjZA1nx6jpK+rfmj+RyI3qwN20U39MqhjzDOi2z2NNEmudcbXstdBj
+         tlLLrjQrUKUdN3qE+gPGpJ7bqeGz2DjmBWWD+diZkSbD6U1NAnToXs3ur4wcm71eSmeM
+         ZEBrJmBvBVpg1ryNk5Bc7kz4X7UiHhgOHNb2kYtxfeu9mOnyoGPfxMdZXcdMzwlwqOSD
+         KbQUVzdxTC6nH2xAXdyaphmuV3Bp7W/0dM6dqHK9iqzVQ5pi+C6vb9CVofEoPrNZJ70g
+         DEZNeje3qezv9eGhzp5uKS4lm2Yd7a9EmLxV52yZY2gi2B9KJScTsmoIEbf0QjgZZ81X
+         EkxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771842886; x=1772447686;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=c+7mrFBaJC57oBSCLhfStS/HZndzkkBQmbQSX+RP2jA=;
+        b=mo8v2+c5D77SyXgrDhL/HU7/OrsTwZhUS6la99cy98lGnbZBu/Yswarqjg17ovCzhJ
+         l/1DZOFvBssiDnSwahy97qcut7EQWYR71EAl7Aii6R3TP5aye+0JMkJDCK9/6HFWNDa1
+         o59DAFhlP/SH0jjqA17AacSSJQO7WtPjXqJ6K8vW7P1HfFrj8AAFRK5qrDvKJJ/byyf4
+         W5ptqExzihFQVuTg5zc6G4dX1vtHb7QTOeNBCnrZZ+JYHJooyNQOhhKdDi6Pz5GktYkt
+         4Er6Wn+lr/V8UKCelgSqc41mSl7xpGKxydbyX8CMg/nQu4h860pT3K1o5pdQO/hVKiDd
+         jBxQ==
+X-Forwarded-Encrypted: i=1; AJvYcCX4DXMv/xVWnnXBP6xwwQkIFgMLRfKFZZQBuOnO5TptyUvprcxQCuEIMun0AFYA4H80giZDCDLlg9Q=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwJY4hFWfjsNtiKl9+/+b85LPh+1RgzxbuAoUPqID/9PnQgxzC/
+	1W4XnBduWfwRVzuylnE6idOsCB6B1oDkwxCEO0J6SvaqW865flpyHG228VlcCuPPWquTxLc6rfR
+	SmVLMqzYTMDFLVLgRtJkPhqvw9Q04GtY=
+X-Gm-Gg: AZuq6aJMhhF8xesAWmsD4iT2dqyvOjv///RScMSEkBfsQbz/xT9glEX1ryR5XJYR+Lt
+	wz+Ooa0Eed+ep9SwJL7rnIxd0/xI9gKGLRu907FVOVBrKCmzjk2HhIHIlbJYReX8E1GJoXYGwqM
+	svcyUc16zsg8V2ABQFRKT1RldjbwiZFhK7q+rYM6rw8tz1O43Z+C1fJs2HWTtAx7wQ6NW1mATEU
+	Ant23oRpBUm+HBUbHmP1C5RLZoupvQa+EPJ/NSKY5zJw/vOX/YQplYKv/qQQhbJS/neZOEJ+LcW
+	9r6eoUUZU9JBIDHfwteCxjdB+jGhb6BeTAspBZc+DjrWIucB2jUqc7KzojvL/O/KVx0j1Kb9dJT
+	7jcfo5Q4=
+X-Received: by 2002:a17:907:3d4f:b0:b8f:aa38:70bc with SMTP id
+ a640c23a62f3a-b9081b3e5d4mr521423866b.38.1771842885593; Mon, 23 Feb 2026
+ 02:34:45 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: as7QZkzO_hzBwYbWGGDa-M9jfe5PqPno
-X-Authority-Analysis: v=2.4 cv=RPK+3oi+ c=1 sm=1 tr=0 ts=699c28a6 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8 a=-OOY9uvXF2ComtnGhFYA:9
-X-Proofpoint-ORIG-GUID: as7QZkzO_hzBwYbWGGDa-M9jfe5PqPno
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjIzMDA4OCBTYWx0ZWRfX9bgvVXHTD8ET
- ZZ3+yNV2vQeLGuaNWEnnE6HlOhryv+04fQKIZFtlFZ8sgnVdIq5JwjeLPt7qdQU5uZJKyzh4u3j
- W9zDdbhwgUM68juigzwk//vHoyuOgJ64z/ZkSymO5NrzzAG3D4HJl7IUh0/pzPBo2wg1qfvle7E
- k5+ph8qtpOnJopUdPifMwKZCfi4uvZtFeJ3FNiI3nHCPOBlUIfenkzk87wTvUtHRJc0QrWve2YU
- SgCbqtppMXT+VqnTXs61kGt+BdzK5gQB5y/nk1ZZfge9SQQRWtv5sE95ndaTWv18YbKfeQA5WfM
- UDlVu/puesmzL7S/LWK9Jmnl+zzd90unlTJeXfec3X585YhhlWHiflsO3ROtvjIez4fhVDiype6
- 5t5+0x7Itxaw8kBu+kbl/m+uJMtnPLbz9u+BKU6X2mqHDUeRUIqI7znO6CksyJODZijgNcrTz/2
- Zi2me/SqPdeqoLsznqw==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-23_02,2026-02-20_04,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 adultscore=0 priorityscore=1501 spamscore=0
- malwarescore=0 lowpriorityscore=0 bulkscore=0 suspectscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602230088
+References: <20260223101440.4872-1-antoniu.miclaus@analog.com>
+In-Reply-To: <20260223101440.4872-1-antoniu.miclaus@analog.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Mon, 23 Feb 2026 12:34:08 +0200
+X-Gm-Features: AaiRm531YEFN-uCCs0tY8_PsLDlaYZpXDPZCv9NNW1q9cljSNvW_Il5xJTzXHUA
+Message-ID: <CAHp75Vci3N+2iH1UZwnWb-pe9EYGq=Q0NA-fTuAf4sOMv6db9A@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: addac: ad74413r: simplify timeout return
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Cosmin Tanislav <cosmin.tanislav@analog.com>, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Return -ETIMEDOUT directly instead of assigning it to an intermediate
-variable first.
+On Mon, Feb 23, 2026 at 12:15=E2=80=AFPM Antoniu Miclaus
+<antoniu.miclaus@analog.com> wrote:
+>
+> Return -ETIMEDOUT directly instead of assigning it to an intermediate
+> variable first.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-Changes in v2:
- - Use wait_for_completion_timeout() directly in if condition
-   instead of assigning to ret first.
- drivers/iio/addac/ad74413r.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+Reviewed-by: Andy Shevchenko <andy@kernel.org>
 
-diff --git a/drivers/iio/addac/ad74413r.c b/drivers/iio/addac/ad74413r.c
-index a20b4d48c5f7..fe930ce5ee30 100644
---- a/drivers/iio/addac/ad74413r.c
-+++ b/drivers/iio/addac/ad74413r.c
-@@ -839,12 +839,9 @@ static int _ad74413r_get_single_adc_result(struct ad74413r_state *st,
- 	if (ret)
- 		return ret;
- 
--	ret = wait_for_completion_timeout(&st->adc_data_completion,
--					  msecs_to_jiffies(1000));
--	if (!ret) {
--		ret = -ETIMEDOUT;
--		return ret;
--	}
-+	if (!wait_for_completion_timeout(&st->adc_data_completion,
-+					 msecs_to_jiffies(1000)))
-+		return -ETIMEDOUT;
- 
- 	ret = regmap_read(st->regmap, AD74413R_REG_ADC_RESULT_X(channel),
- 			  &uval);
--- 
-2.43.0
-
+--=20
+With Best Regards,
+Andy Shevchenko
