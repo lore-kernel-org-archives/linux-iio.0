@@ -1,280 +1,464 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1141D37FF6F;
-	Tue, 24 Feb 2026 11:42:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.135.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771933326; cv=fail; b=evgmCsUOfYCqjrggeXrbJutfDovpINJL8HqZHTUQf3d6v1sRVbU5nPK+JvraBcesvq64IZP+TFrV2LJ7uG8EsKv93yuB341S2iqFn2VnhPwUge269ZFmggaAKJ+QJgkBlR7sQG9wvTd51OedgKBppU4EtRbb4SM2hMb4DMlIxW8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771933326; c=relaxed/simple;
-	bh=WKkl3Z8r7SBLm1z7X130QeDONTsY5Z1tq8XlCleejHo=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=XE08r6EWHD/qKQxR3nDyPYlK4iYoT3dYyAbp5NcP1saxbrdIoQ5O/Jch+NT60WkdunCwTGXGy7jw3oMfKJVwDZboKtA45lU7KfWmKdunOQZvrMlhlxNeB0QyN0vvzaNxC5C3T++9ZXYAsFP1hQAryLGohOO5kq3Sf5YWCt3pAnY=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Jlx9wH1A; arc=fail smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6E033396B9C
+	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 12:22:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771935768; cv=none; b=D16WuJjdsBiCvQYP4W/cP/mx5KN4Gii58JupwkWWr2fZvaZaB86tMreLmvLeRP8pMhZYkUvGQuHFz/jNKo84coZYlUNcG9RM+RI589GMw7ue7gJvukBx9bR++AOIJEeoy0TLN+2vZP9W4rybawazuxccc5KlR0OUkptCDQtEb8Y=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771935768; c=relaxed/simple;
+	bh=MT8uvM8l0kRVf9pMNs3Ul3rgvOQ7PLOEeWBhUBV+AJA=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=i18IeT7eUG2wZmiXalIozthhP3derD7gdJgOUuL548++/UxVmMvp2IP+j3wPy8WS4oBE21orMNv7Z6h1DmFXCA1QwUMZzun7qgwpSRhi1bfzDNagskaRphmUktnr9wdTLET3Er5a97R/XjEvqHnNCUSnxVhCKZj3x7wnLHw2ZrY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=A14NVbRf; arc=none smtp.client-ip=209.85.128.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Jlx9wH1A"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61O9apLL2668516;
-	Tue, 24 Feb 2026 06:41:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=WKkl3
-	Z8r7SBLm1z7X130QeDONTsY5Z1tq8XlCleejHo=; b=Jlx9wH1AMw9BKGVYIR0H/
-	fgPcdKcjmFDX/vfoaR/DHV6hgTAM/5aVLtYwqVK9JHEp6VOwfMhPiSqY6cZ6o0EF
-	BfDmr6yFYmIQfWuc1JcIXpmSq7IXR/vSsRsuuD3SJ1whYa9AOKRORYSBWao6L1Ak
-	ANRtPsQmNp1m8/CTQ/H8OvoR87M3xpWgSMZLfR/nIxmhRWM+lj/Fa6rD4XRMalZH
-	wXnlspGI8XR4+hHNT0qn77Sc+iUBMQLY16Gn3elsVX9E8Z6znkMw+9kt3bhZB1BL
-	glriQX6Im/FPsmVH+QAj3tBlLD+Vpq0ANS6hjM3bgN3lcebI/Ryz/moU77ES3LGy
-	A==
-Received: from ch5pr02cu005.outbound.protection.outlook.com (mail-northcentralusazon11012053.outbound.protection.outlook.com [40.107.200.53])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cg7pbffdn-2
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Tue, 24 Feb 2026 06:41:45 -0500 (EST)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=dSF9rohEg5GSLjiNiFrtlqhVr0IuVUu9Di6Dl0XAM4XcZON8nl/Y5R+Y1em8aqpxUAQc5JEjbUtTIzQ1NKMCFcw94B3HAYzrYfPZhe3QtLCJAze9F2UcdHQ9oUmRmbjJj2WsMKUErdCuEUzhWeQ2QoQAuN6o4WKNvz3YVD/nb+AWM6vX7fLQxtLs1wWItjnrp7K4jHK3iI53tm6ovWHLkaxZBqSZF9KnREZPnGfftZVyfddRClkv0e61Kv/Mcq9OrlsoFgDtrMVewLH0q+lzmbptSzwG7QruLr/rOVDdEttgRoxGXAIvZR4EjOCThnUK18UN0C6L4LQHmsBKAV7Yhg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WKkl3Z8r7SBLm1z7X130QeDONTsY5Z1tq8XlCleejHo=;
- b=a0XaDpqaMvayoD63uEBZnA7XN2/bWktAM48jYSr/nMt8f+UTrhAb1ezVDfEJXdOYuAnvcHfu996D5ilqa9unw3G7hOdjqy2m0+fRwUWUHqgmVDZlS07TPOtxUQcGZ5VyN2wPjiMMprNJvWUHvXquTdleRMiaH0f1O+vr8dPZ5GGvGT00dWYkymPvoRPXM0h0kcIhHO9o/ocJ9hnkTTuc7O/t+P0zlowK8M3TT2+XrPwIUDczElFD7ZIvJW37dgCwBMwTG+v973MxD0yesK7wqH2mQW2pT46xpAfbNjFV4/WF9VzNX7V033eNi1EjV5s0uSrK69+vHktmAMywqvY67w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-Received: from CY4PR03MB3399.namprd03.prod.outlook.com (2603:10b6:910:57::13)
- by PH0PR03MB5895.namprd03.prod.outlook.com (2603:10b6:510:35::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.21; Tue, 24 Feb
- 2026 11:41:41 +0000
-Received: from CY4PR03MB3399.namprd03.prod.outlook.com
- ([fe80::1527:d313:16d4:2376]) by CY4PR03MB3399.namprd03.prod.outlook.com
- ([fe80::1527:d313:16d4:2376%5]) with mapi id 15.20.9542.010; Tue, 24 Feb 2026
- 11:41:41 +0000
-From: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David
- Lechner <dlechner@baylibre.com>,
-        "Sa, Nuno" <Nuno.Sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof
- Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        Olivier
- Moysan <olivier.moysan@foss.st.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>
-Subject: RE: [PATCH v4 1/5] spi: allow ancillary devices to share parent's
- chip selects
-Thread-Topic: [PATCH v4 1/5] spi: allow ancillary devices to share parent's
- chip selects
-Thread-Index: AQHcpOCmJb84+vMLtk+IrvyXF9SSi7WRoZAAgAARdwCAAANsgIAAAD+w
-Date: Tue, 24 Feb 2026 11:41:41 +0000
-Message-ID:
- <CY4PR03MB339987DFB0BC85F913C3B0A39B74A@CY4PR03MB3399.namprd03.prod.outlook.com>
-References: <20260223162110.156746-1-antoniu.miclaus@analog.com>
- <20260223162110.156746-2-antoniu.miclaus@analog.com>
- <aZ142CVjMQ8Dypnb@smile.fi.intel.com>
- <CY4PR03MB33992FF58E620DCE44FE0B419B74A@CY4PR03MB3399.namprd03.prod.outlook.com>
- <aZ2KXVpH9LVl0BdE@smile.fi.intel.com>
-In-Reply-To: <aZ2KXVpH9LVl0BdE@smile.fi.intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CY4PR03MB3399:EE_|PH0PR03MB5895:EE_
-x-ms-office365-filtering-correlation-id: 2a271645-c863-445b-bdbe-08de7399addc
-x-ld-processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|1800799024|7416014|376014|13003099007|38070700021;
-x-microsoft-antispam-message-info:
- =?us-ascii?Q?LJuQ2+Kfwtr+jxvHEr1QPeLIDF2aKAvgiwtuZAHnMykuFedwyMR9ZlOVL9HC?=
- =?us-ascii?Q?JI5Y/hKqTjlmSBWe3FjbAb9q8tk78zHqiKSJOTaKQ7RVUx3DzXPCgkuM6/rP?=
- =?us-ascii?Q?bKI7K1y+DlkCqaXTBib6tD1Sf4kCSYq7d5T9b0GovkEW2Aapy70rUIltz368?=
- =?us-ascii?Q?PHFKjN5cRplF3imQsHi9TeTXFXXKeTnN7Ao4pCvCVPoHYPpw1Rnz60eZvUtq?=
- =?us-ascii?Q?NNRi6M1rYtWm76KdtGSPfo50HhjFLNyzRXPoqPzZlakFyzEDuK4SYzOt1MLg?=
- =?us-ascii?Q?JPUjZg7B0wkwTnza9R/3lo0MoDmo+0HwCbC70MZ8q1ha3FLGyJZNJ8nF6qSN?=
- =?us-ascii?Q?yGslllsygUypljJ6KUq2o7jWuglv52woXvM5VH904MKDPBw6SnlGg/veyMTv?=
- =?us-ascii?Q?Wx3i9ue7ncCkxw283CgXH3yQp6aSsgRlsbdZc+wWOtjXWPVCDFkGtXphGs0j?=
- =?us-ascii?Q?cc8hQZUJ79mfy46f51rxU4BhD4hXWzr1qTPwyXwCUh4YRJxLfwFSB69tgIYn?=
- =?us-ascii?Q?5DyynAAy6v4R5jJST8IHChdwwZKI0kNA+7UUVDRGWuUJzw3zHADf8wnBjb/+?=
- =?us-ascii?Q?wZyktmFdTMEq/sJFUTx+rDccSv1biBFTQpbzBkKlWhg9n27/pn3kxITolNDu?=
- =?us-ascii?Q?/Je1HS19I5AFMeg3uayxTY4X/+ILtOl4CCCHV9T0wEEdy5XZFtxHpsNMbL8T?=
- =?us-ascii?Q?bib+K31UyPgvm+4b4t6n5VJL2OtsolHAHBMk1ze2runPi457upZgLWmY+ffJ?=
- =?us-ascii?Q?zevedFBRNlVp+8xzEf/tqqbwT+JJeDQ7U674dXYt1nXwgejFuB4AH4PSNPQG?=
- =?us-ascii?Q?3kVICYmpnraOxHqEGV+05CEpS4O+Vd0GdQBPxq1+aGlC+nL53V0+kGLcnznu?=
- =?us-ascii?Q?xZABPhKyp1GStkl7i0xqPUTXv3YQfvRqnKoXTWswiQ7R7FfzRnPHGeJJHmi/?=
- =?us-ascii?Q?JjHd8LbRHVANzfRMmYyGhO5GGeb+5M4OcncDZxYCH8fpyDBwQ9oVeFWywGUD?=
- =?us-ascii?Q?HMKeAtqFJkxoDZ2O8SN1/6slV7vttqsJaBdzA/yc7wfLd75l7RZ8ITpf/Hf9?=
- =?us-ascii?Q?+caTIEgPTkMq3x9r8lxLu9OJWlX9KkbdsvAOwI1C5irll3fenO6OOn0a9IaF?=
- =?us-ascii?Q?qZpDmQGOeyppGuzsODbvo7EUqLvi/H/XlGHeA0wwkzvHb2V9DhhP6cUc9Zed?=
- =?us-ascii?Q?a0GovdFq+cnpDoQNphxFbq1EKh+3VF6k4xBaaLpKr3WOtWmav69MRa6KFZZA?=
- =?us-ascii?Q?Ue9JdiacWlzYslk3ifbgOQmIHpobRgC1ZafE821TIblfcfMQDCLGiQFsZvnz?=
- =?us-ascii?Q?bb6qh4WLh8+XF5wELNU5JNaTatJN6QLFdBomOYysPFmeY5A/OhpqHDtYj69B?=
- =?us-ascii?Q?8mIcXQ5lGqTeBoIqkR+UfZupMlgMJnTzk5Vub8vSuLtcBl4S5lGYAmCQqxfF?=
- =?us-ascii?Q?xtx5PqU0F25fdJCJs7d7PRCdmJeLVmkiAbHz9ipkovuoTcQfa0X+fGypuWsN?=
- =?us-ascii?Q?fLYp52Upg9upI8IwnODHBTkiS7TojyYCWh5bsAwE8Y8HU6v3IqYfCuqf7/b6?=
- =?us-ascii?Q?tg7j0qS+FNRyyJ3PYdojc30CbIj9HaDgRsC+ZXXK?=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR03MB3399.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(1800799024)(7416014)(376014)(13003099007)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?rHqc1FpyZvXoiOW0iE6ADBRWHzW2H8FPV9MXp7IorkdlCUW8gn7jQMkjYQcQ?=
- =?us-ascii?Q?7/hpfXh0jMxeTfX0hXsAtCzWmI6+AidLew2RvlVLlS9BPUo8como3vnzrR0g?=
- =?us-ascii?Q?ar9qFQ/Eu5oEAKllnHrt9aAMxPlrAjSFqLmJNpqrIT0qr27MhrJg+Ya3UY27?=
- =?us-ascii?Q?iMnJ0zYON5mZiyzzs2yckvkIhe2JOzZZco9Av5ix/qJJbO4Yp7exg8a9rSw2?=
- =?us-ascii?Q?z8+3oGkNjuUTyHofqjbUpaVgN/0hkoZHX7W38GU+m/KVoT0qr00j7vSMVgAI?=
- =?us-ascii?Q?0gSVo2CsK3bBISQlE3HIOo0EPADq7420CJt96A5IvE1mGuD7fY81cNPxuqk+?=
- =?us-ascii?Q?n35gl/yIfQwjuLZ4lh8nimmDFOqpFDBZtiHz2sidZYOVGNxnxsmya9a/sr/y?=
- =?us-ascii?Q?9qOL0feYR2IbeeGMldR6wQFcg7N066BvHOyFNL+Lu+xfEXo/Vitz/FGH05D6?=
- =?us-ascii?Q?l7/sobpAAnIldgYNcqU3WV8bMO8XVOxsuNFF7PylgbVkU5Hfm6JRS2eAFrPo?=
- =?us-ascii?Q?0QHBDdWL1zMHfJRPp+g7Ey9++r0QR6ihpHh6HiL5LiBThY4BWzERd1/86Ebi?=
- =?us-ascii?Q?4DFUgKpt55kwlac4R6GR/ovSqmKEpfsflkf+CMfoLxWW8j0ZP8V0H+BH719V?=
- =?us-ascii?Q?LJT4iqa+ar1qR8QfUDH2nqG8fvrRYwm4e4438ipURXwvuAjgcXzizeDCTjiW?=
- =?us-ascii?Q?IYXjCExGVJgJDeXjaqcPVgtgMcggdGX9R5MYyNR1rw2p3V5kCoEEjbxIlH1O?=
- =?us-ascii?Q?6Dxk/OC/IrWZenCAsNoZ1KQrGvO+e89iZubJQR8rZ6Y8ME5foULVNBcEDeCi?=
- =?us-ascii?Q?QQcUnuYdX7n79hgQ7C08Va1PpQ9lED56RhkyJiryKdE0nyMNg/ob46n22ivy?=
- =?us-ascii?Q?iicfSz1Hln7lkiECGAKSOsw1jXzWp5j9PPlVHBMlLqjVdpF3LWQLarIxphyz?=
- =?us-ascii?Q?EHF7lRadnhMkKE7K+NFPIGA73DyjO92RHio1CTCOQLEy3bTyBR0KDfCioXjk?=
- =?us-ascii?Q?JWKCt/Y/baX/4ZmvWnMCwfeoSm1ZVkZvgbw3vCk/+0LQGnTLioBoRI7pA7l/?=
- =?us-ascii?Q?m1N3MOuD0gR2gYKsn9nlF4SbwwjQrTWCr/FltP799yY28OSmwWUxZXs5XfVB?=
- =?us-ascii?Q?tSVtn1D/gpw6LmBjlf4awBXQmDoxJxrko4+wQtV45Zu2d63Hrp6Em2YnfDjp?=
- =?us-ascii?Q?52T3YfchTyjDpMfbder+HX2Xv4StMb7eq8+1Zpub3ZQga5eAbTk1YqDUKoZs?=
- =?us-ascii?Q?kyPKZko2WeGi32FXa6sQPc09vSgeeNsu21gDODb7OhT4/pJuxiR45OOGE4zB?=
- =?us-ascii?Q?D6+unjqjFud4I2ZTMMa+yY+wQSAG7rD7R4i96kfwCnIiHAUngWH7qdqqQUyn?=
- =?us-ascii?Q?6JgIisGfr8D8RfD6/tNwU6/Vb+8Hc0uo+yKFO81iPK2Y1XG4tOZ7bYVnjqvr?=
- =?us-ascii?Q?ltMNRqh+ta14DTR7aOdDMwhiWwz/IqitWlWCPz0pnbBV5EOKWSFlrmCl/PQI?=
- =?us-ascii?Q?eA3wcbWV7WdVsJudtdBqckMtlKizeYY2TE1t9iqbeX+t2YhedkupJ6CVcRzX?=
- =?us-ascii?Q?3X9fLMm5KWfxk2+hboyF4AB6hegaVd9MZ8z5xaCzrnqt+Q2iK1e/ow06cLBT?=
- =?us-ascii?Q?TTGsN2vmqjFYDL6xGEgwzMaAxBhr8n00dYHzMTOA/bkpb5e+31sgJnXycis8?=
- =?us-ascii?Q?e3SJ8kcSQDUqPkswt1W0NN2l/gYQ/1rDnRzERpP5+sVXO3azZk2GRZfzS0ev?=
- =?us-ascii?Q?1C5JC4j+EQ=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A14NVbRf"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4806fd9033bso7567675e9.3
+        for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 04:22:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1771935765; x=1772540565; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=yrHPev5XYSZQTvZH8SaHnakXK3hl/tOE+3HyCGJvQlg=;
+        b=A14NVbRf19WzeTbQNjdH446vlRo3aiatTOtxb6HnyfC3aB566HJbaoST4v/xMvNxsY
+         P4Yz9+f0vrc6ZTgCgHPxzy6kAqv4KdmYj7qJ4XKVGbEqqttx0GNQpUR37bJkLhE+iCum
+         5A2rfScwWb2Ache6ffhRWJ0oTPhcL3F+gDdhHXJCdtyK9dEUDSoIyjSzuCD0FDPm6hW6
+         UZZHXANX0cGG8w1T93qy+At0XKJmHat+kryTxCRiCVP/AWKWy4pAhU0akmpBoj7IHh+z
+         cjd+R8rM/G60745uWRMWyMsAr4jM2AA3ftUCvCD5bOIYB9R9orIRpS9Piudgm+pG+3jS
+         cy5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1771935765; x=1772540565;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=yrHPev5XYSZQTvZH8SaHnakXK3hl/tOE+3HyCGJvQlg=;
+        b=TCi/cINSf9kVpMvpPuAxJqSwVk7GshjNggQqd8Ug9XiKG3tP0bQgXlkCvdf0vzdGF0
+         Ozc+FNmFAufwiTCbxv0Cr2IPm21lJyRcSYCCz4b8m5OvAocwZVmUQaj48OIFqUrYiSqP
+         aEmxGNtfwcNH54C5HTVls+W33YeI8pyu8mcUHTJjSvxOHgHror4sZHjy9woa/xhd4mtK
+         fSM0BOh8A3xY8p5Ruw9/hYmw7Go+M8TPHkeZxssvXJVWQUM9I+tuefhv5r5trjXqcoqk
+         JouCWNTzvZ46w4tW0oQ5/bjOLYbuRnO/2ERngqUY/JIRJEll1Ihn6rnywpYshktt6goi
+         P5kA==
+X-Forwarded-Encrypted: i=1; AJvYcCXvYYXVqwIzbv0Sg9GpDFg3Qg9Fh5IO5YzKnEzwQSbz2tmXvNXrKGHCnBMVhaagNC+78VUjYA/88xQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyYGZ8ppsWUm8vzWAINdNb0vxO+rNvqLX8OUD4knCoQb1VOTsc8
+	W9dEomoUT1Mtlh/bcnphW4U2zySJBT/f3wAFHtwJ4tZ7wI7HVv05G5bG
+X-Gm-Gg: AZuq6aJ09ptsZul8G7Ak9vaBr8kywq7+/8n+mWNMTI0U93bfBJbPpESXxxBx5aSz0fR
+	3h3vWjRkcYE5XdNjT/MA5e08teYm5XSykZK1w9vlLNhfe5EYJp+GF1VkMmeBcymK6gdxtldkZxz
+	E2RtR/m1s3dVzCjyDmcRTPCuTX+m8dGr3XkyzB5lxtyhTvAq+VC/V/1kUoCLRgej7ppHkbQvRUV
+	N/uCRLtNnkoCET3017dYO+82Cl+LziAyCmioSwsbdPm4TQMI1qCWSoUKhRhx8w8wHiiiczzpolm
+	SCcE+9nlGlpshORRpCl1Kr2MUVMZ9xiJKf2w61Zk7vKopzvV5HeIxuQFaJFLFTTeUG7rsd0/Oxg
+	Il7zWpV7Bi0hDpZKD8jiBNRB3k/ohKJjGW3fB2D1yYlEr7J45b9rBUNiiKNesiwn4GYQe0j8p5m
+	KUnNO3DglZ3sf0oO1rhKy0i1y6cOSivy+N4/orFrkfv+czO1NqObK2l9A49c3hlZocW+AR3Z169
+	Y/tN+OC1BVYQBNGOuWYHP0n3tpmoP/LPMtj80wXtkDCyOlmCUp8
+X-Received: by 2002:a05:600c:154c:b0:483:7631:befd with SMTP id 5b1f17b1804b1-483a95fc285mr120089195e9.7.1771935764255;
+        Tue, 24 Feb 2026 04:22:44 -0800 (PST)
+Received: from fedora ([149.3.87.76])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483b822c9a5sm29878445e9.2.2026.02.24.04.22.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Feb 2026 04:22:42 -0800 (PST)
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+To: jic23@kernel.org
+Cc: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Subject: [PATCH] iio: adc: fix typos found by codespell
+Date: Tue, 24 Feb 2026 16:22:30 +0400
+Message-ID: <20260224122230.67426-1-giorgitchankvetadze1997@gmail.com>
+X-Mailer: git-send-email 2.52.0
+In-Reply-To: <20260224111744.55378-2-giorgitchankvetadze1997@gmail.com>
+References: <20260224111744.55378-2-giorgitchankvetadze1997@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR03MB3399.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2a271645-c863-445b-bdbe-08de7399addc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Feb 2026 11:41:41.6780
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6Eol6xgFsyQumsCvXVc6mcvoDTzT+z3k7G6iBfY+tTe/jFmW8hS7I992Ncj79R9Duo/mDE8cd/a8XQVxpbBhLay/RRHgdjRdOldZ10vLmaA=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PH0PR03MB5895
-X-Proofpoint-GUID: u9qjiDmY8T6tLlAT_6_CzENTWZF9BlxQ
-X-Authority-Analysis: v=2.4 cv=RPK+3oi+ c=1 sm=1 tr=0 ts=699d8e79 cx=c_pps
- a=EGpQrqTzv4Kwq1gVXkqNKQ==:117 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
- a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=uherdBYGAAAA:8 a=VwQbUJbxAAAA:8 a=QyXUC8HyAAAA:8
- a=gAnH3GRIAAAA:8 a=IpJZQVW2AAAA:8 a=8b9GpE9nAAAA:8 a=QX4gbG5DAAAA:8
- a=aswPhix_XPEOyb-ErbkA:9 a=CjuIK1q_8ugA:10 a=IawgGOuG5U0WyFbmm1f5:22
- a=T3LWEMljR5ZiDmsYVIUa:22 a=AbAUZ8qAyYyZVLSsDulk:22
-X-Proofpoint-ORIG-GUID: u9qjiDmY8T6tLlAT_6_CzENTWZF9BlxQ
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI0MDA5NCBTYWx0ZWRfX/KjS9+ndNUhq
- xCuQJajcjJLqucjFnr0fUC325MMlkkG+sqs/lDwihDzh9Pq4aYiE5a9iML0TqycKzpcMBBdDROG
- 10kvBKm+28K09LM77O8TvGMg1oKHfGiG6FMvMKcKde6dUD8uIhhIwLdcr5KR/VBYa4Sso3SKPDs
- 4YCQ+clk7kJvSgSFZJ3ReYK7DumucsCbm/eMkQkFp1JAyVa4axDXXXU7CiZOAPd84kGJGEMbXN9
- 1NCgx44w4QYANZ+S2xTpsnCnbk8uQl25JCrgVRD7CON6tgT/AeeimHWcwB6lJWdonE84PMhoK2F
- WzrEoNgQJtl5Ab//LxNBoFFZx0wDvD56bSFIWVMPCtwDIajN3pFhWAJ2feJf67YeT2Mr+E6m7IN
- 3YJLFiPzUXOvXWZ92yB9D519Pj81CcTuoanHSoKzlS7zYIsU2nc4ktGmUUVGRh8QiIC6boDvE9Y
- 4mBmHFX3+McWkgKBpHw==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-24_01,2026-02-23_03,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 impostorscore=0 adultscore=0 priorityscore=1501 spamscore=0
- malwarescore=0 lowpriorityscore=0 bulkscore=0 suspectscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602240094
+Content-Transfer-Encoding: 8bit
 
-> -----Original Message-----
-> From: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Sent: Tuesday, February 24, 2026 1:24 PM
-> To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>; Hennerich, Michael
-> <Michael.Hennerich@analog.com>; Jonathan Cameron <jic23@kernel.org>;
-> David Lechner <dlechner@baylibre.com>; Sa, Nuno <Nuno.Sa@analog.com>;
-> Andy Shevchenko <andy@kernel.org>; Rob Herring <robh@kernel.org>;
-> Krzysztof Kozlowski <krzk+dt@kernel.org>; Conor Dooley
-> <conor+dt@kernel.org>; Olivier Moysan <olivier.moysan@foss.st.com>; Mark
-> Brown <broonie@kernel.org>; Sebastian Reichel
-> <sebastian.reichel@collabora.com>; linux-iio@vger.kernel.org;
-> devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; linux-
-> spi@vger.kernel.org
-> Subject: Re: [PATCH v4 1/5] spi: allow ancillary devices to share parent'=
-s chip
-> selects
->=20
-> [External]
->=20
-> On Tue, Feb 24, 2026 at 11:12:57AM +0000, Miclaus, Antoniu wrote:
-> > > -----Original Message-----
-> > > From: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > > Sent: Tuesday, February 24, 2026 12:09 PM
-> > > On Mon, Feb 23, 2026 at 06:21:00PM +0200, Antoniu Miclaus wrote:
-> > > > When registering an ancillary SPI device, the current code flags a =
-chip
-> > > > select conflict with the parent device. This happens because the
-> > > > ancillary device intentionally uses one of the parent's chip select=
-s,
-> > > > but __spi_add_device() checks against all existing devices includin=
-g
-> > > > the parent.
-> > > >
-> > > > Allow this by passing the parent device pointer to __spi_add_device=
-()
-> > > > and skipping the conflict check when the existing device is the par=
-ent.
-> > >
-> > > Isn't this already applied?
-> > Don't think so.
-> > V2:
-> https://urldefense.com/v3/__https://patchwork.kernel.org/project/linux-
-> iio/patch/bcb1eb34fc5e86fd5dbb4472ad1d3ea3cf3e9779.1770393792.git.
-> antoniu.miclaus@analog.com/__;!!A3Ni8CS0y2Y!_3N9p4aNfQTLDj_PhmYtKj
-> tvDUb_XuD11NL_A9Q_MXJ-
-> oIMK_bwwRFi8Cc_RFNuRKMFw48sWYPfFKfzH_mLYVjz4Rtk9HYs$
-> > V3:
-> https://urldefense.com/v3/__https://patchwork.kernel.org/project/linux-
-> iio/patch/20260213144742.16394-2-
-> antoniu.miclaus@analog.com/__;!!A3Ni8CS0y2Y!_3N9p4aNfQTLDj_PhmYtKj
-> tvDUb_XuD11NL_A9Q_MXJ-
-> oIMK_bwwRFi8Cc_RFNuRKMFw48sWYPfFKfzH_mLYVjz4Y3O1A3U$
->=20
-> https://urldefense.com/v3/__https://git.kernel.org/pub/scm/linux/kernel/g=
-it
-> /broonie/spi.git/commit/?h=3Dfor-
-> 7.1&id=3Dffef4123043c5bb29e61052a41e577ae1ee6837a__;!!A3Ni8CS0y2Y!_
-> 3N9p4aNfQTLDj_PhmYtKjtvDUb_XuD11NL_A9Q_MXJ-
-> oIMK_bwwRFi8Cc_RFNuRKMFw48sWYPfFKfzH_mLYVjz4-hW_q-o$
->=20
-> Will be part of today's Linux Next IIUC.
+Fix various spelling mistakes in comments and error messages
+across drivers/iio/adc/, found by running codespell.
 
-Oh, thanks! Was tracking it on patchwork and saw it was not accepted.
+Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+---
+v2: expand to fix all typos across drivers/iio/adc/ (Andy)
 
-> --
-> With Best Regards,
-> Andy Shevchenko
->=20
+ drivers/iio/adc/ad4030.c           | 2 +-
+ drivers/iio/adc/ad4170-4.c         | 6 +++---
+ drivers/iio/adc/ad7380.c           | 2 +-
+ drivers/iio/adc/ad7793.c           | 2 +-
+ drivers/iio/adc/ad7887.c           | 2 +-
+ drivers/iio/adc/ad7923.c           | 4 ++--
+ drivers/iio/adc/ade9000.c          | 2 +-
+ drivers/iio/adc/at91-sama5d2_adc.c | 2 +-
+ drivers/iio/adc/at91_adc.c         | 4 ++--
+ drivers/iio/adc/fsl-imx25-gcq.c    | 2 +-
+ drivers/iio/adc/max1363.c          | 2 +-
+ drivers/iio/adc/mcp3564.c          | 2 +-
+ drivers/iio/adc/men_z188_adc.c     | 2 +-
+ drivers/iio/adc/nau7802.c          | 2 +-
+ drivers/iio/adc/npcm_adc.c         | 2 +-
+ drivers/iio/adc/pac1921.c          | 2 +-
+ drivers/iio/adc/palmas_gpadc.c     | 2 +-
+ drivers/iio/adc/rohm-bd79124.c     | 4 ++--
+ drivers/iio/adc/spear_adc.c        | 2 +-
+ drivers/iio/adc/stm32-adc-core.c   | 2 +-
+ drivers/iio/adc/stm32-adc.c        | 2 +-
+ drivers/iio/adc/sun20i-gpadc-iio.c | 2 +-
+ drivers/iio/adc/twl4030-madc.c     | 2 +-
+ drivers/iio/adc/twl6030-gpadc.c    | 2 +-
+ 24 files changed, 29 insertions(+), 29 deletions(-)
+
+diff --git a/drivers/iio/adc/ad4030.c b/drivers/iio/adc/ad4030.c
+index def3e1d01ceb..eebb6f5835ad 100644
+--- a/drivers/iio/adc/ad4030.c
++++ b/drivers/iio/adc/ad4030.c
+@@ -629,7 +629,7 @@ static int ad4030_conversion(struct iio_dev *indio_dev)
+ 	/* Add one byte if we are using a differential + common byte mode */
+ 	bytes_to_read += (st->mode == AD4030_OUT_DATA_MD_24_DIFF_8_COM ||
+ 			st->mode == AD4030_OUT_DATA_MD_16_DIFF_8_COM) ? 1 : 0;
+-	/* Mulitiply by the number of hardware channels */
++	/* Multiply by the number of hardware channels */
+ 	bytes_to_read *= st->chip->num_voltage_inputs;
+ 
+ 	for (i = 0; i < cnv_nb; i++) {
+diff --git a/drivers/iio/adc/ad4170-4.c b/drivers/iio/adc/ad4170-4.c
+index 82205bfae531..77af0e6b2c59 100644
+--- a/drivers/iio/adc/ad4170-4.c
++++ b/drivers/iio/adc/ad4170-4.c
+@@ -275,9 +275,9 @@ static const unsigned int ad4170_reg_size[] = {
+ };
+ 
+ enum ad4170_ref_buf {
+-	AD4170_REF_BUF_PRE,	/* Pre-charge referrence buffer */
+-	AD4170_REF_BUF_FULL,	/* Full referrence buffering */
+-	AD4170_REF_BUF_BYPASS,	/* Bypass referrence buffering */
++	AD4170_REF_BUF_PRE,	/* Pre-charge reference buffer */
++	AD4170_REF_BUF_FULL,	/* Full reference buffering */
++	AD4170_REF_BUF_BYPASS,	/* Bypass reference buffering */
+ };
+ 
+ /* maps adi,positive/negative-reference-buffer property values to enum */
+diff --git a/drivers/iio/adc/ad7380.c b/drivers/iio/adc/ad7380.c
+index ca411371816f..9f77990a03f9 100644
+--- a/drivers/iio/adc/ad7380.c
++++ b/drivers/iio/adc/ad7380.c
+@@ -1862,7 +1862,7 @@ static int ad7380_probe_spi_offload(struct iio_dev *indio_dev,
+ 
+ 	/*
+ 	 * Starting with a quite low frequency, to allow oversampling x32,
+-	 * user is then reponsible to adjust the frequency for the specific case.
++	 * user is then responsible to adjust the frequency for the specific case.
+ 	 */
+ 	ret = ad7380_set_sample_freq(st, sample_rate / 32);
+ 	if (ret)
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index ccf18ce48e34..b6d86c62f24a 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -805,7 +805,7 @@ static int ad7793_probe(struct spi_device *spi)
+ 
+ 		vref_mv = ret / 1000;
+ 	} else {
+-		vref_mv = 1170; /* Build-in ref */
++		vref_mv = 1170; /* Built-in ref */
+ 	}
+ 
+ 	st->chip_info =
+diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+index 87ff95643794..cf1fbc05d098 100644
+--- a/drivers/iio/adc/ad7887.c
++++ b/drivers/iio/adc/ad7887.c
+@@ -104,7 +104,7 @@ static int ad7887_ring_postdisable(struct iio_dev *indio_dev)
+ {
+ 	struct ad7887_state *st = iio_priv(indio_dev);
+ 
+-	/* dummy read: restore default CH0 settin */
++	/* dummy read: restore default CH0 setting */
+ 	return spi_sync(st->spi, &st->msg[AD7887_CH0]);
+ }
+ 
+diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
+index 0369151c7db1..acc87d486aa4 100644
+--- a/drivers/iio/adc/ad7923.c
++++ b/drivers/iio/adc/ad7923.c
+@@ -30,7 +30,7 @@
+ #define AD7923_PM_MODE_AS	(1)		/* auto shutdown */
+ #define AD7923_PM_MODE_FS	(2)		/* full shutdown */
+ #define AD7923_PM_MODE_OPS	(3)		/* normal operation */
+-#define AD7923_SEQUENCE_OFF	(0)		/* no sequence fonction */
++#define AD7923_SEQUENCE_OFF	(0)		/* no sequence function */
+ #define AD7923_SEQUENCE_PROTECT	(2)		/* no interrupt write cycle */
+ #define AD7923_SEQUENCE_ON	(3)		/* continuous sequence */
+ 
+@@ -39,7 +39,7 @@
+ #define AD7923_CHANNEL_WRITE(channel)	((channel) << 6) /* write channel */
+ #define AD7923_SEQUENCE_WRITE(sequence)	((((sequence) & 1) << 3) \
+ 					+ (((sequence) & 2) << 9))
+-						/* write sequence fonction */
++						/* write sequence function */
+ /* left shift for CR : bit 11 transmit in first */
+ #define AD7923_SHIFT_REGISTER	4
+ 
+diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
+index 5dcc26a08970..4b96651e6cd9 100644
+--- a/drivers/iio/adc/ade9000.c
++++ b/drivers/iio/adc/ade9000.c
+@@ -1549,7 +1549,7 @@ static int ade9000_buffer_postdisable(struct iio_dev *indio_dev)
+ 
+ 	ret = regmap_clear_bits(st->regmap, ADE9000_REG_MASK0, interrupts);
+ 	if (ret) {
+-		dev_err(dev, "Post-disable update maks0 fail\n");
++		dev_err(dev, "Post-disable update mask0 fail\n");
+ 		return ret;
+ 	}
+ 
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index aa4ba3f5a506..69bb49434f90 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -2507,7 +2507,7 @@ static int at91_adc_suspend(struct device *dev)
+ 		at91_adc_buffer_postdisable(indio_dev);
+ 
+ 	/*
+-	 * Do a sofware reset of the ADC before we go to suspend.
++	 * Do a software reset of the ADC before we go to suspend.
+ 	 * this will ensure that all pins are free from being muxed by the ADC
+ 	 * and can be used by for other devices.
+ 	 * Otherwise, ADC will hog them and we can't go to suspend mode.
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 8942d15b3978..6e1930f7c65d 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -171,7 +171,7 @@ struct at91_adc_trigger {
+ };
+ 
+ /**
+- * struct at91_adc_reg_desc - Various informations relative to registers
++ * struct at91_adc_reg_desc - Various information relative to registers
+  * @channel_base:	Base offset for the channel data registers
+  * @drdy_mask:		Mask of the DRDY field in the relevant registers
+  *			(Interruptions registers mostly)
+@@ -231,7 +231,7 @@ struct at91_adc_state {
+ 	struct iio_trigger	**trig;
+ 	bool			use_external;
+ 	u32			vref_mv;
+-	u32			res;		/* resolution used for convertions */
++	u32			res;		/* resolution used for conversions */
+ 	wait_queue_head_t	wq_data_avail;
+ 	const struct at91_adc_caps	*caps;
+ 
+diff --git a/drivers/iio/adc/fsl-imx25-gcq.c b/drivers/iio/adc/fsl-imx25-gcq.c
+index f8c220f6a7b4..e6268f7ac400 100644
+--- a/drivers/iio/adc/fsl-imx25-gcq.c
++++ b/drivers/iio/adc/fsl-imx25-gcq.c
+@@ -47,7 +47,7 @@ struct mx25_gcq_priv {
+ 	 * of register writes, then a wait for a completion callback,
+ 	 * and finally a register read, during which userspace could issue
+ 	 * another read request. This lock protects a read access from
+-	 * ocurring before another one has finished.
++	 * occurring before another one has finished.
+ 	 */
+ 	struct mutex lock;
+ };
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index 9dd547e62b6c..d35f4487b2f9 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -121,7 +121,7 @@ enum max1363_modes {
+ };
+ 
+ /**
+- * struct max1363_chip_info - chip specifc information
++ * struct max1363_chip_info - chip specific information
+  * @info:		iio core function callbacks structure
+  * @channels:		channel specification
+  * @num_channels:       number of channels
+diff --git a/drivers/iio/adc/mcp3564.c b/drivers/iio/adc/mcp3564.c
+index fcdf13f49c48..7632dc794ef1 100644
+--- a/drivers/iio/adc/mcp3564.c
++++ b/drivers/iio/adc/mcp3564.c
+@@ -349,7 +349,7 @@ struct mcp3564_chip_info {
+  * struct mcp3564_state - working data for a ADC device
+  * @chip_info:		chip specific data
+  * @spi:		SPI device structure
+- * @vref_mv:		voltage reference value in miliVolts
++ * @vref_mv:		voltage reference value in milliVolts
+  * @lock:		synchronize access to driver's state members
+  * @dev_addr:		hardware device address
+  * @oversampling:	the index inside oversampling list of the ADC
+diff --git a/drivers/iio/adc/men_z188_adc.c b/drivers/iio/adc/men_z188_adc.c
+index 90919d282e7b..5bd334ec5655 100644
+--- a/drivers/iio/adc/men_z188_adc.c
++++ b/drivers/iio/adc/men_z188_adc.c
+@@ -1,6 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * MEN 16z188 Analog to Digial Converter
++ * MEN 16z188 Analog to Digital Converter
+  *
+  * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
+  * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
+diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
+index 458544cb8ee4..1a42c7962ec9 100644
+--- a/drivers/iio/adc/nau7802.c
++++ b/drivers/iio/adc/nau7802.c
+@@ -257,7 +257,7 @@ static int nau7802_read_poll(struct iio_dev *indio_dev,
+ 	/*
+ 	 * Because there is actually only one ADC for both channels, we have to
+ 	 * wait for enough conversions to happen before getting a significant
+-	 * value when changing channels and the values are far appart.
++	 * value when changing channels and the values are far apart.
+ 	 */
+ 	do {
+ 		ret = i2c_smbus_read_byte_data(st->client, NAU7802_REG_PUCTRL);
+diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
+index c8283873cdee..ddabb9600d46 100644
+--- a/drivers/iio/adc/npcm_adc.c
++++ b/drivers/iio/adc/npcm_adc.c
+@@ -38,7 +38,7 @@ struct npcm_adc {
+ 	 * read access from userspace. Reading a raw value requires a sequence
+ 	 * of register writes, then a wait for a event and finally a register
+ 	 * read, during which userspace could issue another read request.
+-	 * This lock protects a read access from ocurring before another one
++	 * This lock protects a read access from occurring before another one
+ 	 * has finished.
+ 	 */
+ 	struct mutex lock;
+diff --git a/drivers/iio/adc/pac1921.c b/drivers/iio/adc/pac1921.c
+index a0227b57f238..bce7185953ec 100644
+--- a/drivers/iio/adc/pac1921.c
++++ b/drivers/iio/adc/pac1921.c
+@@ -856,7 +856,7 @@ static ssize_t pac1921_format_scale_avail(const int (*const scales_tbl)[2],
+ /*
+  * Read available scales for a specific channel
+  *
+- * NOTE: using extended info insted of iio.read_avail() because access to
++ * NOTE: using extended info instead of iio.read_avail() because access to
+  * current scales must be locked as they depend on shunt resistor which may
+  * change runtime. Caller of iio.read_avail() would access the table unlocked
+  * instead.
+diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
+index 3f433064618e..3aea12e9d4fb 100644
+--- a/drivers/iio/adc/palmas_gpadc.c
++++ b/drivers/iio/adc/palmas_gpadc.c
+@@ -105,7 +105,7 @@ struct palmas_gpadc_thresholds {
+  *		of register writes, then a wait for a completion callback,
+  *		and finally a register read, during which userspace could issue
+  *		another read request. This lock protects a read access from
+- *		ocurring before another one has finished.
++ *		occurring before another one has finished.
+  *
+  * This is the palmas_gpadc structure to store run-time information
+  * and pointers for this driver instance.
+diff --git a/drivers/iio/adc/rohm-bd79124.c b/drivers/iio/adc/rohm-bd79124.c
+index fc0452749b79..40d00bd0cc9d 100644
+--- a/drivers/iio/adc/rohm-bd79124.c
++++ b/drivers/iio/adc/rohm-bd79124.c
+@@ -75,7 +75,7 @@
+ 
+ /*
+  * The high limit, low limit and last measurement result are each stored in
+- * 2 consequtive registers. 4 bits are in the high bits of the first register
++ * 2 consecutive registers. 4 bits are in the high bits of the first register
+  * and 8 bits in the next register.
+  *
+  * These macros return the address of the first reg for the given channel.
+@@ -962,7 +962,7 @@ static int bd79124_hw_init(struct bd79124_data *data)
+ 	if (ret)
+ 		return ret;
+ 
+-	/* Enable writing the measured values to the regsters */
++	/* Enable writing the measured values to the registers */
+ 	ret = regmap_set_bits(data->map, BD79124_REG_GEN_CFG,
+ 			      BD79124_MSK_STATS_EN);
+ 	if (ret)
+diff --git a/drivers/iio/adc/spear_adc.c b/drivers/iio/adc/spear_adc.c
+index 50b0a607baeb..91995489bb1c 100644
+--- a/drivers/iio/adc/spear_adc.c
++++ b/drivers/iio/adc/spear_adc.c
+@@ -82,7 +82,7 @@ struct spear_adc_state {
+ 	 * of register writes, then a wait for a completion callback,
+ 	 * and finally a register read, during which userspace could issue
+ 	 * another read request. This lock protects a read access from
+-	 * ocurring before another one has finished.
++	 * occurring before another one has finished.
+ 	 */
+ 	struct mutex lock;
+ 	u32 current_clk;
+diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
+index e39a4c0db25e..a42d82d61cb8 100644
+--- a/drivers/iio/adc/stm32-adc-core.c
++++ b/drivers/iio/adc/stm32-adc-core.c
+@@ -227,7 +227,7 @@ static int stm32h7_adc_clk_sel(struct platform_device *pdev,
+ 	if (priv->aclk) {
+ 		/*
+ 		 * Asynchronous clock modes (e.g. ckmode == 0)
+-		 * From spec: PLL output musn't exceed max rate
++		 * From spec: PLL output mustn't exceed max rate
+ 		 */
+ 		rate = clk_get_rate(priv->aclk);
+ 		if (!rate) {
+diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+index 2d7f88459c7c..46106200bb86 100644
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -1662,7 +1662,7 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
+ 		/*
+ 		 * Clear ovr bit to avoid subsequent calls to IRQ handler.
+ 		 * This requires to stop ADC first. OVR bit state in ISR,
+-		 * is propaged to CSR register by hardware.
++		 * is propagated to CSR register by hardware.
+ 		 */
+ 		adc->cfg->stop_conv(indio_dev);
+ 		stm32_adc_irq_clear(indio_dev, regs->isr_ovr.mask);
+diff --git a/drivers/iio/adc/sun20i-gpadc-iio.c b/drivers/iio/adc/sun20i-gpadc-iio.c
+index e4dfe76e6362..861c14da75ad 100644
+--- a/drivers/iio/adc/sun20i-gpadc-iio.c
++++ b/drivers/iio/adc/sun20i-gpadc-iio.c
+@@ -55,7 +55,7 @@ struct sun20i_gpadc_iio {
+ 	 * of register writes, then a wait for a completion callback,
+ 	 * and finally a register read, during which userspace could issue
+ 	 * another read request. This lock protects a read access from
+-	 * ocurring before another one has finished.
++	 * occurring before another one has finished.
+ 	 */
+ 	struct mutex		lock;
+ };
+diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+index fe3b31ec976e..f0274cd74973 100644
+--- a/drivers/iio/adc/twl4030-madc.c
++++ b/drivers/iio/adc/twl4030-madc.c
+@@ -252,7 +252,7 @@ static const struct s16_fract twl4030_divider_ratios[16] = {
+ 	{5, 11},	/* CHANNEL 15 */
+ };
+ 
+-/* Conversion table from -3 to 55 degrees Celcius */
++/* Conversion table from -3 to 55 degrees Celsius */
+ static int twl4030_therm_tbl[] = {
+ 	30800,	29500,	28300,	27100,
+ 	26000,	24900,	23900,	22900,	22000,	21100,	20300,	19400,	18700,
+diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
+index 3ac774ebf678..7810d6b2b668 100644
+--- a/drivers/iio/adc/twl6030-gpadc.c
++++ b/drivers/iio/adc/twl6030-gpadc.c
+@@ -416,7 +416,7 @@ static u8 twl6032_channel_to_reg(int channel)
+ {
+ 	/*
+ 	 * for any prior chosen channel, when the conversion is ready
+-	 * the result is avalable in GPCH0_LSB, GPCH0_MSB.
++	 * the result is available in GPCH0_LSB, GPCH0_MSB.
+ 	 */
+ 
+ 	return TWL6032_GPADC_GPCH0_LSB;
+-- 
+2.52.0
 
