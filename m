@@ -1,75 +1,88 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2766137417C
-	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 09:57:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFCBB36CE00;
+	Tue, 24 Feb 2026 09:58:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771927035; cv=none; b=Si93Er4lfQl0oXwNBqaw8w5BDpx1WfxO+tDVRAjWuk62H8S4fbIkwAm8VAHtgpqMfjFqQVA/K26OLlmF/bNyOAYEneMX+OYWVhuzdEmMg5lFu0SjB0L/7psbDal7k9UJ9NwO6SNWzf3KQ6WYG97b78YZR9/bwlSKhXOU5jvQNaA=
+	t=1771927127; cv=none; b=KHDDuWSODYxPCWrPpikJCdZL3H7CUcqRY20lU5LdlnbZXlDstblfTB7LtQ5wVxhhoZWbwOTfIPoPP+4DnxE5RQttpm2rrOArEN+LEQl+TwBHQdVM9JvEEoM0B9pbztJj3MD/Vr9w/Xi6yhXDE7Fs0H7tph2itQWpNGMfJkeFFmM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771927035; c=relaxed/simple;
-	bh=UFZkqG+vdF7K+/lJOuL/h1xxWWbEWxx4t2yrjugjwlc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=gRpdpX5ERargi6eSrtw4MkKM/PgDAJbzrSaYzmfopo1TCKu2FjBzUlCZ2tgCbY6zSZ5jrP+CId5n+lP7Of7dum++r9Ex40Vxj5XKToNvD/aS9z35Huz3N2jsosZKqNdRpZjSCcf9vmrYepLF5jCToiLIBGkSXGZfscUGf1qtdxg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=o+8AbZzN; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771927127; c=relaxed/simple;
+	bh=dQdNO7BjjPYZU8qlGfW9vPJVtXybqbl9IRQNxs5ezgU=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=qOhlONjUyj0KXD4zIm+i3JUKVNqJXId4k4bsYmkYbH3S0c+IV2qkUE91jjbe7T0DSGFO2oz4p6eL7QPfGEoFEV5TDnTIZ8JjAUiAyEDfYCCb5D9DxG30ligDI1d0QJsYPLXLvTfuRnlTggn6JYYJGXbq+xY5CG1MIDP8qV02j7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bRicIVLA; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="o+8AbZzN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF750C116D0
-	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 09:57:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771927034;
-	bh=UFZkqG+vdF7K+/lJOuL/h1xxWWbEWxx4t2yrjugjwlc=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-	b=o+8AbZzNfti66CNnkIu7IoSIhjDnNFigYcbuIlvV3wn2OHQRoGQZLQ/2xhkGCo0cS
-	 NB1WGrSGs+9dtLkI4sUIx9nIp8BBF6QQsHwXZjI9EJcoeIEYARRU0sZhyCTMEpAHxv
-	 R65Sp/nzXrSc61yf5Gbd0JL85Tn8+9qyS1t3q1PAKjs8fX+ZZMhMyVbRGRx/gDFAg7
-	 xIP1tJZ39DZrO4pT6faVp+8T9WBSihkAwFbPG+e2C2O8KSSUdBhup75x61nhWdTBIl
-	 0hiKMHKEYpQsRaoKM+6yaspu4CnqXRMtMPEIalKlo7p6PdnTP4wpzVFGhDWj5o0RuT
-	 uA9rjKMSHu/Uw==
-Received: by mail-yw1-f169.google.com with SMTP id 00721157ae682-7964f1405a0so53085687b3.1
-        for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 01:57:14 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCW4JLTmxJ6GcgKga3vlwfd4WlADMgZ2c9FYmOT+rdsM8/8eHHMdzUEXy3ZueRZz9z90LOtYQvRXBWM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz3qvZ5GiMuFbEAX50P/D/RWHHNC1mIPP/s+gIl9N+Hwmc66ATE
-	kh3uP6F8SxKaMp1LJ+stqvNyS8T3zP92SSQU41il3/GRREr7NO5GI4cG2wAsYgdRxTVHa0BavVr
-	of+UMXuTxbtM5iJvuti9/H+0UGI+yF1k=
-X-Received: by 2002:a05:690c:18:b0:797:a162:f7df with SMTP id
- 00721157ae682-7982902b154mr109459917b3.46.1771927034190; Tue, 24 Feb 2026
- 01:57:14 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bRicIVLA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771927126; x=1803463126;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=dQdNO7BjjPYZU8qlGfW9vPJVtXybqbl9IRQNxs5ezgU=;
+  b=bRicIVLAggsMqBvzlR7YMb6m8T6pw0EU49vlFZnZ9UUjb7m9BJEFLC0P
+   v0P3+cHg3upwfR8VEtdfj0GHRy8ediTgquuTOK6hycozWKVewWkCy+M1+
+   WbLZ4OUFUfzlFT6NC3Zqx11zWmyPaE3bCMM6CxZsdfhx3H+ZeoY4csT4a
+   4VSh/iHLWVQjL982lC3owmgolOeDJcIGfiEIuJx+CB4mq2h/b46YrHBh1
+   0p8vjikkZFK/ta1ysT5l0V7Rs18Xn/EZMafJ9+LVg9MkMPUpZXkDTItre
+   zZzjshXRsU+KHnr5Bui3o1h9SB37uzz/JrmFdLW8UHOmBoNk6XohdsWK/
+   A==;
+X-CSE-ConnectionGUID: nyUVm1kYQ+aQ/coEZCoiNw==
+X-CSE-MsgGUID: 5gILiaUsStugTbeGUa0ZqA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11710"; a="76798245"
+X-IronPort-AV: E=Sophos;i="6.21,308,1763452800"; 
+   d="scan'208";a="76798245"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 01:58:45 -0800
+X-CSE-ConnectionGUID: egMxUvQERlyhGvwODnbehw==
+X-CSE-MsgGUID: 3s0tWeUWR56RaU3g2/Rw8g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,308,1763452800"; 
+   d="scan'208";a="220852188"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.146])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 01:58:43 -0800
+Date: Tue, 24 Feb 2026 11:58:40 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Bhargav Joshi <rougueprince47@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 0/3] iio: frequency: ad9523: fix checkpatch
+Message-ID: <aZ12UH4fPpZ05_ia@smile.fi.intel.com>
+References: <20260223215636.18606-1-rougueprince47@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260224023511.274038-1-ethantidmore06@gmail.com> <20260224023511.274038-5-ethantidmore06@gmail.com>
-In-Reply-To: <20260224023511.274038-5-ethantidmore06@gmail.com>
-From: Linus Walleij <linusw@kernel.org>
-Date: Tue, 24 Feb 2026 10:57:03 +0100
-X-Gmail-Original-Message-ID: <CAD++jL=C_gHisZk5FCb_qPsRcqiamxp3FzoqV3UhCf1+0tJ7oA@mail.gmail.com>
-X-Gm-Features: AaiRm53X3GblnLLQo2UXst7qJs8Djsbwpnu6kjYOtAP0br7nK1aemlZJf-GOX6k
-Message-ID: <CAD++jL=C_gHisZk5FCb_qPsRcqiamxp3FzoqV3UhCf1+0tJ7oA@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] iio: gyro: mpu3050: Fix out-of-sequence free_irq()
-To: Ethan Tidmore <ethantidmore06@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
-	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260223215636.18606-1-rougueprince47@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Feb 24, 2026 at 3:35=E2=80=AFAM Ethan Tidmore <ethantidmore06@gmail=
-.com> wrote:
+On Tue, Feb 24, 2026 at 03:26:33AM +0530, Bhargav Joshi wrote:
 
-> The function free_irq() is placed after iio_triggered_buffer_cleanup()
-> which breaks LIFO because the IRQ was setup after
-> iio_triggered_buffer_setup().
->
-> Place free_irq() in correct location.
->
-> Fixes: 3904b28efb2c7 ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Ethan Tidmore <ethantidmore06@gmail.com>
+This is v4, what changes did you make?
 
-Reviewed-by: Linus Walleij <linusw@kernel.org>
+> Changes in v3:
+> -Patch 1: updated macros to use '(x)' instead of 'x'.
+> -Patch 2: collected reviewed-by (no code changes).
+> -Patch 3: fixed vertical spacing and broken indentation.
 
-Yours,
-Linus Walleij
+Why did not you pick my tags for patches 1 & 3?
+
+> These patches address several checkpatch warnings in the ad9523 driver.
+> 
+> Patch 1: Updated the macros to properly use their argument x.
+> Patch 2: Fixed the multi-line pointer dereferences.
+> Patch 3: Updated symbolic permissions to octal (0444/0200).
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
