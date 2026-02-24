@@ -1,64 +1,64 @@
 Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 963731E47CC
-	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 02:35:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7BF02261B91
+	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 02:35:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771900534; cv=none; b=kqUwjbKYjAQ6D1PCyuvWd3fYxTV2+U30sXj1NoT3wquZWxj+wjHJzFuBxWLnuc7QHE9bSAfuzD5PiyqQHqJCS3zRyk7e5oiMbri/NdTiS/ZSh33HIcC4utSaGbnY11ZkemwQ5beKqUKWMYGFkkoQRfuGdPrrfBiLiR+gJFhpTv4=
+	t=1771900535; cv=none; b=MK/5RtZh9e0RlGbAd/fdTbeq4uMRYEhGzMMXQxYJuYJL6FrpKuXfgqjpO18lIPwQN1bTAGK8sP3IN7HrARpJlEXYOf6FselJaTlWjH4ZKG7smlkJRb21zBggKB5DU9L8WWuXiXCiSGToOwcwwTnhWA4zT/DpFng9hsJxC08vVa8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771900534; c=relaxed/simple;
-	bh=JjkQ46yG8p0a6c9D14dqWVJYigSn20ev39pBlgmVkBk=;
+	s=arc-20240116; t=1771900535; c=relaxed/simple;
+	bh=gYvFshSHeFO4g3kALOTIM0u06mqGXjlapA5rA+UNYK8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QJ5fi1rU/Nu+gqupE6ZIUTavZv1MNnQ0wolaipXLThR8ys6j0astfAdomb7RzciCr1V2IbAAvmU3h2Kw2wtU3vQYL2n716U5UaY1W0gXJNjez3aMCMBlY+wzfvsg/vs2Eld19Pk1U2SNQkCiR6Z21V2/wNrvenf8nSn79NpoUjw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KkO15hWe; arc=none smtp.client-ip=209.85.128.180
+	 MIME-Version; b=CevDtByv38hUJHMJtZ2XTnmEOWesOQKe4ekswWAWbYF24dKxRbpe20pMbbRQ9Bir55FVLhDQ8mycdQtEcPtjgrykkpdgXUOO5M9/NlvtBC6KsGd/+BjJYPVV93sPfFGjEC0t8B7yamCn8Fu6S+LOhkPoOn87JJexsyqAlewbcwA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mX6RXOao; arc=none smtp.client-ip=209.85.128.180
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KkO15hWe"
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-794911acb04so50385977b3.0
-        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 18:35:33 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mX6RXOao"
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-794f701a3e6so47821017b3.2
+        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 18:35:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771900533; x=1772505333; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771900534; x=1772505334; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=w7iGixlg0fjOS+Dh9LySNPkYFcBUk+pqdTwPH6+Zlvs=;
-        b=KkO15hWeVtt39fM8N+XTKysoSZT+Cuf6NlUk4ud4G3I2vFfNw7XUw6RhCMlvyfEaSn
-         X6FP5AdEccBAFBWzl1Ncwz2fseSg4VHgbHPDFrYK+XRUhNoowU8Z7a06VuW7FymZZ5hY
-         2V3smkmxDLA2rZ1rFIzPx3Y5gEmW2gBpJ7+tfl2blq4U4pvZacJXLFm2kNSvGFLHgCaL
-         XlJQfHRN5QNXxpDzZY8tF4nYsHEBBzI0k9HC0dVTRHAMcMzBVY/aCLp6vZDR0vHj/IFb
-         SoVcViP1ZiuegDyrp90ESCmhiE6lhBbDhnnoRwBv6qnf3C+YBXQeePhU+Plw0r5BUjCx
-         L5RQ==
+        bh=M4MU5OJCaPocPPn0n0+lESzz/W1ZYrIATioLMy1y+L4=;
+        b=mX6RXOao0SVM56z++x0ueIa1FA9AtWVEhogsJfQZNrWTCZ5P14+t00monlm7EHYHXH
+         tpe+RSjPBSkMCLq4zSvD6u0yi+BrIcRUoePYzkJk6iSv7Tv2vex84cI+E5PU+0q2y4VO
+         4pBSLhC5TlVF0n/McUezxefJzBSodk7QkIJQqGesY5xU15hdYJoiaQ6atH0x+hUT+pbV
+         fxAXCc6KQdsxvK1IFpuwNnSrW/B5lXAdP+f968ogG3hFjso6Q9k8ymX4LWp2UGSZ/of1
+         xOVzmGH4fgAI5/rAEuqVDZ46M/jQs8POpTErDQomsot9o8rCu0aBAUZkc44Dbi5q5aCX
+         A+aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771900533; x=1772505333;
+        d=1e100.net; s=20230601; t=1771900534; x=1772505334;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=w7iGixlg0fjOS+Dh9LySNPkYFcBUk+pqdTwPH6+Zlvs=;
-        b=KWrlGvQ4eSNgzs6lTI9Qfmox49IPyK2k8NG2Y7vwEjCrtPswAJvG4GENzGYd4Mmusv
-         zt68cXykz+jrKKzeKNLX05o89wOiyZr69UUGqPt404uNXDgJecbVHe0nHtI56NZEOVJF
-         jTx4vmzjm8CcyS2d+9+qbDJwZMXM+uPMqJeSDJ978uKigwBCkbNh40gG1FvutvfUeZLv
-         TCH5iBUXJPccQdMufRLaa7R8EriU4DUDBzcxIKxJzdotWPXvdX5MD101cbPfkLiem5G1
-         qxLPjRIgDYvmbfP73O/A5jGC2O9J5Mzz77P+9IsIkHP30xzCEuItqG6SejAdVqUvHy+S
-         cv4A==
-X-Forwarded-Encrypted: i=1; AJvYcCVP97FClm0L0fk4gY62wcla39QS1gZ1nAN14+4cxe5csfoaUqYrEdsNI2zkwAHviWTyNSpXoEwhroI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzCq6Z6wwd/3Kl8l0fcDnXCkxxkn8eGKwfrZRCWzQA3VyMQU9ei
-	A8uyt0AomgvHBkaJFQSfzDusapnfVzxt+AtJHLuv9nTrChQl95mWaJ+L
-X-Gm-Gg: ATEYQzwFOGjca8oy+t81biJ/O3T1FeKBPLeOY9TdGZpXg3u2LXITqRTgRjK3E4mRnZG
-	vpHovmqshamt+KjVAn+f1LfOA8bZ47AI5lb8MCa7xfgD8x/5LKqEOxVe6CAvDxgrf//79K0CBEp
-	kjNaktjidQG0QjjzzcaMSQSWlYmxjDMk4uPLPjrQUmOCkidJSe9WDY3/IanPRu84bDX8b62Itfw
-	VrmLkblUnjdKCjjVoEPe4LiSBUILU0pwUMr1KGJDr/xPJEjCp/WPtapSb7hpXVfdx2YOD+vQ70i
-	0BowC8fXPJo0qBsCvLc0DTnwuFSNM/eTU/DI0SHIv39xjwyjrZ0TnLw4R4QsIum49w5dFqOtzKC
-	00OzctWh6U9bXBfZklBmIHHDcLFJFATHZLfLxDA2rVz3JCBIgsK53a6pCo2vfEOq5EaEjYq1KeH
-	PIJO7Rj9l58qdg20XZrjfvdfbaoGRh6nLvZddw56C+Ur91UsRBd2DFz0K3RQqficVfIjnB8IFn/
-	0Mibcomn9bQ+qroYN4VJG57
-X-Received: by 2002:a05:690c:6c89:b0:798:3051:2f22 with SMTP id 00721157ae682-7983051331amr73611867b3.49.1771900532669;
-        Mon, 23 Feb 2026 18:35:32 -0800 (PST)
+        bh=M4MU5OJCaPocPPn0n0+lESzz/W1ZYrIATioLMy1y+L4=;
+        b=nXr9+D102hJmaExFxkNOI5sUtmS5crAl6jgMGsdBDEymqvFP72lbbFOd4oQU9FKElR
+         hehx1kkdipyCZQtexS5bQvZsQEtVws1RdHAI5V1xVyA1eSh20YmrJaI9BXArMZenfrZn
+         iZmRDr1SziHwKhJcdyKLWvcrHlKyhjQS6+9C97hFA4fOUuGyxtaKN0PrgGZXt9N23Yue
+         cyPNQNrvsdE6BkQ61Jv7s2aMoZo5iPFqAtar/qvz+l0lyGJLf/O/8O+DM5szSQERM5pr
+         LtmoLQJbvJY9l9VPvMmMZKZMfJVLwdrFt5QHKO/lxe4w9tbx2K4z5H4UVSb5cDXAZLpI
+         5hcA==
+X-Forwarded-Encrypted: i=1; AJvYcCUx6sfC+0bmaIzt7Yce679O+ReGd7app0N+q7wMld0OyWp0Ez+Oyr6X2WHlNeWb+XXhg12OVuNgo18=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz31XM08xDaC56TachD6+9mLF+PeO7bx82qA3A1Ct+PGlhDwoSy
+	8v6VxS/DT1+MCZpvj0jFnF/Rau1cW0ND95Yzyqbz6mF+1YhRBP1nWUWu
+X-Gm-Gg: ATEYQzyvCAHrMauthMRr5cDRslLlbgp3GhXWB3yOy8nmjna/VEvf7qieyQmLhIliaqj
+	+9NgCxo0RfypMrbTntlsjZ2KkDSOR6U59GDA6kmth3QIMC5nxRREC2HqTBR2HDbWy8oUvAe7jts
+	MAlh85/PwKJ2+9YTj/lpoA3CiOmwW7Z1Hlzehe4s9A8FVXw/kPmf/gDM/N0j8A7+0iJZntiTmnA
+	teIQghhNTTCY7FhVGJSF0jBphSymen7Glf+ia0WV2yW9ZiEjAaPQEdUNvxWeOBe7C5BGsbwbdqo
+	cbrBLWyngLmaLTAjyptqZ4ORXXf/ENfUcQHeBf7JS45e10JRdr9GJBmKO2Sx2smnNbrvmaG3XOp
+	CmyzohPL3Bh9l58uHA0QIaaYCt3bLAiHurzcI3Lg61j+MfZaTy9OIuKxBttPZ0CtTZMvAL+mDBa
+	h/21R9k9XCzOIPR4mYvkNIIYR8QNWWo8zVyPeDW+SHrN0gAhBaYHrDbdLcRujDXI0FRp2g+ZHmB
+	nXHPMof9Y1ekibupQwsabtNDrykxWwq9Iw=
+X-Received: by 2002:a05:690c:67c4:b0:796:3787:39ad with SMTP id 00721157ae682-79828f249a1mr112426477b3.27.1771900533662;
+        Mon, 23 Feb 2026 18:35:33 -0800 (PST)
 Received: from tux ([2601:7c0:c37c:4c00::5c0b])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7982d985074sm39585407b3.0.2026.02.23.18.35.31
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7982d985074sm39585407b3.0.2026.02.23.18.35.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Feb 2026 18:35:32 -0800 (PST)
+        Mon, 23 Feb 2026 18:35:33 -0800 (PST)
 From: Ethan Tidmore <ethantidmore06@gmail.com>
 To: Linus Walleij <linusw@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>
@@ -68,9 +68,9 @@ Cc: David Lechner <dlechner@baylibre.com>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Ethan Tidmore <ethantidmore06@gmail.com>
-Subject: [PATCH v2 2/4] iio: gyro: mpu3050: Fix irq resource leak
-Date: Mon, 23 Feb 2026 20:35:09 -0600
-Message-ID: <20260224023511.274038-3-ethantidmore06@gmail.com>
+Subject: [PATCH v2 3/4] iio: gyro: mpu3050: Move iio_device_register() to correct location
+Date: Mon, 23 Feb 2026 20:35:10 -0600
+Message-ID: <20260224023511.274038-4-ethantidmore06@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260224023511.274038-1-ethantidmore06@gmail.com>
 References: <20260224023511.274038-1-ethantidmore06@gmail.com>
@@ -82,62 +82,81 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The interrupt handler is setup but only a few lines down if
-iio_trigger_register() fails the function returns without properly
-releasing the handler:
+iio_device_register() should be at the end of the probe function to
+prevent race conditions.
 
-        ret = request_threaded_irq(irq,
-                                   mpu3050_irq_handler,
-                                   mpu3050_irq_thread,
-                                   irq_trig,
-                                   mpu3050->trig->name,
-                                   mpu3050->trig);
-
-...
-
-        ret = iio_trigger_register(mpu3050->trig);
-        if (ret)
-                return ret;
-
-        indio_dev->trig = iio_trigger_get(mpu3050->trig);
-
-        return 0;
-}
-
-Add cleanup goto to resolve resource leak.
-
-Detected by Smatch:
-drivers/iio/gyro/mpu3050-core.c:1128 mpu3050_trigger_probe() warn:
-'irq' from request_threaded_irq() not released on lines: 1124.
+Place iio_device_register() at end of probe function and place
+iio_device_unregister() accordingly.
 
 Fixes: 3904b28efb2c7 ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Ethan Tidmore <ethantidmore06@gmail.com>
 ---
- drivers/iio/gyro/mpu3050-core.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/iio/gyro/mpu3050-core.c | 22 ++++++++++++++--------
+ 1 file changed, 14 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 06162d886b59..b6e05afbe512 100644
+index b6e05afbe512..73dc7ea1f075 100644
 --- a/drivers/iio/gyro/mpu3050-core.c
 +++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -1121,11 +1121,16 @@ static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
+@@ -1218,12 +1218,6 @@ int mpu3050_common_probe(struct device *dev,
+ 		goto err_power_down;
+ 	}
  
- 	ret = iio_trigger_register(mpu3050->trig);
- 	if (ret)
--		return ret;
-+		goto err_iio_trigger;
+-	ret = iio_device_register(indio_dev);
+-	if (ret) {
+-		dev_err(dev, "device register failed\n");
+-		goto err_cleanup_buffer;
+-	}
+-
+ 	dev_set_drvdata(dev, indio_dev);
  
- 	indio_dev->trig = iio_trigger_get(mpu3050->trig);
+ 	/* Check if we have an assigned IRQ to use as trigger */
+@@ -1231,6 +1225,7 @@ int mpu3050_common_probe(struct device *dev,
+ 		ret = mpu3050_trigger_probe(indio_dev, irq);
+ 		if (ret)
+ 			dev_err(dev, "failed to register trigger\n");
++
+ 	}
  
+ 	/* Enable runtime PM */
+@@ -1246,9 +1241,20 @@ int mpu3050_common_probe(struct device *dev,
+ 	pm_runtime_use_autosuspend(dev);
+ 	pm_runtime_put(dev);
+ 
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(dev, "device register failed\n");
++		goto err_iio_device_register;
++	}
++
  	return 0;
-+
-+err_iio_trigger:
-+	free_irq(mpu3050->irq, mpu3050->trig);
-+
-+	return ret;
+ 
+-err_cleanup_buffer:
++err_iio_device_register:
++	pm_runtime_get_sync(dev);
++	pm_runtime_put_noidle(dev);
++	pm_runtime_disable(dev);
++	if (irq)
++		free_irq(mpu3050->irq, mpu3050->trig);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ err_power_down:
+ 	mpu3050_power_down(mpu3050);
+@@ -1261,13 +1267,13 @@ void mpu3050_common_remove(struct device *dev)
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+ 
++	iio_device_unregister(indio_dev);
+ 	pm_runtime_get_sync(dev);
+ 	pm_runtime_put_noidle(dev);
+ 	pm_runtime_disable(dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 	if (mpu3050->irq)
+ 		free_irq(mpu3050->irq, mpu3050->trig);
+-	iio_device_unregister(indio_dev);
+ 	mpu3050_power_down(mpu3050);
  }
  
- int mpu3050_common_probe(struct device *dev,
 -- 
 2.53.0
 
