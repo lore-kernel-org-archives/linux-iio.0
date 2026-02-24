@@ -1,147 +1,108 @@
-Received: from mail-ej1-f67.google.com (mail-ej1-f67.google.com [209.85.218.67])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0EE2D366555
-	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 08:15:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.67
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5E814368298;
+	Tue, 24 Feb 2026 09:17:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771920902; cv=none; b=O/Xe2L1kP4YhIMrPhNViJyHVTrTqFSNGjKhTO+b9dOyKFps/2QwAwRi/UuGsBUnnbR4HHiersx3e/Jw7w7UBfhTbwUrokDEgwT1N6b1CtTZ4IdhjEH3TMrHDCFLtRQrzEVym2alBjrkXVuAxXLf5CDvFjJUVv2USN5d/yIUXylI=
+	t=1771924680; cv=none; b=rebVlJyZMyAQrhz2taXaDO/N6Tm9oUiYBgbsPeaqSqODzngWINf2bWGO09Hea9t6tpHbk3ykQeilLUtSmcdiJeVoFQHiZDpTpxHnhnMOZd/9kiaIdi/nBoAeJaTjbGX2xD9xLlSKc6YHpfKX2WHI+LRcKP1houeZ37VZiIxORmQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771920902; c=relaxed/simple;
-	bh=9BNqf2MxT2KB9V3RmWVoDEyDdtAfYIbH0M7+sdJqyF8=;
-	h=Mime-Version:Content-Type:Date:Message-Id:Subject:From:To:Cc:
-	 References:In-Reply-To; b=QDAUNQr0+aoeIw0zI9olsrAq2TOz9VLHNNm0KjX7wRwHuBqLfmSx/BbwMVtZku9aBndMsPUMYROM0Onp00wzM/9kYp5MaiTduP8335UsdQBuQXc8Cv84U5a878wLh+0sgNayV2FqlR+HWW/pk+0A21z+Vte/dInf3lX39iW9HMg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com; spf=pass smtp.mailfrom=fairphone.com; dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b=e/PLKYYK; arc=none smtp.client-ip=209.85.218.67
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=fairphone.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=fairphone.com
+	s=arc-20240116; t=1771924680; c=relaxed/simple;
+	bh=BqzYHCGEBIC2+T+zwP6izKiSG5yKfkLkxfZhIW4aYMw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=C68ZAKr4nP5oyty58tkgXH0LJQj2iGFHgSXp9DCIpsDIt1939dPzusHX+qIQgVMqHOwAqjpbr0YMjpMIheACxX2i8JOYOoLMnKHzkFA5vj+kJb9Ln/V0Z0JGYf1TpEvykec52hxMKA9VtH0HfnOsym0d8FFdCPUcofvEGo2ZUKU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Zd26jz9i; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=fairphone.com header.i=@fairphone.com header.b="e/PLKYYK"
-Received: by mail-ej1-f67.google.com with SMTP id a640c23a62f3a-b885a18f620so921711966b.3
-        for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 00:15:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair; t=1771920899; x=1772525699; darn=vger.kernel.org;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=xKXXJGWnu9K3xWMW9HyaDVo1/D1y/DKuzi9/eiBk4qI=;
-        b=e/PLKYYKTVwvOJC59T6f+2vp9KK35XkixfJUCi8jTKZP0yiHMyS6pfcomFjzHxfpbQ
-         knxi8XFrWlEjfuXlgFAvgTkKZBq4gWLEfJMZD4+jfhKoN2q4G/bj9slSFvButfSgrN9Y
-         YsNAVtK/Dq7GCFsgV7LuF1IlOrVmsv97R4MrP6FPstwdbxKns0TovrENx8qlxgrGl0fu
-         UzJdPC0FT9ESwfqQ4Cog01EcdUEfyXd7qaWKbRYmgvymrA3s1U1XmEO6/OGrzUZxdfBo
-         W3pqi3H33scQHyOm6TBC0uE/8w1ehNpixQ5vjnb4NXm8cRabSWM7CaxS+RUe3/3aVBCx
-         xUyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771920899; x=1772525699;
-        h=in-reply-to:references:cc:to:from:subject:message-id:date
-         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=xKXXJGWnu9K3xWMW9HyaDVo1/D1y/DKuzi9/eiBk4qI=;
-        b=K93lE/BJjCshGDodxNTGBRZb31a/VsXSa+DNwXqc8RNEsvOJMPjDsVb6RIfSTL+ZAM
-         7W+e5vjz0GOdr/LOkr9ij+lUQKUqYUT/zHwCnZH6y+Id3h948NRjY3NM6OQ6gwj5TIXZ
-         +PBblOE0GJ9AYhT5InW+wu/ZbFDmzos25JqyOIFWQmYQiln+jhIbLkhctAv3quwCmZLZ
-         8VmbhYhHJYFmtDhuiipcvsYm1ZyT1nMeklCCog2Yo7LduqG5Tju605DHxY4Buu9TG0KY
-         Jv77cSMAcGSS0gdROWFKoHLnKlWB5wfMdcXLTY/VaGPORKU2ZpDFzAm/L7zbk1LCnR+6
-         2xeQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWKfoTXPbZHe15rrwrfOhbmYnz7P3Wfcv2D8IkgjKMDu+5x45rpiUmY0nNhAlIbwm025WPCffEEfh8=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzv8yW4TcoflBpRetzNEtgG/38HXP9Q1ixIxMMSsPacmRyfLFeZ
-	CscoXxjkuSzeAuRiaZShcsrEUOGEm/VXyWUpCN6lP56LmqVwwBWRnnJPT+fVeYPPtB4=
-X-Gm-Gg: AZuq6aLyxpUjlEouwhxdYNnRLvAuks4Sb6wo4vINosIBoA88e/HgU/tTs+i5yEN9C7N
-	0vVrFmg/rgQKAtmVDkp2j9ELsZmGArhkPbJ/2FFNVIxonMMzQn+6UrqZwoKjVkS6RzEZB746OLl
-	n1I+jsjhOVMqKyxOyRIz4gGx0V4PBmTKxYMyKU1z1SiBDy9ZhgcopxsV4p0NhUqBtPfMJwyHxhh
-	WzwjOKqhl219phxdIoW9rFauEUlalK1WXj3ZCYwD4xRx2tQCtGK2/zsjH2Ng+X5GzES8BB4j84L
-	7Zu9KFGPqF1NxUFQQu0lDgsJBrUQsn9C00ttmQSg9SWWHRNrNk54glsdaTWJnbowfZu6vBvv/9b
-	jAdnacDme1CBXNrW6BrcTklPW/nde+ammBIRQTwsXCa++A+BFcvhur+gRiO+7Nf/pkdXqtgRE4R
-	zEG8a0J+J9hyomcsfDvWwlam8fxm6uW7mD4COq136hORYfm/LXyipRUR7lDbkB9/sy1lntox+Ih
-	AvT+PM=
-X-Received: by 2002:a17:907:e0d8:b0:b88:5957:2d65 with SMTP id a640c23a62f3a-b9081b40c12mr380726366b.37.1771920899412;
-        Tue, 24 Feb 2026 00:14:59 -0800 (PST)
-Received: from localhost (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b9084e4bfe6sm399567166b.44.2026.02.24.00.14.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Feb 2026 00:14:59 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Zd26jz9i"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771924680; x=1803460680;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=BqzYHCGEBIC2+T+zwP6izKiSG5yKfkLkxfZhIW4aYMw=;
+  b=Zd26jz9i4j7dt8cNGhxwUNYQBszihtml0/tOpkZicqzNLkQhX4uhp4Xg
+   n39qS/zZ5Kqjs83qMiTMdG6d19hHPIOlDsOB8gWd3PEpD93zuoc0qC9Qa
+   oKO5jsegeNxWElrwJemE9ZGtQZdUqFqz0tB4qMCbvs7oO6r4QPvzo8RQr
+   gBTN4b4Wq+vZ9HnulwLx6Ac/OgpDzQSvkf+Jig3nxDY8PdqLGOoRqQB2q
+   y/kAzXTVV08EH/KoHQVI45TO5ah3gl1ohgKs3+ovBDBA5e9sAeMxP+kCA
+   9tfwQ3mDzwFw5pJQPF+CVgOZE/DDt284/ZnhlEaD30Nx7zm8iZOcjON43
+   A==;
+X-CSE-ConnectionGUID: POWgVsxoSlin1ESPLELuyA==
+X-CSE-MsgGUID: tVOJ5zBSTESW39TYJWO3ow==
+X-IronPort-AV: E=McAfee;i="6800,10657,11710"; a="84390136"
+X-IronPort-AV: E=Sophos;i="6.21,308,1763452800"; 
+   d="scan'208";a="84390136"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 01:18:00 -0800
+X-CSE-ConnectionGUID: Zz476hdbTnS4fvcG5/NCTw==
+X-CSE-MsgGUID: Jkj5gisRRqe4jXbGSj7uyw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,308,1763452800"; 
+   d="scan'208";a="213127124"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.146])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 01:17:57 -0800
+Date: Tue, 24 Feb 2026 11:17:55 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v2 1/1] iio: core: Simplify IIO core managed APIs
+Message-ID: <aZ1sw9SDp5mrDr8R@smile.fi.intel.com>
+References: <20260220132912.2392102-1-andriy.shevchenko@linux.intel.com>
+ <20260222165411.427e6a9c@jic23-huawei>
+ <aZtT3pDS9X6pGVnT@smile.fi.intel.com>
+ <20260223210035.47341770@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date: Tue, 24 Feb 2026 09:14:58 +0100
-Message-Id: <DGN1JB8J9YG5.JZDBJ9WBLDXC@fairphone.com>
-Subject: Re: [PATCH v2 2/5] dt-bindings: thermal: generic-adc: Document
- #io-channel-cells
-From: "Luca Weiss" <luca.weiss@fairphone.com>
-To: "Rob Herring" <robh@kernel.org>, "Luca Weiss" <luca.weiss@fairphone.com>
-Cc: "Jonathan Cameron" <jic23@kernel.org>, "David Lechner"
- <dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- "Andy Shevchenko" <andy@kernel.org>, "Rafael J. Wysocki"
- <rafael@kernel.org>, "Daniel Lezcano" <daniel.lezcano@linaro.org>, "Zhang
- Rui" <rui.zhang@intel.com>, "Lukasz Luba" <lukasz.luba@arm.com>, "Krzysztof
- Kozlowski" <krzk+dt@kernel.org>, "Conor Dooley" <conor+dt@kernel.org>,
- "Laxman Dewangan" <ldewangan@nvidia.com>, "Bjorn Andersson"
- <andersson@kernel.org>, "Konrad Dybcio" <konradybcio@kernel.org>, "Hans de
- Goede" <hansg@kernel.org>, "Jens Reidel" <adrian@mainlining.org>, "Casey
- Connolly" <casey.connolly@linaro.org>,
- <~postmarketos/upstreaming@lists.sr.ht>, <phone-devel@vger.kernel.org>,
- <linux-arm-msm@vger.kernel.org>, <linux-iio@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
- <devicetree@vger.kernel.org>
-X-Mailer: aerc 0.21.0-0-g5549850facc2
-References: <20260220-bat-temp-adc-v2-0-fe34ed4ea851@fairphone.com>
- <20260220-bat-temp-adc-v2-2-fe34ed4ea851@fairphone.com>
- <20260223184815.GA144001-robh@kernel.org>
-In-Reply-To: <20260223184815.GA144001-robh@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260223210035.47341770@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon Feb 23, 2026 at 7:48 PM CET, Rob Herring wrote:
-> On Fri, Feb 20, 2026 at 10:19:06AM +0100, Luca Weiss wrote:
->> Document the property to allow using this sensor with io-channels.
->
-> Why? On the surface, it looks like you are adding a provider property to=
-=20
-> a consumer. Maybe that's right?=20
+On Mon, Feb 23, 2026 at 09:00:35PM +0000, Jonathan Cameron wrote:
+> On Sun, 22 Feb 2026 21:07:10 +0200
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Sun, Feb 22, 2026 at 04:54:11PM +0000, Jonathan Cameron wrote:
+> > > On Fri, 20 Feb 2026 14:25:19 +0100
+> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > >   
+> > > > Use devm_add_action_or_reset() instead of devres_alloc() and
+> > > > devres_add(), which works the same. This will simplify the
+> > > > code. There is no functional changes.
+> > > > 
+> > > > While at it, inline devm_iio_kfifo_allocate() into its only user.
+> > > > 
+> > > > Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+> > > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>  
+> > > Nice.  Applied  
+> > 
+> > Thanks!
+> > 
+> > One minor thing though. The iio_kfifo_alloc()/free() uses variable name 'r'
+> > while devm_iio_kfifo_alloc() uses 'buffer'. I was thinking again and now
+> > I probably would go with 'buffer' in devm_iio_kfifo_release() as well
+> > to have a symmetry with the devm_*_alloc(). If you think it worth changing,
+> > may you fold it? (AFAIU the applied patch is still in the pending/testing
+> > queue that is okay for rebase, squash, et cetera.)
+> > 
+> Ok.  Whilst looking at this I noticed there was a stray docs
+> reference to devm_iio_kfifo_alloc() Which doesn't exist any more so
+> I updated that to refer to iio_kfifo_alloc() which is what is called.
 
-Correct, commit 3762f5851ac5a65dcccadf73dbe853b1b346f561
-("thermal/drivers/thermal-generic-adc: Add temperature sensor channel")
-added support for this in the driver, this documents the dt parts of it.
+Thank you!
 
-Regards
-Luca
+-- 
+With Best Regards,
+Andy Shevchenko
 
->
->>=20
->> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
->> ---
->>  Documentation/devicetree/bindings/thermal/generic-adc-thermal.yaml | 4 =
-++++
->>  1 file changed, 4 insertions(+)
->>=20
->> diff --git a/Documentation/devicetree/bindings/thermal/generic-adc-therm=
-al.yaml b/Documentation/devicetree/bindings/thermal/generic-adc-thermal.yam=
-l
->> index 12e6418dc24d..317fc39ed46a 100644
->> --- a/Documentation/devicetree/bindings/thermal/generic-adc-thermal.yaml
->> +++ b/Documentation/devicetree/bindings/thermal/generic-adc-thermal.yaml
->> @@ -24,6 +24,9 @@ properties:
->>    '#thermal-sensor-cells':
->>      const: 0
->> =20
->> +  "#io-channel-cells":
->> +    const: 0
->> +
->>    io-channels:
->>      maxItems: 1
->> =20
->> @@ -58,6 +61,7 @@ examples:
->>      thermal-sensor {
->>          compatible =3D "generic-adc-thermal";
->>          #thermal-sensor-cells =3D <0>;
->> +        #io-channel-cells =3D <0>;
->>          io-channels =3D <&ads1015 1>;
->>          io-channel-names =3D "sensor-channel";
->>          temperature-lookup-table =3D <
->>=20
->> --=20
->> 2.53.0
->>=20
 
