@@ -1,128 +1,88 @@
-Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC26616A956
-	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 03:41:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.53
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771904498; cv=pass; b=QQ5dORzj0ht6gW0FZDY4XX0BmEMfOVo/hBDDgkRQkEo+9vaBu1/6oJAPfvMWTqxRDDz4o5gewykTJcj5rUDbQy34oQ1wg4+yG/fq7LcpnTSEQ5CSxA0GATZZY++sxRcM7d4hdOzxkk/JuQO74OnxJN9koxxeSWAsm+8Yptb7fLI=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771904498; c=relaxed/simple;
-	bh=NjUgFgIr1W2UuqfkOjfLH4MG/f1JTaFkgw6FflWqkKU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Z4JBLv08BHlQOUC0PsgH0V0RuraYJ3kPod6pP9jDhJY+EANbfUaJdrOYrxbmFqEl6DHaxnhsHSWxMwbGRkEMoL6p9DmZO8375HP/8WUaKZm38TRAtYLx4sCQCatPw+U8g3kRZtcd+1rBo/apjxy4hif7myeYFgmUF/RbFRnQhO8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eVKSUrps; arc=pass smtp.client-ip=74.125.224.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C2E713C918
+	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 04:48:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1771908537; cv=none; b=GnGKIIV6e0+QEiBuPihJzcQR8ozEbAhuT+rw2BMK4rbTfO+ChNN9XvClLe5HGYoy5/ydX3w4KwUFhz1mT9M76S0sapr5Jfqa3m5Gwo8sZTUasjD+mylR6ikD7JlYqP5GUKvNVS406CwH+/6t5982e6IEunUCk+IEJvAEcys+JDM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1771908537; c=relaxed/simple;
+	bh=IphyDIitCw1kE3a0TX5MD+mLftcNLY0JuKxu5X04Fpg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=lPyzHkhhfBSGPpUALEyt6Xr3St8Y3O5BxSp3UC5j1kSNSm8LxwHUx3zYbObvX/9rcGN8hTFThAlIzCfu5T8BgA+n+YBmf/VuWgWoRO4fKZfj1zRrC+Vxmmpg9ZieH1kXm9swlFUDigzqLv+LlcQM12i5DOwDMEnsrCGh5J3Gqb8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HfESV5k2; arc=none smtp.client-ip=209.85.221.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eVKSUrps"
-Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-64ad79dfb7cso4808709d50.2
-        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 19:41:37 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1771904497; cv=none;
-        d=google.com; s=arc-20240605;
-        b=dkf9lfNoRovcIguFMHQftBpZKn/JF9hEr/sq+sbNvYwmmZMm2rwPYXorp+b/gXzhIS
-         9o/WE8rk1uEdxgNYDnaf8v5/j+N2I7FRsj13DPPEbB0/AKzPmRsLCyJBooUW3Z1JaG0t
-         wWn2z+vZ6arNJjNR/eUdg5PjNQlfK5VjiFw39DvOq7Zc2IE+y8c/4B/hP2Jmx6ne9SrT
-         yMqCQc8QeNH4W4eGMwyH3RIErNMn2XS4WvOuqokWQS835IjJoVxuzKLbqChNiuBlxrq+
-         /zBzxdwlP+cYZvDGF+ROf2fr3YMXzSvvgJwtZvKYFjKcl3URg6p93ueCBenmZxINzYlV
-         1igA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=FfbdOxokRF0Q4Sh5bRlzYEVWEQ3qWRLkUrj6g+NsMbw=;
-        fh=J+0Mk83OxceD9+KkqzTVvkUdJv83eeVbjIfJeAgcOBs=;
-        b=L5ijFGROblpgJ8GIE+cUCnGysQquGkl5cVyOTHq50QEQfy4yobHCiSdE2t7r2poORC
-         15lBQtryM+yRZCYhiruyNjdIv7M76MJi9qjcMxvW4hPBr5ceVkpT5fhPt8Y7FBGYpkBT
-         fh+3OLzFKCFLzrNPJS6DU9/EaTTaDIh8EcbTwyz4EWWVZoXtXlwuNltuy/xpPtnbtq9j
-         D6glkQI00VKvvwmUBOBWugdbAJFNAWUOQ1XVOTcm91Ir3gzZwld8Yc2ZswtUUhYgSLhY
-         k/8QMihklfQ+W2Rosmd2yIcxgbx+wH/thNITmR8uHRO+1S452fCkjbc5T5lRvzeQ63lL
-         ADHw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HfESV5k2"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-436317c80f7so4052238f8f.1
+        for <linux-iio@vger.kernel.org>; Mon, 23 Feb 2026 20:48:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771904497; x=1772509297; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=FfbdOxokRF0Q4Sh5bRlzYEVWEQ3qWRLkUrj6g+NsMbw=;
-        b=eVKSUrps3+h4JZXxnrb18Nl2talIqNidIO2vGufOT5ren1b8ss3pWWPcaNoICwpjmw
-         qfp6qIJ97f17jScYIBUyZW3ijzhUI/0M6KTYLoKp3cP47ydBD0M33QqGtRhj29KVnilb
-         ZshenNcFFEjLYrbbKNRWkR9QfeB8/kPsyfKwtmUP09EzsffY/TN+H3KR7+ocZnVM2dpm
-         tp3mfDtt1RtcDkbWSLR/g1MHd2HarujuibyHBvFtL+zV/VaqT3eXJ0bdGlQxE2JrqBvI
-         lBVC4Ir2GkPzyC3DyG/d5slBHgr8hDypkYlOnq9pJlRi2y/Pn7+Wyvw18mx96gVEQWrQ
-         KZkQ==
+        d=gmail.com; s=20230601; t=1771908535; x=1772513335; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=IphyDIitCw1kE3a0TX5MD+mLftcNLY0JuKxu5X04Fpg=;
+        b=HfESV5k2LaXpL4Nf0BzkdWAAN1KwvgGY4Pauc9tJvNw1RbuYikViIT7KKDPhF5Do89
+         KSgtdfrCWSwF4+Tilw7hlVnTS2s1bIECH7+H6xbPMm93igRWZGM2XCw/7K+ZtzmFQcZs
+         gu6dMb//Z9mfrX5FH/9L76dStBU1EODYjPq+01si5HGQOJur4M3+D9xXTdMoTAn6wktV
+         00qhb3JDqF+2KhpSWai05JqFgijt/UxJq7ALxcDryt+pkx0e7k7hZ+i7aDABcOCXjekl
+         4Fvzbl7WCLozGlnCDyNS6aypqCFDSVrdlEOiwIz3lzLq/NisUaB200Wmyx/eYaP7jrWO
+         FzKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771904497; x=1772509297;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=FfbdOxokRF0Q4Sh5bRlzYEVWEQ3qWRLkUrj6g+NsMbw=;
-        b=dpqSlXeDuc7w1rsOlmGEm++3Mc1fgQSBDdxvsUUbw56fbEy6h5iWUAwdd3qH1FIEUn
-         o81DAbiAsooXjpS7yMfTmGYQonxMJnVRS7358i/gy6h7r1gnm4xxhmwS2fDtKmwy/Io+
-         sEVAEhf8bh0XqEaXnRLT57Ah0Wd9twmiraMZKp7DQ7c/3fzeqmc669LeYo1ez+h4oCOB
-         +NjzGLu3sT2v/oxqQWyNIbUEQoKsVQBfQg+fKZrqRakyMF/8Sdr8gWlYCVLhkxFhsu/n
-         b7LDOpf+6ZLw3eDnWo3dTbyvzoLtZxxycRQsqIWVwDmWh3Nj9xiXJHOoJafWx+EL9UTk
-         U9tA==
-X-Forwarded-Encrypted: i=1; AJvYcCWvVvKsrmO/L7Lqybsph7x8Yv96Hz91cpttl2dve6Z9qk1pJZJ5iSYkT6HAxU8HSLHTTCvt2UpuG0U=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyE+Z+EcQF6fEeGV0REymi2nn7jk1u67WVs0HmJV71+oimxw9yg
-	BqliXmSdPkoasMyRQQThk0U/OGODZ+Hx5fgGGz6LQOedKd5N1LSvkx82gHq+beSxwyA6b5bfa/B
-	Q5EMt3/J8IP9MS7lb5PPzDHqSpzbDlmo=
-X-Gm-Gg: ATEYQzy9mhBDDnWQwBlTYCULoDTziC0jfOncvJkaT9MZdqsMdYg1lw+gPxMiCouO09W
-	ILzJ2e8UKoOMs9xWenIu0/3CB+/LUjwPggR9uf4FV3zuj50/9Uc0VrqyR9iIN3dTe+KnZpcQtFx
-	QuGlxumMTxwLZUXFngyhbIb4PnQgA7GM8RLHmWmzAzK3NIvOPbYkbbwBZ3cM7c5Vvhum65FV2EX
-	6u3ATesa2Jk422rsedLLeslQhryodT5IP+hyAbwboz1UVe3VPhtFHe+GIDBfUKte4Yfh0xaPnC5
-	rzDxAeBtpdAm+9QfC6znM4tGYHjGXdcUxpOlTg==
-X-Received: by 2002:a05:690e:1516:b0:649:d26a:d8b4 with SMTP id
- 956f58d0204a3-64c79072c31mr10360413d50.78.1771904496888; Mon, 23 Feb 2026
- 19:41:36 -0800 (PST)
+        d=1e100.net; s=20230601; t=1771908535; x=1772513335;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=IphyDIitCw1kE3a0TX5MD+mLftcNLY0JuKxu5X04Fpg=;
+        b=M7KC1w0PJA1DmWWm3ldfjynCjb5G7V8DjARc3Ov1Q2XE7QzPrZxIVVGgmHw1S5KtYe
+         j7uokYliIg1qwx46A7DaYu1aZgMsZ5fNdLe9tCduhARC0GnlUsiya3VAofzL/CNdKqsM
+         rbMyHaiatiS8+lHv5KPcVjkLJn7bLN7i7LeCDsXGf1iOs8kydaNDwtixH91oo47JHiXc
+         lbaA5o41rZZzmyTOk7wwT8doRNnoZIeaO65B3xrRfK+354vz49Ybx7g75cp2HJFqRJAh
+         8tXN+6M3nNCZt/qzkV+Np1I0/5XzxTosBnD1iqJjXDgwyxkhnEqDBttE6rQslvppjJth
+         pAJw==
+X-Forwarded-Encrypted: i=1; AJvYcCUPCFMOFTvl+BugTS5NiVTKAVswQ/rBFOnsUpzTIsC7UEuGcBgb8OYQUj1eqApArxKtUvNY46qkT/8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz+uzdAEAYBN5QyIbR3w2UuVtElgVxEFEmCdFU3E7lA86OgAy7t
+	vT9hJBKWu/tQkBn3RLLyc+J26O3dgp69Qtm/mF5OxZFxEuEubVnL+U6v
+X-Gm-Gg: ATEYQzxRTjsxoPqnusPMiuTL8hj655BqaKRc6/Qz8/jlRJSjHxrTYXNDX6YNWHtSBaw
+	6ClideGsNHrL7gPqY8id8mSN7+G0hH0Obtf944sG4CHZbtTHGvB0CaDVMyKXaKrIKssDj/B4Yv2
+	8VqDFCWJWHcbdHU7FV31BOMX14qs5pGlxYsTgE2a8vg8IKwtyJnZI9phY/uF6ELFchGjMHvC3VE
+	ivjvpQegU30/oU8jMU1TjKUNhO8fegqK178eg9pCVt1wYz9wEMMGegXHoQLa6OtxmBXHKI2QpSd
+	xauylm06yQbDBPMrJTeRiWmi0XpaCTPFUYB1/CodnGpmW2JGFPQ1YIxKxmOZeHcVA4TZCxoRskj
+	+sZaGu156rmUGH9qske2JXhcgETl/XVl0x9AgOvZYN1CEiNTXuWKGw5aYNGIFD/QyBAWqT08wT9
+	otCwX0IHHXTq5b
+X-Received: by 2002:a05:6000:3103:b0:437:6bda:d979 with SMTP id ffacd0b85a97d-4396ffdf07fmr19850683f8f.27.1771908534623;
+        Mon, 23 Feb 2026 20:48:54 -0800 (PST)
+Received: from pc ([196.235.37.105])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43970bf9f77sm25585997f8f.5.2026.02.23.20.48.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Feb 2026 20:48:53 -0800 (PST)
+Date: Tue, 24 Feb 2026 05:48:51 +0100
+From: Salah Triki <salah.triki@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] iio: core: Clean up device correctly on
+ viio_trigger_alloc() failure
+Message-ID: <aZ0ts-tUTo3DKp00@pc>
+References: <20260221073301.105080-1-salah.triki@gmail.com>
+ <e49877b5-2a8d-43d5-9f8b-de37cde9cdcc@baylibre.com>
+ <20260222162043.1791ab3c@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260218125327.21467-1-architanant5@gmail.com>
- <aZXD0smUd3CRgPcv@smile.fi.intel.com> <20260222134326.7fc1f45a@jic23-huawei>
- <aZwRt7ws7PeHyuPM@smile.fi.intel.com> <20260223204442.444c7503@jic23-huawei>
-In-Reply-To: <20260223204442.444c7503@jic23-huawei>
-From: Archit Anant <architanant5@gmail.com>
-Date: Tue, 24 Feb 2026 09:11:25 +0530
-X-Gm-Features: AaiRm52gb2mDAHiu4cizzLZxr73QGlCRc1temhPZjuanBPnbtkXMUt_w5MSFeL8
-Message-ID: <CADJHxWB930R8A19uqozWfF=RviteJxd9Xns4uYFiQF5zKq5KzQ@mail.gmail.com>
-Subject: Re: [PATCH v2] staging: iio: impedance-analyzer: ad5933: use
- div64_ul() instead of do_div()
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, lars@metafoo.de, 
-	Michael.Hennerich@analog.com, gregkh@linuxfoundation.org, 
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260222162043.1791ab3c@jic23-huawei>
 
-On Tue, Feb 24, 2026 at 2:14=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
-...
-> > > Tweaked commit message as Andy pointed out was needed.
-> > >
-> > > Applied to the togreg branch of iio.git
-> > >
-> > > Andy, if you want to give a tag I can role that in for now as need
-> > > to rebase anyway on rc1.  This mail felt like an 'almost tag' ;)
-> >
-> > I think you are talking about my Rb? Sure
-> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> >
-> Added. Thanks,
->
-Hi Jonathan, Andy,
+Thank you Jonathan, David, Nuno and Andy for the feedback and for applying
+the patch. I appreciate your help in refining the commit message and the
+guidance throughout the versions.
 
-Thank you Jonathan for the help with the commit message and thank you
-Andy for the math optimization guidance.
-
-I've learned a lot from this discussion.
-
---=20
-Sincerely,
-Archit Anant
+Best regards,
+Salah
