@@ -1,95 +1,93 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EF51B3A7F74;
-	Tue, 24 Feb 2026 17:29:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 949BA3A9627;
+	Tue, 24 Feb 2026 17:41:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771954151; cv=none; b=vEUhdvjjp9sP7Qlss8AGsPeg9tMGRtE6ffi5cNT07PYD9KHUl/Xiy03Wak8Vpn+LzBx0e18TeI3Wlt1+Gd7iLmz2c+ZodEMDw9VhZ6oUDo/Ce7QOf8PgUV1yHYQwI1GaYuy9fLsQjZKMer0GQ8dMM8/OVbMgSeRl45e2XqGrLT4=
+	t=1771954903; cv=none; b=SXAavhWOCPHCiBvZLDvKVF5XRFrtuE2ef+N1Q0DOGFvuJ0BE+v4HzsGBraboPaWO2qhfukVcZLhX77ymc8I8E7G0+skE1Iqv2Z/1kv7LnLDhXMkABlubH6RVIGx03/DF8GxS3709nCwYQ/BK3RQn1pSAF67VcGKBm7D0mqj2+Vg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771954151; c=relaxed/simple;
-	bh=pSGqZebvO3+aycQMfeI64m0G/5UvaBKl7jRANx8yJ/I=;
-	h=Date:Content-Type:MIME-Version:From:Cc:To:In-Reply-To:References:
-	 Message-Id:Subject; b=AhhCp+1McfXwO4URygUm/c7BgAhJAGPY+NPOZktbe4HWRT9MC/K9OMhVtwtrjYNptrVUo3igHy23reaxY66NB0SObcTPGz4sGVVl3U8XWNQTCY6tylNyVqpl53pzTQOOuMLTXgrDzIhnUXGnyTQEcLtO99EFZ56tqftciabsww8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jZM9d1J8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1771954903; c=relaxed/simple;
+	bh=36cqExmJ+xVEA46VvhswCFGe7wEAzemfq3PU9IFvDFY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=Fehau5fEUJegIFyzYheFa0aEWD7eMVAROyF9Mcg4ZjvkYQnARcG10h2kFfSJ/+0nECEk2rxO/wZ1HMVC5/z3LLnjGmRCAID2ZXdrdo4qq2JGlojRD63nUauU1INrv2HchQ067+T8aKazRMAjs6fLmWJMkdhFUuN14d56qzDERv8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cE7whtBj; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jZM9d1J8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60BE9C116D0;
-	Tue, 24 Feb 2026 17:29:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1771954150;
-	bh=pSGqZebvO3+aycQMfeI64m0G/5UvaBKl7jRANx8yJ/I=;
-	h=Date:From:Cc:To:In-Reply-To:References:Subject:From;
-	b=jZM9d1J8DoyrvyLJ0oc1B+mv3rXFoGSMx0ZL3qxSurA0IMb1iCGNbasMU7Ihcpbf7
-	 Gh0NfjeXVW5Jh0doKiPA2bpKQV3MlKSYZ+Ak3ta/zu7Y79pw/dUzkLSzem6ZLidtB7
-	 yOtCLmuDeMaPv1/ahTuGAyGo/1vM6dOC3Pq2cbDZxqal5eljxbwQ7USfRrA35Geo/t
-	 qql40er/LOfMqZv3KhZa556pFWxmtAW6UxzGfbfeGWcOSQDqs+RAzeCDCea1D4C1IA
-	 gZ2CYXex1uiADBx42P/ZwoIZYNXRdTcMh+6UT9kGQy+RuXDbdqfBGhmAdVUr8Eoj2Z
-	 MMM5rAjOUks8A==
-Date: Tue, 24 Feb 2026 11:29:09 -0600
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cE7whtBj"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1771954903; x=1803490903;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=36cqExmJ+xVEA46VvhswCFGe7wEAzemfq3PU9IFvDFY=;
+  b=cE7whtBj00/qHQKNe+voXe8S+gqkZSDai33JYwdXAOZKp66+f4uEzBQL
+   Zs6+ZSKtaUBsoytudcCjNV7zmV+1UPKdrCu4WVRWyIjvTdx3eNzhWe3xc
+   Ktf/roFvipYirHa1PvZc3TV2jEhPePUuu9y2wMh+QtLLf769Gnt2aK/R/
+   NXcqrZV8au8WigSvTv3p6faLnxLW4UA/8+sZ+Xkut8Z/Y6SfNIBhvMEWa
+   JsKkVWLQ9yzFCZpRngoOxfvHCiZZoA6AXksQqKyQovXam3Td0I4p1vHx9
+   iVvULoNKVHPviHNQfGUSwuHMuvHt4o+HwBDdmAzu6KEBK5i1ww+E+LibF
+   w==;
+X-CSE-ConnectionGUID: BVVCfFUPSKCUvQKNb5AT+A==
+X-CSE-MsgGUID: tQuj+qAsTvuGEDHQPAVWqQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11711"; a="73048874"
+X-IronPort-AV: E=Sophos;i="6.21,309,1763452800"; 
+   d="scan'208";a="73048874"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 09:41:42 -0800
+X-CSE-ConnectionGUID: nkutu3TqRFWpMN82IReoBQ==
+X-CSE-MsgGUID: hmwbiwOxSJOEXuUGE1Hn5w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,309,1763452800"; 
+   d="scan'208";a="215208062"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.146])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 09:41:39 -0800
+Date: Tue, 24 Feb 2026 19:41:35 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Chris Morgan <macroalpha82@gmail.com>
+Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
+	dlechner@baylibre.com, jic23@kernel.org,
+	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
+	krzk+dt@kernel.org, robh@kernel.org,
+	Chris Morgan <macromorgan@hotmail.com>
+Subject: Re: [PATCH 0/3] Add Invensense ICM42607
+Message-ID: <aZ3iz18O3UEDTDqm@smile.fi.intel.com>
+References: <20260224163109.370930-1-macroalpha82@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-From: "Rob Herring (Arm)" <robh@kernel.org>
-Cc: linux-rockchip@lists.infradead.org, krzk+dt@kernel.org, 
- linux-iio@vger.kernel.org, jic23@kernel.org, 
- Chris Morgan <macromorgan@hotmail.com>, devicetree@vger.kernel.org, 
- dlechner@baylibre.com, conor+dt@kernel.org, nuno.sa@analog.com, 
- jean-baptiste.maneyrol@tdk.com, heiko@sntech.de, andy@kernel.org
-To: Chris Morgan <macroalpha82@gmail.com>
-In-Reply-To: <20260224163109.370930-2-macroalpha82@gmail.com>
-References: <20260224163109.370930-1-macroalpha82@gmail.com>
- <20260224163109.370930-2-macroalpha82@gmail.com>
-Message-Id: <177195414948.3145595.4265112692565898282.robh@kernel.org>
-Subject: Re: [PATCH 1/3] dt-bindings: iio: imu: icm42607: Add devicetree
- binding
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260224163109.370930-1-macroalpha82@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
+On Tue, Feb 24, 2026 at 10:31:02AM -0600, Chris Morgan wrote:
 
-On Tue, 24 Feb 2026 10:31:03 -0600, Chris Morgan wrote:
-> From: Chris Morgan <macromorgan@hotmail.com>
+> Add support for the ICM42607 IMU. This sensor shares the same
+> functionality but a different register layout with the existing
+> ICM42600.
 > 
-> Add devicetree binding for the Invensense ICM42607 and Invensense
-> ICM42607P inertial measurement unit. This unit is a combined
-> accelerometer, gyroscope, and thermometer available via I2C or SPI.
-> 
-> This device is functionally very similar to the icm42600 series with a
-> very different register layout.
-> 
-> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-> ---
->  .../bindings/iio/imu/invensense,icm42607.yaml | 92 +++++++++++++++++++
->  1 file changed, 92 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/imu/invensense,icm42607.yaml
-> 
+> This driver should work with the ICM42607 and ICM42607P over both I2C
+> and SPI, however only the ICM42607P over I2C could be tested.
 
-My bot found errors running 'make dt_binding_check' on your patch:
+Thanks for your contribution, but...
 
-yamllint warnings/errors:
+NAK.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/dt-review-ci/linux/Documentation/devicetree/bindings/iio/imu/invensense,icm42607.yaml: 'maintainers' is a required property
-	hint: Metaschema for devicetree binding documentation
-	from schema $id: http://devicetree.org/meta-schemas/base.yaml
+It's unreviewable bulk out of 4kLoC! I even won't bother looking at any other
+messages in this (too mini) series.
 
-doc reference errors (make refcheckdocs):
+TL;DR: reviewable code is limited at ~750 (or less) ± 150 LoC per patch.
 
-See https://patchwork.kernel.org/project/devicetree/patch/20260224163109.370930-2-macroalpha82@gmail.com
+-- 
+With Best Regards,
+Andy Shevchenko
 
-The base for the series is generally the latest rc1. A different dependency
-should be noted in *this* patch.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit after running the above command yourself. Note
-that DT_SCHEMA_FILES can be set to your schema file to speed up checking
-your schema. However, it must be unset to test all examples with your schema.
 
