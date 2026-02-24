@@ -1,62 +1,62 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 060AC39E193
-	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 14:04:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B148A39E18C
+	for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 14:04:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771941847; cv=none; b=Zu8qjsOLsqOVEABREmerHyVt1q57CgJ5uTnWaBPraFFlQ2x8ZGua1zrcYdsXKPmmFe5nzjCDAZQsQBe+Mf3f+pLDjhuEFQOxCVq7Zxw4lVllQXCP/oZUWe+m/10lygilEhixsaTR1ZM3HacK47/KvHR81KJDrTGwech/7mOz4PQ=
+	t=1771941849; cv=none; b=dZCjyX9/5VhXJFiFLtJJe7XFmIok3Ud1nttOC5dGePeTGTSqNz66hHIYF8Y21S2lNwzAF0KNO0OxgKM49Tf+B3btnlseeVfVwmC7hzRTTEfP8kSqf5APAHzBVkSBvk6G8WtEbKwBUwOlIEs0VC3GjAOj+Fx5evqQEe84VFMlhxE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771941847; c=relaxed/simple;
-	bh=9/7QTpM9w9CetgDRp3W/v439sqmC/gELVsuHbq2pmD8=;
+	s=arc-20240116; t=1771941849; c=relaxed/simple;
+	bh=oLLb29gcQ0BdhzqDQZuPnB8XcQV025xjsRtvxagy5mY=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=gBUAy0tSmKArRhnxrgITIxH3CjpJnn3JOomEvYfiRQJwQlbYGAc8VdQ9i4VHATlHK5c8geZIXq+jU2Rmh6w7wdFdE80BwSMXkqCOaqNrcbSj8hlPwEvpEMbXSaoUbR3zlfl7mw7LlKtJDbiPVBlO8k+vxchdVYyTN2mVvXlk05M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eC81deql; arc=none smtp.client-ip=209.85.128.45
+	 MIME-Version; b=EYNcoDEBcIXlKl7fyYp1DIwm0KaX3Cx4dFvuwUY6ZwJKazVNf1/qrSgChQIDyRhkxmxtXiW2s5JNYpf5J02g1q1RnnOseOtqoDN4/v6Mr6jT97JTO7gVoOEPr7EwVBgzqUZ9EP5ZureFlHI7j49IBzXjjNdOwtCMm2YxyVYW+4M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e0zhnCy9; arc=none smtp.client-ip=209.85.128.50
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eC81deql"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-48379a42f76so42987305e9.0
-        for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 06:04:05 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e0zhnCy9"
+Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-4806f3fc50bso63005325e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 24 Feb 2026 06:04:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1771941844; x=1772546644; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1771941846; x=1772546646; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=xbmaZh646ZKImMHo419Q/3GSUkucF5/edL1/4X8vppA=;
-        b=eC81deqlDrSuOuJTNTb4+E+xrQRt0V/yN3broUd32Cgm6vKXc/6nPdyn97cmcdVYRR
-         2mhNqaoKrOL47Sz0VpERzLG1RxsgZd5LOulGVEM7ZSGjm5oC289VmmRs24V+blE3QNP1
-         qToc1IYf8/qZ2CNdb3VxDFOYYahTxTXAQQlZrZy1sfDjg7Fp1aVIuc1l7PDqTR3BcTnY
-         a8EcnlOb06hPLBcHnzDCL+uWbGowf2J//IPHq/p5IXHgwUtalUliq24KbgpwJPc6Zfh3
-         Y4HC7DhrbrpkqWBI1reJfOUuD5Eso5HHCZn+HncS8TVYL2Z8AIisUojFoGOWm5J1h8hX
-         0rcA==
+        bh=JXJxDts9nitekq/TVoz9OLkW8FMNDccXXJfyJV6WzLY=;
+        b=e0zhnCy9hl8we8Ow+/1z4tj7c/vNeLMiVlP+m8Nv1QaejlG2zFHsTC8LiPk/WNIDs4
+         Dv6DDVMSELtSzo+h2CrQjD/tWD90D3HAMVhbg8tSZjP+Ct71POnTR+K+hHQJnC6RB0kB
+         djk5XPwJkE/YSYj4awO4yo5H8l/HgbiDSH6noZUhkMZ92St5fOc3FERRPSfKhuNT5Xxb
+         jt0jquwm1YDjfpqdvw5WO10QwPfWh5qr9OkwP73kEwJ18gG0UGocI6IF1HA1XifGSlil
+         fFgh2Z4uvwPmCGwBd6iOLaNJWmYoE4jCnSUylpw+iVpSQB75+hoJj/ogHr8bo4jzmgNh
+         s0MQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1771941844; x=1772546644;
+        d=1e100.net; s=20230601; t=1771941846; x=1772546646;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=xbmaZh646ZKImMHo419Q/3GSUkucF5/edL1/4X8vppA=;
-        b=PJZbhXfct/0uz4Xkvrqjd0OXEQ1LsBBDtJ36VI0SvtRbpSDokPxV6ZcvXL08YnkjFO
-         i1Cqs8dFu3P4cCBbdFPAWJnC4+ZiMTXE358plXYqvfdaE0lb/1FulYDrL3B73/28jKI+
-         mceAeukspcCnmxkXNVlZU66H99jTLCYgbbL3GGi3wNi7ro4NSfSUDK3uc2kMDk/eXDgZ
-         ObcLBsozXtTn95hfs/0N6/x1TbHEJOl0q+ub9RK1CGQyqkppF5p/hrIlOqp3BLBXMdnC
-         xKaxtadwsdDLUieVGDgsgX8jC7OgfSkpyuxMGQZQJXcJdN/4WNO2JB+sCuznSxsZXlOM
-         ZVxg==
-X-Gm-Message-State: AOJu0YxE7kzAf+AItU0NmAvX5k/NiREBqOFIKFn6w4+EvqB+xs8S6RVQ
-	Tg3on13wDUFXPYVLTCVYzDpBPftdi/9+IhYoikp8t6x97Y5IYJAc56qAlGRdQ/KP
-X-Gm-Gg: AZuq6aJXQExB9kzZedaNdK0WREkukIg/ipOtydruypW22N1y/8QtZGLgpLFE20HuP89
-	rVkPvlgHaO/nNseI55wl22K0G8d4QorjnvkF4n/GupbVITMc7Zd53PSb+KsGi2qLNFLsoif46si
-	uGcVwIqPb3Ef5vHxaxn8yJ7ScdDEh1O9W+K7/49q2CUCIt56NUdqrUAEB8MYVru2k+pvT4bKZaz
-	0DYiQgCakAXB7yZV8v3otZymLe8bOWvCwlU4JaOhY6HXzUT9g6Crw/xzJ+hDQl6w+Z7V/JQJjUm
-	8gz0yk2oKIunApdgiWGvpXgho/u2UpHYJwaB0GjHxyDsgPetH3O018rDYyhHW3/+a2115tqrM40
-	8IS4Ya3+0B963v0slcY3R1Wb0C+885eL6NwyElL9iT4UJoqKm3v7IpTCaWfMYF2MvVbG+iOSU4h
-	7fnFDLiPvbGLx6YvAb65MnwPniQd5Xw8iiKSWEsFgz1ZcsS0jvziJfJABTzEF20VhRja29DAKb
-X-Received: by 2002:a05:600c:820e:b0:482:e5d4:b7ca with SMTP id 5b1f17b1804b1-483a95f7d94mr187018185e9.8.1771941843952;
-        Tue, 24 Feb 2026 06:04:03 -0800 (PST)
+        bh=JXJxDts9nitekq/TVoz9OLkW8FMNDccXXJfyJV6WzLY=;
+        b=ZPqfAzGk4Xmrss7ajaDxQS6/ROkk/V36o2sBwSxANZitnb/WSi1A6AjGAH4U/j6WlF
+         8GZ3YeUnORaOgsej+AWDg2q6mqQfbcWAo/CWSQGTJOsjsLl8zTLg9mxBTkrTVqD5ECN3
+         9mYjcaf9SzudhhQ8/4vtwgOXSy8AefoeVLgHdVD1Enx7Zgc/RG7RsLYqZ/eCTmLhq3z2
+         N5M3RowJ9m9rYj4Pnz0nGp+FFhCXBaZT4y2+Iuv+DD43Cvb4fBzdRJdDlZ8bzq3UrB0Y
+         TgT5dtJU88JWvyTY1ynMfFedoP2Z4OsUisor10a1SCCnnicLVObj4pWXXdU8P+vjgVnN
+         3ToA==
+X-Gm-Message-State: AOJu0Yyi4aGT/pNhseM/nhUaOYpZZKpV/N4Ob0ksd7S6+VEOJo/JTmpn
+	pTSFDTgvraeJjZYUcm/g/daU75lqaCLzKGxT6QohrgxmG220BsATaHA3iU5i/TyG
+X-Gm-Gg: AZuq6aJcshcHfEXblFbNRCxggY0JtAL/GcZ1IzDLE68ikr0PLxa7XwOR42M99EYd47B
+	J9hcOly7JBumknIBT8uccrJKN5E4RjQxuls0pTFXkIXSsItzyJQwmP74k/zRClN8a5SRM+blxcK
+	/lZZJM32fzvGDSopUQssrm2W4m10+WgYGX8Ar2a2suET811IvMbSNUauMQKbISwp41yb8lTBkej
+	zoLHfkxtKbqwPte80egpNSKbv7bYjdsOhMXZQX64DwI+DC7UsPFicr6IilBCm6GOo3zDa20o4sm
+	WpEWSOggaFXiac/iosF00SnZfzmr0ZzkvMa6GPkN5Kd/NGvpizbUyov8zO0ClwUrtRs9F9LYYYs
+	uPpBy9+Su+wFqyipMxxjfxvFZdZ/M7xR+gn0kEQhyCplpWKIhAHFzfOiQOQc/UrHrGfFBGkA5Q+
+	hYjxe2+09xD5pThRg0k0Tch6tGdfIbUkAlh5rr5mBqVEZOPk4z+DU3utHbfns5Hg==
+X-Received: by 2002:a05:600c:5020:b0:477:5cc6:7e44 with SMTP id 5b1f17b1804b1-483a95fb698mr228656595e9.11.1771941845765;
+        Tue, 24 Feb 2026 06:04:05 -0800 (PST)
 Received: from db07.1337.ma ([197.230.240.146])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483bd7010a0sm1043505e9.5.2026.02.24.06.04.02
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483bd7010a0sm1043505e9.5.2026.02.24.06.04.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Feb 2026 06:04:03 -0800 (PST)
+        Tue, 24 Feb 2026 06:04:05 -0800 (PST)
 From: Taha Ed-Dafili <0rayn.dev@gmail.com>
 To: linux-iio@vger.kernel.org,
 	jic23@kernel.org
@@ -72,9 +72,9 @@ Cc: dlechner@baylibre.com,
 	linux-doc@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Taha Ed-Dafili <0rayn.dev@gmail.com>
-Subject: [PATCH v5 2/5] iio: core: Add IIO_EV_INFO_SCALE to event info
-Date: Tue, 24 Feb 2026 14:03:45 +0000
-Message-ID: <20260224140351.27288-3-0rayn.dev@gmail.com>
+Subject: [PATCH v5 3/5] iio: accel: adxl345: Expose IIO_EV_INFO_VALUE for double tap
+Date: Tue, 24 Feb 2026 14:03:46 +0000
+Message-ID: <20260224140351.27288-4-0rayn.dev@gmail.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260224140351.27288-1-0rayn.dev@gmail.com>
 References: <20260224140351.27288-1-0rayn.dev@gmail.com>
@@ -86,43 +86,43 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Implement support for IIO_EV_INFO_SCALE in the internal enum
-iio_event_info to allow proper ABI compliance.
+The ADXL345 uses a single hardware register (ADXL345_REG_THRESH_TAP) to
+store the threshold for both single tap and double tap events.
 
-This allows drivers (like the ADXL345) to expose event scale
-attributes using the standard IIO ABI rather than manual
-device attributes.
+Currently, the driver only exposes the IIO_EV_INFO_VALUE attribute for
+the single tap event.
 
+However, the IIO ABI dictates that if an event is supported, its
+associated configuration attributes should be exposed to userspace. This
+applies even if writing to one channel property alters the value of
+another due to shared underlying hardware state.
+
+Add IIO_EV_INFO_VALUE to the double tap event specification to ensure
+full ABI compliance.
+
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
 ---
- drivers/iio/industrialio-event.c | 1 +
- include/linux/iio/types.h        | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/iio/accel/adxl345_core.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
-index 06295cfc2da8..5096baf233f0 100644
---- a/drivers/iio/industrialio-event.c
-+++ b/drivers/iio/industrialio-event.c
-@@ -256,6 +256,7 @@ static const char * const iio_ev_info_text[] = {
- 	[IIO_EV_INFO_TAP2_MIN_DELAY] = "tap2_min_delay",
- 	[IIO_EV_INFO_RUNNING_PERIOD] = "runningperiod",
- 	[IIO_EV_INFO_RUNNING_COUNT] = "runningcount",
-+	[IIO_EV_INFO_SCALE] = "scale",
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+index 78e3f799ecc1..1ac99263ad8e 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -235,8 +235,10 @@ static const struct iio_event_spec adxl345_events[] = {
+ 		/* double tap */
+ 		.type = IIO_EV_TYPE_GESTURE,
+ 		.dir = IIO_EV_DIR_DOUBLETAP,
+-		.mask_shared_by_type = BIT(IIO_EV_INFO_ENABLE) |
+-			BIT(IIO_EV_INFO_RESET_TIMEOUT) |
++		.mask_shared_by_type =
++			BIT(IIO_EV_INFO_ENABLE)		|
++			BIT(IIO_EV_INFO_VALUE)		|
++			BIT(IIO_EV_INFO_RESET_TIMEOUT)	|
+ 			BIT(IIO_EV_INFO_TAP2_MIN_DELAY),
+ 	},
  };
- 
- static enum iio_event_direction iio_ev_attr_dir(struct iio_dev_attr *attr)
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 34eebad12d2c..4e3099defc1d 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -21,6 +21,7 @@ enum iio_event_info {
- 	IIO_EV_INFO_TAP2_MIN_DELAY,
- 	IIO_EV_INFO_RUNNING_PERIOD,
- 	IIO_EV_INFO_RUNNING_COUNT,
-+	IIO_EV_INFO_SCALE,
- };
- 
- #define IIO_VAL_INT 1
 -- 
 2.47.3
 
