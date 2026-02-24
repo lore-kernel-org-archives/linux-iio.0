@@ -1,73 +1,58 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACD183793D4;
-	Tue, 24 Feb 2026 11:24:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F021637D114;
+	Tue, 24 Feb 2026 11:26:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1771932262; cv=none; b=s7vckxIx6GfaYRjkZw0hnsUhyfxLsitGJsZ8c3a0tEnYcT8DkIQ5G9qH0cKysrqEEps61E8zRIdLbHsWdhAL9lfxwxnNJbOq1GXb/cpZCvKVcPz1haf2POrOtZmBE/se4lxWdl92xHb+1K9e7ZCK0+3bIvr1Wodz2VFOeoDhwEc=
+	t=1771932413; cv=none; b=ignVnFb+Ot9jCxq/U4u6sGB2AIxz+zZtaiuJfFIM3vtcvnmmo1xTGTQQ0O1NZCWJdMezFTuknrVUB1ulwyprz3DDaJpkSMKEoGABvbnk6gMj9SZZFbGJVQzXhcVG3WDzCokDw7jvuuuu31YqSdFQA9FgcVB2cLGu2lIBy0P57sk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1771932262; c=relaxed/simple;
-	bh=P0jZjq1E/P3sDtaglV9UuSTYVpFAVDD9OXZT1D8ZukU=;
+	s=arc-20240116; t=1771932413; c=relaxed/simple;
+	bh=pKAMBBZL9i2q+1cgcFiJO7JzqliAh+voOviPIxzKa48=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=lzfxrVqMFpKsaitUEcNmhEHQyg9CPxI5UXfqbqloQcnuhuE9JqDKATFTr6gzpC7DrBXWb02p0RQzcTysHRTqg/nszkUek73A+X16dlskajt/xRarvRGtqz78EhB4vFoMZoltOUJXqxcny/DV3mH0vb0ZYP4x/2wDDheX3oc0We4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L2OG0TTs; arc=none smtp.client-ip=192.198.163.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=ebCZ7yyJ/0ZU7/2KYRjNX7dn956vVbKmSlzfK4hMb+ptCRDt8oKyDX4LeRMfXLI8Dx3QLBMYwsg+11FaB8DZYe2IlVT/3o2/r66om/GR99cBo98tOf8fe3Gl9d1FHzJkria/UOJZihIa7YozfDKqo9pQAqdjmDdYzv4gQ9ofdtI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eWIy0X29; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L2OG0TTs"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eWIy0X29"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1771932261; x=1803468261;
+  t=1771932412; x=1803468412;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=P0jZjq1E/P3sDtaglV9UuSTYVpFAVDD9OXZT1D8ZukU=;
-  b=L2OG0TTsypyrummlDpQtG2WYj215hcU2J+tGHkWrIren28Jkes00LW4t
-   nYA1FjT0pC1szse2rEEyo9K2BS1Duqz7UV8GCPkrBvMlfVuIVI7uNeCOW
-   bKVxU2eYaBcfY6JpFt9MJ5w9EF+ii45Dq8mnlzFLDy6PWxm8p9y0Z4d0e
-   ytbupZbzjhTZTv73RKKPPART2VvOychy0iDTuphbWH6enLPYf4ntA+fui
-   gNtD3QaMWc5a0khfnI+Ujtg0iWga/31MuFoJej6qtKgn8I2cS/WD2tF1H
-   WU4jqYAfPAq7/K66/l5MtNu1DSXGw2KkoRr694cLAF5Pv+0ff1rburaFF
-   A==;
-X-CSE-ConnectionGUID: Hh0r5nxCQbSji55rGY7Rhg==
-X-CSE-MsgGUID: gyWFUoDrTRuJ8iA9XyOy6w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11710"; a="83566396"
+  bh=pKAMBBZL9i2q+1cgcFiJO7JzqliAh+voOviPIxzKa48=;
+  b=eWIy0X29WYksBAvhFb6AYODIn8TFUVD7ULTdE4BQtlGzIWBLp1/mOQmj
+   JFv70HMdSPF/zfct2W8C7ddvrXNyyd77xvMo1sGAW6Zl46hs8Q8tD5nKu
+   Q4lMJGD7DoYjY5a6Qrf3R93AC2/AaxQ8p7rhpPNhPjV+/5MyALO877Xxs
+   7AMDzIgofFnzGynZC6ebCGAFaQuGR0VXCoSKVkITDt2t6MsmEPxLW+mcZ
+   Sgq8oRgsdJsrG5mLIE3co4hEz1wzdPvhObplTcfjAF/BGPmCKvkEhzP6T
+   dMFrHFy6R1wYStd6JP3yQqNIcaBXKeUm+ufBNSCmmk/TmrPg0imYw4TwW
+   g==;
+X-CSE-ConnectionGUID: RgP+QcsJT2eMd4L6idfsyg==
+X-CSE-MsgGUID: VxN5QFHmTgmZNJOSugs3iw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11710"; a="83655183"
 X-IronPort-AV: E=Sophos;i="6.21,308,1763452800"; 
-   d="scan'208";a="83566396"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 03:24:20 -0800
-X-CSE-ConnectionGUID: tDiWXSQ2RWeujk3FrXXrAg==
-X-CSE-MsgGUID: gFrDI0qFTNC042SLecLqQw==
+   d="scan'208";a="83655183"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 03:26:51 -0800
+X-CSE-ConnectionGUID: p+eappA2Q3iHVB0M8ou11g==
+X-CSE-MsgGUID: OAgAIbWxRFy/qbOn9BrqUA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,308,1763452800"; 
-   d="scan'208";a="214968339"
+   d="scan'208";a="214120488"
 Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.244.146])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 03:24:16 -0800
-Date: Tue, 24 Feb 2026 13:24:13 +0200
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Feb 2026 03:26:48 -0800
+Date: Tue, 24 Feb 2026 13:26:46 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	Mark Brown <broonie@kernel.org>,
-	Sebastian Reichel <sebastian.reichel@collabora.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>
-Subject: Re: [PATCH v4 1/5] spi: allow ancillary devices to share parent's
- chip selects
-Message-ID: <aZ2KXVpH9LVl0BdE@smile.fi.intel.com>
-References: <20260223162110.156746-1-antoniu.miclaus@analog.com>
- <20260223162110.156746-2-antoniu.miclaus@analog.com>
- <aZ142CVjMQ8Dypnb@smile.fi.intel.com>
- <CY4PR03MB33992FF58E620DCE44FE0B419B74A@CY4PR03MB3399.namprd03.prod.outlook.com>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ade9000: fix typo in error message
+Message-ID: <aZ2K9gbeS0jffkx8@smile.fi.intel.com>
+References: <20260224111744.55378-2-giorgitchankvetadze1997@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,32 +61,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CY4PR03MB33992FF58E620DCE44FE0B419B74A@CY4PR03MB3399.namprd03.prod.outlook.com>
+In-Reply-To: <20260224111744.55378-2-giorgitchankvetadze1997@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Feb 24, 2026 at 11:12:57AM +0000, Miclaus, Antoniu wrote:
-> > -----Original Message-----
-> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > Sent: Tuesday, February 24, 2026 12:09 PM
-> > On Mon, Feb 23, 2026 at 06:21:00PM +0200, Antoniu Miclaus wrote:
-> > > When registering an ancillary SPI device, the current code flags a chip
-> > > select conflict with the parent device. This happens because the
-> > > ancillary device intentionally uses one of the parent's chip selects,
-> > > but __spi_add_device() checks against all existing devices including
-> > > the parent.
-> > >
-> > > Allow this by passing the parent device pointer to __spi_add_device()
-> > > and skipping the conflict check when the existing device is the parent.
-> > 
-> > Isn't this already applied?
-> Don't think so.
-> V2: https://patchwork.kernel.org/project/linux-iio/patch/bcb1eb34fc5e86fd5dbb4472ad1d3ea3cf3e9779.1770393792.git.antoniu.miclaus@analog.com/
-> V3: https://patchwork.kernel.org/project/linux-iio/patch/20260213144742.16394-2-antoniu.miclaus@analog.com/
+On Tue, Feb 24, 2026 at 03:17:45PM +0400, Giorgi Tchankvetadze wrote:
+> Fix a typo in a dev_err() message: "maks0" -> "mask0".
 
-https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git/commit/?h=for-7.1&id=ffef4123043c5bb29e61052a41e577ae1ee6837a
+Hmm... Can you run codespell against the whole subfolder and see what you get?
 
-Will be part of today's Linux Next IIUC.
+*drivers/iio/adc/
+
+> Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+
+Fixing these small things separately might be not so efficient, and if there
+are only few like this, it might be better to combine in a single change.
 
 -- 
 With Best Regards,
