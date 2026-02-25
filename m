@@ -1,76 +1,73 @@
-Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
+Received: from mail-wr1-f42.google.com (mail-wr1-f42.google.com [209.85.221.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 82578392823
-	for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 10:11:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F277E392835
+	for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 10:16:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772014285; cv=none; b=BbiEwwDfzAC3170SRSRDXkVrNIhCvfxMfuCSwVkvYgMyt9I3oXFtxo4TG5LnZ5/DFMZyG2oqEO0QEmT3509cR3kE+cfWtUqADGRpaibrVNzLimzZFGAdcQD/3sA6Ikr8Obe+TqHkihySZPJQbLy/Up3AgGUTqu7uMU/7h4ChhfI=
+	t=1772014602; cv=none; b=VQV+kVXSnUfacIqYEopgPjUUe/r7KtsJypbgWAOwW+DCp3Mz+aPGh32Glr2jY7Dq6n6uyNuNPNDJfvpeqxdCmGIk4OCmXXH2ecC8yn2dE91KyoexWrfOaleKwclMbGse6pA2jhxmhzeOOoS/7JVlDY+PGaYe2tFJO0Kn42AGNXY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772014285; c=relaxed/simple;
-	bh=aBIjT8HJMfYZDveJouRj4sa520yQuhHwAmIb09eSjwY=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=QQoUZjFbhXh66MAJTTIaTZ/pl9jCIdX8YdkfiwT+ApH61POttvkZclQ4oaoZHdDVVzAsm5isZcxIoJIIc/9MfdrycVN0/q1Vh4F7Uha5BJtpLnk06QmOqRloNWZb9lWqleNZ4wJS8Vb1ip6Z2laYp8XiQlGjHQkFkfsFPQAZhy8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=VcXXb2HA; arc=none smtp.client-ip=209.85.128.45
+	s=arc-20240116; t=1772014602; c=relaxed/simple;
+	bh=MkM0A/HsyN7aXTv8muMJJ3kq/6hFQVpMJ9om7R8iWDM=;
+	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=YIDAQIGAPEHJZDVeoQ3yyRf428wwhy074iYFSk9gbIK6cTwUl7jVRrKGHKYN8CjFouErFx9fpAY3D0dM97+OKuK+zL2k2phUj6YLo47uRiLFExGKrfJelwyh55dR1PIPQLv3q0EDYiVH9F4z9iZWMOTDvU6yecQbn1C0lZkK2vE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=IkpbnSpW; arc=none smtp.client-ip=209.85.221.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="VcXXb2HA"
-Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4837f27cf2dso55420935e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 02:11:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="IkpbnSpW"
+Received: by mail-wr1-f42.google.com with SMTP id ffacd0b85a97d-436317c80f7so482305f8f.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 02:16:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772014278; x=1772619078; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772014594; x=1772619394; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RHmHZviAuhOhpKSUpCtTa1iFHF2rU7EWwgoioRxdGwg=;
-        b=VcXXb2HA0DPZgV7hLbmEfIziBEz1bPQr4I/zaSvXo+4Hev6wtbLCnaKsNbzA5qKRps
-         aT20Q81o83AJrNrvUc/K1pxNMjT2e+gfYUmrygBAIbqlzZtv8WcaVuqwjgT/ajPteOUp
-         3JLJG1DmSKEdVht37niVRDZzzgTUQ9sk1vJ8LgGEBnScJhCHDlLnH4BCwenYH7nGUxiY
-         7XE7zEXJnVWNZGdQPBjcZrEpNX07BZkeSy6NRFr/0JK8mJF2oQYefCfWOS8RlKlaVHYO
-         hQEdMKPgQ3C+EG/hory5jqI/dzdyq/fmMYZPPq6P9YB2xcUYAheVUhKeoVNhC7KgOmWa
-         2PwA==
+         :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=X2z+T2tcANuxuNpL/O66Pi5lTdKISXJnPtDtrt0skqs=;
+        b=IkpbnSpWj9fH7fdR38mZDb00p8SeYsuF+OBJE8FuJWjEh8G6e1AXM5a6sbREiw5Ann
+         IYPUxrdUipZQHGH3JE5x9jZyGJxgAnHyyHUf18k8G1Nm9JBy14D4/e0itvhbYPtDChOZ
+         wWnROTDjQUHtfIpR8KMtBKNwidGDo1Dg4R0R+1Y20y3yOehJuCepo4sHus2UNrLG2tQW
+         FR2PMfFc5OmLPDJZTvlAaVIi3MnrCpH3Tu0404ntF34LC1NKgEdHM1q/OSjYyAweSNWk
+         dICVgaC8ppe+fvJPtxjkcArW/85A65moQJlFMNFxJHwoakZiOmcLkvNniInyT20yDcif
+         LJlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772014278; x=1772619078;
+        d=1e100.net; s=20230601; t=1772014594; x=1772619394;
         h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=RHmHZviAuhOhpKSUpCtTa1iFHF2rU7EWwgoioRxdGwg=;
-        b=lU6sqhls5FcA8z4C6omBkDxKJTZMlKXwysV9RReCT7+tVmh19OlTRN3euKfvJ0xobm
-         LQGvKJUUa3Q3npfXIvjsNO4QB0Njjc4Cux6Lu2YCJUS2NXiZ6rGEXSF/NuP2AZAfzdXw
-         3iffEnYCdtZj9fr6UjmTzuct3XRZ75EfThmnZFrPs9v0ig/zlXYNJblRDhZreaRmwkcJ
-         Iat/tJs2BREb+kqheJK+UEdIR9Bmy8GEPUhqXHjgza8CShEe13KdbL49KIyfC6UW4nka
-         fmo7haja1s3ZRg0uNPhnTO4ZdAdPyzR77fN9aKqsc10l2pa1HyZa5n5JkAZ8t+Z+SS/X
-         cUBg==
-X-Forwarded-Encrypted: i=1; AJvYcCVryCInjUcpupuLhg7+tZehZYcoHD2rFiiUO69uiz2zf79udBnSVftidHEKZbIqa+ceptzBCwI/vKw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxoQitEAacTokMzvSaTGoVhXLAn9bzWwZwntRhg5HjSR5FsoEf/
-	XXjNA1GiTx2GEMKjJzSfP2WmkH6iMCutifdJIl1WjfZAh9CCeA0HMsZISyxQ/j582VM=
-X-Gm-Gg: ATEYQzy1LlPnFdwUB7+tKJEsFsqlYCtOSYPIukYkn7cMkV6Itc+V2gOSSsyh/30R8za
-	xAe26t66r1fmS0bpvVGYYj6TSYqVu086hWyBR9lix99glw5UTzPsc1pSzuWFCo6AaF8GsN3rtOu
-	ao5o+rYVgQ3N4+AUNZseOadAnChpIWJ2kPxyLDUpJKZ5KcAP8gFZOE+hghG82vzNWBtDJn6KZdw
-	ramaaUY/X+6zvmxiuckXR6wTjA5I+XNyR2xy6YSdCIgghekpq6zfzY0Djpa0fMEM8vEKB7TLitB
-	+h/qYcJzcmp97yLO6cQAE+JZvD6HQ4CtSd55JPo9zA1YCJ3r1kga4KWll+Ab/OO3uGqj/vBWpxX
-	zmYXw4x0to7k7Sa7hRd9G7Ipd3XpVLQf7/Pc3xvHvQKx0lFY5/nRaF0qBylSOiAQil4QSVdtxCL
-	/LrzxmsHNm1WXPMg==
-X-Received: by 2002:a05:600c:6217:b0:471:14af:c715 with SMTP id 5b1f17b1804b1-483a95eb550mr234842935e9.3.1772014278402;
-        Wed, 25 Feb 2026 02:11:18 -0800 (PST)
+         :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=X2z+T2tcANuxuNpL/O66Pi5lTdKISXJnPtDtrt0skqs=;
+        b=Nr0wAvj0PG9O7GTP0AGwQ/NQHudsf5wPHx/gFkFiZ9yDQF3GiN8+mP6MzyxR2zAJW9
+         GqThfvPl2CJzDdzyypcXCjwxcz1GLTBZ3qqTNK4W2LhTb939oQhr4saYeh84bJel83nN
+         dH79t4wKksKCLJMhsTu8vVSXHPIZ1jVWVUuoTiz5tJeHgWNHeodC8kCuRzY9ekOFdHRJ
+         5nGDfonPe2PgWjJfpf/xV+5lMu2Pc576w0BpTAGV49UFNluzZdkC7x+nltHeIs8okG6i
+         YOLkxZUAobkISzcDtmGD/6gyPnV2CkSRyrPGznPW048FwE+gibEQXh6P+6TLfTN1xA6E
+         cU8Q==
+X-Forwarded-Encrypted: i=1; AJvYcCW6wnSxlM/sIljpXoqbOz2zg7dlxFV/CUrbaXAPZ7ap5DioBM2hukmmDTYuPUgK5+YSsfIHxcnegYc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwMKpyof9thjK3Bd2O0B5ndqKjWddOSLxwF/SX4Ch4eDSEN1ZMI
+	UNwxBURbt79dDEaer4JN+eY2ZgLS8Aik0QWx/fpYhdteBlZU3/DKsAA7gEANtx6bQqY=
+X-Gm-Gg: ATEYQzxtDhIk/A+jhDE2rJKyR1QN+v3j7YIpRHhQbRPwfANUr4pTdyYFthC/5XHEyQU
+	MBoHxhcYc4Cw73uOcBKfIrCxYGehcJmTFIZq+MbC7t1UTuvx3yx8A6LHx42FLD/g0J2ZTbDNg8g
+	MjdFR9apyyLx+F7KqETn7V2FawTl+UeJTqVYnMZQX2b8v3imDdefXbmiTzqxWIC2IsFg6DoQK9y
+	wrG0eRJt3RSMZpUVmaBkztf1DyMNl68m2xojhKe/gqu9RAgW+lB4wiovTQspsZBJ2lZiBK3flUM
+	LmYk7rPJwp1221wg/yswigVG69q+x6fyhENsuVCc+8LVHlRjTrZTK7lTFmobqtBLtzt/jNo5B9j
+	t2zOsDEVMV+EpkaKIyd2PzvwowGZ2zYaEKJL2Pw15SR7WpySbIQHTNbx582CT8omfUqnNjA==
+X-Received: by 2002:a5d:5e01:0:b0:439:8c7f:712c with SMTP id ffacd0b85a97d-4398d8353b0mr4778086f8f.8.1772014594085;
+        Wed, 25 Feb 2026 02:16:34 -0800 (PST)
 Received: from localhost ([151.35.220.155])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483bd6f19d6sm61115015e9.2.2026.02.25.02.11.17
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43970c09897sm34079861f8f.17.2026.02.25.02.16.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Feb 2026 02:11:18 -0800 (PST)
+        Wed, 25 Feb 2026 02:16:33 -0800 (PST)
 From: Francesco Lavra <flavra@baylibre.com>
 To: Lorenzo Bianconi <lorenzo@kernel.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Cc: Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	Andy Shevchenko <andy@kernel.org>,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH v6 1/7] iio: imu: st_lsm6dsx: Set FIFO ODR for accelerometer and gyroscope only
-Date: Wed, 25 Feb 2026 11:11:17 +0100
-Message-Id: <20260225101117.2367725-1-flavra@baylibre.com>
+Subject: [PATCH v6 2/7] iio: imu: st_lsm6dsx: Set buffer sampling frequency for accelerometer only
+Date: Wed, 25 Feb 2026 11:16:32 +0100
+Message-Id: <20260225101632.2368093-1-flavra@baylibre.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260225100421.2366864-1-flavra@baylibre.com>
 References: <20260225100421.2366864-1-flavra@baylibre.com>
@@ -80,45 +77,57 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1747; i=flavra@baylibre.com; h=from:subject; bh=aBIjT8HJMfYZDveJouRj4sa520yQuhHwAmIb09eSjwY=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpnsrEKHlBS2+YWZdjOWGvX/xqPbpahixKnyHdW ADRDgnr6CSJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaZ7KxAAKCRDt8TtzzpQ2 X4IdDACwcFakHxGhyeruPzOvOIecz8RZYgU0hftyD+MA7TKyz82erqakc376M0BnhZiY2DNJi+Q yeD8OzoDUFtsHVIRZvmv/o7+bA9CaOkYY/uIVQP71kD94kioSZVQdxV6KbjCozqEcrkWIckJFkJ 8LlLKm1sVmtp74Balkf8J5n2J1/Z4Ngg+mLjFXO0+/xnXQuqlmQFVViA0cWYYwtpXxZ+KZp77HT futRXa7FZ3xZCPUb9HoFUHjkPgf5jQC5dh/oz2xJGqfLwThuCpp3bq0RLawU5H/XE7U5DZ6RPjq ck4s+r9nKWDbZKRAofCUyA1EWoU6/t6pfxYUs5SNrF89/x6xvFG12f0hqRaugYD86XuU8mVT/Bk zXQprGqLGkjQLDxXwqteu/Mnvn/Td8wjUpwi7IDfFm5w2CxDfAXdF8qLp7UsvUP+wb147dLPejl qONm+TgDR+/CNbEahFEMuCGr8hbYvIsYJCCgZVAa/t62dZIHdKADSP4Q6NIOlJgG1EVKs=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2119; i=flavra@baylibre.com; h=from:subject; bh=MkM0A/HsyN7aXTv8muMJJ3kq/6hFQVpMJ9om7R8iWDM=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpnswA8/bTUHWtdx2A2C6OfJtUtmuStD+mgbvOu BhcilH85FCJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaZ7MAAAKCRDt8TtzzpQ2 XxcxC/4mi0bYTfmbqrOktzvKdp87g5AtpcS1BRGlzfz/A9yu3n30TYNRt1M+ZKgawcc0C0fuxxx msnjbwr53H6AygeGBz+QURrbVacojfcnWIGTmhjYGrQJ9r5gb+GwXgM1W9JOHPdTO/S1qjCkiG5 mPBRv6O1cwdEBnEA5A/vBuGzMNi/5hR5V7baYcinrzwdr/YsvZ+ltvmbS2WH8+cdRod6YmqW1ej lPSNy2Cnob1E/mAguT2LNmfYo7PWRv+aPHR7G/8De+h0WIMod0YHAbSiJPmckjkcSO9MPMqGtVc KoN0MX8lckX0S2Dv3c8jwp/Zq+eu03INmofCSTMGzW842Ow/cok6YhA60HeQKOSv2Zb/NqsTvhv 8dlWvgFHTncjQToYw7FB2fWEePsnmfptOzLE/YiI6SHDbgbbtWB7t9gkj2vh9mTIc/Sj8p0dero OVFcf5E1MPi3tNq2C494i79bxDxh4UgEy9PZOLMdOLllYCQJ6MFsBGEGwIN7TyCnljNk4=
 X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
 Content-Transfer-Encoding: 8bit
 
-The st_lsm6dsx_set_fifo_odr() function, which is called when enabling and
-disabling the hardware FIFO, checks the contents of the hw->settings->batch
-array at index sensor->id, and then sets the current ODR value in sensor
-registers that depend on whether the register address is set in the above
-array element. This logic is valid for internal sensors only, i.e. the
-accelerometer and gyroscope; however, since commit c91c1c844ebd ("iio: imu:
-st_lsm6dsx: add i2c embedded controller support"), this function is called
-also when configuring the hardware FIFO for external sensors (i.e. sensors
-accessed through the sensor hub functionality), which can result in
-unrelated device registers being written.
+The st_lsm6dsx_hwfifo_odr_store() function, which is called when userspace
+writes the buffer sampling frequency sysfs attribute, calls
+st_lsm6dsx_check_odr(), which accesses the odr_table array at index
+`sensor->id`; since this array is only 2 entries long, an access for any
+sensor type other than accelerometer or gyroscope is an out-of-bounds
+access.
 
-Add a check to the beginning of st_lsm6dsx_set_fifo_odr() so that it does
-not touch any registers unless it is called for internal sensors.
+The motivation for being able to set a buffer frequency different from the
+sensor sampling frequency is to support use cases that need accurate event
+detection (which requires a high sampling frequency) while retrieving
+sensor data at low frequency. Since all the supported event types are
+generated from acceleration data only, do not create the buffer sampling
+frequency attribute for sensor types other than the accelerometer.
 
-Fixes: c91c1c844ebd ("iio: imu: st_lsm6dsx: add i2c embedded controller support")
+Fixes: 6b648a36c200 ("iio: imu: st_lsm6dsx: Decouple sensor ODR from FIFO batch data rate")
 Signed-off-by: Francesco Lavra <flavra@baylibre.com>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-index 55d877745575..1ee2fc5f5f1f 100644
+index 1ee2fc5f5f1f..5b28a3ffcc3d 100644
 --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
 +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-@@ -225,6 +225,10 @@ static int st_lsm6dsx_set_fifo_odr(struct st_lsm6dsx_sensor *sensor,
- 	const struct st_lsm6dsx_reg *batch_reg;
- 	u8 data;
+@@ -862,12 +862,21 @@ int st_lsm6dsx_fifo_setup(struct st_lsm6dsx_hw *hw)
+ 	int i, ret;
  
-+	/* Only internal sensors have a FIFO ODR configuration register. */
-+	if (sensor->id >= ARRAY_SIZE(hw->settings->batch))
-+		return 0;
+ 	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
++		const struct iio_dev_attr **attrs;
 +
- 	batch_reg = &hw->settings->batch[sensor->id];
- 	if (batch_reg->addr) {
- 		int val;
+ 		if (!hw->iio_devs[i])
+ 			continue;
+ 
++		/*
++		 * For the accelerometer, allow setting FIFO sampling frequency
++		 * values different from the sensor sampling frequency, which
++		 * may be needed to keep FIFO data rate low while sampling
++		 * acceleration data at high rates for accurate event detection.
++		 */
++		attrs = i == ST_LSM6DSX_ID_ACC ? st_lsm6dsx_buffer_attrs : NULL;
+ 		ret = devm_iio_kfifo_buffer_setup_ext(hw->dev, hw->iio_devs[i],
+ 						      &st_lsm6dsx_buffer_ops,
+-						      st_lsm6dsx_buffer_attrs);
++						      attrs);
+ 		if (ret)
+ 			return ret;
+ 	}
 -- 
 2.39.5
 
