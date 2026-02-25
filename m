@@ -1,109 +1,139 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE02E19FA93;
-	Wed, 25 Feb 2026 11:29:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5CA9E3502BA
+	for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 11:31:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772018960; cv=none; b=IwAv5EJ6b3WQ9GQNH/41s33vemO/qlO9Vs8fOw4NhrJPKH2BlMb3/3wDPD6DzOzsFtB1DmTau3Fj97TS2f33SeyHKK0abFAxZz06MyuJdehurnFqohcvBWB/uAE3ZrHnjgHGjp0OL1gis8bD4bV2kA0gwWbF/hYziID8g8T8zH8=
+	t=1772019115; cv=none; b=Op0YcbVi7QejaXTW/RP/KgLAOWDl5pZIsYLFaHKVC8M7vvZhCFjE/IlmE4Pfb0CCjQpzaz2F12zVl9z3zdBcy6yvOKhBOo3Kpj2C2FM7Nwjo2juOK7WLA34T4AeoCZ2WDoNgt/vHMQYxNJzdGxOcFfocOXAqM4TcDRSgZowT6pU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772018960; c=relaxed/simple;
-	bh=nmpB2c/65klhd1mwJ54wHKaWRCDRETjbp8RuXBnKG98=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OINobcFvMxYFkqQUAFEpj8G7H++G8s7dO8Jfuq26OFcyotFgyUKQ63ZhyNqsqL16rgyPoQi2bJchPGYHmNFGPjkxGsjUuMOQSpubBRMGfazaA5klVNubuIemn5NbnidtNmfZA33owMQEdXc5qBzGFZ6PtDz3XtHcHqY7IZfl9F4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QtaXSFpn; arc=none smtp.client-ip=198.175.65.21
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1772019115; c=relaxed/simple;
+	bh=tyP0nDNjBIEMVKo4YhOLZyC/BQFAGdwA9TSDuFF6Dp4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=s3mGYHNoqzS60wORD5cC+2QSmIw5OpGDD26/6vm/oGac4UwpOUHiqtgZBaVBjkcbxAQcBWbQGcti7MOmP37qWDL1uy54692TmC5VjkvDjliPGVC4jzGePY06XHGpLaR9cJva0bBaM2FjxD1qhlmM/eu05AF8SUnmL/DGUclbo0Q=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N0yYwmge; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QtaXSFpn"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772018959; x=1803554959;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=nmpB2c/65klhd1mwJ54wHKaWRCDRETjbp8RuXBnKG98=;
-  b=QtaXSFpnn6JDY6FH1UKfp3xquKC/lOnQOnOhltrRuUjCgCq71K6rBew7
-   8JyUTBtg1m2QlWLphJ8p37UUsyxfZVE4iZHC1azl4HzutNQQnbXxXyII/
-   uPIvBh7h1TqkdEXBjtC5ZweiXxl/6QSRuwQSbk0RVBbuudjVmZEKxbA2b
-   XjZoFJ9M2EEBna4Z5dCvlNEcAo9sheiW8BUyUKBkw72qde1RmAknkqOkB
-   TtTOSRgp6tGa3rUsE74uTR2rwV9m/ldt9hG5EYF/7aAUrpkDQyPSmBzsC
-   TV6JR50EATnMEugde1HGAqPBXBoPaaQ3QJX3a0hScdth0kOxNyVRZqTbc
-   g==;
-X-CSE-ConnectionGUID: +kvarfD+RDONamebA3COFg==
-X-CSE-MsgGUID: F90VH5pwRxG0eiPZXpp6TQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11711"; a="72929088"
-X-IronPort-AV: E=Sophos;i="6.21,310,1763452800"; 
-   d="scan'208";a="72929088"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2026 03:29:18 -0800
-X-CSE-ConnectionGUID: 7wwAt+ZuQyCeia1hedJC3w==
-X-CSE-MsgGUID: 2hX6jd1WTkGG2Ot5F4b7Iw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,310,1763452800"; 
-   d="scan'208";a="220332687"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.71])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Feb 2026 03:29:16 -0800
-Date: Wed, 25 Feb 2026 13:29:13 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Francesco Lavra <flavra@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v6 5/7] iio: ABI: Add support for floating-point numbers
- in buffer scan elements
-Message-ID: <aZ7dCdLs5xcJ4UGW@smile.fi.intel.com>
-References: <20260225100421.2366864-1-flavra@baylibre.com>
- <20260225101748.2368295-1-flavra@baylibre.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N0yYwmge"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-4836fc075d2so7609565e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 03:31:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772019111; x=1772623911; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=CBdnPip5pL49c6+gEunsZLiIHbCIze9L65pv92ooJx4=;
+        b=N0yYwmgecqz4T3IyphiGxbs98zldqGTTUWJo/UQiYLmfjTSTBsUwEKMM04x9Jh+7tS
+         GJHjYbJYuUV4eZN9W4bLR7olijWMr312HYUa367vp1P1BcaqkbJlyryJncyVLVrTK1oN
+         y5I2RtZFpIbEtEn/FDekwJ8YUsSS6NTgd1GcxdrRzNAo694x2dqKhdXohH6hBENpTP67
+         C+2e/7pshxIhPC2CLNrQ7Z/PHz00MeNubzYCUQ+2olN2I8jlhf1hBU/Iqjj2lUG3N3zZ
+         wHafPhgLirnhLVtMuhxhlcB1FGLlufuSqfWv2sf8gUaNo+Nj4/74bJUSFErpvpYwWCKh
+         celw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772019111; x=1772623911;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=CBdnPip5pL49c6+gEunsZLiIHbCIze9L65pv92ooJx4=;
+        b=ueV4wLvVtuUPdaOEq2Hg3KySkPB54wGPbiI16wRTUrjav8efX2wvjEvRQYSad7LHXE
+         PQDFp1pVsHRHph5egVFFXE6TcShOyKLzcSKpybB2InweLlDcUHlfP+00eKSbjuZ66sY5
+         mqDe/LighqpgvhtruJ1IcFjuAJQI4h/rRLmqzpQh9f+0dvt66vBAqvwAI8jIhWghw0FX
+         uJo+j3znr9/gkGK2WoF2cS55wBuU9kOygwAV5S1MLi5oarhj1v5HSoGsHNLZ0OuZEW+A
+         mTT1ej4QixIcJlFMCe4FsJ/4/CJi/H5vKV1DWj+/9aDU/KdOOkSoiciH6fc0lSiyHdbo
+         M+6Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXjE9+TlnIvauUc2g2VMbZ4zTo5OHG+TQE+d1u7J+8tEPZFVgn6Y+7kvddQrHWm4Wo4EV+Da6skexg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyfLjcG05FXfv0Zhrq0h/fQcIL6f693MNbFL+ShxLA45WxRQThS
+	3bMaiz4Vk53DPzro73EfgOYK3F1wr4+zDg1ZH1mnuXGCrgmB9lDJ3nCr
+X-Gm-Gg: ATEYQzy7qvY9hzSf+ddEtb6ueuTPlwacCx6D6YlNACV27oPwg9k9Y6jEk/AtjQm6fAC
+	fMjxNnqoTjDYn4bMWpBrBOjarWNC9zF429ej9Fv4VRwJPWYKAz+dF/a+E/bxJHJ0mCI4vI3og/g
+	a8lATK0/4VUZvyMGEB6MlZ7viWG6GQOqTZPLHk5+w+bG9Qzz6kmsbRrrhUREN5IfPBpHXt8CEGD
+	+cVwf2yiAMrGol7TipRDNiCo/AZSosicKiBr3I0pVfKGsg1cmxcfIwow7kdLed6hD8wTjqYv37Z
+	GS0YotfRa0CcC5r6P/PGEYE2BLZlx5LV+uGTrznTl0HfDrautTykkhwCNQRHAqxDIMgYgH0JVJs
+	Fn7iLtWaqq2kiHDhWFGit2a0UTHMYxfENrZFRJ1mnk2tCvtFoe4d6NmapBJrKauUeGztNGpkevw
+	AktyottPGl8ec+btageA7OOkuEzCu240tIyjYtaWjAaLU1e6V1vRM/fR9EUUJpROgIz7YrZttM3
+	8zyUX1F53VnSmLolt4MxTaljAs5IqTBGYaCvkE+mQq71FuplXfC
+X-Received: by 2002:a05:600c:8183:b0:477:5b01:7d42 with SMTP id 5b1f17b1804b1-483a95e42admr140167735e9.5.1772019110306;
+        Wed, 25 Feb 2026 03:31:50 -0800 (PST)
+Received: from fedora ([149.3.87.76])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483bffc17dasm17006135e9.2.2026.02.25.03.31.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Feb 2026 03:31:49 -0800 (PST)
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+To: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Subject: [PATCH RFC] iio: adc: ad4030: fix calibscale read/write unit mismatch
+Date: Wed, 25 Feb 2026 15:30:39 +0400
+Message-ID: <20260225113102.84568-2-giorgitchankvetadze1997@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260225101748.2368295-1-flavra@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, Feb 25, 2026 at 11:17:47AM +0100, Francesco Lavra wrote:
-> In the data storage description of a scan element, the first character
-> after the colon can have the values 's' and 'u' to specify signed and
-> unsigned integers, respectively.
-> Add 'f' as an allowed value to specify floating-point numbers formatted
-> according to the IEEE 754 standard.
+The read path returns calibscale in IIO_VAL_INT_PLUS_NANO but the write
+path treats it as MICRO. Since no write_raw_get_fmt is provided, the
+IIO core defaults to MICRO when parsing userspace input.
 
-Main Q here: How will behave iio-tools and other existing user space when
-it sees this? Shouldn't you prepare the user space first for such a change?
+This means reading calibscale and writing it back results in a ~1000x
+gain error.
 
-...
+Change the read path and available range to use MICRO to match the
+write path.
 
-> -  Format is [be|le]:[s|u]bits/storagebits[Xrepeat][>>shift] .
-> +  Format is [be|le]:[s|u|f]bits/storagebits[Xrepeat][>>shift] .
+Fixes: 0cb8b324852f ("iio: adc: ad4030: add driver for ad4030-24")
+Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+---
+ drivers/iio/adc/ad4030.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-I would probably keep order as [f|s|u] and...
-
-> -  * *s* or *u*, specifies if signed (2's complement) or unsigned.
-> +  * *s* or *u* or *f*, specifies if signed (2's complement) or unsigned or
-> +    floating-point.
-
-  * *f*, specifies if floating-point.
-  * *s* or *u*, specifies if signed (2's complement) or unsigned.
-
-...
-
->  - **be** or **le** specifies big or little-endian.
-> -- **s** or **u** specifies if signed (2's complement) or unsigned.
-> +- **s** or **u** or **f** specifies if signed (2's complement) or unsigned or
-> +  floating-point.
-
-Ditto.
-
+diff --git a/drivers/iio/adc/ad4030.c b/drivers/iio/adc/ad4030.c
+index def3e1d01ceb..3d823648371d 100644
+--- a/drivers/iio/adc/ad4030.c
++++ b/drivers/iio/adc/ad4030.c
+@@ -423,10 +423,10 @@ static int ad4030_get_chan_calibscale(struct iio_dev *indio_dev,
+ 
+ 	/* From datasheet: multiplied output = input × gain word/0x8000 */
+ 	*val = gain / AD4030_GAIN_MIDLE_POINT;
+-	*val2 = mul_u64_u32_div(gain % AD4030_GAIN_MIDLE_POINT, NANO,
++	*val2 = mul_u64_u32_div(gain % AD4030_GAIN_MIDLE_POINT, MICRO,
+ 				AD4030_GAIN_MIDLE_POINT);
+ 
+-	return IIO_VAL_INT_PLUS_NANO;
++	return IIO_VAL_INT_PLUS_MICRO;
+ }
+ 
+ /* Returns the offset where 1 LSB = (VREF/2^precision_bits - 1)/gain */
+@@ -720,8 +720,8 @@ static irqreturn_t ad4030_trigger_handler(int irq, void *p)
+ 
+ static const int ad4030_gain_avail[3][2] = {
+ 	{ 0, 0 },
+-	{ 0, 30518 },
+-	{ 1, 999969482 },
++	{ 0, 30 },
++	{ 1, 999969 },
+ };
+ 
+ static int ad4030_read_avail(struct iio_dev *indio_dev,
+@@ -739,7 +739,7 @@ static int ad4030_read_avail(struct iio_dev *indio_dev,
+ 
+ 	case IIO_CHAN_INFO_CALIBSCALE:
+ 		*vals = (void *)ad4030_gain_avail;
+-		*type = IIO_VAL_INT_PLUS_NANO;
++		*type = IIO_VAL_INT_PLUS_MICRO;
+ 		return IIO_AVAIL_RANGE;
+ 
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.52.0
 
