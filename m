@@ -1,201 +1,121 @@
-Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
+Received: from mail-ed1-f53.google.com (mail-ed1-f53.google.com [209.85.208.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5D43131282C
-	for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 19:42:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772048542; cv=none; b=TF+e7yUcM2aJbIeOZ4oaQoAOOdWbHeejgnxfaAm/FCdSPJe+jhko0eqPjL4WE3YJghb0Mjq0b2QBPjqPDPgE5dXbLZaJInUs1mVIFI5IabSHX+FBrv+voxNb3KEnM6YlBIzlQyRklIwe9mOBk3CKAMUWrwWU6O2AR0ogwq/rQ9k=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772048542; c=relaxed/simple;
-	bh=KA3NRYLRo6cyPPrBHOQPFo8PrSHnZspIXBm9ThiE6oY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Ra4ezYWfT2D7qdDQ7I1fgWTPVG5Z1inyeNj26aI/sBUC6n4TmBzuiIcxezX6GnkA3bByq3B/X7hLY2RqFdO8OkTArKnacNVS6vPL9yIW9cQ6jl0kTmrRgBLrZny05On3B3MWFEYKSfTPIWm2phL+8Ii2NX2T25MSQxZohXuU9M0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iB+UVtw+; arc=none smtp.client-ip=209.85.214.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BE473EF0CD
+	for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 19:44:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.53
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772048646; cv=pass; b=aKuXOT9d0qC9fpFxE/tg3anMOSlbxRiJsq5aShHq/HiWOVgdCLgit3k1V8h8SenDNM1rGo6tPPECmq9nwH35oJPXOeq6xO6n2oEf8kbVBg09RDEO6L23sOt3X6uIAe+lohpuvqVo3FNhzfqi3HzoJbEPa1TJHGhRPrm4YKxoIQY=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772048646; c=relaxed/simple;
+	bh=SKOSjsvH33aKBTK3IdGRLtExJpwuipYT4oUjT3BcsUo=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=WIzhVv8uCcBxojw/rbUyR0b/t0831g54OMBGfAcCRU6Np0wg7kw/XAkaDbU9fYX57X4qFcleGPV3G3dpzURDjh2oFmW8JDxvviY5tvC5XQg30YVi+0/NMIrFLotFg+g13kO2b1wyslTsQBv9ht/qPCW/zgHzpRUL1+Ih1KlXJDA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LYr7nf6J; arc=pass smtp.client-ip=209.85.208.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iB+UVtw+"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2a7a9b8ed69so64476485ad.2
-        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 11:42:21 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LYr7nf6J"
+Received: by mail-ed1-f53.google.com with SMTP id 4fb4d7f45d1cf-65f9763e8d1so314593a12.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 11:44:04 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1772048643; cv=none;
+        d=google.com; s=arc-20240605;
+        b=dd4JzfJXQrOUfS/YmH8hc6vBn3eCQwVZNpcKbJyQVZQsTgELBHlG+K++21Hl0MxSbG
+         hWzDSnuTGOafP0n//0i0ET22I09sxo63B2rQMaE797SV7HW6OGLo6EnWIStc4F2YH9IH
+         SA8voQigNtMDHNfbbWIdrW3RG09xIIgUQioz3tjMGfErKfNM6/umjQAILx86MWOC6a/f
+         zrPw5LXL0hnjWHd46HiopdgPMtmddWMMyGXq4aMt+PMlcg2X2PqcNpy8VCtI7B0FsVsG
+         zhQDeJAulrFZvve0s6HvYBM2l65QnNnts4dZfKsAg6wmE0QUYj6uhTpzslgnw3/FxE0j
+         PgoA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=SKOSjsvH33aKBTK3IdGRLtExJpwuipYT4oUjT3BcsUo=;
+        fh=I5fA6SLmot0zHM6xBl72xrxnP65PEq8kl571dwCpvr0=;
+        b=JGTKNQXaS1IQ9jsOGz/4Gvabyef6caN6r+5JkoIGtV0OIuXmuBN2Xe1dQ94L0XDDM7
+         GUCg8yWjEIATDyqezDr9692lxgGrWCu4SeebYwp2h1sLm9tvTEmNZKv6/XGphES2aqr+
+         q2yn3SBJQSCutmHDwp7aaLFWqSpkGSzZZHmYVE0WQuw8DX+fR7+jRYuJdHE92WAcZ8a0
+         OC38qoEkqpYqOAyJK+7BOlm6rP4evF6qNv+02yFt523H3hhPNUfGD2J8IkUMImUJFqeB
+         Ym9dHRl0ZmQT4WCxgmARRSgWCAG2bNRA0bzQhwHgOy/yfIvLGDpc/AOkj5r4wytlnFDq
+         Oh+g==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772048541; x=1772653341; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1772048643; x=1772653443; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=9OJBu/xe+cK1xEvQ4qTytpgqTUvr2mZHvyticnScKFo=;
-        b=iB+UVtw+V5BLwDfYcw1K9AfsbsUXjKvP6eHgzsdsiBMQoJXSgaL6yTZwEVRQ68+lrU
-         WciGr3tkT7JUb0uCAY0ElnBPokIuImTJTO4NDmFKsI1IwY/Z4Nd3udPoD/W29pwTyB4v
-         US45HVBQWQY4J6agTaXQpFvJXFQrVq3ouleKA/GJcUjXJWCHVM6y+sNSdXA+KIg7qDul
-         4unetX0wdtK4rzJe3OEobN4A9YrbGK4wqe8w2szoUBaj89z+lj8T9TWuTOPlucpkMWj9
-         qIGyBw7C766D1nL8KVKXzsOMKqW7g+iUTaiT5HhrPugYqVIHUVgVKupijpzlCqVHEiQc
-         u3uQ==
+        bh=SKOSjsvH33aKBTK3IdGRLtExJpwuipYT4oUjT3BcsUo=;
+        b=LYr7nf6JZ53qoQ/7YrwdRN97q2aNMZZd/0TPUFCXVe1kg8cg2rq1BnA3bZB53Kbbj6
+         n+Ka0iJiXQLWStk44zVmkuaaR5HjAjKhI8wIfO32Ux9+hlUKn+bWcb4mePIz1MdIUkuy
+         zEFnirIpk4x13iUAOVLHTeeYJfitHahZw+Gmmi9SW26lV2pByiB3VntkCbgaBiUMLZ61
+         WGiMk8m9Angx3fRX3MJM66v914fpvJMTFfdicq7zDsXy3gGRxNUrWMW9TUZUPGqXM3Xs
+         N0Y9TvyOjQoWyADWOBd7Zw/Yab2UkWmYMw9z4CLQ4Al3I+1NlKINyj1Z1c9M1K4RUcml
+         uVAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772048541; x=1772653341;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+        d=1e100.net; s=20230601; t=1772048643; x=1772653443;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=9OJBu/xe+cK1xEvQ4qTytpgqTUvr2mZHvyticnScKFo=;
-        b=o0KRpUsp/zQ4jWL6leiRsYgH/CbZymAS8R7sIEFWlms9DUnQ5RnZLlT8skNsdm0Il2
-         8avVEn+X93/BGDl+QPqK2RWI7QGLU6wxJv+BaTss0ARfaSCIYXdGKeN4F6N664L+a+NR
-         xptiIyMmVd3H+7ztMe/HQm3/vI4/ta9WSvaDZu2IrxMX/e47d9m7oy8+VYxDJcrxYUv/
-         WlUCHISorMt9wmgfF+stjRqE0xsaZaYWfYYMqy0XPHobMqKUXfOXiSx7yLVCzEjxeanx
-         /3ndMGbKg7gyaE8ZlhSvNQer2MrKFiaGtbe17wpy2p5PcqRXgMAj/ToudwyqjqzUWggQ
-         hgDA==
-X-Forwarded-Encrypted: i=1; AJvYcCWPA/AvnoCh7BL22S9+LDDDgwUeoWboQd+7bZLN824O/Fw4aCnM1v5DQ+H1qWwXsfQ936YXKhnjgFY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxKgRy/f4ShP5HSz5HZrlhuLDlao3texUFbB+cdAu9T1flMxAn7
-	ue1fauDI7IM1QV00YhapONsbvMNZdjelicHVEkjUMjdXlgyHrIzD/nF0
-X-Gm-Gg: ATEYQzxe0lzDUunfgAtk7ICMLm0ZU3bfgG/bBLqS6dW/O2TsuEEHlF+35eX1IEgHrcv
-	nhEC1m2o9u2SIXAylRpaVyiRVZv4ZAB9+aPDhbw7j6nZo5gIeWMNhuwyX46LdG3aHJmueV6i6H1
-	SGJXvGD/6y8kFgMegrqXPHvXx3nHcTpm5Xue4B7DfwpdfMMxMGwxPU0iOemC7ZplEeTWkc7AHA5
-	Oxh1FbkaFQPCqXPUdphtAtIkvt7a/3mZtsfDsPJ02UuXwsKGLbsX8ebW9ytDUGM7lkE71AsFQ3i
-	LyUeMNQz8trIGZNJeh9zbf5Fy5JTkL1fV+mgSRgaz3CRTITXBpekU+MIq8r9fp0m6ff/Ii+p9k+
-	FQattCv/6tXdqetk/9c2VlN6nDld8ZSijiMB9+pdhZWsJa7lmMFJn6xT3SjZ5WKpBGZ4IDHnJfu
-	T55eLgQCcA0uTVGERUlSUvX04jCy/j4Mzlz30=
-X-Received: by 2002:a17:903:f87:b0:2a0:8be7:e3d7 with SMTP id d9443c01a7336-2ad7456f999mr126909655ad.57.1772048540691;
-        Wed, 25 Feb 2026 11:42:20 -0800 (PST)
-Received: from arch ([2409:40c2:505a:f4f0:ebc3:455d:5e47:8a2d])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2adfb5dbaafsm302215ad.36.2026.02.25.11.42.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Feb 2026 11:42:20 -0800 (PST)
-From: Bhargav Joshi <rougueprince47@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	rougueprince47@gmail.com,
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: 
-Date: Thu, 26 Feb 2026 01:10:51 +0530
-Message-ID: <20260225194051.8614-4-rougueprince47@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260225194051.8614-1-rougueprince47@gmail.com>
-References: <20260225194051.8614-1-rougueprince47@gmail.com>
+        bh=SKOSjsvH33aKBTK3IdGRLtExJpwuipYT4oUjT3BcsUo=;
+        b=G/fLlqrG3vXyAYg/Zh1aKCDw0f1uxw5Xmxe5xvb0GCaWVZHcWy6Ps8WJ3gt6IVuRse
+         qaOD039J/O8bPmtsZHHzBnRbF5227tG4ktN5m9gv01QTye/3IWrFaJeaM7XSs8DO5CL7
+         NVJGfMgeNmX18mtbVYabZW4Eqqlq90z6N+Yhnv8fLGL98QvEv/8GUniWsbpGf3u2/oib
+         eXj7LBUjMmtenWlo0m0HOMJ5onjTqEzr7vkiDGZJmTZmhYWU2IuCXrTRlv+XjYHm8dG+
+         i56+jlv80/FolFFCpYPVsfZRMdov/nfZ7r8Hq6pSfI9fjiOJywHHL+a4RA8ZxmyCfVsb
+         El3w==
+X-Forwarded-Encrypted: i=1; AJvYcCVNa8La+/4lCbxBGYZUr2/fmNcfLp6n9bNipGtymzNwlDzDMn1mum+mGbpHKrpY3aVGqxoDxr/1bDs=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxWXiRlKm88hie1NZNnbPSWbBlfodNMham/rHQCobtb1ftqihlg
+	h2C+pgqrSlWOe9dfn/4xcyH/+32LUoPt/xhwpnLGJE5Y7eVcaX6HWUwX2ad/a+8dU4hDSorOaTZ
+	qSBmPKCcoWLFOi7OAHjrDEi7e/rnb3hc=
+X-Gm-Gg: ATEYQzwin3UR2qDpBLmPREu7jlIurpSmb5paVeYR3b5AAbcnE9RTD0eNmNX0tckt9hp
+	RMfIeELsxTsUfe1j/VDejW1PWiDcEiIDvSjcm0Ry6oiVYT/B8MPe3pFJQlt8Bp2CJBaPaWYjWDt
+	mDatb+Z7KrsW/IuEV/sORkhVbpXTd7RVQm7WmBvLyiXXZK7PS4EGoDO0G2XmLchLIYBrCMwY5xV
+	Yn5THvr9HASfvYrfyE2VWBw+0oYaP9HKBneoF4/I0fxPcKONQyODZT+iUYP2453Ma2oG++Jo84T
+	8s6JYxLvNqrOb/QUztCIzowW7vHSNbP5w9OYnZEfdtlOrgi1Kl01RauZ6dHxfY0AWNvdBq7qv9K
+	fVcbj7+E=
+X-Received: by 2002:a17:907:98d:b0:b8f:8660:3caf with SMTP id
+ a640c23a62f3a-b908196f4ecmr1250576766b.5.1772048643073; Wed, 25 Feb 2026
+ 11:44:03 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260225194051.8614-1-rougueprince47@gmail.com> <20260225194051.8614-2-rougueprince47@gmail.com>
+In-Reply-To: <20260225194051.8614-2-rougueprince47@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 25 Feb 2026 21:43:26 +0200
+X-Gm-Features: AaiRm50khSOG-H2kSlXQyW9kS28zSgRmZ48fypz3L0d1wC5fXPghvbcaeB_nK8Y
+Message-ID: <CAHp75Ve5cC7HU4bXbs3J9-Gr7bwUDr7mPbWJYOt=cMRZM5r8Xw@mail.gmail.com>
+Subject: Re: [PATCH v5 1/3] iio: frequency: ad9523: fix implicit variable
+To: Bhargav Joshi <rougueprince47@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Subject: [PATCH v5 3/3] iio: frequency: ad9523: fix checkpatch warnings
-for symbolic permissions
+On Wed, Feb 25, 2026 at 9:41=E2=80=AFPM Bhargav Joshi <rougueprince47@gmail=
+.com> wrote:
+>
+> Macros AD9523_CLK_DIST_DIV_PHASE_REV(x) and AD9523_CLK_DIST_DIV_REV(x)
 
-The driver currently defines device attributes using symbolic permission
-flags (S_IRUGO and S_IWUSR). Update these to use octal permissions (0444
-and 0200) to resolve checkpatch warnings.
+Too long...
 
-Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
----
-Changes in v5:
-- Reflowed all commit messages to properly wrap near 72 characters as
-  requested.
-- Collected Reviewed-by tag.
+> implicitly relied on variable named 'ret' instead of using passed
 
-Changes in v4:
-- Used full name for SoB 
+on the variable
 
-Changes in v3:
-- Fixed vertical spacing and broken indentation.
+> argument '(x)'. Update the macros to explicitly use the argument '(x)'
+> for their operations.
+>
+> This also resolves the following checkpatch.pl warning: Argument '(x)'
+> is not used in function-like macro
 
- drivers/iio/frequency/ad9523.c | 78 +++++++++++++---------------------
- 1 file changed, 29 insertions(+), 49 deletions(-)
+Still missing period.
 
-diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index 6daa2ea354a8..ad32eb66edca 100644
---- a/drivers/iio/frequency/ad9523.c
-+++ b/drivers/iio/frequency/ad9523.c
-@@ -558,55 +558,35 @@ static ssize_t ad9523_show(struct device *dev,
- 	return ret;
- }
- 
--static IIO_DEVICE_ATTR(pll1_locked, S_IRUGO,
--			ad9523_show,
--			NULL,
--			AD9523_STAT_PLL1_LD);
--
--static IIO_DEVICE_ATTR(pll2_locked, S_IRUGO,
--			ad9523_show,
--			NULL,
--			AD9523_STAT_PLL2_LD);
--
--static IIO_DEVICE_ATTR(pll1_reference_clk_a_present, S_IRUGO,
--			ad9523_show,
--			NULL,
--			AD9523_STAT_REFA);
--
--static IIO_DEVICE_ATTR(pll1_reference_clk_b_present, S_IRUGO,
--			ad9523_show,
--			NULL,
--			AD9523_STAT_REFB);
--
--static IIO_DEVICE_ATTR(pll1_reference_clk_test_present, S_IRUGO,
--			ad9523_show,
--			NULL,
--			AD9523_STAT_REF_TEST);
--
--static IIO_DEVICE_ATTR(vcxo_clk_present, S_IRUGO,
--			ad9523_show,
--			NULL,
--			AD9523_STAT_VCXO);
--
--static IIO_DEVICE_ATTR(pll2_feedback_clk_present, S_IRUGO,
--			ad9523_show,
--			NULL,
--			AD9523_STAT_PLL2_FB_CLK);
--
--static IIO_DEVICE_ATTR(pll2_reference_clk_present, S_IRUGO,
--			ad9523_show,
--			NULL,
--			AD9523_STAT_PLL2_REF_CLK);
--
--static IIO_DEVICE_ATTR(sync_dividers, S_IWUSR,
--			NULL,
--			ad9523_store,
--			AD9523_SYNC);
--
--static IIO_DEVICE_ATTR(store_eeprom, S_IWUSR,
--			NULL,
--			ad9523_store,
--			AD9523_EEPROM);
-+static IIO_DEVICE_ATTR(pll1_locked, 0444, ad9523_show, NULL,
-+		       AD9523_STAT_PLL1_LD);
-+
-+static IIO_DEVICE_ATTR(pll2_locked, 0444, ad9523_show, NULL,
-+		       AD9523_STAT_PLL2_LD);
-+
-+static IIO_DEVICE_ATTR(pll1_reference_clk_a_present, 0444, ad9523_show, NULL,
-+		       AD9523_STAT_REFA);
-+
-+static IIO_DEVICE_ATTR(pll1_reference_clk_b_present, 0444, ad9523_show, NULL,
-+		       AD9523_STAT_REFB);
-+
-+static IIO_DEVICE_ATTR(pll1_reference_clk_test_present, 0444, ad9523_show, NULL,
-+		       AD9523_STAT_REF_TEST);
-+
-+static IIO_DEVICE_ATTR(vcxo_clk_present, 0444, ad9523_show, NULL,
-+		       AD9523_STAT_VCXO);
-+
-+static IIO_DEVICE_ATTR(pll2_feedback_clk_present, 0444, ad9523_show, NULL,
-+		       AD9523_STAT_PLL2_FB_CLK);
-+
-+static IIO_DEVICE_ATTR(pll2_reference_clk_present, 0444, ad9523_show, NULL,
-+		       AD9523_STAT_PLL2_REF_CLK);
-+
-+static IIO_DEVICE_ATTR(sync_dividers, 0200, NULL, ad9523_store,
-+		       AD9523_SYNC);
-+
-+static IIO_DEVICE_ATTR(store_eeprom, 0200, NULL, ad9523_store,
-+		       AD9523_EEPROM);
- 
- static struct attribute *ad9523_attributes[] = {
- 	&iio_dev_attr_sync_dividers.dev_attr.attr,
--- 
-2.53.0
-
+--=20
+With Best Regards,
+Andy Shevchenko
