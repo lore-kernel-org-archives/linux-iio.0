@@ -1,66 +1,67 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCB6731283E
-	for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 21:27:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 51BC0315775
+	for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 21:27:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772054828; cv=none; b=srhGpJBczdLfDJ7TQrw9RIIKDrWq0xIQ+9uoQ4uQvDjZeELoEKK4kYHR5kGfyAgtZSUKxpD+ZACTXPSop7FhPTFurdXPNvewl5ava9ZhlDOzWAcDkyBJI2tdYCrp5eMbATQebPxWADkWRL6UYIpS82iZit1kkoT7HgROXkTC9Eo=
+	t=1772054882; cv=none; b=dL5JNzDW7QVWKdg9SchDWSEitJsfltlbHPb0baKr7mApSMQ4lf2Ea0D2aItwhENRnihBTXvyibpuLYMwQWZ9O8VPyTcnCIZye5BnzpMQ+IFBiMwCqb8CgrtHOHL2uXttICB8sKFcaHRdXG0b50i0LKm8oYqdUr2MwJYkeyENfZQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772054828; c=relaxed/simple;
-	bh=mh7qnXYQkA7Ahj7W/PrVnNLs2LTGDLU5gA4Glh8Uqq0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=qNmfhCMqg4X7g0qyIIoRPWlLuzEVXnadGDKnAGFjE00wK3x5IxTwSrOSRIb3pSjiB/CeDNJAJr7wjR6Iu2h6Dnka/uWVEWDOD8x1ALoL8/q+ViP8Mf2Ux2JPBnQ72qQJKXr3S2z7LdMUzRVItryQWhJChIONv2gwE39yfSQ+UyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=RUVhRHfi; arc=none smtp.client-ip=209.85.210.49
+	s=arc-20240116; t=1772054882; c=relaxed/simple;
+	bh=qjrk/gpVIC1qKApvcZQJkb+2O/ErBj+6Q50wrK706PE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=cUcxwYTZ4wsXNIrs8W4F5afWJTwgwBjaSLr8XLcx9eRM6OTu4lagMbdo6uHUfwpkjod59+CXkz5hpSyVVqAJiuGUHaDVKus2a9FOGELvSbANrCQAliri4WlHruV8/zlnnjNpNAQZq/ZXbnMG7yyDl4FEffbkdukI369RGPMYzEY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=zVFNrM6/; arc=none smtp.client-ip=209.85.167.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="RUVhRHfi"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-7d4beaf25deso1069115a34.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 13:27:06 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="zVFNrM6/"
+Received: by mail-oi1-f179.google.com with SMTP id 5614622812f47-4638e238094so101224b6e.3
+        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 13:27:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772054826; x=1772659626; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772054878; x=1772659678; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=UbuookLTgSsWfKX0tCmhPtZVpYMExZUrx5/0NdEq/IM=;
-        b=RUVhRHfia93HZfa9g1+zkbL4Qiik6Ub8KzGhSdJl0oq6lAudLwDOS3kc1VL9hshREV
-         H5uJq/UeKWbxxh/miIWx0papVf1+ZsjXamQunOfnO/JUpoyT6L5acKbvq00OlbdbxF8C
-         r+g5pJmthh888OeJXX6RdbRzu7vPzD0eueZRJyl3AZWBaUv0BidvtcMOumUUVBm0EX+L
-         JKefV51DezaKZaD0SnnvMpb8qXDaeU+KxRaLSVTdmIUeU6EtlUnESjxM0DdTYwqk3dR9
-         y1f2yec4qA0Gd4U6bA6JqaHcYlZpeDsYqUwSkVBCIG+5MSiM/Sx4nFY3/MEh9Uyh5yOz
-         43jA==
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ppp+Wy9oVLyAcv92KWS/Xhqb10P6rmyhJHh80S79F44=;
+        b=zVFNrM6/dL4RVlHdZshlXZedPF+Sqou81/Sq7A0ZCjiDZ7tfVk1EgwHCfOsrTxzeSH
+         FpwwIwQ8zWvqPpAxNspF25xgKP5TDUyD1pJM3fD3gY3IDOuKjwXBkjH5l0fZ1zUUeZHm
+         c5HRx6mgh2hZwornmLh3CjK4NibTfZ/VDFth8CSCG5PwGyxt3ZJQ4V1qh341VFL3LizR
+         qG2H4yi21KcKfjCY7MF6S2OGLUWXEikGFrcW4Qwc6nlTwbmkaCs39YSyIq4wK6ymu7i2
+         mXx2lM9bsF7BTIHyp7IaApmqtoAD0VhGrLQQBPc5IXWyCUeZ+j+pmr0rfmUFn37jkc8C
+         GE9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772054826; x=1772659626;
+        d=1e100.net; s=20230601; t=1772054878; x=1772659678;
         h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:to:subject:user-agent:mime-version:date:message-id
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=UbuookLTgSsWfKX0tCmhPtZVpYMExZUrx5/0NdEq/IM=;
-        b=c8UYTFHrIuVhUPpLa3Gca5o/E35ns0KhnCN2zkeOy7C9DcE1ufoxoYWt3KMi/RMO56
-         TBKakUFkFS9BmcEUmmmLgMrAmhKe8Hmb7WlfOe6TCA7/UO6+C/tyaxj2AnK6LMqpY/eM
-         SGm9G1zVfU1//bBFVGUu5uDGwOwTdu4c0adRbMjB0Hm1xTTAfOW2qZYwSYdCOHL0o2t9
-         307HYTWr9WlodsT5ErPGidFHfjJU47FgU+u/YGBslv72hq6LshTAEsl8OIzEfxX+AIel
-         idZc5eddrawTVd+spETvrJ7fwQECbzvftubceED4LQ5FuHAqsQbLriQztfWi3+KyRHuR
-         eAbQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVHsO0Sb4revR0WM0r4kB3gkIASkWc1Q3WBaSyQw+T1x5Z/6usNH5lk+UVSQuY/ZDC2YSv9+NCR2FE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxnElEakCIZDPt2mjZZgDvHEREheSbIxCAtCQtGpSVrmNeO9rjW
-	d8k8bN4w2VX8Q0FTS3Fi8rwz0XSpBjGmtNp1XJmaVy6w4MrZEfEclC6p8hoJWB0Z3xA=
-X-Gm-Gg: ATEYQzx17Yqg7wxBEh1ZqMMFDTXGmwmcF0wbjR89fv2I6KNANR1FoEfn2gt/JTqjj2E
-	yRc74pfscpZh0pobMCz2JwCdilt0Lu6xKurqXphEfda5Pb0DpyjIZoVN1kAsDYvquNALgpw76Ph
-	rDLegWNHbe6UL/9JoMDlsUfvT8gapXpzO8w5zS9X0Jdbc48O67QjDBoXyc2NHtklQjjibD6ZkBJ
-	Eb90SqqTILr/BsxCEJaEOedl7LWB/28jsWvU6BQDt0Vovq0LYrJIkD6uSU+vHC4+d876sAXFZ7y
-	MoutExWWt0yySkBC0qQUs+1NWlnX54l83z5qF2c3iX/Y1oLtbZL8WypYHriQyC6xtcVenOGXfOL
-	oSyQVngxhRzjEJHCpyiQXQlZdzBsLGh4MSzwlPcww8H2lP5L5z3uxiRjBf/rtv+nvkXItCAV1Wn
-	IjPvB9xEXZap4CybuCmzE1CAMzmm0j301i52SVeLdLlY5SoY8gWTXxXwVD0GuUtuK1tMYTx3A=
-X-Received: by 2002:a05:6870:e310:b0:3d2:e6a7:e938 with SMTP id 586e51a60fabf-41609ea9226mr370316fac.15.1772054825834;
-        Wed, 25 Feb 2026 13:27:05 -0800 (PST)
+        bh=ppp+Wy9oVLyAcv92KWS/Xhqb10P6rmyhJHh80S79F44=;
+        b=vhrnEVujJ2/sHdDOM3z6zqxESQqGW5pI14ibiNpkB+pg2xR+zeDLDhUYE2fub0kEm/
+         iUlKNNaWgtP3sNwkO7NSvw+z/0Gp8vdKU0USnQvyZwEHk298YzjgVyD0Eia8ab/fsGEB
+         zitMD++CpYUN6QCaufLzYK0yFBR9Uhm4cmFpG9gCAWE+8XoYSZqWV99N1lpBmLdQyQFQ
+         rXZPqdd54eLVKQ6CFQWRctcSgEE6aoFx/+B7WVrsBpgRema+0tTNwikyCiluNape/P1F
+         kMyLpXndXnC8zlpDReuH6Of4wnuIUNFa2oS6XiO3vhiXfyk8iIf38PfMvd+sKVTsi5kw
+         +Y7Q==
+X-Forwarded-Encrypted: i=1; AJvYcCU8cRSh1CeYGMhvf8NOoYgMGQ3lv1H+Rd8JZNCjBgk4pigsl3O99dVXOkJLl27nRnA4MOvqfUuD3uA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz+Xw9uXu9s/2Y9wWisDFWySwS0EusjMDqWqskQaat2vVLKTzDF
+	/jPXIumXyuwTY7kwdkIQlLGOG7+7PXLf/nZD57fDc+9YsR9yLHL9XnGR+7/E/3qo8dJY4BbUK+w
+	a+zO/
+X-Gm-Gg: ATEYQzzAiE4Ua/48FgBJa+jxWZzacGFFsF7wd3BRaExNcJyLJYs/UsKK6pgrEgtqqQ9
+	DOUTL1NnsBC/9txp0+V77IzKOX7PtJlOWrt5X7A2s/XH7JfwPQ8nwFmItVLXs7UHjqci5rX4RlS
+	81mhPWWAvHeKQILbM3wn9Jx8EYXlHJRs7dCMMRp/fyU3DTDYEmmc1opmy0nMZlM0Vg1IXgOKn0x
+	XbU4eORTlKGmQO0OMMvwskjZr0nXDI9eNSzVA3BzQX3wA38iye7U5WmZ8rGs1YVqmFRZ0vRkuiW
+	FQmpIBRGRW+TN5tAKyBVJVxNmi5eXseC6p/aUdeX4ABD8rd/Vt4gCUdm3BnRJ+fLcD5ck3sB4Um
+	rpwoSCzZ5E0p/7tFHqpNdJghg1281MRCrJdi+pkOfJINdb93whKgUvkuqk6rxiJB1GbzBjfrweG
+	8jET8fVSoaghLNP20LfERr4TqxBmaX9PyzVEoey4xaaZp7Rqb4294SQkGQByA/BUleKGpIEIA=
+X-Received: by 2002:a05:6808:6508:b0:45e:a52c:e4cd with SMTP id 5614622812f47-4649eef644amr1321892b6e.27.1772054878045;
+        Wed, 25 Feb 2026 13:27:58 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:146:def2:caeb:cb1f? ([2600:8803:e7e4:500:146:def2:caeb:cb1f])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160cf2572bsm64198fac.2.2026.02.25.13.27.05
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-4644a17aa52sm9783451b6e.10.2026.02.25.13.27.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Feb 2026 13:27:05 -0800 (PST)
-Message-ID: <9c0d071c-b842-47e8-87bd-4e06afec57ef@baylibre.com>
-Date: Wed, 25 Feb 2026 15:27:03 -0600
+        Wed, 25 Feb 2026 13:27:57 -0800 (PST)
+Message-ID: <eeb28077-0886-42b4-b468-21f5c6a6444a@baylibre.com>
+Date: Wed, 25 Feb 2026 15:27:55 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,59 +69,46 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 5/7] iio: ABI: Add support for floating-point numbers
- in buffer scan elements
-To: Francesco Lavra <flavra@baylibre.com>, Jonathan Cameron
- <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Subject: Re: [PATCH v6 6/7] iio: ABI: Add custom data type
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Francesco Lavra <flavra@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20260225100421.2366864-1-flavra@baylibre.com>
- <20260225101748.2368295-1-flavra@baylibre.com>
+ <20260225101806.2368391-1-flavra@baylibre.com>
+ <aZ7gdO58NV6gjgWC@smile.fi.intel.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260225101748.2368295-1-flavra@baylibre.com>
+In-Reply-To: <aZ7gdO58NV6gjgWC@smile.fi.intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 2/25/26 4:17 AM, Francesco Lavra wrote:
-> In the data storage description of a scan element, the first character
-> after the colon can have the values 's' and 'u' to specify signed and
-> unsigned integers, respectively.
-> Add 'f' as an allowed value to specify floating-point numbers formatted
-> according to the IEEE 754 standard.
+On 2/25/26 5:43 AM, Andy Shevchenko wrote:
+> On Wed, Feb 25, 2026 at 11:18:06AM +0100, Francesco Lavra wrote:
+>> This type is used when the data received from or sent to a device cannot be
+>> identified with a standard type and must be processed by custom userspace.
+>> Any driver using the custom type must provide a driver-specific document
+>> that explains what the data represents and how it is to be interpreted by
+>> userspace.
 > 
-> Signed-off-by: Francesco Lavra <flavra@baylibre.com>
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio  | 33 +++++++++++++-----------
->  Documentation/driver-api/iio/buffers.rst |  5 ++--
->  Documentation/iio/iio_devbuf.rst         |  3 ++-
->  3 files changed, 23 insertions(+), 18 deletions(-)
+> This rises the same Q as for other firmware-hidden algos, et cetera: How
+> can we prevent the kernel from being just a simple proxy between HW and
+> the userspace? What would be the point of having the "driver" in the kernel
+> space?
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index 5f87dcee78f7..61961bca4dce 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -1510,21 +1510,24 @@ Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Description of the scan element data storage within the buffer
->  		and hence the form in which it is read from user-space.
-> -		Form is [be|le]:[s|u]bits/storagebits[>>shift].
-> -		be or le specifies big or little endian. s or u specifies if
-> -		signed (2's complement) or unsigned. bits is the number of bits
-> -		of data and storagebits is the space (after padding) that it
-> -		occupies in the buffer. shift if specified, is the shift that
-> -		needs to be applied prior to masking out unused bits. Some
-> -		devices put their data in the middle of the transferred elements
-> -		with additional information on both sides.  Note that some
-> -		devices will have additional information in the unused bits
-> -		so to get a clean value, the bits value must be used to mask
-> -		the buffer output value appropriately.  The storagebits value
-> -		also specifies the data alignment.  So s48/64>>2 will be a
-> -		signed 48 bit integer stored in a 64 bit location aligned to
-> -		a 64 bit boundary. To obtain the clean value, shift right 2
-> -		and apply a mask to zero the top 16 bits of the result.
-> +		Form is [be|le]:[s|u|f]bits/storagebits[>>shift].
 
-Not related to this patch, but I notice that this is missing "repeat".
-\
+I tend to agree that this opens the door for misuse or an excuse to not
+make the effort to develop something more generally useful on future drivers.
+
+For this patch series, could we still use IIO_ROT and introduce a
+new IIO_MOD_PARTIAL_QUATERNION that is defined according to the
+description in the documentation patch in this series? This may be
+the only driver that ever uses it, but it is still clearly defined.
+
+Or perhaps we could even say that if a IIO_MOD_QUATERNION has
+.repeat = 3 instead of .repeat = 4, then it should be interpreted
+this way?
+
+
+
