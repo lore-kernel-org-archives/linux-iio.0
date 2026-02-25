@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 714C62ED848;
-	Wed, 25 Feb 2026 19:07:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0D342BDC0B;
+	Wed, 25 Feb 2026 19:09:40 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772046454; cv=none; b=TdxoWd+2sDoKB3IqYleBq6em/p80ei7Y1d2ETaTXem2Ukhxo/TglBMvKWUCP77VBsjSiq3JssiQcGdkZUntv9ea0i9ZbpB9uC/bSYplg1U2VzZVB1vuV8Q6scFCCczLOoXV/V/bFIFIjzTX8LD83LycH/R6ZTygHptSO0hMsNSk=
+	t=1772046580; cv=none; b=cYoUNsJZkqY9SeAw9BWyL4wUTUTf4L7NaQM/bwEvcu9+V6coCAiBR+wlcN18qpGYMvsVjlMCKXKNnadY8dQCS1tY56RMWM35eHug+eRSvMJXGPh6rhkWHqClwmTEaUA+u0HLugEvmsFIFJYz7m9eCLUwGYnofXKwMbLXlHRVh5Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772046454; c=relaxed/simple;
-	bh=n2ThqRKc1AVWhg9cT24RDtRVQbfzmfNVs8WJEir8WL4=;
+	s=arc-20240116; t=1772046580; c=relaxed/simple;
+	bh=noh+6VhnrLno4CMeO8qob/Mp3YWzLfTF2cssXTDsSpg=;
 	h=From:To:In-Reply-To:References:Subject:Message-Id:Date:
-	 MIME-Version:Content-Type; b=fr2TBGOm6MT8+6j3nfd7Ea6l8oTfRP0VSZr5P8Tt4mjB9ELqlwGhCWhq5HKH/vc7PliKaIDYDBeO84Bm9q1cMyAR2+UeaiVemjThYxh5vHmHUqh5sOMVS4KmG4plmCfFhBcHZfg06MM88Nn6eSUS1PBdKiyH0PepAxWyYHP2OVc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=eKWhlnlD; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=NR6iGMF4JPkvgUepz5jD1F3tjk3ZvaSfCsmz0hq7UzeJvkmX8hbWyooKnO1OzZxTKGeWfJi81sb9CYLRnxKmBmBn+8raH2ndbO8IFCuFRtPhPot21T0TSlSbUgn8XJT9YdmQD3XpXuxMOwn4KnNXDztLRXWB1X/ohqIQj9VD7sk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BejJRzvY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="eKWhlnlD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 584F1C116D0;
-	Wed, 25 Feb 2026 19:07:31 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BejJRzvY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 985C2C116D0;
+	Wed, 25 Feb 2026 19:09:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772046454;
-	bh=n2ThqRKc1AVWhg9cT24RDtRVQbfzmfNVs8WJEir8WL4=;
+	s=k20201202; t=1772046580;
+	bh=noh+6VhnrLno4CMeO8qob/Mp3YWzLfTF2cssXTDsSpg=;
 	h=From:To:In-Reply-To:References:Subject:Date:From;
-	b=eKWhlnlDDPaFKVpRi2Ix1lTUPacf8fV45r8m348II1HYnmB2UxwK+VyqxECLO0Nli
-	 7WmQVpF6T32cplZLTBa9z6flhd35Yiya55DL6pvXRrjk4/HWnjpC5XTq1Ut0wopkg+
-	 ON0OvaA3AFFrS+atnElbcG+VtlFWaHDB6lnbl1vpN6q6wXTSk+seUPr7C9Kai3kcnu
-	 lnEmJgIK3ShSinAZk3c/pNy22BtYS+ssAqz5JmzufFjnF6ntN8z5KFRdHLiIwmcJlC
-	 bhMVkEipvRc+qeM4H1K+H5wLelX3jtF8YUxyLIZ0g3EftEiPEMN3FAfzCFDDvCDYCC
-	 smeoFzQRN8XxA==
+	b=BejJRzvYBjofFZ379gj4g3EV4OJTUbN6+Jj8C6cJrRsZ2Jl+dOtRKgVEUSWMjg6CP
+	 qPgVWGYVh8mKjclPde4LfHtNYeRzsQAtOrtsPDbOk3HRPX4isr/4VXwL2JHkb5HC2/
+	 4/ksGFNlOosT1DgZPIKoifjaUwxDay6xl0imVJyPqfp2VXPRNBSADgLF55Alg3xrH4
+	 3ool2Bn1NiS4WvHJEuvHv6pxB+DAOclk/IsN53KSFUNAMbEMPKwdHGyDxGYylz8vp5
+	 BoFCs0imSbc37oEbN9d3k7KsNaDx4Eada+rVXPOCXMeuXBXgVPVk76AF3jhOCPGIxQ
+	 NdJNOClubWx9A==
 From: Mark Brown <broonie@kernel.org>
 To: Lars-Peter Clausen <lars@metafoo.de>, 
  Michael Hennerich <Michael.Hennerich@analog.com>, 
@@ -34,15 +34,17 @@ To: Lars-Peter Clausen <lars@metafoo.de>,
  Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
  Krzysztof Kozlowski <krzk+dt@kernel.org>, 
  Conor Dooley <conor+dt@kernel.org>, 
- Olivier Moysan <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
- linux-spi@vger.kernel.org, Antoniu Miclaus <antoniu.miclaus@analog.com>
-In-Reply-To: <cover.1770393792.git.antoniu.miclaus@analog.com>
-References: <cover.1770393792.git.antoniu.miclaus@analog.com>
-Subject: Re: (subset) [PATCH v2 0/4] iio: adc: ad4080: add support for
+ Olivier Moysan <olivier.moysan@foss.st.com>, 
+ Sebastian Reichel <sebastian.reichel@collabora.com>, 
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org, 
+ Antoniu Miclaus <antoniu.miclaus@analog.com>
+In-Reply-To: <20260223162110.156746-1-antoniu.miclaus@analog.com>
+References: <20260223162110.156746-1-antoniu.miclaus@analog.com>
+Subject: Re: (subset) [PATCH v4 0/5] iio: adc: ad4080: add support for
  AD4880 dual-channel ADC
-Message-Id: <177204645111.169139.7163032381688312306.b4-ty@kernel.org>
-Date: Wed, 25 Feb 2026 19:07:31 +0000
+Message-Id: <177204657734.171265.1894729966536357038.b4-ty@kernel.org>
+Date: Wed, 25 Feb 2026 19:09:37 +0000
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -53,7 +55,7 @@ Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 X-Mailer: b4 0.15-dev-47773
 
-On Fri, 06 Feb 2026 18:07:12 +0200, Antoniu Miclaus wrote:
+On Mon, 23 Feb 2026 18:20:59 +0200, Antoniu Miclaus wrote:
 > Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC from
 > the same family as AD4080.
 > 
@@ -70,8 +72,8 @@ Applied to
 
 Thanks!
 
-[1/4] spi: allow ancillary devices to share parent's chip selects
-      commit: ffef4123043c5bb29e61052a41e577ae1ee6837a
+[2/5] spi: add devm_spi_new_ancillary_device()
+      commit: e02902dd493bf9c9b05353c761737ac514ad7a5c
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
