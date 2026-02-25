@@ -1,66 +1,66 @@
-Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 299DB311952
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DCB6731283E
 	for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 21:27:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772054828; cv=none; b=PmYyWSXkAPSOJdigPd5ZBM/kA5GvcxGDaVLtVJXoqDLCuNgy4hiI+4bcN0G1DNMbDNig4aYTmbzz4tECN1qqgt4AmI5mFLRE3a7WFZxJyBiPwITfWU3DssNIFUSnGLUBltf8J3iGUnLB/wbZ0ut+7bOhmAbJsiOoJ8DcxmFRD8U=
+	t=1772054828; cv=none; b=srhGpJBczdLfDJ7TQrw9RIIKDrWq0xIQ+9uoQ4uQvDjZeELoEKK4kYHR5kGfyAgtZSUKxpD+ZACTXPSop7FhPTFurdXPNvewl5ava9ZhlDOzWAcDkyBJI2tdYCrp5eMbATQebPxWADkWRL6UYIpS82iZit1kkoT7HgROXkTC9Eo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1772054828; c=relaxed/simple;
-	bh=yGGMDF5JAAyQ7t/X+LED3I2wNOi+oFXMl1uT9N+vUHk=;
+	bh=mh7qnXYQkA7Ahj7W/PrVnNLs2LTGDLU5gA4Glh8Uqq0=;
 	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-	 In-Reply-To:Content-Type; b=UGXhb2TLJSVdwfOKoTKngcDyjApB+2S24UesQYy36GcoUaP7jP1CdUNshn9JydxLgTytaJyFFMQZ9il0Ey4csk7f5zpKaGP0vbk0qLhXI+5hSuP2UX1JC37HHUbiVBxZXh3mzPezBfI3WvRz6Jh7BuYITFdeUhhqd/a0MJYP03k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=PzBp7ysd; arc=none smtp.client-ip=209.85.210.52
+	 In-Reply-To:Content-Type; b=qNmfhCMqg4X7g0qyIIoRPWlLuzEVXnadGDKnAGFjE00wK3x5IxTwSrOSRIb3pSjiB/CeDNJAJr7wjR6Iu2h6Dnka/uWVEWDOD8x1ALoL8/q+ViP8Mf2Ux2JPBnQ72qQJKXr3S2z7LdMUzRVItryQWhJChIONv2gwE39yfSQ+UyU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=RUVhRHfi; arc=none smtp.client-ip=209.85.210.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="PzBp7ysd"
-Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7d18d02af68so36529a34.2
-        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 13:27:05 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="RUVhRHfi"
+Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-7d4beaf25deso1069115a34.0
+        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 13:27:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772054825; x=1772659625; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772054826; x=1772659626; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:to:subject:user-agent:mime-version:date:message-id:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=6qd3od5gT9Y56WsM6DlqnASWYdZTTGBmXPSgA7J3iS4=;
-        b=PzBp7ysdmb3gfHHG4xNmOTe9VXSE5URpzf8AeQjKsPRKZtNZ180XrZmWGei4QIEMag
-         YEV87ONmpK5yI2NAdKi5qvT4gcCMlDdlLTWud/y4qZlDiOB4gKDUpX6Mfc5OIZQhms5q
-         0tcNhY3n116NvydPlxv9UhK2UNl3PXy1VSTxNkDcU+6FFSFzrBtDTS7ULHTuQLXxIkjV
-         yEpsZk/JYKG3mv/LrR2mo2t+gkExij091/8H+me92LRPCUtNu1GXFjX33CjuOVbVpDhp
-         lgqGflnVKqHz5fz1weHNbX8iog6LwPYBlbBKG5gc6bt4Tvih/IzuWWTAsU19BXdrAkSd
-         9E+A==
+        bh=UbuookLTgSsWfKX0tCmhPtZVpYMExZUrx5/0NdEq/IM=;
+        b=RUVhRHfia93HZfa9g1+zkbL4Qiik6Ub8KzGhSdJl0oq6lAudLwDOS3kc1VL9hshREV
+         H5uJq/UeKWbxxh/miIWx0papVf1+ZsjXamQunOfnO/JUpoyT6L5acKbvq00OlbdbxF8C
+         r+g5pJmthh888OeJXX6RdbRzu7vPzD0eueZRJyl3AZWBaUv0BidvtcMOumUUVBm0EX+L
+         JKefV51DezaKZaD0SnnvMpb8qXDaeU+KxRaLSVTdmIUeU6EtlUnESjxM0DdTYwqk3dR9
+         y1f2yec4qA0Gd4U6bA6JqaHcYlZpeDsYqUwSkVBCIG+5MSiM/Sx4nFY3/MEh9Uyh5yOz
+         43jA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772054825; x=1772659625;
+        d=1e100.net; s=20230601; t=1772054826; x=1772659626;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=6qd3od5gT9Y56WsM6DlqnASWYdZTTGBmXPSgA7J3iS4=;
-        b=ChqKh0vjq1GbmX6VQ/r60TKp4mdc4nMNLYhRDW8gRpwJwoIkOhZwoDP70nK/EUL1i3
-         JOTeAFZ9UQehOTmgJ260jlM3OK6UWa/bW3zs+9DUj8MDWCXRkiwjwkToEhz6DspwGHZr
-         MWND/mC76QIOaE+a0xn5b2OE3EDgn2ImzUnF49vTKZuukHhOzIqTERwmIIO6kwBA7iIY
-         TbUtJ8e0C4wuZL09ChpkXLPm5of6KKB0AcgoLC57vTYGnAEKowPaijUnQCF9Jz4aiNMG
-         1WPGvMMMZEvk0Cs6bBT6MRxtsWIjtkvmT5ctm+x6fcKWFSW9FAfRnPp/qxXrvHKrfAs8
-         XXSg==
-X-Forwarded-Encrypted: i=1; AJvYcCVDKPF/QCGg5tDYce/6C9QD75L4SQnAKkDGk8j9kmVVkwVu5jTs4x+RBV5IvrELhZcubRnRGK2/LSY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxg325UEyw8EulHgjZRsqygll3SrvO3Z2QHoDQzxfI4zwBORkEN
-	HCUh28BmuDrgQM0f7c08TCBLIWJ+9/QAkTEFTGQARvemLIlBmCoVCK1iFM2QsmatvP8=
-X-Gm-Gg: ATEYQzwy8T4D/rsuwTWNsrtjxcyGWt/+nKTl0JC3JTwWd007+eF/vt6ub8VBPcpn3SE
-	AZzIZMMnfrSD1TH1XcAbCTnFfP1QbtL3t5jPqtWfRvecXhpNuW4WMneTyZm0YVzYRlIgfIFWtwC
-	X7FHfCqJx3zYvdZCotbD5fb4EkJ2YZZv8QoF0wzuIjrhriTgRo5J5eA+wun1N9hJ96j9/QJxe4Y
-	kGaxvhpdDY5Rx1vYn0H0tjG3U/4/1iC+bIhuhjk+mgTESDGTPAngOEZfl4evdfQyik842ba1wkh
-	T6s91rg+X4JVKuZCPG7XEPz7/eyxozzHfK3ZXgFnNFGZW2SRGuB1rM3Fal4JOfszqaL25mQZQ2H
-	8Gi9uYvBP732X1EsrC0gHFVkFmghrM/yObpAZZb6Jea683iW1BEcmr7lPLd5sueArtNCyAWoT/T
-	lgcJ/vHBdlhIeih2rgbVe5Siqo6Fa4yOgG/88jYmZAngAnrt+6V/KxDgKBXOgcykuPtxVDhoA=
-X-Received: by 2002:a05:6870:2188:b0:3e8:8e56:671a with SMTP id 586e51a60fabf-4157b210230mr8655778fac.54.1772054824819;
-        Wed, 25 Feb 2026 13:27:04 -0800 (PST)
+        bh=UbuookLTgSsWfKX0tCmhPtZVpYMExZUrx5/0NdEq/IM=;
+        b=c8UYTFHrIuVhUPpLa3Gca5o/E35ns0KhnCN2zkeOy7C9DcE1ufoxoYWt3KMi/RMO56
+         TBKakUFkFS9BmcEUmmmLgMrAmhKe8Hmb7WlfOe6TCA7/UO6+C/tyaxj2AnK6LMqpY/eM
+         SGm9G1zVfU1//bBFVGUu5uDGwOwTdu4c0adRbMjB0Hm1xTTAfOW2qZYwSYdCOHL0o2t9
+         307HYTWr9WlodsT5ErPGidFHfjJU47FgU+u/YGBslv72hq6LshTAEsl8OIzEfxX+AIel
+         idZc5eddrawTVd+spETvrJ7fwQECbzvftubceED4LQ5FuHAqsQbLriQztfWi3+KyRHuR
+         eAbQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVHsO0Sb4revR0WM0r4kB3gkIASkWc1Q3WBaSyQw+T1x5Z/6usNH5lk+UVSQuY/ZDC2YSv9+NCR2FE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxnElEakCIZDPt2mjZZgDvHEREheSbIxCAtCQtGpSVrmNeO9rjW
+	d8k8bN4w2VX8Q0FTS3Fi8rwz0XSpBjGmtNp1XJmaVy6w4MrZEfEclC6p8hoJWB0Z3xA=
+X-Gm-Gg: ATEYQzx17Yqg7wxBEh1ZqMMFDTXGmwmcF0wbjR89fv2I6KNANR1FoEfn2gt/JTqjj2E
+	yRc74pfscpZh0pobMCz2JwCdilt0Lu6xKurqXphEfda5Pb0DpyjIZoVN1kAsDYvquNALgpw76Ph
+	rDLegWNHbe6UL/9JoMDlsUfvT8gapXpzO8w5zS9X0Jdbc48O67QjDBoXyc2NHtklQjjibD6ZkBJ
+	Eb90SqqTILr/BsxCEJaEOedl7LWB/28jsWvU6BQDt0Vovq0LYrJIkD6uSU+vHC4+d876sAXFZ7y
+	MoutExWWt0yySkBC0qQUs+1NWlnX54l83z5qF2c3iX/Y1oLtbZL8WypYHriQyC6xtcVenOGXfOL
+	oSyQVngxhRzjEJHCpyiQXQlZdzBsLGh4MSzwlPcww8H2lP5L5z3uxiRjBf/rtv+nvkXItCAV1Wn
+	IjPvB9xEXZap4CybuCmzE1CAMzmm0j301i52SVeLdLlY5SoY8gWTXxXwVD0GuUtuK1tMYTx3A=
+X-Received: by 2002:a05:6870:e310:b0:3d2:e6a7:e938 with SMTP id 586e51a60fabf-41609ea9226mr370316fac.15.1772054825834;
+        Wed, 25 Feb 2026 13:27:05 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:146:def2:caeb:cb1f? ([2600:8803:e7e4:500:146:def2:caeb:cb1f])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160cf2572bsm64198fac.2.2026.02.25.13.27.02
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160cf2572bsm64198fac.2.2026.02.25.13.27.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Feb 2026 13:27:04 -0800 (PST)
-Message-ID: <120c7f33-4ca1-4d35-ac1b-b65362f1adfc@baylibre.com>
-Date: Wed, 25 Feb 2026 15:27:01 -0600
+        Wed, 25 Feb 2026 13:27:05 -0800 (PST)
+Message-ID: <9c0d071c-b842-47e8-87bd-4e06afec57ef@baylibre.com>
+Date: Wed, 25 Feb 2026 15:27:03 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,87 +68,59 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 4/7] iio: Rename 'sign' field to `format` in struct
- iio_scan_type
-To: Francesco Lavra <flavra@baylibre.com>, Jonathan Corbet <corbet@lwn.net>,
- Shuah Khan <skhan@linuxfoundation.org>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>,
- Lucas Stankus <lucas.p.stankus@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Puranjay Mohan <puranjay@kernel.org>,
- Cosmin Tanislav <cosmin.tanislav@analog.com>,
- Ramona Gradinariu <ramona.gradinariu@analog.com>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>,
- Petre Rodan <petre.rodan@subdimension.ro>,
- Dan Robertson <dan@dlrobertson.com>, Benson Leung <bleung@chromium.org>,
- Guenter Roeck <groeck@chromium.org>, Jiri Kosina <jikos@kernel.org>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- Matti Vaittinen <mazziesaccount@gmail.com>,
- Marcelo Schmitt <marcelo.schmitt@analog.com>,
- Esteban Blanc <eblanc@baylibre.com>, Jorge Marques
- <jorge.marques@analog.com>, Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
- Dragos Bogdan <dragos.bogdan@analog.com>,
- Alisa-Dariana Roman <alisa.roman@analog.com>,
- Trevor Gamblin <tgamblin@baylibre.com>, Renato Lui Geh
- <renatogeh@gmail.com>, Eugen Hristev <eugen.hristev@linaro.org>,
- Nicolas Ferre <nicolas.ferre@microchip.com>,
- Alexandre Belloni <alexandre.belloni@bootlin.com>,
- Claudiu Beznea <claudiu.beznea@tuxon.dev>, Andreas Klinger
- <ak@it-klinger.de>, Paul Cercueil <paul@crapouillou.net>,
- Ramona Bolboaca <ramona.bolboaca@analog.com>,
- Marcus Folkesson <marcus.folkesson@gmail.com>,
- Kent Gustavsson <kent@minoris.se>, Matthias Brugger
- <matthias.bgg@gmail.com>,
- AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
- Frank Li <Frank.Li@nxp.com>, Sascha Hauer <s.hauer@pengutronix.de>,
- Pengutronix Kernel Team <kernel@pengutronix.de>,
- Fabio Estevam <festevam@gmail.com>,
- Matteo Martelli <matteomartelli3@gmail.com>,
- Marius Cristea <marius.cristea@microchip.com>,
- Heiko Stuebner <heiko@sntech.de>, Maxime Coquelin
- <mcoquelin.stm32@gmail.com>, Alexandre Torgue
- <alexandre.torgue@foss.st.com>, Kurt Borja <kuurtb@gmail.com>,
- Francesco Dolcini <francesco@dolcini.it>,
- =?UTF-8?Q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?=
- <jpaulo.silvagoncalves@gmail.com>, =?UTF-8?Q?Leonard_G=C3=B6hrs?=
- <l.goehrs@pengutronix.de>, Oleksij Rempel <o.rempel@pengutronix.de>,
- Haibo Chen <haibo.chen@nxp.com>, Salih Erim <salih.erim@amd.com>,
- Conall O'Griofa <conall.ogriofa@amd.com>, Michal Simek
- <michal.simek@amd.com>, Gustavo Silva <gustavograzs@gmail.com>,
- Tomasz Duszynski <tduszyns@gmail.com>, Roan van Dijk <roan@protonic.nl>,
- Jyoti Bhayana <jbhayana@google.com>, Mariel Tinaco
- <Mariel.Tinaco@analog.com>, Nishant Malpani <nish.malpani25@gmail.com>,
- Rui Miguel Silva <rmfrfs@gmail.com>, Linus Walleij <linusw@kernel.org>,
- Lorenzo Bianconi <lorenzo@kernel.org>, Alex Lanzano
- <lanzano.alex@gmail.com>, Jagath Jog J <jagathjog1996@gmail.com>,
- Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
- Remi Buisson <remi.buisson@tdk.com>, Christian Eggers <ceggers@arri.de>,
- Mudit Sharma <muditsharma.info@gmail.com>,
- Javier Carrasco <javier.carrasco.cruz@gmail.com>, =?UTF-8?Q?Ond=C5=99ej_Jir?=
- =?UTF-8?Q?man?= <megi@xff.cz>, Song Qiang <songqiang1304521@gmail.com>,
- Dixit Parmar <dixitparmar19@gmail.com>,
- Gerald Loacker <gerald.loacker@wolfvision.net>, linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
- chrome-platform@lists.linux.dev, linux-input@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mips@vger.kernel.org,
- linux-mediatek@lists.infradead.org, imx@lists.linux.dev,
- linux-rockchip@lists.infradead.org, linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH v6 5/7] iio: ABI: Add support for floating-point numbers
+ in buffer scan elements
+To: Francesco Lavra <flavra@baylibre.com>, Jonathan Cameron
+ <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
 References: <20260225100421.2366864-1-flavra@baylibre.com>
- <20260225101735.2368252-1-flavra@baylibre.com>
+ <20260225101748.2368295-1-flavra@baylibre.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260225101735.2368252-1-flavra@baylibre.com>
+In-Reply-To: <20260225101748.2368295-1-flavra@baylibre.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 2/25/26 4:17 AM, Francesco Lavra wrote:
-> This field is used to differentiate between signed and unsigned integers.
-> A following commit will extend its use to in order to add support for non-
-> integer scan elements; therefore, change its name from 'sign' to a more
-> generic 'format'.
+> In the data storage description of a scan element, the first character
+> after the colon can have the values 's' and 'u' to specify signed and
+> unsigned integers, respectively.
+> Add 'f' as an allowed value to specify floating-point numbers formatted
+> according to the IEEE 754 standard.
 > 
+> Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio  | 33 +++++++++++++-----------
+>  Documentation/driver-api/iio/buffers.rst |  5 ++--
+>  Documentation/iio/iio_devbuf.rst         |  3 ++-
+>  3 files changed, 23 insertions(+), 18 deletions(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index 5f87dcee78f7..61961bca4dce 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1510,21 +1510,24 @@ Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Description of the scan element data storage within the buffer
+>  		and hence the form in which it is read from user-space.
+> -		Form is [be|le]:[s|u]bits/storagebits[>>shift].
+> -		be or le specifies big or little endian. s or u specifies if
+> -		signed (2's complement) or unsigned. bits is the number of bits
+> -		of data and storagebits is the space (after padding) that it
+> -		occupies in the buffer. shift if specified, is the shift that
+> -		needs to be applied prior to masking out unused bits. Some
+> -		devices put their data in the middle of the transferred elements
+> -		with additional information on both sides.  Note that some
+> -		devices will have additional information in the unused bits
+> -		so to get a clean value, the bits value must be used to mask
+> -		the buffer output value appropriately.  The storagebits value
+> -		also specifies the data alignment.  So s48/64>>2 will be a
+> -		signed 48 bit integer stored in a 64 bit location aligned to
+> -		a 64 bit boundary. To obtain the clean value, shift right 2
+> -		and apply a mask to zero the top 16 bits of the result.
+> +		Form is [be|le]:[s|u|f]bits/storagebits[>>shift].
 
-Maybe Jonathan is OK with doing this all at once, but another alternative
-could be to introduce a union to allow both names at the same time, then
-we could make the change more gradually.
+Not related to this patch, but I notice that this is missing "repeat".
+\
