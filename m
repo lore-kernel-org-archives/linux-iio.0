@@ -1,85 +1,133 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31A911DF74F;
-	Thu, 26 Feb 2026 05:13:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9032938A73D
+	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 05:26:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772082782; cv=none; b=UFy84Ie0M0HrSMFFFq1kpPDi4+MNK+atA3ZIuOfBAVVTgUTf1zwpdtWsuBWmfLZUxQLKlaK/JY5CIajX6V7U+CJnkepW1m72J/0ZH8G0Q6CCVLgaI4C0NR5oaNQ7tSN/mXiesCaeX/muNALL4mIkqZMiDJRsE98B5EWh0c8n/8A=
+	t=1772083579; cv=none; b=TPBhK79Wng90KH7KoR7CyXg7VC9kbjg6sr1CLXyPjeD2LpxSa39ehKJhI4rqMPAspguEdkwgs3JhskaP8A/rbd0MIX6LyXiYb8/6UNobdP55GBfDfIOCoen6Ujk3uD3OvlfndScGr2EC9vuNZ2P6qnn2y+khareGg/MELC8LlzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772082782; c=relaxed/simple;
-	bh=cUGWVYbT1gHH454LRXj1SA6j8I8aKW3ClK8FsPfdY4E=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=LvrvfAg68QGE8IeYnVrKtjA3r6F6R5F1d57rPAxiFcXxzaBEtldWX4/FvHEJX5mQppu12VMTPAhyAHBQQzN/xIM35Ndk1gB5WsoRiYLXObr+JBD0yscHjdsrqOksTXX2llYHVm8kPmqjYn/5FyXYudAdUfZe5DEUQieImQVjo2o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=jcT8QWdt; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	s=arc-20240116; t=1772083579; c=relaxed/simple;
+	bh=w5wY9LO2Pk7znAAv+TBh8NdDYQlGt/PiTy8nFT23sMQ=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mC22ItJFV4OLrqxK7ztekoF8cQ7/e+O0N5kJba7Ox+vxFl1UQcLWYODUFtMDk6btNlPaosnNIu681+3ST/LNZYK64TU5eizVW8d50QbIIzFA6Qxq/3IS1hj2lkCDVTzKK/zSek4nXQrSmOxkdVm5pxl3ni3By45+Fy4bdvcXPAg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=a2Ud/wm0; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="jcT8QWdt"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=aGgVpz2weby2NNip7NqSmZyrEfMx++8PG0qOyumWZZk=; b=jcT8QWdtVAR5VLgyLxCbtoADqO
-	bm5Tau9gnHfuFzJwkdufaBh1erBCcIRAG6dDtMFzjRazvAk89ByfufQTpjlHHoF1t9FXOxmp0iLs8
-	PyqWPmOLTB3as0ak9V5SjssRE7ovTbBuSkLvU+PeG62jfuplpeLJNpFw8ov6zXQ9PBZOwpiIQw10i
-	Ks9O6YFLXDCZ9jjRWhYDF16Y+FAa/fxDTMgqcsSohqNt6AZfYTmSWZu41SIlNqTV2rwCFtIQ1doJg
-	M8MmGr2s0ad26JJV2KOg0ObymEnNa1bcVLJhekDfj0TvaReeCx2KX7HQuX85e8LGJJ6HuMDuXHRIr
-	xyxSEEMw==;
-Received: from [50.53.43.113] (helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1vvTgJ-00000005PM8-0zsn;
-	Thu, 26 Feb 2026 05:13:00 +0000
-From: Randy Dunlap <rdunlap@infradead.org>
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] iio: tsl2772: fix all kernel-doc warnings
-Date: Wed, 25 Feb 2026 21:12:57 -0800
-Message-ID: <20260226051258.555019-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a2Ud/wm0"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-480706554beso6047135e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Feb 2026 21:26:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772083577; x=1772688377; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=kOmVHNFGTb86WHQt7RSCacKlGSq4Tvh/jlgRo06YTiU=;
+        b=a2Ud/wm0jZUtGI+HefROL54voyH2mdLMMe/ZyU/8rLUHUIuFvl2fNJf1rlCP5KQcfp
+         WQWeS4tVMajvK2/LC/QWKEz6r84y968GdtgQtTomQs3R72lwEIkDVEqUVHLMWfsqztoO
+         wKwLBhcBGe+eR8XDtobjITrd9wBp6JiQRKXVD3XOpf6kfDyLmAaolJvZb/FV3KE87++N
+         jJ/w3Enn27VIg1roKGp2RjujBQMcojOjNb/3JI4U+xlmvxIu9yo0jPDkj8kiaeECEya6
+         Z0u762KK2ceNSU/wlGCFOaJbUDD99njkaNocQ7RsH8X8QQlAsKt0uji9kXSLRExrbWAO
+         8bMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772083577; x=1772688377;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=kOmVHNFGTb86WHQt7RSCacKlGSq4Tvh/jlgRo06YTiU=;
+        b=k51/rbfBMWelFMvj2n9TB7eH9SHDTdtsKarLsreP19AF3OEGqWoOzUwvUZm702g43X
+         Is2LotNVCrQ1W+yr5RAWFWP4Fa8m63AprYa1bg4BMqK/gzJbrQNACGYwtVR+KWqrwYSO
+         8jvFt1lda7ZyNZw0JWZc+dh9Jvtuecgb09wQO6vrTwmySBw4qZwR83thAgidTLhluLdV
+         y0mlfDWtcx81I78iJ+0PgzEPtjPbqJ3M+gl61PV4lolCH/YV5k15/gnix9G/A5P4dMfW
+         75VCKF6j5nhQaRii7O80DXknEVS8xOdm8ywzcRDW1vGQA4ONf75yuDdW3yFaR+jOS0r4
+         +vOA==
+X-Forwarded-Encrypted: i=1; AJvYcCUGApbFMkR925J/FES7maeKr2qVTl4VUrLbOFiGwr2AexKO/I2MttqjSKHTP7GzJmJJ65Vf4Zmc6zM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz5vRK9hjStgXCD70BsdXMGgmM6US6NiweG9hzT8ssS/91TMo47
+	EWBGzKYaaTGwP/zDkpwkyIAMUrjkdbhIvR6P+E1scj0CxTJrinQDnntQ
+X-Gm-Gg: ATEYQzwvQ6Rt4d3sQ+YNx/bhH4JUFX4sD9Zj4+8Rn3X35455ICezMZohgR+9qx/AT5m
+	8DLZ/62vljX1TKHrOJAKKddpw+xpNg4Llf2U5CGH4E4B9/I5lIy6EJUgpUdDQY4w1Ve6vqk95BI
+	YfoePtu9sp7uEPUm0A/YVknoqgs4ZvU1U+IXTSAEPlj6NtEm2ZLlJ27vba/vIrnVeT38+9tO1tx
+	J3B6p6RBB7PXeBUiNllidXWSLsghbTHzpztmgTmKgqCnQ+0i8WvIjYj1qRzO3qGGDwRb/WRdltu
+	JP7KrQMT12Qhb784Inc71DHj6vW24V7zRBvtKaahp1zZVuyE1VSZ/oe4RLJeu38i0RY1k1ewprP
+	XgTFHl50XcXTrQGVrutGaAZz0v+uNxeQqmhcsj5IRstB/ReIxxJxJD7yg+OkB3SMJAPK/aegqVn
+	HthgJI1jHB
+X-Received: by 2002:a05:600c:a47:b0:47e:e87f:4bba with SMTP id 5b1f17b1804b1-483c21a9b06mr43033435e9.29.1772083576673;
+        Wed, 25 Feb 2026 21:26:16 -0800 (PST)
+Received: from kimsufi.. ([2001:41d0:303:6f54::1])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483bfba9566sm41800805e9.3.2026.02.25.21.26.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Feb 2026 21:26:16 -0800 (PST)
+From: Ruslan Valiyev <linuxoid@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	gregkh@linuxfoundation.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org,
+	Ruslan Valiyev <linuxoid@gmail.com>
+Subject: [PATCH] staging: iio: adc: ad7816: add timeout to busy-wait loop
+Date: Thu, 26 Feb 2026 05:26:15 +0000
+Message-ID: <20260226052615.65734-1-linuxoid@gmail.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
-Use the correct kernel-doc notation for struct members to eliminate
-kernel-doc warnings:
+The ad7816_spi_read() function polls the busy GPIO pin in a tight
+loop without any timeout. If the hardware fails to deassert the
+busy signal, the kernel hangs indefinitely in an unbounded
+busy-wait.
 
-Warning: include/linux/platform_data/tsl2772.h:88 struct member
- 'prox_diode' not described in 'tsl2772_settings'
-Warning: include/linux/platform_data/tsl2772.h:88 struct member
- 'prox_power' not described in 'tsl2772_settings'
+Replace the open-coded while/cpu_relax() loop with
+read_poll_timeout() which polls every 5 us and returns -ETIMEDOUT
+after 1 ms. Per the AD7816 datasheet the maximum conversion time
+is 27 us (temperature channel), so 1 ms provides generous margin.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Also handle the case where gpiod_get_value() returns a negative
+error code, which the original loop silently treated as not-busy.
+
+Fixes: 7924425db04a ("staging: iio: adc: new driver for AD7816 devices")
+Signed-off-by: Ruslan Valiyev <linuxoid@gmail.com>
 ---
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>
-Cc: Nuno Sá <nuno.sa@analog.com>
-Cc: Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org
+ drivers/staging/iio/adc/ad7816.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
- include/linux/platform_data/tsl2772.h |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index 172acf135..7b8a78e4d 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -8,6 +8,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/device.h>
++#include <linux/iopoll.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+@@ -85,8 +86,14 @@ static int ad7816_spi_read(struct ad7816_chip_info *chip, u16 *data)
+ 	}
+ 
+ 	if (chip->id == ID_AD7816 || chip->id == ID_AD7817) {
+-		while (gpiod_get_value(chip->busy_pin))
+-			cpu_relax();
++		int val;
++
++		ret = read_poll_timeout(gpiod_get_value, val, val <= 0,
++					5, 1000, false, chip->busy_pin);
++		if (val < 0)
++			return val;
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	gpiod_set_value(chip->rdwr_pin, 0);
+-- 
+2.43.0
 
---- linux-next-20260225.orig/include/linux/platform_data/tsl2772.h
-+++ linux-next-20260225/include/linux/platform_data/tsl2772.h
-@@ -61,9 +61,9 @@ struct tsl2772_lux {
-  *  @prox_pulse_count:      Number if proximity emitter pulses.
-  *  @prox_max_samples_cal:  The number of samples that are taken when performing
-  *                          a proximity calibration.
-- *  @prox_diode             Which diode(s) to use for driving the external
-+ *  @prox_diode:            Which diode(s) to use for driving the external
-  *                          LED(s) for proximity sensing.
-- *  @prox_power             The amount of power to use for the external LED(s).
-+ *  @prox_power:            The amount of power to use for the external LED(s).
-  */
- struct tsl2772_settings {
- 	int als_time;
