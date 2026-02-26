@@ -1,181 +1,132 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-ua1-f52.google.com (mail-ua1-f52.google.com [209.85.222.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 800DD2D063A
-	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 09:32:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E29BA38E13F
+	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 09:43:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772098325; cv=none; b=V96yDc6eEQ51D1YpEOuQUAY7TM80ZlSEo/AESDzicO5IYoPZuAGcdgQ7P2QYvPvQwBJGQQ5CeC4D1sz13lq2EiIDLVz89NYYTwixNy/uv3sKs9G9eORmZhEiYWeBpmNjsCdO7h3ts4ddKexBlYV11Lb7PclQtJkopCu4Ct85mdc=
+	t=1772099028; cv=none; b=rZV2MvqSx2dCqtiXO6f8Ffb6OPqUHLlkw4tEzsRkJckjoLzQj3+fmQmondppkPZ2eAhdGHMGGAOqIyNay8Mz0fKkjgrOXAgfInN7M3VlIzw4umXGQRvX6VcYkJL+rJpkFAIiO/AwVeOnH21+qiKaDSHZUwXeWh4zvvWs6FB0LtQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772098325; c=relaxed/simple;
-	bh=VDoXj22Oqfb6AlLbLMDpWxYxX5vDi0/YRFdcwWhluRI=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=TRJDJMHzMHAdfu7xvyIEen7japOEp2aAnIZgu1BV5wZHTtzjlM/f3QiGP4T0T9JghG1vlWREQBf/tIO7bDkj6IfR0WKge6/oBVaNID+43SMMJXGwxTHNHPtihEhBbJMqvf1QE1N4KNF4yEBI/ZREgksU6/6fvHyM5VLD7aMiXvg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cxy2vN9b; arc=none smtp.client-ip=209.85.221.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1772099028; c=relaxed/simple;
+	bh=/S2PYGkHe8ntuxqNNWLfs1n9FTai+JUq4ZlR6Edpltk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cn+dyFmhevNM1Z7H4wlWk/Gn61iqA2vgDZ7UHD4jdAeJa44rv7s0DYZSCMWGbFmQQbpW3auoXGfxuyV7JNPFodVO7X83lpJksk3oE8ADJ38HkwVs4qFcuuWdqiQPxS/9LtMcq+4GfjE85pt/WjNk5vOE2+CcSIBMnyBCqwcFeVw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.222.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cxy2vN9b"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-4398c7083d7so552896f8f.3
-        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 01:32:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772098323; x=1772703123; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=L81So1ONkp6t2Vs8xDqcWZCIsJZWaTlxD48UJI4eGtM=;
-        b=cxy2vN9bs6o+hH37fk2V/kXPrRWjO+rmiNILPnVMC8xHHE7aIka8vAYyETeE/qln/q
-         7sejwOevqEhFLcz0ly4VVnfyjzaa3Q18FCJ7ZLGAt2UigVma2BeYQrEXVekKL9s4eAj1
-         U6TqPyQUX4w6y46daPHyh//yeTdVwz3mcntrx5jQ0RVy9vq3/MRXSbmxTnmRryOswf6U
-         RntqyZFY47YRzz6MaWjvvo06zqczK3ozI6oQ6kKbPBPzBoi2Iccy0VEHzXbkFzfsYWsU
-         k0fC5gVPvJtrH96zpq8G+fzPf8EwM1k5BLGYxOagGsedqLDjdJsxzdH3nKCTOlprpeda
-         T5Ig==
+Received: by mail-ua1-f52.google.com with SMTP id a1e0cc1a2514c-94aaa5d3bfcso378381241.3
+        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 01:43:46 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772098323; x=1772703123;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=L81So1ONkp6t2Vs8xDqcWZCIsJZWaTlxD48UJI4eGtM=;
-        b=C3qX1RuE+WArBCD1Jx55e5Kbsq+hI67IlxhiUn9njMLi59BIN63N80XBwBfQZjZABe
-         JJpgEul/oT2NtuD4Yi1QDkf1Y7ZJjZ14e0QQXCwL+fsj4Adfu0/DbGz4x8WKHdB9NHH6
-         spnFiStTFOcRnycVptlzFEekpzy/tRqRrahHldhDcSou8I7pJxrYVqUx+NJsuG7xf45q
-         Gg/AJ3X07gSrm49hTeW+J9L5pxv1kWFotkBZ4XoyjdAQLYE6Phz8orGJvF5uajQkfflm
-         +taHIhupnASlHXV7+XuPjX8vb1RmK0ybK3y2CEFv8/sd80vSLWqKn6moUhkwDJeqS6R7
-         eD7A==
-X-Forwarded-Encrypted: i=1; AJvYcCV34YMs3jQaIwCsavZU3+nEjvY99ix2yfqMp+uhBriPNqxsnN+xK3gyOsI71dZRNsDLnviltadmGRI=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy1EFB5IAhdodE/BdXvHr2UEks4wLghAnMLBsK7nqC+Yqq9X8JC
-	Pu6Ddt2gXOsdnMOlp3Y11j4V0blJ8dZyvmkz+6+sKwkCkof+qRlu7OGt
-X-Gm-Gg: ATEYQzzYhPXO43Y5Xaha6m7bflUECYQQ4BU7M+aD0P1+Cs+f0Tih0qOFAuVGLWd0ItL
-	0gbMUrY3bRKVr0IIA32zXrF52wpfY0jDmcvxMhRUrx3J3sS78Wl13unO4m9ZZGs9K6W0EyTny4T
-	9aZ84xJDXOCi96SbJo2hOJcB3KqDfmVkLDIy73IKFjFUdru1QxT9PrYW7Vpomne1doadJ6BXFef
-	QdTcn/ma+XQTDjtyh9BoTYBFWXb9fIvPSsq4FE6UrIzgKC9WcYZn+cne0kshTV8/qyNaJd6VkN+
-	+vWSo1rgQBpitTLCpDgCbAyAWZ2N/iBGG8Izd9wKnYAH5ynldEC2P0qjA3GeFF6qXU5HSmkgxy+
-	8NhEroRBL1fNEAiu1dCcPm+OqGOJ2fwuS6gvbbN7zKVqJrz8cUlp4S60RVShhVWfXkFHWDNC05G
-	33hvYBUdQ18gMu45ASU8S5PrULK7uaOx4=
-X-Received: by 2002:a05:6000:144c:b0:437:7268:8e1e with SMTP id ffacd0b85a97d-43997f4145emr2841521f8f.51.1772098322654;
-        Thu, 26 Feb 2026 01:32:02 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4398a09aad0sm15400640f8f.2.2026.02.26.01.32.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Feb 2026 01:32:02 -0800 (PST)
-Message-ID: <446c20d78f9e990a90bf9d75ee82d056be6bfca8.camel@gmail.com>
-Subject: Re: [PATCH RFC] iio: adc: ad4030: fix calibscale read/write unit
- mismatch
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>, Marcelo Schmitt
-	 <marcelo.schmitt1@gmail.com>, Giorgi Tchankvetadze
-	 <giorgitchankvetadze1997@gmail.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
- Michael.Hennerich@analog.com, 	jic23@kernel.org, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, 	linux-kernel@vger.kernel.org
-Date: Thu, 26 Feb 2026 09:32:45 +0000
-In-Reply-To: <436cefe2-2ccb-41f6-89ec-921e234dfa32@baylibre.com>
-References: <20260225113102.84568-2-giorgitchankvetadze1997@gmail.com>
-	 <aZ7iyJ2CdNB3L6ON@debian-BULLSEYE-live-builder-AMD64>
-	 <436cefe2-2ccb-41f6-89ec-921e234dfa32@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+        d=1e100.net; s=20230601; t=1772099026; x=1772703826;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=wp+WuKYQrvIK39HhrEYM8s23RNSBPp6K0LAJt9BbK+I=;
+        b=nXvJtjjma+C1WIVEevt5zQbZvmiZGrpBX2xjVsSIRMA7Vlrx3WB0cZJZmHVySS0bkE
+         jlGZg8ITZluY21FK/zmWYP589gVFUAeCWBuUoaVPJ4XMaQorU7/Tt8u3e1epG6i6fSjG
+         hlUrwC/7J1q/ouy8s7FYdgSIoGNVk5Bg3NbZUSHqV2n2LrzFwoieNJ6dWQKTZKgr3O4I
+         hbaFHPetA+ARNzOxXLjTK8Cp4BcK/8HL5m+0P08iP+Kjlu7sMWvyMHYJlMtSmYICQFMq
+         DjQInEcIhvWTV5YxlM/u6VE2mA7kHmRvghCJWoOlsOoM+bk8YK5uENV00hYN/Hk5pFn+
+         5NyA==
+X-Forwarded-Encrypted: i=1; AJvYcCWO/N0eQNVqW2nVEC29COgs0ZDjNl/cA9iivrfV+Ke4nNw7hR9uHjLsHOLelZPj449350hjKT6mAAQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yx5I+k3wS3/dMUSEaECneReWjCsKSDkhKtcCUl9Kjj/l232UYuz
+	7qWyC3toqZEg1hHCahrlvLRAgq6pHekGqWQmc3FmozJVChJMfAIBB0of0TbziNpZ
+X-Gm-Gg: ATEYQzxJYDGOoNtnuHmFtTB0lfffyRAc0v8z7GKOXxD6gWJqwgtVvIT9ATEVAW3i5r8
+	gVD6PTjHaKcmp388lUWczNfBT51CCOgHCFUpbSRZtF6Zyb8j85mPhqk7xdEFn5XuNxU/Kq962Ue
+	WfFEUb5kkm/VWu9ly2hooJxTYlkyyCqomWOCQEu6bFP6B69/jUWTTH8gifdIWMrC3D3F2ImEOrd
+	eB9F30q5Obq6fCKMIudu2TmgDRXglLw48Rp6ltGSbVltk9eUMa7YSUnmoEOA7Ca2kF3V/yqHwYm
+	DWg7XKAqdVsXyUtFnN+GyC13kwcrkDZ03NShJFPmiqvubL30uqhhbG49wbs38oqNyy22Kg51b/n
+	Qst/6f8gTh3jsEc6Jjx3RC4Uf2ds07PxtRMDIvw/g0M12liZbc5mfDLan17JBOIswMy09BFKX2B
+	Uz1evLEGiJYNedSI9f1g+P02VLjQdtt/wiqCsoXFDywWB+urDr3idWXEeeEdBm
+X-Received: by 2002:a05:6102:1626:b0:5f5:3619:8bd1 with SMTP id ada2fe7eead31-5ff14087fa6mr1749138137.25.1772099025874;
+        Thu, 26 Feb 2026 01:43:45 -0800 (PST)
+Received: from mail-vs1-f41.google.com (mail-vs1-f41.google.com. [209.85.217.41])
+        by smtp.gmail.com with ESMTPSA id a1e0cc1a2514c-94df65b281asm1108530241.13.2026.02.26.01.43.45
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 26 Feb 2026 01:43:45 -0800 (PST)
+Received: by mail-vs1-f41.google.com with SMTP id ada2fe7eead31-5fdef6330bfso382600137.1
+        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 01:43:45 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUNxsSUn7uIDoud/t91rKxwEv3qSZ30k9HC650R+GWGPr4H4u751ziNO+dFKna83jyL0Nz/PE+iZ1o=@vger.kernel.org
+X-Received: by 2002:a05:6102:32ca:b0:5ff:a1e:ee66 with SMTP id
+ ada2fe7eead31-5ff13e21dfamr1933555137.2.1772099025362; Thu, 26 Feb 2026
+ 01:43:45 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+References: <20260225100421.2366864-1-flavra@baylibre.com> <20260225101711.2368206-1-flavra@baylibre.com>
+ <aZ7fbdpWRFsvpGWf@smile.fi.intel.com>
+In-Reply-To: <aZ7fbdpWRFsvpGWf@smile.fi.intel.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Thu, 26 Feb 2026 10:43:34 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXMOvWQ1T8CMDvR5XFBxO8m1ai8m982R8Nyf9LXiE7K5Q@mail.gmail.com>
+X-Gm-Features: AaiRm52C-kex9GHahxu_nWJO5ymejtUWryYRBuGFsNzefYJtjE1hyPfJHG0l3NA
+Message-ID: <CAMuHMdXMOvWQ1T8CMDvR5XFBxO8m1ai8m982R8Nyf9LXiE7K5Q@mail.gmail.com>
+Subject: Re: [PATCH v6 3/7] iio: imu: st_lsm6dsx: Fix check for invalid
+ samples from FIFO
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Francesco Lavra <flavra@baylibre.com>, Lorenzo Bianconi <lorenzo@kernel.org>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On Wed, 2026-02-25 at 09:20 -0600, David Lechner wrote:
-> On 2/25/26 5:53 AM, Marcelo Schmitt wrote:
-> > On 02/25, Giorgi Tchankvetadze wrote:
-> > > The read path returns calibscale in IIO_VAL_INT_PLUS_NANO but the wri=
-te
-> > > path treats it as MICRO. Since no write_raw_get_fmt is provided, the
-> > > IIO core defaults to MICRO when parsing userspace input.
-> > >=20
-> > > This means reading calibscale and writing it back results in a ~1000x
-> > > gain error.
-> > >=20
-> > > Change the read path and available range to use MICRO to match the
-> > > write path.
-> >=20
-> > The updates to ad4030 driver will add write_raw_get_fmt() [1].
-> > [1]:
-> > https://lore.kernel.org/linux-iio/516cccc47e917bd26be29b016907f50a244a6=
-8b9.1771865684.git.marcelo.schmitt@analog.com/
-> >=20
-> > At first glance, I think this could instead add a case to write_raw_get=
-_fmt(),
-> > keeping calibscale nano precision (unless nano precision doesn't make s=
-ense
-> > for ad4030 calibscale (don't recall from top of my mind)).
->=20
-> Since this is a fix and needs to be backported, it probably make sense
-> to not depend on a patch that is adding new features.
->=20
+Hi Andy,
 
-+1
+On Wed, 25 Feb 2026 at 12:42, Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+> On Wed, Feb 25, 2026 at 11:17:11AM +0100, Francesco Lavra wrote:
+> > The DRDY_MASK feature implemented in sensor chips marks gyroscope and
+> > accelerometer invalid samples (i.e. samples that have been acquired during
+> > the settling time of sensor filters) with the special values 0x7FFFh,
+> > 0x7FFE, and 0x7FFD.
+> > The driver checks FIFO samples against these special values in order to
+> > discard invalid samples; however, it does the check regardless of the type
+> > of samples being processed, whereas this feature is specific to gyroscope
+> > and accelerometer data. This could cause valid samples to be discarded.
+> >
+> > Fix the above check so that it takes into account the type of samples being
+> > processed. To avoid casting to __le16 * when checking sample values, clean
+> > up the type representation for data read from the FIFO.
+>
+> ...
+>
+> > -     u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE] __aligned(8);
+> > +     struct {
+> > +             union {
+> > +                     __le16 data[3];
+> > +                     __le32 fifo_ts;
+> > +             };
+> > +             aligned_s64 timestamp;
+> > +     } iio_buff = { };
+>
+> Hmm... Have you considered m68k case? IIRC there the alignment is 2 (even for
+> 64-bit members), so theoretically the beginning of the structure can be aligned
+> to address 2. and hence the __le16 data[3] will have no gap to the following
+> timestamp. In current code it's 64-bit and not 48-bit item.
 
-- Nuno S=C3=A1
+Fortunately, the layout of a structure does not change because the
+first member could be stored at a less-aligned address, as that would
+make it incompatible with a different instance that is stored at a
+differently-aligned address ;-)
 
-> I'm sure Jonathan will have an opinion about how he would like to handle
-> a conflict between the fixes and testing branches though.
->=20
-> >=20
-> > >=20
-> > > Fixes: 0cb8b324852f ("iio: adc: ad4030: add driver for ad4030-24")
-> > > Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.co=
-m>
-> > > ---
-> > > =C2=A0drivers/iio/adc/ad4030.c | 10 +++++-----
-> > > =C2=A01 file changed, 5 insertions(+), 5 deletions(-)
-> > >=20
-> > > diff --git a/drivers/iio/adc/ad4030.c b/drivers/iio/adc/ad4030.c
-> > > index def3e1d01ceb..3d823648371d 100644
-> > > --- a/drivers/iio/adc/ad4030.c
-> > > +++ b/drivers/iio/adc/ad4030.c
-> > > @@ -423,10 +423,10 @@ static int ad4030_get_chan_calibscale(struct ii=
-o_dev *indio_dev,
-> > > =C2=A0
-> > > =C2=A0	/* From datasheet: multiplied output =3D input =C3=97 gain wor=
-d/0x8000 */
-> > > =C2=A0	*val =3D gain / AD4030_GAIN_MIDLE_POINT;
-> > > -	*val2 =3D mul_u64_u32_div(gain % AD4030_GAIN_MIDLE_POINT, NANO,
-> > > +	*val2 =3D mul_u64_u32_div(gain % AD4030_GAIN_MIDLE_POINT, MICRO,
-> > > =C2=A0				AD4030_GAIN_MIDLE_POINT);
-> > > =C2=A0
-> > > -	return IIO_VAL_INT_PLUS_NANO;
-> > > +	return IIO_VAL_INT_PLUS_MICRO;
-> > > =C2=A0}
-> > > =C2=A0
-> > > =C2=A0/* Returns the offset where 1 LSB =3D (VREF/2^precision_bits - =
-1)/gain */
-> > > @@ -720,8 +720,8 @@ static irqreturn_t ad4030_trigger_handler(int irq=
-, void *p)
-> > > =C2=A0
-> > > =C2=A0static const int ad4030_gain_avail[3][2] =3D {
-> > > =C2=A0	{ 0, 0 },
-> > > -	{ 0, 30518 },
-> > > -	{ 1, 999969482 },
-> > > +	{ 0, 30 },
-> > > +	{ 1, 999969 },
->=20
-> This loses precision. Instead I would change the write to IIO_VAL_INT_PLU=
-S_NANO
-> to match the read.
->=20
-> > > =C2=A0};
-> > > =C2=A0
-> > > =C2=A0static int ad4030_read_avail(struct iio_dev *indio_dev,
-> > > @@ -739,7 +739,7 @@ static int ad4030_read_avail(struct iio_dev *indi=
-o_dev,
-> > > =C2=A0
-> > > =C2=A0	case IIO_CHAN_INFO_CALIBSCALE:
-> > > =C2=A0		*vals =3D (void *)ad4030_gain_avail;
-> > > -		*type =3D IIO_VAL_INT_PLUS_NANO;
-> > > +		*type =3D IIO_VAL_INT_PLUS_MICRO;
-> > > =C2=A0		return IIO_AVAIL_RANGE;
-> > > =C2=A0
-> > > =C2=A0	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> > > --=20
-> > > 2.52.0
-> > >=20
-> > >=20
+The alignment of a structure is the maximum of the alignments of its
+members.  So that will be 8 bytes, as the aligned_s64 definition has
+an internal "__attribute__((aligned(8)))".
+
+It would be wise to add explicit padding ("u16 pad") just before
+timestamp though, for documentation purpose.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
