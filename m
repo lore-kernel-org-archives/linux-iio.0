@@ -1,46 +1,35 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3BDDA3A6407;
-	Thu, 26 Feb 2026 10:08:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2841B3A1E72
+	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 10:27:13 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772100520; cv=none; b=Hl6knTRcX9L+J8cJPq/7C0Ui9mo7tOPYPluARU490vGp8mvpzobVVX/YDYKTmngWmF06Givrm7da23d30Kk0SoRiOkgPdzKCsHtUew9pXga4CN+A7bgtAzZ6UyCVNN8jjtibMm58jQ36y4LXWejCveupP6y1rNjCtgfHHV+S8HA=
+	t=1772101634; cv=none; b=WQC2IWJHUWwlfpH3PXjidL+bev80q/hn/b44BpoGa5gEJDXlVCsszWyXDp8+lVjwO4a5ICCQ0gmiL7urrl/MfTjylaWItjaNAj+P5SnW2HGyPeQUShC2poN7OgCvOQ3R07QhaIfG8P/p6eyEatNJQJrSPoIrB4jFXrqtpFHWmQg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772100520; c=relaxed/simple;
-	bh=Yy7VyfcZWv4eqMPZxYpvKoXAOCnFJWkLGVXvxELOIj8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Fm2kAtIoruUujx81DntPoDfuBw2MAS+hrWiQ5duIUPbkZ0xUqsYrX4V77V8K9ZjFhZi5wdg1dzdwmdqJtFvoO4Xjo8skwd6zbbya2PQp+3uPGrjWldtV7V+tG9/kDncDTMTXQxAr0PBU+18a0+rJq6wKeovzKFMP0I2rHB+mVHE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Cik5D4Bt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772101634; c=relaxed/simple;
+	bh=BXYQJNytoThcPX9lrGTwUr/LSrzBo2cBwcJ8Plj7rFU=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type; b=ZAyhqwXkSoau0ILqD7G25h+UCf1iXl+lZJ0DGK1y22pSNBMnKmxuHvlBcquCIliGr/Zfz2x0lbj84Q9xt0E23/oZS4+WqEvjFBCIHHiTX/bBT5OhdpMO+tbpWxE4QsI1mbiOhydAaq6/k6cU5a3PI9SQqWpxv1tQ3Axjvkzd1vE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z3QEZHT1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Cik5D4Bt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A0FCC19422;
-	Thu, 26 Feb 2026 10:08:37 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z3QEZHT1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E26BAC19422;
+	Thu, 26 Feb 2026 10:27:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772100520;
-	bh=Yy7VyfcZWv4eqMPZxYpvKoXAOCnFJWkLGVXvxELOIj8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Cik5D4Bt4H+ynPYfXIH0cOrssL3wsSrD64JZx1VCkaJkqzJOF+GrfdnS1QfzX0Mod
-	 1Tb79vQbrHxuOngYmaDOo08OO0Z3kiLiRf7srRuYqC13s6HRZcMSvantS5o7iBJiEs
-	 HT2qahF/tCQ5GoGv1cTVJd7ez1APmfivlC5yQ1/tpA7ln2QFi+LlMfq/COZK9qZGky
-	 6XjV4dUuh9hdQNNGHHuwjf/9DaHz24PoIVNMoEVZkvCUB0TlztNHJzQkl32rt0LZTf
-	 Z291ImjT1cUK7fo5hvZHSeShczL311XIFB5YU628q+0VuqKd8YcX0VX1fzoyb0OQ3o
-	 sSOcL98ifsnxA==
-Date: Thu, 26 Feb 2026 10:08:33 +0000
+	s=k20201202; t=1772101633;
+	bh=BXYQJNytoThcPX9lrGTwUr/LSrzBo2cBwcJ8Plj7rFU=;
+	h=Date:From:To:Subject:From;
+	b=Z3QEZHT1dQ1DR8CI//Leze7M9pxT3jyTAnNkv7DfPFK+KuDGQyDxvI+Zbfm04uqUS
+	 5PXQuFhNAafJTq2wXtSpo8+tWs62K/4/D2TQ2po0dR7+GgMuUjae4Y2QtKQcKdB4jM
+	 34niHULPELQFw2O1t7ODxU1bFmY1dJFkfdhqHYAB9YvkVBuzWTzVOHR7af3a98rRjG
+	 MnRjTmpQRBva4VwR/pQc1TQx4ECr6C28Tk3WAxsfGERyfaxWh0UDFEUYouLahtcyWT
+	 reaO348VA3gTWmO/7AwgO4PJ60azFJEnA56eRW336KDFyFk5dTYys7iEKObXqY3q8c
+	 jkL+pkcM6xc4w==
+Date: Thu, 26 Feb 2026 10:27:09 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Andy Shevchenko <andy@kernel.org>,
- devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- kernel@pengutronix.de, David Jander <david@protonic.nl>, David Lechner
- <dlechner@baylibre.com>
-Subject: Re: [PATCH v6 00/12] iio: dac: ds4424: add DS4402/DS4404 support
- and scale
-Message-ID: <20260226100833.24fa15b5@jic23-huawei>
-In-Reply-To: <aaAHbOVL-83tgIEc@pengutronix.de>
-References: <20260210135110.2027073-1-o.rempel@pengutronix.de>
-	<aaAHbOVL-83tgIEc@pengutronix.de>
+To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] IIO: 1st set of fixes for 7.0
+Message-ID: <20260226102709.37fa6f2b@jic23-huawei>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,74 +37,131 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 26 Feb 2026 09:42:20 +0100
-Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+The following changes since commit 6de23f81a5e08be8fbf5e8d7e9febc72a5b5f27f:
 
-> Hi Jonathan,
-> 
-> Should I resend this patch series?
-No need.   For future reference I use patchwork.kernel.org to track
-status of series.   This one is sat there because I need to do a pull
-request for the precursor fix (which I'll do shortly).  That then needs
-to loop around into a suitable upstream tree before I can pick this
-series up on top of it.
+  Linux 7.0-rc1 (2026-02-22 13:18:59 -0800)
 
+are available in the Git repository at:
 
-Thanks,
+  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fi=
+xes-for-7.0a
 
-Jonathan
-> 
-> On Tue, Feb 10, 2026 at 02:50:58PM +0100, Oleksij Rempel wrote:
-> > changes v6:
-> > - rebase on top of iio/fixes-togreg
-> > - drop "iio: dac: ds4424: reject -128 RAW value", already included
-> > 
-> > This series extends the ds4424 IIO DAC driver and its devicetree binding
-> > to support the DS4402 and DS4404 current DAC variants.
-> > 
-> > DS440x devices share the same register map as DS442x but use a different
-> > resolution (5-bit vs 7-bit) and a different full-scale current formula.
-> > The full-scale current depends on external Rfs resistors connected to
-> > the FS pins, so a new optional DT property is added to provide the
-> > per-channel Rfs values and allow the driver to report a correct IIO
-> > SCALE (mA/step).
-> > 
-> > While adding DS440x support, a few related issues were addressed:
-> > - Port to regmap
-> > - Reject -128 in RAW writes on DS442x, which cannot be represented with
-> >   sign-magnitude encoding and could silently program an unintended
-> >   output.
-> > - Preserve preconfigured values on probe.
-> > - Ratelimit read error logging and use device context.
-> > 
-> > David Jander (1):
-> >   iio: dac: ds4424: add DS4402/DS4404 device IDs
-> > 
-> > Oleksij Rempel (11):
-> >   iio: dac: ds4424: refactor raw access to use bitwise operations
-> >   iio: dac: ds4424: ratelimit read errors and use device context
-> >   iio: dac: ds4424: sort headers alphabetically
-> >   iio: dac: ds4424: rename iio_info struct to avoid ambiguity
-> >   iio: dac: ds4424: use device match data for chip info
-> >   iio: dac: ds4424: use fsleep() instead of usleep_range()
-> >   dt-bindings: iio: dac: maxim,ds4424: add ds4402/ds4404
-> >   iio: dac: ds4424: support per-variant output range limits
-> >   iio: dac: ds4424: convert to regmap
-> >   dt-bindings: iio: dac: maxim,ds4424: add maxim,rfs-ohms property
-> >   iio: dac: ds4424: add Rfs-based scale and per-variant limits
-> > 
-> >  .../bindings/iio/dac/maxim,ds4424.yaml        |  42 +-
-> >  drivers/iio/dac/Kconfig                       |   1 +
-> >  drivers/iio/dac/ds4424.c                      | 375 ++++++++++++------
-> >  3 files changed, 287 insertions(+), 131 deletions(-)
-> > 
-> > --
-> > 2.47.3
-> > 
-> > 
-> >   
-> 
+for you to fetch changes up to 9990cd4f8827bd1ae3fb6eb7407630d8d463c430:
 
+  iio: imu: adis: Fix NULL pointer dereference in adis_init (2026-02-23 08:=
+24:39 +0000)
+
+----------------------------------------------------------------
+IIO: 1st set of fixes for the 7.0 cycle
+
+Usual mixed bag of ancient bugs that have been discovered and more
+recent stuff.
+
+core
+- Cleanup a wait_queue if a driver is removed at exacty the wrong
+  moment.
+adi,adf4377
+- Check correct masks when waiting for reset to complete.
+adi,adis
+- Fix a NULL pointer dereference if ops not provided to adis_init()
+bosch,bme680
+- Fix typo in value used to calculate measurement wait duration.
+infineon,tlv493d
+- Drop incorrect shifting of some bits for x-axis
+invensense,icm42600
+- Fix corner case of output data rate being set to the value it already
+  has which resulted in waiting for ever for a flag to say the update was
+  completed.
+- Fix a case where the buffer is turned off whilst ODR switch is in progres=
+s.
+invensense,icm45600
+- Interrupt 1 drive bit was inverted.
+- Fix a underflow for regulator put warning if probe fails
+invensense,mpu9150
+- Work around a hardware quirk where reading from irq status is not suffici=
+ent
+  to acknowledge an interrupt.
+maxim,ds4424
+- Reject -128 as a possible raw value as it's out of range with the sign
+  / magnitude encoding used by this chip.
+microchip,mcp4131
+- Shift the wiper value only once.
+rohm,bh1780
+- Fix a runtime reference count issue on an error path.
+sensiron,sps30
+- Fix two buffer size issues due to sizeof() wrong thing.
+tyhx,hx9023s
+- Ensure count used by __counted_by is set before accessing the buffer.
+- Avoid a potential division by zero.
+
+----------------------------------------------------------------
+Andreas Kemnade (1):
+      iio: imu: inv-mpu9150: fix irq ack preventing irq storms
+
+Antoniu Miclaus (6):
+      iio: light: bh1780: fix PM runtime leak on error path
+      iio: magnetometer: tlv493d: remove erroneous shift in X-axis data
+      iio: chemical: sps30_i2c: fix buffer size in sps30_i2c_read_meas()
+      iio: chemical: sps30_serial: fix buffer size in sps30_serial_read_mea=
+s()
+      iio: gyro: mpu3050-i2c: fix pm_runtime error handling
+      iio: gyro: mpu3050-core: fix pm_runtime error handling
+
+Chris Spencer (1):
+      iio: chemical: bme680: Fix measurement wait duration calculation
+
+Ethan Tidmore (1):
+      iio: adc: ad7768-1: Fix ERR_PTR dereference in ad7768_fill_scale_tbl
+
+Jean-Baptiste Maneyrol (4):
+      iio: imu: inv_icm42600: fix odr switch to the same value
+      iio: imu: inv_icm42600: fix odr switch when turning buffer off
+      iio: imu: inv_icm45600: fix INT1 drive bit inverted
+      iio: imu: inv_icm45600: fix regulator put warning when probe fails
+
+Lukas Schmid (1):
+      iio: potentiometer: mcp4131: fix double application of wiper shift
+
+Nuno S=C3=A1 (1):
+      iio: buffer: Fix wait_queue not being removed
+
+Oleksij Rempel (1):
+      iio: dac: ds4424: reject -128 RAW value
+
+Radu Sabau (1):
+      iio: imu: adis: Fix NULL pointer dereference in adis_init
+
+SeungJu Cheon (1):
+      iio: frequency: adf4377: Fix duplicated soft reset mask
+
+Yasin Lee (2):
+      iio: proximity: hx9023s: fix assignment order for __counted_by
+      iio: proximity: hx9023s: Protect against division by zero in set_samp=
+_freq
+
+ drivers/iio/adc/ad7768-1.c                         | 13 +++++++++++--
+ drivers/iio/chemical/bme680_core.c                 |  2 +-
+ drivers/iio/chemical/sps30_i2c.c                   |  2 +-
+ drivers/iio/chemical/sps30_serial.c                |  2 +-
+ drivers/iio/dac/ds4424.c                           |  2 +-
+ drivers/iio/frequency/adf4377.c                    |  2 +-
+ drivers/iio/gyro/mpu3050-core.c                    | 18 +++++++++++++-----
+ drivers/iio/gyro/mpu3050-i2c.c                     |  3 +--
+ drivers/iio/imu/adis.c                             |  2 +-
+ drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c  |  2 ++
+ drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c |  4 ++++
+ drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c   |  2 ++
+ drivers/iio/imu/inv_icm45600/inv_icm45600.h        |  2 +-
+ drivers/iio/imu/inv_icm45600/inv_icm45600_core.c   | 11 ++++++++---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         |  8 ++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  2 ++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c      |  5 ++++-
+ drivers/iio/industrialio-buffer.c                  |  6 ++++--
+ drivers/iio/light/bh1780.c                         |  2 +-
+ drivers/iio/magnetometer/tlv493d.c                 |  2 +-
+ drivers/iio/potentiometer/mcp4131.c                |  2 +-
+ drivers/iio/proximity/hx9023s.c                    |  6 ++++--
+ 22 files changed, 73 insertions(+), 27 deletions(-)
