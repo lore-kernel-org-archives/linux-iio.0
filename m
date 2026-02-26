@@ -1,122 +1,119 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35984396D05
-	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 08:42:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45ADE39E6C6;
+	Thu, 26 Feb 2026 09:15:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772095356; cv=none; b=iIhAZJLugRzOg2LGjTv+kd+kwGBy7Tj/Y72bMRfqTlocr0QkEavvcxwvJkYHmmnBTE/oUkdLq22bHex/JdJbnI2xddDNihXCFng9iYNojT6FRFt8IYUmPeO4XECY3618yGtJDMZlhnaSmluYePQQhEmK88WjU7Itbf0uoNx8GNI=
+	t=1772097330; cv=none; b=Wora6Zne1cMK292vKiiD8vBcjWrDy1XntDAeaqKM12MRT3/Xq/TN+ZrdbTDyx3IsGwB/LOb4Rs7mOQu5RD2YTaB+pBeMfayUJEhsUBl9edUacbirhnHNQl4848dzzPogvA/EwbX8xZGY/vcwrsyGkTnqDeyJYYS/fxpPHtCKArc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772095356; c=relaxed/simple;
-	bh=pYjIX6gfN4dYFc0TBFsUfvbwxQcrKEuznQzs6IWNZYQ=;
+	s=arc-20240116; t=1772097330; c=relaxed/simple;
+	bh=SODohucfs/XWZ5ghq6XnVoPIJwJQO+N07jl9Qry3Ask=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Mlo4pAUoMHqDkAmXlTpv83TlA9ghoH7Nsh7v67IqMVHWGxNhDQImK+f1oUklyOSx5vtOAA1JOch+94C+QOOVTqZgVxaSasnkkzku1pWsZh2lUh+0/A9bFYVVyIDcbgrP2Steo224ABWxwAkOZ+7bBpd1twZhvBh7kdJmzrUlmV0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1vvWwv-0002CJ-U6; Thu, 26 Feb 2026 09:42:21 +0100
-Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <ore@pengutronix.de>)
-	id 1vvWwt-002hUN-2P;
-	Thu, 26 Feb 2026 09:42:21 +0100
-Received: from ore by pty.whiteo.stw.pengutronix.de with local (Exim 4.98.2)
-	(envelope-from <ore@pengutronix.de>)
-	id 1vvWwu-00000006izX-460j;
-	Thu, 26 Feb 2026 09:42:20 +0100
-Date: Thu, 26 Feb 2026 09:42:20 +0100
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>
-Cc: Andy Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, kernel@pengutronix.de,
-	David Jander <david@protonic.nl>,
-	David Lechner <dlechner@baylibre.com>
-Subject: Re: [PATCH v6 00/12] iio: dac: ds4424: add DS4402/DS4404 support and
- scale
-Message-ID: <aaAHbOVL-83tgIEc@pengutronix.de>
-References: <20260210135110.2027073-1-o.rempel@pengutronix.de>
+	 Content-Type:Content-Disposition:In-Reply-To; b=dcJabnEr2FsfpFzf9YVQlusMwl8Lq6dMs7u+AoZGy8TVcpy3uBT47KtajL9qUJmZGFJip712H/CVlLuQyRFA2yO9NDjltFjBPJzrfu46hD1nEGxLNgUl1pnPlIyifFrDPVdXU1McXM749wFIKkiYykWJYzW9tUWCO2OkfW7ZpkM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RGmiCcjg; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RGmiCcjg"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772097328; x=1803633328;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SODohucfs/XWZ5ghq6XnVoPIJwJQO+N07jl9Qry3Ask=;
+  b=RGmiCcjg9yoKiLOROPrWbOBOmBSgpwAcShOH0Qei4KV7wvvQuWlqWA/H
+   nq1TzJHJE90KJUMd8tDCWF40BGKe6tFe9ClDe28hvpkLi+xzu0LEcOIRJ
+   ZFLYaM6bfxNv4+kP0icv+Z2NyiKbXkntU0C7llX5dv0wsos1sN1RWVM1T
+   i/RdCsogaLQrqd1EBbqfKUdQELrGemlO9SwBYA9VS8xGzcd9nIGESElsg
+   mXXpu1ye0SciqM97Ldnhr7ObyEks27s7ZpzzSEBrHAhPy4oG+u+lTIe0K
+   3a4mWybGQmwRQe4OU3BJ2cpFivW07XS8mmwfvtiNf95ARnhl9mnd5+uIy
+   g==;
+X-CSE-ConnectionGUID: HuvFVWplSZ6M+TPlhPVg2A==
+X-CSE-MsgGUID: S2XJj0uvSdaPfWQYGBEFhw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11712"; a="75756031"
+X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
+   d="scan'208";a="75756031"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 01:15:27 -0800
+X-CSE-ConnectionGUID: kSadl8LfRcqLbeETw66lfg==
+X-CSE-MsgGUID: hJhdZG8zQj6glUceBSp43w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
+   d="scan'208";a="247046055"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.167])
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 01:15:24 -0800
+Date: Thu, 26 Feb 2026 11:15:22 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Ruslan Valiyev <linuxoid@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] staging: iio: adc: ad7816: add timeout to busy-wait
+ loop
+Message-ID: <aaAPKiwCiGtys-P-@smile.fi.intel.com>
+References: <aZ_9x4q5BZRJi3ue@smile.fi.intel.com>
+ <20260226082547.69616-1-linuxoid@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260210135110.2027073-1-o.rempel@pengutronix.de>
-X-Sent-From: Pengutronix Hildesheim
-X-URL: http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+In-Reply-To: <20260226082547.69616-1-linuxoid@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Jonathan,
+On Thu, Feb 26, 2026 at 08:25:47AM +0000, Ruslan Valiyev wrote:
+> The ad7816_spi_read() function polls the busy GPIO pin in a tight
+> loop without any timeout. If the hardware fails to deassert the
+> busy signal, the kernel hangs indefinitely in an unbounded
+> busy-wait.
+> 
+> Replace the open-coded while/cpu_relax() loop with
+> read_poll_timeout_atomic() which polls every 5 us and returns
+> -ETIMEDOUT after 1 ms. Per the AD7816 datasheet the maximum
+> conversion time is 27 us (temperature channel), so 1 ms provides
+> generous margin.
+> 
+> Use the atomic variant to preserve the existing busy-wait semantics
+> of the original loop.
+> 
+> Also handle the case where gpiod_get_value() returns a negative
+> error code, which the original loop would treat as busy and keep
+> spinning on indefinitely.
 
-Should I resend this patch series?
+First of all, start a new email thread for a new version of the patch.
 
-On Tue, Feb 10, 2026 at 02:50:58PM +0100, Oleksij Rempel wrote:
-> changes v6:
-> - rebase on top of iio/fixes-togreg
-> - drop "iio: dac: ds4424: reject -128 RAW value", already included
-> 
-> This series extends the ds4424 IIO DAC driver and its devicetree binding
-> to support the DS4402 and DS4404 current DAC variants.
-> 
-> DS440x devices share the same register map as DS442x but use a different
-> resolution (5-bit vs 7-bit) and a different full-scale current formula.
-> The full-scale current depends on external Rfs resistors connected to
-> the FS pins, so a new optional DT property is added to provide the
-> per-channel Rfs values and allow the driver to report a correct IIO
-> SCALE (mA/step).
-> 
-> While adding DS440x support, a few related issues were addressed:
-> - Port to regmap
-> - Reject -128 in RAW writes on DS442x, which cannot be represented with
->   sign-magnitude encoding and could silently program an unintended
->   output.
-> - Preserve preconfigured values on probe.
-> - Ratelimit read error logging and use device context.
-> 
-> David Jander (1):
->   iio: dac: ds4424: add DS4402/DS4404 device IDs
-> 
-> Oleksij Rempel (11):
->   iio: dac: ds4424: refactor raw access to use bitwise operations
->   iio: dac: ds4424: ratelimit read errors and use device context
->   iio: dac: ds4424: sort headers alphabetically
->   iio: dac: ds4424: rename iio_info struct to avoid ambiguity
->   iio: dac: ds4424: use device match data for chip info
->   iio: dac: ds4424: use fsleep() instead of usleep_range()
->   dt-bindings: iio: dac: maxim,ds4424: add ds4402/ds4404
->   iio: dac: ds4424: support per-variant output range limits
->   iio: dac: ds4424: convert to regmap
->   dt-bindings: iio: dac: maxim,ds4424: add maxim,rfs-ohms property
->   iio: dac: ds4424: add Rfs-based scale and per-variant limits
-> 
->  .../bindings/iio/dac/maxim,ds4424.yaml        |  42 +-
->  drivers/iio/dac/Kconfig                       |   1 +
->  drivers/iio/dac/ds4424.c                      | 375 ++++++++++++------
->  3 files changed, 287 insertions(+), 131 deletions(-)
-> 
-> --
-> 2.47.3
-> 
-> 
-> 
+Second, give at least 24h between the versions to have a chance being
+reviewed by more people.
+
+
+>  	if (chip->id == ID_AD7816 || chip->id == ID_AD7817) {
+> +		int val;
+> +
+> +		ret = read_poll_timeout_atomic(gpiod_get_value, val, val <= 0,
+
+While val <= 0 is technically correct, semantically it's harder to read,
+it's better to use val < 0 || val == 0.
+
+> +					5, 1000, false, chip->busy_pin);
+
+This has an indentation issue now.
+
+> +		if (val < 0)
+> +			return val;
+> +		if (ret)
+> +			return ret;
 
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+With Best Regards,
+Andy Shevchenko
+
+
