@@ -1,61 +1,63 @@
-Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65E8F3EDAC5
-	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 23:11:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A5033EDAC5
+	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 23:11:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772147474; cv=none; b=aujWnBNrhQqe1HVJAU2Z3Rg8YZ+g3lVFb+CMLiivJr0Txh7/ywSZn0LghZH+5lUtZ+m6OOvEMbI0W4mCq6PfEpDOfKbampe+bZEWTzsUcLMplRZhultmZQoheGMZ5U8graYyLgqEeIBg/qpxp6OZPCpmvTefSS1woBnribrsirY=
+	t=1772147480; cv=none; b=FPwNxyCl6zYxon9ICIcZuyVEuyxozE1F5Kdq55ZnbPlwJKWW2RIg4627cnt93Y3t2rPHBqVoWGX1MpWJxOcQ7KJ89Z0JMwFJ+kY1EtRQQvHLxBQafX/CBe8KaQedAN6BSJbmZbvmuB1OtP+PwF9+fBqnI3MZfbewcFsIe1qBRlU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772147474; c=relaxed/simple;
-	bh=hH6CDiMRNFddchoipK6ATY2qGAFrVRxTKkPTaNVfE0g=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Fq8u9SV0m1zU1LgIsIRcMtqTW3TAO3O5vZhMiCQFoyrmpWSoBsuvdVoevo8lNbB8cxLWw9Cf6tO1l7XrLkxXLr/2JKAFp8Bm7JtBIPMmO4PrqhctpGpNDiK8bEpSCFD2ffG1XYXeELFMRmpbjAz1Qlr8b9up/zBradNmlgXHDco=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cjrQLJr6; arc=none smtp.client-ip=209.85.210.170
+	s=arc-20240116; t=1772147480; c=relaxed/simple;
+	bh=TfhL+f7VtjbiWYOT85/9EUVD1Gke8/6vEBgL8gRLVTE=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=hhp3f7QHdSElmOxpjgRQhME+UKqoMYv4fUTAyKNJANwvnUc5eN3ec9VQoSAGYWjcmGJ/7IJRNzypDFGrYaG/RMxaDZ4vYQYpd1O9reKakdFJtROcCpJUtd7vHAON5mKucffh5EdIqsCE1BuWJsnAF9b7G4cfi3nxUk80QpPIowU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d6RF4snM; arc=none smtp.client-ip=209.85.210.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cjrQLJr6"
-Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-8272c559597so1476585b3a.1
-        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 15:11:13 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d6RF4snM"
+Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-824b32875e7so791284b3a.3
+        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 15:11:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772147473; x=1772752273; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=iTvVwnEU/AtYKfH8y5LK/YN2IBNofpYxJTRKzbbZ8/w=;
-        b=cjrQLJr6ZOih+PXFJinjbpYqtnmqSgKaFIWsKJ71WGEZTuImMgMq3a5l1XoXdPzGe1
-         87h7PLs77iMFnSA+JCX8Wwh181/giWuYwupP05tADbN+kOHVKBwmBEFv9qXn84HPi/HO
-         16/iBZ/rcSGX1ClO0WLBhl5EHoh6yAtgdD8/Rb60KhaF532Dj05I8p5Hc4VUa2XUijW7
-         MMWwZjdNSn4Qz+Os/N2JDmLkuHMU0bxdPeSQyiMaM4dijkgn5HGATERz71rJHiT8nx4i
-         JZESDPc4fLSt4uRNUPdXU0IMTPNS+KY6RXyOd3v1dKUv/6FmSOQnj2fSeoh/reNL5gjd
-         /lbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772147473; x=1772752273;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1772147478; x=1772752278; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=iTvVwnEU/AtYKfH8y5LK/YN2IBNofpYxJTRKzbbZ8/w=;
-        b=CADY1QkjTsOWrvNhnNBKJtPxegFhy6rKhUN4vEh854OxEjNEnWDEhfR5VGBvsl0Mak
-         bdwBo1plbZWlGP04whb+0g921H0C23hcK4V/QHEoGOveTfIrH3yhW5uUVqBih4bgsMDE
-         Pi9+OqytS0utNWf0CCM8X30WHgToU//TJ96IMH8Uvii+ZfnSyN92PG74lxB84bnJluHP
-         mOvpmYI/pLVF1O+54B15WgG0ipl92m+kOEABk88a9OWNkYyuHwTiGKwe7zrMSkKU+6QK
-         1HNjnGdSMyaS8SDs40IXjIA6QT0pVQDC4LKr0agQYivepLeKkPGpVejfU3Mhuu4moUfe
-         vzRA==
-X-Forwarded-Encrypted: i=1; AJvYcCWSHg+6ygcSJUCrAajesHvmzz2cHTYkvK/GzewqfhsxYVFR7KhFP0tJ/b79SoEmdHvVexCUcMGPMKU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwSQNt175MSFT2l7S6NNAcvtUX+0L7maXFdMOAZEPtR8/9lE7bN
-	R8i7BeylUrTcmaFn2E9yKuW0YfXhFHNtpHBz/hwMkW7UpWwO4zimzw97
-X-Gm-Gg: ATEYQzxjObU02rmwW2ZNm5ObFsS5XsaPSBQ7/aTh68akbUqWBiqOB6T6c/S4sLheJ7f
-	SvN9snQ4bOxYAUBW3fi3tFGR2KyJgCJrO4P6hFrQCZSNQKxl2Vgn6UeKSN8aJaCGMVJJRdco+vX
-	qrOxdPetNQaUX+Y3JkcLKCS0WP/mGtoWhK9f1Hvokl2RoS0XcRPq+RIAQwDaCNXFC1uskjIfMr8
-	N2KrhPlJJ6hJ/ipdd715b9KYKX3F5EnEYPYEMv6c4R0wdJMQ2yk4AcYbfJtyJRoAV+/EyZNgMyD
-	O70/OfelxIPdDy0CG7avuRM6aNL5eC7gYLrfiPs35OtZuJICT8QSm4mIlVyv4KVpzm9A056N4Pm
-	bwHpDnyra9N42i+UyYEL6u1FI3G95BVNDZLhv2lGh8Fox7jhFWZhq+zZryyXYq5aluZ3pFRp40c
-	/SI4FRc5w5iLk25QLTXLyeymiy
-X-Received: by 2002:a05:6a00:9283:b0:824:a635:4181 with SMTP id d2e1a72fcca58-8274d972aaamr807065b3a.15.1772147472780;
-        Thu, 26 Feb 2026 15:11:12 -0800 (PST)
+        bh=jQUc2l2etFAMFSbUDTLR0OFMDbwiSBMKpEjkoUkXXeA=;
+        b=d6RF4snMO8py8nAVgGzvDsFQp+fd9C8Efumvp9lWvf39udpXQKCLu2vDFFVNHNSAUD
+         lqCOjeXuTMEMCrNkv9ObJjI/uCTxnOecaS2Hs3EfbgzgWe+UT5IiI0m5ShpQXnBz/KTM
+         gljM0mynXPu2rZJwx5nhCrEewGJmAwIBPE1qxpqILf2wGB2I6SQdaMhREYD8cGSPDAmu
+         K+6DUlyb+KFEfuLMG3+IPf+dpfmdkfZ2dP4IEeKwSY5L524/Jw1pb9MaqQffJjKS+GNq
+         Q2yQHc7UIxPOJrJOPt5D1qUqgO3BJhqABzFIz3P+OCgUAXfRBnWs0N5zkHMjWVaZXHVc
+         tesg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772147478; x=1772752278;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=jQUc2l2etFAMFSbUDTLR0OFMDbwiSBMKpEjkoUkXXeA=;
+        b=jfLT2d5qfpHcjTzC5djd3SCrI80E3rkAHrowzd//VZ9tqmNGNu32Fh9aMtjZWOrJNF
+         Xsai4BYH2Rb9oCEozvFUnydLfHF96242F3U89BSnY75wj184u1L++RdpQrnrr+STYGaD
+         7wfgu/9hjvavWK/i9E68WxtZ7MoGiODVW9Qd0crkEk9ylw2bGcefoViqx4IYdWArXscC
+         ga/Hxuyv/lx/p7de/CTVeSxa5efes/HTLFwZuxKZgEs/dBljR1S9wKd3xjam2JZQunHc
+         wzpnI+wxlsm8vXctL3JxucqbWAsu5u61kMk3uwO1Dcc9W1vKFxwHSf6ai85Mcy+3tsdg
+         DCyA==
+X-Forwarded-Encrypted: i=1; AJvYcCXR1ckXniINcmUSAdI4c+T0tsMIEX4lZEf+E2XQ+2sZNCNSJoKF4vCgqobYTeX/OOQ3osc+g20mBpE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YySn7vN+11D2AJvJOo0LqwohquZ2wwwAhm+tyNCg8G/w89xtZ6T
+	i5zAupPOgnPs8hDwNuq46lMeLJV5tzUudaJYyf28YB0yePNKFlqC/NcH
+X-Gm-Gg: ATEYQzzFQQIICFQDXcYasPBIX1F6R4jXC3n6Gfz0LuvRIVVZx0nyLd8iJ2Xev1dDXof
+	gpPuTL0oF+7c7MJtYuDUgmPoM7PkRpJZfCUby4ZF61Q/Tg90BbcyQwm/NKQSrOUa5E2I1zgz1TK
+	9R76CVYsVwUR6JyHAoimhgwqksU/FVz5EQAXizq27W5Bj8pANMfXLLre3mSgrBBkzNFMHswFb5E
+	XLM77jpbq4pYGntOeZZA/yY5mztR8Bt7BOMSlrBEGqB9S6uCtv2G1RI1kQdTN2HVVktMKcqad46
+	j52WJwsz14EvxnmEE66lwXE2qAnCXWw8MSjexSwjrymtRVsKYp2ypF8U8OfpT7JBnR66Bj0J3WV
+	nXpP+Db/4qoGA4BzzfFGzQs32/xHKB5VcPGMNh3oMhp1iqHQxqyTG7C1wFnKkAMLamsnpM6JOdt
+	GaocLFZ0ECxMpkTKwy3pomUY2kVcvuhEughW4=
+X-Received: by 2002:a05:6a00:1992:b0:7ff:ecbb:1c28 with SMTP id d2e1a72fcca58-8274d94be70mr564246b3a.16.1772147477764;
+        Thu, 26 Feb 2026 15:11:17 -0800 (PST)
 Received: from arch ([2409:40c2:5006:5b06:f9ff:5cdf:1c23:a906])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8273a01054dsm4238752b3a.43.2026.02.26.15.11.06
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8273a01054dsm4238752b3a.43.2026.02.26.15.11.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Feb 2026 15:11:12 -0800 (PST)
+        Thu, 26 Feb 2026 15:11:17 -0800 (PST)
 From: Bhargav Joshi <rougueprince47@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -65,11 +67,14 @@ Cc: dlechner@baylibre.com,
 	andy@kernel.org,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
-	rougueprince47@gmail.com
-Subject: [PATCH v6 0/3] iio: frequency: ad9523: fix checkpatch warnings
-Date: Fri, 27 Feb 2026 04:40:54 +0530
-Message-ID: <20260226231057.20669-1-rougueprince47@gmail.com>
+	rougueprince47@gmail.com,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v6 1/3] iio: frequency: ad9523: fix implicit variable macros
+Date: Fri, 27 Feb 2026 04:40:55 +0530
+Message-ID: <20260226231057.20669-2-rougueprince47@gmail.com>
 X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260226231057.20669-1-rougueprince47@gmail.com>
+References: <20260226231057.20669-1-rougueprince47@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,39 +83,50 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-These patches address several checkpatch warnings in the ad9523 driver.
+The macros AD9523_CLK_DIST_DIV_PHASE_REV(x) and
+AD9523_CLK_DIST_DIV_REV(x) implicitly relied on the variable named 'ret'
+instead of using passed argument '(x)'. Update the macros to explicitly
+use the argument '(x)' for their operations.
 
-Patch 1: Updated the macros to properly use their argument x.
-Patch 2: Fixed the multi-line pointer dereferences.
-Patch 3: Updated symbolic permissions to octal (0444/0200).
+This also resolves the following checkpatch.pl warning: Argument '(x)'
+is not used in function-like macro.
 
+Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+---
 Changes in v6:
-- Patch 1: Fixed grammar and shortened the long first line.
-- Patch 2: No changes.
-- Patch 3: No changes. Resending because something went wrong with v5.
+- Fixed grammar and shortened the long first line.
 
 Changes in v5:
 - Reflowed all commit messages to properly wrap near 72 characters as
   requested.
-- Collected Reviewed-by tags for patches 1 and 3.
+- Collected Reviewed-by tag.
 
 Changes in v4:
 - Used full name for SoB.
 
 Changes in v3:
-- Patch 1: updated macros to use '(x)' instead of 'x'.
-- Patch 2: collected reviewed-by (no code changes).
-- Patch 3: fixed vertical spacing and broken indentation.
+- Updated macros to use '(x)' instead of 'x'.
 
+ drivers/iio/frequency/ad9523.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-bhargav (3):
-  iio: frequency: ad9523: fix implicit variable macros
-  iio: frequency: ad9523: fix multi-line pdata dereferences
-  iio: frequency: ad9523: use octal device permissions
-
- drivers/iio/frequency/ad9523.c | 88 +++++++++++++---------------------
- 1 file changed, 33 insertions(+), 55 deletions(-)
-
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index 63c485e9e44c..5725ab62e0fd 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -167,9 +167,9 @@
+ 
+ /* AD9523_CHANNEL_CLOCK_DIST */
+ #define AD9523_CLK_DIST_DIV_PHASE(x)		(((x) & 0x3F) << 18)
+-#define AD9523_CLK_DIST_DIV_PHASE_REV(x)	((ret >> 18) & 0x3F)
++#define AD9523_CLK_DIST_DIV_PHASE_REV(x)	(((x) >> 18) & 0x3F)
+ #define AD9523_CLK_DIST_DIV(x)			((((x) - 1) & 0x3FF) << 8)
+-#define AD9523_CLK_DIST_DIV_REV(x)		(((ret >> 8) & 0x3FF) + 1)
++#define AD9523_CLK_DIST_DIV_REV(x)		((((x) >> 8) & 0x3FF) + 1)
+ #define AD9523_CLK_DIST_INV_DIV_OUTPUT_EN	(1 << 7)
+ #define AD9523_CLK_DIST_IGNORE_SYNC_EN		(1 << 6)
+ #define AD9523_CLK_DIST_PWR_DOWN_EN		(1 << 5)
 -- 
 2.53.0
 
