@@ -1,87 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FA6847ECF7;
-	Thu, 26 Feb 2026 16:02:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1267426D33;
+	Thu, 26 Feb 2026 16:31:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772121761; cv=none; b=BglXGlZudXxOQVwaIjxUX/IGsqI+CGJiWJ3ALGAJ09+lCIIxDNhcrM5DylbtYLfS4zABROPSB9E/a0kOxUa/Ss0iwtfU0pM+UFzYhzxX6wovh6zW/AZCuEiKLNN4/9XodLlDuzM13TnUnOXL4uQDUmtM4seH1yO1vAlmCtj1uSI=
+	t=1772123462; cv=none; b=kACcYZSiGJLtE3Dgb2mgndJIvVJ0KPEUnHxSgKKqTcAqp350GOr2Wbj/tPtgCV5yDck/uiWT4okllwj+oFa4rRx6iQhmvGfG6b9TzGEkvAttVVFbVI7Z0fOHhc0MNwuzoRjhIMt/+JjOOtCt4tlRmlBC1O6WHotXpUs1NslBivk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772121761; c=relaxed/simple;
-	bh=jWiuoX15Mblrwz24tNf0ikmUwKfACgiLh6JFtmC53E8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JRbEhlsKBzkiic1QcW7qksMFvRqbgQEr0/brPYRQtb2RDWiu1Vo9OavDKJBO7rW3Hxqia7lCiPfm6oJAQAtypKIp6cU9i+N+p9lPIjgfIyiIxnl5hDsSVR+hWQ5jIrhUXsuUw4RvZm/kkBo4IbfLPdNVjEHlvF6XJ++WVLMJMnE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KgphthG4; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1772123462; c=relaxed/simple;
+	bh=IP4dG8wVTwCtivGzu6lHhyXLXDb5IFEG6cGh510bEAQ=;
+	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=vEgbTy/fEZhn1zSO/JLRZdrmVRqhTmf366ELwp0+Vw8+zKRKbsl3NBjI7qQxX7t1ppIzBpvfrnpfkeIGr8ZenB7eBVzE3PaU65jBvuoGexWcN9J+JerVYAnZXDIpK1aHmlSA/W7wPtLIgy/Wo7RbLm7mZklAwGy6pLSCGQ6VVwQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=xB/XHtCT; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KgphthG4"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772121754; x=1803657754;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=jWiuoX15Mblrwz24tNf0ikmUwKfACgiLh6JFtmC53E8=;
-  b=KgphthG4UPxUE2pplk0YjUZmLRT/tJA+APYZNsBp8WJgdmWhPDShlO0t
-   s0dWlFdu297pe55nYga7BYT0JXWRkCuj9pt9AppL3F8k89MHZhC6BW5p8
-   pLujCJ9tfDA6sljYHhh4RZnsM0ijzp87+xDqr1ovuz61G+q4gRCG2lXQY
-   i7tGiOJ4a0lUTCFxk8CwxjdZqQKENl8oeCOrW3nMVJU97iwO56PfSpVCP
-   JJUgjRR8o1qRDy0Uq7aKREcEmO28kx1CPxV37PEUp40po/Zxawh1uzCfk
-   hhGGs5b+vY7RyDyMhW2n8+KsgAwLzE5imVzE52HaNPce+x35gcZA/AcMj
-   g==;
-X-CSE-ConnectionGUID: HXxh0IHIS3KOLHdMieMOdQ==
-X-CSE-MsgGUID: yU+yt7L3Q0uShO9sdElqZg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="83821878"
-X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="83821878"
-Received: from orviesa006.jf.intel.com ([10.64.159.146])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 08:02:33 -0800
-X-CSE-ConnectionGUID: Mxyc/Dp1Qku9BksrkJTOwA==
-X-CSE-MsgGUID: Sye3YMt8TJK0sPAAecFJyQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="215730743"
-Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.167])
-  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 08:02:29 -0800
-Date: Thu, 26 Feb 2026 18:02:27 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Taha Ed-Dafili <0rayn.dev@gmail.com>
-Cc: Michael.Hennerich@analog.com, andy@kernel.org, corbet@lwn.net,
-	dlechner@baylibre.com, jic23@kernel.org, lars@metafoo.de,
-	linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, nuno.sa@analog.com,
-	rdunlap@infradead.org, skhan@linuxfoundation.org
-Subject: Re: [PATCH v5 3/5] iio: accel: adxl345: Expose IIO_EV_INFO_VALUE for
- double tap
-Message-ID: <aaBukywfQqqAjB0U@smile.fi.intel.com>
-References: <aZ29vjil1d7NF5su@smile.fi.intel.com>
- <20260226150318.21168-1-0rayn.dev@gmail.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="xB/XHtCT"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61QG3L9x3025220;
+	Thu, 26 Feb 2026 11:30:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=Nq+og7JEjiVxSMI2oIKATYStpKa
+	XdS0SiQo64AGgiCs=; b=xB/XHtCTqZK/l3WzOnxeS4YaAufSG3Ykgi/hbJAnlE/
+	zv+YHLq8Aooj0LyUkZtx1+PpNkOm39Pxpu/TkLnKvcxe/iugvzK9nw5UN+ixZmDb
+	IBEGlAcengesAgNcLXXiQK4vvSBL3Vn+1gXaUyki5RKEX+r59hNbK3aPtcaB8DSl
+	YXhGkNi6cVumDtBiHatYaN9tZ2G2bJK56Ed0b/TTuS0c4p+uWqEKjUETB42KFvms
+	imeKMzdmFyuIYRdkERMVZIsUAN6Fogv1q1niqV+XC+uP3mMGPRkOBWNYNEDti91z
+	WwV52n6ceLI4HtYrlaQcA8Yj3BrHM483UFZpMTtzWKA==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cj8tdc0sv-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 26 Feb 2026 11:30:54 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61QGUrL2056435
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 26 Feb 2026 11:30:53 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 26 Feb
+ 2026 11:30:52 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 26 Feb 2026 11:30:52 -0500
+Received: from JGERONI2-L01.ad.analog.com (JGERONI2-L01.ad.analog.com [10.116.32.144])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61QGUkMn008067;
+	Thu, 26 Feb 2026 11:30:49 -0500
+From: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+To: <linux-iio@vger.kernel.org>
+CC: <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH 0/2] iio: temperature: add ADI MAX30210 SPI temperature sensor
+Date: Fri, 27 Feb 2026 00:30:39 +0800
+Message-ID: <20260226163041.169786-1-johnerasmusmari.geronimo@analog.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260226150318.21168-1-0rayn.dev@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Authority-Analysis: v=2.4 cv=NubcssdJ c=1 sm=1 tr=0 ts=69a0753e cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=0zRNOIqFuNFAU-9kz1AA:9
+ a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: JuGsnmTXvUEofvRjpLN96K4JnafWZQzC
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI2MDE0OCBTYWx0ZWRfXxe4QL9uIeEAR
+ /NbNajrXLhnS5T2LYoMrIYNdi/m1IBOjhST/ITtcV9KkLl6qHZm01SDdvnYxwFc4mAh9NVcZKa4
+ lf/dLMJPpsZiyO8zTxUXt19upDhrKnCfRJKyWLXZy0PAPsfB02kIAY+zz7i85Jg742R22fVYYsj
+ FKhhvkouOSwSA8pt5xLI+tw99FgOQPNRY8p1RgPulp56Qk414lhzZ6zDcdclT8GBEYcRLc04OAj
+ pzuIedhzXVVb5HsDjbAmZKv5NnnNNdFzOsoRd58zWXgkTkGE761rZf0Tjbnks/6s1Ug1YZXjvhk
+ rGgeQQNMmCOSS/Wu10IM9oP3VB3//WiczeCflo8uEeMVBfRlr2TYgywxUwvr77uuff557f5JzxO
+ 0QwS5rD6iwkS2d2+U1MAQggMSFxqAt+VjT2yKKy5tQwEtpwpoBx/dKPlRZXtoF0tIjy0blohkr7
+ PfzagrE1AXc+gVTOzTw==
+X-Proofpoint-ORIG-GUID: JuGsnmTXvUEofvRjpLN96K4JnafWZQzC
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-02-26_01,2026-02-26_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ priorityscore=1501 phishscore=0 bulkscore=0 adultscore=0 lowpriorityscore=0
+ suspectscore=0 impostorscore=0 malwarescore=0 clxscore=1011 spamscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602260148
 
-On Thu, Feb 26, 2026 at 03:03:18PM +0000, Taha Ed-Dafili wrote:
+This series adds support for the Analog Devices MAX30210
+SPI temperature sensor to the IIO subsystem.
 
-> Thanks for the reviews.
-> 
-> Regarding the bouncing email: it is an archive address for the Linux
-> Foundation Kernel Mentorship Program. The guidelines recommend CCing
-> it for the program application to help with the selection process.
-> However, since it's bouncing, I've dropped it from my CC list, sorry
-> for the spam.
+The MAX30210 is a high-accuracy digital temperature sensor
+with SPI interface intended for medical and wearable
+applications.
 
-Do it Bcc if it's needed.
+Patch 1 adds the device tree binding documentation.
+Patch 2 adds the SPI driver implementation.
+
+John Erasmus Mari Geronimo (2):
+  dt-bindings: iio: temperature: add ADI MAX30210
+  iio: temperature: add ADI MAX30210 driver
+
+ .../iio/temperature/adi,max30210.yaml         |  71 ++
+ MAINTAINERS                                   |   8 +
+ drivers/iio/temperature/Kconfig               |  10 +
+ drivers/iio/temperature/Makefile              |   1 +
+ drivers/iio/temperature/max30210.c            | 758 ++++++++++++++++++
+ 5 files changed, 848 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+ create mode 100644 drivers/iio/temperature/max30210.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
