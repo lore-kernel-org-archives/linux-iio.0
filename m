@@ -1,63 +1,78 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 45ADE39E6C6;
-	Thu, 26 Feb 2026 09:15:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C7A7D399026
+	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 09:20:56 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772097330; cv=none; b=Wora6Zne1cMK292vKiiD8vBcjWrDy1XntDAeaqKM12MRT3/Xq/TN+ZrdbTDyx3IsGwB/LOb4Rs7mOQu5RD2YTaB+pBeMfayUJEhsUBl9edUacbirhnHNQl4848dzzPogvA/EwbX8xZGY/vcwrsyGkTnqDeyJYYS/fxpPHtCKArc=
+	t=1772097658; cv=none; b=B/KPQ07FGRuK/N3kYPnKHgNFPFwnv1eB1RDG8QlP4EL0ZfQKwQXQYj5l6InuLqRbIqEhBBq433lLm77X8mQHfHUspCwRMkAWHkbURAE9ZNpMUIyhfstLV7wrtcSsGwbp2kmG1GkdwEo4mUJFiOav8C3Tivt+dZp8ciqEbbcXZyc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772097330; c=relaxed/simple;
-	bh=SODohucfs/XWZ5ghq6XnVoPIJwJQO+N07jl9Qry3Ask=;
+	s=arc-20240116; t=1772097658; c=relaxed/simple;
+	bh=8qs6x4Pv9y+qF2DuVeJ8w+TpvkUvEUks+sRLZeSXwYE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dcJabnEr2FsfpFzf9YVQlusMwl8Lq6dMs7u+AoZGy8TVcpy3uBT47KtajL9qUJmZGFJip712H/CVlLuQyRFA2yO9NDjltFjBPJzrfu46hD1nEGxLNgUl1pnPlIyifFrDPVdXU1McXM749wFIKkiYykWJYzW9tUWCO2OkfW7ZpkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RGmiCcjg; arc=none smtp.client-ip=192.198.163.13
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=b3JRF5HlvjUtwC8OdeZuJ8NpebyQ/ohX3x4lYZbT/UW/CTIc9c/dTQc2AdIbPOxNm8U1ba91yliEwtF2lWmVmngbwCvmqb1wcvsnRffxicRhte6yJiDavy81v7DxRb5HjYDY/uVmr3n88e00MmBikkBWfF3l6nQuMqcYjkNkMVI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=SMF5eK/B; arc=none smtp.client-ip=209.85.221.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RGmiCcjg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772097328; x=1803633328;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SODohucfs/XWZ5ghq6XnVoPIJwJQO+N07jl9Qry3Ask=;
-  b=RGmiCcjg9yoKiLOROPrWbOBOmBSgpwAcShOH0Qei4KV7wvvQuWlqWA/H
-   nq1TzJHJE90KJUMd8tDCWF40BGKe6tFe9ClDe28hvpkLi+xzu0LEcOIRJ
-   ZFLYaM6bfxNv4+kP0icv+Z2NyiKbXkntU0C7llX5dv0wsos1sN1RWVM1T
-   i/RdCsogaLQrqd1EBbqfKUdQELrGemlO9SwBYA9VS8xGzcd9nIGESElsg
-   mXXpu1ye0SciqM97Ldnhr7ObyEks27s7ZpzzSEBrHAhPy4oG+u+lTIe0K
-   3a4mWybGQmwRQe4OU3BJ2cpFivW07XS8mmwfvtiNf95ARnhl9mnd5+uIy
-   g==;
-X-CSE-ConnectionGUID: HuvFVWplSZ6M+TPlhPVg2A==
-X-CSE-MsgGUID: S2XJj0uvSdaPfWQYGBEFhw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11712"; a="75756031"
-X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="75756031"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 01:15:27 -0800
-X-CSE-ConnectionGUID: kSadl8LfRcqLbeETw66lfg==
-X-CSE-MsgGUID: hJhdZG8zQj6glUceBSp43w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="247046055"
-Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.167])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 01:15:24 -0800
-Date: Thu, 26 Feb 2026 11:15:22 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="SMF5eK/B"
+Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-43767807cf3so400355f8f.1
+        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 01:20:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1772097655; x=1772702455; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=SEN2Mxya0NO2eS3wMKqR810X2FDpQZBHPAnpB8bwU1I=;
+        b=SMF5eK/BqQtbDbxRy4NP88bOyVXmZg5KJOe1SuUownqsqmtjy3bNvqrBhpqYSoX3TN
+         x/tgnFzRmKK/Lqda5j0mpb83uAB/6ZdYT+qZTCXK9fEFyZoROtjZTes3WWaoiuh7lKO7
+         9gz4qqmceP12637akan2NetFQbYW+8RZY/H5i3SYY+ftbEulYzJTFhHSNLf+SbI3pmT4
+         fuRpBTjUXC2McQ0e6gFWyph13SG1UOsLxcwyQ0Oy9P/nI60KQH15+k1+LqeAQWTpV/fe
+         b4uBFuZuAuHgY32DppZd4GPO+3ThCTYk9LEXH6lImXDClO779Xt/iNbTrR5fAEfN3qvW
+         UC/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772097655; x=1772702455;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=SEN2Mxya0NO2eS3wMKqR810X2FDpQZBHPAnpB8bwU1I=;
+        b=mLodc0AhFfH7psD6ID08dyscvcrq8sZN+yMfFLIvriWxf1Vpvl9pw7MfLMDimWsXTl
+         ds8YwOY52WAZXv8njKfMlscbFCI2kQutqAckCb0gY5aoAzch91ZS+8O3/l6fUAWi2Ij8
+         1p44yhAQkYs42e8aW//GiH3/nd45FCGDM8HYO6n2dViZqGh02JJoQSM1kqXkq2/u3xHJ
+         xBDTqKDOlBAkDEuNg3Qqtgv7VE+KFEGHdiipR0sUzLNegpwqF76AjAaxnfST6v1GHqNs
+         V1l0Vsm8lMyG7Ucx5qgcLC7/ZvGdPm6J3SgpZVSRXaeeEX2IIfWdUwJFNMHUDL0IjTk6
+         RfKg==
+X-Forwarded-Encrypted: i=1; AJvYcCXcwLwxECnRRgLOIu3//J/8Lwv9R4PsODPzC2/YYRRTEH5mqYrG003ANc71ISQgmv4lkL2Zu7I4eJk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwvzNH7jEgdaPt6OLw8nNW9pirXUQ1ueLCVTMobLPssWuNi6aV6
+	UZEPDRWy3iKBXYbFMT3TuWm8vQZTJdSgEpq98iI83l+9iocNLpjKdsyWdm3nW9m3Y8k=
+X-Gm-Gg: ATEYQzy/sqsqCC97gBRHJ+iyl0vaKoCvoHFMn+zMRxiyCOyrt4q8xlh3OXxhSTQLsTB
+	l80FZVrV6/oQTaBEX791xxDQnM9GpVQ8IUNHd477FQiScCXxsSJj2Z81bfKa7EafDwQIQzK17w9
+	T8zaOX6aOBGOPBhhfZ+CXYvpP2cqawT/2QS0lYamh9+Et2TlDSnSFQqqGoeu5DyrqQJDfpleyYz
+	5RYRIIgqdlxhmVVhqSBM8DPPRu+WA1T58vdnFIb7+smxI5AgcDNhKtLHtv9Zu/2/rxJztPV8AkZ
+	I4VynBOy0cHkpKmM6uGfp5q+LS1lb74QKbnlCJNQrAb1iA18QKqKYXxqFO21fU8xMiBk6/QigLK
+	phgDSt6fG/JhMuJ0k2CuTQfiumEInT2JBPB5Rm+5MgAtrFBuKvwr5TRcLOMB3in3Us5gASItJvJ
+	REWy7+zQPCFJLtE2o5q1cj1MJdaVvp
+X-Received: by 2002:a05:6000:288d:b0:436:1a2e:9f1c with SMTP id ffacd0b85a97d-439942aa2c7mr6219113f8f.19.1772097655070;
+        Thu, 26 Feb 2026 01:20:55 -0800 (PST)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43970d5463dsm36575369f8f.34.2026.02.26.01.20.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Feb 2026 01:20:54 -0800 (PST)
+Date: Thu, 26 Feb 2026 12:20:51 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
 To: Ruslan Valiyev <linuxoid@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
 	Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
 	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] staging: iio: adc: ad7816: add timeout to busy-wait
- loop
-Message-ID: <aaAPKiwCiGtys-P-@smile.fi.intel.com>
-References: <aZ_9x4q5BZRJi3ue@smile.fi.intel.com>
- <20260226082547.69616-1-linuxoid@gmail.com>
+	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: adc: ad7816: add timeout to busy-wait loop
+Message-ID: <aaAQc036akWiJ4uQ@stanley.mountain>
+References: <20260226052615.65734-1-linuxoid@gmail.com>
+ <aZ_9x4q5BZRJi3ue@smile.fi.intel.com>
+ <20260226082535.69503-1-linuxoid@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,54 +81,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260226082547.69616-1-linuxoid@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260226082535.69503-1-linuxoid@gmail.com>
 
-On Thu, Feb 26, 2026 at 08:25:47AM +0000, Ruslan Valiyev wrote:
-> The ad7816_spi_read() function polls the busy GPIO pin in a tight
-> loop without any timeout. If the hardware fails to deassert the
-> busy signal, the kernel hangs indefinitely in an unbounded
-> busy-wait.
+On Thu, Feb 26, 2026 at 08:25:35AM +0000, Ruslan Valiyev wrote:
+> On Thu, Feb 26, 2026 at 05:26:15AM +0000, Andy Shevchenko wrote:
+> > Have you able to test this?
 > 
-> Replace the open-coded while/cpu_relax() loop with
-> read_poll_timeout_atomic() which polls every 5 us and returns
-> -ETIMEDOUT after 1 ms. Per the AD7816 datasheet the maximum
-> conversion time is 27 us (temperature channel), so 1 ms provides
-> generous margin.
+> No, I don't have AD7816 hardware, compile-tested only.
 > 
-> Use the atomic variant to preserve the existing busy-wait semantics
-> of the original loop.
+> > Have you investigated the code? It was an atomic, now it's sleeping.
+> > This is a huge behavioural change. See my first Q.
 > 
-> Also handle the case where gpiod_get_value() returns a negative
-> error code, which the original loop would treat as busy and keep
-> spinning on indefinitely.
+> You're right, the sleeping change was unnecessary. ad7816_spi_read()
+> is only called from ad7816_show_value(), a sysfs show callback, so
+> it runs in process context. But for a wait of at most 27 us per the
+> datasheet, there's no benefit to sleeping. The atomic variant adds
+> the timeout protection while preserving the original busy-wait
+> semantics.
+> 
 
-First of all, start a new email thread for a new version of the patch.
+So this is only from reading the datasheet and the code?  I had assumed
+this was something you experienced yourself in real life.
 
-Second, give at least 24h between the versions to have a chance being
-reviewed by more people.
-
-
->  	if (chip->id == ID_AD7816 || chip->id == ID_AD7817) {
-> +		int val;
-> +
-> +		ret = read_poll_timeout_atomic(gpiod_get_value, val, val <= 0,
-
-While val <= 0 is technically correct, semantically it's harder to read,
-it's better to use val < 0 || val == 0.
-
-> +					5, 1000, false, chip->busy_pin);
-
-This has an indentation issue now.
-
-> +		if (val < 0)
-> +			return val;
-> +		if (ret)
-> +			return ret;
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+regards,
+dan carpenter
 
