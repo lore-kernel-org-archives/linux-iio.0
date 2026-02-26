@@ -1,64 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A1B8C43D502;
-	Thu, 26 Feb 2026 15:57:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FA6847ECF7;
+	Thu, 26 Feb 2026 16:02:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772121490; cv=none; b=Q6V5Eu4IPFcz0qqiy1wqJEZHzSfzJucpqraCwCYcnxrXaYoNO3p08TDrT60jBLj/wmsBnbTwPYPwy8vkB9qiJp+v2atVMjEGQjE+86Di02Q3pIxSvuJBTUyd+K66ZTFLjgSp32N7pskOCkxQBgsObObX/DW/obWlggoTiUKlwic=
+	t=1772121761; cv=none; b=BglXGlZudXxOQVwaIjxUX/IGsqI+CGJiWJ3ALGAJ09+lCIIxDNhcrM5DylbtYLfS4zABROPSB9E/a0kOxUa/Ss0iwtfU0pM+UFzYhzxX6wovh6zW/AZCuEiKLNN4/9XodLlDuzM13TnUnOXL4uQDUmtM4seH1yO1vAlmCtj1uSI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772121490; c=relaxed/simple;
-	bh=qTnEEXj9o+gw+ilRwY26kk7Wl+97u3gZBmJy04dNsMo=;
+	s=arc-20240116; t=1772121761; c=relaxed/simple;
+	bh=jWiuoX15Mblrwz24tNf0ikmUwKfACgiLh6JFtmC53E8=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Jc/B8OOqX7Y15+14nMCDNin0LieVkz2oqoUr6eDgL07yOrI2FzRKE7jfvM5BqbdXd7M0GCd4h14SNT2Vvs6vmAHS2TkdUqn+uqTCA5LuknBi8TvkiRnBJXvev9CVR/3iQyw8x676yzHwyuTXJ/u5ZYQnHsZwx114sGYlb/NUtMU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UsrPOPUl; arc=none smtp.client-ip=192.198.163.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=JRbEhlsKBzkiic1QcW7qksMFvRqbgQEr0/brPYRQtb2RDWiu1Vo9OavDKJBO7rW3Hxqia7lCiPfm6oJAQAtypKIp6cU9i+N+p9lPIjgfIyiIxnl5hDsSVR+hWQ5jIrhUXsuUw4RvZm/kkBo4IbfLPdNVjEHlvF6XJ++WVLMJMnE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=KgphthG4; arc=none smtp.client-ip=192.198.163.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UsrPOPUl"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="KgphthG4"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772121479; x=1803657479;
+  t=1772121754; x=1803657754;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=qTnEEXj9o+gw+ilRwY26kk7Wl+97u3gZBmJy04dNsMo=;
-  b=UsrPOPUlGOptrY9kBT4CBqJczhTdKxvXRG+B3fvHlyCp8wDgD64MQXv2
-   GX/IA2Q7wxi/oGlvfZ67Xe5k09puR3Z5vHgZ1YoL+Pmr2lkt2TRAH3P0v
-   JfzR78kHjaULtyEsazq3HiWBgR3+pR/ld96uCuZSW9LHMWGfGHf1lxj2O
-   zH0If0BEGTErd3PqcnePwUTIeSrl5veNQCKh/1VzN9/w4kO79a1tcxK4J
-   tJ7dy5IKoaaTUahhMqp96mdlnbropOTy6r85Kp6NuQDPThUxtRfxU5V/W
-   3d7QcmMvUvd/LKrfpso9iuSWdt0xU+5QxPVM9cJFt9pIv9k8HksgXAL5V
-   w==;
-X-CSE-ConnectionGUID: j7UNamJlTL2taBBJqSmr8w==
-X-CSE-MsgGUID: VcHUZnWJSl2faqqnjjgHFQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="73254491"
+  bh=jWiuoX15Mblrwz24tNf0ikmUwKfACgiLh6JFtmC53E8=;
+  b=KgphthG4UPxUE2pplk0YjUZmLRT/tJA+APYZNsBp8WJgdmWhPDShlO0t
+   s0dWlFdu297pe55nYga7BYT0JXWRkCuj9pt9AppL3F8k89MHZhC6BW5p8
+   pLujCJ9tfDA6sljYHhh4RZnsM0ijzp87+xDqr1ovuz61G+q4gRCG2lXQY
+   i7tGiOJ4a0lUTCFxk8CwxjdZqQKENl8oeCOrW3nMVJU97iwO56PfSpVCP
+   JJUgjRR8o1qRDy0Uq7aKREcEmO28kx1CPxV37PEUp40po/Zxawh1uzCfk
+   hhGGs5b+vY7RyDyMhW2n8+KsgAwLzE5imVzE52HaNPce+x35gcZA/AcMj
+   g==;
+X-CSE-ConnectionGUID: HXxh0IHIS3KOLHdMieMOdQ==
+X-CSE-MsgGUID: yU+yt7L3Q0uShO9sdElqZg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="83821878"
 X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="73254491"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 07:57:58 -0800
-X-CSE-ConnectionGUID: 05oGDFgbR82xiIj/lntWHQ==
-X-CSE-MsgGUID: KOVgKt/wQcWHZl+rOiuvhQ==
+   d="scan'208";a="83821878"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 08:02:33 -0800
+X-CSE-ConnectionGUID: Mxyc/Dp1Qku9BksrkJTOwA==
+X-CSE-MsgGUID: Sye3YMt8TJK0sPAAecFJyQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="216732225"
+   d="scan'208";a="215730743"
 Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.167])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 07:57:56 -0800
-Date: Thu, 26 Feb 2026 17:57:53 +0200
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 08:02:29 -0800
+Date: Thu, 26 Feb 2026 18:02:27 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Francesco Lavra <flavra@baylibre.com>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 6/7] iio: ABI: Add custom data type
-Message-ID: <aaBtgQsU0MP8WV_q@smile.fi.intel.com>
-References: <20260225100421.2366864-1-flavra@baylibre.com>
- <20260225101806.2368391-1-flavra@baylibre.com>
- <aZ7gdO58NV6gjgWC@smile.fi.intel.com>
- <eeb28077-0886-42b4-b468-21f5c6a6444a@baylibre.com>
- <aaAQtJ5WTDtkxi08@smile.fi.intel.com>
- <f637d8075569613f97fbe7ff6219e6adde53646d.camel@baylibre.com>
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>
+Cc: Michael.Hennerich@analog.com, andy@kernel.org, corbet@lwn.net,
+	dlechner@baylibre.com, jic23@kernel.org, lars@metafoo.de,
+	linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, nuno.sa@analog.com,
+	rdunlap@infradead.org, skhan@linuxfoundation.org
+Subject: Re: [PATCH v5 3/5] iio: accel: adxl345: Expose IIO_EV_INFO_VALUE for
+ double tap
+Message-ID: <aaBukywfQqqAjB0U@smile.fi.intel.com>
+References: <aZ29vjil1d7NF5su@smile.fi.intel.com>
+ <20260226150318.21168-1-0rayn.dev@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,50 +64,21 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f637d8075569613f97fbe7ff6219e6adde53646d.camel@baylibre.com>
+In-Reply-To: <20260226150318.21168-1-0rayn.dev@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Feb 26, 2026 at 04:30:27PM +0100, Francesco Lavra wrote:
-> On Thu, 2026-02-26 at 11:21 +0200, Andy Shevchenko wrote:
-> > On Wed, Feb 25, 2026 at 03:27:55PM -0600, David Lechner wrote:
+On Thu, Feb 26, 2026 at 03:03:18PM +0000, Taha Ed-Dafili wrote:
 
-...
-
-> > Not sure about the latter, but something explicit like
-> > IIO_MOD_PARTIAL_QUATERNION sounds good to me.
+> Thanks for the reviews.
 > 
-> Another option could be having a custom iio_modifier instead of a custom
-> iio_chan_type. I think this would address the concern of drivers being just
-> a proxy between hardware and userspace. A custom modifier would be used
-> when the data representation for a given channel is too exotic to warrant a
-> generic iio_modifier enum value (but would still need to be documented so
-> that userspace can make use of it).
-> I can imagine a generic userspace application that interfaces with (in this
-> case) rotation sensors (i.e. looks for IIO_ROT channels) and can support
-> not only "standard" rotation data types (yaw, pitch, roll, quaternion, etc)
-> but also "manufacturer-specific" types.
+> Regarding the bouncing email: it is an archive address for the Linux
+> Foundation Kernel Mentorship Program. The guidelines recommend CCing
+> it for the program application to help with the selection process.
+> However, since it's bouncing, I've dropped it from my CC list, sorry
+> for the spam.
 
-And I am against this. It will provoke a vendor to escape the standards,
-common libraries and other tools. If we need something which is too exotic,
-the driver should convert it to the standard one. This way we will support
-HW and won't require or allow some dirty tricks based on vendor-locked
-approaches.
-
-I'm talking from the experience on what vendors are doing or want to do
-IRL in other areas. One of the infamous example, is Broadcom Bluetooth
-used back in Nokia phones, the so called "driver" is useless completely
-in the kernel as it's just a proxy for the HW <--> userspace link.
-
-TL;DR: I'm in favour for anything that does not touch user space at all,
-or has explicit meanings. NAK for CUSTOM, manufactirer-specific, et cetera
-from me is warranted.
-
-> We could even think about allowing more than one custom modifier (e.g.
-> everything >= IIO_MOD_CUSTOM is a custom modifier) so that a sensor can
-> have its "manufacturer-specific" data in multiple separate channels; and of
-> course each such custom modifier would have to be described in a per-driver
-> doc.
+Do it Bcc if it's needed.
 
 -- 
 With Best Regards,
