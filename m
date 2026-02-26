@@ -1,126 +1,361 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6727F36895F
-	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 16:43:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 757123290A4;
+	Thu, 26 Feb 2026 17:48:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772124240; cv=none; b=BhSjLlbz+tF6sRZ68S9Imj4r4CS3KUUf647f2B+uW5D5cohd0KIFCcV2xEHoK3WUFTe2rGc0HELSPqjCDnzWaFcB5AqRaf3oWp7waH5p6oJL1Fyp1fcPEUbiMZTC2IpjnRrF4XGY2/PDkpu5QBKnvkY0cHY0tmzLDhEROqdMGiw=
+	t=1772128108; cv=none; b=HGqMMVk8iRngLd3+rhvDsmSMbZb7montoVMF73tbR0FnqBcr1LZleAHSJWHpe44ZbuIoO0BzvVZD0IKUVV0A6jsIX7lLgvMleO52G4ukVz09gD0nA7FTl8FgwfyI2Z0LSbMx3sdwoHREI4lFJw4xG8Q2xnt7kgF6Zm19tHMp0Q4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772124240; c=relaxed/simple;
-	bh=bVzUIf0vDumSqfzAvMw34LiV1trSBAWr8LifxdiecRU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Zjr0Xy7KZ+xS7pOsHnUxfundl69oV9OXO5Fmsun55kEhongUOHwNFkdMqEXBmoopNcG4RisXb8LvFVbuXBueZyqMb/w+1j2M/iaSbz6KSJv7Wf9n7aZfG7Ie/KPTfHQTwWeVgAJ/zvdXE/g9muYC9IZscl5yTi9se84qjhjsjvA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e/HAd4Lw; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772128108; c=relaxed/simple;
+	bh=KOFBdxXZLvXZb+MXTChMG7R0PNFjapyhVuj7jVA+RD4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=i6mtWkFPGS2K08/e6Scwq3ttavALO45ohrxsI7EFHfHjOJlZsibG7mZ1fLryUPTZndI6RgjWxbCkKIKzLa+OdzU8iH9oErLjKLQ1xQLHYjU29zC4S8eZ0Qjwy2eEdd/50gvTmBebi4po0h021IpqPZk7uiVnh7L1PfyFJH8r0Hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mZrPwC3g; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e/HAd4Lw"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2a962230847so10333575ad.3
-        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 08:43:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772124238; x=1772729038; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=jmkHW0X9WlzYxdcGY/O8+LzsHyuZnIHd7V90obvknNc=;
-        b=e/HAd4LwyyvIGH3YNbA8Uy86Nog545cyr7CBOe9vojb053Yelzwjy5sygdbPOM7sWv
-         hCreKzo7OMj8bpkXYm+C5pSpcMNfhuDGFZRybYfh7m56Z/FHZUYMCXZCyLkXDXoG3xnR
-         jIAJhmrR5m6wM5WYhAvsg8wj2FgCrVKToINzLi6YH/Fw54Jr5V20ODgqTl0myB/d2UwN
-         Ar1NIqzruSsKBMxyjF05Xs8K3RUy683Z8upqRV2OlCfySWV+oI1zsneVqAY3XlI97J9b
-         UmDGqUTS1yrgZt+ZGLgO3CScDP4GixiMQcQKviRIf/lRxIuccxOXeZie/sSrsJqiN3sf
-         Yt+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772124238; x=1772729038;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=jmkHW0X9WlzYxdcGY/O8+LzsHyuZnIHd7V90obvknNc=;
-        b=Ibm282bleM9KnqaPRcMhTX/CFLeZ2ZN8nOhZwKxneUTTjq8EhlqWOgWc/ouq5PnHze
-         LsDW7qRmzfDk1iMceHyPcoiAo9G5DpksCkjecIVy4+X8/guG0ibdyQqR/BUAYuxhLBrr
-         JMrrQsTTyc+FWjm098AUvskZAhPoGXdEDVoh5XfSZ71V3Cy8oz6MHcnxgTN3CKsztM7S
-         sM7AROWmpOG4wWIf2tyjYr2AwUoDxvdzy04fA0007MzrRViTwt818ro6zSXiACKrqR5y
-         qj+XDI+QKcprUM3GXHEt7NdA8YvxSjdDwHtU51NwG/rMvavSuEqIW/ENxZAFOguswssy
-         fouA==
-X-Forwarded-Encrypted: i=1; AJvYcCXwqhXooYYJbm4VmEk9lCU8z99kCmTDdvxUKhcdB6/pX2Gll7cW163Si/DyqdwiiQulnO6caTi0+Zw=@vger.kernel.org
-X-Gm-Message-State: AOJu0YySbSN4lXhL/nu+kRucS0CTrh5doM0V7xvKBMOE7kW7EcbnLAu2
-	u7RKCyvVDcG0B9uejvvHRlDk9v8o8EXenSfQnd63gLOMvblOLKN5EwLA
-X-Gm-Gg: ATEYQzxTY+nkoui51Mj4r0TSh5XZBvpr6iJTlDObqERekeDeSomK7aMfDJx5VxQJf2h
-	cGpdjQTi/CRf5Wpetr34mYjhi454LB4Euccs6h1JsBCe9jQlw68A85w4TVgcG9s3l9syUntkgy9
-	rWIwjLhF1PRCSDJ+FcqfowDztYeSX0s3HkPq/njvW7mE2iE5jHQC9hNlml0itrwD9ijhCnelZ4O
-	rV6vcvcHzhZzWggg8XfUKqjfYX9964KJ8l7alrvcsbs6ME/i2OtMbRduDeDIBul9OUShazKOwqg
-	9m+bLFdGPn4RMfpdpCAOjSdxqTNENCq/dH95/104RnYTwUgooSmXe3TbrKu9/CnW4JEmhi+DrHE
-	zQtcT2YmChiLFBbLTVXYmfV/SzqOlpHZq9IulBL4m5Ps3iZuMZOf8BfN8aYqGj/J5YoOc+tZN1G
-	7T2ZFLhXC7i6px1WSp5sMJH0BDmtsI7DmQXXE=
-X-Received: by 2002:a17:902:da8e:b0:2a0:c5a6:c8df with SMTP id d9443c01a7336-2ae030521camr26876525ad.21.1772124237645;
-        Thu, 26 Feb 2026 08:43:57 -0800 (PST)
-Received: from junjungu-PC.localdomain ([2408:820c:9009:3f2:5925:5b4a:a4af:8ab])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2adfb5b2309sm31066945ad.19.2026.02.26.08.43.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Feb 2026 08:43:57 -0800 (PST)
-From: Felix Gu <ustc.gu@gmail.com>
-Date: Fri, 27 Feb 2026 00:43:51 +0800
-Subject: [PATCH] iio: pressure: abp2030pa: Replace IRQF_ONESHOT with
- IRQF_NO_THREAD
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mZrPwC3g"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772128105; x=1803664105;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=KOFBdxXZLvXZb+MXTChMG7R0PNFjapyhVuj7jVA+RD4=;
+  b=mZrPwC3gTMF4c1mC2tsayjr81PjqQ+fESUUkejWGk+1REiN/28aQLr5P
+   hWdHFT3CQ8Bwv3gBgWQCQVxVbT6GbaeUDzw4R6/WY24MHUdTVAhNPLmeI
+   GcszstB7nZWLNgn9ZGGM8Q59YA60UQNkw/UNkE0pM8z7OLeI4lYoSfNPt
+   YtaH0DTSuwnBTVYCFNceDCc7CY4ME40qmP0n5BIt6TrVPitQ+vansmCe4
+   XNhZujWQ1p4/aKdPpJcJIrK3hjLbNG2q5QnvaIFYtOhPej+s9BYTDOxAX
+   eRD7tGRDWIIOO/whRQOktexQACiQ7yWL7W8OoiAmZ/abR+gAHyqWJukPP
+   g==;
+X-CSE-ConnectionGUID: QJPMzClqRuSpxmAZKwc9YQ==
+X-CSE-MsgGUID: EsvGfDeBRq+tc1loBTG77w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="72901261"
+X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
+   d="scan'208";a="72901261"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 09:48:16 -0800
+X-CSE-ConnectionGUID: yTfOAPLTQ1+sgqLqhsyLgQ==
+X-CSE-MsgGUID: aJ6PS6cvR9uqAIvYjILDBg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
+   d="scan'208";a="216767409"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.167])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 09:48:13 -0800
+Date: Thu, 26 Feb 2026 19:48:11 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH 2/2] iio: temperature: add ADI MAX30210 driver
+Message-ID: <aaCHW3hYUqHA4pgy@smile.fi.intel.com>
+References: <20260226163041.169786-1-johnerasmusmari.geronimo@analog.com>
+ <20260226163041.169786-3-johnerasmusmari.geronimo@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260227-abp-v1-1-b6fed0545852@gmail.com>
-X-B4-Tracking: v=1; b=H4sIAEZ4oGkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
- vPSU3UzU4B8JSMDIzMDIyNz3cSkAl0DQ7NEAwPzxCQLQ3MloMqCotS0zAqwKdGxtbUAGYnqJFU
- AAAA=
-X-Change-ID: 20260227-abp-016a007ab817
-To: Petre Rodan <petre.rodan@subdimension.ro>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- Felix Gu <ustc.gu@gmail.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1772124234; l=1220;
- i=ustc.gu@gmail.com; h=from:subject:message-id;
- bh=bVzUIf0vDumSqfzAvMw34LiV1trSBAWr8LifxdiecRU=;
- b=wQxuGJzUxGbasqol8SzsbwISlzFDy4bajvkF9Xp+j5gloBqgh/ZYCQ/Yap7//doBNAyaokeFo
- B8xa4qdW0/cAfghiiBsPBFId8m+1hERfgzGUqsQYac3LXrsppd6GQt0
-X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
- pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260226163041.169786-3-johnerasmusmari.geronimo@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Since commit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT
-without a threaded handler"), the IRQ core checks IRQF_ONESHOT flag
-in IRQ request and gives a warning if there is no threaded handler.
+On Fri, Feb 27, 2026 at 12:30:41AM +0800, John Erasmus Mari Geronimo wrote:
+> MAX30210 ±0.1°C Accurate Ultra-Small Low-Power Digital Temperature Sensor
 
-Replace IRQF_ONESHOT with IRQF_NO_THREAD.
+Not enough for the commit message.
 
-Fixes: 47d323ce1e89 ("iio: pressure: add Honeywell ABP2 driver")
-Signed-off-by: Felix Gu <ustc.gu@gmail.com>
----
- drivers/iio/pressure/abp2030pa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+...
 
-diff --git a/drivers/iio/pressure/abp2030pa.c b/drivers/iio/pressure/abp2030pa.c
-index 4ca056a73cef..858e13e02bb4 100644
---- a/drivers/iio/pressure/abp2030pa.c
-+++ b/drivers/iio/pressure/abp2030pa.c
-@@ -520,7 +520,7 @@ int abp2_common_probe(struct device *dev, const struct abp2_ops *ops, int irq)
- 	data->p_offset = div_s64(odelta * data->pmin, pdelta) - data->outmin;
- 
- 	if (data->irq > 0) {
--		ret = devm_request_irq(dev, irq, abp2_eoc_handler, IRQF_ONESHOT,
-+		ret = devm_request_irq(dev, irq, abp2_eoc_handler, IRQF_NO_THREAD,
- 				       dev_name(dev), data);
- 		if (ret)
- 			return ret;
+> +#include <asm/div64.h>
 
----
-base-commit: 7d6661873f6b54c75195780a40d66bad3d482d8f
-change-id: 20260227-abp-016a007ab817
+linux/math64.h
 
-Best regards,
+> +#include <linux/bitfield.h>
+> +#include <linux/bitops.h>
+
+> +#include <linux/debugfs.h>
+
+Used?
+
+> +#include <linux/delay.h>
+
+> +#include <linux/errno.h>
+
+You missed err.h
+
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/i2c.h>
+
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/events.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+
+Wow! All of them are in use?
+
+> +#include <linux/interrupt.h>
+> +#include <linux/log2.h>
+> +#include <linux/module.h>
+> +#include <linux/mod_devicetable.h>
+> +#include <linux/property.h>
+> +#include <linux/pwm.h>
+> +#include <linux/regmap.h>
+> +#include <linux/stat.h>
+> +#include <linux/string.h>
+> +#include <linux/unaligned.h>
+> +#include <linux/units.h>
+
+...
+
+> +struct max30210_state {
+> +	/*
+> +	 * Prevent simultaneous access to the i2c client.
+> +	 */
+> +	struct mutex lock;
+
+> +	struct regmap *regmap;
+
+
+And if you swap them, won't the binary size be less?
+
+> +	struct iio_trigger *trig;
+> +	struct gpio_desc *powerdown_gpio;
+> +	u8 watermark;
+> +	u8 data[3 * MAX30210_FIFO_SIZE]  __aligned(IIO_DMA_MINALIGN);
+
+Hmm... Don't we have a macro for this nowadays?
+
+> +};
+
+...
+
+> +static const int samp_freq_avail[] = {
+
+Why not 2D array?
+
+> +	0, 15625,
+> +	0, 31250,
+> +	0, 62500,
+> +	0, 125000,
+> +	0, 250000,
+> +	0, 500000,
+> +	1, 0,
+> +	2, 0,
+> +	4, 0,
+> +	8, 0
+
+Leave trailing comma, it's not a terminator.
+
+> +};
+
+...
+
+> +static int max30210_read_temp(struct regmap *regmap, unsigned int reg,
+> +			      int *temp)
+> +{
+> +	u8 uval[2] __aligned(IIO_DMA_MINALIGN);
+
+No way. This is variable on stack, not all CPUs / architectures allow this.
+And actually why this alignment to begin with? Wouldn't
+
+	__be16 val;
+
+suffice?
+
+> +	int ret;
+> +
+> +	ret = regmap_bulk_read(regmap, reg, uval, 2);
+
+sizeof()
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	*temp = sign_extend32(get_unaligned_be16(uval), 15);
+> +
+> +	return IIO_VAL_INT;
+> +}
+
+...
+
+> +static void max30210_fifo_read(struct iio_dev *indio_dev)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	u32 samp;
+> +	int ret, i, j;
+
+Why are 'i' and 'j' signed?
+
+
+> +	ret = regmap_bulk_read(st->regmap, MAX30210_FIFO_DATA_REG,
+> +			       st->data, 3 * st->watermark);
+> +	if (ret < 0)
+> +		return dev_err(&indio_dev->dev, "Failed to read from fifo.\n");
+> +
+> +	for (i = 0; i < st->watermark; i++) {
+
+'i' is not used outside for-loop, hence
+
+	for (unsigned int i = 0; i < st->watermark; i++) {
+
+> +		samp = 0;
+> +		for (j = 0; j < 3; j++) {
+> +			samp <<= 8;
+> +			samp |= st->data[3 * i + j];
+> +		}
+
+Reinventing get_unaligned_be32() if I'm not mistaken.
+
+> +		if (samp == MAX30210_FIFO_INVAL_DATA) {
+> +			dev_err(&indio_dev->dev, "Invalid data\n");
+> +			continue;
+> +		}
+> +
+> +		iio_push_to_buffers(indio_dev, &samp);
+> +	}
+> +}
+
+...
+
+> +static int max30210_setup(struct max30210_state *st, struct device *dev)
+> +{
+> +	unsigned int val;
+> +
+> +	/* Power down to reset device */
+> +	st->powerdown_gpio = devm_gpiod_get_optional(dev, "powerdown",
+> +						     GPIOD_OUT_HIGH);
+> +	if (IS_ERR(st->powerdown_gpio))
+> +		return dev_err_probe(dev, PTR_ERR(st->powerdown_gpio),
+> +				     "Failed to request powerdown GPIO.\n");
+> +
+> +	/* Power up device */
+> +	gpiod_set_value(st->powerdown_gpio, 0);
+
+All delays must be documented. Add a comment with the datasheet reference to
+explain the value and need of the sleep.
+
+> +	fsleep(700);
+
+> +	/* Clear status byte */
+> +	return regmap_read(st->regmap, MAX30210_STATUS_REG, &val);
+> +}
+
+...
+
+> +static int max30210_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct max30210_state *st;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
+> +		return -EOPNOTSUPP;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+
+> +	mutex_init(&st->lock);
+
+	ret = devm_mutex_init(...);
+
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to enable vdd regulator.\n");
+> +
+> +	st->regmap = devm_regmap_init_i2c(client, &max30210_regmap);
+> +	if (IS_ERR(st->regmap))
+> +		return dev_err_probe(dev, PTR_ERR(st->regmap),
+> +				     "Failed to allocate regmap.\n");
+> +
+> +	ret = max30210_setup(st, dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = &max30210_channels;
+> +	indio_dev->num_channels = 1;
+> +	indio_dev->name = "max30210";
+> +	indio_dev->info = &max30210_info;
+> +
+> +	ret = devm_iio_triggered_buffer_setup_ext(dev, indio_dev, NULL,
+> +						  max30210_trigger_handler,
+> +						  IIO_BUFFER_DIRECTION_IN,
+> +						  &max30210_buffer_ops,
+> +						  max30210_fifo_attributes);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (client->irq) {
+> +		st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
+> +						  indio_dev->name,
+> +						  iio_device_id(indio_dev));
+> +		if (!st->trig)
+> +			return -ENOMEM;
+> +
+> +		st->trig->ops = &max30210_trigger_ops;
+> +		iio_trigger_set_drvdata(st->trig, indio_dev);
+> +		ret = devm_iio_trigger_register(dev, st->trig);
+> +		if (ret)
+> +			return ret;
+> +
+> +		indio_dev->trig = st->trig;
+> +		ret = devm_request_threaded_irq(dev, client->irq,
+> +						iio_trigger_generic_data_rdy_poll,
+> +						NULL, IRQF_TRIGGER_FALLING,
+> +						indio_dev->name, st->trig);
+> +		if (ret)
+> +			return ret;
+> +	}
+
+> +	ret = devm_iio_device_register(dev, indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+
+Wouldn't
+
+	return devm_iio_device_register(dev, indio_dev);
+
+suffice?
+
+> +}
+
+...
+
+> +static const struct i2c_device_id max30210_id[] = {
+> +	{ "max30210", 0 },
+
+No ', 0' part.
+
+> +	{ }
+> +};
+
+...
+
+Can somebody at Analog start a common internal Wiki or other resources
+and collect there typical requirements for the code in IIO? It will prevent
+reviewers and maintainers from doing the same replies again and again.
+
 -- 
-Felix Gu <ustc.gu@gmail.com>
+With Best Regards,
+Andy Shevchenko
+
 
