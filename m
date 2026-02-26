@@ -1,63 +1,63 @@
-Received: from mail-pf1-f181.google.com (mail-pf1-f181.google.com [209.85.210.181])
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A5033EDAC5
-	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 23:11:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A820187FE4
+	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 23:11:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772147480; cv=none; b=FPwNxyCl6zYxon9ICIcZuyVEuyxozE1F5Kdq55ZnbPlwJKWW2RIg4627cnt93Y3t2rPHBqVoWGX1MpWJxOcQ7KJ89Z0JMwFJ+kY1EtRQQvHLxBQafX/CBe8KaQedAN6BSJbmZbvmuB1OtP+PwF9+fBqnI3MZfbewcFsIe1qBRlU=
+	t=1772147485; cv=none; b=qpIqo0lPKtW5Hg9WP7zwVy6/qeTL8CVLxzXouqE8jNFgkpw0hGrsCdwx8hf+VepQx9H6X7S/mxDFA1t8PvOOslOGZlZuErtlhX0xvEM3VP2PtGhLxipBvFslaKSkHP7JcuAk9EQ8xDdxes22wxA9/SOd6s9oK3OieuSlGjDXKtU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772147480; c=relaxed/simple;
-	bh=TfhL+f7VtjbiWYOT85/9EUVD1Gke8/6vEBgL8gRLVTE=;
+	s=arc-20240116; t=1772147485; c=relaxed/simple;
+	bh=pgDjF+SFynRqwPcTuhu9A71XQCFv4iZQSdb1IQofHC8=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=hhp3f7QHdSElmOxpjgRQhME+UKqoMYv4fUTAyKNJANwvnUc5eN3ec9VQoSAGYWjcmGJ/7IJRNzypDFGrYaG/RMxaDZ4vYQYpd1O9reKakdFJtROcCpJUtd7vHAON5mKucffh5EdIqsCE1BuWJsnAF9b7G4cfi3nxUk80QpPIowU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=d6RF4snM; arc=none smtp.client-ip=209.85.210.181
+	 MIME-Version; b=eLUhMLPTE+I15G9O4ns9Amf2JdawqSsfV0ibEZhHEfhfi136ang8yem5LbCQDHBhvrA1bGxEuh9iH1iLLDG4Ii9lSWgMMiy9Chalu/uI/alwJy6ME17AyPx6Cw18IykhipNfPGVhONH6n4roLfITFnex39GdyMkY0JuD4MEEE7E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TlAJ/c5m; arc=none smtp.client-ip=209.85.210.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="d6RF4snM"
-Received: by mail-pf1-f181.google.com with SMTP id d2e1a72fcca58-824b32875e7so791284b3a.3
-        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 15:11:18 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TlAJ/c5m"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-8272c559597so1476720b3a.1
+        for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 15:11:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772147478; x=1772752278; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1772147484; x=1772752284; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jQUc2l2etFAMFSbUDTLR0OFMDbwiSBMKpEjkoUkXXeA=;
-        b=d6RF4snMO8py8nAVgGzvDsFQp+fd9C8Efumvp9lWvf39udpXQKCLu2vDFFVNHNSAUD
-         lqCOjeXuTMEMCrNkv9ObJjI/uCTxnOecaS2Hs3EfbgzgWe+UT5IiI0m5ShpQXnBz/KTM
-         gljM0mynXPu2rZJwx5nhCrEewGJmAwIBPE1qxpqILf2wGB2I6SQdaMhREYD8cGSPDAmu
-         K+6DUlyb+KFEfuLMG3+IPf+dpfmdkfZ2dP4IEeKwSY5L524/Jw1pb9MaqQffJjKS+GNq
-         Q2yQHc7UIxPOJrJOPt5D1qUqgO3BJhqABzFIz3P+OCgUAXfRBnWs0N5zkHMjWVaZXHVc
-         tesg==
+        bh=vO2yIyX5QV033H/kp7ME/ccMu7iMw0aAmads5tUNKKw=;
+        b=TlAJ/c5mc/2AoysCI7WWJTyk08yCU+JJZbW8QJd5l9KdXSBOMMK6c2tec+mbr07tFX
+         Ph1vILT1NewYbpdbvg2hjavg6aZOdUPH5Bwazu02ouW6v3wP/tyYOa3FD0ZY8tKe52eE
+         +cIbeK0aG2r/4AS59cts71N5S6Jf5XG4raP5PWJcosE3K2FnA4sdeqpKvhcXS3azGwRf
+         bGZjJ7rhbHf+XtjMxIKCmLy5+EDynHddHEayIvC1u6tdBawF/nLhqEM67oqm1IHvIUpS
+         jdYGNMAI1rZXZBfDhtd9seQgMTxn/pKpyQ3W5WjGLQw0fFU1595iXflr1jICTx+bI4Po
+         YbFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772147478; x=1772752278;
+        d=1e100.net; s=20230601; t=1772147484; x=1772752284;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=jQUc2l2etFAMFSbUDTLR0OFMDbwiSBMKpEjkoUkXXeA=;
-        b=jfLT2d5qfpHcjTzC5djd3SCrI80E3rkAHrowzd//VZ9tqmNGNu32Fh9aMtjZWOrJNF
-         Xsai4BYH2Rb9oCEozvFUnydLfHF96242F3U89BSnY75wj184u1L++RdpQrnrr+STYGaD
-         7wfgu/9hjvavWK/i9E68WxtZ7MoGiODVW9Qd0crkEk9ylw2bGcefoViqx4IYdWArXscC
-         ga/Hxuyv/lx/p7de/CTVeSxa5efes/HTLFwZuxKZgEs/dBljR1S9wKd3xjam2JZQunHc
-         wzpnI+wxlsm8vXctL3JxucqbWAsu5u61kMk3uwO1Dcc9W1vKFxwHSf6ai85Mcy+3tsdg
-         DCyA==
-X-Forwarded-Encrypted: i=1; AJvYcCXR1ckXniINcmUSAdI4c+T0tsMIEX4lZEf+E2XQ+2sZNCNSJoKF4vCgqobYTeX/OOQ3osc+g20mBpE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YySn7vN+11D2AJvJOo0LqwohquZ2wwwAhm+tyNCg8G/w89xtZ6T
-	i5zAupPOgnPs8hDwNuq46lMeLJV5tzUudaJYyf28YB0yePNKFlqC/NcH
-X-Gm-Gg: ATEYQzzFQQIICFQDXcYasPBIX1F6R4jXC3n6Gfz0LuvRIVVZx0nyLd8iJ2Xev1dDXof
-	gpPuTL0oF+7c7MJtYuDUgmPoM7PkRpJZfCUby4ZF61Q/Tg90BbcyQwm/NKQSrOUa5E2I1zgz1TK
-	9R76CVYsVwUR6JyHAoimhgwqksU/FVz5EQAXizq27W5Bj8pANMfXLLre3mSgrBBkzNFMHswFb5E
-	XLM77jpbq4pYGntOeZZA/yY5mztR8Bt7BOMSlrBEGqB9S6uCtv2G1RI1kQdTN2HVVktMKcqad46
-	j52WJwsz14EvxnmEE66lwXE2qAnCXWw8MSjexSwjrymtRVsKYp2ypF8U8OfpT7JBnR66Bj0J3WV
-	nXpP+Db/4qoGA4BzzfFGzQs32/xHKB5VcPGMNh3oMhp1iqHQxqyTG7C1wFnKkAMLamsnpM6JOdt
-	GaocLFZ0ECxMpkTKwy3pomUY2kVcvuhEughW4=
-X-Received: by 2002:a05:6a00:1992:b0:7ff:ecbb:1c28 with SMTP id d2e1a72fcca58-8274d94be70mr564246b3a.16.1772147477764;
-        Thu, 26 Feb 2026 15:11:17 -0800 (PST)
+        bh=vO2yIyX5QV033H/kp7ME/ccMu7iMw0aAmads5tUNKKw=;
+        b=X5eSAwzi86G3eQNMyGtEdxhRoJm4tGyvnSVEtdmXdV9R+ZfJcVOs7IFdgb35TomG/g
+         2ckn7mkziOVNNj1QHKhS8w1uDjGpJmmj4y5bMQEQa92SyaqRlwPRc/JjP2iGayjBfpha
+         xPuyP+PWhXBgQMKjUuo8+4jAGtHGtwkY6f0rGuKIE0/k5bbj2nT3Vtgv+5n/UUanByqm
+         laA1WfT1HtDnIMWwx5jQwzaIa86rLdt5MZ5P6kCz6RUaQNrKDl02RPJv3FtTcTTldFws
+         NSBKNWRSem1X0aufeB69P3P+UV3zz2umMgpmcqME7gazJQRfx2hSlgb5bCkuthqZ5yqB
+         DBjQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVtCHAAf5nkG6vsIXlE140BawnxEY8lm4Y/gorar11KItyJzz+HvQYZhIb0LIrHYHJA/z//48JnIDQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw5bNnKC3E11OMIFk3vUoFev/OG5qcI+pyJhU65KuWNWQcXj7to
+	/nqE2cRVoNYn2vgCMxptmEgLD72pdhnZJmnaY+FJpl3mFhxTCe/1lK68
+X-Gm-Gg: ATEYQzznW1I/zKSxOxNC0QeaBTB5VczMTKzngazE1pcCTNiM3Kg4RjKawGKR0yZRUi/
+	kKnsukawctQsCT0qwk744Z0ULX+kritDWV+tOraU23fPja1UBW/4qRj/U39NAYfwdgfwVnwFgbf
+	IVCoD2ICSYU6eQOWX/j8Pji9D8vTxwLGykzDKcHWoAWSHVg06k1I/oO3/WdZ5ICDRWOi1yFvXTO
+	yr3HZSuiNVi74t9oPMYyAW9q2ZmWlERYX3j0puWeYMmBiRFZ1zGfkjZsx2+1Z6+WQsVar6dSNX6
+	pVMUx+h1YZ4qgF8jVqRexA5Y0mDUYPuarH7GdAjolrxD1VkTA6k8UhZ73fM0yKZbj/DsGr7En7t
+	cUI0DvSruky7oGqg+7NsJnC19BOqrkSo9J/x4DTEdH8FICIjWnSJPj4mFNMLRPBjCMssCiVxOJF
+	dShqgB43eUwECJM84w5LTr6Okk
+X-Received: by 2002:a05:6a00:1888:b0:823:9c6:1985 with SMTP id d2e1a72fcca58-8274d972c30mr600523b3a.16.1772147484051;
+        Thu, 26 Feb 2026 15:11:24 -0800 (PST)
 Received: from arch ([2409:40c2:5006:5b06:f9ff:5cdf:1c23:a906])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8273a01054dsm4238752b3a.43.2026.02.26.15.11.13
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8273a01054dsm4238752b3a.43.2026.02.26.15.11.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Feb 2026 15:11:17 -0800 (PST)
+        Thu, 26 Feb 2026 15:11:23 -0800 (PST)
 From: Bhargav Joshi <rougueprince47@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -69,9 +69,9 @@ Cc: dlechner@baylibre.com,
 	linux-kernel@vger.kernel.org,
 	rougueprince47@gmail.com,
 	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: [PATCH v6 1/3] iio: frequency: ad9523: fix implicit variable macros
-Date: Fri, 27 Feb 2026 04:40:55 +0530
-Message-ID: <20260226231057.20669-2-rougueprince47@gmail.com>
+Subject: [PATCH v6 2/3] iio: frequency: ad9523: fix multi-line dereferences
+Date: Fri, 27 Feb 2026 04:40:56 +0530
+Message-ID: <20260226231057.20669-3-rougueprince47@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260226231057.20669-1-rougueprince47@gmail.com>
 References: <20260226231057.20669-1-rougueprince47@gmail.com>
@@ -83,50 +83,57 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The macros AD9523_CLK_DIST_DIV_PHASE_REV(x) and
-AD9523_CLK_DIST_DIV_REV(x) implicitly relied on the variable named 'ret'
-instead of using passed argument '(x)'. Update the macros to explicitly
-use the argument '(x)' for their operations.
+Platform data pointer dereferences for pll1_charge_pump_current_nA and
+pll2_charge_pump_current_nA were split across multiple lines. Bring the
+dereference chains onto a single line.
 
-This also resolves the following checkpatch.pl warning: Argument '(x)'
-is not used in function-like macro.
+This resolves the following checkpatch.pl warnings:
+WARNING: Avoid multiple line dereference - prefer 'pdata->pll1_charge_pump_current_nA'
+WARNING: Avoid multiple line dereference - prefer 'pdata->pll2_charge_pump_current_nA'
 
 Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
 Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 ---
 Changes in v6:
-- Fixed grammar and shortened the long first line.
+- No changes.
 
 Changes in v5:
 - Reflowed all commit messages to properly wrap near 72 characters as
-  requested.
-- Collected Reviewed-by tag.
+  requested except for warning messages.
 
 Changes in v4:
 - Used full name for SoB.
 
 Changes in v3:
-- Updated macros to use '(x)' instead of 'x'.
+- Collected reviewed-by (no code changes).
 
- drivers/iio/frequency/ad9523.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/frequency/ad9523.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index 63c485e9e44c..5725ab62e0fd 100644
+index 5725ab62e0fd..6daa2ea354a8 100644
 --- a/drivers/iio/frequency/ad9523.c
 +++ b/drivers/iio/frequency/ad9523.c
-@@ -167,9 +167,9 @@
+@@ -797,8 +797,7 @@ static int ad9523_setup(struct iio_dev *indio_dev)
+ 		return ret;
  
- /* AD9523_CHANNEL_CLOCK_DIST */
- #define AD9523_CLK_DIST_DIV_PHASE(x)		(((x) & 0x3F) << 18)
--#define AD9523_CLK_DIST_DIV_PHASE_REV(x)	((ret >> 18) & 0x3F)
-+#define AD9523_CLK_DIST_DIV_PHASE_REV(x)	(((x) >> 18) & 0x3F)
- #define AD9523_CLK_DIST_DIV(x)			((((x) - 1) & 0x3FF) << 8)
--#define AD9523_CLK_DIST_DIV_REV(x)		(((ret >> 8) & 0x3FF) + 1)
-+#define AD9523_CLK_DIST_DIV_REV(x)		((((x) >> 8) & 0x3FF) + 1)
- #define AD9523_CLK_DIST_INV_DIV_OUTPUT_EN	(1 << 7)
- #define AD9523_CLK_DIST_IGNORE_SYNC_EN		(1 << 6)
- #define AD9523_CLK_DIST_PWR_DOWN_EN		(1 << 5)
+ 	ret = ad9523_write(indio_dev, AD9523_PLL1_CHARGE_PUMP_CTRL,
+-		AD9523_PLL1_CHARGE_PUMP_CURRENT_nA(pdata->
+-			pll1_charge_pump_current_nA) |
++		AD9523_PLL1_CHARGE_PUMP_CURRENT_nA(pdata->pll1_charge_pump_current_nA) |
+ 		AD9523_PLL1_CHARGE_PUMP_MODE_NORMAL |
+ 		AD9523_PLL1_BACKLASH_PW_MIN);
+ 	if (ret < 0)
+@@ -842,8 +841,7 @@ static int ad9523_setup(struct iio_dev *indio_dev)
+ 	 */
+ 
+ 	ret = ad9523_write(indio_dev, AD9523_PLL2_CHARGE_PUMP,
+-		AD9523_PLL2_CHARGE_PUMP_CURRENT_nA(pdata->
+-			pll2_charge_pump_current_nA));
++		AD9523_PLL2_CHARGE_PUMP_CURRENT_nA(pdata->pll2_charge_pump_current_nA));
+ 	if (ret < 0)
+ 		return ret;
+ 
 -- 
 2.53.0
 
