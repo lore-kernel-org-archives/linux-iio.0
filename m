@@ -1,167 +1,89 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2841B3A1E72
-	for <linux-iio@vger.kernel.org>; Thu, 26 Feb 2026 10:27:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71A4F322B74;
+	Thu, 26 Feb 2026 13:19:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772101634; cv=none; b=WQC2IWJHUWwlfpH3PXjidL+bev80q/hn/b44BpoGa5gEJDXlVCsszWyXDp8+lVjwO4a5ICCQ0gmiL7urrl/MfTjylaWItjaNAj+P5SnW2HGyPeQUShC2poN7OgCvOQ3R07QhaIfG8P/p6eyEatNJQJrSPoIrB4jFXrqtpFHWmQg=
+	t=1772111946; cv=none; b=Ed1/Xpm/ZOtchOn8VyM66P1rPi8mcmHlGSTMnjcdbwOd3hfvaNFNSJMajz5L0s/GAQRxc0UeSDB69Vsh9eeieun6hdAuwjf7EVSgHFccRRmuiwrRSt8ghJmBKxIOHkgevE5iNsYuPHbBCQDWzMrIssFsaMCkiz202qopW/oE7WI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772101634; c=relaxed/simple;
-	bh=BXYQJNytoThcPX9lrGTwUr/LSrzBo2cBwcJ8Plj7rFU=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type; b=ZAyhqwXkSoau0ILqD7G25h+UCf1iXl+lZJ0DGK1y22pSNBMnKmxuHvlBcquCIliGr/Zfz2x0lbj84Q9xt0E23/oZS4+WqEvjFBCIHHiTX/bBT5OhdpMO+tbpWxE4QsI1mbiOhydAaq6/k6cU5a3PI9SQqWpxv1tQ3Axjvkzd1vE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z3QEZHT1; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772111946; c=relaxed/simple;
+	bh=Kbm0XCMaqDFY78zqhr3imBHALmfVedwbpkHDbVVUqFE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KCqiUs4A9OryoCOsd4f44CspUzsksP3H63tSpWxFMfC1RDq70m58uuGbvfPa0vz/OC7erqzN0GWhlfg8UgXAygmygtaEhbhDvHXEygh6tyPShA7krbitZz8vFGUCUxzNnEch4x8g+jePqmwsUwGXXH8FM4vKpZBA7ImIFeZt+5g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EUVgDCJh; arc=none smtp.client-ip=198.175.65.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z3QEZHT1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E26BAC19422;
-	Thu, 26 Feb 2026 10:27:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772101633;
-	bh=BXYQJNytoThcPX9lrGTwUr/LSrzBo2cBwcJ8Plj7rFU=;
-	h=Date:From:To:Subject:From;
-	b=Z3QEZHT1dQ1DR8CI//Leze7M9pxT3jyTAnNkv7DfPFK+KuDGQyDxvI+Zbfm04uqUS
-	 5PXQuFhNAafJTq2wXtSpo8+tWs62K/4/D2TQ2po0dR7+GgMuUjae4Y2QtKQcKdB4jM
-	 34niHULPELQFw2O1t7ODxU1bFmY1dJFkfdhqHYAB9YvkVBuzWTzVOHR7af3a98rRjG
-	 MnRjTmpQRBva4VwR/pQc1TQx4ECr6C28Tk3WAxsfGERyfaxWh0UDFEUYouLahtcyWT
-	 reaO348VA3gTWmO/7AwgO4PJ60azFJEnA56eRW336KDFyFk5dTYys7iEKObXqY3q8c
-	 jkL+pkcM6xc4w==
-Date: Thu, 26 Feb 2026 10:27:09 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
-Subject: [PULL] IIO: 1st set of fixes for 7.0
-Message-ID: <20260226102709.37fa6f2b@jic23-huawei>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EUVgDCJh"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772111945; x=1803647945;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Kbm0XCMaqDFY78zqhr3imBHALmfVedwbpkHDbVVUqFE=;
+  b=EUVgDCJh69Q4do9i6Cq0/x/jSAtHIrH+zvdZ2vrvNmO9d6xwsO9WaQVY
+   xNXcPejNWvcbYa06tZmnOpx3iNFSP6sGknxxaC4YQ39LNeWR1tmTokIPY
+   BQjlnaSJ39HFsMWnfyydKVGwAcA8FSBQewJn8trJa/sPqyPSYkll2i99v
+   WuhZ7dHeFy1UOIDFlv89CxCeLY4kICeLkXdNap20w3TYv9rSv8WK8/54l
+   yY9yCaf+nf9vzAHqqW14Na2a3ko00TNCLpw+b93+zAHaN/wpUZtiid4FY
+   gtsD57mX0cqEFL4xB5cVAYN72nUf/murBCr+rK0UZotTaCU0s7VAD8LaE
+   Q==;
+X-CSE-ConnectionGUID: N5xr1QZ4RbSYc+s7KjxoqQ==
+X-CSE-MsgGUID: Rbb3GE67RiS3lC9ij+I3Vg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="84630060"
+X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
+   d="scan'208";a="84630060"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 05:19:05 -0800
+X-CSE-ConnectionGUID: jCDG+iJeRQKhehMcRUEPgQ==
+X-CSE-MsgGUID: MyT5c1fcT4yREfKSGUO2qA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
+   d="scan'208";a="216580124"
+Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.244.167])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 05:19:02 -0800
+Date: Thu, 26 Feb 2026 15:18:59 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Felix Gu <ustc.gu@gmail.com>
+Cc: Ariana Lazar <ariana.lazar@microchip.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: dac: mcp47feb02: Fix mutex used before
+ initialization
+Message-ID: <aaBIQ2zmMuEflPlN@smile.fi.intel.com>
+References: <20260225-mcp47feb02-v2-1-4792dc3942d9@gmail.com>
+ <aZ8cXbvj7KcQNvp3@smile.fi.intel.com>
+ <CAN4SLj3jw-SqXSV04CA_-d=e=Mu63xaJuzu1rUYzTtt7myqMKw@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAN4SLj3jw-SqXSV04CA_-d=e=Mu63xaJuzu1rUYzTtt7myqMKw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The following changes since commit 6de23f81a5e08be8fbf5e8d7e9febc72a5b5f27f:
+On Thu, Feb 26, 2026 at 07:16:26PM +0800, Felix Gu wrote:
+> > But is it called early enough before anything that may trigger access to
+> > 'data'? Exempli gratia, IRQ handler in some cases may be triggered before
+> > probe finished (is it the case here?).
+> >
+> I've checked the implementation, and this driver does not support IRQs.
 
-  Linux 7.0-rc1 (2026-02-22 13:18:59 -0800)
+Thanks for confirming!
 
-are available in the Git repository at:
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fi=
-xes-for-7.0a
+-- 
+With Best Regards,
+Andy Shevchenko
 
-for you to fetch changes up to 9990cd4f8827bd1ae3fb6eb7407630d8d463c430:
 
-  iio: imu: adis: Fix NULL pointer dereference in adis_init (2026-02-23 08:=
-24:39 +0000)
-
-----------------------------------------------------------------
-IIO: 1st set of fixes for the 7.0 cycle
-
-Usual mixed bag of ancient bugs that have been discovered and more
-recent stuff.
-
-core
-- Cleanup a wait_queue if a driver is removed at exacty the wrong
-  moment.
-adi,adf4377
-- Check correct masks when waiting for reset to complete.
-adi,adis
-- Fix a NULL pointer dereference if ops not provided to adis_init()
-bosch,bme680
-- Fix typo in value used to calculate measurement wait duration.
-infineon,tlv493d
-- Drop incorrect shifting of some bits for x-axis
-invensense,icm42600
-- Fix corner case of output data rate being set to the value it already
-  has which resulted in waiting for ever for a flag to say the update was
-  completed.
-- Fix a case where the buffer is turned off whilst ODR switch is in progres=
-s.
-invensense,icm45600
-- Interrupt 1 drive bit was inverted.
-- Fix a underflow for regulator put warning if probe fails
-invensense,mpu9150
-- Work around a hardware quirk where reading from irq status is not suffici=
-ent
-  to acknowledge an interrupt.
-maxim,ds4424
-- Reject -128 as a possible raw value as it's out of range with the sign
-  / magnitude encoding used by this chip.
-microchip,mcp4131
-- Shift the wiper value only once.
-rohm,bh1780
-- Fix a runtime reference count issue on an error path.
-sensiron,sps30
-- Fix two buffer size issues due to sizeof() wrong thing.
-tyhx,hx9023s
-- Ensure count used by __counted_by is set before accessing the buffer.
-- Avoid a potential division by zero.
-
-----------------------------------------------------------------
-Andreas Kemnade (1):
-      iio: imu: inv-mpu9150: fix irq ack preventing irq storms
-
-Antoniu Miclaus (6):
-      iio: light: bh1780: fix PM runtime leak on error path
-      iio: magnetometer: tlv493d: remove erroneous shift in X-axis data
-      iio: chemical: sps30_i2c: fix buffer size in sps30_i2c_read_meas()
-      iio: chemical: sps30_serial: fix buffer size in sps30_serial_read_mea=
-s()
-      iio: gyro: mpu3050-i2c: fix pm_runtime error handling
-      iio: gyro: mpu3050-core: fix pm_runtime error handling
-
-Chris Spencer (1):
-      iio: chemical: bme680: Fix measurement wait duration calculation
-
-Ethan Tidmore (1):
-      iio: adc: ad7768-1: Fix ERR_PTR dereference in ad7768_fill_scale_tbl
-
-Jean-Baptiste Maneyrol (4):
-      iio: imu: inv_icm42600: fix odr switch to the same value
-      iio: imu: inv_icm42600: fix odr switch when turning buffer off
-      iio: imu: inv_icm45600: fix INT1 drive bit inverted
-      iio: imu: inv_icm45600: fix regulator put warning when probe fails
-
-Lukas Schmid (1):
-      iio: potentiometer: mcp4131: fix double application of wiper shift
-
-Nuno S=C3=A1 (1):
-      iio: buffer: Fix wait_queue not being removed
-
-Oleksij Rempel (1):
-      iio: dac: ds4424: reject -128 RAW value
-
-Radu Sabau (1):
-      iio: imu: adis: Fix NULL pointer dereference in adis_init
-
-SeungJu Cheon (1):
-      iio: frequency: adf4377: Fix duplicated soft reset mask
-
-Yasin Lee (2):
-      iio: proximity: hx9023s: fix assignment order for __counted_by
-      iio: proximity: hx9023s: Protect against division by zero in set_samp=
-_freq
-
- drivers/iio/adc/ad7768-1.c                         | 13 +++++++++++--
- drivers/iio/chemical/bme680_core.c                 |  2 +-
- drivers/iio/chemical/sps30_i2c.c                   |  2 +-
- drivers/iio/chemical/sps30_serial.c                |  2 +-
- drivers/iio/dac/ds4424.c                           |  2 +-
- drivers/iio/frequency/adf4377.c                    |  2 +-
- drivers/iio/gyro/mpu3050-core.c                    | 18 +++++++++++++-----
- drivers/iio/gyro/mpu3050-i2c.c                     |  3 +--
- drivers/iio/imu/adis.c                             |  2 +-
- drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c  |  2 ++
- drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c |  4 ++++
- drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c   |  2 ++
- drivers/iio/imu/inv_icm45600/inv_icm45600.h        |  2 +-
- drivers/iio/imu/inv_icm45600/inv_icm45600_core.c   | 11 ++++++++---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         |  8 ++++++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  2 ++
- drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c      |  5 ++++-
- drivers/iio/industrialio-buffer.c                  |  6 ++++--
- drivers/iio/light/bh1780.c                         |  2 +-
- drivers/iio/magnetometer/tlv493d.c                 |  2 +-
- drivers/iio/potentiometer/mcp4131.c                |  2 +-
- drivers/iio/proximity/hx9023s.c                    |  6 ++++--
- 22 files changed, 73 insertions(+), 27 deletions(-)
