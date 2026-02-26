@@ -1,346 +1,116 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A2F2362134;
-	Thu, 26 Feb 2026 21:26:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 915593A0B33;
+	Thu, 26 Feb 2026 22:25:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772141221; cv=none; b=KlCkls8n/gBQ18OdvqWB7CfqwUpR5vhSFxIvw1rq3N+VSXpjBKYfBCe76cnSKmjb91GIHmVuHePEvcvjHToCeIFAeRj34KJxPJG2NtKhil7kItRKoNpDWmQarie3WF24yOawSwD5qpgEjPWn4BCqb4cQSBTPvsbTzLBY46yYTZI=
+	t=1772144714; cv=none; b=HG/PdiveHhSlGX74cCPm8Jin8sb1/9HekFnz7VPJpFLuJ3+R7/Maqr2LAZdcHsAy4JAK1ntzB0fyDW+r0mBHcdH3bzNP3FyvVR2+1aQ/ZZWFhO49qFq/U618QiPJW3/l5wIvgaSqFJvpm0sPwY5FBMzSrv1mvdv40NVT4V/93gI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772141221; c=relaxed/simple;
-	bh=mHiu/wSK7I6EH36K42Z/4mYjLM9btmtLRExCT6F+Ye4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=tWLqSP4zNIkhVgQJ5g2JS0gWCGdXJlA+OYD+GgUb05bOorNzUMVEUCTRHdWqvqMJjRIzC2U84YVx0gvUDPQ3Os65nBl/QkGVabyHxg5YEDe9yZ3m4jBobT8Y0eN2VIHPB6itMT9sFdSQIRLBe3D0Y434KdF/XOjUfGSb9WIxJ4M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=oGHLr2mi; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1772144714; c=relaxed/simple;
+	bh=d6SOwQClggxD8BIlaBxx7xkKZfld648hKXyRqzof2Z4=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=ONAEuyqqsCEFKEvF6FLFQ2h4RUug1j6tBE1X3NVE4xvXGBBAYhymwQcuyj8h3dRbO2anjI/0SjaABa1F8TuD8SXIp43srUmmQNyjuxywcd7GcjpT8AxFovyoAsXN1ostipY2mg/GNvfTYsWpr8M1vut2MIVQAhUK7foMKMXuk6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=cmV5NlO+; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="oGHLr2mi"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772141219; x=1803677219;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=mHiu/wSK7I6EH36K42Z/4mYjLM9btmtLRExCT6F+Ye4=;
-  b=oGHLr2miD2Yr6m7HU5RcgR+IfI8s3ye3YXNbdgm4DvTknFdyY5oHzxeI
-   0t7rRTQcQCz6wxx6sk81i5mpjA+xxjIlS5c8EajwtjlnXzeaZV/pps0CN
-   WBYzcqi8sDhq9r3s6xbEnUN8EQsIkseM6YNBNxZ+F7iSB1TalME41rlPf
-   +vVgxwDpjVYDKI0D8/ce1YuCxhVzIh6CRY6/qpuHT+2MM14GcdvAfVhsQ
-   ElbZCdGrodYValc8KglB56mfkPU55EdVXNmLN4EFFeshMX28J0jB71Ck0
-   Qe7gJb51qqP+mjQaeTs/K71PlsRbtdyyv65ki56c8QbDS2EasbAR3+WSq
-   Q==;
-X-CSE-ConnectionGUID: VGuX9hnrSQi5fxnBdZK24w==
-X-CSE-MsgGUID: XO193NSlRr+/J3CBklCiyA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="60792392"
-X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="60792392"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Feb 2026 13:26:59 -0800
-X-CSE-ConnectionGUID: ZSLsz5VPQBKnjsd5LNMypA==
-X-CSE-MsgGUID: 4UeJIRuBSjmWgKSbFcE5BA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,312,1763452800"; 
-   d="scan'208";a="214617051"
-Received: from lkp-server02.sh.intel.com (HELO a3936d6a266d) ([10.239.97.151])
-  by fmviesa010.fm.intel.com with ESMTP; 26 Feb 2026 13:26:56 -0800
-Received: from kbuild by a3936d6a266d with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vviso-000000009tH-2eKW;
-	Thu, 26 Feb 2026 21:26:54 +0000
-Date: Fri, 27 Feb 2026 05:26:25 +0800
-From: kernel test robot <lkp@intel.com>
-To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>,
-	linux-iio@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>
-Subject: Re: [PATCH 2/2] iio: temperature: add ADI MAX30210 driver
-Message-ID: <202602270554.gpbYaUtd-lkp@intel.com>
-References: <20260226163041.169786-3-johnerasmusmari.geronimo@analog.com>
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="cmV5NlO+"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:
+	Message-ID:Sender:Reply-To:Content-ID:Content-Description;
+	bh=B8m6Kx6tizY8toHrfGq5EdiNNQWUFLh1xOh9fGszzjc=; b=cmV5NlO+LSK0KGNRVirgLKEN4S
+	Syi5tTyYPWTKcTlVDEmHveNMPGZuuuqmdp751aSOEOeP554ETKe6vUcs0se5omb8ayiDih/jOaq52
+	TQJZrtVBz9rMXZKtg/zByhaDVigmq76jd4paogIVG+kDWxL1eZJIDd7PEXm1Gk76zCbRX38AN3osl
+	dwZ9gx3xp4BToJURCZQu4dHcflW59NjhO1DOPdDktbXVTDplT/egWeTPv6ZSXIZAazmZlAyJNcAnq
+	Ev9qCIy3o0bm7CiaRtq81mvqf6GX1VaNm3466/R9TXNdCzwY3rKz2KI5EIOsclMQpHWrapIjaG7gq
+	9TmyxkFQ==;
+Received: from [50.53.43.113] (helo=[192.168.254.34])
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1vvjnE-00000007JQ1-2WHy;
+	Thu, 26 Feb 2026 22:25:12 +0000
+Message-ID: <fc1eddb4-b01f-49a4-808c-9a58b2b63ad8@infradead.org>
+Date: Thu, 26 Feb 2026 14:25:12 -0800
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260226163041.169786-3-johnerasmusmari.geronimo@analog.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: tsl2772: fix all kernel-doc warnings
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org
+References: <20260226051258.555019-1-rdunlap@infradead.org>
+ <aZ_-pVTbTUkByPIJ@smile.fi.intel.com>
+ <7f61d93a-37df-44fc-ab47-b0e5ff70259a@infradead.org>
+ <aaCtJE4tvVZDn1zz@smile.fi.intel.com>
+Content-Language: en-US
+From: Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <aaCtJE4tvVZDn1zz@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi John,
+Hi Andy,
 
-kernel test robot noticed the following build errors:
+On 2/26/26 12:29 PM, Andy Shevchenko wrote:
+> On Thu, Feb 26, 2026 at 11:14:05AM -0800, Randy Dunlap wrote:
+>> On 2/26/26 12:04 AM, Andy Shevchenko wrote:
+>>> On Wed, Feb 25, 2026 at 09:12:57PM -0800, Randy Dunlap wrote:
+>>>> Use the correct kernel-doc notation for struct members to eliminate
+>>>> kernel-doc warnings:
+>>>>
+>>>> Warning: include/linux/platform_data/tsl2772.h:88 struct member
+>>>>  'prox_diode' not described in 'tsl2772_settings'
+>>>> Warning: include/linux/platform_data/tsl2772.h:88 struct member
+>>>>  'prox_power' not described in 'tsl2772_settings'
+>>>
+>>> Hmm... I do not see any of the user of this header file.
+>>> Have you checked if these values are even used?
+>>> Perhaps we can simply kill all this?
 
-[auto build test ERROR on jic23-iio/togreg]
-[also build test ERROR on linus/master v7.0-rc1 next-20260226]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+AFAICT all macros and structs and struct members from that header file are used
+in tsl2772.c.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/John-Erasmus-Mari-Geronimo/dt-bindings-iio-temperature-add-ADI-MAX30210/20260227-013306
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20260226163041.169786-3-johnerasmusmari.geronimo%40analog.com
-patch subject: [PATCH 2/2] iio: temperature: add ADI MAX30210 driver
-config: nios2-allmodconfig (https://download.01.org/0day-ci/archive/20260227/202602270554.gpbYaUtd-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.5.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260227/202602270554.gpbYaUtd-lkp@intel.com/reproduce)
+>> They are used in drivers/iio/light/tsl2772.c.
+> 
+> It's the same driver. So it's *not* a user of the platform data.
+> 
+> Under 'kill' I meant the following:
+> - inline the content of the file to the c-file
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202602270554.gpbYaUtd-lkp@intel.com/
+Would that be "violating" this commit?
+commit 436d42c61c3e
+Author: Arnd Bergmann <arnd@arndb.de>
+Date:   Fri Aug 24 15:22:12 2012 +0200
 
-All errors (new ones prefixed by >>):
+    ARM: samsung: move platform_data definitions
+    
+    Platform data for device drivers should be defined in
+    include/linux/platform_data/*.h, not in the architecture
+    and platform specific directories.
 
-   drivers/iio/temperature/max30210.c: In function 'max30210_read_raw':
->> drivers/iio/temperature/max30210.c:412:23: error: implicit declaration of function 'iio_device_claim_direct_mode'; did you mean 'iio_device_claim_direct'? [-Werror=implicit-function-declaration]
-     412 |                 ret = iio_device_claim_direct_mode(indio_dev);
-         |                       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                       iio_device_claim_direct
->> drivers/iio/temperature/max30210.c:426:17: error: implicit declaration of function 'iio_device_release_direct_mode'; did you mean 'iio_device_release_direct'? [-Werror=implicit-function-declaration]
-     426 |                 iio_device_release_direct_mode(indio_dev);
-         |                 ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         |                 iio_device_release_direct
-   drivers/iio/temperature/max30210.c: At top level:
->> drivers/iio/temperature/max30210.c:604:31: error: initialization of 'int (*)(struct iio_dev *, const struct iio_chan_spec *, enum iio_event_type,  enum iio_event_direction,  bool)' {aka 'int (*)(struct iio_dev *, const struct iio_chan_spec *, enum iio_event_type,  enum iio_event_direction,  _Bool)'} from incompatible pointer type 'int (*)(struct iio_dev *, const struct iio_chan_spec *, enum iio_event_type,  enum iio_event_direction,  int)' [-Werror=incompatible-pointer-types]
-     604 |         .write_event_config = max30210_write_event_config,
-         |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~
-   drivers/iio/temperature/max30210.c:604:31: note: (near initialization for 'max30210_info.write_event_config')
-   cc1: some warnings being treated as errors
+> - recheck the c-file for the unused fields and drop them for good
 
+All used AFAICT.
 
-vim +412 drivers/iio/temperature/max30210.c
+> Alternatively converting c-file to use device properties instead
+> of platform data.
 
-   381	
-   382	static int max30210_read_raw(struct iio_dev *indio_dev,
-   383				     struct iio_chan_spec const *chan, int *val,
-   384				     int *val2, long mask)
-   385	{
-   386		struct max30210_state *st = iio_priv(indio_dev);
-   387		unsigned int uval;
-   388		int ret;
-   389	
-   390		switch (mask) {
-   391		case IIO_CHAN_INFO_SCALE:
-   392			*val = 5;
-   393	
-   394			return IIO_VAL_INT;
-   395		case IIO_CHAN_INFO_SAMP_FREQ:
-   396			ret = regmap_read(st->regmap, MAX30210_TEMP_CONF_2_REG, &uval);
-   397			if (ret)
-   398				return ret;
-   399	
-   400			uval = FIELD_GET(MAX30210_TEMP_PERIOD_MASK, uval);
-   401	
-   402			*val = 8;
-   403	
-   404			/**
-   405			 * register values 0x9 or above have the same sample
-   406			 * rate of 8Hz
-   407			 */
-   408			*val2 = uval >= 0x9 ? 1 : BIT(0x9 - uval);
-   409	
-   410			return IIO_VAL_FRACTIONAL;
-   411		case IIO_CHAN_INFO_RAW:
- > 412			ret = iio_device_claim_direct_mode(indio_dev);
-   413			if (ret)
-   414				return ret;
-   415	
-   416			ret = regmap_write(st->regmap, MAX30210_TEMP_CONV_REG,
-   417					   MAX30210_CONV_T_MASK);
-   418			if (ret)
-   419				goto release_dmode;
-   420	
-   421			fsleep(8000);
-   422	
-   423			ret = max30210_read_temp(st->regmap, MAX30210_TEMP_DATA_REG, val);
-   424	
-   425	release_dmode:
- > 426			iio_device_release_direct_mode(indio_dev);
-   427			return ret;
-   428		default:
-   429			return -EINVAL;
-   430		}
-   431	}
-   432	
-   433	static int max30210_read_avail(struct iio_dev *indio_dev,
-   434				       struct iio_chan_spec const *chan,
-   435				       const int **vals, int *type, int *length,
-   436				       long mask)
-   437	{
-   438		switch (mask) {
-   439		case IIO_CHAN_INFO_SAMP_FREQ:
-   440			*vals = samp_freq_avail;
-   441			*type = IIO_VAL_INT_PLUS_MICRO;
-   442			*length = ARRAY_SIZE(samp_freq_avail);
-   443	
-   444			return IIO_AVAIL_LIST;
-   445		default:
-   446			return -EINVAL;
-   447		}
-   448	}
-   449	
-   450	static int max30210_write_raw(struct iio_dev *indio_dev,
-   451				      struct iio_chan_spec const *chan, int val,
-   452				      int val2, long mask)
-   453	{
-   454		struct max30210_state *st = iio_priv(indio_dev);
-   455		u64 data;
-   456		int ret;
-   457	
-   458		switch (mask) {
-   459		case IIO_CHAN_INFO_SAMP_FREQ:
-   460			ret = iio_device_claim_direct_mode(indio_dev);
-   461			if (ret)
-   462				return ret;
-   463	
-   464			/**
-   465			 * micro_value = val * 1000000 + val2
-   466			 * reg_value = ((micro_value * 64) / 1000000) - 1
-   467			 */
-   468			data = (val * MICRO + val2) << 6;
-   469			do_div(data, MICRO);
-   470	
-   471			data = fls_long(data - 1);
-   472			data = FIELD_PREP(MAX30210_TEMP_PERIOD_MASK, data);
-   473	
-   474			ret = regmap_update_bits(st->regmap, MAX30210_TEMP_CONF_2_REG,
-   475						 MAX30210_TEMP_PERIOD_MASK,
-   476						 (unsigned int)data);
-   477	
-   478			iio_device_release_direct_mode(indio_dev);
-   479			return ret;
-   480		default:
-   481			return -EINVAL;
-   482		}
-   483	}
-   484	
-   485	static int max30210_write_raw_get_fmt(struct iio_dev *indio_dev,
-   486					      struct iio_chan_spec const *chan,
-   487					      long mask)
-   488	{
-   489		switch (mask) {
-   490		case IIO_CHAN_INFO_SAMP_FREQ:
-   491			return IIO_VAL_INT_PLUS_MICRO;
-   492		default:
-   493			return -EINVAL;
-   494		}
-   495	}
-   496	
-   497	static const struct iio_trigger_ops max30210_trigger_ops = {
-   498		.validate_device = &iio_trigger_validate_own_device,
-   499	};
-   500	
-   501	static int max30210_set_watermark(struct iio_dev *indio_dev, unsigned int val)
-   502	{
-   503		struct max30210_state *st = iio_priv(indio_dev);
-   504		unsigned int reg;
-   505		int ret;
-   506	
-   507		if (val < 1 || val > MAX30210_FIFO_SIZE)
-   508			return -EINVAL;
-   509	
-   510		reg = MAX30210_FIFO_SIZE - val;
-   511	
-   512		ret = regmap_write(st->regmap, MAX30210_FIFO_CONF_1_REG, reg);
-   513		if (ret)
-   514			return ret;
-   515	
-   516		st->watermark = val;
-   517	
-   518		return 0;
-   519	}
-   520	
-   521	static ssize_t hwfifo_watermark_show(struct device *dev,
-   522					     struct device_attribute *devattr,
-   523					     char *buf)
-   524	{
-   525		struct max30210_state *st = iio_priv(dev_to_iio_dev(dev));
-   526	
-   527		return sysfs_emit(buf, "%d\n", st->watermark);
-   528	}
-   529	
-   530	IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_min, "1");
-   531	IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_max,
-   532				     __stringify(MAX30210_FIFO_SIZE));
-   533	static IIO_DEVICE_ATTR_RO(hwfifo_watermark, 0);
-   534	
-   535	static const struct iio_dev_attr *max30210_fifo_attributes[] = {
-   536		&iio_dev_attr_hwfifo_watermark_min,
-   537		&iio_dev_attr_hwfifo_watermark_max,
-   538		&iio_dev_attr_hwfifo_watermark,
-   539		NULL,
-   540	};
-   541	
-   542	static int max30210_buffer_preenable(struct iio_dev *indio_dev)
-   543	{
-   544		struct max30210_state *st = iio_priv(indio_dev);
-   545		int ret;
-   546	
-   547		ret = regmap_update_bits(st->regmap, MAX30210_INT_EN_REG,
-   548					 MAX30210_A_FULL_MASK, MAX30210_A_FULL_MASK);
-   549		if (ret)
-   550			return ret;
-   551	
-   552		ret = regmap_update_bits(st->regmap, MAX30210_FIFO_CONF_2_REG,
-   553					 MAX30210_FLUSH_FIFO_MASK,
-   554					 MAX30210_FLUSH_FIFO_MASK);
-   555		if (ret)
-   556			return ret;
-   557	
-   558		ret = regmap_write(st->regmap, MAX30210_TEMP_CONV_REG,
-   559				   MAX30210_AUTO_MASK | MAX30210_CONV_T_MASK);
-   560		if (ret)
-   561			return ret;
-   562	
-   563		return 0;
-   564	}
-   565	
-   566	static int max30210_buffer_postdisable(struct iio_dev *indio_dev)
-   567	{
-   568		struct max30210_state *st = iio_priv(indio_dev);
-   569		int ret;
-   570	
-   571		ret = regmap_update_bits(st->regmap, MAX30210_INT_EN_REG,
-   572					 MAX30210_A_FULL_MASK, 0x0);
-   573		if (ret)
-   574			return ret;
-   575	
-   576		ret = regmap_update_bits(st->regmap, MAX30210_FIFO_CONF_2_REG,
-   577					 MAX30210_FLUSH_FIFO_MASK,
-   578					 MAX30210_FLUSH_FIFO_MASK);
-   579		if (ret)
-   580			return ret;
-   581	
-   582		ret = regmap_write(st->regmap, MAX30210_TEMP_CONV_REG, 0x0);
-   583		if (ret)
-   584			return ret;
-   585	
-   586		return 0;
-   587	}
-   588	
-   589	static const struct iio_buffer_setup_ops max30210_buffer_ops = {
-   590		.preenable = max30210_buffer_preenable,
-   591		.postdisable = max30210_buffer_postdisable,
-   592	};
-   593	
-   594	static const struct iio_info max30210_info = {
-   595		.read_raw = max30210_read_raw,
-   596		.read_avail = max30210_read_avail,
-   597		.write_raw = max30210_write_raw,
-   598		.write_raw_get_fmt = max30210_write_raw_get_fmt,
-   599		.hwfifo_set_watermark = max30210_set_watermark,
-   600		.debugfs_reg_access = &max30210_reg_access,
-   601		.validate_trigger = &max30210_validate_trigger,
-   602		.read_event_value = max30210_read_event,
-   603		.write_event_value = max30210_write_event,
- > 604		.write_event_config = max30210_write_event_config,
-   605		.read_event_config = max30210_read_event_config,
-   606	};
-   607	
+That's your area, I guess.
 
+> We have done many times in the past such transformations in other
+> drivers.
+> 
+>>> But if Jonathan wants to take this as a quick fix to make less
+>>> warnings appear effective immediately I'm fine with the change
+>>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
+thanks.
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+~Randy
+
