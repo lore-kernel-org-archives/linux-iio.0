@@ -1,133 +1,131 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f170.google.com (mail-pf1-f170.google.com [209.85.210.170])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E305E329E7D;
-	Fri, 27 Feb 2026 13:35:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 86E68407572
+	for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 13:54:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772199357; cv=none; b=BjbqD8YQwxhsO6uPsiQXNTyv2ShPdSPPES3bUjGD+VCWPbYLiXTf1fIHwsdH+Fs1gm9CxzMjhi8GI3KWYHReKgF3DNJ5tI3mK9mdnzQBwlivAWhA9S+acbK/tdzW9dAqXreSUhlXi+NqVRt2gworP0fSnW9Bc1NyZfBfKp1dUto=
+	t=1772200481; cv=none; b=RdYDLyvcstUB2U9vI7PcWBwa9TWJz8P6HJcTCDoch5knxzsZl8PCdZs2KIL2ajdbdVzkkb9Wp7/NOQNO65l8hVD/HupbqHcuGuzTdhFIc5N8CpLKVomvO1/kGTxFJP2hbCz0iicltzh4DhNj7VrXgL9BDwpgyhRCP9Zaq3IHnOE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772199357; c=relaxed/simple;
-	bh=OLv/ni7qaq2tYufDexD9r9Jerf7ke/5eiCXs9RRw+ew=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=AOdLtoS86yzaXlTlMngXTsN1+FD18lNV9H9fMTphF2QfRmA37ibKcevMjfP62+IDqtLBCfarAoyOxzg2USA8Xj+bI2+np4AiRw41cB0EtrO1DESIFF6dpJsaisAJ3CLpr1+s7pUlJBkgIvQk9EMEdgyAwQDfhYcOVMUf4E2Mmkw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=V6I5NnsT; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1772200481; c=relaxed/simple;
+	bh=3+A+SQoBt83gTfC1sDpy7RKcu5901biWiEykpqGIOkA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=pilPU9m6Ny+c9TJJ27CxPfgfz0RfgCzh1WDvjt//pwNahUWUwWxI157dQ1Z9Z312Wcf+lHFPNWTcyvO50PPkbNpK89ujn9G/j2cXUrE+V+lqZEVlOPjyM6h4zNIYZcwTPUQyDzOVT19oQlxLkWD9fkRjv7ceL3vMkHX5qkmtx/0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Fx+UiQ8J; arc=none smtp.client-ip=209.85.210.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="V6I5NnsT"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61RC0bCm3025436;
-	Fri, 27 Feb 2026 08:35:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=Wu0DD0j6wbDESy1BbdCa6qGbN5x
-	sz0ka+dmENGQFhQM=; b=V6I5NnsTkVaiTy5A2bd+Bjx0uqJqXMayKTzs0038AjE
-	teLpgk7SjZ4ZfAV7DHu7CdcdBu+4OJIqbw4YNCHlJeMwq+sNo+cDB1V6Cl+oyc+N
-	ywOs9lkMdex+VLMhin82mMEpxQ9EhAsHR5C5JZlC6w0d5yqWbQ7ObSopAMSItmU4
-	iN87FY9t93mu6IjQhgoz3ZG8AwbxPksJFjdUcOZ9O4UtIDD21HyWUDWfyVK2Sgfd
-	lPiYz6k+X3KJMOWERkV5HT0vQzTvS9eqsh9OG/1uuY09kQD1+FyeKQWyRmAPbeKr
-	nprWECdc9RXLxxdk6uC7kd8yuImD0V/616ND6VjtA0w==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cj8tdg8x5-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 27 Feb 2026 08:35:41 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61RDZetC062265
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 27 Feb 2026 08:35:40 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 27 Feb
- 2026 08:35:40 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 27 Feb 2026 08:35:40 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61RDZTPG000372;
-	Fri, 27 Feb 2026 08:35:31 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
-	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] iio: adc: ade9000: move mutex init before IRQ registration
-Date: Fri, 27 Feb 2026 15:33:30 +0200
-Message-ID: <20260227133331.66968-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Fx+UiQ8J"
+Received: by mail-pf1-f170.google.com with SMTP id d2e1a72fcca58-82748095892so745628b3a.0
+        for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 05:54:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772200478; x=1772805278; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=IcA8KC2efBRjVBsjImz9ttRUOmQCENzmLukTqiVhsew=;
+        b=Fx+UiQ8JPqDh77TKkOUcHwCZjrN/jbcmH8VDKA/lircqssdz5lsCswG8zvsuf5fDE7
+         XJeFQARuaWtIPARDLKMIXRBZlkzeeJaS4OIRFAVMhkJ8lDdccq97P1SMNL/DJx7+kCx7
+         3CC4P26phQ0mp5f3vZzCtiOeyCJwuqsd+/AGOl+5qyBh7IxCPWt2dGlulT25ByyaK/Pl
+         /+l5EmwgU2Qj+LVa11GE5K6WksbAfv1T7n84lEdmnskmfQNSxtRveysUwkdqaLz4+MMq
+         q75ix8pjwwPumeUbhGSqsOcVkBm19vd4j/nH6c1Sw0j43HUswBXNnF4sfODylBXjRq7W
+         Kbew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772200478; x=1772805278;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IcA8KC2efBRjVBsjImz9ttRUOmQCENzmLukTqiVhsew=;
+        b=uJttCaUR701ts6qXrEDCcBR+HWfCB3nMVkolqgXQJRNxF9eU9GQmAB7Y0smy28OAKB
+         nPDMEoN5SLGeEsBoy0uNtBcqmxmDY0HWLyzjT/tuIwvtsJXByQUCHYWA4ShYeumxze/k
+         Th/3IFj9BCZ7xDGI/+7f1LF9JM7WO5MinhWib2UOnguaHxfqg+xQOKOp4ziOEYjcYOlg
+         0uBjscFWbjAGXiLYtPXpoziLy750M7fKXgyM3sizodoNgBMoqwzc3LtLWpDjL9wBdQA7
+         dweWbgcCsxtRPRzXU83h2icTgWkbJHQxWzy7v8KxBMstxmnz0nYdPRfA4+GisFBlMnS1
+         6PXA==
+X-Forwarded-Encrypted: i=1; AJvYcCVK39IlLNsZkd40JdEE7VLImV4/jJ6xzha2orcDm1J8KkSbWkDkSObKGCvpFfUhXFfmWUQ0v+bC0tw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxBgD0t57sB4jRV2HMS/PEcWk/peJfM1K1iQCthi7i5sPOlNn84
+	GSIa95Fx4KOSQUZc9QePgIXIfv0A8r1MSP77hWACaOH+pVf99Ghl71AF4XaUMsDMEMnymg==
+X-Gm-Gg: ATEYQzwgT/UYhZBQQRkwOrjhYqsHIJdd23Gakauy+evmWU4uxDY3kGvzHKlwaFJntjK
+	/p9U7bawoYKRqKXdr8xs0I9JHkAiVcKOWP52C6Bj8L+5FjgMEwtYLO2GiJbRDAPf5npTj74peTn
+	VaGZ9YUEf1Ewp+7HeOw1deYuF0XbE5VPaVAfS4xsZEQoCfpFLut3XAIWbp+5jdsJp3az6yldeK2
+	d9lQfdKrUVR9bddWJdf6CW45Nr3gGcICl8p5Pp8NRDKHKQMrRFIiDfD9eioBq05hCLOrNGtjCEK
+	b3Gj601Mvcxu9bcM/TQDh+VEcxxKlQu70riNmvj764LSjIFQzkBKT4/zsRNJrKoQIoPj8uXHsAw
+	fzfa/YVnNeFjCuQZisEO18OKNPF0EcFLVg7cGYMYGrxwBSN/0vkw+u9KFqwx1+v3uibsN3pqMFN
+	CvgKKgsXxKbP4NXVFiP7V5wjO/N0PzuC41pkAN
+X-Received: by 2002:a05:6a00:94ed:b0:81f:3fbd:ccf with SMTP id d2e1a72fcca58-8274d94f80emr2937090b3a.23.1772200478434;
+        Fri, 27 Feb 2026 05:54:38 -0800 (PST)
+Received: from junjungu-PC.localdomain ([2408:820c:9009:3f2:acea:5ed1:6337:b523])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82739db4955sm5603549b3a.29.2026.02.27.05.54.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Feb 2026 05:54:38 -0800 (PST)
+From: Felix Gu <ustc.gu@gmail.com>
+Date: Fri, 27 Feb 2026 21:54:29 +0800
+Subject: [PATCH v2] iio: pressure: abp2030pa: Remove IRQF_ONESHOT from
+ devm_request_irq()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=NubcssdJ c=1 sm=1 tr=0 ts=69a19dad cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8 a=nElHTjQORM6l5cS88qUA:9
-X-Proofpoint-GUID: L9q_EqSp9qK8Pzj0injYMYGlAlN61NYj
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI3MDEyMCBTYWx0ZWRfXzmAfk5OKOIF3
- afN/7l7MnBIqaXYrakB8S8EkqNouMvJVwTBwaxUo0ntBAoWvGSs4IEVaHieGabvN+fCjPoP6u4x
- 8dU45KqYEFiCGacF0IhbSBzwfruQVJDlQi0lOl9u+yOqonyrkVrN/hx0r9WC2qSGK525UdF6rsl
- Vb+kznYaqOiNz0jZ1hJp4duG/hEfF37DcRYQwW7cI/uJsXhYD1esUplB0s/gNlDbLqOdsmC4Tm2
- fu9qgBsXs3fXaVRjHpbOmPH+ZZbKS6RwS1RTl2kcpp86s5T4rDv59xQHjLTox1xVFIIJ0YOHT6B
- NgKHxquBaNDhDE1o2BTgKnL7fAZPBer4Ti0ad2oJa4p5KN5PmxnfHM+0J/tMRW/8HIruVk35dF6
- 3PVpzYJi7UrXknY0gVlpxJJs4Ba4eJUGbbDtDiAJcur4uMQgbKvHgRAxiKT2W2SR34FJwvzltVi
- 3yLc/r+AJcW0NwO9MDw==
-X-Proofpoint-ORIG-GUID: L9q_EqSp9qK8Pzj0injYMYGlAlN61NYj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-27_02,2026-02-27_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- priorityscore=1501 phishscore=0 bulkscore=0 adultscore=0 lowpriorityscore=0
- suspectscore=0 impostorscore=0 malwarescore=0 clxscore=1015 spamscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602270120
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260227-abp-v2-1-a482c02a5876@gmail.com>
+X-B4-Tracking: v=1; b=H4sIABSioWkC/1WMQQ6DIBBFr2JmXRqYFDBd9R7GBeiok1Qx0JA2h
+ ruXuuvy/fz3DkgUmRLcmwMiZU4ctgp4aWBY3DaT4LEyoEQjEa1wfhdSGSeldb5VFupzjzTx+6x
+ 0feWF0yvEzxnN6rf++1kJJbyZaJT6pluNj3l1/LwOYYW+lPIF5NvsLpYAAAA=
+X-Change-ID: 20260227-abp-016a007ab817
+To: Petre Rodan <petre.rodan@subdimension.ro>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ Sebastian Andrzej Siewior <bigeasy@linutronix.de>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Felix Gu <ustc.gu@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1772200473; l=1403;
+ i=ustc.gu@gmail.com; h=from:subject:message-id;
+ bh=3+A+SQoBt83gTfC1sDpy7RKcu5901biWiEykpqGIOkA=;
+ b=ZgLNcDaFCsGmWq4bP0QO7YtuIFYs5XCN84D1LQSGqMOCdo+SHOoV81LvjrxOZP548fo203kmv
+ S4lt77/dfnBBUw3kG8gy5ByUCFDseFS7yDa981Zzg5Sp18/Jvpxye2N
+X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
+ pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
 
-Move devm_mutex_init() before ade9000_request_irq() calls so that
-st->lock is initialized before any handler that depends on it can run.
+Since commit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT
+without a threaded handler"), the IRQ core checks IRQF_ONESHOT flag
+in IRQ request and gives a warning if there is no threaded handler.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Remove IRQF_ONESHOT from devm_request_irq().
+
+Fixes: 47d323ce1e89 ("iio: pressure: add Honeywell ABP2 driver")
+Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+Signed-off-by: Felix Gu <ustc.gu@gmail.com>
 ---
- drivers/iio/adc/ade9000.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Changes in v2:
+- Fixes Petre's comment.
+- Link to v1: https://lore.kernel.org/r/20260227-abp-v1-1-b6fed0545852@gmail.com
+---
+ drivers/iio/pressure/abp2030pa.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
-index db085dc5e526..c62c6480dd0a 100644
---- a/drivers/iio/adc/ade9000.c
-+++ b/drivers/iio/adc/ade9000.c
-@@ -1706,19 +1706,19 @@ static int ade9000_probe(struct spi_device *spi)
+diff --git a/drivers/iio/pressure/abp2030pa.c b/drivers/iio/pressure/abp2030pa.c
+index 4ca056a73cef..b44f1bf4c633 100644
+--- a/drivers/iio/pressure/abp2030pa.c
++++ b/drivers/iio/pressure/abp2030pa.c
+@@ -520,7 +520,7 @@ int abp2_common_probe(struct device *dev, const struct abp2_ops *ops, int irq)
+ 	data->p_offset = div_s64(odelta * data->pmin, pdelta) - data->outmin;
  
- 	init_completion(&st->reset_completion);
- 
--	ret = ade9000_request_irq(dev, "irq0", ade9000_irq0_thread, indio_dev);
-+	ret = devm_mutex_init(dev, &st->lock);
- 	if (ret)
- 		return ret;
- 
--	ret = ade9000_request_irq(dev, "irq1", ade9000_irq1_thread, indio_dev);
-+	ret = ade9000_request_irq(dev, "irq0", ade9000_irq0_thread, indio_dev);
- 	if (ret)
- 		return ret;
- 
--	ret = ade9000_request_irq(dev, "dready", ade9000_dready_thread, indio_dev);
-+	ret = ade9000_request_irq(dev, "irq1", ade9000_irq1_thread, indio_dev);
- 	if (ret)
- 		return ret;
- 
--	ret = devm_mutex_init(dev, &st->lock);
-+	ret = ade9000_request_irq(dev, "dready", ade9000_dready_thread, indio_dev);
- 	if (ret)
- 		return ret;
- 
+ 	if (data->irq > 0) {
+-		ret = devm_request_irq(dev, irq, abp2_eoc_handler, IRQF_ONESHOT,
++		ret = devm_request_irq(dev, irq, abp2_eoc_handler, 0,
+ 				       dev_name(dev), data);
+ 		if (ret)
+ 			return ret;
+
+---
+base-commit: 7d6661873f6b54c75195780a40d66bad3d482d8f
+change-id: 20260227-abp-016a007ab817
+
+Best regards,
 -- 
-2.43.0
+Felix Gu <ustc.gu@gmail.com>
 
