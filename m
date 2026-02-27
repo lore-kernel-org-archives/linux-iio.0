@@ -1,48 +1,75 @@
-Received: from smtpout-04.galae.net (smtpout-04.galae.net [185.171.202.116])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5724643E9E8;
-	Fri, 27 Feb 2026 15:34:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.171.202.116
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFB7743CEFB
+	for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 15:37:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772206451; cv=none; b=pPFUgZnJnrlx7mi6ApQsHeE8mdy1slR+Ngg84OMbYfXB6hUQVBN6dlnG2hN3Ax/9sh82pBEmr1pZM0no1IcJo9YKfjRzReLv7nYK4lXUuzpTSQlBpa5FupZaeDZyS0DSMKDCGN4JqukBHtcXMpQTqmZt23nmp+2ywnUvSgtAGH8=
+	t=1772206666; cv=none; b=aD9CBWwdQwtS/KYsrbvCcUYyVno7Ov22txtTKxydB73YkRgIYVbj3GKZt9d27UgnAAS5zo8LOu30KhEXfDEevoM4KSQuiZod+QKKTSCvHK3bl1r02LsTKPmdLoke+hXPVScLG9VI6DVP09IVo18IaKCh81h4YWc/xcebZI8PRJ4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772206451; c=relaxed/simple;
-	bh=Q5M7jajGD8mocuB5vbEVGa2RaWXjdo/7DN4Gts8cvcE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iiic6QkPM9MQQMQFiRePzlbG937E33caY6Z5xO+Z3sTE9NlWLnuDBiGo3TS5Q+99i3CY0i2lVfypPl704CXHUm1ne30U/ikt0Ht9Y/L1MGuFJ4wSNUoaP1G3jag8NELKMd4IfcWqq1iaB8hC8NxB+YEqYMn0+6+B2IUK8EnjrW8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com; spf=pass smtp.mailfrom=bootlin.com; dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b=xe3dZhFN; arc=none smtp.client-ip=185.171.202.116
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=bootlin.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bootlin.com
+	s=arc-20240116; t=1772206666; c=relaxed/simple;
+	bh=mI23sdKdjfHrq229OZV9nOIuRczz+cpeb/6mgnKDCt0=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=jEiJYCFD9NEp+oJFERLlMXtKrRYRHVqe7eDz67NkrwnY/3abPhbFvo749EhlYapx15ZegkLG7Irwm7CYcObrYolp9kIJXygG8WQQxg7OJS9gbCmdIoUDGy0oQAbvahSJ8JU4UcUDO+TOax/VhqIYAKHcLemNnKzOSAcvseVcXJQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X13Iio4r; arc=none smtp.client-ip=209.85.160.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=bootlin.com header.i=@bootlin.com header.b="xe3dZhFN"
-Received: from smtpout-01.galae.net (smtpout-01.galae.net [212.83.139.233])
-	by smtpout-04.galae.net (Postfix) with ESMTPS id 68CB4C49F49;
-	Fri, 27 Feb 2026 15:34:21 +0000 (UTC)
-Received: from mail.galae.net (mail.galae.net [212.83.136.155])
-	by smtpout-01.galae.net (Postfix) with ESMTPS id 6CD0F5FE46;
-	Fri, 27 Feb 2026 15:34:05 +0000 (UTC)
-Received: from [127.0.0.1] (localhost [127.0.0.1]) by localhost (Mailerdaemon) with ESMTPSA id 71B41103682F4;
-	Fri, 27 Feb 2026 16:33:59 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=dkim;
-	t=1772206444; h=from:subject:date:message-id:to:cc:mime-version:content-type:
-	 in-reply-to:references; bh=om+ILXLhJC6eYOYq4v80L5Ebke/E4rCiLTomLCU79aU=;
-	b=xe3dZhFNZPJfK/ipyEgL/hl+RZ6s6mu2jfTK+6HdWISCrUVTjenydvYCx/gIm3pNL3CzRk
-	CA20q+EDUMY3NHtb4jXUgZ8JLkOxZ4CRylK6BuHcj/WLLF84RPvPXLFgdMamlhqwA3ct0M
-	wIpr9Hutk5Jhdfxa8lytUOedg+cg/ygaDVjamStXMOrdpzVwJgABOB2bQILoIl+Hi0fXNl
-	dUcxKndFAS5eQ2pAazT0PVihh7qP5ZxKmjoRiKPwSNyrF3zA2WFIj2A//epCj1JfXr8siX
-	hECAYH3tCX7sJUFg/dari92jFbrRHm8O7fSMMa5fIeeX7Y12oTNzE/LONKeUQQ==
-Date: Fri, 27 Feb 2026 16:33:58 +0100
-From: Alexandre Belloni <alexandre.belloni@bootlin.com>
-To: Arnd Bergmann <arnd@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] [v3, apply after -rc1] i3c: simplify combined i3c/i2c
- dependencies
-Message-ID: <177220641632.201056.5029746753419046340.b4-ty@bootlin.com>
-References: <20260204164216.544409-1-arnd@kernel.org>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X13Iio4r"
+Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-506362ac5f7so20121101cf.1
+        for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 07:37:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772206664; x=1772811464; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=IYCNfGI/wBJeh75yMqRB8p3GDB0aK/wV0WicdnppPD4=;
+        b=X13Iio4rGHu3KCKPl4UlHdQQtFR8tNnPRH/Ms1hgk0QjjI2UE1R9grl9XfOAARurqz
+         TVhjb+/zYT1KdlAeSdVylb2PKDfKJF9+IYYFVMLK5HafPxGolW5pDA8nofwPEDS8on3A
+         k+h48SvpDHfR87ZIy/+lwx08dOYoR1t/oxQUDhRVMCJ6Aw/7VAEBtK/jopDkJK1k2E3J
+         5VS5CrWnN/JyUpje9PTYNJf0OECxUh5sty/pAlKOd6JTqm8RTKXb+2kC/7DFyvdwhVT4
+         vogNIuPQZw8SrB4Q7NGCTTQLL9pEi8R0lIVUkF9muu5kvbh2GCF42m24wXvu1zVKAf+G
+         woYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772206664; x=1772811464;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=IYCNfGI/wBJeh75yMqRB8p3GDB0aK/wV0WicdnppPD4=;
+        b=EwkLfu5kfLJRIaYqSrndm9zvvnk6iUUdmKgkMveWKsU+nmt5odwtIZln6ovujtTJA8
+         K4ck3o1qaeFq8pzbxDHcGMJ1yCBksLktz6KmHAx51fLXUHMRRqSo9tJ0780DWKKHymiw
+         a9m2WFvqiP7bkdCPFnap/dKOZfQIFcjQ1IEFgM+vV+IwRIc213pM/2ajics8WSbo5gBt
+         Qkufk2J7cP5aUkStGRiWA8aHHT5sR7OTLj/RBTc6HAZKz9CvCG8KAxI27xq0HGNmsZw7
+         GKFFyY/UIFCamR5+3FxBt7fFxlU340+RCBo7/U2V9tGxeTySx6H5EjBRp7WemOm5qRky
+         m2PQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVJFsHFzhXN6jwa9FBKAEvUgkfKIzjShvTpvB8ZbpF+y9Dg5ptSXNFkKvYPi7FNWue2WNhHPV9XYbA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyT3KK+3u8vAHKZDGysqOQ33aWFvTFmV97xUV675LrR7pIR//Vp
+	umltI/V6X1yzbKBl/wuXYcSbOeXivLNxkHwvhrS72Hf/nnVCZ7X8T50g
+X-Gm-Gg: ATEYQzwbhak7QlzoEoiryksTPLwXJdPxnNWjrjj7/CNVFFZGZOp1pDFcVuCrj1oaVId
+	MCgNt/Lo+6hiU2bUo/ahb+pjYfmL8wXF6H0Iu0+pofiEPDTtLGHtqpi9LZhmhgj1GQ21p07hF3r
+	gsaJCA408bM5JceI4CUvg5qqa0XOUj2GzJjqkRC0dZ8dhMYJCiU9VOM6VaIHktatr3JJvuCu0xf
+	jf8gS6xh2dTKLRCxbKg7l9/R9b8+CaOM1k98vMfePDKDsDRP/kUiaBm12QSLwhgAZzV3SoMJX4a
+	wVgzfXlrFA3DfK445q0Jd1c8OtYWLjlsek7+fbvj81j20uGOQFmorc8bPQ5oq+E2BRXTE0T+xse
+	w2tGZYzzIzcQTrQAnVKa00IDk4tZfpormxIr6zwsl1owcChcROAQRA92QQ4q92EVfdWYOG2dFBT
+	dR1NpeQ68J2NwP3MpLmxAGLRzyf+oY7Q83OtxdCTGonRHgZM7emlEmRXoIdGkUiPhulIgxSqeFs
+	8NHofYMKJXUfgbMKDGsl2o26Xz5dqig+M09sKgqj8EX9hBxJiFWZjpwd2ChzzNs5K1cix7SuHLK
+	M6h9xlPIrLsYVqXKjtDz
+X-Received: by 2002:a05:622a:182a:b0:506:2041:13bc with SMTP id d75a77b69052e-50752895c12mr33664521cf.55.1772206663810;
+        Fri, 27 Feb 2026 07:37:43 -0800 (PST)
+Received: from ammar-VM2 (d66-222-145-193.abhsia.telus.net. [66.222.145.193])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-507449be47dsm44501821cf.15.2026.02.27.07.37.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Feb 2026 07:37:43 -0800 (PST)
+Date: Fri, 27 Feb 2026 10:37:41 -0500
+From: Ammar Mustafa <ammarmustafa34@gmail.com>
+To: Alisa-Dariana Roman <alisa.roman@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Docs: iio: ad7191: Correct clock configuration
+Message-ID: <aaG6Rds7GAf9ZtF8@ammar-VM2>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -51,30 +78,38 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260204164216.544409-1-arnd@kernel.org>
-X-Last-TLS-Session-Version: TLSv1.3
 
-On Wed, 04 Feb 2026 17:41:58 +0100, Arnd Bergmann wrote:
-> All combined i2c/i3c drivers appear to suffer from the same link
-> time problem when CONFIG_I3C is set to 'm':
-> 
-> arm-linux-gnueabi-ld: drivers/iio/magnetometer/mmc5633.o: in function `mmc5633_i3c_driver_init':
-> mmc5633.c:(.init.text+0x30): undefined reference to `i3c_driver_register_with_owner'
-> 
-> This was previously fixed every time by marking individual
-> drivers as 'depends on I2C; depends on I3C || !I3C', but this gets
-> tedious and is somewhat confusing.
-> 
-> [...]
+Correct the ad7191 documentation to match the datasheet:
+- Fix inverted CLKSEL pin logic: device should use external clock when low,
+  internal CMOS/crystal when high.
+- Correct CMOS-compatible clock pin from MCLK2 to MCLK1.
 
-Applied, thanks!
+Signed-off-by: Ammar Mustafa <ammarmustafa34@gmail.com>
+---
+ Documentation/iio/ad7191.rst | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-[1/1] i3c: simplify combined i3c/i2c dependencies
-      https://git.kernel.org/abelloni/c/663eb8763c25
-
-Best regards,
-
+diff --git a/Documentation/iio/ad7191.rst b/Documentation/iio/ad7191.rst
+index 977d4fea14b0..bb8a1efcfb98 100644
+--- a/Documentation/iio/ad7191.rst
++++ b/Documentation/iio/ad7191.rst
+@@ -63,12 +63,12 @@ Clock Configuration
+ 
+ The AD7191 supports both internal and external clock sources:
+ 
+-- When CLKSEL pin is tied LOW: Uses internal 4.92MHz clock (no clock property
+-  needed)
+-- When CLKSEL pin is tied HIGH: Requires external clock source
++- When CLKSEL pin is tied LOW: Requires external clock source
+   - Can be a crystal between MCLK1 and MCLK2 pins
+-  - Or a CMOS-compatible clock driving MCLK2 pin
++  - Or a CMOS-compatible clock driving MCLK1 pin and MCLK2 left unconnected
+   - Must specify the "clocks" property in device tree when using external clock
++- When CLKSEL pin is tied HIGH: Uses internal 4.92MHz clock (no clock property
++  needed)
+ 
+ SPI Interface Requirements
+ --------------------------
 -- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.43.0
+
