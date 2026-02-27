@@ -1,126 +1,118 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6322E3EBF07;
-	Fri, 27 Feb 2026 12:43:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772196222; cv=none; b=Aq4dscx0qA/i6xFXUPxi8bO6UgLsctTXKbwwJHNGBAGGV0LtMOQbzZv8lJK34drTnowDfnqTix4u2Q5BmK2jaS6n7wVFUNyCrlFyON5Lk2rgSBRgoK7altkuf0skCDPa/Lo9SfUsO+ePAMdWH/ZO9sHhRnhlXVt7G7gNP5NlNq0=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772196222; c=relaxed/simple;
-	bh=WABTaoHr76ZUtVjEBRcsQaRKtYlYkyPcWkYJkIw7PTU=;
-	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=iwv0HnvR1nURSN0dr7HUHaZeNEVAwwRnVHTQ9t6DkQ23dVWAVQQfxbtPfM5cp83d/A8iXjBLskezf3gWTaNUoEQyIvEYkvBWCHRnxFoc8R9xnLCOBmrRg+yvD/8Ecfa3BHwea1gtQrAtb76ApU5vJcf28Ld9wmEFRdjezNuB9LI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=cSMnNgSq; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 101CF330B06
+	for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 12:49:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.216.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772196572; cv=pass; b=qeoMdo7rIezCHL8qOh3SB9L6iekXQhpcjpVT5Qtsd7HLs5N1x6hel+v21zA7u++Y7XcZJO/mjQGTPRSpPbKHu476+stTgR2H6YoMTOCEbQSuRcoLEZ1fGYy6VBaHi6Q91vW7vqDWBkS6aA1hPm84jACCV8INMDDjWDkyGpiWUXo=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772196572; c=relaxed/simple;
+	bh=JXoEWkMA18GEIgn/Wt84CCq21kzcsr7VoHJR/wykkWM=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=BQrV2VnPlWU1OFqqe2n6g4JGVJMND0zISAvdUdY70g2Y/rYIIcWj0GiSP1+mLfTueihCTNG0P5bvW8j5YX/0IjQSRrq8ItIfDPs9lk7lVMagk6dLvv33FZ1c1pXD4QYhH6Kw23cApObyMKunCZffIDWIme0LVEmhsk+ZJhuokJ8=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B1MTF1YH; arc=pass smtp.client-ip=209.85.216.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="cSMnNgSq"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61RBUoZW1380239;
-	Fri, 27 Feb 2026 07:43:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=O9cNGZlIZWJPjDLsLZm2A9/3oLg
-	zLtLHksupm32azDk=; b=cSMnNgSq/o04dBpfxSiYXcWr/CNsrSaNeRPo/y5VY7y
-	9ATz3J6uPFcFugXHBXG9rkdr+YlO/zD8h4hhtIxV4s9r870bxzFkn82XbfLjLbeP
-	0YHAoBnsXmIRMYH3jRNTC75bsw+MQ6aJBBMXpIC5RRM3WIDDR0J1iTCz/9MXhKM5
-	iyYfaanU4LLTv8VXrOAOkxtCz1eepE3Uxl2rCEUDPp3342GDsuKPT/6RfoOhQcMU
-	AOPKKnre+n9csYwENIXM8vTuSlSPAzCgzl8TIKXv+E7/bKqp9x0unAJogz87SEVW
-	cy+4hFzx+hhjTT0Iv+baJ7JtxvlxviskVgiUEpqEI5A==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cja98qtde-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 27 Feb 2026 07:43:25 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61RChOxj056010
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 27 Feb 2026 07:43:24 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 27 Feb 2026 07:43:24 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Fri, 27 Feb 2026 07:43:24 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 27 Feb 2026 07:43:24 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61RChDIf013405;
-	Fri, 27 Feb 2026 07:43:16 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Ramona Gradinariu
-	<ramona.gradinariu@analog.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
-	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] iio: accel: adxl380: fix FIFO watermark bit 8 always written as 0
-Date: Fri, 27 Feb 2026 14:43:05 +0200
-Message-ID: <20260227124305.55271-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B1MTF1YH"
+Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-358ed90bcefso1102833a91.2
+        for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 04:49:30 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1772196570; cv=none;
+        d=google.com; s=arc-20240605;
+        b=lTD5OLjoFpZ3Hrsr539P99IY43Yu4K8+N+V35Qx2vjFGDfX3+A1wEmdlaZjmjTT829
+         HhieArFmFK9VxDhMPeiKfVOiLXi9lhbat7wy8wqTQOzQQ6vPPhqYCHosR1saLVxB9j0/
+         dstC+uyIOHjsmP9tN0eXSrp0nBb6xajYO+SrUm6+JBWndb2H4+i8wnsybsk2TgFSYOkd
+         MIiBvS0l8doLE1i/FrOhtCT5crb1eswvry6xyt0O1aI4WdexUZSPDsYenyPOByS0yaPh
+         MStQJM3F4ctRS6T/fM/thHztGQpVS5hnmo7l8kfsDJ6Msv0CvAknXeQ0uXDG6oQQBe4c
+         m14w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=ajZfxwhp4Mupg3TLTAza+3+UCxM49Q2sFdfPOhFN+a4=;
+        fh=Ykgp6CC2X6+lC5Rrx3Yka7BiAvTOyWYyJQqrx7nMrDo=;
+        b=QfShjvAJngxzkKL9nEqg9VtOVB9Rf5+HqRDrZc4YtA4IJJY3zHGBr7KrTmTV335XBi
+         WRQLZOZpZzpxxoFIod7LPoHwIAbuPMOcaAW6UKrvmC62lMecHkzgcOJlzMmptp8ByFmp
+         7QdVTzujEonThGbutmCw49BWvKiWd95jq7kGugw4rODDP3zH2ttcvJjn7z7+VHaSCgGw
+         /TS7TUUqFt1IHaAZ/rj7EPVtS/pnEuYMxg1J9nZV7poItatUwyi2k6oI0QUTOudeP8Le
+         LlZzMBMErBrewF5xcVhgSFhRnL0cgg2ugkDRNWJ8Zs4YHsRRSifKmokjG+6Yauk5bPDV
+         cAXA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772196570; x=1772801370; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ajZfxwhp4Mupg3TLTAza+3+UCxM49Q2sFdfPOhFN+a4=;
+        b=B1MTF1YH/OYyYwwi8vZsFj2dgNhs8GioW1ZyzbjMUpXHA55t3To1RNPv8BpEV9P/4p
+         f0l9JbbL0vOo6G9y2bwqr8YGt6BJSZij204GnRN9Z5/WBHqVoZZ6GmXqYYEQf3dckTjY
+         lJG9PBKKpt1nHiIxU4jaBPhlyItpARRtDGjHJzlyg+0xZqun5q03uf1bOBdb+9KTvOLL
+         v2+aFGC40ypCJFs0fqvBdTSq4bmu/WkB3Hla40LblPqC7sOdk+kDJejD7QctPzRLy+8A
+         FxN9I38q5hRvCGsUmkQYADz6Ol1b9+wYv64Efyvhs9CRqU0xjFIXz9yC8ORgIn8L6OlA
+         NRdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772196570; x=1772801370;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=ajZfxwhp4Mupg3TLTAza+3+UCxM49Q2sFdfPOhFN+a4=;
+        b=Bq0KEJfwfaO6bk3ayRNim8Tq6bFw516BcdFUDUmkRntBtbZJnAw4F6bWVOOApn5rHR
+         iKhf60RyZcmSpTz/TDRuSExNcXnoegPWCREITyzn8IGkT5kDH/fxFcGZTkiREet/AZZd
+         ZoDD0NganInEhaCLsBK4xtZewiVNVuF6XNsm0tHbmvP+HvPDXmiCUYV2iFsH5puoJU/4
+         OeFqVAec1RMWOMzbY51e277TI2b3LUYp75iMZqleMg6El/3ajEwcaTHdB5RPczOkxJdX
+         Znhjtav/YigmvbMr194Rf5gm4SP5su8DYevikkgwI/LbNLvDS8ChMLVjirap4zfUsfhF
+         j+jw==
+X-Forwarded-Encrypted: i=1; AJvYcCU1EsWurxYA98HxnBTG6V1f5NLGIWPwrrr4+nzWtqPpOO3t2M1nD1r1+rfHz0ialUb8WLPU63CbJpY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxWN6KAr9XLZcTPuBmjt4B9RSA7oRa6xH6TzuLZy0sHjvotvT3z
+	/EpKNrUVR+XJRd1B2xnxHztpf+TXOr6z/gZsa2iKA1och+9ARrITxcer4PDJlPEo+9UkVGCQd4W
+	qzQdw5QiC7MupkWNBennhVXaJ7B3lTd4=
+X-Gm-Gg: ATEYQzxWsu1D2IWgi1RqXI1t/WzzVo0grMD8zOVTilQgH/bkUGccEEzGonpmLlmvv+j
+	u756ZOTTxxxhDhK6LbQsO3gWcZBdBcq5Tpn9FhroXMelyamaHC+bpPUbIaxqiiBNl3H3bciaMpX
+	T0XsKrZKbiZxX0/ex8sRw9u21kUGgEhn77iBI5G5Nqrfu6Or+0jp9+M3g+Qp2XTTW9mbrioCbGs
+	alawH6FnB1k9gq4FyzE4we6vf36SoNBWY4wHZ59X47wedERZcjVFp9Xk/EgQf7+Qf2FDB1cpo5T
+	C8njghMqr9RYX/kyKO0=
+X-Received: by 2002:a17:90b:5390:b0:340:c179:3657 with SMTP id
+ 98e67ed59e1d1-35965d17f5bmr2959302a91.33.1772196570145; Fri, 27 Feb 2026
+ 04:49:30 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI3MDExMiBTYWx0ZWRfX9y4dazT4gmcp
- fVUqfh8SnkSPsiRiLuF2FMaYxbm9xPTamf8i4xaNecfEgbL8R3sMHtdZa+4XFEvnNhFzwTtc00P
- k2N26DF1WDQ3H81zbgI9d336L9GWQ7PAlJgZR/sxnp4nKfvQUqi1kR63hQpfrlcrsJXj/CWz3v8
- g9S+viMyQvB+01K/hyltk2lo9wNYz35M5yEMFBhJCeU/lijZWRTb4IvhhvY2FNob0O5za9ToNWW
- KrRyjUtICKnubq6Mfb3jMwpR524jwjaWaSqEUgerO723+JvIeGrCHinI4rBLXRWpZCcrWH6oMAw
- osnSTgaRH8I5mSmUTygzMjhY0CmVFIEIz/ynM3MkLHyS0wTicJX9A3cYQ/r0fCQnaen1sTAWy9l
- +3w+VR/uBbw1h3DlEAKApWvolKgNsi/R8brNP0QUin2xXCjx0CJi468PeRJQyulqxL9JBrBXWr3
- FSMTperUYzlTxEdlftA==
-X-Authority-Analysis: v=2.4 cv=a+A9NESF c=1 sm=1 tr=0 ts=69a1916d cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=RBIjZzELQoH7hPQAidgA:9
-X-Proofpoint-ORIG-GUID: uydUqJ9xjCc1iZSwlFRLGDuU0xwVg_Vj
-X-Proofpoint-GUID: uydUqJ9xjCc1iZSwlFRLGDuU0xwVg_Vj
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-27_02,2026-02-27_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 spamscore=0 priorityscore=1501 phishscore=0 lowpriorityscore=0
- clxscore=1015 impostorscore=0 bulkscore=0 suspectscore=0 adultscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602270112
+References: <20260227-abp-v1-1-b6fed0545852@gmail.com> <aaCnYxWE8vuOEimE@lipo.home.arpa>
+In-Reply-To: <aaCnYxWE8vuOEimE@lipo.home.arpa>
+From: Felix Gu <ustc.gu@gmail.com>
+Date: Fri, 27 Feb 2026 20:49:19 +0800
+X-Gm-Features: AaiRm53ct_3RuwDAq2xrKO5TCjjys925psRweZlQwchJ9q74K76jV5Q9SZlLTNg
+Message-ID: <CAN4SLj3QbpAwT7CXv4fb3wCu56c_38Bjsv-wTor0yLbq3R5E2g@mail.gmail.com>
+Subject: Re: [PATCH] iio: pressure: abp2030pa: Replace IRQF_ONESHOT with IRQF_NO_THREAD
+To: Petre Rodan <petre.rodan@subdimension.ro>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+	Sebastian Andrzej Siewior <bigeasy@linutronix.de>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-FIELD_PREP(BIT(0), fifo_samples & BIT(8)) produces either 0 or 256,
-and since FIELD_PREP masks to bit 0, 256 & 1 evaluates to 0. Use !!
-to convert the result to a proper 0-or-1 value.
+On Fri, Feb 27, 2026 at 4:04=E2=80=AFAM Petre Rodan <petre.rodan@subdimensi=
+on.ro> wrote:
+>
+>
+> hello,
+>
+> based on previous feedback [1] IRQF_ONESHOT should be replaced with 0.
+>
+> [1] https://lore.kernel.org/linux-iio/20260114121448.00000249@huawei.com/
+>
+> best regards,
+> peter
+Hi Peter,
+I checked the handler implementation,  IRQF_NO_THREAD is not necessary here=
+.
+I will update it in V2.
 
-Fixes: df36de13677a ("iio: accel: add ADXL380 driver")
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/accel/adxl380.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/accel/adxl380.c b/drivers/iio/accel/adxl380.c
-index 8fab2fdbe147..a51d1d61c412 100644
---- a/drivers/iio/accel/adxl380.c
-+++ b/drivers/iio/accel/adxl380.c
-@@ -877,7 +877,7 @@ static int adxl380_set_fifo_samples(struct adxl380_state *st)
- 	ret = regmap_update_bits(st->regmap, ADXL380_FIFO_CONFIG_0_REG,
- 				 ADXL380_FIFO_SAMPLES_8_MSK,
- 				 FIELD_PREP(ADXL380_FIFO_SAMPLES_8_MSK,
--					    (fifo_samples & BIT(8))));
-+					    !!(fifo_samples & BIT(8))));
- 	if (ret)
- 		return ret;
- 
--- 
-2.43.0
-
+Best regards,
+Felix
