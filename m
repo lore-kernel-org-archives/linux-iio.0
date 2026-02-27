@@ -1,115 +1,104 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+Received: from mail-ot1-f52.google.com (mail-ot1-f52.google.com [209.85.210.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BFB7743CEFB
-	for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 15:37:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A720344CF57
+	for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 16:01:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772206666; cv=none; b=aD9CBWwdQwtS/KYsrbvCcUYyVno7Ov22txtTKxydB73YkRgIYVbj3GKZt9d27UgnAAS5zo8LOu30KhEXfDEevoM4KSQuiZod+QKKTSCvHK3bl1r02LsTKPmdLoke+hXPVScLG9VI6DVP09IVo18IaKCh81h4YWc/xcebZI8PRJ4=
+	t=1772208092; cv=none; b=NX1EYcxi2xgRFBrXD8QnXGHI+pUR3BRwLPvHIjmsUx8kNQqwGGVL5yqRLKtvRm2Fm2JFMNRk6MmdTGVJBi5PI/JNxS9RU4ZIEr/ycECTtFjChlc9s271xFCLQN46QgJLMJcYc6fcsI3y8d9N6m8mPthnbAUYLjpdvmzmF5obkIQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772206666; c=relaxed/simple;
-	bh=mI23sdKdjfHrq229OZV9nOIuRczz+cpeb/6mgnKDCt0=;
-	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
-	 Content-Disposition; b=jEiJYCFD9NEp+oJFERLlMXtKrRYRHVqe7eDz67NkrwnY/3abPhbFvo749EhlYapx15ZegkLG7Irwm7CYcObrYolp9kIJXygG8WQQxg7OJS9gbCmdIoUDGy0oQAbvahSJ8JU4UcUDO+TOax/VhqIYAKHcLemNnKzOSAcvseVcXJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X13Iio4r; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772208092; c=relaxed/simple;
+	bh=mqX00e9QqpKUg+RRh3jJF+qJ43RITeuZ7hqJgrXs+QM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QigekGTZE3J3O+MXWpY5XDk1R0nS43VUOVcJMldUjmYcp4KFPQDuhzlI5f0Q0j+hnW7X7YWnjidcB/MKxd+alJpHXL+QelAPMbG87IvIUSYjHQBGsnnUH638A1eT7uu7YKUSFM+fXD99+GcyDQByLzhskDUfMEquAiebXkfCBvU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=HLuzmuI2; arc=none smtp.client-ip=209.85.210.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X13Iio4r"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-506362ac5f7so20121101cf.1
-        for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 07:37:44 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="HLuzmuI2"
+Received: by mail-ot1-f52.google.com with SMTP id 46e09a7af769-7d4c3896e32so1164468a34.0
+        for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 08:01:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772206664; x=1772811464; darn=vger.kernel.org;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772208088; x=1772812888; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=IYCNfGI/wBJeh75yMqRB8p3GDB0aK/wV0WicdnppPD4=;
-        b=X13Iio4rGHu3KCKPl4UlHdQQtFR8tNnPRH/Ms1hgk0QjjI2UE1R9grl9XfOAARurqz
-         TVhjb+/zYT1KdlAeSdVylb2PKDfKJF9+IYYFVMLK5HafPxGolW5pDA8nofwPEDS8on3A
-         k+h48SvpDHfR87ZIy/+lwx08dOYoR1t/oxQUDhRVMCJ6Aw/7VAEBtK/jopDkJK1k2E3J
-         5VS5CrWnN/JyUpje9PTYNJf0OECxUh5sty/pAlKOd6JTqm8RTKXb+2kC/7DFyvdwhVT4
-         vogNIuPQZw8SrB4Q7NGCTTQLL9pEi8R0lIVUkF9muu5kvbh2GCF42m24wXvu1zVKAf+G
-         woYw==
+        bh=ELIM1XoC6sP2e7/ym7kBeZvkexkVxufY/yi6CFO2Qxk=;
+        b=HLuzmuI2HcGU+s266n+87i0T+0IZsffCHOodKrBHuiDs+mZNFQcv+qOhyv9GERLCQ1
+         3PE0SGDHO+RrFMTvgrrNZzXo4MYDgJyayb870mUIctYQV3ll537C3chUBIJwKkrpKKoT
+         o52ihGqNLGxFb3AWdPgOG1Va977TGeldCE6pQfP8qx2sUzlakjaNuDf0+e6lda+GtWAR
+         4uHGmxsJBiFhEnfpA3PLiP4lvB32KzkPrE3eX2ltSj1d36SIt50uYyNmFKE40401uXis
+         4Q2m3h+FBN/CI3Jh7SYoEa+7Eluh9VAg279om0rV4xM/o7KJxFPtdQjZcbKhuOttliCe
+         mbsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772206664; x=1772811464;
-        h=content-disposition:mime-version:message-id:subject:to:from:date
+        d=1e100.net; s=20230601; t=1772208088; x=1772812888;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=IYCNfGI/wBJeh75yMqRB8p3GDB0aK/wV0WicdnppPD4=;
-        b=EwkLfu5kfLJRIaYqSrndm9zvvnk6iUUdmKgkMveWKsU+nmt5odwtIZln6ovujtTJA8
-         K4ck3o1qaeFq8pzbxDHcGMJ1yCBksLktz6KmHAx51fLXUHMRRqSo9tJ0780DWKKHymiw
-         a9m2WFvqiP7bkdCPFnap/dKOZfQIFcjQ1IEFgM+vV+IwRIc213pM/2ajics8WSbo5gBt
-         Qkufk2J7cP5aUkStGRiWA8aHHT5sR7OTLj/RBTc6HAZKz9CvCG8KAxI27xq0HGNmsZw7
-         GKFFyY/UIFCamR5+3FxBt7fFxlU340+RCBo7/U2V9tGxeTySx6H5EjBRp7WemOm5qRky
-         m2PQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVJFsHFzhXN6jwa9FBKAEvUgkfKIzjShvTpvB8ZbpF+y9Dg5ptSXNFkKvYPi7FNWue2WNhHPV9XYbA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyT3KK+3u8vAHKZDGysqOQ33aWFvTFmV97xUV675LrR7pIR//Vp
-	umltI/V6X1yzbKBl/wuXYcSbOeXivLNxkHwvhrS72Hf/nnVCZ7X8T50g
-X-Gm-Gg: ATEYQzwbhak7QlzoEoiryksTPLwXJdPxnNWjrjj7/CNVFFZGZOp1pDFcVuCrj1oaVId
-	MCgNt/Lo+6hiU2bUo/ahb+pjYfmL8wXF6H0Iu0+pofiEPDTtLGHtqpi9LZhmhgj1GQ21p07hF3r
-	gsaJCA408bM5JceI4CUvg5qqa0XOUj2GzJjqkRC0dZ8dhMYJCiU9VOM6VaIHktatr3JJvuCu0xf
-	jf8gS6xh2dTKLRCxbKg7l9/R9b8+CaOM1k98vMfePDKDsDRP/kUiaBm12QSLwhgAZzV3SoMJX4a
-	wVgzfXlrFA3DfK445q0Jd1c8OtYWLjlsek7+fbvj81j20uGOQFmorc8bPQ5oq+E2BRXTE0T+xse
-	w2tGZYzzIzcQTrQAnVKa00IDk4tZfpormxIr6zwsl1owcChcROAQRA92QQ4q92EVfdWYOG2dFBT
-	dR1NpeQ68J2NwP3MpLmxAGLRzyf+oY7Q83OtxdCTGonRHgZM7emlEmRXoIdGkUiPhulIgxSqeFs
-	8NHofYMKJXUfgbMKDGsl2o26Xz5dqig+M09sKgqj8EX9hBxJiFWZjpwd2ChzzNs5K1cix7SuHLK
-	M6h9xlPIrLsYVqXKjtDz
-X-Received: by 2002:a05:622a:182a:b0:506:2041:13bc with SMTP id d75a77b69052e-50752895c12mr33664521cf.55.1772206663810;
-        Fri, 27 Feb 2026 07:37:43 -0800 (PST)
-Received: from ammar-VM2 (d66-222-145-193.abhsia.telus.net. [66.222.145.193])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-507449be47dsm44501821cf.15.2026.02.27.07.37.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Feb 2026 07:37:43 -0800 (PST)
-Date: Fri, 27 Feb 2026 10:37:41 -0500
-From: Ammar Mustafa <ammarmustafa34@gmail.com>
-To: Alisa-Dariana Roman <alisa.roman@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Docs: iio: ad7191: Correct clock configuration
-Message-ID: <aaG6Rds7GAf9ZtF8@ammar-VM2>
+        bh=ELIM1XoC6sP2e7/ym7kBeZvkexkVxufY/yi6CFO2Qxk=;
+        b=wknA/jHfIrqSnwNanOFV/QT3efdPI8qBt9deDkD5997p5nvRrxw38gultGX6JVA/2U
+         KXy2jBeQ/my50yw6kEnBw4XoHoTm/jLiuha6EbSp5WxsA7R86fhBCX33/19qfSmbEWOV
+         +idwkWLMItVh0c3tvBoOA0w2ORp1/ZQmSFANi6hGjZRDUpt5c9vW93acgNvmEUSpaCln
+         eSGBVr8BB76O973b1rFrwPT30auB/GbIX06BL19Vr5myHbNF3n5Etrw6+bGiTA04juEr
+         wZDB5FrOM3rFjhcl9UbS9mUkGeiOnDh+qjvgCXYUerflJW9gSxlA0/XrJWdkyQFAVKyh
+         CLfg==
+X-Forwarded-Encrypted: i=1; AJvYcCXhiMRvyxiVP2KCiPILgukw5RJCewZF8oFgm0XPujQ0Vfm3T9WIZuAqmci3OD/tLOGV1QhULf0E2fo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyoa5CO7d4vuthabigfUWAdFOv2i5obJGl5eYkkhlMCRBAhd6OE
+	K/SZO0zWbN5xJL58K/4rhY8HIiQnu5MSL1Dc0r37eyAHPYmK9Xcv5H33dyKdk5FQnOY=
+X-Gm-Gg: ATEYQzzsUj8WzQBOfZ+a0YBlSBMIPzKbb6dWVDRpTUUdBPHKcQ26t7TuS3I903QQi7i
+	5qMXijThLseVi+UkFroTRDjGVOSmhFEIrIu/ekNXNBLEGgFJbgM40t8IxJcCY6gxAmyt5ebx4UY
+	B4tHt6SI2mND3LLAKt1PRcXXzNg4JvRLyuqIByg9hNrGaXKNyG+Ic3uZ4dzZqiU5l1obPoIPRug
+	QMC+hY8VVXM4RmNtnGHNCVsW461Mge03JGLRUMnFpNz7McPIx86WbsTlziCP+xjD+AECoNZMUXT
+	FvdsDLEdsO3fTEiiLh0CBQaUMBE4IWRNW+4lCfzxvTcLvB+0lsuNr0pE6W2F8rBV39UmDbZEZJj
+	OAGsOC7NGfs3PJwBjAsYQVTD2lBgWwkX5nwoUkXcY7WMEBezdV+AnUlN9e+mx4/ShdPrtGqSFFw
+	DqMPnrQKe+aaR3LyL2ZHHS7rcHiN12fYC4s9uJFdfaiWg56gT6Ubmo1aQ9FLRwAlRVqzvWfQyDo
+	g==
+X-Received: by 2002:a05:6870:3412:b0:3ea:ff22:3dde with SMTP id 586e51a60fabf-41626ec9ae4mr1759503fac.24.1772208087776;
+        Fri, 27 Feb 2026 08:01:27 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:876a:e36c:76c7:e6d4? ([2600:8803:e7e4:500:876a:e36c:76c7:e6d4])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160d2c9fc2sm4979058fac.18.2026.02.27.08.01.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 27 Feb 2026 08:01:27 -0800 (PST)
+Message-ID: <3c4964b1-9592-401b-a44b-22dace6cf81c@baylibre.com>
+Date: Fri, 27 Feb 2026 10:01:25 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/3] iio: filter: admv8818: Add missing error code
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Ethan Tidmore <ethantidmore06@gmail.com>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260227061424.1135505-1-ethantidmore06@gmail.com>
+ <20260227061424.1135505-2-ethantidmore06@gmail.com>
+ <DGPJFWN3WNIG.1DDAHDOZ7TTK@gmail.com> <aaFCWLknDa9MSzXS@smile.fi.intel.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <aaFCWLknDa9MSzXS@smile.fi.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Correct the ad7191 documentation to match the datasheet:
-- Fix inverted CLKSEL pin logic: device should use external clock when low,
-  internal CMOS/crystal when high.
-- Correct CMOS-compatible clock pin from MCLK2 to MCLK1.
+On 2/27/26 1:06 AM, Andy Shevchenko wrote:
+> On Fri, Feb 27, 2026 at 12:42:11AM -0600, Ethan Tidmore wrote:
+>> On Fri Feb 27, 2026 at 12:14 AM CST, Ethan Tidmore wrote:
+> 
+> ...
+> 
+>> Just realized I should have used -EIO for the error code. Will wait
+>> however on reviews before v2.
+> 
+> Why -EIO? Is it used in the same situation in other cases in this driver?
+> 
 
-Signed-off-by: Ammar Mustafa <ammarmustafa34@gmail.com>
----
- Documentation/iio/ad7191.rst | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/Documentation/iio/ad7191.rst b/Documentation/iio/ad7191.rst
-index 977d4fea14b0..bb8a1efcfb98 100644
---- a/Documentation/iio/ad7191.rst
-+++ b/Documentation/iio/ad7191.rst
-@@ -63,12 +63,12 @@ Clock Configuration
- 
- The AD7191 supports both internal and external clock sources:
- 
--- When CLKSEL pin is tied LOW: Uses internal 4.92MHz clock (no clock property
--  needed)
--- When CLKSEL pin is tied HIGH: Requires external clock source
-+- When CLKSEL pin is tied LOW: Requires external clock source
-   - Can be a crystal between MCLK1 and MCLK2 pins
--  - Or a CMOS-compatible clock driving MCLK2 pin
-+  - Or a CMOS-compatible clock driving MCLK1 pin and MCLK2 left unconnected
-   - Must specify the "clocks" property in device tree when using external clock
-+- When CLKSEL pin is tied HIGH: Uses internal 4.92MHz clock (no clock property
-+  needed)
- 
- SPI Interface Requirements
- --------------------------
--- 
-2.43.0
-
+I think EIO makes sense here. We are reading from a chip. And if the
+values we read aren't one of the expected values, the mostly likely
+reason is the chip is malfunctioning or noise on the wires.
