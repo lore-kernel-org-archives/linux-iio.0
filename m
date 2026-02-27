@@ -1,137 +1,118 @@
-Received: from PNYPR01CU001.outbound.protection.outlook.com (mail-centralindiaazon11020112.outbound.protection.outlook.com [52.101.225.112])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 06C623624D9
-	for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 17:53:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.225.112
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772214788; cv=fail; b=mkLvy/cclc4LVtp55XLWHUYdd+notSUa1JaxfeWLpaWZkeQOdw8cSJBuekb/Nv8utuuMsH5YOJsmTroRaqvgoYvMlcOMUCvRPiw9P3LtvxZ/nG5K3mr0cgeUvDfV8uzuwuXfPT0GuUkxE2T1P7/54Ggx4e+iShSJ96zNkpOq+fM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772214788; c=relaxed/simple;
-	bh=3i/mFMbzruPxOk9JVXcoleKz1h3dkpI19xtUvMWfPFE=;
-	h=From:To:CC:Subject:Date:Message-ID:Content-Type:MIME-Version; b=qrTJcKi75mKLAyQ+qIkv47SwCLpR8dT1kWZEqcHsIjXJQTup0rxgXoaDyr/bh9M4HgxR2E9ylzHEUM54yiAHsWb0vWDBYKwpKspcV9albaSHlai+ipjFmjASANYWgKM5Li7UDa9NnDd0XO6Gp/IeptKhejcPps4+Dc9YH2y+TSU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=iisc.ac.in; spf=pass smtp.mailfrom=iisc.ac.in; dkim=pass (2048-bit key) header.d=iisc.ac.in header.i=@iisc.ac.in header.b=mpc8IplL; arc=fail smtp.client-ip=52.101.225.112
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=iisc.ac.in
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iisc.ac.in
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DF833859D5
+	for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 19:08:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.179
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772219318; cv=none; b=du+dh/rJVO5G7+9g6SIekevKP/Gln5tf6aqfdlSFYhy81wo7ShBXetoqFv4vJV9lYlsoj9QW7GRoLgKeD/a9zM7evOjVr8+RL3h8wmSaXYKnJnAN5rk3uQ4k3I+qUBVcLdNzA09qXFmit0WsIRQKJx6TR3VWxXsGThucAQqhkKY=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772219318; c=relaxed/simple;
+	bh=589BKfYJnX0xBq2QFIE8KktMFxmjY0H22bxg8JH0DTQ=;
+	h=Date:From:To:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=t5cAQNmlCWSg6rApxMAzX00LxuDBOHum+imL5jXTLwOZ1+B2V/uT2MNqWGA+Y9BvegVRYI51BUMpmJeOkyj2GbvtJW9d1BHK9eCpDKwVOPQOM8qUcslSQIG7lxfOw7G37ds2sFb8Wk/S70fQcWAT56tDmvZjRn9Jjx9tNRUv+zM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nd1swH3B; arc=none smtp.client-ip=209.85.160.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=iisc.ac.in header.i=@iisc.ac.in header.b="mpc8IplL"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=jPVSvda54a0qVDPKWZSUMdliqEr7ew0t+EKHd+Le9MS5l3Nda9hUq6uexuJzU+j7b6YqtxKDmAhv0WTlkAac9Mz0Cvxg/XOBJFtIDFXmaVOxGQJOzCrnHZuhtzEXoADgKNuaEUAbgTDBVL9u+HpjKimSQYcvWsiPJyfTe87KMcqerP93eWpBdCOXJ9kHyAALnq3oTZCUHFZEUIXj3GhnAF+FW1GkVA5t/PkrkrpzBByDTbubfOoGr4HT0J5gnQv4pZ8UJBgThIbD9P88RxwT3SJLCNBtLkkBDkZt8sJ21KAqVtKUNGuIWPaqGCDElv2NSrflzQ+cJWYD99PRlUSFgA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=3i/mFMbzruPxOk9JVXcoleKz1h3dkpI19xtUvMWfPFE=;
- b=Su5R+P87rfd8N8Wf+GFZwP9er3L9m6/yucEUjfr3ex2QEGJlVBD7LYiCAQP0i74uLyqUHVHt1VVIa5rPLpFed2Eg9hMAzz9u81zcUHhHoEIV5M42gqEqJTOpEnXh/6DH8DdaWdTrgaxCucgy4WmbsTzKzE0Xe2AdzdxxDKCT5RJPE5HvmBCKOFG0Oh+w9JzIJ6xh563vpw0N7cHalN2VWtiffxP0qv9G5L6MxIfC8gfC+bNwsm1WSu5tFlHDtM+iXAj+QduWmp6vfesVGwIRmE6ta//E55BP9KJNhD80JXKWtIbemvd4XbuARTJkEhsG/9MCSjR6Y0uCzcDVCtr0iQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=iisc.ac.in; dmarc=pass action=none header.from=iisc.ac.in;
- dkim=pass header.d=iisc.ac.in; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iisc.ac.in;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=3i/mFMbzruPxOk9JVXcoleKz1h3dkpI19xtUvMWfPFE=;
- b=mpc8IplLK9YsKJJ3eHTquaot2VWST/GC/lkWTz8JBGlbbtMluJ9T1C1Yx+97A2dZu6cfH3rLSBJH90S6m0tdU70LzV9SCvKGE69eJozJope0QKo74SpsaaqgLEMgEkLWJgh14lrFVKgnc2544LqarxYKTRvpDZYOwaTIOSoez7UATCtDmkztOCl4ts9vTv/q5J5sQSkYguv/fLgUjhNg/JAfHy0dT2CzmR8xcwm5DrCqzwQIL/FKR97SVAL1OcA52UWQjCPrPtcQaJ9D0Z9w4gJr5GQ510uWABRaXNnXVJ2O216A6N5ttTttGwduGxY3HOKyHhj3m0CDJuLmq86ntA==
-Received: from PN1PPFB119D6BAE.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c04:1::31f) by PN6PR01MB12169.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:2fb::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9654.15; Fri, 27 Feb
- 2026 17:53:02 +0000
-Received: from PN1PPFB119D6BAE.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::6397:e211:a079:3bbc]) by PN1PPFB119D6BAE.INDPRD01.PROD.OUTLOOK.COM
- ([fe80::6397:e211:a079:3bbc%4]) with mapi id 15.20.9632.017; Fri, 27 Feb 2026
- 17:53:02 +0000
-From: Anirudh Gupta <anirudhgupta@iisc.ac.in>
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "marcelo.schmitt@analog.com" <marcelo.schmitt@analog.com>,
-	"dragos.bogdan@analog.com" <dragos.bogdan@analog.com>
-Subject: GSOC 2026 - Interest in LinuxFoundation IIO driver project
-Thread-Topic: GSOC 2026 - Interest in LinuxFoundation IIO driver project
-Thread-Index: AQHcqBHqfj+eOEzpGUaMMW0WXM66ng==
-Date: Fri, 27 Feb 2026 17:53:02 +0000
-Message-ID: <830DF73F-3F7D-4E83-8C30-CDBA7408E635@iisc.ac.in>
-Accept-Language: en-IN, en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=iisc.ac.in;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PN1PPFB119D6BAE:EE_|PN6PR01MB12169:EE_
-x-ms-office365-filtering-correlation-id: c72e6a74-a6cf-4d9f-882b-08de76290d3e
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|786006|366016|1800799024|38070700021;
-x-microsoft-antispam-message-info:
- M3YCZeAkG0/2Eihsbf0JZw9Y3xrCSAMGwqkmDrTPH44Z+ZvIsbchPsu9p8l1bLJPiLG/1pz8l1TkfpwbnJqrNcHoneptxvuYn2jU2+1T/w++hy7fsE5Kx93w7bxpPf4mSQaPQ6hh49SegwAl4juY3LX/KZAgfu8U7RywK1y6NQWZlUBf/pv2dlcRWWIPhDX9SeZk4IdQrIsyht3sOToI/4wjnsQe7nj4uw/YVbG4y57anhEpEM2uLraMWyM+MQBgtcaiREuuUwxmrwAbrfA3LspkIn4CJlOG0KLcsotDYvba9SXAkKY3EWwts5GX3NYoF931eRwC/NnzbIzC5KJ07cZ8fK6/CRtSYpLiMt3UWcwXjrRsRkTwKLYaMxptG6y0Im6qBBUmWzw+hYJrgwhb2dlEs4//qytJCNP0rL4LJrl5lV4L4zUqoiHpGbGMvxiYwuLsYuIEO4Kfd0SlOg2Xnx4pTZ61tENl1CwxrM595lIeoYlmlmbhxqKLoRnFo/4lHd4rjEtUGloL9jCdH1POAj7vtg2PB7qxzsu8x1RgjMKPejugHqQcklKg11NjHpJiWXs4iMwliR0OFZlkWRj69lU1S+n4veUAUhvhfxKkUX/NBd/gxmANhTZSgVerB0Y5F2Y3oJRScNo3YtFb+yT2IRuwx5kemn7y347iNh2BtksT+QQWSbop5UR30375vM7InAr3F6zAAdPvh1UtajHrCK0wJjgU6mmNQoV/wQXg+I3DEdop/r442xOdPuEbvKrKOq/Kd56ezGZHB3jmhwyGAcBxSKrP8/JdANY59YUOS90=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PN1PPFB119D6BAE.INDPRD01.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(786006)(366016)(1800799024)(38070700021);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?P5+Kmnkm7fHlwWL0/VvILCPx/uB0Ih1I4JV2ywoLOyI7umQbgaiBHKTB3Wns?=
- =?us-ascii?Q?veP4+LYuf1xWtF95YyWZD1hf/0s80MqNFa2WE0XmjQ1aeES3JaWAcdlzImps?=
- =?us-ascii?Q?dWZc6X0s7yoBTk/B32YaaaoCKqRYBvP5IF72ELqCbqbdysrs395prx0OH/y6?=
- =?us-ascii?Q?qKCLBTUp4bCB7t2Eh+n7YDicviG6Y1Tz65KYahR+S8K52vyAGyANBnUZTmGr?=
- =?us-ascii?Q?CX+OacxdRJ+b8izk7hxPigz7T5+8TU9eIoWZooSn2yxBWbsRnOH1OcYiR15q?=
- =?us-ascii?Q?NLprBtaw+v76SoQ+AA/JgeiN26KMjCQxjHp+QHFuODzMv18qhMGldGH8mfHT?=
- =?us-ascii?Q?UB1Nsd2Revfn6I6mlHEGcv9Whj7cmYuGxzXcLjurtN1VAH8UfbQxQtwmH4QA?=
- =?us-ascii?Q?71YPETbqLDwPqqtbukEGiRjceyDjpNhouBC844kbXphRq91HZRs9tFgW6Usu?=
- =?us-ascii?Q?Wn2r3xrD45ntn6k6Hcl8BoIJ/zbYGRtdvC0mmVjSgA2HHj1joYg/ajhxWwGJ?=
- =?us-ascii?Q?gJSYEutYE9TD/kFRmz2tPPU4b10yFgcVrZpUKIKP+8HuJ9Xtpov+Wobc3jnN?=
- =?us-ascii?Q?FlpkGcbL3t3pcOrEXOz9sy/0q2PkT7ymm4gY8KP9XtWHpjN03Tc4/Amb2tzy?=
- =?us-ascii?Q?UKLLgkqz36qjY3Qm9VoVwkhFS3dkHw0lQ2/lHN4TsmWPGqWD9qDuk6BqJS1I?=
- =?us-ascii?Q?N4dohMXH4GgvjWGpXysPUfwCFbOz9UltYJqkpbqrE12jfvv3wAL3pdptjYCF?=
- =?us-ascii?Q?zpTweik0Bhn2y21Kp5OFe4zFhUEOCFdHQbMJEnA3iwKnLUOh3olkpEvBhu1K?=
- =?us-ascii?Q?ZPj7F1TcVyjkSTa4VZSlnhPkT7E2UkxJ72m6R3RVQDri+0zYBfrQsoNg8t0z?=
- =?us-ascii?Q?5dii+08h6Kq94o2B8JWUbc4hSCtwUjY8uNNGybTUnIHPUAA9RvKItatJQuAB?=
- =?us-ascii?Q?Q0Znnh7FZc0fJhCDFOzPeciaJOhM9blMKVCHaN4uE+vYyrmIHkzikaok5NI+?=
- =?us-ascii?Q?LZ6qrvMGbMZw1lZgcFIF+8tu7TwuuEGPIJ73OvieTPPLCeFA/cC5GaB9EbUG?=
- =?us-ascii?Q?ADSB0FQ+ADndUnI5V1cvjMda3KGEKfglwKWDJklBfsYQamZ/iz1wcD2yskqL?=
- =?us-ascii?Q?EfPPmurUIBsHTOoMRnC46Nks8Z4kiA5i9hjPFybiNNNqEvv+CGuteSdJXrof?=
- =?us-ascii?Q?dBcgkMpXASlQK6zf6Hyhb4iFfvzE5pWaXuucPH3U/MF9Qn0iXR+geCcHcq6o?=
- =?us-ascii?Q?fEabQpPN6UT4nDhEiJVhrTgSvlOUp2rj5JciWuoVu2HONmb1FKiHDT9wKG+6?=
- =?us-ascii?Q?n7i1QA0t/teuh/Nv0IPfvLriUaTSxq0098TbIZm3wnaAILvMTKbjXw4uJZZH?=
- =?us-ascii?Q?HGyVWbWc6LXEMVql6c48TDrwXGsaVq/Drof3zoQdree6vA/3BOvMbRqyw8Qg?=
- =?us-ascii?Q?+veLvNShhq8jcLr9srgwrXhOHGP1Hi4U7/5YB5s2kVonpkE7fpL1EftrtLiO?=
- =?us-ascii?Q?W+of8OcAlsFCrx66B05uAMvWGY6OJ4qn63WqgBKWLupprXsPW2IhE2MtpFIy?=
- =?us-ascii?Q?tU64OAe5Dp1n2Kjr7WTWFzJs6y1V/AoWd2r4nFJgj77B6mx00L0Mi9vp1mUx?=
- =?us-ascii?Q?zx8Jxa8O/wHI+/2mwtA+cpgNiqYlvyhjIOrgBYjg4riqQ2F+RVuWHf7vMQKT?=
- =?us-ascii?Q?u7gwlc6HJpBqQmRze8Tc5YNZOVg5R0khJ38ihJP+JJa11HXKWjClAy0gdyoL?=
- =?us-ascii?Q?TJPaUaBxfMmdlwA3W4h1Krj6hu63OGw=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <C9C134447FFFBB4A9F0577B8738CBE0E@INDPRD01.PROD.OUTLOOK.COM>
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nd1swH3B"
+Received: by mail-qt1-f179.google.com with SMTP id d75a77b69052e-506a297c14bso22329811cf.2
+        for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 11:08:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772219316; x=1772824116; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=3pUhkYNCOHcJIt/TwrF1xrDtMqe67JCJ7QQat4SlfqU=;
+        b=nd1swH3BdQhLW1/u15z1HfZH/rqada5tGGq7Gj1cgztxdgbWUsHy/6tDKxuKCn6VD/
+         wqUuFaMLdgTw0KarCJ9I6H4BayjaXXnbjbiOHpg6o83V35dxqFuFRt7jrOOTOzlNotDK
+         oXyTvVGN+UjOXkCFmn3oQhI+8RLYITeBrR9cq4ISkPjGEodkE4M8SZb4A1gEZSxKdavg
+         sVUlwEfi2z3LFb0kg/ejS06CV2hqxnNQVbLJ6o3rrodrBBkETZ0MYlZkrq9sRzylZm4P
+         77Y//ueDVcoj87uGf6kbDQ3AoJdW/9ir5S/4PF1t3LAZHR/IZy2WdRgYfBw6RoMLmds9
+         VRGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772219316; x=1772824116;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=3pUhkYNCOHcJIt/TwrF1xrDtMqe67JCJ7QQat4SlfqU=;
+        b=pniqYl/47Pplig/ChpuyBjLlGeK8etqIqyuKtESuZQoeRM0gmKB21D+3LPIIIAQIR0
+         3L1BclxjRXnXzlOlxObNOJVrE+9CNyqTosXg2d6kA9hpvTjhTN8w5lBAHfoDaK2BdkAO
+         qcnPgmuSpvuQivhbZShSxYf7wVfmEvyK6lXIqrrXg5zCHrKFPKx+IL84Dg5K4LCbUSg5
+         eBsR2nNCrrW4B3VXibcek5wxGaE6K6wEqi/CFXb5k4NfW6kq0rTKRKgaWisFghqKx7L6
+         qXS2IWfzX0fko2+KwxumvPFUvh34x/Alsl+XKCAPlMvK6cCTZR3eX4lZPojLgCbO+DLY
+         5s4w==
+X-Forwarded-Encrypted: i=1; AJvYcCUb4pntEfQlaenGXi2+JmEtwxQv0S+3RxG3RePHYjTnjI9otWWczrFbmdl2DW1w8CXVBtdqi6Y2+4U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyHWZTTQZKnXzwjiw4CgPiUBWfwx/KT3OxCJflnYcIgd1yt+tGp
+	mn8b6vLJE636oHW8pbaD+6lgN1JskRc9IQdwpgOZJb9mEauwOCBSl3jO
+X-Gm-Gg: ATEYQzzv+7441CehRox9McDD6IKKV0JMVPMQWmfvgBEs2WDvSSBrYV36O2KJ/qJQ0nE
+	SLiGNzEu27ptqCKR4dvsnfmi1f2NcPItfdN8jh9euEyTXqhW7/LFnXIQzvJmUwuwgMV/3aXtZYg
+	Vvbmcka5pCt6VTo4fA8oLn4bR3ZyZdL0NBnMwWtptcrBSnRlFNP16zCbmED15B5gjShSmZUqqWV
+	YkD3iQZPX20JwwkQCEYe7FmVhv7UBRRubWm5HZ32lf+Y8jWAo91StVrLEvFl4egQswrvibgnLTU
+	0v7PpjEzXLNkwVWib3id311W/XjFF9vJd6RlZepVzdKrMZjGw2rsxXF7UHCxikRWXl8ZCsitPTR
+	FkUpaPuCfgm879KiTlEgMb5OlReD62EQ+u6OcOZh6sFnmpazm0+EoAVTPwlxdys+d79cokO4Wn+
+	AFpTT7dbiSpeqzieE1hX271H/SL9JVdl/tO7pzSpIUisje3vKJY/1nDGOzHDSqGcMwkEvIznPht
+	8EX9aTlRnIse8LcZtUFiSxNYFi2cz6G8KfwQ3HFlxWPPJnSm/SBnePzBbbL+cxXEu+Wr+2oOTbi
+	ttbW0bsZQUmptFxBaJvH
+X-Received: by 2002:ac8:7e85:0:b0:502:9e4c:266b with SMTP id d75a77b69052e-50752999d75mr47339771cf.42.1772219315950;
+        Fri, 27 Feb 2026 11:08:35 -0800 (PST)
+Received: from ammar-VM2 (d66-222-145-193.abhsia.telus.net. [66.222.145.193])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50744acf0desm49676961cf.23.2026.02.27.11.08.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 27 Feb 2026 11:08:35 -0800 (PST)
+Date: Fri, 27 Feb 2026 14:08:33 -0500
+From: Ammar Mustafa <ammarmustafa34@gmail.com>
+To: Alisa-Dariana Roman <alisa.roman@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] Docs: iio: ad7191 Correct clock configuration
+Message-ID: <aaHrsTS9iG-PEfue@ammar-VM2>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: iisc.ac.in
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PN1PPFB119D6BAE.INDPRD01.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: c72e6a74-a6cf-4d9f-882b-08de76290d3e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Feb 2026 17:53:02.0591
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 6f15cd97-f6a7-41e3-b2c5-ad4193976476
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: MRYqnDHtNgCp+Tu384vbcwkyzsznfJhqcvAh3XEcl3o4RZVRIjZAiRzWAaCvNSFYEVN7rdBUjV6WB69/dV3r5w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: PN6PR01MB12169
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Respected Mentors,
+Correct the ad7191 documentation to match the datasheet:
+- Fix inverted CLKSEL pin logic: device uses external clock when pin is
+  inactive, and internal CMOS/crystal when high.
+- Correct CMOS-compatible clock pin from MCLK2 to MCLK1.
 
-My name is Anirudh Gupta, a 3rd-year undergraduate at the Indian Institute =
-of Science (IISc), Bengaluru, India. I am interested in the IIO Drivers pro=
-ject for GSOC 2026.
-While I am new to kernel development, I have a foundational understanding o=
-f OS principles, computer architecture, and basic kernel coding through my =
-coursework. I am eager to contribute to the IIO subsystem and learn from th=
-e GSOC and the mentors.
-Could you please point me toward any initial application tasks or documenta=
-tion I should review to get started? I am also happy to join any specific I=
-RC channels or additional mailing lists if recommended.
+Signed-off-by: Ammar Mustafa <ammarmustafa34@gmail.com>
+---
+Changes since v1:
+- Instead of using "tied high" or "tied low", change to active or inactive
+to remove confusion.
+- Undo the swap of entries from previous patch.
 
-Regards,
+ Documentation/iio/ad7191.rst | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Anirudh Gupta
-Indian Institute of Science, Bengaluru=
+diff --git a/Documentation/iio/ad7191.rst b/Documentation/iio/ad7191.rst
+index 977d4fea14b0..fd6a23ad44fd 100644
+--- a/Documentation/iio/ad7191.rst
++++ b/Documentation/iio/ad7191.rst
+@@ -63,11 +63,11 @@ Clock Configuration
+ 
+ The AD7191 supports both internal and external clock sources:
+ 
+-- When CLKSEL pin is tied LOW: Uses internal 4.92MHz clock (no clock property
++- When CLKSEL pin is ACTIVE: Uses internal 4.92MHz clock (no clock property
+   needed)
+-- When CLKSEL pin is tied HIGH: Requires external clock source
++- When CLKSEL pin is INACTIVE: Requires external clock source
+   - Can be a crystal between MCLK1 and MCLK2 pins
+-  - Or a CMOS-compatible clock driving MCLK2 pin
++  - Or a CMOS-compatible clock driving MCLK1 pin and MCLK2 left unconnected
+   - Must specify the "clocks" property in device tree when using external clock
+ 
+ SPI Interface Requirements
+-- 
+2.43.0
+
