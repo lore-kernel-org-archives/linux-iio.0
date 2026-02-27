@@ -1,109 +1,89 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47129374174
-	for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 10:09:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9C56355F46;
+	Fri, 27 Feb 2026 10:33:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772186975; cv=none; b=N+ZO8Wg9HDoqdzUs/3lVyqkEXRlYF9/+5bfSn0wyL1Z3+wF8DmA52/p2r5BB1CIC7y7JiFlda8eiYUs2SB9UUPvQXDoGJToKh5ulnfTY/nuZR+DKjQW8HhVUk0qOrM5WAzf2ISHAFllb/gQ8iD0pfszgFjczhHo2VH2FGdiKgJA=
+	t=1772188389; cv=none; b=fsRFWUNm2F/e/qiC0cdtAG7+/jejbwVpSSyKrTet7GhJVXTrbTKB+1J+FZ8gZAp3MYPbY8+PTfPgfgRLHBq67yv1+ZXbG6tPAiG3wXDGvc072LwcfK7wjbK/8/huAbqkCHGd9tQPfze9IpUdfKO6dwYq1t08vV70WIFdOHVp4M8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772186975; c=relaxed/simple;
-	bh=XxQhq24IP0RffrMJAKIWjVTnHOujl84RWJQmP7kSEME=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=jzA5rJUEczGhn3myzyVB2Y7PA6vVpbWuKklCTgjTIEZwgJmDoqVDlkIyfDOBknmh4QJ/z6Ez5cPhnjRQh0UW33kZqCapruVnLOgSerQBUEyMJr6Fe05o1SUbKnPEsEmSl+Fjd1lwvFKUrnivAfh9yofNU0etqZJpko/r1SFfQhY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N+Q/1j+z; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772188389; c=relaxed/simple;
+	bh=r1nAFa4uMTlZRZogYX1fbskF53ZnDVkqbe3krBL8V0U=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=L+eYQgRP0mSMjHSrc1c60j3XXzzKooD5yR+mppt/QYJi9ltG9UrXIzh21dWSQVEqu7K3ExA6oxyOs1fYfBZ6z9dcwv/wK7XniDVv06Py7kekZZuWcfSxnhNpNvV7TbKnK/sBgpYAgFngvyPEXIA8toqLnv36l3qQXfVtsybaWEs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XVUT5CjI; arc=none smtp.client-ip=192.198.163.11
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N+Q/1j+z"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4836d541968so2029545e9.2
-        for <linux-iio@vger.kernel.org>; Fri, 27 Feb 2026 02:09:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772186973; x=1772791773; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ZVuS9D+l2Ox76ln7aUQ+JMThN/eVhutrb4aOCJcJ1OA=;
-        b=N+Q/1j+zVpgNS4DRSxjXg+BB20vy8iRBX1bLJmCtHmcHTBdG5BcF7Ll6lN7vOBH2Gs
-         HLiwiuze6q2ffTfFZ50FwbIn3bnN5jI3pcn9NwSLba8EQfoRdRqT4Q9Cv3voFXkZwA+z
-         sQo2TsQ0NVrTnSngo0K2/283mAw6rlbCm0YkhKiMcOVoKcRnRih+KlrMtBBdkZ8DFae2
-         qtLJKVyu8i8DnYBTGhwqRhabi9928CFOqYxqJ3DcfLHWx12pKx9ZX06Pf2hyCFH6Gktp
-         NFsQQ7OxheqJgRR5i7/Li7fOgtLl/vLU5pAof1aEu7le9tMQWoCNUJgcnlamccv9QDwI
-         LIyQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772186973; x=1772791773;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ZVuS9D+l2Ox76ln7aUQ+JMThN/eVhutrb4aOCJcJ1OA=;
-        b=WrUMHoWuxojHCbUvXifO4mwa5jQT6/WKl4t3AwjH7SCuHfb6Xabnm/uKKSAxm8oUNe
-         OEWCGBoGz3lcA3i+rS8i8460tglGAM9E6gtuIlaBai5VHg3u10GREpBvQrSwFwATXDH8
-         581oamfddvN6kPrZEpk6TGCOPutoLM5cDfR0yX5Gwa+ZX0iiOlJCgDaWrqukzCTExDj+
-         76sKncxlXiJHzZ9k0k2KdURuLp8whq5A6QFtUWtYs75pYKuukcqwqA5fjC4UujEjIt6X
-         H/Z0RptwvYjTt/llQAnuLCW8yxDkEfC34/sVGcJGZzupq1ueyMrVYMk9LS90xBCcB/Ot
-         GXuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU+ZCr6YUolB8YK63b1+xoha9Ogsya56IJImWBMvOrQBdFe0OGKNpZGMApU/A5j2FayuC3EpFYxTOE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwT8FQ0ryRvXwmC9HkVlhNGGV0+QMesG59+opt1WmeQWgRQMJcJ
-	27GgC5hDp8IvWiJAdEWC8UPxZLtCfAH0khSX9AJcrtTEgozR9mvNoWY4
-X-Gm-Gg: ATEYQzygD2EYXf8SkQOM5vbI9sI5gTna0wwM8c4jlYjuc6K0yX5nrOb0zfUCt3nyn2m
-	Aq9GJjU0GPQjgDlN+Fscr2BOyvTZv6qzJJmHGd9olD6+9T4NIxFeEBeUd8Xj2agFlQpQmduW1se
-	lwEmZIK95RaUd78xCRlnrF0TlV1ha4+CzY0BLsQCRQD46Mbp2NK4ZLXPWX39FlagJEeUisSz9bw
-	UHZtv2mfDeEQrNjsA/w+bBrGB/KKU28h2jA6IiDYOWXFlZ9uGDodAO4vvbdt5FeDuzWmcEF9g6t
-	tEH4xIbjzTDmQU6c2lmgcZrZ7OVM/YmCBmerghnjOBsiPpDEQ9/3/KCO9V1pp2i28RL2TKrvY+6
-	Q35KSyqP4hSX6dV/XQnK5ZSmLGLYYuvt5Ae1JtuNM87J4h2WQgLGcFOqmG0+9f+wp5wT1arQwLj
-	uT0xewcofKXSmoEpOL5GoN6IpIwI7UVeXbJ3MEu8bsxt+wwtlGesNFH5rnYJtPvUukWVswZu4VA
-	X7cLr8hrjhGM46h4lsuOK9n83mwYyqgnakASDPf6QnUR6TPmFsn
-X-Received: by 2002:a05:600c:1d1d:b0:483:816b:67cf with SMTP id 5b1f17b1804b1-483c9bc1c79mr15268295e9.4.1772186972350;
-        Fri, 27 Feb 2026 02:09:32 -0800 (PST)
-Received: from fedora ([149.3.87.76])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483bd7031f3sm182836165e9.6.2026.02.27.02.09.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Feb 2026 02:09:31 -0800 (PST)
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-To: antoniu.miclaus@analog.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Subject: [PATCH] iio: adc: ade9000: fix wrong macro names in ADE9000_ST_ERROR
-Date: Fri, 27 Feb 2026 14:09:01 +0400
-Message-ID: <20260227100900.72980-2-giorgitchankvetadze1997@gmail.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XVUT5CjI"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772188386; x=1803724386;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=r1nAFa4uMTlZRZogYX1fbskF53ZnDVkqbe3krBL8V0U=;
+  b=XVUT5CjIUWL6lNMk51Iwb3oTAq94gcz7JR8NaOFXQ29BACZu8V6j0c1r
+   tr8mDcQFJrQlYsJ1yO0PwirbMXYKmwl4Xz9fsSmLgzAegGGZH55F4X7h4
+   HolnNvVsqn9mwHXIgqnhlWOWtw1Z5G0Mh83OVwAWg5g5VJuVvfRa6pZUM
+   05zC1n00B8d4jR2L+wRm8mjJNxO4ydNU7NuaprNW3NZ3m7Ub376lyP2yR
+   /heGB2g5mxFlsNyS+qrC6RWF3EWWj9UvgzEq0ciaGwVB75mwd+i6cI/U4
+   FqVbkZnsy2eUws2NMkwgHO0Dx14b9LNCFj0HwqBjSFeZAe1XDyCeEMBLA
+   w==;
+X-CSE-ConnectionGUID: ubOJLYV/TgGpZ6FwHwIuTQ==
+X-CSE-MsgGUID: icmLVQ62RtG8368ykvhLAQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="83904185"
+X-IronPort-AV: E=Sophos;i="6.21,314,1763452800"; 
+   d="scan'208";a="83904185"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2026 02:33:05 -0800
+X-CSE-ConnectionGUID: YAzKPmgpRQ2kKIJI3f417Q==
+X-CSE-MsgGUID: 2nV2DiGFRTmae1TJUciW2w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,314,1763452800"; 
+   d="scan'208";a="214297762"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.65])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2026 02:33:02 -0800
+Date: Fri, 27 Feb 2026 12:33:00 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ade9000: fix wrong macro names in
+ ADE9000_ST_ERROR
+Message-ID: <aaFy3JVVL_nvSGsZ@smile.fi.intel.com>
+References: <20260227100900.72980-2-giorgitchankvetadze1997@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260227100900.72980-2-giorgitchankvetadze1997@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-The ADE9000_ST_ERROR macro references ADE9000_ST1_ERROR0 through
-ADE9000_ST1_ERROR3, but the actual defined symbols use the _BIT
-suffix. Fix the references to use the correct macro names.
+On Fri, Feb 27, 2026 at 02:09:01PM +0400, Giorgi Tchankvetadze wrote:
+> The ADE9000_ST_ERROR macro references ADE9000_ST1_ERROR0 through
+> ADE9000_ST1_ERROR3, but the actual defined symbols use the _BIT
 
-Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
----
- drivers/iio/adc/ade9000.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+BIT
 
-diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
-index 5dcc26a08970..0dbfc079e115 100644
---- a/drivers/iio/adc/ade9000.c
-+++ b/drivers/iio/adc/ade9000.c
-@@ -219,8 +219,8 @@
- #define ADE9000_ST1_ERROR2_BIT		BIT(30)
- #define ADE9000_ST1_ERROR3_BIT		BIT(31)
- #define ADE9000_ST_ERROR \
--	(ADE9000_ST1_ERROR0 | ADE9000_ST1_ERROR1 | \
--	 ADE9000_ST1_ERROR2 | ADE9000_ST1_ERROR3)
-+	(ADE9000_ST1_ERROR0_BIT | ADE9000_ST1_ERROR1_BIT | \
-+	 ADE9000_ST1_ERROR2_BIT | ADE9000_ST1_ERROR3_BIT)
- #define ADE9000_ST1_CROSSING_FIRST	6
- #define ADE9000_ST1_CROSSING_DEPTH	25
- 
+(It's okay to drop "_" as "suffix" implies the position of the "BIT".)
+
+> suffix. Fix the references to use the correct macro names.
+
+What about the current code that uses it? Is it even in use currently?
+
+Please, elaborate more in the commit message that we clearly understand
+that you spent time and investigated code and/or datasheet before crafting
+this change.
+
 -- 
-2.52.0
+With Best Regards,
+Andy Shevchenko
+
 
