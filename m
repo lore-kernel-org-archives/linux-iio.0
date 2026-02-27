@@ -1,89 +1,144 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9C56355F46;
-	Fri, 27 Feb 2026 10:33:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88DFE36EA8C;
+	Fri, 27 Feb 2026 10:48:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772188389; cv=none; b=fsRFWUNm2F/e/qiC0cdtAG7+/jejbwVpSSyKrTet7GhJVXTrbTKB+1J+FZ8gZAp3MYPbY8+PTfPgfgRLHBq67yv1+ZXbG6tPAiG3wXDGvc072LwcfK7wjbK/8/huAbqkCHGd9tQPfze9IpUdfKO6dwYq1t08vV70WIFdOHVp4M8=
+	t=1772189306; cv=none; b=Sv7zlqUeDHU+F5/e658XUsCtVtPBGc2JWWoObaAtelM5cibPXW2lDAbqZiFLxsz8w7Abw6GJ/ous6xMh6HoI7cCkHswijhDV1dtVz8qq26PlPhMpl/yWQFGy3Wpleps4wFoN1WjKWaCXBzpdfPcsqD4TVayIWxXM6fwnd4s5pUo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772188389; c=relaxed/simple;
-	bh=r1nAFa4uMTlZRZogYX1fbskF53ZnDVkqbe3krBL8V0U=;
+	s=arc-20240116; t=1772189306; c=relaxed/simple;
+	bh=FToMxHmHFwCggEpSR+c8vfaHDWcvy8bRbfx0FGJfcx0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=L+eYQgRP0mSMjHSrc1c60j3XXzzKooD5yR+mppt/QYJi9ltG9UrXIzh21dWSQVEqu7K3ExA6oxyOs1fYfBZ6z9dcwv/wK7XniDVv06Py7kekZZuWcfSxnhNpNvV7TbKnK/sBgpYAgFngvyPEXIA8toqLnv36l3qQXfVtsybaWEs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XVUT5CjI; arc=none smtp.client-ip=192.198.163.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=kp2wjf/GVwlKgprezfVSqVVtuLM56fXbaVJ3Yw7qrHWH0PdWOC7VmWvF3AHDrKkC48uwPSaAww6TU9j515gWiSZOeSRWAHDieXzD3Zav4lgxsHhQ81AN5hkKta1yt/nlnlKlluCMG266z8TS+jDWZ+H9OTPK9Fi98YngBAXOnqk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MR8gz26M; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XVUT5CjI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772188386; x=1803724386;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=r1nAFa4uMTlZRZogYX1fbskF53ZnDVkqbe3krBL8V0U=;
-  b=XVUT5CjIUWL6lNMk51Iwb3oTAq94gcz7JR8NaOFXQ29BACZu8V6j0c1r
-   tr8mDcQFJrQlYsJ1yO0PwirbMXYKmwl4Xz9fsSmLgzAegGGZH55F4X7h4
-   HolnNvVsqn9mwHXIgqnhlWOWtw1Z5G0Mh83OVwAWg5g5VJuVvfRa6pZUM
-   05zC1n00B8d4jR2L+wRm8mjJNxO4ydNU7NuaprNW3NZ3m7Ub376lyP2yR
-   /heGB2g5mxFlsNyS+qrC6RWF3EWWj9UvgzEq0ciaGwVB75mwd+i6cI/U4
-   FqVbkZnsy2eUws2NMkwgHO0Dx14b9LNCFj0HwqBjSFeZAe1XDyCeEMBLA
-   w==;
-X-CSE-ConnectionGUID: ubOJLYV/TgGpZ6FwHwIuTQ==
-X-CSE-MsgGUID: icmLVQ62RtG8368ykvhLAQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11713"; a="83904185"
-X-IronPort-AV: E=Sophos;i="6.21,314,1763452800"; 
-   d="scan'208";a="83904185"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2026 02:33:05 -0800
-X-CSE-ConnectionGUID: YAzKPmgpRQ2kKIJI3f417Q==
-X-CSE-MsgGUID: 2nV2DiGFRTmae1TJUciW2w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,314,1763452800"; 
-   d="scan'208";a="214297762"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.65])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2026 02:33:02 -0800
-Date: Fri, 27 Feb 2026 12:33:00 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ade9000: fix wrong macro names in
- ADE9000_ST_ERROR
-Message-ID: <aaFy3JVVL_nvSGsZ@smile.fi.intel.com>
-References: <20260227100900.72980-2-giorgitchankvetadze1997@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MR8gz26M"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C643C116C6;
+	Fri, 27 Feb 2026 10:48:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772189306;
+	bh=FToMxHmHFwCggEpSR+c8vfaHDWcvy8bRbfx0FGJfcx0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=MR8gz26M6OBen79lKso9KNxgSDO2YKY5hLRHmzkHmZZKoLr4+h/zIMmqb47pBcOx9
+	 3icozpfLIVDho2WqDwpGeRhQd2vE+UF4Skg/IY8+NL4yQOrJLZhvNy3R1CojrtfjsX
+	 79OBZj8CnXTTv7wXfXKQ0vFpFghAwlqVIPb6wwCGV8Ig3HyQZm4WEqaJQ0sXC2IigE
+	 HRh3XALbkt6DDnYRMMSV0jTrjU0LiYY6/aPB1qoZLXdeVXFXiQH/Lr5ookUo9kQu/7
+	 mbbTaOMZEA3CmeZ/bLbXetIQoyB8h5zsDaeTwrAf0/TPinPtHLPoIZgajMveia6QtW
+	 FlwZzA5BtT67g==
+Date: Fri, 27 Feb 2026 11:48:23 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: temperature: add ADI MAX30210
+Message-ID: <20260227-sceptical-nondescript-owl-de25a6@quoll>
+References: <20260226163041.169786-1-johnerasmusmari.geronimo@analog.com>
+ <20260226163041.169786-2-johnerasmusmari.geronimo@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260227100900.72980-2-giorgitchankvetadze1997@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20260226163041.169786-2-johnerasmusmari.geronimo@analog.com>
 
-On Fri, Feb 27, 2026 at 02:09:01PM +0400, Giorgi Tchankvetadze wrote:
-> The ADE9000_ST_ERROR macro references ADE9000_ST1_ERROR0 through
-> ADE9000_ST1_ERROR3, but the actual defined symbols use the _BIT
+On Fri, Feb 27, 2026 at 12:30:40AM +0800, John Erasmus Mari Geronimo wrote:
+> +
+> +maintainers:
+> +  - John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+> +
+> +description: |
+> +  The MAX30210 operates from 1.7V to 2.0V supply voltage, and is a low-p=
+ower,
+> +  high-accuracy digital temperature sensor with =C2=B10.1=C2=B0C accurac=
+y from +20=C2=B0C to
+> +  +50=C2=B0C and =C2=B10.15=C2=B0C accuracy from -20=C2=B0C to +85=C2=B0=
+C.
+> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ma=
+x30210.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,max30210
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  vdd-supply:
+> +    description: |
 
-BIT
+Do not need '|' unless you need to preserve formatting. Same in other
+places.
 
-(It's okay to drop "_" as "suffix" implies the position of the "BIT".)
+> +      Analog Supply Voltage Input. Must have values in the interval (1.7=
+V; 5.5V)
+> +      in order for the device to function correctly.
+> +
+> +  powerdown-gpios:
+> +    description: |
+> +      GPIO spec for CVT/PDB pin. Should be configured with GPIO_ACTIVE_L=
+OW.
 
-> suffix. Fix the references to use the correct macro names.
-
-What about the current code that uses it? Is it even in use currently?
-
-Please, elaborate more in the commit message that we clearly understand
-that you spent time and investigated code and/or datasheet before crafting
-this change.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Should be configured depending on wiring, because the flag includes any
+inverters. Just say it is active low,
 
 
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description: |
+> +      Connected to INT pin. Should be configured with type IRQ_TYPE_EDGE=
+_BOTH.
+
+No, just say it is interrupt triggered by raising and falling edges.
+
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - vdd-supply
+> +  - powerdown-gpios
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/pwm/pwm.h>
+
+Where do you use this header?
+
+> +
+> +    i2c {
+> +        #address-cells =3D <1>;
+> +        #size-cells =3D <0>;
+> +        status =3D "okay";
+
+Drop.
+
+> +
+> +        temperature-sensor@40 {
+> +            compatible =3D "adi,max30210";
+> +            reg =3D <0x40>;
+> +            vdd-supply =3D <&vdd>;
+> +            powerdown-gpios =3D <&gpio 12 GPIO_ACTIVE_LOW>;
+> +
+> +            interrupt-parent =3D <&gpio>;
+> +            interrupts =3D <17 IRQ_TYPE_EDGE_BOTH>;
+> +        };
+> +    };
+> +...
+> --=20
+> 2.34.1
+>=20
