@@ -1,169 +1,96 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4488542B72B;
-	Fri, 27 Feb 2026 14:02:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C211541C2EA;
+	Fri, 27 Feb 2026 14:44:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772200975; cv=none; b=dArhWd8ZdFkWwzu/mcEY8YB5qU2vQXBFUUWx2aah3tmvonMQytxAwE6F8d5KWGTRxobTOQU4bLmhXXq0QKdFexYrIRviaNg6T9tUhOq/Zp4ICJ21zeLe+2N4dFDOdawaCHv5Z4TQ5StuPLHz/LWIVBNkHxQDTJKbsLR+7h5+LdE=
+	t=1772203494; cv=none; b=Dgr0pOB8JgKYTw9hCp7lGvMTu38t0VMdjI284HwIAWGfpxxJfVq5hUwLXQ99owBVbBY4HY8O3Grl2o1TKe5zTKHU7ijhNzeuwqlzFpXwgNwDzZGIvU76J5mSXUzOX5NMAjtDgSMsjfgECoV1kBSmSCygoR9EumXe7i2TdE7asKU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772200975; c=relaxed/simple;
-	bh=5d0uKzynfG4aR2rTXOs/TJpC/Ni+jVbOz19e5BqPuGQ=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Y0MGDwAaKQcHGr3tsjkn3Y/ftB7FkozYtjJHDMfupYaNY91cfVDBu6D+v+KhxTgK6pLLFLSJX4N+TQ3otWsvjy77NXy69vkT/rSFZSwD4+1xENpO+t5V+lC6MDNRZ7jz8zn0WtgbbsKJMbMOj5cFq0bam8TG2M29p+ztBSjUif0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=t47Tpdeh; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1772203494; c=relaxed/simple;
+	bh=OtxS+BrneApqDYHQ0KWKcypKu5W/9u55okuK6IdjjgI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=k2iakmXWr9GLN3ydCmuxfcHpwkSRpO6GYgkZbl9R6Vc0GNne+ks705q2kkug5NIlgKoljOxFjaYOHASXzCyCB3h33hjnF8z1WE9SjEeAqIEqLeAF8qxhI4fMivuXn3ZiWPDywFZkQWnaOsi8h4t0WHZMMLdz1oP4GZj7Cm3QOE4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EJdpOElZ; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="t47Tpdeh"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 61R8N07j2503421;
-	Fri, 27 Feb 2026 09:02:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=tTy4U
-	QjwjXMCB3pTfM6BvJYl6/oelW7t0M0WX6YwZLU=; b=t47TpdehvTjdvO059MJqe
-	VTHBDUwM2kFIR4tV5NTC0sk2krFtDX6PrPkBNzjmKmXW6ehW12amuelwHGighXTn
-	7ksdcN7WuWoyRGJXkJvy8ZEtXnf+Gy/7iEyS7b0zRfZFmgGt+nPGksJuvRmBaFBZ
-	soagLzDRRtNPSpbZS2UkWBOdiHL4T+Uz8wkb3VlMZ0GqLNsAGINby96W2KqCj3mw
-	m6NGznkKCfsEXL2G39b/a4FSjCY74zuyKk1O66X1KriGZohb+RRdwKWnE/QZUysw
-	GBx6jCsxrry4pGkYr9eFRQ8r+PBtUigzVYGqZJRTNhiwq0Nd3T8cZVl193Xzmr3q
-	g==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cjbw3yk8j-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 27 Feb 2026 09:02:34 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 61RE2XFU064861
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 27 Feb 2026 09:02:33 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 27 Feb
- 2026 09:02:33 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 27 Feb 2026 09:02:33 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 61RE1t40001982;
-	Fri, 27 Feb 2026 09:02:29 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko
-	<andy@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 12/12] iio: filter: admv8818: use dev_err_probe
-Date: Fri, 27 Feb 2026 16:01:41 +0200
-Message-ID: <20260227140152.77529-13-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260227140152.77529-1-antoniu.miclaus@analog.com>
-References: <20260227140152.77529-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EJdpOElZ"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772203493; x=1803739493;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=OtxS+BrneApqDYHQ0KWKcypKu5W/9u55okuK6IdjjgI=;
+  b=EJdpOElZ56WL78cPPtSCTGDWLqLm4hUovtA1BEHn+IY/S4IsHbI8RZXn
+   ZjqZTLNsWuBLVspmAHH9t8IKxgMrOci5o3I93fa5blV7e3BYp9sDjd6/G
+   E3/IjnTYLVv0whPlCAgqyHkml2UmbhEk71An2GsWyzkDbrmPGvaTkSLaM
+   kr3IF90LYkEBkfTyxFVuE645QYOaRPzWoeoA4pBID4jWWkew6krcShvRB
+   NW4QbewlRwU5vkVeWoi6sQYwIsyeFCAzEq0XOHOkk5ZTScUBPvrKiFS8U
+   sIOk56Jy995OF9OqR/+QUY0lWzQ3oyMOHv+IEj/D3kfD1KMCd8ybV7TUQ
+   A==;
+X-CSE-ConnectionGUID: qqf0ZulMRP+HTlordvLSlw==
+X-CSE-MsgGUID: /L4ZTmjsTh+7jeMk0XJxfg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11714"; a="75888563"
+X-IronPort-AV: E=Sophos;i="6.21,314,1763452800"; 
+   d="scan'208";a="75888563"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2026 06:44:52 -0800
+X-CSE-ConnectionGUID: bdp6MRE2T0md9BdWXY6iZw==
+X-CSE-MsgGUID: 8DhqWY6lQ/y7BfVhSF7MVQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,314,1763452800"; 
+   d="scan'208";a="216926587"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.180])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Feb 2026 06:44:49 -0800
+Date: Fri, 27 Feb 2026 16:44:47 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ade9000: fix wrong macro names in
+ ADE9000_ST_ERROR
+Message-ID: <aaGt38ePGhonQRmd@ashevche-desk.local>
+References: <20260227100900.72980-2-giorgitchankvetadze1997@gmail.com>
+ <aaFy3JVVL_nvSGsZ@smile.fi.intel.com>
+ <CAE7dp2qN4mxJfSYXxFQY9sdLR3eQemwDOEur3QxcMU2TNBZTig@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMjI3MDEyNCBTYWx0ZWRfXyHFLwlcp2Z6t
- P7V8CqOOsJ5SypwIjC1/TkrzzWHbinIko2qu+jYgmFOjhvgGgPD0g3v/7VZQA24BYVIck/axCDG
- JYLGLkiNgi9N+W4kgIOlUVOXJd96E0uwVC6E21uRn00sxbutVzm2SNdwfs22SrQJWb/ax27ZyTR
- K/2tdm+OII4TgMcM2apUEWzjifoFu+kGaUsMcEi+SraFAEKWvdK2EX0UPA7B6I8GO4nOVlpTbM3
- WxZOs4GPDkm3Vefy6hT7M/ou0/zeLW8YV6luQRtVERmgfVuLQoW9h1TFCTOUytn/CAScttQcoYr
- DcMVJp4f7b9s51I51eUSBtW9I4IEG90qGmFg6uyd4CCfVUtqjTaHVFU9tehAUwxkvbQOwwaXRZR
- 74d8vqFgzF++Xjay91h4FgHrCI04R+mSGPDB/72p++1D43AnE6Yijn7rwYOb6lF7cxZCM3KizTM
- Fnppbkdu7eIp/z2nlzw==
-X-Authority-Analysis: v=2.4 cv=AtXjHe9P c=1 sm=1 tr=0 ts=69a1a3fa cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=HzLeVaNsDn8A:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8 a=bzgjXaNoBxcg6uAtW_MA:9
-X-Proofpoint-ORIG-GUID: zMbrysNc0nvHdtjgqE-bGyAziFw3Zo-x
-X-Proofpoint-GUID: zMbrysNc0nvHdtjgqE-bGyAziFw3Zo-x
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-02-27_02,2026-02-27_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 clxscore=1015 spamscore=0 priorityscore=1501 malwarescore=0
- adultscore=0 suspectscore=0 lowpriorityscore=0 impostorscore=0 phishscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2602270124
+In-Reply-To: <CAE7dp2qN4mxJfSYXxFQY9sdLR3eQemwDOEur3QxcMU2TNBZTig@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Use dev_err_probe() consistently in the probe path to simplify error
-handling and ensure deferred probes are logged correctly.
+On Fri, Feb 27, 2026 at 02:52:45PM +0400, Giorgi Tchankvetadze wrote:
+> On Fri, Feb 27, 2026 at 2:33 PM Andy Shevchenko
+> <andriy.shevchenko@intel.com> wrote:
+> 
+> > What about the current code that uses it? Is it even in use currently?
+> >Please, elaborate more in the commit message that we clearly understand
+> >that you spent time and investigated code and/or datasheet before crafting
+> >this change.
+> 
+> Hi Andy. Thanks for the feedback !
+> The macro is currently unused in the driver, so this does not cause
+> a build failure.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/filter/admv8818.c | 35 ++++++++++++++---------------------
- 1 file changed, 14 insertions(+), 21 deletions(-)
+Drop it then?
 
-diff --git a/drivers/iio/filter/admv8818.c b/drivers/iio/filter/admv8818.c
-index 5fafd71da2b3..0b9e3ba55476 100644
---- a/drivers/iio/filter/admv8818.c
-+++ b/drivers/iio/filter/admv8818.c
-@@ -657,41 +657,34 @@ static void admv8818_clk_disable(void *data)
- static int admv8818_init(struct admv8818_state *st)
- {
- 	int ret;
--	struct spi_device *spi = st->spi;
-+	struct device *dev = &st->spi->dev;
- 	unsigned int chip_id;
- 
- 	ret = regmap_write(st->regmap, ADMV8818_REG_SPI_CONFIG_A,
- 			   ADMV8818_SOFTRESET_N_MSK | ADMV8818_SOFTRESET_MSK);
--	if (ret) {
--		dev_err(&spi->dev, "ADMV8818 Soft Reset failed.\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "ADMV8818 Soft Reset failed.\n");
- 
- 	ret = regmap_write(st->regmap, ADMV8818_REG_SPI_CONFIG_A,
- 			   ADMV8818_SDOACTIVE_N_MSK | ADMV8818_SDOACTIVE_MSK);
--	if (ret) {
--		dev_err(&spi->dev, "ADMV8818 SDO Enable failed.\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "ADMV8818 SDO Enable failed.\n");
- 
- 	ret = regmap_read(st->regmap, ADMV8818_REG_CHIPTYPE, &chip_id);
--	if (ret) {
--		dev_err(&spi->dev, "ADMV8818 Chip ID read failed.\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "ADMV8818 Chip ID read failed.\n");
- 
--	if (chip_id != 0x1) {
--		dev_err(&spi->dev, "ADMV8818 Invalid Chip ID.\n");
--		return -EINVAL;
--	}
-+	if (chip_id != 0x1)
-+		return dev_err_probe(dev, -EINVAL,
-+				     "ADMV8818 Invalid Chip ID.\n");
- 
- 	ret = regmap_update_bits(st->regmap, ADMV8818_REG_SPI_CONFIG_B,
- 				 ADMV8818_SINGLE_INSTRUCTION_MSK,
- 				 FIELD_PREP(ADMV8818_SINGLE_INSTRUCTION_MSK, 1));
--	if (ret) {
--		dev_err(&spi->dev, "ADMV8818 Single Instruction failed.\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "ADMV8818 Single Instruction failed.\n");
- 
- 	if (st->clkin)
- 		return admv8818_rfin_band_select(st);
+> Reference: ADE9000 datasheet (Rev. B, Page 61), STATUS1 register (0x403),
+> bits 28-31 define ERROR0 through ERROR3 status flags.
+
+Yes, good, this should be in the commit message.
+
 -- 
-2.43.0
+With Best Regards,
+Andy Shevchenko
+
 
