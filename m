@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8847B439017;
-	Sat, 28 Feb 2026 11:37:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD72C1DF980;
+	Sat, 28 Feb 2026 11:48:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772278644; cv=none; b=GRuy9AtA3A2oIvGn/ddgNE+tSBT/Iwfg9NsfzXYBRgS8Xq5TKNgT8vASDfAcEECrFPzWyzhphnugvZcIfjrziivaEqqfpY2A+dVMB8Fu0muof+Q/a3KBaBhZa5TNoI1Huj6dFu/cKr7gnS3ifglp0Um1qgxxTexgOxslubD/Ris=
+	t=1772279314; cv=none; b=u8lG6FFtDWX3Ob81eyj7VizDyC5Ldz9mCMd1Mz2SeI3IBziSCyGLnd8sIYK8kfQJm8rzNEkGPg8yzmd7iwijoLDoQU3km35arS5TcOEBLYzV738UzDuseDP93so8UQdugtNCf1qcnIkNW9DdYYf3FeMsRQmXFtw0YYk82ahbVNw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772278644; c=relaxed/simple;
-	bh=9sWvJC0+fOb9ZYtVGgMquRobScvbX951h0D/TFjuU14=;
+	s=arc-20240116; t=1772279314; c=relaxed/simple;
+	bh=B37Ukv7J3NSxwerfobnuMH6EYc4pdUizc2evnOXtwDs=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eC3KY4tDzJ9O2+IlqyxMTw0ffmlW6F9SwapU3PtOiCt2JfQ0rmfe+G+/WH+5feWFRr5fYKd0WQSYiG0fkKvlJ17fzCQm6PZuQL8L3DnB8q65wXNfAxA6hAu2whMx6i95GYWDPp4jYES4Bz8jMGwR6FwnntFXz2Dt0O6wRBkEhdw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Xr15pQXi; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Tc6zziv1969oShKu3YfpIO+q8Jp7Im+Lzm1EsvR9EFgDNixEdOLUXbEVsaZ5Tpz33zfnAdRMmcK5b6Wz5yOwaMT9RHm0sdHAxNzqFUlOInSY5D2o95YMFyp+yN2M7/yilBO+63z+NCeXElz1IBif+xN+JpA23+EKWsbxCxBI/rs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OcWT3vAF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Xr15pQXi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 231B3C116D0;
-	Sat, 28 Feb 2026 11:37:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OcWT3vAF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E1A51C116D0;
+	Sat, 28 Feb 2026 11:48:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772278644;
-	bh=9sWvJC0+fOb9ZYtVGgMquRobScvbX951h0D/TFjuU14=;
+	s=k20201202; t=1772279314;
+	bh=B37Ukv7J3NSxwerfobnuMH6EYc4pdUizc2evnOXtwDs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Xr15pQXinlAZDaGpGJrjdRML4Y+ri9kNtrmEOWkcL2RUJbGjg1zeBmoMw8vVmYRWS
-	 chIGhSbKQvcpom+vjTu0WAV/c8YT3uH26f2iWcdllS1AtJPH2Y7S5Odh03LiKFeQAT
-	 Rrz6kaQtTHjiW4Lad9G4QeVKM16z6x/RR1A6qoIoochXSqpzXXEJS2r4vHW3bUusw9
-	 mwugybYq+uTIG5oPJc9cRpm5SQ1/kAo+0oktictu+PgdZIbOz0NhAcmkZGx3Q4IaWM
-	 Q64j0rl2HAwxB9L2ZrW1ryWa3J//xn92KvmTnURKxFqebSowrq1d9QLx/qScVHebhi
-	 FeRf699bRqxjw==
-Date: Sat, 28 Feb 2026 11:37:15 +0000
+	b=OcWT3vAF3JV1A1pn4bVJcNd/2DCSaoRPLTVDccZKb+EZDLgujz6EDHHKZsStoATBE
+	 wUUxtetsXqFzcgcwOhCwygfKtf0QbPCrOCxdc24U6C5FgoFK/z7Y6Odn9ofbieFN6h
+	 kqoVl9QrK7dhwolQ/9bcgrRFcUfMLiPldirYoFMoHMQ2+ZE2wgdZxl/7upiOlY6D4S
+	 Rkb4hjlwDd9K7CQxAJznAbR8ItaV937y8O2xV/4kvPeQeVDN4GIW1vJRmu+Si7Y4Os
+	 Ou4W2kMbpHzH26GMKZHRSTkowxlZtGenLaKcvS54poxcm7M+3LIvfa8vgvkk3Jua1y
+	 GlyfmMVRNTUcA==
+Date: Sat, 28 Feb 2026 11:48:23 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 00/12] iio: use dev_err_probe in probe path for ADI
- drivers
-Message-ID: <20260228113715.3d0c4312@jic23-huawei>
-In-Reply-To: <aaGyUMNzk9cNC5LG@ashevche-desk.local>
-References: <20260227140152.77529-1-antoniu.miclaus@analog.com>
-	<aaGyUMNzk9cNC5LG@ashevche-desk.local>
+To: Felix Gu <ustc.gu@gmail.com>
+Cc: Petre Rodan <petre.rodan@subdimension.ro>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Jonathan Cameron
+ <Jonathan.Cameron@huawei.com>, Sebastian Andrzej Siewior
+ <bigeasy@linutronix.de>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: pressure: abp2030pa: Remove IRQF_ONESHOT from
+ devm_request_irq()
+Message-ID: <20260228114823.1411901d@jic23-huawei>
+In-Reply-To: <20260227-abp-v2-1-a482c02a5876@gmail.com>
+References: <20260227-abp-v2-1-a482c02a5876@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,45 +50,50 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 27 Feb 2026 17:03:44 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Fri, 27 Feb 2026 21:54:29 +0800
+Felix Gu <ustc.gu@gmail.com> wrote:
 
-> On Fri, Feb 27, 2026 at 04:01:29PM +0200, Antoniu Miclaus wrote:
-> > Use dev_err_probe() consistently in the probe path of several ADI IIO
-> > drivers. This simplifies error handling and ensures proper logging of
-> > deferred probes.
-> > 
-> > Each driver is updated in two patches: first introducing a local
-> > struct device *dev variable alongside the existing spi variable to
-> > replace &spi->dev references in non-error paths, then converting
-> > dev_err() error paths to use dev_err_probe().
-> > 
-> > Drivers updated:
-> >  - adrf6780
-> >  - admv1014
-> >  - admv1013
-> >  - adf4377
-> >  - ad7293
-> >  - admv8818  
+> Since commit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT
+> without a threaded handler"), the IRQ core checks IRQF_ONESHOT flag
+> in IRQ request and gives a warning if there is no threaded handler.
 > 
-> > Changes in v4:
-> >  - Split each driver update back into two separate patches: one for
-> >    introducing the struct device variable and one for the dev_err_probe()
-> >    conversion. No lines are edited twice cross patch pairs, error-only
-> >    functions get dev introduced in the "use dev_err_probe" commit.  
+> Remove IRQF_ONESHOT from devm_request_irq().
 > 
-> Thanks, I briefly looked and it looks fine to me,
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Applied with a minor tweak to add () after dev_err_probe in the
-the patch titles.
+> Fixes: 47d323ce1e89 ("iio: pressure: add Honeywell ABP2 driver")
+> Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+Applied to the fixes-togreg branch of iio.git.  If Petre wants to take
+another look and perhaps give a tag that would still be welcom.
 
-I like to encourage that way of indicating functions and don't want too many
-patches not doing that in the tree.  You had the () in the more detailed
-descriptions so this is a really minor thing.
-
-Thanks,
+Thanks!
 
 Jonathan
 
+> ---
+> Changes in v2:
+> - Fixes Petre's comment.
+> - Link to v1: https://lore.kernel.org/r/20260227-abp-v1-1-b6fed0545852@gmail.com
+> ---
+>  drivers/iio/pressure/abp2030pa.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
+> diff --git a/drivers/iio/pressure/abp2030pa.c b/drivers/iio/pressure/abp2030pa.c
+> index 4ca056a73cef..b44f1bf4c633 100644
+> --- a/drivers/iio/pressure/abp2030pa.c
+> +++ b/drivers/iio/pressure/abp2030pa.c
+> @@ -520,7 +520,7 @@ int abp2_common_probe(struct device *dev, const struct abp2_ops *ops, int irq)
+>  	data->p_offset = div_s64(odelta * data->pmin, pdelta) - data->outmin;
+>  
+>  	if (data->irq > 0) {
+> -		ret = devm_request_irq(dev, irq, abp2_eoc_handler, IRQF_ONESHOT,
+> +		ret = devm_request_irq(dev, irq, abp2_eoc_handler, 0,
+>  				       dev_name(dev), data);
+>  		if (ret)
+>  			return ret;
+> 
+> ---
+> base-commit: 7d6661873f6b54c75195780a40d66bad3d482d8f
+> change-id: 20260227-abp-016a007ab817
+> 
+> Best regards,
 
