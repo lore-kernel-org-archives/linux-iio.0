@@ -1,111 +1,122 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3400235F5F0;
-	Sat, 28 Feb 2026 19:20:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B8FF35F5FD
+	for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 19:22:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772306454; cv=none; b=ax+aFYAwlU1g8YYyhbYvjUWCHyzFT4u+9NIYpwCqJ/Gr10rUPqp3rUtvNEfIX42Of98UdpPpiDbZ0oPp4KV+9PgRieFV/IrOE3ULSsAGhCIKiH/QetdYV2w3pFwH9Fn2rYwhYklbJfGLXmKAlGc9nDAqa2AkI9MsF3g+LvsMvXg=
+	t=1772306557; cv=none; b=InGG0Rwzf37pNKdsVQzZ8NKK6Hw9p390TEOZ/MTpP0metedB1/HrZr8n3OfRXR9gH19OXcSd3a5iXkTq7JHgti9Gpc2yr09EGDC4UE+WERZ4+ZTEQQlpKuBu5uRCMasyqisUkhW/AO7yppGM34J3VjkkIjopY+gS9Lc9Ch11Rqg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772306454; c=relaxed/simple;
-	bh=qKrgQoVGQBwwlDdVV253JexottJ81p5o/9Wbt/5uuh4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=DA4VKTSwAi3sElPN/QDmjZpHNVXTWBvcIdQNSk/38cJ+3M+F5kUVR1D7dkwtWEtb/gE5QU+7bPJHobggphi1IWi6H9H8ieJth744jkBTqPcA1JzhZ3VF1+mbviRZ7KosDJrdggPYRQs5emLm4B6BfTvUR4cRBNo8XezCLM3GoXE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PE+UHO36; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772306557; c=relaxed/simple;
+	bh=Me8n7owqfLJkYyvUXHQx2u9wWsIV5A0WiPjr8BtB/4g=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=jRQfmNmS01VMSDcIYj7VbC1qh8A5V2QL+EBMVpg56C9ZWHWPBhRdt5+JRA49ejoAx0rnqCHkoFYX3DXvU45/GPcZERFsq/w2+/xo7EH1TNhLgbUIMiIt2GvyLhty77cB0MkZph0MgvUnctR6CLoCfACuKP/SJFq3Qf37BR/s9Qo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=y07saRYL; arc=none smtp.client-ip=209.85.210.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PE+UHO36"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31B6CC116D0;
-	Sat, 28 Feb 2026 19:20:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772306453;
-	bh=qKrgQoVGQBwwlDdVV253JexottJ81p5o/9Wbt/5uuh4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=PE+UHO36SNa+jvmT/WKPchv7fgLOl5vjjhnRIr+Mdx/IsNZeXI2AvN9Gw4duH91T2
-	 n/WAu5gvM0YEVf/x/Y/RAco2rkb4L5XWau2TbcWBD+rj3ct25s0k3DhuKSXjSSl8hA
-	 XmLNwMyLeFgFltJvDTzM2dfZBJl9VZbYprRex7//Hb3aEy6MABjl5JVSDHoYukOd4E
-	 4MqfL2C0Z0xGcgX+JzyqxcY88CAZgJq+YKpO7ccehF4Myp6n4/dsKLfr5fKhSrmSHt
-	 zVNSF9lDPxIcwAaUF2x1ib6EK9CeYo9bzA9J3+otxgNP0JRIEfuTX3FUqdixIb6F9d
-	 kgj5XOE29Hn/A==
-Date: Sat, 28 Feb 2026 19:20:44 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, lars@metafoo.de,
- Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, jonath4nns@gmail.com
-Subject: Re: [PATCH v2 4/4] iio: adc: ad7768-1: add support for SPI offload
-Message-ID: <20260228192044.42d3a51b@jic23-huawei>
-In-Reply-To: <aZxaMPWtxwCvmtdd@smile.fi.intel.com>
-References: <cover.1771362939.git.Jonathan.Santos@analog.com>
-	<79e1004bd9e618f9376a9ed40389510066b91d1c.1771362939.git.Jonathan.Santos@analog.com>
-	<aZxaMPWtxwCvmtdd@smile.fi.intel.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="y07saRYL"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7d4c12ff3d5so3420645a34.2
+        for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 11:22:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772306554; x=1772911354; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=jzurjNKz+LVtj7mOsHnigyTZSCq1BtpAu09PeT2WHx8=;
+        b=y07saRYLoCC2ntjKJ4b9npncuFpyHNGurAj1W9UU09TwMAemNZ7YdHqasUjpbPHhoP
+         Fo3TQCv8IK+dIhba2YaT6OHJsuv8emGbaKn4tbR/7Igqk4HAowbAi3l8jHfrBaGTwu2R
+         OUN3fM8MXJ4NUfpzhIasd3aAsR5AO9H4KYl+ygBFYz6xH5mnhgIYl5GFxKUrGJTlbuYF
+         LAWlOmSnzgDZGPaJzNC1RYOoG5FaBnX6R0+adFDmi6s336sHxwtI27kq1Hebwz/5EgC9
+         Z6ME29ppx85j1pOAdMC1Yy+PC83TPU2cJX65viqn4Urij04tDzURGJSdIijOnHThiZLd
+         RUBw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772306554; x=1772911354;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jzurjNKz+LVtj7mOsHnigyTZSCq1BtpAu09PeT2WHx8=;
+        b=rNhG5liAhakAbUXtfNzspskj7aZBmVCz5cl72blbrl606QaB0gdColS01rR8a43Qcv
+         zTYVQprYyWRcsZR1o8AKHQsOor17aOHLvyfzt37AhrSakN/W2O5beBgOG63j90cqraPE
+         9PB4dfOMywjFlWEA6Al5S5KGmCdRQ0R1rTRLJ25R60zhmaDL4eTizZaZ3blbiiAli91O
+         RjpR0rpk6VeDaa0FlQ4YVeXhtf7aoox4LToci3Lt9fBjcHxDhzqmyp+lj2098ssN2Cce
+         SrXhmQf9wBRT05f4i5vs4xsmygbpL1pOIP60Yc43x6UH96X1fHadBi+9gHhviI+NJAV0
+         lJIQ==
+X-Gm-Message-State: AOJu0Ywm5o4j+NLUwK4q1nbeycLfdWA0KR4gQzgoEHL3YivHTWFsWAyB
+	BgcPjcW3O+yD9TZLQnU+Jf6FT+YREOdRdV5FzJfyn0MKLuhumlS7ohVdab/dQm6tSyk=
+X-Gm-Gg: ATEYQzz0v9iwIKK8zQb5PLSC0Dr3y/Tik24ToRtPok1c3sgtl+2gSboOODQ36dlBCiF
+	Z3BCHHYhe7BrlnQQUhwqImBOd3jaw0YGEJZgtkkWGIJxp6qR86if1WvO363poiEUbaed7+bG+m9
+	CI/DCyRjreQUPW9k4TRP/3y4dOG54RKoq9oZ2CAu134ZsY6vVHsWIj5DFkbgaw21AKaWhqrMay5
+	9Vjpp3hTIK32qsF9MTTJCW8C2b9wD7x9qhxMShAga/lBSqLEa+YToMCBdxeQLbGrsjyXW9zcmhc
+	BI3wyx8RV3LPP1xonX9aqNPAXklqTaaSaOPoPYuYTqHjXNGkedq+gwbcoRpKvFFZCd63bfL/eqH
+	tDgZ5lx9VYD5g3WmB/rj50ADZY6mhxextTKwqeozmAG573P27uAbeVWEQxa1E1I4Mk7+4una5iK
+	kdkylgqCmXh6CCe7H8owRvNtc+GdAgFpt4lcfzSFAZ7fOY8DhTUS4hJeLgX0ibzh8FPIZA/LKip
+	Q==
+X-Received: by 2002:a05:6870:e9aa:b0:40f:e6a:c0f7 with SMTP id 586e51a60fabf-41626e15081mr3595917fac.17.1772306554592;
+        Sat, 28 Feb 2026 11:22:34 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:1031:c44e:9f1f:17c1? ([2600:8803:e7e4:500:1031:c44e:9f1f:17c1])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160d2cc08csm7236079fac.19.2026.02.28.11.22.32
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 28 Feb 2026 11:22:34 -0800 (PST)
+Message-ID: <20195663-2091-41eb-b4b3-e8542d29ae32@baylibre.com>
+Date: Sat, 28 Feb 2026 13:22:32 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: st_sensors: fix trigger allocation
+To: Aleksandrs Vinarskis <alex@vinarskis.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ stable@vger.kernel.org
+References: <20260228-st-iio-trigger-v1-1-abf5909e547f@vinarskis.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260228-st-iio-trigger-v1-1-abf5909e547f@vinarskis.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Mon, 23 Feb 2026 15:46:24 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On 2/28/26 11:11 AM, Aleksandrs Vinarskis wrote:
+> Current hardcoded name prevents adding multiple st-sensors devices
+> on the same platform. Fix by aligning trigger name with other drivers.
+> 
+> Signed-off-by: Aleksandrs Vinarskis <alex@vinarskis.com>
+> ---
+> Some platforms such as Dell XPS 9345 contains multiple accelerometers.
+> Fix st_sensors that currently only allows one device at the time.
+> ---
+>  drivers/iio/common/st_sensors/st_sensors_trigger.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> index 8a8ab688d7980f6dd43c660f90a0eba32c38388b..3b5615d1b6dd66ee0af6ccc83eb2fbd7b2c64d29 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> @@ -124,8 +124,9 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
+>  	unsigned long irq_trig;
+>  	int err;
+>  
+> -	sdata->trig = devm_iio_trigger_alloc(parent, "%s-trigger",
+> -					     indio_dev->name);
+> +	sdata->trig = devm_iio_trigger_alloc(parent, "%s-dev%d",
+> +					     indio_dev->name,
+> +					     iio_device_id(indio_dev));
 
-> On Mon, Feb 23, 2026 at 08:59:53AM -0300, Jonathan Santos wrote:
-> > The AD7768-1 family supports sampling rates up to 1 MSPS, which exceeds
-> > the capabilities of conventional triggered buffer operations due to SPI
-> > transaction overhead and interrupt latency.
-> > 
-> > Add SPI offload support to enable hardware-accelerated data acquisition
-> > that bypasses software SPI transactions using continuous data streaming.  
-> 
-> ...
-> 
-> > +static int ad7768_spi_offload_probe(struct iio_dev *indio_dev,
-> > +				    struct ad7768_state *st)
-> > +{
-> > +	struct device *dev = &st->spi->dev;
-> > +	struct spi_offload_trigger_info trigger_info = {
-> > +		.fwnode = dev_fwnode(dev),
-> > +		.ops = &ad7768_offload_trigger_ops,
-> > +		.priv = st,
-> > +	};
-> > +	struct dma_chan *rx_dma;
-> > +	int ret;
-> > +
-> > +	ret = devm_spi_offload_trigger_register(dev, &trigger_info);
-> > +	if (ret)
-> > +		return dev_err_probe(dev, ret,  "failed to register offload trigger\n");  
-> 
-> Double space...
-> (do not resend just for addressing this)
-Tidied up.
+Is this something that could potentially break userspace? Or are all of these
+just "always there" triggers that userspace doesn't have to touch?
 
-Series applied to the togreg branch of iio.git and for now pushed out as testing
-
-Thanks!
-Jonathan
-
+>  	if (sdata->trig == NULL) {
+>  		dev_err(parent, "failed to allocate iio trigger.\n");
+>  		return -ENOMEM;
 > 
-> > +	st->offload_trigger = devm_spi_offload_trigger_get(dev, st->offload,
-> > +							   SPI_OFFLOAD_TRIGGER_DATA_READY);
-> > +	if (IS_ERR(st->offload_trigger))
-> > +		return dev_err_probe(dev, PTR_ERR(st->offload_trigger),
-> > +				     "failed to get offload trigger\n");
-> > +
-> > +	rx_dma = devm_spi_offload_rx_stream_request_dma_chan(dev, st->offload);
-> > +	if (IS_ERR(rx_dma))
-> > +		return dev_err_probe(dev, PTR_ERR(rx_dma), "failed to get offload RX DMA\n");
-> > +
-> > +	ret = devm_iio_dmaengine_buffer_setup_with_handle(dev, indio_dev, rx_dma,
-> > +							  IIO_BUFFER_DIRECTION_IN);
-> > +	if (ret)
-> > +		return dev_err_probe(dev, ret, "failed to setup offload RX DMA\n");
-> > +
-> > +	indio_dev->setup_ops = &ad7768_offload_buffer_ops;
-> > +
-> > +	return 0;
-> > +}  
+> ---
+> base-commit: 3fa5e5702a82d259897bd7e209469bc06368bf31
+> change-id: 20260228-st-iio-trigger-8ee1f219b566
 > 
+> Best regards,
 
