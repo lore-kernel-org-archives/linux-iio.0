@@ -1,141 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f174.google.com (mail-pf1-f174.google.com [209.85.210.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9A7A7317155;
-	Sat, 28 Feb 2026 19:10:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9C81334FF70
+	for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 19:14:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772305815; cv=none; b=AcnU0PtFj/sjD0WevzJ2WZCSwU/LStdAZcvCrT+IPTCXkMCcIjnGGh9mBK8suOJ/JXs5rmqPIvaS586Q4NBX/K18sKreKL1ZVt9ldD7Kz848igWWxuBHvEEOj28WHNvXhGPdk5jiQZ682n+4xpbU7dpoakDKRs0WaQ17jKbJW04=
+	t=1772306068; cv=none; b=tOkxcSPOE6yINJvah42Cq9GhOxXK0MzHevvcVIqAvav4sAxv7hm53UC6kqc5kySPZ8B4jntmsLs1ty+yZEG85mFRuIHcBk4rjq7lLdC51yHc2+lYVGMOgTU+ETha1hJ/GmP65ayfKRfzzP1AQliRezimvHO+npr2QeGnuW8LLL8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772305815; c=relaxed/simple;
-	bh=XsFYZlIw0JggzOI88pUkP+DQG5W+3B1ZOma8yBHXafk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Nqmea1RKAgACUl1ZktSXLo/+zZQ5Nh0/Zz/fuF3wG95w1ujmpU6jUPt/zXaxsNm/ENuYuKimU3tgzj483C6F9KJx1dAPsC+qow/80YPx2q1aRsa+3TLbmXTB65fFmMNFEUgj8dmLW+dsMAHdcDAp3fLWoquGkpYhDrOMrn3Jv7Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZNI/ZJ0I; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772306068; c=relaxed/simple;
+	bh=O7BO7sofFShJ3rZNNsX0QOJOK89m0pgDWdmerQ+0GlY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=MPL6dbMZUe2aoj1qF0QoiUPsBzfw1V5xdp1Qaen/5n2FThbBt9Bia/8l6vZlNigmqk6ubMQD9om7Gkc0TEcEGHhE9zzjq6t+QLmsbhEiv2gjmb39EozR9aA0MRZIWaGGqk8C7aDWr4oNk8gP3GjXpLhAuOGv9zLtPUvCRMEaVhQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=lNJIN2eP; arc=none smtp.client-ip=209.85.210.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZNI/ZJ0I"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C6F9C116D0;
-	Sat, 28 Feb 2026 19:10:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772305815;
-	bh=XsFYZlIw0JggzOI88pUkP+DQG5W+3B1ZOma8yBHXafk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ZNI/ZJ0IIPr5sQvDU6p1e7t5UTM+krOlL1cA+LW5eH2evO1VrdKk30vZvpWVCb/vp
-	 r2OvnX97QhTEnF9uywx5BBvmqTvE80RfNGN0YuvX7fIYQf7u/ijEj1YrfmxWB4iI65
-	 j7YWWnIPMjS/k20lSbzpQSsFz0CS9N0zaFc6b0FdEnrOfzkL9fCBjrgPJENExUmt0y
-	 X5rmku8iCN+xBooQ1QTSfXqCrUFC91/5g3Zgg7fBAs0vNQh/+HpSnUDAao8FoW1aEu
-	 CODvRV+OEDE/K+42rSs9zqNMo49jYgz8r8aJmbzQyJHw8azo5He38VXJj42CUuM59a
-	 bQb2yov8Dzlgw==
-Date: Sat, 28 Feb 2026 19:10:04 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Olivier Moysan
- <olivier.moysan@foss.st.com>, Mark Brown <broonie@kernel.org>, "Sebastian
- Reichel" <sebastian.reichel@collabora.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <linux-spi@vger.kernel.org>
-Subject: Re: [PATCH v4 5/5] iio: adc: ad4080: add support for AD4880
- dual-channel ADC
-Message-ID: <20260228191004.35be7652@jic23-huawei>
-In-Reply-To: <20260223162110.156746-6-antoniu.miclaus@analog.com>
-References: <20260223162110.156746-1-antoniu.miclaus@analog.com>
-	<20260223162110.156746-6-antoniu.miclaus@analog.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lNJIN2eP"
+Received: by mail-pf1-f174.google.com with SMTP id d2e1a72fcca58-8273e0fb87aso1705311b3a.1
+        for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 11:14:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772306067; x=1772910867; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=aTEnHmdgjafFhA5Ze37HfWiPS6hJ9PTsE7JUpCM9LQc=;
+        b=lNJIN2ePqg1c7A8FwzdtTldYxkOMmETzBRnx9KnYksQVJSlBArKpF6hKLlvqYQAM3S
+         e9QwyOeYNjt701AbbysnIKdO6Fx+RTQhVuI0w/bNgW0aHof2tmBKR411a5MAHk7VLk88
+         fSYz+qnZEwBVqg0CYoUTVn5jiKwohGHG8Pi9Q2d9KmaE2EdCGNLN1ktQpGCN6VZWHMxi
+         /8CJe68wulUQELGvk+7I2B6OScSCIf896fX9w4zN8o3KV7pFCXCFv4WbiGFtkaUlYVbr
+         9HbZq4GhQlbB/zT8FFeHBav24h/rOxZZyiQ2TWOZAOlX3n9sGAFasVYEUubcPdWYKK05
+         OGrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772306067; x=1772910867;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=aTEnHmdgjafFhA5Ze37HfWiPS6hJ9PTsE7JUpCM9LQc=;
+        b=eDqgjpTmYGLXIqqWQ9hapcxYWBTYj2fxMrRJxa8D6y/qC3cNVVUCHidQ+WugGqBnA2
+         /ahR9TzfWryuhAv672vQQ1P4aqxGPlnW9cS3AuusAHiob9GavveIw6r6lo7oyEL6aV9Y
+         HWACScYRQUD2+b+xSuJG/NBPwXHOPOIzFFM9wSgiE6m5sqZmtyVu+POOFXsa58oQTwmB
+         bZk/Oh7Qwr0xZgY6SD6LCtnY3bVAbmjTuVpKvE2pT0AFH3LSnojlZRdPYRudUY+FUdZS
+         nveqCwOTBkGFSfY6GR2VJC0Z3QanM5874iJ/bBBQT/WQ6TO9J4B4By6qKqJJRZsHm5Ok
+         SwCw==
+X-Forwarded-Encrypted: i=1; AJvYcCVjwGJVN3ji174VXt/hS0cuAd03DZRncqeWqXDVT6ZK29SUuhV6qc2cQep6KmjC6S84wQKsDulAkkY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy1hkNrfmmakxQZg1+Dz3EH5bN5OTzlc31FJYhE2Q7hmhHL4muT
+	2TkQSTaw3LOLnRonLX5VBhD2Esya393NJ1M8KQi5CGctfYhaZcoYhZJy
+X-Gm-Gg: ATEYQzz8G4t1bwZcea9ioAUEFlCB9OHgkINICXbIrrSRPmwZ0Tiuqgg/PX19ozrC2eG
+	IJGTVLAeV+5m218z0ujtzAI/QckOMN52JhqedQvx3POhGYHWR4NqG/CkFAgdbLtAtwtwZx8atSB
+	t0Vld1Y+uAm8pGC3//J9eNQbWwqfireB+lCX9D0T3rjMDhVBycDF/o0GJXJm8AtrLBJ8BYPBh0L
+	KM21wfBUAX991pJzNaIcCcGUC5DFNedo+Ibb/r7Jf2s99OWQ+YgwQGQUKdcp0v8rLdDEkd9k0/x
+	dp2VCKIlzXzh/3wdEjPKE5g4E74O74X+ZkgIOV0m3ExnN/bu94XsUKgypJRFlL0LZI12IiLRq0E
+	uvZjJcjRXOy8C7ig/TufgPOmYqCPB6khxyW2c0CPLH/yI6jotSfXbvZNhVNi397X1vSrf15tPu/
+	liEeOjiH/vFv3IgOgAfn3oD7rK6UzfqyEOCSE=
+X-Received: by 2002:a05:6a00:2e04:b0:81c:717b:9d39 with SMTP id d2e1a72fcca58-8274da568e3mr7084345b3a.56.1772306067008;
+        Sat, 28 Feb 2026 11:14:27 -0800 (PST)
+Received: from arch ([2409:40c2:5057:a20e:20e0:a4e3:da85:ffd2])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82739d4c910sm8327918b3a.8.2026.02.28.11.14.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Feb 2026 11:14:26 -0800 (PST)
+From: Bhargav Joshi <rougueprince47@gmail.com>
+To: jikos@kernel.org,
+	srinivas.pandruvada@linux.intel.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	rougueprince47@gmail.com,
+	linux-input@vger.kernel.org
+Subject: [PATCH 0/2] iio: hid-sensor-gyro-3d: fix typo and probe race condition
+Date: Sun,  1 Mar 2026 00:43:58 +0530
+Message-ID: <20260228191400.19244-1-rougueprince47@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Mon, 23 Feb 2026 18:21:04 +0200
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+This patch series introduces two changes to the hid-sensor-gyro-3d
+driver:
 
-> Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC with
-> integrated fully differential amplifiers (FDA).
->=20
-> The AD4880 has two independent ADC channels, each with its own SPI
-> configuration interface. The driver uses spi_new_ancillary_device() to
-> create an additional SPI device for the second channel, allowing both
-> channels to share the same SPI bus with different chip selects.
->=20
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Hi Antoniu
+- Patch 1: Move iio_device_register() to the end of the probe()
+  function and updates the error handling and remove() sequences to
+  strictly follow the LIFO teardown order.
 
-One minor question / comment below. Not particularly important
-but as you will be doing a v5 anyway, seems reasonable to aks the
-question.
+- Patch 2: Fixes a trivial spelling mistake in a array name ('gryo' to
+  'gyro').
 
->  static int ad4080_properties_parse(struct ad4080_state *st)
->  {
-> -	struct device *dev =3D regmap_get_device(st->regmap);
-> +	struct device *dev =3D regmap_get_device(st->regmap[0]);
-> =20
->  	st->lvds_cnv_en =3D device_property_read_bool(dev, "adi,lvds-cnv-enable=
-");
-> =20
-> @@ -602,6 +711,7 @@ static int ad4080_probe(struct spi_device *spi)
->  	struct device *dev =3D &spi->dev;
->  	struct ad4080_state *st;
->  	struct clk *clk;
-> +	unsigned int ch;
->  	int ret;
-> =20
->  	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> @@ -610,6 +720,10 @@ static int ad4080_probe(struct spi_device *spi)
-> =20
->  	st =3D iio_priv(indio_dev);
-> =20
-> +	st->info =3D spi_get_device_match_data(spi);
-> +	if (!st->info)
-> +		return -ENODEV;
-> +
->  	ret =3D devm_regulator_bulk_get_enable(dev,
->  					     ARRAY_SIZE(ad4080_power_supplies),
->  					     ad4080_power_supplies);
-> @@ -617,13 +731,27 @@ static int ad4080_probe(struct spi_device *spi)
->  		return dev_err_probe(dev, ret,
->  				     "failed to get and enable supplies\n");
-> =20
-> -	st->regmap =3D devm_regmap_init_spi(spi, &ad4080_regmap_config);
-> -	if (IS_ERR(st->regmap))
-> -		return PTR_ERR(st->regmap);
-> -
-> -	st->info =3D spi_get_device_match_data(spi);
-> -	if (!st->info)
-> -		return -ENODEV;
+Bhargav Joshi (2):
+  iio: hid-sensor-gyro-3d: move iio_device_register() to end of probe()
+  iio: hid-sensor-gyro-3d: fix typo in array name
 
-Moving this up doesn't seem to be necessary.  Am I missing a reason
-st->info should be set earlier? If not I'd have left it down here simpl
-to avoid the churn.
+ drivers/iio/gyro/hid-sensor-gyro-3d.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-> +	/* Setup primary SPI device (channel 0) */
-> +	st->spi[0] =3D spi;
-> +	st->regmap[0] =3D devm_regmap_init_spi(spi, &ad4080_regmap_config);
-> +	if (IS_ERR(st->regmap[0]))
-> +		return PTR_ERR(st->regmap[0]);
-> +
-> +	/* Setup ancillary SPI devices for additional channels */
-> +	if (st->info->num_channels > 1) {
-> +		for (int i =3D 1; i < st->info->num_channels; i++) {
-> +			st->spi[i] =3D devm_spi_new_ancillary_device(spi,
-> +					spi_get_chipselect(spi, i));
-> +			if (IS_ERR(st->spi[i]))
-> +				return dev_err_probe(dev, PTR_ERR(st->spi[i]),
-> +						     "failed to register ancillary device\n");
-> +
-> +			st->regmap[i] =3D devm_regmap_init_spi(st->spi[i],
-> +							     &ad4080_regmap_config);
-> +			if (IS_ERR(st->regmap[i]))
-> +				return PTR_ERR(st->regmap[i]);
-> +		}
-> +	}
+-- 
+2.53.0
 
