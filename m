@@ -1,41 +1,47 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5060E43CED3;
-	Sat, 28 Feb 2026 12:16:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDC63292B2E;
+	Sat, 28 Feb 2026 12:18:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772280965; cv=none; b=bNiPEHA22oiOloPW4qzu5fJXtaZUqrQxjPoVX1YaU0fqoorBAZVsqvKlkV5pELOdYtaBoTRiB40D/zDJJOQXrjgZdqg+0ENUrynM7wUG5b/mOUT0klAM6tjw3k8kY4jh3/QN0rmsGI5oP3i/0iStLOvcK4MNEwSljPa7A/GjJcU=
+	t=1772281090; cv=none; b=iXYcyTmcjRjVJGqgxsAviKvA9BQWiH7cQV8bVSoNwVMmWBEXlSv2/kjauzT3i32zT6/oD07dWe8RRQOmUaw/TKexozp0TeFesB8SRSXcPKR+oitPaMcMLfbh5nDMKMvy9BJ8qIDEcUSUEW+FHeQiXf5TCZVQnK3e0YDPGnWEDbA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772280965; c=relaxed/simple;
-	bh=9bpPP4AwO4q6d2DgkVRfHu20SLLAtCXiUPX55ih3b9U=;
+	s=arc-20240116; t=1772281090; c=relaxed/simple;
+	bh=btO/35fh6342fKn+LsRICf7YhIHDNsiednytwNkvtuI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=obs0u5s+PvmyZPdpgQpikQrnViK34WgxoqKklVds/Dg3jq41wRco07279mECaDSHhrbx7+J1CXiRYFfZ6hU8cPYeZv/5kU5xtfE+YsPIj1cJwSr8/9DXiAh+IpXYip5/GXl6ybhNEDBLoDB9wj14RVaJqDY24de4vg9SYXN5BUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L9hLplJy; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=hoS1SSyxGQPH1g9gQh/U60qtJGR/x8XLj1wvt/M+kg5pTky81eapiK+BYWWPK6mxsBh9YjcMRP4j1R1BDGJNnZ7gnmCI9o78b0N5VroEKqr0ol1MLk5XFAYvn61YdHVoxD55ixhU0GZ1mx1i1R6RKZr018w8r4vHonRXjK24vco=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cPhuStHl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L9hLplJy"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D2C3C116D0;
-	Sat, 28 Feb 2026 12:16:01 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cPhuStHl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DF65C116D0;
+	Sat, 28 Feb 2026 12:18:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772280964;
-	bh=9bpPP4AwO4q6d2DgkVRfHu20SLLAtCXiUPX55ih3b9U=;
+	s=k20201202; t=1772281089;
+	bh=btO/35fh6342fKn+LsRICf7YhIHDNsiednytwNkvtuI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=L9hLplJy0t6YXTxO0r01VywZdZPvSVeGfIoxnUpE6uJO3EuY+jnxBmOmRhMNj4mlW
-	 BJHzIN9DBBrEcRZV34NL/SHOuybNsLTfritnasZQklJOz2YSv2ikjVOhtDX40iACWS
-	 KC/ZXiBW/+e9YiKViYhSzNx0YvAoqM/cmRRhzCLy8kVXzgRzX9/NDTrRjZSiR7cjko
-	 CNHHf49ZtFCWeto1Mj1r4g+fq+0yVHniEb1rUiVhGAX7PnOaGjh/amVdwQb+Y3iYog
-	 Hl6wVCCZ1R+IrAxj9l2ReUaOa1AlMidJTgrKChSQu81tCwzF8RqdsFkHNdmzFsCuUD
-	 T+s4AJ/y/FvGw==
-Date: Sat, 28 Feb 2026 12:15:56 +0000
+	b=cPhuStHlH8clhOd8kLe2GFjcsv902Z9dLVeokOlAIdJmW3STWrLonMRQH6viCSg3Z
+	 OyxAuEI4vmg7EbnChznIN4LiWn47U+QsrONZ6+C6AAppomNGUWHski3ghq+0Py7c7E
+	 8ktxrW+DQig0ObtiGECm/QVAvEteXbR/Uh/Ci8TFxHjSVkoMhnSP0K0sR7rib68uC7
+	 JsmyWl3ysym3s9MsIFyGc7vycjGtsIUOLNH5H8sPvFITOc9Ua+Y0lQx44tBHnh47Bl
+	 WMwlJn/Ooeon06DEZG9+KPcF89KjnHu+krvqAB1uldmHsPHHi2EosXestzmQx2mfic
+	 cH6Hq05Zk6MvQ==
+Date: Sat, 28 Feb 2026 12:18:00 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Bhargav Joshi <rougueprince47@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 0/3] iio: frequency: ad9523: fix checkpatch warnings
-Message-ID: <20260228121556.6f8ee496@jic23-huawei>
-In-Reply-To: <20260226231057.20669-1-rougueprince47@gmail.com>
-References: <20260226231057.20669-1-rougueprince47@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: temperature: add ADI MAX30210
+Message-ID: <20260228121800.2b137667@jic23-huawei>
+In-Reply-To: <8ff054f9-c22a-4108-8a9b-6ddb49e18dcc@baylibre.com>
+References: <20260226163041.169786-1-johnerasmusmari.geronimo@analog.com>
+	<20260226163041.169786-2-johnerasmusmari.geronimo@analog.com>
+	<8ff054f9-c22a-4108-8a9b-6ddb49e18dcc@baylibre.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,48 +52,15 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 27 Feb 2026 04:40:54 +0530
-Bhargav Joshi <rougueprince47@gmail.com> wrote:
+On Thu, 26 Feb 2026 12:33:38 -0600
+David Lechner <dlechner@baylibre.com> wrote:
 
-> These patches address several checkpatch warnings in the ad9523 driver.
-> 
-> Patch 1: Updated the macros to properly use their argument x.
-> Patch 2: Fixed the multi-line pointer dereferences.
-> Patch 3: Updated symbolic permissions to octal (0444/0200).
-> 
-Series applied to the testing branch of iio.git. I'll push that
-out as togreg later in the week and then it will be picked up by
-linux-next.
+> When there is more than one patch in a series, please include a cover letter.
+Looks like different patches got different CC lists.
+
+For a small series like this just +CC the same folk on all emails
+including the cover letter that David didn't get
 
 Thanks,
 
 Jonathan
-
-> Changes in v6:
-> - Patch 1: Fixed grammar and shortened the long first line.
-> - Patch 2: No changes.
-> - Patch 3: No changes. Resending because something went wrong with v5.
-> 
-> Changes in v5:
-> - Reflowed all commit messages to properly wrap near 72 characters as
->   requested.
-> - Collected Reviewed-by tags for patches 1 and 3.
-> 
-> Changes in v4:
-> - Used full name for SoB.
-> 
-> Changes in v3:
-> - Patch 1: updated macros to use '(x)' instead of 'x'.
-> - Patch 2: collected reviewed-by (no code changes).
-> - Patch 3: fixed vertical spacing and broken indentation.
-> 
-> 
-> bhargav (3):
->   iio: frequency: ad9523: fix implicit variable macros
->   iio: frequency: ad9523: fix multi-line pdata dereferences
->   iio: frequency: ad9523: use octal device permissions
-> 
->  drivers/iio/frequency/ad9523.c | 88 +++++++++++++---------------------
->  1 file changed, 33 insertions(+), 55 deletions(-)
-> 
-
