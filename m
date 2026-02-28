@@ -1,44 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4D3A285050;
-	Sat, 28 Feb 2026 12:10:38 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5060E43CED3;
+	Sat, 28 Feb 2026 12:16:04 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772280638; cv=none; b=Disnvztj0g9YrdLYQ05BO6b8YSl8fIX1nsjJvi1PBUFBvJG/FlL8IDO+QYgugyG2sbjtDI/irBaLjCowCCQKspBbjytXflF3UV1LFiQ1asb3OJNHcyxA6e7gb/rUzIeNrNAmtD7sn0Ewm0O+xUTrRS0TrrgbDlA21huOuGZLXJk=
+	t=1772280965; cv=none; b=bNiPEHA22oiOloPW4qzu5fJXtaZUqrQxjPoVX1YaU0fqoorBAZVsqvKlkV5pELOdYtaBoTRiB40D/zDJJOQXrjgZdqg+0ENUrynM7wUG5b/mOUT0klAM6tjw3k8kY4jh3/QN0rmsGI5oP3i/0iStLOvcK4MNEwSljPa7A/GjJcU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772280638; c=relaxed/simple;
-	bh=0glJCrjYcpgWePd3HGl3ozU5wxj+0Lxorhw19OTGxg8=;
+	s=arc-20240116; t=1772280965; c=relaxed/simple;
+	bh=9bpPP4AwO4q6d2DgkVRfHu20SLLAtCXiUPX55ih3b9U=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oFvAhDMU2aPbAKeovY07L+wH4bFHN0XistjhLP7iv32hwPrcUjnPhdJ9RoFka8BfulBsJCY4mMObf3uhYVC7ISfLWVfSXZu4zUedoJ10W5coTqXHPYYMD/hVd0HGWrTobpXeUklCJs2vVOikFhqR9Qo65NeBQbwiq/QW6kf9wJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p16kngZI; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=obs0u5s+PvmyZPdpgQpikQrnViK34WgxoqKklVds/Dg3jq41wRco07279mECaDSHhrbx7+J1CXiRYFfZ6hU8cPYeZv/5kU5xtfE+YsPIj1cJwSr8/9DXiAh+IpXYip5/GXl6ybhNEDBLoDB9wj14RVaJqDY24de4vg9SYXN5BUc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L9hLplJy; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p16kngZI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A20DBC116D0;
-	Sat, 28 Feb 2026 12:10:34 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L9hLplJy"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D2C3C116D0;
+	Sat, 28 Feb 2026 12:16:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772280638;
-	bh=0glJCrjYcpgWePd3HGl3ozU5wxj+0Lxorhw19OTGxg8=;
+	s=k20201202; t=1772280964;
+	bh=9bpPP4AwO4q6d2DgkVRfHu20SLLAtCXiUPX55ih3b9U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=p16kngZIpp12U+FI/9rIZ80RlIqn7DyqmFJgs4tD0E+w9FSJ3e80daeKZ7Csw+MJ0
-	 lZeL+duZbnHL3C1/gCvaSkvhXxl9lUSwTEjudX2YkMLElMP0whaGXRlyRTP5c+b7//
-	 ZhBJfkMqje4TcdePT/Hc96Fv4hSq3zkTWbS+E/KKgr/T5RpTBo73wqjQ1Vj8XKdtj5
-	 BEa4o9eK+EoPaSJJMgEfDNXx4WTjG6ZsE3Ejl9Qcv7qr85zRryTriATEsdA/HdfhyN
-	 aljc9+JDzS3hBLGz+CNhSDDBvRyWKaEN7rbGOG/+zjCHKzTgKVTSiyL2APREYdj3qI
-	 bCv0dbrXfu6ew==
-Date: Sat, 28 Feb 2026 12:10:29 +0000
+	b=L9hLplJy0t6YXTxO0r01VywZdZPvSVeGfIoxnUpE6uJO3EuY+jnxBmOmRhMNj4mlW
+	 BJHzIN9DBBrEcRZV34NL/SHOuybNsLTfritnasZQklJOz2YSv2ikjVOhtDX40iACWS
+	 KC/ZXiBW/+e9YiKViYhSzNx0YvAoqM/cmRRhzCLy8kVXzgRzX9/NDTrRjZSiR7cjko
+	 CNHHf49ZtFCWeto1Mj1r4g+fq+0yVHniEb1rUiVhGAX7PnOaGjh/amVdwQb+Y3iYog
+	 Hl6wVCCZ1R+IrAxj9l2ReUaOa1AlMidJTgrKChSQu81tCwzF8RqdsFkHNdmzFsCuUD
+	 T+s4AJ/y/FvGw==
+Date: Sat, 28 Feb 2026 12:15:56 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
- antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ade9000: remove unused
- AD9000_CHANNELS_PER_PHASE macro
-Message-ID: <20260228121029.731b5791@jic23-huawei>
-In-Reply-To: <aaFe3oFDGFr4gGze@smile.fi.intel.com>
-References: <20260227085813.46417-2-giorgitchankvetadze1997@gmail.com>
-	<aaFe3oFDGFr4gGze@smile.fi.intel.com>
+To: Bhargav Joshi <rougueprince47@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 0/3] iio: frequency: ad9523: fix checkpatch warnings
+Message-ID: <20260228121556.6f8ee496@jic23-huawei>
+In-Reply-To: <20260226231057.20669-1-rougueprince47@gmail.com>
+References: <20260226231057.20669-1-rougueprince47@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,23 +46,48 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 27 Feb 2026 11:07:42 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Fri, 27 Feb 2026 04:40:54 +0530
+Bhargav Joshi <rougueprince47@gmail.com> wrote:
 
-> On Fri, Feb 27, 2026 at 12:58:13PM +0400, Giorgi Tchankvetadze wrote:
-> > Remove the AD9000_CHANNELS_PER_PHASE macro which is unused, has a
-> > misspelled prefix (AD9000 instead of ADE9000), and has an incorrect
-> > value (10 instead of 11, there are 33 total channels and 3 phases, so 11
-> > for each).  
+> These patches address several checkpatch warnings in the ad9523 driver.
 > 
-> for --> per
+> Patch 1: Updated the macros to properly use their argument x.
+> Patch 2: Fixed the multi-line pointer dereferences.
+> Patch 3: Updated symbolic permissions to octal (0444/0200).
+> 
+Series applied to the testing branch of iio.git. I'll push that
+out as togreg later in the week and then it will be picked up by
+linux-next.
 
-Hmm. per each is weird.  per phase makes more sense so I'll change it to that.
-
-Applied with that commit message tweak.
-Thanks
+Thanks,
 
 Jonathan
 
+> Changes in v6:
+> - Patch 1: Fixed grammar and shortened the long first line.
+> - Patch 2: No changes.
+> - Patch 3: No changes. Resending because something went wrong with v5.
+> 
+> Changes in v5:
+> - Reflowed all commit messages to properly wrap near 72 characters as
+>   requested.
+> - Collected Reviewed-by tags for patches 1 and 3.
+> 
+> Changes in v4:
+> - Used full name for SoB.
+> 
+> Changes in v3:
+> - Patch 1: updated macros to use '(x)' instead of 'x'.
+> - Patch 2: collected reviewed-by (no code changes).
+> - Patch 3: fixed vertical spacing and broken indentation.
+> 
+> 
+> bhargav (3):
+>   iio: frequency: ad9523: fix implicit variable macros
+>   iio: frequency: ad9523: fix multi-line pdata dereferences
+>   iio: frequency: ad9523: use octal device permissions
+> 
+>  drivers/iio/frequency/ad9523.c | 88 +++++++++++++---------------------
+>  1 file changed, 33 insertions(+), 55 deletions(-)
 > 
 
