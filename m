@@ -1,46 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B10CF1925BC;
-	Sat, 28 Feb 2026 13:18:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D555246783;
+	Sat, 28 Feb 2026 13:22:28 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772284728; cv=none; b=XIuUCQoziAKQwl/0ax3fxr5xfic1AHyH5k9VqTzqDnBsCK8pVMKP79xFVLuzRgXwxxThFLNSozT1gSGLeRQC3ly+iF4+25oocq29tfNzDtKr92d2AnOSOtcxsEl5SOpD6BZIOIGd2UK+rTW9v9BIUh4xS6I7TBWPhJfDHCKBVcU=
+	t=1772284948; cv=none; b=Jk25K2fk6LSyjlo8fBarI+eVhWWC44FgDb+maKVhc1wjp+TAs/Q6haqimnH6NKQ6DaAfIV7lcXiRE+2OEyYppVnTf68LwxFaON9dfSby/pcHo7rS1QnEfoubdxkpIQYGFWhVtPkYlXgPWA9C1UuQ0jov/7S9gQpf4Q6YzSjNG/c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772284728; c=relaxed/simple;
-	bh=SA9cIL0f77Pz/kKvKvuVPWXe4KkPtcSzlIph+GQfX1A=;
+	s=arc-20240116; t=1772284948; c=relaxed/simple;
+	bh=YKpixnDDab2E7ZmdPdTMzn2mGQ/IvrkXrx+1KTwplio=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=isGGBhQ++nJfkniSFv5i+7CPSp7qWO073gnDnuiurKp1N6jeBTXJalcjfVqmIYQu4WP1faZSQ5rfX0Yet3fH373E+s0P/6dylQgEFLhS/q/rawlNzibTCZCHHioELO4l8kJZhPn5uONRGc5ZCAtBUqTfmlq8LTsKiavGVH5XbN4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n28e74sm; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=L9ag6zcAAvXEh4fzujS/GDapNjcC7EQOCBgCSXmL0hQoELcS2JMxgUjnPT6h3dIZcA+7ZE9IQ7PEyccChe3z+BjJ3IyXhGVJrB2EvaIiU9FUnFAmFeGuk//WqUYbNS4zocVV0BqMTzRPo43u70Pgamba/GEASMAKSlO68i3ZQUM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g5HwzcSR; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n28e74sm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651ECC116D0;
-	Sat, 28 Feb 2026 13:18:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g5HwzcSR"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99971C116D0;
+	Sat, 28 Feb 2026 13:22:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772284728;
-	bh=SA9cIL0f77Pz/kKvKvuVPWXe4KkPtcSzlIph+GQfX1A=;
+	s=k20201202; t=1772284948;
+	bh=YKpixnDDab2E7ZmdPdTMzn2mGQ/IvrkXrx+1KTwplio=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=n28e74smDaOuiwY7tYKfHvIDvHusUt3WCbZ+Via1fXiW86igglff/fTWJdaPWh7rM
-	 OwLxdbU7MISiFR9rpIrZoVIJjSv8xxmxGgt0h37Dqu//ppY+31H3gWXmyHfJqSMaeO
-	 6dSpj77Lo8krMQ9WcF/h3ZtctwNAeANHUge5oumIbF9w6SnCB+PF+vXxdf/YybLW1I
-	 AqaDUTTouG8Bp4XrLJEQIt5CopAMkpgD29wL+jYvBnNBfmR+6miyzQzhEe8O184Uxe
-	 8W/p8Skv5YmJ2oIgplRD48Pfdy/bTXpgnXnb5baQGymXYxnfmVOILhaxvX+P0Xh9sT
-	 nje9vNFprbnLA==
-Date: Sat, 28 Feb 2026 13:18:38 +0000
+	b=g5HwzcSRWZAAmCtYqVVnpVWs1Fg53pjuwqzokOl+dxnY6Ho37u4olrkCcxPvFMGDg
+	 pjLImyG9L0E2p1HMR7Rs+oMetQLuYBAKyK5uSxXqNRW9mRcoMbuFH7Thk0JYX0wruN
+	 KZW0r5uZb+kPM6hRGcgE7NWVL4by0WuNY9ZhHr5hCZKkWimbG4tYgBS12ysBSv70WF
+	 qq+IogZFU7adPDdrGYgRTcoBS8zQmOtDDTRDw/nh5A5C2BQGVgR8vBC0ZlKaOy6As5
+	 rJGzEihjG6rm3sgZq+ubjHN/GGWMFjILp8eyIAvxwrVJlkofIZoQ+GhnyRlREAY9n+
+	 mxn39WiHr7nfg==
+Date: Sat, 28 Feb 2026 13:22:19 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
-Cc: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
- "lars@metafoo.de" <lars@metafoo.de>, "Hennerich, Michael"
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, "Sa,
- Nuno" <Nuno.Sa@analog.com>, "andy@kernel.org" <andy@kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: adc: ade9000: fix wrong register in CALIBBIAS
- case for active power
-Message-ID: <20260228131838.64d36016@jic23-huawei>
-In-Reply-To: <CY4PR03MB33993FA37361E61ADD3522B89B73A@CY4PR03MB3399.namprd03.prod.outlook.com>
-References: <20260226140700.481317-3-giorgitchankvetadze1997@gmail.com>
-	<CY4PR03MB33993FA37361E61ADD3522B89B73A@CY4PR03MB3399.namprd03.prod.outlook.com>
+To: Petre Rodan <petre.rodan@subdimension.ro>
+Cc: Felix Gu <ustc.gu@gmail.com>, David Lechner <dlechner@baylibre.com>,
+ Nuno S?? <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jonathan
+ Cameron <Jonathan.Cameron@huawei.com>, Sebastian Andrzej Siewior
+ <bigeasy@linutronix.de>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: pressure: abp2030pa: Remove IRQF_ONESHOT from
+ devm_request_irq()
+Message-ID: <20260228132219.41f637ce@jic23-huawei>
+In-Reply-To: <aaLqsGEwNTlRmNJ4@sunspire.home.arpa>
+References: <20260227-abp-v2-1-a482c02a5876@gmail.com>
+	<20260228114823.1411901d@jic23-huawei>
+	<aaLqsGEwNTlRmNJ4@sunspire.home.arpa>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,72 +51,74 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 27 Feb 2026 10:01:41 +0000
-"Miclaus, Antoniu" <Antoniu.Miclaus@analog.com> wrote:
+On Sat, 28 Feb 2026 15:16:32 +0200
+Petre Rodan <petre.rodan@subdimension.ro> wrote:
 
-> > -----Original Message-----
-> > From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-> > Sent: Thursday, February 26, 2026 4:07 PM
-> > To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
-> > Cc: lars@metafoo.de; Hennerich, Michael <Michael.Hennerich@analog.com>;
-> > jic23@kernel.org; David Lechner <dlechner@baylibre.com>; Sa, Nuno
-> > <Nuno.Sa@analog.com>; andy@kernel.org; linux-iio@vger.kernel.org; linux-
-> > kernel@vger.kernel.org; Giorgi Tchankvetadze
-> > <giorgitchankvetadze1997@gmail.com>
-> > Subject: [PATCH v2] iio: adc: ade9000: fix wrong register in CALIBBIAS case for
-> > active power
-> > 
-> > [External]
-> > 
-> > The switch statement in ade9000_write_raw() attempts to match
-> > chan->address against ADE9000_REG_AWATTOS (0x00F) to dispatch
-> > the calibration offset write for active power channels. However,
-> > chan->address is set via ADE9000_ADDR_ADJUST(ADE9000_REG_AWATT,
-> > num), so after masking the phase bits, tmp holds
-> > ADE9000_REG_AWATT (0x210), which never matches 0x00F.
-> > 
-> > As a result, writing IIO_CHAN_INFO_CALIBBIAS for IIO_POWER always
-> > falls through to the default case and returns -EINVAL, making
-> > active power offset calibration silently broken.
-> > 
-> > Fix this by matching against ADE9000_REG_AWATT instead, which is
-> > the actual base address stored in chan->address for watt channels.
-> > 
-> > Reference:ADE9000 datasheet (Rev. B), AWATTOS is the offset correction
-> > register at 0x00F (p. 44), while AWATT is the total active power
-> > register at 0x210 (p. 48).
-> > 
-> > Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
-> > Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-> > ---  
+> hello!
 > 
-> Reviewed-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+> On Sat, Feb 28, 2026 at 11:48:23AM +0000, Jonathan Cameron wrote:
+> > On Fri, 27 Feb 2026 21:54:29 +0800
+> > Felix Gu <ustc.gu@gmail.com> wrote:
+> >   
+> > > Since commit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT
+> > > without a threaded handler"), the IRQ core checks IRQF_ONESHOT flag
+> > > in IRQ request and gives a warning if there is no threaded handler.
+> > > 
+> > > Remove IRQF_ONESHOT from devm_request_irq().
+> > > 
+> > > Fixes: 47d323ce1e89 ("iio: pressure: add Honeywell ABP2 driver")
+> > > Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+> > > Signed-off-by: Felix Gu <ustc.gu@gmail.com>  
+> > 
+> > Applied to the fixes-togreg branch of iio.git.  If Petre wants to take
+> > another look and perhaps give a tag that would still be welcom.  
 > 
-> > v2:
-> >  - Added Fixes tag (Andy)
-> >  - Added datasheet reference (Rev. B, p. 44 and p. 48) (Andy)
+> thank you for the patch, Felix.
+> took me a hot minute to upgrade everything to 7.0.0, you were both too fast :)
+> 
+> Tested-by: Petre Rodan <petre.rodan@subdimension.ro>
+Thanks Petre!
+
+Added the tag.
+
+Jonathan
+
+> 
+> best regards,
+> peter
+> 
 > > 
-> >  drivers/iio/adc/ade9000.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > Thanks!
 > > 
-> > diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
-> > index 5dcc26a08970..1499fb1c718a 100644
-> > --- a/drivers/iio/adc/ade9000.c
-> > +++ b/drivers/iio/adc/ade9000.c
-> > @@ -1123,7 +1123,7 @@ static int ade9000_write_raw(struct iio_dev
-> > *indio_dev,
-> >  			tmp &= ~ADE9000_PHASE_C_POS_BIT;
-> > 
-> >  			switch (tmp) {
-> > -			case ADE9000_REG_AWATTOS:
-> > +			case ADE9000_REG_AWATT:
-> >  				return regmap_write(st->regmap,
-> > 
-> > ADE9000_ADDR_ADJUST(ADE9000_REG_AWATTOS,
-> >  									chan-  
-> > >channel), val);  
-> > --
-> > 2.52.0  
+> > Jonathan
+> >   
+> > > ---
+> > > Changes in v2:
+> > > - Fixes Petre's comment.
+> > > - Link to v1: https://lore.kernel.org/r/20260227-abp-v1-1-b6fed0545852@gmail.com
+> > > ---
+> > >  drivers/iio/pressure/abp2030pa.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > > 
+> > > diff --git a/drivers/iio/pressure/abp2030pa.c b/drivers/iio/pressure/abp2030pa.c
+> > > index 4ca056a73cef..b44f1bf4c633 100644
+> > > --- a/drivers/iio/pressure/abp2030pa.c
+> > > +++ b/drivers/iio/pressure/abp2030pa.c
+> > > @@ -520,7 +520,7 @@ int abp2_common_probe(struct device *dev, const struct abp2_ops *ops, int irq)
+> > >  	data->p_offset = div_s64(odelta * data->pmin, pdelta) - data->outmin;
+> > >  
+> > >  	if (data->irq > 0) {
+> > > -		ret = devm_request_irq(dev, irq, abp2_eoc_handler, IRQF_ONESHOT,
+> > > +		ret = devm_request_irq(dev, irq, abp2_eoc_handler, 0,
+> > >  				       dev_name(dev), data);
+> > >  		if (ret)
+> > >  			return ret;
+> > > 
+> > > ---
+> > > base-commit: 7d6661873f6b54c75195780a40d66bad3d482d8f
+> > > change-id: 20260227-abp-016a007ab817
+> > > 
+> > > Best regards,  
+> >   
 > 
 
