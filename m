@@ -1,124 +1,142 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8D555246783;
-	Sat, 28 Feb 2026 13:22:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68A20222584
+	for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 15:45:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772284948; cv=none; b=Jk25K2fk6LSyjlo8fBarI+eVhWWC44FgDb+maKVhc1wjp+TAs/Q6haqimnH6NKQ6DaAfIV7lcXiRE+2OEyYppVnTf68LwxFaON9dfSby/pcHo7rS1QnEfoubdxkpIQYGFWhVtPkYlXgPWA9C1UuQ0jov/7S9gQpf4Q6YzSjNG/c=
+	t=1772293534; cv=none; b=GonfhnTMA2GmRPa6oSUNn8cJf7xpM3XeODveRizeqMcwZzeLnIv3IQhC0l5hSAtWHq749mDIHOHj04kx2S8TtqsS7wMqiW6S9VGMPteT5EDjCJrTFIJJvWbjCq0of494w1GRquNOm+832UiMC17HC/g2BH/P5LsB2hXzaDu9d88=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772284948; c=relaxed/simple;
-	bh=YKpixnDDab2E7ZmdPdTMzn2mGQ/IvrkXrx+1KTwplio=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=L9ag6zcAAvXEh4fzujS/GDapNjcC7EQOCBgCSXmL0hQoELcS2JMxgUjnPT6h3dIZcA+7ZE9IQ7PEyccChe3z+BjJ3IyXhGVJrB2EvaIiU9FUnFAmFeGuk//WqUYbNS4zocVV0BqMTzRPo43u70Pgamba/GEASMAKSlO68i3ZQUM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=g5HwzcSR; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772293534; c=relaxed/simple;
+	bh=cQLQApxV+gyvPCk7Kb0ux6zyje+EMsitaz8UQXjtjv0=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=E9BI4P2CmrGjFlxHnErQeGrMfxJGV82mUgHTw4wz4OgCHwKkWnGvElbhSZkhMZCMrF7qGASxWzk0oBFwvXm2ScfLIgNO0AFSJWQ/Iwg57YD775a6o3GR/6jhCsWnzXu+UV4LeaYIf8S5NVXBP4B6f1jao3uzfd3D3R+uo6tZEUQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LN19Nhev; arc=none smtp.client-ip=209.85.210.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="g5HwzcSR"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99971C116D0;
-	Sat, 28 Feb 2026 13:22:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772284948;
-	bh=YKpixnDDab2E7ZmdPdTMzn2mGQ/IvrkXrx+1KTwplio=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=g5HwzcSRWZAAmCtYqVVnpVWs1Fg53pjuwqzokOl+dxnY6Ho37u4olrkCcxPvFMGDg
-	 pjLImyG9L0E2p1HMR7Rs+oMetQLuYBAKyK5uSxXqNRW9mRcoMbuFH7Thk0JYX0wruN
-	 KZW0r5uZb+kPM6hRGcgE7NWVL4by0WuNY9ZhHr5hCZKkWimbG4tYgBS12ysBSv70WF
-	 qq+IogZFU7adPDdrGYgRTcoBS8zQmOtDDTRDw/nh5A5C2BQGVgR8vBC0ZlKaOy6As5
-	 rJGzEihjG6rm3sgZq+ubjHN/GGWMFjILp8eyIAvxwrVJlkofIZoQ+GhnyRlREAY9n+
-	 mxn39WiHr7nfg==
-Date: Sat, 28 Feb 2026 13:22:19 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Petre Rodan <petre.rodan@subdimension.ro>
-Cc: Felix Gu <ustc.gu@gmail.com>, David Lechner <dlechner@baylibre.com>,
- Nuno S?? <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jonathan
- Cameron <Jonathan.Cameron@huawei.com>, Sebastian Andrzej Siewior
- <bigeasy@linutronix.de>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: pressure: abp2030pa: Remove IRQF_ONESHOT from
- devm_request_irq()
-Message-ID: <20260228132219.41f637ce@jic23-huawei>
-In-Reply-To: <aaLqsGEwNTlRmNJ4@sunspire.home.arpa>
-References: <20260227-abp-v2-1-a482c02a5876@gmail.com>
-	<20260228114823.1411901d@jic23-huawei>
-	<aaLqsGEwNTlRmNJ4@sunspire.home.arpa>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LN19Nhev"
+Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-82746ed8cdcso1613841b3a.3
+        for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 07:45:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772293533; x=1772898333; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8y0A6UC5dgjVa/R/Ri9dwaEzI34u2KnV/kwuSGeb3lg=;
+        b=LN19NhevlzJwqZwTkrCuXYXvTewuXUcHiT3dddtEEHwU5cr7oeUXbHJaICpzkmj/hw
+         CmEy5LGrPDEJg75LJ/iXlV4PxBvs9DEbXAQHPRW++xyzkILqg81kL5wdozVoefO9WRH+
+         VRO9TIzPX/mtSLQgVzsttypIvVsFQayu0DsMnRNHWkHklXtJegyqYYo9C7B+RcFNLwql
+         wAT/O1Mnq6lXYvAC3Ln5nsS3hboUQ8L1GDqRwTaArrA3RBtr384ERJw929AKdKEQCAGf
+         MOvx77iRjTSZk+4yY8gQ5qfyxlV/hPCoCBzP9+YWIhPaEWiIhC4vWDtpDNXMiNvLVv8D
+         7EQw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772293533; x=1772898333;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8y0A6UC5dgjVa/R/Ri9dwaEzI34u2KnV/kwuSGeb3lg=;
+        b=iMAGwo2bsQ9V2qE/Wyew7eP2shDEKcAMcldbK5LMygI8yr3lQ+VZ2VPna+FHM/caiX
+         dlC7OI76oob7bED6InnE/uRH8tHDnGGcaPcPkQ64gljR71xbh+1ToF1NPxBWs9iJIMtg
+         cwK+t+9dyN8JUkAtXIh4z9KSANCa6GnYmhYOeIT8nYmQUyXfKcaMjntWfU4nZFzGTNxh
+         rmqxK5JpKcVim+WS/VCMeRpv8a8dzstAFim5ohpM00l4qfyBMyyMbO1D6y6S9dzzKZGX
+         O3Gs+3V6eNJ2pxZkbaKhS/8/RioJ0Q4O4lUno66Ja6XyNdnP7giKA7fHL/D4BK3f+sHO
+         XgIA==
+X-Forwarded-Encrypted: i=1; AJvYcCWXKkCB32DmrjChxApf4necFh/2pPSw6/0YE2g1/i39yzZ48aAAeBoBhhBUzzvsEwi7IILclcSlSzM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyMIztr4yjmdDV9ebXd2tNuRT+t86x52TrufKNT+aOrwSotiMn7
+	lwV5ZlzwNa00iHlGAbgot/RutDecRIVGphxaVltL2He2E8jzqAtm64/o
+X-Gm-Gg: ATEYQzzMPTt/Ca9DFGAbzrERn9vy9gjWtgOG2AD8GSpK3FydGPjEmA6TzIGaF18uUj6
+	c54X/wPlrc4hRuesMHVSY+aBefkd6gGlOeoNHMwLVMta3M7J7LUXrjsDDpjMf/duwFdaWIFrHxn
+	j9dL9F7Lf8rvHy8boaeWICcogtmo0Bj/nq7wc7/uq6V88xAXfHHDB4UOvGkMK9bLIY527aTC9ui
+	6slK2XnFZYDHLlF60dOC6o0MbmVT13PV50rv8QyT31L8BVoTtYRZ5S17q4JIoIP2783xTd98JS2
+	2PB2+vYIQ6FbQcUpHjqg7Up0HhfPZVYs/0z+aS99fJa+zwh6a/McR5tvIl8g+Q4bXNLiYiKuRSm
+	C/GQpZbC4GN025Q0iOCyYw0OnL9TMXXNwdnwscGiBsEvPDQPd3X4WWKDjoCtEyrddvN+Vvm+nYv
+	ZIJzz8ur3jpl+7uuD6cdtdAjSuE2Q8i4V9xrTwZmEFww==
+X-Received: by 2002:a05:6a21:610e:b0:394:6109:a548 with SMTP id adf61e73a8af0-395c3a1cd63mr6137821637.3.1772293532669;
+        Sat, 28 Feb 2026 07:45:32 -0800 (PST)
+Received: from debian.ari ([152.58.180.148])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c70fa82dd09sm7807299a12.28.2026.02.28.07.45.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Feb 2026 07:45:32 -0800 (PST)
+From: Archit Anant <architanant5@gmail.com>
+To: jic23@kernel.org,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Archit Anant <architanant5@gmail.com>
+Subject: [PATCH] iio: adc: ad799x: use devm_iio_device_register and devm buffer setup
+Date: Sat, 28 Feb 2026 21:15:15 +0530
+Message-Id: <20260228154515.16639-1-architanant5@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sat, 28 Feb 2026 15:16:32 +0200
-Petre Rodan <petre.rodan@subdimension.ro> wrote:
+Convert the driver to use the device-managed versions of
+iio_device_register() and iio_triggered_buffer_setup().
 
-> hello!
-> 
-> On Sat, Feb 28, 2026 at 11:48:23AM +0000, Jonathan Cameron wrote:
-> > On Fri, 27 Feb 2026 21:54:29 +0800
-> > Felix Gu <ustc.gu@gmail.com> wrote:
-> >   
-> > > Since commit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT
-> > > without a threaded handler"), the IRQ core checks IRQF_ONESHOT flag
-> > > in IRQ request and gives a warning if there is no threaded handler.
-> > > 
-> > > Remove IRQF_ONESHOT from devm_request_irq().
-> > > 
-> > > Fixes: 47d323ce1e89 ("iio: pressure: add Honeywell ABP2 driver")
-> > > Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > > Signed-off-by: Felix Gu <ustc.gu@gmail.com>  
-> > 
-> > Applied to the fixes-togreg branch of iio.git.  If Petre wants to take
-> > another look and perhaps give a tag that would still be welcom.  
-> 
-> thank you for the patch, Felix.
-> took me a hot minute to upgrade everything to 7.0.0, you were both too fast :)
-> 
-> Tested-by: Petre Rodan <petre.rodan@subdimension.ro>
-Thanks Petre!
+This simplifies the error handling in ad799x_probe() by removing the
+'error_cleanup_ring' goto label. It also removes the need to manually
+call iio_device_unregister() and iio_triggered_buffer_cleanup() in
+ad799x_remove().
 
-Added the tag.
+Signed-off-by: Archit Anant <architanant5@gmail.com>
+---
+ drivers/iio/adc/ad799x.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-Jonathan
-
-> 
-> best regards,
-> peter
-> 
-> > 
-> > Thanks!
-> > 
-> > Jonathan
-> >   
-> > > ---
-> > > Changes in v2:
-> > > - Fixes Petre's comment.
-> > > - Link to v1: https://lore.kernel.org/r/20260227-abp-v1-1-b6fed0545852@gmail.com
-> > > ---
-> > >  drivers/iio/pressure/abp2030pa.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > 
-> > > diff --git a/drivers/iio/pressure/abp2030pa.c b/drivers/iio/pressure/abp2030pa.c
-> > > index 4ca056a73cef..b44f1bf4c633 100644
-> > > --- a/drivers/iio/pressure/abp2030pa.c
-> > > +++ b/drivers/iio/pressure/abp2030pa.c
-> > > @@ -520,7 +520,7 @@ int abp2_common_probe(struct device *dev, const struct abp2_ops *ops, int irq)
-> > >  	data->p_offset = div_s64(odelta * data->pmin, pdelta) - data->outmin;
-> > >  
-> > >  	if (data->irq > 0) {
-> > > -		ret = devm_request_irq(dev, irq, abp2_eoc_handler, IRQF_ONESHOT,
-> > > +		ret = devm_request_irq(dev, irq, abp2_eoc_handler, 0,
-> > >  				       dev_name(dev), data);
-> > >  		if (ret)
-> > >  			return ret;
-> > > 
-> > > ---
-> > > base-commit: 7d6661873f6b54c75195780a40d66bad3d482d8f
-> > > change-id: 20260227-abp-016a007ab817
-> > > 
-> > > Best regards,  
-> >   
-> 
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index 108bb22162ef..42712372acdb 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -847,7 +847,7 @@ static int ad799x_probe(struct i2c_client *client)
+ 	if (ret)
+ 		goto error_disable_vref;
+ 
+-	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev, NULL,
+ 		&ad799x_trigger_handler, NULL);
+ 	if (ret)
+ 		goto error_disable_vref;
+@@ -862,19 +862,17 @@ static int ad799x_probe(struct i2c_client *client)
+ 						client->name,
+ 						indio_dev);
+ 		if (ret)
+-			goto error_cleanup_ring;
++			goto error_disable_vref;
+ 	}
+ 
+ 	mutex_init(&st->lock);
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&client->dev, indio_dev);
+ 	if (ret)
+-		goto error_cleanup_ring;
++		goto error_disable_vref;
+ 
+ 	return 0;
+ 
+-error_cleanup_ring:
+-	iio_triggered_buffer_cleanup(indio_dev);
+ error_disable_vref:
+ 	if (st->vref)
+ 		regulator_disable(st->vref);
+@@ -889,9 +887,6 @@ static void ad799x_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+ 
+-	iio_device_unregister(indio_dev);
+-
+-	iio_triggered_buffer_cleanup(indio_dev);
+ 	if (st->vref)
+ 		regulator_disable(st->vref);
+ 	regulator_disable(st->reg);
+-- 
+2.39.5
 
