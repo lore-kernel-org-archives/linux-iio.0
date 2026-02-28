@@ -1,57 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BB9E1B424F;
-	Sat, 28 Feb 2026 10:15:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DBAA3D7D9E;
+	Sat, 28 Feb 2026 10:50:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772273757; cv=none; b=Q3b5yMvHV+R5cJrrV9wGV2aCj8YYMO7xrrtoYRmMhtp6Olny2xJsw2k76AMalY0WbNgPYtv5ewHxWnAYyRNvavZlMk+zBxWCxifANN23OWAfNYQQtYR4z8cP8lQS6Opt4c6ONpUK6XRFNrDlvFJm5gCz4U29r2S5ngD1ETA1f9A=
+	t=1772275854; cv=none; b=BNf0DjjS0jqstl0Ud6zDSunq7WMeo1NxYX0oHSacdi9w4a2dFKodNHNjGiptoQxclPKB2mTyam6VCznSPNRjl3ABVEK7G/l+TvFNcnKxz7UasuHRxXIez3vSnl1NWt6BTkLYNA0rxxNGQ4TBARyV2eYyCYz37QqijHoC2nkYw8E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772273757; c=relaxed/simple;
-	bh=mjn98PrFgttjzzsVqZLupIhQAyUcyvfeH35x1QUk6us=;
+	s=arc-20240116; t=1772275854; c=relaxed/simple;
+	bh=uwvZwCB3Vp/FxlpN6HgUQ3BdXcmuGyPGjZmWitt8bqc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PLDT4FfGJGjgs4uNKhIOmmvBsRMDutWYeMUez++kmNZzaiyaplLNdp2cnII1+Ndod6VkTJ5LEmHVYgFsYit3DBvmOwVUusaE3nHZwiT8IBnPj5wgCda0pG0dY2qwBPD6GirSr7AiWBAAjPWopr4EZmBYzd8rst0pgnxTNJnyKFA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=CuFbugRm; arc=none smtp.client-ip=198.175.65.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=cOdyXaPMStalrrabpt1WTFkmUWXxoTDDe2wscVih0WXBXpL8FikJwqgmtKO42o9bdbBytGnRIEoe8rpg96hg31zvynQd61BvvqQI/UBfp9oS4J8UcHbL2iWl3+HKnCDN7bUZ4UD6/mZdi/bJgkzjgAyGBnGe3sR7412aDZbIg2E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YtwYKyFA; arc=none smtp.client-ip=192.198.163.8
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="CuFbugRm"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YtwYKyFA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772273757; x=1803809757;
+  t=1772275852; x=1803811852;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=mjn98PrFgttjzzsVqZLupIhQAyUcyvfeH35x1QUk6us=;
-  b=CuFbugRmBb6yjrOAJgw3KfCwL1+OBWvpKaNyrhNhBydud/xpiD4SRjba
-   zCFiGgwqz9Wgi8+x0+UDFfQMxY435VNudYpv7QtXv41B6rdmuWmxaae+Z
-   w/7ZdK37XFMmVOLrvQOeKKzubUVKXUwjSahbcBnshQR3bfaiJNi4B0mrX
-   TBm7848r1rtkd2+bbDM6aWudinL/91+UzPW+UIsAaGOC0a4xI8KdQ+6Vs
-   2qLoTzuyURwhkgewLnchINrto1077O8qp4A9PGhIWIWB3eG4ZudSG5wXb
-   WLKiLqQsUGTwoveZI0Ny0l/SjX1FuOMjEhkjncCgmRZeA3jVSJ1B79JoR
-   w==;
-X-CSE-ConnectionGUID: UkaMCFkOQ92+U8D5aO5bBA==
-X-CSE-MsgGUID: 4ZpB2Ja+QfyaknG8bi2Cbg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11714"; a="73392610"
-X-IronPort-AV: E=Sophos;i="6.21,315,1763452800"; 
-   d="scan'208";a="73392610"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2026 02:15:56 -0800
-X-CSE-ConnectionGUID: EWuOJOZlSyWTJNWRdmrL9g==
-X-CSE-MsgGUID: yJ4dDrtDSq6Sx8EyNKp+yA==
+  bh=uwvZwCB3Vp/FxlpN6HgUQ3BdXcmuGyPGjZmWitt8bqc=;
+  b=YtwYKyFAB4SPKTX3yhF4adI/GvLrW2ZyWOXdu6958y1ccAgHZ/5GrIA/
+   x4QeLuY88pekLNtZXv3L06j57kpdUHX3g5nVXB0gOOfz94sGTUAgXR73V
+   FA6DZ/2XBd29n/dGL24HEO4zb83FcPKmww5fSA5JKyq+LIAHeneDHwVPD
+   xbTNNIr2t8uuO3o0m0KmmxGqxsjneDK7PKxx/4FaAtbM399wMKFmgEKMI
+   dNSUQAJF0V2rq9rQG++bTWLNMcvhbE6Cx9wUeCGDp+JxvKGjq8QV9y5ua
+   nzh34o8MCg9Sjm9L6sASN7EcQHpiP+DXNnCzcYaY7qKQ9ZzIAwrOth22H
+   A==;
+X-CSE-ConnectionGUID: 44RKb2XAQDSVOlwuf1l37w==
+X-CSE-MsgGUID: eUlL4kHsQU23KobqZiNQtA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11714"; a="90926338"
+X-IronPort-AV: E=Sophos;i="6.21,316,1763452800"; 
+   d="scan'208";a="90926338"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2026 02:50:52 -0800
+X-CSE-ConnectionGUID: WM5ztWMIQz2OiDYBjeOoiw==
+X-CSE-MsgGUID: aEZ23wz4RN+2y2Q+MQfljw==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,315,1763452800"; 
-   d="scan'208";a="221271577"
+X-IronPort-AV: E=Sophos;i="6.21,316,1763452800"; 
+   d="scan'208";a="240157971"
 Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.245.224])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2026 02:15:54 -0800
-Date: Sat, 28 Feb 2026 12:15:51 +0200
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2026 02:50:49 -0800
+Date: Sat, 28 Feb 2026 12:50:46 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: junan <junan76@163.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
-	andy@kernel.org, sakari.ailus@linux.intel.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Replace NULL thread handler with a dummy function.
-Message-ID: <aaLAVwiUZs_i8U3q@ashevche-desk.local>
-References: <20260228023643.12000-4-junan76@163.com>
+To: Ammar Mustafa <ammarmustafa34@gmail.com>
+Cc: Alisa-Dariana Roman <alisa.roman@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] Docs: iio: ad7191 Correct clock configuration
+Message-ID: <aaLIhgJjrNlp3oTy@ashevche-desk.local>
+References: <aaHrsTS9iG-PEfue@ammar-VM2>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -60,55 +64,35 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260228023643.12000-4-junan76@163.com>
+In-Reply-To: <aaHrsTS9iG-PEfue@ammar-VM2>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Feb 28, 2026 at 10:36:46AM +0800, junan wrote:
-> Hi,
-> 
-> This is a similar problem as [1]:
+On Fri, Feb 27, 2026 at 02:08:33PM -0500, Ammar Mustafa wrote:
+> Correct the ad7191 documentation to match the datasheet:
+> - Fix inverted CLKSEL pin logic: device uses external clock when pin is
+>   inactive, and internal CMOS/crystal when high.
 
-> [1] https://lore.kernel.org/linux-iio/20260227071409.aEG-iBFD@linutronix.de/T/#m15ab81856b42f72169fe51bd87fa399b5147441f
-> 
+high --> active
 
-Make it a Link tag.
+Thanks, this part looks good in the below documentation update.
 
-> without a threaded handler"), the IRQ core checks IRQF_ONESHOT flag
-> in IRQ request and gives a warning if there is no threaded handler.
-> 
-> There are two iio devices on my machine:
+> - Correct CMOS-compatible clock pin from MCLK2 to MCLK1.
 
-IIO
+I haven't checked driver yet, but is it only for a single component?
+Can you double check that _all_ supported by the driver have the same
+in their datasheet(s)?
 
-> ```
-> junan@fedora:~$ ls /sys/bus/iio/devices/
-> iio:device0  trigger0
-> junan@fedora:~$ cat /sys/bus/iio/devices/*/name
-> als
-> als-dev0
-> ```
-> 
-> The function calling chain is as following:
-> 
-> hid_als_probe(hid-sensor-als.c)
-> 	=> hid_sensor_setup_trigger(hid-sensor-trigger.c)
-> 		=> iio_triggered_buffer_setup_ext(industrialio-triggered-buffer.c)
-> 
-> `iio_triggered_buffer_setup_ext` is called with a NULL thread handler, and the flag is set to `IRQF_ONESHOT` inside it.
+...
 
-> I am not sure which flag to change, so I replace the NULL pointer with a
-> dummy function or can we just change the flag?
-
-Besides you used way too long lines, the last sentence (question) has to be
-located in the comment block...
-
-> Signed-off-by: junan <junan76@163.com>
-> ---
-
-...somewhere here.
-
-And answering to it I think it's band-aid and wrong approach.
+> +- When CLKSEL pin is ACTIVE: Uses internal 4.92MHz clock (no clock property
+>    needed)
+> -- When CLKSEL pin is tied HIGH: Requires external clock source
+> +- When CLKSEL pin is INACTIVE: Requires external clock source
+>    - Can be a crystal between MCLK1 and MCLK2 pins
+> -  - Or a CMOS-compatible clock driving MCLK2 pin
+> +  - Or a CMOS-compatible clock driving MCLK1 pin and MCLK2 left unconnected
+>    - Must specify the "clocks" property in device tree when using external clock
 
 -- 
 With Best Regards,
