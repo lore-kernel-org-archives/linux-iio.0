@@ -1,147 +1,129 @@
-Received: from mail-ot1-f51.google.com (mail-ot1-f51.google.com [209.85.210.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17FD54DB552
-	for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 17:35:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EBD533F38A;
+	Sat, 28 Feb 2026 17:52:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772300120; cv=none; b=tS3yMpWN1CfrX1na1uO7Sk5MeRPTqs0+siHf10iJBwZDL8P4ba8q9TG1M4225bwfaGpqKCr3d/1FM4XouY+JJgFxP+wN75Nl86MD8og3SW5RCCf4edCq699S7uEuM1Xxh1EMn7VX8W84JJ/tZTP/8XWvhnHOQNCjPtrRQgUFtr8=
+	t=1772301139; cv=none; b=hx0zNVYserEa2wRqpxRlZWP65kT408M5MA5ZznA2SlrijVUvIKXP/JHxWVHhI7O6KgKtTypVEPuonCNMDcA2lA5H+Oq5cEfNTPanLWUeHe2PNFBizvKtr1J0SqNQ5/s1eLsgsBv953MHxI/VX0WKCfq8rHvuGeOqLowTcYvEMXE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772300120; c=relaxed/simple;
-	bh=VpQlLC4yuAZCN83l2FY7W0C9JGWJzKbwyBbG02roCsc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=q+z01J0wooZQR+5qv/wNoFTM/9SrLiHy3Q8WBr5KSGsn40EOV+s+LcygipJZd2AoLcLCI7YuaDfBhTQQ/ZWuLTVvgc06j2hZAASxLDmsMA7VxEEe7Y7ZAmq198u3SUPIB5qW668J4YI3wNqTdCQIlXhi9YLKGkilEQUq6lc+4K4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=evaMal/C; arc=none smtp.client-ip=209.85.210.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1772301139; c=relaxed/simple;
+	bh=3YiMsqZH0IYRRTdNMS7i3lLlsP+3iUaq6+HmJg+bBQQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=HpW6T7rrDNY5ep/HPsS3jCIMJq5AYUJOLx/jvZPGvUFqB63so80VJaIv8Dn+Ls0vTjw7jFMzvXCDUMYI0G7VR0Im8/3SXcwIa45CIUDHkOmJnqrq5hm/Q0NBV0nIR/MjxDDd36amM00T9LqKe4NdGKe8AgHYExOpJ8eb3vCRpFw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pakou9M5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="evaMal/C"
-Received: by mail-ot1-f51.google.com with SMTP id 46e09a7af769-7d19bfe1190so2665940a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 09:35:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772300117; x=1772904917; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=46ijH4q4ZMpqLn9riBmDz3nl4kEzUq3GVbhaLZAxiNg=;
-        b=evaMal/CSXFIMO2HYWFGkfkZeabChh/rheJB3H86+nS7C0+OHQ6hiqy0iSC3tQ5MI/
-         jPJZn72c4JSoiuID5ANryZ41wh37l3AaKnoyblW3IsQ13XCKZjAP4c2pGwl8VOUgHpOb
-         PUiw105K/6tuyJGmT5PkqLMbyexG7MJKUA2s0HqH5xVRR7T7HiQGiuvaDw1RrIrVYgc1
-         ++HORKppoGLQG/H2rIo7cekPctDk10rSpTf8ehLTDTg+2iTSrrkGMzJEhvxvun8T2lZq
-         dX+GwghOp0RS87mRU5IKOQUPI9S/4r3OTdzPpjFOIBVi6OgarS+fiZ0Aafn2e0yZkPUz
-         YibA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772300117; x=1772904917;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=46ijH4q4ZMpqLn9riBmDz3nl4kEzUq3GVbhaLZAxiNg=;
-        b=XbRGt2b9be5ymYEG8JrM4DHUqTM9TGzWLmjaB8bhzyBAO2YTTOLbwtOlLhwFZNeykX
-         reuHigZ81M7byni5NlZLfjK+EpbpoE8wE+aSZoQYfOvbtk2pVokRl/36zysQm2RfiIkL
-         mm5k4pc6SLo3QgC579MORPzT2c7cEbZw1w5NxbpoG5ISj2JRxnqT4bqhyCoJbYHvaowk
-         hwyM11uczXf1dgWWndXcsN3aZyP282HzjXC9bB/BLMmaPsfOdVyun6HzVxrRK1HUbTWQ
-         E1w/qilKyQfvR+/6jzWWBVYSe96JZHhmbRN0WjnxiHd2+ahnIBB5CocCf/9pUwIa9Qdo
-         lJiQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU5Aco2DZtY+ouTyidGLRAemhMgzRogbgQZ0MvSBpS4qEH8NKf8kkaykwVWoQZOwUE1N+sNUlHgk/c=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxLl3wnE1I1o9VK/ROZvp72fwufIFV2MD3SN9OuFf5dI96J6glo
-	Gw/lrpfQSJCD6PiWLy32YIlHdErs2slJ+J7B5FAyDvlgLOoerY8NMLqjKQo05m1oVEDboJs8Vca
-	YWwuw
-X-Gm-Gg: ATEYQzw4h94AZuQUozLKLNoDeqkiqjV8/PUFFAFGIx3W5f+/Dhgioo4/deDPjEr83I8
-	Ner28IDSAJZmSqpraZpl6qpgUqbeKs52w0cAGBwyA8ydUQSB/ruVof0Vi6wYKE6mxL46sIWexDj
-	iFz4TLDDIWesPK+SKDXwBHlPhy8POwL1IC++LM8Jw1rjufEaHph5tzUKOYnv5oilUbrFgfEtIKo
-	l5FT86uX3ww7yu835nflpt0RAaMc5+uwdZAIg1ZYY3b+fr3l+ptaGo+aVhwsE0z9IURqsc4kGq5
-	1sRijHWUaL+gMzkTV8nNdfaanKewO6S0mQSjvveQc+3zqjZXDyKRq61DBuIBPLQ93TV8GSPYzL9
-	k9waqBnJFpBurGhuOHWwwnYDshgkIkE5n0Y8ujqnuafijYlKulPKKwW8BrgUxb354lNy7uui48N
-	Ss1U4/CuRtQw5H7bHQhp5oGPNrOoUPOO7doMkj+UXfwf4VBpPIi/AUFfIXEaUppxIHtATThPXNL
-	A==
-X-Received: by 2002:a05:6830:25d5:b0:7c7:6043:dd93 with SMTP id 46e09a7af769-7d591b2656amr4819921a34.13.1772300117017;
-        Sat, 28 Feb 2026 09:35:17 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:1031:c44e:9f1f:17c1? ([2600:8803:e7e4:500:1031:c44e:9f1f:17c1])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d58666ea95sm6809490a34.28.2026.02.28.09.35.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 28 Feb 2026 09:35:16 -0800 (PST)
-Message-ID: <00ee6df6-422e-40db-8494-3f9da4ccb227@baylibre.com>
-Date: Sat, 28 Feb 2026 11:35:15 -0600
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pakou9M5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00BF0C19424;
+	Sat, 28 Feb 2026 17:52:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772301138;
+	bh=3YiMsqZH0IYRRTdNMS7i3lLlsP+3iUaq6+HmJg+bBQQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Pakou9M5//aRCSz8iLjlttXz0M2U1oytpgblcvPZoKCiyt18ndpU5VVzl0cg7TgKf
+	 0Hl4PXYchVGRuInPuU2h2OS8S+4PQw/6c/yfaqrA/WFSwmRcspJTS9HRoX48UeyGRb
+	 O6+/WBLvZnZ52mCEEl2oAdiyyjPX/OZIl3BAsBprOt37cEskjiU2YmtTtsHvQ76faa
+	 bm2HkpnUenB2mEDXN/755qOhi/D7G+4Ak4mYqsau42/WxfF26AzwQUVt42A/L+gCZ4
+	 JL3i+r87vvH9snq6S1m0lgFhdEIAsi/NEkcYcQkHzcsSQ7EnKvF2+cqhftIm+xvYtZ
+	 /1Z00g1fTNFag==
+Date: Sat, 28 Feb 2026 17:52:10 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Francesco Lavra <flavra@baylibre.com>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 6/7] iio: ABI: Add custom data type
+Message-ID: <20260228175210.114cf455@jic23-huawei>
+In-Reply-To: <aaBtgQsU0MP8WV_q@smile.fi.intel.com>
+References: <20260225100421.2366864-1-flavra@baylibre.com>
+	<20260225101806.2368391-1-flavra@baylibre.com>
+	<aZ7gdO58NV6gjgWC@smile.fi.intel.com>
+	<eeb28077-0886-42b4-b468-21f5c6a6444a@baylibre.com>
+	<aaAQtJ5WTDtkxi08@smile.fi.intel.com>
+	<f637d8075569613f97fbe7ff6219e6adde53646d.camel@baylibre.com>
+	<aaBtgQsU0MP8WV_q@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: adc: ad799x: use devm_iio_device_register and devm
- buffer setup
-To: Archit Anant <architanant5@gmail.com>
-Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260228154515.16639-1-architanant5@gmail.com>
- <641c4d59-4cfd-49b6-b6de-692db48db1c7@baylibre.com>
- <CADJHxWA6QT9LqAR4n3UUHsr73X1S=SvwWCtO=M220SBUD91p-Q@mail.gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <CADJHxWA6QT9LqAR4n3UUHsr73X1S=SvwWCtO=M220SBUD91p-Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On 2/28/26 11:19 AM, Archit Anant wrote:
-> Hi David,
-> 
-> On Sat, Feb 28, 2026 at 10:06 PM David Lechner <dlechner@baylibre.com> wrote:
->>
->> On 2/28/26 9:45 AM, Archit Anant wrote:
->>> Convert the driver to use the device-managed versions of
->>> iio_device_register() and iio_triggered_buffer_setup().
->>>
->>> This simplifies the error handling in ad799x_probe() by removing the
->>> 'error_cleanup_ring' goto label. It also removes the need to manually
->>> call iio_device_unregister() and iio_triggered_buffer_cleanup() in
->>> ad799x_remove().
->>>
->> Since we are doing this, why not also handle the regulators and
->> rx_buf so that we can drop the remove() function completely?
-> 
-> I completely agree that dropping the remove() function is the
-> ideal end state but I initially stopped short of doing that because of two
-> hurdles:
-> 
-> 1. regulators: since ad799x_read_raw() needs the regulator pointers
-> to call regulator_get_voltage(), I couldn't simply use
-> devm_regulator_get_enable().
+On Thu, 26 Feb 2026 17:57:53 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-In this case, we can use devm_add_action_or_reset() to register the
-disable callbacks.
+> On Thu, Feb 26, 2026 at 04:30:27PM +0100, Francesco Lavra wrote:
+> > On Thu, 2026-02-26 at 11:21 +0200, Andy Shevchenko wrote:  
+> > > On Wed, Feb 25, 2026 at 03:27:55PM -0600, David Lechner wrote:  
+> 
+> ...
+> 
+> > > Not sure about the latter, but something explicit like
+> > > IIO_MOD_PARTIAL_QUATERNION sounds good to me.  
+> > 
+> > Another option could be having a custom iio_modifier instead of a custom
+> > iio_chan_type. I think this would address the concern of drivers being just
+> > a proxy between hardware and userspace. A custom modifier would be used
+> > when the data representation for a given channel is too exotic to warrant a
+> > generic iio_modifier enum value (but would still need to be documented so
+> > that userspace can make use of it).
+> > I can imagine a generic userspace application that interfaces with (in this
+> > case) rotation sensors (i.e. looks for IIO_ROT channels) and can support
+> > not only "standard" rotation data types (yaw, pitch, roll, quaternion, etc)
+> > but also "manufacturer-specific" types.  
+> 
+> And I am against this. It will provoke a vendor to escape the standards,
+> common libraries and other tools. If we need something which is too exotic,
+> the driver should convert it to the standard one. This way we will support
+> HW and won't require or allow some dirty tricks based on vendor-locked
+> approaches.
+> 
+> I'm talking from the experience on what vendors are doing or want to do
+> IRL in other areas. One of the infamous example, is Broadcom Bluetooth
+> used back in Nokia phones, the so called "driver" is useless completely
+> in the kernel as it's just a proxy for the HW <--> userspace link.
+> 
+> TL;DR: I'm in favour for anything that does not touch user space at all,
+> or has explicit meanings. NAK for CUSTOM, manufactirer-specific, et cetera
+> from me is warranted.
+
+The representation here is to my mind 'odd' enough that I'm be surprised
+if another manufacturer ever used it.  Maybe I'm wrong though, I'm out of
+touch with IMUs these days and defacto standards do arise sometimes.
+I'm not sure we can paper over it in the kernel without going to
+floating point maths and I don't want to start a precedence for doing that.
+If anyone can figure out an efficient integer solution, then that would be great.
+
+I'm not against a specific modifier, but that space is only so big so I don't
+want to end up running out of space.  Maybe this is a case for a low impact
+experiment: We add a specific modifier for this format - with full documentation
+(and userspace code in the tools that come with the kernel) and see if that
+opens the flood gates to requests for other custom channels.
+
+It's worth noting I was relaxed on this once before for pulse oximeters
+(the things under drivers/iio/health) because for various odd historical
+reasons I happened to know a bit about the maths needed to get data from those
+and there was a plausible channel type for the channels (as they were always
+light sensing, be it against a light source that was varying). That one didn't
+lead to a deluge but then it was more a case of allowing a minor abuse of
+the ABI than adding an official custom path.
+
+Also worth noting this sensor provides all of the real channels in normal
+ABI compliant fashion, it's just this odd derived channel that is tripping
+us up.
+
+Jonathan
+
 
 > 
-> 2. rx_buf: st->rx_buf is dynamically re-allocated (kfree then kmalloc)
-> inside ad799x_update_scan_mode() based on the scan mask. If I use
-> devm_kmalloc there, it would leak memory on every mask change.
+> > We could even think about allowing more than one custom modifier (e.g.
+> > everything >= IIO_MOD_CUSTOM is a custom modifier) so that a sensor can
+> > have its "manufacturer-specific" data in multiple separate channels; and of
+> > course each such custom modifier would have to be described in a per-driver
+> > doc.  
 > 
-> To drop remove() completely, would you prefer I use devm_add_action_or_reset()
-> to register custom disable & free callbacks for the regulators and the
-> final state of rx_buf?
-> 
-> If that approach sounds good to you, I will gladly prepare a v2 that
-> eliminates the remove() function entirely.
-> 
-> 
-
-Here, we could also use devm_add_action_or_reset() or we could drop
-the dynamic allocation altogether and make rx_buf large enough for
-the largest transfer. The latter would be preferred as that is how
-we usually do it in general.
-
-#define AD799X_MAX_CHANNELS 8
-
-...
-
-struct ad799x_state {
-	...
-	unsigned int			transfer_size;
-	IIO_DECLARE_DMA_BUFFER_WITH_TS(__be16, rx_buf, AD799X_MAX_CHANNELS);
-};
-
-Note, it is important for this to be the last field in the struct
-for DMA alignment purposes.
 
