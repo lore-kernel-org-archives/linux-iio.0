@@ -1,61 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DBAA3D7D9E;
-	Sat, 28 Feb 2026 10:50:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99E1C350295;
+	Sat, 28 Feb 2026 11:05:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772275854; cv=none; b=BNf0DjjS0jqstl0Ud6zDSunq7WMeo1NxYX0oHSacdi9w4a2dFKodNHNjGiptoQxclPKB2mTyam6VCznSPNRjl3ABVEK7G/l+TvFNcnKxz7UasuHRxXIez3vSnl1NWt6BTkLYNA0rxxNGQ4TBARyV2eYyCYz37QqijHoC2nkYw8E=
+	t=1772276724; cv=none; b=YhAVW/BVCuCBbwLlthsnxMGsQ2XgjeA6ogWncdiaCjNxNKf7Q46pDxdEaAAkCJf94KlEAyCsDHG22oEqo721L/bLtaxLcRRxRjBPzpG1k0vS/egK5XIXnzKtJlvbOgnzo8OuBg3t5gYOr+B8lTaiJjTKGocfgElJky9x99+arKQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772275854; c=relaxed/simple;
-	bh=uwvZwCB3Vp/FxlpN6HgUQ3BdXcmuGyPGjZmWitt8bqc=;
+	s=arc-20240116; t=1772276724; c=relaxed/simple;
+	bh=rq0ph85dWcyWbSi+4Qp4VTvQwLfqWLHi7KeqN0ZQwtk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cOdyXaPMStalrrabpt1WTFkmUWXxoTDDe2wscVih0WXBXpL8FikJwqgmtKO42o9bdbBytGnRIEoe8rpg96hg31zvynQd61BvvqQI/UBfp9oS4J8UcHbL2iWl3+HKnCDN7bUZ4UD6/mZdi/bJgkzjgAyGBnGe3sR7412aDZbIg2E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YtwYKyFA; arc=none smtp.client-ip=192.198.163.8
+	 Content-Type:Content-Disposition:In-Reply-To; b=oxpI8YzhXgbm770dSQ1dYTxbYez1t/t19sF95Dyj9FmmoWgAnmw8KDN2GY7cGb2VX3BijiprNyGbhDM0sPTnANFOnencmh+NpKT48yoM7P13cAfdY/Vng5ByEdOawfe8QGHA/2sBdMxm3rqHLkpFjo5uNW2UKRg2mg/rz7y+t+Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=i3wiRyz+; arc=none smtp.client-ip=192.198.163.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YtwYKyFA"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="i3wiRyz+"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772275852; x=1803811852;
+  t=1772276723; x=1803812723;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=uwvZwCB3Vp/FxlpN6HgUQ3BdXcmuGyPGjZmWitt8bqc=;
-  b=YtwYKyFAB4SPKTX3yhF4adI/GvLrW2ZyWOXdu6958y1ccAgHZ/5GrIA/
-   x4QeLuY88pekLNtZXv3L06j57kpdUHX3g5nVXB0gOOfz94sGTUAgXR73V
-   FA6DZ/2XBd29n/dGL24HEO4zb83FcPKmww5fSA5JKyq+LIAHeneDHwVPD
-   xbTNNIr2t8uuO3o0m0KmmxGqxsjneDK7PKxx/4FaAtbM399wMKFmgEKMI
-   dNSUQAJF0V2rq9rQG++bTWLNMcvhbE6Cx9wUeCGDp+JxvKGjq8QV9y5ua
-   nzh34o8MCg9Sjm9L6sASN7EcQHpiP+DXNnCzcYaY7qKQ9ZzIAwrOth22H
+  bh=rq0ph85dWcyWbSi+4Qp4VTvQwLfqWLHi7KeqN0ZQwtk=;
+  b=i3wiRyz+fvypeAlHYZI/XuarQ/A1g6Dsltby8o8XDreI0NMxjwJLSZKb
+   p94xwebgY153ueWlv9R+t5Mr3aA6F3KH06zgFP8wQK9JmDCqiD7ABi/9n
+   BLcMdW/Syo5cAdUQGfnkBlvMoEFRuLXxVIaVTth91yHnR59JsYksQ7R47
+   /sjnmXSkm/kRu/sjGDKPJEHjwIyIWKB5ripbOt5J0Zoo9nRkPtr8m4u7w
+   xkDijgn5SRJwzTm1/+TsvhLgNoYgBEDNY+oevqkv2AaOxgvZhHFW6bJN8
+   jSbyXuoppAF2zJZ6jV0/xilSfl/sUiiAL8ilPBi/sJr2G6WkY6ZUgJfc3
    A==;
-X-CSE-ConnectionGUID: 44RKb2XAQDSVOlwuf1l37w==
-X-CSE-MsgGUID: eUlL4kHsQU23KobqZiNQtA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11714"; a="90926338"
+X-CSE-ConnectionGUID: +k/YNr70SxG2IXcC3AACgQ==
+X-CSE-MsgGUID: cF2jHkUYSpSbM74rlR9BVw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11714"; a="75953678"
 X-IronPort-AV: E=Sophos;i="6.21,316,1763452800"; 
-   d="scan'208";a="90926338"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2026 02:50:52 -0800
-X-CSE-ConnectionGUID: WM5ztWMIQz2OiDYBjeOoiw==
-X-CSE-MsgGUID: aEZ23wz4RN+2y2Q+MQfljw==
+   d="scan'208";a="75953678"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2026 03:05:23 -0800
+X-CSE-ConnectionGUID: 5MgPh792Q3q4ykHn7Dwv2A==
+X-CSE-MsgGUID: SsyBO0nPSgyPsOJ7pIdDWw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,316,1763452800"; 
-   d="scan'208";a="240157971"
+   d="scan'208";a="214489971"
 Received: from dhhellew-desk2.ger.corp.intel.com (HELO localhost) ([10.245.245.224])
-  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2026 02:50:49 -0800
-Date: Sat, 28 Feb 2026 12:50:46 +0200
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Feb 2026 03:05:21 -0800
+Date: Sat, 28 Feb 2026 13:05:18 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Ammar Mustafa <ammarmustafa34@gmail.com>
-Cc: Alisa-Dariana Roman <alisa.roman@analog.com>,
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] Docs: iio: ad7191 Correct clock configuration
-Message-ID: <aaLIhgJjrNlp3oTy@ashevche-desk.local>
-References: <aaHrsTS9iG-PEfue@ammar-VM2>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ade9000: move mutex init before IRQ
+ registration
+Message-ID: <aaLL7qHSQWMzwadp@ashevche-desk.local>
+References: <20260227133331.66968-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,35 +65,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <aaHrsTS9iG-PEfue@ammar-VM2>
+In-Reply-To: <20260227133331.66968-1-antoniu.miclaus@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Feb 27, 2026 at 02:08:33PM -0500, Ammar Mustafa wrote:
-> Correct the ad7191 documentation to match the datasheet:
-> - Fix inverted CLKSEL pin logic: device uses external clock when pin is
->   inactive, and internal CMOS/crystal when high.
+On Fri, Feb 27, 2026 at 03:33:30PM +0200, Antoniu Miclaus wrote:
+> Move devm_mutex_init() before ade9000_request_irq() calls so that
+> st->lock is initialized before any handler that depends on it can run.
 
-high --> active
+Sounds good. The technique to reproduce this (in case you have a HWr
+to make sure probe runs) the kernel configuration should have
+CONFIG_DEBUG_SHIRQ=y (and in some cases a tweak in the code to flag
+IRQ as shared).
 
-Thanks, this part looks good in the below documentation update.
-
-> - Correct CMOS-compatible clock pin from MCLK2 to MCLK1.
-
-I haven't checked driver yet, but is it only for a single component?
-Can you double check that _all_ supported by the driver have the same
-in their datasheet(s)?
-
-...
-
-> +- When CLKSEL pin is ACTIVE: Uses internal 4.92MHz clock (no clock property
->    needed)
-> -- When CLKSEL pin is tied HIGH: Requires external clock source
-> +- When CLKSEL pin is INACTIVE: Requires external clock source
->    - Can be a crystal between MCLK1 and MCLK2 pins
-> -  - Or a CMOS-compatible clock driving MCLK2 pin
-> +  - Or a CMOS-compatible clock driving MCLK1 pin and MCLK2 left unconnected
->    - Must specify the "clocks" property in device tree when using external clock
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
