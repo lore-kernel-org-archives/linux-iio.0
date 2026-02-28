@@ -1,159 +1,143 @@
-Received: from mail-ot1-f42.google.com (mail-ot1-f42.google.com [209.85.210.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0FEB175A6A
-	for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 20:16:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C779E27F010;
+	Sat, 28 Feb 2026 21:35:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772309766; cv=none; b=XH5nyQsuWlaCuYsfHKEy23ABGAWa5oFunb8fm4Phbf5Ip1WM2unCx//e0zXl2e+qH4Xh1/8fvaF0DePj8wmqaSTGPKQc+j9JQ4i90OLzyCtqujBcFP4cc+Ne0BmZxx0+LNPGZjD9NUp/JHGzd6eUAt06zF27A+91f0TatSdX+tI=
+	t=1772314526; cv=none; b=gmuCroIhYwBeb9IZqzZ5l6KbzOVUX49Zc6GrRWf5+1QcimoSzB5dxI/CjSM38gr62v0tnp7KeKxXQpjXR2qCU3mAqxArtprzcXJOU0dq/bNF32ad4mxOTcIW6LhzRnFNdOm1i7XnffRLzas40Hc2eT8S5MlqYW4NvvjIbeVR0I4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772309766; c=relaxed/simple;
-	bh=88AvoyJ6FUzTtHbeoNdIaDkG4TBWEdRB6cUTHhILOuk=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=fYqrstt/eQjCs2Z4Ue0jHpA+9IA/nrA6rPlWOSnSkhZt0FWHu/Ly/qc119Huy+wfR+sVv6AZIHyzFldqXH7r4oTd/XRbtZe1n3Zmsqm7Qxh1z4v3QdVb/3hiJeyHtaCo42RGS88VOAkyXbaRC2ilND5uG5R9bj4XUZqah27pls8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Ic/cKFbx; arc=none smtp.client-ip=209.85.210.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1772314526; c=relaxed/simple;
+	bh=uE+NY26oLrKW+yztywRPuIT9/z0NETykFwOtblclvtM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=pp83kdnj6YsU6HGtNwAykEVp6/8sX/5VQ4DBaSQJoOkqfb2O731tyLCBHDPYTce8/pdaLsQXUwRzF/qePRKsIrcKG9ruu/TpMYMrEo/u+SqxfJEsn3kfi0Np9RMXM+N6jwbW1B7cB2wjPF2UBShT3jqenfMenKw15nm0oNYlVpM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L8Oej7sk; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Ic/cKFbx"
-Received: by mail-ot1-f42.google.com with SMTP id 46e09a7af769-7d4b9c839b1so1613150a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 12:16:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772309764; x=1772914564; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ppLvags4HZOEZEO5eBxyHJk/TaUoHJpEFyovu7IX1b4=;
-        b=Ic/cKFbxAXP1x0RC6WH9SlbVpYJ1aDnlhV6BMSXBKHbRP58qcm05EGPGSBBRsfyc+l
-         3DJXR19ZSj52KfJBhK64eupaVkFi7BZEe+AihuDXij/Tew6LE7F6B/Wn8rcu3hxprykr
-         vY63JTr88csmmXJVX6U1Q9dUFFnvxPmlaVQ2vXhPmhxHl52CwVY9IO4luhhX3OuVhQHU
-         /4uflds65HQ/ZNnpCa0ERTG7GRkzcXw1SnhQH93YU8Ez1g8N6TJdgWYgc1O627+8mzkw
-         1XSOYP0B3/sFWODaIH08WYP2mnZ1AKvEMOawMxjdiRuIeiXVK82EdXYO/w4JXD+IEmmG
-         6/kQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772309764; x=1772914564;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ppLvags4HZOEZEO5eBxyHJk/TaUoHJpEFyovu7IX1b4=;
-        b=NV3k9HXSFAIRsSBi9CTgpoecCpg+SX3DZsfd4Z5RG32wKJB1ewuGVnuT4pznPpVURC
-         Gch7t0XVost3nfG23hTIGEUPZ1gF827KnpoWiV3CtAVxovrSlN6Ig7Yedkc77CYUeXpK
-         4g1O/DhX4KZVt/ml77pUo6jsX1uWZkZeA+6G/uCbhcvD5FgnO2vm1Xlhgw7zDbkTbWW+
-         yDsV3r6JiIPKdRC6SpX2foJPXLa/yGXEW4SbXwQmpFl17zwoG4Zb91WWGV00xg45GTJt
-         N0T74KYWe89C7jD5cu+sxh7i1FeUt/hNhQbqQF/GQvA8550Ng1H6eU3ehk/OUeWv7Ybz
-         gYHg==
-X-Gm-Message-State: AOJu0YyHeMTqr+ZhbrFFGxEVssgRAtIAGqTfM+J3lVT5PXCmTDAqL983
-	jbV/dfbU0ZLNyPEijk/JA2zLsR3BccfCnGVegj2Mv6M7HYb4sFKg2uiwSfK47Us/JKw=
-X-Gm-Gg: ATEYQzzFboKgmjx7bh86z9oMcvozCv4DjsygTthhi9MORsoRPKSo4WNJdQytilf4UXB
-	cN49e3snNu7Kyfjbc3iADTc40awsYBJrLG9H01B8bzDz99r/YwzV2hZ/c8sBfObwrtoNu4UDA9/
-	tCJ+axzN6wbqS1nzuxFiZcgMOhSeQeiUxw72BsOP5LALhdOiJP23tH2j6hNjyy5tfY2OcSoiwj9
-	M5bArfcS05AB+nvVgQtVfcFh1qWzfTx45WJN1g1nycBrpDY02RTNCfiJPTUdP3EcaWZSKITl2/r
-	kyWVVDdeWDPwizHaNEDHVV6a7J/g4O9dTABXQUmo38Ou4otTyAJnQateKhTWQgvlTCrrMYpdrsU
-	SL1rdYsiiXSNVeU2fbJ21all2wR9hj5B5hcazaUUd8pbBBuo4l1AsyrdovC2iyn58JbgA9dNu5H
-	WUmqL+Wa9UepoutvOKc7n/6werCnhQc4EHda7BcTo=
-X-Received: by 2002:a05:6830:6999:b0:7c7:62bd:7fac with SMTP id 46e09a7af769-7d591b25a88mr5242031a34.9.1772309763787;
-        Sat, 28 Feb 2026 12:16:03 -0800 (PST)
-Received: from [127.0.1.1] ([2600:8803:e7e4:500:1031:c44e:9f1f:17c1])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d586626abfsm7000054a34.14.2026.02.28.12.16.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Feb 2026 12:16:03 -0800 (PST)
-From: David Lechner <dlechner@baylibre.com>
-Date: Sat, 28 Feb 2026 14:15:51 -0600
-Subject: [PATCH v2] iio: imu: bno055: add explicit scan buf layout
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L8Oej7sk"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2271DC116D0;
+	Sat, 28 Feb 2026 21:35:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772314526;
+	bh=uE+NY26oLrKW+yztywRPuIT9/z0NETykFwOtblclvtM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=L8Oej7sk73HAJfyxRZvzVKcQAKmPIkq4fCNxQfOFS7UUa1vixkF7JZc9o2s8oOP80
+	 Uz4oYrtshFQMGJk8HzzD4vGd+lBvBSoNSpsqhYL69pUBWqHa7uBJDf2AQxFNGfPUog
+	 BKTPDaydA3JvPcd5oeAutnfEaENsxpqywrh0S4Y5+vQ4OHfKtzKxpuTYSWlz578Ldx
+	 JJGA4nslyioZh2rfHOipND6OKARHmyk1IALOzgkxYh3sw0EVcJBV4ibTuZvkzXxn2x
+	 csk8XYXZAx5ULBypR7aG18tz7SUCFAEYUk2fx0hMoTZZI4Jt/T7qgq6KKJ+O2yZ+kS
+	 43I1cvKsKmCng==
+Received: by finisterre.sirena.org.uk (Postfix, from userid 1000)
+	id 251761AC597D; Sat, 28 Feb 2026 21:35:23 +0000 (GMT)
+Date: Sat, 28 Feb 2026 21:35:22 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	Sebastian Reichel <sebastian.reichel@collabora.com>,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: Re: [PATCH v4 0/5] iio: adc: ad4080: add support for AD4880
+ dual-channel ADC
+Message-ID: <aaNfmu8Wubizo5Go@sirena.co.uk>
+References: <20260223162110.156746-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260228-iio-imu-bno055-repeated-element-v2-1-888676158804@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43PQY7CMAwF0KtUWY9pEpF2pqu5x4hF0ppiqUkgC
- RUI9e6YggTLWVnfkv+TbyJjIsyiq24i4UyZYuCgvyrRH2wYEWjgLLTUjdRqC0QRyJ/BhSiNgYR
- HtAUHwAk9hgKqV8ZotO3WoeCWY8I9XVbhb/fMCU9nhspz+XaY/VT47FUPdqIxrPWmNU73Uv6gN
- t2sH4KzGaGP3lPpKtZyndBHbq+5peZZKIziYR8ol5iu67OzWvF//zUrUOBM6+Q37gfTNL/OXid
- yCTdsi92yLHcnyroDTQEAAA==
-X-Change-ID: 20260214-iio-imu-bno055-repeated-element-1c1552ea74be
-To: Jonathan Cameron <jic23@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- David Lechner <dlechner@baylibre.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2383; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=88AvoyJ6FUzTtHbeoNdIaDkG4TBWEdRB6cUTHhILOuk=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBpo0z8wKN5f9S5qZFHEdtqR/RSbkpMpQyaZYqow
- gjYGqYAIeCJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaaNM/AAKCRDCzCAB/wGP
- wFw7CACTkdFV/ZU2H1AUPViQ5xuUT1IOh66Qn9IU0k3KoallF39SLFWny11WsAleQ5Y1C0Va4Dt
- nkaZu3JYUh7IFHf0HdPuhzTmjalnfNDOySyGt5spRnvF1z1NwzszRwu/8B7WuPp9v5ihq4INARW
- pWWTO7wplWJP+iqIcIivWx9eghgcrg/m6bhs9pGBk34JVBfOQlfezmbyn18MC9kHcAf4zMxbgIR
- 81rOK2EKEgjg4Jcyzs/LpOBNev0EFOQ85TuWSx8U6+3x/YFVhROgbAgxH6Lee+9eCn6RKYzSqKG
- V721bammdKIcwaVIMj9Bja7819CS+eQ5ddjiI9LbIsJF5T+W
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="TMuLw1nB3GMyikBv"
+Content-Disposition: inline
+In-Reply-To: <20260223162110.156746-1-antoniu.miclaus@analog.com>
+X-Cookie: Think big.  Pollute the Mississippi.
 
-Move the scan buf.chans array into a union along with a struct that
-gives the layout of the buffer with all channels enabled.
 
-Although not technically required in this case, if there had been a
-different number of items before the quaternion, there could have been
-a subtle bug with the special alignment needed for the quaternion
-channel data and the array would have been too small.
+--TMuLw1nB3GMyikBv
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Signed-off-by: David Lechner <dlechner@baylibre.com>
----
-This depends on [1] that introduces the IIO_DECLARE_QUATERNION()
-macro. I didn't include it in the same series because the other series
-contains a fix and should be backported while this one ins't a fix.
+On Mon, Feb 23, 2026 at 06:20:59PM +0200, Antoniu Miclaus wrote:
+> Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC from
+> the same family as AD4080.
 
-[1]: https://lore.kernel.org/linux-iio/20260214-iio-fix-repeat-alignment-v1-1-47f01288c803@baylibre.com/
----
-Changes in v2:
-- Rename IIO_DECLARE_REPEATED_ELEMENT() to IIO_DECLARE_QUATERNION().
-- Link to v1: https://lore.kernel.org/r/20260214-iio-imu-bno055-repeated-element-v1-1-b57b08efd566@baylibre.com
----
- drivers/iio/imu/bno055/bno055.c | 20 +++++++++++++++++++-
- 1 file changed, 19 insertions(+), 1 deletion(-)
+The following changes since commit 6de23f81a5e08be8fbf5e8d7e9febc72a5b5f27f:
 
-diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
-index 303bc308f80a..d91558e100cc 100644
---- a/drivers/iio/imu/bno055/bno055.c
-+++ b/drivers/iio/imu/bno055/bno055.c
-@@ -211,7 +211,25 @@ struct bno055_priv {
- 	struct gpio_desc *reset_gpio;
- 	bool sw_reset;
- 	struct {
--		__le16 chans[BNO055_SCAN_CH_COUNT];
-+		union {
-+			__le16 chans[BNO055_SCAN_CH_COUNT];
-+			/*
-+			 * Struct is to ensure proper size in case any padding
-+			 * is needed. Technically not needed in this case, but
-+			 * better to be explicit about the requirements.
-+			 */
-+			struct {
-+				__le16 acc[3];
-+				__le16 magn[3];
-+				__le16 gyr[3];
-+				__le16 yaw;
-+				__le16 pitch;
-+				__le16 roll;
-+				IIO_DECLARE_QUATERNION(__le16, quaternion);
-+				__le16 lia[3];
-+				__le16 gravity[3];
-+			};
-+		};
- 		aligned_s64 timestamp;
- 	} buf;
- 	struct dentry *debugfs;
+  Linux 7.0-rc1 (2026-02-22 13:18:59 -0800)
 
----
-base-commit: 0b9f2af96d9dc898af3aa58bd55bf62768229b92
-change-id: 20260214-iio-imu-bno055-repeated-element-1c1552ea74be
-prerequisite-change-id: 20260214-iio-fix-repeat-alignment-575b2c009e25:v2
-prerequisite-patch-id: e155a526d57c5759a2fcfbfca7f544cb419addfd
-prerequisite-patch-id: 6c69eaad0dd2ae69bd2745e7d387f739fc1a9ba0
+are available in the Git repository at:
 
-Best regards,
--- 
-David Lechner <dlechner@baylibre.com>
+  https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git tags/spi-devm-ancilliary
 
+for you to fetch changes up to e02902dd493bf9c9b05353c761737ac514ad7a5c:
+
+  spi: add devm_spi_new_ancillary_device() (2026-02-24 17:41:42 +0000)
+
+----------------------------------------------------------------
+spi: add devm_spi_new_ancillary_device()
+
+Add a managed version of spi_new_ancillary_device()
+
+----------------------------------------------------------------
+Alain Volmat (1):
+      spi: stm32: fix rx DMA request error handling
+
+Andy Shevchenko (1):
+      spi: pxa2xx: use min() instead of min_t()
+
+Antoni Pokusinski (1):
+      spi: omap2-mcspi: add support for 3-wire transfers
+
+Antoniu Miclaus (2):
+      spi: allow ancillary devices to share parent's chip selects
+      spi: add devm_spi_new_ancillary_device()
+
+Charles Keepax (1):
+      spi: cs42l43: Don't support sidecar properties on device tree systems
+
+Cosmin Tanislav (1):
+      spi: dt-bindings: renesas,rzv2h-rspi: allow multiple DMAs
+
+Krzysztof Kozlowski (1):
+      spi: stm32: Use NULL instead of 0 for pointer
+
+Patrice Chotard (1):
+      spi: stm32-ospi: Remove exec_op() callback debug log
+
+Pei Xiao (1):
+      spi: atcspi200: Remove redundant assignment to .owner
+
+ .../bindings/spi/renesas,rzv2h-rspi.yaml           | 16 ++++-
+ drivers/spi/spi-atcspi200.c                        |  1 -
+ drivers/spi/spi-cs42l43.c                          |  4 +-
+ drivers/spi/spi-omap2-mcspi.c                      | 17 ++++--
+ drivers/spi/spi-pxa2xx.c                           | 11 ++--
+ drivers/spi/spi-stm32-ospi.c                       |  5 --
+ drivers/spi/spi-stm32.c                            | 10 ++--
+ drivers/spi/spi.c                                  | 69 ++++++++++++++++++++--
+ include/linux/spi/spi.h                            |  1 +
+ 9 files changed, 101 insertions(+), 33 deletions(-)
+
+--TMuLw1nB3GMyikBv
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmmjX5oACgkQJNaLcl1U
+h9D+TAf+Ipw8Gc/+B70hMbEpqZhtsYP7GT49dptCsIuN0RBputuTYeqcfujd+mNs
+psu87ms4bHWnarM7TseX1h2QqCF4q5kbZFfLxalWKzuk/99jsBSIZGOUYi0y/DJP
+PeCCXBEj4OWUK7cRGUISyDHTe5TpB4kQMpL79GuODzifE0z6d2HwIXywUmUBcIlD
+mHxXyRQGiuRmPVcaVEIGJCdiADujd7+cL6sjPP4r2iz0FD9gYtlGtgLU2/I5/ECi
+li8nxM9cqvREqAk0u2zv/0HTnXrdtyQVZHFO5gzUXKE9K0EwrQTYyNpAvvPnmVJH
+BF/SDVfqiPmhvQlVhSp95yMy+/a/jg==
+=hOiC
+-----END PGP SIGNATURE-----
+
+--TMuLw1nB3GMyikBv--
