@@ -1,26 +1,26 @@
-Received: from SEYPR02CU001.outbound.protection.outlook.com (mail-koreacentralazon11023140.outbound.protection.outlook.com [40.107.44.140])
+Received: from SEYPR02CU001.outbound.protection.outlook.com (mail-koreacentralazon11023141.outbound.protection.outlook.com [40.107.44.141])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47886322B6F;
-	Sat, 28 Feb 2026 06:58:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.44.140
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5413EA932;
+	Sat, 28 Feb 2026 06:59:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.44.141
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772261939; cv=fail; b=qwM0CNWo5EULWfooGzaqE/ddAPd1uVGo/je6k1eVa8uWa+GzmDob8NGXOgO54Z2kRaB8DCB4cLGp/sUgmY2+8Ngp4fdP3z5h6LVySTJ7XlX96oq9LzO46vYu85cSecSYWhF9peqLyFodLpMETu6Rsojbkh7fvDh7nprEho8I1Q4=
+	t=1772261944; cv=fail; b=XgX5XsYuCzdDfFzGvjWvShcFFxJk2Yxuekmzan6ytGmiavA6hA6Ig62lx1k9lkjvHbvQ2p5qj/UEyjt1UTBSRGu9m+9r8ZZV2LiJHVj2xxF5oFq/Eu4A4BnUWelMGbu8ACbx0k89+DEyCnkEcEnkoRXMoS1DqqHQS30t18IqNco=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772261939; c=relaxed/simple;
-	bh=hzUBkv3cdLIw8BTay1V8Zj1CR3imQ8AObFsq7gN8ivc=;
+	s=arc-20240116; t=1772261944; c=relaxed/simple;
+	bh=NYimO/CGROz7py9Z2HSwMdgtbC9dI7KXOcHZAgmpZjA=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=exrg2g8hUdkurkb4PsBnAoNf6/1sHQsgk5eb4sCM1rc/JeK8NiD29np9NqH1bIB0b2dO+HDM/ecC+9vrp0i7ySXAvZbw6DZ/9VrP1LS6lPijUwvN6lMKbMeGmDRHqoYgir3pKWSIkbCUMwaoCVeISNFPT6I9LAxM9YUGVyjCBao=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=khadas.com; spf=pass smtp.mailfrom=khadas.com; arc=fail smtp.client-ip=40.107.44.140
+	 Content-Type:MIME-Version; b=Zp1Ingydz5gj6jSaAXtyG4gCgjxAyNm7mq1i48nKB6uy0peXB45vdX3kAkyDEsQZ2ikteTdCA8zufqcmd8bqZihYMRRzunw735f/jy+aqTynTHUJjhXG3WOEtB9QL5bTbzoQnCnoWSws7qFiXYBO8hFH9Q1tk49Wba6CdW3855E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=khadas.com; spf=pass smtp.mailfrom=khadas.com; arc=fail smtp.client-ip=40.107.44.141
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=khadas.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=khadas.com
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=GA8C/gx/VgZim45o1FHa0knHmAbRc9c9W9bXT6a0kiYv6KEoYqByLwiFISW8vTjNsucX/xAgZLWSfuMKiksjvoyIcJ21dAl2AE9+9Kg5j1fP7Tat2Wun3VEyalCjYulq9z8r6x351v3lqnxKgoSgR1SnqkSBkzGMlCo2wHQV6M506/R7LVrQKo2FF9ZUSWYZo9AHyJwZ9zo/QQm9yPCF+83hRS+Qq4ylGL4y6OjBlHnVIFAaMmA2aNLVhDS7WVrXwNaXN/QL6UNf5AVpa87mRXJsK0gLNrFFFdtUrGIk8fmQQidcIvKlcWOAofZ7F1jH/SXWuhZsazeFHbmbuOTtBA==
+ b=c2OCZUhlHw7kkKg0t7hDDLe+Ur8AunFaqhCbOZrxXsmQt8bo+xEr/cBzBFtlVKX4DolaDk8N3kwnYqM5Y+eynpaXcomXD1gvjcRr1+HBhXjfN2DEmsmS5kL9vy8GI4foQ/j0lII+JWE0yBQHCPevuXo2Kl67HZpzO0YFY5IPDHrra3Eao2J5HcQ/mLzBKXY1DG0aUN/ezLLTrFDXpE3MdCAyhiACa32BQ4chj5jxB2qo6tXNTsvjabgwxtH9+T5YDzoVJKzEmzHchtdY4uX+cIbL3e0TEzTAKfsmnkjj99lyayONZ0qGoC6Qk0Wssp4kujFjbpQBkn5gTkf93eW81g==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector10001;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jPrlDzf+xVPa9e7rjlS6DxTqLacHiB752dPJV77m5Rw=;
- b=NUsxEeDTckUh/TDUw88SBJU436PhH6ILX85SLwv4sf9MNzCq2NCWGY6XWAdqsMRwbpHzIAjGmNlBWZOxCmTHwx9wDEKCVh794URsXQkl5aU/lUzeHcLy2ocEjBX+2dpdw/Hv3H6ggD8CDgpgaNyGo82TqGoTGmfdmex7sGQUHYex4DJxuxM/ARSTzaZ6uAadO/3DkKs44OTWfKxdQeoBEK92fBbKUGAgtZmXR0eM2d6m/tNzXHiCMFh8QGKAcLPyS+FImfL4F8Jk7SWig9W3+rmVAVMLgZr4YFhUK/0yBKu0MTbaim2k8S0qUHJDWfbzouUQboZkH7E3YVEz4E2w4A==
+ bh=3eX8F5eFGbVueYaJ44sROdGrJ0i17oo+QYnF4dStFUo=;
+ b=kmIgyq0e+58XNUvQ1vHoCF3AI1O76qztwAeXjYkXRSEY5K64sCxdxWI3w2lZRjq9hPCVCs5kQZdtiJxILDSIJrrm7frcQbZX/yfzxA44o69zrP3INdgFUs9iCnlB5jyqRX3ZS4WrMeY60E2dmNlKfVfD9Q+CLiOEx5JM+AyH2M51Cqx+Lrmn+VmyDdawicxrzxChBcriYoUjQ7yKAWtG3T1wHSiMVsWg2c0d12eLv756taFp7jytSdGntdyD/tsk1WtK/ypCJC1lPHMzEUluTp+B8Jf27k/pwQktdjRbttK6A9Nk36d7ys24BTJZzRTlDsaI+gqOrLlnPRFwfoJI0A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=khadas.com; dmarc=pass action=none header.from=khadas.com;
  dkim=pass header.d=khadas.com; arc=none
@@ -30,11 +30,11 @@ Received: from PS1PPF62EEA9B1D.apcprd03.prod.outlook.com (2603:1096:308::2da)
  by SEYPR03MB6722.apcprd03.prod.outlook.com (2603:1096:101:6a::5) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9632.22; Sat, 28 Feb
- 2026 06:58:56 +0000
+ 2026 06:59:01 +0000
 Received: from PS1PPF62EEA9B1D.apcprd03.prod.outlook.com
  ([fe80::20a2:a696:ac88:2549]) by PS1PPF62EEA9B1D.apcprd03.prod.outlook.com
  ([fe80::20a2:a696:ac88:2549%4]) with mapi id 15.20.9654.014; Sat, 28 Feb 2026
- 06:58:56 +0000
+ 06:59:01 +0000
 From: Nick Xie <nick@khadas.com>
 To: neil.armstrong@linaro.org,
 	khilman@baylibre.com,
@@ -54,9 +54,9 @@ Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	xieqinick@gmail.com,
 	Nick Xie <nick@khadas.com>
-Subject: [PATCH v1 1/4] dt-bindings: iio: adc: amlogic,meson-saradc: add S4 compatible
-Date: Sat, 28 Feb 2026 14:58:37 +0800
-Message-Id: <20260228065840.702651-2-nick@khadas.com>
+Subject: [PATCH v1 2/4] iio: adc: meson-saradc: add support for Meson S4
+Date: Sat, 28 Feb 2026 14:58:38 +0800
+Message-Id: <20260228065840.702651-3-nick@khadas.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260228065840.702651-1-nick@khadas.com>
 References: <20260228065840.702651-1-nick@khadas.com>
@@ -73,78 +73,94 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 X-MS-PublicTrafficType: Email
 X-MS-TrafficTypeDiagnostic: PS1PPF62EEA9B1D:EE_|SEYPR03MB6722:EE_
-X-MS-Office365-Filtering-Correlation-Id: dda46485-3173-43bc-480b-08de7696d770
+X-MS-Office365-Filtering-Correlation-Id: 01f9b880-ce85-4050-6f41-08de7696da04
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam:
 	BCL:0;ARA:13230040|1800799024|7416014|52116014|376014|366016|38350700014;
 X-Microsoft-Antispam-Message-Info:
-	xx9OgWf6bSoXkyHIhcCIGUOAM3eYRVLSqfOvOyy9tCyFg5GJN8wklhsz+a9bMQKrOKD9aiiXnbIdx40AJDDZEmDPV/YJv9go4GBiInKd4XYPgDeXmXOmh6QwEiyT5gh194I+IDDR0Kr2jiCNKV4DWraDoWOEs16MgnMEqSU4ySLQD9pZVhyHnzTSkiTpOfW10weI7qcFtHYjQ7I6YF8oW7EpYKW86vSihIe3ZQaVWiFpiDMNWt+wV05GmEooxiAF3hFCI0AUILdYV37Pc/l8/4AoU0TBd2upElTJL3MYUd8i2TU1vrzbEsBgn4YG+cdygoE7GAShoYtZUr0+DKK6lBGtJUPKI1LyId18VlHYMu/kyxcuLXZ0BJ4NPd5OS1SYayxKraCFFqwHOr+J8DfnxXzLMDrbZpW5qXG6Bku7tEXey+Rlw3O10DPNa1QcOwVmlRjxKIATl1WrD/e4bREJhF5bGJnpP8ac9MEcj7Sc0/z7txHYiUbYJqZGtfzh1ceH8jdBescQMtcKutHvLUl4+nmsvUaIMwzSvnKLMDmMM5bbiXh5eQQK04Sf3zvdK9lo67+tpa/Hh8YgEbW7IvNmd2o/HvTj2K78rCDhtlxMxE4a3ZkjYn0z0rhauCSewsLuzbu4VEhsbDpqG4sR6F82ic4ZwpDi7TAijiPkudl1X+85nxXH1jtdvmgpvUj/LaTwXNUt6qV3OJtsEVwFxlVXvp1gXHmQuztcBRKFXacWEExZcVfi1EHlXfBpJOofjIzGBcnP7tzjfdo9glnqYxZ1GTNnHXWv3vY6eoowv24tg5I=
+	AnboybQUvfZDAF0jLpNFfGS4e8XU/HhMzvmCkMrJxwE+QCRyEjaQP58Qp+kvPZ8EI5i1VMR4JiTD4+hkCWV6OOO6tqG9TDTHMVYgG0C0HnXpRELY5UvWm06KICiOsmVbHFoWGkfOx+VNqARf8Oi4RLIMlA5lP3OM1Osn3cCE2KrElZuz5ttk8Rj3BbRIQBF+xUcFpvEkYjkSEOwdoXQHRocaHeR91XsHRZKSHZ3KUyptwoaDtFXyX0vw2+elEKdrXpt0ed8NfsxGAelOHrkNGyYPkakwSwmYeGBYys4dVCEihFlK/ntPh39pYZFjaZew5Y46Gc32p22Z82oKxSxwu4fIOewND7SQ8IAIJK/1wjrCuuLY329rPN+LqgqkDJaJS+bURHt17aOwpWogRNW8RD+MphtMijoTMf6b86QEs+JyYuPz3OZmgYGAAJCXYDw4JnPoKUN2+U/pDsclRKBRu5ltXihPQx+BqgljoTT3ScnMhBdbaXnyiun96FeOjC3nXxjdUvcfuHCvXlvxDbiROYVqhi9/G1nRFR1nKijy1P5e1UeEcQgqovgwvWSHOsy2mvXugW6AAbOaiB+n2KsYv9IfKiDfFsI2SLbrAwDxDButq3M4v3aUMJ2dcMAKwGVbfIxwJc4rEgQxFqRBs8CGdT+OueKZ3gmKnGaPO3OQEReBjwNJxnbwECUWbUP3PMFHiOrCaXATkjlkwV/Ji1+mtZ+/Og6CN4XLjx6NUyVh0pr5RSV03rM7giNDOatAEXG0SWcRduXoe58LZAFRkgY47Q==
 X-Forefront-Antispam-Report:
 	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PS1PPF62EEA9B1D.apcprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(52116014)(376014)(366016)(38350700014);DIR:OUT;SFP:1102;
 X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
 X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?hGFODWfIS7OhJCFYfSeNGn97qhw0PusMTLENmpGIc0vow6CvHK7e8/JXi8HW?=
- =?us-ascii?Q?2tMprxEDDxtdjaJZJ5XDPtGFB9VS8PDc/zXGpAl6SXPYFSvbcWUYr8P4Fyp1?=
- =?us-ascii?Q?1EFo8hE9OYupB+W1tkT+P+DVpU5FX3ToUhlLMnKF9L3vCxdY93sYHMTtDFZi?=
- =?us-ascii?Q?J9ubgumsI+KdHq8inBaAG7aNzkPN76v7sE7C8vRzC52u4vmR0k+EOvVtG/JK?=
- =?us-ascii?Q?NwAiHKylBU02AFTSAiYMpHcu6qsgeTEvAnQsrQ7HMSG1xIat6nIGMzRNogRN?=
- =?us-ascii?Q?1mZs6N1PFOUyBiJEJHHTRrjUfi8gk78jDousQpcKwl5M032gb+/YNLMQOGhf?=
- =?us-ascii?Q?MsvXn6l4/ac7Subf7PydDfMltq8bihDzEmKQMEKeA6zj6MdVosjG5sypZYPL?=
- =?us-ascii?Q?maPEPEvL1xLpv1K1qELq/aNQgQ8q3nPql1MUVjfUCP/cGQeSqSvuATuul2AY?=
- =?us-ascii?Q?zXAPVq5NgWPIAwqS4q68HeOq94f1jrFqFU1i1ikWchdIfD61dEFhFm9AFu1B?=
- =?us-ascii?Q?8R0eciQXe8pyNzuxEVyK9V+vCziloky7QShs+UQLJ9077sj80sGQcM3h1Yh5?=
- =?us-ascii?Q?m94+l3ZMsdWtTjUPN0b+wDX7MP6BC52C9F9ZjWpo4h5iVXcO8ggc/7aOVR8o?=
- =?us-ascii?Q?D/pzcLyFW8eHhGVl6bzV4sf4X55j1u+7ZLYqmPhl2Qz+yB0TK0Ll4f3AH7Nw?=
- =?us-ascii?Q?fsaA4x+jMX8ZhV12nYxcJLTIKpc1SqdZek3PQNpDCWEAb739N5kvJKjX5Kv8?=
- =?us-ascii?Q?xx7CIuweyDoxruaAxvgLv8PJAs+LSpbC0L1fkNB1+aO8umztcZ8hPAtjn4a4?=
- =?us-ascii?Q?VYc29LwiDXEfzgJr+UpRBWo9yupEsQO0JFekF+mEA8FVjGxtYnpLOUmIEXGo?=
- =?us-ascii?Q?82iVLBUcrKHHx2nkp5BWJjeNgMGRcZk6X2ZO61CQnfoh/3rlTCXoFOMnlJaI?=
- =?us-ascii?Q?6Z2sbiXHn8Hu6N5ZiE4qz51q/wiZ9fqwnWzj++tFCuHfMwExAPaa2udg2Dhk?=
- =?us-ascii?Q?qrZkL0F6RHeci6EyVIcCzn2oBv7ApSBnlmSJLZjlI+gaxQinjn4MZiMGB5h/?=
- =?us-ascii?Q?761MH6HOyJebqNfOyf5X2crx8Vcy9G8gGwWJp5nW2YGsz3WZKBzUdRMZ17Y8?=
- =?us-ascii?Q?j4W0JdNXhw11sJAHOhvdFmCJeBlsqDMh0PnkGRozoWvM4y0M463+XKTUDnBk?=
- =?us-ascii?Q?WrVNKkynZs2DZ8ZmeZhScJAnd3g+F/aXLgsdyN8gUai9qza84+cTevxg28Uv?=
- =?us-ascii?Q?JPsFQIhnKA+O3tghT58RFunJyNj/jk2gYi9wDNlzbrm064TiDjwNKwYejAWK?=
- =?us-ascii?Q?9L424YfPkfFnnCl7nNQi7tWtd3ffTD/kuhmFjk9PSSB6uplzlMiGkiA4RaRk?=
- =?us-ascii?Q?ZpH8IHmR1lrikibHvrIaInhpz3BIcJTQoGjlfkKaPn8doppOoi1Mb5BGGFvl?=
- =?us-ascii?Q?Bfe08FWlpWJVn4esmtvH7RGziIB+/IETJpd+nr1c2Yv7aEQtdy06ek9Xr/B7?=
- =?us-ascii?Q?EcS6tKFYvyESLQ/7+nHcIYOFYTu9BHYJstqFLsBRJcRyZur63wvtxWTI0olt?=
- =?us-ascii?Q?09Rcn/eNEJ2Cxq9nGicdyQjM17U6CIHDODWpq1nC4ipR5uMEqIjY16lq+a63?=
- =?us-ascii?Q?qFO8by/QlRkodNe+eWITiteP59igQhNXnceOvHrBS33p54k7beSlw3vkEa3o?=
- =?us-ascii?Q?avl53qABjrcbjFGoosIP1is852C1HHOE3i6jzDQBo1z42/pu?=
+	=?us-ascii?Q?Iz2yBu7UujKtkm/jSvVTcfOUro3ty5xxdypS0WHNpT7exNeDtUnp2ZA99BUp?=
+ =?us-ascii?Q?AgZiyrXtlirGWi3dXY2ViLrseK8SC3bsjG6KCmyjLlnQuIaiAlXX4k1a7/1A?=
+ =?us-ascii?Q?GLE1ydD7s3BygEGW2O/DjepSBJ/WGsfYDC2YGgMErzq0o22WuKMvsO+wO1YT?=
+ =?us-ascii?Q?0zjGd0GfLmKqC4uXkx19uQ33pw8vD2n5vbTRJGcpD8/CIzYZkh5MnBuxNZi0?=
+ =?us-ascii?Q?fkycKZjH8QhpZ36141Wx2PvopdLRqJ+dfv3AeWuExcD6vr02Zoghh5x134B5?=
+ =?us-ascii?Q?NE9135s4HkmZGvr/AheW0+RNCRPaGte07f1ZIpsLJQ+ZyM97sgQ+kTG3Qn//?=
+ =?us-ascii?Q?NutCxkgPoKbxtQwtbdo7uLhlsf3I7nbSQvGM4OmqM00xpiCby7wxD79QHEeR?=
+ =?us-ascii?Q?jMaSBAEetG8Yl73SmMsKl8OQa1KmW43TzbAOGAoTznmJjBHuFEkoCZAK3qNz?=
+ =?us-ascii?Q?9HzkC2LWrxa1QUcJugVOW1u3xTAp51RbP1TQf05/ArWrwEniTcH5CJvk7VMS?=
+ =?us-ascii?Q?eQ5sCh81VB6M4rUNqn5af9OkH4Cik4Q0Aab/vptluaMcifWcmMMzZf3iMzyN?=
+ =?us-ascii?Q?wp6o+8mQCRJKPj31eybDXgN8zaWCLX5o2tERlEmCyc3u00l1VVbLtbWR1iFw?=
+ =?us-ascii?Q?1U6mzHwK3fvUfJ5jBDzOjvgcnKbnBNMCEaaqksJWMZyvOqpHUEWpWdhXXc5b?=
+ =?us-ascii?Q?V2fKa2ROBo6DhI7kqY/Q41W27M1Vvk5JOiqTWT2U7e7KwKfW8Julfqu9tUz/?=
+ =?us-ascii?Q?zEVky/wYIS9xgDBQKujuELmelZHFBazSNdZiM+pdgYpM6cC+vHFUPg8+l8ma?=
+ =?us-ascii?Q?mdet8QHi/JLLs4pJNEyVqyhjUbrasU1jhdQ4yOOptwIiGP6ZyA52aQOJ3vzB?=
+ =?us-ascii?Q?wSmuz45ViPv/jmk31tw26vWkCsWAuHEXElGSC43my3LDf2psgcKQ0VeXucNU?=
+ =?us-ascii?Q?QvyI6ekCV/+4uQv/PSlnX2uKd4p8GpyJdbAWM7F73V7r4cuGWVRzraEqa4Ou?=
+ =?us-ascii?Q?vFSSAmHJDsYKyhU4wlFZzRU0mIf4gHJZdGesoV9IUxOZcTnFatvjm3a105rq?=
+ =?us-ascii?Q?p7REbfRAioiLbTVch4hf2sTUQgWzr4lhCSNKCyuvvzWch3Q47BLSVZpZ1HC1?=
+ =?us-ascii?Q?3IicPt9F9PyODjyqF+IVZuiGRVmbrHDnTw9PrXGlZbjEwJduLyLxXLXTFdJT?=
+ =?us-ascii?Q?0KiTr27oU5FCM67JMjgmK4LMtgIS/ZIhA1Ld1tKBMS2lALn/vJSUc8N24kQK?=
+ =?us-ascii?Q?sqbj+12e80894DH40gr7HFpbHr4bOQ/rD8JBc/3tEZQT3iU+39OR/3y3/pZK?=
+ =?us-ascii?Q?AWOjA2PK53UrBb/HSdLh7i5G9aY+pYdbMY7Rp8UmXiZq7y3NILZ47duxAZE+?=
+ =?us-ascii?Q?21I/gr+4IlCJjsht3xF3Jt9MK1+jMRzsHQo/HlkcOCAPTsWf2db0VUADBQiA?=
+ =?us-ascii?Q?uIX1hP/AMB8Oq8is4VElyE0Dc+btB1/3Oc8Z9Y8LwbM0vbE0KSeMzZhUQpBZ?=
+ =?us-ascii?Q?aJ3jgUEvbIZmCfb6rnjvhnBkkRj5+cz8cw6QCVlTb3LpBQXw2IMH+iLepG5+?=
+ =?us-ascii?Q?2yky6T0vwJGKco3uPqkxeKOI9/d8//eWaL1cCEj/m4hYXJX6VvM2ELL/iVgV?=
+ =?us-ascii?Q?7HwTpTgMBtKgTzxOt4ZrVDh5hjnbzxzxTlnXJYF/I/n0lgAoSHudJWfedgSI?=
+ =?us-ascii?Q?0bYbDMnDMVsP1VtJpt79HoXxB8fmqxM/5Xl+C6NVXIAcdOZX?=
 X-OriginatorOrg: khadas.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: dda46485-3173-43bc-480b-08de7696d770
+X-MS-Exchange-CrossTenant-Network-Message-Id: 01f9b880-ce85-4050-6f41-08de7696da04
 X-MS-Exchange-CrossTenant-AuthSource: PS1PPF62EEA9B1D.apcprd03.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2026 06:58:56.7059
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 28 Feb 2026 06:59:01.0882
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 2dc3bd76-7ac2-4780-a5b7-6c6cc6b5af9b
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AmFmZmJ1vZ8UQ7jEQ3fLPS6V3kDovOy1Ac4kkvj5DE5XK9H4cj590mzzxOIzFMQp
+X-MS-Exchange-CrossTenant-UserPrincipalName: jH4FuybPmSYD1eWo0bjql4husW1GfEZUjxyh8nQ47vIQwUdswjCyHzK3hx5GN1oZ
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: SEYPR03MB6722
 
-Add the compatible string for the SARADC (Successive Approximation
-Register ADC) IP block found in the Amlogic Meson S4 SoC.
+Add support for the SARADC found on the Amlogic Meson S4 SoC.
+According to the documentation and current testing, it is fully
+compatible with the G12A parameter set, so we reuse
+`meson_sar_adc_g12a_data` for this new compatible string.
 
 Signed-off-by: Nick Xie <nick@khadas.com>
 ---
- .../devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml        | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/adc/meson_saradc.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
-index bb9825e7346dd..5496a0dc714aa 100644
---- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
-@@ -27,6 +27,7 @@ properties:
-               - amlogic,meson-gxm-saradc
-               - amlogic,meson-axg-saradc
-               - amlogic,meson-g12a-saradc
-+              - amlogic,meson-s4-saradc
-           - const: amlogic,meson-saradc
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 47cd350498a0d..3ac48b7842c4f 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -1313,6 +1313,11 @@ static const struct meson_sar_adc_data meson_sar_adc_g12a_data = {
+ 	.name = "meson-g12a-saradc",
+ };
  
-   reg:
++static const struct meson_sar_adc_data meson_sar_adc_s4_data = {
++	.param = &meson_sar_adc_g12a_param,
++	.name = "meson-s4-saradc",
++};
++
+ static const struct of_device_id meson_sar_adc_of_match[] = {
+ 	{
+ 		.compatible = "amlogic,meson8-saradc",
+@@ -1341,6 +1346,9 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
+ 	}, {
+ 		.compatible = "amlogic,meson-g12a-saradc",
+ 		.data = &meson_sar_adc_g12a_data,
++	}, {
++		.compatible = "amlogic,meson-s4-saradc",
++		.data = &meson_sar_adc_s4_data,
+ 	},
+ 	{ }
+ };
 -- 
 2.34.1
 
