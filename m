@@ -1,126 +1,91 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC0D52E8B71;
-	Sat, 28 Feb 2026 16:27:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A08D72DE6F8
+	for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 16:27:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772296036; cv=none; b=OF3D7Mzn35BvtEQot8GCLKRQw3ec5qXjvOUIeklTV/Bz6vZEIYdSaGMPblUoNFFL7XPYziHeURCwVqV20AjVbRR3lfAIZmIV/fllMn0Eeb2F+xz5wVpndoQxlcWviwM8YaFxPtshgvr6eeOjlOVI8IMud+OK55+pKSC6UJeRwfo=
+	t=1772296060; cv=none; b=d+HxYviFDEnHXdCxo21pRuozvpYVVU79QH67eU/HgGfxJ/FyFT/FHN56dcK0UpRPU3GbDIPEjYByZ9bimHtZiIcMUHAbdTmSgxY22DmJ6mq1xtNOBkOGwQOuwZ01JxyN1wWISbPa0qgqZUy7EaA1D/yQkHbDjIfM4HbBSvnTBok=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772296036; c=relaxed/simple;
-	bh=4lPWh/DFvuZXEl2b06WYNmLoRprnHEnN0jaEofz6TxA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oqgTyiR1zkZrNavVZICkeaF2XHhPbKkE1N8X9Ix6x9ZoNWzZfd1X0Vr+TKkoyxFm0gRz6Tgm90P81X0TnvkBaJt8/esxZs/Aff8260l+edHSQL7oMbbHQwe54+31DHgjtZj3k6U7ABgE4bZ2Yqh5KljcSO7cPSdMtlkhdjtTBPk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=isFMtRjt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772296060; c=relaxed/simple;
+	bh=i3/rg94Wfo6LrOwSARkMAUOZfbV/3KB0aCm2MchfZZc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=AhBgtktmm8mZjMJvDYipUwA2SyS7h8bnrvfi6DfDupAtquH8RIwSOwhdTUUtlCoawSFXAPdV4qa/KP/VU3le+txpyTb6Z8GpF2zZ/tYxdg1k0O0ejhKORvrfTiVroGESa4PIbb44vigSQHeoo+8bjNCkDfkI9DIeQ6OcWmXk+Ek=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=UAf5ztuM; arc=none smtp.client-ip=209.85.161.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="isFMtRjt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4FC7C116D0;
-	Sat, 28 Feb 2026 16:27:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772296036;
-	bh=4lPWh/DFvuZXEl2b06WYNmLoRprnHEnN0jaEofz6TxA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=isFMtRjtNImO1nHrgipcHm9WBe8E2gcJFd6gpGvfMLgrm7K9z9jMrIoQEnKbWIYPj
-	 uVGt7wjI2U7J+uhFxKuxR5hNu6YwJ2OEkt/WWqu6nUk5mm4DeqNjOPrRQnhK7iIK6v
-	 vZiD2rb3ah5jexuPckvkSFELdDXIx2IgplCihAGRBRQJZPkgeVAqrdfNw0YxL+w3bp
-	 I1xqjnF5xT53cDvRG1j7CdHBcamkZ2zyJ/g5Q4BF5Twmhs1YpoejlrL+mGck5cUxVJ
-	 N8ePDPAb1nfGYIUFuW/SNcZ/Z24iHxdebtzzC1nIBMSoA5f233e0TlAaU30m+CProK
-	 VA2gwSJJZKEJA==
-Date: Sat, 28 Feb 2026 16:27:07 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
- Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH RFC] iio: adc: ad4030: fix calibscale read/write unit
- mismatch
-Message-ID: <20260228162638.00440b5c@jic23-huawei>
-In-Reply-To: <20260225113102.84568-2-giorgitchankvetadze1997@gmail.com>
-References: <20260225113102.84568-2-giorgitchankvetadze1997@gmail.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="UAf5ztuM"
+Received: by mail-oo1-f52.google.com with SMTP id 006d021491bc7-6759a5576f5so1965322eaf.2
+        for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 08:27:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772296056; x=1772900856; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=CP86Ut47LCtiOHeXtYEDxgLTZp2P6pBREzSVZZ3bzCw=;
+        b=UAf5ztuMGiaK03VMRKM/7oay37SOZg+3gjmRDZlO5RlgdSyqz6y6oRJPqqf4sMnjSs
+         eMFB/RPwq3U0nD67jkjE/e48yORdl/798WHTW/a+HDF031sK+OZ3plOPMXMasIUE32WI
+         HamnS8Pf5rIlvRxLLXufesOltaej0yTChMGuNtYraqX/lZOD18QinQFaHtQzzLcp7oHv
+         A+9I3pBCeGpmtdBnFcY2yYibFNC6VneQJ7/QLYBbw+qP/qNHuHnzKyNVMcrhYUxPs2Oc
+         r9KYzxab/IQG2yeq1R2tOptcd9wt7PDooMz1Iy+eF0140+ZJc2pU1jFvrHvdGQqDIrjl
+         ysuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772296056; x=1772900856;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=CP86Ut47LCtiOHeXtYEDxgLTZp2P6pBREzSVZZ3bzCw=;
+        b=FgSxZ6KNrakmmL4gQR5kzb4JgUquZsS3VpuM/dPYlZBj6kyJACt0bEgZApZzRb+vpI
+         riSwDh13/l8NxFch4upX8yDqP7TLmkN38D98+Q3nLhFbNY4eUHcrckXtvA0EEF44URLY
+         l4Rf0iheOJ3vlppFLDOzxJatj3xwhmbCkMgJT4hxQqksUMJKMZcXYgF20QsAKhtbvUBx
+         fVkjhiQzYFld/WqP0cqpk59KO65SpA+7VOc1lZdEhTRP3uGKCLE3zSWjon/A8AIoLUeR
+         19SCkekR2u1zBQROWTXSm8f1AfXqPPKmbRJ9vAYTHEJGbxKvGUVwjLRk4H6KFYk9cwcd
+         U6/g==
+X-Forwarded-Encrypted: i=1; AJvYcCWYTDMJrB8yK8lAyogfD4idaWSq29vTxdtkivt4aafyZwPDJvRQJIvIaWDNblGlriz3ngSjHHNoQvs=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz7miOZQ0Jev2c+NW0uxcsHHEycVnha3WeacPR+0GUcKLFVYNvm
+	JCE60pn2pXmk0pBNvTT4Rupl4DZCD9Stf4miXMCjBkpp6Y0Fldm1w+o6F+RrykdRXT0=
+X-Gm-Gg: ATEYQzyimnkAaMGQANa+npR+0+Njm2lBO+Kt/ubCZxzNvnB7fnLovxr9djuG7hAMKmv
+	BRllBU+72pBny8msMVoUDugEuSFhCOprWrRu0Tqqkle/EmIoga031N3RuuoBPSDU87xAuNw1vxc
+	MYmq4BxbfGfkHIufDHaN1p0ZZ6UFoHcwyOfrUZW47ifoKi5T+MgzvcCAogLv0/E1+qv28tlf3sI
+	N83BQWvUCWjUgWgqQFPjVWNRnPKXuDq8I4uJhY+Lpjzb+bZWqsVBDChZYKDuP+LiZp7t3tEDXO7
+	0Px0AmCT4lpw1IHf2Y11JxpWj2SH3chRZTFhiaoV5oSEzq2IKtyJPIkz8YQH8VQkyvTTZfbY5yE
+	kot+um9hpHf5dg5z5GsccynVg8WfKWw7dGDbjO8xdS57zKxArtZG0Q8Bw1FSQLS/JhOFGKMEKLA
+	Xq3dUon0eraL7RJ4rvhM5MI8KW7hCDDqCVnXtMqng9ZXmeZgVAfjBFuykKCFreZapBkwGIPt0Rn
+	w==
+X-Received: by 2002:a05:6820:1b10:b0:679:efce:99a9 with SMTP id 006d021491bc7-679fadb8724mr5462181eaf.11.1772296056439;
+        Sat, 28 Feb 2026 08:27:36 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:1031:c44e:9f1f:17c1? ([2600:8803:e7e4:500:1031:c44e:9f1f:17c1])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-679f2bec8a1sm6258781eaf.6.2026.02.28.08.27.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 28 Feb 2026 08:27:36 -0800 (PST)
+Message-ID: <f697a233-2fde-49e8-8c85-dbcf2599eaa9@baylibre.com>
+Date: Sat, 28 Feb 2026 10:27:35 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 0/5] iio: accel: adxl345: Implement event scaling and
+ ABI compliance
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>, linux-iio@vger.kernel.org,
+ jic23@kernel.org
+Cc: rdunlap@infradead.org, skhan@linuxfoundation.org, nuno.sa@analog.com,
+ andy@kernel.org, corbet@lwn.net, lars@metafoo.de,
+ Michael.Hennerich@analog.com, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260226151108.22383-1-0rayn.dev@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260226151108.22383-1-0rayn.dev@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 
-On Wed, 25 Feb 2026 15:30:39 +0400
-Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
-
-> The read path returns calibscale in IIO_VAL_INT_PLUS_NANO but the write
-> path treats it as MICRO. Since no write_raw_get_fmt is provided, the
-> IIO core defaults to MICRO when parsing userspace input.
->=20
-> This means reading calibscale and writing it back results in a ~1000x
-> gain error.
-I'm not following this part.  What I'd expect to see something like
-reading avail gets you
-[0.0 0.0000030518 1.99996982]
-
-Reading the channel gets you maybe 1.1333333333 and then when you write
-back because of the lack of write_fmt it gets truncated and you
-are effectively reading 1.133333=20
-
-So I'd not expect to see a gain error, just a loss of precision.
-
-What am I missing? Please provide a numeric example to motivate the
-patch.
-
-Thanks,
-
-Jonathan=20
->=20
-> Change the read path and available range to use MICRO to match the
-> write path.
->=20
-> Fixes: 0cb8b324852f ("iio: adc: ad4030: add driver for ad4030-24")
-> Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-> ---
->  drivers/iio/adc/ad4030.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/ad4030.c b/drivers/iio/adc/ad4030.c
-> index def3e1d01ceb..3d823648371d 100644
-> --- a/drivers/iio/adc/ad4030.c
-> +++ b/drivers/iio/adc/ad4030.c
-> @@ -423,10 +423,10 @@ static int ad4030_get_chan_calibscale(struct iio_de=
-v *indio_dev,
-> =20
->  	/* From datasheet: multiplied output =3D input =C3=97 gain word/0x8000 =
-*/
->  	*val =3D gain / AD4030_GAIN_MIDLE_POINT;
-> -	*val2 =3D mul_u64_u32_div(gain % AD4030_GAIN_MIDLE_POINT, NANO,
-> +	*val2 =3D mul_u64_u32_div(gain % AD4030_GAIN_MIDLE_POINT, MICRO,
->  				AD4030_GAIN_MIDLE_POINT);
-> =20
-> -	return IIO_VAL_INT_PLUS_NANO;
-> +	return IIO_VAL_INT_PLUS_MICRO;
->  }
-> =20
->  /* Returns the offset where 1 LSB =3D (VREF/2^precision_bits - 1)/gain */
-> @@ -720,8 +720,8 @@ static irqreturn_t ad4030_trigger_handler(int irq, vo=
-id *p)
-> =20
->  static const int ad4030_gain_avail[3][2] =3D {
->  	{ 0, 0 },
-> -	{ 0, 30518 },
-> -	{ 1, 999969482 },
-> +	{ 0, 30 },
-> +	{ 1, 999969 },
->  };
-> =20
->  static int ad4030_read_avail(struct iio_dev *indio_dev,
-> @@ -739,7 +739,7 @@ static int ad4030_read_avail(struct iio_dev *indio_de=
-v,
-> =20
->  	case IIO_CHAN_INFO_CALIBSCALE:
->  		*vals =3D (void *)ad4030_gain_avail;
-> -		*type =3D IIO_VAL_INT_PLUS_NANO;
-> +		*type =3D IIO_VAL_INT_PLUS_MICRO;
->  		return IIO_AVAIL_RANGE;
-> =20
->  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+On 2/26/26 9:11 AM, Taha Ed-Dafili wrote:
+> This series addresses ADXL345 driver non-compliance with the IIO ABI.
+> 
+Reviewed-by: David Lechner <dlechner@baylibre.com>
 
