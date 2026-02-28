@@ -1,48 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2EBD533F38A;
-	Sat, 28 Feb 2026 17:52:19 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6664E175A7E;
+	Sat, 28 Feb 2026 17:56:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772301139; cv=none; b=hx0zNVYserEa2wRqpxRlZWP65kT408M5MA5ZznA2SlrijVUvIKXP/JHxWVHhI7O6KgKtTypVEPuonCNMDcA2lA5H+Oq5cEfNTPanLWUeHe2PNFBizvKtr1J0SqNQ5/s1eLsgsBv953MHxI/VX0WKCfq8rHvuGeOqLowTcYvEMXE=
+	t=1772301390; cv=none; b=UQsQiG4PagMR2z+ja62Rvso21UTO09mV7nHOeXoWjn1CBIiX6IIlMca6+AhqGTAX0A35YJ1Tos0QzZvlwLE+i55Z13f9hQvrxOORS8BhphnoC8xavrkhxLDIs1v9hUyFRPQ4RNuzyFiFbLYA2i3GDQ2o20qWLUlKW886HGVn1I8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772301139; c=relaxed/simple;
-	bh=3YiMsqZH0IYRRTdNMS7i3lLlsP+3iUaq6+HmJg+bBQQ=;
+	s=arc-20240116; t=1772301390; c=relaxed/simple;
+	bh=Sn2gZWLJT/bVt5udMjKiiltAZMWqkM8n6O3SYM03JmE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=HpW6T7rrDNY5ep/HPsS3jCIMJq5AYUJOLx/jvZPGvUFqB63so80VJaIv8Dn+Ls0vTjw7jFMzvXCDUMYI0G7VR0Im8/3SXcwIa45CIUDHkOmJnqrq5hm/Q0NBV0nIR/MjxDDd36amM00T9LqKe4NdGKe8AgHYExOpJ8eb3vCRpFw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Pakou9M5; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ZmSs9PUm/XUpramQz7GTkR4FPdkQYDvt/AiaKqO1gt9yPuj5Oma3v89d4asg+dxqQtqgIYd+3bgRCnzlavDkPUyTrcxNvclJTsz7ZbTiYkWUye+VebqWq+owBOZ7Kp+FMPoXEUcO6iIcugnPJAQstVUihWFs/M3nMndWooHD+r4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WypsYAZA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Pakou9M5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00BF0C19424;
-	Sat, 28 Feb 2026 17:52:15 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WypsYAZA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B01C19424;
+	Sat, 28 Feb 2026 17:56:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772301138;
-	bh=3YiMsqZH0IYRRTdNMS7i3lLlsP+3iUaq6+HmJg+bBQQ=;
+	s=k20201202; t=1772301390;
+	bh=Sn2gZWLJT/bVt5udMjKiiltAZMWqkM8n6O3SYM03JmE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Pakou9M5//aRCSz8iLjlttXz0M2U1oytpgblcvPZoKCiyt18ndpU5VVzl0cg7TgKf
-	 0Hl4PXYchVGRuInPuU2h2OS8S+4PQw/6c/yfaqrA/WFSwmRcspJTS9HRoX48UeyGRb
-	 O6+/WBLvZnZ52mCEEl2oAdiyyjPX/OZIl3BAsBprOt37cEskjiU2YmtTtsHvQ76faa
-	 bm2HkpnUenB2mEDXN/755qOhi/D7G+4Ak4mYqsau42/WxfF26AzwQUVt42A/L+gCZ4
-	 JL3i+r87vvH9snq6S1m0lgFhdEIAsi/NEkcYcQkHzcsSQ7EnKvF2+cqhftIm+xvYtZ
-	 /1Z00g1fTNFag==
-Date: Sat, 28 Feb 2026 17:52:10 +0000
+	b=WypsYAZABhxmOUc58NvkUG0kTiDVvHVv1VVTB3Q6IdGxr0soYRBrtXG/uIJaKdIVw
+	 k2FtXtJlZK/3nNzVr8McZYos/X8NTgE6vTbleV5IBuQ2a6jpjE7lxQCCfhMFiFZ06C
+	 GIt4uZ+Iq7irzn2huao9VZUb4hILEs971LBiJkUtX9Jw5ku7/yQRFRaEPGZirLVKa/
+	 m0MB71yS3O+ySU8JOh9/cS4jRufjRQvsOPBqJXFE+oBA3mbrYgJSUfZAvfxHjmLOA0
+	 85GrSjwn/c2WjdEMxZMl7gv8V//tZxOlJMjVzvdw8Y2Pky+si914LZQf81WkINI7OD
+	 Jlt59nVlyZKCg==
+Date: Sat, 28 Feb 2026 17:56:21 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Francesco Lavra <flavra@baylibre.com>, David Lechner
+To: Francesco Lavra <flavra@baylibre.com>
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
  Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
  linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 6/7] iio: ABI: Add custom data type
-Message-ID: <20260228175210.114cf455@jic23-huawei>
-In-Reply-To: <aaBtgQsU0MP8WV_q@smile.fi.intel.com>
+Subject: Re: [PATCH v6 2/7] iio: imu: st_lsm6dsx: Set buffer sampling
+ frequency for accelerometer only
+Message-ID: <20260228175621.4973f2f7@jic23-huawei>
+In-Reply-To: <20260225101632.2368093-1-flavra@baylibre.com>
 References: <20260225100421.2366864-1-flavra@baylibre.com>
-	<20260225101806.2368391-1-flavra@baylibre.com>
-	<aZ7gdO58NV6gjgWC@smile.fi.intel.com>
-	<eeb28077-0886-42b4-b468-21f5c6a6444a@baylibre.com>
-	<aaAQtJ5WTDtkxi08@smile.fi.intel.com>
-	<f637d8075569613f97fbe7ff6219e6adde53646d.camel@baylibre.com>
-	<aaBtgQsU0MP8WV_q@smile.fi.intel.com>
+	<20260225101632.2368093-1-flavra@baylibre.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,77 +49,67 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 26 Feb 2026 17:57:53 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Wed, 25 Feb 2026 11:16:32 +0100
+Francesco Lavra <flavra@baylibre.com> wrote:
 
-> On Thu, Feb 26, 2026 at 04:30:27PM +0100, Francesco Lavra wrote:
-> > On Thu, 2026-02-26 at 11:21 +0200, Andy Shevchenko wrote:  
-> > > On Wed, Feb 25, 2026 at 03:27:55PM -0600, David Lechner wrote:  
+> The st_lsm6dsx_hwfifo_odr_store() function, which is called when userspace
+> writes the buffer sampling frequency sysfs attribute, calls
+> st_lsm6dsx_check_odr(), which accesses the odr_table array at index
+> `sensor->id`; since this array is only 2 entries long, an access for any
+> sensor type other than accelerometer or gyroscope is an out-of-bounds
+> access.
 > 
-> ...
+> The motivation for being able to set a buffer frequency different from the
+> sensor sampling frequency is to support use cases that need accurate event
+> detection (which requires a high sampling frequency) while retrieving
+> sensor data at low frequency. Since all the supported event types are
+> generated from acceleration data only, do not create the buffer sampling
+> frequency attribute for sensor types other than the accelerometer.
 > 
-> > > Not sure about the latter, but something explicit like
-> > > IIO_MOD_PARTIAL_QUATERNION sounds good to me.  
-> > 
-> > Another option could be having a custom iio_modifier instead of a custom
-> > iio_chan_type. I think this would address the concern of drivers being just
-> > a proxy between hardware and userspace. A custom modifier would be used
-> > when the data representation for a given channel is too exotic to warrant a
-> > generic iio_modifier enum value (but would still need to be documented so
-> > that userspace can make use of it).
-> > I can imagine a generic userspace application that interfaces with (in this
-> > case) rotation sensors (i.e. looks for IIO_ROT channels) and can support
-> > not only "standard" rotation data types (yaw, pitch, roll, quaternion, etc)
-> > but also "manufacturer-specific" types.  
-> 
-> And I am against this. It will provoke a vendor to escape the standards,
-> common libraries and other tools. If we need something which is too exotic,
-> the driver should convert it to the standard one. This way we will support
-> HW and won't require or allow some dirty tricks based on vendor-locked
-> approaches.
-> 
-> I'm talking from the experience on what vendors are doing or want to do
-> IRL in other areas. One of the infamous example, is Broadcom Bluetooth
-> used back in Nokia phones, the so called "driver" is useless completely
-> in the kernel as it's just a proxy for the HW <--> userspace link.
-> 
-> TL;DR: I'm in favour for anything that does not touch user space at all,
-> or has explicit meanings. NAK for CUSTOM, manufactirer-specific, et cetera
-> from me is warranted.
+> Fixes: 6b648a36c200 ("iio: imu: st_lsm6dsx: Decouple sensor ODR from FIFO batch data rate")
+> Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+It feels like we may need a little longer to converge on the rest of
+the series, and I don't want to risk delaying the fixes further.
 
-The representation here is to my mind 'odd' enough that I'm be surprised
-if another manufacturer ever used it.  Maybe I'm wrong though, I'm out of
-touch with IMUs these days and defacto standards do arise sometimes.
-I'm not sure we can paper over it in the kernel without going to
-floating point maths and I don't want to start a precedence for doing that.
-If anyone can figure out an efficient integer solution, then that would be great.
+A such I've picked up patches 1 and 2 on the fixes-togreg branch of iio.git
+Please just assume they are available for v7 and drop them from what you post.
 
-I'm not against a specific modifier, but that space is only so big so I don't
-want to end up running out of space.  Maybe this is a case for a low impact
-experiment: We add a specific modifier for this format - with full documentation
-(and userspace code in the tools that come with the kernel) and see if that
-opens the flood gates to requests for other custom channels.
-
-It's worth noting I was relaxed on this once before for pulse oximeters
-(the things under drivers/iio/health) because for various odd historical
-reasons I happened to know a bit about the maths needed to get data from those
-and there was a plausible channel type for the channels (as they were always
-light sensing, be it against a light source that was varying). That one didn't
-lead to a deluge but then it was more a case of allowing a minor abuse of
-the ABI than adding an official custom path.
-
-Also worth noting this sensor provides all of the real channels in normal
-ABI compliant fashion, it's just this odd derived channel that is tripping
-us up.
+This may mean we have to wait for these to be available in a suitable upstream
+tree before I can pick up the rest. We have plenty of cycle left and
+the fixes are really piling up in my tree, so that shouldn't be a problem.
 
 Jonathan
 
 
+> ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
 > 
-> > We could even think about allowing more than one custom modifier (e.g.
-> > everything >= IIO_MOD_CUSTOM is a custom modifier) so that a sensor can
-> > have its "manufacturer-specific" data in multiple separate channels; and of
-> > course each such custom modifier would have to be described in a per-driver
-> > doc.  
-> 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> index 1ee2fc5f5f1f..5b28a3ffcc3d 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> @@ -862,12 +862,21 @@ int st_lsm6dsx_fifo_setup(struct st_lsm6dsx_hw *hw)
+>  	int i, ret;
+>  
+>  	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
+> +		const struct iio_dev_attr **attrs;
+> +
+>  		if (!hw->iio_devs[i])
+>  			continue;
+>  
+> +		/*
+> +		 * For the accelerometer, allow setting FIFO sampling frequency
+> +		 * values different from the sensor sampling frequency, which
+> +		 * may be needed to keep FIFO data rate low while sampling
+> +		 * acceleration data at high rates for accurate event detection.
+> +		 */
+> +		attrs = i == ST_LSM6DSX_ID_ACC ? st_lsm6dsx_buffer_attrs : NULL;
+>  		ret = devm_iio_kfifo_buffer_setup_ext(hw->dev, hw->iio_devs[i],
+>  						      &st_lsm6dsx_buffer_ops,
+> -						      st_lsm6dsx_buffer_attrs);
+> +						      attrs);
+>  		if (ret)
+>  			return ret;
+>  	}
 
