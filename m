@@ -1,66 +1,65 @@
-Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
+Received: from mail-oi1-f179.google.com (mail-oi1-f179.google.com [209.85.167.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7D73C430B8A
-	for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 20:04:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A56A0430B86
+	for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 20:04:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772309045; cv=none; b=avGC7kG+b/2k6rD4tC9O7gWn+LQuwxBVFSaCJtoHB4ylihQqdkgEvI6DiTd+BdKg7TnnL5hfjXUItDzZPrjmw8ycn8Gq1O+zaueq7CUrJ+8DewBF+MF09AEw9hid5pLCKFQNqnMRfk5QvDXZnDmTksIYad/s53kLH44K2c+qWE8=
+	t=1772309046; cv=none; b=cfUFghsilpB/cX/+d54T2YrvtwxN+1nIQpX4gP+8VLktF2lZ7OJeoPyu3BFWfz7/9I5OyfLXDJPl3artSeZx6LvR6G+1GkE1sHRMNjBvOQgwPu+7QPYRFAl9oiVNAO0AI0xOGEnnXugiqsUVwRvslA5REdhHQRizkUUsHytrlko=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772309045; c=relaxed/simple;
-	bh=hvun0/ynWDWaMzowPDTzCwJIAGYy+Qld1aVhTnL0qWM=;
+	s=arc-20240116; t=1772309046; c=relaxed/simple;
+	bh=XR6VB6nJF8YrvnTcNVIaVT4Xgebpbma1v4k6wmlyTok=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=O7hW9IyfhZHIYwS5JBtuFn05RzA9b4QSUn8L+9xby7bao6qDO8hJ/7Qw1szZYxX6H9zIO/e6QxrMl8xASED2q2K+XH9HNewVf6vGK+cXUp6sGX+Nx8YpH/o+vh589gYcZq8THHWyOfVAEj34Ix4WB4MznoikWzcT7kXfjnAPaSQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=MX6S+Yil; arc=none smtp.client-ip=209.85.210.48
+	 In-Reply-To:To:Cc; b=H3XHOJnI3UJreFWp30iLlerbbOetomHDYfFaBLNfEux8NcK8mBfb6TuX3ttMipVXaYEe+ilY2uHoSu8tRoHaU98RUJBX9TP+gx8tYmT1ovnBAA4Nlq3BbpsCngtRPcDx6q7VBRzmwKCK+NejJBuKK2tJD5Jhy6mB22YQVrhmkNQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=swcClr48; arc=none smtp.client-ip=209.85.167.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="MX6S+Yil"
-Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7d18a9d2b1aso2189302a34.2
-        for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 12:04:04 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="swcClr48"
+Received: by mail-oi1-f179.google.com with SMTP id 5614622812f47-463208653d6so2543887b6e.3
+        for <linux-iio@vger.kernel.org>; Sat, 28 Feb 2026 12:04:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772309043; x=1772913843; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772309042; x=1772913842; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=GT0smzTAfpvCV5w+JzL5GF01/TVTvbNjJtXgCgPsKkg=;
-        b=MX6S+Yiltnqm9TRx9QCQ2uiz4MakpE3U1Nyx/Q0fgZtwq0Wrtyb7MSiC4drNZiUjf5
-         yx6Uyia8jDAVyIpHnjwS8bux5aJIak/+4HM8rGRaEXIdV9LYXMchMEKswppcsefu52Wy
-         IzCUkkCU3qOG7rDw0y/q5zhGxQl2yqJx9WiA9rkQk4RdQkcw3sXYx734ToHNNdM7jBLY
-         1IpaOJzTEKrh+zrrMCSZSvdjhgwfxNulAo+3m7Ju2PusA4+Syk+A99oQWvVJxcGc5TNA
-         lOoReOVhNTt1NxO0C6tUsLq/YkrHZk+MKM2ckKQ385Uj9y6n5yqrcVuVMFCiYCuiIqtc
-         BtPA==
+        bh=7RA354iU71vdxVtpuvKh7wmklzvLwNqQbv7Pv/0iW5c=;
+        b=swcClr48MmzE91O3+lCFCvVK+w18pTnIWUDCsPG5RRFwOLSs8tPf0leO6S3hEnuZpM
+         nXLh9cfsedyIxCOr2Dw9WpdiykGbgSnJWmzejPuYROExOsra6xTEuncVYlB3dEQc/Scz
+         057fFqr7rGuKX7UEAMAZxZmpbd81NG2QwXiNNYSO09hEKqT3WlhXOOJ1hq8o08WDKHQp
+         SRsq+nGEIKYm3MKmXh+B4w9T0OKmQcBsiru7cWvzgn8HZZ/hF2YxFR5wrg8v3zcT+KuD
+         PAUsXOjcafjiJXeNCMIXPPwb5nXGnNfw2BcxPOs6yvTU+FICzqyBCED9wxKXORHMZl2X
+         G9qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772309043; x=1772913843;
+        d=1e100.net; s=20230601; t=1772309042; x=1772913842;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=GT0smzTAfpvCV5w+JzL5GF01/TVTvbNjJtXgCgPsKkg=;
-        b=fujqw78if7G067BDrS2L7g2f26381fc4hzmzprkJhL/U5POHXQah2KdqYR0ZSgYEJZ
-         52+IOBq+NDYROgm8tjiZ9pV9OTX1hBgpCw+qW/TQnWwlrpn0Uz7CUXmZrECfOIX3Y2Ye
-         PrX7fE/2hhea35jrPmIxmv5OcvTAplK/9B8vhV2A/vXg61QLi/E7nY68EATS82H2iabz
-         uLgGzBiuZ+kAV9lQUSD3v3uJS6NDNNsGbIOVFm7h5MZXm/9DtoWMjxt2uKg+OdMGk+91
-         Ef24J8GVj7vsEUfD4dBxyzZcnwNfEUVlgPYEukymo40ng3/xo/9/qt8K+czcjgkrp63d
-         GJcw==
-X-Gm-Message-State: AOJu0YzuL6Ed8yVx7KLUwT0mSF5HTVp3yrARq5r3hCAdTMlrpPpdzDdX
-	EilYUeeXjFFmzu25EycEcoFUPJ77Vh6/WRyT8zCt7Kzfh6lu+RvQsxX/2TPlPPwuLC4=
-X-Gm-Gg: ATEYQzxB930UUuiBldBFXmxhDI08G0qdfU6xsQ60zgfeHMkmBeQkTyqySEjyFpZ5xFa
-	/OK08FB/6glwKcSo58N2a6LTX/5XUbgtyKBFqdTAUy+S1iyAcYX9blujChlP8y+Z8JbKDX1HMV6
-	fj7LErBftRaCLFxpyXj0xhWUcrkHZLg8AK+2tfvPyELXFYLTBaUkf0d0kEui3BRC/F6cjA2SUzl
-	y5ytHJXdLVSOo7OcPh1dwGAbsv6PyjwLcwEIaTXVZBC01mD8yZIYORqro4oNoyGpLemwNtPAeDE
-	aZm1p/AUii/OmWb9jct7mQKk+EyUp+JhH+thT70iKYvXv3m03K8QuureGWP5CgqfbDRh33v8MPi
-	COLcja09RdgDuGCFp+dSq2nG9yuMkMSKUVhBn0RZHS02cXawFqXdCwBh5KT3F80de9ipOI/36/b
-	qqpQIWGWNm9j9pnPW2CgPOWrk2VZyDHsfen0WxLxw=
-X-Received: by 2002:a05:6871:a86a:b0:3ec:321c:b2ac with SMTP id 586e51a60fabf-416270c77e3mr4847845fac.37.1772309043510;
-        Sat, 28 Feb 2026 12:04:03 -0800 (PST)
+        bh=7RA354iU71vdxVtpuvKh7wmklzvLwNqQbv7Pv/0iW5c=;
+        b=HxemUzQUrYbYhicU2Ifljse17UOvRVRdXS0ZWtsW+b8K/fmRCuGoGxdWl5gmTY6hf1
+         lRd20PiicO34O+vwleCQPumm7xll2ThrEntQ5gxrpj++keC6UeIakX+xTAUfTOUA4y0M
+         uy96scdK+yuSRvLCeomd9MLoKv5Rb5OpbBCzFy7cN45tEkMOLnGUcVysnCyyy9okCRcC
+         TlRinMqxOaSyHLEs/w+x3cCLNiqpaAkD2NjE66Xx5Hy3DtIQTCU5PghlWuBkMp3slo7B
+         9QiIp/XahNE4hry+GKSujjKOm04T8fnTHjKoFjuyCdgtBX512dmAALmRQ3+5/9e85lGl
+         M/Tw==
+X-Gm-Message-State: AOJu0Yxsx9ezIaHOBOrm9mBc+6P8o0Tss9lJtumrAF6AsO6nNDPpgQsw
+	Zxyda9okclNQFG2t+pDBNCH5KtyQtCsa401ecgdsq6jUPqerdlNcyjXMlChMrLfcQ/Y=
+X-Gm-Gg: ATEYQzzNy19zUZSvfL7vXiw6R2/UijkNndQ68powzVc/luoUPoX0noCCMCPheRqtLRq
+	61mfIq3T9JKELmzNf9xP/nFZMhdI0O834Y4Cj5SclOQVWvzz4TU8iUiJ4KtbKziS6JJ1TVF6jU6
+	frQFeNmhxBExKoanrU4Hs8YHnUU0VZQeIQEEWyoGxbq2ButRCltiIMhO7AZie2DSA/afLwpdXGT
+	kEJpXUc9XxKzriDktKsDCJW6NzYk/+iCB+A54VYRs/Rfpc1KXNwtvU26t9TQ2yT1IXRZX1Iu5lz
+	VwhJDyr67qMzrQS+nzC8LFubkTPjna0K3gJJ3nxOt3HbZkRGJa+IRCaYmMk2mCiJSDnjq+5BCFX
+	a7HF3O/RjcFzfUDRUTGOp+O7uGZPRf9jxlj8AmBLebDW03N5fR+7g+vL2o3Qs8d9Wa0TxgO2ceV
+	aBYMd75NYnCF4oE6PcQhZfv/QUqshp
+X-Received: by 2002:a05:6808:6f93:b0:45e:a1e2:2808 with SMTP id 5614622812f47-464be9e264amr4592348b6e.27.1772309042658;
+        Sat, 28 Feb 2026 12:04:02 -0800 (PST)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:1031:c44e:9f1f:17c1])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160d2cf00fsm7579785fac.20.2026.02.28.12.04.02
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160d2cf00fsm7579785fac.20.2026.02.28.12.04.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Feb 2026 12:04:03 -0800 (PST)
+        Sat, 28 Feb 2026 12:04:01 -0800 (PST)
 From: David Lechner <dlechner@baylibre.com>
-Date: Sat, 28 Feb 2026 14:02:23 -0600
-Subject: [PATCH v2 2/2] iio: orientation: hid-sensor-rotation: fix
- quaternion alignment
+Date: Sat, 28 Feb 2026 14:02:22 -0600
+Subject: [PATCH v2 1/2] iio: add IIO_DECLARE_QUATERNION() macro
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,7 +68,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260228-iio-fix-repeat-alignment-v2-2-d58bfaa2920d@baylibre.com>
+Message-Id: <20260228-iio-fix-repeat-alignment-v2-1-d58bfaa2920d@baylibre.com>
 References: <20260228-iio-fix-repeat-alignment-v2-0-d58bfaa2920d@baylibre.com>
 In-Reply-To: <20260228-iio-fix-repeat-alignment-v2-0-d58bfaa2920d@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -78,48 +77,58 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-input@vger.kernel.org, 
- David Lechner <dlechner@baylibre.com>, Lixu Zhang <lixu.zhang@intel.com>
+ David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1274; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=hvun0/ynWDWaMzowPDTzCwJIAGYy+Qld1aVhTnL0qWM=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBpo0opGwtMAMyKN8kl6Ic0I2p6gJBg3VoYfY//c
- UlxpftaNIiJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaaNKKQAKCRDCzCAB/wGP
- wK8xB/9dHEQD0c8C8Rg61xc47xQOsLaBUDA7ANfx/2in3iGZ/IZzyS6Dk+Ty6fzkwPUDdjv0etU
- sdCgDo3KAa9ie7O6mA0UKKea2eSadkiv1Xhek3wCm+kavT8DutVlKkUfSeVz+3PSd/119powJgj
- IZtkXE/x1Vk0+CyqmKYfF417RySl/shHBXUvNi3FYwLxbPiTN8BZDzryjIVgVe7LRejTsBa6zZ6
- Xh5NgEf9V4zApmel7B1nZ08hm1Io3qAAV5vTeQSWDS4EForyIZfbiVzor1mJ6LLO3dDrWXp6zvN
- nnn0QALmvqo4OfQb5xkyeIlP8Psf4/OYk9fTYKRhGgBidZvG
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1688; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=XR6VB6nJF8YrvnTcNVIaVT4Xgebpbma1v4k6wmlyTok=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBpo0oj3aPK6TTibAywCpnnXbphM5bdQhcyMCAKB
+ SO0lC7iiGqJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaaNKIwAKCRDCzCAB/wGP
+ wLj1B/9HqCuuUKHXKZFQAMuLL2CVLsEKFAPI9dc2LA9n9Z9xSKLtDQRcABPPYz0zos0H0iSqtXJ
+ 3tgqd/k+NH29iprDIwR8g3gs+mRNDZ/kGTiTNgjQzZpbsylIeXDceSeYi9kj+H5d142Ge7rXK1d
+ 6nLXQj5c7OEsZ/k7kN9HfIJGs1+G9KXupeWGz6y1Tb/yopXgvjZ6088w43HAAnRqehkwzWSB2pe
+ 05nAae1116lUUbHRzUBpBYozfYwWEaM7U0nHiQBgZy5vuiaVMjOYBaGaoMjf+AwKhjO81Eekiwi
+ l0rxaP/6geEzi+bP8jpazjvkmVoc7n1J9fCP4ObrWQm2w++o
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Restore the alignment of sampled_vals to 16 bytes by using
-IIO_DECLARE_QUATERNION(). This field contains a quaternion value which
-has scan_type.repeat = 4 and storagebits = 32. So the alignment must
-be 16 bytes to match the assumptions of iio_storage_bytes_for_si() and
-also to not break userspace.
+Add a new IIO_DECLARE_QUATERNION() macro that is used to declare the
+field in an IIO buffer struct that contains a quaternion vector.
 
-Reported-by: Lixu Zhang <lixu.zhang@intel.com>
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=221077
-Fixes: b31a74075cb4 ("iio: orientation: hid-sensor-rotation: remove unnecessary alignment")
-Tested-by: Lixu Zhang <lixu.zhang@intel.com>
+Quaternions are currently the only IIO data type that uses the .repeat
+feature of struct iio_scan_type. This has an implicit rule that the
+element in the buffer must be aligned to the entire size of the repeated
+element. This macro will make that requirement explicit. Since this is
+the only user, we just call the macro IIO_DECLARE_QUATERNION() instead
+of something more generic.
+
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
- drivers/iio/orientation/hid-sensor-rotation.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/iio/iio.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
-index e759f91a710a..6806481873be 100644
---- a/drivers/iio/orientation/hid-sensor-rotation.c
-+++ b/drivers/iio/orientation/hid-sensor-rotation.c
-@@ -19,7 +19,7 @@ struct dev_rot_state {
- 	struct hid_sensor_common common_attributes;
- 	struct hid_sensor_hub_attribute_info quaternion;
- 	struct {
--		s32 sampled_vals[4];
-+		IIO_DECLARE_QUATERNION(s32, sampled_vals);
- 		aligned_s64 timestamp;
- 	} scan;
- 	int scale_pre_decml;
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index a9ecff191bd9..2c91b7659ce9 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -931,6 +931,18 @@ static inline void *iio_device_get_drvdata(const struct iio_dev *indio_dev)
+ #define IIO_DECLARE_DMA_BUFFER_WITH_TS(type, name, count) \
+ 	__IIO_DECLARE_BUFFER_WITH_TS(type, name, count) __aligned(IIO_DMA_MINALIGN)
+ 
++/**
++ * IIO_DECLARE_QUATERNION() - Declare a quaternion element
++ * @type: element type of the individual vectors
++ * @name: identifier name
++ *
++ * Quaternions are a vector composed of 4 elements (W, X, Y, Z). Use this macro
++ * to declare a quaternion element in a struct to ensure proper alignment in
++ * an IIO buffer.
++ */
++#define IIO_DECLARE_QUATERNION(type, name) \
++	type name[4] __aligned(sizeof(type) * 4)
++
+ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv);
+ 
+ /* The information at the returned address is guaranteed to be cacheline aligned */
 
 -- 
 2.43.0
