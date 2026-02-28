@@ -1,44 +1,95 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6664E175A7E;
-	Sat, 28 Feb 2026 17:56:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3CE41375AC1;
+	Sat, 28 Feb 2026 18:00:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772301390; cv=none; b=UQsQiG4PagMR2z+ja62Rvso21UTO09mV7nHOeXoWjn1CBIiX6IIlMca6+AhqGTAX0A35YJ1Tos0QzZvlwLE+i55Z13f9hQvrxOORS8BhphnoC8xavrkhxLDIs1v9hUyFRPQ4RNuzyFiFbLYA2i3GDQ2o20qWLUlKW886HGVn1I8=
+	t=1772301630; cv=none; b=rFTlUPOFZTmzY/wAFlCykNOe8FDBZBPC6rFo0BidI5M0Gba6gmvINod3X3BjEAm2I+OtBIe3o6lKES9IXetb2/KFQHz/J/98MAtHRbuMHaVXZN3hqtIV28zfxrU4pCWgQIgTB3MXh1R/Vo9j/dpFZkrmRRA4fk7LHvIVCSbCX5c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772301390; c=relaxed/simple;
-	bh=Sn2gZWLJT/bVt5udMjKiiltAZMWqkM8n6O3SYM03JmE=;
+	s=arc-20240116; t=1772301630; c=relaxed/simple;
+	bh=kHCRe4FxCpKOmGTFDbEGFmwKc5c1cbzYW9mRrhA/2zM=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZmSs9PUm/XUpramQz7GTkR4FPdkQYDvt/AiaKqO1gt9yPuj5Oma3v89d4asg+dxqQtqgIYd+3bgRCnzlavDkPUyTrcxNvclJTsz7ZbTiYkWUye+VebqWq+owBOZ7Kp+FMPoXEUcO6iIcugnPJAQstVUihWFs/M3nMndWooHD+r4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WypsYAZA; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=rEYsZCofNJjF/T3285U3LlOis4c1wDyVX/PkfMVlaCbthc76U3iB3CXMhDGqCj3Xe9+EZ4q61wPbsUYsU17H9RzmC5UkfL5Ve4gdw94DrnOx+jVH0mEq316O1qD7A9UDeDJf4YuDMBqRARkApBnVGfbean2Pu+i3fFir8NizyAM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Y5Ww6oOt; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WypsYAZA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60B01C19424;
-	Sat, 28 Feb 2026 17:56:27 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Y5Ww6oOt"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED299C19423;
+	Sat, 28 Feb 2026 17:59:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772301390;
-	bh=Sn2gZWLJT/bVt5udMjKiiltAZMWqkM8n6O3SYM03JmE=;
+	s=k20201202; t=1772301629;
+	bh=kHCRe4FxCpKOmGTFDbEGFmwKc5c1cbzYW9mRrhA/2zM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=WypsYAZABhxmOUc58NvkUG0kTiDVvHVv1VVTB3Q6IdGxr0soYRBrtXG/uIJaKdIVw
-	 k2FtXtJlZK/3nNzVr8McZYos/X8NTgE6vTbleV5IBuQ2a6jpjE7lxQCCfhMFiFZ06C
-	 GIt4uZ+Iq7irzn2huao9VZUb4hILEs971LBiJkUtX9Jw5ku7/yQRFRaEPGZirLVKa/
-	 m0MB71yS3O+ySU8JOh9/cS4jRufjRQvsOPBqJXFE+oBA3mbrYgJSUfZAvfxHjmLOA0
-	 85GrSjwn/c2WjdEMxZMl7gv8V//tZxOlJMjVzvdw8Y2Pky+si914LZQf81WkINI7OD
-	 Jlt59nVlyZKCg==
-Date: Sat, 28 Feb 2026 17:56:21 +0000
+	b=Y5Ww6oOt+Lwkhhw6KzkZzqCLx2GB5Y6V/naeD+g/YVnGDnFJykP4eczgV77pSo6aG
+	 MwceHNzWz3tTt2nQUPDrqo4OH/XpY1QPEj4j2coQSntozKAfKLK4GkW1a2dH8TyfFX
+	 5fZRLH0VdmJrHIj0bW/2HmeVqQPjJBYdjnqVErnT7/OV5v8nL9A1bM8hWX1+RqOS8L
+	 j+1xUXhbGCwz3WIiQx9BfetTOcQFR4X46hu07hQziT4+MpACIMVHSm6kKP/vnmJT2+
+	 XJSlGPNpWjGSFDy3clti8s912U34ZnWDCJSJbRQ//cNsZce6q9IlsPUYRVrZhQYnRM
+	 3szaWx8Sycbcw==
+Date: Sat, 28 Feb 2026 17:59:54 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Francesco Lavra <flavra@baylibre.com>
-Cc: Lorenzo Bianconi <lorenzo@kernel.org>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 2/7] iio: imu: st_lsm6dsx: Set buffer sampling
- frequency for accelerometer only
-Message-ID: <20260228175621.4973f2f7@jic23-huawei>
-In-Reply-To: <20260225101632.2368093-1-flavra@baylibre.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Francesco Lavra <flavra@baylibre.com>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Lars-Peter Clausen
+ <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, Lucas
+ Stankus <lucas.p.stankus@gmail.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Puranjay Mohan
+ <puranjay@kernel.org>, Cosmin Tanislav <cosmin.tanislav@analog.com>, Ramona
+ Gradinariu <ramona.gradinariu@analog.com>, Antoniu Miclaus
+ <antoniu.miclaus@analog.com>, Petre Rodan <petre.rodan@subdimension.ro>,
+ Dan Robertson <dan@dlrobertson.com>, Benson Leung <bleung@chromium.org>,
+ Guenter Roeck <groeck@chromium.org>, Jiri Kosina <jikos@kernel.org>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, Matti Vaittinen
+ <mazziesaccount@gmail.com>, Marcelo Schmitt <marcelo.schmitt@analog.com>,
+ Esteban Blanc <eblanc@baylibre.com>, Jorge Marques
+ <jorge.marques@analog.com>, Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
+ Dragos Bogdan <dragos.bogdan@analog.com>, Alisa-Dariana Roman
+ <alisa.roman@analog.com>, Trevor Gamblin <tgamblin@baylibre.com>, Renato
+ Lui Geh <renatogeh@gmail.com>, Eugen Hristev <eugen.hristev@linaro.org>,
+ Nicolas Ferre <nicolas.ferre@microchip.com>, Alexandre Belloni
+ <alexandre.belloni@bootlin.com>, Claudiu Beznea <claudiu.beznea@tuxon.dev>,
+ Andreas Klinger <ak@it-klinger.de>, Paul Cercueil <paul@crapouillou.net>,
+ Ramona Bolboaca <ramona.bolboaca@analog.com>, Marcus Folkesson
+ <marcus.folkesson@gmail.com>, Kent Gustavsson <kent@minoris.se>, Matthias
+ Brugger <matthias.bgg@gmail.com>, AngeloGioacchino Del Regno
+ <angelogioacchino.delregno@collabora.com>, Frank Li <Frank.Li@nxp.com>,
+ Sascha Hauer <s.hauer@pengutronix.de>, Pengutronix Kernel Team
+ <kernel@pengutronix.de>, Fabio Estevam <festevam@gmail.com>, Matteo
+ Martelli <matteomartelli3@gmail.com>, Marius Cristea
+ <marius.cristea@microchip.com>, Heiko Stuebner <heiko@sntech.de>, Maxime
+ Coquelin <mcoquelin.stm32@gmail.com>, Alexandre Torgue
+ <alexandre.torgue@foss.st.com>, Kurt Borja <kuurtb@gmail.com>, Francesco
+ Dolcini <francesco@dolcini.it>, =?UTF-8?B?Sm/Do28=?= Paulo =?UTF-8?B?R29u?=
+ =?UTF-8?B?w6dhbHZlcw==?= <jpaulo.silvagoncalves@gmail.com>, Leonard
+ =?UTF-8?B?R8O2aHJz?= <l.goehrs@pengutronix.de>, Oleksij Rempel
+ <o.rempel@pengutronix.de>, Haibo Chen <haibo.chen@nxp.com>, Salih Erim
+ <salih.erim@amd.com>, Conall O'Griofa <conall.ogriofa@amd.com>, Michal
+ Simek <michal.simek@amd.com>, Gustavo Silva <gustavograzs@gmail.com>,
+ Tomasz Duszynski <tduszyns@gmail.com>, Roan van Dijk <roan@protonic.nl>,
+ Jyoti Bhayana <jbhayana@google.com>, Mariel Tinaco
+ <Mariel.Tinaco@analog.com>, Nishant Malpani <nish.malpani25@gmail.com>, Rui
+ Miguel Silva <rmfrfs@gmail.com>, Linus Walleij <linusw@kernel.org>, Lorenzo
+ Bianconi <lorenzo@kernel.org>, Alex Lanzano <lanzano.alex@gmail.com>,
+ Jagath Jog J <jagathjog1996@gmail.com>, Jean-Baptiste Maneyrol
+ <jean-baptiste.maneyrol@tdk.com>, Remi Buisson <remi.buisson@tdk.com>,
+ Christian Eggers <ceggers@arri.de>, Mudit Sharma
+ <muditsharma.info@gmail.com>, Javier Carrasco
+ <javier.carrasco.cruz@gmail.com>, =?UTF-8?B?T25kxZllag==?= Jirman
+ <megi@xff.cz>, Song Qiang <songqiang1304521@gmail.com>, Dixit Parmar
+ <dixitparmar19@gmail.com>, Gerald Loacker <gerald.loacker@wolfvision.net>,
+ linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
+ linux-input@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-mips@vger.kernel.org, linux-mediatek@lists.infradead.org,
+ imx@lists.linux.dev, linux-rockchip@lists.infradead.org,
+ linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH v6 4/7] iio: Rename 'sign' field to `format` in struct
+ iio_scan_type
+Message-ID: <20260228175954.1f0950a1@jic23-huawei>
+In-Reply-To: <120c7f33-4ca1-4d35-ac1b-b65362f1adfc@baylibre.com>
 References: <20260225100421.2366864-1-flavra@baylibre.com>
-	<20260225101632.2368093-1-flavra@baylibre.com>
+	<20260225101735.2368252-1-flavra@baylibre.com>
+	<120c7f33-4ca1-4d35-ac1b-b65362f1adfc@baylibre.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,67 +100,29 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 25 Feb 2026 11:16:32 +0100
-Francesco Lavra <flavra@baylibre.com> wrote:
+On Wed, 25 Feb 2026 15:27:01 -0600
+David Lechner <dlechner@baylibre.com> wrote:
 
-> The st_lsm6dsx_hwfifo_odr_store() function, which is called when userspace
-> writes the buffer sampling frequency sysfs attribute, calls
-> st_lsm6dsx_check_odr(), which accesses the odr_table array at index
-> `sensor->id`; since this array is only 2 entries long, an access for any
-> sensor type other than accelerometer or gyroscope is an out-of-bounds
-> access.
+> On 2/25/26 4:17 AM, Francesco Lavra wrote:
+> > This field is used to differentiate between signed and unsigned integers.
+> > A following commit will extend its use to in order to add support for non-
+> > integer scan elements; therefore, change its name from 'sign' to a more
+> > generic 'format'.
+> >   
 > 
-> The motivation for being able to set a buffer frequency different from the
-> sensor sampling frequency is to support use cases that need accurate event
-> detection (which requires a high sampling frequency) while retrieving
-> sensor data at low frequency. Since all the supported event types are
-> generated from acceleration data only, do not create the buffer sampling
-> frequency attribute for sensor types other than the accelerometer.
-> 
-> Fixes: 6b648a36c200 ("iio: imu: st_lsm6dsx: Decouple sensor ODR from FIFO batch data rate")
-> Signed-off-by: Francesco Lavra <flavra@baylibre.com>
-It feels like we may need a little longer to converge on the rest of
-the series, and I don't want to risk delaying the fixes further.
+> Maybe Jonathan is OK with doing this all at once, but another alternative
+> could be to introduce a union to allow both names at the same time, then
+> we could make the change more gradually.
 
-A such I've picked up patches 1 and 2 on the fixes-togreg branch of iio.git
-Please just assume they are available for v7 and drop them from what you post.
+Please do the union for v7.  Not so much because I mind a global change, but
+more because the chances of merge conflicts are too high.
 
-This may mean we have to wait for these to be available in a suitable upstream
-tree before I can pick up the rest. We have plenty of cycle left and
-the fixes are really piling up in my tree, so that shouldn't be a problem.
+Perhaps for this series just introduce the union and use it in the driver
+here. We can then chase it through the rest of the tree as a separate step.
+
+Alternatively leave it with a misleading name for now (so allow 'f' to be a
+magic sign value) and we can do the rename as a follow up.
 
 Jonathan
 
-
-> ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> index 1ee2fc5f5f1f..5b28a3ffcc3d 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> @@ -862,12 +862,21 @@ int st_lsm6dsx_fifo_setup(struct st_lsm6dsx_hw *hw)
->  	int i, ret;
->  
->  	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-> +		const struct iio_dev_attr **attrs;
-> +
->  		if (!hw->iio_devs[i])
->  			continue;
->  
-> +		/*
-> +		 * For the accelerometer, allow setting FIFO sampling frequency
-> +		 * values different from the sensor sampling frequency, which
-> +		 * may be needed to keep FIFO data rate low while sampling
-> +		 * acceleration data at high rates for accurate event detection.
-> +		 */
-> +		attrs = i == ST_LSM6DSX_ID_ACC ? st_lsm6dsx_buffer_attrs : NULL;
->  		ret = devm_iio_kfifo_buffer_setup_ext(hw->dev, hw->iio_devs[i],
->  						      &st_lsm6dsx_buffer_ops,
-> -						      st_lsm6dsx_buffer_attrs);
-> +						      attrs);
->  		if (ret)
->  			return ret;
->  	}
 
