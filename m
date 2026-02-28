@@ -1,46 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B4B70342C98;
-	Sat, 28 Feb 2026 13:12:16 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 70AC743E4AB;
+	Sat, 28 Feb 2026 13:13:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772284336; cv=none; b=NdKfOnyDb+SbZ4eWNaiIFXK+Itqc7M9mdEtw0tK4R9n69baDd8Ws/ABfb6X17mO7lWk6eMdu1DfB76rF0WE0z0eqxZFV16ucO/5owMCbcPlY1WgeBjqC9i6Qws2Lav1cPeFedbB0WyudXnqBfJGTaAlK5Qu5tSHOJPUyCzXrXwc=
+	t=1772284431; cv=none; b=pd9dRHLCUPnQktOL2yvk6wz/2YugvZCYKzgJDhx97qHd9BRhG2F0TCP96PykLbzUlXpsLpP/Qd4NsGwpykmYno/Y63WiavQv8rCCLBT800OMDnrR7BT3Pmzy01gRWE1RtQ1GV0QbDf3B/L6UnlRoalt5jE7JrWrshCtFb92QyYI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772284336; c=relaxed/simple;
-	bh=7PKoXbbbZGuaoaD3wd8J03XJk792XyUev5sWPl/XkbA=;
+	s=arc-20240116; t=1772284431; c=relaxed/simple;
+	bh=C2co0zaqZkyUwBDaRHwsjSmehY5ZmT4y7h+mubJeXbc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CL8Xys070uvMuG+0ZC5emxgr8nfS6o5rA23h2j4od55bTRPyhnTdH/pSdV3KsKZwdutw+e1mjoDkXwXnMd+4Q/ZxpGIqEL+d8Phbl6UIRNvJhk1+TtkA6IGfxoHL1I9CZBy8mAZ5tn4cxO+wz4naWFm0OEefVHjLUuvp+bhSTlU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BfdpVxqb; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=F3FSoTOKzI2eUGPrJR/PGHsEHoUDGcNZGABTLfoyExR73f4+ZlgER/KLx9PnJQzkt2M55Zr/lCGx6B4/wD9FniRFP59vMwZxyJ7w/jEC2ykLDJ/+a4amn2ekb52egGG3Rw6jL89F9y8XmHUc6JfFi3YLNIalSzGDg1fbvSnC40c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IUrnJ4Yd; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BfdpVxqb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 644D8C116D0;
-	Sat, 28 Feb 2026 13:12:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IUrnJ4Yd"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C573C116D0;
+	Sat, 28 Feb 2026 13:13:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772284336;
-	bh=7PKoXbbbZGuaoaD3wd8J03XJk792XyUev5sWPl/XkbA=;
+	s=k20201202; t=1772284431;
+	bh=C2co0zaqZkyUwBDaRHwsjSmehY5ZmT4y7h+mubJeXbc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=BfdpVxqbx0z+6y/XazCyPEgJ385DkoEU2lN3ouyy7PPXlnCrKVLj1P6h9u9UbfKYG
-	 FtYm9NiXbHblGRY/ijkLxe94id2Bem7MT02sG74fvr6u2haqCp5Lknc2ejsExP8AWH
-	 O8N/2EyU53ULzLsfbgMvkjSCqCGx20kyuaOtm8+73TMllqT29dvAYP0LZabi+6cMM/
-	 7GI8WYDb63XJvCydbS8vR/36mIxtqKZFEMonYG0jkmsRLIsh3+QeIXY7fS0CXJMuCW
-	 2b3Y2WZzfXak1aL+ecvIwneGAYVFhBTRYVw2RBaLbmBlAwxFCAM5jW+R8KA2A9AzrK
-	 yACAm6NKZmGAA==
-Date: Sat, 28 Feb 2026 13:12:08 +0000
+	b=IUrnJ4YdTyWvxwHjzfSK0SreYIeBTHqOBNJhUskYTKz8rI7CIREoI8qUjbreoWN/l
+	 +m1YiUTCJw6RKAIdHVEPX4wOLRO2u7PQdtqA12wSRnaKqI2RhSVZsQXZtvmadyhhON
+	 NiDmt2xABiKrcpuSkUDvnYCnf26aMoWA4OXYBi4mxQsksNqTXwBfBBOrutUg+M12DR
+	 wY8TGYXf33tdYDOsU4LUYnS1G+HPHfS5rI1Qn3umsbFDXyvXUSdA+MHE2ZZs31RKmA
+	 w0og07I3oPCN3vGP4nIvPvZaLV2KB7uXItCboPcS2K+Y56Tw00hoIWgsRC+eWfyRyE
+	 rXHzVzx++xsQA==
+Date: Sat, 28 Feb 2026 13:13:43 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Randy Dunlap <rdunlap@infradead.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org,
+ David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
  linux-iio@vger.kernel.org
 Subject: Re: [PATCH] iio: tsl2772: fix all kernel-doc warnings
-Message-ID: <20260228131208.27fd3131@jic23-huawei>
-In-Reply-To: <fc1eddb4-b01f-49a4-808c-9a58b2b63ad8@infradead.org>
+Message-ID: <20260228131343.6be72f76@jic23-huawei>
+In-Reply-To: <aZ_-pVTbTUkByPIJ@smile.fi.intel.com>
 References: <20260226051258.555019-1-rdunlap@infradead.org>
 	<aZ_-pVTbTUkByPIJ@smile.fi.intel.com>
-	<7f61d93a-37df-44fc-ab47-b0e5ff70259a@infradead.org>
-	<aaCtJE4tvVZDn1zz@smile.fi.intel.com>
-	<fc1eddb4-b01f-49a4-808c-9a58b2b63ad8@infradead.org>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,78 +48,35 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 26 Feb 2026 14:25:12 -0800
-Randy Dunlap <rdunlap@infradead.org> wrote:
+On Thu, 26 Feb 2026 10:04:53 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> Hi Andy,
-> 
-> On 2/26/26 12:29 PM, Andy Shevchenko wrote:
-> > On Thu, Feb 26, 2026 at 11:14:05AM -0800, Randy Dunlap wrote:  
-> >> On 2/26/26 12:04 AM, Andy Shevchenko wrote:  
-> >>> On Wed, Feb 25, 2026 at 09:12:57PM -0800, Randy Dunlap wrote:  
-> >>>> Use the correct kernel-doc notation for struct members to eliminate
-> >>>> kernel-doc warnings:
-> >>>>
-> >>>> Warning: include/linux/platform_data/tsl2772.h:88 struct member
-> >>>>  'prox_diode' not described in 'tsl2772_settings'
-> >>>> Warning: include/linux/platform_data/tsl2772.h:88 struct member
-> >>>>  'prox_power' not described in 'tsl2772_settings'  
-> >>>
-> >>> Hmm... I do not see any of the user of this header file.
-> >>> Have you checked if these values are even used?
-> >>> Perhaps we can simply kill all this?  
-> 
-> AFAICT all macros and structs and struct members from that header file are used
-> in tsl2772.c.
-> 
-> >> They are used in drivers/iio/light/tsl2772.c.  
+> On Wed, Feb 25, 2026 at 09:12:57PM -0800, Randy Dunlap wrote:
+> > Use the correct kernel-doc notation for struct members to eliminate
+> > kernel-doc warnings:
 > > 
-> > It's the same driver. So it's *not* a user of the platform data.
-> > 
-> > Under 'kill' I meant the following:
-> > - inline the content of the file to the c-file  
+> > Warning: include/linux/platform_data/tsl2772.h:88 struct member
+> >  'prox_diode' not described in 'tsl2772_settings'
+> > Warning: include/linux/platform_data/tsl2772.h:88 struct member
+> >  'prox_power' not described in 'tsl2772_settings'  
 > 
-> Would that be "violating" this commit?
+> Hmm... I do not see any of the user of this header file.
+> Have you checked if these values are even used?
+> Perhaps we can simply kill all this?
+> 
+> But if Jonathan wants to take this as a quick fix to make less
+> warnings appear effective immediately I'm fine with the change
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+I've picked it up because even if we do rip out platform data support
+it's likely the structures will remain and then we'll want them
+to have correctly formatted docs
 
-I think the proposal is to remove platform data support entirely from
-this driver on basis we have no upstream users.
+So applied
 
-There are defaults in driver for the stuff that can still come from
-platform data.  Note there is generic property support for a bunch
-of other stuff (i assume for DT).
-
-So I'd be fine with a patch that removes this header and the use
-of platform data in the driver. Easiest path to that is as Andy described
-in putting the defs in the c file, plus only using the driver defaults
-(so no more 'real' platform data).
+Thanks,
 
 Jonathan
 
-> commit 436d42c61c3e
-> Author: Arnd Bergmann <arnd@arndb.de>
-> Date:   Fri Aug 24 15:22:12 2012 +0200
 > 
->     ARM: samsung: move platform_data definitions
->     
->     Platform data for device drivers should be defined in
->     include/linux/platform_data/*.h, not in the architecture
->     and platform specific directories.
-> 
-> > - recheck the c-file for the unused fields and drop them for good  
-> 
-> All used AFAICT.
-> 
-> > Alternatively converting c-file to use device properties instead
-> > of platform data.  
-> 
-> That's your area, I guess.
-> 
-> > We have done many times in the past such transformations in other
-> > drivers.
-> >   
-> >>> But if Jonathan wants to take this as a quick fix to make less
-> >>> warnings appear effective immediately I'm fine with the change
-> >>> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>  
-> >   
-> thanks.
+
 
