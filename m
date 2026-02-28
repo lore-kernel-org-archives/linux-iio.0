@@ -1,157 +1,122 @@
-Received: from skycaves.subdimension.ro (skycaves.subdimension.ro [157.180.79.17])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C3B248883;
-	Sat, 28 Feb 2026 13:16:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=157.180.79.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B10CF1925BC;
+	Sat, 28 Feb 2026 13:18:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772284607; cv=none; b=pWg/xDfs31PQNAnUpWMZBO2PYl3+xtFqxsrgHYkT8AoItJpmw73GGgDQG5u0sDjsGPKNWkkOieMvenDA8k/INjt9AzWdDtHIYh45o6OYeLsgnAe027daoLT1jEmWwVcB9mt8rCWqAuSo7fcyWw1fmAWUnxcEL55o0EhDzCBlG3Q=
+	t=1772284728; cv=none; b=XIuUCQoziAKQwl/0ax3fxr5xfic1AHyH5k9VqTzqDnBsCK8pVMKP79xFVLuzRgXwxxThFLNSozT1gSGLeRQC3ly+iF4+25oocq29tfNzDtKr92d2AnOSOtcxsEl5SOpD6BZIOIGd2UK+rTW9v9BIUh4xS6I7TBWPhJfDHCKBVcU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772284607; c=relaxed/simple;
-	bh=KGNzmrJx1hmAnGZ9DVMdt7LlCL6gIhOM3brYpCP2ohM=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=QiwhX8PxhhHb7Z4JmfUp6CYEfK7tuJ/HvlYVQ5DOAIO/ViGkuq+Rxkg5aBQDh97n9c82FGkbIc745fi48wBr+XWl5Idv3jHglx3eKuzZ0/dzuAI+qUdMzxaBGRPTKGReljdlqQ+lcHKVQGqDzb3zsU8DLDWlVrc6T+JaDSoIz9Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro; spf=pass smtp.mailfrom=subdimension.ro; dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b=X9ihyjdB; arc=none smtp.client-ip=157.180.79.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=subdimension.ro
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=subdimension.ro
+	s=arc-20240116; t=1772284728; c=relaxed/simple;
+	bh=SA9cIL0f77Pz/kKvKvuVPWXe4KkPtcSzlIph+GQfX1A=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=isGGBhQ++nJfkniSFv5i+7CPSp7qWO073gnDnuiurKp1N6jeBTXJalcjfVqmIYQu4WP1faZSQ5rfX0Yet3fH373E+s0P/6dylQgEFLhS/q/rawlNzibTCZCHHioELO4l8kJZhPn5uONRGc5ZCAtBUqTfmlq8LTsKiavGVH5XbN4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=n28e74sm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=subdimension.ro header.i=@subdimension.ro header.b="X9ihyjdB"
-Received: from sunspire.home.arpa (unknown [IPv6:2a02:2f0e:3013:ab00:e2d5:5eff:fed9:f1c4])
-	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-	 key-exchange secp256r1 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-	(Client did not present a certificate)
-	by skycaves.subdimension.ro (Postfix) with ESMTPSA id 0BCA56546D;
-	Sat, 28 Feb 2026 15:16:34 +0200 (EET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=subdimension.ro;
-	s=mail; t=1772284595;
-	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-	 in-reply-to:in-reply-to:references:references;
-	bh=FdXsEqGA1opIM3oNfnIfap8wZspsSe10UAXblD+Bwj8=;
-	b=X9ihyjdB1C0y5HkZF/WjvHyhVF/CiGGSlOoxamuHFpJKnq+iDpm4b/7fQspXl4oXzZwHvh
-	1ygTAJqacLTZjqLaiDJFcdMBEsi/+cVk5pmQZsKa805ATpSsk8Aia2xlWiRiPdZTsxmzjj
-	BE5LdF4RvZaL1BSbPomqvjzDxqurJQb3ZGC5WIi9iwwJWrUknBvg1UNXKoyTlB9GuUyU3g
-	AzggZcnH6nKlQXvX1qXj8MAEg38fwhLe7u21ozYFfZpW2AnB39nHjwG1v96VI3b3S20ohY
-	uoIXDBJh4bCdJ6TaV/H2MvzyaKKs25bTkJnrtRsLQtwvaxfmzOqaSTO/p9BBgw==
-Date: Sat, 28 Feb 2026 15:16:32 +0200
-From: Petre Rodan <petre.rodan@subdimension.ro>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Felix Gu <ustc.gu@gmail.com>, David Lechner <dlechner@baylibre.com>,
-	Nuno S?? <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-	Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: pressure: abp2030pa: Remove IRQF_ONESHOT from
- devm_request_irq()
-Message-ID: <aaLqsGEwNTlRmNJ4@sunspire.home.arpa>
-References: <20260227-abp-v2-1-a482c02a5876@gmail.com>
- <20260228114823.1411901d@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="n28e74sm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 651ECC116D0;
+	Sat, 28 Feb 2026 13:18:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772284728;
+	bh=SA9cIL0f77Pz/kKvKvuVPWXe4KkPtcSzlIph+GQfX1A=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=n28e74smDaOuiwY7tYKfHvIDvHusUt3WCbZ+Via1fXiW86igglff/fTWJdaPWh7rM
+	 OwLxdbU7MISiFR9rpIrZoVIJjSv8xxmxGgt0h37Dqu//ppY+31H3gWXmyHfJqSMaeO
+	 6dSpj77Lo8krMQ9WcF/h3ZtctwNAeANHUge5oumIbF9w6SnCB+PF+vXxdf/YybLW1I
+	 AqaDUTTouG8Bp4XrLJEQIt5CopAMkpgD29wL+jYvBnNBfmR+6miyzQzhEe8O184Uxe
+	 8W/p8Skv5YmJ2oIgplRD48Pfdy/bTXpgnXnb5baQGymXYxnfmVOILhaxvX+P0Xh9sT
+	 nje9vNFprbnLA==
+Date: Sat, 28 Feb 2026 13:18:38 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
+Cc: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
+ "lars@metafoo.de" <lars@metafoo.de>, "Hennerich, Michael"
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, "Sa,
+ Nuno" <Nuno.Sa@analog.com>, "andy@kernel.org" <andy@kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: adc: ade9000: fix wrong register in CALIBBIAS
+ case for active power
+Message-ID: <20260228131838.64d36016@jic23-huawei>
+In-Reply-To: <CY4PR03MB33993FA37361E61ADD3522B89B73A@CY4PR03MB3399.namprd03.prod.outlook.com>
+References: <20260226140700.481317-3-giorgitchankvetadze1997@gmail.com>
+	<CY4PR03MB33993FA37361E61ADD3522B89B73A@CY4PR03MB3399.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="rAxav+xnyXlGh29c"
-Content-Disposition: inline
-In-Reply-To: <20260228114823.1411901d@jic23-huawei>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
+On Fri, 27 Feb 2026 10:01:41 +0000
+"Miclaus, Antoniu" <Antoniu.Miclaus@analog.com> wrote:
 
---rAxav+xnyXlGh29c
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-
-hello!
-
-On Sat, Feb 28, 2026 at 11:48:23AM +0000, Jonathan Cameron wrote:
-> On Fri, 27 Feb 2026 21:54:29 +0800
-> Felix Gu <ustc.gu@gmail.com> wrote:
->=20
-> > Since commit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT
-> > without a threaded handler"), the IRQ core checks IRQF_ONESHOT flag
-> > in IRQ request and gives a warning if there is no threaded handler.
-> >=20
-> > Remove IRQF_ONESHOT from devm_request_irq().
-> >=20
-> > Fixes: 47d323ce1e89 ("iio: pressure: add Honeywell ABP2 driver")
-> > Reviewed-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-> > Signed-off-by: Felix Gu <ustc.gu@gmail.com>
->=20
-> Applied to the fixes-togreg branch of iio.git.  If Petre wants to take
-> another look and perhaps give a tag that would still be welcom.
-
-thank you for the patch, Felix.
-took me a hot minute to upgrade everything to 7.0.0, you were both too fast=
- :)
-
-Tested-by: Petre Rodan <petre.rodan@subdimension.ro>
-
-best regards,
-peter
-
->=20
-> Thanks!
->=20
-> Jonathan
->=20
-> > ---
-> > Changes in v2:
-> > - Fixes Petre's comment.
-> > - Link to v1: https://lore.kernel.org/r/20260227-abp-v1-1-b6fed0545852@=
-gmail.com
-> > ---
-> >  drivers/iio/pressure/abp2030pa.c | 2 +-
+> > -----Original Message-----
+> > From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+> > Sent: Thursday, February 26, 2026 4:07 PM
+> > To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
+> > Cc: lars@metafoo.de; Hennerich, Michael <Michael.Hennerich@analog.com>;
+> > jic23@kernel.org; David Lechner <dlechner@baylibre.com>; Sa, Nuno
+> > <Nuno.Sa@analog.com>; andy@kernel.org; linux-iio@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; Giorgi Tchankvetadze
+> > <giorgitchankvetadze1997@gmail.com>
+> > Subject: [PATCH v2] iio: adc: ade9000: fix wrong register in CALIBBIAS case for
+> > active power
+> > 
+> > [External]
+> > 
+> > The switch statement in ade9000_write_raw() attempts to match
+> > chan->address against ADE9000_REG_AWATTOS (0x00F) to dispatch
+> > the calibration offset write for active power channels. However,
+> > chan->address is set via ADE9000_ADDR_ADJUST(ADE9000_REG_AWATT,
+> > num), so after masking the phase bits, tmp holds
+> > ADE9000_REG_AWATT (0x210), which never matches 0x00F.
+> > 
+> > As a result, writing IIO_CHAN_INFO_CALIBBIAS for IIO_POWER always
+> > falls through to the default case and returns -EINVAL, making
+> > active power offset calibration silently broken.
+> > 
+> > Fix this by matching against ADE9000_REG_AWATT instead, which is
+> > the actual base address stored in chan->address for watt channels.
+> > 
+> > Reference:ADE9000 datasheet (Rev. B), AWATTOS is the offset correction
+> > register at 0x00F (p. 44), while AWATT is the total active power
+> > register at 0x210 (p. 48).
+> > 
+> > Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
+> > Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+> > ---  
+> 
+> Reviewed-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+> 
+> > v2:
+> >  - Added Fixes tag (Andy)
+> >  - Added datasheet reference (Rev. B, p. 44 and p. 48) (Andy)
+> > 
+> >  drivers/iio/adc/ade9000.c | 2 +-
 > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> >=20
-> > diff --git a/drivers/iio/pressure/abp2030pa.c b/drivers/iio/pressure/ab=
-p2030pa.c
-> > index 4ca056a73cef..b44f1bf4c633 100644
-> > --- a/drivers/iio/pressure/abp2030pa.c
-> > +++ b/drivers/iio/pressure/abp2030pa.c
-> > @@ -520,7 +520,7 @@ int abp2_common_probe(struct device *dev, const str=
-uct abp2_ops *ops, int irq)
-> >  	data->p_offset =3D div_s64(odelta * data->pmin, pdelta) - data->outmi=
-n;
-> > =20
-> >  	if (data->irq > 0) {
-> > -		ret =3D devm_request_irq(dev, irq, abp2_eoc_handler, IRQF_ONESHOT,
-> > +		ret =3D devm_request_irq(dev, irq, abp2_eoc_handler, 0,
-> >  				       dev_name(dev), data);
-> >  		if (ret)
-> >  			return ret;
-> >=20
-> > ---
-> > base-commit: 7d6661873f6b54c75195780a40d66bad3d482d8f
-> > change-id: 20260227-abp-016a007ab817
-> >=20
-> > Best regards,
->=20
+> > 
+> > diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
+> > index 5dcc26a08970..1499fb1c718a 100644
+> > --- a/drivers/iio/adc/ade9000.c
+> > +++ b/drivers/iio/adc/ade9000.c
+> > @@ -1123,7 +1123,7 @@ static int ade9000_write_raw(struct iio_dev
+> > *indio_dev,
+> >  			tmp &= ~ADE9000_PHASE_C_POS_BIT;
+> > 
+> >  			switch (tmp) {
+> > -			case ADE9000_REG_AWATTOS:
+> > +			case ADE9000_REG_AWATT:
+> >  				return regmap_write(st->regmap,
+> > 
+> > ADE9000_ADDR_ADJUST(ADE9000_REG_AWATTOS,
+> >  									chan-  
+> > >channel), val);  
+> > --
+> > 2.52.0  
+> 
 
---=20
-petre rodan
-
---rAxav+xnyXlGh29c
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iQJPBAABCgA5FiEEGiKYHD4NvFCkTqJ3dCsnp2M6SWMFAmmi6qobFIAAAAAABAAO
-bWFudTIsMi41KzEuMTEsMiwyAAoJEHQrJ6djOkljKzMP/3ch4LmGEKlTfIkX/Gqp
-yF0sJoFSp1BSR822PZgDD5aNAlfuatg3RwmZ3uIHH2OvlGHMhHONFVJlin59L/By
-1Oby2VbHTzUp1w7vPFWPMqozkrgVKfprbPTn/kDHwvJx5XeC3gJA+QIAxVLalTwc
-hFdhmMNXvox/PcJW1iPWmuziYODM4+3p93zTTUm2sWYbbtL8X0beKYfmIPAM4pe0
-hzRtv1bprAZRbV+ZErG0xRJDDLh2OBR6xSbrA4Y+lz75Ni9QF/IYMfLx9dP90Iib
-ndz1zpWilenmMT8KeZHn31XrTzXpPbSu+ml5mLhYmVN95DHIYg3rGOdpDpCd/WQb
-osW9g85vHm+ywoiRqsplrshzR65MR1td05Y57VJRNhKmNym+0EwTmhaJo/qU+Zhi
-oc9zJfDEn73p3++m4FFGbr+0RSbyPHtPDGOiEJcS052Ww30+ds2jzRYqDX6VbwDa
-RQ3ig3TwNQYhLLtAdUjozb/8ycRJJee0/W0ASOeRGZxQnKCfs/TTFtSzoGoOivRe
-+7QfIT4fg33ZlqsArBnJtXBiB5Exi0LDo2v/eYUXyzKlrnII5Ic1JS6YWiCi/X5u
-/Dk2vwRUGcPKLC2Sm+NusZkxdsUj+OjxE477n07ciM99pFeKR1fjJ8f7u3zFvbT6
-0lHSEan6Lv2ehW4km1WTao+e
-=KZV9
------END PGP SIGNATURE-----
-
---rAxav+xnyXlGh29c--
