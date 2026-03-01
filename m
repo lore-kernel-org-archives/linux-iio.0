@@ -1,148 +1,217 @@
-Received: from mail-oo1-f51.google.com (mail-oo1-f51.google.com [209.85.161.51])
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E5EF21F1932
-	for <linux-iio@vger.kernel.org>; Sun,  1 Mar 2026 16:46:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.51
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772383572; cv=none; b=YBfrElwdnM105ioisRDqUHvTr1Fx+JDzfgdqvWez8zA7cygv9hnEHZGHZccZNHf5J/ljZqsaBmqO3MnlECp7raOYQkbWr3Ik5Xet5R4o7iEU8YY5Y1I1GoMWXOO0VNg1qi0s6ZSZo7v5Jh7Emqu+CLwOGEc7r1C+ctx+RGyGu2Q=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772383572; c=relaxed/simple;
-	bh=h0h8gA420ufSwg5IkYm3n1FAETvw/pVCAn0GXXUXoKA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ePYcUiT6sIwiwdH5/saegZatpdhQsby6HcA3jHWp+HUcqMevPkiU4oYH4rXbhyRleN+rGN5a5IMvqapu4Awfs197cK7UsK3jwwLtJAXCiXJf9wjTNi7h2nLkrGRZ9NmTJE6tsVyVUVtEVhW3zsouq3l7nZKkhtYzVOkDWVlKUnM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=IyPrB4Tr; arc=none smtp.client-ip=209.85.161.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E509B76026
+	for <linux-iio@vger.kernel.org>; Sun,  1 Mar 2026 19:30:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.210.48
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772393420; cv=pass; b=U/8UqlGRTt+hIasxSD8pKB+cCwFAdhaQyvGDUfd1C7fFCGsu2nkxu7rnkvZ06yrgwTnBti0ElPK+go/Ch5TWp1YJqlFyfFNwOM15whDlMxZFG+Q+8HDvnomVD/a4wCVgTjKCdqQFPOgMeur+4q7OdiJiXwuY+taEiQAe9h2+ke8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772393420; c=relaxed/simple;
+	bh=OjaoeEXyT4g07zYPZ6AJ82LbciewIaIJsjQGkQRMyWc=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MeVTLpNrXUvAvVGYA5U0ewCAkZbIkHT79FO6nd3uypqHGW0YylP/1UT8Ka2uZqg/jab5CyNoK8BDzAhka098TAFFAA8h21mnzGRzd1EopXoZUPScy4Au+wuSH++85BGg/o20Pn50b/zxxbpqi/ChaBP7h2OipTj9y/7LHoGaDFo=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nEEUulqr; arc=pass smtp.client-ip=209.85.210.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="IyPrB4Tr"
-Received: by mail-oo1-f51.google.com with SMTP id 006d021491bc7-679ed01869fso1392834eaf.0
-        for <linux-iio@vger.kernel.org>; Sun, 01 Mar 2026 08:46:10 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nEEUulqr"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7d596a96475so1789077a34.3
+        for <linux-iio@vger.kernel.org>; Sun, 01 Mar 2026 11:30:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1772393418; cv=none;
+        d=google.com; s=arc-20240605;
+        b=e9ULALN6ZdvB9+I0/tcZCP0AGUT8i75Ca990fbn94ns+pz8DOkEFJGN4wqE4sKgE7Y
+         ehxw1z5DJTK63J1UvRrLuzcrOB31iNI6uICjRcoIEDmpOlRGOX29dfIwYIQh5fYBbN1Y
+         0zErZDmF32AuOFiyu/mJg6rrIp1OcInQ3HFpg89JUYbkFtwCjy4oIWHzqNGSI+9yIOiu
+         wEaKMcW/n3+8uGn/oIMViMpULI9Gjm7VFusH6vk2bH4VtmHXwQ9Y8BokVqVmzz+MPiOi
+         RMMV94jHCOzAx1AD6lbBsHDslxCyELra1ut5z3xVTqT/SKJsfnVf+8rP3XrKuNliMkG4
+         AbIg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=AITXmhhS5ybi+RKE9olk35ACfOtV6KA5LR523g3rBrI=;
+        fh=nEXeJtS2yLPQfZqn9VoAZLIEhA8hVmwJkwXw1XPv43I=;
+        b=Q9eKQsLuQ4IrASv9jwVVIvwXvVBkqnIU+yzKobI1GT4sYrZjq8zxh120mcwFpS5eMA
+         /TapNdPqVUzADItw9yPQUQjkwMD/ayYe+z+NvJSBTYTnR32AIkpmYpLhfkNx71m5qMPj
+         6klMs2vd1Dxs5mf9aXHXRpmMY9JZF9TZ/Wu/DnLWL5nGHrbVhBDP3t4wX3WYi1ldbmlD
+         1Mm8ShZVlJgQgGTFCbfD5miBZkrr85Hx//ObeY48JchmvRh5YtBY/SAL6GpGVFd+Pntj
+         lr5GXXvLOnpYoMSSX0BrAwW9tPspW/pv+rO5pEmqv70NWsbiqXk8WDT/z/6Uday+43tn
+         oRLA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772383569; x=1772988369; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=v1O1vv66ph658au/3xOQ7obK8EPF5ZNCD8eDceGWp7A=;
-        b=IyPrB4Tr0yfGWVFO9h1u7GKfS0u1jI2SzvPNg2gND0/xjKG+1jPvOsrwdmZiAu7x6p
-         tHy9S0sNL/hbLVSbuUk1RoVV0jMOfduNiK8hEzd6/KutP2rSLdb5qclNgL+wrIk5tzlB
-         edqyeH2d5YMLN8X0SDZjC6DpsWW+xKSTtwJ7ybHJR8h9DJ8WDPOqYJ2WuEy2ceMkpxpa
-         GLhmH0xx7j2tTo57hLnWOisbpFP6QyfCkM512NmYwjGd17SupoMG9lDwVziHwLorunBh
-         1Vj3hx8muxj2lewmivgCHJUI/yoFv3BxFTUKbLqCW5jFeuaXBlCmkVYFeaTscspKSePn
-         ynBA==
+        d=gmail.com; s=20230601; t=1772393418; x=1772998218; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AITXmhhS5ybi+RKE9olk35ACfOtV6KA5LR523g3rBrI=;
+        b=nEEUulqrsU4Nw7w8x8ugXwskTsqsywRtP84EueS1FfN7N4tnUoRZ8FcPQbK8RQwRtK
+         IKe+N7HN7Y2MvSXlbbovCWY//2DbimIHKjE6+MVThHNAeytsicrwp+rWXuw7dW/F4R84
+         lofDkajcTtIEx9LsST90/sPlaiXpZXdS7KO1fkgndEvSrnP16V9kIxEWiIwZhvdRELXk
+         7LaBrieowxp3f+Wmb5lz0l1/eCKAyVSzY+mwurQV2hKQqbpVQTRnKd8lPW4fD8M82nG1
+         qVtMyj8uHTpus6S4Wu+HxlFzdGh+5Pn6s5de0UlrzUdPaLU5ihH+B59m6zFkZfth0YoH
+         Qptg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772383569; x=1772988369;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=v1O1vv66ph658au/3xOQ7obK8EPF5ZNCD8eDceGWp7A=;
-        b=q6uX7s/YoA8JBONzEalO75R9xG9cdTKlqL5GT7S+O7QxkSXz6gHOMZYzQsgfy4pThG
-         4noieakPl1cJpxosf2LcX+2QgaVDX5zDqvO95UiIiQvXBe8Sg69jWyiXsUkGdXkQ1ZU0
-         Q64opdYUDCpfRfwNmvdl1JmaQPz/sPSZlX06+/w/7H5SYszEF3Av9gQ7+xAXBwnys4kK
-         JK5rDwDiiocRUBJt1eKtUQ+T4Gr+LmZ6RyTTl7EUko4ULCHOTJ+s0Pia6tcH/itn0Rby
-         9+eWVh4LrahsV8rEo+mrJkQ2GYolZ3GGaCqd6mQ0QlrofBdoj4/K6WNXZm+O3kxLyv4B
-         Q6fw==
-X-Forwarded-Encrypted: i=1; AJvYcCWXzsA/4bLfXIeEKqTquMHxkhErh9EsrxE0MjW7iy4AOg1ATKRwWfLzADQTsrPc4r+4Fzj5sSYYGbU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzmVwOUl6g8iwPnUKQvDI8usvD0XmlqR2kDZQKIbjeWa2CSrphy
-	SfTTafw7OS9/Ag+3XxIs0SEu/PrVsfFmexP90xUK5dobQV1stwC6xlUO4HhaadO0IEY=
-X-Gm-Gg: ATEYQzxpZt2TG69nfyBmBYzdXv/vwKeR148s2NPt2MaQH9puhiWlS4ufUfuZcr+5Iy6
-	BBldluzFHWrjKVZLfLYU2ZCmYCuJ4ICll1vn5+ovnjnh3WYGXc5xjS84tiAX//8u/hIF7x65VOc
-	F+pJcktVBLOymEGm0LSHPIygpsBSln311Yv6zoRBT3NpjrQVjmG7paxfbUAQJ/kj2h1HytiIEs3
-	jgWbgeSMH71uy2kURvR6WdIBQI/VuH8/6obpAk2eGMFUFRwLazDlUN3oXRW6N9HsZnAIFNJvbhI
-	SlwtTtdlc11eXLWPVT+s5LAQxXWv6LyuG8StdAIXYk4WxzHgngRWAciaTp+teFkGErz6mJbAFkX
-	RqPV9wTqTNVECdin/pZSxdM0eJuUd5FSnKd0STuu2iZysoZcWsz18oknN0Bmgk8wpiyBVxKiYn0
-	WUoKREOfCnAAS0LX4jHsEnxv5iytPbF9Q386VmOLjiY2qOmZ2a6pyPXHFeiOx1JwTjLuaqS8DxK
-	JP1pskhc3mP
-X-Received: by 2002:a05:6820:4512:b0:65c:f14f:91ca with SMTP id 006d021491bc7-679faf03520mr4203859eaf.49.1772383569540;
-        Sun, 01 Mar 2026 08:46:09 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:8b9c:d657:204d:5a5f? ([2600:8803:e7e4:500:8b9c:d657:204d:5a5f])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-679f2d856d2sm7131043eaf.10.2026.03.01.08.46.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Mar 2026 08:46:09 -0800 (PST)
-Message-ID: <8bf08908-b8fd-4c4f-ab74-66575ed771ab@baylibre.com>
-Date: Sun, 1 Mar 2026 10:46:07 -0600
+        d=1e100.net; s=20230601; t=1772393418; x=1772998218;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=AITXmhhS5ybi+RKE9olk35ACfOtV6KA5LR523g3rBrI=;
+        b=G7dD2Ib2UGIrp9pG+YWRPANokfMGjn9vVZtP8IOIJmZjhsLKmbO/2yvMlH+s03Z19b
+         TirDb1Njk5R/Y3GhmAo+eP+RSQ6vXgvFMDRcIKuJZtiXDCSxuwAQ3ka8BkvfeCybhTNq
+         wM7VgZoNZDKn0xsN7EVYHPoHu+mF3LHm/a0gxEbUGy3dEIp/nI2BaNkl3GpGOO6F57rc
+         XELT4Ct5WuABlM88ku2l+BkLJYwyRrldQo8x55AfGa6ryP+u1MZLZncSpdfRcVq4ASV1
+         fGTvY2J9tDosL77fUFR0hQcP6QUxTJIBoMzWW6ipuHp1aNTUEpQ7Wb6bJnUmrB9RztWJ
+         Ns7g==
+X-Forwarded-Encrypted: i=1; AJvYcCWAzLhTtQetc9VehX0VT4hSxXVf5SQpQ3tljKNWEjHoiB2vgH/Uu+UKw1SWqToNeQp+W0X592lKYms=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyxneON6HJve8M9y+B5Ghg1fIZ7/japkTRNv+QGlXqrrEn2NEdb
+	xM2v0HRtTbCYEa39RsSfi37WCaJXmQwhgWfv6Xhki5tGc5H+mhiP3lx2aN2jk5nOtIpnP+M1ZQA
+	c2rVqXzRKicztuYz/yzfMWZ6CV3y4n5o=
+X-Gm-Gg: ATEYQzxsWJ4fa185Fn30BkLPSCulJgd3jKpwUYwhiEibD92kbXUqHIPzrg7nOb1PNdV
+	eyyZDJ1qYfyeeyk9Ud4JoCumCCqaD1hU9SNQ63P5VSqTKYhcAA5rrW3rHdHtag8x2/7kg6csbO1
+	xzmn1uyGOYzwzm4HJC/VSKfNMTq1usI8/yjufcPPA13njiT6/8PoUCh86hwPgpot8Jg/P/If2LW
+	Wt6Dgdalnb9hD+DYQg+m8pbVo2xMVBVXEATouYmdrH9QNq4KM7kU1WG2hh8tu1b9pDsXC/CKfP8
+	9GXHX4QdqhGvObJXa0h0jv5QfygL52DO01EKZC4=
+X-Received: by 2002:a05:6830:718b:b0:7d1:9da9:c6c with SMTP id
+ 46e09a7af769-7d591bcdad7mr6622117a34.17.1772393417813; Sun, 01 Mar 2026
+ 11:30:17 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: adc: ad799x: use devm_iio_device_register and devm
- buffer setup
+References: <20260228191400.19244-1-rougueprince47@gmail.com>
+ <20260228191400.19244-2-rougueprince47@gmail.com> <20260301114450.17f79213@jic23-huawei>
+In-Reply-To: <20260301114450.17f79213@jic23-huawei>
+From: Bhargav Joshi <rougueprince47@gmail.com>
+Date: Mon, 2 Mar 2026 01:00:06 +0530
+X-Gm-Features: AaiRm52kw1wnE8IDel-K5c3NBDoj7DLWgIYMU_GQ7TIXPDj-_JL_JT4-UcGgRP8
+Message-ID: <CAPC4XCRom4ri1QKw_mTnZGc9np5XFD1LskQnd=ssDAKBdOkGmQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iio: hid-sensor-gyro-3d: move iio_device_register()
+ to end of probe()
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Archit Anant <architanant5@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260228154515.16639-1-architanant5@gmail.com>
- <641c4d59-4cfd-49b6-b6de-692db48db1c7@baylibre.com>
- <CADJHxWA6QT9LqAR4n3UUHsr73X1S=SvwWCtO=M220SBUD91p-Q@mail.gmail.com>
- <00ee6df6-422e-40db-8494-3f9da4ccb227@baylibre.com>
- <20260301113452.7e1f95ee@jic23-huawei>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260301113452.7e1f95ee@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Cc: jikos@kernel.org, srinivas.pandruvada@linux.intel.com, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-input@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 3/1/26 5:34 AM, Jonathan Cameron wrote:
-> On Sat, 28 Feb 2026 11:35:15 -0600
-> David Lechner <dlechner@baylibre.com> wrote:
-> 
->> On 2/28/26 11:19 AM, Archit Anant wrote:
->>> Hi David,
->>>
->>> On Sat, Feb 28, 2026 at 10:06 PM David Lechner <dlechner@baylibre.com> wrote:  
->>>>
->>>> On 2/28/26 9:45 AM, Archit Anant wrote:  
->>>>> Convert the driver to use the device-managed versions of
->>>>> iio_device_register() and iio_triggered_buffer_setup().
->>>>>
->>>>> This simplifies the error handling in ad799x_probe() by removing the
->>>>> 'error_cleanup_ring' goto label. It also removes the need to manually
->>>>> call iio_device_unregister() and iio_triggered_buffer_cleanup() in
->>>>> ad799x_remove().
->>>>>  
->>>> Since we are doing this, why not also handle the regulators and
->>>> rx_buf so that we can drop the remove() function completely?  
->>>
->>> I completely agree that dropping the remove() function is the
->>> ideal end state but I initially stopped short of doing that because of two
->>> hurdles:
->>>
->>> 1. regulators: since ad799x_read_raw() needs the regulator pointers
->>> to call regulator_get_voltage(), I couldn't simply use
->>> devm_regulator_get_enable().  
->>
->> In this case, we can use devm_add_action_or_reset() to register the
->> disable callbacks.
-> 
-> It is vanishingly rare for for the voltages to change after driver probe,
-> so an alternative that is almost certainly fine is to read and cache the
-> voltage at probe.
+On Sun, Mar 1, 2026 at 5:15=E2=80=AFPM Jonathan Cameron <jic23@kernel.org> =
+wrote:
+>
+> On Sun,  1 Mar 2026 00:43:59 +0530
+> Bhargav Joshi <rougueprince47@gmail.com> wrote:
+>
+> > Currently, calling iio_device_register() before
+> > sensor_hub_register_callback() may create a race condition where the
+> > device is exposed to userspace before callbacks are wired.
+>
+> We needs some more here on 'why' this is a problem.
+> Whilst this is an unusual arrangement, I couldn't immediately find
+> anything that was actually broken.  It's possible data will turn up
+> after we tear down the callbacks and before the userspace interfaces
+> are removed, but I think that just results in dropping data. Given it's
+> in a race anyway I don't think we care about that. The callbacks
+> don't seem to be involved in device configuration which can go on whether
+> or not the callbacks are registered.  Maybe there is something that
+> won't get acknowledged if they aren't in place in time?
+>
+> For a fix like this we'd normally want to see a clear flow that
+> leads to a bug.
+>
+> Also a fixes tag so we know how far to backport.
+>
 
-In this driver, we still need the handle to the regulator for suspend
-resume, so that doesn't avoid the need for using devm_add_action_or_reset()
-in this particular case, I don't think.
+Hi Jonathan,
 
->> #define AD799X_MAX_CHANNELS 8
->>
->> ...
->>
->> struct ad799x_state {
->> 	...
->> 	unsigned int			transfer_size;
->> 	IIO_DECLARE_DMA_BUFFER_WITH_TS(__be16, rx_buf, AD799X_MAX_CHANNELS);
->> };
->>
->> Note, it is important for this to be the last field in the struct
->> for DMA alignment purposes.
->>
-> I2C driver, so no need. I2C by default bounce buffers everything anyway so we don't
-> need an aligned buffer (or the padding that results in at the end of the structure).
+I originally submitted the patch for the driver because calling
+iio_device_register() before the callbacks are wired up violates
+standard IIO LIFO ordering. I assumed this created a dangerous race
+condition with userspace. However, as you correctly pointed out, the
+HID sensor hub safely drops those early events without crashing, even
+if it is unusual behaviour still won't have a hard crash.
 
-Thanks for the correction. I just saw an I2C driver the other day that
-was incorrectly doing this then that lead me astray.
+My underlying goal was simply a structural cleanup to align the
+probe() and remove() sequences with standard IIO architecture.
 
+Would you like me to send a v2 of this patch with a revised commit
+message classifying it purely as a structural cleanup (and without a
+Fixes tag), or is the current driver behavior acceptable enough that I
+should just drop this patch entirely?
 
+Thanks,
+Bhargav
+
+> >
+> > Move iio_device_register() to the end of the probe() function to preven=
+t
+> > race condition.
+> >
+> > Consequently, update the error handling path in probe() and in remove()
+> > ensuring that iio_device_unregister() is called first to cut off
+> > userspace access before the hardware callbacks are removed.
+> >
+> > Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
+> > ---
+> >  drivers/iio/gyro/hid-sensor-gyro-3d.c | 20 ++++++++++----------
+> >  1 file changed, 10 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/h=
+id-sensor-gyro-3d.c
+> > index c43990c518f7..8e3628cd8529 100644
+> > --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > @@ -333,12 +333,6 @@ static int hid_gyro_3d_probe(struct platform_devic=
+e *pdev)
+> >               return ret;
+> >       }
+> >
+> > -     ret =3D iio_device_register(indio_dev);
+> > -     if (ret) {
+> > -             dev_err(&pdev->dev, "device register failed\n");
+> > -             goto error_remove_trigger;
+> > -     }
+> > -
+> >       gyro_state->callbacks.send_event =3D gyro_3d_proc_event;
+> >       gyro_state->callbacks.capture_sample =3D gyro_3d_capture_sample;
+> >       gyro_state->callbacks.pdev =3D pdev;
+> > @@ -346,13 +340,19 @@ static int hid_gyro_3d_probe(struct platform_devi=
+ce *pdev)
+> >                                       &gyro_state->callbacks);
+> >       if (ret < 0) {
+> >               dev_err(&pdev->dev, "callback reg failed\n");
+> > -             goto error_iio_unreg;
+> > +             goto error_remove_trigger;
+> > +     }
+> > +
+> > +     ret =3D iio_device_register(indio_dev);
+> > +     if (ret) {
+> > +             dev_err(&pdev->dev, "device register failed\n");
+> > +             goto error_remove_callback;
+> >       }
+> >
+> >       return ret;
+> >
+> > -error_iio_unreg:
+> > -     iio_device_unregister(indio_dev);
+> > +error_remove_callback:
+> > +     sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
+> >  error_remove_trigger:
+> >       hid_sensor_remove_trigger(indio_dev, &gyro_state->common_attribut=
+es);
+> >       return ret;
+> > @@ -365,8 +365,8 @@ static void hid_gyro_3d_remove(struct platform_devi=
+ce *pdev)
+> >       struct iio_dev *indio_dev =3D platform_get_drvdata(pdev);
+> >       struct gyro_3d_state *gyro_state =3D iio_priv(indio_dev);
+> >
+> > -     sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
+> >       iio_device_unregister(indio_dev);
+> > +     sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
+> >       hid_sensor_remove_trigger(indio_dev, &gyro_state->common_attribut=
+es);
+> >  }
+> >
+>
