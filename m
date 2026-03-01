@@ -1,256 +1,120 @@
-Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
+Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 780E7175A8F
-	for <linux-iio@vger.kernel.org>; Sun,  1 Mar 2026 23:47:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16370175A8F
+	for <linux-iio@vger.kernel.org>; Sun,  1 Mar 2026 23:57:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772408829; cv=none; b=Xl7432WklqfRIJYidFjzjycPKKARlQEtBToLCzNN/9kK56PVUGx8wzVLwdANV3HyqpTXcQlQO3f8u9stV6dZJBLfy5LUzMlTFD6dVAt7cK7t1GJToZWU/jwBXVPA6gTbw9dJTzTvNz8my8Hb//Bzn7XL1TadwaL4kzJrWWLFimM=
+	t=1772409461; cv=none; b=k5WuB/uuhmsVGdnpAHSx7LA3vR992t/QzULp4wPdNc41+CSzViUT8hpOlxXJHoIemP24Rh8dSJAgMJOl3iaPAyd7lNhBl5BO/fmDJTMEP9Y7KZuz0tfC9GT2ahDr03DsO0Wkr+hUXxifXDpwt8ovNYmYov9e1WkbqGcw6vOIMRE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772408829; c=relaxed/simple;
-	bh=d2WnHgqmi2t0hFyj3qyly3wbZePdj7qu8dGp5arudvw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=lFamVM+rIRbiOjTmdRSut0YZNvnpcDl0O73dUSE7jcPvnZ5p/UjcBJMnApO6+nAAK/kFGOsWTOcKDDqXVvyYBgu4yn/ZSwOMFBxG/Qmwowqg8HamW1FEYfG/2CZ9VBoxKHemb7cGdugzrAVIfhrrhhINraSkrwfLLB1tYdqTow4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=WiCU2SL3; arc=none smtp.client-ip=209.85.161.43
+	s=arc-20240116; t=1772409461; c=relaxed/simple;
+	bh=PPjWPhAV/CMGlf4h8hqTpGQ1qdiPBHEGZfh0eQ+NN8g=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=nfMlaWwOOOACtErqljdRHPZ5+P5boc0H2W1zVdKs5FBb68RUA+fHjumUINm7OEAu2EIhRkc46Z0urVD7ceXPrqNirQeCvPx+jKGvY0+MkrnZD1RWT5DHhk1qjy2rfCgq82z70O1OwjU001BJ6FWRahUd2IFqnQCFn1zpWd8ACRI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=vttZYeKZ; arc=none smtp.client-ip=209.85.167.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="WiCU2SL3"
-Received: by mail-oo1-f43.google.com with SMTP id 006d021491bc7-6786b13984fso3027384eaf.2
-        for <linux-iio@vger.kernel.org>; Sun, 01 Mar 2026 15:47:06 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="vttZYeKZ"
+Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-463b3697846so4100661b6e.0
+        for <linux-iio@vger.kernel.org>; Sun, 01 Mar 2026 15:57:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772408825; x=1773013625; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=5dwT1q+TqqHDCYMVcm5xwnQXT5XtGs/pb1m0k2p2HzY=;
-        b=WiCU2SL3Bw8olojpjv9WWa2j7NbEtLY1OocRswNGH+ArPk/G+tlYY7oMKJQbxWjMFT
-         YAK5KzuuJhhNGeBij8FTG0AeQSYZ1mLUoQrj+SL2v8XAi14POgTExnrolmSgIkQQ5JZ1
-         mP35Vm0egF3QjomlbwEQXhv4CwI0pSIvDzR464faNUUXemw7y+BhJorojxkRstegYanJ
-         5F+9Hyj41oDKnEORJbqIWxwG0plMiZI607dF+r92t+YqP17VxcYeV2eTGCsMfgDogZDl
-         eX6nQMPMOEgWOGQXUXiHgb2DWChDRFQ1qExlNjutotzIbmiz+1VvS4WzJGpUbD3Q3W3V
-         XbPQ==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772409459; x=1773014259; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=QudNWS8bzG3eo+FT5ClTdDynuy54B2E9XpJYEYAcw4M=;
+        b=vttZYeKZXqwJgdE0pTjZU2tcxov8Tl9oRWgo8Vd0EHaq7P/fk5JP3O6R54IxBsFsUc
+         JApgvM1BzRIop7/ao9vz8TK8NssFRPSAx2iHMuY32E5szhkawXxSLd72S6qyTvSp9orl
+         vHhyEweg+Be/jZv0V2ME/633CBhC00PwLPQqLpKKnngyTACO4r/2lV3VsitND9FGXZiX
+         LH4Ux02ZqOZUIpLcQko2vaVsC9EHkF8gerCsfYejQgq0c/Ft05JVTQRar3K2Q7g8ffXL
+         tmlqV77MT9fClR6XylfDqhmzPx44XI6K17DV+RGL6ZyGjaQqvX0E4ga/l5sQRKtA8vvR
+         sQUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772408825; x=1773013625;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5dwT1q+TqqHDCYMVcm5xwnQXT5XtGs/pb1m0k2p2HzY=;
-        b=uyIv7LooBN6VqzYS+Z2vs+J46ItArLDqaDElp/xBNlX2DCb860+WvcKSppHw6Gw+g7
-         ifgACDdhORR9+i+phs5CrUm09/W4VmRJ26pMABiiL6Y3KWnHYcLW8sk+ENd80f1H0IdB
-         Rn06ElmIEiDff72KD8Ft+4I3rjCOikov95w4WVgk+/kflfRwOLyMFeD5WYjY+FIUYMA6
-         dN7+koxMc1fLS1XZxJkLexXOzfWeZ5mxelXfOFn/3hxcUyaaUZyUZ0O0BNsC8598tsfF
-         9w1NhzysXWlIw62Sb29Wbfnl8M5SUIyCYc+cLd8x/LByCTtapE8LuMYMgJMjEVfp+aQ+
-         FA5A==
-X-Forwarded-Encrypted: i=1; AJvYcCXX1Wr9qBohl2LcE+658y2vdAj8QXDbsVbslz/G+UYTzG+uHjxGd8Dv8JDl9Xpl7aa848QERcv/Ox0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx6oq/WNpOKUs9RbWIsLdlnr5ZQ3uwyjZL6l925mjAAdnZgD9Oi
-	01LNJFu2upy0ks8Nz79B3IQm/hvfUtG8mlrdpHgGhgRGI2djF7hfSIh7NXkxA7UWdy4=
-X-Gm-Gg: ATEYQzxlbfAc5asExkrJBBJ7MvjjK5jz0TlN7X+EuoZjOItQW77ewcPRItPkh3PsOfS
-	8jYY7ZtoYO8b3WykMT7ZJXywZ37dFQfHX2zxd7tdmZAev9vW0F7m3aEWiL/A+1iysXas/dSgQKg
-	bdpd/8pTEDbGfpMvYuo4Gin80gPY8r6RjQpet2lwCxb+1S69cPxx00AOQi06Bvvv0ZhVNMogJ2R
-	xLWoEf4Bk96ERDsqyOXAZ/PPSk6tvyDD5sGvJaRbqc0gGxpTKFcj4u2I4zXFocyDCxZAAdK8NLn
-	A9oy1FquR04qhzz5oy11BXc2Q2emNDxFcb64PtdCQ0bDnaQDuC8Vdrxr+W4ec2BXLbfndsjk9Gi
-	YsOVBUF1mTGOwG4JYoDWKW7a67H/tm+nwRxGZKYgNCYyp47CckWBo0BLF4lnAG622rmCsQsnTQU
-	UC8VhEyXg0wOdWIuQChuJgSwWLDzkY
-X-Received: by 2002:a05:6820:4b18:b0:66f:2d14:32b7 with SMTP id 006d021491bc7-679fadb8aebmr5703003eaf.9.1772408825368;
-        Sun, 01 Mar 2026 15:47:05 -0800 (PST)
-Received: from [127.0.1.1] ([2600:8803:e7e4:500:8b9c:d657:204d:5a5f])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-679f2da4390sm8152129eaf.14.2026.03.01.15.47.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Mar 2026 15:47:03 -0800 (PST)
-From: David Lechner <dlechner@baylibre.com>
-Date: Sun, 01 Mar 2026 17:46:48 -0600
-Subject: [PATCH v2] iio: orientation: hid-sensor-rotation: use
- ext_scan_type
+        d=1e100.net; s=20230601; t=1772409459; x=1773014259;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=QudNWS8bzG3eo+FT5ClTdDynuy54B2E9XpJYEYAcw4M=;
+        b=ldobRldLW7MmQx59CjU5H4tMapyuAUVkR/JBNZCEzmyM8wAkOJuXzUZrIG02hRX8bq
+         ETbtfFHNju0mPINPp7r1BL4eBFjMmtrcGJ+W+ttTKTScN8aPO0cuHvV9IMDhFAC+f4Qn
+         KAYV36VrpOTEfEHHy/TfqvMiYY9pVJcXJq3pfYXGEnbyUHGn1S+OD/k5SjcvjuiUyaPG
+         fzAJp4bH9Br1azFuD/VcXIeTIQp09USCuSPpvCeQBlCYUv5SNBm6YCmBVOKaMVb+gxcl
+         qEnpeV45DGR434UZei4nkDKMvefGuJXmGpsIg4EJbmG9yZYDFaYb2ecDfCDENCXOeDHU
+         ZaeA==
+X-Forwarded-Encrypted: i=1; AJvYcCW7a1t/YGkD1VTxvHwslhE+51oGM94AHSEaY6Z+FVkSVJt1CMyDsfaXVYKxjoxYerQgqZFbUWU+1Ds=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyWUuXRrrPn0A6LqxKcD2jAu3pSzJZcGV5rtuZZtexdVT96kbKi
+	I7rkXiPhN+2uv82yS4d2KGTEXDh+XJldXfk93MumvbWbpPbGYd3abJFY0CN5ndL6Gx8=
+X-Gm-Gg: ATEYQzzzOmZfyyBtx//zMb/mfEBbH3MmuynHpAi1mxfd8kwelXY8JEyJe28w1SowzU1
+	eNFl/GDjT5TdO+/pc2pmNZLx+zOLRZAiVHkwOFBdSh3mvVQ2t6de22duwzzv5yV+RWiinvb/u09
+	2t4+yu+ooyV1AXDudZnC16S+kaiS+i3zMKcEzrlwtqB22FCcdq4D+5NA7/HCujzbTgLfMIr39wl
+	UcuVHpV79ELS1+r1q/KpMdz9yjH/Xlif3TOoJ6jXH1wpLp2p84j51qv7E1tS4V3rJOhZYJmimnb
+	MTrfrGfHZ8jUSIkwPSRKlVoX/Q6q7zbSN7XJvW8Mv0KRv5myJ9T9KH/+//+h79XoSTa7raDQ1Qy
+	Ns1qbDT9kZR6EpLD4ekyoVKS229s5/I0RMAnLKc/Tecp66r7l0zgycnaTJbQ2Tr5ifT//ghtipE
+	Nn3pXtyM7PzfFLFiCjkRPLnciNUCrTlgUFVBmkHIUJCqS2/9or1lI96bCtMeD4OtA/SzFizNTgU
+	xda83ADFa6F
+X-Received: by 2002:a05:6820:1614:b0:679:a54e:3f8b with SMTP id 006d021491bc7-679fb510141mr5356459eaf.19.1772409459184;
+        Sun, 01 Mar 2026 15:57:39 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:8b9c:d657:204d:5a5f? ([2600:8803:e7e4:500:8b9c:d657:204d:5a5f])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-679f2be9ab7sm8014857eaf.4.2026.03.01.15.57.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 01 Mar 2026 15:57:38 -0800 (PST)
+Message-ID: <bdf054d4-aadf-470c-88c4-26d0cc630fc8@baylibre.com>
+Date: Sun, 1 Mar 2026 17:57:37 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [tip: irq/core] genirq: Warn about using IRQF_ONESHOT without a
+ threaded handler
+From: David Lechner <dlechner@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+ srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+ Bert Karwatzki <spasswolf@web.de>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
+ Thomas Gleixner <tglx@kernel.org>,
+ Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+References: <20260113120541.YVf2vRA3@linutronix.de>
+ <20260202232741.13380-1-spasswolf@web.de>
+ <20260203083826.1gOzxrwt@linutronix.de>
+ <0a3433112f0bec3d5bd76c7ae9b6774b455203a6.camel@linux.intel.com>
+ <20260207154218.2053c98c@jic23-huawei>
+ <ec6ff19b-f8c8-405b-bfaf-02da522782fd@baylibre.com>
+Content-Language: en-US
+In-Reply-To: <ec6ff19b-f8c8-405b-bfaf-02da522782fd@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260301-iio-hid-sensor-rotation-cleanup-v2-1-245c6ad59afc@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/42OwQ6CMBBEf8X07Jq2IAFP/ofhUMoim2CL20Ikh
- H+34sGrxzfJzJtVBGTCIC6HVTDOFMi7BPp4ELY37o5AbWKhpS6kVjkQeeiphYAueAb20cTUATu
- gcdMIZY5lrmSlC+xEWhkZO3rthlv9ZcbnlETxF/YUoudlfzGrT/q/cFagIDNoK3POMiu7a2OWg
- RrGk/UPUW/b9ga3eEgI5gAAAA==
-X-Change-ID: 20260214-iio-hid-sensor-rotation-cleanup-84e8410926ef
-To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5237; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=d2WnHgqmi2t0hFyj3qyly3wbZePdj7qu8dGp5arudvw=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBppM/vBv88UMkBlPn8dCHUBhk8jgkIzWqMtohA8
- IT61NTktZ6JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaaTP7wAKCRDCzCAB/wGP
- wBObB/9PCXzB6uVauf004a+Ojx96a7UBtPuXvJza727xxOJHSIrawHfQy86MBJ+CTssCw1y3ioz
- oM6qc9ml4JONrOamrF13ppfjgxULDiqj7gVPLq1ClDBMT5xcVyVpeOFUnvqnTojGzeTEThPDnM9
- XmDqXE9okxfvcnlJD4neasvsXqp2g6V8yoBqpxjwaWQbd5eY4tXOAyi+7nkNfFLky3fnDN3WiH3
- CHqQ8+8+A9lBoYrOo4xv32fOYmLqNhLcWGUh1QPXxXmcS4BnGfkkzGmIG0co1jcOPVVvHUl9Pa9
- N6LhgxDZpb+zFM7m/gdCJz+LD40zv+oNgxyw7PgjbQrKB247
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Make use of ext_scan_type to handle the dynamic realbits size of the
-quaternion data. This lets us implement it using static data rather than
-having to duplicate the channel info for each driver instance.
+On 3/1/26 5:17 PM, David Lechner wrote:
+> On 2/7/26 9:42 AM, Jonathan Cameron wrote:
+>> On Tue, 03 Feb 2026 09:29:25 -0800
+>> srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
+>>
+>>> On Tue, 2026-02-03 at 09:38 +0100, Sebastian Andrzej Siewior wrote:
+>>>> On 2026-02-03 00:27:40 [+0100], Bert Karwatzki wrote:  
+>>>>>
+>>>>> The warning appears because iio_triggered_buffer_setup_ext() (in 
+>>>>> drivers/iio/buffer/industrialio-triggered-buffer.c) is called with
+>>>>> thread = NULL
+>>>>> during the probe of the iio device and calls iio_alloc_pollfunc()
+>>>>> (in drivers/iio/industrialio-trigger.c) with thread = NULL and type
+>>>>> = IRQF_ONESHOT.
+> 
+> 
+> I noticed this while testing hid-sensor-rotation.
+>     
 
-Signed-off-by: David Lechner <dlechner@baylibre.com>
----
-This is something I noticed we could do while looking at an unrelated
-bug. I've tested this using the same script from [1] and confirmed that
-that the scan type didn't change. Before and after are both:
+...
 
-$ cat in_rot_quaternion_type
-le:s16/32X4>>0
+> 
+> I saw that Jonathan mentioned some other more thorough approaches in
+> a later reply, but here is the "quick fix" I came up with.
+> 
+I later found [1] that has an alternate fix, so no need to reply
+about my "solution" here.
 
-[1]: https://lore.kernel.org/linux-iio/20260301-iio-fix-timestamp-alignment-v1-1-1a54980bfb90@baylibre.com/
----
-Changes in v2:
-- Dropped DEV_ROT_SCAN_TYPE_8BIT.
-- Tested using /dev/uhid.
-- Link to v1: https://lore.kernel.org/r/20260214-iio-hid-sensor-rotation-cleanup-v1-1-3aec9a533c0f@baylibre.com
----
- drivers/iio/orientation/hid-sensor-rotation.c | 71 ++++++++++++++++-----------
- 1 file changed, 43 insertions(+), 28 deletions(-)
-
-diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
-index e759f91a710a..3cfd0b323514 100644
---- a/drivers/iio/orientation/hid-sensor-rotation.c
-+++ b/drivers/iio/orientation/hid-sensor-rotation.c
-@@ -34,6 +34,27 @@ static const u32 rotation_sensitivity_addresses[] = {
- 	HID_USAGE_SENSOR_ORIENT_QUATERNION,
- };
- 
-+enum {
-+	DEV_ROT_SCAN_TYPE_16BIT,
-+	DEV_ROT_SCAN_TYPE_32BIT,
-+};
-+
-+static const struct iio_scan_type dev_rot_scan_types[] = {
-+	[DEV_ROT_SCAN_TYPE_16BIT] = {
-+		.sign = 's',
-+		.realbits = 16,
-+		/* Storage bits has to stay 32 to not break userspace. */
-+		.storagebits = 32,
-+		.repeat = 4,
-+	},
-+	[DEV_ROT_SCAN_TYPE_32BIT] = {
-+		.sign = 's',
-+		.realbits = 32,
-+		.storagebits = 32,
-+		.repeat = 4,
-+	},
-+};
-+
- /* Channel definitions */
- static const struct iio_chan_spec dev_rot_channels[] = {
- 	{
-@@ -45,23 +66,14 @@ static const struct iio_chan_spec dev_rot_channels[] = {
- 					BIT(IIO_CHAN_INFO_OFFSET) |
- 					BIT(IIO_CHAN_INFO_SCALE) |
- 					BIT(IIO_CHAN_INFO_HYSTERESIS),
--		.scan_index = 0
-+		.scan_index = 0,
-+		.has_ext_scan_type = 1,
-+		.ext_scan_type = dev_rot_scan_types,
-+		.num_ext_scan_type = ARRAY_SIZE(dev_rot_scan_types),
- 	},
- 	IIO_CHAN_SOFT_TIMESTAMP(1)
- };
- 
--/* Adjust channel real bits based on report descriptor */
--static void dev_rot_adjust_channel_bit_mask(struct iio_chan_spec *chan,
--						int size)
--{
--	chan->scan_type.sign = 's';
--	/* Real storage bits will change based on the report desc. */
--	chan->scan_type.realbits = size * 8;
--	/* Maximum size of a sample to capture is u32 */
--	chan->scan_type.storagebits = sizeof(u32) * 8;
--	chan->scan_type.repeat = 4;
--}
--
- /* Channel read_raw handler */
- static int dev_rot_read_raw(struct iio_dev *indio_dev,
- 				struct iio_chan_spec const *chan,
-@@ -136,9 +148,25 @@ static int dev_rot_write_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int dev_rot_get_current_scan_type(const struct iio_dev *indio_dev,
-+					 const struct iio_chan_spec *chan)
-+{
-+	struct dev_rot_state *rot_state = iio_priv(indio_dev);
-+
-+	switch (rot_state->quaternion.size / 4) {
-+	case sizeof(s16):
-+		return DEV_ROT_SCAN_TYPE_16BIT;
-+	case sizeof(s32):
-+		return DEV_ROT_SCAN_TYPE_32BIT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static const struct iio_info dev_rot_info = {
- 	.read_raw_multi = &dev_rot_read_raw,
- 	.write_raw = &dev_rot_write_raw,
-+	.get_current_scan_type = &dev_rot_get_current_scan_type,
- };
- 
- /* Callback handler to send event after all samples are received and captured */
-@@ -196,7 +224,6 @@ static int dev_rot_capture_sample(struct hid_sensor_hub_device *hsdev,
- /* Parse report which is specific to an usage id*/
- static int dev_rot_parse_report(struct platform_device *pdev,
- 				struct hid_sensor_hub_device *hsdev,
--				struct iio_chan_spec *channels,
- 				unsigned usage_id,
- 				struct dev_rot_state *st)
- {
-@@ -210,9 +237,6 @@ static int dev_rot_parse_report(struct platform_device *pdev,
- 	if (ret)
- 		return ret;
- 
--	dev_rot_adjust_channel_bit_mask(&channels[0],
--		st->quaternion.size / 4);
--
- 	dev_dbg(&pdev->dev, "dev_rot %x:%x\n", st->quaternion.index,
- 		st->quaternion.report_id);
- 
-@@ -271,22 +295,13 @@ static int hid_dev_rot_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
--	indio_dev->channels = devm_kmemdup(&pdev->dev, dev_rot_channels,
--					   sizeof(dev_rot_channels),
--					   GFP_KERNEL);
--	if (!indio_dev->channels) {
--		dev_err(&pdev->dev, "failed to duplicate channels\n");
--		return -ENOMEM;
--	}
--
--	ret = dev_rot_parse_report(pdev, hsdev,
--				   (struct iio_chan_spec *)indio_dev->channels,
--					hsdev->usage, rot_state);
-+	ret = dev_rot_parse_report(pdev, hsdev, hsdev->usage, rot_state);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to setup attributes\n");
- 		return ret;
- 	}
- 
-+	indio_dev->channels = dev_rot_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(dev_rot_channels);
- 	indio_dev->info = &dev_rot_info;
- 	indio_dev->name = name;
-
----
-base-commit: 3fa5e5702a82d259897bd7e209469bc06368bf31
-change-id: 20260214-iio-hid-sensor-rotation-cleanup-84e8410926ef
-
-Best regards,
--- 
-David Lechner <dlechner@baylibre.com>
-
+[1]: https://lore.kernel.org/linux-iio/20260220224514.471348-1-srinivas.pandruvada@linux.intel.com/
