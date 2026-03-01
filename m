@@ -1,39 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DD35430BA3;
-	Sun,  1 Mar 2026 01:23:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 880A3C8F0;
+	Sun,  1 Mar 2026 01:24:53 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772328180; cv=none; b=Zq6QSXO2Z/gzTaJnOl/vbqcih01v1EZi3SoeddaL58q5gohMc43GfL0Unv1A1zzouy8mJxMaAlWxXD/49yKSGxRa18IVSrvyGSx4wyGprL13wvpovTtj/Ru5WfeNp7rvu7ET3ELseK8ic2KSc+d2JKGjXF9678N2AvEEtWZiL1g=
+	t=1772328293; cv=none; b=Uu7YC3zvJMjwc6mZUFq9561RsLV9es2pqvKw6ZcGkfMxB2NBkwT10SUGtboHMomUTh2njclZXyNeEgBWQvyOgBTlMHxl4zNN3KrVwrExTVtsuOC8aYPtw0rNhfm2RugL8PhaeGW141YaqpqsAce5lxcK2iSssjydLQvzFa88B9A=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772328180; c=relaxed/simple;
-	bh=qu7LE4UfWqpF0NqzUyC4BLLU9TyzrMZOpBO5E98JP5I=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qShjp2D825hWKzM/Gi/LmGPaLUANQZKfLKiNZK/Xy4kyV44jtstqdDp2nSF9Z1yczDVOG4vtTEHOWkAdwqmp58oD5oUnm6GOsAftUtKRuilbo976mCiiO+/ElhMgDzkUPSNw/F6iX1R3kjYWEkGnLe3Z8xp4KaGkOIq3XgixqoQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iC1hxHRq; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772328293; c=relaxed/simple;
+	bh=gIBuM8xa7/3gO2Ejm6BuYAW0duRVNl2UN2laHkXY3Uc=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=qe8qHwLEfgWX+Olky1m/p7Wb/yEtqWvtyeoS+4DNWnNLAJOpp+quf5JekA5KeGgFPxyTrMoAqQx8O6i6NDP14ihFzCX2ViRjH/F7ULvzcn0t0DywfbxiQ9bR9LAj4mvPfqE3oMnIpJ7sS3aXQBXFttJf+0AcHEutkiwa9Q/RYmI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Quw6OLXH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iC1hxHRq"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F0E7C19421;
-	Sun,  1 Mar 2026 01:22:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Quw6OLXH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C2037C19421;
+	Sun,  1 Mar 2026 01:24:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772328180;
-	bh=qu7LE4UfWqpF0NqzUyC4BLLU9TyzrMZOpBO5E98JP5I=;
+	s=k20201202; t=1772328293;
+	bh=gIBuM8xa7/3gO2Ejm6BuYAW0duRVNl2UN2laHkXY3Uc=;
 	h=From:To:Cc:Subject:Date:From;
-	b=iC1hxHRqjgDh5CjxT82D+JdP2TOJo/F+iXMERm1ssYZDtf67AfQl92oRK9I75xHeE
-	 3VAsevdj4dCmnkD7FAjFDVkjlaPIftpxVQ92LecbjvAo8TU6MxtZ79q4kHfPkZ8+fx
-	 o1sEiDCJ2lsWzCdzjDW3ixpHi1vqMP7YnlYaCm/JZyIWESco2mgXhA2+tWRGR60Hw2
-	 wwLSoS6sLh0YHQ8iiSJtYcF5NVehNjX7pT4OzIew0IZurLA6KAvxrusi+ZV16pGyp+
-	 1GK77XI1fu2ZB5jXDZUybzOCtP7Wn9pt294nXBoD4Zxe9ZAhpAS2z5mbvPvlB7c5gP
-	 +vgyw+Ub3jHag==
+	b=Quw6OLXHdoZekmpYJ/7kIl0ZFTSUS0ie8OdoXSgI82ag88wKqXTknHEjfabs0Z5yc
+	 TSQcq1YnDc5c3AY0vVoTHRFWUUfuL2alJuGDbSnmg6pQYSG6QO34EhKQKQ2EslrybK
+	 onVeXYZyK7QLRxG51JlhTl6atpI795fRukw3vubhq2ofU4HNboZkXpo3UJTcoZMB0M
+	 0FA3bJJbLrDJAQdLi2G09SFMhuZaWZV7o5y56lWXB9bfnBfMnqHr8boSArVA4etOD7
+	 nGkCL28EUPLZ7GYVAZtfFAM6wa7NifNg43wsjj2lILjw/Q6e0qM14QZB6+10z2GvPf
+	 8uczjpbS3/Iow==
 From: Sasha Levin <sashal@kernel.org>
 To: stable@vger.kernel.org,
-	flavra@baylibre.com
-Cc: Stable@vger.kernel.org,
+	antoniu.miclaus@analog.com
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+	Stable@vger.kernel.org,
 	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
 	linux-iio@vger.kernel.org
-Subject: FAILED: Patch "iio: accel: adxl380: Avoid reading more entries than present in FIFO" failed to apply to 6.12-stable tree
-Date: Sat, 28 Feb 2026 20:22:57 -0500
-Message-ID: <20260301012258.1679574-1-sashal@kernel.org>
+Subject: FAILED: Patch "iio: gyro: itg3200: Fix unchecked return value in read_raw" failed to apply to 6.12-stable tree
+Date: Sat, 28 Feb 2026 20:24:51 -0500
+Message-ID: <20260301012451.1681808-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -55,43 +56,40 @@ Sasha
 
 ------------------ original commit in Linus's tree ------------------
 
-From c1b14015224cfcccd5356333763f2f4f401bd810 Mon Sep 17 00:00:00 2001
-From: Francesco Lavra <flavra@baylibre.com>
-Date: Mon, 19 Jan 2026 11:23:16 +0100
-Subject: [PATCH] iio: accel: adxl380: Avoid reading more entries than present
- in FIFO
+From b79b24f578cdb2d657db23e5fafe82c7e6a36b72 Mon Sep 17 00:00:00 2001
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Date: Thu, 29 Jan 2026 17:01:45 +0200
+Subject: [PATCH] iio: gyro: itg3200: Fix unchecked return value in read_raw
 
-The interrupt handler reads FIFO entries in batches of N samples, where N
-is the number of scan elements that have been enabled. However, the sensor
-fills the FIFO one sample at a time, even when more than one channel is
-enabled. Therefore,the number of entries reported by the FIFO status
-registers may not be a multiple of N; if this number is not a multiple, the
-number of entries read from the FIFO may exceed the number of entries
-actually present.
+The return value from itg3200_read_reg_s16() is stored in ret but
+never checked. The function unconditionally returns IIO_VAL_INT,
+ignoring potential I2C read failures. This causes garbage data to
+be returned to userspace when the read fails, with no error reported.
 
-To fix the above issue, round down the number of FIFO entries read from the
-status registers so that it is always a multiple of N.
+Add proper error checking to propagate the failure to callers.
 
-Fixes: df36de13677a ("iio: accel: add ADXL380 driver")
-Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+Fixes: 9dbf091da080 ("iio: gyro: Add itg3200")
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/accel/adxl380.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/gyro/itg3200_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/accel/adxl380.c b/drivers/iio/accel/adxl380.c
-index ba550142866a3..a77c2323d1aa4 100644
---- a/drivers/iio/accel/adxl380.c
-+++ b/drivers/iio/accel/adxl380.c
-@@ -966,6 +966,7 @@ static irqreturn_t adxl380_irq_handler(int irq, void  *p)
- 	if (ret)
- 		return IRQ_HANDLED;
- 
-+	fifo_entries = rounddown(fifo_entries, st->fifo_set_size);
- 	for (i = 0; i < fifo_entries; i += st->fifo_set_size) {
- 		ret = regmap_noinc_read(st->regmap, ADXL380_FIFO_DATA,
- 					&st->fifo_buf[i],
+diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+index cd8a2dae56cd9..bfe95ec1abda9 100644
+--- a/drivers/iio/gyro/itg3200_core.c
++++ b/drivers/iio/gyro/itg3200_core.c
+@@ -93,6 +93,8 @@ static int itg3200_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_RAW:
+ 		reg = (u8)chan->address;
+ 		ret = itg3200_read_reg_s16(indio_dev, reg, val);
++		if (ret)
++			return ret;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = 0;
 -- 
 2.51.0
 
