@@ -1,55 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 067AA28640B;
-	Sun,  1 Mar 2026 12:23:51 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 004EA1EA7CE;
+	Sun,  1 Mar 2026 12:27:45 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772367832; cv=none; b=O8plDOI+jxJg4VIDtd9nbKtGwgVCoF5S4DlkZ206PqDMAma6TQcR6KU5jPwt7musV52cXXCQ/M3n3UMszO9RRioJ9obBbh6FKXDQf1Rt8iJ0uwlJjdz8gbi92emnQnviMmqm7oPIyuCLrPhgiRglV3dpOCVTfcQhlIHSkH+rgYA=
+	t=1772368066; cv=none; b=CnQnXPjn35zChUrpNLK9pin3boojl7fWBGNEYjfL4nm0QDL4+1xy97qFw42Xt1FYIAn+K+qGLToS+bM8fMhHO4Hh1qXqNsrYtxgcyCVZKDz0/tVSF11vhOLS+9QdgOf0bFDK1U81Lm9ZhjVUIjvYvjs+S4HlEjPTZof0bzJAryY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772367832; c=relaxed/simple;
-	bh=B5RHnWouZGbSWRKvAJTvQTX52TqXg+P+s4M4a2aEP54=;
+	s=arc-20240116; t=1772368066; c=relaxed/simple;
+	bh=G6UeRlgiNHA9TJrb86keHuy+ajfvEWLGBsh27WYDiLk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=OuxtSKum7/C3WBGBIBQkR0T9RkSZCtqJQyBwTbAom8AIyWgPMFV/D5Kb+Z7lNreprWcF2UwdIVE8XjMjgC2CeGGyQpARCJMLftrsYRKwoalu59Tqvogqca2e/9KCeZfdpLfGv3+OXPcZChkhiOX0lKfFmVET4wrlWS416klYyYw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SRqQaxkl; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=pqwuX01vm3Mzi2SPrsxReojFlDEEkBkFA+LoM06aUgsS07UvxEfr3VIZUKcjO0NhCawUD9r2CT+Aq+wjEEzb36AADxFFiBgmAQatNYke1voaNWmQVwONP+Hpgy1bk4OH52iNOIHZCaduYMIhM9sy++2sEDVKZgp/FsT3tsDMxTc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZT3RDGXO; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SRqQaxkl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB996C116C6;
-	Sun,  1 Mar 2026 12:23:45 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZT3RDGXO"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 570A1C116C6;
+	Sun,  1 Mar 2026 12:27:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772367831;
-	bh=B5RHnWouZGbSWRKvAJTvQTX52TqXg+P+s4M4a2aEP54=;
+	s=k20201202; t=1772368065;
+	bh=G6UeRlgiNHA9TJrb86keHuy+ajfvEWLGBsh27WYDiLk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=SRqQaxkl1c5qvEi3MWrQPTMCN4Hktj/5X40pwrkmaIhIq4Wdiq7MS0iKYdkuUtebB
-	 3OkkAzGJnc16M5WmK5//QMdMVOSE6bADQhHi5FfixmPshN5x/VR+0FK+gOQGEox+GG
-	 SR+MDqgSWl//mwx0kYPacgwEyKN4sYpR+vCcWDgB316T+stKEKOu91LhJ54loIx1Xp
-	 JurezoT8ndzyF60cI9mPaxeFk4J90njUunDEXAenJXFMusobOQVopUiYo0Q6xzfdi+
-	 UEw+A2EywqSdKgA0XbAspGkJnAxgDA6b8k4UxYI41snPAZsee1DlpiqQrTSOSTxbtR
-	 2P8VjGaLAgkWA==
-Date: Sun, 1 Mar 2026 12:23:40 +0000
+	b=ZT3RDGXOTvXGoqMlsN/pBaot/3abgt5GCcK1L1zYyLJHxi9lrSNGmja7opVa9USSl
+	 9gVnpmVZEs+2hmUg2OqDuP183HrQ0K++hbBi5NBjggzdVkg0LN+LQqWv+X3sr9d/XD
+	 V0vfqP9vE1fInBjV2mO54/PRlXnaek2oE7/iRcAqMXgx72Jv3b2GuNEMptlPNJb8YT
+	 gSpdSu9QwrUOXbLnoGy0ZGLGl7fuaxq7imNl35RJO4Xms4fvX8WllAhJlA0o+HcCwn
+	 GrUMCkGdhbMLOOIvSv5Hu4zZsTuwO/PNgHWHOYmseayRgLuxQW8QpQVZShHqxcp6wv
+	 ye8TT2D1KwUlg==
+Date: Sun, 1 Mar 2026 12:27:38 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>,
- rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
- Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Dmitry Antipov
- <dmantipov@yandex.ru>
-Subject: Re: [PATCH v7 2/8] iio: core: add fixed point parsing with 64-bit
- parts
-Message-ID: <20260301122340.3fedf64e@jic23-huawei>
-In-Reply-To: <CAHp75VdSV2QDMR0DueCuP=Ds-5A1NsNjqPWtmRbG4NvoJ=LjXQ@mail.gmail.com>
-References: <20260216-adf41513-iio-driver-v7-0-b0ed387ab559@analog.com>
-	<20260216-adf41513-iio-driver-v7-2-b0ed387ab559@analog.com>
-	<20260222172912.60a103c0@jic23-huawei>
-	<aZwYshRxNgSh3CWk@smile.fi.intel.com>
-	<zb752y7tnjzsc35na572o4sip6efwv3i4lha4ls6fhdrr52h5v@bfgy65cmae4p>
-	<CAHp75VdSV2QDMR0DueCuP=Ds-5A1NsNjqPWtmRbG4NvoJ=LjXQ@mail.gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: bno055: fix BNO055_SCAN_CH_COUNT off by one
+Message-ID: <20260301122738.3e4a74a1@jic23-huawei>
+In-Reply-To: <20260214-iio-imu-bno055-count-off-by-one-v1-1-42b2675edc6a@baylibre.com>
+References: <20260214-iio-imu-bno055-count-off-by-one-v1-1-42b2675edc6a@baylibre.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -57,88 +42,57 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, 23 Feb 2026 12:41:45 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+On Sat, 14 Feb 2026 16:33:54 -0600
+David Lechner <dlechner@baylibre.com> wrote:
 
-> On Mon, Feb 23, 2026 at 12:37=E2=80=AFPM Rodrigo Alencar
-> <455.rodrigo.alencar@gmail.com> wrote:
-> > On 26/02/23 11:06AM, Andy Shevchenko wrote: =20
-> > > On Sun, Feb 22, 2026 at 05:29:12PM +0000, Jonathan Cameron wrote: =20
-> > > > On Mon, 16 Feb 2026 15:02:17 +0000
-> > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@ke=
-rnel.org> wrote:
-> > > > =20
-> > > > > Add iio_str_to_fixpoint64() function that leverages simple_strtou=
-ll()
-> > > > > to parse numbers from a string.
-> > > > > A helper function __iio_str_to_fixpoint64() replaces
-> > > > > __iio_str_to_fixpoint() implementation, extending its usage for
-> > > > > 64-bit fixed-point parsing.
-> > > > >
-> > > > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com> =20
-> > > > Hi Rodrigo.
-> > > >
-> > > > This looks fine to me, but given earlier discussions I'd ideally li=
-ke
-> > > > to wait for a final review from Andy. =20
-> > >
-> > > It all depends on the series from Dmitry Antipov.
-> > > Can somebody help reviewing the patch 1 there?
-> > > https://lore.kernel.org/linux-hardening/20260212125628.739276-1-dmant=
-ipov@yandex.ru/ =20
-> >
-> > can we push for the exposure of that function to kernel modules?
-> > We have discussed that in v6, and I understand that:
-> >
-> > EXPORT_SYMBOL_FOR_MODULES(_parse_integer_limit, "industrialio");
-> > in lib/kstrtox.c;
-> >
-> > #include "../../lib/kstrtox.h"
-> > in drivers/iio/industrialio-core.c
-> >
-> > is not a good call... =20
->=20
-> Yep, because it's a temporary band-aid. The proper solution is to have
-> shared code provided by the lib/. So, the wrapper to parse 64-bit out
-> from the constant string literal should be part of the lib/ in the
-> result.
->=20
-> > > When it's in, we can continue on this one. TL;DR: for me this is on h=
-old.
-> > > But if you see the need to have the driver being in IIO, please add a=
- big
-> > > fat FIXME to make sure we will get this all being sorted out in the
-> > > (nearest?) future. =20
-> >
-> > I could add the FIXME into iio_safe_strntou64() doc header. It explains
-> > the context:
-> > =20
-> > > + * The implementation of this function is similar to _parse_integer_=
-limit()
-> > > + * available in lib/kstrtox.h, but that header/function is not avail=
-able to be
-> > > + * used in kernel modules. Hence, this implementation may need to ch=
-ange or
-> > > + * removed to reuse a new suitable helper that is properly exposed. =
-=20
->=20
-> Up to Jonathan, I hope we can move the above mentioned series forward.
-> Without that, as I pointed out, this one sounds to me suboptimal and
-> unneeded double effort.
->=20
-I don't want to hold this series for another cycle, but we are still
-fairly early in this one, so some focus on moving that forwards seems
-sensible.  If we are running out of time, we can fallback to a loud
-FIXME and a plan to move to the generic version in the library next cycle.
-So let's set a rough deadline of rc5 and see how things are going then.
+> Fix an off-by-one error in the BNO055_SCAN_CH_COUNT macro. The count
+> is derived by taking the difference of the last and first register
+> addresses, dividing by the size of each channel (2 bytes). It needs to
+> also add 1 to account for the fact that the count is inclusive of both
+> the first and last channels.
+> 
+> Thanks to the aligned_s64 timestamp field, there was already extra
+> padding in the buffer, so there were no runtime issues caused by this
+> bug.
+> 
+> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> ---
+> I didn't put a Fixes: tag since this there were no runtime bugs. Didn't
+> know if this was worth backporting or not.
+I took the view that it isn't obvious that this is not a bug and hence
+it might confuse readers in the future.  So I gave it fixes tag.
+Still I didn't +CC stable as agree there is no urgency to backport.
 
-For now I'm going to mark this series as "changes requested" in patchwork
-and stop tracking it.=20
+Applied to the fixes-togreg branch of iio.git.
+
+Thanks,
 
 Jonathan
 
->=20
+> ---
+>  drivers/iio/imu/bno055/bno055.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
+> index 303bc308f80a..c96fec2ebb3e 100644
+> --- a/drivers/iio/imu/bno055/bno055.c
+> +++ b/drivers/iio/imu/bno055/bno055.c
+> @@ -64,7 +64,7 @@
+>  #define BNO055_GRAVITY_DATA_X_LSB_REG	0x2E
+>  #define BNO055_GRAVITY_DATA_Y_LSB_REG	0x30
+>  #define BNO055_GRAVITY_DATA_Z_LSB_REG	0x32
+> -#define BNO055_SCAN_CH_COUNT ((BNO055_GRAVITY_DATA_Z_LSB_REG - BNO055_ACC_DATA_X_LSB_REG) / 2)
+> +#define BNO055_SCAN_CH_COUNT ((BNO055_GRAVITY_DATA_Z_LSB_REG - BNO055_ACC_DATA_X_LSB_REG) / 2 + 1)
+>  #define BNO055_TEMP_REG			0x34
+>  #define BNO055_CALIB_STAT_REG		0x35
+>  #define BNO055_CALIB_STAT_MAGN_SHIFT 0
+> 
+> ---
+> base-commit: 0713b26190addfa3a774b386c8658952ef9f7faf
+> change-id: 20260214-iio-imu-bno055-count-off-by-one-3b67a0caaaf6
+> 
+> Best regards,
 
