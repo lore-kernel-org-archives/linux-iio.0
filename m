@@ -1,42 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6B6D184524;
-	Sun,  1 Mar 2026 11:37:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F4112D94A7;
+	Sun,  1 Mar 2026 11:44:59 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772365033; cv=none; b=UNXwGHTiJzfZFtR/VsKIh2fYMa2xf/cVdV5EFPI42MMN30/ZFg99ciy0ofnA3qx8B2wcYsLRFEWSsEsGkkNLbtC+41uIseY73dSNIFWhGlfcmAU2cxkls96SYDB2Hej1mDobuWHEdRKzGUdeLNDe8IKckSV9b5Zs/Q3aCvxuFkM=
+	t=1772365499; cv=none; b=Mwxg7BEbLL1/EEls2tD1rVz2RX1L/K2+3VeTy9FlWw5Em/2umEDHy7V9gn1lOlMnq4ZMSJXxfsoDTkQGcrGioNb44u+h3D20KLtMFh03gGFuJ+Vr0e0sS/ZiADR5kWT5mLCZW/2Cuh4OSgEIB37WHiPlTL6P+uKHTl77ArGYe6g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772365033; c=relaxed/simple;
-	bh=rrwquvcKbGXDpyX4U7rCdBtFBlQ+EPivynl1wuKHzCI=;
+	s=arc-20240116; t=1772365499; c=relaxed/simple;
+	bh=mtKvxHJPTCi6LZo5NyJ947gjmjouofJ/GDyOeU2SZKQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=QCX++7Xtbs5iGcyLTEUUduHwmJaDWax75ne00JQOqf7eAfCMLicqeZdOipcbu4C+RFAK0IcD60l38EDVukLVb79BSou0WODZxshsvO9PCMg65IU7tZnbBtGM8zoJokSLcySzcnmxFuagbdWJlI3U8iaF0HHT7ek+gZqRgTmRNfo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WaaOaAP+; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=u2X2PEOvrCnmW1PiZ5/QE5en+AQNkOx2AqrL5wcoG8A2oS0lVlclhJxT4JoII84h9LGBTbj2xc28yD7wpwnJr2TLAGnugHYgCrgqM8Oe5kO4LKdp+z6f1EMjuxfiUFVE/pd5zhrxIpaK6uVF+Ons7oIFnGTUDWXrKQ9wkZuBae4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WBGdLJ2r; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WaaOaAP+"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 679B7C116C6;
-	Sun,  1 Mar 2026 11:37:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WBGdLJ2r"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68A4AC116C6;
+	Sun,  1 Mar 2026 11:44:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772365033;
-	bh=rrwquvcKbGXDpyX4U7rCdBtFBlQ+EPivynl1wuKHzCI=;
+	s=k20201202; t=1772365498;
+	bh=mtKvxHJPTCi6LZo5NyJ947gjmjouofJ/GDyOeU2SZKQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=WaaOaAP+5HYEYh5VKAFD1aPOhWxR+hAFYpXO+UXEDfY9vAn4AJmBkf4dp1BoxRBMi
-	 Wy6gVvx5yHsOANvPmjdNHWZP6U/r53SBj1ItY+6dyOfe6kGJxueF9b/coGyemDS5IX
-	 AjXio5VaALpau1HbKMs3eSmc4TqRlbGtki+J8nJgSYNOiHIAFxgUoApTAL1j1xRUdT
-	 rRjsnS+2YWc68Nv/gShaOBvi8p9Otb7qhyBBoeHl5yfxSkVhy3K34fJPeeiFu8OiK0
-	 uX/Y3i1M07LTjDORdaAgKWCi7HsbXIHQuaXYQ2HFaq8ue/pnUwVc8TzVepWcVzp/8X
-	 Y/DaAWtka7rDg==
-Date: Sun, 1 Mar 2026 11:37:05 +0000
+	b=WBGdLJ2rawLzIo+7xaUFWY/P/rHyHPFLm16p7BMQ0rom1l0eMT0/U0xnO1r1FcS4C
+	 BRzBxOHod6wJtA5jxcgRDvnxV7erbBmb68El+JZgLoofZk0Ok5sW423Rkf5WPH5A/9
+	 CjZN+ZZn8xGVyVBbUspc50L8igyH5WQX0j6wrveH1sj6L2FCnmuoOKGt9kacshY3dJ
+	 lAHiXW25aIRJt48TYE7uBZ6C23N4LenHCm+16eYLveScZWiuojPmIZvY7FO+nTmyz5
+	 xyg4hSScOfJ8lMNE/2Ca2kj/XBF+CNby+EYA8hS+j3s5H1Knje/Loy0XSSvYPhWHIk
+	 gVKZBvU/FkdYg==
+Date: Sun, 1 Mar 2026 11:44:50 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Archit Anant <architanant5@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad799x: use devm_iio_device_register and devm
- buffer setup
-Message-ID: <20260301113705.75b8224f@jic23-huawei>
-In-Reply-To: <20260228154515.16639-1-architanant5@gmail.com>
-References: <20260228154515.16639-1-architanant5@gmail.com>
+To: Bhargav Joshi <rougueprince47@gmail.com>
+Cc: jikos@kernel.org, srinivas.pandruvada@linux.intel.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-input@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: hid-sensor-gyro-3d: move iio_device_register()
+ to end of probe()
+Message-ID: <20260301114450.17f79213@jic23-huawei>
+In-Reply-To: <20260228191400.19244-2-rougueprince47@gmail.com>
+References: <20260228191400.19244-1-rougueprince47@gmail.com>
+	<20260228191400.19244-2-rougueprince47@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,82 +49,89 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 28 Feb 2026 21:15:15 +0530
-Archit Anant <architanant5@gmail.com> wrote:
+On Sun,  1 Mar 2026 00:43:59 +0530
+Bhargav Joshi <rougueprince47@gmail.com> wrote:
 
-> Convert the driver to use the device-managed versions of
-> iio_device_register() and iio_triggered_buffer_setup().
-> 
-> This simplifies the error handling in ad799x_probe() by removing the
-> 'error_cleanup_ring' goto label. It also removes the need to manually
-> call iio_device_unregister() and iio_triggered_buffer_cleanup() in
-> ad799x_remove().
+> Currently, calling iio_device_register() before
+> sensor_hub_register_callback() may create a race condition where the
+> device is exposed to userspace before callbacks are wired.
 
-It's also unfortunately broken.  There is a simple rule of thumb for
-use of devm.  It must be used for 'everything' up to the point in probe()
-where you decide to stop using it.  After that it cannot be used
-at all.
+We needs some more here on 'why' this is a problem.
+Whilst this is an unusual arrangement, I couldn't immediately find
+anything that was actually broken.  It's possible data will turn up
+after we tear down the callbacks and before the userspace interfaces
+are removed, but I think that just results in dropping data. Given it's
+in a race anyway I don't think we care about that. The callbacks
+don't seem to be involved in device configuration which can go on whether
+or not the callbacks are registered.  Maybe there is something that
+won't get acknowledged if they aren't in place in time?
 
-The reason is that everything in the remove() callback occurs before the
-unwinding of devm actions.  Thus if you mix and match, you get ordering
-problems.
+For a fix like this we'd normally want to see a clear flow that
+leads to a bug.
 
-In this case you turn the power off before removing the user space
-interfaces which is going to be rather unexpected if someone is still
-using those interfaces.
-
-Jonathan
+Also a fixes tag so we know how far to backport.
 
 > 
-> Signed-off-by: Archit Anant <architanant5@gmail.com>
+> Move iio_device_register() to the end of the probe() function to prevent
+> race condition.
+> 
+> Consequently, update the error handling path in probe() and in remove()
+> ensuring that iio_device_unregister() is called first to cut off
+> userspace access before the hardware callbacks are removed.
+> 
+> Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
 > ---
->  drivers/iio/adc/ad799x.c | 13 ++++---------
->  1 file changed, 4 insertions(+), 9 deletions(-)
+>  drivers/iio/gyro/hid-sensor-gyro-3d.c | 20 ++++++++++----------
+>  1 file changed, 10 insertions(+), 10 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-> index 108bb22162ef..42712372acdb 100644
-> --- a/drivers/iio/adc/ad799x.c
-> +++ b/drivers/iio/adc/ad799x.c
-> @@ -847,7 +847,7 @@ static int ad799x_probe(struct i2c_client *client)
->  	if (ret)
->  		goto error_disable_vref;
->  
-> -	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev, NULL,
->  		&ad799x_trigger_handler, NULL);
->  	if (ret)
->  		goto error_disable_vref;
-> @@ -862,19 +862,17 @@ static int ad799x_probe(struct i2c_client *client)
->  						client->name,
->  						indio_dev);
->  		if (ret)
-> -			goto error_cleanup_ring;
-> +			goto error_disable_vref;
+> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> index c43990c518f7..8e3628cd8529 100644
+> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> @@ -333,12 +333,6 @@ static int hid_gyro_3d_probe(struct platform_device *pdev)
+>  		return ret;
 >  	}
 >  
->  	mutex_init(&st->lock);
->  
 > -	ret = iio_device_register(indio_dev);
-> +	ret = devm_iio_device_register(&client->dev, indio_dev);
->  	if (ret)
-> -		goto error_cleanup_ring;
-> +		goto error_disable_vref;
->  
->  	return 0;
->  
-> -error_cleanup_ring:
-> -	iio_triggered_buffer_cleanup(indio_dev);
->  error_disable_vref:
->  	if (st->vref)
->  		regulator_disable(st->vref);
-> @@ -889,9 +887,6 @@ static void ad799x_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct ad799x_state *st = iio_priv(indio_dev);
->  
-> -	iio_device_unregister(indio_dev);
+> -	if (ret) {
+> -		dev_err(&pdev->dev, "device register failed\n");
+> -		goto error_remove_trigger;
+> -	}
 > -
-> -	iio_triggered_buffer_cleanup(indio_dev);
->  	if (st->vref)
->  		regulator_disable(st->vref);
->  	regulator_disable(st->reg);
+>  	gyro_state->callbacks.send_event = gyro_3d_proc_event;
+>  	gyro_state->callbacks.capture_sample = gyro_3d_capture_sample;
+>  	gyro_state->callbacks.pdev = pdev;
+> @@ -346,13 +340,19 @@ static int hid_gyro_3d_probe(struct platform_device *pdev)
+>  					&gyro_state->callbacks);
+>  	if (ret < 0) {
+>  		dev_err(&pdev->dev, "callback reg failed\n");
+> -		goto error_iio_unreg;
+> +		goto error_remove_trigger;
+> +	}
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "device register failed\n");
+> +		goto error_remove_callback;
+>  	}
+>  
+>  	return ret;
+>  
+> -error_iio_unreg:
+> -	iio_device_unregister(indio_dev);
+> +error_remove_callback:
+> +	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
+>  error_remove_trigger:
+>  	hid_sensor_remove_trigger(indio_dev, &gyro_state->common_attributes);
+>  	return ret;
+> @@ -365,8 +365,8 @@ static void hid_gyro_3d_remove(struct platform_device *pdev)
+>  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>  	struct gyro_3d_state *gyro_state = iio_priv(indio_dev);
+>  
+> -	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
+>  	iio_device_unregister(indio_dev);
+> +	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
+>  	hid_sensor_remove_trigger(indio_dev, &gyro_state->common_attributes);
+>  }
+>  
 
