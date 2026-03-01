@@ -1,174 +1,124 @@
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mail-08.mail-europe.com (mail-08.mail-europe.com [57.129.93.249])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD9E433A6F8
-	for <linux-iio@vger.kernel.org>; Sun,  1 Mar 2026 20:25:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB5CB430BB9
+	for <linux-iio@vger.kernel.org>; Sun,  1 Mar 2026 21:29:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=57.129.93.249
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772396744; cv=none; b=LZHFa6RlBymrzUf3cmOrFWylIXade2Fx11oT/vk6Md2v3b5/akBeSJZ4uXpqg9O5wyAXnUOGkKABRgIQKFiGc0O6NdCSayj6uGM/vSaGqpoa4hjlkSU7BbXnqLKC39Vxrki9JqohGZTTkgi+967PGU5qJXa9cEiR+vmz3j1Dt94=
+	t=1772400585; cv=none; b=eJIkICBzGsSjsHGfK5x5rXAQiPb7HHE1/t4RxImm5Zdp6wY41Ey6FPfFPLiHTKs4etTOtLm2c4QzfOY7dEOaQKYMLwqoxju6zfzgASIr0pHEZtV5RVijwt199lCDcW8Wth7ujINqsYCV61x4ML3MqoXtUbQBCssdCr+txs/DCXA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772396744; c=relaxed/simple;
-	bh=ps7ZUToN5AgC3idSqYVCwGGorlD/RoDfLukDDAMO5jY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=j1rUIpesu+/wZE/OPZWg5UxkBlVKv+XTDeE9e3oB3+Z4FBU2c6Glo4yica2twL6t5Qx508fTmhvW55ZBazZoPfCwfZ6zD/QKInYtolj8w9uxMY4kQqelD+v4ujYGRIYN3HLSR8liUbvu1JM9YIHlALzbPbW4WCdIgP//yQzOmJk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=AHcPZkHw; arc=none smtp.client-ip=209.85.210.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1772400585; c=relaxed/simple;
+	bh=DjYyhyMvixTabW49k7cEmN17HvSCk8isqnqLv/Us3XY=;
+	h=Date:To:From:Cc:Subject:Message-ID:MIME-Version:Content-Type; b=ofevHD8q0zsbQozfIQFrJalF0H6U09KZ6Q+KA0IrAIp2xySKGqh2ZwC5/Kl2GY+4peoPhIfD/wMjhtpJmtE7xplbVqELFHbCHa8TRIYxv1536R/7NR7bjF+iv/LqO3UoHxLbeovzT/3H+kdeP/V/pmMpPfzYtbiKVJJQpP3Qa9A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com; spf=pass smtp.mailfrom=protonmail.com; dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b=T5usw3IX; arc=none smtp.client-ip=57.129.93.249
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=protonmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=protonmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="AHcPZkHw"
-Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-7d4ba9abbecso4826734a34.1
-        for <linux-iio@vger.kernel.org>; Sun, 01 Mar 2026 12:25:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772396736; x=1773001536; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=eZodpChBQz3zA6o/aOiIaqgV1izpjgwL4nvy2nT3q2A=;
-        b=AHcPZkHw+WhdQKjW2p817SsQLROvE08xKc4xEye1YmJNaFBoZWVvPg7WBP1QL+nzpX
-         j1ABYA6xZ3IPzgnR3TGlwPWDqyvQwyGVVG9qOCiDUUAGdKuLm0UBlm2zMrI0t673pBcq
-         X6C5glM076e1YeHXRVLgQY1+xMnuxE2tsJKB/KfQRw8XSUf63UuytsU6HmPE18MVsv3j
-         voYMt/8Fo8i3X7Tdufc9AIoHZZ2Zdgzl/vBq5nV98nKNLY43BwuqxQkjhl153wW9N2g6
-         gcsQO09AsK5k/RMmHZeTvZYBfZz5/5VBGUb4dJuJwZr4bhsYK+D4t6fTFRAvfwbw/7fy
-         FTGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772396736; x=1773001536;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=eZodpChBQz3zA6o/aOiIaqgV1izpjgwL4nvy2nT3q2A=;
-        b=f/45btpcqo0DbfYGVHZwZ1etQebIAxnobr59KMtxacU6qM8cmwaP+epxcwskISMIDL
-         Dlwdkyr16gf6iTq684ZKIDBvNhLIXYnj5xd9Djd54RCN7WE1XeX69CzdDBFIkI3lb/KW
-         F21sP4cPWFH7kHg8ziaNnPOW61hElH1gX1LCLiCr5gDFfakjFTSeoAQz8jLddeJqCSBN
-         yQvJTAeSEhJiFHNAQbK/2N1i1BYSzKWTpdrdO49SO6cVTB/JI2nXhfC6pfBDQ11uEskf
-         JfCtqgbCVu23uGoBySscI3mdYc4CVObpjikd/0Mo4TQtkQTNFcs1dPjk6bwrczqqM99O
-         1orA==
-X-Forwarded-Encrypted: i=1; AJvYcCWXO72aRDk9NRhASOgkBDkYd4KF1z3rJ0J3hy2WKS7utPLfMXh/bo2EakI/RVtcE/khRogEJQyWNKw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy1n7rmVKQfsVy6vXrGJPfWsmyBvLrwREI4IiMGxDAYUN/EIRcY
-	FlsoUlKiZ+0uOAKGgwQiVPxGpahOD0sBRG6PDHsU3ivY/m73Mu+JSSqUpj8e5j+ZBwcNihWIzxG
-	CMSTm
-X-Gm-Gg: ATEYQzzlGRB5u1Uoj9LriQ+OpfQKBqD30G9/OiTiVsLjuq5t/ijcoqeby5URHHQJlqt
-	bNiatr25Mhp1djva099MQZ4DZkI0qvxSFD3qCy6f82KhOkTADOTi1k3M/BwdGSQU/fHfTHjx20p
-	M0sKadPeIYqr3OhaI+LFx3oLfIOVASYRcmubrA06zc7nbQmCcMjjis7TWazkySE0BbxmMkL/cVC
-	vTx6ZhrsIRdCc0glHO1j1b7tJeA7c9YeJF5QnwfvOQ49J3YHDQh8R/Ogmvun8t1DzLPLIHGiAun
-	0rjBrmHeAPWa4h02rRIEESJMXqWNqBEcq2RxSvxaEpquJW6jW3zyKl2Y5MD9+smR8vCq/IYHCEQ
-	+vgen7BlmLKChPDRA4OmeEMrKgdmvfq/6HST1sNQITjuqPCxnE400HQN7fJyioRZSgxjPX0b8qE
-	Zj9kwnFf/QNzwraeHEqC3kBUMa2Zjn
-X-Received: by 2002:a05:6870:b2f2:b0:3e7:fa5f:7250 with SMTP id 586e51a60fabf-41626fb0924mr6857750fac.33.1772396735728;
-        Sun, 01 Mar 2026 12:25:35 -0800 (PST)
-Received: from [127.0.1.1] ([2600:8803:e7e4:500:8b9c:d657:204d:5a5f])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160d277316sm10063025fac.17.2026.03.01.12.25.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Mar 2026 12:25:34 -0800 (PST)
-From: David Lechner <dlechner@baylibre.com>
-Date: Sun, 01 Mar 2026 14:24:53 -0600
-Subject: [PATCH 4/4] iio: buffer: fix timestamp alignment when quaternion
- in scan
+	dkim=pass (2048-bit key) header.d=protonmail.com header.i=@protonmail.com header.b="T5usw3IX"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.com;
+	s=protonmail3; t=1772400509; x=1772659709;
+	bh=AlRoRmV8co/cARlAL1QjAIihx23BPQkCrLr+ZKe1xvI=;
+	h=Date:To:From:Cc:Subject:Message-ID:Feedback-ID:From:To:Cc:Date:
+	 Subject:Reply-To:Feedback-ID:Message-ID:BIMI-Selector;
+	b=T5usw3IXZnmuznN11XRHV50QnhBLAfqBf9QZbJ/zcEnJO9Jhe4Eq3NCwt1TPUWlS+
+	 AG8PpKCVhX9Xe4shM5lS28YuWBe1Iuyw38njh5tGTTEgj3g6TmQnWkTZezwBlbC5mm
+	 Gecpy7QRQ5i2umsoyuWmGPtmD90wSRXTPuA7lrDs8n0r/u8J46BVCVXH0U7O5+szXz
+	 hXpR3pm+JTQpJv8oJIgGmvRJbo4D5mSvxNaieHKm0EqQwLOD2UXQGjISGHEagbO0RV
+	 Ed11J/dfnNYmxfrpynIhbqHbuBDiFLNRGkuq1NQSBbzw21SmQ/QXnalxg2B8RqNDkw
+	 CWZpOBRjVri6w==
+Date: Sun, 01 Mar 2026 21:28:26 +0000
+To: linux-iio@vger.kernel.org
+From: Bruno Martins <ehanoc@protonmail.com>
+Cc: jic23@kernel.org, gregkh@linuxfoundation.org, Bruno Martins <ehanoc@protonmail.com>
+Subject: [PATCH] staging: iio: ad7816: Replace sprintf with sysfs_emit
+Message-ID: <20260301212819.98597-1-ehanoc@protonmail.com>
+Feedback-ID: 4792375:user:proton
+X-Pm-Message-ID: 691c69b9ad32bc558dd38545e0761cec51630cc7
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260301-iio-fix-timestamp-alignment-v1-4-1a54980bfb90@baylibre.com>
-References: <20260301-iio-fix-timestamp-alignment-v1-0-1a54980bfb90@baylibre.com>
-In-Reply-To: <20260301-iio-fix-timestamp-alignment-v1-0-1a54980bfb90@baylibre.com>
-To: Jiri Kosina <jikos@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, 
- =?utf-8?q?Lars_M=C3=B6llendorf?= <lars.moellendorf@plating.de>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- Lixu Zhang <lixu.zhang@intel.com>, linux-input@vger.kernel.org, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- David Lechner <dlechner@baylibre.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3132; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=ps7ZUToN5AgC3idSqYVCwGGorlD/RoDfLukDDAMO5jY=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBppKCwYE1zFgBlGDGu3K1oCQ/jPEYUUNKtvI1Ot
- 1PILepELrGJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCaaSgsAAKCRDCzCAB/wGP
- wPs9CACHinHJ1VZdedi8872GMRPuqVtNXcLmjGgG84f0Hvo47puFDicij2+7ttc5/hNCkuucf0Q
- VxweBrvdIVjIgo+whzd5dGCz3jnBWwNbsiT9t8EuvxNQ37DQLwbvoeiA50ilhWodXv9zNqdwsda
- 6PcwvSMcYfoz7Gc0PtmmRphBtQErYG9exjFfCu3jkkc0g9VBx1lvJRGiX7XrezZB404lj5J9BeY
- POWRk0fM95AZ/+qFSv7Hjv1kBr8LrMzm8ptlHzYXku+Pk6kQvdISAXU4Q9TEOy9V0N2aQXb8GUK
- xDkChsUIJQ5XV3pqfKcHZRupjpZ8aijk967gxZjVAOOqiGk4
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Fix timestamp alignment when a scan buffer contains an element larger
-than sizeof(int64_t). Currently s32 quaternions are the only such
-element, and the one driver that has this (hid-sensor-rotation) has a
-workaround in place already so this change does not affect it.
+As stated in Documentation/filesystems/sysfs.rst:
+'New implementations of show() methods should only use sysfs_emit() or
+sysfs_emit_at() when formatting the value to be returned to user space.'
 
-Previously, we assumed that the timestamp would always be 8-byte aligned
-relative to the end of the scan buffer, but in the case of a scan buffer
-a 16-byte quaternion vector, scan_bytes == 32, but the timestamp needs
-to be placed at offset 16, not 24.
+Replace sprintf with sysfs_emit in the following sysfs show functions:
+- ad7816_show_mode()
+- ad7816_show_available_modes()
+- ad7816_show_channel()
+- ad7816_show_value()
+- ad7816_show_oti()
 
-Signed-off-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: Bruno Martins <ehanoc@protonmail.com>
 ---
+ drivers/staging/iio/adc/ad7816.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-To test this, I used hid-sensor-rotation minus the first patch in the
-series so that we can see that the timestamp actually moved to the
-correct location.
-
-Before this patch, the timestamp (8 bytes ending with "98 18") is in the
-wrong location.
-
-00000000  6a 18 00 00 ac f3 ff ff  83 2d 00 00 02 d3 ff ff  |j........-......|
-00000010  00 00 00 00 00 00 00 00  5a 17 a0 2a 73 cb 98 18  |........Z..*s...|
-
-00000020  ad 17 00 00 6a f4 ff ff  35 2b 00 00 ca d0 ff ff  |....j...5+......|
-00000030  00 00 00 00 00 00 00 00  2a a6 bb 30 73 cb 98 18  |........*..0s...|
-
-00000040  92 1e 00 00 50 ec ff ff  ea c1 ff ff 78 f0 ff ff  |....P.......x...|
-00000050  00 00 00 00 00 00 00 00  8f 3b a7 39 77 cb 98 18  |.........;.9w...|
-
-After this patch, timestamp is now in the correct location.
-
-00000000  55 0f 00 00 dd 1f 00 00  af 0b 00 00 ec 3e 00 00  |U............>..|
-00000010  c7 17 68 42 6d d0 98 18  00 00 00 00 00 00 00 00  |..hBm...........|
-
-00000020  57 0e 00 00 c8 1f 00 00  d1 0e 00 00 42 3e 00 00  |W...........B>..|
-00000030  56 a2 87 48 6d d0 98 18  00 00 00 00 00 00 00 00  |V..Hm...........|
-
-00000040  a3 e2 ff ff d3 1b 00 00  0b c9 ff ff cc 20 00 00  |............. ..|
-00000050  27 59 4d b3 72 d0 98 18  00 00 00 00 00 00 00 00  |'YM.r...........|
-
-I also tested this with a different driver not affected by this bug to
-make sure that the timestamp is still in the correct location for all
-other drivers.
----
- include/linux/iio/buffer.h | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
-
-diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
-index d37f82678f71..ac19b39bdbe4 100644
---- a/include/linux/iio/buffer.h
-+++ b/include/linux/iio/buffer.h
-@@ -34,8 +34,16 @@ static inline int iio_push_to_buffers_with_timestamp(struct iio_dev *indio_dev,
- 	void *data, int64_t timestamp)
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7=
+816.c
+index 172acf135f3b..0e32a2295990 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -124,8 +124,8 @@ static ssize_t ad7816_show_mode(struct device *dev,
+ =09struct ad7816_chip_info *chip =3D iio_priv(indio_dev);
+=20
+ =09if (chip->mode)
+-=09=09return sprintf(buf, "power-save\n");
+-=09return sprintf(buf, "full\n");
++=09=09return sysfs_emit(buf, "power-save\n");
++=09return sysfs_emit(buf, "full\n");
+ }
+=20
+ static ssize_t ad7816_store_mode(struct device *dev,
+@@ -156,7 +156,7 @@ static ssize_t ad7816_show_available_modes(struct devic=
+e *dev,
+ =09=09=09=09=09   struct device_attribute *attr,
+ =09=09=09=09=09   char *buf)
  {
- 	if (ACCESS_PRIVATE(indio_dev, scan_timestamp)) {
--		size_t ts_offset = indio_dev->scan_bytes / sizeof(int64_t) - 1;
--		((int64_t *)data)[ts_offset] = timestamp;
-+		size_t ts_offset = indio_dev->scan_bytes -
-+			ACCESS_PRIVATE(indio_dev, largest_scan_element_size);
-+
-+		/*
-+		 * The size of indio_dev->scan_bytes is always aligned to
-+		 * largest_scan_element_size (see iio_compute_scan_bytes()).
-+		 * And this size is always going to be >= sizeof(timestamp).
-+		 * So to correctly place the timestamp, it goes at this offset.
-+		 */
-+		*(int64_t *)(data + ts_offset) = timestamp;
- 	}
- 
- 	return iio_push_to_buffers(indio_dev, data);
+-=09return sprintf(buf, "full\npower-save\n");
++=09return sysfs_emit(buf, "full\npower-save\n");
+ }
+=20
+ static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
+@@ -169,7 +169,7 @@ static ssize_t ad7816_show_channel(struct device *dev,
+ =09struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
+ =09struct ad7816_chip_info *chip =3D iio_priv(indio_dev);
+=20
+-=09return sprintf(buf, "%d\n", chip->channel_id);
++=09return sysfs_emit(buf, "%d\n", chip->channel_id);
+ }
+=20
+ static ssize_t ad7816_store_channel(struct device *dev,
+@@ -231,9 +231,9 @@ static ssize_t ad7816_show_value(struct device *dev,
+ =09=09data &=3D AD7816_TEMP_FLOAT_MASK;
+ =09=09if (value < 0)
+ =09=09=09data =3D BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
+-=09=09return sprintf(buf, "%d.%.2d\n", value, data * 25);
++=09=09return sysfs_emit(buf, "%d.%.2d\n", value, data * 25);
+ =09}
+-=09return sprintf(buf, "%u\n", data);
++=09return sysfs_emit(buf, "%u\n", data);
+ }
+=20
+ static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
+@@ -281,9 +281,9 @@ static ssize_t ad7816_show_oti(struct device *dev,
+ =09=09value =3D AD7816_BOUND_VALUE_MIN +
+ =09=09=09(chip->oti_data[chip->channel_id] -
+ =09=09=09AD7816_BOUND_VALUE_BASE);
+-=09=09return sprintf(buf, "%d\n", value);
++=09=09return sysfs_emit(buf, "%d\n", value);
+ =09}
+-=09return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
++=09return sysfs_emit(buf, "%u\n", chip->oti_data[chip->channel_id]);
+ }
+=20
+ static inline ssize_t ad7816_set_oti(struct device *dev,
+--=20
+2.47.3
 
--- 
-2.43.0
 
