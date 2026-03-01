@@ -1,44 +1,55 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A7702EFD9B;
-	Sun,  1 Mar 2026 12:10:17 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 067AA28640B;
+	Sun,  1 Mar 2026 12:23:51 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772367017; cv=none; b=FSsr09E2He2191Cr0Nc1AxDH3R1k6pb3witQe5xdsq9PUZ38+wRSSpPgG0HGmIpnWeyToVF5y711xaSJAa0GH9WacW/2JiXTg2VFOQITrcpYf//SlYNlY0B1gCQlkj+leMlEb/C9OJ/jJkgYUIW8+h27tj50T4EU5PlWjEkdjSg=
+	t=1772367832; cv=none; b=O8plDOI+jxJg4VIDtd9nbKtGwgVCoF5S4DlkZ206PqDMAma6TQcR6KU5jPwt7musV52cXXCQ/M3n3UMszO9RRioJ9obBbh6FKXDQf1Rt8iJ0uwlJjdz8gbi92emnQnviMmqm7oPIyuCLrPhgiRglV3dpOCVTfcQhlIHSkH+rgYA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772367017; c=relaxed/simple;
-	bh=EM4nV+8wPjflb/uK5rfNQ01u7nu9dx+td63hr8gBYqs=;
+	s=arc-20240116; t=1772367832; c=relaxed/simple;
+	bh=B5RHnWouZGbSWRKvAJTvQTX52TqXg+P+s4M4a2aEP54=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eReOSoSPuFy9Xas5iSypRtGhKpFHfxKaToC3TNlIyq23+EX9vlyMw8jVVquwLDyj/pyUCLDymRcduXALwFk2OX10tvM/c3kYyrxwRQDLwk2imKzwmYcxy0GSFM3PZOCRsPO8WaXv/kqaQq43vVrVO+mYW5PBpNFKe0Grte15eGM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fXtT5LdN; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=OuxtSKum7/C3WBGBIBQkR0T9RkSZCtqJQyBwTbAom8AIyWgPMFV/D5Kb+Z7lNreprWcF2UwdIVE8XjMjgC2CeGGyQpARCJMLftrsYRKwoalu59Tqvogqca2e/9KCeZfdpLfGv3+OXPcZChkhiOX0lKfFmVET4wrlWS416klYyYw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SRqQaxkl; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fXtT5LdN"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2561DC116C6;
-	Sun,  1 Mar 2026 12:10:14 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SRqQaxkl"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB996C116C6;
+	Sun,  1 Mar 2026 12:23:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772367017;
-	bh=EM4nV+8wPjflb/uK5rfNQ01u7nu9dx+td63hr8gBYqs=;
+	s=k20201202; t=1772367831;
+	bh=B5RHnWouZGbSWRKvAJTvQTX52TqXg+P+s4M4a2aEP54=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=fXtT5LdNqKSU/knI4y1CJrVJ2i5yT+9W8SVl1BA7xmfx6aLn7Pm06oMPkRM1ZLnMU
-	 PskskT1n736sibTGyKDHFC1Pz9rLXUbacKix6sIJ/1jze3i6X51L8NjH13kLg5zo+w
-	 2Zpkpc0J0fTrp63lPELSKyq4xy2O9lL504U9pTSh/nURb7SOofQUHwlfDDkYc99329
-	 /LYs/zq51j9JUUdnmrdoi3+VZe/He5XLzzrPmeGetk4gAGcvLcEDenXA1euZ4Yh3X0
-	 HkvVSGKJ83wnBPqrG3lS/l7NsvbkeLxlSaBFelEKGByO5nVCqInBYqa2zZ/SXJ87UD
-	 /YarGGCGzWy8Q==
-Date: Sun, 1 Mar 2026 12:10:11 +0000
+	b=SRqQaxkl1c5qvEi3MWrQPTMCN4Hktj/5X40pwrkmaIhIq4Wdiq7MS0iKYdkuUtebB
+	 3OkkAzGJnc16M5WmK5//QMdMVOSE6bADQhHi5FfixmPshN5x/VR+0FK+gOQGEox+GG
+	 SR+MDqgSWl//mwx0kYPacgwEyKN4sYpR+vCcWDgB316T+stKEKOu91LhJ54loIx1Xp
+	 JurezoT8ndzyF60cI9mPaxeFk4J90njUunDEXAenJXFMusobOQVopUiYo0Q6xzfdi+
+	 UEw+A2EywqSdKgA0XbAspGkJnAxgDA6b8k4UxYI41snPAZsee1DlpiqQrTSOSTxbtR
+	 2P8VjGaLAgkWA==
+Date: Sun, 1 Mar 2026 12:23:40 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Santos <Jonathan.Santos@analog.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, lars@metafoo.de,
- Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org,
- jonath4nns@gmail.com
-Subject: Re: [PATCH v2 4/4] iio: adc: ad7768-1: add support for SPI offload
-Message-ID: <20260301121011.4b5d2238@jic23-huawei>
-In-Reply-To: <ca6f9ec7-ec58-4628-b41a-c2e4beb67777@baylibre.com>
-References: <cover.1771362939.git.Jonathan.Santos@analog.com>
-	<79e1004bd9e618f9376a9ed40389510066b91d1c.1771362939.git.Jonathan.Santos@analog.com>
-	<ca6f9ec7-ec58-4628-b41a-c2e4beb67777@baylibre.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, Andy Shevchenko
+ <andriy.shevchenko@intel.com>, Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>,
+ rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-doc@vger.kernel.org, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, Dmitry Antipov
+ <dmantipov@yandex.ru>
+Subject: Re: [PATCH v7 2/8] iio: core: add fixed point parsing with 64-bit
+ parts
+Message-ID: <20260301122340.3fedf64e@jic23-huawei>
+In-Reply-To: <CAHp75VdSV2QDMR0DueCuP=Ds-5A1NsNjqPWtmRbG4NvoJ=LjXQ@mail.gmail.com>
+References: <20260216-adf41513-iio-driver-v7-0-b0ed387ab559@analog.com>
+	<20260216-adf41513-iio-driver-v7-2-b0ed387ab559@analog.com>
+	<20260222172912.60a103c0@jic23-huawei>
+	<aZwYshRxNgSh3CWk@smile.fi.intel.com>
+	<zb752y7tnjzsc35na572o4sip6efwv3i4lha4ls6fhdrr52h5v@bfgy65cmae4p>
+	<CAHp75VdSV2QDMR0DueCuP=Ds-5A1NsNjqPWtmRbG4NvoJ=LjXQ@mail.gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,96 +57,88 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, 28 Feb 2026 11:18:22 -0600
-David Lechner <dlechner@baylibre.com> wrote:
+On Mon, 23 Feb 2026 12:41:45 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-> On 2/23/26 5:59 AM, Jonathan Santos wrote:
-> > The AD7768-1 family supports sampling rates up to 1 MSPS, which exceeds
-> > the capabilities of conventional triggered buffer operations due to SPI
-> > transaction overhead and interrupt latency.
-> >   
-> 
-> ...
-> 
-> > +static int ad7768_offload_buffer_postenable(struct iio_dev *indio_dev)
-> > +{
-> > +	struct ad7768_state *st = iio_priv(indio_dev);
-> > +	struct spi_offload_trigger_config config = {
-> > +		.type = SPI_OFFLOAD_TRIGGER_DATA_READY,
-> > +	};
-> > +	const struct iio_scan_type *scan_type;
-> > +	unsigned int unused;
-> > +	int ret;
-> > +
-> > +	scan_type = iio_get_current_scan_type(indio_dev, &indio_dev->channels[0]);
-> > +	if (IS_ERR(scan_type))
-> > +		return PTR_ERR(scan_type);
-> > +
-> > +	st->offload_xfer.len = spi_bpw_to_bytes(scan_type->realbits);
-> > +	st->offload_xfer.bits_per_word = scan_type->realbits;
-> > +	st->offload_xfer.offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
-> > +
-> > +	spi_message_init_with_transfers(&st->offload_msg, &st->offload_xfer, 1);
-> > +	st->offload_msg.offload = st->offload;
-> > +
-> > +	ret = spi_optimize_message(st->spi, &st->offload_msg);
-> > +	if (ret) {
-> > +		dev_err(&st->spi->dev, "failed to prepare offload, err: %d\n", ret);
-> > +		return ret;
-> > +	}
-> > +
-> > +	/*
-> > +	 * Write a 1 to the LSB of the INTERFACE_FORMAT register to enter
-> > +	 * continuous read mode. Subsequent data reads do not require an
-> > +	 * initial 8-bit write to query the ADC_DATA register.
-> > +	 */
-> > +	ret =  regmap_write(st->regmap, AD7768_REG_INTERFACE_FORMAT, 0x01);
-> > +	if (ret)
-> > +		goto err_unoptimize_message;
-> > +
-> > +	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger,
-> > +					 &config);
-> > +	if (ret)
-> > +		goto err_exit_continuous_read_mode;
-> > +
-> > +	return 0;
-> > +
-> > +err_exit_continuous_read_mode:  
-> 
-> I wouldn't mind a comment here explaining what this read does.
+> On Mon, Feb 23, 2026 at 12:37=E2=80=AFPM Rodrigo Alencar
+> <455.rodrigo.alencar@gmail.com> wrote:
+> > On 26/02/23 11:06AM, Andy Shevchenko wrote: =20
+> > > On Sun, Feb 22, 2026 at 05:29:12PM +0000, Jonathan Cameron wrote: =20
+> > > > On Mon, 16 Feb 2026 15:02:17 +0000
+> > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@ke=
+rnel.org> wrote:
+> > > > =20
+> > > > > Add iio_str_to_fixpoint64() function that leverages simple_strtou=
+ll()
+> > > > > to parse numbers from a string.
+> > > > > A helper function __iio_str_to_fixpoint64() replaces
+> > > > > __iio_str_to_fixpoint() implementation, extending its usage for
+> > > > > 64-bit fixed-point parsing.
+> > > > >
+> > > > > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com> =20
+> > > > Hi Rodrigo.
+> > > >
+> > > > This looks fine to me, but given earlier discussions I'd ideally li=
+ke
+> > > > to wait for a final review from Andy. =20
+> > >
+> > > It all depends on the series from Dmitry Antipov.
+> > > Can somebody help reviewing the patch 1 there?
+> > > https://lore.kernel.org/linux-hardening/20260212125628.739276-1-dmant=
+ipov@yandex.ru/ =20
+> >
+> > can we push for the exposure of that function to kernel modules?
+> > We have discussed that in v6, and I understand that:
+> >
+> > EXPORT_SYMBOL_FOR_MODULES(_parse_integer_limit, "industrialio");
+> > in lib/kstrtox.c;
+> >
+> > #include "../../lib/kstrtox.h"
+> > in drivers/iio/industrialio-core.c
+> >
+> > is not a good call... =20
+>=20
+> Yep, because it's a temporary band-aid. The proper solution is to have
+> shared code provided by the lib/. So, the wrapper to parse 64-bit out
+> from the constant string literal should be part of the lib/ in the
+> result.
+>=20
+> > > When it's in, we can continue on this one. TL;DR: for me this is on h=
+old.
+> > > But if you see the need to have the driver being in IIO, please add a=
+ big
+> > > fat FIXME to make sure we will get this all being sorted out in the
+> > > (nearest?) future. =20
+> >
+> > I could add the FIXME into iio_safe_strntou64() doc header. It explains
+> > the context:
+> > =20
+> > > + * The implementation of this function is similar to _parse_integer_=
+limit()
+> > > + * available in lib/kstrtox.h, but that header/function is not avail=
+able to be
+> > > + * used in kernel modules. Hence, this implementation may need to ch=
+ange or
+> > > + * removed to reuse a new suitable helper that is properly exposed. =
+=20
+>=20
+> Up to Jonathan, I hope we can move the above mentioned series forward.
+> Without that, as I pointed out, this one sounds to me suboptimal and
+> unneeded double effort.
+>=20
+I don't want to hold this series for another cycle, but we are still
+fairly early in this one, so some focus on moving that forwards seems
+sensible.  If we are running out of time, we can fallback to a loud
+FIXME and a plan to move to the generic version in the library next cycle.
+So let's set a rough deadline of rc5 and see how things are going then.
 
-Given I'm not sure, Jonathan, can we have such a comment as a follow up patch please.
-> 
-> > +	regmap_read(st->regmap24, AD7768_REG24_ADC_DATA, &unused);
-> > +
-> > +err_unoptimize_message:
-> > +	spi_unoptimize_message(&st->offload_msg);
-> > +
-> > +	return ret;
-> > +}  
-> 
-> ...
-> 
-> > +static bool ad7768_offload_trigger_match(struct spi_offload_trigger *trigger,
-> > +					 enum spi_offload_trigger_type type,
-> > +					 u64 *args, u32 nargs)
-> > +{
-> > +	if (type != SPI_OFFLOAD_TRIGGER_DATA_READY)
-> > +		return false;
-> > +
-> > +	/* Requires 1 or 2 args to indicate the trigger output signal */  
-> 
-> Would be more clear to say "up to 2 args are allowed, but only 1 is used".
-I tweaked this.
+For now I'm going to mark this series as "changes requested" in patchwork
+and stop tracking it.=20
 
-> 
-> > +	if (nargs == 0 || nargs > 2 || args[0] != AD7768_TRIGGER_SOURCE_DRDY)
-> > +		return false;
-> > +
-> > +	return true;
-> > +}
-> > +  
+Jonathan
+
+>=20
 
