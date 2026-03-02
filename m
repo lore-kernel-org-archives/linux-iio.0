@@ -1,137 +1,189 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4A941A6813
-	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 21:03:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772485424; cv=none; b=WafJ8xq8VMusJyjduj6NpTt08tC76ltIajyrUePPOTWcFvz4X/1wqJqbirzp/TkJLhn5CeMFN6t51Yuh1sbpQgX/iyxEPgB9pYHYTcr2WUlC9E5zME5TyeXSfRkahr5kYato2BMDuQgQAcrim41HUTjzlDkiqhEAjY9pkDwriuo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772485424; c=relaxed/simple;
-	bh=/WQzFWzyWtBPCb93zCsp2dzNfY++BTiB2axu92sLf/Q=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mgJATpKW7/fTuZFBqMakUZRM9enAbxwf0FO++XROJR9P5upKyw4KL9AX+oPVSDjaapCEGTUXLdANm5mCNjIszQuibIGCr4PYf/dSCmf9jwf8pNitCiUmXMZ5UmyXf7Kprl24TGw8NQwowaniAqRouLOIb66UgOfG65ZydIx4Zik=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=klHREm57; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91B401A680B
+	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 21:04:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.215.177
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772485448; cv=pass; b=fkxeiGsJ6PF3lVzhy8qZAPIo/dKAmbWUzdfrM1tO1tNbbP0J2S7ON3N4PgLIR80wNXaZ59PQDFsbGKDUuX7HQItjxLRbU26vrA+v4qRXlLg0yT2jwsDPU9N0vQmfPD8H+zvwzlcVcQ8uZIfD+I42Zj2LSGT1U968sTdMiI4KvDE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772485448; c=relaxed/simple;
+	bh=CWJKF9SpIjh9pmmYfzTqY7v0sHyXHPNvu82TC+RYFA0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=VEW3hkiM3FglVW7x7jnk9iSbCDT+Pr3xGTSc3NlSS6TgRlOLgcr8rJF1QPpuH6h0Bpv2FEIybcrOZKPgIQSGW1FKtPBC5d86nGBu56bDRexplHdNGyrIAV6WY3m48AjIOyeNV3fS5vJOxM88UUnWfvv4r0h0GxYUf39+aoC9Zxc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com; spf=pass smtp.mailfrom=googlemail.com; dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b=bDoDU96Q; arc=pass smtp.client-ip=209.85.215.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="klHREm57"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88C27C19423;
-	Mon,  2 Mar 2026 21:03:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772485424;
-	bh=/WQzFWzyWtBPCb93zCsp2dzNfY++BTiB2axu92sLf/Q=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=klHREm57/lriOW3wfMk8ZMP4dx4+No1pdmx8n+9S+8r/oWIwuzYb4td1hmuZsVcvk
-	 q+N0en7d9MI0JIZclInY4N0XnHfAUWQr9bdpoTs52sM6Sho8hYPjjiRqB302t3I2ru
-	 qwXj71CCZng6G77zrtif5hQaRzKepRPvD5n/Eek3HXGx1PDT7iAxkzrpsSzX576pIG
-	 4cLEEZlnaboaDHk3yOxpOTZCdUeF/i8B3SHeOLwGqhOUlmQhDk93jKeFs8KOn9VP6U
-	 fT0nm2wAZlscjIZYCPKnrji6lMj4m6j9cwPbIgXyDaZRJ6kgrYrB2eRAgVk5qhw6fr
-	 L37+ZxB6U/XRQ==
-Date: Mon, 2 Mar 2026 21:03:37 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Bruno Martins <ehanoc@protonmail.com>
-Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org
-Subject: Re: [PATCH] staging: iio: ad7816: Replace sprintf with sysfs_emit
-Message-ID: <20260302210337.1dc6447d@jic23-huawei>
-In-Reply-To: <20260301212819.98597-1-ehanoc@protonmail.com>
-References: <20260301212819.98597-1-ehanoc@protonmail.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="bDoDU96Q"
+Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-c7350fd4efdso756734a12.1
+        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 13:04:07 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1772485447; cv=none;
+        d=google.com; s=arc-20240605;
+        b=fO4uOh0kAvqmo/lqiMTVdxmyF+MrKxkuf/yxgnSEVUkOmGmDiOXvohypQxrLIOSJtD
+         vYeAUsmunV3QWoz+sAeRMbnqnZElsj6VHTEQDdqkn+SvuRTXrVptgnuBrg7+r8QWjo6d
+         qiVGzbSsHWWNpZ6s/hrOklKEdbHHoETOp/3zP1P57X0Uxy5dqng7+MWb8gk8mbZa8hrC
+         BPeZxYVc7IvWeYW1PwKgoljf65I+cfUo6x/WWc2opoQomGPGH9eX8z2x5U65c8iarhqj
+         /TJCnHUtDCmDAZTm4fq0o7tZ8i/tB+G0XfDW/F13/1eUYKDPggoCzeJX77OrQtTbzN2v
+         YTJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=S0B/W9oEfTx3Mdx8y1qNKPKD50lO55YEDov361/4WoA=;
+        fh=LCP5mvCF69lpHnkqYC4ZrVgGYPcLc7iy9o4Gwt87Pjk=;
+        b=NXwojgx8Rx4gJsjJ5eCrI03k5oVq3dITd1mgTsMXIJRol8GAsrcup6eToFe58Qh5iO
+         gGb7yWfklTliXUxO7jvesKy3vamvC0FD2c7ELlTaia9vBJAsMQXG3SZzixdkzs4+KJxW
+         mS3UoEwCDaJhcThcVeqqw3AuziIeNoUQ3/Qvvc21RefcMhYSflOec5rYr3bCntFsguLt
+         bq1yWpqUlQX1ijvN/ECO9IrqWC7V3yL9uActvEmHntqV2+PZd9Oq2aMUQKL6aTDs+efo
+         4pZ5y3zaMKHpEOjZYWyEGjAH7nsHmYBxsgbHSGOd/a1pbT9dENYl7E5jU1sGqpQyA51b
+         7TfQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20230601; t=1772485447; x=1773090247; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=S0B/W9oEfTx3Mdx8y1qNKPKD50lO55YEDov361/4WoA=;
+        b=bDoDU96Qj8MJyBOdnA6aQbCDVdDQyoEAqiI7jUOaTPmVDu50AXsPvM44QnliDfct/F
+         PG2WrxT4QoDeUnsqom0DRKYnMj4e65xMxXuayfD2zZ5cNSCT+p/yp2kZdXM7JPFSBoOm
+         JG4Jsh7IeAdXw+lhAubeNGo6lXndVwDSha+xCtB1Px9XY1nzpI7f9ltkmq74lmc+bdFr
+         ebsIvTW86xfRrYb2264HuVYQ/yq0d1Fmtwtk7Syu6nW6D9u2J2KrB4PEyqiIY76QYX1J
+         bMg7WprCJtyncRk03/7UBK3McoHZFDJ1UZYUela9u7l42sqDNcTxVDF5bvIuFxzhLtPm
+         i8Gg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772485447; x=1773090247;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=S0B/W9oEfTx3Mdx8y1qNKPKD50lO55YEDov361/4WoA=;
+        b=XVTCccBeaLFX7NocA9pf4oP+eGL4uoLs+Y3qpymUcUlTQPoUHxfbrR97glfTC11yV/
+         u7nA3s7qwIu/9whr/fhj+NeXVBSEP0kNjyF38nm7JKO5iVbynpCmJw0kkB0+lmJGBlXJ
+         Yf0aszcLDHp6gBX/ddsUmWy7o9WBjk7JPsq7L/bytxy+z2e1BZtQK/iXLsOFeRkUUNaW
+         zOtqzEw9vZDlqitMVKaZYzEy/RPMOXCoT15BESD+Utvh/YeZQv9KeikQ7H6a7szsZyHo
+         fedfdIRAoz2FrshpS7H2RwAV/tekWm/9g/DCjFhZHfyhvmhe5MAQWOjktdOhtEBNsBgb
+         B0ig==
+X-Forwarded-Encrypted: i=1; AJvYcCV8ASxZPIJk+bpiVWOdJNnAo+Tv0cxSY4ZNizHP8xRJUoJqbgyzn7eDHm8ygqNf0OafQ8k+JTZZFzE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxnpvHnJbBAZFtLJjaX8fDZnd047LtDwqlD7vVeL9SNo7zsAa7D
+	l9lDYGTzpl0N53aOTr+LhbsM6nK/S0X3nDSIcmSVUXim9g6ANzqBkK4IrFUhI4Nyr5LAYm7vExp
+	3JT8jh5sZ4UKrK+fxI4kKBQpGCKRpXrg=
+X-Gm-Gg: ATEYQzzbezYmvzP4rsNIOdtYQPHXixL8p+y+PpXXUBT3dOQoWI3HCYKweiMthnDXq3K
+	I/8KLDY2VTCv54VdF0cP3pClwQmv1DSJlpkdgDB5uLEWKfphaocx0LFKZS/rPg/2akTwplUxurc
+	OJn6PHBJo5Lhmcff2etz2E1E8oNDLJJeJm05vGXoWQmflNP8o5G2EEKT2hNO0JCosePfPcVCCLx
+	RGiXPFiRNbG5yu5win8/N9qIFSqFBLXfOGBG9rIz1pgbsuFnWGpWNxmIItEmVxcRbwmwEiLgK+e
+	uiM1Y3p2LcDWLQ2Z+kVqkYE4Tv0KDjCtHk6MVdPe
+X-Received: by 2002:a17:902:ccc8:b0:2ae:5628:a170 with SMTP id
+ d9443c01a7336-2ae5628afe4mr43796855ad.46.1772485446798; Mon, 02 Mar 2026
+ 13:04:06 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260228065840.702651-1-nick@khadas.com> <20260228065840.702651-2-nick@khadas.com>
+ <20260228-quirky-lemon-reindeer-1045f6@quoll> <CAFBinCAkxO4HoN0Cw0Fc2B3KRLLJqso1p5+qjNN_E0c26VOf2g@mail.gmail.com>
+ <49b3a87d-7ea0-4da1-871e-35ddf5d5b454@kernel.org>
+In-Reply-To: <49b3a87d-7ea0-4da1-871e-35ddf5d5b454@kernel.org>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date: Mon, 2 Mar 2026 22:03:54 +0100
+X-Gm-Features: AaiRm50TpdWh3Y_pvxvTMNOeIVTyBRxIzdF8SrzpLj8ML0Xjz_0wayl9w2nZ3rY
+Message-ID: <CAFBinCDyhvzWO3gOL=GtnH56Guh2fkZyhmSjn2k3iJdhtmTdBA@mail.gmail.com>
+Subject: Re: [PATCH v1 1/4] dt-bindings: iio: adc: amlogic,meson-saradc: add
+ S4 compatible
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Nick Xie <nick@khadas.com>, neil.armstrong@linaro.org, khilman@baylibre.com, 
+	jbrunet@baylibre.com, krzk+dt@kernel.org, jic23@kernel.org, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org, 
+	linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xieqinick@gmail.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun, 01 Mar 2026 21:28:26 +0000
-Bruno Martins <ehanoc@protonmail.com> wrote:
+Hi Krzysztof,
 
-> As stated in Documentation/filesystems/sysfs.rst:
-> 'New implementations of show() methods should only use sysfs_emit() or
-> sysfs_emit_at() when formatting the value to be returned to user space.'
-> 
-> Replace sprintf with sysfs_emit in the following sysfs show functions:
-> - ad7816_show_mode()
-> - ad7816_show_available_modes()
-> - ad7816_show_channel()
-> - ad7816_show_value()
-> - ad7816_show_oti()
-> 
-> Signed-off-by: Bruno Martins <ehanoc@protonmail.com>
-Hi Bruno,
+On Mon, Mar 2, 2026 at 2:59=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.org=
+> wrote:
+>
+> On 02/03/2026 12:58, Martin Blumenstingl wrote:
+> > Hi Krzysztof,
+> >
+> > On Sat, Feb 28, 2026 at 12:18=E2=80=AFPM Krzysztof Kozlowski <krzk@kern=
+el.org> wrote:
+> >>
+> >> On Sat, Feb 28, 2026 at 02:58:37PM +0800, Nick Xie wrote:
+> >>> Add the compatible string for the SARADC (Successive Approximation
+> >>> Register ADC) IP block found in the Amlogic Meson S4 SoC.
+> >>
+> >> ... which is fully compatible with g12a?
+> >>
+> >> Write proper explanations.
+> > Would you be fine with:
+> > "There are no known differences between the SARADC on S4 and the one
+> > on G12A. In the past differences between SARADC on the different SoCs
+> > generations have been uncovered late, meaning that a dedicated
+> > compatible string has proven to be useful."
+>
+> No, last sentence is redundant. You do not need to explain in the commit
+> msg rules of bindings, because they are obvious/known. You need to
+> explain the hardware, e.g. in this case the compatibility between devices=
+.
+Understood, thanks.
 
-I've applied this but want to note that the majority if not all of these
-are non standard ABI that will ultimately need to be replaced with standard
-IIO ABI as part of getting this driver ready to move out of staging.
+> >
+> > Do you also require Nick to add amlogic,meson-g12a-saradc as fallback
+> > compatible string for amlogic,meson-s4-saradc?
+> >
+> >>>
+> >>> Signed-off-by: Nick Xie <nick@khadas.com>
+> >>> ---
+> >>>  .../devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml        | 1=
+ +
+> >>>  1 file changed, 1 insertion(+)
+> >>>
+> >>> diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-=
+saradc.yaml b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-sarad=
+c.yaml
+> >>> index bb9825e7346dd..5496a0dc714aa 100644
+> >>> --- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.=
+yaml
+> >>> +++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.=
+yaml
+> >>> @@ -27,6 +27,7 @@ properties:
+> >>>                - amlogic,meson-gxm-saradc
+> >>>                - amlogic,meson-axg-saradc
+> >>>                - amlogic,meson-g12a-saradc
+> >>> +              - amlogic,meson-s4-saradc
+> >>
+> >> If this is compatible with other device, you need proper fallback.
+> >>
+> >>>            - const: amlogic,meson-saradc
+> >>
+> >> And this one is now kind of fake - how does this device use it?
+> > As you have noticed later, it is currently not used.
+> > Can you please confirm that my understanding of the next steps is corre=
+ct:
+> > - you're expecting Nick to omit the amlogic,meson-saradc fallback
+> > compatible string for amlogic,meson-s4-saradc
+>
+> Not omit but replace with proper fallback to specific compatible.
+So in this case we need to end up with:
+compatible =3D "amlogic,meson-s4-saradc", "amlogic,meson-g12a-saradc"
+Stating that the S4 SARADC IP is compatible with the G12A SARADC IP.
+Any S4 specific quirks that we need (in case we ever find something)
+can then be managed in the driver.
 
-Still, in the meantime your patch removes some bad practice that might get
-copied so fair enough!
+> > - and you would like to see amlogic,meson-saradc removed (from the
+> > bindings and .dts files that are already upstream) - I will take care
+> > of this once S4 support lands upstream
+>
+> This no. It's an ABI, you cannot change it. Not worth it, either.
+You suggested adding a comment stating that future bindings must not
+use the "amlogic,meson-saradc" compatible string anymore.
+Since it's part of ABI we need to keep it. So adding a comment is all I'll =
+do.
 
-Applied to the testing branch of iio.git which will become togreg
-once the bots have let me know if they found anything.
 
-Jonathan
-
-> ---
->  drivers/staging/iio/adc/ad7816.c | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index 172acf135f3b..0e32a2295990 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -124,8 +124,8 @@ static ssize_t ad7816_show_mode(struct device *dev,
->  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
->  
->  	if (chip->mode)
-> -		return sprintf(buf, "power-save\n");
-> -	return sprintf(buf, "full\n");
-> +		return sysfs_emit(buf, "power-save\n");
-> +	return sysfs_emit(buf, "full\n");
->  }
->  
->  static ssize_t ad7816_store_mode(struct device *dev,
-> @@ -156,7 +156,7 @@ static ssize_t ad7816_show_available_modes(struct device *dev,
->  					   struct device_attribute *attr,
->  					   char *buf)
->  {
-> -	return sprintf(buf, "full\npower-save\n");
-> +	return sysfs_emit(buf, "full\npower-save\n");
->  }
->  
->  static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
-> @@ -169,7 +169,7 @@ static ssize_t ad7816_show_channel(struct device *dev,
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
->  
-> -	return sprintf(buf, "%d\n", chip->channel_id);
-> +	return sysfs_emit(buf, "%d\n", chip->channel_id);
->  }
->  
->  static ssize_t ad7816_store_channel(struct device *dev,
-> @@ -231,9 +231,9 @@ static ssize_t ad7816_show_value(struct device *dev,
->  		data &= AD7816_TEMP_FLOAT_MASK;
->  		if (value < 0)
->  			data = BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
-> -		return sprintf(buf, "%d.%.2d\n", value, data * 25);
-> +		return sysfs_emit(buf, "%d.%.2d\n", value, data * 25);
->  	}
-> -	return sprintf(buf, "%u\n", data);
-> +	return sysfs_emit(buf, "%u\n", data);
->  }
->  
->  static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
-> @@ -281,9 +281,9 @@ static ssize_t ad7816_show_oti(struct device *dev,
->  		value = AD7816_BOUND_VALUE_MIN +
->  			(chip->oti_data[chip->channel_id] -
->  			AD7816_BOUND_VALUE_BASE);
-> -		return sprintf(buf, "%d\n", value);
-> +		return sysfs_emit(buf, "%d\n", value);
->  	}
-> -	return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
-> +	return sysfs_emit(buf, "%u\n", chip->oti_data[chip->channel_id]);
->  }
->  
->  static inline ssize_t ad7816_set_oti(struct device *dev,
-
+Best regards,
+Martin
