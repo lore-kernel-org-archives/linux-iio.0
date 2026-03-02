@@ -1,189 +1,133 @@
-Received: from mail-pg1-f177.google.com (mail-pg1-f177.google.com [209.85.215.177])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 91B401A680B
-	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 21:04:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.215.177
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772485448; cv=pass; b=fkxeiGsJ6PF3lVzhy8qZAPIo/dKAmbWUzdfrM1tO1tNbbP0J2S7ON3N4PgLIR80wNXaZ59PQDFsbGKDUuX7HQItjxLRbU26vrA+v4qRXlLg0yT2jwsDPU9N0vQmfPD8H+zvwzlcVcQ8uZIfD+I42Zj2LSGT1U968sTdMiI4KvDE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772485448; c=relaxed/simple;
-	bh=CWJKF9SpIjh9pmmYfzTqY7v0sHyXHPNvu82TC+RYFA0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=VEW3hkiM3FglVW7x7jnk9iSbCDT+Pr3xGTSc3NlSS6TgRlOLgcr8rJF1QPpuH6h0Bpv2FEIybcrOZKPgIQSGW1FKtPBC5d86nGBu56bDRexplHdNGyrIAV6WY3m48AjIOyeNV3fS5vJOxM88UUnWfvv4r0h0GxYUf39+aoC9Zxc=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com; spf=pass smtp.mailfrom=googlemail.com; dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b=bDoDU96Q; arc=pass smtp.client-ip=209.85.215.177
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=googlemail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=googlemail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30CF4319847;
+	Mon,  2 Mar 2026 21:14:24 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772486065; cv=none; b=njuhR4LNs50uSCqvgT8x6Kf9aC9xjrZPeKo2SyRRRO6cB75RikHwAKxlgKbGQTtwFviFOxe21xwK1HXd4Tfo3VDTRzF0mk5yrhi9BBG+523b0YvqJy0fX6eUyAU2wzO6xrf8jQDhGIAseHjCauvHQPPfmr7wffVOgETU/q34OuM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772486065; c=relaxed/simple;
+	bh=p8rZoPTDLwf0IXEOuKk5d0TD9WLx1c2nuF4ZJmLbaxU=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=MNyet/RiUP0V7gqhy6p1phqe7+d/ivWJxd8fVqbOg3ZyY6wso3vRYe8hEJS8qhP47a24cpIPiJgzZt82uzjOG7e7MtQapXdXCbezMa12DxRD1xntBCXduucweQFLuFqV/xF1LUKig9Bbst7TxJ8U5p8Avtpn/bNfN2Q4NI3afVI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TEtwKh89; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="bDoDU96Q"
-Received: by mail-pg1-f177.google.com with SMTP id 41be03b00d2f7-c7350fd4efdso756734a12.1
-        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 13:04:07 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1772485447; cv=none;
-        d=google.com; s=arc-20240605;
-        b=fO4uOh0kAvqmo/lqiMTVdxmyF+MrKxkuf/yxgnSEVUkOmGmDiOXvohypQxrLIOSJtD
-         vYeAUsmunV3QWoz+sAeRMbnqnZElsj6VHTEQDdqkn+SvuRTXrVptgnuBrg7+r8QWjo6d
-         qiVGzbSsHWWNpZ6s/hrOklKEdbHHoETOp/3zP1P57X0Uxy5dqng7+MWb8gk8mbZa8hrC
-         BPeZxYVc7IvWeYW1PwKgoljf65I+cfUo6x/WWc2opoQomGPGH9eX8z2x5U65c8iarhqj
-         /TJCnHUtDCmDAZTm4fq0o7tZ8i/tB+G0XfDW/F13/1eUYKDPggoCzeJX77OrQtTbzN2v
-         YTJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=S0B/W9oEfTx3Mdx8y1qNKPKD50lO55YEDov361/4WoA=;
-        fh=LCP5mvCF69lpHnkqYC4ZrVgGYPcLc7iy9o4Gwt87Pjk=;
-        b=NXwojgx8Rx4gJsjJ5eCrI03k5oVq3dITd1mgTsMXIJRol8GAsrcup6eToFe58Qh5iO
-         gGb7yWfklTliXUxO7jvesKy3vamvC0FD2c7ELlTaia9vBJAsMQXG3SZzixdkzs4+KJxW
-         mS3UoEwCDaJhcThcVeqqw3AuziIeNoUQ3/Qvvc21RefcMhYSflOec5rYr3bCntFsguLt
-         bq1yWpqUlQX1ijvN/ECO9IrqWC7V3yL9uActvEmHntqV2+PZd9Oq2aMUQKL6aTDs+efo
-         4pZ5y3zaMKHpEOjZYWyEGjAH7nsHmYBxsgbHSGOd/a1pbT9dENYl7E5jU1sGqpQyA51b
-         7TfQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20230601; t=1772485447; x=1773090247; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=S0B/W9oEfTx3Mdx8y1qNKPKD50lO55YEDov361/4WoA=;
-        b=bDoDU96Qj8MJyBOdnA6aQbCDVdDQyoEAqiI7jUOaTPmVDu50AXsPvM44QnliDfct/F
-         PG2WrxT4QoDeUnsqom0DRKYnMj4e65xMxXuayfD2zZ5cNSCT+p/yp2kZdXM7JPFSBoOm
-         JG4Jsh7IeAdXw+lhAubeNGo6lXndVwDSha+xCtB1Px9XY1nzpI7f9ltkmq74lmc+bdFr
-         ebsIvTW86xfRrYb2264HuVYQ/yq0d1Fmtwtk7Syu6nW6D9u2J2KrB4PEyqiIY76QYX1J
-         bMg7WprCJtyncRk03/7UBK3McoHZFDJ1UZYUela9u7l42sqDNcTxVDF5bvIuFxzhLtPm
-         i8Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772485447; x=1773090247;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=S0B/W9oEfTx3Mdx8y1qNKPKD50lO55YEDov361/4WoA=;
-        b=XVTCccBeaLFX7NocA9pf4oP+eGL4uoLs+Y3qpymUcUlTQPoUHxfbrR97glfTC11yV/
-         u7nA3s7qwIu/9whr/fhj+NeXVBSEP0kNjyF38nm7JKO5iVbynpCmJw0kkB0+lmJGBlXJ
-         Yf0aszcLDHp6gBX/ddsUmWy7o9WBjk7JPsq7L/bytxy+z2e1BZtQK/iXLsOFeRkUUNaW
-         zOtqzEw9vZDlqitMVKaZYzEy/RPMOXCoT15BESD+Utvh/YeZQv9KeikQ7H6a7szsZyHo
-         fedfdIRAoz2FrshpS7H2RwAV/tekWm/9g/DCjFhZHfyhvmhe5MAQWOjktdOhtEBNsBgb
-         B0ig==
-X-Forwarded-Encrypted: i=1; AJvYcCV8ASxZPIJk+bpiVWOdJNnAo+Tv0cxSY4ZNizHP8xRJUoJqbgyzn7eDHm8ygqNf0OafQ8k+JTZZFzE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxnpvHnJbBAZFtLJjaX8fDZnd047LtDwqlD7vVeL9SNo7zsAa7D
-	l9lDYGTzpl0N53aOTr+LhbsM6nK/S0X3nDSIcmSVUXim9g6ANzqBkK4IrFUhI4Nyr5LAYm7vExp
-	3JT8jh5sZ4UKrK+fxI4kKBQpGCKRpXrg=
-X-Gm-Gg: ATEYQzzbezYmvzP4rsNIOdtYQPHXixL8p+y+PpXXUBT3dOQoWI3HCYKweiMthnDXq3K
-	I/8KLDY2VTCv54VdF0cP3pClwQmv1DSJlpkdgDB5uLEWKfphaocx0LFKZS/rPg/2akTwplUxurc
-	OJn6PHBJo5Lhmcff2etz2E1E8oNDLJJeJm05vGXoWQmflNP8o5G2EEKT2hNO0JCosePfPcVCCLx
-	RGiXPFiRNbG5yu5win8/N9qIFSqFBLXfOGBG9rIz1pgbsuFnWGpWNxmIItEmVxcRbwmwEiLgK+e
-	uiM1Y3p2LcDWLQ2Z+kVqkYE4Tv0KDjCtHk6MVdPe
-X-Received: by 2002:a17:902:ccc8:b0:2ae:5628:a170 with SMTP id
- d9443c01a7336-2ae5628afe4mr43796855ad.46.1772485446798; Mon, 02 Mar 2026
- 13:04:06 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TEtwKh89"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6DBC9C19423;
+	Mon,  2 Mar 2026 21:14:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772486064;
+	bh=p8rZoPTDLwf0IXEOuKk5d0TD9WLx1c2nuF4ZJmLbaxU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=TEtwKh89xilwy0AfIxmJ6o59lo3nikZA4b2h4eTUmLJ+xeQn+1VnduNI83ol3aOux
+	 nersnVAd2KSjtGOBG8ZTXZc1ejccqzHVFEN+Nhd5+6pdDrF5e8Ait/jpNJ+5d6zhFk
+	 66jq2ywNoIamJHk6onoAKgQCSCPOvQD89JWalHX7hPkw1TvnCY3+Y4FUTMuMLnvrAw
+	 ZK5JmOyDlwTzc7TZW9ToECxhpLkidaGFko0W5s/IAbLlnxb9WJGZVfeq78ealZC1q8
+	 ax2XrEdVt1Q7ljQoZ94JMo2W7EAImx5u+voSqIgfI/t3AyzFsybxqNa+T3O7i7QvFY
+	 /QhGavTzofmHQ==
+Date: Mon, 2 Mar 2026 21:14:17 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: imu: bno055: add explicit scan buf layout
+Message-ID: <20260302211417.0e4fc10f@jic23-huawei>
+In-Reply-To: <20260228-iio-imu-bno055-repeated-element-v2-1-888676158804@baylibre.com>
+References: <20260228-iio-imu-bno055-repeated-element-v2-1-888676158804@baylibre.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260228065840.702651-1-nick@khadas.com> <20260228065840.702651-2-nick@khadas.com>
- <20260228-quirky-lemon-reindeer-1045f6@quoll> <CAFBinCAkxO4HoN0Cw0Fc2B3KRLLJqso1p5+qjNN_E0c26VOf2g@mail.gmail.com>
- <49b3a87d-7ea0-4da1-871e-35ddf5d5b454@kernel.org>
-In-Reply-To: <49b3a87d-7ea0-4da1-871e-35ddf5d5b454@kernel.org>
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date: Mon, 2 Mar 2026 22:03:54 +0100
-X-Gm-Features: AaiRm50TpdWh3Y_pvxvTMNOeIVTyBRxIzdF8SrzpLj8ML0Xjz_0wayl9w2nZ3rY
-Message-ID: <CAFBinCDyhvzWO3gOL=GtnH56Guh2fkZyhmSjn2k3iJdhtmTdBA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/4] dt-bindings: iio: adc: amlogic,meson-saradc: add
- S4 compatible
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Nick Xie <nick@khadas.com>, neil.armstrong@linaro.org, khilman@baylibre.com, 
-	jbrunet@baylibre.com, krzk+dt@kernel.org, jic23@kernel.org, 
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org, robh@kernel.org, conor+dt@kernel.org, 
-	linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, xieqinick@gmail.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Krzysztof,
+On Sat, 28 Feb 2026 14:15:51 -0600
+David Lechner <dlechner@baylibre.com> wrote:
 
-On Mon, Mar 2, 2026 at 2:59=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.org=
-> wrote:
->
-> On 02/03/2026 12:58, Martin Blumenstingl wrote:
-> > Hi Krzysztof,
-> >
-> > On Sat, Feb 28, 2026 at 12:18=E2=80=AFPM Krzysztof Kozlowski <krzk@kern=
-el.org> wrote:
-> >>
-> >> On Sat, Feb 28, 2026 at 02:58:37PM +0800, Nick Xie wrote:
-> >>> Add the compatible string for the SARADC (Successive Approximation
-> >>> Register ADC) IP block found in the Amlogic Meson S4 SoC.
-> >>
-> >> ... which is fully compatible with g12a?
-> >>
-> >> Write proper explanations.
-> > Would you be fine with:
-> > "There are no known differences between the SARADC on S4 and the one
-> > on G12A. In the past differences between SARADC on the different SoCs
-> > generations have been uncovered late, meaning that a dedicated
-> > compatible string has proven to be useful."
->
-> No, last sentence is redundant. You do not need to explain in the commit
-> msg rules of bindings, because they are obvious/known. You need to
-> explain the hardware, e.g. in this case the compatibility between devices=
-.
-Understood, thanks.
+> Move the scan buf.chans array into a union along with a struct that
+> gives the layout of the buffer with all channels enabled.
+> 
+> Although not technically required in this case, if there had been a
+> different number of items before the quaternion, there could have been
+> a subtle bug with the special alignment needed for the quaternion
+> channel data and the array would have been too small.
+> 
+> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> ---
+> This depends on [1] that introduces the IIO_DECLARE_QUATERNION()
+> macro. I didn't include it in the same series because the other series
+> contains a fix and should be backported while this one ins't a fix.
+> 
+> [1]: https://lore.kernel.org/linux-iio/20260214-iio-fix-repeat-alignment-v1-1-47f01288c803@baylibre.com/
+> ---
+> Changes in v2:
+> - Rename IIO_DECLARE_REPEATED_ELEMENT() to IIO_DECLARE_QUATERNION().
+> - Link to v1: https://lore.kernel.org/r/20260214-iio-imu-bno055-repeated-element-v1-1-b57b08efd566@baylibre.com
+> ---
+>  drivers/iio/imu/bno055/bno055.c | 20 +++++++++++++++++++-
+>  1 file changed, 19 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
+> index 303bc308f80a..d91558e100cc 100644
+> --- a/drivers/iio/imu/bno055/bno055.c
+> +++ b/drivers/iio/imu/bno055/bno055.c
+> @@ -211,7 +211,25 @@ struct bno055_priv {
+>  	struct gpio_desc *reset_gpio;
+>  	bool sw_reset;
+>  	struct {
+> -		__le16 chans[BNO055_SCAN_CH_COUNT];
+> +		union {
+> +			__le16 chans[BNO055_SCAN_CH_COUNT];
+> +			/*
+> +			 * Struct is to ensure proper size in case any padding
+> +			 * is needed. Technically not needed in this case, but
+> +			 * better to be explicit about the requirements.
+> +			 */
+> +			struct {
+> +				__le16 acc[3];
+> +				__le16 magn[3];
+> +				__le16 gyr[3];
+> +				__le16 yaw;
+> +				__le16 pitch;
+> +				__le16 roll;
+> +				IIO_DECLARE_QUATERNION(__le16, quaternion);
+> +				__le16 lia[3];
+> +				__le16 gravity[3];
+> +			};
+> +		};
+>  		aligned_s64 timestamp;
+>  	} buf;
 
-> >
-> > Do you also require Nick to add amlogic,meson-g12a-saradc as fallback
-> > compatible string for amlogic,meson-s4-saradc?
-> >
-> >>>
-> >>> Signed-off-by: Nick Xie <nick@khadas.com>
-> >>> ---
-> >>>  .../devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml        | 1=
- +
-> >>>  1 file changed, 1 insertion(+)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-=
-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-sarad=
-c.yaml
-> >>> index bb9825e7346dd..5496a0dc714aa 100644
-> >>> --- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.=
-yaml
-> >>> +++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.=
-yaml
-> >>> @@ -27,6 +27,7 @@ properties:
-> >>>                - amlogic,meson-gxm-saradc
-> >>>                - amlogic,meson-axg-saradc
-> >>>                - amlogic,meson-g12a-saradc
-> >>> +              - amlogic,meson-s4-saradc
-> >>
-> >> If this is compatible with other device, you need proper fallback.
-> >>
-> >>>            - const: amlogic,meson-saradc
-> >>
-> >> And this one is now kind of fake - how does this device use it?
-> > As you have noticed later, it is currently not used.
-> > Can you please confirm that my understanding of the next steps is corre=
-ct:
-> > - you're expecting Nick to omit the amlogic,meson-saradc fallback
-> > compatible string for amlogic,meson-s4-saradc
->
-> Not omit but replace with proper fallback to specific compatible.
-So in this case we need to end up with:
-compatible =3D "amlogic,meson-s4-saradc", "amlogic,meson-g12a-saradc"
-Stating that the S4 SARADC IP is compatible with the G12A SARADC IP.
-Any S4 specific quirks that we need (in case we ever find something)
-can then be managed in the driver.
+It's not a new problem, but I'm not sure a structure is valid here at all
+as the driver isn't using avail_scan_masks to enforce all channels are enabled.
 
-> > - and you would like to see amlogic,meson-saradc removed (from the
-> > bindings and .dts files that are already upstream) - I will take care
-> > of this once S4 support lands upstream
->
-> This no. It's an ABI, you cannot change it. Not worth it, either.
-You suggested adding a comment stating that future bindings must not
-use the "amlogic,meson-saradc" compatible string anymore.
-Since it's part of ABI we need to keep it. So adding a comment is all I'll =
-do.
+If I read it right we can get any subset of those channels.
+
+Generally for these we've been using the macro you added rather than
+an explicit structure, but if we do that we don't get the align to 8 of the
+quaternion as an explicit thing.  Maybe we make an exception and use
+a structure here but if we do should we pull the timestamp into that
+struct and use IIO_DECLARE_BUFFER_WITH_TS) for the chans array so
+that we make it clear everything floats around depending on what
+is in use.
+
+Jonathan
 
 
-Best regards,
-Martin
+
+
+>  	struct dentry *debugfs;
+> 
+> ---
+> base-commit: 0b9f2af96d9dc898af3aa58bd55bf62768229b92
+> change-id: 20260214-iio-imu-bno055-repeated-element-1c1552ea74be
+> prerequisite-change-id: 20260214-iio-fix-repeat-alignment-575b2c009e25:v2
+> prerequisite-patch-id: e155a526d57c5759a2fcfbfca7f544cb419addfd
+> prerequisite-patch-id: 6c69eaad0dd2ae69bd2745e7d387f739fc1a9ba0
+> 
+> Best regards,
+
