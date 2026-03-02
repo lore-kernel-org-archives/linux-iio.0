@@ -1,59 +1,64 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 870A2387342;
-	Mon,  2 Mar 2026 07:50:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9280378F39;
+	Mon,  2 Mar 2026 07:56:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772437816; cv=none; b=kPDbfQw5WeZPT93+e/BFp0R4u/XB8HAFfKTHxuqNKy+Xl93ZJt/kj5TI4VE+9y7C75BFRd5iybbACjTY6Om1emQEtLRB+zrKWTK4lHUuBggBAIQn0rc8vSg9KYnazHBWlcgWdoGn239/GSgN1orvFBYiWviloEdkR0hd+d2QVQY=
+	t=1772438206; cv=none; b=QjI5LwjrgG2/niOhRjN5TyJ/i/xRiaZskVjjb0o06JpjPSHCS4pw085ntZ2MhtRjFA3I02nCRC4wnWgZHIbwMqg3wZeYJp4oZ0tt7ga1PzySlZg0PISzuGoOalPL/MWXBGmomjw0HejrU7PQuWBViw/uUbQ6xLHLuCqCYO4PKXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772437816; c=relaxed/simple;
-	bh=l+19X3mSzhsmsxH05NHeg9r3eWFTaHt67t8gqN6yfcY=;
+	s=arc-20240116; t=1772438206; c=relaxed/simple;
+	bh=zaO5ovtRTTRZuH1nNfwvRr3Z22dHUXijpP5i3zjZkRY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=UgWQTP/WFaXfLWpnmXRfew91t6NbAFXKgeLtc8/gCxfTAxOiAmE0Rc5Xl77cOToKLVb6wMPwfxIIDn+WLUvRVnY3Xr6pYfw/aS9xegBatIJQvfLYxzb2KmfzW9E05JRJqIxxouJ1Hfkk/CB+Ppsl0xTqNx9VK1J1Y4h6Oupr/uE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JjL/4cn6; arc=none smtp.client-ip=192.198.163.14
+	 Content-Type:Content-Disposition:In-Reply-To; b=TNyZpiQx2WZ2xHr+qHOy09OpP7SbdHnd6KAPZX8ABeXu1WhZYMQcrfrGwin9SK+5SJAoLc2JDq8/6KacHqf7zDHeMOjzsosLo5SblNAUZhbpuqT4s3oOSyUg/vDqHPaNXYcTl7isuMIbFDRS/ugVh0Fu/UaLoUINzgEAWXNxywk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=I3J2lyNg; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JjL/4cn6"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="I3J2lyNg"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772437816; x=1803973816;
+  t=1772438205; x=1803974205;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=l+19X3mSzhsmsxH05NHeg9r3eWFTaHt67t8gqN6yfcY=;
-  b=JjL/4cn6KuQwTIrDlFPyFmN/OJcQ08M0Ru5Y86oTwpgcYqkd6qnYef3e
-   EmeODJ3ZmxTUqVz8YyZxz1AXz3keAiMbvvnhEtLMpV3z9VSGGYim5BbmP
-   CYs2V4o6EZIr6+QPm3Kev/uNw831KxMi+RZ8hzH6VqUvjYXxy+P9Pso+x
-   Uohwq/vdjjs8I7aDVUiNif6U0f49fhhBR5YqlO4L0JBBfBCMjNBtrDNYd
-   KrJzfcvoZEEwG0OWQCCqbE55sAv56OFbr2FkmnvFtlTB04d77ZDTDOr6o
-   VpY/DBx6fjya5mOhOSv0yM/AGFIGqwibqdrq+NKWn6tUVk6d+XgKsWo6t
+  bh=zaO5ovtRTTRZuH1nNfwvRr3Z22dHUXijpP5i3zjZkRY=;
+  b=I3J2lyNg11/VGhhG4DsVa2jscOvh30mxSwGKvsVDuibIOJk24QKfYXdi
+   3f/VU04PCTEo17OgHtdUczpnzGFIxh5lEI9tdsx1mcgt0HabQo0bAm/UF
+   ds1gjKG3QFBzLPdCboUGg6jHdZASBLg1popmaUK6BAPp92jySCY1RDpZK
+   KXSuEEBncxDgrIuxNUyDiEgzqr/6xcIizEu71519tkJe8hOSKk27S7hEN
+   wOi3wHWuVsqOft2lzbpdER++g2WiqE+JsJdPWj1jdSlrcoHjUYhEaC0w+
+   h7clM1zpQdFTC3DJ4mn+Cs6aCGKx5QegyvpVbwBfogd/DeYJc6Dku/UwF
    g==;
-X-CSE-ConnectionGUID: ogWTg7zOQw2BT2Hj4/Msrw==
-X-CSE-MsgGUID: wDkiH98dQIiGNYD1SLxPmQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11716"; a="73503792"
+X-CSE-ConnectionGUID: X9pPUgTySzySvjS2u8EuJQ==
+X-CSE-MsgGUID: NeVL4eg3ThyReQBVrhx3mA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11716"; a="83774576"
 X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
-   d="scan'208";a="73503792"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2026 23:50:14 -0800
-X-CSE-ConnectionGUID: dVN0cgNfT/6ODKBnMOw4YQ==
-X-CSE-MsgGUID: Fl0Cc58dQaSBEnY2y4rCug==
+   d="scan'208";a="83774576"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2026 23:56:45 -0800
+X-CSE-ConnectionGUID: WI6j9mF4TeGm6qCTrbqI5A==
+X-CSE-MsgGUID: uFEX2GKRRHeTbzTStiVkdg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
-   d="scan'208";a="217684382"
+   d="scan'208";a="216800866"
 Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.52])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2026 23:50:11 -0800
-Date: Mon, 2 Mar 2026 09:50:09 +0200
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2026 23:56:42 -0800
+Date: Mon, 2 Mar 2026 09:56:40 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: ade9000: remove unused ADE9000_ST_ERROR
- macro
-Message-ID: <aaVBMRU9wd6s4Nu0@ashevche-desk.local>
-References: <20260302055035.36363-2-giorgitchankvetadze1997@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Ramona Gradinariu <ramona.gradinariu@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: adxl380: fix FIFO watermark bit 8 always
+ written as 0
+Message-ID: <aaVCuE8rwFikaL5c@ashevche-desk.local>
+References: <20260227124305.55271-1-antoniu.miclaus@analog.com>
+ <84fae6b8-d188-4e5c-af06-b342f3d27514@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,30 +67,29 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260302055035.36363-2-giorgitchankvetadze1997@gmail.com>
+In-Reply-To: <84fae6b8-d188-4e5c-af06-b342f3d27514@baylibre.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Mar 02, 2026 at 09:50:36AM +0400, Giorgi Tchankvetadze wrote:
-> The ADE9000_ST_ERROR macro references ADE9000_ST1_ERROR0
-> through ADE9000_ST1_ERROR3, but the actual defined symbols
-> use the BIT suffix. Since this macro is currently unused
-> in the driver, remove it entirely rather than fixing the names.
-> It can be reintroduced in a future patch when it is actually needed.
-> 
-> The individual error bit definitions (bits 28-31 of the STATUS1
-> register at 0x403) are retained as they follow the convention of
-> defining all register fields.
-> 
-> Reference: ADE9000 datasheet (Rev. B, Page 61), STATUS1 register
-> (0x403), bits 28-31 define ERROR0 through ERROR3 status flags.
+On Sat, Feb 28, 2026 at 10:50:00AM -0600, David Lechner wrote:
+> On 2/27/26 6:43 AM, Antoniu Miclaus wrote:
 
-> v2:
->  - Drop the unused macro entirely instead of fixing the references,
->    as suggested by Andy Shevchenko and Jonathan Cameron.
+...
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > +					    !!(fifo_samples & BIT(8))));
+> 
+> Technically, this works, but in terms of understanding the code I think
+> fifo_samples >= BIT(8) would make more sense.
+> 
+> fifo_samples is a count, not bit flags.
+
+I even would prefer to see in such a case
+
+	fifo_samples > (BIT(8) - 1)
+
+that it will define the maximum that fits the HW, or plain number
+
+	fifo_samples > 127
 
 -- 
 With Best Regards,
