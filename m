@@ -1,49 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A3FC1311957;
-	Mon,  2 Mar 2026 20:00:15 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C602B2BE057;
+	Mon,  2 Mar 2026 20:04:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772481615; cv=none; b=Prey1Ty4KhR+Qh6WXnYtC4xaHArFALsjxxMlavINEEBpLYWeumD3zRr2WQ/5ayyGq/xWQiNx7fqPzrY3jT4EkAJiKJUek1zOPiVIRZh/t0kBcNqDHwwMWRtFUx9qauZcNMd5eBEjl1xB6A0E/lVBJf5QEaPnlI09jFe3E323GSQ=
+	t=1772481860; cv=none; b=Xf7mfKD5EFfhdFraNu30tIxE0mL5A9fT6yi2una1gHXA5F4V9Nk+WRYS/WS3K55KJAOzgo3vKQpLZH25h/hM2RVPyJ0sYP5JMJHi3+shtXZptQ/6kiebogYozCAui7P3739jZGJLecdUzM5diWNn+eALnzEpr9HqjbVxe4+LFxQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772481615; c=relaxed/simple;
-	bh=UlHTbLgLSFeoEJvabbReCtaADnfzq3lvpXXuUaAqX5E=;
+	s=arc-20240116; t=1772481860; c=relaxed/simple;
+	bh=uB8MUUzc9gKCRMfCyu6uNqW2m/tmqd1Cf81XBTWSUDA=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Sv+DAOmo0X71Qsuq68YqdcMT51niY3YC8BEyORxSBVUqbyjHWlCBgXPZ247+MQvxZXxEelWuFjm2L3jaodJw4fMt0rfnWrlnPqXGaULufccgP4dAF2UH4tTVngddIPaAsQe5B2ZMeZp7hiKHqN4ELhlzkBcoLNx2F1U1IZQ1cxI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=peFCLIJE; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=EwlD7pyqsgenay+yNLJujQbHd/I3VrgQcLBEayF0CFdqszQkoa6IUVBRC+2+sve7VbpwbVSA3xOoSBYvXfM9r8PY/qQizbMDNQ23FcYBJAj32Gc3UiBtSsSzGQnZNJXR2BmeOzKKPwIQ3VfW6VOt3VxM6Y+h9SHLpWdwJ2Ds4LE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OFTDo36G; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="peFCLIJE"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11072C19423;
-	Mon,  2 Mar 2026 20:00:10 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OFTDo36G"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCAA5C19423;
+	Mon,  2 Mar 2026 20:04:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772481615;
-	bh=UlHTbLgLSFeoEJvabbReCtaADnfzq3lvpXXuUaAqX5E=;
+	s=k20201202; t=1772481860;
+	bh=uB8MUUzc9gKCRMfCyu6uNqW2m/tmqd1Cf81XBTWSUDA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=peFCLIJEt4L7m0ciD4Hk6A1slnsB7QZNBU7BlC3EO9jw3XZSSfpsefvqgGGHZvgcb
-	 ij8wmSA6cRs4CY2fapyhmRIAWnzY+RDepON6kmMAa39OAsrORSkxFhYFv+f2hLHOmB
-	 HnNBXAsY5EXUYR1UD1M4kCrqWkZy9ZYVBgDWS4Pfqns0MYl1mkrdHTgekXcN7IijIj
-	 KJXZ/FjtznDMsgzsROaEyeaiMOOD8cvBFWrFebAKHc7z7rpMdFU6CKa8MkK4jWuHRs
-	 jfWtL0ayJ/DU7mY0IbQwCIWU11Aeh0r0cuxC8HXmuksAQH28vO/i28swUy5B8GMApf
-	 pEfgvcbr5k8zg==
-Date: Mon, 2 Mar 2026 20:00:05 +0000
+	b=OFTDo36GAWXEVLAKPgJ1zOz9zVvhccmlxHhJsjjyJ1RcBu3N4Hvw97iMyhMW8/OQo
+	 nWVI4IZ53vjgZ0+snE4AvTJoO52pXpiDkmQGEVsQCYwwJxHTI/IFSNOr+ThZJW38H3
+	 D8QPGgG/PnPtvlUe2EiNmPMpTtFiEn4ou63XnOvYT9BxxpK6GZPoSyCTHo9s+89bTo
+	 8xyMalAOQTsz7Ug7tSzwkEVrsJPGp7jW07J8QpTh1DCnTKVzn9rHM735aoMHaWNy1K
+	 lnW1+rpnna9tPC2Ffnen6dxL++HuHxYHMlwN17lr3iQYh6PpLTA/+vtdV1OjyEjFSu
+	 OfzV5Oc9J1Z7Q==
+Date: Mon, 2 Mar 2026 20:04:11 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Felix Gu <ustc.gu@gmail.com>, Francesco Dolcini <francesco@dolcini.it>,
- =?UTF-8?B?Sm/Do28=?= Paulo =?UTF-8?B?R29uw6dhbHZlcw==?=
- <jpaulo.silvagoncalves@gmail.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, =?UTF-8?B?Sm8=?=
- =?UTF-8?B?w6Nv?= Paulo =?UTF-8?B?R29uw6dhbHZlcw==?=
- <joao.goncalves@toradex.com>, Francesco Dolcini
- <francesco.dolcini@toradex.com>, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-ads1119: Replace IRQF_ONESHOT with
- IRQF_NO_THREAD
-Message-ID: <20260302200005.75ad5cb1@jic23-huawei>
-In-Reply-To: <d918c909-e5c9-4a9b-99e2-d458392d72c5@baylibre.com>
-References: <20260303-ti-ads1119-v1-1-71b54880edf3@gmail.com>
-	<d918c909-e5c9-4a9b-99e2-d458392d72c5@baylibre.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
+ antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ade9000: remove unused ADE9000_ST_ERROR
+ macro
+Message-ID: <20260302200411.6ae331c7@jic23-huawei>
+In-Reply-To: <aaVBMRU9wd6s4Nu0@ashevche-desk.local>
+References: <20260302055035.36363-2-giorgitchankvetadze1997@gmail.com>
+	<aaVBMRU9wd6s4Nu0@ashevche-desk.local>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,34 +49,33 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 2 Mar 2026 10:15:04 -0600
-David Lechner <dlechner@baylibre.com> wrote:
+On Mon, 2 Mar 2026 09:50:09 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On 3/2/26 10:00 AM, Felix Gu wrote:
-> > Since commit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT
-> > without a threaded handler"), the IRQ core checks IRQF_ONESHOT flag
-> > in IRQ request and gives a warning if there is no threaded handler.
+> On Mon, Mar 02, 2026 at 09:50:36AM +0400, Giorgi Tchankvetadze wrote:
+> > The ADE9000_ST_ERROR macro references ADE9000_ST1_ERROR0
+> > through ADE9000_ST1_ERROR3, but the actual defined symbols
+> > use the BIT suffix. Since this macro is currently unused
+> > in the driver, remove it entirely rather than fixing the names.
+> > It can be reintroduced in a future patch when it is actually needed.
 > > 
-> > Since there is no threaded handler, replace devm_request_threaded_irq
-> > with devm_request_irq, and replace IRQF_ONESHOT with IRQF_NO_THREAD.
+> > The individual error bit definitions (bits 28-31 of the STATUS1
+> > register at 0x403) are retained as they follow the convention of
+> > defining all register fields.
 > > 
-> > Fixes: a9306887eba4 ("iio: adc: ti-ads1119: Add driver")
-> > Signed-off-by: Felix Gu <ustc.gu@gmail.com>
-> > ---  
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
+> > Reference: ADE9000 datasheet (Rev. B, Page 61), STATUS1 register
+> > (0x403), bits 28-31 define ERROR0 through ERROR3 status flags.  
 > 
-> Although I would swap the order of paragraphs in the commit
-> message. The second one is the real problem (so should go first)
-> and the first one is just how the problem was found.
+> > v2:
+> >  - Drop the unused macro entirely instead of fixing the references,
+> >    as suggested by Andy Shevchenko and Jonathan Cameron.  
+> 
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> 
 
-I rewrote the commit message along those lines and called
-out why it needs IRQF_NO_THREAD.
-
-Applied to the fixes-togreg branch of iio.git and marked for stable.
-
-Given proximity to the patch removing the message, it may be this
-will cause some slight mess in linux-next.
+Applied
 
 Thanks,
 
-Jonathan
+J
