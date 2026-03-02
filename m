@@ -1,135 +1,132 @@
-Received: from mail-oi1-f173.google.com (mail-oi1-f173.google.com [209.85.167.173])
+Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DC2254014B7
-	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 15:53:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 65E8F423167
+	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 16:00:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772466784; cv=none; b=ojrU882sKG0aS4UKXg25g4y3EG769MSmv4hpPil1lPPTx9XJLdAFhW+IrHOvxkFIOHAIf3ja565rqqpG/K44HFZ7OKVjxNsse3vwBbQ+OppVZx5gMZL6GwYnyaJxbGoHl8cLuMVqsO2tt5llpmqLfiWT+oX2MaBQOghy2gBGYFY=
+	t=1772467213; cv=none; b=nC9yEOWCfNFXmuZ9yBQ+V/0jqII/4cpD7viu3jmwJ+P3Hzn9c9u2eZ6hYcYKs07E2Rr3W2Njf/7f/MuT3+Jnzi8sJX/wsvyExuWKLYwk1NX2Q6MSJncQlV2ORaQW31BRJhL9e9D4QdHdsK8leSa/+YZhTDLWzYZImDoh/AtU38s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772466784; c=relaxed/simple;
-	bh=cSI4UvLmu3nc2agJSrZQMx03WUPtezKCSNssLL/i+VI=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=ZZGdpuRlfW8ijSdYfd64pg6U8DDWrxl0JWMLMD9dqkTvo2OgaCcZlMBTJf/7R+pAzpuJ11Qch9WqK+U5tHp3KBWiGaFcZPO6qNbQ57qYin3FHAFO1VVCuIRgdkN1TcKiYM9U9q+yM3vIPOFg4UvBmYsTirUGkiNfuAT0WtVBbpU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=C59py6Fj; arc=none smtp.client-ip=209.85.167.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1772467213; c=relaxed/simple;
+	bh=h5rzvGi1/G+Ful3OWovrvuW1iNjNYNlflYV6uCBBpRQ=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=ojIwf+W4iL7f0JIv2chqxvsPb9KgeF96/wPqJFGbgpxB3AFxS26IDz5ag9YVKiJrRTZRfQjg1QnVZqUJjKzSuFqXyvY/X90CYarwMvXlvhw0RgCOgBSC13AL1ibDVyBpUSA+7N/GfIHRCX5u36crav6QnCU0LUO2HbLoCzFhgj0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=IKc9CHCO; arc=none smtp.client-ip=209.85.210.173
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="C59py6Fj"
-Received: by mail-oi1-f173.google.com with SMTP id 5614622812f47-463a94f8475so3793972b6e.0
-        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 07:53:00 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IKc9CHCO"
+Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-82747396358so2196080b3a.0
+        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 08:00:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772466780; x=1773071580; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=3WtWjK/XrBFXhlPr3QyvBUKjwrSPr3UtmIW2Gtd1DQ8=;
-        b=C59py6FjC1Egf/a0Qk1Xks12CiPRfil5/zZJKiVHcuYcBfXHEwyJxgHP9xhVactflJ
-         T8szDakNG5m3ijSYKQ20t6eiHWpVtywlMktd6kXEafBXQc0qbRBafuCp7YuNGo3cm8+v
-         Jz8DDDK3AxDuG4tGZL5ehIXAj9jcCmfMGHPdb0h8JywgvLJPOKqCAhHSRZSrCg54NM+j
-         bvkW08d+yJepYeibN8m7e8x85CiLgjuRlrBdSaIaj2CSEV3GbQ2kG8OSQyg8J3mchMus
-         F76AvltS0x0n1cpIbZUAxKHfOI22JyVM4W3AuTFl5DEu7DXifws+xGDM/8/AVMNw6kP9
-         9fyQ==
+        d=gmail.com; s=20230601; t=1772467212; x=1773072012; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=LdygrmGqM363HHpCS5E1KS1vjEdVqeuh/EoK/GPYeQs=;
+        b=IKc9CHCOkG3Ug2Wy2zN/LVjRAfi5Ov1cjErp4ycs6EQPk3VhL3wB/8UaQkgAfigmNF
+         AsSTp9Dq4Y0cqE+rrC+TDXoyogGxVVeUrEUArvfv3Tq96RusUJ3Jmmj4FL3ecJlmGnNK
+         4r4IWX8CEp3S1WqiOk4sT23aevM/0k5iFP33dM2zN7ELt8rCw3nmYzw1CP89vY5VJaep
+         Z2hwJI3S+zaHLfuDqLQ0e4+mhVExUYK84piYS11sKW2QXh7Wk27ub6kBUeIi7zdueLIt
+         NzO0b7IsPxzrhWKBsO/ZfUIWJTsJSE5vzRRcq3E5ceupKiMewzM9wgqlMHzTdBuWIVsg
+         Wz7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772466780; x=1773071580;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=3WtWjK/XrBFXhlPr3QyvBUKjwrSPr3UtmIW2Gtd1DQ8=;
-        b=tTe/0Qfo4xQJttWX6V7kIRoGMByCDwrocAb6i9NJBU05Czx+aNRit5BzfLDiDCA//F
-         g+g3Hwfv/LQlJm7vvAyuEFTGiVaACe/E9pQdrYjLvx299UroTsjuaWpwXjdjrY4l8MjF
-         hXhJkGJXQi6GpOEZJRJIlSyqmL3YtP20faqmbVf5zOWcIpRravPbqGHhC6+ZzXCZDqU9
-         HwqTinKwaYQ8uluNGldt22KPwxmDaeSAVWtoFasjIzSdY5mI7gAT+l3fh97mdSMmLt3p
-         ovgJFIrIf3mjq+OurRPwF+IwUuq3OamxJjxVMaJwSaB1R8jbo0rCs/mb6ETeermjnSNU
-         BnJg==
-X-Forwarded-Encrypted: i=1; AJvYcCXNAwj7Z6B9/RSmMFLEioA2wPqIWEc3r81mk/0FHs+pgKk05bjkSvzUu8IYunNS/EC59l5OvhQ/w5c=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy9sbegc3IlhMJXR/UL66bUhDpGLpgOEpfE+aTZLW3+iFaNT9fr
-	TpRJq7O4l9sjofkQaLfFiAxDPr0kbR7ROa+mYrtTrgXDWx1VN2V+fteC2O9R9jrUqC0=
-X-Gm-Gg: ATEYQzyP+y1vpFWpTpDhp5+lnrBWJ8inK1u5BJUOcFz6QMDMyWNwhFQSdqmWmvc1VyT
-	VonvW0KTD3bTWFx5Cc5I2uMHLEEXiDAZp4PFrJUHdXnp/lN7Sx1ACkImK10DwtttuLHj91r3OXc
-	3aoBU08B0qV7rzutM7S0zb8RNVrNeHn+iWVvZ2NLRtu+MCNYjEBGJO5+iKHp/lxiQCgbPbjBmtK
-	+aLhGlGalXMb3T34XSY0qEjeu1c2diAV+KQq1BLuNrLF58wlySEOxZtvXCtIzZ8SNZzM3Tuwo5h
-	EKGscfqRVt2tBc05rj1HK7OdbuMaMQMAR/Quro+fooWJFcU6TToBErCfuMWn0C+Xfr/nI4Dx8Eo
-	ihMy6CCBL6mjVeRPGEcTp3caw1BY6nJkedJm+x7WIb/43KS3EJHVoALYRV7bv78bUP4iMuLRvBO
-	VB37NnJXI9u3ZhLowvFzI5PAontI4zNNqX52LZTfF4RTtGujVpW1nQ52n5Z4CmRweObCLpbHL1C
-	vm+jeYDsXy5
-X-Received: by 2002:a05:6808:1188:b0:45e:fcf2:b693 with SMTP id 5614622812f47-464bf0363f1mr6898511b6e.29.1772466779623;
-        Mon, 02 Mar 2026 07:52:59 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:4c09:7c6b:bc48:f2f7? ([2600:8803:e7e4:500:4c09:7c6b:bc48:f2f7])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-464bb5d0a8csm7577165b6e.14.2026.03.02.07.52.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 02 Mar 2026 07:52:59 -0800 (PST)
-Message-ID: <d22e03b2-2093-4d33-8ec5-484f64f2e8cd@baylibre.com>
-Date: Mon, 2 Mar 2026 09:52:58 -0600
+        d=1e100.net; s=20230601; t=1772467212; x=1773072012;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LdygrmGqM363HHpCS5E1KS1vjEdVqeuh/EoK/GPYeQs=;
+        b=u4LJppS2rhj3RXJ66vfygBFYd4RrTGENEnEYdZAXyHaifkV9XAfpJJZyPWvNYX8J6s
+         UCVNFmNbJye3AthQAmghVKH7cvXYnn1V8Dm8Ez+KkK85CO1NUPyur7dLPgtTx0EMzLdF
+         /zV/d/Rs2OuNRpQrQgJ/dBFngKbuiJJJRzjgc6QuxVstjGH4cA9LyHXURwcqlvXlE5my
+         KVkcjJpokjweyEKqZV7Fe8o+Ib7OSAAobTQCPfw/+zc+6PKL5ZvzYqFm0Yk5Enct4S6w
+         WVTn0SO7FZtaHc8X4P5C29j2gvpuX9Rlgc5iAiQK/xptaRa27ZnsxdR/WR91QdmzdQkH
+         T2KQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXhfOlZjq+HpAvAbqMEWjRg6SxHVflo/qv2Utox1SEwfMNcimcOqYPvWudQbAShyZYdTVETAEvxbDw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywsgg09Yx3PAjGhn7QM1l9hG8NPWGimiLU2ekV+kNPlXbFqRMt1
+	gEekMMyuZwM5Pw9214UD6LPUg9R8oPWscVGX4RBr9f6+n3PXtWt1J0qe
+X-Gm-Gg: ATEYQzwkaF8mqkIE8aGkWitU/T36JkBhUcBTOyJUlDP+UJDaIo88diajsNmuIgpT2od
+	Bpv5loaIxaHBm1W3c/v3PJ0dIxhWWYXlM76f2tPBiyOPAEbPPcC0LMl3kAEYDbuNjef143i3kyA
+	A0AKgi4NPEGNt61WQ5/pNIncfLD26ojm8j78QhFAHi/cSaLKHVlNZwQV9UTSIwbOKn6O3apzPgo
+	R3ObCZR6SBXot5kd1p+RENMC04FJmCnpJeiEbayf6xdhhve6ZBD8aKAiIkZnJQJYWiAiEoSrnbH
+	TtSdSSDJ6T8YysFHHOR1RySCjkLYDETzqCj15o09Ltc/jCC/f2TFCR9OVy/zV077LgdSu5eQY/w
+	BQkbInRqAVGb4VG40YtW0oorNoGWc3qvlWWOXtZ+wwLLj31t5bZjsWTjJPdA3IdJwdXkyLmOZS+
+	KlpB//DdaMPbPTP7VtyZno05p8YebjtCU0m7SC
+X-Received: by 2002:a05:6a21:9cca:b0:38e:90ca:5a1d with SMTP id adf61e73a8af0-395c39f7babmr11920653637.11.1772467210523;
+        Mon, 02 Mar 2026 08:00:10 -0800 (PST)
+Received: from junjungu-PC.localdomain ([2408:820c:9009:3f2:4c92:fc5c:54e5:712e])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82739d4e10csm13982076b3a.1.2026.03.02.08.00.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Mar 2026 08:00:10 -0800 (PST)
+From: Felix Gu <ustc.gu@gmail.com>
+Date: Tue, 03 Mar 2026 00:00:04 +0800
+Subject: [PATCH] iio: adc: ti-ads1119: Replace IRQF_ONESHOT with
+ IRQF_NO_THREAD
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 0/2] iio: orientation: hid-sensor-rotation: fix
- quaternion alignment
-To: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
- Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Jiri Kosina <jikos@kernel.org>,
- Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-input@vger.kernel.org,
- Lixu Zhang <lixu.zhang@intel.com>
-References: <20260228-iio-fix-repeat-alignment-v2-0-d58bfaa2920d@baylibre.com>
- <aaVRIOejIgnOdAfY@ashevche-desk.local>
- <6158f495b13f2a8cdc09f37e296166ccf0393c78.camel@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <6158f495b13f2a8cdc09f37e296166ccf0393c78.camel@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260303-ti-ads1119-v1-1-71b54880edf3@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAAO0pWkC/6tWKk4tykwtVrJSqFYqSi3LLM7MzwNyDHUUlJIzE
+ vPSU3UzU4B8JSMDIzMDYwMj3ZJM3cSUYkNDQ0tdS+NkUyMTAwPjFOM0JaCGgqLUtMwKsGHRsbW
+ 1AIy0w0lcAAAA
+X-Change-ID: 20260302-ti-ads1119-93c524003d3f
+To: Francesco Dolcini <francesco@dolcini.it>, 
+ =?utf-8?q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <jpaulo.silvagoncalves@gmail.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: =?utf-8?q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <joao.goncalves@toradex.com>, 
+ Francesco Dolcini <francesco.dolcini@toradex.com>, 
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-iio@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, Felix Gu <ustc.gu@gmail.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1772467206; l=1419;
+ i=ustc.gu@gmail.com; h=from:subject:message-id;
+ bh=h5rzvGi1/G+Ful3OWovrvuW1iNjNYNlflYV6uCBBpRQ=;
+ b=+TOwVyloagu5tEDdmm63Uw7Sxd0CsVjXe2wZaIl3BA74PH/sbaSKX9d6kVI5BHE91yTftbBXK
+ 4K+CtF7XkytCzXL7l2uDUWmLviqefON936ODM4nSAS1UyPI4XNgv4rV
+X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
+ pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
 
-On 3/2/26 6:32 AM, Nuno Sá wrote:
-> On Mon, 2026-03-02 at 10:58 +0200, Andy Shevchenko wrote:
->> On Sat, Feb 28, 2026 at 02:02:21PM -0600, David Lechner wrote:
->>> The main point of this series is to fix a regression reported in
->>> hid-sensor-rotation where the alignment of the quaternion field in the
->>> data was inadvertently changed from 16 bytes to 8 bytes. This is an
->>> unusually case (one of only 2 in the kernel) where the .repeat field of
->>> struct iio_scan_type is used and we have such a requirement. (The other
->>> case uses u16 instead of u32, so it wasn't affected.)
->>>
->>> To make the reason for the alignment more explicit to future readers,
->>> we introduce a new macro, IIO_DECLARE_QUATERNION(), to declare the
->>> array with proper alignment. This is meant to follow the pattern of
->>> the similar IIO_DECLARE_BUFFER_WITH_TS() macro.
->>
->> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
->>
->> But this is in conflict with the other hack-patch in another series.
->> I'm a bit lost what patch 2 fixes here and that hack-patch fixes
->> in the same driver. Shouldn't survive only one?
-> 
-> +1.
-> 
-> I see this is older so should we only look at the other series?
-> 
-> - Nuno Sá
+Since commit aef30c8d569c ("genirq: Warn about using IRQF_ONESHOT
+without a threaded handler"), the IRQ core checks IRQF_ONESHOT flag
+in IRQ request and gives a warning if there is no threaded handler.
 
-They are fixing two separate bugs.
+Since there is no threaded handler, replace devm_request_threaded_irq
+with devm_request_irq, and replace IRQF_ONESHOT with IRQF_NO_THREAD.
 
-This bug (which is a recent regression) is that the size of the struct is
-wrong. It is supposed to be 32 bytes, but a recent change make it only 24.
-This causes iio_push_to_buffers_with_ts() to write over data past the end
-of the struct.
+Fixes: a9306887eba4 ("iio: adc: ti-ads1119: Add driver")
+Signed-off-by: Felix Gu <ustc.gu@gmail.com>
+---
+ drivers/iio/adc/ti-ads1119.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-The other bug (which has been a bug for 6 years) is that the the timestamp
-is in the wrong place. That patch also has an effect of making the struct
-the right size, but that is only a side-effect.
+diff --git a/drivers/iio/adc/ti-ads1119.c b/drivers/iio/adc/ti-ads1119.c
+index c9cedc59cdcd..d92a20945b80 100644
+--- a/drivers/iio/adc/ti-ads1119.c
++++ b/drivers/iio/adc/ti-ads1119.c
+@@ -735,10 +735,8 @@ static int ads1119_probe(struct i2c_client *client)
+ 		return dev_err_probe(dev, ret, "Failed to setup IIO buffer\n");
+ 
+ 	if (client->irq > 0) {
+-		ret = devm_request_threaded_irq(dev, client->irq,
+-						ads1119_irq_handler,
+-						NULL, IRQF_ONESHOT,
+-						"ads1119", indio_dev);
++		ret = devm_request_irq(dev, client->irq, ads1119_irq_handler,
++				       IRQF_NO_THREAD, "ads1119", indio_dev);
+ 		if (ret)
+ 			return dev_err_probe(dev, ret,
+ 					     "Failed to allocate irq\n");
 
-So yes, I should have mentioned that in the cover letter that this series
-should probably be applied first since it is the worse bug. And it looks
-like I'll be doing a v2 of the other series anyway, so I can properly rebase
-it and declare the dependency.
+---
+base-commit: 3fa5e5702a82d259897bd7e209469bc06368bf31
+change-id: 20260302-ti-ads1119-93c524003d3f
 
+Best regards,
+-- 
+Felix Gu <ustc.gu@gmail.com>
 
