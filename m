@@ -1,81 +1,79 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C602B2BE057;
-	Mon,  2 Mar 2026 20:04:20 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F0D247DFA0;
+	Mon,  2 Mar 2026 20:10:56 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772481860; cv=none; b=Xf7mfKD5EFfhdFraNu30tIxE0mL5A9fT6yi2una1gHXA5F4V9Nk+WRYS/WS3K55KJAOzgo3vKQpLZH25h/hM2RVPyJ0sYP5JMJHi3+shtXZptQ/6kiebogYozCAui7P3739jZGJLecdUzM5diWNn+eALnzEpr9HqjbVxe4+LFxQ=
+	t=1772482256; cv=none; b=stmjIx8HgdJ91sIKTg3YLTdDrkbxktLpeSKML2213K9O7EvJfYADsOXwRMBLndALug615VRNsZBqMtjo5swJomdhgmd6iXpODCBOXQhi4j6j/auGtHLwepc6mH/cKfNvSTHNQVSmfxH9q3xHtER3iU7UBJ3HXFXBwcJ4+rYaZIo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772481860; c=relaxed/simple;
-	bh=uB8MUUzc9gKCRMfCyu6uNqW2m/tmqd1Cf81XBTWSUDA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EwlD7pyqsgenay+yNLJujQbHd/I3VrgQcLBEayF0CFdqszQkoa6IUVBRC+2+sve7VbpwbVSA3xOoSBYvXfM9r8PY/qQizbMDNQ23FcYBJAj32Gc3UiBtSsSzGQnZNJXR2BmeOzKKPwIQ3VfW6VOt3VxM6Y+h9SHLpWdwJ2Ds4LE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OFTDo36G; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772482256; c=relaxed/simple;
+	bh=qeYj2gAq7H8eA36J4GrAlei8yALkw0i1XJcZTTYnwtQ=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dhae+9rooEvcTTQQc2fz0nMHrk8UUY5+eG/5znHvWqH7CO5wiVopfUBNbLBPG+T4LHBv29FgjwWpFLv5tu750zS7yFkmNOAL6hze+QKMW8FUvWYsaKegrEt1STX7WOObmMzmI2ANgnO8RCI29my46rljOLPa/ZVuce4zckb0yoo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=P5pCLhyQ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OFTDo36G"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCAA5C19423;
-	Mon,  2 Mar 2026 20:04:16 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="P5pCLhyQ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25B2AC19423;
+	Mon,  2 Mar 2026 20:10:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772481860;
-	bh=uB8MUUzc9gKCRMfCyu6uNqW2m/tmqd1Cf81XBTWSUDA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=OFTDo36GAWXEVLAKPgJ1zOz9zVvhccmlxHhJsjjyJ1RcBu3N4Hvw97iMyhMW8/OQo
-	 nWVI4IZ53vjgZ0+snE4AvTJoO52pXpiDkmQGEVsQCYwwJxHTI/IFSNOr+ThZJW38H3
-	 D8QPGgG/PnPtvlUe2EiNmPMpTtFiEn4ou63XnOvYT9BxxpK6GZPoSyCTHo9s+89bTo
-	 8xyMalAOQTsz7Ug7tSzwkEVrsJPGp7jW07J8QpTh1DCnTKVzn9rHM735aoMHaWNy1K
-	 lnW1+rpnna9tPC2Ffnen6dxL++HuHxYHMlwN17lr3iQYh6PpLTA/+vtdV1OjyEjFSu
-	 OfzV5Oc9J1Z7Q==
-Date: Mon, 2 Mar 2026 20:04:11 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
- antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: ade9000: remove unused ADE9000_ST_ERROR
- macro
-Message-ID: <20260302200411.6ae331c7@jic23-huawei>
-In-Reply-To: <aaVBMRU9wd6s4Nu0@ashevche-desk.local>
-References: <20260302055035.36363-2-giorgitchankvetadze1997@gmail.com>
-	<aaVBMRU9wd6s4Nu0@ashevche-desk.local>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	s=k20201202; t=1772482256;
+	bh=qeYj2gAq7H8eA36J4GrAlei8yALkw0i1XJcZTTYnwtQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=P5pCLhyQpRyGanhopGeIw05Ah8cbFcZ5BuELOzdONKvX7tgwMdmJ8k7KbuMVvUAhF
+	 bIiixbs/xQ//m7EyrlNwUDsoDlmITaX3GmBaihDy4KgFq4YjHsgh0619U5OMwZZmsL
+	 KwbZ815zHhLCV0uuLElQOKr+1dZWWwryAnF3koWNBYkuLHxZEA9jzD3lfqeAZBPk79
+	 6FmYigWEnJlwJdIZpNLRj+qXeH5pln5yELw0MTHDzfO7rYvEP9qAbgU6jlj5ZYADuX
+	 DQAFCr8Ryz5+UOOcdqvZX05Mv0LsiWhahdj1Tes2f0PvDNdv4+HxZR4OFbS51pzoAA
+	 IWqIvf+oOngDw==
+Date: Mon, 2 Mar 2026 20:10:50 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc: Michael Hennerich <michael.hennerich@analog.com>,
+	Marcelo Schmitt <marcelo.schmitt@analog.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Petre Rodan <petre.rodan@subdimension.ro>,
+	Jorge Marques <jorge.marques@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] dt-bindings: iio: accel: adi,adxl372: add ADXL371
+ compatible
+Message-ID: <20260302-detract-subprime-e99e1bd75a89@spud>
+References: <20260302122116.1282-1-antoniu.miclaus@analog.com>
+ <20260302122116.1282-3-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="D9VeISMC0dStEaT2"
+Content-Disposition: inline
+In-Reply-To: <20260302122116.1282-3-antoniu.miclaus@analog.com>
 
-On Mon, 2 Mar 2026 09:50:09 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
 
-> On Mon, Mar 02, 2026 at 09:50:36AM +0400, Giorgi Tchankvetadze wrote:
-> > The ADE9000_ST_ERROR macro references ADE9000_ST1_ERROR0
-> > through ADE9000_ST1_ERROR3, but the actual defined symbols
-> > use the BIT suffix. Since this macro is currently unused
-> > in the driver, remove it entirely rather than fixing the names.
-> > It can be reintroduced in a future patch when it is actually needed.
-> > 
-> > The individual error bit definitions (bits 28-31 of the STATUS1
-> > register at 0x403) are retained as they follow the convention of
-> > defining all register fields.
-> > 
-> > Reference: ADE9000 datasheet (Rev. B, Page 61), STATUS1 register
-> > (0x403), bits 28-31 define ERROR0 through ERROR3 status flags.  
-> 
-> > v2:
-> >  - Drop the unused macro entirely instead of fixing the references,
-> >    as suggested by Andy Shevchenko and Jonathan Cameron.  
-> 
-> Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> 
+--D9VeISMC0dStEaT2
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Applied
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
+pw-bot: not-applicable
 
-Thanks,
+--D9VeISMC0dStEaT2
+Content-Type: application/pgp-signature; name="signature.asc"
 
-J
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaaXuygAKCRB4tDGHoIJi
+0vWZAQCTdztQQlxIn1YJ673Qk+llT571VOPjzUKwF6NRqhlOPwD/YM6z/HtMz3QJ
+Mn+Bklrr3407pRw4DHUWuu7KWLVyJAg=
+=MLTK
+-----END PGP SIGNATURE-----
+
+--D9VeISMC0dStEaT2--
