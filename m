@@ -1,61 +1,63 @@
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+Received: from mail-pj1-f48.google.com (mail-pj1-f48.google.com [209.85.216.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB86A12E1E9
-	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 13:06:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3309E3D6CDE
+	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 13:06:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772456810; cv=none; b=CSEVLlvHw+oO9xd/Ba1F+4xI3zDz2wSCvXfCuVBeqKWipcxSp22cfCocoLtO/Oe5ezp5AOJJNTyCESb97pSNOiE1HvtVqSVec6Q97odKjNl6Kcg7iGVNTFQbVnNPG9VIgU1eVRjXgLSbTULsal2Zz/zrng2Fpz0hXSw6NCaJbMU=
+	t=1772456815; cv=none; b=f1ZXsngM5cAAwRQzqWf5YbaFZ6XrAB7D8QMnsCFaBi5ZXBMN7kQMXn3UEcAIhsFh8rmNOX5LEMwl7NBaneHNa4nxP6eIcaeq7b8t9dcLS2Kt8hYPH4sd7a8fv7o77LmUdZbIGly5to59+He6Z1ykrT/xp47B3Mjv6GDDXTAwUz4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772456810; c=relaxed/simple;
-	bh=Ld6MvIi6MtpwIUxJCjSytwy6J/ialoJ4KrLXi8H7gWU=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tZqUWe1CRzWIb4YznZGEpZk8x4XJodmAmK9PSbsptlMDYPAvIQiUNyBJouqFaqKrFXoBDS/8tIGw55XsS0luWbDdPRKiLLDG4i+EqoxAB1Zku/3/JIPnKzI7dvUA24RceUvkzf5b5MXsz0hpIbPCzmvmU6y5NGMu+1Rtv219NJA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KA1gc4wh; arc=none smtp.client-ip=209.85.216.54
+	s=arc-20240116; t=1772456815; c=relaxed/simple;
+	bh=eJYQ5YvtPHTQPiSfzoq2ScstbsQx5eZ3LHmpQIhH8vo=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=r4+EedCwoQfc5BXaVp5iaLUfrVe/gP+DamG70/Zj9JKEc2meypngE9UWYHWHdutrqJxfZvBOHR38kKYwkPW1t3piuMPIH+lP376kqp3+0WjjxDJpCTMZnEtIBlQYlSgFbM5xsVwoaDm7pRE+9FHIMOBviN+5Up5OjFPCkSvvZRU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fWXjIEfv; arc=none smtp.client-ip=209.85.216.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KA1gc4wh"
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-3598b2318c2so581276a91.3
-        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 05:06:49 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fWXjIEfv"
+Received: by mail-pj1-f48.google.com with SMTP id 98e67ed59e1d1-3599126be32so385511a91.1
+        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 05:06:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772456809; x=1773061609; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Rg9A8B4NO2qDfBh1NkMwAlYZ5E04V3epme3nzddl+2c=;
-        b=KA1gc4whHR4uzm1Ym/aPKSq2V57e/SOhCoAXPiloGlimFGyZcNo6FOMauWXZ5EtBdB
-         HdVz9RlljKJM37NiZw22UCdVCdbScZ17M49Mg0dyKbcHuNUFWberuUwjjnxRyWSE7IGS
-         3O4B9mKzhXSKu5ubArNZF4RwFOG6LY3JZrLA+1mbqZwxd8F+anRvqPK4iIjv19Eqi3Oj
-         o6diHcz96JzZ5viuWNqhOEDYTGuU3A6JS4HC78pD6xJvZYYZoWdFqzNN5ztDx6n5WpS9
-         aAT6wD5nMnd7iI/oT7YtlKeeidneTO5SKZqrpMtnyRD8C10iBTnUPFBrvSaT2MFlVZ6O
-         3lhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772456809; x=1773061609;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1772456813; x=1773061613; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=Rg9A8B4NO2qDfBh1NkMwAlYZ5E04V3epme3nzddl+2c=;
-        b=k4DbS76HZcdcXT923RxYw7Lzx7paRBKNcI1VZJsPRB/9R3OXNfFeVpZ4kgMQPKYjbb
-         BV42/bs3ZaAlKHLQG+N6JFdUbhSryg088y2VLvUuVB/Pe0IMfB8XkA9Em2PQi1diO1a3
-         zlO01hGZdkPv1amw++vwFvTdJ9m61MsL8uFUHvubP/HF5txlkR6gCNYnvoIt39MEjU3I
-         OpT8j4tR4PDPkSSDRzYbKdkhzPVvU2b+vg5/NruoHrxGObr1gqBJMxYD74uG+ECLORfL
-         VPBGHsSMdr2GKumdg2QHEim2XwWSuIkxoYpVrWQgCAncbPNg7QO5WYAkZAgCJauVPHCJ
-         tkGw==
-X-Forwarded-Encrypted: i=1; AJvYcCUvAwaHMH/NakPLtAtvmDWI8m5izLcIkrTDKvBpJhwv5FWq8JWBoROIESkQAHwOhkn5TtViGfk8ck4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy9RA525JIxrZv/Vq08PV09ze8lzbul46uOuvICi8f2GaOemFg+
-	VSd0PCEjSA8zKCDJEKCZKWwkxNxjy01Nn58gLT3aZnMAXs3K4O3TPwWR
-X-Gm-Gg: ATEYQzwrodzKp4I1V+EEaCSbzOvLsRk76QdG0v/hkBVgCFm8g42/YJ3wo19lWfWGltX
-	4SSg3/v3+eV4MnWtdsFst7wWy56jF+1sFF8I7ejPsAbmJJl/sEqOkstZ1qoUziBBtxsRvWI7oHf
-	pCFh6RdtBKXp0pY8TKZYJDtCIiQdooEQMygLnbmxh51P7DRQvVjHuf5cNq6S8jUg6KzUb7qWn44
-	qur2yIWzEZzfgdbnHdIkXFp12FDKtdBifWFqY7gsVNYYoAp1/gDzoslWUAvwaS92micbWYvwOFD
-	anrBVFQdS5utpsHefuHExiUX0C1Aao4AlVxql/97/Vr3L3FnWEjBWN2bNwEGCj57ZrCuYhr8zFN
-	/iEdtMI4suZFMt+z6kTlQdVHOnr+aNRPvgeV4RnPqwQqgeq8zKOPE8bR3vn2ipMyDdLHgv2zrpc
-	L7+0VEp4Vxy5TD3eX4W4AxlJfzOLDStnL7qEla4iYmJQ==
-X-Received: by 2002:a17:90b:3b8d:b0:358:d80e:3831 with SMTP id 98e67ed59e1d1-35965c17f1dmr12711718a91.3.1772456808945;
-        Mon, 02 Mar 2026 05:06:48 -0800 (PST)
+        bh=redOa/mq1A5/vGoB89xwTvVxlbWjSEO176qz4hWguZs=;
+        b=fWXjIEfvWDTGjl950tWPNf7fyhB0LfrEdBCxgVMl6oqUmBhwhK/IVaiisvOkgbxAy7
+         A617nE+sl2p08GjBgVpodJ6jSlHA2H8Y3j5lp5p2zFf1piq4tz6gqqpKWA5sy7EmxE5c
+         G+dEvpqjjfNXcIdtFO2ZQyNfLpqbAbXgjz65X1YQ2oCwnO3mrIcxPgsW6xfQ8AE8Q1gg
+         aqcyKefPlpadLGJjhk71bY9DgN3K7dvscUXmbeQtLsgBt997JhHFnKXtD0rfbp7zgKhX
+         rPfYWLIZvNwNQ6A3JUe1tgYG5mML/toOPh80CbjqxwLpfHB2+Y76PS2/sN47kjj/FGB9
+         LIGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772456813; x=1773061613;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=redOa/mq1A5/vGoB89xwTvVxlbWjSEO176qz4hWguZs=;
+        b=ewIpgOFAk85/04RlwDt5qVRwuH0DFhK83nEm6xf7mMF6b7BRcPKaskhUtPXt9Qjj33
+         Ktm0cIkuQvCpaNsxoT5CIhxQuUwm1aXdhuPfmvUSeFDtFzzxwUIlLOS2oJjuivVNyuOo
+         5dYOEaGmsMwdmjHA3yFzqp0LfaJuW7O2UnkwUdUiLzoyF5f1aznIfC7oMZIW9r4mG6/O
+         1ksjIwnJhzaZJUnFV47DGTq3BfivGOaWbwsNPpo4yBO8ctZcOcUhxJiKst4dSNy7Yvs1
+         G2vUufsnBmGnfl7VDHKkljEAh9Uv1xs2YBR1kcMJBs1Mfe3RkTgpdRf1Y64csWH18eAf
+         qNYA==
+X-Forwarded-Encrypted: i=1; AJvYcCVC+IFnOyDMCycvhHOH9YuG1hTNaDHq2hMAp+cK/h12r3UQsMK6X87+tDmHxIVAklPlfHYs73Pa9Ag=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzmjqEak+jxPZD7cDBlG9gU2J5qMVDsvH9BlHI8DfDqHcR1Mvc8
+	BBX0cq/7w1U5zvkJxxc7lWdG1ElyO+fzh8lnOIp1tXfqFnoKy9YOD8BF
+X-Gm-Gg: ATEYQzyHvBw3QlZ3iauC5Xxn9PqQbCWv97gehFInarIiZYdohvEdbNrTFIegTYQGGYn
+	9GCGvyHizMZyFytZAJFb/mjiV74LjU/0jgsIAkaKDaHCd8rWctoppA9Gp7fdGvbQdZtwnDv7LDB
+	K3BElf9nKNnE6hfyBCGoIc3kVfBg3vtkVtynqI24eHWHg9Fyqh3PtsDDs5zH3kI3XZctIIUSEKp
+	u8fOGPeUfVeV28sSw2mTHhbBiv4mspeFq8CpuNqA54ZJuzBKEswjfgz+g/cVr7pdqBNu3cIS6RH
+	TPUGdRVkwqO7IK0bC0iN1mnsIcp6tsyl0hknwa2+88LsFhFBhdWucLMzqs6QMNbbIR7R91NCqA4
+	7MeVrtlG09PM5HxKhIFEob6oV02bznTr149P2RIel+WknqHIulbPsLV3oKpnRO1RWGnqX8gMaz5
+	czH513xVtHISlUD67Jp7g4ZPKsOhyR9YXwXQbU09OOaQ==
+X-Received: by 2002:a17:90b:4a:b0:354:c600:1a1 with SMTP id 98e67ed59e1d1-35965ccf1b9mr9811995a91.19.1772456813363;
+        Mon, 02 Mar 2026 05:06:53 -0800 (PST)
 Received: from debian.ari ([152.58.176.247])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3597b448e38sm7444585a91.5.2026.03.02.05.06.43
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3597b448e38sm7444585a91.5.2026.03.02.05.06.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Mar 2026 05:06:48 -0800 (PST)
+        Mon, 02 Mar 2026 05:06:52 -0800 (PST)
 From: Archit Anant <architanant5@gmail.com>
 To: jic23@kernel.org,
 	lars@metafoo.de,
@@ -66,10 +68,12 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH v3 0/4] iio: adc: ad799x: modernize resource management
-Date: Mon,  2 Mar 2026 18:36:28 +0530
-Message-Id: <20260302130632.29144-1-architanant5@gmail.com>
+Subject: [PATCH v3 1/4] iio: adc: ad799x: make rx_buf static and DMA-safe
+Date: Mon,  2 Mar 2026 18:36:29 +0530
+Message-Id: <20260302130632.29144-2-architanant5@gmail.com>
 X-Mailer: git-send-email 2.39.5
+In-Reply-To: <20260302130632.29144-1-architanant5@gmail.com>
+References: <20260302130632.29144-1-architanant5@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,36 +82,77 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series modernizes the ad799x driver by converting all resource
-management to use the devm_ infrastructure, ultimately allowing for the
-complete removal of the ad799x_remove() function and simplifying the
-error paths in probe.
+Currently, rx_buf is dynamically allocated using kmalloc() every time
+ad799x_update_scan_mode() is called. This can lead to memory leaks if
+the scan mask is updated multiple times.
 
-This series addresses the feedback from v2, where the changes were
-squashed into a single patch, by splitting the logical steps into
-individual, bisectable commits. It also incorporates feedback regarding
-the safe ordering of regulator disablement and IIO device unregistration.
+Drop the dynamic allocation and replace it with a static, buffer at the
+end of the state structure using IIO_DECLARE_DMA_BUFFER_WITH_TS().
+This eliminates the allocation overhead, prevents leaks, and removes
+the need for manual kfree() on driver removal.
 
-Changes in v3:
-- Split the monolithic v2 patch into 4 logical commits as requested by
-  Andy Shevchenko.
+Suggested-by: David Lechner <dlechner@baylibre.com>
+Signed-off-by: Archit Anant <architanant5@gmail.com>
+---
+ drivers/iio/adc/ad799x.c | 13 ++++---------
+ 1 file changed, 4 insertions(+), 9 deletions(-)
 
-Changes in v2:
-- Incorporated feedback from David Lechner to eliminate dynamic buffer
-  allocation.
-- Incorporated feedback from Jonathan Cameron regarding the ordering
-  hazards of mixing devm and manual teardown, utilizing devm_add_action
-  and voltage caching.
-
-Archit Anant (4):
-  iio: adc: ad799x: make rx_buf static and DMA-safe
-  iio: adc: ad799x: cache regulator voltages during probe
-  iio: adc: ad799x: use devm_add_action_or_reset for regulators
-  iio: adc: ad799x: use devm_iio_device_register and drop remove
-
- drivers/iio/adc/ad799x.c | 86 ++++++++++++++++++++--------------------
- 1 file changed, 43 insertions(+), 43 deletions(-)
-
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index 108bb22162ef..7775be874081 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -39,6 +39,7 @@
+ #include <linux/iio/triggered_buffer.h>
+ 
+ #define AD799X_CHANNEL_SHIFT			4
++#define AD799X_MAX_CHANNELS			8
+ 
+ /*
+  * AD7991, AD7995 and AD7999 defines
+@@ -133,8 +134,8 @@ struct ad799x_state {
+ 	unsigned int			id;
+ 	u16				config;
+ 
+-	u8				*rx_buf;
+ 	unsigned int			transfer_size;
++	IIO_DECLARE_DMA_BUFFER_WITH_TS(__be16, rx_buf, AD799X_MAX_CHANNELS);
+ };
+ 
+ static int ad799x_write_config(struct ad799x_state *st, u16 val)
+@@ -217,11 +218,11 @@ static irqreturn_t ad799x_trigger_handler(int irq, void *p)
+ 	}
+ 
+ 	b_sent = i2c_smbus_read_i2c_block_data(st->client,
+-			cmd, st->transfer_size, st->rx_buf);
++			cmd, st->transfer_size, (u8 *)st->rx_buf);
+ 	if (b_sent < 0)
+ 		goto out;
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
++	iio_push_to_buffers_with_timestamp(indio_dev, &st->rx_buf,
+ 			iio_get_time_ns(indio_dev));
+ out:
+ 	iio_trigger_notify_done(indio_dev->trig);
+@@ -234,11 +235,6 @@ static int ad799x_update_scan_mode(struct iio_dev *indio_dev,
+ {
+ 	struct ad799x_state *st = iio_priv(indio_dev);
+ 
+-	kfree(st->rx_buf);
+-	st->rx_buf = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+-	if (!st->rx_buf)
+-		return -ENOMEM;
+-
+ 	st->transfer_size = bitmap_weight(scan_mask,
+ 					  iio_get_masklength(indio_dev)) * 2;
+ 
+@@ -895,7 +891,6 @@ static void ad799x_remove(struct i2c_client *client)
+ 	if (st->vref)
+ 		regulator_disable(st->vref);
+ 	regulator_disable(st->reg);
+-	kfree(st->rx_buf);
+ }
+ 
+ static int ad799x_suspend(struct device *dev)
 -- 
 2.39.5
 
