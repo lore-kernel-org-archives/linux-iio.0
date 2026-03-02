@@ -1,49 +1,39 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7A3E039150F;
-	Mon,  2 Mar 2026 20:54:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4A941A6813
+	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 21:03:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772484858; cv=none; b=LsPFqa/8Ul229L0NU1nyN+wFDk2lcUsw7Br7ciCdMylrKLIjbJkNDzNvn1ySFMnznDFmRntWCS1xRUWpB+94e7dEMfM53mhm4w5kUxgyaUhcuiT/A3rJoaifEQe8H7zSp74bX+VbDiE555XwtivGdBXbpewvmdW0GBPHrFoc2Oc=
+	t=1772485424; cv=none; b=WafJ8xq8VMusJyjduj6NpTt08tC76ltIajyrUePPOTWcFvz4X/1wqJqbirzp/TkJLhn5CeMFN6t51Yuh1sbpQgX/iyxEPgB9pYHYTcr2WUlC9E5zME5TyeXSfRkahr5kYato2BMDuQgQAcrim41HUTjzlDkiqhEAjY9pkDwriuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772484858; c=relaxed/simple;
-	bh=7UW8X1Q0pg599+j7FABIUxaXRxY9SuGHQOy5y2QW8z0=;
+	s=arc-20240116; t=1772485424; c=relaxed/simple;
+	bh=/WQzFWzyWtBPCb93zCsp2dzNfY++BTiB2axu92sLf/Q=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=atFy84s18zMKSFawqIShxEHjGCSFNoc2aQdKexQKyj5D+QCRTl13opbr90+YydLul+4yNvHoKDbs6EK0Ntj1x8XbfbRPDcTqL7FKy4B5drVxwb/z2azbAbdfcIVlCNHfYaaDz6dnocSegd+DJDvS6BBV4U9wDf3kWQ08/ud3ccA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=YNU7FyAJ; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=mgJATpKW7/fTuZFBqMakUZRM9enAbxwf0FO++XROJR9P5upKyw4KL9AX+oPVSDjaapCEGTUXLdANm5mCNjIszQuibIGCr4PYf/dSCmf9jwf8pNitCiUmXMZ5UmyXf7Kprl24TGw8NQwowaniAqRouLOIb66UgOfG65ZydIx4Zik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=klHREm57; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="YNU7FyAJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C50E4C19423;
-	Mon,  2 Mar 2026 20:54:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="klHREm57"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88C27C19423;
+	Mon,  2 Mar 2026 21:03:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772484858;
-	bh=7UW8X1Q0pg599+j7FABIUxaXRxY9SuGHQOy5y2QW8z0=;
+	s=k20201202; t=1772485424;
+	bh=/WQzFWzyWtBPCb93zCsp2dzNfY++BTiB2axu92sLf/Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=YNU7FyAJDMxqULhnnonk/9wQUijTxtVh2dRGOQXeNbSuJExURmhIPQLZgIqvLPDsi
-	 4F+CoSlnNlWUAQ4xW1PxY+1art+wSRnfwJwAKUR7FLryrRDbB5I4uDYQtv+6yfibWM
-	 J1ve3oHiSxZ3CmzjFOPrBPSZUW7kOJBu9AYZF633sJ3dxi5Ab1nkfhWenTgwiHpcyb
-	 j4PfrtMRaQmO7M5V70cwmAUll1y+g/b6idYXz8aDFZkHlf7zwmEHAV+qITrqZs8cQE
-	 AYYsP3KTWRzpDqzmr4NgCGhfg5QBsFnbMnMzqjnek3bbcJAZQ8+K8WuJJgqcAAkbwq
-	 fkVchkvIGQHVg==
-Date: Mon, 2 Mar 2026 20:54:08 +0000
+	b=klHREm57/lriOW3wfMk8ZMP4dx4+No1pdmx8n+9S+8r/oWIwuzYb4td1hmuZsVcvk
+	 q+N0en7d9MI0JIZclInY4N0XnHfAUWQr9bdpoTs52sM6Sho8hYPjjiRqB302t3I2ru
+	 qwXj71CCZng6G77zrtif5hQaRzKepRPvD5n/Eek3HXGx1PDT7iAxkzrpsSzX576pIG
+	 4cLEEZlnaboaDHk3yOxpOTZCdUeF/i8B3SHeOLwGqhOUlmQhDk93jKeFs8KOn9VP6U
+	 fT0nm2wAZlscjIZYCPKnrji6lMj4m6j9cwPbIgXyDaZRJ6kgrYrB2eRAgVk5qhw6fr
+	 L37+ZxB6U/XRQ==
+Date: Mon, 2 Mar 2026 21:03:37 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Jiri Kosina <jikos@kernel.org>, Srinivas
- Pandruvada <srinivas.pandruvada@linux.intel.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Jonathan Cameron
- <Jonathan.Cameron@huawei.com>, linux-input@vger.kernel.org, Lixu Zhang
- <lixu.zhang@intel.com>
-Subject: Re: [PATCH v2 0/2] iio: orientation: hid-sensor-rotation: fix
- quaternion alignment
-Message-ID: <20260302205408.5159efa4@jic23-huawei>
-In-Reply-To: <d22e03b2-2093-4d33-8ec5-484f64f2e8cd@baylibre.com>
-References: <20260228-iio-fix-repeat-alignment-v2-0-d58bfaa2920d@baylibre.com>
-	<aaVRIOejIgnOdAfY@ashevche-desk.local>
-	<6158f495b13f2a8cdc09f37e296166ccf0393c78.camel@gmail.com>
-	<d22e03b2-2093-4d33-8ec5-484f64f2e8cd@baylibre.com>
+To: Bruno Martins <ehanoc@protonmail.com>
+Cc: linux-iio@vger.kernel.org, gregkh@linuxfoundation.org
+Subject: Re: [PATCH] staging: iio: ad7816: Replace sprintf with sysfs_emit
+Message-ID: <20260302210337.1dc6447d@jic23-huawei>
+In-Reply-To: <20260301212819.98597-1-ehanoc@protonmail.com>
+References: <20260301212819.98597-1-ehanoc@protonmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,64 +41,97 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Mon, 2 Mar 2026 09:52:58 -0600
-David Lechner <dlechner@baylibre.com> wrote:
+On Sun, 01 Mar 2026 21:28:26 +0000
+Bruno Martins <ehanoc@protonmail.com> wrote:
 
-> On 3/2/26 6:32 AM, Nuno S=C3=A1 wrote:
-> > On Mon, 2026-03-02 at 10:58 +0200, Andy Shevchenko wrote: =20
-> >> On Sat, Feb 28, 2026 at 02:02:21PM -0600, David Lechner wrote: =20
-> >>> The main point of this series is to fix a regression reported in
-> >>> hid-sensor-rotation where the alignment of the quaternion field in the
-> >>> data was inadvertently changed from 16 bytes to 8 bytes. This is an
-> >>> unusually case (one of only 2 in the kernel) where the .repeat field =
-of
-> >>> struct iio_scan_type is used and we have such a requirement. (The oth=
-er
-> >>> case uses u16 instead of u32, so it wasn't affected.)
-> >>>
-> >>> To make the reason for the alignment more explicit to future readers,
-> >>> we introduce a new macro, IIO_DECLARE_QUATERNION(), to declare the
-> >>> array with proper alignment. This is meant to follow the pattern of
-> >>> the similar IIO_DECLARE_BUFFER_WITH_TS() macro. =20
-> >>
-> >> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> >>
-> >> But this is in conflict with the other hack-patch in another series.
-> >> I'm a bit lost what patch 2 fixes here and that hack-patch fixes
-> >> in the same driver. Shouldn't survive only one? =20
-> >=20
-> > +1.
-> >=20
-> > I see this is older so should we only look at the other series?
-> >=20
-> > - Nuno S=C3=A1 =20
->=20
-> They are fixing two separate bugs.
->=20
-> This bug (which is a recent regression) is that the size of the struct is
-> wrong. It is supposed to be 32 bytes, but a recent change make it only 24.
-> This causes iio_push_to_buffers_with_ts() to write over data past the end
-> of the struct.
->=20
-> The other bug (which has been a bug for 6 years) is that the the timestamp
-> is in the wrong place. That patch also has an effect of making the struct
-> the right size, but that is only a side-effect.
->=20
-> So yes, I should have mentioned that in the cover letter that this series
-> should probably be applied first since it is the worse bug. And it looks
-> like I'll be doing a v2 of the other series anyway, so I can properly reb=
-ase
-> it and declare the dependency.
->=20
->=20
-I've applied these two to the fixes-togreg branch with them marked for stab=
-le
-inclusion.  For the first one I added a comment to the tags block to say
-it's stable as a precusor for the second.
+> As stated in Documentation/filesystems/sysfs.rst:
+> 'New implementations of show() methods should only use sysfs_emit() or
+> sysfs_emit_at() when formatting the value to be returned to user space.'
+> 
+> Replace sprintf with sysfs_emit in the following sysfs show functions:
+> - ad7816_show_mode()
+> - ad7816_show_available_modes()
+> - ad7816_show_channel()
+> - ad7816_show_value()
+> - ad7816_show_oti()
+> 
+> Signed-off-by: Bruno Martins <ehanoc@protonmail.com>
+Hi Bruno,
 
-Thanks,
+I've applied this but want to note that the majority if not all of these
+are non standard ABI that will ultimately need to be replaced with standard
+IIO ABI as part of getting this driver ready to move out of staging.
+
+Still, in the meantime your patch removes some bad practice that might get
+copied so fair enough!
+
+Applied to the testing branch of iio.git which will become togreg
+once the bots have let me know if they found anything.
 
 Jonathan
+
+> ---
+>  drivers/staging/iio/adc/ad7816.c | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+> index 172acf135f3b..0e32a2295990 100644
+> --- a/drivers/staging/iio/adc/ad7816.c
+> +++ b/drivers/staging/iio/adc/ad7816.c
+> @@ -124,8 +124,8 @@ static ssize_t ad7816_show_mode(struct device *dev,
+>  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
+>  
+>  	if (chip->mode)
+> -		return sprintf(buf, "power-save\n");
+> -	return sprintf(buf, "full\n");
+> +		return sysfs_emit(buf, "power-save\n");
+> +	return sysfs_emit(buf, "full\n");
+>  }
+>  
+>  static ssize_t ad7816_store_mode(struct device *dev,
+> @@ -156,7 +156,7 @@ static ssize_t ad7816_show_available_modes(struct device *dev,
+>  					   struct device_attribute *attr,
+>  					   char *buf)
+>  {
+> -	return sprintf(buf, "full\npower-save\n");
+> +	return sysfs_emit(buf, "full\npower-save\n");
+>  }
+>  
+>  static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
+> @@ -169,7 +169,7 @@ static ssize_t ad7816_show_channel(struct device *dev,
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct ad7816_chip_info *chip = iio_priv(indio_dev);
+>  
+> -	return sprintf(buf, "%d\n", chip->channel_id);
+> +	return sysfs_emit(buf, "%d\n", chip->channel_id);
+>  }
+>  
+>  static ssize_t ad7816_store_channel(struct device *dev,
+> @@ -231,9 +231,9 @@ static ssize_t ad7816_show_value(struct device *dev,
+>  		data &= AD7816_TEMP_FLOAT_MASK;
+>  		if (value < 0)
+>  			data = BIT(AD7816_TEMP_FLOAT_OFFSET) - data;
+> -		return sprintf(buf, "%d.%.2d\n", value, data * 25);
+> +		return sysfs_emit(buf, "%d.%.2d\n", value, data * 25);
+>  	}
+> -	return sprintf(buf, "%u\n", data);
+> +	return sysfs_emit(buf, "%u\n", data);
+>  }
+>  
+>  static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
+> @@ -281,9 +281,9 @@ static ssize_t ad7816_show_oti(struct device *dev,
+>  		value = AD7816_BOUND_VALUE_MIN +
+>  			(chip->oti_data[chip->channel_id] -
+>  			AD7816_BOUND_VALUE_BASE);
+> -		return sprintf(buf, "%d\n", value);
+> +		return sysfs_emit(buf, "%d\n", value);
+>  	}
+> -	return sprintf(buf, "%u\n", chip->oti_data[chip->channel_id]);
+> +	return sysfs_emit(buf, "%u\n", chip->oti_data[chip->channel_id]);
+>  }
+>  
+>  static inline ssize_t ad7816_set_oti(struct device *dev,
+
