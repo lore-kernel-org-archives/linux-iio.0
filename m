@@ -1,180 +1,112 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20EA62FBDE0
-	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 16:17:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8B12732AAA0
+	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 16:28:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772468264; cv=none; b=nglCNbke23e1CJVKHKq3RD2elUDlN/Xa3df+z4BHNk8ZY1jIUYyhNQUrGf2+zIzFkgEbKxxzgikLw6a8IGT/g3FClvo/fKgyM76w2Xq9arJIvmk0kOIOo1/1eS/NbajPLau8laYZybN140MCRRMYQBaUNNKeF4Zofts3tiNJxgw=
+	t=1772468895; cv=none; b=KSaevZj/uvYQXBidfQC1O2u/T94xgerz/zyVRulNPN/dquxrDw1ywos56QHxGgyWlxZhYYaci9tLoN3Pr6jC/LUaZ2zr9opKzdLPP79XxtPAYVDTgmAIE2o6bse+OGpa9glvunlTz0BpI9YmzeVBV+mD1JyCguhO3uRZi0JYbNg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772468264; c=relaxed/simple;
-	bh=e/+mYq2Nz6VcjAwwIILZSkOoopVK6vrvEtovOF7xZAM=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=eCvpkuTBXbohMggW8Ogx2tWbyURMhFSnZ8V1nnRQjFBv75zJCmys4etulmTAncgg9nBZPzCjHiqmA9CE3yJzA9rxuiv3LXu2JkTL+E5ABiCOw/caGfJ6MbdyZ9RGqiyOFmytUP7aMzxTqSJdxUFl8WtUng3JcPzxLI7woteIc4g=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UwDyeBun; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772468895; c=relaxed/simple;
+	bh=gSM64WsfJO6S2rYh59GGND0YhSvSxWL8wBf+z1wIn+0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=trJOw9nlOFzuoKgszVsVY0RqZks0DqoTWvwn7HoQM7a+zVdsUUPoSeSIpBLgKkwqdKAnFA2MqpROskZczFsJ+PLPxHx98VTvIsLuPa6hp6QI8JPC+EbKoQJzofv+00j+g2u0jzmm51BVQ/Yz2LXUbxuND+pClYpS8inH0ywfl+w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=XLckC5e+; arc=none smtp.client-ip=209.85.161.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UwDyeBun"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-439afc58ac7so1738387f8f.0
-        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 08:17:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="XLckC5e+"
+Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-679f6ee3fb0so2052133eaf.2
+        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 08:28:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772468261; x=1773073061; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=wezhi7CF4L9D6nvvGOyC3SwPE4r3g5VxDfDZ4qYyA+4=;
-        b=UwDyeBunsIk8Xc3PZok+Ykwhr2UqS4vav0CGBBiDidRhvm0NF/DxT+q2WzOnUE1a0p
-         7SSXF02+utXuHYpFz8aY1Nv3MCNz7mErRZ7cmfrxS1f0ZRFRFeO/JJY86wIq1WTsS4i9
-         GG3kOr5dd53m4y0Xb4ONU9cFgU+/tc4LcQ1B+sWa6dW0SZwGrv625VMkarMpk64vXBQ3
-         zcC1yjuNhrF92XWk3/a75PU/V80JMizW0ONuZksjyG9NB52U8YpDm14HJPlz9CJATtOx
-         SD3YKCxAgpytNFV7RmkTCXCYpxhFDLK8kOFILMuFgUPGJi7J0maoYD6W3Dr2sJBPTOjs
-         kssA==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772468892; x=1773073692; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=YqJE5duenMEqcJdEHn+YMVP5pRk1d6NJmMPCP3qEwks=;
+        b=XLckC5e+/apSg+/a3/PHqUBuMgWAfoy/NesieCeXDBjwODb5reZWfWdhaACh8UX2dX
+         zJwh4Ni3mQNKLXB3qJIVNLfcV34+Qy88PbXrQSbORoupkc9ARa8a3DE1Oy4DYhE0Thh6
+         rNgh3ovqoIa5KWojlGptDgZDCMjkmTBBYMtgdA4NMnyuTjc1aB1XYqcqnGQA542rY96Z
+         tmox4NOcWPqBXNTKZFxgbyGb61TQtHvExImR3Wj1E/hlHbef/v0uzkxmaDa9IucONv9+
+         AHTzR5voTNqXrgFivOzHpcAhzce4/RqMi8s5jz+ybJoZsmQSw5j7JPelsrlVgmzHUw5k
+         +etQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772468261; x=1773073061;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=wezhi7CF4L9D6nvvGOyC3SwPE4r3g5VxDfDZ4qYyA+4=;
-        b=k8AfU5+Z5wJhwFAR2BaWZaZOHQ2Gtob2y6OWWnoTPHVnlM1U5TdMuu/0OmE84YShLg
-         JXrzuR8gT/NpemCoBI0BhrfckxJ5lLMIbGp5+QjiXI/7AcM/+/LXxDuH2l/cIgpBy1qV
-         v67R7XKDa9SJlVI6FvKSvM2Fe82SNoskzh0wU1DUajEP7Tmdk53Cv0UeXXx3oR+oHQpv
-         uFAHoIm4NrrD9Kglpc5VG7w6GmTZOsWKjgRs3BmYxBZR9FObY3qC4PQxVFTrq2Whzj+E
-         o0fNCf0m/RYrJwpffqV49UBfpUOw4YwF2jUjFS1yKWAqL8u/IFbv0u5ZOOrJ6aYqVzzR
-         kKMw==
-X-Forwarded-Encrypted: i=1; AJvYcCW2AebZX+20ihukSJR7HOk35IcYq4aCkVt8A7NL+h6WztpLtHcutDizgAxrPzIFnF4dK9q/YSq2+00=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxvXjXGwSgr/2gbZ3c7BCFI9aMOFosYnWa2G7aavWDD8LOWnVkL
-	tKV35ZpCEl6khH/WJFmEA220Iyw16xHjFfuTUmCWJMQYCm8JJTs2dWO+
-X-Gm-Gg: ATEYQzxPcS6IgbGJeoFTV9zjnp2adxOahDK9ONSqyLGojMkM9o8zO4IgeXFo27NnYWG
-	PTcPsOpZCxfzOe3zeSMjVy8XAhV2ew90thevGyDdQAg5auv7wziomocESyIGm1DQLxBeEOwdTf9
-	A081Z1MTJm5ng6OO1c3PBKtpnjcV0IQAFUkiOX7vYSme5FnWnHE0B9koDpVIKnomoNhJ9O9HRQF
-	FhqxODaMXctVtSPYgbqEqlP0TDu92uxOTu/5jHI6gSed5zDJubXssf97FZFjHIWswUD2qngif/f
-	ZUZGCuB0Em3Si5LK9s/ZZgmxRoTbXETGAGP5Hv4gltTMimuB5FG+6Fk0E8Gx2mssZ8ap3giGT/A
-	LkJNaR1b8YBGQWB0iw2oc3zrRF1FK5Zl0yA3QQ4vtRhQTJW0g+lXy1Ve4aS1AD8OlLeKc/BU38X
-	SDx5BoHRTpKrw7/UKXB/yd5oQYYZZYJSw=
-X-Received: by 2002:a05:6000:40dc:b0:439:b736:bd0e with SMTP id ffacd0b85a97d-439b736be50mr7224386f8f.44.1772468261230;
-        Mon, 02 Mar 2026 08:17:41 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439b485a0b6sm12554176f8f.39.2026.03.02.08.17.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Mar 2026 08:17:40 -0800 (PST)
-Message-ID: <81abde86bf147c8a38794732354030761a216759.camel@gmail.com>
-Subject: Re: [PATCH 3/4] iio: buffer: cache largest scan element size
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>, Jiri Kosina <jikos@kernel.org>, 
- Jonathan Cameron	 <jic23@kernel.org>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>,  Nuno =?ISO-8859-1?Q?S=E1?=	
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Lars
- =?ISO-8859-1?Q?M=F6llendorf?=	 <lars.moellendorf@plating.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, Lixu Zhang	
- <lixu.zhang@intel.com>, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org, 	linux-kernel@vger.kernel.org
-Date: Mon, 02 Mar 2026 16:18:25 +0000
-In-Reply-To: <d9b14aaa-5c03-4769-b7e5-0a6b3dcbe1f6@baylibre.com>
-References: 
-	<20260301-iio-fix-timestamp-alignment-v1-0-1a54980bfb90@baylibre.com>
-	 <20260301-iio-fix-timestamp-alignment-v1-3-1a54980bfb90@baylibre.com>
-	 <091936ced74a1eb051dfda009e27bdb8f32426b2.camel@gmail.com>
-	 <d9b14aaa-5c03-4769-b7e5-0a6b3dcbe1f6@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+        d=1e100.net; s=20230601; t=1772468892; x=1773073692;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YqJE5duenMEqcJdEHn+YMVP5pRk1d6NJmMPCP3qEwks=;
+        b=huJfJIK1x47wW9v6v2IIR9NUqXfLIDhriYWuGoi6crF8zsY/o8zx+j+JMoHI4cHs6a
+         RJI40J5P1/TYnoam/SAm1xbZi7DVmJMGFZxPBjBWcIcEcjNXEeYHtTTqkiY/IpprbzmO
+         w1eGkCplPkkFewjSg3rGA64V2UXvpe1qujuTvzCCR8KhyxL13qM5eTRZPYZecIxPF3f2
+         PJyvrQhjYN+Nhk0kxLn3tRMVNvXKFiNy83erfQuFKynhyC0w16owVfTTUql/nRiJ/jpo
+         GEXWwAOzKzxUpcKVSQml6/nb98mtmup+TdPDnN0q1c97NHn8HTGRWUVC5i/sd+2yhMCG
+         XNPg==
+X-Forwarded-Encrypted: i=1; AJvYcCVj4G6I2tSF7E7ynksUcSnGMQIf3OrzVu6Gyyoaox1gpHp7QSA2T2HylZqX+u7gAu7LsEUQnmxU4PM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxagQF7Zqursr/UwvK1lK0iI2a3ir1/G4PKTswYIfYNlu6OJjkF
+	14jHHkn9rDrdce5jfAqGaqCjmkyb65sr2txIsDfC18SpGA1bXmEG3ondPNRhjihJJ4k=
+X-Gm-Gg: ATEYQzyrfngebrlmGUjH0TmWpFwMybU3O2ltCO8u0FHSJLE2r7uIGr4varq8wRct9+0
+	qo6YaozTcAYEKEySUWjSNk6abK8mwlWnjNK/Wf3MvZBZXLXNpHrZp+WNd38neb00i4zNP2Kf6gX
+	Zs+E3dL7s1JrIeJP32TZjLVGImAdILij9cJNjQQYH/QgHPv//bSShs7brnMIYXTncHvJeidCKTa
+	NgiKCNTLS3scV5si6pDsDnK66hApQRxiBfVbjWjb1qz0+c8CTUDoX+E9PehBniabOwtqGeDziHH
+	XuMGuUpJW1qD33ZxL40pxqYBcESygv/jvhc4Oofc75RS5uNmfb+YzKm66a0Is+10uTWPhA/xDgU
+	uPz/NW4MqGvnUKk1LqcoxY+vXzE/jrnL2SPaJn3ZZ78aT8cUeD1HM5HgRHZwLvHpdchxwzPJBZK
+	V80PdeOfd77UM7ofjpQ6hJHmvz2+xrqYpnyVx4UU/FVZLZIZ97UfNxMJ0vf5x82c84mesfIDt3j
+	Q==
+X-Received: by 2002:a05:6820:1b0f:b0:662:e066:73a1 with SMTP id 006d021491bc7-679faf45f27mr7102281eaf.57.1772468892553;
+        Mon, 02 Mar 2026 08:28:12 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:4c09:7c6b:bc48:f2f7? ([2600:8803:e7e4:500:4c09:7c6b:bc48:f2f7])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-679f2d9e8d6sm8979804eaf.13.2026.03.02.08.28.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 02 Mar 2026 08:28:12 -0800 (PST)
+Message-ID: <8ce6bc3a-c55e-49e4-973e-5f135e2b24ba@baylibre.com>
+Date: Mon, 2 Mar 2026 10:28:11 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 0/4] iio: adc: ad799x: modernize resource management
+To: Archit Anant <architanant5@gmail.com>, jic23@kernel.org, lars@metafoo.de,
+ Michael.Hennerich@analog.com
+Cc: nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+References: <20260302130632.29144-1-architanant5@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260302130632.29144-1-architanant5@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, 2026-03-02 at 09:35 -0600, David Lechner wrote:
-> On 3/2/26 6:16 AM, Nuno S=C3=A1 wrote:
-> > On Sun, 2026-03-01 at 14:24 -0600, David Lechner wrote:
-> > > Cache the largest scan element size of elements enabled in a scan
-> > > buffer. This will be used later to ensure proper alignment of the
-> > > timestamp element in the scan buffer.
-> > >=20
-> > > The new field could not be placed in struct iio_dev_opaque because we
-> > > will need to access it in a static inline function later, so we make =
-it
-> > > __private instead. It is only intended to be used by core IIO code.
-> > >=20
-> > > Signed-off-by: David Lechner <dlechner@baylibre.com>
-> > > ---
-> > > =C2=A0drivers/iio/industrialio-buffer.c | 14 +++++++++++---
-> > > =C2=A0include/linux/iio/iio.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0 |=C2=A0 3 +++
-> > > =C2=A02 files changed, 14 insertions(+), 3 deletions(-)
-> > >=20
-> > > diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industri=
-alio-buffer.c
-> > > index 71dfc81cb9e5..83e9392f949f 100644
-> > > --- a/drivers/iio/industrialio-buffer.c
-> > > +++ b/drivers/iio/industrialio-buffer.c
-> > > @@ -765,7 +765,8 @@ static int iio_storage_bytes_for_timestamp(struct=
- iio_dev *indio_dev)
-> > > =C2=A0
-> > > =C2=A0static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
-> > > =C2=A0				=C2=A0 const unsigned long *mask, bool timestamp,
-> > > -				=C2=A0 unsigned int *scan_bytes)
-> > > +				=C2=A0 unsigned int *scan_bytes,
-> > > +				=C2=A0 unsigned int *largest_element_size)
-> > > =C2=A0{
-> > > =C2=A0	unsigned int bytes =3D 0;
-> > > =C2=A0	int length, i, largest =3D 0;
-> > > @@ -793,6 +794,9 @@ static int iio_compute_scan_bytes(struct iio_dev =
-*indio_dev,
-> > > =C2=A0
-> > > =C2=A0	*scan_bytes =3D ALIGN(bytes, largest);
-> > > =C2=A0
-> > > +	if (largest_element_size)
-> > > +		*largest_element_size =3D largest;
-> >=20
-> > I might be missing something but it seems we now have two paths:
-> >=20
-> > 1. Go with 32 bytes
-> > 2. Go with 24 bytes (natural alignment)
->=20
-> Hmm... You are right, but we are safe for now because the only repeat is
-> a quaternion, which has repeat of 4, so we don't have a case with e.g.
-> 24 bytes right now.
->=20
-> I can do a follow-up to future-proof iio_storage_bytes_for_si() to
-> handle repeat =3D 3 (or any other less likely value).
->=20
-> Without the repeat, the size is based on .storagebits, and .storagebits /
-> BITS_PER_BYTE is always a power of 2, so no problem there.
->=20
-> >=20
-> > ABI was not clear so I'm not sure if we do want to enforce/treat repeat=
-ed values as one single
-> > element
->=20
-> It has always been this way and we had some recent breakage because I did=
-n't
-> know about this. This patch series is a direct result of that [1] because=
- we
-> identified more bugs when analyzing it.
+On 3/2/26 7:06 AM, Archit Anant wrote:
+> This series modernizes the ad799x driver by converting all resource
+> management to use the devm_ infrastructure, ultimately allowing for the
+> complete removal of the ad799x_remove() function and simplifying the
+> error paths in probe.
+> 
+> This series addresses the feedback from v2, where the changes were
+> squashed into a single patch, by splitting the logical steps into
+> individual, bisectable commits. It also incorporates feedback regarding
+> the safe ordering of regulator disablement and IIO device unregistration.
+> 
+> Changes in v3:
+> - Split the monolithic v2 patch into 4 logical commits as requested by
+>   Andy Shevchenko.
+> 
+> Changes in v2:
+> - Incorporated feedback from David Lechner to eliminate dynamic buffer
+>   allocation.
+> - Incorporated feedback from Jonathan Cameron regarding the ordering
+>   hazards of mixing devm and manual teardown, utilizing devm_add_action
+>   and voltage caching.
+> 
 
-Hmm true. If we shrink the buffer, userspace expecting timestamps at bit 24=
- will not work.
+I just reviewed v2 because I didn't see there was a v3 yet. This is why
+we ask to wait ideally 1 week, but at a few days before sending a new
+revision.
 
+Some of those comment will still apply to v3.
 
-- Nuno S=C3=A1
-
->=20
-> [1]: https://lore.kernel.org/linux-iio/bug-221077-217253@https.bugzilla.k=
-ernel.org%2F/
->=20
-> > If so, nothing to change. But if not, we could re-think the approach an=
-d save some bytes.=C2=A0
->=20
-> It's too late and breaks usespace as we have seen.
->=20
-> > Marginal savings though so If having the smaller buffer is not straight=
- enough I would be ok
-> > with
-> > the simplicity tradeoff.
-> >=20
-> > - Nuno S=C3=A1
-> >=20
