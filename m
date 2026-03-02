@@ -1,118 +1,94 @@
-Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30B1B1AC44D
-	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 07:20:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 870A2387342;
+	Mon,  2 Mar 2026 07:50:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772436040; cv=none; b=qS7TCbOHgGll3yaHp5FI+LyjQXLVVS65c4S1p5iV4Azd1JsB68e/FvEyRCHmSxeyTYzWHFWwe0lkOR7ePOLl6cqyiVFKA6mpQFea7n7kUxUD/9sAiB18B9fz+pmT8aeDgIfKpwFO6KRyTLi60rRbMa3ltVddNoTMgVCwQhXG5fU=
+	t=1772437816; cv=none; b=kPDbfQw5WeZPT93+e/BFp0R4u/XB8HAFfKTHxuqNKy+Xl93ZJt/kj5TI4VE+9y7C75BFRd5iybbACjTY6Om1emQEtLRB+zrKWTK4lHUuBggBAIQn0rc8vSg9KYnazHBWlcgWdoGn239/GSgN1orvFBYiWviloEdkR0hd+d2QVQY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772436040; c=relaxed/simple;
-	bh=+QhDDqM0TcwUBQilYe1cV1aEXboFbNwLvFmlojMCJQw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=PxVkfTWsd3QcYXq1IEswq3Xrzg3wwWAMBs9eEWU4vubZYVwRFqr80pht6CIdMHojGxEtIMoxSMbxbtFJMo+e/9zehievCZER9v6PezkdwFbix9rFVzRKACrkKQV4pLiafMYWhq4VI9dC+JwvGLaxosiwICWC5X7VzF/42u/tLL0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bsRV3o31; arc=none smtp.client-ip=209.85.128.48
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772437816; c=relaxed/simple;
+	bh=l+19X3mSzhsmsxH05NHeg9r3eWFTaHt67t8gqN6yfcY=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=UgWQTP/WFaXfLWpnmXRfew91t6NbAFXKgeLtc8/gCxfTAxOiAmE0Rc5Xl77cOToKLVb6wMPwfxIIDn+WLUvRVnY3Xr6pYfw/aS9xegBatIJQvfLYxzb2KmfzW9E05JRJqIxxouJ1Hfkk/CB+Ppsl0xTqNx9VK1J1Y4h6Oupr/uE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JjL/4cn6; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bsRV3o31"
-Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-483708b697cso5282465e9.3
-        for <linux-iio@vger.kernel.org>; Sun, 01 Mar 2026 23:20:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772436037; x=1773040837; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=A7xcorigsUYDUhG14kf8ZiANUM0B0Rpyk3O9rAq+jxQ=;
-        b=bsRV3o31FB7m7xCLYWSfTstzU2WdvMp5FatKj81PAeJcp6XnJlzFhs36zQFVHH/oj/
-         zJ9aS3pSm/7WFK8Bip3ZoFE6636FyJauUUCMUNbxeN/UM+7RS/clI2+7Bk3cLg80pTXn
-         I352X4t68pwQKqJl5c9vRcxYT0s7WZG8GFN9HN9MBEvL3suqQX0eb+yXm9W1uNbkeg6A
-         /bUTQKKqxahKcK/QuP2b+ceUWJhhbGzKriaCDmKeff0H1MLD0UHZkUdG64k+8FHlaPKF
-         PDQNXEEP9jiGNMuUahRbdqUZuRss+xSEQZws+aSXCkw3P1+w986aED9lgznZ9k2JEp9U
-         s0aQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772436037; x=1773040837;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=A7xcorigsUYDUhG14kf8ZiANUM0B0Rpyk3O9rAq+jxQ=;
-        b=rhpq2MqTD4GlwkIOjAZE31ozD59ggWNEN/tvmSRxtrkYfPAjAcwSzE0juzLGZYEbnq
-         CGO3EXMcX/IqWdWDBuREeKJAxcN9twOiLhS/DDzsNR3Fo/LI2SQ5UkzJS9PfA1PNRdax
-         N6vMC8ymWu2+tp4Ix9MVSAlGx6gOKJq8PAQGwXxn4CJB/sF6RW+RvsFRawILTRywFjVg
-         mwiGmpBMwpOzVKW3O8FkzQAJuXIulrk+ZD/I525gffRIgJAbs1EZhN2nuEegtTGBNnaz
-         Yx48hFbDlXt2rFTsISIQlo38RHPqrMpjpTc54mk2UpNPY/ak+kIUTb+Imgc0DuLtSIXg
-         vkmg==
-X-Forwarded-Encrypted: i=1; AJvYcCX7FzUC+Nd7Ua07j1Noa/tXmgf2rlSIAq8u4TFRV5Cd+b2H07/pfnj8tEPwyyL/mRFIWxqZT9puZQk=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzxIWLMPY4HEvK8j4ZCaDjaUE/9DFNyrYDn2WjBF8Y9LvYljdaL
-	CN6T30s5sgSs/1lv26SR8hcQMKjoJHTDBszz0wJ4U68D2ojzKwEMskeS
-X-Gm-Gg: ATEYQzyMb05k0DhfnjlPj6vHUQTk18NCFRWUzq7EgeCkXGyA9S4FDE6MFXoZo6Fi1Il
-	qmUuBBsfmst02BEh2zZEyZ73EYAjwMcFS1LUv7sTBfULmZQXMhWK+c8s9AyDvfBp6ruPqqtZ/Mo
-	x8aQ5RaHu2as5Kr5iT/lp+65IQCJb/ryk6L9exWG+S7Mgm8nShcBP1Pv0zkWFK4MnqqvvrP7JK/
-	lOY4HnoIdlfePuj8ZloinemvGeJ4w0Vw7VhN+Kyi7L1MqXZdgt/FHN5l1CgusyefiTVhvZM1Lhu
-	5o3UWN0cKrKBgQUHXcnLepANxkqcCOpbP8BbxHgr4J/GMv5XyKAZsYrIoTrxleXt6gUm0OOVj9E
-	phCje9WIYcsnl1F3HDXufcBNRS0hJXu5nUz2kVXn9Snh4vKJKKXOfu87jWl3WBPmB46qEvxQhKG
-	nCo0YzoSxgrWJ43cuGUv6K88HUQhMbSXYlNJS/aFmxJgCuZmiKaMdHzPiJmhz17nUi8pbSs34tm
-	6ypjle6INMoVDYb2kzsTAf+HxfybsVsKN1kBpMzjeOs2JRzfm2a
-X-Received: by 2002:a05:600c:6989:b0:477:7bd8:8f2d with SMTP id 5b1f17b1804b1-483c9c32a06mr113589255e9.8.1772436037375;
-        Sun, 01 Mar 2026 23:20:37 -0800 (PST)
-Received: from fedora ([149.3.87.76])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-483bfb29715sm286026135e9.0.2026.03.01.23.20.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Mar 2026 23:20:36 -0800 (PST)
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-To: antoniu.miclaus@analog.com
-Cc: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Subject: [RFC PATCH] iio: adc: ade9000: fix stale data in waveform buffer read
-Date: Mon,  2 Mar 2026 11:20:02 +0400
-Message-ID: <20260302072001.55737-2-giorgitchankvetadze1997@gmail.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JjL/4cn6"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772437816; x=1803973816;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=l+19X3mSzhsmsxH05NHeg9r3eWFTaHt67t8gqN6yfcY=;
+  b=JjL/4cn6KuQwTIrDlFPyFmN/OJcQ08M0Ru5Y86oTwpgcYqkd6qnYef3e
+   EmeODJ3ZmxTUqVz8YyZxz1AXz3keAiMbvvnhEtLMpV3z9VSGGYim5BbmP
+   CYs2V4o6EZIr6+QPm3Kev/uNw831KxMi+RZ8hzH6VqUvjYXxy+P9Pso+x
+   Uohwq/vdjjs8I7aDVUiNif6U0f49fhhBR5YqlO4L0JBBfBCMjNBtrDNYd
+   KrJzfcvoZEEwG0OWQCCqbE55sAv56OFbr2FkmnvFtlTB04d77ZDTDOr6o
+   VpY/DBx6fjya5mOhOSv0yM/AGFIGqwibqdrq+NKWn6tUVk6d+XgKsWo6t
+   g==;
+X-CSE-ConnectionGUID: ogWTg7zOQw2BT2Hj4/Msrw==
+X-CSE-MsgGUID: wDkiH98dQIiGNYD1SLxPmQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11716"; a="73503792"
+X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
+   d="scan'208";a="73503792"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2026 23:50:14 -0800
+X-CSE-ConnectionGUID: dVN0cgNfT/6ODKBnMOw4YQ==
+X-CSE-MsgGUID: Fl0Cc58dQaSBEnY2y4rCug==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,319,1763452800"; 
+   d="scan'208";a="217684382"
+Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.52])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Mar 2026 23:50:11 -0800
+Date: Mon, 2 Mar 2026 09:50:09 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ade9000: remove unused ADE9000_ST_ERROR
+ macro
+Message-ID: <aaVBMRU9wd6s4Nu0@ashevche-desk.local>
+References: <20260302055035.36363-2-giorgitchankvetadze1997@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260302055035.36363-2-giorgitchankvetadze1997@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-ade9000_configure_scan() always sets the SPI transfer length to half
-the waveform buffer:
+On Mon, Mar 02, 2026 at 09:50:36AM +0400, Giorgi Tchankvetadze wrote:
+> The ADE9000_ST_ERROR macro references ADE9000_ST1_ERROR0
+> through ADE9000_ST1_ERROR3, but the actual defined symbols
+> use the BIT suffix. Since this macro is currently unused
+> in the driver, remove it entirely rather than fixing the names.
+> It can be reintroduced in a future patch when it is actually needed.
+> 
+> The individual error bit definitions (bits 28-31 of the STATUS1
+> register at 0x403) are retained as they follow the convention of
+> defining all register fields.
+> 
+> Reference: ADE9000 datasheet (Rev. B, Page 61), STATUS1 register
+> (0x403), bits 28-31 define ERROR0 through ERROR3 status flags.
 
-  st->xfer[1].len = (st->wfb_nr_samples / 2) * 4;
+> v2:
+>  - Drop the unused macro entirely instead of fixing the references,
+>    as suggested by Andy Shevchenko and Jonathan Cameron.
 
-However, ade9000_iio_push_buffer() iterates over the full
-wfb_nr_samples, pushing twice as many samples as were actually read
-via SPI. The second half contains stale or uninitialized data from
-the rx buffer.
+Suggested-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Fix by setting the SPI transfer length to the full waveform buffer
-size in ade9000_iio_push_buffer(), since the trigger mode fills the
-entire buffer before firing the interrupt.
-
-Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
-Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
----
- drivers/iio/adc/ade9000.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
-index db085dc5e526..c6eb06ef8d37 100644
---- a/drivers/iio/adc/ade9000.c
-+++ b/drivers/iio/adc/ade9000.c
-@@ -804,6 +804,8 @@ static int ade9000_iio_push_buffer(struct iio_dev *indio_dev)
- 
- 	guard(mutex)(&st->lock);
- 
-+	st->xfer[1].len = st->wfb_nr_samples * 4;
-+
- 	ret = spi_sync(st->spi, &st->spi_msg);
- 	if (ret) {
- 		dev_err_ratelimited(&st->spi->dev,
 -- 
-2.52.0
+With Best Regards,
+Andy Shevchenko
+
 
