@@ -1,120 +1,110 @@
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
+Received: from mail-yx1-f45.google.com (mail-yx1-f45.google.com [74.125.224.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16370175A8F
-	for <linux-iio@vger.kernel.org>; Sun,  1 Mar 2026 23:57:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772409461; cv=none; b=k5WuB/uuhmsVGdnpAHSx7LA3vR992t/QzULp4wPdNc41+CSzViUT8hpOlxXJHoIemP24Rh8dSJAgMJOl3iaPAyd7lNhBl5BO/fmDJTMEP9Y7KZuz0tfC9GT2ahDr03DsO0Wkr+hUXxifXDpwt8ovNYmYov9e1WkbqGcw6vOIMRE=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772409461; c=relaxed/simple;
-	bh=PPjWPhAV/CMGlf4h8hqTpGQ1qdiPBHEGZfh0eQ+NN8g=;
-	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
-	 In-Reply-To:Content-Type; b=nfMlaWwOOOACtErqljdRHPZ5+P5boc0H2W1zVdKs5FBb68RUA+fHjumUINm7OEAu2EIhRkc46Z0urVD7ceXPrqNirQeCvPx+jKGvY0+MkrnZD1RWT5DHhk1qjy2rfCgq82z70O1OwjU001BJ6FWRahUd2IFqnQCFn1zpWd8ACRI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=vttZYeKZ; arc=none smtp.client-ip=209.85.167.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D427716132A
+	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 04:44:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772426660; cv=pass; b=SA4/LrJoLeUFrZQCTHRpc1T1AcUNyU00VkX3eOm8ZmqAhXwKU+IJq95cw0kJe9E116m4tvP30IePuV6SqoRCFLC/XHVTpwPnXa0Ha9d0+A0SJ4gsMOWrax4OXl8Ns5btpRv1upXTlWCJAs1Vvo/UuxLGFMeFeg7cIFg//BWQNDU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772426660; c=relaxed/simple;
+	bh=xbK/zKFovWtbSTAdL9DpSBVTJ+2mbgF0vEyViS2gaG4=;
+	h=MIME-Version:From:Date:Message-ID:Subject:To:Cc:Content-Type; b=R6N3XQh4M0dhh3ireE+nCvqtVX+z6ZTnjoYtMIax/Oe6S+qNDHffmASV1TJtEVY/YHXD5ZbOPHKy4BPga4BGDjVQkpsNYxvrqizQ2eRv1eesoocn7+Qy2tFyG0FDDeltCzKwfW/wrRPM8JHj7qyRJCG6nFeomDS7eyxwBpGsNZc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=USOL7qwh; arc=pass smtp.client-ip=74.125.224.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="vttZYeKZ"
-Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-463b3697846so4100661b6e.0
-        for <linux-iio@vger.kernel.org>; Sun, 01 Mar 2026 15:57:39 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="USOL7qwh"
+Received: by mail-yx1-f45.google.com with SMTP id 956f58d0204a3-64ad019bbd4so3398184d50.0
+        for <linux-iio@vger.kernel.org>; Sun, 01 Mar 2026 20:44:18 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1772426657; cv=none;
+        d=google.com; s=arc-20240605;
+        b=A2DAG7wZhE/Gvo0UQadY3RwYvwBxnQMSSwO8jqQ9+VWuoZoJRRHCU/pUKapo7eUJUC
+         5GZDaQtzzDoSq0Sj30PNIYIhfRHXD2y7m6YdXQxeDOljOdeV+4bCaODgbScHRzZjEant
+         1R2MgjS38bBznja9Qw6L297D7YrvoP/wDsDRT+fTIuNSqqJ9hCukvcCMpfPe8K7QOq+X
+         XN5oAHNoZv0xDEY5l02MdsWfFbDh1dVyVYOUoDoc72q/+dLABuoo84hcm9PJu1QmSIpL
+         AMz75afLXLNJ1tXwagoxkEEgZGN7W8LMB2XW7FRdSye8k42uq4LF3ECQQAg5m6S0U7U8
+         uohw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:mime-version:dkim-signature;
+        bh=xbK/zKFovWtbSTAdL9DpSBVTJ+2mbgF0vEyViS2gaG4=;
+        fh=rgQyiRthZ1bhgIZhv1axlOyU0Ax+mS5iC4rjWubKv1g=;
+        b=IvNMiSENA2mG7P9Ir/bGQxBjY5uBLQ8hEDqiTMawa0qly3H4MpGpVaJBwwBQtKQbVG
+         J2/ctCEoezpk8lkCF5+6RpgfJeqVVtbghlCWmyc+I5saCWdDGD5bXUprxXsuYbr0QkiX
+         ZLPWl0LaB5g/WZpeTrnq7vgBdlhjU0IefyVEjHdEJSqTtHkoxRmoLf535qLv4VCsBHDa
+         gELaocponGUzFENf2GeH0yDoheeAhUi9104dsGclK8NsUZZ03Z0Vdnou6RXUA2tgLu/b
+         xP/UMtQaS2M4m6OH+7K9rQfvAcxuIdvN0GxqQWQSja2D8xln3O4ph2D43uCRUYhtSUqd
+         HZdg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772409459; x=1773014259; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=QudNWS8bzG3eo+FT5ClTdDynuy54B2E9XpJYEYAcw4M=;
-        b=vttZYeKZXqwJgdE0pTjZU2tcxov8Tl9oRWgo8Vd0EHaq7P/fk5JP3O6R54IxBsFsUc
-         JApgvM1BzRIop7/ao9vz8TK8NssFRPSAx2iHMuY32E5szhkawXxSLd72S6qyTvSp9orl
-         vHhyEweg+Be/jZv0V2ME/633CBhC00PwLPQqLpKKnngyTACO4r/2lV3VsitND9FGXZiX
-         LH4Ux02ZqOZUIpLcQko2vaVsC9EHkF8gerCsfYejQgq0c/Ft05JVTQRar3K2Q7g8ffXL
-         tmlqV77MT9fClR6XylfDqhmzPx44XI6K17DV+RGL6ZyGjaQqvX0E4ga/l5sQRKtA8vvR
-         sQUQ==
+        d=gmail.com; s=20230601; t=1772426657; x=1773031457; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:mime-version:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=xbK/zKFovWtbSTAdL9DpSBVTJ+2mbgF0vEyViS2gaG4=;
+        b=USOL7qwh7ab1UAvFzp0Z4lY9XGkpUmrYdZyPCKeI9TnrmIU1oUU/tOO86fLJvbH+L3
+         amGUe5J5XlX4WUMWhbepLWLTqPhsYFBtDGD0RffsRqQNH5xd/VEKu22cnIsszJ33y0RY
+         T1/jEfHgECzw6s5MfSQ0Mkti5goDsgoRZABlSni2pCei/RIy3rnfjfwyB+IKRRGRbE9k
+         V3I6XQPwX3PcQ0ACZixbqFDL6EMyovWwprKpx19aRGOkzZZ1ewzu/psUgUjIo1B4oUHq
+         F8/3OWO6Qba2/9xqK2KDtlQp8buRjPS/XfKiNBfIe0zPb9SAEHiUyhBPEc29QtIluoCP
+         Ov1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772409459; x=1773014259;
-        h=content-transfer-encoding:in-reply-to:content-language:references
-         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+        d=1e100.net; s=20230601; t=1772426657; x=1773031457;
+        h=cc:to:subject:message-id:date:from:mime-version:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=QudNWS8bzG3eo+FT5ClTdDynuy54B2E9XpJYEYAcw4M=;
-        b=ldobRldLW7MmQx59CjU5H4tMapyuAUVkR/JBNZCEzmyM8wAkOJuXzUZrIG02hRX8bq
-         ETbtfFHNju0mPINPp7r1BL4eBFjMmtrcGJ+W+ttTKTScN8aPO0cuHvV9IMDhFAC+f4Qn
-         KAYV36VrpOTEfEHHy/TfqvMiYY9pVJcXJq3pfYXGEnbyUHGn1S+OD/k5SjcvjuiUyaPG
-         fzAJp4bH9Br1azFuD/VcXIeTIQp09USCuSPpvCeQBlCYUv5SNBm6YCmBVOKaMVb+gxcl
-         qEnpeV45DGR434UZei4nkDKMvefGuJXmGpsIg4EJbmG9yZYDFaYb2ecDfCDENCXOeDHU
-         ZaeA==
-X-Forwarded-Encrypted: i=1; AJvYcCW7a1t/YGkD1VTxvHwslhE+51oGM94AHSEaY6Z+FVkSVJt1CMyDsfaXVYKxjoxYerQgqZFbUWU+1Ds=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyWUuXRrrPn0A6LqxKcD2jAu3pSzJZcGV5rtuZZtexdVT96kbKi
-	I7rkXiPhN+2uv82yS4d2KGTEXDh+XJldXfk93MumvbWbpPbGYd3abJFY0CN5ndL6Gx8=
-X-Gm-Gg: ATEYQzzzOmZfyyBtx//zMb/mfEBbH3MmuynHpAi1mxfd8kwelXY8JEyJe28w1SowzU1
-	eNFl/GDjT5TdO+/pc2pmNZLx+zOLRZAiVHkwOFBdSh3mvVQ2t6de22duwzzv5yV+RWiinvb/u09
-	2t4+yu+ooyV1AXDudZnC16S+kaiS+i3zMKcEzrlwtqB22FCcdq4D+5NA7/HCujzbTgLfMIr39wl
-	UcuVHpV79ELS1+r1q/KpMdz9yjH/Xlif3TOoJ6jXH1wpLp2p84j51qv7E1tS4V3rJOhZYJmimnb
-	MTrfrGfHZ8jUSIkwPSRKlVoX/Q6q7zbSN7XJvW8Mv0KRv5myJ9T9KH/+//+h79XoSTa7raDQ1Qy
-	Ns1qbDT9kZR6EpLD4ekyoVKS229s5/I0RMAnLKc/Tecp66r7l0zgycnaTJbQ2Tr5ifT//ghtipE
-	Nn3pXtyM7PzfFLFiCjkRPLnciNUCrTlgUFVBmkHIUJCqS2/9or1lI96bCtMeD4OtA/SzFizNTgU
-	xda83ADFa6F
-X-Received: by 2002:a05:6820:1614:b0:679:a54e:3f8b with SMTP id 006d021491bc7-679fb510141mr5356459eaf.19.1772409459184;
-        Sun, 01 Mar 2026 15:57:39 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:8b9c:d657:204d:5a5f? ([2600:8803:e7e4:500:8b9c:d657:204d:5a5f])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-679f2be9ab7sm8014857eaf.4.2026.03.01.15.57.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 Mar 2026 15:57:38 -0800 (PST)
-Message-ID: <bdf054d4-aadf-470c-88c4-26d0cc630fc8@baylibre.com>
-Date: Sun, 1 Mar 2026 17:57:37 -0600
+        bh=xbK/zKFovWtbSTAdL9DpSBVTJ+2mbgF0vEyViS2gaG4=;
+        b=iJZsr1wN0OIrr1b0zjaBfNnbzd2O72B1ZhYQNQeqjQJgP9jyLeQ6ssteTFfjrex70e
+         BKfMAQPVFmPhVL9vJ2/BwkvHMGcKnaN3nuJ5CtPF6c+4/CdXyiTGcLWSyMFS0YzzrGxc
+         m9o3G4Lqajasf4NemY9Bsl27yhrkDIYjAmJSemtXcWlWa/we9HTWB3PrUp4fIBHF+3CU
+         iIknlBT/yIJ4y4jI2It3Yh+obAp05bVWDiW9TuYUBKp3j3q2/vDddF6kxZGTQH/SCOl0
+         rmXvDkm7RU9Xpoqy3YHdrz5LzZiwxV+YqTB+voFsHtiKKyG9URowdIiToLC3rytcXEJJ
+         Gowg==
+X-Gm-Message-State: AOJu0YyVEvQs7387OAcO1Mtns6YaTIShsoSP/VsnotaQIVBwhzAfiuXU
+	DwdkqZSm74Ooa75pmhgWlBYR4MHw1wrSNqLeBfMNi/qjosccsPDZ6CDXRQOrDqA+JZyHl6oG+bp
+	N4ALiU9cByIvLSr5VBC1sb1FailJ7cSwxpjpL
+X-Gm-Gg: ATEYQzxFv/PP0xYQ6p/d/8wWxmUNB+Yz7wLrKrXWukopxit9FCVzyvWyRoYyoFy5AuA
+	Z9Kms0k/u1UHl4FgQNQACnK9eLw7SHcMXZD5ZjS5YzdYV/rjuNOIoOXyjN+C1mg91BMB4KiDJHn
+	yQ8GM13SpXjS69fAkBIhYI+bKkf6d5WKedRFSqUnOb+PF0AN2mAjHeHLJb8hcDJE22GMRjLLNiP
+	8ddtHMqddAcIdGGyGUlBBkVLG3Yxfwnjs23gUZMC2TudDQiYfJJ0y324//0/CqRYWwGinnh6bWH
+	/g78+HAk8sLR6Ltsjlo=
+X-Received: by 2002:a05:690e:175c:b0:64a:db29:5e75 with SMTP id
+ 956f58d0204a3-64cc22c5365mr6880112d50.64.1772426657598; Sun, 01 Mar 2026
+ 20:44:17 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [tip: irq/core] genirq: Warn about using IRQF_ONESHOT without a
- threaded handler
-From: David Lechner <dlechner@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>,
- srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
- Bert Karwatzki <spasswolf@web.de>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
- Thomas Gleixner <tglx@kernel.org>,
- Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-References: <20260113120541.YVf2vRA3@linutronix.de>
- <20260202232741.13380-1-spasswolf@web.de>
- <20260203083826.1gOzxrwt@linutronix.de>
- <0a3433112f0bec3d5bd76c7ae9b6774b455203a6.camel@linux.intel.com>
- <20260207154218.2053c98c@jic23-huawei>
- <ec6ff19b-f8c8-405b-bfaf-02da522782fd@baylibre.com>
-Content-Language: en-US
-In-Reply-To: <ec6ff19b-f8c8-405b-bfaf-02da522782fd@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+From: Chaitanya Sabnis <chaitanya.msabnis@gmail.com>
+Date: Mon, 2 Mar 2026 10:15:33 +0530
+X-Gm-Features: AaiRm50irh8OR9fecHs9MlJGIX995Gj8gVSeqnFEuohNPD_GmUnlujgxHizrZ-o
+Message-ID: <CABjkosFLNXqDKi2MQELF+fmdrrqZvcyFZ1+xncrU1RHXrga5NA@mail.gmail.com>
+Subject: GSoC 2026: Introduction - Chaitanya Sabnis
+To: linux-iio@vger.kernel.org
+Cc: marcelo.schmitt@analog.com, dragos.bogdan@analog.com
+Content-Type: text/plain; charset="UTF-8"
 
-On 3/1/26 5:17 PM, David Lechner wrote:
-> On 2/7/26 9:42 AM, Jonathan Cameron wrote:
->> On Tue, 03 Feb 2026 09:29:25 -0800
->> srinivas pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
->>
->>> On Tue, 2026-02-03 at 09:38 +0100, Sebastian Andrzej Siewior wrote:
->>>> On 2026-02-03 00:27:40 [+0100], Bert Karwatzki wrote:  
->>>>>
->>>>> The warning appears because iio_triggered_buffer_setup_ext() (in 
->>>>> drivers/iio/buffer/industrialio-triggered-buffer.c) is called with
->>>>> thread = NULL
->>>>> during the probe of the iio device and calls iio_alloc_pollfunc()
->>>>> (in drivers/iio/industrialio-trigger.c) with thread = NULL and type
->>>>> = IRQF_ONESHOT.
-> 
-> 
-> I noticed this while testing hid-sensor-rotation.
->     
+Hi everyone,
 
-...
+My name is Chaitanya Sabnis, and I am a final-year Electronics and
+Telecommunication student. I am writing to introduce myself to the
+community as I plan to apply for the GSoC 2026 project: "Create a
+Linux IIO driver for Analog Devices ADE9113."
 
-> 
-> I saw that Jonathan mentioned some other more thorough approaches in
-> a later reply, but here is the "quick fix" I came up with.
-> 
-I later found [1] that has an alternate fix, so no need to reply
-about my "solution" here.
+My background is primarily in physical hardware, digital design, and
+embedded systems. Recently, I designed an op-amp level-shifter circuit
+for analog-to-digital interfacing, implemented I2C bit-banging from
+scratch on a microcontroller, and designed a 16-bit I2S transmitter
+protocol in Verilog. Because of this deep dive into hardware serial
+protocols and signal scaling, I am very excited about the intersection
+of physical sensors and the IIO subsystem.
 
-[1]: https://lore.kernel.org/linux-iio/20260220224514.471348-1-srinivas.pandruvada@linux.intel.com/
+I am currently configuring my Linux environment and ARM
+cross-compilation toolchains. As I prepare my proposal, I look forward
+to learning from this list and hopefully contributing to the IIO
+driver ecosystem.
+
+Best regards,
+Chaitanya Sabnis
+http://www.linkedin.com/in/chaitanya-sabnis5
