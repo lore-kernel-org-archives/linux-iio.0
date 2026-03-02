@@ -1,142 +1,113 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F118F3CC9EC;
-	Mon,  2 Mar 2026 12:59:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BB86A12E1E9
+	for <linux-iio@vger.kernel.org>; Mon,  2 Mar 2026 13:06:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772456386; cv=none; b=eiZW4ZffzqObY9YyQOI1KlKTJVY5TkuTDm2Wd8xi03nxxagl/whm97NgY9mkqD467x5I/chVY5asccuhDkdRMERViOI4SFrKdVL8DdDvo9b8LE4oOh+vqfW5LDvdeET5YISZOa/lUeSK4WLpI9aeF5L8fUy0t3ACJTG9gpdQ5Ko=
+	t=1772456810; cv=none; b=CSEVLlvHw+oO9xd/Ba1F+4xI3zDz2wSCvXfCuVBeqKWipcxSp22cfCocoLtO/Oe5ezp5AOJJNTyCESb97pSNOiE1HvtVqSVec6Q97odKjNl6Kcg7iGVNTFQbVnNPG9VIgU1eVRjXgLSbTULsal2Zz/zrng2Fpz0hXSw6NCaJbMU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772456386; c=relaxed/simple;
-	bh=ljJtBY6uljOIJQHVpnbu7icxOo0mn3WO/aJQNWhtJxQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=TsgBjD7x0/op9s4/PNAQW96toY6B5khZqSEvIEeO94GrQp/uL/zx48xGjwaxCFZwMMuHfOHfE5Cs+wBuqz91wsydgGyOXf9heaWmcACC+rfnRiH5Hk/b1o1N419S+Ki8D82OUQJKbL45DSD8AztPfvanE+eLax4eqs1L+Ixkt4o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=T7tqQYEy; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1772456810; c=relaxed/simple;
+	bh=Ld6MvIi6MtpwIUxJCjSytwy6J/ialoJ4KrLXi8H7gWU=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=tZqUWe1CRzWIb4YznZGEpZk8x4XJodmAmK9PSbsptlMDYPAvIQiUNyBJouqFaqKrFXoBDS/8tIGw55XsS0luWbDdPRKiLLDG4i+EqoxAB1Zku/3/JIPnKzI7dvUA24RceUvkzf5b5MXsz0hpIbPCzmvmU6y5NGMu+1Rtv219NJA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KA1gc4wh; arc=none smtp.client-ip=209.85.216.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="T7tqQYEy"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772456384; x=1803992384;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ljJtBY6uljOIJQHVpnbu7icxOo0mn3WO/aJQNWhtJxQ=;
-  b=T7tqQYEy9XaUqpfAQz/KzcA716VrwHN3u7LL1JWis1digWna/zJNZzPz
-   +CR8WUoDlQSorN4p8GDMNewKiQf3cYWaH6SjZsR0sGBNTmVvmTGz2vvCn
-   WpVnzh/6YpqikpDCgcUqDbhSW6DvLudO7dgqNDcGbNC0eyERFE6n6wmpo
-   OZIS5Ohta7DrzQn4/05w2foL5/dJ+c9bZUpRwrWBH+T2E7rUYaTxtTJVA
-   Jr+ocqPLG7HhkTN+ue88TuXv2mWCujnoHXLUBiUqm2MVeq2aIkMWX06HW
-   lugRmClj8Zy9fpR19zr+dL97oL6mLLugP+X49u8yRh8pBstFrBFQ1vNom
-   A==;
-X-CSE-ConnectionGUID: 3fJFxkjBTMWGFAlExIJhMw==
-X-CSE-MsgGUID: haqPCtiKTw+UFKuG0xdFVQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11717"; a="84927919"
-X-IronPort-AV: E=Sophos;i="6.21,320,1763452800"; 
-   d="scan'208";a="84927919"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 04:59:43 -0800
-X-CSE-ConnectionGUID: q7CfcWl0SxqBe1GtemvYcQ==
-X-CSE-MsgGUID: g5mZC3fcQTmhyeGZgHE13w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,320,1763452800"; 
-   d="scan'208";a="222281212"
-Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.244.52])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2026 04:59:39 -0800
-Date: Mon, 2 Mar 2026 14:59:37 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Marcelo Schmitt <marcelo.schmitt@analog.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Petre Rodan <petre.rodan@subdimension.ro>,
-	Jorge Marques <jorge.marques@analog.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: accel: adxl372: introduce chip_info structure
-Message-ID: <aaWJucx5VY38Qtqp@ashevche-desk.local>
-References: <20260302122116.1282-1-antoniu.miclaus@analog.com>
- <20260302122116.1282-2-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KA1gc4wh"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-3598b2318c2so581276a91.3
+        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 05:06:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772456809; x=1773061609; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Rg9A8B4NO2qDfBh1NkMwAlYZ5E04V3epme3nzddl+2c=;
+        b=KA1gc4whHR4uzm1Ym/aPKSq2V57e/SOhCoAXPiloGlimFGyZcNo6FOMauWXZ5EtBdB
+         HdVz9RlljKJM37NiZw22UCdVCdbScZ17M49Mg0dyKbcHuNUFWberuUwjjnxRyWSE7IGS
+         3O4B9mKzhXSKu5ubArNZF4RwFOG6LY3JZrLA+1mbqZwxd8F+anRvqPK4iIjv19Eqi3Oj
+         o6diHcz96JzZ5viuWNqhOEDYTGuU3A6JS4HC78pD6xJvZYYZoWdFqzNN5ztDx6n5WpS9
+         aAT6wD5nMnd7iI/oT7YtlKeeidneTO5SKZqrpMtnyRD8C10iBTnUPFBrvSaT2MFlVZ6O
+         3lhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772456809; x=1773061609;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Rg9A8B4NO2qDfBh1NkMwAlYZ5E04V3epme3nzddl+2c=;
+        b=k4DbS76HZcdcXT923RxYw7Lzx7paRBKNcI1VZJsPRB/9R3OXNfFeVpZ4kgMQPKYjbb
+         BV42/bs3ZaAlKHLQG+N6JFdUbhSryg088y2VLvUuVB/Pe0IMfB8XkA9Em2PQi1diO1a3
+         zlO01hGZdkPv1amw++vwFvTdJ9m61MsL8uFUHvubP/HF5txlkR6gCNYnvoIt39MEjU3I
+         OpT8j4tR4PDPkSSDRzYbKdkhzPVvU2b+vg5/NruoHrxGObr1gqBJMxYD74uG+ECLORfL
+         VPBGHsSMdr2GKumdg2QHEim2XwWSuIkxoYpVrWQgCAncbPNg7QO5WYAkZAgCJauVPHCJ
+         tkGw==
+X-Forwarded-Encrypted: i=1; AJvYcCUvAwaHMH/NakPLtAtvmDWI8m5izLcIkrTDKvBpJhwv5FWq8JWBoROIESkQAHwOhkn5TtViGfk8ck4=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy9RA525JIxrZv/Vq08PV09ze8lzbul46uOuvICi8f2GaOemFg+
+	VSd0PCEjSA8zKCDJEKCZKWwkxNxjy01Nn58gLT3aZnMAXs3K4O3TPwWR
+X-Gm-Gg: ATEYQzwrodzKp4I1V+EEaCSbzOvLsRk76QdG0v/hkBVgCFm8g42/YJ3wo19lWfWGltX
+	4SSg3/v3+eV4MnWtdsFst7wWy56jF+1sFF8I7ejPsAbmJJl/sEqOkstZ1qoUziBBtxsRvWI7oHf
+	pCFh6RdtBKXp0pY8TKZYJDtCIiQdooEQMygLnbmxh51P7DRQvVjHuf5cNq6S8jUg6KzUb7qWn44
+	qur2yIWzEZzfgdbnHdIkXFp12FDKtdBifWFqY7gsVNYYoAp1/gDzoslWUAvwaS92micbWYvwOFD
+	anrBVFQdS5utpsHefuHExiUX0C1Aao4AlVxql/97/Vr3L3FnWEjBWN2bNwEGCj57ZrCuYhr8zFN
+	/iEdtMI4suZFMt+z6kTlQdVHOnr+aNRPvgeV4RnPqwQqgeq8zKOPE8bR3vn2ipMyDdLHgv2zrpc
+	L7+0VEp4Vxy5TD3eX4W4AxlJfzOLDStnL7qEla4iYmJQ==
+X-Received: by 2002:a17:90b:3b8d:b0:358:d80e:3831 with SMTP id 98e67ed59e1d1-35965c17f1dmr12711718a91.3.1772456808945;
+        Mon, 02 Mar 2026 05:06:48 -0800 (PST)
+Received: from debian.ari ([152.58.176.247])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-3597b448e38sm7444585a91.5.2026.03.02.05.06.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Mar 2026 05:06:48 -0800 (PST)
+From: Archit Anant <architanant5@gmail.com>
+To: jic23@kernel.org,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Archit Anant <architanant5@gmail.com>
+Subject: [PATCH v3 0/4] iio: adc: ad799x: modernize resource management
+Date: Mon,  2 Mar 2026 18:36:28 +0530
+Message-Id: <20260302130632.29144-1-architanant5@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260302122116.1282-2-antoniu.miclaus@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Mon, Mar 02, 2026 at 02:20:57PM +0200, Antoniu Miclaus wrote:
-> Introduce a chip_info structure to parameterize device-specific
-> properties such as ODR/bandwidth frequency tables, activity/inactivity
-> timer scale factors, and the maximum ODR value. This refactors the
-> driver to use chip_info lookups instead of hardcoded values, preparing
-> the driver to support multiple device variants.
-> 
-> The sampling_frequency_available sysfs attribute is changed from a
-> static const string to a dynamic callback that reads from chip_info,
-> and the SPI/I2C probe functions are updated to pass a chip_info
-> pointer instead of a device name string.
-> 
-> No functional change intended.
+This series modernizes the ad799x driver by converting all resource
+management to use the devm_ infrastructure, ultimately allowing for the
+complete removal of the ad799x_remove() function and simplifying the
+error paths in probe.
 
-...
+This series addresses the feedback from v2, where the changes were
+squashed into a single patch, by splitting the logical steps into
+individual, bisectable commits. It also incorporates feedback regarding
+the safe ordering of regulator disablement and IIO device unregistration.
 
-> -static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("400 800 1600 3200 6400");
-> +static ssize_t adxl372_show_samp_freq_avail(struct device *dev,
-> +					    struct device_attribute *attr,
-> +					    char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct adxl372_state *st = iio_priv(indio_dev);
-> +	int i;
-> +	size_t len = 0;
-> +
-> +	for (i = 0; i < st->chip_info->num_freqs; i++)
+Changes in v3:
+- Split the monolithic v2 patch into 4 logical commits as requested by
+  Andy Shevchenko.
 
-> +		len += scnprintf(buf + len, PAGE_SIZE - len,
-> +				 "%d ", st->chip_info->samp_freq_tbl[i]);
+Changes in v2:
+- Incorporated feedback from David Lechner to eliminate dynamic buffer
+  allocation.
+- Incorporated feedback from Jonathan Cameron regarding the ordering
+  hazards of mixing devm and manual teardown, utilizing devm_add_action
+  and voltage caching.
 
-This is part of sysfs, use sysfs_emit_at().
+Archit Anant (4):
+  iio: adc: ad799x: make rx_buf static and DMA-safe
+  iio: adc: ad799x: cache regulator voltages during probe
+  iio: adc: ad799x: use devm_add_action_or_reset for regulators
+  iio: adc: ad799x: use devm_iio_device_register and drop remove
 
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +static IIO_DEVICE_ATTR(sampling_frequency_available,
-> +		       0444, adxl372_show_samp_freq_avail, NULL, 0);
-
-What's wrong with IIO_DEVICE_ATTR_RO()?
-
->  static IIO_DEVICE_ATTR(in_accel_filter_low_pass_3db_frequency_available,
->  		       0444, adxl372_show_filter_freq_avail, NULL, 0);
-
-Make sure this is closer to its callback(s).
-
-...
-
->  static struct attribute *adxl372_attributes[] = {
-> -	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
->  	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
-
->  	NULL,
-
-Side note: At some point consider dropping trailing comma in the terminator.
-
->  };
+ drivers/iio/adc/ad799x.c | 86 ++++++++++++++++++++--------------------
+ 1 file changed, 43 insertions(+), 43 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.39.5
 
