@@ -1,188 +1,100 @@
-Received: from MM0P280CU009.outbound.protection.outlook.com (mail-swedensouthazon11021076.outbound.protection.outlook.com [52.101.76.76])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F7633E373;
-	Tue,  3 Mar 2026 14:59:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.76.76
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772550000; cv=fail; b=lwWZdmZmi3FOeBRN2ClBlJOU++U8WqML4SFcYLq6knKxHBJ/wc/WSFNDcLs8UAfeyH5c86V/IL9v2JRirpsJJckYODAb+ZhAsLalpjfFF5eL2HQbeFwNVWe9y+SViCzqvgdIK8B1Xiv+VVK+fMmZ/LYEiQZEdpXuVRhI4crVGEg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772550000; c=relaxed/simple;
-	bh=vZqgWX3o9CbZ9nRKquaNO+aQeSw1XRci7M1brfqbLoc=;
-	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=SuZiIG+gHLiODfRh5bOsvmCQoLuS5dhmtyZEFKAkrR3yrfBYIO7TpKcXd++8CwjxnhNKyWLz8ya3wh37ZKhUOdl/jtJPAOAyvD0WGQbuOus7uF874ggBJjs01lJ5Vuo7/mVIj4KmGOg7f6BkUNXOvbnTSj+XZrfduL1ZmQFQN7M=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=guidelinegeo.com; spf=pass smtp.mailfrom=guidelinegeo.com; dkim=pass (1024-bit key) header.d=guidelinegeo.com header.i=@guidelinegeo.com header.b=c4idO/cu; arc=fail smtp.client-ip=52.101.76.76
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=guidelinegeo.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=guidelinegeo.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABAF447DD54;
+	Tue,  3 Mar 2026 15:26:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772551604; cv=none; b=gegnnyZt2C3u/FC5X51vPc4DLZktP4Rsc+1SmtiNO5Zygd8mfprFBUGN7uv7mx8DFvWD22iU6w0aNVA0LvbnIn3BKnt0FT8iMYwfKblsxJyAZmP2R/dUu9R5GBUt1UUZI6bypJR1COO/zp21ghvxrtSzTl/SUZuNNQRdVqWOM7A=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772551604; c=relaxed/simple;
+	bh=s6upj/80ray0y8cnqVlyuVAglNfhqP7ECvH0NYsoi1w=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=jD0aq3mfUUL9r4hw0/QgAsZzuvPHo5dpZ+Tu9yTfoWYbr/67Suyb7vvAoqg/PVTnGc3KMCobZni7pEtDqSDvUGsX4l1Iaubf3zGD+ot7Vljq0vcoEYN0nfXGLjewoXkC/v+Es93vM9C9VE84V0pD3JnWbJzAPDgF4NRjLfDnvwU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IKWIBcRc; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=guidelinegeo.com header.i=@guidelinegeo.com header.b="c4idO/cu"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=YARZWhoneTn5G0z2d7QWFevsOvedO0vf9LNhsu7Hma95sgBMorT89uCcj9skNKQ8gjpa15CRiFUH5tFavBQmlqdbYVQ7eitaVpYtENOg3LmcU+eHzBcFV2934orOTPOV+l7oBb6RUThtkJhbm92YlWybfdocctJdM26bVdpL9gbYymG/txWiHxFkKmDNy4+sFEarWnZLqRGIScO3CDR+4x17z6FtdFmeY4DXja5AQMh0sKTLChopZvUAwJ64mhn2HfMjex1kJqorDcmreltDfjOb/x1qvj7ji7BcU22hsa+8IJm7nZAupBpTqm5Suon9DD0YtA4C+9/FYtuKgUHyPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=LEkQ9dNY1XnxCyA9bBuiMFcOlaPpCMruxRKUrc6o1t8=;
- b=yq9h7wU061yUOI3s+PcJFouT+I3dnYHhNtULJMz0tT+qWtHWv0QlXotPp7n/pODulNKrr6ZmyaugMCORNHbjz8U/BHP3rx80Q4etFA6BTD5z4eBrOLdZ8XBL9HTCER6bfGteXPzwJIOZfEItqbNtTJUTdR1uCqa3FA0VyxR4tzthbldzJrhAAuT7X/i4hvAQyoSCo3XV0kB5yMRqu8sWrez3Puk53kTXMh83yAfQQA0CcxDUHygxbBJmLMWZqh2HBbxqRf4Ly0gu/NwQagEvDshFDSHlCsjnxhFwWAsWCLxobArzxzbOzzbfYvPtVCE3YahYpLiOkUDJQcpB4UiXhg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=guidelinegeo.com; dmarc=pass action=none
- header.from=guidelinegeo.com; dkim=pass header.d=guidelinegeo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=guidelinegeo.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LEkQ9dNY1XnxCyA9bBuiMFcOlaPpCMruxRKUrc6o1t8=;
- b=c4idO/cuDAtkfktx/SlofPKvMk1oD59t0mHdYPDrgIT2pzqPlRMHpMcY1o37IdPPPNcfCC1gATrOapGSCOMo1G6UIjaC2uOnpo9j8Cn2oSzy907Ii8BAFK4KsHJSP436W0Hfzjt1CwS3+UeKGDApxqOeqrw3G8TEcs/Jmdgk298=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=guidelinegeo.com;
-Received: from GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:14::9) by
- GVZP280MB0329.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:44::11) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9654.22; Tue, 3 Mar 2026 14:59:51 +0000
-Received: from GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM
- ([fe80::5a42:b24d:f94f:a5ec]) by GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM
- ([fe80::5a42:b24d:f94f:a5ec%3]) with mapi id 15.20.9654.022; Tue, 3 Mar 2026
- 14:59:52 +0000
-From: Christofer Jonason <christofer.jonason@guidelinegeo.com>
-To: jic23@kernel.org
-Cc: lars@metafoo.de,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	michal.simek@amd.com,
-	victor.jonsson@guidelinegeo.com,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org,
-	stable@vger.kernel.org,
-	Christofer Jonason <christofer.jonason@guidelinegeo.com>
-Subject: [PATCH] iio: adc: xilinx-xadc: Fix sequencer mode in postdisable for dual mux
-Date: Tue,  3 Mar 2026 15:58:43 +0100
-Message-ID: <20260303145843.1712811-1-christofer.jonason@guidelinegeo.com>
-X-Mailer: git-send-email 2.47.3
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: GV3P280CA0045.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:150:9::18) To GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM
- (2603:10a6:150:14::9)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IKWIBcRc"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772551603; x=1804087603;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=s6upj/80ray0y8cnqVlyuVAglNfhqP7ECvH0NYsoi1w=;
+  b=IKWIBcRcH4oAbr0LgBz7JUVZwMbbdFQbT3nrurm5thXuJTpRqtSzKkls
+   zRBzYudPT2rTzpgGLHKqVQFN4BgoKSKKz3SdtMzYrKupKdbJng544uLsp
+   3yALBMktxReX71gEbaFt5wM+Wo7hwoILzuRlg2uv+ySiMZLKe4faitJHl
+   MvosCKKlaoJMrJtL7SwK3UNFezg4M9cCZHcCIvfBF3AaAmZHhGkUMi5m5
+   wG5D+WVSp8wUyxWx7dW6RibUb5fuVQGQziCDdLxAj+fWQoZZr36rU5yHl
+   HonQSv5deXbsB2U+yKjwKZJmPuAPQSnlE8F8a3Q17OwUtOr7ZGlkUBltQ
+   Q==;
+X-CSE-ConnectionGUID: H5bl3wPUQMq7FMpMXqY71w==
+X-CSE-MsgGUID: c1wggQ8DT+WSTCTLMFdNwQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11718"; a="61167864"
+X-IronPort-AV: E=Sophos;i="6.21,322,1763452800"; 
+   d="scan'208";a="61167864"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2026 07:26:41 -0800
+X-CSE-ConnectionGUID: BVMSlosdQdOXJLT1YGp35A==
+X-CSE-MsgGUID: 4sfXODrsTOOG20LQw+E3vw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,322,1763452800"; 
+   d="scan'208";a="255920367"
+Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.32])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Mar 2026 07:26:38 -0800
+Date: Tue, 3 Mar 2026 17:26:35 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Christofer Jonason <christofer.jonason@guidelinegeo.com>
+Cc: jic23@kernel.org, lars@metafoo.de, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, michal.simek@amd.com,
+	victor.jonsson@guidelinegeo.com, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: xilinx-xadc: Fix sequencer mode in postdisable
+ for dual mux
+Message-ID: <aab9qzkAi80Cx_9z@ashevche-desk.local>
+References: <20260303145843.1712811-1-christofer.jonason@guidelinegeo.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: GV3P280MB0065:EE_|GVZP280MB0329:EE_
-X-MS-Office365-Filtering-Correlation-Id: 71c1248c-b6ff-4b45-592f-08de79358642
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|7416014|52116014|366016|1800799024|38350700014;
-X-Microsoft-Antispam-Message-Info:
-	pgcoMLFaHCdpyU5+PN2RjXwgU3AnmOja4LRVYM1rdDWOczDYAUzEdNdUlGAoXsXlBuQLPi9zTaIWx7VSl9KatoKXhNQTE+8hxicJdg6aENhGrXOnSCUMjey/4tYvxIl/P92hEDKXeVRT0CE6+079ADU246lOmzMaPWBL5Rv3EVs+i+Ex2Jj2/5fUYbmstV3WzziMWFQMyqR+FeQBoT5qgiBtjLnCl79m+2SPducrY3MVf+oIwkW9u7grXfUajPgNpiOnVw+5mHiWA2w8xBnuZyYbtj+jrN4wapYR5UBPTyEgCACFKUFS98qqutjVa0M2/qbSyo+0gqvmcZ6PhHPNqBkhEyfrdjEy6J8GfzuEmqETzdgqw7uvbBKYDu6vNebdmQYrzcBKj9V2crPQxs2PXBv7YvoMMvqJga8JC8PGIaeuwV4wW/SvYPLC4Rnl+zL1pk1mKRFjptO5J7WeVIURmpI0C1pxMj5ZsFvHvjWT1QrW90SGKeC7Ibbi8FKbHBHPShJ8PHR7m01PdE7sJsXypRL6+GQB0jdc1oMEYqqeWZAsRu4FQR/Xq7Yx8u1noLskMsGXCkzeFUTujMmk1tbBOSoHxxeFY04DwCKB9/vmuetSjbA1ISf2BwrxyJWx/yjC8TFLS9beA7nC+lAYURqhsCfPkPQCcbpUOXCgr3+Jhk3u73egMfDBLNp2WbGzYX5MJXasCJT9bynXUyIcH4MU33rZSROs+4DnC/2xwr4aR4svRgq6ICQ38G5Z2cZkwTY4KxD6zyZjToc6MOl5Ti1G8p0koV4dbNC5MOZCqdDuXDI=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(52116014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?us-ascii?Q?JldqWuT3obxtRf9kDopme8nUXQiBZjLqPooMbxwUhfC9hnMBV6cIzRjmZYFa?=
- =?us-ascii?Q?0Ehvbzl1C/GHzsaBIeHbzKAq6BgD7JkRzDmD8BvwnhHhzbhEIm37TQJ1SqVI?=
- =?us-ascii?Q?HW00vvs6OPVVR8oYNpw9VLG457gDPDrc/tX+NUwoe7R0BF95JCe6hhsTSz1X?=
- =?us-ascii?Q?XZrcgzkFbafHe6KHuj0/HOFQCUqXFJdpoIyjUuEYlo7T85IkVDuPa+hr/aP1?=
- =?us-ascii?Q?gKGtoiOkZaNM6DuJxv2wUq4qCIGFWJcjizgyPPGaCK4yQ9yBBPN+/XRnEHb7?=
- =?us-ascii?Q?dCBbUbx8VP+jB/BnDfl996h1IgEfILDyRaTAPKs2x6T+yy4MvprrjRv+DY1x?=
- =?us-ascii?Q?knYBiSojxGgH8u1RLgV5tgiQ/9c9EREac4efFijijB5bYypXrAdPhdgjsMA8?=
- =?us-ascii?Q?34MmTjniygLfQ9Fgd289dc1B4Dmce60oBjFoV1HoCF+vfXCKZjwvK7EAmz/F?=
- =?us-ascii?Q?A/+HcEo7jEPb9KeR9Gya3eGS186oUFFGK9WoQRJCtblElPDCY8OQFdUgz1/Y?=
- =?us-ascii?Q?93+gfmLGh4AS+3x2KV5wXBbbm6nO8oT9zAnT4myJkcFnMEVq7NpGYT6jhWwy?=
- =?us-ascii?Q?sM4XSTjGJ8JoCIrNIk4oUUS9Og2kRUZoFW45dAHFdRhOh64ETJtn61jMXQd3?=
- =?us-ascii?Q?OwV6AftpPRLTPt3kgCqg3A47f6IbRfi90aEg7B+3U7XfMniZM7IK8kqeMFw+?=
- =?us-ascii?Q?Zqy5Ij0BZMiW1WC8ldjVdcw4hQQomaoVHWYr3kEzP8DdmvPlGP5s9MtpRPQE?=
- =?us-ascii?Q?FAo0uplRSdiQgpslVd3cj+h5WriVMzvlRgXqX+0qfqurwVsuXo1pm9l796NH?=
- =?us-ascii?Q?Xe1k8tgI4DwtCoKb2LaMmAHPN7r8HVMQr+UKj/hbVGgLwkceU2grfAMYa6fi?=
- =?us-ascii?Q?mzlpMo7y2wtUjPlDHHGyI85w63LSHxXW8VTZRoTaJkO++Fj0VgU7M47wl/0f?=
- =?us-ascii?Q?gV98j5NqpcKAaV5BUCLkfFDhsoIYNPHYqj1dzdWYW63Tu1447hWTGDfVm2oi?=
- =?us-ascii?Q?Px4JLCYiBiZ0jcNKrWmjh6uaQkbivf/4bwquFE84xQVGRg9FChZ7d9nA5+S+?=
- =?us-ascii?Q?a3wdObIjpPT8CmnrBK0VD44xosy0tE30Qhj60r3Yo2MYJV+bbrIVDicZJB4B?=
- =?us-ascii?Q?ou/08oqDQIrlp2HqaE49e0r0QzDOmIp4qxh1x83NuYWYMp9ntdukLFIU/DFW?=
- =?us-ascii?Q?QeE2yj63wKdmlJYWZ2ze4s+F5jLEaUBcpQVS9QXWI9eCwkIS8r0SRPkjn419?=
- =?us-ascii?Q?l6Wpg6oUzkkG11gxlKObSF6ULfk/1H/HjtOOSn30zJJdO2gUUdTrMxJ9qcMd?=
- =?us-ascii?Q?UnK7B5Q46wWrMuNjviwyhEtu7snX7j9FIU8L7rt+fO0ZTNE66kAaVEe3+wCU?=
- =?us-ascii?Q?DsUHHUlstmZYOG0C6h5i10yHEGrdneIqvxkfD8Q1fgKr4wTExe4gHKefUAKV?=
- =?us-ascii?Q?eQWLU7LbJbN4v8iW2bx+wIZm1ThOIwQfZu2Vszh6ZsdBHnfUz9AUk+btB9mq?=
- =?us-ascii?Q?1xj845kKcIhvRvelXKlhhg/kkb4mGwNgTcm4JUMUTkJYfP0hq48v5+y1/z6q?=
- =?us-ascii?Q?LjFePdlGygp3sOgNoRxS31l87f+lmYasduyOY1bpTG3kWUJtZRdiH/V30oSl?=
- =?us-ascii?Q?sHKnn9+xYQ90QzswMeKTxut0bUze3FHXD6yf9PtPwdvBV8Rep5SRvaHF6T6i?=
- =?us-ascii?Q?ewVHv2Jst6+KoJzHWQgiWJAXGMOe/7+JIalbc6f4qrGB12fH3ASrbUY6pDGf?=
- =?us-ascii?Q?0RoXCgjdH8Ib+MFKLvKzJonOVcjTIIW6UCRnbdSNuF+26LyxM36i?=
-X-OriginatorOrg: guidelinegeo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 71c1248c-b6ff-4b45-592f-08de79358642
-X-MS-Exchange-CrossTenant-AuthSource: GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 14:59:52.7302
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f3403a73-63c2-4dc7-b628-287972076881
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: Y2eKDNpluZ1fBE/UJsPEODq1acfbTJWt2B6MEEex8NAKg79YyzWln6r3rG2pDyRAFBPRVgy1Y1xFQRMDYrHKoDjwGO9w2kH4JHWGHVdViYBFenpqtBXhFPPcy2WfvoPl
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVZP280MB0329
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260303145843.1712811-1-christofer.jonason@guidelinegeo.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-xadc_postdisable() unconditionally sets the sequencer to continuous
-mode. For dual external multiplexer configurations this is incorrect:
-simultaneous sampling mode is required so that ADC-A samples through
-the mux on VAUX[0-7] while ADC-B simultaneously samples through the
-mux on VAUX[8-15]. In continuous mode only ADC-A is active, so
-VAUX[8-15] channels return incorrect data.
+On Tue, Mar 03, 2026 at 03:58:43PM +0100, Christofer Jonason wrote:
+> xadc_postdisable() unconditionally sets the sequencer to continuous
+> mode. For dual external multiplexer configurations this is incorrect:
+> simultaneous sampling mode is required so that ADC-A samples through
+> the mux on VAUX[0-7] while ADC-B simultaneously samples through the
+> mux on VAUX[8-15]. In continuous mode only ADC-A is active, so
+> VAUX[8-15] channels return incorrect data.
+> 
+> Since postdisable is also called from xadc_probe() to set the initial
+> idle state, the wrong sequencer mode is active from the moment the
+> driver loads.
+> 
+> The preenable path already uses xadc_get_seq_mode() which returns
+> SIMULTANEOUS for dual mux. Fix postdisable to do the same.
 
-Since postdisable is also called from xadc_probe() to set the initial
-idle state, the wrong sequencer mode is active from the moment the
-driver loads.
+...
 
-The preenable path already uses xadc_get_seq_mode() which returns
-SIMULTANEOUS for dual mux. Fix postdisable to do the same.
+>  	ret = xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF1_SEQ_MASK,
+> -		XADC_CONF1_SEQ_CONTINUOUS);
+> +		seq_mode);
 
-Fixes: bdc8cda1d010 ("iio:adc: Add Xilinx XADC driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Christofer Jonason <christofer.jonason@guidelinegeo.com>
----
- drivers/iio/adc/xilinx-xadc-core.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+The indentation can be also amended while at it.
 
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index e257c1b94..89d435d72 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -817,6 +817,7 @@ static int xadc_postdisable(struct iio_dev *indio_dev)
- {
- 	struct xadc *xadc = iio_priv(indio_dev);
- 	unsigned long scan_mask;
-+	int seq_mode;
- 	int ret;
- 	int i;
- 
-@@ -824,6 +825,12 @@ static int xadc_postdisable(struct iio_dev *indio_dev)
- 	for (i = 0; i < indio_dev->num_channels; i++)
- 		scan_mask |= BIT(indio_dev->channels[i].scan_index);
- 
-+	/*
-+	 * Use the correct sequencer mode for the idle state: simultaneous
-+	 * mode for dual external mux configurations, continuous otherwise.
-+	 */
-+	seq_mode = xadc_get_seq_mode(xadc, scan_mask);
-+
- 	/* Enable all channels and calibration */
- 	ret = xadc_write_adc_reg(xadc, XADC_REG_SEQ(0), scan_mask & 0xffff);
- 	if (ret)
-@@ -834,11 +841,11 @@ static int xadc_postdisable(struct iio_dev *indio_dev)
- 		return ret;
- 
- 	ret = xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF1_SEQ_MASK,
--		XADC_CONF1_SEQ_CONTINUOUS);
-+		seq_mode);
- 	if (ret)
- 		return ret;
- 
--	return xadc_power_adc_b(xadc, XADC_CONF1_SEQ_CONTINUOUS);
-+	return xadc_power_adc_b(xadc, seq_mode);
- }
- 
- static int xadc_preenable(struct iio_dev *indio_dev)
+>  	if (ret)
+>  		return ret;
+
 -- 
-2.47.3
+With Best Regards,
+Andy Shevchenko
+
 
