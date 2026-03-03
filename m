@@ -1,51 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 639F83D75CC;
-	Tue,  3 Mar 2026 21:28:25 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9B63D3932C8;
+	Tue,  3 Mar 2026 21:41:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772573305; cv=none; b=euM+0dxdZlj3KunfJjWIoZsBa95IqfFrafgdPGFmEzmPZs1LjegXYrsu0n4pHZe5EGASfamErM8tlrCclLkmTacNtCUM9JltqF1S07QeTEt/XW2rAezbUb+ONVvKSE/RXGhxHBwUNvIc6eRGRbcL/iYpd9f91TbgLwCOYiuLeCc=
+	t=1772574072; cv=none; b=J8qp6YNVeGuTeYbVYq/pd8EKrumzZS4gtjoTG2/v2AqSgzCeYSKasbpZ5bFjeRxn/mP+AcmvFeYHSSN6LbcJAtGc/tuLs8XocLf9saPm3tu1MoF77a/DhZahrhQhh2R0w05FN8Rb3tz5d9OkYxoDUcbZBhV90ye/MOkCyXbgAa4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772573305; c=relaxed/simple;
-	bh=UZYM2GM4QUIhzVjQTV+H7ZwO24LyxBOqpdPkLx4oFfM=;
+	s=arc-20240116; t=1772574072; c=relaxed/simple;
+	bh=UzJqaXf/gbdaKpZCPjdYsRVTL17WyY6ZX5DmtVnb+Nc=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bkvTho4337OlLeCbmSV/W4UVW75eGNfdF/hg3bMPwhoT2iGzdMKA8ejvKVWFMQgAQQbMgVAG/BkeZOenmg5rZylaY4+P+4/xmZu6HZYucLo0Rw+Ivsn4gXEk9g4FYuLtOkiT0eHPB+a33E0K6lcgkMumK2wlEwt5KzJz8Iw7AUc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pNwf+kzW; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=mID43CdsX9wDDfBMTg4W+TQjllXQ1kBBZ5q3J1+hWZB5u7ZMW1n4kytQbZojo2RvN7F6aK3KuGszEWH0Mx4uuoArdXGHwv+GIYMWu/Zu1JFngnFjyom0uQhNqyaVc48THs9Mfa+qvbs46r4T0YrODiLN92UWQwXWYdr22loUFDQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ma3+mzg9; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pNwf+kzW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29143C116C6;
-	Tue,  3 Mar 2026 21:28:18 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ma3+mzg9"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE606C19425;
+	Tue,  3 Mar 2026 21:41:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772573305;
-	bh=UZYM2GM4QUIhzVjQTV+H7ZwO24LyxBOqpdPkLx4oFfM=;
+	s=k20201202; t=1772574072;
+	bh=UzJqaXf/gbdaKpZCPjdYsRVTL17WyY6ZX5DmtVnb+Nc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=pNwf+kzW6S/I6OVHpzfjq4l7pt81HUuNRgk4ib7jJApbkyHXikOSHELUUbUZNYiW6
-	 TP/BpTH9qmyuplCUIDSOCmEyIcd+m3Ny+eAfRx4ct9z8ctkv/fMdpwTUs+8VNXmkhm
-	 I0yhxqOF/s1TPY4h8Hx+6rttmCxC0uoxFqoxE//AgJfmuDecmAxKXxRFc9KdRpRzEo
-	 pc2VPYZnOvwUvpwBoUvcAMKMJybiBYl3BhnirxHnPXxMUrg6Vs0aC6JwGyJzKW3OjY
-	 n59QWWT3H4TKXHC6pKsoXMtWfozfh8p9/8PQGob4/eISI4i2iGhiaKaPF0+Sh2by8u
-	 iD+drY8LJ8Bmg==
-Date: Tue, 3 Mar 2026 21:28:13 +0000
+	b=Ma3+mzg99yHjWXeDONDu5tAIcff9cAQ3NivvA9mnKcr2pGdFuvJB/n9lWdOY5vGP+
+	 RPvQrMvnjX7ZoVo5ZHApzDp8HRlGIeudAMGREHoteFzLPYiAK98UrJcFu8kipMhyi9
+	 ACtmcsPEtzfRYlor0a5asMWf38x2ea4RzS4HGGbZqSjS1N6Wv25IV1CcjSbHB4AD/K
+	 0Sl2d6gET5NumwFzOFFus81PT+dcCgRyd43xbMoFpsJ/Id5x2ItAUjw6xj1Jn4s/YM
+	 hqpGr75S2aT4CeRhZT/8+6HtPkD2FAjrfHO5fINsnVqSz08kAh/j7SA8PwXSYsh465
+	 VQinfzNfJXoAQ==
+Date: Tue, 3 Mar 2026 21:41:03 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jagath Jog J
- <jagathjog1996@gmail.com>, Subhajit Ghosh <subhajit.ghosh@tweaklogic.com>,
- Matti Vaittinen <mazziesaccount@gmail.com>, Fabio Estevam
- <festevam@denx.de>, Linus Walleij <linus.walleij@linaro.org>, Sakari Ailus
- <sakari.ailus@linux.intel.com>, Marcelo Schmitt
- <marcelo.schmitt1@gmail.com>, Eugene Zaikonnikov <ez@norphonic.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 00/13] iio: remove unused struct fields across
- drivers
-Message-ID: <20260303212813.563c8ae5@jic23-huawei>
-In-Reply-To: <20260205204532.1a49cb73@jic23-huawei>
-References: <cover.1770030812.git.antoniu.miclaus@analog.com>
-	<aYHDjUVQTSa4Oyrl@smile.fi.intel.com>
-	<20260205204532.1a49cb73@jic23-huawei>
+To: <Ariana.Lazar@microchip.com>
+Cc: <dan.carpenter@linaro.org>, <dlechner@baylibre.com>,
+ <andriy.shevchenko@intel.com>, <nuno.sa@analog.com>,
+ <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+ <andy@kernel.org>, <andy.shevchenko@gmail.com>
+Subject: Re: [bug report] iio: dac: adding support for Microchip MCP47FEB02
+Message-ID: <20260303214103.009d6359@jic23-huawei>
+In-Reply-To: <ba4306f4a3cba818008c20b0bb9724a184425488.camel@microchip.com>
+References: <caa37f28-a2e8-4e0a-a9ce-a365ce805e4b@stanley.mountain>
+	<aYXvP5FLA5BvkoVX@stanley.mountain>
+	<aYX016NlTNkJzGdT@smile.fi.intel.com>
+	<aYX7tlJ593KBDGW0@stanley.mountain>
+	<aYYFba5-ZV8VuZHM@smile.fi.intel.com>
+	<aYYJc2d5AwJbc_vV@stanley.mountain>
+	<CAHp75VdhTEKu2tKC+UKJLs1DcE7079KEbPV0NTFfUAjADBEg_g@mail.gmail.com>
+	<16614d1f875aa1e9923375dd3de0897de17791f5.camel@microchip.com>
+	<20260301123140.10f585b4@jic23-huawei>
+	<ba4306f4a3cba818008c20b0bb9724a184425488.camel@microchip.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -56,38 +56,39 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 5 Feb 2026 20:45:32 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Mon, 2 Mar 2026 10:28:04 +0000
+<Ariana.Lazar@microchip.com> wrote:
 
-> On Tue, 3 Feb 2026 11:44:45 +0200
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
-> 
-> > On Mon, Feb 02, 2026 at 01:25:50PM +0200, Antoniu Miclaus wrote:  
-> > > This series removes unused struct fields found across various IIO
-> > > drivers. These fields were either left over from previous refactoring,
-> > > or were added during development but never actually used.
-> > > 
-> > > Removing them reduces memory footprint slightly and improves code
-> > > clarity by eliminating dead struct members that could confuse future
-> > > readers.
-> > > 
-> > > Each patch is independent and can be merged separately as they touch
-> > > different drivers with no dependencies between them.    
+> > Just a reminder that this one still seems to be outstanding.
+> > Maybe I missed a patch?
 > > 
-> > Assuming it applies cleanly and compiles,
-> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > and I see in some cases it gains space.
+> > Thanks,
+> > 
+> > Jonathan
+> >   
+> > > 
+> > > Best regards,
+> > > Ariana
+> > >   
 > >   
 > 
-> Applied.  Thanks!
+> Hi Jonathan,
 > 
-Unfortunately I was a Muppet and applied this to a temporary tree
-then lost it.  Now it's actually on the testing branch of iio.git.
+> Given the latest reviews, I was wondering how do you prefer the next
+> patch to be sent. At the moment I am working on the version with three
+> modules in order to include both protocol families. If you prefer, I
+> will firstly send a patch to fix these bugs for MCP47FEB02 and then I
+> will send another one with the combined implementation.
+
+That last option sounds like the right approach. The fix will need to go upstream
+first, then once that's available in upstream I can merge into the togreg
+branch and apply new stuff on top of it.
 
 Thanks,
 
 Jonathan
 
-> J
 > 
+> Best regards,
+> Ariana
 
