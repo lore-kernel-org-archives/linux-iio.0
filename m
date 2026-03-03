@@ -1,38 +1,65 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5463442F57C;
-	Tue,  3 Mar 2026 13:27:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A746A33DEC8
+	for <linux-iio@vger.kernel.org>; Tue,  3 Mar 2026 13:47:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772544446; cv=none; b=gLAayRSfUq95Svjiu4wdTj9GgqH7XjpvKuL1rgDAjBOeAW9MluO3Tp2812r16NQqgEqrFGK/dEog1TmIK9sCGgPXVFFlW0JQvijh69T9N8nZ0g4kLlKRkVF3Wba5jfpJQBIv8guB1QhYZITPcyxlKdYIRPeBcMhDhJJxbw65RV0=
+	t=1772545666; cv=none; b=J9oVGFrESzbJNJBWCIg8Ujnkk8jhyu6soilY77qo9F9R6gqCXtUiVoU+ZFrUY627EzpPj1ANpKfdiebCKFAb4I9nLmr3LYQH34TjYDUpC4pZxjJFfa3qBTJRDts7nwE/t134R37OHv07+NNqcsrgIFpwaDoKHPXVk8HIM5GtPGk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772544446; c=relaxed/simple;
-	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=RPfG0neUYHHEEqSOYnvXwZ7HMxsoZfSnX557ZVltDMjQUzW3dQ7tYp1qdK+HvECmuijkj1jnsvEfYILiQBGPdpN7q0fsjlpJH3MdZbqtf6Kr4gQeZtKf6Gg+CWk4hG7h0Mz4bcIzBeACEhuLxvRDT/El+5KRTQ9SL6/z9nNmuM4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S0fv+2Wz; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772545666; c=relaxed/simple;
+	bh=/p1xCSK5FThphEim6HkaSU/vJIAnaM1raetdYl9rcRU=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=dV1lCgXNRYbfYh0a7A8aeeLUqnKP0bBmdzoHqsZyirfbbULG0Kju1S4ZQ2UUW+KEzcOFH6UXRFQOxGOl+ieR4Fl0hNr7wi+NiEdqet/ASuG4XPTqNs2AkktSxM/jKnPIipk0n9heRGIKkmnl6OcfGsPlG9mtS/YV0MRamAy4gCc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KV/Sv1VU; arc=none smtp.client-ip=209.85.214.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S0fv+2Wz"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2257FC116C6;
-	Tue,  3 Mar 2026 13:27:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772544446;
-	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=S0fv+2WzqWxTyNArHPad+WOkTTPcPbu+p9lwjrVPWg5YQp5JxsMKF58roAtrAusCn
-	 tJbrWdKoPr33ZsdDvHaQh6yCZz3HD4hMfGcDN5E8FfAao52BQvSf8dAJO7IeZ63XzP
-	 JXyeIhEUkc9fY/p9JfzEAoh4LxkufMoKoZd1CK2Vv0JGqRw2cJ9eXJV2HckXj8GygN
-	 3od00yyJjBh9wHmYWuLafy9dIWmo56sGg8q59HRf+PlUvG7iVTiRiR1t0wTTSmjfNO
-	 dYqGIXXG8CLirp0llDIpu4ObxdpcHcPmYHl3io+IJfz+CpT89vxLbWb6sHpBPc7Hzd
-	 ZI/vTk3vORIWw==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19E4DEC1442;
-	Tue,  3 Mar 2026 13:27:26 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Tue, 03 Mar 2026 13:27:15 +0000
-Subject: [PATCH v8 10/10] Documentation: ABI: testing: add common ABI file
- for iio/frequency
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KV/Sv1VU"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2ae527552acso7776565ad.0
+        for <linux-iio@vger.kernel.org>; Tue, 03 Mar 2026 05:47:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772545664; x=1773150464; darn=vger.kernel.org;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=8aa4zaI2ZiY3bWVO4cehbNkJdG5rQzLVFR2soNe+L3o=;
+        b=KV/Sv1VUQ18sUVfYaQen8yXlcWyGjzfsYBKoGmbioPuFHprf562Uz3yHwWvVCoSP3D
+         H5mJDds8I0axv2lwOv42o8cJ2SwKZBubxNL9+Wy6MM8gKkveyc/F7cTF/ACRMWP/5RQa
+         3isDk1eTFD0ZHB+7uKXMS7yaccsceB7EHF06Dr6y8ydFS1VIGsHxsqQVCvYTl0mmdCmx
+         KUbo/OScPGN2TQyhpbfYaKqDeqMKPQG9ov4LYXuajIjwHnjRZYMM1b8UIKQTP9QmhwQ7
+         YmdyWmzLF+lbpt+WMEtXuhMVecA7LGqXKnrhfAWhf0Flv4XKQCdlbMWyW/ly5bidGCin
+         rn+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772545664; x=1773150464;
+        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
+         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=8aa4zaI2ZiY3bWVO4cehbNkJdG5rQzLVFR2soNe+L3o=;
+        b=JxxOO8arHFDiBOomrufcVL8nWCOEXhNWm68RuYyvGU7hcIm1h/fXkEvjIjmoSKQnmE
+         M/dcfMPQkrfjyJ1UCQvpXeHkuTDDNLaxCKr/vWv73Lec5vpbeZs6ojS/ZJovWI09CcmZ
+         YWx1O7+10yRfiYuQXQenBqC7QErGAHX/bWsnaKuYahE/E/OSSwJJhvGqOCi+fdK754lm
+         TL5lmkgu3WLfDyEpBr+X7F+5Azq4JJkHGIc0kxcpLwN7PWbGZcPRVvtATINxELTsbO/4
+         ddgshZ0rH1cvajEJjf/7l6qwOBbg3dRCoJNUig/I3dac6fVb3uXF0F2uF0NdruP2Se4z
+         yTBw==
+X-Forwarded-Encrypted: i=1; AJvYcCXWxzs9ksU0RvQEMsD4njmNzIgSvUcfnoiZaDMslk39zsykPdymkuyDlAqslj+sKbHQlSRHWOPtyLw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyvWxsXLlQJal7tXUFRQdwjNvYrLJSH2BIh4p7L/Wa92UbOY3hr
+	cl6wDD4ZHy3jSNUwfO+5Vlzqa/JaeKogerY9oUH8PYRptiw7Tfz1HIYY
+X-Gm-Gg: ATEYQzw9+sFrC8oxJZ43ETlI7aHJ0cMgrbK1siGsYKcdGYUCJg213I69KH4uUavSLdJ
+	XfT5reZCJrOohmFfBULdvGRsv02WcXI+N/BFh5ogTOpYO5QCazEE1mYvzNF3rQ9GuT0WHm106PJ
+	EuE/jnlRF4GLWDZSYFJrLFpgevfeYl017UXUw3Ay7wQW398EfhB2QDYPzfA4vDRBhO28y5x5Llq
+	HZ1y4Fv6Y6Cn/i2XXBFh6IS94Rkrg0A24SIytqQRrZ5hFtEEfCd6e8H3LXx2KH1E4Ct4tK5nIBD
+	giV0EzOrGZucdisWrPm47NxaEjVsyINEOawwyL1huWTpcQU+3xk5oUJ/2Y+RMMCS8ZgpVMorD3g
+	ATQm3BvNgIPRt5/fxuI6h3g1nUbLK2IUnzoFI1C2qrQQsIJiqwhw7Tu0vmT2c3PX07zkpWHjRYb
+	i6Ktdpl4+UEawLrGe5WbMScLIKJcjLyuiooAmgUj36G1+gE6E=
+X-Received: by 2002:a17:903:1250:b0:2a7:d42f:7065 with SMTP id d9443c01a7336-2ae2e489fc1mr139637605ad.27.1772545664036;
+        Tue, 03 Mar 2026 05:47:44 -0800 (PST)
+Received: from junjungu-PC.localdomain ([2408:820c:9009:3f2:f9d2:c148:3305:e3bf])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae3d1b2c5esm101535245ad.6.2026.03.03.05.47.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Mar 2026 05:47:43 -0800 (PST)
+From: Felix Gu <ustc.gu@gmail.com>
+Date: Tue, 03 Mar 2026 21:47:33 +0800
+Subject: [PATCH v2] iio: adc: ti-ads1119: Reinit completion before
+ wait_for_completion_timeout()
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,80 +68,64 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260303-adf41513-iio-driver-v8-10-8dd2417cc465@analog.com>
-References: <20260303-adf41513-iio-driver-v8-0-8dd2417cc465@analog.com>
-In-Reply-To: <20260303-adf41513-iio-driver-v8-0-8dd2417cc465@analog.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Andrew Morton <akpm@linux-foundation.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
+Message-Id: <20260303-ti-ads1119-1-v2-1-3badba8737f3@gmail.com>
+X-B4-Tracking: v=1; b=H4sIAHTmpmkC/3WMQQqDMBBFryKzbkomERu78h7FRUhGHaimJBJaJ
+ Hdv6r6bD+/DewckikwJ7s0BkTInDlsFdWnALXabSbCvDEqqTmqpxc7C+oSIvUDhXGdIO4k3o6E
+ qr0gTv8/cY6y8cNpD/Jz1jL/3TyhjHdKTIy9Nb9t2mFfLz6sLK4yllC/Dr+OAqAAAAA==
+X-Change-ID: 20260303-ti-ads1119-1-cc68e3c01783
+To: Francesco Dolcini <francesco@dolcini.it>, 
+ =?utf-8?q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <jpaulo.silvagoncalves@gmail.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+ =?utf-8?q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <joao.goncalves@toradex.com>, 
+ Francesco Dolcini <francesco.dolcini@toradex.com>, 
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Felix Gu <ustc.gu@gmail.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1772544443; l=2210;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=OhPLAamt4hmbeCatH+/iPHehi/HIntujTnWeOacWI/A=;
- b=1HLrvBUl4XUjDp85NenVgpnUhF9QEWduuqFD2Ibkb5S42i6e1GK/T6kVS0Pho6X6PDuAu8UpT
- h4llzrCrJiIAOgExN2AZDiiy63XmKIkudONA9U2pdTRqGmyGsXz/VJh
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1772545657; l=1115;
+ i=ustc.gu@gmail.com; h=from:subject:message-id;
+ bh=/p1xCSK5FThphEim6HkaSU/vJIAnaM1raetdYl9rcRU=;
+ b=+uTxiOyiVuUKuPbAnkyMIQq99eSk0jWaXxVVUL2k1UcVJWna5bfq2sA6fLwrDvSKMa1pmAtHG
+ dlpY46hAP47Ad4ytYgWFMf6HOIvmR+4aIxsEl0lYoxkDFV1i7vER7uC
+X-Developer-Key: i=ustc.gu@gmail.com; a=ed25519;
+ pk=fjUXwmjchVN7Ja6KGP55IXOzFeCl9edaHoQIEUA+/hw=
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+The completion is not reinit before wait_for_completion_timeout(),
+so wait_for_completion_timeout() will return immediately after
+the first successful completion.
 
-Add ABI documentation file for PLL/DDS devices with frequency_resolution
-sysfs entry attribute used by both ADF4350 and ADF41513.
-
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Fixes: a9306887eba4 ("iio: adc: ti-ads1119: Add driver")
+Signed-off-by: Felix Gu <ustc.gu@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio-frequency         | 11 +++++++++++
- Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 | 10 ----------
- 2 files changed, 11 insertions(+), 10 deletions(-)
+Changes in v2:
+- Fix Jonathan's comment.
+- Link to v1: https://lore.kernel.org/r/20260303-ti-ads1119-1-v1-1-e3fced089a44@gmail.com
+---
+ drivers/iio/adc/ti-ads1119.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-new file mode 100644
-index 000000000000..1ce8ae578fd6
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-@@ -0,0 +1,11 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
-+KernelVersion:	6.20
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Stores channel Y frequency resolution/channel spacing in Hz for PLL
-+		devices. The given value directly influences the operating mode when
-+		fractional-N synthesis is required, as it derives values for
-+		configurable modulus parameters used in the calculation of the output
-+		frequency. It is assumed that the algorithm that is used to compute
-+		the various dividers, is able to generate proper values for multiples
-+		of channel spacing.
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-index 1254457a726e..76987a119feb 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-@@ -1,13 +1,3 @@
--What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
--KernelVersion:	3.4.0
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Stores channel Y frequency resolution/channel spacing in Hz.
--		The value given directly influences the MODULUS used by
--		the fractional-N PLL. It is assumed that the algorithm
--		that is used to compute the various dividers, is able to
--		generate proper values for multiples of channel spacing.
--
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_refin_frequency
- KernelVersion:	3.4.0
- Contact:	linux-iio@vger.kernel.org
+diff --git a/drivers/iio/adc/ti-ads1119.c b/drivers/iio/adc/ti-ads1119.c
+index c9cedc59cdcd..049cdb108dad 100644
+--- a/drivers/iio/adc/ti-ads1119.c
++++ b/drivers/iio/adc/ti-ads1119.c
+@@ -280,6 +280,9 @@ static int ads1119_single_conversion(struct ads1119_state *st,
+ 	if (ret)
+ 		goto pdown;
+ 
++	if (st->client->irq)
++		reinit_completion(&st->completion);
++
+ 	ret = i2c_smbus_write_byte(st->client, ADS1119_CMD_START_SYNC);
+ 	if (ret)
+ 		goto pdown;
 
+---
+base-commit: 3fa5e5702a82d259897bd7e209469bc06368bf31
+change-id: 20260303-ti-ads1119-1-cc68e3c01783
+
+Best regards,
 -- 
-2.43.0
-
+Felix Gu <ustc.gu@gmail.com>
 
