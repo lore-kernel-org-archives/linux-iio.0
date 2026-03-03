@@ -1,119 +1,188 @@
-Received: from mail-qv1-f52.google.com (mail-qv1-f52.google.com [209.85.219.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from MM0P280CU009.outbound.protection.outlook.com (mail-swedensouthazon11021076.outbound.protection.outlook.com [52.101.76.76])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DA1F3D3D05
-	for <linux-iio@vger.kernel.org>; Tue,  3 Mar 2026 14:16:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.219.52
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772547390; cv=none; b=SUKF2qdZwIKefmywyx/LgNV1RZ/reQ/N7WxEucdBFDu5++iI0d9MaeqyNE2dr149rD96igQICJ4jqLli6SEFO3hsTkHuLt0CFLiIgxO+et3Qb4+Ndq6DMjaiIZdRGv9hY3vXqdC773Ikz4N1jK6eYfnkYoEEwBYndQci03cxHAo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772547390; c=relaxed/simple;
-	bh=O3wxBlM5A9IROKIfrvTr5CqxizEqTm2V+XA0/tPb8jo=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iRG6Wbh0oJz1srPqvHXg6hUKhE/bxaOJv/pZYMTRY/6KSJ1krjsvKfRd6l9kR4N0ijOzDSOyyJMSuDScS2s35UHvmsJ/k5BncomDn3h/Y3KlpD4c/T3GNzp9u3lxqRKttyldcZVwJZWtR9WQ41wghLyP8F+O/5fOPmJcejfqOWs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jruDCTK9; arc=none smtp.client-ip=209.85.219.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26F7633E373;
+	Tue,  3 Mar 2026 14:59:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.76.76
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772550000; cv=fail; b=lwWZdmZmi3FOeBRN2ClBlJOU++U8WqML4SFcYLq6knKxHBJ/wc/WSFNDcLs8UAfeyH5c86V/IL9v2JRirpsJJckYODAb+ZhAsLalpjfFF5eL2HQbeFwNVWe9y+SViCzqvgdIK8B1Xiv+VVK+fMmZ/LYEiQZEdpXuVRhI4crVGEg=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772550000; c=relaxed/simple;
+	bh=vZqgWX3o9CbZ9nRKquaNO+aQeSw1XRci7M1brfqbLoc=;
+	h=From:To:Cc:Subject:Date:Message-ID:Content-Type:MIME-Version; b=SuZiIG+gHLiODfRh5bOsvmCQoLuS5dhmtyZEFKAkrR3yrfBYIO7TpKcXd++8CwjxnhNKyWLz8ya3wh37ZKhUOdl/jtJPAOAyvD0WGQbuOus7uF874ggBJjs01lJ5Vuo7/mVIj4KmGOg7f6BkUNXOvbnTSj+XZrfduL1ZmQFQN7M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=guidelinegeo.com; spf=pass smtp.mailfrom=guidelinegeo.com; dkim=pass (1024-bit key) header.d=guidelinegeo.com header.i=@guidelinegeo.com header.b=c4idO/cu; arc=fail smtp.client-ip=52.101.76.76
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=guidelinegeo.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=guidelinegeo.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jruDCTK9"
-Received: by mail-qv1-f52.google.com with SMTP id 6a1803df08f44-89a07f66f4eso13957186d6.1
-        for <linux-iio@vger.kernel.org>; Tue, 03 Mar 2026 06:16:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772547388; x=1773152188; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=SN5gEyJ3CvnwwkSktZKIQYQ3lN+9NI4Pr7f8HGw+b+o=;
-        b=jruDCTK9psKhqIPBaHVzjUYt817UWNLRW3uWnQBih5DaWHVTy/vkdmLZAavMLbCaZu
-         emPzWCT/BUQ9IczRzgDAo2nNwv/TGfm8BpYdnTEYpFOORESRqAED7PD39XvBv1G/1PMu
-         v6s3v/rJbicx0op9m+wQwPaByvo3azmW64RguH6McdKJx7KLUfu6efO+kbJvwUucKbZy
-         +2WRLbJpe9K9sbhKkFmgx0lpwx0ZlXqyo8Wk7ObsazhNh3IWTMigegIuJWf/u6VQGo2i
-         9W3nbYZfREQ/Gxr6Sf/jwIMWXrfX7uri3rXsVejjQ+56dHwJ1CTh2r98Q40YjeEdAJl8
-         MIpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772547388; x=1773152188;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=SN5gEyJ3CvnwwkSktZKIQYQ3lN+9NI4Pr7f8HGw+b+o=;
-        b=wMOuuqyga2TIwwBa9bqjS/vSV5uxI3oGaznjotfm1KUhH6EraU75RdRv/NQdYdUm/P
-         ZomVeIo7deQJtWPo2U0XBz2qL5BqEM3ryfZWbFIrrnaS44GQxSA/Lcc4SZdKhOoRH66y
-         tA8alFkw+3UzBZogFTQr0vvNoNOjtGNUqWUpbrSPCbSLY1bxYNVYr/5OlI67DPDtQGGs
-         eDXeokV2mQnhD8r3An+FiddQdaW59sTSlL5RnL83U3PYL8KZfshqqmYyS8rk+FaOHtxt
-         G2z86OgmHQIaNGN+IdD0cmaqAwJ0CMjHK6CfRinYojpPBJwDdNUrUKDJjYfE2bR9iymg
-         VNQA==
-X-Forwarded-Encrypted: i=1; AJvYcCWzTP3Udf2Eesenc9Os3eGOoJSKQp94zhf4TH8qcEoteySRGQcoHi0a3Ly7ag/nbLR2Dz23KoW7TSE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwD1Wad7y8mySRJ9NAS7+J0RgMH5N6xsVHe+d7nhRtdo1hSoPo/
-	g/Yq4Ho4x9xLAAVfF8XHIVglpTlKqRNnlC+4iXhGXfpr6QnQbbG92aRo
-X-Gm-Gg: ATEYQzyHIWBKA7O3gf5TtzsQ7Ez8D2xLRC6x59hvQ0r2BoYI1tMXP9qfyqVyhb9BC7Q
-	HCcJH6+0muV7sUUhOZOrXeaz2jJDZ931HrTI8qoRSIyBnmUROlcN6Z1lbVON6HuSI+pRAeT5GFP
-	KsPffXbsA1qh/nQwP1PpbxB+gIoOXyNzRAe6zsM67Zz2AbJtZMIzs1kc65u2jgDOD+POgCGoUG7
-	RnBDKx8onoomMcCACNWYpBKEu3/l/EHnoJxARWVt7GJpdAW8iYgLMP1fdMu514ewW19q9mIC0fv
-	5uPwBHXHx/AO2ZPJ6R72JXxOujUlE0Z86D4Y4WqY8EazAA7k59zOBS+3ppU5JLb/g222Gh2zPs8
-	ZdBxDX9shJz1ViF/haAWKA29eisASbt2AC0CAkNaa2WtOriahOlBXXMkkPChFFRgMcTVYz9QRUx
-	0KINdCYpBsgB0t4dnHyxHPcQwFbEnk3TcNUNX8daHDrCTE2SQL6SGlMxpWdv6x/bDUx3ZIqFBHR
-	7H/MfoEebCDgCmpM7A3KiTb0sj7b2AUi1kX+DIrAXQrq+YBS7U=
-X-Received: by 2002:a05:622a:1445:b0:506:6ec8:835 with SMTP id d75a77b69052e-507529bb500mr199466901cf.54.1772547387868;
-        Tue, 03 Mar 2026 06:16:27 -0800 (PST)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-50744ab3d7csm129120271cf.20.2026.03.03.06.16.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Mar 2026 06:16:26 -0800 (PST)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Tue, 3 Mar 2026 14:16:19 +0000
-To: Andy Shevchenko <andriy.shevchenko@intel.com>, 
-	rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v8 02/10] lib: kstrtox: add kstrntoull() helper
-Message-ID: <qcloiwjlbehs4yyuttvrt46monh7isef4d5nzuwlaby6uxfael@j3trvc5jwosy>
-References: <20260303-adf41513-iio-driver-v8-0-8dd2417cc465@analog.com>
- <20260303-adf41513-iio-driver-v8-2-8dd2417cc465@analog.com>
- <aabm23jCikXs1l6F@ashevche-desk.local>
+	dkim=pass (1024-bit key) header.d=guidelinegeo.com header.i=@guidelinegeo.com header.b="c4idO/cu"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=YARZWhoneTn5G0z2d7QWFevsOvedO0vf9LNhsu7Hma95sgBMorT89uCcj9skNKQ8gjpa15CRiFUH5tFavBQmlqdbYVQ7eitaVpYtENOg3LmcU+eHzBcFV2934orOTPOV+l7oBb6RUThtkJhbm92YlWybfdocctJdM26bVdpL9gbYymG/txWiHxFkKmDNy4+sFEarWnZLqRGIScO3CDR+4x17z6FtdFmeY4DXja5AQMh0sKTLChopZvUAwJ64mhn2HfMjex1kJqorDcmreltDfjOb/x1qvj7ji7BcU22hsa+8IJm7nZAupBpTqm5Suon9DD0YtA4C+9/FYtuKgUHyPA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=LEkQ9dNY1XnxCyA9bBuiMFcOlaPpCMruxRKUrc6o1t8=;
+ b=yq9h7wU061yUOI3s+PcJFouT+I3dnYHhNtULJMz0tT+qWtHWv0QlXotPp7n/pODulNKrr6ZmyaugMCORNHbjz8U/BHP3rx80Q4etFA6BTD5z4eBrOLdZ8XBL9HTCER6bfGteXPzwJIOZfEItqbNtTJUTdR1uCqa3FA0VyxR4tzthbldzJrhAAuT7X/i4hvAQyoSCo3XV0kB5yMRqu8sWrez3Puk53kTXMh83yAfQQA0CcxDUHygxbBJmLMWZqh2HBbxqRf4Ly0gu/NwQagEvDshFDSHlCsjnxhFwWAsWCLxobArzxzbOzzbfYvPtVCE3YahYpLiOkUDJQcpB4UiXhg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=guidelinegeo.com; dmarc=pass action=none
+ header.from=guidelinegeo.com; dkim=pass header.d=guidelinegeo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=guidelinegeo.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LEkQ9dNY1XnxCyA9bBuiMFcOlaPpCMruxRKUrc6o1t8=;
+ b=c4idO/cuDAtkfktx/SlofPKvMk1oD59t0mHdYPDrgIT2pzqPlRMHpMcY1o37IdPPPNcfCC1gATrOapGSCOMo1G6UIjaC2uOnpo9j8Cn2oSzy907Ii8BAFK4KsHJSP436W0Hfzjt1CwS3+UeKGDApxqOeqrw3G8TEcs/Jmdgk298=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=guidelinegeo.com;
+Received: from GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:14::9) by
+ GVZP280MB0329.SWEP280.PROD.OUTLOOK.COM (2603:10a6:150:44::11) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9654.22; Tue, 3 Mar 2026 14:59:51 +0000
+Received: from GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM
+ ([fe80::5a42:b24d:f94f:a5ec]) by GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM
+ ([fe80::5a42:b24d:f94f:a5ec%3]) with mapi id 15.20.9654.022; Tue, 3 Mar 2026
+ 14:59:52 +0000
+From: Christofer Jonason <christofer.jonason@guidelinegeo.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	michal.simek@amd.com,
+	victor.jonsson@guidelinegeo.com,
+	linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	stable@vger.kernel.org,
+	Christofer Jonason <christofer.jonason@guidelinegeo.com>
+Subject: [PATCH] iio: adc: xilinx-xadc: Fix sequencer mode in postdisable for dual mux
+Date: Tue,  3 Mar 2026 15:58:43 +0100
+Message-ID: <20260303145843.1712811-1-christofer.jonason@guidelinegeo.com>
+X-Mailer: git-send-email 2.47.3
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: GV3P280CA0045.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:150:9::18) To GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:150:14::9)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aabm23jCikXs1l6F@ashevche-desk.local>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: GV3P280MB0065:EE_|GVZP280MB0329:EE_
+X-MS-Office365-Filtering-Correlation-Id: 71c1248c-b6ff-4b45-592f-08de79358642
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|376014|7416014|52116014|366016|1800799024|38350700014;
+X-Microsoft-Antispam-Message-Info:
+	pgcoMLFaHCdpyU5+PN2RjXwgU3AnmOja4LRVYM1rdDWOczDYAUzEdNdUlGAoXsXlBuQLPi9zTaIWx7VSl9KatoKXhNQTE+8hxicJdg6aENhGrXOnSCUMjey/4tYvxIl/P92hEDKXeVRT0CE6+079ADU246lOmzMaPWBL5Rv3EVs+i+Ex2Jj2/5fUYbmstV3WzziMWFQMyqR+FeQBoT5qgiBtjLnCl79m+2SPducrY3MVf+oIwkW9u7grXfUajPgNpiOnVw+5mHiWA2w8xBnuZyYbtj+jrN4wapYR5UBPTyEgCACFKUFS98qqutjVa0M2/qbSyo+0gqvmcZ6PhHPNqBkhEyfrdjEy6J8GfzuEmqETzdgqw7uvbBKYDu6vNebdmQYrzcBKj9V2crPQxs2PXBv7YvoMMvqJga8JC8PGIaeuwV4wW/SvYPLC4Rnl+zL1pk1mKRFjptO5J7WeVIURmpI0C1pxMj5ZsFvHvjWT1QrW90SGKeC7Ibbi8FKbHBHPShJ8PHR7m01PdE7sJsXypRL6+GQB0jdc1oMEYqqeWZAsRu4FQR/Xq7Yx8u1noLskMsGXCkzeFUTujMmk1tbBOSoHxxeFY04DwCKB9/vmuetSjbA1ISf2BwrxyJWx/yjC8TFLS9beA7nC+lAYURqhsCfPkPQCcbpUOXCgr3+Jhk3u73egMfDBLNp2WbGzYX5MJXasCJT9bynXUyIcH4MU33rZSROs+4DnC/2xwr4aR4svRgq6ICQ38G5Z2cZkwTY4KxD6zyZjToc6MOl5Ti1G8p0koV4dbNC5MOZCqdDuXDI=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(52116014)(366016)(1800799024)(38350700014);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?us-ascii?Q?JldqWuT3obxtRf9kDopme8nUXQiBZjLqPooMbxwUhfC9hnMBV6cIzRjmZYFa?=
+ =?us-ascii?Q?0Ehvbzl1C/GHzsaBIeHbzKAq6BgD7JkRzDmD8BvwnhHhzbhEIm37TQJ1SqVI?=
+ =?us-ascii?Q?HW00vvs6OPVVR8oYNpw9VLG457gDPDrc/tX+NUwoe7R0BF95JCe6hhsTSz1X?=
+ =?us-ascii?Q?XZrcgzkFbafHe6KHuj0/HOFQCUqXFJdpoIyjUuEYlo7T85IkVDuPa+hr/aP1?=
+ =?us-ascii?Q?gKGtoiOkZaNM6DuJxv2wUq4qCIGFWJcjizgyPPGaCK4yQ9yBBPN+/XRnEHb7?=
+ =?us-ascii?Q?dCBbUbx8VP+jB/BnDfl996h1IgEfILDyRaTAPKs2x6T+yy4MvprrjRv+DY1x?=
+ =?us-ascii?Q?knYBiSojxGgH8u1RLgV5tgiQ/9c9EREac4efFijijB5bYypXrAdPhdgjsMA8?=
+ =?us-ascii?Q?34MmTjniygLfQ9Fgd289dc1B4Dmce60oBjFoV1HoCF+vfXCKZjwvK7EAmz/F?=
+ =?us-ascii?Q?A/+HcEo7jEPb9KeR9Gya3eGS186oUFFGK9WoQRJCtblElPDCY8OQFdUgz1/Y?=
+ =?us-ascii?Q?93+gfmLGh4AS+3x2KV5wXBbbm6nO8oT9zAnT4myJkcFnMEVq7NpGYT6jhWwy?=
+ =?us-ascii?Q?sM4XSTjGJ8JoCIrNIk4oUUS9Og2kRUZoFW45dAHFdRhOh64ETJtn61jMXQd3?=
+ =?us-ascii?Q?OwV6AftpPRLTPt3kgCqg3A47f6IbRfi90aEg7B+3U7XfMniZM7IK8kqeMFw+?=
+ =?us-ascii?Q?Zqy5Ij0BZMiW1WC8ldjVdcw4hQQomaoVHWYr3kEzP8DdmvPlGP5s9MtpRPQE?=
+ =?us-ascii?Q?FAo0uplRSdiQgpslVd3cj+h5WriVMzvlRgXqX+0qfqurwVsuXo1pm9l796NH?=
+ =?us-ascii?Q?Xe1k8tgI4DwtCoKb2LaMmAHPN7r8HVMQr+UKj/hbVGgLwkceU2grfAMYa6fi?=
+ =?us-ascii?Q?mzlpMo7y2wtUjPlDHHGyI85w63LSHxXW8VTZRoTaJkO++Fj0VgU7M47wl/0f?=
+ =?us-ascii?Q?gV98j5NqpcKAaV5BUCLkfFDhsoIYNPHYqj1dzdWYW63Tu1447hWTGDfVm2oi?=
+ =?us-ascii?Q?Px4JLCYiBiZ0jcNKrWmjh6uaQkbivf/4bwquFE84xQVGRg9FChZ7d9nA5+S+?=
+ =?us-ascii?Q?a3wdObIjpPT8CmnrBK0VD44xosy0tE30Qhj60r3Yo2MYJV+bbrIVDicZJB4B?=
+ =?us-ascii?Q?ou/08oqDQIrlp2HqaE49e0r0QzDOmIp4qxh1x83NuYWYMp9ntdukLFIU/DFW?=
+ =?us-ascii?Q?QeE2yj63wKdmlJYWZ2ze4s+F5jLEaUBcpQVS9QXWI9eCwkIS8r0SRPkjn419?=
+ =?us-ascii?Q?l6Wpg6oUzkkG11gxlKObSF6ULfk/1H/HjtOOSn30zJJdO2gUUdTrMxJ9qcMd?=
+ =?us-ascii?Q?UnK7B5Q46wWrMuNjviwyhEtu7snX7j9FIU8L7rt+fO0ZTNE66kAaVEe3+wCU?=
+ =?us-ascii?Q?DsUHHUlstmZYOG0C6h5i10yHEGrdneIqvxkfD8Q1fgKr4wTExe4gHKefUAKV?=
+ =?us-ascii?Q?eQWLU7LbJbN4v8iW2bx+wIZm1ThOIwQfZu2Vszh6ZsdBHnfUz9AUk+btB9mq?=
+ =?us-ascii?Q?1xj845kKcIhvRvelXKlhhg/kkb4mGwNgTcm4JUMUTkJYfP0hq48v5+y1/z6q?=
+ =?us-ascii?Q?LjFePdlGygp3sOgNoRxS31l87f+lmYasduyOY1bpTG3kWUJtZRdiH/V30oSl?=
+ =?us-ascii?Q?sHKnn9+xYQ90QzswMeKTxut0bUze3FHXD6yf9PtPwdvBV8Rep5SRvaHF6T6i?=
+ =?us-ascii?Q?ewVHv2Jst6+KoJzHWQgiWJAXGMOe/7+JIalbc6f4qrGB12fH3ASrbUY6pDGf?=
+ =?us-ascii?Q?0RoXCgjdH8Ib+MFKLvKzJonOVcjTIIW6UCRnbdSNuF+26LyxM36i?=
+X-OriginatorOrg: guidelinegeo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 71c1248c-b6ff-4b45-592f-08de79358642
+X-MS-Exchange-CrossTenant-AuthSource: GV3P280MB0065.SWEP280.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 Mar 2026 14:59:52.7302
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: f3403a73-63c2-4dc7-b628-287972076881
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Y2eKDNpluZ1fBE/UJsPEODq1acfbTJWt2B6MEEex8NAKg79YyzWln6r3rG2pDyRAFBPRVgy1Y1xFQRMDYrHKoDjwGO9w2kH4JHWGHVdViYBFenpqtBXhFPPcy2WfvoPl
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: GVZP280MB0329
 
-On 26/03/03 03:49PM, Andy Shevchenko wrote:
-> On Tue, Mar 03, 2026 at 01:27:07PM +0000, Rodrigo Alencar via B4 Relay wrote:
-> 
-> > Add kstrntoull() function, which converts a string to an ULL with a max
-> > character limit. The function is an alternative integer parsing function
-> > that does not require a null-terminated string. It becomes a better option
-> 
-> null -->  NUL
-> 
-> > over simple_strtoull() or kstrtoull() when parsing integers from a buffer
-> > with custom delimiters without having to create temporary copies.
-> > The function is consumed inside the implementation _kstrtoull(),
-> > promoting reuse.
-> 
-> But this will not properly convert 0000000000000000000000000000000000000000100,
-> for example, if the max_chars say set to 20.
+xadc_postdisable() unconditionally sets the sequencer to continuous
+mode. For dual external multiplexer configurations this is incorrect:
+simultaneous sampling mode is required so that ADC-A samples through
+the mux on VAUX[0-7] while ADC-B simultaneously samples through the
+mux on VAUX[8-15]. In continuous mode only ADC-A is active, so
+VAUX[8-15] channels return incorrect data.
 
-Why would I want that? truncation will happen in the case and the value will
-be zero. max_chars can be zet to INT_MAX/SIZE_MAX if you want to get 100.
+Since postdisable is also called from xadc_probe() to set the initial
+idle state, the wrong sequencer mode is active from the moment the
+driver loads.
 
-> Also kstrto*() have a common idea behind to consume the only \n and allowed
-> digits. This (naming) doesn't fit into the kstrto*() category.
+The preenable path already uses xadc_get_seq_mode() which returns
+SIMULTANEOUS for dual mux. Fix postdisable to do the same.
 
-mmm ok, but include/linux/kstrtox.h is the right place for this? how about just
-strntoull()? I feel like a safe_ prefix does not make much sense if it is
-only to differentiate from simple_strto*(), which should have been safe at
-the first place.
+Fixes: bdc8cda1d010 ("iio:adc: Add Xilinx XADC driver")
+Cc: stable@vger.kernel.org
+Signed-off-by: Christofer Jonason <christofer.jonason@guidelinegeo.com>
+---
+ drivers/iio/adc/xilinx-xadc-core.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index e257c1b94..89d435d72 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -817,6 +817,7 @@ static int xadc_postdisable(struct iio_dev *indio_dev)
+ {
+ 	struct xadc *xadc = iio_priv(indio_dev);
+ 	unsigned long scan_mask;
++	int seq_mode;
+ 	int ret;
+ 	int i;
+ 
+@@ -824,6 +825,12 @@ static int xadc_postdisable(struct iio_dev *indio_dev)
+ 	for (i = 0; i < indio_dev->num_channels; i++)
+ 		scan_mask |= BIT(indio_dev->channels[i].scan_index);
+ 
++	/*
++	 * Use the correct sequencer mode for the idle state: simultaneous
++	 * mode for dual external mux configurations, continuous otherwise.
++	 */
++	seq_mode = xadc_get_seq_mode(xadc, scan_mask);
++
+ 	/* Enable all channels and calibration */
+ 	ret = xadc_write_adc_reg(xadc, XADC_REG_SEQ(0), scan_mask & 0xffff);
+ 	if (ret)
+@@ -834,11 +841,11 @@ static int xadc_postdisable(struct iio_dev *indio_dev)
+ 		return ret;
+ 
+ 	ret = xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF1_SEQ_MASK,
+-		XADC_CONF1_SEQ_CONTINUOUS);
++		seq_mode);
+ 	if (ret)
+ 		return ret;
+ 
+-	return xadc_power_adc_b(xadc, XADC_CONF1_SEQ_CONTINUOUS);
++	return xadc_power_adc_b(xadc, seq_mode);
+ }
+ 
+ static int xadc_preenable(struct iio_dev *indio_dev)
 -- 
-Kind regards,
+2.47.3
 
-Rodrigo Alencar
