@@ -1,172 +1,113 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B324C33F8B8;
-	Tue,  3 Mar 2026 12:41:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772541666; cv=none; b=Sxn17d2PoQgmYsv7O1J+M26UzoMxt1nxk5JycpeyxGjgMxdHIhIN5ypzudNL1uJcNGrIaix5DAEiLw94yG8bmLHxVS5dxwaLhMYwGKqg5llJuBG/iCg4sO1p30dIKr2SoQBCgzhspTH1Kk4EZIkihXFlXDz/cZow700EIfL/rOc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772541666; c=relaxed/simple;
-	bh=dku9ClqyIz82+ydgdcwrWNpz+rR9MfDUOzZY/JGnHDs=;
-	h=From:To:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=gEG6G+SWcvRSlVrzvRYEc6FoEU4cc48/vPfwWMa7w77+J++EbyVAZx1uczeoXy1mn57a+0TzG6N07Bb8GPZPYDoylEkSIyO+H1qfMRyQbWtmKVZFP4+zHWOLgI+tKYAiL0sBANDclBMXhon6bNdQ3CX/n5GEEC2Whdq9YmPMyLA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=XaM2fqDt; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 73AE3200110
+	for <linux-iio@vger.kernel.org>; Tue,  3 Mar 2026 13:26:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.216.47
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772544396; cv=pass; b=Oa51Z7Hyo4KyCXAGI1Q99pFwvoMzw9BY4D7S4kqWabkry9nDiAs1r6xhnzAnWwVoApAxtkrTODXuQUsMqRyqtDkROWQmNSxLTWEw8zJnvP/fXdHUbA+h+IuOFShe85fTU7666dltXXy7wEMzjJl6Is+UU/OEbBZMKDGXaQJg/NM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772544396; c=relaxed/simple;
+	bh=so3210dXMcR3VFqshAkaNYEFczVCUvIeNURNgEKDndA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=M0aZJ2/A+YvQ+Pi2UeWikhj/1vbuCrOi08enVG6B1kgqnTLRK8qCfhjXFccWy16X+990J2XAm7ITF50f6u1yaW0Ofr/0kwKdEZAghTP025FwBjqlPevv1R8a3qKvuykzb2uObSDeqvU4FmKQA0yUKJjHmYHhi2p6Ebeztax/bbw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=OzsIpx2d; arc=pass smtp.client-ip=209.85.216.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="XaM2fqDt"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 623A5IXq3241106;
-	Tue, 3 Mar 2026 07:40:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=3z57r
-	Xy5Qs2cbSdlcG6upTN5n/op/p4tnXdcEZGbfVY=; b=XaM2fqDtbaUgKN30BXyhy
-	QiKKsLzYq0UOh/cQZrem4HI1ZT6T4xiiaUUoJmZIiNJ/fhVyjCVtMbaqMSNf6d+e
-	4J0SeCuUSWxsXcMlTOebj2jd0LMTTc9HYKbQAQoVCLIgemPSRAm69Ji7NMiBx7zS
-	aFxCHq7jcgJOahLeADQvc1ue3cHtHySn6OCeByshd0jPZ7nxy+esXuuglVG1nDQR
-	FKNVD4JEKVE4Hq6b5w1zxbXdu9UUBu/qPW+kc6ld/qNA+vjuRFFIn8FK5DG6GpW6
-	Cp2AffK0fidVuKkaiEFmsHkuGsTD+iTY9p0Pb0krajxd+z6XjR39/2R3KdaMHEpI
-	w==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cmn4kgq4h-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 03 Mar 2026 07:40:36 -0500 (EST)
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 623CeZM5053291
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 3 Mar 2026 07:40:35 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 3 Mar
- 2026 07:40:35 -0500
-Received: from ASHBMBX9.ad.analog.com ([fe80::a11:40fc:1a6f:d912]) by
- ASHBMBX9.ad.analog.com ([fe80::a11:40fc:1a6f:d912%20]) with mapi id
- 15.02.1748.037; Tue, 3 Mar 2026 07:40:35 -0500
-From: "Budai, Robert" <Robert.Budai@analog.com>
-To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>,
-        Lars-Peter Clausen
-	<lars@metafoo.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David Lechner <dlechner@baylibre.com>, "Sa, Nuno" <Nuno.Sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        "Miclaus,
- Antoniu" <Antoniu.Miclaus@analog.com>,
-        "Gradinariu, Ramona"
-	<Ramona.Gradinariu@analog.com>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] iio: imu: adis16550: fix swapped gyro/accel filter
- functions
-Thread-Topic: [PATCH] iio: imu: adis16550: fix swapped gyro/accel filter
- functions
-Thread-Index: AQHcp+OPKWEzQUSSUEypENWyQaPuCLWcwiAg
-Date: Tue, 3 Mar 2026 12:40:35 +0000
-Message-ID: <d1274cf4b7824cdea509d6ad5a48c291@analog.com>
-References: <20260227122046.46710-1-antoniu.miclaus@analog.com>
-In-Reply-To: <20260227122046.46710-1-antoniu.miclaus@analog.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-adiruleop-newscl: Rule Triggered
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OzsIpx2d"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-35691a231a7so3510446a91.3
+        for <linux-iio@vger.kernel.org>; Tue, 03 Mar 2026 05:26:35 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1772544395; cv=none;
+        d=google.com; s=arc-20240605;
+        b=hvhh/ZhxDjOvOJU0FbponcJya76r2L2/rW5Odqr2PqWoyJon/N/WuJUtOM86tylI7y
+         US8IywEZuXJojyIXZhQdHddFnlzCJ1tVr7FJa/beGjKKEd+0o+tQxThzc4X5N0zlRdlm
+         fv6THlbe7lVRsoZaiwixCFWkBUKzGHV/qoTcngaV5glY79ExPE+goNnbjaYCGOm0R457
+         PmgTRfCR2VsMfHIxW3/EVvOmnUMk5LbQ1h9DUGIwWVXLsK03s7wj7BTM5UGNoAKDZypA
+         qS13OQ3lnicpeV0ktp47SOyZJqicrD6nSg7ZjMn5PSyKbXy+TgSKeqd4DkCEzRFfVpK6
+         Du4g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=LD0deI7f4VkEqYBBBpja/0uaQYkXRj1zQa9YGHQ8R0Y=;
+        fh=TL9E+fUjioStsWwdGTkgabfcKW02VqIusGIj6wozaEM=;
+        b=GrCdBUJfHKAZUYhreDU6rSAuNUFkOhZq3I/05Q+QVZvpnc3GJE0YvBkqQb27EGy6ps
+         8YR7dQh6ygdte9qa+UleXcVcVf1w+fK/xSWlSOUsQTVT5UNjdeh0q4sBuax5SYWn69mW
+         qDUgtjWKALTwA3UBKgKsNrwAUZI6dhqMWDSVH5s0r2LcbASXtI69YKob+pdaLhghwYwg
+         5/XUDXaKIT0k5IsdG9WmXxchvvH+imgNb6haCrG6zkTJcoZBCQTQvYnamCndpBwtTQjh
+         m1MY8p0Y9AWVc7P1kZnP0e/K0Ge83w+xH8MieL8mo05qiNqS0d4p5CwU7qnBozNu8u76
+         Uodw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772544395; x=1773149195; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=LD0deI7f4VkEqYBBBpja/0uaQYkXRj1zQa9YGHQ8R0Y=;
+        b=OzsIpx2dtOWi4Hy1k8Ho95lUqDV7W97hNFW8ygOZ8unevpkh3OBWAht24IN4aZc1tF
+         GYmyBR/kX7snQXXB+r5jfmWXgG5UN1hMXoukXUTGbR9J0+2ap9WK0UQO0mLoj6/65mx0
+         lj7/K5ZhNU6xEYPx5ezvd9AKYsZZCDqp9ojpaaQYbzTNI0QI0mQQVMQzsdH+EEEzh1H1
+         X+C6p8SR9IjKDXkU1jDneBydhs4pXgwN7YgLfGYo4QaB1+1BMK17/Mx++44Mh1zZR20m
+         SVkkoEPNfNa6R0VAvFs//+jW9IPlXH6jyt2E4FhV0DvroDKIAcDgv2S5nYNIBJ7FAs96
+         XCDA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772544395; x=1773149195;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=LD0deI7f4VkEqYBBBpja/0uaQYkXRj1zQa9YGHQ8R0Y=;
+        b=B8eOCT1cY7Vp4/qOIztWlmgoKijP8nQIt6FOmur2kZbXBE1krgd0NLtFLg6IV3fx4P
+         Mq/1XVB3sHkzSWtP+jQsSoysR05/PJ+SbQdHsM9ZC07eekzg2bZmEap7z3EOpxxtzma/
+         SQs1ZHZMTTbZMdD0Z3cQ1CD8v2+yS9qX/HXO2M++ssjQTQYZNYuazJI2tsxb8AMuGFpU
+         0YCBIPhE+jFv6T3/hEe3qOLooRmGRQv9OONOhA2Xl5fFWDNbfQPqPly4KX/uw3igTRiz
+         w3odFjrAtKnyeEr0ZYAVS5LEdymVtO7mxtCtCApbgpzPkxHEvHLT4VE2hWeBvMKND2UM
+         fjxQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWK7Ygn+Q1jNfeLUOS5j1S4GtrJ2pR/5UmfcoYgy3VF+OGLcHPFeiBx1Bu4R4WHFSlFEcqMwhEh4Uw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxRv7/Xeypuzf+Hi0Shu+n9eoMkyfbAiIjy149INF0mUxQmHgKD
+	MTKgD8Wp5VWhDFeQIZ72fcQ45TLmRkBxEQr5WS7Ft/XhDXDxjX8Zg0PHx1bDa93+19Fy8cnvD2C
+	k0IrsUhw05/S+gqNWcETI5rF8jPSSdaE=
+X-Gm-Gg: ATEYQzyBscv7QwW3zrEjTxKQYsdQB3SOnX1k5Wz4ibJNWCA/qcPT7tOGhIL8PoK0EMS
+	bCfbv4LBR/rHnBL30xKEnKc/Xx0WL7s1D9bGq2e0K2mr1yXar/dCpZy1u+sqPbRZ7aDLi5AcHnq
+	B7VucuxledR8+m2kIHuskOeA2wVFUa9bqA/QI5KIN8XOMGHy/ZdwRI4jMIlzOYHVD4/gjTOU0U3
+	G1UShe61lXL4qvBQO80Lw790p9cwPLkcJIOLaUDJCgVlx0TnZxU4b1ozztDD2YZGySJ72pKMK9c
+	137sg7It
+X-Received: by 2002:a17:90b:5408:b0:341:134:a962 with SMTP id
+ 98e67ed59e1d1-35965ccab15mr11588287a91.28.1772544394763; Tue, 03 Mar 2026
+ 05:26:34 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzAzMDA5OSBTYWx0ZWRfX74u4ZTsVaz7D
- K5V2DaFHO8lyFM8563ccUNa8ZGaipgHCMQKAmEKFTYbXW5ZkZgREkvgUrDLQURQsaJJyYAC0xHv
- yrDZZJnhEAoUGGYdazjngNuWbQqZhkl9oSNSKyMYzeG+Ul+ZKszad83A2yQHn5hTo/ZZTLFJ2w9
- 4AJ1PjISufYNWb9LhVls3wot5RWSm++cYFoM/p17n0Au+k5p58aBsCGWzGoyTp48DV+2HIvKUII
- 1xpHxDNRcU6G8sr/+VLEcvS1Xf2MMEXGRNxVa/UAoP8h8RkIPPJLA4Raif90yeBQfb/0S5ctz8n
- V+d4eG0uQf0ErZGofiyeiZgiLPYFvEEaKWv95u1L17574cPQKfwCtDSEed1HxRLtUB7mFDSjdhD
- h40fs5efD0LjJwp5JP6ahBMoFQ6A9BKfSdQHfdrqENZhP8kBF4dKwUjrCpwooSz/P496qgpvshM
- 3VLNO79bgZGI+CzOlkg==
-X-Authority-Analysis: v=2.4 cv=Y7P1cxeN c=1 sm=1 tr=0 ts=69a6d6c4 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=xqWC_Br6kY4A:10 a=OAZArwk5CoAA:10 a=kj9zAlcOel0A:10 a=Yq5XynenixoA:10
- a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22
- a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8 a=IpJZQVW2AAAA:8 a=Ei31wznoqjZzguDbTf0A:9
- a=CjuIK1q_8ugA:10 a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-GUID: iTyEAR3JkOrOTOoGgna5EK5iOQkN-j22
-X-Proofpoint-ORIG-GUID: iTyEAR3JkOrOTOoGgna5EK5iOQkN-j22
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1121,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-02_05,2026-03-03_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 phishscore=0 spamscore=0 malwarescore=0 lowpriorityscore=0
- impostorscore=0 clxscore=1011 adultscore=0 priorityscore=1501 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603030099
+References: <20260303-ti-ads1119-1-v1-1-e3fced089a44@gmail.com> <20260302195426.11b4ce81@jic23-huawei>
+In-Reply-To: <20260302195426.11b4ce81@jic23-huawei>
+From: Felix Gu <ustc.gu@gmail.com>
+Date: Tue, 3 Mar 2026 21:26:23 +0800
+X-Gm-Features: AaiRm51WbVZh1w3ZueT4deGevOA8cwBt9lsTG30mwrNf0aeAn82pim6epFwmQ-I
+Message-ID: <CAN4SLj3GSLbe_uMVVzXGH4vJH6fh4gKZN_thFR7bmx6CqoJT+Q@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ti-ads1119: Reinit completion before wait_for_completion_timeout()
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Francesco Dolcini <francesco@dolcini.it>, 
+	=?UTF-8?Q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <jpaulo.silvagoncalves@gmail.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
+	=?UTF-8?Q?Jo=C3=A3o_Paulo_Gon=C3=A7alves?= <joao.goncalves@toradex.com>, 
+	Francesco Dolcini <francesco.dolcini@toradex.com>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
+> What's the reason for doing here rather than a few lines later.
+> That is before this
+> ret = i2c_smbus_write_byte(st->client, ADS1119_CMD_START_SYNC);
+> which the  naming suggests kicks of the actual channel capture?
+>
+> Jonathan
+>
+Hi Jonathan,
 
+I think both positions are fine, but the one you mentioned is more precise.
+I will update it in V2.
 
-> -----Original Message-----
-> From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> Sent: Friday, February 27, 2026 2:21 PM
-> To: Lars-Peter Clausen <lars@metafoo.de>; Hennerich, Michael
-> <Michael.Hennerich@analog.com>; Jonathan Cameron <jic23@kernel.org>;
-> David Lechner <dlechner@baylibre.com>; Sa, Nuno <Nuno.Sa@analog.com>;
-> Andy Shevchenko <andy@kernel.org>; Budai, Robert
-> <Robert.Budai@analog.com>; Miclaus, Antoniu
-> <Antoniu.Miclaus@analog.com>; Gradinariu, Ramona
-> <Ramona.Gradinariu@analog.com>; linux-iio@vger.kernel.org; linux-
-> kernel@vger.kernel.org
-> Subject: [PATCH] iio: imu: adis16550: fix swapped gyro/accel filter funct=
-ions
->=20
-> The low-pass filter handlers for IIO_ANGL_VEL and IIO_ACCEL call each
-> other's filter functions in both read_raw and write_raw. Swap them so
-> each channel type uses its correct filter accessor.
->=20
-> Fixes: bac4368fab62 ("iio: imu: adis16550: add adis16550 support")
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
-Acked-by: Robert Budai <robert.budai@analog.com>
->  drivers/iio/imu/adis16550.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->=20
-> diff --git a/drivers/iio/imu/adis16550.c b/drivers/iio/imu/adis16550.c
-> index 28f0dbd0226c..1f2af506f4bd 100644
-> --- a/drivers/iio/imu/adis16550.c
-> +++ b/drivers/iio/imu/adis16550.c
-> @@ -643,12 +643,12 @@ static int adis16550_read_raw(struct iio_dev
-> *indio_dev,
->  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->  		switch (chan->type) {
->  		case IIO_ANGL_VEL:
-> -			ret =3D adis16550_get_accl_filter_freq(st, val);
-> +			ret =3D adis16550_get_gyro_filter_freq(st, val);
->  			if (ret)
->  				return ret;
->  			return IIO_VAL_INT;
->  		case IIO_ACCEL:
-> -			ret =3D adis16550_get_gyro_filter_freq(st, val);
-> +			ret =3D adis16550_get_accl_filter_freq(st, val);
->  			if (ret)
->  				return ret;
->  			return IIO_VAL_INT;
-> @@ -681,9 +681,9 @@ static int adis16550_write_raw(struct iio_dev
-> *indio_dev,
->  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->  		switch (chan->type) {
->  		case IIO_ANGL_VEL:
-> -			return adis16550_set_accl_filter_freq(st, val);
-> -		case IIO_ACCEL:
->  			return adis16550_set_gyro_filter_freq(st, val);
-> +		case IIO_ACCEL:
-> +			return adis16550_set_accl_filter_freq(st, val);
->  		default:
->  			return -EINVAL;
->  		}
-> --
-> 2.43.0
-
+Best regards,
+Felix
