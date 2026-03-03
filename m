@@ -1,143 +1,183 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BD39042F561;
-	Tue,  3 Mar 2026 19:12:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7B51379EF1
+	for <linux-iio@vger.kernel.org>; Tue,  3 Mar 2026 19:31:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772565146; cv=none; b=MFlV2zTrYSDKTqnr0t7aQbdSRsyKT5aAomKOU9QgMRgD2F8YtFc3iOwdvljDqpxhRgQbH+5ErKAeMa/r/VkTI1SuPZnDwu/OcbAtzGulGCvCXHs0WEzVfw4CoCDSZEtvLjGR+1/LZQzljXvAsJbIzfD+944ghNLhBFvWQutEXd8=
+	t=1772566299; cv=none; b=o/j7gN1wu/teROj+R3MvcaRPVsE/AJMv6i3buCRAHfOnLuUMiE1V4VOX4RDtrqi8dIqZfOxIVEeJgOGse0edQGDwUq9wvnJaFs/OncwmbqE/TR5OYoX5VkquD91y22vykBBiLy5+YcpuNvXbZjvi0fDD542l4FBspgcW6TGXrLM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772565146; c=relaxed/simple;
-	bh=XUSvetyTzglsf5OhBrTm5m3Lr8AqkfzoUD2DgyXy31s=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jUByAQuNcH5IpgtmzhhNwIoI68VGuU70RsBYk++caH6qmaYCaZFaWXq0sNM+lZe6+s+KYE7SdeIk7CFBqN4reP5aPEAhMxKxszP02nXwQ4llrMufOqP93nZj2gE+4RaD6F7tNVkNhdB1uvLUVG2+ALaDE0kOwIhpWVuXNZVOzjU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ufNF0w7b; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772566299; c=relaxed/simple;
+	bh=+G/DTapTeKGN5hxk3oLgQA92dCCGah5RYraucKRmfsk=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=ToRM7AeIV9E/atz7cqs19cnLIg/t7v0DXprljhLByA+UlSQRr2VpJOQbvbMwPl5gIG+Nva+7KCOduY5xf0FtcrkB7YAs/ihzJX6mD2BWpPtwnMfxsuHPsRdxxw5nVRQ54ioss8So42z7VQlXZnOfEufMJRWYK41xkt1pDNwTPNA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=SZ59QVo9; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ufNF0w7b"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73B4FC19425;
-	Tue,  3 Mar 2026 19:12:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772565146;
-	bh=XUSvetyTzglsf5OhBrTm5m3Lr8AqkfzoUD2DgyXy31s=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=ufNF0w7bwN2xo4rjum4lbd3h1kROJT5JOE+tSGFk46Nbywuyx1K2bAXvpZ42IeNhf
-	 gVrqertTAdeZ7KmUXeFa7bhIpowV1KlLe7P2aHFcI6UtaJOcuek/+vz2AdlI0UdAAU
-	 ILXumH5EUAt6hWS7x5Qc5kW3R4xdpzRHEg/D/oHEoB2F+XUzhVnQ5USD0kdsZwXVPK
-	 DzzKYdFgMJpJPybNsSP/By/aRB+I6QALLjrqcP7zDXLnLm79J/LAGwYZjHr9zlHInF
-	 zciyLOtQRCl/CoWPdx3rBVAC1oR5aSZfTQ6uUHkXXd+PMmNYNSvf8LA+qAikOJ22oC
-	 gjUSDmLjQBMrQ==
-Date: Tue, 3 Mar 2026 19:12:22 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Siratul Islam <email@sirat.me>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] dt-bindings: iio: proximity: add ST VL53L1X ToF
- sensor
-Message-ID: <20260303-strike-froth-a2e082b8b59e@spud>
-References: <20260303090253.42076-1-email@sirat.me>
- <20260303090253.42076-2-email@sirat.me>
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="SZ59QVo9"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=from:to:cc:subject:date:message-id
+	:mime-version:content-transfer-encoding; s=k1; bh=LvaEYI1DkC3gG8
+	HSqLFIO8B3jdRzN35AWnw6uUmoiyo=; b=SZ59QVo9Z5/LC1KfkTHdINIkg4qQIh
+	rrARNwidjwPh4FKHOt0EL84P2O15m3+cCEZk6b8gT8MOaaJRfGsLvgDIR0LQ0Q2i
+	IizIk//hhKHAKMRpvRMgiGd/fPGi8Ro4+e1jpL3y18MzVBYvCgHDLFLg46wp3WqG
+	u5yTUg2nxeqjszTbODaculaZYCl99Bk8pSnyYDUp3UAhdUFw4stnLjBrnCY2T07l
+	Brbf3ZVbrD0FXw1J0oO27SJHkbAfIvGkeSpFFEoCBZn/8P4M9MvOIRGh5ko0C9ng
+	Cu7IHYKRvVYo5KM7IuoMnQC61BW1ILt1pDlLhg/PWyTKX/tsJn/rLmBg==
+Received: (qmail 430333 invoked from network); 3 Mar 2026 20:31:25 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 3 Mar 2026 20:31:25 +0100
+X-UD-Smtp-Session: l3s3148p1@m8u8vyNM4qcujnu+
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-renesas-soc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Antonio Borneo <antonio.borneo@foss.st.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Boqun Feng <boqun@kernel.org>,
+	Chen-Yu Tsai <wens@kernel.org>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Danilo Krummrich <dakr@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	driver-core@lists.linux.dev,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Konrad Dybcio <konradybcio@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	linux-arm-kernel@lists.infradead.org,
+	linux-arm-msm@vger.kernel.org,
+	linux-doc@vger.kernel.org,
+	linux-gpio@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	linux-remoteproc@vger.kernel.org,
+	linux-spi@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-sunxi@lists.linux.dev,
+	Mark Brown <broonie@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Samuel Holland <samuel@sholland.org>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>,
+	Waiman Long <longman@redhat.com>,
+	Wilken Gottwalt <wilken.gottwalt@posteo.net>,
+	Will Deacon <will@kernel.org>
+Subject: [PATCH v3 00/15] hwspinlock: move device alloc into core and refactor includes
+Date: Tue,  3 Mar 2026 20:25:52 +0100
+Message-ID: <20260303192600.7224-17-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.51.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="eQcAm1h3NkZ4n2em"
-Content-Disposition: inline
-In-Reply-To: <20260303090253.42076-2-email@sirat.me>
+Content-Transfer-Encoding: 8bit
+
+Changes since RFC v2:
+
+* u8500 and platform_data removal included in this series to make the
+  dependency crystal clear
+* fixed a build failure when adding the callback (Thanks, Sergey!)
+  This series passes now my improved buildscripts. Buildbots are
+  happy, too.
+* mention why "Contact:" information was dropped (Thanks, Andy!)
+* small changes to commit messages
+* added tags (Thanks, everyone!)
+* dropped RFC status
+* rebased to 7.0-rc2
+
+My ultimate goal is to allow hwspinlock provider drivers outside of the
+subsystem directory. It turned out that a simple split of the headers
+files into a public provider and a public consumer header file is not
+enough because core internal structure need to stay hidden. Even more,
+their opaqueness could and should even be increased. That would also
+allow the core to handle the de-/allocation of the hwspinlock device
+itself.
+
+This series does all that. Patches 1-2 remove the meanwhile unused
+platform_data. Patches 3-9 abstract access to internal
+structures away using helpers. Patch 10 then moves hwspinlock device
+handling to the core, simplifying drivers. The remaining patches
+refactor the headers until the internal one is gone and the public ones
+are divided into provider and consumer parts. More details are given in
+the patch descriptions.
+
+One note about using a callback to initialize hwspinlock priv: I also
+experimented with a dedicated 'set_priv' helper function. It felt a bit
+clumsy to me. Drivers would need to save the 'bank' pointer again and
+iterate over it. Because most drivers will only have a simple callback
+anyhow, it looked leaner to me.
+
+This series has been tested on a Renesas SparrowHawk board (R-Car V4H)
+with a yet-to-be-upstreamed hwspinlock driver for the MFIS IP core. A
+branch can be found here (the MFIS driver is still WIP):
+
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/hwspinlock/refactor-alloc-buildtest
+
+Happy hacking,
+
+   Wolfram
 
 
---eQcAm1h3NkZ4n2em
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Wolfram Sang (15):
+  hwspinlock: u8500: delete driver
+  hwspinlock: remove now unused pdata from header file
+  hwspinlock: add helpers to retrieve core data
+  hwspinlock: add callback to fill private data of a hwspinlock
+  hwspinlock: omap: use new callback to initialize hwspinlock priv
+  hwspinlock: qcom: use new callback to initialize hwspinlock priv
+  hwspinlock: sprd: use new callback to initialize hwspinlock priv
+  hwspinlock: stm32: use new callback to initialize hwspinlock priv
+  hwspinlock: sun6i: use new callback to initialize hwspinlock priv
+  hwspinlock: handle hwspinlock device allocation in the core
+  hwspinlock: move entries from internal to public header
+  hwspinlock: remove internal header
+  hwspinlock: sort include and update copyright
+  hwspinlock: refactor provider.h from public header
+  hwspinlock/treewide: refactor consumer.h from public header
 
-On Tue, Mar 03, 2026 at 03:02:40PM +0600, Siratul Islam wrote:
-> Add device tree binding documentation for the STMicroelectronics
-> VL53L1X Time-of-Flight ranging sensor connected via I2C.
->=20
-> Signed-off-by: Siratul Islam <email@sirat.me>
-> ---
->  .../bindings/iio/proximity/st,vl53l1x.yaml    | 49 +++++++++++++++++++
->  1 file changed, 49 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/proximity/st,vl=
-53l1x.yaml
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/proximity/st,vl53l1x.y=
-aml b/Documentation/devicetree/bindings/iio/proximity/st,vl53l1x.yaml
-> new file mode 100644
-> index 000000000000..1b14063ba344
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/proximity/st,vl53l1x.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/proximity/st,vl53l1x.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: ST VL53L1X ToF ranging sensor
-> +
-> +maintainers:
-> +  - Siratul Islam <email@sirat.me>
-> +
-> +properties:
-> +  compatible:
-> +    const: st,vl53l1x
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  reset-gpios:
-> +    maxItems: 1
-> +
-> +  vdd-supply: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
+ Documentation/locking/hwspinlock.rst          |   2 +-
+ MAINTAINERS                                   |   3 +-
+ drivers/base/regmap/regmap.c                  |   2 +-
+ drivers/hwspinlock/Kconfig                    |  10 --
+ drivers/hwspinlock/Makefile                   |   1 -
+ drivers/hwspinlock/hwspinlock_core.c          | 129 +++++++++++----
+ drivers/hwspinlock/hwspinlock_internal.h      |  72 --------
+ drivers/hwspinlock/omap_hwspinlock.c          |  29 ++--
+ drivers/hwspinlock/qcom_hwspinlock.c          |  69 ++++----
+ drivers/hwspinlock/sprd_hwspinlock.c          |  41 ++---
+ drivers/hwspinlock/stm32_hwspinlock.c         |  28 ++--
+ drivers/hwspinlock/sun6i_hwspinlock.c         |  38 ++---
+ drivers/hwspinlock/u8500_hsem.c               | 155 ------------------
+ drivers/iio/adc/sc27xx_adc.c                  |   2 +-
+ drivers/irqchip/irq-stm32mp-exti.c            |   2 +-
+ drivers/mfd/syscon.c                          |   2 +-
+ drivers/nvmem/sc27xx-efuse.c                  |   2 +-
+ drivers/nvmem/sprd-efuse.c                    |   2 +-
+ drivers/pinctrl/stm32/pinctrl-stm32.c         |   2 +-
+ drivers/soc/qcom/smem.c                       |   2 +-
+ drivers/spi/spi-sprd-adi.c                    |   2 +-
+ .../{hwspinlock.h => hwspinlock/consumer.h}   |  57 +------
+ include/linux/hwspinlock/provider.h           |  60 +++++++
+ 23 files changed, 268 insertions(+), 444 deletions(-)
+ delete mode 100644 drivers/hwspinlock/hwspinlock_internal.h
+ delete mode 100644 drivers/hwspinlock/u8500_hsem.c
+ rename include/linux/{hwspinlock.h => hwspinlock/consumer.h} (87%)
+ create mode 100644 include/linux/hwspinlock/provider.h
 
-Are you sure the supply is not mandatory?
+-- 
+2.51.0
 
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    i2c {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-> +        proximity@29 {
-> +            compatible =3D "st,vl53l1x";
-> +            reg =3D <0x29>;
-> +            interrupt-parent =3D <&gpio>;
-> +            interrupts =3D <23 IRQ_TYPE_EDGE_FALLING>;
-> +            reset-gpios =3D <&gpio 5 1>;
-> +            vdd-supply =3D <&vdd_3v3>;
-> +        };
-> +    };
-> +...
-> --=20
-> 2.53.0
->=20
-
---eQcAm1h3NkZ4n2em
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCaacylgAKCRB4tDGHoIJi
-0gbTAQCtEW+b8yKX0PtNjJWO7RdaLVebG3jDu0s4Sz7vjuxwggD9HMVkIbX+hJKE
-10m0222O40XDML8cK5rDLECnrRGszw0=
-=RVMK
------END PGP SIGNATURE-----
-
---eQcAm1h3NkZ4n2em--
