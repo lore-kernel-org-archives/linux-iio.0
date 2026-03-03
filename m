@@ -1,146 +1,118 @@
-Received: from mail-yx1-f50.google.com (mail-yx1-f50.google.com [74.125.224.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B71201278
-	for <linux-iio@vger.kernel.org>; Tue,  3 Mar 2026 05:11:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772514686; cv=pass; b=o3J1erV8q27XQigEgDvTnznfLoKhsHiqAZh/5Aoldf31M74e5mxiU3mAOc8egYv8xJ7+gDc+ZpBmCCbszDaEOGbK6lFqkyRE1OHJw06hrcJDpN3DpO0+IKbmEgWJFrTOpSB3qLlpnwZWeuuhjwj8hZuCxQLxAsar71BkdRE9Ob4=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772514686; c=relaxed/simple;
-	bh=9iF3Gzv7Q9ZuqB1rLLn5IS+bE3rE0VogYGkJMSp6g/U=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=pisL4RH0rTns8OX6EJkklW67DYYoou04FlLmEhWwMc0mFglM+szgMYjtqtIdFYneKjNkGJ11j5JuFOZBPN2KzYzk0DvlYREKV7Cg32pQW8kKLS7rTzMz5vIQxnQjEd/KvTeIqPlyAecGhi6lXN3Ev3RvYjJ4D+E/PRFq+/ymCiw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DIN6dIsS; arc=pass smtp.client-ip=74.125.224.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8C6194A23;
+	Tue,  3 Mar 2026 06:26:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772519163; cv=none; b=lTB3PSVF7FxMyOUvWghK+/FX6k+Dcga/qAVuqWeTz0f1Nz6hJlYIYtW7DenXAOT1R36JXFTjVuOf0xDTyimlFA+/6svRVSed3+9yv9ktXehtXaSH5v/EPblsVA4gEL16zr4j84YUtVOyxC+BoZKjMTuB9/GPvPOG1cC+dzPv1EA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772519163; c=relaxed/simple;
+	bh=1j50NqMw0tW39Khs7QiVUPmByJOtDY3ArZqGKQfTSnQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=lE2iM2kOYb8xeZqgJDuHV2QGrr36BNuMS5Nf307/v2gn79k1HCWo64W1MAb6oe/gp5rnT9e5Oyc7dqC6XSyIKyGLzOvDmQ7xHoYoOBLaCFD3vpFMx1CReRVB0KBCOGDRUr6cx7msyr6ZX1OQ+/LVM48Xeid0VAoq+IkwKUVEMYA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RadMwS5o; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DIN6dIsS"
-Received: by mail-yx1-f50.google.com with SMTP id 956f58d0204a3-64ca09f2170so5310854d50.1
-        for <linux-iio@vger.kernel.org>; Mon, 02 Mar 2026 21:11:24 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1772514684; cv=none;
-        d=google.com; s=arc-20240605;
-        b=I14RMBzewSsCysARpN/2WjPejHAwuKysJke57axOfANUzcuqvpKqgSWrECisXAIXtx
-         ccoWHd6MBQ5osz1p4bcbDwpY0oKvE5jUxLRWfy1WBiTKlHmmK8DCxXNpq0qfioBV3E8l
-         SE8Wu2cZhWnHP0xMj7hUFvKc/IwhbzjyiMpERdSUSe3KMTa6bbCdYvuvwlZj3PligAlK
-         uwC5QpgJyoqbO2Zx1gYTMo5oz9jkLcONcSo7AMBXsyuJ/7UlM2o63ie8CimexpNporZL
-         ZHoouGd7tSLR9n0xD15gmNdRClcfdj9zaJhYg1BogrQRTQG53mKrS1Le6QcHW58Tr/G7
-         DSiA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=emEGQz5YDfAuOf52ZhPAl4T6Ect0qYTBuPN3Zfy9zzo=;
-        fh=+IcEWQq07NFgWW2qjNw68T8Jw/5xgVGCaDfUKKLjH34=;
-        b=Wr0oGDgXzZuiZ7NlSjRpLDkdGLWKnAyCHRWiuwnLMM0sP3+0qMFScu1yJibSfw+k2N
-         +DVWpbcoGLkbcSiX9sDFzMSOlAfXmGH/Q73zDVmOOcaF55Pci4+eQqy2HVW3StpbOYCv
-         RvaYwrRvusBwTpLThXKNevRB/WaJBhAajFAMVLa2suQ5NS0oZ57PefA6XEqw/+QxunH7
-         cxNft22neKwsfGviY3QdhPegqG9GtIqE7FqdgvKjalD/gmjbmwEeC6zXX4m/2+EnWbfe
-         tUysLxSop9JDD2vGB3zx0S+BULfMw82tTlUUrqru8kbwDQuRspEKYGC8kfhyKAv8YPgH
-         AHRQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772514684; x=1773119484; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=emEGQz5YDfAuOf52ZhPAl4T6Ect0qYTBuPN3Zfy9zzo=;
-        b=DIN6dIsSttgYC/8XO3kLkigU1eYKQPTgjcUXUqaQ3IaA5P4/F8T/FJcy07J+FMghVk
-         QR2/pw2O89Ab/BboJ/Ng+TJnEAKi5Q3snlAo8l+UyKxbtXANnlLeECB7hAe29Ftz6gU5
-         7qH4y++8ycjhuAo2MgHW3IEsVPxl1+stksUbNyAJdVR7LPGHFzD7np0BDaMbCXiP7wGU
-         hxp2/Z65yQG3ofE7GFx3I2ZNL3V72aOK8rZRQ0ptFMMhlWbedT9xB2ZjZNS21Wsw+mLT
-         lTsPRk8VwKUUxWD6MZX7HqaWHhV69yvXcPvDjgye5EzgVSW4Fqwy/9erKBckXsk2m9bC
-         SNJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772514684; x=1773119484;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=emEGQz5YDfAuOf52ZhPAl4T6Ect0qYTBuPN3Zfy9zzo=;
-        b=kIiZd2iLd/Vso4EtmNKpOyH6C1vrDorBU3sy9+5/dYaSzcvZkWtdcEVKIY5gNO60mj
-         UwB/Ws7G0KwmLnMSbZhv+8el6tvP1sU2jMvo2s9yCYJFj9+qO1BgQn4VTLARc6ugHmUu
-         LrRTVX7kXkNug81VTiu7znaQ0crO0AOgafYjftDUlQzhDh7izp6wdRvlAcz8Wh0UzEnN
-         GfpVCh7m5CC2+1u4kVR2lf57VKjyHdPWZQFbrpwXwfbDt6bRxdfmPoz0eCOfDcKXoJhA
-         7rR5zBwo4dxrRhMq02Powh4c+OFcSgP7hfGMMMWTNSBiu5oPeevIWRcRYFaUA85Pal3J
-         x+Hw==
-X-Forwarded-Encrypted: i=1; AJvYcCXEhZdYRj04kJ7d3xaQHQvP0K9CELN7GTr6Rpf0ZlOh7Md/hLd2ZDoqtJ8i/P2jmWB7TN5qbRLAsdE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx3EyPF4MfMYVDvXjOJmXzARQqSbnJYJj5gY5hmPjSegsgrCW57
-	o1BZdcEVf6QjQvBBd6t+UWeSsWNiyE+rd0DEWKkkqL4I1Y6HspmpY03DwAR2cWeP0TUqhLQXrNq
-	sOqyUjXylm3lZAjErTOtBuilRWpnKejE=
-X-Gm-Gg: ATEYQzwZQ1wyuV1z9g3GquoY/z8CFSilIGbr1RLy+L0qJXZVm4+ig6PxXmXwSZrs9zY
-	4ZaSw07KB09xFMXWopW6CQiCA0PRau4gph3lWgFYy/jzL7vEBGndMqHwF6v0stURlXOiONOsQiD
-	VssOzXtGCqVQ2c/3HTJb9Ia0SAzFt+uUYbbZkeB4LUYZkIZvsOYpJxjGK+SC/bO76vwotqS1IEf
-	aCWTSAG028qkvQlu39zQeaZmHHSrAJckaHHFjWHweriKAETZwvVPqPGp2lMDIIbo/fFOWhy4yrf
-	K+r5PuTDNA0AOxczR7OAWES9w02EQEpIAxJNzcRSsg==
-X-Received: by 2002:a05:690e:1a85:b0:641:f5bc:6945 with SMTP id
- 956f58d0204a3-64cc236399amr9865259d50.73.1772514684022; Mon, 02 Mar 2026
- 21:11:24 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RadMwS5o"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A765AC116C6;
+	Tue,  3 Mar 2026 06:25:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772519163;
+	bh=1j50NqMw0tW39Khs7QiVUPmByJOtDY3ArZqGKQfTSnQ=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=RadMwS5oF7/zvteJ+Odk85B7kz5XlmH+EqCuO3YYNkbgN5HtUFGirIFT1vnwkEvBs
+	 fSidZGkzo40ELAN98+lR6KveBTWa74/X5jcOVHQUfRk4CWGZKi/cPrEmvgKP+evQIj
+	 P91mAh8sa8cau/ioZNmRdVyfEWyYpRM+jb5qXqvzVMOx3EGHPHmn3UvA05FFT1shFz
+	 417mjaDXbp/peMJ59gEJqGNdVHM0IpfwSjtE6fdikYyBGJrKTwK84ikn7zHM82Fwjv
+	 2FoTIxLQVxx+4jZZIDc2dHwUwTpKlHu2EqPBGYxguMnLmkrGiNW5GghNNYKhr3eNOg
+	 Pl+Vva7F/LJ7g==
+Message-ID: <1fe574f2-7157-4418-9589-2c152479c18e@kernel.org>
+Date: Tue, 3 Mar 2026 07:25:57 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260302130632.29144-1-architanant5@gmail.com> <8ce6bc3a-c55e-49e4-973e-5f135e2b24ba@baylibre.com>
-In-Reply-To: <8ce6bc3a-c55e-49e4-973e-5f135e2b24ba@baylibre.com>
-From: Archit Anant <architanant5@gmail.com>
-Date: Tue, 3 Mar 2026 10:41:13 +0530
-X-Gm-Features: AaiRm52kX5F4Jkd4wPOH7zzpH7JtjEV2TMPpvyzS_nNnyDyHFO4YhqjEG2HZGDk
-Message-ID: <CADJHxWDhCi4YJcPWsmDK9e1_pP3XyK=BMgDVbBzijEZdFfCnOA@mail.gmail.com>
-Subject: Re: [PATCH v3 0/4] iio: adc: ad799x: modernize resource management
-To: David Lechner <dlechner@baylibre.com>
-Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com, 
-	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v1 1/4] dt-bindings: iio: adc: amlogic,meson-saradc: add
+ S4 compatible
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: Nick Xie <nick@khadas.com>, neil.armstrong@linaro.org,
+ khilman@baylibre.com, jbrunet@baylibre.com, krzk+dt@kernel.org,
+ jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, robh@kernel.org,
+ conor+dt@kernel.org, linux-amlogic@lists.infradead.org,
+ linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, xieqinick@gmail.com
+References: <20260228065840.702651-1-nick@khadas.com>
+ <20260228065840.702651-2-nick@khadas.com>
+ <20260228-quirky-lemon-reindeer-1045f6@quoll>
+ <CAFBinCAkxO4HoN0Cw0Fc2B3KRLLJqso1p5+qjNN_E0c26VOf2g@mail.gmail.com>
+ <49b3a87d-7ea0-4da1-871e-35ddf5d5b454@kernel.org>
+ <CAFBinCDyhvzWO3gOL=GtnH56Guh2fkZyhmSjn2k3iJdhtmTdBA@mail.gmail.com>
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Content-Language: en-US
+Autocrypt: addr=krzk@kernel.org; keydata=
+ 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 a/A=
+In-Reply-To: <CAFBinCDyhvzWO3gOL=GtnH56Guh2fkZyhmSjn2k3iJdhtmTdBA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi David,
+On 02/03/2026 22:03, Martin Blumenstingl wrote:
+>>> - and you would like to see amlogic,meson-saradc removed (from the
+>>> bindings and .dts files that are already upstream) - I will take care
+>>> of this once S4 support lands upstream
+>>
+>> This no. It's an ABI, you cannot change it. Not worth it, either.
+> You suggested adding a comment stating that future bindings must not
+> use the "amlogic,meson-saradc" compatible string anymore.
+> Since it's part of ABI we need to keep it. So adding a comment is all I'll do.
+> 
 
-On Mon, Mar 2, 2026 at 9:58=E2=80=AFPM David Lechner <dlechner@baylibre.com=
-> wrote:
->
-> On 3/2/26 7:06 AM, Archit Anant wrote:
-> > This series modernizes the ad799x driver by converting all resource
-> > management to use the devm_ infrastructure, ultimately allowing for the
-> > complete removal of the ad799x_remove() function and simplifying the
-> > error paths in probe.
-> >
-> > This series addresses the feedback from v2, where the changes were
-> > squashed into a single patch, by splitting the logical steps into
-> > individual, bisectable commits. It also incorporates feedback regarding
-> > the safe ordering of regulator disablement and IIO device unregistratio=
-n.
-> >
-> > Changes in v3:
-> > - Split the monolithic v2 patch into 4 logical commits as requested by
-> >   Andy Shevchenko.
-> >
-> > Changes in v2:
-> > - Incorporated feedback from David Lechner to eliminate dynamic buffer
-> >   allocation.
-> > - Incorporated feedback from Jonathan Cameron regarding the ordering
-> >   hazards of mixing devm and manual teardown, utilizing devm_add_action
-> >   and voltage caching.
-> >
->
-> I just reviewed v2 because I didn't see there was a v3 yet. This is why
-> we ask to wait ideally 1 week, but at a few days before sending a new
-> revision.
 
-I agree, I should have waited longer before sending the next revision.
-After Andy's feedback on v2, I realized that the monolithic patch was
-difficult to review and wanted to get the split series out as quickly as
-possible to save reviewers' time. However, I see now that sending it too
-fast caused a different kind of confusion.
+Yes, comment would be useful.
 
->
-> Some of those comment will still apply to v3.
-
-I will wait a few days to collect all feedback on v3 before preparing
-and sending v4.
-Thanks for the patience and the review!
-
---=20
-Sincerely,
-Archit Anant
+Best regards,
+Krzysztof
