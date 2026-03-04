@@ -1,74 +1,73 @@
-Received: from mail-wm1-f41.google.com (mail-wm1-f41.google.com [209.85.128.41])
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 378423890EA
-	for <linux-iio@vger.kernel.org>; Wed,  4 Mar 2026 08:07:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6F678381B1F
+	for <linux-iio@vger.kernel.org>; Wed,  4 Mar 2026 08:07:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772611630; cv=none; b=J1irTmUOiQ9+ETYUJSKxdEmObrooPm8tKOla9VgeeYuixKNYCeeFCDdvoRJbOMUqbbXif9X9JWNWxsJ7lDM80Ugss1fzOgoLMqvMy/3vGunK/r4IV48xthCOz6FvQDgWbQHlpBl4t403394ol7Szzvsap42BrBmMSPaA/WHm3pk=
+	t=1772611638; cv=none; b=LFAZOHpLf/VuAABcaOv77ZPyi2WxvkfuKXDMyRsTwG5sgnGQsKsZ+ZqNvrWgcUB3qqi5t12eqwvNj0UjQctAstdqR1rFBqNWKU/+9ed+yPVtlEsFYHfK5zLC3UUj71TZs8EtJQAA5aCRpVWLd5RCQkkQGI5gnZtFMiUFgxzEoQE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772611630; c=relaxed/simple;
-	bh=Ol6p0rZth3f/iRDeonQqxoZNZAQhn0rATMP/onRw3YU=;
+	s=arc-20240116; t=1772611638; c=relaxed/simple;
+	bh=vq9hgjVkw2IyLSqx6GRLPbeo5mI6UrCm37fIG5RQhm8=;
 	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=jAK385m5sBJ6e1YR6oJsc2pvWpuQ9vRCDXHGV76sn1RKO3zB5KB+SQI5ClFrP+yzd2G0m0ms+ohB3IxIJLkTXBMBYRh2dx2/eE7QMpnUEaqCKnCWjGi/ybDwr3ndD629vCkUG98eqqkctr4GhSkmzZ2a/oIATmxY+9raGdXcT9Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=avJonRFD; arc=none smtp.client-ip=209.85.128.41
+	 MIME-Version; b=ah/pkeDM2sEuNuKCoU0iK7EwfbihxtwYINC9tM6K7I6iFtWixsddfzfB9v5U4HUyWgYZPnERrZZKO9bSYn8nNNVNxbCwSNJuyZk411iWjrRqhwiBvpml9y5ECDpOQeW7MNOw0UVivN+jQ/y1PY0KlUbW1N2srnL3EtonwfxRCOA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=c9rvcz3j; arc=none smtp.client-ip=209.85.221.46
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="avJonRFD"
-Received: by mail-wm1-f41.google.com with SMTP id 5b1f17b1804b1-4837584120eso47826065e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 04 Mar 2026 00:07:08 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="c9rvcz3j"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-439baf33150so2122268f8f.0
+        for <linux-iio@vger.kernel.org>; Wed, 04 Mar 2026 00:07:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772611627; x=1773216427; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772611634; x=1773216434; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=oBQtYx9tuun6QBYG3+5uaN0RHfw3MtXpDHY198tkVjk=;
-        b=avJonRFDiBh9NnOMlP/vV6raypKT+fo2draJZvOzTowzwX2rW7/7Wd7TgmOh1+M+6E
-         UAdiE0oQB6bRizYFExSvW0FEmjxYDKW0fLo3LrRownprFhLSHPuqiZ37LFQ2Os7qNifb
-         RClw4GrTi3ttKBkEcMLZORNSkGinkMfRjB8VfP02wG8FK5vg5y07hRKaHBjr8sT5BTkJ
-         px5yUWMOJ4phUXh3g8QgnkQK8UCsnvjhcjMyl1ifRqmMCiOuNBHbUKDxCsP/5MFc3m6l
-         QQRXUoXkwb98rcHZ8sU8ZJHDTRHBe18wYhJNRgZpq3r850RmnCcOIVln+W3J++5GXhoD
-         8+8Q==
+        bh=UT6cdOv3Men3B4zGxXHfbrc8cEBi1PBjJmQzjY2m3Xk=;
+        b=c9rvcz3jwp7h2R8Ef1bNLd//JXIe5cgEqNDF4/w8GoeHkvyonny+PoczDnn26n3O40
+         H2XHxUoTyVli7jdh+DWnR4hVH720++Fy+UwBxOYH5U4yEOQlMhSP9NeCz0JpwNe8D3MB
+         sIyt6+C/w9WuSQ4hu75oJAYo1hHOLV2AobGZqoe18S5xcMg90UI7hSXCoToN02jJHkTj
+         7vrjZG9vG+yflQVAxLZzZGWc5R+130c7Xg92lJr3aF/XKvS5cbGvvRNcolh+Ek0GIvQD
+         pUAF1B2zgKlDhDyX2py4IaaamX4eI7+DyL3AgO5G+IT2MO14hCS7pWrJAa7pV78yShFP
+         e4ig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772611627; x=1773216427;
+        d=1e100.net; s=20230601; t=1772611634; x=1773216434;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=oBQtYx9tuun6QBYG3+5uaN0RHfw3MtXpDHY198tkVjk=;
-        b=T4M4SwQcDPIUsoN0ASnQGvMYZiVFLkrmLzeiLAjx10j8wcscVfMoBJ0gq6Vw+Z/tcb
-         J0E8C7x3qQda9/QbaFr9z4/9BV54i5PhVdsKtxsME/Z5mDdqycQ+zmfkfN+6bvnuRO4I
-         wM5dAvSb6j6cbDqRXNAbIRuE9HAgqwuXAwaleGGiiETMVMIXcujIrOXkQ0nWTJMflVV+
-         nx58Tb0RmYCVtGRH83ZN9xUWIuenS7Z3AZUXBX7OavHUgI0Mly4J4waIUJAVwEMXSBP/
-         cV3QSsrKegwrc4tNMRmMcbhqHf/s+Hk4micC6fkj3C+3gvDg85ASHe4rauEgbLTeNXVK
-         8mKw==
-X-Forwarded-Encrypted: i=1; AJvYcCU8Z2lVkXI6XCbad7TUpsP5nW3T1CB2R7+e213cGUt4JdwB/GYeSwtOx8a+RctjKS7l1ZMC2ElFPck=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyxYFk4422+qxf+D0JFZiDZfVLIeIbwcPjfxaIHmxBTo74uNqbQ
-	o56TscBc22KamzKuXIXeRpjDL4dBRNOCkVVByV8xm5MAkmy4xGVXPQ97EnM4cfnd9rBBFolqsXI
-	quU23NRE=
-X-Gm-Gg: ATEYQzw/2qeyy8DSjhuVfhIgD/rygfAb0YqcjR0VxJ9e7vVnS7xXC6fMq7OVX1CUlVL
-	9lr4na902VO2gDEHXwOG2RrnBZaFuTYZ98MvytsLwvr08nbFNQBej7pBA9u3H74uj+lBlyVqpnF
-	mx7IqqKEcuDQGtD9+X6BbHFYoQRiilHJ8TqgLFUO9H1VM78vrIBGhzh2T4q4+vwIr1soqzvMT6q
-	08a61bNU91S6cCP/bPBBIERxCNIgh8+XTvDpq87+VhfjrroroUeOeCzBZulZup9yB2v98+NxVZ0
-	ErZ5jzJh/uUahsWY796CkvuD/m+UI67lB2jCoCjLyPcA5PL72L+YgvgG6wf0KsxTgIFc4O0RFGt
-	E+lpexFS1AlZIbQCDbdf5b3wqQBwXSnQVUHxL96XrY7lX3zzrVgqjKI/dLKn82whcAFZCCrxVOh
-	6AfQg=
-X-Received: by 2002:a05:600c:1f85:b0:485:17a7:ba0d with SMTP id 5b1f17b1804b1-485198a2858mr14098255e9.32.1772611627398;
-        Wed, 04 Mar 2026 00:07:07 -0800 (PST)
+        bh=UT6cdOv3Men3B4zGxXHfbrc8cEBi1PBjJmQzjY2m3Xk=;
+        b=oAQ6GKMSLZepZ4HVdpR7kTFTpQcXd8FA7oOa59T5cZBmt6WSnvVWEJbDKH3LSCW7gd
+         wlmoE4u2qzM0ZlGU26hP6CeR/dWAMsVrutMI43uY3o+uACJuMlc1w6z/dxUweLWz/9Kl
+         56Scfmuw+oHRceDnMDCyOSFNaL39E0biu3S4PPlwOdVyuzaGjW8c0hfZi6NChfe5i8gi
+         Ytjc0AD3ECU62zXQlY26kDquCD7l0bMpfSmapJW579i/BF75UnwjcN2X+69DYi+IP3T6
+         ekj9izYwnuCWJtf2jWF4o/ndZt+FZB35eURjJV9OzGCQhc0wvMkH4z/9KS6mpGGTnB7b
+         lyCw==
+X-Forwarded-Encrypted: i=1; AJvYcCVTNGglLcSTLwfiVF/GIv5hFBMIpFrFcJMTvpoOw0QVEvyGQDvSGv0pBdFp//wbWrNKilML4SlYolc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyk9PW9uzHE6K35ZAZTRhSoRUGY6/CtJ7XknWUsgQSmmJS1WWlM
+	s1qBxzoWkXSEXM44/JHaRS1aYo8ift63udtTlhpOsvyRaoeX08UXoao2kA6XH9B3Ma8=
+X-Gm-Gg: ATEYQzzxgU1fyLmW4IR4qQkMP8tl80SblhryC5tHih+wZ+k/uLTxEu1oOdt+xemRwaK
+	7A5/8vlLfA0oBm0P6ix3DAOvOVLdac5K9wiRV/258wymZnYbP2hwEqElTGpmpbmt/bWjv2rggHJ
+	7Wa4IwbNcIItknVevP7haz4ZxVvFkvHfWCKLqjomkdHj5wdBaQMIU++alR1pU3gC3+0dRcqY2xz
+	PKCGaMjTCScWcgQ1nFA6SE1m7OzMuDq3ATJsmk72sXUJWKE1NwIAICeIxQLHwBYv/QZ3g9sp0Lg
+	G0Nm4hqdzL4q7M2rZKUzB1h11m1SO0NWFquQmXKIROmeYM1eOZNDmeqkZBwi2arphUcAPqBa0ip
+	aFGijPBSYluxQqX54uTfcjQD7Zxm/x1w+lau44LopwKolgA6F7mY24aDyeEiTIYqzeDwL
+X-Received: by 2002:a05:6000:2912:b0:439:c39e:d9ed with SMTP id ffacd0b85a97d-439c8a8e098mr1453492f8f.17.1772611633678;
+        Wed, 04 Mar 2026 00:07:13 -0800 (PST)
 Received: from localhost ([151.19.177.89])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4851ad28363sm2482015e9.30.2026.03.04.00.07.06
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-4399c60e40fsm40367359f8f.7.2026.03.04.00.07.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Mar 2026 00:07:07 -0800 (PST)
+        Wed, 04 Mar 2026 00:07:13 -0800 (PST)
 From: Francesco Lavra <flavra@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>,
+To: Lorenzo Bianconi <lorenzo@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v7 5/6] iio: ABI: Add partial quaternion modifier
-Date: Wed,  4 Mar 2026 09:07:05 +0100
-Message-Id: <20260304080706.2844472-1-flavra@baylibre.com>
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v7 6/6] iio: imu: st_lsm6dsx: Add support for rotation sensor
+Date: Wed,  4 Mar 2026 09:07:11 +0100
+Message-Id: <20260304080712.2844514-1-flavra@baylibre.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260304080519.2844101-1-flavra@baylibre.com>
 References: <20260304080519.2844101-1-flavra@baylibre.com>
@@ -78,82 +77,486 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3185; i=flavra@baylibre.com; h=from:subject; bh=Ol6p0rZth3f/iRDeonQqxoZNZAQhn0rATMP/onRw3YU=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpp+gpXzqY3TDqet6R5VUZ+IRv8tvwkuErdTDGd Lxh9s0qji+JAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaafoKQAKCRDt8TtzzpQ2 X6MKC/4lx/3OC+xd/HZeviR7B8SDtAwArzj88cvVqY9LgevL2CVoPu88RInxP0VcFWFuEMcOEJE cMXeRJRtfcm7SydQRp48EioAc66ARJH2hokyWngI4T0O0dkqXGL4RHsnkzqhv7Snv0ZiNPNrtRq Pewp7bnKHalvwiH8A21D8A+q0LCxxRDwa8ZogCuU7eYOLV9daQLfJ0eKijfnvFW5x45qmrSBlTx qk/Sl5HpEcu+1NLyDyZo1PgxElCQOSo9EshxHXmUzY8SdF20Tkd2YAClbwjZJtb9NxMeymv3XRO awq6+UptWFwXRwY5FHIdTdyyIJC45eFI5G6/Yuq7ew5E0B57pAlB31N6N9xzplFUmUOg8A/NiOz Dh1qjN0DmLpXN00HdsEXFNJ3f0bhmUfv+eVOFmv5/8gp3uxngg3P590n6P2EDPdWAjtxX1vCJGI 6A1R2mQeHZ/M+/WdrugPSF4zgxgl/jmILHuoj1Jxj+plxz6sCA1SECtuXy0EQ8x9Fu758=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=14873; i=flavra@baylibre.com; h=from:subject; bh=vq9hgjVkw2IyLSqx6GRLPbeo5mI6UrCm37fIG5RQhm8=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpp+gv9l7zZLzZav5eJOxXnTSHPrcEbvtcEZVPW O4XQG8Ont6JAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCaafoLwAKCRDt8TtzzpQ2 Xy7aC/wI8cdvSbN0E9LbiZH9w03uP6LuP8oiFhmlAc7w0vPeZIEL27D7BGK6wOMb0uq7Jp3CD0P Oa1Il7nKukR85F6PGIjDOO8NhRC4O66t+98VBwUB0qqATxY0caVsAilIGAeUkSOG5Ne/fpzVu3P Pb1qI942Y8A6tgxuHc4IUoKv/tKQuIGXmtssTx8a10Jz9noNMg871/MtmgATNBphvmzzuYeCAvb p1z+sOyR7JpDyZusnePvvlTrh9CwmURwbaHA82ZWu3hNp/I1m5YDv3nLGVXY4WwEX/zadm+CAxb bbqf2Ri1J2KKMwzA1QhBIN/iqp43fpBrT1S3JprIEdysrmnjm72X5yJFzmhAo2chbubdj4AJidk jLT/izZv6ELK1/SS2pnbAlTCdoPxPP1DY9MJhzKlsRGFQB5159BhYxn8TARkddkxEDBOfozEqh7 P4GjKac8W+8QWPasPHUBTB7Z2aka+bNylx1fICButxwz5lyHdI+u020O1i32Hpo7IrYK0=
 X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
 Content-Transfer-Encoding: 8bit
 
-This modifier applies to the IIO_ROT channel type, and indicates a data
-representation that specifies the {x, y, z} components of the normalized
-quaternion vector.
+Some IMU chips in the LSM6DSX family have sensor fusion features that
+combine data from the accelerometer and gyroscope. One of these features
+generates rotation vector data and makes it available in the hardware
+FIFO as a quaternion (more specifically, the X, Y and Z components of the
+quaternion vector, expressed as 16-bit half-precision floating-point
+numbers).
+
+Add support for a new sensor instance that allows receiving sensor fusion
+data, by defining a new struct st_lsm6dsx_fusion_settings (which contains
+chip-specific details for the sensor fusion functionality), and adding this
+struct as a new field in struct st_lsm6dsx_settings. In st_lsm6dsx_core.c,
+populate this new struct for the LSM6DSV and LSM6DSV16X chips, and add the
+logic to initialize an additional IIO device if this struct is populated
+for the hardware type being probed.
+Note: a new IIO device is being defined (as opposed to adding channels to
+an existing device) because the rate at which sensor fusion data is
+generated may not match the data rate from any of the existing devices.
+
+Tested on LSMDSV16X.
 
 Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 13 +++++++++++++
- drivers/iio/industrialio-core.c         |  1 +
- include/uapi/linux/iio/types.h          |  1 +
- tools/iio/iio_event_monitor.c           |  1 +
- 4 files changed, 16 insertions(+)
+ drivers/iio/imu/st_lsm6dsx/Makefile           |   2 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       |  28 ++-
+ .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    |   9 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  |  58 +++++
+ .../iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c    | 234 ++++++++++++++++++
+ 5 files changed, 324 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index bd6c3305dd2b..54e38ebb044d 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1755,6 +1755,19 @@ Description:
- 		measurement from channel Y. Units after application of scale and
- 		offset are milliamps.
+diff --git a/drivers/iio/imu/st_lsm6dsx/Makefile b/drivers/iio/imu/st_lsm6dsx/Makefile
+index 57cbcd67d64f..19a488254de3 100644
+--- a/drivers/iio/imu/st_lsm6dsx/Makefile
++++ b/drivers/iio/imu/st_lsm6dsx/Makefile
+@@ -1,6 +1,6 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ st_lsm6dsx-y := st_lsm6dsx_core.o st_lsm6dsx_buffer.o \
+-		st_lsm6dsx_shub.o
++		st_lsm6dsx_shub.o st_lsm6dsx_fusion.o
  
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_partial_quaternion_raw
-+KernelVersion:	7.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw value of {x, y, z} components of the quaternion vector. These
-+		components represent the axis about which a rotation occurs, and are
-+		subject to the following costraints:
-+		- the quaternion vector is normalized, i.e. x^2 + y^2 + z^2 + w^2 = 1
-+		- the rotation angle is within the [-180, 180] range, i.e. the w
-+		  component (which represents the amount of rotation) is non-negative
-+		These constraints allow the w value to be calculated from the other
-+		components: w = sqrt(1 - (x^2 + y^2 + z^2)).
+ obj-$(CONFIG_IIO_ST_LSM6DSX) += st_lsm6dsx.o
+ obj-$(CONFIG_IIO_ST_LSM6DSX_I2C) += st_lsm6dsx_i2c.o
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index 07b1773c87bd..767aadfe7061 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -294,6 +294,7 @@ enum st_lsm6dsx_sensor_id {
+ 	ST_LSM6DSX_ID_EXT0,
+ 	ST_LSM6DSX_ID_EXT1,
+ 	ST_LSM6DSX_ID_EXT2,
++	ST_LSM6DSX_ID_FUSION,
+ 	ST_LSM6DSX_ID_MAX
+ };
+ 
+@@ -301,6 +302,17 @@ enum st_lsm6dsx_ext_sensor_id {
+ 	ST_LSM6DSX_ID_MAGN,
+ };
+ 
++struct st_lsm6dsx_fusion_settings {
++	const struct iio_chan_spec *chan;
++	int chan_len;
++	struct st_lsm6dsx_reg odr_reg;
++	int odr_hz[ST_LSM6DSX_ODR_LIST_SIZE];
++	int odr_len;
++	struct st_lsm6dsx_reg fifo_enable;
++	struct st_lsm6dsx_reg page_mux;
++	struct st_lsm6dsx_reg enable;
++};
 +
- What:		/sys/.../iio:deviceX/in_energy_en
- What:		/sys/.../iio:deviceX/in_distance_en
- What:		/sys/.../iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_en
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 22eefd048ba9..792fbeb0dfa8 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -125,6 +125,7 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_UVB] = "uvb",
- 	[IIO_MOD_LIGHT_DUV] = "duv",
- 	[IIO_MOD_QUATERNION] = "quaternion",
-+	[IIO_MOD_PARTIAL_QUATERNION] = "partial_quaternion",
- 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
- 	[IIO_MOD_TEMP_OBJECT] = "object",
- 	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index 6d269b844271..c80ef7c1ed12 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -77,6 +77,7 @@ enum iio_modifier {
- 	IIO_MOD_LIGHT_GREEN,
- 	IIO_MOD_LIGHT_BLUE,
- 	IIO_MOD_QUATERNION,
-+	IIO_MOD_PARTIAL_QUATERNION,
- 	IIO_MOD_TEMP_AMBIENT,
- 	IIO_MOD_TEMP_OBJECT,
- 	IIO_MOD_NORTH_MAGN,
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index 03ca33869ce8..db0fb75806ab 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -113,6 +113,7 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LIGHT_UVB] = "uvb",
- 	[IIO_MOD_LIGHT_DUV] = "duv",
- 	[IIO_MOD_QUATERNION] = "quaternion",
-+	[IIO_MOD_PARTIAL_QUATERNION] = "partial_quaternion",
- 	[IIO_MOD_TEMP_AMBIENT] = "ambient",
- 	[IIO_MOD_TEMP_OBJECT] = "object",
- 	[IIO_MOD_NORTH_MAGN] = "from_north_magnetic",
+ /**
+  * struct st_lsm6dsx_ext_dev_settings - i2c controller slave settings
+  * @i2c_addr: I2c slave address list.
+@@ -388,6 +400,7 @@ struct st_lsm6dsx_settings {
+ 	struct st_lsm6dsx_hw_ts_settings ts_settings;
+ 	struct st_lsm6dsx_shub_settings shub_settings;
+ 	struct st_lsm6dsx_event_settings event_settings;
++	struct st_lsm6dsx_fusion_settings fusion_settings;
+ };
+ 
+ enum st_lsm6dsx_fifo_mode {
+@@ -510,6 +523,9 @@ int st_lsm6dsx_check_odr(struct st_lsm6dsx_sensor *sensor, u32 odr, u8 *val);
+ int st_lsm6dsx_shub_probe(struct st_lsm6dsx_hw *hw, const char *name);
+ int st_lsm6dsx_shub_set_enable(struct st_lsm6dsx_sensor *sensor, bool enable);
+ int st_lsm6dsx_shub_read_output(struct st_lsm6dsx_hw *hw, u8 *data, int len);
++int st_lsm6dsx_fusion_probe(struct st_lsm6dsx_hw *hw, const char *name);
++int st_lsm6dsx_fusion_set_enable(struct st_lsm6dsx_sensor *sensor, bool enable);
++int st_lsm6dsx_fusion_set_odr(struct st_lsm6dsx_sensor *sensor, bool enable);
+ int st_lsm6dsx_set_page(struct st_lsm6dsx_hw *hw, bool enable);
+ 
+ static inline int
+@@ -564,12 +580,14 @@ st_lsm6dsx_get_mount_matrix(const struct iio_dev *iio_dev,
+ static inline int
+ st_lsm6dsx_device_set_enable(struct st_lsm6dsx_sensor *sensor, bool enable)
+ {
+-	if (sensor->id == ST_LSM6DSX_ID_EXT0 ||
+-	    sensor->id == ST_LSM6DSX_ID_EXT1 ||
+-	    sensor->id == ST_LSM6DSX_ID_EXT2)
++	switch (sensor->id) {
++	case ST_LSM6DSX_ID_EXT0 ... ST_LSM6DSX_ID_EXT2:
+ 		return st_lsm6dsx_shub_set_enable(sensor, enable);
+-
+-	return st_lsm6dsx_sensor_set_enable(sensor, enable);
++	case ST_LSM6DSX_ID_FUSION:
++		return st_lsm6dsx_fusion_set_enable(sensor, enable);
++	default:
++		return st_lsm6dsx_sensor_set_enable(sensor, enable);
++	}
+ }
+ 
+ static const
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+index a6ee2da5a06c..67f2ba0ff642 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+@@ -88,6 +88,7 @@ enum st_lsm6dsx_fifo_tag {
+ 	ST_LSM6DSX_EXT0_TAG = 0x0f,
+ 	ST_LSM6DSX_EXT1_TAG = 0x10,
+ 	ST_LSM6DSX_EXT2_TAG = 0x11,
++	ST_LSM6DSX_ROT_TAG = 0x13,
+ };
+ 
+ static const
+@@ -226,8 +227,11 @@ static int st_lsm6dsx_set_fifo_odr(struct st_lsm6dsx_sensor *sensor,
+ 	u8 data;
+ 
+ 	/* Only internal sensors have a FIFO ODR configuration register. */
+-	if (sensor->id >= ARRAY_SIZE(hw->settings->batch))
++	if (sensor->id >= ARRAY_SIZE(hw->settings->batch)) {
++		if (sensor->id == ST_LSM6DSX_ID_FUSION)
++			return st_lsm6dsx_fusion_set_odr(sensor, enable);
+ 		return 0;
++	}
+ 
+ 	batch_reg = &hw->settings->batch[sensor->id];
+ 	if (batch_reg->addr) {
+@@ -578,6 +582,9 @@ st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
+ 	case ST_LSM6DSX_EXT2_TAG:
+ 		iio_dev = hw->iio_devs[ST_LSM6DSX_ID_EXT2];
+ 		break;
++	case ST_LSM6DSX_ROT_TAG:
++		iio_dev = hw->iio_devs[ST_LSM6DSX_ID_FUSION];
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index 450cb5b47346..763ac9dfe5b1 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -94,6 +94,26 @@
+ 
+ #define ST_LSM6DSX_REG_WHOAMI_ADDR		0x0f
+ 
++/* Raw values from the IMU are 16-bit half-precision floating-point numbers. */
++#define ST_LSM6DSX_CHANNEL_ROT						\
++{									\
++	.type = IIO_ROT,						\
++	.modified = 1,							\
++	.channel2 = IIO_MOD_PARTIAL_QUATERNION,				\
++	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
++	.info_mask_shared_by_all_available =				\
++		BIT(IIO_CHAN_INFO_SAMP_FREQ),				\
++	.scan_index = 0,						\
++	.scan_type = {							\
++		.format = 'f',						\
++		.realbits = 16,						\
++		.storagebits = 16,					\
++		.endianness = IIO_LE,					\
++		.repeat = 3,						\
++	},								\
++	.ext_info = st_lsm6dsx_ext_info,				\
++}
++
+ static const struct iio_event_spec st_lsm6dsx_ev_motion[] = {
+ 	{
+ 		.type = IIO_EV_TYPE_THRESH,
+@@ -153,6 +173,11 @@ static const struct iio_chan_spec st_lsm6ds0_gyro_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(3),
+ };
+ 
++static const struct iio_chan_spec st_lsm6dsx_fusion_channels[] = {
++	ST_LSM6DSX_CHANNEL_ROT,
++	IIO_CHAN_SOFT_TIMESTAMP(1),
++};
++
+ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 	{
+ 		.reset = {
+@@ -1492,6 +1517,33 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 				},
+ 			},
+ 		},
++		.fusion_settings = {
++			.chan = st_lsm6dsx_fusion_channels,
++			.chan_len = ARRAY_SIZE(st_lsm6dsx_fusion_channels),
++			.odr_reg = {
++				.addr = 0x5e,
++				.mask = GENMASK(5, 3),
++			},
++			.odr_hz[0] = 15,
++			.odr_hz[1] = 30,
++			.odr_hz[2] = 60,
++			.odr_hz[3] = 120,
++			.odr_hz[4] = 240,
++			.odr_hz[5] = 480,
++			.odr_len = 6,
++			.fifo_enable = {
++				.addr = 0x44,
++				.mask = BIT(1),
++			},
++			.page_mux = {
++				.addr = 0x01,
++				.mask = BIT(7),
++			},
++			.enable = {
++				.addr = 0x04,
++				.mask = BIT(1),
++			},
++		},
+ 	},
+ 	{
+ 		.reset = {
+@@ -2899,6 +2951,12 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
+ 			return err;
+ 	}
+ 
++	if (hw->settings->fusion_settings.chan) {
++		err = st_lsm6dsx_fusion_probe(hw, name);
++		if (err)
++			return err;
++	}
++
+ 	if (hw->irq > 0) {
+ 		err = st_lsm6dsx_irq_setup(hw);
+ 		if (err < 0)
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c
+new file mode 100644
+index 000000000000..38a99ca9bd7b
+--- /dev/null
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c
+@@ -0,0 +1,234 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * STMicroelectronics st_lsm6dsx IMU sensor fusion
++ *
++ * Copyright 2026 BayLibre, SAS
++ */
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/mutex.h>
++#include <linux/regmap.h>
++#include <linux/sprintf.h>
++#include <linux/types.h>
++#include <linux/units.h>
++
++#include "st_lsm6dsx.h"
++
++static int
++st_lsm6dsx_fusion_get_odr_val(const struct st_lsm6dsx_fusion_settings *settings,
++			      u32 odr_mHz, u8 *val)
++{
++	int odr_hz = odr_mHz / MILLI;
++	int i;
++
++	for (i = 0; i < settings->odr_len; i++) {
++		if (settings->odr_hz[i] == odr_hz)
++			break;
++	}
++	if (i == settings->odr_len)
++		return -EINVAL;
++
++	*val = i;
++	return 0;
++}
++
++/**
++ * st_lsm6dsx_fusion_page_enable - Enable access to sensor fusion configuration
++ * registers.
++ * @hw: Sensor hardware instance.
++ *
++ * Return: 0 on success, negative value on error.
++ */
++static int st_lsm6dsx_fusion_page_enable(struct st_lsm6dsx_hw *hw)
++{
++	const struct st_lsm6dsx_reg *mux;
++
++	mux = &hw->settings->fusion_settings.page_mux;
++
++	return regmap_set_bits(hw->regmap, mux->addr, mux->mask);
++}
++
++/**
++ * st_lsm6dsx_fusion_page_disable - Disable access to sensor fusion
++ * configuration registers.
++ * @hw: Sensor hardware instance.
++ *
++ * Return: 0 on success, negative value on error.
++ */
++static int st_lsm6dsx_fusion_page_disable(struct st_lsm6dsx_hw *hw)
++{
++	const struct st_lsm6dsx_reg *mux;
++
++	mux = &hw->settings->fusion_settings.page_mux;
++
++	return regmap_clear_bits(hw->regmap, mux->addr, mux->mask);
++}
++
++int st_lsm6dsx_fusion_set_enable(struct st_lsm6dsx_sensor *sensor, bool enable)
++{
++	struct st_lsm6dsx_hw *hw = sensor->hw;
++	const struct st_lsm6dsx_reg *en_reg;
++	int err;
++
++	guard(mutex)(&hw->page_lock);
++
++	en_reg = &hw->settings->fusion_settings.enable;
++	err = st_lsm6dsx_fusion_page_enable(hw);
++	if (err)
++		return err;
++
++	err = regmap_assign_bits(hw->regmap, en_reg->addr, en_reg->mask, enable);
++	if (err) {
++		st_lsm6dsx_fusion_page_disable(hw);
++		return err;
++	}
++
++	return st_lsm6dsx_fusion_page_disable(hw);
++}
++
++int st_lsm6dsx_fusion_set_odr(struct st_lsm6dsx_sensor *sensor, bool enable)
++{
++	const struct st_lsm6dsx_fusion_settings *settings;
++	struct st_lsm6dsx_hw *hw = sensor->hw;
++	u8 data;
++	int err;
++
++	guard(mutex)(&hw->page_lock);
++
++	err = st_lsm6dsx_fusion_page_enable(hw);
++	if (err)
++		return err;
++
++	settings = &hw->settings->fusion_settings;
++	if (enable) {
++		const struct st_lsm6dsx_reg *reg = &settings->odr_reg;
++		u8 odr_val;
++
++		st_lsm6dsx_fusion_get_odr_val(settings, sensor->hwfifo_odr_mHz,
++					      &odr_val);
++		data = ST_LSM6DSX_SHIFT_VAL(odr_val, reg->mask);
++		err = regmap_update_bits(hw->regmap, reg->addr, reg->mask,
++					 data);
++		if (err)
++			goto out;
++	}
++
++	err = regmap_assign_bits(hw->regmap, settings->fifo_enable.addr,
++				 settings->fifo_enable.mask, enable);
++	if (err)
++		goto out;
++
++	return st_lsm6dsx_fusion_page_disable(hw);
++
++out:
++	st_lsm6dsx_fusion_page_disable(hw);
++
++	return err;
++}
++
++static int st_lsm6dsx_fusion_read_raw(struct iio_dev *iio_dev,
++				      struct iio_chan_spec const *ch,
++				      int *val, int *val2, long mask)
++{
++	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = sensor->hwfifo_odr_mHz / MILLI;
++		*val2 = (sensor->hwfifo_odr_mHz % MILLI) * (MICRO / MILLI);
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int st_lsm6dsx_fusion_write_raw(struct iio_dev *iio_dev,
++				       struct iio_chan_spec const *chan,
++				       int val, int val2, long mask)
++{
++	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
++	const struct st_lsm6dsx_fusion_settings *settings;
++	int err;
++
++	settings = &sensor->hw->settings->fusion_settings;
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ: {
++		u32 odr_mHz = val * MILLI + val2 * (MILLI / MICRO);
++		u8 odr_val;
++
++		/* check that the requested frequency is supported */
++		err = st_lsm6dsx_fusion_get_odr_val(settings, odr_mHz,
++						    &odr_val);
++		if (err)
++			return err;
++
++		sensor->hwfifo_odr_mHz = odr_mHz;
++		return 0;
++	}
++	default:
++		return -EINVAL;
++	}
++}
++
++static int st_lsm6dsx_fusion_read_avail(struct iio_dev *indio_dev,
++					struct iio_chan_spec const *chan,
++					const int **vals, int *type,
++					int *length, long mask)
++{
++	struct st_lsm6dsx_sensor *sensor = iio_priv(indio_dev);
++	const struct st_lsm6dsx_fusion_settings *settings;
++
++	settings = &sensor->hw->settings->fusion_settings;
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*vals = settings->odr_hz;
++		*type = IIO_VAL_INT;
++		*length = settings->odr_len;
++		return IIO_AVAIL_LIST;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info st_lsm6dsx_fusion_info = {
++	.read_raw = st_lsm6dsx_fusion_read_raw,
++	.read_avail = st_lsm6dsx_fusion_read_avail,
++	.write_raw = st_lsm6dsx_fusion_write_raw,
++	.hwfifo_set_watermark = st_lsm6dsx_set_watermark,
++};
++
++int st_lsm6dsx_fusion_probe(struct st_lsm6dsx_hw *hw, const char *name)
++{
++	const struct st_lsm6dsx_fusion_settings *settings;
++	struct st_lsm6dsx_sensor *sensor;
++	struct iio_dev *iio_dev;
++	int ret;
++
++	iio_dev = devm_iio_device_alloc(hw->dev, sizeof(*sensor));
++	if (!iio_dev)
++		return -ENOMEM;
++
++	settings = &hw->settings->fusion_settings;
++	sensor = iio_priv(iio_dev);
++	sensor->id = ST_LSM6DSX_ID_FUSION;
++	sensor->hw = hw;
++	sensor->hwfifo_odr_mHz = settings->odr_hz[0] * MILLI;
++	sensor->watermark = 1;
++	iio_dev->modes = INDIO_DIRECT_MODE;
++	iio_dev->info = &st_lsm6dsx_fusion_info;
++	iio_dev->channels = settings->chan;
++	iio_dev->num_channels = settings->chan_len;
++	ret = snprintf(sensor->name, sizeof(sensor->name), "%s_fusion", name);
++	if (ret >= sizeof(sensor->name))
++		return -E2BIG;
++	iio_dev->name = sensor->name;
++
++	/*
++	 *  Put the IIO device pointer in the iio_devs array so that the caller
++	 *  can set up a buffer and register this IIO device.
++	 */
++	hw->iio_devs[ST_LSM6DSX_ID_FUSION] = iio_dev;
++
++	return 0;
++}
 -- 
 2.39.5
 
