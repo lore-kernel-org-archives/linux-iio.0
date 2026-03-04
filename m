@@ -1,203 +1,95 @@
-Received: from mail-wr1-f52.google.com (mail-wr1-f52.google.com [209.85.221.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2621F39182A
-	for <linux-iio@vger.kernel.org>; Wed,  4 Mar 2026 11:47:55 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBE8131E854;
+	Wed,  4 Mar 2026 11:51:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772624876; cv=none; b=WVkZyvPZKQ/ZFw/0QS/FkgDt0u0FdS44CUojBeXXPYJUPDcmHXMJ+OM27sMrkibCYx087kfXs6KdeMWBtFq3q0Z/2D5E1HmnilHFfBXUuJwKJb3eeH6QDoIToojar83MDEffuGBAoOI+C3761ery/G65+85/69h8WwJxqiRHdNg=
+	t=1772625139; cv=none; b=P2RmTokMf3a44nqst/IVjGiG8PrptbCgShKtE78Ar9CcY0dD0EAMeMT5AZeYDHyPGZFVey8Ezh6Cpcp3bbGgeEonmPtQtVOMRv9+vNQNZl+MPYdsoEJ9k8gYjNVU77t4g/oPAe0VSKJzTvh62Gtzy3LJzjdry3IRhz92l2WPCFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772624876; c=relaxed/simple;
-	bh=/R4eaBcrPWpSJC8OeQOy0GTZEIidjpvzldxcxjU2idw=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=P0qB+CChqMXP1ugaiqYxZnCtvl79kTZQXCeO7UzHdiV9Vx6KE3x+BVA70sDEAGVvjiBEcsV66wiG0bOgTLxhfmbdOID/MUCwDqzb1HIc2lDAnDoRDlPLfOBbL2GS/tDL3+pKkLxlfwgTR4XWNPzJcQDcm7jrnxbf907+ZD7OWIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=LNxxACgi; arc=none smtp.client-ip=209.85.221.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772625139; c=relaxed/simple;
+	bh=1cbNHjS3Jwr1X06Tb+6bXSS1cl+vAw/B+P8pT+WbDeE=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NLyW/fWSHIQscMA81eF1BATjhQs23I6+9euvdbZ93VleuqIEx9vV9wGqpR8qTXGlpRK/G5LmpVJDGwScBhLuIj8MsfKsEKD/BG1J9u/7YHfvrAAVBe/zPsAy8bsLdxXCpEa2qbjDEpr/KXwTfs8bY5NbygcN5yOElDB1cVna2ik=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bhTZBllA; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LNxxACgi"
-Received: by mail-wr1-f52.google.com with SMTP id ffacd0b85a97d-439ac15f35fso3755750f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 04 Mar 2026 03:47:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772624873; x=1773229673; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=CduAQzbmJX58L5AceBDqB7EH1l0pF29iMVDCaHBV8pk=;
-        b=LNxxACgiNpyN1jEhDJkix3m9mJWIlpkr42EL1l+57EONc2GbzdOH084plUqRUOYjDQ
-         t+L0oPWwamNC7/WykQr2kqiZit9A5Iavp2leYE0gFhcYf4iMD/1D1ReKlhDpQw4CnncO
-         ZrhVKFAm9is/z6lcy9tDEXHUeCioWvTICo0qyyzzil3mUrmFiYt1wSYdNE0lBBWyRW1D
-         Xcn6nHg/i7MVY5PxGHz91d2Y+yx+h9d9s85p1oA9B9XuzirSWWYHnKInGVC/NpwyFGqG
-         Lh+WnihnkzDMi/B9W2//aivHRXwrlSo/kWe8aOPJ9usmJEmiFMvDfiqoLp61W8zkWtFL
-         /DRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772624873; x=1773229673;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=CduAQzbmJX58L5AceBDqB7EH1l0pF29iMVDCaHBV8pk=;
-        b=FySanXH8msA8fnGZjxYP7v3XvOyRt6y1zKD66RfZtvU0Gim6sV8dtl0vaCot8jnjJ/
-         IiZk/8MINWCjYRwcuwGT98g5uwx8ThVdOuQ9wgGGCRyiZ66dhaVTp+CQVKIk7E02ea0C
-         /dY/AM4FL1Ce9eZYL+lIIpSLznEw2H/TaCm5Nhes+E7C4ukjbtYDQbkpMxLb3TNP2hF4
-         hSXDBwN4a3cdhxTuruXK6lTodaC3A0DOyX1arz6iClnEVRCrB4E90UWkzAtulYtHsrbi
-         2tqKkqufMwR9icuggsuM/3xECGamz6RFkREwXrV7Ls/uCZHo81iNx/Cz/3ob9r6Jptzl
-         Fb8w==
-X-Forwarded-Encrypted: i=1; AJvYcCUMXakPwr9EwU608MoRDK45k9nOrIaFsV6Nh9ZULRtylkpHFkKfnHj0yDI02qR1ZWYUz9Q3u0P6akQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzmALTtjSbAKV6++UNdWEKKs7zbWofoZWJp2p5DL8O5YkSnwek5
-	asVSnmJx0+AhQIXKQlVwqOaFU55gD75/pS3JA3KSPF0Id9guvAqbtbcP
-X-Gm-Gg: ATEYQzwmdyAFW/o27qZUkI1vIM+auw8Ayt0OuedrsRs1SOm91MKWAdNEEzWyu/KGIaL
-	HTSLskLyhpBQ+LQaZZ+u9zjHNY7lYiwq037eur2OpuIfC1/9kkBbmL/vxDcipHCPrAK4IHzHkCe
-	r/GWbjvfQT07ZaNjWz5nSaFN94QP9zLT0a18CCAMZ7U4Ko74TlQZira+E3K6YYf4vEr5ZZAAX+x
-	YY+YTjJg75FDVcGRisdAuZIusDWOREPa046z2XE5L8F3h36tQUZDFxieSiEdjKFynWxNvZJ/ZL4
-	4WjVTIFD4vYZ03cGyTjzy6c1wHewLCCA8ZaJeGetA5JRwlFrhwGRS1iwVmTo/ny3KhpT/RfqUzU
-	RZvbdm750JEoGjDpkVY6EtqqqqaZ0LrMFzHhsfyQdwm/5C98buHzqWcTFHmcWfUXmvXxObAUjNl
-	13xUDbZzWPJojEk73pM1heKow32rkRz/k=
-X-Received: by 2002:a05:6000:2381:b0:439:b3c5:ea20 with SMTP id ffacd0b85a97d-439c7f64c41mr3158399f8f.5.1772624873314;
-        Wed, 04 Mar 2026 03:47:53 -0800 (PST)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439ac9f3e5bsm33109011f8f.37.2026.03.04.03.47.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Mar 2026 03:47:53 -0800 (PST)
-Message-ID: <40d38cac145215e525c0fdc19f48634e9315467f.camel@gmail.com>
-Subject: Re: [PATCH v3] iio: frequency: admv1013: fix NULL pointer
- dereference on str
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>, Lars-Peter Clausen
-	 <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron
-	 <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?=
-	 <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Date: Wed, 04 Mar 2026 11:48:37 +0000
-In-Reply-To: <20260304095818.5459-1-antoniu.miclaus@analog.com>
-References: <20260304095818.5459-1-antoniu.miclaus@analog.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bhTZBllA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772625120; x=1804161120;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=1cbNHjS3Jwr1X06Tb+6bXSS1cl+vAw/B+P8pT+WbDeE=;
+  b=bhTZBllAanQ9KH2CiT23/nxt1E29N1jMrRApm2kS+jRmWg5r6WfQV7+Q
+   8kV+H7UEBMUjnAVxlRGM4wSXo2N10gARy10mVVDrfx4jCiWXMXYbQa+E3
+   74wiF5abgp2YbHSan8d0Ca8cqZ47ykW3IM8WwQX+0eK6Q/6A7JdTDEV7y
+   1pCIvT0o/WvsiMJmaiBRVpExQ69iKGwAwqmZFsDH2HAD0VwVqyniLA1Hf
+   IKH3GYvz1+SD63+yIRwKQdZmJJ0p5WlclwDsCI9Hvvu/s3DYGCtzDUK0e
+   XCw5kefOaKrcEMO5v975Nm72QctKNSKbK3/r6zvfvn1CBNG3xlTrxOrpw
+   A==;
+X-CSE-ConnectionGUID: NdzJmUfYTB6d+gorbSb2Cg==
+X-CSE-MsgGUID: tdrYEFTgQx6xBmspYhKFYA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11718"; a="61257210"
+X-IronPort-AV: E=Sophos;i="6.21,323,1763452800"; 
+   d="scan'208";a="61257210"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 03:51:56 -0800
+X-CSE-ConnectionGUID: eDtDSgfsQbi4u9QQ+mFcRw==
+X-CSE-MsgGUID: Iss5/j+2Sku/SvffDzin0g==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,323,1763452800"; 
+   d="scan'208";a="218431822"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.127])
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 03:51:54 -0800
+Date: Wed, 4 Mar 2026 13:51:51 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Francesco Lavra <flavra@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 5/6] iio: ABI: Add partial quaternion modifier
+Message-ID: <aagc1_EkH3cqh41O@ashevche-desk.local>
+References: <20260304080519.2844101-1-flavra@baylibre.com>
+ <20260304080706.2844472-1-flavra@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260304080706.2844472-1-flavra@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 2026-03-04 at 11:58 +0200, Antoniu Miclaus wrote:
-> When device_property_read_string() fails, str is left uninitialized
-> but the code falls through to strcmp(str, ...), dereferencing a garbage
-> pointer. Replace manual read/strcmp with
-> device_property_match_property_string() which reads the property as a
-> single string value and matches it against an array of known valid
-> strings, handling the missing property case internally.
->=20
-> Fixes: da35a7b526d9 ("iio: frequency: admv1013: add support for ADMV1013"=
-)
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
+On Wed, Mar 04, 2026 at 09:07:05AM +0100, Francesco Lavra wrote:
+> This modifier applies to the IIO_ROT channel type, and indicates a data
+> representation that specifies the {x, y, z} components of the normalized
+> quaternion vector.
 
-One nit below but no need to re-spin just for that:
+...
 
-Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_rot_partial_quaternion_raw
 
-> Changes in v3:
-> =C2=A0- add enum for quad SE mode indices to avoid magic numbers
-> =C2=A0- use designated initializers for string arrays
-> =C2=A0- replace switch with a lookup table for quad SE register values
->=20
-> =C2=A0drivers/iio/frequency/admv1013.c | 55 +++++++++++++++++++----------=
----
-> =C2=A01 file changed, 33 insertions(+), 22 deletions(-)
->=20
-> diff --git a/drivers/iio/frequency/admv1013.c b/drivers/iio/frequency/adm=
-v1013.c
-> index 9202443ef445..afdf06a0de43 100644
-> --- a/drivers/iio/frequency/admv1013.c
-> +++ b/drivers/iio/frequency/admv1013.c
-> @@ -90,6 +90,12 @@ enum {
-> =C2=A0	ADMV1013_SE_MODE_DIFF =3D 12
-> =C2=A0};
-> =C2=A0
-> +enum {
-> +	ADMV1013_QUAD_SE_DIFF,
-> +	ADMV1013_QUAD_SE_POS,
-> +	ADMV1013_QUAD_SE_NEG,
-> +};
-> +
-> =C2=A0struct admv1013_state {
-> =C2=A0	struct spi_device	*spi;
-> =C2=A0	struct clk		*clkin;
-> @@ -512,37 +518,42 @@ static void admv1013_powerdown(void *data)
-> =C2=A0	admv1013_spi_update_bits(data, ADMV1013_REG_ENABLE, enable_reg_msk=
-, enable_reg);
-> =C2=A0}
-> =C2=A0
-> +static const char * const admv1013_input_modes[] =3D {
-> +	[ADMV1013_IQ_MODE] =3D "iq",
-> +	[ADMV1013_IF_MODE] =3D "if",
-> +};
-> +
-> +static const char * const admv1013_quad_se_modes[] =3D {
-> +	[ADMV1013_QUAD_SE_DIFF] =3D "diff",
-> +	[ADMV1013_QUAD_SE_POS] =3D "se-pos",
-> +	[ADMV1013_QUAD_SE_NEG] =3D "se-neg",
-> +};
-> +
-> +static const unsigned int admv1013_quad_se_regvals[] =3D {
-> +	[ADMV1013_QUAD_SE_DIFF] =3D ADMV1013_SE_MODE_DIFF,
-> +	[ADMV1013_QUAD_SE_POS] =3D ADMV1013_SE_MODE_POS,
-> +	[ADMV1013_QUAD_SE_NEG] =3D ADMV1013_SE_MODE_NEG,
-> +};
-> +
-> =C2=A0static int admv1013_properties_parse(struct admv1013_state *st)
-> =C2=A0{
-> =C2=A0	int ret;
-> -	const char *str;
-> =C2=A0	struct device *dev =3D &st->spi->dev;
-> =C2=A0
-> =C2=A0	st->det_en =3D device_property_read_bool(dev, "adi,detector-enable=
-");
-> =C2=A0
-> -	ret =3D device_property_read_string(dev, "adi,input-mode", &str);
-> -	if (ret)
-> -		st->input_mode =3D ADMV1013_IQ_MODE;
-> +	ret =3D device_property_match_property_string(dev, "adi,input-mode",
-> +						=C2=A0=C2=A0=C2=A0 admv1013_input_modes,
-> +						=C2=A0=C2=A0=C2=A0 ARRAY_SIZE(admv1013_input_modes));
-> +	st->input_mode =3D ret >=3D 0 ? ret : ADMV1013_IQ_MODE;
-> =C2=A0
-> -	if (!strcmp(str, "iq"))
-> -		st->input_mode =3D ADMV1013_IQ_MODE;
-> -	else if (!strcmp(str, "if"))
-> -		st->input_mode =3D ADMV1013_IF_MODE;
-> -	else
-> -		return -EINVAL;
-> +	ret =3D device_property_match_property_string(dev, "adi,quad-se-mode",
-> +						=C2=A0=C2=A0=C2=A0 admv1013_quad_se_modes,
-> +						=C2=A0=C2=A0=C2=A0 ARRAY_SIZE(admv1013_quad_se_modes));
-> +	if (ret < 0)
-> +		ret =3D ADMV1013_QUAD_SE_DIFF;
-> =C2=A0
-> -	ret =3D device_property_read_string(dev, "adi,quad-se-mode", &str);
-> -	if (ret)
-> -		st->quad_se_mode =3D ADMV1013_SE_MODE_DIFF;
-> -
-> -	if (!strcmp(str, "diff"))
-> -		st->quad_se_mode =3D ADMV1013_SE_MODE_DIFF;
-> -	else if (!strcmp(str, "se-pos"))
-> -		st->quad_se_mode =3D ADMV1013_SE_MODE_POS;
-> -	else if (!strcmp(str, "se-neg"))
-> -		st->quad_se_mode =3D ADMV1013_SE_MODE_NEG;
-> -	else
-> -		return -EINVAL;
-> +	st->quad_se_mode =3D admv1013_quad_se_regvals[ret];
+> +		Raw value of {x, y, z} components of the quaternion vector. These
+> +		components represent the axis about which a rotation occurs, and are
+> +		subject to the following costraints:
+> +		- the quaternion vector is normalized, i.e. x^2 + y^2 + z^2 + w^2 = 1
+> +		- the rotation angle is within the [-180, 180] range, i.e. the w
+> +		  component (which represents the amount of rotation) is non-negative
+> +		These constraints allow the w value to be calculated from the other
+> +		components: w = sqrt(1 - (x^2 + y^2 + z^2)).
 
-You could have kept the same style:
+Just to double check if we really do not have a special mathematical term for
+that already. If we do, I prefer to have that over odd "partial quaternion".
 
-st->quad_se_mode =3D ret >=3D 0 ? admv1013_quad_se_regvals[ret] : ADMV1013_=
-SE_MODE_DIFF;
-
-yes, more that 80 col but maybe one of those justifiable cases :)
-
-- Nuno S=C3=A1
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
