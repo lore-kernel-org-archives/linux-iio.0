@@ -1,62 +1,66 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A697E3A8759;
-	Wed,  4 Mar 2026 12:25:29 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C26513A6EE1;
+	Wed,  4 Mar 2026 12:25:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772627131; cv=none; b=mVP1droXgNvtOiyAMAJRLWRL95hHRN7H2ohDCMpfPLYvDBgFSqKPF14Hu01Pjp/OmYlI3yPW/ypGAoqYKiDgUqgEn0y1j91s3FkzFXkPKaAxDGOpvFY4xYMPYRaxZEhtGKRLIKBsYokb07vvEC/Jq+H+bSt5uIrdqN1vfI5V5pQ=
+	t=1772627136; cv=none; b=ETR2phsFSMsOhmSsqqBMr3UdLh3JH1h3ck/g6dDf7/SYbPFRnxeyQoAq9FwnM1PXN4v2/VeCs4hwmWerbnltcy05A39e2IH3wCqdMyUsLuhjuiK62rilcAbKDHOrFkcxiSn2/vDKzC2bhz8VtVPSbj15N7UbcwSFuEmo1miGYOk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772627131; c=relaxed/simple;
-	bh=G8igBIVTchBZ041owGbUTDtGTE7yN+xHJ8lRlDj5+uk=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Lz3/8sP2a0GZPtgZhbFKi+WKBAeuWV25LQWDSD/mRjvGUfRDnuRC8rqQAutuoxrohfDjC0+ChasiwoPC8HgdVJYyfcjOMHkWQUdZQnqPBMldjPKcGQzEhniLLgLRDqTSY8bFqCYf/IvVtWmiq38xzLmQvQS72j1HTDRPhe2h4Rk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=le5KxntP; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1772627136; c=relaxed/simple;
+	bh=RFdv4LO6rg7tXzKh4Ke/DGSzA+L0aGxcJaFQHnAf4sg=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ebaWipwTj71YkI+NKt5ggmqwZRW2YTCLvF6vykoX6XQEFLqnpH1Vbsq/zi6zH/HQuRuNn8EasKrWacDD0JQoNX3BKSiFNOA6EAiT8oTyPhWHtN0su9gtkTRAYtFbEwe7C4BR94p0h33HVLAf1i1dZC+d8n3XT7gB8jvhM3rEF3I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=nOngdGDd; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="le5KxntP"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 624Am8bZ1132828;
-	Wed, 4 Mar 2026 07:25:26 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="nOngdGDd"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 624A7JuP3363772;
+	Wed, 4 Mar 2026 07:25:30 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=N4FSoebN4MBpmuGehumnGAiDWkq
-	GNKueyO9YFhw1xng=; b=le5KxntPAXN+AZnrgFpEniV1jSBxXOOd/S1aLih9LRu
-	MPRnYdaJYxSi28tsqr6PEIcABYuSeqqhmaV62Tz08+SpxWiQGoyCZhR0483MdYlk
-	fQLDFy0s+8kkiUSj6P2nIe/P+mfJAbnOrO941ruX0CPNTk2cF2LV/9exKXfxqKcY
-	BgDlQBx9sjQNGRn+4hClXjukzEzIVOT1TWBs+dfr7gKaQNJ+SJ7sJWc076ADkLyP
-	jjNnojl+JDvUTs2hC88lGizs43R+tFfg8Dd6V0ywyyEDfF+/oQx2Tpz1VpSfg0ka
-	dt2gUbJ0sWOMecKm0WAxxk+6yyAb73dud5CHG7w8q4g==
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=h8Bo3
+	Ta1d/I2gR/uK5Cgwkj5fFdkrC8oPNj5yw1eJJg=; b=nOngdGDdq+5ceAhDHBaQY
+	rRpH/AKTSKm+rFIjjRztXm6pCpmru2/HA55JU/j/bhDbIVaRw+v3aqDguZG5LZtK
+	kQp6zLC0iXqhJbPjyYInzT/BXfbthvtFeCG5KEI9pkcI7tls2VwNHBblhoqT4k35
+	OZc6i3N8qzwVRZHiPlbUkhAqCO1VA8YLplKXktgX5E1QZ6t5jh9wHC26swd2j90v
+	ttwZxomVS7DJckCjS4AflpBMMCHjZALO1mLWE2+LqkIv+5uLl/hEvXktpi/oAjSu
+	ZwlkVRqmsoMF9YA0trkJah+PQY4zJXig/PQ+FRSN84aYg6TVwf0FREo63jAkWT/m
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cnwnnnh38-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cpdywsbnf-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Wed, 04 Mar 2026 07:25:25 -0500 (EST)
+	Wed, 04 Mar 2026 07:25:30 -0500 (EST)
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 624CPO2n032243
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 624CPTtX032263
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Wed, 4 Mar 2026 07:25:24 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+	Wed, 4 Mar 2026 07:25:29 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
  ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 4 Mar 2026 07:25:24 -0500
+ 15.2.1748.37; Wed, 4 Mar 2026 07:25:28 -0500
 Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Wed, 4 Mar 2026 07:25:24 -0500
+ 15.2.1748.37; Wed, 4 Mar 2026 07:25:28 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Wed, 4 Mar 2026 07:25:24 -0500
+ Transport; Wed, 4 Mar 2026 07:25:28 -0500
 Received: from JGERONI2-L01.ad.analog.com (JGERONI2-L01.ad.analog.com [10.116.32.144])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 624CPCsB006193;
-	Wed, 4 Mar 2026 07:25:15 -0500
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 624CPCsC006193;
+	Wed, 4 Mar 2026 07:25:20 -0500
 From: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
 To: <linux-iio@vger.kernel.org>, <jic23@kernel.org>
 CC: <dlechner@baylibre.com>, <nuno.sa@analog.com>, <andy@kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 0/2] Add support for Analog Devices MAX30210
-Date: Wed, 4 Mar 2026 20:25:07 +0800
-Message-ID: <20260304122509.67931-1-johnerasmusmari.geronimo@analog.com>
+Subject: [PATCH v2 1/2] dt-bindings: iio: temperature: add ADI MAX30210
+Date: Wed, 4 Mar 2026 20:25:08 +0800
+Message-ID: <20260304122509.67931-2-johnerasmusmari.geronimo@analog.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20260304122509.67931-1-johnerasmusmari.geronimo@analog.com>
+References: <20260304122509.67931-1-johnerasmusmari.geronimo@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,87 +70,126 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: LDpBgNaQ6J6HLg1s11LzXBErLjYFA6M3
-X-Authority-Analysis: v=2.4 cv=dY6NHHXe c=1 sm=1 tr=0 ts=69a824b5 cx=c_pps
+X-Authority-Analysis: v=2.4 cv=Mc9hep/f c=1 sm=1 tr=0 ts=69a824ba cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
  a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=pFtei8h7-M_u3W7gWLYA:9
-X-Proofpoint-GUID: LDpBgNaQ6J6HLg1s11LzXBErLjYFA6M3
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA0MDA5OCBTYWx0ZWRfX14NBiqUS3K2C
- 8wAiaEsicyvypijBoM84aBOywqx07Win61m4ZXMl3rigDsH4T+9XF4oAhsin2m8k28Psw8RAUKF
- AtsSj8WZfP/TApjRHF/OMV2hJgIX6UeEtE82iVPFDmdIVJlTpisg+zVJ/YpNFY7+/ilzeyfOWY8
- mvjw3Js3Ud06/ozNMtbpjSLoILqK6Rzz5Itu6j0strqRw6+LbN5Fm0vqtVRps6kfHp9q+xjtsnV
- s2SJxndqy4nyu6g0KyE130VyrlN+9pS1gkF6qLUdYBZ0mNhLAqcH84i2gI17+7iEP1Y4O1fQ9+j
- ObaejBxWQAUQv9gez4F+QFyvfKG/Jl3Y/3U+l49aBLbokmYSKgHhVqETbCmO7IrhEFdEo2BL7Fm
- HT6nJc38+XfLS11pyjNLbLuvw0lXak6tH448OND59gdAnotAYW0sdUTOVsAyT2Jg8+nyQZNq9Bq
- 3q6iPTJeM2SmfmGaRJA==
+ a=N--XFCr6TIEc_64PeIT2:22 a=gEfo2CItAAAA:8 a=gAnH3GRIAAAA:8 a=VwQbUJbxAAAA:8
+ a=ZN7WX4KZsEyFn0iOn_oA:9 a=sptkURWiP4Gy88Gu7hUp:22
+X-Proofpoint-ORIG-GUID: 2WHzWLkij48phXIqzPbW2FbKCy6ciN6Y
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA0MDA5OCBTYWx0ZWRfXy2fgFF5yGCTS
+ cBAGT1B+VGP8LX08pneah0oDgIWntlKShsbC4wbZKFNd44NsWCKH30zhRcLkqGzWk1oIw5BruBl
+ zx8GVtLCqtAk4/cMAyWrrXVB8pYMr23gpFypDjIdCL6KjhnBIJ/gwX0okzKyTM61Eh6qQiyhKIw
+ aA0v9HCBB665f5tXCMBVmeMOgnj2f4rIuH4w036Re8r3XGugAGM7ybEkO7qkkOMh2oydOPqi3T+
+ 78Sz+OkUnC0W64skxovPXdnslu7kc6dPA+Dr6aMEc2Nuc3QQKGpn+RluTK+3u+SJD98VcTfnOa7
+ BgnCGyYnNylgiWKo3VT9tXk3PHKQMrQqYSUzVbJC5KKFKfo79nwVF4fWyf5Xgi4f/wQGofasA5t
+ 0UKlNHiXnlWbR3kxTe0sZDpza0JoWYcjcAvTjxEOd+l9cGF0sfQjDXozceRwpp+2nkzUqjbV3n2
+ iL+tdcqatzPia5SdsRQ==
+X-Proofpoint-GUID: 2WHzWLkij48phXIqzPbW2FbKCy6ciN6Y
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-03-04_05,2026-03-03_01,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- bulkscore=0 malwarescore=0 lowpriorityscore=0 impostorscore=0 spamscore=0
- clxscore=1015 priorityscore=1501 adultscore=0 suspectscore=0 phishscore=0
+ clxscore=1015 spamscore=0 lowpriorityscore=0 bulkscore=0 adultscore=0
+ phishscore=0 suspectscore=0 priorityscore=1501 malwarescore=0 impostorscore=0
  classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
  reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603040098
 
-This series adds support for the Analog Devices MAX30210 I2C
-temperature sensor.
+Add device tree binding documentation for the Analog Devices
+MAX30210 temperature sensor.
 
-The device provides a 16-bit temperature output and includes
-features such as a hardware FIFO, programmable sampling rate,
-threshold alarms, and interrupt support. These capabilities map
-naturally to the IIO subsystem, particularly the buffered interface
-and event framework.
-
-Patch 1 adds the devicetree binding.
-Patch 2 adds the IIO driver implementation.
-
-Changes in v2:
-- Improve commit message to better describe device features and driver
-  support.
-- Simplify devicetree binding description and clean up property
-  descriptions.
-- Add MAINTAINERS entry for MAX30210 driver.
-- Rename register field macros to include register prefix for clarity.
-- Remove incorrect IIO_DMA_MINALIGN usage and switch to proper __be16
-  handling.
-- Replace manual FIFO byte assembly with get_unaligned_be24().
-- Use dev_err_ratelimited() for invalid FIFO data messages.
-- Simplify event read/write handlers by reducing nested conditionals.
-- Fix write_event_config prototype to use bool state.
-- Replace MAX30210_INT_EN macro with regmap_assign_bits().
-- Replace deprecated iio_device_claim_direct_mode() usage with
-  IIO_DEV_ACQUIRE_DIRECT_MODE().
-- Implement conversion completion polling using regmap_read_poll_timeout()
-  instead of fixed delay.
-- Rework sampling frequency handling using lookup table instead of
-  bit math.
-- Remove trigger infrastructure and switch to IRQ-driven FIFO handling.
-- Replace triggered buffer with kfifo buffer implementation.
-- Use regmap_set_bits() and regmap_clear_bits() helpers where appropriate.
-- Improve FIFO buffer handling and push 16-bit temperature samples.
-- Simplify buffer enable/disable paths.
-- Remove unnecessary fields and clean up state structure.
-- Add optional hardware reset via powerdown GPIO with software reset
-  fallback.
-- Adjust scan type to match 16-bit temperature samples.
-- Miscellaneous code cleanups and style fixes.
-
-John Erasmus Mari Geronimo (2):
-  dt-bindings: iio: temperature: add ADI MAX30210
-  iio: temperature: add support for Analog Devices MAX30210
-
- .../iio/temperature/adi,max30210.yaml         |  62 ++
- MAINTAINERS                                   |   8 +
- drivers/iio/temperature/Kconfig               |  10 +
- drivers/iio/temperature/Makefile              |   1 +
- drivers/iio/temperature/max30210.c            | 664 ++++++++++++++++++
- 5 files changed, 745 insertions(+)
+Signed-off-by: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+---
+ .../iio/temperature/adi,max30210.yaml         | 62 +++++++++++++++++++
+ MAINTAINERS                                   |  7 +++
+ 2 files changed, 69 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
- create mode 100644 drivers/iio/temperature/max30210.c
 
-
-base-commit: 70a9ae59c5b1f2f5501e78e2d85bfeefd153f854
+diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+new file mode 100644
+index 000000000000..66867880a20f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright 2026 Analog Devices Inc.
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/temperature/adi,max30210.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices MAX30210 Temperature Sensor
++
++maintainers:
++  - John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
++
++description: |
++  The MAX30210 is a temperature sensor with an I2C interface.
++  https://www.analog.com/media/en/technical-documentation/data-sheets/max30210.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,max30210
++
++  reg:
++    maxItems: 1
++
++  vdd-supply:
++    description: Analog supply voltage input.
++
++  powerdown-gpios:
++    description: GPIO connected to the CVT/PDB pin (active low).
++    maxItems: 1
++
++  interrupts:
++    description: Connected to INT pin. Interrupt triggered on both rising and falling edges.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - vdd-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        temperature-sensor@40 {
++            compatible = "adi,max30210";
++            reg = <0x40>;
++            vdd-supply = <&vdd>;
++            powerdown-gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
++
++            interrupt-parent = <&gpio>;
++            interrupts = <17 IRQ_TYPE_EDGE_BOTH>;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1c75276404df..09345b9f32ed 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1638,6 +1638,13 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,max22007.yaml
+ F:	drivers/iio/dac/max22007.c
+ 
++ANALOG DEVICES INC MAX30210 DRIVER
++M:	John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
++
+ ANALOG DEVICES INC ADA4250 DRIVER
+ M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+ L:	linux-iio@vger.kernel.org
 -- 
 2.34.1
 
