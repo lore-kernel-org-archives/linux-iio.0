@@ -1,31 +1,31 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D22D038D;
-	Wed,  4 Mar 2026 18:33:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A645938D;
+	Wed,  4 Mar 2026 18:33:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772649210; cv=none; b=bWV0PRak3A2HLCBp6JuYjUR/M/dRUBDAkEyUq7wCBaxBCWWElL+xBk1gYiQcKM2/VUmrSPZhsv5Chy+ltOkYCaBy1PzwPf92t53nhLnRLAVPseMNj4VAEj12//Xeb/S9C3AfHCsXcjN0G4248HbLXIsMYDu+SeATl2uRCvHx7pk=
+	t=1772649214; cv=none; b=hqMhalWqMg+FwhU7SRGJT4bApoZRE/v3h+TrDeu0xhCAMsmAzphtq1QjgY2zgAEbzkb/JKST//VLQpsM9s20JfUD7dWqyZeSX2zzKlWVjIRVAjYv66OIiymGPtHNC8edqyPsS5zE5e2Wnvw8nlNn+wD3e1f2pv8OcZzh6JEm05s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772649210; c=relaxed/simple;
-	bh=23ZWre++sbdS9AI7YPSqbB78TTAMgEfyCsXi1q7Brv4=;
+	s=arc-20240116; t=1772649214; c=relaxed/simple;
+	bh=TYl+mO3jTFF78LYOjZjVzDB4wpiR2tpbrL1fIlmPiw4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=E02BK5UMBWiwPEbGpiSG6ZO2LEhV4iFBgXBV0kivLdWHC5aFsXa3OIzLHVKqX1KJu1uLm+vTPJsTm0JYAVhnDzSK4sThQZ1fnvV7Z6shA3qWlsEUN1COE91Do4g0m/ldGJh/FtWApTtTH1GnL5uTtGQ8qvc7hU4J4wqH5i7pKKk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BdDTbYkm; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ergOmQTsJhyz/HGQZTqagQq5b1vW9nSeYZQCci+N54qEfw6BRj2JgaeETUkRSXsmzP7veqOwwfm2/23FLc/gkGGtMnNWnnlYWA6poK0/TBMeX5fh9q37WZCDb8qpfRFrAn1qoqL/XOH3TujoXfxrCbcPyUPnFesH6vMWpQ44Exg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VnX9G5IJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BdDTbYkm"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6B0FC19425;
-	Wed,  4 Mar 2026 18:33:28 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VnX9G5IJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 926C8C2BC86;
+	Wed,  4 Mar 2026 18:33:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772649210;
-	bh=23ZWre++sbdS9AI7YPSqbB78TTAMgEfyCsXi1q7Brv4=;
+	s=k20201202; t=1772649214;
+	bh=TYl+mO3jTFF78LYOjZjVzDB4wpiR2tpbrL1fIlmPiw4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-	b=BdDTbYkmujqRAY7paiLfuJbpaOo8DW1h8n4jQiqoFyNMbNPgnugld8Vk4thus4NGr
-	 t2WnrfToW/vvZ3gczCJExTPc/ulTklb5Mrtr9CcDtouZcnaiIBhKVUm5Jqw82LtRLC
-	 E336KidEdT417o92tLZAYXJ4Q6BqxOAp91hFu+N2HJ78qIFby6cIdwDSL6CpUtTg2U
-	 kduOhlZJHGAdUhmiuln0nVA1AmGG8+3HLkbT1D+qjK65TFgpJWz+ZZAsIM77LCe1Qb
-	 olY/3Vj9yfr+h1loTh5c56Lpj92EgIcqi0/XwRRvoCN0Ro1XBLUAGzdl7ReSJCcD9q
-	 /laM0tOJ0WlfQ==
+	b=VnX9G5IJHIAqJiwhY41wj5R4TfHMaDqE1ii9AaTSrwbv9iJ6Qm6oVz4hv7ocV/vmt
+	 VRZ3taxDfjg+Ber5v2pNFgLcj5f8o7BvJpYRaZbEhcXyJ1CWRTOYyHG7TqQR4Uy6od
+	 M2uP0TOg5Q5HTVSuJDStc/eiP9cm4OOiDsMjqBDcfN2HdDM9RA0I5dNsId2azETua2
+	 ToP2BliSOPPXXSHgNYlwnPG3Hi22i5Q0h2quUkT7T2bFlaOVCEsCR7TlKRwezsvGY6
+	 52pLVgqttK0B0aVfZNqjdqW471CRFbA/MNe+4WFhLFBwdC3VFVhbFUsiJnVP7tYt/s
+	 UPGtErk6TBQzw==
 From: "Rafael J. Wysocki" <rafael@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: LKML <linux-kernel@vger.kernel.org>,
@@ -34,9 +34,9 @@ Cc: LKML <linux-kernel@vger.kernel.org>,
  Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
  linux-iio@vger.kernel.org
 Subject:
- [PATCH v1 2/2] iio: light: acpi-als: Convert ACPI driver to a platform one
-Date: Wed, 04 Mar 2026 19:33:14 +0100
-Message-ID: <3609079.QJadu78ljV@rafael.j.wysocki>
+ [PATCH v1 1/2] iio: light: acpi-als: Register ACPI notify handler directly
+Date: Wed, 04 Mar 2026 19:32:26 +0100
+Message-ID: <8702898.NyiUUSuA9g@rafael.j.wysocki>
 Organization: Linux Kernel Development
 In-Reply-To: <6147175.MhkbZ0Pkbq@rafael.j.wysocki>
 References: <6147175.MhkbZ0Pkbq@rafael.j.wysocki>
@@ -51,101 +51,70 @@ Content-Type: text/plain; charset="UTF-8"
 
 From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-In all cases in which a struct acpi_driver is used for binding a driver
-to an ACPI device object, a corresponding platform device is created by
-the ACPI core and that device is regarded as a proper representation of
-underlying hardware.  Accordingly, a struct platform_driver should be
-used by driver code to bind to that device.  There are multiple reasons
-why drivers should not bind directly to ACPI device objects [1].
+To facilitate subsequent conversion of the driver to a platform one,
+make it install an ACPI notify handler directly instead of using
+a .notify() callback in struct acpi_driver.
 
-Overall, it is better to bind drivers to platform devices than to their
-ACPI companions, so convert the ACPI ambient light sensor driver to a
-platform one.
+No intentional functional impact.
 
-After this change, the subordinate IIO device will be registered under
-the platform device used for driver binding instead of its ACPI
-companion.
-
-While this is not expected to alter functionality, it changes sysfs
-layout and so it will be visible to user space.
-
-Link: https://lore.kernel.org/all/2396510.ElGaqSPkdT@rafael.j.wysocki/ [1]
 Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 ---
- drivers/iio/light/acpi-als.c | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+ drivers/iio/light/acpi-als.c | 20 +++++++++++++++-----
+ 1 file changed, 15 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
-index 2fe6b493c012..ef4fe708b271 100644
+index d5d1a8b9c035..2fe6b493c012 100644
 --- a/drivers/iio/light/acpi-als.c
 +++ b/drivers/iio/light/acpi-als.c
-@@ -18,6 +18,7 @@
- #include <linux/err.h>
- #include <linux/irq.h>
- #include <linux/mutex.h>
-+#include <linux/platform_device.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/buffer.h>
-@@ -175,9 +176,10 @@ static irqreturn_t acpi_als_trigger_handler(int irq, void *p)
- 	return IRQ_HANDLED;
+@@ -90,9 +90,9 @@ static int acpi_als_read_value(struct acpi_als *als, char *prop, s32 *val)
+ 	return 0;
  }
  
--static int acpi_als_add(struct acpi_device *device)
-+static int acpi_als_probe(struct platform_device *pdev)
+-static void acpi_als_notify(struct acpi_device *device, u32 event)
++static void acpi_als_notify(acpi_handle handle, u32 event, void *data)
  {
--	struct device *dev = &device->dev;
-+	struct device *dev = &pdev->dev;
-+	struct acpi_device *device = ACPI_COMPANION(dev);
- 	struct iio_dev *indio_dev;
- 	struct acpi_als *als;
- 	int ret;
-@@ -188,7 +190,6 @@ static int acpi_als_add(struct acpi_device *device)
+-	struct iio_dev *indio_dev = acpi_driver_data(device);
++	struct iio_dev *indio_dev = data;
+ 	struct acpi_als *als = iio_priv(indio_dev);
  
- 	als = iio_priv(indio_dev);
+ 	if (iio_buffer_enabled(indio_dev) && iio_trigger_using_own(indio_dev)) {
+@@ -102,7 +102,7 @@ static void acpi_als_notify(struct acpi_device *device, u32 event)
+ 			break;
+ 		default:
+ 			/* Unhandled event */
+-			dev_dbg(&device->dev,
++			dev_dbg(&als->device->dev,
+ 				"Unhandled ACPI ALS event (%08x)!\n",
+ 				event);
+ 		}
+@@ -218,7 +218,17 @@ static int acpi_als_add(struct acpi_device *device)
+ 	if (ret)
+ 		return ret;
  
--	device->driver_data = indio_dev;
- 	als->device = device;
- 	mutex_init(&als->lock);
- 
-@@ -226,9 +227,10 @@ static int acpi_als_add(struct acpi_device *device)
- 					       acpi_als_notify, indio_dev);
- }
- 
--static void acpi_als_remove(struct acpi_device *device)
-+static void acpi_als_remove(struct platform_device *pdev)
- {
--	acpi_dev_remove_notify_handler(device, ACPI_DEVICE_NOTIFY, acpi_als_notify);
-+	acpi_dev_remove_notify_handler(ACPI_COMPANION(&pdev->dev),
-+				       ACPI_DEVICE_NOTIFY, acpi_als_notify);
+-	return devm_iio_device_register(dev, indio_dev);
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret)
++		return ret;
++
++	return acpi_dev_install_notify_handler(device, ACPI_DEVICE_NOTIFY,
++					       acpi_als_notify, indio_dev);
++}
++
++static void acpi_als_remove(struct acpi_device *device)
++{
++	acpi_dev_remove_notify_handler(device, ACPI_DEVICE_NOTIFY, acpi_als_notify);
  }
  
  static const struct acpi_device_id acpi_als_device_ids[] = {
-@@ -238,17 +240,16 @@ static const struct acpi_device_id acpi_als_device_ids[] = {
- 
- MODULE_DEVICE_TABLE(acpi, acpi_als_device_ids);
- 
--static struct acpi_driver acpi_als_driver = {
--	.name	= "acpi_als",
--	.class	= ACPI_ALS_CLASS,
--	.ids	= acpi_als_device_ids,
--	.ops = {
--		.add	= acpi_als_add,
--		.remove	= acpi_als_remove,
-+static struct platform_driver acpi_als_driver = {
-+	.probe = acpi_als_probe,
-+	.remove = acpi_als_remove,
-+	.driver = {
-+		.name = "acpi_als",
-+		.acpi_match_table = acpi_als_device_ids,
+@@ -234,7 +244,7 @@ static struct acpi_driver acpi_als_driver = {
+ 	.ids	= acpi_als_device_ids,
+ 	.ops = {
+ 		.add	= acpi_als_add,
+-		.notify	= acpi_als_notify,
++		.remove	= acpi_als_remove,
  	},
  };
  
--module_acpi_driver(acpi_als_driver);
-+module_platform_driver(acpi_als_driver);
- 
- MODULE_AUTHOR("Zhang Rui <rui.zhang@intel.com>");
- MODULE_AUTHOR("Martin Liska <marxin.liska@gmail.com>");
 -- 
 2.51.0
 
