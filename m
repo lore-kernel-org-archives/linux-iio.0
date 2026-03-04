@@ -1,106 +1,157 @@
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA2B634D907
-	for <linux-iio@vger.kernel.org>; Wed,  4 Mar 2026 10:16:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D74C836AB40
+	for <linux-iio@vger.kernel.org>; Wed,  4 Mar 2026 11:40:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772619421; cv=none; b=nCyIW8ukUCiL1d3ZxqD1rS7hIJQMe2SVhw0Ukr+dWdn20O3mGA6FXUT8fQbvq+JtCp8UvCj5iWlcPTwwOMpscIPDIA33KmXdwe9HG/fpNZmdQSfsvTuwofiM0DZpmiWYG5MSXnFrE/0EPBztVC1gXNwr5uhJMMaYHZGRc/wFapE=
+	t=1772624417; cv=none; b=ciahx3pbkXuaApcJqjHq2GxnbMhl7TdJlY64jbnexCVqX2NlpG6eU6Lt/nGIn5iKKk8WIg08tjcDJw4XNyCrcBG3vGKRu1yk4XzfbDT5DFPP/wbRU+g67N+zB5vawEj1xfJfjSwFxcbfLXRwu3zv6bKsSte8QmeYxY2S7Ym5O2w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772619421; c=relaxed/simple;
-	bh=e78qIDzHbDTqXVogJF+UVOVMy75B++Q+8NZ/1KY9TUY=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jPvUXH6n8RjLGd0MSiiyQIcDObenIjFG1PLEZGo6FqRd9jD38rkGP56l3yUihvBnWNvqzLJ5rfpAujJ2Ip0AJF0TyT+Pdf3xQccChTJkkExINIf0mxm8+dLPCX8DU6+0buRrf6fp+A0eUvWSAvSh5ThzV69mS/Jhv6o87s9qTcg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=F+FSwpMX; arc=none smtp.client-ip=209.85.128.50
+	s=arc-20240116; t=1772624417; c=relaxed/simple;
+	bh=hhJHUnyXzwi/Kx5IBoqabTPd6BRuf0miytj3h2lUkH8=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=R8LPY1+lU8p6RV/nWNLkJEi4bHFDwAGeUTeZRNz5rGEdeqQjwfa1ZUOVTwJob8ATt3ZJ7QCPPSFjQdbYkVBebv8uixBO6Lj6NOwH1ATA/bEiwXYPfhreK9XwZtYxOYVOywU0LRO1S1QostD456qlO37ubXxchH6Ma7U/UTyu4M8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KDDCweWt; arc=none smtp.client-ip=209.85.128.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F+FSwpMX"
-Received: by mail-wm1-f50.google.com with SMTP id 5b1f17b1804b1-483bd7354efso89379645e9.2
-        for <linux-iio@vger.kernel.org>; Wed, 04 Mar 2026 02:16:59 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KDDCweWt"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-4836f363ad2so79048485e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 04 Mar 2026 03:40:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772619418; x=1773224218; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hYB3YNu9CO7wLt2ZT8Xt9m7azMQTOfSk/ijLWaYuruI=;
-        b=F+FSwpMXpboj5Xote2ENRoHs8jokK6NZkRGnHXH4Qy3cV3lBdhiex5fHH9wNHAjdhK
-         yqGvfBGwjpHrGAR+l6wgHNZa77l96PQY1fJWo2xhuCVwQp6WrSo/kVUGJtLRM+lpwMlz
-         tP+31aj1JPS+X4nRNiTwhltna0Em727kkN2S2Iw7DmoBsbn1CDPDOHgMd18NfKRPRqk8
-         0TvYXo1BoWGnRr73ONsX444mo+GUDtdoixmN6R+5aBXYazoDMqyRZ9QHPbl3AT1nnCk1
-         +/K1DTBEv0BP29zEOeRkYIjutxE2ZIuX7lhUCht8CRZhQInAqHabKMqS5C73FREKZnDG
-         otzw==
+        d=gmail.com; s=20230601; t=1772624414; x=1773229214; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=PbtOTZEyDRKjxabRC490eCkoRx0H/oDiCdXHd+Ic+XI=;
+        b=KDDCweWtOzYn4I/UH+CnwrDkMnXZazShDwi08VF9ggh15bE7cTjWoFeFIOotFgPSys
+         iGigzH8R+EmSMzB2LZJ0Htgk3yGr4BNCAE1xdwkfVfBBVAfzh8pogKL/8JyYdEQ25vsX
+         QtN00GWsaOwfU4Z8z1yfbE8Ab9XWIP1x9V+xrniWhDDznok2gKneHAv7Z07NX2cDmHHE
+         p/Mc7giKtIqbtm30dUfkhRQCPOKiVDl9M1Q2Br9gt0xAk1uFbOtSe0PChAblVJJzJ++e
+         tXTLbuQdav7rgX3dVTFWc9PC5UOCfgv2WsgZKco6ZDwi8Yei4k8XXW8mW3/vCPWLfL+N
+         vaFQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772619418; x=1773224218;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=hYB3YNu9CO7wLt2ZT8Xt9m7azMQTOfSk/ijLWaYuruI=;
-        b=xVUT6WIGMwH2dZX3qE6FvDuzIWE1QNyhEcQ/G9/NN5YvwWJhEvSxy4tKB+UOTEHC5e
-         99R41mDesMAu51Tawui7Oy1ktFeI++PYR0N2DNjdkClnafslz7Xo9ZcOy8AE/AoPYbLV
-         ygYYwgXV776msO+K1O0RHtjDb/3dVJrdS0Hm+NU+Cv4qJZ5c3/XDa3+1cUdEyT99L86P
-         E+XeEg+/bL8xjsyYMGaEkVdXByWqzAeLF50TnjSmGoraME1H/338VdLc9VAbPkzZZSZ2
-         UromoVIj6xBV4ovZoC8l7mR3EDaJXfB7kUsMn71z2uEixo5avzrpVQ/dSfQ08UjEAzW4
-         Ng3w==
-X-Forwarded-Encrypted: i=1; AJvYcCXSau8WZE214iAC3E4bjIfdY7wxFXnJ8BT0iZiDqEcjp7nYoV5xFt+yiHvuTmo94o5ag6zcYKwfdTc=@vger.kernel.org
-X-Gm-Message-State: AOJu0YySCtpgCfcnN+o4za7IHoGSJtmeGRSDK5dFbZFV/TTweD2D3Kkb
-	cVToqX0yB+uMaoWJ5s7oaj1djlevIqujKtx20kBRRnM8ZM9ERy9Rzc7A
-X-Gm-Gg: ATEYQzwXO4knNOhhsh4xKMmZYW4GP7MSDTw5T8vsEwCO1tVbM5GSsWrh5IJK6s7jrmL
-	qZ20kwKFIl/JGYLhL9OK9Ti8K49RXIfEBKLdEtRbWN3qxRADcmcQJlzB6zB5ioe43Pn1gOrMqH9
-	tYL5h3cHZ0CenZF2pkvWiPEuCmA698MF1PWELqRxLSxtEljeBCEzKiSjsR8zgfqx8haybNeQhK7
-	DUxePS2Roj9KuU43lEW1KjCQVBF/fhtIfVaB9AGzhqDgB1owSUxHP4iSM2MCx0EJT9tzKC3Czf4
-	qqyHBjTTDP2d2+aEvMuBRLIcYeiWUL7WJp/+1S8pXmGd5pIAmabb+SgBEh6sxY50XuB8gbXHnpW
-	l/Q+t4E+MXVmf7NdYgSPqdAqC1/n1zvP8dpSE4OFRs4Zp2pOtS0beR8PS669yw8E5hOZTgpxyck
-	uZMJPujRUsONbneUrp6QaG1dfIbtlPPf/WCuufyV3Hov1DL8Qos19GVwcHV2CUZ12m
-X-Received: by 2002:a05:600c:a51:b0:47d:3ffa:5f03 with SMTP id 5b1f17b1804b1-48519886ca3mr23059915e9.21.1772619417522;
-        Wed, 04 Mar 2026 02:16:57 -0800 (PST)
-Received: from pumpkin (82-69-66-36.dsl.in-addr.zen.co.uk. [82.69.66.36])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48518839ae7sm36391845e9.1.2026.03.04.02.16.57
+        d=1e100.net; s=20230601; t=1772624414; x=1773229214;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=PbtOTZEyDRKjxabRC490eCkoRx0H/oDiCdXHd+Ic+XI=;
+        b=OLtZSj6OsboW/bLUMmNGSwXdRGTNnZu8b+H3BAdkFx3HKQDYuPmvNX60SpQ8+Om0uW
+         wGikwlLcQ+RcRzEC9YgXFd7XRxYNsynIst5dB/tKIF62nIx/w5AXHcR7AjPW22ygaAeE
+         +BX//TPr2nZUKjZ2zfePMl8eFB8qGOEpW3uk64VSwh18qbmLA+V/I7tTJ8jRCpb3eTDq
+         IgdXohgbmqF/nURPO7Iy4XGRy6E8YvSlWmfJqMiwRd2EygEzwhzHzd2BAyRdXX51Ptpu
+         8xGbg/EreLj86GtAuHSmOTTA6wiXEy1yDZunRzsTTzW6OLT+uv8JBD4fVOX8h/N1SDIj
+         5NPg==
+X-Forwarded-Encrypted: i=1; AJvYcCUzermAOR4X5QvnDaDLQS/FrU0WAZ+WdgeNAZcw4VhGRadn2Sl8Xg6GIg9/rjFqY5CnWaf4LCnNYr8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxVrNP5F5rRWr7meqCmTEGWXafzKVfmZ7Jx+ktTkVpf2fPmopEp
+	B4jxpBDWtt58aYuxscQAu1/7Wp3VGYwrQpZA4zDTVsNe+/SOuw9cCEZp
+X-Gm-Gg: ATEYQzx/QDq9S96x+qjS7nwQoQ6xKfl0leBF9aD0BpyYzeL8Wqc1IP+XGvGUmCaQM4f
+	JPtwi5dLARul7MinJ0gp1VubFLc6ATJHZyLBxXH9PsAAjifjq1gm8aajuKmP02QzBWFyQ9mUsai
+	urGgz9lO7a/86TlUDlnNACBpeJsbRVxbYF4kYwlJCmPBVCVUK9NyXeJPE2ake68kiao0P/TEtxP
+	6xaxwPVtWfRu7Nybig1qvZjXmLPPENRuz4sYQMk36YTQFFnXcBb0ibyuYnUPRMkpBTGXvkksdJX
+	RwBItaaXNG1cIACIotc5DdGMj0NrsHKIpqgYP5Kw73yVWksW7mfuGuwmaHX1zEBjLlwjDMOMsp1
+	+2S0eTHvFG2Yhjikdqlmv9NX1xBv/aIU0s3dSs79oCa9Gpmt4LH5CoUMxW/uS8wNXmkJF/9ZjTV
+	uxPGDyz7YYYJzqFRSujPUic5RgqYdLsf8=
+X-Received: by 2002:a05:600c:a51:b0:47e:e20e:bbbe with SMTP id 5b1f17b1804b1-48519889928mr26061705e9.25.1772624414000;
+        Wed, 04 Mar 2026 03:40:14 -0800 (PST)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4851884225asm47072305e9.6.2026.03.04.03.40.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 04 Mar 2026 02:16:57 -0800 (PST)
-Date: Wed, 4 Mar 2026 10:16:55 +0000
-From: David Laight <david.laight.linux@gmail.com>
-To: Rodrigo Alencar via B4 Relay
- <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- Jonathan Corbet <corbet@lwn.net>, Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v8 02/10] lib: kstrtox: add kstrntoull() helper
-Message-ID: <20260304101655.620df7ee@pumpkin>
-In-Reply-To: <20260303-adf41513-iio-driver-v8-2-8dd2417cc465@analog.com>
-References: <20260303-adf41513-iio-driver-v8-0-8dd2417cc465@analog.com>
-	<20260303-adf41513-iio-driver-v8-2-8dd2417cc465@analog.com>
-X-Mailer: Claws Mail 4.1.1 (GTK 3.24.38; arm-unknown-linux-gnueabihf)
+        Wed, 04 Mar 2026 03:40:13 -0800 (PST)
+Message-ID: <7888782857fca26d6562c5cf1807fc7488c9dde8.camel@gmail.com>
+Subject: Re: [PATCH v2] iio: adc: xilinx-xadc: Fix sequencer mode in
+ postdisable for dual mux
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Christofer Jonason <christofer.jonason@guidelinegeo.com>, 
+	jic23@kernel.org
+Cc: lars@metafoo.de, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, 	michal.simek@amd.com, victor.jonsson@guidelinegeo.com,
+ linux-iio@vger.kernel.org, 	linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, 	stable@vger.kernel.org
+Date: Wed, 04 Mar 2026 11:40:58 +0000
+In-Reply-To: <20260304090727.1800289-1-christofer.jonason@guidelinegeo.com>
+References: <20260304090727.1800289-1-christofer.jonason@guidelinegeo.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-On Tue, 03 Mar 2026 13:27:07 +0000
-Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+On Wed, 2026-03-04 at 10:07 +0100, Christofer Jonason wrote:
+> xadc_postdisable() unconditionally sets the sequencer to continuous
+> mode. For dual external multiplexer configurations this is incorrect:
+> simultaneous sampling mode is required so that ADC-A samples through
+> the mux on VAUX[0-7] while ADC-B simultaneously samples through the
+> mux on VAUX[8-15]. In continuous mode only ADC-A is active, so
+> VAUX[8-15] channels return incorrect data.
+>=20
+> Since postdisable is also called from xadc_probe() to set the initial
+> idle state, the wrong sequencer mode is active from the moment the
+> driver loads.
+>=20
+> The preenable path already uses xadc_get_seq_mode() which returns
+> SIMULTANEOUS for dual mux. Fix postdisable to do the same.
+>=20
+> Fixes: bdc8cda1d010 ("iio:adc: Add Xilinx XADC driver")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Christofer Jonason <christofer.jonason@guidelinegeo.com>
+> ---
 
-> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> 
-> Add kstrntoull() function, which converts a string to an ULL with a max
-> character limit. The function is an alternative integer parsing function
-> that does not require a null-terminated string. It becomes a better option
-> over simple_strtoull() or kstrtoull() when parsing integers from a buffer
-> with custom delimiters without having to create temporary copies.
-> The function is consumed inside the implementation _kstrtoull(),
-> promoting reuse.
+From a code standpoint:
 
-If you've got custom delimiters use a function that returns a pointer
-to the character that terminated the conversion.
-They save you having to find the delimiter as well as taking a copy.
+Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 
-	David
-
+> Changes in v2:
+> =C2=A0 - Align continuation line to opening parenthesis (Andy)
+> =C2=A0drivers/iio/adc/xilinx-xadc-core.c | 11 +++++++++--
+> =C2=A01 file changed, 9 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-=
+xadc-core.c
+> index e257c1b94..3980dfacb 100644
+> --- a/drivers/iio/adc/xilinx-xadc-core.c
+> +++ b/drivers/iio/adc/xilinx-xadc-core.c
+> @@ -817,6 +817,7 @@ static int xadc_postdisable(struct iio_dev *indio_dev=
+)
+> =C2=A0{
+> =C2=A0	struct xadc *xadc =3D iio_priv(indio_dev);
+> =C2=A0	unsigned long scan_mask;
+> +	int seq_mode;
+> =C2=A0	int ret;
+> =C2=A0	int i;
+> =C2=A0
+> @@ -824,6 +825,12 @@ static int xadc_postdisable(struct iio_dev *indio_de=
+v)
+> =C2=A0	for (i =3D 0; i < indio_dev->num_channels; i++)
+> =C2=A0		scan_mask |=3D BIT(indio_dev->channels[i].scan_index);
+> =C2=A0
+> +	/*
+> +	 * Use the correct sequencer mode for the idle state: simultaneous
+> +	 * mode for dual external mux configurations, continuous otherwise.
+> +	 */
+> +	seq_mode =3D xadc_get_seq_mode(xadc, scan_mask);
+> +
+> =C2=A0	/* Enable all channels and calibration */
+> =C2=A0	ret =3D xadc_write_adc_reg(xadc, XADC_REG_SEQ(0), scan_mask & 0xff=
+ff);
+> =C2=A0	if (ret)
+> @@ -834,11 +841,11 @@ static int xadc_postdisable(struct iio_dev *indio_d=
+ev)
+> =C2=A0		return ret;
+> =C2=A0
+> =C2=A0	ret =3D xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF1_SEQ_M=
+ASK,
+> -		XADC_CONF1_SEQ_CONTINUOUS);
+> +				=C2=A0 seq_mode);
+> =C2=A0	if (ret)
+> =C2=A0		return ret;
+> =C2=A0
+> -	return xadc_power_adc_b(xadc, XADC_CONF1_SEQ_CONTINUOUS);
+> +	return xadc_power_adc_b(xadc, seq_mode);
+> =C2=A0}
+> =C2=A0
+> =C2=A0static int xadc_preenable(struct iio_dev *indio_dev)
