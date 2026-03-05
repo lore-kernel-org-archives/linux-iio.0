@@ -1,80 +1,76 @@
-Received: from CH4PR04CU002.outbound.protection.outlook.com (mail-northcentralusazon11013029.outbound.protection.outlook.com [40.107.201.29])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pf1-f178.google.com (mail-pf1-f178.google.com [209.85.210.178])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE6AE40148E;
-	Thu,  5 Mar 2026 19:59:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.201.29
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772740771; cv=fail; b=Lf795MCtL9GVzKv3OyTAHpA9SepvpIre4qMuFhKEB6NmSyfjkA5GpFfuI2zq0O6f0mBQkOk0vsBJfp6Hc7dSsoevIHUk/OVJMOzFlwvNiX2HLIkoMYQL1lsHq064k5ws6gKeVWVt5MsMHDqQJ9FbH3e+hF/HMDd22rlzVVLTlvQ=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772740771; c=relaxed/simple;
-	bh=Z6HldUMVHQkAJ0tiDiG7K1ytGJRPeEVGUt4AX3cF7G8=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=brMZ9BE5rDm9ko2KTaB1pANGQzLEwoCPYe3fEGCrD6yloRz17m6aeIEI6CslIK77UCpYx2Pr+uIteKSxBr2h7HHuz10DK8joFibtXqU63SVOMU4WG7gAzabUkdNUwZUAZz5zoG8IEDM5Huh3ft5jh1mgmxcmgHd6FKkc1aXNKko=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com; spf=pass smtp.mailfrom=ti.com; dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b=DObhDScR; arc=fail smtp.client-ip=40.107.201.29
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=ti.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=ti.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64DD734B43D
+	for <linux-iio@vger.kernel.org>; Thu,  5 Mar 2026 21:04:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.178
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772744663; cv=none; b=R037TtbuMDq9E6ziSUvuvBukcpRBq4siS2KfXF9NyXUkn5YKcL0duSGcA3gP2pseTS0QogzcurD93Uf5UOen43BrQ1m8vtowoIAzrgoNrMusi+KHOuWuyEE8ldyf8i5c6rHAfDBHhVvdnDIEhp35YA+zCdL7MSr+Wj8dgcw9D5E=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772744663; c=relaxed/simple;
+	bh=RrTc5ZHztUuUqkH+At+TJQt4NUn4orTcyqFWueIoEvM=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=mMb3hqDR4FyzyMuMMyRjYWaKF3sY4i9uNOB81i/4W7DsooXojUnP0jQ0/4w3dflkOQC2c502lazWBoO9bvpNj2VrhkGyskL3df2H9sR5mHyi95oFiMdHV3RAdrckXbn/maNbhrkUYFaoOYDyWTAX7/SoZeF5hx8nM0vVNGjeGp0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WZub/Hd8; arc=none smtp.client-ip=209.85.210.178
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="DObhDScR"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=BnjYVpY3Q7OBPGuG+gLrNcgoKxbJKx70RCmSHX20DN13w4EW6ZW7aubPODGceXF+mzMzsGc9G8+EZe5A7yqaXYWi7ksuC40ZRIqVS2twFZv5SJiBNAQdffuto8CL8D5bNT+9J2npbg1PBuM6popDpOdqE9VGxcsz7KtX3brElU8mQVZt7Iz9735NCAeR/mVuoz+w4GWN+OfG05VvHOHwb8E8A9ZnjDA00jZ8zlhRA8iY3DM0mIq0jJq/VMASXA7Ny02RibMr5UXQVc5Cb4sNATHZjIedhDOJp9cyJzr8HLDcebZk5KBRbGzQZIA0484oF7Dys738ge2qOIaI3Izv/g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o+/91yoOzHJUkNNYR81kJvZ5vtCIBWcP/BK8bTNiYZI=;
- b=S1uukFtDgHioInKxUNYDNtin5TyiLpedcywJJUNK+KdQPWzPd4z6gZgAgXn94l4APjJ3xjaAmdn3816nmgK0WAwtK2NukwXgspyvguMMt9xulZVX0wzja5dLM95YBhngMizPvcRubvWUDFQ4ohoBOliIBPHaSex+st1yR3gnP2pzbLWpApRr+IqOWYjVgbEcUNgY5eofjmyEkiNl6jZGvGxSgIZZ4/WIX2pybuKzgwUaFk0q1vXC9O7eojcO+wsizuQK//mhWHaZBeAD5ep4nRUXjYtZclcu54TRnroZT3LuPeotASkO6OcvFuHq2z+eomaHs2Hk/+SoikS+Olm7gQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 198.47.23.194) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=ti.com;
- dmarc=pass (p=quarantine sp=none pct=100) action=none header.from=ti.com;
- dkim=none (message not signed); arc=none (0)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o+/91yoOzHJUkNNYR81kJvZ5vtCIBWcP/BK8bTNiYZI=;
- b=DObhDScR2Wv7pEWv0UG/yMi79phMxFw/Qv2U74dIm+XH13OtCYjwTBrL+s54qbMeLboXNn8+osRI5rVr2DEntbV6giRZksGbi55YFGVbc1UNLKxN+eqIgdZKVI0a3i7xIB7Z1QY+s3nNF6LMcZQStZKfZ+yxA8G+8/MFpPE2gNQ=
-Received: from SA1P222CA0004.NAMP222.PROD.OUTLOOK.COM (2603:10b6:806:22c::14)
- by IA1PR10MB6879.namprd10.prod.outlook.com (2603:10b6:208:421::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.18; Thu, 5 Mar
- 2026 19:59:19 +0000
-Received: from SA2PEPF00001507.namprd04.prod.outlook.com
- (2603:10b6:806:22c:cafe::2e) by SA1P222CA0004.outlook.office365.com
- (2603:10b6:806:22c::14) with Microsoft SMTP Server (version=TLS1_3,
- cipher=TLS_AES_256_GCM_SHA384) id 15.20.9654.23 via Frontend Transport; Thu,
- 5 Mar 2026 19:59:07 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 198.47.23.194)
- smtp.mailfrom=ti.com; dkim=none (message not signed) header.d=none;dmarc=pass
- action=none header.from=ti.com;
-Received-SPF: Pass (protection.outlook.com: domain of ti.com designates
- 198.47.23.194 as permitted sender) receiver=protection.outlook.com;
- client-ip=198.47.23.194; helo=lewvzet200.ext.ti.com; pr=C
-Received: from lewvzet200.ext.ti.com (198.47.23.194) by
- SA2PEPF00001507.mail.protection.outlook.com (10.167.242.39) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.9678.18 via Frontend Transport; Thu, 5 Mar 2026 19:59:19 +0000
-Received: from DLEE210.ent.ti.com (157.170.170.112) by lewvzet200.ext.ti.com
- (10.4.14.103) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 5 Mar
- 2026 13:59:19 -0600
-Received: from DLEE207.ent.ti.com (157.170.170.95) by DLEE210.ent.ti.com
- (157.170.170.112) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20; Thu, 5 Mar
- 2026 13:59:18 -0600
-Received: from lelvem-mr05.itg.ti.com (10.180.75.9) by DLEE207.ent.ti.com
- (157.170.170.95) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.2562.20 via Frontend
- Transport; Thu, 5 Mar 2026 13:59:18 -0600
-Received: from lelvem-mr05.itg.ti.com ([10.249.42.149])
-	by lelvem-mr05.itg.ti.com (8.18.1/8.18.1) with ESMTP id 625JxIEY2951411;
-	Thu, 5 Mar 2026 13:59:18 -0600
-From: Andrew Davis <afd@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
-	Nikita Travkin <nikita@trvn.ru>
-CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, Andrew Davis <afd@ti.com>
-Subject: [PATCH] dt-bindings: iio: light: ltr501: Add liteon,ltr303
-Date: Thu, 5 Mar 2026 13:59:17 -0600
-Message-ID: <20260305195917.831104-1-afd@ti.com>
-X-Mailer: git-send-email 2.39.2
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WZub/Hd8"
+Received: by mail-pf1-f178.google.com with SMTP id d2e1a72fcca58-824ac5d28f9so8636755b3a.0
+        for <linux-iio@vger.kernel.org>; Thu, 05 Mar 2026 13:04:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772744662; x=1773349462; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=PFqSaEYNCjidkzwHN5ZnhX/rwyXadMMMmVhe1scX/pA=;
+        b=WZub/Hd896c+918E7xmFYVjPMWf2xXQndxomZz1rb+ZvtM45RwlPvQVxG0Hh2BYEe9
+         N0Mioi+RlV+9+3U67mbk8JUN39xKZCKPpI1voFPlliSGVSd10iMsqDPraBoBUAvv2LvD
+         P3sIEHxOF+wUK60kPkzz2RdPFhCcaAiWcbfp4qBCUaNNJE+U/7VDKMxfz2mo+0aS9mOU
+         D8fc+iR8Jt2aF/90sXKALk66IelWomDxC2tHI8+EASM90y5NNdXeYtMxsCStxDnbwZ2F
+         ceFtmCYr4l1FnX3uBm6NNLymReAyDAef2sAE6/b41m3AtxpY2pjOMa2EJljdkQP0rERs
+         PhYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772744662; x=1773349462;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=PFqSaEYNCjidkzwHN5ZnhX/rwyXadMMMmVhe1scX/pA=;
+        b=TdqDC2EOY0ex6UI14w60m0S1rjsv03BGOEmkgmAuQ6YynZAXBnPlVrY1pKqm/4W5zZ
+         Ugwb61lp3wEhDS4KhNAxiIZK2NUr/JKxEhkH3iFOgjg95ACrOXfmN/HFX2MWyIPDZCet
+         PihWy3go/SK94dbQTZXgi4xxH9Q2jSE6D9Z/JP+P2FPHMw4X11v1Kkx/Hg/9Pn5NmS2T
+         ShjwsZgNVCQScxUs+J7g1ustk/x9RdSNUo2KCYBuKVB0RgUeTKCDUEqDG4R3F5P+z3OE
+         DLlUznurzo9eN6w7c7gk9IwSSHZDgVaGy+pMUYT/xVykOLJWRXPTe8ePVETA8AUWauTq
+         C5qA==
+X-Forwarded-Encrypted: i=1; AJvYcCXpA06i2fE1P2wUYHyIezw+ANGPgIrUdb1sPoqpMTOmZb7qLCVcS3f4O24Epl4K0C1HWrq093ziq0s=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwvqpzrKsJWkr1EdSX+CfQDCijIluqe7CxUyLzOOceSTZ6fj+JN
+	G9RQgo74l4GSsyGC4sjaIl7oyMEEKbLw7NiB2+v4WrQzGkZMPSg2hr/ofY3xJg==
+X-Gm-Gg: ATEYQzzwuthdOz6PQS6JcKS5Nt8bIZofnFlhPLsHMaPdjmVmoBvsjrxG8IxxSMyFpAN
+	RASdUBLcRc0uT8JDEozfq4aBcPcGTVOVQgP1gTyaq0yH2HTCcAlfSFmS/zWCwAFEyix+l3X5JQS
+	L5Ap3ZUqR+C4rUfp/Q7i5hehK0tKEQxBOBE30Fbw3eXUpkZVxSwK2DEIouApRuEvJEFZr7mPMY+
+	HwDVt4ZpoDeuQ/ln4mATPXCODPFc20sXCnJK6/A5Uj2eL+8g4td6u5g4ALP6DVk3JeLaAlQOW5O
+	4WVdhEYqjtL5F5Pg7esrx7eOhhJ6vpbg50VxAsiiPUHzAWXT+lfdcuiVUxAEc21l6iXrsNROy3S
+	wamqwPF/3h9P9zKgAdVgwL7jvhJpp5fUfuPOvi4sTHUUAIymfXfdb4P4bRlmH4LCUNEfGvLoSsc
+	2ex+oYovtF/EIDpiVBbEuCMeff
+X-Received: by 2002:a05:6a00:1c9a:b0:829:9130:e698 with SMTP id d2e1a72fcca58-8299130ecb8mr1738523b3a.64.1772744661731;
+        Thu, 05 Mar 2026 13:04:21 -0800 (PST)
+Received: from arch ([2409:40c2:542d:796b:d56f:9c25:f250:525e])
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-8273a05c0b0sm21854421b3a.61.2026.03.05.13.04.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Mar 2026 13:04:20 -0800 (PST)
+From: Bhargav Joshi <rougueprince47@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	rougueprince47@gmail.com,
+	linux-staging@lists.linux.dev
+Subject: [RFC PATCH] staging: iio: ad9832: modernize ABI and remove dds.h dependency
+Date: Fri,  6 Mar 2026 02:33:47 +0530
+Message-ID: <20260305210347.120446-1-rougueprince47@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -82,56 +78,226 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-C2ProcessedOrg: 333ef613-75bf-4e12-a4b1-8e3623f5dcea
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SA2PEPF00001507:EE_|IA1PR10MB6879:EE_
-X-MS-Office365-Filtering-Correlation-Id: a95e7e87-12bb-462f-edad-08de7af1b01c
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|376014|1800799024|82310400026|36860700016|34020700016;
-X-Microsoft-Antispam-Message-Info:
-	j60HtKlyx69T8zx9aQK18Ry6MRILDgF9XxPE/+du5uL6X2VNBkFVLLgNPdoBtqi/W53UdcsupZDvvhUEp9MwMQQU9oCwQkshBZ4iM7/G9GTbDZg1jqo64DcOBW01BhDOV7afN/qWDUi9Yq0NJ78wLMDxK5wrwS1wkYGh6u6YK4b/iziYVIGKKV/9l9DkDvUie3dyA5gyvDLNqsswyak1uu6/sQJv+W8eBQoWL79BXOU/Ag2SLmAfJiJWi5hNUuURRXBPfwOcDTh2ToOtyMRjxh2uqjbAuC11J3ND2BlSRLeBh6npxP3JAIHGCQm0lqXLCR18WSCK12QTbkFvVyKhvnD5G4JIdPzgVH08cfAdrxLTj/nFXIBhtJe6h0lgQ4B6fmumCxFahI9a92LyyCuY0HD+XVX49mu3L2vxzkg0EDI63xJlyQOyKxGF6yvima7JcyYangi/y7gPMSdup3D8MNh6PoLnpZftyoyDgZrJHHJYFeoT61sDyvdtdACTggOHfiyy3r0AY8VcaJFf9IK3LsuXRArxOn0f3rK7DCLWrU3xf3keTjSTLzVHB2nvV9lWbPEi4BDm7VNY9DvtAE9qq6x3ixdkI0c+mai67PyNakSf8xDAKzL6qDfXZKqoBZ3jN9w+ArV3SDmmcXQm3Q9gFMdLOtJAKLYyjZAPK3N7owU8nbZNMnY3EMvHFqfnuNK3pF4nZ+UE4LJJ4Urb5LVgvm4z9l3nvkvwUPxYsnm7zafjeOdrp2cefGxXslSj1jNkUFk1thXcFsFHCAYAUuovLQ==
-X-Forefront-Antispam-Report:
-	CIP:198.47.23.194;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:lewvzet200.ext.ti.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(376014)(1800799024)(82310400026)(36860700016)(34020700016);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	6r1q891vgxb4Dwc5wTmaldrLXRbX7eBw0j9KATZSo03Govj/YDCyErG2tsYL49QbCfs5YT43Uz94jX7z/96w+JTJ++s6/yBO5856HQ8nNAShVktiDTczp9vx/mQzCphCbEvCiGLdOswBB/r8BorHpeSWCHQNs+3Wegc5WRPkwFzvzH+E9aXVSxxhP7zWFUo7S+6LsMdGiauBU22+FDsQ4VDNvUreoq4PLAi6Xpx2omTZqb2ZTEbRlgxaqE/8iR9Sbp0av3W+TjbR5Nx7FngAKcZhIGQ35/yvY5huE/hyocT2fIytK2vNpKe2LbTAK7VsAYP8lalnfy+RwaHXU34Zbz2n+onMS5TfWgULmyk+h+rSi6IMHvD4ZyOWGpIiOq+CwJOLbcyDsP3h4vXEJ+3IHOe4NtrOI1jgArce17ZudiJ7mxkUapEYRwP5fo9JPUov
-X-OriginatorOrg: ti.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 05 Mar 2026 19:59:19.2820
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a95e7e87-12bb-462f-edad-08de7af1b01c
-X-MS-Exchange-CrossTenant-Id: e5b49634-450b-4709-8abb-1e2b19b982b7
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=e5b49634-450b-4709-8abb-1e2b19b982b7;Ip=[198.47.23.194];Helo=[lewvzet200.ext.ti.com]
-X-MS-Exchange-CrossTenant-AuthSource:
-	SA2PEPF00001507.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB6879
 
-This device is already supported by the driver and this compatible
-string was added to the of_device_id list but was not documented
-here in the binding, fix this.
+The AD9832 driver currently relies on legacy custom IIO macros defined
+in dds.h. This triggers checkpatch.pl warnings (NON_OCTAL_PERMISSIONS)
+and, more importantly, exposes a non-standard sysfs ABI (e.g.,
+frequency0, frequency1, phase0-3) directly to user space.
 
-Signed-off-by: Andrew Davis <afd@ti.com>
+This patch removes the custom macros and migrates the driver to standard
+IIO API mechanisms:
+- Standard attributes (frequency, phase) now use info_mask_separate.
+- Non standard specific toggles (frequencysymbol, phasesymbol,
+  pincontrol) have been migrated to an ext_info array.
+- Remove dds.h header dependency.
+- Pointless frequency_scale and phase_scale attributes are dropped as
+  suggested by Jonathan in
+  https://lore.kernel.org/linux-iio/20251231180939.422e9e62@jic23-huawei/
+
+NOTE: This patch introduces an intentional ABI changes. The non-standard
+attributes (out_altvoltage0_frequency0, etc.) have been removed. They
+are replaced by standard attributes (out_altvoltage0_frequency and
+out_altvoltage0_phase). Routing to correct register while writing is
+handled by checking currently active frequencysymbol or phasesymbol.
+
+Testing: This patch has been strictly compile-tested. I do not have
+access to physical AD9832 hardware. I am submitting this as an RFC to
+see if these changes are acceptable, and to ask if someone with physical
+hardware could test thisg and provide a Tested-by tag.
+
+Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
 ---
- Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 1 +
- 1 file changed, 1 insertion(+)
+This patch is heavily inspired from discussions in following
+thread.
+https://lore.kernel.org/linux-iio/20251215190806.11003-1-tomasborquez13@gmail.com/
 
-diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-index c8074f180a793..ab9bb68dd7363 100644
---- a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-+++ b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-@@ -18,6 +18,7 @@ properties:
-       - liteon,ltr501
-       - liteon,ltr559
-       - liteon,ltr301
-+      - liteon,ltr303
+Since this is an RFC please let me know if these changes are acceptable.
+
+ drivers/staging/iio/frequency/ad9832.c | 135 +++++++++++++++----------
+ 1 file changed, 80 insertions(+), 55 deletions(-)
+
+diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+index b87ea1781b27..066a1b9ee8d5 100644
+--- a/drivers/staging/iio/frequency/ad9832.c
++++ b/drivers/staging/iio/frequency/ad9832.c
+@@ -23,8 +23,6 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
  
-   reg:
-     maxItems: 1
+-#include "dds.h"
+-
+ /* Registers */
+ #define AD9832_FREQ0LL		0x0
+ #define AD9832_FREQ0HL		0x1
+@@ -168,12 +166,63 @@ static int ad9832_write_phase(struct ad9832_state *st,
+ 	return spi_sync(st->spi, &st->phase_msg);
+ }
+ 
+-static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+-			    const char *buf, size_t len)
++static int ad9832_write_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	struct ad9832_state *st = iio_priv(indio_dev);
++	int ret;
++	unsigned int addr;
++
++	if (val < 0)
++		return -EINVAL;
++
++	mutex_lock(&st->lock);
++	switch (mask) {
++	case IIO_CHAN_INFO_FREQUENCY:
++		if (st->ctrl_fp & AD9832_FREQ)
++			addr = AD9832_FREQ1HM;
++		else
++			addr = AD9832_FREQ0HM;
++
++		ret = ad9832_write_frequency(st, addr, val);
++		break;
++
++	case IIO_CHAN_INFO_PHASE:
++		switch (FIELD_GET(AD9832_PHASE_MASK, st->ctrl_fp)) {
++		case 0:
++			addr = AD9832_PHASE0H;
++			break;
++		case 1:
++			addr = AD9832_PHASE1H;
++			break;
++		case 2:
++			addr = AD9832_PHASE2H;
++			break;
++		case 3:
++			addr = AD9832_PHASE3H;
++			break;
++		default:
++			addr = AD9832_PHASE0H;
++			break;
++		}
++		ret = ad9832_write_phase(st, addr, val);
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++	mutex_unlock(&st->lock);
++
++	return ret;
++}
++
++static ssize_t ad9832_write_ext_info(struct iio_dev *indio_dev,
++				     uintptr_t private,
++				     const struct iio_chan_spec *chan,
++				     const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad9832_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret;
+ 	unsigned long val;
+ 
+@@ -182,17 +231,7 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+ 		goto error_ret;
+ 
+ 	mutex_lock(&st->lock);
+-	switch ((u32)this_attr->address) {
+-	case AD9832_FREQ0HM:
+-	case AD9832_FREQ1HM:
+-		ret = ad9832_write_frequency(st, this_attr->address, val);
+-		break;
+-	case AD9832_PHASE0H:
+-	case AD9832_PHASE1H:
+-	case AD9832_PHASE2H:
+-	case AD9832_PHASE3H:
+-		ret = ad9832_write_phase(st, this_attr->address, val);
+-		break;
++	switch ((u32)private) {
+ 	case AD9832_PINCTRL_EN:
+ 		st->ctrl_ss &= ~AD9832_SELSRC;
+ 		st->ctrl_ss |= FIELD_PREP(AD9832_SELSRC, val ? 0 : 1);
+@@ -245,50 +284,34 @@ static ssize_t ad9832_write(struct device *dev, struct device_attribute *attr,
+ 	return ret ? ret : len;
+ }
+ 
+-/*
+- * see dds.h for further information
+- */
++#define AD9832_EXT_INFO(_name, _ident) { \
++	.name = _name, \
++	.write = ad9832_write_ext_info, \
++	.private = _ident, \
++	.shared = IIO_SEPARATE, \
++}
+ 
+-static IIO_DEV_ATTR_FREQ(0, 0, 0200, NULL, ad9832_write, AD9832_FREQ0HM);
+-static IIO_DEV_ATTR_FREQ(0, 1, 0200, NULL, ad9832_write, AD9832_FREQ1HM);
+-static IIO_DEV_ATTR_FREQSYMBOL(0, 0200, NULL, ad9832_write, AD9832_FREQ_SYM);
+-static IIO_CONST_ATTR_FREQ_SCALE(0, "1"); /* 1Hz */
+-
+-static IIO_DEV_ATTR_PHASE(0, 0, 0200, NULL, ad9832_write, AD9832_PHASE0H);
+-static IIO_DEV_ATTR_PHASE(0, 1, 0200, NULL, ad9832_write, AD9832_PHASE1H);
+-static IIO_DEV_ATTR_PHASE(0, 2, 0200, NULL, ad9832_write, AD9832_PHASE2H);
+-static IIO_DEV_ATTR_PHASE(0, 3, 0200, NULL, ad9832_write, AD9832_PHASE3H);
+-static IIO_DEV_ATTR_PHASESYMBOL(0, 0200, NULL,
+-				ad9832_write, AD9832_PHASE_SYM);
+-static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808"); /* 2PI/2^12 rad*/
+-
+-static IIO_DEV_ATTR_PINCONTROL_EN(0, 0200, NULL,
+-				ad9832_write, AD9832_PINCTRL_EN);
+-static IIO_DEV_ATTR_OUT_ENABLE(0, 0200, NULL,
+-				ad9832_write, AD9832_OUTPUT_EN);
+-
+-static struct attribute *ad9832_attributes[] = {
+-	&iio_dev_attr_out_altvoltage0_frequency0.dev_attr.attr,
+-	&iio_dev_attr_out_altvoltage0_frequency1.dev_attr.attr,
+-	&iio_const_attr_out_altvoltage0_frequency_scale.dev_attr.attr,
+-	&iio_dev_attr_out_altvoltage0_phase0.dev_attr.attr,
+-	&iio_dev_attr_out_altvoltage0_phase1.dev_attr.attr,
+-	&iio_dev_attr_out_altvoltage0_phase2.dev_attr.attr,
+-	&iio_dev_attr_out_altvoltage0_phase3.dev_attr.attr,
+-	&iio_const_attr_out_altvoltage0_phase_scale.dev_attr.attr,
+-	&iio_dev_attr_out_altvoltage0_pincontrol_en.dev_attr.attr,
+-	&iio_dev_attr_out_altvoltage0_frequencysymbol.dev_attr.attr,
+-	&iio_dev_attr_out_altvoltage0_phasesymbol.dev_attr.attr,
+-	&iio_dev_attr_out_altvoltage0_out_enable.dev_attr.attr,
+-	NULL,
++static const struct iio_chan_spec_ext_info ad9832_ext_info[] = {
++	AD9832_EXT_INFO("pincontrol_en", AD9832_PINCTRL_EN),
++	AD9832_EXT_INFO("frequencysymbol", AD9832_FREQ_SYM),
++	AD9832_EXT_INFO("phasesymbol", AD9832_PHASE_SYM),
++	AD9832_EXT_INFO("out_enable", AD9832_OUTPUT_EN),
++	{ }
+ };
+ 
+-static const struct attribute_group ad9832_attribute_group = {
+-	.attrs = ad9832_attributes,
++static const struct iio_chan_spec ad9832_channels[] = {
++	{
++		.type = IIO_ALTVOLTAGE,
++		.indexed = 1,
++		.channel = 0,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_FREQUENCY) |
++				      BIT(IIO_CHAN_INFO_PHASE),
++		.ext_info = ad9832_ext_info,
++	},
+ };
+ 
+ static const struct iio_info ad9832_info = {
+-	.attrs = &ad9832_attribute_group,
++	.write_raw = ad9832_write_raw,
+ };
+ 
+ static int ad9832_probe(struct spi_device *spi)
+@@ -321,6 +344,8 @@ static int ad9832_probe(struct spi_device *spi)
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+ 	indio_dev->info = &ad9832_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad9832_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad9832_channels);
+ 
+ 	/* Setup default messages */
+ 	st->xfer.tx_buf = &st->data;
 -- 
-2.39.2
+2.53.0
 
