@@ -1,85 +1,208 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 445D930FF1C;
-	Thu,  5 Mar 2026 07:11:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F36C375F67;
+	Thu,  5 Mar 2026 08:49:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772694688; cv=none; b=Ctab/RfoB6aVHJU7ML+2Igb2shzUSWCfDMLQjI48hbO0qwylPLYBD/Nx+/b3vIH+ScSL6591b7IIi9RskRYbaPQIbzkmXVOStfZNSVwK5YLxFbtZLSKPkWQkkDd9n5msULj7F/Qfd2NbVz2qDMxGw0DvB5iQ7wbJZMWmgllF3/Q=
+	t=1772700560; cv=none; b=Bgg6igBuBhrsW1W0Xe/9jnWniSf3mzLvWo5WWHsb9O54etW5armGumTXQIZL1C9IDb41JGu7E/TrzKA2YHQZdUTF7Zc9oRjHS3tKOyD15Xe7+PB3GxEfkca9EHmKgCeCBvi+jLP+XtP/TD0L+YdIKe9zJSQOI4VJtlGHKvw/Hm4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772694688; c=relaxed/simple;
-	bh=YrghpefAVzvUhvtMqW1qS8G69fAOW9+vaNoRlMTENBU=;
+	s=arc-20240116; t=1772700560; c=relaxed/simple;
+	bh=UEwttngTQsmLLtKJ8DFAkKkPp9TkJbnDTb161dzvgCo=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=n/qmsZ+ztzb/ZwXaERDe2IBlocSinGL7tyvNJ5lCfqM+Pru5VIdjJJtDcKrrvyIuKBClrMLRebOUXSoniiq49jgC1SL0HKrUxFR5FyaZTnHdh59qDGB11jDBu5lYwPvY8eG25/v1DdEkDuKokF5MDvviWZEf1DZwilhSD/ZJYNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gWBvRItV; arc=none smtp.client-ip=192.198.163.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=gWpV8PjPttthJGo93kSW2JdcNnmiJxEjOLuf/KA5Wz+E8aUJelkqDlcybkOR9KKOYKptO7u0zI5cnVR2vXKtrjEIM720D8L4O0HovKt7BuQm3yfBhE6LRNQN/UM9xdIRKHVvcPvRgOYVjSj+guv6w+VSROMD7Tl4l6zqZ/HhigI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oeBENYUV; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gWBvRItV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772694687; x=1804230687;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=YrghpefAVzvUhvtMqW1qS8G69fAOW9+vaNoRlMTENBU=;
-  b=gWBvRItVYDL74bfy6BaGJ1o70ZCFpbQRmkaz2lse99nmq6cB0vOqd4ev
-   D3nuL8d6H+0kL7SIZihPtlQa0OSmpHFm3no2oGO3RLfkN2g/3+AaxJGtR
-   csAabpK2CFrAl7odl/DvopZIRZJsNH3Rso8qkNw1OG1wI6NsVPV/3klT0
-   hGNkr7D3EJCT2qScGKM3twRrNkiDGvKqg1hGfovMtP6wFtMRyJskb5swx
-   UPqAXBMny7iHomqPw8pqllTdBEymhgysfnSGEnWM+ANtfMJdONAFz6nnu
-   zynOH9KPF5ZfwTbaMXclfDPdaGBTKdlaeCIkLhnRV9Qu+fSptuG5sQz/T
-   w==;
-X-CSE-ConnectionGUID: Cwx+19fqRB+gFT1mi0dT7Q==
-X-CSE-MsgGUID: iSewA5lUQ/O25FKOWeXbUg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11719"; a="77643358"
-X-IronPort-AV: E=Sophos;i="6.21,325,1763452800"; 
-   d="scan'208";a="77643358"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 23:11:27 -0800
-X-CSE-ConnectionGUID: cJBd+nTpQvidc5RSA9ByOw==
-X-CSE-MsgGUID: qO1hoR8kQcWH1H3VXCHsHg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,325,1763452800"; 
-   d="scan'208";a="215864624"
-Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.21])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 23:11:25 -0800
-Date: Thu, 5 Mar 2026 09:11:22 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>,
-	Linux ACPI <linux-acpi@vger.kernel.org>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] iio: light: acpi-als: Register ACPI notify
- handler directly
-Message-ID: <aaksmnbDUIfCUTqv@ashevche-desk.local>
-References: <6147175.MhkbZ0Pkbq@rafael.j.wysocki>
- <8702898.NyiUUSuA9g@rafael.j.wysocki>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oeBENYUV"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 926E0C116C6;
+	Thu,  5 Mar 2026 08:49:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772700560;
+	bh=UEwttngTQsmLLtKJ8DFAkKkPp9TkJbnDTb161dzvgCo=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=oeBENYUVSaUIgTeVFRD5YBJxrw75e0yO3ekO3RJ5WXmoWo3cZ8gL9GakH+D84ZtKS
+	 qK6fR73ch5JgXbzyaZs303hpQGym5CQrHRjfKmXwKnza3IglQrzyfeuUAmoxewkYcr
+	 JI/rq5Lvmrqcod1d2hi5HA6nKV518xfNYDs6S0WaYW10tZ01vqPhaTRDAbL+2yQNam
+	 /xu1RdzmrY3gv8ZUm5EUmvtRQ57yR41xdtYAG1RXLNUkM1kioldrmuoZBMLN4bqhgM
+	 gIWZQlTY33jhfLSudmIdi8e/jnpT4Rfbc+9lDyQuKNaDU7sDCoyFg+D9AKpGRqJgwh
+	 TkFg/lCX+vQhQ==
+Date: Thu, 5 Mar 2026 09:49:17 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>, 
+	William Breathitt Gray <wbg@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Thierry Reding <thierry.reding@gmail.com>, linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
+Subject: Re: [PATCH 0/5] Renesas MTU3 PWM / counter fixes
+Message-ID: <aak9_ran81EPmjpm@monoceros>
+References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="73k3u4jandqqyizn"
 Content-Disposition: inline
-In-Reply-To: <8702898.NyiUUSuA9g@rafael.j.wysocki>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
-
-On Wed, Mar 04, 2026 at 07:32:26PM +0100, Rafael J. Wysocki wrote:
-
-> To facilitate subsequent conversion of the driver to a platform one,
-> make it install an ACPI notify handler directly instead of using
-> a .notify() callback in struct acpi_driver.
-> 
-> No intentional functional impact.
-
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
+In-Reply-To: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
 
 
+--73k3u4jandqqyizn
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 0/5] Renesas MTU3 PWM / counter fixes
+MIME-Version: 1.0
+
+On Fri, Jan 30, 2026 at 02:23:48PM +0200, Cosmin Tanislav wrote:
+> The Renesas MTU3 PWM and counter drivers have some issues which have
+> been observed while adding support for the Renesas RZ/T2H and RZ/N2H
+> SoCs.
+>=20
+> This series fixes the most important issues which prevent normal
+> functioning of the driver, while other less important issues will be
+> handled in a future series.
+>=20
+> Questions for the PWM maintainer:
+>=20
+> 1)
+>=20
+> The handling introduced in patches 1 and 2 is similar to the approach
+> taken in commits [1] and [2].
+>=20
+> Is this the right approach?
+>=20
+> This code snippet below extracted from drivers/pwm/pwm-rzg2l-gpt.c
+> entirely prevents the period ticks from changing at all when two PWM
+> channels backed by the same HW channel are in use.
+
+Yes, this is a known issue. But there is no sane alternative I'm aware
+of as one consumer must not change the settings affecting a different
+consumer.
+
+> if (rzg2l_gpt->channel_request_count[ch] > 1) {
+>   u8 sibling_ch =3D rzg2l_gpt_sibling(pwm->hwpwm);
+>=20
+>   if (rzg2l_gpt_is_ch_enabled(rzg2l_gpt, sibling_ch)) {
+>     if (period_ticks < rzg2l_gpt->period_ticks[ch])
+>       return -EBUSY;
+>=20
+>     period_ticks =3D rzg2l_gpt->period_ticks[ch];
+>   }
+> }
+>=20
+> Same logic has been imposed in patches 1 and 2 as the HW limitation is
+> similar.
+>=20
+> Based on the logic here, a second channel can be enabled as long as its
+> period is larger than the period of the first enabled channel, and the
+> period and duty cycle will be adjusted to be <=3D to the period of the
+> first enabled channel.
+>=20
+> But once the second channel is enabled, there's no way to adjust the
+> period of either channels anymore.
+>=20
+> Wouldn't a better solution be that the smallest period between the two
+> channels is used, so that adjustment is still possible dynamically?
+>=20
+> Here is an example.
+>=20
+> echo 0 > /sys/class/pwm/pwmchip0/export
+> echo 1 > /sys/class/pwm/pwmchip0/export
+> echo 0xFFF000 > /sys/class/pwm/pwmchip0/pwm0/period
+> echo 0x7FF800 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+> echo 0xFFF000 > /sys/class/pwm/pwmchip0/pwm1/period
+> echo 0x7FF800 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
+> echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
+> echo 1 > /sys/class/pwm/pwmchip0/pwm1/enable
+>=20
+> Now both LEDs are on, let's increase the period.
+>=20
+> echo 0xFFFF000 > /sys/class/pwm/pwmchip0/pwm0/period
+> echo 0x7FFF800 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+>=20
+> The effective period did not change.
+
+Yeah, so pwm0 still runs at 0xFFF000. And setting the duty_cycle to
+0x7FFF800 also results in it being 0xFFF000.
+=20
+> echo 0xFFFF000 > /sys/class/pwm/pwmchip0/pwm1/period
+> echo 0x7FFF800 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
+>=20
+> The effective period didn't change now either.
+>=20
+> echo 0 > /sys/class/pwm/pwmchip0/pwm0/enable
+> echo 0 > /sys/class/pwm/pwmchip0/pwm1/enable
+>=20
+> echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
+> echo 1 > /sys/class/pwm/pwmchip0/pwm1/enable
+>=20
+> After turning the PWMs off and on again, the effective period is
+> updated.
+
+Yes, let's note that the sysfs API is strange.
+
+> If we were to change the period dynamically to the smallest one, the
+> LEDs would have changed their effective period without needing to be
+> turned off and on again.
+
+Not all consumers only care about the relative duty cycle. So changing
+the period behind the back of a consumer even when keeping the relative
+duty cycle is a no go.
+
+> Would this approach be better than the current approach? I can see that
+> other drivers just refuse updating the period entirely when the PWM
+> channels must share the same period.
+>=20
+>=20
+> 2)
+>=20
+> Another issue that I've encountered is that PWM is left enabled even if
+> the channel is unexported.
+>=20
+> Here is an example.
+>=20
+> echo 0 > /sys/class/pwm/pwmchip0/export
+> echo 0xFFFF000 > /sys/class/pwm/pwmchip0/pwm0/period
+> echo 0x7FFF800 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
+> echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
+> echo 0 > /sys/class/pwm/pwmchip0/unexport
+>=20
+> The connected LED is kept blinking as 0 was not written to enable.
+>=20
+> Is this intended? Or should the PWM turn off on unexport?
+
+For in-kernel users of a PWM it's the consumer's responsibility to
+disable a PWM before pwm_put(). I think it's more natural to have the
+same for /sys (and also the chardev interface).
+
+> 3)
+>=20
+> Should the .get_state() ops read the period and duty cycle from the
+> hardware if the PWM is not enabled?
+
+It doesn't need to.
+
+> Currently the MTU3 driver guards reading period and duty cycle based on
+> whether the PWM is enabled.
+
+Best regards
+Uwe
+
+--73k3u4jandqqyizn
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmmpQ4oACgkQj4D7WH0S
+/k7iMAgAu3Ml0H8KBG9SsCnSyS32BCqDIneFx3upsHvm+1/N1Byeof1cdv/5Thov
+pJ2JwexrpimVz643rpBvkZ/utEkmbIbDW5NOp8GlD0HK6G56sr2HhZ4r9cktv5bQ
+YmNoTfwT2JJpC/MsZnrk2olNf1w4nRtL1WcFCEAmfFAYYBSyUB62VUq/huYh5fyC
+whkeOgQ55YOmHZ0vVr2F7ksvo1AI0sJgJglmdwvhB9lUiB/FuRw1f+oqv55V8J73
+rUqcGV6EHDStiimRD6bxJ95obAq2pT5zzlzjaK8Ctjg3/0fOasUBD3kB6EuwUbAo
+fn7FrqywEgUnBZ5vXnav8uNmiHVWQw==
+=01q9
+-----END PGP SIGNATURE-----
+
+--73k3u4jandqqyizn--
