@@ -1,369 +1,114 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B91A639B4A9;
-	Thu,  5 Mar 2026 12:44:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772714668; cv=none; b=rYCIaF0iWB2jJLB34MX8Leaij/+QFhcG4wk59dhb35BycVKNcIwCS+FKIHtYnq1heJswqdLza3FgR5Nlrd51e++Ew+ryR/7BYdtO2K/Tu5dw2oYqkZc8NdmwBseGocdxbjwTruii3YilqhYiQm4p2/UegYquLTXjfh4bcUgCgSc=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772714668; c=relaxed/simple;
-	bh=1w1RB447ldnhlv8Hxu9zjeDMNtNYv/NPl51WMASJdHA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=tGcSQVLaLf6PoU9KSijosV1RXLeVCHeDXSmeD8EPGnyu2VCi2urciYYPhYHp5PSDKWDwzr1VJi/Vb+OH6ZGtsjfbM49TS2TVW8wag2Nib2yJ3qns3e1XDyLgJqLkBtYzV5o5iQ1OHSS2zz5V0NNevmviXCrLrIjpEOjtrCKf+VU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LDxIZTHJ; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26A4039C634
+	for <linux-iio@vger.kernel.org>; Thu,  5 Mar 2026 12:46:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.179
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772714804; cv=pass; b=P3Vy/chx3zrTPzF/ZPo4UH8BPMN4yvDuRhiTd1T8wGfOhwigBH3uHXmbKRk6YQbuUQjpZ0CPXcx7dSWVQk+7WE3k9A/eE/9poK8wFvOX7UKQzG0su940EoHnTIdQxyNTgssNyj1AbeoJ3nUt3NX8qNaFnByjNq1ZhvZGxRXifHU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772714804; c=relaxed/simple;
+	bh=o0POkazCs+lb73dBMhowTUqc3dsqo+pbqDTEL2E/U7g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=cvJzC7PsENEcahEqQJb3M4vbfl8r3I6W8JCYxrk96LrvrETkikRKiJTM7Dxh1dFfOK1bk+B0c0zi8vPVIPR81peZBvTKkTm3pUeY3OXG2xAtsTvehX/hTPRPZTj4U3SS7+QrTSvvbvIU2E3JvX5JZ4RGf57Yvb7qZVrzaJeREdM=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dY1CNL8V; arc=pass smtp.client-ip=209.85.128.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LDxIZTHJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DB4FC116C6;
-	Thu,  5 Mar 2026 12:44:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772714668;
-	bh=1w1RB447ldnhlv8Hxu9zjeDMNtNYv/NPl51WMASJdHA=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=LDxIZTHJ2mYAqUYUpM4rqzZqtOy9udLdU1nPT/u3StPVOAxHfd1HkkpzQVNBSMNCH
-	 tHAAbXHXvchUiXKghhZ/gTWDIczkMPjXTj5SXEg2l6KA5uZ9T7SNE2pTHnkOPGiC/N
-	 R+jvYfQZkT5R0zYOrUApdyIuMpJE2gaQKcjZiWS0aIapVW/Gl7pvBkItwBaJNBWaqY
-	 DspG8lnPxmxXQfJlwIaAI4BIe1+2wKsNdNXPNfblQVleHP6DcEQPVv0LznMOrZKC6L
-	 i1iJ3VLPsiU1NRIuHz9lNYrs/PLJjveniEzGFvjojTShf9jVCLI39Fudl1ICZ2sB7K
-	 1RYQ3uYn/pX2A==
-Message-ID: <d77de930-d988-40ad-9b29-9bfe8f4584df@kernel.org>
-Date: Thu, 5 Mar 2026 13:44:22 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dY1CNL8V"
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-79898953985so39250477b3.1
+        for <linux-iio@vger.kernel.org>; Thu, 05 Mar 2026 04:46:42 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; t=1772714802; cv=none;
+        d=google.com; s=arc-20240605;
+        b=K2vrGL5n/z11ZSE6gK6AsjopGO30sv7rPdBHJ1scx7Fp3sZEcxurS89wWmGlFPS0j9
+         B6IB5+MuP6qS0BpKKG8YZqekEuuD0tvgSNpDasL1P49Eet2hO0qZ5M3W1dsbJq8yBmdJ
+         X67WqpufwmPKiOrL2VWtTedFSz7b/DBt9yonsTtcRvHS5ARwiM5lslG22Y5KPTW6vENG
+         KHOlKL1GFSy8+5ipkXhOWQcXGo1T6Fzcg4CzBjkTEUyN+9LTuqTDojJDCAPeRU27/mni
+         fzeFxIJ8pNc213es4tj2oK1HJsj67EGphgw+n51Rk/p5trbQAgjJ2gMwcW5Ku83cJM0u
+         Iwug==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:dkim-signature;
+        bh=o0POkazCs+lb73dBMhowTUqc3dsqo+pbqDTEL2E/U7g=;
+        fh=ulodM5k9gAlPLjsZOvhQ1VQBCoHMApvAPnbbv3rBvI0=;
+        b=HoC6i3CzcZLgTofcRnlqKMH4rk0AvIBk9FyhMea8hLd2ViN0h/Pj0WSw4ir6/2YPnl
+         rJjHrZA9nT20dzMXMHCsuSGWzA0TSVSbIfYbGm7eVhWwctBiDclOoy1YYon42UGZRfxg
+         WTt7VsonlsyE891/X1KvBw2VPMKrfraaJDRQNHyPT/kFU1oH3cfCx1B/7caCMzKLyC8S
+         XXLqcE5W1A1UJPU8dePxaNiw5bI/yxW2cGIns2hpW4LD8sivJxUn0OqNTTCexGeQgVa5
+         wgqEVaSGzIrcyAvz40ysaM3nmxeLhPSNhHGww7Vu/BJUFewSPF0Hf672he0fOy0kfFqQ
+         45/w==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772714802; x=1773319602; darn=vger.kernel.org;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:from:to:cc:subject:date:message-id:reply-to;
+        bh=o0POkazCs+lb73dBMhowTUqc3dsqo+pbqDTEL2E/U7g=;
+        b=dY1CNL8Vy5pJxr/loHCh7jy3lcHPxPVqreVG2YpdviPlfoOTkyCWHOaWzKavPxZP7N
+         mFz6E8s2ZKZAXGwdHNtV+6fyYyKMt9Ed0VTaIpxHyavX/6Of58JPy7DSCWcXehpMVOaF
+         kpGkZzAabE2x8EPMMeB837HxS0yNOboG9zaa3HP4k+tYTJhkhdkgpbr4iCdDtbDF+qlt
+         sSoZkhPrroD+Qcx+AsjTpF5+/wBpdXWzpNkxEtmyDE38ToC6iLR9cx4u/VeihSHnb57o
+         XwbFox5nFrWVLX2so9bJNCYFHYIlOPfAg868XJkQWGjvrHpCMD0bTb2Pdsyu6ln16RcO
+         9uGA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772714802; x=1773319602;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=o0POkazCs+lb73dBMhowTUqc3dsqo+pbqDTEL2E/U7g=;
+        b=k/uiZPP6rX7fha2lyjrRWB9tUQKAztCX/sGFdOEe7fD7pZbt5hgIFKYR5wudkS6mfk
+         jikkkn9VEAuvE4Rb28xr/i/8ru0yMLcjG18sQR/SEG6xWghDC4v6BC9XeKgTu5KAX2PG
+         4TpB2yz3KYKFzEIOykYD7BcryBVyGg3Usf48bMlSi1VGOE4btQoFw3gqsLE3y8LNY/X/
+         5w/VlSxKfcCDz8BsTIapMJ+WR41Qg3GN62n5xCgQnlM9jhHhvV6ara/DKUIXui3XNAH5
+         VJr38Vg0gcXg9UP75LXrYpuAlp2s/aB2msL0TscwjO9zDQEf/kq01ecb5uCbe5BzGn42
+         3kgg==
+X-Forwarded-Encrypted: i=1; AJvYcCXNwEbnK14bZutryfwt8gtDjQLHqUp8Xu0UodnajWXa+QX8XPLdNICLBY2Nq753jBdpZyypBBEvn6E=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw9Yhj/RgzJbJ+Dd0SNg7RAT+YiVQw9KDJzX2xppvwqWJRaa2yd
+	RKrQJ4ALQ/TDQNgwiP/CYv2+J7FZ+mVe+j0x96JtvSCkclAorTPx7Sl813Uh5Hoq/tT08ZFeYQK
+	nVQT9JgD1L8i7XUOV4a1i3GHmxO81qgE=
+X-Gm-Gg: ATEYQzzr0RPx4XwtNPQK0+Pi4QoSAMdAjcfKVICGcs2CfsZqSlYkEQSR13lj2SHwz8L
+	ZvbERcb2RJXpAT6bP/jEAkvbVQsAl2ZvT1fOuj1LoS+oarocaVfHlrFI1cSkRuluQ8ovw/i1F8v
+	evsxw2CNEDkpgBt9fYFv9JyF1odUanr1orzOZrx68Oqp/e5eJbmMixWYWtyqJ1TD3UzLFw8pA8T
+	cXeDReD2KkUe5MT7DZC1ZCgZZ/pGkt6hek4iIuFVrgguJn/1tdt3eQN4O9ceGNeIMK97D7/Vdqs
+	YdId8chic9ReIy8a5HPdnY7lxvE=
+X-Received: by 2002:a05:690e:b49:b0:64a:d64a:b025 with SMTP id
+ 956f58d0204a3-64cf9b22d01mr4439489d50.7.1772714802117; Thu, 05 Mar 2026
+ 04:46:42 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add bindings for AD4691 family
-To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-gpio@vger.kernel.org
-References: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
- <20260305-ad4692-multichannel-sar-adc-driver-v1-1-336229a8dcc7@analog.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20260305-ad4692-multichannel-sar-adc-driver-v1-1-336229a8dcc7@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20260305021550.120614-1-chenchunyang0908@gmail.com> <aakrn40DOvSdRgQP@ashevche-desk.local>
+In-Reply-To: <aakrn40DOvSdRgQP@ashevche-desk.local>
+From: Chunyang Chen <chenchunyang0908@gmail.com>
+Date: Thu, 5 Mar 2026 20:46:30 +0800
+X-Gm-Features: AaiRm53NN7I3r73FTn6Qb93ELqnhbwl-hWO6jNsosj0RP21fPmKjNSN7vQKUAz8
+Message-ID: <CA+TCOg8ehyUx4yLs4acCTYfMiYJaJ-g3UyPAfw80Wy+M8FwWiA@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ti-ads1018: fix type overflow for data rate
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: kuurtb@gmail.com, jic23@kernel.org, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-On 05/03/2026 13:23, Radu Sabau via B4 Relay wrote:
-> From: Radu Sabau <radu.sabau@analog.com>
-> 
-> Add YAML bindings and dt-bindings header for the Analog Devices AD4691
+Hi Kurt, Andy,
 
-There are no such thing as YAML bindings. DT bindings.
+Thanks for your review and suggestions!
+I have sent out the v2 patch, which addresses the following:
 
+On Thu, Mar 5, 2026, Kurt Borja wrote:
+> data_rate_mode_to_hz[] is u32 so I prefer for this to be u32. This also
+> kinda matches ads1018_calc_delay() which takes unsigned int.
 
-> family of multichannel SAR ADCs (AD4691, AD4692, AD4693, AD4694).
-> 
-> The binding describes five operating modes selectable via the
+Changed 'drate' type to u32 to match the array definition and maintain
+consistency, as suggested by Kurt.
 
-No, describe the hardware, not binding.
+On Thu, Mar 5, 2026, Andy Shevchenko wrote:
+> Needs Fixes tag.
 
-
-A nit, subject: drop second/last, redundant "bindings". The
-"dt-bindings" prefix is already stating that these are bindings.
-See also:
-https://elixir.bootlin.com/linux/v6.17-rc3/source/Documentation/devicetree/bindings/submitting-patches.rst#L18
-
-
-> adi,spi-mode property, optional PWM/clock for CNV Clock and CNV Burst
-> modes, GPIO pins, voltage supplies and the trigger-source interface for
-> SPI Engine offload operation.
-> 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-> ---
->  .../devicetree/bindings/iio/adc/adi,ad4691.yaml    | 278 +++++++++++++++++++++
->  MAINTAINERS                                        |   8 +
->  include/dt-bindings/iio/adc/adi,ad4691.h           |  13 +
->  3 files changed, 299 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
-> new file mode 100644
-> index 000000000000..b0d8036184b0
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
-> @@ -0,0 +1,278 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/adi,ad4691.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD4691 Family Multichannel SAR ADCs
-> +
-> +maintainers:
-> +  - Radu Sabau <radu.sabau@analog.com>
-> +
-> +description: |
-> +  The AD4691 family are high-speed, low-power, multichannel successive
-> +  approximation register (SAR) analog-to-digital converters (ADCs) with
-> +  an SPI-compatible serial interface. The family supports multiple operating
-> +  modes including CNV Clock Mode, CNV Burst Mode, Autonomous Mode, SPI Burst
-> +  Mode, and Manual Mode.
-> +
-> +  The driver supports both standard SPI and SPI Engine (offload) operation.
-
-Driver is irrelevant. If you change mode, you change bindings?
-
-> +
-> +  Datasheets:
-> +    * https://www.analog.com/en/products/ad4692.html
-> +    * https://www.analog.com/en/products/ad4691.html
-> +    * https://www.analog.com/en/products/ad4694.html
-> +    * https://www.analog.com/en/products/ad4693.html
-> +
-> +$ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad4691
-> +      - adi,ad4692
-> +      - adi,ad4693
-> +      - adi,ad4694
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 40000000
-> +
-> +  spi-cpol: true
-> +  spi-cpha: true
-> +
-> +  adi,spi-mode:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-
-Nope. You already have such property, so you cannot redefine it. Look at
-other sources.
-
-...
-
-
-> +  clocks:
-> +    description: Reference clock for PWM timing in CNV Clock and CNV Burst modes.
-> +    maxItems: 1
-> +
-> +  clock-names:
-
-Drop clock-names. Not useful if you call it just ref.
-
-> +    items:
-> +      - const: ref_clk
-> +
-> +  pwms:
-> +    description:
-> +      PWM connected to the CNV pin. Required for CNV Clock Mode and CNV Burst
-> +      Mode to control conversion timing.
-> +    maxItems: 1
-> +
-> +  pwm-names:
-> +    items:
-> +      - const: cnv
-> +
-> +  interrupts:
-> +    description:
-> +      Interrupt from the GP0 pin configured as DATA_READY or BUSY. Required
-> +      for non-offload operation in all modes except Manual Mode (mode 4),
-> +      where CNV is tied to CS and no DATA_READY signal is generated.
-> +    maxItems: 1
-> +
-> +  interrupt-names:
-> +    items:
-> +      - const: DRDY
-
-Lowercase. Or actually drop names...
-
-> +
-> +  '#trigger-source-cells':
-> +    description: |
-> +      For SPI Engine offload operation, this node acts as a trigger source.
-> +      Two cells are required:
-> +        - First cell: Trigger event type (0 = BUSY, 1 = DATA_READY)
-> +        - Second cell: GPIO pin number (only 0 = GP0 is supported)
-> +
-> +      Macros are available in dt-bindings/iio/adc/adi,ad4691.h:
-> +        AD4691_TRIGGER_EVENT_BUSY, AD4691_TRIGGER_EVENT_DATA_READY
-> +        AD4691_TRIGGER_PIN_GP0
-> +    const: 2
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - adi,spi-mode
-> +  - vio-supply
-> +  - reset-gpios
-> +
-> +allOf:
-> +  # vref-supply and vrefin-supply are mutually exclusive, one is required
-> +  - oneOf:
-> +      - required:
-> +          - vref-supply
-> +      - required:
-> +          - vrefin-supply
-> +
-> +  # AD4694 (20-bit) does not support Manual Mode
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          const: adi,ad4694
-> +    then:
-> +      properties:
-> +        adi,spi-mode:
-> +          enum: [0, 1, 2, 3]
-> +
-> +  # CNV Clock Mode and CNV Burst Mode require PWM and clock
-> +  - if:
-> +      properties:
-> +        adi,spi-mode:
-> +          enum: [0, 1]
-> +    then:
-> +      required:
-> +        - clocks
-> +        - clock-names
-> +        - pwms
-> +        - pwm-names
-> +
-> +  # Non-Manual modes (0-3) without SPI offload require a DRDY interrupt.
-> +  # Offload configurations expose '#trigger-source-cells' instead.
-> +  - if:
-> +      properties:
-> +        adi,spi-mode:
-> +          enum: [0, 1, 2, 3]
-> +      not:
-> +        required:
-> +          - '#trigger-source-cells'
-> +    then:
-> +      required:
-> +        - interrupts
-> +        - interrupt-names
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    #include <dt-bindings/iio/adc/adi,ad4691.h>
-> +
-> +    /* Example: AD4692 in CNV Clock Mode with standard SPI */
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        adc@0 {
-> +            compatible = "adi,ad4692";
-> +            reg = <0>;
-> +            spi-cpol;
-> +            spi-cpha;
-> +            spi-max-frequency = <40000000>;
-> +
-> +            adi,spi-mode = <0>; /* CNV Clock Mode */
-> +
-> +            vio-supply = <&vio_supply>;
-> +            vref-supply = <&vref_5v>;
-> +
-> +            reset-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
-> +            gp0-gpios = <&gpio 11 GPIO_ACTIVE_HIGH>;
-> +
-> +            clocks = <&ref_clk>;
-> +            clock-names = "ref_clk";
-> +
-> +            pwms = <&pwm_gen 0 0>;
-> +            pwm-names = "cnv";
-> +
-> +            interrupts = <12 4>;
-> +            interrupt-names = "DRDY";
-> +        };
-> +    };
-> +
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    #include <dt-bindings/iio/adc/adi,ad4691.h>
-> +
-> +    /* Example: AD4692 in Manual Mode with SPI Engine offload */
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        adc@0 {
-> +            compatible = "adi,ad4692";
-> +            reg = <0>;
-> +            spi-cpol;
-> +            spi-cpha;
-> +            spi-max-frequency = <31250000>;
-> +
-> +            adi,spi-mode = <4>; /* Manual Mode */
-> +
-> +            vio-supply = <&vio_supply>;
-> +            vrefin-supply = <&vrefin_supply>;
-> +
-> +            reset-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
-> +        };
-> +    };
-> +
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    #include <dt-bindings/iio/adc/adi,ad4691.h>
-
-Where do you use the header?
-
-Anyway, drop example, two are enough.
-
+Added the Fixes tag as requested by Andy.
 
 Best regards,
-Krzysztof
+Chunyang Chen
