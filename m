@@ -1,277 +1,883 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f51.google.com (mail-oa1-f51.google.com [209.85.160.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B195F1531E8;
-	Thu,  5 Mar 2026 00:46:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FC7A1E531
+	for <linux-iio@vger.kernel.org>; Thu,  5 Mar 2026 00:56:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772671616; cv=none; b=Guyamx8R2X5DD/mnS/qyZ7Gdq+VOf0iqKq23ZmKLjvm6oTwjNq0+pccheTmw6xQTXzfwdwLzreWb1ohRIAEAkYNxm23fmUV54FCN7umUXBZDic8ETV77PVy4G818coVpBId9xuH3n2aU4rqnKNqnoPgMgjyzSdyTH9014DJciuo=
+	t=1772672201; cv=none; b=R1mlV/qVpXZfqSk+87cMf1r1udNFY71x/A+yHvxaCwT2pqBscO78RNfFyJtBjEV5cmlPS+ya18Xp9LGNLn9mOd7jFcjB0VJ+5dvufA7oJW8cKm5O3iMVToLTHBjw+2AFhdJhe+b7Ei3yX/TFHKyYYM+/E0vvasTsmvlzvaMImU0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772671616; c=relaxed/simple;
-	bh=fXCeegBbIUBRm4xFMMFUFNRIomWhKFiBfNiUiz7gdzg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W3NDLdARBUbFuxsOKaOwbRYdl6J6DkKHl0ImbhosgFBo5Yr3z+sINz0alrQUQCoCSR+cPQir3L8as+tqlg+AaWzmEbSYTaIzLdl+dWb+m+W08kH5e8YfM+KO2efB2rAXoiYEOiSySefW4Ryjn+gkvM3cR3xo2yAWlB+1IfnbT7c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e1ri/jRI; arc=none smtp.client-ip=198.175.65.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1772672201; c=relaxed/simple;
+	bh=ZRX8nbE+x8RbXbneau5wMXKxKJx0ueeBBG8zpf1Vbgw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LQEWEHT9NvLCFIYY8OrZHh5hyqRPHhHvcEmM8d4X7iz5LRo8imbLn8dHu1eb7tOEesqciQbMS+Wq31WoU6bVabyWr4QNd73PziQbJt5Zxu02d515SLiYflAAY9wzqauhf8y7YRRrUjXyYFzQ437+j+HwJnYcDgiN1cdt2gur4aE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=tsdXDOpI; arc=none smtp.client-ip=209.85.160.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e1ri/jRI"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772671614; x=1804207614;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fXCeegBbIUBRm4xFMMFUFNRIomWhKFiBfNiUiz7gdzg=;
-  b=e1ri/jRIqiT36an26Fvx45w+1lHQO1Nk07O7fpfU0WTPacTK9Cs3rSRk
-   54TQ82bhT8Dipes7OTcSsHUyhLh3/KUqkyPASMSC0YKVY4MLGQ9HtzemP
-   zVPmKPVlRFyxSOl+GswH2KX0hSNgAZrzSjh98Y7n9yKl7lAV7xohACG6z
-   kuH7jGuJuJQEVWtTMkIxEVcPmCH4hVOs4/FTlYEwCJE7M4AqRjoQo1Qzl
-   D42iJHmd/oPoyFVA6uaJWRr3nWEp9kSwBtB4petnByCHWlwW5MY25UEhL
-   dDXZrVU05aPoAjb4jUwxtxpSfW644/Ugn+5fl4+gQDirZ9qmMpPmXpH9r
-   w==;
-X-CSE-ConnectionGUID: 1wwsarzRRrWV6HZrUOyzXQ==
-X-CSE-MsgGUID: hdmn3Kl9TdqNuviSgOlCgA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11719"; a="85219034"
-X-IronPort-AV: E=Sophos;i="6.21,325,1763452800"; 
-   d="scan'208";a="85219034"
-Received: from fmviesa002.fm.intel.com ([10.60.135.142])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 16:46:54 -0800
-X-CSE-ConnectionGUID: AKS7JEquSCG86Vtn73DOfg==
-X-CSE-MsgGUID: dB0MQpefRNiAD3gv34EaWQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.21,325,1763452800"; 
-   d="scan'208";a="241519934"
-Received: from lkp-server01.sh.intel.com (HELO f27a57aa7a36) ([10.239.97.150])
-  by fmviesa002.fm.intel.com with ESMTP; 04 Mar 2026 16:46:52 -0800
-Received: from kbuild by f27a57aa7a36 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vxwrZ-000000004s9-2XlC;
-	Thu, 05 Mar 2026 00:46:49 +0000
-Date: Thu, 5 Mar 2026 08:45:56 +0800
-From: kernel test robot <lkp@intel.com>
-To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>,
-	linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: temperature: add support for Analog Devices
- MAX30210
-Message-ID: <202603050822.weVzrjhU-lkp@intel.com>
-References: <20260304122509.67931-3-johnerasmusmari.geronimo@analog.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="tsdXDOpI"
+Received: by mail-oa1-f51.google.com with SMTP id 586e51a60fabf-404254ffe8aso1683501fac.0
+        for <linux-iio@vger.kernel.org>; Wed, 04 Mar 2026 16:56:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772672197; x=1773276997; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=YkROOz4Y4uaMWr14APyULcJyq7nxp1o+bzfIJlufAOo=;
+        b=tsdXDOpIizTuzfQVBekm9KaSr+r0wuRFs42JGqkEQ+2S+ayWc6PE80WZ7utUo826VW
+         Az6XtywdIHybDpSK0FgQkZZ+ZhW+d3rGTB+L8nM/wSjDeO4vbIpwavXxaK2W6toYRfy5
+         FOGc0tEXkFWSy8RjIvGfyvRX7nQjt+ff4fSd2OsA/y7F09WN+aPz0CVgFv08Jt/SdqX9
+         oUcRxZAN9PzcOKsAj2JtO/hr/GWZpemEK8owEkAeNy4zUWPCBcG6JUV4P04DEN9b/xkN
+         wJ+HOO+6qMVUQg3RcBc+RT9UqEvySVgrTASaK4Lh7VUh4ccWoT4K1LyH4OzxUqcd49xR
+         98Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772672197; x=1773276997;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=YkROOz4Y4uaMWr14APyULcJyq7nxp1o+bzfIJlufAOo=;
+        b=XfNzOAAL7OesgF49pFEkbDAklx6hm/iWfjYR7sB48qf5A2FmyH8V7a+bdnivWI7taO
+         M/T7C/D6TfZoF18H5rV4+mIaejjrtCtiPDWejpRt/VuBatJ+J52RD+6ql0O6SzfyFmwa
+         p7SdX3tQeY7vOt4WNjqbxiUbLv1Y9OB32xTYPesjKQu+uzPGRUa8hoIMYrWsq094HPVK
+         hQH6B9XBXQRFVcd+R09/es4g8XVzceKP+Y9LPrJTqIWJvjcZyVi8alOFDUPnjoh2BPNK
+         tuJFhRPpO2PizVP3myDliBMCkYM808vbmZWYHtts7Xop68Z23zKJyvBAv20q+WqCs8jx
+         mBJg==
+X-Forwarded-Encrypted: i=1; AJvYcCU2xepiZr6Is6lJBaxzauX2r0PO/XBwghQUHvGfyADM2OqKPDz5CZguDmzl8AO0Twl9SfqFI7Wo6uc=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw7BS6ub+BGNNaXGyNQGFvw32eOrFrypq+0N+DBVxpE9L2ucQaS
+	rWwl2SHX21whorDeve1Vfl38e/+8rb+aCnmcxK42Tnb9MS8+vKwE5DIgcXYiKC9qBEk=
+X-Gm-Gg: ATEYQzw6uvoaO5LbGzQNKO3Ic+ADcm9MrMiPZbQXrd/lAxC/xEcjaVNmf0k5MirVDmz
+	67Z5/2XR3/2PL0U//uj2GHyXbNgLwpJIeEUcTMMybWumRU413gVqpz9PdL899rE9bvHwu+pZ5OE
+	0ciItQZ077h5oq+F9MFEsloj5tmxsbGBlLISONSJ5xV/rQ9n93r7QI6PzlPx+/NdLOuXUkIry9Y
+	6n1roud1GMdPnxJm+GUNdyx6Hpz5qq8pbXO8WGDR03G+Hq1OYACKdttIKTcZQKpd+ti9JPW4bmN
+	BruypEVpvem6qGTG/AmZfG4Q75DVxxvIYp4q2k0bcfsjUxfhI2q9GcshEtRDwPZpdl7NwxUkTh+
+	nLuYx4DjnWcobou2YKJV320GFKk54ngjEOBRlyZyZfUJBD9oTflaKYjyQcFUUavCtC+2+Yitkl1
+	H/QG31cZ/Y1TmL9O+bMQL03ao/L8FIqYBlAfx9B4jApmvEi+yAtq42VFc6+VSHN6AxC5emA4eze
+	w==
+X-Received: by 2002:a05:6871:7287:b0:3f5:b761:5234 with SMTP id 586e51a60fabf-416c3e282c0mr346512fac.28.1772672197356;
+        Wed, 04 Mar 2026 16:56:37 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:d719:8353:352f:b2e0? ([2600:8803:e7e4:500:d719:8353:352f:b2e0])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4160d26d9absm20274939fac.16.2026.03.04.16.56.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 04 Mar 2026 16:56:36 -0800 (PST)
+Message-ID: <d6e76e20-9385-4c53-ad1d-c0153fc48cc4@baylibre.com>
+Date: Wed, 4 Mar 2026 18:56:36 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 2/2] iio: temperature: add support for Analog Devices
+ MAX30210
+To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>,
+ linux-iio@vger.kernel.org, jic23@kernel.org
+Cc: nuno.sa@analog.com, andy@kernel.org, linux-kernel@vger.kernel.org
+References: <20260304122509.67931-1-johnerasmusmari.geronimo@analog.com>
+ <20260304122509.67931-3-johnerasmusmari.geronimo@analog.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
 In-Reply-To: <20260304122509.67931-3-johnerasmusmari.geronimo@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-Hi John,
+On 3/4/26 6:25 AM, John Erasmus Mari Geronimo wrote:
+> Add support for the Analog Devices MAX30210 I2C temperature
+> sensor.
+> 
+> The driver uses regmap for register access and integrates with
+> the IIO framework. It supports:
+> 
+> - Direct mode temperature conversion
+> - Configurable sampling frequency
+> - Threshold events
+> - FIFO operation with IIO kfifo buffer support
+> - Optional interrupt-driven data ready signaling
+> 
+> The device provides 16-bit signed temperature data and a
+> 64-sample FIFO.
+> 
+> Signed-off-by: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+> ---
+>  MAINTAINERS                        |   1 +
+>  drivers/iio/temperature/Kconfig    |  10 +
+>  drivers/iio/temperature/Makefile   |   1 +
+>  drivers/iio/temperature/max30210.c | 664 +++++++++++++++++++++++++++++
+>  4 files changed, 676 insertions(+)
+>  create mode 100644 drivers/iio/temperature/max30210.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 09345b9f32ed..2abdbcf3a8e5 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1644,6 +1644,7 @@ L:	linux-iio@vger.kernel.org
+>  S:	Supported
+>  W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+> +F:	drivers/iio/temperature/max30210.c
+>  
+>  ANALOG DEVICES INC ADA4250 DRIVER
+>  M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+> index 9328b2250ace..b396757eb761 100644
+> --- a/drivers/iio/temperature/Kconfig
+> +++ b/drivers/iio/temperature/Kconfig
+> @@ -184,4 +184,14 @@ config MCP9600
+>  	  This driver can also be built as a module. If so, the module
+>  	  will be called mcp9600.
+>  
 
-kernel test robot noticed the following build errors:
+Let's keep these in order too. MAX30... goes before MAX31...
 
-[auto build test ERROR on 70a9ae59c5b1f2f5501e78e2d85bfeefd153f854]
+> +config MAX30210
+> +	tristate "Analog Devices MAX30210 temperature sensor"
+> +	depends on I2C
+> +	help
+> +	  If you say yes here you get support for MAX30210 low-power digital
+> +	  temperature sensor chip connected via I2C.
+> +
+> +	  This driver can also be build as a module. If so, the module
+> +	  will be called max30210.
+> +
+>  endmenu
+> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+> index 07d6e65709f7..e5aad14dc09b 100644
+> --- a/drivers/iio/temperature/Makefile
+> +++ b/drivers/iio/temperature/Makefile
+> @@ -8,6 +8,7 @@ obj-$(CONFIG_LTC2983) += ltc2983.o
+>  obj-$(CONFIG_HID_SENSOR_TEMP) += hid-sensor-temperature.o
+>  obj-$(CONFIG_MAXIM_THERMOCOUPLE) += maxim_thermocouple.o
+>  obj-$(CONFIG_MAX30208) += max30208.o
+> +obj-$(CONFIG_MAX30210) += max30210.o
+>  obj-$(CONFIG_MAX31856) += max31856.o
+>  obj-$(CONFIG_MAX31865) += max31865.o
+>  obj-$(CONFIG_MCP9600) += mcp9600.o
+> diff --git a/drivers/iio/temperature/max30210.c b/drivers/iio/temperature/max30210.c
+> new file mode 100644
+> index 000000000000..839ed9830957
+> --- /dev/null
+> +++ b/drivers/iio/temperature/max30210.c
+> @@ -0,0 +1,664 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * Analog Devices MAX30210 I2C Temperature Sensor driver
+> + *
+> + * Copyright 2026 Analog Devices Inc.
+> + */
+> +
 
-url:    https://github.com/intel-lab-lkp/linux/commits/John-Erasmus-Mari-Geronimo/dt-bindings-iio-temperature-add-ADI-MAX30210/20260304-202920
-base:   70a9ae59c5b1f2f5501e78e2d85bfeefd153f854
-patch link:    https://lore.kernel.org/r/20260304122509.67931-3-johnerasmusmari.geronimo%40analog.com
-patch subject: [PATCH v2 2/2] iio: temperature: add support for Analog Devices MAX30210
-config: i386-randconfig-r071-20260305 (https://download.01.org/0day-ci/archive/20260305/202603050822.weVzrjhU-lkp@intel.com/config)
-compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
-smatch: v0.5.0-9004-gb810ac53
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260305/202603050822.weVzrjhU-lkp@intel.com/reproduce)
+Looks like we are missing some headers here. We try to include
+what is actually used in the file rather than relying on includes
+from other includes.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603050822.weVzrjhU-lkp@intel.com/
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/events.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/kfifo_buf.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/regmap.h>
+> +#include <linux/units.h>
+> +
+> +#define MAX30210_STATUS_REG		0x00
+> +#define MAX30210_INT_EN_REG		0x02
+> +#define MAX30210_FIFO_DATA_REG		0x08
+> +#define MAX30210_FIFO_CONF_1_REG	0x09
+> +#define MAX30210_FIFO_CONF_2_REG	0x0A
+> +#define MAX30210_SYS_CONF_REG		0x11
+> +#define MAX30210_PIN_CONF_REG		0x12
+> +#define MAX30210_TEMP_ALM_HI_REG	0x22
+> +#define MAX30210_TEMP_ALM_LO_REG	0x24
+> +#define MAX30210_TEMP_INC_THRESH_REG	0x26
+> +#define MAX30210_TEMP_DEC_THRESH_REG	0x27
+> +#define MAX30210_TEMP_CONF_1_REG	0x28
+> +#define MAX30210_TEMP_CONF_2_REG	0x29
+> +#define MAX30210_TEMP_CONV_REG		0x2A
+> +#define MAX30210_TEMP_DATA_REG		0x2B
+> +#define MAX30210_TEMP_SLOPE_REG		0x2D
+> +#define MAX30210_UNIQUE_ID_REG		0x30
+> +#define MAX30210_PART_ID_REG		0xFF
+> +
+> +#define MAX30210_STATUS_A_FULL_MASK   BIT(7)
+> +#define MAX30210_STATUS_TEMP_RDY_MASK BIT(6)
+> +#define MAX30210_STATUS_TEMP_DEC_MASK BIT(5)
+> +#define MAX30210_STATUS_TEMP_INC_MASK BIT(4)
+> +#define MAX30210_STATUS_TEMP_LO_MASK  BIT(3)
+> +#define MAX30210_STATUS_TEMP_HI_MASK  BIT(2)
+> +#define MAX30210_STATUS_PWR_RDY_MASK  BIT(0)
+> +
+> +#define MAX30210_FIFOCONF1_FLUSH_FIFO_MASK BIT(4)
+> +
+> +#define MAX30210_SYSCONF_RESET_MASK		BIT(0)
+> +
+> +#define MAX30210_PINCONF_EXT_CNV_EN_MASK	BIT(7)
+> +#define MAX30210_PINCONF_EXT_CVT_ICFG_MASK	BIT(6)
+> +#define MAX30210_PINCONF_INT_FCFG_MASK		GENMASK(3, 2)
+> +#define MAX30210_PINCONF_INT_OCFG_MASK		GENMASK(1, 0)
+> +
+> +#define MAX30210_TEMPCONF1_CHG_DET_EN_MASK	BIT(3)
+> +#define MAX30210_TEMPCONF1_RATE_CHG_FILTER_MASK	GENMASK(2, 0)
+> +
+> +#define MAX30210_TEMPCONF2_TEMP_PERIOD_MASK	GENMASK(3, 0)
+> +#define MAX30210_TEMPCONF2_ALERT_MODE_MASK	BIT(7)
+> +
+> +#define MAX30210_TEMPCONV_AUTO_MASK	BIT(1)
+> +#define MAX30210_TEMPCONV_CONV_T_MASK	BIT(0)
+> +
+> +#define MAX30210_PART_ID		0x45
+> +#define MAX30210_FIFO_SIZE		64
+> +#define MAX30210_FIFO_INVAL_DATA	GENMASK(23, 0)
+> +#define MAX30210_WATERMARK_DEFAULT	(0x40 - 0x1F)
+> +
+> +#define MAX30210_UNIQUE_ID_LEN		6
+> +#define MAX30210_EXT_CVT_FREQ_MIN	1
+> +#define MAX30210_EXT_CVT_FREQ_MAX	20
+> +
+> +struct max30210_state {
+> +	struct regmap *regmap;
+> +	u8 watermark;
+> +	/* Raw FIFO byte buffer (3 bytes per sample) */
 
-All errors (new ones prefixed by >>):
+This 3 is used a few other places in the code, so might be nice to have
+a macro for that.
 
-   drivers/iio/temperature/max30210.c: In function 'max30210_fifo_read':
->> drivers/iio/temperature/max30210.c:136:27: error: implicit declaration of function 'get_unaligned_be24' [-Wimplicit-function-declaration]
-     136 |                 u32 raw = get_unaligned_be24(&st->fifo_buf[3 * i]);
-         |                           ^~~~~~~~~~~~~~~~~~
-   drivers/iio/temperature/max30210.c: In function 'max30210_read_event_config':
->> drivers/iio/temperature/max30210.c:272:32: error: implicit declaration of function 'FIELD_GET' [-Wimplicit-function-declaration]
-     272 |                         return FIELD_GET(MAX30210_STATUS_TEMP_HI_MASK, val);
-         |                                ^~~~~~~~~
-   drivers/iio/temperature/max30210.c: In function 'max30210_write_raw':
->> drivers/iio/temperature/max30210.c:418:49: error: implicit declaration of function 'FIELD_PREP' [-Wimplicit-function-declaration]
-     418 |                                                 FIELD_PREP(MAX30210_TEMPCONF2_TEMP_PERIOD_MASK, i));
-         |                                                 ^~~~~~~~~~
+> +	u8 fifo_buf[3 * MAX30210_FIFO_SIZE];
+> +};
+> +
+> +static const int max30210_samp_freq_avail[][2] = {
+> +	{ 0, 15625 },
+> +	{ 0, 31250 },
+> +	{ 0, 62500 },
+> +	{ 0, 125000 },
+> +	{ 0, 250000 },
+> +	{ 0, 500000 },
+> +	{ 1, 0 },
+> +	{ 2, 0 },
+> +	{ 4, 0 },
+> +	{ 8, 0 },
+> +};
+> +
+> +static const struct regmap_config max30210_regmap = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.max_register = MAX30210_PART_ID_REG,
+> +};
+> +
+> +static int max30210_read_temp(struct regmap *regmap, unsigned int reg,
+> +			      int *temp)
+> +{
+> +	__be16 val;
+> +	int ret;
+> +
+> +	ret = regmap_bulk_read(regmap, reg, &val, sizeof(val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	*temp = sign_extend32(be16_to_cpu(val), 15);
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int max30210_write_temp(struct regmap *regmap, unsigned int reg,
+> +			       int temp)
+> +{
+> +	__be16 val;
+> +
+> +	val = cpu_to_be16(temp);
+> +
+> +	return regmap_bulk_write(regmap, reg, &val, sizeof(val));
+> +}
+> +
+> +static void max30210_fifo_read(struct iio_dev *indio_dev)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = regmap_bulk_read(st->regmap, MAX30210_FIFO_DATA_REG,
+> +			       st->fifo_buf, 3 * st->watermark);
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "Failed to read from fifo.\n");
+> +		return;
+> +	}
+> +
+> +	for (unsigned int i = 0; i < st->watermark; i++) {
+> +		u32 raw = get_unaligned_be24(&st->fifo_buf[3 * i]);
+> +
+> +		if (raw == MAX30210_FIFO_INVAL_DATA) {
+> +			dev_err_ratelimited(&indio_dev->dev, "Invalid data\n");
+> +			continue;
+> +		}
+> +
+> +		s16 temp = (s16)(raw & 0xFFFF);
+
+Can use FIELD_GET().
+
+> +
+> +		iio_push_to_buffers(indio_dev, &temp);
+> +	}
+> +}
+> +
+> +static irqreturn_t max30210_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct iio_dev *indio_dev = dev_id;
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	unsigned int status;
+> +	int ret;
+> +
+> +	ret = regmap_read(st->regmap, MAX30210_STATUS_REG, &status);
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "Status read failed\n");
+> +		return IRQ_NONE;
+> +	}
+> +
+> +	if (status & MAX30210_STATUS_A_FULL_MASK)
+> +		max30210_fifo_read(indio_dev);
+> +
+> +	if (status & MAX30210_STATUS_TEMP_HI_MASK)
+> +		iio_push_event(indio_dev,
+> +			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+> +						    IIO_EV_TYPE_THRESH,
+> +						    IIO_EV_DIR_RISING),
+> +			       iio_get_time_ns(indio_dev));
+> +
+> +	if (status & MAX30210_STATUS_TEMP_LO_MASK)
+> +		iio_push_event(indio_dev,
+> +			       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+> +						    IIO_EV_TYPE_THRESH,
+> +						    IIO_EV_DIR_FALLING),
+> +			       iio_get_time_ns(indio_dev));
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int max30210_reg_access(struct iio_dev *indio_dev, unsigned int reg,
+> +			       unsigned int writeval, unsigned int *readval)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +
+> +	if (!readval)
+
+Usual way is to swap these to avoid the !.
+
+> +		return regmap_write(st->regmap, reg, writeval);
+> +
+> +	return regmap_read(st->regmap, reg, readval);
+> +}
+> +
+> +static int max30210_read_event(struct iio_dev *indio_dev,
+> +			       const struct iio_chan_spec *chan,
+> +			       enum iio_event_type type,
+> +			       enum iio_event_direction dir,
+> +			       enum iio_event_info info, int *val, int *val2)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +
+> +	if (info != IIO_EV_INFO_VALUE)
+> +		return -EINVAL;
+> +
+> +	switch (dir) {
+> +	case IIO_EV_DIR_RISING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return max30210_read_temp(st->regmap, MAX30210_TEMP_ALM_HI_REG, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_EV_DIR_FALLING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return max30210_read_temp(st->regmap, MAX30210_TEMP_ALM_LO_REG, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max30210_write_event(struct iio_dev *indio_dev,
+> +				const struct iio_chan_spec *chan,
+> +				enum iio_event_type type,
+> +				enum iio_event_direction dir,
+> +				enum iio_event_info info, int val, int val2)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +
+> +	if (info != IIO_EV_INFO_VALUE)
+> +		return -EINVAL;
+
+No range checking on val?
+
+> +
+> +	switch (dir) {
+> +	case IIO_EV_DIR_RISING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return max30210_write_temp(st->regmap, MAX30210_TEMP_ALM_HI_REG, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_EV_DIR_FALLING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return max30210_write_temp(st->regmap, MAX30210_TEMP_ALM_LO_REG, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max30210_read_event_config(struct iio_dev *indio_dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      enum iio_event_type type,
+> +				      enum iio_event_direction dir)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	ret = regmap_read(st->regmap, MAX30210_INT_EN_REG, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	switch (dir) {
+> +	case IIO_EV_DIR_RISING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return FIELD_GET(MAX30210_STATUS_TEMP_HI_MASK, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_EV_DIR_FALLING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return FIELD_GET(MAX30210_STATUS_TEMP_LO_MASK, val);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max30210_write_event_config(struct iio_dev *indio_dev,
+> +				       const struct iio_chan_spec *chan,
+> +				       enum iio_event_type type,
+> +				       enum iio_event_direction dir, bool state)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +
+> +	switch (dir) {
+> +	case IIO_EV_DIR_RISING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return regmap_assign_bits(st->regmap, MAX30210_INT_EN_REG,
+> +						  MAX30210_STATUS_TEMP_HI_MASK, state);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_EV_DIR_FALLING:
+> +		switch (type) {
+> +		case IIO_EV_TYPE_THRESH:
+> +			return regmap_assign_bits(st->regmap, MAX30210_INT_EN_REG,
+> +						  MAX30210_STATUS_TEMP_LO_MASK, state);
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max30210_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan, int *val,
+> +			     int *val2, long mask)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	unsigned int uval;
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 5;
+> +		*val2 = 1000;
+> +
+> +		return IIO_VAL_FRACTIONAL;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		ret = regmap_read(st->regmap, MAX30210_TEMP_CONF_2_REG, &uval);
+> +		if (ret)
+> +			return ret;
+> +
+> +		uval = FIELD_GET(MAX30210_TEMPCONF2_TEMP_PERIOD_MASK, uval);
+> +
+
+Could use a comment here to explain code below. It makes sense when you
+read the datasheet, but looks odd without that context.
+
+> +		if (uval >= ARRAY_SIZE(max30210_samp_freq_avail))
+> +			uval = ARRAY_SIZE(max30210_samp_freq_avail) - 1;
+> +
+> +		*val = max30210_samp_freq_avail[uval][0];
+> +		*val2 = max30210_samp_freq_avail[uval][1];
+> +
+> +		return IIO_VAL_FRACTIONAL;
+> +	case IIO_CHAN_INFO_RAW: {
+
+Techicnally, there is a race condition here. We could be exiting buffer mode
+here. So this looks like one of those rare cases where we should use
+IIO_DEV_GUARD_CURRENT_MODE().
+
+Typically we just don't allow reading raw during buffered read though
+unless there is a real-world use case for it.
+
+> +		if (iio_buffer_enabled(indio_dev))
+> +			return max30210_read_temp(st->regmap, MAX30210_TEMP_DATA_REG, val);
+> +
+> +		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +		if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +			return -EBUSY;
+> +
+> +		ret = regmap_write(st->regmap, MAX30210_TEMP_CONV_REG,
+> +				   MAX30210_TEMPCONV_CONV_T_MASK);
+> +		if (ret)
+> +			return ret;
+> +
+> +		/*
+> +		 * Wait until CONVERT_T auto-clears.
+> +		 * Datasheet:
+> +		 *   tBIAS_WU = 260 µs
+> +		 *   tINT     = 8 ms
+> +		 *
+> +		 * Worst-case conversion ≈ 8.26 ms.
+> +		 * Use 10 ms timeout for margin.
+> +		 */
+> +		ret = regmap_read_poll_timeout(st->regmap, MAX30210_TEMP_CONV_REG, uval,
+> +					       !(uval & MAX30210_TEMPCONV_CONV_T_MASK),
+> +					       500,          /* poll every 500 µs */
+> +					       10000);       /* 10 ms timeout */
+> +		if (ret)
+> +			return ret;
+> +
+> +		return max30210_read_temp(st->regmap, MAX30210_TEMP_DATA_REG, val);
+> +	}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max30210_read_avail(struct iio_dev *indio_dev,
+> +			       struct iio_chan_spec const *chan,
+> +			       const int **vals, int *type, int *length,
+> +			       long mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*vals = &max30210_samp_freq_avail[0][0];
+> +		*type = IIO_VAL_INT_PLUS_MICRO;
+> +		*length = ARRAY_SIZE(max30210_samp_freq_avail) * 2;
+> +
+> +		return IIO_AVAIL_LIST;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max30210_write_raw(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan, int val,
+> +			      int val2, long mask)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ: {
+> +		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
+> +		if (IIO_DEV_ACQUIRE_FAILED(claim))
+> +			return -EBUSY;
+> +
+> +		if (val < 0 || val2 < 0)
+> +			return -EINVAL;
+> +
+> +		for (unsigned int i = 0; i < ARRAY_SIZE(max30210_samp_freq_avail); i++) {
+> +			if (val == max30210_samp_freq_avail[i][0] &&
+> +			    val2 == max30210_samp_freq_avail[i][1]) {
+> +				return regmap_update_bits(st->regmap, MAX30210_TEMP_CONF_2_REG,
+> +						MAX30210_TEMPCONF2_TEMP_PERIOD_MASK,
+> +						FIELD_PREP(MAX30210_TEMPCONF2_TEMP_PERIOD_MASK, i));
+> +			}
+> +		}
+> +
+> +		return -EINVAL;
+> +	}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max30210_set_watermark(struct iio_dev *indio_dev, unsigned int val)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	unsigned int reg;
+> +	int ret;
+> +
+> +	if (val < 1 || val > MAX30210_FIFO_SIZE)
+> +		return -EINVAL;
+> +
 
 
-vim +/get_unaligned_be24 +136 drivers/iio/temperature/max30210.c
+> +	reg = MAX30210_FIFO_SIZE - val;
 
-   122	
-   123	static void max30210_fifo_read(struct iio_dev *indio_dev)
-   124	{
-   125		struct max30210_state *st = iio_priv(indio_dev);
-   126		int ret;
-   127	
-   128		ret = regmap_bulk_read(st->regmap, MAX30210_FIFO_DATA_REG,
-   129				       st->fifo_buf, 3 * st->watermark);
-   130		if (ret) {
-   131			dev_err(&indio_dev->dev, "Failed to read from fifo.\n");
-   132			return;
-   133		}
-   134	
-   135		for (unsigned int i = 0; i < st->watermark; i++) {
- > 136			u32 raw = get_unaligned_be24(&st->fifo_buf[3 * i]);
-   137	
-   138			if (raw == MAX30210_FIFO_INVAL_DATA) {
-   139				dev_err_ratelimited(&indio_dev->dev, "Invalid data\n");
-   140				continue;
-   141			}
-   142	
-   143			s16 temp = (s16)(raw & 0xFFFF);
-   144	
-   145			iio_push_to_buffers(indio_dev, &temp);
-   146		}
-   147	}
-   148	
-   149	static irqreturn_t max30210_irq_handler(int irq, void *dev_id)
-   150	{
-   151		struct iio_dev *indio_dev = dev_id;
-   152		struct max30210_state *st = iio_priv(indio_dev);
-   153		unsigned int status;
-   154		int ret;
-   155	
-   156		ret = regmap_read(st->regmap, MAX30210_STATUS_REG, &status);
-   157		if (ret) {
-   158			dev_err(&indio_dev->dev, "Status read failed\n");
-   159			return IRQ_NONE;
-   160		}
-   161	
-   162		if (status & MAX30210_STATUS_A_FULL_MASK)
-   163			max30210_fifo_read(indio_dev);
-   164	
-   165		if (status & MAX30210_STATUS_TEMP_HI_MASK)
-   166			iio_push_event(indio_dev,
-   167				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
-   168							    IIO_EV_TYPE_THRESH,
-   169							    IIO_EV_DIR_RISING),
-   170				       iio_get_time_ns(indio_dev));
-   171	
-   172		if (status & MAX30210_STATUS_TEMP_LO_MASK)
-   173			iio_push_event(indio_dev,
-   174				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
-   175							    IIO_EV_TYPE_THRESH,
-   176							    IIO_EV_DIR_FALLING),
-   177				       iio_get_time_ns(indio_dev));
-   178	
-   179		return IRQ_HANDLED;
-   180	}
-   181	
-   182	static int max30210_reg_access(struct iio_dev *indio_dev, unsigned int reg,
-   183				       unsigned int writeval, unsigned int *readval)
-   184	{
-   185		struct max30210_state *st = iio_priv(indio_dev);
-   186	
-   187		if (!readval)
-   188			return regmap_write(st->regmap, reg, writeval);
-   189	
-   190		return regmap_read(st->regmap, reg, readval);
-   191	}
-   192	
-   193	static int max30210_read_event(struct iio_dev *indio_dev,
-   194				       const struct iio_chan_spec *chan,
-   195				       enum iio_event_type type,
-   196				       enum iio_event_direction dir,
-   197				       enum iio_event_info info, int *val, int *val2)
-   198	{
-   199		struct max30210_state *st = iio_priv(indio_dev);
-   200	
-   201		if (info != IIO_EV_INFO_VALUE)
-   202			return -EINVAL;
-   203	
-   204		switch (dir) {
-   205		case IIO_EV_DIR_RISING:
-   206			switch (type) {
-   207			case IIO_EV_TYPE_THRESH:
-   208				return max30210_read_temp(st->regmap, MAX30210_TEMP_ALM_HI_REG, val);
-   209			default:
-   210				return -EINVAL;
-   211			}
-   212		case IIO_EV_DIR_FALLING:
-   213			switch (type) {
-   214			case IIO_EV_TYPE_THRESH:
-   215				return max30210_read_temp(st->regmap, MAX30210_TEMP_ALM_LO_REG, val);
-   216			default:
-   217				return -EINVAL;
-   218			}
-   219		default:
-   220			return -EINVAL;
-   221		}
-   222	}
-   223	
-   224	static int max30210_write_event(struct iio_dev *indio_dev,
-   225					const struct iio_chan_spec *chan,
-   226					enum iio_event_type type,
-   227					enum iio_event_direction dir,
-   228					enum iio_event_info info, int val, int val2)
-   229	{
-   230		struct max30210_state *st = iio_priv(indio_dev);
-   231	
-   232		if (info != IIO_EV_INFO_VALUE)
-   233			return -EINVAL;
-   234	
-   235		switch (dir) {
-   236		case IIO_EV_DIR_RISING:
-   237			switch (type) {
-   238			case IIO_EV_TYPE_THRESH:
-   239				return max30210_write_temp(st->regmap, MAX30210_TEMP_ALM_HI_REG, val);
-   240			default:
-   241				return -EINVAL;
-   242			}
-   243		case IIO_EV_DIR_FALLING:
-   244			switch (type) {
-   245			case IIO_EV_TYPE_THRESH:
-   246				return max30210_write_temp(st->regmap, MAX30210_TEMP_ALM_LO_REG, val);
-   247			default:
-   248				return -EINVAL;
-   249			}
-   250		default:
-   251			return -EINVAL;
-   252		}
-   253	}
-   254	
-   255	static int max30210_read_event_config(struct iio_dev *indio_dev,
-   256					      const struct iio_chan_spec *chan,
-   257					      enum iio_event_type type,
-   258					      enum iio_event_direction dir)
-   259	{
-   260		struct max30210_state *st = iio_priv(indio_dev);
-   261		unsigned int val;
-   262		int ret;
-   263	
-   264		ret = regmap_read(st->regmap, MAX30210_INT_EN_REG, &val);
-   265		if (ret)
-   266			return ret;
-   267	
-   268		switch (dir) {
-   269		case IIO_EV_DIR_RISING:
-   270			switch (type) {
-   271			case IIO_EV_TYPE_THRESH:
- > 272				return FIELD_GET(MAX30210_STATUS_TEMP_HI_MASK, val);
-   273			default:
-   274				return -EINVAL;
-   275			}
-   276		case IIO_EV_DIR_FALLING:
-   277			switch (type) {
-   278			case IIO_EV_TYPE_THRESH:
-   279				return FIELD_GET(MAX30210_STATUS_TEMP_LO_MASK, val);
-   280			default:
-   281				return -EINVAL;
-   282			}
-   283		default:
-   284			return -EINVAL;
-   285		}
-   286	}
-   287	
+This looks a bit odd and could use some explanation.
 
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+And even if it technically doesn't need it, would still expect a FIELD_PREP()
+here since there are some reserved bits.
+
+> +
+> +	ret = regmap_write(st->regmap, MAX30210_FIFO_CONF_1_REG, reg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->watermark = val;
+> +
+> +	return 0;
+> +}
+> +
+> +static ssize_t hwfifo_watermark_show(struct device *dev,
+> +				     struct device_attribute *devattr,
+> +				     char *buf)
+> +{
+> +	struct max30210_state *st = iio_priv(dev_to_iio_dev(dev));
+> +
+> +	return sysfs_emit(buf, "%d\n", st->watermark);
+> +}
+> +
+> +IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_min, "1");
+> +IIO_STATIC_CONST_DEVICE_ATTR(hwfifo_watermark_max,
+> +			     __stringify(MAX30210_FIFO_SIZE));
+> +static IIO_DEVICE_ATTR_RO(hwfifo_watermark, 0);
+> +
+> +static const struct iio_dev_attr *max30210_fifo_attributes[] = {
+> +	&iio_dev_attr_hwfifo_watermark_min,
+> +	&iio_dev_attr_hwfifo_watermark_max,
+> +	&iio_dev_attr_hwfifo_watermark,
+> +	NULL
+> +};
+> +
+> +static int max30210_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	int ret;
+
+The register names are a bit cryptic. I wouldn't mind a high-level comment
+explaining the intention here.
+
+> +
+> +	ret = regmap_set_bits(st->regmap, MAX30210_INT_EN_REG, MAX30210_STATUS_A_FULL_MASK);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_set_bits(st->regmap, MAX30210_FIFO_CONF_2_REG,
+> +			      MAX30210_FIFOCONF1_FLUSH_FIFO_MASK);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_write(st->regmap, MAX30210_TEMP_CONV_REG,
+> +			    MAX30210_TEMPCONV_AUTO_MASK | MAX30210_TEMPCONV_CONV_T_MASK);
+> +}
+> +
+> +static int max30210_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct max30210_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = regmap_write(st->regmap, MAX30210_TEMP_CONV_REG, 0x0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_set_bits(st->regmap, MAX30210_FIFO_CONF_2_REG,
+> +			      MAX30210_FIFOCONF1_FLUSH_FIFO_MASK);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_clear_bits(st->regmap, MAX30210_INT_EN_REG,
+> +				 MAX30210_STATUS_A_FULL_MASK);
+> +}
+> +
+> +static const struct iio_buffer_setup_ops max30210_buffer_ops = {
+> +	.preenable = max30210_buffer_preenable,
+> +	.postdisable = max30210_buffer_postdisable,
+> +};
+> +
+> +static const struct iio_info max30210_info = {
+> +	.read_raw = max30210_read_raw,
+> +	.read_avail = max30210_read_avail,
+> +	.write_raw = max30210_write_raw,
+> +	.hwfifo_set_watermark = max30210_set_watermark,
+> +	.debugfs_reg_access = max30210_reg_access,
+> +	.read_event_value = max30210_read_event,
+> +	.write_event_value = max30210_write_event,
+> +	.write_event_config = max30210_write_event_config,
+> +	.read_event_config = max30210_read_event_config,
+> +};
+> +
+> +static const struct iio_event_spec max30210_events[] = {
+> +	{
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.mask_separate = BIT(IIO_EV_INFO_VALUE) | BIT(IIO_EV_INFO_ENABLE),
+> +	}, {
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_FALLING,
+> +		.mask_separate = BIT(IIO_EV_INFO_VALUE) | BIT(IIO_EV_INFO_ENABLE),
+> +	},
+> +};
+> +
+> +static const struct iio_chan_spec max30210_channels = {
+> +	.type = IIO_TEMP,
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +			      BIT(IIO_CHAN_INFO_SCALE) |
+> +			      BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +	.info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +	.scan_index = 0,
+> +	.event_spec = max30210_events,
+> +	.num_event_specs = ARRAY_SIZE(max30210_events),
+> +	.scan_type = {
+> +		.sign = 's',
+> +		.realbits = 16,
+> +		.storagebits = 16,
+> +		.shift = 0,
+> +		.endianness = IIO_CPU,
+> +	},
+> +};
+> +
+> +static int max30210_setup(struct max30210_state *st, struct device *dev)
+> +{
+> +	struct gpio_desc *powerdown_gpio;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	/* Optional hardware reset via powerdown GPIO */
+> +	powerdown_gpio = devm_gpiod_get_optional(dev, "powerdown",
+> +						 GPIOD_OUT_HIGH);
+> +	if (IS_ERR(powerdown_gpio))
+> +		return dev_err_probe(dev, PTR_ERR(powerdown_gpio),
+> +				     "failed to request powerdown GPIO\n");
+> +
+> +	if (powerdown_gpio) {
+> +		/* Deassert powerdown to power up device */
+> +		gpiod_set_value(powerdown_gpio, 0);
+> +	} else {
+> +		/* Software reset fallback */
+> +		ret = regmap_update_bits(st->regmap, MAX30210_SYS_CONF_REG,
+
+regmap_set_bits()
+
+> +					 MAX30210_SYSCONF_RESET_MASK,
+> +					 MAX30210_SYSCONF_RESET_MASK);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+
+Use IIO style multi-line comments:
+
+	/*
+	 * Datasheet Figure 6:
+
+> +	/* Datasheet Figure 6:
+> +	 * tPU max = 700 µs after power-up or reset before device is ready.
+> +	 */
+> +	fsleep(700);
+> +
+> +	/* Clear status byte */
+> +	return regmap_read(st->regmap, MAX30210_STATUS_REG, &val);
+> +}
+> +
+> +static int max30210_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct iio_dev *indio_dev;
+> +	struct max30210_state *st;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
+> +		return -EOPNOTSUPP;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st = iio_priv(indio_dev);
+> +
+> +	ret = devm_regulator_get_enable(dev, "vdd");
+> +	if (ret)
+> +		return dev_err_probe(dev, ret,
+> +				     "Failed to enable vdd regulator.\n");
+> +
+> +	st->regmap = devm_regmap_init_i2c(client, &max30210_regmap);
+> +	if (IS_ERR(st->regmap))
+> +		return dev_err_probe(dev, PTR_ERR(st->regmap),
+> +				     "Failed to allocate regmap.\n");
+> +
+> +	st->watermark = MAX30210_WATERMARK_DEFAULT;
+> +
+> +	ret = max30210_setup(st, dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = &max30210_channels;
+> +	indio_dev->num_channels = 1;
+> +	indio_dev->name = "max30210";
+> +	indio_dev->info = &max30210_info;
+> +
+> +	ret = devm_iio_kfifo_buffer_setup_ext(dev, indio_dev, &max30210_buffer_ops,
+> +					      max30210_fifo_attributes);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (client->irq) {
+
+The way the driver is written currently, the interrup is required.
+
+Either we need to reutrn error on !client->irq or we need to have a second
+max30210_info that excludes buffer and events.
+
+> +		ret = devm_request_irq(dev, client->irq, max30210_irq_handler, IRQF_NO_THREAD,
+> +				       indio_dev->name, indio_dev);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> +
+> +static const struct i2c_device_id max30210_id[] = {
+> +	{ "max30210" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, max30210_id);
+> +
+> +static const struct of_device_id max30210_of_match[] = {
+> +	{ .compatible = "adi,max30210" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, max30210_of_match);
+> +
+> +static struct i2c_driver max30210_driver = {
+> +	.driver = {
+> +		.name = "max30210",
+> +		.of_match_table = max30210_of_match,
+> +	},
+> +	.probe = max30210_probe,
+> +	.id_table = max30210_id,
+> +};
+> +module_i2c_driver(max30210_driver);
+> +
+> +MODULE_AUTHOR("John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com");
+> +MODULE_DESCRIPTION("MAX30210 low-power digital temperature sensor");
+> +MODULE_LICENSE("GPL");
+
