@@ -1,172 +1,141 @@
-Received: from OS0P286CU010.outbound.protection.outlook.com (mail-japanwestazon11011051.outbound.protection.outlook.com [40.107.74.51])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1167B23D7E3;
-	Thu,  5 Mar 2026 11:25:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.74.51
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772709928; cv=fail; b=VXyLNoKTQyxowgyQUkpvBXE+CTvXt/Oc1EGgf4fvEXY1il5c30cj486avJQenlIz6BqlslO/nShX5CFdVA6rtVnx9rkdf0DXaqAvs3PITRNNgCqGSW6HUkVGlR888x3KQEOvVML/fXahfES10YFPIkEyuSPJscttFy/wC1Wv4ag=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772709928; c=relaxed/simple;
-	bh=beAaldgcAUaWSb0pdVxN1bUecJgDRMl8JACDt+JGBFU=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=PywMAhOIM305Lty9TP1AyB1vCbuPiZE0IjRY+UlYoRj4nlJjOC7gpNrJ1k/NikZ9OKtXBDWyWXXO39dM0rPXHse7zXnnL2HW2X5m8cTpNGjIdfOMryRlxHgHx2AoKkBEMyclJvAeGrTGURY9Ukbus040plqGj6MjRCgTCYoy9b4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com; spf=pass smtp.mailfrom=bp.renesas.com; dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b=OAEdPZy2; arc=fail smtp.client-ip=40.107.74.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=bp.renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=bp.renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5B4DF1C8604;
+	Thu,  5 Mar 2026 11:39:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772710768; cv=none; b=PP90+mKXmFHCULPaP6rgyk4BQLPAgsp766F8p5814UbbH4MXW57kxgsEwbEA1secZy5pBjm6pauWQ3QXn/Y6dMKo5/RFTlweiUD89wTQ4jnUVjetQO4W6w+GXk5cZWxAvslHrc8bZX+VSrVHWOqcBoax5NurgoJqBF4cf74I7e8=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772710768; c=relaxed/simple;
+	bh=lOBeofY3Kfyqw7BVexwMxhocdeLZeNJs+JrrS2i32FU=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=bUipzZRxv8NGCHvCATqen1wsOKB7xW0oAtPFW06XxNugk2l7am04zsY5qDxHGR/HnegUcezMmcJuMMJ6s+KyOXjHiuwi+S8Styh3Humk412LvtpfNhJMEzU3J9ZGrZj+FWScocKIRJ0l3kA3TORd0pbqERoNaI7pdD4sQY0C3mg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=CEiwOk8e; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=bp.renesas.com header.i=@bp.renesas.com header.b="OAEdPZy2"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=csSjoA46y2VSdWK6GoBo+itYKHedZq2HeLQ8v+89dfGV1PxI3umA1iux1cbsHTUjuv5AB56+L8SiWyli3amUK6QErBIwteDqOFCRKvBMGlso/Bt9ac2/X/JYDq8CqGxwmztHTK4CPmZzTM9bJvVTuWr2Zj2yxWyJ27jjQGQdKIlmslJ/6Ik0GtRLKOnBSKzHBd1EJbkDX195UQAho0Sx1lah6vhh+sCg9GPSRkutH2+m2NemFabh1Zbat5bVhC2q5tryPVo9Md8yz+IYnLu/POAArBe3cYRPPJMqHzzSYCO+8mWSeHoRg1S+Y7g6eDXZWCSDVhypHNnu3gTNxlQ81A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=7lQ4vExV58mTZfpKPDtd1O68AvqN7WqinrfZuswS5WU=;
- b=jjC2nZvDEJeTm3f9L4HVVAH9odNWOCNX/LRB3g9tphLrxGccX1lkPSEnGfVOGhYYEYop4uohIR9+Ntx6rDaYEMvN1Jfu0l1s6aTGFNn0mOh9l6qLqtR3cPnsjsoS4qAZh9IM5h+KuoOWNrPG9ia3vX8C2D9QGpnTC34eEIopt7rNgQB5+job/gFRerEgeDmCwTr0H1Xm+W+D9Mxf96VfN3n6iYN/vCpwJKOBwHir0L7wzXzTSFA7oebRTX48odSPoVbFjU07ZPq/t3zXdF4sdkVWQhOEQQtneQFMh6/igrc1J6OyB/v1YFmFk2DpIsNsV5UoMsjelNWuwu2F3Ive+A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=bp.renesas.com; dmarc=pass action=none
- header.from=bp.renesas.com; dkim=pass header.d=bp.renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bp.renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=7lQ4vExV58mTZfpKPDtd1O68AvqN7WqinrfZuswS5WU=;
- b=OAEdPZy2oHEI3sG11lcXSBO2o/5r/vnYdOzsORprhb3P/Dl/ToK0eiYDO4r19+kERG4mklkaXXSW7aoOVIRUslJNtNub/ItG7d1lyRCTgJdBtGibmjzB5jKSdSoLTE1SfVSmyYG7AF4u/2w8fA70avHS0TUcGfwzweJ4TS5t0Tc=
-Received: from OSCPR01MB14315.jpnprd01.prod.outlook.com (2603:1096:604:39f::5)
- by OS3PR01MB10407.jpnprd01.prod.outlook.com (2603:1096:604:1ff::5) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.18; Thu, 5 Mar
- 2026 11:25:22 +0000
-Received: from OSCPR01MB14315.jpnprd01.prod.outlook.com
- ([fe80::66f:fac9:2ef6:9796]) by OSCPR01MB14315.jpnprd01.prod.outlook.com
- ([fe80::66f:fac9:2ef6:9796%4]) with mapi id 15.20.9678.016; Thu, 5 Mar 2026
- 11:25:22 +0000
-From: Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>
-To: Geert Uytterhoeven <geert+renesas@glider.be>, Jonathan Cameron
-	<jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
-	=?iso-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>, Andy Shevchenko
-	<andy@kernel.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>
-Subject: RE: [PATCH] iio: adc: rzg2l: Convert to FIELD_MODIFY()
-Thread-Topic: [PATCH] iio: adc: rzg2l: Convert to FIELD_MODIFY()
-Thread-Index: AQHcrIjLFfhqgmI65U23BWHkYu5ThrWfzAWQ
-Date: Thu, 5 Mar 2026 11:25:22 +0000
-Message-ID:
- <OSCPR01MB14315890194F50E0B51EBFF48AA7DA@OSCPR01MB14315.jpnprd01.prod.outlook.com>
-References:
- <d42ba403c1fb1aca88b82ba3020ad0ec442a455f.1772705608.git.geert+renesas@glider.be>
-In-Reply-To:
- <d42ba403c1fb1aca88b82ba3020ad0ec442a455f.1772705608.git.geert+renesas@glider.be>
-Accept-Language: en-US, en-GB
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=bp.renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: OSCPR01MB14315:EE_|OS3PR01MB10407:EE_
-x-ms-office365-filtering-correlation-id: c3dc1d13-366e-4f56-987f-08de7aa9e3ae
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|1800799024|366016|376014|38070700021;
-x-microsoft-antispam-message-info:
- s7CE1IOGDLwtJZaEZLuKVAiXEMnNQFYUwlOe5NOvWcp28wXHp0xDgWKIo9zn90NkDTlSxj8xg2EnoudUYFRmlIvY8J9HOTPTFo53KCvGpZS0Ra4NK/8uYsi9XJWGrxUdirMGv0New6kj4W0MQ5rV+lB/AeR33Ku8c3066U2ET/Fw+LmWXHNEKPaX6g7b/IXQBMr0WKYAOB0cI+0aWHSxpd0Bz5UHDBdTcNIqgrVjX8O8XXIiJGjmYKlqTdnfcMWRQKC67E3DYReoclQ3JwWLbpzxd6zjf5yz177ymNl9Fr4HfWqw2bEJ6RE9Zmhy0V/m53BdVDUJvSNfnSwX+1U9EcssfTKPE9VmL+rAQkLqC1Jd33bGfejDTf0BM47aYJLpS3/tFCdSzCBUCwOM3AM4anNeMPhR/mGk2b/mUgygzERDu06fYRYJ8FyWvQJhp3q9tMWQF4kB9ehiLsG+spGkyBBPRgdf+6RdYw1kzxQHCzCYGVR4LgIxOuRk0NaykmVYhPheHGCVm9lojqEItiwFn97Ms6IRjAtrOo5Zah7xtwRdHVoc8ZggfR23hwa/nfNW/dVCi4BYF+P2Cr+P241F84+wRTqfpiv8vvi1PwDZiUMRiULzNpAIWjqq7GEIxCZbPpesTi+ZbMu/ELg3+0hfCR3iq79a+9Q23B7o9z6g80rxy2VIEOqXInWsUbbysGo7dwh1brTdt17ja8cEfxporvRIp1frPj0oVUTW5tYagjMfvNTOI5gW1Y3xHYeqNvlUUw0zLWtong6ZJwJ+P9K659YtJcxrXMALnYNTI3ARB/U=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSCPR01MB14315.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(366016)(376014)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?ghOcru2YySu/6jZLNsCSX/1/0bNllCOZlZhfJTz7Cxv4DSdZ8ZWcTLTn5x?=
- =?iso-8859-1?Q?rWDP5IPaFQSP2rA/FXw5N1pBacyVVkcj8lydeIXg4UQF2CX/RPqwcDX8ca?=
- =?iso-8859-1?Q?xjh31zvueQNoI8z+S3ylcy1qkN7f1W796xjY/AN+LwlKTA/nykh7GamjxV?=
- =?iso-8859-1?Q?z07AGAvFx07XAtnQU3xmrz1kBFTRdV5/tDW6RmLQrXc0d37S3b1J7175Vw?=
- =?iso-8859-1?Q?drYmW3IomalEiJwJlNuW0YzEopV1//DFs4Qzcc/PmhNRrCjKPojvJFwhC3?=
- =?iso-8859-1?Q?2/SltxPX91wPHWKTuzAD06xazkNcmowKhANiMpxRlHHvn85VdkgdIx7Hiz?=
- =?iso-8859-1?Q?5RxlQC5ary5Q2X/bXF+Nshn1iRdvcWEOq7wqhhpKMzeoFaL4HHhLafJA2D?=
- =?iso-8859-1?Q?fDrg+OZqHoPTxaBhgB6BfcpydfZWBCTf/pAk4Al05daJtNLqCiX1ceCUov?=
- =?iso-8859-1?Q?ktmd7OKgNrC9q4a9eXxYGsOBh83Ku0xu38xuHd+QB/1cdCLS9/eCyeYrlX?=
- =?iso-8859-1?Q?BzYt94SaDy/AAvKKuMf+wSNvjIqdjlKziDGFM2y1zR9QUDWDzMkH668EjO?=
- =?iso-8859-1?Q?58FJJOOkJm5ZzEQr9LCSOMjiSlLkxMVPcmwGOHpNqNwS7m6yUE2Jrkz6WL?=
- =?iso-8859-1?Q?9BmpWObHx6PlUjpdojvSzf+XsBHK3Wzgrc843d4+U7Qh7QW9+1m58o5rbE?=
- =?iso-8859-1?Q?9uGAMQy6Kpw8pTGNUhGm6WqV/MBjrwqW44fh/jEpOyW20LkPqoo4pW+s2P?=
- =?iso-8859-1?Q?mHG+pgszCB3lQiwIgAYikukXyStQnQWD0VvsAh8aBdqq2TSfVzsNONQgDV?=
- =?iso-8859-1?Q?V7sFYJy6yK7FQDJJp8nhUcL6hxRe/UEdgRFV1yozqyRPz0pRGiTP9Sfegy?=
- =?iso-8859-1?Q?TANDTxzDsB10scoBNxgQKMKaPtn6wCzvpLHqcG2ETrZ8TX6ELDn74YrfYt?=
- =?iso-8859-1?Q?TKEwP3fpuFAgklZcqczdIGFM57lQgQll5u/OZ7hJAErPDls/lEtbAne/GJ?=
- =?iso-8859-1?Q?nbDf7OUAX5tLZwTxb02mZhvdfJmkTDTnROh03Qp4qjM8pSsaKSd1fCylX6?=
- =?iso-8859-1?Q?zhl4I4qhYCLjro1IEQPWsviKs6oIX1AOllpswa3qjToAUv3o1QHWWOqHkM?=
- =?iso-8859-1?Q?B/9oD1UQKmRX5A7IakqU4SdkpivDDPNR/ck03lsyA6ZzWjGslQNJB3CgVM?=
- =?iso-8859-1?Q?EiK4LkUeMSal6mATWyQFQcOyGY9k7NutoGlRzAp790nLf4PVkjdrqc8v6T?=
- =?iso-8859-1?Q?Q3iMnb3K9bzA+NsnQYKZECEjzTDY0Pdx8cgjHlDXlEIzWkS7aOpXDydNIr?=
- =?iso-8859-1?Q?yjKAxW9OCkH8dCyfU3oA+g+Lc4vmAQKe2f9xNaRXgfVCGhuaERoMbi0f3+?=
- =?iso-8859-1?Q?qTkItTMkgYKSmmaOL/MSAbTLXVpnF6PX05i0e0oneUvLA+sz/GBadVdMfn?=
- =?iso-8859-1?Q?o+YcwwH+b9wLuOVgUEALFqHhLFupmVgDl3uOhDo9K86y/297XNg2uruScD?=
- =?iso-8859-1?Q?y/eLq0FpIwtD8clM/a6KHlmmr5fAPvDHw0LBOoIItTnnGKwT5ktuxs9dpF?=
- =?iso-8859-1?Q?7qqz4Lf5VDsoNOgAhc/nbC+uxayYBq0mrGBFl4hxAP4TLyKXShCb5b6OXs?=
- =?iso-8859-1?Q?eMgKnGdXPPQWjU3Cd38tKjrEgBgCIY2An2QK828TXMbjcqBC2wLIRkvpGp?=
- =?iso-8859-1?Q?vIUnt84tHekLQTTvA5NAPKXwG2LlecQowUt8NdW/ICz2KYcmr8KlLQVkuK?=
- =?iso-8859-1?Q?l4seyIeqTyiZDlOgMt+9v256cogfK6Rl4iozuRe5zTi0NunfTwuCqBISlO?=
- =?iso-8859-1?Q?xkM8cJXPXC0oVbmIIZnLEycU+j4gw6oZ1X2rmCC+2eJ5zDXngdcl?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="CEiwOk8e"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6259rkuF2756375;
+	Thu, 5 Mar 2026 06:39:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=Vj86U4DIqMY/b7VcSqEq67Ib3WE
+	RR6rH26UprYrMsOw=; b=CEiwOk8e+p3wK35tJvqw0Zok9zoWUUFWJrfrLx6WQk3
+	m35GNfuK8YcgHXOA1Xp92yDUwi7yOYDcDbBHR2jIwkkBfsU2OpZ2iA69zz+MfXP4
+	6j+E0u49U7BcnKJLgBxIPq5d15tEJKucO3OqOvLf8nkSnd7xz8dbamxYe7WPTs1W
+	PhgxjjhFvbBx6lYWN0iq8JWDshZbOQXWjFI+/d8nxf//THimfxA1AEhEFr1AFSJy
+	jb0AQwqF4e8GTtbsyefXfNrGfGBCf8ctMCY+c05UB09LB5pfMEaFGvoLGHyLhjv+
+	Ctqn3JYe1ilo128iS6Napq3I/iqq1mut7TP9eqIrMRg==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cppt6c2sg-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Thu, 05 Mar 2026 06:39:08 -0500 (EST)
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 625Bd7ap058548
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Thu, 5 Mar 2026 06:39:07 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Thu, 5 Mar
+ 2026 06:39:06 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Thu, 5 Mar 2026 06:39:06 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 625BcrWE005601;
+	Thu, 5 Mar 2026 06:38:55 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Andy Shevchenko
+	<andy@kernel.org>, Rob Herring <robh@kernel.org>,
+        Krzysztof Kozlowski
+	<krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Olivier Moysan
+	<olivier.moysan@foss.st.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v5 0/4] iio: adc: ad4080: add support for AD4880 dual-channel ADC
+Date: Thu, 5 Mar 2026 13:37:26 +0200
+Message-ID: <20260305113756.47243-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: bp.renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSCPR01MB14315.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3dc1d13-366e-4f56-987f-08de7aa9e3ae
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Mar 2026 11:25:22.0520
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: chh2nx03N4WxyoNrNFkDlAWMRXufwr1FyoUzl9uXX5PJwSmYxdHwqgvH9nZ0OkOFPIzfepMCDQXghreVsBIbLBofJI22uUYB0bdIt2vYTB2MUrcz7VNq55+8V5YZiD49
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS3PR01MB10407
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA1MDA5NSBTYWx0ZWRfXzmZARLDHJ+BR
+ F8BhEoL2EyVF5MiuaXGZ/1oiXhP8TbHnYw+FtfrR8fbQvcqCizk9i3bQnywV1VpbzaZfh1OU0iB
+ jHPGOTtd1yK7A41AkSzdrgj/Rr7XnWWf6LXiu7G/nVS58C6ZOb71FT+k1RNEXthrJraUBwSZuKi
+ 97EpJ0OeRYVTNd9d0kiYdHwXw2nqrOao7nKbXFJqUG8FxUj/Gu1vmS777egsVgrtlq4oDI5qKwM
+ PzjIsOhuLs13Sr+NhBSga3+3nCFW/OrUcfzasxH5+SJrKZ9pEsL6IVp6er2NQBwnmcZ9Lvju2Dt
+ PILcebegr1kipsNzytbpkAHfud7/6JCxGYWp4+bfULhYZXn7X3c8bXNEu+wkvjECPV88sDSG1fP
+ xwWO6giEfl67BObr4r+oMZZBJQivSTQQxMxUIHPR2ILClTwjNtTNnHS/4EhRNCh1ocMeQX47zxh
+ XLZCZ2uNEbkBi2v7ncw==
+X-Proofpoint-GUID: sqEqxbFpYaGAvEJ9skg6sJ4Hlh6rki6O
+X-Authority-Analysis: v=2.4 cv=EKkLElZC c=1 sm=1 tr=0 ts=69a96b5c cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8
+ a=JEplbj-ZQJa3tgTfUoEA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-ORIG-GUID: sqEqxbFpYaGAvEJ9skg6sJ4Hlh6rki6O
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-05_04,2026-03-04_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 phishscore=0 impostorscore=0 bulkscore=0 priorityscore=1501
+ spamscore=0 suspectscore=0 adultscore=0 clxscore=1015 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603050095
 
-> From: Geert Uytterhoeven <geert+renesas@glider.be>
-> Sent: 05 March 2026 10:14
-> To: Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>;
-> Jonathan Cameron <jic23@kernel.org>; David Lechner
-> <dlechner@baylibre.com>; Nuno S=E1 <nuno.sa@analog.com>; Andy Shevchenko
-> <andy@kernel.org>
-> Cc: linux-iio@vger.kernel.org; linux-renesas-soc@vger.kernel.org; Geert
-> Uytterhoeven <geert+renesas@glider.be>
-> Subject: [PATCH] iio: adc: rzg2l: Convert to FIELD_MODIFY()
->=20
-> Use the FIELD_MODIFY() helper instead of open-coding the same operation.
-> This requires splitting the double OR operation.
->=20
-> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> ---
->  drivers/iio/adc/rzg2l_adc.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
->=20
-Reviewed-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC from
+the same family as AD4080.
 
-Cheers,
-Prabhakar
+The AD4880 has two independent ADC channels, each with its own SPI
+configuration interface and LVDS data output. The driver uses
+spi_new_ancillary_device() for the second channel's SPI and requires
+two io-backend instances for the data interfaces.
 
-> diff --git a/drivers/iio/adc/rzg2l_adc.c b/drivers/iio/adc/rzg2l_adc.c
-> index 1010e0511b3e09c1..dcbe112efa863419 100644
-> --- a/drivers/iio/adc/rzg2l_adc.c
-> +++ b/drivers/iio/adc/rzg2l_adc.c
-> @@ -401,10 +401,9 @@ static int rzg2l_adc_hw_init(struct device *dev,
-> struct rzg2l_adc *adc)
->  	 */
->  	reg =3D rzg2l_adc_readl(adc, RZG2L_ADM(3));
->  	reg &=3D ~RZG2L_ADM3_ADIL_MASK;
-> -	reg &=3D ~RZG2L_ADM3_ADCMP_MASK;
-> +	FIELD_MODIFY(RZG2L_ADM3_ADCMP_MASK, &reg, hw_params->default_adcmp);
->  	reg &=3D ~hw_params->adsmp_mask;
-> -	reg |=3D FIELD_PREP(RZG2L_ADM3_ADCMP_MASK, hw_params->default_adcmp) |
-> -	       hw_params->default_adsmp[0];
-> +	reg |=3D hw_params->default_adsmp[0];
->=20
->  	rzg2l_adc_writel(adc, RZG2L_ADM(3), reg);
->=20
-> --
-> 2.43.0
+This series includes:
+  - Use __free(fwnode_handle) for automatic cleanup in iio backend
+  - Refactored devm_iio_backend_get_by_index() for multi-channel backend lookup
+  - DT bindings update for AD4880
+  - Driver support for AD4880
+
+Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ad4880.pdf
+
+Changes in v5:
+  - Drop the SPI patches (already applied)
+  - Split the __free(fwnode_handle) cleanup into a separate patch (patch 1)
+  - Fix "Get's" -> "Gets" typo in devm_iio_backend_get_by_index()
+    kernel-doc (patch 2)
+  - Declare loop variables in for-loop initializers (patch 4)
+  - Drop redundant num_channels > 1 guard around ancillary device
+    setup loop (patch 4)
+
+Antoniu Miclaus (4):
+  iio: backend: use __free(fwnode_handle) for automatic cleanup
+  iio: backend: add devm_iio_backend_get_by_index()
+  dt-bindings: iio: adc: ad4080: add AD4880 support
+  iio: adc: ad4080: add support for AD4880 dual-channel ADC
+
+ .../bindings/iio/adc/adi,ad4080.yaml          |  53 +++-
+ drivers/iio/adc/ad4080.c                      | 230 ++++++++++++++----
+ drivers/iio/industrialio-backend.c            |  62 +++--
+ include/linux/iio/backend.h                   |   2 +
+ 4 files changed, 278 insertions(+), 69 deletions(-)
+
+-- 
+2.43.0
 
