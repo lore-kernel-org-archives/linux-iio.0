@@ -1,191 +1,281 @@
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B9DB41799F
-	for <linux-iio@vger.kernel.org>; Thu,  5 Mar 2026 00:11:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 066E13368B7;
+	Thu,  5 Mar 2026 00:34:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772669487; cv=none; b=Tfd7XNkx1kN6ElsSa0Ez5WZsicpcZKdsx+oWePgWfs56qKfWA7pgGC6aISe1tnXMPSlsM/pRltgYA5co9e8v5yvfgFzlK8ss8yQZl2F2OCxklkYk79Dq2/cWkRswbV6jnj4ULLWRrpS2UbU916WNC4QVrym8ANPCGOEW19Y68Es=
+	t=1772670897; cv=none; b=X1pu9v0YX7Xe05pbn2UCdPfib/1NORFMToNFSUNc4qNlNHur1FiI8b57FGSB7REunhl565gbdy0oxHvM0GdXPVWd9F30ALZdiHhAdyZFzcwzRxVhLXDuwxWtlJYThkfDlirwXQMAi+zitlX2FrEKh+0E9iV4PGuwvBYekRaoWZU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772669487; c=relaxed/simple;
-	bh=ReYvOkczpVQFeeKyuHhGik55MaCNLtaNhsNjs8HWBU0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=LHfUK3E7RfsYIPAJ6gnKL+msIYklCioSt9XX+R+bd1bGWFQvXsdnJ8tphFREctU3iRq6V6dQo9SlVZhS8E2pbkH83sKgsvXq0qExrRg02UHhNIhmcFOFmwKny3j7Tj9RN2HtH1DSO8oBEqAAOpjkr3cFdRntPgt33DsI3UZ3JvY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=qrUgrcrL; arc=none smtp.client-ip=209.85.167.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1772670897; c=relaxed/simple;
+	bh=Y5tNmD/z+hXbUS3yPmpQI37LjZuCPtMHumMJgkI4cWs=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=WR+KGvG9DIM9yJw+83RbC/XcvZ57NFTiNzMwKh/CIioi/5ngFYzJiNrC7oXG3+UFPOUJI14bWflIYtipKzKq/W9OMEOfviaI+ydfblgT3BfDMWuPTfm2qd6MiR5RKO/0fH62qmE2o7Qu0u3yHCCqV3ElTrQLEKgGCP7GDy1I7kM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b/UOcpdy; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="qrUgrcrL"
-Received: by mail-oi1-f171.google.com with SMTP id 5614622812f47-45f126d47b8so5465789b6e.2
-        for <linux-iio@vger.kernel.org>; Wed, 04 Mar 2026 16:11:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772669483; x=1773274283; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=oA8O5ZwjNTNkBr8c/qYu7tjeiL/FihIILsf+2wRVrh0=;
-        b=qrUgrcrL4rxPwc3+aN4gmqqXCRxC5y5elgDFzLK+chPfKZ8VI2X22yc+X8hQyVIG3L
-         KGqglCuHGUQ9V9ie84KNG3MmFel6qhVZOl7fGJeOU150E6KrusYnpRzDlShwtWTw8eVL
-         8FVNZwirLn7Ul9SVgc3OhUfoCn2HIc+xoJSr7uMKkdVKixrklSJGQ9x+SD+dlcqem5ea
-         ocyZrv/bQ7JCrS8FsjkNxoaPrqbh9mHd/GDU4J5Zt+F+ddlP4qry91jWCQzKyYabTdxK
-         P2BOe5OeMAQFA8gosN3WAWUW3RC8SxGnQC0bRKMgVatiXTwlHirs1ekLM56Ay0FgSD4k
-         NMUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772669483; x=1773274283;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=oA8O5ZwjNTNkBr8c/qYu7tjeiL/FihIILsf+2wRVrh0=;
-        b=T6dR9mBuGJOc6SJxZAECG8bEtK5wSoHBkbjYo6IQDUXb0FF/MpirIcukFtno56ei/l
-         iXdhvEG+PubhlsdETtbsAYyZQTXs7DZrrYq2GA4dRnEZTFvTvbVyWxh9hqFvjSgzq3+L
-         auiRNLvTIDk7cgJpcwMvot4KCTzWfTFBXd0VWHfIR9CTxphkUIftxgJgmpxXrPvpk+Ay
-         vpqklS0MpDjLhYw+p+xmQnBrht3Afa+7jJjbT7NoyjdAci48ardQGCzfedz7R/9jWvZz
-         HH/QRwHTqRKn7FvoTdf+6Q55A0uSeNmPX1m7PqZGlf6nyEKkNdwB42T+P20qsp8aNCdn
-         hHjg==
-X-Forwarded-Encrypted: i=1; AJvYcCWk7ReUUL8mQ2MVAWkTSbXoIAzkbNMcVsIxdSEDnwe02nptGm4K1m4SrjAiOXQhYbUEC7FIt5qSVyA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyyoa96VjsfWZXpEb/O35kXakUfFt+0zEGHl+BLkR4334kZz6M9
-	qHLjMzr8tZFWJtIsunYbBBAfDiY+366hMt/pUrB5lQr3kXpBY+44SmEC7f8+FgorRH0jwuPx6cX
-	Dq/pR
-X-Gm-Gg: ATEYQzxauOgnBBL3wpQbFEPuBrjYzrOFG5yli+/sGygxiFrIyXRf1KxhCwiuRpVrvG1
-	MjFsAiTloYhwQ9mjqCK0YKn+tF9IRHy3pL0bQ8+8C8zX3XUm3HMq5rQXwWBNRlAdBSoVJ9mKQ/M
-	XFMqQYE7BgiyeIo1Fqt4JfX8srPDX1aBQbkdqlVEEyQUrUDkb+b5hcl2MJjh4okfH11uYBT7BN1
-	FTzscKgs3b8OfbQuKhHcSBttV9G2HHrh5o1SMxiSuPaYioDitqodc5P0uFPyhQHCezBZ8ruBs5z
-	7h9HC2XJJno9anJ6UpkQjjNo0I1KuB0XDmNBmQ//PONl6FRj58XxaPHpyJINRmsk1ztdHxEL8AH
-	cwTQ2wx929BAso7h9qycKMM0il6389cukb2lZXhfAxzEswxUzhWlktS++ftZxA2QWNXUuOesUaI
-	27gXrLB2CG0v9VowJjTx1W5DFvtIXCV240K2i43z0Ij+rFaSvN4DaUykUUlZmlOTwBh8hd4k3WU
-	g==
-X-Received: by 2002:a05:6808:4feb:b0:45e:fd68:3de4 with SMTP id 5614622812f47-4651a95886cmr2129187b6e.0.1772669483626;
-        Wed, 04 Mar 2026 16:11:23 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:d719:8353:352f:b2e0? ([2600:8803:e7e4:500:d719:8353:352f:b2e0])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-464bb5d0a8csm12246284b6e.14.2026.03.04.16.11.22
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 04 Mar 2026 16:11:23 -0800 (PST)
-Message-ID: <0024f138-a8f6-48a2-a68e-a8c36e542b5a@baylibre.com>
-Date: Wed, 4 Mar 2026 18:11:22 -0600
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b/UOcpdy"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772670895; x=1804206895;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Y5tNmD/z+hXbUS3yPmpQI37LjZuCPtMHumMJgkI4cWs=;
+  b=b/UOcpdySy07E3Uxr9LDXMjk1wv/vfjKYOFzoiPui6bOtwfFutsIe3yC
+   HOAeZybyZegYyZmXy26J/a3NTcxbyTsMsNk5ggiSKgOt1/nfzXDnuzqdf
+   39r4TPvPXqYHI9LuhwphgtJoKyrlF40B0ObCS0Dvi1CqZdWsc+2h5vsBH
+   DafTFlp/J8KJzfTVrFWoQSj36+oUkD6CoqRKSgfkq6zlPDzm02RrHTj9Q
+   4526c73tI7uS0Jkppn1HX/OC0f5gik2uf13dRPmL1lsSY1qMRnpEENJkm
+   jSOdQf5tjS8ykmKjTRBu0a5BRsKaLQMoh0Gy4BrK6I7I7IEGVDOHA/q9s
+   A==;
+X-CSE-ConnectionGUID: T5thFL8uTq6oeK3/9vlujg==
+X-CSE-MsgGUID: 6s2eaJT0QK2sAzwKWOkpPw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11719"; a="84459110"
+X-IronPort-AV: E=Sophos;i="6.21,325,1763452800"; 
+   d="scan'208";a="84459110"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 16:34:55 -0800
+X-CSE-ConnectionGUID: LOotDxHPRmiOXDTieOinqg==
+X-CSE-MsgGUID: EUAw/1PeRvGvpJ5nvfuCcg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.21,325,1763452800"; 
+   d="scan'208";a="256389751"
+Received: from lkp-server01.sh.intel.com (HELO f27a57aa7a36) ([10.239.97.150])
+  by orviesa001.jf.intel.com with ESMTP; 04 Mar 2026 16:34:51 -0800
+Received: from kbuild by f27a57aa7a36 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1vxwfv-000000004r9-2oNh;
+	Thu, 05 Mar 2026 00:34:47 +0000
+Date: Thu, 5 Mar 2026 08:34:01 +0800
+From: kernel test robot <lkp@intel.com>
+To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>,
+	linux-iio@vger.kernel.org, jic23@kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: temperature: add support for Analog Devices
+ MAX30210
+Message-ID: <202603050819.rN8MJLQm-lkp@intel.com>
+References: <20260304122509.67931-3-johnerasmusmari.geronimo@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: temperature: add ADI MAX30210
-To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>,
- linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: nuno.sa@analog.com, andy@kernel.org, linux-kernel@vger.kernel.org
-References: <20260304122509.67931-1-johnerasmusmari.geronimo@analog.com>
- <20260304122509.67931-2-johnerasmusmari.geronimo@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260304122509.67931-2-johnerasmusmari.geronimo@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260304122509.67931-3-johnerasmusmari.geronimo@analog.com>
 
-On 3/4/26 6:25 AM, John Erasmus Mari Geronimo wrote:
-> Add device tree binding documentation for the Analog Devices
-> MAX30210 temperature sensor.
-> 
-> Signed-off-by: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
-> ---
->  .../iio/temperature/adi,max30210.yaml         | 62 +++++++++++++++++++
->  MAINTAINERS                                   |  7 +++
->  2 files changed, 69 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
-> new file mode 100644
-> index 000000000000..66867880a20f
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
-> @@ -0,0 +1,62 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +# Copyright 2026 Analog Devices Inc.
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/temperature/adi,max30210.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices MAX30210 Temperature Sensor
-> +
-> +maintainers:
-> +  - John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
-> +
-> +description: |
-> +  The MAX30210 is a temperature sensor with an I2C interface.
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/max30210.pdf
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,max30210
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  vdd-supply:
-> +    description: Analog supply voltage input.
+Hi John,
 
-The description makes it sound like there could be other supplies,
-but there aren't. It is the "everything" supply, so we can just
-call it the power supply.
+kernel test robot noticed the following build errors:
 
-> +
-> +  powerdown-gpios:
-> +    description: GPIO connected to the CVT/PDB pin (active low).
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    description: Connected to INT pin. Interrupt triggered on both rising and falling edges.
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vdd-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        temperature-sensor@40 {
-> +            compatible = "adi,max30210";
-> +            reg = <0x40>;
-> +            vdd-supply = <&vdd>;
-> +            powerdown-gpios = <&gpio 12 GPIO_ACTIVE_LOW>;
-> +
-> +            interrupt-parent = <&gpio>;
-> +            interrupts = <17 IRQ_TYPE_EDGE_BOTH>;
-> +        };
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 1c75276404df..09345b9f32ed 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1638,6 +1638,13 @@ W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/devicetree/bindings/iio/dac/adi,max22007.yaml
->  F:	drivers/iio/dac/max22007.c
+[auto build test ERROR on 70a9ae59c5b1f2f5501e78e2d85bfeefd153f854]
 
-It looks like MAX22007 is not in alphabetical order. Let's fix it
-first so we can put this new one in the right place.
+url:    https://github.com/intel-lab-lkp/linux/commits/John-Erasmus-Mari-Geronimo/dt-bindings-iio-temperature-add-ADI-MAX30210/20260304-202920
+base:   70a9ae59c5b1f2f5501e78e2d85bfeefd153f854
+patch link:    https://lore.kernel.org/r/20260304122509.67931-3-johnerasmusmari.geronimo%40analog.com
+patch subject: [PATCH v2 2/2] iio: temperature: add support for Analog Devices MAX30210
+config: sparc64-allmodconfig (https://download.01.org/0day-ci/archive/20260305/202603050819.rN8MJLQm-lkp@intel.com/config)
+compiler: clang version 23.0.0git (https://github.com/llvm/llvm-project 9a109fbb6e184ec9bcce10615949f598f4c974a9)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260305/202603050819.rN8MJLQm-lkp@intel.com/reproduce)
 
->  
-> +ANALOG DEVICES INC MAX30210 DRIVER
-> +M:	John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Supported
-> +W:	https://ez.analog.com/linux-software-drivers
-> +F:	Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
-> +
->  ANALOG DEVICES INC ADA4250 DRIVER
->  M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
->  L:	linux-iio@vger.kernel.org
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202603050819.rN8MJLQm-lkp@intel.com/
 
+All errors (new ones prefixed by >>):
+
+>> drivers/iio/temperature/max30210.c:136:13: error: call to undeclared function 'get_unaligned_be24'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     136 |                 u32 raw = get_unaligned_be24(&st->fifo_buf[3 * i]);
+         |                           ^
+>> drivers/iio/temperature/max30210.c:272:11: error: call to undeclared function 'FIELD_GET'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     272 |                         return FIELD_GET(MAX30210_STATUS_TEMP_HI_MASK, val);
+         |                                ^
+   drivers/iio/temperature/max30210.c:279:11: error: call to undeclared function 'FIELD_GET'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     279 |                         return FIELD_GET(MAX30210_STATUS_TEMP_LO_MASK, val);
+         |                                ^
+   drivers/iio/temperature/max30210.c:336:10: error: call to undeclared function 'FIELD_GET'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     336 |                 uval = FIELD_GET(MAX30210_TEMPCONF2_TEMP_PERIOD_MASK, uval);
+         |                        ^
+>> drivers/iio/temperature/max30210.c:418:7: error: call to undeclared function 'FIELD_PREP'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+     418 |                                                 FIELD_PREP(MAX30210_TEMPCONF2_TEMP_PERIOD_MASK, i));
+         |                                                 ^
+   5 errors generated.
+
+
+vim +/get_unaligned_be24 +136 drivers/iio/temperature/max30210.c
+
+   122	
+   123	static void max30210_fifo_read(struct iio_dev *indio_dev)
+   124	{
+   125		struct max30210_state *st = iio_priv(indio_dev);
+   126		int ret;
+   127	
+   128		ret = regmap_bulk_read(st->regmap, MAX30210_FIFO_DATA_REG,
+   129				       st->fifo_buf, 3 * st->watermark);
+   130		if (ret) {
+   131			dev_err(&indio_dev->dev, "Failed to read from fifo.\n");
+   132			return;
+   133		}
+   134	
+   135		for (unsigned int i = 0; i < st->watermark; i++) {
+ > 136			u32 raw = get_unaligned_be24(&st->fifo_buf[3 * i]);
+   137	
+   138			if (raw == MAX30210_FIFO_INVAL_DATA) {
+   139				dev_err_ratelimited(&indio_dev->dev, "Invalid data\n");
+   140				continue;
+   141			}
+   142	
+   143			s16 temp = (s16)(raw & 0xFFFF);
+   144	
+   145			iio_push_to_buffers(indio_dev, &temp);
+   146		}
+   147	}
+   148	
+   149	static irqreturn_t max30210_irq_handler(int irq, void *dev_id)
+   150	{
+   151		struct iio_dev *indio_dev = dev_id;
+   152		struct max30210_state *st = iio_priv(indio_dev);
+   153		unsigned int status;
+   154		int ret;
+   155	
+   156		ret = regmap_read(st->regmap, MAX30210_STATUS_REG, &status);
+   157		if (ret) {
+   158			dev_err(&indio_dev->dev, "Status read failed\n");
+   159			return IRQ_NONE;
+   160		}
+   161	
+   162		if (status & MAX30210_STATUS_A_FULL_MASK)
+   163			max30210_fifo_read(indio_dev);
+   164	
+   165		if (status & MAX30210_STATUS_TEMP_HI_MASK)
+   166			iio_push_event(indio_dev,
+   167				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+   168							    IIO_EV_TYPE_THRESH,
+   169							    IIO_EV_DIR_RISING),
+   170				       iio_get_time_ns(indio_dev));
+   171	
+   172		if (status & MAX30210_STATUS_TEMP_LO_MASK)
+   173			iio_push_event(indio_dev,
+   174				       IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
+   175							    IIO_EV_TYPE_THRESH,
+   176							    IIO_EV_DIR_FALLING),
+   177				       iio_get_time_ns(indio_dev));
+   178	
+   179		return IRQ_HANDLED;
+   180	}
+   181	
+   182	static int max30210_reg_access(struct iio_dev *indio_dev, unsigned int reg,
+   183				       unsigned int writeval, unsigned int *readval)
+   184	{
+   185		struct max30210_state *st = iio_priv(indio_dev);
+   186	
+   187		if (!readval)
+   188			return regmap_write(st->regmap, reg, writeval);
+   189	
+   190		return regmap_read(st->regmap, reg, readval);
+   191	}
+   192	
+   193	static int max30210_read_event(struct iio_dev *indio_dev,
+   194				       const struct iio_chan_spec *chan,
+   195				       enum iio_event_type type,
+   196				       enum iio_event_direction dir,
+   197				       enum iio_event_info info, int *val, int *val2)
+   198	{
+   199		struct max30210_state *st = iio_priv(indio_dev);
+   200	
+   201		if (info != IIO_EV_INFO_VALUE)
+   202			return -EINVAL;
+   203	
+   204		switch (dir) {
+   205		case IIO_EV_DIR_RISING:
+   206			switch (type) {
+   207			case IIO_EV_TYPE_THRESH:
+   208				return max30210_read_temp(st->regmap, MAX30210_TEMP_ALM_HI_REG, val);
+   209			default:
+   210				return -EINVAL;
+   211			}
+   212		case IIO_EV_DIR_FALLING:
+   213			switch (type) {
+   214			case IIO_EV_TYPE_THRESH:
+   215				return max30210_read_temp(st->regmap, MAX30210_TEMP_ALM_LO_REG, val);
+   216			default:
+   217				return -EINVAL;
+   218			}
+   219		default:
+   220			return -EINVAL;
+   221		}
+   222	}
+   223	
+   224	static int max30210_write_event(struct iio_dev *indio_dev,
+   225					const struct iio_chan_spec *chan,
+   226					enum iio_event_type type,
+   227					enum iio_event_direction dir,
+   228					enum iio_event_info info, int val, int val2)
+   229	{
+   230		struct max30210_state *st = iio_priv(indio_dev);
+   231	
+   232		if (info != IIO_EV_INFO_VALUE)
+   233			return -EINVAL;
+   234	
+   235		switch (dir) {
+   236		case IIO_EV_DIR_RISING:
+   237			switch (type) {
+   238			case IIO_EV_TYPE_THRESH:
+   239				return max30210_write_temp(st->regmap, MAX30210_TEMP_ALM_HI_REG, val);
+   240			default:
+   241				return -EINVAL;
+   242			}
+   243		case IIO_EV_DIR_FALLING:
+   244			switch (type) {
+   245			case IIO_EV_TYPE_THRESH:
+   246				return max30210_write_temp(st->regmap, MAX30210_TEMP_ALM_LO_REG, val);
+   247			default:
+   248				return -EINVAL;
+   249			}
+   250		default:
+   251			return -EINVAL;
+   252		}
+   253	}
+   254	
+   255	static int max30210_read_event_config(struct iio_dev *indio_dev,
+   256					      const struct iio_chan_spec *chan,
+   257					      enum iio_event_type type,
+   258					      enum iio_event_direction dir)
+   259	{
+   260		struct max30210_state *st = iio_priv(indio_dev);
+   261		unsigned int val;
+   262		int ret;
+   263	
+   264		ret = regmap_read(st->regmap, MAX30210_INT_EN_REG, &val);
+   265		if (ret)
+   266			return ret;
+   267	
+   268		switch (dir) {
+   269		case IIO_EV_DIR_RISING:
+   270			switch (type) {
+   271			case IIO_EV_TYPE_THRESH:
+ > 272				return FIELD_GET(MAX30210_STATUS_TEMP_HI_MASK, val);
+   273			default:
+   274				return -EINVAL;
+   275			}
+   276		case IIO_EV_DIR_FALLING:
+   277			switch (type) {
+   278			case IIO_EV_TYPE_THRESH:
+   279				return FIELD_GET(MAX30210_STATUS_TEMP_LO_MASK, val);
+   280			default:
+   281				return -EINVAL;
+   282			}
+   283		default:
+   284			return -EINVAL;
+   285		}
+   286	}
+   287	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
