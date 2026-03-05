@@ -1,62 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 066E13368B7;
-	Thu,  5 Mar 2026 00:34:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B195F1531E8;
+	Thu,  5 Mar 2026 00:46:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772670897; cv=none; b=X1pu9v0YX7Xe05pbn2UCdPfib/1NORFMToNFSUNc4qNlNHur1FiI8b57FGSB7REunhl565gbdy0oxHvM0GdXPVWd9F30ALZdiHhAdyZFzcwzRxVhLXDuwxWtlJYThkfDlirwXQMAi+zitlX2FrEKh+0E9iV4PGuwvBYekRaoWZU=
+	t=1772671616; cv=none; b=Guyamx8R2X5DD/mnS/qyZ7Gdq+VOf0iqKq23ZmKLjvm6oTwjNq0+pccheTmw6xQTXzfwdwLzreWb1ohRIAEAkYNxm23fmUV54FCN7umUXBZDic8ETV77PVy4G818coVpBId9xuH3n2aU4rqnKNqnoPgMgjyzSdyTH9014DJciuo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772670897; c=relaxed/simple;
-	bh=Y5tNmD/z+hXbUS3yPmpQI37LjZuCPtMHumMJgkI4cWs=;
+	s=arc-20240116; t=1772671616; c=relaxed/simple;
+	bh=fXCeegBbIUBRm4xFMMFUFNRIomWhKFiBfNiUiz7gdzg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WR+KGvG9DIM9yJw+83RbC/XcvZ57NFTiNzMwKh/CIioi/5ngFYzJiNrC7oXG3+UFPOUJI14bWflIYtipKzKq/W9OMEOfviaI+ydfblgT3BfDMWuPTfm2qd6MiR5RKO/0fH62qmE2o7Qu0u3yHCCqV3ElTrQLEKgGCP7GDy1I7kM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=b/UOcpdy; arc=none smtp.client-ip=192.198.163.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=W3NDLdARBUbFuxsOKaOwbRYdl6J6DkKHl0ImbhosgFBo5Yr3z+sINz0alrQUQCoCSR+cPQir3L8as+tqlg+AaWzmEbSYTaIzLdl+dWb+m+W08kH5e8YfM+KO2efB2rAXoiYEOiSySefW4Ryjn+gkvM3cR3xo2yAWlB+1IfnbT7c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=e1ri/jRI; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="b/UOcpdy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="e1ri/jRI"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772670895; x=1804206895;
+  t=1772671614; x=1804207614;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=Y5tNmD/z+hXbUS3yPmpQI37LjZuCPtMHumMJgkI4cWs=;
-  b=b/UOcpdySy07E3Uxr9LDXMjk1wv/vfjKYOFzoiPui6bOtwfFutsIe3yC
-   HOAeZybyZegYyZmXy26J/a3NTcxbyTsMsNk5ggiSKgOt1/nfzXDnuzqdf
-   39r4TPvPXqYHI9LuhwphgtJoKyrlF40B0ObCS0Dvi1CqZdWsc+2h5vsBH
-   DafTFlp/J8KJzfTVrFWoQSj36+oUkD6CoqRKSgfkq6zlPDzm02RrHTj9Q
-   4526c73tI7uS0Jkppn1HX/OC0f5gik2uf13dRPmL1lsSY1qMRnpEENJkm
-   jSOdQf5tjS8ykmKjTRBu0a5BRsKaLQMoh0Gy4BrK6I7I7IEGVDOHA/q9s
-   A==;
-X-CSE-ConnectionGUID: T5thFL8uTq6oeK3/9vlujg==
-X-CSE-MsgGUID: 6s2eaJT0QK2sAzwKWOkpPw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11719"; a="84459110"
+  bh=fXCeegBbIUBRm4xFMMFUFNRIomWhKFiBfNiUiz7gdzg=;
+  b=e1ri/jRIqiT36an26Fvx45w+1lHQO1Nk07O7fpfU0WTPacTK9Cs3rSRk
+   54TQ82bhT8Dipes7OTcSsHUyhLh3/KUqkyPASMSC0YKVY4MLGQ9HtzemP
+   zVPmKPVlRFyxSOl+GswH2KX0hSNgAZrzSjh98Y7n9yKl7lAV7xohACG6z
+   kuH7jGuJuJQEVWtTMkIxEVcPmCH4hVOs4/FTlYEwCJE7M4AqRjoQo1Qzl
+   D42iJHmd/oPoyFVA6uaJWRr3nWEp9kSwBtB4petnByCHWlwW5MY25UEhL
+   dDXZrVU05aPoAjb4jUwxtxpSfW644/Ugn+5fl4+gQDirZ9qmMpPmXpH9r
+   w==;
+X-CSE-ConnectionGUID: 1wwsarzRRrWV6HZrUOyzXQ==
+X-CSE-MsgGUID: hdmn3Kl9TdqNuviSgOlCgA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11719"; a="85219034"
 X-IronPort-AV: E=Sophos;i="6.21,325,1763452800"; 
-   d="scan'208";a="84459110"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 16:34:55 -0800
-X-CSE-ConnectionGUID: LOotDxHPRmiOXDTieOinqg==
-X-CSE-MsgGUID: EUAw/1PeRvGvpJ5nvfuCcg==
+   d="scan'208";a="85219034"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2026 16:46:54 -0800
+X-CSE-ConnectionGUID: AKS7JEquSCG86Vtn73DOfg==
+X-CSE-MsgGUID: dB0MQpefRNiAD3gv34EaWQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.21,325,1763452800"; 
-   d="scan'208";a="256389751"
+   d="scan'208";a="241519934"
 Received: from lkp-server01.sh.intel.com (HELO f27a57aa7a36) ([10.239.97.150])
-  by orviesa001.jf.intel.com with ESMTP; 04 Mar 2026 16:34:51 -0800
+  by fmviesa002.fm.intel.com with ESMTP; 04 Mar 2026 16:46:52 -0800
 Received: from kbuild by f27a57aa7a36 with local (Exim 4.98.2)
 	(envelope-from <lkp@intel.com>)
-	id 1vxwfv-000000004r9-2oNh;
-	Thu, 05 Mar 2026 00:34:47 +0000
-Date: Thu, 5 Mar 2026 08:34:01 +0800
+	id 1vxwrZ-000000004s9-2XlC;
+	Thu, 05 Mar 2026 00:46:49 +0000
+Date: Thu, 5 Mar 2026 08:45:56 +0800
 From: kernel test robot <lkp@intel.com>
 To: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>,
 	linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-kernel@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-kernel@vger.kernel.org
 Subject: Re: [PATCH v2 2/2] iio: temperature: add support for Analog Devices
  MAX30210
-Message-ID: <202603050819.rN8MJLQm-lkp@intel.com>
+Message-ID: <202603050822.weVzrjhU-lkp@intel.com>
 References: <20260304122509.67931-3-johnerasmusmari.geronimo@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -78,33 +77,30 @@ url:    https://github.com/intel-lab-lkp/linux/commits/John-Erasmus-Mari-Geronim
 base:   70a9ae59c5b1f2f5501e78e2d85bfeefd153f854
 patch link:    https://lore.kernel.org/r/20260304122509.67931-3-johnerasmusmari.geronimo%40analog.com
 patch subject: [PATCH v2 2/2] iio: temperature: add support for Analog Devices MAX30210
-config: sparc64-allmodconfig (https://download.01.org/0day-ci/archive/20260305/202603050819.rN8MJLQm-lkp@intel.com/config)
-compiler: clang version 23.0.0git (https://github.com/llvm/llvm-project 9a109fbb6e184ec9bcce10615949f598f4c974a9)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260305/202603050819.rN8MJLQm-lkp@intel.com/reproduce)
+config: i386-randconfig-r071-20260305 (https://download.01.org/0day-ci/archive/20260305/202603050822.weVzrjhU-lkp@intel.com/config)
+compiler: gcc-14 (Debian 14.2.0-19) 14.2.0
+smatch: v0.5.0-9004-gb810ac53
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260305/202603050822.weVzrjhU-lkp@intel.com/reproduce)
 
 If you fix the issue in a separate patch/commit (i.e. not just a new version of
 the same patch/commit), kindly add following tags
 | Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603050819.rN8MJLQm-lkp@intel.com/
+| Closes: https://lore.kernel.org/oe-kbuild-all/202603050822.weVzrjhU-lkp@intel.com/
 
 All errors (new ones prefixed by >>):
 
->> drivers/iio/temperature/max30210.c:136:13: error: call to undeclared function 'get_unaligned_be24'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+   drivers/iio/temperature/max30210.c: In function 'max30210_fifo_read':
+>> drivers/iio/temperature/max30210.c:136:27: error: implicit declaration of function 'get_unaligned_be24' [-Wimplicit-function-declaration]
      136 |                 u32 raw = get_unaligned_be24(&st->fifo_buf[3 * i]);
-         |                           ^
->> drivers/iio/temperature/max30210.c:272:11: error: call to undeclared function 'FIELD_GET'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+         |                           ^~~~~~~~~~~~~~~~~~
+   drivers/iio/temperature/max30210.c: In function 'max30210_read_event_config':
+>> drivers/iio/temperature/max30210.c:272:32: error: implicit declaration of function 'FIELD_GET' [-Wimplicit-function-declaration]
      272 |                         return FIELD_GET(MAX30210_STATUS_TEMP_HI_MASK, val);
-         |                                ^
-   drivers/iio/temperature/max30210.c:279:11: error: call to undeclared function 'FIELD_GET'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-     279 |                         return FIELD_GET(MAX30210_STATUS_TEMP_LO_MASK, val);
-         |                                ^
-   drivers/iio/temperature/max30210.c:336:10: error: call to undeclared function 'FIELD_GET'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-     336 |                 uval = FIELD_GET(MAX30210_TEMPCONF2_TEMP_PERIOD_MASK, uval);
-         |                        ^
->> drivers/iio/temperature/max30210.c:418:7: error: call to undeclared function 'FIELD_PREP'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+         |                                ^~~~~~~~~
+   drivers/iio/temperature/max30210.c: In function 'max30210_write_raw':
+>> drivers/iio/temperature/max30210.c:418:49: error: implicit declaration of function 'FIELD_PREP' [-Wimplicit-function-declaration]
      418 |                                                 FIELD_PREP(MAX30210_TEMPCONF2_TEMP_PERIOD_MASK, i));
-         |                                                 ^
-   5 errors generated.
+         |                                                 ^~~~~~~~~~
 
 
 vim +/get_unaligned_be24 +136 drivers/iio/temperature/max30210.c
