@@ -1,168 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C18A626FDBF;
-	Thu,  5 Mar 2026 17:46:11 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CDABA3033DF
+	for <linux-iio@vger.kernel.org>; Thu,  5 Mar 2026 19:05:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772732771; cv=none; b=fmC3qhbxn88n8FLGfWC0gBSM+/fLgetGFNiBK20LvE4Cn8AAQ4NXACBeGHqUB1JyVEvx0IP4cWw4W01G/MauUWjml3mKQiMNqka3bJTjNiKJIm4g2vVyBIEZwUCuWP9d2VVIMcvOFesvDQJSu/3eZbxe5K4fYu+1p4Jb/t7X0a8=
+	t=1772737561; cv=none; b=QNh16gzqKBBcdOnXGHNc3GZuJbFrdGQjrCjlGMsu9lcIUFLpDRqaS+l63G8PGkZsI/n0dGoVRC8S+AtddneivFYkjLNjFvpxLWQ4X+nC2pCGbJ8fa9qLUm9i/FrPYJRF+3ihNJ5FUK8fWpWb2kKiOURaO4lJB1HUGOOHKjp5/hs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772732771; c=relaxed/simple;
-	bh=2HAVcfpUtCyECaW0rvig9lyxyuv7rVKUEqPEYkLuDeQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MTWo81PXXlAktG4Om7bcgyGUY6VsemIEtgOJG45F+hKYuoLC1v+FY2E/jjHZYLj8jRZpV4scPphWIj95yEVfPDrmYkFZhKYJPIJaDwfgW/u+dFAEGDydWUwG8x37hr1UxiXKS/lFuFiBdgmxVjaQA6O6CSiO3Ji4yKrDCgnCuxc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Dm/amFbO; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772737561; c=relaxed/simple;
+	bh=PoZhjt3uQ53hew80uagXcdFkYbFd19jlnF8DaZB6F8M=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=IplWqCtkvSjE9SZi6mUsKc69jcrRFojOeZf6hlx7TzdA+aCPNjNB4SDs7hAG1QAQgFlM+3y9Eo5qi+pja9NhcPusJHoDdaVM4vjer7CdgI/roknJ/ZU7peQaXv4JPieAZwR2zojKJznTHYcIv5AUvSnVXtMKsSABlNz+lYnLbKc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=EcVy/bhL; arc=none smtp.client-ip=194.117.254.33
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Dm/amFbO"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1C0BC2BCB2;
-	Thu,  5 Mar 2026 17:46:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772732771;
-	bh=2HAVcfpUtCyECaW0rvig9lyxyuv7rVKUEqPEYkLuDeQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Dm/amFbOJ28V2MKhtPq1e11XjQ+YEsGi+ex48RrYXrHoNGSB21AxQ3UtXo3lVy7/z
-	 jOIM5/tcCzKOLyXvclKL/YL7NhopROcd5yC5LNtUQhGTq+QYBnSqIsXxqEvtbAteDK
-	 oxwqReiny+F82V7Rk3Iz9/17jArPdhPYsqW+ITwEYr5EaZma4VvFLuAWu4qpgsx9vT
-	 pcfajjM+w8EST9+SC8RY54mbMdl+etKmyJyRAK9yHU0R+YZg6zWczUUINW7pm0K0ec
-	 H1zicn1/1UjmIBY1h2xlz8oHUh0qy1S/M+MxoT/IPu89xOg3B728jPvMsMOK1cQNrx
-	 N7JZoLxFr+2Mg==
-Date: Thu, 5 Mar 2026 17:45:59 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-Cc: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
- =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= <ukleinek@kernel.org>, Liam Girdwood
- <lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-gpio@vger.kernel.org
-Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add bindings for AD4691
- family
-Message-ID: <20260305174559.1ded5173@jic23-huawei>
-In-Reply-To: <20260305-ad4692-multichannel-sar-adc-driver-v1-1-336229a8dcc7@analog.com>
-References: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
-	<20260305-ad4692-multichannel-sar-adc-driver-v1-1-336229a8dcc7@analog.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="EcVy/bhL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+	sang-engineering.com; h=date:from:to:cc:subject:message-id
+	:references:mime-version:content-type:in-reply-to; s=k1; bh=PoZh
+	jt3uQ53hew80uagXcdFkYbFd19jlnF8DaZB6F8M=; b=EcVy/bhLK2eBwgExPMJ3
+	1rbX27cmhWjc3rjGsjxF5dRov7fUUDlpNwgi9pngCGqJG5rKUq+J2C7p8l7IBa1n
+	wAix8At/9KEPwT6JYyilYtj2K1NUn9Fe6iLpr+kWvIBDV6i4EuUfuN6Gi8/pycHE
+	4vAwn6qRsLPrTXt0uIMwoQrYoe5V27+qZp4xfOoSuWX7fTIVZ0s80690f6qBtlHQ
+	aykgx+mmEG8fCS2XDtombi/a32mAZGwytbmjpk8rnYFTpCSaNVHVEBXYPEPH+iwl
+	s9fnwEBco4uAbN1zFVh8Nns87WyRd1m0ExV4cifwtmIFoWYBRJWERmLoh5POBXHa
+	bA==
+Received: (qmail 1304730 invoked from network); 5 Mar 2026 20:05:54 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 5 Mar 2026 20:05:54 +0100
+X-UD-Smtp-Session: l3s3148p1@FM0uoEtMkO4ujns5
+Date: Thu, 5 Mar 2026 20:05:53 +0100
+From: Wolfram Sang <wsa+renesas@sang-engineering.com>
+To: linux-renesas-soc@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org,
+	Alexandre Torgue <alexandre.torgue@foss.st.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Antonio Borneo <antonio.borneo@foss.st.com>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Baolin Wang <baolin.wang@linux.alibaba.com>,
+	Bjorn Andersson <andersson@kernel.org>,
+	Boqun Feng <boqun@kernel.org>, Chen-Yu Tsai <wens@kernel.org>,
+	Chunyan Zhang <zhang.lyra@gmail.com>,
+	Danilo Krummrich <dakr@kernel.org>,
+	David Lechner <dlechner@baylibre.com>, driver-core@lists.linux.dev,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Ingo Molnar <mingo@redhat.com>,
+	Jernej Skrabec <jernej.skrabec@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Konrad Dybcio <konradybcio@kernel.org>, Lee Jones <lee@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org,
+	linux-doc@vger.kernel.org, linux-gpio@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+	linux-remoteproc@vger.kernel.org, linux-spi@vger.kernel.org,
+	linux-stm32@st-md-mailman.stormreply.com,
+	linux-sunxi@lists.linux.dev, Mark Brown <broonie@kernel.org>,
+	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+	Orson Zhai <orsonzhai@gmail.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	"Rafael J. Wysocki" <rafael@kernel.org>,
+	Samuel Holland <samuel@sholland.org>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Srinivas Kandagatla <srini@kernel.org>,
+	Thomas Gleixner <tglx@kernel.org>, Waiman Long <longman@redhat.com>,
+	Wilken Gottwalt <wilken.gottwalt@posteo.net>,
+	Will Deacon <will@kernel.org>
+Subject: Re: [PATCH v3 00/15] hwspinlock: move device alloc into core and
+ refactor includes
+Message-ID: <aanUEX9jq0Y9iNIe@shikoro>
+References: <20260303192600.7224-17-wsa+renesas@sang-engineering.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-
-On Thu, 05 Mar 2026 14:23:27 +0200
-Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wrote:
-
-> From: Radu Sabau <radu.sabau@analog.com>
-> 
-> Add YAML bindings and dt-bindings header for the Analog Devices AD4691
-> family of multichannel SAR ADCs (AD4691, AD4692, AD4693, AD4694).
-> 
-> The binding describes five operating modes selectable via the
-> adi,spi-mode property, optional PWM/clock for CNV Clock and CNV Burst
-> modes, GPIO pins, voltage supplies and the trigger-source interface for
-> SPI Engine offload operation.
-> 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-
-Hi Radu, I'm going to focus on mode... Mostly because things called
-mode are usually a sign of mixing up different aspects of the board
-design...
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260303192600.7224-17-wsa+renesas@sang-engineering.com>
 
 
-> +
-> +  adi,spi-mode:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [0, 1, 2, 3, 4]
-> +    description: |
-> +      Selects the ADC operating mode:
-> +        0 - CNV Clock Mode: External PWM drives CNV pin, samples at PWM rate.
-> +        1 - CNV Burst Mode: PWM triggers burst cycles, internal oscillator
-> +            drives conversions within each burst.
-> +        2 - Autonomous Mode: Internal oscillator drives conversions, software
-> +            starts/stops via register write.
-> +        3 - SPI Burst Mode: Similar to Autonomous Mode but optimized for
-> +            SPI burst reads.
-> +        4 - Manual Mode: CNV is directly tied to SPI CS. Each SPI transfer
-> +            triggers a conversion and returns previous result (pipelined).
-Which of these are wiring related?
+I need to fix __iomem annotations. Sorry, I didn't know I have to update
+to top-of-tree sparse which is now required for v7.0-rc1...
 
-0 and 1 need a PWM wired up.  So describe a PWM. If there is one we need
-to figure which we want so indication provided by userspace.
-
-2 and 3 don't need anything beyond bus.
-
-4 probably does need a binding but that's about whether that wire connection
-is there or not.
-
-> +
-> +  vio-supply:
-> +    description: I/O voltage supply (1.71V to 1.89V or VDD).
-> +
-> +  vref-supply:
-> +    description:
-> +      External reference voltage supply (2.4V to 5.25V). Mutually exclusive
-> +      with vrefin-supply.
-
-Enforce that via a rule as you do below. No need to document it here as well.
-
-> +
-> +  vrefin-supply:
-> +    description:
-> +      Internal reference buffer input supply. Mutually exclusive with
-> +      vref-supply.
-
-
-> +
-> +  # AD4694 (20-bit) does not support Manual Mode
-
-That's a driver thing. Not something we want in the binding.
-
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          const: adi,ad4694
-> +    then:
-> +      properties:
-> +        adi,spi-mode:
-> +          enum: [0, 1, 2, 3]
-> +
-> +  # CNV Clock Mode and CNV Burst Mode require PWM and clock
-> +  - if:
-> +      properties:
-> +        adi,spi-mode:
-> +          enum: [0, 1]
-
-This is backwards. Define these as optional properties and use that to
-limit what the driver can offer as ways it can run. Maybe they
-only make sense together in which case add that rule.
-
-
-> +    then:
-> +      required:
-> +        - clocks
-> +        - clock-names
-> +        - pwms
-> +        - pwm-names
-> +
-> +  # Non-Manual modes (0-3) without SPI offload require a DRDY interrupt.
-> +  # Offload configurations expose '#trigger-source-cells' instead.
-> +  - if:
-> +      properties:
-> +        adi,spi-mode:
-> +          enum: [0, 1, 2, 3]
-> +      not:
-> +        required:
-> +          - '#trigger-source-cells'
-> +    then:
-> +      required:
-> +        - interrupts
-> +        - interrupt-names
-> +
->
