@@ -1,171 +1,333 @@
-Received: from mout.web.de (mout.web.de [212.227.17.12])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 505E13ED10E;
-	Fri,  6 Mar 2026 17:30:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3124D39890F
+	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 20:27:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772818239; cv=none; b=PPB1hd0Z9fVM9OdBc0Bq8qgUEaPyegY6Ysu6bYfFg1Zh6sPN66eFV7tSXRSIqLgXJtNrezqD4LVWbVBH/1CdkAwb3GsMn9nBiC73q4cfRSjZywMBgCxJDu6TIsX3zraiVFaC7LxemGfyZ46H0BFCmpqYYN/PSQ07DNANrfz/tOw=
+	t=1772828838; cv=none; b=SQqgC7l8YjygsNCaXQKDLRBTR0mvGTekIqU9tX0LhAQhbCKtK11IvDG8D1JmhDjF73NuL4G7MXDv8vU4Yen9yLTDN/G4KYJoih5AKyDqT7SSLNCaH0Zxc+S38mV+z++b4bbIvTZv2TE27qaQEjNrDx9JWRkwBixOEQ+sArd54NE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772818239; c=relaxed/simple;
-	bh=iirW3cdvIjMtLct2LQyILKWs+AkDGPwYr9osifxyzJQ=;
-	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
-	 In-Reply-To:Content-Type; b=Ge+/8EQd9pijYto7QDo2Pxovhq5qhy8mbKLrznc0k9z9Lc4WNHRYV52G1cOK3OBaDEhM94Dxjzz1WXt2BmFYEcJDypjEeCk7Kcbup+QosUuI615OO8rHpBL+6SfEtXEpPOgixmOEet/YdqX+reXWZZxI6FrMrR6avJlpfMiyfZk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=QGLQh2OH; arc=none smtp.client-ip=212.227.17.12
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
+	s=arc-20240116; t=1772828838; c=relaxed/simple;
+	bh=g3oAsMDa6tuR+/A6Em0En8JCTZpVH/momdRatLteLhE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=I1xV4qXIxL1iL74m+FocaKAii9JFX+E9JGo6poonFrdIoAaytBXd29k1yKzBOwQu79jIqsto5qQW7tbRaB7+gvNHZnQbErZ8tA892RT2Fr7pbwS1PqgIcTvKI97A48G1yfAksAxvAxzWJyPZXOrZaxU37uByT7V2PhnQ3hRI53s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bSWpWrvb; arc=none smtp.client-ip=209.85.216.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="QGLQh2OH"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
-	s=s29768273; t=1772818234; x=1773423034; i=markus.elfring@web.de;
-	bh=aCvQlpXDz260BMbgYOCBaTLrk1IVxt/fe+l+8eDa07Q=;
-	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
-	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-	 cc:content-transfer-encoding:content-type:date:from:message-id:
-	 mime-version:reply-to:subject:to;
-	b=QGLQh2OH6Rh5r7Ex4NTinAPjbRk0y+T7lEstWDiKPsLbb9KUrxD3Pg3nYpZRhaH1
-	 sZZ4lCJnrlb4ymw+QrxeI5MgXNDlBfsKufzocyTpk0NjEuWXjBqnaI2XZnLmVWnBl
-	 WOLDIDLoAP50+QR5DPNshU3LuqPSFEq6Tx4m7A11AYEldPpPTUQx64p3WWQKduhnz
-	 SxlB80bgMGC9PwiC2Tt/iG08i6lI4hRhDB9VratE6aoWhd6LBGovss3sdyk2GrPG2
-	 1CHV+/gJTnHhOl58++UuW8r95A1yCqCGD2dERX0wf5CtMx0UbQlbLob44z9AdV8b9
-	 pR9Qmzf+RH76DlKn9w==
-X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
-Received: from client.hidden.invalid by smtp.web.de (mrweb105
- [213.165.67.124]) with ESMTPSA (Nemesis) id 1M7Nig-1w1rr4224i-003kHq; Fri, 06
- Mar 2026 18:30:34 +0100
-Message-ID: <7f2787b1-c176-4c30-b1c0-211461c93673@web.de>
-Date: Fri, 6 Mar 2026 18:30:25 +0100
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bSWpWrvb"
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-358ed696623so4046056a91.0
+        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 12:27:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772828836; x=1773433636; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=raCgZFvVUfOpsCKvrIvPbVa+6HmFw1W/wn9qNthdpCU=;
+        b=bSWpWrvbnmwJt+kLA7LpIZhk7gt0jui3qFdFjGYhCbnQLl26XUuz1Q6i5akrGjFEAM
+         2FyovGM6aI+6iaBrq4hFhz3kxFAOXBM9fvhjaCfLXTJisgNpTcI+D9AmCSGcLSpljyMJ
+         FmuybG+nPaGp8QZjd3N5rlbpihtqdzwWlDfbKSbqPUBk49X+vBlMYZsf8FVwuaZ9Y8eM
+         SjR5Z2w8pOX9dHE2CNJVGadWp5Ztn5+o2NkoyNE6XAiL0wsIbDIwNd/G2189ZvMip8Ds
+         Bhs3QX78pnJ96IsveD1LNWGhFwJAx3RvjnN9ThOvDZmaQ9tLHMgQDGEFqHwPKT224Ire
+         cyQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772828836; x=1773433636;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=raCgZFvVUfOpsCKvrIvPbVa+6HmFw1W/wn9qNthdpCU=;
+        b=VfM2bSW0l4Vrmwwxz359Juy+c5ByImfWIsu17BFlchnakk3jfVt4DZBRVf6yJxBcdC
+         rVEJuLH6vJeMk88W5sXyclV5tS5gqQlYn//AcmNOfGZvV+ovaS6YFlshQNC0QWuLpbjg
+         IDKh6L2T/DfoC3ATiYuju+3lKi79x82RL1h4cR0rnv3xeG0siS1ZHR91xNanVDk+CoYC
+         Sc6UE7qF4NZYPgk2ig+K33hbY/CwzmzRG+HD63UfPSE58+SiLe08JCTU+zuGPk2lKEn+
+         jfL1ECdoApgUPYrEIP0xE/roHcVOUL1dVBjcWI1orGi3SFHwT5AjjnkONTs+on11PcFd
+         +5KA==
+X-Gm-Message-State: AOJu0YxAGcyQu0u5uhm1wr9GT5VmvDfgWatw9b23FfG7v8fORflsCK4w
+	NpgNy7ktYnJl5NQUNjgonpZed7jjhMM1HIDsepTgPO/T/mjc7qQ2xJWR
+X-Gm-Gg: ATEYQzyGri/V6cKISF9DOKze8PhKIG8NleEJV5KaiBOw5vlXP1kyYtCkkrrWflikYxi
+	lEZTLdCmvIAXIBw0BgoNDq8M3lVQwrIDb6QNifYA2ecL+ddEojqXaKBmkdTWTjMAHqKgSPqniOf
+	niBX1NbJcDMgxso9W9V8ifygSg+ZH4ewxtceZ4/HUP67yFCZfgJZ/Ihg3L8bSlm07mi7iUKguPz
+	J4orp1mkV/2P3/Tw7ddj+4LHwCyjQRqGJPQkVGDXfSL3Qk8bWxKm0nKbMGTY7ULZppW8aWfkL9h
+	abnzY5WUYTefg9aT3bC78jP4OxXDqj3qUWQawzP391IAmZ7J4LY8RV0w/vS2V1Wdkpevi8FZeIy
+	ePA0HbdV3S7RtJjhjac7Kebc/4R0O3fmuVenGT0CGxwwdDgNYAc3lDH6Cp9hE/hB5E+Fxs9/rK2
+	UFCP/dbsqUlxV5aQkXC9inrIC4Sgh3+zd5nJ6b3HWvrZwNru3LrWu16Ruw9Dk2dO6OuZ0G/QdlV
+	DA7AJWlQHF8WUtTQ5Ik1g4ZZmAkPm8pgLk=
+X-Received: by 2002:a17:90b:3c4a:b0:356:24f0:af08 with SMTP id 98e67ed59e1d1-359be28d404mr3003809a91.1.1772828836429;
+        Fri, 06 Mar 2026 12:27:16 -0800 (PST)
+Received: from fedora ([103.215.156.29])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-359b2d5fe2dsm6326572a91.7.2026.03.06.12.27.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 06 Mar 2026 12:27:16 -0800 (PST)
+From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+To: lucas.p.stankus@gmail.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	puranjay@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+Subject: [PATCH] iio: convert to guard(mutex)
+Date: Sat,  7 Mar 2026 01:56:50 +0530
+Message-ID: <20260306202650.61865-1-rajveer.chaudhari.linux@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-To: Radu Sabau <radu.sabau@analog.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
- linux-pwm@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Lars-Peter Clausen <lars@metafoo.de>, Liam Girdwood <lgirdwood@gmail.com>,
- Linus Walleij <linusw@kernel.org>, Mark Brown <broonie@kernel.org>,
- Michael Hennerich <michael.hennerich@analog.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Rob Herring
- <robh@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-Cc: LKML <linux-kernel@vger.kernel.org>
-References: <20260305-ad4692-multichannel-sar-adc-driver-v1-2-336229a8dcc7@analog.com>
-Subject: Re: [PATCH 2/4] iio: adc: ad4691: add initial driver for AD4691
- family
-Content-Language: en-GB, de-DE
-From: Markus Elfring <Markus.Elfring@web.de>
-In-Reply-To: <20260305-ad4692-multichannel-sar-adc-driver-v1-2-336229a8dcc7@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:hqobFGqgeFmUhj8+QTtFaZhtp+EHaNRODlPpFs84hdCGIm3Yhjn
- o4gqFFeLizyI3bnVGdarAApggE2VPfusplml0n7t+5ecGSAxMCccB/W5LDRv9P/ycHhShZE
- u65pfU2gntVJ1VZytX2k6dTKGi8+XktK8BAJbOPSGLAFEqhlXWmcEd2/dxSyj8yFvnPSXQB
- oJtAQ4fsR56rdBgOdBoGw==
-X-Spam-Flag: NO
-UI-OutboundReport: notjunk:1;M01:P0:0FqIr29Ofqk=;2c8394JyzZhP5s0weGhz7AVT6vn
- 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
- eYcKZHig=
+Content-Transfer-Encoding: 8bit
 
-=E2=80=A6
-> +++ b/drivers/iio/adc/ad4691.c
-> @@ -0,0 +1,1196 @@
-=E2=80=A6
-> +static int ad4691_reg_access(struct iio_dev *indio_dev, unsigned int re=
-g,
-> +			     unsigned int writeval, unsigned int *readval)
-> +{
-=E2=80=A6
-> +	mutex_lock(&st->lock);
-> +	if (readval) {
-=E2=80=A6
-> +	ret =3D regmap_write(st->regmap, reg, writeval);
-> +
-> +mutex_unlock:
-> +	mutex_unlock(&st->lock);
-> +	return ret;
-> +}
-=E2=80=A6
+Replace manual mutex_lock/mutex_unlock pairs with guard(mutex)
+in several IIO drivers. This ensures the mutex is released on
+every return path, preventing missed unlocks on error paths.
 
-Under which circumstances would you become interested to apply a statement
-like =E2=80=9Cguard(mutex)(&st->lock);=E2=80=9D?
-https://elixir.bootlin.com/linux/v7.0-rc1/source/include/linux/mutex.h#L25=
-3
+Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+---
+ drivers/iio/accel/adxl313_core.c      |  7 +++----
+ drivers/iio/accel/adxl355_core.c      | 27 ++++++++-------------------
+ drivers/iio/accel/adxl372.c           |  8 +++-----
+ drivers/iio/industrialio-sw-device.c  |  4 ++--
+ drivers/iio/industrialio-sw-trigger.c |  4 ++--
+ 5 files changed, 18 insertions(+), 32 deletions(-)
 
-Regards,
-Markus
+diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
+index 9f5d4d2cb325..94c6023af487 100644
+--- a/drivers/iio/accel/adxl313_core.c
++++ b/drivers/iio/accel/adxl313_core.c
+@@ -8,6 +8,7 @@
+  */
+ 
+ #include <linux/bitfield.h>
++#include <linux/cleanup.h>
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+ #include <linux/overflow.h>
+@@ -356,18 +357,16 @@ static int adxl313_read_axis(struct adxl313_data *data,
+ {
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	ret = regmap_bulk_read(data->regmap,
+ 			       ADXL313_REG_DATA_AXIS(chan->address),
+ 			       &data->transf_buf, sizeof(data->transf_buf));
+ 	if (ret)
+-		goto unlock_ret;
++		return ret;
+ 
+ 	ret = le16_to_cpu(data->transf_buf);
+ 
+-unlock_ret:
+-	mutex_unlock(&data->lock);
+ 	return ret;
+ }
+ 
+diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
+index 1c1d64d5cbcb..ef05178bff00 100644
+--- a/drivers/iio/accel/adxl355_core.c
++++ b/drivers/iio/accel/adxl355_core.c
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/bits.h>
+ #include <linux/bitfield.h>
++#include <linux/cleanup.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+@@ -263,12 +264,11 @@ static int adxl355_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 	struct adxl355_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 	ret = regmap_update_bits(data->regmap, ADXL355_POWER_CTL_REG,
+ 				 ADXL355_POWER_CTL_DRDY_MSK,
+ 				 FIELD_PREP(ADXL355_POWER_CTL_DRDY_MSK,
+ 					    state ? 0 : 1));
+-	mutex_unlock(&data->lock);
+ 
+ 	return ret;
+ }
+@@ -409,16 +409,15 @@ static int adxl355_set_odr(struct adxl355_data *data,
+ {
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	if (data->odr == odr) {
+-		mutex_unlock(&data->lock);
+ 		return 0;
+ 	}
+ 
+ 	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
+ 				 ADXL355_FILTER_ODR_MSK,
+@@ -433,13 +432,10 @@ static int adxl355_set_odr(struct adxl355_data *data,
+ 	if (ret)
+ 		goto err_set_opmode;
+ 
+-	mutex_unlock(&data->lock);
+ 	return 0;
+ 
+ err_set_opmode:
+ 	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
+-err_unlock:
+-	mutex_unlock(&data->lock);
+ 	return ret;
+ }
+ 
+@@ -448,16 +444,15 @@ static int adxl355_set_hpf_3db(struct adxl355_data *data,
+ {
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	if (data->hpf_3db == hpf) {
+-		mutex_unlock(&data->lock);
+ 		return 0;
+ 	}
+ 
+ 	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
+ 				 ADXL355_FILTER_HPF_MSK,
+@@ -471,13 +466,10 @@ static int adxl355_set_hpf_3db(struct adxl355_data *data,
+ 	if (ret)
+ 		goto err_set_opmode;
+ 
+-	mutex_unlock(&data->lock);
+ 	return 0;
+ 
+ err_set_opmode:
+ 	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
+-err_unlock:
+-	mutex_unlock(&data->lock);
+ 	return ret;
+ }
+ 
+@@ -486,11 +478,11 @@ static int adxl355_set_calibbias(struct adxl355_data *data,
+ {
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	put_unaligned_be16(calibbias, data->transf_buf);
+ 	ret = regmap_bulk_write(data->regmap,
+@@ -505,13 +497,10 @@ static int adxl355_set_calibbias(struct adxl355_data *data,
+ 	if (ret)
+ 		goto err_set_opmode;
+ 
+-	mutex_unlock(&data->lock);
+ 	return 0;
+ 
+ err_set_opmode:
+ 	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
+-err_unlock:
+-	mutex_unlock(&data->lock);
+ 	return ret;
+ }
+ 
+diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
+index 28a8793a53b6..24a79f61900d 100644
+--- a/drivers/iio/accel/adxl372.c
++++ b/drivers/iio/accel/adxl372.c
+@@ -7,6 +7,7 @@
+ 
+ #include <linux/bitfield.h>
+ #include <linux/bitops.h>
++#include <linux/cleanup.h>
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
+ #include <linux/module.h>
+@@ -336,17 +337,14 @@ static ssize_t adxl372_write_threshold_value(struct iio_dev *indio_dev, unsigned
+ 	struct adxl372_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	mutex_lock(&st->threshold_m);
++	guard(mutex)(&st->threshold_m);
+ 	ret = regmap_write(st->regmap, addr, ADXL372_THRESH_VAL_H_SEL(threshold));
+ 	if (ret < 0)
+-		goto unlock;
++		return ret;
+ 
+ 	ret = regmap_update_bits(st->regmap, addr + 1, GENMASK(7, 5),
+ 				 ADXL372_THRESH_VAL_L_SEL(threshold) << 5);
+ 
+-unlock:
+-	mutex_unlock(&st->threshold_m);
+-
+ 	return ret;
+ }
+ 
+diff --git a/drivers/iio/industrialio-sw-device.c b/drivers/iio/industrialio-sw-device.c
+index 3582524de0b8..a2a3e3a67d79 100644
+--- a/drivers/iio/industrialio-sw-device.c
++++ b/drivers/iio/industrialio-sw-device.c
+@@ -10,6 +10,7 @@
+ #include <linux/kmod.h>
+ #include <linux/list.h>
+ #include <linux/slab.h>
++#include <linux/cleanup.h>
+ 
+ #include <linux/iio/sw_device.h>
+ #include <linux/iio/configfs.h>
+@@ -84,11 +85,10 @@ struct iio_sw_device_type *iio_get_sw_device_type(const char *name)
+ {
+ 	struct iio_sw_device_type *dt;
+ 
+-	mutex_lock(&iio_device_types_lock);
++	guard(mutex)(&iio_device_types_lock);
+ 	dt = __iio_find_sw_device_type(name, strlen(name));
+ 	if (dt && !try_module_get(dt->owner))
+ 		dt = NULL;
+-	mutex_unlock(&iio_device_types_lock);
+ 
+ 	return dt;
+ }
+diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
+index 334b6b10a784..4af601ae286c 100644
+--- a/drivers/iio/industrialio-sw-trigger.c
++++ b/drivers/iio/industrialio-sw-trigger.c
+@@ -10,6 +10,7 @@
+ #include <linux/kmod.h>
+ #include <linux/list.h>
+ #include <linux/slab.h>
++#include <linux/cleanup.h>
+ 
+ #include <linux/iio/sw_trigger.h>
+ #include <linux/iio/configfs.h>
+@@ -88,11 +89,10 @@ struct iio_sw_trigger_type *iio_get_sw_trigger_type(const char *name)
+ {
+ 	struct iio_sw_trigger_type *t;
+ 
+-	mutex_lock(&iio_trigger_types_lock);
++	guard(mutex)(&iio_trigger_types_lock);
+ 	t = __iio_find_sw_trigger_type(name, strlen(name));
+ 	if (t && !try_module_get(t->owner))
+ 		t = NULL;
+-	mutex_unlock(&iio_trigger_types_lock);
+ 
+ 	return t;
+ }
+-- 
+2.53.0
+
