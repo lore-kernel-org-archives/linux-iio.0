@@ -1,179 +1,109 @@
-Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A78D3A0B3A
-	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 13:46:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27E3F271A94;
+	Fri,  6 Mar 2026 14:33:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772804791; cv=none; b=a47yqh3YIOkl0OlHAz69p+hOweERc0SmBswGwI3wckdZP1sJ/LhDtkZsw5OPFzZ3RVOjiDl7RQ3lCMJuFhR2MakmPLJe/v6YABAlG/aEYoXM8JTdK1kqZ/nh7sfbwVfXJGmcGbJ09X7K1+YAUL1GMUzlQuKR4UPcFExWxrkC+YY=
+	t=1772807592; cv=none; b=MhiJcfTERLv/RksU/yRBsY91kIfOYTA4uag2QP+XDIbJeIBfMPnZM5YvLoh7aDCMe0pEOOfvvrRfreXcsexgZe4LrrcALvJZF9VqijeNTw9GlLPOOZj3UY6BfF73v5MyRLV1mudWo+mA48ffC1CQnFsS2G/2abUs2ggaH0lGu/U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772804791; c=relaxed/simple;
-	bh=csEjjDLi6SpEXl2DdL5mEw5wkF3j0SXOOlvkpfWlO8A=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=kRnxZia6/UN5VrqeOm5romYY3Z83tmExm2jf3a3PKKnRdidbsOKhbryEylumkKR4zgjNIGBN5A0U2F4mED8fYsztthfp9Nvr3P3Q4ND1j6IF2BYly/SlKhIPYHTeqRzdAFWSGrTrA6vu2KqfRITluynT5D4153v4Zoi/fGGixr0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kdqwaJ8O; arc=none smtp.client-ip=209.85.221.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772807592; c=relaxed/simple;
+	bh=6bpb8U4o1pj6JShYNq2ftR3yy8sMU1tPrbz8tpbfjDw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=T8pmTt2tljy6MtgyryvXPs3lTnqzfueD0nAbp0Pdtt/WreQGrvobbdoReGtMNyMuJT7ygFzXQHDf/b/FtwXH3u4gDfX+OQUyguFPKEuZzyUdMl6+i9A7p1MwLbvXz9hGNfUmbMDGW01UjuDFxJgekMq4ytng3FmvBaCyJ3477+s=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H/VOkmsT; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kdqwaJ8O"
-Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-439acc60f9dso634044f8f.1
-        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 05:46:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772804781; x=1773409581; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=pxrVsLEgO+Q9Gj9IzQjGjxIIScDX/iogdhdfvLyaTO0=;
-        b=kdqwaJ8OfcoVQkh9a2n9Eu+AZ8Z6ZWqZvFF5I+yRh8rUy3CynpFhA3bf6CbnOt6Ckp
-         m4SJB+eZIrCRfztHOlYpYCt5NoTOs1mVDixYVaSebhygWQejEq9UiNjHiSFqq+bG5ufs
-         9LdIv8PmugZ8J6eJZ+EF9sxyBWM+Ukybun9/Kf/bUNx7SA7X/A5hl+0XYJkSnfeROAEM
-         o5kRMl/U2u2Yfz5g4S60LPmiDJDtip3eZA+Z0cCg+twpH/GV+IPPlOP6tqFIL17DiaZe
-         WNsu2sWyw+knQnIZm/Fr1BChf2u6QMNKmtBU+NXiJwB+/cHh5lqLGW+jVZSbxjFiCJ1S
-         4AZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772804781; x=1773409581;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=pxrVsLEgO+Q9Gj9IzQjGjxIIScDX/iogdhdfvLyaTO0=;
-        b=AUAbvqEsPcT0s8i2g8lofWHgRkqD5dacrJ2NC2tT0x1R3LcD5R+9bfA/Iz9gmRjJ+5
-         TcGAQADwRNtzUNSSG/qlylvKNT7nSGXf53+WoiXM9BZXTU6+bEHHOzyljlGd1vW6TxOZ
-         IEGmJrL9RAYeKGicUziibORlWvbFLhaeyoK83tZfcni3hrnHFnjk+60hY7AaLA8rJOpA
-         su+8QPUtb0bOoobdLeCgv+trcf6vEywQinnHQ7aA/erZ5K39q0PhEbukBUdjkwLgKonC
-         EuKJT3SgHYdTDWsESFrS3z6xzO/EEJSM095IwtkPsqhuIa2q7qWDFKdhDercQ65MgN7s
-         nMrA==
-X-Forwarded-Encrypted: i=1; AJvYcCUM8ozcamGbH6GPZGisPbTkmq5YbdlmWD3+wggmnVsy/I367lA27thFHdYxrbmvO1TzPLiFiCOR/yg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw3g0u0DxkanS2gBvadFHhmAOJ4w5dwYyh8I/7kMlaW61PCV9Em
-	GYpvIIhJ7LbFmjlt0PAJOgcYCuj8u8ppfK13iKQMtwJoUF+p9q4+yYSC
-X-Gm-Gg: ATEYQzwrw6sAddfwOfrVKlFWwDxt0GeV2xoW74VIl/w7p/JdLjdTgE6dIIHXMR7E2o4
-	fH2f9gf2+SbvK8dJ7V+TLPPrmqBjXL1xEr5Ml5SCuSYMdhREbnVm3kd7jUmXwQi0QvEVnHSlVDP
-	pUG8atyrGhsO4kivsMgTvVfbEqh3Cf594HT/oRwxFVnwKlpchGNEcl4Uy4gyG25ZTk4BbjNmxGB
-	6RnJUiyipnEbgJjXuPLYGQFE0Zc2trHdj+lqmxi2RaDNjPhYRv1cpjZY/WDs2BEYSwZmwn2BClx
-	qQ/DPjRtro6vbVlu9mRacW2pHskNVINTZqjGyj/KBvur30TG5jkzHEvsUIFP63AWIsgUIFyxZyh
-	37WMv5r4aZYKMZfJdOl0uza76VAmtv2WnwLcHYRNKY7UECsFwhBjZ/knQf2YjlOxJLN16EBSbIL
-	B4IW6G8lk87Frmqv6WzNYP3yq+ZYAIWuKdT/XmfnzOdNxWg9/C++jZseuRimafaRXFKZpoQ1clH
-	Uo3EhRY/0LSWC03ZZ2ACQ1eh6oU6PTpa7f7uMeI2AWSaGkRKdpS
-X-Received: by 2002:a05:6000:4028:b0:439:d735:757f with SMTP id ffacd0b85a97d-439da68339emr2349948f8f.6.1772804781031;
-        Fri, 06 Mar 2026 05:46:21 -0800 (PST)
-Received: from fedora ([149.3.87.76])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439dad8d973sm3610838f8f.3.2026.03.06.05.46.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2026 05:46:20 -0800 (PST)
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-To: antoniu.miclaus@analog.com
-Cc: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Subject: [PATCH] iio: adc: max1363: Fix leading space indentation
-Date: Fri,  6 Mar 2026 17:43:36 +0400
-Message-ID: <20260306134332.746728-5-giorgitchankvetadze1997@gmail.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H/VOkmsT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1772807591; x=1804343591;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6bpb8U4o1pj6JShYNq2ftR3yy8sMU1tPrbz8tpbfjDw=;
+  b=H/VOkmsTRzdgOWf0yJoj0dA1/DLqOAE9fOSZuZu4qHOf5jfDfh7K3/b7
+   DYiYLUg3dLyTCowv15f4dj0+fIdG0dJgrj67DNSI/LbnPNhxYoDzbo6Rq
+   ROUIDkjTzmiCc1sq7rl3KA9cYysZZY7Z/XNAjJnNn9xXAmjBccFVlhB5J
+   ihmZYhvgTZDuVCCQRpDne5EX2n+qdytE2I2NLnFSzPU1TLV4TLzyoZCfO
+   n6sJCl0I6ZB+aucZGBWAXXDBTKEErMCPwSqqlTZ4we4XKvqVmiPysVv9+
+   1jK/L3lgY7kUxXXWFlY8tXiW3nEIo0IX5k6H4zcsq1HRIKMBRrM2tzQSM
+   A==;
+X-CSE-ConnectionGUID: 5DrlXQoLT9+m15QXptD/aw==
+X-CSE-MsgGUID: GThIlJLjSW+jLtF+jFoZOA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11721"; a="84627349"
+X-IronPort-AV: E=Sophos;i="6.23,105,1770624000"; 
+   d="scan'208";a="84627349"
+Received: from orviesa004.jf.intel.com ([10.64.159.144])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 06:33:09 -0800
+X-CSE-ConnectionGUID: Ky+8fPOMQrC10urVEQ+gjg==
+X-CSE-MsgGUID: pUyz7LejTYaWQilWDsiUNw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,105,1770624000"; 
+   d="scan'208";a="223510755"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.1])
+  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 06:33:04 -0800
+Date: Fri, 6 Mar 2026 16:33:01 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+Subject: Re: [PATCH 0/4] iio: adc: ad4691: add driver for AD4691 multichannel
+ SAR ADC family
+Message-ID: <aarlnZUR984DH98V@ashevche-desk.local>
+References: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
+ <aarDJicasFlUnOkx@ashevche-desk.local>
+ <LV9PR03MB84149EAE41DE73C61B81091FF77AA@LV9PR03MB8414.namprd03.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <LV9PR03MB84149EAE41DE73C61B81091FF77AA@LV9PR03MB8414.namprd03.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Fix leading space indentation in the device enum (found by checkpatch).
+On Fri, Mar 06, 2026 at 12:39:30PM +0000, Sabau, Radu bogdan wrote:
+> > -----Original Message-----
+> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > Sent: Friday, March 6, 2026 2:06 PM
+> > On Thu, Mar 05, 2026 at 02:23:26PM +0200, Radu Sabau via B4 Relay wrote:
 
-No functional change.
+...
 
-Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
----
- drivers/iio/adc/max1363.c | 74 +++++++++++++++++++--------------------
- 1 file changed, 37 insertions(+), 37 deletions(-)
+> > This cover letter doesn't answer to the first important question: Why a brand
+> > new driver? Do your homework and check what is already in the kernel and
+> > explain in the next version why no other existing driver can be reused (refactored).
+> 
+> Indeed at first glance I thought about adding support for these parts in the existing
+> AD4965 driver. The registers indeed are a bit similar between them, but the
+> channel specific registers are completely different, and more than this the
+> conversion modes are different.
+> With this being said, I will try and make things more clear by answering this
+> question in the cover letter of the next patch. Thank you for pointing this out.
 
-diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index d35f4487b2f9..75af10bc37de 100644
---- a/drivers/iio/adc/max1363.c
-+++ b/drivers/iio/adc/max1363.c
-@@ -638,43 +638,43 @@ static const struct iio_chan_spec max11646_channels[] = MAX1363_2X_CHANS(10);
- static const struct iio_chan_spec max11644_channels[] = MAX1363_2X_CHANS(12);
- 
- enum { max1361,
--       max1362,
--       max1363,
--       max1364,
--       max1036,
--       max1037,
--       max1038,
--       max1039,
--       max1136,
--       max1137,
--       max1138,
--       max1139,
--       max1236,
--       max1237,
--       max1238,
--       max1239,
--       max11600,
--       max11601,
--       max11602,
--       max11603,
--       max11604,
--       max11605,
--       max11606,
--       max11607,
--       max11608,
--       max11609,
--       max11610,
--       max11611,
--       max11612,
--       max11613,
--       max11614,
--       max11615,
--       max11616,
--       max11617,
--       max11644,
--       max11645,
--       max11646,
--       max11647
-+	max1362,
-+	max1363,
-+	max1364,
-+	max1036,
-+	max1037,
-+	max1038,
-+	max1039,
-+	max1136,
-+	max1137,
-+	max1138,
-+	max1139,
-+	max1236,
-+	max1237,
-+	max1238,
-+	max1239,
-+	max11600,
-+	max11601,
-+	max11602,
-+	max11603,
-+	max11604,
-+	max11605,
-+	max11606,
-+	max11607,
-+	max11608,
-+	max11609,
-+	max11610,
-+	max11611,
-+	max11612,
-+	max11613,
-+	max11614,
-+	max11615,
-+	max11616,
-+	max11617,
-+	max11644,
-+	max11645,
-+	max11646,
-+	max11647
- };
- 
- static const int max1363_monitor_speeds[] = { 133000, 665000, 33300, 16600,
+Good, the summary of the above will fulfil the request, thanks.
+
 -- 
-2.52.0
+With Best Regards,
+Andy Shevchenko
+
 
