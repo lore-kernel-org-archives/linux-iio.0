@@ -1,135 +1,128 @@
-Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
+Received: from mail-oa1-f46.google.com (mail-oa1-f46.google.com [209.85.160.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A760934403A
-	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 21:24:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.52
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772832250; cv=pass; b=VBkgr6gz9vutf/niGYQU6hBfLXZdrZ+0bb59V4Z/wEfqsgvnkBx0zojCsUEg5FwiSX0NNCjveqZm2c7X4KF+Cp19MJjOrDP4JLWREYbyuCEonIrgpqYLX2AnhizZzP8aF09xU1TF3/yG245BxAp8+7JY0zjSgs/QZCeS6tSlFbo=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772832250; c=relaxed/simple;
-	bh=v6ip/y5lihMfADzAqRBKgHGPe4MuFKsEQzB0Cx1z4cE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Pc54lIUy27MQbDQQ9yjiXvYriMXUTmSdbco4jG1/4N5KXXXP4++xzwLfFIkXu7slSKeFMW0D7yaC1d8fyeyOZF0eQgSN+fIhq4BSWjTOduUljT5mwZPJivOXQ1aq8FtIdn1uNNjHn0T9uOcmPOLYjgxpccQ7LoTtcLR78FlZpHs=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SkPHCOkd; arc=pass smtp.client-ip=209.85.208.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7B26E3FFAB4
+	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 22:10:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.46
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772835011; cv=none; b=rKdx0Ar47nz0AmXHEeqT38Kdab6ZSUVmk/AOx1NG4XaK19JpALZaxKQ55bYsqutsXZAAQNmZLCLt4bus3JrBzAztM00J4MvRQ2SVhdRWP1JpFjVqAKhFHi7DHykmJ8nnPk+jGYOVak+jujiy3whTJqa8bCJAhDE5LgiVx67Otyw=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772835011; c=relaxed/simple;
+	bh=4P/xm8FEu5eq/Y160CoyYXo2WJWicbC2FprXYR4M3dQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=T+L1Oex0wr8fVXOfD0fdEOcgCeVM4P/rGf7KtSpkLHWedtERb+huw3jSIfiYZtti7X30svBqcd3kHMlSEhTyBAftJtNsUDqIRJrh5Q4uOwHcIKPlOctB+ajgt5oZDDHswBgVHiNtKNKKSiYz60rRWUdWRj2EUbtsyP/ybAV4dO0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=ZIjSK9ec; arc=none smtp.client-ip=209.85.160.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SkPHCOkd"
-Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-6615c461d3fso3351139a12.2
-        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 13:24:08 -0800 (PST)
-ARC-Seal: i=1; a=rsa-sha256; t=1772832247; cv=none;
-        d=google.com; s=arc-20240605;
-        b=acFElXWZEczOsFUwtfijthpSH5PpeDH+yAlltFfxk2gCRkTZ/VOfRkmhQ3xOcranSN
-         C01SqIWDvyPst4ct3sZfcJXjCkGs5S6CyHGFby4Bc5R7zW0Vgos9UOr3bRET0Q3M1m/3
-         QGezCP+Pk48Zu/yxdBCrLa4UmT0Quf1L4SD/ue8nEkzJR0IjD91lw2Phj0NttBrR+1eY
-         EK6+coeYMgPZ+G9enq399UJqqiye9J5xlNiQ8gCzZqQp6vcAORRn+Qi6wXQqxOCTlMQ1
-         KGb2uyabKdAqNJ99TF8jSE2u8aEkxCVd80DwlJCNeph4doAbAFzBCImy/i91cw4nUISR
-         yJcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=125HaQC4wDDDDocLzk5/bPNL7VZajdoNRkLJC79CTfE=;
-        fh=xngDlmv+g/Va4fnkepf6IAuvHEcC+MFyrSYGauZt4ko=;
-        b=iZoCp6fyiQP0Es5D82HGlWcuqRlZJ9ESwI1oSn6g6p8RDYbU3h/GSZPxfjo3xIVL68
-         SkHKNfOg8ly/5OKJsS2CCZAWagnRb1Yyo1kVNVpmKC9ptGkFmdYUbYETiKpNZT9kMyJK
-         j7x/fDjPUM01c55uLstVFsWRyrKSggd3yOB1Oq58U6qoG9Z38bNJfWly2YJvs9ppLubX
-         2FBwhgEuRNqJJjj5X4WqsTvN/TPxbobEqUNcwOenLU66fFJjYeARkMA0X9XytgV0Qim/
-         WXebGKPQ+j4lmkpOar/CpTJKnJpTFdnsM3lUStnuO7aGdB8+HifF5bYp0OvnFPpJIn+y
-         9Oww==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="ZIjSK9ec"
+Received: by mail-oa1-f46.google.com with SMTP id 586e51a60fabf-40ee486a76eso3248661fac.2
+        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 14:10:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772832247; x=1773437047; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=125HaQC4wDDDDocLzk5/bPNL7VZajdoNRkLJC79CTfE=;
-        b=SkPHCOkda1jJsczf+ot4/tLBgUIK0oVaw/VMpc++P0DPtBj/BzVQInYfkiL64ipqD2
-         xUFD6Gt5XiiqLaqdNSQrcP/+0Uqgm4F5bMqjrS1ovGmwiHS8e6gekzxipdFAhvUtxnta
-         8fbAYFgC7AORex9vMu/UXNHlk0k2lxODMV4uG9TUOngMkIJKrWb+9s53CqfvYQ6ujjE2
-         0CRwPVKKfANPBZMxL9sYiVWcCBv8F6mo6zsXDD3qmrEZ5xZ+5O/2FhClssF8IEQzUyG3
-         ZMu0XQPBfU0PFrB1AayeI8fSNJhHruvtVNtbtIuSvlwZm6sy6y7Y4mcTIj1J+TqnNenG
-         EGIg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772835008; x=1773439808; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=AETatfqfDS1XREX9cs1Ig1MjMauK60I6x4pBlhW5zqc=;
+        b=ZIjSK9ecE1fkFwIGEBBFqeD9DnWInVPy9CvOlY3J4kGCSl7xHyBrQzzWZFcs2h/+kP
+         W7QWy/PaMCVvdyRjS6G8ZFwxpuFGXbwbM772TtWVcwNHtetQwj2I045RPMjJ3o1xSUIM
+         7MCdz4mBTOKow1EicRW3K3PqmPzfaafFIZQ+RXJNChUQa4BfT5kDSvKxDMDufb6RlgpY
+         AbLmCfOafwqepUX8oO3rBBel1EQjOWEeAXUoAsfdrHI5dZB7IIGRDql1AjzD+ZDAB5En
+         40YrOSl/GgX2eUmR/ExGE0UrE+1cokNv4BrTBZBdH1DzfT1rgb5GCGL+rRZZQ7WkTaAw
+         viGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772832247; x=1773437047;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=125HaQC4wDDDDocLzk5/bPNL7VZajdoNRkLJC79CTfE=;
-        b=Ljyl1XMjJu3r6ZU5L1cOkFCaH3yox7gDV0QBtBjyT15uqmvjXqtc+w7tBH9J2kcC5p
-         Ym76lQ7q4dzNKpzxrb1Ig+pO/w7kEAbSmsevyf/55u3Z9LzRR99fbELNzYxYR4lmR4vq
-         OY/UeyrqCAzWzADjiRQOHJ5OLpXLNYvAVWX9E7xNTrCN0B6xW9dNeuPMRwoMxrlw6mEx
-         eFXWR4iIgF5LNS7q0fQt2K/gWww8FMVZ3FzYd3RsoJUO6JG0NvyS/1TnA/L8jeEonvuJ
-         gDJRTDE0WHkSIwyWvOEUma3x3BNVKHbGNIEyHKAO7q950qJ0akVVapjjWBGRYVZw/bMh
-         XOFw==
-X-Forwarded-Encrypted: i=1; AJvYcCWLhbHPCANR3F7qPR3bWgdyrS9zh98zjIDrgg1eE3VkXZlcMvgY3dyRhUNcfa0dvYwePoZpzVJySOc=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz+zD+zphogKp0rU/UfFy4wMYvIXOQ4Txrl5SSlETFc9WgvXaCW
-	H/3NEOVssHp9i3x8qQ8eyrJN60OEfkMCNV7ooHdR/nEJ1TdllTmzB+NKAV8tM11lPFW9Vw+Jjuy
-	JaXJKvagLwYs+lBw0mES4yAxw24l704Y=
-X-Gm-Gg: ATEYQzyRvfJuXbtAVOJXBDlafrFaxPVQ5wlrj/0cy/T4Rf0RaPSTg0o03qMOPYrN61/
-	iDxXhAbZBaPpLnUicewt+lzPZIZvJztTkOavxGlzNzS1AzY7RuLNqzkLkXs84ABLhREqrGsq/X6
-	jIetAjyOjr2E7g82Gu4CKDFDZh9mfRpiVUlOlzspFv+4/9W0sjUbsw4voDhBhtWmoGUzD8VzMJ3
-	AIyCC2IQ5f8/ww+/0kG8s3F9zCO5UaOJGprC3KuBPzGONAXR/nGgmI2XiQHtc1FJ4tAAVl38SfA
-	0vm2PdAiK9B/K1JA3UdtAyED2Fd1X5FTeXUXYNzKfvfKJHs/KMS9H9gCVPQV/UGT9MzygQ==
-X-Received: by 2002:a05:6402:51ce:b0:660:ce49:f6b3 with SMTP id
- 4fb4d7f45d1cf-6619d52e969mr1862489a12.30.1772832246745; Fri, 06 Mar 2026
- 13:24:06 -0800 (PST)
+        d=1e100.net; s=20230601; t=1772835008; x=1773439808;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=AETatfqfDS1XREX9cs1Ig1MjMauK60I6x4pBlhW5zqc=;
+        b=ZrWKLcuN30oI4dB2+KSyPEZOQ3iKA9F2sQ66chN2Iv6wp9MMWU6Hv0DZvqcWVYFTz0
+         so+TXP/WqPCjOOGgIthDdDZEgqihZ6hIuMuzjiaRAuw1UfMBBfUTwRNH4rLSBbVt+b6c
+         0foQ93iMVyHy11IntBFg/2JtVsYb929pp82mdZnNiBD++6WsngPrFDldboJQXhIggTdO
+         o3D0E1xTPi7ZiYOizJAy2xvPKoHrWnkdm2CAQvNFl2ycIgjBCOSmSEkPelsGtcRsQns1
+         6zRE/tOrOv4bhj124l/6wv4q3HErMg4+ES7mHLaUIBNGOUsHibhr9F++zjqlUcJk/lpZ
+         PraA==
+X-Gm-Message-State: AOJu0YyHLva3EYuTMmB8SNbwCbqXJ+DODfB2m2HVFrDoZPZQMO0j1GhQ
+	/y5PPd1wZS6ZeEKb66ZrPpFyHx/0QyXe3tbRUp3a6Hd6MclN6fMWaZ46VLPOoN7WiQo=
+X-Gm-Gg: ATEYQzwbli8EFFltGpoBNq5h6AgLOpX7hxFxhhGAaQAYOgRS/+zcHU/Td3/gcznR4zO
+	nawZbVsti/N9Cdui2lJImYgCQFBBZwReY0eJzi0iXa4Rnp0yrXVzBpv32FBbECpfk7LMuLZT3eN
+	WwiSBvHdYXeadFUSTdCFWRovK9SGWJMaIbxG1x261oepFduI/NvUQPlPx+3KBF6+N/7ud7eTdf0
+	5CEsY1N1sRWd57Wx+vuUxLHE5AUbHbEEUFc1bZeza/pNuU+slh6OV5NLrkJbSpCBAR2hMvucsa5
+	wA6zD/9u2QzL4pbu2LXWsPsi9sY6IvAi5BKPN4tGF5o5vrFJhrup0aQoAMBK+P9K85GbVOZVH8e
+	Clg4ld6vxD9zUFWMRx79ZreZGv9h42V6uTJ6GuSaOE/jJlJBqZ3zOrXGZEQFOrHg4QK5dJl8djo
+	ObNtxLuvtKao2IskCwmkgbvgBM8lDrPzjJB/oRrcRcNxRUUtFAIm9YUv181IKLaIRyjgM5jG3qS
+	Q==
+X-Received: by 2002:a05:6870:810c:b0:3e8:8e56:6718 with SMTP id 586e51a60fabf-416e451e07dmr2320208fac.52.1772835008402;
+        Fri, 06 Mar 2026 14:10:08 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:6d78:b98b:fc05:ddbe? ([2600:8803:e7e4:500:6d78:b98b:fc05:ddbe])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-416e68368a8sm2410513fac.14.2026.03.06.14.10.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Mar 2026 14:10:08 -0800 (PST)
+Message-ID: <da67d80a-d6a7-46e2-a625-ce73ac167661@baylibre.com>
+Date: Fri, 6 Mar 2026 16:10:07 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260306202650.61865-1-rajveer.chaudhari.linux@gmail.com> <aatDSpZW54mLxjkF@ashevche-desk.local>
-In-Reply-To: <aatDSpZW54mLxjkF@ashevche-desk.local>
-From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Date: Sat, 7 Mar 2026 02:53:55 +0530
-X-Gm-Features: AaiRm51CMH491-fS3fFvvqX4Pv4ifG20_8LGDJnszHOfDlSDG1O06G1wmGnOG4A
-Message-ID: <CANS1UbjTGRF+f52PkZLmDDXVatuXrfez+ca65aR7W1e+jQ6g3A@mail.gmail.com>
-Subject: Re: [PATCH] iio: convert to guard(mutex)
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: lucas.p.stankus@gmail.com, lars@metafoo.de, Michael.Hennerich@analog.com, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	puranjay@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] iio: accel: adxl313: convert to guard(mutex)
+To: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>,
+ lucas.p.stankus@gmail.com, lars@metafoo.de, Michael.Hennerich@analog.com,
+ jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org, puranjay@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <d587dd07-ce23-49f1-9a38-ea741e4ef14c@baylibre.com>
+ <20260306211152.65109-1-rajveer.chaudhari.linux@gmail.com>
+ <20260306211152.65109-2-rajveer.chaudhari.linux@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260306211152.65109-2-rajveer.chaudhari.linux@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Thanks for the review Andy.
+On 3/6/26 3:11 PM, Rajveer Chaudhari wrote:
+> ---
+>  drivers/iio/accel/adxl313_core.c | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
+> index 9f5d4d2cb325..94c6023af487 100644
+> --- a/drivers/iio/accel/adxl313_core.c
+> +++ b/drivers/iio/accel/adxl313_core.c
+> @@ -8,6 +8,7 @@
+>   */
+>  
+>  #include <linux/bitfield.h>
+> +#include <linux/cleanup.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/module.h>
+>  #include <linux/overflow.h>
+> @@ -356,18 +357,16 @@ static int adxl313_read_axis(struct adxl313_data *data,
+>  {
+>  	int ret;
+>  
+> -	mutex_lock(&data->lock);
+> +	guard(mutex)(&data->lock);
+>  
+>  	ret = regmap_bulk_read(data->regmap,
+>  			       ADXL313_REG_DATA_AXIS(chan->address),
+>  			       &data->transf_buf, sizeof(data->transf_buf));
+>  	if (ret)
+> -		goto unlock_ret;
+> +		return ret;
+>  
+>  	ret = le16_to_cpu(data->transf_buf);
 
-Those files have been dropped in v2 of this series which was just sent.
-The v2 focuses only on the ADXL accelerometer drivers where the
-conversion also simplifies the error handling.
+This can be simplifed:
 
-With Best Regards,
-Rajveer Chaudhari
+	return le16_to_cpu(data->transf_buf);
 
-On Sat, Mar 7, 2026 at 2:42=E2=80=AFAM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Sat, Mar 07, 2026 at 01:56:50AM +0530, Rajveer Chaudhari wrote:
-> > Replace manual mutex_lock/mutex_unlock pairs with guard(mutex)
-> > in several IIO drivers. This ensures the mutex is released on
-> > every return path, preventing missed unlocks on error paths.
->
-> ...
->
-> >  #include <linux/kmod.h>
-> >  #include <linux/list.h>
-> >  #include <linux/slab.h>
-> > +#include <linux/cleanup.h>
->
-> Move it to the better place to keep more lines ordered.
->
-> >  #include <linux/kmod.h>
-> >  #include <linux/list.h>
-> >  #include <linux/slab.h>
-> > +#include <linux/cleanup.h>
->
-> Ditto.,
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
+>  
+> -unlock_ret:
+> -	mutex_unlock(&data->lock);
+>  	return ret;
+>  }
+>  
+
