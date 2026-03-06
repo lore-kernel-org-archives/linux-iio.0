@@ -1,74 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27E3F271A94;
-	Fri,  6 Mar 2026 14:33:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F3EE93ACA66;
+	Fri,  6 Mar 2026 14:39:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772807592; cv=none; b=MhiJcfTERLv/RksU/yRBsY91kIfOYTA4uag2QP+XDIbJeIBfMPnZM5YvLoh7aDCMe0pEOOfvvrRfreXcsexgZe4LrrcALvJZF9VqijeNTw9GlLPOOZj3UY6BfF73v5MyRLV1mudWo+mA48ffC1CQnFsS2G/2abUs2ggaH0lGu/U=
+	t=1772807956; cv=none; b=s8bFF+1W7RqG3ElBQf2kczCYdi2jAm7EiWaCfdQGkHrDnaaToP1SENqdPoF6fbYtKYqjeQk+pU2Mm8MCemrQWduocL5NDKcKNvtCbYg2HeBxIS0g3Kt/hB9E+0a4EbE2Lzmr0g6yXQjNL4V9BsyltoLZNH5nKRft67jmQt+3SAQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772807592; c=relaxed/simple;
-	bh=6bpb8U4o1pj6JShYNq2ftR3yy8sMU1tPrbz8tpbfjDw=;
+	s=arc-20240116; t=1772807956; c=relaxed/simple;
+	bh=RvIr1bv4JzGGnQbI64pXM40ONViqWztGeEODEcBy2jM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=T8pmTt2tljy6MtgyryvXPs3lTnqzfueD0nAbp0Pdtt/WreQGrvobbdoReGtMNyMuJT7ygFzXQHDf/b/FtwXH3u4gDfX+OQUyguFPKEuZzyUdMl6+i9A7p1MwLbvXz9hGNfUmbMDGW01UjuDFxJgekMq4ytng3FmvBaCyJ3477+s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=H/VOkmsT; arc=none smtp.client-ip=192.198.163.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=FwSjZMUU+fpIpqUoml1DWyiQP54bUWJB42qNXfjKerUcdkPzm/OqD4S5+i3aLPM+U2QUFOnu+bWsYu5GAfixF6rJsIFIk7M09qA483QOIzG8mcLAAU6iI+RJ9B/M9QAmzObEdiigdhgw8yr1EDEHiv9TFMQvXC1PIlS4QwV+p8I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ffgNsRis; arc=none smtp.client-ip=198.175.65.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="H/VOkmsT"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ffgNsRis"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772807591; x=1804343591;
+  t=1772807955; x=1804343955;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=6bpb8U4o1pj6JShYNq2ftR3yy8sMU1tPrbz8tpbfjDw=;
-  b=H/VOkmsTRzdgOWf0yJoj0dA1/DLqOAE9fOSZuZu4qHOf5jfDfh7K3/b7
-   DYiYLUg3dLyTCowv15f4dj0+fIdG0dJgrj67DNSI/LbnPNhxYoDzbo6Rq
-   ROUIDkjTzmiCc1sq7rl3KA9cYysZZY7Z/XNAjJnNn9xXAmjBccFVlhB5J
-   ihmZYhvgTZDuVCCQRpDne5EX2n+qdytE2I2NLnFSzPU1TLV4TLzyoZCfO
-   n6sJCl0I6ZB+aucZGBWAXXDBTKEErMCPwSqqlTZ4we4XKvqVmiPysVv9+
-   1jK/L3lgY7kUxXXWFlY8tXiW3nEIo0IX5k6H4zcsq1HRIKMBRrM2tzQSM
-   A==;
-X-CSE-ConnectionGUID: 5DrlXQoLT9+m15QXptD/aw==
-X-CSE-MsgGUID: GThIlJLjSW+jLtF+jFoZOA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11721"; a="84627349"
+  bh=RvIr1bv4JzGGnQbI64pXM40ONViqWztGeEODEcBy2jM=;
+  b=ffgNsRisQKo9pr6CTm7J7tU8YCrBZfHpg6tMKvS6wYN+0O9/cjC8aPZ8
+   n0mRg1TjtAgPv+dhPha/TIsooD1qgPCFnMI5v+S8uxYxJMRuJce23O2zl
+   vEs1vUmbtLRuwTSkWUdlo8+eAxdjsE9W6iVr0lP0aEZqsnrXVnLHfvwbu
+   GveAfqw4kp16qz+KUQy1VHK7GCdFmCVJh7HnInZp7tA5qfTwRJybwKduD
+   TOMRCx7pzI2VXM2Vh+fPakWk5YMI/8ummXGwb7PMgH7hHdTdl8jtLzrm+
+   y/vRq8WM5qtXrbq5ZMkHk5BOgI88d6ZlD1PKr4LTmkivC0EohhWZlk2YR
+   w==;
+X-CSE-ConnectionGUID: oJ13nXJGQ3iiaiRyFg9oLg==
+X-CSE-MsgGUID: mrBkskjvRmuc/dI4vBC3rw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11721"; a="73962712"
 X-IronPort-AV: E=Sophos;i="6.23,105,1770624000"; 
-   d="scan'208";a="84627349"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 06:33:09 -0800
-X-CSE-ConnectionGUID: Ky+8fPOMQrC10urVEQ+gjg==
-X-CSE-MsgGUID: pUyz7LejTYaWQilWDsiUNw==
+   d="scan'208";a="73962712"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 06:39:14 -0800
+X-CSE-ConnectionGUID: BNRUhAbSRqSm5FFmpEVGVw==
+X-CSE-MsgGUID: utXx3yj0RgeEDC+SzBiS6Q==
 X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,105,1770624000"; 
-   d="scan'208";a="223510755"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.1])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 06:33:04 -0800
-Date: Fri, 6 Mar 2026 16:33:01 +0200
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 06:39:12 -0800
+Date: Fri, 6 Mar 2026 16:39:09 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
-Subject: Re: [PATCH 0/4] iio: adc: ad4691: add driver for AD4691 multichannel
- SAR ADC family
-Message-ID: <aarlnZUR984DH98V@ashevche-desk.local>
-References: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
- <aarDJicasFlUnOkx@ashevche-desk.local>
- <LV9PR03MB84149EAE41DE73C61B81091FF77AA@LV9PR03MB8414.namprd03.prod.outlook.com>
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/4] iio: frequency: ad9523: add dev variable
+Message-ID: <aarnDSzQHIrfmSen@ashevche-desk.local>
+References: <20260306102504.42395-1-antoniu.miclaus@analog.com>
+ <20260306102504.42395-4-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -77,30 +63,53 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <LV9PR03MB84149EAE41DE73C61B81091FF77AA@LV9PR03MB8414.namprd03.prod.outlook.com>
+In-Reply-To: <20260306102504.42395-4-antoniu.miclaus@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Mar 06, 2026 at 12:39:30PM +0000, Sabau, Radu bogdan wrote:
-> > -----Original Message-----
-> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > Sent: Friday, March 6, 2026 2:06 PM
-> > On Thu, Mar 05, 2026 at 02:23:26PM +0200, Radu Sabau via B4 Relay wrote:
+On Fri, Mar 06, 2026 at 12:24:47PM +0200, Antoniu Miclaus wrote:
+> Introduce a local struct device variable in ad9523_probe() to simplify
+> subsequent conversions and improve code readability.
 
 ...
 
-> > This cover letter doesn't answer to the first important question: Why a brand
-> > new driver? Do your homework and check what is already in the kernel and
-> > explain in the next version why no other existing driver can be reused (refactored).
-> 
-> Indeed at first glance I thought about adding support for these parts in the existing
-> AD4965 driver. The registers indeed are a bit similar between them, but the
-> channel specific registers are completely different, and more than this the
-> conversion modes are different.
-> With this being said, I will try and make things more clear by answering this
-> question in the cover letter of the next patch. Thank you for pointing this out.
+>  static int ad9523_probe(struct spi_device *spi)
+>  {
+> -	struct ad9523_platform_data *pdata = dev_get_platdata(&spi->dev);
+> +	struct device *dev = &spi->dev;
+> +	struct ad9523_platform_data *pdata = dev_get_platdata(dev);
 
-Good, the summary of the above will fulfil the request, thanks.
+It's always better to split assignment and definition when the result is going
+to be validated. It makes code robust against potential changes in
+between that might alter that variable / value.
+
+	struct ad9523_platform_data *pdata;
+
+>  	struct iio_dev *indio_dev;
+>  	struct ad9523_state *st;
+>  	int ret;
+
+	pdata = dev_get_platdata(dev);
+
+>  	if (!pdata) {
+> -		dev_err(&spi->dev, "no platform data?\n");
+> +		dev_err(dev, "no platform data?\n");
+
+This line can be updated in the second patch altogether.
+
+>  		return -EINVAL;
+>  	}
+
+...
+
+> -	st->reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset",
+> +	st->reset_gpio = devm_gpiod_get_optional(dev, "reset",
+>  		GPIOD_OUT_LOW);
+>  	if (IS_ERR(st->reset_gpio))
+>  		return PTR_ERR(st->reset_gpio);
+
+Side note: The material to move to reset-gpio driver instead (I think we have
+tons of the IIO drivers with the same).
 
 -- 
 With Best Regards,
