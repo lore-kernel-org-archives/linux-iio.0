@@ -1,253 +1,169 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11B62344DB0;
-	Fri,  6 Mar 2026 09:29:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0FB433B2A0;
+	Fri,  6 Mar 2026 10:25:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772789380; cv=none; b=ceFYdpD8AIqQu+WV5aqJpDL5tRgaU/UQ891DRmAF/SEbizvuKB2p9wukLD+c4hieHoMYxc1YXN/57bk1ru1/F+/U4KvszPPbBukYWcWuwBegEKtDiSR+lMN48okCHGodbqFB/3LSmYfwbfaOfQDVCWn3lK0IrrPfyqj74HmPNks=
+	t=1772792755; cv=none; b=mg8JIs+QMszlytOmnZWXp9/hEAT/+wcRgqhEDbZ9r01ewRKz9kaSmQXLkvn+bG14U0ftjhNdgCIgGuQXp/lGT6fA3oon/kYPF2EBrkWCJYzIumqLZYHchVo3CQRhc71B3Y6CtuyAL9TeOp/iVDpzOC0QdivdwkcPfeUdJnq51os=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772789380; c=relaxed/simple;
-	bh=FoiIGNp6DMC3eHerJOHrvzGKeWjUt+DKC9a9Fgi4Ni8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KJ1T2SpL7sDcM+JGvKbfMn10dmhyBXBAnvC7I5KAHfwysWXu9B6MXMvlgV8Oek3eqKRAbRmuhicOloh2eydJj+LWB2eJ2mTKY/XDuGKSc2DQwNF4Xn6Ze/HsuBJXhAn1Uig1fsj60xJiNWmk4irrLbTrJSQbcxLgMwzffiV0wN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QWQiJ39x; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772792755; c=relaxed/simple;
+	bh=/1ln1f5ASvqMEhGgj9sKTz/Svc5XSdHZ5ERyvUNc96A=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=UYcDGnTNKk2c182qjZ9rj0wnwNei3GF0jzjOlhTiMOQ4j9spmVwEM1qGmeWkIULinKqwT0tc2uGcynFsbgkrPyZZL9V0axQrQGw41Aeg2hvubBPyeClAS4RkEpy6pmohXXmCpcHxjASNTJnOmLzDyl8l/N4dNbw7Mk2AUf5Pg9E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=odjmE6R0; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QWQiJ39x"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155F5C4CEF7;
-	Fri,  6 Mar 2026 09:29:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772789379;
-	bh=FoiIGNp6DMC3eHerJOHrvzGKeWjUt+DKC9a9Fgi4Ni8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=QWQiJ39xbMfGlDkQBxCjEYkkBGt1Vmhyt0HWPbFAqj/TgdYixJS7+sTAacFheWQMf
-	 ceaQ6zpd5Ee9wwFDibZBYb6/dliriMauMpq48W1cRMSFZ+9nD11w0NY73R6zB/pNm1
-	 gxYw1kUwy/40fZHL3Vs1UYr3cnJ6xwbW8aBv7TKLHesu2iD/yFzhat7uniyKkc4Z1F
-	 5vb3LJiOZ/LKUq82Qh8q7qmGrN7uaHLKZiyVwY/1ryE7I6ibsS3Bdr7agsnb/daadi
-	 OSDKUZypC6ydvpXPm4eQY7vZ80ZKwFOhrItRXF1SCMi2PXtEKYzM1uKbTvQfcwxxTj
-	 IeNJe38fZ0jfA==
-Date: Fri, 6 Mar 2026 10:29:36 +0100
-From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
-To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, 
-	Biju Das <biju.das.jz@bp.renesas.com>
-Cc: William Breathitt Gray <wbg@kernel.org>, Lee Jones <lee@kernel.org>, 
-	Thierry Reding <thierry.reding@gmail.com>, linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, stable@vger.kernel.org
-Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
- channel
-Message-ID: <aaqTVDQa7xn70bR_@monoceros>
-References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
- <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="odjmE6R0"
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6265mv8H2756978;
+	Fri, 6 Mar 2026 05:25:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=JMH9Y
+	cstxDSXDcLa5QjRkSbMp3wKb8bGd3J0Yg343RU=; b=odjmE6R0WdkEcFjYyrAzw
+	V8ATQmEskqcfgCEej33ovI0pLHx179K0MubPWVW4z0ZVgXcw1lxhp++Z2yPKJiDz
+	iWUV/WWNW6+mAI7uQpXQIsFvGfpYeBecpj6/r4wL3OZZkGtkxFs+IWg8vCQupPhW
+	86w7z4scm5eHTzfTJNCSYbxOQoa1EVrlI+i1Gg6OlrGPUQLG48l+ibMtq2Z7JLQl
+	heHaKOuSyEEX971WA0PG8skC5IYFPJbYo1hyE9fWBqd8x/Ga5FRGKY+EChDJHUe6
+	zJUGQKJ30bW6wEwKvZ0XkOj7fgM0sdLap6bYcwOQPLOq6c06cTjgXZGwwGz5/kFa
+	Q==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cppt6gxvm-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Fri, 06 Mar 2026 05:25:33 -0500 (EST)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 626APWbx007762
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Fri, 6 Mar 2026 05:25:32 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 6 Mar
+ 2026 05:25:32 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Fri, 6 Mar 2026 05:25:32 -0500
+Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 626APG2U003684;
+	Fri, 6 Mar 2026 05:25:28 -0500
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David
+ Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH 2/4] iio: frequency: admv4420: use dev_err_probe
+Date: Fri, 6 Mar 2026 12:24:46 +0200
+Message-ID: <20260306102504.42395-3-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260306102504.42395-1-antoniu.miclaus@analog.com>
+References: <20260306102504.42395-1-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="sdqtu4j6eja6jess"
-Content-Disposition: inline
-In-Reply-To: <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA2MDA5OSBTYWx0ZWRfX+8Q9chPrhgYV
+ UXJZO9vRMKeffQXY9SoiQt+kqiTASY94IYjp2CBkLNy2Imq2IpmiWZtDG75CX/knNiJw7n+fKyQ
+ ysE+aV2Na6KDyKnFiZ2Q8l7fN3XTe1OMPDM2LXnn8P5g9SqAUoN6QoO905+1RRn1GcNlSVp+smo
+ FlN6D/pRztt6UcsX7PVsljU5Mgk/SJJZ/b4v+rtcaC0e4RoV+zKW3WKfT2y08NshykQTr6idv8q
+ SuLYu19upEAkD11t+oLsBxL1LJmqEnp6si57t1AW7qgPmdBwGfV2Avj1mvLrXWXGNWwaKDA7wJA
+ uLSFi4CnCbDUa6NOfHW42eRZNERsRZbpJuvlcSNWM5FOyZhHKOdj5h+KqeVEJRapSwgvBykq4Uv
+ lVsi32nO67Nufuty5RLsR+l3ug9ddqj4jCZvsIJ/TtKD9O4ulq4GUP0bNhzV6So+ynP0B81CeRX
+ WVUlCSpv4zmH0OoSMzA==
+X-Proofpoint-GUID: h-QtoGPWu_dxhm9FTLvWqeiu92ZpCpFG
+X-Authority-Analysis: v=2.4 cv=EKkLElZC c=1 sm=1 tr=0 ts=69aaab9d cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=Z0pTeXoby7EwIRygza74:22 a=gAnH3GRIAAAA:8 a=rh7gjDiLLP6ny2FSsboA:9
+X-Proofpoint-ORIG-GUID: h-QtoGPWu_dxhm9FTLvWqeiu92ZpCpFG
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-06_03,2026-03-04_01,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ malwarescore=0 phishscore=0 impostorscore=0 bulkscore=0 priorityscore=1501
+ spamscore=0 suspectscore=0 adultscore=0 clxscore=1015 lowpriorityscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603060099
 
+Use dev_err_probe() instead of dev_err() in the probe path to ensure
+proper handling of deferred probing and to simplify error handling.
 
---sdqtu4j6eja6jess
-Content-Type: text/plain; protected-headers=v1; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
- channel
-MIME-Version: 1.0
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+ drivers/iio/frequency/admv4420.c | 27 +++++++++++----------------
+ 1 file changed, 11 insertions(+), 16 deletions(-)
 
-Hello,
+diff --git a/drivers/iio/frequency/admv4420.c b/drivers/iio/frequency/admv4420.c
+index 6ebfe08fc211..2416fe850ecf 100644
+--- a/drivers/iio/frequency/admv4420.c
++++ b/drivers/iio/frequency/admv4420.c
+@@ -279,10 +279,9 @@ static int admv4420_setup(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (val != ADMV4420_SCRATCH_PAD_VAL_1) {
+-		dev_err(dev, "Failed ADMV4420 to read/write scratchpad %x ", val);
+-		return -EIO;
+-	}
++	if (val != ADMV4420_SCRATCH_PAD_VAL_1)
++		return dev_err_probe(dev, -EIO,
++				     "Failed ADMV4420 to read/write scratchpad %x\n", val);
+ 
+ 	ret = regmap_write(st->regmap,
+ 			   ADMV4420_SCRATCHPAD,
+@@ -294,10 +293,9 @@ static int admv4420_setup(struct iio_dev *indio_dev)
+ 	if (ret)
+ 		return ret;
+ 
+-	if (val != ADMV4420_SCRATCH_PAD_VAL_2) {
+-		dev_err(dev, "Failed to read/write scratchpad %x ", val);
+-		return -EIO;
+-	}
++	if (val != ADMV4420_SCRATCH_PAD_VAL_2)
++		return dev_err_probe(dev, -EIO,
++				     "Failed to read/write scratchpad %x\n", val);
+ 
+ 	st->mux_sel = ADMV4420_LOCK_DTCT;
+ 	st->lo_freq_hz = ADMV4420_DEFAULT_LO_FREQ_HZ;
+@@ -305,10 +303,9 @@ static int admv4420_setup(struct iio_dev *indio_dev)
+ 	admv4420_fw_parse(st);
+ 
+ 	ret = admv4420_calc_parameters(st);
+-	if (ret) {
+-		dev_err(dev, "Failed calc parameters for %lld ", st->vco_freq_hz);
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret,
++				     "Failed calc parameters for %lld\n", st->vco_freq_hz);
+ 
+ 	ret = regmap_write(st->regmap, ADMV4420_R_DIV_L,
+ 			   FIELD_GET(0xFF, st->ref_block.divider));
+@@ -369,10 +366,8 @@ static int admv4420_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = ARRAY_SIZE(admv4420_channels);
+ 
+ 	ret = admv4420_setup(indio_dev);
+-	if (ret) {
+-		dev_err(&spi->dev, "Setup ADMV4420 failed (%d)\n", ret);
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "Setup ADMV4420 failed\n");
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+-- 
+2.43.0
 
-On Fri, Jan 30, 2026 at 02:23:49PM +0200, Cosmin Tanislav wrote:
-> enable_count is only incremented after rz_mtu3_pwm_config() is called
-> for the current PWM channel, causing prescale to not be checked if one
-> PWM channel is enabled and we're enabling the second PWM channel of the
-> same HW channel.
->=20
-> To handle this edge case, if the user_count of the HW channel is larger
-> than 1 and the sibling PWM channel is enabled, check that the new
-> prescale is not smaller than the sibling's prescale.
->=20
-> If the new prescale is larger than the sibling's prescale, use the
-> sibling's prescale.
->=20
-> The user_count check is ensures that we are indeed dealing with a HW
-> channel that has two IOs.
->=20
-> Cc: stable@vger.kernel.org
-> Fixes: 254d3a727421 ("pwm: Add Renesas RZ/G2L MTU3a PWM driver")
-> Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-> ---
->  drivers/pwm/pwm-rz-mtu3.c | 24 +++++++++++++++++++-----
->  1 file changed, 19 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/pwm/pwm-rz-mtu3.c b/drivers/pwm/pwm-rz-mtu3.c
-> index ab39bd37edaf..f6073be1c2f8 100644
-> --- a/drivers/pwm/pwm-rz-mtu3.c
-> +++ b/drivers/pwm/pwm-rz-mtu3.c
-> @@ -142,6 +142,14 @@ rz_mtu3_get_channel(struct rz_mtu3_pwm_chip *rz_mtu3=
-_pwm, u32 hwpwm)
->  	return priv;
->  }
-> =20
-> +static u32 rz_mtu3_sibling_hwpwm(u32 hwpwm, bool is_primary)
-> +{
-> +	if (is_primary)
-> +		return hwpwm + 1;
-> +	else
-> +		return hwpwm - 1;
-> +}
-
-Can we please make this function a bit more sophisticated to not need
-is_primary? Something like:
-
-static u32 rz_mtu3_sibling_hwpwm(struct rz_mtu3_pwm_chip *rz_mtu3_pwm, u32 =
-hwpwm)
-{
-	struct rz_mtu3_pwm_channel *priv =3D rz_mtu3_get_channel(rz_mtu3_pwm, hwpw=
-m);
-
-	BUG_ON(priv->map->num_channel_ios !=3D 2);
-
-	if (priv->map->base_pwm_number =3D=3D hwpwm)
-		return hwpwm + 1;
-	else
-		return hwpwm - 1;
-}
-
-(Or if you want to save the rz_mtu3_get_channel() call, pass priv to
-rz_mtu3_sibling_hwpwm() which is already available at the call sites.)
-
-And well, BUG_ON isn't very loved, so either it should be dropped or the
-issue escalated in a more civilized manner. I keep it for the sake of
-simplicity during the discussion.
-
-> +
->  static bool rz_mtu3_pwm_is_ch_enabled(struct rz_mtu3_pwm_chip *rz_mtu3_p=
-wm,
->  				      u32 hwpwm)
->  {
-> @@ -322,6 +330,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, =
-struct pwm_device *pwm,
->  	struct rz_mtu3_pwm_channel *priv;
->  	u64 period_cycles;
->  	u64 duty_cycles;
-> +	bool is_primary;
->  	u8 prescale;
->  	u16 pv, dc;
->  	u8 val;
-> @@ -329,6 +338,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, =
-struct pwm_device *pwm,
-> =20
->  	priv =3D rz_mtu3_get_channel(rz_mtu3_pwm, pwm->hwpwm);
->  	ch =3D priv - rz_mtu3_pwm->channel_data;
-> +	is_primary =3D priv->map->base_pwm_number =3D=3D pwm->hwpwm;
-> =20
->  	period_cycles =3D mul_u64_u32_div(state->period, rz_mtu3_pwm->rate,
->  					NSEC_PER_SEC);
-> @@ -340,11 +350,15 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip=
-, struct pwm_device *pwm,
->  	 * different settings. Modify prescalar if other PWM is off or handle
->  	 * it, if current prescale value is less than the one we want to set.
->  	 */
-> -	if (rz_mtu3_pwm->enable_count[ch] > 1) {
-> -		if (rz_mtu3_pwm->prescale[ch] > prescale)
-> -			return -EBUSY;
-
-OK, I understood the issue. If the sibling is already on and the current
-IO is still off, enable_count doesn't account yet for the current
-IO and thus is 1 but still the prescaler must not be changed.
-
-The commit log needs updating to make this clearer.
-
-An alternative would be to check for
-
-	if (rz_mtu3_pwm->enable_count[ch] + (pwm->state.enabled ? 0 : 1) > 1)
-
-but I'm not sure this is better.
-
-> +	if (rz_mtu3_pwm->user_count[ch] > 1) {
-> +		u32 sibling_hwpwm =3D rz_mtu3_sibling_hwpwm(pwm->hwpwm, is_primary);
-
-Maybe add a comment here saying something like:
-
-	Not all channels have a sibling, but if user_count > 1 there is
-	one.
-> =20
-> -		prescale =3D rz_mtu3_pwm->prescale[ch];
-> +		if (rz_mtu3_pwm_is_ch_enabled(rz_mtu3_pwm, sibling_hwpwm)) {
-> +			if (rz_mtu3_pwm->prescale[ch] > prescale)
-> +				return -EBUSY;
-> +
-> +			prescale =3D rz_mtu3_pwm->prescale[ch];
-> +		}
->  	}
-> =20
->  	pv =3D rz_mtu3_pwm_calculate_pv_or_dc(period_cycles, prescale);
-> @@ -371,7 +385,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, =
-struct pwm_device *pwm,
->  	if (rz_mtu3_pwm->prescale[ch] !=3D prescale && rz_mtu3_pwm->enable_coun=
-t[ch])
->  		rz_mtu3_disable(priv->mtu);
-> =20
-> -	if (priv->map->base_pwm_number =3D=3D pwm->hwpwm) {
-> +	if (is_primary) {
->  		rz_mtu3_8bit_ch_write(priv->mtu, RZ_MTU3_TCR,
->  				      RZ_MTU3_TCR_CCLR_TGRA | val);
->  		rz_mtu3_pwm_write_tgr_registers(priv, RZ_MTU3_TGRA, pv,
-
-All in all I'm unhappy with the hwpwm to channel+IO mapping, this makes
-this all more complicated. This is something that already bugged me when
-this driver was created.
-
-It's out of scope for this series of fixes, but I wonder if we could
-create a mapping from hwpwm to an IO-id like this:
-
-	hwpwm | IO-id
-	------+------
-	   0  |    0	(channel 0, io 0)
-	   1  |    1	(channel 0, io 1)
-	   2  |    2	(channel 1, io 0)
-	   3  |    4	(channel 2, io 0)
-           4  |    6	(channel 3, io 0)
-	   5  |    7	(channel 3, io 1)
-	   6  |    8	(channel 4, io 0)
-	   7  |    9	(channel 4, io 1)
-	   8  |   12	(channel 6, io 0)
-	   9  |   13	(channel 6, io 1)
-	  10  |   14	(channel 7, io 0)
-	  11  |   15	(channel 7, io 1)
-
-then the sibling would be just `io_id ^ 1` and the channel could
-be computed by `io_id >> 1` and the base id for a given io is just
-`io_id & ~1`.
-
-Tracking of an IO being enabled could be done using
-
-	enabled_io & (1 << io_id)
-
-I think this would be a simpler scheme that needs less memory and less
-pointer dereferencing and the check for the sibling being enabled would
-also be a trivial bit operation.
-
-Best regards
-Uwe
-
---sdqtu4j6eja6jess
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmmqnn0ACgkQj4D7WH0S
-/k7Wzwf/e+vzpYwwhFhW3E9JQ2D3JmIcRmgwwXg58CTquzjL9OqqWbAOb8er6weD
-dkefvUn8AT0d6TyuO8mEffQsdQJXl+G8P0NyB34Tyc+5xOKdeu5fPb2anOSPt1hO
-iRH9QlcU191sEnLCjkTIixMAAJWrJ4nmD8izL11D0QwC8QTSyp76pPzhl+b1f3x1
-jvDPNaWJiUmGfSFDdWsplrAmTqjUWgQoBENly8gE2iNzQiYnLeoi4H/y6rkjCrnL
-Q4wXUaue6LDo9WdkyfZF03p5rbja6v+glKggHyhoLzTeFfjFsSCWFLeyseaRGJLn
-WORN1nKDyxhQlwcdFDgyH/wuvsQrLg==
-=WvAD
------END PGP SIGNATURE-----
-
---sdqtu4j6eja6jess--
