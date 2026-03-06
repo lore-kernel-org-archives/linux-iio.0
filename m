@@ -1,105 +1,84 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0DD6F38E122;
-	Fri,  6 Mar 2026 12:06:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03EB0382361;
+	Fri,  6 Mar 2026 12:08:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772798767; cv=none; b=p+bQKy7zvcK9bvGcyUo2Z24KsEV5mzhVKhIOTQNaWt5OBfRFZt9VtsF15mAm1dHcnX1GnarML1jC1zoV0XRVjj5NjHtqFtSPsZai3tctjJQlTTpSt4fFc7xKSkJH0hKix1GAQWzA+xneAZBiazIwR6p5NHOeO+dN73GPhRJ9Mvc=
+	t=1772798902; cv=none; b=SaIpaJy9Uqd5I0beAZ8IJw3oG1UsZ6RgSqXb3lP1/AfD1F9YaSLsk68SQy/7MmQvDexZ98MlQer0TnF+DFG1siaxmRToBBVeAh2hjrCFqvwc4Ta6Of3I/dkp4+fl8X7c16xljyquE7vL3kbgkhGjQZaA1pKgRve1K5hJhM1YOs0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772798767; c=relaxed/simple;
-	bh=tDO3tMBubRJSmBotVf8K/a4q5f5YJCh4+ak8U1es/hg=;
+	s=arc-20240116; t=1772798902; c=relaxed/simple;
+	bh=klTuZw2IfxgSUEdfTpE/SnfDiLBiwXxvj2Gqun0SB9U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=a4XsZ5HYaqTGl/gVQfZOSP9YRq2aZS1nizXTZtDQVLGJwcPLLaPkuNaBdU27/lUqs9wn+DBpkoqVVg+19v+FbeZTOZSLADmlFKJMtjkIeujQbnNeRfJL8La3FcusSEpDcRTWAsXY5x3yph1in2P5YABzZVASLRQtkw0ol010nqY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JXm0vl9R; arc=none smtp.client-ip=198.175.65.9
+	 Content-Type:Content-Disposition:In-Reply-To; b=clxnjTPyvnoHmD/jbmVI06+hKWx+zgAN0V7IHlJq0JKqLM0mvEdzg/YB+A0eWyRQY5LGL6QQw+u2yES1nDkc7xJ9vBlnrPdNzyzpT1LSwKx1xNEJx5x3ILU6nAm7uzgWejtQqq1Sic9LLmCwKUHTJsTlV57ZsULPGm7iF0zS6Yo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XHKXk2vi; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JXm0vl9R"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XHKXk2vi"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772798766; x=1804334766;
+  t=1772798901; x=1804334901;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=tDO3tMBubRJSmBotVf8K/a4q5f5YJCh4+ak8U1es/hg=;
-  b=JXm0vl9RZTdJlylTio7dv+fJs6ZUo/6zyHGKGyVM9xq+3LY5UijJhxnO
-   12Ru2BNDu3UlSuJnMe5TRyYos0+6hYJ4NbxF0VJYYZiULQhyrYEbkNPNU
-   SelM/1kt8z4OAxcBCpDM5eoyGgrRo3xrvdqBEtc+uC2U2MvXWEzXjc+cc
-   7kg+Bwb0Zjdhtrr/sGPtu+mQB/8srJc/Yl1bmwTrZBKPFjfyc1vbJYWm2
-   nLJEcqa6pL7Xmfcyp0mP9P2DRIzUdirupoWbRZnJwQqTj/VoclCd3IGk0
-   xTo/NSBQlGaqid9BKMZxUcILKHGWTRIMZQlqtSJy8D06jYc5HWIQUFozA
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=klTuZw2IfxgSUEdfTpE/SnfDiLBiwXxvj2Gqun0SB9U=;
+  b=XHKXk2vi8iIt9tyF6KGENflMAgWCyqz7YkTRHUZ+qT5u8XKY35wPZm9m
+   BcaBkKupWhh1eDFmtK9s1bUDAvPi1uFlfILnfPMeCVkmNb1KpB1NySs+o
+   m1I+uJJMb6ZatHpYGYdJ0Jlo4GTiXWKg6UVnT3b7DW2OWcAR70jFfVw/W
+   d4m/+XhWe9GtYNCaHmASAofMpAqPWmJ2xLNwqtF2oqpBFJqABFViIUpv3
+   eUDjaT+IniixVaUqqs7geZi21IwSU1bN1+duBiB6E+cpaI+keX5Gcd+Mu
+   GJTmCwFd0CZWhlth/NlQg3Jti9ogC1YImulwJe3R5fduDmQTIiP8LTnhT
    w==;
-X-CSE-ConnectionGUID: sUnCZtWMSaKFsPtEzcvilg==
-X-CSE-MsgGUID: SmJPRIt7SgiJ4qSh1/UXcg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11720"; a="96520743"
+X-CSE-ConnectionGUID: DLZ6EYXuRUiJmo2ToP2oxA==
+X-CSE-MsgGUID: LxWtJDanRRyB3YBojRCF/g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11720"; a="73096975"
 X-IronPort-AV: E=Sophos;i="6.23,104,1770624000"; 
-   d="scan'208";a="96520743"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:06:05 -0800
-X-CSE-ConnectionGUID: sCG+ZcC6SEmRcOTOHOemwQ==
-X-CSE-MsgGUID: KK7mkGgaQ0KVEQibuFNTPw==
+   d="scan'208";a="73096975"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:08:20 -0800
+X-CSE-ConnectionGUID: lbwt2nAoTHevC7HHl+X9Uw==
+X-CSE-MsgGUID: +Ksmvh1dQjSSSsrr17WL4w==
 X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,104,1770624000"; 
+   d="scan'208";a="218941248"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.1])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:06:00 -0800
-Date: Fri, 6 Mar 2026 14:05:58 +0200
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:08:18 -0800
+Date: Fri, 6 Mar 2026 14:08:15 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: radu.sabau@analog.com
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org
-Subject: Re: [PATCH 0/4] iio: adc: ad4691: add driver for AD4691 multichannel
- SAR ADC family
-Message-ID: <aarDJicasFlUnOkx@ashevche-desk.local>
-References: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
+To: Chunyang Chen <chenchunyang0908@gmail.com>
+Cc: kuurtb@gmail.com, jic23@kernel.org, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ti-ads1018: fix type overflow for data rate
+Message-ID: <aarDrwAITxtS1ziI@ashevche-desk.local>
+References: <20260305021550.120614-1-chenchunyang0908@gmail.com>
+ <20260305124302.129637-1-chenchunyang0908@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260305124302.129637-1-chenchunyang0908@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Mar 05, 2026 at 02:23:26PM +0200, Radu Sabau via B4 Relay wrote:
-> This series adds support for the Analog Devices AD4691 family of
-> high-speed, low-power multichannel successive approximation register
-> (SAR) ADCs with an SPI-compatible serial interface.
+On Thu, Mar 05, 2026 at 08:43:02PM +0800, Chunyang Chen wrote:
+> The variable 'drate' is currently defined as u8. However, the data rate
+> values in ads1018 can reach up to 3300 Hz, which exceeds the maximum
+> value of 255 that a u8 can hold.
 > 
-> The family includes:
->   - AD4691: 16-channel, 500 kSPS
->   - AD4692: 16-channel, 1 MSPS
->   - AD4693: 8-channel, 500 kSPS
->   - AD4694: 8-channel, 1 MSPS
+> Change the type of 'drate' to u32 to match the data_rate_mode_to_hz
+> array definition and ensure the data rate is handled correctly.
 > 
-> The devices support five operating modes:
->   - CNV Clock Mode:    external PWM drives CNV, samples at PWM rate
->   - CNV Burst Mode:    PWM triggers bursts, internal oscillator drives
->                        conversions within each burst
->   - Autonomous Mode:   internal oscillator drives conversions,
->                        software starts/stops via register write
->   - SPI Burst Mode:    similar to Autonomous Mode but optimised for
->                        SPI burst reads
->   - Manual Mode:       CNV tied to SPI CS; each SPI transfer triggers
->                        a conversion and returns the previous result
->                        (pipelined);
+> Fixes: bf0bba486b5b ("iio: adc: ti-ads1018: add ti-ads1018 driver")
+> Signed-off-by: Chunyang Chen <chenchunyang0908@gmail.com>
 
-This cover letter doesn't answer to the first important question: Why a brand
-new driver? Do your homework and check what is already in the kernel and
-explain in the next version why no other existing driver can be reused (refactored).
+New version — new email thread.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
