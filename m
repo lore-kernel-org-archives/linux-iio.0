@@ -1,185 +1,90 @@
-Received: from OS0P286CU011.outbound.protection.outlook.com (mail-japanwestazon11010003.outbound.protection.outlook.com [52.101.228.3])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f169.google.com (mail-pg1-f169.google.com [209.85.215.169])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 521C227EFEE;
-	Thu,  5 Mar 2026 21:59:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.228.3
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772748000; cv=fail; b=twK2FlUlqjgAg3d3/q5fuqeWH9raQjvzuQlnkNZT+EiI7ek07nnT5qUDNrsOryVvqjKXrrNVHcbNkakV8gCtVInmhslmm5WTQ36ZEdG7E+OvKAE1uHFqycMBKpOmvWOkF1l4JImx3fY6qcoSWzj9AoblrbCzIJZW8wW6AeNc1jg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772748000; c=relaxed/simple;
-	bh=F7KtqzgyKfQfoWBiP0DKUF1S/SFHw1Vpjfkc3bfAew8=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=jbXHmZpkpTJ0gkR+yXpINrqBzIpwGR24VdzhQ604MBgommUKQYovf9tLkaa0slqPkB/wmeoge9sZ7ignPlTA+3sxa+LAkrRf4UdiPULBiFM2sPBUSK0f7vgXgZiFNWtoAyQsYiBtx67fgLZK4CAOF55Ghl23xp3HNRkAnfhAmv4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=afqk5ljm; arc=fail smtp.client-ip=52.101.228.3
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C921E2D8768
+	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 05:19:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.169
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1772774343; cv=none; b=WkXMRxurjg1nqcH9y2akVqyYCs1nBtO1rODJgeQVcG/8JCQdDfGsI6QCpNY1lOe2VWCcQ485w41j12Ejl/2G1mYRl5uAMRZtIsyPqegrYYTJV3r/mos4+JNwUhZ9qZHzBVSU1Us/hhvoL+rbBFGWZpJYz5kuhtKxs196+DE++W0=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1772774343; c=relaxed/simple;
+	bh=AfuIW5bx6NIQqFRuCYTL9YvA3iAe6YCE0/eZXP4dzlk=;
+	h=Date:From:To:Cc:Subject:Message-ID:MIME-Version:Content-Type:
+	 Content-Disposition; b=LHLzpc4uqHuE5yCsEgdfGgpVhJIe3TGwpeMaP5Do2tHmTRdZRFwc1gIRly/bFXZvG2xmwYauQipjqS+lwoOZDr4Nq2kuPXnPOGdwZ3e2BJ+tiO4P+ep3pIWowF4OwsK1wy7PDvADr4Iv7J3PKlRd5KhmyDKbPHDYCGmsNxXtFQk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=j3jH8YS2; arc=none smtp.client-ip=209.85.215.169
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="afqk5ljm"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=JfGfq2domxrwJ/0tnJhMgg7t8LUbs9zAuAuVh/X+n6/TnUdHaIlXYTtpJoQGlvyWImj3azBzC/xB74g3Z+/pAPaDOkjA+ZWKrFRGtdeNX28fCVKYTqcA0ZxTQytANwbT7mMbNkH0ISiPrD1VpTBMv5HFjZQgVINSbPw1DLj/0nfvwmLNPKtBc5YxCFhxfO60WITjIIBAM9AxVTEyqEgfrsJZ3fKAEj3qpSCBNaJP0j3vvoswPpkCF0xZof5a3nUcnBVfzFECsgb+esJi/6/HYAL1QCim0LZ9GM1AzKpRsYqDJub2Jz93nnCtSbzjy0yJzCeKM+5P+owQ4GzIicTFTQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BtVgIBMJIe3RzcMShg/oJtUewo8+j29vq0NiGQRNfQU=;
- b=w4g+o26toGb0ZicneKbMlI+ecXR3It6VNU5OCBMbWKdQGOEviiyjat3Rw14rOonBNjJ0uMevO3UPAM6WNJ495VS/cD7C9igw/tuSXJmi2RjDq1u+ESknAPo7CC/5AfzfYrlToqvM+cBEGFvTHI7mPLug0/2ryobvJi8d4phQjc48mSjbeZTiJMmLM4lsQkEXtyvhXK7SxX+ZxomT52ueLr7u8gjK498tkGX+2jU/TveuagxCN4PoJ0M8ZOzRL5Z5kp2mDIrKeX9o1pt1IbFeABk3bZvYwSZSlbVDerKWSjHVvJDpt79UYezM73k5toB8Fenx4/+HviOCIcConBBIww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BtVgIBMJIe3RzcMShg/oJtUewo8+j29vq0NiGQRNfQU=;
- b=afqk5ljmwjMeMntqw9CdMrE0vSmGlKePZEi4lX+BwfJDDfb5gK7oGuq2/7N81orZ+w97FAoJin9+Dgig7sy05/an4NnW2s1HKmrVwjZ3XSIjkq1sB9Uw8w0E5o1H1jQ0fhIW2w8VygeLjTasPa0BRh/3PKKA7aPaItWINXgEgaU=
-Received: from TYRPR01MB15619.jpnprd01.prod.outlook.com
- (2603:1096:405:29b::10) by TY7PR01MB16219.jpnprd01.prod.outlook.com
- (2603:1096:405:2a7::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.18; Thu, 5 Mar
- 2026 21:59:55 +0000
-Received: from TYRPR01MB15619.jpnprd01.prod.outlook.com
- ([fe80::a68f:5c9:9de8:4fa4]) by TYRPR01MB15619.jpnprd01.prod.outlook.com
- ([fe80::a68f:5c9:9de8:4fa4%5]) with mapi id 15.20.9678.017; Thu, 5 Mar 2026
- 21:59:54 +0000
-From: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <ukleinek@kernel.org>
-CC: Biju Das <biju.das.jz@bp.renesas.com>, William Breathitt Gray
-	<wbg@kernel.org>, Lee Jones <lee@kernel.org>, Thierry Reding
-	<thierry.reding@gmail.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
-	<linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org"
-	<linux-pwm@vger.kernel.org>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>
-Subject: RE: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
- channel
-Thread-Topic: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
- channel
-Thread-Index: AQHckeNxm+l5nvVDhECE0kd9r0GiYLWf2EkAgADVIsA=
-Date: Thu, 5 Mar 2026 21:59:54 +0000
-Message-ID:
- <TYRPR01MB15619661CAEFBB9A94F8C1CD0857DA@TYRPR01MB15619.jpnprd01.prod.outlook.com>
-References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
- <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
- <aalEXwdvHtToZmRQ@monoceros>
-In-Reply-To: <aalEXwdvHtToZmRQ@monoceros>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYRPR01MB15619:EE_|TY7PR01MB16219:EE_
-x-ms-office365-filtering-correlation-id: 8ccc76b0-ba2c-430a-5b58-08de7b0288c0
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;ARA:13230040|366016|376014|1800799024|38070700021;
-x-microsoft-antispam-message-info:
- hEeTqUKOesEYrbm1yl50uBXkCRxLnNxQko+30v/R/TH8muUNuhMHSUQ3D0t5Ta7p/k1cOJ+jw0jhM5txoSBKDoiQWXm7u1gN3wOixRQEHLOD5PkFOdP1hyJ0fhlUPI+voIPSDC8PTdtYoafk0fcBScGCnvcdVYYU5fxU8k9POhBnhhsLYW4AV8nC5synuLkANWyM3X1mOeivXe3zDl+X4QGDEMDPS2MJLdelGXiGSnNN06Lj2JuJAJ8PJc16VdD2WkIhKGqOodh3q1/DOIuCGuYC4qXxCYGsNAUt9SaSCuwanWwgWjoY2K0mfw6kq/6vrY1Pb6sRpzCGMlmntBqMtT9e6g1+AtzfkC2KFutwF+bvqFO0wBGjZPN/FyIN27N9RtAEF8ARpPpGG4+ApJjxHHK5pJRSwhG9TOHFHSPe6252awJ8C306r/zkhD3LKJ8xjiDtaPs5fCZB+mBo3H5gFr/2ZNyy1ya9cNXGpfBkqFGY6vpSb4BpWzyt667FdX3q1ysFvw99QdeUVkZ0mJ14k57u1O1RoT4cOIL66HtU+jQoQelh5yCk8SbPJfSP3p8wycuAS6EmNzmpRr4/xhPuT/Mj/I2TDXuIiKcNoUzdJXJhdk1dWn6Dr/50mxkRGGdwhYWB0eQn1i/q5G6n0pC/x6AVwLYNfsj+nNEJud4tJg8zB3k321shCDl/V/iuW8zaPVtkvZXJ9WzpG46BTNTK7HBTCoI9JqQBYoF3jmGx1YCAsg8mk2CI/zNFZXUulujxDfm9zgLPUSXoOhbnQIhUwQ79JB/17bvDcG0kQ+N1tVs=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYRPR01MB15619.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?sPYTwzS182JMkYFd4/x9CWEYm1Ff4XUvx5gHNCANCPm+fGiEPXD7m1s7AQ?=
- =?iso-8859-1?Q?OH0umCcNUZ+1wilCwcMR5xL+e8L3Zq8RmoUFypiQZskqDBztASg7YHOEOM?=
- =?iso-8859-1?Q?j4YyQauPb7+0DkeOJquc0LOd2hWlmOGtxGR9GD8BPdDIovKN93OAvLIrGN?=
- =?iso-8859-1?Q?2C2DihjmqpJAx3nitpl8tvA3zgrR6Gn/hPDvUtyET9RfBLV803AkgLRuyO?=
- =?iso-8859-1?Q?guHhSHx0xp0QcIcIAn8hI/FKGgtEJaHUqIN9BUi3efes89RKGQB0co+I+T?=
- =?iso-8859-1?Q?CnQbIH/MmvshKOkGHAi2ExQmILs7FmJO/MFVDJlq8m3HCwBW355Ll5VyiO?=
- =?iso-8859-1?Q?uRu+6OTanthoYGwBg8WdDLiEH3LtKyU2ZwvNyl2T67kLchI1ZgDkenggfc?=
- =?iso-8859-1?Q?67iPXz/TfNI/umDGyz/JuLNJUTDqqUkedOc+wPQ6oJptUC0jAdVAfbsoEw?=
- =?iso-8859-1?Q?zZYNA0j5PO5w6gxeOSvut5L7rxxVn/ypbRy1s3yt0MdnjqdIjcC1gV3/1K?=
- =?iso-8859-1?Q?IAxSSWxOkHdwUeJF5BlVvn73J3kXINETyOeA9fnO5xAdf8WMrwiDmYwPqh?=
- =?iso-8859-1?Q?lPi6aR9wXsHAz3ZWBJjnL1p1QC6m+hR0HJZLvAWA6l0gzuM0hFUqLdCrim?=
- =?iso-8859-1?Q?Z0FLIY4ramJwpAOgEfjGL13GSViaodtD/nBCbQQ6fkOWcC7Xrg3mX3VoAY?=
- =?iso-8859-1?Q?OUhsJq+qpx+uaiAFSUbrBG6/oZqzZClmX1fGcH+K/DqVO3wi/re2pRYlPW?=
- =?iso-8859-1?Q?5j/1scXuKJ5gezZHXEBT1gfly2dRNpSyGMTbBLK74Yw6uTjse3nv6QAUa1?=
- =?iso-8859-1?Q?XnFFYXr3+MlMdBrDIDN6i/tJ7aYWkbW1YzuasQ6D9ZXyIA7ydK3Ur8xSIW?=
- =?iso-8859-1?Q?tIimbY36qg5qmX5a15zelwqFBLDEr1lVE21UuBjLs/SmTVY9CV7KSmaKo9?=
- =?iso-8859-1?Q?ciT+UVcv/9tAjrPvS12QxtIghKaGfTXykFHIMbVE3cPnJF4J67zL29WV4j?=
- =?iso-8859-1?Q?T3ALcp1ro7NQU5XSzBqoy5y+Ll/wk9rkIEmwMOxQvMdJ/mzKW+XZh+HJIR?=
- =?iso-8859-1?Q?0TS3Z5ryfohrEGnaofwpc4/QQiowRd8HNARPdwUaqYocqSJ8/EX9AdtX3S?=
- =?iso-8859-1?Q?bHcEILsZHyQE5CpUm0i1GLiYR+SYe4mkU9UPwk69QoJ7pl/5JZ4wcwD//0?=
- =?iso-8859-1?Q?ChxwvfJLTjsRefVmXVwc6UkY2ksQ9T9CgSutyVe43m3NAzvvXIq4FPdzLR?=
- =?iso-8859-1?Q?dAGvBbWZeFVY1bn8VIiQDXqdyJIpRLiFvfEHGAhoa8b9Jn1mhBf++M+LDe?=
- =?iso-8859-1?Q?/Ty3//TlvzHE/irawGiuf5xl0muEmwNUc4yJSHyNDaTBLLFCaqxAQl6K+v?=
- =?iso-8859-1?Q?TT/QPGLhdvLTy/bdlZJl+62AtUvCAyjsZWq5r5wQ3L5Gva4I+drYAbIroi?=
- =?iso-8859-1?Q?ZRQ0kbRnxRj4v/zPOiSphZD6fc5mmSVFVnSY6+QGYRefE9m3xNpL9hg1JB?=
- =?iso-8859-1?Q?X2AVVqp8YFKKmOKeozGDUctyG+1jYn7osGt9froD+Vhtx5qfBq/5kSKq/t?=
- =?iso-8859-1?Q?NJNODAOOt+UrgCcio3QicYNu0dJUgoOr7hcqwDyJXB8qnL8oqt2FYiY5MG?=
- =?iso-8859-1?Q?Ss3w5XwDEWuTLMdHTQGQrWPHygG6JiwNJWuOHQxjZtQUwPD4ssfKVafHSI?=
- =?iso-8859-1?Q?CANKFoMyO26t/oFDVWOgBxH2iCvxI3abC9/Dd2s9T4LDnd99KEV5s9+5Ym?=
- =?iso-8859-1?Q?9UbOj9+MdKaGRdBU1cV5r+UO0fsrxWrZJkW0xT4EdEGiiuLYk1IuYFxYEy?=
- =?iso-8859-1?Q?Q4TBDO/pIoZSp5WzWH9qrm/1WGWZQe1BgUmnKPW3CAgcfhRNAfj3?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j3jH8YS2"
+Received: by mail-pg1-f169.google.com with SMTP id 41be03b00d2f7-c737d3a51bdso1005076a12.3
+        for <linux-iio@vger.kernel.org>; Thu, 05 Mar 2026 21:19:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772774342; x=1773379142; darn=vger.kernel.org;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=iqq0nZrYLqj1ui2Q6mvv3Ic3EWgM4fz5QKW3Npt78Fs=;
+        b=j3jH8YS2k0vXu04OVQTrtuZjk/XtxCc2IccWCNoDdvYuWDwcXnIKFklGtrSb8BYWGt
+         XiqcGAG1pp8qiHL/s+UhsCRFnZgWtRBIo2dpaF6Z0VeySV8TRQS8Gd5/VpKYz816LV7X
+         9mHAWXzBUuCm+2YYjbtTqETy4sBpqaK5pJLkimisC8FrGzIEPAqrHijzE3n9DyqIfG+1
+         SkaCQjKCOtDDsI9S/D71e6M9p9pGyEYrvZxNA7HhukaeoauGt40LlTBcVo068fqHEg+P
+         /T1BPGmeD53XfkoAWyL/YXsPkQgS7JPIYXMqXNynIpzHULe4Ypmt4qkz4MhH3yOG7rD2
+         02tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772774342; x=1773379142;
+        h=content-disposition:mime-version:message-id:subject:cc:to:from:date
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=iqq0nZrYLqj1ui2Q6mvv3Ic3EWgM4fz5QKW3Npt78Fs=;
+        b=EPhK3vZikHNRs8C1YEfvqWXrW+ivLPrY5dOop6KAzADcawIMA2MxkZ4iGtWvFRMhZt
+         DIpjA260pzJN9I7D8JhxbpjXXQcHIID2DEKwYck9Afn/Z4UXnklo6s0iSWkltGmBiYOh
+         UdJfkW6MGooT3BDVZoYaSpELWr35DW+06jZeunDMSRbYdlM+MaQ8NgT6HaxGsrc22PXV
+         HeRINaEb39IY4S83EKFsuN3/rEUY5FGn0ESWX3zoKD/W8qgGPatMZCgxottRxzrOGByQ
+         zwVGKQfAPuEJaV/ZTJouyM5dBZAOlu/Hhv9+EpP7dbeqi5H/T2r1HBnK+pX5teMM6D3H
+         4p/w==
+X-Forwarded-Encrypted: i=1; AJvYcCXh2qmVstNV7WDmVGx3Y8a5jRtPNG6M+3oEdZJZCIpovkABv3IpCvOvODHZ9x5iN2aPDXXBobficDg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxK5WxwMdGnfVXy2ABsBRMDsOA7Ob2oyUVnPDYJGvZ0nTPHmA+Q
+	9WpQbEHEUgiOGW2aDN7bpJXPSIGcuCEn1J+d7LyKt8Uo8zTpWHEl7hUz
+X-Gm-Gg: ATEYQzxVzdB9AkFML/Hdr0DmKfdDnKc/LIiIHJhvtxN59WK7u+cPXgodvy/lqbTeS6a
+	TFcKaAiESb7W/1LI0AEpJhEBEF3AQ+zco49J7myuuJ+kUOeGGHUdLk2VAC9yxndJgOckCqGc6H3
+	Ct1kfsQxCMEkXYO9vrfSKHTrGgCxsjZhTi3Fsevnuw6KgvU6vdIjpbWUrwla1Gcdyv4VJUKfbRH
+	NGnE2/HU3Oy42qe8yaateiInpRkRpJn581SzOW6iq1p2QAUYQV+CjnRk/ehhdRkYa8l28xghNnx
+	yN3tfoHOyMpBhMGdoJ3IlusVftI9qH4yRNv5D24X6+DYFZ/L+1fSKSg3UxQElgewoN8GFB19ZYU
+	ozPysRqfeizo7CpAn91tpFkZ6o6IhWRae1hdUfs7nzVlxpfI+dqzOK48PcpkJbVF0nadYuAMcEZ
+	qu/pJeCFdGtaB9IFhrFiPfqSE=
+X-Received: by 2002:a17:903:2c07:b0:2a9:2ab2:e50d with SMTP id d9443c01a7336-2ae82498a30mr10966785ad.51.1772774342130;
+        Thu, 05 Mar 2026 21:19:02 -0800 (PST)
+Received: from fedora ([2401:4900:1c6a:a1a3:2df:56f1:1fc3:e6dd])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae83e9d228sm5214465ad.33.2026.03.05.21.18.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 05 Mar 2026 21:19:01 -0800 (PST)
+Date: Fri, 6 Mar 2026 10:48:50 +0530
+From: ShiHao <i.shihao.999@gmail.com>
+To: marcelo.schmitt@analog.com
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, mazziesaccount@gmail.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	i.shihao.999@gmail.com, till@linux.com
+Subject: Request for guidence
+Message-ID: <aapjuiq0JSVWfmWA@fedora>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYRPR01MB15619.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8ccc76b0-ba2c-430a-5b58-08de7b0288c0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 05 Mar 2026 21:59:54.7427
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: huXiOUbjljrcBieBdiVEGHvgOBLgLbhu3M8g+FTiePJNPTSFM/WUM9IRE2RsrIAz1gR2c+XAhzdiXf2Vdcb3iD9TEh62TgXAZa1/UA4Sx5k6XZrDBbKJ8fp7sS3xW8gt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY7PR01MB16219
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-> From: Uwe Kleine-K=F6nig <ukleinek@kernel.org>
-> Sent: Thursday, March 5, 2026 10:57 AM
->=20
-> Hello Cosmin,
->=20
-> On Fri, Jan 30, 2026 at 02:23:49PM +0200, Cosmin Tanislav wrote:
-> > enable_count is only incremented after rz_mtu3_pwm_config() is called
-> > for the current PWM channel, causing prescale to not be checked if one
-> > PWM channel is enabled and we're enabling the second PWM channel of the
-> > same HW channel.
->=20
-> I don't understand the issue. If the second PWM channel is enabled
-> while the first is only requested, changing the period is fine?!
->=20
-> Can you please show a sequence of events that result in bad behaviour?
->=20
+hello,
 
-Hello Uwe. The issue happens when a PWM channel is already enabled,
-and we're trying to enable a second PWM channel backed by the same
-HW channel, but with a different prescale. Although, because of
-other HW limitations we cannot really have differing periods, but
-that's handled in the following patch, 2/5.
+I hope everyone is doing well and fine. Recently i have been
+getting prepared for gsoc 2026 for The Linux Foundation project
+idea iio AD39113 driver development however i just noticed that the
+project idea has been withdrawn from the list. I wanted to ask that
+whether the driver develpment is still planned or it is dropped from
+project idea list.
 
-Here's a sequence of commands that results in bad behavior.
-
-I've added a print for the enable count and period before the
-enable_count check, and prints for the actual period / duty cycle
-register writes, just to show that it gets thar far.
-
-root@rzt2h-evk:~# echo 0 > /sys/class/pwm/pwmchip0/export
-root@rzt2h-evk:~# echo 1 > /sys/class/pwm/pwmchip0/export
-
-root@rzt2h-evk:~# echo 0xffff0 > /sys/class/pwm/pwmchip0/pwm0/period
-root@rzt2h-evk:~# echo 0x7fff0 > /sys/class/pwm/pwmchip0/pwm0/duty_cycle
-root@rzt2h-evk:~# echo 1 > /sys/class/pwm/pwmchip0/pwm0/enable
-[   71.916095] pwm pwmchip0: enable_count: 0, period: ffff0, prescale: 1
-[   71.924085] pwm pwmchip0: TGRA: ffff, TGRB: 7fff
-
-root@rzt2h-evk:~# echo 0xffff00 > /sys/class/pwm/pwmchip0/pwm1/period
-root@rzt2h-evk:~# echo 0x7fff00 > /sys/class/pwm/pwmchip0/pwm1/duty_cycle
-root@rzt2h-evk:~# echo 1 > /sys/class/pwm/pwmchip0/pwm1/enable
-[   80.063208] pwm pwmchip0: enable_count: 1, period: ffff00, prescale: 3
-[   80.071028] pwm pwmchip0: TGRC: ffff, TGRD: 7fff
-
-As you can notice, at the time of the enable_count check for the second
-PWM channel, enable_count is equal to 1, so it does not pass the > 1
-condition, the prescale value is not validated, and it ends up overriding
-the previous prescale, messing up the already set period and duty cycle
-of the previously enabled PWM channel.
-
-> Best regards
-> Uwe
+If the driver is still needed , I would be interested in contribtuting
+to its development outside gsoc as well since i have no idea whether i
+would be allowed for its development or not thats is why  any help would
+be appreciated thank you for your time .
