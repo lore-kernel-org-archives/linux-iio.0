@@ -1,333 +1,145 @@
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3124D39890F
-	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 20:27:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D35E336F430
+	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 20:37:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772828838; cv=none; b=SQqgC7l8YjygsNCaXQKDLRBTR0mvGTekIqU9tX0LhAQhbCKtK11IvDG8D1JmhDjF73NuL4G7MXDv8vU4Yen9yLTDN/G4KYJoih5AKyDqT7SSLNCaH0Zxc+S38mV+z++b4bbIvTZv2TE27qaQEjNrDx9JWRkwBixOEQ+sArd54NE=
+	t=1772829438; cv=none; b=Fsl0bijFpKmEJ84/MAb+ocf0MG3+TWbbufiGM216h45AWLtM6o+kI4LNsu3MuO2/G01JwARn93rR6xe0CNuCwYEU3wYSVeUWoBI3HAg92lRwEo5/HFU3+6XbR88sZysUJtosFZ49+qQPgmF31D5WZA31D2o+3jZgP3X6pgu/R+Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772828838; c=relaxed/simple;
-	bh=g3oAsMDa6tuR+/A6Em0En8JCTZpVH/momdRatLteLhE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=I1xV4qXIxL1iL74m+FocaKAii9JFX+E9JGo6poonFrdIoAaytBXd29k1yKzBOwQu79jIqsto5qQW7tbRaB7+gvNHZnQbErZ8tA892RT2Fr7pbwS1PqgIcTvKI97A48G1yfAksAxvAxzWJyPZXOrZaxU37uByT7V2PhnQ3hRI53s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bSWpWrvb; arc=none smtp.client-ip=209.85.216.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772829438; c=relaxed/simple;
+	bh=9XAxqGdoYnPypi9pDiH5n/sLMDogOMDYiBwl2GgCMww=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=FiH8ExA/ZpulIQ1tKtZvj8tYnk2o5osFmkIq3S5kf1eJtmrkbi0BF+Sj5aaOBmWDpPj5Sb2DxEGWyrBc1+EYlRtrdeA37ZIJaPr8XWdNWRkegxnIjxbdkGvEY3UpKTtaDrIEn3yrVe4KptO/Y2yELFaz4JqN7MBMCcgWLGJ3i24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=KGbMuTL/; arc=none smtp.client-ip=209.85.167.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bSWpWrvb"
-Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-358ed696623so4046056a91.0
-        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 12:27:17 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="KGbMuTL/"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-46391e91e16so6660046b6e.3
+        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 12:37:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772828836; x=1773433636; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=raCgZFvVUfOpsCKvrIvPbVa+6HmFw1W/wn9qNthdpCU=;
-        b=bSWpWrvbnmwJt+kLA7LpIZhk7gt0jui3qFdFjGYhCbnQLl26XUuz1Q6i5akrGjFEAM
-         2FyovGM6aI+6iaBrq4hFhz3kxFAOXBM9fvhjaCfLXTJisgNpTcI+D9AmCSGcLSpljyMJ
-         FmuybG+nPaGp8QZjd3N5rlbpihtqdzwWlDfbKSbqPUBk49X+vBlMYZsf8FVwuaZ9Y8eM
-         SjR5Z2w8pOX9dHE2CNJVGadWp5Ztn5+o2NkoyNE6XAiL0wsIbDIwNd/G2189ZvMip8Ds
-         Bhs3QX78pnJ96IsveD1LNWGhFwJAx3RvjnN9ThOvDZmaQ9tLHMgQDGEFqHwPKT224Ire
-         cyQg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772829435; x=1773434235; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=guJ8HhzXT4BfiL89v2VHGYnRZxssARS5UTcNEFrucSY=;
+        b=KGbMuTL/x6WW3ddfzOc4PovFDr0kb9HlZ67+6nlOpjwNLK3NNMVQOc6r347NmQdYXB
+         IKMDev9AanMOBrBG1ysfYWaXpmDO6FwWb1aTwaBu5j2k8gHsrrbGCH7OrL3A3jtcdd8Q
+         QvH9DCTVe6fhCp9nVIQZk3tqbABzo1Q2wz+LZAX/Iqee0ZDEVkw0PPOIwJ7lbrhKrhe8
+         8+k5nJwKExMW2gTJhMGsXyiiQ3BatbzDDiWiY2KveatW2eQIP7I/lAX9XOmSAF0HuH0y
+         EuiPt/Rfo2S0hWFRwNtHWzS/j2jC5lRNz4A0koCYTPl48FkJgbxdDiUdtBzzVbgnUVC+
+         AtMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772828836; x=1773433636;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=raCgZFvVUfOpsCKvrIvPbVa+6HmFw1W/wn9qNthdpCU=;
-        b=VfM2bSW0l4Vrmwwxz359Juy+c5ByImfWIsu17BFlchnakk3jfVt4DZBRVf6yJxBcdC
-         rVEJuLH6vJeMk88W5sXyclV5tS5gqQlYn//AcmNOfGZvV+ovaS6YFlshQNC0QWuLpbjg
-         IDKh6L2T/DfoC3ATiYuju+3lKi79x82RL1h4cR0rnv3xeG0siS1ZHR91xNanVDk+CoYC
-         Sc6UE7qF4NZYPgk2ig+K33hbY/CwzmzRG+HD63UfPSE58+SiLe08JCTU+zuGPk2lKEn+
-         jfL1ECdoApgUPYrEIP0xE/roHcVOUL1dVBjcWI1orGi3SFHwT5AjjnkONTs+on11PcFd
-         +5KA==
-X-Gm-Message-State: AOJu0YxAGcyQu0u5uhm1wr9GT5VmvDfgWatw9b23FfG7v8fORflsCK4w
-	NpgNy7ktYnJl5NQUNjgonpZed7jjhMM1HIDsepTgPO/T/mjc7qQ2xJWR
-X-Gm-Gg: ATEYQzyGri/V6cKISF9DOKze8PhKIG8NleEJV5KaiBOw5vlXP1kyYtCkkrrWflikYxi
-	lEZTLdCmvIAXIBw0BgoNDq8M3lVQwrIDb6QNifYA2ecL+ddEojqXaKBmkdTWTjMAHqKgSPqniOf
-	niBX1NbJcDMgxso9W9V8ifygSg+ZH4ewxtceZ4/HUP67yFCZfgJZ/Ihg3L8bSlm07mi7iUKguPz
-	J4orp1mkV/2P3/Tw7ddj+4LHwCyjQRqGJPQkVGDXfSL3Qk8bWxKm0nKbMGTY7ULZppW8aWfkL9h
-	abnzY5WUYTefg9aT3bC78jP4OxXDqj3qUWQawzP391IAmZ7J4LY8RV0w/vS2V1Wdkpevi8FZeIy
-	ePA0HbdV3S7RtJjhjac7Kebc/4R0O3fmuVenGT0CGxwwdDgNYAc3lDH6Cp9hE/hB5E+Fxs9/rK2
-	UFCP/dbsqUlxV5aQkXC9inrIC4Sgh3+zd5nJ6b3HWvrZwNru3LrWu16Ruw9Dk2dO6OuZ0G/QdlV
-	DA7AJWlQHF8WUtTQ5Ik1g4ZZmAkPm8pgLk=
-X-Received: by 2002:a17:90b:3c4a:b0:356:24f0:af08 with SMTP id 98e67ed59e1d1-359be28d404mr3003809a91.1.1772828836429;
-        Fri, 06 Mar 2026 12:27:16 -0800 (PST)
-Received: from fedora ([103.215.156.29])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-359b2d5fe2dsm6326572a91.7.2026.03.06.12.27.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Mar 2026 12:27:16 -0800 (PST)
-From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-To: lucas.p.stankus@gmail.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	puranjay@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Subject: [PATCH] iio: convert to guard(mutex)
-Date: Sat,  7 Mar 2026 01:56:50 +0530
-Message-ID: <20260306202650.61865-1-rajveer.chaudhari.linux@gmail.com>
-X-Mailer: git-send-email 2.53.0
+        d=1e100.net; s=20230601; t=1772829435; x=1773434235;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=guJ8HhzXT4BfiL89v2VHGYnRZxssARS5UTcNEFrucSY=;
+        b=t4DMcrSlKvKw9P5t/qloE7q0EE/Xxx92Vv33MP0JxkIMEf3YJM3MQQhyL92oNY7QiD
+         TIOiroC5cy7HBty8Nnnrw8y41JoUYc2KwVQdsT9ZCtHgPT2HsVjlzLxeulsiitkubvux
+         LHrB+wpBvwFCMa0UJEu6zk5jGw6i0nELL2ZvblR/97Bs6Ic+tfj+2QyNNWYz1yLyawjK
+         yeIMKJtZwZyHtj7hVGgZL85SGIONqnIM99Os0b99zfvSwXVxxHAMTyZB0gny2kDoedkM
+         bFZeXS39emjpWuSgPvqXhiA71SN6zikeU7xGrqh5QhDl3PepqeJhneaBibVOZ1A/Og8j
+         Tuig==
+X-Gm-Message-State: AOJu0YwTeSV74tfbfhgeLd2ZGGAF2sw3gqFDKvr0xOD0z7FDZrjosVPg
+	g+dHgoqTLzbTnWjuaYOq4vS0gKJgZ+Ig7n3MbSmIX8I3N1TLofZQg36ZX/oaNwv88F4=
+X-Gm-Gg: ATEYQzzXLlThFf+Ti60KxE/fMfbBRdnFnQgsw/FaJ7toNiIXB1/W9FaI0/zZ+Qi7jTm
+	K9StsBQUv4OQi9NACzRvMfV+ncGLfDLsY3+keu7Cy3TNkD5TKCkor1oRfs00xFgwG8S0TBFIq/a
+	cEZm2JW6uWsx2LYvCB5fHCx0ARks32aPUqAXhvISSdt5SPDpGNhrbba9wG3F0KdKsk85yI6yCoD
+	fI/V2O7ytivcopLQehmBamR28iSh3ry25Q8XNIMGtoWvtbCJ+6KJ/Vj0DOClFIlBCZved5Xkn7f
+	zurWZr/JmEsumnhQ+HBMIw/iedvW7vwfzjSReR3QOLac61kgwcZD7uMkXubprbpGVI3O8h3/+75
+	plWbiS+VoJwTt1lOko5pfzZ5iXy8dHWBx+2enzJ+rj/i8vWDDOksJod+NBgv/v1q2DHxm5eAF/U
+	4/URWWOJVrQm+Mp/dtFkup0yPx3DIXxf5wS9FMhNw1XIs9DWytXpY3XkPvJNOL+tstKAzY9hzUw
+	EshGP6Vt2QH
+X-Received: by 2002:a05:6808:c3d5:b0:463:93a5:a5bf with SMTP id 5614622812f47-466dc9ec17emr1937365b6e.8.1772829434794;
+        Fri, 06 Mar 2026 12:37:14 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:6d78:b98b:fc05:ddbe? ([2600:8803:e7e4:500:6d78:b98b:fc05:ddbe])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-466df96c1a8sm1263028b6e.8.2026.03.06.12.37.13
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Mar 2026 12:37:14 -0800 (PST)
+Message-ID: <d587dd07-ce23-49f1-9a38-ea741e4ef14c@baylibre.com>
+Date: Fri, 6 Mar 2026 14:37:13 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: convert to guard(mutex)
+To: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>,
+ lucas.p.stankus@gmail.com, lars@metafoo.de, Michael.Hennerich@analog.com,
+ jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org, puranjay@kernel.org
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260306202650.61865-1-rajveer.chaudhari.linux@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260306202650.61865-1-rajveer.chaudhari.linux@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Replace manual mutex_lock/mutex_unlock pairs with guard(mutex)
-in several IIO drivers. This ensures the mutex is released on
-every return path, preventing missed unlocks on error paths.
+On 3/6/26 2:26 PM, Rajveer Chaudhari wrote:
+> Replace manual mutex_lock/mutex_unlock pairs with guard(mutex)
+> in several IIO drivers. This ensures the mutex is released on
+> every return path, preventing missed unlocks on error paths.
 
-Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
----
- drivers/iio/accel/adxl313_core.c      |  7 +++----
- drivers/iio/accel/adxl355_core.c      | 27 ++++++++-------------------
- drivers/iio/accel/adxl372.c           |  8 +++-----
- drivers/iio/industrialio-sw-device.c  |  4 ++--
- drivers/iio/industrialio-sw-trigger.c |  4 ++--
- 5 files changed, 18 insertions(+), 32 deletions(-)
+If there are any actual bugs this is fixing, they need to be split
+out and have a clear explanation of the bug and have a Fixes: tag.
 
-diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
-index 9f5d4d2cb325..94c6023af487 100644
---- a/drivers/iio/accel/adxl313_core.c
-+++ b/drivers/iio/accel/adxl313_core.c
-@@ -8,6 +8,7 @@
-  */
- 
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/interrupt.h>
- #include <linux/module.h>
- #include <linux/overflow.h>
-@@ -356,18 +357,16 @@ static int adxl313_read_axis(struct adxl313_data *data,
- {
- 	int ret;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	ret = regmap_bulk_read(data->regmap,
- 			       ADXL313_REG_DATA_AXIS(chan->address),
- 			       &data->transf_buf, sizeof(data->transf_buf));
- 	if (ret)
--		goto unlock_ret;
-+		return ret;
- 
- 	ret = le16_to_cpu(data->transf_buf);
- 
--unlock_ret:
--	mutex_unlock(&data->lock);
- 	return ret;
- }
- 
-diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
-index 1c1d64d5cbcb..ef05178bff00 100644
---- a/drivers/iio/accel/adxl355_core.c
-+++ b/drivers/iio/accel/adxl355_core.c
-@@ -9,6 +9,7 @@
- 
- #include <linux/bits.h>
- #include <linux/bitfield.h>
-+#include <linux/cleanup.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger.h>
-@@ -263,12 +264,11 @@ static int adxl355_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	struct adxl355_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 	ret = regmap_update_bits(data->regmap, ADXL355_POWER_CTL_REG,
- 				 ADXL355_POWER_CTL_DRDY_MSK,
- 				 FIELD_PREP(ADXL355_POWER_CTL_DRDY_MSK,
- 					    state ? 0 : 1));
--	mutex_unlock(&data->lock);
- 
- 	return ret;
- }
-@@ -409,16 +409,15 @@ static int adxl355_set_odr(struct adxl355_data *data,
- {
- 	int ret;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	if (data->odr == odr) {
--		mutex_unlock(&data->lock);
- 		return 0;
- 	}
- 
- 	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
- 	if (ret)
--		goto err_unlock;
-+		return ret;
- 
- 	ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
- 				 ADXL355_FILTER_ODR_MSK,
-@@ -433,13 +432,10 @@ static int adxl355_set_odr(struct adxl355_data *data,
- 	if (ret)
- 		goto err_set_opmode;
- 
--	mutex_unlock(&data->lock);
- 	return 0;
- 
- err_set_opmode:
- 	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
--err_unlock:
--	mutex_unlock(&data->lock);
- 	return ret;
- }
- 
-@@ -448,16 +444,15 @@ static int adxl355_set_hpf_3db(struct adxl355_data *data,
- {
- 	int ret;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	if (data->hpf_3db == hpf) {
--		mutex_unlock(&data->lock);
- 		return 0;
- 	}
- 
- 	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
- 	if (ret)
--		goto err_unlock;
-+		return ret;
- 
- 	ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
- 				 ADXL355_FILTER_HPF_MSK,
-@@ -471,13 +466,10 @@ static int adxl355_set_hpf_3db(struct adxl355_data *data,
- 	if (ret)
- 		goto err_set_opmode;
- 
--	mutex_unlock(&data->lock);
- 	return 0;
- 
- err_set_opmode:
- 	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
--err_unlock:
--	mutex_unlock(&data->lock);
- 	return ret;
- }
- 
-@@ -486,11 +478,11 @@ static int adxl355_set_calibbias(struct adxl355_data *data,
- {
- 	int ret;
- 
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
- 
- 	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
- 	if (ret)
--		goto err_unlock;
-+		return ret;
- 
- 	put_unaligned_be16(calibbias, data->transf_buf);
- 	ret = regmap_bulk_write(data->regmap,
-@@ -505,13 +497,10 @@ static int adxl355_set_calibbias(struct adxl355_data *data,
- 	if (ret)
- 		goto err_set_opmode;
- 
--	mutex_unlock(&data->lock);
- 	return 0;
- 
- err_set_opmode:
- 	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
--err_unlock:
--	mutex_unlock(&data->lock);
- 	return ret;
- }
- 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index 28a8793a53b6..24a79f61900d 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/bitfield.h>
- #include <linux/bitops.h>
-+#include <linux/cleanup.h>
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/module.h>
-@@ -336,17 +337,14 @@ static ssize_t adxl372_write_threshold_value(struct iio_dev *indio_dev, unsigned
- 	struct adxl372_state *st = iio_priv(indio_dev);
- 	int ret;
- 
--	mutex_lock(&st->threshold_m);
-+	guard(mutex)(&st->threshold_m);
- 	ret = regmap_write(st->regmap, addr, ADXL372_THRESH_VAL_H_SEL(threshold));
- 	if (ret < 0)
--		goto unlock;
-+		return ret;
- 
- 	ret = regmap_update_bits(st->regmap, addr + 1, GENMASK(7, 5),
- 				 ADXL372_THRESH_VAL_L_SEL(threshold) << 5);
- 
--unlock:
--	mutex_unlock(&st->threshold_m);
--
- 	return ret;
- }
- 
-diff --git a/drivers/iio/industrialio-sw-device.c b/drivers/iio/industrialio-sw-device.c
-index 3582524de0b8..a2a3e3a67d79 100644
---- a/drivers/iio/industrialio-sw-device.c
-+++ b/drivers/iio/industrialio-sw-device.c
-@@ -10,6 +10,7 @@
- #include <linux/kmod.h>
- #include <linux/list.h>
- #include <linux/slab.h>
-+#include <linux/cleanup.h>
- 
- #include <linux/iio/sw_device.h>
- #include <linux/iio/configfs.h>
-@@ -84,11 +85,10 @@ struct iio_sw_device_type *iio_get_sw_device_type(const char *name)
- {
- 	struct iio_sw_device_type *dt;
- 
--	mutex_lock(&iio_device_types_lock);
-+	guard(mutex)(&iio_device_types_lock);
- 	dt = __iio_find_sw_device_type(name, strlen(name));
- 	if (dt && !try_module_get(dt->owner))
- 		dt = NULL;
--	mutex_unlock(&iio_device_types_lock);
- 
- 	return dt;
- }
-diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
-index 334b6b10a784..4af601ae286c 100644
---- a/drivers/iio/industrialio-sw-trigger.c
-+++ b/drivers/iio/industrialio-sw-trigger.c
-@@ -10,6 +10,7 @@
- #include <linux/kmod.h>
- #include <linux/list.h>
- #include <linux/slab.h>
-+#include <linux/cleanup.h>
- 
- #include <linux/iio/sw_trigger.h>
- #include <linux/iio/configfs.h>
-@@ -88,11 +89,10 @@ struct iio_sw_trigger_type *iio_get_sw_trigger_type(const char *name)
- {
- 	struct iio_sw_trigger_type *t;
- 
--	mutex_lock(&iio_trigger_types_lock);
-+	guard(mutex)(&iio_trigger_types_lock);
- 	t = __iio_find_sw_trigger_type(name, strlen(name));
- 	if (t && !try_module_get(t->owner))
- 		t = NULL;
--	mutex_unlock(&iio_trigger_types_lock);
- 
- 	return t;
- }
--- 
-2.53.0
+> 
+> Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+> ---
+>  drivers/iio/accel/adxl313_core.c      |  7 +++----
+>  drivers/iio/accel/adxl355_core.c      | 27 ++++++++-------------------
+>  drivers/iio/accel/adxl372.c           |  8 +++-----
+>  drivers/iio/industrialio-sw-device.c  |  4 ++--
+>  drivers/iio/industrialio-sw-trigger.c |  4 ++--
 
+Please split these up as one patch per driver. It makes it easier to
+review and backport if needed.
+
+>  5 files changed, 18 insertions(+), 32 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
+> index 9f5d4d2cb325..94c6023af487 100644
+> --- a/drivers/iio/accel/adxl313_core.c
+> +++ b/drivers/iio/accel/adxl313_core.c
+> @@ -8,6 +8,7 @@
+>   */
+>  
+>  #include <linux/bitfield.h>
+> +#include <linux/cleanup.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/module.h>
+>  #include <linux/overflow.h>
+> @@ -356,18 +357,16 @@ static int adxl313_read_axis(struct adxl313_data *data,
+>  {
+>  	int ret;
+>  
+> -	mutex_lock(&data->lock);
+> +	guard(mutex)(&data->lock);
+>  
+>  	ret = regmap_bulk_read(data->regmap,
+>  			       ADXL313_REG_DATA_AXIS(chan->address),
+>  			       &data->transf_buf, sizeof(data->transf_buf));
+>  	if (ret)
+> -		goto unlock_ret;
+> +		return ret;
+>  
+>  	ret = le16_to_cpu(data->transf_buf);
+>  
+> -unlock_ret:
+> -	mutex_unlock(&data->lock);
+>  	return ret;
+
+Watch out for places like this where we can return directly now.
+If we aren't doing additional improvements like that or fixing
+actual bugs, there isn't much point in spending the time to convert
+to guard().
+
+The same applies to all of the other changes in this patch.
+
+>  }
+>  
