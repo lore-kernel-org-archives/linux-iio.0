@@ -1,377 +1,171 @@
-Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mout.web.de (mout.web.de [212.227.17.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97D6E3E5EC9;
-	Fri,  6 Mar 2026 15:39:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 505E13ED10E;
+	Fri,  6 Mar 2026 17:30:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=212.227.17.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772811592; cv=none; b=akrx5lIucIzvxoEiEdfdpcn4gteJB2ifoZsIZhZgrgpYWU7TFQ7jNAHY5yeuLRf+ejP0ssw3pqDPQdqBm9weN/FgjsJgjaZST8z4IXT9COH2mO2osy54Qi1197gpgRrObrlCgxwQOkzLEfLk+ORjaYhKSU8JiSFPHb19iJZdPKc=
+	t=1772818239; cv=none; b=PPB1hd0Z9fVM9OdBc0Bq8qgUEaPyegY6Ysu6bYfFg1Zh6sPN66eFV7tSXRSIqLgXJtNrezqD4LVWbVBH/1CdkAwb3GsMn9nBiC73q4cfRSjZywMBgCxJDu6TIsX3zraiVFaC7LxemGfyZ46H0BFCmpqYYN/PSQ07DNANrfz/tOw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772811592; c=relaxed/simple;
-	bh=FTLFRXVngdJdOkdGv/z4nImU+oEaB91CvL4PjW3I54w=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=usqzfFQXMXNPtx+ZGyRbypbCJG1DgxJmPaRpGanq91NcNLGaBxhKPIiF9AD3u9RfRmGvR7vdJtNQ5Q5TbSn2LEeVp2V4exwFUJIuUHnDc+92wYPeXJqBC+lLwykiSfiVfSrG4ehDJ1LhG7iF6DTtAmKVj+GlQc+JxDx+3o5iU8U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=YUb2l4qo; arc=none smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	s=arc-20240116; t=1772818239; c=relaxed/simple;
+	bh=iirW3cdvIjMtLct2LQyILKWs+AkDGPwYr9osifxyzJQ=;
+	h=Message-ID:Date:MIME-Version:To:Cc:References:Subject:From:
+	 In-Reply-To:Content-Type; b=Ge+/8EQd9pijYto7QDo2Pxovhq5qhy8mbKLrznc0k9z9Lc4WNHRYV52G1cOK3OBaDEhM94Dxjzz1WXt2BmFYEcJDypjEeCk7Kcbup+QosUuI615OO8rHpBL+6SfEtXEpPOgixmOEet/YdqX+reXWZZxI6FrMrR6avJlpfMiyfZk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de; spf=pass smtp.mailfrom=web.de; dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b=QGLQh2OH; arc=none smtp.client-ip=212.227.17.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=web.de
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=web.de
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="YUb2l4qo"
-Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 626E4QnW3363772;
-	Fri, 6 Mar 2026 10:39:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=W26Z8
-	Ce2MtOVaR+SXZt1k6wqXYerxSJg3Zi7iktwDTs=; b=YUb2l4qo2qqt4y1EZKhAG
-	jDtimCMteMOZDa1t452ma21YPzbnc2q5vGtpQW5tteMKhfAPwCqn13gdPyBmZuJj
-	SqMVHRGdE/zxD+qfWikWwAunRFt7/H/ADzbg/RPFdVS+LoRh/OesYULPOPB16FUe
-	zVTykDsVSBIZtgVmfIMjzSRxHBBOzsh7zfwZq2ilO5kbaD/+JD7tJoBrAEQccFJk
-	mxM/sBsg/ySSk1wd/ssm9JhHWYlI5JW4oRMeFIEUNFc+1J9P/3kxP0AaIxUycNy4
-	butIChNa1e5rBz3osjuKjXVJ1QFJOV21RosOdJqtstCxOP+ofVTmv/YpxeL71aVK
-	g==
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cpdyx3t19-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Fri, 06 Mar 2026 10:39:32 -0500 (EST)
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 626FdVvb045314
-	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Fri, 6 Mar 2026 10:39:31 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Fri, 6 Mar
- 2026 10:39:31 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Fri, 6 Mar 2026 10:39:31 -0500
-Received: from HYB-b1tGeUj4GP1.ad.analog.com (HYB-b1tGeUj4GP1.ad.analog.com [10.48.65.247])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 626FctKx002837;
-	Fri, 6 Mar 2026 10:39:24 -0500
-From: Antoniu Miclaus <antoniu.miclaus@analog.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich
-	<Michael.Hennerich@analog.com>,
-        Marcelo Schmitt <marcelo.schmitt@analog.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Antoniu Miclaus
-	<antoniu.miclaus@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David
- Lechner <dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob
- Herring <robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor
- Dooley <conor+dt@kernel.org>,
-        Petre Rodan <petre.rodan@subdimension.ro>,
-        Jorge Marques <jorge.marques@analog.com>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 4/4] iio: accel: adxl372: add support for ADXL371
-Date: Fri, 6 Mar 2026 17:18:24 +0200
-Message-ID: <20260306151859.131934-5-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.43.0
-In-Reply-To: <20260306151859.131934-1-antoniu.miclaus@analog.com>
-References: <20260306151859.131934-1-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=web.de header.i=markus.elfring@web.de header.b="QGLQh2OH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=web.de;
+	s=s29768273; t=1772818234; x=1773423034; i=markus.elfring@web.de;
+	bh=aCvQlpXDz260BMbgYOCBaTLrk1IVxt/fe+l+8eDa07Q=;
+	h=X-UI-Sender-Class:Message-ID:Date:MIME-Version:To:Cc:References:
+	 Subject:From:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+	 cc:content-transfer-encoding:content-type:date:from:message-id:
+	 mime-version:reply-to:subject:to;
+	b=QGLQh2OH6Rh5r7Ex4NTinAPjbRk0y+T7lEstWDiKPsLbb9KUrxD3Pg3nYpZRhaH1
+	 sZZ4lCJnrlb4ymw+QrxeI5MgXNDlBfsKufzocyTpk0NjEuWXjBqnaI2XZnLmVWnBl
+	 WOLDIDLoAP50+QR5DPNshU3LuqPSFEq6Tx4m7A11AYEldPpPTUQx64p3WWQKduhnz
+	 SxlB80bgMGC9PwiC2Tt/iG08i6lI4hRhDB9VratE6aoWhd6LBGovss3sdyk2GrPG2
+	 1CHV+/gJTnHhOl58++UuW8r95A1yCqCGD2dERX0wf5CtMx0UbQlbLob44z9AdV8b9
+	 pR9Qmzf+RH76DlKn9w==
+X-UI-Sender-Class: 814a7b36-bfc1-4dae-8640-3722d8ec6cd6
+Received: from client.hidden.invalid by smtp.web.de (mrweb105
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 1M7Nig-1w1rr4224i-003kHq; Fri, 06
+ Mar 2026 18:30:34 +0100
+Message-ID: <7f2787b1-c176-4c30-b1c0-211461c93673@web.de>
+Date: Fri, 6 Mar 2026 18:30:25 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Authority-Analysis: v=2.4 cv=Mc9hep/f c=1 sm=1 tr=0 ts=69aaf534 cx=c_pps
- a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=N--XFCr6TIEc_64PeIT2:22 a=gAnH3GRIAAAA:8 a=1I6Wr64xNoAqNp8NlDkA:9
- a=mpv_7z2a4kGo0ltCk4E8:22
-X-Proofpoint-ORIG-GUID: nFAuUbVUKJXOatLQiZUPDC9vqdlEgNY6
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA2MDE0NyBTYWx0ZWRfX/OU2lUjV0rBH
- hVh2XhJX+e8W+NMyv6THIrvvUr56KVgfxk1K8O5CHxB2kEA9hq5XxlUgkLDshnCNIMu4Z52+NNx
- OEdXj/HRDT747Sp+RIgFYf8IqoAh1jPFlrOXwopGm8Ll6UGlRd/dQ3M8F3DeOPqG+Dp9Vyeo9kB
- cmC7+yFlZyfGnv/2OUPXsmca//aqYwMUBBNoIWNaIfgK4kDmvJfKAqPnsWzy1eCNQGuKstTnGdp
- vaRaQBhhXepvKxujbijnYF1UgvGbjhQ6+XG+lB69XHbd15O0TSfMSzNQK1S96iVt7p6GNh9Izu9
- a3lsNGZPU0JJFshh9plwlbHlxoPhBn732x1i1mLKWTGKE03n4g/r9VUEE3QjHdyS0UZD50KoqBq
- 6pD2lSeS9q6m0/sd/50nDBS/T1nsDii59uVdWC8nlOh+McklLH+Asgp5R6SX6rFrmrE+GXra4mw
- wMfsmXPAMCw3mXEa7GQ==
-X-Proofpoint-GUID: nFAuUbVUKJXOatLQiZUPDC9vqdlEgNY6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-06_05,2026-03-06_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- clxscore=1015 spamscore=0 lowpriorityscore=0 bulkscore=0 adultscore=0
- phishscore=0 suspectscore=0 priorityscore=1501 malwarescore=0 impostorscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603060147
+User-Agent: Mozilla Thunderbird
+To: Radu Sabau <radu.sabau@analog.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-gpio@vger.kernel.org,
+ linux-pwm@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>, Liam Girdwood <lgirdwood@gmail.com>,
+ Linus Walleij <linusw@kernel.org>, Mark Brown <broonie@kernel.org>,
+ Michael Hennerich <michael.hennerich@analog.com>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, Rob Herring
+ <robh@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+Cc: LKML <linux-kernel@vger.kernel.org>
+References: <20260305-ad4692-multichannel-sar-adc-driver-v1-2-336229a8dcc7@analog.com>
+Subject: Re: [PATCH 2/4] iio: adc: ad4691: add initial driver for AD4691
+ family
+Content-Language: en-GB, de-DE
+From: Markus Elfring <Markus.Elfring@web.de>
+In-Reply-To: <20260305-ad4692-multichannel-sar-adc-driver-v1-2-336229a8dcc7@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:hqobFGqgeFmUhj8+QTtFaZhtp+EHaNRODlPpFs84hdCGIm3Yhjn
+ o4gqFFeLizyI3bnVGdarAApggE2VPfusplml0n7t+5ecGSAxMCccB/W5LDRv9P/ycHhShZE
+ u65pfU2gntVJ1VZytX2k6dTKGi8+XktK8BAJbOPSGLAFEqhlXWmcEd2/dxSyj8yFvnPSXQB
+ oJtAQ4fsR56rdBgOdBoGw==
+X-Spam-Flag: NO
+UI-OutboundReport: notjunk:1;M01:P0:0FqIr29Ofqk=;2c8394JyzZhP5s0weGhz7AVT6vn
+ 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
+ eYcKZHig=
 
-Add support for the Analog Devices ADXL371, a +-200g 3-axis MEMS
-accelerometer sharing the same register map as the ADXL372 but with
-different ODR values (320/640/1280/2560/5120 Hz vs 400/800/1600/3200/
-6400 Hz), different bandwidth values, and different timer scale
-factors for activity/inactivity detection.
+=E2=80=A6
+> +++ b/drivers/iio/adc/ad4691.c
+> @@ -0,0 +1,1196 @@
+=E2=80=A6
+> +static int ad4691_reg_access(struct iio_dev *indio_dev, unsigned int re=
+g,
+> +			     unsigned int writeval, unsigned int *readval)
+> +{
+=E2=80=A6
+> +	mutex_lock(&st->lock);
+> +	if (readval) {
+=E2=80=A6
+> +	ret =3D regmap_write(st->regmap, reg, writeval);
+> +
+> +mutex_unlock:
+> +	mutex_unlock(&st->lock);
+> +	return ret;
+> +}
+=E2=80=A6
 
-Due to a silicon anomaly (er001) causing FIFO data misalignment on
-all current ADXL371 silicon, FIFO and triggered buffer support is
-disabled for the ADXL371 - only direct mode reads are supported.
+Under which circumstances would you become interested to apply a statement
+like =E2=80=9Cguard(mutex)(&st->lock);=E2=80=9D?
+https://elixir.bootlin.com/linux/v7.0-rc1/source/include/linux/mutex.h#L25=
+3
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-Changes in v2:
- - Use adxl372_buffer_setup() helper instead of inlining buffer/trigger
-   conditional logic in probe.
- - Use designated initializers for ADXL371 frequency tables.
-
- drivers/iio/accel/Kconfig       | 12 +++----
- drivers/iio/accel/adxl372.c     | 62 +++++++++++++++++++++++++++++----
- drivers/iio/accel/adxl372.h     |  4 ++-
- drivers/iio/accel/adxl372_i2c.c |  7 ++--
- drivers/iio/accel/adxl372_spi.c |  7 ++--
- 5 files changed, 74 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 3d3f8d8673dd..4094299e2ed8 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -158,24 +158,24 @@ config ADXL372
- 	select IIO_TRIGGERED_BUFFER
- 
- config ADXL372_SPI
--	tristate "Analog Devices ADXL372 3-Axis Accelerometer SPI Driver"
-+	tristate "Analog Devices ADXL371/ADXL372 3-Axis Accelerometer SPI Driver"
- 	depends on SPI
- 	select ADXL372
- 	select REGMAP_SPI
- 	help
--	  Say yes here to add support for the Analog Devices ADXL372 triaxial
--	  acceleration sensor.
-+	  Say yes here to add support for the Analog Devices ADXL371/ADXL372
-+	  triaxial acceleration sensor.
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called adxl372_spi.
- 
- config ADXL372_I2C
--	tristate "Analog Devices ADXL372 3-Axis Accelerometer I2C Driver"
-+	tristate "Analog Devices ADXL371/ADXL372 3-Axis Accelerometer I2C Driver"
- 	depends on I2C
- 	select ADXL372
- 	select REGMAP_I2C
- 	help
--	  Say yes here to add support for the Analog Devices ADXL372 triaxial
--	  acceleration sensor.
-+	  Say yes here to add support for the Analog Devices ADXL371/ADXL372
-+	  triaxial acceleration sensor.
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called adxl372_i2c.
- 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index adb9e42653f1..7a1ee2fef618 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-- * ADXL372 3-Axis Digital Accelerometer core driver
-+ * ADXL371/ADXL372 3-Axis Digital Accelerometer core driver
-  *
-  * Copyright 2018 Analog Devices Inc.
-  */
-@@ -182,6 +182,14 @@ enum adxl372_odr {
- 	ADXL372_ODR_6400HZ,
- };
- 
-+enum adxl371_odr {
-+	ADXL371_ODR_320HZ,
-+	ADXL371_ODR_640HZ,
-+	ADXL371_ODR_1280HZ,
-+	ADXL371_ODR_2560HZ,
-+	ADXL371_ODR_5120HZ,
-+};
-+
- enum adxl372_bandwidth {
- 	ADXL372_BW_200HZ,
- 	ADXL372_BW_400HZ,
-@@ -222,6 +230,37 @@ static const int adxl372_bw_freq_tbl[5] = {
- 	200, 400, 800, 1600, 3200,
- };
- 
-+static const int adxl371_samp_freq_tbl[5] = {
-+	[ADXL371_ODR_320HZ] = 320,
-+	[ADXL371_ODR_640HZ] = 640,
-+	[ADXL371_ODR_1280HZ] = 1280,
-+	[ADXL371_ODR_2560HZ] = 2560,
-+	[ADXL371_ODR_5120HZ] = 5120,
-+};
-+
-+static const int adxl371_bw_freq_tbl[5] = {
-+	[ADXL371_ODR_320HZ] = 160,
-+	[ADXL371_ODR_640HZ] = 320,
-+	[ADXL371_ODR_1280HZ] = 640,
-+	[ADXL371_ODR_2560HZ] = 1280,
-+	[ADXL371_ODR_5120HZ] = 2560,
-+};
-+
-+const struct adxl372_chip_info adxl371_chip_info = {
-+	.name = "adxl371",
-+	.samp_freq_tbl = adxl371_samp_freq_tbl,
-+	.bw_freq_tbl = adxl371_bw_freq_tbl,
-+	.num_freqs = ARRAY_SIZE(adxl371_samp_freq_tbl),
-+	.act_time_scale_us = 4125,
-+	.act_time_scale_low_us = 8250,
-+	.inact_time_scale_ms = 16,
-+	.inact_time_scale_low_ms = 32,
-+	.max_odr = ADXL371_ODR_5120HZ,
-+	/* Silicon erratum (er001) causes FIFO data misalignment on ADXL371 */
-+	.fifo_supported = false,
-+};
-+EXPORT_SYMBOL_NS_GPL(adxl371_chip_info, "IIO_ADXL372");
-+
- const struct adxl372_chip_info adxl372_chip_info = {
- 	.name = "adxl372",
- 	.samp_freq_tbl = adxl372_samp_freq_tbl,
-@@ -232,6 +271,7 @@ const struct adxl372_chip_info adxl372_chip_info = {
- 	.inact_time_scale_ms = 13,
- 	.inact_time_scale_low_ms = 26,
- 	.max_odr = ADXL372_ODR_6400HZ,
-+	.fifo_supported = true,
- };
- EXPORT_SYMBOL_NS_GPL(adxl372_chip_info, "IIO_ADXL372");
- 
-@@ -1252,10 +1292,15 @@ int adxl372_probe(struct device *dev, struct regmap *regmap,
- 
- 	indio_dev->channels = adxl372_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(adxl372_channels);
--	indio_dev->available_scan_masks = adxl372_channel_masks;
- 	indio_dev->name = chip_info->name;
- 	indio_dev->info = &adxl372_info;
--	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
-+
-+	if (chip_info->fifo_supported) {
-+		indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
-+		indio_dev->available_scan_masks = adxl372_channel_masks;
-+	} else {
-+		indio_dev->modes = INDIO_DIRECT_MODE;
-+	}
- 
- 	ret = adxl372_setup(st);
- 	if (ret < 0) {
-@@ -1263,14 +1308,17 @@ int adxl372_probe(struct device *dev, struct regmap *regmap,
- 		return ret;
- 	}
- 
--	ret = adxl372_buffer_setup(indio_dev);
--	if (ret < 0)
--		return ret;
-+	if (chip_info->fifo_supported) {
-+		ret = adxl372_buffer_setup(indio_dev);
-+		if (ret < 0)
-+			return ret;
-+	}
- 
- 	return devm_iio_device_register(dev, indio_dev);
- }
- EXPORT_SYMBOL_NS_GPL(adxl372_probe, "IIO_ADXL372");
- 
- MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
--MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer driver");
-+MODULE_AUTHOR("Antoniu Miclaus <antoniu.miclaus@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices ADXL371/ADXL372 3-axis accelerometer driver");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/accel/adxl372.h b/drivers/iio/accel/adxl372.h
-index 3ce06609446c..353a8b3a9d76 100644
---- a/drivers/iio/accel/adxl372.h
-+++ b/drivers/iio/accel/adxl372.h
-@@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0+ */
- /*
-- * ADXL372 3-Axis Digital Accelerometer
-+ * ADXL371/ADXL372 3-Axis Digital Accelerometer
-  *
-  * Copyright 2018 Analog Devices Inc.
-  */
-@@ -20,8 +20,10 @@ struct adxl372_chip_info {
- 	unsigned int inact_time_scale_ms;
- 	unsigned int inact_time_scale_low_ms;
- 	unsigned int max_odr;
-+	bool fifo_supported;
- };
- 
-+extern const struct adxl372_chip_info adxl371_chip_info;
- extern const struct adxl372_chip_info adxl372_chip_info;
- 
- int adxl372_probe(struct device *dev, struct regmap *regmap,
-diff --git a/drivers/iio/accel/adxl372_i2c.c b/drivers/iio/accel/adxl372_i2c.c
-index 3f97126a87a1..40acfa611c83 100644
---- a/drivers/iio/accel/adxl372_i2c.c
-+++ b/drivers/iio/accel/adxl372_i2c.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-- * ADXL372 3-Axis Digital Accelerometer I2C driver
-+ * ADXL371/ADXL372 3-Axis Digital Accelerometer I2C driver
-  *
-  * Copyright 2018 Analog Devices Inc.
-  */
-@@ -46,12 +46,14 @@ static int adxl372_i2c_probe(struct i2c_client *client)
- }
- 
- static const struct i2c_device_id adxl372_i2c_id[] = {
-+	{ "adxl371", (kernel_ulong_t)&adxl371_chip_info },
- 	{ "adxl372", (kernel_ulong_t)&adxl372_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, adxl372_i2c_id);
- 
- static const struct of_device_id adxl372_of_match[] = {
-+	{ .compatible = "adi,adxl371", .data = &adxl371_chip_info },
- 	{ .compatible = "adi,adxl372", .data = &adxl372_chip_info },
- 	{ }
- };
-@@ -69,6 +71,7 @@ static struct i2c_driver adxl372_i2c_driver = {
- module_i2c_driver(adxl372_i2c_driver);
- 
- MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
--MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer I2C driver");
-+MODULE_AUTHOR("Antoniu Miclaus <antoniu.miclaus@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices ADXL371/ADXL372 3-axis accelerometer I2C driver");
- MODULE_LICENSE("GPL");
- MODULE_IMPORT_NS("IIO_ADXL372");
-diff --git a/drivers/iio/accel/adxl372_spi.c b/drivers/iio/accel/adxl372_spi.c
-index 0e199feb405e..438e2bef5b77 100644
---- a/drivers/iio/accel/adxl372_spi.c
-+++ b/drivers/iio/accel/adxl372_spi.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0+
- /*
-- * ADXL372 3-Axis Digital Accelerometer SPI driver
-+ * ADXL371/ADXL372 3-Axis Digital Accelerometer SPI driver
-  *
-  * Copyright 2018 Analog Devices Inc.
-  */
-@@ -37,12 +37,14 @@ static int adxl372_spi_probe(struct spi_device *spi)
- }
- 
- static const struct spi_device_id adxl372_spi_id[] = {
-+	{ "adxl371", (kernel_ulong_t)&adxl371_chip_info },
- 	{ "adxl372", (kernel_ulong_t)&adxl372_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, adxl372_spi_id);
- 
- static const struct of_device_id adxl372_of_match[] = {
-+	{ .compatible = "adi,adxl371", .data = &adxl371_chip_info },
- 	{ .compatible = "adi,adxl372", .data = &adxl372_chip_info },
- 	{ }
- };
-@@ -60,6 +62,7 @@ static struct spi_driver adxl372_spi_driver = {
- module_spi_driver(adxl372_spi_driver);
- 
- MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
--MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer SPI driver");
-+MODULE_AUTHOR("Antoniu Miclaus <antoniu.miclaus@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices ADXL371/ADXL372 3-axis accelerometer SPI driver");
- MODULE_LICENSE("GPL");
- MODULE_IMPORT_NS("IIO_ADXL372");
--- 
-2.43.0
-
+Regards,
+Markus
