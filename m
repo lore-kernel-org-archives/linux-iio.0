@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2DB5C26E706;
-	Fri,  6 Mar 2026 12:15:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CA41226B2CE;
+	Fri,  6 Mar 2026 12:16:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772799318; cv=none; b=NH1yT3nZPpgdMYiCMAmi5ryyF/klCOQDmAQgNnNhdndkDj33czZFSx98KnRlpJOlau8oNjAM2Rmq9iqfJxUHr22ClrwZ5YCQpcJVLn76DKuWPN8UupOO5qbC/VrGi5BntIkjDINuGAUR77GhwU+YvW8ojKJQqUeCT9VNs8cCTzs=
+	t=1772799372; cv=none; b=LNOXLEnchFgmFhsG26gMb3DlCTd8RuJfJ9fEjKokSJADrHwn68dNEwKsP9bfjicG0LDE8ZLMltdI6MUb3oGsAVd2YICnxXHkxx9G9PYU/MPvYpgaK2k/e+UqaMqBIPkA3vIkNcQPSMqOpBjFviruooIxkE6noC9ji8BaLwq6PqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772799318; c=relaxed/simple;
-	bh=NOK9MTd/4P7V1LU80Y8A7+QlHVwq/lPkRU4DrDWu//E=;
+	s=arc-20240116; t=1772799372; c=relaxed/simple;
+	bh=3jjumFtShjLylI3IaQ9V+LM1tQVGq6axCHWL1aCsZyg=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=ipkvo5/bm/WioogORLXPopMfY+o912oTlGbV+Fox6ILvNcAuy+Gm2R6UlqG6pXT/s8v7nBQd4v45yjqMq82IkdFWkpD11flhhCwsOV93PdWoguApu1ueCrF3/T8amLdxbUXm2TTkX69gZ3LejkWdH4VZWaRcAEd3paKcWWcJAn0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NWrwofNL; arc=none smtp.client-ip=198.175.65.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=rX+dBv3XvTBznrwXci/xP/jljvABR+tKklyPzYILqTuMAp0LW4decPijDCtcGPNpVP1OsXR/PpiFXoLIXxwFUgYJPBRulj4cIBbfs2hk/C2p9SL+7IsoXy+DkA9KO/vGRZEaYDyb6LgRCnHvW1qmL46H6/jECgsvh6x8WJ5MViQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HrDnrKCB; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NWrwofNL"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HrDnrKCB"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772799317; x=1804335317;
+  t=1772799371; x=1804335371;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=NOK9MTd/4P7V1LU80Y8A7+QlHVwq/lPkRU4DrDWu//E=;
-  b=NWrwofNLfG8/AA8sN9mHjqsmu+iURNLcPOg+cTEU+JCXLflj+BFIR3Jf
-   cSYOFIEGloJl0HqqJYtO6Lum4VIxcAShgSuGrxDPDPJ+jFtivh1yO1rHE
-   /cGagvV+WXxgL0cUJDOJj5QyBF0fJpGNxKJWi/a9q97iynmjDWo/O5ouR
-   qxvb+bz0bcVuX97FVYeYhXdNhDsp/d5rLQHTvXGf0xn86z8cC8ii0ZZKz
-   jb8tUS1hXC8hhIwUzKRVPvJ8CnXQNzMcI+gjjxcDZHnHXoAEji5irOinD
-   O0Ix4EF4DHz6RJ9G/YxSI0gqdGTTLcJo/zz804/zN19ucV3g9/gO1oVcI
+  bh=3jjumFtShjLylI3IaQ9V+LM1tQVGq6axCHWL1aCsZyg=;
+  b=HrDnrKCBm1I5wgz04W86qk8oIm1ic4SIxqdhbXSbsO/Mr9nR2ULFNkYw
+   lS9RfXfoTLeIhl80PjnNVoDSsPONaxyKDVmv4vAQuB12auQAwWjNo+Z3o
+   YeAyFti2c6UKKWk+YVSuvPf043SRiyS5Z7dU+th8+PXNISspbJrO1pb6N
+   CG2UN417oV5Bf27aH62frgxSBq5SThI2P6d5uqYD6qJMhsvoAsSZGWUQh
+   G5icOwkxL9xRZT6FtCRpKB1sqzoM7tgK41S4AyVmKS6MoIPkr+AOPDqRh
+   TO7uk/N/Idp6FvO0QbgdzHyYqklWp+AZmQDxGN2rAvwCsr89pBCuF61AD
    A==;
-X-CSE-ConnectionGUID: PXT+dHqyQxKNjDtGxz7rJg==
-X-CSE-MsgGUID: ZL7w9PfjRN2dccOIRq5oZQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11720"; a="77506473"
+X-CSE-ConnectionGUID: x9b6fBBNT6SAM6kKIEiNnw==
+X-CSE-MsgGUID: AvJLoaUlTrevp2LJiZ0Nhg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11720"; a="84616449"
 X-IronPort-AV: E=Sophos;i="6.23,104,1770624000"; 
-   d="scan'208";a="77506473"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:15:16 -0800
-X-CSE-ConnectionGUID: NTuYTsMlQC6tbAuZzveBlA==
-X-CSE-MsgGUID: dP+d8Ou0TcWlUA7c7mg7nQ==
+   d="scan'208";a="84616449"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:16:10 -0800
+X-CSE-ConnectionGUID: oR9dHS38SBugEi6PzXzw1A==
+X-CSE-MsgGUID: 8xZu2IkPTnKG9CcMEtsFDw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,104,1770624000"; 
-   d="scan'208";a="223686923"
+   d="scan'208";a="218942309"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.1])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:15:14 -0800
-Date: Fri, 6 Mar 2026 14:15:11 +0200
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:16:08 -0800
+Date: Fri, 6 Mar 2026 14:16:05 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Shi Hao <i.shihao.999@gmail.com>
 Cc: marcelo.schmitt@analog.com, linux-kernel@vger.kernel.org,
@@ -51,7 +51,7 @@ Cc: marcelo.schmitt@analog.com, linux-kernel@vger.kernel.org,
 	andy@kernel.org, nuno.sa@analog.com, dlechner@baylibre.com,
 	jic23@kernel.org
 Subject: Re: [PATCH] iio: adc: fix spelling in comments
-Message-ID: <aarFTxzKEWrj-MRY@ashevche-desk.local>
+Message-ID: <aarFhdivR6XAhbAm@ashevche-desk.local>
 References: <20260306062107.51886-1-i.shihao.999@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -73,10 +73,8 @@ On Fri, Mar 06, 2026 at 11:51:07AM +0530, Shi Hao wrote:
 > - avalable -> available
 > - Digial -> Digital
 
-Only 4 typos?
-
-Can you run `codespell` against each of the subfolders and create the
-respective patch series?
+Also this misses necessary tags. Please, take your time to study Submitting
+Patches documentation.
 
 -- 
 With Best Regards,
