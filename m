@@ -1,110 +1,253 @@
-Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2AB9158DA3
-	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 09:10:05 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11B62344DB0;
+	Fri,  6 Mar 2026 09:29:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772788207; cv=none; b=q9Xl8U5GH8Z7zrbMGtTnbNd523EqdkclDRC6mIPKl9typlDPfmYwIV6tacmLQsbMXirFh290cLRKgqEIAf7LQoSXYfA2TFtCSaIKh2s7ZBOU2QCIY7jSzhBYS/jN7sp0KRTrZk+wk+gzuu2ay2+hcpLA3MP1D1nomYG6I8oYJsw=
+	t=1772789380; cv=none; b=ceFYdpD8AIqQu+WV5aqJpDL5tRgaU/UQ891DRmAF/SEbizvuKB2p9wukLD+c4hieHoMYxc1YXN/57bk1ru1/F+/U4KvszPPbBukYWcWuwBegEKtDiSR+lMN48okCHGodbqFB/3LSmYfwbfaOfQDVCWn3lK0IrrPfyqj74HmPNks=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772788207; c=relaxed/simple;
-	bh=uwm0bSCXmxvpSNZUShveuIwJcCvk78nSTrVPBeuWho0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=kmt3T6dRzfoV205wGQIf4sKd1xcNalbDQ26AMY3rMcbaSQrkbsrghaFREW9rrJrmBr6c9ZVT9f0icR6x4+hdqX+agsxjWw9xe07khxal2kgV8nUGMyxy5c7PzunKlKIg+seV/cU5bFCensfnLN6OMyroRQRALQQCW6e8GO2Dk1A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-56a857578a8so3071236e0c.3
-        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 01:10:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772788205; x=1773393005;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=V3nZIv+ouWgmKG3C/K0jHTIxk5om4dQA+zY3E5ywYQ8=;
-        b=uBdNzq2BIs7oyCamlhD2YetPm6RDEfYUzU387/BDS2qm74VMWfX09rXrR8vEhXg1gr
-         rJwY81eUmiaYpmov+1swIfAXOQn124DeHF5Jj9PtprcBLLLEf0k4iFSabYfDRBYcL+Zo
-         vYd8tmVPJ3MTdbz5sy3NJtW/p9mXzXWZCRimQEqPcLW2pyHfzxSHMmHMnlMTKSG+kTw9
-         v4qX7zvZAuhOJ4Q2oj8cQ8g3g8rHyT793Q2nnZmjlh0G2c8ZlSHdk6ZeTw0meDUWwzF/
-         iwN87CpoznwZD3qX/LObpr6g3QCYEqHl64aT2UaZiV21iMXZazkQHcrqpyLwMQVIpJib
-         7P7g==
-X-Forwarded-Encrypted: i=1; AJvYcCVdIXvrBu1lnm+zYWtclpFpIjeSdhuNOzg5vRzMqPlweaK3UckVAfDzdX7aA4Jqr4Siqms168hScD4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyGnSRc9ZlYMjK1wCSrmQEfWFDfRovb0vSSfa0RXfJPj0mogOcN
-	DiLqZnIOJh0PRjmiVJ1VNO4yFru5e7T3QjtIeJhWF1C8aMFTT6+Knxra1aKwDO79XxE=
-X-Gm-Gg: ATEYQzyokbj/D9rq/HFt0PhA1ZSt7zOypx49+0ZhD4Y/AJXsCNbMvFHcdC1FnMVeo7Z
-	fSOtboMzconWNrSGITrNB+CZ1C5HTT0JImx9i90WsTq+d67aYshUrGHOVgDKL/2lDpMdwDDB7xs
-	aUisn2Scseau1Mlk9Cighu9mQnpwMpegu351wBcvaFYk0mZ3HL90dt8RDH8hV57tB0aDLJEW+zL
-	qrhu8u2htdiuyjQ7hubzKbhEFq4OM91KdDuazHQEyXsvtQLKn3FR6b6D0WnqX6nqzEEJ+bhpdjn
-	PjT8BO32lLe8gku7QMR/ELlMuKIrKxGHSY/wZOGbdTyWMCOwCTOweAFhYsuVqjB7nNjj786eAx8
-	5SE1Juh3dCPD3Lv23/B6xJuXNyR9ENuwR4AQRNfmi7MpLLzh8JdqEGmqaiWq5dVatTwFpmxTh8K
-	WqhfsNK2ogPCfnYdF0BkLgp3EdvjaqkgjZ0zH3ibzYpxtNCBLZdoJqtTR6YU9T
-X-Received: by 2002:a05:6122:1699:b0:56a:f348:9b8b with SMTP id 71dfb90a1353d-56b07dff8f9mr383905e0c.12.1772788204722;
-        Fri, 06 Mar 2026 01:10:04 -0800 (PST)
-Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com. [209.85.217.43])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56b09b20d02sm795950e0c.15.2026.03.06.01.10.04
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 06 Mar 2026 01:10:04 -0800 (PST)
-Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-5ff05af29b4so3226121137.1
-        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 01:10:04 -0800 (PST)
-X-Forwarded-Encrypted: i=1; AJvYcCUa3gEau8LJBGqhTMMVeWjRV4QpTn1JqP0iNRpEuly2Y+jIQCQGmAsT/urtcMiYWniBJLzleHMvam8=@vger.kernel.org
-X-Received: by 2002:a05:6102:161f:b0:5fe:626a:a51b with SMTP id
- ada2fe7eead31-5ffe5f89dcfmr438378137.14.1772788203846; Fri, 06 Mar 2026
- 01:10:03 -0800 (PST)
+	s=arc-20240116; t=1772789380; c=relaxed/simple;
+	bh=FoiIGNp6DMC3eHerJOHrvzGKeWjUt+DKC9a9Fgi4Ni8=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KJ1T2SpL7sDcM+JGvKbfMn10dmhyBXBAnvC7I5KAHfwysWXu9B6MXMvlgV8Oek3eqKRAbRmuhicOloh2eydJj+LWB2eJ2mTKY/XDuGKSc2DQwNF4Xn6Ze/HsuBJXhAn1Uig1fsj60xJiNWmk4irrLbTrJSQbcxLgMwzffiV0wN0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QWQiJ39x; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QWQiJ39x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155F5C4CEF7;
+	Fri,  6 Mar 2026 09:29:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772789379;
+	bh=FoiIGNp6DMC3eHerJOHrvzGKeWjUt+DKC9a9Fgi4Ni8=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=QWQiJ39xbMfGlDkQBxCjEYkkBGt1Vmhyt0HWPbFAqj/TgdYixJS7+sTAacFheWQMf
+	 ceaQ6zpd5Ee9wwFDibZBYb6/dliriMauMpq48W1cRMSFZ+9nD11w0NY73R6zB/pNm1
+	 gxYw1kUwy/40fZHL3Vs1UYr3cnJ6xwbW8aBv7TKLHesu2iD/yFzhat7uniyKkc4Z1F
+	 5vb3LJiOZ/LKUq82Qh8q7qmGrN7uaHLKZiyVwY/1ryE7I6ibsS3Bdr7agsnb/daadi
+	 OSDKUZypC6ydvpXPm4eQY7vZ80ZKwFOhrItRXF1SCMi2PXtEKYzM1uKbTvQfcwxxTj
+	 IeNJe38fZ0jfA==
+Date: Fri, 6 Mar 2026 10:29:36 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>, 
+	Biju Das <biju.das.jz@bp.renesas.com>
+Cc: William Breathitt Gray <wbg@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Thierry Reding <thierry.reding@gmail.com>, linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, stable@vger.kernel.org
+Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
+ channel
+Message-ID: <aaqTVDQa7xn70bR_@monoceros>
+References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
+ <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <d42ba403c1fb1aca88b82ba3020ad0ec442a455f.1772705608.git.geert+renesas@glider.be>
- <20260305193152.253dc267@jic23-huawei>
-In-Reply-To: <20260305193152.253dc267@jic23-huawei>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 6 Mar 2026 10:09:52 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVtNPU8fhznYmgnC_55xdqdd545eD5nHtiw_P4AD1v69g@mail.gmail.com>
-X-Gm-Features: AaiRm50dI1vKfZ-T0zEsv62f5Tr9uck-3NrMp4NLVNXCnJh4Ix6huEV-NMCebHs
-Message-ID: <CAMuHMdVtNPU8fhznYmgnC_55xdqdd545eD5nHtiw_P4AD1v69g@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: rzg2l: Convert to FIELD_MODIFY()
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
-	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
-	linux-renesas-soc@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="sdqtu4j6eja6jess"
+Content-Disposition: inline
+In-Reply-To: <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
 
-Hi Jonathan.
 
-On Thu, 5 Mar 2026 at 20:32, Jonathan Cameron <jic23@kernel.org> wrote:
-> On Thu,  5 Mar 2026 11:13:55 +0100
-> Geert Uytterhoeven <geert+renesas@glider.be> wrote:
->
-> > Use the FIELD_MODIFY() helper instead of open-coding the same operation.
-> > This requires splitting the double OR operation.
-> Hi Geert,
->
-> Looks like similar can be applied in
-> rzg2l_adc_conversion_setup()
+--sdqtu4j6eja6jess
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
+ channel
+MIME-Version: 1.0
 
-Which case did you have in mind? Note that FIELD_MODIFY() needs
-a constant mask, so it cannot be used with e.g.
-hw_params->adint_inten_mask.
-For non-constant masks, we first need to introduce field_modify() ;-)
+Hello,
 
-> FIELD_MODIFY() is useful to shorten code, but if we are using it we should look
-> for all good opportunities in a driver.  Please check to see if there are more.
+On Fri, Jan 30, 2026 at 02:23:49PM +0200, Cosmin Tanislav wrote:
+> enable_count is only incremented after rz_mtu3_pwm_config() is called
+> for the current PWM channel, causing prescale to not be checked if one
+> PWM channel is enabled and we're enabling the second PWM channel of the
+> same HW channel.
+>=20
+> To handle this edge case, if the user_count of the HW channel is larger
+> than 1 and the sibling PWM channel is enabled, check that the new
+> prescale is not smaller than the sibling's prescale.
+>=20
+> If the new prescale is larger than the sibling's prescale, use the
+> sibling's prescale.
+>=20
+> The user_count check is ensures that we are indeed dealing with a HW
+> channel that has two IOs.
+>=20
+> Cc: stable@vger.kernel.org
+> Fixes: 254d3a727421 ("pwm: Add Renesas RZ/G2L MTU3a PWM driver")
+> Signed-off-by: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+> ---
+>  drivers/pwm/pwm-rz-mtu3.c | 24 +++++++++++++++++++-----
+>  1 file changed, 19 insertions(+), 5 deletions(-)
+>=20
+> diff --git a/drivers/pwm/pwm-rz-mtu3.c b/drivers/pwm/pwm-rz-mtu3.c
+> index ab39bd37edaf..f6073be1c2f8 100644
+> --- a/drivers/pwm/pwm-rz-mtu3.c
+> +++ b/drivers/pwm/pwm-rz-mtu3.c
+> @@ -142,6 +142,14 @@ rz_mtu3_get_channel(struct rz_mtu3_pwm_chip *rz_mtu3=
+_pwm, u32 hwpwm)
+>  	return priv;
+>  }
+> =20
+> +static u32 rz_mtu3_sibling_hwpwm(u32 hwpwm, bool is_primary)
+> +{
+> +	if (is_primary)
+> +		return hwpwm + 1;
+> +	else
+> +		return hwpwm - 1;
+> +}
 
-I did a full scan, and it seems I did miss RZG2L_ADIVC_DIVADC_4.
-Will fix in v2, eventually.
-Thanks!
+Can we please make this function a bit more sophisticated to not need
+is_primary? Something like:
 
-Gr{oetje,eeting}s,
+static u32 rz_mtu3_sibling_hwpwm(struct rz_mtu3_pwm_chip *rz_mtu3_pwm, u32 =
+hwpwm)
+{
+	struct rz_mtu3_pwm_channel *priv =3D rz_mtu3_get_channel(rz_mtu3_pwm, hwpw=
+m);
 
-                        Geert
+	BUG_ON(priv->map->num_channel_ios !=3D 2);
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+	if (priv->map->base_pwm_number =3D=3D hwpwm)
+		return hwpwm + 1;
+	else
+		return hwpwm - 1;
+}
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+(Or if you want to save the rz_mtu3_get_channel() call, pass priv to
+rz_mtu3_sibling_hwpwm() which is already available at the call sites.)
+
+And well, BUG_ON isn't very loved, so either it should be dropped or the
+issue escalated in a more civilized manner. I keep it for the sake of
+simplicity during the discussion.
+
+> +
+>  static bool rz_mtu3_pwm_is_ch_enabled(struct rz_mtu3_pwm_chip *rz_mtu3_p=
+wm,
+>  				      u32 hwpwm)
+>  {
+> @@ -322,6 +330,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, =
+struct pwm_device *pwm,
+>  	struct rz_mtu3_pwm_channel *priv;
+>  	u64 period_cycles;
+>  	u64 duty_cycles;
+> +	bool is_primary;
+>  	u8 prescale;
+>  	u16 pv, dc;
+>  	u8 val;
+> @@ -329,6 +338,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, =
+struct pwm_device *pwm,
+> =20
+>  	priv =3D rz_mtu3_get_channel(rz_mtu3_pwm, pwm->hwpwm);
+>  	ch =3D priv - rz_mtu3_pwm->channel_data;
+> +	is_primary =3D priv->map->base_pwm_number =3D=3D pwm->hwpwm;
+> =20
+>  	period_cycles =3D mul_u64_u32_div(state->period, rz_mtu3_pwm->rate,
+>  					NSEC_PER_SEC);
+> @@ -340,11 +350,15 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip=
+, struct pwm_device *pwm,
+>  	 * different settings. Modify prescalar if other PWM is off or handle
+>  	 * it, if current prescale value is less than the one we want to set.
+>  	 */
+> -	if (rz_mtu3_pwm->enable_count[ch] > 1) {
+> -		if (rz_mtu3_pwm->prescale[ch] > prescale)
+> -			return -EBUSY;
+
+OK, I understood the issue. If the sibling is already on and the current
+IO is still off, enable_count doesn't account yet for the current
+IO and thus is 1 but still the prescaler must not be changed.
+
+The commit log needs updating to make this clearer.
+
+An alternative would be to check for
+
+	if (rz_mtu3_pwm->enable_count[ch] + (pwm->state.enabled ? 0 : 1) > 1)
+
+but I'm not sure this is better.
+
+> +	if (rz_mtu3_pwm->user_count[ch] > 1) {
+> +		u32 sibling_hwpwm =3D rz_mtu3_sibling_hwpwm(pwm->hwpwm, is_primary);
+
+Maybe add a comment here saying something like:
+
+	Not all channels have a sibling, but if user_count > 1 there is
+	one.
+> =20
+> -		prescale =3D rz_mtu3_pwm->prescale[ch];
+> +		if (rz_mtu3_pwm_is_ch_enabled(rz_mtu3_pwm, sibling_hwpwm)) {
+> +			if (rz_mtu3_pwm->prescale[ch] > prescale)
+> +				return -EBUSY;
+> +
+> +			prescale =3D rz_mtu3_pwm->prescale[ch];
+> +		}
+>  	}
+> =20
+>  	pv =3D rz_mtu3_pwm_calculate_pv_or_dc(period_cycles, prescale);
+> @@ -371,7 +385,7 @@ static int rz_mtu3_pwm_config(struct pwm_chip *chip, =
+struct pwm_device *pwm,
+>  	if (rz_mtu3_pwm->prescale[ch] !=3D prescale && rz_mtu3_pwm->enable_coun=
+t[ch])
+>  		rz_mtu3_disable(priv->mtu);
+> =20
+> -	if (priv->map->base_pwm_number =3D=3D pwm->hwpwm) {
+> +	if (is_primary) {
+>  		rz_mtu3_8bit_ch_write(priv->mtu, RZ_MTU3_TCR,
+>  				      RZ_MTU3_TCR_CCLR_TGRA | val);
+>  		rz_mtu3_pwm_write_tgr_registers(priv, RZ_MTU3_TGRA, pv,
+
+All in all I'm unhappy with the hwpwm to channel+IO mapping, this makes
+this all more complicated. This is something that already bugged me when
+this driver was created.
+
+It's out of scope for this series of fixes, but I wonder if we could
+create a mapping from hwpwm to an IO-id like this:
+
+	hwpwm | IO-id
+	------+------
+	   0  |    0	(channel 0, io 0)
+	   1  |    1	(channel 0, io 1)
+	   2  |    2	(channel 1, io 0)
+	   3  |    4	(channel 2, io 0)
+           4  |    6	(channel 3, io 0)
+	   5  |    7	(channel 3, io 1)
+	   6  |    8	(channel 4, io 0)
+	   7  |    9	(channel 4, io 1)
+	   8  |   12	(channel 6, io 0)
+	   9  |   13	(channel 6, io 1)
+	  10  |   14	(channel 7, io 0)
+	  11  |   15	(channel 7, io 1)
+
+then the sibling would be just `io_id ^ 1` and the channel could
+be computed by `io_id >> 1` and the base id for a given io is just
+`io_id & ~1`.
+
+Tracking of an IO being enabled could be done using
+
+	enabled_io & (1 << io_id)
+
+I think this would be a simpler scheme that needs less memory and less
+pointer dereferencing and the check for the sibling being enabled would
+also be a trivial bit operation.
+
+Best regards
+Uwe
+
+--sdqtu4j6eja6jess
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmmqnn0ACgkQj4D7WH0S
+/k7Wzwf/e+vzpYwwhFhW3E9JQ2D3JmIcRmgwwXg58CTquzjL9OqqWbAOb8er6weD
+dkefvUn8AT0d6TyuO8mEffQsdQJXl+G8P0NyB34Tyc+5xOKdeu5fPb2anOSPt1hO
+iRH9QlcU191sEnLCjkTIixMAAJWrJ4nmD8izL11D0QwC8QTSyp76pPzhl+b1f3x1
+jvDPNaWJiUmGfSFDdWsplrAmTqjUWgQoBENly8gE2iNzQiYnLeoi4H/y6rkjCrnL
+Q4wXUaue6LDo9WdkyfZF03p5rbja6v+glKggHyhoLzTeFfjFsSCWFLeyseaRGJLn
+WORN1nKDyxhQlwcdFDgyH/wuvsQrLg==
+=WvAD
+-----END PGP SIGNATURE-----
+
+--sdqtu4j6eja6jess--
