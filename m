@@ -1,244 +1,110 @@
-Received: from mail-dy1-f181.google.com (mail-dy1-f181.google.com [74.125.82.181])
+Received: from mail-vk1-f181.google.com (mail-vk1-f181.google.com [209.85.221.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 89C10376BC4
-	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 07:17:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2AB9158DA3
+	for <linux-iio@vger.kernel.org>; Fri,  6 Mar 2026 09:10:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772781472; cv=none; b=HBW8aWBHSqQoU0IZPf4tfyuE20mRYm3gpCDkmQBzhRjNYSJY+6U0HQ+9OYswZ+Y2tucppjHTwOgVS3NjwDrT5WlReUoGI4JeBeSa9xEvvMy4jOuoICXV0NuJ9mIdzMXE37DkxQIytuiVcky64Y75+7q33B0WA+IPSAXpJns1sSI=
+	t=1772788207; cv=none; b=q9Xl8U5GH8Z7zrbMGtTnbNd523EqdkclDRC6mIPKl9typlDPfmYwIV6tacmLQsbMXirFh290cLRKgqEIAf7LQoSXYfA2TFtCSaIKh2s7ZBOU2QCIY7jSzhBYS/jN7sp0KRTrZk+wk+gzuu2ay2+hcpLA3MP1D1nomYG6I8oYJsw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772781472; c=relaxed/simple;
-	bh=0rAB9MBGoOdOMIG3fhy02OT6Cyxc/u79BMxz/VaekZ4=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=tAgi1IRZ90s/TQbZc1F/trfyZxTJFRek7Un43bwavaYlwexpRb0wVOUhbdVQmJTFZcBXWDFx4YJ08j5pZl6lyRKwVpYKn9KO2Gqgg1Lao98GCTsNGqJDigQGLoRirgvCy3upkB4thZP37+K8s/Ff/RZevwfAw2LaNVxXG3Itfyk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=GVq4BVai; arc=none smtp.client-ip=74.125.82.181
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1772788207; c=relaxed/simple;
+	bh=uwm0bSCXmxvpSNZUShveuIwJcCvk78nSTrVPBeuWho0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kmt3T6dRzfoV205wGQIf4sKd1xcNalbDQ26AMY3rMcbaSQrkbsrghaFREW9rrJrmBr6c9ZVT9f0icR6x4+hdqX+agsxjWw9xe07khxal2kgV8nUGMyxy5c7PzunKlKIg+seV/cU5bFCensfnLN6OMyroRQRALQQCW6e8GO2Dk1A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.181
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GVq4BVai"
-Received: by mail-dy1-f181.google.com with SMTP id 5a478bee46e88-2be1ab1fa7dso6613444eec.0
-        for <linux-iio@vger.kernel.org>; Thu, 05 Mar 2026 23:17:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772781470; x=1773386270; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=aMYOEONlQSsPyZ3EdoCsxjFpvIJZ2m37u2LdjlQwwyY=;
-        b=GVq4BVaixbl48rrPtZ3uq3EMGxfMz8ZGWU9HtlKme87w/OuSjpKVVKAxbgc7XaAzfq
-         DCDSw7w/wPccyrV5bSvzh+XzQi+KUb1AmNP3RYvQcVCI7UNEW82Jpb+sbEHArmt98hSR
-         Uxqy6V18Lbis1MinjCmaUKhNB9QaN4qd3oFbSVYsRSGvrTpTUFQLk2nQID0JNI9WRMdi
-         aYt+E8cNVSB78424HERrlrBvr851DNJ7MvLQ2OZhrwGreoWFB6aSjtOYV+dO11VLjtKq
-         N1ROiJF1s1LBLy1AVZGBe6b2P0WInsN2ju6MBndCtoIhwMCtP57S5D1A3SBadM/fBqk4
-         G5Dw==
+Received: by mail-vk1-f181.google.com with SMTP id 71dfb90a1353d-56a857578a8so3071236e0c.3
+        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 01:10:05 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772781470; x=1773386270;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=aMYOEONlQSsPyZ3EdoCsxjFpvIJZ2m37u2LdjlQwwyY=;
-        b=n35dCcNBAP202mIQEYuZsQ7DbsIQnN3j8e0h4TiQs/kL2BgskePPswypQEPQzha2Bu
-         OZgS1ZlT01fRKR3BvBkNgSMSh0EhM/oVzz9Q3owO8KrQzyCw3m5yDTT9Z1otNe+qJQ6p
-         D27RSeEmwViHy0qIkyHvSFmblTyTBl7ssbweV95gB7UvqVkDyPUuCStRi65Ocnj3+kMu
-         LuqI8h7427m11hHftNglw2N96e2LaPkFf2wmSHHgH0Bo57Ed0Kz7uoR8cYRuUi0sLDb7
-         gkqHbEcX0K4lNTPHSo7uxZcL1Fi9dEHGzBF/CcBNKh7ZppFXnsRCe9x5JlDiOgIS2TUP
-         roiw==
-X-Forwarded-Encrypted: i=1; AJvYcCWOM7QugbHFUfb1BC1fPNmXl9ZeGDTm60HmR0iH9RqIb1qY+KeCpZu+B1ND5OBuUgeJFY75sxb6B48=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzcA1AzBYN50Ykh+2Lcdi8fF2lmJE1pbaTNu0INKXcam7nBj//E
-	oNBaWpbmZYKwWCXY4ZSvZOcN/tz2sJjPGDrtdJYeJGe+khhJHidpmFrsLiTsrCeS
-X-Gm-Gg: ATEYQzzkL3q819GNWoPMulMTzAB+vIBQgsd3s+hXFb5fF8gW4YPeaZF0bNMQCu61vPx
-	cDtUsFo1sXo9LIE4oXeWNA8vtGN7la34g48pJRtw+km+cBKzBu9/HJQ+RPOn4VsickU9CZsC3xk
-	hMRaXyMZXAiJDFfUoLXNfwqw0iGiYRcX9IohQrsEgWHY4Qa6ZkBpXXZ85pS20j7Iw29oecE2BIX
-	4kTr7hzKI72IQvEndeKVhgziCDaYopjcm7VmIAbYSXtXkc2ushD1ohDuQDOgkhdf0LQAf2WlLbq
-	ZYsaMmEG4zXBgfaMErn1LHLvX3VFPNPqH0x4vj0tRHyxCoj9xnKozyhawX5MLCkGz6Ryv41PSuZ
-	l+8acNFtVuIeHRbdJzEdeQg34fMh5ZE49TZGKifGLjR4aT/RLs4vPQSgj8m4/MCREvj7gAcMNAE
-	6UtRNInYB50H7CjRpxg+xZRYuAFDPOfydDQWFHpg==
-X-Received: by 2002:a05:7301:1291:b0:2bd:f432:d545 with SMTP id 5a478bee46e88-2be4deb8b8cmr460852eec.17.1772781470331;
-        Thu, 05 Mar 2026 23:17:50 -0800 (PST)
-Received: from [192.168.1.187] ([76.50.196.152])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2be4f96f25bsm545713eec.28.2026.03.05.23.17.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 Mar 2026 23:17:49 -0800 (PST)
-From: Michael Harris <michaelharriscode@gmail.com>
-Date: Thu, 05 Mar 2026 23:17:01 -0800
-Subject: [PATCH v2 4/4] staging: iio: adt7316: convert magic numbers to
- BIT_U32() or GENMASK_U32()
+        d=1e100.net; s=20230601; t=1772788205; x=1773393005;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=V3nZIv+ouWgmKG3C/K0jHTIxk5om4dQA+zY3E5ywYQ8=;
+        b=uBdNzq2BIs7oyCamlhD2YetPm6RDEfYUzU387/BDS2qm74VMWfX09rXrR8vEhXg1gr
+         rJwY81eUmiaYpmov+1swIfAXOQn124DeHF5Jj9PtprcBLLLEf0k4iFSabYfDRBYcL+Zo
+         vYd8tmVPJ3MTdbz5sy3NJtW/p9mXzXWZCRimQEqPcLW2pyHfzxSHMmHMnlMTKSG+kTw9
+         v4qX7zvZAuhOJ4Q2oj8cQ8g3g8rHyT793Q2nnZmjlh0G2c8ZlSHdk6ZeTw0meDUWwzF/
+         iwN87CpoznwZD3qX/LObpr6g3QCYEqHl64aT2UaZiV21iMXZazkQHcrqpyLwMQVIpJib
+         7P7g==
+X-Forwarded-Encrypted: i=1; AJvYcCVdIXvrBu1lnm+zYWtclpFpIjeSdhuNOzg5vRzMqPlweaK3UckVAfDzdX7aA4Jqr4Siqms168hScD4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyGnSRc9ZlYMjK1wCSrmQEfWFDfRovb0vSSfa0RXfJPj0mogOcN
+	DiLqZnIOJh0PRjmiVJ1VNO4yFru5e7T3QjtIeJhWF1C8aMFTT6+Knxra1aKwDO79XxE=
+X-Gm-Gg: ATEYQzyokbj/D9rq/HFt0PhA1ZSt7zOypx49+0ZhD4Y/AJXsCNbMvFHcdC1FnMVeo7Z
+	fSOtboMzconWNrSGITrNB+CZ1C5HTT0JImx9i90WsTq+d67aYshUrGHOVgDKL/2lDpMdwDDB7xs
+	aUisn2Scseau1Mlk9Cighu9mQnpwMpegu351wBcvaFYk0mZ3HL90dt8RDH8hV57tB0aDLJEW+zL
+	qrhu8u2htdiuyjQ7hubzKbhEFq4OM91KdDuazHQEyXsvtQLKn3FR6b6D0WnqX6nqzEEJ+bhpdjn
+	PjT8BO32lLe8gku7QMR/ELlMuKIrKxGHSY/wZOGbdTyWMCOwCTOweAFhYsuVqjB7nNjj786eAx8
+	5SE1Juh3dCPD3Lv23/B6xJuXNyR9ENuwR4AQRNfmi7MpLLzh8JdqEGmqaiWq5dVatTwFpmxTh8K
+	WqhfsNK2ogPCfnYdF0BkLgp3EdvjaqkgjZ0zH3ibzYpxtNCBLZdoJqtTR6YU9T
+X-Received: by 2002:a05:6122:1699:b0:56a:f348:9b8b with SMTP id 71dfb90a1353d-56b07dff8f9mr383905e0c.12.1772788204722;
+        Fri, 06 Mar 2026 01:10:04 -0800 (PST)
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com. [209.85.217.43])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56b09b20d02sm795950e0c.15.2026.03.06.01.10.04
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 06 Mar 2026 01:10:04 -0800 (PST)
+Received: by mail-vs1-f43.google.com with SMTP id ada2fe7eead31-5ff05af29b4so3226121137.1
+        for <linux-iio@vger.kernel.org>; Fri, 06 Mar 2026 01:10:04 -0800 (PST)
+X-Forwarded-Encrypted: i=1; AJvYcCUa3gEau8LJBGqhTMMVeWjRV4QpTn1JqP0iNRpEuly2Y+jIQCQGmAsT/urtcMiYWniBJLzleHMvam8=@vger.kernel.org
+X-Received: by 2002:a05:6102:161f:b0:5fe:626a:a51b with SMTP id
+ ada2fe7eead31-5ffe5f89dcfmr438378137.14.1772788203846; Fri, 06 Mar 2026
+ 01:10:03 -0800 (PST)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260305-adt7316-correct-macros-v2-4-3702e3841c42@gmail.com>
-References: <20260305-adt7316-correct-macros-v2-0-3702e3841c42@gmail.com>
-In-Reply-To: <20260305-adt7316-correct-macros-v2-0-3702e3841c42@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, 
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
- linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org, 
- Michael Harris <michaelharriscode@gmail.com>
-X-Mailer: b4 0.14.2
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1772781459; l=5562;
- i=michaelharriscode@gmail.com; s=20260130; h=from:subject:message-id;
- bh=0rAB9MBGoOdOMIG3fhy02OT6Cyxc/u79BMxz/VaekZ4=;
- b=5MBgmK5XwbhRJgOsfvxYxLgjH4BN49GWnBZYl3dSOPGCax98N3pasMXF75qbVcJkAPUcEob+N
- 1onOStR7tCWBqV0kO2gxF8uoRwU2+SgrM3tkVlKUBpLfbGQNyJvH96w
-X-Developer-Key: i=michaelharriscode@gmail.com; a=ed25519;
- pk=td/zQD3XANAhdG3Kf3mSetXiynk1Ql0eM4s0+eks5DU=
+References: <d42ba403c1fb1aca88b82ba3020ad0ec442a455f.1772705608.git.geert+renesas@glider.be>
+ <20260305193152.253dc267@jic23-huawei>
+In-Reply-To: <20260305193152.253dc267@jic23-huawei>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 6 Mar 2026 10:09:52 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdVtNPU8fhznYmgnC_55xdqdd545eD5nHtiw_P4AD1v69g@mail.gmail.com>
+X-Gm-Features: AaiRm50dI1vKfZ-T0zEsv62f5Tr9uck-3NrMp4NLVNXCnJh4Ix6huEV-NMCebHs
+Message-ID: <CAMuHMdVtNPU8fhznYmgnC_55xdqdd545eD5nHtiw_P4AD1v69g@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: rzg2l: Convert to FIELD_MODIFY()
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-renesas-soc@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 
-Improve readability by converting raw hex macros to use BIT_U32() or
-GENMASK_U32() instead.
+Hi Jonathan.
 
-Signed-off-by: Michael Harris <michaelharriscode@gmail.com>
----
- drivers/staging/iio/addac/adt7316.c | 72 ++++++++++++++++++-------------------
- 1 file changed, 36 insertions(+), 36 deletions(-)
+On Thu, 5 Mar 2026 at 20:32, Jonathan Cameron <jic23@kernel.org> wrote:
+> On Thu,  5 Mar 2026 11:13:55 +0100
+> Geert Uytterhoeven <geert+renesas@glider.be> wrote:
+>
+> > Use the FIELD_MODIFY() helper instead of open-coding the same operation.
+> > This requires splitting the double OR operation.
+> Hi Geert,
+>
+> Looks like similar can be applied in
+> rzg2l_adc_conversion_setup()
 
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index ea7d97bb0f378f3a3ce1225d8d13af2c5955ca56..824801c022475c35b8dfd4626820a533fbb68a17 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -30,8 +30,8 @@
- #define ADT7316_INT_STAT1		0x0
- #define ADT7316_INT_STAT2		0x1
- #define ADT7316_LSB_IN_TEMP_VDD		0x3
--#define ADT7316_LSB_IN_TEMP_MASK	0x3
--#define ADT7316_LSB_VDD_MASK		0xC
-+#define ADT7316_LSB_IN_TEMP_MASK	GENMASK_U32(1, 0)
-+#define ADT7316_LSB_VDD_MASK		GENMASK_U32(3, 2)
- #define ADT7316_LSB_EX_TEMP_AIN		0x4
- #define ADT7316_LSB_EX_TEMP_AIN1_MASK	GENMASK_U32(1, 0)
- #define ADT7516_LSB_AIN2_MASK		GENMASK_U32(3, 2)
-@@ -90,19 +90,19 @@
- /*
-  * ADT7316 config1
-  */
--#define ADT7316_CONFIG1_MONITOR_EN		0x1
--#define ADT7516_CONFIG1_SEL_AIN1_2_EX_TEMP_MASK	0x6
--#define ADT7516_CONFIG1_SEL_EX_TEMP		0x4
--#define ADT7516_CONFIG1_SEL_AIN3		0x8
--#define ADT7316_CONFIG1_INT_EN			0x20
--#define ADT7316_CONFIG1_INT_POLARITY		0x40
--#define ADT7316_CONFIG1_PD			0x80
-+#define ADT7316_CONFIG1_MONITOR_EN		BIT_U32(0)
-+#define ADT7516_CONFIG1_SEL_AIN1_2_EX_TEMP_MASK	GENMASK_U32(2, 1)
-+#define ADT7516_CONFIG1_SEL_EX_TEMP		BIT_U32(2)
-+#define ADT7516_CONFIG1_SEL_AIN3		BIT_U32(3)
-+#define ADT7316_CONFIG1_INT_EN			BIT_U32(5)
-+#define ADT7316_CONFIG1_INT_POLARITY		BIT_U32(6)
-+#define ADT7316_CONFIG1_PD			BIT_U32(7)
- 
- /*
-  * ADT7316 config2
-  */
--#define ADT7316_CONFIG2_AD_SINGLE_CH_MASK	0x3
--#define ADT7516_CONFIG2_AD_SINGLE_CH_MASK	0x7
-+#define ADT7316_CONFIG2_AD_SINGLE_CH_MASK	GENMASK_U32(1, 0)
-+#define ADT7516_CONFIG2_AD_SINGLE_CH_MASK	GENMASK_U32(2, 0)
- #define ADT7316_CONFIG2_AD_SINGLE_CH_VDD	0
- #define ADT7316_CONFIG2_AD_SINGLE_CH_IN		1
- #define ADT7316_CONFIG2_AD_SINGLE_CH_EX		2
-@@ -110,51 +110,51 @@
- #define ADT7516_CONFIG2_AD_SINGLE_CH_AIN2	3
- #define ADT7516_CONFIG2_AD_SINGLE_CH_AIN3	4
- #define ADT7516_CONFIG2_AD_SINGLE_CH_AIN4	5
--#define ADT7316_CONFIG2_AD_SINGLE_CH_MODE	0x10
--#define ADT7316_CONFIG2_DISABLE_AVERAGING	0x20
--#define ADT7316_CONFIG2_EN_SMBUS_TIMEOUT	0x40
--#define ADT7316_CONFIG2_RESET			0x80
-+#define ADT7316_CONFIG2_AD_SINGLE_CH_MODE	BIT_U32(4)
-+#define ADT7316_CONFIG2_DISABLE_AVERAGING	BIT_U32(5)
-+#define ADT7316_CONFIG2_EN_SMBUS_TIMEOUT	BIT_U32(6)
-+#define ADT7316_CONFIG2_RESET			BIT_U32(7)
- 
- /*
-  * ADT7316 config3
-  */
--#define ADT7316_CONFIG3_ADCLK_22_5		0x1
--#define ADT7316_CONFIG3_DA_HIGH_RESOLUTION	0x2
--#define ADT7316_CONFIG3_DA_EN_VIA_DAC_LDAC	0x8
--#define ADT7516_CONFIG3_AIN_IN_VREF		0x10
--#define ADT7316_CONFIG3_EN_IN_TEMP_PROP_DACA	0x20
--#define ADT7316_CONFIG3_EN_EX_TEMP_PROP_DACB	0x40
-+#define ADT7316_CONFIG3_ADCLK_22_5		BIT_U32(0)
-+#define ADT7316_CONFIG3_DA_HIGH_RESOLUTION	BIT_U32(1)
-+#define ADT7316_CONFIG3_DA_EN_VIA_DAC_LDAC	BIT_U32(3)
-+#define ADT7516_CONFIG3_AIN_IN_VREF		BIT_U32(4)
-+#define ADT7316_CONFIG3_EN_IN_TEMP_PROP_DACA	BIT_U32(5)
-+#define ADT7316_CONFIG3_EN_EX_TEMP_PROP_DACB	BIT_U32(6)
- 
- /*
-  * ADT7316 DAC config
-  */
--#define ADT7316_DAC_CONFIG_2VREF_CH_MASK	0xF
--#define ADT7316_DAC_CONFIG_EN_MODE_MASK		0x30
-+#define ADT7316_DAC_CONFIG_2VREF_CH_MASK	GENMASK_U32(3, 0)
-+#define ADT7316_DAC_CONFIG_EN_MODE_MASK		GENMASK_U32(5, 4)
- #define ADT7316_DAC_CONFIG_EN_MODE_SINGLE	0x00
- #define ADT7316_DAC_CONFIG_EN_MODE_AB_CD	0x10
- #define ADT7316_DAC_CONFIG_EN_MODE_ABCD		0x20
- #define ADT7316_DAC_CONFIG_EN_MODE_LDAC		0x30
--#define ADT7316_DAC_CONFIG_VREF_BYPASS_AB	0x40
--#define ADT7316_DAC_CONFIG_VREF_BYPASS_CD	0x80
-+#define ADT7316_DAC_CONFIG_VREF_BYPASS_AB	BIT_U32(6)
-+#define ADT7316_DAC_CONFIG_VREF_BYPASS_CD	BIT_U32(7)
- 
- /*
-  * ADT7316 LDAC config
-  */
--#define ADT7316_LDAC_CONFIG_EN_DA_MASK		0xF
--#define ADT7316_LDAC_CONFIG_DAC_IN_VREF		0x10
--#define ADT7516_LDAC_CONFIG_DAC_AB_IN_VREF	0x10
--#define ADT7516_LDAC_CONFIG_DAC_CD_IN_VREF	0x20
--#define ADT7516_LDAC_CONFIG_DAC_IN_VREF_MASK	0x30
-+#define ADT7316_LDAC_CONFIG_EN_DA_MASK		GENMASK_U32(3, 0)
-+#define ADT7316_LDAC_CONFIG_DAC_IN_VREF		BIT_U32(4)
-+#define ADT7516_LDAC_CONFIG_DAC_AB_IN_VREF	BIT_U32(4)
-+#define ADT7516_LDAC_CONFIG_DAC_CD_IN_VREF	BIT_U32(5)
-+#define ADT7516_LDAC_CONFIG_DAC_IN_VREF_MASK	GENMASK_U32(5, 4)
- 
- /*
-  * ADT7316 INT_MASK2
-  */
--#define ADT7316_INT_MASK2_VDD		0x10
-+#define ADT7316_INT_MASK2_VDD		BIT_U32(4)
- 
- /*
-  * ADT7316 value masks
-  */
--#define ADT7316_VALUE_MASK		0xfff
-+#define ADT7316_VALUE_MASK		GENMASK_U32(11, 0)
- #define ADT7316_AD_MSB_MASK		GENMASK_U32(9, 2)
- 
- /*
-@@ -172,7 +172,7 @@
- #define ID_ADT7517		0x12
- #define ID_ADT7519		0x14
- 
--#define ID_FAMILY_MASK		0xF0
-+#define ID_FAMILY_MASK		GENMASK_U32(7, 4)
- #define ID_ADT73XX		0x0
- #define ID_ADT75XX		0x10
- 
-@@ -206,9 +206,9 @@ struct adt7316_chip_info {
- #define ADT7516_AIN2_INT_MASK		0x20
- #define ADT7516_AIN3_INT_MASK		0x40
- #define ADT7516_AIN4_INT_MASK		0x80
--#define ADT7316_VDD_INT_MASK		0x100
--#define ADT7316_TEMP_INT_MASK		0x1F
--#define ADT7516_AIN_INT_MASK		0xE0
-+#define ADT7316_VDD_INT_MASK		BIT_U32(8)
-+#define ADT7316_TEMP_INT_MASK		GENMASK_U32(4, 0)
-+#define ADT7516_AIN_INT_MASK		GENMASK_U32(7, 5)
- #define ADT7316_TEMP_AIN_INT_MASK	\
- 	(ADT7316_TEMP_INT_MASK)
- 
+Which case did you have in mind? Note that FIELD_MODIFY() needs
+a constant mask, so it cannot be used with e.g.
+hw_params->adint_inten_mask.
+For non-constant masks, we first need to introduce field_modify() ;-)
+
+> FIELD_MODIFY() is useful to shorten code, but if we are using it we should look
+> for all good opportunities in a driver.  Please check to see if there are more.
+
+I did a full scan, and it seems I did miss RZG2L_ADIVC_DIVADC_4.
+Will fix in v2, eventually.
+Thanks!
+
+Gr{oetje,eeting}s,
+
+                        Geert
 
 -- 
-2.53.0
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
