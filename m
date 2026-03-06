@@ -1,128 +1,157 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 745462DEA9B;
-	Fri,  6 Mar 2026 12:09:57 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 745F836827B;
+	Fri,  6 Mar 2026 12:10:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772798998; cv=none; b=JsLuorBj068dN1kHLXaBVKyJNtCk6yZcI5oNHwkkUvhtCjgpoBetpXSUnwNm8V0oVHP3+s03Ha8Eu+zzXLk77vIwDfygHSMkqZW3EGpPvmfcUsI9NEgwtdaqpJx8fdTBL5gG0s+GYqLUJ89YJEWCOqC4OHR+949tiA+Z/eL1wfE=
+	t=1772799054; cv=none; b=TrPH9FiiA2TNJc9EhQnUMubhd/wAY4fGU/8hxBLePZOfLZSpUz+fgNURgpfA4oJmd0Kxh4VqVlz4eA0V8OHdacIFlT1MvBDbAjw3o8cH0FIj7cePuUUe7q+Fi1QKgU4EFLnH+aAJGx00ZFH+13JHCyHyL/Hqf74DIjLcEWfptPg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772798998; c=relaxed/simple;
-	bh=nVVub8fwfY6QBhQ2M77L7oG9jsYVZgUizfpDlI1q/aA=;
+	s=arc-20240116; t=1772799054; c=relaxed/simple;
+	bh=B5zyNtA8RUGaQnpXYzohEYIM7Y4wffPpb+CBZysbP/U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Hw0N3S+UHpoksCCjt691yHoyJqOnxG1g3zo/oeyZDvDGVCHSoBYWqgjHKIr/n9FbttFwRdsuhbR8A62FswOEDQdyGk1S3Jz3u4OJkjT19Xaa7uDV/QsotvO7/4EvFG+wWLgtu66ubR540eiC0gzyltPQTv7aLlEErnl7quUJLms=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VHBPk8gX; arc=none smtp.client-ip=198.175.65.20
+	 Content-Type:Content-Disposition:In-Reply-To; b=lb7LIirgVqeX1vdKag8Q+ME6wFrDldrHiVwnbpOSbBbseAHOEfOC+Te721AUPlm4LeystxlDpkyNvr2pHz2pWPYm6LGiQ/PERXymnIMTM01+MtOtD9E9PtVa2xWG+adWT+uKV1Wgef3shBe/7oixTT7ufmlgeh7EvppYwvmgmXk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QLG/8NR2; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VHBPk8gX"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QLG/8NR2"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772798998; x=1804334998;
+  t=1772799053; x=1804335053;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:content-transfer-encoding:in-reply-to;
-  bh=nVVub8fwfY6QBhQ2M77L7oG9jsYVZgUizfpDlI1q/aA=;
-  b=VHBPk8gX6BDVqWK2fFC3lGbauh3BhL8jJAjuXu7dC5TYSfmb0uRFUVE2
-   /2a8/69n16ACpTHppdyyx91VM5jIJbuuhCj2mp4q00UxIZFmGmRCzplia
-   /KDoRTku3ioQ5PjQCu4pmEws5FoJgJ1cac7khl1lBrgR32Nn5IVpEwfLQ
-   XjE7rMIKHmhyBcTw12/M8ziQ2C8RdOwk256VlD4I8BxQi5XTULeoAGMXQ
-   artHyjlO74awDHkT4p+P6fwBwbh/OzOChXZ1nqhib54ggPMAdYt2jOfVE
-   NX26FQl+M6ifX8LFWBMwXzjHVYBotth0w2XM+0iGlji3aBsNbPPcMeGZn
-   Q==;
-X-CSE-ConnectionGUID: eNPGMou+Q+yKwJW/TuGxWA==
-X-CSE-MsgGUID: DBWUqi3URhmxYxj+o5mF8g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11720"; a="73605303"
+  bh=B5zyNtA8RUGaQnpXYzohEYIM7Y4wffPpb+CBZysbP/U=;
+  b=QLG/8NR2UrE1Kefo9IBDnNA7aT5mOefSQ77C2Bc1fChjv0/K9YMe+u1y
+   d3lo0j58HimlTKymRqEQH+kinMlEFPJ15zKmL0DB4Kh10XK+y2XKY8NB7
+   Mrw9ArW89fngan2WBFud7d+sqrOp+9jMnDi7bc9r3fTzHrGZLY1gpO/3A
+   2bfa91pQTtusBVLsSajD6swJ4NvDrh/ka2rHf4vBdVYGgo0Wy+ShMy9MK
+   Ez4YEw0rZpX9s9WE1jYsfBtqSoVnkSrohW9wRh/9K6JyUpP+FJ8IMBxBv
+   w7XzhsSiMeAuNjp5oIycpHvwHnnWdClEWkm5eIcL0TbRjZPG4HNmrGFuH
+   A==;
+X-CSE-ConnectionGUID: Zj+SGFddTRmvSnPuDudKFA==
+X-CSE-MsgGUID: CbG/0skUQNaMj5LHkLhJ9A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11720"; a="74093718"
 X-IronPort-AV: E=Sophos;i="6.23,104,1770624000"; 
-   d="scan'208";a="73605303"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:09:57 -0800
-X-CSE-ConnectionGUID: N+BTpeh3TRKfLK77LLHkTw==
-X-CSE-MsgGUID: iC4M1LnJSBKpRfjdq8Ysgg==
+   d="scan'208";a="74093718"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:10:52 -0800
+X-CSE-ConnectionGUID: J93Q8krRREO4wO1LuImtjw==
+X-CSE-MsgGUID: 21rElS+iRQSusnH5WRKz9w==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,104,1770624000"; 
-   d="scan'208";a="215690111"
+   d="scan'208";a="249464388"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.1])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:09:54 -0800
-Date: Fri, 6 Mar 2026 14:09:51 +0200
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 04:10:50 -0800
+Date: Fri, 6 Mar 2026 14:10:47 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: David Lechner <dlechner@baylibre.com>
-Cc: Andy Shevchenko <andy.shevchenko@gmail.com>,
-	Francesco Lavra <flavra@baylibre.com>,
+Cc: Francesco Lavra <flavra@baylibre.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 4/6] iio: ABI: Add support for floating-point numbers
- in buffer scan elements
-Message-ID: <aarED5TAWg2qFtxi@ashevche-desk.local>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 5/6] iio: ABI: Add partial quaternion modifier
+Message-ID: <aarER76yQLyasKJa@ashevche-desk.local>
 References: <20260304080519.2844101-1-flavra@baylibre.com>
- <20260304080658.2844434-1-flavra@baylibre.com>
- <70f25902-5c79-46f9-8c67-99633b22b5ac@baylibre.com>
- <098886563f5fdcde837989d0556ed9a2d8d3203b.camel@baylibre.com>
- <CAHp75Vdni=OgHiDi8G5s6CgBFZZuypOyJSo5DFjaKYFkLGPqkQ@mail.gmail.com>
- <dd6d1436-d509-4233-ba1f-5a3f870f35fb@baylibre.com>
+ <20260304080706.2844472-1-flavra@baylibre.com>
+ <aagc1_EkH3cqh41O@ashevche-desk.local>
+ <a265489380e7abc9343c536185bc203688c5bd29.camel@baylibre.com>
+ <ae79da24-1129-461f-a8ff-9dadfc863fee@baylibre.com>
+ <0e808a2522e4021187ccf6aca5d8baae4beeed6c.camel@baylibre.com>
+ <e145d179-d8c4-44d3-ac7d-1721b676cf01@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <dd6d1436-d509-4233-ba1f-5a3f870f35fb@baylibre.com>
+In-Reply-To: <e145d179-d8c4-44d3-ac7d-1721b676cf01@baylibre.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Mar 05, 2026 at 08:37:48AM -0600, David Lechner wrote:
-> On 3/5/26 3:23 AM, Andy Shevchenko wrote:
-> > On Thu, Mar 5, 2026 at 11:09â€¯AM Francesco Lavra <flavra@baylibre.com> wrote:
-> >> On Wed, 2026-03-04 at 16:45 -0600, David Lechner wrote:
-> >>> On 3/4/26 2:06 AM, Francesco Lavra wrote:
-> >>>> In the data storage description of a scan element, the first character
-> >>>> after the colon can have the values 's' and 'u' to specify signed and
-> >>>> unsigned integers, respectively.
-> >>>> Add 'f' as an allowed value to specify floating-point numbers formatted
-> >>>> according to the IEEE 754 standard.
+On Thu, Mar 05, 2026 at 08:40:26AM -0600, David Lechner wrote:
+> On 3/5/26 2:50 AM, Francesco Lavra wrote:
+> > On Wed, 2026-03-04 at 16:42 -0600, David Lechner wrote:
+> >> On 3/4/26 8:21 AM, Francesco Lavra wrote:
+> >>> On Wed, 2026-03-04 at 13:51 +0200, Andy Shevchenko wrote:
+> >>>> On Wed, Mar 04, 2026 at 09:07:05AM +0100, Francesco Lavra wrote:
 
 ...
 
-> >>>> -  Format is [be|le]:[s|u]bits/storagebits[Xrepeat][>>shift] .
-> >>>> +  Format is [be|le]:[f|s|u]bits/storagebits[Xrepeat][>>shift] .
+> >>>>> +What:          /sys/bus/iio/devices/iio:deviceX/in_rot_partial_qua
+> >>>>> tern
+> >>>>> ion_raw
 > >>>>
-> >>>>    * *be* or *le*, specifies big or little endian.
-> >>>> +  * *f*, specifies if floating-point.
-> >>>>    * *s* or *u*, specifies if signed (2's complement) or unsigned.
+> >>>>> +               Raw value of {x, y, z} components of the quaternion
+> >>>>> vector. These
+> >>>>> +               components represent the axis about which a
+> >>>>> rotation
+> >>>>> occurs, and are
+> >>>>> +               subject to the following costraints:
+> >>>>> +               - the quaternion vector is normalized, i.e. x^2 +
+> >>>>> y^2 +
+> >>>>> z^2 + w^2 = 1
+> >>>>> +               - the rotation angle is within the [-180, 180]
+> >>>>> range,
+> >>>>> i.e. the w
+> >>>>> +                 component (which represents the amount of
+> >>>>> rotation)
+> >>>>> is non-negative
+> >>>>> +               These constraints allow the w value to be
+> >>>>> calculated
+> >>>>> from the other
+> >>>>> +               components: w = sqrt(1 - (x^2 + y^2 + z^2)).
+> >>>>
+> >>>> Just to double check if we really do not have a special mathematical
+> >>>> term
+> >>>> for
+> >>>> that already. If we do, I prefer to have that over odd "partial
+> >>>> quaternion".
 > >>>
-> >>> I would keep all of the format options on one bullet point.
+> >>> A quaternion is often represented as w + xi + yj + zk, i.e. it's
+> >>> composed
+> >>> of a real coefficient (w) and 3 imaginary coefficients (x, y, z). With
+> >>> this
+> >>> notation, the (x, y, z) components are referred to as the imaginary
+> >>> part of
+> >>> the quaternion.
+> >>> Alternatively, a quaternion is represented as the combination of a
+> >>> scalar
+> >>> value w and a 3D vector value (x, y, z). With this notation, the (x, y,
+> >>> z)
+> >>> components are referred to as the vector part of the quaternion; this
+> >>> can
+> >>> be confusing, since the quaternion as a whole is often considered as a
+> >>> 4D
+> >>> vector.
 > >>
-> >> That's what I did initially, but Andy suggested doing differently [1].
+> >> I'm surprised there isn't a common name for this. When I went looking,
+> >> the
+> >> thing that came up most often is that Doom 3 used this in their MD5 file
+> >> format. So maybe IIO_MOD_DOOM3_QUATERNION? (joking)
+> >>
+> >> I do think we could come up with something better than "partial" though.
+> >>
+> >> My first thought is IIO_MOD_3D_QUATERNION since it is a 3-dimentional
+> >> number,
+> >> but I could see that being confusing to some since quaternions are
+> >> generally
+> >> used for rotations in 3-D space.
+> >>
+> >> Maybe something like IIO_MOD_3VALUE_QUATERNION or
+> >> IIO_MOD_COMPRESSED_QUATERNION
+> >> or just IIO_MOD_3QUATERNION?
 > > 
-> > And still I think it's better to not mix them. The floating in the
-> > same sentence is confusing (along with 2's complement mention and
-> > sign).
+> > Or, since this represents the axis of rotation, perhaps something like
+> > IIO_MOD_QUATERNION_AXIS?
 > 
-> Then I would split up all 3. It is strange to mix some and not
-> all.
+> Sounds OK to me.
 
-I don't find it 'strange'. The integer are grouped together, floats do not
-belong to that group.
-
-...
-
-> >>>> -is [be|le]:[s|u]bits/storagebits[Xrepeat][>>shift], where:
-> >>>> +is [be|le]:[f|s|u]bits/storagebits[Xrepeat][>>shift], where:
-> >>>>
-> >>>>  - **be** or **le** specifies big or little-endian.
-> >>>> +- **f** specifies if floating-point.
-> >>>>  - **s** or **u** specifies if signed (2's complement) or unsigned.
-> >>>
-> >>> same here
-> >>
-> >> [1] https://lore.kernel.org/linux-iio/aZ7dCdLs5xcJ4UGW@smile.fi.intel.com/
-> > 
-> > Same here.
+Agree, this is at least better than opaque "partial".
 
 -- 
 With Best Regards,
