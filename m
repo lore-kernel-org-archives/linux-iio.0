@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6EE13242B2;
-	Fri,  6 Mar 2026 14:54:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61EE130EF87;
+	Fri,  6 Mar 2026 15:04:10 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772808843; cv=none; b=KcOfHtwx2OJLLr9PyuXmF4jbdpWks+DpCQhYjepvb+B2SltZcme3wojz4kZD4IX6uN53jzDKdFWVEUQ4quXv42tzy0yPLa/ERnDhQENuWBR862fYANM6w+4Z0AN8dUXIjpB+VbK5MmvgsCuysFKdQSJCWDknNZPySE4UjwRs3yM=
+	t=1772809452; cv=none; b=iYFovRNKScLternUxXG5bpPk9V1Kji43z1ae3dfcOUF4U53VsImp8I8B2TKmOX1RN450sL7S3FRvpbQj0Z65XtheqUGxpcOPE7wM3X++L8q4BTUBXh5LJr5NelY8y4I/Jh2Tj/4STmwtQv/PjFi+Os/1O8NJlMGoHall4vfnh3E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772808843; c=relaxed/simple;
-	bh=UCrTSNwjQsS5GkBHqGVBy/OXjFKvnuBgLBSgAWMk2rI=;
+	s=arc-20240116; t=1772809452; c=relaxed/simple;
+	bh=SAhDBUxkXICGIXFT0B7dQT8RXO7TBcx2mqPsOeIUKhU=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iwOSRHUc0IX1Rop2EJ9aFaGITXgylPjl8qAKYqAofsEcMABGm98U621nR9OrE57RtcugWF5S0hrXmkxlwc7CaLIn4R65fVJr4DLNwgabkkp+PT9xh33ezBVVKl+fpUbSiCmkalqCT6gvvRjYTfv+UB2rSo7S3gcodVFwxkF2Udc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=L8lxzXoI; arc=none smtp.client-ip=198.175.65.21
+	 Content-Type:Content-Disposition:In-Reply-To; b=cLqn/oGkuiSwWcLT3vg0dnv8VyrNH66q/5l9PVOkbzdddq/0glvuHsIjh9/ljepYdEOMaJGT6s4EMQLlKdsr0TJlQH5Y1lsfKJvTFt73ZfgDD9Oevlf+xzpqAYPdbAq1ka+9AnoO0adQHM/lZD3rc7EH7TQYPdvY7soUQqcOB0I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=YztM49ix; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="L8lxzXoI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="YztM49ix"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772808842; x=1804344842;
+  t=1772809450; x=1804345450;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=UCrTSNwjQsS5GkBHqGVBy/OXjFKvnuBgLBSgAWMk2rI=;
-  b=L8lxzXoI1vB8IhTFnnX3Eu6Rnq/7EfDpRvtAiJxk5jQ+oiGMhktxGdMX
-   fyWcz3STY3KnXMT0sUTfeCJbDljQxgPETfa63Fk20c/alDcspNFHjq7/s
-   HfTPAPj14zoO3gvbiycYUUK6v15s4wisfwpartFbCd0LU0M0Psk20ou+N
-   /hunqTitNEWHvAXMYxIPCAR+pxsMrhuII+W+nK2uqNqXb7PJ1JzgbqK0q
-   7uPxFZrtqPgrG0FN2y/G2rSogF4yKNbiE2qO/Rww6y1deFyWqif5x+D3r
-   T50CrBQCW37V/U+3lnadOMxDAv+leUa8k6ji7LlURVkYuwAKNnyf2Hkrz
+  bh=SAhDBUxkXICGIXFT0B7dQT8RXO7TBcx2mqPsOeIUKhU=;
+  b=YztM49ixIL4qIvlw/u2DKWfRAIbcT2jIfybuI0YphufAsS3MNjANfJoa
+   9XhJDEBAARq6QPLEZFiMtTgYTd/ZOsj7bNJ+b3lSXvvnkC2/cAi2R94tG
+   s0p3GC+QBJIz5NaV81vcwxjQS6BGxWWHymiqu2yqk2j+DnXsvIY0yyhit
+   eWxBEXHkXLkIzZEu6gwKQDjK0qsgpCK2YQx1FzW8ouJzQNEpAeFyvJOWQ
+   iR4PhH6dGH0XrZOqGHpDGBKXyXOoyMWMjOUXKFYPQ71pjzrMIOxVI29z+
+   E0OCv4kwbpyONb2dEW/+YUGPwpoNntRzL6axsSFThFSkSXCd/nD915QVW
    g==;
-X-CSE-ConnectionGUID: j7K6nTXNShOVVXtfYIshIg==
-X-CSE-MsgGUID: FP1V6KQBRumxWvjuv9fs5A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11721"; a="73790725"
+X-CSE-ConnectionGUID: fnA4m+6aQ8OwGVKN+n25hw==
+X-CSE-MsgGUID: wxdcf/nbSRqxw3oiTBwj9A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11721"; a="96534675"
 X-IronPort-AV: E=Sophos;i="6.23,105,1770624000"; 
-   d="scan'208";a="73790725"
-Received: from orviesa004.jf.intel.com ([10.64.159.144])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 06:54:01 -0800
-X-CSE-ConnectionGUID: gu1gvYqbTTWKIPZ2C2kkog==
-X-CSE-MsgGUID: EACPI++4S/unSyyJd1w1IA==
+   d="scan'208";a="96534675"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 07:04:09 -0800
+X-CSE-ConnectionGUID: eThrUbIkQ5W1esjHJeVdEg==
+X-CSE-MsgGUID: 9GYdynhUSZ+aN2/k3SwwMA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,105,1770624000"; 
-   d="scan'208";a="223512783"
+   d="scan'208";a="218263460"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.1])
-  by orviesa004-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 06:53:58 -0800
-Date: Fri, 6 Mar 2026 16:53:55 +0200
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Mar 2026 07:04:06 -0800
+Date: Fri, 6 Mar 2026 17:04:04 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Michael Harris <michaelharriscode@gmail.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
@@ -54,10 +54,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
 	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] staging: iio: adt7316: remove shift/offset macros
-Message-ID: <aarqg9NBUYpkFKDW@ashevche-desk.local>
+Subject: Re: [PATCH v2 3/4] staging: iio: adt7316: add config names to
+ registers and reorder
+Message-ID: <aars5G53on8L_tzg@ashevche-desk.local>
 References: <20260305-adt7316-correct-macros-v2-0-3702e3841c42@gmail.com>
- <20260305-adt7316-correct-macros-v2-2-3702e3841c42@gmail.com>
+ <20260305-adt7316-correct-macros-v2-3-3702e3841c42@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -66,53 +67,131 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260305-adt7316-correct-macros-v2-2-3702e3841c42@gmail.com>
+In-Reply-To: <20260305-adt7316-correct-macros-v2-3-3702e3841c42@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Mar 05, 2026 at 11:16:59PM -0800, Michael Harris wrote:
-> Remove shift/offset macros and instead use the corresponding mask with
-> FIELD_GET(), FIELD_PREP(), or FIELD_FIT().
+On Thu, Mar 05, 2026 at 11:17:00PM -0800, Michael Harris wrote:
+> Add config names to macros to make it more clear which register they're
+> affecting. Also renamed ADT7316_EN to further clarify what
+> it's enabling.
 > 
-> In cases where an appropriate mask didn't exist, it was created.
-> 
-> One of the shift/offset macros was used for a convoluted dynamic
-> bitfield extraction. In its place, a helper function,
-> adt7316_extract_ad_lsb(), was created so the shift/offset could be
-> removed.
+> Some macros were reordered, so that mask values were below the actual
+> mask.
 
 ...
 
->  #include <linux/i2c.h>
->  #include <linux/rtc.h>
->  #include <linux/module.h>
-> +#include <linux/bitfield.h>
+> +#define ADT7516_CONFIG1_SEL_AIN1_2_EX_TEMP_MASK	0x6
 
-Try to squeeze it to make a longest (but sparse AFAICS) ordered list of
-inclusions. With given context
-
-  #include <linux/bitfield.h>
-  #include <linux/i2c.h>
-  #include <linux/rtc.h>
-  #include <linux/module.h>
-
-gives 3 out of 4 in order.
+GENMASK*()
 
 ...
 
->  	dac_config = chip->dac_config & (~ADT7316_DA_EN_MODE_MASK);
-> -	dac_config |= data << ADT7316_DA_EN_MODE_SHIFT;
-> +	dac_config |= FIELD_PREP(ADT7316_DA_EN_MODE_MASK, data);
+> +#define ADT7516_CONFIG1_SEL_EX_TEMP		0x4
+> +#define ADT7516_CONFIG1_SEL_AIN3		0x8
 
-FIELD_MODIFY() ?
+Bits? Values?
 
 ...
 
-> -		data = msb << ADT7316_T_VALUE_FLOAT_OFFSET;
-> +		data = FIELD_PREP(ADT7316_AD_MSB_MASK, msb);
->  		data |= lsb & ADT7316_LSB_IN_TEMP_MASK;
+> +#define ADT7316_CONFIG1_INT_EN			0x20
+> +#define ADT7316_CONFIG1_INT_POLARITY		0x40
 
-Ditto and so on...
+These looks like bits, why not BIT*()?
+
+> +#define ADT7316_CONFIG1_PD			0x80
+
+A bit?
+
+...
+
+> +#define ADT7316_CONFIG2_AD_SINGLE_CH_MASK	0x3
+> +#define ADT7516_CONFIG2_AD_SINGLE_CH_MASK	0x7
+
+GENMASK()
+
+> +#define ADT7316_CONFIG2_AD_SINGLE_CH_VDD	0
+> +#define ADT7316_CONFIG2_AD_SINGLE_CH_IN		1
+> +#define ADT7316_CONFIG2_AD_SINGLE_CH_EX		2
+> +#define ADT7516_CONFIG2_AD_SINGLE_CH_AIN1	2
+> +#define ADT7516_CONFIG2_AD_SINGLE_CH_AIN2	3
+> +#define ADT7516_CONFIG2_AD_SINGLE_CH_AIN3	4
+> +#define ADT7516_CONFIG2_AD_SINGLE_CH_AIN4	5
+> +#define ADT7316_CONFIG2_AD_SINGLE_CH_MODE	0x10
+
+...
+
+> +#define ADT7316_CONFIG2_DISABLE_AVERAGING	0x20
+> +#define ADT7316_CONFIG2_EN_SMBUS_TIMEOUT	0x40
+> +#define ADT7316_CONFIG2_RESET			0x80
+
+Bits?
+And so on...
+
+...
+
+Are you going to have this conversion in a separate patch?
+
+...
+
+> +	switch (chip->config2 & ADT7516_CONFIG2_AD_SINGLE_CH_MASK) {
+> +	case ADT7316_CONFIG2_AD_SINGLE_CH_VDD:
+>  		return sysfs_emit(buf, "0 - VDD\n");
+> +	case ADT7316_CONFIG2_AD_SINGLE_CH_IN:
+>  		return sysfs_emit(buf, "1 - Internal Temperature\n");
+> +	case ADT7316_CONFIG2_AD_SINGLE_CH_EX:
+>  		if (((chip->id & ID_FAMILY_MASK) == ID_ADT75XX) &&
+> +		    (chip->config1 & ADT7516_CONFIG1_SEL_AIN1_2_EX_TEMP_MASK) == 0)
+>  			return sysfs_emit(buf, "2 - AIN1\n");
+>  
+>  		return sysfs_emit(buf, "2 - External Temperature\n");
+> +	case ADT7516_CONFIG2_AD_SINGLE_CH_AIN2:
+> +		if ((chip->config1 & ADT7516_CONFIG1_SEL_AIN1_2_EX_TEMP_MASK) == 0)
+>  			return sysfs_emit(buf, "3 - AIN2\n");
+>  
+>  		return sysfs_emit(buf, "N/A\n");
+> +	case ADT7516_CONFIG2_AD_SINGLE_CH_AIN3:
+> +		if (chip->config1 & ADT7516_CONFIG1_SEL_AIN3)
+>  			return sysfs_emit(buf, "4 - AIN3\n");
+>  
+>  		return sysfs_emit(buf, "N/A\n");
+> +	case ADT7516_CONFIG2_AD_SINGLE_CH_AIN4:
+>  		return sysfs_emit(buf, "5 - AIN4\n");
+>  	default:
+>  		return sysfs_emit(buf, "N/A\n");
+
+Side note:
+Instead of this long switch I would rather introduce  a clear string array per
+each of the possible variant. Note, that linker will eliminate string duplication,
+so it won't be a problem.
+
+...
+
+> +	switch (chip->dac_config & ADT7316_DAC_CONFIG_EN_MODE_MASK) {
+> +	case ADT7316_DAC_CONFIG_EN_MODE_SINGLE:
+>  		return sysfs_emit(buf,
+>  			"0 - auto at any MSB DAC writing\n");
+> +	case ADT7316_DAC_CONFIG_EN_MODE_AB_CD:
+>  		return sysfs_emit(buf,
+>  			"1 - auto at MSB DAC AB and CD writing\n");
+> +	case ADT7316_DAC_CONFIG_EN_MODE_ABCD:
+>  		return sysfs_emit(buf,
+>  			"2 - auto at MSB DAC ABCD writing\n");
+> +	default: /* ADT7316_DAC_CONFIG_EN_MODE_LDAC */
+>  		return sysfs_emit(buf, "3 - manual\n");
+>  	}
+
+Also can be just a string array with indexed access and a single call to
+sysfs_emit(buf, "%s\n");
+
+
+...
+
+>  static IIO_DEVICE_ATTR(ex_temp_AIN1, 0444, adt7316_show_ex_temp_AIN1,
+
+Side note:
+Can IIO_DEVICE_ATTR_RO() be used here (and in other similar cases)?
+
 
 -- 
 With Best Regards,
