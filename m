@@ -1,129 +1,225 @@
-Received: from mail-oi1-f170.google.com (mail-oi1-f170.google.com [209.85.167.170])
+Received: from mail-dy1-f170.google.com (mail-dy1-f170.google.com [74.125.82.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B8B632DB7A0
-	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 20:37:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D360823FC41
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 21:04:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772915829; cv=none; b=pCD2Li1lPdAy7aOn/oUQqRDo9MZOFbH/cRZXZrqjH8uC3frtBkENeef6pM24G4UO9UIB+sQjW0vuO/oDLaRr+unu00CBi920aO/eWXZoyKpR+PHIgkrUzXvbzJXoEWNWTJkp9ooxKVw/eRxoUrRepAbmitohFCyQ6v11mJQpAMQ=
+	t=1772917475; cv=none; b=nHVix9W+912BMcJvUSJO1NsBrq2O2wpmAzQ8UEo0RC5xBLXv2l4FMweWD2B4NmNlSEQoO04de7Hg/2r3+VS+WZTmWUP61B9JABVhZb/q9fRDHvhbudrXK04kGw4zbBHy+kuryN0huOuCrxBLSR4KjawciaP1Xw8hz0ayh6gYoTY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772915829; c=relaxed/simple;
-	bh=IjBOwiHWwDAplGXF3s7gu2jCw/OhZ6b0Q3mSOOl18j4=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=aOo+qyNnrPJCn67MAS0LFqRHGGaHs0xiFTN0eY1M84dn83m1goETxXpIbNJiYp9DGYHs5KFwp5ArvPmxe1FNhc3MysYGqh/Gw5perFeRAC5sZtp2TCYzMnB/G5EaH1w39gSzZNsYz3fCBwM2u7arl4Rr8wtQ1R8nXHCoyFaUC3c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=wc2QxkAp; arc=none smtp.client-ip=209.85.167.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1772917475; c=relaxed/simple;
+	bh=Adpf5avf2QfFHKSA0d3Du40uWSWQ7I6ZqoGIBSBkoXA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=NLbTfNS+9mATnneyFyaa0pkBcgCEBfPV2Ai3Ft3dSgafi+XxZ6EtITezKZNbsx1qwEkLD7J/0XgQluNtGgB+Fr3ge/3T3aJiJlb1VIYobSlK/tpEhM3REtWFaODUFI8smFgXjDo1nvvxzZlVw9dkS+biZgF1dzS8Qc/hcirZwK4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nLc5dmF7; arc=none smtp.client-ip=74.125.82.170
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="wc2QxkAp"
-Received: by mail-oi1-f170.google.com with SMTP id 5614622812f47-4645dde00a7so10463233b6e.1
-        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 12:37:06 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nLc5dmF7"
+Received: by mail-dy1-f170.google.com with SMTP id 5a478bee46e88-2be19f05d7dso3117169eec.1
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 13:04:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772915826; x=1773520626; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=YuiXX4s6eiDajFGdJAZ+wVHabHyzBcBn0KoLcdMdMJE=;
-        b=wc2QxkApVUN3nShXqI0v5ytYcDnm/5eV3KtRXllLFVSYdAHQVsuoDmNkH7y0yDWBD2
-         E5WjAjQ4QukNOakGFFTIeq7aHYM5DvQyz9NE1o2RMx37J2YPhqUI4+KyWroNO6QIdRp2
-         HjImUKLs1bSuO5pdhLDqqrwo9dqoU6DND52vz9BTY2FZ5t97baZ0Xi20l3LIHIPxWDv7
-         2J3s52DY+WPAF0RNOzODDYWJANvCQHVO7XY6QijIGn2tL77P8adUOTJGM80ZwDAd8ASc
-         DH2+/F+224KKmbtaxuJPWQOkCfjcCBjJVid1C9D/IIJs49p0qdNhzb5zDtp53DMoitKL
-         ycjg==
+        d=gmail.com; s=20230601; t=1772917472; x=1773522272; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=TPdbwovxerSjT/ojrWEbDVuDl8NEMcqqgw+5IiHu7CU=;
+        b=nLc5dmF74FahWGuANlEaLRD0Wez3Z6/A1+p/Bvo2TbBm48KfqymHxZfchxPinR70gY
+         NEWsx4AZQZzxCpxiZoqpREGL6okKNSBEtS8XO5B+LdNAKBrAJw7q5M5zWCs3UZZ9M86y
+         2S8JN/z9QYM61RhFrYpKgTGJ+DUYGC9UF+Iku7a4eZMsAkn34cHShty8WixRaiQh6lvU
+         SBTBTUd4Q/Tm5ff5vJxiSEc00XBmf0ib7MxJ1G0HpbBwZ0DWtaCuSORdDw1WtSKKLmVt
+         QxGx4SnuiLrNEeUX8TXVB7ZX0fDusHrSNlqIWk5lQzRNH5lGmbZ3zll1o9qqFQvsLK06
+         cD8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772915826; x=1773520626;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=YuiXX4s6eiDajFGdJAZ+wVHabHyzBcBn0KoLcdMdMJE=;
-        b=xQaH7EBb99QClXEMB6Zt5Rbji/HRcthbxHSaweHR5XVrGd1F+E252UD+245zFYDr83
-         fENb7JNBaGHN7d6YC9JrIjnLpopwFnHLYiK55rcy7wSq8GOn0kuLm6TXTtoVxtPuFyhx
-         KoioIkHl90PT4PMMFbUhD9yNcTaw6HYwm3Z5MqYuIJflyaG47znAJQm0M7coPeZCnghP
-         YYjqza8Bn3eKTlCtRHE1BYgOfAdLG8YYmUEq4k0SxaNq8L6zCFz+nsqPh0Cg3BIQJ6pB
-         W8Sa4d1ZeboKoYGdgovaAzZNBkH6BnwgpTvYmxu6xREcboLIfGnR2kcUPoFlfAityqSi
-         6eqg==
-X-Forwarded-Encrypted: i=1; AJvYcCW4ZMtndZ73p3yaPpV17+ekRev7MlSxigMatwpTmPAZ7+aqGHupiWVwW5lW9MDv1Aj5c6atLa+e5vo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxlW9MZ0s6Kj7vHNDU8YaDX5DpYaKdu9ZFMUrUCi5izsKLSC651
-	FZNABYOr9pyWQZr3qL2T26+hzEqLBVcVelwWMsGj7lT1zBy2UtGgHKQ218BXkwxIxXw=
-X-Gm-Gg: ATEYQzwegSinAV4Vacn42iv0mydEIc2orZmYcLFb2tgLoihfC0mH29b1ABSdtqGyk5/
-	UtmuadwCq4QrAr8hGNyIvDs4hhdI2VTOUq7AoL6eM73k13PHnBYg4gNrOjKpTrddO1fqaM0sKVR
-	qmZO7NHaaku1l4cqCNQOyZFjOSj3nxWlJHm+/ztPlPxgRCWFo8xx1SNNWEyK+CXwFRtZwIVonnp
-	NYhWDBrObAbeUsOw35vpek/o8eqasMES0KwU0Oi0XqNzhMEF2IZoiTpsU/1aIKeslGPpps+ZHER
-	1NflPPVZyMbPuiVWI3Jo0EwgITnnGaD+4e5VXa7ERwhGUjPlglM1hWnr9gM68rZvDeVy7zWqs0G
-	YDMMlEG73/MDq8X47kimqzyiML1aC2vxaEReJkJh0MCfWNYU0mMMuT1H0GpQ22xc+Bayxy7O9oC
-	4yxTESv/G4KKTKy/bw/tmK594KhFdAi+yYGdBvlCSgjFKWg32J9rdyLyz3Bsi58enkqmDuqAtN/
-	Q==
-X-Received: by 2002:a05:6808:e803:10b0:466:f4cc:2b3c with SMTP id 5614622812f47-466f4cc81a2mr696529b6e.8.1772915825738;
-        Sat, 07 Mar 2026 12:37:05 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:cccf:5174:fa72:c520? ([2600:8803:e7e4:500:cccf:5174:fa72:c520])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-466dfa96903sm2918496b6e.13.2026.03.07.12.37.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Mar 2026 12:37:04 -0800 (PST)
-Message-ID: <75a16958-8a14-48e9-8b86-03d9797f3d4d@baylibre.com>
-Date: Sat, 7 Mar 2026 14:37:02 -0600
+        d=1e100.net; s=20230601; t=1772917472; x=1773522272;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=TPdbwovxerSjT/ojrWEbDVuDl8NEMcqqgw+5IiHu7CU=;
+        b=nw4IVhlTU5MLNyIobEZOPr4u7c2YCHW+Zqq/6SC05ds2EEfg3Xbp5KBiJHfu2WQNoE
+         qJqUIKNjVtVaFrL6gi8DFwqbb4fq7PmAu706XNmJpf4vKOK9oGv2TiADoJQa6vvbR6WB
+         03WvIcZ2fHwN+JAlYcteIZT4EwZX4Ti8iHHfAX0LCFlc2BD6n3Dxb51YKAwGKb3GSB1e
+         2t3NdjVAjEp8LcO4xxD1+vS8c3C6IY1pL30okLBvprmrSbb0Qr3hbmpzDK9BVDZ4wMya
+         4j/A6k3yQlZro+2nAwnYVYOOJU8AZpEXlI7a27BfdXWPKwIgkU2BUpXyS4dRVpX7nVRl
+         be4w==
+X-Forwarded-Encrypted: i=1; AJvYcCV0gTsGKpC9iskOBlBcYey2j63D1ZKU4eHmUOkeC71zlCuJJz8/LtmWjBqrIdoGRyHftduR1APR2Oo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YynmUa4Ah+RIEpWQISLL8MMDbIntTHjA6is8uNqXkIZicum1EAn
+	f0i8SC5moP6EYcfwyZ3LhgtkjgKJKz6IzPH1NN1jGuXvut2P6/JusFvD
+X-Gm-Gg: ATEYQzxuyUmtjL5zJ+fTKcL7sgb6+GRlFCCComd0wUOP8/6cIkHSNiK0OBycFD0BG79
+	mZar7+aT+ejPheuxnzx1r9Ei4raudx81OsR1cnah0zmunKQjC+e1v6qpoOmBDkPAUEoDSvpXBIo
+	Iyb9nNrVxeB5siViAsOgkParBZDHHO8+qf441Xt0fVBEcbOK1Cs4IpvtTxdP6CqWalLRQQjsNuG
+	1XDy7Wn8lM4TNhMsM9MqnpFTNabwDv2mHd0a3Nt01scI8EG/K5qMhBzRv+dAuo4sBFYu6GslcYq
+	ILObQzvctWJ2h4bs7PPTuR69ooJZDzzGgPYtRqSmsUC9HT+B/XA46eoLzQ2vslHRIMTrUCFiGR1
+	CBkYJ7J1j9eGs9QoyOLVEGdQ4dxk5nxCm+pgSVO98YhGxtopNtJFvNJXXQI086SB/oLFA2r8yz5
+	Sr9W9YprZy5Vzr+4OSe/xqCF/w+NEdev0=
+X-Received: by 2002:a05:693c:2c81:b0:2a4:3594:d54e with SMTP id 5a478bee46e88-2be4e04c52emr2609567eec.27.1772917471800;
+        Sat, 07 Mar 2026 13:04:31 -0800 (PST)
+Received: from localhost ([2804:30c:966:7b00:fd18:61b8:43a7:4049])
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2be4f948324sm4699773eec.17.2026.03.07.13.04.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Mar 2026 13:04:30 -0800 (PST)
+Date: Sat, 7 Mar 2026 18:05:06 -0300
+From: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To: Bhargav Joshi <rougueprince47@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-staging@lists.linux.dev
+Subject: Re: [RFC PATCH] staging: iio: ad9832: modernize ABI and remove dds.h
+ dependency
+Message-ID: <aayTAmJ4x5_965Gg@debian-BULLSEYE-live-builder-AMD64>
+References: <20260305210347.120446-1-rougueprince47@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [RFC PATCH] iio: adc: ade9000: fix stale data in waveform buffer
- read
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>,
- antoniu.miclaus@analog.com
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260302072001.55737-2-giorgitchankvetadze1997@gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260302072001.55737-2-giorgitchankvetadze1997@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260305210347.120446-1-rougueprince47@gmail.com>
 
-On 3/2/26 1:20 AM, Giorgi Tchankvetadze wrote:
-> ade9000_configure_scan() always sets the SPI transfer length to half
-> the waveform buffer:
+Hello Bhargav,
+
+On 03/06, Bhargav Joshi wrote:
+> The AD9832 driver currently relies on legacy custom IIO macros defined
+> in dds.h. This triggers checkpatch.pl warnings (NON_OCTAL_PERMISSIONS)
+> and, more importantly, exposes a non-standard sysfs ABI (e.g.,
+> frequency0, frequency1, phase0-3) directly to user space.
 > 
->   st->xfer[1].len = (st->wfb_nr_samples / 2) * 4;
+> This patch removes the custom macros and migrates the driver to standard
+> IIO API mechanisms:
+> - Standard attributes (frequency, phase) now use info_mask_separate.
+> - Non standard specific toggles (frequencysymbol, phasesymbol,
+>   pincontrol) have been migrated to an ext_info array.
+> - Remove dds.h header dependency.
+> - Pointless frequency_scale and phase_scale attributes are dropped as
+>   suggested by Jonathan in
+>   https://lore.kernel.org/linux-iio/20251231180939.422e9e62@jic23-huawei/
 > 
-> However, ade9000_iio_push_buffer() iterates over the full
-> wfb_nr_samples, pushing twice as many samples as were actually read
-> via SPI. The second half contains stale or uninitialized data from
-> the rx buffer.
+> NOTE: This patch introduces an intentional ABI changes. The non-standard
+> attributes (out_altvoltage0_frequency0, etc.) have been removed. They
+> are replaced by standard attributes (out_altvoltage0_frequency and
+> out_altvoltage0_phase). Routing to correct register while writing is
+> handled by checking currently active frequencysymbol or phasesymbol.
 > 
-> Fix by setting the SPI transfer length to the full waveform buffer
-> size in ade9000_iio_push_buffer(), since the trigger mode fills the
-> entire buffer before firing the interrupt.
+> Testing: This patch has been strictly compile-tested. I do not have
+> access to physical AD9832 hardware. I am submitting this as an RFC to
+> see if these changes are acceptable, and to ask if someone with physical
+> hardware could test thisg and provide a Tested-by tag.
 > 
-> Fixes: 81de7b4619fc ("iio: adc: add ade9000 support")
-> Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+> Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
 > ---
->  drivers/iio/adc/ade9000.c | 2 ++
->  1 file changed, 2 insertions(+)
+> This patch is heavily inspired from discussions in following
+> thread.
+> https://lore.kernel.org/linux-iio/20251215190806.11003-1-tomasborquez13@gmail.com/
+
+Thanks for making that clear. Still, a change log highlighting the main
+differences between yours and Tomas' patches would have been appreciated.
+
+By the way, I'm assuming Tomas is fine with you caring on the driver update?
+
+More comments inline.
 > 
-> diff --git a/drivers/iio/adc/ade9000.c b/drivers/iio/adc/ade9000.c
-> index db085dc5e526..c6eb06ef8d37 100644
-> --- a/drivers/iio/adc/ade9000.c
-> +++ b/drivers/iio/adc/ade9000.c
-> @@ -804,6 +804,8 @@ static int ade9000_iio_push_buffer(struct iio_dev *indio_dev)
->  
->  	guard(mutex)(&st->lock);
->  
-> +	st->xfer[1].len = st->wfb_nr_samples * 4;
-> +
->  	ret = spi_sync(st->spi, &st->spi_msg);
->  	if (ret) {
->  		dev_err_ratelimited(&st->spi->dev,
+> Since this is an RFC please let me know if these changes are acceptable.
+> 
+>  drivers/staging/iio/frequency/ad9832.c | 135 +++++++++++++++----------
+>  1 file changed, 80 insertions(+), 55 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+> index b87ea1781b27..066a1b9ee8d5 100644
+> --- a/drivers/staging/iio/frequency/ad9832.c
+> +++ b/drivers/staging/iio/frequency/ad9832.c
+...
+> -/*
+> - * see dds.h for further information
+> - */
+> +#define AD9832_EXT_INFO(_name, _ident) { \
+> +	.name = _name, \
+> +	.write = ad9832_write_ext_info, \
+Why no .read procedure? I think at least for the
+out_enable/out_altcurrent0_enable attribute we would want a read function.
 
-This could use some more comments in the code to explain the different
-code paths. I have a feeling this isn't the ideal solution. Writing
-over .len in a separate function from when the xfer is set up is
-a recipe for more bugs.
+> +	.private = _ident, \
+> +	.shared = IIO_SEPARATE, \
+> +}
+>  
+> -static IIO_DEV_ATTR_FREQ(0, 0, 0200, NULL, ad9832_write, AD9832_FREQ0HM);
+> -static IIO_DEV_ATTR_FREQ(0, 1, 0200, NULL, ad9832_write, AD9832_FREQ1HM);
+> -static IIO_DEV_ATTR_FREQSYMBOL(0, 0200, NULL, ad9832_write, AD9832_FREQ_SYM);
+> -static IIO_CONST_ATTR_FREQ_SCALE(0, "1"); /* 1Hz */
+> -
+> -static IIO_DEV_ATTR_PHASE(0, 0, 0200, NULL, ad9832_write, AD9832_PHASE0H);
+> -static IIO_DEV_ATTR_PHASE(0, 1, 0200, NULL, ad9832_write, AD9832_PHASE1H);
+> -static IIO_DEV_ATTR_PHASE(0, 2, 0200, NULL, ad9832_write, AD9832_PHASE2H);
+> -static IIO_DEV_ATTR_PHASE(0, 3, 0200, NULL, ad9832_write, AD9832_PHASE3H);
+> -static IIO_DEV_ATTR_PHASESYMBOL(0, 0200, NULL,
+> -				ad9832_write, AD9832_PHASE_SYM);
+> -static IIO_CONST_ATTR_PHASE_SCALE(0, "0.0015339808"); /* 2PI/2^12 rad*/
+> -
+> -static IIO_DEV_ATTR_PINCONTROL_EN(0, 0200, NULL,
+> -				ad9832_write, AD9832_PINCTRL_EN);
+> -static IIO_DEV_ATTR_OUT_ENABLE(0, 0200, NULL,
+> -				ad9832_write, AD9832_OUTPUT_EN);
+> -
+> -static struct attribute *ad9832_attributes[] = {
+> -	&iio_dev_attr_out_altvoltage0_frequency0.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_frequency1.dev_attr.attr,
+> -	&iio_const_attr_out_altvoltage0_frequency_scale.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_phase0.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_phase1.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_phase2.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_phase3.dev_attr.attr,
+I'd try to split this patch into smaller ones.
+One for updating the frequency and phase channels.
 
-The xfer is set up in ade9000_configure_scan() and that function
-has an argument of either ADE9000_REG_WF_HALF_BUFF or ADE9000_REG_WF_BUFF.
-Could we use that to determine the correct .len and set it in one
-place in ade9000_configure_scan()?
+> -	&iio_const_attr_out_altvoltage0_phase_scale.dev_attr.attr,
+One patch for dropping the _scale attributes.
+
+> -	&iio_dev_attr_out_altvoltage0_pincontrol_en.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_frequencysymbol.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_phasesymbol.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_out_enable.dev_attr.attr,
+> -	NULL,
+> +static const struct iio_chan_spec_ext_info ad9832_ext_info[] = {
+> +	AD9832_EXT_INFO("pincontrol_en", AD9832_PINCTRL_EN),
+Why did you drop the comment about making pincontrol_en a DT property?
+Nevertheless, pincontrol_en is another piece I'd put in a separate patch.
+
+> +	AD9832_EXT_INFO("frequencysymbol", AD9832_FREQ_SYM),
+> +	AD9832_EXT_INFO("phasesymbol", AD9832_PHASE_SYM),
+Maybe I'm missing something but this doesn't seem to follow the suggested ABI.
+https://lore.kernel.org/linux-iio/20251221194358.3284acb4@jic23-huawei/
+Why did you chose this particular naming for the ABI?
+
+> +	AD9832_EXT_INFO("out_enable", AD9832_OUTPUT_EN),
+I think it is okay to change the enable from device attribute to channel
+attribute in this case since it's staging and this device has only one channel.
+Though, I believe we should call it out_altcurrent0_enable, as proposed on
+Tomas' set. I'd also set this on a separate patch.
+
+> +	{ }
+>  };
+>  
+> -static const struct attribute_group ad9832_attribute_group = {
+> -	.attrs = ad9832_attributes,
+> +static const struct iio_chan_spec ad9832_channels[] = {
+> +	{
+> +		.type = IIO_ALTVOLTAGE,
+Maybe I've missed something. Didn't the previous review reached the conclusion
+that the channels should be IIO_ALTCURRENT? The datasheet it documents IOUT as
+current output.
+
+> +		.indexed = 1,
+> +		.channel = 0,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_FREQUENCY) |
+> +				      BIT(IIO_CHAN_INFO_PHASE),
+> +		.ext_info = ad9832_ext_info,
+> +	},
+>  };
+>  
+>  static const struct iio_info ad9832_info = {
+> -	.attrs = &ad9832_attribute_group,
+> +	.write_raw = ad9832_write_raw,
+No .read_raw ?
+
+>  };
