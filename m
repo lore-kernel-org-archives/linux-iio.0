@@ -1,48 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF517274B58;
-	Sat,  7 Mar 2026 11:00:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0A175330B2F;
+	Sat,  7 Mar 2026 11:04:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772881210; cv=none; b=ZNwcmYkeOvlq3I5jwvKjmfJNT53p2usfO1+kdfOHZRDyZp/bzauJKXx/cqfRiObhHwoIx/Qci1QWH/jKbU2jgznrfiWYCVzCwDM4vNNMuNC/ebjaJUbPr8vKKeh3iWNdwDfQOpAQaEnTeBhYwQ/BPFWL5/PDSbR46DKsdTFAnnY=
+	t=1772881499; cv=none; b=HyyhjJPyOIHD/Us9Z589b3YdhboBVguaXX43cH7hql4lTSTAR2AAk2GrDd4cQGzc5kNewRMrcVSsIT+Z2H8MzvdJxQdtNlO9MEGJ1IzoKbUTTH+WS2X0FoMaFNS3zXH3fYdaMl7Uu5yCnjUU8WWBt1yRmIHyV/GcpGxhj3czFRM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772881210; c=relaxed/simple;
-	bh=M0d9Pl4EXKENXdlrYGKAe19iW4l2z+VxMe/CDDorEq4=;
+	s=arc-20240116; t=1772881499; c=relaxed/simple;
+	bh=XP6D85GhIBaITwpzbgv/w6t/vLSCQdMXX2P7pdKHrRU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=T0fJrdTfU+vf+N75fNIEwOHUdMo6NcuHH1xmWlaw/TEA7fCcbodQPvwq6vADHgkGL63K3twVyPmW0U7hM3QzBaCAfxqAUhdqXKvpwlMm5bNOX4pMroF/7vqx4wZrbkdWXgwqD9F10qaTBB/Uc2HibRy0En/S03RnnckHThgqEmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K6CSn4Ib; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=G/Bm4wnUY80TBKy9cz8+HwoFI594ta6YgJxpZlRtL2tCddq9ZiPckP5nctMlIm6E5yMCmqtzZ5x5F7yIy+uQ/p0/I8QyuUj7/fbiCezkd+ti/viRVrA0SoL79tbFp9N1NAJB/3dhTu58ouapNCLPIslPhNeO5RpmllnOEixt3a8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fHkZWmAf; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K6CSn4Ib"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5269C19422;
-	Sat,  7 Mar 2026 11:00:04 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fHkZWmAf"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2637FC19422;
+	Sat,  7 Mar 2026 11:04:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772881210;
-	bh=M0d9Pl4EXKENXdlrYGKAe19iW4l2z+VxMe/CDDorEq4=;
+	s=k20201202; t=1772881498;
+	bh=XP6D85GhIBaITwpzbgv/w6t/vLSCQdMXX2P7pdKHrRU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=K6CSn4Ibm7R9244ykpCyHqzbxr7ZrE9E62cwXDQ69CWSEs3AflO5PNwnHnIQnB9u/
-	 2KKZ76pNDaQb1830g4DLwtRMp06GPR3i5EUabw/iiJQWml3kdkCrNN2wZFEXCZhPXV
-	 0V8o3cO9PIzicyIGUNAaJKDgVjtnkk3LU/YQomcS6y7htAJ+tfYQN8vT48HPWmgzYE
-	 rHK7ziWVM3T5eFZ0HLEugSlcYT+nP+mxTP1M7pV5736AWLRQCkko4Pzu2VwOx8+Ls0
-	 JEH9dcSmEEOK5KA9z8pSl6ni5Nc9QkdQTRO/0sDz7iPZYSE1i4eYMhsWW+4M7AIUkv
-	 oz5w2GMilK7rA==
-Date: Sat, 7 Mar 2026 10:59:59 +0000
+	b=fHkZWmAfmdokglinbp4GAEne3OLFd8hxurBOuHx1wfp3m027z6HQUarG5+zdfdnWX
+	 Vd9yUvbRQwZuZu4kQZPMyeHaEmanoxKW2BSCugj+gPb2LC17doypUqmZCu1AS5oQVN
+	 YcOslooCK6kEYLxMDUueIfg0sSTynGtHcUjSToe+8ENkS+mZBntSFHi41IYk2cP8WJ
+	 FrwQG/jDm33MWB0kKBR+zqCL8ExXWs8hcjGgGlhHhkredJ8NfnyS3SgrjEpS3HeeXo
+	 Jz/XqzBNZus8GdNFUG9lr2EFGXLyWcLDJ/9H0s6MrwjJmhWKy/f1mW/KKu9+t/0TRL
+	 8KbYekSvPT9Kw==
+Date: Sat, 7 Mar 2026 11:04:47 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc: Michael Hennerich <michael.hennerich@analog.com>, Marcelo Schmitt
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Marcelo Schmitt
  <marcelo.schmitt@analog.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>, David Lechner
- <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, "Rob Herring"
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, "Conor Dooley"
- <conor+dt@kernel.org>, Petre Rodan <petre.rodan@subdimension.ro>, Jorge
- Marques <jorge.marques@analog.com>, <linux-iio@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/4] iio: accel: adxl372: introduce chip_info
- structure
-Message-ID: <20260307105959.33167730@jic23-huawei>
-In-Reply-To: <20260306151859.131934-2-antoniu.miclaus@analog.com>
+ David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Petre Rodan
+ <petre.rodan@subdimension.ro>, Jorge Marques <jorge.marques@analog.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/4] iio: accel: adxl372: add support for ADXL371
+Message-ID: <20260307110447.189b98c0@jic23-huawei>
+In-Reply-To: <20260306151859.131934-5-antoniu.miclaus@analog.com>
 References: <20260306151859.131934-1-antoniu.miclaus@analog.com>
-	<20260306151859.131934-2-antoniu.miclaus@analog.com>
+	<20260306151859.131934-5-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,84 +53,78 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 6 Mar 2026 17:18:21 +0200
+On Fri, 6 Mar 2026 17:18:24 +0200
 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-> Introduce a chip_info structure to parameterize device-specific
-> properties such as ODR/bandwidth frequency tables, activity/inactivity
-> timer scale factors, and the maximum ODR value. This refactors the
-> driver to use chip_info lookups instead of hardcoded values, preparing
-> the driver to support multiple device variants.
+> Add support for the Analog Devices ADXL371, a +-200g 3-axis MEMS
+> accelerometer sharing the same register map as the ADXL372 but with
+> different ODR values (320/640/1280/2560/5120 Hz vs 400/800/1600/3200/
+> 6400 Hz), different bandwidth values, and different timer scale
+> factors for activity/inactivity detection.
 > 
-> The sampling_frequency and filter_low_pass_3db_frequency available
-> attributes are switched from custom sysfs callbacks to read_avail()
-> based handling via info_mask_shared_by_type_available. This enforces
-> consistent formatting through the IIO framework and makes the values
-> accessible to in-kernel consumers.
-> 
-> The SPI/I2C probe functions are updated to pass a chip_info pointer
-> instead of a device name string.
-> 
-> No functional change intended.
+> Due to a silicon anomaly (er001) causing FIFO data misalignment on
+> all current ADXL371 silicon, FIFO and triggered buffer support is
+> disabled for the ADXL371 - only direct mode reads are supported.
 > 
 > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-One really minor request for a comment on where the 3db frequency
-number of entries comes from + some musing on whether it would have
-been sensible to do the read_avail stuff as a precursor.
-Otherwise LGTM.
+A couple of small formatting things. Otherwise looks good to me.
 
-> ---
-> Changes in v2:
->  - Switch sampling_frequency and filter_low_pass_3db_frequency available
->    attributes from custom sysfs callbacks to read_avail() with
->    info_mask_shared_by_type_available.
-> 
->  drivers/iio/accel/adxl372.c     | 125 +++++++++++++++++---------------
->  drivers/iio/accel/adxl372.h     |  16 +++-
->  drivers/iio/accel/adxl372_i2c.c |  12 ++-
->  drivers/iio/accel/adxl372_spi.c |  12 ++-
->  4 files changed, 96 insertions(+), 69 deletions(-)
-> 
+Thanks,
+
+Jonathan
+
+>  
 > diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-> index 28a8793a53b6..6918a5834d74 100644
+> index adb9e42653f1..7a1ee2fef618 100644
 > --- a/drivers/iio/accel/adxl372.c
 > +++ b/drivers/iio/accel/adxl372.c
-
-
-> +static int adxl372_read_avail(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      const int **vals, int *type, int *length,
-> +			      long mask)
-> +{
-> +	struct adxl372_state *st = iio_priv(indio_dev);
+> @@ -1,6 +1,6 @@
+>  // SPDX-License-Identifier: GPL-2.0+
+>  /*
+> - * ADXL372 3-Axis Digital Accelerometer core driver
+> + * ADXL371/ADXL372 3-Axis Digital Accelerometer core driver
+>   *
+>   * Copyright 2018 Analog Devices Inc.
+>   */
+> @@ -182,6 +182,14 @@ enum adxl372_odr {
+>  	ADXL372_ODR_6400HZ,
+>  };
 >  
-> -static const struct attribute_group adxl372_attrs_group = {
+> +enum adxl371_odr {
+> +	ADXL371_ODR_320HZ,
+> +	ADXL371_ODR_640HZ,
+> +	ADXL371_ODR_1280HZ,
+> +	ADXL371_ODR_2560HZ,
+> +	ADXL371_ODR_5120HZ,
+Might be worth a
+	ADXL371_ODR_NUM
+entry so you can size the array from it below.
 
-In ideal patch break up I'd have liked to have seen the switch to the
-read_avail as a precursor patch but given there would be a fair bit
-of churn as a result maybe it wasn't worth it.
-
-> -	.attrs = adxl372_attributes,
-> -};
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*vals = st->chip_info->samp_freq_tbl;
-> +		*type = IIO_VAL_INT;
-> +		*length = st->chip_info->num_freqs;
-> +		return IIO_AVAIL_LIST;
-> +	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-> +		*vals = st->chip_info->bw_freq_tbl;
-> +		*type = IIO_VAL_INT;
-> +		*length = st->odr + 1;
-I know there wasn't one in the original code, but this length is odd enough
-that I'd like to see a brief comment saying why.  My assumption is because
-you can't filter above half the sampling frequency (Nyquist and all that
-would mean it was at best pointless) but good to state that.
-
-> +		return IIO_AVAIL_LIST;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
+> +};
+> +
+>  enum adxl372_bandwidth {
+>  	ADXL372_BW_200HZ,
+>  	ADXL372_BW_400HZ,
+> @@ -222,6 +230,37 @@ static const int adxl372_bw_freq_tbl[5] = {
+>  	200, 400, 800, 1600, 3200,
+>  };
+>  
+> +static const int adxl371_samp_freq_tbl[5] = {
+> +	[ADXL371_ODR_320HZ] = 320,
+> +	[ADXL371_ODR_640HZ] = 640,
+> +	[ADXL371_ODR_1280HZ] = 1280,
+> +	[ADXL371_ODR_2560HZ] = 2560,
+> +	[ADXL371_ODR_5120HZ] = 5120,
+> +};
+> +
+> +static const int adxl371_bw_freq_tbl[5] = {
+> +	[ADXL371_ODR_320HZ] = 160,
+> +	[ADXL371_ODR_640HZ] = 320,
+> +	[ADXL371_ODR_1280HZ] = 640,
+> +	[ADXL371_ODR_2560HZ] = 1280,
+> +	[ADXL371_ODR_5120HZ] = 2560,
+> +};
+Style wise, why not do the same for adxl372_bw_freq_tbl[] as here?
+I slightly prefer this style, but key is consistency so if you'd
+gone the other way for both that would have been fine as well.
 
