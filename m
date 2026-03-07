@@ -1,87 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F16ED292936;
-	Sat,  7 Mar 2026 11:46:34 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 68918357A5E
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 11:49:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772883995; cv=none; b=PLaWJ7C3aZa7G4ZrenHt4f81iun8OmymTiW19NtRrYjdF25fGrXB5bd6v7xxseJE7JwZvix1nfGBdb6JQDkctRPZRQVYX8Jd/uahMGVkDtL1P1putqGEAd1WeOqqzRdSojmTl6Z8Mz3V7m5+C7n5iQ63nDHQ8K49CReb3MF0mYw=
+	t=1772884177; cv=none; b=IxibVuogn+DT3GksY/TLDinEjHi+FGIeV61k4G5IRARaHung9eeMa0OpV7VP/2xsUY5vCDzqdQ9NR7p1j4pbs6RBlanQEbjDEP6qEs/FR3n/ViMbaGVGDApR5QEpPjP9kjHJTdxOnx6jzV848zrcw2PDAHhGzZK4QdynisbDn10=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772883995; c=relaxed/simple;
-	bh=e2sgILYvwWn+n1AWi5JDySrL+cwEdM04cBkm6xfJJJw=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fs58z3AbRw3mIBtOHSdcAaFcxfeT6BLMXkD2jwnZNg3xdJWqJdYbjH9Y6IvRNz6IysC11IsgYFwu4iKcn8QxAvlM26Y8FYKFtlZixPgtIqCW3bB0xlNQf9saRhkfUSk2mi9krtTjA1FKSSZHigoHTTb4bKJigM7OSNYjQMGNGhM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i6kqDjNu; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772884177; c=relaxed/simple;
+	bh=OGeAUhwq2xHJ4TxgRpsGVuF3q8EujQIeYoZZhDQzPBs=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=DAIq00qffjjdt504ZwELdOPy1f3BhCHyihV4a9qDE77a9X/J6B71FKNfBrg1N6dxdce6MZs4i0/0iXynrS1H7S0IjgMbJBBWsoafqi9hvT7f4ddDYeR5di52jO+Ddn2RcBSTTVxWvfA+P/SsmimIcoQEURDEM3SxrW1kAQGO+Pg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HTSDp060; arc=none smtp.client-ip=209.85.215.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i6kqDjNu"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79C62C19422;
-	Sat,  7 Mar 2026 11:46:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772883994;
-	bh=e2sgILYvwWn+n1AWi5JDySrL+cwEdM04cBkm6xfJJJw=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=i6kqDjNudrzuFt2hjdiw/J6C+tyvrKJpLnTJwPudGS/hZCFFoLXPsupPY0ylBRDOm
-	 u65aBihRd9G+2W4Y+orapHvcgrAFneiOOKqug0uBJO1+zvA9Fru2B/7WRAjnRDnLMX
-	 Db0Bv1U+AGSwPjH8vBoqDCao1wdODw9HIhFLmfqJjGQDEkSQpMjoPpG6HCjNqGEiSs
-	 qIwwVzlqYrIkWq8k24B16knzvD5luZE1J+B8nsCbqpLqKO2mPyta5D0qsFoaOZ6X/y
-	 CkMAUyiEp87iQL/6hVTekA5crUwEJp0posjh3G+i59Hzs3nnvGTHH9DH0mMiMH+Xmg
-	 FBHrW/ayPd7rA==
-Date: Sat, 7 Mar 2026 11:46:25 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v3 4/6] iio: adc: ti-ads7950: simplify check for
- spi_setup() failures
-Message-ID: <20260307114625.7904edf1@jic23-huawei>
-In-Reply-To: <20260305-ti-ads7950-facelift-v3-4-a23fdd1a079e@gmail.com>
-References: <20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com>
-	<20260305-ti-ads7950-facelift-v3-4-a23fdd1a079e@gmail.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HTSDp060"
+Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-c7377119453so1783585a12.1
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 03:49:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772884175; x=1773488975; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=9qzrJNZstjJ+lRuYkvhkBZ/2X1OkNUCbMuLvnWpwJBQ=;
+        b=HTSDp060I5branEt+dFml6OGcX51UPZfVgkvvO3NQAHtSRpZg497fzjucOjEfVvwoE
+         HyVmji/kPWcaM5ecsVxZPuAkNhhLGYUj02PTAc2HPNkbCOOBd8GPeu29b7pCGtSeVbSk
+         vsZoXXsUNKjjW+PSPY0ig3UV4zFGXksupLR14kHnEUkCDOSsOrC+n/X7qdJorpc8uwGF
+         JZFkGPdXWuVaP52TlqlwcJ129gIBfs2cb8D4l+ynVcye711tb4KoCKMHb1aVk7bRku1/
+         +WlseEYjcVeTYIiLdME5TnFByz7Ydbzq5r/UYJGDuCzKwjpV/9yV5Q716qyRsfpCOpUv
+         mEAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772884175; x=1773488975;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=9qzrJNZstjJ+lRuYkvhkBZ/2X1OkNUCbMuLvnWpwJBQ=;
+        b=XM+zIfxvmMp7hJI0V3Y7xtuT8YaoNy/nG51L1W019RK1j8CncEES/FpYw1DlsdBMx8
+         1PAH2YKw9/pUcXS3efossCz7ypM49RxdgscKuQu4WiT4f4jS6pHaEGTbZ9rCRDt4nAxT
+         bWwJsu2KHDl/GwpBgTdgm1Kk7+lJVz1HLzU9PxCxz60QY4pvZCop4V2X7V0RPS0yNA60
+         Ili0FeRVhK853bqU43CFrlyWRcoYCtEAYUYKHKO39PM/1vyn0KlFxxJwgYkI4nF69tvG
+         55g6J6aXwQN2LDHfsAC4tUjdF5W9z63Ir2i+yEkSqhPlziz8gZUdGV9tfh/cmrHHPylI
+         CTnA==
+X-Gm-Message-State: AOJu0YxVtqBOYKJxlzXtTTnJtxQ6+zFnVE/pM8nXqfZWvoOPDHGg/aI/
+	Ukt60yqVC7z80YS4LtmNxN4jKNZJmcbpyT2VOdF9JerTRe9L6NVBGd3i
+X-Gm-Gg: ATEYQzw3aCXRlH3uZN5nE4T9ef60DKGylRhqzF5FYhRWqP6DKREH31+p+sGL3unZ6Zk
+	HBGmL1pgotvIUMIGu6h9ERVac2vnuZ2s9bAuiR1q06sT3qhlI3QnAi6vWWNqRBtG3XPbUC+ezBm
+	d1gzPtKWnTAZCrhstjvKToN+Yid1+pOxFWWU0cNSKm6X05lnKDR4bbMaEa5q6u6JsQjt/odMk+g
+	xVbdq6uhp80FoHRIbUrmzihRAFKKHD+45eaArfocAZ3VgGpUQR0gGpBDuEhgY6he6rcgRczO010
+	7Ui/Y1YSryQ8/GVg/eE8D2QKo+Hamin2aiOLImZLqlqi6Vg/qzgHSzdc2Wy1f4kXBCtFZnw5LC4
+	lc9/vuOaRZNjDHHKUxMvsakiCVvcmoDcOXirknkpWsMtzejjP6R6Hv3IDfF6qYt4vjnqCiSsn2W
+	gzs5yMWjU8BYYFKnDdx15/UTuyKrRQ0kelvDlsUe9fT6jeu7CLt2Hb00Me8ulRetainULuqmh4q
+	T+lBk+H45JfMO9vGe4FQZWL
+X-Received: by 2002:a05:6a21:7489:b0:394:f617:b401 with SMTP id adf61e73a8af0-39858fb2f02mr5200638637.4.1772884174666;
+        Sat, 07 Mar 2026 03:49:34 -0800 (PST)
+Received: from fedora ([103.215.156.48])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c739dfbf4fesm4264696a12.0.2026.03.07.03.49.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Mar 2026 03:49:34 -0800 (PST)
+From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+To: lucas.p.stankus@gmail.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	puranjay@kernel.org,
+	dlechner@baylibre.com
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+Subject: [PATCH v4 0/2] iio: accel: convert to guard(mutex)
+Date: Sat,  7 Mar 2026 17:19:10 +0530
+Message-ID: <20260307114912.58062-1-rajveer.chaudhari.linux@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Thu, 05 Mar 2026 11:21:55 -0800
-Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
+This series converts manual mutex_lock/mutex_unlock pairs to
+guard(mutex) in two ADXL accelerometer drivers. Each conversion
+also simplifies error handling by removing goto labels and
+returning directly on error paths.
 
-> spi_setup() specifies that it returns 0 on success or negative error on
-> failure. Therefore we can simply check for the return code being 0 or
-> not.
-> 
-> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> ---
->  drivers/iio/adc/ti-ads7950.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-> index 1515089dd759..273c35e03185 100644
-> --- a/drivers/iio/adc/ti-ads7950.c
-> +++ b/drivers/iio/adc/ti-ads7950.c
-> @@ -527,7 +527,7 @@ static int ti_ads7950_probe(struct spi_device *spi)
->  	spi->bits_per_word = 16;
->  	spi->mode |= SPI_CS_WORD;
->  	ret = spi_setup(spi);
-> -	if (ret < 0) {
-Given it doesn't really fit better in patch 6 than it does here
-maybe drag the
-	if (ret)
-		return dev_err_probe();
-here instead just to avoid tiny it of churn around brackets.
+adxl355 was considered but dropped as guard(mutex) leads to
+code duplication due to the STANDBY/MEASUREMENT op_mode pattern,
+making it less readable than the original code.
 
-Not important though.
+Ref to v3: [PATCH v3 0/3] iio: accel: convert to guard(mutex)
 
-> +	if (ret) {
->  		dev_err(&spi->dev, "Error in spi setup\n");
->  		return ret;
->  	}
-> 
+Rajveer Chaudhari (2):
+  iio: accel: adxl313: convert to guard(mutex)
+  iio: accel: adxl372: convert to guard(mutex)
+
+ drivers/iio/accel/adxl313_core.c | 11 ++++-------
+ drivers/iio/accel/adxl372.c      | 13 +++++--------
+ 2 files changed, 9 insertions(+), 15 deletions(-)
+
+-- 
+2.53.0
 
