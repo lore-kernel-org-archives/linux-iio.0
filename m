@@ -1,42 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 908CC34EEE4;
-	Sat,  7 Mar 2026 11:38:06 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C8E735838C;
+	Sat,  7 Mar 2026 11:42:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772883486; cv=none; b=ceVajqR9x5ykxt9Ew1gCypOzVgzw20ForRXKHUS8C3wyVjC5JTzfpLnr0M+0Cw3oQt+X8wSgywGxfhPYKQJ1K+JV8mxByG8+SIJmwyZhpDxcagcdZIm7aZc01m1STe3mDhjGHE7nZJ25FlOeKj4asc3F9o3fqyAYYFZPstk0zwE=
+	t=1772883741; cv=none; b=eA3iv2bqJg7honYBhoGwZlcXM/ewzQDLZQ9wjJkUTUnJiBXh+ImLXGPC1YEp0UEQei7T7evQLeJTb4w3SESkqIoomLc2Inn6GTmMMTmJ5vnwd5W6jBOyUxNSAlrTtzli68cYV0W20gvv1JB8WL1pez6ExDFFTwzfi4NieJUSruU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772883486; c=relaxed/simple;
-	bh=4vEmIvT6/hd6IrLoExqkfyoQm4aseR8ycMrBsF7re7M=;
+	s=arc-20240116; t=1772883741; c=relaxed/simple;
+	bh=qNsxtdfBK2pWpemA/Ju6s8rlhRJmP6/DDZxdnQLFxCY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=d9uZ47COiv/iPnx/agEIslPn1em0sh5PZEAbmxZUcv7bBzJBMJ75h6geYeXrGJ9Lvf7U+pFUtPrqfTBZ1GXndTe7tSCCHDTsurdaWCNpbWIUK+t1A4NhXlA7pd6Fe7+4+5xOKKYyx6d7+nJfX604JxhRCQxSWvaJOgzxHi4vKXw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnfGNmg8; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=PexzJCDM4WqRy8HJWtTEr4UZhPgegdH93lWI78GDnvoVhHtNu+vtEt5m1HPXslTWli6X6fwl9vl9FinRUUecvo+vsh4f71kdpzDa3iXoUTkp0Uj5B8YutdDj99LayPDTgnO7zqf4RiscX6HnKHXvWPvUib3Wl6ByRxyr6eVUjow=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=rOLoUDpA; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnfGNmg8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC3A0C19422;
-	Sat,  7 Mar 2026 11:38:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="rOLoUDpA"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0BA6C2BC86;
+	Sat,  7 Mar 2026 11:42:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772883486;
-	bh=4vEmIvT6/hd6IrLoExqkfyoQm4aseR8ycMrBsF7re7M=;
+	s=k20201202; t=1772883741;
+	bh=qNsxtdfBK2pWpemA/Ju6s8rlhRJmP6/DDZxdnQLFxCY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=dnfGNmg8z5QIgwvwihbNXmE+Cgu7rzfv6CThYcbnKdoiEgGHDr90C0If0+2JdHXCz
-	 5EUIJhggaB34bDwPI1DlE7RqEMQPsBL2BELJ3gH/bcohET6qo5ToQVqqvIw45sYjEP
-	 1mdpcJct9cp3tiVNE+o435fVkIvPymQBRXGPxPuIhVYjJpRDCDOj3/reNDr3VsJtoj
-	 s4Gwo2RXKs1HoVa40rex7mSQA2Ewg3zclOXRw5DzmFtN26iLW6mYkeVMPlIZTsN53b
-	 +b4V5XWbl0M2Ipim2RvSHG/S5XZ9bljdzzCGM3aK1BoO+oP1UFHT/SSIDDup+GNnuw
-	 vmlr8AuEetAYQ==
-Date: Sat, 7 Mar 2026 11:37:57 +0000
+	b=rOLoUDpAZk1tZI/xXdWoKpaBhatnsufSMRr23TeuwwCqAqZj66GNZ+0/JLxOgCqiT
+	 HDFAtHA3swPnEE7yD4fPPDpeejPSQjITr+0hEVkl2+4SdQb0JEnBiC1vBmSyd04y9v
+	 20RJ5CmVTQS4ldsmiVXExUs8m1Oi4PzrlQunOQQMqMSpDOKJkE5ojrCMyAZgpzpl1i
+	 o2o72lU3Se9EoIvA7h2w2TjG+I16u9kyTlBE8Qc5th7MIHAgsWuL4ilmdUKzmAgC3X
+	 GDeGSQ8CgRgo+dE90hm5AByw+UAJ5t9FxZjU0fyhjGIfP34tCigJFHVttJqgt7E406
+	 Fb5uv6GNVvg8g==
+Date: Sat, 7 Mar 2026 11:42:11 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andrew Davis <afd@ti.com>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] dt-bindings: iio: light: ltr501: Add liteon,ltr303
-Message-ID: <20260307113757.69abe0f1@jic23-huawei>
-In-Reply-To: <20260305195917.831104-1-afd@ti.com>
-References: <20260305195917.831104-1-afd@ti.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Linus Walleij
+ <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ Andy Shevchenko <andriy.shevchenko@intel.com>, Bartosz Golaszewski
+ <bartosz.golaszewski@oss.qualcomm.com>
+Subject: Re: [PATCH v3 0/6] ti-ads7950: fix gpio handling and facelift
+Message-ID: <20260307114211.771bc710@jic23-huawei>
+In-Reply-To: <20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com>
+References: <20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,34 +50,58 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 5 Mar 2026 13:59:17 -0600
-Andrew Davis <afd@ti.com> wrote:
+On Thu, 05 Mar 2026 11:21:51 -0800
+Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
 
-> This device is already supported by the driver and this compatible
-> string was added to the of_device_id list but was not documented
-> here in the binding, fix this.
+> The original reason for this series is to make sure ti_ads7950_get()
+> returns result in range [0, 1] or a negative error code to comply with
+> gpiolib requirement.
 > 
+> During review David noticed the fact that the function also clobbers
+> gpio state. Fixing that lead to adding cleanups using guard() and devm.
+> 
+Applied patches 1 and 2 to the fixes-togreg branch of iio.git and marked
+them for stable.
 
-Needs a brief note on why it is different enough from all other supported
-devices that we can't do a fallback compatible.
+The rest will need to wait for those to be upstream.  Given I have the
+memory of a goldfish and there will it seems be a v4, please mention
+that in the cover letter.
 
-Seems it has a mix of scaling and channels that doesn't match any other device.
+Thanks,
 
-> Signed-off-by: Andrew Davis <afd@ti.com>
+Jonathan
+
+> v3:
+> 
+> - Added "Fixes" tags
+> - Picked up reviewed-by tags for #1 and #2
+> - Dropped the conversion to "error" variables
+> - Avoid using scoped_guard (per David)
+> - directly return results of function calls at the end of function (David)
+> - Split spi_sync() error handling into a new patxch (Andy)
+> - Switch to using devm_regulator_get_enable_read_voltage() (David)
+> 
+> v2:
+> 
+> - style fixes in #1 (per David)
+> - fix to not clobber state (#2, new)
+> - #3 and #4 (new)
+> 
 > ---
->  Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> Dmitry Torokhov (6):
+>       iio: adc: ti-ads7950: normalize return value of gpio_get
+>       iio: adc: ti-ads7950: do not clobber gpio state in ti_ads7950_get()
+>       iio: adc: ti-ads7950: switch to using guard() notation
+>       iio: adc: ti-ads7950: simplify check for spi_setup() failures
+>       iio: adc: ti-ads7950: switch to using devm_regulator_get_enable_read_voltage()
+>       iio: adc: ti-ads7950: complete conversion to using managed resources
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-> index c8074f180a793..ab9bb68dd7363 100644
-> --- a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-> +++ b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
-> @@ -18,6 +18,7 @@ properties:
->        - liteon,ltr501
->        - liteon,ltr559
->        - liteon,ltr301
-> +      - liteon,ltr303
->  
->    reg:
->      maxItems: 1
+>  drivers/iio/adc/ti-ads7950.c | 188 ++++++++++++++-----------------------------
+>  1 file changed, 59 insertions(+), 129 deletions(-)
+> ---
+> base-commit: c025f6cf4209e1542ec2afebe49f42bbaf1a5c7b
+> change-id: 20260220-ti-ads7950-facelift-ad8b5390a654
+> 
+> Thanks.
+> 
 
