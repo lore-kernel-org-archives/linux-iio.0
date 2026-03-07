@@ -1,43 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3895C26D4CA;
-	Sat,  7 Mar 2026 13:18:57 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6DAEA2459C9
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 13:23:09 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772889538; cv=none; b=JjcUrHvQsky4ldkfxFbR6ZS0wHx6PbJrwmJ5vBdyqP1UyQqD31vat15V1slN2++rFpNIEGb2pRpdRL7THt1nmEd2yMB/OSk6xYa0ae8cN5u/YchRmCCnG+3wmv8I8+6ZrsGZUPTaa/VX99GLwRzqM+J9U2W+MD0hQpviwEPNhd8=
+	t=1772889789; cv=none; b=ufzF2pTHsi2rgyC84pl1d6sUSLijDV5A1KoEoUunSN/l9tO5OQTMwcsCkYpCHrQ23WuiHkfkdfZYHlTCjP4vlFGNB6qtkkMhXVvcMs0xM/BP+xeASKn7t6DhmRRsW1Mnkdl5DCbyuiQDHL7YjDrK9C8T+WPgy18NVfMVz+0T9Kk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772889538; c=relaxed/simple;
-	bh=CYQwTRO29fSsh+BWRH9G4A7LIvSuk9tukZqQc7L0Cio=;
+	s=arc-20240116; t=1772889789; c=relaxed/simple;
+	bh=wtcIhaAUsxKAsKcKU3kADEtb1xBm7I+8YtOuQ4iB+X0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=FPNFK+syPJU5I+ng8lv4tP/b2AjUQxx+EyEz07NauzAFriPbUXY8DzLh0bdHH3L1EgR5cIfSCZIWoh/RsB4FioRpYDHFjvdfr67bC3m9tZLtbwDdAn98EZ8IOuD/kSCyGgv1QaOIh9umixiSJZA6EsiK1doElbZgzET2tjkg3mY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mN7IMT23; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=cL1y6lwZyN4GburpnQby51kxQ657pfg8WnlrdrdQ9wDXd1m21GzM3cnx8unSsJVBkbDZfgNqzxCuIvqWsnEAYi5xFiS+css/u36XUfXWSCCVqNpghNwSydifPfPM425e01Lv0lNcglztjPHKsKmfixG3YswstXxqFpb0aRUo3a4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=SMrO8pOI; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mN7IMT23"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB4C4C19422;
-	Sat,  7 Mar 2026 13:18:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="SMrO8pOI"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B568FC19422;
+	Sat,  7 Mar 2026 13:23:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772889537;
-	bh=CYQwTRO29fSsh+BWRH9G4A7LIvSuk9tukZqQc7L0Cio=;
+	s=k20201202; t=1772889789;
+	bh=wtcIhaAUsxKAsKcKU3kADEtb1xBm7I+8YtOuQ4iB+X0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=mN7IMT23dfWd4BT1X7MpgD/LEUy50F2E1QWena5Jxb+n257hu6AMQnrJbPZNfhkVY
-	 3OidIS0VZv2qEHoLI3yy+VHnH2CHg3m5/5xnkYWHi1RyqcMuillSBBJAvrcDUN1U7N
-	 /RUYEo2eeT2NpBIlR4m2jShFvel+YHhooKr9HMcfj7MHqHhBUYKcBXZd1UqZTU8Ojn
-	 ZC4G8zKuBc/usgZcbyY9zrpSRoIienxNtg6+dC7mZ7sSlYI8g0gsRToszcOXG7D1f/
-	 SVBopHGui69y1AaDwtfHwuGY2BptQcpI3lXjf4CQQBiyFu8vRRe05bM2UANVT8bwO0
-	 Z3h/vZD3fi9dA==
-Date: Sat, 7 Mar 2026 13:18:49 +0000
+	b=SMrO8pOIqY5RKz/FwgPVqKlCeW7vBzQRC+6ttxtINhJqcoIxbR3H1SLqUORZ7LPLi
+	 6kEBx7cZRlzGbm38o7nSj3unULX5/w0YLAPa+fNJru7DenVKXKiHN+eUOvAcbYNkj9
+	 bqllFQR8kBxtLOlu4XKSP+YcTgx6fzEjxED0GsjcmM8Kc7LD/tHoHqs9FjMlY0TkFC
+	 zvYa9jBTvchggWH6xCq4gZMzCue5Q/5RfzrN/8+pVJtdXAVKCTTByzD4N7tNXKELln
+	 mkd+0Jr5wM8ahI555wCRE4qb/ikT/El4HcUMjgqnnwKpeiJRHWBYcXX0b9WRvRYbYQ
+	 USOlbta2VS1sw==
+Date: Sat, 7 Mar 2026 13:23:00 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Chunyang Chen <chenchunyang0908@gmail.com>
-Cc: kuurtb@gmail.com, andriy.shevchenko@intel.com, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: ti-ads1018: fix type overflow for data
- rate
-Message-ID: <20260307131849.609fafe4@jic23-huawei>
-In-Reply-To: <20260305124302.129637-1-chenchunyang0908@gmail.com>
-References: <20260305021550.120614-1-chenchunyang0908@gmail.com>
-	<20260305124302.129637-1-chenchunyang0908@gmail.com>
+To: Nuno =?UTF-8?B?U8Oh?= via B4 Relay
+ <devnull+nuno.sa.analog.com@kernel.org>
+Cc: nuno.sa@analog.com, linux-iio@vger.kernel.org, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH] iio: buffer: hw-consumer: remove redundant scan_mask
+ flexible array
+Message-ID: <20260307132300.49f256b2@jic23-huawei>
+In-Reply-To: <20260303-iio-improve-hw-consumer-v1-1-1a19b41977b1@analog.com>
+References: <20260303-iio-improve-hw-consumer-v1-1-1a19b41977b1@analog.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,44 +44,88 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu,  5 Mar 2026 20:43:02 +0800
-Chunyang Chen <chenchunyang0908@gmail.com> wrote:
+On Tue, 03 Mar 2026 11:50:44 +0000
+Nuno S=C3=A1 via B4 Relay <devnull+nuno.sa.analog.com@kernel.org> wrote:
 
-> The variable 'drate' is currently defined as u8. However, the data rate
-> values in ads1018 can reach up to 3300 Hz, which exceeds the maximum
-> value of 255 that a u8 can hold.
-> 
-> Change the type of 'drate' to u32 to match the data_rate_mode_to_hz
-> array definition and ensure the data rate is handled correctly.
-> 
-> Fixes: bf0bba486b5b ("iio: adc: ti-ads1018: add ti-ads1018 driver")
-The patch name in this fixes tag is wrong.  I fixed up.
+> From: Nuno S=C3=A1 <nuno.sa@analog.com>
+>=20
+> The scan_mask flexible array member in hw_consumer_buffer duplicates
+> the scan_mask pointer already present in struct iio_buffer. Remove it
+> and allocate the bitmap directly with bitmap_zalloc(), assigning it to
+> buf->buffer.scan_mask. This simplifies the code and there's no need for
+> the flex array allocation.
+>=20
+> Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+Ok.. I guess the original thinking was to save an allocation as then
+scan_mask bitmaps tend to be small and probably fit in the padding anyway.
 
-J
-> Signed-off-by: Chunyang Chen <chenchunyang0908@gmail.com>
-> 
+Still I think it's simpler to read as you have it here.
+
+So applied.  I didn't tweak the line thing Andy pointed out as marginal
+case to my eyes.
+
+Jonathan
+
 > ---
-> v2:
-> - Change drate type to u32 as suggested by Kurt.
-> - Add Fixes tag as requested by Andy.
-> ---
->  drivers/iio/adc/ti-ads1018.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/ti-ads1018.c b/drivers/iio/adc/ti-ads1018.c
-> index 6246b3cab..0780abd0d 100644
-> --- a/drivers/iio/adc/ti-ads1018.c
-> +++ b/drivers/iio/adc/ti-ads1018.c
-> @@ -249,7 +249,7 @@ static int ads1018_single_shot(struct ads1018 *ads1018,
->  			       struct iio_chan_spec const *chan, u16 *cnv)
+>  drivers/iio/buffer/industrialio-hw-consumer.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/drivers/iio/buffer/industrialio-hw-consumer.c b/drivers/iio/=
+buffer/industrialio-hw-consumer.c
+> index cb771ef8eeb3..24d7df603760 100644
+> --- a/drivers/iio/buffer/industrialio-hw-consumer.c
+> +++ b/drivers/iio/buffer/industrialio-hw-consumer.c
+> @@ -28,7 +28,6 @@ struct hw_consumer_buffer {
+>  	struct list_head head;
+>  	struct iio_dev *indio_dev;
+>  	struct iio_buffer buffer;
+> -	long scan_mask[];
+>  };
+> =20
+>  static struct hw_consumer_buffer *iio_buffer_to_hw_consumer_buffer(
+> @@ -52,7 +51,6 @@ static const struct iio_buffer_access_funcs iio_hw_buf_=
+access =3D {
+>  static struct hw_consumer_buffer *iio_hw_consumer_get_buffer(
+>  	struct iio_hw_consumer *hwc, struct iio_dev *indio_dev)
 >  {
->  	u8 max_drate_mode = ads1018->chip_info->num_data_rate_mode_to_hz - 1;
-> -	u8 drate = ads1018->chip_info->data_rate_mode_to_hz[max_drate_mode];
-> +	u32 drate = ads1018->chip_info->data_rate_mode_to_hz[max_drate_mode];
->  	u8 pga_mode = ads1018->chan_data[chan->scan_index].pga_mode;
->  	struct spi_transfer xfer[2] = {
->  		{
+> -	unsigned int mask_longs =3D BITS_TO_LONGS(iio_get_masklength(indio_dev)=
+);
+>  	struct hw_consumer_buffer *buf;
+> =20
+>  	list_for_each_entry(buf, &hwc->buffers, head) {
+> @@ -60,13 +58,18 @@ static struct hw_consumer_buffer *iio_hw_consumer_get=
+_buffer(
+>  			return buf;
+>  	}
+> =20
+> -	buf =3D kzalloc_flex(*buf, scan_mask, mask_longs);
+> +	buf =3D kzalloc_obj(*buf);
+>  	if (!buf)
+>  		return NULL;
+> =20
+>  	buf->buffer.access =3D &iio_hw_buf_access;
+>  	buf->indio_dev =3D indio_dev;
+> -	buf->buffer.scan_mask =3D buf->scan_mask;
+> +	buf->buffer.scan_mask =3D bitmap_zalloc(iio_get_masklength(indio_dev),
+> +					      GFP_KERNEL);
+> +	if (!buf->buffer.scan_mask) {
+> +		kfree(buf);
+> +		return NULL;
+> +	}
+> =20
+>  	iio_buffer_init(&buf->buffer);
+>  	list_add_tail(&buf->head, &hwc->buffers);
+>=20
+> ---
+> base-commit: cd04646c0f3eefdde87538f6ff932420cedc9ba0
+> change-id: 20260303-iio-improve-hw-consumer-5955f7f46b91
+> --
+>=20
+> Thanks!
+> - Nuno S=C3=A1
+>=20
+>=20
 
