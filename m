@@ -1,44 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0F8B7261B9B;
-	Sat,  7 Mar 2026 14:20:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 719103921C8;
+	Sat,  7 Mar 2026 14:22:03 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772893215; cv=none; b=VTV2JH033jisLfinWQHuIxstAO58j4YFE7PkJCZa6HX1OyMsW0KV0yNXVkFQeKe6V8LIkWz9E+j8lqq7tSIrnQu8GvCoyswAD5eE/Ci49XUP7EnPCswwsoee8GKs3XewKw1Gj1OTVAoeVJDU0ttt7c1YVxtNXaLhpxlLxhSvXuU=
+	t=1772893323; cv=none; b=oNZHnQpUjuiq9L45npGyIot0edwM7tkVY35oOjd26gVUTHnh9SBqfyTfUzAOYkGgPyqMw+WhIX2WmWdnxU3WEg9CS63r2mHGAhEStuDH8QWrXpgK4rJEGgDYxnYVfZq0FR/7Y3u7gtCilFtuBzlgrAHujkDiVlNCSGkASt/tj9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772893215; c=relaxed/simple;
-	bh=a5jVNnEzNzRgAOkThx17Lm/fR+3+iFoZser1WqgJoZE=;
+	s=arc-20240116; t=1772893323; c=relaxed/simple;
+	bh=FRXNGoH9VPCjKjelFZ/fekAYJZtNO/11PzBFs2rLJU4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Y2TsbUFj4IMjOCVgXottARVmSXutoyRzagCdXfxGBOtUE8tOUH5b4t88vxouBbZYSZvsKS3X9jCYYFAgvJBihpTmfMKKhzalVZP833rW/tda87XXtJ6luAz3dywPJy3ZvccWLv5RUfsE4oguo2UxEA2+tsn2xFEsplo/Qw4rStg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=tr0zmgXz; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=f2Nrv23vOMBJp/5fOMFVw5qmmT3aZLqEqWsQIUZA38xLBRY+WYLiI9CBi+e4hn2b7HfXcD4cE1Ac8lO72SjCbYjd6x/qB8+g8TmRTWR6z7bl+u1C3u5ortYXZGt3pPlEj4sveVd9paU5sS4fSXRjRWomhdL8zDIqNhRQWXwhvsM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qU/ggGNK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="tr0zmgXz"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 311ECC19422;
-	Sat,  7 Mar 2026 14:20:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qU/ggGNK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F1CC19422;
+	Sat,  7 Mar 2026 14:21:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772893214;
-	bh=a5jVNnEzNzRgAOkThx17Lm/fR+3+iFoZser1WqgJoZE=;
+	s=k20201202; t=1772893323;
+	bh=FRXNGoH9VPCjKjelFZ/fekAYJZtNO/11PzBFs2rLJU4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=tr0zmgXzPq4pdzVp/WO1b5jtLPurs39ZW1JPWLMstsB+++ggnyLspKPTg5Q1de4Aw
-	 NCW30gLKb7+w/q0IzMy1BB7gGYZttOf11SD8PUxh2Tfw+FEDgaQFuvGXp0VmtFlhw5
-	 Tt+Hx2msLLCo7/W0AsscgqdMxs6V7SRBgXF99/JUjxYC0ajVwKS2XGpjH4rEgVZl8l
-	 EpxCgmr1kCNI2G95rNUaKP9wZsGDkMhGaHoWsouKrGQcf1cGzwooVOphw6PlqJRZ6W
-	 BqVUf+BS1eT/8neIMP9acVtKaTXdYFqSXpelT8xTZAPDU/EvpMp+YMD1gjL97DBERP
-	 n2fRfMMV9ZWcg==
-Date: Sat, 7 Mar 2026 14:20:04 +0000
+	b=qU/ggGNK001qBsFbEuAa9bFUv3x9G7y+NmWDrqz3fPyLU81n/IFIkRpqHD1+y2t4n
+	 R5OJmnscF76JtN+6zbucHlZPkzDWTF1Lcu8sW4BxRgyEkRW+1ZgZJXf6LYVGzoW7dy
+	 ghx5xyDGWN+EcKQfzUD01U5RVZU1OVKXC/r4PNW0Pduy1nA9vKewn8SCShZy11ESfc
+	 wkEOdo37FGxO+HxwT3S+PixywtFeRHvmOXPZbwoqg/L/wGNiLLXadYMas85trLXGqb
+	 yzngfBgu5t+Ydg8J+SFgz4Km127cZqxbc62AlrAMWOES/9fyn8xoLoiboWVVBC5aVD
+	 A5umhaBUwfiJg==
+Date: Sat, 7 Mar 2026 14:21:53 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Jonathan Santos <Jonathan.Santos@analog.com>
-Cc: <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
- <devicetree@vger.kernel.org>, <cosmin.tanislav@analog.com>,
- <lars@metafoo.de>, <Michael.Hennerich@analog.com>, <dlechner@baylibre.com>,
- <nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
- <krzk+dt@kernel.org>, <conor+dt@kernel.org>
-Subject: Re: [PATCH 3/3] iio: adc: ad4130: add new supported parts
-Message-ID: <20260307142004.7bfd5de1@jic23-huawei>
-In-Reply-To: <1d5baeec27724a1c8ebf909c29c3599d583948a1.1772078999.git.Jonathan.Santos@analog.com>
-References: <cover.1772078999.git.Jonathan.Santos@analog.com>
-	<1d5baeec27724a1c8ebf909c29c3599d583948a1.1772078999.git.Jonathan.Santos@analog.com>
+To: Bhargav Joshi <rougueprince47@gmail.com>
+Cc: jikos@kernel.org, srinivas.pandruvada@linux.intel.com,
+ dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-input@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: hid-sensor-gyro-3d: move iio_device_register()
+ to end of probe()
+Message-ID: <20260307142153.26bab5b0@jic23-huawei>
+In-Reply-To: <CAPC4XCRom4ri1QKw_mTnZGc9np5XFD1LskQnd=ssDAKBdOkGmQ@mail.gmail.com>
+References: <20260228191400.19244-1-rougueprince47@gmail.com>
+	<20260228191400.19244-2-rougueprince47@gmail.com>
+	<20260301114450.17f79213@jic23-huawei>
+	<CAPC4XCRom4ri1QKw_mTnZGc9np5XFD1LskQnd=ssDAKBdOkGmQ@mail.gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,102 +48,137 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Sat, 28 Feb 2026 09:39:04 -0300
-Jonathan Santos <Jonathan.Santos@analog.com> wrote:
+On Mon, 2 Mar 2026 01:00:06 +0530
+Bhargav Joshi <rougueprince47@gmail.com> wrote:
 
-> Add support for AD4129-4/8, AD4130-4, and AD4131-4/8 variants.
-> 
-> The AD4129 series supports the same FIFO interface as the AD4130 but with
-> reduced resolution (16-bit). The AD4131 series lacks FIFO support, so
-> triggered buffer functionality is introduced.
-> 
-> The 4-channel variants feature fewer analog inputs, GPIOs, and sparse pin
-> mappings for VBIAS, analog inputs, and excitation currents. The driver now
-> handles these differences with chip-specific configurations, including pin
-> mappings and GPIO counts.
-> 
-> Signed-off-by: Jonathan Santos <Jonathan.Santos@analog.com>
-A couple of things inline.
+> On Sun, Mar 1, 2026 at 5:15=E2=80=AFPM Jonathan Cameron <jic23@kernel.org=
+> wrote:
+> >
+> > On Sun,  1 Mar 2026 00:43:59 +0530
+> > Bhargav Joshi <rougueprince47@gmail.com> wrote:
+> > =20
+> > > Currently, calling iio_device_register() before
+> > > sensor_hub_register_callback() may create a race condition where the
+> > > device is exposed to userspace before callbacks are wired. =20
+> >
+> > We needs some more here on 'why' this is a problem.
+> > Whilst this is an unusual arrangement, I couldn't immediately find
+> > anything that was actually broken.  It's possible data will turn up
+> > after we tear down the callbacks and before the userspace interfaces
+> > are removed, but I think that just results in dropping data. Given it's
+> > in a race anyway I don't think we care about that. The callbacks
+> > don't seem to be involved in device configuration which can go on wheth=
+er
+> > or not the callbacks are registered.  Maybe there is something that
+> > won't get acknowledged if they aren't in place in time?
+> >
+> > For a fix like this we'd normally want to see a clear flow that
+> > leads to a bug.
+> >
+> > Also a fixes tag so we know how far to backport.
+> > =20
+>=20
+> Hi Jonathan,
+>=20
+> I originally submitted the patch for the driver because calling
+> iio_device_register() before the callbacks are wired up violates
+> standard IIO LIFO ordering. I assumed this created a dangerous race
+> condition with userspace. However, as you correctly pointed out, the
+> HID sensor hub safely drops those early events without crashing, even
+> if it is unusual behaviour still won't have a hard crash.
+>=20
+> My underlying goal was simply a structural cleanup to align the
+> probe() and remove() sequences with standard IIO architecture.
+>=20
+> Would you like me to send a v2 of this patch with a revised commit
+> message classifying it purely as a structural cleanup (and without a
+> Fixes tag), or is the current driver behavior acceptable enough that I
+> should just drop this patch entirely?
 
-> +static irqreturn_t ad4130_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ad4130_state *st = iio_priv(indio_dev);
-> +	unsigned int data_reg_size = ad4130_data_reg_size(st);
-> +	unsigned int num_en_chn = bitmap_weight(indio_dev->active_scan_mask,
-> +						iio_get_masklength(indio_dev));
-> +	struct spi_transfer xfer = {
-> +		.rx_buf = st->scan.channels,
-> +		.len = data_reg_size * num_en_chn,
-> +	};
-> +	int ret;
-> +
-> +	ret = spi_sync_transfer(st->spi, &xfer, 1);
-> +	if (ret < 0)
-> +		goto err_unlock;
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, &st->scan,
-> +					   iio_get_time_ns(indio_dev));
-> +
-> +err_unlock:
+My gut is leave this one alone. It's a rather unusual driver in lots
+of ways, so I don't really mind one more ;)
 
-Needs a rename seeing as no locks involved.
+Lets see if anyone else has strong views one way or the other.
 
-> +	iio_trigger_notify_done(indio_dev->trig);
->  
->  	return IRQ_HANDLED;
->  }
-> @@ -1300,12 +1416,77 @@ static const struct iio_info ad4130_info = {
->  	.debugfs_reg_access = ad4130_reg_access,
->  };
+Srinivas?
 
-> @@ -2100,34 +2383,46 @@ static int ad4130_probe(struct spi_device *spi)
->  	if (ret)
->  		return dev_err_probe(dev, ret, "Failed to request irq\n");
->  
-> -	/*
-> -	 * When the chip enters FIFO mode, IRQ polarity is inverted.
-> -	 * When the chip exits FIFO mode, IRQ polarity returns to normal.
-> -	 * See datasheet pages: 65, FIFO Watermark Interrupt section,
-> -	 * and 71, Bit Descriptions for STATUS Register, RDYB.
-> -	 * Cache the normal and inverted IRQ triggers to set them when
-> -	 * entering and exiting FIFO mode.
-> -	 */
-> -	st->irq_trigger = irq_get_trigger_type(spi->irq);
-> -	if (st->irq_trigger & IRQF_TRIGGER_RISING)
-> -		st->inv_irq_trigger = IRQF_TRIGGER_FALLING;
-> -	else if (st->irq_trigger & IRQF_TRIGGER_FALLING)
-> -		st->inv_irq_trigger = IRQF_TRIGGER_RISING;
-> -	else
-> -		return dev_err_probe(dev, -EINVAL, "Invalid irq flags: %u\n",
-> -				     st->irq_trigger);
-> +	if (st->chip_info->has_fifo) {
-> +		/*
-> +		 * When the chip enters FIFO mode, IRQ polarity is inverted.
-> +		 * When the chip exits FIFO mode, IRQ polarity returns to normal.
-> +		 * See datasheet pages: 65, FIFO Watermark Interrupt section,
-> +		 * and 71, Bit Descriptions for STATUS Register, RDYB.
-> +		 * Cache the normal and inverted IRQ triggers to set them when
-> +		 * entering and exiting FIFO mode.
+>=20
+> Thanks,
+> Bhargav
+>=20
+> > >
+> > > Move iio_device_register() to the end of the probe() function to prev=
+ent
+> > > race condition.
+> > >
+> > > Consequently, update the error handling path in probe() and in remove=
+()
+> > > ensuring that iio_device_unregister() is called first to cut off
+> > > userspace access before the hardware callbacks are removed.
+> > >
+> > > Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
+> > > ---
+> > >  drivers/iio/gyro/hid-sensor-gyro-3d.c | 20 ++++++++++----------
+> > >  1 file changed, 10 insertions(+), 10 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro=
+/hid-sensor-gyro-3d.c
+> > > index c43990c518f7..8e3628cd8529 100644
+> > > --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > @@ -333,12 +333,6 @@ static int hid_gyro_3d_probe(struct platform_dev=
+ice *pdev)
+> > >               return ret;
+> > >       }
+> > >
+> > > -     ret =3D iio_device_register(indio_dev);
+> > > -     if (ret) {
+> > > -             dev_err(&pdev->dev, "device register failed\n");
+> > > -             goto error_remove_trigger;
+> > > -     }
+> > > -
+> > >       gyro_state->callbacks.send_event =3D gyro_3d_proc_event;
+> > >       gyro_state->callbacks.capture_sample =3D gyro_3d_capture_sample;
+> > >       gyro_state->callbacks.pdev =3D pdev;
+> > > @@ -346,13 +340,19 @@ static int hid_gyro_3d_probe(struct platform_de=
+vice *pdev)
+> > >                                       &gyro_state->callbacks);
+> > >       if (ret < 0) {
+> > >               dev_err(&pdev->dev, "callback reg failed\n");
+> > > -             goto error_iio_unreg;
+> > > +             goto error_remove_trigger;
+> > > +     }
+> > > +
+> > > +     ret =3D iio_device_register(indio_dev);
+> > > +     if (ret) {
+> > > +             dev_err(&pdev->dev, "device register failed\n");
+> > > +             goto error_remove_callback;
+> > >       }
+> > >
+> > >       return ret;
+> > >
+> > > -error_iio_unreg:
+> > > -     iio_device_unregister(indio_dev);
+> > > +error_remove_callback:
+> > > +     sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
+> > >  error_remove_trigger:
+> > >       hid_sensor_remove_trigger(indio_dev, &gyro_state->common_attrib=
+utes);
+> > >       return ret;
+> > > @@ -365,8 +365,8 @@ static void hid_gyro_3d_remove(struct platform_de=
+vice *pdev)
+> > >       struct iio_dev *indio_dev =3D platform_get_drvdata(pdev);
+> > >       struct gyro_3d_state *gyro_state =3D iio_priv(indio_dev);
+> > >
+> > > -     sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
+> > >       iio_device_unregister(indio_dev);
+> > > +     sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_GYRO_3D);
+> > >       hid_sensor_remove_trigger(indio_dev, &gyro_state->common_attrib=
+utes);
+> > >  }
+> > > =20
+> > =20
 
-That's special.   The binding doc needs an update to say which state we are
-expecting an irq description for.  Obviously not a result of this
-series but nice to add that none the less!
-
-> +		 */
-> +		st->irq_trigger = irq_get_trigger_type(spi->irq);
-> +		if (st->irq_trigger & IRQF_TRIGGER_RISING)
-> +			st->inv_irq_trigger = IRQF_TRIGGER_FALLING;
-> +		else if (st->irq_trigger & IRQF_TRIGGER_FALLING)
-> +			st->inv_irq_trigger = IRQF_TRIGGER_RISING;
-> +		else
-> +			return dev_err_probe(dev, -EINVAL, "Invalid irq flags: %u\n",
-> +					     st->irq_trigger);
-> +	}
->  
->  	return devm_iio_device_register(dev, indio_dev);
->  }
