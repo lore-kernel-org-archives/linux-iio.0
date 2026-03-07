@@ -1,43 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E29233343C;
-	Sat,  7 Mar 2026 17:11:54 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAD42253340;
+	Sat,  7 Mar 2026 17:17:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772903514; cv=none; b=N8jbcMOqJpDpKH94U10o5bw0ZH5ooKLQJzUWa9brfrjMw88SD2Y1VAhLFc/hPYJaWw4HeSDuY5mnetAvgVYEPX4YqGfiIc7ghNX4b38BrD6KQyz43zzBRymcrn8Bm8gqACVouPIIlXH2DRKBrVfNmBYxlT1rlLFiHhMvE37BLLo=
+	t=1772903838; cv=none; b=CfJdgO7zYNZ+5gaFE4RvhSNdkfQSqdj28KBGz6pHm3ZXSFUFp305X108RiUvHQ4mw+1rA+avXA0TrO8Ldb7f18U/z2q/UvX3nD4+S/BK7zwEdGUYNDrDscNeSlQkTXeNDHS0dGjbj5RC7BACTuqXxeR0phKRliSg6L+ctEg6jUU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772903514; c=relaxed/simple;
-	bh=BvNDd1b5MKmcJPAGzg/yWIGtPouqJqU4qEm+cADjBsY=;
+	s=arc-20240116; t=1772903838; c=relaxed/simple;
+	bh=Ng60Nmsrl46XiuwVJCXG/RGYiZXrQdGUSPx/t+Mouyo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=exV8N1lj0OnNY1DU+w9B+2Nww8Y8+BHosPvEtBdfWj5X+MjqCHMUJzo1Hz3agnPr/oH5daLstTRWRNOZLNnWqgf9S/B/TcqtJ+Sx/aNUkgKeTUSexPHl99pXSgegz/rK30LGp3MwYWwVkrW4sbGByaTfbVIrcvjs0R0qXqa2mkk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=idfmKf7m; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=lE0Vvonua5g8L3RiX9/r/cMKRr83O53lpxt2XkCaR1TH4AOE6NFagg9B7K6QOcBdIoroyHp2KnynadxndAC52IH+r/QjhYsOqOEZLhI8yZtxnBJr2gRaIvOFgurnwr13cfGwJV7n84drJaZXKAsAjiOYyOmeu4JR7z0VYiTbRP0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vIBzPhr4; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="idfmKf7m"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0E0BC19422;
-	Sat,  7 Mar 2026 17:11:49 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vIBzPhr4"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B870C19422;
+	Sat,  7 Mar 2026 17:17:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772903513;
-	bh=BvNDd1b5MKmcJPAGzg/yWIGtPouqJqU4qEm+cADjBsY=;
+	s=k20201202; t=1772903838;
+	bh=Ng60Nmsrl46XiuwVJCXG/RGYiZXrQdGUSPx/t+Mouyo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=idfmKf7mTHVE2czp5iaWkCWF8RvUyG8rL5RSkd/3hK7YR9Wc6ONDDWjndIM4jrAwA
-	 KJy1Plg9z8DTiX5f7gOMALSKO/ZZlNiCdEQUTfSkwoqhYzOiPkSBpaToMSqY2RGZWq
-	 LENPPPOMVKasza4hXsb7F1DGQehYCN321XJG6/MpmQyIXXQWHVBTPemDAa+6iC7/Bl
-	 hhiXIkJwYu2yL1unil623s0GHttJ9Q1c2NeukCs49qtNFr1rSy1Mp+dnxAXiO+JHNy
-	 vR00scKaH+bbWygi3rKv5uSBRjPZj3UcAU+pNjSXjDMXARQJettH0obgHx4Vxppquh
-	 gL5hrxw8LEhFA==
-Date: Sat, 7 Mar 2026 17:11:44 +0000
+	b=vIBzPhr4dIY8YEWXO0/8SJ3ik93P5qADtuSZ1fE3sjf0pMrJY/Cbpum0h2LxlpPDj
+	 Q432pe+XemhhYwq7jPauA4qRGfHSyMVORRDGYGoFmHwYW5ikJzrhGtZDBOw4AouqN+
+	 OK9QBtaiQ4+PtG2wWVb9DNTuijmBnwZIjgXVNPmF/Ls95PuGFkrIHmORAbSTlMaOqC
+	 PAv2Wx/oz258NcERccQyEW361k8b1kIFptihmtVKe8Vz+/cuAQXvPiQb4uv7Mq6YVg
+	 K3VPhO9Jk+7nEcizPpyFP6gHr+LsBeH/H4pWPwWYgysUGsKZWRR18XC5DVS0pJmb1o
+	 TyT66fDKbfjbg==
+Date: Sat, 7 Mar 2026 17:17:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Cc: lucas.p.stankus@gmail.com, lars@metafoo.de,
- Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org,
- puranjay@kernel.org, dlechner@baylibre.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: accel: adxl372: convert to guard(mutex)
-Message-ID: <20260307171144.46d42799@jic23-huawei>
-In-Reply-To: <20260307114912.58062-3-rajveer.chaudhari.linux@gmail.com>
-References: <20260307114912.58062-1-rajveer.chaudhari.linux@gmail.com>
-	<20260307114912.58062-3-rajveer.chaudhari.linux@gmail.com>
+To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
+ Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: palmas_gpadc: Fix leading space indentation
+Message-ID: <20260307171710.2aa24c55@jic23-huawei>
+In-Reply-To: <20260307130213.174010-2-giorgitchankvetadze1997@gmail.com>
+References: <20260307130213.174010-2-giorgitchankvetadze1997@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,67 +46,50 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat,  7 Mar 2026 17:19:12 +0530
-Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com> wrote:
+On Sat,  7 Mar 2026 17:02:14 +0400
+Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
 
-> Replace manual mutex_lock/mutex_unlock pair with guard(mutex) in
-> adxl372_write_threshold_value(). This ensures the mutex is released
-> on all return paths and allows returning directly without a goto label.
+> Fix lines starting with spaces instead of tabs to comply with the
+> kernel coding style.
 > 
-> Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Series applied. One small tweak mentioned below.
+> No functional change.
+> 
+> Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Huh. I wonder why I never got bot warnings on this?
 
-Applied to the testing branch of iio.git where the bots poke at it
-briefly before I push it out as togreg which linux-next picks up.
+Thanks for fixing it. I applied but changed the patch title a little
+to remove the word fix as that tends to make people thing it needs a backport.
 
-Thanks,
+Applied to the testing branch of iio.git.
 
 Jonathan
 
 > ---
-> v4: Changelog moved below --- as requested by Jonathan Cameron.
-> v3: Return directly from error path without goto.
-> v2: Split into separate patch per driver.
-> ---
->  drivers/iio/accel/adxl372.c | 13 +++++--------
->  1 file changed, 5 insertions(+), 8 deletions(-)
+>  drivers/iio/adc/palmas_gpadc.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-> index 28a8793a53b6..4bf8656991ea 100644
-> --- a/drivers/iio/accel/adxl372.c
-> +++ b/drivers/iio/accel/adxl372.c
-> @@ -7,6 +7,7 @@
+> diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
+> index 3f433064618e..f9995e28b10f 100644
+> --- a/drivers/iio/adc/palmas_gpadc.c
+> +++ b/drivers/iio/adc/palmas_gpadc.c
+> @@ -521,16 +521,16 @@ static int palmas_gpadc_get_low_threshold_raw(struct palmas_gpadc *adc,
 >  
->  #include <linux/bitfield.h>
->  #include <linux/bitops.h>
-> +#include <linux/cleanup.h>
->  #include <linux/interrupt.h>
->  #include <linux/irq.h>
->  #include <linux/module.h>
-> @@ -336,18 +337,14 @@ static ssize_t adxl372_write_threshold_value(struct iio_dev *indio_dev, unsigned
->  	struct adxl372_state *st = iio_priv(indio_dev);
->  	int ret;
+>  	val = (val * 1000) / adc->adc_info[adc_chan].gain;
 >  
-> -	mutex_lock(&st->threshold_m);
-> +	guard(mutex)(&st->threshold_m);
-> +
->  	ret = regmap_write(st->regmap, addr, ADXL372_THRESH_VAL_H_SEL(threshold));
->  	if (ret < 0)
-> -		goto unlock;
-> +		return ret;
+> -        if (adc->adc_info[adc_chan].is_uncalibrated) {
+> +	if (adc->adc_info[adc_chan].is_uncalibrated) {
+>  		/* 2% worse */
+>  		min_gain_error -= 20;
+>  		min_offset_error = -36;
+> -        } else {
+> +	} else {
+>  		val = (val * adc->adc_info[adc_chan].gain_error -
+>  		       adc->adc_info[adc_chan].offset) /
+>  			1000;
+>  		min_offset_error = -2;
+> -        }
+> +	}
 >  
-> -	ret = regmap_update_bits(st->regmap, addr + 1, GENMASK(7, 5),
-> +	return regmap_update_bits(st->regmap, addr + 1, GENMASK(7, 5),
->  				 ADXL372_THRESH_VAL_L_SEL(threshold) << 5);
-
-I'd expect a minor indent update to be needed here.  1 more space.
-
-> -
-> -unlock:
-> -	mutex_unlock(&st->threshold_m);
-> -
-> -	return ret;
->  }
->  
->  static int adxl372_read_axis(struct adxl372_state *st, u8 addr)
+>  	return palmas_gpadc_threshold_with_tolerance(val,
+>  						     min_INL,
 
