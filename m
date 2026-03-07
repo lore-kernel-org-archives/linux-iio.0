@@ -1,90 +1,119 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f43.google.com (mail-wr1-f43.google.com [209.85.221.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1EC2579DA;
-	Sat,  7 Mar 2026 13:01:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3D99C31690E
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 13:03:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772888467; cv=none; b=B9H1eKZ5KpHSsGfgJI8ZrvEtqyRGtuhUek/qj1bNnafbr1JArZVZZqCo8ZEkeeD6AFsOk3mOReO+r08v0r66BXfUCMSn7lUy2ovAQ4xxG/Lwb6CxFD0nLA8J/qQrnoLPwUtXbqSLrcNsbkqJaDgfvP/cbps0F6JWzdaCdip7Vd8=
+	t=1772888583; cv=none; b=DZz6rwoh3KPKwYLzskHkJVtxwseQJ+D1vfy0wTIZ6A826Mf13BreJiTjJ15p145LoGhcPLvdgHwlnH7MqxiXPYbosQAwrf9FwYMR+aeKxfvKdAGcbEdYACvt5CRgjzhCej/aeEtpSdP97+bw+u3dH6izMDcq879keVF/TgpThIU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772888467; c=relaxed/simple;
-	bh=xAnQh1furyaz2PGfm6n6C/plQRiAp4inoicKfvWthC8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=F2eJIJPSMNCJHdmjFwe3RX5aVdui6tEHDI1jHGZmnDnQr0YhY4PlHVtuoUlZjp+jjql4I1Ykv9gPCovV7BJGT7sXOhk0yMXPM6G7glnPRIWuKp70IqCoFqYQSZXVGGRzCKIWQ8Yno6gyMz17X9kkPOw0PMeXIEhadLiXkzGRBec=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=E63Q0ODg; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772888583; c=relaxed/simple;
+	bh=O4P9DqgsLO0ggYk/A+NnFTIlCaBQLwfcSQj+hsSCfTY=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=lq7c/0Mvrq/BYX8zEUUXuPBAQEcV7imEXp2dqTTGk0G1z9aifaa+hS5h0SpSQLa3za4tFROP9CIPpTfy+dKN2dq90EqgycdqCnDJLx/WSBeJLDd6BYZ62X9tHguBeuUmiCq8xEu5x+bQBpvNsS/i0gZiSye+4TA2DzWdKvZdIeM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BTG/d7s5; arc=none smtp.client-ip=209.85.221.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="E63Q0ODg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDEE2C19422;
-	Sat,  7 Mar 2026 13:01:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772888466;
-	bh=xAnQh1furyaz2PGfm6n6C/plQRiAp4inoicKfvWthC8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=E63Q0ODgGy/vTxFMM1+BUJHmVQdcV+RI2jMKZPE0YuNgT1cXPNvJkWkRMyB2hKSgC
-	 hPJxIWmAOZ75ARemUkzLNUfTXCTuYtoIIU+K3eQtMjGfmiBEWNlC8Dtp76vf4XFp00
-	 xI8Uw1wdh2W2v+XOJpeNkxT8bonkdEhasPwh4g1++o3TK+clqNNkAucA6U02fGIMYH
-	 HpBghe4Ue1VQInsJ3mjlKC5SiBcffM8ZnJrOtyJ1JSpF3KbgQcVLbzcfHqILQ+dYip
-	 jOWHJNRzbrx5lpirRixwsA9EV1/zIlbbqs7yicZz6nT7Dz+ZgeWuezuQyDlragg+PI
-	 Be0TVdAswmcJg==
-Date: Sat, 7 Mar 2026 13:00:58 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: David Lechner <dlechner@baylibre.com>, Francesco Lavra
- <flavra@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 5/6] iio: ABI: Add partial quaternion modifier
-Message-ID: <20260307130058.190a0596@jic23-huawei>
-In-Reply-To: <aakrCIJBdHb1T30Y@ashevche-desk.local>
-References: <20260304080519.2844101-1-flavra@baylibre.com>
-	<20260304080706.2844472-1-flavra@baylibre.com>
-	<77e10517-2b6e-417b-95d3-185d3a067ba5@baylibre.com>
-	<aakrCIJBdHb1T30Y@ashevche-desk.local>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BTG/d7s5"
+Received: by mail-wr1-f43.google.com with SMTP id ffacd0b85a97d-439b3ae4a8eso627271f8f.3
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 05:03:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772888580; x=1773493380; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=Wkf6tTocDUZNevY9vbEFhIWKQSii4421LsB7XFDej1U=;
+        b=BTG/d7s5IrrEOGVsUWHq7OBOFFQeRT3kAojPd5gk3w19WmbPQv9bVQrfrRq8cep6p2
+         uHDsqJdRH5ijXAjTUU5mLR8WCs9eXNyZR5vrIlNCrcbv+DetDzJlFhG1AP1sjZg1dhQx
+         QzHHLYBHHxJ7AjbG+BMoiDQZ2OD6z3f/myrNtLHN1vExRYHDxYfdQ0o6yBri6tHvExOZ
+         0WxfkB9P9MpgKfU/uguqbE/wVqzXa5kKfP24J6JqIZ4GUMN9Sr4xrnvRJgxzuHRacCag
+         oiMKtaiXx+jtANNOXf6mg97hso6zi5fYVK3tySV1EKGRwm6yUKuw02hfa1E5YEGTwNDy
+         1frg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772888580; x=1773493380;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=Wkf6tTocDUZNevY9vbEFhIWKQSii4421LsB7XFDej1U=;
+        b=djH6VT0UswOy3zj/0j/XBlulFzUZOoNF7ZglH/ye6GZivANxgQAGaizo5SSnw8FRs7
+         ljKWb5A6N3iNwj6BbgEAZi/PFezXFn7ASYBt/ous8wBHr/MdAbw/Vq4fzj4Bo0FrHjuh
+         vKitHBI2NfDUuxbqDSyjPLl+igWqdNgjvLliK4MykU7o4Z/kF6v4dyEKZdKls8zpPWy0
+         5krkL9itiRBv30725x8eWZ0rnXfWVXLfntId4pJEIdfeqovi8BW7FqBBH52Rc+tci87K
+         4DhvInfBcN+EbLpLQd7331ZO3/H/dGbN+8+mTIi7IE93rmqI8nPY1tHSDKNmYMgGjx9A
+         i/YQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXi+15jxvydbMDRf1SbLX1KY99kf6EbsrdAYbG/fmkNN4qyGTcZFhfvJzJG9BG5/74JJSGxKlGz4IA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxediHp5SH4dvh7fciwMWKUMTRlojZ3CJAHmmKZHufL0YkzpS7I
+	05J/4r06i8hDI2mjOpLUff/joaJnLxV6ht09gORtJaj0G6yrLEHxWSVF
+X-Gm-Gg: ATEYQzxl7N1y5/Dl0Ge2uW71i8kDKMsixe1bT2kdrDcHCA1/5Fz3R9vsYBAwAfzhHRI
+	p8B0oS3Wi7uAxtcimdlHsDnbkqRTosT4wf82RFBpA8nGsQtqk+lKSBKJ2dU+9QcaTjATza+k5Fh
+	S9VTrOulzqgO+xBrNn3xPj6vryAayC+EJUS3LLD2jZ7Ujk89RrYyFi9zdINVTqLPdFhv+ZMzh7H
+	0WMdPNzrk1satPFA6S07JZ2klu132cqdd/y7ggovYHg3VkZr//vlel/2f+fsgB1gxwYFGQnk3Y3
+	hBsmEith42oXvGDkn7D8B26E391DDrkiG8wpmhyj36WItXkVFOcNeYsw3eOQYciEBfZ+XekHrAu
+	+BboXbJzHyTA3IgIc8l5QEl52oio6ikEu/0tLsEWsc2lyTVzCdUlsE4F4og+XzuZsIFb4I/fFQu
+	JkyPRsC9Y+xAgTCTpMy1soD+bv4+402ZmpehKj+Ca68WR6pFVkN6scNBhxnxAt98V2SklAyiN0D
+	0J1JHSD/AV5YKB8jmb4GTnmZILLRQavTvdUjpdNZdLKxfdV9+1T
+X-Received: by 2002:a05:600c:350e:b0:483:7d93:9f8a with SMTP id 5b1f17b1804b1-48526916b0dmr55900635e9.1.1772888580500;
+        Sat, 07 Mar 2026 05:03:00 -0800 (PST)
+Received: from fedora ([149.3.87.76])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-485244b6e9esm70816245e9.5.2026.03.07.05.02.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Mar 2026 05:03:00 -0800 (PST)
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+To: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Subject: [PATCH] iio: adc: palmas_gpadc: Fix leading space indentation
+Date: Sat,  7 Mar 2026 17:02:14 +0400
+Message-ID: <20260307130213.174010-2-giorgitchankvetadze1997@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Thu, 5 Mar 2026 09:04:40 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+Fix lines starting with spaces instead of tabs to comply with the
+kernel coding style.
 
-> On Wed, Mar 04, 2026 at 04:35:39PM -0600, David Lechner wrote:
-> > On 3/4/26 2:07 AM, Francesco Lavra wrote:  
-> 
-> ...
-> 
-> > > +		- the quaternion vector is normalized, i.e. x^2 + y^2 + z^2 + w^2 = 1  
-> > 
-> > Isn't this usually written with w first?
-> >   
-> > > +		- the rotation angle is within the [-180, 180] range, i.e. the w  
-> > 
-> > Best to say the angle units. IIO standard unit for angle is radians.
-> >   
-> > > +		  component (which represents the amount of rotation) is non-negative  
-> 
-> Based on these, maybe the name should be
-> 
->   normalised_360_quaternion
-> 
-> (or variations of this)? Actually "partial" quaternion some articles use
-> for something different as far as I can say.
+No functional change.
 
-The "axis" naming for the define is probably as good as we can do for
-something that is mathematically dubious in my view. There are two many
-ways it could be interpreted and I'd be surprised if this does get used
-in other devices, and they all pick the same way of filling in the
-missing constraint.
+Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+---
+ drivers/iio/adc/palmas_gpadc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-Mind you I never much like quaternion's (part of my PhD was on Clifford /
-Geometric algebra's and exponentials of bivectors are so much cleaner :)
-
-Jonathan
-
-> 
+diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
+index 3f433064618e..f9995e28b10f 100644
+--- a/drivers/iio/adc/palmas_gpadc.c
++++ b/drivers/iio/adc/palmas_gpadc.c
+@@ -521,16 +521,16 @@ static int palmas_gpadc_get_low_threshold_raw(struct palmas_gpadc *adc,
+ 
+ 	val = (val * 1000) / adc->adc_info[adc_chan].gain;
+ 
+-        if (adc->adc_info[adc_chan].is_uncalibrated) {
++	if (adc->adc_info[adc_chan].is_uncalibrated) {
+ 		/* 2% worse */
+ 		min_gain_error -= 20;
+ 		min_offset_error = -36;
+-        } else {
++	} else {
+ 		val = (val * adc->adc_info[adc_chan].gain_error -
+ 		       adc->adc_info[adc_chan].offset) /
+ 			1000;
+ 		min_offset_error = -2;
+-        }
++	}
+ 
+ 	return palmas_gpadc_threshold_with_tolerance(val,
+ 						     min_INL,
+-- 
+2.52.0
 
