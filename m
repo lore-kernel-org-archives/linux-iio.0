@@ -1,45 +1,46 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5CB334D4D3;
-	Sat,  7 Mar 2026 11:09:48 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F5D934B693;
+	Sat,  7 Mar 2026 11:30:20 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772881788; cv=none; b=Kp83udcc2h9BqIGVvCFvAU9YbUr4DHcMd+aAzEAXveZL+Pnj7n2okdjxdOCrAju/YBmTo99DeK368BBBZ2A+SJz8WTprP8xxeBH994vaSEh1jNgzvobWhvdbdzPFibg+4Zp+VUUgib431ysESiL7jUwS6jKH5RdjzirE+vDUPTk=
+	t=1772883021; cv=none; b=S3gHSJvYevv3VMxr0aV3DIHZZ52FhnntUQcef8hc+rfZVCOjknOYIYPm0RVP/FOMfXG8FSEPDRAmKShlOuapiNnkoX9UUGo7H+lyEDTJoxAmTyyJ9MQschm47fZKabSYwp5A4ftAo79/Os9UHKq7ETFfbd75Qd6cY5r11CJQgVg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772881788; c=relaxed/simple;
-	bh=cjjr/VoLwDpuHx5Rt1NM/iEHxNEsxfEWMLb4ptTu3WI=;
+	s=arc-20240116; t=1772883021; c=relaxed/simple;
+	bh=2CUVF99qWhu/7jlppu/a4NP/AlTSyIlV4CS7j851hoo=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=fx9ng9IlCn3TpPVKAggTJ3SFQCa4D1aaMukcFJwxvcO3iBa3mBcaahIeTq5R0anqC/ZDOXuYkWCYXUJQG97dvnBNHOUJ5ky7A1dQIbfLjGaIdOcImxHxRLOA02iMleLhhCYq7Tq38rLpMM85pUsVfxrxNj2U7QGemIoHZIR5pu4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p/PkVYtY; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=DCD/8mwZtB8tRc5OUWFLsod/ovPJpbX7lhJTA+klLs3bBit2PP5QwMjx7wxF06L+hGgEKyo8DHj9lNUUS9p3Pi4NFYrnVBpdxtrQceHE8z2qVdDkX2XGJouKj5Tt6d4QCfkMu8+E9g3trNQNO3VjWp8kyBVfaEkSW52/hcjUT40=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IEj+1fn1; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p/PkVYtY"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F0FAC19422;
-	Sat,  7 Mar 2026 11:09:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IEj+1fn1"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1E01C19422;
+	Sat,  7 Mar 2026 11:30:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772881788;
-	bh=cjjr/VoLwDpuHx5Rt1NM/iEHxNEsxfEWMLb4ptTu3WI=;
+	s=k20201202; t=1772883020;
+	bh=2CUVF99qWhu/7jlppu/a4NP/AlTSyIlV4CS7j851hoo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=p/PkVYtYe/prLDRN3OO76pZKXiNuL1txySgkEr4RGahVn6LlYhOCJwGwpBF/jYEaz
-	 3siE8ERxyGN67j5718KhbO+cSTP+EFppwQ/l3EJeiVdXnK9kz28w7zaoixxUMasEr/
-	 /rwR5d6vzidZY86TYSEsEJznHfJlxAhfEvwxDX3rj2Y14fDT1+R5Q05id7WJ/OxH57
-	 61+zSUdhDP0kWCEPGJTcQukf034ujBBpycKXdmNjFSMu8HAZJaUfMhuhJf5ruZYp+4
-	 jAn9eTX3FmJHUc+sVgNbL3RbUA9jzR28ZbPFPnPsvZkV1gK20hLM5TJeZfF8RYjT+V
-	 1hcjSUoUpamAA==
-Date: Sat, 7 Mar 2026 11:09:39 +0000
+	b=IEj+1fn1uMG5ete1sYnRb8JY399tNrmdDZeEKl4sGVHF/XavtPbFSeB3iNZwjRpWK
+	 LPGb5M9UDASAGx9QRGkfDd/kcEMIpBrERvoFvVq3P2Ilzm4HTcI7TVNCTrPdtycAGd
+	 +drGASlTbNQ2iHp++g+XK922V/XgKolieBCubV0K7juWFjd4RmqwBpJ6XuMB2tLQgf
+	 jiy5FSBdXCbF4MBR5S11mdqzXH1fTSW14LjNvnLdN4YxN3rNAAgdef1QTJhCDmSDha
+	 KU9QS5yaJo1KyCKEHb18ByGsCi1Skh39AOXEOLrUBdFOrmf7f2xXgUq/dCv2cznvLV
+	 S1Uki026kPY2g==
+Date: Sat, 7 Mar 2026 11:30:11 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/4] iio: frequency: ad9523: use dev_err_probe
-Message-ID: <20260307110939.7fbfe548@jic23-huawei>
-In-Reply-To: <aarHeQbq-Ml-ZjqR@ashevche-desk.local>
-References: <20260306102504.42395-1-antoniu.miclaus@analog.com>
-	<20260306102504.42395-5-antoniu.miclaus@analog.com>
-	<aarHeQbq-Ml-ZjqR@ashevche-desk.local>
+To: Michael Harris <michaelharriscode@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Greg Kroah-Hartman
+ <gregkh@linuxfoundation.org>, David Lechner <dlechner@baylibre.com>, Nuno
+ =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/4] staging: iio: adt7316: remove shift/offset
+ macros
+Message-ID: <20260307113011.16da6098@jic23-huawei>
+In-Reply-To: <20260305-adt7316-correct-macros-v2-2-3702e3841c42@gmail.com>
+References: <20260305-adt7316-correct-macros-v2-0-3702e3841c42@gmail.com>
+	<20260305-adt7316-correct-macros-v2-2-3702e3841c42@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,30 +51,56 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 6 Mar 2026 14:24:25 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Thu, 05 Mar 2026 23:16:59 -0800
+Michael Harris <michaelharriscode@gmail.com> wrote:
 
-> On Fri, Mar 06, 2026 at 12:24:48PM +0200, Antoniu Miclaus wrote:
-> > Use dev_err_probe() instead of dev_err() in the probe path to ensure
-> > proper handling of deferred probing and to simplify error handling.  
+> Remove shift/offset macros and instead use the corresponding mask with
+> FIELD_GET(), FIELD_PREP(), or FIELD_FIT().
 > 
-> ...
+> In cases where an appropriate mask didn't exist, it was created.
 > 
-> > -	if (!pdata) {
-> > -		dev_err(dev, "no platform data?\n");
-> > -		return -EINVAL;
-> > -	}
-> > +	if (!pdata)
-> > +		return dev_err_probe(dev, -EINVAL, "no platform data?\n");  
+> One of the shift/offset macros was used for a convoluted dynamic
+> bitfield extraction. In its place, a helper function,
+> adt7316_extract_ad_lsb(), was created so the shift/offset could be
+> removed.
 > 
-> Platform data?! Maybe we can get rid of it entirely?
+> Signed-off-by: Michael Harris <michaelharriscode@gmail.com>
 
-Good thing to do, but big job. There is no DT binding for this and
-the platform data is very complex.  I checked though and the part is
-still recommended for new designs so if Analog wants to support it going
-forward that work needs doing.
+> ---
+>  drivers/staging/iio/addac/adt7316.c | 59 ++++++++++++++++++++++---------------
+>  1 file changed, 36 insertions(+), 23 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> index 1412808c50c76a68b5771a25c46dd3308c5cbcdb..b8b66f4dd14bb59c3d29fdd569d84f0dd786db9e 100644
+> --- a/drivers/staging/iio/addac/adt7316.c
+> +++ b/drivers/staging/iio/addac/adt7316.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/i2c.h>
+>  #include <linux/rtc.h>
+>  #include <linux/module.h>
+> +#include <linux/bitfield.h>
+>  
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/events.h>
+> @@ -31,10 +32,11 @@
+>  #define ADT7316_LSB_IN_TEMP_VDD		0x3
+>  #define ADT7316_LSB_IN_TEMP_MASK	0x3
+>  #define ADT7316_LSB_VDD_MASK		0xC
+
+Convert all masks to GENMASK_U32() rather than just the ones where you
+are removing a shift.  That will give us more consistent code and
+makes sense as part of this patch.
+
+
+> -#define ADT7316_LSB_VDD_OFFSET		2
+>  #define ADT7316_LSB_EX_TEMP_AIN		0x4
+> -#define ADT7316_LSB_EX_TEMP_MASK	0x3
+> -#define ADT7516_LSB_AIN_SHIFT		2
+> +#define ADT7316_LSB_EX_TEMP_AIN1_MASK	GENMASK_U32(1, 0)
+Why GENMASK_U32()?  The registers seem to be 8 bit.
+I'm not sure we care that much about the extra checks the sized
+variant brings but if we do want to use it use the U8() variant.
 
 Jonathan
 
-> 
 
