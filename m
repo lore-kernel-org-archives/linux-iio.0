@@ -1,44 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 920372DC35C;
-	Sat,  7 Mar 2026 12:20:11 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7FE02330B2F;
+	Sat,  7 Mar 2026 12:21:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772886011; cv=none; b=TR4fi8bgz+akttb+WttJMJz490HSPo+/wSNpeVBvyfsrXDZZ2Zg/pZLZ9vevPFm20/lmAgAmx9pe+u9xPMRuzWdThuw1mQCdK400NAL9gc5z6CoN4VsfgXE/fnYizuVjvjkrQSfo1x/nZjRiAuiKh/dUrytDCBlXDvLU9Zjen6E=
+	t=1772886104; cv=none; b=br0aAej6FWel7ZHsBJFBE4ChOjvOA/r4DLg0QjYYQT+BC3JKdWBxcZ6VzNRWxBU5Ou2Ia3CvsUqMQHaM3Oh+Ln5xyrOjPAqdUTxB2ZSzOWHIF+dBPe9k4kI7eCUMe5wlWNAu0BJtI/OfWaxPtNwurDW82d+gfm6L0vAiPfZqqjQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772886011; c=relaxed/simple;
-	bh=jiRi92ztOe93ijqJqbf1JgES37OuCVHNCdB1G3L9DHQ=;
+	s=arc-20240116; t=1772886104; c=relaxed/simple;
+	bh=7owkRNPvB7Q6hbMGb+aLAe2DhVztwY3ImJl15C8aD40=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=l0zPo/+G4drnKandwVssxMkJdpaxRPrQDuLyuVSJstzeKe5ealyDuLPBYHsyWeinOmss4GbgN/m6dQ8gmwZjX8cc/2HAJkBAZbYm4nlMxMCToNe2QnKwCZLAslAX8CvbamQKahrdY0Aueh7lubLyquzMbGbMRwLpafEMqvzH4ag=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=cetPOPQ0; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=U6R03ejcQySLo/nLDyiY3GxpwKArMQm5D4svAIv9ZnSCE9sDpcI6c1r9aosgsXnUILOhzJUVStoEpXYgdoFc5VH/x03IQFYubdKilwxJuDUYbw33BRkpL9qF1JKEUaDxGejrahivoCsWhnj7ZkXwJJW22ywgBM1XSnhVizsTbDo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZXslT74p; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="cetPOPQ0"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AF33C19422;
-	Sat,  7 Mar 2026 12:20:08 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZXslT74p"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71EDDC19422;
+	Sat,  7 Mar 2026 12:21:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772886011;
-	bh=jiRi92ztOe93ijqJqbf1JgES37OuCVHNCdB1G3L9DHQ=;
+	s=k20201202; t=1772886104;
+	bh=7owkRNPvB7Q6hbMGb+aLAe2DhVztwY3ImJl15C8aD40=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=cetPOPQ0ZNK4yOirBNPB69Ea2YnkkhQaB+fPZVxot6FHiv+u2MVOjF5N1Kda+amYg
-	 /R/K8smNfGCQfpzhh+Xj5ADcrHx4+uEkSlTzNcqlZWL70kiRjYWq4/WvbRsjZ6AQRe
-	 b6t5ENr22YsBM4pXX+iQphHJKdKQuJ9UJAbfcsyFfTzl0kH4y117HYfTq5Kan0h92P
-	 RAs2mI/Tqu/QyHNnNAD492ituRYJyWAYrm6yyViRCG08nEhZ7g+kBtJ2A0f2ZLaR/0
-	 1cHtUtp61DoMXM+YCiLi7xmqG7BqAtuQipzN8wYAdhkZ127/envQnxNq7ykkQlUt+Q
-	 YX22ldal9FO0w==
-Date: Sat, 7 Mar 2026 12:20:03 +0000
+	b=ZXslT74pXFP0HFGpsj++TYVu/Ae5kn0T8pFXL0G3CEmXNJLQ7DsOIOFgpJu3zRsKY
+	 cb9yOw2v2C/Z7q1Arl7yr5KPzN7zh0LZNkghhT55VuE2hjmLNQeXketZwR3sxu3NwX
+	 VZ3+KGJnjmP9GQ8kkGc+UZ1YGOGz6/UqIwbSdGPI/3Z16Jm+ai+v9f8wFzekDrbbNs
+	 bGWALR7d1NMRY8SBAlmf29b0AR8nShqAhRDLBHuuSFt1u63r7oMUETQCKyA+9vJQ43
+	 L+bQc1oJXt28+dwNGledkcslkepzsjgXjfpKcSKFdm1jtQaJdBs/DqOCFC8XGvlD5J
+	 6+wswzdJwTAbQ==
+Date: Sat, 7 Mar 2026 12:21:38 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>, LKML
- <linux-kernel@vger.kernel.org>, Linux ACPI <linux-acpi@vger.kernel.org>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v1 2/2] iio: light: acpi-als: Convert ACPI driver to a
- platform one
-Message-ID: <20260307122003.691e2478@jic23-huawei>
-In-Reply-To: <aakseadAuKEMAmvq@ashevche-desk.local>
-References: <6147175.MhkbZ0Pkbq@rafael.j.wysocki>
-	<3609079.QJadu78ljV@rafael.j.wysocki>
-	<aakseadAuKEMAmvq@ashevche-desk.local>
+To: David Lechner <dlechner@baylibre.com>
+Cc: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>,
+ linux-iio@vger.kernel.org, nuno.sa@analog.com, andy@kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: temperature: add ADI MAX30210
+Message-ID: <20260307122138.74c8b767@jic23-huawei>
+In-Reply-To: <0024f138-a8f6-48a2-a68e-a8c36e542b5a@baylibre.com>
+References: <20260304122509.67931-1-johnerasmusmari.geronimo@analog.com>
+	<20260304122509.67931-2-johnerasmusmari.geronimo@analog.com>
+	<0024f138-a8f6-48a2-a68e-a8c36e542b5a@baylibre.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,62 +48,65 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 5 Mar 2026 09:10:49 +0200
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Wed, 4 Mar 2026 18:11:22 -0600
+David Lechner <dlechner@baylibre.com> wrote:
 
-> On Wed, Mar 04, 2026 at 07:33:14PM +0100, Rafael J. Wysocki wrote:
-> > From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+> On 3/4/26 6:25 AM, John Erasmus Mari Geronimo wrote:
+> > Add device tree binding documentation for the Analog Devices
+> > MAX30210 temperature sensor.
 > > 
-> > In all cases in which a struct acpi_driver is used for binding a driver
-> > to an ACPI device object, a corresponding platform device is created by
-> > the ACPI core and that device is regarded as a proper representation of
-> > underlying hardware.  Accordingly, a struct platform_driver should be
-> > used by driver code to bind to that device.  There are multiple reasons
-> > why drivers should not bind directly to ACPI device objects [1].
+> > Signed-off-by: John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+> > ---
+> >  .../iio/temperature/adi,max30210.yaml         | 62 +++++++++++++++++++
+> >  MAINTAINERS                                   |  7 +++
+> >  2 files changed, 69 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
 > > 
-> > Overall, it is better to bind drivers to platform devices than to their
-> > ACPI companions, so convert the ACPI ambient light sensor driver to a
-> > platform one.
-> > 
-> > After this change, the subordinate IIO device will be registered under
-> > the platform device used for driver binding instead of its ACPI
-> > companion.
-> > 
-> > While this is not expected to alter functionality, it changes sysfs
-> > layout and so it will be visible to user space.  
+> > diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+> > new file mode 100644
+> > index 000000000000..66867880a20f
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/temperature/adi,max30210.yaml
+> > @@ -0,0 +1,62 @@
+> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> > +# Copyright 2026 Analog Devices Inc.
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/temperature/adi,max30210.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Analog Devices MAX30210 Temperature Sensor
+> > +
+> > +maintainers:
+> > +  - John Erasmus Mari Geronimo <johnerasmusmari.geronimo@analog.com>
+> > +
+> > +description: |
+> > +  The MAX30210 is a temperature sensor with an I2C interface.
+> > +  https://www.analog.com/media/en/technical-documentation/data-sheets/max30210.pdf
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - adi,max30210
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  vdd-supply:
+> > +    description: Analog supply voltage input.  
 > 
-> ...
-> 
-> > -static struct acpi_driver acpi_als_driver = {
-> > -	.name	= "acpi_als",
-> > -	.class	= ACPI_ALS_CLASS,
-> > -	.ids	= acpi_als_device_ids,
-> > -	.ops = {
-> > -		.add	= acpi_als_add,
-> > -		.remove	= acpi_als_remove,
-> > +static struct platform_driver acpi_als_driver = {
-> > +	.probe = acpi_als_probe,
-> > +	.remove = acpi_als_remove,
-> > +	.driver = {
-> > +		.name = "acpi_als",
-> > +		.acpi_match_table = acpi_als_device_ids,
-> >  	},
-> >  };  
-> 
-> >    
-> 
-> You can also drop this unneeded blank line.
-> 
-> > -module_acpi_driver(acpi_als_driver);
-> > +module_platform_driver(acpi_als_driver);  
-> 
-> Anyways, LGTM,
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Tweaked and applied to the testing branch of iio.git.
+> The description makes it sound like there could be other supplies,
+> but there aren't. It is the "everything" supply, so we can just
+> call it the power supply.
 
-Thanks,
+I think
+
+   vdd-supply: true
+
+is also fine when it's a simple as this.
 
 Jonathan
+
 
 > 
 
