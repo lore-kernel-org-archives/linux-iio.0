@@ -1,140 +1,83 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E812536A02B
-	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 10:18:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61FB42586C2;
+	Sat,  7 Mar 2026 10:26:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772878724; cv=none; b=kYyXbSPCv+zNRabGhsQsUctXuO9zSljd8NXPqbtnAjpxNOFzUQCQ9Wp43n0JPg79Q12dQodUdSykY76Bz2C2kscbrMiXsKupeHbRY/7pMxkcfTD0XidVmyN0QcwuozwhXXymexZiqsfJV+W1a7tcQX4y5Vh5EqoqNdnQfhxou1w=
+	t=1772879201; cv=none; b=t9+NyhTq1kBtsCn7W928Gvs41q94EFD4klmGN13zWAyHpUSGOsv02BSIucyoLAwwip7PktBhif6VDnrHfobdjQwpDPTjOB2+Z95LOXmIQQbkfN/ANgBUgy819BbOR5J4VizaHH9IQ+lMQUI3pF2ZZu7K4Edgg1sK/dkzBkuC+bE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772878724; c=relaxed/simple;
-	bh=/SmXTAY/xZRfSiD4uiSMI1Yh4L2ASRtyBwJyrX5qvvM=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=E4PgGZhCT1In6iwVbqXYLFDNIUSxAq08OlFlk0bO1iFoCktAhktnxo65R72ZNapWRJLEAhQBsT0mPDBRlZwaDxSh82r3MYdDOraSoXgxieL8DZvnQmb7Yoslk/Li6JE5tyGqteon4P4PMbNczHbqldM8U1bBBx450xA75VPmy6E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kN9UagkO; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772879201; c=relaxed/simple;
+	bh=bJZkaIIN5vXMA5ntcFV+OoGcPa4Ag3NRBEq2KoxFaew=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=VQX9DlF7gupCKFznzrO3s3XoJyVTdx7C1aJDqVPguJwzWF43AUHOtNbuMT8jhxArIvhvZSEJ4daxMFokJEf4lVoFolmRNzSdurIVa2IHGJwkek4Q6y6tPjSX6ABoqdyXX2IWNa0lV0b6GvVR6LYNIuLOVntYjjbTQ449rHgUBfE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=VW/7T5Qp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kN9UagkO"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2ad4d639db3so45721215ad.0
-        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 02:18:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772878721; x=1773483521; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=M/I55kaLdBWzOitjkqtS2/HX//j8K3LJPhNqqPwMTTg=;
-        b=kN9UagkOEmmEvEqTG6xjjVnRhdr6Gvtig7fgquq/78b5547MUNZ1JVfrnzlqkrSzCc
-         rI0dg3ZBeAgGC7Q1QcMtwjAn+sis+YGib92cpVvET0VnJGqd3XjT3Vw5pJH9bDJXQQYd
-         Mo2F+CnZFy95FxbnR+OeRyhaHcwuchv5pZiNyjCG51BvuMPh4wHB8sEth7ulbXeJvfic
-         k8xR4vC8c5be/K6UEPaTmNJs20YOyeqql5xAC0pgfw2Nbp6qL0J2N2kkd9HrGnHol+gl
-         ulw1/rBp//7FGR/dw4a3+gGCYnMF3px6QG5Vy02Qv9tehXWgG6dObOZtONjt5ANvGZtR
-         FGvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772878721; x=1773483521;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=M/I55kaLdBWzOitjkqtS2/HX//j8K3LJPhNqqPwMTTg=;
-        b=tiVMpvLJnHIRMtRtTJxDuK1/uwV6BQFncr4E+YGKzrsGto8ajKk6eWP91f3NvnX8RP
-         x1j0g4/qJ03yCzPsdtyfkDTZE3FsrAKs9LkqxDnR/87q+BM6TK0T12n64VGZxZYLj2PH
-         bFFKIBqMImurrIANnhpoxykUi8rOgDb7tXmveZblbRihNTVS+wdipqWLTWK2MCGlUhM3
-         z82IbvZ7AQkMiDT93ex3rgf05jG5baaHUBDQ45+NOnwC8s+mMOrPiocnwS17ljarYHBh
-         Ow2TCkPl/Yn0kFpJBZpXsKD1Q5S8KgWy2XR45Sw4AnopaK+f4fX64kxo7givfBNqmy0u
-         /+AQ==
-X-Gm-Message-State: AOJu0YxF9S98eiQonp43dfgrfu7NccRO1PQpLlRH3WM20VlGanQnDWcZ
-	IoEI+443L+QKfFwhd5KjdGr9apcHuM0+drB1mz5n+TZFsbd+eAc/Jtla
-X-Gm-Gg: ATEYQzw0gtuNLtw4AplsDZrcKvdv9HB0+qyt7F9QY6JcPC6vfeCmrbRQ+o1A/9kk2ef
-	lCEQAxN3dSFelofK+L3XNEdPqDmle7qh5negu2WjecZdTt2NnR1aD2RRBaGx8WQhSZRS+e8+FM7
-	y1zV4Px3nfJzsZREYJyQBNw5MOqCthtRVEk16vX7+vpAzlpz8mP3FHaO+aP+JZ6AqQgM31Sisuq
-	c9trttKOr5mwPk7JM1C9Beb6r8vk0NTSJ3M0M4C6MRZn7AcoLjxtgg/2zI9FeB0a6BhjfaRF61o
-	uaUdqqSuquiX/vzQYU3LR0B9Qi6rxklrE+vpd2iUHsiFOrjLIsVTjleIepKiatmGC4XX6TYIKWc
-	w8SaKNbM5oZBLrcyBupy/4SV4q185PWPhE49QAaAsRDrXalLNw0I71GbVkzzAC/xBS+pMYBXfb/
-	ycY9y56um4FKl74ELok3leO4aAwDp1hxin0+QisoelxI6pPhZCpfzY+Rakskv3ADPS99/q94bRt
-	GHY821f+RMZQ5OyARoLyMFD
-X-Received: by 2002:a17:902:ebc3:b0:2ae:512b:eea9 with SMTP id d9443c01a7336-2ae82430f22mr53741175ad.36.1772878721117;
-        Sat, 07 Mar 2026 02:18:41 -0800 (PST)
-Received: from fedora ([103.215.156.48])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae83f7864dsm48381265ad.49.2026.03.07.02.18.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Mar 2026 02:18:40 -0800 (PST)
-From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-To: lucas.p.stankus@gmail.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	puranjay@kernel.org,
-	dlechner@baylibre.com
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Subject: [PATCH v3 3/3] iio: accel: adxl372: convert to guard(mutex)
-Date: Sat,  7 Mar 2026 15:47:58 +0530
-Message-ID: <20260307101758.50091-4-rajveer.chaudhari.linux@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="VW/7T5Qp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB859C19422;
+	Sat,  7 Mar 2026 10:26:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772879201;
+	bh=bJZkaIIN5vXMA5ntcFV+OoGcPa4Ag3NRBEq2KoxFaew=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=VW/7T5QpM3M7swlArjxIhZfXu7yUM6Bew/KtwItHZZOhZjQ/v5VWr45Jt2D1KKt5L
+	 +Tbl4rPTaxR9QFfeJEcKpvxq+e8IMmHfIdz/LqauO6sxGUR3IIl4TtNBbk8guKzhIJ
+	 6n+xZUoS9BpGQaw+tGKrRXVLOcfVjG3G+u2FbPZ7wgelUvRXnR28yTnum3M1sZzN45
+	 GiyVfOdDLGatfqv6wgOHPVBL03sJt8C1DcEPU+gDqEvl27GF/bI5s3XKzcMJfc7FIi
+	 25mxU5sRpRZJE0Rgdu8cTYBqd9UYKhkDsIsLe1ANH9Cko4MU4ceMovpz5sYQAscO2T
+	 EaU5hDfGEVmgg==
+Date: Sat, 7 Mar 2026 10:26:34 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+Cc: lucas.p.stankus@gmail.com, lars@metafoo.de,
+ Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org,
+ puranjay@kernel.org, dlechner@baylibre.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] iio: accel: convert to guard(mutex)
+Message-ID: <20260307102634.6eaafab5@jic23-huawei>
 In-Reply-To: <20260307101758.50091-1-rajveer.chaudhari.linux@gmail.com>
 References: <20260306211152.65109-1-rajveer.chaudhari.linux@gmail.com>
- <20260307101758.50091-1-rajveer.chaudhari.linux@gmail.com>
+	<20260307101758.50091-1-rajveer.chaudhari.linux@gmail.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Replace manual mutex_lock/mutex_unlock pair with guard(mutex) in
-adxl372_write_threshold_value(). Remove goto label and return
-directly on error path.
+On Sat,  7 Mar 2026 15:47:55 +0530
+Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com> wrote:
 
-v3: Return directly from error path without goto.
-v2: Split into separate patch per driver.
+> This series converts manual mutex_lock/mutex_unlock pairs to
+> guard(mutex) in three ADXL accelerometer drivers. Each conversion
+> also simplifies error handling by removing goto labels and
+> returning directly where possible.
+> 
+> v3: Remove remaining goto labels completely as requested by David Lechner.
+>     Return directly from functions where ret variable is not needed.
+> v2: Split into one patch per driver as requested by David Lechner.
+>     Ensured each conversion also simplifies code flow.
+> 
+> Rajveer Chaudhari (3):
+>   iio: accel: adxl313: convert to guard(mutex)
+>   iio: accel: adxl355: convert to guard(mutex)
+>   iio: accel: adxl372: convert to guard(mutex)
+> 
+>  drivers/iio/accel/adxl313_core.c | 15 ++----
+>  drivers/iio/accel/adxl355_core.c | 81 ++++++++++++++------------------
+>  drivers/iio/accel/adxl372.c      | 16 +++----
+>  3 files changed, 45 insertions(+), 67 deletions(-)
+> 
 
-Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
----
- drivers/iio/accel/adxl372.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+Hi Rajveer,
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index 28a8793a53b6..340433782cf2 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/bitfield.h>
- #include <linux/bitops.h>
-+#include <linux/cleanup.h>
- #include <linux/interrupt.h>
- #include <linux/irq.h>
- #include <linux/module.h>
-@@ -334,20 +335,15 @@ static ssize_t adxl372_write_threshold_value(struct iio_dev *indio_dev, unsigned
- 					     u16 threshold)
- {
- 	struct adxl372_state *st = iio_priv(indio_dev);
--	int ret;
- 
--	mutex_lock(&st->threshold_m);
--	ret = regmap_write(st->regmap, addr, ADXL372_THRESH_VAL_H_SEL(threshold));
-+	guard(mutex)(&st->threshold_m);
-+	
-+	int ret = regmap_write(st->regmap, addr, ADXL372_THRESH_VAL_H_SEL(threshold));
- 	if (ret < 0)
--		goto unlock;
-+		return ret;
- 
--	ret = regmap_update_bits(st->regmap, addr + 1, GENMASK(7, 5),
-+	return regmap_update_bits(st->regmap, addr + 1, GENMASK(7, 5),
- 				 ADXL372_THRESH_VAL_L_SEL(threshold) << 5);
--
--unlock:
--	mutex_unlock(&st->threshold_m);
--
--	return ret;
- }
- 
- static int adxl372_read_axis(struct adxl372_state *st, u8 addr)
--- 
-2.53.0
+Small process thing.  Please send each new version as a separate email
+thread.  It can get very hard to follow when we end up with deeply
+nested threads so most areas of the kernel prefer to just associate
+them via name of the thread and possibly a link in the cover letter
+to the previous version.
 
+Jonathan
