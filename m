@@ -1,46 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 843D434B1AB;
-	Sat,  7 Mar 2026 11:33:56 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 908CC34EEE4;
+	Sat,  7 Mar 2026 11:38:06 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772883236; cv=none; b=eYaL/jPl56EfTZKjULXP6yiZdxWHQU17ef8Vd2kyBI2ZQU754YJW1o98KU9yQnsaFuuXKoVbNL+Zx3HhKLAux3tIHZnqzFcUto6mdaoR4dm1F6YyCmF5LFjTVliqeoo9mYWH8YtYkj3y/qNMCX0y0Y8XrYBVOS0c2bkCdzLJfo4=
+	t=1772883486; cv=none; b=ceVajqR9x5ykxt9Ew1gCypOzVgzw20ForRXKHUS8C3wyVjC5JTzfpLnr0M+0Cw3oQt+X8wSgywGxfhPYKQJ1K+JV8mxByG8+SIJmwyZhpDxcagcdZIm7aZc01m1STe3mDhjGHE7nZJ25FlOeKj4asc3F9o3fqyAYYFZPstk0zwE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772883236; c=relaxed/simple;
-	bh=DX8+xCr22O9KlDW/8VXkPWhIAH0JAZqq/dxy7iBInlc=;
+	s=arc-20240116; t=1772883486; c=relaxed/simple;
+	bh=4vEmIvT6/hd6IrLoExqkfyoQm4aseR8ycMrBsF7re7M=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZMzFCAA8fb2MxrJgdrz2yK87nIlS7rsFa//Q9GG8i0DhtPcXSOG34gjfBUCsWu7oDfMuPpNRDOUIPl1bb7cWpC54GXpY0FGwts7ygf3F70BT5vqIze7G82LSHUXPfPYSkRQoQGmDIWlViNrnUEG2OMig7aZ64XTY/MG4iGNeBzM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pVenn+or; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=d9uZ47COiv/iPnx/agEIslPn1em0sh5PZEAbmxZUcv7bBzJBMJ75h6geYeXrGJ9Lvf7U+pFUtPrqfTBZ1GXndTe7tSCCHDTsurdaWCNpbWIUK+t1A4NhXlA7pd6Fe7+4+5xOKKYyx6d7+nJfX604JxhRCQxSWvaJOgzxHi4vKXw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dnfGNmg8; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pVenn+or"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C295C19422;
-	Sat,  7 Mar 2026 11:33:54 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dnfGNmg8"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC3A0C19422;
+	Sat,  7 Mar 2026 11:38:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772883236;
-	bh=DX8+xCr22O9KlDW/8VXkPWhIAH0JAZqq/dxy7iBInlc=;
+	s=k20201202; t=1772883486;
+	bh=4vEmIvT6/hd6IrLoExqkfyoQm4aseR8ycMrBsF7re7M=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=pVenn+orq1t9mpXceRZch6cqgvRwUBM6vzvpguyo6OfWiN46yZ4k+Z49Lyr7Fef4w
-	 5mzK5czQCQdNUshsFFRO9Db6oSAelZoxkKA+FMAyvKHao5WzrFzCEQFEZBdnUg/rUZ
-	 0TPr9SN8eLiAnPNunxoU515lscAc4H/fhSjKoDzz4IiHgPJCgDlJf1TdCb9oJuvCKg
-	 QVLvs4D0VGS4y79mn0yfKPAWyAX68HaN7CIYjnABBRx/Uk70sWBYsvqpY2+iCGqliz
-	 6GqIQeRaU1fHnLwLyMKBKebKm5vol2w9zaTEEDEsaBYQWfWBWMMm0tyJpvUiGYuil+
-	 QRQnM6vIVRRTA==
-Date: Sat, 7 Mar 2026 11:33:50 +0000
+	b=dnfGNmg8z5QIgwvwihbNXmE+Cgu7rzfv6CThYcbnKdoiEgGHDr90C0If0+2JdHXCz
+	 5EUIJhggaB34bDwPI1DlE7RqEMQPsBL2BELJ3gH/bcohET6qo5ToQVqqvIw45sYjEP
+	 1mdpcJct9cp3tiVNE+o435fVkIvPymQBRXGPxPuIhVYjJpRDCDOj3/reNDr3VsJtoj
+	 s4Gwo2RXKs1HoVa40rex7mSQA2Ewg3zclOXRw5DzmFtN26iLW6mYkeVMPlIZTsN53b
+	 +b4V5XWbl0M2Ipim2RvSHG/S5XZ9bljdzzCGM3aK1BoO+oP1UFHT/SSIDDup+GNnuw
+	 vmlr8AuEetAYQ==
+Date: Sat, 7 Mar 2026 11:37:57 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Michael Harris <michaelharriscode@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Greg Kroah-Hartman
- <gregkh@linuxfoundation.org>, David Lechner <dlechner@baylibre.com>, Nuno
- =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/4] staging: iio: adt7316: refactor temperature
- calculation logic
-Message-ID: <20260307113350.2d6c6862@jic23-huawei>
-In-Reply-To: <20260305-adt7316-correct-macros-v2-1-3702e3841c42@gmail.com>
-References: <20260305-adt7316-correct-macros-v2-0-3702e3841c42@gmail.com>
-	<20260305-adt7316-correct-macros-v2-1-3702e3841c42@gmail.com>
+To: Andrew Davis <afd@ti.com>
+Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, Nikita Travkin <nikita@trvn.ru>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dt-bindings: iio: light: ltr501: Add liteon,ltr303
+Message-ID: <20260307113757.69abe0f1@jic23-huawei>
+In-Reply-To: <20260305195917.831104-1-afd@ti.com>
+References: <20260305195917.831104-1-afd@ti.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,45 +47,34 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 05 Mar 2026 23:16:58 -0800
-Michael Harris <michaelharriscode@gmail.com> wrote:
+On Thu, 5 Mar 2026 13:59:17 -0600
+Andrew Davis <afd@ti.com> wrote:
 
-> Replace the manual sign manipulation with sign_extend32() and change the
-> affected variable from u16 to s32 to properly handle negative values.
+> This device is already supported by the driver and this compatible
+> string was added to the of_device_id list but was not documented
+> here in the binding, fix this.
 > 
-> Resolve a logic error where the sign bit was being checked at bit 10
-> instead of bit 9 for a 10-bit value.
-> 
-> Convert the data variable to be in centidegrees celsius (0.25 C per bit)
-> so we can use simple division and modulo for sysfs_emit() instead of the
-> convoluted bit shifting and masking.
-> 
-> Signed-off-by: Michael Harris <michaelharriscode@gmail.com>
 
-As Andy noted needs a fixes tag.
+Needs a brief note on why it is different enough from all other supported
+devices that we can't do a fallback compatible.
 
+Seems it has a mix of scaling and channels that doesn't match any other device.
+
+> Signed-off-by: Andrew Davis <afd@ti.com>
 > ---
->  drivers/staging/iio/addac/adt7316.c | 24 ++++++++++++------------
->  1 file changed, 12 insertions(+), 12 deletions(-)
+>  Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-> index 8a9a8262c2bec34f3c3e79d8174f492b9a23fb70..1412808c50c76a68b5771a25c46dd3308c5cbcdb 100644
-> --- a/drivers/staging/iio/addac/adt7316.c
-> +++ b/drivers/staging/iio/addac/adt7316.c
-> @@ -155,9 +155,12 @@
->   * ADT7316 value masks
->   */
->  #define ADT7316_VALUE_MASK		0xfff
-> -#define ADT7316_T_VALUE_SIGN		0x400
->  #define ADT7316_T_VALUE_FLOAT_OFFSET	2
-> -#define ADT7316_T_VALUE_FLOAT_MASK	0x2
-> +
-> +/*
-> + * ADT7316 hardware constants
-> + */
-> +#define ADT7316_TEMP_CENTIDEG_PER_BIT	25
-
-As it's only used in one place, I'd think just use the numeric value down there
-and if you feel it needs more background, add a comment there.
-
+> diff --git a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+> index c8074f180a793..ab9bb68dd7363 100644
+> --- a/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+> +++ b/Documentation/devicetree/bindings/iio/light/liteon,ltr501.yaml
+> @@ -18,6 +18,7 @@ properties:
+>        - liteon,ltr501
+>        - liteon,ltr559
+>        - liteon,ltr301
+> +      - liteon,ltr303
+>  
+>    reg:
+>      maxItems: 1
 
