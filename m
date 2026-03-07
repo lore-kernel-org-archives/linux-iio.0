@@ -1,364 +1,233 @@
-Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 383ED21FF23
-	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 17:17:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 31B9427A92E;
+	Sat,  7 Mar 2026 17:20:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772903840; cv=none; b=KIDxYZD8kwBAGil6XZOneNXgfwbM76vamutiPcUroRj6A8kdLWCRjnZxUJJMftdK4p9/UJFx0vcauE9aO0E2t8GR2+CfpDeaX3k3NbrU41+Mg0WCY9PKNj+yq/dV3E8c/zh7KnXgR4WIR4hzMQSzhYt1tMnnYRF1TJQjSb6GNQw=
+	t=1772904004; cv=none; b=jLDrw3WOlpbHuKQ2lYPh3ALW+kpuDAgnSrcMDbmaDy6xv/QE3U+zgV55OZdbkBCTi7lzGgRijic85G8oFND4U0WjljsS/aQDlDZRDn4FqjDi9Ie9GR8Glo6qHmYRBdRNG0O7xyLPk4p8Q2Fjm2VbgPbH+02JtGd/W3XwDBo9R9c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772903840; c=relaxed/simple;
-	bh=q2HQcfiT/KoQa7CVQjSe9h4G+/m15DVdnGvuTp+vQTc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=E6MhbWwp29y+KcxN6Bb/JQPeY4xqIYLAOpv41AOsbmgtTBtffg+47mYReRCHvDimiXa55oH+i2DHzZ3rY7o3llV5LlR14tdpS4ZI7C3ExJ2oDySyKZuPU5p8MK1l+yURgHzLLG++a/dRoLrCQ/GLY65zGncgCx0olC6qeOPYPd0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=BXDUau7i; arc=none smtp.client-ip=209.85.167.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1772904004; c=relaxed/simple;
+	bh=K7Uxm/p+skrYxSCimuqS3vpH9nXP0VJVqtdiOaTesn4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fz/FHqkeR2Jp76lZWFoSe/J3phgLu9kCHce0Apv9W5O9tbysr5GeHEU6XVxdacl9v7eJdMe3vnJFfy9pgDUhY7VZ6Dlj+XAOKttyE5o2OPYMVzCK6gmBO2kPgWWM8NEnKt6zb5Z7e3f3CxgMEDNm6nrOZdwojjE+nXA3CqKG944=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=I35PzjQp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="BXDUau7i"
-Received: by mail-oi1-f180.google.com with SMTP id 5614622812f47-45f053b7b90so6756373b6e.0
-        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 09:17:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772903837; x=1773508637; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=uLqbBF+LpizOINU7hVvdD1525Ju0a1AaHblaI6jxaPo=;
-        b=BXDUau7irOnfFiTavMo2iTXcArn411Bc0S6cLgYkwFoZ8v0KG2gsZRXLB9T+RW8mGS
-         3g7FCsqytpsc9BIilmZ8POvmKEnGaLKeku1I5OPBw81gNjTUcKueXJpUjN+by807qHGT
-         ZSRcS7WByOgZyA11hJKDnykgjroRzVYyZ7A94WKCinj3BDuAMFsl6/sGNSRhkWYvdtKa
-         exy076ci+ByJhRsSUE8i3weYW4FcFAkHOPNE9MKTiVRQYJK0gKkZpDPGAehnrqp6I7PB
-         ru8wsuARRnGGTO+jp+N48K99OjQEtG7SYMalohLEI1zQxTKP6/01mx+6JCfTw4Isj5xY
-         UNfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772903837; x=1773508637;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=uLqbBF+LpizOINU7hVvdD1525Ju0a1AaHblaI6jxaPo=;
-        b=OQoB8WC2zPIp+iSMgT06zxPqSMLi6Hq5JYl0XUkZpoDsmu1xV0G5vOLgXBjqBJrkt8
-         600uXlGXPeLp7CwpyibtML0HeBAyHv2EzB2+aiMPOTIKlVnRSGScz3EoPpiuvcdvTMlj
-         l/jpnTNoETg5hSC6BscZCxj6d39kCoBFPHBWRSbqBsnAneiHthrqnQ8MI8tA4B0jjJ49
-         6qdUr9PQnbziTV7xh+d6udCNTJ0/urGd1wr0WDZDYPeO4MUwu793NRCCW6oJM1aAJ8tI
-         v5sjNFjjYrPe20rt0Rn56B+DZM/YoYCBgqWUe3AetwiYHyjmAUiGtR3VtrXTbAmPW9z3
-         dAOA==
-X-Forwarded-Encrypted: i=1; AJvYcCXmE3z705ALIj6ZcbjayXF0q6sdY9pKJWNMo+pqqWRU+8knh3Xg/O5opWA4hf6mqZG+bopDusvSTa0=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yy8qK62VfjxV3NjpCE91dSIZl0ASjtEa9gkQNy0XWIMYlnqDPqU
-	/Ow3KwXjgO0WYa5B+e6EQUkbpwfGLbBYt5Wp/cJGrYyj8IgGUqROju63TFgkHWRbNHU=
-X-Gm-Gg: ATEYQzxhSK4UswvtzuJhBI3n98Rp/Zu1jpUkvRFeGMYnjXJ4oJrhCjBfcYts9MN1iae
-	LTndYO93oZ0YBXi6ZSRVbwZlhnXhfbvnKINE1ObnFIFBOis1LaHN22LU//qnA8BV+bMEaOWCXRE
-	txtewmUklJvPdZeGHjwTL00wt+vrIV6+prBo8WIzQV09Y/p58gJXKTKJb79E7k9iNMzR9u8GRee
-	KNJZV8KWY6eYeNcCV4xlpjiQXdA502GyYyKMfTKis4s74/VmldPF0euK7V+hodDeyiZf2le7BHu
-	54a/ixR4q1ypyr7sfZhGEYhK3eifUOgzI21l9x7w7Rnr1+d6owZFS+ojdFsHdbaJE6DdLtDlXaF
-	TmejJlihRgGD33kJbYRJ/x3TbvKvtfscKQrqkxwIIgu4fPs7RPWq6A6yEywFY2mg0QWXMKfdetR
-	aQwultwD3MmiNccZ/qh0u02UDPzKd1KZIB7CsuvuYReSINT1b4iJ5n3MIkhksiGTtd4uKJWXXNy
-	Q==
-X-Received: by 2002:a05:6808:838b:b0:466:efb5:9434 with SMTP id 5614622812f47-466efb59cc0mr768015b6e.31.1772903837147;
-        Sat, 07 Mar 2026 09:17:17 -0800 (PST)
-Received: from ?IPV6:2600:8803:e7e4:500:cccf:5174:fa72:c520? ([2600:8803:e7e4:500:cccf:5174:fa72:c520])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-466df93e85fsm2677663b6e.2.2026.03.07.09.17.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Mar 2026 09:17:15 -0800 (PST)
-Message-ID: <3181de17-d3f6-479e-9500-f5d552bb4151@baylibre.com>
-Date: Sat, 7 Mar 2026 11:17:15 -0600
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="I35PzjQp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3EA0EC19422;
+	Sat,  7 Mar 2026 17:20:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1772904003;
+	bh=K7Uxm/p+skrYxSCimuqS3vpH9nXP0VJVqtdiOaTesn4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=I35PzjQpvnZv9L3ny7rpEXrc+ZCV/LABOVv81XoNJ0ujQPe11ZGEZUiljl6X9If0A
+	 ffbR+eIwcXIJyFZ6J+SWinIg1iaNwyD85MbAaJNG+/Q2S/Mygq99gJPpZvhfC+8EON
+	 Qyyu5aUkUeFIPDZkfCKHZctwg7NCeH5gUzt+vQdztr5Lpy2Zi2wThi4C39+kpiACYc
+	 vCzoHxdV3aHeZ2510BeCaPOmxeQ1hZGWokvm6uCPbt2LlX2hQPSiIsrI7wsUHYhzy0
+	 Yyi5R9N44Ilc/+S1IlWlTmWzGewoTCe0hV2MmWda/8lZ+V2BuVtEw751IKLy/5/x1z
+	 luTdnbl5HbUwQ==
+Date: Sat, 7 Mar 2026 18:20:00 +0100
+From: Lorenzo Bianconi <lorenzo@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Francesco Lavra <flavra@baylibre.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v7 1/6] iio: imu: st_lsm6dsx: Fix check for invalid
+ samples from FIFO
+Message-ID: <aaxeQCpp-x1l1BU3@lore-desk>
+References: <20260304080519.2844101-1-flavra@baylibre.com>
+ <20260304080600.2844267-1-flavra@baylibre.com>
+ <20260307124629.7b4c3953@jic23-huawei>
+ <aaxC9T75dtLR-AD8@lore-desk>
+ <20260307170439.6c64be73@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/3] iio: proximity: add driver for ST VL53L1X ToF sensor
-To: Siratul Islam <email@sirat.me>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-Cc: jic23@kernel.org, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, linux-kernel@vger.kernel.org
-References: <20260303090253.42076-1-email@sirat.me>
- <20260303090253.42076-3-email@sirat.me>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260303090253.42076-3-email@sirat.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-
-On 3/3/26 3:02 AM, Siratul Islam wrote:
-> Add support for the STMicroelectronics VL53L1X Time-of-Flight
-> ranging sensor with I2C interface.
-> 
-
-...
-
-> +static int vl53l1x_set_distance_mode(struct vl53l1x_data *data,
-> +				     enum vl53l1x_distance_mode mode)
-> +{
-> +	int ret;
-> +
-> +	switch (mode) {
-> +	case VL53L1X_SHORT:
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_PHASECAL_CONFIG__TIMEOUT_MACROP,
-> +				   0x14);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_A, 0x07);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_B, 0x05);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_RANGE_CONFIG__VALID_PHASE_HIGH,
-> +				   0x38);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap, VL53L1X_SD_CONFIG__WOI_SD0,
-> +				   0x07);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap, VL53L1X_SD_CONFIG__WOI_SD1,
-> +				   0x05);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_SD_CONFIG__INITIAL_PHASE_SD0, 6);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_SD_CONFIG__INITIAL_PHASE_SD1, 6);
-
-Maybe worth using regmap_multi_reg_write() above and below?
-
-> +		break;
-> +	case VL53L1X_LONG:
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_PHASECAL_CONFIG__TIMEOUT_MACROP,
-> +				   0x0A);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_A, 0x0F);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_B, 0x0D);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_RANGE_CONFIG__VALID_PHASE_HIGH,
-> +				   0xB8);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap, VL53L1X_SD_CONFIG__WOI_SD0,
-> +				   0x0F);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap, VL53L1X_SD_CONFIG__WOI_SD1,
-> +				   0x0D);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_SD_CONFIG__INITIAL_PHASE_SD0, 14);
-> +		if (ret)
-> +			return ret;
-> +		ret = regmap_write(data->regmap,
-> +				   VL53L1X_SD_CONFIG__INITIAL_PHASE_SD1, 14);
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	data->distance_mode = mode;
-> +	return 0;
-> +}
-> +
-
-...
-
-> +	return ret;
-> +}
-> +
-> +static const struct iio_chan_spec vl53l1x_channels[] = {
-> +	{
-> +		.type = IIO_DISTANCE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				      BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +		},
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(1),
-> +};
-> +
-> +static int vl53l1x_read_raw(struct iio_dev *indio_dev,
-> +			    const struct iio_chan_spec *chan, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct vl53l1x_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (chan->type != IIO_DISTANCE)
-> +		return -EINVAL;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-
-What is here is perfectly fine, but I'm sure someone will eventually
-want to change it to IIO_DEV_ACQUIRE_DIRECT_MODE().
-
-> +		if (!iio_device_claim_direct(indio_dev))
-> +			return -EBUSY;
-> +		ret = vl53l1x_read_proximity(data, val);
-> +		iio_device_release_direct(indio_dev);
-> +		if (ret)
-> +			return ret;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = 1000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int vl53l1x_validate_trigger(struct iio_dev *indio_dev,
-> +				    struct iio_trigger *trig)
-> +{
-> +	struct vl53l1x_data *data = iio_priv(indio_dev);
-> +
-> +	return data->trig == trig ? 0 : -EINVAL;
-> +}
-> +
-> +static const struct iio_info vl53l1x_info = {
-> +	.read_raw = vl53l1x_read_raw,
-> +	.validate_trigger = vl53l1x_validate_trigger,
-> +};
-> +
-> +static irqreturn_t vl53l1x_trigger_handler(int irq, void *priv)
-> +{
-> +	struct iio_poll_func *pf = priv;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct vl53l1x_data *data = iio_priv(indio_dev);
-> +	struct {
-> +		u16 distance;
-> +		aligned_s64 timestamp;
-> +	} scan = {};
-> +	unsigned int range_status;
-> +	int ret;
-> +
-> +	ret = regmap_read(data->regmap, VL53L1X_RESULT__RANGE_STATUS,
-> +			  &range_status);
-> +	if (ret || (range_status & VL53L1X_RANGE_STATUS_MASK) !=
-
-Probably best to use FIELD_GET() here and redefine VL53L1X_RANGE_STATUS_VALID
-accrodingly.
-
-> +			   VL53L1X_RANGE_STATUS_VALID)
-> +		goto done;
-> +
-> +	ret = vl53l1x_read_u16(data,
-> +			       VL53L1X_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0,
-> +				   &scan.distance);
-> +	if (ret)
-> +		goto done;
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, &scan,
-> +					   iio_get_time_ns(indio_dev));
-> +
-> +done:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	vl53l1x_clear_irq(data);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static irqreturn_t vl53l1x_threaded_irq(int irq, void *priv)
-> +{
-> +	struct iio_dev *indio_dev = priv;
-> +	struct vl53l1x_data *data = iio_priv(indio_dev);
-> +
-> +	if (iio_buffer_enabled(indio_dev))
-> +		iio_trigger_poll_nested(indio_dev->trig);
-> +	else
-> +		complete(&data->completion);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int vl53l1x_configure_irq(struct i2c_client *client,
-> +				 struct iio_dev *indio_dev)
-
-Would be more logical to move this function closer to probe.
-
-> +{
-> +	struct vl53l1x_data *data = iio_priv(indio_dev);
-> +	int irq_flags = irq_get_trigger_type(client->irq);
-> +	int ret;
-> +
-> +	if (!irq_flags)
-> +		irq_flags = IRQF_TRIGGER_FALLING;
-> +
-> +	ret = devm_request_threaded_irq(&client->dev, client->irq, NULL,
-> +					vl53l1x_threaded_irq,
-> +					irq_flags | IRQF_ONESHOT,
-> +					indio_dev->name, indio_dev);
-> +	if (ret) {
-> +		dev_err(&client->dev, "devm_request_irq error: %d\n", ret);
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="hhUO1IbZpoTq0b1U"
+Content-Disposition: inline
+In-Reply-To: <20260307170439.6c64be73@jic23-huawei>
 
 
-Can use return dev_err_probe() here since this is only called in probe.
+--hhUO1IbZpoTq0b1U
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+> On Sat, 7 Mar 2026 16:23:33 +0100
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>=20
+> > > On Wed,  4 Mar 2026 09:06:00 +0100
+> > > Francesco Lavra <flavra@baylibre.com> wrote:
+> > >  =20
+> > > > The DRDY_MASK feature implemented in sensor chips marks gyroscope a=
+nd
+> > > > accelerometer invalid samples (i.e. samples that have been acquired=
+ during
+> > > > the settling time of sensor filters) with the special values 0x7FFF=
+h,
+> > > > 0x7FFE, and 0x7FFD.
+> > > > The driver checks FIFO samples against these special values in orde=
+r to
+> > > > discard invalid samples; however, it does the check regardless of t=
+he type
+> > > > of samples being processed, whereas this feature is specific to gyr=
+oscope
+> > > > and accelerometer data. This could cause valid samples to be discar=
+ded.
+> > > >=20
+> > > > Fix the above check so that it takes into account the type of sampl=
+es being
+> > > > processed. To avoid casting to __le16 * when checking sample values=
+, clean
+> > > > up the type representation for data read from the FIFO.
+> > > >=20
+> > > > Fixes: 960506ed2c69 ("iio: imu: st_lsm6dsx: enable drdy-mask if ava=
+ilable")
+> > > > Signed-off-by: Francesco Lavra <flavra@baylibre.com> =20
+> > > Looks fine to me, but looking for a Lorenzo tag ideally given it's not
+> > > a particularly trivial fix!
+> > >=20
+> > > Jonathan =20
+> >=20
+> > Hi Francesco,
+> >=20
+> > thx for fixing this, I think the patch is fine, just a couple of nits i=
+nline if
+> > you need to repost.
+> >=20
+> > Regards,
+> > Lorenzo
+> >=20
+> > Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> >=20
+> > > > ---
+> > > >  .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 23 +++++++++++----=
+----
+> > > >  1 file changed, 14 insertions(+), 9 deletions(-)
+> > > >=20
+> > > > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drive=
+rs/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > > > index 5b28a3ffcc3d..a6ee2da5a06c 100644
+> > > > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > > > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > > > @@ -365,8 +365,6 @@ static inline int st_lsm6dsx_read_block(struct =
+st_lsm6dsx_hw *hw, u8 addr,
+> > > >  	return 0;
+> > > >  }
+> > > > =20
+> > > > -#define ST_LSM6DSX_IIO_BUFF_SIZE	(ALIGN(ST_LSM6DSX_SAMPLE_SIZE, \
+> > > > -					       sizeof(s64)) + sizeof(s64))
+> > > >  /**
+> > > >   * st_lsm6dsx_read_fifo() - hw FIFO read routine
+> > > >   * @hw: Pointer to instance of struct st_lsm6dsx_hw.
+> > > > @@ -539,14 +537,14 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw=
+ *hw)
+> > > >  #define ST_LSM6DSX_INVALID_SAMPLE	0x7ffd
+> > > >  static int
+> > > >  st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
+> > > > -			    u8 *data, s64 ts)
+> > > > +			    __le16 *data, s64 ts)
+> > > >  {
+> > > > -	s16 val =3D le16_to_cpu(*(__le16 *)data);
+> > > >  	struct st_lsm6dsx_sensor *sensor;
+> > > >  	struct iio_dev *iio_dev;
+> > > > =20
+> > > >  	/* invalid sample during bootstrap phase */
+> > > > -	if (val >=3D ST_LSM6DSX_INVALID_SAMPLE)
+> > > > +	if ((tag =3D=3D ST_LSM6DSX_GYRO_TAG || tag =3D=3D ST_LSM6DSX_ACC_=
+TAG) &&
+> > > > +	    (s16)le16_to_cpup(data) >=3D ST_LSM6DSX_INVALID_SAMPLE)
+> > > >  		return -EINVAL; =20
+> >=20
+> > what about moving this check to a dedicated routine? Like
+> > st_lsm6dsx_check_data() or similar?
+>=20
+> Make sense. Let's do that as part of this fix.
+>=20
+> >=20
+> > > > =20
+> > > >  	/*
+> > > > @@ -609,7 +607,13 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6=
+dsx_hw *hw)
+> > > >  	 * must be passed a buffer that is aligned to 8 bytes so
+> > > >  	 * as to allow insertion of a naturally aligned timestamp.
+> > > >  	 */
+> > > > -	u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE] __aligned(8);
+> > > > +	struct {
+> > > > +		union {
+> > > > +			__le16 data[3];
+> > > > +			__le32 fifo_ts;
+> > > > +		};
+> > > > +		aligned_s64 timestamp;
+> > > > +	} iio_buff =3D { }; =20
+> >=20
+> > you can get rid of space between brackets.
+>=20
+> Prefer not on this.  I'm trying to standardize on having the space as it =
+looks
+> more normal in some other usecases than no space.  I had to a pick a styl=
+e and
+> this is the one I went with a year or so back.
 
-> +		return ret;
-> +	}
-> +
-> +	ret = regmap_write(data->regmap, VL53L1X_SYSTEM__INTERRUPT_CONFIG_GPIO,
-> +			   VL53L1X_INT_NEW_SAMPLE_READY);
-> +	if (ret)
-> +		dev_err(&client->dev, "failed to configure IRQ: %d\n", ret);
+ack, that's fine in this case (I missed that).
 
-ditto
+Regards,
+Lorenzo
 
-> +
-> +	return ret;
-> +}
-> +
-> +static int vl53l1x_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	struct vl53l1x_data *data = iio_priv(indio_dev);
-> +
-> +	return vl53l1x_start_ranging(data);
-> +}
-> +
-> +static int vl53l1x_buffer_postdisable(struct iio_dev *indio_dev)
-> +{
-> +	struct vl53l1x_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = vl53l1x_stop_ranging(data);
-> +	if (ret)
-> +		return ret;
-> +
-> +	reinit_completion(&data->completion);
-> +	wait_for_completion_timeout(&data->completion, HZ / 10);
-> +
-> +	return vl53l1x_clear_irq(data);
-> +}
-> +
-> +static const struct iio_buffer_setup_ops vl53l1x_buffer_setup_ops = {
-> +	.postenable = &vl53l1x_buffer_postenable,
-> +	.postdisable = &vl53l1x_buffer_postdisable,
-> +};
+>=20
+> >=20
+> > > >  	u8 tag;
+> > > >  	bool reset_ts =3D false;
+> > > >  	int i, err, read_len;
+> > > > @@ -648,7 +652,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6d=
+sx_hw *hw)
+> > > > =20
+> > > >  		for (i =3D 0; i < pattern_len;
+> > > >  		     i +=3D ST_LSM6DSX_TAGGED_SAMPLE_SIZE) {
+> > > > -			memcpy(iio_buff, &hw->buff[i + ST_LSM6DSX_TAG_SIZE],
+> > > > +			memcpy(&iio_buff, &hw->buff[i + ST_LSM6DSX_TAG_SIZE],
+> > > >  			       ST_LSM6DSX_SAMPLE_SIZE);
+> > > > =20
+> > > >  			tag =3D hw->buff[i] >> 3;
+> > > > @@ -659,7 +663,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6d=
+sx_hw *hw)
+> > > >  				 * B0 =3D ts[7:0], B1 =3D ts[15:8], B2 =3D ts[23:16],
+> > > >  				 * B3 =3D ts[31:24]
+> > > >  				 */
+> > > > -				ts =3D le32_to_cpu(*((__le32 *)iio_buff));
+> > > > +				ts =3D le32_to_cpu(iio_buff.fifo_ts);
+> > > >  				/*
+> > > >  				 * check if hw timestamp engine is going to
+> > > >  				 * reset (the sensor generates an interrupt
+> > > > @@ -670,7 +674,8 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6d=
+sx_hw *hw)
+> > > >  					reset_ts =3D true;
+> > > >  				ts *=3D hw->ts_gain;
+> > > >  			} else {
+> > > > -				st_lsm6dsx_push_tagged_data(hw, tag, iio_buff,
+> > > > +				st_lsm6dsx_push_tagged_data(hw, tag,
+> > > > +							    iio_buff.data,
+> > > >  							    ts);
+> > > >  			}
+> > > >  		} =20
+> > >  =20
+>=20
 
-These are not symetric. It either needs to be postenable/predisable
-or preenable/postdisable.
+--hhUO1IbZpoTq0b1U
+Content-Type: application/pgp-signature; name=signature.asc
 
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCaaxeQAAKCRA6cBh0uS2t
+rDnXAP0ZCAFa+SgAfZ2uDXjHkLg8GNn++GBTuA4aOM9sV5CdowD/Z4dhpNvvn8ON
+jpIkSi2NbE4RezD+agg4Xet3P9/pDQ8=
+=f80u
+-----END PGP SIGNATURE-----
+
+--hhUO1IbZpoTq0b1U--
