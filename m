@@ -1,205 +1,109 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C559326B764;
-	Sat,  7 Mar 2026 15:23:36 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B3F43A4F39
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 16:27:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772897016; cv=none; b=qf5L6fknDUN6q2Vi3Mf/fmdKRlgEUTS1p4UJhsLet/qMyG8l6Dt2jCyrTX16FRDXyYNOOxSaNhguKPDbIHHkI/1DMelimnr5DmuLS3dMcIuYWRgEbxcPatldT0bWC3+1WaJDEWLGR1tPfNJGS8eJbJn4cec5+mOgbLlMhhslCl0=
+	t=1772900866; cv=none; b=M87Trs7xd9hroAG82GQPCoS7WrpZR+p3N5DG4oxAPOlzWQRabV9buCDKyO0trCbwNTWlyHlv98oRRSCUGQaeldyOaYh7kWsEVQZp01oTg4ogxKMxMTOJcA4QZ9BY0NjPBJiioO3/L58na+Xy1EXnWrB00XZrV3Vub/dkFQFCmRw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772897016; c=relaxed/simple;
-	bh=4VQ206BfuEh5PWpvSJN5VmtxwpLd9oXfKC8S+ACsPCU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=O4BIC7/1hgLbmg5GpXu0iq5qOZLmnARo817GoK0axWv2jtiF45Acij2cwHVM/tP64miDRH3WoNWX4iUhxZRlXsPWIyuX66OcfyBM+DF+lNri97bpVpksJ/9rllE7mqcRB/Vv4OGmoR/WNRNLTPubGpHlWYAmBYk9BvCwPmS4St0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UszhFMBa; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772900866; c=relaxed/simple;
+	bh=2i0EJ63RpRjxcMnjm6qCcEuhBgw382Wkin5Bb311vr0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=EAoOvSYXv7kgFr0VRayJ/130SoMxXH9LFrO2pGZ5U87aFI5EOq8WcIsj7abvkR/HOvEIFYpgOgcxYdFel2SfWypStDgR12Den9nO0sjwQYwbf2uPO8xVuMpvge4a866KJFoLthBo39cqPKSENUHxw9m+PAFSFyyWQiZz58qqZqE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=RTlQtQXS; arc=none smtp.client-ip=209.85.210.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UszhFMBa"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E634CC19422;
-	Sat,  7 Mar 2026 15:23:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772897016;
-	bh=4VQ206BfuEh5PWpvSJN5VmtxwpLd9oXfKC8S+ACsPCU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=UszhFMBaq4fMCDegi6SBjvTbmHDhXLWmBF8eqUUd1Jxg0/JvH/giSLYuEUkTdlV4Y
-	 /i+uIXTv0jGWzzSS9FQNMCZymS9DUhBkmlxeCuMSFuvJEIU8g+P6nqHaupugAVERqH
-	 zFP3bMeDE4WuZNCuZvm5ocT9MZn+0J6SPCbG1JtLTXebxBpLxm7vBgOEQbX8WsPlCz
-	 XBwUnVSmMPb1yxM1kkRlkhDa1JLS8Qt3tAEA0wS94LNMehqI4FoY3aTpu/JOGVOu1I
-	 pKRB1VqyFJJH4/6X3297lJFdlauehmdxxiD4QMP2TylNmpDQASE2/orgqz5SWvPtnJ
-	 ftv8N2wPjyvTg==
-Date: Sat, 7 Mar 2026 16:23:33 +0100
-From: Lorenzo Bianconi <lorenzo@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Francesco Lavra <flavra@baylibre.com>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 1/6] iio: imu: st_lsm6dsx: Fix check for invalid
- samples from FIFO
-Message-ID: <aaxC9T75dtLR-AD8@lore-desk>
-References: <20260304080519.2844101-1-flavra@baylibre.com>
- <20260304080600.2844267-1-flavra@baylibre.com>
- <20260307124629.7b4c3953@jic23-huawei>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="RTlQtQXS"
+Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7d7412cfb9eso92457a34.1
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 08:27:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772900863; x=1773505663; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ZBl+rXMC2e9uD/KiX6ObM2tHYn9ZVyslTh4HddNRzfU=;
+        b=RTlQtQXSkOWFk3rZ4WXKlw4RVL9tA/Bhur5EFWo4lHokUdcDNdOE4UWRVyTyAMFZup
+         ArhfnB2Vq2djXUcbp5GodOEeWxRGGgt7Jjtnkvf2Vk21VGxJnAUV52aPXNXBJ45jOzO2
+         +4XJV9cD3n8yV2hhcwuA/pTd08DTDf6NET9TKaFXq+5fngQemXKSy2TSLttQVBBdecP+
+         VWOpYofUhoIjDGJJzkmstoFcSq6DuzRXWsNFVrt4dTfC3x8wK15RvdNc/YIwyjabVCpz
+         VYXG6QDnAZ/IK/+XWeiGcJoZwf2hFgahWTNZOndEIJIISHxv3UCNgutBl+D9EQJWmvIt
+         4Hzg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772900863; x=1773505663;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ZBl+rXMC2e9uD/KiX6ObM2tHYn9ZVyslTh4HddNRzfU=;
+        b=cspVbPrhqSxNiezzAT3hUPeMqaylMOJmt1JBJAWdIkuuby0taGGd++4FvF/9GdHvD1
+         u+UR4VW88Di2Q1shIW26IS0a+8bWU8QQO89JQoNnManlhSFKmSfzxJIjVKEp01VP29KW
+         7yQwkY1gvPkgxFg7T5U58HXH7dCaGZAZyW/QYXDIS5X/ehwcVc70lWG4OmfTrQ9LHgCK
+         B7iNVfAwo3biX1pLgRL7G+2+0QTN15DkH8wS11wJPVh2r+YWmPs+o4Mpnwzu5FQ2su9Q
+         HlRpQ6xA+7Fd3s5I67urp0ttfF6LDQMOUZLWwPTNtxOJGvDczCopwIeqhb6oYJtSAeHf
+         XreQ==
+X-Gm-Message-State: AOJu0Yy9t3uJPPunFmc/XrmjwNHxZ9sCmIzdiiwViZv4n+B+HuFuGLpM
+	ALeOLWa2Ob6f3U/J1vbxYo8pgPj/t322FKSu54fK6kO0Dv7eCkNK0qfmMWMZEQyViEI=
+X-Gm-Gg: ATEYQzw5lGW3MDOU8n6X7eX9vt42lQkz67wSI7DbvzVyMLYsaq2XV1l4G6AAVAbE9dY
+	JGgb9vIs6BpOWiuDGhNUfqDyFJS/LOgKn/Fd7PmZ0KPgPGclpsVwf2c52/VVura2hIhpROelzJ0
+	CwPnFsHVNFQkVPDqZf42JeEExmPnOnkW3zyHskU04nsQssj0joiU2Phpwo/fj8fpwLfir0zDVp+
+	1Cl4kNsveFVPmJ+TtySJ+pUydZYMB/BWfqQhTwY0YY6QdaXH1hUupDJ2RKtj2YVs+KLqrE0orgV
+	+Mb8ozu5YyPexCqYDSuMHenSRHiqEgxh2vg3/ejICox5Kjdp5r+OR6QKLh/5BOzQHLHiHQzCSUF
+	E/obEzWBJaO/5jl1u89sS/cOiQOBOPxm/N4zSylkz43UsSB8i335lBnQyMenaYQrxVWqQ5DbKKp
+	14FYJ6VMBY/9cYjOuuz4ol+Sm69okgaou8bVCdxnKeADGwul0bkPePvCjV/jjvjx1Y8ryTlj0UC
+	g==
+X-Received: by 2002:a05:6830:620f:b0:7cf:ced8:b5cf with SMTP id 46e09a7af769-7d72702f122mr4013656a34.26.1772900863067;
+        Sat, 07 Mar 2026 08:27:43 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:cccf:5174:fa72:c520? ([2600:8803:e7e4:500:cccf:5174:fa72:c520])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d728c5b75csm3319349a34.2.2026.03.07.08.27.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 Mar 2026 08:27:42 -0800 (PST)
+Message-ID: <18438082-8efc-475f-acde-be3cb313f2ab@baylibre.com>
+Date: Sat, 7 Mar 2026 10:27:41 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="vXEOuhMkRjXBrKRZ"
-Content-Disposition: inline
-In-Reply-To: <20260307124629.7b4c3953@jic23-huawei>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 3/3] iio: adc: ad4130: add new supported parts
+To: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Jonathan Santos <Jonathan.Santos@analog.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ devicetree@vger.kernel.org, cosmin.tanislav@analog.com, lars@metafoo.de,
+ Michael.Hennerich@analog.com, jic23@kernel.org, nuno.sa@analog.com,
+ andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org
+References: <cover.1772078999.git.Jonathan.Santos@analog.com>
+ <1d5baeec27724a1c8ebf909c29c3599d583948a1.1772078999.git.Jonathan.Santos@analog.com>
+ <aaWH1wL8odeCmE6w@ashevche-desk.local>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <aaWH1wL8odeCmE6w@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
+On 3/2/26 6:51 AM, Andy Shevchenko wrote:
+> On Sat, Feb 28, 2026 at 09:39:04AM -0300, Jonathan Santos wrote:
+>> Add support for AD4129-4/8, AD4130-4, and AD4131-4/8 variants.
+>>
 
---vXEOuhMkRjXBrKRZ
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+...
 
-> On Wed,  4 Mar 2026 09:06:00 +0100
-> Francesco Lavra <flavra@baylibre.com> wrote:
->=20
-> > The DRDY_MASK feature implemented in sensor chips marks gyroscope and
-> > accelerometer invalid samples (i.e. samples that have been acquired dur=
-ing
-> > the settling time of sensor filters) with the special values 0x7FFFh,
-> > 0x7FFE, and 0x7FFD.
-> > The driver checks FIFO samples against these special values in order to
-> > discard invalid samples; however, it does the check regardless of the t=
-ype
-> > of samples being processed, whereas this feature is specific to gyrosco=
-pe
-> > and accelerometer data. This could cause valid samples to be discarded.
-> >=20
-> > Fix the above check so that it takes into account the type of samples b=
-eing
-> > processed. To avoid casting to __le16 * when checking sample values, cl=
-ean
-> > up the type representation for data read from the FIFO.
-> >=20
-> > Fixes: 960506ed2c69 ("iio: imu: st_lsm6dsx: enable drdy-mask if availab=
-le")
-> > Signed-off-by: Francesco Lavra <flavra@baylibre.com>
-> Looks fine to me, but looking for a Lorenzo tag ideally given it's not
-> a particularly trivial fix!
->=20
-> Jonathan
+> 
+>> +	/* Triggered buffer data structure */
+>> +	struct {
+>> +		u32 channels[AD4130_MAX_CHANNELS];
+>> +		s64 timestamp;
+> 
+> Use aligned_s64 type...
+> 
+>> +	} scan __aligned(8);
+> 
+> ...instead of this.
+> 
 
-Hi Francesco,
+This is used with SPI, so it actually needs to be:
 
-thx for fixing this, I think the patch is fine, just a couple of nits inlin=
-e if
-you need to repost.
-
-Regards,
-Lorenzo
-
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
-
-> > ---
-> >  .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 23 +++++++++++--------
-> >  1 file changed, 14 insertions(+), 9 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/i=
-io/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > index 5b28a3ffcc3d..a6ee2da5a06c 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > @@ -365,8 +365,6 @@ static inline int st_lsm6dsx_read_block(struct st_l=
-sm6dsx_hw *hw, u8 addr,
-> >  	return 0;
-> >  }
-> > =20
-> > -#define ST_LSM6DSX_IIO_BUFF_SIZE	(ALIGN(ST_LSM6DSX_SAMPLE_SIZE, \
-> > -					       sizeof(s64)) + sizeof(s64))
-> >  /**
-> >   * st_lsm6dsx_read_fifo() - hw FIFO read routine
-> >   * @hw: Pointer to instance of struct st_lsm6dsx_hw.
-> > @@ -539,14 +537,14 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
-> >  #define ST_LSM6DSX_INVALID_SAMPLE	0x7ffd
-> >  static int
-> >  st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
-> > -			    u8 *data, s64 ts)
-> > +			    __le16 *data, s64 ts)
-> >  {
-> > -	s16 val =3D le16_to_cpu(*(__le16 *)data);
-> >  	struct st_lsm6dsx_sensor *sensor;
-> >  	struct iio_dev *iio_dev;
-> > =20
-> >  	/* invalid sample during bootstrap phase */
-> > -	if (val >=3D ST_LSM6DSX_INVALID_SAMPLE)
-> > +	if ((tag =3D=3D ST_LSM6DSX_GYRO_TAG || tag =3D=3D ST_LSM6DSX_ACC_TAG)=
- &&
-> > +	    (s16)le16_to_cpup(data) >=3D ST_LSM6DSX_INVALID_SAMPLE)
-> >  		return -EINVAL;
-
-what about moving this check to a dedicated routine? Like
-st_lsm6dsx_check_data() or similar?
-
-> > =20
-> >  	/*
-> > @@ -609,7 +607,13 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_=
-hw *hw)
-> >  	 * must be passed a buffer that is aligned to 8 bytes so
-> >  	 * as to allow insertion of a naturally aligned timestamp.
-> >  	 */
-> > -	u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE] __aligned(8);
-> > +	struct {
-> > +		union {
-> > +			__le16 data[3];
-> > +			__le32 fifo_ts;
-> > +		};
-> > +		aligned_s64 timestamp;
-> > +	} iio_buff =3D { };
-
-you can get rid of space between brackets.
-
-> >  	u8 tag;
-> >  	bool reset_ts =3D false;
-> >  	int i, err, read_len;
-> > @@ -648,7 +652,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_h=
-w *hw)
-> > =20
-> >  		for (i =3D 0; i < pattern_len;
-> >  		     i +=3D ST_LSM6DSX_TAGGED_SAMPLE_SIZE) {
-> > -			memcpy(iio_buff, &hw->buff[i + ST_LSM6DSX_TAG_SIZE],
-> > +			memcpy(&iio_buff, &hw->buff[i + ST_LSM6DSX_TAG_SIZE],
-> >  			       ST_LSM6DSX_SAMPLE_SIZE);
-> > =20
-> >  			tag =3D hw->buff[i] >> 3;
-> > @@ -659,7 +663,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_h=
-w *hw)
-> >  				 * B0 =3D ts[7:0], B1 =3D ts[15:8], B2 =3D ts[23:16],
-> >  				 * B3 =3D ts[31:24]
-> >  				 */
-> > -				ts =3D le32_to_cpu(*((__le32 *)iio_buff));
-> > +				ts =3D le32_to_cpu(iio_buff.fifo_ts);
-> >  				/*
-> >  				 * check if hw timestamp engine is going to
-> >  				 * reset (the sensor generates an interrupt
-> > @@ -670,7 +674,8 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_h=
-w *hw)
-> >  					reset_ts =3D true;
-> >  				ts *=3D hw->ts_gain;
-> >  			} else {
-> > -				st_lsm6dsx_push_tagged_data(hw, tag, iio_buff,
-> > +				st_lsm6dsx_push_tagged_data(hw, tag,
-> > +							    iio_buff.data,
-> >  							    ts);
-> >  			}
-> >  		}
->=20
-
---vXEOuhMkRjXBrKRZ
-Content-Type: application/pgp-signature; name=signature.asc
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCaaxC9QAKCRA6cBh0uS2t
-rFYeAP0d0oLAfUPfJV/zGVW0ODPOpod76++L/0xHuvIOtMZCSAD5AUrl3gSlrApX
-6pShZUypdIEaP5CxTHvWDB+21iGooAY=
-=xrt5
------END PGP SIGNATURE-----
-
---vXEOuhMkRjXBrKRZ--
+	IIO_DECLARE_DMA_BUFFER_WITH_TS(u32, channels, AD4130_MAX_CHANNELS);
