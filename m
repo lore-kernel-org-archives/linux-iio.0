@@ -1,63 +1,63 @@
-Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
+Received: from mail-pg1-f181.google.com (mail-pg1-f181.google.com [209.85.215.181])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF2A3369984
-	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 10:18:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFA23346AF2
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 10:18:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.181
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772878709; cv=none; b=HueWqOFa8Pb/vGMFB4mxGUyzdRAoh4cy/CxHpIEFQA3OtHYyuoZdKcwfMZmCv3d/tso9+Zd0oc0Sh3Cofh0aomtsqx7UGiXfwNZaukWfInC0xDhy/uWT/fsBaPZnq47kwaYhEbCTipV1ipJQXINqU6GzwCpBEcsZbEMawDCxu2o=
+	t=1772878715; cv=none; b=np/8WaK07fhCYxQ9FU5k8Yth+FSLxTFbRC1S1O9UDDvsWI+qej2V9EOD1CxtO2X1OnrueF1cQdaYfS3UyJPyDWdhsbom01cKN8nC8iurXSQklPIFfgcjSSmD2X7yoyj3kHzIjz4mdUP/urE020axHxzT4l7H2DmKUMvELia/6to=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772878709; c=relaxed/simple;
-	bh=HOXEPuFDHq4cAEsHy1JJD6E7KdWxcKY/1o1AGOXotRw=;
+	s=arc-20240116; t=1772878715; c=relaxed/simple;
+	bh=r2LlFVmymWhPwFcVkiJGk/YEm63Tgz960SzCAIop0CM=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=J1z2q6Cu4oNFeE4HipAszOT/dCdazYTApkEeVKIdJXEY6rSClpxi9eENVBT0FOkFIwnyYSUAqCPPaNzJbbkD+2QZlhFyDYHCpHIfbL4UiB2oFQSHWfzA9lACeiioYzIPHScty92BG+Y00v/KjNbGfw34mpeJKLx+1mGzRojXODk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L0PqeOpo; arc=none smtp.client-ip=209.85.215.173
+	 MIME-Version; b=o8uAH0uFIRiK9EEVr5BoVrDxqHcxFqCvtfVm2Rv6Zh6hbA2gfJjd427BiMNnl69iqKw08XzjvrcEUfekNZF29XFltiWtWsUwGTWhm4aDtqi5eZ9lEkngbolaj1RJ/9FcodMeZPmjIedlUiQAXLLcz5M1PeSdaXSlWd18/G9vElc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dITUeNlk; arc=none smtp.client-ip=209.85.215.181
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L0PqeOpo"
-Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-c739d32b72cso951169a12.2
-        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 02:18:26 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dITUeNlk"
+Received: by mail-pg1-f181.google.com with SMTP id 41be03b00d2f7-c737d3a51bdso1493315a12.3
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 02:18:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772878706; x=1773483506; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1772878712; x=1773483512; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=XqeU11PM/n3egwzjA5sFzLDovMDrITrNKIRs91FkAow=;
-        b=L0PqeOpobkjJnVb1wU8pxXglrnKfZsUgABrT803n4OCP+QErLuT7qbMWRlYId9w6JW
-         F3Wc/x39DoA80aRDLera0NJMQD0jmd+K3l2PUDW2MalRD0k+I9hjl1CbcDzyC3aK5y6R
-         Qx803v1GjQkbGnJvQwpROB06zoKCwZlm6+IkLLQ83qUe5XmoiaST1YHOVxy4OX5wIcxO
-         4ycWPm02VX2LTlyxW6DQpeJrfr7xCcMLxqVL00Oo/mhdPdUOQDl7MlscQRfsvhHqpgQq
-         xJJz2O/BO20xiL7vxN7zeKAMHsUt2bbibwtlVpXqKht14LX04PeH3UfmlWarxxGOPIGk
-         wMGw==
+        bh=ILuopjJVYJJNk1BvhCBXLzEWgrHW/yLVAVwM4GFLhJ8=;
+        b=dITUeNlkvmxGbR5/LatepOoGF0aY84ROVDMo3AmSx00DVn0CKNCnhLQ+Q7jn8A4ir+
+         Oj3Ncx99YHfLMNfSuc+A5F79bey/qLipCIlpojnDdM2vDGKu2NIvRmlEN57OTU2O08L9
+         WDfMRuHbBdpB51Rlg0Uc8bkS/VOdx3ml7AMPOlMAm0K32W3FqvRy/r3bMhW72srbqWmk
+         nPlfq7zEetcbWXoIs7fqAAFmZ45OiN06SIXdeukMgS/B1uY/2IpAVHaigQA3HFGcjFEC
+         EFpJ4jXp6FXpQbqSAFfwe368s1ELzmrMN3xuDcw9n7uS6VMYj6HelfIRAXs4JU+7JiJR
+         9USw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772878706; x=1773483506;
+        d=1e100.net; s=20230601; t=1772878712; x=1773483512;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=XqeU11PM/n3egwzjA5sFzLDovMDrITrNKIRs91FkAow=;
-        b=F7x+S4fWAyGWrPKhxxVYX1wB/bDSIkcXIMIJOVfGiiYYyuQuK/eAGiBHEWXAWZcUJI
-         wMCbS+5VKH5DAU115O5gIMgRezWHOgd1Nt1fxz0JD4pj9vUKT1Yhe0FmPf0GRe15ORjs
-         L6O8TnG148Ow3glw0S3VRivAPA5WsEFga2gN2+tnsh3wUttZOAECbIcCRj7JFfjR2opv
-         lDOA4CXXw0rN/TL9sZwHR9FU6M//hiM2DAskY0pjQ82+cLBmV/ex52K+gyprAm7Rfmrf
-         WjwzEIof4j75FcogJOcR0r5Becw3DMRUB7b894Og0ruf0zYBN5IbuOVaczVsF9NerEjc
-         nJCQ==
-X-Gm-Message-State: AOJu0YwyMgV9Jgj7Cuo5QqlctWxK6GWdIn+JzlzNOAg0RPr1v2NB/Ym/
-	USGKRSaJBjWn3/3Bv5Qy1Sd4BbL3492eHe84xxP6gOUUh48fvDUQvx9z
-X-Gm-Gg: ATEYQzwfquZ6ZlhAAOK3MGlvkRJ95yHb3Ud4Cw+RqlAohmQwWzlMAJfesoSOtoXqXss
-	HVj49HZrm6+6XFvT13r9FaHX6s5I6xng4HqeerYfZBIvGyIUbcL8IDXkytoy/itncXhRZx8YJxX
-	b1MGPFWI/QDtv15yxmbTcfPEkwE/bicDGNuO8tA+pnisaRKb0DIRdI0UDtsgYNWpIxFLeuypxaV
-	PGHO8hShJMdEX63hiInw2ka2uyqXMFIVrQXyAM9I86Pq/TJj0lpZffPt9U27cfq30pQK2Vpram7
-	I0iSXSSL+Pe5eYwqQ8PLnjmMUhl3OLL6zZ9mWjOwD7QXBe8jpklwM+x7GapOwrBOPToBIfaEEzV
-	pHwqmiz7aG3xpbOMz6t2vAaLdERugwX8YDMlG0ASulh0dZhvS/1y/OSVy2MqG8jEHpYK3nwnivu
-	JT+fQGIxP86I94t88JRXVgOG+S25x2ejT9MiUsj4/0Fu7nittSQxasCyaBG5mvUFoixzJpezDc6
-	FsdZCH7dMLJHVnwAcdIMDNh
-X-Received: by 2002:a17:902:ecc5:b0:2ae:6ced:e1a8 with SMTP id d9443c01a7336-2ae82366e5fmr51558275ad.6.1772878706045;
-        Sat, 07 Mar 2026 02:18:26 -0800 (PST)
+        bh=ILuopjJVYJJNk1BvhCBXLzEWgrHW/yLVAVwM4GFLhJ8=;
+        b=vFj2Sm+fo/Vv/ZeTTfZmLArCFue1cZuejli4XCxvM+johUdt4dSs14X8zFPgwZC0zn
+         G+hvaxB44sgtWg9+Fwaw15hdC8jNcDL0Zk+aRxHk0TzhTxXRoIXEvFo/xRUh8JyzFVvC
+         SsubqDfoggzDgtBPGO44W6PFsT6jULvnFOOECI5coLdN4GRJMu2whRxkis2NRgnIospC
+         +gntXe8OgE6+Dq2zSjQ1CYfVdWZ002lGtTrzgxnrOAJ6HiBbyXdHiAEhzVI3sGKlfqKC
+         KyuxyS57mhg7uDg2sSG2YWGcq5hykkOu1IQPTbnX9wRby4WcuaHF8bsFvYvPVA78HkMc
+         yfdg==
+X-Gm-Message-State: AOJu0Yx/qdhq1GkacnNcwA9eCrtankkv2NKoFuNBtcucr9xcsmmG7Cob
+	+8Bdpqqb0rNjwgB/81/UXeoLHL7sHbHe3onyithANSffF3JnulfLZ9d3
+X-Gm-Gg: ATEYQzziUf37JNgHJW3K6QSrK9FmqfTamBBhlycVlS4nH8lPyLd9lC3bLsZTzRgAWdg
+	5t6zHTMNXxYUuKNbAJFyuTmp7pXz0XT9bmt05nrwaRVvkwtYht0y3u0ywzUPl5R7N/2B4qHMb2I
+	E9fvXg2qPFs4/6pjcyAQcSLDzydcOmSA1curN6WXGTnOlKVXnipX0j0jxvO4ZzU1dbtZxj7ffrt
+	UTGNV8woD1KL6LqYLMjBZjSXTlWWXts+P74OIdSXnkrCib84krTz3PB08QBhqoWg2ZASwIrxRvb
+	t25otTTqFi+2V/2BHajUKRi4DycMm31gdhei90vMoGnag29vlyfqxTMjjgQ85TeuPN5gQ3IpQjr
+	Uv1vbfIDYpwKALMUWaYAv0ymlUJAaTSuJxdEhqW1DAgt8KyA9gD3JGhmAMsUyXuQRwk7DoatCdq
+	9XtW74LYp0T70cVWFGUHUk5tSbfV+R08sw5C5MlErMdTOwusRp412td8jH0s3MR//np1Up3vb+n
+	UB+9M4B0R7xtYctaCXqWNgp
+X-Received: by 2002:a17:903:1a24:b0:2ae:4ef4:1415 with SMTP id d9443c01a7336-2ae8238544emr50643415ad.13.1772878711980;
+        Sat, 07 Mar 2026 02:18:31 -0800 (PST)
 Received: from fedora ([103.215.156.48])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae83f7864dsm48381265ad.49.2026.03.07.02.18.21
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae83f7864dsm48381265ad.49.2026.03.07.02.18.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Mar 2026 02:18:25 -0800 (PST)
+        Sat, 07 Mar 2026 02:18:31 -0800 (PST)
 From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
 To: lucas.p.stankus@gmail.com,
 	lars@metafoo.de,
@@ -70,9 +70,9 @@ To: lucas.p.stankus@gmail.com,
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Subject: [PATCH v3 1/3] iio: accel: adxl313: convert to guard(mutex)
-Date: Sat,  7 Mar 2026 15:47:56 +0530
-Message-ID: <20260307101758.50091-2-rajveer.chaudhari.linux@gmail.com>
+Subject: [PATCH v3 2/3] iio: accel: adxl355: convert to guard(mutex)
+Date: Sat,  7 Mar 2026 15:47:57 +0530
+Message-ID: <20260307101758.50091-3-rajveer.chaudhari.linux@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260307101758.50091-1-rajveer.chaudhari.linux@gmail.com>
 References: <20260306211152.65109-1-rajveer.chaudhari.linux@gmail.com>
@@ -85,56 +85,192 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace manual mutex_lock/mutex_unlock pair with guard(mutex) in
-adxl313_read_axis(). This ensures the mutex is released on all
-return paths and allows returning directly without a goto label.
+Replace manual mutex_lock/mutex_unlock pairs with guard(mutex) in
+adxl355_data_rdy_trigger_set_state(), adxl355_set_odr(),
+adxl355_set_hpf_3db() and adxl355_set_calibbias(). Remove all
+goto labels and return directly on error paths.
 
-v3: Return directly from regmap_bulk_read error path.
+v3: Remove all remaining gotos and return directly where possible.
 v2: Split into separate patch per driver.
 
 Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
 ---
- drivers/iio/accel/adxl313_core.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
+ drivers/iio/accel/adxl355_core.c | 81 ++++++++++++++------------------
+ 1 file changed, 34 insertions(+), 47 deletions(-)
 
-diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
-index 9f5d4d2cb325..40f62c6f89b4 100644
---- a/drivers/iio/accel/adxl313_core.c
-+++ b/drivers/iio/accel/adxl313_core.c
-@@ -8,6 +8,7 @@
-  */
+diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
+index 1c1d64d5cbcb..af606e2ab8d4 100644
+--- a/drivers/iio/accel/adxl355_core.c
++++ b/drivers/iio/accel/adxl355_core.c
+@@ -9,6 +9,7 @@
  
+ #include <linux/bits.h>
  #include <linux/bitfield.h>
 +#include <linux/cleanup.h>
- #include <linux/interrupt.h>
- #include <linux/module.h>
- #include <linux/overflow.h>
-@@ -354,21 +355,15 @@ static int adxl313_set_odr(struct adxl313_data *data,
- static int adxl313_read_axis(struct adxl313_data *data,
- 			     struct iio_chan_spec const *chan)
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
+@@ -261,16 +262,13 @@ static int adxl355_data_rdy_trigger_set_state(struct iio_trigger *trig,
  {
+ 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+ 	struct adxl355_data *data = iio_priv(indio_dev);
 -	int ret;
+ 
+-	mutex_lock(&data->lock);
+-	ret = regmap_update_bits(data->regmap, ADXL355_POWER_CTL_REG,
++	guard(mutex)(&data->lock);
++	
++	return regmap_update_bits(data->regmap, ADXL355_POWER_CTL_REG,
+ 				 ADXL355_POWER_CTL_DRDY_MSK,
+ 				 FIELD_PREP(ADXL355_POWER_CTL_DRDY_MSK,
+ 					    state ? 0 : 1));
+-	mutex_unlock(&data->lock);
 -
+-	return ret;
+ }
+ 
+ static void adxl355_fill_3db_frequency_table(struct adxl355_data *data)
+@@ -409,38 +407,34 @@ static int adxl355_set_odr(struct adxl355_data *data,
+ {
+ 	int ret;
+ 
 -	mutex_lock(&data->lock);
 +	guard(mutex)(&data->lock);
  
--	ret = regmap_bulk_read(data->regmap,
-+	int ret = regmap_bulk_read(data->regmap,
- 			       ADXL313_REG_DATA_AXIS(chan->address),
- 			       &data->transf_buf, sizeof(data->transf_buf));
+ 	if (data->odr == odr) {
+-		mutex_unlock(&data->lock);
+ 		return 0;
+ 	}
+ 
+ 	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
  	if (ret)
--		goto unlock_ret;
--
--	ret = le16_to_cpu(data->transf_buf);
+-		goto err_unlock;
 +		return ret;
  
--unlock_ret:
+ 	ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
+ 				 ADXL355_FILTER_ODR_MSK,
+ 				 FIELD_PREP(ADXL355_FILTER_ODR_MSK, odr));
+-	if (ret)
+-		goto err_set_opmode;
++	if (ret){
++		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
++		return ret;
++	}
+ 
+ 	data->odr = odr;
+ 	adxl355_fill_3db_frequency_table(data);
+ 
+ 	ret = adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
+-	if (ret)
+-		goto err_set_opmode;
++	if (ret){
++		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
++		return ret;
++	}
+ 
+-	mutex_unlock(&data->lock);
+ 	return 0;
+-
+-err_set_opmode:
+-	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
+-err_unlock:
 -	mutex_unlock(&data->lock);
 -	return ret;
-+	return le16_to_cpu(data->transf_buf);
  }
  
- static int adxl313_read_freq_avail(struct iio_dev *indio_dev,
+ static int adxl355_set_hpf_3db(struct adxl355_data *data,
+@@ -448,37 +442,33 @@ static int adxl355_set_hpf_3db(struct adxl355_data *data,
+ {
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	if (data->hpf_3db == hpf) {
+-		mutex_unlock(&data->lock);
+ 		return 0;
+ 	}
+ 
+ 	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
+ 				 ADXL355_FILTER_HPF_MSK,
+ 				 FIELD_PREP(ADXL355_FILTER_HPF_MSK, hpf));
+-	if (ret)
+-		goto err_set_opmode;
++	if (ret){
++		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
++		return ret;
++	}
+ 
+ 	data->hpf_3db = hpf;
+ 
+ 	ret = adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
+-	if (ret)
+-		goto err_set_opmode;
++	if (ret){
++		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
++		return ret;
++	}
+ 
+-	mutex_unlock(&data->lock);
+ 	return 0;
+-
+-err_set_opmode:
+-	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
+-err_unlock:
+-	mutex_unlock(&data->lock);
+-	return ret;
+ }
+ 
+ static int adxl355_set_calibbias(struct adxl355_data *data,
+@@ -486,33 +476,30 @@ static int adxl355_set_calibbias(struct adxl355_data *data,
+ {
+ 	int ret;
+ 
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+ 	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
+ 	if (ret)
+-		goto err_unlock;
++		return ret;
+ 
+ 	put_unaligned_be16(calibbias, data->transf_buf);
+ 	ret = regmap_bulk_write(data->regmap,
+ 				adxl355_chans[chan].offset_reg,
+ 				data->transf_buf, 2);
+-	if (ret)
+-		goto err_set_opmode;
++	if (ret){
++		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
++		return ret;
++	}
+ 
+ 	data->calibbias[chan] = calibbias;
+ 
+ 	ret = adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
+-	if (ret)
+-		goto err_set_opmode;
++	if (ret){
++		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
++		return ret;
++	}
+ 
+-	mutex_unlock(&data->lock);
+ 	return 0;
+-
+-err_set_opmode:
+-	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
+-err_unlock:
+-	mutex_unlock(&data->lock);
+-	return ret;
+ }
+ 
+ static int adxl355_read_raw(struct iio_dev *indio_dev,
 -- 
 2.53.0
 
