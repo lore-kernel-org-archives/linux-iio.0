@@ -1,99 +1,187 @@
-Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
+Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D3B9536A018
-	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 18:05:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4CB236AB40
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 18:07:42 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772906708; cv=none; b=T+4omA1CMsfy9kfpjysY3dINZwAGv4kAOSfuX0p4R8OUYhjPA0ktyKTZJz9IwG3omRfy6cG9e23DEtScxyFL2EafGu37YvradFUdhceOi5MXn/bTT7twrcFqfVYhh2UECHIHRac8v9firuoIj/AY3GOqac4IMCP3WjQjRHwXdoQ=
+	t=1772906866; cv=none; b=MJpCe+flrEAnMU+VCOYJqd0MsjMMcN9WgcSPbfa6sxKxZaxpnancxV1jv9P1qqCFGxdHvxpL+A/okdk/a0qC92CsO1C9JQSo+njy4nf88+rzx0FTw8Gro0yXkhEAV2AFrIH/g0WIU+osVfJAMssFtovnDzTcgPGBoMQJuscL6og=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772906708; c=relaxed/simple;
-	bh=f8u9tZ5yXA+289o2fQEx5pV1hn3JxFCX2cBBveXfXT0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KIzPhk4V0ZTcugLYVWpTA9YJb9CftxKJ9REHS7EzCPxUrj5gdERpD1znOCiFTXAzTOWTltPPrP6S9Gvxe1wFyyYtjPXX3fPoQEi63zxmwn8AWv0/VwIrjKnE5LidNcwMBZ2ppsA2+he2ELmVgNCWLUib+lWg4u49lneiJmckfJo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eMiU5CFM; arc=none smtp.client-ip=74.125.82.176
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1772906866; c=relaxed/simple;
+	bh=AjLmyyV1IqIcyjL94dLV+Q8gDTyZ2Fibz1qd//sD39I=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=TtgyVTW/el1Ui//KYqqs5zq/3HsbN4AXpQuvyN0bJhomhBHOZoGgYIDyaULSdxWrinY5CsNUrCG1FyGB9ZNAXC1uWMiREzJEV20vyM3SYbu0aHo6ScSfrF2xnRh81Uin0maukY2zB7zHltZTC6laCvGVl2JChkhlQkLqj2ZeZwQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=YvnOzOXT; arc=none smtp.client-ip=209.85.210.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eMiU5CFM"
-Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-2bdfd129c52so6876871eec.0
-        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 10:05:07 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="YvnOzOXT"
+Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-7d4c7d04890so8767134a34.3
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 10:07:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772906707; x=1773511507; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=bBEPXxu/ApclYFmmge/TCqJ31Oo4O40W2MKETuIb+jM=;
-        b=eMiU5CFMoRFhtzH/Rb3/kqScaCuUKVmzf/6ewP7tH4l7mZvLbQfx/O+sC5GLqxVFji
-         7WlNKcUuT0BuqSd4oyhha64TaWDZfJBasMIbgI9Zivoz6v3dan6W4mElrzNlPVwFJigr
-         kcI041C3zappScmRHZjPF29mlC9X2/L6f4K5grWju8oLmOjU3WzwX28OCrzHxSFWr7zO
-         ec7IFLp5SuRjtozEVedeqjHXgVxSnqNlgtVjQvTUpFcA5eN2GODnnNQQjtSxRvTzoCLC
-         2pFYUTD/KO6qgSVskTv0oeMITmoMHGn5W+m06hZDweljdzVQYwl6adijtdS/0G76RtLI
-         t/lQ==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772906862; x=1773511662; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=J6QvxCwB+7fa0QyFkBuDXBSyOMIgNW/h6j55oZ+anGw=;
+        b=YvnOzOXT0lF6IVBeCMAnopIOYk4uHBRJIAeaTxGK39TPdjCPODGgFXvJMsKfRWM5E4
+         6au/CiBvW7WL21ZntcX8nkiOASxQWr9yn9Vi4l/yqr+qFKiuzJb97gz+3uHTeC5+iaBB
+         a+t/fQ3qFvqUthKCvZa/AK78VC4GU+V5n+USVeleQDdqLKhjm3eHWsXxKLzFt3aW2+K1
+         fpeCFSnirUQO19nX4hBGfhVLGdKVQsnBgbztAs8yVFuMTy10/Jtsj9Pr1nAYf3ktzcb6
+         SY55UZm6c0w9Lm//9jH4pQ1+AAzne4W4s8hd79g9hm/kWm0BOUhFFh/yrkndBcRAhmYR
+         mMUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772906707; x=1773511507;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=bBEPXxu/ApclYFmmge/TCqJ31Oo4O40W2MKETuIb+jM=;
-        b=WRxJLsjtAopRs7va/LJqH/dIb+YodK8irCIjE2yAxdlBur+pvRybof4mMzGsDd7Yn/
-         /0Aj18iwk0nYP63//y1E+OB5RogfnxEh+7CXUYWZPMTRLJh1kMu510UYNpvhQtj0PEyz
-         jBYEf9Mgp6WYI8MVTdbOXO1F15D7leWDrZFu1/x3x/kdbd4JRs9x42x0nWRpy1/kX6es
-         YrTKSJ/yNM/nQF4+Q0EydyV2GpeQ7lM+Cs6S+vcpDPskCIy4t90lAqb2psuQn01t74xV
-         I+PTz6Vel2Yr8NEX0p13+aZW6xIrwYWdsD5CYqRw6PLFoPtch79kl2/dK3ahfPL/DyJR
-         kTwQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVMdRpVYY3uugrp+wHGXbms5gs0JpRNWk+mywW1rrsq0a2k3aHuuYwzj09enAp1fpgHOVJqv/fZ0MI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzehGQMN1Dcek1LEFlp659u1M9PBTK3RaXUNvXUx0kUHyetArjP
-	BvdNagM9kEfuuLfjCkOC1ltrVi43EYGEwrkuwt4fXCw6u2Refb8DvzyD
-X-Gm-Gg: ATEYQzzT+EgEXubOjszsyul+GdSQI5HDdwW1tZBaUBbzzOmcMeW0rpaqwCAabA89wf/
-	w6kkGsCPPPbucNtA2zBD3xbdmknIlTozq0CUvn9gjTOmtOibNbyYLhOLs7fDrSq6D6HLeELpayz
-	/pwBwntzcZrwzkejidJ0pWBskZRWIN+bgNzJirXO0Zzm3cuijGTsrXGSoAMHD5HOTBInWjzcLjb
-	FCJOZ+Lx+wetKlixPSNojUrLo4Z827Kx+mVo9Y9GihKa7c2dpKF6fG3scTvypR/KE5O+8/t7VWr
-	0xV2sM62D8SyHZlbVQA2HRUXXyBWcL+GxN4nDalxwoN58vhmi0SyQI0I7vd2znx/wmf3Ll0X2Mv
-	WAQy6vVSjnQohNULD0oW6xB9Q6aR2j5U38rE+mriz7XTm3dd5x/c99+EWYr6mnaokVhz7SxxqHW
-	Jw18qZtkMLwB5d3Ug83w0GhV/R6FXJKD+t
-X-Received: by 2002:a05:7300:ed01:b0:2ba:9cfb:2744 with SMTP id 5a478bee46e88-2be4e063ce8mr2023362eec.30.1772906706866;
-        Sat, 07 Mar 2026 10:05:06 -0800 (PST)
-Received: from google.com ([2601:647:5e00:4acd:6ebb:c69c:ad7e:23c9])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2be4f948390sm3742223eec.22.2026.03.07.10.05.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Mar 2026 10:05:06 -0800 (PST)
-Date: Sat, 7 Mar 2026 18:05:04 +0000
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Linus Walleij <linusw@kernel.org>, 
-	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
-	linux-gpio@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v3 6/6] iio: adc: ti-ads7950: complete conversion to
- using managed resources
-Message-ID: <aaxow6NtBjSYFVTk@google.com>
-References: <20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com>
- <20260305-ti-ads7950-facelift-v3-6-a23fdd1a079e@gmail.com>
- <aarGrAtrVbJgxoK8@ashevche-desk.local>
+        d=1e100.net; s=20230601; t=1772906862; x=1773511662;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=J6QvxCwB+7fa0QyFkBuDXBSyOMIgNW/h6j55oZ+anGw=;
+        b=vv+u5voKksCLvsITBFtHLXzX3PAHU+7i3Y32UmRqJQthLTQUhjeyIWRTFIp6SKoww+
+         boRQC/TZ3J3FPfOARX91Rk3pCATYZNYW2dO7O0V6JaELHxrahA/RnZiQvq0NQqvlAIDS
+         0OXbaz+sXn9FCy1ONA3DOjWJU2leP2iwqFfvlrLZUDPClsNtMabZ1OoWs7S7HVYYzY+a
+         ulL1l4T9IkTxhbh54P5R/PcCyjYTSKbpv2k8V+Zd7LXXqWI+pyJKhsU15dZllE2gxEtS
+         t2h6FnQGje8OeMM9wGHuYC/rgpl26ntXqhQQ4xzN1ZiNEHsoB6GcAP/ochD/+buUze8J
+         utCw==
+X-Forwarded-Encrypted: i=1; AJvYcCX96U1Sp+lwAQaKlpikmvY0IFPhkpi1+ZX1VqCu/bnXyNwzM8pExosallYkq7aHb/IV1gx4a0QtfkY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxGtBK9nILqcomn+gZl3vQyePU5ERZa5N+VpUQwl6Y1ATzLByzy
+	LWfxaoEy05ajJPOuGP+PSYAVMru/1CWi2IJD2ZqNzP7wtaSX1yfDYx9rHeYV6ytmD64=
+X-Gm-Gg: ATEYQzwHWJdzia+2ViL85b0uQV3CL7P5D1aszbIiC4/0jk02XDsJTqDiTH7pJKeda/E
+	tB/Ni7He9QkYa6RYdVPEhyk/r4wubEa86wIVOxyWhgm2z3eKy1ScoY9QM1tHm/5fyN7/bgm0pHd
+	JEpNNi389fjAOHlr2kOXvDffV5nTvv1WDl20htGDUIR8bNgoPuxIkLZZ0G1NZVOQbpF51H+Qw7J
+	jmbTJmwZLesd5G5VX/qfON9lS+h1NmOL4BzHacVQumgXdzWTvYKChGcTPkSA5IaCGLqIRHbMj15
+	MkDdOK962ei+AlJsC+MudxsUJMHevQHAEAW4POtBGvGbuy8UQfuemGjqNxGp9/aQqIfm9rMtOH9
+	SjLFiw8npRkuU8fXLnqM0m6Pbvo+tz3yg9lT+eMSj181yvjEmkdcT1biCiYSUaVRXtCEKPfzVLA
+	f0iaI1q0OnmfZ95o0GyAlOKpMcN6e/PuZWZFsSAdjSpohaBWb3RLTjByd83kNZfUkfy7wBLOocW
+	A==
+X-Received: by 2002:a05:6830:6d13:b0:7cf:d168:1ef3 with SMTP id 46e09a7af769-7d726f8dbdamr4635225a34.23.1772906861727;
+        Sat, 07 Mar 2026 10:07:41 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:cccf:5174:fa72:c520? ([2600:8803:e7e4:500:cccf:5174:fa72:c520])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d728d2eef0sm3351152a34.24.2026.03.07.10.07.40
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 Mar 2026 10:07:41 -0800 (PST)
+Message-ID: <9b63f0d2-24e6-4215-958c-42cb9d2e5536@baylibre.com>
+Date: Sat, 7 Mar 2026 12:07:40 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <aarGrAtrVbJgxoK8@ashevche-desk.local>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 5/6] iio: adc: ti-ads7950: switch to using
+ devm_regulator_get_enable_read_voltage()
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-gpio@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com>
+ <20260305-ti-ads7950-facelift-v3-5-a23fdd1a079e@gmail.com>
+ <20260307114947.0b946dfb@jic23-huawei>
+ <27ffa24d-a388-46eb-8df7-04624cd32ea1@baylibre.com>
+ <aaxoIWL7NIa-2VkU@google.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <aaxoIWL7NIa-2VkU@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Mar 06, 2026 at 02:21:00PM +0200, Andy Shevchenko wrote:
-> On Thu, Mar 05, 2026 at 11:21:57AM -0800, Dmitry Torokhov wrote:
-> > All resources that the driver needs have managed API now. Switch to
-> > using them to make code clearer and drop ti_ads7950_remove().
+On 3/7/26 12:04 PM, Dmitry Torokhov wrote:
+> On Sat, Mar 07, 2026 at 11:43:32AM -0600, David Lechner wrote:
+>> On 3/7/26 5:49 AM, Jonathan Cameron wrote:
+>>> On Thu, 05 Mar 2026 11:21:56 -0800
+>>> Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
+>>>
+>>>> The regulator is enabled for the entire time the driver is bound to the
+>>>> device, and we only need to access it to fetch voltage, which can be
+>>>> done at probe time.
+>>>>
+>>>> Switch to using devm_regulator_get_enable_read_voltage() which
+>>>> simplifies probing and unbinding code.
+>>>>
+>>>> Suggested-by: David Lechner <dlechner@baylibre.com>
+>>>> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+>>> Hi.
+>>>
+>>> I think this broke the ACPI case (where regulator isn't available).
 > 
-> ...
+> Oh, you're right.
 > 
-> > -	mutex_init(&st->slock);
+>>>
+>>> Jonathan
+>>>
+>>>> ---
+>>>>  drivers/iio/adc/ti-ads7950.c | 45 +++++++++++---------------------------------
+>>>>  1 file changed, 11 insertions(+), 34 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+>>>> index 273c35e03185..847e83baa876 100644
+>>>> --- a/drivers/iio/adc/ti-ads7950.c
+>>>> +++ b/drivers/iio/adc/ti-ads7950.c
+>>>> @@ -341,19 +341,9 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+>>>>  	return st->single_rx;
+>>>>  }
+>>>>  
+>>>> -static int ti_ads7950_get_range(struct ti_ads7950_state *st)
+>>>> +static unsigned int ti_ads7950_get_range(struct ti_ads7950_state *st)
+>>>>  {
+>>>> -	int vref;
+>>>> -
+>>>> -	if (st->vref_mv) {
+>>>> -		vref = st->vref_mv;
+>>>> -	} else {
+>>>> -		vref = regulator_get_voltage(st->reg);
+>>>> -		if (vref < 0)
+>>>> -			return vref;
+>>>> -
+>>>> -		vref /= 1000;
+>>>> -	}
+>>>> +	unsigned int vref = st->vref_mv;
+>>>>  
+>>>>  	if (st->cmd_settings_bitmask & TI_ADS7950_CR_RANGE_5V)
+>>>>  		vref *= 2;
+>>>> @@ -382,11 +372,7 @@ static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
+>>>>  
+>>>>  		return IIO_VAL_INT;
+>>>>  	case IIO_CHAN_INFO_SCALE:
+>>>> -		ret = ti_ads7950_get_range(st);
+>>>> -		if (ret < 0)
+>>>> -			return ret;
+>>>> -
+>>>> -		*val = ret;
+>>>> +		*val = ti_ads7950_get_range(st);
+>>>>  		*val2 = (1 << chan->scan_type.realbits) - 1;
+>>>>  
+>>>>  		return IIO_VAL_FRACTIONAL;
+>>>> @@ -580,30 +566,24 @@ static int ti_ads7950_probe(struct spi_device *spi)
+>>>>  	spi_message_init_with_transfers(&st->scan_single_msg,
+>>>>  					st->scan_single_xfer, 3);
+>>>>  
+>>>> +	ret = devm_regulator_get_enable_read_voltage(&spi->dev, "vref");
+>>>> +	if (ret < 0)
+>>>
+>>> I think you need to check for -ENODEV and if you see than then
+>>> see if the acpi route below applies.  Otherwise on ACPI this will fail
+>>> and we'll fail the probe.
+>>>
+>>
+>> Or do something like:
+>>
+>> 	if (ACPI_COMPANION(&spi->dev)) {
+>> 		ret = devm_regulator_get_enable(&spi->dev, "vref");
+>> 		if (ret)
+>> 			return dev_err_probe(&spi->dev, ret,
+>> 					     "Failed to get regulator \"vref\"\n");
+>>
+>>  		st->vref_mv = TI_ADS7950_VA_MV_ACPI_DEFAULT;
 > 
-> I missed seeing the + lines WRT the above removal.
+> We know that concept of regulators is not exposed on ACPI systems, and
+> we'd get a dummy here, so maybe just store st->vref_mv and not bother
+> with acquiring and enabling the dummy regulator?
+> 
+> Thanks.
 > 
 
-Oops, will fix it up.
-
--- 
-Dmitry
+Sounds OK to me.
