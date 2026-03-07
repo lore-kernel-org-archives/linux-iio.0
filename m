@@ -1,67 +1,67 @@
-Received: from mail-ot1-f49.google.com (mail-ot1-f49.google.com [209.85.210.49])
+Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C4CB236AB40
-	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 18:07:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.49
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E31A3239099
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 18:14:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772906866; cv=none; b=MJpCe+flrEAnMU+VCOYJqd0MsjMMcN9WgcSPbfa6sxKxZaxpnancxV1jv9P1qqCFGxdHvxpL+A/okdk/a0qC92CsO1C9JQSo+njy4nf88+rzx0FTw8Gro0yXkhEAV2AFrIH/g0WIU+osVfJAMssFtovnDzTcgPGBoMQJuscL6og=
+	t=1772907251; cv=none; b=QERlhets25nQUm/Ax7iEYuljt+jTN9Q4D2H3cMZvlUXd4gG680/7N3ujC3/hi42cyMPu0AYrdrSEb06Vy9purYN8gZ2O7beRgmsJ/DhINyOu7aFPRT/PK7B2QRIQ7ry/sJ25EWHzgFiXFagybhdATmqOuPd6Lv+xp+oAiaDyXnM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772906866; c=relaxed/simple;
-	bh=AjLmyyV1IqIcyjL94dLV+Q8gDTyZ2Fibz1qd//sD39I=;
+	s=arc-20240116; t=1772907251; c=relaxed/simple;
+	bh=2bpNFQYrY+4AxovPokblGV+YZqGYq2o3LMzrIO8FHhE=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=TtgyVTW/el1Ui//KYqqs5zq/3HsbN4AXpQuvyN0bJhomhBHOZoGgYIDyaULSdxWrinY5CsNUrCG1FyGB9ZNAXC1uWMiREzJEV20vyM3SYbu0aHo6ScSfrF2xnRh81Uin0maukY2zB7zHltZTC6laCvGVl2JChkhlQkLqj2ZeZwQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=YvnOzOXT; arc=none smtp.client-ip=209.85.210.49
+	 In-Reply-To:Content-Type; b=fFoS6fO+FGJwn3MNigDXo1X5+nnzGZvAfpNCE5afKrVKpe1Ers2lz+ryG/isoRscfwJqSovMcFhRJr4RvfwDkVxSWZIQdfkVIismmtAT1WN7X6kcN3agNWqnczFutk+d/QbAn4JB4LuB+D3TdA45PCwSuamn+MOFFLM1sNGBcOk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=U4Xu749u; arc=none smtp.client-ip=209.85.210.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="YvnOzOXT"
-Received: by mail-ot1-f49.google.com with SMTP id 46e09a7af769-7d4c7d04890so8767134a34.3
-        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 10:07:42 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="U4Xu749u"
+Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-7d4ba9abbecso12305764a34.1
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 10:14:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772906862; x=1773511662; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772907249; x=1773512049; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=J6QvxCwB+7fa0QyFkBuDXBSyOMIgNW/h6j55oZ+anGw=;
-        b=YvnOzOXT0lF6IVBeCMAnopIOYk4uHBRJIAeaTxGK39TPdjCPODGgFXvJMsKfRWM5E4
-         6au/CiBvW7WL21ZntcX8nkiOASxQWr9yn9Vi4l/yqr+qFKiuzJb97gz+3uHTeC5+iaBB
-         a+t/fQ3qFvqUthKCvZa/AK78VC4GU+V5n+USVeleQDdqLKhjm3eHWsXxKLzFt3aW2+K1
-         fpeCFSnirUQO19nX4hBGfhVLGdKVQsnBgbztAs8yVFuMTy10/Jtsj9Pr1nAYf3ktzcb6
-         SY55UZm6c0w9Lm//9jH4pQ1+AAzne4W4s8hd79g9hm/kWm0BOUhFFh/yrkndBcRAhmYR
-         mMUw==
+        bh=GRdsLK7weBsl9Qz7+q1Z86EFK/E2/7vFXBMivgf8qR4=;
+        b=U4Xu749urpHkBRZdo4xn4HQ7iY2EWPU1T6nkw/cohHD447YV/J1RAV+KIKwEzFbtu4
+         yIyxDlvxljsU6Tfm0VZVQssfTP/V2SqKX458mzIDfJr31Ul5onPkz1wf6ElyNuJJzpMU
+         S3Uv5Kh3NmTEkf/d7HyWep2TtGb25V+NTs+gXFtD4EKzpt7FJEyhRWl64odkR4zyezXw
+         mqzWJrPPHHkdOhW2E+OF3OrMC7ru91cRqoImKrfWQh1EjxoN/Kko6s0zItXTCH9xjkIF
+         70bQ6yeN6kF1ehuNITcvognB/MY41mtnD+tSNku4ARQTTx6uLg9M8qqXfKy9c1LteiyY
+         wLHQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772906862; x=1773511662;
+        d=1e100.net; s=20230601; t=1772907249; x=1773512049;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=J6QvxCwB+7fa0QyFkBuDXBSyOMIgNW/h6j55oZ+anGw=;
-        b=vv+u5voKksCLvsITBFtHLXzX3PAHU+7i3Y32UmRqJQthLTQUhjeyIWRTFIp6SKoww+
-         boRQC/TZ3J3FPfOARX91Rk3pCATYZNYW2dO7O0V6JaELHxrahA/RnZiQvq0NQqvlAIDS
-         0OXbaz+sXn9FCy1ONA3DOjWJU2leP2iwqFfvlrLZUDPClsNtMabZ1OoWs7S7HVYYzY+a
-         ulL1l4T9IkTxhbh54P5R/PcCyjYTSKbpv2k8V+Zd7LXXqWI+pyJKhsU15dZllE2gxEtS
-         t2h6FnQGje8OeMM9wGHuYC/rgpl26ntXqhQQ4xzN1ZiNEHsoB6GcAP/ochD/+buUze8J
-         utCw==
-X-Forwarded-Encrypted: i=1; AJvYcCX96U1Sp+lwAQaKlpikmvY0IFPhkpi1+ZX1VqCu/bnXyNwzM8pExosallYkq7aHb/IV1gx4a0QtfkY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxGtBK9nILqcomn+gZl3vQyePU5ERZa5N+VpUQwl6Y1ATzLByzy
-	LWfxaoEy05ajJPOuGP+PSYAVMru/1CWi2IJD2ZqNzP7wtaSX1yfDYx9rHeYV6ytmD64=
-X-Gm-Gg: ATEYQzwHWJdzia+2ViL85b0uQV3CL7P5D1aszbIiC4/0jk02XDsJTqDiTH7pJKeda/E
-	tB/Ni7He9QkYa6RYdVPEhyk/r4wubEa86wIVOxyWhgm2z3eKy1ScoY9QM1tHm/5fyN7/bgm0pHd
-	JEpNNi389fjAOHlr2kOXvDffV5nTvv1WDl20htGDUIR8bNgoPuxIkLZZ0G1NZVOQbpF51H+Qw7J
-	jmbTJmwZLesd5G5VX/qfON9lS+h1NmOL4BzHacVQumgXdzWTvYKChGcTPkSA5IaCGLqIRHbMj15
-	MkDdOK962ei+AlJsC+MudxsUJMHevQHAEAW4POtBGvGbuy8UQfuemGjqNxGp9/aQqIfm9rMtOH9
-	SjLFiw8npRkuU8fXLnqM0m6Pbvo+tz3yg9lT+eMSj181yvjEmkdcT1biCiYSUaVRXtCEKPfzVLA
-	f0iaI1q0OnmfZ95o0GyAlOKpMcN6e/PuZWZFsSAdjSpohaBWb3RLTjByd83kNZfUkfy7wBLOocW
-	A==
-X-Received: by 2002:a05:6830:6d13:b0:7cf:d168:1ef3 with SMTP id 46e09a7af769-7d726f8dbdamr4635225a34.23.1772906861727;
-        Sat, 07 Mar 2026 10:07:41 -0800 (PST)
+        bh=GRdsLK7weBsl9Qz7+q1Z86EFK/E2/7vFXBMivgf8qR4=;
+        b=JeBRcxCVcjUZRSvB/8xXOIF7YQSOZf0HkOrsnffTlOpyz/oyOx13HSW7utoArBnA5T
+         do1fGxYX7v7+Ugfwj+4wAKrqaC6uDCLJz/ueB0xbvAHqi5AxNmzGZL5GJEEyoWjLdb2E
+         twMjwFfh0RW87c6797X4O+VBilGx+VC7TV/x8wfa0RtWyRq3we8EAo26kKMWxQxUyPZT
+         PgcQFYOBxYVyqyxm9yquZ+3u/MQKQEWRaNR6nUZB+bCn2g5jPEk9pkKnn+gaxZazhmbZ
+         0iKs1hTaJ43JBYwa7BcrO/nkoYmAT8qBldcqona38zYV2qdTxFBlgeRJGfm0wwBIKtX2
+         N6vw==
+X-Forwarded-Encrypted: i=1; AJvYcCUZ0HePfTquEQNFHrFCQMsJX4UPYgTNf9Asiew0o/fq8efv0C+sfkuyWkguVpeXwtLuv7Yi33AKW8c=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz44oPSLv5+3UVkx/HvlihTaBnR7XqyGl7/mu47qILL1LBYjV8D
+	9o4b2gOS7sSsjPme+zo5e5k+FLD2Aqx33HQ2DhM0cG/YA3G1q4nJ9UEeLL3cMiBHGfQ=
+X-Gm-Gg: ATEYQzyXBE3v8R4/8gqhgdjji3srXTs7X6DbJp0Ekzt1isIHgTGxuE1uJxIrDk+17ZA
+	BG+9iA9XuO+jexCDpP+pOwbLBFoIcIHpPd9FbHYpl8n+lpVCBZOTK1y4evg8lAfNgE2QlYSX6qg
+	woX6CaxnBmTu/tf7CPxmAKJz8uXzFCawBOlQhuzTSC2eBexOaVKtqKCrNpX5WFf6nxDlRaKw23M
+	SeoB22EvVb4Kq4ZU6WhUbpiL5gIFtQULNcOnfOOl4NRXT6NUZ/DIRnUHmib2tjaQ4HxQb/F7JdF
+	R+CWLbwg+eimyOhgjmQeee9sIHd3vekowh/87Fo3nDkZ/uuGeAKoSIIFwjpPVz4efiyNL2MK4Tr
+	Hin2UDgdWJdm3sU9KH2QoMPVHkZIht4gSvbeD35PL4m2ORaJoV9JH5e67UlwAL15LnSHx3aNZWO
+	AuhwYK9NHiU67S6HEvmuuby3zaz+tgwNiHIMual/iBKE5ICs2eg4WACptkyZ8k0C1sQhGShkTWd
+	g9kZNgMLWSL
+X-Received: by 2002:a05:6820:1ca3:b0:67b:ad2d:1226 with SMTP id 006d021491bc7-67bad2d15a5mr92348eaf.32.1772907248856;
+        Sat, 07 Mar 2026 10:14:08 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:cccf:5174:fa72:c520? ([2600:8803:e7e4:500:cccf:5174:fa72:c520])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d728d2eef0sm3351152a34.24.2026.03.07.10.07.40
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67bacd85dd6sm152199eaf.11.2026.03.07.10.14.06
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Mar 2026 10:07:41 -0800 (PST)
-Message-ID: <9b63f0d2-24e6-4215-958c-42cb9d2e5536@baylibre.com>
-Date: Sat, 7 Mar 2026 12:07:40 -0600
+        Sat, 07 Mar 2026 10:14:08 -0800 (PST)
+Message-ID: <ece644e9-fa6c-4be2-8159-4e8d1ef52cab@baylibre.com>
+Date: Sat, 7 Mar 2026 12:14:06 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,119 +69,66 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 5/6] iio: adc: ti-ads7950: switch to using
- devm_regulator_get_enable_read_voltage()
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+Subject: Re: [PATCH v5 4/4] iio: adc: ad4080: add support for AD4880
+ dual-channel ADC
+To: kernel test robot <lkp@intel.com>,
+ Antoniu Miclaus <antoniu.miclaus@analog.com>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Linus Walleij <linusw@kernel.org>, Bartosz Golaszewski <brgl@kernel.org>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- linux-gpio@vger.kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com>
- <20260305-ti-ads7950-facelift-v3-5-a23fdd1a079e@gmail.com>
- <20260307114947.0b946dfb@jic23-huawei>
- <27ffa24d-a388-46eb-8df7-04624cd32ea1@baylibre.com>
- <aaxoIWL7NIa-2VkU@google.com>
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>,
+ Olivier Moysan <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc: oe-kbuild-all@lists.linux.dev
+References: <20260305113756.47243-5-antoniu.miclaus@analog.com>
+ <202603080146.6a7IzS7i-lkp@intel.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <aaxoIWL7NIa-2VkU@google.com>
+In-Reply-To: <202603080146.6a7IzS7i-lkp@intel.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 3/7/26 12:04 PM, Dmitry Torokhov wrote:
-> On Sat, Mar 07, 2026 at 11:43:32AM -0600, David Lechner wrote:
->> On 3/7/26 5:49 AM, Jonathan Cameron wrote:
->>> On Thu, 05 Mar 2026 11:21:56 -0800
->>> Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
->>>
->>>> The regulator is enabled for the entire time the driver is bound to the
->>>> device, and we only need to access it to fetch voltage, which can be
->>>> done at probe time.
->>>>
->>>> Switch to using devm_regulator_get_enable_read_voltage() which
->>>> simplifies probing and unbinding code.
->>>>
->>>> Suggested-by: David Lechner <dlechner@baylibre.com>
->>>> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
->>> Hi.
->>>
->>> I think this broke the ACPI case (where regulator isn't available).
+On 3/7/26 11:11 AM, kernel test robot wrote:
+> Hi Antoniu,
 > 
-> Oh, you're right.
+> kernel test robot noticed the following build errors:
 > 
->>>
->>> Jonathan
->>>
->>>> ---
->>>>  drivers/iio/adc/ti-ads7950.c | 45 +++++++++++---------------------------------
->>>>  1 file changed, 11 insertions(+), 34 deletions(-)
->>>>
->>>> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
->>>> index 273c35e03185..847e83baa876 100644
->>>> --- a/drivers/iio/adc/ti-ads7950.c
->>>> +++ b/drivers/iio/adc/ti-ads7950.c
->>>> @@ -341,19 +341,9 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
->>>>  	return st->single_rx;
->>>>  }
->>>>  
->>>> -static int ti_ads7950_get_range(struct ti_ads7950_state *st)
->>>> +static unsigned int ti_ads7950_get_range(struct ti_ads7950_state *st)
->>>>  {
->>>> -	int vref;
->>>> -
->>>> -	if (st->vref_mv) {
->>>> -		vref = st->vref_mv;
->>>> -	} else {
->>>> -		vref = regulator_get_voltage(st->reg);
->>>> -		if (vref < 0)
->>>> -			return vref;
->>>> -
->>>> -		vref /= 1000;
->>>> -	}
->>>> +	unsigned int vref = st->vref_mv;
->>>>  
->>>>  	if (st->cmd_settings_bitmask & TI_ADS7950_CR_RANGE_5V)
->>>>  		vref *= 2;
->>>> @@ -382,11 +372,7 @@ static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
->>>>  
->>>>  		return IIO_VAL_INT;
->>>>  	case IIO_CHAN_INFO_SCALE:
->>>> -		ret = ti_ads7950_get_range(st);
->>>> -		if (ret < 0)
->>>> -			return ret;
->>>> -
->>>> -		*val = ret;
->>>> +		*val = ti_ads7950_get_range(st);
->>>>  		*val2 = (1 << chan->scan_type.realbits) - 1;
->>>>  
->>>>  		return IIO_VAL_FRACTIONAL;
->>>> @@ -580,30 +566,24 @@ static int ti_ads7950_probe(struct spi_device *spi)
->>>>  	spi_message_init_with_transfers(&st->scan_single_msg,
->>>>  					st->scan_single_xfer, 3);
->>>>  
->>>> +	ret = devm_regulator_get_enable_read_voltage(&spi->dev, "vref");
->>>> +	if (ret < 0)
->>>
->>> I think you need to check for -ENODEV and if you see than then
->>> see if the acpi route below applies.  Otherwise on ACPI this will fail
->>> and we'll fail the probe.
->>>
->>
->> Or do something like:
->>
->> 	if (ACPI_COMPANION(&spi->dev)) {
->> 		ret = devm_regulator_get_enable(&spi->dev, "vref");
->> 		if (ret)
->> 			return dev_err_probe(&spi->dev, ret,
->> 					     "Failed to get regulator \"vref\"\n");
->>
->>  		st->vref_mv = TI_ADS7950_VA_MV_ACPI_DEFAULT;
+> [auto build test ERROR on v7.0-rc2]
+> [also build test ERROR on linus/master]
+> [cannot apply to jic23-iio/togreg next-20260306]
+> [If your patch is applied to the wrong git tree, kindly drop us a note.
+> And when submitting patch, we suggest to use '--base' as documented in
+> https://git-scm.com/docs/git-format-patch#_base_tree_information]
 > 
-> We know that concept of regulators is not exposed on ACPI systems, and
-> we'd get a dummy here, so maybe just store st->vref_mv and not bother
-> with acquiring and enabling the dummy regulator?
+> url:    https://github.com/intel-lab-lkp/linux/commits/Antoniu-Miclaus/iio-backend-use-__free-fwnode_handle-for-automatic-cleanup/20260305-194647
+> base:   v7.0-rc2
+> patch link:    https://lore.kernel.org/r/20260305113756.47243-5-antoniu.miclaus%40analog.com
+> patch subject: [PATCH v5 4/4] iio: adc: ad4080: add support for AD4880 dual-channel ADC
+> config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20260308/202603080146.6a7IzS7i-lkp@intel.com/config)
+> compiler: sh4-linux-gcc (GCC) 15.2.0
+> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260308/202603080146.6a7IzS7i-lkp@intel.com/reproduce)
 > 
-> Thanks.
+> If you fix the issue in a separate patch/commit (i.e. not just a new version of
+> the same patch/commit), kindly add following tags
+> | Reported-by: kernel test robot <lkp@intel.com>
+> | Closes: https://lore.kernel.org/oe-kbuild-all/202603080146.6a7IzS7i-lkp@intel.com/
 > 
+> All errors (new ones prefixed by >>):
+> 
+>    drivers/iio/adc/ad4080.c: In function 'ad4080_probe':
+>>> drivers/iio/adc/ad4080.c:739:31: error: implicit declaration of function 'devm_spi_new_ancillary_device'; did you mean 'spi_new_ancillary_device'? [-Wimplicit-function-declaration]
+>      739 |                 st->spi[ch] = devm_spi_new_ancillary_device(spi,
+>          |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>          |                               spi_new_ancillary_device
+>>> drivers/iio/adc/ad4080.c:739:29: error: assignment to 'struct spi_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
+>      739 |                 st->spi[ch] = devm_spi_new_ancillary_device(spi,
+>          |                             ^
+> 
+> 
+The cover letter of the series should call out the dependency on the
+SPI patches that have already been picked up.
 
-Sounds OK to me.
+There is even a git format for this that the bots understand to avoid
+messages like this.
