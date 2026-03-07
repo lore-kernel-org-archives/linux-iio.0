@@ -1,259 +1,133 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f45.google.com (mail-pj1-f45.google.com [209.85.216.45])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 04C181339A4;
-	Sat,  7 Mar 2026 10:43:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0C01A3033E6
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 10:47:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772880221; cv=none; b=QEtFVxhuQU4xfq7pxexcgVlP/ZwYiGqKkq5ogcKvpCeqaOvtC1eQVM61B1B5jtrIWUKscbtLcld2s/pKPbB71IlhOynQFAnWAcyXCYlTvDGpj7DzD6/x1uj4ZLQ8gVUrBNaMiThCWlHJvcBsB/XQYOEiNyy7H7AWD4FYZ0Udmzs=
+	t=1772880461; cv=none; b=EntApohTo5BqQuKvhD5fy3Ms9I8xOzdo2DEbcTomE9hh3mibyiz7gzt19fgDGMSnbkF+5+DzuR4e2p1fTucTdBI4Hfn9olFOjw+vuSgtIFYZhySz4tE+3s5TkFWPgySWVLhoGhnq+7lKZXigfO2rVp9ZBe8GnrzQcecTEqkbsOk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772880221; c=relaxed/simple;
-	bh=EmXqekTwyeJo0T/iHo6pjr8xk/7J41VJ7Cy2yQlMueQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=AFWu9VXdWqNZXL1xZNCHVdx8U+UrAKyChGZ77cGgURdOPooRbQ7pPa3q56zRgDVqs4XDCpoiSnwWTrqoA2DT0G4sioklWUzRV+SsYm7CFZxzSnADaw2Hj11UZsKy3AtYYswHOQafPBw1ahl2bGsx5oEeQb73iFuEuu+dOtADpmU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nH2j/pSD; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772880461; c=relaxed/simple;
+	bh=xNBzACMCOB3e4CUyWB3qnTOeE6CJTZFIbk52mtjQWv0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=nj2n7gpL0tl2n1+15lx+uaumyCq6pZlgvZz+NtYZ3I7XFsTy+kCsucYUCEMoLvxnxLsN4WmLEYe7Cd1dH5/1rgLyx2AuDyBtaBXQvv+Zj2ZCyFZ6/au3+BuPUuMl5x5dmS4u+RXW9K7vmYOCU7NBtX/reZWp9Viig1XKrS9Sczo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f/UAgAOV; arc=none smtp.client-ip=209.85.216.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nH2j/pSD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03067C19422;
-	Sat,  7 Mar 2026 10:43:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772880220;
-	bh=EmXqekTwyeJo0T/iHo6pjr8xk/7J41VJ7Cy2yQlMueQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=nH2j/pSD/WlvwuCUW740IQdNFbGyqd1xkoyK35wchcWFn61M7w426EoijSF6CoJIG
-	 cyb7Dgtqxo+IR4TRsg+ohWXfoqZ4+qAAQeAu7JF+5NgfPHqdrvrUggRHZdkleSekm0
-	 r0PV7DtQiNMsUzaE12mIXwcpMMH3xgz7uzZbVzCbkyPKq7X+Uf38ODX1p4i8HIyrrC
-	 RHmN3hSgAPMEZsaMqBxwjqnP3PSTG5bnw0FB5rfUOPuHNzTS3jxM338DvpV1hCkjZQ
-	 oe0J2M+ATwEVGOtcqajiZtJMTYPJceT4tTaiKKCs8SPJNsXjcyJp/6c3EeyFclEVKP
-	 7B1inG+IuOwMA==
-Date: Sat, 7 Mar 2026 10:43:31 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Cc: lucas.p.stankus@gmail.com, lars@metafoo.de,
- Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org,
- puranjay@kernel.org, dlechner@baylibre.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] iio: accel: adxl355: convert to guard(mutex)
-Message-ID: <20260307104331.2d1402cd@jic23-huawei>
-In-Reply-To: <20260307103949.4cb3ce6e@jic23-huawei>
-References: <20260306211152.65109-1-rajveer.chaudhari.linux@gmail.com>
-	<20260307101758.50091-1-rajveer.chaudhari.linux@gmail.com>
-	<20260307101758.50091-3-rajveer.chaudhari.linux@gmail.com>
-	<20260307103949.4cb3ce6e@jic23-huawei>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f/UAgAOV"
+Received: by mail-pj1-f45.google.com with SMTP id 98e67ed59e1d1-3597fea200dso5053292a91.3
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 02:47:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772880459; x=1773485259; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=k6imQY54g3nSQPw4rVdUIT9KroYSgZ8bDJBrElfTIoQ=;
+        b=f/UAgAOVTEw5jOBSDP7uy6BfICjtEq4mr8W3w/d/ubbB8uA/KjDnH/WF7i2WyDRsQT
+         MgQ6lOjdAisyNANiM6AHwrdQVwoNKpNxRqFKm3TjfTV5D+XlauIZFdrr19Lz4WiM05Mg
+         jeSv2OW/Q+ifB5ogfk+7e5PzRWqSV3oesKaDvFvFRnOgFY+VenPp2dMZBIrvQSzC7bfu
+         HWPukyGCeICxs1VCI6TzjUyu1JYdbHoH4O+h9fsewDwPeLrez1NQgUXjUK5qmzbiJdrR
+         589r4uxV+3yI0oQ7V/s76+DegB6c/oBmCDwwrVqg3UnuOt+S55PyDTJNAtQ1RocfkfuB
+         w2Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772880459; x=1773485259;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=k6imQY54g3nSQPw4rVdUIT9KroYSgZ8bDJBrElfTIoQ=;
+        b=pJSIwetb1e/XM4t5X+4LQxfL94SFE2ppKiuOht6vvp2M/MTgh5PeOYBCsRRIyQe3sr
+         SBLkH+QxIOrYvsapr6GDG9uu9pDXHOCGtPm3GoabeQ3T43PxCuZJv3T1nZBH+GUn/y6A
+         fcjsrGptr5VbtP1d4c2W2z+2JQM0sI7DwCb4u+7EU8eMe4ZxoSjAz0gmNPSFVRQRxZsM
+         AADx9Sc7psWBm1jRu+8g8xAr6SGbGyCNrhDhKxdjpqrpsWA+dVIQWjC0VKXkGQSTuAKs
+         xue1SZrsdBwbfzpq22+C9iV3vl9y9qzA4g/xvs+FxmwFnHVA70PDlo8gsXEIzkSHVvd1
+         Cqvw==
+X-Forwarded-Encrypted: i=1; AJvYcCXO10D/pwP+gZSoUpOUk1iliPtiSaNLDyDW2XlG1XmqYcM6VJlDrmLLcKjqytXPn/Kq2z/dnZlxVRw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy1Luz1XCwarFYtVZwsyaC51ry2FkKtYyFxVVn8aiy0kShWbqR3
+	FLh8Xo/uK5mhAnlv867qlAXhbuw0VK4G2j4wdYWO+P4+FwiXhx75EB3G
+X-Gm-Gg: ATEYQzz9R1Kle1LcVet/wqL/TkPpiqbhbNKRVdfjiH04Fx1ylRSO9RrKObqV2dIyGVy
+	RogMB2WCRkVef5AwOpX8wwtxNikkZSQgb71EFPtWbhZlFYZjx664ockosf8hu256lx0N1yburQv
+	HbeZ5NfVM1KKsWAfQs3zFJTHSsXCq40gSRJ4ChDMhqljw+abXpBgPUpQsBp4STCnOtTf0TZLHR9
+	q/wPTX+L0Oafjwd+bH9BUPuagzrX2oydbLnyr23j6zu3ERbCkImFSh0YCJ9TjDat3XcWrZ/oH+x
+	4zau4wmJ+isb8tpyFfRnqIfSgEtBQXEx3XGv9ZI26TQbOd/gI04jxZH/NHU1h3U6S6hMM2Cwpez
+	n+sWY9bXLHJxC+Ce/8oBNf3Im0bPF0DquRyyayIFVhJhirH3aDQZQIwJl+gMwOEPv8i5Ge9C3I7
+	R68QVaiXVMk3teI94ufNS5vwWd
+X-Received: by 2002:a17:902:ef0a:b0:2ae:4fc7:8053 with SMTP id d9443c01a7336-2ae82481982mr62452895ad.46.1772880459435;
+        Sat, 07 Mar 2026 02:47:39 -0800 (PST)
+Received: from fedora ([2401:4900:1c6a:49e5:cff6:c6fd:2f81:fb7c])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae83e78d48sm49541235ad.22.2026.03.07.02.47.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 07 Mar 2026 02:47:39 -0800 (PST)
+From: Shi Hao <i.shihao.999@gmail.com>
+To: andriy.shevchenko@intel.com
+Cc: andy@kernel.org,
+	dlechner@baylibre.com,
+	jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	marcelo.schmitt@analog.com,
+	mazziesaccount@gmail.com,
+	nuno.sa@analog.com,
+	i.shihao.999@gmail.com
+Subject: [PATCH v2 0/6] iio: fix spelling mistakes in comments
+Date: Sat,  7 Mar 2026 16:16:59 +0530
+Message-ID: <20260307104705.49129-1-i.shihao.999@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Sat, 7 Mar 2026 10:39:49 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+This series fixes spelling mistakes in comments across
+several IIO subsystems to improve readability and code
+consistency.
 
-> On Sat,  7 Mar 2026 15:47:57 +0530
-> Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com> wrote:
-> 
-> > Replace manual mutex_lock/mutex_unlock pairs with guard(mutex) in
-> > adxl355_data_rdy_trigger_set_state(), adxl355_set_odr(),
-> > adxl355_set_hpf_3db() and adxl355_set_calibbias(). Remove all
-> > goto labels and return directly on error paths.
-> > 
-> > v3: Remove all remaining gotos and return directly where possible.
-> > v2: Split into separate patch per driver.  
-> 
-> Same issue for the change log needing to be below the ---
+v2:
 
-One more thing. Sometimes guard() brings enough extra complexity it isn't
-the right tool for the job. Whilst you can explore the suggestions for
-helper functions I make below, I'm not sure they will lead to easier to
-read and less error prone code.  So it might not be a good idea to use
-them in this driver at all!
+- Split original patch into 6 commits
+- Fixed commit message formatting and typos
+- Added necessary tags in commits
+- Added more fixes then previous
 
-Jonathan
+Shi Hao (6):
+  iio: accel: fix spelling mistakes in comments
+  iio: adc: fix spelling mistakes in comments
+  iio: amplifiers: fix spelling mistake in comment
+  iio: cdc: fix spelling mistakes in comments
+  iio: chemical: fix spelling mistake in comment
+  iio: common: fix spelling mistakes in comments
 
-> 
-> 
-> > 
-> > Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-> > ---
-> >  drivers/iio/accel/adxl355_core.c | 81 ++++++++++++++------------------
-> >  1 file changed, 34 insertions(+), 47 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
-> > index 1c1d64d5cbcb..af606e2ab8d4 100644
-> > --- a/drivers/iio/accel/adxl355_core.c
-> > +++ b/drivers/iio/accel/adxl355_core.c
-> >  
-> 
-> ...
-> 
-> >  
-> >  static void adxl355_fill_3db_frequency_table(struct adxl355_data *data)
-> > @@ -409,38 +407,34 @@ static int adxl355_set_odr(struct adxl355_data *data,
-> >  {
-> >  	int ret;
-> >  
-> > -	mutex_lock(&data->lock);
-> > +	guard(mutex)(&data->lock);
-> >  
-> >  	if (data->odr == odr) {
-> > -		mutex_unlock(&data->lock);
-> >  		return 0;
-> >  	}
-> >  
-> >  	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
-> >  	if (ret)
-> > -		goto err_unlock;
-> > +		return ret;
-> >  
-> >  	ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
-> >  				 ADXL355_FILTER_ODR_MSK,
-> >  				 FIELD_PREP(ADXL355_FILTER_ODR_MSK, odr));
-> > -	if (ret)
-> > -		goto err_set_opmode;
-> > +	if (ret){
-> > +		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);  
-> See below.
-> 
-> > +		return ret;
-> > +	}
-> >  
-> >  	data->odr = odr;
-> >  	adxl355_fill_3db_frequency_table(data);
-> >  
-> >  	ret = adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > -	if (ret)
-> > -		goto err_set_opmode;
-> > +	if (ret){
-> > +		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > +		return ret;
-> > +	}
-> >  
-> > -	mutex_unlock(&data->lock);
-> >  	return 0;
-> > -
-> > -err_set_opmode:
-> > -	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > -err_unlock:
-> > -	mutex_unlock(&data->lock);
-> > -	return ret;
-> >  }
-> >  
-> >  static int adxl355_set_hpf_3db(struct adxl355_data *data,
-> > @@ -448,37 +442,33 @@ static int adxl355_set_hpf_3db(struct adxl355_data *data,
-> >  {
-> >  	int ret;
-> >  
-> > -	mutex_lock(&data->lock);
-> > +	guard(mutex)(&data->lock);
-> >  
-> >  	if (data->hpf_3db == hpf) {
-> > -		mutex_unlock(&data->lock);
-> >  		return 0;
-> >  	}
-> >  
-> >  	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
-> >  	if (ret)
-> > -		goto err_unlock;
-> > +		return ret;
-> >  
-> >  	ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
-> >  				 ADXL355_FILTER_HPF_MSK,
-> >  				 FIELD_PREP(ADXL355_FILTER_HPF_MSK, hpf));
-> > -	if (ret)
-> > -		goto err_set_opmode;
-> > +	if (ret){
-> > +		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);  
-> 
-> Similar to below.
-> 
-> > +		return ret;
-> > +	}
-> >  
-> >  	data->hpf_3db = hpf;
-> >  
-> >  	ret = adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > -	if (ret)
-> > -		goto err_set_opmode;
-> > +	if (ret){
-> > +		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > +		return ret;
-> > +	}
-> >  
-> > -	mutex_unlock(&data->lock);
-> >  	return 0;
-> > -
-> > -err_set_opmode:
-> > -	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > -err_unlock:
-> > -	mutex_unlock(&data->lock);
-> > -	return ret;
-> >  }
-> >  
-> >  static int adxl355_set_calibbias(struct adxl355_data *data,
-> > @@ -486,33 +476,30 @@ static int adxl355_set_calibbias(struct adxl355_data *data,
-> >  {
-> >  	int ret;
-> >  
-> > -	mutex_lock(&data->lock);
-> > +	guard(mutex)(&data->lock);
-> >  
-> >  	ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
-> >  	if (ret)
-> > -		goto err_unlock;
-> > +		return ret;
-> >  
-> >  	put_unaligned_be16(calibbias, data->transf_buf);
-> >  	ret = regmap_bulk_write(data->regmap,
-> >  				adxl355_chans[chan].offset_reg,
-> >  				data->transf_buf, 2);
-> > -	if (ret)
-> > -		goto err_set_opmode;
-> > +	if (ret){  
-> Whilst this does answer the feedback you got on v2 wrt to not mixing
-> gotos (see comments on this in cleanup.h) it leads to inelegant code
-> due to the duplication.
-> 
-> There are a couple of techniques to avoid this. The most appropriate
-> one here is to use a helper function called something like
-> do_adxl355_set_calibbias() which has all the code
-> done between set_op_mode and unsetting it.
-> 
-> Then you can unconditionally unset the op_mode before checking
-> if there as an error.  You will need to be a little clever with
-> ret code handling though.
-> 
-> 
-> > +		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > +		return ret;
-> > +	}
-> >  
-> >  	data->calibbias[chan] = calibbias;
-> >  
-> >  	ret = adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > -	if (ret)
-> > -		goto err_set_opmode;
-> > +	if (ret){  
-> 
-> Run checkpatch.pl over your patch. Should be a space before that {
-> 
-> > +		adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > +		return ret;
-> > +	}
-> >  
-> > -	mutex_unlock(&data->lock);
-> >  	return 0;
-> > -
-> > -err_set_opmode:
-> > -	adxl355_set_op_mode(data, ADXL355_MEASUREMENT);
-> > -err_unlock:
-> > -	mutex_unlock(&data->lock);
-> > -	return ret;
-> >  }
-> >  
-> >  static int adxl355_read_raw(struct iio_dev *indio_dev,  
-> 
+ drivers/iio/accel/adis16201.c                          | 2 +-
+ drivers/iio/accel/adis16209.c                          | 2 +-
+ drivers/iio/adc/ad4030.c                               | 2 +-
+ drivers/iio/adc/ad4170-4.c                             | 6 +++---
+ drivers/iio/adc/ad7380.c                               | 2 +-
+ drivers/iio/adc/ad7887.c                               | 2 +-
+ drivers/iio/adc/ad7923.c                               | 4 ++--
+ drivers/iio/adc/at91_adc.c                             | 4 ++--
+ drivers/iio/adc/max1363.c                              | 2 +-
+ drivers/iio/adc/mcp3564.c                              | 2 +-
+ drivers/iio/adc/men_z188_adc.c                         | 2 +-
+ drivers/iio/adc/npcm_adc.c                             | 2 +-
+ drivers/iio/adc/palmas_gpadc.c                         | 2 +-
+ drivers/iio/adc/rohm-bd79124.c                         | 4 ++--
+ drivers/iio/adc/spear_adc.c                            | 2 +-
+ drivers/iio/adc/stm32-adc-core.c                       | 2 +-
+ drivers/iio/adc/stm32-adc.c                            | 2 +-
+ drivers/iio/adc/sun20i-gpadc-iio.c                     | 2 +-
+ drivers/iio/adc/ti_am335x_adc.c                        | 2 +-
+ drivers/iio/adc/twl4030-madc.c                         | 2 +-
+ drivers/iio/adc/twl6030-gpadc.c                        | 2 +-
+ drivers/iio/amplifiers/ada4250.c                       | 2 +-
+ drivers/iio/cdc/ad7150.c                               | 2 +-
+ drivers/iio/cdc/ad7746.c                               | 2 +-
+ drivers/iio/chemical/bme680_core.c                     | 2 +-
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c   | 2 +-
+ drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 2 +-
+ drivers/iio/common/inv_sensors/inv_sensors_timestamp.c | 2 +-
+ drivers/iio/common/ms_sensors/ms_sensors_i2c.c         | 2 +-
+ 29 files changed, 34 insertions(+), 34 deletions(-)
 
+--
+2.53.0
