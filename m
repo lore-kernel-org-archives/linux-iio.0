@@ -1,67 +1,67 @@
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E31A3239099
-	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 18:14:09 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E69D8328251
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 18:17:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772907251; cv=none; b=QERlhets25nQUm/Ax7iEYuljt+jTN9Q4D2H3cMZvlUXd4gG680/7N3ujC3/hi42cyMPu0AYrdrSEb06Vy9purYN8gZ2O7beRgmsJ/DhINyOu7aFPRT/PK7B2QRIQ7ry/sJ25EWHzgFiXFagybhdATmqOuPd6Lv+xp+oAiaDyXnM=
+	t=1772907451; cv=none; b=VN0yL0Lz95DW+KtJU6Q8rROTiA1pk+QMI7LJzDVcBwb0/po4GTX+8LPvy4BkGXD8N1zY/UTRk9bBWJJjRdPcvGk2YaRk9chSaSrAEV8C1s0eY6U/jmP1oOgSspPrJP5U442N8QwY6Ve8o0Fw0wbGrdlSq1qMyJpU7zBZdr8wokk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772907251; c=relaxed/simple;
-	bh=2bpNFQYrY+4AxovPokblGV+YZqGYq2o3LMzrIO8FHhE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fFoS6fO+FGJwn3MNigDXo1X5+nnzGZvAfpNCE5afKrVKpe1Ers2lz+ryG/isoRscfwJqSovMcFhRJr4RvfwDkVxSWZIQdfkVIismmtAT1WN7X6kcN3agNWqnczFutk+d/QbAn4JB4LuB+D3TdA45PCwSuamn+MOFFLM1sNGBcOk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=U4Xu749u; arc=none smtp.client-ip=209.85.210.47
+	s=arc-20240116; t=1772907451; c=relaxed/simple;
+	bh=Ibbbri2MB7GhFcfgPa6chiXmHO3dxSvWIz4uDCK1P+k=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=H7rI/5hMeltw+/LhgxAgGM3d08WHAGIHySCB4aIhZhznDdoIYpJQ7yIEHlExipDgHTECO7gGe0v5vXjpyfqgTvhi6DKdeIaup+HjES+PhSl6b6kyHVz0xXg6N53ufjqzOvkB7D0ZL32rOzMmxGLSg2ltf0ft/lTObq0HXc3ziIM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2oaBkZ8+; arc=none smtp.client-ip=209.85.161.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="U4Xu749u"
-Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-7d4ba9abbecso12305764a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 10:14:09 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2oaBkZ8+"
+Received: by mail-oo1-f45.google.com with SMTP id 006d021491bc7-662f5c5507cso8184699eaf.3
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 10:17:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772907249; x=1773512049; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772907449; x=1773512249; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GRdsLK7weBsl9Qz7+q1Z86EFK/E2/7vFXBMivgf8qR4=;
-        b=U4Xu749urpHkBRZdo4xn4HQ7iY2EWPU1T6nkw/cohHD447YV/J1RAV+KIKwEzFbtu4
-         yIyxDlvxljsU6Tfm0VZVQssfTP/V2SqKX458mzIDfJr31Ul5onPkz1wf6ElyNuJJzpMU
-         S3Uv5Kh3NmTEkf/d7HyWep2TtGb25V+NTs+gXFtD4EKzpt7FJEyhRWl64odkR4zyezXw
-         mqzWJrPPHHkdOhW2E+OF3OrMC7ru91cRqoImKrfWQh1EjxoN/Kko6s0zItXTCH9xjkIF
-         70bQ6yeN6kF1ehuNITcvognB/MY41mtnD+tSNku4ARQTTx6uLg9M8qqXfKy9c1LteiyY
-         wLHQ==
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=xquXLJiyzhbEgf4b5MNljCoNXck7pIYC/7+CH0404uE=;
+        b=2oaBkZ8+sDREnc3IGpntm+BFuer0jtOXHCI+maQx9ts/a285QEckT/MGTRpGUmohSL
+         LiLjvscHReBcbqVh62LEMIkV4vGl01hHfYmDc1mUT04D7z1f2cJ1lhgzVTTQjQoLqq2N
+         7MfWt7q9l+yLvcERTpga0zszeXFYfIOLlP4K6pGj4zhLhyBWwu4qT3RN+scJ9BhdFUi4
+         /6T2Nc8BvhStwY/oHmnezL5zf61WBmY9LBfwEBPA1ktQE8zgIZX0p2NbnqPe10EMRasf
+         m9iEFYqAKSFnGUv9MFkIhSBxm7rnI5SubD5CLpegMZjmVYBgcusdETRFeDslfPsuPQA0
+         JNww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772907249; x=1773512049;
+        d=1e100.net; s=20230601; t=1772907449; x=1773512249;
         h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :references:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=GRdsLK7weBsl9Qz7+q1Z86EFK/E2/7vFXBMivgf8qR4=;
-        b=JeBRcxCVcjUZRSvB/8xXOIF7YQSOZf0HkOrsnffTlOpyz/oyOx13HSW7utoArBnA5T
-         do1fGxYX7v7+Ugfwj+4wAKrqaC6uDCLJz/ueB0xbvAHqi5AxNmzGZL5GJEEyoWjLdb2E
-         twMjwFfh0RW87c6797X4O+VBilGx+VC7TV/x8wfa0RtWyRq3we8EAo26kKMWxQxUyPZT
-         PgcQFYOBxYVyqyxm9yquZ+3u/MQKQEWRaNR6nUZB+bCn2g5jPEk9pkKnn+gaxZazhmbZ
-         0iKs1hTaJ43JBYwa7BcrO/nkoYmAT8qBldcqona38zYV2qdTxFBlgeRJGfm0wwBIKtX2
-         N6vw==
-X-Forwarded-Encrypted: i=1; AJvYcCUZ0HePfTquEQNFHrFCQMsJX4UPYgTNf9Asiew0o/fq8efv0C+sfkuyWkguVpeXwtLuv7Yi33AKW8c=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz44oPSLv5+3UVkx/HvlihTaBnR7XqyGl7/mu47qILL1LBYjV8D
-	9o4b2gOS7sSsjPme+zo5e5k+FLD2Aqx33HQ2DhM0cG/YA3G1q4nJ9UEeLL3cMiBHGfQ=
-X-Gm-Gg: ATEYQzyXBE3v8R4/8gqhgdjji3srXTs7X6DbJp0Ekzt1isIHgTGxuE1uJxIrDk+17ZA
-	BG+9iA9XuO+jexCDpP+pOwbLBFoIcIHpPd9FbHYpl8n+lpVCBZOTK1y4evg8lAfNgE2QlYSX6qg
-	woX6CaxnBmTu/tf7CPxmAKJz8uXzFCawBOlQhuzTSC2eBexOaVKtqKCrNpX5WFf6nxDlRaKw23M
-	SeoB22EvVb4Kq4ZU6WhUbpiL5gIFtQULNcOnfOOl4NRXT6NUZ/DIRnUHmib2tjaQ4HxQb/F7JdF
-	R+CWLbwg+eimyOhgjmQeee9sIHd3vekowh/87Fo3nDkZ/uuGeAKoSIIFwjpPVz4efiyNL2MK4Tr
-	Hin2UDgdWJdm3sU9KH2QoMPVHkZIht4gSvbeD35PL4m2ORaJoV9JH5e67UlwAL15LnSHx3aNZWO
-	AuhwYK9NHiU67S6HEvmuuby3zaz+tgwNiHIMual/iBKE5ICs2eg4WACptkyZ8k0C1sQhGShkTWd
-	g9kZNgMLWSL
-X-Received: by 2002:a05:6820:1ca3:b0:67b:ad2d:1226 with SMTP id 006d021491bc7-67bad2d15a5mr92348eaf.32.1772907248856;
-        Sat, 07 Mar 2026 10:14:08 -0800 (PST)
+        bh=xquXLJiyzhbEgf4b5MNljCoNXck7pIYC/7+CH0404uE=;
+        b=sya9DgvewmsQikJT9gSBiMuJJ5X7CnKJn7Op/POfWhARgQC0QUNU3dLE2s+iK90ngK
+         6CnATX1bLjRgXwHhJNXBFTlhmjH/sZdbVyO/eFBAvgBeUtVue7LlnMl+3DyJrWt65Fkc
+         EntH2Z8a6TkAbTwJzw5rRlIEBLXubhzQLT/OCpqXvrJfZs3aDm1LHT2HnUoGIXgCfYWW
+         1I2EUDi+VssDRQbFrQCWaCFUjh4YT0dlU4QbW+Rm8RaP9zPb6XhL7n0TLj9QNifmoQIi
+         qvlUMzbRig/YyFm2MuNi2bTg9QS8pj7oGXPtcr34zX/oiBNOeBmJBAs5CMXTqJ+xKyzZ
+         u/4g==
+X-Forwarded-Encrypted: i=1; AJvYcCWyCWaRVQPvJif6j8U0wklD9WgUITnwYRVUrb61alasV3KI8bLRY6yln3NNq3fpcpx2QA+01rV1z2A=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzEvr36rsTcEhz2Qte7hOHwAv7BWVWzKt0FHrPDCTXJudl1cJaC
+	2IEHmcUXAegNk8gvJxH72H1r9+nIBemJE6h22U+i5vdo+yz+hDdC93/c7+jtG3k3lOU=
+X-Gm-Gg: ATEYQzzjujmAM2teD4vqMlsI5ozGufo0v/JV5hjDGoCjDk9WY0HNO63a7RH4XAhTmgq
+	hKhh9KzWrP4Qtuz0aYnhyEaC2ycSqoeS5IWfl9pcdeqWEOgwrZ9EHgao7xnexJmpKwfEoB/YUbw
+	LN70SDBQ0Q9P8LcUbBmbqs2r284JdKDfUpi4zueXzEm++Kk1ECjT1Aqp6zIOiYMDyQNE+l2xNCN
+	hZ7CBWSD4V3ltsnZ8HTNpTMvpheYjymdPqQmsZNDhKr5xvV29AU89Q6mtfG6sFZ/DFyvb2tvi5+
+	2Z22jnZOWziE0wS86VHp7B5ttrk4+B2MMLr2teTe9xx79DkPzyc6rs/365TbCfo2tGJwO7fxbAP
+	45ffiZgCVthsHZQYGWqD/z8S65mpv4K+dHSWxdQdlLoOLvyIrHyy8qwO8ZkH3tLzLvLjes03ns+
+	Kzz/csyGCFzTNbtzphpEGVJOVAbgnIoaq+vc5A8DqbjY/AWdr/IxC52VZ44RKsCx6ztFI9UZ0PR
+	Q==
+X-Received: by 2002:a05:6820:4911:b0:67b:abfa:e154 with SMTP id 006d021491bc7-67babfae1eamr246402eaf.29.1772907448774;
+        Sat, 07 Mar 2026 10:17:28 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:cccf:5174:fa72:c520? ([2600:8803:e7e4:500:cccf:5174:fa72:c520])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67bacd85dd6sm152199eaf.11.2026.03.07.10.14.06
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67b9d4711eesm2843371eaf.8.2026.03.07.10.17.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Mar 2026 10:14:08 -0800 (PST)
-Message-ID: <ece644e9-fa6c-4be2-8159-4e8d1ef52cab@baylibre.com>
-Date: Sat, 7 Mar 2026 12:14:06 -0600
+        Sat, 07 Mar 2026 10:17:28 -0800 (PST)
+Message-ID: <19142d29-89ec-48a8-8445-5e3e441c1b8d@baylibre.com>
+Date: Sat, 7 Mar 2026 12:17:26 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,66 +69,30 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 4/4] iio: adc: ad4080: add support for AD4880
- dual-channel ADC
-To: kernel test robot <lkp@intel.com>,
- Antoniu Miclaus <antoniu.miclaus@analog.com>,
+Subject: Re: [PATCH v5 2/4] iio: backend: add devm_iio_backend_get_by_index()
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
  Lars-Peter Clausen <lars@metafoo.de>,
  Michael Hennerich <Michael.Hennerich@analog.com>,
  Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
  <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>,
  Olivier Moysan <olivier.moysan@foss.st.com>, linux-iio@vger.kernel.org,
  devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev
-References: <20260305113756.47243-5-antoniu.miclaus@analog.com>
- <202603080146.6a7IzS7i-lkp@intel.com>
+References: <20260305113756.47243-1-antoniu.miclaus@analog.com>
+ <20260305113756.47243-3-antoniu.miclaus@analog.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <202603080146.6a7IzS7i-lkp@intel.com>
+In-Reply-To: <20260305113756.47243-3-antoniu.miclaus@analog.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 3/7/26 11:11 AM, kernel test robot wrote:
-> Hi Antoniu,
+On 3/5/26 5:37 AM, Antoniu Miclaus wrote:
+> Add a new function to get an IIO backend by its index in the
+> io-backends device tree property. This is useful for multi-channel
+> devices that have multiple backends, where looking up by index is
+> more straightforward than using named backends.
 > 
-> kernel test robot noticed the following build errors:
-> 
-> [auto build test ERROR on v7.0-rc2]
-> [also build test ERROR on linus/master]
-> [cannot apply to jic23-iio/togreg next-20260306]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch#_base_tree_information]
-> 
-> url:    https://github.com/intel-lab-lkp/linux/commits/Antoniu-Miclaus/iio-backend-use-__free-fwnode_handle-for-automatic-cleanup/20260305-194647
-> base:   v7.0-rc2
-> patch link:    https://lore.kernel.org/r/20260305113756.47243-5-antoniu.miclaus%40analog.com
-> patch subject: [PATCH v5 4/4] iio: adc: ad4080: add support for AD4880 dual-channel ADC
-> config: sh-allmodconfig (https://download.01.org/0day-ci/archive/20260308/202603080146.6a7IzS7i-lkp@intel.com/config)
-> compiler: sh4-linux-gcc (GCC) 15.2.0
-> reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260308/202603080146.6a7IzS7i-lkp@intel.com/reproduce)
-> 
-> If you fix the issue in a separate patch/commit (i.e. not just a new version of
-> the same patch/commit), kindly add following tags
-> | Reported-by: kernel test robot <lkp@intel.com>
-> | Closes: https://lore.kernel.org/oe-kbuild-all/202603080146.6a7IzS7i-lkp@intel.com/
-> 
-> All errors (new ones prefixed by >>):
-> 
->    drivers/iio/adc/ad4080.c: In function 'ad4080_probe':
->>> drivers/iio/adc/ad4080.c:739:31: error: implicit declaration of function 'devm_spi_new_ancillary_device'; did you mean 'spi_new_ancillary_device'? [-Wimplicit-function-declaration]
->      739 |                 st->spi[ch] = devm_spi_new_ancillary_device(spi,
->          |                               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->          |                               spi_new_ancillary_device
->>> drivers/iio/adc/ad4080.c:739:29: error: assignment to 'struct spi_device *' from 'int' makes pointer from integer without a cast [-Wint-conversion]
->      739 |                 st->spi[ch] = devm_spi_new_ancillary_device(spi,
->          |                             ^
-> 
-> 
-The cover letter of the series should call out the dependency on the
-SPI patches that have already been picked up.
 
-There is even a git format for this that the bots understand to avoid
-messages like this.
+Reviewed-by: David Lechner <dlechner@baylibre.com>
+
