@@ -1,66 +1,68 @@
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B3F43A4F39
-	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 16:27:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6B77C32ED21
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 16:50:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772900866; cv=none; b=M87Trs7xd9hroAG82GQPCoS7WrpZR+p3N5DG4oxAPOlzWQRabV9buCDKyO0trCbwNTWlyHlv98oRRSCUGQaeldyOaYh7kWsEVQZp01oTg4ogxKMxMTOJcA4QZ9BY0NjPBJiioO3/L58na+Xy1EXnWrB00XZrV3Vub/dkFQFCmRw=
+	t=1772902221; cv=none; b=nbxs8lv+B6psLQtaci3mne6qOL4Q+gJchnRvuFFKB5miB4Xlfnip6INxVoFuhX+nff9j2AoyXQTFDFZG8UniM166NRsG8nNahjMLoIsxhSKmJ1PETGP+8Sfh21U4Epuj36LcJbxKddyvzDY15JTjbcb6YDQ/aBanHhXKbYZmWnI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772900866; c=relaxed/simple;
-	bh=2i0EJ63RpRjxcMnjm6qCcEuhBgw382Wkin5Bb311vr0=;
+	s=arc-20240116; t=1772902221; c=relaxed/simple;
+	bh=cNks/tp+AMRyN6sp5KytIVoOfz22YIR8StH2a4NjKG8=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EAoOvSYXv7kgFr0VRayJ/130SoMxXH9LFrO2pGZ5U87aFI5EOq8WcIsj7abvkR/HOvEIFYpgOgcxYdFel2SfWypStDgR12Den9nO0sjwQYwbf2uPO8xVuMpvge4a866KJFoLthBo39cqPKSENUHxw9m+PAFSFyyWQiZz58qqZqE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=RTlQtQXS; arc=none smtp.client-ip=209.85.210.54
+	 In-Reply-To:Content-Type; b=EkGlWkv7eyuj8dLvRElzcZj7DIDX/0s2Nt0StJ3aWQB95gbRkWzhxVhor6qO9qERucDbfLdDhL+L+zpGabLfQyDbruQtS4wfZl90Nj1Q2Qa+aO2EJrosVv4O4U/qWDZ80fQqs4I2Ja2LMsVC7T02IN1v5sA4VGPLTQg0xxtfWkw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=FcUn2hNM; arc=none smtp.client-ip=209.85.210.48
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="RTlQtQXS"
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7d7412cfb9eso92457a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 08:27:43 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="FcUn2hNM"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7d4be94eeacso10703384a34.2
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 08:50:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772900863; x=1773505663; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772902216; x=1773507016; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=ZBl+rXMC2e9uD/KiX6ObM2tHYn9ZVyslTh4HddNRzfU=;
-        b=RTlQtQXSkOWFk3rZ4WXKlw4RVL9tA/Bhur5EFWo4lHokUdcDNdOE4UWRVyTyAMFZup
-         ArhfnB2Vq2djXUcbp5GodOEeWxRGGgt7Jjtnkvf2Vk21VGxJnAUV52aPXNXBJ45jOzO2
-         +4XJV9cD3n8yV2hhcwuA/pTd08DTDf6NET9TKaFXq+5fngQemXKSy2TSLttQVBBdecP+
-         VWOpYofUhoIjDGJJzkmstoFcSq6DuzRXWsNFVrt4dTfC3x8wK15RvdNc/YIwyjabVCpz
-         VYXG6QDnAZ/IK/+XWeiGcJoZwf2hFgahWTNZOndEIJIISHxv3UCNgutBl+D9EQJWmvIt
-         4Hzg==
+        bh=Z/82J0F6BsrTq+dl8XoJ9fpKY1YIojB94UrmWOeex5k=;
+        b=FcUn2hNMuFw8q5cjDxl46XptIDKYrJsz8lJvkpzLyXPBSzXEjepT+vl4lxh80kZuFG
+         vIRuNgk49nV7V+w2cctfLbM0adzyHL9AqKrxY7GsQlCtjKw4GA1vLigDcfB+7K9kUjbI
+         2ibFfKxJJTp2uKuON9zgHww/JV4GzjnGd3E5UK7mpeoLVIyJ895K7kXaa+O3R0k5WObs
+         3B7u9UiZhUqwPuiBXUEYDwdvtbfFkxuvrrmbh3gZUzA0BRXxjCNB9z2xkKvIfy8zqtx1
+         48D4zCVAYhapqbIQa+GFWKVz5DaXvspgrAf0KP8PtpSYEifKaMK8k1yOs4ykYLdf5UCs
+         dgrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772900863; x=1773505663;
+        d=1e100.net; s=20230601; t=1772902216; x=1773507016;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=ZBl+rXMC2e9uD/KiX6ObM2tHYn9ZVyslTh4HddNRzfU=;
-        b=cspVbPrhqSxNiezzAT3hUPeMqaylMOJmt1JBJAWdIkuuby0taGGd++4FvF/9GdHvD1
-         u+UR4VW88Di2Q1shIW26IS0a+8bWU8QQO89JQoNnManlhSFKmSfzxJIjVKEp01VP29KW
-         7yQwkY1gvPkgxFg7T5U58HXH7dCaGZAZyW/QYXDIS5X/ehwcVc70lWG4OmfTrQ9LHgCK
-         B7iNVfAwo3biX1pLgRL7G+2+0QTN15DkH8wS11wJPVh2r+YWmPs+o4Mpnwzu5FQ2su9Q
-         HlRpQ6xA+7Fd3s5I67urp0ttfF6LDQMOUZLWwPTNtxOJGvDczCopwIeqhb6oYJtSAeHf
-         XreQ==
-X-Gm-Message-State: AOJu0Yy9t3uJPPunFmc/XrmjwNHxZ9sCmIzdiiwViZv4n+B+HuFuGLpM
-	ALeOLWa2Ob6f3U/J1vbxYo8pgPj/t322FKSu54fK6kO0Dv7eCkNK0qfmMWMZEQyViEI=
-X-Gm-Gg: ATEYQzw5lGW3MDOU8n6X7eX9vt42lQkz67wSI7DbvzVyMLYsaq2XV1l4G6AAVAbE9dY
-	JGgb9vIs6BpOWiuDGhNUfqDyFJS/LOgKn/Fd7PmZ0KPgPGclpsVwf2c52/VVura2hIhpROelzJ0
-	CwPnFsHVNFQkVPDqZf42JeEExmPnOnkW3zyHskU04nsQssj0joiU2Phpwo/fj8fpwLfir0zDVp+
-	1Cl4kNsveFVPmJ+TtySJ+pUydZYMB/BWfqQhTwY0YY6QdaXH1hUupDJ2RKtj2YVs+KLqrE0orgV
-	+Mb8ozu5YyPexCqYDSuMHenSRHiqEgxh2vg3/ejICox5Kjdp5r+OR6QKLh/5BOzQHLHiHQzCSUF
-	E/obEzWBJaO/5jl1u89sS/cOiQOBOPxm/N4zSylkz43UsSB8i335lBnQyMenaYQrxVWqQ5DbKKp
-	14FYJ6VMBY/9cYjOuuz4ol+Sm69okgaou8bVCdxnKeADGwul0bkPePvCjV/jjvjx1Y8ryTlj0UC
-	g==
-X-Received: by 2002:a05:6830:620f:b0:7cf:ced8:b5cf with SMTP id 46e09a7af769-7d72702f122mr4013656a34.26.1772900863067;
-        Sat, 07 Mar 2026 08:27:43 -0800 (PST)
+        bh=Z/82J0F6BsrTq+dl8XoJ9fpKY1YIojB94UrmWOeex5k=;
+        b=jxgLQzLssCs6z6Vzp0iq0Jo9DwUefOFRLPaWs1D7oKP/PCK778Dxh6wPyh2dmQZnI6
+         UR5q3DHxJ3phNlHK4PB/EqkiSmFrpHiBvwOfTBDcfyQS6XzDr6CT+gv7IoEy/y/yi/J7
+         LhbRruMvFfjlP50XMTuyGu/dxiwY9GJwxNh3oSRJihX/ik6tVvaL735CJGd7AazNy4Ir
+         xIZthX2YnIhHWTJKp2EtFqGuv/MALopVckJjOoX1lr2+dfBW7T2NugmSXNGseVNIM9di
+         2zYkLW5sEhi0HrpeoQ8sIQYwgoUDysTTgFbCO9eYmUyLPlTU7aPEad5gEiajEBl8GT/f
+         BKmQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXJwzC67HnXaAdfgpO66o0zBuBj/KzykbRfvRIWylDZiBbTPZ+MZs95FgxtFpPsQcUEKF/RmdOxgkM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyTCXdrJWHKxJ1nHjLledhbVwi/zZ4Q+DVf8zFihNNxpTD0b2dJ
+	flfjUR5HdZXeLhSkPXmCBviN6tsIHIg+3El+ih3mHtdDMzW97cZtifR3YLKQ97P0yLb72I/dd3G
+	a2ILU
+X-Gm-Gg: ATEYQzz2vABzh0sAbTsParr/VFSCx/LEQsWwczF1rzEdlKZiywN6pu4XJIjDE8tHTx0
+	b4AEAlc3HaI9E/XjT/AtDddUiE3oTBKt7LRHvD6xNNYWCS4MGJdAVHdFEj2BzkEprt5WmURMKLn
+	rvqPGLZELLI+dkFkHZ7vGWKB+RL+AfWCtbfKWDONDIPQXrZnM6JMGDD2zPX/zlWzQuFxjXvHnlz
+	EcG0KOoWGkv54eu71T54dS7oe5ud53DUAy926Eib2HRFeptFKUzz0/Pzl1K1pASV5qqBhEybyhU
+	po5U5ESGOFMNRrEDwggRfgp4/UhsH7xOvYP8Od20ZSW8V026eDI0+Qo7+1pG1+sz+6J3rQWgVQM
+	kQ34GR0HFxUUO91/1Sm9VN9UZ7CC9nQBhyjmGHtydS77J/UXieLJuHytOYQlmXzk4tfvfOla4sI
+	OfOziQWXXb7P0efdemhXvEEaPZa50Nqd0cH/5tscLm9iFBbHCqTng+3kaXvyKbPK9Fsd74IhIsp
+	zkYyopY37aF
+X-Received: by 2002:a05:6830:410f:b0:7cf:dbb4:320a with SMTP id 46e09a7af769-7d726fe1a6bmr3617425a34.27.1772902216297;
+        Sat, 07 Mar 2026 08:50:16 -0800 (PST)
 Received: from ?IPV6:2600:8803:e7e4:500:cccf:5174:fa72:c520? ([2600:8803:e7e4:500:cccf:5174:fa72:c520])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d728c5b75csm3319349a34.2.2026.03.07.08.27.41
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d728c5b75csm3349388a34.2.2026.03.07.08.50.15
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 07 Mar 2026 08:27:42 -0800 (PST)
-Message-ID: <18438082-8efc-475f-acde-be3cb313f2ab@baylibre.com>
-Date: Sat, 7 Mar 2026 10:27:41 -0600
+        Sat, 07 Mar 2026 08:50:15 -0800 (PST)
+Message-ID: <7cc67826-3a8a-4190-9447-62b7d68e4445@baylibre.com>
+Date: Sat, 7 Mar 2026 10:50:14 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,42 +70,177 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 3/3] iio: adc: ad4130: add new supported parts
-To: Andy Shevchenko <andriy.shevchenko@intel.com>,
- Jonathan Santos <Jonathan.Santos@analog.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- devicetree@vger.kernel.org, cosmin.tanislav@analog.com, lars@metafoo.de,
- Michael.Hennerich@analog.com, jic23@kernel.org, nuno.sa@analog.com,
- andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org
-References: <cover.1772078999.git.Jonathan.Santos@analog.com>
- <1d5baeec27724a1c8ebf909c29c3599d583948a1.1772078999.git.Jonathan.Santos@analog.com>
- <aaWH1wL8odeCmE6w@ashevche-desk.local>
+Subject: Re: [PATCH RFC 0/8] AD9910 Direct Digital Synthesizer
+To: Jonathan Cameron <jic23@kernel.org>,
+ Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: =?UTF-8?Q?Nuno_S=C3=A1?= <noname.nuno@gmail.com>,
+ rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
+References: <20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com>
+ <a72b2d62-3b91-4789-a1b1-ff1429e80ed5@baylibre.com>
+ <2k4ouimpaxjuhnk67qmrues2375zj43ehru7h5as6w6kf7yak3@2ndr72co5trh>
+ <bdc973e5-df74-48f2-8884-439b03565940@baylibre.com>
+ <9392fea00a9c3b23d1bc9468faa1b3cc20904398.camel@gmail.com>
+ <20260301133806.5e706756@jic23-huawei>
+ <pohirub7gjqu7xtq5qakkmr3wlek2rgj6kdgltjvir6g4jwgbr@hmjflsplni4o>
+ <20260307140953.46db3c19@jic23-huawei>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <aaWH1wL8odeCmE6w@ashevche-desk.local>
+In-Reply-To: <20260307140953.46db3c19@jic23-huawei>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On 3/2/26 6:51 AM, Andy Shevchenko wrote:
-> On Sat, Feb 28, 2026 at 09:39:04AM -0300, Jonathan Santos wrote:
->> Add support for AD4129-4/8, AD4130-4, and AD4131-4/8 variants.
+On 3/7/26 8:09 AM, Jonathan Cameron wrote:
+> On Mon, 2 Mar 2026 10:22:47 +0000
+> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+> 
+>> On 26/03/01 01:38PM, Jonathan Cameron wrote:
+>>> On Mon, 23 Feb 2026 10:02:00 +0000
+>>> Nuno Sá <noname.nuno@gmail.com> wrote:
+>>>   
+>>>> On Sun, 2026-02-22 at 14:32 -0600, David Lechner wrote:  
+>>>>> On 2/22/26 4:01 AM, Rodrigo Alencar wrote:    
+>>>>>> On 26/02/21 02:16PM, David Lechner wrote:    
+>>>>>>> On 2/20/26 10:46 AM, Rodrigo Alencar via B4 Relay wrote:    
+>>>>>>>> This patch series adds support for the Analog Devices AD9910 DDS.
+>>>>>>>> This is an RFC so that we can agree/discuss on the design that follows:
+>>>>>>>>     
+>>>>>
+>>>>> ...
+>>>>>     
+>>>>>>>> represents a distinct signal path into the DDS accumulator, so the driver
+>>>>>>>> models them as separate IIO output channels (all IIO_ALTVOLTAGE type).    
+>>>>>>>
+>>>>>>> Generally IIO channels represent the physical input/output, not the
+>>>>>>> internal channels.    
+>>>>>>
+>>>>>> That is part of the reason for this RFC. Dividing those top-level modes
+>>>>>> into channels allows for better organization, as they can operate together,
+>>>>>> i.e., phase or scale can be provided by single-tone profile, while
+>>>>>> frequency is controlled by the digital ramp generator (see Mode Priority
+>>>>>> section in the datasheet). Also, it allows to explore the most of standard
+>>>>>> ABIs like, scale, frequency, phase, sampling_frequency and enable.
+>>>>>> Putting everything into a single channel would make things a lot messy
+>>>>>> to interface with.
+>>>>>>     
+>>>>>>> Ideally we would just have the one channel here with a mode selection
+>>>>>>> attribute. Documentation can tell us which modes use which attributes.
+>>>>>>>     
+>>>>>>>> This per-channel separation allows userspace to configure each mode
+>>>>>>>> independently through its own set of sysfs attributes, and to
+>>>>>>>> enable/disable modes individually via IIO_CHAN_INFO_ENABLE, relying on
+>>>>>>>> the hardware's own mode selection architecture.
+>>>>>>>>     
+>>>>>
+>>>>> Looking at Table 5 in the datasheet really helped me understand this better.
+>>>>> I think this series could benefit from a documentation patch that explains
+>>>>> more about how the driver works with some diagrams.
+>>>>>
+>>>>> So really what we have here are a bunch of digital data generators rather
+>>>>> than a bunch of altvotlage output channels. And the same data channels can be
+>>>>> mixed and match as the source for up to 3 different components of the output
+>>>>> (frequency, phase, amplitude) depending on the priority rules defined in
+>>>>> Table 5.    
+>>>>
+>>>> More bellow... But note that all of the (or most of it) generators are going to
+>>>> be feed into a DAC. Your output is altvoltage but maybe we can treat the
+>>>> internals as voltage. Not sure.
+>>>>    
+>>>>>
+>>>>> Digital data sources are really more like a buffer in IIO terms than a
+>>>>> channel. And before we added the IIO backend stuff, there wasn't really
+>>>>> any other digital data source/sink that I am aware of other than buffers
+>>>>> (but there are certainly a lot of odd corners of IIO that I haven't explored
+>>>>> yet, so maybe I missed some).
+>>>>>
+>>>>> In a recent discussion, the idea of possibly needing a way to provide
+>>>>> some userspace interface to be able to tweak knobs of an IIO backend
+>>>>> was also brought up.
+>>>>>
+>>>>> Putting those ideas together, I'm wondering if we need some new channel
+>>>>> type or even a whole new interface (e.g. a new sysfs directory like buffers
+>>>>> and events) for managing these digital data sources/sinks that are not an
+>>>>> IIO buffer.
+>>>>>     
+>>>>
+>>>> But what would be that channel? In the end of the day, we typically have voltage or
+>>>> current DACs and a DDS primary function is indeed to generate alternating waveforms
+>>>> that you then typically feed into a DAC (and in some cases from the DAC into a
+>>>> power amplifier). So the DDS is just part of the data/signal path. Anyways, not sure
+>>>> on the new type and I think we already have the "blocks" in IIO for dealing with this:
+>>>>
+>>>> . frequency
+>>>> . phase
+>>>> . amplitude (raw + scale + offset)
+>>>>
+>>>> But you're right that maybe it's time to think in a better way to fit them together. 
+>>>> Maybe a new type (as buffers or events) can make sense where the above are treated as, example, scan
+>>>> elements. Maybe it's overcomplicating, not sure. It surely needs  discussion and thinking :).
+>>>>
+>>>> And spoiler alert, as you might have guessed already, the parallel port stuff is to be
+>>>> used with DMA buffers (and IIO backends). At least, that was the plan IIRC. But Rodrigo
+>>>> can confirm it.
+>>>>   
+>>>>> I think we've seen enough of these already to know that things like a
+>>>>> "tone generator" and a "ramp generator" are going to be common and could
+>>>>> share some standard attributes. 
+>>>>>     
+>>>>
+>>>> I tend to agree. For example, there already some DACs (with dithering) that make use of a similar
+>>>> interface (but with a custom prefix). Though the end goal is different, the interface is not that
+>>>> far off:
+>>>>
+>>>>
+>>>> https://elixir.bootlin.com/linux/v6.19.3/source/Documentation/ABI/testing/sysfs-bus-iio-dac-ltc2688
+>>>>
+>>>> Anyways, I knew this one would be an interesting one for upstream :)  
+>>>
+>>> For history buffs, we had a bunch of DDS chips in staging at one point and never
+>>> manage to figure out the questions being raised here :(  They are complex
+>>> beasts.  Clarity of ABI proposal and documentation is going to be key to driving
+>>> this series forwards. In a sense the code is the easy part.  
 >>
+>> Does that mean that once good documentation is provided, the presented design can
+>> be accepted? Even though data generators/sources might not be interpreted as
+>> altvoltage channels?
+> 
+> I'm not sure yet :(  It's a pretty complex design and we haven't really come to a conclusion
+> on how to handle this channel 'mixing' case.
+> 
+> If we did go this way, we'd need to figure out a way to describe the mixing part.
+> So either we describe it as one channel (which is going to be really complex)
+> or we describe it as multiple channels but add extra ABI to make it clear they
+> are mixed into a single 'physical' channel.
+> 
+> Jonathan
+> 
+>>
+> 
 
-...
+Some ideas have crossed my mind, like adding new option to the in_/out_
+prefix for "internal" channels. But I it would take a long time to teach
+existing generic userspace libraries/tools about this.
 
-> 
->> +	/* Triggered buffer data structure */
->> +	struct {
->> +		u32 channels[AD4130_MAX_CHANNELS];
->> +		s64 timestamp;
-> 
-> Use aligned_s64 type...
-> 
->> +	} scan __aligned(8);
-> 
-> ...instead of this.
-> 
+What has popped into my head just now is that perhaps we could do like
+Rodrigo is proposing here reusing existing channels and standard attributes
+as much as possible and add a new "subcomponent_of" attribute to provide
+the link, similar to "current_trigger" for triggers.
 
-This is used with SPI, so it actually needs to be:
+This way, it would still work with existing userspace tools (even if it
+looks a bit confusing). And userspace tools could eventually be taught
+to present the channels as a tree-like structure with the main channel
+and subcomponents nested under it.
 
-	IIO_DECLARE_DMA_BUFFER_WITH_TS(u32, channels, AD4130_MAX_CHANNELS);
+We would want to spell out up front what all of the anticipated ways of
+using it are. For example, I suspect eventually someone will want this
+attribute to be writeable to assign a specific limited resource to a
+specific channel. An I expect that we would eventually see something were
+a single subcomponent is shared between multiple physical channels. In
+this case, we would want the value of the "subcomponent_of" attribute to
+be able to be a list.
+
