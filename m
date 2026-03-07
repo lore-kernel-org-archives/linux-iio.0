@@ -1,63 +1,63 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
+Received: from mail-pg1-f173.google.com (mail-pg1-f173.google.com [209.85.215.173])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 940DD366073
-	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 10:18:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BF2A3369984
+	for <linux-iio@vger.kernel.org>; Sat,  7 Mar 2026 10:18:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.173
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772878702; cv=none; b=IyLJwI53C0xgDB94HsZXIHTPeY3kwGJfeC26FTuYp2kgu8ULDBaMk7kUkS4J4S/y9px9SkRBLqUIedBHE2+UxNLWrqk7TsOJgIcDnmYGS5G16g5LDVwcQKHTWk4ycEiF8MzW3oFyhkPYepd84prWjv4c9WkAcsXA9Ze+9w0ii4I=
+	t=1772878709; cv=none; b=HueWqOFa8Pb/vGMFB4mxGUyzdRAoh4cy/CxHpIEFQA3OtHYyuoZdKcwfMZmCv3d/tso9+Zd0oc0Sh3Cofh0aomtsqx7UGiXfwNZaukWfInC0xDhy/uWT/fsBaPZnq47kwaYhEbCTipV1ipJQXINqU6GzwCpBEcsZbEMawDCxu2o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772878702; c=relaxed/simple;
-	bh=EDEYITHLk+KBhib0vXKBizDuXqqMsr4ntCcgZd2rk1k=;
+	s=arc-20240116; t=1772878709; c=relaxed/simple;
+	bh=HOXEPuFDHq4cAEsHy1JJD6E7KdWxcKY/1o1AGOXotRw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=D+IHOfx7pUzzt619tP/Bc6aLHwEReyguh5BpbphLGV2ndWJ7CnD6f4IBK2Izd7HO8/r0lyNOEUN6DTXdNow/2JNbvByYM/sYuRcWMKqRTyES5R/VI65UKZ4mERwBNNqjh2dptgq+y3E51H1c66LoXpTlmXxcgpie/aBOPo3rbwk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=k3WszjzM; arc=none smtp.client-ip=209.85.214.173
+	 MIME-Version; b=J1z2q6Cu4oNFeE4HipAszOT/dCdazYTApkEeVKIdJXEY6rSClpxi9eENVBT0FOkFIwnyYSUAqCPPaNzJbbkD+2QZlhFyDYHCpHIfbL4UiB2oFQSHWfzA9lACeiioYzIPHScty92BG+Y00v/KjNbGfw34mpeJKLx+1mGzRojXODk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=L0PqeOpo; arc=none smtp.client-ip=209.85.215.173
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="k3WszjzM"
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2ae88e16485so5610605ad.0
-        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 02:18:20 -0800 (PST)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L0PqeOpo"
+Received: by mail-pg1-f173.google.com with SMTP id 41be03b00d2f7-c739d32b72cso951169a12.2
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 02:18:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772878700; x=1773483500; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1772878706; x=1773483506; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HxG+FZn+bR6NrZAQzrMOLNblwabArWh7Lsf3IX2YTv0=;
-        b=k3WszjzMaZ1DV9O2lNwdjmgGDBh0VNg23WoUQoiZtGbVH2l+CgRjSmaaVPwHFKeydw
-         wt90KDIIAWov5hf2az9h61cL+jFyIp01EpwqDkOTpP2XXkc9R1dczX2+cABQkS7meByW
-         ihOiIM7AjxYU5ll6fDER+47YNjNk8bPP2wuoWAwFJ7j/ek0l3B2w84IjtYlCDUaiBH4B
-         /Zlgx4JRYCS4IaGuJiymri1WmaDpjr/IhDb+i8q8uSXOdiE6AHRB34frmRH7NSlxXcMd
-         4Xa3PbDu9dGTHIkwAl7h0ypF5sFiYtd2YET34yKpvUUYX4qbz5VZ4U6Qnylff7lbaqYx
-         E70Q==
+        bh=XqeU11PM/n3egwzjA5sFzLDovMDrITrNKIRs91FkAow=;
+        b=L0PqeOpobkjJnVb1wU8pxXglrnKfZsUgABrT803n4OCP+QErLuT7qbMWRlYId9w6JW
+         F3Wc/x39DoA80aRDLera0NJMQD0jmd+K3l2PUDW2MalRD0k+I9hjl1CbcDzyC3aK5y6R
+         Qx803v1GjQkbGnJvQwpROB06zoKCwZlm6+IkLLQ83qUe5XmoiaST1YHOVxy4OX5wIcxO
+         4ycWPm02VX2LTlyxW6DQpeJrfr7xCcMLxqVL00Oo/mhdPdUOQDl7MlscQRfsvhHqpgQq
+         xJJz2O/BO20xiL7vxN7zeKAMHsUt2bbibwtlVpXqKht14LX04PeH3UfmlWarxxGOPIGk
+         wMGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772878700; x=1773483500;
+        d=1e100.net; s=20230601; t=1772878706; x=1773483506;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=HxG+FZn+bR6NrZAQzrMOLNblwabArWh7Lsf3IX2YTv0=;
-        b=v2+U4w/GJwMXYXgLrSyQER0DM/5u77rKjZqAkHqweUlAQYVODy1t82C+Cy3Ilur8Ba
-         +IGztHnM16zc9uodHQkW9Mt2AYbUjmt8BM7QKiWyz/bPx0zG1sykNvkJUvR9sxeJU3KF
-         A6TDT4TisutIM314rfddfThUV+i//mCC/5tMy/sCy796R4zRuJGwoFsPWeQoDmkZhct+
-         U6REZcJhBYCsBi4hv0fNuseyIiZiFflrjyeE5BiYPonRPRbE7Yo7Dm7DK9WHaP7k1m5c
-         EOLWo6FOjxK4H4QI/++Ug6VCxT243iysNxXF1TvJD1XpvWgcR4mYSZelKJrHhXvbeMwS
-         UEiA==
-X-Gm-Message-State: AOJu0YzhONSD5QI58EKhdgtwoC2Z84rRXBmoJH//meKsgx3uMB0aoe6X
-	NnVb7eJXNk6Ot5ftHHqbW/IUS+sGuHVI288Swuz2iWU++MxexPRYCP1m
-X-Gm-Gg: ATEYQzzI8dmv97smga8ArkcnoDS84tXjd6JgxZYmW1SX4oAxBUhaM8pNTPfjDiv79ZZ
-	8ik/sE4giyyEKS3IIN8Rm8+0z3gaKfNOfkx8lRQWpBKQ1abi9rzLlz4HRjXFXiZ3PfKgEYFINWj
-	hdffvkJaDkXgkQ/+Qte3V2WhIzr4hEteme2Oz3T8hugUSYx+mqiEA54Zd6sGPJrSdfzpAc0wHKF
-	N9DTgj4oV7mbWeXKkFijeHeorqNFTY2dSF9DFE7UT8U5Gc8rL8BNsDY/SezWs1Muo3GXwbTDQvW
-	0HRc6CJOBINCLPMWvLOxq03skjha6M1gSg6QsNToa1RcODNYM/8o2YFRH2Ltcsn0Ye7d1bJI0OP
-	cqMV//uKbkuGGEYLQeiAgLvTzSAXCm9U9o3DUCToCCqkff+PKrKe6yDV6bjOq5z5OSzpwMCwM7u
-	3UQK+XeE4cdusw9HsP4rFJWUkqXZUOiiNj+Cu7Wz7YpjPa/jJI9qaZBAnPs6foG88T6lZpUtBXG
-	mTQiHS0aG4DAe1RNILh0oHh
-X-Received: by 2002:a17:902:ce83:b0:2ae:45bd:9b39 with SMTP id d9443c01a7336-2ae82416b18mr51351775ad.12.1772878699749;
-        Sat, 07 Mar 2026 02:18:19 -0800 (PST)
+        bh=XqeU11PM/n3egwzjA5sFzLDovMDrITrNKIRs91FkAow=;
+        b=F7x+S4fWAyGWrPKhxxVYX1wB/bDSIkcXIMIJOVfGiiYYyuQuK/eAGiBHEWXAWZcUJI
+         wMCbS+5VKH5DAU115O5gIMgRezWHOgd1Nt1fxz0JD4pj9vUKT1Yhe0FmPf0GRe15ORjs
+         L6O8TnG148Ow3glw0S3VRivAPA5WsEFga2gN2+tnsh3wUttZOAECbIcCRj7JFfjR2opv
+         lDOA4CXXw0rN/TL9sZwHR9FU6M//hiM2DAskY0pjQ82+cLBmV/ex52K+gyprAm7Rfmrf
+         WjwzEIof4j75FcogJOcR0r5Becw3DMRUB7b894Og0ruf0zYBN5IbuOVaczVsF9NerEjc
+         nJCQ==
+X-Gm-Message-State: AOJu0YwyMgV9Jgj7Cuo5QqlctWxK6GWdIn+JzlzNOAg0RPr1v2NB/Ym/
+	USGKRSaJBjWn3/3Bv5Qy1Sd4BbL3492eHe84xxP6gOUUh48fvDUQvx9z
+X-Gm-Gg: ATEYQzwfquZ6ZlhAAOK3MGlvkRJ95yHb3Ud4Cw+RqlAohmQwWzlMAJfesoSOtoXqXss
+	HVj49HZrm6+6XFvT13r9FaHX6s5I6xng4HqeerYfZBIvGyIUbcL8IDXkytoy/itncXhRZx8YJxX
+	b1MGPFWI/QDtv15yxmbTcfPEkwE/bicDGNuO8tA+pnisaRKb0DIRdI0UDtsgYNWpIxFLeuypxaV
+	PGHO8hShJMdEX63hiInw2ka2uyqXMFIVrQXyAM9I86Pq/TJj0lpZffPt9U27cfq30pQK2Vpram7
+	I0iSXSSL+Pe5eYwqQ8PLnjmMUhl3OLL6zZ9mWjOwD7QXBe8jpklwM+x7GapOwrBOPToBIfaEEzV
+	pHwqmiz7aG3xpbOMz6t2vAaLdERugwX8YDMlG0ASulh0dZhvS/1y/OSVy2MqG8jEHpYK3nwnivu
+	JT+fQGIxP86I94t88JRXVgOG+S25x2ejT9MiUsj4/0Fu7nittSQxasCyaBG5mvUFoixzJpezDc6
+	FsdZCH7dMLJHVnwAcdIMDNh
+X-Received: by 2002:a17:902:ecc5:b0:2ae:6ced:e1a8 with SMTP id d9443c01a7336-2ae82366e5fmr51558275ad.6.1772878706045;
+        Sat, 07 Mar 2026 02:18:26 -0800 (PST)
 Received: from fedora ([103.215.156.48])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae83f7864dsm48381265ad.49.2026.03.07.02.18.15
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae83f7864dsm48381265ad.49.2026.03.07.02.18.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Mar 2026 02:18:19 -0800 (PST)
+        Sat, 07 Mar 2026 02:18:25 -0800 (PST)
 From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
 To: lucas.p.stankus@gmail.com,
 	lars@metafoo.de,
@@ -70,12 +70,13 @@ To: lucas.p.stankus@gmail.com,
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Subject: [PATCH v3 0/3] iio: accel: convert to guard(mutex)
-Date: Sat,  7 Mar 2026 15:47:55 +0530
-Message-ID: <20260307101758.50091-1-rajveer.chaudhari.linux@gmail.com>
+Subject: [PATCH v3 1/3] iio: accel: adxl313: convert to guard(mutex)
+Date: Sat,  7 Mar 2026 15:47:56 +0530
+Message-ID: <20260307101758.50091-2-rajveer.chaudhari.linux@gmail.com>
 X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260306211152.65109-1-rajveer.chaudhari.linux@gmail.com>
+In-Reply-To: <20260307101758.50091-1-rajveer.chaudhari.linux@gmail.com>
 References: <20260306211152.65109-1-rajveer.chaudhari.linux@gmail.com>
+ <20260307101758.50091-1-rajveer.chaudhari.linux@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -84,26 +85,56 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-This series converts manual mutex_lock/mutex_unlock pairs to
-guard(mutex) in three ADXL accelerometer drivers. Each conversion
-also simplifies error handling by removing goto labels and
-returning directly where possible.
+Replace manual mutex_lock/mutex_unlock pair with guard(mutex) in
+adxl313_read_axis(). This ensures the mutex is released on all
+return paths and allows returning directly without a goto label.
 
-v3: Remove remaining goto labels completely as requested by David Lechner.
-    Return directly from functions where ret variable is not needed.
-v2: Split into one patch per driver as requested by David Lechner.
-    Ensured each conversion also simplifies code flow.
+v3: Return directly from regmap_bulk_read error path.
+v2: Split into separate patch per driver.
 
-Rajveer Chaudhari (3):
-  iio: accel: adxl313: convert to guard(mutex)
-  iio: accel: adxl355: convert to guard(mutex)
-  iio: accel: adxl372: convert to guard(mutex)
+Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+---
+ drivers/iio/accel/adxl313_core.c | 15 +++++----------
+ 1 file changed, 5 insertions(+), 10 deletions(-)
 
- drivers/iio/accel/adxl313_core.c | 15 ++----
- drivers/iio/accel/adxl355_core.c | 81 ++++++++++++++------------------
- drivers/iio/accel/adxl372.c      | 16 +++----
- 3 files changed, 45 insertions(+), 67 deletions(-)
-
+diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
+index 9f5d4d2cb325..40f62c6f89b4 100644
+--- a/drivers/iio/accel/adxl313_core.c
++++ b/drivers/iio/accel/adxl313_core.c
+@@ -8,6 +8,7 @@
+  */
+ 
+ #include <linux/bitfield.h>
++#include <linux/cleanup.h>
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+ #include <linux/overflow.h>
+@@ -354,21 +355,15 @@ static int adxl313_set_odr(struct adxl313_data *data,
+ static int adxl313_read_axis(struct adxl313_data *data,
+ 			     struct iio_chan_spec const *chan)
+ {
+-	int ret;
+-
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
+ 
+-	ret = regmap_bulk_read(data->regmap,
++	int ret = regmap_bulk_read(data->regmap,
+ 			       ADXL313_REG_DATA_AXIS(chan->address),
+ 			       &data->transf_buf, sizeof(data->transf_buf));
+ 	if (ret)
+-		goto unlock_ret;
+-
+-	ret = le16_to_cpu(data->transf_buf);
++		return ret;
+ 
+-unlock_ret:
+-	mutex_unlock(&data->lock);
+-	return ret;
++	return le16_to_cpu(data->transf_buf);
+ }
+ 
+ static int adxl313_read_freq_avail(struct iio_dev *indio_dev,
 -- 
 2.53.0
 
