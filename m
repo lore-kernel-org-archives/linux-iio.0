@@ -1,62 +1,65 @@
 Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D72C287511;
-	Sun,  8 Mar 2026 20:27:31 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 100892459DC;
+	Sun,  8 Mar 2026 20:32:18 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773001652; cv=none; b=ko8pH2WrXWSp/fsAKnbaIkMeh0lGdk7wciKOagzUZxrcx20ETn4ueVbsRlF48Aj+saVkdrh78xfIlFupNNcopYb3lYmZmiS8xb85+0QG65I7F3ztmRlfInIPPBGOeqOYMFTe0ihsHUmsm25aGICRWqb/pByDuT9SMpft6smRQ+Y=
+	t=1773001940; cv=none; b=TgWKCV5FT87bjRfzSuUwJ5eVk3bDiWjm5n2L9xtQ2EvJZarO/BoYg8crKYncQ/Fh1uQu4XYhR8hY2HtSQ5OD/zAr+I5v3nZmqtaETT8p9pj2mo93ZpqINezYDjq9XUW8/pHMWwQvN6sWrpS+3PEolNbvEUpKbKdrXpbxXjLffbE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773001652; c=relaxed/simple;
-	bh=842Mv371r7N900wDtTAmP1fZPu7pkrIcySHK2nLAepw=;
+	s=arc-20240116; t=1773001940; c=relaxed/simple;
+	bh=a2+EwsR765fWM6MpBoKj/YKwgh8Gg9Vmd0gRgPLB1Fc=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=U+mHpt6Wdz/xRA91x/IsyXcKIAywI0NtfShhPUG9Rnrm5VPyXbU21A1U6A9n0ti/2II+PJBkxUhYCjplFFbJlrYKoGz99aKXUVJ0gi0jWodMhD8ReD3LZtYfm6mGHgYIH2L1Ta+GeN5cLx/4KJ3sihIXvf19CAQKjNyPEgFh5og=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XbJdqg9b; arc=none smtp.client-ip=198.175.65.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=rkvG0Z7/B2sfOqUF+PfOUhL7kDj2VAPPz4glqlaNlHqyjjp9iiI3No5Bl8o0QCBrfuM0JvDMhi3W7DVI/rrkg3iLeADLWsy915AFfk8TnphcGE5Wi2rgtQ6eyawkBUMYGOzdc4z5ixgLWb6rKkM+2YzpyVB8Y7JeiAc/e07LFgI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OYAKE2i0; arc=none smtp.client-ip=198.175.65.11
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XbJdqg9b"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OYAKE2i0"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773001652; x=1804537652;
+  t=1773001940; x=1804537940;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=842Mv371r7N900wDtTAmP1fZPu7pkrIcySHK2nLAepw=;
-  b=XbJdqg9bbmfgjwLzvCOH+ZtDnyaWLd3Wc3TrClCQ675X0WApM+0ZZ0i6
-   fwgkbNRimsXFHta3cxFN33K0S9M+3eUUy23IoOK2a+lfIwnE0LBEhQk9w
-   3J1XESg1/hnkWk7tS0Of5Etkhl4PhoIP9h8fRuhyff/ZiP2BzPEsZxGtM
-   w+fyXyIc2R7p0eH22vOSqm74C/Gr4FyqWFvOivo4eM/4+T51fStCJ26sP
-   if82A/FiLMEO+LZ8N1u6NWenQdmWWWe4wF2VzXvp9Zfta1Z5VWG/4bPMB
-   XTzGGzopdtPpic0FNnUF9ZbIp3zsH73O0nwx+b1xSLDO4xoMcUwwINwX7
-   w==;
-X-CSE-ConnectionGUID: OPlx9l05TlG3x1zwGoqRyQ==
-X-CSE-MsgGUID: axtvYfKWTaOnTH/OejsQgg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="84359056"
+  bh=a2+EwsR765fWM6MpBoKj/YKwgh8Gg9Vmd0gRgPLB1Fc=;
+  b=OYAKE2i0gTukt9XMiILgM8Yuu40Vc+6dIX5OXgdcYkO3jdf8LVgZIhCW
+   l/+nlN6SDS6EzwVEE1RD9p95S6DWYwl4sfqd4J79Aw9+TtGm3CFxqMQbq
+   qbVaTv42pkkP0tL29BAdR8cACPVreCUYn6nksl4+ER8JjVX0RnrKoC6KB
+   IfMK8SaKQ5nteZmDNQz1sudJfDoGdGLrAFMA1lCLBaa2pQuAOd7SB9Kj5
+   B2jGV05NHeGM3YE2pzt5T94Yh3SfWWJNyqX1tlwHrpR3Z2r6fRaRBYj7p
+   COZyM6yZNleYykr79kmWWCqRnjko7HP7zAMbvt8tTlGyTZ5Q0Iz0KeWOb
+   g==;
+X-CSE-ConnectionGUID: IEq5/dtiSBiTMaxQjWkI1Q==
+X-CSE-MsgGUID: ofoNNJBjSXChMR+8rhuWRw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="84359204"
 X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="84359056"
+   d="scan'208";a="84359204"
 Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 13:27:31 -0700
-X-CSE-ConnectionGUID: xyvEwSSOR52Nm1KTe5A9qQ==
-X-CSE-MsgGUID: 3FRv/el5Sh6O64alzrbRZw==
+  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 13:32:19 -0700
+X-CSE-ConnectionGUID: xaiR69b/Toe1ckBGEscZHA==
+X-CSE-MsgGUID: hbh8bmjuSDeQdBG8KKBYlA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="219527684"
+   d="scan'208";a="219528367"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.83])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 13:27:29 -0700
-Date: Sun, 8 Mar 2026 22:27:26 +0200
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 13:32:15 -0700
+Date: Sun, 8 Mar 2026 22:32:13 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	Francesco Lavra <flavra@baylibre.com>,
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v7 5/6] iio: ABI: Add partial quaternion modifier
-Message-ID: <aa3brnQzYT2fKeZo@ashevche-desk.local>
-References: <20260304080519.2844101-1-flavra@baylibre.com>
- <20260304080706.2844472-1-flavra@baylibre.com>
- <77e10517-2b6e-417b-95d3-185d3a067ba5@baylibre.com>
- <20260307130312.2efd100e@jic23-huawei>
+	Andy Shevchenko <andy@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v3 5/6] iio: adc: ti-ads7950: switch to using
+ devm_regulator_get_enable_read_voltage()
+Message-ID: <aa3czXB9tzLQgwha@ashevche-desk.local>
+References: <20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com>
+ <20260305-ti-ads7950-facelift-v3-5-a23fdd1a079e@gmail.com>
+ <20260307114947.0b946dfb@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -65,26 +68,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260307130312.2efd100e@jic23-huawei>
+In-Reply-To: <20260307114947.0b946dfb@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Mar 07, 2026 at 01:03:12PM +0000, Jonathan Cameron wrote:
-> On Wed, 4 Mar 2026 16:35:39 -0600
-> David Lechner <dlechner@baylibre.com> wrote:
-> > On 3/4/26 2:07 AM, Francesco Lavra wrote:
+On Sat, Mar 07, 2026 at 11:49:47AM +0000, Jonathan Cameron wrote:
+> On Thu, 05 Mar 2026 11:21:56 -0800
+> Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
 
 ...
 
-> Whilst I can see the argument, I'm not keen on more punctuation in the filenames.
-> May well trip up someone's parser.  For now squashing the spaces is probably
-> the best option.
-> 
-> This made me spot a major issue though. We can only add to end of these
-> enums, not the middle!
+> I think this broke the ACPI case (where regulator isn't available).
 
-So, if not yet, we need to have a patch that adds a big fat note/warning about
-this on top of the enum(s).
+Right, and I even have an HW to test (if required).
+
+...
+
+> > +	ret = devm_regulator_get_enable_read_voltage(&spi->dev, "vref");
+> > +	if (ret < 0)
+> 
+> I think you need to check for -ENODEV and if you see than then
+> see if the acpi route below applies.  Otherwise on ACPI this will fail
+> and we'll fail the probe.
+
+Yep, just make it default without even checking the fwnode type.
+No need to bring the whole acpi.h into the mix.
 
 -- 
 With Best Regards,
