@@ -1,216 +1,139 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0E91135893;
-	Sun,  8 Mar 2026 00:20:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A25121A83F9
+	for <linux-iio@vger.kernel.org>; Sun,  8 Mar 2026 00:35:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772929234; cv=none; b=gEHyV2hFTyQwrUTZkePLcKNrWyWrxqw6Zz+70NN/VDGqG7nxxLGlVKNYu7n6KYxVgDpQAC/f/l/ZtvxuNn1is4jdFEaEspclROafbrdy4fZaenNJbg0FzHfSOXWEYWbMuAD0YEdIG4KrvhhzPQaW9l7CO7ZTi5E3eZWkvgKaluM=
+	t=1772930140; cv=none; b=k8ILUJQPpEMpKX3gTa87SLAkzZmKDotB/AKNCE4Zy9+8aH2fmci336buNVJ8riDQ5OSh/5yzdwj1GBVqLnC3YRTVoMICkw0aL2HlL8ZylRiZ384DKTCkh3X2r4vuP70hpYLf+a37sz4iN0/sibTo9VHNzHL+X1gJfo77doEV2KA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772929234; c=relaxed/simple;
-	bh=S+TdmegN6LPmRbLcYD+guAiSDuYAfP/isRPuL+f2XLI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JOttaU1ff1c7FAvvQMTjIZkzSFjQK0aAygZL1lB1I+bpAXuYYDS4RrGwDlUcC+4xa7VUQrkHzJbwjlG10v+hoWB5DvI9FAs3fgM5dFJ8Ih5IM+GUtq55wrgcPtbOjPrWXmdLkSzuZejaR7AtZLZS+Z/pCbXP6X96CPv2mzRmqVY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=a95WAGyK; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1772930140; c=relaxed/simple;
+	bh=eq8rWAlrWpCDTV0rXsnwg2/EAD5jdK7r4BAEqsX9OBM=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=LmeaC5DcXd6g031LIICYvnqT0MLYItpppljVILSqLqfYc2cYW1djfXPMuV3g9ffGKqGulY//Cz+xBGUAXogWCfXp3ToE9y6YPKsOEDlGzQOELxHJ7rYP/X6AijY0xgu3MmjT1Eq+2DGf1qRihw3eY/niMTJnJZMsgSNKvnVBV8Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=LTDdJhts; arc=none smtp.client-ip=209.85.160.53
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="a95WAGyK"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1772929234; x=1804465234;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=S+TdmegN6LPmRbLcYD+guAiSDuYAfP/isRPuL+f2XLI=;
-  b=a95WAGyKtKE0PyrCDqJgolaPrA4NFMK819iqrAO4Fmc22pE5zvGjZHFU
-   1BUamQoVyonCTSD732PbAUtRYYmWcCsfeRY/XSFUOOya/bWY7Ym5l9OxH
-   HFbN9Y8l6DakWDP1pLPLhQ7+RPIbPAAh3U2xGnhe71I9m2jc9NqPZ9uGw
-   Wo+ZCJ5HpfqfXP33HHRCRxeQxGSlyoEppRxyvuRipuBRWNoIHKgvYk5lj
-   hDskKxlGy7kkSMf0Vx2S85vlFuWPpHaX6nR+MtZa8WPGBOB3Wut7c2yMv
-   yPWf+CGTChh1KSgsGJCsQ/DRPaTg2q4sE4ScZsRe77UMNfrZic3Y4PIkN
-   Q==;
-X-CSE-ConnectionGUID: DMc13xC+SqukopB0Kb2Efw==
-X-CSE-MsgGUID: BD7o3ba1SgSWk+ooGC02Cw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11722"; a="74189176"
-X-IronPort-AV: E=Sophos;i="6.23,107,1770624000"; 
-   d="scan'208";a="74189176"
-Received: from fmviesa001.fm.intel.com ([10.60.135.141])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Mar 2026 16:20:33 -0800
-X-CSE-ConnectionGUID: rUSUHO+4QTm7GK+RgPqDEA==
-X-CSE-MsgGUID: o6vPGFn9TwqDQJmm+fRLPg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,107,1770624000"; 
-   d="scan'208";a="245489683"
-Received: from lkp-server01.sh.intel.com (HELO 058beb05654c) ([10.239.97.150])
-  by fmviesa001.fm.intel.com with ESMTP; 07 Mar 2026 16:20:29 -0800
-Received: from kbuild by 058beb05654c with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1vz1sg-000000002kr-0d2A;
-	Sun, 08 Mar 2026 00:20:26 +0000
-Date: Sun, 8 Mar 2026 08:19:30 +0800
-From: kernel test robot <lkp@intel.com>
-To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Olivier Moysan <olivier.moysan@foss.st.com>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev
-Subject: Re: [PATCH v5 4/4] iio: adc: ad4080: add support for AD4880
- dual-channel ADC
-Message-ID: <202603080827.qjeW4PYt-lkp@intel.com>
-References: <20260305113756.47243-5-antoniu.miclaus@analog.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="LTDdJhts"
+Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-40ee9b945d5so3515115fac.0
+        for <linux-iio@vger.kernel.org>; Sat, 07 Mar 2026 16:35:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1772930136; x=1773534936; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ylT3Gkt3E+gdnboidI42Bw4R7RZBX2/1MTaq4t5bKEo=;
+        b=LTDdJhtsqfUQTG5GZDTtWe0fJy5bbW3e2I7feKv38Vic7shWtbs5V6vlsM7JLQXXCu
+         T1LAO9WUB/IMjQ86U3EviSUSpYGxYQ1ieOQPDzckZWFy7bgsjIboUXy8S2GDpXrx9bKv
+         Th9QiYDI2XG0KGXR7Sn73VKB0KqbfSTUcfw5GQzCvGvVjDZAuzuLt83xIxLCAPKpSFtz
+         96GU1P1e5ttrph81btQosCG9l9vV22DWCaHKsJPKb6vLh1N5JtmP1jSAtKF00RxM/5LW
+         ygF8E7nd8nIhVsUosZPntKFDkoHjz8vXEXKVcwovZC3PHu/OPvVB3CriVbjkvogfvUny
+         yjLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772930136; x=1773534936;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ylT3Gkt3E+gdnboidI42Bw4R7RZBX2/1MTaq4t5bKEo=;
+        b=jx9fboD8gW6mUDiJQP11nIK56VfLfG0Ysv306clRT0VOBKWtmm821pGOQROUZsN26J
+         UVXOYA2t2+k53zBOHGoPhbTI0pgKZZQsH25zt6IAvoKcKCF1BMQyF/0C1xAcm6I794n/
+         EynmExqChvj2S+Fk98Cm1JbnHXg9JMhMU5OO3Ig+rApZHiAnnPfHEq+X1pzCHuaXaMIq
+         0TYO1tfWsMRRHgE9r1cLPG47RxG3w65D7fz9T2Yjy6zS6CXuRwnS3qL2dpgNkC1oWcMS
+         uLQpru7GZohhGe+hCVJzQR/8AO9Eu6ih1pqjgXjiWZbU6seb2svgzE/aSExmw0NUyN9U
+         x2QA==
+X-Gm-Message-State: AOJu0YxMTGnFMHZqABj3TnEvqTAl9dUq1pHXwxwho2Tcixa/1guBxPPY
+	PxUM/j90utRuRL6g4pIQNODK4EBwTPLW0rBfg1Omzt9L3gv9STK/WhglAVTRQTvsE1TjTUP599c
+	t1h/R
+X-Gm-Gg: ATEYQzyyDdYJaQeI5hEPVvwinXmMZjVM5VEaTibXHJdOx91iY93d7+UZVyKhKWWAOjm
+	Phy+KmurCib5fu/U01AQ9GoIE9u0KvShdQdI6QAEtL+O3CoAfCd6FmDn3Njy+PokMAWkvK7ndtP
+	UAcQm/4WWo7iFOV7N7ACGLPJvq6XzKGBn4E9AqbFC1ThaE72liJR6JxTcMlvybjaYVQoGjZwJE+
+	SpmLHLXqu/LsYPhKWiaU8a2B4yOSCjjGqMNLZu3otOHNK64zZS/DVIz+lQcM9v30AofxhhkJ9HN
+	EsiWcODNQD43Q0J5I3WneBM4bI9JLMMvayXgxaiUp7my1GB3fmGYjz3Uuxj21vcVoA0K5rkXfC0
+	+6A/7tZwb3J2QE9L1B5GLU8kdS2TOlvAjokGAAAR/pM0ygfxk9J24/efXlPG0japyKqMuwGqV79
+	Gdf6CsNl9kAkfPr4qn0M7+q9pSLkx+xRHnu21Wr0Ua7pjfzTG8p0ps8PwyUJvpB94omHUeFUY0R
+	Q==
+X-Received: by 2002:a05:6870:d10b:b0:409:b130:787c with SMTP id 586e51a60fabf-416e4416afcmr4139493fac.42.1772930136541;
+        Sat, 07 Mar 2026 16:35:36 -0800 (PST)
+Received: from ?IPV6:2600:8803:e7e4:500:cccf:5174:fa72:c520? ([2600:8803:e7e4:500:cccf:5174:fa72:c520])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-416e67d9c3csm5039017fac.11.2026.03.07.16.35.33
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 Mar 2026 16:35:34 -0800 (PST)
+Message-ID: <7f000ea5-1a41-4da8-aad5-04aa875fa4bc@baylibre.com>
+Date: Sat, 7 Mar 2026 18:35:32 -0600
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260305113756.47243-5-antoniu.miclaus@analog.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/2] iio: add IIO_DECLARE_QUATERNION() macro
+To: Francesco Lavra <flavra@baylibre.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ Jonathan Cameron <Jonathan.Cameron@huawei.com>, linux-input@vger.kernel.org,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Jiri Kosina <jikos@kernel.org>,
+ Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+References: <20260228-iio-fix-repeat-alignment-v2-0-d58bfaa2920d@baylibre.com>
+ <20260228-iio-fix-repeat-alignment-v2-1-d58bfaa2920d@baylibre.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260228-iio-fix-repeat-alignment-v2-1-d58bfaa2920d@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Hi Antoniu,
+On 2/28/26 2:02 PM, David Lechner wrote:
+> Add a new IIO_DECLARE_QUATERNION() macro that is used to declare the
+> field in an IIO buffer struct that contains a quaternion vector.
+> 
+> Quaternions are currently the only IIO data type that uses the .repeat
+> feature of struct iio_scan_type. This has an implicit rule that the
+> element in the buffer must be aligned to the entire size of the repeated
+> element. This macro will make that requirement explicit. Since this is
+> the only user, we just call the macro IIO_DECLARE_QUATERNION() instead
+> of something more generic.
+> 
+> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> ---
+>  include/linux/iio/iio.h | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index a9ecff191bd9..2c91b7659ce9 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -931,6 +931,18 @@ static inline void *iio_device_get_drvdata(const struct iio_dev *indio_dev)
+>  #define IIO_DECLARE_DMA_BUFFER_WITH_TS(type, name, count) \
+>  	__IIO_DECLARE_BUFFER_WITH_TS(type, name, count) __aligned(IIO_DMA_MINALIGN)
+>  
+> +/**
+> + * IIO_DECLARE_QUATERNION() - Declare a quaternion element
+> + * @type: element type of the individual vectors
+> + * @name: identifier name
+> + *
+> + * Quaternions are a vector composed of 4 elements (W, X, Y, Z). Use this macro
+> + * to declare a quaternion element in a struct to ensure proper alignment in
+> + * an IIO buffer.
+> + */
+> +#define IIO_DECLARE_QUATERNION(type, name) \
+> +	type name[4] __aligned(sizeof(type) * 4)
+> +
+>  struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv);
+>  
+>  /* The information at the returned address is guaranteed to be cacheline aligned */
+> 
 
-kernel test robot noticed the following build errors:
+Hi Francesco,
 
-[auto build test ERROR on v7.0-rc2]
-[also build test ERROR on linus/master]
-[cannot apply to jic23-iio/togreg next-20260306]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+I should have cc'ed you on this one. We'll want to add another macro
+like this for IIO_DECLARE_QUATERNION_AXIS(), I imagine. (This has been
+applied to the fixes-togreg branch since it is a dependency to a fix.)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Antoniu-Miclaus/iio-backend-use-__free-fwnode_handle-for-automatic-cleanup/20260305-194647
-base:   v7.0-rc2
-patch link:    https://lore.kernel.org/r/20260305113756.47243-5-antoniu.miclaus%40analog.com
-patch subject: [PATCH v5 4/4] iio: adc: ad4080: add support for AD4880 dual-channel ADC
-config: riscv-allyesconfig (https://download.01.org/0day-ci/archive/20260308/202603080827.qjeW4PYt-lkp@intel.com/config)
-compiler: clang version 16.0.6 (https://github.com/llvm/llvm-project 7cbf1a2591520c2491aa35339f227775f4d3adf6)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260308/202603080827.qjeW4PYt-lkp@intel.com/reproduce)
+What to do on that for the alignment though is an open question since
+we've never had a repeat of 3 before. The question is if it is OK to
+have an alignment that isn't a power of two bytes. For your case, since
+the data is 3 x 16-bit, it would be 3 * 2 = 6 bytes.
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603080827.qjeW4PYt-lkp@intel.com/
-
-All errors (new ones prefixed by >>):
-
->> drivers/iio/adc/ad4080.c:739:17: error: call to undeclared function 'devm_spi_new_ancillary_device'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
-                   st->spi[ch] = devm_spi_new_ancillary_device(spi,
-                                 ^
-   drivers/iio/adc/ad4080.c:739:17: note: did you mean 'spi_new_ancillary_device'?
-   include/linux/spi/spi.h:389:27: note: 'spi_new_ancillary_device' declared here
-   extern struct spi_device *spi_new_ancillary_device(struct spi_device *spi, u8 chip_select);
-                             ^
->> drivers/iio/adc/ad4080.c:739:15: error: incompatible integer to pointer conversion assigning to 'struct spi_device *' from 'int' [-Wint-conversion]
-                   st->spi[ch] = devm_spi_new_ancillary_device(spi,
-                               ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   2 errors generated.
-
-
-vim +/devm_spi_new_ancillary_device +739 drivers/iio/adc/ad4080.c
-
-   705	
-   706	static int ad4080_probe(struct spi_device *spi)
-   707	{
-   708		struct iio_dev *indio_dev;
-   709		struct device *dev = &spi->dev;
-   710		struct ad4080_state *st;
-   711		struct clk *clk;
-   712		int ret;
-   713	
-   714		indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-   715		if (!indio_dev)
-   716			return -ENOMEM;
-   717	
-   718		st = iio_priv(indio_dev);
-   719	
-   720		ret = devm_regulator_bulk_get_enable(dev,
-   721						     ARRAY_SIZE(ad4080_power_supplies),
-   722						     ad4080_power_supplies);
-   723		if (ret)
-   724			return dev_err_probe(dev, ret,
-   725					     "failed to get and enable supplies\n");
-   726	
-   727		/* Setup primary SPI device (channel 0) */
-   728		st->spi[0] = spi;
-   729		st->regmap[0] = devm_regmap_init_spi(spi, &ad4080_regmap_config);
-   730		if (IS_ERR(st->regmap[0]))
-   731			return PTR_ERR(st->regmap[0]);
-   732	
-   733		st->info = spi_get_device_match_data(spi);
-   734		if (!st->info)
-   735			return -ENODEV;
-   736	
-   737		/* Setup ancillary SPI devices for additional channels */
-   738		for (unsigned int ch = 1; ch < st->info->num_channels; ch++) {
- > 739			st->spi[ch] = devm_spi_new_ancillary_device(spi,
-   740								    spi_get_chipselect(spi, ch));
-   741			if (IS_ERR(st->spi[ch]))
-   742				return dev_err_probe(dev, PTR_ERR(st->spi[ch]),
-   743						     "failed to register ancillary device\n");
-   744	
-   745			st->regmap[ch] = devm_regmap_init_spi(st->spi[ch],
-   746							      &ad4080_regmap_config);
-   747			if (IS_ERR(st->regmap[ch]))
-   748				return PTR_ERR(st->regmap[ch]);
-   749		}
-   750	
-   751		ret = devm_mutex_init(dev, &st->lock);
-   752		if (ret)
-   753			return ret;
-   754	
-   755		indio_dev->name = st->info->name;
-   756		indio_dev->channels = st->info->channels;
-   757		indio_dev->num_channels = st->info->num_channels;
-   758		indio_dev->info = st->info->num_channels > 1 ?
-   759				  &ad4880_iio_info : &ad4080_iio_info;
-   760	
-   761		ret = ad4080_properties_parse(st);
-   762		if (ret)
-   763			return ret;
-   764	
-   765		clk = devm_clk_get_enabled(&spi->dev, "cnv");
-   766		if (IS_ERR(clk))
-   767			return PTR_ERR(clk);
-   768	
-   769		st->clk_rate = clk_get_rate(clk);
-   770	
-   771		/* Get backends for all channels */
-   772		for (unsigned int ch = 0; ch < st->info->num_channels; ch++) {
-   773			st->back[ch] = devm_iio_backend_get_by_index(dev, ch);
-   774			if (IS_ERR(st->back[ch]))
-   775				return PTR_ERR(st->back[ch]);
-   776	
-   777			ret = devm_iio_backend_enable(dev, st->back[ch]);
-   778			if (ret)
-   779				return ret;
-   780		}
-   781	
-   782		/*
-   783		 * Request buffer from the first backend only. For multi-channel
-   784		 * devices (e.g., AD4880), all backends share a single IIO buffer
-   785		 * as data from all ADC channels is interleaved into one stream.
-   786		 */
-   787		ret = devm_iio_backend_request_buffer(dev, st->back[0], indio_dev);
-   788		if (ret)
-   789			return ret;
-   790	
-   791		ret = ad4080_setup(indio_dev);
-   792		if (ret)
-   793			return ret;
-   794	
-   795		return devm_iio_device_register(&spi->dev, indio_dev);
-   796	}
-   797	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
