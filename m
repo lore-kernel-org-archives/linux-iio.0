@@ -1,205 +1,116 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 011B739448C;
-	Sun,  8 Mar 2026 18:28:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E207C348866
+	for <linux-iio@vger.kernel.org>; Sun,  8 Mar 2026 18:29:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772994532; cv=none; b=K5ST7bIVBl3FT6Q3Yr0wLQs2Iigraok8vt0L69RjkoB/B69KKOfRZYPidapo8Y/QOsKuyZ+rXra3yC/6On2Y7lBsRzUA+0vZtYL+COYWEdDZkT9qj6kk9NAsphcONClUvgqdZRcpQJrkPSglXadXJR0PAfn0E4c/BR0Okd46uBw=
+	t=1772994549; cv=none; b=H4YWw8XvvBoe9BkaA9gb8KrBa7XXzX7eUNiAU5q1wG3AZChoe+if3FTKLnNn/Jw21cauyMW0nFpL6HjNsjgWUZHjnP/Xy4VxXZgp89ovPzWFR3GVr2ZQkeXiJ3/Iay5uNIuzWyiIXo1qTMn3Ei96mLWgLSvmfZiDJIsJezKHSPI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772994532; c=relaxed/simple;
-	bh=AbZ2VMFdeOP37VjLR8TQ3qomr0Qrf1mNdZHRI7FOsjI=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=ZS7Y+YvgRWJTJlQTBGmEh7kYnSfUx9XdX4EZzliOcnI6C5w0ZyRlZsws0jroCEwsbe04aKSD3AL7Ij2b7qM8Uw07u2uCEjdbr1x01RKCMFVWeQySW18jSWWnrUIoSnSz9/GFdLex5ViUYFD/aI+AAPPN/5aeTo6dMfxeFZs8mBM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MGZ1YOW/; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1772994549; c=relaxed/simple;
+	bh=ijqO0RH/c8WpzUF3ch/7TZ/yblp4KMzkFtx1ZZAn264=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=MVKNtmHIozIVJZKBtbBgsosPBBHXu2L6ZylrtkN3XMXpFgFP3TGro0ml04lUPhG5vRirPZKb7pzIvCWJHwXhuG0rbbj6e07xpPg4HfmRxioRIOgJZCgDm74lv2SNgo7/NBayCfbSMpe5QVqxhdJU+fm7ateeDMWG0rr+akGG3nk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hvCdw3GA; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MGZ1YOW/"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA070C2BC86;
-	Sun,  8 Mar 2026 18:28:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1772994531;
-	bh=AbZ2VMFdeOP37VjLR8TQ3qomr0Qrf1mNdZHRI7FOsjI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=MGZ1YOW/qsgNg0RzngBxjg0yJgjBa2R2LOujqjn8gWZCF8N/mJhxihLqusGTrTS8q
-	 GBF7hjByYDc4KHMn9B7H6CEHV42+EJC5Gr7TM8GglPXHAhE//hnee2+cyVQ8JUJphc
-	 I8B+rmylibYq/kNSRDvtYT9QNZKuvtDZd5uZrI5P0DWp8yGkuJzn+MeAlxIr1k5xsM
-	 MNNuxeWn0cb/4n8L3/24uZGIPEoZivxkYVdZ+q0inBEhJVAFqwkd2n0BCxOHhcEY1O
-	 K2tyYUReoieAsa3Ln/cWl5hQcfOVB+n4fKeEQElUIiZ/YglEcIWRbAL7GaA8sdI9+b
-	 JTWIIUDyJy6Iw==
-Date: Sun, 8 Mar 2026 18:28:39 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: David Lechner <dlechner@baylibre.com>
-Cc: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>, Radu Sabau via B4 Relay
- <devnull+radu.sabau.analog.com@kernel.org>, Lars-Peter Clausen
- <lars@metafoo.de>, "Hennerich, Michael" <Michael.Hennerich@analog.com>,
- "Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
- Dooley <conor+dt@kernel.org>, Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?=
- <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>, Mark Brown
- <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>, Bartosz
- Golaszewski <brgl@kernel.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
- <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org"
- <linux-pwm@vger.kernel.org>, "linux-gpio@vger.kernel.org"
- <linux-gpio@vger.kernel.org>
-Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add bindings for AD4691
- family
-Message-ID: <20260308182839.19587743@jic23-huawei>
-In-Reply-To: <08717cd6-a732-4f06-a6f1-8cbdaa755b78@baylibre.com>
-References: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
-	<20260305-ad4692-multichannel-sar-adc-driver-v1-1-336229a8dcc7@analog.com>
-	<20260305174559.1ded5173@jic23-huawei>
-	<LV9PR03MB84149F32D4CABA4D2827D85BF77AA@LV9PR03MB8414.namprd03.prod.outlook.com>
-	<08717cd6-a732-4f06-a6f1-8cbdaa755b78@baylibre.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hvCdw3GA"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2ae3a2f6007so59657245ad.2
+        for <linux-iio@vger.kernel.org>; Sun, 08 Mar 2026 11:29:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1772994548; x=1773599348; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=H4m2EMUIvaZ3HIXTiDn2GW7MNo5qWlfcC51az5xANqQ=;
+        b=hvCdw3GAJKTZmRAPqQdGgnZFlYB0oVQNcuXdHPqlw86RdwgHIvgs+XWIMq5feDbcvM
+         BzECDL+p7r2Goi2VXvbEfneE/F1vbmVg/aPOPU+lvPs0v5bmbMhiGGMJQ7ihcAZiBDQ4
+         mlcJtwixtOWCTTxFIfEFJ+YG+UBodyQvA2PmviwlNkAInvWPtr5dzKtjhpl+ipxMy6/k
+         yrKDxJAmz/F2HIVsZd9v1BRbV5tL92pQFr5SOfHGgDmNdv23wsrQhS1KCoN2j5mnjml5
+         Y4RIFpSrbYqbKjHLKOxtA+P49jL8/iM7CeIa8esUV1oQF/P8OeeEljnZbUM1obBK+IbS
+         gPRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1772994548; x=1773599348;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=H4m2EMUIvaZ3HIXTiDn2GW7MNo5qWlfcC51az5xANqQ=;
+        b=F5fQ7KT5JjKxFAyl4TQWKbA5eIp39Bq2Z9W+s3nIDZqRZdsea7aDK7lbVLlxeT6AxT
+         siSkvGMbnImLl3agi3RNVjarQSpM+Iw4qpQTdYHetquHblRySFsM6mLryLX3ahc0OmF/
+         2a40KiSGOdT3N8fU5XwC5tC9Hs+h/oGX/gGDJPuW8aHRxignX/hjSaJ4EH0wZMYouAFC
+         4B3RXDbBOUIMBOaUPMlt2yggEaqJjZXYum/ZebTBjNH1VFlTIQMIvfcmpTUuGfWJ/nNT
+         nqP2nB7kyLALdwsTDinGWct6twGPbYR9vR/V2eQsWqolG/cKD3/SJOAwukCtkbZqf1SL
+         qC5A==
+X-Forwarded-Encrypted: i=1; AJvYcCXjhq1t51o2A5BDboN2r4Yw/ngMEXdYr0g12HScSBwx9vk0dHceCWjZZPck2xXKqkcMbS0BJBdyXGQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwuW57YWrqIAXoyfAdNeJnOk8A6B/jo71fNYkF/8cXG3485WSVz
+	erVNd2uf/Ap5wGywz65RDIBwqyAmHUR+OtmsLxLGTKExSWByu8IySUP/
+X-Gm-Gg: ATEYQzxr/TZwv1i1WblCHZZVcuzii0C8MFJxqiIXiaW1bDIdRaRys4r38IN8caztSwU
+	SXdaqRq9vintb+oQ5XSMi2ii9KEQBAKVAFvhHhQlrglZVMTcMifCgqoCTEKH5PJa+Llu0laUd0y
+	0F7YgdC36+FRnMlggnqhZ/14XhTOPfLZLiMU2ISUHCHaak4DY7Ji98vQVIK2uF5GIep0Xwxl9Eu
+	u7apO9X6Knoey8etZbfSqdSqinqkpne3iXwWY6jdCkSpgbK0JJcx/XAyGgHXi69iGzBAvPD0dV3
+	Do7MxywZJDtzeMLL45/MTEoDf8A0NtfON939Wsd8S+q8NeSiN++Bw+Pais+KWAWOY4K0jykSBAj
+	v5CHzuiVLd43nE/2Jl6b6JrOtx9JQeVE9Tn03Ds7JrkqyL0JCLKeQiPFd+pb6bfcxtrx7R167nx
+	zfVZnQrzESnI8+Me98ZTsV4jRoBoPuGzEMYTNWzI0o
+X-Received: by 2002:a17:903:3bc7:b0:2a7:757b:35a1 with SMTP id d9443c01a7336-2ae825046d5mr87272245ad.38.1772994548171;
+        Sun, 08 Mar 2026 11:29:08 -0700 (PDT)
+Received: from debian.ari ([152.58.179.53])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2ae83f783dbsm89006965ad.42.2026.03.08.11.29.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Mar 2026 11:29:07 -0700 (PDT)
+From: Archit Anant <architanant5@gmail.com>
+To: jic23@kernel.org,
+	dlechner@baylibre.com
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Archit Anant <architanant5@gmail.com>
+Subject: [PATCH v4 0/4] iio: adc: ad799x: modernize resource management
+Date: Sun,  8 Mar 2026 23:58:07 +0530
+Message-Id: <20260308182811.33471-1-architanant5@gmail.com>
+X-Mailer: git-send-email 2.39.5
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Sat, 7 Mar 2026 12:48:39 -0600
-David Lechner <dlechner@baylibre.com> wrote:
+This series modernizes the ad799x driver by converting all resource
+management to the devm_ infrastructure. This results in cleaner 
+probe error handling and the removal of the ad799x_remove() function.
 
-> On 3/6/26 5:55 AM, Sabau, Radu bogdan wrote:
-> >=20
-> >  =20
-> >> -----Original Message-----
-> >> From: Jonathan Cameron <jic23@kernel.org>
-> >> Sent: Thursday, March 5, 2026 7:46 PM
-> >> To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>
-> >> Cc: Sabau, Radu bogdan <Radu.Sabau@analog.com>; Lars-Peter Clausen <la=
-rs@metafoo.de>; Hennerich, Michael
-> >> <Michael.Hennerich@analog.com>; David Lechner <dlechner@baylibre.com>;=
- Sa, Nuno <Nuno.Sa@analog.com>; Andy Shevchenko
-> >> <andy@kernel.org>; Rob Herring <robh@kernel.org>; Krzysztof Kozlowski =
-<krzk+dt@kernel.org>; Conor Dooley <conor+dt@kernel.org>;
-> >> Uwe Kleine-K=C3=B6nig <ukleinek@kernel.org>; Liam Girdwood <lgirdwood@=
-gmail.com>; Mark Brown <broonie@kernel.org>; Linus Walleij
-> >> <linusw@kernel.org>; Bartosz Golaszewski <brgl@kernel.org>; linux-iio@=
-vger.kernel.org; devicetree@vger.kernel.org; linux-
-> >> kernel@vger.kernel.org; linux-pwm@vger.kernel.org; linux-gpio@vger.ker=
-nel.org
-> >> Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add bindings for AD469=
-1 family
-> >>
-> >> [External]
-> >>
-> >> On Thu, 05 Mar 2026 14:23:27 +0200
-> >> Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org> wro=
-te:
-> >> =20
-> >>> From: Radu Sabau <radu.sabau@analog.com>
-> >>>
-> >>> Add YAML bindings and dt-bindings header for the Analog Devices AD4691
-> >>> family of multichannel SAR ADCs (AD4691, AD4692, AD4693, AD4694).
-> >>>
-> >>> The binding describes five operating modes selectable via the
-> >>> adi,spi-mode property, optional PWM/clock for CNV Clock and CNV Burst
-> >>> modes, GPIO pins, voltage supplies and the trigger-source interface f=
-or
-> >>> SPI Engine offload operation.
-> >>>
-> >>> Signed-off-by: Radu Sabau <radu.sabau@analog.com> =20
-> >>
-> >> Hi Radu, I'm going to focus on mode... Mostly because things called
-> >> mode are usually a sign of mixing up different aspects of the board
-> >> design...
-> >> =20
-> > Hi Jonathan, Krysztof,
-> >=20
-> > Thank you guys so much for your review.
-> >=20
-> > Regarding 'mode', I agree that it should be something that could be mod=
-ified
-> > at run-time, especially since all register modes (CNV_CLOCK, CNV_BURST,
-> > AUTONOMOUS and SPI_BURST) rely on the same principles of reading the
-> > ADC result from the registers, the main difference being that PWM on the
-> > CNV pin is required for CNV_CLOCK and CNV_BURST, but the board design
-> > stays the same. Perhaps this PWM can be initialized at start-time and o=
-nly
-> > be used when CNV modes are being used. This would mean mode can
-> > become an IIO attribute that could be set by the user at run-time. =20
->=20
-> More likely, it would be two different ways of doing a buffered read,
-> so maybe two different buffers? Or just pick the "best" one and only
-> implement that mode.
+Changes in v4:
+- Simplified voltage caching to use a single 'vref_uV' variable as
+suggested by David Lechner.
+- Capitalized 'uV' in variable names as suggested by Andy Shevchenko.
+- Removed redundant 'if (ret < 0)' check in read_raw() (dead check).
+- Used devm_mutex_init() to replace manual mutex handling.
+- Introduced a local 'dev' pointer in probe() to simplify function calls.
+- Switched to IIO_DECLARE_BUFFER_WITH_TS() for the buffer declaration.
+- Moved goto removals into the respective patches where devm conversion
+occurs.
 
-I 'think' burst mode is really an oversampling thing as you read back from
-either the output of an averaging filter or an accumulator.=20
-I doubt there is reason to support both the oversampled and raw
-readings at the same time.
+Changes in v3:
+- Split the monolithic v2 patch into 4 logical commits as requested by
+  Andy Shevchenko.
 
->=20
-> >=20
-> > However for MANUAL, modifications of jumper resistors on the physical
-> > board is required for proper functionality, since the CNV pin needs to =
-be
-> > tied to CS in this mode. Would it be preferred if bindings would have a
-> > 'register-mode' attribute (the name could be better) which can have val=
-ues
-> > like 1(register modes are used) and 1(manual mode is used), and for
-> > register modes, have a global IIO attribute that can switch between
-> > them?
-> >  =20
->=20
-> The binding should describe how the chip is wired up. So rather than thin=
-king
-> about modes, try thinking in terms of connections. Based on what the devi=
-cetree
-> says is connected, the driver can then infer which modes are actually pos=
-sible.
->=20
-> Bringing back some context that was trimmed:
->=20
-> +  adi,spi-mode:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [0, 1, 2, 3, 4]
-> +    description: |
-> +      Selects the ADC operating mode:
-> +        0 - CNV Clock Mode: External PWM drives CNV pin, samples at PWM =
-rate.
-> +        1 - CNV Burst Mode: PWM triggers burst cycles, internal oscillat=
-or
-> +            drives conversions within each burst.
-> +        2 - Autonomous Mode: Internal oscillator drives conversions, sof=
-tware
-> +            starts/stops via register write.
-> +        3 - SPI Burst Mode: Similar to Autonomous Mode but optimized for
-> +            SPI burst reads.
-> +        4 - Manual Mode: CNV is directly tied to SPI CS. Each SPI transf=
-er
-> +            triggers a conversion and returns previous result (pipelined=
-).
->=20
->=20
-> It sounds like there are 3 ways that the CNV pin could be wired up:
->=20
-> 1. Wired to PWM
-> 2. Not connected
-> 3. Wired to CS
->=20
-> On some other chips we've seen where CNV could be wired up different ways,
-> "not connected" was not an option. In those cases, we could infer that if
-> that no other properties indicated what CNV was connected to, then we wou=
-ld
-> assume CNV was connected to SPI CS.
->=20
-> In this case, if "not connected" is an option, we might need a bool/flag
-> property adi,cnv-is-cs to describe that the CNV pin is wired to the CS pi=
-n.
-> And we already have the pwms property to know when CNV is connected to a
-> PWM.
->=20
->=20
-> > Please let me know your thoughts on this before addressing the other
-> > Comments and preparing other patches.
-> >=20
-> > Best regards,
-> > Radu
-> >  =20
+Changes in v2:
+- Eliminated dynamic buffer allocation (feedback from David Lechner).
+- Cached voltages to prevent devm/manual ordering hazards (feedback 
+  from Jonathan Cameron).
+
+Archit Anant (4):
+  iio: adc: ad799x: make rx_buf static
+  iio: adc: ad799x: cache regulator voltage during probe
+  iio: adc: ad799x: use devm_add_action_or_reset for regulators
+  iio: adc: ad799x: use devm_iio_device_register and drop remove
+
+ drivers/iio/adc/ad799x.c | 101 +++++++++++++++++----------------------
+ 1 file changed, 44 insertions(+), 57 deletions(-)
+
+-- 
+2.39.5
 
