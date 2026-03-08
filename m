@@ -1,172 +1,184 @@
-Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+Received: from mail-yx1-f44.google.com (mail-yx1-f44.google.com [74.125.224.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 34647301474
-	for <linux-iio@vger.kernel.org>; Sun,  8 Mar 2026 11:03:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7AB96368940
+	for <linux-iio@vger.kernel.org>; Sun,  8 Mar 2026 11:05:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1772967837; cv=none; b=dGlkYbxSvOGpYTqD8qOU4tG4Wb7ARad+YIFZ+qzsNEEHylra9HLQpCV28E6TegyxYurAu5PRS0p+NtHcByVmdInoORPZYjZqqrJtkUOkzLVSAECXoeGyLxFux86qqcal7dmKWDeLENryzUJ7sbpV7jX422JwlCSd2s7On+dGlQc=
+	t=1772967901; cv=none; b=pi+QsmhDCqgwdDSCkM9jtJjl6kgqTDkZlUw85VffrKE/dB91uR+o2RD0FgiKfewKDnhUJJODkTAMzFTtV4Tnd7LNFGrgJpVSMMXXWLTAY+QV3CcUXM8nLzD/TMFtxnE7fdgk8MDvKJNOibHHPu7HqLabrTvNo8btOFBzyvJukwo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1772967837; c=relaxed/simple;
-	bh=ZR2qFgJfdC2GjW4dyKZjOf8PqW0v0MbDkbDRSr8lLHQ=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=QrJ/ZcRMhq8mXDWPt5K/4yDzrGG4KbOn2OvDQDM9VMyf5s74KBik9tsK1cOdYNQ3fiCKHZrCvjvNQVcS/w5ncCehQLmngDYJkIYy8DpVOgy+0UWB8X3+gds+zx7kDQ+s+QZgZbkqHrntgxlN6SLa4HM+jVJ6tPlhIzlSvhCYOdU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QW0VtTwz; arc=none smtp.client-ip=209.85.160.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1772967901; c=relaxed/simple;
+	bh=9gPDtpd4mBNWOUOxraJnQcOsDJMondQzmRZFVuBawzw=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=a5Zhtl6EJxDi3/Of3LcSrIBi3BDsL520ptMxAUJiOFU7+BQquqoCArOaj7zPfUO0P0FfldE+gwbBmDvcqtqwiKvdG3BnUMxuLXdqcrqfmYI/7fWXXMPAlDUcDDY8Gow/de45NpmlK3Szau6RGD9opH9itUTvY5ra//iDa+RjD2g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=74.125.224.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QW0VtTwz"
-Received: by mail-qt1-f173.google.com with SMTP id d75a77b69052e-5069b3e0c66so154199081cf.1
-        for <linux-iio@vger.kernel.org>; Sun, 08 Mar 2026 04:03:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1772967835; x=1773572635; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=Nq7xBQecNCcWqMyaqx5bcThSviNyfnXB225YIziDf9g=;
-        b=QW0VtTwz6FAY3N2/AWNiHHfisZKCVXLvImrzKK8cAURqThgQogQYYrpeM+kwBrGybu
-         GONKq1+K7FRswkTcUgFx+KAV4pajsI+oLYF7f8nTROlTekm4AM1EQrUSdKBjspADcwBA
-         VtgOmwS+WG18k79jiSf+Q+EOTmpt93nxYE0+pCifYVTgJxTrmPlQy0W3/SZmmnTk1A7/
-         hD1kxashcNMS+z0arz1gwKty9bgSPTBbHK5hlkcap/EltIC/0jV/yRsBZhhq7rM7v90E
-         zfULukuuCqMsA032EHSb48ovO7awi5RKH8zn+WwP99WBv5+o7WPmPVZk/+tcxl6scNrp
-         ifFA==
+Received: by mail-yx1-f44.google.com with SMTP id 956f58d0204a3-64ae2ce2fe1so9810056d50.1
+        for <linux-iio@vger.kernel.org>; Sun, 08 Mar 2026 04:05:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1772967835; x=1773572635;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=Nq7xBQecNCcWqMyaqx5bcThSviNyfnXB225YIziDf9g=;
-        b=n1RFTLM0cp3AGkfY2jPGgU7fymGkD5JVal8oMuSGX2rmlbe3H55KnK9DHSLVYs6R8I
-         sie0DeXnnsXGP7o7gfqHtQ5Lb5QolexdENSo1JT9QXEvva0rJKY+afqdJg2txnb+pPqi
-         4dOsfxyo+DpXv8rz7JJ4DX8GuYgqYfqdjGF4T/plYC37rwbUHEz1wPTH9aouqeHPHNSm
-         pn23/lWjX+n0hRXZy8/77nnSjLGDEuKzKdsaknM+JTMEnn/BCod9XaiSkVDQtLk5w+ZX
-         kynhhBLC7gllymHISNvMl/DIuq2hPBRX0tNKTsaWBy5/e3INbrL3YP9sXouai83hD26V
-         uCtA==
-X-Forwarded-Encrypted: i=1; AJvYcCVH/HCdiHgQVgJWIpAuVZsmLuwPgVwJOA03fKBFCgO2HUAaenLRmSoJc958+dmAZ2yML1acSWr6+YY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzWcL/Cv9jdeuimDzbtIbYgiLXtaikPEjRDTLIpM3PPyOF40vNV
-	mzKMNudJuE52toJemF54aqAnLeg7agrhWkqDhSBIvhp/BWSKGvxcYh7r
-X-Gm-Gg: ATEYQzzJmiJ2mMMrvtRmLUxPiFLZOXOXXeRKJVdzDBk5ymS25c3Ufn3cOcyVtEOiD5q
-	clO8oRMHqOtvgaXmDzvWJl4DzLkCpVlDBviJ/0SdGPljO/tWOTpjNfw+gHGSfaespG6RF5q7jV/
-	0bdCKyjmYVarY7yyFXSLFH2sBdlqcxM8APOrteFqK4+lfckqZjspqDPY7pEyXwSeLME6tzw+1DG
-	bPnbW37cePy7BpLcanS7sIiyoJNchXknte3+uAtvKcTkgu0AWXksUfNBxAC7M2ifFPoQfdXPBfB
-	zPjrFhIXKQnSTwMxtzr0jISqZbVWq5OAxAFhdeKYGmSJuTfVC0JJhNyilcDSdGTNYtxurybIk5o
-	PgJwdA2xoc/QI5TQETQxR7dqBFsqb0omWWljOl5y/o+noadsJthvfEJjewnN4KzsdUm7hD/XDHB
-	M3FT1W3VDheQvER+xvY7VDjZFLm3h9HRT8kapDfg==
-X-Received: by 2002:a05:622a:10:b0:506:7049:c768 with SMTP id d75a77b69052e-508e67f5f64mr148242761cf.9.1772967834819;
-        Sun, 08 Mar 2026 04:03:54 -0700 (PDT)
-Received: from new-nest ([94.19.228.143])
-        by smtp.gmail.com with ESMTPSA id d75a77b69052e-509101c6a55sm13521381cf.23.2026.03.08.04.03.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 08 Mar 2026 04:03:54 -0700 (PDT)
-From: Andrey Skvortsov <andrej.skvortzov@gmail.com>
-To: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Cc: Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Subject: [PATCH] iio: imu: fix unbalanced regulator_disable calls, when probe fails
-Date: Sun,  8 Mar 2026 14:03:28 +0300
-Message-ID: <20260308110328.2859831-1-andrej.skvortzov@gmail.com>
-X-Mailer: git-send-email 2.51.0
+        d=1e100.net; s=20230601; t=1772967899; x=1773572699;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=wTltxE2z0oe8oSkasQNopG2LUPadxirCkumepv6l9/s=;
+        b=vWKEtsS6vW7Bq78gL5ae3MamSUIy20UpsNOzWIDZ0GLl9F8XQBgl6a1VqOm976sUZR
+         uErRzvSNNUZ5pqLxGeOHCSB+zGnLiSssX9eAs5QhE0uUro2p0BzODoWBcGm7hZjS4kiO
+         w2NK9fsbvGyF1T1qhsIX6a+0OZ+3ZuYGcE6yP9YpGWoFCHkA0+A5RkH73JseQyl2JvKZ
+         8sGJhN6jd2/hoGkoUDfj5tHF25sR9+cDT6vmxjEeM6nRk50X4stON27CXTVMNTXussuZ
+         9J68NUF4pt+cDAT7UeTDs/sX3q5adlI4EO0oAPD8xx1bGVlMxPkZJMsxIlxfs1IPxR0z
+         fhNQ==
+X-Gm-Message-State: AOJu0Ywy5WL1fuhWPOsMUhVwVmbsFo8GxcdI2rflTtc1ep6a5gJ8tKWG
+	7cg+cmjDSY7oSrzk4h0d2HfmmzEP7dLMn7gaQAmwDklPtJZhphaO4ExJ0cgN89OLfxM=
+X-Gm-Gg: ATEYQzw1eN/RtdsDoJ2X4jiehDn5dKTqgjP/jL14EVGiM8mAQF8QqCorXYOfS1+/sjq
+	3OgAScgZ35fO8oXKCPWNtt8mikQf1cpJBWhEdee3z1Qz4pnjUJd2ET/sHjYT3xhQRq3S9sQgKId
+	UkwH5Db8ebybu+39IBmjICT4MQuk6mQNzwsvxQ7HFMwZY83/dnqN4c+GtngtcXcpJxLdXctuaAk
+	2Bm1VOm2Ie0Hu5Q6yD1xUrWSSfFshDNo8R97ziRW4pWjrsdQchFOSazV0/R41dRXXI3bMbJXV6t
+	RNwUEXvL74HKEGTECduvDu06nZiTvw0jmcZMKsG1YYhRydtjermFQVrJBWDbmYE7e4r4Uja6dc/
+	tY1loU0+F2CriFaeTvenZquocMgs2vKcEwIT+Q0rE/NAmh0pQCbKq86v1NeGcWjJ/LFz7+lUO9I
+	aZxlnyctvVruHW9zExSF6bJUO7S+suglz67vE3cX6lzkxC9tBPqRl3
+X-Received: by 2002:a05:690e:d42:b0:64a:db17:3ce6 with SMTP id 956f58d0204a3-64d1406e410mr7544756d50.2.1772967899239;
+        Sun, 08 Mar 2026 04:04:59 -0700 (PDT)
+Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com. [74.125.224.53])
+        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-64d176e70e7sm3274887d50.20.2026.03.08.04.04.56
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 08 Mar 2026 04:04:57 -0700 (PDT)
+Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-64ae222d87dso9693527d50.2
+        for <linux-iio@vger.kernel.org>; Sun, 08 Mar 2026 04:04:56 -0700 (PDT)
+X-Received: by 2002:a05:690e:120e:b0:64a:f927:b3b7 with SMTP id
+ 956f58d0204a3-64d14358867mr7876885d50.77.1772967896431; Sun, 08 Mar 2026
+ 04:04:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260303090253.42076-1-email@sirat.me> <20260303090253.42076-3-email@sirat.me>
+ <3181de17-d3f6-479e-9500-f5d552bb4151@baylibre.com>
+In-Reply-To: <3181de17-d3f6-479e-9500-f5d552bb4151@baylibre.com>
+From: Sirat <email@sirat.me>
+Date: Sun, 8 Mar 2026 17:04:45 +0600
+X-Gmail-Original-Message-ID: <CANn+LW+uLQuoRbN4UMq1-pVcsJqzc0sMQNGwfwuSrTR-pNdLog@mail.gmail.com>
+X-Gm-Features: AaiRm52PYb_rtA4-d1aCtn2cfZ_t84oqp4uh_6f1BHRnrYpTvIcQXG-7edeB8Zg
+Message-ID: <CANn+LW+uLQuoRbN4UMq1-pVcsJqzc0sMQNGwfwuSrTR-pNdLog@mail.gmail.com>
+Subject: Re: [PATCH 2/3] iio: proximity: add driver for ST VL53L1X ToF sensor
+To: David Lechner <dlechner@baylibre.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org, 
+	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
+	conor+dt@kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-During a probe functions after all regulators are enabled, runtime pm
-is enabled. Before probe function finishes, runtime pm triggers and
-disables vddio regulator. When probe function fails after that,
-inv_mpu_core_disable_regulator_action tries to disable already
-disabled by runtime pm vddio regulator causing following backtrace:
+On Sat, Mar 7, 2026 at 11:17=E2=80=AFPM David Lechner <dlechner@baylibre.co=
+m> wrote:
+>
+> On 3/3/26 3:02 AM, Siratul Islam wrote:
+> > Add support for the STMicroelectronics VL53L1X Time-of-Flight
+> > ranging sensor with I2C interface.
+> >
+>
+> ...
+>
+Hi, Thank you for reviewing the patch! Please find my responses below.
+>
+>
+> > +static int vl53l1x_set_distance_mode(struct vl53l1x_data *data,
+...
+> > +             if (ret)
+> > +                     return ret;
+> > +             ret =3D regmap_write(data->regmap,
+> > +                                VL53L1X_SD_CONFIG__INITIAL_PHASE_SD1, =
+6);
+>
+> Maybe worth using regmap_multi_reg_write() above and below?
+>
+Done. Put the register values into const reg_sequence arrays
+per mode and use regmap_multi_reg_write(). Much cleaner.
+>
+>
+> > +     case IIO_CHAN_INFO_RAW:
+>
+> What is here is perfectly fine, but I'm sure someone will eventually
+> want to change it to IIO_DEV_ACQUIRE_DIRECT_MODE().
+>
+> > +             if (!iio_device_claim_direct(indio_dev))
+> > +                     return -EBUSY;
+> > +             ret =3D vl53l1x_read_proximity(data, val);
+> > +             iio_device_release_direct(indio_dev);
+>
+Noted. keeping iio_device_claim_direct() for now.
+>
+> > +
+...
+> > +     ret =3D regmap_read(data->regmap, VL53L1X_RESULT__RANGE_STATUS,
+> > +                       &range_status);
+> > +     if (ret || (range_status & VL53L1X_RANGE_STATUS_MASK) !=3D
+>
+> Probably best to use FIELD_GET() here and redefine VL53L1X_RANGE_STATUS_V=
+ALID
+> accrodingly.
+>
+Switched to FIELD_GET() in both the trigger handler and read_proximity.
+>
+...
+> > +
+> > +static int vl53l1x_configure_irq(struct i2c_client *client,
+> > +                              struct iio_dev *indio_dev)
+>
+> Would be more logical to move this function closer to probe.
+>
+Moved it right above probe.
+>
+> > +{
+> > +     struct vl53l1x_data *data =3D iio_priv(indio_dev);
+> > +     int irq_flags =3D irq_get_trigger_type(client->irq);
+> > +     int ret;
+> > +
+> > +     if (!irq_flags)
+> > +             irq_flags =3D IRQF_TRIGGER_FALLING;
+> > +
+> > +     ret =3D devm_request_threaded_irq(&client->dev, client->irq, NULL=
+,
+> > +                                     vl53l1x_threaded_irq,
+> > +                                     irq_flags | IRQF_ONESHOT,
+> > +                                     indio_dev->name, indio_dev);
+> > +     if (ret) {
+> > +             dev_err(&client->dev, "devm_request_irq error: %d\n", ret=
+);
+>
+>
+> Can use return dev_err_probe() here since this is only called in probe.
+>
+Done for both error paths.
+>
+> > +             return ret;
+> > +     }
+> > +
+> > +     ret =3D regmap_write(data->regmap, VL53L1X_SYSTEM__INTERRUPT_CONF=
+IG_GPIO,
+> > +                        VL53L1X_INT_NEW_SAMPLE_READY);
+> > +     if (ret)
+> > +             dev_err(&client->dev, "failed to configure IRQ: %d\n", re=
+t);
+>
+> ditto
+>
+> > +
+...
+> > +
+> > +static const struct iio_buffer_setup_ops vl53l1x_buffer_setup_ops =3D =
+{
+> > +     .postenable =3D &vl53l1x_buffer_postenable,
+> > +     .postdisable =3D &vl53l1x_buffer_postdisable,
+> > +};
+>
+> These are not symetric. It either needs to be postenable/predisable
+> or preenable/postdisable.
+>
+Fixed.
+>
 
- inv-mpu6050-i2c 1-0068: trigger probe fail -19
- ------------[ cut here ]------------
- unbalanced disables a for vcc-dsi-sensor
- WARNING: drivers/regulator/core.c:3244 at _regulator_disable+0x118/0x260, CPU#3: (udev-worker)/357
- Call trace:
-  _regulator_disable+0x118/0x260 (P)
-  regulator_disable+0x50/0xa0
-  inv_mpu_core_disable_regulator_action+0x30/0xa0 [inv_mpu6050]
-  devm_action_release+0x1c/0x30
-  release_nodes+0x6c/0xa8
-  devres_release_group+0x158/0x1a0
-  i2c_device_probe+0x33c/0x3a0
-  really_probe+0xc8/0x3f0
-  __driver_probe_device+0x88/0x170
-  driver_probe_device+0x48/0x130
-  __driver_attach+0x10c/0x260
-  bus_for_each_dev+0x84/0xf0
-  driver_attach+0x2c/0x40
-  bus_add_driver+0x124/0x258
-  driver_register+0x70/0x138
-  i2c_register_driver+0x50/0xe8
-  inv_mpu_driver_init+0x28/0xfb8 [inv_mpu6050_i2c]
-  do_one_initcall+0x5c/0x478
-  do_init_module+0x5c/0x268
-  load_module+0x1d04/0x2558
-  init_module_from_file+0xe8/0x158
-  __arm64_sys_finit_module+0x1f8/0x388
-  invoke_syscall.constprop.0+0x64/0xe8
-  el0_svc_common.constprop.0+0xc0/0xe8
-  do_el0_svc+0x24/0x38
-  el0_svc+0x3c/0x198
-  el0t_64_sync_handler+0xa0/0xe8
-  el0t_64_sync+0x198/0x1a0
- ---[ end trace 0000000000000000 ]---
- inv-mpu6050-i2c 1-0068: Failed to disable vddio regulator: -5
-
-This change introduces variable to track state of vddio regulator and
-whether it's needed to disable it or not.
-
-Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 5 +++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 1 +
- 2 files changed, 6 insertions(+)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 5796896d54cd8..7dd09963d5a39 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -1843,6 +1843,7 @@ static int inv_mpu_core_enable_regulator_vddio(struct inv_mpu6050_state *st)
- 		/* Give the device a little bit of time to start up. */
- 		usleep_range(3000, 5000);
- 	}
-+	st->vddio_supply_en = !result;
- 
- 	return result;
- }
-@@ -1851,10 +1852,14 @@ static int inv_mpu_core_disable_regulator_vddio(struct inv_mpu6050_state *st)
- {
- 	int result;
- 
-+	if (!st->vddio_supply_en)
-+		return 0;
-+
- 	result = regulator_disable(st->vddio_supply);
- 	if (result)
- 		dev_err(regmap_get_device(st->map),
- 			"Failed to disable vddio regulator: %d\n", result);
-+	st->vddio_supply_en = false;
- 
- 	return result;
- }
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index 6239b1a803f77..1a2fb857f022d 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -208,6 +208,7 @@ struct inv_mpu6050_state {
- 	struct inv_sensors_timestamp timestamp;
- 	struct regulator *vdd_supply;
- 	struct regulator *vddio_supply;
-+	bool vddio_supply_en;
- 	bool magn_disabled;
- 	s32 magn_raw_to_gauss[3];
- 	struct iio_mount_matrix magn_orient;
--- 
-2.51.0
-
+Thanks again,
+Sirat
