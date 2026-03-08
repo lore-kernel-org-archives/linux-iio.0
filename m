@@ -1,65 +1,61 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 100892459DC;
-	Sun,  8 Mar 2026 20:32:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A345F1531C1;
+	Sun,  8 Mar 2026 20:40:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773001940; cv=none; b=TgWKCV5FT87bjRfzSuUwJ5eVk3bDiWjm5n2L9xtQ2EvJZarO/BoYg8crKYncQ/Fh1uQu4XYhR8hY2HtSQ5OD/zAr+I5v3nZmqtaETT8p9pj2mo93ZpqINezYDjq9XUW8/pHMWwQvN6sWrpS+3PEolNbvEUpKbKdrXpbxXjLffbE=
+	t=1773002402; cv=none; b=juJOSUkSCdHd1goIpiUzRBIoNfW3dB2JeYvVabt9oyuURb+r3i6Q/TBGjtZo/B0Qlt8R1oFrVA7RaONQdBaRsWxLcAR1dygcNIVAOw0LG2i+yh68AlRoDsJW2siQlXnBlgbRrKUUu4upFf7clvts/WX9PIXrWuTcXDW6rxYwfYY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773001940; c=relaxed/simple;
-	bh=a2+EwsR765fWM6MpBoKj/YKwgh8Gg9Vmd0gRgPLB1Fc=;
+	s=arc-20240116; t=1773002402; c=relaxed/simple;
+	bh=jZbOX2F0jIunrTD2MjJUxOMDSxQG60+rvIEQYd6Iyn0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rkvG0Z7/B2sfOqUF+PfOUhL7kDj2VAPPz4glqlaNlHqyjjp9iiI3No5Bl8o0QCBrfuM0JvDMhi3W7DVI/rrkg3iLeADLWsy915AFfk8TnphcGE5Wi2rgtQ6eyawkBUMYGOzdc4z5ixgLWb6rKkM+2YzpyVB8Y7JeiAc/e07LFgI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OYAKE2i0; arc=none smtp.client-ip=198.175.65.11
+	 Content-Type:Content-Disposition:In-Reply-To; b=YYXsvmNIuNOf/kW3HhKiEiqEvtLfI4naypMyLw5jIwVioHtVKg7s/MjggGaXf4vGUhhDrDa0g8/0QpU0BXMNPS3WngheMfiPZY7rkMoMiqcIgOTQGU1nhtEoqd3CCHpV9S/FZwe+t6tzECEqbP6BDxRIpZfEM7GdQRI/UJIOIxo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ONgeTqX3; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OYAKE2i0"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ONgeTqX3"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773001940; x=1804537940;
+  t=1773002401; x=1804538401;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=a2+EwsR765fWM6MpBoKj/YKwgh8Gg9Vmd0gRgPLB1Fc=;
-  b=OYAKE2i0gTukt9XMiILgM8Yuu40Vc+6dIX5OXgdcYkO3jdf8LVgZIhCW
-   l/+nlN6SDS6EzwVEE1RD9p95S6DWYwl4sfqd4J79Aw9+TtGm3CFxqMQbq
-   qbVaTv42pkkP0tL29BAdR8cACPVreCUYn6nksl4+ER8JjVX0RnrKoC6KB
-   IfMK8SaKQ5nteZmDNQz1sudJfDoGdGLrAFMA1lCLBaa2pQuAOd7SB9Kj5
-   B2jGV05NHeGM3YE2pzt5T94Yh3SfWWJNyqX1tlwHrpR3Z2r6fRaRBYj7p
-   COZyM6yZNleYykr79kmWWCqRnjko7HP7zAMbvt8tTlGyTZ5Q0Iz0KeWOb
-   g==;
-X-CSE-ConnectionGUID: IEq5/dtiSBiTMaxQjWkI1Q==
-X-CSE-MsgGUID: ofoNNJBjSXChMR+8rhuWRw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="84359204"
+  bh=jZbOX2F0jIunrTD2MjJUxOMDSxQG60+rvIEQYd6Iyn0=;
+  b=ONgeTqX3/2Xta2cG0RVb2AhL71Bhq/J2pAGmMhfNhY7HOa3NzXnYXkwv
+   7uJvR2++W658yj6rgdqSLwF4jE4zTqB+TfWHhb9pIKZlQcZN+XC85uykY
+   tTBDtZC3b3mDERB82tym3zpbwMaFfZgUVYwoO0RY8sor/7xr5rBEj7m0+
+   ppk40DS0KHgBV0CZrrmPxwY4rY2hRV8Val8PycG1Pvfjgy6oT0pAvPtgX
+   svHROYsFTjrHOGE2shQOL1Ow+bY9lqaAk0jLLLIGP88mdoRSMLYpciPQB
+   IXrxDaRh47t+SHWwlqKC6sjngxhbHQCM6qX6yuqsbvs7av5xgwTYyt7fU
+   Q==;
+X-CSE-ConnectionGUID: 4QL7JfswRUSzVuKKBfWOkg==
+X-CSE-MsgGUID: aP5lhAp5S4683ThKuXfx9g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="77632798"
 X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="84359204"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 13:32:19 -0700
-X-CSE-ConnectionGUID: xaiR69b/Toe1ckBGEscZHA==
-X-CSE-MsgGUID: hbh8bmjuSDeQdBG8KKBYlA==
+   d="scan'208";a="77632798"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 13:40:00 -0700
+X-CSE-ConnectionGUID: 4Kyr+68ETBS/6wLFl0kroA==
+X-CSE-MsgGUID: jjEMC7jhS6SYTtbKogULrA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="219528367"
+   d="scan'208";a="242580468"
 Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.83])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 13:32:15 -0700
-Date: Sun, 8 Mar 2026 22:32:13 +0200
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2026 13:39:58 -0700
+Date: Sun, 8 Mar 2026 22:39:56 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+To: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-	Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v3 5/6] iio: adc: ti-ads7950: switch to using
- devm_regulator_get_enable_read_voltage()
-Message-ID: <aa3czXB9tzLQgwha@ashevche-desk.local>
-References: <20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com>
- <20260305-ti-ads7950-facelift-v3-5-a23fdd1a079e@gmail.com>
- <20260307114947.0b946dfb@jic23-huawei>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: fix unbalanced regulator_disable calls, when
+ probe fails
+Message-ID: <aa3enGhPrKG7WUUO@ashevche-desk.local>
+References: <20260308110328.2859831-1-andrej.skvortzov@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,31 +64,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260307114947.0b946dfb@jic23-huawei>
+In-Reply-To: <20260308110328.2859831-1-andrej.skvortzov@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Mar 07, 2026 at 11:49:47AM +0000, Jonathan Cameron wrote:
-> On Thu, 05 Mar 2026 11:21:56 -0800
-> Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
-
-...
-
-> I think this broke the ACPI case (where regulator isn't available).
-
-Right, and I even have an HW to test (if required).
-
-...
-
-> > +	ret = devm_regulator_get_enable_read_voltage(&spi->dev, "vref");
-> > +	if (ret < 0)
+On Sun, Mar 08, 2026 at 02:03:28PM +0300, Andrey Skvortsov wrote:
+> During a probe functions after all regulators are enabled, runtime pm
+> is enabled. Before probe function finishes, runtime pm triggers and
+> disables vddio regulator. When probe function fails after that,
+> inv_mpu_core_disable_regulator_action tries to disable already
+> disabled by runtime pm vddio regulator causing following backtrace:
 > 
-> I think you need to check for -ENODEV and if you see than then
-> see if the acpi route below applies.  Otherwise on ACPI this will fail
-> and we'll fail the probe.
+>  inv-mpu6050-i2c 1-0068: trigger probe fail -19
+>  ------------[ cut here ]------------
 
-Yep, just make it default without even checking the fwnode type.
-No need to bring the whole acpi.h into the mix.
+Read Submitting Patches documentation (the section about backtraces
+in the commit messages) and act accordingly in the next version.
+
+>  unbalanced disables a for vcc-dsi-sensor
+>  WARNING: drivers/regulator/core.c:3244 at _regulator_disable+0x118/0x260, CPU#3: (udev-worker)/357
 
 -- 
 With Best Regards,
