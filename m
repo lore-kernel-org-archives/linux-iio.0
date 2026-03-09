@@ -1,90 +1,106 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5626E2D7BF;
-	Mon,  9 Mar 2026 07:31:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CCDDC1DF74F;
+	Mon,  9 Mar 2026 08:52:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773041516; cv=none; b=X6NZEepARtJp5A6+6Ptqe8J9nbx3XTjOKYytgK+JYDR91cpzrptg11POYzCGYw4VMYN3YGS+ke2mPiKa4bbhCsn4rad79C/653HzH/KT4krVK60aHU3UZ5VvfRhap6zmbeDV4F2faqQfeZXUtQTwXcXYqqCzwucxwu8No1UlU2M=
+	t=1773046358; cv=none; b=V2URLAm9P2eQpKbO/Q3Tz5RZOH2Flf7WO5mQbLyXpXO+NRvV9ntCI/pcMGcJEXEI8O2JY3sqDaSddY+asZO1KdhtQZd0QnqsmQx1Bllb7Ggrp80AjCGfnJwcERu6av1SNOlQd9R07asY0KcUk5xsNc42aKmAoJyrEYcfR8Xor5I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773041516; c=relaxed/simple;
-	bh=hdYMQOX/lKKCHTpRNMHa6JJ/ewQmiWuZngIePnyPKQQ=;
+	s=arc-20240116; t=1773046358; c=relaxed/simple;
+	bh=HeqU8ro+uPeQp9tslIJnU33XdwI9Tosl5JY8WQmrTss=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LsXT64eZAE5DxAyF9H+Udyf1ZPOG0zf0uqTgUB8jT3PhZZfsKE+N7tFvwIxlBMeEcpeEYWsvzqCTjchpOV1OkAnBNWX5JFiRksw9mH62Gcs4txF7DQ8a9HXzo+T4AEE01pX+85XjLtaKakl0J2XQUV30WbLDywQgQy1j9i6v2lY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EqTMxn91; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=U+yryNBiVB5a6oGiKidGtg866yiqR0R7DbkdlQVuKKHUqT/XCnxrx5F/Wak/A2UYM19drrvfKMER7fRaiN/Xj+5mMOU/2zjzNFCohZhSfwqKDEFVMi3DZmIWDF8mDBKIznx1K09Wm46lxYfTuYu9Vlb+uqtf7fWONYAZ+uwPh24=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fpv5tnZe; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EqTMxn91"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41F27C4CEF7;
-	Mon,  9 Mar 2026 07:31:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773041515;
-	bh=hdYMQOX/lKKCHTpRNMHa6JJ/ewQmiWuZngIePnyPKQQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=EqTMxn91zwmv9jlOgK0MWh5QuuWdxfoYCByhngGO6FM9UAoMJUC60HWBZZS+mzpYR
-	 vmSfdCgbdxjptt0alUSzhzhEU6Q5EJE7zg4fApv7Nw+pt/tv+xIIjVg85jTX2/gqno
-	 I9kkahne50YJ6fhIyPJ81/cq9CWyxIP/npQg4ua3F2VCLffOBb/5JSJK3E0jz9XFXi
-	 yW4FxKqx7kDzraGLm/C7fPc2EocxZ2hdLQEP8ShSEaUOZEWGV79qZXuIBEO/VceDMO
-	 bGsyklQmMQw/n5yOIZC8LEtAkstDljbuQiCcjwfPZp/7t9rEwnWnc864keZ4kFKpYp
-	 rqf1zC+HN5APw==
-Date: Mon, 9 Mar 2026 08:31:53 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Siratul Islam <email@sirat.me>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF
- sensor
-Message-ID: <20260309-loose-interesting-wren-cfe4b3@quoll>
-References: <20260308113728.40860-1-email@sirat.me>
- <20260308113728.40860-2-email@sirat.me>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fpv5tnZe"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773046357; x=1804582357;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=HeqU8ro+uPeQp9tslIJnU33XdwI9Tosl5JY8WQmrTss=;
+  b=fpv5tnZeST5lS1pmOOHXeilMAACTO+QGYGFCDEp6D3OFQcfwaKV1BwCr
+   mOPQO/cpDKKWLvCV7bIL5hUoMiM/x+zXZLKmzaV+3waGOrbYmlZ3PMIMH
+   bK1maajMC3gnFKOvDoUMIonZv7LeTbFbb39Skb3EQFnWKCEsct8YuSK6W
+   3+w6N7/6QyZH7JPmg3n5QfVLQPpwTp7RQlt7hjkSkTp47d5lEyhp0BjLr
+   MJ5fEXSipaXxZcg0juDpGSkRpj5+hx50TuNKJ0Lx6Jh3usDvyam0nLmTM
+   3pDoWmXOOr1mXUp+Sjk6GmDUqhRBOPaqP2yRZrSGz2uQzSifmEReCWqZM
+   Q==;
+X-CSE-ConnectionGUID: RPiwYULNRe2xg8kiO706aQ==
+X-CSE-MsgGUID: f9MJNc8ETTG+t9qQYHSRQw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="96681652"
+X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
+   d="scan'208";a="96681652"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 01:52:37 -0700
+X-CSE-ConnectionGUID: R/u4TXgFSTqLUw6P9ZV2+g==
+X-CSE-MsgGUID: pRIAbBSGTieHzk2m3e3Dnw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
+   d="scan'208";a="257609604"
+Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.181])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 01:52:33 -0700
+Date: Mon, 9 Mar 2026 10:52:31 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v3 5/6] iio: adc: ti-ads7950: switch to using
+ devm_regulator_get_enable_read_voltage()
+Message-ID: <aa6KT-tzzEclXCA3@ashevche-desk.local>
+References: <20260305-ti-ads7950-facelift-v3-0-a23fdd1a079e@gmail.com>
+ <20260305-ti-ads7950-facelift-v3-5-a23fdd1a079e@gmail.com>
+ <20260307114947.0b946dfb@jic23-huawei>
+ <aa3czXB9tzLQgwha@ashevche-desk.local>
+ <aa5ZA-CiIZuVkAdS@google.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260308113728.40860-2-email@sirat.me>
+In-Reply-To: <aa5ZA-CiIZuVkAdS@google.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sun, Mar 08, 2026 at 05:37:27PM +0600, Siratul Islam wrote:
-> Add device tree binding documentation for the STMicroelectronics
-> VL53L1X Time-of-Flight ranging sensor connected via I2C.
+On Mon, Mar 09, 2026 at 05:35:58AM +0000, Dmitry Torokhov wrote:
+> On Sun, Mar 08, 2026 at 10:32:13PM +0200, Andy Shevchenko wrote:
+> > On Sat, Mar 07, 2026 at 11:49:47AM +0000, Jonathan Cameron wrote:
+> > > On Thu, 05 Mar 2026 11:21:56 -0800
+> > > Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
+
+...
+
+> > > > +	ret = devm_regulator_get_enable_read_voltage(&spi->dev, "vref");
+> > > > +	if (ret < 0)
+> > > 
+> > > I think you need to check for -ENODEV and if you see than then
+> > > see if the acpi route below applies.  Otherwise on ACPI this will fail
+> > > and we'll fail the probe.
+> > 
+> > Yep, just make it default without even checking the fwnode type.
+> > No need to bring the whole acpi.h into the mix.
 > 
-> Signed-off-by: Siratul Islam <email@sirat.me>
-> ---
->  .../bindings/iio/proximity/st,vl53l1x.yaml    | 50 +++++++++++++++++++
->  MAINTAINERS                                   |  6 +++
->  2 files changed, 56 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/proximity/st,vl53l1x.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/proximity/st,vl53l1x.yaml b/Documentation/devicetree/bindings/iio/proximity/st,vl53l1x.yaml
-> new file mode 100644
-> index 000000000000..c4ae96293f27
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/proximity/st,vl53l1x.yaml
-> @@ -0,0 +1,50 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/proximity/st,vl53l1x.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: ST VL53L1X ToF ranging sensor
-> +
-> +maintainers:
-> +  - Siratul Islam <email@sirat.me>
-> +
-> +properties:
-> +  compatible:
-> +    const: st,vl53l1x
+> I do not think this would be correct behavior. On non-ACPI systems the
+> regulator is mandatory, and the driver should not blindly apply scale
+> from ACPI systems just because regulator is missing in the DTS.
 
-Looks the same as st,vl53l0x  and pins are 100% the same, so just put it
-there without any difference in properties.
+I mistakenly thought that original code doesn't have that cneck. Yes, the
+ACPI_COMPANION() should be preserved.
 
-reset is the xshut.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-Best regards,
-Krzysztof
 
