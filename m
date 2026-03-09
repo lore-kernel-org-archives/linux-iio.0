@@ -1,283 +1,467 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f47.google.com (mail-wm1-f47.google.com [209.85.128.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8C573B52E0;
-	Mon,  9 Mar 2026 13:08:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.135.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773061734; cv=fail; b=c66QW90kvTGDy1+bGFlkV6Z44GoEgm19Bnd1535uFdFJNDv+ouximLgLT6aPE1YxZ2F3V180gX49lhRW1pkS3Opt0DfM6JJksdjbyE/h0cezTK5sSqVfD8/gqi7t1V+0hbp9iUbnplAOUasKTnqW1QPsgmO+80tofNMUHcXDIEE=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773061734; c=relaxed/simple;
-	bh=iedvHrKOdRKyJ0p4AHgS5uSsY2RqBAzQbR19F+/cROA=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=eU+3FOznauzZOM6l6iYAsNQ2q49nutFu0Bf4O3LTQFyg9pTVioybQV68sIUDAVd9czQQy2n4FpVp+eL5F8c8JmJvYltp2AF0UM2D07UDgKR60YKuXxZR6xlT4U07lxw5xKfooWOHZPuz0ZDEr/X69xkl2bNj9JDTGFSA+tADV4o=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=l9bEBfSZ; arc=fail smtp.client-ip=148.163.135.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B22853AEF3F
+	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 13:13:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.47
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773062030; cv=none; b=TfSpTY4OIKdUOQj7Z+3fnGR7vU0xQGSw0QYor7MKt/CLtUMOSmkaSDfyoxAWDxFmGeeruVjE0nHvairlCYfoQPdSLaORljwXG78tQ7HRPaiSLu8SBAOzn3uiLo3tZwdAzj5l80VtiQ8bWovjdeRvVL8gF2nM6hSu2RxD8Khmm0A=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773062030; c=relaxed/simple;
+	bh=AgOW8pH7Ol8ZGI6Yh7st14HP8hC+hmPcH0PJN9F9gpQ=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=sOw1JTk6rr0WXTHJlyyBKFU8i+MHY8gzTXr9YdlgyV0DqU1u+DWbejq7LTnUBsa2W5ISDvGeqPNhjcLNfSXi1nM1QBtBzSN5BplSZeUKVRiXgoKuLREksES1qj2cZiK0uRzUjtG3PKiBgNIN4EGxgsUMF/l2Fsik5pVmVrDzvjw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dGGu7wvE; arc=none smtp.client-ip=209.85.128.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="l9bEBfSZ"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6298Zire2800060;
-	Mon, 9 Mar 2026 09:08:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=x4txh
-	T74SfC7K1+/KNGWlFSaiovK+ziSQsjQP+fuZgw=; b=l9bEBfSZ2oUAsznraRpbt
-	7nipzNQ15f3hdmRQa56UnuqnNQwH8rO1nnIE38g6iSmMYnYYzUNF8BHRohtmvDA9
-	mLG+XJ/DL9nV4Fn58qSjLNOwiNqJt3aDT0NfOwahNZDMxSKNQNJix2gd+AZWlK8n
-	dIttm+cwZBk7Z6wZguvWXi7f7qPnjsAQgUCngolRt9qt5Z+HMTLYtZ3jT9olBjuM
-	1B5JpK0zn+GAqj9gNzwt6UkObpfWWYC3rFZZYH5GWMCgc/UoQB+nymHkM3sTO9Xh
-	cti7pLNvPncjCMS1eRmyfzFrxSvTRCRsgnTbcpviDO2z9Iwu6K4Q6cc6ziAJVDfR
-	Q==
-Received: from ch5pr02cu005.outbound.protection.outlook.com (mail-northcentralusazon11012003.outbound.protection.outlook.com [40.107.200.3])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4crht6xjrg-2
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Mon, 09 Mar 2026 09:08:31 -0400 (EDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=hw9fLrt2GQj0GLd6XtXE6EM41HzbzhX0YdqbUeKY00wtPS47bvJjZKqX1o8wfDAj2rOlruNKIpd9I1BdLPzNBMGJLxKVrage32OwehvO8x7Kp10INLa3Nn0w9akDRHSM0/MVPdE/bsXKsgrszli2uy4MgJBeA1HF7kZ4AdXsEd8UeBVjkns5oVPizsCnfVtlBvLQU6GGPCoRvfzj+j3Nj3WUDN1kc2PXcSkcCUvSwFvsRI1o3wRRyyFdZclu/00fExkJutRBBmAPWLyz6sQB69j0osqrHLsv/XklW+5uPZV6bhmh96wp0ZiY7lmTdJ11YOJtamzkKAJH1qPYLAW6pw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=x4txhT74SfC7K1+/KNGWlFSaiovK+ziSQsjQP+fuZgw=;
- b=QZrWLRWV5fbILKGmnpnlW7MiOlK6T/c+3PZel+DVxgkTTsXRKTqcr5iMK7jDL3Lzfbl+DwC7Byy0VDZoicYIJLPOmxs70rAMRyYwVAKbcs5+aQGxtk4VHPDPPdUa6zPWAnPKvBaulajHNHcL8nXb2MAPD6VTU60IkAIYtvF2Hx+pEGjoDiNv5ouAdbBYFt6BoA+QpKSchyKgeRRUZwxGgFHUsBNWqQRD4LrzDIezUo/Usr7MVI1fQbVr5MZzWGHTrJIriCOUkU5BhvvAkWrVvwKzvXIZOxCUHUYfrEkJvEUotcjb4tGifkry4oitjAuq2/GNcx35KF264rVEU4ZaGQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-Received: from CY4PR03MB3399.namprd03.prod.outlook.com (2603:10b6:910:57::13)
- by BN9PR03MB5962.namprd03.prod.outlook.com (2603:10b6:408:133::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.25; Mon, 9 Mar
- 2026 13:08:26 +0000
-Received: from CY4PR03MB3399.namprd03.prod.outlook.com
- ([fe80::1527:d313:16d4:2376]) by CY4PR03MB3399.namprd03.prod.outlook.com
- ([fe80::1527:d313:16d4:2376%5]) with mapi id 15.20.9542.010; Mon, 9 Mar 2026
- 13:08:26 +0000
-From: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>,
-        "Schmitt, Marcelo"
-	<Marcelo.Schmitt@analog.com>,
-        "Sa, Nuno" <Nuno.Sa@analog.com>,
-        David Lechner
-	<dlechner@baylibre.com>,
-        Andy Shevchenko <andy@kernel.org>, Rob Herring
-	<robh@kernel.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley
-	<conor+dt@kernel.org>,
-        Petre Rodan <petre.rodan@subdimension.ro>,
-        "Marques,
- Jorge" <Jorge.Marques@analog.com>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 4/4] iio: accel: adxl372: add support for ADXL371
-Thread-Topic: [PATCH v2 4/4] iio: accel: adxl372: add support for ADXL371
-Thread-Index: AQHcrX+CxLMnKizSyEqxE/DuUJfIMrWi6WyAgANGjWA=
-Date: Mon, 9 Mar 2026 13:08:26 +0000
-Message-ID:
- <CY4PR03MB3399158C9C0984048B8EF7189B79A@CY4PR03MB3399.namprd03.prod.outlook.com>
-References: <20260306151859.131934-1-antoniu.miclaus@analog.com>
-	<20260306151859.131934-5-antoniu.miclaus@analog.com>
- <20260307110447.189b98c0@jic23-huawei>
-In-Reply-To: <20260307110447.189b98c0@jic23-huawei>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: CY4PR03MB3399:EE_|BN9PR03MB5962:EE_
-x-ms-office365-filtering-correlation-id: 6385d8d6-c25b-4f4c-eb4e-08de7ddcf365
-x-ld-processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|366016|7416014|376014|1800799024|38070700021;
-x-microsoft-antispam-message-info:
- ZK4yM17gSvf5D/tEWj417egHs+hGeP9kTi1+0ncYlh+fPDbKZgeH323aGL8B4PPjx4gcWFxEralIZ/9faaGOqeIEuIPn+MCbBGf1pjqvP/G9PgwmCRGElSzDPzrSG2ln4FpZJGTWasAVgr3Sjf7dIONJlDqJ6DpFgx6jAUBBhnodD78cRl17BodAbZARmg3DP08nmKwk3pd0JDyjxVZWnkqEnMTrDRul5vA3QjfaKMxW+pqrRHp+HkEjkLCg7YP7/C19+SQCNmolq1+DGH8oxffWFcZ8nllZiHzx49dwj/xnp0ru4x/C5+qy6xmaRMwh2RKSbUTeOENzIxq/cxhvK1QzKJ6POr/Ly82MoJctcg5lAgapTRZjH9IN8X1eO/Nc0rHdweqnXg8biW6yhOhc+1zMpKG/QG8aRnW3WjxlKu9uysRExky6eGz8uSUb1jDio0Hvy2fDk+Dg5AEVKqLJzWYmzZY9x+16ElQEizBJbrnKX4v6la5+i+dl5/54m6rElFOy9csBxobVaLj6cvLEdmU8ELJ8O0y8ayI17vWHCgx9mirb//qN9L+DQBMEKcPBRmduf62PEjqRb15TD0db8OX/B0DP2kUgOGR/b3q8ta5987ALGhFBtE6zT7EwWEVMti56nwmAlCnm7PyR0wWJ5H6/jHLT7vnG6T4/79vhnLqgHDZRH0BC8q4mrFsnhJc4P7Uo9KgxviFLQdhfb501rkpokMa7qfFgJPdy8w5PZ2ppdugyh4Ts1v+0TIV2OG25TNRmYcZ4BXjbK5BeeVpMtyMGpXVmAQw4YlFm4uCQuJE=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR03MB3399.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(7416014)(376014)(1800799024)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?us-ascii?Q?wYxvlxFVApaMR/UTPwYCkvcN86IvP5ZA/cATWb8+s9JUeb7gfaAH+sfRAbTy?=
- =?us-ascii?Q?0+735qjBVvQa7oh2Ib7/OQdHf9ir1c6U27kkdz86EQXCUJ1lY9vCcQsu/oHL?=
- =?us-ascii?Q?cLcKHSWXApmad/m2te4b9AReaKeuaqrh+/Ee7UeoKmf/r8it9sT2VXOZMaPT?=
- =?us-ascii?Q?BXOYi6fmpgFtYY7K/f6KTLEA2eF8nZrjOZR9u+R82YDl+l3K6PuAvaSF72/o?=
- =?us-ascii?Q?ktQAxFHmWl9OQxZ8i5Uiyh6Li+rpzQVP1KgK3lhSvkdjsm1G+zKfFBbhHVhh?=
- =?us-ascii?Q?le9oSrixQ79eKPARXdHEQqzg5qE2FbvZz2DAE65IEQH1tpy9W7DUwN7rG7eS?=
- =?us-ascii?Q?iF4DvPT+plNClrLacPlvlrkeu6S9lrrUouKwl0SB3pjWQuUI4lfuAykGTgvN?=
- =?us-ascii?Q?nCKkyPtsZ4LluHhCXiXItkx5+lwh3BJHf7lxjE6XzL5L1dUdEbYTrGh34Wjv?=
- =?us-ascii?Q?ne6bsMZ8IN+M6sYoUhCTFmV91yVpVw0lS8Tt3GfkRzo5uj9+kE7y1mbEg56e?=
- =?us-ascii?Q?8gtAV1OdmbxnKCpHJtHOBaoFMQHtojCW1xMBDUvc99okboa4HE17ui/zEfb3?=
- =?us-ascii?Q?Q+3g3VDYnEltL1Q9JX32pz7oxpUdK4XGO0WvtlqLEQziZgUODyVqIFe5Kiuh?=
- =?us-ascii?Q?4TaqJ8CIPXVgYWX8GcRTBennReNZTxV7EVYZRQGk+7KE4Zea+ZUPB93Sk9NP?=
- =?us-ascii?Q?ZFdJQw0Fm3vL5w8x+WmDv+GSiM40m2AQEka7K4mL0Ip5J2NOzlqKPh6zq/gR?=
- =?us-ascii?Q?3B+eeYrVWALWcMSbcxVQyLDzjfLbS54nozPmYM9O0Rr/ghxrS11mtzuiiHJT?=
- =?us-ascii?Q?Pxf1SVB2YG3uC2lM6Rf7NC7py62OxzxEcQYx4lOlpD3cSQG3NTsKst9BZhmf?=
- =?us-ascii?Q?q1goJgxJiK95QjRqSNEbp++5+Dc7JeYdOMGvxEoGJDV1Dr4ITprgq3f2Q8mB?=
- =?us-ascii?Q?mY4hksMOIVpPCd3sCdtKeiGAOOo84vTv6VCWzGdZUxmnVUeiwrXDFo3Fs4RP?=
- =?us-ascii?Q?4ERRcoYDtP5dY/lUAF3PVUSIxKmDcUioJ6VHo2lRbTuwGisQdWoaCap3JY7W?=
- =?us-ascii?Q?Zfq7U8srDLIHY+P72z1+MzVAOAQJV+WqmYTUTpTxZo8PLSscvdx968/ZzXhz?=
- =?us-ascii?Q?0AAnqmNixVDS1BjSxNfdVrA2wO/bG20EyPXa0ax4XZi3w1T0FIV/p1t0IL0V?=
- =?us-ascii?Q?ru8+Nu7HLVT6vlpfTFWh8y9JfkSKbFqQI/pk/eG852KO7GsY9+ByTWBRgTMY?=
- =?us-ascii?Q?9hjW31IRmvcJrBdb5uZioaydLh2+KvmF83JTyp6lWcRXW54HdzZR04ueYddU?=
- =?us-ascii?Q?w7ZzxqqkFXEiAVTv87pAioSQbHOPKTqnlR/Xc693kO7XvvgBgn2cULGHmX01?=
- =?us-ascii?Q?17v3kCHYd63UPY/zCXvsYetZBDeLlGiDU8xn+Oay3yV3k8aJJdgL27x49/ty?=
- =?us-ascii?Q?v96voPwBs5EptjgYIdqo7GPSz6gcSNswEAREcwxL8VpuwZ5J8MLI+byf8kVC?=
- =?us-ascii?Q?49QQkWl97+xW3c25u0MUuWJ1i/X+onLWRPVVBQzdYq7K7TFQUS7tv+zaopCk?=
- =?us-ascii?Q?9z5PwFSseg3p/YS/ovZBbaAAjHpYi5sre0FNPraXTgNqgZzPFO/L13ctdfr9?=
- =?us-ascii?Q?lQWHlBsGbCdmZrL/8XeEDLg+wl13qOzppTl9d0ifEm2WtbpTLVcElkVWaJpK?=
- =?us-ascii?Q?69gE3wDiGbkcmtaVufdB+MXXpVtvh3wqfUNkYRnfdmu0EJb+Qt7CdP3nwTj/?=
- =?us-ascii?Q?wX4nxK5Cww=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dGGu7wvE"
+Received: by mail-wm1-f47.google.com with SMTP id 5b1f17b1804b1-4853f2826f7so6443065e9.1
+        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2026 06:13:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773062025; x=1773666825; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=XULHpVakZ5dTlDAXLZlY07cTrjqMFhuraRf1z35D1qU=;
+        b=dGGu7wvEPtcdfElWI9frlRNb4MRzqq5Xpr8JadqUAycxQIOG1IKeeFEyl8XCVdVnQp
+         DLy6vN/F6hsLKkr56e/ZoGQuYX8ZxIrOvN7XCIj67YKTnW54kpUEjAu2owrvs9u5s6Na
+         kR9hdV6kVU4lG2+h0DxyCYnd4lzuMbF08XgVZ9WCZBYt1mcqG0FvMY1iYK7Gi2u1Qv0H
+         vMloivp5wAqPs6F5/rhLpHIrYVGTJHwdSiihK5VGk8nVJ//s/fT/nIzFIPXqWf0soe0f
+         nZmNsyaeFcT27TuRJ7PLqGPoN1cz3zOu5CVmjegWWciYmhgNqb/H4eKrb+UNWiU7h6Yj
+         Xe+Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773062025; x=1773666825;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=XULHpVakZ5dTlDAXLZlY07cTrjqMFhuraRf1z35D1qU=;
+        b=jXsDrde/vJHMKYVEUozW0E9tpBqRheqm2c6D6xwjEDaYFvKpZCkAaAHlDoeEyNay9F
+         Jr7s8ZeUVV5EX5rDXtDVuJFR2TN/sjVVfjigUuPWKXeOvXgfhechdqqmL9mNDpwhAUpn
+         kh3Jq0hJ7qEax1YGC18myCmMXTcnTchhPRH7iEL6n9SNthhoPNFmWdy0refTZK75CaRa
+         1q3fb9/cATJMB4tA+ZqFHHGwT9dp+VFXEirZ2+ihyuovW6xVlLWQ/v9NNwMdiXNPIchH
+         n4EVoLfIrDreUX6B8AOAtrxDQUzQUUuD+DhCMklYDYfSLTm2PcmPBiv9YtaqT3JdY8u6
+         RTKw==
+X-Forwarded-Encrypted: i=1; AJvYcCX8T/7rM6kilnrPTkPaFb0GB1UqXV4MzyN/dtw2Be0JO0AuyvzgLbbx5iERg3Mr2sl5k99jjz7C3yI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyxY3dTlEnOMBITD0LBOGnZPbhF5Vmk2/wCvWueET0NJTyheC+9
+	XFNetdFBvUhgfYosmQuQL5fyCSC2LlDwaJlYYUtZPp6xSLn/bwOY6ewdUytruxc1
+X-Gm-Gg: ATEYQzyNHmu34QGmQ6hm0XagD6zEWH3AloV8Wmk+KdH0Qp/MdGUqXL+UDNTSjeDP/Pl
+	gBEG+OwY5U9UMTNTfqLfVtNUlHxXark3Vjercp1K7coQDeK/YcHDyROc2IvhcOjiHX+CxVmO2oU
+	KpDGcmLY++W/cu1eYj9Acs7bESJrLMy/fc8gO13CVLmeyn3Bgo7Q1sjWbHelrjt9maURbGQQxgp
+	poT96+Q5w6S+nm1x95uoti8HT7ky/4ST6q0XNTSuQVsY53DjtU5ohj3tdu9qyFcUQGpKifo10Tf
+	1doFXFwo8d4IhM+MP5vGySumILU2fuyosG1halOHk9VG0Gb+eiQVxMYapEdHKOYzb0EFx7t+ygC
+	xZ8F8SjVqYVQrvnv3OclmE/IUUZv2+CjVk9k2eiLsXFfwtW3MX6KJw5WVl2opXIRLkqCj+yeDlX
+	WFwh0UigbcIlpg2NavUdbtFDnpq+X0dEI=
+X-Received: by 2002:a05:600c:4fc3:b0:485:3692:e906 with SMTP id 5b1f17b1804b1-4853692eacemr85848555e9.13.1773062024541;
+        Mon, 09 Mar 2026 06:13:44 -0700 (PDT)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4852e38c013sm367606925e9.8.2026.03.09.06.13.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2026 06:13:44 -0700 (PDT)
+Message-ID: <0b8b484575bb106ebabb1519073a416cd2e152c8.camel@gmail.com>
+Subject: Re: [PATCH RFC 0/8] AD9910 Direct Digital Synthesizer
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, Jonathan Cameron
+	 <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter
+ Clausen	 <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor
+ Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
+Date: Mon, 09 Mar 2026 13:14:29 +0000
+In-Reply-To: <ii3gz6t4ufaiznypykneeqrc2hgrrrea26pvyffhbr5ryx2u73@zar3awo4mvxh>
+References: <bdc973e5-df74-48f2-8884-439b03565940@baylibre.com>
+	 <9392fea00a9c3b23d1bc9468faa1b3cc20904398.camel@gmail.com>
+	 <20260301133806.5e706756@jic23-huawei>
+	 <pohirub7gjqu7xtq5qakkmr3wlek2rgj6kdgltjvir6g4jwgbr@hmjflsplni4o>
+	 <20260307140953.46db3c19@jic23-huawei>
+	 <7cc67826-3a8a-4190-9447-62b7d68e4445@baylibre.com>
+	 <20260307165816.46a98d34@jic23-huawei>
+	 <zurbjiq5nqbcid5h6kfworkmhczigirkzsqqsczfkatpg3bbe3@t7ssv76d3t4a>
+	 <42fe94df-ff8c-49d2-9a03-7d00e48eb22b@baylibre.com>
+	 <20260308181234.2e7ac4b9@jic23-huawei>
+	 <ii3gz6t4ufaiznypykneeqrc2hgrrrea26pvyffhbr5ryx2u73@zar3awo4mvxh>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked:
-	jiAn+KsVXT1cvqnRcSSqMXcmhsX/awrX1gykIl86tAROD/kRmfbZsNqux2DvhEIof9RrT7Kjk6vvbjBX6vGjhu3BFNUfrK3wGOl9K4axCqIhrc3ElbVG6/HF607cdokoSGrjjBDxVEuJQIScPImXEY0NQ+3Df1lyoMxqxvtv6z4tXDkhXEhffElm/UphtiBILrmJp8Gg7FFpQpvhlQ2fd+9Zw2Vmtt0/lcC10nLodU4iBPSS/vE93IFUOau40ZVkUnQHCFEbhIhkQQw7Nzzj4NNZxYCxm7isDVVVpPkF0awoLpqWjWOkVjSGkqaX52tNzJjkL4fhiLRccAKDQHR8VQ==
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR03MB3399.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6385d8d6-c25b-4f4c-eb4e-08de7ddcf365
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2026 13:08:26.2500
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: YFI107n2bOPskLcEpcefdcot6eo7H1JWDi/XWFfX812fSPKXYq/WbHFgtoFEehv8v2O7O+xAzU51t/T2y8TRa/SLz+s7Dr1qRs7CX4tusBk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR03MB5962
-X-Authority-Analysis: v=2.4 cv=f5RFxeyM c=1 sm=1 tr=0 ts=69aec64f cx=c_pps
- a=QsHTWkejXhsF4jLr7vu2uQ==:117 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
- a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=kj9zAlcOel0A:10
- a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=Z0pTeXoby7EwIRygza74:22 a=VwQbUJbxAAAA:8 a=gAnH3GRIAAAA:8 a=IpJZQVW2AAAA:8
- a=0IrIa_ooGUS6r_URlPwA:9 a=CjuIK1q_8ugA:10 a=IawgGOuG5U0WyFbmm1f5:22
- a=mpv_7z2a4kGo0ltCk4E8:22
-X-Proofpoint-ORIG-GUID: nnGq5e2Zp4cqd05hG8j2eNTLbakAY3aL
-X-Proofpoint-GUID: nnGq5e2Zp4cqd05hG8j2eNTLbakAY3aL
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA5MDExOSBTYWx0ZWRfX7D1wINPyAtot
- u302kqk4/AhW9851XDUiCRRZcheckGIa9w07B+HKYS0cg5TuH5IEdWyG8duus4qHVfx4sUV4AxV
- FiJINoO/I9t8TCoUkaJexh588tKnvQUaTPnrcWcWDYSk/HJUQgWX8tOn1GyfE1mZo+/HWipdjvQ
- +RoQDW1gWbLEKT3ZxOPNFMQJPpT14jM9FPJc9fPBQ/aOV+RmcvkizsKiUpmrep/U/LQA2FDir89
- z/sDwJHF+6iY1uv4ZujkwVlEcQcMSrSiOP+TpS6RZXGGDw8SM9QCWc5Z2SX6Byy1rHTj/Tv80OD
- dMuqtL/lPHbgTVciM7N2dD8SeyZ97dj2Q33pN27dFbIJ91ufCGbTyjjv2iytBDjPVcgGZChpw2A
- SSEghzNkM1rX4JDc0QYdN5eBpUCkwg57y3H/vqX8gM50R+mR+t0dVR1qqRQLTrC7EtH4pAl8gAn
- DJGbpgh3SiHGpUYp5CQ==
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-09_03,2026-03-06_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- malwarescore=0 clxscore=1015 phishscore=0 adultscore=0 priorityscore=1501
- spamscore=0 suspectscore=0 impostorscore=0 lowpriorityscore=0 bulkscore=0
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603090119
 
-> -----Original Message-----
-> From: Jonathan Cameron <jic23@kernel.org>
-> Sent: Saturday, March 7, 2026 1:05 PM
-> To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>; Hennerich, Michael
-> <Michael.Hennerich@analog.com>; Schmitt, Marcelo
-> <Marcelo.Schmitt@analog.com>; Sa, Nuno <Nuno.Sa@analog.com>; David
-> Lechner <dlechner@baylibre.com>; Andy Shevchenko <andy@kernel.org>;
-> Rob Herring <robh@kernel.org>; Krzysztof Kozlowski <krzk+dt@kernel.org>;
-> Conor Dooley <conor+dt@kernel.org>; Petre Rodan
-> <petre.rodan@subdimension.ro>; Marques, Jorge
-> <Jorge.Marques@analog.com>; linux-iio@vger.kernel.org;
-> devicetree@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: Re: [PATCH v2 4/4] iio: accel: adxl372: add support for ADXL371
+On Mon, 2026-03-09 at 09:52 +0000, Rodrigo Alencar wrote:
+> On 26/03/08 06:12PM, Jonathan Cameron wrote:
+> > On Sat, 7 Mar 2026 14:01:14 -0600
+> > David Lechner <dlechner@baylibre.com> wrote:
+> >=20
+> > > On 3/7/26 12:54 PM, Rodrigo Alencar wrote:
+> > > > On 26/03/07 04:58PM, Jonathan Cameron wrote:=C2=A0=20
+> > > > > On Sat, 7 Mar 2026 10:50:14 -0600
+> > > > > David Lechner <dlechner@baylibre.com> wrote:
+> > > > > =C2=A0
+> > > > > > On 3/7/26 8:09 AM, Jonathan Cameron wrote:=C2=A0=20
+> > > > > > > On Mon, 2 Mar 2026 10:22:47 +0000
+> > > > > > > Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+> > > > > > > =C2=A0=C2=A0=C2=A0=20
+> > > > > > > > On 26/03/01 01:38PM, Jonathan Cameron wrote:=C2=A0=C2=A0=C2=
+=A0=20
+> > > > > > > > > On Mon, 23 Feb 2026 10:02:00 +0000
+> > > > > > > > > Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+> > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=20
+> > > > > > > > > > On Sun, 2026-02-22 at 14:32 -0600, David Lechner wrote:=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=20
+> > > > > > > > > > > On 2/22/26 4:01 AM, Rodrigo Alencar wrote:=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=20
+> > > > > > > > > > > > On 26/02/21 02:16PM, David Lechner wrote:=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=20
+> > > > > > > > > > > > > On 2/20/26 10:46 AM, Rodrigo Alencar via B4 Relay=
+ wrote:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=20
+> > > > > > > > > > > > > > This patch series adds support for the Analog D=
+evices AD9910 DDS.
+> > > > > > > > > > > > > > This is an RFC so that we can agree/discuss on =
+the design that follows:
 >=20
-> [External]
+> ...
 >=20
-> On Fri, 6 Mar 2026 17:18:24 +0200
-> Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+> > > > > > > > > > > > > > represents a distinct signal path into the DDS =
+accumulator, so the
+> > > > > > > > > > > > > > driver
+> > > > > > > > > > > > > > models them as separate IIO output channels (al=
+l IIO_ALTVOLTAGE
+> > > > > > > > > > > > > > type).=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=20
+> > > > > > > > > > > > >=20
+> > > > > > > > > > > > > Generally IIO channels represent the physical inp=
+ut/output, not the
+> > > > > > > > > > > > > internal channels.=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=20
+> > > > > > > > > > > >=20
+> > > > > > > > > > > > That is part of the reason for this RFC. Dividing t=
+hose top-level modes
+> > > > > > > > > > > > into channels allows for better organization, as th=
+ey can operate together,
+> > > > > > > > > > > > i.e., phase or scale can be provided by single-tone=
+ profile, while
+> > > > > > > > > > > > frequency is controlled by the digital ramp generat=
+or (see Mode Priority
+> > > > > > > > > > > > section in the datasheet). Also, it allows to explo=
+re the most of standard
+> > > > > > > > > > > > ABIs like, scale, frequency, phase, sampling_freque=
+ncy and enable.
+> > > > > > > > > > > > Putting everything into a single channel would make=
+ things a lot messy
+> > > > > > > > > > > > to interface with.
 >=20
-> > Add support for the Analog Devices ADXL371, a +-200g 3-axis MEMS
-> > accelerometer sharing the same register map as the ADXL372 but with
-> > different ODR values (320/640/1280/2560/5120 Hz vs
-> 400/800/1600/3200/
-> > 6400 Hz), different bandwidth values, and different timer scale
-> > factors for activity/inactivity detection.
-> >
-> > Due to a silicon anomaly (er001) causing FIFO data misalignment on
-> > all current ADXL371 silicon, FIFO and triggered buffer support is
-> > disabled for the ADXL371 - only direct mode reads are supported.
-> >
-> > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> A couple of small formatting things. Otherwise looks good to me.
+> ...
 >=20
-> Thanks,
+> > > > > > > > > > > Looking at Table 5 in the datasheet really helped me =
+understand this better.
+> > > > > > > > > > > I think this series could benefit from a documentatio=
+n patch that explains
+> > > > > > > > > > > more about how the driver works with some diagrams.
+> > > > > > > > > > >=20
+> > > > > > > > > > > So really what we have here are a bunch of digital da=
+ta generators rather
+> > > > > > > > > > > than a bunch of altvotlage output channels. And the s=
+ame data channels can be
+> > > > > > > > > > > mixed and match as the source for up to 3 different c=
+omponents of the output
+> > > > > > > > > > > (frequency, phase, amplitude) depending on the priori=
+ty rules defined in
+> > > > > > > > > > > Table 5.=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=20
+> > > > > > > > > >=20
+> > > > > > > > > > More bellow... But note that all of the (or most of it)=
+ generators are going to
+> > > > > > > > > > be feed into a DAC. Your output is altvoltage but maybe=
+ we can treat the
+> > > > > > > > > > internals as voltage. Not sure.
+> > > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=20
+> > > > > > > > > > >=20
+> > > > > > > > > > > Digital data sources are really more like a buffer in=
+ IIO terms than a
+> > > > > > > > > > > channel. And before we added the IIO backend stuff, t=
+here wasn't really
+> > > > > > > > > > > any other digital data source/sink that I am aware of=
+ other than buffers
+> > > > > > > > > > > (but there are certainly a lot of odd corners of IIO =
+that I haven't explored
+> > > > > > > > > > > yet, so maybe I missed some).
+> > > > > > > > > > >=20
+> > > > > > > > > > > In a recent discussion, the idea of possibly needing =
+a way to provide
+> > > > > > > > > > > some userspace interface to be able to tweak knobs of=
+ an IIO backend
+> > > > > > > > > > > was also brought up.
+> > > > > > > > > > >=20
+> > > > > > > > > > > Putting those ideas together, I'm wondering if we nee=
+d some new channel
+> > > > > > > > > > > type or even a whole new interface (e.g. a new sysfs =
+directory like buffers
+> > > > > > > > > > > and events) for managing these digital data sources/s=
+inks that are not an
+> > > > > > > > > > > IIO buffer.
+> > > > > > > > > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=20
+> > > > > > > > > >=20
+> > > > > > > > > > But what would be that channel? In the end of the day, =
+we typically have voltage
+> > > > > > > > > > or
+> > > > > > > > > > current DACs and a DDS primary function is indeed to ge=
+nerate alternating
+> > > > > > > > > > waveforms
+> > > > > > > > > > that you then typically feed into a DAC (and in some ca=
+ses from the DAC into a
+> > > > > > > > > > power amplifier). So the DDS is just part of the data/s=
+ignal path. Anyways, not
+> > > > > > > > > > sure
+> > > > > > > > > > on the new type and I think we already have the "blocks=
+" in IIO for dealing with
+> > > > > > > > > > this:
+> > > > > > > > > >=20
+> > > > > > > > > > . frequency
+> > > > > > > > > > . phase
+> > > > > > > > > > . amplitude (raw + scale + offset)
+> > > > > > > > > >=20
+> > > > > > > > > > But you're right that maybe it's time to think in a bet=
+ter way to fit them
+> > > > > > > > > > together.=C2=A0
+> > > > > > > > > > Maybe a new type (as buffers or events) can make sense =
+where the above are
+> > > > > > > > > > treated as, example, scan
+> > > > > > > > > > elements. Maybe it's overcomplicating, not sure. It sur=
+ely needs=C2=A0 discussion and
+> > > > > > > > > > thinking :).
 >=20
-> Jonathan
+> ...
 >=20
-> >
-> > diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-> > index adb9e42653f1..7a1ee2fef618 100644
-> > --- a/drivers/iio/accel/adxl372.c
-> > +++ b/drivers/iio/accel/adxl372.c
-> > @@ -1,6 +1,6 @@
-> >  // SPDX-License-Identifier: GPL-2.0+
-> >  /*
-> > - * ADXL372 3-Axis Digital Accelerometer core driver
-> > + * ADXL371/ADXL372 3-Axis Digital Accelerometer core driver
-> >   *
-> >   * Copyright 2018 Analog Devices Inc.
-> >   */
-> > @@ -182,6 +182,14 @@ enum adxl372_odr {
-> >  	ADXL372_ODR_6400HZ,
-> >  };
-> >
-> > +enum adxl371_odr {
-> > +	ADXL371_ODR_320HZ,
-> > +	ADXL371_ODR_640HZ,
-> > +	ADXL371_ODR_1280HZ,
-> > +	ADXL371_ODR_2560HZ,
-> > +	ADXL371_ODR_5120HZ,
-> Might be worth a
-> 	ADXL371_ODR_NUM
-> entry so you can size the array from it below.
+> > > > > > > > > For history buffs, we had a bunch of DDS chips in staging=
+ at one point and never
+> > > > > > > > > manage to figure out the questions being raised here :(=
+=C2=A0 They are complex
+> > > > > > > > > beasts.=C2=A0 Clarity of ABI proposal and documentation i=
+s going to be key to driving
+> > > > > > > > > this series forwards. In a sense the code is the easy par=
+t.=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=20
+> > > > > > > >=20
+> > > > > > > > Does that mean that once good documentation is provided, th=
+e presented design can
+> > > > > > > > be accepted? Even though data generators/sources might not =
+be interpreted as
+> > > > > > > > altvoltage channels?=C2=A0=C2=A0=C2=A0=20
+> > > > > > >=20
+> > > > > > > I'm not sure yet :(=C2=A0 It's a pretty complex design and we=
+ haven't really come to a
+> > > > > > > conclusion
+> > > > > > > on how to handle this channel 'mixing' case.
+> > > > > > >=20
+> > > > > > > If we did go this way, we'd need to figure out a way to descr=
+ibe the mixing part.
+> > > > > > > So either we describe it as one channel (which is going to be=
+ really complex)
+> > > > > > > or we describe it as multiple channels but add extra ABI to m=
+ake it clear they
+> > > > > > > are mixed into a single 'physical' channel.
+> > > > > > >=20
 >=20
-> > +};
-> > +
-> >  enum adxl372_bandwidth {
-> >  	ADXL372_BW_200HZ,
-> >  	ADXL372_BW_400HZ,
-> > @@ -222,6 +230,37 @@ static const int adxl372_bw_freq_tbl[5] =3D {
-> >  	200, 400, 800, 1600, 3200,
-> >  };
-> >
-> > +static const int adxl371_samp_freq_tbl[5] =3D {
-> > +	[ADXL371_ODR_320HZ] =3D 320,
-> > +	[ADXL371_ODR_640HZ] =3D 640,
-> > +	[ADXL371_ODR_1280HZ] =3D 1280,
-> > +	[ADXL371_ODR_2560HZ] =3D 2560,
-> > +	[ADXL371_ODR_5120HZ] =3D 5120,
-> > +};
-> > +
-> > +static const int adxl371_bw_freq_tbl[5] =3D {
-> > +	[ADXL371_ODR_320HZ] =3D 160,
-> > +	[ADXL371_ODR_640HZ] =3D 320,
-> > +	[ADXL371_ODR_1280HZ] =3D 640,
-> > +	[ADXL371_ODR_2560HZ] =3D 1280,
-> > +	[ADXL371_ODR_5120HZ] =3D 2560,
-> > +};
-> Style wise, why not do the same for adxl372_bw_freq_tbl[] as here?
-> I slightly prefer this style, but key is consistency so if you'd
-> gone the other way for both that would have been fine as well.
+> ...
+>=20
+> > > > > > Some ideas have crossed my mind, like adding new option to the =
+in_/out_
+> > > > > > prefix for "internal" channels. But I it would take a long time=
+ to teach
+> > > > > > existing generic userspace libraries/tools about this.
+> > > > > >=20
+> > > > > > What has popped into my head just now is that perhaps we could =
+do like
+> > > > > > Rodrigo is proposing here reusing existing channels and standar=
+d attributes
+> > > > > > as much as possible and add a new "subcomponent_of" attribute t=
+o provide
+> > > > > > the link, similar to "current_trigger" for triggers.
+> > > > > >=20
+> > > > > > This way, it would still work with existing userspace tools (ev=
+en if it
+> > > > > > looks a bit confusing). And userspace tools could eventually be=
+ taught
+> > > > > > to present the channels as a tree-like structure with the main =
+channel
+> > > > > > and subcomponents nested under it.
+> > > > > >=20
+> > > > > > We would want to spell out up front what all of the anticipated=
+ ways of
+> > > > > > using it are. For example, I suspect eventually someone will wa=
+nt this
+> > > > > > attribute to be writeable to assign a specific limited resource=
+ to a
+> > > > > > specific channel. An I expect that we would eventually see some=
+thing were
+> > > > > > a single subcomponent is shared between multiple physical chann=
+els. In
+> > > > > > this case, we would want the value of the "subcomponent_of" att=
+ribute to
+> > > > > > be able to be a list.=C2=A0=20
+> > > > >=20
+> > > > > Something along those lines might work. I'd not thought about the=
+ case
+> > > > > of one 'internal' going to multiple 'external'.=C2=A0 Otherwise I=
+ was wondering
+> > > > > if something informal related to labels would work.=C2=A0 We've d=
+one that where
+> > > > > we've been associating things like voltage and power measurement =
+from a single
+> > > > > pin.=C2=A0 It's rather adhoc though.=C2=A0 Possibly we could roll=
+ it into a newer
+> > > > > more general scheme.=C2=A0=20
+> > >=20
+> > > Hmm... in this case, it sounds more flat where there isn't a clear ch=
+annel
+> > > that would be the "root" of a tree relation.
+> > >=20
+> > > > >=20
+> > > > > If the association is done as meta data attributes alongside exis=
+ting
+> > > > > channels then as you say existing tools will kind of work, just n=
+eed some
+> > > > > human understanding of what is actually being controlled until th=
+ey catch
+> > > > > up with the newer schemes.
+> > > > >=20
+> > > > > Lots of ways we could actually represent the graphs.=C2=A0 Going =
+to take some
+> > > > > figuring out!=C2=A0=20
+> > > >=20
+> > > > I like the idea of subchannels to create logical tree-structures. I=
+t opens
+> > > > up for other possibilities.
+> > > >=20
+> > > > I wonder if the varying channel index would still confuse a user, e=
+ven
+> > > > with this metadata attribute, like:
+> > > > - out_altvoltage0
+> > > > - out_altvoltage1
+> > > > 	- out_altvoltage1_subcomponent_of =3D out_altvoltage0
+> > > >=20
+> > > > would there be a different way to name the full_postfix in
+> > > > __iio_device_attr_init() that would allow to keep channel index the=
+ same
+> > > > (e.g. altvoltage0 for multiple internal sub-channel) and still be
+> > > > compatible with userspace tools? I don't know, something like:
+> > > > - out_altvoltage0
+> > > > - out_altvoltage0_0
+> > > > - out_altvoltage0_1
+> > > > - out_altvoltage0_2
+> > > >=20
+> > > > userspace tools would understand out_altvoltage0_0_frequency as:
+> > > > - direction: out
+> > > > - type: altvoltage
+> > > > - channel idx: 0
+> > > > - attr name: 0_frequency
+> > > >=20
+> > > > and that would be a problem?
+> > > > =C2=A0=20
+> > >=20
+> > > I have a feeling that could be problematic for existing attribute
+> > > parsers.
+> >=20
+> > Agreed.=C2=A0 This smells like extend_name and that caused all sorts
+> > of annoying problems for the userspace folk.
+> >=20
+> > >=20
+> > > How about using higher numbered channel indexes instead?
+> > >=20
+> > > out_altvoltage100_* =3D physical channel
+> > >=20
+> > > out_altvoltage101_* =3D subcomponent
+> > > out_altvoltage102_* =3D subcomponent
+> > > ...
+> > Have to be careful we don't run out of space for events.
+> > #define IIO_EVENT_CODE_EXTRACT_CHAN(mask) ((__s16)(mask & 0xFFFF))
+> > So we do have 16 bits hence this might work.
+> >=20
+> > I'm not sure we want to make rules around this though.
+>=20
+> Ok, I think we are reaching an agreement. With this, I think there
+> is room for a small redesign, i.e., having a root channel to represent
+> the physical DAC and child channels as follows (* on custom ABI):
+> - out_altvoltage100: root/physical channel
+> 	- profile*: for profile selection
+> 	- sampling_frequency: sysclk frequency value
+> 	- out_altvoltage110: single tone channel
+> 		- frequency: single tone profile FTW
+> 		- phase: single tone profile POW
+> 		- scale: single tone profile ASF
+> 	- out_altvoltage120: parallel port channel
+> 		- en
+> 		- frequency_scale* or frequency_gain*: for FM gain=20
+> 		- frequency or frequency_offset*
+> 		- phase or phase_offset*
+> 		- scale or scale_offset*
+> 	- out_altvoltage130: drg channel
+> 		- en
+> 		- destination*
+> 		- operating_mode*
+> 		- out_altvoltage131: drg upper limit channel
+> 			- frequency
+> 			- frequency_step*
+> 			- phase
+> 			- phase_step*
+> 			- scale
+> 			- scale_step*
+> 			- sampling_frequency
+> 		- out_altvoltage132: drg lower limit channel
+> 			- frequency
+> 			- frequency_step*
+> 			- phase
+> 			- phase_step*
+> 			- scale
+> 			- scale_step*
+> 			- sampling_frequency
+> 	- out_altvoltage140: ram channel
+> 		- en
+> 		- frequency: global FTW
+> 		- phase: global POW
+> 		- sampling_frequency
+> 		- destination*
+> 		- operating_mode*
+> 		- address_start*
+> 		- address_end*
+> 	- out_altvoltage150: osk channel
+> 		- en
+> 		- scale: global ASF
+> 		- scale_step*
+> 		- sampling_frequency
+> 		- pinctrl_en*
+>=20
+> so I ended up with 8 channels (rather than the initial 5). Breaking up th=
+e
+> DRG channel, following the tree structure allows to explore more of the
+> standard ABI. I suppose that even with this, documentation is no less
+> important. How does it look?
 
+FWIW, I kind of like this "child" channel concept and think it might be use=
+ful
+for other things to. One thing that comes to mind is how do we want to hand=
+le this
+in terms of scan_elements? Do we have it completely independent or do we wa=
+nt to play some
+games with it? Like allowing arbitrary sizes (not power of 2) in child chan=
+nels as long as the
+sum matches what was defined in the parent/physical channel.
 
-I will do the same for adxl372_bw_freq_tbl[] as here.
-Where do you think is the best place to put that, in patch 1? (introduce ch=
-ip_info structure)
+One usecase for the above would be the ad4030 ADC where we went with two ch=
+annels (for the common
+mode voltage) for one physical one and we define two scan elements where th=
+e total storage does
+not directly map the actual physical size. And while we can get away with i=
+t for SW buffers, for HW
+buffers it's not "so simple".
 
-Thanks
+Can be a bit tricky to implement but the above concept might open the door =
+for it.
+
+- Nuno S=C3=A1
+
 
