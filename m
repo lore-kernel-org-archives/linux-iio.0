@@ -1,324 +1,355 @@
-Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f49.google.com (mail-pj1-f49.google.com [209.85.216.49])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 259A0341076;
-	Mon,  9 Mar 2026 08:58:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.139.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773046688; cv=fail; b=ZjfvII2uywO7VgBwTcfaRpC7bTjbjmdAAf6U2hl9wHBOFrgPOiziSf0xfnwPFG34+etELCiFCl6U6s3EoL2Ta7HDJI2GnqKrsV7r841CGUFMpOUiOVcB1dHxdE7gcErOp31zebpBjmETv++tFMhKpZAFujXRlWFtjNwbeuqQxJg=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773046688; c=relaxed/simple;
-	bh=6FAk41CwsRphR8ITHr5ILzIWhocIfiW9jDHBqgGQCp4=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=kSxQ45IEYBVeoHAg7VLAJIReMgVBP5Fh1enOX3hOMYMwsq8RRFer4q/2ImBk9k6GW4UprE2kmXiGzkkJorWvWprVDsjVLZ5uE9LvD3JFH8di1dTaP39Z7qOp2ywTgBmUsDpO3Pb0MKXOz7q4yhOM7NMHyKxfSHt+pujP6eheXh8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=k4pITOW0; arc=fail smtp.client-ip=148.163.139.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 289F7385522
+	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 09:52:59 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.49
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773049986; cv=none; b=jl3GlxZdywkuuJ3osY73tPbqGq5KDHrgNkVgwh8m69aJautFTQro2UjSgzI7iQcqLuTTNX555V6XuVpPvGKlpJg15lNJrnhnoIEgss7rXtIAZ9KtPZftTfXEObQomQrzVzt776Zy5LqkCXkmJmQTWIYRxr35wvxytYplz5x1GuM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773049986; c=relaxed/simple;
+	bh=/5VN1F9S2L32gZPlc5C5S3KHeYNMyzOQh7KWGnCcLQc=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=ZEAo2nsQ0tvaOkaYytAoxpDAx923Te0shBSw2CYZXoa0uQeBx8nsAtec8XGeqgdG1ARD1Raic5qAYn14b6SSmVryNNdZKo9NGYqvZURwBR3dFggMxyJMu1BAvGZqTX/SoiTMA5X5fRHErktQ/QwCkhzQU7av3HN2mIR+9O/ajkA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=XS72XvKL; arc=none smtp.client-ip=209.85.216.49
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="k4pITOW0"
-Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 6298ZeR93618919;
-	Mon, 9 Mar 2026 04:57:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=6FAk4
-	1CwsRphR8ITHr5ILzIWhocIfiW9jDHBqgGQCp4=; b=k4pITOW0Z+Srwbimm3DDM
-	VCHtSTn7h6oeWExS8Ba38EuLsVThA5cfKsRmFh/CZmyzlLUHGJU6GIPmi3IABbMz
-	VN+xdZboiA28zAic2Rx3Xskg8neMj3tVgupo04SMmdepmh8NlEozKWiLpPLAknyo
-	oZxTV5f7ds5RSS1DmkXH2oOale9xCPIeiXdiWXGw3nB+Pj5P2fy0dIJ1nOK3bgQH
-	KBdCSdgBx4vehwygXdjhxhAVtb4h/tTNhdSdGxDo2lDnywjJzRnkz+kbXfFy1QKZ
-	aGfCVGIdnERqlIR/Ge0baUT8yCTo/bCUCCRpgE+6UG0vrKJa4b0h4PFCi2X0DU3R
-	A==
-Received: from co1pr03cu002.outbound.protection.outlook.com (mail-westus2azon11010021.outbound.protection.outlook.com [52.101.46.21])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cren9ndhk-2
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Mon, 09 Mar 2026 04:57:36 -0400 (EDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=k1BliAEn/QZvGhjh2eJysUvzNzaMJanp3zFFravA4QhpVWUtwxuIVs4gs5eUu86d74MIW6ao5jW3T8b76luwToDbGf1Zez/NwbaUhAw1PqAz98Y/OwIAJtTdbvGu/n9Oij7YU9fwNp5juVFdk7Rgpk+990E6peVcM6K4012wCa6fLTQ6u6mwSc6f0kIPCq8EapRonoDBVaXNj6mCCDSIAyrIoM55QZHKwPm7iwyA2wi5bgMvs1d8DZa2K5VXcfVFPy5vi+zMd9PkKJWnjRYAb4zCIZMJth5VlW3iey7bxfloVSQyE/ruifPAYlHv7tkedE1nb/SgG+pRe5hOgPPt+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=6FAk41CwsRphR8ITHr5ILzIWhocIfiW9jDHBqgGQCp4=;
- b=MAbdVnFxX4c1Syec7wAhof1gC2kg5kUmk/8hPWVaTWxHaxVYJt+8/R1WyV+JY9FZisjtBp3n63aEL2LF9v45jTg5mbNY2gvuj/qSZEjrpve+Gympk9vwceyRxTtqjFfXbP/REoVKOPTPYK2qPoGMft5C6FZraTDqmgYS/XATHLP+F8W+f+2NkDRZAN1a8lwebJp6exnkvV56ZmNKzNcV0aQdhXr2eFK7auTKCZQuJJE4P7QRiqsAXIuCyC317+AEYguDj1gLjfWiuJ1dilQCx0MA/zFdup2nLNGbvNAf1b3tdD+IL1zV/mugWm+iMPxMDn2myVvLu9R+YwmTbDiCcw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-Received: from SA5PR03MB8425.namprd03.prod.outlook.com (2603:10b6:806:47b::8)
- by BL1PR03MB6152.namprd03.prod.outlook.com (2603:10b6:208:319::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.25; Mon, 9 Mar
- 2026 08:57:33 +0000
-Received: from SA5PR03MB8425.namprd03.prod.outlook.com
- ([fe80::ad3e:e026:f2fa:bf5f]) by SA5PR03MB8425.namprd03.prod.outlook.com
- ([fe80::ad3e:e026:f2fa:bf5f%5]) with mapi id 15.20.9678.024; Mon, 9 Mar 2026
- 08:57:32 +0000
-From: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>
-CC: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>,
-        "Sa, Nuno" <Nuno.Sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof
- Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        =?utf-8?B?VXdlIEtsZWluZS1Lw7ZuaWc=?= <ukleinek@kernel.org>,
-        Liam Girdwood
-	<lgirdwood@gmail.com>, Mark Brown <broonie@kernel.org>,
-        Linus Walleij
-	<linusw@kernel.org>,
-        Bartosz Golaszewski <brgl@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
-Subject: RE: [PATCH 1/4] dt-bindings: iio: adc: add bindings for AD4691 family
-Thread-Topic: [PATCH 1/4] dt-bindings: iio: adc: add bindings for AD4691
- family
-Thread-Index: AQHcrJrnOQr61vQ0mEuBvbjSZ+4EebWgNqSAgAEV+KCAAiA0gIABjL6AgADugYA=
-Date: Mon, 9 Mar 2026 08:57:32 +0000
-Message-ID:
- <SA5PR03MB842501D7A27A10BC203E5433F779A@SA5PR03MB8425.namprd03.prod.outlook.com>
-References:
- <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
-	<20260305-ad4692-multichannel-sar-adc-driver-v1-1-336229a8dcc7@analog.com>
-	<20260305174559.1ded5173@jic23-huawei>
-	<LV9PR03MB84149F32D4CABA4D2827D85BF77AA@LV9PR03MB8414.namprd03.prod.outlook.com>
-	<08717cd6-a732-4f06-a6f1-8cbdaa755b78@baylibre.com>
- <20260308182839.19587743@jic23-huawei>
-In-Reply-To: <20260308182839.19587743@jic23-huawei>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: SA5PR03MB8425:EE_|BL1PR03MB6152:EE_
-x-ms-office365-filtering-correlation-id: 3d82eb4a-f395-46af-49e0-08de7db9e69a
-x-ld-processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|7416014|366016|1800799024|38070700021;
-x-microsoft-antispam-message-info:
- FwKmitPme7DBgc2AJJTlWIEKWLfhfCQwHC3EvIDVTNWyJEeByYGX/GoYZMWdEuO5qLfHeNv41A0dMmemiNt3sunROQdjAT8IFvYs9YUSy0Rok7TtcwLSnrBwuOp+BUSKES9e0RhyeA4hpSCEMEHuuJE+eEjZ96LOwU3rnv9DyY9wU8brSY/jGH6O+z91NV0fTlnbb1HwLuoF+0QfarQOUOSaGiiLmgBXJAynMKQrrlxx6cVmS4OL3ALxEiuNGEz7rTWhcTnk09vNIlPXJ2ILgC6jWjIsKOdUYF/NxbaMF7WRu+1qokWGgqH2jLdvZUUmJz1m3J00QDqMIPOBIMr4D9YankLZGGcnBRSAc5QtUatkW83ZjlhLxWG/MzM28lHNgw7jkLxDUnyF3xzp67xMtqSoKy9Ac9y2rqjWhm1BcaHZQ5N43801Gyjp63K4Mcrw3K09jB3KA2c7adVH8D1Ldj0ZYtKhLV2XRTGo9XJShFVgxjYCpdqmGu1hyiI8bjLvAD17dX3p2VNsidHplE+i9Yx2fb878rz0vYhZXKUa8r5RDEAwPrLmEwIz/HVv5X7CP8CBcUQGEJRWr5RpIJwB6dnp1rqCAK1q9mfuMsSEuOcPVfNrPLhZAqiSLf4IBeKH98Kg1wskr++KTTMB09YlS6rLL0c68XQIy5znNQQ01ysIU14zM+w6WSkGvICgLi6S94w01TZvlaZaHPDv9UDkULu4mFrXoG6AjbAUpECq4vWkv1DlbRFvwTA62zPSXM3T3Ui0sDmzfHucOk7GDVr4fphov+mUmsQIBBHXrehVsFU=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA5PR03MB8425.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?utf-8?B?aGVHV280cUR1UmpzT1lWL2FBTDhWZHdCRWF6QjViWHVmdGdoc2M1YzI1U0VV?=
- =?utf-8?B?ajFERmNiNE83QWlxQTJaUHk5bWVVVGl1TkovcFNLMUYrRkFNUndrVlVLTCtI?=
- =?utf-8?B?TndvT1IwelRqUURreUpuYmxwSU9GTmN3M1V1d2NHQ2s0UGlGRW05WWZiMUlH?=
- =?utf-8?B?cE90dWJ3cVMrMUIvMjN3ZHNVUkMrUnJRam83eGEwYkk0N2VUSnV0K25XWGNS?=
- =?utf-8?B?ZW5FRmQ5d2g1cUxFVlpXblBGUENxT2lSWksyckJPdGU2U0ZxRWhnUWlRQUdy?=
- =?utf-8?B?K3lyd0ZtNGo4MHhQVFZFSlg2SWtaVDhlVHVpeU5xcFJ3ZklRa1k0VERtSjlw?=
- =?utf-8?B?b2ZpTEplNDdFcXNOeW9CMmlQNGpNUEFobC9mNDd4UHlhQVZIT29TdEVFWVF0?=
- =?utf-8?B?dEhjVjljeDd6Wm0xUEQ1YXdnVDlreDZTQUswZ1crc1ZMY0VKUG9md1B1Z015?=
- =?utf-8?B?QWc3dENzSWJHaWYwVStBTFhsVUpBMFd0NDdlWnUxM2JwSDlJTzZaNzJiN2JO?=
- =?utf-8?B?Y1ZGL05nWFVRcVE2eWxKbmZuWWRmTnRSeU1yejBjMjFlOUdoT1lrK2tQUXR1?=
- =?utf-8?B?bXpZOUtqUUV5UDIvREFnRWZEYmxPdWYvK2cvVTlqWlNieUJuYk5GVU84UWxv?=
- =?utf-8?B?VlFvTEdHWWZuV3gyWkNld2U5VEZ5ZGZ3dWZ4UWpaR0JtWmpEZUU0Rmc3Z3pr?=
- =?utf-8?B?Nmp1MXA1YndzQzZJWC9NWDE1SGxPUm1YWHVaUDJVdXVwd3hIL1E2QnIwd0Jn?=
- =?utf-8?B?dzVWQ3BDYjA1RUl0ak0xaWxlbStUeVRuclQ1L1ZYYmdKcmw1cVFBeU1hQmJK?=
- =?utf-8?B?U3JWMzVrMk9LWStLR2tWZy81T1JQQktNSHIwRVJaeHFRem9MNEpOQ2hreUsr?=
- =?utf-8?B?RURWbCttNlJKaDI1SCtNdmd6d3VVTzBTS1RVaU10czhwVjdqbk9hUE0vSnlW?=
- =?utf-8?B?TTZJVTR4VTRZZWkwOFJUanhGMEJzTENZOGFvd2xLdkVzUWNXelR3eUZXNktP?=
- =?utf-8?B?WkNQcDNoQ29HL1RPWUlpNlNvc045SHpYemZHNEdDanlxY0M2TWMxUmt6bFBS?=
- =?utf-8?B?dnNTU3pBWjcyeVprbEc4NmVlZFp2cjJTVnlGZmZDS2I3eFVLczJBNDg5Ry83?=
- =?utf-8?B?TUt3dHhWQUVVWlhXZldWSTB0ZFVpQWl3YUwxKzlhYUM0b0lGek5STFFFVmlS?=
- =?utf-8?B?cVpoc0RuK2F4RUtHZEVkYmFiVUhOaW1qSnF1WjNJUUlzS0dDVVUydE9YOFlK?=
- =?utf-8?B?anlzNnFBS0lNeVRFT1pTZkt5aENWTElhaXd1Q2JJbmFYWXRlYnloZEw4Z281?=
- =?utf-8?B?dTNHOGtQS3BBYmhzem1pQnU1bnllbjRNU1lyYUNvOWxsY20veUFHS2o5dXZu?=
- =?utf-8?B?YTF5ZnNTR2lvZTNwTWxTM1h1UWtMaFdQRTVqVXBZOHNkTmNmL2tVdHlsc210?=
- =?utf-8?B?QUtQVzRhanczbUdTYU14d0FUbytvODdxb3h4UW9YbzQzbFVlZ3J0VlZ4NEdv?=
- =?utf-8?B?TkxSNW5ucjIxaHdaZGx6UkJOSEZHRmhJYTVWWWhMVTlEb1E1cUhRaE9aNldT?=
- =?utf-8?B?WkFqMHJSaFczRlUxTFFWSWJLaVQxOTlyVVFOcEJrMDFBZUVzelRWUzJOc1Q2?=
- =?utf-8?B?aWdMdy9HT1p2RkpLanc5SFB5S25uVHRSQi9xZk9QUkFsb1h2aUgrTnVta1pt?=
- =?utf-8?B?aGpOaHkzNUthU1JxbVJCS1FaWU5tUE9ZVGF0TjV5cFJYRmlQeDQwbVB0RnZJ?=
- =?utf-8?B?OFQrZVhIOEl5aklDSEVxYkxJbFhtWVZLM1lyOHhnTXYrL3kxVUlXOGV4RjVN?=
- =?utf-8?B?c0tIdzc5WlR4QU00bzdZNzVhN3hEQmZaeW1qSXoySFpmVUUvR003aFVHUkFG?=
- =?utf-8?B?VHJGTHlKdTlsTHFBeGRQSk5GWlJSbzVBaUtMZDdTMHFnRGJVWFcxOHRGdER4?=
- =?utf-8?B?Z3BBVXp0U0F6ZkwrRWF4akxYZkIzdnAzUEwrTXcrK2FHSm4rdFN0VmF4MytZ?=
- =?utf-8?B?NVNCSXVZRmthTFExOFhQT0MxRWw5UHlweENuV2t5dUtLNUhCNjkvekthTnE5?=
- =?utf-8?B?aFJhZVpscWdkS1k4bVJsSktEWm5VbzA4ZHBYWDdWSDhDaDA1YTdpZjBPMk13?=
- =?utf-8?B?UGJESUduUlFJRjFZSS9reTVvQ3RLYUZKaVlkUTRGNHlQUTFFS3RxaUI4c3Fp?=
- =?utf-8?B?SnNPMXFuSFR5elp5SlhlaXhvWUpJVUpaWGNFL2U2UFVqcWtTMVFEUEhYQjg1?=
- =?utf-8?B?U0NaNzFPaG50ekY4bHlLVEdBYXhmZTJzZFFGVnpEYTZzNnlFMS9LMEUyZ3Zy?=
- =?utf-8?B?NTZXU0U0czJwS2VEY2pqS3Q1c1lrc0RaNFB4dkRKWXdKZE5HRCtmdz09?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XS72XvKL"
+Received: by mail-pj1-f49.google.com with SMTP id 98e67ed59e1d1-3598df39444so4961749a91.2
+        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2026 02:52:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773049979; x=1773654779; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=HtRTYnyFX0fSoLC5XC9JrdYAZCbOcOn4vu9sOfqB5uo=;
+        b=XS72XvKLCkQ5LUZ9GytSIGHmDVwV0FNw5zxG6YPcMQp47zqP8GDm+SjZ3bsjjzeOOX
+         o1HOGZSABm/3cuTbFVLRqMWUprKfobU1PUXIwHHdgV42DMp8UJnAyXJPMtU4595hDXgB
+         nezgbKqcBVA/B9cDEUhcOCjHCQt21TYpCOZ8N7Vf9Bu83NPMnjiYM/ujuBHgO//OTnNF
+         iDy+Bd8Mq/uhjt+gkhiMH/CLABC/iSUFpDGYkY7VmqZrGaLxf50yeiq5kbIQ2TaAHEgS
+         O4/6qwb4zbCofj4m2VoEMqBilCH46RUmStFzi7slu5WNM4GbVP6qPIlzMlveNHChI8JA
+         4LwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773049979; x=1773654779;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=HtRTYnyFX0fSoLC5XC9JrdYAZCbOcOn4vu9sOfqB5uo=;
+        b=kQ+2O1NSE8kn04Mhp7RkkdnlB3LNIAY3wPVZeaPuXLm5YWWneC+X7hsVzUWXY5iOH2
+         1ybNp+0b5zMGcbXt58fQ933+db4Vm6f4lRWC33an1FRcvF6rZMFFHYp5oaUP8cFPyy1q
+         eMKvQGEDjPHbPeBgBLZ9+sWQ0etKKVsDZIh2/g84p2CQj7u+XFgw7skmpScAQWrFNQpV
+         NJyDckE2QGXTUnLoYLcGmqNguPHzxS0bIm4xnVE7jybh9kNji1ORCFu0xgyq1JtkXW+Y
+         oDx+Wv/Bifuwd9DlTcb2LS9MhcR7V741Wr1s8+TDEF8GuKXu+Su6k4yPW973xkwRdOuI
+         xNDQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWSLotRrou1FfnUGx+ftWFeSAC2NMNK7o+8vlthukS9U6UPQ7CusZmNCtYHziQsyTtO66X2RcA6oG8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy3KE3CpLNdEZ8ZNwTHNkkDCTQ0lRUCZjtWX/qtNMLgFkS7P+0g
+	9IkLEsNEZ6cTR2TttBjlpyn1m9vVttgdV6UJ2qJpefIWI4tJ7neVzT5R
+X-Gm-Gg: ATEYQzzrmyNtWmx/j+7Pbc0kiYO91eTlXRMBXBG2p59yhEMQnh3snw/W/XrxAZ4MCon
+	Z7iQCF429TAdOITlnczV4XdglLgvlik/udUzTH5QNsfOb+vr65hsTmoc7Orxx2MX+AsMDSESZvj
+	B+Sj3NSqvsv7AlMbPYCJpq4v5DIefsiAgcWBKmaYw3PCHQiIG0miLQp++zInjWRLNtzDOXK/weq
+	7nhOhKgHVBaljDf+EkFEHDelqKSUBbEynYm2LL7hcxxRCtGz8fypbns2Db99mC0bSQtnQosp7Ix
+	ZEYPBB1cZIAJXGun/k53se/YrkvV6+B4ZFmCpsg7MzyfPT/HGkAv7h6goQ57DHdx2LcARY1pqD4
+	CtT4ekWsTPM0667JhRQP/7+ovJIMi5c/J8OCy/QFb8GMAM09pfkJ1lFtwl5JfOCjQmffO3/KbQ8
+	XL/4mWzEnddPV4RVnwj8ngVyYaKtK9x5KRai8vxHXCMA/y8IzXbENAopKwcd0Ilf1Fz6SI8Seq3
+	zoJnG3YtnctVUd67emZd+tXfB0G3DSpXyq5m74vlnJGG1Pd/wrcGDJHcMkR/g==
+X-Received: by 2002:a17:90b:2e0c:b0:33b:a906:e40 with SMTP id 98e67ed59e1d1-359be21d409mr9470998a91.2.1773049979021;
+        Mon, 09 Mar 2026 02:52:59 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-359b2d39238sm13583400a91.4.2026.03.09.02.52.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 Mar 2026 02:52:58 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Mon, 9 Mar 2026 09:52:40 +0000
+To: Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>
+Cc: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, 
+	Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>, rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH RFC 0/8] AD9910 Direct Digital Synthesizer
+Message-ID: <ii3gz6t4ufaiznypykneeqrc2hgrrrea26pvyffhbr5ryx2u73@zar3awo4mvxh>
+References: <bdc973e5-df74-48f2-8884-439b03565940@baylibre.com>
+ <9392fea00a9c3b23d1bc9468faa1b3cc20904398.camel@gmail.com>
+ <20260301133806.5e706756@jic23-huawei>
+ <pohirub7gjqu7xtq5qakkmr3wlek2rgj6kdgltjvir6g4jwgbr@hmjflsplni4o>
+ <20260307140953.46db3c19@jic23-huawei>
+ <7cc67826-3a8a-4190-9447-62b7d68e4445@baylibre.com>
+ <20260307165816.46a98d34@jic23-huawei>
+ <zurbjiq5nqbcid5h6kfworkmhczigirkzsqqsczfkatpg3bbe3@t7ssv76d3t4a>
+ <42fe94df-ff8c-49d2-9a03-7d00e48eb22b@baylibre.com>
+ <20260308181234.2e7ac4b9@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked:
-	g8pnO9s6FB3KSKFbh5xzlwo91xG+pPlPao21dHYOOx4aYT7Vic9JKLE8H5h7dpXwaGFD6wg0kN83D4T6qdq0RCO3KA9k1NH/kQOqwo0sAhUSmSlEAAhZt1iU5Zm0f1JxU25f8eQIeOo3iRvO07k3p+CjCrrPN20flt1ZP+EEkkS7T5QE7PdfDEp4dc71q/wQZaFG9X6S/c3pLWZt2xXVq8K1QKrevhcxy+jaVilZBXhTkXYfLkbY3tBKT19n8spWd0rW8iincTHS0ZY6e4Ps6v9S+L5iPy5U7MyXbwuQWYW6TEV0EkBghXB0XBU8YG1OE3VEpnI2oi+sarPyk1vb6Q==
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA5PR03MB8425.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3d82eb4a-f395-46af-49e0-08de7db9e69a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Mar 2026 08:57:32.4025
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nPUHUnL95hf9bO4NNw9slH5A1YaF9Lc2EA9XvT2r/tquoOHtD8JzuFAWz9+b7xJqWE15Vwv3QZMcJiWF0YhRlQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL1PR03MB6152
-X-Proofpoint-GUID: DVKjbTTPXS70Y3Jn6guNitGrpfoBTRDE
-X-Authority-Analysis: v=2.4 cv=O9A0fR9W c=1 sm=1 tr=0 ts=69ae8b80 cx=c_pps
- a=ReLZl+GdXdFt35wSL8r9Ug==:117 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
- a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=IkcTkHD0fZMA:10
- a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=ugNRTJOwpmtT476g4l8T:22 a=VwQbUJbxAAAA:8 a=IpJZQVW2AAAA:8 a=gAnH3GRIAAAA:8
- a=pGLkceISAAAA:8 a=G9g-uqL-ENfZw1q8yw8A:9 a=QEXdDO2ut3YA:10
- a=IawgGOuG5U0WyFbmm1f5:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzA5MDA4MSBTYWx0ZWRfX3j8AfMaHrw5x
- +VN9to9YIpIHxLCN1q/JUmXPKO3O9URXRGZYTT4+u82dAngCIAgjqdrct+0UhCfquMiks2UzXb3
- HFwIPtQDZh0fjmzWh74F1zMP8K+ecZhoshYfofEd9Dq4Re2xCrCA6j0blHz9kkQ5yZCSQjsqvNP
- 207nWvg54kXCYcd43HPvSFuBJj/WQ03XwuTa8mCrrEASH9TKFfp7QsqGiWkoVTYsFII9Z7btzAp
- 9LtEGhJSPHndgMdiWDYP0w6mZEiH7aXX4TBIRFGGpqc/D6fT3LMBTKW9VV+w+XuFUoY1vhiOKvn
- sOZZGSLrw5blnbjdc7oxvVtHV1AFAi2SW/HbiB0E2whTOyvh0sRzYerynyo4e4UZUX/J4CxRik8
- B0Nd53TvxMmbPGHWga+AyDBh271/v6nThDBBq6SCCFnw1P0pzxPm8/f+pvrzNL0JXo0vteHZEyO
- EOOwPbj+PGf+lneMDRA==
-X-Proofpoint-ORIG-GUID: DVKjbTTPXS70Y3Jn6guNitGrpfoBTRDE
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-09_03,2026-03-06_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 clxscore=1015 malwarescore=0 bulkscore=0 phishscore=0
- spamscore=0 impostorscore=0 adultscore=0 lowpriorityscore=0
- priorityscore=1501 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2602130000
- definitions=main-2603090081
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260308181234.2e7ac4b9@jic23-huawei>
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSm9uYXRoYW4gQ2FtZXJv
-biA8amljMjNAa2VybmVsLm9yZz4NCj4gU2VudDogU3VuZGF5LCBNYXJjaCA4LCAyMDI2IDg6Mjkg
-UE0NCj4gVG86IERhdmlkIExlY2huZXIgPGRsZWNobmVyQGJheWxpYnJlLmNvbT4NCj4gQ2M6IFNh
-YmF1LCBSYWR1IGJvZ2RhbiA8UmFkdS5TYWJhdUBhbmFsb2cuY29tPjsgUmFkdSBTYWJhdSB2aWEg
-QjQgUmVsYXkgPGRldm51bGwrcmFkdS5zYWJhdS5hbmFsb2cuY29tQGtlcm5lbC5vcmc+OyBMYXJz
-LQ0KPiBQZXRlciBDbGF1c2VuIDxsYXJzQG1ldGFmb28uZGU+OyBIZW5uZXJpY2gsIE1pY2hhZWwg
-PE1pY2hhZWwuSGVubmVyaWNoQGFuYWxvZy5jb20+OyBTYSwgTnVubyA8TnVuby5TYUBhbmFsb2cu
-Y29tPjsgQW5keQ0KPiBTaGV2Y2hlbmtvIDxhbmR5QGtlcm5lbC5vcmc+OyBSb2IgSGVycmluZyA8
-cm9iaEBrZXJuZWwub3JnPjsgS3J6eXN6dG9mIEtvemxvd3NraSA8a3J6aytkdEBrZXJuZWwub3Jn
-PjsgQ29ub3IgRG9vbGV5DQo+IDxjb25vcitkdEBrZXJuZWwub3JnPjsgVXdlIEtsZWluZS1Lw7Zu
-aWcgPHVrbGVpbmVrQGtlcm5lbC5vcmc+OyBMaWFtIEdpcmR3b29kIDxsZ2lyZHdvb2RAZ21haWwu
-Y29tPjsgTWFyayBCcm93bg0KPiA8YnJvb25pZUBrZXJuZWwub3JnPjsgTGludXMgV2FsbGVpaiA8
-bGludXN3QGtlcm5lbC5vcmc+OyBCYXJ0b3N6IEdvbGFzemV3c2tpIDxicmdsQGtlcm5lbC5vcmc+
-OyBsaW51eC1paW9Admdlci5rZXJuZWwub3JnOw0KPiBkZXZpY2V0cmVlQHZnZXIua2VybmVsLm9y
-ZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZzsgbGludXgtcHdtQHZnZXIua2VybmVsLm9y
-ZzsgbGludXgtZ3Bpb0B2Z2VyLmtlcm5lbC5vcmcNCj4gU3ViamVjdDogUmU6IFtQQVRDSCAxLzRd
-IGR0LWJpbmRpbmdzOiBpaW86IGFkYzogYWRkIGJpbmRpbmdzIGZvciBBRDQ2OTEgZmFtaWx5DQo+
-IA0KPiBbRXh0ZXJuYWxdDQo+IA0KPiBPbiBTYXQsIDcgTWFyIDIwMjYgMTI6NDg6MzkgLTA2MDAN
-Cj4gRGF2aWQgTGVjaG5lciA8ZGxlY2huZXJAYmF5bGlicmUuY29tPiB3cm90ZToNCj4gDQo+ID4g
-T24gMy82LzI2IDU6NTUgQU0sIFNhYmF1LCBSYWR1IGJvZ2RhbiB3cm90ZToNCj4gPiA+DQo+ID4g
-Pg0KPiA+ID4+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+ID4gPj4gRnJvbTogSm9uYXRo
-YW4gQ2FtZXJvbiA8amljMjNAa2VybmVsLm9yZz4NCj4gPiA+PiBTZW50OiBUaHVyc2RheSwgTWFy
-Y2ggNSwgMjAyNiA3OjQ2IFBNDQo+ID4gPj4gVG86IFJhZHUgU2FiYXUgdmlhIEI0IFJlbGF5IDxk
-ZXZudWxsK3JhZHUuc2FiYXUuYW5hbG9nLmNvbUBrZXJuZWwub3JnPg0KPiA+ID4+IENjOiBTYWJh
-dSwgUmFkdSBib2dkYW4gPFJhZHUuU2FiYXVAYW5hbG9nLmNvbT47IExhcnMtUGV0ZXIgQ2xhdXNl
-biA8bGFyc0BtZXRhZm9vLmRlPjsgSGVubmVyaWNoLCBNaWNoYWVsDQo+ID4gPj4gPE1pY2hhZWwu
-SGVubmVyaWNoQGFuYWxvZy5jb20+OyBEYXZpZCBMZWNobmVyIDxkbGVjaG5lckBiYXlsaWJyZS5j
-b20+OyBTYSwgTnVubyA8TnVuby5TYUBhbmFsb2cuY29tPjsgQW5keSBTaGV2Y2hlbmtvDQo+ID4g
-Pj4gPGFuZHlAa2VybmVsLm9yZz47IFJvYiBIZXJyaW5nIDxyb2JoQGtlcm5lbC5vcmc+OyBLcnp5
-c3p0b2YgS296bG93c2tpIDxrcnprK2R0QGtlcm5lbC5vcmc+OyBDb25vciBEb29sZXkNCj4gPGNv
-bm9yK2R0QGtlcm5lbC5vcmc+Ow0KPiA+ID4+IFV3ZSBLbGVpbmUtS8O2bmlnIDx1a2xlaW5la0Br
-ZXJuZWwub3JnPjsgTGlhbSBHaXJkd29vZCA8bGdpcmR3b29kQGdtYWlsLmNvbT47IE1hcmsgQnJv
-d24gPGJyb29uaWVAa2VybmVsLm9yZz47IExpbnVzDQo+IFdhbGxlaWoNCj4gPiA+PiA8bGludXN3
-QGtlcm5lbC5vcmc+OyBCYXJ0b3N6IEdvbGFzemV3c2tpIDxicmdsQGtlcm5lbC5vcmc+OyBsaW51
-eC1paW9Admdlci5rZXJuZWwub3JnOyBkZXZpY2V0cmVlQHZnZXIua2VybmVsLm9yZzsgbGludXgt
-DQo+ID4gPj4ga2VybmVsQHZnZXIua2VybmVsLm9yZzsgbGludXgtcHdtQHZnZXIua2VybmVsLm9y
-ZzsgbGludXgtZ3Bpb0B2Z2VyLmtlcm5lbC5vcmcNCj4gPiA+PiBTdWJqZWN0OiBSZTogW1BBVENI
-IDEvNF0gZHQtYmluZGluZ3M6IGlpbzogYWRjOiBhZGQgYmluZGluZ3MgZm9yIEFENDY5MSBmYW1p
-bHkNCj4gPiA+Pg0KPiA+ID4+IFtFeHRlcm5hbF0NCj4gPiA+Pg0KPiA+ID4+IE9uIFRodSwgMDUg
-TWFyIDIwMjYgMTQ6MjM6MjcgKzAyMDANCj4gPiA+PiBSYWR1IFNhYmF1IHZpYSBCNCBSZWxheSA8
-ZGV2bnVsbCtyYWR1LnNhYmF1LmFuYWxvZy5jb21Aa2VybmVsLm9yZz4gd3JvdGU6DQo+ID4gPj4N
-Cj4gPiA+Pj4gRnJvbTogUmFkdSBTYWJhdSA8cmFkdS5zYWJhdUBhbmFsb2cuY29tPg0KPiA+ID4+
-Pg0KPiA+ID4+PiBBZGQgWUFNTCBiaW5kaW5ncyBhbmQgZHQtYmluZGluZ3MgaGVhZGVyIGZvciB0
-aGUgQW5hbG9nIERldmljZXMgQUQ0NjkxDQo+ID4gPj4+IGZhbWlseSBvZiBtdWx0aWNoYW5uZWwg
-U0FSIEFEQ3MgKEFENDY5MSwgQUQ0NjkyLCBBRDQ2OTMsIEFENDY5NCkuDQo+ID4gPj4+DQo+ID4g
-Pj4+IFRoZSBiaW5kaW5nIGRlc2NyaWJlcyBmaXZlIG9wZXJhdGluZyBtb2RlcyBzZWxlY3RhYmxl
-IHZpYSB0aGUNCj4gPiA+Pj4gYWRpLHNwaS1tb2RlIHByb3BlcnR5LCBvcHRpb25hbCBQV00vY2xv
-Y2sgZm9yIENOViBDbG9jayBhbmQgQ05WIEJ1cnN0DQo+ID4gPj4+IG1vZGVzLCBHUElPIHBpbnMs
-IHZvbHRhZ2Ugc3VwcGxpZXMgYW5kIHRoZSB0cmlnZ2VyLXNvdXJjZSBpbnRlcmZhY2UgZm9yDQo+
-ID4gPj4+IFNQSSBFbmdpbmUgb2ZmbG9hZCBvcGVyYXRpb24uDQo+ID4gPj4+DQo+ID4gPj4+IFNp
-Z25lZC1vZmYtYnk6IFJhZHUgU2FiYXUgPHJhZHUuc2FiYXVAYW5hbG9nLmNvbT4NCj4gPiA+Pg0K
-PiA+ID4+IEhpIFJhZHUsIEknbSBnb2luZyB0byBmb2N1cyBvbiBtb2RlLi4uIE1vc3RseSBiZWNh
-dXNlIHRoaW5ncyBjYWxsZWQNCj4gPiA+PiBtb2RlIGFyZSB1c3VhbGx5IGEgc2lnbiBvZiBtaXhp
-bmcgdXAgZGlmZmVyZW50IGFzcGVjdHMgb2YgdGhlIGJvYXJkDQo+ID4gPj4gZGVzaWduLi4uDQo+
-ID4gPj4NCj4gPiA+IEhpIEpvbmF0aGFuLCBLcnlzenRvZiwNCj4gPiA+DQo+ID4gPiBUaGFuayB5
-b3UgZ3V5cyBzbyBtdWNoIGZvciB5b3VyIHJldmlldy4NCj4gPiA+DQo+ID4gPiBSZWdhcmRpbmcg
-J21vZGUnLCBJIGFncmVlIHRoYXQgaXQgc2hvdWxkIGJlIHNvbWV0aGluZyB0aGF0IGNvdWxkIGJl
-IG1vZGlmaWVkDQo+ID4gPiBhdCBydW4tdGltZSwgZXNwZWNpYWxseSBzaW5jZSBhbGwgcmVnaXN0
-ZXIgbW9kZXMgKENOVl9DTE9DSywgQ05WX0JVUlNULA0KPiA+ID4gQVVUT05PTU9VUyBhbmQgU1BJ
-X0JVUlNUKSByZWx5IG9uIHRoZSBzYW1lIHByaW5jaXBsZXMgb2YgcmVhZGluZyB0aGUNCj4gPiA+
-IEFEQyByZXN1bHQgZnJvbSB0aGUgcmVnaXN0ZXJzLCB0aGUgbWFpbiBkaWZmZXJlbmNlIGJlaW5n
-IHRoYXQgUFdNIG9uIHRoZQ0KPiA+ID4gQ05WIHBpbiBpcyByZXF1aXJlZCBmb3IgQ05WX0NMT0NL
-IGFuZCBDTlZfQlVSU1QsIGJ1dCB0aGUgYm9hcmQgZGVzaWduDQo+ID4gPiBzdGF5cyB0aGUgc2Ft
-ZS4gUGVyaGFwcyB0aGlzIFBXTSBjYW4gYmUgaW5pdGlhbGl6ZWQgYXQgc3RhcnQtdGltZSBhbmQg
-b25seQ0KPiA+ID4gYmUgdXNlZCB3aGVuIENOViBtb2RlcyBhcmUgYmVpbmcgdXNlZC4gVGhpcyB3
-b3VsZCBtZWFuIG1vZGUgY2FuDQo+ID4gPiBiZWNvbWUgYW4gSUlPIGF0dHJpYnV0ZSB0aGF0IGNv
-dWxkIGJlIHNldCBieSB0aGUgdXNlciBhdCBydW4tdGltZS4NCj4gPg0KPiA+IE1vcmUgbGlrZWx5
-LCBpdCB3b3VsZCBiZSB0d28gZGlmZmVyZW50IHdheXMgb2YgZG9pbmcgYSBidWZmZXJlZCByZWFk
-LA0KPiA+IHNvIG1heWJlIHR3byBkaWZmZXJlbnQgYnVmZmVycz8gT3IganVzdCBwaWNrIHRoZSAi
-YmVzdCIgb25lIGFuZCBvbmx5DQo+ID4gaW1wbGVtZW50IHRoYXQgbW9kZS4NCj4gDQo+IEkgJ3Ro
-aW5rJyBidXJzdCBtb2RlIGlzIHJlYWxseSBhbiBvdmVyc2FtcGxpbmcgdGhpbmcgYXMgeW91IHJl
-YWQgYmFjayBmcm9tDQo+IGVpdGhlciB0aGUgb3V0cHV0IG9mIGFuIGF2ZXJhZ2luZyBmaWx0ZXIg
-b3IgYW4gYWNjdW11bGF0b3IuDQo+IEkgZG91YnQgdGhlcmUgaXMgcmVhc29uIHRvIHN1cHBvcnQg
-Ym90aCB0aGUgb3ZlcnNhbXBsZWQgYW5kIHJhdw0KPiByZWFkaW5ncyBhdCB0aGUgc2FtZSB0aW1l
-Lg0KPiANCg0KSSBhZ3JlZSB3aXRoIHRoYXQsIHBlcmhhcHMgYnVyc3QgbW9kZXMgKENOVl9CVVJT
-VCBhbmQgU1BJX0JVUlNUKSBjb3VsZA0KYmUgZHJvcHBlZC4gQWxzbywgQVVUT05PTU9VUyBtb2Rl
-IGNvdWxkIGJlIHVzZWQgZm9yIHJlYWRfcmF3IHNpbmNlDQppdHMgY29tcGF0aWJsZSB3aXRoIGJv
-dGggQ05WX0NMT0NLIGFuZCBNQU5VQUwgaGFyZHdhcmUgc2V0dXBzLg0KU28sIHRoZW4gaWYgdGhl
-ICdwd20nIGlzIHByZXNlbnQgaW4gdGhlIGRldmljZSB0cmVlLCBDTlZfQ0xPQ0sNCndpbGwgYmUg
-dXNlZCBmb3IgYnVmZmVyZWQgcmVhZGluZ3MgYW5kIGlmIG5vdCwgTUFOVUFMIHdpbGwuDQpUaGlz
-IHdpbGwgaW5kZWVkIG5vdCBvbmx5IHNpbXBsaWZ5IHRoZSBkcml2ZXIsIGJ1dCBhbHNvIGtlZXAg
-dHdvIGltcG9ydGFudA0KbW9kZXMgdXAgZm9yIGNob2ljZSBmb3IgdGhlIHVzZXIuDQoNClBsZWFz
-ZSBsZXQgbWUga25vdyB5b3VyIHRob3VnaHRzIG9uIHRoaXMgYXBwcm9hY2guDQoNCj4gPg0KPiA+
-ID4NCj4gPiA+IEhvd2V2ZXIgZm9yIE1BTlVBTCwgbW9kaWZpY2F0aW9ucyBvZiBqdW1wZXIgcmVz
-aXN0b3JzIG9uIHRoZSBwaHlzaWNhbA0KPiA+ID4gYm9hcmQgaXMgcmVxdWlyZWQgZm9yIHByb3Bl
-ciBmdW5jdGlvbmFsaXR5LCBzaW5jZSB0aGUgQ05WIHBpbiBuZWVkcyB0byBiZQ0KPiA+ID4gdGll
-ZCB0byBDUyBpbiB0aGlzIG1vZGUuIFdvdWxkIGl0IGJlIHByZWZlcnJlZCBpZiBiaW5kaW5ncyB3
-b3VsZCBoYXZlIGENCj4gPiA+ICdyZWdpc3Rlci1tb2RlJyBhdHRyaWJ1dGUgKHRoZSBuYW1lIGNv
-dWxkIGJlIGJldHRlcikgd2hpY2ggY2FuIGhhdmUgdmFsdWVzDQo+ID4gPiBsaWtlIDEocmVnaXN0
-ZXIgbW9kZXMgYXJlIHVzZWQpIGFuZCAxKG1hbnVhbCBtb2RlIGlzIHVzZWQpLCBhbmQgZm9yDQo+
-ID4gPiByZWdpc3RlciBtb2RlcywgaGF2ZSBhIGdsb2JhbCBJSU8gYXR0cmlidXRlIHRoYXQgY2Fu
-IHN3aXRjaCBiZXR3ZWVuDQo+ID4gPiB0aGVtPw0KPiA+ID4NCj4gPg0KPiA+IFRoZSBiaW5kaW5n
-IHNob3VsZCBkZXNjcmliZSBob3cgdGhlIGNoaXAgaXMgd2lyZWQgdXAuIFNvIHJhdGhlciB0aGFu
-IHRoaW5raW5nDQo+ID4gYWJvdXQgbW9kZXMsIHRyeSB0aGlua2luZyBpbiB0ZXJtcyBvZiBjb25u
-ZWN0aW9ucy4gQmFzZWQgb24gd2hhdCB0aGUgZGV2aWNldHJlZQ0KPiA+IHNheXMgaXMgY29ubmVj
-dGVkLCB0aGUgZHJpdmVyIGNhbiB0aGVuIGluZmVyIHdoaWNoIG1vZGVzIGFyZSBhY3R1YWxseSBw
-b3NzaWJsZS4NCj4gPg0KPiA+IEJyaW5naW5nIGJhY2sgc29tZSBjb250ZXh0IHRoYXQgd2FzIHRy
-aW1tZWQ6DQo+ID4NCj4gPiArICBhZGksc3BpLW1vZGU6DQo+ID4gKyAgICAkcmVmOiAvc2NoZW1h
-cy90eXBlcy55YW1sIy9kZWZpbml0aW9ucy91aW50MzINCj4gPiArICAgIGVudW06IFswLCAxLCAy
-LCAzLCA0XQ0KPiA+ICsgICAgZGVzY3JpcHRpb246IHwNCj4gPiArICAgICAgU2VsZWN0cyB0aGUg
-QURDIG9wZXJhdGluZyBtb2RlOg0KPiA+ICsgICAgICAgIDAgLSBDTlYgQ2xvY2sgTW9kZTogRXh0
-ZXJuYWwgUFdNIGRyaXZlcyBDTlYgcGluLCBzYW1wbGVzIGF0IFBXTSByYXRlLg0KPiA+ICsgICAg
-ICAgIDEgLSBDTlYgQnVyc3QgTW9kZTogUFdNIHRyaWdnZXJzIGJ1cnN0IGN5Y2xlcywgaW50ZXJu
-YWwgb3NjaWxsYXRvcg0KPiA+ICsgICAgICAgICAgICBkcml2ZXMgY29udmVyc2lvbnMgd2l0aGlu
-IGVhY2ggYnVyc3QuDQo+ID4gKyAgICAgICAgMiAtIEF1dG9ub21vdXMgTW9kZTogSW50ZXJuYWwg
-b3NjaWxsYXRvciBkcml2ZXMgY29udmVyc2lvbnMsIHNvZnR3YXJlDQo+ID4gKyAgICAgICAgICAg
-IHN0YXJ0cy9zdG9wcyB2aWEgcmVnaXN0ZXIgd3JpdGUuDQo+ID4gKyAgICAgICAgMyAtIFNQSSBC
-dXJzdCBNb2RlOiBTaW1pbGFyIHRvIEF1dG9ub21vdXMgTW9kZSBidXQgb3B0aW1pemVkIGZvcg0K
-PiA+ICsgICAgICAgICAgICBTUEkgYnVyc3QgcmVhZHMuDQo+ID4gKyAgICAgICAgNCAtIE1hbnVh
-bCBNb2RlOiBDTlYgaXMgZGlyZWN0bHkgdGllZCB0byBTUEkgQ1MuIEVhY2ggU1BJIHRyYW5zZmVy
-DQo+ID4gKyAgICAgICAgICAgIHRyaWdnZXJzIGEgY29udmVyc2lvbiBhbmQgcmV0dXJucyBwcmV2
-aW91cyByZXN1bHQgKHBpcGVsaW5lZCkuDQo+ID4NCj4gPg0KPiA+IEl0IHNvdW5kcyBsaWtlIHRo
-ZXJlIGFyZSAzIHdheXMgdGhhdCB0aGUgQ05WIHBpbiBjb3VsZCBiZSB3aXJlZCB1cDoNCj4gPg0K
-PiA+IDEuIFdpcmVkIHRvIFBXTQ0KPiA+IDIuIE5vdCBjb25uZWN0ZWQNCj4gPiAzLiBXaXJlZCB0
-byBDUw0KPiA+DQo+ID4gT24gc29tZSBvdGhlciBjaGlwcyB3ZSd2ZSBzZWVuIHdoZXJlIENOViBj
-b3VsZCBiZSB3aXJlZCB1cCBkaWZmZXJlbnQgd2F5cywNCj4gPiAibm90IGNvbm5lY3RlZCIgd2Fz
-IG5vdCBhbiBvcHRpb24uIEluIHRob3NlIGNhc2VzLCB3ZSBjb3VsZCBpbmZlciB0aGF0IGlmDQo+
-ID4gdGhhdCBubyBvdGhlciBwcm9wZXJ0aWVzIGluZGljYXRlZCB3aGF0IENOViB3YXMgY29ubmVj
-dGVkIHRvLCB0aGVuIHdlIHdvdWxkDQo+ID4gYXNzdW1lIENOViB3YXMgY29ubmVjdGVkIHRvIFNQ
-SSBDUy4NCj4gPg0KPiA+IEluIHRoaXMgY2FzZSwgaWYgIm5vdCBjb25uZWN0ZWQiIGlzIGFuIG9w
-dGlvbiwgd2UgbWlnaHQgbmVlZCBhIGJvb2wvZmxhZw0KPiA+IHByb3BlcnR5IGFkaSxjbnYtaXMt
-Y3MgdG8gZGVzY3JpYmUgdGhhdCB0aGUgQ05WIHBpbiBpcyB3aXJlZCB0byB0aGUgQ1MgcGluLg0K
-PiA+IEFuZCB3ZSBhbHJlYWR5IGhhdmUgdGhlIHB3bXMgcHJvcGVydHkgdG8ga25vdyB3aGVuIENO
-ViBpcyBjb25uZWN0ZWQgdG8gYQ0KPiA+IFBXTS4NCj4gPg0KPiA+DQo+ID4gPiBQbGVhc2UgbGV0
-IG1lIGtub3cgeW91ciB0aG91Z2h0cyBvbiB0aGlzIGJlZm9yZSBhZGRyZXNzaW5nIHRoZSBvdGhl
-cg0KPiA+ID4gQ29tbWVudHMgYW5kIHByZXBhcmluZyBvdGhlciBwYXRjaGVzLg0KPiA+ID4NCj4g
-PiA+IEJlc3QgcmVnYXJkcywNCj4gPiA+IFJhZHUNCj4gPiA+DQoNCg==
+On 26/03/08 06:12PM, Jonathan Cameron wrote:
+> On Sat, 7 Mar 2026 14:01:14 -0600
+> David Lechner <dlechner@baylibre.com> wrote:
+> 
+> > On 3/7/26 12:54 PM, Rodrigo Alencar wrote:
+> > > On 26/03/07 04:58PM, Jonathan Cameron wrote:  
+> > >> On Sat, 7 Mar 2026 10:50:14 -0600
+> > >> David Lechner <dlechner@baylibre.com> wrote:
+> > >>  
+> > >>> On 3/7/26 8:09 AM, Jonathan Cameron wrote:  
+> > >>>> On Mon, 2 Mar 2026 10:22:47 +0000
+> > >>>> Rodrigo Alencar <455.rodrigo.alencar@gmail.com> wrote:
+> > >>>>     
+> > >>>>> On 26/03/01 01:38PM, Jonathan Cameron wrote:    
+> > >>>>>> On Mon, 23 Feb 2026 10:02:00 +0000
+> > >>>>>> Nuno Sá <noname.nuno@gmail.com> wrote:
+> > >>>>>>       
+> > >>>>>>> On Sun, 2026-02-22 at 14:32 -0600, David Lechner wrote:      
+> > >>>>>>>> On 2/22/26 4:01 AM, Rodrigo Alencar wrote:        
+> > >>>>>>>>> On 26/02/21 02:16PM, David Lechner wrote:        
+> > >>>>>>>>>> On 2/20/26 10:46 AM, Rodrigo Alencar via B4 Relay wrote:        
+> > >>>>>>>>>>> This patch series adds support for the Analog Devices AD9910 DDS.
+> > >>>>>>>>>>> This is an RFC so that we can agree/discuss on the design that follows:
+
+...
+
+> > >>>>>>>>>>> represents a distinct signal path into the DDS accumulator, so the driver
+> > >>>>>>>>>>> models them as separate IIO output channels (all IIO_ALTVOLTAGE type).        
+> > >>>>>>>>>>
+> > >>>>>>>>>> Generally IIO channels represent the physical input/output, not the
+> > >>>>>>>>>> internal channels.        
+> > >>>>>>>>>
+> > >>>>>>>>> That is part of the reason for this RFC. Dividing those top-level modes
+> > >>>>>>>>> into channels allows for better organization, as they can operate together,
+> > >>>>>>>>> i.e., phase or scale can be provided by single-tone profile, while
+> > >>>>>>>>> frequency is controlled by the digital ramp generator (see Mode Priority
+> > >>>>>>>>> section in the datasheet). Also, it allows to explore the most of standard
+> > >>>>>>>>> ABIs like, scale, frequency, phase, sampling_frequency and enable.
+> > >>>>>>>>> Putting everything into a single channel would make things a lot messy
+> > >>>>>>>>> to interface with.
+
+...
+
+> > >>>>>>>> Looking at Table 5 in the datasheet really helped me understand this better.
+> > >>>>>>>> I think this series could benefit from a documentation patch that explains
+> > >>>>>>>> more about how the driver works with some diagrams.
+> > >>>>>>>>
+> > >>>>>>>> So really what we have here are a bunch of digital data generators rather
+> > >>>>>>>> than a bunch of altvotlage output channels. And the same data channels can be
+> > >>>>>>>> mixed and match as the source for up to 3 different components of the output
+> > >>>>>>>> (frequency, phase, amplitude) depending on the priority rules defined in
+> > >>>>>>>> Table 5.        
+> > >>>>>>>
+> > >>>>>>> More bellow... But note that all of the (or most of it) generators are going to
+> > >>>>>>> be feed into a DAC. Your output is altvoltage but maybe we can treat the
+> > >>>>>>> internals as voltage. Not sure.
+> > >>>>>>>        
+> > >>>>>>>>
+> > >>>>>>>> Digital data sources are really more like a buffer in IIO terms than a
+> > >>>>>>>> channel. And before we added the IIO backend stuff, there wasn't really
+> > >>>>>>>> any other digital data source/sink that I am aware of other than buffers
+> > >>>>>>>> (but there are certainly a lot of odd corners of IIO that I haven't explored
+> > >>>>>>>> yet, so maybe I missed some).
+> > >>>>>>>>
+> > >>>>>>>> In a recent discussion, the idea of possibly needing a way to provide
+> > >>>>>>>> some userspace interface to be able to tweak knobs of an IIO backend
+> > >>>>>>>> was also brought up.
+> > >>>>>>>>
+> > >>>>>>>> Putting those ideas together, I'm wondering if we need some new channel
+> > >>>>>>>> type or even a whole new interface (e.g. a new sysfs directory like buffers
+> > >>>>>>>> and events) for managing these digital data sources/sinks that are not an
+> > >>>>>>>> IIO buffer.
+> > >>>>>>>>         
+> > >>>>>>>
+> > >>>>>>> But what would be that channel? In the end of the day, we typically have voltage or
+> > >>>>>>> current DACs and a DDS primary function is indeed to generate alternating waveforms
+> > >>>>>>> that you then typically feed into a DAC (and in some cases from the DAC into a
+> > >>>>>>> power amplifier). So the DDS is just part of the data/signal path. Anyways, not sure
+> > >>>>>>> on the new type and I think we already have the "blocks" in IIO for dealing with this:
+> > >>>>>>>
+> > >>>>>>> . frequency
+> > >>>>>>> . phase
+> > >>>>>>> . amplitude (raw + scale + offset)
+> > >>>>>>>
+> > >>>>>>> But you're right that maybe it's time to think in a better way to fit them together. 
+> > >>>>>>> Maybe a new type (as buffers or events) can make sense where the above are treated as, example, scan
+> > >>>>>>> elements. Maybe it's overcomplicating, not sure. It surely needs  discussion and thinking :).
+
+...
+
+> > >>>>>> For history buffs, we had a bunch of DDS chips in staging at one point and never
+> > >>>>>> manage to figure out the questions being raised here :(  They are complex
+> > >>>>>> beasts.  Clarity of ABI proposal and documentation is going to be key to driving
+> > >>>>>> this series forwards. In a sense the code is the easy part.      
+> > >>>>>
+> > >>>>> Does that mean that once good documentation is provided, the presented design can
+> > >>>>> be accepted? Even though data generators/sources might not be interpreted as
+> > >>>>> altvoltage channels?    
+> > >>>>
+> > >>>> I'm not sure yet :(  It's a pretty complex design and we haven't really come to a conclusion
+> > >>>> on how to handle this channel 'mixing' case.
+> > >>>>
+> > >>>> If we did go this way, we'd need to figure out a way to describe the mixing part.
+> > >>>> So either we describe it as one channel (which is going to be really complex)
+> > >>>> or we describe it as multiple channels but add extra ABI to make it clear they
+> > >>>> are mixed into a single 'physical' channel.
+> > >>>>
+
+...
+
+> > >>> Some ideas have crossed my mind, like adding new option to the in_/out_
+> > >>> prefix for "internal" channels. But I it would take a long time to teach
+> > >>> existing generic userspace libraries/tools about this.
+> > >>>
+> > >>> What has popped into my head just now is that perhaps we could do like
+> > >>> Rodrigo is proposing here reusing existing channels and standard attributes
+> > >>> as much as possible and add a new "subcomponent_of" attribute to provide
+> > >>> the link, similar to "current_trigger" for triggers.
+> > >>>
+> > >>> This way, it would still work with existing userspace tools (even if it
+> > >>> looks a bit confusing). And userspace tools could eventually be taught
+> > >>> to present the channels as a tree-like structure with the main channel
+> > >>> and subcomponents nested under it.
+> > >>>
+> > >>> We would want to spell out up front what all of the anticipated ways of
+> > >>> using it are. For example, I suspect eventually someone will want this
+> > >>> attribute to be writeable to assign a specific limited resource to a
+> > >>> specific channel. An I expect that we would eventually see something were
+> > >>> a single subcomponent is shared between multiple physical channels. In
+> > >>> this case, we would want the value of the "subcomponent_of" attribute to
+> > >>> be able to be a list.  
+> > >>
+> > >> Something along those lines might work. I'd not thought about the case
+> > >> of one 'internal' going to multiple 'external'.  Otherwise I was wondering
+> > >> if something informal related to labels would work.  We've done that where
+> > >> we've been associating things like voltage and power measurement from a single
+> > >> pin.  It's rather adhoc though.  Possibly we could roll it into a newer
+> > >> more general scheme.  
+> > 
+> > Hmm... in this case, it sounds more flat where there isn't a clear channel
+> > that would be the "root" of a tree relation.
+> > 
+> > >>
+> > >> If the association is done as meta data attributes alongside existing
+> > >> channels then as you say existing tools will kind of work, just need some
+> > >> human understanding of what is actually being controlled until they catch
+> > >> up with the newer schemes.
+> > >>
+> > >> Lots of ways we could actually represent the graphs.  Going to take some
+> > >> figuring out!  
+> > > 
+> > > I like the idea of subchannels to create logical tree-structures. It opens
+> > > up for other possibilities.
+> > > 
+> > > I wonder if the varying channel index would still confuse a user, even
+> > > with this metadata attribute, like:
+> > > - out_altvoltage0
+> > > - out_altvoltage1
+> > > 	- out_altvoltage1_subcomponent_of = out_altvoltage0
+> > > 
+> > > would there be a different way to name the full_postfix in
+> > > __iio_device_attr_init() that would allow to keep channel index the same
+> > > (e.g. altvoltage0 for multiple internal sub-channel) and still be
+> > > compatible with userspace tools? I don't know, something like:
+> > > - out_altvoltage0
+> > > - out_altvoltage0_0
+> > > - out_altvoltage0_1
+> > > - out_altvoltage0_2
+> > > 
+> > > userspace tools would understand out_altvoltage0_0_frequency as:
+> > > - direction: out
+> > > - type: altvoltage
+> > > - channel idx: 0
+> > > - attr name: 0_frequency
+> > > 
+> > > and that would be a problem?
+> > >   
+> > 
+> > I have a feeling that could be problematic for existing attribute
+> > parsers.
+> 
+> Agreed.  This smells like extend_name and that caused all sorts
+> of annoying problems for the userspace folk.
+> 
+> > 
+> > How about using higher numbered channel indexes instead?
+> > 
+> > out_altvoltage100_* = physical channel
+> > 
+> > out_altvoltage101_* = subcomponent
+> > out_altvoltage102_* = subcomponent
+> > ...
+> Have to be careful we don't run out of space for events.
+> #define IIO_EVENT_CODE_EXTRACT_CHAN(mask) ((__s16)(mask & 0xFFFF))
+> So we do have 16 bits hence this might work.
+> 
+> I'm not sure we want to make rules around this though.
+
+Ok, I think we are reaching an agreement. With this, I think there
+is room for a small redesign, i.e., having a root channel to represent
+the physical DAC and child channels as follows (* on custom ABI):
+- out_altvoltage100: root/physical channel
+	- profile*: for profile selection
+	- sampling_frequency: sysclk frequency value
+	- out_altvoltage110: single tone channel
+		- frequency: single tone profile FTW
+		- phase: single tone profile POW
+		- scale: single tone profile ASF
+	- out_altvoltage120: parallel port channel
+		- en
+		- frequency_scale* or frequency_gain*: for FM gain 
+		- frequency or frequency_offset*
+		- phase or phase_offset*
+		- scale or scale_offset*
+	- out_altvoltage130: drg channel
+		- en
+		- destination*
+		- operating_mode*
+		- out_altvoltage131: drg upper limit channel
+			- frequency
+			- frequency_step*
+			- phase
+			- phase_step*
+			- scale
+			- scale_step*
+			- sampling_frequency
+		- out_altvoltage132: drg lower limit channel
+			- frequency
+			- frequency_step*
+			- phase
+			- phase_step*
+			- scale
+			- scale_step*
+			- sampling_frequency
+	- out_altvoltage140: ram channel
+		- en
+		- frequency: global FTW
+		- phase: global POW
+		- sampling_frequency
+		- destination*
+		- operating_mode*
+		- address_start*
+		- address_end*
+	- out_altvoltage150: osk channel
+		- en
+		- scale: global ASF
+		- scale_step*
+		- sampling_frequency
+		- pinctrl_en*
+
+so I ended up with 8 channels (rather than the initial 5). Breaking up the
+DRG channel, following the tree structure allows to explore more of the
+standard ABI. I suppose that even with this, documentation is no less
+important. How does it look?
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
