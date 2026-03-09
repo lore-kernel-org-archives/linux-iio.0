@@ -1,379 +1,251 @@
-Received: from mail-pg1-f174.google.com (mail-pg1-f174.google.com [209.85.215.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.12])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D3913DA5C1
-	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 15:35:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F23143DA7E5;
+	Mon,  9 Mar 2026 15:42:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773070502; cv=none; b=SPnoa/xcMY5bBLDExLJjhg+m6a+/VO/PHNdEooFh4DPpRuDPUEVyEZWRmF2R9R/sRdllymajezbLCB3fuUw7XQTDTxhd5Oj1mQNp/mLKXEuY3XoTU4YY6AyiWu/h305eS5R99lNEIpQaFaYbm8FIfTxzqSyQ4ZSTpFf2B+yjZ8A=
+	t=1773070948; cv=none; b=leuRs2XdBHxSKBu0en2ArxlTorgouxUvHrYQsUaN8mJWWokBzW6fY5ukudmYRuehU66F8vEB4LCpmlXQvZwWjJDMEYvX6/Q4WvUMOmdvrI7+fUUcaiLJKgSGBkAT7NtOemyIWw9DoBqHJqLuvWCyUcXSuo8D3JXOG3G33REenJA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773070502; c=relaxed/simple;
-	bh=vrE+CMIeHFYAeyFK29dqpzRZODZ4uJrVcL4FShk+xks=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=IWFzRdnXVKE5CvLYhBjGB4l9d7xVGF1u/CKc2ATh9L4K9URYCSZolDr/hLNhb4vFRZ/OdEdHyQ5whWoW+ocfA4vhAYbG285o0mmH0yf1uE/vRuOFqX+222sDd7bTNc62WNzB5TwEEIkGtJXNRBO+LFRF0tqWTy43Vm+GNubMcjQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ZTyJ2GtI; arc=none smtp.client-ip=209.85.215.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773070948; c=relaxed/simple;
+	bh=+5JCVJB1rmmmycSnyjMmr8SN4oSzdN8sAtx7nSf9j5I=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=rqs0pyIT+4vGu1AtqAT3kGYo/pG/uPWnM7G8Qbub98ZHBqlupppUrSY3nZeOsfYvXj+C0Hm3T1CI4XFsy1sUYmViViXcxc9+mdP237dTcIAMPJonF9YQTBvT6N1FcsHpPlspHmbKZqZIL4fo2RGXPcfZg01Y197my9oQm0yNZx4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LtLk7gG+; arc=none smtp.client-ip=192.198.163.12
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZTyJ2GtI"
-Received: by mail-pg1-f174.google.com with SMTP id 41be03b00d2f7-c73bc3dd25fso296894a12.1
-        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2026 08:35:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773070500; x=1773675300; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=TofA4+zPs6CJY0GvXEWYtD82c2puhy10CmQlWfM+rhE=;
-        b=ZTyJ2GtIZJGfvCHT04sM3VYYS00GRh2OA1UHiaIv69ban+GZPat1fmzNaQQC6JCBLV
-         sClXFBCXTlU4ngiWkjOR/MykrClseFPY9Vwtb47FwHhmpmHyAWXzDTibv3BLD5yq5YlN
-         Z78jj7O60Tdx8iyitx4e9C0CBmmFIcE6nK8+eog+CNFJnHuBoeKautSFXM/zOQxFGz4X
-         zk21FVaUQZP4Prtycly1q2GKxKaGKP+xjNnjf8ab5LIE3Kc7uCbD9Zc2HhvqtwW2SdgZ
-         a3L+qFKmZwCN8HQju9KGZRXpGY2AfqK256jW/OADcwgir99MS5tW526a4KPuWnnSyoeM
-         ndJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773070500; x=1773675300;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=TofA4+zPs6CJY0GvXEWYtD82c2puhy10CmQlWfM+rhE=;
-        b=Wr+ygECQs8dt5JdlpLj6jZ7kYUugprntSBF/D1KdJgUefhP9dPj4R6jV7n7TJEIqWY
-         Z7jyZ1aVi7UoA4YhBnCEnFQwgkeLwLFcUC2vLa7fIr4zy2fAkenXDrZwidsaFlEHRINB
-         5bw+r69hYc17QpRQBqXq9gcDAZM1NVdfQ3Q4Qsa4yZnsn6q+KK04UykmwzZjCfxMT5Qf
-         KQlRL4SNmgR78kJaQ9znvftFWfS6RdHmrQKbiEWUD7w/PTMfGyfdxQjbKqDm53lXR7C+
-         wIgGYyWndFq8yTQopWJklflc0/Ti5U/yVhF6pp/tODZwq8c0b8jma3Vzx+cwQW4xabQP
-         B9Bw==
-X-Gm-Message-State: AOJu0YxmYBXnXx5bsC2/xbDuxYt9J5eaca4MZsnMGCpRnPVplJKYS1lA
-	2N06kMeuVfOru7w0NYFmVUplLMyVF49YM9X4iWgArKG3C/LIBgI8n4wb
-X-Gm-Gg: ATEYQzzEUEhz2EzY6HcfG3O10lZUvLRm7XoxkaC4MkIFJIZEVghy7t3vzVhs6japAir
-	ueJXyBs/V4uajzBEepJQrtP1HC9E4+3ULVmYCoDOODe9hXf/5kCv/IkjW13ZZZ3h11UEVC6PCwf
-	odkgQByCYI24TT7oWUz5brTouVIugpDKP3YsaB4LfRK8mmv/AR/IQrPgCP5nn2RRPH/wSHmLwUZ
-	mUIDE72EHumNqt8sGq9Z1M7hn2APU15wPyIrQV0QvmonvJMMvHfh1/z8w72RvDmezOhfibJw17w
-	T15nF5LAHoMMQKrh2robu1eZBxzri0A5wbEhCKGdep1FeRCik5g42ogEOz9mzN22TqfPmtfqaED
-	KZFNELqUXdD/h0XdiVD5KhnJuksbsEVjsDyV1Ikq27oczTJZXZ50MD1EbztqHAjlSD65bKGqRFJ
-	uYWM85E+HoUCgT5uyQuwdNJXSW+GlY4th6OF6uFfRArOGZd/HMHYbF9Pm4nhv3zhNTLCu86cbN7
-	t6ujYLpVyqFH1UX+7yhjVmwsTM=
-X-Received: by 2002:a05:6a21:6197:b0:398:a71b:a0f8 with SMTP id adf61e73a8af0-398a71bb767mr895162637.14.1773070500331;
-        Mon, 09 Mar 2026 08:35:00 -0700 (PDT)
-Received: from fedora ([2401:4900:1c80:20f6:77bf:3a75:33cb:748c])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c739e16cebbsm9316563a12.16.2026.03.09.08.34.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2026 08:35:00 -0700 (PDT)
-From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	waqar.hameed@axis.com,
-	linusw@kernel.org,
-	sakari.ailus@linux.intel.com,
-	harshit.m.mogalapalli@oracle.com,
-	antoniu.miclaus@analog.com,
-	andrew.ijano@gmail.com
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Subject: [PATCH v2 4/4] iio: accel: sca3000: convert to guard(mutex)
-Date: Mon,  9 Mar 2026 21:04:08 +0530
-Message-ID: <20260309153408.71512-5-rajveer.chaudhari.linux@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260309153408.71512-1-rajveer.chaudhari.linux@gmail.com>
-References: <20260309153408.71512-1-rajveer.chaudhari.linux@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LtLk7gG+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773070946; x=1804606946;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:content-transfer-encoding:mime-version;
+  bh=+5JCVJB1rmmmycSnyjMmr8SN4oSzdN8sAtx7nSf9j5I=;
+  b=LtLk7gG+XjxlHPtnDaYAEXtZm/D8C4gs0/N/CCPtPfMy9wKxHZA40z1e
+   vSV0sgjL+ida2GSVD74DHXF8LJXrnBP2myZp0JE4M6fDyJSg+QWUHeV28
+   KpFAqmVdV0/j1bdiq41mCL8AVo9AwG3i7ww3D7Ky+C/XepJUqb/CSVN2I
+   7OYab8Rm0uksckH6trjhWDwRNjEsiDKFCbxupbEkboRU/UcEpIjX9pm+P
+   3hM/sT5eq9Q5csVs4jyPFI7guSrHq8urxMqPvbM4h/3/RfJdHqb4iasbD
+   Jr2s5j7st9QUKOOv+exEO7BDM+XV9Yd/h5V/mcRqwWAXa5OgGtdpDppGK
+   Q==;
+X-CSE-ConnectionGUID: /ai5dwoPRp2jg9NIWCxLJg==
+X-CSE-MsgGUID: eyPf/yq6QA+X5PH+144yjg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="77976614"
+X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
+   d="scan'208";a="77976614"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 08:42:25 -0700
+X-CSE-ConnectionGUID: Qz/HVf71R4akc84jFNGQvQ==
+X-CSE-MsgGUID: 0bO/5/rURSS4IaFBo//lHw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
+   d="scan'208";a="219730753"
+Received: from spandruv-desk2.jf.intel.com ([10.88.27.176])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 08:42:25 -0700
+Message-ID: <4695861781487359fddc6cb8aab932c70cb8ebba.camel@linux.intel.com>
+Subject: Re: [PATCH 1/2] iio: hid-sensor-gyro-3d: move iio_device_register()
+ to end of probe()
+From: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Jonathan Cameron <jic23@kernel.org>, Bhargav Joshi
+	 <rougueprince47@gmail.com>
+Cc: jikos@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	linux-input@vger.kernel.org
+Date: Mon, 09 Mar 2026 08:42:24 -0700
+In-Reply-To: <20260307142153.26bab5b0@jic23-huawei>
+References: <20260228191400.19244-1-rougueprince47@gmail.com>
+		<20260228191400.19244-2-rougueprince47@gmail.com>
+		<20260301114450.17f79213@jic23-huawei>
+		<CAPC4XCRom4ri1QKw_mTnZGc9np5XFD1LskQnd=ssDAKBdOkGmQ@mail.gmail.com>
+	 <20260307142153.26bab5b0@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.56.2 (3.56.2-2.fc42) 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Replace manual mutex_lock/mutex_unlock pair with guard(mutex) in
-sca3000_print_rev(), sca3000_ring_int_process(),
-sca3000_read_event_config(), __sca3000_hw_ring_state_set(),
-sca3000_hw_ring_preenable(), sca3000_hw_ring_postdisable(),
-sca3000_clean_setup(), sca3000_stop_all_interrupts().
-This ensures the mutex is released on all return paths and
-allows returning directly without a goto label.
+On Sat, 2026-03-07 at 14:21 +0000, Jonathan Cameron wrote:
+> On Mon, 2 Mar 2026 01:00:06 +0530
+> Bhargav Joshi <rougueprince47@gmail.com> wrote:
+>=20
+> > On Sun, Mar 1, 2026 at 5:15=E2=80=AFPM Jonathan Cameron <jic23@kernel.o=
+rg>
+> > wrote:
+> > >=20
+> > > On Sun,=C2=A0 1 Mar 2026 00:43:59 +0530
+> > > Bhargav Joshi <rougueprince47@gmail.com> wrote:
+> > > =C2=A0
+> > > > Currently, calling iio_device_register() before
+> > > > sensor_hub_register_callback() may create a race condition
+> > > > where the
+> > > > device is exposed to userspace before callbacks are wired.=C2=A0=
+=20
+> > >=20
+> > > We needs some more here on 'why' this is a problem.
+> > > Whilst this is an unusual arrangement, I couldn't immediately
+> > > find
+> > > anything that was actually broken.=C2=A0 It's possible data will turn
+> > > up
+> > > after we tear down the callbacks and before the userspace
+> > > interfaces
+> > > are removed, but I think that just results in dropping data.
+> > > Given it's
+> > > in a race anyway I don't think we care about that. The callbacks
+> > > don't seem to be involved in device configuration which can go on
+> > > whether
+> > > or not the callbacks are registered.=C2=A0 Maybe there is something
+> > > that
+> > > won't get acknowledged if they aren't in place in time?
+> > >=20
+> > > For a fix like this we'd normally want to see a clear flow that
+> > > leads to a bug.
+> > >=20
+> > > Also a fixes tag so we know how far to backport.
+> > > =C2=A0
+> >=20
+> > Hi Jonathan,
+> >=20
+> > I originally submitted the patch for the driver because calling
+> > iio_device_register() before the callbacks are wired up violates
+> > standard IIO LIFO ordering. I assumed this created a dangerous race
+> > condition with userspace. However, as you correctly pointed out,
+> > the
+> > HID sensor hub safely drops those early events without crashing,
+> > even
+> > if it is unusual behaviour still won't have a hard crash.
+> >=20
+> > My underlying goal was simply a structural cleanup to align the
+> > probe() and remove() sequences with standard IIO architecture.
+> >=20
+> > Would you like me to send a v2 of this patch with a revised commit
+> > message classifying it purely as a structural cleanup (and without
+> > a
+> > Fixes tag), or is the current driver behavior acceptable enough
+> > that I
+> > should just drop this patch entirely?
+>=20
+> My gut is leave this one alone. It's a rather unusual driver in lots
+> of ways, so I don't really mind one more ;)
+>=20
+> Lets see if anyone else has strong views one way or the other.
+>=20
+> Srinivas?
+>=20
+I don't see anything wrong with this. If you register callback before,=20
+then iio_push_to_buffers_with_timestamp() can be called before
+iio_device_register(), although it will not happen because nobody
+powered on sensors in the hub.
 
-Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
----
-v2: Dropped Header alignment change
----
- drivers/iio/accel/sca3000.c | 97 ++++++++++++++++---------------------
- 1 file changed, 42 insertions(+), 55 deletions(-)
+Thanks,
+Srinivs
 
-diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-index 4a827be439a2..8a06602ab41c 100644
---- a/drivers/iio/accel/sca3000.c
-+++ b/drivers/iio/accel/sca3000.c
-@@ -9,6 +9,7 @@
- 
- #include <linux/interrupt.h>
- #include <linux/fs.h>
-+#include <linux/cleanup.h>
- #include <linux/device.h>
- #include <linux/slab.h>
- #include <linux/kernel.h>
-@@ -424,16 +425,16 @@ static int sca3000_print_rev(struct iio_dev *indio_dev)
- 	int ret;
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	ret = sca3000_read_data_short(st, SCA3000_REG_REVID_ADDR, 1);
- 	if (ret < 0)
--		goto error_ret;
-+		return ret;
-+
- 	dev_info(&indio_dev->dev,
- 		 "sca3000 revision major=%lu, minor=%lu\n",
- 		 st->rx[0] & SCA3000_REG_REVID_MAJOR_MASK,
- 		 st->rx[0] & SCA3000_REG_REVID_MINOR_MASK);
--error_ret:
--	mutex_unlock(&st->lock);
- 
- 	return ret;
- }
-@@ -996,13 +997,14 @@ static void sca3000_ring_int_process(u8 val, struct iio_dev *indio_dev)
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 	int ret, i, num_available;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	if (val & SCA3000_REG_INT_STATUS_HALF) {
- 		ret = sca3000_read_data_short(st, SCA3000_REG_BUF_COUNT_ADDR,
- 					      1);
- 		if (ret)
--			goto error_ret;
-+			return;
-+
- 		num_available = st->rx[0];
- 		/*
- 		 * num_available is the total number of samples available
-@@ -1011,7 +1013,8 @@ static void sca3000_ring_int_process(u8 val, struct iio_dev *indio_dev)
- 		ret = sca3000_read_data(st, SCA3000_REG_RING_OUT_ADDR, st->rx,
- 					num_available * 2);
- 		if (ret)
--			goto error_ret;
-+			return;
-+
- 		for (i = 0; i < num_available / 3; i++) {
- 			/*
- 			 * Dirty hack to cover for 11 bit in fifo, 13 bit
-@@ -1023,8 +1026,6 @@ static void sca3000_ring_int_process(u8 val, struct iio_dev *indio_dev)
- 			iio_push_to_buffers(indio_dev, st->rx + i * 3 * 2);
- 		}
- 	}
--error_ret:
--	mutex_unlock(&st->lock);
- }
- 
- /**
-@@ -1110,11 +1111,11 @@ static int sca3000_read_event_config(struct iio_dev *indio_dev,
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 	int ret;
- 	/* read current value of mode register */
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	ret = sca3000_read_data_short(st, SCA3000_REG_MODE_ADDR, 1);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 
- 	switch (chan->channel2) {
- 	case IIO_MOD_X_AND_Y_AND_Z:
-@@ -1134,7 +1135,7 @@ static int sca3000_read_event_config(struct iio_dev *indio_dev,
- 			ret = sca3000_read_ctrl_reg(st,
- 						SCA3000_REG_CTRL_SEL_MD_CTRL);
- 			if (ret < 0)
--				goto error_ret;
-+				return ret;
- 			/* only supporting logical or's for now */
- 			ret = !!(ret & sca3000_addresses[chan->address][2]);
- 		}
-@@ -1143,9 +1144,6 @@ static int sca3000_read_event_config(struct iio_dev *indio_dev,
- 		ret = -EINVAL;
- 	}
- 
--error_ret:
--	mutex_unlock(&st->lock);
--
- 	return ret;
- }
- 
-@@ -1277,10 +1275,12 @@ int __sca3000_hw_ring_state_set(struct iio_dev *indio_dev, bool state)
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 	int ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	ret = sca3000_read_data_short(st, SCA3000_REG_MODE_ADDR, 1);
- 	if (ret)
--		goto error_ret;
-+		return ret;
-+
- 	if (state) {
- 		dev_info(&indio_dev->dev, "supposedly enabling ring buffer\n");
- 		ret = sca3000_write_reg(st,
-@@ -1290,8 +1290,6 @@ int __sca3000_hw_ring_state_set(struct iio_dev *indio_dev, bool state)
- 		ret = sca3000_write_reg(st,
- 			SCA3000_REG_MODE_ADDR,
- 			(st->rx[0] & ~SCA3000_REG_MODE_RING_BUF_ENABLE));
--error_ret:
--	mutex_unlock(&st->lock);
- 
- 	return ret;
- }
-@@ -1310,26 +1308,20 @@ static int sca3000_hw_ring_preenable(struct iio_dev *indio_dev)
- 	int ret;
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	/* Enable the 50% full interrupt */
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
- 	if (ret)
--		goto error_unlock;
-+		return ret;
-+
- 	ret = sca3000_write_reg(st,
- 				SCA3000_REG_INT_MASK_ADDR,
- 				st->rx[0] | SCA3000_REG_INT_MASK_RING_HALF);
- 	if (ret)
--		goto error_unlock;
--
--	mutex_unlock(&st->lock);
-+		return ret;
- 
- 	return __sca3000_hw_ring_state_set(indio_dev, 1);
--
--error_unlock:
--	mutex_unlock(&st->lock);
--
--	return ret;
- }
- 
- static int sca3000_hw_ring_postdisable(struct iio_dev *indio_dev)
-@@ -1342,17 +1334,15 @@ static int sca3000_hw_ring_postdisable(struct iio_dev *indio_dev)
- 		return ret;
- 
- 	/* Disable the 50% full interrupt */
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
- 	if (ret)
--		goto unlock;
--	ret = sca3000_write_reg(st,
-+		return ret;
-+
-+	return sca3000_write_reg(st,
- 				SCA3000_REG_INT_MASK_ADDR,
- 				st->rx[0] & ~SCA3000_REG_INT_MASK_RING_HALF);
--unlock:
--	mutex_unlock(&st->lock);
--	return ret;
- }
- 
- static const struct iio_buffer_setup_ops sca3000_ring_setup_ops = {
-@@ -1372,25 +1362,26 @@ static int sca3000_clean_setup(struct sca3000_state *st)
- {
- 	int ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	/* Ensure all interrupts have been acknowledged */
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_STATUS_ADDR, 1);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 
- 	/* Turn off all motion detection channels */
- 	ret = sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_MD_CTRL);
- 	if (ret < 0)
--		goto error_ret;
-+		return ret;
- 	ret = sca3000_write_ctrl_reg(st, SCA3000_REG_CTRL_SEL_MD_CTRL,
- 				     ret & SCA3000_MD_CTRL_PROT_MASK);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 
- 	/* Disable ring buffer */
- 	ret = sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL);
- 	if (ret < 0)
--		goto error_ret;
-+		return ret;
- 	ret = sca3000_write_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL,
- 				     (ret & SCA3000_REG_OUT_CTRL_PROT_MASK)
- 				     | SCA3000_REG_OUT_CTRL_BUF_X_EN
-@@ -1398,17 +1389,17 @@ static int sca3000_clean_setup(struct sca3000_state *st)
- 				     | SCA3000_REG_OUT_CTRL_BUF_Z_EN
- 				     | SCA3000_REG_OUT_CTRL_BUF_DIV_4);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 	/* Enable interrupts, relevant to mode and set up as active low */
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 	ret = sca3000_write_reg(st,
- 				SCA3000_REG_INT_MASK_ADDR,
- 				(ret & SCA3000_REG_INT_MASK_PROT_MASK)
- 				| SCA3000_REG_INT_MASK_ACTIVE_LOW);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 	/*
- 	 * Select normal measurement mode, free fall off, ring off
- 	 * Ring in 12 bit mode - it is fine to overwrite reserved bits 3,5
-@@ -1416,13 +1407,10 @@ static int sca3000_clean_setup(struct sca3000_state *st)
- 	 */
- 	ret = sca3000_read_data_short(st, SCA3000_REG_MODE_ADDR, 1);
- 	if (ret)
--		goto error_ret;
--	ret = sca3000_write_reg(st, SCA3000_REG_MODE_ADDR,
--				(st->rx[0] & SCA3000_MODE_PROT_MASK));
-+		return ret;
- 
--error_ret:
--	mutex_unlock(&st->lock);
--	return ret;
-+	return sca3000_write_reg(st, SCA3000_REG_MODE_ADDR,
-+				(st->rx[0] & SCA3000_MODE_PROT_MASK));
- }
- 
- static const struct iio_info sca3000_info = {
-@@ -1504,18 +1492,17 @@ static int sca3000_stop_all_interrupts(struct sca3000_state *st)
- {
- 	int ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
- 	if (ret)
--		goto error_ret;
--	ret = sca3000_write_reg(st, SCA3000_REG_INT_MASK_ADDR,
-+		return ret;
-+
-+	return sca3000_write_reg(st, SCA3000_REG_INT_MASK_ADDR,
- 				(st->rx[0] &
- 				 ~(SCA3000_REG_INT_MASK_RING_THREE_QUARTER |
- 				   SCA3000_REG_INT_MASK_RING_HALF |
- 				   SCA3000_REG_INT_MASK_ALL_INTS)));
--error_ret:
--	mutex_unlock(&st->lock);
--	return ret;
- }
- 
- static void sca3000_remove(struct spi_device *spi)
--- 
-2.53.0
 
+
+
+
+
+> >=20
+> > Thanks,
+> > Bhargav
+> >=20
+> > > >=20
+> > > > Move iio_device_register() to the end of the probe() function
+> > > > to prevent
+> > > > race condition.
+> > > >=20
+> > > > Consequently, update the error handling path in probe() and in
+> > > > remove()
+> > > > ensuring that iio_device_unregister() is called first to cut
+> > > > off
+> > > > userspace access before the hardware callbacks are removed.
+> > > >=20
+> > > > Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
+> > > > ---
+> > > > =C2=A0drivers/iio/gyro/hid-sensor-gyro-3d.c | 20 ++++++++++--------=
+-
+> > > > -
+> > > > =C2=A01 file changed, 10 insertions(+), 10 deletions(-)
+> > > >=20
+> > > > diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > > b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > > index c43990c518f7..8e3628cd8529 100644
+> > > > --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > > +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > > @@ -333,12 +333,6 @@ static int hid_gyro_3d_probe(struct
+> > > > platform_device *pdev)
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 return ret;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+> > > >=20
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D iio_device_register(indio_dev);
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0 if (ret) {
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 dev_err(&pdev->dev, "device register failed\n");
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 goto error_remove_trigger;
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0 }
+> > > > -
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gyro_state->callbacks.send_event =3D=
+ gyro_3d_proc_event;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gyro_state->callbacks.capture_sample=
+ =3D
+> > > > gyro_3d_capture_sample;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 gyro_state->callbacks.pdev =3D pdev;
+> > > > @@ -346,13 +340,19 @@ static int hid_gyro_3d_probe(struct
+> > > > platform_device *pdev)
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 &gyro_state->callbacks);
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (ret < 0) {
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0 dev_err(&pdev->dev, "callback reg failed\n");
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 goto error_iio_unreg;
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 goto error_remove_trigger;
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0 }
+> > > > +
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0 ret =3D iio_device_register(indio_dev);
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0 if (ret) {
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 dev_err(&pdev->dev, "device register failed\n");
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 goto error_remove_callback;
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 }
+> > > >=20
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+> > > >=20
+> > > > -error_iio_unreg:
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0 iio_device_unregister(indio_dev);
+> > > > +error_remove_callback:
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0 sensor_hub_remove_callback(hsdev,
+> > > > HID_USAGE_SENSOR_GYRO_3D);
+> > > > =C2=A0error_remove_trigger:
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 hid_sensor_remove_trigger(indio_dev,=
+ &gyro_state-
+> > > > >common_attributes);
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 return ret;
+> > > > @@ -365,8 +365,8 @@ static void hid_gyro_3d_remove(struct
+> > > > platform_device *pdev)
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct iio_dev *indio_dev =3D platfo=
+rm_get_drvdata(pdev);
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct gyro_3d_state *gyro_state =3D=
+ iio_priv(indio_dev);
+> > > >=20
+> > > > -=C2=A0=C2=A0=C2=A0=C2=A0 sensor_hub_remove_callback(hsdev,
+> > > > HID_USAGE_SENSOR_GYRO_3D);
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_device_unregister(indio_dev);
+> > > > +=C2=A0=C2=A0=C2=A0=C2=A0 sensor_hub_remove_callback(hsdev,
+> > > > HID_USAGE_SENSOR_GYRO_3D);
+> > > > =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 hid_sensor_remove_trigger(indio_dev,=
+ &gyro_state-
+> > > > >common_attributes);
+> > > > =C2=A0}
+> > > > =C2=A0
+> > > =C2=A0
