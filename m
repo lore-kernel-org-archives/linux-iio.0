@@ -1,37 +1,37 @@
 Received: from ilama.link.melty.land (mail.melty.land [45.77.175.144])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAAA040F8DF
-	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 19:37:40 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E34640F8DA
+	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 19:37:58 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.77.175.144
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773085062; cv=none; b=ISs6Y3HezjoppnK9/ZLYnYlgV5ZDaXikwAIjRp/1OaIlTcUhrDO5VAPwGxPSivDOC9hoxKDMTmuPMIs/uYWawEw4SlXHzyWCd6GOXGEKmkuiXuwQkE8CIQZR1MLGGOjcmFCTsH8wP2zSVvoqW7uyKZGXtuSqpkH2oDaIDHlYutA=
+	t=1773085079; cv=none; b=EH/eaIqIf56xt16j03ZAMUHA5NL9RaeALr8QSUcoxQP86CtpEDeCdNZYjbCOcfUeBBUBeoqRdql18i4OtrVmgZnBOj0c4UYKuuGsbMUZ9B5CxbCYKCuuTbYQ2CfV/HCiVdTC7PCdwNGNPTxE0/CiEfMqkK3QFLwE0ja1Qwi8xGo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773085062; c=relaxed/simple;
-	bh=kiSIWQIAmw2OlE6S6XMc508Z99ZfCXkZsKxX51xnAaA=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=rnIF89H1cL2hw1mSygBhGxFsXRY2dnQzUmI0PbNTIcPSOldBxYk7KYCDlwoWhFGK4yCZVjcRpCcILdP9Lr1Uduj0HU0ConRBr+UGmbUVxiUONFbrEBRflOPI7CgdY7zfzmRhUHLpADEfsO/uBScYXTMLT+nr3DAQoU9Kl1OqWGo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=chuang.cz; spf=pass smtp.mailfrom=chuang.cz; dkim=pass (1024-bit key) header.d=chuang.cz header.i=@chuang.cz header.b=vID3GPAp; arc=none smtp.client-ip=45.77.175.144
+	s=arc-20240116; t=1773085079; c=relaxed/simple;
+	bh=v1j1iua1wCZEZfJA6ozTETwJJAGkI6lKLERU9nywzus=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=IWBWZKe1sV4Q2pruAOXVYoUf+VuhOz6zzwIMbBqKeXobSyNXy9vwSKIZbiVuWU32pQl4h0wx581rLw4vCf2vIjAOD6PxB4B090DSlGdSUAEu1OW0D00QwHajaYmxsVPSmLN4F0y7Rkc2cXKi4Q1AmPhyNA+4gzk7jnlhoO48p6Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=chuang.cz; spf=pass smtp.mailfrom=chuang.cz; dkim=pass (1024-bit key) header.d=chuang.cz header.i=@chuang.cz header.b=lFXrtinB; arc=none smtp.client-ip=45.77.175.144
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=chuang.cz
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chuang.cz
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chuang.cz header.i=@chuang.cz header.b="vID3GPAp"
+	dkim=pass (1024-bit key) header.d=chuang.cz header.i=@chuang.cz header.b="lFXrtinB"
 Received: from hawthorn (hawthorn.chuang [192.168.174.5])
-	by ilama.link.melty.land (Postfix) with ESMTPSA id 6BC22A19D35;
-	Tue, 10 Mar 2026 03:30:36 +0800 (CST)
+	by ilama.link.melty.land (Postfix) with ESMTPSA id 6FDC1A19D51;
+	Tue, 10 Mar 2026 03:37:55 +0800 (CST)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=chuang.cz; s=default;
-	t=1773084637; bh=kiSIWQIAmw2OlE6S6XMc508Z99ZfCXkZsKxX51xnAaA=;
+	t=1773085076; bh=v1j1iua1wCZEZfJA6ozTETwJJAGkI6lKLERU9nywzus=;
 	h=From:To:Cc:Subject:Date;
-	b=vID3GPApEIEdMdsBjzy3bcFNeKn5JEISvHd01lO6rkDVIXdY8WyiOy7adwlPoeaV0
-	 80/aCqWpFAFqyHM1Ei7sv5Xt0IAelp/t5srWgoZ+TV8+igjiF0hSsdyyK3DT/2qB86
-	 m/mWJtoVJR1i9VPARRddk08n5G7i6BNyX0AHeNfM=
+	b=lFXrtinB167seh3RE4xwYTlPZlaUQIFX4HW+9TdGZ5cNrk49FZMXWQbl9cBkDv/c9
+	 YmsBdptL1+gu5weGZu+ez59zFD3ZWClNAd3olJYRjy8Z608QPO2KdF5MIn689J6G4P
+	 Q3+j8SMSQL0wMXOXh3P8bn9J3qF1zCTip6+eD0Ic=
 From: Chuang Zhu <git@chuang.cz>
 To: linux-iio@vger.kernel.org
 Cc: Marc Titinger <mtitinger@baylibre.com>,
 	=?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>,
 	Chuang Zhu <git@chuang.cz>
-Subject: [PATCH] iio: adc: ina2xx: add INA236 support
-Date: Tue, 10 Mar 2026 03:29:27 +0800
-Message-ID: <20260309192927.478439-1-git@chuang.cz>
+Subject: [PATCH v2] iio: adc: ina2xx: add INA236 support
+Date: Tue, 10 Mar 2026 03:37:42 +0800
+Message-ID: <20260309193742.479883-1-git@chuang.cz>
 X-Mailer: git-send-email 2.51.2
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -55,6 +55,8 @@ Ohm's law, I = Vshunt / Rshunt
 
 ShuntVoltage_LSB = 2.5 uV = 0.0000025 V
 => calibration_divisor = 2048
+
+Signed-off-by: Chuang Zhu <git@chuang.cz>
 ---
  drivers/iio/adc/ina2xx-adc.c | 25 ++++++++++++++++++++-----
  1 file changed, 20 insertions(+), 5 deletions(-)
