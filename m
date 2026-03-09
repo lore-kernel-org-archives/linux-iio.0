@@ -1,400 +1,135 @@
-Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
+Received: from mail-oa1-f47.google.com (mail-oa1-f47.google.com [209.85.160.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 130583BE16B
-	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 14:24:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2FAF03D332E
+	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 14:34:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773066297; cv=none; b=m7t6dgU+/lW3IufsZBzsVE/uQo0MLGDhJgBAIcsbh6o8GHT3y9XyIPSY8tF6T7ArwaidGJrYP8t08+P/8L9jRt9xspRl2plDoY2Wmz+83UWWZOvDfDr9SP7sc35I3lDo9Qwm+7FyLbGlzY3OYejglolbxZv7Cg4InckQSEBnv3s=
+	t=1773066899; cv=none; b=LXCI/Uxa6Zm2y7LH+3yP8p7Z/2TF1KmT1TxngWfUNm2Jb1zNSVHH2CrsT9Q32vJQKpsEKS24Vp6ALAxZgzmVbuWFe+Tcbss1Sw38FQ5tWrJrUZZxGHNLU1wvKMTdEP8ClktE2UHoCIDHbO4qxVDgVoJXAq07lEuzgLWPr2EUz6c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773066297; c=relaxed/simple;
-	bh=tYmlw5EJddPO0i/7GhVZcraSQ1Bss/FoOSAoivPvmjw=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=A5qt6rRZ5JFxNIF5WOz3McAg3YOoZDKq9XiOZtf2KDCxqUddBB5hW/TfGirASVHPixutCJRcwniDfN6BbdsOUbX175ESBpYDYgJd+VeROSPfTSpZX7g7WEUcXGW9JMuvOsnbr1na42mzaK29+J4w3eiGPHtr0xByfmaMnRcxTN0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h/e47GfR; arc=none smtp.client-ip=209.85.216.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773066899; c=relaxed/simple;
+	bh=dNwjQS4Ze5AVUXxTNwwtAMEcTV30AgWPK58E9Q8lvj8=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QtaAmHjuRlfRIX+XwaXTBU+7L/BQIpDvyfRKqnNueMCSSUf+e5ubc+826tV2WlsLLt++dOyNj6TVyLnlVghlOhYWW34FBFNcpCImwn7ieD1kLWZCsxAgd0+g3JUZ1twBNHWwDKNZ6lIsfeQVIyfx4b/zIaXDF4NL2+TlFe/lEu4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=GEXiLin1; arc=none smtp.client-ip=209.85.160.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h/e47GfR"
-Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-35984cd0335so3453430a91.0
-        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2026 07:24:55 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="GEXiLin1"
+Received: by mail-oa1-f47.google.com with SMTP id 586e51a60fabf-40423dbe98bso2874150fac.2
+        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2026 07:34:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773066295; x=1773671095; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=iJhbrAfBpXsuKw1KxcluPw8lwJFwkriN9862ZTb+amQ=;
-        b=h/e47GfRu7HtQlR9/bqGMG+n9sM451AxE3VNTmj6JrgxqUiYafcsu1OE3gQ5Ppdvol
-         HL/riBshk2uuEBZcCOvwHT6b8FYrCPaztQu9DV7UDJ6pZH79lHuTwqd4dw+ZYgVMf2H/
-         1Ei7MCntEE6UgHn4W6ZYkKlozRfFMXLegwVbTkNDE1JKtpCT+iLq//CjnYrNXvUEZvWl
-         DZKj1eo/W7QzYsa89Eby/1+eZcYi0sp5oNcUbpNaNMJSZGLOBcWmMzHWYsrX86YDFaPM
-         XVsA86GnHQn6eK6PiZr2gFFoyW5crRCP1D6Yk2Gt5PL0XXouXGVCsH9I2JuiMdwHH9IW
-         aD8g==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773066896; x=1773671696; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=B/2nZ3AXN7tfnpTcvPfto5djcQ417TUS0Z4ffFdUirY=;
+        b=GEXiLin1J3e1ijArnxDfLr/g0ciKQbmfyg6/Hx21Jq+d0zHsSMrywyK4IrniHzFKMl
+         HrMxakK6BqyUtmSCAGTiLCcqixpocqZPiu8vAyzcjU2r1NcnCCcq9uA5sVwKbaT4Col1
+         S7ZSZMPMv8M2+QTla/MR/LwFt6Lqi3U0Dh0L77vmX7KrsORbt5Lt8K6JVfZCrnhnx/EN
+         g5KTjoMsHJHQzK4Kik87ILDrU7YKxJ4apuiZ1mX+KK0gc3MvdwDg2TDdrGP8jC7dzkDg
+         7nVSnxVJf4bOdYk5oskF8pOZYTnlTv7C+UAyZwEsqF49YMjRAzWwZQgrkz3Tqu4mGnGH
+         eYYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773066295; x=1773671095;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=iJhbrAfBpXsuKw1KxcluPw8lwJFwkriN9862ZTb+amQ=;
-        b=IA5JZdimL4iL38gPvpR7RrhjF8NA6rSmlZ0UtYjC+rYRWcc2vDk06ngnHe7cBtSrSz
-         XKZrc5/s82Bu7agInqRoEYGs+dYoxPtArTpAy18gHtvuYHaljeufXrLh42E53aneY0eH
-         ftoV8eUgkSWYl+wdHm4WHXnphxkstPz5y5nKqx1BeEUO9dsqrTmCUCOreq1vbzPIYK8h
-         Nql1jPi+CXea3O7aUT46NKEJSGp7gpgdd4PlJLgU4JKEkIIwk1iXL3N8ZAGu55KgGzDU
-         +sQXzK/yMg1TVODUZvowzkGH4Tk+NQgc+utz80Q9j/3kFq/PLlEEYTCUPLUH1DScCs9o
-         CrqQ==
-X-Gm-Message-State: AOJu0Yw+7XFBqKoGKuOUCxe6DGFVIaHuMs+R7VIa/cVZ+58hq+fvDmOy
-	0+7WiKX/W/W87f9pTLkcXjsIwFVQLyJOhRglAplEhP7tMUHNt196Gcti
-X-Gm-Gg: ATEYQzzLZCOZwYleKPtHVlSUYQo21MHTaAYra4MQau0/MXNKd4Jf9yzB7ELrtNRmRej
-	S9zidt7fdHFsrIiBM8li/uqo7b19DUFfc50M0dOvn7I9ETgX+I0gxlGM5TVMAkPB3JRbPaDzg0Q
-	pcGJ79fd51CLAy+fA8a7dUmUD1UgpWh9Un9EX5QOCauKESxkqoueDj9IEgr1jf5rFEU95g3VJ6K
-	Cmc7wR1USZfLNloK65xkawV2+ZFhlziP2ZqTWXOSKVZnt3sZoM8vdFrsYp7nNj7FRks4kU5Mvn1
-	3TtAmj3Eg5kg955xX3i7nynhKBGPYQb2Gyj35xuXeu3hXsMdgFFBIctlp09kfsYg0DScxtpmjK7
-	FJ6XgAx/KdCD0olrRWy03SzXJl8P20O+NN7GjDoxlucCUIPswq9TahFFKEdeLYSVwqCAY68kq71
-	eh25AEa/I3UfaK64+oHPj4pCIgQOmzS6pLyMpDYWqPBGOdW4PalKeLrzyZFIVraG2W34KsSdnmU
-	9Gmy+T8YtB9yPt/BAGIfNWdtLI=
-X-Received: by 2002:a17:90b:48cd:b0:356:21e9:73ff with SMTP id 98e67ed59e1d1-359be354bc7mr8880922a91.11.1773066295430;
-        Mon, 09 Mar 2026 07:24:55 -0700 (PDT)
-Received: from fedora ([2401:4900:1c80:20f6:77bf:3a75:33cb:748c])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-359b2e0e1aasm18985311a91.15.2026.03.09.07.24.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2026 07:24:54 -0700 (PDT)
-From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	waqar.hameed@axis.com,
-	linusw@kernel.org,
-	sakari.ailus@linux.intel.com,
-	harshit.m.mogalapalli@oracle.com,
-	antoniu.miclaus@analog.com,
-	andrew.ijano@gmail.com
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Subject: [PATCH 4/4] iio: accel: sca3000: convert to guard(mutex)
-Date: Mon,  9 Mar 2026 19:53:52 +0530
-Message-ID: <20260309142352.57407-5-rajveer.chaudhari.linux@gmail.com>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260309142352.57407-1-rajveer.chaudhari.linux@gmail.com>
-References: <20260309142352.57407-1-rajveer.chaudhari.linux@gmail.com>
+        d=1e100.net; s=20230601; t=1773066896; x=1773671696;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=B/2nZ3AXN7tfnpTcvPfto5djcQ417TUS0Z4ffFdUirY=;
+        b=Et4cuXgJ5NNMYT1x7OXHmbrYsdqY6tzcnH95sbpkg5Aq3D5Silun5q7EXyL7SNUESm
+         u2/PmPCKcMyVvlXDFHk+LCLY4MVWqm8lZpeBXaQWTnlX8hepSNtjAJ5jck0j3Yg0Ap3M
+         PxupegY+CCGfgjemjR9V64AW8x3enfXda8PMuqoO8KtGfGsYMMe05qVXqsWPJ6SjvGpX
+         HW39nSfDbRy1cgKASYQfNOW/8UvP7vhYB3yg2ql1SzBiKsq+BRMMPtFgGUD1gdnp/Yak
+         HAX0jkqrxBCnyKpxCXJeqlp4/I7TZYWd5jhn0ciw78nvOnHX9wtekDn+7gPaAeh3uyCt
+         ezlw==
+X-Forwarded-Encrypted: i=1; AJvYcCUq15e4PmPqyf+8jSUcNW1hmNpPMlozOUc6f9nyWn4gkRYSmBIwxc3NAfsxmaq9rmi07SvR1m93tlY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw4QEZH98Aw8L32h4fWNphTO0beww3C1sFSr3nTMuwQOEwLFn6i
+	J3Bg0CTNcew3oezv4bVbeJACkQlMNVL6WYl51Iz0gjnJe61nykwG328pMpn8TcME43A=
+X-Gm-Gg: ATEYQzybSb27Iiu4+vI4BHXbS9jUow/jTd7+b9a9hnl1MSs/LmYj/wP2I+PT6sFH+0y
+	0mjS2mhJ1UudDEVeJuUfcqZrPimzWIbpaY6TAVtiK/z7PpFeFC3lDkPI7IZDHmmED7oPP1Hz2I8
+	R2iw8PkaLkqmWJDjl/uqLFgr9xTIo8/B5cs0Prnj0iBux6IwdSCSYUgf47NlJoEugZ1QDwZZF8e
+	OAYoy3+eazEa8qNRU1++0Mmdl7wNcYw59pjcNOjN1vMu7/NXUhNGXRLhDJ/Kys3uyP9BAPTWO8G
+	r38SIKq9prmf5CfHJbndd8y+GnC+DaP+ERBkojh2JhSQJLry9HQlcbR5z+dd5P8bQbOHi3ogxdp
+	9tQ8X9ejC7btZyCgjauUEii/AAovr1tbX/dWpQXVdMde2WwFzkPRorSKgGqw8VIoauBlfINvrxp
+	c9CyP1Sq/e33P+juZKWYMGkqWMJCbfMxbqTOxIuwOsQI7PU2liIAx+MIWywE3SzEosOl5f
+X-Received: by 2002:a05:6870:8a21:b0:404:263b:9da1 with SMTP id 586e51a60fabf-416e3e84a31mr6480974fac.5.1773066896060;
+        Mon, 09 Mar 2026 07:34:56 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:77:c35f:9c1b:c75f? ([2600:8803:e7e4:500:77:c35f:9c1b:c75f])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-416e6836886sm8715938fac.16.2026.03.09.07.34.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 09 Mar 2026 07:34:55 -0700 (PDT)
+Message-ID: <b4aec378-879e-4a8b-960d-051cd8b94615@baylibre.com>
+Date: Mon, 9 Mar 2026 09:34:53 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: add bindings for AD4691 family
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>
+Cc: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
+ Lars-Peter Clausen <lars@metafoo.de>,
+ "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+ "Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+ "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+References: <20260305-ad4692-multichannel-sar-adc-driver-v1-0-336229a8dcc7@analog.com>
+ <20260305-ad4692-multichannel-sar-adc-driver-v1-1-336229a8dcc7@analog.com>
+ <20260305174559.1ded5173@jic23-huawei>
+ <LV9PR03MB84149F32D4CABA4D2827D85BF77AA@LV9PR03MB8414.namprd03.prod.outlook.com>
+ <08717cd6-a732-4f06-a6f1-8cbdaa755b78@baylibre.com>
+ <20260308182839.19587743@jic23-huawei>
+ <SA5PR03MB842501D7A27A10BC203E5433F779A@SA5PR03MB8425.namprd03.prod.outlook.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <SA5PR03MB842501D7A27A10BC203E5433F779A@SA5PR03MB8425.namprd03.prod.outlook.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Replace manual mutex_lock/mutex_unlock pair with guard(mutex) in
-sca3000_print_rev(). This ensures the mutex is
-released on all return paths and allows returning directly
-without a goto label.
+On 3/9/26 3:57 AM, Sabau, Radu bogdan wrote:
+> 
 
-Aligned	headers	in alphabatical	order.
+...
 
-Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
----
- drivers/iio/accel/sca3000.c | 115 ++++++++++++++++--------------------
- 1 file changed, 52 insertions(+), 63 deletions(-)
-
-diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
-index 4a827be439a2..05c91dfbc6ab 100644
---- a/drivers/iio/accel/sca3000.c
-+++ b/drivers/iio/accel/sca3000.c
-@@ -7,20 +7,23 @@
-  * See industrialio/accels/sca3000.h for comments.
-  */
- 
--#include <linux/interrupt.h>
--#include <linux/fs.h>
-+#include <linux/cleanup.h>
- #include <linux/device.h>
--#include <linux/slab.h>
-+#include <linux/fs.h>
-+#include <linux/interrupt.h>
- #include <linux/kernel.h>
--#include <linux/spi/spi.h>
--#include <linux/sysfs.h>
- #include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
- #include <linux/uaccess.h>
--#include <linux/iio/iio.h>
--#include <linux/iio/sysfs.h>
--#include <linux/iio/events.h>
-+
- #include <linux/iio/buffer.h>
-+#include <linux/iio/events.h>
-+#include <linux/iio/iio.h>
- #include <linux/iio/kfifo_buf.h>
-+#include <linux/iio/sysfs.h>
-+
-+#include <linux/spi/spi.h>
- 
- #define SCA3000_WRITE_REG(a) (((a) << 2) | 0x02)
- #define SCA3000_READ_REG(a) ((a) << 2)
-@@ -424,16 +427,16 @@ static int sca3000_print_rev(struct iio_dev *indio_dev)
- 	int ret;
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	ret = sca3000_read_data_short(st, SCA3000_REG_REVID_ADDR, 1);
- 	if (ret < 0)
--		goto error_ret;
-+		return ret;
-+
- 	dev_info(&indio_dev->dev,
- 		 "sca3000 revision major=%lu, minor=%lu\n",
- 		 st->rx[0] & SCA3000_REG_REVID_MAJOR_MASK,
- 		 st->rx[0] & SCA3000_REG_REVID_MINOR_MASK);
--error_ret:
--	mutex_unlock(&st->lock);
- 
- 	return ret;
- }
-@@ -996,13 +999,14 @@ static void sca3000_ring_int_process(u8 val, struct iio_dev *indio_dev)
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 	int ret, i, num_available;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	if (val & SCA3000_REG_INT_STATUS_HALF) {
- 		ret = sca3000_read_data_short(st, SCA3000_REG_BUF_COUNT_ADDR,
- 					      1);
- 		if (ret)
--			goto error_ret;
-+			return;
-+
- 		num_available = st->rx[0];
- 		/*
- 		 * num_available is the total number of samples available
-@@ -1011,7 +1015,8 @@ static void sca3000_ring_int_process(u8 val, struct iio_dev *indio_dev)
- 		ret = sca3000_read_data(st, SCA3000_REG_RING_OUT_ADDR, st->rx,
- 					num_available * 2);
- 		if (ret)
--			goto error_ret;
-+			return;
-+
- 		for (i = 0; i < num_available / 3; i++) {
- 			/*
- 			 * Dirty hack to cover for 11 bit in fifo, 13 bit
-@@ -1023,8 +1028,6 @@ static void sca3000_ring_int_process(u8 val, struct iio_dev *indio_dev)
- 			iio_push_to_buffers(indio_dev, st->rx + i * 3 * 2);
- 		}
- 	}
--error_ret:
--	mutex_unlock(&st->lock);
- }
- 
- /**
-@@ -1110,11 +1113,11 @@ static int sca3000_read_event_config(struct iio_dev *indio_dev,
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 	int ret;
- 	/* read current value of mode register */
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	ret = sca3000_read_data_short(st, SCA3000_REG_MODE_ADDR, 1);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 
- 	switch (chan->channel2) {
- 	case IIO_MOD_X_AND_Y_AND_Z:
-@@ -1134,7 +1137,7 @@ static int sca3000_read_event_config(struct iio_dev *indio_dev,
- 			ret = sca3000_read_ctrl_reg(st,
- 						SCA3000_REG_CTRL_SEL_MD_CTRL);
- 			if (ret < 0)
--				goto error_ret;
-+				return ret;
- 			/* only supporting logical or's for now */
- 			ret = !!(ret & sca3000_addresses[chan->address][2]);
- 		}
-@@ -1143,9 +1146,6 @@ static int sca3000_read_event_config(struct iio_dev *indio_dev,
- 		ret = -EINVAL;
- 	}
- 
--error_ret:
--	mutex_unlock(&st->lock);
--
- 	return ret;
- }
- 
-@@ -1277,10 +1277,12 @@ int __sca3000_hw_ring_state_set(struct iio_dev *indio_dev, bool state)
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 	int ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	ret = sca3000_read_data_short(st, SCA3000_REG_MODE_ADDR, 1);
- 	if (ret)
--		goto error_ret;
-+		return ret;
-+
- 	if (state) {
- 		dev_info(&indio_dev->dev, "supposedly enabling ring buffer\n");
- 		ret = sca3000_write_reg(st,
-@@ -1290,8 +1292,6 @@ int __sca3000_hw_ring_state_set(struct iio_dev *indio_dev, bool state)
- 		ret = sca3000_write_reg(st,
- 			SCA3000_REG_MODE_ADDR,
- 			(st->rx[0] & ~SCA3000_REG_MODE_RING_BUF_ENABLE));
--error_ret:
--	mutex_unlock(&st->lock);
- 
- 	return ret;
- }
-@@ -1310,26 +1310,20 @@ static int sca3000_hw_ring_preenable(struct iio_dev *indio_dev)
- 	int ret;
- 	struct sca3000_state *st = iio_priv(indio_dev);
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	/* Enable the 50% full interrupt */
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
- 	if (ret)
--		goto error_unlock;
-+		return ret;
-+
- 	ret = sca3000_write_reg(st,
- 				SCA3000_REG_INT_MASK_ADDR,
- 				st->rx[0] | SCA3000_REG_INT_MASK_RING_HALF);
- 	if (ret)
--		goto error_unlock;
--
--	mutex_unlock(&st->lock);
-+		return ret;
- 
- 	return __sca3000_hw_ring_state_set(indio_dev, 1);
--
--error_unlock:
--	mutex_unlock(&st->lock);
--
--	return ret;
- }
- 
- static int sca3000_hw_ring_postdisable(struct iio_dev *indio_dev)
-@@ -1342,17 +1336,15 @@ static int sca3000_hw_ring_postdisable(struct iio_dev *indio_dev)
- 		return ret;
- 
- 	/* Disable the 50% full interrupt */
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
- 	if (ret)
--		goto unlock;
--	ret = sca3000_write_reg(st,
-+		return ret;
-+
-+	return sca3000_write_reg(st,
- 				SCA3000_REG_INT_MASK_ADDR,
- 				st->rx[0] & ~SCA3000_REG_INT_MASK_RING_HALF);
--unlock:
--	mutex_unlock(&st->lock);
--	return ret;
- }
- 
- static const struct iio_buffer_setup_ops sca3000_ring_setup_ops = {
-@@ -1372,25 +1364,26 @@ static int sca3000_clean_setup(struct sca3000_state *st)
- {
- 	int ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	/* Ensure all interrupts have been acknowledged */
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_STATUS_ADDR, 1);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 
- 	/* Turn off all motion detection channels */
- 	ret = sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_MD_CTRL);
- 	if (ret < 0)
--		goto error_ret;
-+		return ret;
- 	ret = sca3000_write_ctrl_reg(st, SCA3000_REG_CTRL_SEL_MD_CTRL,
- 				     ret & SCA3000_MD_CTRL_PROT_MASK);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 
- 	/* Disable ring buffer */
- 	ret = sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL);
- 	if (ret < 0)
--		goto error_ret;
-+		return ret;
- 	ret = sca3000_write_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL,
- 				     (ret & SCA3000_REG_OUT_CTRL_PROT_MASK)
- 				     | SCA3000_REG_OUT_CTRL_BUF_X_EN
-@@ -1398,17 +1391,17 @@ static int sca3000_clean_setup(struct sca3000_state *st)
- 				     | SCA3000_REG_OUT_CTRL_BUF_Z_EN
- 				     | SCA3000_REG_OUT_CTRL_BUF_DIV_4);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 	/* Enable interrupts, relevant to mode and set up as active low */
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 	ret = sca3000_write_reg(st,
- 				SCA3000_REG_INT_MASK_ADDR,
- 				(ret & SCA3000_REG_INT_MASK_PROT_MASK)
- 				| SCA3000_REG_INT_MASK_ACTIVE_LOW);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 	/*
- 	 * Select normal measurement mode, free fall off, ring off
- 	 * Ring in 12 bit mode - it is fine to overwrite reserved bits 3,5
-@@ -1416,13 +1409,10 @@ static int sca3000_clean_setup(struct sca3000_state *st)
- 	 */
- 	ret = sca3000_read_data_short(st, SCA3000_REG_MODE_ADDR, 1);
- 	if (ret)
--		goto error_ret;
--	ret = sca3000_write_reg(st, SCA3000_REG_MODE_ADDR,
--				(st->rx[0] & SCA3000_MODE_PROT_MASK));
-+		return ret;
- 
--error_ret:
--	mutex_unlock(&st->lock);
--	return ret;
-+	return sca3000_write_reg(st, SCA3000_REG_MODE_ADDR,
-+				(st->rx[0] & SCA3000_MODE_PROT_MASK));
- }
- 
- static const struct iio_info sca3000_info = {
-@@ -1504,18 +1494,17 @@ static int sca3000_stop_all_interrupts(struct sca3000_state *st)
- {
- 	int ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
-+
- 	ret = sca3000_read_data_short(st, SCA3000_REG_INT_MASK_ADDR, 1);
- 	if (ret)
--		goto error_ret;
--	ret = sca3000_write_reg(st, SCA3000_REG_INT_MASK_ADDR,
-+		return ret;
-+
-+	return sca3000_write_reg(st, SCA3000_REG_INT_MASK_ADDR,
- 				(st->rx[0] &
- 				 ~(SCA3000_REG_INT_MASK_RING_THREE_QUARTER |
- 				   SCA3000_REG_INT_MASK_RING_HALF |
- 				   SCA3000_REG_INT_MASK_ALL_INTS)));
--error_ret:
--	mutex_unlock(&st->lock);
--	return ret;
- }
- 
- static void sca3000_remove(struct spi_device *spi)
--- 
-2.53.0
-
+>>>> Regarding 'mode', I agree that it should be something that could be modified
+>>>> at run-time, especially since all register modes (CNV_CLOCK, CNV_BURST,
+>>>> AUTONOMOUS and SPI_BURST) rely on the same principles of reading the
+>>>> ADC result from the registers, the main difference being that PWM on the
+>>>> CNV pin is required for CNV_CLOCK and CNV_BURST, but the board design
+>>>> stays the same. Perhaps this PWM can be initialized at start-time and only
+>>>> be used when CNV modes are being used. This would mean mode can
+>>>> become an IIO attribute that could be set by the user at run-time.
+>>>
+>>> More likely, it would be two different ways of doing a buffered read,
+>>> so maybe two different buffers? Or just pick the "best" one and only
+>>> implement that mode.
+>>
+>> I 'think' burst mode is really an oversampling thing as you read back from
+>> either the output of an averaging filter or an accumulator.
+>> I doubt there is reason to support both the oversampled and raw
+>> readings at the same time.
+>>
+> 
+> I agree with that, perhaps burst modes (CNV_BURST and SPI_BURST) could
+> be dropped. Also, AUTONOMOUS mode could be used for read_raw since
+> its compatible with both CNV_CLOCK and MANUAL hardware setups.
+> So, then if the 'pwm' is present in the device tree, CNV_CLOCK
+> will be used for buffered readings and if not, MANUAL will.
+> This will indeed not only simplify the driver, but also keep two important
+> modes up for choice for the user.
+> 
+> Please let me know your thoughts on this approach.
+> 
+Sounds sensible to me.
