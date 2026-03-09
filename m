@@ -1,140 +1,124 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 816AA3B5301;
-	Mon,  9 Mar 2026 19:38:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773085132; cv=none; b=LzWkxcWEHOdXj19aBbCW3fS31u3jJHGjOPCUY4FyOAyCCrPDA8lRFahTGhm8AT/g005GgjWxMNUxmAgGCgpRB6l09T9CMALzaWwnbD1sANfpUZ3zLnVdFig8aHQypRRcVdO7W6TqJO83YVaNpPVds91/vd2x4cv5SYn/CAWHffY=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773085132; c=relaxed/simple;
-	bh=UgBTjnA/UWCqy16++mw2F7x01R8eJ2Sv874mUF8A/+c=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=hShNwtRn+AxoUcqRJ2dqIeFCk3Uw3Mj3wyhlJizpA2SSZHukoVmc1IRSM3eR7BfiKq+b4esoZvOYQa/JHlVMas1LevBpxkHh844TUNwMgICaFoVtf+AzrcD88SixB+Putac/7xn5o34z58rJ2Ud7HozziWNcRxdRp2+eSIpqb+M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S0i0Gsji; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5527F41325B
+	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 19:58:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.43
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773086331; cv=pass; b=RAG3Z5tNflyE7MyDerp78o8WDR/Sqvb3TnIttIX9fMBzba709C97tg+NOuKQHKID0hd0kM0kxRtizJqa2T1x5mmYSJ6oskUdu2QMfVZ781QArJ46R7kCWAyBV/F/3XIIP7K1UJeplz9xIWZH0cC+/inoeLyZpZ2VV5jAAhRqQaU=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773086331; c=relaxed/simple;
+	bh=CA1oGizoUANZBUNkB4o7l2KHcKAooGdG+sT54ynCIy4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Chhpqb4cDywHrjNDCd25I4RuFYH3hVYcnk0s0i2bG5gsQNQzqnUkWNZL+IyPLPOpeR49rE76DHFqW5BKIHEySW0qIV5hZjx5Lv8mtwuqZjKhTbZ+qAydFpO1T5Azj4CWX3gMcYHCebCX901pBgXibkt475et8eet2eYaogGQhOI=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gqPokTEv; arc=pass smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S0i0Gsji"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA9AFC4CEF7;
-	Mon,  9 Mar 2026 19:38:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773085132;
-	bh=UgBTjnA/UWCqy16++mw2F7x01R8eJ2Sv874mUF8A/+c=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=S0i0Gsjim0bHPhthdReTr5GprJgPNCg6zvoRRJ4Zhvqu9DYaS2htyjVoFMHIHfSG3
-	 pWQVSdDA3a7OjT5RZEMI2Lq83Q93ZYdcQgWbg2Yo9vhJcMaqPC3BhZc1vtstmneBh9
-	 Vo5qmPeoUzSB83GQfmoCnMM7gPyrHRPoTN9blmlsx01vCGP4QqXMgbhc/APxFs0TW5
-	 S/LGSRDMBB+jZHpgqT9i3jhZKzP7LEde5aZZYs9TAP3cABtnZ1btKMW6ytTWFaTXIt
-	 jHpkwkWIPKoXe1Gan54cJSqpf+yn2bryd8ZK4pK1i2ZK54+F3yRW7NMv8SGWVJ3Y/N
-	 7nzVUjydjushQ==
-Date: Mon, 9 Mar 2026 19:38:43 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Archit Anant <architanant5@gmail.com>
-Cc: dlechner@baylibre.com, lars@metafoo.de, Michael.Hennerich@analog.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/4] iio: adc: ad799x: cache regulator voltage during
- probe
-Message-ID: <20260309193843.66136463@jic23-huawei>
-In-Reply-To: <20260308182811.33471-3-architanant5@gmail.com>
-References: <20260308182811.33471-1-architanant5@gmail.com>
-	<20260308182811.33471-3-architanant5@gmail.com>
-X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gqPokTEv"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-662b42ca0daso1056608a12.3
+        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2026 12:58:49 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773086328; cv=none;
+        d=google.com; s=arc-20240605;
+        b=P+HMMYCMIjZlW1VOGK5y2m5gAP6H6Q1VITakK6fOkPOaVitLJGbw624M2ZqOYAdOSG
+         Z2AyUASM23xTH+8189PhoOD+4onV/Qfy7hwvx6mLI9ALiDbrYxsoXKMnFlJWRK3AZ3XU
+         U9gbbLZPgwufK2IenT99te3jk16vBsWMGoKxCflnd7Y5h8CdHyu7KnASC/GDjtaCbsDv
+         huVP+ZKtOR0yaIwGQ8Jps0eRPqW6n8awxiAik8WnyEKe5CnI0Yh/hk7RILTrk3JQrjZG
+         6wpuVEuWuJ3ikR06/CpwNhmT5icBpyd55FizxvZIat1FObvLZVuKab6IZx0EMILr6x4/
+         Uk8A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=G6VmTEw/fQ7f3SzdJueKVbKvGg5qHjNYFcZLopH6Gls=;
+        fh=mBJqlc1qL/63frlGqn471PFcKUCt9CtqLQZuw0EGqbU=;
+        b=gSf5fPwVlZk/5n219kGc873hsU6ufDyjMl6uo8Z/A5WoHjBd0Xp0Q8nV9fyUyd+iKZ
+         Fozl9MO5YRsnhlnpD/UKdzYogViAWkSo81YYlDUCAjzIK8ncXWqe77phgxNgm24clDuk
+         BgJnQE+HR5+HA2/JnV+u5lKXkoK5amQTtQK6QxfUZbP75H5aIEsnjIjSNEwOitbUffGo
+         gsND6s5sDyS5axjszAmL1/23/akkIooR9SfrJ/HaAR8ZTSTUwqdihX7F9NQFmPfVuGyh
+         G5ScbGA9ahqMDqkWvEo69Ok4DPLpX7L1fKV3WQIC8LMHtaiNVo6fdFQX0mV7AVU+Dq/c
+         p4Og==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773086328; x=1773691128; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=G6VmTEw/fQ7f3SzdJueKVbKvGg5qHjNYFcZLopH6Gls=;
+        b=gqPokTEvZGWRHzkKV72AagZxpcP/eI25iithPbYI+8x/Iep1A2Q5/WcOFG5r+UnJlk
+         qb/kHdNSsGvX2/fpYGfVSGYF9zke3HwL/ZyLEqsJC3R9M5+sgandE7+mBYxDx+aKrpvU
+         yo4M5t3ufS5g5gFK5AkNnzOLKaRbURDvoLhKx2ErhyoqVQgwhcD/dyU26oec/L15/nzr
+         fDNtPvLCS0c1LWFrO0AaPVQZvRQHLKdf+Pl+JZfdxmEoTM9aeEiA2GFDyutKNVcqDW2b
+         9fXttht+Gk0qDA6tJnxTzMIdv+ggMApL0v6CaiebVBw9WphJi6rjeRp4ajL6PlmlIiHM
+         re8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773086328; x=1773691128;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=G6VmTEw/fQ7f3SzdJueKVbKvGg5qHjNYFcZLopH6Gls=;
+        b=QZuyp6QwFqOJNMgxgPShYG+FZ39wgZcerGb5p5fvqg6zR0FzZvNKIqHlpf4n+Cb4ro
+         InIzOKfn8z0LJxdOSp3aI5whF03dqgRDbveZZnXvKviUYCo3iKBGUtxjHxEDfICQCcMv
+         Lr8H/z+SoUrruU3Sr470tceVc1CK1tvSHPPZoS+u4ZF68TY5uUkC+Se1YAE+RANuafNe
+         +cYbTRhRQZrrHElnSrlMQ6r6aCJjRbAT7+mW7Q8OAlZZ6mNph9xMQjDFTyNJEYQo5xIP
+         WD1LIZc8XjMvSS8HxntEl+K4+eaFkDJMkA2Plo5KzYaDtMuWvR3tpFFTF0cfcJ6ABI9v
+         n1sA==
+X-Forwarded-Encrypted: i=1; AJvYcCX86ZRF3/mGRhWDcCJNqlo/OE6p7iqXPu4iH1IfRmOl7Mm5vClR6HSjdUb2WViX6kYg5FYyy/o++FU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxyadfl+T6t7IkmnVGtoSLAIMoyMozyPL/MYg1v6S1xST6LAD/1
+	HrAnOlct6JEVvhQopK7M2Mh3XaNEuqOJKCrpneFdzVaHi9GRR4DdR2bjZ/n0TvqTe1JBHKR2e1e
+	/iE++EPpfCEaW7gqtlDgsclSWhbeF+no=
+X-Gm-Gg: ATEYQzz3Q1h1/cQ/Xhf08vc6vE2SooE8e2IQ0pwDMyISxxtvGv/kg1iI9lvFldXLGJN
+	alNHLjgL35eoxpc+2CHdBMdas6OYSRtB+B/6RwgZB8KYMyp4Wzp9Wrg7M/w25IWq7QAv+cPGi8v
+	GhAXEoRe9znte4yQ+Vd/jnG/zHNRNVhBH6r7/dAdiJZ6FIlpEyRyfAHLEzAigMMXdXzmjEfYc3r
+	V7/sHDUP3tYj2ijClVsWk3lZHUvmGZ6jwURqjoYnrxUE6L98Rm/rYOjVPCkm/GiB3Pp8+/d5ItP
+	F0/2jBNYVhGf4P+ePesSNZMl0UxRVmjeZZzAz5OrylMXZsllwDzbcAAcVWaJMIwinq6QLDSkjrF
+	6CzqVvfDrdTKau+YY95FqzgX+M8U=
+X-Received: by 2002:a05:6402:50d4:b0:64d:e1c:4c0a with SMTP id
+ 4fb4d7f45d1cf-6619d2f1d70mr7223667a12.0.1773086327413; Mon, 09 Mar 2026
+ 12:58:47 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260309153408.71512-1-rajveer.chaudhari.linux@gmail.com>
+ <20260309153408.71512-5-rajveer.chaudhari.linux@gmail.com> <20260309193010.104159cb@jic23-huawei>
+In-Reply-To: <20260309193010.104159cb@jic23-huawei>
+From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+Date: Tue, 10 Mar 2026 01:28:36 +0530
+X-Gm-Features: AaiRm52Bwrjch4Pxau4YC0YuEVAMy6Wl_rdwPbnAhD7GlLlEp-OPWXNEFNchnY8
+Message-ID: <CANS1UbiJgvbbzOAbi1TM5=N-Gj-LQoOFRyBUf06qkZRY3zw+Sw@mail.gmail.com>
+Subject: Re: [PATCH v2 4/4] iio: accel: sca3000: convert to guard(mutex)
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	waqar.hameed@axis.com, linusw@kernel.org, sakari.ailus@linux.intel.com, 
+	harshit.m.mogalapalli@oracle.com, antoniu.miclaus@analog.com, 
+	andrew.ijano@gmail.com, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Sun,  8 Mar 2026 23:58:09 +0530
-Archit Anant <architanant5@gmail.com> wrote:
+Hello Jonathan,
 
-> Reading the regulator voltage via regulator_get_voltage() can be a slow
-> operation. Since the reference voltage for this ADC is not expected to
-> change at runtime, it is inefficient to query the regulator API every
-> time userspace reads the IIO_CHAN_INFO_SCALE attribute.
-> 
-> Determine the active reference voltage (either VREF or VCC) during
-> probe() and cache it in a single variable in the state structure.
-> This improves the performance of ad799x_read_raw(), removes the
-> dependency on the regulator pointers during fast-path reads, and
-> allows the removal of a redundant negative-value check.
-> 
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Suggested-by: David Lechner <dlechner@baylibre.com>
-> Signed-off-by: Archit Anant <architanant5@gmail.com>
-This is a little more complex. See below.
+Thanks for the review, I will add all of your suggested return path,
+indentation fixes in v3.
 
-> ---
->  drivers/iio/adc/ad799x.c | 21 +++++++++++++--------
->  1 file changed, 13 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-> index c1a7fa37706f..28f1901698a6 100644
-> --- a/drivers/iio/adc/ad799x.c
-> +++ b/drivers/iio/adc/ad799x.c
-> @@ -135,6 +135,9 @@ struct ad799x_state {
->  	u16				config;
->  
->  	unsigned int			transfer_size;
-> +
-> +	int				vref_uV;
-> +
->  	IIO_DECLARE_BUFFER_WITH_TS(__be16, rx_buf, AD799X_MAX_CHANNELS);
->  };
->  
-> @@ -302,14 +305,7 @@ static int ad799x_read_raw(struct iio_dev *indio_dev,
->  			GENMASK(chan->scan_type.realbits - 1, 0);
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
-> -		if (st->vref)
-> -			ret = regulator_get_voltage(st->vref);
-> -		else
-> -			ret = regulator_get_voltage(st->reg);
-> -
-> -		if (ret < 0)
-> -			return ret;
-> -		*val = ret / 1000;
-> +		*val = st->vref_uV / 1000;
->  		*val2 = chan->scan_type.realbits;
->  		return IIO_VAL_FRACTIONAL_LOG2;
->  	}
-> @@ -809,6 +805,10 @@ static int ad799x_probe(struct i2c_client *client)
->  	ret = regulator_enable(st->reg);
->  	if (ret)
->  		return ret;
-> +	ret = regulator_get_voltage(st->reg);
-This is broken for some cases.  If the vcc reg is a stub provided
-by the regulator framework, or a regulator that we simply have no way
-to read back the voltage from, then this will return an error.
-Previously that was only a problem if we actually need this voltage.
-i.e. we didn't have a vref.
+But I have a question, should I submit the next version of patch right
+now as you reviewed
+the whole patch, or wait for 24 hrs as instructed by Andy Shevchenko
+to let others
+have a chance to comment, review.
 
-So we need to read this voltage only if there is no vref.
+On Tue, Mar 10, 2026 at 1:00=E2=80=AFAM Jonathan Cameron <jic23@kernel.org>=
+ wrote:
+>
+> So I think we really want to head towards something like the following.
+> Probably break this up though.  guard() patch first, then flip the logic =
+in
+> a second patch.
 
-> +	if (ret < 0)
-> +		goto error_disable_reg;
-> +	st->vref_uV = ret;
->  
->  	/* check if an external reference is supplied */
->  	if (chip_info->has_vref) {
-> @@ -827,6 +827,11 @@ static int ad799x_probe(struct i2c_client *client)
->  			ret = regulator_enable(st->vref);
->  			if (ret)
->  				goto error_disable_reg;
-> +
-> +			ret = regulator_get_voltage(st->vref);
+Yes, I will prepare and submit a separate patch for this logic flip.
 
-For this you can use
-	devm_regulator_get_enable_read_voltage()
-Read the comments for how that works with optional regulators.
-
-> +			if (ret < 0)
-> +				goto error_disable_vref;
-> +			st->vref_uV = ret;
->  		}
->  	}
->  
-
+Thankyou,
+Rajveer
