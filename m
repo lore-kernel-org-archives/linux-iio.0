@@ -1,96 +1,240 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B54193921F1;
-	Mon,  9 Mar 2026 11:52:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 33101376BEC;
+	Mon,  9 Mar 2026 12:13:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=68.232.153.233
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773057157; cv=none; b=AtSW9T2pLLPv0LHH8NsVa5sPnwX90raXhyFVS3v6FDeB8ONzx0rrjeDCOYnD/lltoZVqwp+p9ySlvG3d/kKeE/N0U1VCX9m5d1YilOvX8z4lYhUAD/SIfFiE3mbBC/RPOz82w3f+DlDi63fa2qrnykJpcoErAffRbE3zf9NuhrI=
+	t=1773058393; cv=none; b=kylyrYULDtIterchKNsqHKv47t/NQ2y3n1p0rzZEt0Ev0dkIAa9NdCKNpv8a8cxdps7wmAA8lia4Xifi7/pNRa8zV0jHyKFYNjceslWkIlZJIGA7U+CEax3nPhQgT45+NARq34T2mtx9Cip7mKEmwmv/XD3p2ndSIuxyQBiWusk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773057157; c=relaxed/simple;
-	bh=Dykc6BnsdLQJ0V8YqBH4eSolqlsSmJcxhnUPHlCYDm8=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Uk4omuSYpDy50oOWKUlgLxPN1Vja1nt64fu9SEo0D7bGSvFQ1sNMqsvYChgGrgPEXXnz8EApUwN6LCo6OYDTh8FGP6WRcRbr0BDbHri1TK4Hn3/THzsuuAwrlXZ+1qSPKEHq2Wvii+hLi4BRYiE2PJ4lpEKxxfEvB4Uei+9K09k=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ORPMDW9h; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1773058393; c=relaxed/simple;
+	bh=lmww/AnRT4CLgt5Rdb6gYI6yta72w2KvFetRCs2bDTE=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-ID:To:CC; b=SjuCHgvVNixm9YKojyp+TrQwYTl/K5JXj/Kpqup+5jPXFXXV6ymSke64RHXAz7vUHbHZdlLNLqjAyAruMBl/AFap33qcaX5enDfOtBXBudDZN/IxzFGazgXMJhUlm636XLM0iVBUauaXoE5bnP4MaQiyCQVO7sK1I5yNjGoXMgg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com; spf=pass smtp.mailfrom=microchip.com; dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b=KjO/liJ5; arc=none smtp.client-ip=68.232.153.233
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=microchip.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=microchip.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ORPMDW9h"
+	dkim=pass (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="KjO/liJ5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773057151; x=1804593151;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Dykc6BnsdLQJ0V8YqBH4eSolqlsSmJcxhnUPHlCYDm8=;
-  b=ORPMDW9hKf1CAxo6MNeAhm27Jk3Bkz05kgFwtL3M05+WihgsXEi6hw8g
-   0stqYNJX9pHLs089XeVPEK24NlU9998WjYz3QTTNzyxNnwHKJ1vR7oA4E
-   5kQXhnuXliLKR/x1Xqbn0ClWsJKTt7pMBKfI21H2U0+d9h61aVjIqqmrP
-   Tb9syRnvx2eCJAf/oBRjepHYC8xVepxKUfDpjQH4QpxDSWPgzR/wEpern
-   B9iVjVbDXj0bJsUvW6x4RTBZEmqhJC/pj7h3J4Ul8ytUZ5HrIKKlFMNoL
-   Jzxw3Rf2fhN8xxGwkbua/0JtA4Hjzrv5y9V2Bme7Jjf3NfYWfvJpV6Isi
-   Q==;
-X-CSE-ConnectionGUID: IZmgqlGGRUqxLQVPpa/g1w==
-X-CSE-MsgGUID: EPqjbD13RSq81h9HWW/wEw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11723"; a="73977711"
-X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="73977711"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 04:52:30 -0700
-X-CSE-ConnectionGUID: 2J/O+TQWQfyP/VoYejueJQ==
-X-CSE-MsgGUID: AMdSAiSXTMqMYEzL1lIdPQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,109,1770624000"; 
-   d="scan'208";a="216250207"
-Received: from rvuia-mobl.ger.corp.intel.com (HELO localhost) ([10.245.245.181])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 04:52:28 -0700
-Date: Mon, 9 Mar 2026 13:52:25 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Shi Hao <i.shihao.999@gmail.com>
-Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	marcelo.schmitt@analog.com, mazziesaccount@gmail.com,
-	nuno.sa@analog.com
-Subject: Re: [PATCH v3 2/6] iio: adc: fix spelling mistakes in comments
-Message-ID: <aa60eapboLEbFaFN@ashevche-desk.local>
-References: <20260309104513.40359-1-i.shihao.999@gmail.com>
- <20260309104513.40359-3-i.shihao.999@gmail.com>
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1773058392; x=1804594392;
+  h=from:date:subject:mime-version:content-transfer-encoding:
+   message-id:to:cc;
+  bh=lmww/AnRT4CLgt5Rdb6gYI6yta72w2KvFetRCs2bDTE=;
+  b=KjO/liJ5bdVr4QrlGzrE6tFmB0SZQG0mbMv0dXmuNWBbigBmWh7W+QcT
+   nDJ/bfL7bRDnJiMZPL42q7XYrRVynJg+75d8kGL9r7TLo5qEkzcCcxU8N
+   zoV8D7mdrm3wyI/KCW8Dxs0rABUZeTlWKDoLArgTXF7kX2xRkBKIeSFR9
+   zYOHmf+g6h14TsmdJU3qIq5tNZ51t6pTtvo84zilX84lPlNxn3wn9IqUb
+   yswYNsxKLcWrZV5NQHb0h2DmOh8pR9l4Zrz1CsR2j0BLvumjqTYMd5MyI
+   s5lVAM3Ctj+Y5xKiDxoXS0GN482L3GAkykE4VVTu1ogzjFPD7dxq1fFjD
+   A==;
+X-CSE-ConnectionGUID: IN4R9I4iQ/2y5EFaLyde3Q==
+X-CSE-MsgGUID: 7gYo2ZEOTLq1STbCspBBaw==
+X-IronPort-AV: E=Sophos;i="6.23,109,1770620400"; 
+   d="scan'208";a="285784267"
+X-Amp-Result: SKIPPED(no attachment in message)
+Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Mar 2026 05:13:11 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.87.71) by
+ chn-vm-ex1.mchp-main.com (10.10.87.30) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.2.2562.35; Mon, 9 Mar 2026 05:12:31 -0700
+Received: from [127.0.1.1] (10.10.85.11) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.2507.58 via Frontend
+ Transport; Mon, 9 Mar 2026 05:12:29 -0700
+From: Ariana Lazar <ariana.lazar@microchip.com>
+Date: Mon, 9 Mar 2026 14:12:23 +0200
+Subject: [PATCH v2] iio: dac: mcp47feb02: Fix Vref validation [1-999] case
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260309104513.40359-3-i.shihao.999@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-ID: <20260309-mcp47feb02-fix1-v2-1-6a5ef30e4b27@microchip.com>
+X-B4-Tracking: v=1; b=H4sIACa5rmkC/2WNQQ7CIBREr9L8tRigSFNXvYfpQujH/gWFgCGah
+ ruLTVy5fJOZNztkTIQZrt0OCQtlClsDeerArvftgYyWxiC51Lzninkb1eDQcMkcvQSTfFncaAd
+ htIa2iglbfhhvc+OV8jOk93FQxDf9uS5/riKYYFoZLfrWQD5OnmwKdqV4tsHDXGv9ACvqshmyA
+ AAA
+X-Change-ID: 20260304-mcp47feb02-fix1-20ddf9c71b66
+To: Jonathan Cameron <jic23@kernel.org>, David Lechner
+	<dlechner@baylibre.com>, =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, "Andy
+ Shevchenko" <andy@kernel.org>
+CC: Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>, Ariana Lazar
+	<ariana.lazar@microchip.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1773058348; l=6037;
+ i=ariana.lazar@microchip.com; s=20250825; h=from:subject:message-id;
+ bh=lmww/AnRT4CLgt5Rdb6gYI6yta72w2KvFetRCs2bDTE=;
+ b=IHC/B/OFNNig9Vt7jwijJ7Iv/lC5jiEQ0Sf8+vXAkBgoKRMei+Q+Z3FkovxmR4GgkuTPOLn2d
+ 6ctmRfl5pX0Aodz2+v7cyGS+uhWzHj0TSq8ljMf2TzQSefkFx4xqAzy
+X-Developer-Key: i=ariana.lazar@microchip.com; a=ed25519;
+ pk=jmvf1fSxcnzZmXfITM3L94IwutM+wqA1POQHiYyD6Dk=
 
-On Mon, Mar 09, 2026 at 04:15:09PM +0530, Shi Hao wrote:
-> There were several spelling mistakes in comments such as mulitiply,
-> referrence, ocurring, consequtive, and celcius, as well as other
-> occurrences. Fix these spelling mistakes to improve code readability
-> and consistency.
+Store reference voltages in uV instead of mV to avoid invalid error code
+in dev_err_probe() call. Vref variables store the actual value returned by
+devm_regulator_get_enable_read_voltage() function instead of the results of
+dividing it by MILLI. The corner case [1-999] divided by MILLI of the
+voltage reference variable value would become 0 is covered too.
 
-...
+Fixes: bf394cc80369 ("iio: dac: adding support for Microchip MCP47FEB02")
+Link: https://lore.kernel.org/all/aYXvP5FLA5BvkoVX@stanley.mountain/
+Signed-off-by: Ariana Lazar <ariana.lazar@microchip.com>
+---
+Changes in v2:
+- add () to functions mentioned in the commit message
+- split vref_uV, vref1_uV assigments
+- Link to v1: https://lore.kernel.org/r/20260305-mcp47feb02-fix1-v1-1-64b613260e09@microchip.com
+---
+ drivers/iio/dac/mcp47feb02.c | 49 ++++++++++++++++++++------------------------
+ 1 file changed, 22 insertions(+), 27 deletions(-)
 
-> static u8 twl6032_channel_to_reg(int channel)
->  {
-> 	/*
-> 	 * for any prior chosen channel, when the conversion is ready
+diff --git a/drivers/iio/dac/mcp47feb02.c b/drivers/iio/dac/mcp47feb02.c
+index b218f0c3a0bd79f43dc9f2da1027f49a04e1975b..5615b4f50e6527023da2f492f12268f64e59fab9 100644
+--- a/drivers/iio/dac/mcp47feb02.c
++++ b/drivers/iio/dac/mcp47feb02.c
+@@ -65,7 +65,7 @@
+ #define MCP47FEB02_MAX_SCALES_CH			3
+ #define MCP47FEB02_DAC_WIPER_UNLOCKED			0
+ #define MCP47FEB02_NORMAL_OPERATION			0
+-#define MCP47FEB02_INTERNAL_BAND_GAP_mV			2440
++#define MCP47FEB02_INTERNAL_BAND_GAP_uV			2440000
+ #define NV_DAC_ADDR_OFFSET				0x10
+ 
+ enum mcp47feb02_vref_mode {
+@@ -697,44 +697,40 @@ static const struct iio_chan_spec mcp47febxx_ch_template = {
+ };
+ 
+ static void mcp47feb02_init_scale(struct mcp47feb02_data *data, enum mcp47feb02_scale scale,
+-				  int vref_mV, int scale_avail[])
++				  int vref_uV, int scale_avail[])
+ {
+ 	u32 value_micro, value_int;
+ 	u64 tmp;
+ 
+-	/* vref_mV should not be negative */
+-	tmp = (u64)vref_mV * MICRO >> data->chip_features->resolution;
++	/* vref_uV should not be negative */
++	tmp = (u64)vref_uV * MILLI >> data->chip_features->resolution;
+ 	value_int = div_u64_rem(tmp, MICRO, &value_micro);
+ 	scale_avail[scale * 2] = value_int;
+ 	scale_avail[scale * 2 + 1] = value_micro;
+ }
+ 
+-static int mcp47feb02_init_scales_avail(struct mcp47feb02_data *data, int vdd_mV,
+-					int vref_mV, int vref1_mV)
++static int mcp47feb02_init_scales_avail(struct mcp47feb02_data *data, int vdd_uV,
++					int vref_uV, int vref1_uV)
+ {
+-	struct device *dev = regmap_get_device(data->regmap);
+ 	int tmp_vref;
+ 
+-	mcp47feb02_init_scale(data, MCP47FEB02_SCALE_VDD, vdd_mV, data->scale);
++	mcp47feb02_init_scale(data, MCP47FEB02_SCALE_VDD, vdd_uV, data->scale);
+ 
+ 	if (data->use_vref)
+-		tmp_vref = vref_mV;
++		tmp_vref = vref_uV;
+ 	else
+-		tmp_vref = MCP47FEB02_INTERNAL_BAND_GAP_mV;
++		tmp_vref = MCP47FEB02_INTERNAL_BAND_GAP_uV;
+ 
+ 	mcp47feb02_init_scale(data, MCP47FEB02_SCALE_GAIN_X1, tmp_vref, data->scale);
+ 	mcp47feb02_init_scale(data, MCP47FEB02_SCALE_GAIN_X2, tmp_vref * 2, data->scale);
+ 
+ 	if (data->phys_channels >= 4) {
+-		mcp47feb02_init_scale(data, MCP47FEB02_SCALE_VDD, vdd_mV, data->scale_1);
+-
+-		if (data->use_vref1 && vref1_mV <= 0)
+-			return dev_err_probe(dev, vref1_mV, "Invalid voltage for Vref1\n");
++		mcp47feb02_init_scale(data, MCP47FEB02_SCALE_VDD, vdd_uV, data->scale_1);
+ 
+ 		if (data->use_vref1)
+-			tmp_vref = vref1_mV;
++			tmp_vref = vref1_uV;
+ 		else
+-			tmp_vref = MCP47FEB02_INTERNAL_BAND_GAP_mV;
++			tmp_vref = MCP47FEB02_INTERNAL_BAND_GAP_uV;
+ 
+ 		mcp47feb02_init_scale(data, MCP47FEB02_SCALE_GAIN_X1,
+ 				      tmp_vref, data->scale_1);
+@@ -1080,8 +1076,8 @@ static int mcp47feb02_init_ctrl_regs(struct mcp47feb02_data *data)
+ 	return 0;
+ }
+ 
+-static int mcp47feb02_init_ch_scales(struct mcp47feb02_data *data, int vdd_mV,
+-				     int vref_mV, int vref1_mV)
++static int mcp47feb02_init_ch_scales(struct mcp47feb02_data *data, int vdd_uV,
++				     int vref_uV, int vref1_uV)
+ {
+ 	unsigned int i;
+ 
+@@ -1089,7 +1085,7 @@ static int mcp47feb02_init_ch_scales(struct mcp47feb02_data *data, int vdd_mV,
+ 		struct device *dev = regmap_get_device(data->regmap);
+ 		int ret;
+ 
+-		ret = mcp47feb02_init_scales_avail(data, vdd_mV, vref_mV, vref1_mV);
++		ret = mcp47feb02_init_scales_avail(data, vdd_uV, vref_uV, vref1_uV);
+ 		if (ret)
+ 			return dev_err_probe(dev, ret, "failed to init scales for ch %u\n", i);
+ 	}
+@@ -1103,10 +1099,7 @@ static int mcp47feb02_probe(struct i2c_client *client)
+ 	struct device *dev = &client->dev;
+ 	struct mcp47feb02_data *data;
+ 	struct iio_dev *indio_dev;
+-	int vref1_mV = 0;
+-	int vref_mV = 0;
+-	int vdd_mV;
+-	int ret;
++	int vref1_uV, vref_uV, vdd_uV, ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -1143,11 +1136,12 @@ static int mcp47feb02_probe(struct i2c_client *client)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	vdd_mV = ret / MILLI;
++	vdd_uV = ret;
+ 
++	vref_uV = 0;
+ 	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
+ 	if (ret > 0) {
+-		vref_mV = ret / MILLI;
++		vref_uV = ret;
+ 		data->use_vref = true;
+ 	} else {
+ 		dev_dbg(dev, "using internal band gap as voltage reference.\n");
+@@ -1155,9 +1149,10 @@ static int mcp47feb02_probe(struct i2c_client *client)
+ 	}
+ 
+ 	if (chip_features->have_ext_vref1) {
++		vref1_uV = 0;
+ 		ret = devm_regulator_get_enable_read_voltage(dev, "vref1");
+ 		if (ret > 0) {
+-			vref1_mV = ret / MILLI;
++			vref1_uV = ret;
+ 			data->use_vref1 = true;
+ 		} else {
+ 			dev_dbg(dev, "using internal band gap as voltage reference 1.\n");
+@@ -1169,7 +1164,7 @@ static int mcp47feb02_probe(struct i2c_client *client)
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "Error initialising vref register\n");
+ 
+-	ret = mcp47feb02_init_ch_scales(data, vdd_mV, vref_mV, vref1_mV);
++	ret = mcp47feb02_init_ch_scales(data, vdd_uV, vref_uV, vref1_uV);
+ 	if (ret)
+ 		return ret;
+ 
 
-While at it,
+---
+base-commit: bfd61205aca379121b1913885d4d06c51857119b
+change-id: 20260304-mcp47feb02-fix1-20ddf9c71b66
 
-for --> For
-
-> -	 * the result is avalable in GPCH0_LSB, GPCH0_MSB.
-> +	 * the result is available in GPCH0_LSB, GPCH0_MSB.
-> 	 */
-> 
-> 	return TWL6032_GPADC_GPCH0_LSB;
-
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Ariana Lazar <ariana.lazar@microchip.com>
 
