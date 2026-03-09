@@ -1,119 +1,129 @@
-Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from DUZPR83CU001.outbound.protection.outlook.com (mail-northeuropeazon11012002.outbound.protection.outlook.com [52.101.66.2])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D24E73D4135
-	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 14:35:10 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9577D3A63F7;
+	Mon,  9 Mar 2026 14:36:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.66.2
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773066913; cv=pass; b=hieuhNCv0bffI7NsSPdvPbreSODUlzuiOlnJdLOnAQisITLFUxStz1Lhq3PnCkKCvqkEQ+txm8yFa6r1O9QJ0dtYxNhQkTIxwOvR249juKsFa97nxU88dx19Sage6h0A8yWaxitsYEoMQTHUQMYTU0OT2AUYDAX7UeBvOBUziHw=
+	t=1773066963; cv=fail; b=nXiL0HYf9ieDRFBlAem3BQBDre3H5BlHnnlo+/Z1F9YrPwoJg5icKVL4pnTPIFnqIlRQB3or220HJWjhdrl6aWslT/hqG574JpJoPLeu5Su2ZPE8pwpMMxNiZCkvhI1bcmG3SnAaDCXH1iPO3EfR4eymJ/RF6zVjNBM0FhBPiF4=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773066913; c=relaxed/simple;
-	bh=kCCaZBLqWEqxQ+c215zpXcZhGoJOLUlvX6y63A/PVe0=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=q3RmR2PI8bmm9C02fwUU48sEWWfRKZa1SDYy90L+ayfT43GAxvv8FZ5WO7iTdseQqT+t9cWFlvPf9tF2mqXeQV6FiVULqClXXKQit4oR5bVX5oVFVtlo3/tSB2oeZNVAUY8tzCLjLF5flrxLMDeyiNlo+xUNEz70izE+lleMH5s=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JAvz/Nos; arc=pass smtp.client-ip=209.85.208.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773066963; c=relaxed/simple;
+	bh=KvwfDoCjTDMS2FCV6I218pXzDRUlRpmDzeW+kE1EoWU=;
+	h=From:To:CC:Subject:In-Reply-To:References:Date:Message-ID:
+	 MIME-Version:Content-Type; b=k8Nts8K0OlKCN0aIutBQ4/XjIGHDnVCkTW0EmRmVJNbUyEYYIyJRJs2Wx1pSFL/t61aYZ5+ieUPSZ4SIdP6aBKH/nPva5GLNj/MAW4eU0T7z9AoJMObzIes/on8uSFBpNFqLgvU3PCSX5jTi2/Zy5UtCl4M+5GouImmGg0N6lf0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com; spf=pass smtp.mailfrom=axis.com; dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b=h00aH9F9; arc=fail smtp.client-ip=52.101.66.2
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=axis.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=axis.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JAvz/Nos"
-Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-660ea8bcb96so8330311a12.3
-        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2026 07:35:10 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773066909; cv=none;
-        d=google.com; s=arc-20240605;
-        b=lh+l3eITgzzh6mkPKvisgLhFF9Ft0UDPahxqBwhpUJ5G+P2klmb2SA9luMAOTz6bLu
-         n/Kj/cRGKwhY+wz65bGl4gVxyrRHM7yGmfXEWSTnVxnnbWhi3w/aNUQA0W/W3p1SAXkl
-         qkivMSkog5572oGsWsRfC27Lfb0/4opE4qcExoFU6/QaqHHlk04hZ+DMjUDfAD1AF9N4
-         yu4u5XpWjxPXcJ2q5+kO6O5/OoWXS2LXCKmqHpqnNMFuWCVQmYccCEeDCMvTxNWbYdVr
-         JGEYrGf+jRmz9I6W1ftkwMwtXSx/GEkHA5xDNIL4/q3w+PnZJCBtKWnKo7Ae4rvkqOyN
-         1qcA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=8iWESBVoXzlMM18RcpcDPAS+3eCir6TBR1mLTZw1N3A=;
-        fh=F4RLnT2P7yRLQSnulva2p0pOkeCocks0PSlXQVz4qXY=;
-        b=kQFzgaCL2dHU1mOW0SW+FfixY+Nz3YQhDlf1YwCGs92diqDOnAia+GFEeVqLvk8X1t
-         qgAwEByK19euv2lDxyTJI78vGAaCskMw0VgHNCaDjBhidbtLtQTYkoGP4uwDZ9NCUPPG
-         LEMIIuj8/OJlLCyu3i3wz4ZF2GEOVZwbFQhZZbFwSHurNq7Jw4i2oA7gWnFVKq7nZpbZ
-         oiqEozkoonAziyMkP0zprY/w96F90mxvW1/vsWYqTmiqdqtLf6ssYRu9ClFdCf37+B8b
-         7PT3cxm5m0D2mGnREKrs/1X9Jn1uEyGe7iVa3THuGNMxd1Jg9h8p7UVjLRUNZ0IqVetP
-         tfFw==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773066909; x=1773671709; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=8iWESBVoXzlMM18RcpcDPAS+3eCir6TBR1mLTZw1N3A=;
-        b=JAvz/Nosfp3JZof8Qbw8xcjh359fC8lNPxX7GIPyJ9JzrNh/c4BZdX5m9lnmPbKSMY
-         I8Jn62CLVeXhTqmApaJXKuXs0o2g8zixA0LQBroxvnk/xcfFCfDZjig8n37lbSBUkGpj
-         Ja4wSjKtUYK4vSbgF/WxLRU3qUOemesiAeSLy1/arSo9vUoVNPf58uAVHAQPhbLcyJYw
-         r005goTU3rKmS+hv6Jm2WzmqdZn99H1+Nb2+cujq5ntsrwXsb6ihVfb1224emP1x6i2h
-         N9OPk4S6gbbEaS1F/4YW4/Ho8E7MPzVDXqL7qF/pPLxgyUlPZqb4WNfIDg9MiCbUNZ6T
-         VbeQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773066909; x=1773671709;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=8iWESBVoXzlMM18RcpcDPAS+3eCir6TBR1mLTZw1N3A=;
-        b=xScIDkCzW6j1E9y5ywGlvxbIOtyVh0wcPZOVo815fZk2rJictSeFeMMUFtwIVjF71C
-         WTOQe66zKr+G9kfPrBW6JYAPdKLKabIC51VQK4HDSA4SahEIllNIMoyXzyd3QxaPjdpI
-         KP5yehbEePK2VVmcl1edtK6/dph1zXjixWNrnD954e36iePYZOFQvLYWNw+ou4qrEDG2
-         4HY72cOSRoONR/6yBFi4WM6wGeP5O0Ho8Yed/uWRMwNCyOMpJn88RoV58Ss9v/FAbsNS
-         lsADEE7QfjcAy1XaThLjhhmDtUF05J+y/BS4cWr4Ks1FKt0UbEu7+GaNF1/p37Lyq5/u
-         S1SA==
-X-Gm-Message-State: AOJu0Yx2eWGDOZm/rIMpDdw8Td/vsP9XDHVl7AtdiUFTLOF/HyJ0lTsV
-	I7/uXbJ6dXzmHgQUz3weH6cRxbFYcqu72haotU7WZRsT6ac8bDze31VCpDue0k6UgBMh2EV4IJB
-	95tyttX+YYdMa2hxpO3F8v1oRQaJsneY=
-X-Gm-Gg: ATEYQzxmB9+dpqq5n8qdiLm5mvSa7a9MSgl/gjTGaFYw3GFfIS04l2ML5bScP4hEzAS
-	Rig1N23fiLxX10oxibuH6+rycvY4EPub7RsiLcKdVJeyh9TciwnMWhn6UZ7Ot/m1VTn1fLYC2V8
-	JImHCVInTtilLEAzxv2s/G1Wj8TP+Os/JIWOxPsXfI8W3yyAMnAi7gD8a0fK7uix4dQjF/wAdct
-	lKESojqjjnF6qpf8CiQ8KPwRT4n1VFwdYmy73efdZd2BOotMDK173pI+UOIxIC2e+qGPqMyMDuE
-	LlvZodwFg9MiwK0jJRhGQuXZCZDw5H29jUCE5eamgqjfhhQVLp/KSe2Cg/hz4+rZMCIfYWxgEVI
-	cOmSUkPjcoZpWa5MxhH2h8B4jyLU=
-X-Received: by 2002:a05:6402:1469:b0:659:36de:6d20 with SMTP id
- 4fb4d7f45d1cf-6619d4a6127mr6696036a12.14.1773066908545; Mon, 09 Mar 2026
- 07:35:08 -0700 (PDT)
+	dkim=pass (1024-bit key) header.d=axis.com header.i=@axis.com header.b="h00aH9F9"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=WFE6CzmPr9Elnf2l3vGA+j7Ehu3VF94Km79A9eNFH7TYmoy3TiGijj0G8pVpqfMfQhdwFJaxd8s6COds3vePhT+1sIMHoSK8mQ29u9v+tpOsfRfm2be697x3LP/3qbRQOigL29Dfn4psUtQuqnZC8FnDsLoLEukqyxdsiae0ucp/aPwa5GNUmvZtyTPpenB4r+WLazwX+hrUgsnpYdxPNhWiALiFW33+5V3kyHbwGT0M7ySBd8H3rqhJXjSUsK7FDDThSWYT8SwuVXJ4W2uqxPu4oeAmLUKAlh9cHNZN+QGQXoHKt51ebj+OU6S4bT4KTW1Q6a75Ld0ZEwueearRPg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=HLwoEeS++l7TvID8TrrnvMMPIUUgfkB7+qbEQ2Toxsk=;
+ b=uZGlxBGvVBm5Y7dYN43nSi+NR/sAzl/0l2dqTZuohS5Qdy14HK/PRvaFHEuEfhWYChoNj7tvs9ddiuvpxkjbIuE9PT9Ld5qnzkdMLVFShnRRTpk9C7e6yOos+/7q3z5J0PPXa0E8xMMowbt3JqZy9PqCvYCEOmmyQl4LVzHZnucfg3wfBgDZuRvLzKPmGMoO84EEMT1cg3fbXTqXcaToDUUtDRvfIpDW79ZairpAIP/ecSqHITo5q7lz/Zk2pR2lFt4paa7hzLecepxwjjzaeWWHYI1tO2WN5VPK10Dyds8ozerblemRVYfmCXLdHuX99SPbfLlibPNLuRymFYB5vA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 195.60.68.100) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=axis.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=axis.com;
+ dkim=none (message not signed); arc=none (0)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axis.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HLwoEeS++l7TvID8TrrnvMMPIUUgfkB7+qbEQ2Toxsk=;
+ b=h00aH9F9kij2zgO8Z7YDE53u4GwmPu1dCVEQOCm/SaiwzQ7MENDZzPs8GSaaJju3jdjIZlpegdEDQfyCy0wSHlkJ1uBok3wYAec2XoUgkWrurvRS7jkcNLxRq4pGTOKZLcLeLc0HCh/tB/7nJ4P4j4c12oA4qGJAeWWGUc26KAo=
+Received: from DUZPR01CA0128.eurprd01.prod.exchangelabs.com
+ (2603:10a6:10:4bc::21) by PR3PR02MB6105.eurprd02.prod.outlook.com
+ (2603:10a6:102:6b::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9678.25; Mon, 9 Mar
+ 2026 14:35:58 +0000
+Received: from DU2PEPF00028D11.eurprd03.prod.outlook.com
+ (2603:10a6:10:4bc:cafe::ea) by DUZPR01CA0128.outlook.office365.com
+ (2603:10a6:10:4bc::21) with Microsoft SMTP Server (version=TLS1_3,
+ cipher=TLS_AES_256_GCM_SHA384) id 15.20.9678.24 via Frontend Transport; Mon,
+ 9 Mar 2026 14:35:54 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 195.60.68.100)
+ smtp.mailfrom=axis.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=axis.com;
+Received-SPF: Pass (protection.outlook.com: domain of axis.com designates
+ 195.60.68.100 as permitted sender) receiver=protection.outlook.com;
+ client-ip=195.60.68.100; helo=mail.axis.com; pr=C
+Received: from mail.axis.com (195.60.68.100) by
+ DU2PEPF00028D11.mail.protection.outlook.com (10.167.242.25) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.9654.16 via Frontend Transport; Mon, 9 Mar 2026 14:35:58 +0000
+Received: from pc52311-2249 (10.4.0.13) by se-mail10w.axis.com (10.20.40.10)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.39; Mon, 9 Mar
+ 2026 15:35:58 +0100
+From: Waqar Hameed <waqar.hameed@axis.com>
+To: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+CC: <jic23@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+	<andy@kernel.org>, <linusw@kernel.org>, <sakari.ailus@linux.intel.com>,
+	<harshit.m.mogalapalli@oracle.com>, <antoniu.miclaus@analog.com>,
+	<andrew.ijano@gmail.com>, <linux-iio@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/4] iio: accel: bmc150: convert to guard(mutex)
+In-Reply-To: <20260309142352.57407-2-rajveer.chaudhari.linux@gmail.com>
+	(Rajveer Chaudhari's message of "Mon, 9 Mar 2026 19:53:49 +0530")
+References: <20260309142352.57407-1-rajveer.chaudhari.linux@gmail.com>
+	<20260309142352.57407-2-rajveer.chaudhari.linux@gmail.com>
+User-Agent: a.out
+Date: Mon, 9 Mar 2026 15:35:58 +0100
+Message-ID: <pndeclt5aup.a.out@axis.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260309142352.57407-1-rajveer.chaudhari.linux@gmail.com> <20260309142352.57407-2-rajveer.chaudhari.linux@gmail.com>
-In-Reply-To: <20260309142352.57407-2-rajveer.chaudhari.linux@gmail.com>
-From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Date: Mon, 9 Mar 2026 20:04:57 +0530
-X-Gm-Features: AaiRm52vWChRUgxt5jVXDmYGLP-xIrE9FhmZB9R-_kxmujT28aAovyQDPkO0u7Y
-Message-ID: <CANS1UbhYkVCWZf-WK65EWZ6Xz69H5dJ12=jCs-LQe13GpMBhPw@mail.gmail.com>
-Subject: Re: [PATCH 1/4] iio: accel: bmc150: convert to guard(mutex)
-To: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
-	andy@kernel.org, waqar.hameed@axis.com, linusw@kernel.org, 
-	sakari.ailus@linux.intel.com, harshit.m.mogalapalli@oracle.com, 
-	antoniu.miclaus@analog.com, andrew.ijano@gmail.com
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-ClientProxiedBy: se-mail10w.axis.com (10.20.40.10) To se-mail10w.axis.com
+ (10.20.40.10)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: DU2PEPF00028D11:EE_|PR3PR02MB6105:EE_
+X-MS-Office365-Filtering-Correlation-Id: 5a4e4eb1-21be-4135-ac7a-08de7de92e1c
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|7416014|376014|82310400026|36860700016;
+X-Microsoft-Antispam-Message-Info:
+	4KC3l/ZjWmnNLp6YREia/Eu8/JvroI1ojADwxmVJFE9hVVh/hnPhlLuI2MClnVW5OJDqSV05You8mFsgXG6RhiBKRaTS2f7YwMIG598P2CQbQYErHfkucVGQDdwjqftmDzM4cUoZo0QPkI3hVOE+T/A9bMYrKLTGmJS7g5x8NckMtUqTDxvqIko1CKcujBU5l0F7hy6pjalQ9C9Zr23cwt9hsKcDYbtzxxEqrlU8TyzZdU/iEQzMkhZmxcRFtd19qYodrO9Ii55oo0EZgoX0qKxm+yYw4Hzidkx+5k4ME1fc7lVNabAMVWfi/UFC0SnukMZLPkaYert9/ZdoRkKHEqN5LpYUhcdVBk4f4UiHRpJy0pQAtaywSC/WmoT2AAwwwbN1QGG7afJl99ZvdjboeYHYbvrPkwr7mJRDuz4zQ6+rNjEF9HIJg5nFN5oecKruJvdykp+9eEmiI03eSrNWGC9fqg9QGBi+Sv0KHwmzUmnCn3Uvqi0E7jxxl+HZxVxL2GIyHKcTbgIpsu4jhVT7VMW6NMDNKYaA/IEbuvA1BhKbnTIuL75vjmg5Fcv80uqL4iLk7DIjnB5p2FC3AQ7qED5DGeoE17Z/Ypf3jMXzgybOt+QH2p/f6nwrEmLkegobxk5kVhKS/UdKbLyCc1/DEuVZa3NJM/LuGb9fcSITRO10HoHpXEZelJSovjTKKT2w3euuYAmcUu3MGT7INy+/8U/lfgvQaIQtfATQpRmlYzenkqFh7w6yO89NOlvT0o5TOuQSBJxo9WOgurGQ0f1TTA==
+X-Forefront-Antispam-Report:
+	CIP:195.60.68.100;CTRY:SE;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:mail.axis.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(82310400026)(36860700016);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	QKiJTZD+41bqtfe1bUyPf86/UqGbKaFKMEvVRPtk7D6bMPyoezqXwfIqG4E7D3/XEys0bNsthSjtDenv263WMsinDj8FPGkN9jZytpkiWuuDiOz/jYNdK5YVXqwUzsWoBTbtw8XkKK2WSR6x79jE6dRQGsYneIx+Ta6QPaTyelQHgiRKIyc5EwnPzGpJFbgC9eqwiBxFMEvbF9gItWouez1eq07kHCwEL0gSpVsvitjuLP41e4kg0iA27m3crc2sbdc/JFaNHNOLq0iZiBARWURVPobrspRvbWfvHBVCDDafnjm3MXKN0ESiU0W12cnGYhKAgqqb+8JFkFkvY3pf5a/QycXD2KaC456iQ9AOMghhvRKpRulfZeQD2SsSwF12r3nDvuA/GdtfMkS2FABO1xcoLeL4snLsaBOOjytSRZgIn1foJbE4Mvydn9xOodQY
+X-OriginatorOrg: axis.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Mar 2026 14:35:58.7162
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a4e4eb1-21be-4135-ac7a-08de7de92e1c
+X-MS-Exchange-CrossTenant-Id: 78703d3c-b907-432f-b066-88f7af9ca3af
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=78703d3c-b907-432f-b066-88f7af9ca3af;Ip=[195.60.68.100];Helo=[mail.axis.com]
+X-MS-Exchange-CrossTenant-AuthSource:
+	DU2PEPF00028D11.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR3PR02MB6105
 
-On Mon, Mar 9, 2026 at 7:54=E2=80=AFPM Rajveer Chaudhari
-<rajveer.chaudhari.linux@gmail.com> wrote:
+On Mon, Mar 09, 2026 at 19:53 +0530 Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com> wrote:
 
-> @@ -1485,7 +1488,7 @@ static int bmc150_accel_buffer_postenable(struct ii=
-o_dev *indio_dev)
->         if (iio_device_get_current_mode(indio_dev) =3D=3D INDIO_BUFFER_TR=
-IGGERED)
->                 return 0;
+> Replace manual mutex_lock/mutex_unlock pair with guard(mutex) in
+> bmc150_accel_buffer_predisable(). This ensures the mutex is
+> released on all return paths and allows returning directly
+> without a goto label.
 >
-> -       mutex_lock(&data->mutex);
-> +       guard(mutex)(&data->mutex);
->
->         if (!data->watermark)
->                 goto out;
+> Aligned headers in alphabatical order.
 
-I am sorry I accidentally forgot to clean up goto and mutex_unlock in
-bmc150_accel_buffer_postenable().
-I will fix it in V2.
+Never mix unrelated changes. This should be separate patches. Why? Think
+about traceability (bisect etc.).
 
-Thankyou,
-Rajveer
+This comment applies to all other patches in the series as well. I'll
+just state it here and wait for V2 before taking a deeper look. 
+
+To be honest, I'm not even sure if sorting the headers is a "valid"
+patch. It's just cosmetics (and there seems to be no such code style
+guidelines)...
+
+[...]
+
