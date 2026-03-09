@@ -1,161 +1,106 @@
-Received: from mail-wr1-f48.google.com (mail-wr1-f48.google.com [209.85.221.48])
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 469223AEF37
-	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 14:14:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.48
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9934D345757
+	for <linux-iio@vger.kernel.org>; Mon,  9 Mar 2026 14:24:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773065699; cv=none; b=tdDcvligP0jE1qDMS6Gcu06X0flzVzyU4AVlJ+WW9XVyQSwmhjM97wIGpTf49jL6eWni/2dt3HmAB/lqtQSRKy396135SU2EE/O0qFTLmXwjkTbsZNJeTwxaZL/8HjpOJedVlNmgb1ddBCFSJdh2rL+pTJkjdz4SdrBwKmgFpBE=
+	t=1773066269; cv=none; b=RYFkgQEfeJ2C3abkmvpL+YMhme32EWZlw3xlPkzLNpcITW8AIZLC1ATKwPfaJMW3JcK8u3haR4VNIuym7Ncil7K5OHarqLXyhV196YIyglB0v98w59OCh9cfK47BuveudI0iAnS9ppiK+aFhDLnula/LhvNFxJTDP4eyb8HC3Yc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773065699; c=relaxed/simple;
-	bh=9lvQX9fmBjyeTI1FZ+BGSlZlpfTaB4KXQ4dV+V05t8A=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=F62fKy6EyPKO3cs5GrL5wV1Nia23Gk2TTrVZv8kWU/lJSXwCBMEEgcgbVapCdXuicjUTGkJMbKCZM3p6ALyelqj9tHUznJfYtCa6drjLK3WdElpTdQJYzk2YqHBZgW4P3TsiRBuQScaoJFFlXBzvOY94kQ6fbXFmp/anUR66Pc4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=cOGHoVlb; arc=none smtp.client-ip=209.85.221.48
+	s=arc-20240116; t=1773066269; c=relaxed/simple;
+	bh=9uJRT3FKb6EexXWrwSqKSpTNQpf3aTkdg4yqa026Uj0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=gVvO9Cd0axeiDJZlbe8ITNshy36j4901tzmOb4R5rUKl3OD6vl/5WRN4C506Pmmq4v0GKjmoZkBiSI29aw+UoBfrcuax1z3oMUBD7778QJ0RGep/Z81U0TLs8nw561oOTp9GlYILlSYzkyRbclWapnXyMyhFOB7Uei0hhuTQEac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hc2Ay3ZZ; arc=none smtp.client-ip=209.85.216.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cOGHoVlb"
-Received: by mail-wr1-f48.google.com with SMTP id ffacd0b85a97d-439af00d33cso8779406f8f.1
-        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2026 07:14:58 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hc2Ay3ZZ"
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-3597fea200dso6291824a91.3
+        for <linux-iio@vger.kernel.org>; Mon, 09 Mar 2026 07:24:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773065697; x=1773670497; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=9lvQX9fmBjyeTI1FZ+BGSlZlpfTaB4KXQ4dV+V05t8A=;
-        b=cOGHoVlbC5Yzh5OUNO8niSZUooqHHH4lN8anZMAGBbsHk3cpOmuVImni6dI90kSVLm
-         MimA+HY9Z9odDOV+C8oZFLml9N3Puf/6NYrXQigUQBHJQOWLoX6czyxk/XIwaql1ksKF
-         pu+mc9hdb4+XTHHbgxtC5y+2+h3sKeYGL7tSu/WJv/mRBLw6X+kbqvCxNKR605KLa3ft
-         q603wsoEstDxwI9kjW9JATn3JEP8afzrq2lplQXKj01nkNQsNKb9i5ozF7aMeoeGD35P
-         lcZZQ/uRZwwF6NycXJ5j2jp1L3OfdS7Hljl8Z8cYzL/KJ3aW5cD+2uQhaNeC3z2TUh5q
-         oB0g==
+        d=gmail.com; s=20230601; t=1773066268; x=1773671068; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=AER5ZefJVDvStBcox3FLdZxVBXZmffk2UdbV+Z5G4qw=;
+        b=hc2Ay3ZZ6OEZshYoJ22khUo6Hh1VGY5R4QUsHVh5gnZnGGTqN+Rz08BRJ9V7TUckck
+         xRxJbJHLeXKVp3KMGoicF+Ch+U0KW6YyeB6JkeJrDKcBYZU4mXTD8E6oU9xpSra/gY/u
+         kuoiHtQHQUC58iqJ7iZowgiR23YSr1+3rlmhFbCSMIqIDP4hUHr2wnGv9yE5ihhikjzg
+         A1x0LBreGd2omj4cM8MKftvPIK7bZKDvO/BZqS1RtckmQdvyXKdQh6QCvji0/h8KKu3B
+         JDpDFgIufBYV98ZVZJLXkDAndr6qvvdMtRiUkeY62lyq5fP94JFZyXKJqwQlo4IFrEYd
+         3sCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773065697; x=1773670497;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=9lvQX9fmBjyeTI1FZ+BGSlZlpfTaB4KXQ4dV+V05t8A=;
-        b=Qz5TEohl+yhnuIQrJ9SKB3FGbwkHnbe0cAPBVl1z/P+f7e/TG+AgFsR545lEV1Xe0C
-         77B6KUpTgd++B4HuVJhYRo1OgVmVKMjHspQndpMswboEKZkK4m3bZopjJPFp8Qx8RVpn
-         m55gziFwXSnsj9bisUDJkBdFxPJtqU3iYlg+XXt5pa8SsCpBBGDRQ0E+b1PC4BMY+z1K
-         9UzbOzza82iZ0mYxl5mCpdQP9l/1vc4kge4FFD9eLKXvJnekQxwWcpFE1JODEI15Pg2Y
-         azLv6PnnYKPbog9To7WKdgPc3IPVU0dambNuC0bdIqFMGdeuiJOIe/p58FvYzuWvJ5no
-         OjQQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWU8dRfnioaBa13a/ikQ03M+EUmET5rEgAroWaPFp7ogoiSCFKIhDW+ZE7WcSP2yze3F+gWAr/edI8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxoHT6XCCB7cEnbo4hh5hMJqCIMM9Qz2EHcvFuTY+fwwtKGAXty
-	jeUvm3nQfp2af7bBGnJBT78L9lDrtQqRPUZ4zr63L3ljxnUkocPspBQu
-X-Gm-Gg: ATEYQzxWEG8G/kw0VUG4G2/SekgLQwHbyVj8gVX+xAXvGqtQkalDWkONkZmSdrrW8wH
-	ki0x3udxKPQZyQVXbETuIzQhJ5CGsDXe4tJSwcXbwH5QO+HeP/3HB1XXHgZQke1XaodNHwmmwPi
-	72HxLK05i5iBUAPtnG9hhpHwG7VsVLVXWfLYRe5w/x6vhTTpyffclg0YJ4iUCHBxRSJUd6oHQ5D
-	mw3moxYvb3p/47aZYlm6ZzzQI2xBoslEVM2A9qfk3TedycmA2MQ2KcJxwyyPt6xF/fidAUDRnU/
-	9MB/+TB6K9mCsv7qrqEc5LBvCoRKh94Ry8S9n5fQlPBHt96RjLuFOVEXBoXmWvDd5gxSolgVACu
-	akB+g7s7+5d5c3+v/ZwFo/CqY3i5yHQ9lU1adAwXGUK1P/THpCGnISeyCTkxy3vLO0/yWzCOqFd
-	xEA3ea/dsV4BzE1xzOkdjITS1FcIZQlCs=
-X-Received: by 2002:a5d:5d89:0:b0:439:b932:b445 with SMTP id ffacd0b85a97d-439da5553bemr19249202f8f.2.1773065696441;
-        Mon, 09 Mar 2026 07:14:56 -0700 (PDT)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439dae2b9fbsm27354711f8f.23.2026.03.09.07.14.55
+        d=1e100.net; s=20230601; t=1773066268; x=1773671068;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=AER5ZefJVDvStBcox3FLdZxVBXZmffk2UdbV+Z5G4qw=;
+        b=iDqEWLsUcjfhIigrzT8xNk0gHk5aRVyDHAueXk5obHE06rGlUsNDFyfAuLkDxgdyx+
+         bP/MLl8IZaoMDcBjrMnYTrqq0rvhXJy0hnodBT+BvWwTLEVk5Ki19LIviAdtYuJhocsA
+         3i2Og4YXno36OFi3EF/4bVqGvQ7hEGQ2aEUEdrQMK2HGfMc8lHWnliBolNd7SYEN1zNB
+         lUk2kc6/2Cm8wafrfzQzrNOpqVcl3iGYgRxUzSUXq2nKlc5TiINRScKywSsDdSGbNRCM
+         k7bQC+JmFqZqgRjGX/x3LDbKbMsncnfbtIJ5sCgRGFveDt/i8sSZCg79rtdlmbRaxhca
+         Rgbg==
+X-Gm-Message-State: AOJu0YzSWRbvVTaGQmPGkdUfuMZNYPIqsmkkf0rEq8zuuD18O3cN1JXz
+	cstxC2A9P7EHBaGstZ4CbGej9J3uveKb/WF07Uj1JNRHxH7i20NrzGQd
+X-Gm-Gg: ATEYQzwv+RqdiyCzD5drxY8AXh2llyaVYfaRlwaMoFeLPHRxoNCYTVERBGZqwRLWnKM
+	+76FTe3TARpS6ep/MTYp46vaavkMRn+IDRRCJyjFH7g4uUnrrszUdm18f5M8zyI5PGOhJcIJ4o4
+	6y4i8+KK/6oAWOU5Eo1TmdD56HW4bKh/tsCt30p+0oppGVIillB8XMgPJC5Idvzg4jAC4QQUDu8
+	Sq3ceaK9m0XglHB0PNJj2SnRwdUPriT1moOU1bus1Kff9a7VYKhB9fLSnsfebBdYeKVXVliQ2de
+	o8ek+r2ST7XqaYSjFRAce7XANsy65CiG9zs4u8dVm1cD69ProP7IZyraRawqCqWBJYckWWHKG82
+	FE8NMOXHHh0iJz2ZEHbRUX9plqWRJlOR5AlPCCXZR2r+BPmPE19/UZ1EvvpGM1fKrb8iOiDUCLd
+	Ncn4+RBRy3+2xSAF2iX5qntQJxCZXqF9t9BO6Q12HpniFwvPu7a0KfptCGF9E3GwNNLcrqG9JTb
+	mQQiU8m9QH0TtXvAKH2mNm01RU=
+X-Received: by 2002:a17:90b:5587:b0:354:a546:5edd with SMTP id 98e67ed59e1d1-359be24b125mr11455177a91.11.1773066267736;
+        Mon, 09 Mar 2026 07:24:27 -0700 (PDT)
+Received: from fedora ([2401:4900:1c80:20f6:77bf:3a75:33cb:748c])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-359b2e0e1aasm18985311a91.15.2026.03.09.07.24.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 09 Mar 2026 07:14:56 -0700 (PDT)
-Message-ID: <00213b587ae4f9bde11ec928081abb60ddbed09a.camel@gmail.com>
-Subject: Re: [PATCH v2 0/5] iio: buffer: fix timestamp alignment (in rare
- case)
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: David Lechner <dlechner@baylibre.com>, Jiri Kosina <jikos@kernel.org>, 
- Jonathan Cameron	 <jic23@kernel.org>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>,  Nuno =?ISO-8859-1?Q?S=E1?=	
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Lars
- =?ISO-8859-1?Q?M=F6llendorf?=	 <lars.moellendorf@plating.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, Lixu Zhang
-	 <lixu.zhang@intel.com>, Francesco Lavra <flavra@baylibre.com>, 
-	linux-input@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
-Date: Mon, 09 Mar 2026 14:15:41 +0000
-In-Reply-To: <20260307-iio-fix-timestamp-alignment-v2-0-d1d48fbadbbf@baylibre.com>
-References: 
-	<20260307-iio-fix-timestamp-alignment-v2-0-d1d48fbadbbf@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+        Mon, 09 Mar 2026 07:24:27 -0700 (PDT)
+From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	waqar.hameed@axis.com,
+	linusw@kernel.org,
+	sakari.ailus@linux.intel.com,
+	harshit.m.mogalapalli@oracle.com,
+	antoniu.miclaus@analog.com,
+	andrew.ijano@gmail.com
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+Subject: [PATCH 0/4] iio: accel: convert to guard(mutex)
+Date: Mon,  9 Mar 2026 19:53:48 +0530
+Message-ID: <20260309142352.57407-1-rajveer.chaudhari.linux@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 
-On Sat, 2026-03-07 at 19:44 -0600, David Lechner wrote:
-> In [1], it was pointed out that the iio_push_to_buffers_with_timestamp()
-> function is not putting the timestamp at the correct offset in the scan
-> buffer in rare cases where the largest scan element size is larger than
-> sizeof(int64_t).
->=20
-> [1]: https://lore.kernel.org/linux-iio/20260215162351.79f40b32@jic23-huaw=
-ei/
->=20
-> This only affected one driver, namely hid-sensor-rotation since it is
-> the only driver that meets the condition. To fix things up, first we
-> fix the hid-sensor-rotation driver in a way that preserves compatibility
-> with the broken timestamp alignment. Then we are free to fix the core
-> IIO code without affecting any users.
->=20
-> The first patch depends on [2] which is now in iio/fixes-togreg. It
-> should be OK to apply the first patch there and let the rest of the
-> patches go through iio/togreg (the later patches are just preventing
-> future bugs).
->=20
-> [2]:
-> https://lore.kernel.org/linux-iio/20260228-iio-fix-repeat-alignment-v2-0-=
-d58bfaa2920d@baylibre.com/
->=20
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-> ---
+This series converts manual mutex_lock/mutex_unlock pairs to
+guard(mutex) in two ADXL accelerometer drivers. Each conversion
+also simplifies error handling by removing goto labels and
+returning directly on error paths.
 
-LGTM,
+Also aligned headers alphabetically.
 
-Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+Rajveer Chaudhari (4):
+  iio: accel: bmc150: convert to guard(mutex)
+  iio: accel: mma8452: convert to guard(mutex)
+  iio: accel: mma9551: convert to guard(mutex)
+  iio: accel: sca3000: convert to guard(mutex)
 
-> Changes in v2:
-> - Don't say "HACK" in comments.
-> - Cache timestamp offset instead of largest scan element size.
-> - New patch to ensure size/alignment is always power of 2 bytes.
-> - Link to v1:
-> https://lore.kernel.org/r/20260301-iio-fix-timestamp-alignment-v1-0-1a549=
-80bfb90@baylibre.com
->=20
-> ---
-> David Lechner (5):
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio: orientation: hid-sensor-rotation: add=
- timestamp hack to not break userspace
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio: buffer: check return value of iio_com=
-pute_scan_bytes()
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio: buffer: cache timestamp offset in sca=
-n buffer
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio: buffer: ensure repeat alignment is a =
-power of two
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio: buffer: fix timestamp alignment when =
-quaternion in scan
->=20
-> =C2=A0drivers/iio/industrialio-buffer.c=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | 46 ++++++++++++++++++++-------
-> =C2=A0drivers/iio/orientation/hid-sensor-rotation.c | 22 +++++++++++--
-> =C2=A0include/linux/iio/buffer.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
- | 12 +++++--
-> =C2=A0include/linux/iio/iio.h=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0 |=C2=A0 3 ++
-> =C2=A04 files changed, 66 insertions(+), 17 deletions(-)
-> ---
-> base-commit: 6f25a6105c41a7d6b12986dbe80ded396a5667f8
-> change-id: 20260228-iio-fix-timestamp-alignment-89ade1af458b
-> prerequisite-message-id: <20260228-iio-fix-repeat-alignment-v2-0-d58bfaa2=
-920d@baylibre.com>
-> prerequisite-patch-id: e155a526d57c5759a2fcfbfca7f544cb419addfd
-> prerequisite-patch-id: 6c69eaad0dd2ae69bd2745e7d387f739fc1a9ba0
->=20
-> Best regards,
-> --=C2=A0=20
-> David Lechner <dlechner@baylibre.com>
+ drivers/iio/accel/bmc150-accel-core.c |  26 +++---
+ drivers/iio/accel/mma8452.c           |  35 ++++----
+ drivers/iio/accel/mma9551.c           |  19 +++--
+ drivers/iio/accel/sca3000.c           | 115 ++++++++++++--------------
+ 4 files changed, 91 insertions(+), 104 deletions(-)
+
+-- 
+2.53.0
+
