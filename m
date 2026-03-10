@@ -1,63 +1,63 @@
-Received: from mail-pf1-f175.google.com (mail-pf1-f175.google.com [209.85.210.175])
+Received: from mail-pf1-f177.google.com (mail-pf1-f177.google.com [209.85.210.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 437A03E8C5F
-	for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 20:06:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D87393E8C41
+	for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 20:06:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773173199; cv=none; b=dsj1Mk/r0ayXBAra1T/fxkN8p6QUY3RQAOjiGmU3LvqNTyJox1jigHj+ioDMdpmlQLtUZMrI6eo257M9oENWrQNmRPIsEtHcbAFIB6Z9JrnDmrdRNcOxrvFtrgSQM4PcM72h23PEr0E4ykrZZgsg4d36+pVpSxOVG4qK6oJ7jUc=
+	t=1773173211; cv=none; b=dtKLK6MA9BHNdApwQxoNVFzZsc6HWbjh5idkf6ZBDgctxilafOwHgugP0bhBDMy12BIgQ1spaksIRi894vQL461aSGii0rNn2FPdWcY1w0pl8T8wpytfxdAirH5zz4i+o64maINKqFY3ji8xz6A3kJp8jj9r5A9mrW2SWkMtaio=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773173199; c=relaxed/simple;
-	bh=/7JruJpa7ywq82KD85xOZTvhatrgKy0BagtYB7uZ79g=;
+	s=arc-20240116; t=1773173211; c=relaxed/simple;
+	bh=BAEAEao8zGcfEPk3ro9fqvnx7VdR1iceehL4mhJX3gE=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eJ8tU3Jgy6CRkUjyvOxhv9hugMYJUy8gfNyoLAcx9pYeBNlU6AN6BzvDo4/JXiYlfSbw5bnmN3gR66NDYN3prqQjpJpccBsbcExRtlYtBneCmVvXxTgrNQ+YcHFkalCotarW3jyY2qVpeKumNaXuAQ0H9c1U0d4ffweTgMVpBeY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=naTXuOfZ; arc=none smtp.client-ip=209.85.210.175
+	 MIME-Version; b=CfmJHveS5rb4sR3Dcrt9O9QgMmTA9KTVvT+oeWepeamdViPcB9rHOfWh656/r56qA1Vrmi1gBs985iTrwR0+RNDgZd2fU7FbHErrEJCGfswiXBoCXZuyrhtRKG4YVnvZhwUFGzlDd3Cn4bhzM9aFV6WMZ8e+BAzVvXuEjvUR95w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EigOO2GA; arc=none smtp.client-ip=209.85.210.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="naTXuOfZ"
-Received: by mail-pf1-f175.google.com with SMTP id d2e1a72fcca58-829756f3ee9so5955605b3a.2
-        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 13:06:38 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EigOO2GA"
+Received: by mail-pf1-f177.google.com with SMTP id d2e1a72fcca58-82735a41920so4945702b3a.2
+        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 13:06:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773173198; x=1773777998; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773173209; x=1773778009; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=qPe88jYT4Koj6mAx2acbFPR53xRU3O301fVKhXPrOjk=;
-        b=naTXuOfZDLAAIoPTkTaHvY+bAxgT0YHcZI5xzbV0WGkhqrAtqzzuoKj5Db/gNeChYX
-         x1wivouGjkattpZz6PoJEKg7kmF1QXbG1m3I8HktZ9NjJSyFlH5qmGScAwNiy2//XhVc
-         j6x+kOKjhv278n7eOQ42Cofn4hCkDCMFYF4qm6dT8KOzYpfg/jfPHixIZSuJxz2kCiYM
-         YszjZ7soDEiXutKyPBeeuVBK1uvNG61U2YmXmttSP/dY13JiFn9zzbLsFRyog3NiC9vm
-         m4mwzmvC8mlD67OCBIaBiQGdxBz5Qr2OmhhtUG353ULbTSRDyd9P0Jx3G0kcXLegXQd6
-         zOlg==
+        bh=maRFdwFBItYsUxmd+9t8qBnRnOAkqFEhAXgbmQcZeFE=;
+        b=EigOO2GAx+kVSZimumtEPDu4LKmq2DjuZInKvZEiWrNgyNxGtxYewUQpkhw5N857iF
+         kRClGOzhUZJYqu3f0tJINcNxLx9pYBrOBIywdBeslV0fbKsAE2pABBtcN/JVV14IHsk5
+         SE0lgBA1e9Ewj8hIzppr77j+AgdyRjkJYcEhRfhpTU3MMaNF11xTUquCaKk4oEWjb8Ik
+         AKQ/Et6KMDWVWdM/7qfJA3gYRDCIsiDlg/WsWf3qMhMtrjwqsUKAbQPYfSOEYewfOdeO
+         odJ3zuMoRbdENb0NlUBLZIhIngOPnnN/6Yu3tTL0b4CZsa+Iu+AazNCXAtBskxUFbvnj
+         3lGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773173198; x=1773777998;
+        d=1e100.net; s=20230601; t=1773173209; x=1773778009;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=qPe88jYT4Koj6mAx2acbFPR53xRU3O301fVKhXPrOjk=;
-        b=eWuUnEhldT56R6cBKYIlvmRsZ4h8IiBvcLNY20p6GBhmpZT6OLsTY1im3JheB61zAG
-         PAla2ypdk2PCp5cKkAf893VlaBUWn1Cx1j4Y+xc0c+TKLbBEYedBMKPFaPSVlFH3KF7R
-         BLS6nLaRn3s52hO5yVZVOuDd6jMAwPyz7+wQc7Onr1NAqT1Q8LG3BFXSZI/j37Sq+sdt
-         iy74hK2xChV0w9ZQyXncuPOxwuLI+eJ5ASYSqxZRJiHM/rDPWsoEPcQ173gGHIEDQn8t
-         v/gyVsYGVUWzF7rKsm2kRImiKLmBoAb8zpmftAqm/N4tIcDVOppza9qb4NhTD2ZB6WQa
-         Wf+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCUEH1fEs/hCfYzTObuJIV5PZfV1dZZfQhloNKlYWHV7f+HT/bFa2mRCkpsILgR7yHOZKXTITeY/PiI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwVrE20ec1wQdavNKyBK59Z7O+2Fy18Db8gLx1T3FNzwgz1cuKO
-	w3tiOpU2bcDoW7pClwze3XhM6OnjImopKOWJGojFz22UvMnohrinHLSv
-X-Gm-Gg: ATEYQzzylNkiXRxbpSoZ1xm1RnP4Mo+Pg+Iyz2dSJoB6pwkyg5VesLzUnC8EC/psXdO
-	juidYCBp6ZdCUR+D1fCTRLY/QoqPdjLvwgsez+2WwhSyM1nlPo23nh/sv6YGtsqSalxpBz7scO5
-	fHLlEo+jc3dTED/Y8bPZ+BeknnF0bVYGQmF+EhVdCcOcc9MvAE4tKJJPpTf2InHcPjSkzurNHpD
-	brHcMWj6owur+VdOI2k+uUV3EoOJTJ/g6e9ieyn+AaOmUcb0l/qoYQZMpX12PQgm9QWF5Ge6HSG
-	EoL2rjExnSIu18zmStkI+UJZZKdtTStNwC3q6kDWUjpbh/lAh527ujC2vQ9Y6fNUNGCyF9WPGPc
-	n+iV0JCLfDH4F8fBqisOAHgIOjuECI7jp43z/iDIFVCPaLglqbHOI49kr1sGBC/Q1sQ2TveCya3
-	dYCC+v6H7mX8JC+iwIbO4MBcVL2l2TXZupWj/HLoDNinVKo6Rj
-X-Received: by 2002:a05:6a00:2d8f:b0:829:af4a:5ebc with SMTP id d2e1a72fcca58-829f6eed76dmr146730b3a.7.1773173197615;
-        Tue, 10 Mar 2026 13:06:37 -0700 (PDT)
+        bh=maRFdwFBItYsUxmd+9t8qBnRnOAkqFEhAXgbmQcZeFE=;
+        b=A5APCXEhsj1tAjWK5Wvyi6zcqCJrFnzoz+Qqh9f8IILq93muaKGKJ0+cACff4HR94P
+         cobql3Zycd9CyiRwx9xMwj2sjoaD541/e6i3g5DjWHnpMCksJCO/bt/M6aB3QRrmbExJ
+         noxSNN49lPEJ0iYHpRFIRA4+TyvdqBK69qB32CuWUzFwPPAs6Xw6wARx140up9NqPats
+         ajpOe3y6IobeyUHekMI3K2cRKvSeNlr+XumbnH4ClqRvpJwtPDXasSu7aZak7KUxg67F
+         BEB0JlfXyV/zQcBorGeNGrMLFRGiXr8AKblWUP7uRR6b0o1okhTQn45g5XXVbt4HTN4K
+         uhSg==
+X-Forwarded-Encrypted: i=1; AJvYcCUr/Tj1zNPzao5ZMKWNXvORx+ULzYy9w7HVYv9APZxq/48eBTcnbLPRBz2LrFczL+QWLs1CCYnPuv8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxqmt5ZIGYPC57BM6bLOvryv1m4wu3cYgW/l8M9zJYs94Vw2oS7
+	Od+SXQnsSS9jAifGqi85Nu0uAR0FeZgBj8z1+tCx/AUktrrb5056WBey
+X-Gm-Gg: ATEYQzyUEAohzrwZDuzZAYyULB1iZcu3Nju6pJikp9RWFcyRJBjvfnTZQjvjaiHlEov
+	5BCYtbEHd8IKP5bJN2ErS6Kp3NIYOpE+dzsnJKSUHfvz26Q7HFonjSLPbLbTDkhpNkOPfkfUzeK
+	WMugIQ5z+Ucu+jqeAcFm3T6E8AEJx4RbeWgnkPkdl/bpin3I1Jbd51b++UK6yEAcwZYAuazLEEf
+	1UGcyL+YbYVVhKtj/KMq15j3Crr7GBohnb0q5H3wBxcLE2MIAxqqkxkuOMrbLmddVMimZSZdoqJ
+	ReIwLab+5h9yPLogZyMmynOCPSbKjE/W0On4+ztukDTYzckjZ3FbGZfb6GeweAcYfYX5oeV/AfL
+	dCSIE/aS4/7Con1UAWmgFZRy0oz1kTNUf6iNlVyk9mqkwVzWM0LXx0v9fxhC0VIdNemrJMXlUlz
+	J+INdeUKziwqU3A+Q37jgNsx/URKKRPLl/4/LvJUBj6KQbJMNP
+X-Received: by 2002:a05:6a00:ac0f:b0:829:7e6d:cf1f with SMTP id d2e1a72fcca58-829f721be36mr107593b3a.51.1773173209251;
+        Tue, 10 Mar 2026 13:06:49 -0700 (PDT)
 Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-829f6dc2d0asm101660b3a.13.2026.03.10.13.06.26
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-829f6dc2d0asm101660b3a.13.2026.03.10.13.06.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2026 13:06:37 -0700 (PDT)
+        Tue, 10 Mar 2026 13:06:48 -0700 (PDT)
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
 To: jic23@kernel.org,
@@ -103,9 +103,9 @@ Cc: dlechner@baylibre.com,
 	linux-staging@lists.linux.dev,
 	sanjayembeddedse@gmail.com,
 	skhan@linuxfoundation.org
-Subject: [PATCH 6/7] media: allegro: simplify cleanup using __free
-Date: Wed, 11 Mar 2026 01:35:12 +0530
-Message-Id: <20260310200513.2162018-7-sanjayembedded@gmail.com>
+Subject: [PATCH 7/7] staging: rtl8723bs: simplify cleanup using __free
+Date: Wed, 11 Mar 2026 01:35:13 +0530
+Message-Id: <20260310200513.2162018-8-sanjayembedded@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20260310200513.2162018-1-sanjayembedded@gmail.com>
 References: <20260310200513.2162018-1-sanjayembedded@gmail.com>
@@ -115,281 +115,253 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
 Replace manual cleanup logic with __free attribute from cleanup.h. This
 removes explicit kfree() calls and simplifies the error handling paths.
-Remove unused variable e.g. ‘size’ after usage of cleanup API.
 
-No functional change intended for kernel memory allocation.
+No functional change intended for kmalloc().
 
 Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 ---
- .../media/platform/allegro-dvt/allegro-core.c | 95 +++++--------------
- 1 file changed, 24 insertions(+), 71 deletions(-)
+ .../staging/rtl8723bs/hal/rtl8723b_hal_init.c | 13 ++-----
+ drivers/staging/rtl8723bs/hal/sdio_ops.c      | 37 ++++---------------
+ 2 files changed, 11 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/media/platform/allegro-dvt/allegro-core.c b/drivers/media/platform/allegro-dvt/allegro-core.c
-index eac3bc9af990..197a368fcb57 100644
---- a/drivers/media/platform/allegro-dvt/allegro-core.c
-+++ b/drivers/media/platform/allegro-dvt/allegro-core.c
-@@ -934,25 +934,20 @@ static int allegro_mbox_send(struct allegro_mbox *mbox, void *msg)
+diff --git a/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c b/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c
+index 8d259820f103..2badf7d1aec4 100644
+--- a/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c
++++ b/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c
+@@ -627,7 +627,6 @@ static void hal_ReadEFuse_WiFi(
+ 	u8 *pbuf
+ )
  {
- 	struct allegro_dev *dev = mbox->dev;
- 	ssize_t size;
--	int err;
--	u32 *tmp;
-+	int err = 0;
+-	u8 *efuseTbl = NULL;
+ 	u16 eFuse_Addr = 0;
+ 	u8 offset, wden;
+ 	u8 efuseHeader, efuseExtHdr, efuseData;
+@@ -640,7 +639,7 @@ static void hal_ReadEFuse_WiFi(
+ 	if ((_offset + _size_byte) > EFUSE_MAX_MAP_LEN)
+ 		return;
  
--	tmp = kzalloc(mbox->size, GFP_KERNEL);
--	if (!tmp) {
--		err = -ENOMEM;
--		goto out;
--	}
-+	u32 *tmp __free(kfree) = kzalloc(mbox->size, GFP_KERNEL);
-+	if (!tmp)
-+		return -ENOMEM;
+-	efuseTbl = kmalloc(EFUSE_MAX_MAP_LEN, GFP_ATOMIC);
++	u8 *efuseTbl __free(kfree) = kmalloc(EFUSE_MAX_MAP_LEN, GFP_ATOMIC);
+ 	if (!efuseTbl)
+ 		return;
  
- 	size = allegro_encode_mail(tmp, msg);
+@@ -702,8 +701,6 @@ static void hal_ReadEFuse_WiFi(
  
- 	err = allegro_mbox_write(mbox, tmp, size);
--	kfree(tmp);
- 	if (err)
--		goto out;
-+		return err;
+ 	rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BYTES, (u8 *)&used);
+ 	rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_USAGE, (u8 *)&efuse_usage);
+-
+-	kfree(efuseTbl);
+ }
  
- 	allegro_mcu_interrupt(dev);
+ static void hal_ReadEFuse_BT(
+@@ -713,7 +710,6 @@ static void hal_ReadEFuse_BT(
+ 	u8 *pbuf
+ )
+ {
+-	u8 *efuseTbl;
+ 	u8 bank;
+ 	u16 eFuse_Addr;
+ 	u8 efuseHeader, efuseExtHdr, efuseData;
+@@ -728,7 +724,7 @@ static void hal_ReadEFuse_BT(
+ 	if ((_offset + _size_byte) > EFUSE_BT_MAP_LEN)
+ 		return;
  
--out:
+-	efuseTbl = kmalloc(EFUSE_BT_MAP_LEN, GFP_ATOMIC);
++	u8 *efuseTbl __free(kfree) = kmalloc(EFUSE_BT_MAP_LEN, GFP_ATOMIC);
+ 	if (!efuseTbl)
+ 		return;
+ 
+@@ -739,7 +735,7 @@ static void hal_ReadEFuse_BT(
+ 
+ 	for (bank = 1; bank < 3; bank++) { /*  8723b Max bake 0~2 */
+ 		if (hal_EfuseSwitchToBank(padapter, bank) == false)
+-			goto exit;
++			return;
+ 
+ 		eFuse_Addr = 0;
+ 
+@@ -804,9 +800,6 @@ static void hal_ReadEFuse_BT(
+ 
+ 	rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BT_BYTES, (u8 *)&used);
+ 	rtw_hal_set_hwreg(padapter, HW_VAR_EFUSE_BT_USAGE, (u8 *)&efuse_usage);
+-
+-exit:
+-	kfree(efuseTbl);
+ }
+ 
+ void Hal_ReadEFuse(
+diff --git a/drivers/staging/rtl8723bs/hal/sdio_ops.c b/drivers/staging/rtl8723bs/hal/sdio_ops.c
+index c9cb20c61a2b..303139a75551 100644
+--- a/drivers/staging/rtl8723bs/hal/sdio_ops.c
++++ b/drivers/staging/rtl8723bs/hal/sdio_ops.c
+@@ -179,9 +179,7 @@ static u32 sdio_read32(struct intf_hdl *intfhdl, u32 addr)
+ 	if (shift == 0) {
+ 		val = sd_read32(intfhdl, ftaddr, NULL);
+ 	} else {
+-		u8 *tmpbuf;
+-
+-		tmpbuf = kmalloc(8, GFP_ATOMIC);
++		u8 *tmpbuf __free(kfree) = kmalloc(8, GFP_ATOMIC);
+ 		if (!tmpbuf)
+ 			return SDIO_ERR_VAL32;
+ 
+@@ -189,8 +187,6 @@ static u32 sdio_read32(struct intf_hdl *intfhdl, u32 addr)
+ 		sd_read(intfhdl, ftaddr, 8, tmpbuf);
+ 		memcpy(&le_tmp, tmpbuf + shift, 4);
+ 		val = le32_to_cpu(le_tmp);
+-
+-		kfree(tmpbuf);
+ 	}
+ 	return val;
+ }
+@@ -223,19 +219,17 @@ static s32 sdio_readN(struct intf_hdl *intfhdl, u32 addr, u32 cnt, u8 *buf)
+ 	if (shift == 0) {
+ 		err = sd_read(intfhdl, ftaddr, cnt, buf);
+ 	} else {
+-		u8 *tmpbuf;
+ 		u32 n;
+ 
+ 		ftaddr &= ~(u16)0x3;
+ 		n = cnt + shift;
+-		tmpbuf = kmalloc(n, GFP_ATOMIC);
++		u8 *tmpbuf __free(kfree) = kmalloc(n, GFP_ATOMIC);
+ 		if (!tmpbuf)
+ 			return -ENOMEM;
+ 
+ 		err = sd_read(intfhdl, ftaddr, n, tmpbuf);
+ 		if (!err)
+ 			memcpy(buf, tmpbuf + shift, cnt);
+-		kfree(tmpbuf);
+ 	}
+ 	return err;
+ }
+@@ -326,22 +320,18 @@ static s32 sdio_writeN(struct intf_hdl *intfhdl, u32 addr, u32 cnt, u8 *buf)
+ 	if (shift == 0) {
+ 		err = sd_write(intfhdl, ftaddr, cnt, buf);
+ 	} else {
+-		u8 *tmpbuf;
+ 		u32 n;
+ 
+ 		ftaddr &= ~(u16)0x3;
+ 		n = cnt + shift;
+-		tmpbuf = kmalloc(n, GFP_ATOMIC);
++		u8 *tmpbuf __free(kfree) = kmalloc(n, GFP_ATOMIC);
+ 		if (!tmpbuf)
+ 			return -ENOMEM;
+ 		err = sd_read(intfhdl, ftaddr, 4, tmpbuf);
+-		if (err) {
+-			kfree(tmpbuf);
++		if (err)
+ 			return err;
+-		}
+ 		memcpy(tmpbuf + shift, buf, cnt);
+ 		err = sd_write(intfhdl, ftaddr, n, tmpbuf);
+-		kfree(tmpbuf);
+ 	}
+ 	return err;
+ }
+@@ -491,7 +481,6 @@ static s32 _sdio_local_read(
+ 	struct intf_hdl *intfhdl;
+ 	u8 mac_pwr_ctrl_on;
+ 	s32 err;
+-	u8 *tmpbuf;
+ 	u32 n;
+ 
+ 	intfhdl = &adapter->iopriv.intf;
+@@ -503,7 +492,7 @@ static s32 _sdio_local_read(
+ 		return _sd_cmd52_read(intfhdl, addr, cnt, buf);
+ 
+ 	n = round_up(cnt, 4);
+-	tmpbuf = kmalloc(n, GFP_ATOMIC);
++	u8 *tmpbuf __free(kfree) = kmalloc(n, GFP_ATOMIC);
+ 	if (!tmpbuf)
+ 		return -ENOMEM;
+ 
+@@ -511,8 +500,6 @@ static s32 _sdio_local_read(
+ 	if (!err)
+ 		memcpy(buf, tmpbuf, cnt);
+ 
+-	kfree(tmpbuf);
+-
  	return err;
  }
  
-@@ -963,36 +958,29 @@ static int allegro_mbox_send(struct allegro_mbox *mbox, void *msg)
- static int allegro_mbox_notify(struct allegro_mbox *mbox)
- {
- 	struct allegro_dev *dev = mbox->dev;
--	union mcu_msg_response *msg;
--	u32 *tmp;
--	int err;
-+	int err = 0;
+@@ -529,7 +516,6 @@ s32 sdio_local_read(
+ 	struct intf_hdl *intfhdl;
+ 	u8 mac_pwr_ctrl_on;
+ 	s32 err;
+-	u8 *tmpbuf;
+ 	u32 n;
  
--	msg = kmalloc_obj(*msg);
-+	union mcu_msg_response *msg __free(kfree) = kmalloc_obj(*msg);
- 	if (!msg)
+ 	intfhdl = &adapter->iopriv.intf;
+@@ -544,7 +530,7 @@ s32 sdio_local_read(
+ 		return sd_cmd52_read(intfhdl, addr, cnt, buf);
+ 
+ 	n = round_up(cnt, 4);
+-	tmpbuf = kmalloc(n, GFP_ATOMIC);
++	u8 *tmpbuf __free(kfree) = kmalloc(n, GFP_ATOMIC);
+ 	if (!tmpbuf)
  		return -ENOMEM;
  
- 	msg->header.version = dev->fw_info->mailbox_version;
+@@ -552,8 +538,6 @@ s32 sdio_local_read(
+ 	if (!err)
+ 		memcpy(buf, tmpbuf, cnt);
  
--	tmp = kmalloc(mbox->size, GFP_KERNEL);
-+	u32 *tmp __free(kfree) = kmalloc(mbox->size, GFP_KERNEL);
- 	if (!tmp) {
--		err = -ENOMEM;
--		goto out;
-+		return -ENOMEM;
- 	}
- 
- 	err = allegro_mbox_read(mbox, tmp, mbox->size);
- 	if (err < 0)
--		goto out;
-+		return err;
- 
- 	err = allegro_decode_mail(msg, tmp);
- 	if (err)
--		goto out;
-+		return err;
- 
- 	allegro_handle_message(dev, msg);
- 
--out:
--	kfree(tmp);
--	kfree(msg);
+-	kfree(tmpbuf);
 -
  	return err;
  }
  
-@@ -1480,13 +1468,11 @@ static int allegro_mcu_push_buffer_internal(struct allegro_channel *channel,
- 					    enum mcu_msg_type type)
- {
- 	struct allegro_dev *dev = channel->dev;
--	struct mcu_msg_push_buffers_internal *msg;
- 	struct mcu_msg_push_buffers_internal_buffer *buffer;
- 	unsigned int num_buffers = 0;
- 	size_t size;
- 	struct allegro_buffer *al_buffer;
- 	struct list_head *list;
--	int err;
+@@ -570,7 +554,6 @@ s32 sdio_local_write(
+ 	struct intf_hdl *intfhdl;
+ 	u8 mac_pwr_ctrl_on;
+ 	s32 err;
+-	u8 *tmpbuf;
  
- 	switch (type) {
- 	case MCU_MSG_TYPE_PUSH_BUFFER_REFERENCE:
-@@ -1501,9 +1487,9 @@ static int allegro_mcu_push_buffer_internal(struct allegro_channel *channel,
+ 	intfhdl = &adapter->iopriv.intf;
  
- 	list_for_each_entry(al_buffer, list, head)
- 		num_buffers++;
--	size = struct_size(msg, buffer, num_buffers);
-+	size = struct_size((struct mcu_msg_push_buffers_internal *)NULL, buffer, num_buffers);
+@@ -583,7 +566,7 @@ s32 sdio_local_write(
+ 	)
+ 		return sd_cmd52_write(intfhdl, addr, cnt, buf);
  
--	msg = kmalloc(size, GFP_KERNEL);
-+	struct mcu_msg_push_buffers_internal *msg __free(kfree) = kmalloc(size, GFP_KERNEL);
- 	if (!msg)
+-	tmpbuf = kmalloc(cnt, GFP_ATOMIC);
++	u8 *tmpbuf __free(kfree) = kmalloc(cnt, GFP_ATOMIC);
+ 	if (!tmpbuf)
  		return -ENOMEM;
  
-@@ -1521,10 +1507,7 @@ static int allegro_mcu_push_buffer_internal(struct allegro_channel *channel,
- 		buffer++;
+@@ -591,8 +574,6 @@ s32 sdio_local_write(
+ 
+ 	err = sd_write(intfhdl, addr, cnt, tmpbuf);
+ 
+-	kfree(tmpbuf);
+-
+ 	return err;
+ }
+ 
+@@ -880,16 +861,14 @@ void sd_int_dpc(struct adapter *adapter)
  	}
  
--	err = allegro_mbox_send(dev->mbox_command, msg);
--
--	kfree(msg);
--	return err;
-+	return allegro_mbox_send(dev->mbox_command, msg);
- }
+ 	if (hal->sdio_hisr & SDIO_HISR_TXERR) {
+-		u8 *status;
+ 		u32 addr;
  
- static int allegro_mcu_push_buffer_intermediate(struct allegro_channel *channel)
-@@ -1621,8 +1604,6 @@ static ssize_t allegro_h264_write_sps(struct allegro_channel *channel,
- 				      void *dest, size_t n)
- {
- 	struct allegro_dev *dev = channel->dev;
--	struct nal_h264_sps *sps;
--	ssize_t size;
- 	unsigned int size_mb = SIZE_MACROBLOCK;
- 	/* Calculation of crop units in Rec. ITU-T H.264 (04/2017) p. 76 */
- 	unsigned int crop_unit_x = 2;
-@@ -1632,7 +1613,7 @@ static ssize_t allegro_h264_write_sps(struct allegro_channel *channel,
- 	unsigned int cpb_size;
- 	unsigned int cpb_size_scale;
+-		status = kmalloc(4, GFP_ATOMIC);
++		u8 *status  __free(kfree) = kmalloc(4, GFP_ATOMIC);
+ 		if (status) {
+ 			addr = REG_TXDMA_STATUS;
+ 			hal_sdio_get_cmd_addr_8723b(adapter, WLAN_IOREG_DEVICE_ID, addr, &addr);
+ 			_sd_read(intfhdl, addr, 4, status);
+ 			_sd_write(intfhdl, addr, 4, status);
+-			kfree(status);
+ 		}
+ 	}
  
--	sps = kzalloc_obj(*sps);
-+	struct nal_h264_sps *sps __free(kfree) = kzalloc_obj(*sps);
- 	if (!sps)
- 		return -ENOMEM;
- 
-@@ -1715,21 +1696,15 @@ static ssize_t allegro_h264_write_sps(struct allegro_channel *channel,
- 	sps->vui.pic_struct_present_flag = 1;
- 	sps->vui.bitstream_restriction_flag = 0;
- 
--	size = nal_h264_write_sps(&dev->plat_dev->dev, dest, n, sps);
--
--	kfree(sps);
--
--	return size;
-+	return nal_h264_write_sps(&dev->plat_dev->dev, dest, n, sps);
- }
- 
- static ssize_t allegro_h264_write_pps(struct allegro_channel *channel,
- 				      void *dest, size_t n)
- {
- 	struct allegro_dev *dev = channel->dev;
--	struct nal_h264_pps *pps;
--	ssize_t size;
- 
--	pps = kzalloc_obj(*pps);
-+	struct nal_h264_pps *pps __free(kfree) = kzalloc_obj(*pps);
- 	if (!pps)
- 		return -ENOMEM;
- 
-@@ -1752,11 +1727,7 @@ static ssize_t allegro_h264_write_pps(struct allegro_channel *channel,
- 	pps->pic_scaling_matrix_present_flag = 0;
- 	pps->second_chroma_qp_index_offset = 0;
- 
--	size = nal_h264_write_pps(&dev->plat_dev->dev, dest, n, pps);
--
--	kfree(pps);
--
--	return size;
-+	return nal_h264_write_pps(&dev->plat_dev->dev, dest, n, pps);
- }
- 
- static void allegro_channel_eos_event(struct allegro_channel *channel)
-@@ -1772,15 +1743,13 @@ static ssize_t allegro_hevc_write_vps(struct allegro_channel *channel,
- 				      void *dest, size_t n)
- {
- 	struct allegro_dev *dev = channel->dev;
--	struct nal_hevc_vps *vps;
- 	struct nal_hevc_profile_tier_level *ptl;
--	ssize_t size;
- 	unsigned int num_ref_frames = channel->num_ref_idx_l0;
- 	s32 profile = v4l2_ctrl_g_ctrl(channel->mpeg_video_hevc_profile);
- 	s32 level = v4l2_ctrl_g_ctrl(channel->mpeg_video_hevc_level);
- 	s32 tier = v4l2_ctrl_g_ctrl(channel->mpeg_video_hevc_tier);
- 
--	vps = kzalloc_obj(*vps);
-+	struct nal_hevc_vps *vps __free(kfree) = kzalloc_obj(*vps);
- 	if (!vps)
- 		return -ENOMEM;
- 
-@@ -1800,29 +1769,23 @@ static ssize_t allegro_hevc_write_vps(struct allegro_channel *channel,
- 	vps->max_dec_pic_buffering_minus1[0] = num_ref_frames;
- 	vps->max_num_reorder_pics[0] = num_ref_frames;
- 
--	size = nal_hevc_write_vps(&dev->plat_dev->dev, dest, n, vps);
--
--	kfree(vps);
--
--	return size;
-+	return nal_hevc_write_vps(&dev->plat_dev->dev, dest, n, vps);
- }
- 
- static ssize_t allegro_hevc_write_sps(struct allegro_channel *channel,
- 				      void *dest, size_t n)
- {
- 	struct allegro_dev *dev = channel->dev;
--	struct nal_hevc_sps *sps;
- 	struct nal_hevc_profile_tier_level *ptl;
- 	struct nal_hevc_vui_parameters *vui;
- 	struct nal_hevc_hrd_parameters *hrd;
--	ssize_t size;
- 	unsigned int cpb_size;
- 	unsigned int num_ref_frames = channel->num_ref_idx_l0;
- 	s32 profile = v4l2_ctrl_g_ctrl(channel->mpeg_video_hevc_profile);
- 	s32 level = v4l2_ctrl_g_ctrl(channel->mpeg_video_hevc_level);
- 	s32 tier = v4l2_ctrl_g_ctrl(channel->mpeg_video_hevc_tier);
- 
--	sps = kzalloc_obj(*sps);
-+	struct nal_hevc_sps *sps __free(kfree) = kzalloc_obj(*sps);
- 	if (!sps)
- 		return -ENOMEM;
- 
-@@ -1913,11 +1876,7 @@ static ssize_t allegro_hevc_write_sps(struct allegro_channel *channel,
- 
- 	hrd->vcl_hrd[0].cbr_flag[0] = !v4l2_ctrl_g_ctrl(channel->mpeg_video_frame_rc_enable);
- 
--	size = nal_hevc_write_sps(&dev->plat_dev->dev, dest, n, sps);
--
--	kfree(sps);
--
--	return size;
-+	return nal_hevc_write_sps(&dev->plat_dev->dev, dest, n, sps);
- }
- 
- static ssize_t allegro_hevc_write_pps(struct allegro_channel *channel,
-@@ -1925,11 +1884,9 @@ static ssize_t allegro_hevc_write_pps(struct allegro_channel *channel,
- 				      void *dest, size_t n)
- {
- 	struct allegro_dev *dev = channel->dev;
--	struct nal_hevc_pps *pps;
--	ssize_t size;
- 	int i;
- 
--	pps = kzalloc_obj(*pps);
-+	struct nal_hevc_pps *pps = kzalloc_obj(*pps);
- 	if (!pps)
- 		return -ENOMEM;
- 
-@@ -1960,11 +1917,7 @@ static ssize_t allegro_hevc_write_pps(struct allegro_channel *channel,
- 
- 	pps->lists_modification_present_flag = channel->enable_reordering;
- 
--	size = nal_hevc_write_pps(&dev->plat_dev->dev, dest, n, pps);
--
--	kfree(pps);
--
--	return size;
-+	return nal_hevc_write_pps(&dev->plat_dev->dev, dest, n, pps);
- }
- 
- static u64 allegro_put_buffer(struct allegro_channel *channel,
 -- 
 2.34.1
 
