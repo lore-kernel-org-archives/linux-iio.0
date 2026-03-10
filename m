@@ -1,316 +1,142 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-lf1-f52.google.com (mail-lf1-f52.google.com [209.85.167.52])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB417364E82
-	for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 07:56:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4652B430B91
+	for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 09:14:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773129403; cv=none; b=BUe1HnHjfKw8/zVCJNN3VJP3X3qBDixP3c8qaO0opdVdRHVCa/t2GlbubR9Pl2++kvy3DpmhvoPvri1/xgciRLLXPD29/A408w65v+K92uWhGMC/yYwIvtKsmVf1+pRhy775PudebZx4RriG8TuvfSKMbjyIqUeWMeA1tuvUd38=
+	t=1773134063; cv=none; b=d0/LuX4botK/f4O0DEnj7nOMaB7Z3z3gSfTtmsS2n2nOlsY4h5M9VMoqeGBDuP66VHQDATeEdBHiOO6/VeBL2cHU/s+T3/IjebFrzmCKEjrPywaKiHBOkmSkH5UK1gU/H+Fdwp4jCx78OJ5JruSvneujw88H3Y1gI5rXmvdVO9s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773129403; c=relaxed/simple;
-	bh=YQYoMl9cJ2YRn65PkaBbiPVREIoceypt3NqeBMjR1eA=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=FjR8rFb61fbhTTxQq9GD86uCK/jsEU7GTFC0S4bT9LXP5IBMHrgSvdoKr7eZ9C92cYIEYENEmI2m4PKdl0YgV+SEQpu5bFb0oZVZbaL2lZ1EqjZk6F44dloyCJNQwzSnVCIxrhnnyOkBlWRujPcWiMEgcxiXWEn94nO6bv8x9uQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=dZrru0GX; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	s=arc-20240116; t=1773134063; c=relaxed/simple;
+	bh=nCUm8571Rrc9v11gqQwOsBrkuE4vArUu7aTZDv0jhR0=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tNRdOo6DuH6RmixYOuY49/mvp6AsfulF8xqcl+8d8Zuyfrcu19JcBZ+PnE4wfMagWHMEiX9BxXYFDATd4mnsy5zyKYD118Z8Wz/UQK2rL6Ohm79AZjcQuZCd/Yp2ZLSGRSEHKzjMbLaxxM/vEY8KIw0ySJSe+rC8x4ZNuvW3LxM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kcddL4Uf; arc=none smtp.client-ip=209.85.167.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="dZrru0GX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=from:to:cc:subject:date:message-id
-	:in-reply-to:references:mime-version:content-transfer-encoding;
-	 s=k1; bh=VR3bz5kc4VcI1PQY8TwV4x5GtzDKGF8AtE87sZOuzTU=; b=dZrru0
-	GXM++14D1PbCtyngDrMW8bonktJHKvt9XeOUkdDaxOXlM9NRre3Vd3APZ5cxZFIC
-	f14v8TBO29iO5BU0eZet6ismxA9rjm2dFjLdqiKB74WpuV1gyDyThm3AeO6Cago5
-	YTH3bqYH6cMhgSq4vjiDCFP0HWuZ0q4dxt4OQyjRwx9QzOX6J4qQokLjTqD8Qpin
-	0t2/ojU2/9cJulIAxn/KrNdCKDJ6bLGq8S2cju1wMCIoe6eEYnYbz1q/sETFrOzE
-	seq3fEvjDeCrOyipkspFtTZgGc5YzEAUOkx2f0THGSsEwFjbW8iABQGkIOIP5U1z
-	8Jc6iJm42q5pRLbQ==
-Received: (qmail 3112920 invoked from network); 10 Mar 2026 08:56:03 +0100
-Received: by mail.zeus03.de with UTF8SMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 10 Mar 2026 08:56:03 +0100
-X-UD-Smtp-Session: l3s3148p1@CnfT2aZM/tIujntP
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: linux-renesas-soc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	Lee Jones <lee@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Will Deacon <will@kernel.org>,
-	Boqun Feng <boqun@kernel.org>,
-	Waiman Long <longman@redhat.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Antonio Borneo <antonio.borneo@foss.st.com>,
-	Linus Walleij <linusw@kernel.org>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	linux-remoteproc@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	linux-iio@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-gpio@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-spi@vger.kernel.org
-Subject: [PATCH v4 15/15] hwspinlock/treewide: refactor consumer.h from public header
-Date: Tue, 10 Mar 2026 08:55:30 +0100
-Message-ID: <20260310075539.11701-16-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.47.3
-In-Reply-To: <20260310075539.11701-1-wsa+renesas@sang-engineering.com>
-References: <20260310075539.11701-1-wsa+renesas@sang-engineering.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kcddL4Uf"
+Received: by mail-lf1-f52.google.com with SMTP id 2adb3069b0e04-5a140efd2d5so4128937e87.2
+        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 02:14:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773134059; x=1773738859; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=2Wk/PIY5UOjxYkFnDNw1res7eXVE54IeoMKH3WeV19A=;
+        b=kcddL4UfeIxFXgxUjX1TBsST5bTazd3bUi8xXW0znqJyAM8ZFgpEVHiumpw5/lr48I
+         Q2MQlWGZNtVZy6O5yuH4R6bAV9BiwKgyQm3zH170ckJGelQzBaF8OfvliBDQDl1MgpBd
+         lD1fK00vnOFE4B0L3N2aeHp6hdj5odWXAF/0xz1uRBQhw+mifDjGGcJfrlz6FP+RdYKr
+         dCXE9lVldBDhuYKbgG/kT8aygRl+rfgLQAgH/iLGBMau942KXcgHvaZEr55VhLxWBmKQ
+         QGIuTlufK8I/8X4PEj9x+nE6dkU8Bq1cqeQIPvoSunr9X8obPvgEvGKw15Ej66woOK+c
+         AHog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773134059; x=1773738859;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=2Wk/PIY5UOjxYkFnDNw1res7eXVE54IeoMKH3WeV19A=;
+        b=kgl3jpNDXbcBYzrJmVuu3btomIysSD3KIm4xV+c8arJ2T3oqfQkKHHWhLYAskvZft6
+         G26pixVUFYHsjICdXd1WFhxpktEYVTrSaMsjmZPEvvTynZlFSDEpS41UNmAXz+S3JQ5R
+         eonOV6vhZJtos+RS567SUk59pWnby6k+TmR3ygnTunw0tk9Z2hiRs5u+kbW+2oylpShn
+         7va1+Fy6JSsutVQ6iLlxhA/YKYRCA+caHwMRWuCtpPCBxIYKTpwdT3oWVpoi3fpMd+dc
+         qIEZZWsAm2ymT3vEgXij06oXwcatoApQ+2ckPh0u8S8acYQdYHmvM9FquvP5B/fthVTa
+         OASg==
+X-Forwarded-Encrypted: i=1; AJvYcCVnnDCXzzBqDE/r0vN9zsJ3vOJamaT7xEnuXVHU1WMdD2j2LSqoLtg7T9tWtO+JyzGaYSoNuNs/4fM=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz5joalz7T/aXLB6MKfv5sVFnjHhtC3mnGckLxjvjKinFpI6Clq
+	KbNkxME0eUXcDdd30etcgYs2ipaf9cRIiLnzsvxFAOr456qJ2/m/r+Qt
+X-Gm-Gg: ATEYQzzVPfkNHVHYy980vq0G9l1v/0ecxTQIKK89dIUZdLgWsW7QT3q+kXk+UpFsd5i
+	qXXmKc2z77HWOyZY/ixCij8mOM0xa735CcvJlsk/orrvzeG749Vl2+95IaBjxZ5tz6AK5o5XT4+
+	9rpuJCO+tfPcM/EhIZM2OZJrTfl/x7+U9LPTQocGYdN502e2z/X8TNe+P2VbVKme6+rhvyRDzij
+	1NRzu6Gn7jRdDGSR+o9XVNHgFeNhBZW7CXlEgVwWqEKaSSF4VvKhbhA784umGfu38nOxIArlZ9E
+	K6EUl2OEYkzDnhjAt7PN+m5iZiiebvGMvqZWGp3PZb2qGGIZrg7zYzwbMGYSVJoMlKuA8alhSwm
+	2EJpoJp+0vOk5nqljfYt5VL5MJGk+PbHc2I5J2LcL0WCoo0kgZ03YhbF+Wdf31KMiDNsB0aOzPo
+	L+85lknkuJwtI0NdxQ/960rmJgM4At6HxbrQVF/li+F37Szyb3tm/RsyDNwTFQG8NyvghcxOfJB
+	hEVLZ0l
+X-Received: by 2002:a05:6512:334a:b0:5a1:3864:9306 with SMTP id 2adb3069b0e04-5a13cd5e6eemr4098603e87.43.1773134059196;
+        Tue, 10 Mar 2026 02:14:19 -0700 (PDT)
+Received: from ?IPV6:2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703? ([2a10:a5c0:800d:dd00:8fdf:935a:2c85:d703])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a13d08d31esm2614081e87.85.2026.03.10.02.14.18
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Mar 2026 02:14:18 -0700 (PDT)
+Message-ID: <d1c6b4d5-3e33-48f3-926e-cc3d109fa12f@gmail.com>
+Date: Tue, 10 Mar 2026 11:14:17 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 0/6] iio: fix spelling mistakes in comments
+To: Shi Hao <i.shihao.999@gmail.com>, andriy.shevchenko@intel.com
+Cc: andy@kernel.org, dlechner@baylibre.com, jic23@kernel.org,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ marcelo.schmitt@analog.com, nuno.sa@analog.com
+References: <20260307104705.49129-1-i.shihao.999@gmail.com>
+Content-Language: en-US, en-AU, en-GB, en-BW
+From: Matti Vaittinen <mazziesaccount@gmail.com>
+In-Reply-To: <20260307104705.49129-1-i.shihao.999@gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-Factor out the entries only needed for consumers from the generic public
-header. This allows for a clean separation between providers and
-consumers. Also remove contact field in favor of MAINTAINERS entries.
-Fix the users, too.
+On 07/03/2026 12:46, Shi Hao wrote:
+> This series fixes spelling mistakes in comments across
+> several IIO subsystems to improve readability and code
+> consistency.
+> 
+> v2:
+> 
+> - Split original patch into 6 commits
+> - Fixed commit message formatting and typos
+> - Added necessary tags in commits
+> - Added more fixes then previous
+> 
+> Shi Hao (6):
+>    iio: accel: fix spelling mistakes in comments
+>    iio: adc: fix spelling mistakes in comments
+>    iio: amplifiers: fix spelling mistake in comment
+>    iio: cdc: fix spelling mistakes in comments
+>    iio: chemical: fix spelling mistake in comment
+>    iio: common: fix spelling mistakes in comments
+> 
+>   drivers/iio/accel/adis16201.c                          | 2 +-
+>   drivers/iio/accel/adis16209.c                          | 2 +-
+>   drivers/iio/adc/ad4030.c                               | 2 +-
+>   drivers/iio/adc/ad4170-4.c                             | 6 +++---
+>   drivers/iio/adc/ad7380.c                               | 2 +-
+>   drivers/iio/adc/ad7887.c                               | 2 +-
+>   drivers/iio/adc/ad7923.c                               | 4 ++--
+>   drivers/iio/adc/at91_adc.c                             | 4 ++--
+>   drivers/iio/adc/max1363.c                              | 2 +-
+>   drivers/iio/adc/mcp3564.c                              | 2 +-
+>   drivers/iio/adc/men_z188_adc.c                         | 2 +-
+>   drivers/iio/adc/npcm_adc.c                             | 2 +-
+>   drivers/iio/adc/palmas_gpadc.c                         | 2 +-
+>   drivers/iio/adc/rohm-bd79124.c                         | 4 ++--
+>   drivers/iio/adc/spear_adc.c                            | 2 +-
+>   drivers/iio/adc/stm32-adc-core.c                       | 2 +-
+>   drivers/iio/adc/stm32-adc.c                            | 2 +-
+>   drivers/iio/adc/sun20i-gpadc-iio.c                     | 2 +-
+>   drivers/iio/adc/ti_am335x_adc.c                        | 2 +-
+>   drivers/iio/adc/twl4030-madc.c                         | 2 +-
+>   drivers/iio/adc/twl6030-gpadc.c                        | 2 +-
+>   drivers/iio/amplifiers/ada4250.c                       | 2 +-
+>   drivers/iio/cdc/ad7150.c                               | 2 +-
+>   drivers/iio/cdc/ad7746.c                               | 2 +-
+>   drivers/iio/chemical/bme680_core.c                     | 2 +-
+>   drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c   | 2 +-
+>   drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 2 +-
+>   drivers/iio/common/inv_sensors/inv_sensors_timestamp.c | 2 +-
+>   drivers/iio/common/ms_sensors/ms_sensors_i2c.c         | 2 +-
+>   29 files changed, 34 insertions(+), 34 deletions(-)
+Changes to ROHM stuff looks good to me. Thanks!
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Acked-by: Mark Brown <broonie@kernel.org>
-Acked-by: Jonathan Cameron <jonathan.cameron@huawei.com> # for IIO
-Acked-by: Lee Jones <lee@kernel.org> # for MFD
----
- Documentation/locking/hwspinlock.rst              |  2 +-
- MAINTAINERS                                       |  1 -
- drivers/base/regmap/regmap.c                      |  2 +-
- drivers/hwspinlock/hwspinlock_core.c              |  2 +-
- drivers/iio/adc/sc27xx_adc.c                      |  2 +-
- drivers/irqchip/irq-stm32mp-exti.c                |  2 +-
- drivers/mfd/syscon.c                              |  2 +-
- drivers/nvmem/sc27xx-efuse.c                      |  2 +-
- drivers/nvmem/sprd-efuse.c                        |  2 +-
- drivers/pinctrl/stm32/pinctrl-stm32.c             |  2 +-
- drivers/soc/qcom/smem.c                           |  2 +-
- drivers/spi/spi-sprd-adi.c                        |  2 +-
- .../linux/{hwspinlock.h => hwspinlock/consumer.h} | 15 ++++++---------
- 13 files changed, 17 insertions(+), 21 deletions(-)
- rename include/linux/{hwspinlock.h => hwspinlock/consumer.h} (98%)
-
-diff --git a/Documentation/locking/hwspinlock.rst b/Documentation/locking/hwspinlock.rst
-index a737c702a7d1..001bcab86690 100644
---- a/Documentation/locking/hwspinlock.rst
-+++ b/Documentation/locking/hwspinlock.rst
-@@ -306,7 +306,7 @@ Typical usage
- 
- ::
- 
--	#include <linux/hwspinlock.h>
-+	#include <linux/hwspinlock/consumer.h>
- 	#include <linux/err.h>
- 
- 	int hwspinlock_example(void)
-diff --git a/MAINTAINERS b/MAINTAINERS
-index d5d78f08bfca..11421b205874 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11213,7 +11213,6 @@ F:	Documentation/devicetree/bindings/hwlock/
- F:	Documentation/locking/hwspinlock.rst
- F:	drivers/hwspinlock/
- F:	include/linux/hwspinlock/
--F:	include/linux/hwspinlock.h
- 
- HARDWARE TRACING FACILITIES
- M:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
-diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index 607c1246d994..d25494495469 100644
---- a/drivers/base/regmap/regmap.c
-+++ b/drivers/base/regmap/regmap.c
-@@ -16,7 +16,7 @@
- #include <linux/sched.h>
- #include <linux/delay.h>
- #include <linux/log2.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/unaligned.h>
- 
- #define CREATE_TRACE_POINTS
-diff --git a/drivers/hwspinlock/hwspinlock_core.c b/drivers/hwspinlock/hwspinlock_core.c
-index 6c8a03deb00c..e78ec4b5cfa3 100644
---- a/drivers/hwspinlock/hwspinlock_core.c
-+++ b/drivers/hwspinlock/hwspinlock_core.c
-@@ -12,7 +12,7 @@
- #include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/err.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/hwspinlock/provider.h>
- #include <linux/jiffies.h>
- #include <linux/kernel.h>
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index 6209499c5c37..8a881d63b7dd 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (C) 2018 Spreadtrum Communications Inc.
- 
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/iio/iio.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-diff --git a/drivers/irqchip/irq-stm32mp-exti.c b/drivers/irqchip/irq-stm32mp-exti.c
-index a24f4f1a4f8f..25d5aa67728a 100644
---- a/drivers/irqchip/irq-stm32mp-exti.c
-+++ b/drivers/irqchip/irq-stm32mp-exti.c
-@@ -6,7 +6,7 @@
-  */
- 
- #include <linux/bitops.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/irq.h>
-diff --git a/drivers/mfd/syscon.c b/drivers/mfd/syscon.c
-index 21a7fcdd2737..8ec74f8513d7 100644
---- a/drivers/mfd/syscon.c
-+++ b/drivers/mfd/syscon.c
-@@ -11,7 +11,7 @@
- #include <linux/cleanup.h>
- #include <linux/clk.h>
- #include <linux/err.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/list.h>
- #include <linux/mutex.h>
- #include <linux/of.h>
-diff --git a/drivers/nvmem/sc27xx-efuse.c b/drivers/nvmem/sc27xx-efuse.c
-index 4e2ffefac96c..309090cd4ff0 100644
---- a/drivers/nvmem/sc27xx-efuse.c
-+++ b/drivers/nvmem/sc27xx-efuse.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (C) 2018 Spreadtrum Communications Inc.
- 
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
-diff --git a/drivers/nvmem/sprd-efuse.c b/drivers/nvmem/sprd-efuse.c
-index 1a7e4e5d8b86..92e3092719ba 100644
---- a/drivers/nvmem/sprd-efuse.c
-+++ b/drivers/nvmem/sprd-efuse.c
-@@ -3,7 +3,7 @@
- 
- #include <linux/clk.h>
- #include <linux/delay.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/nvmem-provider.h>
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-index 6a99708a5a23..17b2072d609e 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -10,7 +10,7 @@
- #include <linux/clk.h>
- #include <linux/export.h>
- #include <linux/gpio/driver.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/irq.h>
- #include <linux/mfd/syscon.h>
-diff --git a/drivers/soc/qcom/smem.c b/drivers/soc/qcom/smem.c
-index d5c94b47f431..6d574d65b4a3 100644
---- a/drivers/soc/qcom/smem.c
-+++ b/drivers/soc/qcom/smem.c
-@@ -4,7 +4,7 @@
-  * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
-  */
- 
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/of.h>
-diff --git a/drivers/spi/spi-sprd-adi.c b/drivers/spi/spi-sprd-adi.c
-index e7d83c16b46c..04313e4a63dd 100644
---- a/drivers/spi/spi-sprd-adi.c
-+++ b/drivers/spi/spi-sprd-adi.c
-@@ -5,7 +5,7 @@
-  */
- 
- #include <linux/delay.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/init.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-diff --git a/include/linux/hwspinlock.h b/include/linux/hwspinlock/consumer.h
-similarity index 98%
-rename from include/linux/hwspinlock.h
-rename to include/linux/hwspinlock/consumer.h
-index 4fe1c8831cd1..f476222ec924 100644
---- a/include/linux/hwspinlock.h
-+++ b/include/linux/hwspinlock/consumer.h
-@@ -1,17 +1,16 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /*
-- * Hardware spinlock public header
-+ * Hardware spinlock public header for consumers
-  *
-  * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com
-- *
-- * Contact: Ohad Ben-Cohen <ohad@wizery.com>
-+ * Copyright (C) 2026 Sang Engineering
-+ * Copyright (C) 2026 Renesas Solutions Corp.
-  */
- 
--#ifndef __LINUX_HWSPINLOCK_H
--#define __LINUX_HWSPINLOCK_H
-+#ifndef __LINUX_HWSPINLOCK_CONSUMER_H
-+#define __LINUX_HWSPINLOCK_CONSUMER_H
- 
- #include <linux/err.h>
--#include <linux/sched.h>
- 
- /* hwspinlock mode argument */
- #define HWLOCK_IRQSTATE		0x01 /* Disable interrupts, save state */
-@@ -22,8 +21,6 @@
- struct device;
- struct device_node;
- struct hwspinlock;
--struct hwspinlock_device;
--struct hwspinlock_ops;
- 
- #ifdef CONFIG_HWSPINLOCK
- 
-@@ -403,4 +400,4 @@ static inline void hwspin_unlock(struct hwspinlock *hwlock)
- 	__hwspin_unlock(hwlock, 0, NULL);
- }
- 
--#endif /* __LINUX_HWSPINLOCK_H */
-+#endif /* __LINUX_HWSPINLOCK_CONSUMER_H */
 -- 
-2.47.3
+---
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
+~~ When things go utterly wrong vim users can always type :help! ~~
