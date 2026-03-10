@@ -1,75 +1,79 @@
-Received: from mail.imp.bg.ac.rs (mail.imp.bg.ac.rs [147.91.50.100])
-	by smtp.subspace.kernel.org (Postfix) with ESMTP id 6E04615853B;
-	Tue, 10 Mar 2026 15:35:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=147.91.50.100
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+	(No client certificate requested)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7E8AB3C5559;
+	Tue, 10 Mar 2026 16:29:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773156946; cv=none; b=dE/eWbGY9REU+ki9Kj3vMhd0wvEM+vq3boBeD7qdJRfne7QRwWPJT5nQEitHft8lMnKmVJIT+FYVg9YK3fWqJ2rfZarhIGqkPm/zFhyoRInRBIuWQyV/7XsLMcrHxSSpr9fMuPdp2280sV+wTB0y/I2+/Ts2bvtkuT7JYvGS+ug=
+	t=1773160167; cv=none; b=PrqP/ROzY74FvKSWGKA2lqEWv8geMsUcHliaB5pHEXChHwIn42SHrj54L6H7ETeQQEtj7k/uYC68lCaT4Pl9odyH9AjuF8zTU0sTxbMeY/nXTd26j8mD9DkMzvBzKiAadTbXYeg5tGiMptfTwAjz7WDhiKahToFSHUjZ631H9Fc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773156946; c=relaxed/simple;
-	bh=AVLKj8uQtBNoQEGxeVPnV/2j9OD6SDO9AoTNoV2lwrI=;
-	h=MIME-Version:Date:From:To:Cc:Subject:Message-ID:Content-Type; b=EVHPeQa0ny/e3IbX5UfpshDqxcRu3lAfthy2+lnDvCbb4bJ0KIjPq/MON8STs0FK5KFw3v7/H9U441P7TbNI6C3socnUC9qMV3h10xh2DjUMeUyFELv/cV/A3OJxoCV2zY0hOl1s0g8zPGfzScNBPOrkegKfsi4jxEkVOjD4XDI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=pupin.rs; spf=pass smtp.mailfrom=pupin.rs; dkim=pass (1024-bit key) header.d=pupin.rs header.i=@pupin.rs header.b=CubVAgJx; arc=none smtp.client-ip=147.91.50.100
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=pupin.rs
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pupin.rs
+	s=arc-20240116; t=1773160167; c=relaxed/simple;
+	bh=VsaDX79DuCFmJN7u+hlFMdw7qYI7x3yL+W9kJANC3Yc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=KxNV1GDnFPuUZ8jJg0O8SQP3eRF2Fx4vKR6mnKO95QuDEv/38eOuBbwM+oiXtwPlsXHbZ6DES0Mso2KR9hH8+ba+6042lYgxRAXkREpTC8cHUeZ40+P/BWiZNY2weGceJb67L9TAoW04B6dHhSauomFG/Hrdvq2lrGalsbiyCuk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ddEdFT/O; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=pupin.rs header.i=@pupin.rs header.b="CubVAgJx"
-Received: from localhost (localhost [127.0.0.1])
-	by mail.imp.bg.ac.rs (Postfix) with ESMTP id 51C56140C46FF;
-	Tue, 10 Mar 2026 16:27:46 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=pupin.rs; h=
-	content-transfer-encoding:content-type:content-type:organization
-	:message-id:subject:subject:from:from:date:date:mime-version
-	:received:received:received; s=dkim20260301; t=1773156466; bh=AV
-	LKj8uQtBNoQEGxeVPnV/2j9OD6SDO9AoTNoV2lwrI=; b=CubVAgJxklr4l98N8K
-	7jC1ZhuFiWtJwlzrgFtEqJtM9GMHSRZn4JnJUJLT2i3KJjk6YbPG2SOZnzzLE5c9
-	NFLo+Nlalc09ckndmWNUpuAlL2PQBQpZXH/JYC1wrG4e9fF5bQ0spLA7ym4t1RTi
-	CDL6WuQu2kExce7H1hRbZVdHE=
-X-Virus-Scanned: amavis at imp.bg.ac.rs
-Received: from mail.imp.bg.ac.rs ([127.0.0.1])
- by localhost (mail.imp.bg.ac.rs [127.0.0.1]) (amavis, port 10024) with LMTP
- id kKP9czrqoVa0; Tue, 10 Mar 2026 16:27:46 +0100 (CET)
-X-Comment: SPF check N/A for local connections - client-ip=147.91.50.99; helo=webmail.imp.bg.ac.rs; envelope-from=david.marinovic@pupin.rs; receiver=jic23@kernel.org 
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.imp.bg.ac.rs 366F0140C678A
-Received: from webmail.imp.bg.ac.rs (webmail.imp.bg.ac.rs [147.91.50.99])
-	by mail.imp.bg.ac.rs (Postfix) with ESMTP id 366F0140C678A;
-	Tue, 10 Mar 2026 16:27:27 +0100 (CET)
-Received: from unknown (unknown [147.91.52.213]) by webmail.imp.bg.ac.rs
- (Roundcube webmail) with HTTP; Tue, 10 Mar 2026 16:27:27 +0100 CET
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ddEdFT/O"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D413C19423;
+	Tue, 10 Mar 2026 16:29:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773160167;
+	bh=VsaDX79DuCFmJN7u+hlFMdw7qYI7x3yL+W9kJANC3Yc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=ddEdFT/OhR6eQCYrejEyEQ8ICI2cOMwnlqUf/xQbPhtnL2LrMY24tanJW6dHcDgPn
+	 h7FW/zJLU0+jfiEAk2bek9rflyyqed+NTJb536XLIKrHBB/Sz5A+c6E4SUeKbqF5vM
+	 cyhtGWUIgfX8bnJdFx4+j2hT+XLkACLIsDIH1I7X+K5OUXMpDOA6dzwJR0Ym8VARGo
+	 jTqj0HkSiNoJwph/nfgsU1V4qPk+umOimKNDDbrCHvVfAWTjhYzLAfbrXA3M7DQqVz
+	 rTEzl+aTFub5Ai1TZEt6POlDxDIda2JV2DsLUxefEERtzU0/yQM/8LoIpep6R2EhHa
+	 cFlNbsWfHQPxg==
+Date: Tue, 10 Mar 2026 09:29:24 -0700
+From: Josh Poimboeuf <jpoimboe@kernel.org>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, 
+	Peter Zijlstra <peterz@infradead.org>, Nathan Chancellor <nathan@kernel.org>, 
+	Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH v2] iio: imu: bmi160: Remove potential undefined behavior
+ in bmi160_config_pin()
+Message-ID: <iuky6xrhgkfrufvllvbqb6rfis3du7ow5rnh2nkamdupsvpkh5@us6k2bcmuzma>
+References: <fb653ed07fa99e3ebc51374bb367cba5712e4ca1.1773114154.git.jpoimboe@kernel.org>
+ <abACMNYNE5tpr9ZB@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Date: Tue, 10 Mar 2026 16:27:27 +0100
-From: =?UTF-8?Q?David_Marinovi=C4=87?= <david.marinovic@pupin.rs>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] iio: dac: ltc2632: add support for LTC2654 DAC family
-Message-ID: <5d4fb8998d9634c3e5a8ed17b80dae07@pupin.rs>
-X-Sender: david.marinovic@pupin.rs
-Organization: IMPT
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <abACMNYNE5tpr9ZB@ashevche-desk.local>
 
-This patch series adds support for the Linear Technology LTC2654
-quad DAC family to the existing ltc2632 driver.
+On Tue, Mar 10, 2026 at 01:36:16PM +0200, Andy Shevchenko wrote:
+> On Mon, Mar 09, 2026 at 08:45:45PM -0700, Josh Poimboeuf wrote:
+> > If 'pin' is not one of its expected values, the value of
+> > 'int_out_ctrl_shift' is undefined.  With UBSAN enabled, this causes
+> > Clang to generate undefined behavior, resulting in the following
+> > warning:
+> > 
+> >   drivers/iio/imu/bmi160/bmi160_core.o: warning: objtool: bmi160_setup_irq() falls through to next function __cfi_bmi160_core_runtime_resume()
+> > 
+> > Prevent the UB and improve error handling by returning an error if 'pin'
+> > has an unexpected value.
+> > 
+> > While at it, simplify the code a bit by moving the 'pin_name' assignment
+> > to the first switch statement.
+> 
+> Thanks!
+> Are you aware of this: https://bugzilla.kernel.org/show_bug.cgi?id=219192?
+> Perhaps also needs to be addressed? (I haven't checked if it's already done
+> or not.)
 
-The LTC2654 shares the same 24-bit SPI protocol as the existing
-LTC2632/2634/2636 devices, requiring minimal additions to the
-driver.
+I'll be out the rest of this week, but I'll take a look when I get back.
 
-The LTC2654L-16 variant has been tested on a Phytec phyCORE-STM32MP1
-board with the DAC connected via SPI1. The driver probes successfully
-and all 4 channels are accessible via the IIO sysfs interface.
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
-Patch 1 adds the driver support.
-Patch 2 updates the DT bindings documentation.
+Thanks!
 
-David Marinovic (2):
-   iio: dac: ltc2632: add support for LTC2654 DAC family
-   dt-bindings: iio: dac: ltc2632: add LTC2654 compatible strings
-
-Signed-off-by: David Marinovic <david.marinovic@pupin.rs>
+-- 
+Josh
