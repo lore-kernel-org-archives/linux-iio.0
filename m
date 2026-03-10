@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC793164DF;
-	Tue, 10 Mar 2026 20:11:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94A3D2EC0A4;
+	Tue, 10 Mar 2026 20:15:22 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773173470; cv=none; b=bzIHcoIPb2zpY9o0zattWjx/Ac5fWHXySfMseeQEJCogTQ1a7Qu9FHU8j7/H0tC29qXuBn/XrHx0jJnMSjvHQ6/+VRH/ZycpamQY74rOcasunMcvj3sXdOjRu12Kb08gGBPzqY96x5C07EXKJczs1JgDjmMl0snn2s17E1jFUug=
+	t=1773173722; cv=none; b=PDXfiZWLHt7pREwenjfDHKfsuFROTzlVIw14mdZky1MNuKwfcmoedIyQyTT5a2cptnY5UOKYVRXL0YSKwM3NCG6uSqRQ13oiEa/OV56o051/Ynry0ofghd7n6OI1PG+NMYm3du5YUGQOEcXdxi7TsvmDK6B2WYSMoyoMEkZODco=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773173470; c=relaxed/simple;
-	bh=4Z8XqE3UvYxBjddjBwKXl7xeUEpNa0b3S65LVm1zYMA=;
+	s=arc-20240116; t=1773173722; c=relaxed/simple;
+	bh=JJprijv1x/bWz2BDIoluF1LKLlTfozp4RJEAePCkT9s=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=jP4UdwINCbzzFv5Oj3kbbLvTlVX0kCkA9HAp10bSG/0jKqJOwOWKU5MeRr1LvNAV0x3zRdKKs/VXtBAOsnhD5zl2CIHWFG2hycZdpiAZR3CKFle25GMUSKD+IPLiwJb4zxY63TNPWER0+ja6dW63VWeOISkRCtNedsMhfDogl6c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Ciey979u; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=Jc7Yhv9WD6FQG4IP4vkGzGl3iaA+HmVOfosDNpfb2lIAnRLNKkI8PMCOkKuF2wwC2MP47s5pC1hoinGzyDuKowgwi5wOrmp2wClkGxe3jUXMZvpEoR8kbDkDk/pMDH2UhXa0a6a/+Y26nFgt+e8acMMmPrCRVkQUJBwt1wDD4Dg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FLyH8u7B; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Ciey979u"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74D0EC19423;
-	Tue, 10 Mar 2026 20:11:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FLyH8u7B"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 068C3C19423;
+	Tue, 10 Mar 2026 20:15:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773173469;
-	bh=4Z8XqE3UvYxBjddjBwKXl7xeUEpNa0b3S65LVm1zYMA=;
+	s=k20201202; t=1773173722;
+	bh=JJprijv1x/bWz2BDIoluF1LKLlTfozp4RJEAePCkT9s=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Ciey979uCqn87um4aS/XCmH8eKO4hap2RIoDaD+0lj6VrzisYCppigRsnIw2B7KH/
-	 AkWpP1fPvKQJ4g3qnKWQA5h77sg6VGHhoqevmni3m87UJ8u4aJbKSnUR8D9F7Yg7br
-	 Xlkvx5oUM9CT9JS0UdvgB2BdY2nl/bBbzFzNKrlSsqhixcCFTp+2V3uUwsSe9Db+Dn
-	 aHBLv0ATH8DO/FqJ42cl0QFDMUZ2pLibzBdAqwrgtrilVX2nBTjVHe1pqbEKN1/DwY
-	 Sviz8IewhMbNOfhn7wGuvdlnme+YkCLbbSZ0Jhmvk65GenWDaDYizl/T6fE3Ww351r
-	 BOdW+47c4ljHA==
-Message-ID: <a617bbfe-0339-4334-8b52-dc85de12c626@kernel.org>
-Date: Tue, 10 Mar 2026 21:11:04 +0100
+	b=FLyH8u7BRSp0nsw7G4e4yJfFgsUHKpg99A6ExY70H6DUJS1h7nOSWCX82y+IbGBeG
+	 5R46mYSxTFQyPsDr0mq6Y0NJxU9lIZ02f+jIIETtt0Uy5SYaoVFjavOzupq00SwvVz
+	 jwKxsWd/veWM98gBgTKvjinAUMX5rDgs/zWTNL0HIWNmxUvi/RR6LacwPwduzZb+ov
+	 UZ814ymIR3i1APsgEoFdCeaf/7qpFQWnhvWLn8kP59+0oD4/OHaRo5a7KjQQzDgW27
+	 ewV6Xh5EDEmd9cgDaYMvdbH6JV1NnUHI+0Yuq95jEnKLSA+ujKZ9J1kuBvjNbu+bvz
+	 /hP+tWAK4WAEA==
+Message-ID: <a5073d33-a077-474a-a7de-2d568e80727f@kernel.org>
+Date: Tue, 10 Mar 2026 21:15:16 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,8 +35,7 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 1/5] dt-bindings: iio: dac: ad5504: add output-range
- and missing gpios
+Subject: Re: [PATCH v2 2/5] iio: dac: ad5504: sort headers alphabetically
 To: Taha Ed-Dafili <0rayn.dev@gmail.com>, lars@metafoo.de,
  Michael.Hennerich@analog.com, jic23@kernel.org, robh@kernel.org,
  krzk+dt@kernel.org, conor+dt@kernel.org
@@ -45,7 +44,7 @@ Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20260310174835.24209-1-0rayn.dev@gmail.com>
- <20260310174835.24209-2-0rayn.dev@gmail.com>
+ <20260310174835.24209-3-0rayn.dev@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -91,93 +90,18 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20260310174835.24209-2-0rayn.dev@gmail.com>
+In-Reply-To: <20260310174835.24209-3-0rayn.dev@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 10/03/2026 18:48, Taha Ed-Dafili wrote:
-> The AD5504 output range (0-30V or 0-60V) is determined by the R_SEL pin.
+> Rearrange the include headers in alphabetical order to follow the
+> standard kernel coding style. This is a preparatory cleanup with
+> no functional changes.
 > 
-> Use standard output-range-microvolt and range-sel-gpios properties to
-> describe the hardware configuration of the R_SEL pin. Ensure mutual
-> exclusivity using the not/required logic. Additionally, add missing
-> vlogic-supply, clear-gpios, ldac-gpios and datasheet links, and provide
-> a complete usage example.
-> 
-> Suggested-by: David Lechner <dlechner@baylibre.com>
-> Suggested-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Suggested-by: Andy Shevchenko <andy@kernel.org>
 
-Hm? Where did I suggest writing such patch?
-
-Are you mixing terms here? I gave you review, no?
-
-> Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
-> ---
->  .../bindings/iio/dac/adi,ad5504.yaml          | 40 ++++++++++++++++++-
->  1 file changed, 39 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
-> index 9c2c038683b4..c0b2d470949a 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
-> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
-> @@ -10,8 +10,10 @@ maintainers:
->    - Lars-Peter Clausen <lars@metafoo.de>
->    - Jonathan Cameron <jic23@kernel.org>
->  
-> -description:
-> +description: |
->    High voltage (up to 60V) DACs with temperature sensor alarm function
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ad5504.pdf
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ad5501.pdf
->  
->  properties:
->    compatible:
-> @@ -27,16 +29,48 @@ properties:
->      maxItems: 1
->  
->    vcc-supply: true
-> +  vlogic-supply: true
-> +
-> +  output-range-microvolt:
-> +    description: |
-> +      Specify the channel output full scale range. The R_SEL pin
-> +      determines if the range is 0-30V or 0-60V.
-> +    items:
-> +      - const: 0
-> +      - enum: [30000000, 60000000]
-> +    default: [0, 60000000]
-> +
-> +  range-sel-gpios:
-> +    description:
-> +      GPIO connected to the R_SEL pin to select the output voltage range.
-> +    maxItems: 1
-> +
-> +  clear-gpios:
-> +    description: GPIO that controls the /CLR pin (active low).
-> +    maxItems: 1
-> +
-> +  ldac-gpios:
-> +    description: GPIO that controls the /LDAC pin (active low).
-> +    maxItems: 1
->  
->  additionalProperties: false
->  
->  required:
->    - compatible
->    - reg
-> +  - vcc-supply
-
-This is technically ABI break and nothing in the commit msg explained
-why you are doing this, why this was not required before etc. Changes
-you make must come with proper background.
-
-> +
-> +allOf:
-> +  - not:
-> +      required:
-> +        - range-sel-gpios
-> +        - output-range-microvolt
-
+Where was this patch suggested by Andy?
 
 Best regards,
 Krzysztof
