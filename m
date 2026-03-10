@@ -1,48 +1,34 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 71DC839DBFB;
-	Tue, 10 Mar 2026 21:12:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5EE63BE632;
+	Tue, 10 Mar 2026 21:42:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=156.67.10.101
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773177129; cv=none; b=AQZNwu3KRGo7Tfjp+q8kbnyfcctVkP8Xm7UVf5qHdqY8gvCiPKgb8T4/JGtOJV/w4YaAnL7sxfOVb/hiOATYn0TK7q4p2MBGP81PIZa52Zbw+Hdsww8JEmGpJHtfxxpcA7tdmTKBkmx0aKFoLV542f3oNA/HDXFl42MDq6JhIUw=
+	t=1773178972; cv=none; b=qChrFiqwgeJAIa9R+RD9mruoD3ybnBdz60qfjR0rhzy2mQ/MypWJ4Lm/AT6yuKLWtMM2N0aLbE1m6zICChH7IiNarnPedyd1gfWaH3pNIp49iR0AllC+9eouwhCCXoH1gvfSNIz2QOZrc43K+wcO9x9hREOZ2coQ43Hw7DfvLf0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773177129; c=relaxed/simple;
-	bh=pehZhuiQQpthYsgXZoLR8NFfpxutBnuajwfJq5hQwx4=;
+	s=arc-20240116; t=1773178972; c=relaxed/simple;
+	bh=y91edeQ8o1/X5XSGLJZITFd+JTr6VrnoUG18G8144I0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PjlfXYOqz2Ba6YKWxrnixhrzxnda9SS+6GBoTYQx+J9kjOJZp3Zsx0HHKA9pbbKQzkC4uTK+x3+tOOox949wJiGig5qtg9G1s5EvCSaFc8MWvW2ytIb0eCf4jpFzS0cG8pCehsHqA2Ur+kqBjXf6KI+hu2GldIebWjH9dVuswJw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=RZ742tAh; arc=none smtp.client-ip=198.175.65.15
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=P5AcJPqyKf5Tr6KnouPuk7V8D3a/5Uhv0Ke2SkubN/gBPhd8F25zCQWTL9jOCsQ2WRstW0CnUY08Fb2k+UiUk+l3qVy/ncRrMpVqixzLZqMqYK4FXXfyl2vZ/VfjnAj0C9HjtCcU8zNNP5sjWs8R7Mbg5FDp7EGjxuPrOeP1z/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch; spf=pass smtp.mailfrom=lunn.ch; dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b=HwIp2Gov; arc=none smtp.client-ip=156.67.10.101
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="RZ742tAh"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773177127; x=1804713127;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=pehZhuiQQpthYsgXZoLR8NFfpxutBnuajwfJq5hQwx4=;
-  b=RZ742tAhpuRUF5xMJzpNqTxJBFlW4nZ54vx/dmeOoTJHdFxe88OUVPaw
-   z+fjCP40m9bSQ0+mJeOwN6Hk9qCQEsrEoaaDGcn8CwzJNK6Wk2RMt/SE3
-   nAwR+xpWJfaFeyXFHM9/1QVyTZLfJ402Enn1xncgwWdJwBgexyRC/pMRj
-   pJuJE2eJrr7x31RcYLYuZWh6uKwWFErL5fx69WAxBxqN26heobIJ2peFq
-   QHIShjL3uXu/5F5OXQxsneED0c8/FO7A0AuWftyqXWmkD3RiRxMmpU0Vo
-   S6+k5SM43hwirYCdqmwzkkaPyqGjMFVphZ7zno7AqZaiUu0ahiSBnzt/q
-   Q==;
-X-CSE-ConnectionGUID: iBTPoyGmTuSau0yQQE3FsA==
-X-CSE-MsgGUID: NSLkxqu/Sia8Oysmj+OpQw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11725"; a="77841729"
-X-IronPort-AV: E=Sophos;i="6.23,112,1770624000"; 
-   d="scan'208";a="77841729"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2026 14:12:06 -0700
-X-CSE-ConnectionGUID: ixppP8mBRc2aAsqY+2t1EQ==
-X-CSE-MsgGUID: +u7wFx7eQXiY/mTugiKMyQ==
-X-ExtLoop1: 1
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.54])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2026 14:11:58 -0700
-Date: Tue, 10 Mar 2026 23:11:56 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
+	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="HwIp2Gov"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+	bh=2f8R5GEyxkZQIaf64bF4zBHCOUbaQ3TEBtHbXujsVTs=; b=HwIp2Gov4Vq8cd4o8z42qkD5qX
+	m94Yotc3CL7E1pNYm9Ix9lffgY3gHInitMQayEaOhwQMZcMFc/PgBVjgi2gpyAcEg90EgwigfbEsA
+	+C6sb/M7WpXY2IfRQkDu22vPgylEym7pQhl+IyUq2X7g4cgU7nzhax5STJ3biRzAQ9xo=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+	(envelope-from <andrew@lunn.ch>)
+	id 1w04qH-00B5j1-QZ; Tue, 10 Mar 2026 22:42:17 +0100
+Date: Tue, 10 Mar 2026 22:42:17 +0100
+From: Andrew Lunn <andrew@lunn.ch>
 To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 Cc: jic23@kernel.org, m.tretter@pengutronix.de, mchehab@kernel.org,
 	p.zabel@pengutronix.de, tiffany.lin@mediatek.com,
@@ -63,10 +49,10 @@ Cc: jic23@kernel.org, m.tretter@pengutronix.de, mchehab@kernel.org,
 	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-mediatek@lists.infradead.org, greybus-dev@lists.linaro.org,
 	linux-staging@lists.linux.dev, skhan@linuxfoundation.org
-Subject: Re: [PATCH 2/7] iio: ssp_sensors: simplify cleanup using __free
-Message-ID: <abCJHOuBcPo4W2GQ@ashevche-desk.local>
+Subject: Re: [PATCH 7/7] staging: rtl8723bs: simplify cleanup using __free
+Message-ID: <02b2587c-c885-48b0-90af-0b8d65a3a593@lunn.ch>
 References: <20260310200513.2162018-1-sanjayembedded@gmail.com>
- <20260310200513.2162018-3-sanjayembedded@gmail.com>
+ <20260310200513.2162018-8-sanjayembedded@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -75,50 +61,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260310200513.2162018-3-sanjayembedded@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+In-Reply-To: <20260310200513.2162018-8-sanjayembedded@gmail.com>
 
-On Wed, Mar 11, 2026 at 01:35:08AM +0530, Sanjay Chitroda wrote:
+On Wed, Mar 11, 2026 at 01:35:13AM +0530, Sanjay Chitroda wrote:
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 > 
 > Replace manual cleanup logic with __free attribute from cleanup.h. This
 > removes explicit kfree() calls and simplifies the error handling paths.
 > 
 > No functional change intended for kmalloc().
+> 
+> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> ---
+>  .../staging/rtl8723bs/hal/rtl8723b_hal_init.c | 13 ++-----
+>  drivers/staging/rtl8723bs/hal/sdio_ops.c      | 37 ++++---------------
+>  2 files changed, 11 insertions(+), 39 deletions(-)
+> 
+> diff --git a/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c b/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c
+> index 8d259820f103..2badf7d1aec4 100644
+> --- a/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c
 
-Why this is a series? You can avoid spamming tons of unrelated people with this
-by sending patches individually.
+rtl8723bs is a networking device.
 
-...
+https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
 
->  	case SSP_HUB2AP_WRITE:
-> -		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
-> +		char *buffer __free(kfree) = kzalloc(length, GFP_KERNEL | GFP_DMA);
->  		if (!buffer)
->  			return -ENOMEM;
->  
->  		ret = spi_read(data->spi, buffer, length);
->  		if (ret < 0) {
->  			dev_err(SSP_DEV, "spi read fail\n");
-> -			kfree(buffer);
->  			break;
->  		}
->  
->  		ret = ssp_parse_dataframe(data, buffer, length);
->  
-> -		kfree(buffer);
->  		break;
+says:
 
-Now you can return directly.
+Low level cleanup constructs (such as __free()) can be used when
+building APIs and helpers, especially scoped iterators. However,
+direct use of __free() within networking core and drivers is
+discouraged.
 
-		return ssp_parse_dataframe(data, buffer, length);
+Please drop this patch.
 
-But also add a prerequisite to convert to guard()() et alai.
+You might also want to check other subsystems and see if they have
+similar policies for these magic operators.
 
->  	default:
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+	Andrew
