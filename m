@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94A3D2EC0A4;
-	Tue, 10 Mar 2026 20:15:22 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1317A3BD63E;
+	Tue, 10 Mar 2026 20:16:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773173722; cv=none; b=PDXfiZWLHt7pREwenjfDHKfsuFROTzlVIw14mdZky1MNuKwfcmoedIyQyTT5a2cptnY5UOKYVRXL0YSKwM3NCG6uSqRQ13oiEa/OV56o051/Ynry0ofghd7n6OI1PG+NMYm3du5YUGQOEcXdxi7TsvmDK6B2WYSMoyoMEkZODco=
+	t=1773173775; cv=none; b=uSWfjLWKHJpluRht/HLxTuf7lYiM233qnjPtoCQyIkp2V9yB2/hR/rxEbE6biPABka72+G0MS06CqbY/l6u/qfKMvapZkHwgKbMleB9LDLxEkspB9E0eyXnEk8tUXCS8HI9RauZ1/R5LqxWjsGhG9PJ1SB3TnACV+aTB248/5M0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773173722; c=relaxed/simple;
-	bh=JJprijv1x/bWz2BDIoluF1LKLlTfozp4RJEAePCkT9s=;
+	s=arc-20240116; t=1773173775; c=relaxed/simple;
+	bh=0DrwwXzADSpSeZBOPifR+KmPzUc085LW4Uzbjt3ZgSo=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Jc7Yhv9WD6FQG4IP4vkGzGl3iaA+HmVOfosDNpfb2lIAnRLNKkI8PMCOkKuF2wwC2MP47s5pC1hoinGzyDuKowgwi5wOrmp2wClkGxe3jUXMZvpEoR8kbDkDk/pMDH2UhXa0a6a/+Y26nFgt+e8acMMmPrCRVkQUJBwt1wDD4Dg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FLyH8u7B; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=cvmREhUc34FRiG5941D/ci38bHpoUebU698W3iZ+X9V/z3b8ipmwiorAiz9iqHl20EiMRbsxLQ/NqRhs+z7fUzsmjOt0FR2yFIHpnEsCWSJ3P21PixpWbPTbCQDTEcnGy0ltWOib+KWlwmJmiXCeLMqayZh5qU41fNohXoJQlSw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IfFjOnWm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FLyH8u7B"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 068C3C19423;
-	Tue, 10 Mar 2026 20:15:17 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IfFjOnWm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83067C19423;
+	Tue, 10 Mar 2026 20:16:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773173722;
-	bh=JJprijv1x/bWz2BDIoluF1LKLlTfozp4RJEAePCkT9s=;
+	s=k20201202; t=1773173774;
+	bh=0DrwwXzADSpSeZBOPifR+KmPzUc085LW4Uzbjt3ZgSo=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=FLyH8u7BRSp0nsw7G4e4yJfFgsUHKpg99A6ExY70H6DUJS1h7nOSWCX82y+IbGBeG
-	 5R46mYSxTFQyPsDr0mq6Y0NJxU9lIZ02f+jIIETtt0Uy5SYaoVFjavOzupq00SwvVz
-	 jwKxsWd/veWM98gBgTKvjinAUMX5rDgs/zWTNL0HIWNmxUvi/RR6LacwPwduzZb+ov
-	 UZ814ymIR3i1APsgEoFdCeaf/7qpFQWnhvWLn8kP59+0oD4/OHaRo5a7KjQQzDgW27
-	 ewV6Xh5EDEmd9cgDaYMvdbH6JV1NnUHI+0Yuq95jEnKLSA+ujKZ9J1kuBvjNbu+bvz
-	 /hP+tWAK4WAEA==
-Message-ID: <a5073d33-a077-474a-a7de-2d568e80727f@kernel.org>
-Date: Tue, 10 Mar 2026 21:15:16 +0100
+	b=IfFjOnWmC1NLJQXMq0mewz/qDInSjoVkFQyCgP2+lXhyc3YKNszKgmn3BWV67lLYT
+	 EpWcOAkNB1ZgOKtfbFmufseh/EvZcA7pc9c2aseWN9C/HABb8jeQP+/P6GlY7VL0Pg
+	 fcIczzHbNa7tE2ueYVumB1UBr4PeiYooe5gCQ5xPURm2wdh2Yosj1Cy+GUqdiLB+Xk
+	 dPFcXuR+FQv1lhhmACPlQAtY+MGOKoQWRktogMfnaupaz+ITPgNYY6J+vT/NsbE2tk
+	 eMh8b4rB9nXMWRuw3BXWnLW3WaM6B4bRDsUUqTegzC33c5qCb6fM8d34IVo2tfv3Vx
+	 UY1AsAXHooLFQ==
+Message-ID: <92f390df-0e7b-454d-9a6d-af26eb575a23@kernel.org>
+Date: Tue, 10 Mar 2026 21:16:09 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -35,7 +35,8 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 2/5] iio: dac: ad5504: sort headers alphabetically
+Subject: Re: [PATCH v2 4/5] iio: dac: ad5504: fix scale via
+ output-range-microvolt
 To: Taha Ed-Dafili <0rayn.dev@gmail.com>, lars@metafoo.de,
  Michael.Hennerich@analog.com, jic23@kernel.org, robh@kernel.org,
  krzk+dt@kernel.org, conor+dt@kernel.org
@@ -44,7 +45,7 @@ Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
  linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org
 References: <20260310174835.24209-1-0rayn.dev@gmail.com>
- <20260310174835.24209-3-0rayn.dev@gmail.com>
+ <20260310174835.24209-5-0rayn.dev@gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -90,18 +91,24 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20260310174835.24209-3-0rayn.dev@gmail.com>
+In-Reply-To: <20260310174835.24209-5-0rayn.dev@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 10/03/2026 18:48, Taha Ed-Dafili wrote:
-> Rearrange the include headers in alphabetical order to follow the
-> standard kernel coding style. This is a preparatory cleanup with
-> no functional changes.
+> The AD5504 full-scale range is hardware-determined by the
+> R_SEL pin (0-30V or 0-60V). Previously, the driver incorrectly used the
+> VCC regulator voltage to calculate the scale.
 > 
+> Update the probe function to read the standard "output-range-microvolt"
+> property as a two-element array to determine the correct full-scale range.
+> Use the MILLI macro for clearer millivolt assignments and simplify the
+> probe logic using a local device pointer.
+> 
+> Suggested-by: David Lechner <dlechner@baylibre.com>
 > Suggested-by: Andy Shevchenko <andy@kernel.org>
 
-Where was this patch suggested by Andy?
+Where were these suggestions given?
 
 Best regards,
 Krzysztof
