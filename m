@@ -1,100 +1,138 @@
-Received: from vps0.lunn.ch (vps0.lunn.ch [156.67.10.101])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oi1-f177.google.com (mail-oi1-f177.google.com [209.85.167.177])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B5EE63BE632;
-	Tue, 10 Mar 2026 21:42:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=156.67.10.101
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A246121FF30
+	for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 21:52:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773178972; cv=none; b=qChrFiqwgeJAIa9R+RD9mruoD3ybnBdz60qfjR0rhzy2mQ/MypWJ4Lm/AT6yuKLWtMM2N0aLbE1m6zICChH7IiNarnPedyd1gfWaH3pNIp49iR0AllC+9eouwhCCXoH1gvfSNIz2QOZrc43K+wcO9x9hREOZ2coQ43Hw7DfvLf0=
+	t=1773179554; cv=none; b=HsiBfID7LeHorneSgRC7FmFrE+nBsia/UzmBQQvHAPclDKL+47saK0kkjhr6F3vvA+FjlmmmU3Xib+Ipt4IEb5s+z5JQy8r9S//BJwSmtUCDHgBCI8UhWAX60LSrBoo5l9lbLHf+1FmG6/Bu7BkEX6zgjY1eyz2ueAs3OwROCJU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773178972; c=relaxed/simple;
-	bh=y91edeQ8o1/X5XSGLJZITFd+JTr6VrnoUG18G8144I0=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=P5AcJPqyKf5Tr6KnouPuk7V8D3a/5Uhv0Ke2SkubN/gBPhd8F25zCQWTL9jOCsQ2WRstW0CnUY08Fb2k+UiUk+l3qVy/ncRrMpVqixzLZqMqYK4FXXfyl2vZ/VfjnAj0C9HjtCcU8zNNP5sjWs8R7Mbg5FDp7EGjxuPrOeP1z/E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch; spf=pass smtp.mailfrom=lunn.ch; dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b=HwIp2Gov; arc=none smtp.client-ip=156.67.10.101
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=lunn.ch
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=lunn.ch
+	s=arc-20240116; t=1773179554; c=relaxed/simple;
+	bh=y84qubhrfr3cMc6nAC3U/0mPJebsA1MPz29TDYveouw=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=Ipk+AdC8rxx1EtRVTZ8uMQKS/hkYXiZdV5job+OD5i2mWszt+qTpM/7bRRjlVfqhmuZJ5P8FP4z5My1sn7V0JnCcInKJXzi/d6KuNGjnwOEhtrU92G+GLBgFDXi18lykjfTd4Lf4dF6t7EICQmLnLja/YHyeFVgSpwQTl0Xs1hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=VBgXmYF6; arc=none smtp.client-ip=209.85.167.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=lunn.ch header.i=@lunn.ch header.b="HwIp2Gov"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-	s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
-	References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
-	Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
-	bh=2f8R5GEyxkZQIaf64bF4zBHCOUbaQ3TEBtHbXujsVTs=; b=HwIp2Gov4Vq8cd4o8z42qkD5qX
-	m94Yotc3CL7E1pNYm9Ix9lffgY3gHInitMQayEaOhwQMZcMFc/PgBVjgi2gpyAcEg90EgwigfbEsA
-	+C6sb/M7WpXY2IfRQkDu22vPgylEym7pQhl+IyUq2X7g4cgU7nzhax5STJ3biRzAQ9xo=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
-	(envelope-from <andrew@lunn.ch>)
-	id 1w04qH-00B5j1-QZ; Tue, 10 Mar 2026 22:42:17 +0100
-Date: Tue, 10 Mar 2026 22:42:17 +0100
-From: Andrew Lunn <andrew@lunn.ch>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: jic23@kernel.org, m.tretter@pengutronix.de, mchehab@kernel.org,
-	p.zabel@pengutronix.de, tiffany.lin@mediatek.com,
-	andrew-ct.chen@mediatek.com, yunfei.dong@mediatek.com,
-	matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
-	johan@kernel.org, elder@kernel.org, gregkh@linuxfoundation.org,
-	pure.logic@nexus-software.ie, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org, kernel@pengutronix.de,
-	kees@kernel.org, nabijaczleweli@nabijaczleweli.xyz,
-	marcelo.schmitt1@gmail.com, maudspierings@gocontroll.com,
-	hverkuil+cisco@kernel.org, ribalda@chromium.org,
-	straube.linux@gmail.com, dan.carpenter@linaro.org,
-	lukagejak5@gmail.com, ethantidmore06@gmail.com,
-	samasth.norway.ananda@oracle.com, karanja99erick@gmail.com,
-	s9430939@naver.com, tglx@kernel.org, mingo@kernel.org,
-	sun.jian.kdev@gmail.com, weibu@redadmin.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, greybus-dev@lists.linaro.org,
-	linux-staging@lists.linux.dev, skhan@linuxfoundation.org
-Subject: Re: [PATCH 7/7] staging: rtl8723bs: simplify cleanup using __free
-Message-ID: <02b2587c-c885-48b0-90af-0b8d65a3a593@lunn.ch>
-References: <20260310200513.2162018-1-sanjayembedded@gmail.com>
- <20260310200513.2162018-8-sanjayembedded@gmail.com>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="VBgXmYF6"
+Received: by mail-oi1-f177.google.com with SMTP id 5614622812f47-467161c4a1cso828300b6e.3
+        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 14:52:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773179551; x=1773784351; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=KrG0m0+wGAmylYP6HW5DIMPVkIxjVDO5lBH833IMH8c=;
+        b=VBgXmYF66HCQW3EXVqSV8U+tAEba1ONLGiCRwPrRVN3xpnc2IdkJECTwYeFFSkzZM0
+         XnjK0Xt9b9K/59rLA1o1zNQ7u6wsYJH4mG0j37Vr5xesm4W3iEq091pkeYZg0a67qDD1
+         hocNFYmo3Smn3MLcsrotD984wrOcKCEx6Dhn3CIj92tLlAzn+FqfOuViMmy9OknvJvkz
+         yCGrPbYQxPN+4stePPOnP8LvZA9PGG0iNG9nbzGwgglag3qYh3T4sPUqjTgI7v5HqY+8
+         6GwjPYqdeW42br2RjquUUPCYvhCY6dYJ/A7NUoHgmQIImtaqqUfvOQGPCzXLg5+OPo16
+         ZtkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773179551; x=1773784351;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=KrG0m0+wGAmylYP6HW5DIMPVkIxjVDO5lBH833IMH8c=;
+        b=fxkccj6R3DHCYHpIqGwg1sLOW+Qub+eqJW1mPO5D1OrQfGWnPiNzC1/wN2D5ijMy/s
+         7gqkddmhgzyjYOrHXywcvZGtOIouW93SVb2O6vG04vhvP5Cg50DK0kR6bnE1zog5CV3s
+         tqInzPl7R8udkcV8TJ4bpzjUSulTBZR4iz6ku3yuj8SUwFUS8HjxTrRNCRhVn6hX33Q6
+         hEhRxMfithny6X7zEeXwPECvHCxBGX11E5O4br+p6jHKXkDODTy8w37KcVnQFzfclAYP
+         9owpXlqxlmaPrl7aJcBi/+Jelnr2kOe8W5Lvo9NbVBNzD3xO+bpnXvBkfo8RbSUCeWXy
+         NxJw==
+X-Forwarded-Encrypted: i=1; AJvYcCWC6ktJnxoQM99kMDZ3TJJjj6ThbxoWWgIC7dxoDm7sGs6pxnU76d1O0FQruPKwcK+JftpwgjI7l8U=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyZctvzT1283TVwDhOK7MWYw/IBNs2rkwsahGKwe/W8ISuYaqeI
+	w8tV3RDlMg4tei/Bg1OPLQRvPpU6d+/3PRzWkDjWYfImaFejk9dJNVzkqMSPjLTFqsE=
+X-Gm-Gg: ATEYQzxS0V6KRQsPiAHVKFkpjkXb9s4uVJRQaPpSCf4eEL3MGGOiDdcjbQbG6qyqsz9
+	eL8+42XJ6NPwcfcT53jetoJHjIATdUnsL5YDjoiGMOuKZmop2tpFRzzT440lX8vrmksc3UZOt/J
+	2J/JFQ0mZLmlefI4yLLfdwbNkINpZgdEBL94O/31nAzPfleu1J+LgrHjVxfF8GIO0yebDH3hqXq
+	WP7eCp6XvVXxXxnbBJKRB00uQ0fpHiPJ4SYw+YwpAZ2WTVAeG9M0JVBSGn6UFDbD6Q3tmnkHSzC
+	QjdfMfbeQwmdX9FymdW0Pdm3VxSYrbuYeeBHRXUYxEEpIc5X5C/4A6EMkRu7Ah0FgiQ10/Othnp
+	9XxjFc6YV0exov33ta1FDsIH0xsIMISbenl17L7y20iNWoN89FVMEzF7gzJp1IP/IGDKfGxOKDT
+	BvB716voee987dZMXKQZTS+9li5IEvvfvp7ZsD6XusJ5EM+1ocVWN0oS0EsVZNtJ0Nv4qEGAOeZ
+	g==
+X-Received: by 2002:a05:6808:1929:b0:466:ecc2:6f47 with SMTP id 5614622812f47-4673354b18amr144459b6e.31.1773179551449;
+        Tue, 10 Mar 2026 14:52:31 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:78e2:51e2:14b8:2e10? ([2600:8803:e7e4:500:78e2:51e2:14b8:2e10])
+        by smtp.gmail.com with ESMTPSA id 5614622812f47-46734160cebsm48179b6e.7.2026.03.10.14.52.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Mar 2026 14:52:30 -0700 (PDT)
+Message-ID: <79bfac24-dcb4-4fb9-90d8-3ef2393f51e3@baylibre.com>
+Date: Tue, 10 Mar 2026 16:52:28 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260310200513.2162018-8-sanjayembedded@gmail.com>
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 0/7] drivers: Simplify cleanup paths using __free
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>, jic23@kernel.org,
+ m.tretter@pengutronix.de, mchehab@kernel.org, p.zabel@pengutronix.de,
+ tiffany.lin@mediatek.com, andrew-ct.chen@mediatek.com,
+ yunfei.dong@mediatek.com, matthias.bgg@gmail.com,
+ angelogioacchino.delregno@collabora.com, johan@kernel.org, elder@kernel.org,
+ gregkh@linuxfoundation.org, pure.logic@nexus-software.ie
+Cc: nuno.sa@analog.com, andy@kernel.org, kernel@pengutronix.de,
+ kees@kernel.org, nabijaczleweli@nabijaczleweli.xyz,
+ marcelo.schmitt1@gmail.com, maudspierings@gocontroll.com,
+ hverkuil+cisco@kernel.org, ribalda@chromium.org, straube.linux@gmail.com,
+ dan.carpenter@linaro.org, lukagejak5@gmail.com, ethantidmore06@gmail.com,
+ samasth.norway.ananda@oracle.com, karanja99erick@gmail.com,
+ s9430939@naver.com, tglx@kernel.org, mingo@kernel.org,
+ sun.jian.kdev@gmail.com, weibu@redadmin.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+ skhan@linuxfoundation.org
+References: <20260310200513.2162018-1-sanjayembedded@gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260310200513.2162018-1-sanjayembedded@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Wed, Mar 11, 2026 at 01:35:13AM +0530, Sanjay Chitroda wrote:
+On 3/10/26 3:05 PM, Sanjay Chitroda wrote:
 > From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 > 
-> Replace manual cleanup logic with __free attribute from cleanup.h. This
-> removes explicit kfree() calls and simplifies the error handling paths.
+> Hi all,
 > 
-> No functional change intended for kmalloc().
+> This patch series replaces manual cleanup and explicit kfree() calls with
+> the __free attribute from <linux/cleanup.h>. This modernizes the memory
+> management style and simplifies common error paths without altering any
+> functional behavior.
 > 
-> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> ---
->  .../staging/rtl8723bs/hal/rtl8723b_hal_init.c | 13 ++-----
->  drivers/staging/rtl8723bs/hal/sdio_ops.c      | 37 ++++---------------
->  2 files changed, 11 insertions(+), 39 deletions(-)
+> The __free attribute provides automatic scope-based cleanup, making
+> resource management clearer and reducing the chances of missing cleanup
+> on early returns.
 > 
-> diff --git a/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c b/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c
-> index 8d259820f103..2badf7d1aec4 100644
-> --- a/drivers/staging/rtl8723bs/hal/rtl8723b_hal_init.c
+> No functional changes are intended in this series.
+> 
+> Testing:
+>   - Compiled with W=1
+>   - Build-tested on i86_64
+> 
+> Based on:
+>   <linux-v7.0-rc2>
+> 
+> Feel free to share your valuable input in context of the cleanup API.
+> 
+> Thanks,
+> Sanjay Chitroda
+> 
+> Sanjay Chitroda (7):
+>   staging: greybus: simplify cleanup using __free
+>   iio: ssp_sensors: simplify cleanup using __free
+>   iio: st_sensors: simplify cleanup using __free
+>   media: mediatek: vcodec: simplify cleanup using __free
+>   media: chips-media: coda: simplify cleanup using __free
+>   media: allegro: simplify cleanup using __free
+>   staging: rtl8723bs: simplify cleanup using __free
 
-rtl8723bs is a networking device.
+There is no reason to put patches from different subsystems
+in the same series when there is no dependency between them.
+It just make for more noise for everyone.
 
-https://www.kernel.org/doc/html/latest/process/maintainer-netdev.html
-
-says:
-
-Low level cleanup constructs (such as __free()) can be used when
-building APIs and helpers, especially scoped iterators. However,
-direct use of __free() within networking core and drivers is
-discouraged.
-
-Please drop this patch.
-
-You might also want to check other subsystems and see if they have
-similar policies for these magic operators.
-
-	Andrew
