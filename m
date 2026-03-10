@@ -1,107 +1,156 @@
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 02FEB2E091B
-	for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 14:38:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 420743054C7
+	for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 14:56:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773153536; cv=none; b=VX9HZooASNIbTespiKrc7/fePKlqc/Ju0WGKyWk5nFIrLXOcOfHVFjR8OUvwNExw9+y9jZYfDFamFhpSoLXnEFxUr9XebEdMTK3bhERGxNzheuEeDjtfyn8m+Mz3GIaQqHQ/RWY8ljJ4EtrCdBnqh/OZ82C79cUoITm0W6UGsLg=
+	t=1773154597; cv=none; b=gjAjvFGizeJtYsGC8UwT1a/lifUM+Lg1ZTNOrSVY5ueYmPIIiY64V+0Cl4r5oYn9eNYaal9iPNEyKYsYBRltx2rItKdFoGZn9E3rqZEi9dSuTEWV09IQa1daPC9ZBiKOkOj/8lYfGoCaD9ykW2XBNk/LdcxyRTX5oPFDm/9JY6Q=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773153536; c=relaxed/simple;
-	bh=AvFivWHR6AnBEng6tYufmh/r4xxaaTDjy8KAOiceg0A=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=aPuQ7PVwxksjLW8aUrAakW2righwaYmqbVPJ1LUdovJX8dUz14MqhzNRNNOBPyGDt3gtPs9nR5tj1HJHTynbk1nSw6psXz0n39Yo+PRvrkiqdOaHRa02b7SWSL5+CJOOqMNtgWt9uKFHNtC19XmOMUYt5+U6Ti4Q+82EIJe0LoY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l6yhLrzW; arc=none smtp.client-ip=209.85.221.45
+	s=arc-20240116; t=1773154597; c=relaxed/simple;
+	bh=Adxtcaj5gXdszEkLumv81RUtL2t0seACB+0gj7M3PnU=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=VDTK6OTNkuHpXWBA9FIeaFLRtYgWgCTU1bmoPUaJzPoYQiu9YV5qEEiMfMCgZdsfMMS7mXEVGQSGb1Xriqm20TffgM9Ts/U4TDbqk2I0U9WPCln1+FUnudcP9LMw0HAARbz3QHTjAu90tZrGiNLcyYkVneNpchw7Oyzja5uemSo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O2Hu3oL1; arc=none smtp.client-ip=209.85.128.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l6yhLrzW"
-Received: by mail-wr1-f45.google.com with SMTP id ffacd0b85a97d-439c43992ffso390371f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 07:38:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O2Hu3oL1"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-4852f73d0a3so27986265e9.3
+        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 07:56:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773153533; x=1773758333; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=f1J+bRUFK3Q26QD6HRU4/njBTw/ikUzFk2xKndnAo4E=;
-        b=l6yhLrzW4JFT5dFNb4x30P1jsdy0wR42Pqm6H2VzkvYzeEVrLoxjk0BgYBaLWKWQNj
-         Ej5EwP4UfXUrQSKiBog2pnrxIivM5MZ64pp8c1put0BiOGQyocCs890GXlrm9hSiDPt+
-         l666cE8sFEFZ8Tb8UTg8vlENITrLN0ug8uNvelOSknaEioNK0gusWUBMMHshqHtWxPw9
-         q2aK/wLPvqaqJv0o1jhLmNhq64LHOiyJgbYTutmirn/oUiPrfnk8cFYZr1G8WS3xdrBF
-         rDQalT/VRoJiRwyevi5dlwiqDqdZ2cFlDMX/hxhnX6wgNYdo7Ifj3wQuCXqxNO8vCsp3
-         ojjA==
+        d=gmail.com; s=20230601; t=1773154595; x=1773759395; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=TYlGoIbjoDt3A7y8h3rrcVY2ZMLgrI9LbvC+PaAruog=;
+        b=O2Hu3oL1IagBYyv2LhyBGZgHH+GXl2CxoU133deT6ITCy8kVls7AJFrmYs8aWQIbp7
+         wwhvEopRkkocCwMzdqyRzPPWvR05Ycm06rKk5JbZV7yDfYlZQ1SjzhwmIDYKGoB4CGUU
+         b+RUt7tOuNzUPblSk7JzpjvVTl9kMPSffNEl1mNoemWq2s78WwNbmre4V2Tq7YSXgmko
+         mtdJ1xSGXRZuEdODa5aj69j7p1iS6OCZEtwfPse8NwR0WzF3UqlFQroCiT3IBXeWu4+H
+         EDWL2lxKD7FHyc/vLW2DijkDvVDOTZvDbJneuS+8Ih0N6U9SX7yIVui3HxQmzy9L+tL/
+         7txA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773153533; x=1773758333;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=f1J+bRUFK3Q26QD6HRU4/njBTw/ikUzFk2xKndnAo4E=;
-        b=qhvPeHz/dk4TAg8ai0cqEYE3L92eiwgWGxvvjoZXuHzWNXu3flIEPjiCjo3Rui6gsy
-         9aOuAeeSjQTJ3BEJlEiqcCYYht264LpR0S4xN27iUWbw8MDbcWHOdxJKhRZOwaRN6cgl
-         QNnnUQvJxXBHGn9Ol10Scs9z/vTozXt6ETMC5u6bTI315j8CvuHwA7n6Zq2YjUnURCb6
-         +DgoQLz39lSnfgYAnAMib+4g65dPfZC/5ZnMrIRyZEJT9jgvXskYvECGjZfA3WlikTrk
-         ++zoyjMfmGnFompu6IDYwUtC+p3mjvmRJaldk4DfQ9uy9qAc2ZlSc490v/M+svzUN8k9
-         znIg==
-X-Forwarded-Encrypted: i=1; AJvYcCV64JTwaKoncmKs8+m6EYkJirMDsD8XSkuD3VHPu5YuAJqnYLL3yjvzdV4M8a7+KqtwSB3qfjOrsj0=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzrACiYV9ljpv9gZjoaggu0jNA09CVVYAz4eG4zqItnOxf5AgWn
-	nNIDNE7qBWO43JT61oHymn8ItDsuIYYzpm+N09CmzHqOsq4DuJMt+gzT
-X-Gm-Gg: ATEYQzy3rL/4Elj1BvJRwokydA9MLzB8IHCIUB/J2s6dNjHrZFn6Mwv6ZCIOZC5DCFe
-	/YtAsmVh/KNEY8H7bIsbJ8BuGVwan/fnOv4a+Pyfa5r/zT6eG0k4YvDFHcDyyx8b5481CaPBqND
-	m9Sk/jygKMoXAXriAEKznXeALwmhFMurxUQgop5YJJzD7pkoM/XWxxwpnW5n8ZNo/M7932ifrOQ
-	eE33x4ph2wh+/9FxHDWXSun88HoQwQl/xh9jKcHvtx3mW0/YOKc7KZALeB6ughrHm69nOrqZERj
-	OofL3AaX1qjtFmDj76oik24hSZ+hBp8/p+FtmWf9ivADn158aa4ngboI+87CxAnIQu3pTwV7uGW
-	pNX6DgPH7vYB65m9Jypx5DI0InqqjZnzimfLFqdALAkNkSCt4Jwbx5sxs/lb3aUH4DcUSPCT9pA
-	l2BS+utWn7z1R7fhfwMPxF7EF35lbnQTcMpcvPmJV2npMi63Tvp5yn9pvusGHOlIF4mvQhLcglj
-	nKq8juSxlgl29pcEdHFfMEX95kos/DHurFfRjerNF25hQm9Fr6vcto/dMjMQAg=
-X-Received: by 2002:a5d:5d0f:0:b0:439:bdd7:4258 with SMTP id ffacd0b85a97d-439da8a0481mr15127077f8f.7.1773153533171;
-        Tue, 10 Mar 2026 07:38:53 -0700 (PDT)
-Received: from fedora ([149.3.87.76])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439dadac2a7sm37671323f8f.15.2026.03.10.07.38.51
+        d=1e100.net; s=20230601; t=1773154595; x=1773759395;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=TYlGoIbjoDt3A7y8h3rrcVY2ZMLgrI9LbvC+PaAruog=;
+        b=gxhx+t9K0p1f6ohNlYuC8U21/8vw9dQ2IZ2q6tqofKm+CzwPUiT5HxdDJIc9ibIDss
+         XjIsUVIaPccwnf//4zVp2J6H1jH75GWMEl2jgzw8XWVFw14uF0kiSPsCmSGN0gScmp0X
+         O6ib9TlAyafau/1sQcG+f6PUx1X5VmpqVDGK3yUJB72kfPKU++zcnujeZXCXiD0kWnEl
+         8Rm+4+faXOxzOqq3FzLSSk7daBtpdN7xxw8bKr5FtD0kOl4DOY4ZIc/ZfbBNlzduF1g4
+         3uh4mnoesguzVIrw8uLwzG/agOVV03vi7HCD/qszswXDN+cFD8J/522qL5Zq3apACTFD
+         naYQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVOkGixbyDmD4tIyFCc6N+g+U6qzkNzoKn5dq+6hc7ck6WV/7m/vgpu3sXpCnPFxZQHRzKTA+QBBPQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyQ2Y7cgS9dYLPcRqPlXWMkHGAACc/LGjXMv+6ePjulpFaTNN6v
+	lV1cLshgTBXL0GlqPORM7ERlk3DR+7DpuKNMbtI8unu0dep5MLMpKnIL
+X-Gm-Gg: ATEYQzyGg3XS9WhG14hg196o+b2pcvjh2Z4gRRrpr2Db7b85kfPqmFsd7NMTSEdzO37
+	/ytJeHtlLQAQy+QWrQNlHETv9r4v6a55EdslaDIOEVaj7PGf5rESqYZ//sgcnFOM5k8AWbx+4m5
+	mIewl++7z5hQ0oD49uhoxqeVlM/vwkJcSPcWpAvLJ7upuBnYpYdsI9ai52JsIEBpGcEEakmIwqU
+	3qXRFnaxlt3WM8DNQx0orWqYRyhbFpZ0oRxaQYxRlTV8iwpYCexBWk4O8fkX3csFM770Q2C80Nz
+	SkGCUMdoyJoGVK7k4eM5xs2Cxt2M1fTY156x6k9bDrhMaQBsEWFxLVbmoXKFk0UWRnmAYq9aM9W
+	H4rYa8WrR4hldzsWGZZ6xPZ/QelWxBvSKfDFSPCrArOLdcowNusK4VWgadt2ba+CajsvLO786eA
+	7zioWPnsilFjYnVxveq9LUTAMGVVbaaRI=
+X-Received: by 2002:a05:600c:138a:b0:47e:e2eb:bc22 with SMTP id 5b1f17b1804b1-4852691c5bamr277357445e9.5.1773154594345;
+        Tue, 10 Mar 2026 07:56:34 -0700 (PDT)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48541aa7aacsm100218115e9.13.2026.03.10.07.56.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2026 07:38:52 -0700 (PDT)
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-To: antoniu.miclaus@analog.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Subject: [PATCH] iio: adc: mt6359-auxadc: Fix comma spacing
-Date: Tue, 10 Mar 2026 18:38:10 +0400
-Message-ID: <20260310143809.83126-2-giorgitchankvetadze1997@gmail.com>
-X-Mailer: git-send-email 2.52.0
+        Tue, 10 Mar 2026 07:56:34 -0700 (PDT)
+Message-ID: <26ee13c084488bb66aec8e240e416e3e43f3b697.camel@gmail.com>
+Subject: Re: [PATCH v2] iio: imu: bmi160: Remove potential undefined
+ behavior in bmi160_config_pin()
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Josh Poimboeuf <jpoimboe@kernel.org>, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>, Andy Shevchenko	 <andy@kernel.org>, Peter Zijlstra
+ <peterz@infradead.org>, Nathan Chancellor	 <nathan@kernel.org>, Arnd
+ Bergmann <arnd@arndb.de>
+Date: Tue, 10 Mar 2026 14:57:19 +0000
+In-Reply-To: <fb653ed07fa99e3ebc51374bb367cba5712e4ca1.1773114154.git.jpoimboe@kernel.org>
+References: 
+	<fb653ed07fa99e3ebc51374bb367cba5712e4ca1.1773114154.git.jpoimboe@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 
-Fix incorrect whitespace around comma on line 325 to comply with
-kernel coding style. This silences checkpatch errors "ERROR: space
-prohibited before that ','" and "ERROR: space required after that ','".
-No functional change.
+On Mon, 2026-03-09 at 20:45 -0700, Josh Poimboeuf wrote:
+> If 'pin' is not one of its expected values, the value of
+> 'int_out_ctrl_shift' is undefined.=C2=A0 With UBSAN enabled, this causes
+> Clang to generate undefined behavior, resulting in the following
+> warning:
+>=20
+> =C2=A0 drivers/iio/imu/bmi160/bmi160_core.o: warning: objtool: bmi160_set=
+up_irq() falls through to next
+> function __cfi_bmi160_core_runtime_resume()
+>=20
+> Prevent the UB and improve error handling by returning an error if 'pin'
+> has an unexpected value.
+>=20
+> While at it, simplify the code a bit by moving the 'pin_name' assignment
+> to the first switch statement.
+>=20
+> Fixes: 895bf81e6bbf ("iio:bmi160: add drdy interrupt support")
+> Reported-by: Arnd Bergmann <arnd@arndb.de>
+> Closes: https://lore.kernel.org/a426d669-58bb-4be1-9eaa-6f3d83109e2d@app.=
+fastmail.com
+> Signed-off-by: Josh Poimboeuf <jpoimboe@kernel.org>
+> ---
 
-Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
----
- drivers/iio/adc/mt6359-auxadc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 
-diff --git a/drivers/iio/adc/mt6359-auxadc.c b/drivers/iio/adc/mt6359-auxadc.c
-index f426a289e867..6b9ed9b1fde2 100644
---- a/drivers/iio/adc/mt6359-auxadc.c
-+++ b/drivers/iio/adc/mt6359-auxadc.c
-@@ -322,7 +322,7 @@ static const struct mtk_pmic_auxadc_chan mt6359_auxadc_ch_desc[] = {
- 	MTK_PMIC_ADC_CHAN(BATADC, PMIC_AUXADC_RQST0, 0, PMIC_AUXADC_IMP1, 15, 128, 7, 2),
- 	MTK_PMIC_ADC_CHAN(BAT_TEMP, PMIC_AUXADC_RQST0, 3, PMIC_AUXADC_IMP1, 15, 8, 5, 2),
- 	MTK_PMIC_ADC_CHAN(CHIP_TEMP, PMIC_AUXADC_RQST0, 4, PMIC_AUXADC_IMP1, 15, 8, 1, 1),
--	MTK_PMIC_ADC_CHAN(ACCDET, PMIC_AUXADC_RQST0, 5, PMIC_AUXADC_IMP1, 15 ,8, 1, 1),
-+	MTK_PMIC_ADC_CHAN(ACCDET, PMIC_AUXADC_RQST0, 5, PMIC_AUXADC_IMP1, 15, 8, 1, 1),
- 	MTK_PMIC_ADC_CHAN(VDCXO, PMIC_AUXADC_RQST0, 6, PMIC_AUXADC_IMP1, 15, 8, 3, 2),
- 	MTK_PMIC_ADC_CHAN(TSX_TEMP, PMIC_AUXADC_RQST0, 7, PMIC_AUXADC_IMP1, 15, 128, 1, 1),
- 	MTK_PMIC_ADC_CHAN(HPOFS_CAL, PMIC_AUXADC_RQST0, 9, PMIC_AUXADC_IMP1, 15, 256, 1, 1),
--- 
-2.52.0
-
+> =C2=A0drivers/iio/imu/bmi160/bmi160_core.c | 15 +++++----------
+> =C2=A01 file changed, 5 insertions(+), 10 deletions(-)
+>=20
+> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi16=
+0/bmi160_core.c
+> index 5f47708b4c5d..4abb83b75e2e 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+> @@ -573,12 +573,16 @@ static int bmi160_config_pin(struct regmap *regmap,=
+ enum bmi160_int_pin pin,
+> =C2=A0		int_out_ctrl_shift =3D BMI160_INT1_OUT_CTRL_SHIFT;
+> =C2=A0		int_latch_mask =3D BMI160_INT1_LATCH_MASK;
+> =C2=A0		int_map_mask =3D BMI160_INT1_MAP_DRDY_EN;
+> +		pin_name =3D "INT1";
+> =C2=A0		break;
+> =C2=A0	case BMI160_PIN_INT2:
+> =C2=A0		int_out_ctrl_shift =3D BMI160_INT2_OUT_CTRL_SHIFT;
+> =C2=A0		int_latch_mask =3D BMI160_INT2_LATCH_MASK;
+> =C2=A0		int_map_mask =3D BMI160_INT2_MAP_DRDY_EN;
+> +		pin_name =3D "INT2";
+> =C2=A0		break;
+> +	default:
+> +		return -EINVAL;
+> =C2=A0	}
+> =C2=A0	int_out_ctrl_mask =3D BMI160_INT_OUT_CTRL_MASK << int_out_ctrl_shi=
+ft;
+> =C2=A0
+> @@ -612,17 +616,8 @@ static int bmi160_config_pin(struct regmap *regmap, =
+enum bmi160_int_pin pin,
+> =C2=A0	ret =3D bmi160_write_conf_reg(regmap, BMI160_REG_INT_MAP,
+> =C2=A0				=C2=A0=C2=A0=C2=A0 int_map_mask, int_map_mask,
+> =C2=A0				=C2=A0=C2=A0=C2=A0 write_usleep);
+> -	if (ret) {
+> -		switch (pin) {
+> -		case BMI160_PIN_INT1:
+> -			pin_name =3D "INT1";
+> -			break;
+> -		case BMI160_PIN_INT2:
+> -			pin_name =3D "INT2";
+> -			break;
+> -		}
+> +	if (ret)
+> =C2=A0		dev_err(dev, "Failed to configure %s IRQ pin", pin_name);
+> -	}
+> =C2=A0
+> =C2=A0	return ret;
+> =C2=A0}
