@@ -1,63 +1,63 @@
-Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
+Received: from mail-wm1-f49.google.com (mail-wm1-f49.google.com [209.85.128.49])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 466163D47DC
-	for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 17:48:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1036D3D5255
+	for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 17:48:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.49
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773164936; cv=none; b=LtAyNeMC6ZLZvE6lfhiFaHerAoMBdtEDPi8D3XyKqyv7qC/QT6cMm5CS34EvJ+Ccn46KV7rEOgTPZ3yCsvSf+mOS1/SZ7lbdoAvITnp2LjP7a3wjRY9WkoQiem2S0D0UNKMw2xjwKs1P9Gehl9I7UaZoReI3pHgnh3LMsGA9Umo=
+	t=1773164939; cv=none; b=JdumxRDnlX8qzIBi6R+JPEskkbuBAVov2zFVruGAa3cysjKAZ9zNcAOiWeESMHT/JERU1GfDsmf9vj8+Csx15D7CKcGR+AYxU9Xf0NL29cvePT1MZcPlUWqV5rqUDueY5AUqLYZkMP59ioqDa/lEbcwLl557mqsI7GNNP21FU9k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773164936; c=relaxed/simple;
-	bh=xeXVTSZzQuuFD+lMKWTOiRIKsLFrz54VBr0660xK+CQ=;
+	s=arc-20240116; t=1773164939; c=relaxed/simple;
+	bh=RwbHXRCoVmTWoeGYZD5/ykMLkxfjTwmcVo/8jjaLucI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=QOYTtoaMC7bMTgYZL5mmj6EPYwdt8VmZtciuR6+cVHpU/DgNdytHMktnySYkHwfcdq59jgU76lf1kjHIkhZy3Fxg/q1SGcLTHuFFK/q4MJp8ma9Rx6gFfPA8TlBpAA/hucnzgkmauIcF1qLncDfLqryhOGdeZAajZuit4EDTxmo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jJRk7KuO; arc=none smtp.client-ip=209.85.221.53
+	 MIME-Version; b=bV2FW4OXm2MJydt/bJSbHd9KCKyMvvEXzRNL0EF4odbIKLiFfOid3Pu4G6oKvq/EOUMa+9d7EpVIi6HMq7yplbP3jk8Dd2Mj1ind5QXNqR3DgOGZPoH1xXHYtPYY4AbE48rUNLdq4zNYsEpvFrrWrN3GX5lN/gsjEfBOexlhUkA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MP1ZjwMk; arc=none smtp.client-ip=209.85.128.49
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jJRk7KuO"
-Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-439c944bb62so4806002f8f.3
-        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 10:48:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MP1ZjwMk"
+Received: by mail-wm1-f49.google.com with SMTP id 5b1f17b1804b1-4852afd42ceso38756425e9.2
+        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 10:48:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773164932; x=1773769732; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773164934; x=1773769734; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BslQrBMKlw57se9odRgPPZj4HtuVGPf12Q60E4FhFEw=;
-        b=jJRk7KuOfLQOtFkoENv5UgV8Bzc0kQ3GSLDG+Br+orZehGkqgCPSNzWO7QKuXvefeb
-         S+ES0XN7v0Dv8A753dNyxGJNITsdwBKVOiV/p8b4q3KRkcGkhsUdZHn0CWKD17pAjYDI
-         SUtkmpWLamfIGMtux/ZYafXtBdfiD8Efl7ydzlTLYVRtQzzrdor0Y7uO8BQRYiuGWE+B
-         bLA3fG+WJGu4WkZCSX32JO/IsUcDHoFtpQhrrUg2hUskrS5jvkQqTAkHi/2t86+flRJ8
-         w8VXiOUE4ko/kXRwYQeTcUbGZ1rx2ApBomAjY86/wy/VOP7hk68UPR6bHBzhs104bp5h
-         ijJw==
+        bh=q3ExWVYtTjOCeiXkdLArD0AHGSvrIoXmw1MBLiE6OHE=;
+        b=MP1ZjwMkLhpKIMrUsE5TyKhpzwzbxU83503eEVGKSuaap6BuyNhsKSkK8dwQlSf9lz
+         DI3unISjDRHmXaBp0HqSDvM7Jdp7QG3zCXDD4331upsEMQcp1PoNbXof1yXVao80p7o1
+         970IiIfiwxxoYHvCCTJG/67NySbpAB45ZwHljGoaT72BM7ZLiPlsJe9tdlO4LbAIOsiT
+         jDQUNPf695acW8LLfE79z/6JKYO5rFKpPvJVbC0t55aRqBytMmiBTM/c0TW6IoBRBAJO
+         5ROKZ481TRJ8+5K7eerHRgZCUJ30C8MZKICIxYD5xoBeoT82SkVHKaPx1nksXe54diTa
+         dvng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773164932; x=1773769732;
+        d=1e100.net; s=20230601; t=1773164934; x=1773769734;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=BslQrBMKlw57se9odRgPPZj4HtuVGPf12Q60E4FhFEw=;
-        b=vzCuB0N4+UT651VzR9np8C0M+mY2fsdQJ2krneKjmviGtUowqX753jvA1tc2QTpWwd
-         jO/fS+C5JyZwVWKGiR0eCAGpFdOV2Lahh6vAj3e3z+8kBzgjehZxJgsU1gu9aVfCs+n1
-         ZsjgrCxV3geQcrWICBu8zi+w3/Giiq4lp3oGhgH/zvFmxsQSSdWTsjpZvgvGH2GpNZJg
-         xIpt7axdd+RPbjRQeCj+z6GBIVzUpK7lIyjaYCQVqEhTEP/6RhHQPvJyQcDWwTpTIvRf
-         Rh8Nn2sWmsoFvSyh8IkRObZfItYmqjD8jLvqoMvGPrFYnrTXGZbrWdbK85Qbr+PV8ZVJ
-         R/aw==
-X-Forwarded-Encrypted: i=1; AJvYcCVhluNKvSoqYOQZnaQmqqw8xHRL5FDT8rB8EApiAkaWAq9/i6+PMmBBuSL/R3HgW/fssiV7c/ctZ/o=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzvZFx9Dl+IVPHBs72fZ3OyjLUkGKZ+WuhfrbKS6A3lYl0JJ8xU
-	jsVKjR1wF8Ml+IiPhjhdrYfqEzgoWBKED5bneWSB9pRX0Wi8dt8bHF5N
-X-Gm-Gg: ATEYQzyo4oc2LX+uu18RWbk2TRb1gAInjDBw5S5SHsCvV+/ReJ1oIJIpb06Asu3O5dk
-	xwWcJpPZTM1epMu+QXoFvhAYKyLKqUunrnIiB8zAhml2vuWCr1wDAD2jXNoV2JTXhWVPkC3I918
-	xMu3bu+k9D5AOxQBChiqco7T2pHnH4uI/Ok4UZCT4BgqNSYEkvuqIBZ4RGeLhQflCb4qxwYgd1L
-	ts5MOMbQX1+gzYjEAY6l9IlOwsuMf3wMzBx8rVmp270k5BLA1b4xq4ukSeKjmx80FfMevXGSf+V
-	EHpOWhTMB4cHbQfK123QtvLk1Hgb37pH2Y9oMR5yHGFIRBo/rNUF5Do3qHQ7z01wTlYxg8qwzSu
-	7l89/WYprGVUzaZcrdm2xR2h06uBX6KOeklAfqTGU2R7zsL1wYfyb7FnBZd45hhvUOEF8/1+XPk
-	ND+UgwmdmI4oSZrvdq/0i4I7kqNqC5VPXWfPl/4zIdsZsN3WSitwAAWnRUHA==
-X-Received: by 2002:adf:e802:0:b0:439:f61a:e005 with SMTP id ffacd0b85a97d-439f61ae05emr1742261f8f.32.1773164931625;
-        Tue, 10 Mar 2026 10:48:51 -0700 (PDT)
+        bh=q3ExWVYtTjOCeiXkdLArD0AHGSvrIoXmw1MBLiE6OHE=;
+        b=g7P8Ia8xb2Jqe+VJFXNBr5bx6+bp+C4BCvFT6BHYJ06oqS4vld+wmYYJ94jaK2zeP4
+         QjT2p6h60g9Ptmy9qZPrAeLBM8Dqm5zCjt1D6Yc8fuY1Bmq+QLO6FgJrJKb6Z6H30Cb3
+         7+YMan1ikQRGBsNSfYoBndwxXtmjmlWOCmWPyA/DlOX6w5S1GOqzr0ROb2c2FRoIXjfm
+         Dc4jTD8wnDqXlj1ctJ5YYRtd9qV3S49TX6smsmv1IoJy20y0Mb+AnQQr06BleQPiuLCY
+         pG3+fM7ZxVtFqhQLzUXO9aHSFASSl8Wcd00QBJKZrrPONpcCoYBgInlxT15xczYGxfhS
+         Vizw==
+X-Forwarded-Encrypted: i=1; AJvYcCVeu8SvB+XoB4XjsCW4gqy15RaWwl2ZGtzKyThNp1/UGoLzqOQN65NRk897pC8FDbmT5w+UY6xabmY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyQqRwJsiTKY4Cy6NwmNhJQH+aEPkY0NEBGroF3kJr3raLXa46C
+	gkdi+/Z6+R3BOIxJGC657K5xmXkBHO+jF7b1jICnQZ9OJ7VmWpZCVYyi
+X-Gm-Gg: ATEYQzzEA1ESkK/eUOPr49XoH6ymQn7d+sUyxkVLapE8HDYnGFWZXBCYDeru74qzlGd
+	VBqG6VYORJJMm3ckEvkHR8bCBK7IO4tlM7inVEy6e4S/oV+XJq88RWAP5S007WF//32LU2tXKWV
+	2PRYnB1z4BLXXEL7Hy39t7sYOyiijSFTrlC5O/ctBAS28hVOSHfAzR2OiwgFoYQWG0vRJo2nTn+
+	ZWoZ1iwyYA6M6cvztHCyEWpegyOvySJLqCl6q7T30s+IMLMC4w2EX1aNVKmrjk2BrOvzY3DOQXn
+	7SyttVIzNA1H5NRnZdVvmKvE0hICl42S260qM/XScm3JOM4MH3ZvN2jWAQ+Cbr6NgtAcFLwOI2D
+	jT/s7SxSlY/2h21zMLChyJR3RP3XRPmCahOZhgxQajUO3htYnzhDzmQTnGRRfAOREqOqjl7BjuJ
+	yHZ9dR9JvuUx5s86OZKR/kmoP0pifyhck2+y2bsBnYy7d3Pro28gVigU9akA==
+X-Received: by 2002:a05:6000:2881:b0:437:711c:8754 with SMTP id ffacd0b85a97d-439da55541cmr29415959f8f.7.1773164933500;
+        Tue, 10 Mar 2026 10:48:53 -0700 (PDT)
 Received: from db07.1337.ma ([197.230.240.146])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439dae45786sm42986166f8f.32.2026.03.10.10.48.49
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439dae45786sm42986166f8f.32.2026.03.10.10.48.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 10 Mar 2026 10:48:51 -0700 (PDT)
+        Tue, 10 Mar 2026 10:48:52 -0700 (PDT)
 From: Taha Ed-Dafili <0rayn.dev@gmail.com>
 To: lars@metafoo.de,
 	Michael.Hennerich@analog.com,
@@ -74,9 +74,9 @@ Cc: dlechner@baylibre.com,
 	devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Taha Ed-Dafili <0rayn.dev@gmail.com>
-Subject: [PATCH v2 4/5] iio: dac: ad5504: fix scale via output-range-microvolt
-Date: Tue, 10 Mar 2026 17:48:34 +0000
-Message-ID: <20260310174835.24209-5-0rayn.dev@gmail.com>
+Subject: [PATCH v2 5/5] iio: dac: ad5504: add optional GPIO control for CLR and LDAC
+Date: Tue, 10 Mar 2026 17:48:35 +0000
+Message-ID: <20260310174835.24209-6-0rayn.dev@gmail.com>
 X-Mailer: git-send-email 2.47.3
 In-Reply-To: <20260310174835.24209-1-0rayn.dev@gmail.com>
 References: <20260310174835.24209-1-0rayn.dev@gmail.com>
@@ -88,108 +88,64 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-The AD5504 full-scale range is hardware-determined by the
-R_SEL pin (0-30V or 0-60V). Previously, the driver incorrectly used the
-VCC regulator voltage to calculate the scale.
+Add support for the optional 'clear-gpios' and 'ldac-gpios' properties
+defined in the device tree bindings.
 
-Update the probe function to read the standard "output-range-microvolt"
-property as a two-element array to determine the correct full-scale range.
-Use the MILLI macro for clearer millivolt assignments and simplify the
-probe logic using a local device pointer.
+Use devm_gpiod_get_optional() with GPIOD_OUT_LOW to ensure the pins are
+initialized to their inactive state.
 
-Suggested-by: David Lechner <dlechner@baylibre.com>
-Suggested-by: Andy Shevchenko <andy@kernel.org>
 Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
 ---
- drivers/iio/dac/ad5504.c | 43 ++++++++++++++++++++++------------------
- 1 file changed, 24 insertions(+), 19 deletions(-)
+ drivers/iio/dac/ad5504.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
 diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-index e71218c44982..cd563460fc0a 100644
+index cd563460fc0a..58538f5263fc 100644
 --- a/drivers/iio/dac/ad5504.c
 +++ b/drivers/iio/dac/ad5504.c
-@@ -12,10 +12,12 @@
+@@ -7,7 +7,9 @@
+ 
+ #include <linux/bits.h>
+ #include <linux/device.h>
++#include <linux/err.h>
+ #include <linux/errno.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/interrupt.h>
  #include <linux/kernel.h>
  #include <linux/mod_devicetable.h>
- #include <linux/module.h>
-+#include <linux/property.h>
- #include <linux/regulator/consumer.h>
- #include <linux/spi/spi.h>
- #include <linux/sysfs.h>
- #include <linux/types.h>
-+#include <linux/units.h>
+@@ -48,6 +50,8 @@
+  * @vref_mv:		actual reference voltage used
+  * @pwr_down_mask:	power down mask
+  * @pwr_down_mode:	current power down mode
++ * @gpio_clear:	GPIO descriptor for the /CLR pin
++ * @gpio_ldac:		GPIO descriptor for the /LDAC pin
+  * @data:		transfer buffer
+  */
+ struct ad5504_state {
+@@ -56,6 +60,8 @@ struct ad5504_state {
+ 	unsigned short			vref_mv;
+ 	unsigned			pwr_down_mask;
+ 	unsigned			pwr_down_mode;
++	struct gpio_desc		*gpio_clear;
++	struct gpio_desc		*gpio_ldac;
  
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -271,28 +273,31 @@ static const struct iio_chan_spec ad5504_channels[] = {
+ 	__be16				data[2] __aligned(IIO_DMA_MINALIGN);
+ };
+@@ -299,6 +305,14 @@ static int ad5504_probe(struct spi_device *spi)
+ 	if (pdata && pdata->vref_mv)
+ 		st->vref_mv = pdata->vref_mv;
  
- static int ad5504_probe(struct spi_device *spi)
- {
--	const struct ad5504_platform_data *pdata = dev_get_platdata(&spi->dev);
-+	struct device *dev = &spi->dev;
-+	const struct ad5504_platform_data *pdata = dev_get_platdata(dev);
- 	struct iio_dev *indio_dev;
- 	struct ad5504_state *st;
- 	int ret;
-+	u32 range[2];
- 
--	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
- 	st = iio_priv(indio_dev);
- 
--	ret = devm_regulator_get_enable_read_voltage(&spi->dev, "vcc");
--	if (ret < 0 && ret != -ENODEV)
-+	ret = devm_regulator_get_enable(dev, "vcc");
-+	if (ret)
- 		return ret;
--	if (ret == -ENODEV) {
--		if (pdata->vref_mv)
--			st->vref_mv = pdata->vref_mv;
--		else
--			dev_warn(&spi->dev, "reference voltage unspecified\n");
--	} else {
--		st->vref_mv = ret / 1000;
--	}
++	st->gpio_clear = devm_gpiod_get_optional(dev, "clear", GPIOD_OUT_LOW);
++	if (IS_ERR(st->gpio_clear))
++		return PTR_ERR(st->gpio_clear);
 +
-+	st->vref_mv = 60 * MILLI;
-+	ret = device_property_read_u32_array(dev, "output-range-microvolt",
-+					     range, 2);
-+	if (!ret && range[1] == 30 * MICRO)
-+		st->vref_mv = 30 * MILLI;
++	st->gpio_ldac = devm_gpiod_get_optional(dev, "ldac", GPIOD_OUT_LOW);
++	if (IS_ERR(st->gpio_ldac))
++		return PTR_ERR(st->gpio_ldac);
 +
-+	if (pdata && pdata->vref_mv)
-+		st->vref_mv = pdata->vref_mv;
- 
  	st->spi = spi;
  	indio_dev->name = spi_get_device_id(st->spi)->name;
-@@ -305,17 +310,17 @@ static int ad5504_probe(struct spi_device *spi)
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	if (spi->irq) {
--		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
--					   NULL,
--					   &ad5504_event_handler,
--					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
--					   spi_get_device_id(st->spi)->name,
--					   indio_dev);
-+		ret = devm_request_threaded_irq(dev, spi->irq,
-+						NULL,
-+						&ad5504_event_handler,
-+						IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
-+						spi_get_device_id(st->spi)->name,
-+						indio_dev);
- 		if (ret)
- 			return ret;
- 	}
- 
--	return devm_iio_device_register(&spi->dev, indio_dev);
-+	return devm_iio_device_register(dev, indio_dev);
- }
- 
- static const struct spi_device_id ad5504_id[] = {
+ 	indio_dev->info = &ad5504_info;
 -- 
 2.47.3
 
