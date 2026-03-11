@@ -1,133 +1,145 @@
-Received: from mail-qk1-f171.google.com (mail-qk1-f171.google.com [209.85.222.171])
+Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 28F5128466C
-	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 02:01:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6653D283C89
+	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 02:18:17 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.172
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773194487; cv=none; b=EnUsWBmYCiAa3f+nMs/UGcIchOC9coyFdKUz670TgiX1bxjNhzrnuwFUG89HKBL/k4qESQtqf0Vjp/Y2H2wUFxB7C/oxdQeWmy+gRefKO3wQOlzJatZzmjtHHAOJNKzXXURSMkdDNmwRpvDcSt7BAu0aoFZCx42MUki3BagZ7hc=
+	t=1773195498; cv=none; b=CpvWQOMti98IGVuXHHhrhgr6UoPw+8HRbY5p5P5L/z5woM7GIU30kb4iDiu4vyOtq54v2tuFJOFSt5SBCnqn59RSmC71tLUHGih5BRF7aSc9WCnJHKZ9uZmSg4BO4G3RdOscu9AdlaQ2pf4c7UaD4SuNcmeG2pda9xLbfgI+lq0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773194487; c=relaxed/simple;
-	bh=QY6PxO64XoZhcth5ov6YZyAvrX6JOQB86Oj9F4LIfgw=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KTwCWzMRDAVRJlHqZiKWoZOtOI6DdElB+CaiWsVqmSH8N867dp4ZdvKJqrdXkyvvrPDeAjos+I1GqrdGBP1Cb1unu6sYuddrXLiTciql+qmt/kRjVcK4bFuy6XkaBUEU9AbPAd81cHmhjXIvqcjZeCDmq0hWIHKy/2ILaiGB5kU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=RX920Bpz; arc=none smtp.client-ip=209.85.222.171
+	s=arc-20240116; t=1773195498; c=relaxed/simple;
+	bh=+/dHpzDdvnXv9XvCFyqZfCQUq6sgyPwg/78YsLVfcJ8=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=ZwZO2d8HNvqidcQ7y/JC6aI28/kUwMy0kdksi7Kto4Bt09afgm9yaZllRxo50yK3IphrmIkUhBwEgIXSZoKDy1Lv+a39dMn+R361Y6zXELei22Nnlo7q/bePtSUgdu+aCruHw6z9GG6YDwLRUQsPayScawFB8M6dpjR96KoYNH4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fvSKyg0D; arc=none smtp.client-ip=209.85.215.172
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RX920Bpz"
-Received: by mail-qk1-f171.google.com with SMTP id af79cd13be357-8cb40149037so1453290685a.2
-        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 19:01:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fvSKyg0D"
+Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-c6e2355739dso5512220a12.2
+        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 19:18:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773194485; x=1773799285; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=7IvZ9ggFoFIJ/kaG1UJfehIdidvgncjVHyDF1WxJK20=;
-        b=RX920Bpz/I+AvmdoIJ8pTx+v1vxOxtkNAPYbqJ9/CfWPH9KAAh49HjKUxGRmYrHTb2
-         9u45RkA/V7ycw4Ynq39MQVh52otNENnl/25gqdQR2TZRSReiynaim3CkXc85DziEWbVH
-         sU1JtFYfEs+R/OgwJgFnd+ebmFuEbU4nTIoa40Xg9DlqanPpcfNG1GiLSiu4lNauL5B2
-         Dk1pjsDvco7NT72k5G8WOHVDrIZt+XLRrykyzX9lOsoPnxOdqAV9rUOOU8QHPZayXiCM
-         lTr+3B3n+YqmXU7/r02fik6SUaaKKhEw6o+9q9wEc5/AtRqvzyl3LYQjTbRobAcKJd1q
-         +iEw==
+        d=gmail.com; s=20230601; t=1773195497; x=1773800297; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=1ZAqF770CjctREhKahUCDqzMAEkw+GXfuiDNjYlwSLk=;
+        b=fvSKyg0D0WfL/vzr9Cx5vJtutHyS2zyBDrgY+VRcTqz1DcJwn3lM2Y8uF8N8UAqBK2
+         bdETDCx+d2sNjHBfAebcNpBL6hJJn8e60zBt8yIUzmQ+26hJT7kQ8hlERQDXCsi1hH9/
+         kzzikvy3SQ+VayGNhQqv5kCVuwATD6j3rBkca+qYvqazKuYg6466as/ASq2rfdi04rmo
+         kQ6AChj+ypwTBF3lpFirsL2emJtQF9olWt9gLcHB9bqFfkF/Nbua5FQ9vsA6Hfo0vh8t
+         PnsuNnFBT0OYeAU47bdPH7dWapocF/3WdLPxpl7rHMOHJMpexIzRW+OQnKOe7EktAZqu
+         t9Ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773194485; x=1773799285;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=7IvZ9ggFoFIJ/kaG1UJfehIdidvgncjVHyDF1WxJK20=;
-        b=up1tOdQzVdVSJS8kTxo7Fj+7ghhbiOuqoUbOl3VA6rAlKFRYCr9R/iMwoCATRRFOF2
-         ivcjZ0C2oXg4LdVnNDOgzNr0C8puwZZLhgdq+XCKHk7Dzf6H7tMDEX17anOxvLDSxzhc
-         gpWfLPLiH+xKQb37y28aPqJSaD4f0xEurYFUY64Kq9+fCdIGCBPaFTdUDbTFTSL2JLfV
-         LKPE44ksfVSUk+U8FLvJU1oE/GbU3p9LM3luaulPu4nhR+e5akvQfLp3zZnBShk4v57w
-         dr9KJ55huakTXb1h5WJT4hoiB2N+u8MRcNy371s4O6losjEWXnXXFszK2Xc0K4Tz6iS1
-         mknA==
-X-Forwarded-Encrypted: i=1; AJvYcCUWEqLkB+2vtc3cr5a0vB/AYPLLe4MfqCe9h74isi1/5uQxtLN2WjJ6dsKXGIe/o73wXNC/G9QodxY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzlA8MTKpDwhuqcoUNhhzrof3RQtHwi4n98eAw+TbnjKhaqgYrS
-	xVVbB+waLdjfzjzOlCqpTiejxvoPDuR2kF4LcxL4LoVMu0ldkax1ifXI
-X-Gm-Gg: ATEYQzxq8909+c50G5KmWrUZ4otKugTTphMuaYQrMlXvzRLT86ArTVj9rcmjXVnoVyX
-	xPeH+i+CfyLSXECnIEyEM8GoYYQ1SJifhYfp7tBotFagpIKBGplcBB0E0O94DBOVYbMFhkTIcZZ
-	YkdkKSVI32a1hSnlAz23MmEwYzLKblMAfyfKb0ul7OtkhJBlFrTBhNIWNO0ddfJcRJnXNyq4fjU
-	pzZ2O0Ldp2GpMgcSEkRC6Vf2iPHbl+KBKNGjSGuQhGtt4IJH7iF0tA7xqSZHokMiYaJjSMuKhed
-	Gw6hecMEU0bsav3k+qDAINknEc4ltbyvRZ8xk/gSSD54PPcWQtBy74QAyWbZY56rM1iD3u8sMl1
-	O19gTBpbirkM1b7xkHHYyXzg6uYeFzMKhFaBT84stco0CK2L6quuAexONSjDodYay8DumSXfjND
-	ZVu4kimcYOoJH5Bhw0cxEsMCLj6VNXifb+A2i68k6yqw==
-X-Received: by 2002:a05:620a:4481:b0:8cd:7685:760c with SMTP id af79cd13be357-8cda19b163bmr129934385a.13.1773194484684;
-        Tue, 10 Mar 2026 19:01:24 -0700 (PDT)
-Received: from localhost.localdomain ([50.21.71.60])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cda1fbcd2esm46308185a.5.2026.03.10.19.01.23
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Tue, 10 Mar 2026 19:01:24 -0700 (PDT)
-From: Neel Bullywon <neelb2403@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Neel Bullywon <neelb2403@gmail.com>
-Subject: [PATCH] iio: frequency: adf4350: replace loop with order_base_2()
-Date: Tue, 10 Mar 2026 22:01:15 -0400
-Message-ID: <20260311020115.56321-1-neelb2403@gmail.com>
-X-Mailer: git-send-email 2.44.0
+        d=1e100.net; s=20230601; t=1773195497; x=1773800297;
+        h=content-transfer-encoding:mime-version:message-id:references
+         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=1ZAqF770CjctREhKahUCDqzMAEkw+GXfuiDNjYlwSLk=;
+        b=v3teHcjGvgS7VppGfm7v7sOYxK+JlSM9RxmEWH3xeZFrTPcSboOLXl2DxKV2bLwhoS
+         ogN7kaJgnQdz4LYurFBNC72iAM/kH9zTvwskNHZeybfuCSPLb70JAiADPtnzFrYBYkbO
+         kZ4Zx6sB+RQQ2DYE8mo3OUfGXTP9Xqr/leRTazN7Qe3VP5J9DehW7ZzHXHaGsegHdKTO
+         PJveowAbqaFCJ+cFcXNZ/wIWEP6BO1TYvkXezs6QnRJ9x9CGZ6WZLdmdER5pVWgnhnMP
+         h8U1xEMjYpL9bJJNfdonnpCpbxBTUNCnYSKLaV8wpbAqR8wRHCdwNiDbn0hLaUIiNnxs
+         r+mg==
+X-Forwarded-Encrypted: i=1; AJvYcCULKp6CjnflQwruv7PGAYZIK0rZUx6H3lrRULG9AirjirCJBeTBYhvqK+4XrbxHZZGLA7LLsk0GhV8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwPOwlK7HCRaBEe6150wBzIp0Zwvc7YknupAeXRu9UHRVX6Cfli
+	w3ANL4FiuJR7TZYLn5D8nNwaz3S8myCL3s5N7GYHTJihA6HyUkZN7F03
+X-Gm-Gg: ATEYQzxv/Tq+U6nkeyNPomYf8rtWE8Tr8j4Nh0yqeVPfHT64WAwf/nRfsU4ijwYfB/d
+	UJd+TbcaNILRFy541CE397zsduJrGgiLzK7Kjt4+cl04QMuiq7wyNA6YVv4uAqj7F9SVdiXU88L
+	klmAmSw0Rg/FVNDjv2LubOstKGwi7ssdKpmGz8wiVuyj4amh7h7161mQ0SvvsZgFIutCMC3I9vL
+	Pmc/5WnQuQIlUMrzhkIEP/KkCKTw8r+3Ce666yzTcKBlDWrj2rMQPvsHIQuUuf6hIQ1LgyCmopK
+	tW07GhlC0GtlSdn9dON+NFJl01QKeqBXHdc/AtE5N2KK2ree31dFsb6qJQCTXjyfSPBIIs9BLM5
+	fpJdhgsaTCu483NXV4m3ara7kBIPckn9Q5zcaYQeNyX9XK1Ww+90u+C26PlR2pwPD15hinJ6jdl
+	HcrxIb+vVZldCCBtmaGL3Nxn4C1mhjW6laOZw=
+X-Received: by 2002:a17:903:1666:b0:2a9:47ff:101c with SMTP id d9443c01a7336-2aeae8eb7dcmr9366255ad.46.1773195496591;
+        Tue, 10 Mar 2026 19:18:16 -0700 (PDT)
+Received: from ehlo.thunderbird.net ([2401:4900:aab1:729a::4bc6:faff])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aeae34e009sm5679355ad.46.2026.03.10.19.18.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 10 Mar 2026 19:18:16 -0700 (PDT)
+Date: Wed, 11 Mar 2026 07:27:18 +0530
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+To: David Lechner <dlechner@baylibre.com>, jic23@kernel.org,
+ m.tretter@pengutronix.de, mchehab@kernel.org, p.zabel@pengutronix.de,
+ tiffany.lin@mediatek.com, andrew-ct.chen@mediatek.com,
+ yunfei.dong@mediatek.com, matthias.bgg@gmail.com,
+ angelogioacchino.delregno@collabora.com, johan@kernel.org, elder@kernel.org,
+ gregkh@linuxfoundation.org, pure.logic@nexus-software.ie
+CC: nuno.sa@analog.com, andy@kernel.org, kernel@pengutronix.de, kees@kernel.org,
+ nabijaczleweli@nabijaczleweli.xyz, marcelo.schmitt1@gmail.com,
+ maudspierings@gocontroll.com, hverkuil+cisco@kernel.org,
+ ribalda@chromium.org, straube.linux@gmail.com, dan.carpenter@linaro.org,
+ lukagejak5@gmail.com, ethantidmore06@gmail.com,
+ samasth.norway.ananda@oracle.com, karanja99erick@gmail.com,
+ s9430939@naver.com, tglx@kernel.org, mingo@kernel.org,
+ sun.jian.kdev@gmail.com, weibu@redadmin.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
+ greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+ skhan@linuxfoundation.org
+Subject: Re: [PATCH 0/7] drivers: Simplify cleanup paths using __free
+User-Agent: Thunderbird for Android
+In-Reply-To: <79bfac24-dcb4-4fb9-90d8-3ef2393f51e3@baylibre.com>
+References: <20260310200513.2162018-1-sanjayembedded@gmail.com> <79bfac24-dcb4-4fb9-90d8-3ef2393f51e3@baylibre.com>
+Message-ID: <7F16ED38-6BC1-4D31-B5B6-6C1E45D24C25@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Address the TODO in adf4350_set_freq() by replacing the iterative
-power-of-2 shift loop with the standard order_base_2() macro.
 
-By utilizing DIV_ROUND_UP_ULL(), we
-can calculate the required RF divider selection in a single step.
 
-This ensures freq is properly shifted to meet or exceed the minimum
-VCO frequency.
+On 11 March 2026 3:22:28=E2=80=AFam IST, David Lechner <dlechner@baylibre=
+=2Ecom> wrote:
+>On 3/10/26 3:05 PM, Sanjay Chitroda wrote:
+>> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
+>>=20
+>> Hi all,
+>>=20
+>> This patch series replaces manual cleanup and explicit kfree() calls wi=
+th
+>> the __free attribute from <linux/cleanup=2Eh>=2E This modernizes the me=
+mory
+>> management style and simplifies common error paths without altering any
+>> functional behavior=2E
+>>=20
+>> The __free attribute provides automatic scope-based cleanup, making
+>> resource management clearer and reducing the chances of missing cleanup
+>> on early returns=2E
+>>=20
+>> No functional changes are intended in this series=2E
+>>=20
+>> Testing:
+>>   - Compiled with W=3D1
+>>   - Build-tested on i86_64
+>>=20
+>> Based on:
+>>   <linux-v7=2E0-rc2>
+>>=20
+>> Feel free to share your valuable input in context of the cleanup API=2E
+>>=20
+>> Thanks,
+>> Sanjay Chitroda
+>>=20
+>> Sanjay Chitroda (7):
+>>   staging: greybus: simplify cleanup using __free
+>>   iio: ssp_sensors: simplify cleanup using __free
+>>   iio: st_sensors: simplify cleanup using __free
+>>   media: mediatek: vcodec: simplify cleanup using __free
+>>   media: chips-media: coda: simplify cleanup using __free
+>>   media: allegro: simplify cleanup using __free
+>>   staging: rtl8723bs: simplify cleanup using __free
+>
+>There is no reason to put patches from different subsystems
+>in the same series when there is no dependency between them=2E
+>It just make for more noise for everyone=2E
+>
 
-Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
----
- drivers/iio/frequency/adf4350.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-index ed1741165f55..e07be6d5e67e 100644
---- a/drivers/iio/frequency/adf4350.c
-+++ b/drivers/iio/frequency/adf4350.c
-@@ -17,6 +17,8 @@
- #include <linux/err.h>
- #include <linux/gcd.h>
- #include <linux/gpio/consumer.h>
-+#include <linux/log2.h>
-+#include <linux/math64.h>
- #include <asm/div64.h>
- #include <linux/clk.h>
- #include <linux/clk-provider.h>
-@@ -149,18 +151,12 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
- 	if (freq > ADF4350_MAX_OUT_FREQ || freq < st->min_out_freq)
- 		return -EINVAL;
- 
--	st->r4_rf_div_sel = 0;
--
- 	/*
--	 * !\TODO: The below computation is making sure we get a power of 2
--	 * shift (st->r4_rf_div_sel) so that freq becomes higher or equal to
--	 * ADF4350_MIN_VCO_FREQ. This might be simplified with fls()/fls_long()
--	 * and friends.
-+	 * Calculate the required RF divider selection (power of 2 shift)
-+	 * to ensure the VCO frequency is >= ADF4350_MIN_VCO_FREQ.
- 	 */
--	while (freq < ADF4350_MIN_VCO_FREQ) {
--		freq <<= 1;
--		st->r4_rf_div_sel++;
--	}
-+	st->r4_rf_div_sel = order_base_2(DIV_ROUND_UP_ULL(ADF4350_MIN_VCO_FREQ, freq));
-+	freq <<= st->r4_rf_div_sel;
- 
- 	if (freq > ADF4350_MAX_FREQ_45_PRESC) {
- 		prescaler = ADF4350_REG1_PRESCALER;
--- 
-2.44.0
-
+Thanks for the feedback=2E I will split unrelated patches into
+separate series per subsystem or individual in future submissions=2E
