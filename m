@@ -1,145 +1,112 @@
-Received: from mail-pg1-f172.google.com (mail-pg1-f172.google.com [209.85.215.172])
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6653D283C89
-	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 02:18:17 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5426D244685
+	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 05:13:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773195498; cv=none; b=CpvWQOMti98IGVuXHHhrhgr6UoPw+8HRbY5p5P5L/z5woM7GIU30kb4iDiu4vyOtq54v2tuFJOFSt5SBCnqn59RSmC71tLUHGih5BRF7aSc9WCnJHKZ9uZmSg4BO4G3RdOscu9AdlaQ2pf4c7UaD4SuNcmeG2pda9xLbfgI+lq0=
+	t=1773206008; cv=none; b=VmL9/9U/NX9+3bbeT4NaOjdwclJYGAQ+aozJw5qJu+ZvUT4sUu8LO/pK7ebK8n6lutcjZXL5DsvldU9JoPWcdKd91FaBpb48P3pHffFj6bUelwX4GToQez4utjz3XZdCg83gqdSrd6fCpAhDuDY8ZMro0+AKyOVwYaGESVQYLr8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773195498; c=relaxed/simple;
-	bh=+/dHpzDdvnXv9XvCFyqZfCQUq6sgyPwg/78YsLVfcJ8=;
-	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
-	 MIME-Version:Content-Type; b=ZwZO2d8HNvqidcQ7y/JC6aI28/kUwMy0kdksi7Kto4Bt09afgm9yaZllRxo50yK3IphrmIkUhBwEgIXSZoKDy1Lv+a39dMn+R361Y6zXELei22Nnlo7q/bePtSUgdu+aCruHw6z9GG6YDwLRUQsPayScawFB8M6dpjR96KoYNH4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fvSKyg0D; arc=none smtp.client-ip=209.85.215.172
+	s=arc-20240116; t=1773206008; c=relaxed/simple;
+	bh=0Mt8K9MMFmE77LzxRrxaJYlclFNZFcdDFmhDKTkmLs4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=EivMiqSbJXxmwt9rwo/cq+fz4tB5HnKa8Ix0shOWUMH2CldAbbmKI0ykvzPXnNHP2tqy3hTgUIId6pGvQBxtN4W+xQAVUceIXTZeW23+Drf31vAg2seK6x4TbUuF0rzaUBufXS7fn5iWtsm1pgQXWpfTGFgMKd/ZifRXlKvME5g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SHIStUyL; arc=none smtp.client-ip=209.85.215.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fvSKyg0D"
-Received: by mail-pg1-f172.google.com with SMTP id 41be03b00d2f7-c6e2355739dso5512220a12.2
-        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 19:18:17 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SHIStUyL"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-c648bc907ebso8591024a12.3
+        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 22:13:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773195497; x=1773800297; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=1ZAqF770CjctREhKahUCDqzMAEkw+GXfuiDNjYlwSLk=;
-        b=fvSKyg0D0WfL/vzr9Cx5vJtutHyS2zyBDrgY+VRcTqz1DcJwn3lM2Y8uF8N8UAqBK2
-         bdETDCx+d2sNjHBfAebcNpBL6hJJn8e60zBt8yIUzmQ+26hJT7kQ8hlERQDXCsi1hH9/
-         kzzikvy3SQ+VayGNhQqv5kCVuwATD6j3rBkca+qYvqazKuYg6466as/ASq2rfdi04rmo
-         kQ6AChj+ypwTBF3lpFirsL2emJtQF9olWt9gLcHB9bqFfkF/Nbua5FQ9vsA6Hfo0vh8t
-         PnsuNnFBT0OYeAU47bdPH7dWapocF/3WdLPxpl7rHMOHJMpexIzRW+OQnKOe7EktAZqu
-         t9Ug==
+        d=gmail.com; s=20230601; t=1773206007; x=1773810807; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=QJbYP8cp7eraGSBSW0Vq/Otq0nICsguS5QRhgAYuVLY=;
+        b=SHIStUyLC/e3p8rtMuwRoQbbwpXKd4YYPQqky9TTPJIq/5ycvsbAl5R7RP73Fx95fD
+         r3TRBvXogWk6mtAEl2cdycgg7F1zLpkCRIANLEyjDRG0QKaBfIek+SiOMNfzEniH06Gk
+         +5Wpxf8xgzI//l5ZTGx8G4S1zyxwfWlgpASboerdZQSy+YKIFmBaBMqH4qVV98U72rxp
+         Y9eBfPFZ3KeKPlGHfXKOxqOMvwEvYtmA9NAwUCAcrZuZux2jVKGAF7yYEmIF8OQ4j4Z8
+         Xy977ZWFSTvMQYjbM7zeGdeBxLTbvZBXLF9vrU1xKCIaEP6wibgnec70vvqXaYCBX4Ax
+         HvlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773195497; x=1773800297;
-        h=content-transfer-encoding:mime-version:message-id:references
-         :in-reply-to:user-agent:subject:cc:to:from:date:x-gm-gg
+        d=1e100.net; s=20230601; t=1773206007; x=1773810807;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:from:date:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=1ZAqF770CjctREhKahUCDqzMAEkw+GXfuiDNjYlwSLk=;
-        b=v3teHcjGvgS7VppGfm7v7sOYxK+JlSM9RxmEWH3xeZFrTPcSboOLXl2DxKV2bLwhoS
-         ogN7kaJgnQdz4LYurFBNC72iAM/kH9zTvwskNHZeybfuCSPLb70JAiADPtnzFrYBYkbO
-         kZ4Zx6sB+RQQ2DYE8mo3OUfGXTP9Xqr/leRTazN7Qe3VP5J9DehW7ZzHXHaGsegHdKTO
-         PJveowAbqaFCJ+cFcXNZ/wIWEP6BO1TYvkXezs6QnRJ9x9CGZ6WZLdmdER5pVWgnhnMP
-         h8U1xEMjYpL9bJJNfdonnpCpbxBTUNCnYSKLaV8wpbAqR8wRHCdwNiDbn0hLaUIiNnxs
-         r+mg==
-X-Forwarded-Encrypted: i=1; AJvYcCULKp6CjnflQwruv7PGAYZIK0rZUx6H3lrRULG9AirjirCJBeTBYhvqK+4XrbxHZZGLA7LLsk0GhV8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwPOwlK7HCRaBEe6150wBzIp0Zwvc7YknupAeXRu9UHRVX6Cfli
-	w3ANL4FiuJR7TZYLn5D8nNwaz3S8myCL3s5N7GYHTJihA6HyUkZN7F03
-X-Gm-Gg: ATEYQzxv/Tq+U6nkeyNPomYf8rtWE8Tr8j4Nh0yqeVPfHT64WAwf/nRfsU4ijwYfB/d
-	UJd+TbcaNILRFy541CE397zsduJrGgiLzK7Kjt4+cl04QMuiq7wyNA6YVv4uAqj7F9SVdiXU88L
-	klmAmSw0Rg/FVNDjv2LubOstKGwi7ssdKpmGz8wiVuyj4amh7h7161mQ0SvvsZgFIutCMC3I9vL
-	Pmc/5WnQuQIlUMrzhkIEP/KkCKTw8r+3Ce666yzTcKBlDWrj2rMQPvsHIQuUuf6hIQ1LgyCmopK
-	tW07GhlC0GtlSdn9dON+NFJl01QKeqBXHdc/AtE5N2KK2ree31dFsb6qJQCTXjyfSPBIIs9BLM5
-	fpJdhgsaTCu483NXV4m3ara7kBIPckn9Q5zcaYQeNyX9XK1Ww+90u+C26PlR2pwPD15hinJ6jdl
-	HcrxIb+vVZldCCBtmaGL3Nxn4C1mhjW6laOZw=
-X-Received: by 2002:a17:903:1666:b0:2a9:47ff:101c with SMTP id d9443c01a7336-2aeae8eb7dcmr9366255ad.46.1773195496591;
-        Tue, 10 Mar 2026 19:18:16 -0700 (PDT)
-Received: from ehlo.thunderbird.net ([2401:4900:aab1:729a::4bc6:faff])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aeae34e009sm5679355ad.46.2026.03.10.19.18.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Mar 2026 19:18:16 -0700 (PDT)
-Date: Wed, 11 Mar 2026 07:27:18 +0530
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-To: David Lechner <dlechner@baylibre.com>, jic23@kernel.org,
- m.tretter@pengutronix.de, mchehab@kernel.org, p.zabel@pengutronix.de,
- tiffany.lin@mediatek.com, andrew-ct.chen@mediatek.com,
- yunfei.dong@mediatek.com, matthias.bgg@gmail.com,
- angelogioacchino.delregno@collabora.com, johan@kernel.org, elder@kernel.org,
- gregkh@linuxfoundation.org, pure.logic@nexus-software.ie
-CC: nuno.sa@analog.com, andy@kernel.org, kernel@pengutronix.de, kees@kernel.org,
- nabijaczleweli@nabijaczleweli.xyz, marcelo.schmitt1@gmail.com,
- maudspierings@gocontroll.com, hverkuil+cisco@kernel.org,
- ribalda@chromium.org, straube.linux@gmail.com, dan.carpenter@linaro.org,
- lukagejak5@gmail.com, ethantidmore06@gmail.com,
- samasth.norway.ananda@oracle.com, karanja99erick@gmail.com,
- s9430939@naver.com, tglx@kernel.org, mingo@kernel.org,
- sun.jian.kdev@gmail.com, weibu@redadmin.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org, linux-mediatek@lists.infradead.org,
- greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
- skhan@linuxfoundation.org
-Subject: Re: [PATCH 0/7] drivers: Simplify cleanup paths using __free
-User-Agent: Thunderbird for Android
-In-Reply-To: <79bfac24-dcb4-4fb9-90d8-3ef2393f51e3@baylibre.com>
-References: <20260310200513.2162018-1-sanjayembedded@gmail.com> <79bfac24-dcb4-4fb9-90d8-3ef2393f51e3@baylibre.com>
-Message-ID: <7F16ED38-6BC1-4D31-B5B6-6C1E45D24C25@gmail.com>
+        bh=QJbYP8cp7eraGSBSW0Vq/Otq0nICsguS5QRhgAYuVLY=;
+        b=fPlSJRkbNPqEC0EsUUbJ+Vy62InNxcoVhzNAoXyQUQ8xiZf0sigtnuPcZVbOl0n5NT
+         QwZ8QVtI+90w4gilTg8PeGdkHUbi8kLVU7ZBzS0NxnnrLdtlfJDpQGqK8hMtXTa8i6gV
+         G5pje2D0/PpCv/ILAhq36vY3ckEjxAHQdK8VgPKZOfi8LSiiqMpm6JLGNyBjbWngWHFF
+         X+c1WIKzBImY4cndSxfOZ6yEZ+DPnu8s1ikFluzAWsd3/h8ibzTQu9DwGA+Nm3m379kw
+         PO2Z4AYOWkkVr9vxdyRhfRxAlLAeHdkbHPonZRk0KP+WiGbZL6VFt6kkeYowXwQHS7wr
+         W6rQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXWPo0Rbq2gA+zrlYj5r907bmU/Sy8UGwWXkYPOmypwm6SWmFzwOgLuGu+e2xT6qb7zBiMfZFeQ1EY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzB501ioQqGEqqCz0AqRRJg6/0SuLLDzyJSBA7M9JjEZXyu6edh
+	CsnIAb+Kf+26l8Pju/3CMa/f8AaKHEMULKj2/wdWDwe1zNGykTbF7xh/
+X-Gm-Gg: ATEYQzxylSqn4ZQxe0o544Vtf6XW+2MqFRy047D5/0/mqOI3aRarl0C+EWHDFTPgQ7+
+	57kIHb8QfyC8Ttz3gQLJ5KjpA3TSy2EDfp/c37yCXnmu0DPv7udjAONUzk+40m79f25D2qbyhLf
+	RKFEaxzYlKdgLoOO0xYIEiQP0WVi3AdK1KdV59OhYDQn/a5Z3lgdn1Q/TlVDDsfyop/z46iBF9L
+	aSIO7mRLawqiJprI0Z3Dj2adFp3hDzc5weIQdYOS8DmZI6+ja9QjUD6Q5+LA6m67LB7/wssv5lj
+	TLg8REA2XNvx40y+plmrftWYHU9iSTMIzhQ0K67f5ezyIP2o8U59Jp/ITy9XXTB866grmhJvXlw
+	s/Wv+sp4LPLRGfsAFUNChQrFu/zxfCVtnyDyl38MvZBqnsjENQ7klpdoI2yovcq9ZdJAbyJz9ng
+	3UjoQSFIqNcCAdDCqpnqOfux8J
+X-Received: by 2002:a17:903:174e:b0:2ae:5104:571e with SMTP id d9443c01a7336-2aeae76fa46mr13435925ad.9.1773206006604;
+        Tue, 10 Mar 2026 22:13:26 -0700 (PDT)
+Received: from fedora ([2401:4900:1c6a:27e8:1c1d:af76:30f5:4937])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aeae34e009sm9599435ad.46.2026.03.10.22.13.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Mar 2026 22:13:26 -0700 (PDT)
+Date: Wed, 11 Mar 2026 10:43:19 +0530
+From: ShiHao <i.shihao.999@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: ShiHao <i.shihao.999@gmail.com>, marcelo.schmitt@analog.com,
+	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, mazziesaccount@gmail.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	till@linux.com
+Subject: Re: Request for guidence
+Message-ID: <abD572bpEU8f9Uil@fedora>
+References: <aapjuiq0JSVWfmWA@fedora>
+ <ebb8bcb5-660c-409c-89b1-d473ba5140d3@gmail.com>
+ <aa_yTUNAmkOUnN7j@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <aa_yTUNAmkOUnN7j@ashevche-desk.local>
 
+On Tue, Mar 10, 2026 at 12:28:29PM +0200, Andy Shevchenko wrote:
+> We are already in the relevant mailing list, so if ShiHao wants to work on IIO
+> drivers, welcome!
 
-
-On 11 March 2026 3:22:28=E2=80=AFam IST, David Lechner <dlechner@baylibre=
-=2Ecom> wrote:
->On 3/10/26 3:05 PM, Sanjay Chitroda wrote:
->> From: Sanjay Chitroda <sanjayembeddedse@gmail=2Ecom>
->>=20
->> Hi all,
->>=20
->> This patch series replaces manual cleanup and explicit kfree() calls wi=
-th
->> the __free attribute from <linux/cleanup=2Eh>=2E This modernizes the me=
-mory
->> management style and simplifies common error paths without altering any
->> functional behavior=2E
->>=20
->> The __free attribute provides automatic scope-based cleanup, making
->> resource management clearer and reducing the chances of missing cleanup
->> on early returns=2E
->>=20
->> No functional changes are intended in this series=2E
->>=20
->> Testing:
->>   - Compiled with W=3D1
->>   - Build-tested on i86_64
->>=20
->> Based on:
->>   <linux-v7=2E0-rc2>
->>=20
->> Feel free to share your valuable input in context of the cleanup API=2E
->>=20
->> Thanks,
->> Sanjay Chitroda
->>=20
->> Sanjay Chitroda (7):
->>   staging: greybus: simplify cleanup using __free
->>   iio: ssp_sensors: simplify cleanup using __free
->>   iio: st_sensors: simplify cleanup using __free
->>   media: mediatek: vcodec: simplify cleanup using __free
->>   media: chips-media: coda: simplify cleanup using __free
->>   media: allegro: simplify cleanup using __free
->>   staging: rtl8723bs: simplify cleanup using __free
+> With Best Regards,
+> Andy Shevchenko
 >
->There is no reason to put patches from different subsystems
->in the same series when there is no dependency between them=2E
->It just make for more noise for everyone=2E
 >
+Hello,
+	First of all, thank you all for your time and responses. After
+	learning that the IIO driver development project will not be
+	part of this year’s GSoC, I shifted my preparation toward the
+	DT binding project idea since it aligns with my driver development
+	goals and Thank you, Andy, for letting me know that I can still
+	work on driver development. However, I still have no clear idea
+	how to get started.
 
-Thanks for the feedback=2E I will split unrelated patches into
-separate series per subsystem or individual in future submissions=2E
+	My main questions are: how should I begin, which sensors currently
+	need drivers, and what happens if someone else is already working
+	on a particular driver? Would it still be possible for me to
+	contribute?
+
+	Therefore, I would really appreciate some guidance on how to get
+	started. Any help would be greatly appreciated. Thank you all again.
+
+With sincere regards,
+Shi Hao
+
