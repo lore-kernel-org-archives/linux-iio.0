@@ -1,143 +1,180 @@
-Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6D80F38DD3
-	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 00:11:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 69F1B1684A4;
+	Wed, 11 Mar 2026 00:23:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773187908; cv=none; b=uZ8DGDXtY5+CH7CGovGKL3KD7aE1M26Cikjnr5O0Of3Cax2oJWnUQ3MjWcv2ORoluO9ifgjvAWMn9UuETBABu/NbvwhbRuDhGQyh8pTdlCVuy7nPIEzF4olixzwlkkGRhsFFduYhRfWXR4LzD46Bbj9R/SnsX3GzGsDzzlotkaM=
+	t=1773188639; cv=none; b=fR/Q0jPe80Va/gVJM+hNZpn+7UKGjI+ytj5Aw6fx2DzM3PSWvGBF7If4M8238LK1ce+brnMvFgM7EgN01Kc41VfB1OiOlugKeTOH+i0RqhYZb5ASXw7ykZd6aO8sRL4It8KXDExxN+Wcf/mH8coqsZ820+Y+6ZrAuZqHg0f2Ywo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773187908; c=relaxed/simple;
-	bh=P3lEy5gIkhZ3O6GB/4pR9gWhPNMout6x33dBMMGTqnc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Kz0fP9AQvDw70nYYExYwj5uMYX64qPo7pWsCXoPMV/T2QQr7ananS7wtbqJP4d7TWwXVIL20+CEhD3dfq6fpnU427o3amhT5ISxSFz9NjFevS4RKKUZZtQ+R9sKYxymjeHw/42csY5XENvvezPv9R+XAPmipsiRe9BVBenAFenk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=y/qXzXUk; arc=none smtp.client-ip=209.85.210.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1773188639; c=relaxed/simple;
+	bh=RI7Y+NzuTz4/ZvZ/zc35Yv2tCf1ybPV3mQjEnjHhdis=;
+	h=From:Subject:Date:Message-ID:MIME-Version:Content-Type:To:CC; b=r5OPeN8VQBNdLhEvWsBzCC1vZI2tFQcRxSYIKaXowjdPO1kCO5/3vUUGUsNaI+ZuqXKflogcT3tgiXq44F/iNWhELFL9VNp9jJ8z8WqboaqpwucsTWwyBREKhpdCzxZe21ADDREObX2ev6ygAzrrzlZ0oKWEK8CSMTo2gLNSRKY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=Budvsf16; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="y/qXzXUk"
-Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7d4c12ff3d5so12571187a34.2
-        for <linux-iio@vger.kernel.org>; Tue, 10 Mar 2026 17:11:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773187905; x=1773792705; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=k/g9x/WAltqKnAS6kgiR1qo0fBhygP8SG/QvklfILzc=;
-        b=y/qXzXUk69fxfYkmTeImwa+hj4O/vGBPkAt+DNTFcOLgLY+ACHSB+ypg7s2Gq994kZ
-         7hm2qsueBPtYoM2ZM0Kf9Ncd2AFnAdxm519kuYX0gs1ukgD+qRY7N9O1F2AlhhVBVtLP
-         sWRrh8oW1dXSqr8VW5cNdCAgxnGNdokwp0iviYDlpl8/DWXIcnLiGxKtGMdIj5gWJTs6
-         0oObGrTRYZDy6JFNDiHF/E1HRhzJvWQrfpBxKqUQqVndkwjtQD0Kbm0rRBKYqX9i4tVh
-         JyRgLZlQBXMGgIAVwRL2eLAuGrUCh4d1nY2RxsCABLW7tAXen/c02DKwSWStrNzPEt2u
-         ALJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773187905; x=1773792705;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=k/g9x/WAltqKnAS6kgiR1qo0fBhygP8SG/QvklfILzc=;
-        b=aMWZT9/GUD+i9vJGprckXzn+MUrSzLt4hCIHeHzNfx5TNfCxvBWh65/RkjcCQtqXFC
-         CJvC5uhehCAmh6++4KIKtB6Oh9hGafndPFw+6IP5i3PH2V+9OHQ4VX1CSR2FbcAmVNXi
-         rDp39mh2iwzeFDWGX6hp9zzr5xSOszxzW5y3lv051sHycqDycxJqxGh5fJkGoNy15rHj
-         wWh1s4HPYpa/X4Xc6WskPwC5jEkY5DO5Lv6Ntb5mVbWsJIROTCnhpUQjn+e/7F7/dm7D
-         ks5tWa3Ivwczn7CkwbtiDr0aoo3n+E7hsTtJIlFNWnOcnBbRNKOZfuxkf4P1bVQHBKT8
-         O+LA==
-X-Forwarded-Encrypted: i=1; AJvYcCUWEsYtBkiQFXjU8ttXb/FU2Au/eyzayanAg4V54+GHYVsyW9QDwL5lw1NAn4IfRsMDvdrg3bSVNZM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzT/2X7rOFu4TIvtOdy6AU+8tmPSyFyyRMUYlPEk47E9LqLljey
-	c52d5L21vSmyvmijv0O252p7B5Lx3j9MYNUcwyrAr77DJTeclmx148vetmnXZ/uXG0M=
-X-Gm-Gg: ATEYQzy5cYnOsihGs+aY2XC2dZdwP9WEHWgf88JhzRSrbZfWgbTqShL2XOdGMS+5ONn
-	JOaPBn9WlX6lqKOKj6yUcotUn2RoL7UCbAY+qQgeD7Jtt5CG3eMwUpYl7nNiii7mmngQN7FA2xh
-	ODyPLhRcOmTeVoL/4aei+J1Bw0awJ0mtD/TAEUguWC9CKsEBSwG87Y9EihgE2qDtFMziDd7Q+2p
-	VQ8Qu03RNk/F8KTTV/stkLV04CD6wqsvYIaUaTID/dHrl/pd6qk6tS9z4/20LmbxRotVU0EmHCi
-	D3h6r1IsqsSWKEu0RN8r2XhiruNkVodvYEnn52+hbaUfIHAu1dXLxjkdPr5225OQWQjeW5qRa6V
-	hE0Bmu3hwjhAHEN1smUhM8K+G4rSyJ7A4J/V8qhBBkWhX5y61pIQtvVq1qQ4zPlmGgFYIeo5y8r
-	5UPQvrcpSOTDuGR6L8wOXs7sFcM3bYhd++cCA8ylwa4WklEcSna59VKAOameWk63hmc5+0sSWW1
-	Q==
-X-Received: by 2002:a05:6830:264b:b0:7d7:382f:f00f with SMTP id 46e09a7af769-7d76a73d752mr520754a34.31.1773187905339;
-        Tue, 10 Mar 2026 17:11:45 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:82ac:f3fe:2e5f:ec03? ([2600:8803:e7e4:500:82ac:f3fe:2e5f:ec03])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d76aebc9d3sm492155a34.24.2026.03.10.17.11.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 10 Mar 2026 17:11:44 -0700 (PDT)
-Message-ID: <b1187027-3ddd-43bc-a773-8b5d794e04fc@baylibre.com>
-Date: Tue, 10 Mar 2026 19:11:43 -0500
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="Budvsf16"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62ANdwlk1139698;
+	Tue, 10 Mar 2026 20:23:36 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=ZlPpDpun4T+5Dr7nrCGibGkXydm
+	0OS0YCldEkDGEEyc=; b=Budvsf16alyRs2gcIEmksrsy2EUG9Xqte6bONIEpFwj
+	XOjsL7jSAf5jF5bIYahbHRbD2SgS1zbG+d7ZL/qbKDoYpUWp0qJS4BptrEmBoOfX
+	Ng+3QKixd0Nglb3FD/NKUBtcU0MS1h0L6sGIFbGAxE0ZK5aciJv3B9fLE72fmAvG
+	BnN6k/rJW2SiBpiOUHJUGRhPJEa0JbjhClMdZpJ9Wpt34pI7Y6yLJR9pv838ploA
+	4TdIw+Ywbqhh4TX7YsUU1qb54IgEnHUto/WoNnrjELdnByJVobZr8tO5ba9SOvZW
+	q7XI7ssLZgszI7/W54anMlu04NysqQQHDMUGljZAAzA==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4ctw6284c9-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Tue, 10 Mar 2026 20:23:36 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62B0NZ0R036265
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Tue, 10 Mar 2026 20:23:35 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 10 Mar 2026 20:23:35 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 10 Mar 2026 20:23:35 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Tue, 10 Mar 2026 20:23:35 -0400
+Received: from ATORRENO-L02.ad.analog.com (ATORRENO-L02.ad.analog.com [10.118.4.140])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62B0NJkN015383;
+	Tue, 10 Mar 2026 20:23:22 -0400
+From: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+Subject: [PATCH v2 0/3] Add support for AD5706R DAC
+Date: Wed, 11 Mar 2026 08:23:16 +0800
+Message-ID: <20260311-dev_ad5706r-v2-0-f367063dbd1b@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH RFC 6/8] iio: frequency: ad9910: add RAM mode support
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>,
- Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
-References: <20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com>
- <20260220-ad9910-iio-driver-v1-6-3b264aa48a10@analog.com>
- <20260301133153.7f2f8501@jic23-huawei> <20260307140735.5ec2e608@jic23-huawei>
- <bxcybwaz3am7nrrfcjuvkbbe7yp4vwcxwwh4dafaj5dsy622s7@m4vdam6tyaht>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <bxcybwaz3am7nrrfcjuvkbbe7yp4vwcxwwh4dafaj5dsy622s7@m4vdam6tyaht>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAPS1sGkC/23MQQ7CIBCF4as0sxYzjLa0rryHaQyUsSVRMGCIp
+ uHuYtcu/5e8b4XE0XGCU7NC5OySC74G7RqYFu1nFs7WBkLqkAiF5XzVtlXYRUESW5bW0qAN1Mc
+ z8s29N+0y1l5ceoX42fAsf+t/J0uBQlF7MMaqY98PZ+31Pcz7KTxgLKV8Aa8je7SnAAAA
+X-Change-ID: 20260220-dev_ad5706r-2105e1dd29ab
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        "David
+ Lechner" <dlechner@baylibre.com>,
+        =?utf-8?q?Nuno_S=C3=A1?=
+	<nuno.sa@analog.com>,
+        Andy Shevchenko <andy@kernel.org>, Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        =?utf-8?q?Uwe_Kleine-K=C3=B6nig?=
+	<ukleinek@kernel.org>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
+        "Alexis Czezar
+ Torreno" <alexisczezar.torreno@analog.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1773188600; l=2598;
+ i=alexisczezar.torreno@analog.com; s=20250213; h=from:subject:message-id;
+ bh=RI7Y+NzuTz4/ZvZ/zc35Yv2tCf1ybPV3mQjEnjHhdis=;
+ b=kO0fO+4zQSLPkV/yhEyS1HMA+N4AeReYvjlwn1BulElEhTARoGGsMYBWw38UNeIywGh7dnkzt
+ ccec5OZ8iETCF/qoTNLpgANsVIQPZ0cfxxvhW8LdfnmzyBCC0MymjUp
+X-Developer-Key: i=alexisczezar.torreno@analog.com; a=ed25519;
+ pk=XpXmJnRjnsKdDil6YpOlj9+44S+XYXVFnxvkbmaZ+10=
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: fUX9IEgoZtVgbYD0MZO0lRGcKyLhIPGW
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzExMDAwMSBTYWx0ZWRfX4FIg5wZjwToA
+ QoeSdDnR3Idc1112OdbJJjVbcbt7PjP1kisaigVt1btDCvqqoWF1NnhKiAvbc4SUy54RrTvKdDh
+ 4RRo9eQdPiWoYDFJBtsFcPOgTJ2UFXQ94BifI8ZBNvtEDvuzuRZi3ep+x56aOgDVWeldnDrNtdy
+ tH5xYo7CHBDQ9nEiY1iCFhyZuq4q01B36k5zknD/Pjc1gMvTaI77A1WAH0yq9jIEOo9ReZV0Rw6
+ 8c3ast3Vh6EzAgHaxsDL4xp7CPKtHV4JO43KuneQ+nX7dOuGJyCUZdd1nLUncs6IxT6fy99GIYq
+ 14HnPns64zt+BLp6rHBrH7WRSGSjTpvC8xwSUxN6BSzdWee9Pe0FMxUQBty9YZtalQ2OizN8Aq/
+ ONI+ATrAKTjhRoaDGWIfiRgM7uJvuUOZTmT+igmkuEjJC2+lL+CN5yNT1hpMQKseTaaxkxHXzED
+ +zIciEUtOsapckv2hzQ==
+X-Authority-Analysis: v=2.4 cv=P/g3RyAu c=1 sm=1 tr=0 ts=69b0b608 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8
+ a=VwQbUJbxAAAA:8 a=lAPpY2re-nV465j7mocA:9 a=QEXdDO2ut3YA:10
+X-Proofpoint-GUID: fUX9IEgoZtVgbYD0MZO0lRGcKyLhIPGW
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-10_05,2026-03-09_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 phishscore=0 lowpriorityscore=0 priorityscore=1501 adultscore=0
+ clxscore=1015 bulkscore=0 malwarescore=0 impostorscore=0 suspectscore=0
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2602130000 definitions=main-2603110001
 
-On 3/10/26 12:40 PM, Rodrigo Alencar wrote:
-> On 26/03/07 02:07PM, Jonathan Cameron wrote:
->> On Sun, 1 Mar 2026 13:31:53 +0000
->> Jonathan Cameron <jic23@kernel.org> wrote:
->>
->>> On Fri, 20 Feb 2026 16:46:10 +0000
->>> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
->>>
->>>> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
->>>>
->>>> Add RAM channel with support for profile-based control. This includes:
->>>> - RAM data loading via binary sysfs attribute (ram_data);  
->>>
->>> I'm not sure that's a long term viable path.  We either need
->>> to figure out how to do it as firmware file load, or via an output buffer.
->>>
->>> Firmware load would probably be too static and I'm not sure quite
->>> how we map these to IIO output buffers.
->>
->> We would have to carry it for ever which is very much not ideal.
->> The firmware approach has the same issue, but can be thought of
->> as defaults at boot time forever.  If no defaults then we use whatever
->> we come up with as the long term solution.
-> 
-> I was thinking about the firmware approach:
-> - Normally a driver would request the firmware during probe and the
->   filename would be pre-defined.
-> - Less statically, It could have an attribute that once written, it would
->   request the RAM contents (e.g. under /lib/firmware/ad9910_ram.bin).
->   It could be the enable attribute itself (but that would not be effective
->   when the binary would not change), or a separate one (e.g. destination),
->   or a new one (e.g. load_en)
+This series adds support for the Analog Devices AD5706R, a 4-channel
+16-bit current output digital-to-analog converter with SPI interface.
 
-Have you looked at firmware_upload_register()? It looks like it provides
-something along these lines.
+The AD5706R features:
+  - 4 independent current output DAC channels
+  - Configurable output ranges (50mA, 150mA, 200mA, 300mA)
+  - Hardware and software LDAC trigger with configurable edge selection
+  - Toggle and dither modes per channel
+  - Internal or external voltage reference selection
+  - PWM-controlled LDAC
+  - Dynamic change SPI speed
 
-> - Alternatively  we can also have an attribute (like 'filename') that once written,
->   loads a firmware file under /lib/firmware/<value-of-filename>.bin 
-> 
-> I am currently using libiio to write the sysfs binary attribute. Thus,
-> the downside of the firmware approach is that I would have to use something
-> else when changing a firmware file remotely (as libiio would not support this).
->  
-> Also, the buffer approach has its problems, mostly because triggered buffers
-> are not really designed for multi-buffer support, even though it could work
-> along side the DMA engine one (that I am using with the parallel port).
-> Additionally, userspace tools are not yet ready for multi-buffer support.
-> Also, an IIO buffer might give a sense of data streaming capabilities,
-> not a one-shot load that I need here.
-> 
+The driver exposes standard IIO raw/scale/offset channel attributes for
+DAC output control, sampling frequency for PWM-based LDAC timing, and
+extended attributes for device configuration including output range
+selection, trigger mode, and multiplexer output.
+
+This driver is developed and tested on the Cora Z7S platform using
+the AXI SPI Engine and AXI CLKGEN IP cores. The 'clocks' property
+enables dynamic SPI clock rate management via the CLKGEN.
+
+Datasheet: https://www.analog.com/en/products/ad5706r.html
+
+Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+---
+Changes in v2:
+- Stripped driver down to basic DAC functionality (read/write raw,
+  read-only scale) as suggested.
+- Removed PWM (LDAC), GPIO (reset/shutdown), clock generator,
+  SPI engine frequency switching, debugfs streaming, and all
+  custom ext_info sysfs attributes
+- Removed regmap, IIO_BUFFER, and iio/sysfs.h dependencies
+- Simplified SPI read/write to use standard spi_sync_transfer
+  without clock mode logic
+- Scale reports default 50mA range as read-only using
+  IIO_VAL_FRACTIONAL_LOG2; writable range selection deferred
+  to future follow-up series
+- Simplified DT binding to only require compatible, reg, and
+  spi-max-frequency
+- Link to v1: https://lore.kernel.org/r/20260220-dev_ad5706r-v1-0-7253bbd74889@analog.com
+
+---
+Alexis Czezar Torreno (3):
+      dt-bindings: iio: dac: Add binding for AD5706R
+      iio: dac: ad5706r: Add support for AD5706R DAC
+      MAINTAINERS: Add entry for AD5706R DAC driver
+
+ .../devicetree/bindings/iio/dac/adi,ad5706r.yaml   |  48 +++++
+ MAINTAINERS                                        |   8 +
+ drivers/iio/dac/Kconfig                            |  10 +
+ drivers/iio/dac/Makefile                           |   1 +
+ drivers/iio/dac/ad5706r.c                          | 208 +++++++++++++++++++++
+ 5 files changed, 275 insertions(+)
+---
+base-commit: 3674f3ca92730d9a07b42b311f1337d83c4d5605
+change-id: 20260220-dev_ad5706r-2105e1dd29ab
+
+Best regards,
+-- 
+Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
 
