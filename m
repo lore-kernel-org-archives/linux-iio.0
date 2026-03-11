@@ -1,126 +1,135 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-ej1-f47.google.com (mail-ej1-f47.google.com [209.85.218.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 423382F8BEE
-	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 20:18:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 329E83090C2
+	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 20:22:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.47
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773260327; cv=pass; b=StE9ZTBRlcUuOZE4kzBbNlrtjprUm1NqfimVKB/BT1H6BjSSXIBI5D6gBwrk4qvftQg/wwqNRk4Tmr5FafWWs+evTov0+An44gjMhug1YdZEC4DQt50RDXZP/etYHjm86S2pNDzTCo2R8kWw4AKl84s+rlViv5leBMaUp7z5eg0=
+	t=1773260542; cv=pass; b=Zc4zTZdpW8XfwoxjoGcJAq9VaM+HFHl3AHkkwUVr0o2hcbEBRTacps7X3dRuhI1V5xx96roV20OSrR1O0dHl2rZquOwnxzRBKNde1bX7NoSCc2iwgasujZqvR5QRN8XrZ8TakYxoB9b7SkkNRfuZiXujy1MtWDu2AtByIDNmB2g=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773260327; c=relaxed/simple;
-	bh=E8jOnk+OV3CBlGh+i4MV8jYIJFhMbjnNvmBl9LFBYW4=;
+	s=arc-20240116; t=1773260542; c=relaxed/simple;
+	bh=38+2N7ZJuFyG0UPwIwmnpAPM6azdgPeuvfq8MVnWFYg=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NjS76Ubc5byqTBl4mQd7kRo8H+hs41vRpU2IeLlg+pS50llIxmWra52O9l59OFE9Sp65QnRdWBFT8o1eNHj7d5yMdnJR/Wn74vnVwFJPciJaWeiQGgJL0omP2Nn3fQ6UenDI/Sv6s0oM1C7is3HXA+4hdWtuzH7yWVpYw7C5P6E=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UL4vzp/n; arc=pass smtp.client-ip=209.85.218.41
+	 To:Cc:Content-Type; b=FTtmsVNVYh9A8+pRK5xajD6OSS9kK6dGiiMgIRCz4uli7hJaQIK6o6xk9VtUSnLlBPVyBzYhMWUHS3Q8zLRQbHHa9+XFZLsnOkxuCZzAqaeGkJPw7X2Aw1pXw0/3AUfRqPoX8beZQL/zo9l7cI4RB4D4XntrJZxC5VJYXSLPH78=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Qs1Xh4yD; arc=pass smtp.client-ip=209.85.218.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UL4vzp/n"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-b96f02b4329so36699266b.2
-        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 13:18:46 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773260325; cv=none;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Qs1Xh4yD"
+Received: by mail-ej1-f47.google.com with SMTP id a640c23a62f3a-b9431300833so36578066b.0
+        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 13:22:21 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773260540; cv=none;
         d=google.com; s=arc-20240605;
-        b=FzmQqTcnWm774LZNjTVQnGiI5M1rrCl8VPbUurCrH5n5m4RCY4RagZaaPSOvAj5ajN
-         Zl23OGR31jSCcR1fR5+SDxKWsmBX//gMJ+pCdDsU7d4sxlQKNWRyCrEo31p3xpyPzV/2
-         Lc0ynZDFAPy3pa8MPWqc3MAd24H59RaZETmWy9KD2j3vjW4K007qlKp0ZuDCtBYuPelz
-         RfOJJkT5I5XdrY0xBFy7oxiNpcnCBhgc34NWE5fxWW4MU3ViQsLDXuCNSfaBtv8ieLBp
-         3HtyLLr6dC3tas8Z2qM8gCifyRrU4+X5JbL2jLMdOQ/rJwoyx1Hu4AxevVsbA5FP9seD
-         GtQA==
+        b=YZ8lP6MQ8qsswQue3ZW3jhgsrQC4dJVImgOMxB5uOXufuEjs79ik68oqT41V1mmMQJ
+         u8uVLm649OAGbOqtPwmU6R/NrjenpqBpWcC01IuXzRei3cdIX4og/DiSwX67kDnq5lmc
+         rxfvxLRgFj1hgn4wpNzIEyyufDlDJ/ZeHirAIqUsjYZkLerdYAR6kdkZZX4HZyLrJ3f9
+         36cf/ZkIOSBAfDlP9PHRJ4I1C7RTbp5PQuMkSb6sydfV1UBza7gPhJf1wLdAF5YrSgAE
+         KmzGTPdEf1R0qOqqo31dQ7mA5NFY7dARqCHA4+UebGxjs7fYcZIX6+FMnXaM3ucaXoOo
+         7+Vw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:dkim-signature;
-        bh=E8jOnk+OV3CBlGh+i4MV8jYIJFhMbjnNvmBl9LFBYW4=;
-        fh=L65Z21lw/DxQGeW6dznNzLo5Bp6Tz2B9wZkTbbhNG44=;
-        b=JkDsiUeNLElf/7ZiNF/3Uy8B4RnrnTd9INK26M0H4EWGI/0QfWZC+Sws9uGFUelHei
-         nYUODQoRo5r37Vqrx/0+J1S3oDM2rqcleeOnf3CZMfU8JhqZwdfNLG/KcpEg6YFgoXvj
-         GbQsSpIJ0COv35c7KMnvTePnr6Y71cFpkue3A5QpaOZ4W6k1/oON2mI/iepZSCGRT0Xh
-         ALB9PiYByPfjoK1CIJzxkYTocB9WKB0G0WtC0bokRlVjXwK79jvGsleFrPfIeHEHx+MX
-         //2NkV2xUD9RLunVqjsviKdVwXt5LBX2MSSNs+wEf7rN3tK2GApoXtuSuAOBQH+rZJYs
-         7WrA==;
+        bh=bB7481rsK1O6nMKj5HmnagqD0USg3675favP4HtAnJI=;
+        fh=Maw/rq26/45z+esJtnKnZu3lzEVf0tjFXmoBPXHvSFg=;
+        b=eC5Emb42Qj480pFywASDqTNWJYIyPjuoc5pjBqk0rO5uOdYGR9y6fW7UyWLzUM007Q
+         u4KyYkiYcPjRAaiX9IytAfIJh3BdjACRM4raWzTlVWwmMdAnZifvHtRIz55TtLH3TIZQ
+         M7m2B+53+bqAvxv8e+90G/RnFXrcCiL38mxA3rtTBcnudm66d7tvijiQ0GisO0WGGwVk
+         sY328nBdoF8qitM6wqlXNki1gZ27x1iIv6OGTko2eYzP9TOY4cCGl4je1iLWFkwC7P6Z
+         EeXg3OKuEsP3q4JdIHe4qGJeLZ9gJc7jwW2ja4MEr/tuCbOUfQK71F8g+cbNlYuun7YU
+         MIMg==;
         darn=vger.kernel.org
 ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773260325; x=1773865125; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773260540; x=1773865340; darn=vger.kernel.org;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=E8jOnk+OV3CBlGh+i4MV8jYIJFhMbjnNvmBl9LFBYW4=;
-        b=UL4vzp/ndXcROpE5qV2QxqpA3kdkCiOnNhjO300VUQzXbdZfwHtStbjrU1ruyTUYWN
-         fx/CFxScfpNt6Bbfmz9dUXKDzXXxt0x1eA5v9WZgtWY0V6FVU31KdNw1zb8K5MIUiX9x
-         6YFXhR19PSAT5unRJouwgshFv3gbwq5lZ2NjzLm6l8Q85vDr1/wY7WcQAXf23fYnN6Q8
-         F3JGL6uKBwdS0uETWeemJr/TTG5fkFRWxeta/BS8SVxsl5S0cF7RcsjYScBKouyyAflq
-         YeDDb4n4ZnjQXmAJK8WM9kmdjrQHfKC2EvlhA7d5E+GWBj0lg1Et/SCCbIY3l9l5olJR
-         CMPg==
+        bh=bB7481rsK1O6nMKj5HmnagqD0USg3675favP4HtAnJI=;
+        b=Qs1Xh4yDz1NV1j+DooXwc2wpmeRN1sVK4ilLShqVhwAqkDMgonFTDfHjw3CT9b21Yw
+         M1i9AhAnptbi+yh2HU3A9iurBDjh5ua1Q9sk0fnbB0rDXk2IqXRi76S/sTBJG7ONhtY/
+         7jy2lUwnnDdVGBN6GaU5mrUyvhHPyqwpC5SJ/Sftt7Wr7l1ykmwptzt7TKNIAVR5StGR
+         Ik3Q/vadsUS0D3ioB9R0nPTy3SZL1d7SKyQ2Gex9WhAHMHdOotiBJqkY8dJ0nvoRf2UG
+         IxtehUcLmafdZXcFDSmTKl7ADXF7RmVqZHLESaGs/R0CeXlWP7pj+tBrBMd2+4ppG+Xa
+         YRLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773260325; x=1773865125;
+        d=1e100.net; s=20230601; t=1773260540; x=1773865340;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=E8jOnk+OV3CBlGh+i4MV8jYIJFhMbjnNvmBl9LFBYW4=;
-        b=fZ9osG0MN4YCcBzyN77l4ltIdSnwMZTjc5lI0Jo/WL/vpOVN3ST7IDseRprMSvdvcT
-         TpDVrgd+iri9ok/cOhE5l/VKjn809y52b83Xa5xnQ7oTe2bGWieTRg/Trqj1JEmP//cU
-         55ddGqwH1YsT9Ki8297HnO7vO/iMpIvZCn4+hGodtG/0Qxg6EFX15VtvKr/w+mD95Way
-         xf3bZLBhbG5UGym1dDADPpUjv1xir5ep0ELBKFbMi4fMPsXsZwiD/BorXVrTon4qYhFb
-         fcVAaOMIbppg5J4CoucKlutbd4Xuxd0NE7c0AAgjx1tqa9Ce9Ry/IJJR/qMngd5+GWPf
-         mUgg==
-X-Forwarded-Encrypted: i=1; AJvYcCV17H5I8sG8wHmmEeLCymO7pGHf6AYR10l4U48mUDATIOjFXQh5cUd0Y8Buo+3kg5GIKdrHPr0n5p8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwcSutzq8wriQt0Vfmf7K5Fhs9O1gyfL9Lmcy/iIZnyXUT5Fyge
-	P7JUXSFHCZyJ4WMErp7BCQV8Y7GS3FE+CFPIYqGV+dG6WqpqXJa9jU8HX2OYIaQbEDsjsntYhsU
-	vHo7awR15EhjsRF0xZrsZ/81NDk6RKfxISIQ5
-X-Gm-Gg: ATEYQzzEAzPwQlD0dIuURjQlpxTA1/BJQCR212KE9Q8A3rLIaRcS8LdhWFu6W4eth+5
-	rmEAK2KQKs+1/344LOwiTUTqlXlmcOFmtOF9fEs3RJVONwKqHF+dPYXmSKFFKLzhggMXHk9IVV5
-	0qWXcJfy09m7I/lO1Ee3l2zTR2EEzApUSUgfhPk6nqUZ89+oEIn2EKZqa3jOVpI8yo0XDCGP48D
-	A2zU8tBZbhTjvXJwA0I2fex24aSDSmMePTjVwSAg2ju/1sigLMD3TzCST3DUC9MjiBhfomgrY/w
-	BrtlO8HLf9g/fd8FvoxRz597ByDj9rN5luDVxnMlpYTFo8Hho1WP6CWq8oFQB1A5tMuphEo9qiX
-	Ydm/SCfQ=
-X-Received: by 2002:a17:907:1b28:b0:b96:eb7e:bc3b with SMTP id
- a640c23a62f3a-b972e530602mr218474366b.49.1773260324392; Wed, 11 Mar 2026
- 13:18:44 -0700 (PDT)
+        bh=bB7481rsK1O6nMKj5HmnagqD0USg3675favP4HtAnJI=;
+        b=q0kcX5U2H5RhFBRht5WrAfLGXYxWFFa8Vdw8NRNnQ3DARE9nvHez7MeaYa57MPGRRm
+         V+WTFr5HPfDlgf1kOduvMG4lvGxgKWIklNfFSitML64N33VRTzasJz+fskGWE5xLJ2Po
+         tyF4wlQRIPnPaj8oymWUPd5UgEpMfj+o5x/+T2eE5XRRHwZNCefkwfGsu9t3yWhanxfx
+         hEDQ0yAavApl2iaSUW0M0x+VMyCBA/HyMLDHegvtRBJy+NOYq9BFyutYyRxFS6BWhkpl
+         j3eqBag7mr5q0rcDuxe+ZGGAu5vD3SvPvT0V7Mdp/CrDyvtTy4j0DZULahmpsyKlt4ia
+         kkTA==
+X-Forwarded-Encrypted: i=1; AJvYcCU44v95o1Viv2FpB4UsviMOrBstfPdM0hmfERabkMhJjIGecuSiTjZQZXvWSn1s59lYX6RkEyTviXg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxr47lXsIfVAKVVcQ+OT0Fx4SFy/EmU3HRW2EMXQpkrwK9E7E9W
+	PvpOjRFZ9DLxgoqQm/N2IAAUR2I1wZb2kEEoPRCzym03b9EjQZX0YJ3c6dVEU0EK8uvYXClRaEe
+	AEMv1EJ4qY2sArnSqDahnzijz0CkggLE=
+X-Gm-Gg: ATEYQzyYnAcackriOuj/KCoWR6EnFEovCioSR9twBZLskc4zA4BUkjtaeyz4516V/J2
+	iJnlM+S1VRuzCTcRZ+DRZVG+BNuFGBOhYWp7uchwQxwlpsRfmcsaRHsvAHjzD+djttbyZlZhMlP
+	bMoJS0O3AZqCzA5TAYy/OCoXE80BEasFVA6FrC415MPPUFJ24yWN9ldAfowwOXEwmxwdwvuotrs
+	dEyYdFaRo4sXmeUTmjeNYQOVUDfxF8ocYwwnD/+rvqQJsZObJRdZrnks7d4IL5kCOfKGeJzWIBW
+	GGxVwCsZ1dL/16v6+gTM0Skn90M5f6aeNhijiokHudv8eO7unCnNMNxGJnIKDuiyQuVwh3F1oZ4
+	mHeGynf4=
+X-Received: by 2002:a17:907:3e99:b0:b96:df8c:42cb with SMTP id
+ a640c23a62f3a-b972e534dcbmr218538466b.46.1773260539396; Wed, 11 Mar 2026
+ 13:22:19 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260311194624.1521-1-ethantidmore06@gmail.com>
-In-Reply-To: <20260311194624.1521-1-ethantidmore06@gmail.com>
+References: <20260311182050.3467471-1-sanjayembedded@gmail.com>
+In-Reply-To: <20260311182050.3467471-1-sanjayembedded@gmail.com>
 From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Wed, 11 Mar 2026 22:18:07 +0200
-X-Gm-Features: AaiRm501hcMrfYgbOIJ6iqPXC2ZcxsKgtf_suleunN1jnU0LCEmxuYNY6IzkL4o
-Message-ID: <CAHp75VeZb0pSiAkHo9QUeS+2L-qP_83-dKKRSp7-1VfZrtr1bw@mail.gmail.com>
-Subject: Re: [RFC] GSoC 2026: Transitioning IIO to guard() and scoped_guard()
-To: Ethan Tidmore <ethantidmore06@gmail.com>
-Cc: jic23@kernel.org, andy@kernel.org, linux-iio@vger.kernel.org
+Date: Wed, 11 Mar 2026 22:21:42 +0200
+X-Gm-Features: AaiRm50R55fdindFPEeUQt9rfkKPHdczecHaTaDxZi8DkDzmfiFHcLVdIYXirG0
+Message-ID: <CAHp75VfsAVy8xBtftMwdzmde=9Bf5aFbdr+SW1=Ep01X8eaDhQ@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: st_sensors: drop temporary kmalloc buffer and
+ reuse buffer_data
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, kees@kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, Mar 11, 2026 at 9:46=E2=80=AFPM Ethan Tidmore <ethantidmore06@gmail=
-.com> wrote:
+On Wed, Mar 11, 2026 at 8:21=E2=80=AFPM Sanjay Chitroda
+<sanjayembeddedse@gmail.com> wrote:
 >
-> Hi Jonathan, Andy,
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 >
-> I'm proposing converting the entire IIO tree to use guard() and
-> scoped_guard() instead of manual locking. This would greatly reduce
-> boilerplate, the possibility of lock leaks and modernize the entire IIO
-> tree to current kernel API standards.
+> Replace the per-call kmalloc() scratch buffer with the statically allocat=
+ed
+> buffer_data[] field present in struct st_sensor_data. The existing buffer
+> is DMA-aligned and sufficiently sized for all channel widths, so using it
+> avoids unnecessary dynamic memory allocation on each read.
 >
-> $ grep -rn "mutex_lock" drivers/iio | wc -l
-> 874
->
-> This would have to be a "Large" project according to GsoC due to the scal=
-e
-> of the IIO tree. If this is wanted, I would like to know how these change=
-s
-> should be submitted to make this easier to review. I was thinking per
-> directory per vendor.
->
-> Looking forward to hear your feedback.
+> This simplifies the code, removes redundent code and allocation.
 
-Most of the cases can be automated with coccinelle, so you can even
-create a script in one day and estimate the real number of corner
-cases (id est that require manual work). That said, it's not a big
-project from amount of drivers point of view. It might be still big
-depending on corner cases and if you wish to target them as well.
+Spell check your commit messages.
+
+> No functional change intended.
+
+...
+
+>         int err;
+> -       u8 *outdata;
+>         struct st_sensor_data *sdata =3D iio_priv(indio_dev);
+>         unsigned int byte_for_channel;
+>
+>         byte_for_channel =3D DIV_ROUND_UP(ch->scan_type.realbits +
+>                                         ch->scan_type.shift, 8);
+
+> +       u8 *outdata =3D (u8 *)sdata->buffer_data;
+
+No. We don't mess up with C99 definitions. The only exceptions are
+loop iterators and scoped variables which are none in this case.
+
+
 
 --=20
 With Best Regards,
