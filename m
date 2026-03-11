@@ -1,170 +1,162 @@
-Received: from mail-ej1-f53.google.com (mail-ej1-f53.google.com [209.85.218.53])
+Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B69343E1236
-	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 16:54:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4DCF3E3176
+	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 17:08:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773248048; cv=none; b=rkkPY/dEu9AH5BYcXTxFRWQ5j88Oiq1og2zd0bit/3QImuCyevf7z8sTYkEwYdKkFHgI/VDgQyQiA/nkj3qG/xoR3MaKxI69mnn8jhD7GzvxvXZSX/FKQvutDBSYusy2y+lkJYQ+nf1ucHMsHm7i7Asg4u5Jo01j7dHre38KfO4=
+	t=1773248922; cv=none; b=nzDygo45z+4HY/DsmXhMiYvT7eH51fnh2GBASpgrr79m/1nub+XeBf0e1lQrS/XpjUZ8pFfn27q8IeMKTEYOQpBm7B4OAcF77xLbVdJDoHpeFHJoslLOjHKjXrMX7uNSKWVeKt5TNeYdgaJwq8YL7E90FQA+fYOMsnsKNoPW7MU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773248048; c=relaxed/simple;
-	bh=Z9OZZB3CYTeVUj4B/NjeZZJLS8yiWmY8Bzo9StWySzU=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=plRpB3dVp1p7toK77WfF07IzegtH3whTYxxFDn6rJn/Vp8x8pcwGGN5OM5FhGqxwuksPA8sD18/AbmKqeknIYNJ0XQJ3FNMAWD5hUge3va5Xo0uyF2acLIAJUbw5zlTqIZQh59LQlzo0Se6P0+0qxmJ5y2jAz2gnxdlwxOyEQyU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Jz0hG8wV; arc=none smtp.client-ip=209.85.218.53
+	s=arc-20240116; t=1773248922; c=relaxed/simple;
+	bh=6mhnSaAg3iLefoQGg+TR62AbdmaFTj9WXmqTeVzCn+s=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=hmitK7O2c5tOE2DjOQAxY4egzJRuntLfxtJGHsLwEqa1Zblt8SqxGCF9xj73F/tro7mXiT5GFlDe3cGzHuC07hxg/Wm2oQLFmqC0l25BZvPt3qLv3diEkAYgXQSmpkLi4iGRJI/wZvZxc3CqRtEN6a7TRGQPlQJugxTHXZMOB4U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=nc8AlKWt; arc=none smtp.client-ip=209.85.160.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jz0hG8wV"
-Received: by mail-ej1-f53.google.com with SMTP id a640c23a62f3a-b943a880577so148366b.3
-        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 09:54:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nc8AlKWt"
+Received: by mail-qt1-f174.google.com with SMTP id d75a77b69052e-5090c27d3f6so1025971cf.0
+        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 10:08:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773248045; x=1773852845; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=4OLoZWNfLX2Hv2p8BwoMWD6UD6t/Qu6fX1zjeJKXrT8=;
-        b=Jz0hG8wVy8JSzI9ok0Uo0uZpWOu0D5g3LFvwtTTAtR8zxuULBgdtxeABNvWd+36Qhf
-         gkBCzhFErLvc2io+0ACD5llrWTPsebWUL/molKJo5ajtJhKaM54GtcKP3XRKVYuWG6DQ
-         yh2qlLH1uV/Lu0g5XztWrkkBpPXENESTcixtWXizlXcz3WlJupsLOLk91GdRuY//dBOj
-         HtcA7mDXD8CgJpGwx/IptaspMLkRGANInDgN9rWJM0aHr22Bcc7GumYKakOBmIiycXut
-         KsY86RGPfVEl3NL14i+tV9JxIkjmVGrAa2czxS68w2xvxKsgbIauCJuR1dDkQpPMiZFK
-         d2jQ==
+        d=gmail.com; s=20230601; t=1773248919; x=1773853719; darn=vger.kernel.org;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=cuyOusyX8t2/9N8XkvP3Pzm/04mnrL2/yq15S8/jD6o=;
+        b=nc8AlKWtKqYsEyQ94EoiTPpSlHFUfJhklVvy9oZxCUkrpMiESY9TjHo7gAyOfrDvLI
+         cB1NNQ+yH2AI9BbR24vsBN7mGcM9tgNSfzTXjDsrcRQsaehrBP4AmMVY44MBwe2JhRjZ
+         ViGSFrrGcS68sRKHSGhTb2d7jVPSvvBR83CkFyz8L5TfN/CPCTtXPadWOmvNM7m9ISws
+         GDLwqSeg/7zsQH3LSAnvWr6sGMCt9aQ9/xRAa3QozzXmJhD5e43A/NE9a0eph7OG5Tuc
+         E0xjCKJPmlLouvxKtmS6ufZ3kPl9k45Pb5S4QBuISJgbVkcUEUguj7YDAU411dN5vh1J
+         zU2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773248045; x=1773852845;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+        d=1e100.net; s=20230601; t=1773248919; x=1773853719;
+        h=in-reply-to:content-transfer-encoding:content-disposition
+         :mime-version:references:message-id:subject:cc:to:date:from:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=4OLoZWNfLX2Hv2p8BwoMWD6UD6t/Qu6fX1zjeJKXrT8=;
-        b=JLzHw5mgOVCodiFvzNcmT4qPKVI/ggltyAM1nAIdDpWgRPD0mZOLm42isH8hMNFm8t
-         Lg1jiIKGvzRzECQBftK6BDVpdgEWQPSOqFZdsdqi6359FBbkRmGsD15W9whWlTH9y+ja
-         MaLUQBUMWV5OUZjE6vAn0jD2+95cB4m9266nfOBB//Zu4QRF9V8R+fYrt2xsl/Vq7uvr
-         iokBTeiIF4/4sAP3f2j5h3yarFDnHxMuqlgCrUppn/yBkICCoLdebYVKukkgFGDRX4N4
-         NWF93G5RSpmfa9bKOB20Z6VgAyH09xoQbRZMdRHrABjdBT445wDHgI7oaNLyuuRo3jfY
-         gjAw==
-X-Forwarded-Encrypted: i=1; AJvYcCXuE0HgdLti1O1EI1sof6AHXew3Gx+FaTli6Q8gpY9M/Ke0FkWaILqsd+k2+YcA2t4H2IMLJV8VhJ4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwEXTidJnB9kqKhoEttct9ZNxn3Jm7JAaR7bYDLYi9gqV23ot3n
-	RejAG0/iOjEsKhawrKmJy1EYyJb0QOBIo6AGbhzlCGxqj1f/7JuoZcdH
-X-Gm-Gg: ATEYQzwQ0H3QAOOBm1ELUPxBwdg29fYIupms5CpIJ9BomtUEY23rSTI1f78+hsalNmS
-	veadkCajevn6ebR0ztADyhYPlsbGphGFmJ9kflJi4nMWI5EZoFwuucIp20NIW6uScxPFUemtYfT
-	XNSLPGZri1YyZoqBnJG4hxpnMnS3jP+La8gTrvxR1LsTGms5taJ/pn4ucPaB5J8zAdxT33jRBQb
-	PbXLrR/AV8EalM/ANUCaLCW1u6Lsbj/r9O9j3NAgEhoVnoeQ84FaUfXJfZG1rREcl61IqKzixc1
-	10gFnO2/fpzP9vGIpHSWmKq1nlzRIUT7EN5IETI0u0MDsKEL5CLfggh+X8W0gWhcov0yKkmzmg6
-	W05+uQjKCVnxivb5+8GDtFnSq/geeI2izsLLJYzml6F/VcQt1qd6emmeVxkmIZ2Gd1Of3p9hEky
-	Lvi9G2DAjkVBdHEuKRVPHYLQ==
-X-Received: by 2002:a17:907:f815:b0:b94:3836:1672 with SMTP id a640c23a62f3a-b972e2c23acmr195615166b.37.1773248044571;
-        Wed, 11 Mar 2026 09:54:04 -0700 (PDT)
-Received: from [10.5.0.2] ([185.128.9.22])
-        by smtp.gmail.com with ESMTPSA id 4fb4d7f45d1cf-66350890006sm39973a12.20.2026.03.11.09.54.03
+        bh=cuyOusyX8t2/9N8XkvP3Pzm/04mnrL2/yq15S8/jD6o=;
+        b=kSBFgJ8+cYCXmzRN6NXX1/SakCpkRQddBkCVZh42SPPjEkASrfY73kOnf4SFneh4cb
+         dqpdOJJVUZlYJAPzaWlSTyB84HYm5lHlz8d5xzhpBL96Sw2Bplg7fmGs+SQbvzT91KT2
+         TUDKtFXLs3VXijHVeg/7dWniPhlS/5XBmSsxKVGCAN06bcdU7Oa2ue9XeFSlWDIEO6Mu
+         fTWYU6FBxYFHRGRrQqNmERKhu+DoKxEqflbbWAg8OSl8qb4ACwIgtTybkdhZvVI6bvyg
+         R7qLRB+RX1Ltx8TlG5qS0Yx1hbo212L6rHaSu8AyZ6MTwZYUQ1fKBo4ktJvg7zfu2lfY
+         1vgw==
+X-Forwarded-Encrypted: i=1; AJvYcCXDNxWe7J4lQpiunAWNhQaE105XJtt28/bHABCkvXttAYDiJ2i52d1fQ2ahtnwmJ2fa5wRj8GlUXZ8=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz2hipmkgQKrMyemQFZEHuUdMFIXC9z5quE9Qqt2bxwHpMivKjL
+	oMcc6VY4Ou2uD+SeFmh5a93noDMSJBpKyJTGmgLTvWmeUiAYsq36d3Vs
+X-Gm-Gg: ATEYQzxHJQz9a2Jh+fT67DB83Usrxg1RsGPQH6oXpJoeFmg2Ow+UGaOQfJqhOrHMDzU
+	lmBNiafP38vHfKzU4ce8jJqHf8sBe1mLonhflxn4+9Eu6fWRqVFiaNcdXA8dpe679rts0a9OUTE
+	+eanHT1prxvoKGyezxoBmnlfxYbYycBg47mxiuKTurStDIijhNrLId874EelWPCyz5mEGRUuOCn
+	9ey2+XOwiEJEgwrmp68l0HGPMhCcq0CvUOagzywibS9ThEch6CYJezt7Hlh+CNq+XJBksqMEEK4
+	OlasXxaSdDu9QAzeMl2L892xT1YTbKgzqMCJxpUmDo1omi2HirIAmp9tdu7WMh9lVqtOtaG0weN
+	l9lJ/xiuhsAUmRTRVCrUxKzN3MpelhW8ky/Lzh+mzkUHF/T15ByxHxydiZ6JavhtzhiOEZR0mJT
+	gvLKcU3YACI8GN8TdomzSpWbQOeO9L15QIE1snLnfvnFx38ZLZGmmv7ysLzeUNZfp46EBzbkVUt
+	Amg8AXV1864Q94B9HGlX6Cgen3o1mJ1QIWyJEhO0sIU8XBnlio=
+X-Received: by 2002:a05:622a:1111:b0:509:31d1:eb0 with SMTP id d75a77b69052e-5093a1d9fb5mr39796621cf.65.1773248918614;
+        Wed, 11 Mar 2026 10:08:38 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
+        by smtp.gmail.com with ESMTPSA id d75a77b69052e-5093a14791dsm16436701cf.31.2026.03.11.10.08.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2026 09:54:04 -0700 (PDT)
-Message-ID: <3a967f38a43933f12c98a9dfe4f1e85fa592b41b.camel@gmail.com>
-Subject: Re: [PATCH RFC 6/8] iio: frequency: ad9910: add RAM mode support
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, David Lechner
-	 <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, Rodrigo
- Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+        Wed, 11 Mar 2026 10:08:37 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Wed, 11 Mar 2026 17:08:33 +0000
+To: Nuno =?utf-8?B?U8Oh?= <noname.nuno@gmail.com>, 
+	Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, David Lechner <dlechner@baylibre.com>, 
+	Jonathan Cameron <jic23@kernel.org>, 
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
 Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter
- Clausen	 <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob
- Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,  Conor
- Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
-Date: Wed, 11 Mar 2026 16:54:48 +0000
-In-Reply-To: <frn4iotwpzef7ca5yosmwllxrottjlu2rpgpbdogrydsujebf3@lwamhpkzxn65>
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>
+Subject: Re: [PATCH RFC 6/8] iio: frequency: ad9910: add RAM mode support
+Message-ID: <bfiacew2zft2ayg72g7g2dxdnzsqxr4m63kkz326o7ybb5rbgy@hg4hs4plwj5f>
 References: <20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com>
-	 <20260220-ad9910-iio-driver-v1-6-3b264aa48a10@analog.com>
-	 <20260301133153.7f2f8501@jic23-huawei>
-	 <20260307140735.5ec2e608@jic23-huawei>
-	 <bxcybwaz3am7nrrfcjuvkbbe7yp4vwcxwwh4dafaj5dsy622s7@m4vdam6tyaht>
-	 <b1187027-3ddd-43bc-a773-8b5d794e04fc@baylibre.com>
-	 <frn4iotwpzef7ca5yosmwllxrottjlu2rpgpbdogrydsujebf3@lwamhpkzxn65>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+ <20260220-ad9910-iio-driver-v1-6-3b264aa48a10@analog.com>
+ <20260301133153.7f2f8501@jic23-huawei>
+ <20260307140735.5ec2e608@jic23-huawei>
+ <bxcybwaz3am7nrrfcjuvkbbe7yp4vwcxwwh4dafaj5dsy622s7@m4vdam6tyaht>
+ <b1187027-3ddd-43bc-a773-8b5d794e04fc@baylibre.com>
+ <frn4iotwpzef7ca5yosmwllxrottjlu2rpgpbdogrydsujebf3@lwamhpkzxn65>
+ <3a967f38a43933f12c98a9dfe4f1e85fa592b41b.camel@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <3a967f38a43933f12c98a9dfe4f1e85fa592b41b.camel@gmail.com>
 
-On Wed, 2026-03-11 at 13:11 +0000, Rodrigo Alencar wrote:
-> On 26/03/10 07:11PM, David Lechner wrote:
-> > On 3/10/26 12:40 PM, Rodrigo Alencar wrote:
-> > > On 26/03/07 02:07PM, Jonathan Cameron wrote:
-> > > > On Sun, 1 Mar 2026 13:31:53 +0000
-> > > > Jonathan Cameron <jic23@kernel.org> wrote:
-> > > >=20
-> > > > > On Fri, 20 Feb 2026 16:46:10 +0000
-> > > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@=
-kernel.org> wrote:
-> > > > >=20
-> > > > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > > > > >=20
-> > > > > > Add RAM channel with support for profile-based control. This in=
-cludes:
-> > > > > > - RAM data loading via binary sysfs attribute (ram_data);=C2=A0=
-=20
-> > > > >=20
-> > > > > I'm not sure that's a long term viable path.=C2=A0 We either need
-> > > > > to figure out how to do it as firmware file load, or via an outpu=
-t buffer.
-> > > > >=20
-> > > > > Firmware load would probably be too static and I'm not sure quite
-> > > > > how we map these to IIO output buffers.
-> > > >=20
-> > > > We would have to carry it for ever which is very much not ideal.
-> > > > The firmware approach has the same issue, but can be thought of
-> > > > as defaults at boot time forever.=C2=A0 If no defaults then we use =
-whatever
-> > > > we come up with as the long term solution.
-> > >=20
-> > > I was thinking about the firmware approach:
-> > > - Normally a driver would request the firmware during probe and the
-> > > =C2=A0 filename would be pre-defined.
-> > > - Less statically, It could have an attribute that once written, it w=
-ould
-> > > =C2=A0 request the RAM contents (e.g. under /lib/firmware/ad9910_ram.=
-bin).
-> > > =C2=A0 It could be the enable attribute itself (but that would not be=
- effective
-> > > =C2=A0 when the binary would not change), or a separate one (e.g. des=
-tination),
-> > > =C2=A0 or a new one (e.g. load_en)
-> >=20
-> > Have you looked at firmware_upload_register()? It looks like it provide=
-s
-> > something along these lines.
->=20
-> Thanks! this is in fact perfect!
-> It might be ugly, but for the sake of debugging I managed to get libiio t=
-o
-> interface with this by exposing it in the debugfs.
->=20
-> 	debugfs_create_symlink("ram_loading",
-> 			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_get_debugfs_dentry(indio_dev)=
-,
-> 			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "/sys/class/firmware/ad9910-ram/l=
-oading");
-> 	debugfs_create_symlink("ram_data",
-> 			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 iio_get_debugfs_dentry(indio_dev)=
-,
-> 			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 "/sys/class/firmware/ad9910-ram/d=
-ata");
+On 26/03/11 04:54PM, Nuno Sá wrote:
+> On Wed, 2026-03-11 at 13:11 +0000, Rodrigo Alencar wrote:
+> > On 26/03/10 07:11PM, David Lechner wrote:
+> > > On 3/10/26 12:40 PM, Rodrigo Alencar wrote:
+> > > > On 26/03/07 02:07PM, Jonathan Cameron wrote:
+> > > > > On Sun, 1 Mar 2026 13:31:53 +0000
+> > > > > Jonathan Cameron <jic23@kernel.org> wrote:
+> > > > > 
+> > > > > > On Fri, 20 Feb 2026 16:46:10 +0000
+> > > > > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> > > > > > 
+> > > > > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > > > > > 
+> > > > > > > Add RAM channel with support for profile-based control. This includes:
+> > > > > > > - RAM data loading via binary sysfs attribute (ram_data);  
+> > > > > > 
+> > > > > > I'm not sure that's a long term viable path.  We either need
+> > > > > > to figure out how to do it as firmware file load, or via an output buffer.
+> > > > > > 
+> > > > > > Firmware load would probably be too static and I'm not sure quite
+> > > > > > how we map these to IIO output buffers.
+> > > > > 
+> > > > > We would have to carry it for ever which is very much not ideal.
+> > > > > The firmware approach has the same issue, but can be thought of
+> > > > > as defaults at boot time forever.  If no defaults then we use whatever
+> > > > > we come up with as the long term solution.
+> > > > 
+> > > > I was thinking about the firmware approach:
+> > > > - Normally a driver would request the firmware during probe and the
+> > > >   filename would be pre-defined.
+> > > > - Less statically, It could have an attribute that once written, it would
+> > > >   request the RAM contents (e.g. under /lib/firmware/ad9910_ram.bin).
+> > > >   It could be the enable attribute itself (but that would not be effective
+> > > >   when the binary would not change), or a separate one (e.g. destination),
+> > > >   or a new one (e.g. load_en)
+> > > 
+> > > Have you looked at firmware_upload_register()? It looks like it provides
+> > > something along these lines.
+> > 
+> > Thanks! this is in fact perfect!
+> > It might be ugly, but for the sake of debugging I managed to get libiio to
+> > interface with this by exposing it in the debugfs.
+> > 
+> > 	debugfs_create_symlink("ram_loading",
+> > 			       iio_get_debugfs_dentry(indio_dev),
+> > 			       "/sys/class/firmware/ad9910-ram/loading");
+> > 	debugfs_create_symlink("ram_data",
+> > 			       iio_get_debugfs_dentry(indio_dev),
+> > 			       "/sys/class/firmware/ad9910-ram/data");
+> 
+> Or for the sake of future proving, maybe let's make the sysfs a bit more generic. At least the path,
+> 
+> /sys/class/firmware/dev_name(iio_dev)/*
+> 
+> I guess userspace tools could work with the above to match the fw blob with the right device. Also,
+> hardcoding the name as it seems you have done will be a problem if we have multiple devices, no?
 
-Or for the sake of future proving, maybe let's make the sysfs a bit more ge=
-neric. At least the path,
+You are right. I am using /sys/class/firmware/iio:deviceX:ram/* at this point.
+I suppose some complex transceivers you may know about may need different fw_upload
+instances for different CPUs or profiles.
+I like the idea for userspace tools to expose those. For now, using symlink into
+debufs is working just fine.
+ 
+-- 
+Kind regards,
 
-/sys/class/firmware/dev_name(iio_dev)/*
-
-I guess userspace tools could work with the above to match the fw blob with=
- the right device. Also,
-hardcoding the name as it seems you have done will be a problem if we have =
-multiple devices, no?
-
-Not sure about the above though :)
-
-- Nuno S=C3=A1
-
-
+Rodrigo Alencar
