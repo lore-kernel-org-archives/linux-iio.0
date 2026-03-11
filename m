@@ -1,109 +1,126 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD15E39B955;
-	Wed, 11 Mar 2026 07:10:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9E233A7592
+	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 07:23:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773213061; cv=none; b=qclsP5Ji5qu6dy4vUCS5k6sqfznwCBj5+1CTWMOtCPm4c2/HN+umpQWCKdtVqFUPPb9HP70u2EnubIPy2pnD5pdlXCHkdMEw6ki69pLwd1ejx1kdzeEk8o3jAdifzbmN9S4xX44GS/heKDRpr9r+7Is4MdwJscgdjxqVz/b/IsQ=
+	t=1773213796; cv=none; b=rEEEjo/3TMS6BGBS9KUDCAAoUw0PpeLeV5ZxG8qvnKk4WmwhpOWyfWgE1wXr+6Jav/OYRFOWxgqyN+xCeAaGWkPzHUXDjsDE9PE6nafK5YrmvvbaKzasNoOt3Sock+1GBvCPJIpIPsQMbdrfOoa+HtEj763sTvVK/LNBGx1ybNA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773213061; c=relaxed/simple;
-	bh=S6DCtOFxG9F6QSwwhCT2DfwAh3MaroX/4RxL/8YtxZs=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=S7sZ+qn8FACUln83C0i4DLTsbeI/cmXWfzQerQPfXqAhmOCJMfwtaknBQQiWgviKMIo2ejJ8IASnPme2/3LCh/i4bg1sVT5c8tgeLfUVUlKPc0mqoZiw3O9HS2m/vokARUhDDBIi7XCkmL+IJ3QcvYXRp1I09Y78ssANPk0noCU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ndCJQwuA; arc=none smtp.client-ip=198.175.65.19
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1773213796; c=relaxed/simple;
+	bh=k8rz1SI/iu18xVsuv9AvC01u3jy55XY3qSnSKKjJHjU=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=f1+Mwdi09DozOUhDs7wJ6b6+zVdAjQRm3lRsxwAGBruDMFygOXasrp3MW0JWsRN9Bk9aY3EN1Iij7C4k6wNPmkgcnEq3ie3M6FcLud5w8q+511xo9UNpzWhIJbzPWFhS2bVk7B7QRUbPNlUbZVjl+lRnZGmyWK9reFlRXb4iIR0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PwUFmmQG; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ndCJQwuA"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773213059; x=1804749059;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=S6DCtOFxG9F6QSwwhCT2DfwAh3MaroX/4RxL/8YtxZs=;
-  b=ndCJQwuAK1HLorygklM13IOBi/9kGCHTx7R4NW+UGp/oBzOoMdsKsKwK
-   iDRgra/P/2kvYRCHEqVTsn3Vs6I8/BHMcLh+loaWVDgxmcy992S5BsShT
-   NTAj8FKwaQgO1+FttKMyEIeMymF6rpcU1NKdMs7vtScd0Y0WSIygQwWKw
-   A3TYrV8nhtjKE3CH58YXzbouhWjmLiAmwG+q8a2XJ62LblDFmflXtBMvB
-   +hKGczk4Ba0UgBj1bwitDpHPxWpHetS7G5WmpU1zcCsI9EnqYiI4M9877
-   qBb33NlpVI7IpQxjuthGJnuloNwAZLQQYGGrS46PuvyCZcsLqaikeBJiu
-   w==;
-X-CSE-ConnectionGUID: vnXrTaZdQHyZIzvBP7Na6w==
-X-CSE-MsgGUID: l/1Qq+aYSH6P3fSw8G3+0A==
-X-IronPort-AV: E=McAfee;i="6800,10657,11725"; a="74171605"
-X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
-   d="scan'208";a="74171605"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 00:10:58 -0700
-X-CSE-ConnectionGUID: atYMevo4T8OUE7O98QHNmA==
-X-CSE-MsgGUID: 1n+RXzXMQISQ9OfmBiYbrg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
-   d="scan'208";a="219619872"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.178])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 00:10:54 -0700
-Date: Wed, 11 Mar 2026 09:10:52 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Kyle Hsieh <kylehsieh1995@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Liam Beguin <liambeguin@gmail.com>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] iio: adc: ltc2309: add support for ltc2305
-Message-ID: <abEVfIKYZSl-AnL8@ashevche-desk.local>
-References: <20260311-add_ltc2305_driver-v4-0-bc350d347f33@gmail.com>
- <20260311-add_ltc2305_driver-v4-2-bc350d347f33@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PwUFmmQG"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4836fc075d2so11849805e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 00:23:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773213786; x=1773818586; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=86aRCi8i7mN6Pgruptnj4oyN+hhEXKOO9Bvzbg+MT14=;
+        b=PwUFmmQGFh+j+AC+cW6hdklGyiEJnzFgXAyB/jf+YqhxCSzhkU2c5kRyc85keI3BHG
+         8zHa8v2MYk10UhFpE3i9aaJCOkoXkdvPEAe1KfkftT7wE1D53HonXMer5z7zKwDUNSQj
+         IfALvRLn5KWY/QfaN+0BC5u6Dv8WsX0oqg13M1pjsAj+mJENkv+DpVlhl2avvfsn6GtV
+         y+BWcBCAGLIqig5XweR1SGTxxJxjFxQP4NPfW4z/EUnIcIpomgPb9Mt2kfzcMcajaeuN
+         b42gIASrUHDt/ohliFVFT+DFXuxXGys7CLdFYs6gqgDB3ag9LpU63wIk8Jz9vHjcQ6pT
+         0o0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773213786; x=1773818586;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=86aRCi8i7mN6Pgruptnj4oyN+hhEXKOO9Bvzbg+MT14=;
+        b=XSoKZg5kqfSh+KqSDvDnbVkBgS/ytT59XWl8ud1ypTgUCHXkMuOrZbPDR70B4xgvYT
+         cHGr3zg15CG3GDR0EP4dJWTyp59EKyxR4+/8rFMgPw2eLdn7LKni9ZH11mMRLEwmKJ9J
+         v4AS2wzjfi7tFb2hLCrDllIF9DbAvdwbys7G2Vs9ACrbcFrX/okAUYJ4SJ1S/PN9Ds3L
+         bD0A06PeynI0THusO/ekANj/97OrJqnusAVom0Bss2aVTHC6c2xQ/dA4W7BZEXdBHTHl
+         ILZQ58q3Sy1KsRjx0bfmzCC1U6USSs/NJ2Ipti0cqfO2B+r3HglLqt2OdvXamQoz5yx5
+         1exw==
+X-Forwarded-Encrypted: i=1; AJvYcCVzyxqgcU9rkRgkDF2d/RTDRi6NzCl3hH+/cH+xARFdHJZdu7tMCg0qhFVgeXsJgEbpxxhLACfsrYA=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyy1259v+KM0nvaau5hzL/7l1mUS5BdpyWVr6cTvgSnHkSbhnpf
+	OQsx26ZM64ctzclNw/KwVGxkwZT//HbV2/AUViqJkK1Z6154O+qARFGIgmAN33ELqHQ=
+X-Gm-Gg: ATEYQzwespMbqDK+sbk0dVwdhbcm7P3ehoxokivYX9xmmPFIF5PCvr+gux32Iy5pVLw
+	HN6jDEZ9+dLaaVg35HOWiul/ZSD9ZhcUwn6ehLR5XsnH9nJ4tdyxLhgpS+ey/J/WFCcAdBBeFrN
+	e3xYoJl5OeEndRXNvIuXKD4PHHeSiCCzzzjT0HrKOl7qoysQL5sIWB3OZc5eAEoal67aIdgmB/p
+	ESIG8iprzWlixDjS0jn5sen889Mc4XhZJ98AeeH7my3tE3qtQeML3pecryahxunJnMEGEmHWkGY
+	2YhGepqHJLzK/VwysAxIssVW0BsD/5Mn3AMuMXjltHyGAKL2/0SN1x1xF+ZsSykAASCZ2qLA0AD
+	gyfqMZp4PvrYHvSt+BplDzDSet1pUShE1Pz3gFHitfiCbvGRgb2DoSV0myIXx5LAM0cJ8MbkkmM
+	TfGzBmHOTTeKNu6ZEITZmc8MHR+SfMM0emkJXIYIKEoVX6xkVovsWoLdP5jfbw4RbTRmFj57PqC
+	IF11sXpE2WBYk99AqUFdoZjqUbRs8CDevNrx+hYEQRkrmHye8A47v9qBKIKGDg=
+X-Received: by 2002:a05:600c:35c6:b0:485:2af3:3f89 with SMTP id 5b1f17b1804b1-4854b0abbcfmr16031965e9.2.1773213785875;
+        Wed, 11 Mar 2026 00:23:05 -0700 (PDT)
+Received: from fedora ([149.3.87.76])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4854b0c3d66sm10785915e9.17.2026.03.11.00.23.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Mar 2026 00:23:05 -0700 (PDT)
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+To: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Subject: [PATCH] iio: adc: ad4130: Adjust indentation so statements start on tabstop
+Date: Wed, 11 Mar 2026 11:21:58 +0400
+Message-ID: <20260311072156.35057-3-giorgitchankvetadze1997@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260311-add_ltc2305_driver-v4-2-bc350d347f33@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Wed, Mar 11, 2026 at 09:43:02AM +0800, Kyle Hsieh wrote:
-> Add support for the 2-channel LTC2305 ADC in the existing LTC2309 driver.
-> The LTC2305 and LTC2309 share similar features: both are 12-bit,
-> low-noise, low-power SAR ADCs with an I2C interface.
-> The main difference is the number of channels: LTC2305 has 2 channels,
-> while LTC2309 has 8 channels.
+Replace spaces used for alignment in the struct inside
+static_assert() with tabs so that statements start on a tabstop.
 
-...
+This addresses all checkpatch warnings about statements not starting
+on a tabstop in this file.
 
->  /* Order matches expected channel address, See datasheet Table 1. */
+No functional change.
 
-This comment now confusing, it should be kept at the initial enum, but the
-better idea is...
+Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+---
+ drivers/iio/adc/ad4130.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-> +enum ltc2305_channels {
-> +	LTC2305_CH0_CH1 = 0x0,
-> +	LTC2305_CH1_CH0 = 0x4,
-> +	LTC2305_CH0     = 0x8,
-> +	LTC2305_CH1     = 0xc,
-> +};
-> +
->  enum ltc2309_channels {
->  	LTC2309_CH0_CH1 = 0,
->  	LTC2309_CH2_CH3,
-
-...to assign proper values (in necessary order) explicitly and adjust comment.
-Then add this patch on top.
-
->  }
-
+diff --git a/drivers/iio/adc/ad4130.c b/drivers/iio/adc/ad4130.c
+index 5567ae5dee88..f90b2dbf501d 100644
+--- a/drivers/iio/adc/ad4130.c
++++ b/drivers/iio/adc/ad4130.c
+@@ -605,15 +605,15 @@ static bool ad4130_setup_info_eq(struct ad4130_setup_info *a,
+ 	 */
+ 	static_assert(sizeof(*a) ==
+ 		      sizeof(struct {
+-				     unsigned int iout0_val;
+-				     unsigned int iout1_val;
+-				     unsigned int burnout;
+-				     unsigned int pga;
+-				     unsigned int fs;
+-				     u32 ref_sel;
+-				     enum ad4130_filter_type filter_type;
+-				     bool ref_bufp;
+-				     bool ref_bufm;
++				unsigned int iout0_val;
++				unsigned int iout1_val;
++				unsigned int burnout;
++				unsigned int pga;
++				unsigned int fs;
++				u32 ref_sel;
++				enum ad4130_filter_type filter_type;
++				bool ref_bufp;
++				bool ref_bufm;
+ 			     }));
+ 
+ 	if (a->iout0_val != b->iout0_val ||
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.52.0
 
