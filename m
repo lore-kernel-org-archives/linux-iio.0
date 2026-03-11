@@ -1,142 +1,198 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f51.google.com (mail-wm1-f51.google.com [209.85.128.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 360833DD524;
-	Wed, 11 Mar 2026 11:44:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 72C3F3DE420
+	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 11:57:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773229471; cv=none; b=RhjtORSt2UAzukFwEKXywLKmuRDl2lHvW5RtNNsjNQU+rd2OHO+E0nmyf3e75aRiRylxeCOWHByan7Ymt3aGY0xVXpmBpzvUgT7JGX1G7noVQXYeIn7YVwU/TnlMAyXB99J4rBpgwLRpl2Hh6rDlaolJ3CFbeHAAyNFlIqzV798=
+	t=1773230237; cv=none; b=qwp7kBy79tmipGhAjEwhvw2fVkwKJpppbWQY/C7Pg08KGag0CgnM2pBn4yec5CRVAwQUgbeyslpWBjkT3HRL6ntkA52S2oB2mtJ62HRm/yjNI9Ck7W+PbTYdwbcau0mMPZfnPZ+AC/C+kfc3kkut8f/IfCUTIOgde/AzEDszN6I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773229471; c=relaxed/simple;
-	bh=XY0jFffDLGVGCJw4uqbLQtSOOoaUJosbQqgvPfqZ4LI=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=HeszoPIaUv/hYQBXxAJzLeLUmoJ1yeAUoszhps15ANGZ+JAmb0ili8PVF+RAyW+M2T1bmZpxVkegbcyhAvtwok/8TdrfIFS6Wr83BM2QlLXSmHAoxVdQn7ZONKYjbDGsaxP5OtBVrqDzVfT2wp8rTick7wmYFXKfqZlznjCboAQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aUX2qga6; arc=none smtp.client-ip=192.198.163.17
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1773230237; c=relaxed/simple;
+	bh=zqt1TJo6M5ytVgoiQO4PNEkMGsD06msQOJ67zLe/YZQ=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=i5IOUkvK2mYgmJNdpsyvZr7tgmqxoy1qt11qphdzjZiFo9AW25DAcLXY9FgiKCp6I+F3ZQsuz/urS+NBxI1Ag1huJU71nLB1ncOiALUz0yF+z8cVkETc4JR/QqrHNJuTPrvi7eEh2vN3p1y7nAClntz7mAKC9a/Al+JCcDDqxEQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SUz3g2Ju; arc=none smtp.client-ip=209.85.128.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aUX2qga6"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773229470; x=1804765470;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=XY0jFffDLGVGCJw4uqbLQtSOOoaUJosbQqgvPfqZ4LI=;
-  b=aUX2qga6DY6GwldgNNpCU/6ODvUKJziz0+M8AWG/gkt6YLZVR+sJycdr
-   MeWJDY1b53YE8lFqifCikX8ovNF3YhMl7VmWEkKAg5NPvRfzGcV+EsGS6
-   oSWdtc3N0bK9MWjA3Gd9eL4eg4mWbnG8SBDsjgKL5rMzOPrK15QnEdcxf
-   tNg2q2rIDFAy1pzKB1CbulPc505tLaW9WgrE/yXo6tk4TwpRI0nIX9ruT
-   jgXhBvuNdGD6G1BXrgclVuCGYQxy6hGei9CqksLq7u+rM/Ukzn5A+M0ij
-   ZDS+WCbE2SOvnpuX3H514vPIDw0Wl0fa17crfKTpZsLsR+Zn3r0x3hVcy
-   w==;
-X-CSE-ConnectionGUID: 0ZNIkEHJT6aK1qloMEPV6g==
-X-CSE-MsgGUID: LLAmb7UbQFejdFtNnqxSPA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11725"; a="74204379"
-X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
-   d="scan'208";a="74204379"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 04:44:29 -0700
-X-CSE-ConnectionGUID: 5mc6tgogSPiqkolLF3VOEQ==
-X-CSE-MsgGUID: YENNypp7SMa5mrNHIGhYWA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
-   d="scan'208";a="224601491"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.178])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 04:44:25 -0700
-Date: Wed, 11 Mar 2026 13:44:23 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] iio: dac: ad5706r: Add support for AD5706R DAC
-Message-ID: <abFVl8NhfBkvyI4I@ashevche-desk.local>
-References: <20260311-dev_ad5706r-v2-0-f367063dbd1b@analog.com>
- <20260311-dev_ad5706r-v2-2-f367063dbd1b@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SUz3g2Ju"
+Received: by mail-wm1-f51.google.com with SMTP id 5b1f17b1804b1-48540d21f7dso26517785e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 04:57:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773230233; x=1773835033; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=zqt1TJo6M5ytVgoiQO4PNEkMGsD06msQOJ67zLe/YZQ=;
+        b=SUz3g2JuSj0UmQYfQ/A0s/awEkP9EdpgvhQLowuko5kEM5/Slvj1nvL3Q9ELk3EMVg
+         oZN773twe147kv2CTAmGXNnqkBhSk4Auvu0TISOdj0PAoLrBdEwpF4apQ1LSnvxTSDOM
+         7GHbrp15fjBnAFwQqOP20qeTFRhjrC6pzp0t1sl9SLbWt7kAIvQ44T6xhGlzfL6gFkie
+         p+NZuCOf+lAGx3P50QrTg+6epXqClY+Z5U1INaCsI5ZTZaL1EPg8OR7K4cT1XtUKfheS
+         AudaosZG9M8ESGBW8fjnyXEhnXhy6CduMTxara3s10NwI7NRCgMc821iUAqnasn8Rqqo
+         WflQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773230233; x=1773835033;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=zqt1TJo6M5ytVgoiQO4PNEkMGsD06msQOJ67zLe/YZQ=;
+        b=kp+dFjjpMQ3vZ7FDymGT+/xG8TcKcX9xu+WaTcaXctKSv3FL0PphBLxYznPAAyQzA5
+         sF0A3wj0uM8I5KB6DDN5XMRfZKIUMASUU9DP1kiaJnZYP/sNXYdGHSJCaTIkXnG+ck4b
+         IjyX5B/1viOni0ZwDNvTxBdeQt6uGI2xTqnzp8WwABPLLFtrKst6r8e6UlY3PgvU19YS
+         UNsCreqWtfmpo3oAIv8uicUmyEZkNVmeZKNrJGQau3m0AAAujVt/Wt2e/ZaR3ld3V0//
+         VAXK4k476jxwTSiFNrT86MsfeXEiGbbKOZTjvBm6vkSMJxMfuXA86b/E6p69n9ZL/GX+
+         AkGA==
+X-Forwarded-Encrypted: i=1; AJvYcCU6So1GCEF0MWQVGhFLwuOumpCIQJIeTODhSTWDHuZtsDZy4AyXWAoOG1pbceejJOc8vPbzsD49PuU=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyMZXWoW3B8mw+OB8r3ZtcyDpih1HPjhBnlu4tjV2L1p6/ZXItr
+	y29BmjjQj4CerMRiAENrS8gPZLix8iUKFsa1jaOz/+NplpINVxX4HpCN
+X-Gm-Gg: ATEYQzwgagFUDGJzw5MWQSU9f0v/HfVVdXkHsq9IAa6lySJqW0RxYwP6GQIzp8MwaIk
+	vFHr+9/ngLvFECVeW+i6zgvxYXyeprbC9ujF06ih4zA7efbQ0W9WpWcurcuuuysktVZHx8cNtKP
+	Sqj+y8gFjUPe5iiaa4Cd1ZeTCromEK1yzFR55rdYzb8MaM/HOkhxhXow5L00nfKF5N1uLvOCKBx
+	li/azPqNAhLOGrs5iyscKGNVavBbRjVAjABCSrRVv8MaH3mahFL0754hyborKf4e+SpfsT59mu0
+	K4T9l6DOOPTLCETS3FXAfD6nMaQFtPsZCV7latdiiolVBGQS8HQazCD0DJ5eIz5cXCWgt4rBgL1
+	61ngAOpjC6OppylzEh2f3Rdn4VxthgZD5RmlsYUAh9dOC+ay/vAOBML/Tm/R4/cMdbOfa+7QRVN
+	b4+7LZBmLO/kuqwHCMhLonbnnbMlqpIF4=
+X-Received: by 2002:a05:600c:138a:b0:485:40c6:f507 with SMTP id 5b1f17b1804b1-4854b136ac7mr38643825e9.30.1773230232448;
+        Wed, 11 Mar 2026 04:57:12 -0700 (PDT)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4854b0d4977sm17543575e9.19.2026.03.11.04.57.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Mar 2026 04:57:12 -0700 (PDT)
+Message-ID: <a79296dc96215a579c29c5c9eda464f818f050d6.camel@gmail.com>
+Subject: Re: [PATCH v2 1/5] dt-bindings: iio: dac: ad5504: add output-range
+ and missing gpios
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>, lars@metafoo.de, 
+	Michael.Hennerich@analog.com, jic23@kernel.org, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	skhan@linuxfoundation.org, me@brighamcampbell.com,
+ linux-iio@vger.kernel.org, 	devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Krzysztof Kozlowski	 <krzk@kernel.org>
+Date: Wed, 11 Mar 2026 11:57:56 +0000
+In-Reply-To: <20260310174835.24209-2-0rayn.dev@gmail.com>
+References: <20260310174835.24209-1-0rayn.dev@gmail.com>
+	 <20260310174835.24209-2-0rayn.dev@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.58.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260311-dev_ad5706r-v2-2-f367063dbd1b@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Mar 11, 2026 at 08:23:18AM +0800, Alexis Czezar Torreno wrote:
-> Add support for the Analog Devices AD5706R, a 4-channel 16-bit
-> current output digital-to-analog converter with SPI interface.
-> 
-> Features:
->   - 4 independent DAC channels
->   - Hardware and software LDAC trigger
->   - Configurable output range
->   - PWM-based LDAC control
->   - Dither and toggle modes
->   - Dynamically configurable SPI speed
-
-...
-
-> +#include <linux/device.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
-
-IWYU, please.
-Yet another typical issue with ADI patches. Really, talk to your senior
-colleagues who are experienced kernel developers before sending it to ML.
-
-...
-
-> +#define AD5706R_DAC_RESOLUTION		16
-> +#define AD5706R_DAC_MAX_CODE		BIT(AD5706R_DAC_RESOLUTION)  /* 65536 */
-
-Useless comment, use the same number explicitly instead
-
-	BIT(16)
-
-which is much more readable.
-
-...
-
-> +	st->tx_buf = cpu_to_be32((((u32)reg) << 16) |
-> +			((u32)val << (16 - (num_bytes * 8))));
-
-What the heck is this?
-
-...
-
-> +static const struct of_device_id ad5706r_of_match[] = {
-> +	{ .compatible = "adi,ad5706r" },
-> +	{ },
-
-Even inside a single file this is inconsistent, besides being third of
-101 IIO	patch issues.
-
-> +};
-> +MODULE_DEVICE_TABLE(of, ad5706r_of_match);
+On Tue, 2026-03-10 at 17:48 +0000, Taha Ed-Dafili wrote:
+> The AD5504 output range (0-30V or 0-60V) is determined by the R_SEL pin.
+>=20
+> Use standard output-range-microvolt and range-sel-gpios properties to
+> describe the hardware configuration of the R_SEL pin. Ensure mutual
+> exclusivity using the not/required logic. Additionally, add missing
+> vlogic-supply, clear-gpios, ldac-gpios and datasheet links, and provide
+> a complete usage example.
+>=20
+> Suggested-by: David Lechner <dlechner@baylibre.com>
+> Suggested-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Signed-off-by: Taha Ed-Dafili <0rayn.dev@gmail.com>
+> ---
+> =C2=A0.../bindings/iio/dac/adi,ad5504.yaml=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 | 40 ++++++++++++++++++-
+> =C2=A01 file changed, 39 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> index 9c2c038683b4..c0b2d470949a 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5504.yaml
+> @@ -10,8 +10,10 @@ maintainers:
+> =C2=A0=C2=A0 - Lars-Peter Clausen <lars@metafoo.de>
+> =C2=A0=C2=A0 - Jonathan Cameron <jic23@kernel.org>
+> =C2=A0
+> -description:
+> +description: |
+> =C2=A0=C2=A0 High voltage (up to 60V) DACs with temperature sensor alarm =
+function
+> +=C2=A0 https://www.analog.com/media/en/technical-documentation/data-shee=
+ts/ad5504.pdf
+> +=C2=A0 https://www.analog.com/media/en/technical-documentation/data-shee=
+ts/ad5501.pdf
+> =C2=A0
+> =C2=A0properties:
+> =C2=A0=C2=A0 compatible:
+> @@ -27,16 +29,48 @@ properties:
+> =C2=A0=C2=A0=C2=A0=C2=A0 maxItems: 1
+> =C2=A0
+> =C2=A0=C2=A0 vcc-supply: true
+> +=C2=A0 vlogic-supply: true
 > +
-> +static const struct spi_device_id ad5706r_id[] = {
-> +	{ "ad5706r", 0 },
+> +=C2=A0 output-range-microvolt:
+> +=C2=A0=C2=A0=C2=A0 description: |
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 Specify the channel output full scale ran=
+ge. The R_SEL pin
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 determines if the range is 0-30V or 0-60V=
+.
+> +=C2=A0=C2=A0=C2=A0 items:
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - const: 0
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - enum: [30000000, 60000000]
+> +=C2=A0=C2=A0=C2=A0 default: [0, 60000000]
+> +
+> +=C2=A0 range-sel-gpios:
+> +=C2=A0=C2=A0=C2=A0 description:
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 GPIO connected to the R_SEL pin to select=
+ the output voltage range.
+> +=C2=A0=C2=A0=C2=A0 maxItems: 1
+> +
+> +=C2=A0 clear-gpios:
 
-When there is no driver data, no need to explicitly initialise it.
+I would match the datasheet name. So clr.
 
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, ad5706r_id);
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+- Nuno S=C3=A1
+> +=C2=A0=C2=A0=C2=A0 description: GPIO that controls the /CLR pin (active =
+low).
+> +=C2=A0=C2=A0=C2=A0 maxItems: 1
+> +
+> +=C2=A0 ldac-gpios:
+> +=C2=A0=C2=A0=C2=A0 description: GPIO that controls the /LDAC pin (active=
+ low).
+> +=C2=A0=C2=A0=C2=A0 maxItems: 1
+> =C2=A0
+> =C2=A0additionalProperties: false
+> =C2=A0
+> =C2=A0required:
+> =C2=A0=C2=A0 - compatible
+> =C2=A0=C2=A0 - reg
+> +=C2=A0 - vcc-supply
+> +
+> +allOf:
+> +=C2=A0 - not:
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 required:
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - range-sel-gpios
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 - output-range-microvolt
+> =C2=A0
+> =C2=A0examples:
+> =C2=A0=C2=A0 - |
+> =C2=A0=C2=A0=C2=A0=C2=A0 #include <dt-bindings/interrupt-controller/irq.h=
+>
+> +=C2=A0=C2=A0=C2=A0 #include <dt-bindings/gpio/gpio.h>
+> +
+> =C2=A0=C2=A0=C2=A0=C2=A0 spi {
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #address-cells =3D <1>;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 #size-cells =3D <0>;
+> @@ -45,6 +79,10 @@ examples:
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
+compatible =3D "adi,ad5504";
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
+vcc-supply =3D <&dac_vcc>;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 =
+interrupts =3D <55 IRQ_TYPE_EDGE_FALLING>;
+> +
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 outpu=
+t-range-microvolt =3D <0 60000000>;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 clear=
+-gpios =3D <&gpio 4 GPIO_ACTIVE_LOW>;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ldac-=
+gpios =3D <&gpio 5 GPIO_ACTIVE_LOW>;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 };
+> =C2=A0=C2=A0=C2=A0=C2=A0 };
+> =C2=A0...
