@@ -1,96 +1,127 @@
-Received: from mail-yx1-f47.google.com (mail-yx1-f47.google.com [74.125.224.47])
+Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 43F8E2E0B58
-	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 19:46:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.47
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773258393; cv=none; b=jckf6zsdE5JBg1dPU1Xd5tt7gLtt70Pvs4HC7u9n48z2NZ8zHnULbFJW201v3HCnSoiz2QGri2p5ASBVyrOUgYQYrYXHzNF/4AMUxnHZUgf+jGXZz/QzoF+IKVDYJY7x8J+1WmqKeMA3eTIbBv/j+NCTxvOaCKIB/7QbCPILlts=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773258393; c=relaxed/simple;
-	bh=SuyAIU97sc7OvZ+7TWVVigAUtVzZpnLHp31eu/m3i28=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=rJdB3Jqu5S4mCffe2SCs0wCg0X41xY6SeewMR5OKQNwihiFqvEIN7FqNl7EsSGxXBB1nPZ8RYlSNdCdfavh9m/zBgeTBj2MLgubMwcSn516wzbYE2rhvRd5l86lqePfiuWm1Rr74eCexfcmcuUdiaYS4GLEYTrlzlcGbYKkzGYA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WTxWr7V+; arc=none smtp.client-ip=74.125.224.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 423382F8BEE
+	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 20:18:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.218.41
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773260327; cv=pass; b=StE9ZTBRlcUuOZE4kzBbNlrtjprUm1NqfimVKB/BT1H6BjSSXIBI5D6gBwrk4qvftQg/wwqNRk4Tmr5FafWWs+evTov0+An44gjMhug1YdZEC4DQt50RDXZP/etYHjm86S2pNDzTCo2R8kWw4AKl84s+rlViv5leBMaUp7z5eg0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773260327; c=relaxed/simple;
+	bh=E8jOnk+OV3CBlGh+i4MV8jYIJFhMbjnNvmBl9LFBYW4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=NjS76Ubc5byqTBl4mQd7kRo8H+hs41vRpU2IeLlg+pS50llIxmWra52O9l59OFE9Sp65QnRdWBFT8o1eNHj7d5yMdnJR/Wn74vnVwFJPciJaWeiQGgJL0omP2Nn3fQ6UenDI/Sv6s0oM1C7is3HXA+4hdWtuzH7yWVpYw7C5P6E=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=UL4vzp/n; arc=pass smtp.client-ip=209.85.218.41
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WTxWr7V+"
-Received: by mail-yx1-f47.google.com with SMTP id 956f58d0204a3-64c9707fc11so222837d50.2
-        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 12:46:32 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UL4vzp/n"
+Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-b96f02b4329so36699266b.2
+        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 13:18:46 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773260325; cv=none;
+        d=google.com; s=arc-20240605;
+        b=FzmQqTcnWm774LZNjTVQnGiI5M1rrCl8VPbUurCrH5n5m4RCY4RagZaaPSOvAj5ajN
+         Zl23OGR31jSCcR1fR5+SDxKWsmBX//gMJ+pCdDsU7d4sxlQKNWRyCrEo31p3xpyPzV/2
+         Lc0ynZDFAPy3pa8MPWqc3MAd24H59RaZETmWy9KD2j3vjW4K007qlKp0ZuDCtBYuPelz
+         RfOJJkT5I5XdrY0xBFy7oxiNpcnCBhgc34NWE5fxWW4MU3ViQsLDXuCNSfaBtv8ieLBp
+         3HtyLLr6dC3tas8Z2qM8gCifyRrU4+X5JbL2jLMdOQ/rJwoyx1Hu4AxevVsbA5FP9seD
+         GtQA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=E8jOnk+OV3CBlGh+i4MV8jYIJFhMbjnNvmBl9LFBYW4=;
+        fh=L65Z21lw/DxQGeW6dznNzLo5Bp6Tz2B9wZkTbbhNG44=;
+        b=JkDsiUeNLElf/7ZiNF/3Uy8B4RnrnTd9INK26M0H4EWGI/0QfWZC+Sws9uGFUelHei
+         nYUODQoRo5r37Vqrx/0+J1S3oDM2rqcleeOnf3CZMfU8JhqZwdfNLG/KcpEg6YFgoXvj
+         GbQsSpIJ0COv35c7KMnvTePnr6Y71cFpkue3A5QpaOZ4W6k1/oON2mI/iepZSCGRT0Xh
+         ALB9PiYByPfjoK1CIJzxkYTocB9WKB0G0WtC0bokRlVjXwK79jvGsleFrPfIeHEHx+MX
+         //2NkV2xUD9RLunVqjsviKdVwXt5LBX2MSSNs+wEf7rN3tK2GApoXtuSuAOBQH+rZJYs
+         7WrA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773258391; x=1773863191; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=k8x/j0D3rNYXXI/9q1LMbwzFTmsh0RPYwN8v6ThOlPA=;
-        b=WTxWr7V+7PRjFK1R3lRPiyBfxNwf6u/mOsP6glNLO0LsM7J3l1ADcpWn5WWCi0kpjU
-         thKWdfEMizc6IZ/TUie+qyRAr+fyCX5/audCVIelUqv6qR5SGrmYJ+ASBML955DdovXC
-         6Ccat14eG0Dn2iy3gzHXYLMyZedruqHEcxQLQISIdOafuqD6mcgkTxNRkVpeL+e7g93V
-         xR49jC+jODW6rI1wAaDkeUofwiKeknFGfAx7HM6NSH9J+AmjLjAGcGUeNPD8uZWsFweY
-         qHfhz/1CwIwcnipZToPDyZ70w0zZMvNf0XLG8eqKDs52z4qsBaVz1vy/Xj5NEr0H0nZJ
-         mCZA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773258391; x=1773863191;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1773260325; x=1773865125; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=k8x/j0D3rNYXXI/9q1LMbwzFTmsh0RPYwN8v6ThOlPA=;
-        b=RR8wTR8Pq74IEUI/lFAO2HCiwxCM1Sje7GY0nPUJgWYwr353WC/z3QmXudBf5iqCLG
-         Ddbe5WLFPkWzbaq8uugIA4cufGGesHFI3E/gaYim2E7/Jx4i5oD3fZawmVCZ7w2JPMm6
-         a7cf+YyoCvRKd3D+Gk2BGYiaAU9JKPS7f5iIdmB6faVOvl4cdLzh6yga8bAeCd6DL8c8
-         plgXANJt8PqxIxB1bKOmhxjdoeCcvMz7p9VJ2zI9WKzhDwVtiyPEXTX78qAio2z4v2pz
-         ksm6p3RlqQ9GLRt7AIXrI0bFzQVanN0p7nj8NeFgVPsRxmRvpJ+1fIP46+n25izAuOX9
-         HGhQ==
-X-Gm-Message-State: AOJu0YxPGHuP5eqQwXJCFXAH2lSdWKC8DnDns2hNu0URfC1XseDKq4tG
-	MeKWXMg8a4Uj1dssI4ACZTkB55+mTW1rEMZVlCW81CdWzh9jyxJktlVBqy4YIA==
-X-Gm-Gg: ATEYQzxXhwCExoLOFWC8dDhhACsg0BdYlEHBHFCaK9PuP+gAT2jxSDsCRkBnwY4xjYc
-	NF3l108jzMGbtwqZuvWCZ/PRQxL9u1DtVvWjXqHqmOt+/9Xk0qax0iPzKI6wae/AcT3LEZ+Vb/N
-	ABR2B4MBx7Y3fpeF2VcKtPGCSnon4rwTpn/VW+nApl/Lr5EJjUlKaR227rQFmN4pnCXH4aKdz7j
-	+kosUU8ZUdmWwVOnXN25KS8eyp3xp8werLw1uBIAKpReV9/s2gJk9vtNm/MbrAJhFTPdWuaJB3D
-	dcZHX7RDtGI0m/DZr2CvyTnTkyc/tLHNjyVavO2Wmxxd9/Mpq1Pq1NuJ+buhNrriPJCLTjrM5i2
-	Qc0zrbFlcoEK4t+VSX3SpFn9jnF7K0IMctp0Se5FGY+Btl+EaH/eO9rUABiVDASeen2LKT6Iabx
-	U1ir7up+nGZdUq6hcOgUIM/kLIRbj6lYpFQ8F1DxzSrkFocZxGJYlcJT7cI02eWgwopEKzrYI9h
-	zhtFz8aSrCnB9g9QFa7PLuPJ+xTTGNTm24r0esAxzTavzNieRM6lzpL/9owbhgXlsEk7YIe/EnS
-	iHDxLhmM1w==
-X-Received: by 2002:a05:690c:386:b0:798:6e69:2470 with SMTP id 00721157ae682-79917eacbaemr35208777b3.3.1773258391205;
-        Wed, 11 Mar 2026 12:46:31 -0700 (PDT)
-Received: from localhost.localdomain ([2600:1005:b11d:678c:38a4:272d:91cc:6439])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-79917f268e5sm18217927b3.46.2026.03.11.12.46.29
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Wed, 11 Mar 2026 12:46:30 -0700 (PDT)
-From: Ethan Tidmore <ethantidmore06@gmail.com>
-To: jic23@kernel.org,
-	andy@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Ethan Tidmore <ethantidmore06@gmail.com>
-Subject: [RFC] GSoC 2026: Transitioning IIO to guard() and scoped_guard()
-Date: Wed, 11 Mar 2026 14:46:24 -0500
-Message-Id: <20260311194624.1521-1-ethantidmore06@gmail.com>
-X-Mailer: git-send-email 2.39.5 (Apple Git-154)
+        bh=E8jOnk+OV3CBlGh+i4MV8jYIJFhMbjnNvmBl9LFBYW4=;
+        b=UL4vzp/ndXcROpE5qV2QxqpA3kdkCiOnNhjO300VUQzXbdZfwHtStbjrU1ruyTUYWN
+         fx/CFxScfpNt6Bbfmz9dUXKDzXXxt0x1eA5v9WZgtWY0V6FVU31KdNw1zb8K5MIUiX9x
+         6YFXhR19PSAT5unRJouwgshFv3gbwq5lZ2NjzLm6l8Q85vDr1/wY7WcQAXf23fYnN6Q8
+         F3JGL6uKBwdS0uETWeemJr/TTG5fkFRWxeta/BS8SVxsl5S0cF7RcsjYScBKouyyAflq
+         YeDDb4n4ZnjQXmAJK8WM9kmdjrQHfKC2EvlhA7d5E+GWBj0lg1Et/SCCbIY3l9l5olJR
+         CMPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773260325; x=1773865125;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=E8jOnk+OV3CBlGh+i4MV8jYIJFhMbjnNvmBl9LFBYW4=;
+        b=fZ9osG0MN4YCcBzyN77l4ltIdSnwMZTjc5lI0Jo/WL/vpOVN3ST7IDseRprMSvdvcT
+         TpDVrgd+iri9ok/cOhE5l/VKjn809y52b83Xa5xnQ7oTe2bGWieTRg/Trqj1JEmP//cU
+         55ddGqwH1YsT9Ki8297HnO7vO/iMpIvZCn4+hGodtG/0Qxg6EFX15VtvKr/w+mD95Way
+         xf3bZLBhbG5UGym1dDADPpUjv1xir5ep0ELBKFbMi4fMPsXsZwiD/BorXVrTon4qYhFb
+         fcVAaOMIbppg5J4CoucKlutbd4Xuxd0NE7c0AAgjx1tqa9Ce9Ry/IJJR/qMngd5+GWPf
+         mUgg==
+X-Forwarded-Encrypted: i=1; AJvYcCV17H5I8sG8wHmmEeLCymO7pGHf6AYR10l4U48mUDATIOjFXQh5cUd0Y8Buo+3kg5GIKdrHPr0n5p8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwcSutzq8wriQt0Vfmf7K5Fhs9O1gyfL9Lmcy/iIZnyXUT5Fyge
+	P7JUXSFHCZyJ4WMErp7BCQV8Y7GS3FE+CFPIYqGV+dG6WqpqXJa9jU8HX2OYIaQbEDsjsntYhsU
+	vHo7awR15EhjsRF0xZrsZ/81NDk6RKfxISIQ5
+X-Gm-Gg: ATEYQzzEAzPwQlD0dIuURjQlpxTA1/BJQCR212KE9Q8A3rLIaRcS8LdhWFu6W4eth+5
+	rmEAK2KQKs+1/344LOwiTUTqlXlmcOFmtOF9fEs3RJVONwKqHF+dPYXmSKFFKLzhggMXHk9IVV5
+	0qWXcJfy09m7I/lO1Ee3l2zTR2EEzApUSUgfhPk6nqUZ89+oEIn2EKZqa3jOVpI8yo0XDCGP48D
+	A2zU8tBZbhTjvXJwA0I2fex24aSDSmMePTjVwSAg2ju/1sigLMD3TzCST3DUC9MjiBhfomgrY/w
+	BrtlO8HLf9g/fd8FvoxRz597ByDj9rN5luDVxnMlpYTFo8Hho1WP6CWq8oFQB1A5tMuphEo9qiX
+	Ydm/SCfQ=
+X-Received: by 2002:a17:907:1b28:b0:b96:eb7e:bc3b with SMTP id
+ a640c23a62f3a-b972e530602mr218474366b.49.1773260324392; Wed, 11 Mar 2026
+ 13:18:44 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260311194624.1521-1-ethantidmore06@gmail.com>
+In-Reply-To: <20260311194624.1521-1-ethantidmore06@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Wed, 11 Mar 2026 22:18:07 +0200
+X-Gm-Features: AaiRm501hcMrfYgbOIJ6iqPXC2ZcxsKgtf_suleunN1jnU0LCEmxuYNY6IzkL4o
+Message-ID: <CAHp75VeZb0pSiAkHo9QUeS+2L-qP_83-dKKRSp7-1VfZrtr1bw@mail.gmail.com>
+Subject: Re: [RFC] GSoC 2026: Transitioning IIO to guard() and scoped_guard()
+To: Ethan Tidmore <ethantidmore06@gmail.com>
+Cc: jic23@kernel.org, andy@kernel.org, linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Jonathan, Andy,
+On Wed, Mar 11, 2026 at 9:46=E2=80=AFPM Ethan Tidmore <ethantidmore06@gmail=
+.com> wrote:
+>
+> Hi Jonathan, Andy,
+>
+> I'm proposing converting the entire IIO tree to use guard() and
+> scoped_guard() instead of manual locking. This would greatly reduce
+> boilerplate, the possibility of lock leaks and modernize the entire IIO
+> tree to current kernel API standards.
+>
+> $ grep -rn "mutex_lock" drivers/iio | wc -l
+> 874
+>
+> This would have to be a "Large" project according to GsoC due to the scal=
+e
+> of the IIO tree. If this is wanted, I would like to know how these change=
+s
+> should be submitted to make this easier to review. I was thinking per
+> directory per vendor.
+>
+> Looking forward to hear your feedback.
 
-I'm proposing converting the entire IIO tree to use guard() and
-scoped_guard() instead of manual locking. This would greatly reduce
-boilerplate, the possibility of lock leaks and modernize the entire IIO 
-tree to current kernel API standards.
+Most of the cases can be automated with coccinelle, so you can even
+create a script in one day and estimate the real number of corner
+cases (id est that require manual work). That said, it's not a big
+project from amount of drivers point of view. It might be still big
+depending on corner cases and if you wish to target them as well.
 
-$ grep -rn "mutex_lock" drivers/iio | wc -l
-874
-
-This would have to be a "Large" project according to GsoC due to the scale
-of the IIO tree. If this is wanted, I would like to know how these changes
-should be submitted to make this easier to review. I was thinking per
-directory per vendor. 
-
-Looking forward to hear your feedback.
-
-Thanks,
-
-ET
+--=20
+With Best Regards,
+Andy Shevchenko
