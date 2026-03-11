@@ -1,86 +1,110 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 786F73112C1;
-	Wed, 11 Mar 2026 11:36:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AB7E33DCD98
+	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 11:38:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773228990; cv=none; b=AainrEaqL16XvpBOLMVSgmhjyORluxl/lxzq/akeAgJjtdComK41gg82noHH+qNhVSQvz1zwwh6Vc1zqQCm1LZ+xwkM+g/NS8T4TSC3MrZRm6d4tfdZ/MotgwmOTw0EMmNckqLrmT+n4Y3rhjY9zKZ22Eu9qqVmoWNbc7Kg/DBs=
+	t=1773229104; cv=none; b=R7MTri45UqfTpUHMMvA7GFG6QyB9waQ08k4jVzCLVJHpGVWNaNjTgxFOanpiGc8W8jGI3EHZ1/mFC53sN2o2spBplt5TxiWkzc/6o6vFA1ZIqqUdbz5W1QNfxukicP6QWRzcihESROzdUCKXFb/yO9G52KOyMnsQtdhKFnU/vBc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773228990; c=relaxed/simple;
-	bh=o4mzS9ptvgAjnLz4N9oF/qMwT6YeKSX5GUVjpuFvOGY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=cRcb8BwchN48M9dwyGeZxi0q36CsRFCXmAzoRjbmMGaFjVdR8QwZrMLI1r9rxH4cK02XGAl+bF02fA7nvLg0R+u6kGrVveqQQgSy4W3OJYsMSH9lQMOt0lRI+BwK2cipPUEGrfCjfmK8DVJ50/5vW/Vc9ZhYQ/Q3DrpA2aej1SU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QP6zZAFV; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1773229104; c=relaxed/simple;
+	bh=xtGiKjEnBQpQPUntP7CaatfwfFSBZpxu8M91vVnlSNA=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=UDurq1SiIHd4Ni6nWy3k/oL8zuOdEqK/G7yGQAPVCgqiaUK52qlRF3bpaRbBLcSJ7hDKIVK1xIl+1vPWsizJ+XOgUIXjCzckWZaDhhPItARCyr0SZjxC5z4BODWNvyuYendMCxSi/G9zErzbwUqRqoAzfitUNUu4HAyQD0I8TeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=YFA/Mv8z; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QP6zZAFV"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773228990; x=1804764990;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=o4mzS9ptvgAjnLz4N9oF/qMwT6YeKSX5GUVjpuFvOGY=;
-  b=QP6zZAFVwJHjKLMsmGR2HhaP9qG9jZA5YDLVRUXCKnXpYbr9gBeGcW6H
-   rFQ7f7iMNa8G1D7XTGLVFAaZXuqRexzlqoK9TtfyQencqEJ1ok7YfF9ou
-   U/PD/NvBRCbNxZ1NrKcaJyYKbaZRzjh3OmBHmAQ9CfWls2YtFk2XGohCt
-   /0SC8LCnCXOlEgRQSbWVElS5Rjo/eax5xNuJWHD7g6aZjqoy6duCwuXoV
-   OsKwGeaUzgmA2Zf8ek/yO882ptb5lDUtGRq2MDXWh0+nlYguEdOfx9/h/
-   OsuM1AxKKa2BUl8E1/hJj+R+1RnyQAYkgCt+z3rX7sQIwiCpsjJECdv3m
-   A==;
-X-CSE-ConnectionGUID: 9SD48vhaRVq6oQ5PfpLLlg==
-X-CSE-MsgGUID: XW1Fkbo2T3a+VF7/A44Xtw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11725"; a="84616923"
-X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
-   d="scan'208";a="84616923"
-Received: from orviesa002.jf.intel.com ([10.64.159.142])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 04:36:29 -0700
-X-CSE-ConnectionGUID: DPLbcihwRaWPV808gIz/SA==
-X-CSE-MsgGUID: FWx/UiGuTHmUc8ihLMg6vg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
-   d="scan'208";a="250936304"
-Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.178])
-  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 04:36:24 -0700
-Date: Wed, 11 Mar 2026 13:36:22 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] MAINTAINERS: Add entry for AD5706R DAC driver
-Message-ID: <abFTtlfBZaGEjdCK@ashevche-desk.local>
-References: <20260311-dev_ad5706r-v2-0-f367063dbd1b@analog.com>
- <20260311-dev_ad5706r-v2-3-f367063dbd1b@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YFA/Mv8z"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-48538c5956bso9359335e9.0
+        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 04:38:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773229102; x=1773833902; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=V54kHQSlYQm1LF5g5xy9u1LvyxUv6rsWTsl/vLq0rrU=;
+        b=YFA/Mv8zPgMhKIKkkqOtZ1Arczl26+uiu5XndIrDYRrspF9l+U0/hqM1HgxW9pLUJv
+         iNoXffyQJ/9T4HepdCzm/wdgh9ZuP03qqgKyXUbr0aEywBXSXOsGfTy/WWQCsqN0wDIk
+         eshupzR7oHMxDq4yiWvPmWX4tqKBxybSqD7o/qSp3kUPkOrgFO6/qZW87ixUA+IksBKa
+         xZSdAHAPhy30QVKL5xHWqCEVJO2vAMC1UvtcIvQUXuAoO/QCwDCgCe9ld2D/a+rpSGVl
+         GOql9XgPlRu1tmBxZAZUyOqVMvm4QVaNmwiSO38kf04FDWzmOD7JdAUwiwMp27/1Jxq4
+         wKMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773229102; x=1773833902;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=V54kHQSlYQm1LF5g5xy9u1LvyxUv6rsWTsl/vLq0rrU=;
+        b=aU2bIt4jx+VB92HMC8P+IUjJlX+SWF4ebt4Ht3wPckN/N0sDlCQciLZgEwyq0RC9AI
+         y5V/EQ8unLszKvUeA7xvuWGLE005iA1Hy88KcN2jyTzrvHIhAymOJ1a2hsc6auJd5umu
+         qHFTGc6Em342S0BW/SznCHqG3ROrwoYpvB48YqrkF1APwY478VcR2cXVmT6eKeowsGGj
+         Ur90fz6gbT5byaEcrfFMwzseLVncJCMeS3P44inumB7qcSI9ASy4sH78Z4M1Agn9Py5R
+         eyK5yB6NCdoHiuBGesPQhDc0UFUXOlsuMhqITZFKBAMdTNgW4V9hEVeCgighqmZIeHZD
+         Z3Yg==
+X-Gm-Message-State: AOJu0YwtqmgqLIPeSB1xnfc+t/JLTs+jSrTNEw/XFhhvtpuNyrDlBU/t
+	dTBdJb3ZKAz1PngrSb1mSrW7wrt2JGZikqdd92iFmCXDQ5JDCSCTRtt0
+X-Gm-Gg: ATEYQzw8EhxUGnuXRJxq+km5TBo4MUNsB+Vo8Jm8H4/ECxHU2v98ikSGKf4nWmzl4MZ
+	gMVXTgu+5QYKu4q4ffodZrOA3802CUO5KUDkgUW1eWDqtttS7+H/jxVAn3Dcl7b362KpZcxrt9J
+	dyqlIrV6Tj4sqEsuGCCZNCG9dBNnTw8zCyZ3F6kEd+9ww9vgz55ctJj64wtucXEVPayVhXPY9Zk
+	jv33X39yCHSN59E7sKTFmfVVQb4xGjd0Z+HapUUut4bs0Is7UtRjIs60erDdFhtnlxywjYiFtiL
+	0QWEdT6PXV/pMWbSvAS+DILPlELffua+bapn4X7MFR7XiSUxctjEjcIqtwbp/pphWgITBTxSGnz
+	07JX9h+4lcw80edgdai0K8tAH+kG9CMdoVwCVqPnKx2LIh0YvSyjSYuIOaJ9PwbdHgest4h+gqw
+	jiGL5uLWJTQyGaefXJ/eQ18tRU5A==
+X-Received: by 2002:a05:600c:6808:b0:485:3cef:d6ea with SMTP id 5b1f17b1804b1-4854b2916d5mr29289375e9.13.1773229101905;
+        Wed, 11 Mar 2026 04:38:21 -0700 (PDT)
+Received: from [192.168.0.39] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48541b6f6b7sm188681855e9.9.2026.03.11.04.38.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Mar 2026 04:38:21 -0700 (PDT)
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+Subject: [PATCH 0/2] iio: light: vcnl4000: add regulator support
+Date: Wed, 11 Mar 2026 13:38:01 +0200
+Message-Id: <20260311-vcnl4000-regulators-v1-0-66b6038ce563@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260311-dev_ad5706r-v2-3-f367063dbd1b@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/x3MMQqAMAxA0atIZgtJFRGvIg61Rg1IK6mKIN7d4
+ viG/x9IrMIJuuIB5UuSxJBBZQF+dWFhI1M2WLQNVoTm8mGrEdEoL+fmjqjJjH6msXVInhvI5a4
+ 8y/1f++F9PxrthidlAAAA
+X-Change-ID: 20260310-vcnl4000-regulators-bcf1b8a01ce6
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
+ phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>, 
+ Raymond Hackley <raymondhackley@protonmail.com>
+X-Mailer: b4 0.14.3
 
-On Wed, Mar 11, 2026 at 08:23:19AM +0800, Alexis Czezar Torreno wrote:
-> Add maintainer entry for the Analog Devices AD5706R DAC driver
-> and device tree binding.
+This patch series introduces support for voltage supply, I2C and cathode
+regulators. This fixes an issue where if a regulator is shared between
+the proximity sensor and some other device, and the other device is
+powered off, the proximity sensor would be powered off as well.
 
-This should be added when the respective files are being added.
+One of the commits includes a Reported-by: tag without a Closes: tag -
+the report was done outside of LKML.
 
+Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+---
+Erikas Bitovtas (2):
+      dt-bindings: iio: light: vcnl4000: add regulators
+      iio: light: vcnl4000: add regulator support
+
+ Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml | 7 +++++++
+ drivers/iio/light/vcnl4000.c                                     | 8 ++++++++
+ 2 files changed, 15 insertions(+)
+---
+base-commit: 7109a2155340cc7b21f27e832ece6df03592f2e8
+change-id: 20260310-vcnl4000-regulators-bcf1b8a01ce6
+
+Best regards,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+Erikas Bitovtas <xerikasxx@gmail.com>
 
