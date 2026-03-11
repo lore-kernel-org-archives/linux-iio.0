@@ -1,119 +1,163 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E145A3DDDCC;
-	Wed, 11 Mar 2026 12:07:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B92B43CCFBF;
+	Wed, 11 Mar 2026 12:18:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773230851; cv=none; b=XrDmkYXtAOY5NvJUGe1+qXl/l+WZtz5KBCHUqXk645wqLQTuc02y1iGlbSiPhIiJXfJAkNeKi4aFdzhZ+CKRVLgbgrpHlbzbXO/j/oEyCSJTTG/al/2ArIVFf1HcdHxByFfyeyzXEPtci2CUlA9k2yiWuluMgEmsd2rEQpv31uY=
+	t=1773231521; cv=none; b=lt822k/94uXt+YOngPcWGL4SSsnMlXLbLtg4hgJcuYEUIZCajiIGGvrcEKcJ9plPaAIb0O12yz3Kj62tzeF1n0UQhsSeIIKrWQ0FdFnMaaTT2TgUoRAUaWqms7dCiIlJMiYIAlmj4VGtLICMEzMkG1N4T6FXTIZwj4m7ouqM8zc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773230851; c=relaxed/simple;
-	bh=RK+pKuRfdfGfw8oANuvpjd3fTlBXpMU22AHKCXyNTcA=;
+	s=arc-20240116; t=1773231521; c=relaxed/simple;
+	bh=InzsTl1hnNNecjD7snJvzJloux/8wy7GR5JJTXnPzPw=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CplfRWD3oTbozL4fTzsXis8z7+vzhNhPxy2rnT2uIcZggZ11e/qNnz4WKiEtMQHVIHfk1sOjXNIu2WHuGFcZlueXD1JC4JscdGCR0WUAZATEP5u6B8PoI2u4RAs4wBhGdxWlv6BMYFd0avYX8ID5yDEYK2RtAsLOa9BLLIIeiwY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=QP6ssVBO; arc=none smtp.client-ip=198.175.65.21
+	 Content-Type:Content-Disposition:In-Reply-To; b=bTFytZLL9UdlWPV+EIpqiLYrJorZ0TcslVFfy8tNSj3eiPhJSVOE3vZH5uPHyEKbzVyRUCZiK+i8yG88jyY8lxJ1L42TWeE88EFTqgvArY1N66yvkB8drRSyNeAhWAe5M1XysDTTdy7v6Wl714+wFW6ko+glNglQXUArOiQij5o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=dW0btGjA; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="QP6ssVBO"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="dW0btGjA"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773230846; x=1804766846;
+  t=1773231518; x=1804767518;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=RK+pKuRfdfGfw8oANuvpjd3fTlBXpMU22AHKCXyNTcA=;
-  b=QP6ssVBOsnAuLpxZOXj1UElbxsqKJhePnck+AMH/DblHcWODqMMKwAt3
-   ws4/e55hAOvyLS/cSCo35pcXRte2rwjmdZ2/GGnFHr5Y9vyFYUKMI1zb3
-   L1hy7JgDRzcjs50oQZXd8CgOZJ4UKNaRJJ/gmnsDYeXA+hLnrUDNLGPcA
-   zC+3/z7Iz0F0+BJnc45VfumQiCubvcd1sIJC3n4i1GJb2XV9JrmhLsAY0
-   Yrue/fVgqplPeGl1M2UNxwMyfZmbPYJwM+sveBIreR+XALETBo//HDklh
-   HQTYI4szxkdip2+Cc9CiisZqBNSsBYWsbaMlOK1oYOCVxmzhmquQANivI
-   w==;
-X-CSE-ConnectionGUID: aMBo3VajTvWJvy8UEmeqPA==
-X-CSE-MsgGUID: qi83aCT/QGWBVl5WDsr9ig==
-X-IronPort-AV: E=McAfee;i="6800,10657,11726"; a="74171528"
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=InzsTl1hnNNecjD7snJvzJloux/8wy7GR5JJTXnPzPw=;
+  b=dW0btGjAuQysQWg3OshxB5euFZbvvYgNQ1Bxb/2zpoBGiUOePSSw96WN
+   PNwrfnOOiBdI0jNo+yt5pcjziHWyfELUe5Z1jLOrb5EsgbqYQLFcJAO81
+   jVi0y15+o6MrsZ903Q734fVq5K3BY572V5icjR9YRrKyxMQg95niISHgm
+   Fb1ytjkilWCtJdZOJA1nbzah5TeLnxJUXkBzrLVkNDZaeQx5Bu41Sb4r5
+   Zc2KPE0xTn2uqidup0lFwGHHOnRqLNdMPGqr57pH/xU48G9/xsWv3cpFd
+   co41l0kg4SRH08ilgq37Oh2odEqih9OGSHQDZgx3zoSl96NI6eZlC/UHb
+   A==;
+X-CSE-ConnectionGUID: +ZzF3ZinQmG3CZ8afSraVg==
+X-CSE-MsgGUID: NpW5s2w6RjGFNrzdaljAig==
+X-IronPort-AV: E=McAfee;i="6800,10657,11726"; a="85001775"
 X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
-   d="scan'208";a="74171528"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 05:07:21 -0700
-X-CSE-ConnectionGUID: c444PqeVTW68jz/O7+Etlw==
-X-CSE-MsgGUID: mY4K9MB/TreCXpG9WYgUVA==
+   d="scan'208";a="85001775"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 05:18:37 -0700
+X-CSE-ConnectionGUID: rX98UaKOQ3KCY4F3rIYAJA==
+X-CSE-MsgGUID: EvJHbzg7Rq6ZduXdu4cmeg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
-   d="scan'208";a="217118798"
+   d="scan'208";a="220499705"
 Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.178])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 05:07:19 -0700
-Date: Wed, 11 Mar 2026 14:07:16 +0200
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 05:18:35 -0700
+Date: Wed, 11 Mar 2026 14:18:32 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Neel Bullywon <neelb2403@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: frequency: adf4350: replace loop with order_base_2()
-Message-ID: <abFa9G81Bj4YTZqq@ashevche-desk.local>
-References: <20260311020115.56321-1-neelb2403@gmail.com>
+To: David =?utf-8?Q?Marinovi=C4=87?= <david.marinovic@pupin.rs>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+	andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: dac: ltc2632: add support for LTC2654 DAC family
+Message-ID: <abFdmNIZYQFUIGIE@ashevche-desk.local>
+References: <5d4fb8998d9634c3e5a8ed17b80dae07@pupin.rs>
+ <82ba84f98db9c32d3fc4efd7ef6697a2@pupin.rs>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260311020115.56321-1-neelb2403@gmail.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <82ba84f98db9c32d3fc4efd7ef6697a2@pupin.rs>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, Mar 10, 2026 at 10:01:15PM -0400, Neel Bullywon wrote:
-> Address the TODO in adf4350_set_freq() by replacing the iterative
-> power-of-2 shift loop with the standard order_base_2() macro.
+On Tue, Mar 10, 2026 at 04:29:48PM +0100, David Marinović wrote:
 > 
-> By utilizing DIV_ROUND_UP_ULL(), we
-> can calculate the required RF divider selection in a single step.
+> Add support for the Linear Technology LTC2654 quad DAC family.
+> The LTC2654 is a 4-channel, 16-/12-bit DAC with SPI interface,
+> sharing the same 24-bit SPI protocol as the existing LTC2632/
+> LTC2634/LTC2636 devices supported by this driver.
 > 
-> This ensures freq is properly shifted to meet or exceed the minimum
-> VCO frequency.
-
-Thanks! My comments below.
+> Add support for the following variants:
+> - LTC2654L-16: 16-bit, 2.5V internal reference
+> - LTC2654L-12: 12-bit, 2.5V internal reference
+> - LTC2654H-16: 16-bit, 4.096V internal reference
+> - LTC2654H-12: 12-bit, 4.096V internal reference
 
 ...
 
-> -	st->r4_rf_div_sel = 0;
-> -
->  	/*
-> -	 * !\TODO: The below computation is making sure we get a power of 2
-> -	 * shift (st->r4_rf_div_sel) so that freq becomes higher or equal to
-> -	 * ADF4350_MIN_VCO_FREQ. This might be simplified with fls()/fls_long()
-> -	 * and friends.
-> +	 * Calculate the required RF divider selection (power of 2 shift)
-> +	 * to ensure the VCO frequency is >= ADF4350_MIN_VCO_FREQ.
->  	 */
-> -	while (freq < ADF4350_MIN_VCO_FREQ) {
-> -		freq <<= 1;
-> -		st->r4_rf_div_sel++;
-> -	}
-> +	st->r4_rf_div_sel = order_base_2(DIV_ROUND_UP_ULL(ADF4350_MIN_VCO_FREQ, freq));
+> enum ltc2632_supported_device_ids {
 
-We don't need 64-bit division even with your approach as values are 32-bit for
-this case (yeah, I know that they have 64-bit types).
+>         ID_LTC2636H12,
+>         ID_LTC2636H10,
+>         ID_LTC2636H8,
+> +       ID_LTC2654L16,
+> +       ID_LTC2654L12,
+> +       ID_LTC2654H16,
+> +       ID_LTC2654H12
 
-What you need is to do as suggested by comment: use fls_long() against the
-constant and freq to see the difference in value, if there is none the while
-will become just a check and a single shift.
+You see how nicely the new IDs landed here, but after you it will require an
+unneeded churn.
 
-Or consider it as the opposite problem: "How much the given constant is now
-bigger than freq?" With that it might be more obvious solution.
+>  };
 
-I.o.w. think about this a bit more.
+...
 
-> +	freq <<= st->r4_rf_div_sel;
->  
+> static const struct spi_device_id ltc2632_id[] = {
 
-I would move this blank line to be before freq shift, this will associate it
-with the check below.
+>         { "ltc2636-h12",
+> (kernel_ulong_t)&ltc2632_chip_info_tbl[ID_LTC2636H12] },
+>         { "ltc2636-h10",
+> (kernel_ulong_t)&ltc2632_chip_info_tbl[ID_LTC2636H10] },
+>         { "ltc2636-h8", (kernel_ulong_t)&ltc2632_chip_info_tbl[ID_LTC2636H8]
+> },
+> +       { "ltc2654-l16",
+> (kernel_ulong_t)&ltc2632_chip_info_tbl[ID_LTC2654L16] },
+> +       { "ltc2654-l12",
+> (kernel_ulong_t)&ltc2632_chip_info_tbl[ID_LTC2654L12] },
+> +       { "ltc2654-h16",
+> (kernel_ulong_t)&ltc2632_chip_info_tbl[ID_LTC2654H16] },
+> +       { "ltc2654-h12",
+> (kernel_ulong_t)&ltc2632_chip_info_tbl[ID_LTC2654H12] },
+>         { }
 
->  	if (freq > ADF4350_MAX_FREQ_45_PRESC) {
->  		prescaler = ADF4350_REG1_PRESCALER;
+Can we have a refactor patch to drop that enum and use separate chip_info
+static objects?
+
+>  };
+
+...
+
+> static const struct of_device_id ltc2632_of_match[] = {
+
+>         }, {
+>                 .compatible = "lltc,ltc2636-h8",
+>                 .data = &ltc2632_chip_info_tbl[ID_LTC2636H8]
+> +       }, {
+> +               .compatible = "lltc,ltc2654-l16",
+> +               .data = &ltc2632_chip_info_tbl[ID_LTC2654L16]
+> +       }, {
+> +               .compatible = "lltc,ltc2654-l12",
+> +               .data = &ltc2632_chip_info_tbl[ID_LTC2654L12]
+> +       }, {
+> +               .compatible = "lltc,ltc2654-h16",
+> +               .data = &ltc2632_chip_info_tbl[ID_LTC2654H16]
+> +       }, {
+> +               .compatible = "lltc,ltc2654-h12",
+> +               .data = &ltc2632_chip_info_tbl[ID_LTC2654H12]
+>         },
+
+Ditto.
+
+>         { }
+>  };
+
+...
+
+> Subject: [PATCH 0/2] iio: dac: ltc2632: add support for LTC2654 DAC family
+> Date: 10.03.2026 16:27
+> From: David Marinović <david.marinovic@pupin.rs>
+> To: jic23@kernel.org
+> 
+> This patch series adds support for the Linear Technology LTC2654
+> quad DAC family to the existing ltc2632 driver.
+
+Huh?!
 
 -- 
 With Best Regards,
