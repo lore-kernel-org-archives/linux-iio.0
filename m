@@ -1,107 +1,142 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B432E2D94A0
-	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 12:40:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99DE016132A;
+	Wed, 11 Mar 2026 13:03:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773232806; cv=none; b=GGI0t1GYcwAOSs8n6qH2iI52E5SqC+XL6cWMQLxnZrN4Erbea8O9jqPsW0Z1bzY20yJLWtBlifMFR/gKNVvrTgrUA4cvlRXF3Hqy6pROD/omtYCJ3pvxpDcF95ooqYGPB7yWDLOmq9DdkviKJgdRg4jTReRk6xOhx5vv7Y8bU7s=
+	t=1773234238; cv=none; b=euYRIkLkk2pDWgrnUD3uq7MQd82pLP+CDrfVyi8OHjqiwuFoKr/ZuveFmGmMOj07O4wcCFOWVaOGxvtwHxauAnQrlizu2t0vqXFkOL8R5S0aP2OwM+HBk22wS473PyjKbbcz42AtdmxdPtoQtWVAbRnB2RFJmkrhRetQjhfkgYE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773232806; c=relaxed/simple;
-	bh=ypkgbZBJnCuKYz1Q4k4xX9VYLpvEeclpOgAoB/0XkJM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Y6os3Ls0R9yX5/OjhNS82GLn+NCuuttsBJdwNBZo4/HPhMK80Q4kpiyEXRtZxSbdtRYJ2rp0Gjus19JmyOTDfNeply7PJpe0OKrdC/6+CJJZG0YHsXibJjnkd4/Jde4M4zGP/EuJUOcwJadJn2haLUlgNVQxBSbxX+kFrIadJTs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ks3HfIZH; arc=none smtp.client-ip=209.85.221.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773234238; c=relaxed/simple;
+	bh=02BWGCyBwEVGccAXuN3PhsDOGLBtLKmhhtdNxECuvRg=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=iXpnYaIC1+NkwH9LJllMN22k5HA9Bi4k0O3QqGJjn+LnW9pL9oPWnQVSUbC3u+b+jLNAa0+VzpZVXkQg10bpTZTtaMd8Wd6/ye70ZKrLVt1kCpA/+x3VAQfIH00ezWrHpS8CqenKIts2uWvvMKf8v5kpUVTNOBLYi2q00KzqpkM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LeVzIeSF; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ks3HfIZH"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-439ce3605ecso4712818f8f.0
-        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 05:40:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773232803; x=1773837603; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7bkd7t4OM6NrSXY3/5JBnKwSTKqs/TjWcikuqUhFmKk=;
-        b=ks3HfIZHFPQ17cYq+md0FuV9Xlp4eBom2GooUYxQ5wIyfSn+i1EPXp9l5WXZVhBcan
-         VNfc1UOyqa8+CNp9pm2wcR/7bgDE9Xd/dEQ+9u5e5XorRlrGsISA18PNgAONxDMa18t9
-         tbUhzrTijFI5H2o0NBIv/6hn/LAUerf9lZF8XF5raDxuTdCfY/Z0bcttXbMCgXzsAYDD
-         0tls6l/4fpSxpcy1suXHHqH5u9IUBLNGn4Dlj8vndULlr16J8sP7TP9/sPHXyj7feM2d
-         mSsJT/yvVNfWO9n+SzO8hgjT1M/79SL0outxxZcWx1I9c6+HcO29x+d178Jy7+fWDNww
-         9Frg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773232803; x=1773837603;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7bkd7t4OM6NrSXY3/5JBnKwSTKqs/TjWcikuqUhFmKk=;
-        b=bXSiIn16I3hYR5MMUpEbmxcqC6ISgH5s76rolhs0a/1VEZAMdkn3PTfvJjiOMi/XhR
-         HukQOPKbF24/t3F/RxL3enAeOjq/C9GZ39kG87dWghZ25d27yKUu2Ol0lompkHCpqVUs
-         4JuJRclD59Omc9n7MRyhLULvUe5k/OUoiHccXtG0rV9k7qB16dUxdasnJTXWsDpY985F
-         xRXTqZyG/YF156TgU9eZrQraXdQInLYhxcF1oW6g2V5Pcp6jDngnpewu6HoaXyk8uAnA
-         Ju2PW07a3oiwqISSHSRSHJP0X5C75yuQcl9UVGKtKz30U/F9HPKyAk8FA/2sQP9G/Zf2
-         Ak/A==
-X-Forwarded-Encrypted: i=1; AJvYcCXG6e4lllxHtMo7WB8KpOEMr3d8hRb54BVZ8Te7qNE0THnDp8KxpGqNAsccs/vX9FhneK6bHugVTWA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxxdbkoJ6xJF0NDkNWsfQtUp31P2YXdHK91dEwlQNskZK5GcbZB
-	GMjBYvutDXZhhydd+7jSFxT5HB1qZrfPE7Mcl5bTQjD0LmbS9SoW+jHD
-X-Gm-Gg: ATEYQzzjIlwKJGvXrS110ZTD/u1on+SsV+/PCBhbggmw8DNgAq0z1F7jkoYC4afvCjx
-	yWZIsfMV1nNGMYXCdW7z/ORXn9Mk88N/zG/OQzS+zrhRH7ATCEGqzLusaoSCsn0E4iVPZ6kFpuo
-	AqfkVfJHNea0swNt5VcNMzfvAhITaipLS9O5xKxdOOPCVLfzD6Ub/Tc/6fZj7vQWK7T7kQ2qkuc
-	uNMIWrLlYysY9udE94axG4MF27bWUrrr6bu48mbTP9kVgD3q7X2Tgfq7VT8eZ0yG2hxDlkVneQn
-	hG+PB+CIavwgd9H/jE214EQDpWfEpjWfO/VRO2tEPnMQcmQl7e45M+hn1ofs0HPzWd4ji9NQ5aO
-	V3Zx3YwGbNGMJkl06U/C65P9ScRr1zJGCk8eDyzx+sZZ3Zvd1BIfkwOWhFAhH7phAGR+d3Iv4S0
-	by/uO6ax3Q8vQ3TkCGOb7E2uG+pDZAqay3xWQg
-X-Received: by 2002:a05:6000:2503:b0:439:ad72:9900 with SMTP id ffacd0b85a97d-439f821ba00mr5021469f8f.29.1773232802942;
-        Wed, 11 Mar 2026 05:40:02 -0700 (PDT)
-Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439f81aca65sm7461346f8f.17.2026.03.11.05.40.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 Mar 2026 05:40:02 -0700 (PDT)
-Message-ID: <9e5babd2-3e11-4c79-9192-379b11392a58@gmail.com>
-Date: Wed, 11 Mar 2026 14:40:00 +0200
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LeVzIeSF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A92C5C19425;
+	Wed, 11 Mar 2026 13:03:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773234238;
+	bh=02BWGCyBwEVGccAXuN3PhsDOGLBtLKmhhtdNxECuvRg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=LeVzIeSFhnCa2b8BDIkpG1xraS+PIEHmtPipxkxgPOq7fTbu0HdDn5UcocvF5fpSs
+	 kGRQx5YV0rRIS1bE6U2MIWXBE0PZMDV+LZBGUJxid5mqPphUDfNHmr3zRYhWq713Zh
+	 2ZytrYhNxXJTYOYbZW0q3HR3Ws4yWGhZVrNVuz9fzV5HSuYMrnLP65hn9LEcnOCOjv
+	 zBrhXNOSx9oyXhV8TAWLUROIZLhuEFl4telRYm7AhXUXUh+2GvsVFr7RzjRzzfXjlB
+	 LqErI4osotkZSMmYJtThassB3VjIZO+TRxgLJferk3M5cZdGvZTKv9AXWeiWCafYWL
+	 pPNU1Uri0JPXg==
+Date: Wed, 11 Mar 2026 14:03:55 +0100
+From: Krzysztof Kozlowski <krzk@kernel.org>
+To: David =?utf-8?Q?Marinovi=C4=87?= <david.marinovic@pupin.rs>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	michael.hennerich@analog.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH 2/2] dt-bindings: iio: dac: ltc2632: add LTC2654
+ compatible strings
+Message-ID: <20260311-warping-ruby-marmoset-3d494a@quoll>
+References: <5d4fb8998d9634c3e5a8ed17b80dae07@pupin.rs>
+ <4915e1023c72d2681b0c4ae028ec609e@pupin.rs>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 2/2] iio: light: vcnl4000: add regulator support
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
- phone-devel@vger.kernel.org, Raymond Hackley <raymondhackley@protonmail.com>
-References: <20260311-vcnl4000-regulators-v1-0-66b6038ce563@gmail.com>
- <20260311-vcnl4000-regulators-v1-2-66b6038ce563@gmail.com>
- <abFejMb3uLbg4fiu@ashevche-desk.local>
-Content-Language: en-US
-From: Erikas Bitovtas <xerikasxx@gmail.com>
-In-Reply-To: <abFejMb3uLbg4fiu@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <4915e1023c72d2681b0c4ae028ec609e@pupin.rs>
 
+On Tue, Mar 10, 2026 at 04:32:05PM +0100, David Marinovi=C4=87 wrote:
+> Add DT compatible strings for the LTC2654 DAC family variants
+> supported by the ltc2632 driver.
 
+Describe hardware, not driver.
 
-On 3/11/26 2:22 PM, Andy Shevchenko wrote:
-> On Wed, Mar 11, 2026 at 01:38:03PM +0200, Erikas Bitovtas wrote:
->> Add supply, I2C and cathode voltage regulators to the sensor and enable
->> them. This keeps the sensor powered on even after its only supply shared
->> by another device shuts down.
-> 
->> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
->> Reported-by: Raymond Hackley <raymondhackley@protonmail.com>
-> 
-> Where was it reported? Do you need Closes tag?
-> 
-> ...
-The report was done outside of LKML, in a Matrix channel.
+>=20
+> Signed-off-by: David Marinovic <david.marinovic@pupin.rs>
+> ---
+>  .../devicetree/bindings/iio/dac/lltc,ltc2632.yaml        | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
+> b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
+> index 733edc7d6d17..7ec663beec1a 100644
+> --- a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
+> +++ b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
+> @@ -4,14 +4,15 @@
+>  $id: http://devicetree.org/schemas/iio/dac/lltc,ltc2632.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+>=20
+> -title: Linear Technology LTC263x 12-/10-/8-Bit Rail-to-Rail DAC
+> +title: Linear Technology LTC263x 12-/10-/8-Bit, LTC2654 16-/12-Bit,
+> Rail-to-Rail DAC
 
-Respectfully,
-Erikas Bitovtas
+There are multiple patch errors here. This is unmergeable.
+
+>=20
+>  maintainers:
+>    - Michael Hennerich <michael.hennerich@analog.com>
+>=20
+>  description: |
+> -  Bindings for the Linear Technology LTC2632/2634/2636 DAC
+> +  Bindings for the Linear Technology LTC2632/2634/2636/2654 DAC
+>    Datasheet can be found here: https://www.analog.com/media/en/technical=
+-documentation/data-sheets/LTC263[246].pdf
+> +  Datasheet can be found here:
+> https://www.analog.com/media/en/technical-documentation/data-sheets/2654f=
+=2Epdf
+>=20
+>  properties:
+>    compatible:
+> @@ -34,6 +35,10 @@ properties:
+>        - lltc,ltc2636-h12
+>        - lltc,ltc2636-h10
+>        - lltc,ltc2636-h8
+> +      - lltc,ltc2654-l16
+> +      - lltc,ltc2654-l12
+> +      - lltc,ltc2654-h16
+> +      - lltc,ltc2654-h12
+
+Several look compatible to me, so express it with fallback and drop
+unneeded entries in the driver.
+
+>=20
+>    reg:
+>      maxItems: 1
+> --
+> 2.50.1
+>=20
+>=20
+>=20
+>=20
+> -------- Original Message --------
+> Subject: [PATCH 0/2] iio: dac: ltc2632: add support for LTC2654 DAC family
+> Date: 10.03.2026 16:27
+> From: David Marinovi=C4=87 <david.marinovic@pupin.rs>
+> To: jic23@kernel.org
+>=20
+> This patch series adds support for the Linear Technology LTC2654
+> quad DAC family to the existing ltc2632 driver.
+>=20
+> The LTC2654 shares the same 24-bit SPI protocol as the existing
+> LTC2632/2634/2636 devices, requiring minimal additions to the
+> driver.
+>=20
+> The LTC2654L-16 variant has been tested on a Phytec phyCORE-STM32MP1
+> board with the DAC connected via SPI1. The driver probes successfully
+> and all 4 channels are accessible via the IIO sysfs interface.
+>=20
+> Patch 1 adds the driver support.
+> Patch 2 updates the DT bindings documentation.
+>=20
+> David Marinovic (2):
+>   iio: dac: ltc2632: add support for LTC2654 DAC family
+>   dt-bindings: iio: dac: ltc2632: add LTC2654 compatible strings
+>=20
+> Signed-off-by: David Marinovic <david.marinovic@pupin.rs>
+
+What is this?
+
