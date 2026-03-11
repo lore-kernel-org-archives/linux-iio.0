@@ -1,56 +1,65 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6A9C3783DA;
-	Wed, 11 Mar 2026 07:06:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD15E39B955;
+	Wed, 11 Mar 2026 07:10:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773212805; cv=none; b=d8QBoxjyQXByutSgCPLgEKK9EVoQmWJbEMhTfDh7PVsGotbz+Uskw7AKM6D0M+JmltyzKGeRoN6R16TrGxEk1VozaWJPgDEwjaqKduXDl1rwH5r8prjMZqeFQ6Ndcm6iEIIQCjLWHntTN+COVqKjCs0sAr8J6P9r8Vf2pDrxcXo=
+	t=1773213061; cv=none; b=qclsP5Ji5qu6dy4vUCS5k6sqfznwCBj5+1CTWMOtCPm4c2/HN+umpQWCKdtVqFUPPb9HP70u2EnubIPy2pnD5pdlXCHkdMEw6ki69pLwd1ejx1kdzeEk8o3jAdifzbmN9S4xX44GS/heKDRpr9r+7Is4MdwJscgdjxqVz/b/IsQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773212805; c=relaxed/simple;
-	bh=RR9Qvte44D15VS4RtzccJeT1Fg0fLFhuLfeFArrffZg=;
+	s=arc-20240116; t=1773213061; c=relaxed/simple;
+	bh=S6DCtOFxG9F6QSwwhCT2DfwAh3MaroX/4RxL/8YtxZs=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VSbBMkMgLI7QxhiMgAEAlDAHV2m3pKottUhE/+UZ4LKKxaV112hTpbsg6ay/oc1r5y2B2sXO14GjrDU8JRGu+/CZrWO2oGd8yL+E0Hb+BtIVWbPpU1tAeaycXqsM7A1KN1MeOkMHC8LObgkU4ffkdrX79XBMUeL4D8VByMR7lIk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b=fUOLBM+t; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=S7sZ+qn8FACUln83C0i4DLTsbeI/cmXWfzQerQPfXqAhmOCJMfwtaknBQQiWgviKMIo2ejJ8IASnPme2/3LCh/i4bg1sVT5c8tgeLfUVUlKPc0mqoZiw3O9HS2m/vokARUhDDBIi7XCkmL+IJ3QcvYXRp1I09Y78ssANPk0noCU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ndCJQwuA; arc=none smtp.client-ip=198.175.65.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=linuxfoundation.org header.i=@linuxfoundation.org header.b="fUOLBM+t"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B573EC4CEF7;
-	Wed, 11 Mar 2026 07:06:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-	s=korg; t=1773212805;
-	bh=RR9Qvte44D15VS4RtzccJeT1Fg0fLFhuLfeFArrffZg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=fUOLBM+tf+Xmbt4WSJJkpYCsoDglyB9XUWNK0x+zAm8AzvWVlSG6KBa41S0GrubbI
-	 ZoQEs3UNBN2LOcYgEJ6duyxKpBwLRZSWELKfr9B6JshcfZLRBatSuaNYTSxGZyhzsU
-	 bxuv3gMR4x0ml1VaUAGr5vrWLWForGzRwzofRA0Q=
-Date: Wed, 11 Mar 2026 08:06:28 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Dan Carpenter <dan.carpenter@linaro.org>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
-	Sanjay Chitroda <sanjayembeddedse@gmail.com>, jic23@kernel.org,
-	m.tretter@pengutronix.de, mchehab@kernel.org,
-	p.zabel@pengutronix.de, tiffany.lin@mediatek.com,
-	andrew-ct.chen@mediatek.com, yunfei.dong@mediatek.com,
-	matthias.bgg@gmail.com, angelogioacchino.delregno@collabora.com,
-	johan@kernel.org, elder@kernel.org, pure.logic@nexus-software.ie,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	kernel@pengutronix.de, kees@kernel.org,
-	nabijaczleweli@nabijaczleweli.xyz, marcelo.schmitt1@gmail.com,
-	maudspierings@gocontroll.com, hverkuil+cisco@kernel.org,
-	ribalda@chromium.org, straube.linux@gmail.com, lukagejak5@gmail.com,
-	ethantidmore06@gmail.com, samasth.norway.ananda@oracle.com,
-	karanja99erick@gmail.com, s9430939@naver.com, tglx@kernel.org,
-	mingo@kernel.org, sun.jian.kdev@gmail.com, weibu@redadmin.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-mediatek@lists.infradead.org, greybus-dev@lists.linaro.org,
-	linux-staging@lists.linux.dev, skhan@linuxfoundation.org
-Subject: Re: [PATCH 1/7] staging: greybus: simplify cleanup using __free
-Message-ID: <2026031100-old-retry-ee2c@gregkh>
-References: <20260310200513.2162018-1-sanjayembedded@gmail.com>
- <20260310200513.2162018-2-sanjayembedded@gmail.com>
- <abCIBPZzZBfMoOtm@ashevche-desk.local>
- <abEQ6HA0CGGCyV1B@stanley.mountain>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ndCJQwuA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773213059; x=1804749059;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=S6DCtOFxG9F6QSwwhCT2DfwAh3MaroX/4RxL/8YtxZs=;
+  b=ndCJQwuAK1HLorygklM13IOBi/9kGCHTx7R4NW+UGp/oBzOoMdsKsKwK
+   iDRgra/P/2kvYRCHEqVTsn3Vs6I8/BHMcLh+loaWVDgxmcy992S5BsShT
+   NTAj8FKwaQgO1+FttKMyEIeMymF6rpcU1NKdMs7vtScd0Y0WSIygQwWKw
+   A3TYrV8nhtjKE3CH58YXzbouhWjmLiAmwG+q8a2XJ62LblDFmflXtBMvB
+   +hKGczk4Ba0UgBj1bwitDpHPxWpHetS7G5WmpU1zcCsI9EnqYiI4M9877
+   qBb33NlpVI7IpQxjuthGJnuloNwAZLQQYGGrS46PuvyCZcsLqaikeBJiu
+   w==;
+X-CSE-ConnectionGUID: vnXrTaZdQHyZIzvBP7Na6w==
+X-CSE-MsgGUID: l/1Qq+aYSH6P3fSw8G3+0A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11725"; a="74171605"
+X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
+   d="scan'208";a="74171605"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 00:10:58 -0700
+X-CSE-ConnectionGUID: atYMevo4T8OUE7O98QHNmA==
+X-CSE-MsgGUID: 1n+RXzXMQISQ9OfmBiYbrg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,113,1770624000"; 
+   d="scan'208";a="219619872"
+Received: from amilburn-desk.amilburn-desk (HELO localhost) ([10.245.244.178])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Mar 2026 00:10:54 -0700
+Date: Wed, 11 Mar 2026 09:10:52 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Kyle Hsieh <kylehsieh1995@gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Liam Beguin <liambeguin@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: adc: ltc2309: add support for ltc2305
+Message-ID: <abEVfIKYZSl-AnL8@ashevche-desk.local>
+References: <20260311-add_ltc2305_driver-v4-0-bc350d347f33@gmail.com>
+ <20260311-add_ltc2305_driver-v4-2-bc350d347f33@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -59,20 +68,42 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <abEQ6HA0CGGCyV1B@stanley.mountain>
+In-Reply-To: <20260311-add_ltc2305_driver-v4-2-bc350d347f33@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Mar 11, 2026 at 09:51:20AM +0300, Dan Carpenter wrote:
-> On Tue, Mar 10, 2026 at 11:07:16PM +0200, Andy Shevchenko wrote:
-> > To complete this, one may add a prerequisite to use guard()() first.
-> > 
-> 
-> I don't think we're encouraging people to re-write existing staging
-> code to use cleanup.h magic...  It's unclear if I have to review these
-> patches or if they're auto NAKed because we're not doing the conversions.
+On Wed, Mar 11, 2026 at 09:43:02AM +0800, Kyle Hsieh wrote:
+> Add support for the 2-channel LTC2305 ADC in the existing LTC2309 driver.
+> The LTC2305 and LTC2309 share similar features: both are 12-bit,
+> low-noise, low-power SAR ADCs with an I2C interface.
+> The main difference is the number of channels: LTC2305 has 2 channels,
+> while LTC2309 has 8 channels.
 
-I've already rejected them, we don't want this type of changes in
-staging at this point in time.
+...
 
-thanks,
+>  /* Order matches expected channel address, See datasheet Table 1. */
 
-greg k-h
+This comment now confusing, it should be kept at the initial enum, but the
+better idea is...
+
+> +enum ltc2305_channels {
+> +	LTC2305_CH0_CH1 = 0x0,
+> +	LTC2305_CH1_CH0 = 0x4,
+> +	LTC2305_CH0     = 0x8,
+> +	LTC2305_CH1     = 0xc,
+> +};
+> +
+>  enum ltc2309_channels {
+>  	LTC2309_CH0_CH1 = 0,
+>  	LTC2309_CH2_CH3,
+
+...to assign proper values (in necessary order) explicitly and adjust comment.
+Then add this patch on top.
+
+>  }
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
