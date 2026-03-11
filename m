@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 99DE016132A;
-	Wed, 11 Mar 2026 13:03:58 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6C3002FFDE1;
+	Wed, 11 Mar 2026 13:04:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773234238; cv=none; b=euYRIkLkk2pDWgrnUD3uq7MQd82pLP+CDrfVyi8OHjqiwuFoKr/ZuveFmGmMOj07O4wcCFOWVaOGxvtwHxauAnQrlizu2t0vqXFkOL8R5S0aP2OwM+HBk22wS473PyjKbbcz42AtdmxdPtoQtWVAbRnB2RFJmkrhRetQjhfkgYE=
+	t=1773234278; cv=none; b=oJvuhESoXgUk+p5MiOmr28h5xKyVMXHNFcUYr3thND2iavfB0375oz/GsRFS+sapK7rOCTaYJ7Q8ydrTvky/WK6XJc5m+A8lrz+nNizd5iuHNi+OHwotSXcLRNJ2KYuhgLEzVf1k/8g9NNEs5golk/u1+B/peLdCifXpEqb2S0c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773234238; c=relaxed/simple;
-	bh=02BWGCyBwEVGccAXuN3PhsDOGLBtLKmhhtdNxECuvRg=;
+	s=arc-20240116; t=1773234278; c=relaxed/simple;
+	bh=8o/nRfc4LXRembuRgqC+qmKlYNBcimO62f4HGENnZ0A=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iXpnYaIC1+NkwH9LJllMN22k5HA9Bi4k0O3QqGJjn+LnW9pL9oPWnQVSUbC3u+b+jLNAa0+VzpZVXkQg10bpTZTtaMd8Wd6/ye70ZKrLVt1kCpA/+x3VAQfIH00ezWrHpS8CqenKIts2uWvvMKf8v5kpUVTNOBLYi2q00KzqpkM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LeVzIeSF; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=ax5KDvtTVdmKpXEI/wrTRpWvNOnGHc5akYHOBpDlkzL+8GKb113wOlVl7CgS/+6s8Vtm++Fo2XjYqVzB13Lj/97XkjvfHD9PMLOgkxx9Q6PIFVtAK52xeCnzgLvfNugwpLsx7W6Bdg+aD6psWwqwkqemTtTZKRVaGlpSy8h+Y9k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HkP+0bSJ; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LeVzIeSF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A92C5C19425;
-	Wed, 11 Mar 2026 13:03:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HkP+0bSJ"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A370C4CEF7;
+	Wed, 11 Mar 2026 13:04:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773234238;
-	bh=02BWGCyBwEVGccAXuN3PhsDOGLBtLKmhhtdNxECuvRg=;
+	s=k20201202; t=1773234277;
+	bh=8o/nRfc4LXRembuRgqC+qmKlYNBcimO62f4HGENnZ0A=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=LeVzIeSFhnCa2b8BDIkpG1xraS+PIEHmtPipxkxgPOq7fTbu0HdDn5UcocvF5fpSs
-	 kGRQx5YV0rRIS1bE6U2MIWXBE0PZMDV+LZBGUJxid5mqPphUDfNHmr3zRYhWq713Zh
-	 2ZytrYhNxXJTYOYbZW0q3HR3Ws4yWGhZVrNVuz9fzV5HSuYMrnLP65hn9LEcnOCOjv
-	 zBrhXNOSx9oyXhV8TAWLUROIZLhuEFl4telRYm7AhXUXUh+2GvsVFr7RzjRzzfXjlB
-	 LqErI4osotkZSMmYJtThassB3VjIZO+TRxgLJferk3M5cZdGvZTKv9AXWeiWCafYWL
-	 pPNU1Uri0JPXg==
-Date: Wed, 11 Mar 2026 14:03:55 +0100
+	b=HkP+0bSJUtLRxoJLIZlB0t+c58PI7JxJVjY817K89N1uGFEiiccuwwIwkRniy8iSu
+	 E1+CNqgyQ2VTdLSBbbJGgo/g2txueqwI5bQNmymwqfJkpWDnn9qLapBQYJHxOBwKUB
+	 P6m5AYRgiDdAm2y8jnucvzMQiklxBorP5LB0uef6aRdrP1G6rCGUlEJ/XQ1onpYdSE
+	 nAHMeFua3X+19GiyUlEMN4LANKpQQ4W6JEJFItarVbwv07NpN9N8B6jn/ZCNXQ9+kR
+	 F5IWEv89RDUIe0NAZanemmy1u8WWZw5r5aqN+x0WO+HFZLUk58DlacKzBZY7JrDik5
+	 bLpK14V4/NEOg==
+Date: Wed, 11 Mar 2026 14:04:35 +0100
 From: Krzysztof Kozlowski <krzk@kernel.org>
 To: David =?utf-8?Q?Marinovi=C4=87?= <david.marinovic@pupin.rs>
 Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
@@ -35,7 +35,7 @@ Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
 	michael.hennerich@analog.com, devicetree@vger.kernel.org
 Subject: Re: [PATCH 2/2] dt-bindings: iio: dac: ltc2632: add LTC2654
  compatible strings
-Message-ID: <20260311-warping-ruby-marmoset-3d494a@quoll>
+Message-ID: <20260311-sassy-successful-earwig-afbd8e@quoll>
 References: <5d4fb8998d9634c3e5a8ed17b80dae07@pupin.rs>
  <4915e1023c72d2681b0c4ae028ec609e@pupin.rs>
 Precedence: bulk
@@ -52,91 +52,24 @@ In-Reply-To: <4915e1023c72d2681b0c4ae028ec609e@pupin.rs>
 On Tue, Mar 10, 2026 at 04:32:05PM +0100, David Marinovi=C4=87 wrote:
 > Add DT compatible strings for the LTC2654 DAC family variants
 > supported by the ltc2632 driver.
-
-Describe hardware, not driver.
-
 >=20
 > Signed-off-by: David Marinovic <david.marinovic@pupin.rs>
 > ---
 >  .../devicetree/bindings/iio/dac/lltc,ltc2632.yaml        | 9 +++++++--
 >  1 file changed, 7 insertions(+), 2 deletions(-)
 >=20
-> diff --git a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> index 733edc7d6d17..7ec663beec1a 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> +++ b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> @@ -4,14 +4,15 @@
->  $id: http://devicetree.org/schemas/iio/dac/lltc,ltc2632.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
->=20
-> -title: Linear Technology LTC263x 12-/10-/8-Bit Rail-to-Rail DAC
-> +title: Linear Technology LTC263x 12-/10-/8-Bit, LTC2654 16-/12-Bit,
-> Rail-to-Rail DAC
 
-There are multiple patch errors here. This is unmergeable.
+Please organize the patch documenting the compatible (DT bindings)
+before the patch using that compatible.
+See also: https://elixir.bootlin.com/linux/v6.14-rc6/source/Documentation/d=
+evicetree/bindings/submitting-patches.rst#L46
 
->=20
->  maintainers:
->    - Michael Hennerich <michael.hennerich@analog.com>
->=20
->  description: |
-> -  Bindings for the Linear Technology LTC2632/2634/2636 DAC
-> +  Bindings for the Linear Technology LTC2632/2634/2636/2654 DAC
->    Datasheet can be found here: https://www.analog.com/media/en/technical=
--documentation/data-sheets/LTC263[246].pdf
-> +  Datasheet can be found here:
-> https://www.analog.com/media/en/technical-documentation/data-sheets/2654f=
-=2Epdf
->=20
->  properties:
->    compatible:
-> @@ -34,6 +35,10 @@ properties:
->        - lltc,ltc2636-h12
->        - lltc,ltc2636-h10
->        - lltc,ltc2636-h8
-> +      - lltc,ltc2654-l16
-> +      - lltc,ltc2654-l12
-> +      - lltc,ltc2654-h16
-> +      - lltc,ltc2654-h12
+Please run scripts/checkpatch.pl on the patches and fix reported
+warnings. After that, run also 'scripts/checkpatch.pl --strict' on the
+patches and (probably) fix more warnings. Some warnings can be ignored,
+especially from --strict run, but the code here looks like it needs a
+fix. Feel free to get in touch if the warning is not clear.
 
-Several look compatible to me, so express it with fallback and drop
-unneeded entries in the driver.
-
->=20
->    reg:
->      maxItems: 1
-> --
-> 2.50.1
->=20
->=20
->=20
->=20
-> -------- Original Message --------
-> Subject: [PATCH 0/2] iio: dac: ltc2632: add support for LTC2654 DAC family
-> Date: 10.03.2026 16:27
-> From: David Marinovi=C4=87 <david.marinovic@pupin.rs>
-> To: jic23@kernel.org
->=20
-> This patch series adds support for the Linear Technology LTC2654
-> quad DAC family to the existing ltc2632 driver.
->=20
-> The LTC2654 shares the same 24-bit SPI protocol as the existing
-> LTC2632/2634/2636 devices, requiring minimal additions to the
-> driver.
->=20
-> The LTC2654L-16 variant has been tested on a Phytec phyCORE-STM32MP1
-> board with the DAC connected via SPI1. The driver probes successfully
-> and all 4 channels are accessible via the IIO sysfs interface.
->=20
-> Patch 1 adds the driver support.
-> Patch 2 updates the DT bindings documentation.
->=20
-> David Marinovic (2):
->   iio: dac: ltc2632: add support for LTC2654 DAC family
->   dt-bindings: iio: dac: ltc2632: add LTC2654 compatible strings
->=20
-> Signed-off-by: David Marinovic <david.marinovic@pupin.rs>
-
-What is this?
+Best regards,
+Krzysztof
 
