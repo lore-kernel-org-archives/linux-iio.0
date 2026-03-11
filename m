@@ -1,126 +1,207 @@
-Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D9E233A7592
-	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 07:23:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C2EA43B19B2;
+	Wed, 11 Mar 2026 07:42:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773213796; cv=none; b=rEEEjo/3TMS6BGBS9KUDCAAoUw0PpeLeV5ZxG8qvnKk4WmwhpOWyfWgE1wXr+6Jav/OYRFOWxgqyN+xCeAaGWkPzHUXDjsDE9PE6nafK5YrmvvbaKzasNoOt3Sock+1GBvCPJIpIPsQMbdrfOoa+HtEj763sTvVK/LNBGx1ybNA=
+	t=1773214935; cv=none; b=RHJnLOdw6vZ8+BqXtw3SL/Ri0fHDK3H9NixfmzgFWxZv1g7B9ARSPedhle5heTcKDvVHBOY7gYrb+ZOm/+YHNqOyOJwFJPWEi5DGEfnZm57jLlzAs6iwf9vKGBS70xL8tXurH7RHBRW78edTBcbXwiE4psA+ilo3SI3JtxWraZA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773213796; c=relaxed/simple;
-	bh=k8rz1SI/iu18xVsuv9AvC01u3jy55XY3qSnSKKjJHjU=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=f1+Mwdi09DozOUhDs7wJ6b6+zVdAjQRm3lRsxwAGBruDMFygOXasrp3MW0JWsRN9Bk9aY3EN1Iij7C4k6wNPmkgcnEq3ie3M6FcLud5w8q+511xo9UNpzWhIJbzPWFhS2bVk7B7QRUbPNlUbZVjl+lRnZGmyWK9reFlRXb4iIR0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PwUFmmQG; arc=none smtp.client-ip=209.85.128.46
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773214935; c=relaxed/simple;
+	bh=QeLzGLF8CNjkYSPppK6zWOOzDKT7ad73s5qPIAspWWk=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=VY9CBDF6CEgczuFoRa3OJNHifwgvtULe/LKqXjA29roKf+jqr4mV4RoNikCEo1RReu5RzdNf1Q2apNgfEUusKP1ygEnLUcXEwbhK0T1si9C15fiIFtVsOnbRz5LZ9Hlm3catZS+wBk4JdNUu3a0TJ+5de6KGBQG7z4PN75Za8AE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=IaDeYa6H; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PwUFmmQG"
-Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-4836fc075d2so11849805e9.0
-        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 00:23:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773213786; x=1773818586; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=86aRCi8i7mN6Pgruptnj4oyN+hhEXKOO9Bvzbg+MT14=;
-        b=PwUFmmQGFh+j+AC+cW6hdklGyiEJnzFgXAyB/jf+YqhxCSzhkU2c5kRyc85keI3BHG
-         8zHa8v2MYk10UhFpE3i9aaJCOkoXkdvPEAe1KfkftT7wE1D53HonXMer5z7zKwDUNSQj
-         IfALvRLn5KWY/QfaN+0BC5u6Dv8WsX0oqg13M1pjsAj+mJENkv+DpVlhl2avvfsn6GtV
-         y+BWcBCAGLIqig5XweR1SGTxxJxjFxQP4NPfW4z/EUnIcIpomgPb9Mt2kfzcMcajaeuN
-         b42gIASrUHDt/ohliFVFT+DFXuxXGys7CLdFYs6gqgDB3ag9LpU63wIk8Jz9vHjcQ6pT
-         0o0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773213786; x=1773818586;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=86aRCi8i7mN6Pgruptnj4oyN+hhEXKOO9Bvzbg+MT14=;
-        b=XSoKZg5kqfSh+KqSDvDnbVkBgS/ytT59XWl8ud1ypTgUCHXkMuOrZbPDR70B4xgvYT
-         cHGr3zg15CG3GDR0EP4dJWTyp59EKyxR4+/8rFMgPw2eLdn7LKni9ZH11mMRLEwmKJ9J
-         v4AS2wzjfi7tFb2hLCrDllIF9DbAvdwbys7G2Vs9ACrbcFrX/okAUYJ4SJ1S/PN9Ds3L
-         bD0A06PeynI0THusO/ekANj/97OrJqnusAVom0Bss2aVTHC6c2xQ/dA4W7BZEXdBHTHl
-         ILZQ58q3Sy1KsRjx0bfmzCC1U6USSs/NJ2Ipti0cqfO2B+r3HglLqt2OdvXamQoz5yx5
-         1exw==
-X-Forwarded-Encrypted: i=1; AJvYcCVzyxqgcU9rkRgkDF2d/RTDRi6NzCl3hH+/cH+xARFdHJZdu7tMCg0qhFVgeXsJgEbpxxhLACfsrYA=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyy1259v+KM0nvaau5hzL/7l1mUS5BdpyWVr6cTvgSnHkSbhnpf
-	OQsx26ZM64ctzclNw/KwVGxkwZT//HbV2/AUViqJkK1Z6154O+qARFGIgmAN33ELqHQ=
-X-Gm-Gg: ATEYQzwespMbqDK+sbk0dVwdhbcm7P3ehoxokivYX9xmmPFIF5PCvr+gux32Iy5pVLw
-	HN6jDEZ9+dLaaVg35HOWiul/ZSD9ZhcUwn6ehLR5XsnH9nJ4tdyxLhgpS+ey/J/WFCcAdBBeFrN
-	e3xYoJl5OeEndRXNvIuXKD4PHHeSiCCzzzjT0HrKOl7qoysQL5sIWB3OZc5eAEoal67aIdgmB/p
-	ESIG8iprzWlixDjS0jn5sen889Mc4XhZJ98AeeH7my3tE3qtQeML3pecryahxunJnMEGEmHWkGY
-	2YhGepqHJLzK/VwysAxIssVW0BsD/5Mn3AMuMXjltHyGAKL2/0SN1x1xF+ZsSykAASCZ2qLA0AD
-	gyfqMZp4PvrYHvSt+BplDzDSet1pUShE1Pz3gFHitfiCbvGRgb2DoSV0myIXx5LAM0cJ8MbkkmM
-	TfGzBmHOTTeKNu6ZEITZmc8MHR+SfMM0emkJXIYIKEoVX6xkVovsWoLdP5jfbw4RbTRmFj57PqC
-	IF11sXpE2WBYk99AqUFdoZjqUbRs8CDevNrx+hYEQRkrmHye8A47v9qBKIKGDg=
-X-Received: by 2002:a05:600c:35c6:b0:485:2af3:3f89 with SMTP id 5b1f17b1804b1-4854b0abbcfmr16031965e9.2.1773213785875;
-        Wed, 11 Mar 2026 00:23:05 -0700 (PDT)
-Received: from fedora ([149.3.87.76])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4854b0c3d66sm10785915e9.17.2026.03.11.00.23.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2026 00:23:05 -0700 (PDT)
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-To: antoniu.miclaus@analog.com,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Subject: [PATCH] iio: adc: ad4130: Adjust indentation so statements start on tabstop
-Date: Wed, 11 Mar 2026 11:21:58 +0400
-Message-ID: <20260311072156.35057-3-giorgitchankvetadze1997@gmail.com>
-X-Mailer: git-send-email 2.52.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="IaDeYa6H"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 652C0C4CEF7;
+	Wed, 11 Mar 2026 07:42:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773214935;
+	bh=QeLzGLF8CNjkYSPppK6zWOOzDKT7ad73s5qPIAspWWk=;
+	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+	b=IaDeYa6HVLa5+Y+GeU4WjTVwOsw2dslf81mBsXvq4uvNyyVpVoQLS0E6dgtOZSR+z
+	 20OEJPhAX7rrfue/1OOZHoQPpiKzLp+h3m+/RaKNbFn/zcW4opLrFuZJrE46dO0wgS
+	 20AC+JAsRromrO84+WIlL2bXLxGjx3E+EwF/eZRLmXMT7nrJNxUELfuiZYj7yH4YdV
+	 pxx9T/NOF3BfiUwdw58jaYYcPxHvQ5T1IOPBxUfoe1IBi575PZmoA2Cf1rrPsqqfxy
+	 /xblIbH0T4EuLRcyX185vyZ93GjXW3yyhofcwCum6r49Iefw07Pm/jRQmzN4xDEzMj
+	 O1lVEbYwPD8iQ==
+Message-ID: <604e98e6-dd40-4b44-92c4-5164c02cb996@kernel.org>
+Date: Wed, 11 Mar 2026 07:42:08 +0000
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 05/10] nvmem: qcom-spmi-sdam: Migrate to
+ devm_spmi_subdevice_alloc_and_add()
+To: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>,
+ jic23@kernel.org
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ arnd@arndb.de, gregkh@linuxfoundation.org, srini@kernel.org,
+ vkoul@kernel.org, neil.armstrong@linaro.org, sre@kernel.org,
+ sboyd@kernel.org, krzk@kernel.org, dmitry.baryshkov@oss.qualcomm.com,
+ quic_wcheng@quicinc.com, melody.olvera@oss.qualcomm.com,
+ quic_nsekar@quicinc.com, ivo.ivanov.ivanov1@gmail.com, abelvesa@kernel.org,
+ luca.weiss@fairphone.com, konrad.dybcio@oss.qualcomm.com,
+ mitltlatltl@gmail.com, krishna.kurapati@oss.qualcomm.com,
+ linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+ linux-pm@vger.kernel.org, kernel@collabora.com
+References: <20260114092742.13231-1-angelogioacchino.delregno@collabora.com>
+ <20260114092742.13231-6-angelogioacchino.delregno@collabora.com>
+Content-Language: en-US
+From: Srinivas Kandagatla <srini@kernel.org>
+In-Reply-To: <20260114092742.13231-6-angelogioacchino.delregno@collabora.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Replace spaces used for alignment in the struct inside
-static_assert() with tabs so that statements start on a tabstop.
 
-This addresses all checkpatch warnings about statements not starting
-on a tabstop in this file.
 
-No functional change.
+On 1/14/26 9:27 AM, AngeloGioacchino Del Regno wrote:
+> Some Qualcomm PMICs integrate a SDAM device, internally located in
+> a specific address range reachable through SPMI communication.
+> 
+> Instead of using the parent SPMI device (the main PMIC) as a kind
+> of syscon in this driver, register a new SPMI sub-device for SDAM
+> and initialize its own regmap with this sub-device's specific base
+> address, retrieved from the devicetree.
+> 
+> This allows to stop manually adding the register base address to
+> every R/W call in this driver, as this can be, and is now, handled
+> by the regmap API instead.
+> 
+> Reviewed-by: Konrad Dybcio <konrad.dybcio@oss.qualcomm.com>
+> Tested-by: Neil Armstrong <neil.armstrong@linaro.org> # on SM8650-QRD
+> Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+> ---
 
-Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
----
- drivers/iio/adc/ad4130.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+Am not sure what is the merge strategy, if you want me to take it via
+nvmem tree, please let me know otherwise
 
-diff --git a/drivers/iio/adc/ad4130.c b/drivers/iio/adc/ad4130.c
-index 5567ae5dee88..f90b2dbf501d 100644
---- a/drivers/iio/adc/ad4130.c
-+++ b/drivers/iio/adc/ad4130.c
-@@ -605,15 +605,15 @@ static bool ad4130_setup_info_eq(struct ad4130_setup_info *a,
- 	 */
- 	static_assert(sizeof(*a) ==
- 		      sizeof(struct {
--				     unsigned int iout0_val;
--				     unsigned int iout1_val;
--				     unsigned int burnout;
--				     unsigned int pga;
--				     unsigned int fs;
--				     u32 ref_sel;
--				     enum ad4130_filter_type filter_type;
--				     bool ref_bufp;
--				     bool ref_bufm;
-+				unsigned int iout0_val;
-+				unsigned int iout1_val;
-+				unsigned int burnout;
-+				unsigned int pga;
-+				unsigned int fs;
-+				u32 ref_sel;
-+				enum ad4130_filter_type filter_type;
-+				bool ref_bufp;
-+				bool ref_bufm;
- 			     }));
- 
- 	if (a->iout0_val != b->iout0_val ||
--- 
-2.52.0
+
+Acked-by: Srinivas Kandagatla <srini@kernel.org>
+
+
+--srini
+>  drivers/nvmem/Kconfig          |  1 +
+>  drivers/nvmem/qcom-spmi-sdam.c | 38 +++++++++++++++++++++++-----------
+>  2 files changed, 27 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/nvmem/Kconfig b/drivers/nvmem/Kconfig
+> index bf47a982cf62..5e924c869e77 100644
+> --- a/drivers/nvmem/Kconfig
+> +++ b/drivers/nvmem/Kconfig
+> @@ -368,6 +368,7 @@ config NVMEM_SNVS_LPGPR
+>  config NVMEM_SPMI_SDAM
+>  	tristate "SPMI SDAM Support"
+>  	depends on SPMI
+> +	select REGMAP_SPMI
+>  	help
+>  	  This driver supports the Shared Direct Access Memory Module on
+>  	  Qualcomm Technologies, Inc. PMICs. It provides the clients
+> diff --git a/drivers/nvmem/qcom-spmi-sdam.c b/drivers/nvmem/qcom-spmi-sdam.c
+> index 4f1cca6eab71..4974105dd963 100644
+> --- a/drivers/nvmem/qcom-spmi-sdam.c
+> +++ b/drivers/nvmem/qcom-spmi-sdam.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/nvmem-provider.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/regmap.h>
+> +#include <linux/spmi.h>
+>  
+>  #define SDAM_MEM_START			0x40
+>  #define REGISTER_MAP_ID			0x40
+> @@ -20,7 +21,6 @@
+>  struct sdam_chip {
+>  	struct regmap			*regmap;
+>  	struct nvmem_config		sdam_config;
+> -	unsigned int			base;
+>  	unsigned int			size;
+>  };
+>  
+> @@ -73,7 +73,7 @@ static int sdam_read(void *priv, unsigned int offset, void *val,
+>  		return -EINVAL;
+>  	}
+>  
+> -	rc = regmap_bulk_read(sdam->regmap, sdam->base + offset, val, bytes);
+> +	rc = regmap_bulk_read(sdam->regmap, offset, val, bytes);
+>  	if (rc < 0)
+>  		dev_err(dev, "Failed to read SDAM offset %#x len=%zd, rc=%d\n",
+>  						offset, bytes, rc);
+> @@ -100,7 +100,7 @@ static int sdam_write(void *priv, unsigned int offset, void *val,
+>  		return -EINVAL;
+>  	}
+>  
+> -	rc = regmap_bulk_write(sdam->regmap, sdam->base + offset, val, bytes);
+> +	rc = regmap_bulk_write(sdam->regmap, offset, val, bytes);
+>  	if (rc < 0)
+>  		dev_err(dev, "Failed to write SDAM offset %#x len=%zd, rc=%d\n",
+>  						offset, bytes, rc);
+> @@ -110,8 +110,17 @@ static int sdam_write(void *priv, unsigned int offset, void *val,
+>  
+>  static int sdam_probe(struct platform_device *pdev)
+>  {
+> +	struct regmap_config sdam_regmap_config = {
+> +		.reg_bits = 16,
+> +		.val_bits = 8,
+> +		.max_register = 0xff,
+> +		.fast_io = true,
+> +	};
+>  	struct sdam_chip *sdam;
+>  	struct nvmem_device *nvmem;
+> +	struct spmi_device *sparent;
+> +	struct spmi_subdevice *sub_sdev;
+> +	struct device *dev = &pdev->dev;
+>  	unsigned int val;
+>  	int rc;
+>  
+> @@ -119,19 +128,23 @@ static int sdam_probe(struct platform_device *pdev)
+>  	if (!sdam)
+>  		return -ENOMEM;
+>  
+> -	sdam->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+> -	if (!sdam->regmap) {
+> -		dev_err(&pdev->dev, "Failed to get regmap handle\n");
+> -		return -ENXIO;
+> -	}
+> +	sparent = to_spmi_device(dev->parent);
+> +	sub_sdev = devm_spmi_subdevice_alloc_and_add(dev, sparent);
+> +	if (IS_ERR(sub_sdev))
+> +		return PTR_ERR(sub_sdev);
+>  
+> -	rc = of_property_read_u32(pdev->dev.of_node, "reg", &sdam->base);
+> +	rc = device_property_read_u32(dev, "reg", &sdam_regmap_config.reg_base);
+>  	if (rc < 0) {
+> -		dev_err(&pdev->dev, "Failed to get SDAM base, rc=%d\n", rc);
+> +		dev_err(dev, "Failed to get SDAM base, rc=%d\n", rc);
+>  		return -EINVAL;
+>  	}
+>  
+> -	rc = regmap_read(sdam->regmap, sdam->base + SDAM_SIZE, &val);
+> +	sdam->regmap = devm_regmap_init_spmi_ext(&sub_sdev->sdev, &sdam_regmap_config);
+> +	if (IS_ERR(sdam->regmap))
+> +		return dev_err_probe(dev, PTR_ERR(sdam->regmap),
+> +				     "Failed to get regmap handle\n");
+> +
+> +	rc = regmap_read(sdam->regmap, SDAM_SIZE, &val);
+>  	if (rc < 0) {
+>  		dev_err(&pdev->dev, "Failed to read SDAM_SIZE rc=%d\n", rc);
+>  		return -EINVAL;
+> @@ -159,7 +172,7 @@ static int sdam_probe(struct platform_device *pdev)
+>  	}
+>  	dev_dbg(&pdev->dev,
+>  		"SDAM base=%#x size=%u registered successfully\n",
+> -		sdam->base, sdam->size);
+> +		sdam_regmap_config.reg_base, sdam->size);
+>  
+>  	return 0;
+>  }
+> @@ -181,3 +194,4 @@ module_platform_driver(sdam_driver);
+>  
+>  MODULE_DESCRIPTION("QCOM SPMI SDAM driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS("SPMI");
 
