@@ -1,96 +1,89 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79AAB33AD99
-	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 09:42:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2BF082ED17B;
+	Thu, 12 Mar 2026 10:33:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773308550; cv=none; b=AmCH4QmKov1+gBLh2vsFI9G5XKAjJ1J+hNABMihv2k3vU+OYAQIM2lDj5t3+XokSCmsrTImkvEBvXiun9Xvusndt+oBFqgrgukQToiwQPF0AopUqxyX8oW6T+PQ8QXxwTM53hifg5S+DLbzUxpBnm1TpzcJwqi85sJ03tVBIeIw=
+	t=1773311631; cv=none; b=foRe2q84v67MpQDACchQCVRnlzhbsyzQafFPsolE2ycJYGJgMNIObnimGgk2yyM6jxmPjEdMet9re8HPRWb5A49wA/NAaZZOLwJwbQZZ42diE7/bbZeO0ojEGqZCGbqAOxlkeis1ZeRbQE68+LTRWXbujjQkAS2o3BUwxfAY/Y8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773308550; c=relaxed/simple;
-	bh=LrRJyq6VQySVl718hq4Y+k08CQJyzUJ7fs3zZEZlLSU=;
+	s=arc-20240116; t=1773311631; c=relaxed/simple;
+	bh=3KpvAXpeJPWsqPRCeJHW5Vw6LfZFOwJwVnd5HxIyanI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=io/LEC9MvkBYsUIOzxH/JN2OYZie2m/ZAkDGYov7nocIm7++LDusIowjbCtJS6npnNK3lH9G9DteebL7a78t2NNC74c8IwLBYhLIAEuEmXIlWEWt24dTg3PzvdpPAO4hrpe6/bBSlVgSbDsbRsMQBGmipiQAd2YIloxYhvJlx8I=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=NlRQdQzy; arc=none smtp.client-ip=198.175.65.16
+	 Content-Type:Content-Disposition:In-Reply-To; b=fh6/zLMN7wai2gOKSXodEjbHZcxlXCMFXPEhR5j8YaZsVzrKZNuefPvQoN4MmVDTTkhKhWpvuuZ+c0ybcxtNqDhJa3UyL4fa0V4al2XbPS/x6SUAmBMqmJE3opH1VlnoLZFey+W6kQVTO/DXBYY4Qk/izUUOV7YuUmNJbuOsQVA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EZ4BgFm5; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="NlRQdQzy"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EZ4BgFm5"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773308549; x=1804844549;
+  t=1773311630; x=1804847630;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=LrRJyq6VQySVl718hq4Y+k08CQJyzUJ7fs3zZEZlLSU=;
-  b=NlRQdQzyMpEBJjQpuRY2j5UZbGfwArG7Rz96vUQKvg7DA9q4D+xlVbwY
-   nByscWzVbGaDWlDDqB1cjkI01YPzpZAoXYW9f6wn32KH/CNtoNHGdLCqw
-   WUIVY5SD6PAB4xJnf2Z/mRFfERjZecNCAZm8GVTkozTWQH9hM/Vp44a6i
-   Som9RIiPWyssxstyqs7l6SL9tH0XlRCY5cGYWexrDQF2ia5rdeB4rn4Ua
-   5hxPOuwWJwHTfuyD0azbjtNh3bF3cQzIbn68iVt+8oftiOrEOFBVT/zod
-   sF9acT+U+5IF0NUjLTaVUvKfx8e9EmjMS9/ccSCGw2Vm9zH6xCnX4qKus
+   mime-version:in-reply-to;
+  bh=3KpvAXpeJPWsqPRCeJHW5Vw6LfZFOwJwVnd5HxIyanI=;
+  b=EZ4BgFm5LYof/NnKowkD53TbXTm/gyFyF328+ZofSRm/8JkJjJAhG+PC
+   1sxINPrPPgc3p3ZvIuGJyuM+YCjkCEmMkXwfo3FqtFclL3+P9kF6Rqzjp
+   vnOIIxl4oX69hgllJZMvow2RzToVApj2noMxGIHGUoPzh98KpnvV/dylU
+   dpiVubSDOzwMk5q4F8bFwGtMF2ijPBm9VlkcotJO7AvMLfvO5xGsMBNvL
+   DR0Nw48DHpBKjF/GFVC4uJjkr25VgJ4xb6scCDm8sQadW+pWH0TebV3Nh
+   6vEoZCbI8X/cojlmon2iZdalyR0NDGnVGE4IFvvNbxLpbJ2Egnn6y90k8
    g==;
-X-CSE-ConnectionGUID: PUXWYVQbS7uqKM6N7DERVA==
-X-CSE-MsgGUID: B2SiEUIgRHeewsGzOVfxUg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11726"; a="74583757"
+X-CSE-ConnectionGUID: 5ryLe5ciRaWTpm8B7nTVRg==
+X-CSE-MsgGUID: JjCo7mOHRdaJBlnSUVcRJw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11726"; a="85875262"
 X-IronPort-AV: E=Sophos;i="6.23,116,1770624000"; 
-   d="scan'208";a="74583757"
-Received: from orviesa009.jf.intel.com ([10.64.159.149])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2026 02:42:29 -0700
-X-CSE-ConnectionGUID: /SO9ZloWSTSHZxcOZSpezQ==
-X-CSE-MsgGUID: nIxZNAc/TluDa4VxxV6HRg==
+   d="scan'208";a="85875262"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2026 03:33:49 -0700
+X-CSE-ConnectionGUID: jGEwWJIHTIu3URx9PPU2WQ==
+X-CSE-MsgGUID: 2p8/WmRSR7y3c2VTu7wO1A==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,116,1770624000"; 
-   d="scan'208";a="220716281"
+   d="scan'208";a="220976616"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2026 02:42:26 -0700
-Date: Thu, 12 Mar 2026 11:42:24 +0200
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2026 03:33:47 -0700
+Date: Thu, 12 Mar 2026 12:33:43 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ad4130: Adjust indentation so statements start
- on tabstop
-Message-ID: <abKKgPUkoKQ39Ho0@ashevche-desk.local>
-References: <20260311072156.35057-3-giorgitchankvetadze1997@gmail.com>
- <abGPhYz-5OLeYg07@ashevche-desk.local>
- <CAE7dp2pO+Dx654ybH47uu7FTyoNfTHaEB8ihxiMFjQYONrODhg@mail.gmail.com>
+To: Randy Dunlap <rdunlap@infradead.org>
+Cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: st_sensors: correct kernel-doc issues
+Message-ID: <abKWh4ACsYzTI9fr@ashevche-desk.local>
+References: <20260312051347.681042-1-rdunlap@infradead.org>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAE7dp2pO+Dx654ybH47uu7FTyoNfTHaEB8ihxiMFjQYONrODhg@mail.gmail.com>
+In-Reply-To: <20260312051347.681042-1-rdunlap@infradead.org>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Mar 12, 2026 at 09:49:27AM +0400, Giorgi Tchankvetadze wrote:
-> On Wed, Mar 11, 2026 at 7:51 PM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
+On Wed, Mar 11, 2026 at 10:13:45PM -0700, Randy Dunlap wrote:
+> Use the proper kernel-doc format and struct member names to avoid
+> kernel-doc warnings:
 > 
-> > No need to touch this. I was against that static_assert() in the first place,
-> > and still against it. In my opinion it brings no real value as I can craft a
-> > layout that will have the same members and sizeof, but different types.
-> >
-> > In my opinion it's better to just remove it completely.
-> 
-> I adjusted the indentation only to address the checkpatch warnings.
+> Warning: include/linux/iio/common/st_sensors.h:184 struct member 'int1'
+>  not described in 'st_sensor_data_ready_irq'
+> Warning: ../include/linux/iio/common/st_sensors.h:184 struct member 'int2'
+>  not described in 'st_sensor_data_ready_irq'
+> Warning: ../include/linux/iio/common/st_sensors.h:184 struct member
+>  'stat_drdy' not described in 'st_sensor_data_ready_irq'
+> Warning: ../include/linux/iio/common/st_sensors.h:184 struct member 'ig1'
+>  not described in 'st_sensor_data_ready_irq'
+> Warning: ../include/linux/iio/common/st_sensors.h:219 struct member
+>  'num_ch' not described in 'st_sensor_settings'
+> Warning: ../include/linux/iio/common/st_sensors.h:263 struct member
+>  'num_data_channels' not described in 'st_sensor_data'
 
-checkpatch is not AR (action required) tool, it's recommendation one and
-sometimes even it brings false positives or (rarely) harmful recommendations
-like in this case (because it doesn't understand well what's going on in
-this piece). You may experiment with clang-format on the other hand and see
-when it gives better result. Note, we have a specific clang-format
-configuration in the kernel source tree.
-
-> If the consensus is that static_assert doesn't add meaningful
-> guarantees and should
-> be removed, I'm happy to send a follow-up patch dropping it.
+Thanks, it's a good patch for this driver!
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
