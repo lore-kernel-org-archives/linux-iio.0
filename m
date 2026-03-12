@@ -1,64 +1,65 @@
-Received: from mail-wr1-f41.google.com (mail-wr1-f41.google.com [209.85.221.41])
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 67156368947
-	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 11:53:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88F7838D008
+	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 11:53:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773316401; cv=none; b=MwRF9q5Ytn8NvDiSzK7ayiJzmawnrB53Ix8tmqtRBGGyE9jexWVF3f7DFPgaJMYRcDO0NBPoXLebvBib6cVkoikSwFYiOTMjg4fSwYZGQWA1aD4Nv6AEMZl6VqxO8TzWR2fkRLWN0tKfFznluXHI1sVJHoQ5TR+QpIc1zHwUzqc=
+	t=1773316402; cv=none; b=aSCXD9R0FovxZ1Vh8vkzuHZ4UQImuyQZh0W1qBeDJnxqcOvimThCxx/USxeOjC2ECDteTmLJiXIbHmN0/OuvZZR2c4yNQKmNIhr3gbqxd9XYFNzIIqaM/+h2SpTzw88X2qI9CvlpmdSDNcfEI1zSshbHyPw4gF1gTKLCdx1mQjk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773316401; c=relaxed/simple;
-	bh=J+U5drShINo5+0B3DYDVjx3TPOFOzJe4Hqp6zGMExds=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=dMhaTOmcFq5lqzuh2YHYoBEqjzRsqQ7PKDv3PVC/9ieWFlxg62xV7BGz2gSJ2mTZyRQSgxt592iaQJgbRm90fGNrtR/HUNnM9N2kIXurG08np2K898rGCPpP/eUDY2IfaO6+41WZ+geAGknYQsrgkKrL+7daU3T8JbZ1aWcANiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Lbtg1hK3; arc=none smtp.client-ip=209.85.221.41
+	s=arc-20240116; t=1773316402; c=relaxed/simple;
+	bh=2iIh6/jj/6H6G9sjbI72U6v40DlA/kmaSOoZzH3A9CA=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=TVaIXIHJrgm9EpXBUOPgVj2TJwe+lkY6qd44wqMojmjfuxMn1H+7+7kf8tEH8nmKFTBmnQpiCyne8b0VEbxeu0q9nHAPERQmz/D1IoKj5r7n5KrNTxin2pS9jvcAnWgWP0U1BWxRY0oKquip4zfEAcOt79e5mfXgSkoxdz1jm/g=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FkyYbbL7; arc=none smtp.client-ip=209.85.221.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lbtg1hK3"
-Received: by mail-wr1-f41.google.com with SMTP id ffacd0b85a97d-439cb5af25bso975017f8f.1
-        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 04:53:20 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FkyYbbL7"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-439b9b1900bso617165f8f.1
+        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 04:53:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773316399; x=1773921199; darn=vger.kernel.org;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=44LXRHinVhycilszR/4yNd78RLiYQ/Nblg4COhfoEQc=;
-        b=Lbtg1hK3yB3gYJ56R5yPo3Tx9k2eZYG8+itJUNHVDWUJUXTDBu0kzBHMQqaureLXVj
-         qxNOepIhvFJrhr1W6ECWaS18js0pWx3Pa+6tMb6EHuY1RR6glc4uhuhrTT62hJptXQD7
-         E3CzztCMcd0AC46SSWKREQxHRjVWAwp0eZqclmqvY9vUhs1BSzmzysIQbOweXvdGs2iQ
-         8mrzW5gptAhciyV2B6lPdb5AXdTw9R1jR/C10oikQZC/NMdQQliwskkXGD6Ng+v/NJoy
-         dJjcoH07vL9XdLuGI5Oqyb1SOH5hni1V/nnss9KX71lUd76R94FNL19e8eU5ayciAXX+
-         VlMA==
+        d=gmail.com; s=20230601; t=1773316400; x=1773921200; darn=vger.kernel.org;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=gk8qVbjj9bf3D7zS5clldQ8atXUlML3S3z10DBlLuFw=;
+        b=FkyYbbL7aZoySwQlbBWia42i5HN4GslFA78IhvI6pIY+6+AvbjC3AItvOu/Pev3iNS
+         WmLqRlhsTE4yMJSdFXvWI6xt5q1ibXqyuMeTfFtVWkLGSc1JhRDVz9qiUJNlm1p+hmgR
+         x3kk+0KA36ukzsm4I0rKPqwTWfHSGXD4Vfo4kq2vyE0f5AEm32EM5Ln3DwagqGAiBTGr
+         SLiM9Bz70dahF3Rm2aXvgtnb8yu0QHYXxxx2Pm/LgdF+X/TD8rJfaMY9tAsp+Pj4Tu/h
+         4jr60MHL0vNERXC0Wr4BXE7p/lwxbc4Mgo4egckQFTdDLPVSDztgK+kZyoUEuEv/IDfh
+         Qprw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773316399; x=1773921199;
-        h=cc:to:content-transfer-encoding:mime-version:message-id:date
-         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=44LXRHinVhycilszR/4yNd78RLiYQ/Nblg4COhfoEQc=;
-        b=dIrJsLLX7BQZ9qSs2jR7le/b0rDLr54/oQ+xaPQNbMQzQO+EsF06YGY7zjv6NCJEL3
-         SQn2M325FPt1zHBXwi+i99TeAJUsVTW541stx923n3fMzd4Yi03YHmbmRjFXS05QbR4N
-         jM1NjkyyURkOZaIQTvdhoYTPh679q7hodQU4dFbeY67hbGgju47ihCRA6LTXmmmTws+X
-         iJUPjDVFJmYCiVpSQ7uq1Re30IarCPb1OGpxoFmFKdizyQfdgFchjmA0taveNN443kW1
-         KHIWlN3qNUPPFBJMsmJxNBefMAPNECHfC9C5KpR0Wie5AinsHEr/AEPAnPEDltPZGuK7
-         ivbg==
-X-Gm-Message-State: AOJu0YzOXeWlF4EbM59+KJuL04QA47zLFLgRCZ6wwG/qRuj6L/2nNUdG
-	X1EuZ6ZlX6+gTv1uf/n5Aq2CLo2m3HmVgZ6PyMYycSCk0BTZxWXykYVB
-X-Gm-Gg: ATEYQzxMQwWpHkwQr5dFr/SxzYkV7SWbbKIH1JoNVPEREzBhwI3ynpz3E6SoZmhREVd
-	NnwujH3Xx0O7xR4PRrX9B82am87Q2x8P4wn1Ea4vaVcBycTuktqEzuTKnK8YIZ0Vz9ovkiUzoZ4
-	2SCCIQn+u/+64g6CaR4gueaMjFoutQlhHNOt2PCnuf1Zf3UD5yWXTi5k7pASM8tk5mH3Due9ONu
-	odTeeDFICQDvdep4AKS7agm4SblCYbGk7S74CIB91Wsu7pE5GOMZcKxtALTL1cfmFb0TX5b1vs5
-	xeUWLHFk/MNLse8sUqS/Xe4k0xFu25WdaAezlheUSw5AxLwsnleAh9ue0tl+OMZwSi/3/Og+4i4
-	070UW651l2xzYD4Vv5/cWVI0aKfvGcsVmFmpCcUuYEjuLNQZCsk3PNbi0+LKfmpJFVzIBfNd2gF
-	0hvk1lcK/4M11WWKibR91gq3SIIw==
-X-Received: by 2002:a05:6000:186b:b0:439:b046:2044 with SMTP id ffacd0b85a97d-439f81f2334mr11880791f8f.12.1773316398625;
-        Thu, 12 Mar 2026 04:53:18 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1773316400; x=1773921200;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=gk8qVbjj9bf3D7zS5clldQ8atXUlML3S3z10DBlLuFw=;
+        b=XXfmyPa9wHQ+SSLVqZQwYHnDEUvKc3lHFT+GOUHJmHQCzjyCaVmE4sww9nCltQc+Ew
+         wsPp+v1m4OINDzZeC2TSS/3aQI2R99EADvVbDx5VOUcDjmKyNTe9BuxveN5bO0k8ockK
+         4oh44DK6bNMY4u+aMfezacGk7r4WKUzk52tl76LgJzsWMwkRubdGuh5jTajWHO6IOLuD
+         FxrHbG0+fak54vQbK75MylOwNXSXMLNb69chwk+fCvFKdm9Ra9yhVUPN5oY8eQM+/xPP
+         Ega3DpytxnzUfGEUK1Zh5qj0FUWrFSo5rjUZ5WNnUow9W0iRXav3ugb9E1NgZiBdA9C+
+         SDIA==
+X-Gm-Message-State: AOJu0Yzp5HKh1u/EUy2YgFsD7rGcKK51J5Pwf60oWOxwOqw7QPjMJSDu
+	dFXCsHc4YsKYbC6Ijq9e7dzLF9N0cJ3YeBpxMaFzdNV5k7Ok63tQmG99
+X-Gm-Gg: ATEYQzwvYms4ausLB+QwETtw4TSFkAi33GcbqeDvpgqhXG36H8hO0ZQ0WGhaiSCqee1
+	0ebXpL2f9vRTXP3b8JaMn8PLo64Bw2JTo1NTzMG/uVhviLg1VNt9a8q2JLnFDqUJisii1is1zg2
+	5D41xnCJcJ7qL63f+bhSoMd719R9qQpIX2CTuwSbVYHHSCpbIl+YMmJpvaAYyvmlL+fQeCFKeOs
+	vPDUxW2FoVtysBZNNJBxexRT/d5vL+RNU5MHMSwaacnqOvi2KCsV4o+z5E1ucjm3mf5WjsAJxQ8
+	VEWBcZ3k+dYwh36yC4aeOKZldoULAQt/+gsZmEaq/J4wpjovsNOxwCy3V/360FqpkOB2/tsv1os
+	RhM4XVNG1GymSFWdINBRqbxpzrgxsyg2t0ylgfi8HrymnduuwCkKjcIyRjwYd+vaKErdyWG8uRE
+	hiLaVOBTZ8yZfjUl2Xg2B9kEE5Cw==
+X-Received: by 2002:a05:6000:40de:b0:439:be86:5051 with SMTP id ffacd0b85a97d-439f8415d9amr11408103f8f.59.1773316399868;
+        Thu, 12 Mar 2026 04:53:19 -0700 (PDT)
 Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439fe22529csm7044960f8f.31.2026.03.12.04.53.17
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439fe22529csm7044960f8f.31.2026.03.12.04.53.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2026 04:53:18 -0700 (PDT)
+        Thu, 12 Mar 2026 04:53:19 -0700 (PDT)
 From: Erikas Bitovtas <xerikasxx@gmail.com>
-Subject: [PATCH v2 0/3] iio: light: vcnl4000: add regulator support
-Date: Thu, 12 Mar 2026 13:53:11 +0200
-Message-Id: <20260312-vcnl4000-regulators-v2-0-2bdebbcbb58a@gmail.com>
+Date: Thu, 12 Mar 2026 13:53:12 +0200
+Subject: [PATCH v2 1/3] dt-bindings: iio: light: vcnl4000: add regulators
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,11 +68,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/22NwQrCMBBEf6Xs2cim1VA8+R+lh3TdtgttIokGp
- eTfjQVvHt8w82aDyEE4wqXaIHCSKN4VqA8V0GzdxEpuhaHG2mCjUSVyywkRVeDpudiHD1ENNOq
- htaiJDZTlPfAor93a9YVniaX33k+S/qY/n/7rS1qhMmYojZb4bJrrtFpZjuRX6HPOH0D/Ida2A
- AAA
-X-Change-ID: 20260310-vcnl4000-regulators-bcf1b8a01ce6
+Message-Id: <20260312-vcnl4000-regulators-v2-1-2bdebbcbb58a@gmail.com>
+References: <20260312-vcnl4000-regulators-v2-0-2bdebbcbb58a@gmail.com>
+In-Reply-To: <20260312-vcnl4000-regulators-v2-0-2bdebbcbb58a@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
  David Lechner <dlechner@baylibre.com>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
@@ -80,41 +79,43 @@ To: Jonathan Cameron <jic23@kernel.org>,
  Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
- phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>, 
- Raymond Hackley <raymondhackley@protonmail.com>
+ phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>
 X-Mailer: b4 0.14.3
 
-This patch series introduces support for voltage supply, I2C and cathode
-regulators. This fixes an issue where if a regulator is shared between
-the proximity sensor and some other device, and the other device is
-powered off, the proximity sensor would be powered off as well.
-
-One of the commits includes a Reported-by: tag without a Closes: tag -
-the report was done outside of LKML.
+This commit adds regulator properties for vcnl4000 ambient light and
+proximity sensors.
 
 Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
 ---
-Changes in v2:
-- Removed double quotes in includes.
-- Reordered includes alphabetically.
-- Enabled regulators before the mutex is initialized.
-- Replaced direct usage of &client->dev with a variable.
-- Link to v1: https://lore.kernel.org/r/20260311-vcnl4000-regulators-v1-0-66b6038ce563@gmail.com
+ Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
----
-Erikas Bitovtas (3):
-      dt-bindings: iio: light: vcnl4000: add regulators
-      iio: light: vcnl4000: add support for regulators
-      iio: light: vcnl4000: move client->dev in probe into a variable
+diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+index 2ba4d5de4ec4..a1b4c02db246 100644
+--- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
++++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+@@ -33,6 +33,10 @@ properties:
+   interrupts:
+     maxItems: 1
+ 
++  vdd-supply: true
++  vddio-supply: true
++  vled-supply: true
++
+   reg:
+     maxItems: 1
+ 
+@@ -54,6 +58,9 @@ examples:
+             compatible = "vishay,vcnl4200";
+             reg = <0x51>;
+             proximity-near-level = <220>;
++            vdd-supply = <&reg_vdd>;
++            vddio-supply = <&reg_vddio>;
++            vled-supply = <&reg_vled>;
+         };
+     };
+ ...
 
- .../bindings/iio/light/vishay,vcnl4000.yaml        |  7 ++++
- drivers/iio/light/vcnl4000.c                       | 41 +++++++++++++---------
- 2 files changed, 32 insertions(+), 16 deletions(-)
----
-base-commit: f90aadf1c67c8b4969d1e5e6d4fd7227adb6e4d7
-change-id: 20260310-vcnl4000-regulators-bcf1b8a01ce6
-
-Best regards,
 -- 
-Erikas Bitovtas <xerikasxx@gmail.com>
+2.53.0
 
