@@ -1,58 +1,59 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0ED1336D9F8
-	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 09:37:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E78BD346E4A
+	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 09:39:36 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773308279; cv=none; b=ZaKXqGJa9aP3TPKSXQ8kZmfuk1dYdtq/vQrgKK4nuzMGeaCAV9yKajZ9mBk/dawVW7D3kSu2yJQH90VZlWZq0are01pytz7VKM+6AyXtvzFywK5BizAR8syDA9JpbsBQiaQWG1Dd7Q9VMNLB4HPON2fRuK5HxsTGYDk+34F10wI=
+	t=1773308379; cv=none; b=djkhfEGNfqlrJq01pJmk6YQxQBWkKDuR5bsKZ2QtQpeLkTSCv7dgUI99scs78bqe24wEtqv2UcCRwKd7LAVmvnrUISpiwZZf5fQfDcmxxhdzuQgDbzR8JOZEkpjR9H0ZPfqeYjt4MatfDuqiHdc/dce1eK6WtIF17XPCZg2vmXE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773308279; c=relaxed/simple;
-	bh=/7ahq/tu4V1x0yVYbESvuMPSf4JEGPaklCjtZk2Uo4k=;
+	s=arc-20240116; t=1773308379; c=relaxed/simple;
+	bh=R0EwGvPeXJeB0Czxbh6w7DVBDlJIq2K3qOSVFx3+5OY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=DgsVVoHuEg+pkTjd2TmfHC+IUfDj1HNUfERnMY8zNi8ix0hx0HOJaz9HUBZDOXdwMrJkGzq+ydAI25RVaGg6Lqbd/p+u3sJLi4+BbDoHWLM2ol6EqZxrghhslGZy6cSInUZRgIX/5w1EVFcL90riJeT/J2e0ywQ42yD9pERGMzc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=BN9VcYyk; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=deNv805hqioFEE/BWc7MsWAPfugn8iLFMX/gb15POsd1wMwPdSSyklIeRx7C06vpjThsQlv3y9/wqcrkr2aWuRcSjS83nQIhtcAd65ofsP2fnkzbmENbaUil5kJuZxZ8eBT3Pf4VhG7FqvFLBTmlMdy4mNy7XdeXhiPTG9ZVGAU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=De+PQ8fC; arc=none smtp.client-ip=192.198.163.10
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="BN9VcYyk"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="De+PQ8fC"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773308273; x=1804844273;
+  t=1773308377; x=1804844377;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=/7ahq/tu4V1x0yVYbESvuMPSf4JEGPaklCjtZk2Uo4k=;
-  b=BN9VcYykp7iZdbLMw4s5qeC/AzGO1ETSuwIq00qHhjz7xcAwQghVKz6h
-   kH2F+++eTq3lsZp5jZf4OHBo5xY48ZhxVHi9vlrMAzeIgYtgNtb4otUnX
-   EsBK4MtN7x8RuWiaot4sLYGBQeTnrI2Cq4h1EQyUT1MX1caqlhiyeII82
-   aw4Gd666aO2cFINK6xgmny7V/d/lG2gMStOtCuQUeFyfZhJRmg9SkHAVr
-   zliMmQ/3N8LdtLJoaNoySVIgE57xGwQlX1GKgLL6pgrlptvKOdDWpMyz1
-   gZiKhYkC58B9sBdV3IKXIxLV46ZDPW2gDIKALerhEaUo8EY2t7q+MtgZM
+  bh=R0EwGvPeXJeB0Czxbh6w7DVBDlJIq2K3qOSVFx3+5OY=;
+  b=De+PQ8fCbS8yUDoozBRnCGdelNTD2oiceEQaGR5RReCL+C01jPDrMlLF
+   E0Ule0Q5ipUJPp6qnH7LDJPw8ifn9jGPDjOu7feqZO/HtiTLEAZWHC4aj
+   epBIPfhFtMsOgODE3ZhZHshYH4FgqQGbhPh+nUFCSR9ZUvs4Hj97JCJHf
+   un04lOcuJYBdRj56a055dpNC/sNT+k0+eDCWHjHZbYATi7obgt1S2m+dW
+   BAeSNjrRkVvG8rgp0rwuHVIVKUtBmOGdlXLIEwRXpxuTaN9bakftPgVCF
+   RJiSUT7fs29Ymvy+I3tZPeSJm9SVfvm8TTAXrIpxMU42nWSRmUb415z+X
    g==;
-X-CSE-ConnectionGUID: G7fOfYCTTTSNra9/o7IlYA==
-X-CSE-MsgGUID: 73bXweg8Q56YLgHIt2VoMA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11726"; a="73584991"
+X-CSE-ConnectionGUID: vtONEqTjRf2s95twpxfNmg==
+X-CSE-MsgGUID: TD/5QQeBShiXEYiw+m3+PA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11726"; a="85745832"
 X-IronPort-AV: E=Sophos;i="6.23,116,1770624000"; 
-   d="scan'208";a="73584991"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2026 02:37:52 -0700
-X-CSE-ConnectionGUID: 4RusnLJqSmiKrkesZ62Mig==
-X-CSE-MsgGUID: OWLVQjBXTRWn8W7HaHPoqQ==
+   d="scan'208";a="85745832"
+Received: from orviesa006.jf.intel.com ([10.64.159.146])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2026 02:39:36 -0700
+X-CSE-ConnectionGUID: tT1WNh4ERlGsXN6frPCfiw==
+X-CSE-MsgGUID: 6L1XRlfWTr2twxN3w9mkHw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,116,1770624000"; 
-   d="scan'208";a="258668884"
+   d="scan'208";a="219868584"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.112])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2026 02:37:50 -0700
-Date: Thu, 12 Mar 2026 11:37:47 +0200
+  by orviesa006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Mar 2026 02:39:34 -0700
+Date: Thu, 12 Mar 2026 11:39:31 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
 Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
 	Michael.Hennerich@analog.com, jic23@kernel.org,
 	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
 	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: adc: twl6030-gpadc: Format block comments
-Message-ID: <abKJa0JtgkSF55gF@ashevche-desk.local>
-References: <20260312080752.48091-5-giorgitchankvetadze1997@gmail.com>
+Subject: Re: [PATCH 0/3] iio: adc: Format block comments
+Message-ID: <abKJ06Bjmdmmc7hA@ashevche-desk.local>
+References: <20260312080752.48091-2-giorgitchankvetadze1997@gmail.com>
+ <abKH2ZnAvJmmI3BY@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,34 +62,28 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260312080752.48091-5-giorgitchankvetadze1997@gmail.com>
+In-Reply-To: <abKH2ZnAvJmmI3BY@ashevche-desk.local>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Mar 12, 2026 at 12:07:53PM +0400, Giorgi Tchankvetadze wrote:
-> Move the trailing "*/" of multi-line block comments to a separate
-> line to comply with the kernel comment style.
+On Thu, Mar 12, 2026 at 11:31:10AM +0200, Andy Shevchenko wrote:
+> On Thu, Mar 12, 2026 at 12:07:50PM +0400, Giorgi Tchankvetadze wrote:
+> > Fix block comment formatting in several IIO ADC drivers so the
+> > trailing "*/" appears on a separate line.
+> > 
+> > This resolves checkpatch warnings:
+> > 
+> >   WARNING: Block comments use a trailing */ on a separate line
 > 
-> This resolves checkpatch warnings:
-> 
->   WARNING: Block comments use a trailing */ on a separate line
-> 
-> No functional change.
+> You sent patches as the series, but it does not have proper In-Reply-To,
+> in other words it is not chained. Either don't do series (send patches
+> individually) or make sure it's an email thread.
 
-...
+All patches in it requires more work, please learn from this experience
+about process aspects (email thread, et cetera) and comment style.
 
-> -	[3] = { /* ch 3, external, temperature with external diode/general
-> -								purpose */
-> +	[3] = { /* ch 3, external, temperature with external diode/general purpose */
-
-I don't see the rest, but here it's definitely better to move the comment to be
-before of the data entry:
-
-	/* ch 3, external, temperature with external diode/general purpose */
-	[3] = {
-
-With that being said, it might require to rearrange the whole set of the
-comments in this initialiser array.
+And thanks for looking into this (yes, I know the patches like these
+are least appreciated to work on).
 
 -- 
 With Best Regards,
