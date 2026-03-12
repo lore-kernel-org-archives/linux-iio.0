@@ -1,922 +1,233 @@
-Received: from mail-pl1-f173.google.com (mail-pl1-f173.google.com [209.85.214.173])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AC83394478
-	for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 22:42:13 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.173
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773268935; cv=none; b=II+3kFa6donT/GyJuJguYMzdviggBszDvF3bCIXTq8UP0akEbLa9i9UqgvJeabJJEhNnNY62svF4/aeb11ofu8/fk6KNKLQo27Ul2kj85mO/SYcuqUOf9zpXkIz6955MxOYH1G2F1qpVoFmsq7fu1vTOeRBH4cqRjiLxuviLoj8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773268935; c=relaxed/simple;
-	bh=rccAnbrnsUnJm4R157TyrHzKnaYwH+x7CTjZlNHFuwY=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=TsjU8l9Z6uZOaGKkdnmPw3TpMVr2CzEM7ogX7LKpIAdo+Wzm9fT4U9Ppjw8lHcxD4UZTTb7mh9gZKT9UDZX1mz9Wuiw+OYqHGzTEFFuky5eSSHMJDLRcrH3kuwrLIIeQrDtYsFP0INq/LdPngCwGgRen9mhVkZS/pzWKCTA9sXM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.214.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pl1-f173.google.com with SMTP id d9443c01a7336-2a9296b3926so3811515ad.1
-        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 15:42:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773268933; x=1773873733;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=It57hAYSQC/n5J/WxtihvQKKeYCO48muc2Cj5k04wj0=;
-        b=QwkeO8gTDdIum2IpnR5RKNzAgqv+vhdeMVMtGKH3y0+zyi38NGTagCl9JaVs3XPBz6
-         0klyJ6GKPnE7NJ04PUbsQteZ5gT59ADHD3baZfI3wtjwVGpAOFBwhfsPLPPtzDojjSEp
-         dvPwxZwq49+7iWSJkp4R1FxatEyEmVbuSA9YJBw+wGS/M/5/8RjXf6rLKTZuQbVadcou
-         xrezwxmZoVaKfEsGuTqD2Klu7Cp/QnW9j45ZwlzTHewtbLBqUVVuwteDpu3L9vlslw9q
-         qmzZ24DpNbSngOXLQS1CWuckpqQpMG5glm6eeybylOHk3IsYDoEK9e3lFWSLODZXS0bc
-         knIg==
-X-Gm-Message-State: AOJu0Yypv9Hi15vv7swJ8uTY4Xb00rKp9w4wmfuMJXn0BIv3kIHkEpUJ
-	x0PA9pq6/QR4LqQPCU8MYAAh5oz2b6fVB7+TZeZlEOtGnHRrxdZ41Yab/KXWQ6GYsiU=
-X-Gm-Gg: ATEYQzxECry4MgeXM+9yHxGkOGFRWIQo7eBNqrKhq7j7gNbbql+d9i0Cguk6nxLvH/k
-	IJIUVAH+So3DRL71ogU3rX72DGScL4UPprKUNa29K1QdvnTpQXik9iYY28pwTvAGUwPJkPX5L0p
-	b4FxZ4YKlZN1CddjaASSS6yFBbk8pfP2bevxUhujCuuY+WkQ2jamg5TgK0lKQIfWu+Fw+UtFOQj
-	aCkvZBeeZG3bNP1nxKuiN0t8MFkbuBGEBXfHioLy7ehJ/fuq34yWe/A9J9BszBOIXyJMsZRqkMW
-	xP/WyQR2K7TXgQ7WmoMCOAmLnJkzcRDVNlSEcMRp7huO2PLIPfj82z7q1+pn+L5kp/GEtzGG8Bt
-	vfpZK/gHbXD8tvSYLOq3rfJLDs64dg0oN2jgzuaNDN9CUY0QMWsnuIRlfItStGgBUY5ojNrFby8
-	AGT4X/wF8BbXvZYPOd1Q3QCp0S3EqmhHRHjGKpTzY=
-X-Received: by 2002:a17:902:cf0f:b0:2ae:61db:797b with SMTP id d9443c01a7336-2aeae64c381mr39354445ad.0.1773268933046;
-        Wed, 11 Mar 2026 15:42:13 -0700 (PDT)
-Received: from archlinux.www.tp-link.com ([103.135.252.26])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aeae35ef5asm32854975ad.65.2026.03.11.15.42.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2026 15:42:12 -0700 (PDT)
-From: Siratul Islam <email@sirat.me>
-To: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	robh@kernel.org,
-	krzk+dt@kernel.org,
-	conor+dt@kernel.org,
-	linux-kernel@vger.kernel.org,
-	Siratul Islam <email@sirat.me>
-Subject: [PATCH v3 2/2] iio: proximity: add driver for ST VL53L1X ToF sensor
-Date: Thu, 12 Mar 2026 04:40:37 +0600
-Message-ID: <20260311224044.21480-3-email@sirat.me>
-X-Mailer: git-send-email 2.53.0
-In-Reply-To: <20260311224044.21480-1-email@sirat.me>
-References: <20260311224044.21480-1-email@sirat.me>
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAD2E37CD4D;
+	Thu, 12 Mar 2026 02:32:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.139.77
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773282774; cv=fail; b=qt0UERkWy+aDrRXMcOPDWx/LMTXSwbgh36mI0kIe5JR9KOnq3DbN0iE2hYhH5GruGLu3RZoyJj/REihv5Xvy1dAP7tyP5WmBp0WKmFafMNW5/X58zN8pimv2F0IihdvcTbx1AdpTGomrXUeVZyWtKzztArEXXM/yRoOBjw+R2Zc=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773282774; c=relaxed/simple;
+	bh=ZM5PHvRkQ6qVS4RAdGM2F8nctys5CKuXYYcApCToCOs=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=rUEhSLjX+tEtYVqMDCpYRyAx8IHonKWtim5dQyk3XXJ804elRDROvCYXQI+AxEnfsfcl30bVf50nXLMvgI8n/G38vVMMGlNlg+oJYab+w+NzjR+81eiWj4+xe1+vhehxu2yOHP7uQn4CwHilV1fvfQmCOENpCKxLy1iLDL1XibQ=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=K5KEoCeo; arc=fail smtp.client-ip=148.163.139.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="K5KEoCeo"
+Received: from pps.filterd (m0375854.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62BMPC8a442687;
+	Wed, 11 Mar 2026 22:32:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=8i/jW
+	1NMOhZBVecsvH9yUQq+YcunStdooRxG+6dEwOE=; b=K5KEoCeosizEevXVtE3OU
+	KxM7MJvETg2fqfuiSA1jCk8/vcpNwyVOfzrA+g+J+8xcji0y43CWg63JyYk4FAuR
+	Znh7wCvCln2apQqhUwGlXZBgVyYo026HOCCTmfH90BR3A1Ddjarrj9aXUT6qG+4/
+	qiWp85ZAkT7IyvK2Z1ZCS4tJ/VwhRIDrbr3cvyUT9OtMA+mQ9BGNPB/Qr+h3tlVk
+	GV6+WQXIIQ2AU5WQ17VSz+H5YANzt/EtmfzQ615WI4NXY6Yx9VjSiCUUSx3nUIL6
+	8cVL8OkgkPsliAzZEjOZu9B6K/ekpbbkzDYTYFGao3YZZHjet3/cy0kPmPNraGOe
+	g==
+Received: from bl2pr02cu003.outbound.protection.outlook.com (mail-eastusazon11011011.outbound.protection.outlook.com [52.101.52.11])
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cuh5qgn3v-2
+	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
+	Wed, 11 Mar 2026 22:32:25 -0400 (EDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=pN2gpPrTG9/xluJcSO58m0M3sgz2GmvFApWDgW0C4DO/0r517dNhBYG+P6T4iZSNl2p3+03/1SGBFgRtrQ5VOc7qkiVhN6o+axaIYyfwt2OEkj182e7T+NqR+2nWKzps7ZRDWZdHYSoD218uuCRgF7TLJv1Y4PUtUNRcoXRKwWLhuFAkmvuUTzmiE7Ews8n6sgMgdlZO28lEiLt2sJSM07cNRnB68Wnc8wnvsbbS/oq8EBFyrohb1M4f4DnZmzCuzznhKY9X9ehT/IAl8Nhdj5pLeqyZjXxm1WWjP/cthF2ugz+Woppnlx16HWGQiv6rZ44loiJOxfeDB8JXgKgVww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=8i/jW1NMOhZBVecsvH9yUQq+YcunStdooRxG+6dEwOE=;
+ b=PYoSwUjLVwxsRczERI5EmED665uYkOvX9s9UCrIZ5RkB2Anr51Xj8l+UdqDhhO03ZeIGkO4IyOXeTVe/mJkU1EporM83odD48NgWJVY7VoIeMa/+L5UsDYiMj23YSjHP1qviHVIr7/SsDetyoITOJzEAbdDLmLNFGtWEFVJrUIyKhEQ4E13oM3KUAJbMPoCKTe7bs7weQUY9MKxmJiEr8LjG/YRaZ42KXJtFEmqMuhLcoZ0QnZHl7qt1a7CldeI1fkQFiYQotHB6x7vUo1AqLi4hA58p/zKyOFLawk9uy9lirZFeE1yzmyaO3fRzObMkxbqxHAMRFlWABaZhbydxMA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+Received: from PH0PR03MB6351.namprd03.prod.outlook.com (2603:10b6:510:ab::18)
+ by BN8PR03MB5058.namprd03.prod.outlook.com (2603:10b6:408:7a::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.11; Thu, 12 Mar
+ 2026 02:32:22 +0000
+Received: from PH0PR03MB6351.namprd03.prod.outlook.com
+ ([fe80::1578:4572:29b5:2442]) by PH0PR03MB6351.namprd03.prod.outlook.com
+ ([fe80::1578:4572:29b5:2442%6]) with mapi id 15.20.9700.013; Thu, 12 Mar 2026
+ 02:32:21 +0000
+From: "Torreno, Alexis Czezar" <AlexisCzezar.Torreno@analog.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+CC: Lars-Peter Clausen <lars@metafoo.de>,
+        "Hennerich, Michael"
+	<Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        David
+ Lechner <dlechner@baylibre.com>,
+        "Sa, Nuno" <Nuno.Sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>,
+        Rob Herring <robh@kernel.org>,
+        Krzysztof
+ Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <ukleinek@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
+Subject: RE: [PATCH v2 2/3] iio: dac: ad5706r: Add support for AD5706R DAC
+Thread-Topic: [PATCH v2 2/3] iio: dac: ad5706r: Add support for AD5706R DAC
+Thread-Index: AQHcsO1cvIZcATiC9kK4qKSLqBMDm7WpNvSAgADzu1A=
+Date: Thu, 12 Mar 2026 02:32:21 +0000
+Message-ID:
+ <PH0PR03MB63519615ACE22ADE4055D2DBF144A@PH0PR03MB6351.namprd03.prod.outlook.com>
+References: <20260311-dev_ad5706r-v2-0-f367063dbd1b@analog.com>
+ <20260311-dev_ad5706r-v2-2-f367063dbd1b@analog.com>
+ <abFVl8NhfBkvyI4I@ashevche-desk.local>
+In-Reply-To: <abFVl8NhfBkvyI4I@ashevche-desk.local>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: PH0PR03MB6351:EE_|BN8PR03MB5058:EE_
+x-ms-office365-filtering-correlation-id: 74d94d2f-313c-4540-c24f-08de7fdf96c7
+x-ld-processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|1800799024|7416014|376014|366016|38070700021|22082099003|56012099003|18002099003;
+x-microsoft-antispam-message-info:
+ e2zvyrzopuU/7KbCTPFti+c4QrM1Zc0KWUGRscG197mT4DgHJLtgusmyv8HzhXYhTBtx8iH9uxjgVwMSk8h0JmL+zO6et8gsUrtFMFzijpOUvl+w2vIP2RrJbDl7YNU+kgC7IZQBSQ2WBcGOfDYugR3k0Vkm8E85UmdePUXn/3u/rHAXjZmxe554Js8fHlRfNTKJSk3qafdIYjMNsovlABjNJ1+A+V4eW5XiQCq+RYvdZIdo8CIGHPcVRoEO8Qg/lU6cKl0/MlyRe0Vrny7KeFhFT2JlhI44nRzpQJlIHm1QbzwhHmYcOWdEiNP7rWzOEgUxI2hS1LpJ399av98q0oRSfzZPbg6HTymO2gsJlVr2Wd/LRvO9x9hXbBlGGmOLgKvcL5TuuPJoAm0paW+/ELUdvNl2k3u6miU1HPhEVw2dqDQg+L/seumNFn1pCFfwkoaCKq2yyhz1gh6zOxf+s0jMW+bxHJHspGSL9MYOHpT14LWcfjbg0u+t+KypaNhyEV5uElIna3HOVJp1Da1DeUQW9AdpG18IvSXhino+1bKU4vML9FViFgkgflR164mdbmjepp7N5a9hfJa+tI/iSfjuPaBx2FftjtLHlJf7I7PJe0Qmb8Xx8OQIsmSJwtDrxf31nof4ZIPYmxibhkWPOQ6GCEHjIAL7NJEzc5z5t5qN/KdPmirHsEWukL6m10hOzNPxgkgvdIpUFuFBiV04o1dZPIGLYYlP/sHooHqRrEy50S9BiZJEsM5+JGOh/zlbe1TInQ7jqW/+AwfOMmRkcM2cSoWf69s/3A0ablijS5E=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR03MB6351.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(38070700021)(22082099003)(56012099003)(18002099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?HR/+zfc5rBT2wXi0B5Q3qdUMlIZFhdIu+DPeBvgsm1Wd1ttwJZKG1PH/cI?=
+ =?iso-8859-1?Q?Ou1qgiXrGzP9kygaiSHv87ZGM/njgBJEVliBKzanvRxarjKIXcrY7hi8cr?=
+ =?iso-8859-1?Q?0CZdLzMeO5OtLhdq9ba7DQXHOFX2HU21ILn9/KEAf+SbKnIeOgJ6FcfE9D?=
+ =?iso-8859-1?Q?Pw8BULRL6CZbslkfCxg8+T/rH9nWOxjvFFLMnf+DmJzftCCBkPzovdF28Y?=
+ =?iso-8859-1?Q?Izk5n+4Sl7wtwbTf7kWmc6fAQdwYrUo88UKUxFZkDwsog97eCGw15AbIRm?=
+ =?iso-8859-1?Q?P3Fr2W1Vk6SHh0lBN7WQOj478X7yk12zpx/UzOt6UmlZZocsMuXaiHuU4E?=
+ =?iso-8859-1?Q?jgfM8GoAP8EX2dt7cwyzzyeZvEgCNIhZlBjq8xxfI+LCU2yEUB2tXFkTT3?=
+ =?iso-8859-1?Q?jKhHTw2FlDdvt6VrTrzktNiGYsOVq9VOwoFXxmJXyek7XVsKvQVj46nrCM?=
+ =?iso-8859-1?Q?POqkOmlJ00y4TNy1CoEvNY4mIGJlLwpkt80mJxc8Xs0CUVqGjjpffljG9A?=
+ =?iso-8859-1?Q?mqbmcjQUtPpfB0+2DyCfdddgblHnkaY/eUFi1i09DOmWhQlJ6Bgq2elneC?=
+ =?iso-8859-1?Q?H4MwYSsLk7YWuIM5WnKYWGE0E72V7pIQWQ+bMKpYDlr9ephySS5H6cEaGt?=
+ =?iso-8859-1?Q?lieNhGQXZu4o1cNGT8urD97mHvCUbPQTQDqGg++Bwe6hn/zgOXJLe9lNpG?=
+ =?iso-8859-1?Q?AIe1hYsS9i4N4dy3gJUnSUjFaZYPQ/iRd+Un2A7JL9lwsJyQ1Re3JZvE2G?=
+ =?iso-8859-1?Q?ZQ0pbrx7ZRYDdi0wN4/bcsSmNIj9vEzSA5LX1iPJaXV0EckhOiX1fjWcA4?=
+ =?iso-8859-1?Q?ePUkmBWwP/zQgl+cR0eFEAT/2YkNOzxTAA68eHSkD5Nh7H9eocyDPjW1dn?=
+ =?iso-8859-1?Q?uBI3FPunhzdzkjv4W+IPyhnEWLOK5VauzHETULcrU6Z6bwLXw+C3d7CXoj?=
+ =?iso-8859-1?Q?k4ItAdQ5BzIKl4iitZUd2rQoPDH5XL/e/wCulNfRstWmSBlo6YCo01xekl?=
+ =?iso-8859-1?Q?2iZwiXEnaAxw7dBitPM/Ms1mOowe7spjO0zQndBSM8tx3itJbgUGn9QIpY?=
+ =?iso-8859-1?Q?/Z4BsO/hCnQJMu0R04VMqzyVa5wyBZiVUn572+QQDxsJz7DIk4KzaPn1f4?=
+ =?iso-8859-1?Q?SYv1w/1E2K0GIoW84RrLmseEYp1Q17dOOWApjs/JBi5pvUqYgAqsCFPsWj?=
+ =?iso-8859-1?Q?Kwd4KWzJrGsDxkXsdoF+fTTwusvJIXr6vilaP7BUjBNWY215ZCIhumSaT/?=
+ =?iso-8859-1?Q?Zrh5b8hVxbWXzjCpZ+q0jkrbuSfRe1jXXBK9kdl5M/MPLlAC2ofrB+S3XV?=
+ =?iso-8859-1?Q?5SnxwaE2vg1nkQjBT5FpJQSXCcRBcveYTWRW20YhoVZdwXXnDu+Q7N1E8l?=
+ =?iso-8859-1?Q?G1NdRMTVDD7CdZtNN4SN8TELBdG1UJbyhInD23SPjnCubIXEZZlUVVkI5u?=
+ =?iso-8859-1?Q?JDlTO4ZMV0msseuV0ndm2iiVoKJGfYBtu2XSEBPlnVafK7tfrEnDzMmjXT?=
+ =?iso-8859-1?Q?VNROe+RqrccGJTwil+Mlh/NSxHp+F9eLnS8bVSjhtHKolV1MzZOvJnHMEt?=
+ =?iso-8859-1?Q?1+XPWDxka9SI9CjItDYJtpT6gbCJ5J3TnVueTPX4+qGb08u50mRmbtB4uo?=
+ =?iso-8859-1?Q?at0YC7OaogOdiK6wmrYy9i/aJVOmyBuXX26X+Lmnw2fIvYX/jwhhSJwUTv?=
+ =?iso-8859-1?Q?mgCcHuMqT1QmChbWcGvo88gndRe5MsNaoG3a4j61IJ980jetfBE+AT+FDz?=
+ =?iso-8859-1?Q?DzUq0oU//0lDJ02CXEreOrTr+70up5eC0EZDrGliwsNPeT8RfGKs6FlcNM?=
+ =?iso-8859-1?Q?sEpjwSXs2h58VyzVJRzX9bcaWwiuA/s=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Exchange-RoutingPolicyChecked:
+	u+Uhy59NA3GJSG3dbI5B2Dz9TeK03ecMGVPz/lb+CATY73qc8ZBxlBnzvzZoqQvvPe0OmC8L2cATVn+1sBO/coG37jJGCYe30jaM5xHEMPuo7CyeLRP6SJvShwK7Cx8wP/EPel2ypowSHXsSmg4nW/3q2MYax7XQ9H0FwBDI9FqzJT6wkhajHMA3xFLk3HFQkaWhy0yqbtRDjggyR7WXSy+tFByxQJzv+sPCNDoXrxo3K1+uiD75YAXhsHibz30RjcbR7iJrQvtNIVjXUFzONbW0lV1fpZLPgg3q+e3rQR+kedtaYkW0hINOmCR4pE/gJxb4YTI59Mjo+wY/DCu/Cw==
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR03MB6351.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 74d94d2f-313c-4540-c24f-08de7fdf96c7
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Mar 2026 02:32:21.7193
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Xe0d5ZkxLeDd3CEtQnUPwfd+HeS3AoeQQqjNMYNX86/SZO5U6hFUpsxbshTT14uQRFNbJIe96O98k44i9tLh4b6gkn60rwyODYD68i7rv5g=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR03MB5058
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzEyMDAxOCBTYWx0ZWRfXwIQw0IYmffwV
+ jqNBsrQYtjzi08ZXkB343b8GwYOcS3WrUKA66/DpPaCPFU9SQDVTHfgKIRzLCGBLDciQyVrE+Yq
+ cN/j1ThKRT+q9VK6HAJ8XnKwPgAIU5OqSuiVr0lHM17/NPARPo++VBzfnsMMKvsTrOOcxv4/ERe
+ jgyZp3NLbzdD3XMA2N73lfyC6sbJWiIRT2sBKm9DoveuLkmmXljIbOQEDrU6gmXde6KRWq5Uc8T
+ WlTatTG7B7xOzInVgiPCe6/cA2Fm2FCWO/5x0u0Ut5SYNm2QokCCBp4BLbQX9c5OCzz9u1HHj7s
+ jAWUf+dS7Ej+5DOfh0MJWXY6Jas20Qohqg2atqHUd5YxX+gsnbG2fIcJb4p+YFZWG7E+N/Vtrie
+ 13HrKnM28xolhKBb/vB8Mo7fnRphf81jUEPeSCkDBYdNTC5hzL1B/HXLa0blRk43h6tb0692WP8
+ CsHAyCVdCGP5/Y7op/w==
+X-Proofpoint-GUID: kB1PsQ98Xsbq2GzNK9gb8ZSCSEqKutM0
+X-Proofpoint-ORIG-GUID: kB1PsQ98Xsbq2GzNK9gb8ZSCSEqKutM0
+X-Authority-Analysis: v=2.4 cv=N7Ek1m9B c=1 sm=1 tr=0 ts=69b225b9 cx=c_pps
+ a=+4AL93Ollhzyglb1kYk7Zw==:117 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
+ a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=8nJEP1OIZ-IA:10
+ a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=iZSIUCweCk2Oy3QsdGPA:22 a=KDJ5RcydbglllALAYUgA:9 a=wPNLvfGTeEIA:10
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-11_02,2026-03-09_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ spamscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0 malwarescore=0
+ phishscore=0 clxscore=1011 adultscore=0 suspectscore=0 priorityscore=1501
+ classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
+ reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603120018
 
-Add support for the STMicroelectronics VL53L1X Time-of-Flight
-ranging sensor with I2C interface.
+> ...
+>=20
+> > +#include <linux/device.h>
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/module.h>
+> > +#include <linux/spi/spi.h>
+>=20
+> IWYU, please.
+> Yet another typical issue with ADI patches. Really, talk to your senior c=
+olleagues
+> who are experienced kernel developers before sending it to ML.
+>=20
 
-Signed-off-by: Siratul Islam <email@sirat.me>
----
- MAINTAINERS                         |   1 +
- drivers/iio/proximity/Kconfig       |  14 +
- drivers/iio/proximity/Makefile      |   1 +
- drivers/iio/proximity/vl53l1x-i2c.c | 782 ++++++++++++++++++++++++++++
- 4 files changed, 798 insertions(+)
- create mode 100644 drivers/iio/proximity/vl53l1x-i2c.c
+I'll bring this up. As per your suggestion in the other mail, compiling com=
+mon issues
+like this may be needed. Lessens pitfalls for newer devs.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index a142a97be4cb..50531a87bf2e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -25098,6 +25098,7 @@ M:	Siratul Islam <email@sirat.me>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
- F:	Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
-+F:	drivers/iio/proximity/vl53l1x-i2c.c
- 
- STABLE BRANCH
- M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
-index 6070974c2c85..3b0fdeb03ecd 100644
---- a/drivers/iio/proximity/Kconfig
-+++ b/drivers/iio/proximity/Kconfig
-@@ -244,6 +244,20 @@ config VL53L0X_I2C
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called vl53l0x-i2c.
- 
-+config VL53L1X_I2C
-+	tristate "STMicroelectronics VL53L1X ToF ranger sensor (I2C)"
-+	depends on I2C
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	select REGMAP_I2C
-+	help
-+	  Say Y here to build a driver for STMicroelectronics VL53L1X
-+	  ToF ranger sensors with i2c interface.
-+	  This driver can be used to measure the distance of objects.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called vl53l1x-i2c.
-+
- config AW96103
- 	tristate "AW96103/AW96105 Awinic proximity sensor"
- 	select REGMAP_I2C
-diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
-index 152034d38c49..4352833dd8a4 100644
---- a/drivers/iio/proximity/Makefile
-+++ b/drivers/iio/proximity/Makefile
-@@ -23,5 +23,6 @@ obj-$(CONFIG_SX_COMMON) 	+= sx_common.o
- obj-$(CONFIG_SX9500)		+= sx9500.o
- obj-$(CONFIG_VCNL3020)		+= vcnl3020.o
- obj-$(CONFIG_VL53L0X_I2C)	+= vl53l0x-i2c.o
-+obj-$(CONFIG_VL53L1X_I2C)	+= vl53l1x-i2c.o
- obj-$(CONFIG_AW96103)		+= aw96103.o
- 
-diff --git a/drivers/iio/proximity/vl53l1x-i2c.c b/drivers/iio/proximity/vl53l1x-i2c.c
-new file mode 100644
-index 000000000000..e6c3efeb6051
---- /dev/null
-+++ b/drivers/iio/proximity/vl53l1x-i2c.c
-@@ -0,0 +1,782 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+/*
-+ * Support for ST VL53L1X FlightSense ToF Ranging Sensor on a i2c bus.
-+ *
-+ * Copyright (C) 2026 Siratul Islam <email@sirat.me>
-+ *
-+ * Datasheet available at
-+ * <https://www.st.com/resource/en/datasheet/vl53l1x.pdf>
-+ *
-+ * Default 7-bit i2c slave address 0x29.
-+ *
-+ * The VL53L1X requires a firmware configuration blob to be loaded at boot.
-+ * Register values for the default configuration are taken from
-+ * ST's VL53L1X Ultra Lite Driver (STSW-IMG009).
-+ */
-+
-+#include <linux/array_size.h>
-+#include <linux/bits.h>
-+#include <linux/bitfield.h>
-+#include <linux/completion.h>
-+#include <linux/delay.h>
-+#include <linux/dev_printk.h>
-+#include <linux/err.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/i2c.h>
-+#include <linux/interrupt.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/types.h>
-+
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#define VL53L1X_SOFT_RESET					0x0000
-+#define VL53L1X_VHV_CONFIG__TIMEOUT_MACROP_LOOP_BOUND		0x0008
-+#define VL53L1X_VHV_CONFIG__INIT				0x000B
-+#define VL53L1X_GPIO_HV_MUX__CTRL				0x0030
-+#define VL53L1X_GPIO__TIO_HV_STATUS				0x0031
-+#define VL53L1X_SYSTEM__INTERRUPT_CONFIG_GPIO			0x0046
-+#define VL53L1X_PHASECAL_CONFIG__TIMEOUT_MACROP			0x004B
-+#define VL53L1X_RANGE_CONFIG__TIMEOUT_MACROP_A			0x005E
-+#define VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_A			0x0060
-+#define VL53L1X_RANGE_CONFIG__TIMEOUT_MACROP_B			0x0061
-+#define VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_B			0x0063
-+#define VL53L1X_RANGE_CONFIG__VALID_PHASE_HIGH			0x0069
-+#define VL53L1X_SYSTEM__INTERMEASUREMENT_PERIOD			0x006C
-+#define VL53L1X_SD_CONFIG__WOI_SD0				0x0078
-+#define VL53L1X_SD_CONFIG__WOI_SD1				0x0079
-+#define VL53L1X_SD_CONFIG__INITIAL_PHASE_SD0			0x007A
-+#define VL53L1X_SD_CONFIG__INITIAL_PHASE_SD1			0x007B
-+#define VL53L1X_SYSTEM__INTERRUPT_CLEAR				0x0086
-+#define VL53L1X_SYSTEM__MODE_START				0x0087
-+#define VL53L1X_RESULT__RANGE_STATUS				0x0089
-+#define VL53L1X_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0	0x0096
-+#define VL53L1X_RESULT__OSC_CALIBRATE_VAL			0x00DE
-+#define VL53L1X_FIRMWARE__SYSTEM_STATUS				0x00E5
-+#define VL53L1X_IDENTIFICATION__MODEL_ID			0x010F
-+
-+#define VL53L1X_MODEL_ID_VAL		0xEACC
-+
-+#define VL53L1X_DEFAULT_CONFIG_ADDR	0x2D
-+
-+#define VL53L1X_MODE_START_TIMED	0x40
-+#define VL53L1X_MODE_START_STOP		0x00
-+
-+#define VL53L1X_INT_NEW_SAMPLE_READY	0x02
-+
-+#define VL53L1X_GPIO_HV_MUX_POLARITY	BIT(4)
-+
-+#define VL53L1X_VHV_LOOP_BOUND_TWO	0x09
-+
-+#define VL53L1X_RANGE_STATUS_MASK	GENMASK(4, 0)
-+#define VL53L1X_RANGE_STATUS_VALID	9
-+
-+/* Inter-measurement period uses PLL divider with 1.075 oscillator correction */
-+#define VL53L1X_OSC_CALIBRATE_MASK	GENMASK(9, 0)
-+#define VL53L1X_OSC_CORRECTION_FACTOR	1075
-+#define VL53L1X_OSC_CORRECTION_DIVISOR	1000
-+
-+enum vl53l1x_distance_mode {
-+	VL53L1X_SHORT,
-+	VL53L1X_LONG,
-+};
-+
-+struct vl53l1x_data {
-+	struct regmap *regmap;
-+	struct completion completion;
-+	struct regulator *vdd_supply;
-+	struct gpio_desc *xshut_gpio;
-+	enum vl53l1x_distance_mode distance_mode;
-+	u16 osc_calibrate_val;
-+	u8 gpio_polarity;
-+	int irq;
-+};
-+
-+static const struct regmap_config vl53l1x_regmap_config = {
-+	.reg_bits = 16,
-+	.val_bits = 8,
-+};
-+
-+static int vl53l1x_read_u16(struct vl53l1x_data *data, u16 reg, u16 *val)
-+{
-+	__be16 buf;
-+	int ret;
-+
-+	ret = regmap_bulk_read(data->regmap, reg, &buf, 2);
-+	if (ret)
-+		return ret;
-+
-+	*val = be16_to_cpu(buf);
-+	return 0;
-+}
-+
-+static int vl53l1x_write_u16(struct vl53l1x_data *data, u16 reg, u16 val)
-+{
-+	__be16 buf = cpu_to_be16(val);
-+
-+	return regmap_bulk_write(data->regmap, reg, &buf, 2);
-+}
-+
-+static int vl53l1x_write_u32(struct vl53l1x_data *data, u16 reg, u32 val)
-+{
-+	__be32 buf = cpu_to_be32(val);
-+
-+	return regmap_bulk_write(data->regmap, reg, &buf, 4);
-+}
-+
-+static int vl53l1x_clear_irq(struct vl53l1x_data *data)
-+{
-+	return regmap_write(data->regmap, VL53L1X_SYSTEM__INTERRUPT_CLEAR,
-+			    0x01);
-+}
-+
-+static int vl53l1x_start_ranging(struct vl53l1x_data *data)
-+{
-+	int ret;
-+
-+	ret = vl53l1x_clear_irq(data);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(data->regmap, VL53L1X_SYSTEM__MODE_START,
-+			    VL53L1X_MODE_START_TIMED);
-+}
-+
-+static int vl53l1x_stop_ranging(struct vl53l1x_data *data)
-+{
-+	return regmap_write(data->regmap, VL53L1X_SYSTEM__MODE_START,
-+			    VL53L1X_MODE_START_STOP);
-+}
-+
-+/*
-+ * Default configuration blob from ST's VL53L1X ULD (STSW-IMG009).
-+ */
-+static const u8 vl53l1x_default_config[] = {
-+	/* 0x2D, 0x2E, 0x2F, 0x30, 0x31, 0x32, 0x33, 0x34 */
-+	0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x02, 0x08,
-+	/* 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B, 0x3C */
-+	0x00, 0x08, 0x10, 0x01, 0x01, 0x00, 0x00, 0x00,
-+	/* 0x3D, 0x3E, 0x3F, 0x40, 0x41, 0x42, 0x43, 0x44 */
-+	0x00, 0xFF, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00,
-+	/* 0x45, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C */
-+	0x00, 0x20, 0x0B, 0x00, 0x00, 0x02, 0x0A, 0x21,
-+	/* 0x4D, 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54 */
-+	0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0xC8,
-+	/* 0x55, 0x56, 0x57, 0x58, 0x59, 0x5A, 0x5B, 0x5C */
-+	0x00, 0x00, 0x38, 0xFF, 0x01, 0x00, 0x08, 0x00,
-+	/* 0x5D, 0x5E, 0x5F, 0x60, 0x61, 0x62, 0x63, 0x64 */
-+	0x00, 0x01, 0xCC, 0x0F, 0x01, 0xF1, 0x0D, 0x01,
-+	/* 0x65, 0x66, 0x67, 0x68, 0x69, 0x6A, 0x6B, 0x6C */
-+	0x68, 0x00, 0x80, 0x08, 0xB8, 0x00, 0x00, 0x00,
-+	/* 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74 */
-+	0x00, 0x0F, 0x89, 0x00, 0x00, 0x00, 0x00, 0x00,
-+	/* 0x75, 0x76, 0x77, 0x78, 0x79, 0x7A, 0x7B, 0x7C */
-+	0x00, 0x00, 0x01, 0x0F, 0x0D, 0x0E, 0x0E, 0x00,
-+	/* 0x7D, 0x7E, 0x7F, 0x80, 0x81, 0x82, 0x83, 0x84 */
-+	0x00, 0x02, 0xC7, 0xFF, 0x9B, 0x00, 0x00, 0x00,
-+	/* 0x85, 0x86, 0x87 */
-+	0x01, 0x00, 0x00,
-+};
-+
-+static int vl53l1x_chip_init(struct vl53l1x_data *data)
-+{
-+	struct device *dev = regmap_get_device(data->regmap);
-+	unsigned int val;
-+	u16 model_id;
-+	int ret;
-+
-+	if (!data->xshut_gpio) {
-+		ret = regmap_write(data->regmap, VL53L1X_SOFT_RESET, 0x00);
-+		if (ret)
-+			return ret;
-+		fsleep(100); /* conservative reset pulse, no spec */
-+
-+		ret = regmap_write(data->regmap, VL53L1X_SOFT_RESET, 0x01);
-+		if (ret)
-+			return ret;
-+		fsleep(1000); /* conservative boot wait, no spec */
-+	}
-+
-+	ret = regmap_read_poll_timeout(data->regmap,
-+				       VL53L1X_FIRMWARE__SYSTEM_STATUS, val,
-+				       val & BIT(0),
-+				       1 * USEC_PER_MSEC,
-+				       100 * USEC_PER_MSEC);
-+	if (ret) {
-+		dev_err(dev, "firmware boot timeout\n");
-+		return ret;
-+	}
-+
-+	ret = vl53l1x_read_u16(data, VL53L1X_IDENTIFICATION__MODEL_ID,
-+			       &model_id);
-+	if (ret)
-+		return ret;
-+
-+	if (model_id != VL53L1X_MODEL_ID_VAL)
-+		dev_info(dev, "unknown model id: 0x%04x, continuing\n", model_id);
-+
-+	ret = vl53l1x_read_u16(data, VL53L1X_RESULT__OSC_CALIBRATE_VAL,
-+			       &data->osc_calibrate_val);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_bulk_write(data->regmap, VL53L1X_DEFAULT_CONFIG_ADDR,
-+				vl53l1x_default_config,
-+				sizeof(vl53l1x_default_config));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_read(data->regmap, VL53L1X_GPIO_HV_MUX__CTRL, &val);
-+	if (ret)
-+		return ret;
-+	data->gpio_polarity = !!(val & VL53L1X_GPIO_HV_MUX_POLARITY);
-+
-+	/* Initial ranging cycle for VHV calibration */
-+	ret = vl53l1x_start_ranging(data);
-+	if (ret)
-+		return ret;
-+
-+	/* 1ms poll, 1s timeout covers max timing budgets (per ST ULD) */
-+	ret = regmap_read_poll_timeout(data->regmap,
-+				       VL53L1X_GPIO__TIO_HV_STATUS, val,
-+				       (val & 0x01) == (!data->gpio_polarity),
-+				       1 * USEC_PER_MSEC,
-+				       1000 * USEC_PER_MSEC);
-+	if (ret)
-+		return ret;
-+
-+	ret = vl53l1x_clear_irq(data);
-+	if (ret)
-+		return ret;
-+
-+	ret = vl53l1x_stop_ranging(data);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(data->regmap,
-+			   VL53L1X_VHV_CONFIG__TIMEOUT_MACROP_LOOP_BOUND,
-+			   VL53L1X_VHV_LOOP_BOUND_TWO);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(data->regmap, VL53L1X_VHV_CONFIG__INIT, 0x00);
-+}
-+
-+static const struct reg_sequence vl53l1x_mode_short[] = {
-+	{ VL53L1X_PHASECAL_CONFIG__TIMEOUT_MACROP,	0x14 },
-+	{ VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_A,		0x07 },
-+	{ VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_B,		0x05 },
-+	{ VL53L1X_RANGE_CONFIG__VALID_PHASE_HIGH,	0x38 },
-+	{ VL53L1X_SD_CONFIG__WOI_SD0,			0x07 },
-+	{ VL53L1X_SD_CONFIG__WOI_SD1,			0x05 },
-+	{ VL53L1X_SD_CONFIG__INITIAL_PHASE_SD0,		6 },
-+	{ VL53L1X_SD_CONFIG__INITIAL_PHASE_SD1,		6 },
-+};
-+
-+static const struct reg_sequence vl53l1x_mode_long[] = {
-+	{ VL53L1X_PHASECAL_CONFIG__TIMEOUT_MACROP,	0x0A },
-+	{ VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_A,		0x0F },
-+	{ VL53L1X_RANGE_CONFIG__VCSEL_PERIOD_B,		0x0D },
-+	{ VL53L1X_RANGE_CONFIG__VALID_PHASE_HIGH,	0xB8 },
-+	{ VL53L1X_SD_CONFIG__WOI_SD0,			0x0F },
-+	{ VL53L1X_SD_CONFIG__WOI_SD1,			0x0D },
-+	{ VL53L1X_SD_CONFIG__INITIAL_PHASE_SD0,		14 },
-+	{ VL53L1X_SD_CONFIG__INITIAL_PHASE_SD1,		14 },
-+};
-+
-+static const struct {
-+	const struct reg_sequence *regs;
-+	size_t num_regs;
-+} vl53l1x_mode_configs[] = {
-+	[VL53L1X_SHORT] = { vl53l1x_mode_short, ARRAY_SIZE(vl53l1x_mode_short) },
-+	[VL53L1X_LONG]  = { vl53l1x_mode_long, ARRAY_SIZE(vl53l1x_mode_long) },
-+};
-+
-+static int vl53l1x_set_distance_mode(struct vl53l1x_data *data,
-+				     enum vl53l1x_distance_mode mode)
-+{
-+	int ret;
-+
-+	if (mode >= ARRAY_SIZE(vl53l1x_mode_configs))
-+		return -EINVAL;
-+
-+	ret = regmap_multi_reg_write(data->regmap,
-+				     vl53l1x_mode_configs[mode].regs,
-+				     vl53l1x_mode_configs[mode].num_regs);
-+	if (ret)
-+		return ret;
-+
-+	data->distance_mode = mode;
-+	return 0;
-+}
-+
-+/*
-+ * The timing budget controls how long the sensor spends collecting
-+ * a single range measurement. Pre-computed TIMEOUT_MACROP register
-+ * values from ST's VL53L1X ULD.
-+ */
-+static int vl53l1x_set_timing_budget(struct vl53l1x_data *data, u16 budget_ms)
-+{
-+	u16 timeout_a, timeout_b;
-+	int ret;
-+
-+	switch (data->distance_mode) {
-+	case VL53L1X_SHORT:
-+		switch (budget_ms) {
-+		case 15:
-+			timeout_a = 0x001D;
-+			timeout_b = 0x0027;
-+			break;
-+		case 20:
-+			timeout_a = 0x0051;
-+			timeout_b = 0x006E;
-+			break;
-+		case 33:
-+			timeout_a = 0x00D6;
-+			timeout_b = 0x006E;
-+			break;
-+		case 50:
-+			timeout_a = 0x01AE;
-+			timeout_b = 0x01E8;
-+			break;
-+		case 100:
-+			timeout_a = 0x02E1;
-+			timeout_b = 0x0388;
-+			break;
-+		case 200:
-+			timeout_a = 0x03E1;
-+			timeout_b = 0x0496;
-+			break;
-+		case 500:
-+			timeout_a = 0x0591;
-+			timeout_b = 0x05C1;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	case VL53L1X_LONG:
-+		switch (budget_ms) {
-+		case 20:
-+			timeout_a = 0x001E;
-+			timeout_b = 0x0022;
-+			break;
-+		case 33:
-+			timeout_a = 0x0060;
-+			timeout_b = 0x006E;
-+			break;
-+		case 50:
-+			timeout_a = 0x00AD;
-+			timeout_b = 0x00C6;
-+			break;
-+		case 100:
-+			timeout_a = 0x01CC;
-+			timeout_b = 0x01EA;
-+			break;
-+		case 200:
-+			timeout_a = 0x02D9;
-+			timeout_b = 0x02F8;
-+			break;
-+		case 500:
-+			timeout_a = 0x048F;
-+			timeout_b = 0x04A4;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	ret = vl53l1x_write_u16(data, VL53L1X_RANGE_CONFIG__TIMEOUT_MACROP_A,
-+				timeout_a);
-+	if (ret)
-+		return ret;
-+
-+	return vl53l1x_write_u16(data, VL53L1X_RANGE_CONFIG__TIMEOUT_MACROP_B,
-+				 timeout_b);
-+}
-+
-+static int vl53l1x_set_inter_measurement_ms(struct vl53l1x_data *data,
-+					    u16 period_ms)
-+{
-+	u16 clock_pll = data->osc_calibrate_val & VL53L1X_OSC_CALIBRATE_MASK;
-+	u32 inter_meas;
-+
-+	inter_meas = clock_pll * period_ms;
-+	inter_meas = (inter_meas * VL53L1X_OSC_CORRECTION_FACTOR) /
-+		     VL53L1X_OSC_CORRECTION_DIVISOR;
-+
-+	return vl53l1x_write_u32(data, VL53L1X_SYSTEM__INTERMEASUREMENT_PERIOD,
-+				 inter_meas);
-+}
-+
-+static int vl53l1x_read_proximity(struct vl53l1x_data *data, int *val)
-+{
-+	unsigned long time_left;
-+	unsigned int range_status;
-+	u16 distance;
-+	int ret;
-+
-+	if (data->irq) {
-+		reinit_completion(&data->completion);
-+
-+		ret = vl53l1x_clear_irq(data);
-+		if (ret)
-+			return ret;
-+
-+		time_left = wait_for_completion_timeout(&data->completion, HZ);
-+		if (time_left == 0)
-+			return -ETIMEDOUT;
-+	} else {
-+		unsigned int rdy;
-+
-+		/* 1ms poll, 1s timeout covers max timing budgets (per ST ULD) */
-+		ret = regmap_read_poll_timeout(data->regmap,
-+					       VL53L1X_GPIO__TIO_HV_STATUS, rdy,
-+					       (rdy & 0x01) == (!data->gpio_polarity),
-+					       1 * USEC_PER_MSEC,
-+					       1000 * USEC_PER_MSEC);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	ret = regmap_read(data->regmap, VL53L1X_RESULT__RANGE_STATUS,
-+			  &range_status);
-+	if (ret)
-+		goto clear_irq;
-+
-+	if (FIELD_GET(VL53L1X_RANGE_STATUS_MASK, range_status) != VL53L1X_RANGE_STATUS_VALID) {
-+		ret = -EIO;
-+		goto clear_irq;
-+	}
-+
-+	ret = vl53l1x_read_u16(data,
-+			       VL53L1X_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0,
-+			       &distance);
-+	if (ret)
-+		goto clear_irq;
-+
-+	*val = distance;
-+
-+clear_irq:
-+	vl53l1x_clear_irq(data);
-+	return ret;
-+}
-+
-+static const struct iio_chan_spec vl53l1x_channels[] = {
-+	{
-+		.type = IIO_DISTANCE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 16,
-+			.storagebits = 16,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(1),
-+};
-+
-+static int vl53l1x_read_raw(struct iio_dev *indio_dev,
-+			    const struct iio_chan_spec *chan, int *val,
-+			    int *val2, long mask)
-+{
-+	struct vl53l1x_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (chan->type != IIO_DISTANCE)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (!iio_device_claim_direct(indio_dev))
-+			return -EBUSY;
-+		ret = vl53l1x_read_proximity(data, val);
-+		iio_device_release_direct(indio_dev);
-+		if (ret)
-+			return ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		*val2 = 1000;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info vl53l1x_info = {
-+	.read_raw = vl53l1x_read_raw,
-+	.validate_trigger = iio_validate_own_trigger,
-+};
-+
-+static irqreturn_t vl53l1x_trigger_handler(int irq, void *priv)
-+{
-+	struct iio_poll_func *pf = priv;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct vl53l1x_data *data = iio_priv(indio_dev);
-+	struct {
-+		u16 distance;
-+		aligned_s64 timestamp;
-+	} scan = {};
-+	unsigned int range_status;
-+	int ret;
-+
-+	ret = regmap_read(data->regmap, VL53L1X_RESULT__RANGE_STATUS,
-+			  &range_status);
-+	if (ret || FIELD_GET(VL53L1X_RANGE_STATUS_MASK, range_status) !=
-+			   VL53L1X_RANGE_STATUS_VALID)
-+		goto notify_and_clear_irq;
-+
-+	ret = vl53l1x_read_u16(data,
-+			       VL53L1X_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0,
-+			       &scan.distance);
-+	if (ret)
-+		goto notify_and_clear_irq;
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, &scan,
-+					   iio_get_time_ns(indio_dev));
-+
-+notify_and_clear_irq:
-+	iio_trigger_notify_done(indio_dev->trig);
-+	vl53l1x_clear_irq(data);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t vl53l1x_irq_handler(int irq, void *priv)
-+{
-+	struct iio_dev *indio_dev = priv;
-+	struct vl53l1x_data *data = iio_priv(indio_dev);
-+
-+	if (iio_buffer_enabled(indio_dev))
-+		iio_trigger_poll(indio_dev->trig);
-+	else
-+		complete(&data->completion);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int vl53l1x_buffer_postenable(struct iio_dev *indio_dev)
-+{
-+	struct vl53l1x_data *data = iio_priv(indio_dev);
-+
-+	return vl53l1x_start_ranging(data);
-+}
-+
-+static int vl53l1x_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct vl53l1x_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = vl53l1x_stop_ranging(data);
-+	if (ret)
-+		return ret;
-+
-+	reinit_completion(&data->completion);
-+	wait_for_completion_timeout(&data->completion, HZ / 10);
-+
-+	return vl53l1x_clear_irq(data);
-+}
-+
-+static const struct iio_buffer_setup_ops vl53l1x_buffer_setup_ops = {
-+	.postenable = &vl53l1x_buffer_postenable,
-+	.predisable = &vl53l1x_buffer_predisable,
-+};
-+
-+static const struct iio_trigger_ops vl53l1x_trigger_ops = {
-+	.validate_device = iio_trigger_validate_own_device,
-+};
-+
-+static void vl53l1x_stop_ranging_action(void *_data)
-+{
-+	vl53l1x_stop_ranging(_data);
-+}
-+
-+static void vl53l1x_power_off(void *_data)
-+{
-+	struct vl53l1x_data *data = _data;
-+
-+	gpiod_set_value_cansleep(data->xshut_gpio, 1);
-+	regulator_disable(data->vdd_supply);
-+}
-+
-+static int vl53l1x_power_on(struct vl53l1x_data *data)
-+{
-+	int ret;
-+
-+	ret = regulator_enable(data->vdd_supply);
-+	if (ret)
-+		return ret;
-+
-+	gpiod_set_value_cansleep(data->xshut_gpio, 0);
-+	/*
-+	 * 1.2 ms max boot duration.
-+	 * Datasheet Section 3.6 "Power up and boot sequence".
-+	 */
-+	fsleep(1200);
-+
-+	return 0;
-+}
-+
-+static int vl53l1x_configure_irq(struct device *dev, int irq,
-+				 struct iio_dev *indio_dev)
-+{
-+	struct vl53l1x_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = devm_request_irq(dev, irq, vl53l1x_irq_handler,
-+			       IRQF_NO_THREAD,
-+			       indio_dev->name, indio_dev);
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to request IRQ\n");
-+
-+	ret = regmap_write(data->regmap, VL53L1X_SYSTEM__INTERRUPT_CONFIG_GPIO,
-+			   VL53L1X_INT_NEW_SAMPLE_READY);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "failed to configure IRQ\n");
-+
-+	return 0;
-+}
-+
-+static int vl53l1x_probe(struct i2c_client *client)
-+{
-+	struct device *dev = &client->dev;
-+	struct vl53l1x_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	data->irq = client->irq;
-+
-+	if (!i2c_check_functionality(client->adapter,
-+				     I2C_FUNC_SMBUS_READ_I2C_BLOCK |
-+				     I2C_FUNC_SMBUS_BYTE_DATA))
-+		return -EOPNOTSUPP;
-+
-+	data->regmap = devm_regmap_init_i2c(client, &vl53l1x_regmap_config);
-+	if (IS_ERR(data->regmap))
-+		return dev_err_probe(dev, PTR_ERR(data->regmap),
-+				     "regmap initialization failed\n");
-+
-+	data->vdd_supply = devm_regulator_get(dev, "vdd");
-+	if (IS_ERR(data->vdd_supply))
-+		return dev_err_probe(dev, PTR_ERR(data->vdd_supply),
-+				     "Unable to get VDD regulator\n");
-+
-+	data->xshut_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(data->xshut_gpio))
-+		return dev_err_probe(dev, PTR_ERR(data->xshut_gpio),
-+				     "Cannot get reset GPIO\n");
-+
-+	ret = vl53l1x_power_on(data);
-+	if (ret)
-+		return dev_err_probe(dev, ret,
-+				     "Failed to power on the chip\n");
-+
-+	ret = devm_add_action_or_reset(dev, vl53l1x_power_off, data);
-+	if (ret)
-+		return ret;
-+
-+	ret = vl53l1x_chip_init(data);
-+	if (ret)
-+		return ret;
-+
-+	ret = vl53l1x_set_distance_mode(data, VL53L1X_LONG);
-+	if (ret)
-+		return ret;
-+
-+	ret = vl53l1x_set_timing_budget(data, 50);
-+	if (ret)
-+		return ret;
-+
-+	ret = vl53l1x_set_inter_measurement_ms(data, 50);
-+	if (ret)
-+		return ret;
-+
-+	ret = vl53l1x_start_ranging(data);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(dev, vl53l1x_stop_ranging_action, data);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->name = "vl53l1x";
-+	indio_dev->info = &vl53l1x_info;
-+	indio_dev->channels = vl53l1x_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(vl53l1x_channels);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	if (client->irq) {
-+		struct iio_trigger *trig;
-+
-+		init_completion(&data->completion);
-+
-+		trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
-+					      indio_dev->name,
-+					      iio_device_id(indio_dev));
-+		if (!trig)
-+			return -ENOMEM;
-+
-+		trig->ops = &vl53l1x_trigger_ops;
-+		iio_trigger_set_drvdata(trig, indio_dev);
-+		ret = devm_iio_trigger_register(dev, trig);
-+		if (ret)
-+			return ret;
-+
-+		indio_dev->trig = iio_trigger_get(trig);
-+
-+		ret = vl53l1x_configure_irq(dev, client->irq, indio_dev);
-+		if (ret)
-+			return ret;
-+
-+		ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-+						      &vl53l1x_trigger_handler,
-+						      &vl53l1x_buffer_setup_ops);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static const struct i2c_device_id vl53l1x_id[] = {
-+	{ "vl53l1x" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, vl53l1x_id);
-+
-+static const struct of_device_id st_vl53l1x_dt_match[] = {
-+	{ .compatible = "st,vl53l1x" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, st_vl53l1x_dt_match);
-+
-+static struct i2c_driver vl53l1x_driver = {
-+	.driver = {
-+		.name = "vl53l1x-i2c",
-+		.of_match_table = st_vl53l1x_dt_match,
-+	},
-+	.probe = vl53l1x_probe,
-+	.id_table = vl53l1x_id,
-+};
-+module_i2c_driver(vl53l1x_driver);
-+
-+MODULE_AUTHOR("Siratul Islam <email@sirat.me>");
-+MODULE_DESCRIPTION("ST VL53L1X ToF ranging sensor driver");
-+MODULE_LICENSE("Dual BSD/GPL");
--- 
-2.53.0
+> ...
+>=20
+> > +#define AD5706R_DAC_RESOLUTION		16
+> > +#define AD5706R_DAC_MAX_CODE
+> 	BIT(AD5706R_DAC_RESOLUTION)  /* 65536 */
+>=20
+> Useless comment, use the same number explicitly instead
+>=20
+> 	BIT(16)
+>=20
+> which is much more readable.
+>=20
+> ...
+>=20
+> > +	st->tx_buf =3D cpu_to_be32((((u32)reg) << 16) |
+> > +			((u32)val << (16 - (num_bytes * 8))));
+>=20
+> What the heck is this?
 
+I'll make this more readable.
+but the format goal is:
+
+if num_bytes =3D 1
+    tx_buf [31:0] =3D [reg 31:16] [val 15:8] [ XXXX]
+if num_bytes =3D 2
+    tx_buf [31:0] =3D [reg 31:16] [      val 15:0        ]
+
+>=20
+> ...
+>=20
+> > +static const struct of_device_id ad5706r_of_match[] =3D {
+> > +	{ .compatible =3D "adi,ad5706r" },
+> > +	{ },
+>=20
+> Even inside a single file this is inconsistent, besides being third of
+> 101 IIO	patch issues.
+
+Will note the other feedback and track the common issues.
+Thank you,
