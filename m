@@ -1,129 +1,119 @@
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1A493DC4AB
-	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 17:37:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 695FB351C35;
+	Thu, 12 Mar 2026 17:39:18 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773337061; cv=none; b=iR/NAthZFfzSrp6qt7+sv+DyIMyMeCmSFd8tgLBt6cN/n5YjPmnh9hRzZQJZmOQmunBc6IroJ+9qNsxyC4hOdfc0mCaCtaGG2SKeTJNWrEXK4ZzwcyLJh45qmY+leWdeJfQB0e9/QxNOtjkRszVdk82JZMnUO//wPkNINts+aj4=
+	t=1773337158; cv=none; b=oFEkrxExMvpBqpMXlFvNEJI9ZWJ/tJyK4v4mAmK2FE01Zoq6S0SqwXGgN9f0fMs3zrxv0ccjSb8/hk4PSLLjoRWpR8ukj1igYJZMjA2q61FJfF9FNKv1Y4w4kf0nv36zjpVVqhxuKQErdWGXuA24WOgp3fH12Mjcuu593BovnzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773337061; c=relaxed/simple;
-	bh=RsnSHv78qpaLqwvgdzM6cPidFSNlfTQ2Kmz1fO7Ie7I=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=MaU2u/DjHBbQyC/Fng5FoZEr1KmZWk5rqOPKuqkzjC3ri05lzjeyjGSVkwCgzlWSeCytHkzgcXOnyM4r4VMYUBgNkyeVfnNvqzO3DXk/7SUCLSKzMop3AyKFONJmZ2R/KbymgBkUTVO+VD+aqLDpzHKeWWUuKm+TqIxzjK7mdQo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-79907171da2so12877657b3.2
-        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 10:37:39 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773337059; x=1773941859;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=+0AhCYVaWd9XEdWYnJomiFHtpEOu8tGpu+mSNsVNTfo=;
-        b=EkovMZHIUuDTw7wHE1CXYb+7LRAkoy/48saewvHzTJjTcdY4hWbX5OqbBX1ACRubU6
-         c/Ftmkw1v5utC/X6ckVArWsxRfEcBvedktZ5hjPtfeBD4ptRGRYchxdtylR/7VbaouhL
-         ae1BcU7n7pwJ5vglibqH+gQp2f0osD572fE7S0jXrZY8WNcSgaWrmKiNCTOV+tID5+IM
-         NFoOA6kyC3n9zwu9/FrAnlLmuvmors8cYiYS8yqseYGmSB7D1oUbJxDpy3bGCUrNp7ni
-         XSgmWSybP4H0HMwSZu7eIpdJzaZo3virb68MjstA0HwrSQ4p07sL4zLqQDjQXNj915Qb
-         gvdA==
-X-Gm-Message-State: AOJu0YxHXAjMHtk2vDvrayuVZO9t2nXBdh2/EJT20MdwVJTtjYt0uApm
-	3YjSVLHvi679Je/ccgw7s4wnJdn8v1mwTkLU5OizW6teC3X2lx9gU61bVdTWW0gZa8VeSg==
-X-Gm-Gg: ATEYQzz5so1z6NT8aWdo1T0oMfS5l3xXFnBQOrXo2hmO5xUQAPlP4vbb47poKvM2fbO
-	1RyrXqLO8djv3to2bit0NMXUw4ypdKOrwPteV85Ccc5t3dwRFRi15fHxKLMPEdegEmhIfgurLZr
-	TzKeP2U0WHVeu5amTyYTl4sNKsi9QXIpb1L/sgh2aiPb4QXcfQ85M9EYwx+OKjZ7WdPXnaRBZEh
-	wYXnponWmAUyDszS8YLMAbcHuVTd56wI72W4vEjk6NGBh7niJxBngi4zUGAe/mAO+WspdzQQAhK
-	J6mZzbDAGjbBFjg9bLWHGgqI88qoZ8owylXrdc+FlWK32zDpH1u0tGmHOXAi/c1wLv9rVlsFOuw
-	qbUfJx/bWYNlq32S9asHpSYm1DXJCjMXxqDaz1+ywPim8aVT1MFaxbfvD/7R9K43WnZMocLQwtw
-	OfO1jMgGXrK7KgkihQMN2Ai9uCtmyL8S3lMxev7+iJOio579wCOszo11DUagFo
-X-Received: by 2002:a05:690c:5c11:b0:796:6784:82cb with SMTP id 00721157ae682-79a1c08a8e2mr4062297b3.2.1773337058548;
-        Thu, 12 Mar 2026 10:37:38 -0700 (PDT)
-Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com. [209.85.128.172])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-7991ad51ee0sm28539217b3.8.2026.03.12.10.37.38
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 12 Mar 2026 10:37:38 -0700 (PDT)
-Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-79907171da2so12877417b3.2
-        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 10:37:38 -0700 (PDT)
-X-Received: by 2002:a05:690c:34c9:b0:798:da13:7141 with SMTP id
- 00721157ae682-79a1c2182b8mr4592247b3.63.1773337057869; Thu, 12 Mar 2026
- 10:37:37 -0700 (PDT)
+	s=arc-20240116; t=1773337158; c=relaxed/simple;
+	bh=8tangXIJgqmeLCu+uid5kcJH5BZUSAQ549JIKe6bFOc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=u4gxOsOLyx1GlU5bjBX5nHV6A7I+L3mtpzS7m0xfQTtDV9+9hyZFhW6P3+gga+NGlFlvRN79YhnCCbSaGSTlChSwXHizVimvEFCj14Ve5lQFD2NL/diM2jvCYFu7f3yN9pPwiWpVXWF7MB1alXdAntJlasGDauFUxjNeMCWztTQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GlmGN1XD; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GlmGN1XD"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BD07C4CEF7;
+	Thu, 12 Mar 2026 17:39:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773337158;
+	bh=8tangXIJgqmeLCu+uid5kcJH5BZUSAQ549JIKe6bFOc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GlmGN1XDZwTrDBfg6Ol0kqK12NK5p/UYK06a729WdBYcxpA87H/k3EbD/5qfBaXKI
+	 yfGpNnPbsnGShxz9YXdeeVp1eMDwwHy7USwNGVoUQh8v+0xXxcwmKBMpHMmSlpdGWF
+	 5bpIR1HGTSgxTk1WdzMtsT59fB2xT/YtdVJ5YFAYBc0oR61TTRhFWT9TiusMLUhOVq
+	 uk2hMRR/BJpLARGtuv/HwKmwASZyp4kaLHk4lo1Ok4WiRfMn57acFOUNUYbYaFB3Jp
+	 78IuhxQBUhQmVv5lUcQ6J+H1tSNfNnPHaWvJH3+WU70XPrc63frvXTmKK6DHS5HCBn
+	 8CqeQk2AKAZBw==
+Date: Thu, 12 Mar 2026 17:39:13 +0000
+From: Conor Dooley <conor@kernel.org>
+To: Erikas Bitovtas <xerikasxx@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dt-bindings: iio: light: vcnl4000: add regulators
+Message-ID: <20260312-slouching-shelf-c8f64433881d@spud>
+References: <20260312-vcnl4000-regulators-v2-0-2bdebbcbb58a@gmail.com>
+ <20260312-vcnl4000-regulators-v2-1-2bdebbcbb58a@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260311224044.21480-1-email@sirat.me> <20260311224044.21480-3-email@sirat.me>
- <abLUgxivQnz2ISeY@ashevche-desk.local>
-In-Reply-To: <abLUgxivQnz2ISeY@ashevche-desk.local>
-From: Sirat <email@sirat.me>
-Date: Thu, 12 Mar 2026 23:37:26 +0600
-X-Gmail-Original-Message-ID: <CANn+LW+mg9Ridm3aMrVhy7cgvmJO0JNV_s_myfRCW8gPv7Ggkg@mail.gmail.com>
-X-Gm-Features: AaiRm53b54paoY7bohUQnhAoqD1uMqiR4vU46Vf3xd6gKJBBdHGtUpnfKfsDxCc
-Message-ID: <CANn+LW+mg9Ridm3aMrVhy7cgvmJO0JNV_s_myfRCW8gPv7Ggkg@mail.gmail.com>
-Subject: Re: [PATCH v3 2/2] iio: proximity: add driver for ST VL53L1X ToF sensor
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org, 
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="pYN3c8jb1SuI1kvB"
+Content-Disposition: inline
+In-Reply-To: <20260312-vcnl4000-regulators-v2-1-2bdebbcbb58a@gmail.com>
+
+
+--pYN3c8jb1SuI1kvB
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 12, 2026 at 8:58=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
->
-> On Thu, Mar 12, 2026 at 04:40:37AM +0600, Siratul Islam wrote:
-> > Add support for the STMicroelectronics VL53L1X Time-of-Flight
-> > ranging sensor with I2C interface.
-> ...
->
-> > +static const struct regmap_config vl53l1x_regmap_config =3D {
-> > +     .reg_bits =3D 16,
-> > +     .val_bits =3D 8,
->
-> No cache?
->
-The result registers change on every measurement, so caching doesn't
-apply well here.
-Will add .cache_type =3D REGCACHE_NONE  with a comment to clarify.
-> > +};
->
-> ...
-> > +
-> > +     reinit_completion(&data->completion);
->
-> > +     wait_for_completion_timeout(&data->completion, HZ / 10);
->
-> No error condition check?
->
-This is only a short drain to make sure any pending IRQ has been
-handled before we stop
-the device and clear the interrupt line. A timeout here is not treated
-as a failure and the device
-is being shut down anyway, so I intentionally do not check the return value=
-.
->
-> ...
->
-> > +     data->xshut_gpio =3D devm_gpiod_get_optional(dev, "reset", GPIOD_=
-OUT_HIGH);
-> > +     if (IS_ERR(data->xshut_gpio))
-> > +             return dev_err_probe(dev, PTR_ERR(data->xshut_gpio),
-> > +                                  "Cannot get reset GPIO\n");
->
-> If it's a reset (semantically), use reset-gpio driver and reset APIs here=
-.
->
-The XSHUT pin is a shutdown/enable pin rather than a true reset line,
-and the existing shared st,vl53l0x.yaml
-binding already defines it as reset-gpios. So I am keeping the GPIO
-consumer API here.
->
->
+On Thu, Mar 12, 2026 at 01:53:12PM +0200, Erikas Bitovtas wrote:
+> This commit adds regulator properties for vcnl4000 ambient light and
+> proximity sensors.
 
-Sending v4 with all other fixes from your review, shortly.
+This we can see. Your commit message should say why.
 
-Thanks,
-Sirat
+Do all devices in the binding have all of these supplies?
+
+>=20
+> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml | 7 +++=
+++++
+>  1 file changed, 7 insertions(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.=
+yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+> index 2ba4d5de4ec4..a1b4c02db246 100644
+> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+> @@ -33,6 +33,10 @@ properties:
+>    interrupts:
+>      maxItems: 1
+> =20
+> +  vdd-supply: true
+> +  vddio-supply: true
+> +  vled-supply: true
+> +
+>    reg:
+>      maxItems: 1
+> =20
+> @@ -54,6 +58,9 @@ examples:
+>              compatible =3D "vishay,vcnl4200";
+>              reg =3D <0x51>;
+>              proximity-near-level =3D <220>;
+> +            vdd-supply =3D <&reg_vdd>;
+> +            vddio-supply =3D <&reg_vddio>;
+> +            vled-supply =3D <&reg_vled>;
+>          };
+>      };
+>  ...
+>=20
+> --=20
+> 2.53.0
+>=20
+
+--pYN3c8jb1SuI1kvB
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCabL6QQAKCRB4tDGHoIJi
+0ke5AP9tyhxjqz1XVt343vG25cnoWFoR+CMvKiFP/ROJAoyuGwD+I/P3SJp3/NFn
+xsGHIzSSNCLJi7r72LTMxP13Yw9Saws=
+=f0Xg
+-----END PGP SIGNATURE-----
+
+--pYN3c8jb1SuI1kvB--
