@@ -1,63 +1,63 @@
-Received: from mail-pl1-f170.google.com (mail-pl1-f170.google.com [209.85.214.170])
+Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EFBCE1A5B9E
-	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 08:20:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D62DF33A6F7
+	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 08:20:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773303618; cv=none; b=gmVvJpLUJi9/wkkRQJs1snm5n3rze3KkUfiqS5dnkDhlniBITODV9PEC4yPk9S3BoJxTV5WEB18lsiie9Vn0E7l333R1gyUABgpqGCsXAPZ0/oDrBsV/TUsfkcw05OER0UTcsKJdQPKx1nYHalCDOW6xLLS9S1N8aICeNfuOl/E=
+	t=1773303625; cv=none; b=WgezeGyU0Dlh5ZA/1QayBfnt3q+KUmV6LES37+hXGic6Q3dBCZTLRyEMM1bCV9tfkGgSW5UFmyyHnO5kNJD3tKHhoM8QKsUgJFQ8efEuopEWVA8VV4SgaYc/WW/siSvymY4FV0tPUYUWn09PPtxrm7/J0Rsj5NM3xRPmW7CK18w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773303618; c=relaxed/simple;
-	bh=Edaye/3CrVze15FJxoamDG+w6ueaUaBhBylJlmgV0tY=;
+	s=arc-20240116; t=1773303625; c=relaxed/simple;
+	bh=ou3lbyq4fDZg+GSVSfhDp3gj9+aEBNAHHddZXTYBnG4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=WF75vxE1gjTmHHzNQ8/6YPeYR1wlhyya8DGG7Qtv4pD4Na8FUopPnfjO3UAqgOBNLv4FAF6mgEerMIObndBNgYnYv6z9egpzDDPvaKhc2hUJjekYHQRtNNi8IcHFt9Anf0009vedHFspym5B/+038R1Bw6IvGnjvAvlqyMQ20j4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=m5/gHJOH; arc=none smtp.client-ip=209.85.214.170
+	 MIME-Version; b=Q/gh19r3u3RAmZhjUqvXwvJmtzkDRLkqxdWmwBK3jq+Q3uyk096wQ4vC4Hxsv4YlcQsXPkcgc/ZzYpyQM4PeBb29D3Te7TtXUrkOEMXW8dkATqVDkpPgtYNDt5iu7YrlVoaVnvqOgc9fc0IxKZz89hF8RaXgHf+y7XeGUdRTaPE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eXc+vijq; arc=none smtp.client-ip=209.85.214.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="m5/gHJOH"
-Received: by mail-pl1-f170.google.com with SMTP id d9443c01a7336-2ae5636ab04so8450795ad.3
-        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 01:20:16 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eXc+vijq"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2ae4d48dc2fso3991785ad.3
+        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 01:20:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773303616; x=1773908416; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773303623; x=1773908423; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=6Da6CmLvCiNOlwy1v5QAVRL0Kuj4W/ug/xDjVba+jfw=;
-        b=m5/gHJOHfmffvTAOog2oXqR7DOCuOw6VqWukAoe0kbKIMAGi78S8p95D6S9Z/68mhH
-         +vWSN7lI3n4lgYFjqD1STMGxfjoRSpPHvrDZguv2+2nPKDMCCmXdUfls4EJFfA6uCxw/
-         +3L4jeMOToQwEu7HvLXOpgRgAEDjggAQMNb/EaKlaCx9iXlvy2fb6dFwg5etP+zSwE3/
-         xBKgM/j3+GKW7i8MXoxxkqM5IS7Pk8Jgl1ZzhqcO00gX50soytZjM0ZVUXD+Trrj7IRx
-         yodJgxTo4QdJOT1V5+NitQ5LOpSKu2B5aOI6ie9qzENEWAu6QJzND7HlgJRl7MXJmj4b
-         A39g==
+        bh=UY+BDJIyA8NSf40uEDoQLKUGXr4A905L63hTXYyoJv0=;
+        b=eXc+vijqqGgrzxngjrmQD/SsbN52lq7SQOVc70fhzJKXURlwVb8IlRDOBmT0z0H8NQ
+         Uk9axJvyz9DnO6GhRVglJ5hALkCqiZBJGUKadZUUDUMetPRQmQu08+F10E3/42DGeg2J
+         zdwfpM1O5RvXe65J2mO4+/JwZAR/hVuTu8MYxnyG8qGluFxUq8Ns4obPH0N3DiWGyaui
+         LpEWeIKeHkW/S4SX408ky1QUHbYRV6h/QOQPUW9mmiXdWglKcTJ8o9GHmn0fkfjMzKpT
+         ymmctzF/aIR/m8EDOsqn8U2O0zoQcG4ujTNJnCxQqbCE0+pVw+abSjLimdAnYj+4R3Gm
+         4aeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773303616; x=1773908416;
+        d=1e100.net; s=20230601; t=1773303623; x=1773908423;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=6Da6CmLvCiNOlwy1v5QAVRL0Kuj4W/ug/xDjVba+jfw=;
-        b=iGFZ9UYYAzZ+4gySynqM1mwHKEvSRdSSmssZ6BsWy73xw/P+RnrxtEQLVeeRBymMJR
-         9J9jBy698ULMYLm7BSkSg2dgIe+eNXhA5h5Kf6gqqzZypknCZWoCiABeVd9fO4Qf/orw
-         258zyg6JSAyPR4dFugbvYD6RvTnLYxIzmqPC6fl5OBYobp6fJCBQoEhet0t2OiCgL3Oz
-         9A7VDZvAgTZFa4dAsWKD2ztwYInOFV3WIJvS99aw57LSewoXEetgejMvNIO+k+/iaa4j
-         2XZbyQtmlZbaGQHs+Tc1M5KNHJHb1PgyZ6UT2MgIZ9CCl1QUq6q3+Kzu7yIWdBSNj2gN
-         cuRA==
-X-Gm-Message-State: AOJu0Yy5GeXw0wb2gx0udVA8FYr5vCFoRBFrEvlnrn1Kyw2JrYBfQn/j
-	I9FHlUGdu6dsWVu/l7gMYVJMPjfPhowZVvdDrpDYMvvOG3CRFGvLbjt8
-X-Gm-Gg: ATEYQzzugCHHMMVi9dbUgisr4ssN2Webbgbt35fwNS7+jmIi4s6BNUIsmfl9vdIY5Zb
-	gDP9viH2x0zH2dW0f57biPeJ5Ixz3kPf/waWlF/HKN0b1psqQvoi5BNUUXuQPA5Z/geXyS7nE3X
-	pcP4XrgmtLXjcCGs897fNUeymk0f3B69n0g4oGGgKksU/3UWZGtRVzXuda9pcMDShZEidtJbtEE
-	TUA4Am8HkxPo1Sm2XK+lbo/2mXsC2tKxHGZbidp3YA4RWDXUwtIVjFSTu7OXMwCoHKHeWodPZxb
-	E8UgWQNjIZ2U0j1AbnzfHijaopa88AKio7WgA7By1iveskZOsPvPQ+2+oiE80m40dTOKqy4KYcI
-	/2ICnJ4PWfEp7SZiYPga7RFDOYwn0gZFP8VWQ0dwWKKMO+L07N47NqSva07d2DWRi87xMalmD7r
-	9jfBgy5hS4WHxNG+AKM3Kn74Rxwmfu5TeLoSd8HcPYlN7NYZoqaJnoESdPt0F3CQv3Vq5ySw5tG
-	48Fxxs5ovrpjUmHYX+ax8c=
-X-Received: by 2002:a17:903:2451:b0:2ae:4fdb:d596 with SMTP id d9443c01a7336-2aeae769ac1mr61672975ad.11.1773303616233;
-        Thu, 12 Mar 2026 01:20:16 -0700 (PDT)
+        bh=UY+BDJIyA8NSf40uEDoQLKUGXr4A905L63hTXYyoJv0=;
+        b=nkXH+rKyXLJaaPtxCMztlavn/HWNsD3oAWrBcycac19475LZDHTqhIxfB1W6QizTEX
+         hAYBcsvWElzWirCAODtGVhz1Eza33EEELf07qdhHVCA2uUStFStXn4MH3KERPXFpMkzo
+         YdxcqsfPqlT+D3jFUlHdA4ciFsBroWUXUy3sBjR+4gLkZwlKHmi+N9jaHfN6Ip5reqTH
+         QzVJF7/1nHkIDShTEUplCvSEdUCSTySbkgBE91G9ZfNIUxqUB+pffY7XM6d8+1VRTtqA
+         /vm3pjsX3YFMKFw4FFHqlhqOe1ddZwCModSi7nnLUuck8Bo+d4a6ZWPoEzIIUBxFhNhc
+         o5jQ==
+X-Gm-Message-State: AOJu0YwQERx5/JqjvXwhZMQR7OEVHBbsWUc82aE8uonRXQvoFcJRJ5kY
+	bbjkkg1zRpfgTB6IWs9PwKPHKz42f4y8Ty4RtOt9zYLHvFZNGpWuswBv
+X-Gm-Gg: ATEYQzwZPIl76DhMs820b7uhNI2bUAsWxB1Rua1Q54H8nYWJfsMI/O3hhP7bb91fgRr
+	gyVBgmVOInan+lSlpO+YvWmCx5QZ1dtTPRghRVBT4Id6pPz7R7/TW6BDwGAnE3tYyzmIVd8G1z8
+	8i4Zxa7f27xGVIGmDtwnxY+c/gw7hze2VsVvMv+rUU4ln5FyzG3MUmTKvlKi66vDfkxxqX17Row
+	y0SiqWingzWF2nmKxeZtLx4M76P7tpfay+z2xHCLZhq8WQ8vlUD8ALO02iWAtnxUM6dWp9xX/l9
+	l1H8tPLoUsvZB8OUWDoK+WLHM/gaPl6iMj/dLzIOj2KjLJxTBdpCWMCIV0fFDHs3Jhcky+SgOUR
+	YjUq7b6eYhHdYA8mBU0NM4hzXcRVnlQ10IYGCzq7kEd72chPeyezgODHBqW2X/hdo1ads+NusyW
+	gWc68CYxAKd0S0G5u0pyb2oSQG4xegQT2l3iVq9JbsDq9cDEA/Z0HA+e2VOk3h384VV+hiYzj3/
+	tHSdRBlF+Ce24KpJ01IA38=
+X-Received: by 2002:a17:903:2f8d:b0:2ae:5a28:cbac with SMTP id d9443c01a7336-2aeae85a65dmr53352415ad.32.1773303623161;
+        Thu, 12 Mar 2026 01:20:23 -0700 (PDT)
 Received: from fedora ([103.92.106.30])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aeae24a91dsm64388905ad.31.2026.03.12.01.20.11
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aeae24a91dsm64388905ad.31.2026.03.12.01.20.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2026 01:20:15 -0700 (PDT)
+        Thu, 12 Mar 2026 01:20:22 -0700 (PDT)
 From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
 To: jic23@kernel.org,
 	dlechner@baylibre.com,
@@ -72,9 +72,9 @@ To: jic23@kernel.org,
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Subject: [PATCH v3 1/4] iio: accel: bmc150: convert to guard(mutex)
-Date: Thu, 12 Mar 2026 13:49:39 +0530
-Message-ID: <20260312081942.23858-2-rajveer.chaudhari.linux@gmail.com>
+Subject: [PATCH v3 2/4] iio: accel: mma8452: convert to guard(mutex)
+Date: Thu, 12 Mar 2026 13:49:40 +0530
+Message-ID: <20260312081942.23858-3-rajveer.chaudhari.linux@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260312081942.23858-1-rajveer.chaudhari.linux@gmail.com>
 References: <20260312081942.23858-1-rajveer.chaudhari.linux@gmail.com>
@@ -86,99 +86,76 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Replace manual mutex_lock/mutex_unlock pair with guard(mutex)
-in bmc150_accel_buffer_predisable() and
-bmc150_accel_buffer_postenable(). This ensures the mutex is
+Replace manual mutex_lock/mutex_unlock pair with guard(mutex) in
+mma8452_change_config(). This ensures the mutex is
 released on all return paths and allows returning directly
 without a goto label.
 
 Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
 ---
-v3: stop initialising ret=0 at start, making clear about good path.
-moved return ret up into the if (ret) {} block in
-bmc150_accel_buffer_postenable().
+v3 : No changes
 
-v2: Cleaned mutex_unlock and goto in
-bmc150_accel_buffer_postenable(),
-Dropped Header alignment change.
+v2 : Dropped Header alignment change
 ---
- drivers/iio/accel/bmc150-accel-core.c | 22 +++++++++-------------
- 1 file changed, 9 insertions(+), 13 deletions(-)
+ drivers/iio/accel/mma8452.c | 21 ++++++++-------------
+ 1 file changed, 8 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 42ccf0316ce5..4772dc6fcee9 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -7,6 +7,7 @@
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 15172ba2972c..09bb205a1b8f 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -20,6 +20,7 @@
+ 
  #include <linux/module.h>
- #include <linux/i2c.h>
- #include <linux/interrupt.h>
+ #include <linux/mod_devicetable.h>
 +#include <linux/cleanup.h>
- #include <linux/delay.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
-@@ -1480,20 +1481,20 @@ static int bmc150_accel_buffer_preenable(struct iio_dev *indio_dev)
- static int bmc150_accel_buffer_postenable(struct iio_dev *indio_dev)
- {
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
--	int ret = 0;
-+	int ret;
+ #include <linux/property.h>
+ #include <linux/i2c.h>
+ #include <linux/iio/iio.h>
+@@ -597,36 +598,30 @@ static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
+ 	int ret;
+ 	int is_active;
  
- 	if (iio_device_get_current_mode(indio_dev) == INDIO_BUFFER_TRIGGERED)
- 		return 0;
+-	mutex_lock(&data->lock);
++	guard(mutex)(&data->lock);
  
--	mutex_lock(&data->mutex);
-+	guard(mutex)(&data->mutex);
+ 	is_active = mma8452_is_active(data);
+-	if (is_active < 0) {
+-		ret = is_active;
+-		goto fail;
+-	}
++	if (is_active < 0)
++		return is_active;
  
- 	if (!data->watermark)
--		goto out;
-+		return 0;
- 
- 	ret = bmc150_accel_set_interrupt(data, BMC150_ACCEL_INT_WATERMARK,
- 					 true);
- 	if (ret)
--		goto out;
-+		return ret;
- 
- 	data->fifo_mode = BMC150_ACCEL_FIFO_MODE_FIFO;
- 
-@@ -1502,12 +1503,10 @@ static int bmc150_accel_buffer_postenable(struct iio_dev *indio_dev)
- 		data->fifo_mode = 0;
- 		bmc150_accel_set_interrupt(data, BMC150_ACCEL_INT_WATERMARK,
- 					   false);
-+		return ret;
+ 	/* config can only be changed when in standby */
+ 	if (is_active > 0) {
+ 		ret = mma8452_standby(data);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
  	}
  
--out:
--	mutex_unlock(&data->mutex);
+ 	ret = i2c_smbus_write_byte_data(data->client, reg, val);
+ 	if (ret < 0)
+-		goto fail;
++		return ret;
+ 
+ 	if (is_active > 0) {
+ 		ret = mma8452_active(data);
+ 		if (ret < 0)
+-			goto fail;
++			return ret;
+ 	}
+ 
+-	ret = 0;
+-fail:
+-	mutex_unlock(&data->lock);
 -
 -	return ret;
 +	return 0;
  }
  
- static int bmc150_accel_buffer_predisable(struct iio_dev *indio_dev)
-@@ -1517,19 +1516,16 @@ static int bmc150_accel_buffer_predisable(struct iio_dev *indio_dev)
- 	if (iio_device_get_current_mode(indio_dev) == INDIO_BUFFER_TRIGGERED)
- 		return 0;
- 
--	mutex_lock(&data->mutex);
-+	guard(mutex)(&data->mutex);
- 
- 	if (!data->fifo_mode)
--		goto out;
-+		return 0;
- 
- 	bmc150_accel_set_interrupt(data, BMC150_ACCEL_INT_WATERMARK, false);
- 	__bmc150_accel_fifo_flush(indio_dev, BMC150_ACCEL_FIFO_LENGTH, false);
- 	data->fifo_mode = 0;
- 	bmc150_accel_fifo_set_mode(data);
- 
--out:
--	mutex_unlock(&data->mutex);
--
- 	return 0;
- }
- 
+ static int mma8452_set_power_mode(struct mma8452_data *data, u8 mode)
 -- 
 2.53.0
 
