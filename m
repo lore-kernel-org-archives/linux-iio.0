@@ -1,120 +1,139 @@
-Received: from mail-yx1-f50.google.com (mail-yx1-f50.google.com [74.125.224.50])
+Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9253823EAB0
-	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 05:49:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.50
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773294580; cv=pass; b=pqytUL/cWTz8cTdUMEKtJIN0L7VjjS0nLOvaQRdJZx1Yun4ldhih4rmahPvBuJmUUj6Ibb8IH325dnT3w1u4cNPDGl7o07zq//8xc5KS818e6lFWVQIJLG2+5bZHnfR9a0MVVWYGgHIUCURsO7q7xpUwjyCm1KW8DLpKU9K7DoA=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773294580; c=relaxed/simple;
-	bh=RMQByrBiJnhgVK3Ji/kumr4mEcr78/UhRD6H04gca0g=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=PrKxyBwzDDaw9O6DJ45lAIuN7OSTE+rwxC14CMYri5hJigfmCq5HEcEGHFMGevnpCCCkZTKhlVR9G4uGEfJB6U4j8QT+hfjZgci0dYLPVJUAwKPNdfqLpAf63/fZKKVFnMuMMdjXewIaqFKgSTIQ0IlM8gEJIB6t3rh7109/pEw=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Rkuztu9t; arc=pass smtp.client-ip=74.125.224.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9B6731E82C
+	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 06:34:30 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773297272; cv=none; b=ADF87MwbYpB3dFTHGoX3h3daMNjW9QvCxDJl2+VIeDEBCFihNfVItK1xG8I78T8xc1wfqQH50xe6IFXCUmJhxXmqFXX7l7T78W8kf8r8joC475yG6fNUt0vmImlHLRL6/7YSHAvyaiafIFEhriolCiu4OBajga69I7uooNUzBcM=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773297272; c=relaxed/simple;
+	bh=u6RgrTM5nGdaNIIJs8dQi6CpfAbt4BCxv0+23K1ivQc=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=mUE6OciD9WOmwpunYnPGVIMz7suLIDz9A/l2XgWxPCCp6kIdlIheQzoV5c1NiidWvnD2vOL++ZwqqHU06KgRxhcWm7ZNEkWVLl/ymu0QW2ciDtTO3n/BRbwOQEOvuT4Zj162C7QxHPhTN+4Q83pqXx76e7hwQ+ZnKntYgEqqVfY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jywgYDsK; arc=none smtp.client-ip=209.85.210.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Rkuztu9t"
-Received: by mail-yx1-f50.google.com with SMTP id 956f58d0204a3-64b3801600fso92282d50.2
-        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 22:49:39 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773294578; cv=none;
-        d=google.com; s=arc-20240605;
-        b=UCnY0vPZvsiPgll17hp9uWOmXkGwaK4NvqNLBYCF1uf+M38dMXfVucP6wjt9+AFY1B
-         Xmo+lOezGRpBjR28GK35VgLyw7mOjde/BfHYi0V1LmXzBxpSxCEIGAEywcOWZdhlrMMy
-         ZOc/iQL0D9tzcsJAPkfQT+8D/HkT1h0hwPZakTgK6scasD0oHs+kmz0stKZzz7ZMuU3E
-         5Gij8GmGCN68WjU3MO+x7D4lxDMIQuViamvP7hwhp6jSkKMIILHAu5hA36Oiv/qLzNGf
-         ZkpKD2mbl4v8+DxHkygG7gvmk/adPgkJgLeBsh8x+lDBj2efzkhnR+/SwyDKC05/uA+/
-         1TXQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=RMQByrBiJnhgVK3Ji/kumr4mEcr78/UhRD6H04gca0g=;
-        fh=VoG358nAPzXaur2i8ePd1WXbM0Oc3aAvJGPF2l2FxzU=;
-        b=TsJ7gBrQzYJ0gm0pKkrXOQ4xVcZtHRTqATY0FXt+zLVssfwwBg/N2eceagvVsOqBNq
-         5e6lxQv/b6KQUqUtWju8NiOQ/wYUh/UDFSAH+Shz4KUq/fGv9jFqw40n68j93QsCZ2Eg
-         BtFSuFE5ljAS4103sHH+brbg5k4t1MDETJu3dBALFQfTfjou6Y1fQXFWunfmJ7T6i0aK
-         uCwIcQcPLhUOnJxxXor9m88CHAG4Xv9gAqT4BZsHSH1peMXe/zI1pEc3de/RHxsypBD/
-         CLrCQTKQ9+Slzba/nHE5Qica1eEoK2HtqFi68ZWHsRyutw0r/FaWb/i/e3KMVjUE8dVI
-         ovxg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jywgYDsK"
+Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-824c9da9928so380708b3a.3
+        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 23:34:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773294578; x=1773899378; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=RMQByrBiJnhgVK3Ji/kumr4mEcr78/UhRD6H04gca0g=;
-        b=Rkuztu9t4AMrPe4w6/MswRG8YekoweOI/yQfRaZacvd5UeLMwiHsDtSamqlanUNGzC
-         N+UWeFOg0T+/xR6xcQJV2e+PbdP+fJW5DrboF32rpq1UWWZaD3UBq4PNMYgH1mQcUBEj
-         Zjo8yYhqZ8AFXyCnJQ7WuWYOkm30nSfBBbp0wOA7zTUgmAORg8HuxLEU9cNiUP2DxVDs
-         obYAF+5iLkqE1VnpIf0nqcYUpG1aO6+gzJPExxkl8ZbH1ESaOncDWB0j3fJneQjRSyno
-         BEICQHktFPj8lNjYUd8IZQugBE7yZ14NYdkoABqRsmLWqZQbHr8gU60UgVju0JbpH28y
-         E/ew==
+        d=gmail.com; s=20230601; t=1773297270; x=1773902070; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=eC4j+QkdYIhkea2GOsCrDBLrX9/9TUq5R1IgUZKPzSc=;
+        b=jywgYDsK8YTbUzfr0coXV7Ul4DvqFFt+nE8BeOTT48Lv0C6lMl1U1LhefWddj/YOD5
+         YEiF2xcimR15hA4iUoTSsz4VKAzyRlMOEaP37QVWxt90+4CAhqbACwQ4ol3dd2zygGqk
+         j2PGVQPuM+r6LPQ74Sgl8YBk5D8Xu1Y1xD5ffXfkbnYf4PySg5l1ERKWCHgu+cJ70IKA
+         mmTFkKlHemFhacDCx0SwnasLpYuXQCAqXKdSr4kTpVoS1HNLdCDQu6SJJng6VHXy13tM
+         OiX6G4XMnWOvxekHMtpb4oc0jcpbHPMLw/Q3Y1A/CLdh4oXOb9oLTTaiUkAlXv1mKUGr
+         kpOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773294578; x=1773899378;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=RMQByrBiJnhgVK3Ji/kumr4mEcr78/UhRD6H04gca0g=;
-        b=mASBMlWKROzd9YXPkStz/vbvIjMryuHb5SbMiTz0VKtZS3li3BsQjDkIkYPp/lEGX0
-         yR6rChshEj6tuIOlrUxMlV+WJgWx0cG2ypTQ3W8P0nZ+BYTzaHn9VIGYYjjUK4pCCImf
-         aMooekyjgFaIZ6UTCri0qSoewOc1bf4gPdPgol/9KFwC0G/hjLdZvnhoMlkLonwHfpS8
-         eSJu41pRkz2i8i3anjS2Sra+sNURTb+s3s5yaJqeiyV3fB4x7JniUC5TaSNq06GdC1tr
-         avWaDfKXN2JoHTeDd4zeiDFXs/Z/pDUgRJX8g9u8JQygq+NDg/D9gBTsI5CPsMoRL5Dp
-         uPlA==
-X-Forwarded-Encrypted: i=1; AJvYcCVOS+zjDbpbWFymNBoucmz1lv1WJI0sIaFqiMGqQFDBtDp2b34E0BiGjqRs4HSq2Y8vTXMR1UPoA5c=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwDl/FoHK0pqqwaiHwZRCyroWpPF+S3itqhza3Wk13B7vK5YoGK
-	HC31QCJCuD086EcHVMrU/K7FuRa2dwJ05Pb1LYKsUW08rFOWjhzRCcmk6HU+FtfuuQ8dxLvq/mV
-	OACuiUDp0For6nU1FUC+9i/MxSOIsOkM=
-X-Gm-Gg: ATEYQzzKiRn2i8iPgLBMdHGbNSR7J6IU+qJGv5o600XXxS9NX3s5SjGTfA5v8bs+D8f
-	cv70KrqclNfG2ZZYfOF6LyOR/rmkt2EpzUqRgn0Iqq8LqOPRHinRvpbVbK7vk9E6TkO7d5vy0wF
-	Jw63M317WcXdsQWiBy40NHBPyNxCKfWjFJ3wByXmEMfE/Ph32oOhZIagb+8WSVlhvW9910V84BK
-	VrmPpJy/aOgWSfOPmsiUG6PGh/Ap/9PADn8HElhKdqEuhIIBO+b/yJ0auf6aaKNVzZQTYoQ3fHe
-	FmCzp9kyerjIN9eU0p0pyuQhxGl3Wn2lwAS5Ci07BUacGSA5Z/W/s8FLcQ1gOIkLvPVbFq+QgB5
-	gEwiZisczShhglCt6/QCYDg==
-X-Received: by 2002:a05:690e:140e:b0:649:bbf4:1212 with SMTP id
- 956f58d0204a3-64e596aeba4mr820692d50.1.1773294578554; Wed, 11 Mar 2026
- 22:49:38 -0700 (PDT)
+        d=1e100.net; s=20230601; t=1773297270; x=1773902070;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=eC4j+QkdYIhkea2GOsCrDBLrX9/9TUq5R1IgUZKPzSc=;
+        b=Th5/SkZwsoTah2cWjR2QlDVRBNg73HPmbQSP/mwM6i0u6AJWh/tS1I7vAIZ2Rok/cL
+         0D8awoy8w8/xtBSRGP5tlfuTxaAr+HZ0K7jlwaZeLUrU8YZFCgjBbrs+6/WLwn53j1X3
+         nTYRu/kYGc0VJwKHmhuZPAsSIz8Zl4bu1/HxD1wQWuJtO2I5FUMgcx7z56Dm3RzgifsE
+         RImkquBQPop1cJpVBjvh6lAaOWiA92uXQUl80eBAThlIuuA1ZLJkwi1lZbG8phc1LWg0
+         bMNyLWlJaPy+QIlV3t+sIeckOxB4QbeA/9PUOEBVjBZwPA/wEO4PPILNGZCA08tz+HKM
+         nLVA==
+X-Forwarded-Encrypted: i=1; AJvYcCWph7o40x3rSUOajo/1aO6Q2VJBOnLbGTPbXac36GmCIGWST9bpa5L9nivwuiEFDBIeRfgeqHxte7E=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxxtj147C7R9kVuoNUrZu8vK36Ic+3or9ztAgSbm3Pnkj2Nl1J5
+	/5P31cI2ouCkl6FCnOECVfSgsmbGauahKYyVDZw/GblEWFBpFbE2Hfy2
+X-Gm-Gg: ATEYQzw2RBJLGoAzred8clRRrr2eLehJ25B9bBkafpn0GP2oLeYO/fKMvX7CPS21ikI
+	P0kWDkz77/MQOuDfnIvfbJ57J66fAMYy0rIUFAzF/5vXQRsgKf9KGA1TQSwF7YDtRyBsPrDqUI9
+	YHHHv4rjmQ6zmLswntQMChVToB9ium0QiibJKVafWsZ/6A8pAm3L1so2ImAH9Jfceu/5sqlYxSW
+	7avtGnir81taxqFQNVPvPQVW2wlTyYzR59aXDyDdbAsLnxgeX5hq8UczlcJw16UFi7C1XGdSLt/
+	anuovMw9TlCTMBjpLdn+wpAg6c7zIzBT1dF8q0w9LVBvvRKnSYKMfJuKI7SDqzVh4S2ZWg/lo4v
+	GGR8ZK5h1O9xKeGNM0uR4TfWMGzze+l0gdOaR4yjEvHODq6UY9yOrsQjbs38656HyHJG2NhCGTC
+	p48lPf1ko8WjHNi53GqVyWMriFVe8qz0Q6YsRsFkb/fn5OVV7e
+X-Received: by 2002:a05:6a21:7016:b0:398:c3c3:8686 with SMTP id adf61e73a8af0-398c5e60587mr4571507637.4.1773297270223;
+        Wed, 11 Mar 2026 23:34:30 -0700 (PDT)
+Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c73cdf0e498sm4062548a12.3.2026.03.11.23.34.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Mar 2026 23:34:29 -0700 (PDT)
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: kees@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sanjayembeddedse@gmail.com
+Subject: [PATCH v3] iio: st_sensors: drop temporary kmalloc buffer and reuse buffer_data
+Date: Thu, 12 Mar 2026 12:04:24 +0530
+Message-Id: <20260312063424.3846945-1-sanjayembedded@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260311072156.35057-3-giorgitchankvetadze1997@gmail.com> <abGPhYz-5OLeYg07@ashevche-desk.local>
-In-Reply-To: <abGPhYz-5OLeYg07@ashevche-desk.local>
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Date: Thu, 12 Mar 2026 09:49:27 +0400
-X-Gm-Features: AaiRm50F7sDeTMXcniyDn0wXA71lWXB0OjblmzShhFnzcai_ltBpdRyCPdw2Was
-Message-ID: <CAE7dp2pO+Dx654ybH47uu7FTyoNfTHaEB8ihxiMFjQYONrODhg@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: ad4130: Adjust indentation so statements start
- on tabstop
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Wed, Mar 11, 2026 at 7:51=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-> No need to touch this. I was against that static_assert() in the first pl=
-ace,
-> and still against it. In my opinion it brings no real value as I can craf=
-t a
-> layout that will have the same members and sizeof, but different types.
->
-> In my opinion it's better to just remove it completely.
->
+Replace the per-call kmalloc() scratch buffer with the statically allocated
+buffer_data[] field present in struct st_sensor_data. The existing buffer
+is DMA-aligned and sufficiently sized for all channel widths, so using it
+avoids unnecessary dynamic memory allocation on each read.
 
-Hi Andy and thanks for the feedback.
+This simplifies the code, removes redundant allocation and cleanup.
+No functional change intended.
 
-I adjusted the indentation only to address the checkpatch warnings.
-If the consensus is that static_assert doesn't add meaningful
-guarantees and should
-be removed, I'm happy to send a follow-up patch dropping it.
+Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+---
+Changes in v3:
+- fix variable declartion placement to follow kernel coding style
+- Link to v2 https://lore.kernel.org/all/20260311182050.3467471-1-sanjayembedded@gmail.com/
+Changes in v2:
+- split series to individual patch
+- address review comment from David Lechner and reuse exising buffer instead of allocation
+- Link to v1 https://lore.kernel.org/all/20260310200513.2162018-4-sanjayembedded@gmail.com/
+---
+ drivers/iio/common/st_sensors/st_sensors_core.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-Thanks,
-Giorgi
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index dac593be5695..dbc5e16fbde4 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -501,14 +501,12 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+ 
+ 	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
+ 					ch->scan_type.shift, 8);
+-	outdata = kmalloc(byte_for_channel, GFP_DMA | GFP_KERNEL);
+-	if (!outdata)
+-		return -ENOMEM;
++	outdata = sdata->buffer_data;
+ 
+ 	err = regmap_bulk_read(sdata->regmap, ch->address,
+ 			       outdata, byte_for_channel);
+ 	if (err < 0)
+-		goto st_sensors_free_memory;
++		return err;
+ 
+ 	if (byte_for_channel == 1)
+ 		*data = (s8)*outdata;
+@@ -517,10 +515,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+ 	else if (byte_for_channel == 3)
+ 		*data = (s32)sign_extend32(get_unaligned_le24(outdata), 23);
+ 
+-st_sensors_free_memory:
+-	kfree(outdata);
+-
+-	return err;
++	return 0;
+ }
+ 
+ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+-- 
+2.34.1
+
