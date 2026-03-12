@@ -1,75 +1,76 @@
-Received: from mail-pf1-f176.google.com (mail-pf1-f176.google.com [209.85.210.176])
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E9B6731E82C
-	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 06:34:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.176
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1A830389119
+	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 07:27:34 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773297272; cv=none; b=ADF87MwbYpB3dFTHGoX3h3daMNjW9QvCxDJl2+VIeDEBCFihNfVItK1xG8I78T8xc1wfqQH50xe6IFXCUmJhxXmqFXX7l7T78W8kf8r8joC475yG6fNUt0vmImlHLRL6/7YSHAvyaiafIFEhriolCiu4OBajga69I7uooNUzBcM=
+	t=1773300458; cv=none; b=joFeRtMsn7ifPn0Z/mb9sBElWtwWUjAnkX4D64nutXzebrCmw7Rm0L3uI8ATVQQghsm4KwIplqYdWMDo32NBhWW4lmr0yMnNIb/Q31Qo1WVF67oeDYabxNg4JEFycukwcZ4a9XYtCZZOQlfc8YKmOwmpMvTlGKmGYcGNvBvmXqA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773297272; c=relaxed/simple;
-	bh=u6RgrTM5nGdaNIIJs8dQi6CpfAbt4BCxv0+23K1ivQc=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=mUE6OciD9WOmwpunYnPGVIMz7suLIDz9A/l2XgWxPCCp6kIdlIheQzoV5c1NiidWvnD2vOL++ZwqqHU06KgRxhcWm7ZNEkWVLl/ymu0QW2ciDtTO3n/BRbwOQEOvuT4Zj162C7QxHPhTN+4Q83pqXx76e7hwQ+ZnKntYgEqqVfY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=jywgYDsK; arc=none smtp.client-ip=209.85.210.176
+	s=arc-20240116; t=1773300458; c=relaxed/simple;
+	bh=j7n+jTRsgur+aqLMBnVbTk7FX3PKXhTxx8CVcD0FAUw=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=idZbOYc0gKJqQLeSpH2BfJor4Eppmfw8BkiSlcq1DQF2At+ixekxN8k3EoDP3wop9t5BV2Vu2v9v8wMVRY+bk+9bCCdnvOxrMFqz6uI8e5N6zl73VxIVroTqMG4QDCob2PaX3J7N1UVr92n0RLf8QrP6Xi3hyUWjF08wo82upgM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f5Bx5JWk; arc=none smtp.client-ip=209.85.221.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jywgYDsK"
-Received: by mail-pf1-f176.google.com with SMTP id d2e1a72fcca58-824c9da9928so380708b3a.3
-        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 23:34:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f5Bx5JWk"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-439acc60f9dso92068f8f.1
+        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 00:27:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773297270; x=1773902070; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773300453; x=1773905253; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=eC4j+QkdYIhkea2GOsCrDBLrX9/9TUq5R1IgUZKPzSc=;
-        b=jywgYDsK8YTbUzfr0coXV7Ul4DvqFFt+nE8BeOTT48Lv0C6lMl1U1LhefWddj/YOD5
-         YEiF2xcimR15hA4iUoTSsz4VKAzyRlMOEaP37QVWxt90+4CAhqbACwQ4ol3dd2zygGqk
-         j2PGVQPuM+r6LPQ74Sgl8YBk5D8Xu1Y1xD5ffXfkbnYf4PySg5l1ERKWCHgu+cJ70IKA
-         mmTFkKlHemFhacDCx0SwnasLpYuXQCAqXKdSr4kTpVoS1HNLdCDQu6SJJng6VHXy13tM
-         OiX6G4XMnWOvxekHMtpb4oc0jcpbHPMLw/Q3Y1A/CLdh4oXOb9oLTTaiUkAlXv1mKUGr
-         kpOg==
+        bh=pYAdKLTdz353LmLCDsPjRxQCXN2D9mbnuWbC6g0T4Zc=;
+        b=f5Bx5JWkJpKyChkM+Un3PYSjAZf3b8Wadll0o2fFdY1VQTuipAhT7sFL4msDQnm0wT
+         mACMoXti3EN3EUd0WinKg9x6GljOzL9NkYJxpPwFDmePLF9xBmmgUuAlLeBPxqRQyI/G
+         n+u+NtXzVc7sVFB4McaNyen+ty4t38Uiw24asmx1Uw4s+NUOSn9Vxuclw7LftrhR8hUW
+         +7xywmJ99gXmXspHQWapLt6e3WJ353n7cwFqS3VWTeHdMOll1CwmswCZxDCcaBtRrcFu
+         0mIecwnjfRSvIuPV1Hdky+GCnIWc0RQvfsdaqpZTJssRGb0VIKYKlfhwW9tkDBIDIDZt
+         Wk9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773297270; x=1773902070;
+        d=1e100.net; s=20230601; t=1773300453; x=1773905253;
         h=content-transfer-encoding:mime-version:message-id:date:subject:cc
          :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=eC4j+QkdYIhkea2GOsCrDBLrX9/9TUq5R1IgUZKPzSc=;
-        b=Th5/SkZwsoTah2cWjR2QlDVRBNg73HPmbQSP/mwM6i0u6AJWh/tS1I7vAIZ2Rok/cL
-         0D8awoy8w8/xtBSRGP5tlfuTxaAr+HZ0K7jlwaZeLUrU8YZFCgjBbrs+6/WLwn53j1X3
-         nTYRu/kYGc0VJwKHmhuZPAsSIz8Zl4bu1/HxD1wQWuJtO2I5FUMgcx7z56Dm3RzgifsE
-         RImkquBQPop1cJpVBjvh6lAaOWiA92uXQUl80eBAThlIuuA1ZLJkwi1lZbG8phc1LWg0
-         bMNyLWlJaPy+QIlV3t+sIeckOxB4QbeA/9PUOEBVjBZwPA/wEO4PPILNGZCA08tz+HKM
-         nLVA==
-X-Forwarded-Encrypted: i=1; AJvYcCWph7o40x3rSUOajo/1aO6Q2VJBOnLbGTPbXac36GmCIGWST9bpa5L9nivwuiEFDBIeRfgeqHxte7E=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxxtj147C7R9kVuoNUrZu8vK36Ic+3or9ztAgSbm3Pnkj2Nl1J5
-	/5P31cI2ouCkl6FCnOECVfSgsmbGauahKYyVDZw/GblEWFBpFbE2Hfy2
-X-Gm-Gg: ATEYQzw2RBJLGoAzred8clRRrr2eLehJ25B9bBkafpn0GP2oLeYO/fKMvX7CPS21ikI
-	P0kWDkz77/MQOuDfnIvfbJ57J66fAMYy0rIUFAzF/5vXQRsgKf9KGA1TQSwF7YDtRyBsPrDqUI9
-	YHHHv4rjmQ6zmLswntQMChVToB9ium0QiibJKVafWsZ/6A8pAm3L1so2ImAH9Jfceu/5sqlYxSW
-	7avtGnir81taxqFQNVPvPQVW2wlTyYzR59aXDyDdbAsLnxgeX5hq8UczlcJw16UFi7C1XGdSLt/
-	anuovMw9TlCTMBjpLdn+wpAg6c7zIzBT1dF8q0w9LVBvvRKnSYKMfJuKI7SDqzVh4S2ZWg/lo4v
-	GGR8ZK5h1O9xKeGNM0uR4TfWMGzze+l0gdOaR4yjEvHODq6UY9yOrsQjbs38656HyHJG2NhCGTC
-	p48lPf1ko8WjHNi53GqVyWMriFVe8qz0Q6YsRsFkb/fn5OVV7e
-X-Received: by 2002:a05:6a21:7016:b0:398:c3c3:8686 with SMTP id adf61e73a8af0-398c5e60587mr4571507637.4.1773297270223;
-        Wed, 11 Mar 2026 23:34:30 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c73cdf0e498sm4062548a12.3.2026.03.11.23.34.27
+        bh=pYAdKLTdz353LmLCDsPjRxQCXN2D9mbnuWbC6g0T4Zc=;
+        b=OziBJURgoMjx0oIrwFk/Ll33texhK3WAkr9Lgitf0EgfNqf8fYEXsDQyMJuJfnAtL+
+         kMFaHEGPJ/WgepXTs3aBEpZBz8DV8b29dKIn1VlFowN18stiUurYVTXDwBXlNw2q/w8C
+         56WtCqwTwDarWH8RJ2k6jMYYdXPhbPkN5DZcv98FNqtN2gugTtvMju/zetCWLRBsflfl
+         0DWZGVOeh4Cd9soyz8dxbhkjM2ZQVNvktxsP/L5nVmu4of6oJDfvJEhVgfeQBPJsFix+
+         mU/vuamr+8ncViUSa4MafaRRU9Dpk5iwadp6RhGNYMuseXyG/6WgSbp7A0hPkhQXD0iF
+         UCpA==
+X-Forwarded-Encrypted: i=1; AJvYcCXDHufeSQAy4nejrQePMUWJfbbnqGvZ8z6oa+k0Y2SeDH0I2LL8nGafnZFJNKXQeJcTXqpk5rQv8ZA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxNh3umWGybaLIhLWHURSz409p8F/tvtp1w7Kt9h6XpkicbEHnG
+	VeZfZCir7B1uRTdJaXIzUiYgot7WazjYlyv9GkcLJqzQM96PG6UnFCjczzCZlHFW
+X-Gm-Gg: ATEYQzyLCR0sS+kfluCblWv28uwrXNay7irHi+U5al9uVN0oYUoyRsKQdx/FA/XERa9
+	Ux7kRPzH6jk4fAjGFg4RCm4e/RGc82UIRGhTKNVp/oljxqMQlJ4aYDA0v8cttEqjwGOmLHzLlIu
+	q47MySDTxS0zsRbpRaSN8P401OOS/pGMhl5nW8QMECrei9QPiP76uNY8o0t/U7LOyhws+kKEEt8
+	zhWIYE/koNnMilQBuMBizgy6Knz7AiCsWF6A7xLfjnkpiPPYV+53NPfPtUMVG7CoQAD0P8mCUlO
+	cF6Ij3TJTvNZSGxxJsgec9u6UTuH0W9OPm1OOr0Lno8TtKWMLjZfQHHzDywENkFOX/T34m6Yiq3
+	3GnyQPRtqMG/s9+LbdpQnCq//pAxbnjlbhpre/4ZHcJmlpbSmgbh5TQkK8R8bJiTKePAQqO4S4m
+	+23rcOV8IiJqSC/ZVUlIoki63U3nh/ATPf7r3aATI1cH+ZuxCOIwodKL6x+/+qDw7XfLYHivXIr
+	NutRsVlz8IuZdWznSF5XfSN2ZerO1QcMdG4zXLiJrNLX2/+1n0U
+X-Received: by 2002:adf:f785:0:b0:439:fbf7:dc7 with SMTP id ffacd0b85a97d-439fbf70e13mr3118362f8f.5.1773300452977;
+        Thu, 12 Mar 2026 00:27:32 -0700 (PDT)
+Received: from fedora ([149.3.87.76])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439fe2187aasm5295049f8f.30.2026.03.12.00.27.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 Mar 2026 23:34:29 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
+        Thu, 12 Mar 2026 00:27:32 -0700 (PDT)
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+To: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
 	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: kees@kernel.org,
+	andy@kernel.org,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sanjayembeddedse@gmail.com
-Subject: [PATCH v3] iio: st_sensors: drop temporary kmalloc buffer and reuse buffer_data
-Date: Thu, 12 Mar 2026 12:04:24 +0530
-Message-Id: <20260312063424.3846945-1-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Subject: [PATCH] iio: adc: ad7793: Format block comments
+Date: Thu, 12 Mar 2026 11:26:04 +0400
+Message-ID: <20260312072603.38478-2-giorgitchankvetadze1997@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -78,62 +79,82 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Move the trailing "*/" of multi-line block comments to a separate
+line to comply with the kernel comment style.
 
-Replace the per-call kmalloc() scratch buffer with the statically allocated
-buffer_data[] field present in struct st_sensor_data. The existing buffer
-is DMA-aligned and sufficiently sized for all channel widths, so using it
-avoids unnecessary dynamic memory allocation on each read.
+This fixes checkpatch warnings:
 
-This simplifies the code, removes redundant allocation and cleanup.
-No functional change intended.
+"WARNING: Block comments use a trailing */ on a separate line"
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+No functional change.
+
+Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
 ---
-Changes in v3:
-- fix variable declartion placement to follow kernel coding style
-- Link to v2 https://lore.kernel.org/all/20260311182050.3467471-1-sanjayembedded@gmail.com/
-Changes in v2:
-- split series to individual patch
-- address review comment from David Lechner and reuse exising buffer instead of allocation
-- Link to v1 https://lore.kernel.org/all/20260310200513.2162018-4-sanjayembedded@gmail.com/
----
- drivers/iio/common/st_sensors/st_sensors_core.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+ drivers/iio/adc/ad7793.c | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index dac593be5695..dbc5e16fbde4 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -501,14 +501,12 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index 8ff7b70d6632..c56c43468db6 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -35,9 +35,11 @@
+ #define AD7793_REG_ID		4 /* ID Register	     (RO, 8-bit) */
+ #define AD7793_REG_IO		5 /* IO Register	     (RO, 8-bit) */
+ #define AD7793_REG_OFFSET	6 /* Offset Register	     (RW, 16-bit
+-				   * (AD7792)/24-bit (AD7793)) */
++				   * (AD7792)/24-bit (AD7793))
++				   */
+ #define AD7793_REG_FULLSALE	7 /* Full-Scale Register
+-				   * (RW, 16-bit (AD7792)/24-bit (AD7793)) */
++				   * (RW, 16-bit (AD7792)/24-bit (AD7793))
++				   */
  
- 	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
- 					ch->scan_type.shift, 8);
--	outdata = kmalloc(byte_for_channel, GFP_DMA | GFP_KERNEL);
--	if (!outdata)
--		return -ENOMEM;
-+	outdata = sdata->buffer_data;
+ /* Communications Register Bit Designations (AD7793_REG_COMM) */
+ #define AD7793_COMM_WEN		(1 << 7) /* Write Enable */
+@@ -69,15 +71,18 @@
+ #define AD7793_MODE_CAL_SYS_FULL	7 /* System Full-Scale Calibration */
  
- 	err = regmap_bulk_read(sdata->regmap, ch->address,
- 			       outdata, byte_for_channel);
- 	if (err < 0)
--		goto st_sensors_free_memory;
-+		return err;
+ #define AD7793_CLK_INT		0 /* Internal 64 kHz Clock not
+-				   * available at the CLK pin */
++				   * available at the CLK pin
++				   */
+ #define AD7793_CLK_INT_CO	1 /* Internal 64 kHz Clock available
+-				   * at the CLK pin */
++				   * at the CLK pin
++				   */
+ #define AD7793_CLK_EXT		2 /* External 64 kHz Clock */
+ #define AD7793_CLK_EXT_DIV2	3 /* External Clock divided by 2 */
  
- 	if (byte_for_channel == 1)
- 		*data = (s8)*outdata;
-@@ -517,10 +515,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
- 	else if (byte_for_channel == 3)
- 		*data = (s32)sign_extend32(get_unaligned_le24(outdata), 23);
+ /* Configuration Register Bit Designations (AD7793_REG_CONF) */
+ #define AD7793_CONF_VBIAS(x)	(((x) & 0x3) << 14) /* Bias Voltage
+-						     * Generator Enable */
++						     * Generator Enable
++						     */
+ #define AD7793_CONF_BO_EN	(1 << 13) /* Burnout Current Enable */
+ #define AD7793_CONF_UNIPOLAR	(1 << 12) /* Unipolar/Bipolar Enable */
+ #define AD7793_CONF_BOOST	(1 << 11) /* Boost Enable */
+@@ -113,13 +118,17 @@
  
--st_sensors_free_memory:
--	kfree(outdata);
--
--	return err;
-+	return 0;
- }
+ /* IO (Excitation Current Sources) Register Bit Designations (AD7793_REG_IO) */
+ #define AD7793_IO_IEXC1_IOUT1_IEXC2_IOUT2	0 /* IEXC1 connect to IOUT1,
+-						   * IEXC2 connect to IOUT2 */
++						   * IEXC2 connect to IOUT2
++						   */
+ #define AD7793_IO_IEXC1_IOUT2_IEXC2_IOUT1	1 /* IEXC1 connect to IOUT2,
+-						   * IEXC2 connect to IOUT1 */
++						   * IEXC2 connect to IOUT1
++						   */
+ #define AD7793_IO_IEXC1_IEXC2_IOUT1		2 /* Both current sources
+-						   * IEXC1,2 connect to IOUT1 */
++						   * IEXC1,2 connect to IOUT1
++						   */
+ #define AD7793_IO_IEXC1_IEXC2_IOUT2		3 /* Both current sources
+-						   * IEXC1,2 connect to IOUT2 */
++						   * IEXC1,2 connect to IOUT2
++						   */
  
- int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+ #define AD7793_IO_IXCEN_10uA	(1 << 0) /* Excitation Current 10uA */
+ #define AD7793_IO_IXCEN_210uA	(2 << 0) /* Excitation Current 210uA */
 -- 
-2.34.1
+2.52.0
 
