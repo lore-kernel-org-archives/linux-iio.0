@@ -1,233 +1,115 @@
-Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
+Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CAD2E37CD4D;
-	Thu, 12 Mar 2026 02:32:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=148.163.139.77
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773282774; cv=fail; b=qt0UERkWy+aDrRXMcOPDWx/LMTXSwbgh36mI0kIe5JR9KOnq3DbN0iE2hYhH5GruGLu3RZoyJj/REihv5Xvy1dAP7tyP5WmBp0WKmFafMNW5/X58zN8pimv2F0IihdvcTbx1AdpTGomrXUeVZyWtKzztArEXXM/yRoOBjw+R2Zc=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773282774; c=relaxed/simple;
-	bh=ZM5PHvRkQ6qVS4RAdGM2F8nctys5CKuXYYcApCToCOs=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=rUEhSLjX+tEtYVqMDCpYRyAx8IHonKWtim5dQyk3XXJ804elRDROvCYXQI+AxEnfsfcl30bVf50nXLMvgI8n/G38vVMMGlNlg+oJYab+w+NzjR+81eiWj4+xe1+vhehxu2yOHP7uQn4CwHilV1fvfQmCOENpCKxLy1iLDL1XibQ=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=K5KEoCeo; arc=fail smtp.client-ip=148.163.139.77
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0B003976B2;
+	Thu, 12 Mar 2026 05:13:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773292435; cv=none; b=bL8uvPGF0kwd8qfdQFA1ZG8UqN9JzVCxwhjCCgZ2jD/LfQ59wkxHQvVE5vK9ao/aK6sGoTH162q6KEKwaAxA9p30u6vhszSZJ2Xw9F4CwsROfz6d3YTIZBFQ/IzFs2MAg4FWMPpR6O7UdVp5S4UhoI4An+Yxibsytvs55N5InAQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773292435; c=relaxed/simple;
+	bh=cTOfBxHzfarYeGfNaDbiX5oNBEoFTS+Badi8sCb8hV4=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Z8YGmkTx1f3TaEkhrEwwWihK87l3P+oZ5faIJzWuGYjx1TcgpTBE6gHXAFajAQPsQoNDVdkuUdVceuGVvhG2FGcdc7kG4qXlT+SzQvnbKsAhvkmMC6gpDLS0HfSmBFFdQ8O+ldgciVQMh23I5x2gUOWEBh/pO30mJaANPg8td28=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=vSy72RjV; arc=none smtp.client-ip=198.137.202.133
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
+Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="K5KEoCeo"
-Received: from pps.filterd (m0375854.ppops.net [127.0.0.1])
-	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62BMPC8a442687;
-	Wed, 11 Mar 2026 22:32:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=8i/jW
-	1NMOhZBVecsvH9yUQq+YcunStdooRxG+6dEwOE=; b=K5KEoCeosizEevXVtE3OU
-	KxM7MJvETg2fqfuiSA1jCk8/vcpNwyVOfzrA+g+J+8xcji0y43CWg63JyYk4FAuR
-	Znh7wCvCln2apQqhUwGlXZBgVyYo026HOCCTmfH90BR3A1Ddjarrj9aXUT6qG+4/
-	qiWp85ZAkT7IyvK2Z1ZCS4tJ/VwhRIDrbr3cvyUT9OtMA+mQ9BGNPB/Qr+h3tlVk
-	GV6+WQXIIQ2AU5WQ17VSz+H5YANzt/EtmfzQ615WI4NXY6Yx9VjSiCUUSx3nUIL6
-	8cVL8OkgkPsliAzZEjOZu9B6K/ekpbbkzDYTYFGao3YZZHjet3/cy0kPmPNraGOe
-	g==
-Received: from bl2pr02cu003.outbound.protection.outlook.com (mail-eastusazon11011011.outbound.protection.outlook.com [52.101.52.11])
-	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cuh5qgn3v-2
-	(version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NOT);
-	Wed, 11 Mar 2026 22:32:25 -0400 (EDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=pN2gpPrTG9/xluJcSO58m0M3sgz2GmvFApWDgW0C4DO/0r517dNhBYG+P6T4iZSNl2p3+03/1SGBFgRtrQ5VOc7qkiVhN6o+axaIYyfwt2OEkj182e7T+NqR+2nWKzps7ZRDWZdHYSoD218uuCRgF7TLJv1Y4PUtUNRcoXRKwWLhuFAkmvuUTzmiE7Ews8n6sgMgdlZO28lEiLt2sJSM07cNRnB68Wnc8wnvsbbS/oq8EBFyrohb1M4f4DnZmzCuzznhKY9X9ehT/IAl8Nhdj5pLeqyZjXxm1WWjP/cthF2ugz+Woppnlx16HWGQiv6rZ44loiJOxfeDB8JXgKgVww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=8i/jW1NMOhZBVecsvH9yUQq+YcunStdooRxG+6dEwOE=;
- b=PYoSwUjLVwxsRczERI5EmED665uYkOvX9s9UCrIZ5RkB2Anr51Xj8l+UdqDhhO03ZeIGkO4IyOXeTVe/mJkU1EporM83odD48NgWJVY7VoIeMa/+L5UsDYiMj23YSjHP1qviHVIr7/SsDetyoITOJzEAbdDLmLNFGtWEFVJrUIyKhEQ4E13oM3KUAJbMPoCKTe7bs7weQUY9MKxmJiEr8LjG/YRaZ42KXJtFEmqMuhLcoZ0QnZHl7qt1a7CldeI1fkQFiYQotHB6x7vUo1AqLi4hA58p/zKyOFLawk9uy9lirZFeE1yzmyaO3fRzObMkxbqxHAMRFlWABaZhbydxMA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-Received: from PH0PR03MB6351.namprd03.prod.outlook.com (2603:10b6:510:ab::18)
- by BN8PR03MB5058.namprd03.prod.outlook.com (2603:10b6:408:7a::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9700.11; Thu, 12 Mar
- 2026 02:32:22 +0000
-Received: from PH0PR03MB6351.namprd03.prod.outlook.com
- ([fe80::1578:4572:29b5:2442]) by PH0PR03MB6351.namprd03.prod.outlook.com
- ([fe80::1578:4572:29b5:2442%6]) with mapi id 15.20.9700.013; Thu, 12 Mar 2026
- 02:32:21 +0000
-From: "Torreno, Alexis Czezar" <AlexisCzezar.Torreno@analog.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-CC: Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael"
-	<Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        David
- Lechner <dlechner@baylibre.com>,
-        "Sa, Nuno" <Nuno.Sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>,
-        Rob Herring <robh@kernel.org>,
-        Krzysztof
- Kozlowski <krzk+dt@kernel.org>,
-        Conor Dooley <conor+dt@kernel.org>,
-        =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <ukleinek@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>
-Subject: RE: [PATCH v2 2/3] iio: dac: ad5706r: Add support for AD5706R DAC
-Thread-Topic: [PATCH v2 2/3] iio: dac: ad5706r: Add support for AD5706R DAC
-Thread-Index: AQHcsO1cvIZcATiC9kK4qKSLqBMDm7WpNvSAgADzu1A=
-Date: Thu, 12 Mar 2026 02:32:21 +0000
-Message-ID:
- <PH0PR03MB63519615ACE22ADE4055D2DBF144A@PH0PR03MB6351.namprd03.prod.outlook.com>
-References: <20260311-dev_ad5706r-v2-0-f367063dbd1b@analog.com>
- <20260311-dev_ad5706r-v2-2-f367063dbd1b@analog.com>
- <abFVl8NhfBkvyI4I@ashevche-desk.local>
-In-Reply-To: <abFVl8NhfBkvyI4I@ashevche-desk.local>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: PH0PR03MB6351:EE_|BN8PR03MB5058:EE_
-x-ms-office365-filtering-correlation-id: 74d94d2f-313c-4540-c24f-08de7fdf96c7
-x-ld-processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|1800799024|7416014|376014|366016|38070700021|22082099003|56012099003|18002099003;
-x-microsoft-antispam-message-info:
- e2zvyrzopuU/7KbCTPFti+c4QrM1Zc0KWUGRscG197mT4DgHJLtgusmyv8HzhXYhTBtx8iH9uxjgVwMSk8h0JmL+zO6et8gsUrtFMFzijpOUvl+w2vIP2RrJbDl7YNU+kgC7IZQBSQ2WBcGOfDYugR3k0Vkm8E85UmdePUXn/3u/rHAXjZmxe554Js8fHlRfNTKJSk3qafdIYjMNsovlABjNJ1+A+V4eW5XiQCq+RYvdZIdo8CIGHPcVRoEO8Qg/lU6cKl0/MlyRe0Vrny7KeFhFT2JlhI44nRzpQJlIHm1QbzwhHmYcOWdEiNP7rWzOEgUxI2hS1LpJ399av98q0oRSfzZPbg6HTymO2gsJlVr2Wd/LRvO9x9hXbBlGGmOLgKvcL5TuuPJoAm0paW+/ELUdvNl2k3u6miU1HPhEVw2dqDQg+L/seumNFn1pCFfwkoaCKq2yyhz1gh6zOxf+s0jMW+bxHJHspGSL9MYOHpT14LWcfjbg0u+t+KypaNhyEV5uElIna3HOVJp1Da1DeUQW9AdpG18IvSXhino+1bKU4vML9FViFgkgflR164mdbmjepp7N5a9hfJa+tI/iSfjuPaBx2FftjtLHlJf7I7PJe0Qmb8Xx8OQIsmSJwtDrxf31nof4ZIPYmxibhkWPOQ6GCEHjIAL7NJEzc5z5t5qN/KdPmirHsEWukL6m10hOzNPxgkgvdIpUFuFBiV04o1dZPIGLYYlP/sHooHqRrEy50S9BiZJEsM5+JGOh/zlbe1TInQ7jqW/+AwfOMmRkcM2cSoWf69s/3A0ablijS5E=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR03MB6351.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(38070700021)(22082099003)(56012099003)(18002099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?HR/+zfc5rBT2wXi0B5Q3qdUMlIZFhdIu+DPeBvgsm1Wd1ttwJZKG1PH/cI?=
- =?iso-8859-1?Q?Ou1qgiXrGzP9kygaiSHv87ZGM/njgBJEVliBKzanvRxarjKIXcrY7hi8cr?=
- =?iso-8859-1?Q?0CZdLzMeO5OtLhdq9ba7DQXHOFX2HU21ILn9/KEAf+SbKnIeOgJ6FcfE9D?=
- =?iso-8859-1?Q?Pw8BULRL6CZbslkfCxg8+T/rH9nWOxjvFFLMnf+DmJzftCCBkPzovdF28Y?=
- =?iso-8859-1?Q?Izk5n+4Sl7wtwbTf7kWmc6fAQdwYrUo88UKUxFZkDwsog97eCGw15AbIRm?=
- =?iso-8859-1?Q?P3Fr2W1Vk6SHh0lBN7WQOj478X7yk12zpx/UzOt6UmlZZocsMuXaiHuU4E?=
- =?iso-8859-1?Q?jgfM8GoAP8EX2dt7cwyzzyeZvEgCNIhZlBjq8xxfI+LCU2yEUB2tXFkTT3?=
- =?iso-8859-1?Q?jKhHTw2FlDdvt6VrTrzktNiGYsOVq9VOwoFXxmJXyek7XVsKvQVj46nrCM?=
- =?iso-8859-1?Q?POqkOmlJ00y4TNy1CoEvNY4mIGJlLwpkt80mJxc8Xs0CUVqGjjpffljG9A?=
- =?iso-8859-1?Q?mqbmcjQUtPpfB0+2DyCfdddgblHnkaY/eUFi1i09DOmWhQlJ6Bgq2elneC?=
- =?iso-8859-1?Q?H4MwYSsLk7YWuIM5WnKYWGE0E72V7pIQWQ+bMKpYDlr9ephySS5H6cEaGt?=
- =?iso-8859-1?Q?lieNhGQXZu4o1cNGT8urD97mHvCUbPQTQDqGg++Bwe6hn/zgOXJLe9lNpG?=
- =?iso-8859-1?Q?AIe1hYsS9i4N4dy3gJUnSUjFaZYPQ/iRd+Un2A7JL9lwsJyQ1Re3JZvE2G?=
- =?iso-8859-1?Q?ZQ0pbrx7ZRYDdi0wN4/bcsSmNIj9vEzSA5LX1iPJaXV0EckhOiX1fjWcA4?=
- =?iso-8859-1?Q?ePUkmBWwP/zQgl+cR0eFEAT/2YkNOzxTAA68eHSkD5Nh7H9eocyDPjW1dn?=
- =?iso-8859-1?Q?uBI3FPunhzdzkjv4W+IPyhnEWLOK5VauzHETULcrU6Z6bwLXw+C3d7CXoj?=
- =?iso-8859-1?Q?k4ItAdQ5BzIKl4iitZUd2rQoPDH5XL/e/wCulNfRstWmSBlo6YCo01xekl?=
- =?iso-8859-1?Q?2iZwiXEnaAxw7dBitPM/Ms1mOowe7spjO0zQndBSM8tx3itJbgUGn9QIpY?=
- =?iso-8859-1?Q?/Z4BsO/hCnQJMu0R04VMqzyVa5wyBZiVUn572+QQDxsJz7DIk4KzaPn1f4?=
- =?iso-8859-1?Q?SYv1w/1E2K0GIoW84RrLmseEYp1Q17dOOWApjs/JBi5pvUqYgAqsCFPsWj?=
- =?iso-8859-1?Q?Kwd4KWzJrGsDxkXsdoF+fTTwusvJIXr6vilaP7BUjBNWY215ZCIhumSaT/?=
- =?iso-8859-1?Q?Zrh5b8hVxbWXzjCpZ+q0jkrbuSfRe1jXXBK9kdl5M/MPLlAC2ofrB+S3XV?=
- =?iso-8859-1?Q?5SnxwaE2vg1nkQjBT5FpJQSXCcRBcveYTWRW20YhoVZdwXXnDu+Q7N1E8l?=
- =?iso-8859-1?Q?G1NdRMTVDD7CdZtNN4SN8TELBdG1UJbyhInD23SPjnCubIXEZZlUVVkI5u?=
- =?iso-8859-1?Q?JDlTO4ZMV0msseuV0ndm2iiVoKJGfYBtu2XSEBPlnVafK7tfrEnDzMmjXT?=
- =?iso-8859-1?Q?VNROe+RqrccGJTwil+Mlh/NSxHp+F9eLnS8bVSjhtHKolV1MzZOvJnHMEt?=
- =?iso-8859-1?Q?1+XPWDxka9SI9CjItDYJtpT6gbCJ5J3TnVueTPX4+qGb08u50mRmbtB4uo?=
- =?iso-8859-1?Q?at0YC7OaogOdiK6wmrYy9i/aJVOmyBuXX26X+Lmnw2fIvYX/jwhhSJwUTv?=
- =?iso-8859-1?Q?mgCcHuMqT1QmChbWcGvo88gndRe5MsNaoG3a4j61IJ980jetfBE+AT+FDz?=
- =?iso-8859-1?Q?DzUq0oU//0lDJ02CXEreOrTr+70up5eC0EZDrGliwsNPeT8RfGKs6FlcNM?=
- =?iso-8859-1?Q?sEpjwSXs2h58VyzVJRzX9bcaWwiuA/s=3D?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="vSy72RjV"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+	Content-Type:MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
+	Content-ID:Content-Description:In-Reply-To:References;
+	bh=8xmSRS/soK7btPTkWRRQk60dsAQtRusWAyvVEzeVOZs=; b=vSy72RjV2Gjend3Pf0+Ru8uk55
+	XQZ9mqunlfVtHZ85uaKbjJ3ly0uAtS+a/P/F029ereGHM15J0KA/L1LnOiqUZq2PWQXJHwOeUCDc+
+	MtV5ABp1ro6gyKNFxZKL6lcCT8RDS/RGmevdN4iQLEAbcozmjRHppLG2Avm+QabGxfR+N9gKbffvf
+	9siV5k/iRyS7r+CtxFE+bowILId2iBaixvXI15OfKa3jm2Y3MRea+j4C37os7VZqLreuGmVko36VR
+	w90PeISpP1j98kn7e32+aeG9QpL1Y7cx8lUptgUhG37sDYGuAw3Wxx4mm2nvgalQyVJimMx9shdlo
+	qTs/l3og==;
+Received: from [50.53.43.113] (helo=bombadil.infradead.org)
+	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
+	id 1w0YMq-0000000DL63-2awJ;
+	Thu, 12 Mar 2026 05:13:53 +0000
+From: Randy Dunlap <rdunlap@infradead.org>
+To: linux-kernel@vger.kernel.org
+Cc: Randy Dunlap <rdunlap@infradead.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org
+Subject: [PATCH] iio: st_sensors: correct kernel-doc issues
+Date: Wed, 11 Mar 2026 22:13:45 -0700
+Message-ID: <20260312051347.681042-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Exchange-RoutingPolicyChecked:
-	u+Uhy59NA3GJSG3dbI5B2Dz9TeK03ecMGVPz/lb+CATY73qc8ZBxlBnzvzZoqQvvPe0OmC8L2cATVn+1sBO/coG37jJGCYe30jaM5xHEMPuo7CyeLRP6SJvShwK7Cx8wP/EPel2ypowSHXsSmg4nW/3q2MYax7XQ9H0FwBDI9FqzJT6wkhajHMA3xFLk3HFQkaWhy0yqbtRDjggyR7WXSy+tFByxQJzv+sPCNDoXrxo3K1+uiD75YAXhsHibz30RjcbR7iJrQvtNIVjXUFzONbW0lV1fpZLPgg3q+e3rQR+kedtaYkW0hINOmCR4pE/gJxb4YTI59Mjo+wY/DCu/Cw==
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR03MB6351.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 74d94d2f-313c-4540-c24f-08de7fdf96c7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Mar 2026 02:32:21.7193
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Xe0d5ZkxLeDd3CEtQnUPwfd+HeS3AoeQQqjNMYNX86/SZO5U6hFUpsxbshTT14uQRFNbJIe96O98k44i9tLh4b6gkn60rwyODYD68i7rv5g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR03MB5058
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzEyMDAxOCBTYWx0ZWRfXwIQw0IYmffwV
- jqNBsrQYtjzi08ZXkB343b8GwYOcS3WrUKA66/DpPaCPFU9SQDVTHfgKIRzLCGBLDciQyVrE+Yq
- cN/j1ThKRT+q9VK6HAJ8XnKwPgAIU5OqSuiVr0lHM17/NPARPo++VBzfnsMMKvsTrOOcxv4/ERe
- jgyZp3NLbzdD3XMA2N73lfyC6sbJWiIRT2sBKm9DoveuLkmmXljIbOQEDrU6gmXde6KRWq5Uc8T
- WlTatTG7B7xOzInVgiPCe6/cA2Fm2FCWO/5x0u0Ut5SYNm2QokCCBp4BLbQX9c5OCzz9u1HHj7s
- jAWUf+dS7Ej+5DOfh0MJWXY6Jas20Qohqg2atqHUd5YxX+gsnbG2fIcJb4p+YFZWG7E+N/Vtrie
- 13HrKnM28xolhKBb/vB8Mo7fnRphf81jUEPeSCkDBYdNTC5hzL1B/HXLa0blRk43h6tb0692WP8
- CsHAyCVdCGP5/Y7op/w==
-X-Proofpoint-GUID: kB1PsQ98Xsbq2GzNK9gb8ZSCSEqKutM0
-X-Proofpoint-ORIG-GUID: kB1PsQ98Xsbq2GzNK9gb8ZSCSEqKutM0
-X-Authority-Analysis: v=2.4 cv=N7Ek1m9B c=1 sm=1 tr=0 ts=69b225b9 cx=c_pps
- a=+4AL93Ollhzyglb1kYk7Zw==:117 a=z/mQ4Ysz8XfWz/Q5cLBRGdckG28=:19
- a=lCpzRmAYbLLaTzLvsPZ7Mbvzbb8=:19 a=xqWC_Br6kY4A:10 a=8nJEP1OIZ-IA:10
- a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=iZSIUCweCk2Oy3QsdGPA:22 a=KDJ5RcydbglllALAYUgA:9 a=wPNLvfGTeEIA:10
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-11_02,2026-03-09_02,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- spamscore=0 lowpriorityscore=0 impostorscore=0 bulkscore=0 malwarescore=0
- phishscore=0 clxscore=1011 adultscore=0 suspectscore=0 priorityscore=1501
- classifier=typeunknown authscore=0 authtc= authcc= route=outbound adjust=0
- reason=mlx scancount=1 engine=8.22.0-2603050001 definitions=main-2603120018
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-> ...
->=20
-> > +#include <linux/device.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/module.h>
-> > +#include <linux/spi/spi.h>
->=20
-> IWYU, please.
-> Yet another typical issue with ADI patches. Really, talk to your senior c=
-olleagues
-> who are experienced kernel developers before sending it to ML.
->=20
+Use the proper kernel-doc format and struct member names to avoid
+kernel-doc warnings:
 
-I'll bring this up. As per your suggestion in the other mail, compiling com=
-mon issues
-like this may be needed. Lessens pitfalls for newer devs.
+Warning: include/linux/iio/common/st_sensors.h:184 struct member 'int1'
+ not described in 'st_sensor_data_ready_irq'
+Warning: ../include/linux/iio/common/st_sensors.h:184 struct member 'int2'
+ not described in 'st_sensor_data_ready_irq'
+Warning: ../include/linux/iio/common/st_sensors.h:184 struct member
+ 'stat_drdy' not described in 'st_sensor_data_ready_irq'
+Warning: ../include/linux/iio/common/st_sensors.h:184 struct member 'ig1'
+ not described in 'st_sensor_data_ready_irq'
+Warning: ../include/linux/iio/common/st_sensors.h:219 struct member
+ 'num_ch' not described in 'st_sensor_settings'
+Warning: ../include/linux/iio/common/st_sensors.h:263 struct member
+ 'num_data_channels' not described in 'st_sensor_data'
 
-> ...
->=20
-> > +#define AD5706R_DAC_RESOLUTION		16
-> > +#define AD5706R_DAC_MAX_CODE
-> 	BIT(AD5706R_DAC_RESOLUTION)  /* 65536 */
->=20
-> Useless comment, use the same number explicitly instead
->=20
-> 	BIT(16)
->=20
-> which is much more readable.
->=20
-> ...
->=20
-> > +	st->tx_buf =3D cpu_to_be32((((u32)reg) << 16) |
-> > +			((u32)val << (16 - (num_bytes * 8))));
->=20
-> What the heck is this?
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+---
+ include/linux/iio/common/st_sensors.h |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
-I'll make this more readable.
-but the format goal is:
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>
+Cc: Nuno Sá <nuno.sa@analog.com>
+Cc: Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org
 
-if num_bytes =3D 1
-    tx_buf [31:0] =3D [reg 31:16] [val 15:8] [ XXXX]
-if num_bytes =3D 2
-    tx_buf [31:0] =3D [reg 31:16] [      val 15:0        ]
-
->=20
-> ...
->=20
-> > +static const struct of_device_id ad5706r_of_match[] =3D {
-> > +	{ .compatible =3D "adi,ad5706r" },
-> > +	{ },
->=20
-> Even inside a single file this is inconsistent, besides being third of
-> 101 IIO	patch issues.
-
-Will note the other feedback and track the common issues.
-Thank you,
+--- linux-next-20260311.orig/include/linux/iio/common/st_sensors.h
++++ linux-next-20260311/include/linux/iio/common/st_sensors.h
+@@ -160,12 +160,12 @@ struct st_sensor_int_drdy {
+ 
+ /**
+  * struct st_sensor_data_ready_irq - ST sensor device data-ready interrupt
+- * struct int1 - data-ready configuration register for INT1 pin.
+- * struct int2 - data-ready configuration register for INT2 pin.
++ * @int1: data-ready configuration register for INT1 pin.
++ * @int2: data-ready configuration register for INT2 pin.
+  * @addr_ihl: address to enable/disable active low on the INT lines.
+  * @mask_ihl: mask to enable/disable active low on the INT lines.
+- * struct stat_drdy - status register of DRDY (data ready) interrupt.
+- * struct ig1 - represents the Interrupt Generator 1 of sensors.
++ * @stat_drdy: status register of DRDY (data ready) interrupt.
++ * @ig1: represents the Interrupt Generator 1 of sensors.
+  * @en_addr: address of the enable ig1 register.
+  * @en_mask: mask to write the on/off value for enable.
+  */
+@@ -190,6 +190,7 @@ struct st_sensor_data_ready_irq {
+  * @wai_addr: The address of WhoAmI register.
+  * @sensors_supported: List of supported sensors by struct itself.
+  * @ch: IIO channels for the sensor.
++ * @num_ch: Number of IIO channels in @ch
+  * @odr: Output data rate register and ODR list available.
+  * @pw: Power register of the sensor.
+  * @enable_axis: Enable one or more axis of the sensor.
+@@ -228,7 +229,7 @@ struct st_sensor_settings {
+  * @regmap: Pointer to specific sensor regmap configuration.
+  * @enabled: Status of the sensor (false->off, true->on).
+  * @odr: Output data rate of the sensor [Hz].
+- * num_data_channels: Number of data channels used in buffer.
++ * @num_data_channels: Number of data channels used in buffer.
+  * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
+  * @int_pin_open_drain: Set the interrupt/DRDY to open drain.
+  * @irq: the IRQ number.
