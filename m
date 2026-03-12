@@ -1,115 +1,120 @@
-Received: from bombadil.infradead.org (bombadil.infradead.org [198.137.202.133])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yx1-f50.google.com (mail-yx1-f50.google.com [74.125.224.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0B003976B2;
-	Thu, 12 Mar 2026 05:13:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.137.202.133
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773292435; cv=none; b=bL8uvPGF0kwd8qfdQFA1ZG8UqN9JzVCxwhjCCgZ2jD/LfQ59wkxHQvVE5vK9ao/aK6sGoTH162q6KEKwaAxA9p30u6vhszSZJ2Xw9F4CwsROfz6d3YTIZBFQ/IzFs2MAg4FWMPpR6O7UdVp5S4UhoI4An+Yxibsytvs55N5InAQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773292435; c=relaxed/simple;
-	bh=cTOfBxHzfarYeGfNaDbiX5oNBEoFTS+Badi8sCb8hV4=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Z8YGmkTx1f3TaEkhrEwwWihK87l3P+oZ5faIJzWuGYjx1TcgpTBE6gHXAFajAQPsQoNDVdkuUdVceuGVvhG2FGcdc7kG4qXlT+SzQvnbKsAhvkmMC6gpDLS0HfSmBFFdQ8O+ldgciVQMh23I5x2gUOWEBh/pO30mJaANPg8td28=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org; spf=none smtp.mailfrom=infradead.org; dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b=vSy72RjV; arc=none smtp.client-ip=198.137.202.133
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=infradead.org
-Authentication-Results: smtp.subspace.kernel.org; spf=none smtp.mailfrom=infradead.org
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9253823EAB0
+	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 05:49:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.50
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773294580; cv=pass; b=pqytUL/cWTz8cTdUMEKtJIN0L7VjjS0nLOvaQRdJZx1Yun4ldhih4rmahPvBuJmUUj6Ibb8IH325dnT3w1u4cNPDGl7o07zq//8xc5KS818e6lFWVQIJLG2+5bZHnfR9a0MVVWYGgHIUCURsO7q7xpUwjyCm1KW8DLpKU9K7DoA=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773294580; c=relaxed/simple;
+	bh=RMQByrBiJnhgVK3Ji/kumr4mEcr78/UhRD6H04gca0g=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=PrKxyBwzDDaw9O6DJ45lAIuN7OSTE+rwxC14CMYri5hJigfmCq5HEcEGHFMGevnpCCCkZTKhlVR9G4uGEfJB6U4j8QT+hfjZgci0dYLPVJUAwKPNdfqLpAf63/fZKKVFnMuMMdjXewIaqFKgSTIQ0IlM8gEJIB6t3rh7109/pEw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Rkuztu9t; arc=pass smtp.client-ip=74.125.224.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="vSy72RjV"
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-	Content-Type:MIME-Version:Message-ID:Date:Subject:Cc:To:From:Sender:Reply-To:
-	Content-ID:Content-Description:In-Reply-To:References;
-	bh=8xmSRS/soK7btPTkWRRQk60dsAQtRusWAyvVEzeVOZs=; b=vSy72RjV2Gjend3Pf0+Ru8uk55
-	XQZ9mqunlfVtHZ85uaKbjJ3ly0uAtS+a/P/F029ereGHM15J0KA/L1LnOiqUZq2PWQXJHwOeUCDc+
-	MtV5ABp1ro6gyKNFxZKL6lcCT8RDS/RGmevdN4iQLEAbcozmjRHppLG2Avm+QabGxfR+N9gKbffvf
-	9siV5k/iRyS7r+CtxFE+bowILId2iBaixvXI15OfKa3jm2Y3MRea+j4C37os7VZqLreuGmVko36VR
-	w90PeISpP1j98kn7e32+aeG9QpL1Y7cx8lUptgUhG37sDYGuAw3Wxx4mm2nvgalQyVJimMx9shdlo
-	qTs/l3og==;
-Received: from [50.53.43.113] (helo=bombadil.infradead.org)
-	by bombadil.infradead.org with esmtpsa (Exim 4.98.2 #2 (Red Hat Linux))
-	id 1w0YMq-0000000DL63-2awJ;
-	Thu, 12 Mar 2026 05:13:53 +0000
-From: Randy Dunlap <rdunlap@infradead.org>
-To: linux-kernel@vger.kernel.org
-Cc: Randy Dunlap <rdunlap@infradead.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH] iio: st_sensors: correct kernel-doc issues
-Date: Wed, 11 Mar 2026 22:13:45 -0700
-Message-ID: <20260312051347.681042-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Rkuztu9t"
+Received: by mail-yx1-f50.google.com with SMTP id 956f58d0204a3-64b3801600fso92282d50.2
+        for <linux-iio@vger.kernel.org>; Wed, 11 Mar 2026 22:49:39 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773294578; cv=none;
+        d=google.com; s=arc-20240605;
+        b=UCnY0vPZvsiPgll17hp9uWOmXkGwaK4NvqNLBYCF1uf+M38dMXfVucP6wjt9+AFY1B
+         Xmo+lOezGRpBjR28GK35VgLyw7mOjde/BfHYi0V1LmXzBxpSxCEIGAEywcOWZdhlrMMy
+         ZOc/iQL0D9tzcsJAPkfQT+8D/HkT1h0hwPZakTgK6scasD0oHs+kmz0stKZzz7ZMuU3E
+         5Gij8GmGCN68WjU3MO+x7D4lxDMIQuViamvP7hwhp6jSkKMIILHAu5hA36Oiv/qLzNGf
+         ZkpKD2mbl4v8+DxHkygG7gvmk/adPgkJgLeBsh8x+lDBj2efzkhnR+/SwyDKC05/uA+/
+         1TXQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=RMQByrBiJnhgVK3Ji/kumr4mEcr78/UhRD6H04gca0g=;
+        fh=VoG358nAPzXaur2i8ePd1WXbM0Oc3aAvJGPF2l2FxzU=;
+        b=TsJ7gBrQzYJ0gm0pKkrXOQ4xVcZtHRTqATY0FXt+zLVssfwwBg/N2eceagvVsOqBNq
+         5e6lxQv/b6KQUqUtWju8NiOQ/wYUh/UDFSAH+Shz4KUq/fGv9jFqw40n68j93QsCZ2Eg
+         BtFSuFE5ljAS4103sHH+brbg5k4t1MDETJu3dBALFQfTfjou6Y1fQXFWunfmJ7T6i0aK
+         uCwIcQcPLhUOnJxxXor9m88CHAG4Xv9gAqT4BZsHSH1peMXe/zI1pEc3de/RHxsypBD/
+         CLrCQTKQ9+Slzba/nHE5Qica1eEoK2HtqFi68ZWHsRyutw0r/FaWb/i/e3KMVjUE8dVI
+         ovxg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773294578; x=1773899378; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=RMQByrBiJnhgVK3Ji/kumr4mEcr78/UhRD6H04gca0g=;
+        b=Rkuztu9t4AMrPe4w6/MswRG8YekoweOI/yQfRaZacvd5UeLMwiHsDtSamqlanUNGzC
+         N+UWeFOg0T+/xR6xcQJV2e+PbdP+fJW5DrboF32rpq1UWWZaD3UBq4PNMYgH1mQcUBEj
+         Zjo8yYhqZ8AFXyCnJQ7WuWYOkm30nSfBBbp0wOA7zTUgmAORg8HuxLEU9cNiUP2DxVDs
+         obYAF+5iLkqE1VnpIf0nqcYUpG1aO6+gzJPExxkl8ZbH1ESaOncDWB0j3fJneQjRSyno
+         BEICQHktFPj8lNjYUd8IZQugBE7yZ14NYdkoABqRsmLWqZQbHr8gU60UgVju0JbpH28y
+         E/ew==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20230601; t=1773294578; x=1773899378;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=RMQByrBiJnhgVK3Ji/kumr4mEcr78/UhRD6H04gca0g=;
+        b=mASBMlWKROzd9YXPkStz/vbvIjMryuHb5SbMiTz0VKtZS3li3BsQjDkIkYPp/lEGX0
+         yR6rChshEj6tuIOlrUxMlV+WJgWx0cG2ypTQ3W8P0nZ+BYTzaHn9VIGYYjjUK4pCCImf
+         aMooekyjgFaIZ6UTCri0qSoewOc1bf4gPdPgol/9KFwC0G/hjLdZvnhoMlkLonwHfpS8
+         eSJu41pRkz2i8i3anjS2Sra+sNURTb+s3s5yaJqeiyV3fB4x7JniUC5TaSNq06GdC1tr
+         avWaDfKXN2JoHTeDd4zeiDFXs/Z/pDUgRJX8g9u8JQygq+NDg/D9gBTsI5CPsMoRL5Dp
+         uPlA==
+X-Forwarded-Encrypted: i=1; AJvYcCVOS+zjDbpbWFymNBoucmz1lv1WJI0sIaFqiMGqQFDBtDp2b34E0BiGjqRs4HSq2Y8vTXMR1UPoA5c=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwDl/FoHK0pqqwaiHwZRCyroWpPF+S3itqhza3Wk13B7vK5YoGK
+	HC31QCJCuD086EcHVMrU/K7FuRa2dwJ05Pb1LYKsUW08rFOWjhzRCcmk6HU+FtfuuQ8dxLvq/mV
+	OACuiUDp0For6nU1FUC+9i/MxSOIsOkM=
+X-Gm-Gg: ATEYQzzKiRn2i8iPgLBMdHGbNSR7J6IU+qJGv5o600XXxS9NX3s5SjGTfA5v8bs+D8f
+	cv70KrqclNfG2ZZYfOF6LyOR/rmkt2EpzUqRgn0Iqq8LqOPRHinRvpbVbK7vk9E6TkO7d5vy0wF
+	Jw63M317WcXdsQWiBy40NHBPyNxCKfWjFJ3wByXmEMfE/Ph32oOhZIagb+8WSVlhvW9910V84BK
+	VrmPpJy/aOgWSfOPmsiUG6PGh/Ap/9PADn8HElhKdqEuhIIBO+b/yJ0auf6aaKNVzZQTYoQ3fHe
+	FmCzp9kyerjIN9eU0p0pyuQhxGl3Wn2lwAS5Ci07BUacGSA5Z/W/s8FLcQ1gOIkLvPVbFq+QgB5
+	gEwiZisczShhglCt6/QCYDg==
+X-Received: by 2002:a05:690e:140e:b0:649:bbf4:1212 with SMTP id
+ 956f58d0204a3-64e596aeba4mr820692d50.1.1773294578554; Wed, 11 Mar 2026
+ 22:49:38 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20260311072156.35057-3-giorgitchankvetadze1997@gmail.com> <abGPhYz-5OLeYg07@ashevche-desk.local>
+In-Reply-To: <abGPhYz-5OLeYg07@ashevche-desk.local>
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Date: Thu, 12 Mar 2026 09:49:27 +0400
+X-Gm-Features: AaiRm50F7sDeTMXcniyDn0wXA71lWXB0OjblmzShhFnzcai_ltBpdRyCPdw2Was
+Message-ID: <CAE7dp2pO+Dx654ybH47uu7FTyoNfTHaEB8ihxiMFjQYONrODhg@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ad4130: Adjust indentation so statements start
+ on tabstop
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com, 
+	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Use the proper kernel-doc format and struct member names to avoid
-kernel-doc warnings:
+On Wed, Mar 11, 2026 at 7:51=E2=80=AFPM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
 
-Warning: include/linux/iio/common/st_sensors.h:184 struct member 'int1'
- not described in 'st_sensor_data_ready_irq'
-Warning: ../include/linux/iio/common/st_sensors.h:184 struct member 'int2'
- not described in 'st_sensor_data_ready_irq'
-Warning: ../include/linux/iio/common/st_sensors.h:184 struct member
- 'stat_drdy' not described in 'st_sensor_data_ready_irq'
-Warning: ../include/linux/iio/common/st_sensors.h:184 struct member 'ig1'
- not described in 'st_sensor_data_ready_irq'
-Warning: ../include/linux/iio/common/st_sensors.h:219 struct member
- 'num_ch' not described in 'st_sensor_settings'
-Warning: ../include/linux/iio/common/st_sensors.h:263 struct member
- 'num_data_channels' not described in 'st_sensor_data'
+> No need to touch this. I was against that static_assert() in the first pl=
+ace,
+> and still against it. In my opinion it brings no real value as I can craf=
+t a
+> layout that will have the same members and sizeof, but different types.
+>
+> In my opinion it's better to just remove it completely.
+>
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
----
- include/linux/iio/common/st_sensors.h |   11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+Hi Andy and thanks for the feedback.
 
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>
-Cc: Nuno Sá <nuno.sa@analog.com>
-Cc: Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org
+I adjusted the indentation only to address the checkpatch warnings.
+If the consensus is that static_assert doesn't add meaningful
+guarantees and should
+be removed, I'm happy to send a follow-up patch dropping it.
 
---- linux-next-20260311.orig/include/linux/iio/common/st_sensors.h
-+++ linux-next-20260311/include/linux/iio/common/st_sensors.h
-@@ -160,12 +160,12 @@ struct st_sensor_int_drdy {
- 
- /**
-  * struct st_sensor_data_ready_irq - ST sensor device data-ready interrupt
-- * struct int1 - data-ready configuration register for INT1 pin.
-- * struct int2 - data-ready configuration register for INT2 pin.
-+ * @int1: data-ready configuration register for INT1 pin.
-+ * @int2: data-ready configuration register for INT2 pin.
-  * @addr_ihl: address to enable/disable active low on the INT lines.
-  * @mask_ihl: mask to enable/disable active low on the INT lines.
-- * struct stat_drdy - status register of DRDY (data ready) interrupt.
-- * struct ig1 - represents the Interrupt Generator 1 of sensors.
-+ * @stat_drdy: status register of DRDY (data ready) interrupt.
-+ * @ig1: represents the Interrupt Generator 1 of sensors.
-  * @en_addr: address of the enable ig1 register.
-  * @en_mask: mask to write the on/off value for enable.
-  */
-@@ -190,6 +190,7 @@ struct st_sensor_data_ready_irq {
-  * @wai_addr: The address of WhoAmI register.
-  * @sensors_supported: List of supported sensors by struct itself.
-  * @ch: IIO channels for the sensor.
-+ * @num_ch: Number of IIO channels in @ch
-  * @odr: Output data rate register and ODR list available.
-  * @pw: Power register of the sensor.
-  * @enable_axis: Enable one or more axis of the sensor.
-@@ -228,7 +229,7 @@ struct st_sensor_settings {
-  * @regmap: Pointer to specific sensor regmap configuration.
-  * @enabled: Status of the sensor (false->off, true->on).
-  * @odr: Output data rate of the sensor [Hz].
-- * num_data_channels: Number of data channels used in buffer.
-+ * @num_data_channels: Number of data channels used in buffer.
-  * @drdy_int_pin: Redirect DRDY on pin 1 (1) or pin 2 (2).
-  * @int_pin_open_drain: Set the interrupt/DRDY to open drain.
-  * @irq: the IRQ number.
+Thanks,
+Giorgi
