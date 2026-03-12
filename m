@@ -1,63 +1,63 @@
 Received: from mail-pl1-f171.google.com (mail-pl1-f171.google.com [209.85.214.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D62DF33A6F7
-	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 08:20:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B8171A5B9E
+	for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 08:20:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773303625; cv=none; b=WgezeGyU0Dlh5ZA/1QayBfnt3q+KUmV6LES37+hXGic6Q3dBCZTLRyEMM1bCV9tfkGgSW5UFmyyHnO5kNJD3tKHhoM8QKsUgJFQ8efEuopEWVA8VV4SgaYc/WW/siSvymY4FV0tPUYUWn09PPtxrm7/J0Rsj5NM3xRPmW7CK18w=
+	t=1773303632; cv=none; b=DahNGJ3Phe6/YllS5RBE4MPXViRfIaoUgBs5fy9Wg9btiU414ktrKJ/5F148AZaWZmzEPzQvX7mOWWLiIJIHjeYKbNUZ7z2Oq+PeywQ4RzquZVgXVI+6YPNNXAFfouQsiplxDi5GqaL/VcjT663+rLnykH/nru1JKKZvhWgwp9E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773303625; c=relaxed/simple;
-	bh=ou3lbyq4fDZg+GSVSfhDp3gj9+aEBNAHHddZXTYBnG4=;
+	s=arc-20240116; t=1773303632; c=relaxed/simple;
+	bh=utsr2wFERS1dweRxRw6x9TMZVrqawmdGB2Vg8I7kYpw=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Q/gh19r3u3RAmZhjUqvXwvJmtzkDRLkqxdWmwBK3jq+Q3uyk096wQ4vC4Hxsv4YlcQsXPkcgc/ZzYpyQM4PeBb29D3Te7TtXUrkOEMXW8dkATqVDkpPgtYNDt5iu7YrlVoaVnvqOgc9fc0IxKZz89hF8RaXgHf+y7XeGUdRTaPE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eXc+vijq; arc=none smtp.client-ip=209.85.214.171
+	 MIME-Version; b=VYewv+Kv5ZI6UON9qqxNP9lFQ/I5NSNWsqSze/wWSYm2jFUtqJ32Q0tmPdc9fdjGTteaw3QfqKEfwY3M8WzOJDSrDgUMCItoYfK9u1Jj+RPDDxdEvVYrJs88gcNwQL4Br3fBYfRez9dGcRlFFsphQl/0PFY2ABGsq483D8ELv20=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bK48kZMF; arc=none smtp.client-ip=209.85.214.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eXc+vijq"
-Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2ae4d48dc2fso3991785ad.3
-        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 01:20:23 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bK48kZMF"
+Received: by mail-pl1-f171.google.com with SMTP id d9443c01a7336-2ad4d639db3so4406345ad.0
+        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2026 01:20:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773303623; x=1773908423; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773303630; x=1773908430; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=UY+BDJIyA8NSf40uEDoQLKUGXr4A905L63hTXYyoJv0=;
-        b=eXc+vijqqGgrzxngjrmQD/SsbN52lq7SQOVc70fhzJKXURlwVb8IlRDOBmT0z0H8NQ
-         Uk9axJvyz9DnO6GhRVglJ5hALkCqiZBJGUKadZUUDUMetPRQmQu08+F10E3/42DGeg2J
-         zdwfpM1O5RvXe65J2mO4+/JwZAR/hVuTu8MYxnyG8qGluFxUq8Ns4obPH0N3DiWGyaui
-         LpEWeIKeHkW/S4SX408ky1QUHbYRV6h/QOQPUW9mmiXdWglKcTJ8o9GHmn0fkfjMzKpT
-         ymmctzF/aIR/m8EDOsqn8U2O0zoQcG4ujTNJnCxQqbCE0+pVw+abSjLimdAnYj+4R3Gm
-         4aeQ==
+        bh=RQzoVC+zbsYW93M6OjzhineZstDtj2uD7TkTjyo4rvg=;
+        b=bK48kZMF2bLtsZQ9S844dQppDK8b8pMYsTbY76/KewJnztp78eD17lVBnBijsyI3Dr
+         xJJAhEJmluWgLDrzPVwAOtVU5hHa5Ei56nLjN1YCA3wxJ/GN0R/FzOYE3zLwrsKklbhH
+         jJS1AFJFBPbqkr+GBuIZiGHTccNiirezm1MJwgnAyrOPc/HFawztREAFCZzJ2vfb5xgb
+         4938CTfPk24PJS57AciGOBJj/5xTYA9rZHUinxV2Ppssnjs0o/oVpBXhd2TV0M/4SZrR
+         iTdvz+KEBZBiI/3XtZxjVAjeAZSpu9pwNQ07QKdb98apFRg/bPcRfaCo15TgmTmi2CVG
+         Ez1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20230601; t=1773303623; x=1773908423;
+        d=1e100.net; s=20230601; t=1773303630; x=1773908430;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=UY+BDJIyA8NSf40uEDoQLKUGXr4A905L63hTXYyoJv0=;
-        b=nkXH+rKyXLJaaPtxCMztlavn/HWNsD3oAWrBcycac19475LZDHTqhIxfB1W6QizTEX
-         hAYBcsvWElzWirCAODtGVhz1Eza33EEELf07qdhHVCA2uUStFStXn4MH3KERPXFpMkzo
-         YdxcqsfPqlT+D3jFUlHdA4ciFsBroWUXUy3sBjR+4gLkZwlKHmi+N9jaHfN6Ip5reqTH
-         QzVJF7/1nHkIDShTEUplCvSEdUCSTySbkgBE91G9ZfNIUxqUB+pffY7XM6d8+1VRTtqA
-         /vm3pjsX3YFMKFw4FFHqlhqOe1ddZwCModSi7nnLUuck8Bo+d4a6ZWPoEzIIUBxFhNhc
-         o5jQ==
-X-Gm-Message-State: AOJu0YwQERx5/JqjvXwhZMQR7OEVHBbsWUc82aE8uonRXQvoFcJRJ5kY
-	bbjkkg1zRpfgTB6IWs9PwKPHKz42f4y8Ty4RtOt9zYLHvFZNGpWuswBv
-X-Gm-Gg: ATEYQzwZPIl76DhMs820b7uhNI2bUAsWxB1Rua1Q54H8nYWJfsMI/O3hhP7bb91fgRr
-	gyVBgmVOInan+lSlpO+YvWmCx5QZ1dtTPRghRVBT4Id6pPz7R7/TW6BDwGAnE3tYyzmIVd8G1z8
-	8i4Zxa7f27xGVIGmDtwnxY+c/gw7hze2VsVvMv+rUU4ln5FyzG3MUmTKvlKi66vDfkxxqX17Row
-	y0SiqWingzWF2nmKxeZtLx4M76P7tpfay+z2xHCLZhq8WQ8vlUD8ALO02iWAtnxUM6dWp9xX/l9
-	l1H8tPLoUsvZB8OUWDoK+WLHM/gaPl6iMj/dLzIOj2KjLJxTBdpCWMCIV0fFDHs3Jhcky+SgOUR
-	YjUq7b6eYhHdYA8mBU0NM4hzXcRVnlQ10IYGCzq7kEd72chPeyezgODHBqW2X/hdo1ads+NusyW
-	gWc68CYxAKd0S0G5u0pyb2oSQG4xegQT2l3iVq9JbsDq9cDEA/Z0HA+e2VOk3h384VV+hiYzj3/
-	tHSdRBlF+Ce24KpJ01IA38=
-X-Received: by 2002:a17:903:2f8d:b0:2ae:5a28:cbac with SMTP id d9443c01a7336-2aeae85a65dmr53352415ad.32.1773303623161;
-        Thu, 12 Mar 2026 01:20:23 -0700 (PDT)
+        bh=RQzoVC+zbsYW93M6OjzhineZstDtj2uD7TkTjyo4rvg=;
+        b=BY79yQbOhrZh2q/tnpCPvZPO/c+JrHhXzJ7CV8tIZCJVBlUlGSqH2Nn6RcHi3OwAne
+         SoTFVEitClKO4/HjrkLXqHiOqMoMByfshwAfcxW66RJ8QRY22AeZE5ovhAqZhCXMpuaD
+         XPg92g3x2CPpMhIDrpWo6v/fMn6FFGEfTYdGrwmQ1zWnTRdpnralNxecnTv87rZ2pEGI
+         8LbLgo5uJ8AL0wsbrHuvCuflTQcD3H1w2S+a5+CGeiuCUDB2wStPAjmvIGgDaluRoWpB
+         ODj0IWDAgG8E29j43IqYOHHQq/Fg3AyxU6YxfhFI/WJ/ClG2uMEydDvCpSqOTqA3mHKW
+         lGvQ==
+X-Gm-Message-State: AOJu0Yx9l9odPWJxPudFlhpUs5SIn+RZCI0FVqApCrH+lHQeVbob91l9
+	tE4b9wS+ueX0d49i5U07M+jAlTt2Ejegaf5V/9MuIbTbb2h7kWkE+e5J
+X-Gm-Gg: ATEYQzw0ndp8eBKCgk5ZwJGPbnj8aI+cVu+ehAU745Xr8SzXJwLT8xrGmBS0rxCZGlA
+	6CFd8KgU9L2WUsXruNBkPHkPlnNhYbJ9VWYrgr3ebezvgKaHdRwVU/1sKvqzcq1uii1f5+72Sci
+	jMTelZ6AR1ay7tmrnthHWO9H8m4+VHXDTMtif9b/z9e6w6qorGHvjP1JIb/o24W5CZfLABjdPLq
+	2ANi9medJfjriAuoN801upUO/G3Sv9iehoLO+pZBeqMKu+JbYHt240Mqpmw5ZGUO33wv6qTtDF8
+	xRbOh85LeS8W9f+RXrJphKanmcqNIq2sC7BHdfP+7zbzoEXguXHwP2lZPjxQ1IRndhjPh9PIQPU
+	d/e7f9zwr+fcC8AEFO9ssWMkjuEQj9NcgjpI5fQv11Zxv8hVjyvxN9ZO4Q8guS9OSkL3qtzx95r
+	WWMNH3VY4yrtp6b7J7Qa8xERO/gj9DZjBSox+yXtiIZ24va3HqY/EqRYhB/55iEG7ZLoMKlv177
+	v4sQXyLnQVU9I/hQgsYDq0=
+X-Received: by 2002:a17:903:2288:b0:2a0:fe9f:1884 with SMTP id d9443c01a7336-2aeae95b193mr56649855ad.55.1773303630577;
+        Thu, 12 Mar 2026 01:20:30 -0700 (PDT)
 Received: from fedora ([103.92.106.30])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aeae24a91dsm64388905ad.31.2026.03.12.01.20.18
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aeae24a91dsm64388905ad.31.2026.03.12.01.20.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 Mar 2026 01:20:22 -0700 (PDT)
+        Thu, 12 Mar 2026 01:20:30 -0700 (PDT)
 From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
 To: jic23@kernel.org,
 	dlechner@baylibre.com,
@@ -72,9 +72,9 @@ To: jic23@kernel.org,
 Cc: linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Subject: [PATCH v3 2/4] iio: accel: mma8452: convert to guard(mutex)
-Date: Thu, 12 Mar 2026 13:49:40 +0530
-Message-ID: <20260312081942.23858-3-rajveer.chaudhari.linux@gmail.com>
+Subject: [PATCH v3 3/4] iio: accel: mma9551: convert to guard(mutex)
+Date: Thu, 12 Mar 2026 13:49:41 +0530
+Message-ID: <20260312081942.23858-4-rajveer.chaudhari.linux@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260312081942.23858-1-rajveer.chaudhari.linux@gmail.com>
 References: <20260312081942.23858-1-rajveer.chaudhari.linux@gmail.com>
@@ -87,75 +87,68 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
 Replace manual mutex_lock/mutex_unlock pair with guard(mutex) in
-mma8452_change_config(). This ensures the mutex is
+mma9551_event_handler(). This ensures the mutex is
 released on all return paths and allows returning directly
 without a goto label.
 
 Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
 ---
-v3 : No changes
+v3: No Changes
 
-v2 : Dropped Header alignment change
+v2: Dropped Header alignment change
 ---
- drivers/iio/accel/mma8452.c | 21 ++++++++-------------
- 1 file changed, 8 insertions(+), 13 deletions(-)
+ drivers/iio/accel/mma9551.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 15172ba2972c..09bb205a1b8f 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -20,6 +20,7 @@
- 
- #include <linux/module.h>
+diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+index 02195deada49..65a913972ce2 100644
+--- a/drivers/iio/accel/mma9551.c
++++ b/drivers/iio/accel/mma9551.c
+@@ -9,6 +9,7 @@
  #include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/slab.h>
 +#include <linux/cleanup.h>
- #include <linux/property.h>
- #include <linux/i2c.h>
+ #include <linux/delay.h>
+ #include <linux/gpio/consumer.h>
  #include <linux/iio/iio.h>
-@@ -597,36 +598,30 @@ static int mma8452_change_config(struct mma8452_data *data, u8 reg, u8 val)
- 	int ret;
- 	int is_active;
+@@ -337,7 +338,7 @@ static irqreturn_t mma9551_event_handler(int irq, void *private)
+ 	u16 reg;
+ 	u8 val;
  
--	mutex_lock(&data->lock);
-+	guard(mutex)(&data->lock);
+-	mutex_lock(&data->mutex);
++	guard(mutex)(&data->mutex);
  
- 	is_active = mma8452_is_active(data);
--	if (is_active < 0) {
--		ret = is_active;
--		goto fail;
--	}
-+	if (is_active < 0)
-+		return is_active;
- 
- 	/* config can only be changed when in standby */
- 	if (is_active > 0) {
- 		ret = mma8452_standby(data);
- 		if (ret < 0)
--			goto fail;
-+			return ret;
+ 	for (i = 0; i < 3; i++)
+ 		if (irq == data->irqs[i]) {
+@@ -349,7 +350,7 @@ static irqreturn_t mma9551_event_handler(int irq, void *private)
+ 		/* IRQ was triggered on 4th line, which we don't use. */
+ 		dev_warn(&data->client->dev,
+ 			 "irq triggered on unused line %d\n", data->irqs[3]);
+-		goto out;
++		return IRQ_HANDLED;
  	}
  
- 	ret = i2c_smbus_write_byte_data(data->client, reg, val);
- 	if (ret < 0)
--		goto fail;
-+		return ret;
- 
- 	if (is_active > 0) {
- 		ret = mma8452_active(data);
- 		if (ret < 0)
--			goto fail;
-+			return ret;
+ 	switch (mma_axis) {
+@@ -373,7 +374,7 @@ static irqreturn_t mma9551_event_handler(int irq, void *private)
+ 	if (ret < 0) {
+ 		dev_err(&data->client->dev,
+ 			"error %d reading tilt register in IRQ\n", ret);
+-		goto out;
++		return IRQ_HANDLED;
  	}
  
--	ret = 0;
--fail:
--	mutex_unlock(&data->lock);
+ 	iio_push_event(indio_dev,
+@@ -381,9 +382,6 @@ static irqreturn_t mma9551_event_handler(int irq, void *private)
+ 					  IIO_EV_TYPE_ROC, IIO_EV_DIR_RISING),
+ 		       iio_get_time_ns(indio_dev));
+ 
+-out:
+-	mutex_unlock(&data->mutex);
 -
--	return ret;
-+	return 0;
+ 	return IRQ_HANDLED;
  }
  
- static int mma8452_set_power_mode(struct mma8452_data *data, u8 mode)
 -- 
 2.53.0
 
