@@ -1,150 +1,147 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f46.google.com (mail-wr1-f46.google.com [209.85.221.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DA95372B22;
-	Fri, 13 Mar 2026 14:40:28 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 37B823C6A4B
+	for <linux-iio@vger.kernel.org>; Fri, 13 Mar 2026 16:39:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773412830; cv=none; b=bX8P1jMpp5BfTKzfbsyJFoY969mww3ljUolwYS2v3pDkR4+kjTQM101Px7CvhL17wyMzWmz7EF8Q2Z7ym4s2ZzD+z1INYgmABId67PCf9BNo2bh7e3RqppVUokZrYCqcHc0+kjDurjESZR2oMWaeKolV01wrpQy3apjG5PZEN7M=
+	t=1773419970; cv=none; b=QANec++mG8BoZzygDV99CUnuhHWxtS2b58KHyFpOI19S6uiJghtcv1fJM4ATGPwAwkO7L4okQ4l7szhXGGmTsWir/tseVDnePqPbQsK8QW6kgT7N9nCkBBLWNMYkLuKQITThXjsSWN0sRzWIkG5F+dRvLVTDYJc6ZPpWp0pS+Vg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773412830; c=relaxed/simple;
-	bh=d23l5QfZILL92TANqDOqm0WjgNLDASSxYAanpTwaEgE=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=LbYjLy1lDxd/97UyVqHFz6k4M62X59Z8i8awDxEL8pUDYsCDkKPD9WYBhq/CDPmBmX5/7xHzIduzXmjbGyg+uZGKWC4QkbV7IvFrvzS3+xtb2DDLGmf9RAod64hh6uiv4wuf5LJKRPrqH/7XQrWXt4GvXGe1E7tpXlp3q/0RY00=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EGbAEev7; arc=none smtp.client-ip=192.198.163.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1773419970; c=relaxed/simple;
+	bh=Qj7u7fKzT27EaALLTcCusFhJ7ATg3tivF3VhphoT12w=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=OdEId/NhgV/9ymzgXjNcNzwofsxoo6mQjKEy0CsV/Qixk8PXqF5BO9JXkYoy09/A4pXlTlIZBNiyUcNlPYSqVS9b/vIwckeMCaDjmfdW2Adh8GK04li/63lJ9VAjBdqsykaWEKYh+hp76jIUVxlp+dE4+GqISO+x5iWDLioXh00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=DaOVbzC/; arc=none smtp.client-ip=209.85.221.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EGbAEev7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773412828; x=1804948828;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=d23l5QfZILL92TANqDOqm0WjgNLDASSxYAanpTwaEgE=;
-  b=EGbAEev7miV1BJjqzfAtGilgzJ6wbn3TF37tNjvaFhIAE32cbq5x12Pa
-   puSuGkBMEm2Xsi1eHALpoLF6KRug/ENzAZw8ncKixsDXGBrjVu0RC5HRd
-   GadDxOgefoumjJfYQqe6SfNhCuL0ZCrajzy/Y7n8E6/DXDFE3pD5Wv2b9
-   zueXNB82dQvj/EOxIkRHyXTo5Cr+7PvFUSGEKeE7ooE48BPfbQDh2yMes
-   bFKEG7hIL/XrF6waGg3vXpoYV8mdeBCF/rZKaRjG6YfKg4CsWezbRru+z
-   XSynfdtNys+nfuUyKf7wOOtHnxrrRKPZd6SzD/m3ZpcdU9ygDzE5eBDMx
-   g==;
-X-CSE-ConnectionGUID: G/dvZH0LQFaussNxKmw1wA==
-X-CSE-MsgGUID: Uqvw0KZ3Tu+wvuhPD66L3w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="62090732"
-X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="62090732"
-Received: from fmviesa010.fm.intel.com ([10.60.135.150])
-  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:40:28 -0700
-X-CSE-ConnectionGUID: k7P44SedR9iseEQORDQ+MA==
-X-CSE-MsgGUID: fZ+VfvuWSh6RDMwVkZXiOQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="217597282"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.246])
-  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:40:23 -0700
-Date: Fri, 13 Mar 2026 16:40:21 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
-Subject: Re: [PATCH v3 3/4] iio: adc: ad4691: add triggered buffer support
-Message-ID: <abQh1Y5_oGyvIxwT@ashevche-desk.local>
-References: <20260313-ad4692-multichannel-sar-adc-driver-v3-0-b4d14d81a181@analog.com>
- <20260313-ad4692-multichannel-sar-adc-driver-v3-3-b4d14d81a181@analog.com>
- <abPxR0TVa70sMg38@ashevche-desk.local>
- <LV9PR03MB841415AA5DB9FFB714710CC3F745A@LV9PR03MB8414.namprd03.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DaOVbzC/"
+Received: by mail-wr1-f46.google.com with SMTP id ffacd0b85a97d-439b94a19fdso2225775f8f.0
+        for <linux-iio@vger.kernel.org>; Fri, 13 Mar 2026 09:39:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773419967; x=1774024767; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=SpEPoHYvhvWkjpmYEpEt8jyUUg5KMMUdOdkwivHgCi4=;
+        b=DaOVbzC/MQfQZvuTtUCqVq+ekt2HGjagyRzoDSez1ksKifQOvRzQStVjVt9jt6Tk1U
+         bdBBx7iFu+Thpx2NA5bGj5w4oU2nSMWaMhs1e+yzddQ40wbImoyTSxT9YNWXqz2nGXF1
+         fJGv6Wi+pBDosr6/RJ9WsaUHYrTNFxPEZrf0Vyoj3BecjhBXDFdJB6EKonccmftX+p2G
+         ytwkEaYR5PhUrH6LqGqaGr21cdzhSJLjy+PUBsBL3PvHrLTEdYVg/CDKmEWhF5A5u/pI
+         kIRZzLDTXyWvezW8Hb9o6r1Xn5WhFR3iOukr3yBTel4EZjUG7QA2ttSMYBW/QT6+II0/
+         Tq2w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773419967; x=1774024767;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=SpEPoHYvhvWkjpmYEpEt8jyUUg5KMMUdOdkwivHgCi4=;
+        b=A9jgk753bRlrMRzVkqAkZIJKHmPOwqpBVPQUpopa26slIbXPPVdiTrXgssxMxTINU+
+         WKJCNG7nEpaFmd04RAHlzEhMtaCj4kJQ4+UgJjo8hpftc4WKpUpypkXPf8zBkQywRorg
+         AuGVQN/4Pnl50vNkOmgz+T7QLAY7PINlN1rAayyOZ3OYKXk0WiAj9wp0UJIRIUekLqCm
+         nFYQm67EcOypTg2miP7ZN0eRTSfeVS0Ds46znDrieqhkyBsBoHLtQ8FbrczJ7RVC1Z7L
+         kB3loz2Y94SiR0hjdOSiXL6iVF7kdPNVWCcK5RzmgQoIym7d3EA2T8UFa7vPMxG9o4m1
+         9aAA==
+X-Forwarded-Encrypted: i=1; AJvYcCUTNoD/MRe9V7acQqq1RYb3/ahg1Fv5ajp6We6Fm6CMnGOIMZ5on7Qxpz4HZ0+mdFe/03zhnBrN29M=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yyye+d3lP3f3qRz/XrxHktbDZ6YxoyxTpYoGAvy7/hsv5Fd9iCO
+	sUVTigVIGdeoCSjgQQZwYDZcVnaXyJRmxXSV5ZEtog536ITakfV1zRWx
+X-Gm-Gg: ATEYQzyP7NasV4JJv+2et4uRudhlIg7VmXfLvUx1d8bdjgrqQqIkkq9yInVilrZYSNY
+	9TwkZjS7kdUtHbJDKI/pzM1W17ktcKdP+B8KE8PAMb/Uwkj4jQZRcz7Ljqapp5K7n+bsA2p9JNS
+	mZc1PqfaxAgfP3zsGMdx03vr9VBunQEeH7CeizI431I5o6rO4A74MmnF2G/NbG9GGY+70l0Vpnf
+	AsDUtyi+FvftlFkXkDVzDJfObjgP18uSvbnfFgMnMEhWcLJnSNqB5p2W+PMH4qsbzauhZS9D3UX
+	S6E4erAhtFAT0J3xM3UkuyH9AWDS+MbgCqCEAvCvKRhb5yTOXSfpit64YQDg5xgirHpmkXWCAiV
+	spHccUFkeO4QqqanoWKk4STvcopGlx6grYQIh7oXMOQcwal0s3SmVaq7cK5KCW9HX/yovpv6FE8
+	Rl6k9HHadXjFQc8H2/pXRiRfIkDCnv4J02sBKJ
+X-Received: by 2002:a05:6000:2283:b0:439:cb79:ab05 with SMTP id ffacd0b85a97d-43a04db5ff4mr7600661f8f.36.1773419967340;
+        Fri, 13 Mar 2026 09:39:27 -0700 (PDT)
+Received: from [192.168.0.39] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439fe22e9ddsm16346345f8f.37.2026.03.13.09.39.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Mar 2026 09:39:27 -0700 (PDT)
+Message-ID: <3d27945a-639d-4c3d-969f-2ec23bdd9900@gmail.com>
+Date: Fri, 13 Mar 2026 18:39:25 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <LV9PR03MB841415AA5DB9FFB714710CC3F745A@LV9PR03MB8414.namprd03.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 1/3] dt-bindings: iio: light: vcnl4000: add regulators
+To: Conor Dooley <conor@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+References: <20260312-vcnl4000-regulators-v2-0-2bdebbcbb58a@gmail.com>
+ <20260312-vcnl4000-regulators-v2-1-2bdebbcbb58a@gmail.com>
+ <20260312-slouching-shelf-c8f64433881d@spud>
+Content-Language: en-US
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+In-Reply-To: <20260312-slouching-shelf-c8f64433881d@spud>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Fri, Mar 13, 2026 at 12:09:55PM +0000, Sabau, Radu bogdan wrote:
-> > -----Original Message-----
-> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > Sent: Friday, March 13, 2026 11:13 AM
-> > On Fri, Mar 13, 2026 at 12:07:27PM +0200, Radu Sabau via B4 Relay wrote:
 
-...
 
-> > > -#define AD4691_ACC_COUNT_VAL			0x3F
-> > > +#define AD4691_ACC_COUNT_VAL			0x01
-> > 
-> > No ping-pong, and actually this was not used at all. So, make sure you add
-> > constants when they are really started being used.
+On 3/12/26 7:39 PM, Conor Dooley wrote:
+> On Thu, Mar 12, 2026 at 01:53:12PM +0200, Erikas Bitovtas wrote:
+>> This commit adds regulator properties for vcnl4000 ambient light and
+>> proximity sensors.
 > 
-> This value is being used in the buffer_postenable in order to make
-> sure we don't encounter oversampling, since Manual Mode doesn't
-> oversample, and per Jonathan's review, there is no reason to support
-> both oversampled and raw readings at the same time.
-
-Yes, but it wasn't used before this patch.
-
-...
-
-> > > +static int ad4691_setup_triggered_buffer(struct iio_dev *indio_dev,
-> > > +					 struct ad4691_state *st)
-> > > +{
-> > > +	struct device *dev = regmap_get_device(st->regmap);
-> > > +	struct spi_device *spi = to_spi_device(dev);
-> > > +	int irq, ret;
-> > > +
-> > > +	st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
-> > > +					  indio_dev->name,
-> > > +					  iio_device_id(indio_dev));
-> > 
-> > It seems you ignored some of my comments. Please go back and read carefully
-> > what I commented on previous version of the series.
+> This we can see. Your commit message should say why.
 > 
-> I am very sorry for this. I may have misunderstood the comments, and thus
-> seem like I ignored them, but this wasn't my intention at all.
+> Do all devices in the binding have all of these supplies?
+> 
 
-When in such a situation, ask! A request is free and acceptable.
+If we look at the datasheet for vcnl4040,
+https://www.vishay.com/docs/84274/vcnl4040.pdf, in figure 11 we can see
+that there can be 3 supplies: sensor supply Vdd (vdd), I2C supply for
+the bus Vpull_up (vddio) and IR LED anode Vdd_led (vled).
+The other datasheets refer to three supplies as well - one for the
+sensor, one for anode and one for the bus:
+https://www.vishay.com/docs/83372/vcnl4000.pdf
+https://www.vishay.com/docs/84138/designingvcnl4010.pdf
+https://www.vishay.com/docs/84327/designingvcnl4200.pdf
 
-> If you refer to the trigger_alloc comment, I did talk to my senior colleagues
-> and they referred to the fact -ENOMEM return should have been enough,
-> but perhaps this was wrong too. Could you please clarify?
-
-I'm talking about the room of the previous lines
-
-	st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d", indio_dev->name,
-					  iio_device_id(indio_dev));
-
-fits 80 limit, for example. OTOH this is less logical, perhaps your variant
-is okay.
-
-...
-
-> Radu
-
-When answering, remove the context you are agree with and not going to discuss.
-I had to drop over 200 lines just "for fun" (no).
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+>>
+>> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+>> ---
+>>  Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml | 7 +++++++
+>>  1 file changed, 7 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+>> index 2ba4d5de4ec4..a1b4c02db246 100644
+>> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+>> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+>> @@ -33,6 +33,10 @@ properties:
+>>    interrupts:
+>>      maxItems: 1
+>>  
+>> +  vdd-supply: true
+>> +  vddio-supply: true
+>> +  vled-supply: true
+>> +
+>>    reg:
+>>      maxItems: 1
+>>  
+>> @@ -54,6 +58,9 @@ examples:
+>>              compatible = "vishay,vcnl4200";
+>>              reg = <0x51>;
+>>              proximity-near-level = <220>;
+>> +            vdd-supply = <&reg_vdd>;
+>> +            vddio-supply = <&reg_vddio>;
+>> +            vled-supply = <&reg_vled>;
+>>          };
+>>      };
+>>  ...
+>>
+>> -- 
+>> 2.53.0
+>>
 
