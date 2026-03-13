@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 25426336895;
-	Fri, 13 Mar 2026 09:30:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DBE0B34404F;
+	Fri, 13 Mar 2026 09:32:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773394207; cv=none; b=k0XHxFMKRpVHKhDQhQHwII1yNBcMuPd9VTJL67VlCCP0X+lfODBXXkTkwuU8Tn/I/+1oH/dfJgXq/EtFg8LC5NxwKVcaKZd4hhM6RZRZevdoC1WEmWW5RQbijhYc92QsAv+aJq179IbTorNIMwVtJiMawiKj+wf/a8k6zOX7V2I=
+	t=1773394330; cv=none; b=bHsuT0nDxWqSXiR91ZlV2BCC3Czxn4TyFCNBBFXoe7Q3kOTAHYWIUIKDrqYrdoM+NDh27iN4EMDtZI+yaJ7N3Lu//ou7psUQJRfqhx2d1pXZ5Ba8p6I6JVTfw2YwIjyWF0n2CSU4vHwWmOAoQzZ2qEzPjO2neNq8mAy8/XnS39k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773394207; c=relaxed/simple;
-	bh=ClY2wRaESVURRmRqKK2FcwN9QyfCcetyXgPPPCHz0Rw=;
+	s=arc-20240116; t=1773394330; c=relaxed/simple;
+	bh=nppF1ad9T9XazH1yCnKiKJ8QR0oAlqI2g7/jhh/8t+U=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=W2YjgGpehh0k9EVgESla39A3QqNHlV4zk+IO8SPXj6lx508krmt45eSnFR6IzhZWrKwKNguceZX9JERVha67GFnqJI90N1IpF9JcRlcz3D3+w0PV8bxdsLIznwJ83w+z458RdV/Lwrf+tSgMdcT8bw4BgaRJUKV5g0dOXntRXiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iT/cob3i; arc=none smtp.client-ip=198.175.65.21
+	 Content-Type:Content-Disposition:In-Reply-To; b=aQ7J61/V8AYfegfBxrrrUgGMZIfQARYsS8VsjqVFJKgAg7u9PS7ni3AQ5/Ee2ji60sTkQEDnIoHHxWNmO80Z+Pi1aY2YNTiBWZhYrKPWPyFnVJYm37ORL0AWC/p1Sm2tl4+9SVjbnSOyIK910HIQo1QIQLj+/ymfECykf3RdRlM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iGjaT3Hi; arc=none smtp.client-ip=198.175.65.19
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iT/cob3i"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iGjaT3Hi"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773394206; x=1804930206;
+  t=1773394328; x=1804930328;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ClY2wRaESVURRmRqKK2FcwN9QyfCcetyXgPPPCHz0Rw=;
-  b=iT/cob3ik5s9UWlzsDNhCdZ7IRs92zdAig+4B5FKomGophqnVLM973h7
-   WuXN2WIYHOWVKwitsdXYPh0gLZRmRs6H7kSFW4VmoE8PkxAx9a/keCnCz
-   IBNjaAD9t2ElLqBHXKJcVQWRxsfOdoLt7YCcBo49dzXrCtqdTNwBLQq2o
-   daH3q5sssWVDSwXJ0ijW5PfEJ2Vrh4DlnRE6aW6QWMTWIPIzsa6T1MlX3
-   nFJjwEXuz7b7FG/LaA728apegyzE/clDUn/i9bh98/ZlUvnQdlFI5MfYM
-   I/kadQ9EpT1LxyQJu7LBhVpo25uC/0LAHApXKd5TrdmsNWFk6rnvhl0kr
-   w==;
-X-CSE-ConnectionGUID: 30+7Ik/XS2yjcsJjOx9YSg==
-X-CSE-MsgGUID: A5sf0y72Tt+qoN3XXgzl8w==
-X-IronPort-AV: E=McAfee;i="6800,10657,11727"; a="74380768"
+  bh=nppF1ad9T9XazH1yCnKiKJ8QR0oAlqI2g7/jhh/8t+U=;
+  b=iGjaT3HiTsUB4o7gOp/wnuoFhPqoDkHNK37mxPcyQHzNtVTT7KV8Nnxq
+   AjFReEYhlJFI3H9LPL2Hm2NwyNE5l+z9DF/6rxP1lRff8v8/Q2t7jbJ2r
+   nzGm3ktPBBoxUtS8G4QhITrKSfe0lnHN/KmX8Hv3RgOn5ATCzTlFhJ6pv
+   sQqI8M0EzRzfblgZhfUYPzGpbAjckqp9Ke85QSSPDLhnRbQRrEsC8FW5I
+   vnt5+Tr+SJV0+oUxWzhJ72k/7Ps72mRNJ+s3L+FH4ij0MZV/7h0iNIqN0
+   v0lITwkckZNJbNS4xclZrqWxuwf8chuMxwGejUcLRmzjj6kAzcHftNrik
+   g==;
+X-CSE-ConnectionGUID: aG9mWBoMSByuYD7ZUX3LaQ==
+X-CSE-MsgGUID: gt0/85coQuGO/t/lr1IpAg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11727"; a="74394797"
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="74380768"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 02:30:05 -0700
-X-CSE-ConnectionGUID: YbLZYZgbS5qp7ng0VxytMA==
-X-CSE-MsgGUID: 2Z5y++EfR/aJlHbErsrYhQ==
+   d="scan'208";a="74394797"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 02:32:07 -0700
+X-CSE-ConnectionGUID: NP6vg9yORXaGSdK0VshM0w==
+X-CSE-MsgGUID: gAA72zLVTO2mDXcG1uOzlg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="226068259"
+   d="scan'208";a="217135271"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.246])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 02:29:53 -0700
-Date: Fri, 13 Mar 2026 11:29:51 +0200
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 02:31:58 -0700
+Date: Fri, 13 Mar 2026 11:31:56 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Tomas Borquez <tomasborquez13@gmail.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
@@ -86,9 +86,10 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	linux-stm32@st-md-mailman.stormreply.com,
 	linux-arm-kernel@lists.infradead.org,
 	chrome-platform@lists.linux.dev
-Subject: Re: [PATCH] cleanup: uintptr_t to unsigned long
-Message-ID: <abPZD-fLDYzE2WRc@ashevche-desk.local>
+Subject: Re: [PATCH v2] iio: cleanup: uintptr_t to unsigned long
+Message-ID: <abPZjEE82AIxSgB6@ashevche-desk.local>
 References: <20260313013435.25731-1-tomasborquez13@gmail.com>
+ <20260313071014.2102-1-tomasborquez13@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -97,17 +98,13 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260313013435.25731-1-tomasborquez13@gmail.com>
+In-Reply-To: <20260313071014.2102-1-tomasborquez13@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Thu, Mar 12, 2026 at 10:34:35PM -0300, Tomas Borquez wrote:
+On Fri, Mar 13, 2026 at 04:10:14AM -0300, Tomas Borquez wrote:
 > Linus has been explicit that uintptr_t should not be used in the kernel.
-
-And it's all usually about new code. The shuffling _existing_ code is a churn.
-This churn has to be agreed upfront. (That's what Jonathan's mail is, so
-you need to have two links and proper message.)
-
+> 
 > The iio_chan_spec_ext_info struct uses uintptr_t for the private field
 > and in its read/write function pointer signatures. Jonathan Cameron noted
 > this should be cleaned up in one go across all users [1].
@@ -116,33 +113,18 @@ you need to have two links and proper message.)
 > drivers implementing or using iio_chan_spec_ext_info callbacks.
 > 
 > No functional change intended.
-
+> 
 > [1] https://lore.kernel.org/linux-iio/20260111122034.174c754c@jic23-huawei/
 > 
-
-This should be Link tag. And to the original email.
-
 > Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Tomas Borquez <tomasborquez13@gmail.com>
 
-We don't accept wrongly prepared patches.
-NAK.
+Please, really, take your time and study process documentation!
+No new version, especially that SPAMS so many people, in less
+than 24h. You must give a chance other people to review.
 
-...
-
->  drivers/iio/adc/stm32-dfsdm-adc.c             |  4 ++--
->  drivers/iio/afe/iio-rescale.c                 |  4 ++--
->  drivers/iio/amplifiers/hmc425a.c              |  4 ++--
->  drivers/iio/chemical/sunrise_co2.c            |  8 ++++----
->  .../cros_ec_sensors/cros_ec_sensors_core.c    |  4 ++--
->  drivers/iio/common/scmi_sensors/scmi_iio.c    |  2 +-
->  drivers/iio/dac/ad3530r.c                     |  4 ++--
-
-Besides that, it's much better to group them one per subfolder: adc, dac,
-et cetera. Currently this even spams tons of people who do not want to
-be spammed.
-
-Take your time and become familiar with the process before sending a proper
-version of this.
+This version effectively ignores all my comments I just gave against v1.
+So big NAK again!
 
 -- 
 With Best Regards,
