@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.17])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BA3E639EF17;
-	Fri, 13 Mar 2026 14:16:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.17
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C1AED39F17E;
+	Fri, 13 Mar 2026 14:17:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773411390; cv=none; b=uL9U6Mz2v/Kvru4D6cwPI7+QZK8xE1x9o5cbCfeleFAdWiAR21MMCDb8MqRvPl/tMA1hbLh9YspyCj7yRaQL7TpL+f695aHbVLpYGfjGytuVLcO4kxQETbkACf46pbEKRa6N1bBT6zRzQkUgpJUGncUdJ1rZFP1qOle15vNRKaw=
+	t=1773411428; cv=none; b=bSExclSHh1yemQFE+5vQg9zlKjGR7I2pNn/NdFH8vtgxMGZ/Yit83Lhq+JFiTnLiBduhGWryE4pOnrRuwQGZII84/kWONaDVcEEKtKSA+NxcRpdAmrBk/S9npXCM721/6R0c/qKqBcBAn/9d4/nfGPIBi0t7G+vEjWTagppm93c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773411390; c=relaxed/simple;
-	bh=z0suur1BvJ5sBXswvEPknYSglcvChaaHYLqGhohtWrs=;
+	s=arc-20240116; t=1773411428; c=relaxed/simple;
+	bh=uhmLaHGXNGo1Mx+Le7cGtlKBqG589HShcozxvGMtrTY=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JSTAt/uopQP+s1yfG5coQk4Yht4atNFzRPU7WdXeh/0ciC6K8gXVnYma1O9D+edjBqRs/jBknr2Tkq1DF7HWvPjSC875Rrb3i0gnH5xICmVFRqy92dOnfjOijo/oDr0+qMwFFZeiqGsMeYlRj8TCQydYQyhnjX3M4CigPkyE5Qw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=JtAOjy3v; arc=none smtp.client-ip=198.175.65.17
+	 Content-Type:Content-Disposition:In-Reply-To; b=mCFaOEXdtof0nhWsTq3TciZCTLfFUVyI350rRuE/UJljhmGPqXI78Gc+wSh21GDUTr6vJgaaeknkMC8j9eugnwvuQ8YNHI1EHwGDR1EOQISVbdJaHjv7bjUkF6Wy5Z2hpnRwQh/VOWZuoRsZSScKmZYnV7D2ICDVeOuUPCQEKS0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ZOyvaYAN; arc=none smtp.client-ip=198.175.65.13
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="JtAOjy3v"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ZOyvaYAN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773411388; x=1804947388;
+  t=1773411425; x=1804947425;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=z0suur1BvJ5sBXswvEPknYSglcvChaaHYLqGhohtWrs=;
-  b=JtAOjy3vq1KqRlnhlagiq+4WER7GFk5iKsbvb1r5oyx9w7JsdkrCWwnx
-   N2pp1NuDxI9UFHWNa+T+nLg8MT+PfgmM4ufe0xqWSeovVpuoOG1QJaoFj
-   WhGUBHodqNJynuuHSM9/fEKyvuo+txNnpbMtHFqYmg3O+Oaz7kIPTZiBJ
-   LgzvnZYmRDEXHgS1SGh4FzStcTfeCHMT/1fePAlwTXhNhPU6oMe3CwxB+
-   3LYH9gkBHAEkHMQydcRygL3aNObjjtGJlv9UD+Nj4CHcHWm9sOC4lKHbz
-   Lc5RCtmchMWzgD5X8au03dnwo+K2OKZakTKdzNcntosr1OW1A1ECy9PXD
-   w==;
-X-CSE-ConnectionGUID: khlRnc4wQzaNrOppagZvMQ==
-X-CSE-MsgGUID: MB6RJJTzS4u3rsl32dgVng==
-X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="74488326"
+  bh=uhmLaHGXNGo1Mx+Le7cGtlKBqG589HShcozxvGMtrTY=;
+  b=ZOyvaYANgj5kheb6w0WQSmv8ZLnCwjdqktr16xyXwJLoTpLbj2YTJJ3L
+   9sqMT4zsLI6df4aNnCoUju/jrSEEITcywppeaZzWAEQreOAoetR5YHNs6
+   GZknFuwedIGed+7mLocXvmNq1kEXwT05PDS/g6ogpyDjaFqGo9m3PL2IR
+   zO47EMhtZu/nPXE4nsTHsD869fk2Hzg0EwmcPHD7O911XlUBsaN8btrA4
+   AXWRPtsxHsQYETSdYFWz169iK2QFSpkE4KVhYPzqaLEVQZTAe8NE8KE3X
+   upnmsNpE9CCEpTmV8eNiIFPyhuKbn5pextCU18p7ms37siIbV/BawmKKN
+   Q==;
+X-CSE-ConnectionGUID: MDzgOoq6SWWUyEu2AIVAEA==
+X-CSE-MsgGUID: ajll4jdrRi+3Do64efApkg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="85603957"
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="74488326"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa109.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:16:28 -0700
-X-CSE-ConnectionGUID: Iz5NM0HWSYypeBik+/yL/w==
-X-CSE-MsgGUID: Y/+1t00KQYCe1BhYv5Opsw==
+   d="scan'208";a="85603957"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:17:04 -0700
+X-CSE-ConnectionGUID: WPqdKllDQfug6ySb4G8PwA==
+X-CSE-MsgGUID: INmGjbElQby4rrzOw8AD8g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="217179506"
+   d="scan'208";a="259071504"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.246])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:16:24 -0700
-Date: Fri, 13 Mar 2026 16:16:21 +0200
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:17:01 -0700
+Date: Fri, 13 Mar 2026 16:16:58 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
@@ -57,10 +57,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
 	Olivier Moysan <olivier.moysan@foss.st.com>,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 2/4] iio: backend: add devm_iio_backend_get_by_index()
-Message-ID: <abQcNb7xl-twuv92@ashevche-desk.local>
+Subject: Re: [PATCH v6 1/4] iio: backend: use __free(fwnode_handle) for
+ automatic cleanup
+Message-ID: <abQcWmPl0Mwin8JI@ashevche-desk.local>
 References: <20260313115856.87763-1-antoniu.miclaus@analog.com>
- <20260313115856.87763-3-antoniu.miclaus@analog.com>
+ <20260313115856.87763-2-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -69,53 +70,19 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260313115856.87763-3-antoniu.miclaus@analog.com>
+In-Reply-To: <20260313115856.87763-2-antoniu.miclaus@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Mar 13, 2026 at 01:58:51PM +0200, Antoniu Miclaus wrote:
-> Add a new function to get an IIO backend by its index in the
-> io-backends device tree property. This is useful for multi-channel
-> devices that have multiple backends, where looking up by index is
-> more straightforward than using named backends.
+On Fri, Mar 13, 2026 at 01:58:50PM +0200, Antoniu Miclaus wrote:
+> Convert __devm_iio_backend_fwnode_get() to use the __free(fwnode_handle)
+> cleanup attribute for the fwnode_back variable, removing the need for
+> manual fwnode_handle_put() calls. Move the declaration closer to its
+> first use, narrowing its scope.
 > 
-> Extract __devm_iio_backend_fwnode_get_by_index() from the existing
-> __devm_iio_backend_fwnode_get(), taking the index directly as a
-> parameter. The new public API devm_iio_backend_get_by_index() uses
-> the index to find the backend reference in the io-backends property,
-> avoiding the need for io-backend-names.
+> No functional change.
 
-...
-
-> -static struct iio_backend *__devm_iio_backend_fwnode_get(struct device *dev, const char *name,
-> -							 struct fwnode_handle *fwnode)
-> +static struct iio_backend *
-> +__devm_iio_backend_fwnode_get_by_index(struct device *dev,
-> +				       struct fwnode_handle *fwnode,
-> +				       unsigned int index)
-
-Why out of a sudden to shorten under 80? The rest seems exercises 100 limit...
-
-static struct iio_backend * __devm_iio_backend_fwnode_get_by_index(struct device *dev,
-								   struct fwnode_handle *fwnode,
-								   unsigned int index)
-is under 100.
-
-...
-
-> +struct iio_backend *devm_iio_backend_get_by_index(struct device *dev,
-> +						  unsigned int index)
-
-Ditto.
-
-> +{
-> +	return __devm_iio_backend_fwnode_get_by_index(dev, dev_fwnode(dev),
-> +						      index);
-
-Ditto.
-
-> +}
-> +EXPORT_SYMBOL_NS_GPL(devm_iio_backend_get_by_index, "IIO_BACKEND");
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
 -- 
 With Best Regards,
