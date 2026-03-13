@@ -1,60 +1,75 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D88E6175A9C;
-	Fri, 13 Mar 2026 14:34:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DA95372B22;
+	Fri, 13 Mar 2026 14:40:28 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773412457; cv=none; b=N7K+qiSnIRnk2WIUdPNyc6E4ikhcyIn7UGcBjNbFfPSoGTP7AW2FdltvcoSIFiqz1x0X9d9mrSXki4JCsosaQO6RlHxarZNw7OnRv1CYemps0LKMr0kYEsEGNR6Ggwsa+8lZizjEDy6FNO6/BI/RBAuKYmDkUd/FXOTbfEZX0f4=
+	t=1773412830; cv=none; b=bX8P1jMpp5BfTKzfbsyJFoY969mww3ljUolwYS2v3pDkR4+kjTQM101Px7CvhL17wyMzWmz7EF8Q2Z7ym4s2ZzD+z1INYgmABId67PCf9BNo2bh7e3RqppVUokZrYCqcHc0+kjDurjESZR2oMWaeKolV01wrpQy3apjG5PZEN7M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773412457; c=relaxed/simple;
-	bh=RKTUaqioJ2zolu5YI1IwDnVHeW1fQdQf3qwJyJX8XOw=;
+	s=arc-20240116; t=1773412830; c=relaxed/simple;
+	bh=d23l5QfZILL92TANqDOqm0WjgNLDASSxYAanpTwaEgE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=JqD6g6E+gTzbMAEECSZAoAFnqvUZa1+YmcG6RkjWKAAp9vOZoyO0cYqgFtd0/I72Z+uPoNoVPEfkqcI56KEAiTJL/gpD66YLbNxlE4vg8Y1KcR9UsQQF85JoUsZZVfjmT/A/QpGOlxkQzg1dQnKEuN6fA2A/ii13RkNP/fbouIQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=Xk//vMbq; arc=none smtp.client-ip=192.198.163.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=LbYjLy1lDxd/97UyVqHFz6k4M62X59Z8i8awDxEL8pUDYsCDkKPD9WYBhq/CDPmBmX5/7xHzIduzXmjbGyg+uZGKWC4QkbV7IvFrvzS3+xtb2DDLGmf9RAod64hh6uiv4wuf5LJKRPrqH/7XQrWXt4GvXGe1E7tpXlp3q/0RY00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=EGbAEev7; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="Xk//vMbq"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="EGbAEev7"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773412455; x=1804948455;
+  t=1773412828; x=1804948828;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=RKTUaqioJ2zolu5YI1IwDnVHeW1fQdQf3qwJyJX8XOw=;
-  b=Xk//vMbqYTAK0jWieDWiC34P4/m+DugVWTK+aiMmyOa9tE+WZDIVcplD
-   UDVK1mRh5unqzuoqscmhVFZ8kSZoUvpM8LdSRvx1MKJIxNErM4pX7cYiP
-   Mb6+uh6TtY9nExTWzVMCvl1zht/Ex1Z2XtXbWDBx++R2XDQE6e4QgcdQ7
-   yJBt87Gh+G0EO9rWbUdvwOz9VL4U76hN4IBT0q+RuAe30Knd+q+sQ/zcz
-   Lge/3EjQo78SBopxGENkoF7bDXgdflPz35hXhxii5GaOcXztVIA3ZOl7D
-   n82LvBOdqw9JkmK/tJOD3xgJ4FItS6cs8y81tpV1Wth14K44YFInz+LkU
-   Q==;
-X-CSE-ConnectionGUID: g3B9YfNMQQSFPwboOo0ivA==
-X-CSE-MsgGUID: 5/25qEHjQhueXaLA6BUKNw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="73536599"
+  bh=d23l5QfZILL92TANqDOqm0WjgNLDASSxYAanpTwaEgE=;
+  b=EGbAEev7miV1BJjqzfAtGilgzJ6wbn3TF37tNjvaFhIAE32cbq5x12Pa
+   puSuGkBMEm2Xsi1eHALpoLF6KRug/ENzAZw8ncKixsDXGBrjVu0RC5HRd
+   GadDxOgefoumjJfYQqe6SfNhCuL0ZCrajzy/Y7n8E6/DXDFE3pD5Wv2b9
+   zueXNB82dQvj/EOxIkRHyXTo5Cr+7PvFUSGEKeE7ooE48BPfbQDh2yMes
+   bFKEG7hIL/XrF6waGg3vXpoYV8mdeBCF/rZKaRjG6YfKg4CsWezbRru+z
+   XSynfdtNys+nfuUyKf7wOOtHnxrrRKPZd6SzD/m3ZpcdU9ygDzE5eBDMx
+   g==;
+X-CSE-ConnectionGUID: G/dvZH0LQFaussNxKmw1wA==
+X-CSE-MsgGUID: Uqvw0KZ3Tu+wvuhPD66L3w==
+X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="62090732"
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="73536599"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:34:14 -0700
-X-CSE-ConnectionGUID: uUKGtdhTSFOF6vyLxU5t3w==
-X-CSE-MsgGUID: 5O2EmwidS3KE+Kj3Wcsm6w==
+   d="scan'208";a="62090732"
+Received: from fmviesa010.fm.intel.com ([10.60.135.150])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:40:28 -0700
+X-CSE-ConnectionGUID: k7P44SedR9iseEQORDQ+MA==
+X-CSE-MsgGUID: fZ+VfvuWSh6RDMwVkZXiOQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="216084555"
+   d="scan'208";a="217597282"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.246])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:34:11 -0700
-Date: Fri, 13 Mar 2026 16:34:09 +0200
+  by fmviesa010-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:40:23 -0700
+Date: Fri, 13 Mar 2026 16:40:21 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Siratul Islam <email@sirat.me>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 2/2] iio: proximity: add driver for ST VL53L1X ToF
- sensor
-Message-ID: <abQgYaWJDx9Hb5Pd@ashevche-desk.local>
-References: <20260313113737.151881-1-email@sirat.me>
- <20260313113737.151881-3-email@sirat.me>
+To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
+	"linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
+Subject: Re: [PATCH v3 3/4] iio: adc: ad4691: add triggered buffer support
+Message-ID: <abQh1Y5_oGyvIxwT@ashevche-desk.local>
+References: <20260313-ad4692-multichannel-sar-adc-driver-v3-0-b4d14d81a181@analog.com>
+ <20260313-ad4692-multichannel-sar-adc-driver-v3-3-b4d14d81a181@analog.com>
+ <abPxR0TVa70sMg38@ashevche-desk.local>
+ <LV9PR03MB841415AA5DB9FFB714710CC3F745A@LV9PR03MB8414.namprd03.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,24 +78,70 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260313113737.151881-3-email@sirat.me>
+In-Reply-To: <LV9PR03MB841415AA5DB9FFB714710CC3F745A@LV9PR03MB8414.namprd03.prod.outlook.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Mar 13, 2026 at 05:37:18PM +0600, Siratul Islam wrote:
-> Add support for the STMicroelectronics VL53L1X Time-of-Flight
-> ranging sensor with I2C interface.
-
-Now LGTM,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-
-One nit-pick that can be dealt with later on (up to maintainers).
+On Fri, Mar 13, 2026 at 12:09:55PM +0000, Sabau, Radu bogdan wrote:
+> > -----Original Message-----
+> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > Sent: Friday, March 13, 2026 11:13 AM
+> > On Fri, Mar 13, 2026 at 12:07:27PM +0200, Radu Sabau via B4 Relay wrote:
 
 ...
 
-> +	reset_control_deassert(data->xshut_reset);
+> > > -#define AD4691_ACC_COUNT_VAL			0x3F
+> > > +#define AD4691_ACC_COUNT_VAL			0x01
+> > 
+> > No ping-pong, and actually this was not used at all. So, make sure you add
+> > constants when they are really started being used.
+> 
+> This value is being used in the buffer_postenable in order to make
+> sure we don't encounter oversampling, since Manual Mode doesn't
+> oversample, and per Jonathan's review, there is no reason to support
+> both oversampled and raw readings at the same time.
 
-No need to check for an error?
+Yes, but it wasn't used before this patch.
+
+...
+
+> > > +static int ad4691_setup_triggered_buffer(struct iio_dev *indio_dev,
+> > > +					 struct ad4691_state *st)
+> > > +{
+> > > +	struct device *dev = regmap_get_device(st->regmap);
+> > > +	struct spi_device *spi = to_spi_device(dev);
+> > > +	int irq, ret;
+> > > +
+> > > +	st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
+> > > +					  indio_dev->name,
+> > > +					  iio_device_id(indio_dev));
+> > 
+> > It seems you ignored some of my comments. Please go back and read carefully
+> > what I commented on previous version of the series.
+> 
+> I am very sorry for this. I may have misunderstood the comments, and thus
+> seem like I ignored them, but this wasn't my intention at all.
+
+When in such a situation, ask! A request is free and acceptable.
+
+> If you refer to the trigger_alloc comment, I did talk to my senior colleagues
+> and they referred to the fact -ENOMEM return should have been enough,
+> but perhaps this was wrong too. Could you please clarify?
+
+I'm talking about the room of the previous lines
+
+	st->trig = devm_iio_trigger_alloc(dev, "%s-dev%d", indio_dev->name,
+					  iio_device_id(indio_dev));
+
+fits 80 limit, for example. OTOH this is less logical, perhaps your variant
+is okay.
+
+...
+
+> Radu
+
+When answering, remove the context you are agree with and not going to discuss.
+I had to drop over 200 lines just "for fun" (no).
 
 -- 
 With Best Regards,
