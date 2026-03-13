@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.18])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3E75D30CD92;
-	Fri, 13 Mar 2026 14:01:23 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A6C2329C48;
+	Fri, 13 Mar 2026 14:03:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773410484; cv=none; b=o4esq5dEILuutoOyBAqaSysiqY1MZNad4vebkcMGQH6y9BhgF9QMZbA7XBc0vwO0kG0gNw8fmJbmr+X5OGRq+a7VmgCyoUqDTCtHtZSBpAlzRHEQXkXZQngo77cmEzEWygd5xSq2KfSLeievsFkomivmCZPOcSpyVqVgA7Sn7dk=
+	t=1773410604; cv=none; b=rPm5BhndfpZF+DHcW6ipzOvQ/GRL2a0UZOhkJOEuqG/q8JxEo32QfcX5uGwXuUMgUfcq5cTjDcr4eBF30sD6Utc+1uj8nHbJxkAWWjTy1AGq1cmVOc+6TOTum9UuW1j2OryTjpjfz5EKLtmNYO/H7tET9Tcpaq7+q1SsGSwZrHM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773410484; c=relaxed/simple;
-	bh=2BppDJfSxsSjbvRdSpJ2401wKS89758/R3FKR3prU1A=;
+	s=arc-20240116; t=1773410604; c=relaxed/simple;
+	bh=2n3BFb/AaSKZh3Nx+wgcz17IN325ciZ03DJLWlEZ2nM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=VWAbJzWbahQKpKYoFbS0o+OE4NDUw87WOLcgW8lvzdEB2kDKNx8ZNj+CNNK8Sve9d3lvDXINaq4UxGG5A3AOSNGI7Duur7TQy03pupuVIGNuarOAax9BXz/eF4zRcrfj6YAwckRzu/n7ampgTxTRwyd06T03VTRYAV7a5xSLSO8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g6HLMZFj; arc=none smtp.client-ip=198.175.65.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=PR3do3iktzulliot0Hhub6jFajERjg9R0QkyddstVuBnPLFZM5c58CK0rklTkC1QqTXb6KxFXx4fosvdXcuK+q1qWPElD5Z6oiyKwuOwC/oUrLr4PsXT3sRhab4NkNwPD3zTxl9CM+DzNfIU1KSUNFA3KqlF2wayUSfalNONXiI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DntC7D5C; arc=none smtp.client-ip=192.198.163.18
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g6HLMZFj"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DntC7D5C"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773410483; x=1804946483;
+  t=1773410603; x=1804946603;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=2BppDJfSxsSjbvRdSpJ2401wKS89758/R3FKR3prU1A=;
-  b=g6HLMZFjGTqeeHwMi/WwWWyAV7EG/Z/eUZTxiFxBO3AyDw2GVkwmUVVJ
-   NhdlEpHJWS9YxTdd3NBrW9rZGIPjBDPbf7bz0fCr7Xz7HBBZUroWOr3E7
-   HrTKYEkk69A2ZIVLhsXRU1XLf0JXXgPnO1VpDnVwbXBefjmNaEd2MKvYf
-   zPft1FrF5ly+90GYwrdrjVnWqw+pueMWfeSosWnJ/XPCbDNqaxOTP5pKt
-   ZTYjzsH0QH2tEvBNoiOzgtfCVz7Z/XlJn8kzQbu8KNRFES7fOS7KY96ch
-   zww14cJT6AkzJGrVin4wFCO9dHaHe19KRARFs2dqm+tM3dO+5OpWy47os
-   w==;
-X-CSE-ConnectionGUID: aCjayNtmR8G/Q2F3yvqYxg==
-X-CSE-MsgGUID: XO+GxlpZScS3tgB/krE4iA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="74553770"
+  bh=2n3BFb/AaSKZh3Nx+wgcz17IN325ciZ03DJLWlEZ2nM=;
+  b=DntC7D5Ci1KFZcTdDq5ckCvGuJcerB9tQgEQG3bgYnXOjFmB56y/4yOY
+   jdtusmMpabCqEKcGMYkM35Scz0esI7fxcEcuuxUmPaHlsEk/u1XcwPx7U
+   uthkce894MfsrSgrvjbHiyjFT+J0L9c+glbQ4LOtxKhlxdulgOpusGzHH
+   hwA5niYiAyqYkQic/DNg8M8vKgzCJ4lKEtjjYD8ikMaOHsTY6Z87sVB2G
+   y0AIkHa459gsK00e9hAHVVextAesPeanbpAzfyxKMu26YNIg6esfgL4Tu
+   tY7mR2PRX1RU/bALELzfWEQn+9Cfne7U3IzL5vgRRt8GzKvDnkkg2CUDc
+   A==;
+X-CSE-ConnectionGUID: VvvcvFK2SdejhVLFMxpiuw==
+X-CSE-MsgGUID: jJSJEFThTaeqLig/+elMOQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="73703245"
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="74553770"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa110.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:01:23 -0700
-X-CSE-ConnectionGUID: xdhWzKQYQ0O2y+xVHpmc+Q==
-X-CSE-MsgGUID: 9RNE0+/oQwenl+GhflUgPg==
+   d="scan'208";a="73703245"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:03:22 -0700
+X-CSE-ConnectionGUID: YrGfMucTTHivKnNykmKOcw==
+X-CSE-MsgGUID: hVPVQoBpTnyBi3qC4+TsyA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="216078843"
+   d="scan'208";a="225857838"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.246])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:01:18 -0700
-Date: Fri, 13 Mar 2026 16:01:16 +0200
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:03:18 -0700
+Date: Fri, 13 Mar 2026 16:03:16 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Cc: Michael Hennerich <michael.hennerich@analog.com>,
@@ -59,10 +59,11 @@ Cc: Michael Hennerich <michael.hennerich@analog.com>,
 	Marcelo Schmitt <marcelo.schmitt@analog.com>,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 1/4] iio: accel: adxl372: introduce chip_info structure
-Message-ID: <abQYrLTQvceBCalD@ashevche-desk.local>
+Subject: Re: [PATCH v3 3/4] iio: accel: adxl372: factor out buffer and
+ trigger setup
+Message-ID: <abQZJEfdRMzcGZGi@ashevche-desk.local>
 References: <20260313115525.85435-1-antoniu.miclaus@analog.com>
- <20260313115525.85435-2-antoniu.miclaus@analog.com>
+ <20260313115525.85435-4-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,79 +72,40 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260313115525.85435-2-antoniu.miclaus@analog.com>
+In-Reply-To: <20260313115525.85435-4-antoniu.miclaus@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Mar 13, 2026 at 01:54:54PM +0200, Antoniu Miclaus wrote:
-> Introduce a chip_info structure to parameterize device-specific
-> properties such as ODR/bandwidth frequency tables, activity/inactivity
-> timer scale factors, and the maximum ODR value. This refactors the
-> driver to use chip_info lookups instead of hardcoded values, preparing
-> the driver to support multiple device variants.
-> 
-> The sampling_frequency and filter_low_pass_3db_frequency available
-> attributes are switched from custom sysfs callbacks to read_avail()
-> based handling via info_mask_shared_by_type_available. This enforces
-> consistent formatting through the IIO framework and makes the values
-> accessible to in-kernel consumers.
-> 
-> The SPI/I2C probe functions are updated to pass a chip_info pointer
-> instead of a device name string.
+On Fri, Mar 13, 2026 at 01:54:56PM +0200, Antoniu Miclaus wrote:
+> Extract the triggered buffer, trigger allocation, and IRQ request
+> logic from adxl372_probe() into a dedicated adxl372_buffer_setup()
+> helper. This reduces the probe function complexity and prepares for
+> conditionally disabling buffer support on device variants with
+> known FIFO issues.
 > 
 > No functional change intended.
 
 ...
 
-> enum adxl372_odr {
+> +	ret = devm_iio_trigger_register(dev, st->dready_trig);
+> +	if (ret < 0)
 
->  	ADXL372_ODR_1600HZ,
->  	ADXL372_ODR_3200HZ,
->  	ADXL372_ODR_6400HZ,
-> +	ADXL372_ODR_NUM,
+Consider dropping ' < 0' parts where they are not required.
 
-No comma for the terminator entry.
+> +		return ret;
+> +
+> +	ret = devm_iio_trigger_register(dev, st->peak_datardy_trig);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	indio_dev->trig = iio_trigger_get(st->dready_trig);
 
->  };
+> +	return devm_request_irq(dev, st->irq,
+> +				iio_trigger_generic_data_rdy_poll,
+> +				IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
+> +				indio_dev->name, st->dready_trig);
 
-...
-
-> static const struct iio_event_spec adxl372_events[] = {
-
->  	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
->  				    BIT(IIO_CHAN_INFO_SAMP_FREQ) |	\
->  		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
-
-Consider at some point making the above consistent by style with the below
-
-	.info_mask_shared_by_type =
-		BIT(IIO_CHAN_INFO_SCALE) |				\
-		BIT(IIO_CHAN_INFO_SAMP_FREQ) |				\
-		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
-
-> +	.info_mask_shared_by_type_available =				\
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |				\
-> +		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
->  	.scan_index = index,						\
-
->  };
-
-...
-
-> +	chip_info = i2c_get_match_data(client);
-
-> +	if (!chip_info)
-> +		return -ENODEV;
-
-It is an agreement to avoid adding a dead code such as above check.
-
-...
-
-> +	chip_info = spi_get_device_match_data(spi);
-> +	if (!chip_info)
-> +		return -ENODEV;
-
-Ditto.
+This left for the context as the last one doesn't have such a check.
 
 -- 
 With Best Regards,
