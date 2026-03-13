@@ -1,114 +1,108 @@
-Received: from mail-ed1-f47.google.com (mail-ed1-f47.google.com [209.85.208.47])
+Received: from mail-yw1-f177.google.com (mail-yw1-f177.google.com [209.85.128.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C1EB34FF46
-	for <linux-iio@vger.kernel.org>; Fri, 13 Mar 2026 10:48:27 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.47
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773398909; cv=pass; b=uRLaKeFnHU4ngUrWXUaZ4Rkt+hdLuYfkjDoYva+NPLlBjCEAN33w9InsaOW+QJBEoKRAGDu3da1VbLyOcT0znBAd49oUGWSeX2h6j5/prMSIC2ZTN2Uvg7azYH00wTtHWXm7fS3+k+w89aHjMow9FUZuztNV6ME3hUgnBrB3n1A=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773398909; c=relaxed/simple;
-	bh=NVJ8+tcWOrnG2BZb0ni/WUdkoiT4ZKsuQ7I4PKTu8lk=;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AFAF921B191
+	for <linux-iio@vger.kernel.org>; Fri, 13 Mar 2026 10:56:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.177
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773399362; cv=none; b=XSPyaWQxnT/muq3SFz7iW9qd1QCjG/+th0OrfpquASvCZsj/hY4xAGYSvUkTmuzjt8/axMAJMb8uJeKiOSfIkzFdJA/wK7RAUtSwj+s4EGV0XaT+G7tUfusDZ9wo9E5SZrvSDrcOBdETBrlG4e2l1DWC9O4r2nYYni8Ga5ro0wQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773399362; c=relaxed/simple;
+	bh=xWJukZR7qun4SLAfI53dfW+rWEm/QwqPyiKcmt6t38k=;
 	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=RtFmK/y20Ef8oORgU6IJiyqSKu9wXydwUH68wFKyHTi1PUhXbD9S6gjp0cwCkqgUYcOtdGGD26nBASp4VHFhRzp/JTb0VI/NGgdJGvwJzSJYmFIu0lns1CEZLNmHGu221Wx+L1GqJxa19p2Ji+VffEaK28yee6bkK2gRrPY3qZI=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QB7X+l2H; arc=pass smtp.client-ip=209.85.208.47
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	 To:Cc:Content-Type; b=smYOMtW8Yw8QK80mYNw6hgqEtY2oLI2pw11GmcN3Q1YXHxQ1o78LrDBgH1jw35oxZVRc+HyMaPf4KwJIzsdQRHtY+9yMVkQ7JjGrm2RVdRUpbxSko1RUHuMZS4NHeHluJPkXWueykwC1sTqms/CM8PAdT+VNEJSD8R+J6RYPdkE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.177
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QB7X+l2H"
-Received: by mail-ed1-f47.google.com with SMTP id 4fb4d7f45d1cf-661d20c9787so2972390a12.0
-        for <linux-iio@vger.kernel.org>; Fri, 13 Mar 2026 03:48:27 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773398906; cv=none;
-        d=google.com; s=arc-20240605;
-        b=eotIHXzNXsTtD5IL+8ajP+KqSFeOPG5CLLxFlolNNGf1zKCyIm26NpFfeuUK8Vhi3+
-         K5hych8kKTPzut6LfoVqJDPBuorEFbPjhBaA1wU647A0oSET7SW3QDq5eVWPpJsuvEIY
-         p5QOoNn+7MLJjaRi02kMYzrZ7DNs4FyVGBrfnIMeSegqlq/rJ75yq8S9bkOOMKOoEG2t
-         q63cI31qi9UEdMfGQa7sH5tMeQOZ6a2yGNNJ6GlyWbB9RIKHd/0ehji/N0a4Y7yc5PhR
-         i99HsXWUhV+46nUOFJ7N17K2LmnRNIKqKCK1z2gFFoJDpU80SBs5ySv2/mXgle+kJBTY
-         hbLQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=NVJ8+tcWOrnG2BZb0ni/WUdkoiT4ZKsuQ7I4PKTu8lk=;
-        fh=dnUhT55HiqL4NWLE4DHD6WW+O428IVxpiCpknILj1sc=;
-        b=YKlcoaJqu1C9S/pNhFF/onz0rw2/RCHYQIEPQjVVbC8h4qT5sPcAo0nIFsHEHYxg/Y
-         hlXUubLIPUkSQoVGrJN6LF0CD2yfI/nFHkpV0eWdEkAtJZB3PTA+ssF/RJmyDIuq7owp
-         EZU3AGbmTIa9ZLPGiLqcBqNW8v0LOaWB9iPHdL8TqAwHSOBLm3ul59UVhmMD+7ptbWRS
-         KWRBBHfvCgP0FoC7xSNVizRiFVJSh516VmQWMSNkiFNnyfGbl9dWOFOAxu9Rh2qnJc9h
-         D1qAKqHIjGIEYDh+hliEWDM6jDPxYUd6prEpD/072sa5/CKBb8KpuAJwKQio23XbIO2B
-         IY4w==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773398906; x=1774003706; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=NVJ8+tcWOrnG2BZb0ni/WUdkoiT4ZKsuQ7I4PKTu8lk=;
-        b=QB7X+l2H5QezjMA4pPQmUNlyGEueh4QytLJ9n0Pt9Nr4G/8X3o05MuT5j1o1gGu9/g
-         GDG0VgkAoyJojmb86BFQCfbhHK3Z4HcxxNmsqZwf35zyhKSVauzHRbD189C+6dSdl7f6
-         Oc90b/m7d6h1fT9ForokNs6mc+y8UQK5EsWEX2kk6uoo8oSHEIfIwVsHOvQE/cLHeUPR
-         tT4tQlr90c5FY7jGY6qy+o/18R4ZsAj2a9Ep8/zuI1rbWDS1hr02qaj7nqnP2bO+5oaz
-         ++Z1IBRhGQpfM3m7a8Vu1/O5M0Xs8AM7YFa3j3ArRxNCgiO8cIjeCCuy4Pic7rNRUFQ1
-         /PhQ==
+Received: by mail-yw1-f177.google.com with SMTP id 00721157ae682-7986d231b3cso47070357b3.1
+        for <linux-iio@vger.kernel.org>; Fri, 13 Mar 2026 03:56:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773398906; x=1774003706;
+        d=1e100.net; s=20251104; t=1773399360; x=1774004160;
         h=content-transfer-encoding:cc:to:subject:message-id:date:from
          :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=NVJ8+tcWOrnG2BZb0ni/WUdkoiT4ZKsuQ7I4PKTu8lk=;
-        b=KLJ2XKdJDkoPwcxniqPUrARTY3ZBPLdvHTzAkASFwSw/TjoEEASrDOxKj51lYoW+wc
-         eFtxWDKlIeLk5dn28Yl+EStTBK7W5w5ZD2LJK+iaQdfzrSb8NsMFKe3TYQBjdbaqHdX1
-         gJdPCJj2tt+cSJd8f1hqyR26eK2Mcg3Q0nVaVZFSNHDhcSNubpTPEYymYKjpA4h6m7sE
-         e5NzO7mZO3hqtODaQII3dZ3eeJ80UzC97Qd8HLhByacggQ1YpJJE8IisuBs6hItBXIIY
-         9u7IAe/KbLgmA3FmJWsbRYqpWXT3G2nSm+fYRIkTDZHODw8iq3K/QFmSbwKfeVFDdTAl
-         S/5Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXSM5350hIKI9iElRnhC+O6lnTR957mHFuNBkBdcK6/Q8k8XWKBxw+5xb7sIsPItBm5EkSTFtfSzk4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxWRO35LQ9qmeTAj7SsrDWV+wOCaqM1aR6S7tRSwBjHV2Yji13I
-	ujyblpSXRR/+/2vkWkTP/G6fWqXtqlFXKF7sLjmKOoTgPbvuP+/78KIwCHBrrn3uSwN5N/kvbPk
-	OzpJWBfvzIy6jAo6Rw86Rfe8QmzQ5qhzQYg==
-X-Gm-Gg: ATEYQzzQMO503eqQ91unIzkbUYylAxxgD4A+9S2lK0oZoSlRlWiPMuDhjQTQ8PmYjvk
-	jvnE53yJc/NZ4h/tj9gp/STweHXhL6OpJuhM6SW4eP+11209rrHHsgWbMqY9/UXy9DvrpioMY+/
-	wLKlY9VGn3lKsywjRAOZVjdJsYvh+ffFuT1bDTpH9fk0ssv8S1O0LPd++On9NMtqHlEFDBI4mfx
-	aDNJixrDvS9hhBp8+YY8MJMIQSPYrYFvXnfFy9oObgJodo/ezDVfSnoTOMttlkyBdSHPhnNxhBS
-	Rdm9ogSlqbnt8QIav+FLOohdjIFSRxzyq2gdrE5IMy70WZLpJxfMPlQyrySNWKcpK4Zq
-X-Received: by 2002:a05:6402:2805:b0:65b:f342:d1a2 with SMTP id
- 4fb4d7f45d1cf-663ba0e7f8emr1609780a12.6.1773398906047; Fri, 13 Mar 2026
- 03:48:26 -0700 (PDT)
+        bh=xWJukZR7qun4SLAfI53dfW+rWEm/QwqPyiKcmt6t38k=;
+        b=JDz9ESKihnprejvOL47KjBVDZNUcHUy5YgqQoWk/CUO/WoVnHFROu+iVvUCSDIkDKM
+         +IuzjG6nm1IHM5Hnjqb7uDNUYx+w4OSS0PSq8bUcfqvu66N28OMla0UHXczhiITgz0XI
+         XCIrrLaZapGdn/ANnw9vZ9EUOacymOyVa4LpVOf5ADx2jmRLRzJKyzsEvhzh+nCKg9Ve
+         EgFgXa+pK6j3rK4nLgptmoePG4GS2M5JNzOHl2hpBiMa9sv4tk92b7vvLZ0DZhZYO4z4
+         pRrxzHHYNgvVYFfO4SDIBf6a2eFKXuGolu1uJ4apmMvhTUE7B/FDMgdENkPmrYzzjcWH
+         +Q9Q==
+X-Gm-Message-State: AOJu0Yx/ToxA7D1K1DnTaE7zMUOGyU/jqBEa0Z6asIPYmGFSrWjOFqjg
+	DiI7D7ObdS8dk8t5bRUTV3/CiyVH6wubjAC9Tzf4LD90op7a3mqlSu6FgSgbSjfS5bsEMA==
+X-Gm-Gg: ATEYQzwnhtI8dx11YLenosOQ0eq48CjiWfyviKRdypLfG1MBaoPiJR2D4KsLZn8K8q7
+	7teaIO5NV4u0Jeu/Vk7jyTCw4ciG3Cacy/udA4UEO6NKT+3e/2Qlevu9JZSlIsJZtVQz6CCUrif
+	FReWlk+tpBJH69OmOgXINGuY2AOhYVrpY4xyG/oJ14FBdA175430Dv1wLvQCDcLhYYxc38Hlnh0
+	dITVRwk1HG3daPLZzrQUfNCero6Jq11TezrJOw35cjHXK1CWggBGfua1O2TlYFM2w0/7fZUS2Qf
+	echwnF6HKA+8AnM4cgtd+N2f0Z7wESLCEmqHIvMQ1aefCbNA/s8p6idnDxDRYzG6bBOaIXGRTb4
+	SSili4m2KGiv8ECBt+OQRA1GCOmNscsoqQHUXnIzsU+5HQNDjZCqXc1NsobNA3d1UgDkREUDCZa
+	kzqpps6u7Wd0MO/KsgWuHTvmIUTjWNeH3HpZv6KQd0g+Z4SOvJ6zuDRZOTmzeTjrO+mfd2jsEn9
+	ar2sLDNxEo9JDV92XjVu7XZzdgcCw7smHzskEwGGw==
+X-Received: by 2002:a05:690c:46c1:b0:792:7745:72fc with SMTP id 00721157ae682-799475e6f5emr61076677b3.21.1773399360298;
+        Fri, 13 Mar 2026 03:56:00 -0700 (PDT)
+Received: from mail-yx1-f41.google.com (mail-yx1-f41.google.com. [74.125.224.41])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-7991974ebd2sm42244397b3.2.2026.03.13.03.55.59
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 13 Mar 2026 03:55:59 -0700 (PDT)
+Received: by mail-yx1-f41.google.com with SMTP id 956f58d0204a3-64c9c8f8783so2396494d50.1
+        for <linux-iio@vger.kernel.org>; Fri, 13 Mar 2026 03:55:59 -0700 (PDT)
+X-Received: by 2002:a53:ee4b:0:b0:64d:6a5a:ac3d with SMTP id
+ 956f58d0204a3-64e6289f6cbmr2073213d50.39.1773399359165; Fri, 13 Mar 2026
+ 03:55:59 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260312081942.23858-1-rajveer.chaudhari.linux@gmail.com>
- <20260312081942.23858-2-rajveer.chaudhari.linux@gmail.com>
- <abLLap9bN3tTXfD6@ashevche-desk.local> <CANS1UbjkAEhaLYWoDRFenBwrW91ttzo12cXS2CjtmW7Sz0pP3g@mail.gmail.com>
- <pndikb1kn9n.a.out@axis.com> <CANS1UbhMH_z=e5KrmxQv+D9=_7YQL=g=qdxv9e86iRjZ7LF=uA@mail.gmail.com>
- <pndh5qk2fd9.a.out@axis.com>
-In-Reply-To: <pndh5qk2fd9.a.out@axis.com>
-From: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
-Date: Fri, 13 Mar 2026 16:18:15 +0530
-X-Gm-Features: AaiRm52_L4nFX9k57YCAVK5OvhW6mFLXlVgdPpAMRp5IV-2N4_MYdfhHW9t9sGU
-Message-ID: <CANS1Ubh-O98hmD8UFininuJDduLg4g+muCPea6X8m8A52HBEKQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/4] iio: accel: bmc150: convert to guard(mutex)
-To: Waqar Hameed <waqar.hameed@axis.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, jic23@kernel.org, dlechner@baylibre.com, 
-	nuno.sa@analog.com, andy@kernel.org, linusw@kernel.org, 
-	sakari.ailus@linux.intel.com, harshit.m.mogalapalli@oracle.com, 
-	antoniu.miclaus@analog.com, andrew.ijano@gmail.com, linux-iio@vger.kernel.org, 
-	linux-kernel@vger.kernel.org
+References: <20260311224044.21480-1-email@sirat.me> <20260311224044.21480-3-email@sirat.me>
+ <abLUgxivQnz2ISeY@ashevche-desk.local> <CANn+LW+mg9Ridm3aMrVhy7cgvmJO0JNV_s_myfRCW8gPv7Ggkg@mail.gmail.com>
+ <abPaaSgJi6m6mch9@ashevche-desk.local>
+In-Reply-To: <abPaaSgJi6m6mch9@ashevche-desk.local>
+From: Sirat <email@sirat.me>
+Date: Fri, 13 Mar 2026 16:55:48 +0600
+X-Gmail-Original-Message-ID: <CANn+LWL1anBWWQz3DKbZWo=0MSb5EhY3KSiq84=qgo8ZO68XTQ@mail.gmail.com>
+X-Gm-Features: AaiRm52AWgFnivg9kHX3kLuPles6YeHu778rjWkq6sm2jrDVCYGJ_SYCDT66Jl0
+Message-ID: <CANn+LWL1anBWWQz3DKbZWo=0MSb5EhY3KSiq84=qgo8ZO68XTQ@mail.gmail.com>
+Subject: Re: [PATCH v3 2/2] iio: proximity: add driver for ST VL53L1X ToF sensor
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, linux-kernel@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 13, 2026 at 3:58=E2=80=AFPM Waqar Hameed <waqar.hameed@axis.com=
-> wrote:
+On Fri, Mar 13, 2026 at 3:35=E2=80=AFPM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
 >
-> No worries! As I said before, it's not always easy navigating the
-> different sub-systems in kernel development. A future tip is to see how
-> most other drivers are written, they usually tend to follow the guide
-> lines. If not, one can fix them on the go, just like here :)
+> On Thu, Mar 12, 2026 at 11:37:26PM +0600, Sirat wrote:
+> > On Thu, Mar 12, 2026 at 8:58=E2=80=AFPM Andy Shevchenko
+> > <andriy.shevchenko@intel.com> wrote:
+> > > On Thu, Mar 12, 2026 at 04:40:37AM +0600, Siratul Islam wrote:
+>
+> ...
+> > >
+> > > If it's a reset (semantically), use reset-gpio driver and reset APIs =
+here.
+> > >
+> > The XSHUT pin is a shutdown/enable pin rather than a true reset line,
+> > and the existing shared st,vl53l0x.yaml
+> > binding already defines it as reset-gpios. So I am keeping the GPIO
+> > consumer API here.
+>
+> And? reset-gpio driver is exactly for those cases. Please, move your driv=
+er
+> code accordingly.
+>
+Blame is on me for not realizing that reset controller now also
+supports "reset-gpios", my apologies.
+My original hesitation was due to not willing to modify the binding to
+add "resets"
 
-Yesss got it!
+I will switch to the reset controller.
+>
+>
 
-Thank you :)
+Thanks,
+Sirat
