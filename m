@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A6C2329C48;
-	Fri, 13 Mar 2026 14:03:22 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4764532D7FF;
+	Fri, 13 Mar 2026 14:05:16 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773410604; cv=none; b=rPm5BhndfpZF+DHcW6ipzOvQ/GRL2a0UZOhkJOEuqG/q8JxEo32QfcX5uGwXuUMgUfcq5cTjDcr4eBF30sD6Utc+1uj8nHbJxkAWWjTy1AGq1cmVOc+6TOTum9UuW1j2OryTjpjfz5EKLtmNYO/H7tET9Tcpaq7+q1SsGSwZrHM=
+	t=1773410717; cv=none; b=m2deGXt/Nn87UgHWnCC0jQc4wwnUHdBmMFm/57oZ0EBAUXYN/xcw16ppt1tJsYTbmMv0kS62eR0pZzdHAkhyFdfT9LK2JhTgn0ULIzh3UpgcCJgU4fIMmAVvwck8nFmHNBX08iuSIQnarrQZkgpYN2A8GyODvatOqP9TIoivfwg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773410604; c=relaxed/simple;
-	bh=2n3BFb/AaSKZh3Nx+wgcz17IN325ciZ03DJLWlEZ2nM=;
+	s=arc-20240116; t=1773410717; c=relaxed/simple;
+	bh=1vSQZbv62qc35prjvp6H3LJfli5G3/bUikTEoBdTMK0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=PR3do3iktzulliot0Hhub6jFajERjg9R0QkyddstVuBnPLFZM5c58CK0rklTkC1QqTXb6KxFXx4fosvdXcuK+q1qWPElD5Z6oiyKwuOwC/oUrLr4PsXT3sRhab4NkNwPD3zTxl9CM+DzNfIU1KSUNFA3KqlF2wayUSfalNONXiI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=DntC7D5C; arc=none smtp.client-ip=192.198.163.18
+	 Content-Type:Content-Disposition:In-Reply-To; b=TkJ+E7eLnLTr3VIcLwr1BAvl/LeLwp6Lj2N18dSDunFM8qGN70JLYqfT3LPJneyvo3+ZqASLGtz0uiIJReEc4hEoHJT7AbN3MFAsdXujX2rO/VwwkQHjUNwKROEuaEpD4sEFI46gbzf/ldzPANIDtdUWGvBWbbriqpF05eNCBoU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=iZg4GyqG; arc=none smtp.client-ip=198.175.65.20
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="DntC7D5C"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="iZg4GyqG"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773410603; x=1804946603;
+  t=1773410716; x=1804946716;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=2n3BFb/AaSKZh3Nx+wgcz17IN325ciZ03DJLWlEZ2nM=;
-  b=DntC7D5Ci1KFZcTdDq5ckCvGuJcerB9tQgEQG3bgYnXOjFmB56y/4yOY
-   jdtusmMpabCqEKcGMYkM35Scz0esI7fxcEcuuxUmPaHlsEk/u1XcwPx7U
-   uthkce894MfsrSgrvjbHiyjFT+J0L9c+glbQ4LOtxKhlxdulgOpusGzHH
-   hwA5niYiAyqYkQic/DNg8M8vKgzCJ4lKEtjjYD8ikMaOHsTY6Z87sVB2G
-   y0AIkHa459gsK00e9hAHVVextAesPeanbpAzfyxKMu26YNIg6esfgL4Tu
-   tY7mR2PRX1RU/bALELzfWEQn+9Cfne7U3IzL5vgRRt8GzKvDnkkg2CUDc
+  bh=1vSQZbv62qc35prjvp6H3LJfli5G3/bUikTEoBdTMK0=;
+  b=iZg4GyqGzcOPitG1SOHh0RHDRQ97MH7QhaTiBoZJEoDrpsuoiNHAd1S3
+   ha21WylSVRuSiII7PchX8ZI+1CIYBkiYJ7tPY0P3acB6KDqDjlp/JpXHb
+   NDg5NfIMEQp9wPz9YDFzsKShJrvVVXdYme60UNWrc37VKQeaSN8GfIakZ
+   5vAKJmiv9F/3Q4YKFsR5XOf3RhGcYXyqlOCaNI3esA6OrVWbseBkjRNbO
+   MzI3f70jul7e4t4yyTctXytoKUMCqZWhdR8nJL9fyQJ0tdGwQLb3YjxdZ
+   +vPUdwyPaVQ5V3w9fqPV0pEYa/7psDe6htaBbUynpvTlu5TSB8Z6mTnIq
    A==;
-X-CSE-ConnectionGUID: VvvcvFK2SdejhVLFMxpiuw==
-X-CSE-MsgGUID: jJSJEFThTaeqLig/+elMOQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="73703245"
+X-CSE-ConnectionGUID: pxVf3VwHQL+fYk7dz52gTw==
+X-CSE-MsgGUID: hDPJWpK0Q7uWf37ZlOAXUg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11728"; a="74216812"
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="73703245"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:03:22 -0700
-X-CSE-ConnectionGUID: YrGfMucTTHivKnNykmKOcw==
-X-CSE-MsgGUID: hVPVQoBpTnyBi3qC4+TsyA==
+   d="scan'208";a="74216812"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:05:16 -0700
+X-CSE-ConnectionGUID: k1XTfjBJQ4GgdXiZMj5bIg==
+X-CSE-MsgGUID: D4f9VV8MRY6XIc7GFwtSDQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,118,1770624000"; 
-   d="scan'208";a="225857838"
+   d="scan'208";a="225290890"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.246])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:03:18 -0700
-Date: Fri, 13 Mar 2026 16:03:16 +0200
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Mar 2026 07:05:11 -0700
+Date: Fri, 13 Mar 2026 16:05:08 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Cc: Michael Hennerich <michael.hennerich@analog.com>,
@@ -59,11 +59,10 @@ Cc: Michael Hennerich <michael.hennerich@analog.com>,
 	Marcelo Schmitt <marcelo.schmitt@analog.com>,
 	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 3/4] iio: accel: adxl372: factor out buffer and
- trigger setup
-Message-ID: <abQZJEfdRMzcGZGi@ashevche-desk.local>
+Subject: Re: [PATCH v3 4/4] iio: accel: adxl372: add support for ADXL371
+Message-ID: <abQZlPRhCQfjKFEV@ashevche-desk.local>
 References: <20260313115525.85435-1-antoniu.miclaus@analog.com>
- <20260313115525.85435-4-antoniu.miclaus@analog.com>
+ <20260313115525.85435-5-antoniu.miclaus@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -72,40 +71,49 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260313115525.85435-4-antoniu.miclaus@analog.com>
+In-Reply-To: <20260313115525.85435-5-antoniu.miclaus@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Mar 13, 2026 at 01:54:56PM +0200, Antoniu Miclaus wrote:
-> Extract the triggered buffer, trigger allocation, and IRQ request
-> logic from adxl372_probe() into a dedicated adxl372_buffer_setup()
-> helper. This reduces the probe function complexity and prepares for
-> conditionally disabling buffer support on device variants with
-> known FIFO issues.
+On Fri, Mar 13, 2026 at 01:54:57PM +0200, Antoniu Miclaus wrote:
+> Add support for the Analog Devices ADXL371, a +-200g 3-axis MEMS
+> accelerometer sharing the same register map as the ADXL372 but with
+> different ODR values (320/640/1280/2560/5120 Hz vs 400/800/1600/3200/
+> 6400 Hz), different bandwidth values, and different timer scale
+> factors for activity/inactivity detection.
 > 
-> No functional change intended.
+> Due to a silicon anomaly (er001) causing FIFO data misalignment on
+> all current ADXL371 silicon, FIFO and triggered buffer support is
+> disabled for the ADXL371 - only direct mode reads are supported.
 
 ...
 
-> +	ret = devm_iio_trigger_register(dev, st->dready_trig);
-> +	if (ret < 0)
+> +enum adxl371_odr {
+> +	ADXL371_ODR_320HZ,
+> +	ADXL371_ODR_640HZ,
+> +	ADXL371_ODR_1280HZ,
+> +	ADXL371_ODR_2560HZ,
+> +	ADXL371_ODR_5120HZ,
+> +	ADXL371_ODR_NUM,
 
-Consider dropping ' < 0' parts where they are not required.
+No comma for the terminator entry.
 
-> +		return ret;
-> +
-> +	ret = devm_iio_trigger_register(dev, st->peak_datardy_trig);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	indio_dev->trig = iio_trigger_get(st->dready_trig);
+> +};
 
-> +	return devm_request_irq(dev, st->irq,
-> +				iio_trigger_generic_data_rdy_poll,
-> +				IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
-> +				indio_dev->name, st->dready_trig);
+...
 
-This left for the context as the last one doesn't have such a check.
+> @@ -1217,8 +1258,8 @@ static int adxl372_buffer_setup(struct iio_dev *indio_dev)
+>  		return -ENOMEM;
+>  
+>  	st->peak_datardy_trig = devm_iio_trigger_alloc(dev, "%s-dev%d-peak",
+> -							indio_dev->name,
+> -							iio_device_id(indio_dev));
+> +						       indio_dev->name,
+> +						       iio_device_id(indio_dev));
+>  	if (!st->peak_datardy_trig)
+>  		return -ENOMEM;
+
+Stray change. It doesn't belong to this patch.
 
 -- 
 With Best Regards,
