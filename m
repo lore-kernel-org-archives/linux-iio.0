@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07C19288D6;
-	Sat, 14 Mar 2026 11:37:04 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 57A49288D6;
+	Sat, 14 Mar 2026 11:41:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773488225; cv=none; b=rEx0Ba5hbjJ0hFWu/cMuBsOQwLo2GnbfiNTI4qQKvOZ4M5s3ftnv88KrpmtXTa3+6+xovh7E4s5we+72lubEMPO0fbo2aQKAdVLMu15A2mFcA8ME4HpGMg7lCV3qvFN6T0y5zyqvayN9FqOVogqxonE4lRal6vaniybsZ34/8Wk=
+	t=1773488471; cv=none; b=slbB+gV04gqXhK0gAYKai66O8CSzlsnAP/JpSu2l7Htp4/sqGnS5Ttj5a7GV22Y6INHpWsEnhcyBoXb5IR21fJ9uv97TPQgGW0sOP/0ICmFViLlmzlRbCRwIv947HSNB+m4dojxaHP09GQLyWijFTmaeLA5ZcYYuueOpo93zSWE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773488225; c=relaxed/simple;
-	bh=+I1vpztz0Fs+olHCNWhnMMvy8X93cDQgQm68gTo+xcw=;
+	s=arc-20240116; t=1773488471; c=relaxed/simple;
+	bh=O3BZe9xCPxTaURzPF82YIJAoWC+15+99COKbB9Vu6g8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=osplWgXDYygvUAxcX29i4n/fOPjoDiBdB/EjupS1VM8I1iN1Xhq3c0NO3AK3mPT4JV2weIlF9pycAG47Dlsm883kDLdOSYNYJ2ZyYNi+yx4yCt+gN71hoLIvGOTSGIW+6rOGTjURGw9LE6TXXInuOiOr2PEMJ8uHLPWkHQfJ8T0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JGkJekOI; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=Fc8nMP1T9ido7TsNuONgE8cK8G/FQEJamjUfYO6w080XD9A71Tx390KfSpK+cXlmqUxbHJojVPhY8vCtIcvRWzFlMYXzuWjxoFVWTeZFcZk7LO6xWow5Asl+PQn4hke+QZHMcQbPDIK06seJPsxy9XxDuDyIhj8rDIYhVYoLk0E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=dcsooTBb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JGkJekOI"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEF31C116C6;
-	Sat, 14 Mar 2026 11:36:59 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="dcsooTBb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC7D9C116C6;
+	Sat, 14 Mar 2026 11:41:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773488224;
-	bh=+I1vpztz0Fs+olHCNWhnMMvy8X93cDQgQm68gTo+xcw=;
+	s=k20201202; t=1773488470;
+	bh=O3BZe9xCPxTaURzPF82YIJAoWC+15+99COKbB9Vu6g8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=JGkJekOI/c7F4i7Gq1pAmWrGqz7mTE8kedKrMXPJHxqufmLSLERbgyQChLUccahN4
-	 B+SHKP7mVSx86y2Xfpj5MH4kEe1TZZL0xMg6zoc+8ALNCSNQorgitf7D2qfAhtale0
-	 ScruvbmcKayMwLujJIeD7dazM+H04YqDqKpGxldDLB+5Ql6pAla9O1Yqnd5N3TwNzh
-	 WPK8Ge6jYqlnFper2c1nMN0W7B5U0JUG+HKdvCSRXzdlTLxza5cPHFHvOR5tyEAT3d
-	 9tVg5o8mthqdF3goajFEmFou+ibhvE27mNVI41+z/DBrWiUNkZ7NwFKS9Bmd9Hktm+
-	 UQNW9U/QHTHBQ==
-Date: Sat, 14 Mar 2026 11:36:54 +0000
+	b=dcsooTBb5HG9+JhLQ2jcND3ngLzibPgroJ6TGyhcBtEKmEK+rMNDA6PuBvUtfHUbJ
+	 OIABdQVQsra1BSwPTyinpGKNexOioX/LOGl+w1TwV+8L5kC/KOZWer59mE6a9ELX0u
+	 CXs1/wf6uvhKOv7uI5kNWI/oP2MByLXW3KOj34GmgEbTwC/iX7psba1h7Kq/58Jv4k
+	 UX6x9t9+94my9d87QqpTkPxLwCzUHbqCCLK2M2J8vIE+6hlPEs6Y/0rZDtlWGWSwfl
+	 mUXaI3d13MwOCOwaISTgPH0R8A2/0k682dMKzsGCDbEl1v9WNckQeNZvMRzGiwFtBR
+	 MA4zchSyVYDPw==
+Date: Sat, 14 Mar 2026 11:40:58 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
@@ -36,11 +36,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
  Conor Dooley <conor+dt@kernel.org>, Olivier Moysan
  <olivier.moysan@foss.st.com>, <linux-iio@vger.kernel.org>,
  <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 0/4] iio: adc: ad4080: add support for AD4880
+Subject: Re: [PATCH v6 0/4] iio: adc: ad4080: add support for AD4880
  dual-channel ADC
-Message-ID: <20260314113646.7b36030b@jic23-huawei>
-In-Reply-To: <20260305113756.47243-1-antoniu.miclaus@analog.com>
-References: <20260305113756.47243-1-antoniu.miclaus@analog.com>
+Message-ID: <20260314114058.246bcfc5@jic23-huawei>
+In-Reply-To: <20260313115856.87763-1-antoniu.miclaus@analog.com>
+References: <20260313115856.87763-1-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,7 +51,7 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Thu, 5 Mar 2026 13:37:26 +0200
+On Fri, 13 Mar 2026 13:58:49 +0200
 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
 > Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC from
@@ -68,28 +68,27 @@ Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 >   - DT bindings update for AD4880
 >   - Driver support for AD4880
 > 
-> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ad4880.pdf
-
-Series applied with that ordering tweak in the new backend function patch.
-Note that this crossed with a new device being added to the driver
-and so it took a fair bit of conflict resolution. Please check I didn't mess
-it up. 
-
-Applied and pushed out as testing (subject to exiting a tunnel under London ;)
-
-Thanks,
-
-Jonathan
-
+> This series depends on the SPI ancillary device patches already picked
+> up in Mark Brown's SPI tree (https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git).
+> Added base-commit in the cover letter below.
 > 
-> Changes in v5:
->   - Drop the SPI patches (already applied)
->   - Split the __free(fwnode_handle) cleanup into a separate patch (patch 1)
->   - Fix "Get's" -> "Gets" typo in devm_iio_backend_get_by_index()
->     kernel-doc (patch 2)
->   - Declare loop variables in for-loop initializers (patch 4)
->   - Drop redundant num_channels > 1 guard around ancillary device
->     setup loop (patch 4)
+> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ad4880.pdf
+> 
+> Changes in v6:
+>   - Move fwnode_back declaration back to inline position above
+>     IS_ERR() check (patch 2)
+>   - Rebase on top of broonie/spi for-next and use --base to declare
+>     the SPI dependency (cover letter)
+
+Ok. Given there was nothing in v5 to indicate a need to do a v6
+you should have replied to that thread to say you were doing so.
+The fwnode thing was something I said I'd fix up whilst applying.
+The SPI dependency was a 'do it better next time' comment.
+
+I've dropped the v5 version I applied.  Now you have questions
+to answer from Andy on this one.
+
+
 > 
 > Antoniu Miclaus (4):
 >   iio: backend: use __free(fwnode_handle) for automatic cleanup
@@ -102,5 +101,10 @@ Jonathan
 >  drivers/iio/industrialio-backend.c            |  62 +++--
 >  include/linux/iio/backend.h                   |   2 +
 >  4 files changed, 278 insertions(+), 69 deletions(-)
+> 
+> 
+> base-commit: 2cd3974b9ae59ac731a4792e1608be32621b6e98
+> --
+> 2.43.0
 > 
 
