@@ -1,221 +1,112 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-oa1-f44.google.com (mail-oa1-f44.google.com [209.85.160.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1C32137CD4A
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 16:06:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E827A61FFE
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 16:19:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773504407; cv=none; b=tHuMHdmuATpGBcIA6A8NAT0WP0doKrVgICLdkYeG0scLpZtJgxChbR2lCri36ABrknT702kToLEb3VNhP17d6K0FT5mujTJVm2UURo4AaNpihJVu7beRq+2JpyNrbeAmpD5Hxqba5gp6P69a0h5cey+6sbQCXUrxGoP4HhGgVVc=
+	t=1773505195; cv=none; b=IW8syEj1BlUQC92WHocybzlm7AekR7q34dmMlokPUqk0jkWFbAAQSYmkAjznpAoopnM2ACczIUAv5ie5LalZwfNmKBbtuG4DaRkb+Bos2+5+DMmo6/urKerC/ebdAPO6r/CK33XkE19/p3a4DTjdH8a0jkl38azJV14cCa0iF+w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773504407; c=relaxed/simple;
-	bh=AAYQH8m5hJopiQqgeTngADuMlO+elqyJCsSOeSZcnBU=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=UA/JY0z8RCQh8t6RifJ3Cvhe/1fz2AXRsGLu8SJw3k74YXQOZCwWmLFdC6YS/vpWjelRF5QgQ//UBWdPWj+nwm2ha2OdDBJ/16ZErUYAzMExuqWRW/kDcwWYF8ctRHZbENAWjfKqJy3FC1iLI1D0FUu5rfH9brm0WOIa7BgbOUY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=dGaiKDey; arc=none smtp.client-ip=209.85.218.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773505195; c=relaxed/simple;
+	bh=KBkmFspCBI5UcLEf1cRd//2zKNdLHfEi9/AjCUQ/XiQ=;
+	h=Message-ID:Date:MIME-Version:Subject:From:To:Cc:References:
+	 In-Reply-To:Content-Type; b=gDfm7t9vuQUsChyVH5KkihJarOdmwt8EJqtMH4fZxhwKlAd0He4Y8ALw8y3Zz3yaHGm8JbTLHirb8kY/K1ido+Y+gSAuYObJeQtMyTBRmkVO7FskVQNtCPW1f+ayZaD1szt36VjokoPeeFDFXuQwyHL/kT0fnUhissaYoBco8Uc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=UTlE6CIa; arc=none smtp.client-ip=209.85.160.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dGaiKDey"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-b9358bc9c50so392905566b.1
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 09:06:45 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="UTlE6CIa"
+Received: by mail-oa1-f44.google.com with SMTP id 586e51a60fabf-41708f6aa5fso1939811fac.2
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 09:19:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773504404; x=1774109204; darn=vger.kernel.org;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=ztVKqP7Iue8aUh5WW0pabHa7SHe1KuIXZfJfBXrdn9M=;
-        b=dGaiKDeyCS/zMpoONAWtHlh6/lm5+lp/RD1B9EeSGZ2u5oRIpW1Iirkmz6zYIloLUs
-         /VEQqCH0R4Ju26RpDnC1TS3BAF8DBdY3Q1WBZn2Uc+aCHx1O3h2FCSuD7NOXd8cKJyew
-         J7uWG3FghoA8CkNzjwbAEajbKB3PKa6EDxnl9TvygmQ7D3+SB4dAu+1gec9Pp9HuS2em
-         3BBpwDEj7DyjxSYc6iuY1TW/JVmo7U/pE/tUCSnHUkzJ/wit9T/7rU8xc4H5q+DmUNWl
-         NSDJUXU3GBO1RC28jclfsIoF2DHlcKiXVfRlT2OpoKW5x6xn9oR1sY5RKL7fIDYahpB+
-         f2TA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773504404; x=1774109204;
-        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
-         :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773505193; x=1774109993; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=ztVKqP7Iue8aUh5WW0pabHa7SHe1KuIXZfJfBXrdn9M=;
-        b=nESQwkadcSlrp5JovqmUbx8fjXX9BHenyiGpy9dpaoyXwL4zwrsp2YntO755UtWg10
-         AsAiRK843gx8uBXP2GMtUbAraq4puXlrufmahxUu4Kyvm8kHSsPuDySSY8mOEQjUmydU
-         402x92aR5cOwf12pkWNeZc4JII1Piy03SPPjdfX5vIx2ZmiTM9MXjzmDTFAGTqUOucyn
-         oWZCPSOxxvHAcJxZLjveoXMP35zaw9nwLxnW2S4sEAKRHREByCP1p2IEQrXulwPKEWl7
-         u6x3E9zDsqgHvAZSnliql6pGWGa9u/zrTLuPfw3W4GjAadq73vQh3KFMbZSd92bgv80u
-         +F8A==
-X-Gm-Message-State: AOJu0YxNr3LI+nX7x7H6vCwjUbn8vBnjcsXa1cVjZZURLkuDFFonYfp1
-	Of1488w77CoPu2/IbDBHx7JiJ2DWTDxZAad31VGtHaLmdMHLjL/zIxJ5
-X-Gm-Gg: ATEYQzxhoC2QtYAOH+kuhwOa/F3O/rQHVNLbu8WUj8mG1JACAytVvoHOsyRgedynQRC
-	MQ9EA9Oa06EuzNYFFPJb5gnb/3hIPtfCZZ59DL/R/zV4hOYAU3PW+HljQh5VP30MY+PFE2L2b4/
-	djpdrK2lY9rWP+5YtLEEXVCBcnIf8oK52gA2i6Hao3B5OrCcRThF+i9k/0RCwZmBZYRhO38McIt
-	QeRhfzarp9D7+l+8+C4qmmPZLhtJ9+7rUgiwt+l53Bx2HzxgZbuKBTRUy5W4hysoaWKQgnqdCJ2
-	w6DJb7SnXp8KyjzdejwNcwpjxHmVZv6wTE1YjfcRIyTwwNow4ycv5/cdQhnMb91+6/iOemRQSoz
-	f6VY9L5muooH5y0SCk0rTwnOzXqJjmfNtAX4Z7OvhAPII83Js/AJDhJAXEHrUa1SD/thy3fYhxl
-	iffAk9P83p9kJK49mOdtSNVVFYiQ==
-X-Received: by 2002:a17:907:746:b0:b97:6384:2317 with SMTP id a640c23a62f3a-b97650e5609mr440832566b.17.1773504404085;
-        Sat, 14 Mar 2026 09:06:44 -0700 (PDT)
-Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b978b8625d3sm151722366b.52.2026.03.14.09.06.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Mar 2026 09:06:43 -0700 (PDT)
-From: Erikas Bitovtas <xerikasxx@gmail.com>
-Date: Sat, 14 Mar 2026 18:06:35 +0200
-Subject: [PATCH v3 6/6] iio: light: vcnl4000: use variables for I2C client
- and device instances
+        bh=KBkmFspCBI5UcLEf1cRd//2zKNdLHfEi9/AjCUQ/XiQ=;
+        b=UTlE6CIakS2eeEyYdefN9JLGIAeYhImg5giLVCU1Jwn1SkdIs2yf9jTYEC3DucLtNP
+         +4CtMvlqRY05xeMY9671JeIYMAHlL9UnjTq04Xw6NGdprq0U9qR1bXZKQg6Eu+sLf2/D
+         HsD+apRTHc11ijvEOk3MfRcpkJTDnQAsaVUsMID6lu4qUm+8wc3KW3HfAjaWNiRrdM0C
+         AoLf5KyL59/iBXG8HiwayLfUHaST8neln7L9cZvg5jExoNUkjR5j27PQmejhHLJXScil
+         +vO2pfiAg3VdCKMVkDQveenO4TZq9FoBA/pi6WKthvseITlnsALJrCQQjdtTbBMz/Yty
+         ukUg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773505193; x=1774109993;
+        h=content-transfer-encoding:in-reply-to:content-language:references
+         :cc:to:from:subject:user-agent:mime-version:date:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=KBkmFspCBI5UcLEf1cRd//2zKNdLHfEi9/AjCUQ/XiQ=;
+        b=LMLNj61VZgAm7oKCiVF7ludcZfs8flZCNPo494kFJA99BU77uzfyah/f6ZgZNJdONw
+         mVEvxFfHI/DUsiu0WUQnbD5ScwUcxHYxa9DJMtvJ8DrJMVBA5VHAGtHM9AbA7m6y9vNr
+         rXu2VlJ6G3wrl7RJpATyPOMyfW+7vaUk9bhDAGBjcDV3sSLgXKaQgY0v8ti/rkdhq0Qy
+         TmU4WXCoKINJdc7onEHyyCrKLZil0GNtSuQFtmXX0Bb7GvqZDOhVO6v0LLDNib6gREaF
+         RJJ1slnprRYmFSIgPQCaKDhueROO5rg8OUz8e+D+yipKQDQTKkYbc+o4XfT9LIPZsG9z
+         K3Gw==
+X-Gm-Message-State: AOJu0YxCbwKCEuerD5fafv9DUpebqMkQtIIjvmr94ohO07pBkJe/uSXs
+	Y1pEwacOsN9BC6hmLpri5u374uiajunkcaEHhSopUrK0MWZ6yWrdkuM89aHmCAaubNQ=
+X-Gm-Gg: ATEYQzwbebMeOqQRN9zkpO3dWeiyKqGw7IAlMiMh3ODHw6QI5KlFFmJYzfqHOHEk8sO
+	RAogiO4ysifLHXrkFip/9v3Ert/hVYK+uWBH0x5zNyOTCpO53MyCBh1P4QSyxKSK/S5av6caOds
+	t3aM1/CXgUSEuZUOFgqk0zkAGCYyU9+ri+CF7Qx3RxN21E08rcma0majayLaSkh9G/ImZC/dGu/
+	uDhu7JpqKPWDYYEstbKrwg56hXcptkOTLaJK6KCOjmQpqZYc75uqOkvCj6kFb4dSmwuKQya2Dbb
+	fe3EppVllZ/vIwTN/8x3YmSgyoMPfNSM4HDJJj7iSTlEGRcfGZMlWsHbkPi7VLRbaJE7IGxMqPU
+	Xc8ZhWfP4mJNAjApFmeIIhzsQh6bFrNFkdQDRvLU2Yxti7zpAx/I234IBN+rMl0JJB9UbvyMh0I
+	O/ZJcMFE+Vjm49nxs0WdIqMuf6NmYSeClhfKN5J118a+E/J4NZBU6nLv5oxAgrxI975pqWNxbFV
+	w==
+X-Received: by 2002:a05:6870:510d:b0:417:1165:cf2e with SMTP id 586e51a60fabf-417b917197amr4017421fac.6.1773505192866;
+        Sat, 14 Mar 2026 09:19:52 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:14a9:db6c:e65a:4287? ([2600:8803:e7e4:500:14a9:db6c:e65a:4287])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177e6ae0e3sm11940193fac.16.2026.03.14.09.19.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 14 Mar 2026 09:19:52 -0700 (PDT)
+Message-ID: <c158a12d-4855-40e7-9581-8078be4237fa@baylibre.com>
+Date: Sat, 14 Mar 2026 11:19:51 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v3 1/4] dt-bindings: iio: adc: add bindings for AD4691
+ family
+From: David Lechner <dlechner@baylibre.com>
+To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+ linux-gpio@vger.kernel.org
+References: <20260313-ad4692-multichannel-sar-adc-driver-v3-0-b4d14d81a181@analog.com>
+ <20260313-ad4692-multichannel-sar-adc-driver-v3-1-b4d14d81a181@analog.com>
+ <a1824f39-3925-4e94-ac98-52dcdfbaa0d2@baylibre.com>
+Content-Language: en-US
+In-Reply-To: <a1824f39-3925-4e94-ac98-52dcdfbaa0d2@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260314-vcnl4000-regulators-v3-6-3c4a48d30676@gmail.com>
-References: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
-In-Reply-To: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
- phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>
-X-Mailer: b4 0.14.3
 
-After moving data->client and client->dev into variables of their own,
-replace all instances of data->client and client->dev being used in
-vcnl4200_init and vcnl4000_probe by the said variables to reduce
-clutter.
+On 3/14/26 10:29 AM, David Lechner wrote:
+> On 3/13/26 5:07 AM, Radu Sabau via B4 Relay wrote:
+>> From: Radu Sabau <radu.sabau@analog.com>
+>>
+>> Add DT bindings for the Analog Devices AD4691 family of multichannel
+>> SAR ADCs (AD4691, AD4692, AD4693, AD4694).
+>>
 
-Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
----
- drivers/iio/light/vcnl4000.c | 34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+...
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index c8bb1826b916..9b7cd3f0c8fb 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -362,14 +362,14 @@ static int vcnl4200_init(struct vcnl4000_data *data)
- 	int ret, id;
- 	u16 regval;
- 
--	ret = i2c_smbus_read_word_data(data->client, VCNL4200_DEV_ID);
-+	ret = i2c_smbus_read_word_data(client, VCNL4200_DEV_ID);
- 	if (ret < 0)
- 		return ret;
- 
- 	id = ret & 0xff;
- 
- 	if (id != VCNL4200_PROD_ID) {
--		ret = i2c_smbus_read_word_data(data->client, VCNL4040_DEV_ID);
-+		ret = i2c_smbus_read_word_data(client, VCNL4040_DEV_ID);
- 		if (ret < 0)
- 			return ret;
- 
-@@ -379,7 +379,7 @@ static int vcnl4200_init(struct vcnl4000_data *data)
- 			return -ENODEV;
- 	}
- 
--	dev_dbg(&data->client->dev, "device id 0x%x", id);
-+	dev_dbg(dev, "device id 0x%x", id);
- 
- 	data->rev = (ret >> 8) & 0xf;
- 	data->ps_int = 0;
-@@ -413,23 +413,23 @@ static int vcnl4200_init(struct vcnl4000_data *data)
- 		return ret;
- 
- 	/* Use 16 bits proximity sensor readings */
--	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
-+	ret = i2c_smbus_read_word_data(client, VCNL4200_PS_CONF1);
- 	if (ret < 0)
- 		return ret;
- 
- 	regval = ret | VCNL4040_PS_CONF2_PS_HD;
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1,
-+	ret = i2c_smbus_write_word_data(client, VCNL4200_PS_CONF1,
- 					regval);
- 	if (ret < 0)
- 		return ret;
- 
- 	/* Align proximity sensor sample rate to 16 bits data width */
--	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF3);
-+	ret = i2c_smbus_read_word_data(client, VCNL4200_PS_CONF3);
- 	if (ret < 0)
- 		return ret;
- 
- 	regval = ret | VCNL4040_CONF3_PS_SAMPLE_16BITS;
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF3,
-+	ret = i2c_smbus_write_word_data(client, VCNL4200_PS_CONF3,
- 					regval);
- 	if (ret < 0)
- 		return ret;
-@@ -1998,7 +1998,7 @@ static int vcnl4000_probe(struct i2c_client *client)
- 	struct device *dev = &client->dev;
- 	int ret;
- 
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
-@@ -2022,10 +2022,10 @@ static int vcnl4000_probe(struct i2c_client *client)
- 	if (ret < 0)
- 		return ret;
- 
--	dev_dbg(&client->dev, "%s Ambient light/proximity sensor, Rev: %02x\n",
-+	dev_dbg(dev, "%s Ambient light/proximity sensor, Rev: %02x\n",
- 		data->chip_spec->prod, data->rev);
- 
--	if (device_property_read_u32(&client->dev, "proximity-near-level",
-+	if (device_property_read_u32(dev, "proximity-near-level",
- 				     &data->near_level))
- 		data->near_level = 0;
- 
-@@ -2037,7 +2037,7 @@ static int vcnl4000_probe(struct i2c_client *client)
- 
- 	if (data->chip_spec->trig_buffer_func &&
- 	    data->chip_spec->buffer_setup_ops) {
--		ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev,
-+		ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
- 						      NULL,
- 						      data->chip_spec->trig_buffer_func,
- 						      data->chip_spec->buffer_setup_ops);
-@@ -2046,8 +2046,8 @@ static int vcnl4000_probe(struct i2c_client *client)
- 	}
- 
- 	if (client->irq && data->chip_spec->irq_thread) {
--		ret = devm_request_threaded_irq(&client->dev, client->irq,
--						NULL, data->chip_spec->irq_thread,
-+		ret = devm_request_threaded_irq(dev, client->irq, NULL,
-+						data->chip_spec->irq_thread,
- 						IRQF_TRIGGER_FALLING |
- 						IRQF_ONESHOT,
- 						"vcnl4000_irq",
-@@ -2060,7 +2060,7 @@ static int vcnl4000_probe(struct i2c_client *client)
- 			return ret;
- 	}
- 
--	ret = pm_runtime_set_active(&client->dev);
-+	ret = pm_runtime_set_active(dev);
- 	if (ret < 0)
- 		goto fail_poweroff;
- 
-@@ -2068,9 +2068,9 @@ static int vcnl4000_probe(struct i2c_client *client)
- 	if (ret < 0)
- 		goto fail_poweroff;
- 
--	pm_runtime_enable(&client->dev);
--	pm_runtime_set_autosuspend_delay(&client->dev, VCNL4000_SLEEP_DELAY_MS);
--	pm_runtime_use_autosuspend(&client->dev);
-+	pm_runtime_enable(dev);
-+	pm_runtime_set_autosuspend_delay(dev, VCNL4000_SLEEP_DELAY_MS);
-+	pm_runtime_use_autosuspend(dev);
- 
- 	return 0;
- fail_poweroff:
+>> +
+>> +properties:
 
--- 
-2.53.0
+More properties we can add: gpio-controller and #gpio-cells
+
+It doesn't matter if the driver implements it or not. We want the
+bindings to be as complete as possible and we know these are the
+correct properties for ADCs with GPIOs.
+
 
