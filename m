@@ -1,66 +1,66 @@
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E1A734A784
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 19:37:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E1966231830
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 19:41:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773517050; cv=none; b=Na0Ghgkm3NWHhHqpkGg9vx+SHbggLiL0bgZReCzrJCjjuXtSGyILFbG6WZjP3mW4USQF3CNCyaFObBWeqPAiVJGUQXmJwskq6mFtPvPo52Vb5GfABzlAnW6mg+a5Wnqt2Z0+zle5rBWNfeCQsn6zcd0RHi7j0TEL+B6QcdePZgs=
+	t=1773517267; cv=none; b=EoElconmfGKub7wEPU5D99g0ImtlD06vZ0gyMqDOeUXWe9WOvdPUEm2bWqasVFgfilj9kmsrT4kFuOD1F228HxU1tYJVVM+hD/oeYZzYbIz+0lsPQgjafxmdn3IWnsy2yxleijPF1BzttdIwkCFnREhB0+WOK7s7iSI+wfMc6xM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773517050; c=relaxed/simple;
-	bh=bmJoDlubNuiSuTHjybhtVNBPxfnUm5q0x17kzUHhCx8=;
+	s=arc-20240116; t=1773517267; c=relaxed/simple;
+	bh=YhFNVh+TdpLVh1xk/Xn1xNU1nZbxWb47XrVk/k++Wqs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Mg5TxO/WTEJREeouCKwjqIyRMabyFrC9w3IJv01KeJ0dZu98OI9sLjP67WIRjysNnhT3bZpgUIjlFB7pNeLcY5ucZhsLuCydXTC4V9CrUofC9juKhqyhwoU+VjiJiC5xyFgfxkP4iLxRGZFotumR7ZXkuyy44Xy4oQfUkDNR0oA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=T8r15Gde; arc=none smtp.client-ip=209.85.160.52
+	 In-Reply-To:Content-Type; b=T+Uqbf6LcB2PZsvtBTkHBcmyHvBD1ZSKim4IZh3qQcsb1DSFtd6z0Kp+8QWIz5polWaapP/JJ63HEeTbZVU4kHG+UZY5rJPTnrkN+usQksqjXgGlKudKj9XyJ1fwp/CY6RuAMRAj363Pxw6JElhxwwA3yHoypDKILhVNYweTtrM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=0oGyH3Ke; arc=none smtp.client-ip=209.85.160.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="T8r15Gde"
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-417400afaeeso3350887fac.1
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 12:37:25 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="0oGyH3Ke"
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-415b23dd6e5so1117900fac.3
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 12:41:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773517045; x=1774121845; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773517264; x=1774122064; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=cC8ZFoiqCiOYv0fc78n7vNqBObMBFZkLshHY/fh8V5k=;
-        b=T8r15Gdeui/6u1qc//ByND50ST/JLzU4o6hSUIrJ58ONW2mOxO+mpDkbsE3+sQE+rt
-         4PiCkRQtXMgQmBAB8nXl5Ol/ioHxvb3gdqniZJA7nGkH+mT+PLj5SRCXEhwFh/n1Cpng
-         fYgX8Xrz1kKx7norfBGc73RZMN15ppQRO7QkmgxjqE8KxqgwlcIFWeHg7TJfI+qAfaeC
-         IMGXXzmP4eTM41VQMoFnh1IyfAeRQY582sYobdhNixukY5S2JadyF/WS8akq2fk/AHhk
-         QHp9fCtu480lh2kJM8cpmy+eg4pzWGjW1gnFs6/S9vJP69hlnsuBk/ke6Af4g7cxQr0e
-         bzQQ==
+        bh=NrIN0ZseX7ZuhWs9DTzoQIy4BiwvgAC1j7M3dYH/MTc=;
+        b=0oGyH3KeQz5D1QoQoBE/Wgf4+XPHLL7F7OCZA8HEAe+ZqdG//gPjDetq5vf5wX6Scw
+         8x1kxoJ3MlbTJYRehEwqk2p94Bp8uasWM3EpnpLlrYLOZl94QBdpju5BNyobdA73ZEg5
+         itwt0vmLrL9jZ9QvJEDUNJ85nOwrswLEaDIekc8jwsf2+LK68psDGaHOl0qAbC58UVM9
+         o8vY9E07LYWDSiqLCiiely1iYT8M7KBIcv3gA9o6ELoc5As8m8cgpMBB/2ar1CFj4uJV
+         5ZDP6WrqxSYI6NpJh25kM9+/PrIUgDy4QvqAaNaR8NQlBm6JQk6qKY2uEsT4mcCVrv8I
+         +o/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773517045; x=1774121845;
+        d=1e100.net; s=20251104; t=1773517264; x=1774122064;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=cC8ZFoiqCiOYv0fc78n7vNqBObMBFZkLshHY/fh8V5k=;
-        b=jb18cX4ODBUybrYyaeYL5sxm1ljZ4DlAcHOIRhqEqhYq13AnEhE077nacELwAzmcte
-         IM5mI0NWQwKo87ZpSA++MTfKuAmNBPtK1MuZXxsan+WFBDt9qO1CDc8ygSqg5GPMW/jA
-         5Ud6iY4O0q7XkBM6oZJxTg2DW0IMqWqRj7gvWz72wT+75K97f+PLLw5aWHunzkK5GVbX
-         zlCxc7ETDr03F6sE96F9iSLRUeaJ9XSHxIHy29qh88PTAka/cduYJaMrn4CfTR1zA1JQ
-         eeBDbQluWIu6rYpEnuwnqM1njD64at6/cbpMjxB+ihXyLNuUr7mBjTMhirK5QGzkMB/T
-         oJFg==
-X-Gm-Message-State: AOJu0Yx7RUf6M4xe4FerNT3fQp86R9or9JEF4SZa8VjzMsiIhcVJTpCX
-	2HeE7Haj1nCqIfszmxyxo3xlD62PFRD148v4r8FyLxZJqI/CM0peY2Oiyo6AqWHiEU4=
-X-Gm-Gg: ATEYQzzLEanBsjgqER4oCsTVXf45KsRQolDBUnI0ld99ih85umNB4TiqbWo8qIpFr4x
-	DHxnKXMR6UXhEMMwfKucUPD3k8pPW1u+jsoprv43gSBwB0Go+vDybZO7hG+ursVelU73RaDWdu1
-	zX91GUarT45FFN7ZdAhz7z5ZyUwhxbXaL1Q61ln78eZke3tO/dWZXK6xaNPaeML5S+TKvw/b6B4
-	eKFxM4apv00byy/2PB9fGG0HfCcbTeLVcC190Zb24memrHSXpIzOqgx5veJ1hmS1NzoRlTF517z
-	+3ALcGvnBwP/jfzjDtzKHKkRyf/YdS1STBWypsRqlttEmajqBWtqqtg2oeo59rvyfvDSg1bjtEv
-	NFUsRq3Ys1J9gqXcLcL4oY9uu42FnkERO8+m8fC+KbXPjXSgyxKeswYpVv/auClRKU16g+Q6K9M
-	Y3FwxTKbOZUCfzAepO9LVEuWHRXJ3sq2I7uCVWviVLBd6ZxQyR5W7t3B70vjx4ZWjURyqVy+T8H
-	A==
-X-Received: by 2002:a05:6870:c10c:b0:417:8539:bdba with SMTP id 586e51a60fabf-417b72df1acmr4347566fac.24.1773517044891;
-        Sat, 14 Mar 2026 12:37:24 -0700 (PDT)
+        bh=NrIN0ZseX7ZuhWs9DTzoQIy4BiwvgAC1j7M3dYH/MTc=;
+        b=KVlBvZm5G0jzBlNBmzuqbLmvvsFS3uZlM5dMopDNa59mvA5AnhlMPkPMcWumqktmVP
+         ZYy+HXqCwwvYPgIX2S/GYCRNL1P8RCTliDyagT+/uXvpump1rs/jHvW4yyccZ9VRp6uE
+         Yqgc+GiunxlFV+N1C8dEVyVGje7wG8d3pftHV1bWbGcQM6PWgC5D1/SbEr6rI2kIpNfR
+         J53s9GfA/1mD5YyW3kRNREwEDqf/WCDW5yYOmMGzpBQ9cVR9C/0EbDcchZvb2XPyZQfN
+         /HtjQP8YKXKNEipuVjYD2CDxqAXhjsStSSifRLAjJgljMSyL0S/O9H7XW7PPM0Aav4Cv
+         A/6A==
+X-Gm-Message-State: AOJu0YyHrEa2EdkSNRXt73FIzBXsGB5F4tpKIoF3KixScdMKbFbFZzBa
+	KycBY/NxvBGz+B1z2EITFQ+r2T5frzoCPtu0jfCWOkQWaOgUjOOEsceAktSU9d6LuFQ=
+X-Gm-Gg: ATEYQzx4up1nfDREviCVyASVDDTYVlam2zyesSBECmaN9HyWBCeggYpDPpC1X4SR7za
+	QJQylIJDPfRjF2p01FjTgqC9bTpEJm4FDtoHNpwzI5zHsCZcjcsCd18FcQkfaExJQw/du34w6/2
+	G0IQPWoIp4qRNsoDtae3z8VOZyzRatFlFH1BSX5ZrazxovGxuLSlmqIWRE3bdPYbTyDE8DqP52h
+	pwvoD6zCv8651qZEUAPoAnGbvKnjBVj+IuADR981MCJFzp+Fvx6dRLe6uy4JQJ5rYGglqtc6N3D
+	xKkaprFKfMElxRQq9SKnHV1WkDYna4Fka50jeInRN1hH47++CNayfocPAPEue3jIc9mxiCg3hxN
+	RfhZj17Q98QbWA4ddACHKLLQSBCcWtO7p8Jy4AQV3IMm5Y/Qik++JlaK49H5qr1JcwwULOznpjK
+	tglqQ979YqfO9u7b6dWlrh3kPx/3QdOBHWVowi2lfoK/8QQ0H7TSSjylROPyQXsMS8O+qyMTGtZ
+	zoXXbI3pcQG
+X-Received: by 2002:a05:6808:3845:b0:466:feb1:5f79 with SMTP id 5614622812f47-4675753d5a2mr3779559b6e.50.1773517263762;
+        Sat, 14 Mar 2026 12:41:03 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:14a9:db6c:e65a:4287? ([2600:8803:e7e4:500:14a9:db6c:e65a:4287])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177de88106sm11554928fac.0.2026.03.14.12.37.21
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177e1fb6efsm12564050fac.3.2026.03.14.12.41.02
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 Mar 2026 12:37:23 -0700 (PDT)
-Message-ID: <b8a9a56b-04cb-4bb3-8606-3d90d1aba721@baylibre.com>
-Date: Sat, 14 Mar 2026 14:37:21 -0500
+        Sat, 14 Mar 2026 12:41:03 -0700 (PDT)
+Message-ID: <b7d46419-6320-4eed-9469-cf8043f0e20a@baylibre.com>
+Date: Sat, 14 Mar 2026 14:41:02 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,511 +68,68 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 4/4] iio: adc: ad4691: add SPI offload support
-To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-gpio@vger.kernel.org
-References: <20260313-ad4692-multichannel-sar-adc-driver-v3-0-b4d14d81a181@analog.com>
- <20260313-ad4692-multichannel-sar-adc-driver-v3-4-b4d14d81a181@analog.com>
+Subject: Re: [PATCH v4 1/8] iio: accel: bmc150: sort headers alphabetically
+To: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>, jic23@kernel.org,
+ nuno.sa@analog.com, andy@kernel.org, waqar.hameed@axis.com,
+ linusw@kernel.org, sakari.ailus@linux.intel.com,
+ harshit.m.mogalapalli@oracle.com, antoniu.miclaus@analog.com,
+ andrew.ijano@gmail.com
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260314170609.26827-1-rajveer.chaudhari.linux@gmail.com>
+ <20260314170609.26827-2-rajveer.chaudhari.linux@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260313-ad4692-multichannel-sar-adc-driver-v3-4-b4d14d81a181@analog.com>
+In-Reply-To: <20260314170609.26827-2-rajveer.chaudhari.linux@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 3/13/26 5:07 AM, Radu Sabau via B4 Relay wrote:
-> From: Radu Sabau <radu.sabau@analog.com>
-> 
-> Add SPI offload support to enable DMA-based, CPU-independent data
-> acquisition using the SPI Engine offload framework.
-> 
-> When an SPI offload is available (devm_spi_offload_get() succeeds),
-> the driver registers a DMA engine IIO buffer and uses dedicated buffer
-> setup operations. If no offload is available the existing software
-> triggered buffer path is used unchanged.
-> 
-> Both CNV Clock Mode and Manual Mode support offload, but use different
-> trigger mechanisms:
-> 
-> CNV Clock Mode: the SPI Engine is triggered by the ADC's DATA_READY
-> signal on GP0. For this mode the driver acts as both an SPI offload
-> consumer (DMA RX stream, message optimization) and a trigger source
-> provider: it registers the GP0/DATA_READY output via
-> devm_spi_offload_trigger_register() so the offload framework can
-> match the '#trigger-source-cells' phandle from the device tree and
-> automatically fire the SPI Engine DMA transfer at end-of-conversion.
-> The pre-built SPI message reads all active channels from the AVG_IN
-> accumulator registers (2-byte address + 2-byte data per channel,
-> one 4-byte transfer each) followed by a state reset word to re-arm
-> the accumulator for the next cycle.
-> 
-> Manual Mode: the SPI Engine is triggered by a periodic trigger at
-> the configured sampling frequency. The pre-built SPI message uses
-> the pipelined CNV-on-CS protocol: N+1 4-byte transfers are issued
-> for N active channels (the first result is discarded as garbage from
-> the pipeline flush) and the remaining N results are captured by DMA.
-> 
-> All offload transfers use 32-bit frames (bits_per_word=32, len=4) for
-> DMA word alignment. In Manual Mode the 4-byte DMA word layout is
-> [dummy(8), data_hi(8), data_lo(8), extra(8)]; the channel scan type
-> storagebits=32, shift=8, realbits=16 correctly extracts the 16-bit
-> ADC result from the middle two bytes.
-> 
-> Kconfig gains a dependency on IIO_BUFFER_DMAENGINE.
-> 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
+On 3/14/26 12:06 PM, Rajveer Chaudhari wrote:
+> Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
 > ---
->  drivers/iio/adc/Kconfig  |   1 +
->  drivers/iio/adc/ad4691.c | 397 ++++++++++++++++++++++++++++++++++++++++++++++-
->  2 files changed, 391 insertions(+), 7 deletions(-)
+> v4 : Patch added in v4
+> ---
+>  drivers/iio/accel/bmc150-accel-core.c | 17 ++++++++++-------
+>  1 file changed, 10 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index d498f16c0816..93f090e9a562 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -144,6 +144,7 @@ config AD4691
->  	depends on SPI
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
-> +	select IIO_BUFFER_DMAENGINE
->  	select REGMAP
->  	help
->  	  Say yes here to build support for Analog Devices AD4691 Family MuxSAR
-> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
-> index de2208395b21..ad9eaa94727e 100644
-> --- a/drivers/iio/adc/ad4691.c
-> +++ b/drivers/iio/adc/ad4691.c
-> @@ -9,6 +9,7 @@
->  #include <linux/clk.h>
->  #include <linux/delay.h>
->  #include <linux/device.h>
-> +#include <linux/dmaengine.h>
->  #include <linux/err.h>
->  #include <linux/reset.h>
->  #include <linux/hrtimer.h>
-> @@ -21,11 +22,15 @@
->  #include <linux/regmap.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/spi/spi.h>
-> +#include <linux/spi/offload/consumer.h>
-> +#include <linux/spi/offload/provider.h>
->  #include <linux/util_macros.h>
->  #include <linux/units.h>
->  #include <linux/unaligned.h>
->  
->  #include <linux/iio/buffer.h>
-> +#include <linux/iio/buffer-dma.h>
-> +#include <linux/iio/buffer-dmaengine.h>
->  #include <linux/iio/iio.h>
->  
->  #include <linux/iio/trigger.h>
-> @@ -46,6 +51,7 @@
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index 42ccf0316ce5..4eb4293a741d 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -4,23 +4,26 @@
+>   * Copyright (c) 2014, Intel Corporation.
 >   */
->  #define AD4691_MANUAL_MODE_STD_FREQ(x, y)	((y) / (36 * ((x) + 1)))
->  #define AD4691_BITS_PER_XFER			24
-> +#define AD4691_OFFLOAD_BITS_PER_WORD		32
->  #define AD4691_CNV_DUTY_CYCLE_NS		380
->  #define AD4691_MAX_CONV_PERIOD_US		800
 >  
-> @@ -92,6 +98,11 @@
->  #define AD4691_ACC_IN(n)			(0x252 + (3 * (n)))
->  #define AD4691_ACC_STS_DATA(n)			(0x283 + (4 * (n)))
+> -#include <linux/module.h>
+> +#include <linux/acpi.h>
+> +#include <linux/cleanup.h>
+
+Should not add cleanup.h until the next patch.
+
+> +#include <linux/delay.h>
+>  #include <linux/i2c.h>
+>  #include <linux/interrupt.h>
+> -#include <linux/delay.h>
+> -#include <linux/slab.h>
+> -#include <linux/acpi.h>
+> +#include <linux/module.h>
+>  #include <linux/pm.h>
+>  #include <linux/pm_runtime.h>
+>  #include <linux/property.h>
+> -#include <linux/iio/iio.h>
+> -#include <linux/iio/sysfs.h>
+> +#include <linux/regmap.h>
+> +#include <linux/slab.h>
+> +
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/events.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+>  #include <linux/iio/trigger.h>
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+> -#include <linux/regmap.h>
+> +
+>  #include <linux/regulator/consumer.h>
 >  
-> +/* SPI offload 32-bit message byte-field masks (MSB = first transmitted) */
-> +#define AD4691_MSG_ADDR_HI			GENMASK(31, 24)
-> +#define AD4691_MSG_ADDR_LO			GENMASK(23, 16)
-> +#define AD4691_MSG_DATA				GENMASK(15, 8)
-> +
->  enum ad4691_adc_mode {
->  	AD4691_CNV_CLOCK_MODE,
->  	AD4691_MANUAL_MODE,
-> @@ -250,6 +261,16 @@ struct ad4691_state {
->  	/* hrtimer for MANUAL_MODE triggered buffer (non-offload) */
->  	struct hrtimer			sampling_timer;
->  
-> +	struct spi_offload		*offload;
-> +	struct spi_offload_trigger	*offload_trigger;
-> +	struct spi_offload_trigger	*offload_trigger_periodic;
+>  #include "bmc150-accel.h"
 
-Aren't these mutually exclusive (depends on hardware wiring)?
-
-It seems like we only need one trigger pointer because we never
-have two at the same time.
-
-> +	u64				offload_trigger_hz;
-> +	struct spi_message		offload_msg;
-> +	/* Max 16 channel transfers + 1 state reset or NOOP */
-> +	struct spi_transfer		offload_xfer[17];
-> +	/* TX commands for manual and accumulator modes */
-> +	u32				offload_tx_cmd[17];
-> +	u32				offload_tx_reset;
->  	/*
->  	 * DMA (thus cache coherency maintenance) may require the
->  	 * transfer buffers to live in their own cache lines.
-> @@ -263,6 +284,65 @@ struct ad4691_state {
->  	} scan __aligned(IIO_DMA_MINALIGN);
->  };
->  
-> +static const struct spi_offload_config ad4691_offload_config = {
-> +	.capability_flags = SPI_OFFLOAD_CAP_TRIGGER |
-> +			    SPI_OFFLOAD_CAP_RX_STREAM_DMA,
-> +};
-> +
-> +static bool ad4691_offload_trigger_match(struct spi_offload_trigger *trigger,
-> +					 enum spi_offload_trigger_type type,
-> +					 u64 *args, u32 nargs)
-> +{
-> +	if (type != SPI_OFFLOAD_TRIGGER_DATA_READY)
-> +		return false;
-> +
-> +	/*
-> +	 * Requires 2 args:
-> +	 * args[0] is the trigger event (BUSY or DATA_READY).
-> +	 * args[1] is the GPIO pin number (only GP0 supported).
-> +	 */
-> +	if (nargs != 2)
-> +		return false;
-> +
-> +	if (args[0] != AD4691_TRIGGER_EVENT_BUSY &&
-> +	    args[0] != AD4691_TRIGGER_EVENT_DATA_READY)
-
-What is the difference between BUSY and DATA_READY?
-
-> +		return false;
-> +
-> +	if (args[1] != AD4691_TRIGGER_PIN_GP0)
-> +		return false;
-> +
-> +	return true;
-> +}
-> +
-> +static int ad4691_offload_trigger_request(struct spi_offload_trigger *trigger,
-> +					  enum spi_offload_trigger_type type,
-> +					  u64 *args, u32 nargs)
-> +{
-> +	/*
-> +	 * GP0 is configured as DATA_READY or BUSY in ad4691_config()
-> +	 * based on the ADC mode. No additional configuration needed here.
-> +	 */
-> +	if (nargs != 2)
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad4691_offload_trigger_validate(struct spi_offload_trigger *trigger,
-> +					   struct spi_offload_trigger_config *config)
-> +{
-> +	if (config->type != SPI_OFFLOAD_TRIGGER_DATA_READY)
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_offload_trigger_ops ad4691_offload_trigger_ops = {
-> +	.match = ad4691_offload_trigger_match,
-> +	.request = ad4691_offload_trigger_request,
-> +	.validate = ad4691_offload_trigger_validate,
-> +};
-> +
->  static void ad4691_disable_pwm(void *data)
->  {
->  	struct pwm_device *pwm = data;
-> @@ -446,9 +526,13 @@ static int ad4691_transfer(struct ad4691_state *st, int command,
->  
->  static int ad4691_get_sampling_freq(struct ad4691_state *st)
->  {
-> -	if (st->adc_mode == AD4691_MANUAL_MODE)
-> +	if (st->adc_mode == AD4691_MANUAL_MODE) {
-> +		/* Offload uses periodic trigger, non-offload uses hrtimer */
-> +		if (st->offload)
-> +			return st->offload_trigger_hz;
->  		return DIV_ROUND_CLOSEST(NSEC_PER_SEC,
->  					 ktime_to_ns(st->sampling_period));
-> +	}
->  
->  	return DIV_ROUND_CLOSEST(NSEC_PER_SEC,
->  				 pwm_get_period(st->conv_trigger));
-> @@ -502,6 +586,7 @@ static int ad4691_pwm_get(struct ad4691_state *st)
->  static int ad4691_set_sampling_freq(struct iio_dev *indio_dev, unsigned int freq)
->  {
->  	struct ad4691_state *st = iio_priv(indio_dev);
-> +	int ret;
->  
->  	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
->  
-> @@ -511,11 +596,29 @@ static int ad4691_set_sampling_freq(struct iio_dev *indio_dev, unsigned int freq
->  	guard(mutex)(&st->lock);
->  
->  	if (st->adc_mode == AD4691_MANUAL_MODE) {
-> +		/* For offload mode, validate and store frequency for periodic trigger */
-> +		if (st->offload) {
-> +			struct spi_offload_trigger_config config = {
-> +				.type = SPI_OFFLOAD_TRIGGER_PERIODIC,
-> +				.periodic = {
-> +					.frequency_hz = freq,
-> +				},
-> +			};
-> +
-> +			ret = spi_offload_trigger_validate(st->offload_trigger_periodic,
-> +							   &config);
-> +			if (ret)
-> +				return ret;
-> +
-> +			st->offload_trigger_hz = config.periodic.frequency_hz;
-> +			return 0;
-> +		}
-> +
-> +		/* Non-offload: update hrtimer sampling period */
->  		if (!freq || freq > st->chip->max_rate)
->  			return -ERANGE;
->  
-> -		st->sampling_period = ns_to_ktime(DIV_ROUND_CLOSEST(NSEC_PER_SEC,
-> -									 freq));
-> +		st->sampling_period = ns_to_ktime(DIV_ROUND_CLOSEST(NSEC_PER_SEC, freq));
->  		return 0;
->  	}
->  
-> @@ -787,6 +890,223 @@ static const struct iio_buffer_setup_ops ad4691_buffer_setup_ops = {
->  	.postdisable = &ad4691_buffer_postdisable,
->  };
->  
-> +static int ad4691_offload_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad4691_state *st = iio_priv(indio_dev);
-> +	struct spi_device *spi = to_spi_device(regmap_get_device(st->regmap));
-> +	struct spi_offload_trigger_config config = { };
-> +	struct spi_offload_trigger *trigger;
-> +	struct spi_transfer *xfer = st->offload_xfer;
-> +	int ret, num_xfers = 0;
-> +	int active_chans[16];
-> +	unsigned int bit;
-> +	int n_active = 0;
-> +	int i;
-> +
-> +	memset(xfer, 0, sizeof(st->offload_xfer));
-> +
-> +	/* Collect active channels in scan order */
-> +	iio_for_each_active_channel(indio_dev, bit)
-> +		active_chans[n_active++] = bit;
-> +
-> +	ret = ad4691_enter_conversion_mode(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * MANUAL_MODE uses a periodic (PWM) trigger and reads directly from
-> +	 * the ADC. CNV_CLOCK_MODE uses the DATA_READY trigger and reads from
-> +	 * accumulators.
-> +	 */
-> +	if (st->adc_mode == AD4691_MANUAL_MODE) {
-> +		config.type = SPI_OFFLOAD_TRIGGER_PERIODIC;
-> +		config.periodic.frequency_hz = st->offload_trigger_hz;
-> +		trigger = st->offload_trigger_periodic;
-> +		if (!trigger)
-> +			return -EINVAL;
-> +	} else {
-> +		u16 mask = ~(*indio_dev->active_scan_mask);
-> +		u32 acc_mask[2] = { mask & 0xFF, mask >> 8 };
-
-This is hard to grok. Probably should use bitfield helper and
-cpu_to_be16().
-
-> +
-> +		ret = regmap_write(st->regmap, AD4691_STATE_RESET_REG,
-> +				   AD4691_STATE_RESET_ALL);
-> +		if (ret)
-> +			return ret;
-> +
-> +		/* Configure accumulator masks - 0 = enabled, 1 = masked */
-> +		ret = regmap_bulk_write(st->regmap, AD4691_ACC_MASK1_REG,
-> +					acc_mask, 2);
-> +		if (ret)
-> +			return ret;
-> +
-> +		/* Configure sequencer with active channels */
-> +		ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
-> +				   *indio_dev->active_scan_mask);
-> +		if (ret)
-> +			return ret;
-> +
-> +		iio_for_each_active_channel(indio_dev, bit) {
-> +			ret = regmap_write(st->regmap, AD4691_ACC_COUNT_LIMIT(bit),
-> +					   AD4691_ACC_COUNT_VAL);
-> +			if (ret)
-> +				return ret;
-> +		}
-> +
-> +		config.type = SPI_OFFLOAD_TRIGGER_DATA_READY;
-> +		trigger = st->offload_trigger;
-> +	}
-> +
-> +	if (st->adc_mode == AD4691_MANUAL_MODE) {
-> +		/*
-> +		 * Manual mode with CNV tied to CS: Each CS toggle triggers a
-> +		 * conversion AND reads the previous conversion result (pipeline).
-> +		 */
-> +		for (i = 0; i < n_active; i++) {
-> +			put_unaligned_be32(FIELD_PREP(AD4691_MSG_ADDR_HI,
-
-Nothing unaligned here.
-
-> +						      AD4691_ADC_CHAN(active_chans[i])),
-> +					   &st->offload_tx_cmd[num_xfers]);
-> +			xfer[num_xfers].tx_buf = &st->offload_tx_cmd[num_xfers];
-> +			xfer[num_xfers].len = 4;
-> +			xfer[num_xfers].bits_per_word = 32;
-
-> +			xfer[num_xfers].speed_hz = spi->max_speed_hz;
-
-This should already be the default.
-
-> +			xfer[num_xfers].cs_change = 1;
-> +			xfer[num_xfers].cs_change_delay.value = 1000;
-
-This needs an explantion of where the number comes from. I would expect 430 ns
-based on max value of t_CONV from the datasheet.
-
-> +			xfer[num_xfers].cs_change_delay.unit = SPI_DELAY_UNIT_NSECS;
-
-If it really is 1 microsecond, we can change the units.
-
-> +			/* First transfer RX is garbage - don't capture it */
-> +			if (num_xfers)
-
-Would make more sense as (i > 0)
-
-> +				xfer[num_xfers].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
-> +			num_xfers++;
-
-Why have 2nd variable instead of using i?
-
-> +		}
-> +
-> +		/* Final NOOP to flush pipeline and get last channel's data */
-> +		put_unaligned_be32(FIELD_PREP(AD4691_MSG_ADDR_HI, AD4691_NOOP),
-> +				   &st->offload_tx_cmd[num_xfers]);
-> +		xfer[num_xfers].tx_buf = &st->offload_tx_cmd[num_xfers];
-> +		xfer[num_xfers].len = 4;
-> +		xfer[num_xfers].bits_per_word = 32;
-> +		xfer[num_xfers].speed_hz = spi->max_speed_hz;
-> +		xfer[num_xfers].cs_change = 0;
-> +		xfer[num_xfers].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
-> +		num_xfers++;
-> +	} else {
-> +		/*
-> +		 * CNV_CLOCK_MODE: single transfer per channel (2-byte cmd +
-> +		 * 2-byte data = 4 bytes, one 32-bit SPI Engine DMA word).
-> +		 * AVG_IN registers are used; RX layout: [cmd_hi, cmd_lo, d_hi, d_lo]
-
-These comments are confusing. What it actually appears we are doing is
-doing a 16-bit write and then a 16-bit read. I assume we are doing it
-using 32-bit words for efficiny so that we only have 1/2 of the number
-of xfers required to do it separately.
-
-TX layout: [cmd_hi, cmd_lo, ignore, ignore]
-RX layout: [ignore, ignore, data_hi, data_lo]
-
-
-> +		 */
-> +		for (i = 0; i < n_active; i++) {
-> +			unsigned int reg;
-> +			int ch = active_chans[i];
-> +
-> +			reg = AD4691_AVG_IN(ch);
-> +			put_unaligned_be32(FIELD_PREP(AD4691_MSG_ADDR_HI, (reg >> 8) | 0x80) |
-
-Mixing FIELD_PREP() and bit ops looks wrong.
-
-> +					   FIELD_PREP(AD4691_MSG_ADDR_LO, reg & 0xFF),
-> +					   &st->offload_tx_cmd[ch]);
-> +			xfer[num_xfers].tx_buf = &st->offload_tx_cmd[ch];
-> +			xfer[num_xfers].len = 4;
-> +			xfer[num_xfers].bits_per_word = 32;
-> +			xfer[num_xfers].speed_hz = spi->max_speed_hz;
-> +			xfer[num_xfers].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
-> +			xfer[num_xfers].cs_change = 1;
-> +			num_xfers++;
-> +		}
-> +
-> +		/* State reset: clear accumulator so DATA_READY can fire again. */
-> +		put_unaligned_be32(FIELD_PREP(AD4691_MSG_ADDR_HI, AD4691_STATE_RESET_REG >> 8) |
-> +				   FIELD_PREP(AD4691_MSG_ADDR_LO, AD4691_STATE_RESET_REG & 0xFF) |
-> +				   FIELD_PREP(AD4691_MSG_DATA, AD4691_STATE_RESET_ALL),
-> +				   &st->offload_tx_reset);
-> +		xfer[num_xfers].tx_buf = &st->offload_tx_reset;
-> +		xfer[num_xfers].len = 4;
-> +		xfer[num_xfers].bits_per_word = 32;
-> +		xfer[num_xfers].speed_hz = spi->max_speed_hz;
-> +		xfer[num_xfers].cs_change = 0;
-> +		num_xfers++;
-> +	}
-> +
-> +	if (num_xfers == 0)
-> +		return -EINVAL;
-> +
-
-...
-
-> +static int ad4691_setup_offload(struct iio_dev *indio_dev,
-> +				struct ad4691_state *st)
-> +{
-> +	struct device *dev = regmap_get_device(st->regmap);
-> +	struct spi_device *spi = to_spi_device(dev);
-> +	struct dma_chan *rx_dma;
-> +	int ret;
-> +
-> +	if (st->adc_mode == AD4691_MANUAL_MODE) {
-> +		st->offload_trigger_periodic = devm_spi_offload_trigger_get(dev,
-> +				st->offload, SPI_OFFLOAD_TRIGGER_PERIODIC);
-> +		if (IS_ERR(st->offload_trigger_periodic))
-> +			return dev_err_probe(dev,
-> +				PTR_ERR(st->offload_trigger_periodic),
-> +				"failed to get periodic offload trigger\n");
-> +
-> +		st->offload_trigger_hz = AD4691_MANUAL_MODE_STD_FREQ(st->chip->num_channels,
-> +								      spi->max_speed_hz);
-> +	} else {
-> +		struct spi_offload_trigger_info trigger_info = {
-> +			.fwnode = dev_fwnode(dev),
-> +			.ops = &ad4691_offload_trigger_ops,
-> +			.priv = st,
-> +		};
-> +
-> +		ret = devm_spi_offload_trigger_register(dev, &trigger_info);
-> +		if (ret)
-> +			return dev_err_probe(dev, ret,
-> +					     "failed to register offload trigger\n");
-> +
-> +		st->offload_trigger = devm_spi_offload_trigger_get(dev,
-> +				st->offload, SPI_OFFLOAD_TRIGGER_DATA_READY);
-> +		if (IS_ERR(st->offload_trigger))
-> +			return dev_err_probe(dev, PTR_ERR(st->offload_trigger),
-> +					     "failed to get offload trigger\n");
-> +	}
-> +
-> +	rx_dma = devm_spi_offload_rx_stream_request_dma_chan(dev, st->offload);
-> +	if (IS_ERR(rx_dma))
-> +		return dev_err_probe(dev, PTR_ERR(rx_dma),
-> +				     "failed to get offload RX DMA\n");
-> +
-> +	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_HARDWARE;
-
-We don't need to set INDIO_BUFFER_HARDWARE here,
-devm_iio_dmaengine_buffer_setup_with_handle() does that already.
-
-> +	indio_dev->setup_ops = &ad4691_offload_buffer_setup_ops;
-> +
-> +	return devm_iio_dmaengine_buffer_setup_with_handle(dev, indio_dev,
-> +			rx_dma, IIO_BUFFER_DIRECTION_IN);
-> +}
-> +
