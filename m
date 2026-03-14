@@ -1,49 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 031011632DD;
-	Sat, 14 Mar 2026 12:00:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A4772949E0;
+	Sat, 14 Mar 2026 12:09:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773489644; cv=none; b=KKchtBOHvG5VbNNIxOFNUw+zts6r8d+l0+JbVeTcUuLSYYW4TQQbQBaVDBXXtfqNcuGrt9XXtxgM0NvppZUbFYO56YyQrx/rIjrVBA+RXuMX0T496IREz6aX/fIMbBRAKTIlG5eVjt0HZKk2664dRsCXawKEbB3tIyLCAk/6KBM=
+	t=1773490156; cv=none; b=OjP98ghF4WYpVARihAR+NlUO/y40AvHb9QcmdsjLVCo7q+u3MqfXxOv+BTa5xNYloYrzD8m+3g2vAEucn8PmXC2/XAsPUleO7WCVTh0qgbi5IiF/oRZ2rpWmxWLlVRMmDzAmvh6ZI/QEH1nB6AZggwf0k/Iq06JpTtztCeWtJbY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773489644; c=relaxed/simple;
-	bh=dfoEFNpfg3RpymXb8lJoxY3QW2VfROktVwWXNaI9UhQ=;
+	s=arc-20240116; t=1773490156; c=relaxed/simple;
+	bh=H66Rk1Lr5dkE6znYGULWwNpORwboGWlxJP27Ub566I0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=psLIVOqp52/hVp3iF5v1CI28ZIwJXHbODMWmVk9GQi7IPHKYEQiKwpyzNX8N5SAkUMbWuP9DdbVaQZ437DOFRqEpCYiCcBKgUZd7aec1Uy1RUEfMu6uCOYA08RZMOCqEoDI24GS6soL4YfHCyM9kWVxjhR3zCzau0EFQTh6qqOE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qgpqFMp1; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=NnfzaAQpMociFe2jGUL23nlfYXQQWYHvAoUbp5hnrrmKYcbfRfM5+lg/i7NRPtPdba25dglzc7P4ej1hLP6xHxRDyt2G1rLCT00gAEFCUcyNnY9Qo7QJMIc1h9Tfk1U0RmdaWlJ5Gy/gadVqZHt0oiVNK29uP1tS/8ebEsRC6SU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WYJSZpIS; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qgpqFMp1"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBBFDC2BCAF;
-	Sat, 14 Mar 2026 12:00:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WYJSZpIS"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CCF52C116C6;
+	Sat, 14 Mar 2026 12:09:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773489643;
-	bh=dfoEFNpfg3RpymXb8lJoxY3QW2VfROktVwWXNaI9UhQ=;
+	s=k20201202; t=1773490155;
+	bh=H66Rk1Lr5dkE6znYGULWwNpORwboGWlxJP27Ub566I0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=qgpqFMp1Ka4Cq/C/lDOUwnR1rdzqQHdUgsvMHclwmw/bVVjIs9mAC/biEyLKoSdvo
-	 AgdfAm7acS7I6dTzen6q4EYYEjj3YMZxl8hXOi5TMr+UurSVtvhvTHZQOKmH9OLRUN
-	 WxBLJ7kk4sg3gsguPaUXg/o943/majwlQ2keBIs8ECIPMbTrttLtYST6fn6HQ0Zxbt
-	 LrT7soN97bEH+jfEO4KXaHLMc9XGKrODfJKe/xrJftJM3iVjLpusso2D8Mv7/zXmby
-	 aQzsQz2jc7NVT9VeoY/YkYgrMZ2V56YIHZX5wjRD/4zxVCEXOpK8Ctu+n1NDZflOfZ
-	 TvRc2tp/0+G5w==
-Date: Sat, 14 Mar 2026 12:00:22 +0000
+	b=WYJSZpISFdYnJQURxdyZ99Syat+N6QcR9olYNHLCJqz3yc0YrjFaJc+o/J81a/Vo1
+	 azcww4VzxPC7xe8L8ffwho+P88UFFIxWS30MisOlBFtYn9WgjXjSxss7UDmM1xZN17
+	 ONZfFqeg+XRJFAJ3+Gl6vNdJTBfHk+3srcJDjNHNG+zeJ2f9HLU800Vldjb3u8jpQa
+	 xPXp8i4YCnfn/Yus+qRtOgjFp3+KXwT5zm7HpEmx0KNU9A3/mKLC1//BD5W/6HXgn3
+	 Ww+p+LUWKaNHQiCya8MfoDaJ9TcjCPaveczTeaoclFCX6ks2ebL+3KREOkO5o+yg6P
+	 r8VBYUwAv/B0Q==
+Date: Sat, 14 Mar 2026 12:08:55 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>, Lars-Peter Clausen
- <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, David
- Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Olivier Moysan <olivier.moysan@foss.st.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6 4/4] iio: adc: ad4080: add support for AD4880
- dual-channel ADC
-Message-ID: <20260314120022.56265de3@jic23-huawei>
-In-Reply-To: <abQdvXq9MtIZ0EpZ@ashevche-desk.local>
-References: <20260313115856.87763-1-antoniu.miclaus@analog.com>
-	<20260313115856.87763-5-antoniu.miclaus@analog.com>
-	<abQdvXq9MtIZ0EpZ@ashevche-desk.local>
+To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
+ <Michael.Hennerich@analog.com>, "Schmitt, Marcelo"
+ <Marcelo.Schmitt@analog.com>, "Sa, Nuno" <Nuno.Sa@analog.com>, David
+ Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob
+ Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor
+ Dooley <conor+dt@kernel.org>, Petre Rodan <petre.rodan@subdimension.ro>,
+ "Marques, Jorge" <Jorge.Marques@analog.com>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
+ <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 4/4] iio: accel: adxl372: add support for ADXL371
+Message-ID: <20260314120855.0ac0e128@jic23-huawei>
+In-Reply-To: <CY4PR03MB3399158C9C0984048B8EF7189B79A@CY4PR03MB3399.namprd03.prod.outlook.com>
+References: <20260306151859.131934-1-antoniu.miclaus@analog.com>
+	<20260306151859.131934-5-antoniu.miclaus@analog.com>
+	<20260307110447.189b98c0@jic23-huawei>
+	<CY4PR03MB3399158C9C0984048B8EF7189B79A@CY4PR03MB3399.namprd03.prod.outlook.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -54,61 +56,110 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 13 Mar 2026 16:22:53 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 9 Mar 2026 13:08:26 +0000
+"Miclaus, Antoniu" <Antoniu.Miclaus@analog.com> wrote:
 
-> On Fri, Mar 13, 2026 at 01:58:53PM +0200, Antoniu Miclaus wrote:
-> > Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC with
-> > integrated fully differential amplifiers (FDA).
+> > -----Original Message-----
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Saturday, March 7, 2026 1:05 PM
+> > To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
+> > Cc: Lars-Peter Clausen <lars@metafoo.de>; Hennerich, Michael
+> > <Michael.Hennerich@analog.com>; Schmitt, Marcelo
+> > <Marcelo.Schmitt@analog.com>; Sa, Nuno <Nuno.Sa@analog.com>; David
+> > Lechner <dlechner@baylibre.com>; Andy Shevchenko <andy@kernel.org>;
+> > Rob Herring <robh@kernel.org>; Krzysztof Kozlowski <krzk+dt@kernel.org>;
+> > Conor Dooley <conor+dt@kernel.org>; Petre Rodan
+> > <petre.rodan@subdimension.ro>; Marques, Jorge
+> > <Jorge.Marques@analog.com>; linux-iio@vger.kernel.org;
+> > devicetree@vger.kernel.org; linux-kernel@vger.kernel.org
+> > Subject: Re: [PATCH v2 4/4] iio: accel: adxl372: add support for ADXL371
 > > 
-> > The AD4880 has two independent ADC channels, each with its own SPI
-> > configuration interface. The driver uses spi_new_ancillary_device() to
-> > create an additional SPI device for the second channel, allowing both
-> > channels to share the same SPI bus with different chip selects.  
+> > [External]
+> > 
+> > On Fri, 6 Mar 2026 17:18:24 +0200
+> > Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+> >   
+> > > Add support for the Analog Devices ADXL371, a +-200g 3-axis MEMS
+> > > accelerometer sharing the same register map as the ADXL372 but with
+> > > different ODR values (320/640/1280/2560/5120 Hz vs  
+> > 400/800/1600/3200/  
+> > > 6400 Hz), different bandwidth values, and different timer scale
+> > > factors for activity/inactivity detection.
+> > >
+> > > Due to a silicon anomaly (er001) causing FIFO data misalignment on
+> > > all current ADXL371 silicon, FIFO and triggered buffer support is
+> > > disabled for the ADXL371 - only direct mode reads are supported.
+> > >
+> > > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>  
+> > A couple of small formatting things. Otherwise looks good to me.
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> >   
+> > >
+> > > diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
+> > > index adb9e42653f1..7a1ee2fef618 100644
+> > > --- a/drivers/iio/accel/adxl372.c
+> > > +++ b/drivers/iio/accel/adxl372.c
+> > > @@ -1,6 +1,6 @@
+> > >  // SPDX-License-Identifier: GPL-2.0+
+> > >  /*
+> > > - * ADXL372 3-Axis Digital Accelerometer core driver
+> > > + * ADXL371/ADXL372 3-Axis Digital Accelerometer core driver
+> > >   *
+> > >   * Copyright 2018 Analog Devices Inc.
+> > >   */
+> > > @@ -182,6 +182,14 @@ enum adxl372_odr {
+> > >  	ADXL372_ODR_6400HZ,
+> > >  };
+> > >
+> > > +enum adxl371_odr {
+> > > +	ADXL371_ODR_320HZ,
+> > > +	ADXL371_ODR_640HZ,
+> > > +	ADXL371_ODR_1280HZ,
+> > > +	ADXL371_ODR_2560HZ,
+> > > +	ADXL371_ODR_5120HZ,  
+> > Might be worth a
+> > 	ADXL371_ODR_NUM
+> > entry so you can size the array from it below.
+> >   
+> > > +};
+> > > +
+> > >  enum adxl372_bandwidth {
+> > >  	ADXL372_BW_200HZ,
+> > >  	ADXL372_BW_400HZ,
+> > > @@ -222,6 +230,37 @@ static const int adxl372_bw_freq_tbl[5] = {
+> > >  	200, 400, 800, 1600, 3200,
+> > >  };
+> > >
+> > > +static const int adxl371_samp_freq_tbl[5] = {
+> > > +	[ADXL371_ODR_320HZ] = 320,
+> > > +	[ADXL371_ODR_640HZ] = 640,
+> > > +	[ADXL371_ODR_1280HZ] = 1280,
+> > > +	[ADXL371_ODR_2560HZ] = 2560,
+> > > +	[ADXL371_ODR_5120HZ] = 5120,
+> > > +};
+> > > +
+> > > +static const int adxl371_bw_freq_tbl[5] = {
+> > > +	[ADXL371_ODR_320HZ] = 160,
+> > > +	[ADXL371_ODR_640HZ] = 320,
+> > > +	[ADXL371_ODR_1280HZ] = 640,
+> > > +	[ADXL371_ODR_2560HZ] = 1280,
+> > > +	[ADXL371_ODR_5120HZ] = 2560,
+> > > +};  
+> > Style wise, why not do the same for adxl372_bw_freq_tbl[] as here?
+> > I slightly prefer this style, but key is consistency so if you'd
+> > gone the other way for both that would have been fine as well.  
 > 
-> I am still not sure this is the best approach we can have.
-> In any case, I have immediate questions here about regmap usage.
-
-I think we have a fairly fundamental misalignment on what this is.
-
-To my understanding (diagram on first page of the datasheet)
-+ the functional block diagram on page 3 it's effectively two almost
-entirely separate devices in one package (sharing of power etc) and
-a few common wires for clocks references etc.  Pretty close to some
-of the multi die devices we get for IMUs etc but with tighter coupling
-that forces one driver (for the IMUs we just register separate drivers).
-
-It 'might' use one SPI bus, or 2 or even 4 (if using separate data
-interfaces).
-
-Just to speed things up let me have a go at answering the questions.
-
 > 
-> - Why do we need to have a separate regmap per channel?
-
-Propose an alternative? It's two independent interfaces, so you
-could spin a special regmap to handle that, but it's much simpler
-to just use standard stuff and keep them separate. Not to mention it
-would either have to do external locking or falsely imply
-there was any restriction on using both interfaces at once
-(there isn't)
-
-> - What is special about channel 0?
-
-Nothing.
-
-> - Is it okay to communicate with different channels simultaneously?
-
-Yes. They are entirely parallel bits of silicon. Own state machines
-and everything.
-The configuration registers section of the datasheet says:
-"Each channel has it's own independent configuration memory
-accessible through it's separate configuration SPI interface."
-
->   Wouldn't be a nasty race with HW IO?
-
-Nope. You are talking to different devices (more or less).
+> I will do the same for adxl372_bw_freq_tbl[] as here.
+> Where do you think is the best place to put that, in patch 1? (introduce chip_info structure)
+Probably a precursor patch given the tables already exist.
 
 Jonathan
 
+> 
+> Thanks
+> 
 
