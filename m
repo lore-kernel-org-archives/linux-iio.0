@@ -1,66 +1,66 @@
-Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
+Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A9FE37F744
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 19:51:53 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 094FB37F73C
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 19:53:51 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773517915; cv=none; b=OSX6Ebm9ST0SVR1ykGUN3tsaJz1ZqExDTXgf76NFfKjxu4Pm+3OyxCpe8nsVCq6NfRH0z8/7L02vjmUHYWk1Vd8O4vNdslxwlieGJXrn5LJ3iz67iKrrsFBR7EcNXIgAg+cv/lnSyoTtNVLvAzDg85QlN0ix3ico70GwYzcCHyY=
+	t=1773518033; cv=none; b=CRp549ZjyzYnaRQlN841bepPLjz7vHknW8eQ4K3WYwqqXD6l/R9EowR77GHYhODesBBUjK0vKyTFmdJ8EI6E4TTR2y4Wfw0/qv2QXFXSWQNYjpmhXOeCvx9sp1gk2H6ud0uf9yTjW2q3EDgtSPTNENO3Vj1Z+efPvbtQNIMi6Gw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773517915; c=relaxed/simple;
-	bh=PN/ebOVkl3Ch2oEl48DSbiQkNWOJst/IpNNfFU9a8WU=;
+	s=arc-20240116; t=1773518033; c=relaxed/simple;
+	bh=WoYBcfnqdXjGLK8p2ATCDv5Clwk3rCl9OK1fQPfrqbk=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=IrmpXRTlh4fwSAOmdFuRHix+EaGRri9hx69KKiWHUTzURbB374f5hbRaH9t3TpkHeZBreLAzQZpmUNc479kS9N3RP3YSAvOLkWow4Wa21JpVTkThm6OIzo7bDJWovv9L3Z7IzMfGvJLILL6AzIlLvQZKuwrtcjFiVaimODBGIdQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=flEhqgR4; arc=none smtp.client-ip=209.85.167.175
+	 In-Reply-To:Content-Type; b=EyB8e6LpeYmf7Y76iLtW39ASnNqGqdScwnTT6/yOzDfaTt8AAg0AF6dDgFR0SnHcajpY/cyQJd/NAaaDh4iqx01B6nNCBTkQDINC6eaxgKhPy8D2j3ZPOxPuOnuBOYisKEP8Yzms0M3dzJjyYlY2/VZTm2fFtPxhpdQikrrIDaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=phCg3G4U; arc=none smtp.client-ip=209.85.160.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="flEhqgR4"
-Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-466f59dbe4bso780223b6e.0
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 12:51:53 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="phCg3G4U"
+Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-4170e916d77so1045674fac.1
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 12:53:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773517912; x=1774122712; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773518031; x=1774122831; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=D8F1aqi6Qy869M29EukxOGNGMVc3+0t8hXdBRfmiktU=;
-        b=flEhqgR4mKUaS/olngJFGDWd7v8oKAo/r6t+CEfnMQiKnG5qCpDOL995SiGRCr0zBK
-         sKxyTS3Ub3Iv7xo3TC7eHJa/MAR9afA9ED0Tglx2nhiyoXafAS4Cihpk0mccsb35QWo4
-         LFfkpEmMu3X1qPnNXkgUvkm1zYqgmvEjWZB9ADQWnXaf49MCtBYJdMCjntroQJ5+83Av
-         djvi2uf/U2gZGvAHigYZGPYafgsofKJZ34BsgR+blnB71FYqZNonOWFdpmuhd1IdvxLC
-         6JKOTTTUNrwp6H6br5xZcdhMmLBgL+nF5TWXAoHdkzrjRQ01oqtPS6J0Hz5Fj4EO9a9L
-         A4Lg==
+        bh=jAUWUxgIJbO5o3ZCocsIhLG9qA3mcb6cANaDC/wIQ9Q=;
+        b=phCg3G4UpLjTDCiRn9Kfgzoxih14sZ5+A46wkuduGbAUTVGGLJioPsmvFndMoCGiMC
+         5F72fHgNzPfMvaOYwbWPQF8Cb1hItKBp8s5bRB9tc4xzsRHP71pt1kUW7QxtT22UwJZL
+         KzpaqbLAuNPt9lsQ9JjpzsabOqz3Tf7ZHF10Bvx6ayJdVxSCCiLwMGu6pCpLgQP8fdGR
+         cQOkocPaO5DOzZ5eDlzz/jPXcKPFU8wL8fT4uVNcazviiCTFF0wMK0NwIacOHa+W1W4m
+         w1KjV0cWB59E2z6g6Cy17EOGkCEVcp94RRmC0IfU2i+Hx+NOYu9fIv2tVe+RTNtekcd1
+         r04Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773517912; x=1774122712;
+        d=1e100.net; s=20251104; t=1773518031; x=1774122831;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=D8F1aqi6Qy869M29EukxOGNGMVc3+0t8hXdBRfmiktU=;
-        b=R6zNlXcmHpHr04vCiOg3nK39Vo7eFfl5e+9QPuEZTn6er//XcVgrRzvpR8l+nZ2cTV
-         Ub7dUZLtIgmB8jgrwVkuzNIey6Qoz6xls0eYHJ5i6B5/qrlTMXnAw8g+jnK16CqcpnWw
-         dRKb8XB2SOfDrAPcruIzJ34/qS92wjWd1cSdD0PEOdtYnfdD0I0H8f7Y3cHLKKtpvMad
-         +FCcq1Bp/o+Tpg268gIYZ6sdFV8SwtfhhOx/E4ruhYalQU/kq8jfBTQKCeeHYelUOx3i
-         OIvSGk02pIJMXmzE2TKLcJYa9Cer8KeuVLwIlTa7hIreD/kVDu/PxPO4ETbMbc+jj6GA
-         /HLg==
-X-Gm-Message-State: AOJu0YwTozEKZznpcE9V4l4EroLIKdn8aksWSJhF34sdTa+Ti+I7wmz6
-	uabh2HB5hnuOmmnFg8QaTtK37oqDIPLaXLDBgDwb3gqoDKfP6eoXychfoN6MeO094nQ=
-X-Gm-Gg: ATEYQzzu+Xq6SeUFqdEw5dv9xti+3sf7BQvNwZ6EEcojCvSM6VC+5oohiLh9+G/sLY5
-	Cbx0R9DQsMVsLE6iQHiTVr60pOrJgkpHQmf8gKT0WXTHHuow+ddizhzMh2316qmFuscaUn2XYys
-	jETR3QA4lLuW87xDaWrS1u3nZq3bUWToYmxNcvcxa/3/q03zHPAS8IkLXET1+JP1/JF6+UmBb0J
-	zzvzIDJliUClPX6Yu88EQN8l2GZfzSp6XeLQUOXurR5A1ZcIm499Zg5N7WQykhjlofVcL4naVZD
-	p7EkS26RrT43BGAM5CNZoP5M2SpY932kgoFtW6W01T/Vk1NFrwCiaG0F8pA31vc3Jjys+zDSuGA
-	uXhIMqDdqFuGmDi9MulCIJsTSwbsmdSTajmoGTCDuL/F6pOQnpwZHyja1uNOtLdrTaZaPM63X6k
-	cnE91tu2xF4XN0reueMh5LmeoSAjJjARybVj0/Khm6bO542IilO47L9Kk66oeEwu6CiJEIBziu1
-	A==
-X-Received: by 2002:a05:6830:828d:b0:7c7:63b6:89d3 with SMTP id 46e09a7af769-7d782510f72mr5089963a34.19.1773517912188;
-        Sat, 14 Mar 2026 12:51:52 -0700 (PDT)
+        bh=jAUWUxgIJbO5o3ZCocsIhLG9qA3mcb6cANaDC/wIQ9Q=;
+        b=mH2bNgzPcp0LS2gcLvVbDidzSro+bxo6Of6gVAj7cgyA/DxB9DEiqIsZJ+wD5auDjK
+         zwA7wlF48XumLkZi0BF5NMnramyq3AomC3x3LVOz2avoPDsnibK8KppJPT0s94agb9Qb
+         cBQf3RyQRhhpgD2/qAlMIfi2YORpgIBhaPmRHpbO4X+SiNCOM4QIcrCzjaVcDB4QAXeS
+         mycJKNoDKFA8mEPepGsC4z8D05W5t3xII0A7ycilt3NuBHCe9BbKeYDkTqdO5fi/ZQsb
+         4Ut7NZa4nYMqWbgW2e4yD/u/OrvJ1lTMI76b6DtM3jrdOFwSy1EAHahrZJDFc/xpeJCl
+         KClw==
+X-Gm-Message-State: AOJu0YxPUGZGAhdyIk9e1VX1ucN8i8nnvh5pAzDJlGJosvQi7mc1PPXU
+	6KGX4/a730mk+FN3A8HvXKEivbwES1Hein51CWW8jitXWmxBowW9XzoKAdYYswcLknY=
+X-Gm-Gg: ATEYQzysQnOJdGsUBXzxJZWI/w4bqG8mFTwJBDOU7TCFg9qNDjVpvrQxMAsrpjdUVTM
+	3Od3zEJK2vkoWuyYN59C6AfhRHZT3tVinKzqsgKboGfAZmwljUAGIrhwFCNv0wg0pD0MjKfsTR3
+	MN9XRi4hR/6eX3r9d+JlEa+eXqh6Bv8u9i/smryYhIpt9B0yjBcvProZKQ5dF7/CIQE9n4q4KB0
+	jEIU+GryRoPVHP+zLOkyqZAq9bil4ACviFqMC0TkO6+/4PZGgisCSmKcCIBJ8mRH20v2j/v5ios
+	NKSCF4bw6ZrIEI0kKFJx/L6jMMLx5NLPgGbwDQT4mEn3Z7hpiLA6MQZjNYsuc8Rf/cP+fg6fRZY
+	PnYmpv11Rg/xI+TTOV4jb51dlnx9FJ/Em5uRXOfzKyOuGQqzZEOX1qW2cb0RhspdyeI7IzPWBlb
+	2Q57/DvGx2cdwtYnFbxXv5YR18Xvt1wZ+bU8AvZgzajMfRZ1r0+YmQ9kGpWB2ReszoXoa2Iy/ZE
+	oJYOsfyAJUJ
+X-Received: by 2002:a05:6870:d8c:b0:404:33e1:3cc2 with SMTP id 586e51a60fabf-417b91b2c8fmr4441451fac.13.1773518030913;
+        Sat, 14 Mar 2026 12:53:50 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:14a9:db6c:e65a:4287? ([2600:8803:e7e4:500:14a9:db6c:e65a:4287])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d76aebc9d3sm9157746a34.24.2026.03.14.12.51.51
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177e64a931sm12099255fac.14.2026.03.14.12.53.48
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 Mar 2026 12:51:51 -0700 (PDT)
-Message-ID: <cde8cef8-1bfa-47e0-8ebb-6c295f31f497@baylibre.com>
-Date: Sat, 14 Mar 2026 14:51:50 -0500
+        Sat, 14 Mar 2026 12:53:49 -0700 (PDT)
+Message-ID: <cb92bb47-9078-475d-b242-71e3f9181a72@baylibre.com>
+Date: Sat, 14 Mar 2026 14:53:47 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,8 +68,7 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/6] iio: light: vcnl4000: replace mutex_init with
- devm_mutex_init
+Subject: Re: [PATCH v3 0/6] iio: light: vcnl4000: add regulator support
 To: Erikas Bitovtas <xerikasxx@gmail.com>, Jonathan Cameron
  <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
  Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
@@ -77,33 +76,29 @@ To: Erikas Bitovtas <xerikasxx@gmail.com>, Jonathan Cameron
  <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
- phone-devel@vger.kernel.org
+ phone-devel@vger.kernel.org, Raymond Hackley <raymondhackley@protonmail.com>
 References: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
- <20260314-vcnl4000-regulators-v3-3-3c4a48d30676@gmail.com>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260314-vcnl4000-regulators-v3-3-3c4a48d30676@gmail.com>
+In-Reply-To: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
 On 3/14/26 11:06 AM, Erikas Bitovtas wrote:
-> Replace mutex_init used across driver with its device-managed
-> counterpart, so all assigned mutexes get destroyed.
+> This patch series introduces support for voltage supply, I2C and cathode
+> regulators. This fixes an issue where if a regulator is shared between
+> the proximity sensor and some other device, and the other device is
+> powered off, the proximity sensor would be powered off as well.
 > 
+> One of the commits includes a Reported-by: tag without a Closes: tag -
+> the report was done outside of LKML.
 
-...
+If it is on the public web, we can still add a link. You can just reply
+to that patch with the tag (if there is one) and it will get picked up.
 
-> @@ -1985,6 +1993,7 @@ static int vcnl4000_probe(struct i2c_client *client)
->  	const struct i2c_device_id *id = i2c_client_get_device_id(client);
->  	struct vcnl4000_data *data;
->  	struct iio_dev *indio_dev;
-> +	struct device *dev = &client->dev;
+> 
+> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+> ---
 
-Purely cosmetic, but I would have put this two lines up (right after
-*id) to keep assignments and longer lines together.
+Reviewed-by: David Lechner <dlechner@baylibre.com>
 
-No need to v4 though, everything else look good.
-
->  	int ret;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
