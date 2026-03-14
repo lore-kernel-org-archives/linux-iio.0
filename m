@@ -1,65 +1,63 @@
-Received: from mail-oo1-f52.google.com (mail-oo1-f52.google.com [209.85.161.52])
+Received: from mail-ot1-f53.google.com (mail-ot1-f53.google.com [209.85.210.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 967B12D0C72
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 21:12:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DD93D308F0A
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 21:38:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773522765; cv=none; b=fgi8oHC2/lIoRByCVdhB+fCweiFHMWLe/XHv8GnjfEueNjFOXkCEwqj2ChkcpBYmMdvdAUA+Vri265DLgMWSH70GmMqSfKZ6a6kCeIh20G5pk/86bNjTURlAsFIowUaBwqTKSszgp/4I16aH0cczyKkl6HwjY9WXtDfoWztMswg=
+	t=1773524320; cv=none; b=sf3aR5qgWvLXQTLrP90wY0zbHdjnyVZIJAlccBdtYZ14hlSKO3v/KSGlU5ZxP+Rz8tyNt6JWescqfBqsiIz2UR2OzDwfeRE8PgCzX9ZGnCiXQTvZV+tw8FDcenqlPOdUj0oLSIgnUveUm1feCIUrlLeoLlJ6eSs6bstxhRlo0TQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773522765; c=relaxed/simple;
-	bh=UjIIYg2kVWpb/cG3eChFsyq18uKV8EkcjudkwaNjpAM=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=mhTOJd4t6Rh4nsGyMpyeiD0z772Scxgx6bpTCC7zuftfRcSgOaKtzk79j3fqBF7Z5MGTgrqFTlj7yJZjsOIiuaPQWNIEP3rNuRtVcdLrojgi/Q2ljJyxCpKcESsmtcRxsIYveEaDvr1rTfvpDrwXgOXXoguDBZ1dkUsbWUCxgmI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=HU6WU26W; arc=none smtp.client-ip=209.85.161.52
+	s=arc-20240116; t=1773524320; c=relaxed/simple;
+	bh=2BX7rWQrsEXRzxA/4MK8HptuXQGfO+O840znjERKL2I=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=RSdOL7jH4vC6lbh0s54AhDs4OWBveJ4h9HHpwSIO6eRt5R18Dk4HODvlwTcjlRyNJqi765MhcRqw/czQZUf83fVlch0jQaOoXx2Pvnuo9tM6EX9VQk0RigPKsbi/Rm2OnDS4LWrzhtLIBfVHREJBCjknfwucF89oYAWDNFVL0L4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=eGWd5ssy; arc=none smtp.client-ip=209.85.210.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="HU6WU26W"
-Received: by mail-oo1-f52.google.com with SMTP id 006d021491bc7-67bac077116so1758093eaf.1
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 14:12:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="eGWd5ssy"
+Received: by mail-ot1-f53.google.com with SMTP id 46e09a7af769-7d7412cfb9eso3179816a34.1
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 14:38:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773522761; x=1774127561; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773524317; x=1774129117; darn=vger.kernel.org;
         h=cc:to:message-id:content-transfer-encoding:mime-version:subject
          :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ulzdKVlcsNl87tenyXgz5EvJuSO4615gLT3TGIxTUuk=;
-        b=HU6WU26WfDEGX8rpdx0MsX597axYUPmXnTn4c1jcMFRW9aXh/dJaQyqTQWq+cwp+L1
-         h7eioAV/DK9caBBXQx8MqOlCSg9EfaV2c0DGpavUCxKVsm+hz/S192kYdTQhj0d9LPk5
-         v64Sg6kLnGxPt8gAdS3hahRu0e/FxWUgWkV/HriGBnVeDDiBWb5tJLhzYDmS06AJax/7
-         HB+5YX5tliUPoDzfjaI/WorJ3FwpSBFUadBL8qYePL23+r2+/APJ7sQtHRIMH62mI5Xl
-         +B6dgYQFdH2AmQaBpUTm5IudhfRyfSXww35pRb5azRLlGqix4adFjTd+466YxjVpZ5ec
-         S8wg==
+        bh=i1d07rh0mOzNQzU0saBk3TkTXoE/Opl6M/NzAk80LlM=;
+        b=eGWd5ssyQUqUxmRP0ZUr5mTHE016wiEA9sbnVQ0gK6qkC/G4l/tvxhoBZDDk2GHsL9
+         iDrCQtJij//x2SXuE6UOjjYFoykPYAe7pV+cfmwFOrcBwWrcCgFGiIDccRBg5eP/S6ej
+         sYHSgWMeEQfSmhFiSfnEwIbaWk2ET/NoTQOpCMSN5KukeH9Zedty9QxQBc9E9qifrXXJ
+         O0m3HHk1hp6oPxPG0WiNtgzlObCMr2kzsEVcWFcoIvEVF5Un439IQVC4y1n2soy39pDJ
+         J+kEwx7Bop1PnNj4SgV7tzR8wbzptAvjksi+2mPeS9XT6KThTtr1XswxPtwmfKjw4fFo
+         39Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773522761; x=1774127561;
+        d=1e100.net; s=20251104; t=1773524317; x=1774129117;
         h=cc:to:message-id:content-transfer-encoding:mime-version:subject
          :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=ulzdKVlcsNl87tenyXgz5EvJuSO4615gLT3TGIxTUuk=;
-        b=ONb1S7Z9FEINlny6Yb60qV7r9skLpPqNaOfxrM0DztiFtuC6rrTRI0UCdBgyvz1SG5
-         hU0M8MUwaSmVCuKJe28ocAO13mzD4h8NB2cS5r8VA4S8jg8ac3h9IzjETjyW4Lb+OW/U
-         dVYGn4+drlQau46eWhQH9xIFlMJH3UiUSlFssdgkrwwbcoyDFjLRYO0MpiRl1nt2eyx+
-         F9BRDst53z69nYXtD0EtMKnggZkJa5bfJhe+jnbGPJILdYoy+lJ5FwtLtpG0daC2DHYN
-         Yp4CfIE1JlYU5oUO3qylGiHZiNLWesFdNqR7/m8lRBy2HxGbxh68zAd9tCDVaE0QJ5J/
-         6tZA==
-X-Forwarded-Encrypted: i=1; AJvYcCVSApiTsr86THcY1ka+BVZvto4KPTEzvD629ixbAWTA/k3C/LSgmKXdeLrAPxDcU0gDZoT3aTPJo/E=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxm6p1Iahp1B4mXR59rlVo10lHqZ+JHp0R1BVEWYE0Z7N8cWjdf
-	6fZHEsUb31F6qzGcvM7v6JywHTKm0TYoShl0Ly/MexT25Tf6dh5/k+EZcFsukQ7ZxSs=
-X-Gm-Gg: ATEYQzxdXwM/l9UbNQrEpgzMfIEnEZ6VX9LkerWZJWLgXfYwLMBe4jN4hB8qKaVDdPH
-	rN/p1nETxiCAtOVQaqAFyGDi50xZ0btmcq31kSSVmjCJvubMehNDjJiKeSDOhFrpYJ/5/3etWbr
-	hv1Tw3+DIsKbiS9rXBoqV8i19XWpUGoCk33WeptiuUzdzNYyR44ZWMO+cybz2l3ZZ6ENDRkd7hU
-	9uJKI/Yhe9vdOKMkqQKc4XszNpqReleB+5Jggmwty4zvAzMdXzYNSzYbVK5sikT6wCZR3M2OEB4
-	v4s3LM61oO/UVhYz7sQBDVw7BPVc5vjAl4b5rPYveejQtF7j10LX2nqIAixlA5WcDLwzjwPnt5c
-	vaQtcJAKkEHs6ouMVfNjDffmHSDAGZs9yD5GWv9FkH8AAs2VIY/O8vofvk8nZJgtyT5IRjLGDKQ
-	ArzG+mN3/3ZfegaKw2Q2A1cZ1xyteS
-X-Received: by 2002:a05:6820:1789:b0:67b:e1ef:7a11 with SMTP id 006d021491bc7-67be1ef7dc9mr4302914eaf.65.1773522761518;
-        Sat, 14 Mar 2026 14:12:41 -0700 (PDT)
+        bh=i1d07rh0mOzNQzU0saBk3TkTXoE/Opl6M/NzAk80LlM=;
+        b=bF7X2kFnAz2sym0JQFdENXPaubFL9cP1HKjRDwDscYF+tyduU75LITSJltKjKqgYEv
+         bFy1oTxHMbnN/KbdOHRzcqFc9LAZuDcPybA3UHLJa58K4VcvoGkJ3RjUq7CnlkWpcOC1
+         jk1Zdjo33SrcQyL9Gjjbr0gVrZLYkut9qwAT6Hkh21pc3iZ+iEG5wNvMoiXsr2l4Hkf2
+         4fuARIThyRgdI7rzClNzRkX9YHyfewSMFrjk3yWu+SaX7hbpbq1jFqUy4QKitv1rmbC0
+         CxsZh5pMeXFTFnqohGJJDamn9mELtOY/shzGZgInG09LxYP1g08eEJKQeQTewv9++/uN
+         PaVQ==
+X-Gm-Message-State: AOJu0YxDTP7mGmlSKMFQASm1K9rwmc7k3zAQvIgwxrR213oPSK7vZlVE
+	khakvf9nVbolm74aI7tY5Khhnuan6F6o5yI0kuwATBibj731rXx24kusQpmlKiGqEFU=
+X-Gm-Gg: ATEYQzxaT+eom4SsL1qRLcezDfOd3ToUSEHowdX+VlNMJKrfpASSjwZRm49ujUtCj7q
+	Uy81RWwMKzVMbLtCIkGrIXH9VsJVQA1yahejGS1mbzy171InMFt3hOKpvZSsWb8SbUNvq/Q71P1
+	05QtG7QRqLAKZQSRwpPBvyrmsn9kZopAW690vfyYNe/lXz0c2jdeWzns7Bt0GquzXst8ppLoPUP
+	cl+CJ4PLfqQAHBK6fJ5lDXTvofh0Vn4nYlF2HW10sg496IUh/LD0a8gxYwrp/L/usm/aSOjfM16
+	G4tysxTa6EVV3ZKSMeQpF+RJHf+uq1JeFmZzymC/izvlrSwxjB+3qEsBH5MAs6UOX9QM8KcMDgu
+	kbL3EhMKQu/vdDvaJ19Bc/UAPh13lScyrUHrfT9cCT1HWcJzFB3nVaFnaEmNWWtg4WjTpuf6mn2
+	7WNpDMqXqq37BrsGf/Qw8ZlMuFPKNG
+X-Received: by 2002:a05:6830:82d3:b0:7d7:5dd8:765c with SMTP id 46e09a7af769-7d7825cf2a0mr5227603a34.24.1773524316763;
+        Sat, 14 Mar 2026 14:38:36 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:14a9:db6c:e65a:4287])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67bc9336db1sm6822618eaf.14.2026.03.14.14.12.38
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177e69c79dsm10890932fac.15.2026.03.14.14.38.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Mar 2026 14:12:40 -0700 (PDT)
+        Sat, 14 Mar 2026 14:38:36 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
-Date: Sat, 14 Mar 2026 16:12:24 -0500
-Subject: [PATCH v2] iio: adc: ti-ads7950: use
- iio_push_to_buffers_with_ts_unaligned()
+Date: Sat, 14 Mar 2026 16:38:25 -0500
+Subject: [PATCH v3] iio: imu: bno055: add explicit scan buf layout
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,99 +66,101 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260314-iio-adc-ti-ads7950-declare-dma-buffer-v2-1-2087fc18b077@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/5WOSwqDMBRFtyIZ95XE4CcddR/FQT4v9RU/JVGpi
- HtvtCvo6HLgcu7dWMRAGNkt21jAhSKNQ4L8kjHb6uGJQC4xy3lecskrIBpBOwsTpYiVKjg4tJ0
- OCK7XYGbvMYByRV4q73VtDEuud0BPn3Pn0fw4zuaFdjrkR6OlOI1hPY8s4uj9u7kIEFApIyRXU
- tbO341eOzIBr3bsWbPv+xduGQZ/7wAAAA==
-X-Change-ID: 20260307-iio-adc-ti-ads7950-declare-dma-buffer-9d5269ffa8bb
+Message-Id: <20260314-iio-imu-bno055-repeated-element-v3-1-2baca42290de@baylibre.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/43OTW7DIBAF4KtYrDs1UINRVr1H1QXYE2ekYNKBW
+ I0i372UbKpu2uXj53vvLjIyYRaH7i4YN8qU1hpenjoxnfy6INBcs9BSW6nVAEQJKF4hrEkaA4w
+ X9AVnwDNGXAuoSRmj0Y9DQFGVC+ORPlvD2/sjM35ca1F5HIrgM8KUYqRy6Orr3DPGVG/72tW3z
+ 1DSwriIb+BEuSS+tcWbasK/x20KFAQzBunwOBtrX4O/nSkwPtcBjd/0D1K7v0ldSeecHa0yzsn
+ hF7nv+xecFRkTZQEAAA==
+X-Change-ID: 20260214-iio-imu-bno055-repeated-element-1c1552ea74be
 To: Jonathan Cameron <jic23@kernel.org>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
  Andy Shevchenko <andy@kernel.org>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-iio@vger.kernel.org, 
- linux-kernel@vger.kernel.org, David Lechner <dlechner@baylibre.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2895; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=UjIIYg2kVWpb/cG3eChFsyq18uKV8EkcjudkwaNjpAM=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBptc8/Z6hpyf9du13QWXT5GmO9KQ8fyMb36mujn
- VRQTTEoJciJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCabXPPwAKCRDCzCAB/wGP
- wPq7B/wLRQi/AX0NzAnwyYWGZAaqgqT4Fs9RP9osU9BGPXBuKMi+NKgRzIkBOk1Q/KyvaUpH6IG
- oEl8SYnFroVXRT8nhqZqz/XurAc5z9U5CUA0tcSwkF9IzFJSxy7NaaTJB0n7n+/c1+UpfQhmUlA
- RKrPJF63AuNyEXhLzMzaWCvfj5jkIJtKg1oSa9TC4hLsX7d0A9uIwR0srwpJB4wRtki+TJ37W3o
- qtKzDY+G9kXxA4ApdyVUzF5W6TnpertqTdcmZr3A/X1kuaRN+RkT6Sc24gDtUez+2tlo46XTOzi
- Y9HhSeykRO2bgYLuQJ4Vw9Za2CsorKupVKXuXh5JMuIMc3KU
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2705; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=2BX7rWQrsEXRzxA/4MK8HptuXQGfO+O840znjERKL2I=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBptdVUwenwRUH8ug1iZBhIs3oNOETYsmV3uzWFl
+ KG3BH+/SR2JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCabXVVAAKCRDCzCAB/wGP
+ wGMvB/44i7bH2c2tDfJ6OOUMHR0GEePBym//pQOKaS1wLoYtXTC/xakXg5sIwTHpUsJxy94A3J7
+ xMGAlec9FV6frhZdZogozM16Uew4p+bx2UNmeREHfLUpIcyunaAkRPOx5ViBc0ytzHXkXafAoQR
+ fkZ4PDirsMqS0dmjjRpbfzAKLUBYv+hxv+9dN/gVqjiyjf2bknDB4vg+NyX2YvUzxwiLJgL0zCe
+ xKh0SeyjpHuGAo2Q1w5rqqA7T7ntKc1WWKFBHSHgrxfYZQz0TAN7XgC21E52YaOC81ny2nm9pjE
+ skE7Io8c96qQ+55XZ1ckCL0VKerXyQvlTiiGrLDsZ+1gQc4b
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Use iio_push_to_buffers_with_ts_unaligned() to avoid unaligned access
-when writing the timestamp in the rx_buf.
+Move the scan buf.chans array into a union along with a struct that
+gives the layout of the buffer with all channels enabled.
 
-The previous implementation would have been fine on architectures that
-support 4-byte alignment of 64-bit integers but could cause issues on
-architectures that require 8-byte alignment.
+Although not technically required in this case, if there had been a
+different number of items before the quaternion, there could have been
+a subtle bug with the special alignment needed for the quaternion
+channel data and the array would have been too small.
 
-Fixes: 902c4b2446d4 ("iio: adc: New driver for TI ADS7950 chips")
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
-Since we were looking at this driver, I was going to convert this to use
-IIO_DECLARE_DMA_BUFFER_WITH_TS() but then I noticed that we actually
-have an unaligned access problem with the timestamp since we are
-ignoring the first two elements in the rx_buf when pushing the data to
-the buffer.
+This depends on [1] that introduces the IIO_DECLARE_QUATERNION() macro
+(which is currently in fixes-togreg).
 
-Unfortunately, this will cause a merge conflict with the series Dmitry
-is working on. I don't think there is any rush to get this backported
-since no one has reported a crash from unaligned access. Since fixes
-should go before improvements, we could apply this to iio/togreg then
-Dmitry can rebase his series on top of it.
+[1]: https://lore.kernel.org/linux-iio/20260214-iio-fix-repeat-alignment-v1-1-47f01288c803@baylibre.com/
 ---
+Changes in v3:
+- Use IIO_DECLARE_BUFFER_WITH_TS()
+- Move timestamp into new struct.
+- Make comment more verbose.
+- Link to v2: https://lore.kernel.org/r/20260228-iio-imu-bno055-repeated-element-v2-1-888676158804@baylibre.com
+
 Changes in v2:
-- use sizeof(*st->rx_buf)
-- Link to v1: https://patch.msgid.link/20260307-iio-adc-ti-ads7950-declare-dma-buffer-v1-1-79b1309338df@baylibre.com
+- Rename IIO_DECLARE_REPEATED_ELEMENT() to IIO_DECLARE_QUATERNION().
+- Link to v1: https://lore.kernel.org/r/20260214-iio-imu-bno055-repeated-element-v1-1-b57b08efd566@baylibre.com
 ---
- drivers/iio/adc/ti-ads7950.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/iio/imu/bno055/bno055.c | 27 ++++++++++++++++++++++++---
+ 1 file changed, 24 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index cdc624889559..418452aaca81 100644
---- a/drivers/iio/adc/ti-ads7950.c
-+++ b/drivers/iio/adc/ti-ads7950.c
-@@ -47,8 +47,6 @@
- #define TI_ADS7950_MAX_CHAN	16
- #define TI_ADS7950_NUM_GPIOS	4
- 
--#define TI_ADS7950_TIMESTAMP_SIZE (sizeof(int64_t) / sizeof(__be16))
--
- /* val = value, dec = left shift, bits = number of bits of the mask */
- #define TI_ADS7950_EXTRACT(val, dec, bits) \
- 	(((val) >> (dec)) & ((1 << (bits)) - 1))
-@@ -105,8 +103,7 @@ struct ti_ads7950_state {
- 	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
--	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2 + TI_ADS7950_TIMESTAMP_SIZE]
--		__aligned(IIO_DMA_MINALIGN);
-+	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2] __aligned(IIO_DMA_MINALIGN);
- 	u16 tx_buf[TI_ADS7950_MAX_CHAN + 2];
- 	u16 single_tx;
- 	u16 single_rx;
-@@ -313,8 +310,10 @@ static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
- 	if (ret < 0)
- 		goto out;
- 
--	iio_push_to_buffers_with_timestamp(indio_dev, &st->rx_buf[2],
--					   iio_get_time_ns(indio_dev));
-+	iio_push_to_buffers_with_ts_unaligned(indio_dev, &st->rx_buf[2],
-+					      sizeof(*st->rx_buf) *
-+					      TI_ADS7950_MAX_CHAN,
-+					      iio_get_time_ns(indio_dev));
- 
- out:
- 	mutex_unlock(&st->slock);
+diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
+index c96fec2ebb3e..d0101607a9b3 100644
+--- a/drivers/iio/imu/bno055/bno055.c
++++ b/drivers/iio/imu/bno055/bno055.c
+@@ -210,9 +210,30 @@ struct bno055_priv {
+ 	u8 uid[BNO055_UID_LEN];
+ 	struct gpio_desc *reset_gpio;
+ 	bool sw_reset;
+-	struct {
+-		__le16 chans[BNO055_SCAN_CH_COUNT];
+-		aligned_s64 timestamp;
++	union {
++		IIO_DECLARE_BUFFER_WITH_TS(__le16, chans, BNO055_SCAN_CH_COUNT);
++		/*
++		 * This struct is not used, but it is here to ensure proper size
++		 * and alignment of the scan buffer above (because of the extra
++		 * requirements of the quaternion field). Technically it is not
++		 * needed in this case, because other fields just happen to make
++		 * things correctly aligned already. But it is better to be
++		 * explicit about the requirements anyway. The actual contents
++		 * of the scan buffer will vary depending on which channels are
++		 * enabled.
++		 */
++		struct {
++			__le16 acc[3];
++			__le16 magn[3];
++			__le16 gyr[3];
++			__le16 yaw;
++			__le16 pitch;
++			__le16 roll;
++			IIO_DECLARE_QUATERNION(__le16, quaternion);
++			__le16 lia[3];
++			__le16 gravity[3];
++			aligned_s64 timestamp;
++		};
+ 	} buf;
+ 	struct dentry *debugfs;
+ };
 
 ---
 base-commit: 79a86a6cc3669416a21fef32d0767d39ba84b3aa
-change-id: 20260307-iio-adc-ti-ads7950-declare-dma-buffer-9d5269ffa8bb
+change-id: 20260214-iio-imu-bno055-repeated-element-1c1552ea74be
 
 Best regards,
 --  
