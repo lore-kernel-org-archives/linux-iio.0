@@ -1,390 +1,135 @@
-Received: from mail-oa1-f52.google.com (mail-oa1-f52.google.com [209.85.160.52])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E193B2F616A
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 15:29:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DF59926ED3E
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 16:06:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773502194; cv=none; b=i449k5p1UUpM80k/YkaJ30Msx6jyVgLgla1mkzJyGC3U30N4EcKiGr+NXC5Vmjsrwnv4ydEuglBW3TkHLtMh5m0IfRQP4faowuAHKmZ7osONYT8qMS5OOveYg/59ll1obY79xujT10gg1KZ4elnP19Px38eOwzbJPtiouMlEhm4=
+	t=1773504400; cv=none; b=klRYT6dGq0SwIHruAZVKYT+beQkCdkvGSs/Vlx6q5cmnUOQz86iwtRDc7AhWhrnUXRAfdcofbbNs10OSZuf3gLHXbyzW0kFfoowNQmuW8NjKcAgyvJLOgteOF/yAkioF1zgBfvdtimL8pXWv5MjxOEoh8D/+/5XvAOnKYOi/hn4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773502194; c=relaxed/simple;
-	bh=qx/loJ+nJsLs+1vSgg0MO76kHfZg2hNO2DOfOaemHwA=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fJgx0ggYlVh5o4bY2ywYji22UZ8BQV6V2RkAhVlH4wjzBx+3UW0ezA62mIcaI2y7atiIgUo5XRKthoM9LHaoWLVlWK2ux8RKpJb+OUKbnOqtUf9EE+Uu5wn/4zTb9mOIcrD/rmEJFXF78KvEEqgN1Qfg+JT5R5Lnkc1/0Q9ig8M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=AmPw74tL; arc=none smtp.client-ip=209.85.160.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1773504400; c=relaxed/simple;
+	bh=PVNLhKnuvnLq5lryTjPze92pjMzYxlP0inllyDZUJLM=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=pkLwzh6GiKJQnlU5lpgz9ObspqyXipOcdqqHMsr4iajwJe4jkon02XpDbupSBTfRmJRZUTlpOtjFnng/wMI1buMRrjSeKR7JyxMBrtFsC/OJsbhTOVuoOP+Hvno/Si/oc7+d5GQYO/lP4PLxBJ6pXSl+77+MkAmDQepWdvageg4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f0FENvpz; arc=none smtp.client-ip=209.85.218.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="AmPw74tL"
-Received: by mail-oa1-f52.google.com with SMTP id 586e51a60fabf-4138136f02eso2247479fac.2
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 08:29:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f0FENvpz"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b9773abf811so245094866b.0
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 09:06:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773502190; x=1774106990; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7uFlD08MptP0EXYCAMvyKNjPMZade8ZdNS7/hJcx2vI=;
-        b=AmPw74tL1EEmrxKL9jRVvFNQbbeqdOtR+IfwOnp4NeSCy1BaELsJQ08KCZMVCsdvd2
-         8kzlMagJY7yuLaN3pdL6L4X+Y4O54LpuFNaALdycHIUdH1pv3LjKvWwx3H5mvYtbY2+S
-         sXRzmIvFsd6fDUFDgIqeRP8QM5Z+Fi7JxtuRdKqV9O89BNXu7T+TBDUsNkJF1HWnXjD0
-         ojjfPCcuv92LC12L6rpbo7tpmS4cf1OntWgf3YxKlSWCzGVkV1Bsf85NjIxsFo8Hv2K8
-         RdkNeAO+54LfhHvuhLAhfOQQZKcJf4DskeXJf6t9eKXVevpOrVkOJ1iIfN4vuPbbZqMX
-         7YIg==
+        d=gmail.com; s=20230601; t=1773504397; x=1774109197; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=u2gE4AmHfyDdJk2rWgz4dNOtkVHCWBvMjN9Y8lBsN1k=;
+        b=f0FENvpzkPEGjHiCvfvsjqvC8KFbPozoLU3EQJLnxV6kbHgZDIAzOdVXnTFHe6VaMs
+         F9PGz1IJ01sn0xVK4iHPO4q+DtnoiJXkmX6v0DwEC2aeGwwUAoC+soHV7Y2c/Zt/LuRP
+         uVQyaaU93lVUFoPsATnuuWffnjliwqIrWiVIj6rZMQlZ32k7JOmU7KDcYnsiShR1A04+
+         sEr7wXcxvGcr9loDgnfT4wRARrAHdY2earvQgLut5i1YOu84r+DUWvb8w+MLjCFoqaGk
+         sEoOQIOpdysz5YXjfdzwFnY/6Bb7YDH6BdTFtgolHcfueO1AsnXeNoGhJIBMHwH2Yszk
+         uG9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773502190; x=1774106990;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7uFlD08MptP0EXYCAMvyKNjPMZade8ZdNS7/hJcx2vI=;
-        b=St8PgiJ3LW1mcP6BTvSuC8BOxmYUbURS+0arMx1zedAEqcm+/FhLgk47Feiv64zMb9
-         QB8xiPgXeha/j5YibdoxhuYmq1DhRkTzm6jQ+yhtePnzBr4DuKIzOGS7tbTP4gHCRt6Z
-         c6SoNOeSuMVRQJqOPMPN4E3fnPrLi6TWzpad14j1upgwAMrisjNw74ePS4lye/P1sKCt
-         CQGUBF8Ku4737gx0ZgnxnzhCfFXd/I4yrPJhUZM+iY/F2b6yxJijed2e2JEyll6LEwFE
-         nAvLHAeQgOubN7zjITANix6O0bxegDrXK8Oa60KPXq4kPHAsBQIrptEQTjsPAyUpJPLd
-         kOYw==
-X-Gm-Message-State: AOJu0YyJp6qa9vZtI+e91i7DnDjPIWAZUQQEc0ymA8YiJee5TZsnU4cJ
-	GTyeqIqhQCIJbqHJr9fk+CD1n9vmaiObM76e7QyRYIS3x74ZyFsyfJKvpe0e3XE40GU=
-X-Gm-Gg: ATEYQzw7vbCGFuBZDYFRfd6gcGCyeStmwIoP2N8rvjo0L+fhiYwPgX7MgzjwXkJz0WD
-	p4fLeuoLafPqoV1w9giY7t8r//T5BNR9hGhDoDBaibAQxMfCj418HOWCj+WtoxEAIyaVMdqz91v
-	dro8guNXhfCFr7CU/bhNsGmCp5y3i44/W98qbqHzxoqF1of6wM2Mv0U+LsZuoLsSpMU2K67PwCF
-	Q60Vrp0AwIHYMgnwQBdkuzpbYlAO/v6yho/IdsZ5nDbKW/5BQ15DDqvt9Tq0Wjwal9IZOvP9tAp
-	oKMttf20/4gboWs+ohmMApD1c9OWJpzCQgJfrn2X90oRnvmpOdX9TG3LApPxHKThhqP7xLV02/S
-	TDhNSd0YQvFtTA29PMfwEJ6asgcvJTtagQdqNettNgBIryk0xxzNYP87Sln1nOEAIsvsyoigFY9
-	09vLoU+mLsGXKBnxlml5FdUx1hkFmFhSeIN5UX2ZBRkpnw4MNpHv+QEacnDP/clRlLqMhZfntuZ
-	0WXRzSplvJ/
-X-Received: by 2002:a05:6870:30a:b0:417:33b7:8c3c with SMTP id 586e51a60fabf-417b93ef429mr3929979fac.36.1773502189651;
-        Sat, 14 Mar 2026 08:29:49 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:14a9:db6c:e65a:4287? ([2600:8803:e7e4:500:14a9:db6c:e65a:4287])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177e5e94b4sm10487225fac.11.2026.03.14.08.29.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 Mar 2026 08:29:49 -0700 (PDT)
-Message-ID: <a1824f39-3925-4e94-ac98-52dcdfbaa0d2@baylibre.com>
-Date: Sat, 14 Mar 2026 10:29:48 -0500
+        d=1e100.net; s=20251104; t=1773504397; x=1774109197;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=u2gE4AmHfyDdJk2rWgz4dNOtkVHCWBvMjN9Y8lBsN1k=;
+        b=SkCozODK9RAfyQuN2//kuKTAktIElHLzjRNx7sEKSwaXa0P9/tKAt0hiWa0gCaGF57
+         FCX5xKKNMUBsbNefS7LTVOGYHcUjyFmzmEWCuwc1RlnyBczVoM+MMLNMON6XTFcDmQBb
+         WHq50uqE8NX8zzXtyZLVH9rW9FZ0IjZpAbY7ShmOdGm+sgy/n46uZ3FGcGvJI9K2iHcc
+         zlgLMOO/TDak6vTDgqUQnGr7RZooWmbWWwDnoMBKQl8oRxxzmYTGNW00OMwkMkHUpS0+
+         0IDqnHqdzJKP1aDPEPQcZWds3d8l9MJbr8p2kq5DhDLbn8UcVdlpVUfLz0OPf+dH3WCz
+         WSpA==
+X-Gm-Message-State: AOJu0Yyvh9XEs4sGsaEHQtxiPfOpEEEiwuOdv9NrgrNqQRJaolSiIT2i
+	c5V0YS98kavG9viZ8clFHwZdbCMe/BlNEYBWgeZ+YlTEIg+YL2dS4NgC
+X-Gm-Gg: ATEYQzwOuthJOAG/U8eigV6hmdw6ljJU6CAIeeAXJmlqxo3ymi+Ig4pbAajAoTQJzZZ
+	3LK0GC5F23XYJqicXtgg+PrHmh9a3WqS62zD7xF+crJiko3jOmaEe/by6B+K85WpHZ6K4FvjTS2
+	7rpRn2JIRHynFpPKH8MFlR3SxsaK1aQACZSwz/XYLnLrI/yiV8t7NlmETsUWs+LR4Q5gN//hT62
+	jdKxi4kfj6FfTHKpqF/xZX2JNbSR4W5Ls+u8zzDf3CiwPlrE+xg5dkfBAmyIRl8ndikvjD+/NuN
+	WSU4KM/pps0lu8RX697NWAHhdl9OA/w4L7n3dQFx7vOtjgJTCqd0FvJ3TMp9MDMRHd7fcvEyQD0
+	n2OEj1pq73wr0vtn9EoRNYSyzHebUxmevAhjRBXFrwbwmN//EU+eoXImJNEP4WHm8Af2Uu3Q77Q
+	9nMAT0hv2sodH2PDdjOG63Dglom5qmuQ4SBqT0
+X-Received: by 2002:a17:907:3cd2:b0:b97:3734:8d49 with SMTP id a640c23a62f3a-b9765145762mr437909166b.38.1773504397154;
+        Sat, 14 Mar 2026 09:06:37 -0700 (PDT)
+Received: from [192.168.0.39] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b978b8625d3sm151722366b.52.2026.03.14.09.06.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 Mar 2026 09:06:36 -0700 (PDT)
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+Subject: [PATCH v3 0/6] iio: light: vcnl4000: add regulator support
+Date: Sat, 14 Mar 2026 18:06:29 +0200
+Message-Id: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/4] dt-bindings: iio: adc: add bindings for AD4691
- family
-To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-gpio@vger.kernel.org
-References: <20260313-ad4692-multichannel-sar-adc-driver-v3-0-b4d14d81a181@analog.com>
- <20260313-ad4692-multichannel-sar-adc-driver-v3-1-b4d14d81a181@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260313-ad4692-multichannel-sar-adc-driver-v3-1-b4d14d81a181@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/23NTQqDMBAF4KtI1k2ZxBqkq96jdJGJYxzwpyRta
+ BHv3igUXLh8w3vfzCJSYIriWswiUOLI05hDeSqE6+zoSXKTs9CgDZQKZHJjfwEAGci/e/uaQpT
+ oWoW1BeXIiLx8Bmr5s6n3R84dx9z7bk+SWq9/Tx16SUmQxmBu1I4qU978YLk/u2kQq5f03tDHh
+ s6GxoYQHWJV272xLMsP2sEiRfoAAAA=
+X-Change-ID: 20260310-vcnl4000-regulators-bcf1b8a01ce6
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
+ phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>, 
+ Raymond Hackley <raymondhackley@protonmail.com>
+X-Mailer: b4 0.14.3
 
-On 3/13/26 5:07 AM, Radu Sabau via B4 Relay wrote:
-> From: Radu Sabau <radu.sabau@analog.com>
-> 
-> Add DT bindings for the Analog Devices AD4691 family of multichannel
-> SAR ADCs (AD4691, AD4692, AD4693, AD4694).
-> 
-> The binding describes the hardware connections: an optional PWM on
-> the CNV pin selects CNV Clock Mode; when absent, Manual Mode is used
-> with CNV tied to SPI CS. GPIO pins, voltage supplies, and the
-> trigger-source interface for SPI Engine offload operation are also
-> described.
-> 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-> ---
->  .../devicetree/bindings/iio/adc/adi,ad4691.yaml    | 180 +++++++++++++++++++++
->  MAINTAINERS                                        |   8 +
->  include/dt-bindings/iio/adc/adi,ad4691.h           |  13 ++
->  3 files changed, 201 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
-> new file mode 100644
-> index 000000000000..a9301e0ca851
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
-> @@ -0,0 +1,180 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/adi,ad4691.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices AD4691 Family Multichannel SAR ADCs
-> +
-> +maintainers:
-> +  - Radu Sabau <radu.sabau@analog.com>
-> +
-> +description: |
-> +  The AD4691 family are high-speed, low-power, multichannel successive
-> +  approximation register (SAR) analog-to-digital converters (ADCs) with
-> +  an SPI-compatible serial interface. The ADC supports CNV Clock Mode,
-> +  where an external PWM drives the CNV pin, and Manual Mode, where CNV
-> +  is directly tied to the SPI chip-select.
-> +
-> +  Datasheets:
-> +    * https://www.analog.com/en/products/ad4692.html
-> +    * https://www.analog.com/en/products/ad4691.html
-> +    * https://www.analog.com/en/products/ad4694.html
-> +    * https://www.analog.com/en/products/ad4693.html
-> +
-> +$ref: /schemas/spi/spi-peripheral-props.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,ad4691
-> +      - adi,ad4692
-> +      - adi,ad4693
-> +      - adi,ad4694
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 40000000
-> +
-> +  spi-cpol: true
-> +  spi-cpha: true
-> +
-> +  vio-supply:
-> +    description: I/O voltage supply (1.71V to 1.89V or VDD).
-> +
+This patch series introduces support for voltage supply, I2C and cathode
+regulators. This fixes an issue where if a regulator is shared between
+the proximity sensor and some other device, and the other device is
+powered off, the proximity sensor would be powered off as well.
 
-Missing avdd-supply and ldo-in-supply.
+One of the commits includes a Reported-by: tag without a Closes: tag -
+the report was done outside of LKML.
 
+Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+---
+Changes in v3:
+- Added a more detailed description for supplies in the dt-bindings commit.
+- Separated sorting includes into a commit of its own.
+- Replaced all occurrences of mutex_init with its device-managed
+  counterpart.
+- Moved client->dev variable declaration into a commit for adding
+  regulators.
+- Removed redundant dev_err messages in probe function.
+- Replaced all direct usages of client->dev and data->client into usages
+  by variable.
+- Link to v2: https://lore.kernel.org/r/20260312-vcnl4000-regulators-v2-0-2bdebbcbb58a@gmail.com
 
-> +  vref-supply:
-> +    description: External reference voltage supply (2.4V to 5.25V).
-> +
-> +  vrefin-supply:
-> +    description: Internal reference buffer input supply.
-> +
+Changes in v2:
+- Removed double quotes in includes.
+- Reordered includes alphabetically.
+- Enabled regulators before the mutex is initialized.
+- Replaced direct usage of &client->dev with a variable.
+- Link to v1: https://lore.kernel.org/r/20260311-vcnl4000-regulators-v1-0-66b6038ce563@gmail.com
 
-It always confuses me when "v" is added to the pin name. Generally, "VREF"
-is an internal signal and "REF" is the actual pin name. So it makes more
-sense to me to call these ref-supply and refin-supply.
+---
+Erikas Bitovtas (6):
+      dt-bindings: iio: light: vcnl4000: add regulators
+      iio: light: vcnl4000: sort includes by their name
+      iio: light: vcnl4000: replace mutex_init with devm_mutex_init
+      iio: light: vcnl4000: add support for regulators
+      iio: light: vcnl4000: remove error messages for trigger and irq
+      iio: light: vcnl4000: use variables for I2C client and device instances
 
-> +  reset-gpios:
-> +    description: GPIO connected to the RESET pin (active high).
+ .../bindings/iio/light/vishay,vcnl4000.yaml        |  7 ++
+ drivers/iio/light/vcnl4000.c                       | 76 +++++++++++++---------
+ 2 files changed, 52 insertions(+), 31 deletions(-)
+---
+base-commit: 6e03baeeb160e6cfd72f2c39f26c50bcd925c7a0
+change-id: 20260310-vcnl4000-regulators-bcf1b8a01ce6
 
-Datasheet says "Active Low".
-
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    description: Reference clock for PWM timing in CNV Clock Mode.
-> +    maxItems: 1
-
-I feel like I asked this already, but which pin is this clock connected to?
-It sounds like it is the clock for the PWM, not the ADC. So it does not belong
-here.
-
-> +
-> +  pwms:
-> +    description:
-> +      PWM connected to the CNV pin. When present, selects CNV Clock Mode where
-> +      the PWM drives the conversion rate. When absent, Manual Mode is used
-> +      (CNV tied to SPI CS).
-> +    maxItems: 1
-> +
-> +  pwm-names:
-> +    items:
-> +      - const: cnv
-
-Usually, we don't have a name when there is only one.
-
-> +
-> +  interrupts:
-> +    description:
-> +      Interrupt line connected to the ADC GP0 pin. GP0 must be physically
-> +      wired to an interrupt-capable input on the SoC. The ADC asserts GP0 as
-> +      DATA_READY at end of conversion, used both for non-offload CNV Clock Mode
-> +      operation and for SPI Engine offload triggering via '#trigger-source-cells'.
-> +      Not used in Manual Mode, where CNV is tied to SPI CS and no DATA_READY
-> +      signal is generated.
-> +    maxItems: 1
-> +
-> +  '#trigger-source-cells':
-> +    description: |
-> +      For SPI Engine offload operation, this node acts as a trigger source.
-
-I don't think we need to call out SPI offload here. In theory, this could
-also also be used for synchronization with something else.
-
-> +      Two cells are required:
-> +        - First cell: Trigger event type (0 = BUSY, 1 = DATA_READY)
-
-I'm wondering if we really need to specify the event type. For interrupts,
-we we just specify the pin and not the function when the pin has more than
-one possible function.
-
-I know that we have done something like this on some of the previous SPI
-offload devices. So maybe there was a good reason for it. Or maybe I just
-had tunnel vision at the time.
-
-I suggest we try implementing this with just one cell that specifies the
-physical pin. In the driver, when SPI_OFFLOAD_TRIGGER_DATA_READY is
-requested in the driver, we can use that to program the function of the
-pin accordingly. 
-
-> +        - Second cell: GPIO pin number (only 0 = GP0 is supported)
-
-If GP0 is the only possible pin for an output, we should omit the cell. If
-there are more possible pins, we should document them (even if the driver
-doesn't support it).
-
-> +
-> +      Macros are available in dt-bindings/iio/adc/adi,ad4691.h:
-> +        AD4691_TRIGGER_EVENT_BUSY, AD4691_TRIGGER_EVENT_DATA_READY
-> +        AD4691_TRIGGER_PIN_GP0
-> +    const: 2
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - vio-supply
-> +  - reset-gpios
-> +
-> +allOf:
-> +  # vref-supply and vrefin-supply are mutually exclusive, one is required
-> +  - oneOf:
-> +      - required:
-> +          - vref-supply
-> +      - required:
-> +          - vrefin-supply
-> +
-> +  # CNV Clock Mode requires a reference clock.
-> +  - if:
-> +      required:
-> +        - pwms
-> +    then:
-> +      required:
-> +        - clocks
-> +
-> +  # CNV Clock Mode (pwms present) without SPI offload requires a DRDY interrupt.
-> +  # Offload configurations expose '#trigger-source-cells' instead.
-> +  - if:
-> +      required:
-> +        - pwms
-> +      not:
-> +        required:
-> +          - '#trigger-source-cells'
-> +    then:
-> +      required:
-> +        - interrupts
-> +
-> +unevaluatedProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    /* Example: AD4692 in CNV Clock Mode (pwms present) with standard SPI */
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        adc@0 {
-> +            compatible = "adi,ad4692";
-> +            reg = <0>;
-> +            spi-cpol;
-> +            spi-cpha;
-> +            spi-max-frequency = <40000000>;
-> +
-> +            vio-supply = <&vio_supply>;
-> +            vref-supply = <&vref_5v>;
-> +
-> +            reset-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
-
-I would expect reset to be active low to match the hardware.
-
-> +
-> +            clocks = <&ref_clk>;
-> +
-> +            pwms = <&pwm_gen 0 0>;
-> +            pwm-names = "cnv";
-
-Should we also include the trigger in this example?
-
-> +
-> +            interrupts = <12 4>;
-> +        };
-> +    };
-> +
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    /* Example: AD4692 in Manual Mode (no pwms) with SPI Engine offload */
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        adc@0 {
-> +            compatible = "adi,ad4692";
-> +            reg = <0>;
-> +            spi-cpol;
-> +            spi-cpha;
-> +            spi-max-frequency = <31250000>;
-> +
-> +            vio-supply = <&vio_supply>;
-> +            vrefin-supply = <&vrefin_supply>;
-> +
-> +            reset-gpios = <&gpio 10 GPIO_ACTIVE_HIGH>;
-> +        };
-> +    };
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 61bf550fd37c..9994d107d88d 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1484,6 +1484,14 @@ W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/devicetree/bindings/iio/adc/adi,ad4170-4.yaml
->  F:	drivers/iio/adc/ad4170-4.c
->  
-> +ANALOG DEVICES INC AD4691 DRIVER
-> +M:	Radu Sabau <radu.sabau@analog.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Supported
-> +W:	https://ez.analog.com/linux-software-drivers
-> +F:	Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
-> +F:	include/dt-bindings/iio/adc/adi,ad4691.h
-> +
->  ANALOG DEVICES INC AD4695 DRIVER
->  M:	Michael Hennerich <michael.hennerich@analog.com>
->  M:	Nuno Sá <nuno.sa@analog.com>
-> diff --git a/include/dt-bindings/iio/adc/adi,ad4691.h b/include/dt-bindings/iio/adc/adi,ad4691.h
-> new file mode 100644
-> index 000000000000..294b03974f48
-> --- /dev/null
-> +++ b/include/dt-bindings/iio/adc/adi,ad4691.h
-> @@ -0,0 +1,13 @@
-> +/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-> +
-> +#ifndef _DT_BINDINGS_ADI_AD4691_H
-> +#define _DT_BINDINGS_ADI_AD4691_H
-> +
-> +/* Trigger event types */
-> +#define AD4691_TRIGGER_EVENT_BUSY	0
-> +#define AD4691_TRIGGER_EVENT_DATA_READY	1
-> +
-> +/* Trigger GPIO pin selection */
-> +#define AD4691_TRIGGER_PIN_GP0		0
-
-Could probably do without a macro to give GP0/1/2/3 names since
-it will be pretty obvious that 0 = GP0, etc.
-
-> +
-> +#endif /* _DT_BINDINGS_ADI_AD4691_H */
-> 
+Best regards,
+-- 
+Erikas Bitovtas <xerikasxx@gmail.com>
 
