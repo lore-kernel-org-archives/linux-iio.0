@@ -1,135 +1,123 @@
-Received: from mail-oa1-f42.google.com (mail-oa1-f42.google.com [209.85.160.42])
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7DC51336885
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 14:39:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AE4F81DED63
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 15:25:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773499148; cv=none; b=f5HbpfE3vJUzFh8Qcw+zwsm+T4GdtopUrG2nmxtnNkCeBSj/4KvkVGOLngKmZezAhDj2MDx6XnYcD3xI00LlqIrQPYzb+dxZroKh1eom3GjKmP4IiXF9Yu1tncNrAnkN8YrHTP5DxKOtRFt/F+JPFxjQl7Qqpyth6UQ1mSpS078=
+	t=1773501959; cv=none; b=P1BXE38FjxAejDQpfdaxEjJ6eqsEVPbA8jBp/KNv3AGFTtF8RRvK6oDkiBaC4/g9BUWOe+uuu6VV2HhFJOECyokKjJlQ0Wckm0ZdFFSE+SGnEAuHYZxnTdrPRXLSqLnQeIfHFZ/4Kkok/fs1Tvg40cNolEOLtiwrU5A3jlt44sc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773499148; c=relaxed/simple;
-	bh=5M+8FF18btNiR/OXWuCMOHZwYvMZZMCmX9jXGsGAsUM=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=awDbvJaL33tOcQfTX7KjBwGdmQpNW781mGRqMOxkaFdOOCIWgiNIBPx3RPxGPuU/xP+DHZQwNa7sGS48Ve5x/oO7YIqj/5iKyny38Ljb4It3kKPQ7/Zxnl1b2hr6ubufv5fM7EFrb4fH7GfVHO9lBBXX2g/g/ghyS84iM48z0Pk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=MIOaTg7f; arc=none smtp.client-ip=209.85.160.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="MIOaTg7f"
-Received: by mail-oa1-f42.google.com with SMTP id 586e51a60fabf-40ea36b56b7so2280415fac.3
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 07:39:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773499145; x=1774103945; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=f30xM/Mb3048ZhnccFuHLAyII+0/eJw/DdO5W4q5nGM=;
-        b=MIOaTg7fWAR5C4/7q4i1DiEjxFexoVTQ3GzXj8GT8+zCHWHGVMUPI3GOcyTjB2TG8j
-         6x90oQZExaRCGh1q0piZyccq6i8LhPs8qH8elO6srXUem9LVhafXxwSf3QjSzST1FpK1
-         l3JS5WujmUuwfDJ2ZeczclXEeNQbiaKfpZ3BAMb9D1IDZ9CqtSUEFrtf//8btdkiRJXL
-         hLFl8t+r9VJXcMQ6bT9kgE2FlZC1bXXnoydT7YxMjD1inXLlWFtEDFI26C3cWOw4OqNs
-         qPVLE//0zk1t4xiuR02hlbj2BzZ5LmDYYOlXftygCUAARe3SX4NlySJCSvfbH14l6OUx
-         Nm7w==
+	s=arc-20240116; t=1773501959; c=relaxed/simple;
+	bh=MtmnzLG5Bo63WRQMbvVrVIj5k9GpRoRJaxMkFlxTeV0=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=FeFG6NmZX6mwi+bP4AVhk0h/UfDb62cFlZ+YZDOjK2EhKHWuGuRY6NWBKWAM+F80Grl4fF5FcJ0J+04smphUkVeSqQlBNJPCgQtrADmmXMoIlYS9spxwIyqxmnajEBan5Y5sFUOnleRne9Up5B9dRHbIOshyC15UlK5O7O4G+zk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.171
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-7987531082aso33237927b3.3
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 08:25:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773499145; x=1774103945;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=f30xM/Mb3048ZhnccFuHLAyII+0/eJw/DdO5W4q5nGM=;
-        b=MktM6OjhUdYLDIhJb4wDPHVnBMeQqkC/qw3aCjmQ8st6RcmGsDzAQOd2a6WKLe7dCy
-         bOdR18pr7dhCdddL3XI9FfejY7pNN+TDjZuOzaLfHYcO0b2BvS+6eIdadSLiYVzQq9ka
-         0xXYxmcJeumoyZJVpsTCYb3jjdkMJu8Skcd0X94WE+vx4b8twavz7hMdz858iv+AcLh4
-         7v/BxicPZ9Ihrakb1MxX0WVsh40upFbKWZ+XgLzqR6Q+O2RKnLgc7/2MHdzCisAh5Z/i
-         sitlRZ2eX/zLYLEfOs/UHcK59o5xXHhMCJTAZRWrxrxNz+1RoiZr1FJXjUaAB2JasFEt
-         Qx4w==
-X-Gm-Message-State: AOJu0YxLIR/YJkWB/44GUagLj5wiD2wA2duep1TyXC8uujaWzs7Pg71g
-	A+ta2Y1PDGIWC+6sitOBQHXqMuCmHCvXsZZ5xy7g+SdNewDBPtxFuExrIsaS1HsUp0s=
-X-Gm-Gg: ATEYQzw7Qk8qVT85BVDRWH8qGJdNVrpzpZhlGBs4AubCjeDUSx6AveHVdEJoDWGDKkV
-	wh+NVg35lRxb9RxsIJ/t9buxXy7CAbFRH6HNIvbopUM0YroQ/R9xKl+zVHJ4zYFMtx+xv1qbupv
-	tNxl2ViMVQyiHllpnKbbqf/evIlb0E1JI89z844bqnBJgQLwaoFKLBKnGHO9SZQPA6KaAD67Al2
-	/XzWdJXesRnarm20QWnyVKectRb02lkBMR2hCsegfU+H/GMXYQrvvefP7davE5/DVEyq7K6YKFl
-	fe6E3j0J8oEmyMNETHQLRzkBzPtoOobBG+6swidqnlnBbWIrvNvXrS3Vt/4pp4qOpPgSWrTxf0y
-	mZDPuwobwqhnMq05zktvRd6/qK78PFFnq8JHsXIR+BhzJ9apQqcfUxh68GqD1EU7D9ZtGlfP7Ty
-	LPz1V7F94fYIX1p94pBj3t3PXQ/wBe7HTc24ip1JAQgMrurP70eC93FSzV+jv+ToLpawMi3JiWM
-	g==
-X-Received: by 2002:a05:6870:8318:b0:36e:8381:db00 with SMTP id 586e51a60fabf-417b902b7eemr3936827fac.9.1773499145404;
-        Sat, 14 Mar 2026 07:39:05 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:14a9:db6c:e65a:4287? ([2600:8803:e7e4:500:14a9:db6c:e65a:4287])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177e6c7885sm10415806fac.17.2026.03.14.07.39.04
+        d=1e100.net; s=20251104; t=1773501958; x=1774106758;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=uPLN6zlYiIXlkEI//PrNAmzZ4tY8iJf1tdCwKSeMOdg=;
+        b=fh7LEcc3v0SKJlP2P4AZKGZPTHsRIeYi5bBuVqEf8jDpec8b95syFFZpCmM8LD038z
+         vWe5f10CTyCrOLWesWWPq4gs47qw4/GHkt6NII3ANuwCYNI63LxVjapuip45qhFelIM9
+         2VcFhGsLQEY7RyFFUE69DbSLvMJC1DJEXRQdgt5sE6QJuNkf6vS+n1s7t6tcBufxDqeO
+         eWdWHXN/DPN/wACFQibNMXXmwgYkf4kpX9PT5Q22ufQn8aGntbijmxt3+sgZFyVb+1lO
+         5RseKL4WsJ84n79EkdwIT4+KsB+cJotV8qYOJQotm2vLRkmWAy1fNHdmQNegb4Ejhzdq
+         D4+Q==
+X-Forwarded-Encrypted: i=1; AJvYcCV4GijRQQGJZYDLFViE6vo2g1lJ+eHvZKpF4o9Suy6ARlfx+51mBrAnF5T+v6CxpzkRQCf1hj4Iu0Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxoB0qT+wWJfEAdao78hyjy/MV5cNwAIk4oqRl2mc6OiMs2ezn6
+	hkpgC1zhOFZxoFXLOIYzn/bYskJYh9V6+hnsTZJg7OJAkpbuOd1qHZLl24fu3zWH
+X-Gm-Gg: ATEYQzxxe8TeH3X1NfIKX6vzIdn+Sg99lEZm4SQ+AWcTmFcZKXh0EXgbZdkZYBAojQi
+	mi9kUksYbQ/EYWm6LKIzxkBEnEOmvffmqlQUhJc6gHgnh8OKjm6Q+lWccV7Dk1+5eojTay4t3l3
+	DQn7LYLZTtCqrDFcbMpFi4D6lbRppAlemrlHMPoR1sbRsA45zRaBlctNZT6VPzqmKoL74z1bN4K
+	4FYDqYEdDZC6FMunaoczY5ZMaUCfrZjjw/c6W2cuTJ4FvorcKnNcw4UwVuFc6d2GrMcAwERN5T1
+	EOaTY453N0vHkwmibC1LeYxSOV1Ivx79nt9fdTV5PDyKWAiTq0wjcgdxk1lE6Uc3LQXfrZPB/bl
+	BpP73zngO5khDWUZGqihGQIrypRUyoBSvqIs+MoVywE0l1ysPqb96fmJSnVjbtviHqbSu3ualqf
+	G+mZ73djYLwrfQAJICaqrtqhx9qlLdEvulv2EybFq1t++8a/TR0cnWaDx1XrWT3VuaykTfX6JV7
+	FOWWESdJbrbfWIWNXm2jTuthiQx+1j9LN6pAdMusQ==
+X-Received: by 2002:a05:690c:c510:b0:796:3dce:d095 with SMTP id 00721157ae682-79a1c085dd0mr71238397b3.7.1773501957559;
+        Sat, 14 Mar 2026 08:25:57 -0700 (PDT)
+Received: from mail-yx1-f46.google.com (mail-yx1-f46.google.com. [74.125.224.46])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-79a37c4f793sm4987087b3.16.2026.03.14.08.25.56
+        for <linux-iio@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 Mar 2026 07:39:04 -0700 (PDT)
-Message-ID: <a2486bc7-13be-4567-a53c-b37921df7bcd@baylibre.com>
-Date: Sat, 14 Mar 2026 09:39:03 -0500
+        Sat, 14 Mar 2026 08:25:56 -0700 (PDT)
+Received: by mail-yx1-f46.google.com with SMTP id 956f58d0204a3-64d5a7926cfso3179199d50.2
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 08:25:56 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCUjUa06GRjnEkLgzK/ZxmAllM1kNMfANXmtahC7zDQD+2ECjyZpc+HGzQnGo1LQIrQFipiwInJy4Dg=@vger.kernel.org
+X-Received: by 2002:a05:690c:c50e:b0:798:1f8:3152 with SMTP id
+ 00721157ae682-79a1c085de0mr77708347b3.13.1773501956280; Sat, 14 Mar 2026
+ 08:25:56 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/2] iio: proximity: add driver for ST VL53L1X ToF
- sensor
-To: Sirat <email@sirat.me>, Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org,
- nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
- conor+dt@kernel.org, linux-kernel@vger.kernel.org
-References: <20260311224044.21480-1-email@sirat.me>
- <abLNbGUmaA7K0s68@ashevche-desk.local>
- <CANn+LW+F2bVMAGwoF8q9yBpF3x5r_hWDqvE3_JYjcLd16A_cEA@mail.gmail.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <CANn+LW+F2bVMAGwoF8q9yBpF3x5r_hWDqvE3_JYjcLd16A_cEA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20260311224044.21480-1-email@sirat.me> <abLNbGUmaA7K0s68@ashevche-desk.local>
+ <CANn+LW+F2bVMAGwoF8q9yBpF3x5r_hWDqvE3_JYjcLd16A_cEA@mail.gmail.com> <a2486bc7-13be-4567-a53c-b37921df7bcd@baylibre.com>
+In-Reply-To: <a2486bc7-13be-4567-a53c-b37921df7bcd@baylibre.com>
+From: Sirat <email@sirat.me>
+Date: Sat, 14 Mar 2026 21:25:44 +0600
+X-Gmail-Original-Message-ID: <CANn+LWK2OZ1dm0TAstM2hr6O6h2nEPRrNfje0mC3a2uc0HEwVQ@mail.gmail.com>
+X-Gm-Features: AaiRm50a0WB7oPrNpIM1ZzaRDqKuyHnT9tTRHdmvsogCGE-cmB_9gK4JmsK425k
+Message-ID: <CANn+LWK2OZ1dm0TAstM2hr6O6h2nEPRrNfje0mC3a2uc0HEwVQ@mail.gmail.com>
+Subject: Re: [PATCH v3 0/2] iio: proximity: add driver for ST VL53L1X ToF sensor
+To: David Lechner <dlechner@baylibre.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, jic23@kernel.org, nuno.sa@analog.com, 
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 3/12/26 10:12 AM, Sirat wrote:
-> On Thu, Mar 12, 2026 at 8:28 PM Andy Shevchenko
-> <andriy.shevchenko@intel.com> wrote:
->>
->> On Thu, Mar 12, 2026 at 04:40:35AM +0600, Siratul Islam wrote:
-> ...
->>> ---
->>> Changes in v3:
->>> - Merge DT binding into existing st,vl53l0x.yaml (per Krzysztof).
->>> - Use "reset-gpios" in the binding but xshut_gpio in the driver since that's the actual pin name.
->>
->> But why is it "reset" in the bindings? If it's a power rail or enable pin, why
->> not call it as a such in the bindings? The connection on PCB level is different story.
->>
-> In v2, I actually used a separate st,vl53l1x.yaml binding with
-> `xshut-gpios` and a required `vdd-supply`.
-> But Krzysztof pointed out that they share the same pins so the
-> existing st,vl53l0x.yaml should suffice,
-> using reset as the xshut pin.
-> 
-> I think a choice has to be made here:
-> 1. Either I use the st,vl53l0x.yaml binding with wrong pin name and
-> optional vdd-supply to not break existing code.
-> 2. Or use a separate binding st,vl53l1x.yaml with 1. correct pin name,
-> and 2. require vdd-supply
+On Sat, Mar 14, 2026 at 8:39=E2=80=AFPM David Lechner <dlechner@baylibre.co=
+m> wrote:
+>
+> On 3/12/26 10:12 AM, Sirat wrote:
+> > On Thu, Mar 12, 2026 at 8:28=E2=80=AFPM Andy Shevchenko
+> > <andriy.shevchenko@intel.com> wrote:
+> >>
+> >> On Thu, Mar 12, 2026 at 04:40:35AM +0600, Siratul Islam wrote:
+> > ...
+> >>> ---
+> >>> Changes in v3:
+> >>> - Merge DT binding into existing st,vl53l0x.yaml (per Krzysztof).
+> >>> - Use "reset-gpios" in the binding but xshut_gpio in the driver since=
+ that's the actual pin name.
+> >>
+>
+> We can modify the existing binding to make the supply required based
+> on the compatible.
+>
+> allOf:
+>   # Technically supply is required to power device, but we keep it
+>   # optional for "st,vl53l0x" for backwards compatibility.
+>   - if:
+>       not:
+>         properties:
+>           compatible:
+>             const: "st,vl53l0x"
+>     then:
+>       required:
+>         vdd-supply
+>
+>
+> And we can add a description to reset-gpios to explain that it is actuall=
+y the
+> XSHUT pin.
+>
+This will solve the problem, but I'm concerned about someone not
+following the commit history looking at the code.
+Logically, it doesn't make sense as both the devices require the
+supply. In fact it may give the impression that
+the vl53l0x explicitly doesn't need power. We are having to deal with
+too much just to save us from writing a new file.
 
-We can modify the existing binding to make the supply required based
-on the compatible.
-
-allOf:
-  # Technically supply is required to power device, but we keep it
-  # optional for "st,vl53l0x" for backwards compatibility.
-  - if:
-      not:
-        properties:
-          compatible:
-            const: "st,vl53l0x"
-    then:
-      required:
-        vdd-supply
-
-
-And we can add a description to reset-gpios to explain that it is actually the
-XSHUT pin.
-
-> 
-> Krzysztof, do you have a preference on how we should handle this?
->>
->>
-
+That said, I can still implement this if it's still the prefered way
+to solve our problem. Or leave it optional as it is.
+>
