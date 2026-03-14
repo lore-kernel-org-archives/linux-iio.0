@@ -1,66 +1,68 @@
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
+Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 094FB37F73C
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 19:53:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1E9A3231A21
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 20:22:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773518033; cv=none; b=CRp549ZjyzYnaRQlN841bepPLjz7vHknW8eQ4K3WYwqqXD6l/R9EowR77GHYhODesBBUjK0vKyTFmdJ8EI6E4TTR2y4Wfw0/qv2QXFXSWQNYjpmhXOeCvx9sp1gk2H6ud0uf9yTjW2q3EDgtSPTNENO3Vj1Z+efPvbtQNIMi6Gw=
+	t=1773519737; cv=none; b=k5Hh2ChOm+qHHdb5xnKMuU1aRv9DEoq7LheQAXb++gt61ZfUtiZXxOSf8iMv24sXaYfP8Zexq0uZtrGsLxhpTSrWtHpycJRX5g/lMQ/OxHdaLIGLtZAS7iS9b41bTs9TvsrX5AYNJX8uX9lka1GeNTnhhZA7APuNIGV82FxRAdg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773518033; c=relaxed/simple;
-	bh=WoYBcfnqdXjGLK8p2ATCDv5Clwk3rCl9OK1fQPfrqbk=;
+	s=arc-20240116; t=1773519737; c=relaxed/simple;
+	bh=gv5UVXcM+GM9/Tz4ymtqz4cpxzaHKReheF2p9kWkpIM=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=EyB8e6LpeYmf7Y76iLtW39ASnNqGqdScwnTT6/yOzDfaTt8AAg0AF6dDgFR0SnHcajpY/cyQJd/NAaaDh4iqx01B6nNCBTkQDINC6eaxgKhPy8D2j3ZPOxPuOnuBOYisKEP8Yzms0M3dzJjyYlY2/VZTm2fFtPxhpdQikrrIDaU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=phCg3G4U; arc=none smtp.client-ip=209.85.160.45
+	 In-Reply-To:Content-Type; b=O0ykRvuFAn42q4go6tbtuP1AxLZyp0TO4wjo9nzGftJwi0Yj8mgH3yq2To5lyOnVEutBau7TSMsopzCkGkaomzELZhhxoHBF7Lj9v+cXYP1Fulp6SMUWBXuZW8AZmfiqCzj5mXp+ncxQIJMf/CFxc0aWBM/IKdd7UTBBOOi1w54=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=W3aAHvOe; arc=none smtp.client-ip=209.85.210.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="phCg3G4U"
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-4170e916d77so1045674fac.1
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 12:53:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="W3aAHvOe"
+Received: by mail-ot1-f47.google.com with SMTP id 46e09a7af769-7d75ed779bfso3461032a34.2
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 13:22:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773518031; x=1774122831; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773519734; x=1774124534; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=jAUWUxgIJbO5o3ZCocsIhLG9qA3mcb6cANaDC/wIQ9Q=;
-        b=phCg3G4UpLjTDCiRn9Kfgzoxih14sZ5+A46wkuduGbAUTVGGLJioPsmvFndMoCGiMC
-         5F72fHgNzPfMvaOYwbWPQF8Cb1hItKBp8s5bRB9tc4xzsRHP71pt1kUW7QxtT22UwJZL
-         KzpaqbLAuNPt9lsQ9JjpzsabOqz3Tf7ZHF10Bvx6ayJdVxSCCiLwMGu6pCpLgQP8fdGR
-         cQOkocPaO5DOzZ5eDlzz/jPXcKPFU8wL8fT4uVNcazviiCTFF0wMK0NwIacOHa+W1W4m
-         w1KjV0cWB59E2z6g6Cy17EOGkCEVcp94RRmC0IfU2i+Hx+NOYu9fIv2tVe+RTNtekcd1
-         r04Q==
+        bh=EJo3ixYn506JdxY20NI00e42tBgHOxbKoRjS/yR4UCY=;
+        b=W3aAHvOeVbq8M/LNpdiF/NGrZPqtNcazwQFirxNhYD8NZFSiumlShqzqWFHx45nbmI
+         BNkUrShC4Y5dMNQKZqaBFWYdBnIpZuZAB7tw3q31DjvwNToDblMfpqBFQG7ubLn1mgs8
+         uKtjFGn5aOWQsNxKbDhhr1UdtlkmIzNlt00aJs8G+4JM44RugUJ+8OhjU/4Sas5vZMRx
+         DM3lU9QZShxXDGAdNIEbCOHIAIqWA3YcD2Cy8cWkOC4CrorCm/mVDXWkaO1eU4p7svyC
+         Xlet6v3mgFL1ZZjf+kxWyuTLUohGVKEEYPMupZ6yOMZ9tbo5dsVJ2kpRVYv9E9xxO6Zc
+         d1iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773518031; x=1774122831;
+        d=1e100.net; s=20251104; t=1773519734; x=1774124534;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=jAUWUxgIJbO5o3ZCocsIhLG9qA3mcb6cANaDC/wIQ9Q=;
-        b=mH2bNgzPcp0LS2gcLvVbDidzSro+bxo6Of6gVAj7cgyA/DxB9DEiqIsZJ+wD5auDjK
-         zwA7wlF48XumLkZi0BF5NMnramyq3AomC3x3LVOz2avoPDsnibK8KppJPT0s94agb9Qb
-         cBQf3RyQRhhpgD2/qAlMIfi2YORpgIBhaPmRHpbO4X+SiNCOM4QIcrCzjaVcDB4QAXeS
-         mycJKNoDKFA8mEPepGsC4z8D05W5t3xII0A7ycilt3NuBHCe9BbKeYDkTqdO5fi/ZQsb
-         4Ut7NZa4nYMqWbgW2e4yD/u/OrvJ1lTMI76b6DtM3jrdOFwSy1EAHahrZJDFc/xpeJCl
-         KClw==
-X-Gm-Message-State: AOJu0YxPUGZGAhdyIk9e1VX1ucN8i8nnvh5pAzDJlGJosvQi7mc1PPXU
-	6KGX4/a730mk+FN3A8HvXKEivbwES1Hein51CWW8jitXWmxBowW9XzoKAdYYswcLknY=
-X-Gm-Gg: ATEYQzysQnOJdGsUBXzxJZWI/w4bqG8mFTwJBDOU7TCFg9qNDjVpvrQxMAsrpjdUVTM
-	3Od3zEJK2vkoWuyYN59C6AfhRHZT3tVinKzqsgKboGfAZmwljUAGIrhwFCNv0wg0pD0MjKfsTR3
-	MN9XRi4hR/6eX3r9d+JlEa+eXqh6Bv8u9i/smryYhIpt9B0yjBcvProZKQ5dF7/CIQE9n4q4KB0
-	jEIU+GryRoPVHP+zLOkyqZAq9bil4ACviFqMC0TkO6+/4PZGgisCSmKcCIBJ8mRH20v2j/v5ios
-	NKSCF4bw6ZrIEI0kKFJx/L6jMMLx5NLPgGbwDQT4mEn3Z7hpiLA6MQZjNYsuc8Rf/cP+fg6fRZY
-	PnYmpv11Rg/xI+TTOV4jb51dlnx9FJ/Em5uRXOfzKyOuGQqzZEOX1qW2cb0RhspdyeI7IzPWBlb
-	2Q57/DvGx2cdwtYnFbxXv5YR18Xvt1wZ+bU8AvZgzajMfRZ1r0+YmQ9kGpWB2ReszoXoa2Iy/ZE
-	oJYOsfyAJUJ
-X-Received: by 2002:a05:6870:d8c:b0:404:33e1:3cc2 with SMTP id 586e51a60fabf-417b91b2c8fmr4441451fac.13.1773518030913;
-        Sat, 14 Mar 2026 12:53:50 -0700 (PDT)
+        bh=EJo3ixYn506JdxY20NI00e42tBgHOxbKoRjS/yR4UCY=;
+        b=b+rOWMHxMXVB+9CzIHFzCT6r+0/X9Ayy0+xetuJX1Er43XKtCTaSSGTGTBYV+OFI4B
+         xQNMC9UNlqMT4u7KBJXZTV1RmGsIzlEykZJB1+cCRZJ8zU1WQa61NdRlvnSszreEHOtX
+         JyiZLKcz/edIvbOf5tsSKPO9pOzxJ9PCH7doEEq7uYMZZWWReT0Ifx64b8/wgKQIV3I4
+         p1QG0e/U5kl6jL4D+tVUcSsXftSzWix5TDAovOfvFiRd7n1cp2X6TILxcn0qZO2SD7+Y
+         9+afc6guOfllg5gfa3Iir6gt8p0ABKIWLjl9S77Mj19VqJkjaRgZDMeYz1n88DtdIlLG
+         ZLpw==
+X-Forwarded-Encrypted: i=1; AJvYcCUYRrTDqYLA9xwFD2XwN3aQ30h+Kpt5kWXOstfva8h/hlT9+DY/hLGeB55rLKjKnv5m8P59hS2igOM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwfPnZEnn9IBo10vYdAWgBvO2zDSUgctnK1GYv1CEQanAIU7WjR
+	aY0GgDvXDySBmHwo5AsYxKPnprQgsk9sTdYOiGoBmOXskUtUPFUfhn5AcWsnzsv8rzaBpv6Z3VD
+	nLSwl
+X-Gm-Gg: ATEYQzydyib18TcYJvlKlFpwLV0TbmKhEkvq4vRKDpZchAzO2e+7SCASc49CDh2gi4y
+	h7m9JPDSiyQ6ccEVt2V9cKMMaG9H2eLt0ZVd0fdp8K7W7ek0OjkRy75U5oYbb2qUF1fIavOnVBL
+	PSyXvc6PjzNmMPMgUw4sMZuYyPCQBtPQ7r25d1OA0utxIiUceCTsSIL4o4XffF28ZTTsd/vtT+y
+	Nlg6t6MUXm7tqdDph1ALC5TERt2NFP7EPgfvaiZLllYTA7xap4VHU47oSwV4KtD/FXaGpWvKDM6
+	KCJY5aMwA8LykTTXQjoADJh/mTxIIci8dFdznf45cwYFeXZWVlfDwCFj0kSwxSAwEkdB3rPYbhO
+	tqbMSIX/M2x/6SypCr94HqOsd30K6+rs+3d1ev71CPUXnUJWSEabxnix7rV6IsBcpHUM9bs0Bv1
+	TdflQdqzc9TXtxgmzrzVZail2Vvg/luWSmgI87WxePtGJaeSIXp0dE1y6Z94M6gl5EZqnMPFnl/
+	PWNYhya9bdK
+X-Received: by 2002:a05:6830:6d12:b0:7d7:4aec:7ae1 with SMTP id 46e09a7af769-7d78259d059mr5215603a34.31.1773519734048;
+        Sat, 14 Mar 2026 13:22:14 -0700 (PDT)
 Received: from ?IPV6:2600:8803:e7e4:500:14a9:db6c:e65a:4287? ([2600:8803:e7e4:500:14a9:db6c:e65a:4287])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177e64a931sm12099255fac.14.2026.03.14.12.53.48
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d76ac328b9sm8838001a34.1.2026.03.14.13.22.13
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 Mar 2026 12:53:49 -0700 (PDT)
-Message-ID: <cb92bb47-9078-475d-b242-71e3f9181a72@baylibre.com>
-Date: Sat, 14 Mar 2026 14:53:47 -0500
+        Sat, 14 Mar 2026 13:22:13 -0700 (PDT)
+Message-ID: <a2e56b5c-ef76-4a6a-9ffc-e8fe259a7153@baylibre.com>
+Date: Sat, 14 Mar 2026 15:22:12 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,37 +70,50 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 0/6] iio: light: vcnl4000: add regulator support
-To: Erikas Bitovtas <xerikasxx@gmail.com>, Jonathan Cameron
- <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
- phone-devel@vger.kernel.org, Raymond Hackley <raymondhackley@protonmail.com>
-References: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
+Subject: Re: [PATCH] iio: accel: fix ADXL355 temperature signature value
+To: Andrej Valek <andy@skyrain.eu>, linux-iio@vger.kernel.org
+Cc: Valek Andrej <andrej.v@skyrain.eu>, lars@metafoo.de,
+ Michael.Hennerich@analog.com, puranjay@kernel.org,
+ jonathan.cameron@huawei.com
+References: <20260313092413.35912-1-andy@skyrain.eu>
 Content-Language: en-US
 From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
+In-Reply-To: <20260313092413.35912-1-andy@skyrain.eu>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On 3/14/26 11:06 AM, Erikas Bitovtas wrote:
-> This patch series introduces support for voltage supply, I2C and cathode
-> regulators. This fixes an issue where if a regulator is shared between
-> the proximity sensor and some other device, and the other device is
-> powered off, the proximity sensor would be powered off as well.
+On 3/13/26 4:24 AM, Andrej Valek wrote:
+> From: "Valek Andrej <andrej.v@skyrain.eu>"
 > 
-> One of the commits includes a Reported-by: tag without a Closes: tag -
-> the report was done outside of LKML.
+> Temperature was wrongly represented as 12-bit signature, confirmed by DS.
 
-If it is on the public web, we can still add a link. You can just reply
-to that patch with the tag (if there is one) and it will get picked up.
+signature == signed integer?
+
+DS == datasheet?
+
+> Even if the temperature is negative, the value in the register stays
+> unsigned.
+
+And IIO_CHAN_INFO_OFFSET will be negative.
 
 > 
-> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+> Signed-off-by: Valek Andrej <andrej.v@skyrain.eu>
 > ---
+>  drivers/iio/accel/adxl355_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
+> index 1c1d64d5cbcb2..8f90c58f41008 100644
+> --- a/drivers/iio/accel/adxl355_core.c
+> +++ b/drivers/iio/accel/adxl355_core.c
+> @@ -745,7 +745,7 @@ static const struct iio_chan_spec adxl355_channels[] = {
+>  				      BIT(IIO_CHAN_INFO_OFFSET),
+>  		.scan_index = 3,
+>  		.scan_type = {
+> -			.sign = 's',
+> +			.sign = 'u',
+>  			.realbits = 12,
+>  			.storagebits = 16,
+>  			.endianness = IIO_BE,
 
-Reviewed-by: David Lechner <dlechner@baylibre.com>
 
