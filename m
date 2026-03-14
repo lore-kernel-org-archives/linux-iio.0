@@ -1,144 +1,128 @@
-Received: from mail-qk1-f180.google.com (mail-qk1-f180.google.com [209.85.222.180])
+Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com [74.125.224.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E7084223323
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 17:20:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.222.180
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49A57347DD
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 18:08:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773508821; cv=none; b=HFt49MlNJqGrOkSSovdCCHuCp9ryIO/ZPiscpGTWByEpwpCWVl1yfs26qtqm4rFCBP7yYd9h6y7HSGr4BDtxmNgL6MwC/1x0GjG5CvtO/fFTdseg90RLiOl7oRY4DUIc6dZJKFbwHMtg9CauNH/aoC59+7UHzVGoK0dO/fBmDFI=
+	t=1773511687; cv=none; b=my/Zlbr6oH0cYPKZLLMGzngmnfP2jzj72ImV0ZmQJ2n1+mjLHiVVX4kkXMs9wPevxMo5aASUAMl6J6gB3v8zbY7zq/ab5JuepPMWZeBn2NUN+MlfQYW9aZBbm6Uwm84tFxkDH8L/jTO+GAHRhGGo1Hgtxk1bzBwDsQJBhfyUrrc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773508821; c=relaxed/simple;
-	bh=Txz7Wh2Jb+oCJjmAM7o0qTCk6qfXlfp7o/c+0pOhmJg=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=FKLjB8XM94Hx1MD6y/DddsQQv6UB3Gj2eVBt9Pe+kR3I/cgGVwbFVapS98lPWMqZj3nJpXLG4TxldcooX3G7xuMI/H/iKlw7+mfvdqLlGYkTrVMiGRyoPXDS+tRkgoSnQQ3KZvC6uPnU/wdQjD99WmSoMFO4/+eTaiZwh5Dh/NI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=QDAgVptg; arc=none smtp.client-ip=209.85.222.180
+	s=arc-20240116; t=1773511687; c=relaxed/simple;
+	bh=zOskvLS10rYNxZVppK5rSYC3b2FQ6yq1FEq2VBHohdA=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=ri26zwZctA1FtMGGaZnWfpMUOkiIejSL2PDDksNWhY0EL7FheN7WPwr4XZK5ceb4cWELKykwAXVdKuPfAZ/ZOKwlz7e0NT+PlgIjTthjRRJO0h405jZIXwnDxN3sdDjCydGbK5c9IXlL5YtTGYmd0qV+FMpVMnoeakOYcXcmPfI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B4avUYaZ; arc=none smtp.client-ip=74.125.224.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QDAgVptg"
-Received: by mail-qk1-f180.google.com with SMTP id af79cd13be357-8cd77786e97so324103685a.3
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 10:20:19 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B4avUYaZ"
+Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-64c9a6d68e5so2775602d50.3
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 11:08:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773508819; x=1774113619; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1773511685; x=1774116485; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=4eQgV0GJfcBirHFQIwxleynpLMsruw2WGsHUL1t52B0=;
-        b=QDAgVptgnXoCi32pF0PgHRBdfl9VXO3BewNKjhHLa6rhDbvyTA47NRqDHpTNy+wftJ
-         05h+t3KUS3zAKK93ZXboQ28PDY5toqFKdaZwmq5Yp4yMq+aVXeG/bS9slmtGOJUViIy3
-         r0KDpG1xutkZUQCMBu5J9PmOtqMVvIfwEBWXSKsGYqmwXvmsoUrz8CsXcUEef6YRiKau
-         3XogEoUAYz29LkkgpJ0kPSZSIzVjM5sikeFXkZ3UDFug/99lYc2YBFMo+sPXnzbCc/2d
-         V64iO/1CDAfTNtlaEy4Vty+r6TJHdDOB4JfBa/0AKql+WeKZrtgVbapSwx65oX/XNgb6
-         s0Bg==
+        bh=zOskvLS10rYNxZVppK5rSYC3b2FQ6yq1FEq2VBHohdA=;
+        b=B4avUYaZryYQplGxkd8ckQqKgHo1v/12lQTXP0c6Z5k+ZGunlEYvlst/lrx8NEtisz
+         h8fVuyrYfQ71M43VJDgi22YgcsuOy9aLFapUlKxOciupZawS3nIwMJwDZWAHPt3jqDFI
+         9fY43sy8cWermtsVlPoBdtG335UPPoVqnTuP/kdPeG2XhWYVC5JCMksI3MgKxWJG1oip
+         /9Cd+K0n2cmYGKFwU3QI95ifs/ykh9VCvd71/YO9tOxkNeDLBh0AIIWxHByvEIzl4895
+         aeOp80QRS+BeFlpQF+pPu9rrkBXmj3xUNgn3zpDWuqz83XKvjCkb2Gv44LkoyBE+g0vm
+         ZRNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773508819; x=1774113619;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=4eQgV0GJfcBirHFQIwxleynpLMsruw2WGsHUL1t52B0=;
-        b=Rjt0YzZpHsL3IVWdBocjzEEjl0Kwa6FDKXbFhT117EP6GfmNBamSsTci1CCQ4OZ2Mi
-         hq/ra+tNXl65OVBa9WDKG3OJUHoo83CP5QReoqoSqRrpxpLc5RnbVXBj96wwzSHloiWK
-         aV7wv0V3bIhRFRq3Uo5edizmnGVoLvTWw4g83WkPHLDwVI/V8kbCwBReDnBFUbrLinbJ
-         vPByLOdj2p4g97J83SCHsOeGcviyHIXs/haSa906AOxEvsgXfNhObIucjGd+icnUy/DC
-         vAL04XoYoEXpl+q6zTMLUKqh84hAbSO/gWNePSxFtZR/aTN3NCvp5qgNz/DWNwJNiPna
-         VOfQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXXvjQtWMYpU04S5MV5nJ1gLXxD+unggrBpaCP0GOomqf7fuE+fqLBjZZwPV1l4Qa0qQp16GArVj88=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxkVKPRTH/ISensKwtFic96Wqp9S1MvmGlg6XesueqXZ92urI5i
-	9keNDWID+Pyms8WCEvngrYFmP80M55ZPvJff5668P3RaOaiufECN4wt+
-X-Gm-Gg: ATEYQzwYs4zdDUPBiBaOVWmXSNMCZi2MN64nIeE4ErnUk5lXvxAnZRmKOqJvTqKYADJ
-	XaxnQzMyi6qJKgNZIzyLgWFTJd3S7rzd2S4Z6LxjnzmM0VhO+CVCer29gfBGS4p+x3NPsCA5lD0
-	Nnb5HJkd3GWGX1DvlvpeMyHc5yGYEiECN9bECpylUD4egaqw5oz/0pBU8hRqPx/g4EWCW8ckqmT
-	72WZKk22xEDrbqDEeqeYPF/4jHTFTme7jFY5wkub5oM9IVm4S7i3NR98GA+vqDb0E72N8Dh+kXu
-	7NvB+Thi0qcwyYcN+J3fU63OiFhg3PvNygqB/SJCjSVH2wZAZl90muR/wtTFpFilGVgRzwNtSmA
-	JkQciCpy5/2uzD2yhrnyf/qn50orMixWpaz8tu+FB2Nsseaun7Mowde7aF6d7QmM3werN1uroyM
-	6xujAjlC5GRsGnUKCD9ITjL9xrTahXBw7htUjJCg4Byfr34Q0=
-X-Received: by 2002:a05:620a:4502:b0:8c6:b425:4779 with SMTP id af79cd13be357-8cdb5a05fe2mr994724985a.7.1773508818720;
-        Sat, 14 Mar 2026 10:20:18 -0700 (PDT)
-Received: from localhost.localdomain ([142.188.159.189])
-        by smtp.gmail.com with ESMTPSA id af79cd13be357-8cda21540f5sm802599385a.45.2026.03.14.10.20.16
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Sat, 14 Mar 2026 10:20:18 -0700 (PDT)
-From: Neel Bullywon <neelb2403@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Neel Bullywon <neelb2403@gmail.com>
-Subject: [PATCH v2] iio: frequency: adf4350: replace loop with fls_long()
-Date: Sat, 14 Mar 2026 13:20:06 -0400
-Message-ID: <20260314172006.69744-1-neelb2403@gmail.com>
-X-Mailer: git-send-email 2.44.0
-In-Reply-To: <20260311020115.56321-1-neelb2403@gmail.com>
-References: <20260311020115.56321-1-neelb2403@gmail.com>
+        d=1e100.net; s=20251104; t=1773511685; x=1774116485;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zOskvLS10rYNxZVppK5rSYC3b2FQ6yq1FEq2VBHohdA=;
+        b=nNWqF58wNM9w2o36F9dR2IJSUV+OCxA70R7VW1ErEP8VJ9HfPHhagrqGqPAltVeKwz
+         eYoZK9m8i3ULCw0eUEHkq7IHwkaJBcove+Hokgz3M7fCYItce880cvXUMwfSow7Fmuio
+         0sINHCA9TEjO0AFNh3wkXU4HtPrMxaBuB8hjJHlU+E94Smk8Y2o4eSHv4dqcvD+3eaW9
+         dJv3qqI+apJwR4aXRQ5JfUUYwTihjanAwfgPR+SatuNW3hQTUYn58RgTdKnyeiZDnHeR
+         lLR+LF+ZIVB7TvxefkqkC3a+mHeKt/gQDTSIMHU93W3zTBTmROdehuJDkXe6fN7Mvix3
+         Kc/g==
+X-Forwarded-Encrypted: i=1; AJvYcCVqEQaRGoL4U8VI3WMvM9gGu1ZV4J4bfi1QYFH70nka0f+MaKM6Hj8e6s1ULDBOVZ9L+I7g1is/DEo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzdVd3No5kWRfYHXWFteuacIFGVZeTCiYX/7RceIRkZBA/KHOBw
+	e3iOFTQYo+S6Dc9mHZ2p3hlcsQlNZ52qPN9V9Qpz1cafMSnmUlOB9Ghd
+X-Gm-Gg: ATEYQzwASL1grm3NqZJnen5t9TP/a9jO5NKUi5wyn0xuIWBcbUjCjzS8XEbbwWyC/Q/
+	fLr3GLag51WUHII59K+Koj4JaXji5AB+cQW9QF14jZjGZs7r1AQZgz6U5V4kHiSu/qdiOqG5S2D
+	5CcVX7b9U4E99JRXnKRHucaqAO9JDSKQFKGEOl+MVLd1f3/vd7NQl5kRQc1gJctCQ0sYWIQldQ9
+	+2eCnBhm36JC++YrR3O9gqscbsxkHGTb7kYYlVPMvoV/HnfkqJ5r7xOF7PFyMLwUAWQJyk3ggTx
+	fS+qys04O1+LgLGHMU8fuMqFwOZWkh90IuIWrZ5MaQHbaDWo+dbizUY7GlA14Gbn3GuQwnPooIb
+	WRjBSEDNL6uHLv1SlTULckMH0z7nV5uMrM2J/MpuD2kYNVTh2LB0kG+qJifXsWQqAniJSg4Urle
+	jfkLuUH3Opby+0/YtJfDB/9grJdf7hsBe72HRQBXnGznGycmFhVuUG0wnyEW8Qt6qvTu+KYMgd3
+	YtDr4gSOtMChWRw2gFPm8Qa04VLQYfR98WuhuifVNGF6Z//WOQ3W3hV2KB4Eafc1po=
+X-Received: by 2002:a05:690c:c155:b0:799:182:17bd with SMTP id 00721157ae682-79a1c0e1676mr67691637b3.24.1773511685202;
+        Sat, 14 Mar 2026 11:08:05 -0700 (PDT)
+Received: from localhost ([2601:7c0:c37c:4c00:f174:ec69:bc86:8883])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-79a381fc2cesm6431537b3.24.2026.03.14.11.08.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 14 Mar 2026 11:08:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Sat, 14 Mar 2026 13:08:04 -0500
+Message-Id: <DH2PF86XN60W.2MVDUHLKPR7LH@gmail.com>
+Cc: "Ethan Tidmore" <ethantidmore06@gmail.com>, <andy@kernel.org>,
+ <linux-iio@vger.kernel.org>
+Subject: Re: [RFC] GSoC 2026: Transitioning IIO to guard() and
+ scoped_guard()
+From: "Ethan Tidmore" <ethantidmore06@gmail.com>
+To: "Jonathan Cameron" <jic23@kernel.org>, "Andy Shevchenko"
+ <andy.shevchenko@gmail.com>
+X-Mailer: aerc 0.21.0
+References: <20260311194624.1521-1-ethantidmore06@gmail.com>
+ <CAHp75VeZb0pSiAkHo9QUeS+2L-qP_83-dKKRSp7-1VfZrtr1bw@mail.gmail.com>
+ <20260314110758.2fc20704@jic23-huawei>
+In-Reply-To: <20260314110758.2fc20704@jic23-huawei>
 
-Address the TODO in adf4350_set_freq() by replacing the iterative
-power-of-2 shift loop with a constant-time bitwise calculation.
+On Sat Mar 14, 2026 at 6:07 AM CDT, Jonathan Cameron wrote:
+> On Wed, 11 Mar 2026 22:18:07 +0200
 
-By comparing the highest set bits of the target constant and freq
-using fls_long(), we can calculate the required RF divider selection
-in a single step without relying on expensive 64-bit division.
+...
 
-This ensures freq is properly shifted to meet or exceed the minimum
-VCO frequency.
+>
+> Hi Ethan
+>
+> I'm not keen on a mass cleanup like this without taking a closer look at
+> the drivers. I would say (based on gut feeling rather than actually
+> having checked the stats) that perhaps 25% of these patches result in
+> feedback on the surrounding code or follow on improvements that are
+> enabled.=20
 
-Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
----
-Changes in v2:
-  - Use fls_long() instead of order_base_2(DIV_ROUND_UP_ULL()) to avoid
-    unnecessary 64-bit division (Andy Shevchenko)
-  - Add correction check for mantissa edge case
-  - Adjust whitespace per review feedback
+That makes sense. That would be a ton of time spent on reviewing this.
 
- drivers/iio/frequency/adf4350.c | 16 +++++++---------
- 1 file changed, 7 insertions(+), 9 deletions(-)
+...
 
-diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
-index ed1741165f55..2183deec179d 100644
---- a/drivers/iio/frequency/adf4350.c
-+++ b/drivers/iio/frequency/adf4350.c
-@@ -17,6 +17,7 @@
- #include <linux/err.h>
- #include <linux/gcd.h>
- #include <linux/gpio/consumer.h>
-+#include <linux/bitops.h>
- #include <asm/div64.h>
- #include <linux/clk.h>
- #include <linux/clk-provider.h>
-@@ -151,17 +152,14 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
- 
- 	st->r4_rf_div_sel = 0;
- 
--	/*
--	 * !\TODO: The below computation is making sure we get a power of 2
--	 * shift (st->r4_rf_div_sel) so that freq becomes higher or equal to
--	 * ADF4350_MIN_VCO_FREQ. This might be simplified with fls()/fls_long()
--	 * and friends.
--	 */
--	while (freq < ADF4350_MIN_VCO_FREQ) {
--		freq <<= 1;
--		st->r4_rf_div_sel++;
-+	if (freq < ADF4350_MIN_VCO_FREQ) {
-+		st->r4_rf_div_sel = fls_long(ADF4350_MIN_VCO_FREQ - 1) - fls_long(freq);
-+		if ((freq << st->r4_rf_div_sel) < ADF4350_MIN_VCO_FREQ)
-+			st->r4_rf_div_sel++;
- 	}
- 
-+	freq <<= st->r4_rf_div_sel;
-+
- 	if (freq > ADF4350_MAX_FREQ_45_PRESC) {
- 		prescaler = ADF4350_REG1_PRESCALER;
- 		mdiv = 75;
--- 
-2.44.0
+> As to the your question on how this 'might' be done, it would need to be
+> 1 patch per driver because this will cause chaos for backports of later
+> fixes due to significant churn.
 
+Yeah, that kills the idea entirely. I was hoping it could be done per
+vendor per dir but, I understand why that wouldn't work.
+
+>
+> There are ABI changes that we want to push through the tree such
+> as iio_push_to_buffers_with_ts() but that's because the new ABI
+> is inherently safer and I want to get rid of the old one.
+> Some of those cases are easy, others much less so.
+
+If a tree wide conversion to iio_push_to_buffers_with_ts() would be
+wanted I'd be glad to do that. There is much less volume for this
+project and if completed then a deprecated function could be removed.
+
+$ grep -rn "iio_push_to_buffers_with_timestamp" drivers/iio/ | wc -l
+73
+
+And this would be much more manageable to review. Would this be a viable
+proposal for GsoC?
+
+Thanks,
+
+ET
