@@ -1,1046 +1,273 @@
-Received: from mail-ot1-f43.google.com (mail-ot1-f43.google.com [209.85.210.43])
+Received: from mail-oi1-f175.google.com (mail-oi1-f175.google.com [209.85.167.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 27A6F3009E1
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 16:36:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.43
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773506215; cv=none; b=I1gtMpesNKQE9KfcXgMxl2woG5W9hsiwulEv4RM/JJLkTD0VEcVLxfD2GVQh0sds1SXzSJizYfsLPF2VpYCWDC2nyxMAjhenzCxplNEkOfUN/CaR7tQ85RAcbUNk5O9ZpFvqGQq+NbFlq3VXZj3gXF0cRdXDuj1H7obXM4Tyvkk=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773506215; c=relaxed/simple;
-	bh=k1Y8TgfYbhysVRnukEhW+1EWo5zrkZCsGqeoSCYkGAU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=MyE5d3VIVal5ZyUkd8vb3xqHlVH5goZ2AJg21+i8+Ox6HYL96jgpqN3Jo9x3mhBQtj17kb0bYje17ro4trUK9xwt1Dtj2h8qQJrqZwfBZe6m0MEQn20LG5+QTpybHnaa9vvyO1QeoL0RTytdZocTXhn4JHghUb06rPKBGODK8cY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=CssAZYmA; arc=none smtp.client-ip=209.85.210.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0F852522BA
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 16:37:05 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.167.175
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773506227; cv=pass; b=S0xm+6F0YU32dHg0rAEOho0l7z0sd0wwGIxsAoScgQdCz7Q7Habc6YdipVmtC1eXhAd+VGw1gwI/Q5pfcFNvkI+5EUWHG4dTcxH2tFbNOKmIK9vBd+Qzr49g+qkdu0WXUJNNZnNlJ7Tk0IcCUDKVLBDDgysdnLCjHB+xvMVW5kw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773506227; c=relaxed/simple;
+	bh=AChuMYvzN9FAUF/EEMXao0p5KoUwHXrwfFFL2igcsZ4=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=kkfjzINLHByRXNyWL7OWL+MM2YTiRKfGROzOeHW1afJpntih2sCJsaMQqXJgaPltW5VUtXTFl0jUGPd2TWp0TcIZEapezCcOteaJXZwAvIXfmGWtzZaiCZVyYO7GgjzbgIvXGXh2L0Ws/u9Y+N8edhZ5fIL0MdStlpX0cTsu9yc=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=B79qGRvQ; arc=pass smtp.client-ip=209.85.167.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="CssAZYmA"
-Received: by mail-ot1-f43.google.com with SMTP id 46e09a7af769-7d743ba241aso1711591a34.1
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 09:36:50 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B79qGRvQ"
+Received: by mail-oi1-f175.google.com with SMTP id 5614622812f47-46708149af2so1733694b6e.0
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 09:37:05 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773506225; cv=none;
+        d=google.com; s=arc-20240605;
+        b=F/jQ5bWYygSU0NDCue2Wt6YBUM2raaTGD0SPdrMBUkiQ0+GKtwimbh6P1t8TekLyuo
+         AONRxxexXngHszTX4+oG9KdK5VvAU3VdCC4S36KgG9nnVoVMW/IRt5bLDBVbIYllG+3f
+         SKTnF1pt8Rf+kS3j2ruuaw1LJz41I1X7wud3rreKM8PrGFfgFM+Qfo15Vs5pWHHFzMWo
+         tBW+X08n8HxY53lOb1a2m0gGa3Jxi7JZvVuayNqYy8C0uRGhcUV2vzCD+MvQP24zJDQw
+         plRuzJlirRXT0p8rkNB0j2GkIwyuWPj12Szs1v6lI3V/wZUpFc3p4JaCbIdMKinmD/Ae
+         8uCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=T6UH7E+PyL5XHcjZkvJVPR6jCyW0Zkum2Jt0XVUTJW0=;
+        fh=RFsO/vB5j22NT8iWq4z7j2VZTDkD94uDaYq9SvXQgcE=;
+        b=S0T4eUD2fovvTet6YX31cVDWgH+eG/FcoYhdAFCmB80PCvkSKhGEf+VeHfvy84WEAV
+         MpNA8on4kFoyDqodxCwIEUnYo3dOh87fBVc1t12zD1xxzQ3V1YAtgRN/RrYj9bmkh0u7
+         lLVL3uKm4DOLKd0cIwk8OmmFs7l8YDHRDrLfiwBEbesa67qC+w9xKUkkViwvC0FybGzV
+         qQI4PsHGiJ00mj94D4Pn1Y/IENINGP+C7PrUiaS9F3MkB7mh+v5jeyrkSW8DMzk/QTZT
+         QnZW1jTGHZpBEezBqc7HgrLZJxDxeluJl42RcdWT6Jsz1/iYEWISaOUx9H7z25Al8rgC
+         RFPQ==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773506210; x=1774111010; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=GP8TCAmV+sEBdph0Dyg7uEwuCToVskjd/wPHYMbnYeM=;
-        b=CssAZYmAEjFFg/nlYZdXwvggE297gCYnTdp7YTEJPGW//+RoXQEjryDLolvZ1dT7PH
-         Ppvp0sd3HJVnoyDrYikbKzZkP2PSC40kCzNQRomqFzq7UxnMELiYq4rQ2AUAcOHWzzQr
-         UhPtt16n5y8rmx4/23NPqsHXXCPw1bdC28urLA/mKGdZEp6E9rthiURV9bdfdJWn8/4C
-         /PE5vf+A8SiKkdDjWVSHKp1iIrW4+PpQhPoF2UrtsrCz74mkCaTek2kh3HauuyfcdtUv
-         0coApG/7j64Bdqya5neuJa+ATpBC7H2N5g1oq5OspFKt2tOjWKyQz/1LhJyETxvtuHah
-         aGJg==
+        d=gmail.com; s=20230601; t=1773506225; x=1774111025; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=T6UH7E+PyL5XHcjZkvJVPR6jCyW0Zkum2Jt0XVUTJW0=;
+        b=B79qGRvQkGAO9pPwBEMu1lSFHeKMxHTmT7cFSrd5mVXwr7do/eJtA9Fx5iMLmsd8kc
+         OgOqe5ytahKUvcBDSBzcQVBD14WBnXQ1DxMOV2mjAlBElS6XkVcxBAq/9alslm2YRz0L
+         ROyQQSup90dBxPP35pDF2q5jKB7p6gqAeZAF+ZCVzUEixlsz85HSxuwVyuT1Ro6vzVtg
+         9szgc/JP9FjTuXL2Nu2xEjG5k9IBAmbb5Gp1jgBW3iLsvmtDuzuLY2eJWNmm3WAa9o0z
+         4jjDqkQvG19pjr9pTkpNk/f3OxEI0u0KKUQWib4r6ezg7Ud7Re/Z1qc8JaAyeyZ6FJP0
+         vOAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773506210; x=1774111010;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=GP8TCAmV+sEBdph0Dyg7uEwuCToVskjd/wPHYMbnYeM=;
-        b=SVunlXglBs3cfSFCg44I0O7UPsMPXjwgohTh1bRlCNlERMWX2lxkxSXDHCtXwS53oX
-         RcCt5Px5OBmodjvCGekqE0GqW32RKdxTOwrBS7Qq25qsQH4u1d/UdtwfZCRNUiRjKKjM
-         HsY1xP+jkYNbbWdfYUc+aUkxOEh+GfMsG1bcDwR9PcZt7SMSVV4yYaqHYWR9mV11EaSz
-         530Z+lhLYoQAbNhSBMa2DxDuB74H8yvDD2oSy1Pv8mIoIHW0/iWAD8YhNHN8n7goADtT
-         0X3hOZDy43QTD9YgBb4OFZhy/yn/wR84+04YZQpFj87NuEe4fw157AAE6ofU5YGOPdy3
-         eIWw==
-X-Gm-Message-State: AOJu0Yx3L0hDTKVp/k1c0UMAj0V2FKtkVpVjo9t8wKG07aldNl5qh3Tn
-	3ZbfYdgqFELxHLsWsKS1BRKgciScamB7nmeoJ7zdciWd9b4sYCOQQ0jntkiv8CbtibQ=
-X-Gm-Gg: ATEYQzxLf7N8suuNMc4M83vShG4iBfqMHe4zlNOuMRMzCVHYaqSiyGpO/6h7tVgmOq7
-	0urVbVO+xD+1pz22U3EQcnuoBPqZdvp8VXIJT0oyGUOCG+43lFdhQu7gLKaG/TEzjKruDCMevsE
-	JYvOAsGl7EEPC4gLyW2TgiBTMnAWE5aGSFUa+PRmHPY7M/9hgJ2U4eJ3yZfYgs64ICbZM06E+OA
-	K/bu+whRhSFyvxWctikTO2CKB51ZjiIZ3IMkIuJD3P0GImU8k2DS+IWXrhY3TpfDmG0wjvGML8f
-	jK4+Y4x6dt4xvzXy0oGrgfrHS0rL0WEiwv2KhkBvlx7mLc2fDmfMe435HonRBhUQtn2CsUPX55i
-	h5eCpfIhujQzw/m3e+HaUcjn1yUyaLMN6s5LxareuWe1/o4uYly45aiL+GUNYmP2L+Q9ByKfgJZ
-	HYiEw5q5YlM+i+i5Kq21C/h/hJkKSso6VbdJtqcYxDxdPhYNXWByGTdAWD9Uam8jBPwTK7q2dbn
-	w==
-X-Received: by 2002:a05:6830:6503:b0:7d7:4b65:e8d2 with SMTP id 46e09a7af769-7d78243bcc4mr4678197a34.1.1773506209892;
-        Sat, 14 Mar 2026 09:36:49 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:14a9:db6c:e65a:4287? ([2600:8803:e7e4:500:14a9:db6c:e65a:4287])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d76ac898d6sm8642882a34.9.2026.03.14.09.36.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 14 Mar 2026 09:36:49 -0700 (PDT)
-Message-ID: <aa83d2ab-a531-4f3c-869b-85c323c469c7@baylibre.com>
-Date: Sat, 14 Mar 2026 11:36:48 -0500
+        d=1e100.net; s=20251104; t=1773506225; x=1774111025;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=T6UH7E+PyL5XHcjZkvJVPR6jCyW0Zkum2Jt0XVUTJW0=;
+        b=SyoysAw4JaUJxD7IYxht/Ue6CSo2m3uzXp1nLVdwgE7HK2P18T/nezC2gbP0ctDJYN
+         SyqosjoqCy7Fb0aXcXaPaqXlbYMg9diS66/z8uWh9SZxOKKUuIvJ0aFc8dFZGzO+FNDF
+         0U/l8+tuCt8Bezb6+qzGoLjxEbxliHr8RmRAXDGjaRRHAJdXt58pAZkKNYk0NplpLygE
+         8kQxvOko1jq2VzzVdfh/3mcwHkV80mBS3EGco4rw7T6ji1ut5HNzZN54cojQ4Bro9Vqg
+         ys1UIn3890tgqwqpQsha6S7+JaFtdIgD9vzqFUgalf11utiOQyVfi+FPwsGwVPp0c4eD
+         1UmQ==
+X-Forwarded-Encrypted: i=1; AJvYcCW5fXOyWjE2Ijz5w70/f+7K9/Y6C2NFwyfeI1ivqZtJICpZU0pnxNByyMc9KSpHzUwJ6/SZZLhz/+M=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxrkMOedi70cUXFm5dv8+rt7SHqxhT8VcV1VD35lLmz0z6hVd6/
+	vCF5+llZlv38EQxxKxf/yEHo51Mb6STHKUoqISyGY4KmAZf7SbF7HtOeRjH0u6ULMkQy0Kdsmp+
+	f/J94e1Q2MZsT45mXeEnsw0FoSLcd9LQ=
+X-Gm-Gg: ATEYQzy/XPW/hwtzou0tO4J6agZ8DPep3WKvurJka+aquJdf6eAcmLIsEGh1PyH4pSq
+	rQa6MLt6mvR2acLU85Ha5QLC02yoQDdqTXJWP656pkfo8sSITIM7R9csZLbbxD6rCu9X3xrMffD
+	EIF48IhWcaP56VGHfMLrmfi3DnDrrGWuETKUnffYjjRhIeO/KLtvpcsIPRzc5R+/CxaUnk2vn5q
+	DdQDEbma4qlyTQ09K7FpwU1JAEvI2FJswJt4SNojplwGyCWKtWvDxfya3sxQVALPW96T2mzOqgm
+	w2dzTxUtd0VdGS5fQ1i5D7aarWEutwNH4itmU/j7lA==
+X-Received: by 2002:a05:6808:6909:b0:450:32f0:4887 with SMTP id
+ 5614622812f47-467572d3896mr3753931b6e.31.1773506224754; Sat, 14 Mar 2026
+ 09:37:04 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 2/4] iio: adc: ad4691: add initial driver for AD4691
- family
-To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
- linux-gpio@vger.kernel.org
-References: <20260313-ad4692-multichannel-sar-adc-driver-v3-0-b4d14d81a181@analog.com>
- <20260313-ad4692-multichannel-sar-adc-driver-v3-2-b4d14d81a181@analog.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <20260313-ad4692-multichannel-sar-adc-driver-v3-2-b4d14d81a181@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20260228191400.19244-1-rougueprince47@gmail.com>
+ <20260228191400.19244-2-rougueprince47@gmail.com> <20260301114450.17f79213@jic23-huawei>
+ <CAPC4XCRom4ri1QKw_mTnZGc9np5XFD1LskQnd=ssDAKBdOkGmQ@mail.gmail.com>
+ <20260307142153.26bab5b0@jic23-huawei> <4695861781487359fddc6cb8aab932c70cb8ebba.camel@linux.intel.com>
+In-Reply-To: <4695861781487359fddc6cb8aab932c70cb8ebba.camel@linux.intel.com>
+From: Bhargav Joshi <rougueprince47@gmail.com>
+Date: Sat, 14 Mar 2026 22:06:53 +0530
+X-Gm-Features: AaiRm51Me6kyVGZ2MRCS65Psgv5NxNTJQNJRusBIV_44237y4VDotlnTjJSQiu4
+Message-ID: <CAPC4XCTrV3Ww1TzKzb2KvaTzGmUPb8K1RsJ5yyZYvW48wt8_PQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iio: hid-sensor-gyro-3d: move iio_device_register()
+ to end of probe()
+To: srinivas pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, jikos@kernel.org, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 3/13/26 5:07 AM, Radu Sabau via B4 Relay wrote:
-> From: Radu Sabau <radu.sabau@analog.com>
-> 
-> Add support for the Analog Devices AD4691 family of high-speed,
-> low-power multichannel SAR ADCs: AD4691 (16-ch, 500 kSPS),
-> AD4692 (16-ch, 1 MSPS), AD4693 (8-ch, 500 kSPS) and
-> AD4694 (8-ch, 1 MSPS).
-> 
-> The driver implements a custom regmap layer over raw SPI to handle the
-> device's mixed 1/2/3/4-byte register widths and uses the standard IIO
-> read_raw/write_raw interface for single-channel reads.
-> 
-> Two buffered operating modes are supported, auto-detected from the
-> device tree:
-> 
->     - CNV Clock Mode:  an external PWM drives the CNV pin; the sampling
->                        rate is controlled via the PWM period. Requires a
->                        reference clock and a DATA_READY interrupt.
-> 
->     - Manual Mode:     CNV is tied to SPI CS; each SPI transfer triggers
->                        a conversion and returns the previous result
->                        (pipelined). No external clock or interrupt needed.
-> 
-> In both modes the chip idles in Autonomous Mode so that single-shot
-> read_raw can use the internal oscillator without disturbing the
-> hardware configuration.
-> 
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-> ---
->  MAINTAINERS              |   1 +
->  drivers/iio/adc/Kconfig  |  11 +
->  drivers/iio/adc/Makefile |   1 +
->  drivers/iio/adc/ad4691.c | 772 +++++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 785 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 9994d107d88d..5325f7d3b7f4 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1490,6 +1490,7 @@ L:	linux-iio@vger.kernel.org
->  S:	Supported
->  W:	https://ez.analog.com/linux-software-drivers
->  F:	Documentation/devicetree/bindings/iio/adc/adi,ad4691.yaml
-> +F:	drivers/iio/adc/ad4691.c
->  F:	include/dt-bindings/iio/adc/adi,ad4691.h
->  
->  ANALOG DEVICES INC AD4695 DRIVER
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 60038ae8dfc4..3685a03aa8dc 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -139,6 +139,17 @@ config AD4170_4
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called ad4170-4.
->  
-> +config AD4691
-> +	tristate "Analog Devices AD4691 Family ADC Driver"
-> +	depends on SPI
-> +	select REGMAP
-> +	help
-> +	  Say yes here to build support for Analog Devices AD4691 Family MuxSAR
-> +	  SPI analog to digital converters (ADC).
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ad4691.
-> +
->  config AD4695
->  	tristate "Analog Device AD4695 ADC Driver"
->  	depends on SPI
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index c76550415ff1..4ac1ea09d773 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -16,6 +16,7 @@ obj-$(CONFIG_AD4080) += ad4080.o
->  obj-$(CONFIG_AD4130) += ad4130.o
->  obj-$(CONFIG_AD4134) += ad4134.o
->  obj-$(CONFIG_AD4170_4) += ad4170-4.o
-> +obj-$(CONFIG_AD4691) += ad4691.o
->  obj-$(CONFIG_AD4695) += ad4695.o
->  obj-$(CONFIG_AD4851) += ad4851.o
->  obj-$(CONFIG_AD7091R) += ad7091r-base.o
-> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
-> new file mode 100644
-> index 000000000000..31eafa12bef8
-> --- /dev/null
-> +++ b/drivers/iio/adc/ad4691.c
-> @@ -0,0 +1,772 @@
-> +// SPDX-License-Identifier: GPL-2.0-or-later
-> +/*
-> + * Copyright (C) 2024-2026 Analog Devices, Inc.
-> + * Author: Radu Sabau <radu.sabau@analog.com>
-> + */
-> +#include <linux/bitfield.h>
-> +#include <linux/bitops.h>
-> +#include <linux/cleanup.h>
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/reset.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/math.h>
-> +#include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/property.h>
-> +#include <linux/pwm.h>
-> +#include <linux/regmap.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/util_macros.h>
-> +#include <linux/units.h>
-> +#include <linux/unaligned.h>
-> +
-> +#include <linux/iio/iio.h>
-> +
-> +#include <dt-bindings/iio/adc/adi,ad4691.h>
-> +
-> +#define AD4691_VREF_uV_MIN			2400000
-> +#define AD4691_VREF_uV_MAX			5250000
-> +
-> +/*
-> + * Default sampling frequency for MANUAL_MODE.
-> + * Each sample needs (num_channels + 1) SPI transfers of 24 bits.
-> + * The factor 36 = 24 * 3/2 folds in a 50% scheduling margin:
-> + *   freq = spi_hz / (24 * 3/2 * (num_channels + 1))
-> + *        = spi_hz / (36 * (num_channels + 1))
-> + */
-> +#define AD4691_MANUAL_MODE_STD_FREQ(x, y)	((y) / (36 * ((x) + 1)))
-> +#define AD4691_BITS_PER_XFER			24
-> +#define AD4691_CNV_DUTY_CYCLE_NS		380
-> +#define AD4691_MAX_CONV_PERIOD_US		800
-> +
-> +#define AD4691_SEQ_ALL_CHANNELS_OFF		0x00
-> +#define AD4691_STATE_RESET_ALL			0x01
-> +
-> +#define AD4691_REF_CTRL_MASK			GENMASK(4, 2)
-> +
-> +#define AD4691_DEVICE_MANUAL			0x14
-> +#define AD4691_DEVICE_REGISTER			0x10
-> +#define AD4691_AUTONOMOUS_MODE_VAL		0x02
-> +
-> +#define AD4691_NOOP				0x00
-> +#define AD4691_ADC_CHAN(ch)			((0x10 + (ch)) << 3)
-> +
-> +#define AD4691_STATUS_REG			0x014
-> +#define AD4691_CLAMP_STATUS1_REG		0x01A
-> +#define AD4691_CLAMP_STATUS2_REG		0x01B
-> +#define AD4691_DEVICE_SETUP			0x020
-> +#define AD4691_REF_CTRL				0x021
-> +#define AD4691_OSC_FREQ_REG			0x023
-> +#define AD4691_STD_SEQ_CONFIG			0x025
-> +#define AD4691_SPARE_CONTROL			0x02A
-> +
-> +#define AD4691_OSC_EN_REG			0x180
-> +#define AD4691_STATE_RESET_REG			0x181
-> +#define AD4691_ADC_SETUP			0x182
-> +#define AD4691_ACC_MASK1_REG			0x184
-> +#define AD4691_ACC_MASK2_REG			0x185
-> +#define AD4691_ACC_COUNT_LIMIT(n)		(0x186 + (n))
-> +#define AD4691_ACC_COUNT_VAL			0x3F
-> +#define AD4691_GPIO_MODE1_REG			0x196
-> +#define AD4691_GPIO_MODE2_REG			0x197
-> +#define AD4691_GPIO_READ			0x1A0
-> +#define AD4691_ACC_STATUS_FULL1_REG		0x1B0
-> +#define AD4691_ACC_STATUS_FULL2_REG		0x1B1
-> +#define AD4691_ACC_STATUS_OVERRUN1_REG		0x1B2
-> +#define AD4691_ACC_STATUS_OVERRUN2_REG		0x1B3
-> +#define AD4691_ACC_STATUS_SAT1_REG		0x1B4
-> +#define AD4691_ACC_STATUS_SAT2_REG		0x1BE
-> +#define AD4691_ACC_SAT_OVR_REG(n)		(0x1C0 + (n))
-> +#define AD4691_AVG_IN(n)			(0x201 + (2 * (n)))
-> +#define AD4691_AVG_STS_IN(n)			(0x222 + (3 * (n)))
-> +#define AD4691_ACC_IN(n)			(0x252 + (3 * (n)))
-> +#define AD4691_ACC_STS_DATA(n)			(0x283 + (4 * (n)))
-> +
-> +enum ad4691_adc_mode {
-> +	AD4691_CNV_CLOCK_MODE,
-> +	AD4691_MANUAL_MODE,
-> +};
-> +
-> +enum ad4691_gpio_mode {
-> +	AD4691_ADC_BUSY   = 4,
-> +	AD4691_DATA_READY = 6,
-> +};
-> +
-> +enum ad4691_ref_ctrl {
-> +	AD4691_VREF_2P5   = 0,
-> +	AD4691_VREF_3P0   = 1,
-> +	AD4691_VREF_3P3   = 2,
-> +	AD4691_VREF_4P096 = 3,
-> +	AD4691_VREF_5P0   = 4,
-> +};
-> +
-> +struct ad4691_chip_info {
-> +	const struct iio_chan_spec *channels;
-> +	const struct iio_chan_spec *manual_channels;
-> +	const char *name;
-> +	unsigned int num_channels;
-> +	unsigned int max_rate;
-> +};
-> +
-> +#define AD4691_CHANNEL(chan, index, real_bits, storage_bits, _shift)	\
-> +	{								\
-> +		.type = IIO_VOLTAGE,					\
-> +		.indexed = 1,						\
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ)	\
-> +					   | BIT(IIO_CHAN_INFO_SCALE),	\
-> +		.channel = chan,					\
-> +		.scan_index = index,					\
-> +		.scan_type = {						\
-> +			.sign = 'u',					\
-> +			.realbits = real_bits,				\
-> +			.storagebits = storage_bits,			\
-> +			.shift = _shift,				\
-> +		},							\
-> +	}
-> +
-> +static const struct iio_chan_spec ad4691_channels[] = {
-> +	AD4691_CHANNEL(0, 0, 16, 32, 0),
-> +	AD4691_CHANNEL(1, 1, 16, 32, 0),
-> +	AD4691_CHANNEL(2, 2, 16, 32, 0),
-> +	AD4691_CHANNEL(3, 3, 16, 32, 0),
-> +	AD4691_CHANNEL(4, 4, 16, 32, 0),
-> +	AD4691_CHANNEL(5, 5, 16, 32, 0),
-> +	AD4691_CHANNEL(6, 6, 16, 32, 0),
-> +	AD4691_CHANNEL(7, 7, 16, 32, 0),
-> +	AD4691_CHANNEL(8, 8, 16, 32, 0),
-> +	AD4691_CHANNEL(9, 9, 16, 32, 0),
-> +	AD4691_CHANNEL(10, 10, 16, 32, 0),
-> +	AD4691_CHANNEL(11, 11, 16, 32, 0),
-> +	AD4691_CHANNEL(12, 12, 16, 32, 0),
-> +	AD4691_CHANNEL(13, 13, 16, 32, 0),
-> +	AD4691_CHANNEL(14, 14, 16, 32, 0),
-> +	AD4691_CHANNEL(15, 15, 16, 32, 0)
-> +};
-> +
-> +static const struct iio_chan_spec ad4693_channels[] = {
-> +	AD4691_CHANNEL(0, 0, 16, 32, 0),
-> +	AD4691_CHANNEL(1, 1, 16, 32, 0),
-> +	AD4691_CHANNEL(2, 2, 16, 32, 0),
-> +	AD4691_CHANNEL(3, 3, 16, 32, 0),
-> +	AD4691_CHANNEL(4, 4, 16, 32, 0),
-> +	AD4691_CHANNEL(5, 5, 16, 32, 0),
-> +	AD4691_CHANNEL(6, 6, 16, 32, 0),
-> +	AD4691_CHANNEL(7, 7, 16, 32, 0)
-> +};
+Hi,
 
-I would expect the 16-bits in 32-bits to be only for SPI offload and
-therefore not introduced until the later patch that adds SPI offload
-support. And we should include a comment on why it is needed so that
-no one tries to "fix" it later (since normally we would use 16-bit
-storage for 16-bit data).
+On Mon, Mar 9, 2026 at 9:12=E2=80=AFPM srinivas pandruvada
+<srinivas.pandruvada@linux.intel.com> wrote:
+>
+> On Sat, 2026-03-07 at 14:21 +0000, Jonathan Cameron wrote:
+> > On Mon, 2 Mar 2026 01:00:06 +0530
+> > Bhargav Joshi <rougueprince47@gmail.com> wrote:
+> >
+> > > On Sun, Mar 1, 2026 at 5:15=E2=80=AFPM Jonathan Cameron <jic23@kernel=
+.org>
+> > > wrote:
+> > > >
+> > > > On Sun,  1 Mar 2026 00:43:59 +0530
+> > > > Bhargav Joshi <rougueprince47@gmail.com> wrote:
+> > > >
+> > > > > Currently, calling iio_device_register() before
+> > > > > sensor_hub_register_callback() may create a race condition
+> > > > > where the
+> > > > > device is exposed to userspace before callbacks are wired.
+> > > >
+> > > > We needs some more here on 'why' this is a problem.
+> > > > Whilst this is an unusual arrangement, I couldn't immediately
+> > > > find
+> > > > anything that was actually broken.  It's possible data will turn
+> > > > up
+> > > > after we tear down the callbacks and before the userspace
+> > > > interfaces
+> > > > are removed, but I think that just results in dropping data.
+> > > > Given it's
+> > > > in a race anyway I don't think we care about that. The callbacks
+> > > > don't seem to be involved in device configuration which can go on
+> > > > whether
+> > > > or not the callbacks are registered.  Maybe there is something
+> > > > that
+> > > > won't get acknowledged if they aren't in place in time?
+> > > >
+> > > > For a fix like this we'd normally want to see a clear flow that
+> > > > leads to a bug.
+> > > >
+> > > > Also a fixes tag so we know how far to backport.
+> > > >
+> > >
+> > > Hi Jonathan,
+> > >
+> > > I originally submitted the patch for the driver because calling
+> > > iio_device_register() before the callbacks are wired up violates
+> > > standard IIO LIFO ordering. I assumed this created a dangerous race
+> > > condition with userspace. However, as you correctly pointed out,
+> > > the
+> > > HID sensor hub safely drops those early events without crashing,
+> > > even
+> > > if it is unusual behaviour still won't have a hard crash.
+> > >
+> > > My underlying goal was simply a structural cleanup to align the
+> > > probe() and remove() sequences with standard IIO architecture.
+> > >
+> > > Would you like me to send a v2 of this patch with a revised commit
+> > > message classifying it purely as a structural cleanup (and without
+> > > a
+> > > Fixes tag), or is the current driver behavior acceptable enough
+> > > that I
+> > > should just drop this patch entirely?
+> >
+> > My gut is leave this one alone. It's a rather unusual driver in lots
+> > of ways, so I don't really mind one more ;)
+> >
+> > Lets see if anyone else has strong views one way or the other.
+> >
+> > Srinivas?
+> >
+> I don't see anything wrong with this. If you register callback before,
+> then iio_push_to_buffers_with_timestamp() can be called before
+> iio_device_register(), although it will not happen because nobody
+> powered on sensors in the hub.
+>
+Thank you for the clarification, given that current code won't cause
+any issues, Jonathan I am completely fine with dropping this one.
 
-> +
-> +static const struct iio_chan_spec ad4691_manual_channels[] = {
-> +	AD4691_CHANNEL(0, 0, 16, 24, 8),
-> +	AD4691_CHANNEL(1, 1, 16, 24, 8),
-> +	AD4691_CHANNEL(2, 2, 16, 24, 8),
-> +	AD4691_CHANNEL(3, 3, 16, 24, 8),
-> +	AD4691_CHANNEL(4, 4, 16, 24, 8),
-> +	AD4691_CHANNEL(5, 5, 16, 24, 8),
-> +	AD4691_CHANNEL(6, 6, 16, 24, 8),
-> +	AD4691_CHANNEL(7, 7, 16, 24, 8),
-> +	AD4691_CHANNEL(8, 8, 16, 24, 8),
-> +	AD4691_CHANNEL(9, 9, 16, 24, 8),
-> +	AD4691_CHANNEL(10, 10, 16, 24, 8),
-> +	AD4691_CHANNEL(11, 11, 16, 24, 8),
-> +	AD4691_CHANNEL(12, 12, 16, 24, 8),
-> +	AD4691_CHANNEL(13, 13, 16, 24, 8),
-> +	AD4691_CHANNEL(14, 14, 16, 24, 8),
-> +	AD4691_CHANNEL(15, 15, 16, 24, 8)
-> +};
+Best Regards,
+Bhargav
 
-Can't have 24-bit storage, but I guess that got fixed in a later patch.
-
-
-> +
-> +static const struct iio_chan_spec ad4693_manual_channels[] = {
-> +	AD4691_CHANNEL(0, 0, 16, 24, 8),
-> +	AD4691_CHANNEL(1, 1, 16, 24, 8),
-> +	AD4691_CHANNEL(2, 2, 16, 24, 8),
-> +	AD4691_CHANNEL(3, 3, 16, 24, 8),
-> +	AD4691_CHANNEL(4, 4, 16, 24, 8),
-> +	AD4691_CHANNEL(5, 5, 16, 24, 8),
-> +	AD4691_CHANNEL(6, 6, 16, 24, 8),
-> +	AD4691_CHANNEL(7, 7, 16, 24, 8)
-> +};
-
-channel and index is always the same, so we can combine that into
-one argument.
-
-> +
-> +static const struct ad4691_chip_info ad4691_ad4691 = {
-
-Usually, we name these like: ad4691_chip_info instead of ad4691_ad4691.
-
-> +	.channels = ad4691_channels,
-> +	.manual_channels = ad4691_manual_channels,
-> +	.name = "ad4691",
-> +	.num_channels = ARRAY_SIZE(ad4691_channels),
-> +	.max_rate = 500 * HZ_PER_KHZ,
-> +};
-> +
-> +static const struct ad4691_chip_info ad4691_ad4692 = {
-
-And here would be ad4692_chip_info.
-
-> +	.channels = ad4691_channels,
-> +	.manual_channels = ad4691_manual_channels,
-> +	.name = "ad4692",
-> +	.num_channels = ARRAY_SIZE(ad4691_channels),
-> +	.max_rate = 1 * HZ_PER_MHZ,
-> +};
-> +
-> +static const struct ad4691_chip_info ad4691_ad4693 = {
-> +	.channels = ad4693_channels,
-> +	.manual_channels = ad4693_manual_channels,
-> +	.name = "ad4693",
-> +	.num_channels = ARRAY_SIZE(ad4693_channels),
-> +	.max_rate = 500 * HZ_PER_KHZ,
-> +};
-> +
-> +static const struct ad4691_chip_info ad4691_ad4694 = {
-> +	.channels = ad4693_channels,
-> +	.manual_channels = ad4693_manual_channels,
-> +	.name = "ad4694",
-> +	.num_channels = ARRAY_SIZE(ad4693_channels),
-> +	.max_rate = 1 * HZ_PER_MHZ,
-> +};
-> +
-> +struct ad4691_state {
-> +	const struct ad4691_chip_info	*chip;
-
-Usually, we would call this "info" rather than "chip".
-
-> +	struct regmap			*regmap;
-> +
-> +	unsigned long			ref_clk_rate;
-> +	struct pwm_device		*conv_trigger;
-> +
-> +	enum ad4691_adc_mode		adc_mode;
-> +
-> +	int				vref_uV;
-> +	u64				cnv_period;
-
-Always include units in variable names when possible. Is this ns?
-
-> +	ktime_t				sampling_period;
-> +	/*
-> +	 * Synchronize access to members of the driver state, and ensure
-> +	 * atomicity of consecutive SPI operations.
-> +	 */
-> +	struct mutex			lock;
-> +};
-> +
-> +static void ad4691_disable_pwm(void *data)
-> +{
-> +	struct pwm_device *pwm = data;
-> +	struct pwm_state state;
-> +
-> +	pwm_get_state(pwm, &state);
-> +	state.enabled = false;
-> +	pwm_apply_might_sleep(pwm, &state);
-
-See Uwe's comment from v2. This is why we always tell people to wait a week
-before sending a new revision. It takes a while for all comments to come in.
-
-> +}
-> +
-> +static int ad4691_regulator_get(struct ad4691_state *st)
-
-Would be more logical to keep this close to probe function since it is
-only used during probe.
-
-> +{
-> +	struct device *dev = regmap_get_device(st->regmap);
-> +	int ret;
-> +
-
-As mentioned in the DT review, there are also avdd and ldo-in regulators that can
-be handled here.
-
-Later we may need to set DEVICE_SETUP:LDO_EN based on this info.
-
-> +	ret = devm_regulator_get_enable(dev, "vio");
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to get and enable VIO\n");
-> +
-> +	st->vref_uV = devm_regulator_get_enable_read_voltage(dev, "vref");
-> +	if (st->vref_uV == -ENODEV)
-> +		st->vref_uV = devm_regulator_get_enable_read_voltage(dev, "vrefin");
-
-Don't we need to keep track of REF vs. REFIN so that we can set REF_CTRL:REFBUF_EN
-correctly later?
-
-> +	if (st->vref_uV < 0)
-> +		return dev_err_probe(dev, st->vref_uV,
-> +				     "Failed to get reference supply\n");
-> +
-> +	if (st->vref_uV < AD4691_VREF_uV_MIN || st->vref_uV > AD4691_VREF_uV_MAX)
-> +		return dev_err_probe(dev, -EINVAL, "vref(%d) must be under [%u %u]\n",
-> +				     st->vref_uV, AD4691_VREF_uV_MIN, AD4691_VREF_uV_MAX);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad4691_reg_read(void *context, unsigned int reg, unsigned int *val)
-> +{
-> +	struct ad4691_state *st = context;
-> +	struct spi_device *spi = to_spi_device(regmap_get_device(st->regmap));
-> +	u8 tx[2], rx[4];
-> +	int ret;
-> +
-> +	put_unaligned_be16(0x8000 | reg, tx);
-> +
-> +	switch (reg) {
-> +	case 0 ... AD4691_OSC_FREQ_REG:
-> +	case AD4691_SPARE_CONTROL ... AD4691_ACC_SAT_OVR_REG(15):
-> +		ret = spi_write_then_read(spi, tx, 2, rx, 1);
-> +		if (ret)
-> +			return ret;
-> +		*val = rx[0];
-> +		return 0;
-> +	case AD4691_STD_SEQ_CONFIG:
-> +	case AD4691_AVG_IN(0) ... AD4691_AVG_IN(15):
-> +		ret = spi_write_then_read(spi, tx, 2, rx, 2);
-> +		if (ret)
-> +			return ret;
-> +		*val = get_unaligned_be16(rx);
-> +		return 0;
-> +	case AD4691_AVG_STS_IN(0) ... AD4691_AVG_STS_IN(15):
-> +	case AD4691_ACC_IN(0) ... AD4691_ACC_IN(15):
-> +		ret = spi_write_then_read(spi, tx, 2, rx, 3);
-> +		if (ret)
-> +			return ret;
-> +		*val = get_unaligned_be24(rx);
-> +		return 0;
-> +	case AD4691_ACC_STS_DATA(0) ... AD4691_ACC_STS_DATA(15):
-> +		ret = spi_write_then_read(spi, tx, 2, rx, 4);
-> +		if (ret)
-> +			return ret;
-> +		*val = get_unaligned_be32(rx);
-> +		return 0;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ad4691_reg_write(void *context, unsigned int reg, unsigned int val)
-> +{
-> +	struct ad4691_state *st = context;
-> +	struct spi_device *spi = to_spi_device(regmap_get_device(st->regmap));
-> +	u8 tx[4];
-> +
-> +	put_unaligned_be16(reg, tx);
-> +
-> +	switch (reg) {
-> +	case 0 ... AD4691_OSC_FREQ_REG:
-> +	case AD4691_SPARE_CONTROL ... AD4691_GPIO_MODE2_REG:
-> +		if (val > 0xFF)
-> +			return -EINVAL;
-> +		tx[2] = val;
-> +		return spi_write_then_read(spi, tx, 3, NULL, 0);
-> +	case AD4691_STD_SEQ_CONFIG:
-> +		if (val > 0xFFFF)
-> +			return -EINVAL;
-> +		put_unaligned_be16(val, &tx[2]);
-> +		return spi_write_then_read(spi, tx, 4, NULL, 0);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static bool ad4691_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case AD4691_STATUS_REG:
-> +	case AD4691_CLAMP_STATUS1_REG:
-> +	case AD4691_CLAMP_STATUS2_REG:
-> +	case AD4691_GPIO_READ:
-> +	case AD4691_ACC_STATUS_FULL1_REG ... AD4691_ACC_STATUS_SAT2_REG:
-> +	case AD4691_ACC_SAT_OVR_REG(0) ... AD4691_ACC_SAT_OVR_REG(15):
-> +	case AD4691_AVG_IN(0) ... AD4691_AVG_IN(15):
-> +	case AD4691_AVG_STS_IN(0) ... AD4691_AVG_STS_IN(15):
-> +	case AD4691_ACC_IN(0) ... AD4691_ACC_IN(15):
-> +	case AD4691_ACC_STS_DATA(0) ... AD4691_ACC_STS_DATA(15):
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static bool ad4691_readable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case 0 ... AD4691_OSC_FREQ_REG:
-> +	case AD4691_SPARE_CONTROL ... AD4691_ACC_SAT_OVR_REG(15):
-> +	case AD4691_STD_SEQ_CONFIG:
-> +	case AD4691_AVG_IN(0) ... AD4691_AVG_IN(15):
-> +	case AD4691_AVG_STS_IN(0) ... AD4691_AVG_STS_IN(15):
-> +	case AD4691_ACC_IN(0) ... AD4691_ACC_IN(15):
-> +	case AD4691_ACC_STS_DATA(0) ... AD4691_ACC_STS_DATA(15):
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static bool ad4691_writeable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case 0 ... AD4691_OSC_FREQ_REG:
-> +	case AD4691_STD_SEQ_CONFIG:
-> +	case AD4691_SPARE_CONTROL ... AD4691_GPIO_MODE2_REG:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static const struct regmap_config ad4691_regmap_config = {
-> +	.reg_bits = 16,
-> +	.val_bits = 32,
-> +	.reg_read = ad4691_reg_read,
-> +	.reg_write = ad4691_reg_write,
-> +	.volatile_reg = ad4691_volatile_reg,
-> +	.readable_reg = ad4691_readable_reg,
-> +	.writeable_reg = ad4691_writeable_reg,
-> +	.max_register = AD4691_ACC_STS_DATA(15),
-> +	.cache_type = REGCACHE_MAPLE,
-> +};
-> +
-> +static int ad4691_get_sampling_freq(struct ad4691_state *st)
-> +{
-> +	if (st->adc_mode == AD4691_MANUAL_MODE)
-> +		return DIV_ROUND_CLOSEST(NSEC_PER_SEC,
-> +					 ktime_to_ns(st->sampling_period));
-> +
-> +	return DIV_ROUND_CLOSEST(NSEC_PER_SEC,
-> +				 pwm_get_period(st->conv_trigger));
-> +}
-> +
-> +static int __ad4691_set_sampling_freq(struct ad4691_state *st, int freq)
-> +{
-> +	unsigned long long target, ref_clk_period_ns;
-> +	struct pwm_state cnv_state;
-> +
-> +	pwm_init_state(st->conv_trigger, &cnv_state);
-> +
-> +	freq = clamp(freq, 1, st->chip->max_rate);
-> +	target = DIV_ROUND_CLOSEST_ULL(st->ref_clk_rate, freq);
-> +	ref_clk_period_ns = DIV_ROUND_CLOSEST_ULL(NANO, st->ref_clk_rate);
-> +	st->cnv_period = ref_clk_period_ns * target;
-> +	cnv_state.period = ref_clk_period_ns * target;
-> +	cnv_state.duty_cycle = AD4691_CNV_DUTY_CYCLE_NS;
-> +	cnv_state.enabled = false;
-> +
-> +	return pwm_apply_might_sleep(st->conv_trigger, &cnv_state);
-> +}
-> +
-> +static int ad4691_pwm_get(struct ad4691_state *st)
-
-"get" is confusing name for a "setup" function.
-
-> +{
-> +	struct device *dev = regmap_get_device(st->regmap);
-> +	struct clk *ref_clk;
-> +	int ret;
-> +
-> +	ref_clk = devm_clk_get_enabled(dev, NULL);
-> +	if (IS_ERR(ref_clk))
-> +		return dev_err_probe(dev, PTR_ERR(ref_clk),
-> +				     "Failed to get ref clock\n");
-> +
-> +	st->ref_clk_rate = clk_get_rate(ref_clk);
-
-This clock stuff was already done in probe.
-
-Also, as mentioned in the DT review, since this clock isn't connected to
-the ADC chip, it doesn't really make sense that it should be assigned to
-the ADC. We should be able to just set the PWM rate to what we need without
-caring what the the input clock to the PWM is.
-
-If something else is needed to make it actually work, we need a detailed
-explanation in the cover letter so that we can discuss it more.
-
-> +
-> +	st->conv_trigger = devm_pwm_get(dev, "cnv");
-> +	if (IS_ERR(st->conv_trigger))
-> +		return dev_err_probe(dev, PTR_ERR(st->conv_trigger),
-> +				     "Failed to get cnv pwm\n");
-> +
-> +	ret = devm_add_action_or_reset(dev, ad4691_disable_pwm,
-> +				       st->conv_trigger);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret,
-> +				     "Failed to register PWM disable action\n");
-> +
-> +	return __ad4691_set_sampling_freq(st, st->chip->max_rate);
-> +}
-> +
-> +static int ad4691_set_sampling_freq(struct iio_dev *indio_dev, unsigned int freq)
-> +{
-> +	struct ad4691_state *st = iio_priv(indio_dev);
-> +
-> +	IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-> +
-> +	if (IIO_DEV_ACQUIRE_FAILED(claim))
-> +		return -EBUSY;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	if (st->adc_mode == AD4691_MANUAL_MODE) {
-> +		if (!freq || freq > st->chip->max_rate)
-> +			return -ERANGE;
-> +
-> +		st->sampling_period = ns_to_ktime(DIV_ROUND_CLOSEST(NSEC_PER_SEC,
-> +									 freq));
-
-Why do we convert this to ktime when we just convert it back to ns later?
-
-> +		return 0;
-> +	}
-> +
-> +	if (!st->conv_trigger)
-> +		return -ENODEV;
-> +
-> +	if (!freq || freq > st->chip->max_rate)
-> +		return -ERANGE;
-> +
-> +	return __ad4691_set_sampling_freq(st, freq);
-> +}
-> +
-> +static int ad4691_single_shot_read(struct iio_dev *indio_dev,
-> +				   struct iio_chan_spec const *chan, int *val)
-> +{
-> +	struct ad4691_state *st = iio_priv(indio_dev);
-> +	u16 mask = ~BIT(chan->channel);
-> +	u32 acc_mask[2] = { mask & 0xFF, mask >> 8 };
-> +	unsigned int reg_val;
-> +	int ret;
-
-No mutex lock here?
-
-> +
-> +	/*
-> +	 * Always use AUTONOMOUS mode for single-shot reads, regardless
-> +	 * of the buffer mode (CNV_CLOCK or MANUAL). The chip is kept
-> +	 * in AUTONOMOUS mode during idle; enter_conversion_mode() and
-> +	 * exit_conversion_mode() handle the switch for buffer operation.
-> +	 */
-> +	ret = regmap_write(st->regmap, AD4691_STATE_RESET_REG,
-> +			   AD4691_STATE_RESET_ALL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
-> +			   BIT(chan->channel));
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_bulk_write(st->regmap, AD4691_ACC_MASK1_REG, acc_mask, 2);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_write(st->regmap, AD4691_OSC_EN_REG, 1);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * Wait for conversion to complete using a timed delay.
-> +	 * A single read needs 2 internal oscillator periods.
-> +	 * OSC_FREQ_REG is never modified by the driver, so the
-> +	 * oscillator runs at reset-default speed. Use chip->max_rate
-> +	 * as a conservative proxy: it is always <= the OSC frequency,
-> +	 * so the computed delay is >= the actual conversion time.
-> +	 */
-> +	unsigned long conv_us = DIV_ROUND_UP(2 * USEC_PER_SEC,
-> +					     st->chip->max_rate);
-> +	fsleep(conv_us);
-> +
-> +	ret = regmap_write(st->regmap, AD4691_OSC_EN_REG, 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = regmap_read(st->regmap, AD4691_AVG_IN(chan->channel), &reg_val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	*val = reg_val;
-> +	regmap_write(st->regmap, AD4691_STATE_RESET_REG, AD4691_STATE_RESET_ALL);
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int ad4691_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan, int *val,
-> +			   int *val2, long info)
-> +{
-> +	struct ad4691_state *st = iio_priv(indio_dev);
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_RAW: {
-> +		IIO_DEV_ACQUIRE_DIRECT_MODE(indio_dev, claim);
-> +
-> +		if (IIO_DEV_ACQUIRE_FAILED(claim))
-> +			return -EBUSY;
-> +
-> +		return ad4691_single_shot_read(indio_dev, chan, val);
-> +	}
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = ad4691_get_sampling_freq(st);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = st->vref_uV / 1000;
-> +		*val2 = chan->scan_type.realbits;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ad4691_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val, int val2, long mask)
-> +{
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		return ad4691_set_sampling_freq(indio_dev, val);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int ad4691_reg_access(struct iio_dev *indio_dev, unsigned int reg,
-> +			     unsigned int writeval, unsigned int *readval)
-> +{
-> +	struct ad4691_state *st = iio_priv(indio_dev);
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	if (readval)
-> +		return regmap_read(st->regmap, reg, readval);
-> +
-> +	return regmap_write(st->regmap, reg, writeval);
-> +}
-> +
-> +static const struct iio_info ad4691_info = {
-> +	.read_raw = &ad4691_read_raw,
-> +	.write_raw = &ad4691_write_raw,
-> +	.debugfs_reg_access = &ad4691_reg_access,
-> +};
-> +
-> +static int ad4691_reset(struct ad4691_state *st)
-> +{
-> +	struct device *dev = regmap_get_device(st->regmap);
-> +	struct reset_control *rst;
-> +
-> +	rst = devm_reset_control_get_optional_exclusive(dev, NULL);
-> +	if (IS_ERR(rst))
-> +		return dev_err_probe(dev, PTR_ERR(rst),
-> +				     "Failed to get reset\n");
-> +
-> +	if (!rst)
-
-Usually, we do a software reset here (see SPI_CONFIG_A register)
-if hardware reset is not possible.
-
-> +		return 0;
-> +
-> +	reset_control_assert(rst);
-> +	/* Reset delay required. See datasheet Table 5. */
-> +	fsleep(300);
-> +	reset_control_deassert(rst);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad4691_config(struct ad4691_state *st)
-> +{
-> +	struct device *dev = regmap_get_device(st->regmap);
-> +	enum ad4691_ref_ctrl ref_val;
-> +	unsigned int reg_val;
-> +	int ret;
-> +
-> +	/*
-> +	 * Determine buffer conversion mode from DT: if a PWM is provided it
-> +	 * drives the CNV pin (CNV_CLOCK_MODE); otherwise CNV is tied to CS
-> +	 * and each SPI transfer triggers a conversion (MANUAL_MODE).
-> +	 * Both modes idle in AUTONOMOUS mode so that read_raw can use the
-> +	 * internal oscillator without disturbing the hardware configuration.
-> +	 */
-> +	if (device_property_present(dev, "pwms")) {
-> +		st->adc_mode = AD4691_CNV_CLOCK_MODE;
-> +		ret = ad4691_pwm_get(st);
-> +		if (ret)
-> +			return ret;
-> +	} else {
-> +		st->adc_mode = AD4691_MANUAL_MODE;
-> +		st->sampling_period = ns_to_ktime(DIV_ROUND_CLOSEST_ULL(NSEC_PER_SEC,
-> +			AD4691_MANUAL_MODE_STD_FREQ(st->chip->num_channels,
-> +				to_spi_device(dev)->max_speed_hz)));
-> +	}
-> +
-> +	/* Perform a state reset on the channels at start-up. */
-> +	ret = regmap_write(st->regmap, AD4691_STATE_RESET_REG,
-> +			   AD4691_STATE_RESET_ALL);
-
-This seems redundant since we already did a hardware (or software reset).
-
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to write state reset\n");
-> +
-> +	/* Clear STATUS register by reading from the STATUS register. */
-> +	ret = regmap_read(st->regmap, AD4691_STATUS_REG, &reg_val);
-
-Ditto.
-
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to read status register\n");
-> +
-> +	switch (st->vref_uV) {
-> +	case AD4691_VREF_uV_MIN ... 2750000:
-
-Strange to mix macro and non-macro for range.
-
-> +		ref_val = AD4691_VREF_2P5;
-> +		break;
-> +	case 2750001 ... 3250000:
-> +		ref_val = AD4691_VREF_3P0;
-> +		break;
-> +	case 3250001 ... 3750000:
-> +		ref_val = AD4691_VREF_3P3;
-> +		break;
-> +	case 3750001 ... 4500000:
-> +		ref_val = AD4691_VREF_4P096;
-> +		break;
-> +	case 4500001 ... AD4691_VREF_uV_MAX:
-> +		ref_val = AD4691_VREF_5P0;
-> +		break;
-> +	default:
-> +		return dev_err_probe(dev, -EINVAL,
-> +				     "Unsupported vref voltage: %d uV\n",
-> +				     st->vref_uV);
-> +	}
-> +
-> +	ret = regmap_write(st->regmap, AD4691_REF_CTRL,
-> +			   FIELD_PREP(AD4691_REF_CTRL_MASK, ref_val));
-
-As mentioned elsewhere, also expect to set REFBUF_EN here if needed.
-
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to write REF_CTRL\n");
-> +
-> +	/* Both CNV_CLOCK and MANUAL devices start in AUTONOMOUS mode. */
-> +	ret = regmap_write(st->regmap, AD4691_ADC_SETUP, AD4691_AUTONOMOUS_MODE_VAL);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to write ADC_SETUP\n");
-> +
-> +	return regmap_write(st->regmap, AD4691_GPIO_MODE1_REG, AD4691_ADC_BUSY);
-
-We should not be setting anything about the gpios without checking what the
-devicetree says is wired up.
-
-I would defer adding all of the pwm/CNV_CLOCK/samling_freqnecy/GP0 trigger
-stuff to the patch that actually adds SPI offload support for it to logically
-make sense.
-
-> +}
-> +
-> +static int ad4691_probe(struct spi_device *spi)
-> +{
-> +	struct device *dev = &spi->dev;
-> +	struct iio_dev *indio_dev;
-> +	struct ad4691_state *st;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(indio_dev);
-> +	ret = devm_mutex_init(dev, &st->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->regmap = devm_regmap_init(dev, NULL, st, &ad4691_regmap_config);
-> +	if (IS_ERR(st->regmap))
-> +		return dev_err_probe(dev, PTR_ERR(st->regmap),
-> +				     "Failed to initialize regmap\n");
-> +
-> +	st->chip = spi_get_device_match_data(spi);
-> +
-> +	ret = ad4691_regulator_get(st);
-
-I would call this ad4691_regulator_setup() or something similar to make it more
-obvious this is an init function.
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ad4691_reset(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ad4691_config(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->name = st->chip->name;
-> +	indio_dev->info = &ad4691_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	indio_dev->channels = (st->adc_mode == AD4691_MANUAL_MODE) ?
-> +		st->chip->manual_channels : st->chip->channels;
-> +	indio_dev->num_channels = st->chip->num_channels;
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static const struct of_device_id ad4691_of_match[] = {
-> +	{ .compatible = "adi,ad4691", .data = &ad4691_ad4691 },
-> +	{ .compatible = "adi,ad4692", .data = &ad4691_ad4692 },
-> +	{ .compatible = "adi,ad4693", .data = &ad4691_ad4693 },
-> +	{ .compatible = "adi,ad4694", .data = &ad4691_ad4694 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, ad4691_of_match);
-> +
-> +static const struct spi_device_id ad4691_id[] = {
-> +	{ "ad4691", (kernel_ulong_t)&ad4691_ad4691 },
-> +	{ "ad4692", (kernel_ulong_t)&ad4691_ad4692 },
-> +	{ "ad4693", (kernel_ulong_t)&ad4691_ad4693 },
-> +	{ "ad4694", (kernel_ulong_t)&ad4691_ad4694 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, ad4691_id);
-> +
-> +static struct spi_driver ad4691_driver = {
-> +	.driver = {
-> +		.name = "ad4691",
-> +		.of_match_table = ad4691_of_match,
-> +	},
-> +	.probe = ad4691_probe,
-> +	.id_table = ad4691_id,
-> +};
-> +module_spi_driver(ad4691_driver);
-> +
-> +MODULE_AUTHOR("Radu Sabau <radu.sabau@analog.com>");
-> +MODULE_DESCRIPTION("Analog Devices AD4691 Family ADC Driver");
-> +MODULE_LICENSE("GPL");
-> 
-
+> Thanks,
+> Srinivs
+>
+>
+>
+>
+>
+>
+> > >
+> > > Thanks,
+> > > Bhargav
+> > >
+> > > > >
+> > > > > Move iio_device_register() to the end of the probe() function
+> > > > > to prevent
+> > > > > race condition.
+> > > > >
+> > > > > Consequently, update the error handling path in probe() and in
+> > > > > remove()
+> > > > > ensuring that iio_device_unregister() is called first to cut
+> > > > > off
+> > > > > userspace access before the hardware callbacks are removed.
+> > > > >
+> > > > > Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
+> > > > > ---
+> > > > >  drivers/iio/gyro/hid-sensor-gyro-3d.c | 20 ++++++++++---------
+> > > > > -
+> > > > >  1 file changed, 10 insertions(+), 10 deletions(-)
+> > > > >
+> > > > > diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > > > b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > > > index c43990c518f7..8e3628cd8529 100644
+> > > > > --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > > > +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
+> > > > > @@ -333,12 +333,6 @@ static int hid_gyro_3d_probe(struct
+> > > > > platform_device *pdev)
+> > > > >               return ret;
+> > > > >       }
+> > > > >
+> > > > > -     ret =3D iio_device_register(indio_dev);
+> > > > > -     if (ret) {
+> > > > > -             dev_err(&pdev->dev, "device register failed\n");
+> > > > > -             goto error_remove_trigger;
+> > > > > -     }
+> > > > > -
+> > > > >       gyro_state->callbacks.send_event =3D gyro_3d_proc_event;
+> > > > >       gyro_state->callbacks.capture_sample =3D
+> > > > > gyro_3d_capture_sample;
+> > > > >       gyro_state->callbacks.pdev =3D pdev;
+> > > > > @@ -346,13 +340,19 @@ static int hid_gyro_3d_probe(struct
+> > > > > platform_device *pdev)
+> > > > >                                       &gyro_state->callbacks);
+> > > > >       if (ret < 0) {
+> > > > >               dev_err(&pdev->dev, "callback reg failed\n");
+> > > > > -             goto error_iio_unreg;
+> > > > > +             goto error_remove_trigger;
+> > > > > +     }
+> > > > > +
+> > > > > +     ret =3D iio_device_register(indio_dev);
+> > > > > +     if (ret) {
+> > > > > +             dev_err(&pdev->dev, "device register failed\n");
+> > > > > +             goto error_remove_callback;
+> > > > >       }
+> > > > >
+> > > > >       return ret;
+> > > > >
+> > > > > -error_iio_unreg:
+> > > > > -     iio_device_unregister(indio_dev);
+> > > > > +error_remove_callback:
+> > > > > +     sensor_hub_remove_callback(hsdev,
+> > > > > HID_USAGE_SENSOR_GYRO_3D);
+> > > > >  error_remove_trigger:
+> > > > >       hid_sensor_remove_trigger(indio_dev, &gyro_state-
+> > > > > >common_attributes);
+> > > > >       return ret;
+> > > > > @@ -365,8 +365,8 @@ static void hid_gyro_3d_remove(struct
+> > > > > platform_device *pdev)
+> > > > >       struct iio_dev *indio_dev =3D platform_get_drvdata(pdev);
+> > > > >       struct gyro_3d_state *gyro_state =3D iio_priv(indio_dev);
+> > > > >
+> > > > > -     sensor_hub_remove_callback(hsdev,
+> > > > > HID_USAGE_SENSOR_GYRO_3D);
+> > > > >       iio_device_unregister(indio_dev);
+> > > > > +     sensor_hub_remove_callback(hsdev,
+> > > > > HID_USAGE_SENSOR_GYRO_3D);
+> > > > >       hid_sensor_remove_trigger(indio_dev, &gyro_state-
+> > > > > >common_attributes);
+> > > > >  }
+> > > > >
+> > > >
