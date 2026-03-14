@@ -1,65 +1,63 @@
-Received: from mail-oo1-f54.google.com (mail-oo1-f54.google.com [209.85.161.54])
+Received: from mail-ot1-f44.google.com (mail-ot1-f44.google.com [209.85.210.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6351523C8C7
-	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 22:18:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C731139D
+	for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 22:33:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773526703; cv=none; b=mgi0INyJmqg7qGOTtkYEaqy9SCeubZsKdzZNb/qQl3BZS+ZILAjhGAvs+ehHP7bi4Za03my8sqYvhWN4BWKvQku5qxh3WE1KgGhCi8y77SLTF0Se7Ysqc+CkRnrrFVCqac0mqjsz/J2WM822an6wZ33hPklBFwMHla1BCVBmyn0=
+	t=1773527594; cv=none; b=qysh2moSL86fDeI8U/2WcKtlYd3Ep3U2gQmcIXr4qxdlL2hESOwCXH4A1RYaqZVeb0XfPT3e7MdLvZSKxia3N0zq5ojBwkmWEDiFb9feMLdJEGFbXSNmjkPXxmY3Wi/VThYvyjtC0wTiruKzZW5adlkpd7gw9xc0BMqdpiohvIo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773526703; c=relaxed/simple;
-	bh=bKcY4Y+E9DqhFkvhNYpy3LHkEQMdezB6JBUJ9ambGWY=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=eaRYsLIebvD+pO2zLoBGrmy9HPk25KuEyT119H+N5UFeGL4ln669aQZeUvvO7W9Lyy1J0xMbmO8DzMwKhDOCoPUP5l2xcu+o8tvUuAQG2XAhzxfYCpIVhhhaHPy0/4Q3TGGMahNQNHWTwsvDAZVOfKHUaxWO1vWfg73f7v44zAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Y8P1fDtR; arc=none smtp.client-ip=209.85.161.54
+	s=arc-20240116; t=1773527594; c=relaxed/simple;
+	bh=F5YZfmacPGnfiNEAS0erRG+QQGtKjmB3EGupdTdGS8U=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=nNAmduw0bR7w4qJqpd0cJhAJ1s6kfW679lXBtFuj7bui2CGXVOH6ctWXuoK/X9+K+ApVaZjgAVw7euzMwAifyMPJMn1OLEmop6NjFA3GF7Hegftt2jtanBDq8Cz3cM5UaXSd1+YZRu0vl4ZFiIkQPa1T5migcH7EPApOH1LeKbw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=2ETQItmx; arc=none smtp.client-ip=209.85.210.44
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Y8P1fDtR"
-Received: by mail-oo1-f54.google.com with SMTP id 006d021491bc7-67bb5e4d06eso1174085eaf.1
-        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 15:18:21 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="2ETQItmx"
+Received: by mail-ot1-f44.google.com with SMTP id 46e09a7af769-7d74aa6bcdbso2301406a34.2
+        for <linux-iio@vger.kernel.org>; Sat, 14 Mar 2026 15:33:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773526700; x=1774131500; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773527591; x=1774132391; darn=vger.kernel.org;
         h=cc:to:message-id:content-transfer-encoding:mime-version:subject
          :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=uDbUEHxvZ6LbG5yA0b6crCNwXlRJDt1sD43ttVBDLD4=;
-        b=Y8P1fDtRPGsFOmibxI1DqUWs5O0wHchm5XbmzqQFAIhRZnepC6sReV7pnpOaZBgAQw
-         lnnrGG36tyQZ8JpKsWLgVvr6n1PQgUOHm917U3JqjhwUBFmgmJS5hlD8Ow3IhBfvMX0T
-         m7vjKmM8aDs2AhKIuUn0IAYUYJUbE6E8zSPEMRlqp7PT5I1w8D4LZe+mO9yoBZatvMhT
-         1qEC8qv+AiU3ayuYSaBUD4LvPpja34EoEvu1VwI9GHSyzto0f7YQFWqeNytGuv4Af1yd
-         5sxaj/kq/BcQyV10zhUYROCTdH+Sqkya/Y8UOcL6q1pBs02uD4R/pmsQTB0wbJtU4orx
-         qQ9Q==
+        bh=h2tAKbjHUFoSXKgHV6cgHXldBRcBG6iPADoEUcfnIy0=;
+        b=2ETQItmxuItZzGn4X9tzdQGrDLW2nugKtCU+UUwprQ6sYSDmG6YmNnQvrDU4KS+HNf
+         mDvrmPZQ96Nw5OObub7x/SjrmS2HtR+dG999oqFCeoVlAa6GQo3ZcidWRuq0szF29WRb
+         7lUCtYKPPdJRcJlJVrkCiOpTised83oGtYHM685SvXfGRBwBQqHMCUsGLpaJefjOsWQm
+         0kJ2gJpovkzcbiGy5uVCVng4Noo/oc/zsXhnxWDq24pOJl76x8cmxAW2JRYEcOPCnHFz
+         iogZcKZcmfWVuESg62V2ZxbN0+xHhGX71jz6niQLQHNowjj19zuvepbDH2grtnMK57Wo
+         dvJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773526700; x=1774131500;
+        d=1e100.net; s=20251104; t=1773527591; x=1774132391;
         h=cc:to:message-id:content-transfer-encoding:mime-version:subject
          :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=uDbUEHxvZ6LbG5yA0b6crCNwXlRJDt1sD43ttVBDLD4=;
-        b=d4VkeVMb36c18aFZVL4vMJkeUItGX9Vctr2Lk6DN+ULZ9hTy1ug9fF0/R8GQA1Z3e1
-         xbNgnDafXvISYLAFzH6O/KdwBPUOw4gyBLT9rd5btN8xRUdt2vx5iM52iDVOH+MA+qc5
-         CUN+Sor7jwFO9hjW9oQP39fZvwQIsHsS0Gl1F01m5/0MMJWsM7BA+TkA1ZTBbpG865iB
-         BS+i0ofXXOYKzvSkvTscw6HMx+MHUcNpTmmxyW2kXIa1qaAmJi7P7U07Bc9MbTT2xJD9
-         8yvoXLB2DszJwR1oP++D2/aGdntKld1K+XH3hzohpiW1yX2pPWnZuDhUDYiwh8810Y+g
-         wKBQ==
-X-Forwarded-Encrypted: i=1; AJvYcCWGRGq5FKNG5N56knwR6whxVTWRQF4/baXwVcQfnlkMlkheNnKuNF+EYSE+cjpJZsxrWMNxuYsuWmM=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yyzs6fGW6s3Ak4NfIY8bHl8myHlACJRER4t2Kp0Zny7FtDJIJ19
-	el/cnyTSc0F9VptZETXU/ONxIYHkueI0bUXin3CjE5Ce0IdKp4lg/Xv35HR/WDwuCGY4pEZD/v+
-	gXCe0
-X-Gm-Gg: ATEYQzwwESYgi4tMvc7NlzADHS9pa9mLMaHIVWxYdCsW9Nrb1udQ8xxYYhtarpNGtW+
-	lfob/GXTJIaXryZuvazTtK2jhBlOkogAbpInXbxZuujP4gJxveYDHMTAvAOMlGa1D5eruwlZkB7
-	yEyFIAeyEat9SDQEhY2YALZb05K1w4wiS8LCWkbkYXJujCY6sMGwof4Sno0K9CcIjcG3Xo5F83n
-	tCZSy7y246p7QXi25abFEMLjEBYNNswhWMreSfvH4tYY1epjznPzFGfBNuQt0lI8280EdYdEM5J
-	nL1ayelLq2erE24RIADAMOkxcnc+G/QFighPKEcxvJxDJlkww5KoXJE1ntbVo4xvqizwYpldt4C
-	TxHrY95E8BvM+Xfihs0cDjorYeasH/ASFoz4HdseWfERq+0BFnSSAuA+iNklYaoBbtSzAP0ZsXJ
-	pzMwP6FfPQ8dg42qvsBKuLouv7zgOPgciv6YZz6os=
-X-Received: by 2002:a05:6820:1349:b0:679:96f:3f04 with SMTP id 006d021491bc7-67bdaa60223mr5518895eaf.53.1773526700359;
-        Sat, 14 Mar 2026 15:18:20 -0700 (PDT)
+        bh=h2tAKbjHUFoSXKgHV6cgHXldBRcBG6iPADoEUcfnIy0=;
+        b=PtcU0VH54JGbEKfKB62xWD83ZShuO0h4zQDRvmxBYVpyPrLmjxnU2uAOaLNRljV0l7
+         XgQzTSe2IxY/AJehfvRgd5mJETHOuusGaT2IldAZpm8xS+lQYTHA6CA8aZO1dF7YMJy/
+         ofgZPLA4kjuFCZdE6VKgIN3zx8hrtzTw8xPavaLCYmNsegevu+sqHYFghUQ5/myGOAB/
+         qbhyhS/gBf2aAg6voMn1K98zvgsd86eqBetzoAKvWobUmClat0p7jr5JVq261sQ6JQDV
+         1grbgE4oT5lEk5vQojC5W7egG0+nqYjTlKidjM1hPWBdxXHa25vINC/L+Dzz5ChN3rMA
+         A8Mg==
+X-Gm-Message-State: AOJu0YzREl/EH5XTEi2khVe9MqO/KKBXFK7K/+XPFFISjP5bPnnBZfPt
+	USShVogC1eR0TJxEsGoBOlQa08gjTJx1zPSSTju6XYBZKeUqM4LnisLCTNyIQiVvcf4=
+X-Gm-Gg: ATEYQzybE0cpx/0EhCAGvHl5Tte9wvdu603jiDreOZZcRr8F7xq2Ho9SvHZKXJ6xTh/
+	bGTxKmHAP1Z8HPGbi/5cgNucb8ml8ksz+tnvSV2p6KjSANb7NasTIo/EgKKGozi5VllQUTzA94i
+	kQjzG6HvSEzoCc6BdLweQ+XJjtwKRmlaGMlM+J2Ju81iydVeKSXzmbHo2o4Hm3WA0plvnLI4zU7
+	MK3tUxoI7yEA15OrqteYHR+YpsVy6N1zJ1qJ+EiuU5s8YtkJqE2mLVt07ER0A7vHzK5zquQaq7q
+	7nqiRKKR2OvbpD4S6AOf8HuJ7J9qGAWWucUJ+Bw+vUctzFhKSTJitWgbrk6fOWaTbT1qoyX9G44
+	RB5bRL85hHke/g463sOFVVQVvXypIcyijycVqHzY41ZST29ml6tGhju8QPD9b2GbYKqVNFuXmCG
+	unKECIyFiIsS2JcV4ZQOEiRWIxV6jy
+X-Received: by 2002:a05:6830:64c8:b0:7d7:556e:d677 with SMTP id 46e09a7af769-7d7825595e5mr5383286a34.29.1773527591504;
+        Sat, 14 Mar 2026 15:33:11 -0700 (PDT)
 Received: from [127.0.1.1] ([2600:8803:e7e4:500:f27f:adf2:8637:6bb9])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67bc8efae1asm7679293eaf.3.2026.03.14.15.18.18
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d76ac898d6sm9161899a34.9.2026.03.14.15.33.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Mar 2026 15:18:19 -0700 (PDT)
+        Sat, 14 Mar 2026 15:33:11 -0700 (PDT)
 From: David Lechner <dlechner@baylibre.com>
-Date: Sat, 14 Mar 2026 17:18:10 -0500
-Subject: [PATCH] iio: light: vcnl4035: fix scan buffer on big-endian
+Date: Sat, 14 Mar 2026 17:33:01 -0500
+Subject: [PATCH] iio: health: max30100: drop unnecessary cast
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,105 +66,58 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260314-iio-light-vcnl4035c-clean-up-scan-buf-v1-1-400d273eb026@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXNQQqDMBCF4avIrDswmlShVyldxHHUKSFKYkQQ7
- 960XT2+zf9OSBJVEjyqE6LsmnQJBfWtAp5dmAR1KIaGmpZMbVF1Qa/TvOHOwVsyd0b24gLmFRO
- X7fOInXNEg2nFdgSltUYZ9fj9PF9/p9y/hbdvHK7rA2M8CB6JAAAA
-X-Change-ID: 20260314-iio-light-vcnl4035c-clean-up-scan-buf-7aa00d36e470
+Message-Id: <20260314-iio-health-max301000-drop-int-cast-v1-1-ed4982d559f5@baylibre.com>
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXNQQrCMBCF4auUWTswaYqiVxEXMZ2YEU1KJkqh9
+ O6mFt7m2/xvAeUirHDpFij8FZWcGsyhAx9dejDK2Aw99UeyZkCRjJHdq0Z8u9mSISIcS55QUkX
+ vtGKwQ9vZMoUTtNBUOMj8P7neduvn/mRftzKs6w8scQiVhgAAAA==
+X-Change-ID: 20260314-iio-health-max301000-drop-int-cast-f34f3493e0f7
 To: Jonathan Cameron <jic23@kernel.org>, 
  =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>, Parthiban Nallathambi <pn@denx.de>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>, 
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
  David Lechner <dlechner@baylibre.com>
 X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2662; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=bKcY4Y+E9DqhFkvhNYpy3LHkEQMdezB6JBUJ9ambGWY=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBptd6jvoxYGvHGymRs5PkwluWepv/h0jurCjKoF
- TpgeHx276aJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCabXeowAKCRDCzCAB/wGP
- wOGFB/98JSVkD+O7YQXtOQTR2w/vt4CzHtUWxUEzekpEbaGugP6vgTNVOIcCj4f4NhHmMUj9xT8
- mxWD6Rn94hD67g88mCRfd8XIlnUEPn8W2YyU001H8GEwB84jB2A8HAfRNxNerXmnXWJV+C9fyD/
- ZlTM76CD1e4i9gqebBAT75+sZVV+p5abc0rlptqNQszkyowULv9n7Rpez0ct/qRih4hSTEXpPcf
- VP/+WWKVj0S3tdwJ21ZuuvebqylB9RQA6m1d/LyFxKKdxP0NELJNzX46ezlkcXr57f9CKZD/t7H
- IuEbVOK8zgTkt4M/O/q22XaMzpawe0RqdkaOdID9PfGVGa7H
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1079; i=dlechner@baylibre.com;
+ h=from:subject:message-id; bh=F5YZfmacPGnfiNEAS0erRG+QQGtKjmB3EGupdTdGS8U=;
+ b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBpteIftIV8A41NMi4M31u6QsOVQbEQcQX62eolp
+ iprnhIVgi6JATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCabXiHwAKCRDCzCAB/wGP
+ wOZyB/0a3tRcAyrXVje/1hVi5YOhKAUZPfX7o9PvZmV8Qt4Fu3dIz/4yIJPP0QYX44Sh6xivQRg
+ q/ERP4lQscQv2etgbwxW/UB5sGMeTiSmfp2F+oDGpWyieC+c37CcfQ/eXmko7FKXnArHgcsV+c4
+ Nvwo2RIbqVEHm/ljk45HW9O1DaJrtB2MXxOdeHTEJUVNJ+qYZ4mA6UMZA6TD+mgvm22go/d2kis
+ uZfflV1dCDJg21Gk5IMIwrt9yY1nIWaqIDxINhDbmsshjh/c2PxBkgxd8EYYXmy4nCrDwhpAOzj
+ zqWyH4/9XVDSZ8Ni4IAzV1vvKq/34ccvEg9+2JAhwN3AXT9w
 X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
  fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
 
-Rework vcnl4035_trigger_consumer_handler() so that we are not passing
-what should be a u16 value as an int * to regmap_read(). This won't
-work on bit endian systems.
+Drop an unnecessary cast in max30100_led_init().
 
-Instead, add a new unsigned int variable to pass to regmap_read(). Then
-copy that value into the buffer struct.
+val is defined as unsigned int val[2]; so the cast is not needed, nor
+is the address-of operator &.
 
-The buffer array is replaced with a struct since there is only one value
-being read. This allows us to use the correct u16 data type and has a
-side-effect of simplifying the alignment specification.
+Also fix alignment with ( while we are touching this.
 
-Also fix the endianness of the scan format from little-endian to CPU
-endianness. Since we are using regmap to read the value, it will be
-CPU-endian.
-
-Fixes: 55707294c4eb ("iio: light: Add support for vishay vcnl4035")
 Signed-off-by: David Lechner <dlechner@baylibre.com>
 ---
- drivers/iio/light/vcnl4035.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ drivers/iio/health/max30100.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/vcnl4035.c b/drivers/iio/light/vcnl4035.c
-index 963747927425..16aeb17067bc 100644
---- a/drivers/iio/light/vcnl4035.c
-+++ b/drivers/iio/light/vcnl4035.c
-@@ -103,17 +103,23 @@ static irqreturn_t vcnl4035_trigger_consumer_handler(int irq, void *p)
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct vcnl4035_data *data = iio_priv(indio_dev);
- 	/* Ensure naturally aligned timestamp */
--	u8 buffer[ALIGN(sizeof(u16), sizeof(s64)) + sizeof(s64)]  __aligned(8) = { };
-+	struct {
-+		u16 als_data;
-+		aligned_s64 timestamp;
-+	} buffer = { };
-+	unsigned int val;
- 	int ret;
+diff --git a/drivers/iio/health/max30100.c b/drivers/iio/health/max30100.c
+index 7dfdb5eb305e..00dca1c9425c 100644
+--- a/drivers/iio/health/max30100.c
++++ b/drivers/iio/health/max30100.c
+@@ -274,7 +274,7 @@ static int max30100_led_init(struct max30100_data *data)
+ 	int reg, ret;
  
--	ret = regmap_read(data->regmap, VCNL4035_ALS_DATA, (int *)buffer);
-+	ret = regmap_read(data->regmap, VCNL4035_ALS_DATA, &val);
- 	if (ret < 0) {
- 		dev_err(&data->client->dev,
- 			"Trigger consumer can't read from sensor.\n");
- 		goto fail_read;
- 	}
--	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
--					iio_get_time_ns(indio_dev));
-+
-+	buffer.als_data = val;
-+	iio_push_to_buffers_with_timestamp(indio_dev, &buffer,
-+					   iio_get_time_ns(indio_dev));
- 
- fail_read:
- 	iio_trigger_notify_done(indio_dev->trig);
-@@ -381,7 +387,7 @@ static const struct iio_chan_spec vcnl4035_channels[] = {
- 			.sign = 'u',
- 			.realbits = 16,
- 			.storagebits = 16,
--			.endianness = IIO_LE,
-+			.endianness = IIO_CPU,
- 		},
- 	},
- 	{
-@@ -395,7 +401,7 @@ static const struct iio_chan_spec vcnl4035_channels[] = {
- 			.sign = 'u',
- 			.realbits = 16,
- 			.storagebits = 16,
--			.endianness = IIO_LE,
-+			.endianness = IIO_CPU,
- 		},
- 	},
- };
+ 	ret = device_property_read_u32_array(dev, "maxim,led-current-microamp",
+-					(unsigned int *) &val, 2);
++					     val, 2);
+ 	if (ret) {
+ 		/* Default to 24 mA RED LED, 50 mA IR LED */
+ 		reg = (MAX30100_REG_LED_CONFIG_24MA <<
 
 ---
 base-commit: ff0843ceb1fb11a6b73e0e77b932ef7967aecd4b
-change-id: 20260314-iio-light-vcnl4035c-clean-up-scan-buf-7aa00d36e470
+change-id: 20260314-iio-health-max301000-drop-int-cast-f34f3493e0f7
 
 Best regards,
 --  
