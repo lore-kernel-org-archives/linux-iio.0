@@ -1,124 +1,109 @@
-Received: from mail-oo1-f53.google.com (mail-oo1-f53.google.com [209.85.161.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mx2.mythic-beasts.com (mx2.mythic-beasts.com [46.235.227.24])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 163EE31E832
-	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 19:22:21 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 12C74371D01;
+	Sun, 15 Mar 2026 21:24:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=46.235.227.24
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773602545; cv=none; b=pUDZPwGEFTKXLuJleq10QMM8xZSRGIgZYukSTdkb2Kx0ljtZJQaCAVtgLONHsYbymHB5aE8HZrUkk98KlLvc1J4PcwYXZ85N0vShmSFwqBMZQg+0Uk5lkOHdeo7tRSszqHchVWUX+Z31DCZy66SJZ5QJoTrDhNDI2WANcf2EZ2A=
+	t=1773609903; cv=none; b=M0u+eicY0RHbioSl5bfnmysTyZD4b+/mzd91TkxsoISjm+tRcTcVvPg2gAl431M7isAWIBTWpo8EEIRVv9JaDPC+3ZU62ZvFZj8xDQaJSED5Ji4X8OYwyfGEaq+gTIwn4GjT8MWnkmSySHttEXaPf4PhF8j4FL3EZ+C3ujrgvrk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773602545; c=relaxed/simple;
-	bh=bfXyebqUVv+iZhbMKZokBlBxZwMEXvGPTmEwhUEkqxw=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:To:Cc; b=Jq6cv05V8PepPU1zALvRudts+cTwR7DTt2QXZ16JICYriUEJo65BmJkCKHXECkSzwPzkHzrWjdXEYhcUOqHPFpUrQS6tuBnq9ITAEy5tngmXaVFgZoi4EXOt5m8xn2ibNYm39mn1PZYoxXyc2j9iDeQuylbEWUxDq1gZxRrlys8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=BNXFrTe7; arc=none smtp.client-ip=209.85.161.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1773609903; c=relaxed/simple;
+	bh=NG9/BsFQD9fSdaKlgTgR0n8gl/bSvJoKMyv+VsMHC1c=;
+	h=Date:From:To:CC:Subject:In-Reply-To:References:Message-ID:
+	 MIME-Version:Content-Type; b=Hm5aExh5TjprhWzXtyae2ambbK1OyNe9DpEy5DLoxtC5cX2YJBImZzKh00B5JrOAZli995YatRhlADVh7rna7Gx0UaixZ+jUt/F7GgEE+QaVN06a281SeMbUe25o+vn03c1e2xMkWa6CxaPGPUt39BgYid4D1aNqItYsHXDsZMg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jic23.retrosnub.co.uk; spf=pass smtp.mailfrom=jic23.retrosnub.co.uk; dkim=pass (2048-bit key) header.d=jic23.retrosnub.co.uk header.i=@jic23.retrosnub.co.uk header.b=5OlrNzX5; arc=none smtp.client-ip=46.235.227.24
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=jic23.retrosnub.co.uk
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=jic23.retrosnub.co.uk
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="BNXFrTe7"
-Received: by mail-oo1-f53.google.com with SMTP id 006d021491bc7-673ee2a98b1so2117635eaf.0
-        for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 12:22:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773602541; x=1774207341; darn=vger.kernel.org;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=JVeBequuB1u10c4ABThk7aLTo8FvsspgZZZO3pQgd1s=;
-        b=BNXFrTe7e/leetKsyOiGskMwn2QakdSRZBq2uaFUODD9r7vvdB47vgmYPRd51kdLGX
-         qw91uzYYc3jCRKLMlRyzfydUNg9qRrifucfRdJfGaMuBM87UOBCq4sIe6rnT8E099Lyx
-         WV1uIQkTelcWyC89ZpuolqWTlz84HN5gylV2QnURY86NNau27vEq1fgK2/EURHA3UT0a
-         JsaMlOzVa2y20J3FLojqD2/6RRQEQp+ERL3MVHdMq2IW1yIL8/qbbeKlQGgvDDobh8rI
-         aXvyCrupkbobf4e2/d2Qg7bx9ERJrwVELRxBp+dfmHHfEE46Ah9kcfhOLdhENutVh3ax
-         MPng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773602541; x=1774207341;
-        h=cc:to:message-id:content-transfer-encoding:mime-version:subject
-         :date:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=JVeBequuB1u10c4ABThk7aLTo8FvsspgZZZO3pQgd1s=;
-        b=lIbEtae+PF6cl9GKtybsFVSqAHZEitPn4ObaDVHGQ0e+CMMrOKKfNkHD8gD1n7fP1X
-         r5uXJwWW4hkM6x+6yL4GJv/ZQK8lQoVhMH0yKZ6X1R5ETWxAnN/6s3WOWS3ntEAsrcBs
-         yFWCrUaJPs+eBDISEVMMYp1pHDprxeffQvLR/XztFCluqWnlhWY/zSFA+TVDzlDMG6Gq
-         9UHqwGurGCCmEiCTdRhY4TBes+pQssE663ASReACWidOcLxijmE/x7qdsRyLkUsOO7DY
-         tPJiQlwPiV5HtvI9x6E6b+kC4LI8ynGmsVQ25/rJJmjzmmauU2Wbk+QeH6RNmCAOnZxC
-         GV0Q==
-X-Gm-Message-State: AOJu0YxRGF6U4Xyw+2U+WhvN6i5LQ4e8pezkNPzzzva4ox9gf3xJg1Co
-	kHanURL2VjoNVA+8Yk1N63LAWmzPhgg00p1oT3p8o+RVDweiycLeWulpu0ryOuWvEXI=
-X-Gm-Gg: ATEYQzzYJQqXHm3yP/g66Y2v+0PQWxF3lj4gxJce20ZL5rPK3JQOSM9nK0asE5w/6oO
-	d4y5tGBae/4pZljrkRZzo21PE+dQweQpQKqIB4qwpL2MTn2BwQiQGBrmEKkxl7bgmPXxYFTJRIi
-	SSrMgK7peXWMBxZ6dQ57R7p6EUgCJxh68zY1PQ+C0oZZG+i8jt3giZnVF52U6HHd7NDYURwKwMc
-	90nlG0VElXArlqcKXQ0cdMl/AFPHS4ba4MDcWAatiP5mMrSubb/CbBGtaDAzgzj6fCZVTE0Ynb4
-	rynn6HkJ8RigW/F2dW7a8Uf93c5054NMfAjPj0bFeHgdUobl1y8Zz1Kno+I13mIfsxW4f5c0q6/
-	vU7qxQkRlNU/Zj1TuEUNBCr4CLIwXyp+2AL3GTPNKFHbGZtBcTxDOGosCmWhdFwc4nP7vUA+Y2j
-	vOIu8cnAhK8bZ1m1xKMNVyhFXamhmt
-X-Received: by 2002:a05:6820:55c7:20b0:67b:e3cf:a40e with SMTP id 006d021491bc7-67be3cfa6d4mr3426610eaf.17.1773602541036;
-        Sun, 15 Mar 2026 12:22:21 -0700 (PDT)
-Received: from [127.0.1.1] ([2600:8803:e7e4:500:f27f:adf2:8637:6bb9])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67bdd612b6esm4392512eaf.10.2026.03.15.12.22.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Mar 2026 12:22:19 -0700 (PDT)
-From: David Lechner <dlechner@baylibre.com>
-Date: Sun, 15 Mar 2026 14:21:51 -0500
-Subject: [PATCH] iio: light: as73211: remove duplicate zero init of
- scan.chan[3]
+	dkim=pass (2048-bit key) header.d=jic23.retrosnub.co.uk header.i=@jic23.retrosnub.co.uk header.b="5OlrNzX5"
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=jic23.retrosnub.co.uk; s=mythic-beasts-k1; h=Subject:To:From:Date;
+	bh=d0bhAwjEo/QnWswJsthoj3+V9ClSGQBFouScMgZDBs8=; b=5OlrNzX5lTzK8WOqaaBfwp3eEb
+	gSvMbziqU5KM1gqJNKPQUT9Ub9O77fi2+sRCOLQPxygkQ64ZlUByNdx99RhP4XRyPzLlwK78y3BXw
+	qSy10OEGSorEwZmVkCa5vwKYkcOkhi0Ut6aRctEZp60WOhxuEGhWNMjPta+MRp6lISEY5U+ZD/4xH
+	YcbwpkSVMXMdm/X5V2KKXW2bHWAShkGxE/sOb+/y821foi86kkLIX18xX/ueWIEZV8arTGvCSjJS4
+	u9fBrXuikIGNsONVI2kDHdXfI3QTv8VQYuZc1OqC4rlet9XXzv2YwPNcz/JoQuxPRmmm5V36fyQ+J
+	2T2XwOSQ==;
+Received: by mailhub-hex-d.mythic-beasts.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+	(Exim 4.96)
+	(envelope-from <jic23@jic23.retrosnub.co.uk>)
+	id 1w1sx3-000ck4-2Y;
+	Sun, 15 Mar 2026 21:24:46 +0000
+Date: Sun, 15 Mar 2026 21:24:18 +0000
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To: Erikas Bitovtas <xerikasxx@gmail.com>, Jonathan Cameron <jic23@kernel.org>
+CC: David Lechner <dlechner@baylibre.com>,
+ =?ISO-8859-1?Q?Nuno_S=E1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
+ Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
+Subject: =?US-ASCII?Q?Re=3A_=5BPATCH_v3_5/6=5D_iio=3A_light=3A_vcnl4000=3A_?=
+ =?US-ASCII?Q?remove_error_messages_for_trigger_and_irq?=
+User-Agent: K-9 Mail for Android
+In-Reply-To: <706a349f-63e5-4f47-9f77-c84db1058f5e@gmail.com>
+References: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com> <20260314-vcnl4000-regulators-v3-5-3c4a48d30676@gmail.com> <20260315183127.59036e25@jic23-huawei> <706a349f-63e5-4f47-9f77-c84db1058f5e@gmail.com>
+Message-ID: <8D6D8F40-2B7E-46C6-8A24-15717CB70ADD@jic23.retrosnub.co.uk>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260315-iio-light-ad73211-remove-dup-zero-init-v1-1-4785c876ed92@baylibre.com>
-X-B4-Tracking: v=1; b=H4sIAAAAAAAC/yXNTQ6CMBBA4auQWTtJfwJEr2JcwHSAMdqSthAj4
- e4UXX6b9zZIHIUT3KoNIq+SJPgCfamAps6PjOKKwSjTKKtrFAn4knHK2LnWGq0x8jusjG6Z8cs
- xoHjJSGaw9bVV1CiCEpsjD/L5je6Pv9PSP5nyWYd9PwCOH9AIigAAAA==
-X-Change-ID: 20260315-iio-light-ad73211-remove-dup-zero-init-c2f35970c60c
-To: Christian Eggers <ceggers@arri.de>, Jonathan Cameron <jic23@kernel.org>, 
- =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
- Andy Shevchenko <andy@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
- David Lechner <dlechner@baylibre.com>
-X-Mailer: b4 0.15-dev
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1008; i=dlechner@baylibre.com;
- h=from:subject:message-id; bh=bfXyebqUVv+iZhbMKZokBlBxZwMEXvGPTmEwhUEkqxw=;
- b=owEBbQGS/pANAwAKAcLMIAH/AY/AAcsmYgBptwbjjJj5yy8Bu42Iolald8sXQVLEZb5Q0/xtk
- YdWBcLdphKJATMEAAEKAB0WIQTsGNmeYg6D1pzYaJjCzCAB/wGPwAUCabcG4wAKCRDCzCAB/wGP
- wLvQB/4yNPBCnVttH+OmoboMutx3p4CVb0ZeFxBWPl0GfWay4NkXjoVE8g5DxNPAnoKuY2CuiBB
- cJgY2gjFFVrC1c7gugZy7SgoGzPt8JMO/thLvwqINvCBpONzIlqs+LVIefoSIrrZcwiza9HUGc8
- TEpse318WX+4G89QKvHRHIZtieRW79qrZaxuw+wHZSjkA86NO9yVh/W8XcQecArObdAs52FmFI0
- fNb91jI+fQ5qdDO6dyOs+hlCKppZ536PQGDI2ewu5OSqEsrAtBoSn7CXPW+K+C5LxR1pMuv/ljS
- rKDKd3NaaDIQXfHtUJRkHumcDPk2ix4EmyVZPYTugMEd0R5t
-X-Developer-Key: i=dlechner@baylibre.com; a=openpgp;
- fpr=8A73D82A6A1F509907F373881F8AF88C82F77C03
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-BlackCat-Spam-Score: 25
 
-Remove setting scan.chan[3] to zero. Since commit 433b99e92294 ("iio:
-light: as73211: Ensure buffer holes are zeroed"), the entire scan struct
-is zeroed before being filled with data, so this is redundant.
 
-Signed-off-by: David Lechner <dlechner@baylibre.com>
----
- drivers/iio/light/as73211.c | 3 ---
- 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/iio/light/as73211.c b/drivers/iio/light/as73211.c
-index 32719f584c47..9fe830dac679 100644
---- a/drivers/iio/light/as73211.c
-+++ b/drivers/iio/light/as73211.c
-@@ -677,9 +677,6 @@ static irqreturn_t as73211_trigger_handler(int irq __always_unused, void *p)
- 				(char *)&scan.chan[0], 3 * sizeof(scan.chan[0]));
- 		if (ret < 0)
- 			goto done;
--
--		/* Avoid pushing uninitialized data */
--		scan.chan[3] = 0;
- 	}
- 
- 	if (data_result) {
-
----
-base-commit: ff0843ceb1fb11a6b73e0e77b932ef7967aecd4b
-change-id: 20260315-iio-light-ad73211-remove-dup-zero-init-c2f35970c60c
-
-Best regards,
---  
-David Lechner <dlechner@baylibre.com>
-
+On March 15, 2026 7:15:51 PM GMT, Erikas Bitovtas <xerikasxx@gmail=2Ecom> =
+wrote:
+>
+>
+>On 3/15/26 8:31 PM, Jonathan Cameron wrote:
+>> On Sat, 14 Mar 2026 18:06:34 +0200
+>> Erikas Bitovtas <xerikasxx@gmail=2Ecom> wrote:
+>>=20
+>>> The error code is available in the log after return=2E Remove duplicat=
+e
+>>> error messages to reduce noise in dmesg=2E
+>>>
+>>> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail=2Ecom>
+>>> ---
+>>>  drivers/iio/light/vcnl4000=2Ec | 9 ++-------
+>>>  1 file changed, 2 insertions(+), 7 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/light/vcnl4000=2Ec b/drivers/iio/light/vcnl40=
+00=2Ec
+>>> index e501db7249d7=2E=2Ec8bb1826b916 100644
+>>> --- a/drivers/iio/light/vcnl4000=2Ec
+>>> +++ b/drivers/iio/light/vcnl4000=2Ec
+>>> @@ -2041,11 +2041,8 @@ static int vcnl4000_probe(struct i2c_client *cl=
+ient)
+>>>  						      NULL,
+>>>  						      data->chip_spec->trig_buffer_func,
+>>>  						      data->chip_spec->buffer_setup_ops);
+>>> -		if (ret < 0) {
+>>> -			dev_err(&client->dev,
+>>> -				"unable to setup iio triggered buffer\n");
+>>=20
+>> Is this one a duplicate? I don't recall us being particular verbose
+>> in terms of error messages in iio_triggered_buffer_setup_ext() which is
+>> where that ends up coming from=2E  I think there is only one path
+>> where it can return anything other than -ENOMEM and that one is a dupli=
+cate
+>> registration check (so fair to not print)=2E  So perhaps all this patch
+>> needs is a comment on what errors can surface from this call and why
+>> it is therefore not worth printing anything=2E
+>>=20
+>
+>I do not see anything being printed on iio_triggered_buffer_setup_ext(),
+>so I guess this is not a duplicate=2E The function can return -EADDRINUSE
+>if a buffer is already assigned, to prevent cleanup function being
+>called on a buffer that wasn't allocated=2E
+>I will add this print back if necessary in v4=2E
+>
+I think it is fine to drop the print but more detail on why is needed for =
+the commit message=2E
