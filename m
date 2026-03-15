@@ -1,95 +1,143 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C30D51A6819;
-	Sun, 15 Mar 2026 08:49:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20E441DFF0
+	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 12:16:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773564584; cv=none; b=SGJ5QWbSoIFK25jXT8684FOPaUrtv971CYuemdxTW4PcV5lAA50yZmrmShmzOnweTcgwrJJ9pngGEeZrwiIYHkCmI+GOoxhPMj09l46Qe6tim4LCNo2W2ivzRRM6UhcKLYXnG2NENhHfOffdXuVqiEcRsbx1Zuh1W27/wGPtfuM=
+	t=1773576993; cv=none; b=RsxrZRSUUmkMSm37E9n54metYRqUiLFtD9AEANyCFB9x6ONjcf754WbTnbvw1Cr9V5qnqFFInt2EZxJipy4c+b0qx96hEEgJ2YoGjGZrSGhKsxG/mwCWMNSkzoCM/cluHEf//RMgR0puB/G/3JrdRlhlFvbhl7qUsMyoY6TsyqY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773564584; c=relaxed/simple;
-	bh=lNfVYfqFUzIenEN23nNkQbpeelNRkJkuLuCmDomX4OY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nDSSnDxKp6/+yuiuDKDtkKUXkCX6fkSn4lmXAqJZ1S4w8GhQPo0Dps2qIVEy+6kcaJjsOo88ygSYxNarOKvrk4tzr+BBsACXUEfR5AK3NRyGh7vg1/mUA4LqrSdmw9LMiNc+4VbZpDL6xEOMeyjcEywECkFfBc67ypm9voTFpkI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kpJ6Ifc6; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773576993; c=relaxed/simple;
+	bh=o6NEd9Qnd0g7VXaH4C7X9rM2Y51BJxI8kXsEauLUPA8=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=D6L8wJGIIJ04LZQ65CVwAr1RlAXd6VEwZ2KZGmrzOhpsO6F3zEfuKbUOHsA/X3Jo5fbuvmVZcrk/O+vrO6TgtZjRIOyxcJddq8ihiGrjLRz0Mt4y9vjNxJ19NRWilkv5w5S9PAyCQfeqqZEG6fM4FoGun9qccHEhIp5clHbFrJc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ML+FY1J7; arc=none smtp.client-ip=209.85.214.174
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kpJ6Ifc6"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDC62C4CEF7;
-	Sun, 15 Mar 2026 08:49:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773564584;
-	bh=lNfVYfqFUzIenEN23nNkQbpeelNRkJkuLuCmDomX4OY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=kpJ6Ifc6RhYtqlXWpAGfDU79mdHBhZB0A4fYAyhOG4lFzaUbx7ofH0oXSBIryb1Eu
-	 DZgx4hJNbP+/1mb0XecOSObf4IFB9itcBNxr7FhP78mJyA1CpWyibXprljjBZXdI2I
-	 n1okhXg/LKKebHa5EcMqZzVWUnHxLUpTpb0/1DcJZaE+VSTq4SrZedQsAVXrRXnj3p
-	 y4BnRpiLAE+v9ZmOTF4JQv6kF4kNs+4xLgK3EWlsfpIBpI0hjSPeWKJg4V1sPjhoeU
-	 fPV1WoupzV/d5VSRiIlYTSGrsey7dkbYGZqlW5n4s1HXcWyszHC/upipJdZ9tD/4Vc
-	 DkOYyVN4XmRYQ==
-Date: Sun, 15 Mar 2026 09:49:41 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Erikas Bitovtas <xerikasxx@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
-	phone-devel@vger.kernel.org
-Subject: Re: [PATCH v3 1/6] dt-bindings: iio: light: vcnl4000: add regulators
-Message-ID: <20260315-honest-debonair-oarfish-3a33ed@quoll>
-References: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
- <20260314-vcnl4000-regulators-v3-1-3c4a48d30676@gmail.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ML+FY1J7"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2a7a9b8ed69so45289395ad.2
+        for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 05:16:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773576991; x=1774181791; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ENF5X6gQPPCvifGOM8Ukl253KdBOejJZcQzWq1vd7AE=;
+        b=ML+FY1J7XbtqtqdVX3WHWlaIm21Qiyv6/djpE9Qc15IXK9wSDvDQbQ9LGQ7Sv/jCnz
+         eSObeITxaRu/8py7nqABh6CFMRKMtvP9iSkHlww4kzvovSzbqbCbgEzTdhOIk1kUIgFa
+         +85RBXUKBVquDnb2tNv41aZSelf94VnGpXbX4YgpJOJALCrK08UTE5UP+oMA/3EHzZwE
+         WDqLX31aOFulfjaqzr6YJ/Qg02a9c9vfPbdv/AeG+3riMy+ADH70B6pLCQ8sDHMsUXoc
+         9dW/Lt+ZdE6U3xAxtV7820G5QYMejW9HQYXvdXaexL2VdZAKU6nrE3744c4dDtLSPZS8
+         E72Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773576991; x=1774181791;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ENF5X6gQPPCvifGOM8Ukl253KdBOejJZcQzWq1vd7AE=;
+        b=RZ4iPjQfQ2BmxuNpuMt8HV/nip4sSgRZCTwH8p5YgKEDNg5mAy52hT+2/SuaU3Rc6K
+         +F1r2cN28/UuYJtyIr3kSXcNsJDN5SJiwd9nkCriYeychrmVjqqoQfJN66nZKznPWIcU
+         Ht5KUyrTYHi4JkDgENSWGi6KWSxERrECExn9Q5LSA+/pfXNwNIVo2/4MAunPWjM4J6AE
+         BP8+o+omrNgf6wgSyb+eLRa2t+4dJJtEX3lpWjH7xsepklCF8V/w7Y1Cxf/loDB5jYLC
+         aK3ml+nJbkHC0We9/gylOxE33maCYTciUbzGn9sbnTITG/06iu+oFxA0Oze/rdaJDBIT
+         ScTQ==
+X-Forwarded-Encrypted: i=1; AJvYcCU0+TA5cZ7BD4N+X2ufvt3sN5OkEnlc/r1mDV9eYnMpYK1TJnseAV2drFnmKm3Az/D0TmbbVSwmsAk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yxuc7yoMgNG6P318jqv7gFbDj7m4WDyL1RlBD0CPkiY6qmcpUOu
+	L5fW4uLp881m5YuKZr2ribKS8qw1VHqkNRDLwzxaT4Ik6HWL1SVmlZku
+X-Gm-Gg: ATEYQzxDQgcxM1Oe3qEKVH5CgpV1FurmPZjxJd9HFw5BdXgnKZG6fswa6fJrqyCGtzN
+	5YC0wex22KmjiieuplQ2CtnQO5h1DBDsmXU2PLVOLwZw5toWt8qjkOZLNGXh+5eVaUBr5zM87Vt
+	GqnuOBg6+L3k3SrVyIzK6+GD8nPQQowiktHZin5T+HwwJeRNuQlwueXVheYhjlQCNJGqtbJrfYB
+	nPeOj+5B4PVZf2cBWwzQ2RJmiBDVMqunbnXEhUcB4rBdzthHppfcZJ2FybuBBhTr5P2NoZpZx1A
+	U92kBFln9H5s6B1Nnukp5yUPCNWf9aez/reTzJwMdI/IJ5iXb7dZmAIzes3ao0S5o849t9Fpjql
+	DWzOBGtL7+UAp2S/bHKxw8fZgGOqSi87AZsEKTDiGl7dgJ+gMUXi26XRr60L5PdTwZcDdTVbjqi
+	7u3EmLCW7JPiWn0m/LOUcFmxFO/uGLgvkA9vS0SF1LEHmJ+4lt
+X-Received: by 2002:a17:902:ced2:b0:2ae:5776:45f8 with SMTP id d9443c01a7336-2aeca91d8acmr99613065ad.3.1773576991515;
+        Sun, 15 Mar 2026 05:16:31 -0700 (PDT)
+Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b04e5cb3dbsm25883095ad.25.2026.03.15.05.16.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 15 Mar 2026 05:16:30 -0700 (PDT)
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: kees@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sanjayembeddedse@gmail.com
+Subject: [PATCH v4] iio: st_sensors: drop temporary kmalloc buffer and reuse buffer_data
+Date: Sun, 15 Mar 2026 17:46:25 +0530
+Message-Id: <20260315121625.840769-1-sanjayembedded@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260314-vcnl4000-regulators-v3-1-3c4a48d30676@gmail.com>
+Content-Transfer-Encoding: 8bit
 
-On Sat, Mar 14, 2026 at 06:06:30PM +0200, Erikas Bitovtas wrote:
-> This commit adds supply properties for the sensor, I2C bus and IR LED
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-Please do not use "This commit/patch/change", but imperative mood. See
-longer explanation here:
-https://elixir.bootlin.com/linux/v6.16/source/Documentation/process/submitting-patches.rst#L94
+Replace the per-call kmalloc() scratch buffer with the existing
+buffer_data[] field present in struct st_sensor_data. The existing buffer
+is DMA-aligned and sufficiently sized for all channel widths, so using it
+avoids unnecessary dynamic memory allocation on each read.
 
-> anode supplies [1], which can be found in vcnl4000 ambient light and
+This simplifies the code, removes redundant allocation and cleanup.
+No functional change intended.
 
-So other devices do not have these supplies? Or have only some?
+Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Reviewed-by: David Lechner <dlechner@baylibre.com>
+---
+Changes in v4:
+- Rectify commit message review by David Lechner
+- Link to v3 https://lore.kernel.org/all/20260312063424.3846945-1-sanjayembedded@gmail.com/
+Changes in v3:
+- fix variable declartion placement to follow kernel coding style
+- Link to v2 https://lore.kernel.org/all/20260311182050.3467471-1-sanjayembedded@gmail.com/
+Changes in v2:
+- split series to individual patch
+- address review comment from David Lechner and reuse exising buffer instead of allocation
+- Link to v1 https://lore.kernel.org/all/20260310200513.2162018-4-sanjayembedded@gmail.com/
+---
+ drivers/iio/common/st_sensors/st_sensors_core.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-You already received that question, so I assume you checked. Then check
-again because 4040 has VDD.
-
-thus in
-that case 
-
-> proximity sensors, to ensure the sensor is powered on before proceeding
-> with setup.
-> 
-> [1] https://www.vishay.com/docs/84274/vcnl4040.pdf
-> 
-> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
-> ---
->  Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> index 2ba4d5de4ec4..a1b4c02db246 100644
-> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> @@ -33,6 +33,10 @@ properties:
->    interrupts:
->      maxItems: 1
->  
-> +  vdd-supply: true
-> +  vddio-supply: true
-
-VCNL4000 does not have VDDIO and VLED pins.
-
-Best regards,
-Krzysztof
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index dac593be5695..dbc5e16fbde4 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -501,14 +501,12 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+ 
+ 	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
+ 					ch->scan_type.shift, 8);
+-	outdata = kmalloc(byte_for_channel, GFP_DMA | GFP_KERNEL);
+-	if (!outdata)
+-		return -ENOMEM;
++	outdata = sdata->buffer_data;
+ 
+ 	err = regmap_bulk_read(sdata->regmap, ch->address,
+ 			       outdata, byte_for_channel);
+ 	if (err < 0)
+-		goto st_sensors_free_memory;
++		return err;
+ 
+ 	if (byte_for_channel == 1)
+ 		*data = (s8)*outdata;
+@@ -517,10 +515,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+ 	else if (byte_for_channel == 3)
+ 		*data = (s32)sign_extend32(get_unaligned_le24(outdata), 23);
+ 
+-st_sensors_free_memory:
+-	kfree(outdata);
+-
+-	return err;
++	return 0;
+ }
+ 
+ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+-- 
+2.34.1
 
