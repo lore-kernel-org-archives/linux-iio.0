@@ -1,216 +1,138 @@
-Received: from ilama.link.melty.land (mail.melty.land [45.77.175.144])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BC0A41D61BC
-	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 18:23:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=45.77.175.144
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A949319B5A3;
+	Sun, 15 Mar 2026 18:26:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773599020; cv=none; b=lWV/4oUHRRzYkV0CYId+wovxy2XfHVuHstF7tfUIF9qj6fqfqdoRWFt4bcEl/0SV5QfBnnwe5tLkulkQ4FsQP5wreiMTvrvKoIfJylMWARZ91L5/5YE7IHnaWgElkl2BraeXJrr2ondoxh2iclyfqBejD5KLaYBbZBRqcweF6K8=
+	t=1773599212; cv=none; b=NvyejxXq1vOe1vY/5i5BcTTPgfr4xw/6Q0pFusja6NGFtSV05dWKmYsRK6txwq285de67P4ZKVIW4TtCFCcY/rXYbI7LYa1gV5k1r4oRAjjVzyVL/qst5YMKQKnSta+JpMYVKFXFBHp/LGcVtiA2qzpyfDL2QJdJEdHb3zkCZFw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773599020; c=relaxed/simple;
-	bh=wqODPaJA3f/EvU265jyKR/7EtO6nlCji3DnkVU+csls=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=TT6GCtERk3gpMDECgtRKamsxl8xP6mzky/D3riUe1nDWvIlixGaNVFDiWGlZuWi1clUEKY+mzHLMHYbAH9L436CpT19F1U7m3W8e2Rz4ugyMUm+cziEpqi97Sk6xOygES+YJ1+uBFBSjGpGRl2ar1kAmt+AM090FM5cpuHmxDMs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=chuang.cz; spf=pass smtp.mailfrom=chuang.cz; dkim=pass (1024-bit key) header.d=chuang.cz header.i=@chuang.cz header.b=Y0vrKqD7; arc=none smtp.client-ip=45.77.175.144
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=chuang.cz
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=chuang.cz
+	s=arc-20240116; t=1773599212; c=relaxed/simple;
+	bh=bA0X/cdAPTa3TTm+zrn9vDdqCAipGretS+zp96/vxyA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=tSdDu6zUtoGfnTc7QA8CmegZwvPaAqXTgUDZNHjzGu75gl8qymNwX0vacOxPoNrmbhDlPaUxyt8k3Ixkn3ZG4NxWV11FMg1t2DWkYcjTtO/3QrSkcv2WAFx8NvV+RiKmflginIuik48/6zZA1IYZWvIqpAgNsIgQ0zcaMzx9tUE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hVHnml3+; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=chuang.cz header.i=@chuang.cz header.b="Y0vrKqD7"
-Received: from hawthorn.lan (unknown [IPv6:240e:3b1:d0b1:ff90:d706:1c39:3aea:659c])
-	by ilama.link.melty.land (Postfix) with ESMTPSA id 8A5AFA7A0EA;
-	Mon, 16 Mar 2026 02:23:29 +0800 (CST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=chuang.cz; s=default;
-	t=1773599011; bh=wqODPaJA3f/EvU265jyKR/7EtO6nlCji3DnkVU+csls=;
-	h=From:To:Cc:Subject:Date;
-	b=Y0vrKqD7b9NeR2aBE9lxsHbq/G9JrzyQSEpZkfmbIfSXrgrQE+R4VzbmM0NP7KRW5
-	 5EPufmYmEnNAd5w2KA/ghZqyDZP6EbbGh/nrXz+rn1tkerdDvvvRLzIDI6kPWVZtFj
-	 NLLLXhTVJ38BKckHq1D6JcCdckJNMY56LNhnt4kQ=
-From: Chuang Zhu <git@chuang.cz>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Marc Titinger <mtitinger@baylibre.com>,
-	=?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>,
-	Chuang Zhu <git@chuang.cz>
-Subject: [PATCH v3] iio: adc: ina2xx: add INA236 support
-Date: Mon, 16 Mar 2026 02:23:04 +0800
-Message-ID: <20260315182304.613783-1-git@chuang.cz>
-X-Mailer: git-send-email 2.51.2
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hVHnml3+"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5236EC4CEF7;
+	Sun, 15 Mar 2026 18:26:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773599212;
+	bh=bA0X/cdAPTa3TTm+zrn9vDdqCAipGretS+zp96/vxyA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=hVHnml3+ZneQQO5V1+nquOTr+v0PrGhAdTFh9sgmSXrRQXM617BiDKdOM+EdH/fBZ
+	 +WSE3Bq4rVCUjAv8Ri9wGkAyHaRzooNUc5acT3IXq8JYxWEBSI9wJH5s7Jo4nwBdaE
+	 kGDTak96F2a7ccy+shu1CdSbjkUOxw+tz0pl6c7BoN19O0Vc+8Ewiw+MXsZzANIygh
+	 zmwy+lgjLoIB3L9Zm0CtAk2udTUtZY69ZA/y/NGmzxWVDp2eq1TFR4TdaNz5oYxni3
+	 687zY07NSt1yYTmu3ZeAtMD+OT7kLXzYy8eBPCUwNENzWVDpOq56SucVFqfuw2hqGT
+	 KAlVtGFl06wAw==
+Date: Sun, 15 Mar 2026 18:26:42 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Erikas Bitovtas <xerikasxx@gmail.com>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+Subject: Re: [PATCH v3 3/6] iio: light: vcnl4000: replace mutex_init with
+ devm_mutex_init
+Message-ID: <20260315182642.5c6918ad@jic23-huawei>
+In-Reply-To: <20260314-vcnl4000-regulators-v3-3-3c4a48d30676@gmail.com>
+References: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
+	<20260314-vcnl4000-regulators-v3-3-3c4a48d30676@gmail.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-The calibration divisor is not directly specified in the datasheet, but can be calculated:
+On Sat, 14 Mar 2026 18:06:32 +0200
+Erikas Bitovtas <xerikasxx@gmail.com> wrote:
 
-I = Current_LSB * Current
-Current = ShuntVoltage * CAL / calibration_divisor
-CAL = 0.00512 / (Current_LSB * Rshunt)
-ShuntVoltage = Vshunt / ShuntVoltage_LSB
+> Replace mutex_init used across driver with its device-managed
+> counterpart, so all assigned mutexes get destroyed.
+> 
+> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+Hi Erikas,
 
-=> I = (0.00512 / (calibration_divisor*ShuntVoltage_LSB)) * (Vshunt / Rshunt)
+One related area that I noticed whilst checking this patch was
+safe wrt to ordering.  I think cleaning that up before this
+patch would make this one more obviously correct.
 
-Ohm's law, I = Vshunt / Rshunt
-=> 0.00512 / (calibration_divisor*ShuntVoltage_LSB) = 1
+Jonathan
 
-ShuntVoltage_LSB = 2.5 uV = 0.0000025 V
-=> calibration_divisor = 2048
+> ---
+>  drivers/iio/light/vcnl4000.c | 17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+> index 939ff2d65105..0ee307fc5ab7 100644
+> --- a/drivers/iio/light/vcnl4000.c
+> +++ b/drivers/iio/light/vcnl4000.c
+> @@ -356,6 +356,8 @@ static int vcnl4200_set_power_state(struct vcnl4000_data *data, bool on)
+>  
+>  static int vcnl4200_init(struct vcnl4000_data *data)
+>  {
+> +	struct i2c_client *client = data->client;
+> +	struct device *dev = &client->dev;
+>  	int ret, id;
+>  	u16 regval;
+>  
+> @@ -400,8 +402,14 @@ static int vcnl4200_init(struct vcnl4000_data *data)
+>  	}
+>  	data->al_scale = data->chip_spec->ulux_step;
+>  	data->ps_scale = 16;
+> -	mutex_init(&data->vcnl4200_al.lock);
+> -	mutex_init(&data->vcnl4200_ps.lock);
+> +
+> +	ret = devm_mutex_init(dev, &data->vcnl4200_al.lock);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = devm_mutex_init(dev, &data->vcnl4200_ps.lock);
+> +	if (ret < 0)
+> +		return ret;
+I think this is ok because the only thing undone in remove is the power state
+setting that is the last call in this function but the mixture of non
+devm and devm calls in init is less than helpful for readability.
+Given both init() callbacks end with
+return data->chip_spec->set_power_state(data, true) and the remove
+just calls that callback without any wrapping up in different init functions
+I'm thinking it would make it all more readable if we didn't consider
+turning on the power as part of the _init() but instead called it
+directly from probe().
 
-Signed-off-by: Chuang Zhu <git@chuang.cz>
----
- drivers/iio/adc/ina2xx-adc.c | 57 ++++++++++++++++++++++++++++++------
- 1 file changed, 48 insertions(+), 9 deletions(-)
+That would perhaps give more readable code and avoid mix of devm cleanup
+and other cleanup in those callbacks.
 
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 857e1b69d6cd..6a4ee833d12c 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -121,7 +121,7 @@ static const struct regmap_config ina2xx_regmap_config = {
- 	.volatile_reg = ina2xx_is_volatile_reg,
- };
- 
--enum ina2xx_ids { ina219, ina226 };
-+enum ina2xx_ids { ina219, ina226, ina236 };
- 
- struct ina2xx_config {
- 	const char *name;
-@@ -175,6 +175,16 @@ static const struct ina2xx_config ina2xx_config[] = {
- 		.power_lsb_factor = 25,
- 		.chip_id = ina226,
- 	},
-+	[ina236] = {
-+		.name = "ina236",
-+		.config_default = INA226_CONFIG_DEFAULT,
-+		.calibration_value = 2048,
-+		.shunt_voltage_lsb = 2500,
-+		.bus_voltage_shift = 0,
-+		.bus_voltage_lsb = 1600,
-+		.power_lsb_factor = 32,
-+		.chip_id = ina236,
-+	},
- };
- 
- static int ina2xx_read_raw(struct iio_dev *indio_dev,
-@@ -499,20 +509,26 @@ static int ina2xx_write_raw(struct iio_dev *indio_dev,
- 		break;
- 
- 	case IIO_CHAN_INFO_INT_TIME:
--		if (chip->config->chip_id == ina226) {
-+		switch (chip->config->chip_id) {
-+		case ina226:
-+		case ina236:
- 			if (chan->address == INA2XX_SHUNT_VOLTAGE)
- 				ret = ina226_set_int_time_vshunt(chip, val2,
- 								 &tmp);
- 			else
- 				ret = ina226_set_int_time_vbus(chip, val2,
- 							       &tmp);
--		} else {
-+			break;
-+		case ina219:
- 			if (chan->address == INA2XX_SHUNT_VOLTAGE)
- 				ret = ina219_set_int_time_vshunt(chip, val2,
- 								 &tmp);
- 			else
- 				ret = ina219_set_int_time_vbus(chip, val2,
- 							       &tmp);
-+			break;
-+		default:
-+			ret = -EINVAL;
- 		}
- 		break;
- 
-@@ -727,14 +743,20 @@ static int ina2xx_conversion_ready(struct iio_dev *indio_dev)
- 	 * For now, we do an extra read of the MASK_ENABLE register (INA226)
- 	 * resp. the BUS_VOLTAGE register (INA219).
- 	 */
--	if (chip->config->chip_id == ina226) {
-+	switch (chip->config->chip_id) {
-+	case ina226:
-+	case ina236:
- 		ret = regmap_read(chip->regmap,
- 				  INA226_MASK_ENABLE, &alert);
- 		alert &= INA226_CVRF;
--	} else {
-+		break;
-+	case ina219:
- 		ret = regmap_read(chip->regmap,
- 				  INA2XX_BUS_VOLTAGE, &alert);
- 		alert &= INA219_CNVR;
-+		break;
-+	default:
-+		ret = -EINVAL;
- 	}
- 
- 	if (ret < 0)
-@@ -998,16 +1020,22 @@ static int ina2xx_probe(struct i2c_client *client)
- 	/* Patch the current config register with default. */
- 	val = chip->config->config_default;
- 
--	if (type == ina226) {
-+	switch (type) {
-+	case ina226:
-+	case ina236:
- 		ina226_set_average(chip, INA226_DEFAULT_AVG, &val);
- 		ina226_set_int_time_vbus(chip, INA226_DEFAULT_IT, &val);
- 		ina226_set_int_time_vshunt(chip, INA226_DEFAULT_IT, &val);
--	} else {
-+		break;
-+	case ina219:
- 		chip->avg = 1;
- 		ina219_set_int_time_vbus(chip, INA219_DEFAULT_IT, &val);
- 		ina219_set_int_time_vshunt(chip, INA219_DEFAULT_IT, &val);
- 		ina219_set_vbus_range_denom(chip, INA219_DEFAULT_BRNG, &val);
- 		ina219_set_vshunt_pga_gain(chip, INA219_DEFAULT_PGA, &val);
-+		break;
-+	default:
-+		return -EINVAL;
- 	}
- 
- 	ret = ina2xx_init(chip, val);
-@@ -1017,14 +1045,20 @@ static int ina2xx_probe(struct i2c_client *client)
- 	}
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
--	if (type == ina226) {
-+	switch (type) {
-+	case ina226:
-+	case ina236:
- 		indio_dev->channels = ina226_channels;
- 		indio_dev->num_channels = ARRAY_SIZE(ina226_channels);
- 		indio_dev->info = &ina226_info;
--	} else {
-+		break;
-+	case ina219:
- 		indio_dev->channels = ina219_channels;
- 		indio_dev->num_channels = ARRAY_SIZE(ina219_channels);
- 		indio_dev->info = &ina219_info;
-+		break;
-+	default:
-+		return -EINVAL;
- 	}
- 	indio_dev->name = id ? id->name : chip->config->name;
- 
-@@ -1057,6 +1091,7 @@ static const struct i2c_device_id ina2xx_id[] = {
- 	{ "ina226", ina226 },
- 	{ "ina230", ina226 },
- 	{ "ina231", ina226 },
-+	{ "ina236", ina236 },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, ina2xx_id);
-@@ -1082,6 +1117,10 @@ static const struct of_device_id ina2xx_of_match[] = {
- 		.compatible = "ti,ina231",
- 		.data = (void *)ina226
- 	},
-+	{
-+		.compatible = "ti,ina236",
-+		.data = (void *)ina236
-+	},
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ina2xx_of_match);
--- 
-2.51.2
+
+>  
+>  	/* Use 16 bits proximity sensor readings */
+>  	ret = i2c_smbus_read_word_data(data->client, VCNL4200_PS_CONF1);
+> @@ -1985,6 +1993,7 @@ static int vcnl4000_probe(struct i2c_client *client)
+>  	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+>  	struct vcnl4000_data *data;
+>  	struct iio_dev *indio_dev;
+> +	struct device *dev = &client->dev;
+>  	int ret;
+>  
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> @@ -1997,7 +2006,9 @@ static int vcnl4000_probe(struct i2c_client *client)
+>  	data->id = id->driver_data;
+>  	data->chip_spec = &vcnl4000_chip_spec_cfg[data->id];
+>  
+> -	mutex_init(&data->vcnl4000_lock);
+> +	ret = devm_mutex_init(dev, &data->vcnl4000_lock);
+> +	if (ret < 0)
+> +		return ret;
+>  
+>  	ret = data->chip_spec->init(data);
+>  	if (ret < 0)
+> 
 
