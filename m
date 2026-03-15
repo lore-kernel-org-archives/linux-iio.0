@@ -1,44 +1,41 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF2EF1FC8
-	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 18:41:47 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEABD242D88;
+	Sun, 15 Mar 2026 18:46:35 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773600107; cv=none; b=JUFASvf6m9N8nA5Zb+XAb8d7V3kGmJGD+06ZGkDiHTY830syhzPs5wb8P0vy6AFvD7wsXA+bdhrxq9V3yWRi0qj2N7eKYRmIOG2ZRbQw6lyXFH83qI2PjrOk8usYA6/S0pAZqPY/wRfYCrjmL5+uM01m/Cwsf2nZ+3su3vLkdH4=
+	t=1773600395; cv=none; b=IdGGEgesvzk+emNgNlXls8x2BnsXVHomQIYvTHAuJi1uG+UotwMBlcU/uPsGJ2WsiDfmgfehgHriC+5ihXnZv/Isy9RKcfw7nIThMuEuKc3nJ5QbNsWkBaumDpktq5aKkeCMEbbi23vLQ655cYfGjli1VuVyYdqQFeMxK3pNE0g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773600107; c=relaxed/simple;
-	bh=SGcNK1yoxvTUP7CPCuhD9SHwUADasESSEURxD+/7YAE=;
+	s=arc-20240116; t=1773600395; c=relaxed/simple;
+	bh=YOVM3YUKlN3kejUAmEpgFt/P+ftuu9sw2v1vFivpXwI=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=lnrmqiYijXvu6YZPKdee4shqvGiKieNAEn7fqquoOA1/G7hS4VxTABPeaOCgDKzm0PCKpYvAeJptqhpcHb1lshdW/sum+14ChFuNB6sKiNmXMAJu9a5wyhNbat+/zYZBdNbF4kyDV92r8UHwEDRnuYEHqn7MA9fP+T/OfcEYHQc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lsPlm2sc; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=U3a3UJkEnrhVLjYRIom6q9TxE5+HH1eQDSox7P95LdBCP45kW9R95muEWrMxklCWapb4enQYezrlEBVTVWv/fIS98zM9WO4vEt0v43ZwE89cEO/RE9OOHlFMOG9XkWYIdGY62TyAmI8U+MK8M0N1BAI+Bs95jmB5DiY08PW76Hk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HiV7G+hs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lsPlm2sc"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48664C4CEF7;
-	Sun, 15 Mar 2026 18:41:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HiV7G+hs"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63BFFC4CEF7;
+	Sun, 15 Mar 2026 18:46:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773600107;
-	bh=SGcNK1yoxvTUP7CPCuhD9SHwUADasESSEURxD+/7YAE=;
+	s=k20201202; t=1773600395;
+	bh=YOVM3YUKlN3kejUAmEpgFt/P+ftuu9sw2v1vFivpXwI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=lsPlm2sc5i49q6Kj8UNmYKtW3SJJDjSs6ApTit9k2E4CpQi94t3zeqBbUksfKK186
-	 U7mzt8Kc6WU7hRmLGNDr4RwhM2gB1GOlQW1e9MoZH/yQgExAiiR/BtmDS6Al1GoST9
-	 iSGa3VCTLrj5IptAr/oklUj/QynDX1TzpArcL99EkCqutaaKRD6jJKduHQ+8QzVd9/
-	 ww7l+O2tZX+SvIymyna9iLN5aLFv4Ki62pHPMnuJSnYzySWNk8vBBCco0mtMZjNaUV
-	 rLShrVAK7t8WGu94uYQDFAtWP4KcC5C9tuN67PNR+qBtbGJJRx4XEbq8ugzVfZNEH6
-	 m8tvNwWpgKSkQ==
-Date: Sun, 15 Mar 2026 18:41:40 +0000
+	b=HiV7G+hs7FqOsGQeDj2QvVvMZVpB6h1/KzKxVbPCl69KayC0pFkEBBszXb+ZRbluC
+	 iU5enwfqxpDaEmK1JsQtVNJ43DLdCgZkj7SbNrRGKN+q1gJOj6UBIkmiXjsM7uqdhl
+	 +lqglbXomUp2X0xDcUPinvkK2VTgVp8jAe2zQVonyxhUh7C9v1Ya8nQ06Vs3vqbTPD
+	 gXbGHF7i3iDqMpyGqt0BVeCdXegiRJNvbk8JKpTizcjkjsKECkgLrIZFBqTGF3rm6d
+	 ZqK4yK6gsg9VGRx8SPkIcSHB+sfaNSSx62Aa03qNXnAsF2gFxq49y0D7x5lLTrkXIt
+	 uz8tM/UdNNO2A==
+Date: Sun, 15 Mar 2026 18:46:27 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: "Ethan Tidmore" <ethantidmore06@gmail.com>
-Cc: "Andy Shevchenko" <andy.shevchenko@gmail.com>, <andy@kernel.org>,
- <linux-iio@vger.kernel.org>
-Subject: Re: [RFC] GSoC 2026: Transitioning IIO to guard() and
- scoped_guard()
-Message-ID: <20260315184140.6f34f76a@jic23-huawei>
-In-Reply-To: <DH2PF86XN60W.2MVDUHLKPR7LH@gmail.com>
-References: <20260311194624.1521-1-ethantidmore06@gmail.com>
-	<CAHp75VeZb0pSiAkHo9QUeS+2L-qP_83-dKKRSp7-1VfZrtr1bw@mail.gmail.com>
-	<20260314110758.2fc20704@jic23-huawei>
-	<DH2PF86XN60W.2MVDUHLKPR7LH@gmail.com>
+To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ kees@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: st_sensors: drop temporary kmalloc buffer and
+ reuse buffer_data
+Message-ID: <20260315184627.5bca7f73@jic23-huawei>
+In-Reply-To: <20260311182050.3467471-1-sanjayembedded@gmail.com>
+References: <20260311182050.3467471-1-sanjayembedded@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,71 +46,76 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 14 Mar 2026 13:08:04 -0500
-"Ethan Tidmore" <ethantidmore06@gmail.com> wrote:
+On Wed, 11 Mar 2026 23:50:50 +0530
+Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
 
-> On Sat Mar 14, 2026 at 6:07 AM CDT, Jonathan Cameron wrote:
-> > On Wed, 11 Mar 2026 22:18:07 +0200  
+> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 > 
-> ...
+> Replace the per-call kmalloc() scratch buffer with the statically allocated
+> buffer_data[] field present in struct st_sensor_data. The existing buffer
+> is DMA-aligned and sufficiently sized for all channel widths, so using it
+> avoids unnecessary dynamic memory allocation on each read.
 > 
-> >
-> > Hi Ethan
-> >
-> > I'm not keen on a mass cleanup like this without taking a closer look at
-> > the drivers. I would say (based on gut feeling rather than actually
-> > having checked the stats) that perhaps 25% of these patches result in
-> > feedback on the surrounding code or follow on improvements that are
-> > enabled.   
+> This simplifies the code, removes redundent code and allocation.
+> No functional change intended.
 > 
-> That makes sense. That would be a ton of time spent on reviewing this.
+> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> ---
+> Changes in v2:
+> - split series to individual patch
+> - address review comment from David Lechner and reuse exising buffer instead of allocation
+> - Link to v1 https://lore.kernel.org/all/20260310200513.2162018-4-sanjayembedded@gmail.com/
+> ---
+>  drivers/iio/common/st_sensors/st_sensors_core.c | 12 +++---------
+>  1 file changed, 3 insertions(+), 9 deletions(-)
 > 
-> ...
-> 
-> > As to the your question on how this 'might' be done, it would need to be
-> > 1 patch per driver because this will cause chaos for backports of later
-> > fixes due to significant churn.  
-> 
-> Yeah, that kills the idea entirely. I was hoping it could be done per
-> vendor per dir but, I understand why that wouldn't work.
-> 
-> >
-> > There are ABI changes that we want to push through the tree such
-> > as iio_push_to_buffers_with_ts() but that's because the new ABI
-> > is inherently safer and I want to get rid of the old one.
-> > Some of those cases are easy, others much less so.  
-> 
-> If a tree wide conversion to iio_push_to_buffers_with_ts() would be
-> wanted I'd be glad to do that. There is much less volume for this
-> project and if completed then a deprecated function could be removed.
-> 
-> $ grep -rn "iio_push_to_buffers_with_timestamp" drivers/iio/ | wc -l
-> 73
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index dac593be5695..488e2bf6d117 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -495,20 +495,17 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+>  				     struct iio_chan_spec const *ch, int *data)
+>  {
+>  	int err;
+> -	u8 *outdata;
+>  	struct st_sensor_data *sdata = iio_priv(indio_dev);
+>  	unsigned int byte_for_channel;
+>  
+>  	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
+>  					ch->scan_type.shift, 8);
+> -	outdata = kmalloc(byte_for_channel, GFP_DMA | GFP_KERNEL);
+> -	if (!outdata)
+> -		return -ENOMEM;
+> +	u8 *outdata = (u8 *)sdata->buffer_data;
+Why is buffer_data a char array?  It's already implicitly cast to a u8
+in one place. I'd see if it actually wants to be a char anywhere in the driver.
+If not fix that as a precursor patch to this one.
 
-It's definitely wanted.
-
-> 
-> And this would be much more manageable to review. Would this be a viable
-> proposal for GsoC?
-
-Perhaps not on it's own - I'm not sure as I've never been actively involved
-in GSOC.  One to discuss with the folk running the kernel projects.
-I don't know how open they are to this sort of (mostly) mechanical
-cleanup.
-
-There are a bunch of other bits of historical stuff we'd like to get rid of.
-Converting drivers to read_avail() to cut down on hand crafting attr or
-using the macros in iio/sysfs.h that mostly should go away.
-
-I also have been thinking it would be nice to figure out a cleaner
-solution for hardware fifo related attributes which are a case the core doesn't handle
-at all today. That was fine when those drivers were rare, but they are getting
-more and more common and that stuff certainly looks ugly.
+I'm not sure I'd bother having a local variable for outdata given
+it is only used a few times but I don't mind it much (beyond what Andy
+pointed out about declaring it here).
 
 Jonathan
 
-> 
-> Thanks,
-> 
-> ET
+>  
+>  	err = regmap_bulk_read(sdata->regmap, ch->address,
+>  			       outdata, byte_for_channel);
+>  	if (err < 0)
+> -		goto st_sensors_free_memory;
+> +		return err;
+>  
+>  	if (byte_for_channel == 1)
+>  		*data = (s8)*outdata;
+> @@ -517,10 +514,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+>  	else if (byte_for_channel == 3)
+>  		*data = (s32)sign_extend32(get_unaligned_le24(outdata), 23);
+>  
+> -st_sensors_free_memory:
+> -	kfree(outdata);
+> -
+> -	return err;
+> +	return 0;
+>  }
+>  
+>  int st_sensors_read_info_raw(struct iio_dev *indio_dev,
 
