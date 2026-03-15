@@ -1,41 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BEABD242D88;
-	Sun, 15 Mar 2026 18:46:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D7A541891A9;
+	Sun, 15 Mar 2026 18:52:34 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773600395; cv=none; b=IdGGEgesvzk+emNgNlXls8x2BnsXVHomQIYvTHAuJi1uG+UotwMBlcU/uPsGJ2WsiDfmgfehgHriC+5ihXnZv/Isy9RKcfw7nIThMuEuKc3nJ5QbNsWkBaumDpktq5aKkeCMEbbi23vLQ655cYfGjli1VuVyYdqQFeMxK3pNE0g=
+	t=1773600754; cv=none; b=sO9L6l1MLUjPPofNwS0viNnOaeZYxYYuJC0uW76tqDC6YvenvdoWeY8mcRL8LKOtNanfeBxlMOGf19pRunqjRrwkV07rdLIvUY6EfIDK/3XINPlA1eFRZSsUC+EpkjnuNz7ICsU1onYuFAWd45kE1kcCjkbqNK1pn0RJaIqsEEs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773600395; c=relaxed/simple;
-	bh=YOVM3YUKlN3kejUAmEpgFt/P+ftuu9sw2v1vFivpXwI=;
+	s=arc-20240116; t=1773600754; c=relaxed/simple;
+	bh=FV+EI0smjT8S1w7eDJI5od9gRMB4R0LdWbJuGCnHhk8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=U3a3UJkEnrhVLjYRIom6q9TxE5+HH1eQDSox7P95LdBCP45kW9R95muEWrMxklCWapb4enQYezrlEBVTVWv/fIS98zM9WO4vEt0v43ZwE89cEO/RE9OOHlFMOG9XkWYIdGY62TyAmI8U+MK8M0N1BAI+Bs95jmB5DiY08PW76Hk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HiV7G+hs; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=RHsRMnwieI+vOgeN2rwCs7MPCRWj+gBZUaw95o/40qrFKZY+3+tFC3OCoHqLsCs5QNlv5eL9hkT1Iuf8tVLgPjNRhoWsxkONbFZE/v1I7KeB1H6XqWJgpsZj8dr/d70LZbi5kYxt6JV8tIHIb/3kFjduIiO3g1jnZjsWPWcekX8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=c8svTJv3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HiV7G+hs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63BFFC4CEF7;
-	Sun, 15 Mar 2026 18:46:32 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="c8svTJv3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9DD9C4CEF7;
+	Sun, 15 Mar 2026 18:52:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773600395;
-	bh=YOVM3YUKlN3kejUAmEpgFt/P+ftuu9sw2v1vFivpXwI=;
+	s=k20201202; t=1773600754;
+	bh=FV+EI0smjT8S1w7eDJI5od9gRMB4R0LdWbJuGCnHhk8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=HiV7G+hs7FqOsGQeDj2QvVvMZVpB6h1/KzKxVbPCl69KayC0pFkEBBszXb+ZRbluC
-	 iU5enwfqxpDaEmK1JsQtVNJ43DLdCgZkj7SbNrRGKN+q1gJOj6UBIkmiXjsM7uqdhl
-	 +lqglbXomUp2X0xDcUPinvkK2VTgVp8jAe2zQVonyxhUh7C9v1Ya8nQ06Vs3vqbTPD
-	 gXbGHF7i3iDqMpyGqt0BVeCdXegiRJNvbk8JKpTizcjkjsKECkgLrIZFBqTGF3rm6d
-	 ZqK4yK6gsg9VGRx8SPkIcSHB+sfaNSSx62Aa03qNXnAsF2gFxq49y0D7x5lLTrkXIt
-	 uz8tM/UdNNO2A==
-Date: Sun, 15 Mar 2026 18:46:27 +0000
+	b=c8svTJv3Ze0qsI9lhD69A/e60uEwxad601VZ83SoiZcSETcNQ+iMg1ZDMGRW4gyA5
+	 jdCtLieq2QOba1OpWXoqg9juKj/cNanIGPLnC8OwP5xyKVhvpy/wFR9HxC+b5OagV/
+	 QPeGieuui+BV+7bWmvE1BqBUnvOkEb8hfD1efhz15wW/pPbndlzglbmO7n9dlg0L/D
+	 S/laSsi7jfjYX+k4lykwJe54Q3SnqQGSmA5KJGaE9vk20pvf8B5Lo9f18/lmy3ebvY
+	 6uiBTpko0391tyBtP9F1D0w1bbBLDvLTwXc/7NonvKv8fCwsmzxuT5LFgFkeF+6xB5
+	 gZT+iFYEgYiNQ==
+Date: Sun, 15 Mar 2026 18:52:26 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
  kees@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: st_sensors: drop temporary kmalloc buffer and
- reuse buffer_data
-Message-ID: <20260315184627.5bca7f73@jic23-huawei>
-In-Reply-To: <20260311182050.3467471-1-sanjayembedded@gmail.com>
-References: <20260311182050.3467471-1-sanjayembedded@gmail.com>
+Subject: Re: [PATCH v3 1/3] iio: ssp_sensors: ssp_spi: use guard() to
+ release mutexes
+Message-ID: <20260315185226.2bc4d8bc@jic23-huawei>
+In-Reply-To: <20260315125509.857195-2-sanjayembedded@gmail.com>
+References: <20260315125509.857195-1-sanjayembedded@gmail.com>
+	<20260315125509.857195-2-sanjayembedded@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,76 +47,190 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 11 Mar 2026 23:50:50 +0530
+On Sun, 15 Mar 2026 18:25:07 +0530
 Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
 
 > From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 > 
-> Replace the per-call kmalloc() scratch buffer with the statically allocated
-> buffer_data[] field present in struct st_sensor_data. The existing buffer
-> is DMA-aligned and sufficiently sized for all channel widths, so using it
-> avoids unnecessary dynamic memory allocation on each read.
-> 
-> This simplifies the code, removes redundent code and allocation.
-> No functional change intended.
+> Replace explicit mutex_lock() and mutex_unlock() with the guard() macro
+> for cleaner and safer mutex handling.
 > 
 > Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 > ---
-> Changes in v2:
-> - split series to individual patch
-> - address review comment from David Lechner and reuse exising buffer instead of allocation
-> - Link to v1 https://lore.kernel.org/all/20260310200513.2162018-4-sanjayembedded@gmail.com/
-> ---
->  drivers/iio/common/st_sensors/st_sensors_core.c | 12 +++---------
->  1 file changed, 3 insertions(+), 9 deletions(-)
+>  drivers/iio/common/ssp_sensors/ssp_spi.c | 54 ++++++++++--------------
+>  1 file changed, 22 insertions(+), 32 deletions(-)
 > 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index dac593be5695..488e2bf6d117 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -495,20 +495,17 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
->  				     struct iio_chan_spec const *ch, int *data)
->  {
->  	int err;
-> -	u8 *outdata;
->  	struct st_sensor_data *sdata = iio_priv(indio_dev);
->  	unsigned int byte_for_channel;
+> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
+> index 6c81c0385fb5..87a38002b218 100644
+> --- a/drivers/iio/common/ssp_sensors/ssp_spi.c
+> +++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
+> @@ -2,6 +2,7 @@
+>  /*
+>   *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
+>   */
+> +#include <linux/cleanup.h>
 >  
->  	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
->  					ch->scan_type.shift, 8);
-> -	outdata = kmalloc(byte_for_channel, GFP_DMA | GFP_KERNEL);
-> -	if (!outdata)
-> -		return -ENOMEM;
-> +	u8 *outdata = (u8 *)sdata->buffer_data;
-Why is buffer_data a char array?  It's already implicitly cast to a u8
-in one place. I'd see if it actually wants to be a char anywhere in the driver.
-If not fix that as a precursor patch to this one.
+>  #include "ssp.h"
+>  
+> @@ -189,55 +190,49 @@ static int ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
+>  
+>  	msg->done = done;
+>  
+> -	mutex_lock(&data->comm_lock);
+> +	guard(mutex)(&data->comm_lock);
+>  
+>  	status = ssp_check_lines(data, false);
+> -	if (status < 0)
+> -		goto _error_locked;
+> +	if (status < 0) {
+> +		data->timeout_cnt++;
+> +		return status;
+> +	}
+>  
+>  	status = spi_write(data->spi, msg->buffer, SSP_HEADER_SIZE);
+>  	if (status < 0) {
+>  		gpiod_set_value_cansleep(data->ap_mcu_gpiod, 1);
+>  		dev_err(SSP_DEV, "%s spi_write fail\n", __func__);
+> -		goto _error_locked;
+> +		data->timeout_cnt++;
+guard() isn't always the right answer.  The counter needing updating
+here in every error path makes me thing maybe it isn't here.
+Pity there is one error path at the top where that's not updated,
+otherwise I'd suggest updating in a wrapper function.
 
-I'm not sure I'd bother having a local variable for outdata given
-it is only used a few times but I don't mind it much (beyond what Andy
-pointed out about declaring it here).
+> +		return status;
+>  	}
+>  
+>  	if (!use_no_irq) {
+> -		mutex_lock(&data->pending_lock);
+> -		list_add_tail(&msg->list, &data->pending_list);
+> -		mutex_unlock(&data->pending_lock);
+> +		scoped_guard(mutex, &data->pending_lock)
 
-Jonathan
+The guard brings little here, but if you want to do it.
+		guard(mutex)(&data->pending_lock);
+is fine - no need for scoped_guard() and increased indent.
+Make sure you understand why that is effectively the same in this cases.
 
+> +			list_add_tail(&msg->list, &data->pending_list);
+>  	}
 >  
->  	err = regmap_bulk_read(sdata->regmap, ch->address,
->  			       outdata, byte_for_channel);
->  	if (err < 0)
-> -		goto st_sensors_free_memory;
-> +		return err;
+>  	status = ssp_check_lines(data, true);
+>  	if (status < 0) {
+>  		if (!use_no_irq) {
+> -			mutex_lock(&data->pending_lock);
+> -			list_del(&msg->list);
+> -			mutex_unlock(&data->pending_lock);
+> +			scoped_guard(mutex, &data->pending_lock)
+
+As above.
+
+> +				list_add_tail(&msg->list, &data->pending_list);
+>  		}
+> -		goto _error_locked;
+> +		data->timeout_cnt++;
+> +		return status;
+>  	}
 >  
->  	if (byte_for_channel == 1)
->  		*data = (s8)*outdata;
-> @@ -517,10 +514,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
->  	else if (byte_for_channel == 3)
->  		*data = (s32)sign_extend32(get_unaligned_le24(outdata), 23);
->  
-> -st_sensors_free_memory:
-> -	kfree(outdata);
+> -	mutex_unlock(&data->comm_lock);
 > -
-> -	return err;
-> +	return 0;
+>  	if (!use_no_irq && done)
+>  		if (wait_for_completion_timeout(done,
+>  						msecs_to_jiffies(timeout)) ==
+>  		    0) {
+> -			mutex_lock(&data->pending_lock);
+> -			list_del(&msg->list);
+> -			mutex_unlock(&data->pending_lock);
+> +			scoped_guard(mutex, &data->pending_lock)
+> +				list_add_tail(&msg->list, &data->pending_list);
+Slightly trickier but holding the mutex over the timeout_cnt is fine, so
+I'd use guard() here as well.
+
+>  
+>  			data->timeout_cnt++;
+>  			return -ETIMEDOUT;
+>  		}
+>  
+>  	return 0;
+> -
+> -_error_locked:
+> -	mutex_unlock(&data->comm_lock);
+> -	data->timeout_cnt++;
+> -	return status;
 >  }
 >  
->  int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+>  static inline int ssp_spi_sync_command(struct ssp_data *data,
+> @@ -360,7 +355,7 @@ int ssp_irq_msg(struct ssp_data *data)
+>  		 * this is a small list, a few elements - the packets can be
+>  		 * received with no order
+>  		 */
+> -		mutex_lock(&data->pending_lock);
+> +		guard(mutex)(&data->pending_lock);
+
+Check the scope definition.  Given where you remove the unlock below
+I'm not sure the scope is what you think it is.
+Switch statements are tricky wrt to scope!
+
+
+
+
+>  		list_for_each_entry_safe(iter, n, &data->pending_list, list) {
+>  			if (iter->options == msg_options) {
+>  				list_del(&iter->list);
+> @@ -376,10 +371,8 @@ int ssp_irq_msg(struct ssp_data *data)
+>  			 * check but let's handle this
+>  			 */
+>  			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
+> -			if (!buffer) {
+> -				ret = -ENOMEM;
+> -				goto _unlock;
+> -			}
+> +			if (!buffer)
+> +				return -ENOMEM;
+>  
+>  			/* got dead packet so it is always an error */
+>  			ret = spi_read(data->spi, buffer, length);
+> @@ -391,7 +384,7 @@ int ssp_irq_msg(struct ssp_data *data)
+>  			dev_err(SSP_DEV, "No match error %x\n",
+>  				msg_options);
+>  
+> -			goto _unlock;
+> +			return ret;
+>  		}
+>  
+>  		if (msg_type == SSP_AP2HUB_READ)
+> @@ -409,15 +402,13 @@ int ssp_irq_msg(struct ssp_data *data)
+>  				msg->length = 1;
+>  
+>  				list_add_tail(&msg->list, &data->pending_list);
+> -				goto _unlock;
+> +				return ret;
+>  			}
+>  		}
+>  
+>  		if (msg->done)
+>  			if (!completion_done(msg->done))
+>  				complete(msg->done);
+> -_unlock:
+> -		mutex_unlock(&data->pending_lock);
+>  		break;
+>  	case SSP_HUB2AP_WRITE:
+>  		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
+> @@ -448,7 +439,7 @@ void ssp_clean_pending_list(struct ssp_data *data)
+>  {
+>  	struct ssp_msg *msg, *n;
+>  
+> -	mutex_lock(&data->pending_lock);
+> +	guard(mutex)(&data->pending_lock);
+>  	list_for_each_entry_safe(msg, n, &data->pending_list, list) {
+>  		list_del(&msg->list);
+>  
+> @@ -456,7 +447,6 @@ void ssp_clean_pending_list(struct ssp_data *data)
+>  			if (!completion_done(msg->done))
+>  				complete(msg->done);
+>  	}
+> -	mutex_unlock(&data->pending_lock);
+>  }
+>  
+>  int ssp_command(struct ssp_data *data, char command, int arg)
 
