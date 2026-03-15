@@ -1,41 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94B7434D903
-	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 12:30:05 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EEC4E355819;
+	Sun, 15 Mar 2026 12:42:26 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773577805; cv=none; b=CYdRrCTNQrty0jXnPzHMStUe7ZBIWO5h6JZvb5QdFZqM+uYvcehHVN089m37F9pAIK/Z3IXIvV+jNSJNzjEag8x8k83zVUQH8DY25CZ2AuAYQO2zr3UOZoWdtvKuNK6tMIPfBvSU0UTkxzZMD8KK5q+H5qu2N/GdS1pplxxZfhE=
+	t=1773578547; cv=none; b=OZFCHEPYmz7PFAVyL2/gRTOXCBRjOZiWe/+weOmJydeL3Ywv8g3EMfzwFMparFNOP2gHX5KfM/nUh04lzUm/qxVc7U5F2ptY+sexedwpnucKWFOsr8zQDFPisk4F8L2AADNA6Jza9q4M5Pb7EuI5vFJBe7xG1zpzGnGLFSwfu/8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773577805; c=relaxed/simple;
-	bh=EwnCOf46mN3COISjD8XAj/Au2p5ZQrfSmYKRVrffpk4=;
+	s=arc-20240116; t=1773578547; c=relaxed/simple;
+	bh=+stIcwyPY4/1GXALH1wHry1XyiOYNwNg0jESs5LxL9s=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CPC8L990eRRuosYBfT5fY0MOjQFNCpd/WjVGyEdFtLq8LwLXmm0RaU2yTAjFycVbSf8UPN2+K2WuHSTNCh1BiHyQGkQdp2S/lK08G1GNce80KufIteKa418EpCMu2gntJe7SzrwJLES3m8ebr0jZRgRWQzzb6Wwf98zjz3w7R1Y=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=THaTrVnG; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=kWirIx8/o4e9r2W/+utezaae+LibU3GnObFCdgk8fhgwhLslNrmUHlTdoewYZE7K2xmJ4FzhYZBVSuy4QCtJev+qn/7g5PRdfjkU1JJEBSrgCP2bX8EbygqgJpefsXlTylHtX7M4ehUelyR9k19QgHCMB4VPf/Ivj6v4b2ARlbE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=UriL3X5x; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="THaTrVnG"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC5C1C4CEF7;
-	Sun, 15 Mar 2026 12:30:02 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="UriL3X5x"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11FF6C4CEF7;
+	Sun, 15 Mar 2026 12:42:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773577805;
-	bh=EwnCOf46mN3COISjD8XAj/Au2p5ZQrfSmYKRVrffpk4=;
+	s=k20201202; t=1773578546;
+	bh=+stIcwyPY4/1GXALH1wHry1XyiOYNwNg0jESs5LxL9s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=THaTrVnGvkXUOeg1wGumYti7Kp7hS+9Q9V6QHrCTHDY3qewPoOvpCK254vRCvaHhS
-	 3B96UUFV78fT6+QU6QpRg2bur3K1ZIWiijJ3FBc3VeQP8ZcDxbtyJV6EzwZzsLOovt
-	 JvVLkuqr588NQm2RW76b9CpdTx7JtLUopVt0eGk23QSdDugDhH7YA7yqib8+EUNYb2
-	 3RbL+YlzRQcVNE6p3GSkmjRcIOCw4rFLm8O9YuTzJh+UltdypQ/5RM185pKMzvqPoF
-	 +5vvsyT6Z4caUcfIEJ3st/ep3KVKA7jMVEm1qk03XgBx1gcCt6Wz86UABrF5m44oIC
-	 C51SzEyQtaoSA==
-Date: Sun, 15 Mar 2026 12:29:58 +0000
+	b=UriL3X5xSMrS3KP+dkmU5mxl5h7B/iAvhi1aTq+1XXXRCQNliV2f4s38EcHZsiIG2
+	 GkCsSW0wdD4qR26NqyXeS8UDc7rX8HxycdSimDsflEdTD6hZh6I8lQEov5SXMbXE1G
+	 NbU3H+/GLsiy5i5Enz3OVNp1wXlkpii7ZO9fib1IjDuwrZAupx62njOdnGqWkpvlTA
+	 M4JX+71d6V/KeA9PEbZcGCc2q6IZu6aTRxYiPW8cznHpKImTbwbOKxolhXdjlQRoXE
+	 x5yrn8+HyOtCS3r2hOFGBEW6sP305A7uYmUkNKVElIiAQYmwEGP91TMvrtiDUISuP6
+	 8+sxChIcv3iFg==
+Date: Sun, 15 Mar 2026 12:42:03 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
- Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: mt6359-auxadc: Fix comma spacing
-Message-ID: <20260315122958.5c95485a@jic23-huawei>
-In-Reply-To: <20260310143809.83126-2-giorgitchankvetadze1997@gmail.com>
-References: <20260310143809.83126-2-giorgitchankvetadze1997@gmail.com>
+To: Taha Ed-Dafili <0rayn.dev@gmail.com>
+Cc: krzk@kernel.org, Michael.Hennerich@analog.com, andy@kernel.org,
+ conor+dt@kernel.org, devicetree@vger.kernel.org, dlechner@baylibre.com,
+ krzk+dt@kernel.org, lars@metafoo.de, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, me@brighamcampbell.com, nuno.sa@analog.com,
+ robh@kernel.org, skhan@linuxfoundation.org
+Subject: Re: [PATCH v2 1/5] dt-bindings: iio: dac: ad5504: add output-range
+ and missing gpios
+Message-ID: <20260315124203.3c740f29@jic23-huawei>
+In-Reply-To: <20260311094902.9252-1-0rayn.dev@gmail.com>
+References: <a617bbfe-0339-4334-8b52-dc85de12c626@kernel.org>
+	<20260311094902.9252-1-0rayn.dev@gmail.com>
 X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -46,32 +50,49 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Tue, 10 Mar 2026 18:38:10 +0400
-Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com> wrote:
+On Wed, 11 Mar 2026 09:49:02 +0000
+Taha Ed-Dafili <0rayn.dev@gmail.com> wrote:
 
-> Fix incorrect whitespace around comma on line 325 to comply with
-> kernel coding style. This silences checkpatch errors "ERROR: space
-> prohibited before that ','" and "ERROR: space required after that ','".
-> No functional change.
+> Hi Krzysztof,
 > 
-> Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Applied.
-Thanks.
-> ---
->  drivers/iio/adc/mt6359-auxadc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> I misunderstood how the Suggested-by tag is used. Since
+> Andy explicitly asked me to sort the headers, and the DT properties were
+> provided during the v1 review, I thought I should credit those direct
+> suggestions. My reasoning was simply that those specific patches and
+> changes wouldn't exist in this series without that feedback.
 > 
-> diff --git a/drivers/iio/adc/mt6359-auxadc.c b/drivers/iio/adc/mt6359-auxadc.c
-> index f426a289e867..6b9ed9b1fde2 100644
-> --- a/drivers/iio/adc/mt6359-auxadc.c
-> +++ b/drivers/iio/adc/mt6359-auxadc.c
-> @@ -322,7 +322,7 @@ static const struct mtk_pmic_auxadc_chan mt6359_auxadc_ch_desc[] = {
->  	MTK_PMIC_ADC_CHAN(BATADC, PMIC_AUXADC_RQST0, 0, PMIC_AUXADC_IMP1, 15, 128, 7, 2),
->  	MTK_PMIC_ADC_CHAN(BAT_TEMP, PMIC_AUXADC_RQST0, 3, PMIC_AUXADC_IMP1, 15, 8, 5, 2),
->  	MTK_PMIC_ADC_CHAN(CHIP_TEMP, PMIC_AUXADC_RQST0, 4, PMIC_AUXADC_IMP1, 15, 8, 1, 1),
-> -	MTK_PMIC_ADC_CHAN(ACCDET, PMIC_AUXADC_RQST0, 5, PMIC_AUXADC_IMP1, 15 ,8, 1, 1),
-> +	MTK_PMIC_ADC_CHAN(ACCDET, PMIC_AUXADC_RQST0, 5, PMIC_AUXADC_IMP1, 15, 8, 1, 1),
->  	MTK_PMIC_ADC_CHAN(VDCXO, PMIC_AUXADC_RQST0, 6, PMIC_AUXADC_IMP1, 15, 8, 3, 2),
->  	MTK_PMIC_ADC_CHAN(TSX_TEMP, PMIC_AUXADC_RQST0, 7, PMIC_AUXADC_IMP1, 15, 128, 1, 1),
->  	MTK_PMIC_ADC_CHAN(HPOFS_CAL, PMIC_AUXADC_RQST0, 9, PMIC_AUXADC_IMP1, 15, 256, 1, 1),
+> I now realize this tag is meant for original feature ideas, not standard
+> review feedback. I will drop the tags across the entire series in v3.
+> 
+> Regarding vcc-supply: I made it required because the driver currently
+> fails to probe without it. I understand now that this causes an ABI break,
+> so I will revert it back to optional in v3.
+Are you sure it fails to probe?
+
+	ret = devm_regulator_get_enable_read_voltage(&spi->dev, "vcc");
+	if (ret < 0 && ret != -ENODEV)
+		return ret;
+	if (ret == -ENODEV) {
+		if (pdata->vref_mv)
+			st->vref_mv = pdata->vref_mv;
+		else
+			dev_warn(&spi->dev, "reference voltage unspecified\n");
+	} else {
+		st->vref_mv = ret / 1000;
+	}
+
+If it's not provided we should get ret == -ENODEV then fall through
+to the other paths to either get it or warn if it's not there.
+
+Logically it is required, but we have been papering over the DT
+binding not listing that for a while.
+
+Jonathan
+
+
+> 
+> Thank you for the clarification.
+> 
+> Best regards,
+> Taha
 
