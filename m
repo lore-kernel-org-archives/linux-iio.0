@@ -1,143 +1,132 @@
-Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 20E441DFF0
-	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 12:16:32 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8D0F1DFF0
+	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 12:16:39 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773576993; cv=none; b=RsxrZRSUUmkMSm37E9n54metYRqUiLFtD9AEANyCFB9x6ONjcf754WbTnbvw1Cr9V5qnqFFInt2EZxJipy4c+b0qx96hEEgJ2YoGjGZrSGhKsxG/mwCWMNSkzoCM/cluHEf//RMgR0puB/G/3JrdRlhlFvbhl7qUsMyoY6TsyqY=
+	t=1773577000; cv=none; b=kMwI1TiFXvtzpv7zoF13WK1cpGbYj1HNBJ4uLcOZ0q/HrLzbyF36fgtwAnH/qavpL+FzzzhY1sCIiyrWattQpxErJRYGjNlIhTwh6PqYYlnkSHbStMlMHFpyjNlIVgi03gtCU3fyn7yStHPgqG5enbiHw+zoi6/JePFYNGXfZ6U=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773576993; c=relaxed/simple;
-	bh=o6NEd9Qnd0g7VXaH4C7X9rM2Y51BJxI8kXsEauLUPA8=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=D6L8wJGIIJ04LZQ65CVwAr1RlAXd6VEwZ2KZGmrzOhpsO6F3zEfuKbUOHsA/X3Jo5fbuvmVZcrk/O+vrO6TgtZjRIOyxcJddq8ihiGrjLRz0Mt4y9vjNxJ19NRWilkv5w5S9PAyCQfeqqZEG6fM4FoGun9qccHEhIp5clHbFrJc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ML+FY1J7; arc=none smtp.client-ip=209.85.214.174
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773577000; c=relaxed/simple;
+	bh=/WpYLgizg5PQRAAAe+hwsKaNwTfC1D7H79Fz6XPKdJc=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=mhq5hi36Dle1Ry5HuRdvAYnegBwsw/KsBzDRjdtBOjS3dWBrcBCaM6ujsq63uVEWImxbIvBddOuc9FM37w+VhaB8fXR+nIzOr/BqyTwbJ+pt29IsDaUcgUx6VZWE+Z+bRAOSrzoKlgdTjVDU6wINL1XoFHAE4MQmoqVOzJ1ZTak=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BpPFd4sb; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ML+FY1J7"
-Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2a7a9b8ed69so45289395ad.2
-        for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 05:16:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773576991; x=1774181791; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=ENF5X6gQPPCvifGOM8Ukl253KdBOejJZcQzWq1vd7AE=;
-        b=ML+FY1J7XbtqtqdVX3WHWlaIm21Qiyv6/djpE9Qc15IXK9wSDvDQbQ9LGQ7Sv/jCnz
-         eSObeITxaRu/8py7nqABh6CFMRKMtvP9iSkHlww4kzvovSzbqbCbgEzTdhOIk1kUIgFa
-         +85RBXUKBVquDnb2tNv41aZSelf94VnGpXbX4YgpJOJALCrK08UTE5UP+oMA/3EHzZwE
-         WDqLX31aOFulfjaqzr6YJ/Qg02a9c9vfPbdv/AeG+3riMy+ADH70B6pLCQ8sDHMsUXoc
-         9dW/Lt+ZdE6U3xAxtV7820G5QYMejW9HQYXvdXaexL2VdZAKU6nrE3744c4dDtLSPZS8
-         E72Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773576991; x=1774181791;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=ENF5X6gQPPCvifGOM8Ukl253KdBOejJZcQzWq1vd7AE=;
-        b=RZ4iPjQfQ2BmxuNpuMt8HV/nip4sSgRZCTwH8p5YgKEDNg5mAy52hT+2/SuaU3Rc6K
-         +F1r2cN28/UuYJtyIr3kSXcNsJDN5SJiwd9nkCriYeychrmVjqqoQfJN66nZKznPWIcU
-         Ht5KUyrTYHi4JkDgENSWGi6KWSxERrECExn9Q5LSA+/pfXNwNIVo2/4MAunPWjM4J6AE
-         BP8+o+omrNgf6wgSyb+eLRa2t+4dJJtEX3lpWjH7xsepklCF8V/w7Y1Cxf/loDB5jYLC
-         aK3ml+nJbkHC0We9/gylOxE33maCYTciUbzGn9sbnTITG/06iu+oFxA0Oze/rdaJDBIT
-         ScTQ==
-X-Forwarded-Encrypted: i=1; AJvYcCU0+TA5cZ7BD4N+X2ufvt3sN5OkEnlc/r1mDV9eYnMpYK1TJnseAV2drFnmKm3Az/D0TmbbVSwmsAk=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxuc7yoMgNG6P318jqv7gFbDj7m4WDyL1RlBD0CPkiY6qmcpUOu
-	L5fW4uLp881m5YuKZr2ribKS8qw1VHqkNRDLwzxaT4Ik6HWL1SVmlZku
-X-Gm-Gg: ATEYQzxDQgcxM1Oe3qEKVH5CgpV1FurmPZjxJd9HFw5BdXgnKZG6fswa6fJrqyCGtzN
-	5YC0wex22KmjiieuplQ2CtnQO5h1DBDsmXU2PLVOLwZw5toWt8qjkOZLNGXh+5eVaUBr5zM87Vt
-	GqnuOBg6+L3k3SrVyIzK6+GD8nPQQowiktHZin5T+HwwJeRNuQlwueXVheYhjlQCNJGqtbJrfYB
-	nPeOj+5B4PVZf2cBWwzQ2RJmiBDVMqunbnXEhUcB4rBdzthHppfcZJ2FybuBBhTr5P2NoZpZx1A
-	U92kBFln9H5s6B1Nnukp5yUPCNWf9aez/reTzJwMdI/IJ5iXb7dZmAIzes3ao0S5o849t9Fpjql
-	DWzOBGtL7+UAp2S/bHKxw8fZgGOqSi87AZsEKTDiGl7dgJ+gMUXi26XRr60L5PdTwZcDdTVbjqi
-	7u3EmLCW7JPiWn0m/LOUcFmxFO/uGLgvkA9vS0SF1LEHmJ+4lt
-X-Received: by 2002:a17:902:ced2:b0:2ae:5776:45f8 with SMTP id d9443c01a7336-2aeca91d8acmr99613065ad.3.1773576991515;
-        Sun, 15 Mar 2026 05:16:31 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b04e5cb3dbsm25883095ad.25.2026.03.15.05.16.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Mar 2026 05:16:30 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: kees@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sanjayembeddedse@gmail.com
-Subject: [PATCH v4] iio: st_sensors: drop temporary kmalloc buffer and reuse buffer_data
-Date: Sun, 15 Mar 2026 17:46:25 +0530
-Message-Id: <20260315121625.840769-1-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BpPFd4sb"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AABC3C4CEF7;
+	Sun, 15 Mar 2026 12:16:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773576999;
+	bh=/WpYLgizg5PQRAAAe+hwsKaNwTfC1D7H79Fz6XPKdJc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=BpPFd4sbTuS3K5MYsABblcUtBPdJjENbArPCPtzFixhgAegF8dDrZ2hM5e21T42nM
+	 tpRYteHdyOEf5qJgqYJqxCkzu4uOxlThd4daY9qDKEmSA39CytC06ChZ999YmwuobZ
+	 w1AQA3vLv1PcWrvZhgSlei8dDMpoHOmBG5iV9ABAJS080dI8o4JxSKyPexx3kabh0z
+	 66uaGky9u6m7H8gi3ep/FNFuLF6dlDRE0hL8/JnKcsf7EFTNAdsdB+XJsjUcFXh0+5
+	 O4C9K3wT+7xxcCFjjQfIfZKjuqQE+WNgoMIZX5lBi93uK8yGa7NIBIWPgt8nfvfU3Z
+	 zEcaK6AyZcnJg==
+Date: Sun, 15 Mar 2026 12:16:26 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Chuang Zhu <git@chuang.cz>
+Cc: linux-iio@vger.kernel.org, Marc Titinger <mtitinger@baylibre.com>,
+ Stefan =?UTF-8?B?QnLDvG5z?= <stefan.bruens@rwth-aachen.de>
+Subject: Re: [PATCH v2] iio: adc: ina2xx: add INA236 support
+Message-ID: <20260315121626.5fd2273c@jic23-huawei>
+In-Reply-To: <20260309193742.479883-1-git@chuang.cz>
+References: <20260309193742.479883-1-git@chuang.cz>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Tue, 10 Mar 2026 03:37:42 +0800
+Chuang Zhu <git@chuang.cz> wrote:
 
-Replace the per-call kmalloc() scratch buffer with the existing
-buffer_data[] field present in struct st_sensor_data. The existing buffer
-is DMA-aligned and sufficiently sized for all channel widths, so using it
-avoids unnecessary dynamic memory allocation on each read.
+> The calibration divisor is not directly specified in the datasheet, but can be calculated:
+> 
+> I = Current_LSB * Current
+> Current = ShuntVoltage * CAL / calibration_divisor
+> CAL = 0.00512 / (Current_LSB * Rshunt)
+> ShuntVoltage = Vshunt / ShuntVoltage_LSB
+> 
+> => I = (0.00512 / (calibration_divisor*ShuntVoltage_LSB)) * (Vshunt / Rshunt)  
+> 
+> Ohm's law, I = Vshunt / Rshunt
+> => 0.00512 / (calibration_divisor*ShuntVoltage_LSB) = 1  
+> 
+> ShuntVoltage_LSB = 2.5 uV = 0.0000025 V
+> => calibration_divisor = 2048  
+> 
+> Signed-off-by: Chuang Zhu <git@chuang.cz>
+Hi.
 
-This simplifies the code, removes redundant allocation and cleanup.
-No functional change intended.
+Ideally I'd like this driver to move away from using an enum
+for device identification and towards encapsulating all the
+differences between devices in a chip specific structure
+instance.  However, that's obviously a more significant
+change and I don't feel it's fair to land that on you!
+If you want to do it though it would be appreciated.
+Just look for other drivers that use separate structures
+rather than indexing into an array.
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Reviewed-by: David Lechner <dlechner@baylibre.com>
----
-Changes in v4:
-- Rectify commit message review by David Lechner
-- Link to v3 https://lore.kernel.org/all/20260312063424.3846945-1-sanjayembedded@gmail.com/
-Changes in v3:
-- fix variable declartion placement to follow kernel coding style
-- Link to v2 https://lore.kernel.org/all/20260311182050.3467471-1-sanjayembedded@gmail.com/
-Changes in v2:
-- split series to individual patch
-- address review comment from David Lechner and reuse exising buffer instead of allocation
-- Link to v1 https://lore.kernel.org/all/20260310200513.2162018-4-sanjayembedded@gmail.com/
----
- drivers/iio/common/st_sensors/st_sensors_core.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
+Having said that, if we are going to stick to the enum for now
+I would prefer a few changes to how we do it. See inline.
+> ---
+>  drivers/iio/adc/ina2xx-adc.c | 25 ++++++++++++++++++++-----
+>  1 file changed, 20 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+> index 857e1b69d6cd4..4e421f91f707f 100644
+> --- a/drivers/iio/adc/ina2xx-adc.c
+> +++ b/drivers/iio/adc/ina2xx-adc.c
+> @@ -121,7 +121,7 @@ static const struct regmap_config ina2xx_regmap_config = {
+>  	.volatile_reg = ina2xx_is_volatile_reg,
+>  };
+>  
+> -enum ina2xx_ids { ina219, ina226 };
+> +enum ina2xx_ids { ina219, ina226, ina236 };
+>  
+>  struct ina2xx_config {
+>  	const char *name;
+> @@ -175,6 +175,16 @@ static const struct ina2xx_config ina2xx_config[] = {
+>  		.power_lsb_factor = 25,
+>  		.chip_id = ina226,
+>  	},
+> +	[ina236] = {
+> +		.name = "ina236",
+> +		.config_default = INA226_CONFIG_DEFAULT,
+> +		.calibration_value = 2048,
+> +		.shunt_voltage_lsb = 2500,
+> +		.bus_voltage_shift = 0,
+> +		.bus_voltage_lsb = 1600,
+> +		.power_lsb_factor = 32,
+> +		.chip_id = ina236,
+> +	},
+>  };
+>  
+>  static int ina2xx_read_raw(struct iio_dev *indio_dev,
+> @@ -499,7 +509,7 @@ static int ina2xx_write_raw(struct iio_dev *indio_dev,
+>  		break;
+>  
+>  	case IIO_CHAN_INFO_INT_TIME:
+> -		if (chip->config->chip_id == ina226) {
+> +		if (chip->config->chip_id != ina219) {
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index dac593be5695..dbc5e16fbde4 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -501,14 +501,12 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
- 
- 	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
- 					ch->scan_type.shift, 8);
--	outdata = kmalloc(byte_for_channel, GFP_DMA | GFP_KERNEL);
--	if (!outdata)
--		return -ENOMEM;
-+	outdata = sdata->buffer_data;
- 
- 	err = regmap_bulk_read(sdata->regmap, ch->address,
- 			       outdata, byte_for_channel);
- 	if (err < 0)
--		goto st_sensors_free_memory;
-+		return err;
- 
- 	if (byte_for_channel == 1)
- 		*data = (s8)*outdata;
-@@ -517,10 +515,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
- 	else if (byte_for_channel == 3)
- 		*data = (s32)sign_extend32(get_unaligned_le24(outdata), 23);
- 
--st_sensors_free_memory:
--	kfree(outdata);
--
--	return err;
-+	return 0;
- }
- 
- int st_sensors_read_info_raw(struct iio_dev *indio_dev,
--- 
-2.34.1
+I would prefer explicit matching. Probably best done via
+a switch on the chip_id. Same applies in all the other similar changes.
 
+
+
+>  			if (chan->address == INA2XX_SHUNT_VOLTAGE)
+>  				ret = ina226_set_int_time_vshunt(chip, val2,
+>  								 &tmp);
+> @@ -727,7 +737,7 @@ static int ina2xx_conversion_ready(struct iio_dev *indio_dev)
+>  	 * For now, we do an extra read of the MASK_ENABLE register (INA226)
+>  	 * resp. the BUS_VOLTAGE register (INA219).
+>  	 */
