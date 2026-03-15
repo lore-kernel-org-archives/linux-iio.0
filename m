@@ -1,121 +1,76 @@
-Received: from mail-pj1-f42.google.com (mail-pj1-f42.google.com [209.85.216.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5A60F3B28D
-	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 22:45:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 30737299A81
+	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 23:15:41 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773614730; cv=none; b=VyNQhR5PcZma3uaml+MMHXK05PKxnbDj5QJ+2we5foOslrUi+OF7vGodjFZEAwpQrZgRxPX8V+c3/4oPUrhFu2/rN01hKJNn7fFg5kxI0MGLT1AZKA7Sk0gmAgXh8m9lCUQF1WIMoEtIUwQTDoOQ1RgL5DFzXLlawHcpP9rbSzI=
+	t=1773616542; cv=none; b=IZOMSveFaC7tlvK4NU2hMwY9Z+qlOgzGzlVvb09eggdBVwmaoY+zg6g0OYgLQUbYvIOyXmfzsWxdXU/hTglc5u5PHSP3rI86b04pEjoRDW5X6uZv1j9MTEixQWMafp9ja+E2eyO+qTSrdLnY99gMMQ8u23aCZzhzqRDZP0zg+hs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773614730; c=relaxed/simple;
-	bh=SeP47jURJ5GcqZkbs1mdEQtG5+NfFXpOgY0pOWIWHy8=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=eTisrCSPE5JnJ184yKJui8s61Cvk0l2/aZbjMTStInrcXq9ykshSvHPNgS1ZTdmwYMzQnYwbKxfPtpOsq8YQ9Ye8sq1/WLUQ3ZYIDgbcCarvdkYMEEBQ4QcpATBLt5qu1ufFep56Czaoj98rXNr4bpNkWf+RD4q38SXaU2HudF4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gxUZFG5w; arc=none smtp.client-ip=209.85.216.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773616542; c=relaxed/simple;
+	bh=KXE0kTfVKbthKFCLaufC0+ki7igm7Yqqf2CeyCe818M=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=MtrGa4wq/1seqMAvx1hVO3aLOSZTzEPm74sknyPWZxLPjAzOaS23kkYMbjhS5iJ29y1eXvO4fSI3JpFS54mqhYQoFmvgNPcsVYQcTO1aVTb9uIFyUObKcjB2SGPaUIFLCGB1hP+gLMHZbgGJWPfiR0HUXdzD0BuEiUzeQQu5Rmw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NJV2ZPcp; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gxUZFG5w"
-Received: by mail-pj1-f42.google.com with SMTP id 98e67ed59e1d1-35a1230c60eso1982176a91.3
-        for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 15:45:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773614728; x=1774219528; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=XgV+zvtNacxGNDWXOWURDnYoBBzeUFufHazWy/5RAXQ=;
-        b=gxUZFG5wUFujtmAXdHtCRmTTX5VjdHRPJyuwlqqBqepQl6LDYXHFkOZFJrcms/Nf+D
-         8G8YKNI9JyScByi5XJTdn4MNC68WxXBRPU+vgqiWReW2YEOW1b/ovEX+Y+L7aMyf22Ar
-         h4Iib8OaspBU3NHy1yuWbN2JYe1hTywSDqkUV8usoaeOglH8UWZRfXzfX4nS/dHYZT9e
-         EMCwBTSChe3uQOm6fDbT9ygeuFHOCCTUsuyDUBxTUlktzErt7ARrfv3jryS+MXHdCrOr
-         vNpFABfV+DFzRF7P+k7O3jXoW1wNP9COTLu9PQoXZwOjsadWLWvf8OdKUZnnfulGG470
-         R/9Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773614728; x=1774219528;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=XgV+zvtNacxGNDWXOWURDnYoBBzeUFufHazWy/5RAXQ=;
-        b=qiaw7GXOOnpRBIiTA0wC9/0oTAtZ0sKy81dCyztmInfliFBa/7/0tUFOk2PTyv1PhU
-         CoFlCuHGNWxnBhVTqblHaigWxazI9oiXOYe/c5hNFLxIOPuubBAXhmBZ+p8r8KFscnJ7
-         LTBmuotPj+YbssyFehEwrLHbhiCENAlt0vzbyRuhFfoO6kpMfqqcFzyQKYgcolQRb/TY
-         qH5dDKAbqhnK7rKpnqqFxfbtKbACyluLwXxKOlMZn5exx3xsNVQ478gtqZeuBUJsFyzd
-         PwyeBbbu/30giIWDU99RZZFbSDOdw8lg7OHdMoMXegtUQ22UIpxyBynowEyPVuPWJave
-         JtAQ==
-X-Gm-Message-State: AOJu0YwAwmkTze1uXNn/5L5/apLkJOm2yaI/2cgqXdcOFhSmHa5DbULS
-	Me5kEldfyPty5TF/AylnydL2ddJ9j0QXGNhNVi0SjP/zB7Vs5EPqIH6kH5sQjA==
-X-Gm-Gg: ATEYQzzntH99vEQayn24Gs24T+9KC/DCqwhpthlYbP2zLQhSSm+zHSYw6+KQggj9j3P
-	c9FhPG95ALK35ij+5MrX6hIER0j0DCzDxzGRUKvsa6S17/dFe2eQFBiyPvcauD16UvRV7LuuCZC
-	zgN310xxkQrF8HYfBf1yFIxHWFS9IlutUmK5E6un63vjOpGaFA1UPABRsm4dXJv3KEMDzzqCj4D
-	eh83BvGXaTnwG3nadl889fv6efgHy4ezOo01D4x/R+vUeZS4PLzO5j82qP1zqgVla10Zm4QbDcZ
-	e/gzIMLaaCZH9sQkB+tXwGv32AvSSf5cJGF99VvFGQnRHMkC0Slwxw90ttARva1o0KprPQ4nqLH
-	lhAyA2RRZnL6kLjPDblKzNRXoIQgycDLUpJe/CkSxqHy7pBBhGcMrXZ0Rc2KwgT2QjhpbMW1QyO
-	XkcU8MdTN5El5z+cNTfBm2kwBTjKbbjG9ux2R7+Ndbm90saGHFTkzIXSw=
-X-Received: by 2002:a17:90b:2e45:b0:341:6164:c27d with SMTP id 98e67ed59e1d1-35a21e1b7d9mr9533807a91.3.1773614728401;
-        Sun, 15 Mar 2026 15:45:28 -0700 (PDT)
-Received: from ryzen ([2601:644:8000:56f5::8bd])
-        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35b8e1cb560sm2175401a91.1.2026.03.15.15.45.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Mar 2026 15:45:27 -0700 (PDT)
-From: Rosen Penev <rosenp@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Peter Rosin <peda@axentia.se>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] iio: iio-mux: use flexible array member
-Date: Sun, 15 Mar 2026 15:45:09 -0700
-Message-ID: <20260315224509.48111-1-rosenp@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NJV2ZPcp"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D32BDC2BCB2
+	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 23:15:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773616541;
+	bh=KXE0kTfVKbthKFCLaufC0+ki7igm7Yqqf2CeyCe818M=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+	b=NJV2ZPcpPXFg4tZzma3NhIokBzrKbzZ1tC9ZfDua+pu9oRzWJ3FTJIhqJuEH5VkO5
+	 PGmVyBe1FX366e4MINBNhbbI9a8F5sjSMEjSfT5oRmS+oxP5uSLro3feiZPd8jbxdB
+	 CmXamqtQ0kHpWkz4kjx92UOv1bk2Jtm+2agY0j5Os3HMjDlfiTQjWALhWbWz4vLY39
+	 V4aE0RHxCY84ogQzjPrnqo5cuQSCSy770YF5ZTNwT1agw4diPJKzzXpk6BtRNzObfm
+	 u2seNWN0FDuEDm1zxgdH3BBImsVbwakRpXKPSXkR/PDBAUjPXnwyHI+kqCzef6wZ6N
+	 zYFN8vdNSc+rQ==
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-79a40fb9890so5644617b3.1
+        for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 16:15:41 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCW1P7pvxkEGMbmtgmp/XJT9NxBUhq8gOjrb8JSW3X2NwSBFAHRUZqfXXInKJw/GHCGFqS3IlBSx6ZU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yy9Kcdi8eHgECoGrSaYNhPHQukg+I5YpaA23CDtjk8xfI3q6+ek
+	lLpMz3+Ia/cXSHjSqfZ7r3cG8xhcuKpQhlvT4ye9+kJaJ0veel8fxEisj9Na6/FF7TyuzxiT3JN
+	7xh9sEXR2VZInmnb+cgwnxaTKoG2fpu4=
+X-Received: by 2002:a05:690c:3482:b0:798:58be:3248 with SMTP id
+ 00721157ae682-79a1c238cacmr118895847b3.58.1773616541161; Sun, 15 Mar 2026
+ 16:15:41 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260314170609.26827-1-rajveer.chaudhari.linux@gmail.com> <20260314170609.26827-3-rajveer.chaudhari.linux@gmail.com>
+In-Reply-To: <20260314170609.26827-3-rajveer.chaudhari.linux@gmail.com>
+From: Linus Walleij <linusw@kernel.org>
+Date: Mon, 16 Mar 2026 00:15:30 +0100
+X-Gmail-Original-Message-ID: <CAD++jLnasubJKy56fMfYj3pSZ97g5SAQVKVU597R6pg0t-6zMA@mail.gmail.com>
+X-Gm-Features: AaiRm51ADsygOZMGSYI5U4GcM3nRJ9D40rRGwFyI5fIB4HSTxyhRCSq0vqa1kq0
+Message-ID: <CAD++jLnasubJKy56fMfYj3pSZ97g5SAQVKVU597R6pg0t-6zMA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/8] iio: accel: bmc150: convert to guard(mutex)
+To: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, waqar.hameed@axis.com, sakari.ailus@linux.intel.com, 
+	harshit.m.mogalapalli@oracle.com, antoniu.miclaus@analog.com, 
+	andrew.ijano@gmail.com, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Allows using struct_size to simplify allocation slightly.
+On Sat, Mar 14, 2026 at 6:07=E2=80=AFPM Rajveer Chaudhari
+<rajveer.chaudhari.linux@gmail.com> wrote:
 
-Removes a pointer from the struct.
+> Replace manual mutex_lock/mutex_unlock pair with guard(mutex)
+> in bmc150_accel_buffer_predisable() and
+> bmc150_accel_buffer_postenable(). This ensures the mutex is
+> released on all return paths and allows returning directly
+> without a goto label.
+>
+> Signed-off-by: Rajveer Chaudhari <rajveer.chaudhari.linux@gmail.com>
 
-Signed-off-by: Rosen Penev <rosenp@gmail.com>
----
- drivers/iio/multiplexer/iio-mux.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+This one is rather trivial and easy to review:
+Reviewed-by: Linus Walleij <linusw@kernel.org>
 
-diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
-index b742ca9a99d1..8db061413829 100644
---- a/drivers/iio/multiplexer/iio-mux.c
-+++ b/drivers/iio/multiplexer/iio-mux.c
-@@ -33,8 +33,8 @@ struct mux {
- 	struct iio_channel *parent;
- 	struct iio_chan_spec *chan;
- 	struct iio_chan_spec_ext_info *ext_info;
--	struct mux_child *child;
- 	u32 delay_us;
-+	struct mux_child child[];
- };
- 
- static int iio_mux_select(struct mux *mux, int idx)
-@@ -380,8 +380,7 @@ static int mux_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
- 
--	sizeof_priv = sizeof(*mux);
--	sizeof_priv += sizeof(*mux->child) * children;
-+	sizeof_priv = struct_size(mux, child, children);
- 	sizeof_priv += sizeof(*mux->chan) * children;
- 	sizeof_priv += sizeof_ext_info;
- 
-@@ -390,7 +389,6 @@ static int mux_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	mux = iio_priv(indio_dev);
--	mux->child = (struct mux_child *)(mux + 1);
- 	mux->chan = (struct iio_chan_spec *)(mux->child + children);
- 
- 	platform_set_drvdata(pdev, indio_dev);
--- 
-2.53.0
-
+Yours,
+Linus Walleij
