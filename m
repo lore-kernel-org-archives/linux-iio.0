@@ -1,40 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2D1FB214A8B;
-	Sun, 15 Mar 2026 18:37:00 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AF2EF1FC8
+	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 18:41:47 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773599821; cv=none; b=ijMY9OjQqoUqmm15kkzfTjm4//nw3n4mibSDmYjRLP33/SL9Wuotq2m22k0LTJN9l+Y9kP81w8ojJ9Yl3FuS251jpAI1VDSWzSmqFKXR15ENDVpFKXPkcRdD4JhPBB3/1Md7goegWaZJYj4JkbqdX5JkEmkxPvVLz/EmSuy/69A=
+	t=1773600107; cv=none; b=JUFASvf6m9N8nA5Zb+XAb8d7V3kGmJGD+06ZGkDiHTY830syhzPs5wb8P0vy6AFvD7wsXA+bdhrxq9V3yWRi0qj2N7eKYRmIOG2ZRbQw6lyXFH83qI2PjrOk8usYA6/S0pAZqPY/wRfYCrjmL5+uM01m/Cwsf2nZ+3su3vLkdH4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773599821; c=relaxed/simple;
-	bh=/zkr9Te5S8wVTK2sWbBXpVgnsFhXcZmLhN2TKIibAW4=;
+	s=arc-20240116; t=1773600107; c=relaxed/simple;
+	bh=SGcNK1yoxvTUP7CPCuhD9SHwUADasESSEURxD+/7YAE=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=rtDWU3FQGdK/6C+rBpOj3BUFvIofGe6Gm174ibPbhOSKYicp6FpOHd8Pe/Q8TvW0VLIngytUeUIiVTt6ZXUB1MJxH3g4ovMY9MNwJkNZX/8fl2PiTufWdaMXoiAaWDPUMi3RkSL8fsBZ/lF+DB9Jb6DfEYIsPX9AU2bnJNzo07s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=omMMBiXs; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=lnrmqiYijXvu6YZPKdee4shqvGiKieNAEn7fqquoOA1/G7hS4VxTABPeaOCgDKzm0PCKpYvAeJptqhpcHb1lshdW/sum+14ChFuNB6sKiNmXMAJu9a5wyhNbat+/zYZBdNbF4kyDV92r8UHwEDRnuYEHqn7MA9fP+T/OfcEYHQc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lsPlm2sc; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="omMMBiXs"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0FA4C4CEF7;
-	Sun, 15 Mar 2026 18:36:57 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lsPlm2sc"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48664C4CEF7;
+	Sun, 15 Mar 2026 18:41:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773599820;
-	bh=/zkr9Te5S8wVTK2sWbBXpVgnsFhXcZmLhN2TKIibAW4=;
+	s=k20201202; t=1773600107;
+	bh=SGcNK1yoxvTUP7CPCuhD9SHwUADasESSEURxD+/7YAE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=omMMBiXsFOZZo7fNprdzGpRclwyRkcCFUl6nA4kSUDfk6+ROZgRZzdHSI3ttqzFKS
-	 W5tnvNb/PAXyHU3UvOqjMxIaOu51YZGZmRXMqXcbfZvELY9gyys7FRUZN8zxvzVmqY
-	 2kIqMAKLqofMYPCRrK7d3usjvCXKL6PyG3WWCTwMVU7oAZXkg8iQFIwvhxBxJB/UZ3
-	 5lRg8ttgTaiZ9+507CVxS8DC7lfNCJiCUcyRUaDjMDMzLMysDTNssHlt8N2+306W6D
-	 UIIaR6jatmGAY5FssYFQri92o8x5GZT1XxREWsPZuFnCu8QlmXlDW+1GmU1Ef+6Bq3
-	 CKSUciiKMvEPQ==
-Date: Sun, 15 Mar 2026 18:36:52 +0000
+	b=lsPlm2sc5i49q6Kj8UNmYKtW3SJJDjSs6ApTit9k2E4CpQi94t3zeqBbUksfKK186
+	 U7mzt8Kc6WU7hRmLGNDr4RwhM2gB1GOlQW1e9MoZH/yQgExAiiR/BtmDS6Al1GoST9
+	 iSGa3VCTLrj5IptAr/oklUj/QynDX1TzpArcL99EkCqutaaKRD6jJKduHQ+8QzVd9/
+	 ww7l+O2tZX+SvIymyna9iLN5aLFv4Ki62pHPMnuJSnYzySWNk8vBBCco0mtMZjNaUV
+	 rLShrVAK7t8WGu94uYQDFAtWP4KcC5C9tuN67PNR+qBtbGJJRx4XEbq8ugzVfZNEH6
+	 m8tvNwWpgKSkQ==
+Date: Sun, 15 Mar 2026 18:41:40 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- kees@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: ssp_sensors: simplify cleanup using __free
-Message-ID: <20260315183652.37af83a1@jic23-huawei>
-In-Reply-To: <20260311174151.3441429-1-sanjayembedded@gmail.com>
-References: <20260311174151.3441429-1-sanjayembedded@gmail.com>
+To: "Ethan Tidmore" <ethantidmore06@gmail.com>
+Cc: "Andy Shevchenko" <andy.shevchenko@gmail.com>, <andy@kernel.org>,
+ <linux-iio@vger.kernel.org>
+Subject: Re: [RFC] GSoC 2026: Transitioning IIO to guard() and
+ scoped_guard()
+Message-ID: <20260315184140.6f34f76a@jic23-huawei>
+In-Reply-To: <DH2PF86XN60W.2MVDUHLKPR7LH@gmail.com>
+References: <20260311194624.1521-1-ethantidmore06@gmail.com>
+	<CAHp75VeZb0pSiAkHo9QUeS+2L-qP_83-dKKRSp7-1VfZrtr1bw@mail.gmail.com>
+	<20260314110758.2fc20704@jic23-huawei>
+	<DH2PF86XN60W.2MVDUHLKPR7LH@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,91 +49,71 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 11 Mar 2026 23:11:51 +0530
-Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
+On Sat, 14 Mar 2026 13:08:04 -0500
+"Ethan Tidmore" <ethantidmore06@gmail.com> wrote:
 
-> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> On Sat Mar 14, 2026 at 6:07 AM CDT, Jonathan Cameron wrote:
+> > On Wed, 11 Mar 2026 22:18:07 +0200  
 > 
-> Replace manual cleanup logic with __free attribute from cleanup.h. This
-> removes explicit kfree() calls and simplifies the error handling paths.
+> ...
 > 
-> No functional change intended for kmalloc().
+> >
+> > Hi Ethan
+> >
+> > I'm not keen on a mass cleanup like this without taking a closer look at
+> > the drivers. I would say (based on gut feeling rather than actually
+> > having checked the stats) that perhaps 25% of these patches result in
+> > feedback on the surrounding code or follow on improvements that are
+> > enabled.   
 > 
-> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com
->
-I think it is worth noting this is an ancient driver.  I don't mind
-clear improvements but I would suggest perhaps looking for more
-recent code to see if this sort of cleanup applies.
+> That makes sense. That would be a ton of time spent on reviewing this.
+> 
+> ...
+> 
+> > As to the your question on how this 'might' be done, it would need to be
+> > 1 patch per driver because this will cause chaos for backports of later
+> > fixes due to significant churn.  
+> 
+> Yeah, that kills the idea entirely. I was hoping it could be done per
+> vendor per dir but, I understand why that wouldn't work.
+> 
+> >
+> > There are ABI changes that we want to push through the tree such
+> > as iio_push_to_buffers_with_ts() but that's because the new ABI
+> > is inherently safer and I want to get rid of the old one.
+> > Some of those cases are easy, others much less so.  
+> 
+> If a tree wide conversion to iio_push_to_buffers_with_ts() would be
+> wanted I'd be glad to do that. There is much less volume for this
+> project and if completed then a deprecated function could be removed.
+> 
+> $ grep -rn "iio_push_to_buffers_with_timestamp" drivers/iio/ | wc -l
+> 73
+
+It's definitely wanted.
+
+> 
+> And this would be much more manageable to review. Would this be a viable
+> proposal for GsoC?
+
+Perhaps not on it's own - I'm not sure as I've never been actively involved
+in GSOC.  One to discuss with the folk running the kernel projects.
+I don't know how open they are to this sort of (mostly) mechanical
+cleanup.
+
+There are a bunch of other bits of historical stuff we'd like to get rid of.
+Converting drivers to read_avail() to cut down on hand crafting attr or
+using the macros in iio/sysfs.h that mostly should go away.
+
+I also have been thinking it would be nice to figure out a cleaner
+solution for hardware fifo related attributes which are a case the core doesn't handle
+at all today. That was fine when those drivers were rare, but they are getting
+more and more common and that stuff certainly looks ugly.
 
 Jonathan
 
-> ---
-> Changes in v2:
-> - split series to individual patch
-> - address review comment from Andy Shevchenko
-> - Link to v1 https://lore.kernel.org/all/20260310200513.2162018-3-sanjayembedded@gmail.com/
-> ---
->  drivers/iio/common/ssp_sensors/ssp_spi.c | 14 +++-----------
->  1 file changed, 3 insertions(+), 11 deletions(-)
 > 
-> diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
-> index 6c81c0385fb5..4320061475e0 100644
-> --- a/drivers/iio/common/ssp_sensors/ssp_spi.c
-> +++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
-> @@ -331,7 +331,6 @@ static int ssp_parse_dataframe(struct ssp_data *data, char *dataframe, int len)
->  /* threaded irq */
->  int ssp_irq_msg(struct ssp_data *data)
->  {
-> -	char *buffer;
->  	u8 msg_type;
->  	int ret;
->  	u16 length, msg_options;
-> @@ -375,7 +374,7 @@ int ssp_irq_msg(struct ssp_data *data)
->  			 * but the slave should not send such ones - it is to
->  			 * check but let's handle this
->  			 */
-> -			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
-> +			char *buffer __free(kfree) = kmalloc(length, GFP_KERNEL | GFP_DMA);
->  			if (!buffer) {
->  				ret = -ENOMEM;
->  				goto _unlock;
-Read the documentation in cleanup.h and make sure you follow it.
-
-> @@ -386,8 +385,6 @@ int ssp_irq_msg(struct ssp_data *data)
->  			if (ret >= 0)
->  				ret = -EPROTO;
->  
-> -			kfree(buffer);
-> -
->  			dev_err(SSP_DEV, "No match error %x\n",
->  				msg_options);
->  
-> @@ -420,22 +417,17 @@ int ssp_irq_msg(struct ssp_data *data)
->  		mutex_unlock(&data->pending_lock);
->  		break;
->  	case SSP_HUB2AP_WRITE:
-> -		buffer = kzalloc(length, GFP_KERNEL | GFP_DMA);
-> +		char *buffer __free(kfree) = kzalloc(length, GFP_KERNEL | GFP_DMA);
-
-What scope is this cleaning up at the end of?
-
->  		if (!buffer)
->  			return -ENOMEM;
->  
->  		ret = spi_read(data->spi, buffer, length);
->  		if (ret < 0) {
->  			dev_err(SSP_DEV, "spi read fail\n");
-> -			kfree(buffer);
->  			break;
->  		}
->  
-> -		ret = ssp_parse_dataframe(data, buffer, length);
-> -
-> -		kfree(buffer);
-> -		break;
-> -
-> +		return ssp_parse_dataframe(data, buffer, length);
->  	default:
->  		dev_err(SSP_DEV, "unknown msg type\n");
->  		return -EPROTO;
+> Thanks,
+> 
+> ET
 
