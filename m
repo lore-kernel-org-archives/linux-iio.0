@@ -1,137 +1,127 @@
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4B55A3612D7
-	for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 12:55:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA9D321D590;
+	Sun, 15 Mar 2026 13:01:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773579326; cv=none; b=MbhQHaRoBevrTTB6GaCg3bblNkAbfSEu+leBbvTQnoEOqfZT/b6jwcvyZXZkGxyNrtaUQT9Rfzb91MdQ+Yq1VsRX/2hRN4zt3oQGef4cOgXikpI5dqEsPlZwX9ClXeOz2FTgQjA1lmflZXwl9E0+dW/iqY/VsCFx/GZtZlWt5es=
+	t=1773579665; cv=none; b=NWhNpVTJLds483G0MdIjEiHkv1aHolR0NAWZ5Dvqqx4P99EVp0JfsN4bPdlwN5vxTs53KgE7UfEmh/x1cBuf/ZE/Ecuiq576Doq+hbnhV3Wcfu5ahdEGRrJrjs5lvEhKWswuy8G8YEZMiEVAE56OkYoFd8RSE3kFA1QqzB2c/j4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773579326; c=relaxed/simple;
-	bh=K4N10Qq1mjbRUweIr+G8jDzUZCjkS4GakESqPiIk4Wg=;
-	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=MsVgOLmj73acd7LJVQSIQ68MB94N0Hg5EpQCI7dMn8h1LVt9LgEt/TexDZpvxR0wYb9jLzBVtvOv5m8J0KHkxA+PG4j3zJxX5zDQPS3s5c+1J8ylA4+BLGYbApQt7Tk0o/+EHnoYCGxbSkpqVSR4qmBFofW3OKwAX5BE5ucQIJ4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TAf3L0Lq; arc=none smtp.client-ip=209.85.215.170
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773579665; c=relaxed/simple;
+	bh=cg5SYFDLvAGyZVFjzjr93a4a/MJ45i0Wtf1tcGYLJZA=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=X/b+iHduvPgCxAclBculBjw2zi6eV+UalMmFwGuBPAFEWSN6OlmLmPXnIdMO9KgcxKavXBi1irb7rcLeQfM4voP/C1jCqkdtWDCiId+02bzqRgr0KfP8X3gl3LLH5RoJorMMsZAu3o4ZXzqnWm1YbgxIT6pkpd9PVmY9hk2bZ4U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mop0q72r; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TAf3L0Lq"
-Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-c73f107789cso338921a12.1
-        for <linux-iio@vger.kernel.org>; Sun, 15 Mar 2026 05:55:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773579325; x=1774184125; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=hCJUzv9jhddUmc/S9aCxqgSkfPPiNhG3doSB3b0Nsfk=;
-        b=TAf3L0LqwW2vUSbka4heJGq8ha4ibB7Kbzp/CNCybNuXzuXPRUB3WQiqIwmwcrLWK2
-         Nv5LaVwD8TK0XWut2JgbHuAG5RgvEzTnR4eiqNVQljswy6mOLYQAB9iJ4nA6l0MYsbHg
-         O6iS8AVzWo+vDpjfKPQILzeLQUGcZwNj6nGsjZYPT7cDXSKVWFukJKlBRDx45eIzsUKH
-         9juxkWPbx24jKk8YHeTEDtGQHjZ2OuWpInaw0dDtHXL/AFklVBLCNwJWFZ+VFoI1pjgK
-         6bFIaOWHJKSjHgQ57e3NuVmNJj38KgMfRbAQA1QRekCoN3HgJgte3Vo/j+VMKFLfA80g
-         UBzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773579325; x=1774184125;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=hCJUzv9jhddUmc/S9aCxqgSkfPPiNhG3doSB3b0Nsfk=;
-        b=eOLORUyo2n0m82H/QHDNqq47YIdaSbEYi7X3Z1Obq5dNojuoxWRtqoZfFqqreU8NaY
-         AT2BEN7wYpB9t1lLcY8HEK9F9RC0RTMJYxXLyYvDOJfBYrGKJMRxVNFRnrlr+ea7F9Dn
-         aBd6lNdoFJyTxSMYp3KlGvBD36M2rsAyYu1oo09V8LGv9tfEdifQVLf/ZTrAE6GSbS0B
-         cWLPTL+pnZxt1Pbc5CZBJEwvyByfcdti12bJLu7diorGkYgaiVt2n9wzjrE2WRFonHRF
-         zbJM2bXIizkTszl8HIr6eH3omSNdfDTJBHeAb2wnYGbMj2e0ydPNaDsc4XwhL7u+dHR0
-         5POA==
-X-Forwarded-Encrypted: i=1; AJvYcCVGPzVxtb/nVErpMmrumDT8hHafqO59g6FBvapC+sptcyqqRuHAeP9suMMeXfdY6d8N0ScLlw7xLrw=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yye3l8/M6ejaKiWK26gSu2EgK7TweaZyPcAi+0jcYQkFqwK+ygO
-	Cv2Z0141KOaGLYhNtbCBrGT5vu/itz6XMCGfmNyNuvwNVbGAy9zpsvKm
-X-Gm-Gg: ATEYQzzJnrHp4iANs8/GxUwTyFTR+bsUqna5OFQ3kFsp1RT/V+mvoBj+ux7joJtA2yr
-	a23N3RDiRgOpsk4T7Ep24Xn2offv7eHHcg4Y2AxT3neZbUFjqgBjw+iNKjsrb8MJhhHssqP2AvW
-	6NixtqQ0VZtmL/MxLGjdb3lhCWGgmZn+jE5NER6NXJ8sV/vgIekwXoWrC9s+EF5MkpU42ahbi8E
-	HyCR+4ZGKyu3Pok4RJAACZKF0AQjKxA06+zl54FT7eqvsZrcsQzDzKyMp+7Igt1Zb/3fpuxyX3d
-	HUU+c+Phu/R6ouxnawsYIGIyB9zuE/3XlXaTuLctR4CcJn6Bn7yf56E9lg9e44U6BhkVT92mEIm
-	3O2CvDMynZIFJIfrl0TZu36FVj262pZcYGtkMNW7ZkHIkTKb3ktft51m6CVplHxreiqNKW7y5Sj
-	5B5TVRwEs7KRiUukIeVd19Ltgkwpa8juwRkzU33mTL1zmGpssq
-X-Received: by 2002:a17:903:240b:b0:2ae:4fc8:3f59 with SMTP id d9443c01a7336-2aecac9d416mr101003085ad.49.1773579324696;
-        Sun, 15 Mar 2026 05:55:24 -0700 (PDT)
-Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece594b4fsm72931565ad.20.2026.03.15.05.55.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Mar 2026 05:55:24 -0700 (PDT)
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
-To: jic23@kernel.org,
-	dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org
-Cc: kees@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	sanjayembeddedse@gmail.com
-Subject: [PATCH v3 3/3] iio: ssp_sensors: cleanup codestyle warning
-Date: Sun, 15 Mar 2026 18:25:09 +0530
-Message-Id: <20260315125509.857195-4-sanjayembedded@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20260315125509.857195-1-sanjayembedded@gmail.com>
-References: <20260315125509.857195-1-sanjayembedded@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mop0q72r"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4ABCDC4CEF7;
+	Sun, 15 Mar 2026 13:00:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773579664;
+	bh=cg5SYFDLvAGyZVFjzjr93a4a/MJ45i0Wtf1tcGYLJZA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=Mop0q72r5oToUM5vIe9wgAuJybCRUtyj1NvhRnRtIcT8ZiDqutrISUuVXrDbpjgWP
+	 ibFOmh7YB1CpjM8gj4fJSsfnoJgzjr3lnMOM71ElCL1qzTx4mDqCHABHBXH5MjHqlu
+	 br32GtToB9hKbigFI0RtnaeoS7PhlaqJiuRQdGzw/pTRkrJwrnUDN3Zppc+vcx1qwK
+	 kb1W3n6obxHEuCZfAcPgLq3yc3sbOPlCBuMdG6UseUAitP7WRczoZ7LrD7aQM3ZWkB
+	 ObaM5J+eNXNYyZT2nj2Qxxhp0x9spY9vN0siB/z6U0zhTds3ov9Bx+JV7EkH8A7DGE
+	 6mdEnSNU4HoHg==
+Date: Sun, 15 Mar 2026 13:00:48 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Neel Bullywon <neelb2403@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: frequency: adf4350: replace loop with
+ fls_long()
+Message-ID: <20260315130029.128aabb4@jic23-huawei>
+In-Reply-To: <20260314172006.69744-1-neelb2403@gmail.com>
+References: <20260311020115.56321-1-neelb2403@gmail.com>
+	<20260314172006.69744-1-neelb2403@gmail.com>
+X-Mailer: Claws Mail 4.3.1 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+On Sat, 14 Mar 2026 13:20:06 -0400
+Neel Bullywon <neelb2403@gmail.com> wrote:
 
-Reported by checkpatch:
-FILE: drivers/iio/common/ssp_sensors/ssp_spi.c
+> Address the TODO in adf4350_set_freq() by replacing the iterative
+> power-of-2 shift loop with a constant-time bitwise calculation.
+> 
+> By comparing the highest set bits of the target constant and freq
+> using fls_long(), we can calculate the required RF divider selection
+> in a single step without relying on expensive 64-bit division.
+> 
+> This ensures freq is properly shifted to meet or exceed the minimum
+> VCO frequency.
+> 
+> Signed-off-by: Neel Bullywon <neelb2403@gmail.com>
+Hi Neel,
 
-WARNING: Prefer __packed over __attribute__((__packed__))
-+} __attribute__((__packed__));
+I'll wait for Andy to comment on the new implementation.
+In meantime a process comment.  Don't send a new version
+in reply to old one. It tends to end up with deeply nested
+messy email threads. I'm not entirely sure where people doing this
+comes from. Maybe there is some part of the kernel where this style
+is requested?  Or it's coming from other projects.
 
-CHECK: Macro argument '...' may be better as '(...)'
-to avoid precedence issues
+If you want to associate a new patch with an old one, put a link
+to lore after the change log.
 
-Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
----
- drivers/iio/common/ssp_sensors/ssp_spi.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+No need to resend this time though!
 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_spi.c b/drivers/iio/common/ssp_sensors/ssp_spi.c
-index 9df94bd02e3a..8a52bfb0e39c 100644
---- a/drivers/iio/common/ssp_sensors/ssp_spi.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_spi.c
-@@ -7,7 +7,7 @@
- #include "ssp.h"
- 
- #define SSP_DEV (&data->spi->dev)
--#define SSP_GET_MESSAGE_TYPE(data) (data & (3 << SSP_RW))
-+#define SSP_GET_MESSAGE_TYPE(data) ((data) & (3 << SSP_RW))
- 
- /*
-  * SSP -> AP Instruction
-@@ -30,7 +30,7 @@ struct ssp_msg_header {
- 	__le16 length;
- 	__le16 options;
- 	__le32 data;
--} __attribute__((__packed__));
-+} __packed;
- 
- struct ssp_msg {
- 	u16 length;
-@@ -120,9 +120,9 @@ static inline void ssp_get_buffer(struct ssp_msg *m, unsigned int offset,
- }
- 
- #define SSP_GET_BUFFER_AT_INDEX(m, index) \
--	(m->buffer[SSP_HEADER_SIZE_ALIGNED + index])
-+	((m)->buffer[SSP_HEADER_SIZE_ALIGNED + (index)])
- #define SSP_SET_BUFFER_AT_INDEX(m, index, val) \
--	(m->buffer[SSP_HEADER_SIZE_ALIGNED + index] = val)
-+	((m)->buffer[SSP_HEADER_SIZE_ALIGNED + (index)] = val)
- 
- static void ssp_clean_msg(struct ssp_msg *m)
- {
--- 
-2.34.1
+
+Jonathan
+> ---
+> Changes in v2:
+>   - Use fls_long() instead of order_base_2(DIV_ROUND_UP_ULL()) to avoid
+>     unnecessary 64-bit division (Andy Shevchenko)
+>   - Add correction check for mantissa edge case
+>   - Adjust whitespace per review feedback
+> 
+>  drivers/iio/frequency/adf4350.c | 16 +++++++---------
+>  1 file changed, 7 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+> index ed1741165f55..2183deec179d 100644
+> --- a/drivers/iio/frequency/adf4350.c
+> +++ b/drivers/iio/frequency/adf4350.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/err.h>
+>  #include <linux/gcd.h>
+>  #include <linux/gpio/consumer.h>
+> +#include <linux/bitops.h>
+>  #include <asm/div64.h>
+>  #include <linux/clk.h>
+>  #include <linux/clk-provider.h>
+> @@ -151,17 +152,14 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+>  
+>  	st->r4_rf_div_sel = 0;
+>  
+> -	/*
+> -	 * !\TODO: The below computation is making sure we get a power of 2
+> -	 * shift (st->r4_rf_div_sel) so that freq becomes higher or equal to
+> -	 * ADF4350_MIN_VCO_FREQ. This might be simplified with fls()/fls_long()
+> -	 * and friends.
+> -	 */
+> -	while (freq < ADF4350_MIN_VCO_FREQ) {
+> -		freq <<= 1;
+> -		st->r4_rf_div_sel++;
+> +	if (freq < ADF4350_MIN_VCO_FREQ) {
+> +		st->r4_rf_div_sel = fls_long(ADF4350_MIN_VCO_FREQ - 1) - fls_long(freq);
+> +		if ((freq << st->r4_rf_div_sel) < ADF4350_MIN_VCO_FREQ)
+> +			st->r4_rf_div_sel++;
+>  	}
+>  
+> +	freq <<= st->r4_rf_div_sel;
+> +
+>  	if (freq > ADF4350_MAX_FREQ_45_PRESC) {
+>  		prescaler = ADF4350_REG1_PRESCALER;
+>  		mdiv = 75;
 
