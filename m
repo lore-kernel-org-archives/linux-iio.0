@@ -1,65 +1,66 @@
-Received: from mail-ej1-f41.google.com (mail-ej1-f41.google.com [209.85.218.41])
+Received: from mail-ej1-f51.google.com (mail-ej1-f51.google.com [209.85.218.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5BA1F3D16E5
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 17:19:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.41
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C53213CFF61
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 17:19:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773681596; cv=none; b=sNgU4Y26ECNM6QH1MzjJnnNwaD4ZE/x+tNUkhTob01ZolGykt1TUafmE/GG4mQSYiWyEw/BZHi67Hy0AVLBCXj4IpdyUPqX/CdQnuPrOtBpEbmED+xJsZEiHDZG9+xixYWwt3hCE4bYOXStCpNVaaY7SwXjR7b1fEZysYJR0y6E=
+	t=1773681597; cv=none; b=lU2VNP6CIZtBmf80HrpZR6yGnn6XzxVi9MjOPd+rArztkaepF1UxqH1zzFunjB+yC1Hw9PIyQ2qH/lxAxQLBGwrKDjw/LiicLIFXiMgopUyzTsH1kjDse9V6mtBncksK8mqZlVjcxPRncOSN4ZC1JvvAJD+IBg/LGPfZLmV3l8o=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773681596; c=relaxed/simple;
-	bh=FyYL7KjhfBkhq4Z8eKOH65vilPS2pr7+rN80jiOzQpc=;
+	s=arc-20240116; t=1773681597; c=relaxed/simple;
+	bh=fwyYVczkGGhNbbtuDw6wb0iPQK79Hav8hEBxFnyoihs=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=NWQ4F0p8Ni8E3QBB4EAH2UtuEr22A9B5hMb5b/Tq+ocWKsijoFf57p4svNBoGzz2jYYWffeERGFtIcKMIMUgShu8uKxwIYq8cCMC5lKys98HpKdCpcO6R6u4RLw0qOxGvLbK7uhvksT/oApJ1Y/WYiDNdp6dZ8Ov+JDMmA2F4wY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=N4NhUkx5; arc=none smtp.client-ip=209.85.218.41
+	 In-Reply-To:To:Cc; b=HWj1WWvzlNZWWSPBNqb1WgLaH9fMYh4sEBJ4OpNLRVYFD0aSv3L0ImKux8DR/cHCNrEMClEoOnecxti/1uOFSLmjuQxinyLBjfdzn52qvFYNaokOnbG9BDfmF1HYliS2ElPZOQKQ+xuoMgStP4do8+ZK3BxAk35fGJsFaVPeR9A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=l4jO7IqV; arc=none smtp.client-ip=209.85.218.51
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N4NhUkx5"
-Received: by mail-ej1-f41.google.com with SMTP id a640c23a62f3a-b9795ca4e6dso383234766b.2
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 10:19:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l4jO7IqV"
+Received: by mail-ej1-f51.google.com with SMTP id a640c23a62f3a-b96d784828bso735334566b.3
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 10:19:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773681593; x=1774286393; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773681594; x=1774286394; darn=vger.kernel.org;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=AGTiQESNTxF+kqg9mPQcr06UPYRyUnWm55j6lAp7RWY=;
-        b=N4NhUkx5yXG1WNgC3quqRNlR4pOqVEOUR6t8Il2JDWvlcGTLYM7CLixNyI8Mnwrl9Z
-         mX/NyoniGiquWWQNCFwgbx4Ly21QuGOEQezjG2b5H1CUm3jMJeeVYxvGzLj78LOC75cZ
-         JSIoF/ppNljUvPY82OOyvk5Uof1QCUD+JbDkP9OqIUemhx4TEa7d954jfmJtq15DuugJ
-         ELnuSMIsBSWxp4OwADccnLXbKBnj+qCfFaStgJRTFK13npZid0HQ3VrwERqTKNxkYCBr
-         3KSbWHBBR7vKFPLyCOTwlXCZa/EPPsdJfm18rvzUhBJ8SxQ/znsdzPyE/gSHUlyzqbK/
-         QtIg==
+        bh=l5lDxPgHMLUWf4KOAgcF/BaGDb9kL4QT6S8GOy/ie+w=;
+        b=l4jO7IqVxgcgLUJJZSXH+fqmT1n1VQSP3xwRcXDBMj0sVhNGdUL6jHWoaUjETIDdaM
+         uGQzxXGnitAcjqy71ublk7gqpi+vbU0KEYBKxcYRD7qkhdcX6MQ1kdqHRsJQLhRLL4Nt
+         Ulo2YYNjFnxDkEcR+BNVnEhQZrhQLpURiaDuITnb4OgDi1/8V0miq814s013JPr3NHPE
+         xlFYb0RpcFbOWyt9lVwfnvkC5pl3lXsAQ+mMlAP9yN7jcQuPaOhxeY55dRwMLNYa1g1b
+         43pzma+5Wz7FwVVSITsXn2eHqb9Tx/0Vt440c2sHQ7f9AwfASz7Nh7RKLiNv/WGjgsdW
+         IIAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773681593; x=1774286393;
+        d=1e100.net; s=20251104; t=1773681594; x=1774286394;
         h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
          :mime-version:subject:date:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=AGTiQESNTxF+kqg9mPQcr06UPYRyUnWm55j6lAp7RWY=;
-        b=fZ+PBXQT2AFUqE29oUApYTol6D5HHIUt+Fkl6cgpP6m5QLRiSkfMKUKrbrNEyZOcFh
-         TXQxcm3Y712sArrBVDfgYIyAEAXA66svPYx7yCmhwP42XIL3uGCszga2cuXKdOI+C9AA
-         eBqA5vX5RofIyRpT5DX+P0Z1s2MjoyExTeRANvz2mt1DBAz+rEk+EtC0pOGXN30hF2P9
-         olXjJ+Pm21jtWg5kZLpo+CntAtuCGJIpeCWeZppGycXImPBmD9o/ZdAKSmmGb88AtcPX
-         VRw9JG6DSTlRezA2uTmeUgx4SnUEJTlpdo+mxO1bB2A5A2vAmoM9FhfbcGGsD90oS7C6
-         NxrA==
-X-Gm-Message-State: AOJu0YwniuzicY93eA54vGcXxQyeMBWrhj2M0xRTbeSmeEXAELSzzKZU
-	63uyiQP6gu/OCCM9qquhRgGij5oy1AkKDJkPi2HRLAwKDcgh0hGjqUsO
-X-Gm-Gg: ATEYQzyQlK2gaWLMyWyLF16XHb7iTDgkAP/jQBsjQeGEkmYPQFVG3CRwqTA2+Dfwi7M
-	52WZ3eXhYZD+4gNbeqoMFaJyXBfxOI2G9nydd67uZazQvyqvd9U+nPerGX0UlUmr4rX0OLEdbOR
-	dPMX01nc8Mas+8Tt4ZLVNKzIIAYkTuASq46Rh70EoX0DWMO0c/2dQUSGrIyiWgUTRXfZJRk83UE
-	vf6DxK0DP/Jj4PEST5KA455YNhAWxuqgYwuwzRg9zSe6Nd8pN3NdhnLgv3ksfvJUhci5OH2psKB
-	NWQYQ4ZEfzJuLydh3mq3ap5s7uQ/ZiPCXzhUcttDBML0fDMFNYC2iReMP8fu3KeZOx4xiDiRwr2
-	flA7DVSbIWwpOC3yXoiGEuKU8dBMywxN+Gdx94hz9Kc1IGetZm9aMzj3x0tsAkkWT1QI8CEgDwp
-	aOKIerN4FC0odAzUc5V0gTKtc2jA==
-X-Received: by 2002:a17:907:e2d2:b0:b94:c55:81d2 with SMTP id a640c23a62f3a-b9764f4bdf8mr721875566b.1.1773681592603;
-        Mon, 16 Mar 2026 10:19:52 -0700 (PDT)
+        bh=l5lDxPgHMLUWf4KOAgcF/BaGDb9kL4QT6S8GOy/ie+w=;
+        b=Kqaq8oLOvC3uoaRbaQwAC2CUtmACa5moJrz/hbCozPs4iUvYAPyv5HsSq8iys9ak8w
+         mHBysjollKWsi66XEQ4axK5Eft3kd5kRUAtB43JB4q+8EOsToH6vg5EwAwIxi6zrw3Yi
+         ajcmospaxUsh73aC29tvLbUfBdoNGj8z7UGiTnodZFiY7D+kMrrlKRVB4EgjEn4So0XV
+         8B6NukUMnTj3JWpHuruwa08zqCeob3EP+A5DKwzwr/8YoFw7f61O4xXi7y6oLe1Uxiio
+         52cRBrJcGQCUK4X7wdtukgwDtjDAs6rQcciQw1rkBaVNDrmAu3GD/pwVj/Y4GYy6bd6q
+         wJ9A==
+X-Gm-Message-State: AOJu0Yz5vVZr5dKplbOsSS5ooO8JqrRooCXkp3qKzUSyZF+le0doMIqp
+	bAzLeCrj/7TCCs0rw+iVZR5qkdmH5Fr+jSN+/jJZ64Bs7bF3V2caIA/yN7aa5LpC
+X-Gm-Gg: ATEYQzxsTfirJficrqnnuWLRMAvwGfa24HEivM4JSccOoEZjoB3FTWJEkQXezkgbuOS
+	182IPsiHa6zAtqX8UGNeXkadiRGya6UZH4oGETizhY0FTfpIVoWMONUCSE/bzAJCUhYKctFaf50
+	Sn+jNUUwUVsouvHNvKR456XtHyJOkoy0HGCEGmOeeVB2W7mlGXrRHGhwo3fV6Wwo7RLpZM/tbyo
+	mZQCqYCRGGt7frvzLdOq+GvIQjif+d/iV6vSVRGV1Vrc5wtMUTzmUMGEEzQ/Kz692/FD/8LNpvs
+	pp0z04EDoeQmNtjHp2iYNmmQj9J7JaEKio524uv5nj6t200GKIjRtU1ymWhbQPB2WJkXCXhCfvr
+	oRt3mlp75ZB9W5BxbOUypguyuEwkibK+4PtWs6ReMIdK4kDumgaBHg+K5RTLMsrwpnQSPK4WS/8
+	NB+EOHBk08r6k2mhALj3Kp/ZpXCQ==
+X-Received: by 2002:a17:906:3396:b0:b97:464:956e with SMTP id a640c23a62f3a-b97651d0b0cmr575179866b.34.1773681594087;
+        Mon, 16 Mar 2026 10:19:54 -0700 (PDT)
 Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b97846174cfsm505940266b.22.2026.03.16.10.19.50
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b97846174cfsm505940266b.22.2026.03.16.10.19.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2026 10:19:51 -0700 (PDT)
+        Mon, 16 Mar 2026 10:19:53 -0700 (PDT)
 From: Erikas Bitovtas <xerikasxx@gmail.com>
-Date: Mon, 16 Mar 2026 19:19:46 +0200
-Subject: [PATCH v4 2/7] iio: light: vcnl4000: sort includes by their name
+Date: Mon, 16 Mar 2026 19:19:47 +0200
+Subject: [PATCH v4 3/7] iio: light: vcnl4000: move power enablement from
+ init to probe
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,7 +69,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260316-vcnl4000-regulators-v4-2-854fc2eaf54b@gmail.com>
+Message-Id: <20260316-vcnl4000-regulators-v4-3-854fc2eaf54b@gmail.com>
 References: <20260316-vcnl4000-regulators-v4-0-854fc2eaf54b@gmail.com>
 In-Reply-To: <20260316-vcnl4000-regulators-v4-0-854fc2eaf54b@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>, 
@@ -82,35 +83,52 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
  phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>
 X-Mailer: b4 0.14.3
 
-Sort include headers by file name for better readability.
+Given both vcnl4000_init and vcnl4200_init end with
+dev->chip_spec->set_power_state(), they can be called once from the
+probe to enable the sensors. Move the set_power_state function from init
+and call it after init function in probe.
 
 Reviewed-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
 ---
- drivers/iio/light/vcnl4000.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/light/vcnl4000.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 5e03c3d8874b..939ff2d65105 100644
+index 939ff2d65105..287ccd89cfb2 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -18,12 +18,12 @@
-  */
+@@ -280,7 +280,7 @@ static int vcnl4000_init(struct vcnl4000_data *data)
+ 	data->rev = ret & 0xf;
+ 	data->al_scale = 250000;
  
- #include <linux/bitfield.h>
--#include <linux/module.h>
--#include <linux/i2c.h>
--#include <linux/err.h>
- #include <linux/delay.h>
--#include <linux/pm_runtime.h>
-+#include <linux/err.h>
-+#include <linux/i2c.h>
- #include <linux/interrupt.h>
-+#include <linux/module.h>
-+#include <linux/pm_runtime.h>
- #include <linux/units.h>
+-	return data->chip_spec->set_power_state(data, true);
++	return 0;
+ };
  
- #include <linux/iio/buffer.h>
+ static ssize_t vcnl4000_write_als_enable(struct vcnl4000_data *data, bool en)
+@@ -425,10 +425,6 @@ static int vcnl4200_init(struct vcnl4000_data *data)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = data->chip_spec->set_power_state(data, true);
+-	if (ret < 0)
+-		return ret;
+-
+ 	return 0;
+ };
+ 
+@@ -2003,6 +1999,10 @@ static int vcnl4000_probe(struct i2c_client *client)
+ 	if (ret < 0)
+ 		return ret;
+ 
++	ret = data->chip_spec->set_power_state(data, true);
++	if (ret)
++		return ret;
++
+ 	dev_dbg(&client->dev, "%s Ambient light/proximity sensor, Rev: %02x\n",
+ 		data->chip_spec->prod, data->rev);
+ 
 
 -- 
 2.53.0
