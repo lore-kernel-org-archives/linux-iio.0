@@ -1,63 +1,63 @@
-Received: from mail-pl1-f179.google.com (mail-pl1-f179.google.com [209.85.214.179])
+Received: from mail-pl1-f174.google.com (mail-pl1-f174.google.com [209.85.214.174])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8E9FC3845AE
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:01:42 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.179
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1BD94386C04
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:01:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.174
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773651703; cv=none; b=OaiKm8G/YVksnQcJelNNCHiODBjCZjF9Ovfv1UrNhY2/+j+HwmEfqEbx5jCszZMhrBFX+hfnqPsY6ccmJBbtAqA8eo9cMNFIo+XMZgH8xWLhO1qtw6Qo86LpEEybU1K9R3NwyFUCn+tXpSV0dHL4N+C/i/KrkIWEceCNrP6Ep3Y=
+	t=1773651709; cv=none; b=K2YfolnMqsdhOOJq5FsD5+CB+pC4CHCNOgLfhJrgBGib9CgiJHrcFbgeyEgG/WidS9Ogl/aHvUg3s2iuv6OihZyPbIEWtIzR5qUa3EZs8um/VzvnRCowDECE+hzUHz6B+Me5qah31CdEJme4UqEkydTlizLcJs01xsM2Gt377V8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773651703; c=relaxed/simple;
-	bh=V3HWIXCvXXE7FE5FRYklt761wxOahtV1detCwX3P8f0=;
+	s=arc-20240116; t=1773651709; c=relaxed/simple;
+	bh=HSu3xx2lCjtWg88R5qvzBlH/MUVbsV39zZtLxvUYB/Y=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=P1fUN/2NPV+c46oQkyYJIbEenF3H/iYff2bNCeMioc6nWvK3n6r2CTIhs5t7TEV7Kzast5Mklta/XM6U7Tgdvown/vGgoNKBzjxn8bfP/T9GOop0B4VaJnRsRGwGaGkKcl/3fwfqNwGE14pxtqiNO7iybIjj1M/xvIOBuazu4kY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C218IYR7; arc=none smtp.client-ip=209.85.214.179
+	 MIME-Version; b=TNLn33I4F8NfxpE0Iltwl1lfmJ+3jRr33rW+a5WuNUoobWhxk7outIJwWwZDEDf1aSILJEQn0KI7jUY0SgbtEN9WmWGLuxOquOtEUyNwbRkNBujH29QuQASGF5fbxnj3XPPlFJrbsPIvoixMD4/aER/0tVsoOK+ZYEjvIdFtY6I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Zmk2SjD2; arc=none smtp.client-ip=209.85.214.174
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C218IYR7"
-Received: by mail-pl1-f179.google.com with SMTP id d9443c01a7336-2a9296b3926so34084225ad.1
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:01:42 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Zmk2SjD2"
+Received: by mail-pl1-f174.google.com with SMTP id d9443c01a7336-2aaed195901so20038095ad.0
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:01:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773651702; x=1774256502; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773651707; x=1774256507; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=BUxp2VUu2W6Pw8Gz02q+Ts23ED2qB8HC59Sr60mpXkQ=;
-        b=C218IYR7f/sWYmevDy2SuelvnjYSOpf3HTTiBuJGIOkaIvp7IZmQribbHpi2TCik5O
-         v2wTK2AMCg/V87ALAlcqKeLz8bOcjrMI47b0wsoYrLi49kPGpQ1J0zLbdmoTjaa6mMBG
-         mFIMCvrMjPtlp7ncX+BGYj6/wCswwlvoraBEoP6QMTK09zGPPdLnsdMYuGvC9bn4539D
-         XToJ60Rq6dcbAyDbDWUmIEdDryN8WPq8KZlPo3JR9EvDZ8rdvuEp+ezqdUqrB674gvhE
-         l+iJrtlsVPfzH4H6eimaFv0iN8UlAZAw0yztmCHmj7vrEjC2RiUeYEVoGpmrnP4wGSby
-         SUrg==
+        bh=ImzEfHYzjQqMQH44oXgmZ23YQ1PrMrF+t43BBl3cQAU=;
+        b=Zmk2SjD2e4JaYQGfLjaRMFXcY4rlEPEw2p1rnUAeXXxGzXC+2584wqmFiYhbk9Io2Y
+         SxxGN+25NmK3Eh8LIZgjacH8Vg2E+Y9XN9xxjzpUsbdXIqAHY7dsdfONyNlPUQDiuWKL
+         trkIdUEAQw6yO7unTAk4eD5U9F1VthZrdG8yjl5W3Rc5VNSdEEGwIa15ogppjg7FRvuc
+         SsD8oAhv8HDXOLo7W8fVhScgjpX6iKpN78S3XrlemJTesIFa5ZvovvjSSToQLEHvi64H
+         +EG90x1i9F6kDCm+Jf85sCTzNCAQLsm4f8IIb61yDDSKGkiLXomhn3xEBJXqtm8Ate6q
+         5E3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773651702; x=1774256502;
+        d=1e100.net; s=20251104; t=1773651707; x=1774256507;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=BUxp2VUu2W6Pw8Gz02q+Ts23ED2qB8HC59Sr60mpXkQ=;
-        b=mfnMxVsyEYjcv0kmU2BsaiRdSpRqZKEaoNYcDDoRlOgs22vB3+B5IQtGDdcxgBJZCA
-         /m8A9Py8W+1A/seNJCwIOB/qdiUkkK8WpQR1TQFLLF8W4Ybk00K7HEDrZj9dhT+RL/Mo
-         g19aIcGnBp34P3j73/FhM4W+adA3lAoTyrJyUK9IjtJD8Kl/Mwt2IWHZXo/rxXSS9yB6
-         JoX49LXT1bK8KxWPxVzX5DrDo9lVYjmpcnZ0CF4BHUnzMOClxxZaXQPDQkcfk5TeeH21
-         zyAD161yUNUomo4aMitl1rOBaWHz6/G2MgG5yVAbw90HgKnSaEm13POX+HLXtTvxRRIF
-         aVVg==
-X-Forwarded-Encrypted: i=1; AJvYcCWVAbUbF7KcIpmdP5PEz08IkUfdTK1nOnoRIvNkrJ+8khIgZ+N/fNDgNM9NDqaY42xxwG3d7o+9vy4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YywddDJ55H9n+JJ1bAVp9lDJZNekAmlfllzFb0TpOoqdDnWpXOq
-	9owdS0uVdiiGrGzyUXp+ldiBSz0rgRGe8WY42PV6HWrSEO8EpNSpUbDF64lWBA==
-X-Gm-Gg: ATEYQzwnaR2Qa0VXoh0n40GcNdZ9E/xQ3jb276gIl3+8Tpe1hUPRWnmSZq/S2KAOYVl
-	QBjzMyj95g3EC58D0s5e3426ZML8P6DNyn1XfzR2WcXRilkB2VP1jywvXBnBb8Gi1Us7COM5Onf
-	G05vZ+Up5VWhO5bSYm72LAvU/jNHV70bovFPDo269X4u1Fm/Z02EbqJUDx8JDxKJhfPdBqIMx1N
-	3JoFMppSG/ICrulIATZAR8k3XBwBUaa9ZksYj1r/beCL/aCGjg1f47vXIjSMMWd2WXuSk3kLTSn
-	7TLyScSqEqb/n+snJ/XU51ePEl/IQiM8/qor0fZQTNk1JPhrliIlztbAXK9fSRWTY0+0eQJmhUe
-	ZHaYJlEUnP1GU+TbzxL/578XTJ2vFENVa+GwQwSx87BHJ60IZ5Ym5B6rxrcUeq18P0uDs/w4Axu
-	0EvU+kKDb0HAhSct2TACuGTEav
-X-Received: by 2002:a17:902:db0a:b0:2b0:5770:d485 with SMTP id d9443c01a7336-2b05770d6b7mr28757365ad.11.1773651701848;
-        Mon, 16 Mar 2026 02:01:41 -0700 (PDT)
+        bh=ImzEfHYzjQqMQH44oXgmZ23YQ1PrMrF+t43BBl3cQAU=;
+        b=i5IbkGLj6zOtKyONh9z6vn+jKmBrkk4ubcOubOuVz38CFuqFLpxlqreThNRZ4YI1cf
+         kBiAVBddpKclFmgH1aW7HIJ7VxuJmrSISOp1byG7ivZiuHEzEGUxSDGLhIfYBEo9g30p
+         yV6tauhTnFkojVeEwrdQyoaFcSNVp9/JzvnW9MMy+pvRg5x2ccEF1TZo1tDglKx+zgKn
+         ZEOT9L2SVvEWmRya2wxoPpBNSfQ89KVjo3N72dDCExY+5CpEbyiH6EzBAxx5jUFxZ4uq
+         4ZrsN26sT91YL7ejy0igvU5m7CVMH0KaFVRZDKet0RpyZhFEMnvBkLOUthXjJujlvAjy
+         ED9w==
+X-Forwarded-Encrypted: i=1; AJvYcCVNvwla2lQHYJiMhUvgys9THtosLtDll8y05KyQuFhrhRtjwQJqh7WZb8klFZ/F+c3tZh/o9Q8GzL4=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxjythP7ZEPSdQFZvr9M1Io6IJ1QVF8E4lQ+/figHsWu/A9yI6v
+	Baoj1ENFDVkpg62sQjuh9VhX8javWr4rwtgvrDnxBacyo+iTa5Ge8dSH
+X-Gm-Gg: ATEYQzxv0mNC1Crz/1MEOQ46AJfELQLlB7bhAY/cRj0mAvJx8HhAW9EJ2Xgk3tVyivA
+	mZCQFbkf+YMBg0z7naUqfQg8gpoEAx1zZTU61N/g1UGHuR3run5UXz1Bmt/KmfcplcK2Y1XR802
+	gj+h22R+FkSgwuGSeoTLWdrU5KamIyUyVzRHue8lB5nZb8i0dcGbOi+xOE/LyQIJcQNmNxKS57l
+	h9cl0NzQ8GG9HCC7ib93vxe8n94I9o4UgUaTR7WUAja5EdxLE5lDgyf0lR/muXRM0AR3JncRY0U
+	3gfWQo8tWcLQxcDp7aCtvSFNFLSZEVyKa4ACuLUhDGhT525VgmRs2SR4LpI3MGCQswOdaaqghDY
+	jstQAS5KspQSCjwD/rbP1LP+CmUCki2WeZhtRPwH/gfhNUkJOWtFfF2wRxr0CgGpBsabZ30EQ6L
+	BjUPnooxseytcZTA21kGTV8U+J
+X-Received: by 2002:a17:903:907:b0:2ab:230d:2d96 with SMTP id d9443c01a7336-2aeca92e633mr118469405ad.11.1773651707117;
+        Mon, 16 Mar 2026 02:01:47 -0700 (PDT)
 Received: from fedora ([2401:4900:1f33:4eeb:289f:fcde:6da5:35e3])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.01.37
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.01.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2026 02:01:41 -0700 (PDT)
+        Mon, 16 Mar 2026 02:01:46 -0700 (PDT)
 From: Shi Hao <i.shihao.999@gmail.com>
 To: jic23@kernel.org
 Cc: andriy.shevchenko@intel.com,
@@ -68,9 +68,9 @@ Cc: andriy.shevchenko@intel.com,
 	linux-kernel@vger.kernel.org,
 	mazziesaccount@gmail.com,
 	nuno.sa@analog.com
-Subject: [PATCH v5 11/14] iio: common: fix spelling mistakes in comments
-Date: Mon, 16 Mar 2026 14:30:19 +0530
-Message-ID: <20260316090023.14691-12-i.shihao.999@gmail.com>
+Subject: [PATCH v5 12/14] iio: chemical: rephrase comment and fix a typo
+Date: Mon, 16 Mar 2026 14:30:20 +0530
+Message-ID: <20260316090023.14691-13-i.shihao.999@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260316090023.14691-1-i.shihao.999@gmail.com>
 References: <20260316090023.14691-1-i.shihao.999@gmail.com>
@@ -82,82 +82,27 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Fix spelling mistakes in comments.
+Rephrase the comment and fix a spelling mistake.
 
-- exepects -> expects
-- fuction -> function
-- theoritical -> theoretical
-- appopriate -> appropriate
-- iio -> IIO
+- insuffient -> insufficient
 
 Signed-off-by: Shi Hao <i.shihao.999@gmail.com>
 ---
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c   | 2 +-
- drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 2 +-
- drivers/iio/common/inv_sensors/inv_sensors_timestamp.c | 4 ++--
- drivers/iio/common/ms_sensors/ms_sensors_i2c.c         | 2 +-
- 4 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/iio/chemical/bme680_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-index 82cef4a12442..f34e2bbba2d1 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-@@ -106,7 +106,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
-		switch (st->core.type) {
-		case MOTIONSENSE_TYPE_ACCEL:
-			/*
--			 * EC returns data in g, iio exepects m/s^2.
-+			 * EC returns data in g, IIO expects m/s^2.
-			 * Do not use IIO_G_TO_M_S_2 to avoid precision loss.
-			 */
-			*val = div_s64(val64 * 980665, 10);
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-index a61428bfdce3..c115a72832b2 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -346,7 +346,7 @@ int hid_sensor_write_raw_hyst_rel_value(struct hid_sensor_common *st,
- EXPORT_SYMBOL_NS(hid_sensor_write_raw_hyst_rel_value, "IIO_HID");
-
- /*
-- * This fuction applies the unit exponent to the scale.
-+ * This function applies the unit exponent to the scale.
-  * For example:
-  * 9.806650000 ->exp:2-> val0[980]val1[665000000]
-  * 9.000806000 ->exp:2-> val0[900]val1[80600000]
-diff --git a/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c b/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
-index 97526ba87b93..e0b10366ed2b 100644
---- a/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
-+++ b/drivers/iio/common/inv_sensors/inv_sensors_timestamp.c
-@@ -154,7 +154,7 @@ void inv_sensors_timestamp_interrupt(struct inv_sensors_timestamp *ts,
-		valid = inv_update_chip_period(ts, period);
-	}
-
--	/* no previous data, compute theoritical value from interrupt */
-+	/* no previous data, compute theoretical value from interrupt */
-	if (ts->timestamp == 0) {
-		/* elapsed time: sensor period * sensor samples number */
-		interval = (int64_t)ts->period * (int64_t)sample_nb;
-@@ -185,7 +185,7 @@ void inv_sensors_timestamp_apply_odr(struct inv_sensors_timestamp *ts,
+diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
+index 24e0b59e2fdf..6aeac132394c 100644
+--- a/drivers/iio/chemical/bme680_core.c
++++ b/drivers/iio/chemical/bme680_core.c
+@@ -807,7 +807,7 @@ static int bme680_read_gas(struct bme680_data *data, int *comp_gas_res)
+	adc_gas_res = FIELD_GET(BME680_ADC_GAS_RES, gas_regs_val);
 
 	/*
-	 * After ODR change the time interval with the previous sample is
--	 * undertermined (depends when the change occures). So we compute the
-+	 * undertermined (depends when the change occurs). So we compute the
-	 * timestamp from the current interrupt using the new FIFO period, the
-	 * total number of samples and the current sample numero.
-	 */
-diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
-index 588470863681..1960a2ce82a8 100644
---- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
-+++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
-@@ -96,7 +96,7 @@ EXPORT_SYMBOL_NS(ms_sensors_read_prom_word, "IIO_MEAS_SPEC_SENSORS");
-  *
-  * Generic ADC conversion & read function for Measurement Specialties
-  * devices.
-- * The function will issue conversion command, sleep appopriate delay, and
-+ * The function will issue conversion command, sleep appropriate delay, and
-  * issue command to read ADC.
-  *
-  * Return: 0 on success, negative errno otherwise.
+-	 * occurs if either the gas heating duration was insuffient
++	 * This may occur if either the gas heating duration was insufficient
+	 * to reach the target heater temperature or the target
+	 * heater temperature was too high for the heater sink to
+	 * reach.
 --
 2.53.0
