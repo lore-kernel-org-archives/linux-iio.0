@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 16EC339FCC3;
-	Mon, 16 Mar 2026 15:21:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 557FE38D00A;
+	Mon, 16 Mar 2026 15:23:57 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773674521; cv=none; b=lC6TTUH8cP2CRLbIhWIHpDmpp7sNU+0O8x7AMkEAUPfqi7f+rTojMoMACNyCj66JAgz9642F6WJzu6BVYocVnG/Tp1ar09oGHa5aTszXWIVZKxyhBNLwGW8ZD08fj6nMQUbpCF8sO3DEaaG76mQCFRiQfs6sMrYo8vaLpSI8UQc=
+	t=1773674639; cv=none; b=azHfZXSHTV0CghmhdPaCfkBW9WHeraHtJSi67Da7r60VorcmEXVataoqS08u0tFE2ri9wvwZ3TFl5sNsWm1jfH5vMOTfo2WnVVK/2ysfn0UG17drTikqFj7fPtzeP1lGqIwy0HQlxqJkNqFNG0OBbRK9zUkbqq5Gy2IphnLZPkk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773674521; c=relaxed/simple;
-	bh=l+1lS9IF5T52QWS47Q7ZCCsSP6rjXnGtQfIhuOPX8ps=;
+	s=arc-20240116; t=1773674639; c=relaxed/simple;
+	bh=20GIlEHy/sVe4e2jX3rrE8q0cbxfWTl2tfNOtUUch/w=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rW1kwpn1nEJFr5zm/ODZFxHLl5OXZ8SyWKjWDWz8ktA7rafbOyqwC+kTOzLuXtoyEPU7i2fGbrHLfkVKDU92PHx+HqAnqde+/ldz/0VX2giBxNqe4wFkl3bg39yUjl8ikgYNiQH/gUurbYi29KZQCSXkQAlO3Z7rd29v+11/4ZM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PylupEUu; arc=none smtp.client-ip=198.175.65.13
+	 Content-Type:Content-Disposition:In-Reply-To; b=e8CcU4Qretorgc/72Zmzh4Ytstvo+wkbsM8FEEm0yDAe1NqX8eUnLw4f3Iw8t25O29gYZJN3IvCbh2fqBxUvG9OiQGd8LUVd4Y5cBt2q/stRrOmpl792OWa/uOUcOLqSc7KLxzqCdRQoPxrLXuQINIWd01KqEeL3zsbkEUpL9kg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=XTtw7wr1; arc=none smtp.client-ip=198.175.65.14
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PylupEUu"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="XTtw7wr1"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773674520; x=1805210520;
+  t=1773674637; x=1805210637;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=l+1lS9IF5T52QWS47Q7ZCCsSP6rjXnGtQfIhuOPX8ps=;
-  b=PylupEUumxqeln//o8PXaxY1E8MCCfJec7n7n/qmns+wHRqLfHqVPmKo
-   4tbRS1jseYU+jNBOT50Cs5jL10iOZW+oGxXkFTIHBV4rdZAv2A4tAQHL9
-   0UuRAHb97A2S874Dfu79kxXtJCk6GAnV9Y+jd56wxJRZBbWnycy61YMxR
-   xuSYNaI4SfNFFlJ7MxC2bl4949t5wm8gUQeb17466tYJsD8CIqlBBr9Xt
-   DXwXuWVsvSzFPyhu0PcRY2IpAZIQrssU9K3nco9piBkI5N8qPuh0IFEXM
-   OLYmP9LFqg4ZvuYmrvvPQPgJxJlnrH7WkPufJ49qoRKT5GmRLZPwNPFd0
-   Q==;
-X-CSE-ConnectionGUID: tKiLapplQGGw7NY2r9CzMw==
-X-CSE-MsgGUID: oVRZseikSsOOd9CZPY4MiA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11731"; a="85774902"
+  bh=20GIlEHy/sVe4e2jX3rrE8q0cbxfWTl2tfNOtUUch/w=;
+  b=XTtw7wr1q61fTO0nm5qGfHEVy/aF5vaXGsIiBTk5Ilgngk/PbWAsFtJg
+   B1/F5EMMGlaOIQwlJFpxE0wMcXIxNlbDg07ETqGANSzXF8v0LXKKIaQzN
+   Pd0WyRXJkKmGg7r9Skxcz4/lrsE4B5McpltezJta10J5Ed8HnBlw2+Tc6
+   jkbyGziNJxrdcXLOGKoWoJf0sorS04/93fhJDBOL6tjt1Xco512Lhb7u+
+   xFSaJm3o0qXPpqxJwE7WFQVd0AmXOYRLLUXiGkreK3jPlqox9Grx0cMXS
+   oW8mvkspWsIh9B3NYcN6tXmumN0XFZzoJdM1C2QjnqwIe93jtjWCa877F
+   A==;
+X-CSE-ConnectionGUID: OOZIVr/wQG6GtS+0zXzdHg==
+X-CSE-MsgGUID: JnWJ470MTcaIV5lPFhgPqg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11731"; a="78544273"
 X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="85774902"
-Received: from orviesa003.jf.intel.com ([10.64.159.143])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 08:21:59 -0700
-X-CSE-ConnectionGUID: 0M1XwILvTvmgrDhBjceGOg==
-X-CSE-MsgGUID: JHKoCYvFQpe7XGWvoneryg==
+   d="scan'208";a="78544273"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 08:23:57 -0700
+X-CSE-ConnectionGUID: jXSBGeGqQO+Oj+adpoA8YA==
+X-CSE-MsgGUID: jMMn6nsiQBCwFDEfx9ZAnw==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="226077072"
+   d="scan'208";a="252475109"
 Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.237])
-  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 08:21:56 -0700
-Date: Mon, 16 Mar 2026 17:21:52 +0200
+  by orviesa002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 08:23:53 -0700
+Date: Mon, 16 Mar 2026 17:23:50 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Jonathan Santos <Jonathan.Santos@analog.com>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -52,10 +52,11 @@ Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
 	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
 	conor+dt@kernel.org
-Subject: Re: [PATCH v2 3/5] iio: adc: ad4130: Add SPI device ID table
-Message-ID: <abggEE6RPkMZlgrs@ashevche-desk.local>
+Subject: Re: [PATCH v2 4/5] iio: adc: ad4130: introduce chip info for future
+ multidevice support
+Message-ID: <abgghuhw01q9u90c@ashevche-desk.local>
 References: <cover.1773311639.git.Jonathan.Santos@analog.com>
- <63f625f4f19c33f937bace7a37b921a0e4810559.1773311639.git.Jonathan.Santos@analog.com>
+ <4ab83983026db04695e0a36a7103efbfb82f7a76.1773311639.git.Jonathan.Santos@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -64,23 +65,26 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <63f625f4f19c33f937bace7a37b921a0e4810559.1773311639.git.Jonathan.Santos@analog.com>
+In-Reply-To: <4ab83983026db04695e0a36a7103efbfb82f7a76.1773311639.git.Jonathan.Santos@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Mar 16, 2026 at 08:45:26AM -0300, Jonathan Santos wrote:
-> Add SPI device ID table to enable non-device tree based device binding.
-> The id_table provides a fallback matching mechanism when of_match_table
-> cannot be used, which is required for proper SPI driver registration.
+On Mon, Mar 16, 2026 at 08:45:36AM -0300, Jonathan Santos wrote:
+> Introduce a chip_info structure to abstract device-specific parameters
+> and prepare the driver for supporting multiple AD4130 family variants.
 
 ...
 
-> +static const struct spi_device_id ad4130_id_table[] = {
-> +	{ "ad4130", 0 },
+> +struct ad4130_chip_info {
+> +	const char *name;
+> +	unsigned int max_analog_pins;
+> +	const struct iio_info *info;
+> +	const unsigned int *reg_size;
+> +	const unsigned int reg_size_length;
 
-No ', 0' part, please.
+On (some) 64-bit architectures it might have unneeded gaps. Does `pahole` agree
+with this layout?
 
-> +	{ }
 > +};
 
 -- 
