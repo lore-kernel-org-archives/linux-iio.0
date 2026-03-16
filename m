@@ -1,131 +1,130 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wr1-f44.google.com (mail-wr1-f44.google.com [209.85.221.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B803DEAF8;
-	Mon, 16 Mar 2026 18:31:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A2BD333C198
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 19:03:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773685886; cv=none; b=Ysy5HvlWTmmAoZuwQr+g2cXyE9Hnd40jjXupeqnkTAT+9JYW6W2A20IcFv8pgp9oqxuM+uEASIRgU8VKGxeNdwges9RMOMLykow9Fn3+aHWdZgP4TY1cE4KYVqRBh+RJX6zVNYFV5khNuenmcsSMGIuWtadf21v/dfcvUW//UnA=
+	t=1773687826; cv=none; b=O2+u36pcEw5Lw3D0fkq18GG9lBchjYBj8zz3n4++DYgmxFLM0IEFpNCVPRTHwmWCQKAejO66a92PY/dEljiz3iQ4RkmVP4aGEOAyVqmfDaTkIX+M+NJanRcYWCgc0//bhatJeYdVKGi+vs6vYONE3OWE2Ya7MRxuHT2yKjDlV7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773685886; c=relaxed/simple;
-	bh=/341tmVA/vpTq4iA3KHxWy3dIVN8HL9NUtzjrYa2B9g=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=WZawGH9KuRiWGZkGEj+ODcINd0UX4VdC1jd+JGn0ya99XFs7mDGk/+GK86j8nI2SFEf0X7hezKFhHiVkiKrqDdE9HlaiXOyp3W9oOOoAbKRjrQJ1coqoy1AWzZVYVbH4mQt6K/KmVE7kbta6ceUL5+NLWssb3p17BXLmvWb01MM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZVJJM4Ib; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773687826; c=relaxed/simple;
+	bh=L8JZFY3lXdUOZ5qQqSJQH5xO8HLT6fm5i80Jm9kcEgc=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=ZGJf5k7Sf8nTTtWgqV0th85WPqoi95ZhbQivhnSbMMgjCERMcfyLhDAzneuSpXpwjgxSr9nDQjB2ORClFwftse85TKEIOM5diTVWPAJkRyv73YGjEurrLmE/Z6veOHHquIt6Djythq8J3rLta4TG8VjbFosSvfmQa6g0amO96Cs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=3Z4O1o+5; arc=none smtp.client-ip=209.85.221.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZVJJM4Ib"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F31C19421;
-	Mon, 16 Mar 2026 18:31:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773685885;
-	bh=/341tmVA/vpTq4iA3KHxWy3dIVN8HL9NUtzjrYa2B9g=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=ZVJJM4IbGffu4trVq1isJYCU8TdMCMY7r2VW59pT3w8bDuPmUJLr++K9bsfiOwpEM
-	 WR1gqU/bI09hxvYkcOPOeW4YLm38t1LRn76MXcvnNPj+b5hwkFPz0VrVH4IMtikp0q
-	 w6gkQc3U1neiXM4mojcEet4ixogI9nQOu1eEzgMX93j9VmFNYpP2cMteA3EOBj8OSS
-	 ii+zQjPINrt8ZpcIqLry8nOgywuT63H38VPSADSJBW/PGAQpl+zb/K1jXD8XVwKNg0
-	 Idb89JOLotC2o7T3AnUMn37w1uLd0TVo7FE63rUU6Tj9AvO5Ix+REcuFOe0Pr50oNl
-	 Nt9g92qZR6hzg==
-Date: Mon, 16 Mar 2026 18:31:17 +0000
-From: Jonathan Cameron <jic23@kernel.org>
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="3Z4O1o+5"
+Received: by mail-wr1-f44.google.com with SMTP id ffacd0b85a97d-439b9b190easo3493324f8f.2
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 12:03:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773687823; x=1774292623; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:organization
+         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
+         :cc:subject:date:message-id:reply-to;
+        bh=L8JZFY3lXdUOZ5qQqSJQH5xO8HLT6fm5i80Jm9kcEgc=;
+        b=3Z4O1o+5nL7xlAkkiH5C6XbrJoO4j8WsITfBUK3gGyOyC0uSx3JWlevqPtb5rWXzAO
+         OVITIulO7qxGFnP4kmuZLjBAtH8YAxT2wDpuNZsQWyZ/ZE4gzn7/ed1Mi2WAovgE0IOt
+         VQjlrwJgDzxdqvbIjS0Io01YXnYj3oFBx2nDzkCeIylzrCS1jQs+b5wrcYymKAp9J5y3
+         gvcRaooVE6C/gHNPnGvqVq5NeZQ2brv0VWx7dXIFQordqKpD0m2XWQik7jeGTaLpAefd
+         hMap/910lfLRcIuZq9roWuofeBO1eqKueQI1nuHSfystwLFn79Dw64/SNQQOfGL8rkLZ
+         QnuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773687823; x=1774292623;
+        h=mime-version:user-agent:content-transfer-encoding:organization
+         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=L8JZFY3lXdUOZ5qQqSJQH5xO8HLT6fm5i80Jm9kcEgc=;
+        b=dwpr15UvrmnxbF/wq4XhILxgIkl+wGPrtoBUisQiFoWjId1gtGgvzHa/oHntTRQNqa
+         9aKBkO38DHWu+M2dtdjo6HeXeqwQBXhIHKV/8E/UCcorMt0VOHCDZjEdqrDBvf005bHP
+         FYL77axPy1EnsYbmAtknPdPDuwmScm1inNdZtIA+klKH7G0njnjm87UQw24XBtDtiCjr
+         5dF6FxwM1eBAtc6+a0E2Lg19uxribtoptAv7iUBY27LvQZDupZWsXdu/GRgUI0g1ZWH/
+         pJhsi+LLTMyKarLy6GcsHfTxkrKPGvkcwewool0N2sl/JHXM6OQ/stqudc84MExbYYFj
+         YKVw==
+X-Gm-Message-State: AOJu0Yyek8bQgRjD2WqJ7irl1Wx7Y34xiccLTS17r15tyX/Dqn0qNKUB
+	XkqqtBxVymMVB8jVuI71HBSU5IPcEEfBsYYuXAVGwwuxgviiGgzbhIE0YLonXYpvGKc=
+X-Gm-Gg: ATEYQzwFSUfKCGGHYEF3VjLpU/kFLItoJYKVGsMXgfSPrqLVYVjvvt93RirJruucjin
+	WXGuqRqKkl2ZwFU/WQPI41uXDpN/kHSiAHaHEfK2imn/A7z+nvAQRiTqJqGMNj/YhDhyripf8Qc
+	9Vkr/kl6z9jByKk38LKtc24rVYc1RTBSm6clpHSAROwGcvbil/h797u1SmfcDMuwKq3yG/cvfFJ
+	XoZ3/zAop1H6rQJmor11CVV+mUdkGSOZLu+gH56YtYDxNEYzgXICg2COWV/FOpUWGoIJCaRk+vC
+	PGoWxoFjKe36Gcki8A3kaOS0rrR60Xjtl29q3Z2dLiLM/MKJ9ytWHcOjiFv9UwNEeDI1cIMUW1v
+	UYR+q+tGzXqjRtwwbCJHhdTxZTx1q4PIrq6ZyfCxSDzA3aURJavEgMZWL+CwvQ/RSNecOdrDWuB
+	53yuVjLD8=
+X-Received: by 2002:a05:6000:4310:b0:43b:492c:8349 with SMTP id ffacd0b85a97d-43b492c8602mr2940929f8f.3.1773687822919;
+        Mon, 16 Mar 2026 12:03:42 -0700 (PDT)
+Received: from [10.128.148.30] ([151.37.210.249])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b4389321csm11688656f8f.29.2026.03.16.12.03.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Mar 2026 12:03:42 -0700 (PDT)
+Message-ID: <0b9ac137f52c2c279e07b2d1d8f7379ca9631cef.camel@baylibre.com>
+Subject: Re: [PATCH v2 1/2] iio: add IIO_DECLARE_QUATERNION() macro
+From: Francesco Lavra <flavra@baylibre.com>
 To: David Lechner <dlechner@baylibre.com>
-Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Matt Ranostay <mranostay@gmail.com>,
- linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: adc: ti-adc161s626: use DMA-safe memory for
- spi_read()
-Message-ID: <20260316183117.4dde7386@jic23-huawei>
-In-Reply-To: <20260314-iio-adc-ti-adc161s626-fix-scan-buf-v1-2-56243b11e87b@baylibre.com>
-References: <20260314-iio-adc-ti-adc161s626-fix-scan-buf-v1-0-56243b11e87b@baylibre.com>
-	<20260314-iio-adc-ti-adc161s626-fix-scan-buf-v1-2-56243b11e87b@baylibre.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Jonathan
+ Cameron <Jonathan.Cameron@huawei.com>, linux-input@vger.kernel.org,
+ Jonathan Cameron <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jiri Kosina
+ <jikos@kernel.org>, Srinivas Pandruvada
+ <srinivas.pandruvada@linux.intel.com>
+Date: Mon, 16 Mar 2026 20:03:40 +0100
+In-Reply-To: <7f000ea5-1a41-4da8-aad5-04aa875fa4bc@baylibre.com>
+References: 
+	<20260228-iio-fix-repeat-alignment-v2-0-d58bfaa2920d@baylibre.com>
+	 <20260228-iio-fix-repeat-alignment-v2-1-d58bfaa2920d@baylibre.com>
+	 <7f000ea5-1a41-4da8-aad5-04aa875fa4bc@baylibre.com>
+Organization: BayLibre
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
-On Sat, 14 Mar 2026 18:13:32 -0500
-David Lechner <dlechner@baylibre.com> wrote:
+On Sat, 2026-03-07 at 18:35 -0600, David Lechner wrote:
+> On 2/28/26 2:02 PM, David Lechner wrote:
+> > Add a new IIO_DECLARE_QUATERNION() macro that is used to declare the
+> > field in an IIO buffer struct that contains a quaternion vector.
+> >=20
+> > Quaternions are currently the only IIO data type that uses the .repeat
+> > feature of struct iio_scan_type. This has an implicit rule that the
+> > element in the buffer must be aligned to the entire size of the
+> > repeated
+> > element. This macro will make that requirement explicit. Since this is
+> > the only user, we just call the macro IIO_DECLARE_QUATERNION() instead
+> > of something more generic.
 
-> Add a DMA-safe buffer and use it for spi_read() instead of a stack
-> memory. All SPI buffers must be DMA-safe.
-> 
-> Since we only need up to 3 bytes, we just use a u8[] instead of __be16
-> and __be32 and change the conversion functions appropriately.
-> 
-> Fixes: 4d671b71beef ("iio: adc: ti-adc161s626: add support for TI 1-channel differential ADCs")
-> Signed-off-by: David Lechner <dlechner@baylibre.com>
-> ---
->  drivers/iio/adc/ti-adc161s626.c | 19 +++++++------------
->  1 file changed, 7 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti-adc161s626.c b/drivers/iio/adc/ti-adc161s626.c
-> index 1d427548e0b3..6416d6a7ada0 100644
-> --- a/drivers/iio/adc/ti-adc161s626.c
-> +++ b/drivers/iio/adc/ti-adc161s626.c
-> @@ -70,6 +70,7 @@ struct ti_adc_data {
->  
->  	u8 read_size;
->  	u8 shift;
-> +	u8 buf[3] __aligned(IIO_DMA_MINALIGN);
-On this. There is new generic infrastructure for marking these.
-https://elixir.bootlin.com/linux/v7.0-rc3/source/include/linux/dma-mapping.h#L720
-https://lore.kernel.org/all/01ea88055ded4d70cac70ba557680fd5fa7d9ff5.1767601130.git.mst@redhat.com/
-
-Would look like
-	__dma_from_device_group_begin();
-	u8 buf[3];
-	__dma_from_device_group_end();
-
-Do you think we should adopt them rather than doing our own thing?
-Slowly though I don't want the noise of a mass conversion.
-
-As normal, advantage of standard infrastructure is cutting down
-in subsystem specific magic.
-
-I 'think' result is the same (though it also forces the trailing padding if anything
-comes after this and needs it).
+...
 
 
->  };
->  
->  static int ti_adc_read_measurement(struct ti_adc_data *data,
-> @@ -78,26 +79,20 @@ static int ti_adc_read_measurement(struct ti_adc_data *data,
->  	int ret;
->  
->  	switch (data->read_size) {
-> -	case 2: {
-> -		__be16 buf;
-> -
-> -		ret = spi_read(data->spi, (void *) &buf, 2);
-> +	case 2:
-> +		ret = spi_read(data->spi, data->buf, 2);
->  		if (ret)
->  			return ret;
->  
-> -		*val = be16_to_cpu(buf);
-> +		*val = get_unaligned_be16(data->buf);
->  		break;
-> -	}
-> -	case 3: {
-> -		__be32 buf;
-> -
-> -		ret = spi_read(data->spi, (void *) &buf, 3);
-> +	case 3:
-> +		ret = spi_read(data->spi, data->buf, 3);
->  		if (ret)
->  			return ret;
->  
-> -		*val = be32_to_cpu(buf) >> 8;
-> +		*val = get_unaligned_be24(data->buf);
->  		break;
-> -	}
->  	default:
->  		return -EINVAL;
->  	}
-> 
+> Hi Francesco,
+>=20
+> I should have cc'ed you on this one. We'll want to add another macro
+> like this for IIO_DECLARE_QUATERNION_AXIS(), I imagine. (This has been
+> applied to the fixes-togreg branch since it is a dependency to a fix.)
+>=20
+> What to do on that for the alignment though is an open question since
+> we've never had a repeat of 3 before. The question is if it is OK to
+> have an alignment that isn't a power of two bytes. For your case, since
+> the data is 3 x 16-bit, it would be 3 * 2 =3D 6 bytes.
 
+Hi David. Differently from the hid-sensor driver (where the `scan` field in
+struct dev_rot_state is used exclusively for quaternion data), the lsm6dsx
+driver uses a data structure (see the `iio_buff` variable in
+st_lsm6dsx_buffer.c:st_lsm6dsx_read_tagged_fifo()) that is shared between
+all the different data types that can be read from the hardware FIFO
+(accel, gyro, quaternion, external sensor data), so changing this structure
+to a quaternion-specific type is not ideal. So I think for the time being
+there wouldn't be any users of an IIO_DECLARE_QUATERNION_AXIS() macro.
+
+As for the alignment, according to your patch at [1], when the repeat
+number is not a power of two, it is (will be) rounded up to the next power
+of two (and this is consistent with what the lsm6dsx driver expects), so
+the alignment will be 8 bytes.
+
+[1]
+https://lore.kernel.org/linux-iio/20260307-iio-fix-timestamp-alignment-v2-4=
+-d1d48fbadbbf@baylibre.com/
