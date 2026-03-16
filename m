@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D4F0838F620;
-	Mon, 16 Mar 2026 10:24:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8F3D038E124;
+	Mon, 16 Mar 2026 10:27:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773656668; cv=none; b=cCXVNnbjHqm1SLcUPjGqS6hCmUv4vvTXcBSEMbKCtTkGgdk9MKQln+I9bfUNkNxv2hRXOGI6njgqui34K6Zwq2m2rEZgLkeqBgyIVUslotSiZCurfyowyo7pFX+19rEspS0VNTzlsZc+0oVRrO3Acxy5uDtTXPL9to+XmC7cHGg=
+	t=1773656864; cv=none; b=Zhk34DC6f72pIpzjIWNtVtDGJgaErYm9eSBrQkSNEs6eniexHh1eZ3lvq5rzk/3ITBTaJOPodODtD6E1Aaaw7iO+cdfY3Q/OlfwuW9owmTMrg8angTxQMDgqn4J9AnaWezHuvsFUeaU6nUNk7nwn/qOpIv7DikTBQ4CFcTXffnI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773656668; c=relaxed/simple;
-	bh=agLLKnC6utTurhdFvGrWvOs5pfXbj0I1fdGfI9RxrJU=;
+	s=arc-20240116; t=1773656864; c=relaxed/simple;
+	bh=xHbC15Av+mVN56628rDyUUF3vqnT/6/26LWQ2kojBD0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OZ+4mJULBq5/XfcMn+Egfs/bAU2SJuUg66hoUBpkg4K0uFjkR2gnhQWjC3iJqPe+tHLjEBDPOKAtSVh0mhgFuFjF2ZcdN8ybIH0MttTH8aVD2/ofDdaqQuPVQkT8vEYdZXEjeu7NMnNrw2K3IF0n1rtnVi+4p2uVqT8AWHovBbU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lbKtc5i/; arc=none smtp.client-ip=192.198.163.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=o9Nxn238BfVQP5G0df2VG4X1C6fz8QKYxRc6vdZ1XhE3GSYG5fTkEJ7XGcpfutKt9M/WGaqj5acS8wM3lkMKffFLd9vGNP7CN6K0qBMO2DU9r1CYm0IHp5mLvpPHAhgC2LC8oAT6YXXv+REP4q8DGGbKJ4FRvf8Hz8aW4mw8Y2U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=eEheYhW7; arc=none smtp.client-ip=198.175.65.15
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lbKtc5i/"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="eEheYhW7"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773656667; x=1805192667;
+  t=1773656864; x=1805192864;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=agLLKnC6utTurhdFvGrWvOs5pfXbj0I1fdGfI9RxrJU=;
-  b=lbKtc5i/YwcZefaYDL1j+spIWkbgMVxrrVcizQY/YFDVnKdMiQFU9c2g
-   AMv+P23sIZL3ifWNUrnpwvfmJEHQUOC5XsNfqhtd4p5PGEN2o8pFsVlZp
-   GbJokUFzg2sH1rNtrUUBG6GIBsGpdW2nodD4L6CZII7NyTqsi2rls9ZLJ
-   szZPQSxV+G46vpp43UDNHD7bCfmvqxbIiO7t5+29eCtbcRxq11DB41WIZ
-   lOtXI/8U7yaL5j7hN0sP4nqiSDEsaeKK1F5XTVSB2VfuxToatjjGnglaU
-   cededC5xYFAk13RUjMEXCa/KrhvpEcmQ3aLlIJgR9zJeuaasY5YsC/prG
-   w==;
-X-CSE-ConnectionGUID: 1m47uOFlSJ2RBekgyeryvw==
-X-CSE-MsgGUID: /AGpVidFQ8i0FlFigtdYbw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="73683289"
+  bh=xHbC15Av+mVN56628rDyUUF3vqnT/6/26LWQ2kojBD0=;
+  b=eEheYhW77LuT2/lJtO9+KyC2QscsjYqruV8Lh4Ak7P8IArf4LFjLfVTd
+   3VZBsl9g3HWjPrsaA7/CdVr3Bm2yFDERlzrDSZOrAYdCD/leqPf0rIfRA
+   xspq7ktJa0xoPVVl8lBpX7N1i7tX2ow4e+Z/nOKe/XZw0cRTl+ltFQZS+
+   ZNGs3uqekZF5Rbbbo9fEuhiw6N8a0lISaXLOVz9e2MT13cQ56meu2R66g
+   sCDLAFg0bCfaxs/pR6B+qXR3NvwdlbiXFusxLLa/FMHD+SOv3FqR3K3CA
+   wD+PXYfpYf1qOQYnzlRA4tWhNRaw43qmj+bk9jSud91Mxa2TZpNJ+ycDm
+   A==;
+X-CSE-ConnectionGUID: +2pFjj+dQuao+8Chv+se5g==
+X-CSE-MsgGUID: 7RkcF0eERAm/+btk7uS7MQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="78273244"
 X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="73683289"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 03:24:26 -0700
-X-CSE-ConnectionGUID: ksaPXfGxS62GDR/izTPb0A==
-X-CSE-MsgGUID: c5k2Fh94T8qW/OPqQgGq0g==
+   d="scan'208";a="78273244"
+Received: from fmviesa002.fm.intel.com ([10.60.135.142])
+  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 03:27:43 -0700
+X-CSE-ConnectionGUID: ROvAPVjsQ5iwvM9K1gEjnw==
+X-CSE-MsgGUID: A6/44649QN2zvNLiCVt06g==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="221956135"
+   d="scan'208";a="244906029"
 Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.237])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 03:24:23 -0700
-Date: Mon, 16 Mar 2026 12:24:20 +0200
+  by fmviesa002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 03:27:38 -0700
+Date: Mon, 16 Mar 2026 12:27:36 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: Erikas Bitovtas <xerikasxx@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -54,12 +54,12 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
 	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org
-Subject: Re: [PATCH v3 3/6] iio: light: vcnl4000: replace mutex_init with
- devm_mutex_init
-Message-ID: <abfaVL7_tI1d4zcR@ashevche-desk.local>
+	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+	Raymond Hackley <raymondhackley@protonmail.com>
+Subject: Re: [PATCH v3 4/6] iio: light: vcnl4000: add support for regulators
+Message-ID: <abfbGGvcfJpRdqDZ@ashevche-desk.local>
 References: <20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com>
- <20260314-vcnl4000-regulators-v3-3-3c4a48d30676@gmail.com>
+ <20260314-vcnl4000-regulators-v3-4-3c4a48d30676@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,34 +68,44 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260314-vcnl4000-regulators-v3-3-3c4a48d30676@gmail.com>
+In-Reply-To: <20260314-vcnl4000-regulators-v3-4-3c4a48d30676@gmail.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Mar 14, 2026 at 06:06:32PM +0200, Erikas Bitovtas wrote:
-> Replace mutex_init used across driver with its device-managed
-> counterpart, so all assigned mutexes get destroyed.
+On Sat, Mar 14, 2026 at 06:06:33PM +0200, Erikas Bitovtas wrote:
+> Add supply, I2C and cathode voltage regulators to the sensor and enable
+> them. This keeps the sensor powered on even after its only supply shared
+> by another device shuts down.
 
 ...
 
-> +	ret = devm_mutex_init(dev, &data->vcnl4200_al.lock);
+> +	ret = devm_regulator_bulk_get_enable(dev,
+
+Below is broken indentation.
+
+> +				      ARRAY_SIZE(regulator_names),
+
+There is still some room on the previous line.
+
+> +				      regulator_names);
+
+	ret = devm_regulator_bulk_get_enable(dev, ARRAY_SIZE(regulator_names),
+					     regulator_names);
+
+OTOH the logical split is rather to have the last two on a single line, but
+that one becomes too long, so your initial variant is okay with fixed
+indentation.
+
+	ret = devm_regulator_bulk_get_enable(dev,
+					     ARRAY_SIZE(regulator_names),
+					     regulator_names);
+
+
 > +	if (ret < 0)
 
-Do we need ' < 0' parts?
+Do we need ' < 0' part?
 
 > +		return ret;
-> +
-> +	ret = devm_mutex_init(dev, &data->vcnl4200_ps.lock);
-> +	if (ret < 0)
-> +		return ret;
-
-...
-
-> +	ret = devm_mutex_init(dev, &data->vcnl4000_lock);
-> +	if (ret < 0)
-> +		return ret;
-
-Ditto.
 
 -- 
 With Best Regards,
