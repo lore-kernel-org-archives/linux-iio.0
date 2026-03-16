@@ -1,79 +1,104 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.11])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6459372EE1
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 10:02:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.11
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79E39352FB0;
+	Mon, 16 Mar 2026 10:13:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773655346; cv=none; b=OmyPYgykEAp4boo47exUgMe1mU7uQCUi4bb7CPj70pKaqmUNEAGWI+h9PQGK2YsWfH1RwhRXejPtTJwOpyxvbMcuiscMP3lJpB2xqg9ecjXhyhqzW2UkvtE1EJy0dD8lDRmo1gvCzKxrHP8g3oiYEz+0JJBCsFJ3zBigez9uR1E=
+	t=1773656009; cv=none; b=mtpY8ZFph5U6au30xpf3ntUyl+ITkwr3cN0SPgSqXMcdoqHUFkLZpppSndT17sY43P25GvLNAptNsqDgyx++bQFBG0+DnDHOa00P66odSR5XzHKQAtIru5mClyQWR9T6VteogFeiLF09qF/lTR0alRtiD/wvV8S/7Xe9B1+RZxM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773655346; c=relaxed/simple;
-	bh=EFKD+QmGTn6WgiR7QrjkRkHKEsRIL6fQSqx89vschW4=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=bRVj0ISJsbFvflWB/37TIAVvYaRx6SCgM0UjqiNBSfQiAqRJwMVyFksSL4A/BnJBXzOswCB52VDF8pYZcQgQ2JNFtAMRPQFJ1sb+JyGKOMs4GN6R4mk8QJd0BezuWcZs0f+u8Um635e4Jg9xfmWKVnASduponJm4p8QC4vVf93E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GuvJOXFg; arc=none smtp.client-ip=198.175.65.11
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1773656009; c=relaxed/simple;
+	bh=uvmNUVeW05PxXKT9g2Z+LxiEzXQO/dH0eTByg8eVn/E=;
+	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
+	 In-Reply-To:Content-Type; b=ssNTsGohgZYngPIs79aKxiZphKr37eV9Oypao/hVTuXQ+dAeJLNNugDscfclkgKtgOkKlLioayQ6pVXX9kEv2rIHSSc02M8GuB0KgkrR6REyq6AtZWzbu8AM4uhy+ODdzfBec/BD7pJn/GBjFxjfZvad4RyEy4PZs7+RrB+dk3w=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lYtnYR7z; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GuvJOXFg"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773655345; x=1805191345;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EFKD+QmGTn6WgiR7QrjkRkHKEsRIL6fQSqx89vschW4=;
-  b=GuvJOXFgStPS5Dn7XcQ4ima/3Ghhhn9ynpqkbud598YtdxZf6Qd9DFMh
-   NYvsegsEVH3ZbWF628nrrzxmNbqzsj5lJAF6+UFo++0IkP2ova9k1tZeb
-   jVyFv4rCPp/PIPNDqoXWqux8GUf7S7z2QGl8KwantsVBrLboU2DaEPj1f
-   GIzmwlql+gpXenTnz8AuXRBvloNvAYHvKAYvhDoCLfoNONzQvqnaIUbgq
-   xzyH2halgfEsfUyVH7rykQb7FwEGlHyny6CyTZy17yPP8eMo5ns3Q6UKa
-   eyqYXd2k8MN/AgfGPTSrAZh08EczAfaLXeX6vwiRr7VX9Qr029TbCUHD/
-   A==;
-X-CSE-ConnectionGUID: FiiymH/rTu+UvkzEN5IlqQ==
-X-CSE-MsgGUID: saAzL2LtTfm5RxbwZ0spvw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="84983230"
-X-IronPort-AV: E=Sophos;i="6.23,123,1770624000"; 
-   d="scan'208";a="84983230"
-Received: from orviesa007.jf.intel.com ([10.64.159.147])
-  by orvoesa103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 03:02:24 -0700
-X-CSE-ConnectionGUID: FUfylNJqTvyxMatDDLq/vg==
-X-CSE-MsgGUID: alXt5BKGTwa+rvPHWZkW9A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,123,1770624000"; 
-   d="scan'208";a="222067629"
-Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.237])
-  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 03:02:22 -0700
-Date: Mon, 16 Mar 2026 12:02:19 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de,
-	Michael.Hennerich@analog.com, jic23@kernel.org,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: ad_sigma_delta: Format block comments
-Message-ID: <abfVKws8hF4bUbv5@ashevche-desk.local>
-References: <20260314111250.223788-4-giorgitchankvetadze1997@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lYtnYR7z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11CAFC19421;
+	Mon, 16 Mar 2026 10:13:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773656009;
+	bh=uvmNUVeW05PxXKT9g2Z+LxiEzXQO/dH0eTByg8eVn/E=;
+	h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
+	b=lYtnYR7zUf8+8AfVyh/A1n57n6tphcah6GFYj7Jo/9aIARfwXp8r6N6yEdvwIiYbA
+	 MxsfxmkmPUedlm8Clq0Ea6IoktbCDeemrI5SxPI05iqqaiJaFd1M5wKga64jjOdfqL
+	 u0UoX6DNe1pPlnr0HoWK09ICt0+LHOvFugc/iPJUaAIACExyipxDux3uhhfpyWSzmS
+	 iOaD+GXjRQJkb0kU7M6Ui6vq54TTDZLqzDErNCb/CV+DN4oRZQyjXrBfeDAyOZ/I0G
+	 GZ2uuCIhc4xw8jH17oTosyW78b3Sm8OyPtFEpmAIteJtNIbT3Vyi7Y14tl1CThSLp4
+	 dr7aI7fRPgSbg==
+Message-ID: <8fcc1419-266c-429e-b1bf-1799322eb69e@kernel.org>
+Date: Mon, 16 Mar 2026 11:13:24 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260314111250.223788-4-giorgitchankvetadze1997@gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+From: Hans Verkuil <hverkuil+cisco@kernel.org>
+Subject: Re: [PATCH v2 1/6] media: vidtv: Rename PI definition to PI_SAMPLES
+To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+ linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
+ linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Benson Leung <bleung@chromium.org>,
+ Guenter Roeck <groeck@chromium.org>, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ "Daniel W. S. Almeida" <dwlsalmeida@gmail.com>
+References: <20251107201005.3156118-1-andriy.shevchenko@linux.intel.com>
+ <20251107201005.3156118-2-andriy.shevchenko@linux.intel.com>
+Content-Language: en-US, nl
+In-Reply-To: <20251107201005.3156118-2-andriy.shevchenko@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sat, Mar 14, 2026 at 03:12:53PM +0400, Giorgi Tchankvetadze wrote:
-> Format the multi-line comment in ad_sd_set_comm() according to
-> the kernel multi-line comment style.
+Hi Andy,
 
-Assuming this is only a single issue of a kind in entire iio/adc,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+Just FYI: I'll take this patch. Regardless of the other patches in this series it does
+make sense. I haven't seen any updates to this series, is it abandoned?
 
--- 
-With Best Regards,
-Andy Shevchenko
+Regards,
 
+	Hans
+
+On 07/11/2025 21:02, Andy Shevchenko wrote:
+> The definition of PI in the driver is not the actual value in radians,
+> but rather degrees. Since we are going to have a value in radians
+> defined in a global header, rename this definition to avoid potential
+> collisions. No functional changes.
+> 
+> Acked-by: Hans Verkuil <hverkuil+cisco@kernel.org>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> ---
+>  drivers/media/test-drivers/vidtv/vidtv_s302m.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/media/test-drivers/vidtv/vidtv_s302m.c b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
+> index 9da18eac04b5..b3217d643b1e 100644
+> --- a/drivers/media/test-drivers/vidtv/vidtv_s302m.c
+> +++ b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
+> @@ -45,7 +45,7 @@
+>  #define FF_S302M_DEFAULT_PTS_OFFSET 100000
+>  
+>  /* Used by the tone generator: number of samples for PI */
+> -#define PI		180
+> +#define PI_SAMPLES		180
+>  
+>  static const u8 reverse[256] = {
+>  	/* from ffmpeg */
+> @@ -259,10 +259,10 @@ static u16 vidtv_s302m_get_sample(struct vidtv_encoder *e)
+>  		if (!ctx->last_tone)
+>  			return 0x8000;
+>  
+> -		pos = (2 * PI * ctx->note_offset * ctx->last_tone) / S302M_SAMPLING_RATE_HZ;
+> +		pos = (2 * PI_SAMPLES * ctx->note_offset * ctx->last_tone) / S302M_SAMPLING_RATE_HZ;
+>  		ctx->note_offset++;
+>  
+> -		return (fixp_sin32(pos % (2 * PI)) >> 16) + 0x8000;
+> +		return (fixp_sin32(pos % (2 * PI_SAMPLES)) >> 16) + 0x8000;
+>  	}
+>  
+>  	/* bug somewhere */
 
