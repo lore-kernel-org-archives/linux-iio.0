@@ -1,202 +1,149 @@
-Received: from mail-oa1-f54.google.com (mail-oa1-f54.google.com [209.85.160.54])
+Received: from mail-ed1-f52.google.com (mail-ed1-f52.google.com [209.85.208.52])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 88AE43CCFCE
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 16:44:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1DC683CFF5C
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 17:19:50 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.52
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773679489; cv=none; b=t2q8lgXg9KnXQImaRAUwCw4IDwuXMWbFQEUft8vNo8VhYTyVJFKWTZPQRpqzr1HQU/QFlnvBUYWQXMx8ZBcfTX+W/nO2f5BAZ/SSEFIOEwIoTE7awIx1Q0/m4yKQetrHuyC2DZ3oKrO4yTTov/MvAMm6pe1sLtYbLPWKpee6Jvw=
+	t=1773681592; cv=none; b=qc9/J2NwqdwU1wdOEl6Pp/n8Bi7HdFVrR+cp0Mwe1DRlOvE+BStLCoK5ailM0r1gTBIopjycefAu5tKx+vueiozFMOYCNR3NwVj0pYiwhRCJ+bcJn/PcVTNmz6L7v3XnWc9+0y9RFQkYxSUz+BvGALYQf2LyiWOHz1NjDdwcFYc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773679489; c=relaxed/simple;
-	bh=Tkdt6e6cnfyPY0SugtxYloHST0stO69sHMglYRTuOi0=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=C9QTNWhgoT7W+AFUPqXNP/RRQ9edu8/htee5vrU/VmiDiMRoNcc8473tER88JAnzAtYRhS19rS3pduzd2kylgDv5OqZe19BIagDMWfAU79M77STNDaseya18E+DfNoXgSWBmUJiwP4tg7CeVMzXGvpkKfTBh0bBY3quE/3kTelg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=iTFuv01s; arc=none smtp.client-ip=209.85.160.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1773681592; c=relaxed/simple;
+	bh=OOhWhIBktKoAtdZER1V9ZuKqMI9/xmuvVzeYZnJq6n4=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=Melr4DYtjYnWjtfnA71fnptU/ci/4DWIRAm3EDpW34OxYB9watwaWrdbHEILr107ZPiKi9SHNqsex9gVLa6cJb7j3oNyvYz+gRtwqBm2lY7q5s8cjB5EFLbAENztV2NgX2dzmOMjRMeIBpPNIFUZgaNMtDrjRVh2cFKP+xkMbVg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Vr4HZzbP; arc=none smtp.client-ip=209.85.208.52
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="iTFuv01s"
-Received: by mail-oa1-f54.google.com with SMTP id 586e51a60fabf-40ea36b56b7so3246288fac.3
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:44:47 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Vr4HZzbP"
+Received: by mail-ed1-f52.google.com with SMTP id 4fb4d7f45d1cf-666f646f5cfso745960a12.1
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 10:19:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773679486; x=1774284286; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=4AJTku3OJZDZ6/Kpiw5pDXaqosol7el2TXJoCn2CGLI=;
-        b=iTFuv01sWYT+Kv5MkQyWtJ5hj1yeq4H2sWPcTmnOjZwRc+VRQZ7HLoo2fAUEjJa8a/
-         I4yhutovyrIh0Dog60nItEsnan7+/ELbTB6P39HRFPutA0L8dFvynDwjMhb62zXzDEWD
-         BS4lYWyhk7AGsCOkEZPwBzG6N0PAyGTe2N60Vb/vbyecUzjYi/+48yd82Alg4IMdw4pm
-         0OLfZMCubL00ZTG7wVAhIEOHX1R0WqCIlOedtQw6oebgcXqKQvlviYMZoxB39oC3D/ox
-         KDa2sDZ7yrwt5sfO5JWymdSFM6P1uAGIkFlVoawdP+6UG49eY58kesVfjfH41MBQTljF
-         GreA==
+        d=gmail.com; s=20230601; t=1773681589; x=1774286389; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=ui4W/qmHAPpyDEXnX4wSdjce55+fYM+nlh/b/oydIMw=;
+        b=Vr4HZzbPRIhBCSXdcedBYQcXcnXvLcYpInye5TgPFvzjh1Cz7l5+Hyc2QW7qbYzkuH
+         kMjUhKZhe68ocfqRXvRQ/Qhw17+wZSO4S8HOhIcuUncz1hY5OLLa3BveQnBZaMg4Fi6c
+         VKgZsDv+sIGexmf7tDndmT3b2Y9G6Vo7yuNpqaMV9Evjbl2mRO8h5Fe19hWNkcM3+oOu
+         tWPwl24oV+DyG0D7AgsKoCFwGwaxF3HOgnoAw4/Hck0ddbxpnnHnCyVzh4osI6gsQ7ba
+         ri6olGIiazlE8ttTsa7HBoVK9QnaRW25FqzsTm4Lzz3g3wrYDwJZbjf9giv2iWxBc4/c
+         I5XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773679486; x=1774284286;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=4AJTku3OJZDZ6/Kpiw5pDXaqosol7el2TXJoCn2CGLI=;
-        b=BW0ydoeXs+OWpe4Jikyu2VsnSoDX2YUVJ5xMbshtr1v8n6It8CdRmHaYXsXV1jOm4p
-         5u5/YgjBnucF3vU3+JfxU83PKhFz3iA38pFxItWkvZkmblm2XBgr2T4ch7t7wbAET8LO
-         F4cLEP3wx3e+l0jYC0Bxb31JYS6gf1K6Xk6iqyRQhfI2vViAZDRNRQyRNJfM7mqCYC12
-         l2/boKOmQ+6X+Q9J6eFoz4CBMHlpAxPq6pXUbSsDxPu0oZC6jQMTxYQDg0xE6bA2mKFD
-         jlwwsKRDg+6qLm3sOQihsKCAOEziCfkjSU+M/iur9hjvIte7bSwIWcKF/htOwB0oNqWg
-         fpTQ==
-X-Gm-Message-State: AOJu0YzY2VDNs05vYRI0Kd0JRNI67epEKqTJesEBou3p+BHWfOtWuCNC
-	5Y4MPZtxgT4P4ekIE6fQ8Jy6coN0ntsiCqcXuLAy7UGa+gWrF3a9+PZdvsf8Q1TzZ+M=
-X-Gm-Gg: ATEYQzzApQ+4nbA4kg0+430JhjSwXeObtMKUlhw4+mBxAaGcB0174/9SMkCfAht8XfA
-	SRt9hRKvEwefqaIG7q0o5iXURClLqVhHRCDoygln4xsvK14xdQeXE1M11aH/ohkQt5u6xZzv3nB
-	03Irb728FM4j9SlM8S2ciJuqoLBq57b8lyM6vXE8KGr9/ttWmL44iTTr2FxHGq7ZuEYSWGRr0zk
-	ZG3f9gn7rUvjeltYgBfLdNPwYbUgc1Jy/41FofYBxi35f7zkdufVNVQDHOXfist6sbRapX26Ih9
-	V4AERCbokxPzT2o5ZAxVVqUAbr77Ig7Z6xx0pna0e7cP/Oq48cTxKuFZLJGU4Crb/N5HhohnI+Q
-	iyJ+PPUB/cHDOwGstis87M7rkRrqM0xUvvozioaUQLv9xDgCK0m2LrpwpXvmIu4SzEnQQ0GzwUv
-	0coe4pV7QrYhFl7H/lNHaRSlnEVfbyWZTYShWBe1cz/H/gb3ddBnlp1VdnGunRCTrs8g4c85agD
-	A==
-X-Received: by 2002:a05:6870:3b8e:b0:417:22c9:a311 with SMTP id 586e51a60fabf-417b902ecbcmr8375036fac.6.1773679486349;
-        Mon, 16 Mar 2026 09:44:46 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:e504:a034:1152:a664? ([2600:8803:e7e4:500:e504:a034:1152:a664])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177e69c79dsm15440675fac.15.2026.03.16.09.44.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Mar 2026 09:44:45 -0700 (PDT)
-Message-ID: <06b48810-f997-40a4-86db-d3b7db9dfc18@baylibre.com>
-Date: Mon, 16 Mar 2026 11:44:44 -0500
+        d=1e100.net; s=20251104; t=1773681589; x=1774286389;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=ui4W/qmHAPpyDEXnX4wSdjce55+fYM+nlh/b/oydIMw=;
+        b=VPJzkRrqAZo391kslUKGkIAYQcKrhIkndJaKXoPCXYKaZLfSQi+6jmzPcNMO//MTqH
+         Tzk/6Z0ibcqkPX00jNoizDA0NwRkgx04DxNpCxL1u/Z+mgKomy4lyiA1u68Y0MAi/mF8
+         tqbfRp01ueMl80LXnDCsFNvVjS1dfuDAIeT7AeuU1aSPcy4liuUd9Dir+j7RN5/r7mj/
+         HUfKqGy6oArGOQ6CbXSg0bl47lLL3YgjcVg+p+5NlfD14xwSmE1Q9DNhiJA5G2ua1QE+
+         utIX2EtK5Ib0g1aEk6bf3QkuBGb2v43Wx2aPlOl5tSh9uZUISV7Yy60FMBtL11aoZDIl
+         l1Cg==
+X-Gm-Message-State: AOJu0Yx3PEfy+zpuik5hN128ry2wUJwO8m2gTkbnAatQyyMCJiAgmURv
+	rfTJBpdxCdFg5YPX4RHvOpX1C+V0h1jtGkv4RtQoDT+p94KSsxgwmQV3
+X-Gm-Gg: ATEYQzwIQLXdliyiepmmBz0OvDcus4btFPG5fPRRmc7u9px41KtngI2cU/TnWdqV4up
+	/JH0CAwb01S6pV/9Vhd+V8MwU/DsZzMmesULS1Csmawua9CTURscI1BmQ68xcaFYWYW/Ye+xiSh
+	OVpZ/MgnIybVEldUS+VDGWWkUKmYyZXX7ZT5KvNK4tf4MEEkkddYKOd56d39yxyKuarfeLDfjA9
+	M4kWXbgc1PW11bomOPfeN3RUcGKpvp3YF062owqwBCortFtNVqzunfgx3CUHMP5MYQ8VmkDKcyr
+	IUG8ri38vQGmK8Te7nl+fLTet6oihaJ7XOenRozWEBOl1jzCdLnsXuqJYd9Okq6d7/OhBfWhGWJ
+	Q8Ne3w6dpH5hR7aKsIZFLI/L+hgv44GqQiSHnNgD4hVn3Ryx8VkP9Epsz712Z/imM3/DPuKvJSO
+	XIrE32aygSLygGbdqHtLoznk1Kjg==
+X-Received: by 2002:a17:907:86a5:b0:b96:e79f:194c with SMTP id a640c23a62f3a-b97d6e51416mr31543466b.31.1773681589204;
+        Mon, 16 Mar 2026 10:19:49 -0700 (PDT)
+Received: from [192.168.0.39] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b97846174cfsm505940266b.22.2026.03.16.10.19.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 16 Mar 2026 10:19:48 -0700 (PDT)
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+Subject: [PATCH v4 0/7] iio: light: vcnl4000: add regulator support
+Date: Mon, 16 Mar 2026 19:19:44 +0200
+Message-Id: <20260316-vcnl4000-regulators-v4-0-854fc2eaf54b@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 3/4] iio: adc: ad4691: add triggered buffer support
-To: "Sabau, Radu bogdan" <Radu.Sabau@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- "Hennerich, Michael" <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, "Sa, Nuno" <Nuno.Sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
- <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
- Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
- Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
- "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>
-References: <20260313-ad4692-multichannel-sar-adc-driver-v3-0-b4d14d81a181@analog.com>
- <20260313-ad4692-multichannel-sar-adc-driver-v3-3-b4d14d81a181@analog.com>
- <0bca5313-a968-48a1-9245-aeae25ab4187@baylibre.com>
- <LV9PR03MB8414E82D015E615DD64ADEFAF740A@LV9PR03MB8414.namprd03.prod.outlook.com>
- <7251a53a-100c-4867-ab4e-b7d2d019b26b@baylibre.com>
- <LV9PR03MB84146ADC269645000849795AF740A@LV9PR03MB8414.namprd03.prod.outlook.com>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <LV9PR03MB84146ADC269645000849795AF740A@LV9PR03MB8414.namprd03.prod.outlook.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/23NywrCMBAF0F+RrI1MHo3Flf8hLpJ02gb6kESDU
+ vrvTgtCkS7vcO+ZiSWMARO7HCYWMYcUxoGCPh6Yb+3QIA8VZSZBGlACePZDpwGAR2xenX2OMXH
+ na+FKC8KjYbR8RKzDe1Vvd8ptSNT7rE+yWK4/T+x6WXDgxjhqlB4Lo65Nb0N38mPPFi/LrSH3D
+ UmGdBU6550rSvtvqK2h9w1FhvLa6rJSYM5ma8zz/AVwnkZ4PgEAAA==
+X-Change-ID: 20260310-vcnl4000-regulators-bcf1b8a01ce6
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
+ phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>, 
+ Raymond Hackley <raymondhackley@protonmail.com>
+X-Mailer: b4 0.14.3
 
-On 3/16/26 10:56 AM, Sabau, Radu bogdan wrote:
-> 
-> 
->> -----Original Message-----
->> From: David Lechner <dlechner@baylibre.com>
->> Sent: Monday, March 16, 2026 5:38 PM
->> To: Sabau, Radu bogdan <Radu.Sabau@analog.com>; Lars-Peter Clausen
->> <lars@metafoo.de>; Hennerich, Michael <Michael.Hennerich@analog.com>;
->> Jonathan Cameron <jic23@kernel.org>; Sa, Nuno <Nuno.Sa@analog.com>;
->> Andy Shevchenko <andy@kernel.org>; Rob Herring <robh@kernel.org>;
->> Krzysztof Kozlowski <krzk+dt@kernel.org>; Conor Dooley
->> <conor+dt@kernel.org>; Uwe Kleine-König <ukleinek@kernel.org>; Liam
->> Girdwood <lgirdwood@gmail.com>; Mark Brown <broonie@kernel.org>; Linus
->> Walleij <linusw@kernel.org>; Bartosz Golaszewski <brgl@kernel.org>; Philipp
->> Zabel <p.zabel@pengutronix.de>
->> Cc: linux-iio@vger.kernel.org; devicetree@vger.kernel.org; linux-
->> kernel@vger.kernel.org; linux-pwm@vger.kernel.org; linux-
->> gpio@vger.kernel.org
->> Subject: Re: [PATCH v3 3/4] iio: adc: ad4691: add triggered buffer support
->>
->> [External]
->>
->> On 3/16/26 8:22 AM, Sabau, Radu bogdan wrote:
->>>
->>>
->>>> -----Original Message-----
->>>> From: David Lechner <dlechner@baylibre.com>
->>>> Sent: Saturday, March 14, 2026 8:38 PM
->>>
->>> ...
->>>
->>>>> Both operating modes share a single IIO trigger and trigger handler.
->>>>> The handler builds a complete scan — one u32 slot per channel at its
->>>>> scan_index position, followed by a timestamp — and pushes it to the
->>>>> IIO buffer in a single iio_push_to_buffers_with_ts() call.
->>>>
->>>> It would really help here to see some timing diagrams to know if we
->>>> are implementing this right.
->>>>
->>>> For example, it isn't clear that in clocked mode if CNV triggers a
->>>> single conversion in the sequencer (i.e. IIO_SAMP_FREQ should be
->>>> info_mask_separate) or if it triggers the sequence (i.e. IIO_SAMP_FREQ
->>>> should be info_mask_shared_by_all).
->>>>
->>>
->>> The CNV triggers the sequence and IIO_SAMP_FREQ is
->> info_mask_shared_by_all.
->>>
->>> As per datasheet page 31 (Accumulator Section), when each accumulator
->>> receives a sample, the ACC_COUNT is increased. In clocked mode we
->>> are setting the ACC_COUNT limit to 1, therefore having one sample per
->>> channel (no oversampling as discussed in previous versions). So each
->>> period of the CNV PWM is respective to one sample of a channel.
->>
->> Assuming that "a" channel means "one" channel...
->>
->> In this case then sampling_frequency should be per channel (separate).
->>
->> A sampling_frequency that is shared_by_all means that each period of
->> CNV should trigger one sample each for _all_ channels. In other words,
->> the sampling frequency gives one complete set of samples for all enabled
->> channels pushed to the buffer.
->>
-> 
-> Oh, ok then, will have them separate. I assumed that since the PWM period
-> is constant with each pulse, then the sampling rate will be the same for
-> each channel, thus having them as shared_by_all, but I assume you are
-> right about this in this case, I will have them as separate in this case, the
-> update will happen in the previous patch upon next version.
-> 
-Does the sampling stop after one "burst" (reading each enabled channel once)?
+This patch series introduces support for voltage supply, I2C and cathode
+regulators. This fixes an issue where if a regulator is shared between
+the proximity sensor and some other device, and the other device is
+powered off, the proximity sensor would be powered off as well.
 
-If yes, then what controls when the next set of samples starts?
+One of the commits includes a Reported-by: tag without a Closes: tag -
+the report was done outside of LKML.
 
-Looking at Figure 63 in the datasheet for CNV Clock mode, it looks like it
-depends entirely on how long the SPI message takes. So the actual sample rate
-is going to be quite random instead of the sum of each channel as the IIO ABI
-says it should. It seems a waste of the PWM to do it this way since we end
-up with a random sample rate.
+Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+---
+Changes in v4:
+- Reworded device tree bindings commit into imperative mood and
+  clarified where do supplies come from.
+- Moved data->chip_spec->set_power_state() calls from init functions to
+  probe.
+- Removed explicit less than 0 checks for ret where unnecessary.
+- Moved the patch that adds regulators to the end of the series.
+- Added an explanation for removing duplicate prints in probe.
+- Fixed indentation for devm_regulator_bulk_get_enable() and i2c_smbus
+  writes in vcnl4200_init().
+- Removed a redundant check for "proximity-near-level" device property.
+- Link to v3: https://lore.kernel.org/r/20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com
 
-It seems to me like the CNV Burst mode would actually be better suited to
-how IIO usually does things. In this case, the PWM frequency would control
-the effective sample rate (one PWM pulse triggers one complete set of
-samples) and the internal oscillator controls triggering each individual
-conversion.
+Changes in v3:
+- Added a more detailed description for supplies in the dt-bindings commit.
+- Separated sorting includes into a commit of its own.
+- Replaced all occurrences of mutex_init with its device-managed
+  counterpart.
+- Moved client->dev variable declaration into a commit for adding
+  regulators.
+- Removed redundant dev_err messages in probe function.
+- Replaced all direct usages of client->dev and data->client into usages
+  by variable.
+- Link to v2: https://lore.kernel.org/r/20260312-vcnl4000-regulators-v2-0-2bdebbcbb58a@gmail.com
 
-In this setup, we would still have the info_mask_separate IIO_SAMP_FREQ,
-but it would control the internal oscillator. Then we would have a separate
-buffer0/sampling_frequency attribute that controlled the PWM frequency.
+Changes in v2:
+- Removed double quotes in includes.
+- Reordered includes alphabetically.
+- Enabled regulators before the mutex is initialized.
+- Replaced direct usage of &client->dev with a variable.
+- Link to v1: https://lore.kernel.org/r/20260311-vcnl4000-regulators-v1-0-66b6038ce563@gmail.com
 
-Then, as long as the PWM frequency was slow enough that the SPI message
-can be done, it can make samples with almost no jitter. This is why I would
-expect PWM to almost always be used with SPI offload though, otherwise
-it has to be quite slow compared to what the chip is capable of.
+---
+Erikas Bitovtas (7):
+      dt-bindings: iio: light: vcnl4000: add regulators
+      iio: light: vcnl4000: sort includes by their name
+      iio: light: vcnl4000: move power enablement from init to probe
+      iio: light: vcnl4000: replace mutex_init with devm_mutex_init
+      iio: light: vcnl4000: remove error messages for trigger and irq
+      iio: light: vcnl4000: use variables for I2C client and device instances
+      iio: light: vcnl4000: add support for regulators
 
-I suppose the CNV Clock mode could also be made to work with the typical
-IIO trigger so that we could control the actual sample rate. It just
-wouldn't be as precise.
+ .../bindings/iio/light/vishay,vcnl4000.yaml        |  7 ++
+ drivers/iio/light/vcnl4000.c                       | 90 ++++++++++++----------
+ 2 files changed, 56 insertions(+), 41 deletions(-)
+---
+base-commit: 6e03baeeb160e6cfd72f2c39f26c50bcd925c7a0
+change-id: 20260310-vcnl4000-regulators-bcf1b8a01ce6
 
-
-
-If you have some examples of how this chip should actually be used in the
-real world, that could help pick what is the right thing to do here.
+Best regards,
+-- 
+Erikas Bitovtas <xerikasxx@gmail.com>
 
