@@ -1,63 +1,63 @@
-Received: from mail-pg1-f182.google.com (mail-pg1-f182.google.com [209.85.215.182])
+Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C23E382F3A
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:01:30 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ABAED386431
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:01:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773651691; cv=none; b=OuIBzax29WSFfFZeO/AN0kUa0XB4YbicU1F48wSAgZQGvlRcq7C9+F+cGviK7Jk+WWSS9rwT+06lM3uLWhkQb4sA1U3UM4/nKysEBBECJvazEspie+yEiUmRUgcs9b+XngKIRnj9F+5yKF73PV1XzoCVhO+VfWF6R5vRzf/MFOc=
+	t=1773651697; cv=none; b=EQtYE7PWgpz1dTbqEi1PKAruEZKBx4L45/HA0jAPbD19Ab6bdYiFR42qZUcK3gCirUq/WsVfTIyjTSIJlF2mZLlWxPvYB94obGbZotcdOuEzSbTf0j9tHP0JHfhFkaz6egSVCc/4FizWCp5kF5+MvKUJUS4R0rT/0sUNg1DvrUk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773651691; c=relaxed/simple;
-	bh=Gs3zY5KGIX2nqhc8WqfOuJGK/XKU9gPfWtSK30NEYMY=;
+	s=arc-20240116; t=1773651697; c=relaxed/simple;
+	bh=vnlTaEbQkXcBVgZJUSBKKiGJHSj2+ifIboa8T73l4/4=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=AbEUK8l8Z+lME18WWfIPhyhfINiySwidYIIeGXdonl8uhWb/VdYvA1xkbAZvQuqo579Z0PHYLuPP5uSGjsNn1ihPpvfNd52s6RCPtCbZwP/VCdtnmHwlGPkxY3Q3XCyj/IRMDJGXJRmCf2FZkxioK6+kxHsTtyGZ2MDSG6BR/I0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=iXd1NnMj; arc=none smtp.client-ip=209.85.215.182
+	 MIME-Version; b=RWlxOK5KOnO8KfcquvDasl0scS79WLR3MX0WsyfufLTQmkZti1vuqYKH8XwkwTcCwaDEfRsrecBcMoOXbQJsoR9gYKcJyoMFggGLP0s15FGC7dz5pyrRmfe+uVU1yfBA+q7O1ogtG6zuXYFDOKOBhoVpYBUYruE2AVXIBJADFVw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=kZQk2aTW; arc=none smtp.client-ip=209.85.214.177
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iXd1NnMj"
-Received: by mail-pg1-f182.google.com with SMTP id 41be03b00d2f7-c73e9e4cdf7so1126938a12.2
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:01:30 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kZQk2aTW"
+Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2a9296b3926so34083355ad.1
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:01:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773651690; x=1774256490; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773651695; x=1774256495; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=m0s6VZrlSaFsXdqFp8sXze64L79nq0Bq0Ita9pFkYx0=;
-        b=iXd1NnMj2hFH4Ss2JgGFOVZR0bijD6/APEsEvq3ZBjN2kiprEfL1wstVBFCLTHved8
-         vpuyiGlTXBWt066MRcWMS88+Zao6jvc+DUdeOzwO9R/veIwbbulrmZ2DieUZ3KErmXdm
-         dfQKpE/YeZx9nA2PDnO8AGYER5Y6XwRpbgcuwtofwEIKWsFslyJifyaTTk8jd+TMEfkl
-         xK3K5bYaVPFWMkD7YcZhd1UsjNSs/UTNgeoo79NwALbWXGz+hHVw8ofHm8Glhuh+d8DW
-         5VMF0nX/CWyAv4E7qrT3SSE6a4brS/LhB3GEncaUqpBWHPP0lFwqUmdMXX+9ZFsC+/iK
-         TGsA==
+        bh=GX7xNcVJfH3cNiHUfSF4zy1INoYYmvBzCMNf3iU2VD4=;
+        b=kZQk2aTW1jkZhDx8DCIi4WzgfvkqDFCL8R5ODww5eJZzO2uUHrnwid6MDZe9yVdRyv
+         2U1308bhZ5ocXKOV3Hl8A9G/V9LVCt/xmL2VJR8Zq4X3sFZ7xiT4sfd3KaJ8K01EHjxl
+         P/oNgwoIQ3X8ztBCABDVMeNoPi51w2niTWRdc8Q8EJHjmAXSpThZj6Ns1LXa8KeGCrlF
+         vZI0TCuGgUuwWYKC7Ecomj51bUlHr9D+Z24o4VLzghN8OFQtNvNkUpFbdqJg47tdK05F
+         pPXTWTf5A9DPZZXSwUWTsJ4HWDqfiTz4DjEzUJNPdr4m0SbMh03/IVTOyouK9bRWqCsJ
+         D8tg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773651690; x=1774256490;
+        d=1e100.net; s=20251104; t=1773651695; x=1774256495;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=m0s6VZrlSaFsXdqFp8sXze64L79nq0Bq0Ita9pFkYx0=;
-        b=W/glA4UeSUHe9kPWX5jiHbLUatDP2E+5AejRyZoi6yhOrFAzEZqu61hGKXK1cbgNmz
-         XKpjWy7gyOKLS4Z4stjhQReOmvzfp3UhwdWjeXPLCkmoBznienSCmisXIYQuYAMhxXtB
-         bevSRicXasXlUQ2a4jnOgFH9o0Lvwaxu9Of/646wwubrz31Dy6DtlhXGx3sisAAozF8z
-         T+XmmkVFFbPDrhT6a6ZRnyvWWJCqD23Y3fNvowYRSKO6XixlLdvkNHsAuW9rvEk3nBfA
-         oDIq1ctXGPBUswKfH3U4chPD9qrH3Xn4MqzfD9zyAsMJi+54fx7xViR59ZL1XUMsND+r
-         Sdzw==
-X-Forwarded-Encrypted: i=1; AJvYcCUXO9hkIYbZm7+eBUXtTauTlOYPt4O6cNyWY3OvHccYGEVwe8OJBtmyATgS4c29FSvRCIh8KktDIsM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxSVQFQmUX8WQYYXnuv78ehZrX3KXm6uCqlTBG2K+V49/grQONY
-	scfZ+2dhKAyAOuwCnVkpiVcwGCkgWOT8QiJNtYD3reBfF1DxH9PnS3ys
-X-Gm-Gg: ATEYQzyRSomVfjYKF61zFrp6YzqUTTjiayZ66FT8d4kN5VUrUbWF+GCtYxyHfLgC6tM
-	X1ecdyMfO+6JvlzUqpskJTmoHb3jCnwxD2wILD+YJXJPulbBItSeg6howBtJ/wBc0u7dYQNnG4R
-	I+CuIAdRz5qYt5Ut2LV+Lqdbtd8yEDgR6pBxKp1xiQrUOLB2gjmJ/k9KdrOaxrdJNJdp3jyI0xn
-	Hdwwjw0I04+b9haO7nq7ZpZueDn+DqFLB/8NAmfqiZcq6rNrWV6nKq7+7OnKIWOyBo9jJVXm+Ij
-	S1aWkTC8t4wnZC7D12lDFRdkbyuGpcgdivnH9/cFhyHsA3aKE1IbxuD+IsGiyb08vdtxmNZyFjw
-	h7s+vCH/tJ67dMWlw/Rv0bfpVlb+CM1Kbrimz2jXBVKHBJGy/UxRI/aVyzSk6oVB3OTKG6BxE9t
-	pF150RPztWWXe5DbKFCoqhpdwp
-X-Received: by 2002:a17:903:189:b0:2b0:5520:f49c with SMTP id d9443c01a7336-2b055210a7dmr34736375ad.25.1773651689804;
-        Mon, 16 Mar 2026 02:01:29 -0700 (PDT)
+        bh=GX7xNcVJfH3cNiHUfSF4zy1INoYYmvBzCMNf3iU2VD4=;
+        b=nFnpjpzwCD+twL1IDLgBs2/fdpB/1FnRxH8lBdCpJrFQlQdkk7tSZ2Tw60Htj6eEuC
+         FGMx+zZPNxli2WyBTQX0Wqr4ao6CM2eyHGJbPSdnGXO0RhSqcjiYS8OUNn9zl4pBLy36
+         qjWovw7y9HeIpoQ82Uo7M+xqIcFX9jBzOdd7nxsdR6i8lGGMoZNzqz7kMCuzo6TFDwms
+         JJB8YD5SnvSUSG5Yy6tJHBgxP9Mahk/rhsmSGDP+biI4R/0JR9D2RAbYzwAWlfXFJdwx
+         zbMJXdGwnzgEwRB7DkFM/h+AM5pRdtnuP0bXZBvV5Gjd2rN0nCgIH5nbMv4dBCQjsZog
+         g7Cg==
+X-Forwarded-Encrypted: i=1; AJvYcCXTZGNVhEThWefNNvvjgSDK5EXApuycfDJ8klf0rPINHfhO8bMAE7k5qQyNxzU4FzrbyARjmokR7k0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxHwCestQmSnMfbG05bjqdOSh9cne09T3F2DhAVnzCOPtgbxC0d
+	nBlCs0yj6f8egYnXsFLN4Pyg9vKpMsvhFMXqsFE8gsiEqbtVwuQkzTXi
+X-Gm-Gg: ATEYQzz0QP3me2Db8U+uTt6dxfW3yunx/ARgNrMbgJ1V+zxpAOdM2ysMxb+ZeYM6hI1
+	07UprI5hQSPDwC3ny3hgDDjysYb1fRPd5qXDMRbn/CRgoHSyjLWNJHZq5NN5xtaMmC6t4AWIH5+
+	86zJPVlxaQtmMt79aRAPGiANTyngJa7KYpV6Owh5meSTc2nchAVmWN4jMTyUrjcxyf+eZqoKRd5
+	8FBQUQp36c57t9hqfr6x9qSCiHNpCWEgTwNuAkxLlGXWyxvv95rkB0KyiQJSmgk47cQ6ZVatFvj
+	HYs7mTIs0VRKAGiBaRQuq40WTn8Pv1YxAUssjwqxCMMUO4k8C8SAo4rw/fa7OczWVJCMjtTgK2x
+	WceHxF+hQAeV0dcMRPyCGQAzkfSOQYOtnirzSmV0U94sKBJtS6Tv1ap9jZs7w3dynNpK9EuZh2U
+	aAFnz08YC6Z7xoxnFgm6y2nw7V
+X-Received: by 2002:a17:902:d542:b0:2aa:d60c:d48a with SMTP id d9443c01a7336-2aeca967d83mr133924975ad.7.1773651695002;
+        Mon, 16 Mar 2026 02:01:35 -0700 (PDT)
 Received: from fedora ([2401:4900:1f33:4eeb:289f:fcde:6da5:35e3])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.01.24
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.01.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2026 02:01:27 -0700 (PDT)
+        Mon, 16 Mar 2026 02:01:34 -0700 (PDT)
 From: Shi Hao <i.shihao.999@gmail.com>
 To: jic23@kernel.org
 Cc: andriy.shevchenko@intel.com,
@@ -68,9 +68,9 @@ Cc: andriy.shevchenko@intel.com,
 	linux-kernel@vger.kernel.org,
 	mazziesaccount@gmail.com,
 	nuno.sa@analog.com
-Subject: [PATCH v5 09/14] iio: temp: fix spelling mistakes in comments
-Date: Mon, 16 Mar 2026 14:30:17 +0530
-Message-ID: <20260316090023.14691-10-i.shihao.999@gmail.com>
+Subject: [PATCH v5 10/14] iio: test: fix typo from neeeds to needs in comment
+Date: Mon, 16 Mar 2026 14:30:18 +0530
+Message-ID: <20260316090023.14691-11-i.shihao.999@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260316090023.14691-1-i.shihao.999@gmail.com>
 References: <20260316090023.14691-1-i.shihao.999@gmail.com>
@@ -82,37 +82,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Fix spelling mistakes in comments.
-
-- catched -> caught
-- chanel -> channel
+Fix incorrect spelling from neeeds to needs.
 
 Signed-off-by: Shi Hao <i.shihao.999@gmail.com>
 ---
- drivers/iio/temperature/ltc2983.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/test/iio-test-gts.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-index 7dd40d69cce6..38e6f8dfd3b8 100644
---- a/drivers/iio/temperature/ltc2983.c
-+++ b/drivers/iio/temperature/ltc2983.c
-@@ -709,7 +709,7 @@ ltc2983_thermocouple_new(const struct fwnode_handle *child, struct ltc2983_data
-		ret = fwnode_property_read_u32(ref, "reg", &thermo->cold_junction_chan);
-		if (ret)
-			/*
--			 * This would be catched later but we can just return
-+			 * This would be caught later but we can just return
-			 * the error right away.
-			 */
-			return dev_err_ptr_probe(&st->spi->dev, ret,
-@@ -798,7 +798,7 @@ ltc2983_rtd_new(const struct fwnode_handle *child, struct ltc2983_data *st,
-	 * For 4wire RTD with rotation, the channel selection cannot be
-	 * >=19 since the chann + 1 is used in this configuration.
-	 * For 4wire RTDs with kelvin rsense, the rsense channel cannot be
--	 * <=1 since chanel - 1 and channel - 2 are used.
-+	 * <=1 since channel - 1 and channel - 2 are used.
-	 */
-	if (rtd->sensor_config & LTC2983_RTD_4_WIRE_MASK) {
-		/* 4-wire */
+diff --git a/drivers/iio/test/iio-test-gts.c b/drivers/iio/test/iio-test-gts.c
+index 11250bc905c9..6ffff85ba853 100644
+--- a/drivers/iio/test/iio-test-gts.c
++++ b/drivers/iio/test/iio-test-gts.c
+@@ -20,7 +20,7 @@
+  *
+  * If yes, then adding a test is probably a good idea but please stop for a
+  * moment and consider the effort of changing all the tests when code gets
+- * refactored. Eventually it neeeds to be.
++ * refactored. Eventually it needs to be.
+  */
+
+ #define TEST_TSEL_50		1
 --
 2.53.0
