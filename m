@@ -1,110 +1,131 @@
-Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com [209.85.221.169])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EA7B83DBD60
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 18:26:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.169
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 10B803DEAF8;
+	Mon, 16 Mar 2026 18:31:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773685592; cv=none; b=XbqC5jB4AlDLdO/Hko4HEZqUir5KzohoaA66+SKf1beOaeIqLjT86n2Ph1xtQ+Xa/miMmXVsIj0UW7VAfYCNcC5EjYDVTo75i/oUKJDwydrRlQcvHdX6a0e3X4tOr+ySHVNKMTYQZoT65jTgKuagI09pixVj5VTJHlmeSwa+QBw=
+	t=1773685886; cv=none; b=Ysy5HvlWTmmAoZuwQr+g2cXyE9Hnd40jjXupeqnkTAT+9JYW6W2A20IcFv8pgp9oqxuM+uEASIRgU8VKGxeNdwges9RMOMLykow9Fn3+aHWdZgP4TY1cE4KYVqRBh+RJX6zVNYFV5khNuenmcsSMGIuWtadf21v/dfcvUW//UnA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773685592; c=relaxed/simple;
-	bh=eLT608Iu65e75yFDY2ephL+DnmrFksL+EdNUoRvOM1w=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=Q3sjyuKMma6/38Y7rReOrWwMz1BIoIkzvjymsraMx3p6WKxOo3MDhZTra+0pSrNQ9jdyUrCjzEoY9CPUw4My1kqB63YsWhok3OazHqjV2v6NdyHLwWJDnj1Lv525LE7b/pklKqBdZ6PsU7/1VwdootKvLi16m98gCD8VtoVZZh4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.169
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f169.google.com with SMTP id 71dfb90a1353d-56b71eef805so831436e0c.1
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 11:26:26 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773685585; x=1774290385;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=vpQ1JDIESkHS70bwkrVznor7mYifAlL8o6+MvzPijrw=;
-        b=EK58hWIME7G5BWnvF7hX1t4z+ayLyMKe/XO7fA4NrLa+kAOKrsmLrabKqeYK4u67T9
-         WBGVtlRhEj3UbNxZ39m4GnNm+P10K/8B06A7+Ua0vheUFv0GbMyLs13nhdvbYSHVNHiu
-         8Z1Zq4hOBrA1Gu6V9JneLUS5O+NTpdcnNNgDeps4o/3eRE9YyW4X2DTk1yiMATgGk823
-         5vQUpMpfBBozBI/aLaoaGdMAjktlthnfSNEU9rs8pvtDq03+uwHTY4YEg7aAIum9k+Cm
-         TbiMMnUfm/m3kH6oTTfbSUa1GdaYlhmHSPukmYQEwVclIAD5ZwO40pPLc3aVWpg/NkQK
-         xIaQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXpwlrQVeloYMVP+k6XJWciPal4t5vVWzRxfEzPRnJXkWMGDjBhUW9g2cqh1AcYHHMdIgn4LMf4BjY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx9HwG3WPOa70G/TCqKlUYtc2iUcp998zcRz15Hc9homixGF2du
-	y9G7WGEi37vQXxPQioMTmKgI3JsBT8epfOAxFJEGm2FhtkUY1F9qjQsRtaG7v7od
-X-Gm-Gg: ATEYQzy9hGE7rjGMxLFVbj8JPpEzZIe5u2yzjukuyD4cEnoQMqdClEpA2Mzw4MWR6cS
-	tl6ab4TEPOfq4vMtL6SDusJ0e//xztAjZjKq71Ovr7DcqJY6ygb18ZU5LqlQRx3MKOCqleKBTfm
-	mlG6ksjDbKSenf06HLra/G8z9o7QZvifB65F1Ky5MMejl0oY1V/4R/Gg4DxJe9PZci3ewzoGrdJ
-	BwWIMJP89b/+gJXaPoZofDrHK1dHng4HJAsThkWsYNUJQfB68uPoR+PDM/Ekw4LRE4N3VMtzNJs
-	Qrx80avi9nRZ2FMNyOnXBxAwWHgKA7qlxasqay7pvIfqb+07WLlCZZTCcGKq9Xy5xaP0+GUrZjl
-	dZPlsnL2oVUxsX1tJGLC0kojJh62gPXcHAqUuz/QnPlumejArddGwTZC3Wy2IomGGSfQakfvkMa
-	kdk7lHxH9PIjQfYLTOSYRw+G8j8L6ALbgaobSzAXo7rv8LsxLusFsiJLnzjoeySLZriZ/luVtX6
-	RE=
-X-Received: by 2002:a05:6122:17a1:b0:56a:9401:11eb with SMTP id 71dfb90a1353d-56b627f077bmr4855168e0c.2.1773685585517;
-        Mon, 16 Mar 2026 11:26:25 -0700 (PDT)
-Received: from mail-vk1-f175.google.com (mail-vk1-f175.google.com. [209.85.221.175])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56b463510a5sm7993917e0c.8.2026.03.16.11.26.24
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Mar 2026 11:26:24 -0700 (PDT)
-Received: by mail-vk1-f175.google.com with SMTP id 71dfb90a1353d-56afbcd8adbso2191014e0c.2
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 11:26:24 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCX3GRObLp/N08YAHqaSV2DsBrxcA5xjrw/IfbxqRQWh4OkHOq/xQlNtL/lp+uRGpK5xLIsFhaCRRxw=@vger.kernel.org
-X-Received: by 2002:a05:6122:6286:b0:566:2711:d8ab with SMTP id
- 71dfb90a1353d-56b628474b4mr4749468e0c.6.1773685583889; Mon, 16 Mar 2026
- 11:26:23 -0700 (PDT)
+	s=arc-20240116; t=1773685886; c=relaxed/simple;
+	bh=/341tmVA/vpTq4iA3KHxWy3dIVN8HL9NUtzjrYa2B9g=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WZawGH9KuRiWGZkGEj+ODcINd0UX4VdC1jd+JGn0ya99XFs7mDGk/+GK86j8nI2SFEf0X7hezKFhHiVkiKrqDdE9HlaiXOyp3W9oOOoAbKRjrQJ1coqoy1AWzZVYVbH4mQt6K/KmVE7kbta6ceUL5+NLWssb3p17BXLmvWb01MM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=ZVJJM4Ib; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="ZVJJM4Ib"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F31C19421;
+	Mon, 16 Mar 2026 18:31:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773685885;
+	bh=/341tmVA/vpTq4iA3KHxWy3dIVN8HL9NUtzjrYa2B9g=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=ZVJJM4IbGffu4trVq1isJYCU8TdMCMY7r2VW59pT3w8bDuPmUJLr++K9bsfiOwpEM
+	 WR1gqU/bI09hxvYkcOPOeW4YLm38t1LRn76MXcvnNPj+b5hwkFPz0VrVH4IMtikp0q
+	 w6gkQc3U1neiXM4mojcEet4ixogI9nQOu1eEzgMX93j9VmFNYpP2cMteA3EOBj8OSS
+	 ii+zQjPINrt8ZpcIqLry8nOgywuT63H38VPSADSJBW/PGAQpl+zb/K1jXD8XVwKNg0
+	 Idb89JOLotC2o7T3AnUMn37w1uLd0TVo7FE63rUU6Tj9AvO5Ix+REcuFOe0Pr50oNl
+	 Nt9g92qZR6hzg==
+Date: Mon, 16 Mar 2026 18:31:17 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Matt Ranostay <mranostay@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: ti-adc161s626: use DMA-safe memory for
+ spi_read()
+Message-ID: <20260316183117.4dde7386@jic23-huawei>
+In-Reply-To: <20260314-iio-adc-ti-adc161s626-fix-scan-buf-v1-2-56243b11e87b@baylibre.com>
+References: <20260314-iio-adc-ti-adc161s626-fix-scan-buf-v1-0-56243b11e87b@baylibre.com>
+	<20260314-iio-adc-ti-adc161s626-fix-scan-buf-v1-2-56243b11e87b@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
- <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
- <aaqTVDQa7xn70bR_@monoceros> <TYRPR01MB156191C8E77BDA44AE23A7D4F857AA@TYRPR01MB15619.jpnprd01.prod.outlook.com>
- <TYRPR01MB156192CC838EC0B3DD66246158540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
-In-Reply-To: <TYRPR01MB156192CC838EC0B3DD66246158540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Mon, 16 Mar 2026 19:26:12 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVqqGTmxiKRQBbphw8KmtG66HLaZhDVvtSK81cfiMsXcQ@mail.gmail.com>
-X-Gm-Features: AaiRm52-cBzLFzQh3BVzaTMxkTLnHu9mSUGosGUtI9IHFak7XQqS486mq62zz2g
-Message-ID: <CAMuHMdVqqGTmxiKRQBbphw8KmtG66HLaZhDVvtSK81cfiMsXcQ@mail.gmail.com>
-Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd channel
-To: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	Biju Das <biju.das.jz@bp.renesas.com>, William Breathitt Gray <wbg@kernel.org>, Lee Jones <lee@kernel.org>, 
-	Thierry Reding <thierry.reding@gmail.com>, 
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, 
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-Hi Cosmin,
+On Sat, 14 Mar 2026 18:13:32 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-On Mon, 16 Mar 2026 at 16:52, Cosmin-Gabriel Tanislav
-<cosmin-gabriel.tanislav.xa@renesas.com> wrote:
-> static int rz_mtu3_sibling_hwpwm(u32 hwpwm, u32 *sibling_hwpwm)
+> Add a DMA-safe buffer and use it for spi_read() instead of a stack
+> memory. All SPI buffers must be DMA-safe.
+> 
+> Since we only need up to 3 bytes, we just use a u8[] instead of __be16
+> and __be32 and change the conversion functions appropriately.
+> 
+> Fixes: 4d671b71beef ("iio: adc: ti-adc161s626: add support for TI 1-channel differential ADCs")
+> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> ---
+>  drivers/iio/adc/ti-adc161s626.c | 19 +++++++------------
+>  1 file changed, 7 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti-adc161s626.c b/drivers/iio/adc/ti-adc161s626.c
+> index 1d427548e0b3..6416d6a7ada0 100644
+> --- a/drivers/iio/adc/ti-adc161s626.c
+> +++ b/drivers/iio/adc/ti-adc161s626.c
+> @@ -70,6 +70,7 @@ struct ti_adc_data {
+>  
+>  	u8 read_size;
+>  	u8 shift;
+> +	u8 buf[3] __aligned(IIO_DMA_MINALIGN);
+On this. There is new generic infrastructure for marking these.
+https://elixir.bootlin.com/linux/v7.0-rc3/source/include/linux/dma-mapping.h#L720
+https://lore.kernel.org/all/01ea88055ded4d70cac70ba557680fd5fa7d9ff5.1767601130.git.mst@redhat.com/
 
-Unused sibling_hwpwm?
+Would look like
+	__dma_from_device_group_begin();
+	u8 buf[3];
+	__dma_from_device_group_end();
 
-> {
->         if (!rz_mtu3_hwpwm_is_primary(hwpwm))
->                 return hwpwm - 1;
->
->         if (rz_mtu3_hwpwm_is_primary(hwpwm + 1))
->                 return -EINVAL;
->
->         return hwpwm + 1;
-> }
+Do you think we should adopt them rather than doing our own thing?
+Slowly though I don't want the noise of a mass conversion.
 
-Gr{oetje,eeting}s,
+As normal, advantage of standard infrastructure is cutting down
+in subsystem specific magic.
 
-                        Geert
+I 'think' result is the same (though it also forces the trailing padding if anything
+comes after this and needs it).
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>  };
+>  
+>  static int ti_adc_read_measurement(struct ti_adc_data *data,
+> @@ -78,26 +79,20 @@ static int ti_adc_read_measurement(struct ti_adc_data *data,
+>  	int ret;
+>  
+>  	switch (data->read_size) {
+> -	case 2: {
+> -		__be16 buf;
+> -
+> -		ret = spi_read(data->spi, (void *) &buf, 2);
+> +	case 2:
+> +		ret = spi_read(data->spi, data->buf, 2);
+>  		if (ret)
+>  			return ret;
+>  
+> -		*val = be16_to_cpu(buf);
+> +		*val = get_unaligned_be16(data->buf);
+>  		break;
+> -	}
+> -	case 3: {
+> -		__be32 buf;
+> -
+> -		ret = spi_read(data->spi, (void *) &buf, 3);
+> +	case 3:
+> +		ret = spi_read(data->spi, data->buf, 3);
+>  		if (ret)
+>  			return ret;
+>  
+> -		*val = be32_to_cpu(buf) >> 8;
+> +		*val = get_unaligned_be24(data->buf);
+>  		break;
+> -	}
+>  	default:
+>  		return -EINVAL;
+>  	}
+> 
+
