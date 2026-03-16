@@ -1,105 +1,179 @@
-Received: from mail-oi1-f172.google.com (mail-oi1-f172.google.com [209.85.167.172])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D1DE32D593E
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 14:40:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1477F2D77EA;
+	Mon, 16 Mar 2026 14:41:49 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773672008; cv=none; b=EdjL4wr3DWI+Ze6x0O8w15YsFnVCV5DYtU21YRqY08Rc9xq+6PAMUGNTPlbU0ZYQvB9kWuC820axusCSzXFfaRojkxy9PoSbfTrFBjsK6IaLx8L6xrsPsu1Uv3em+nSNQm5LhM4P4jbHeVHoq9itoh1qqAryDe7sFKS4DawvXbk=
+	t=1773672112; cv=none; b=RmgfP9gS7g2ErRlvsuy+ISFN5Pja3H9CiQ+W015XOGuMHN2uNxPVcSfLZEzcBC4iME71a7cEv5sVY2wQsB808XVfExCVf4mB7pZlCm005VlNwMFRjzv3gHRrQFg0TgohhNmHlTPufSR3BtA3o/uNT5V3MvXoKwHuOb3XZZUVChg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773672008; c=relaxed/simple;
-	bh=vEYLEgxSP2lKTubzSOozjBJXghbkFgCp32WXaWPfZAc=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=rf30roIHlELP7T3C6s6HkcwQxz8Gff+6w0ophmQgwGWivThIUjMX3TYatjm5ebh4m44Sbyx4p4ttR8KxOHSEj6UDN9P4nvMZv4hsH7v7lYAO48qXpiCIYOlLoSLlJHFMpnFzRa1VdYIvs60eeb4KcL6gr9/cbNN4/lNb4wgArQY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=kE27gOpp; arc=none smtp.client-ip=209.85.167.172
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1773672112; c=relaxed/simple;
+	bh=ZAMW0FTCO7c8W2CeTKzlxy+5/e5aRWcPLqGZ/kPyQ08=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=YNJ8JTOpj/VNJJJlvuBNxoOqef8cDtpoQmBAXMGaUPNU8+xgl4hZ1/Ufgz3xCp1SbSLG0GsO7VcUDeqRN1qdfvZu5QC5BEGmToCg/wLlukghd+04w4GiJ1HirGzSEnVoZwwpTUxxtn2j50qNFw75aqVf8s5v8XG+TadCQvvhCFY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=VoCvNLiz; arc=none smtp.client-ip=198.175.65.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="kE27gOpp"
-Received: by mail-oi1-f172.google.com with SMTP id 5614622812f47-4671cbce2feso1950479b6e.3
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 07:40:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773672006; x=1774276806; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=7TY2FRwYMmIT8/sc67W9gdAYCf1hET0rE5ocPkZNHes=;
-        b=kE27gOpp4Xyaf7htH7N7ROdaN2s700kjqB4HL3s9GvyvPOcdco5tX2JcQkWzWU86U0
-         gqI0/NCtYGkT4A/Q62jHY3ly3nqRBQLn/2DGDkk1w3moFsa6bM1qLUs2FsCHb6aMigk7
-         kBGU/YpYwXqz+87AAOv+kltnQnjBUwVfnMrhQq9IoU+KaC/J/v8Li5mhmKPhfDlb/FGz
-         MrsJ8O9V6h44AIXOVaaJxxx9kFQv3a8KJpcTsIaQQZwVbJpoEHL+qgrf2W9OblPwwbIE
-         K7Qt8LrSsQiTzI48aKtXT07QGbl/9M3oYVuA+oDkpcq0UW8dQ5JAjscucM7vEl08Oraa
-         +YRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773672006; x=1774276806;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=7TY2FRwYMmIT8/sc67W9gdAYCf1hET0rE5ocPkZNHes=;
-        b=eje4tXS/oQ8QVnKCw6smVG5WKxW2/XEBu2DEh9pFsiINcsRJg0eXArOUFK/Hx/cILu
-         oBuWzk74gy2+6ch2sYCU7CBV6QCzn7sOOENIrGy2crRprTfnq2c0+QgMm4juvyst4vbM
-         IVS8ODbmHltYR3NhsxsSt6LMGr8mwZICpV26b5C4VIgtSSJN0ElzTikuk7gku9mNBW01
-         P/XrZUfPm2KdaxY4nbxH+89sCrm5idjAwOsyfeQS75QaeSPHveaE5guNoUv9CTnNpja+
-         SHHNIF2U3jEKU7ho545c71zwiwgYPqLzD49PzzJavyeoFNp1FaPABQW144McfUfh5yuM
-         4C+Q==
-X-Forwarded-Encrypted: i=1; AJvYcCWkTXYvJxRb5jeh1rwdLmjPbRNUI91g3YUUJQzqVTYfRTcArSo8LczdcubsGZfX+Z0soG12KcTYdOY=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwFq7h7wbwGd2BozXQqzK/As3rRt39LO79L8tkX6hsw4vpgP1Nw
-	J/XjPzZH29MV9fV6hRFdXbr5y+W7wg12xWB3atG3ABOD0wqwVSfORETWgYn41jeiJWFD0S7w4dl
-	4dvLJ
-X-Gm-Gg: ATEYQzxlXovrbKzd6toPGYaYmCtxCi52v8KNLMfL3YKXAQnGl8sV8w9vNw/zWlv2EoH
-	AF2D7hineHYwVS2c82pC57x7VtZM66XxIaO8o3+CBjHGdoAmTdYmIxZeJ3xhu58D/DxqE12FyGz
-	vqE/6mwyP+l+9SODyO5B8z4DOfEp/J+3eKxa3mHq9gd6EykMtZTzaM4ZiMCu4Ql9YwS1qIAtfgO
-	iKH4qQNvMlftwVNagt7eaShjQF2/2w69vqF5YtaIS7XPNCqONEEeKDf9rHqZzuoHVj5PobF/Axy
-	QxvHmhE1lDgm0CInw3oPrYMqFh/F/RRccudY3NAlccZ63bSdYM0azUCiLxLIAbXadVB5W1z7I+f
-	NBmOEg0o65nFO8UBna5vvlUa/tjQ+n3QeyNQCfrZioh0+MI5EmLr/Jq5Fv0V4tkddPzB6f64EVp
-	koiuVa5d+AlFn2vr+glBp4txzS7YLAxndU3wbbhE7phrmWL2GauSXx30OxpO1pYqdXhyLFtxvae
-	w==
-X-Received: by 2002:a05:6808:1a21:b0:467:13b5:8ae6 with SMTP id 5614622812f47-4675704ae1cmr6692339b6e.4.1773672005878;
-        Mon, 16 Mar 2026 07:40:05 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:e504:a034:1152:a664? ([2600:8803:e7e4:500:e504:a034:1152:a664])
-        by smtp.gmail.com with ESMTPSA id 5614622812f47-46734340842sm9561589b6e.18.2026.03.16.07.40.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Mar 2026 07:40:05 -0700 (PDT)
-Message-ID: <ef64fc38-51ff-4785-8b50-22f9c7a9683b@baylibre.com>
-Date: Mon, 16 Mar 2026 09:40:04 -0500
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="VoCvNLiz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773672110; x=1805208110;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=ZAMW0FTCO7c8W2CeTKzlxy+5/e5aRWcPLqGZ/kPyQ08=;
+  b=VoCvNLizfWAVAJUymqg1uMHMX4NCSGaeC1Km9O6hjvCBtzbMx5CyAd+n
+   1hG8vP1y689Aj6RBtNbtnBtif1P5MGDKf70AxbRX9ULgZKCZjhWrPHGp2
+   EdlCDD4LYnR0+pEk1dl4tpKJpfN+c4bTs8FcBdfaZuVHwzMtFJYiGqwNZ
+   o5O/i/7FZj4jQIXPbuv5QAvpoHvSjdOGArDsYLq8TIyXrE6x9gC6DsIrX
+   4gjoC7x/yDs+qmavW1X7UAa0jzQ+TQseQIdFW9wPnWml2ViaJN38NxMFg
+   oGMOPlcQNu7JYJLYwMq+jZdPtCWeWXjE8m0Zn0UYWx9nifF3eQAdZ49uS
+   g==;
+X-CSE-ConnectionGUID: ej8eQeKYQpCQ7NeDtWriHg==
+X-CSE-MsgGUID: i5a1hQ5HQbKcwVJLU2oy/Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11731"; a="97296190"
+X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
+   d="scan'208";a="97296190"
+Received: from orviesa001.jf.intel.com ([10.64.159.141])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 07:41:50 -0700
+X-CSE-ConnectionGUID: U/h2dejRSI2oXKffvN4L5A==
+X-CSE-MsgGUID: k3Yk+3/lRZ62tU8+0Ch3ZQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
+   d="scan'208";a="259839184"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.237])
+  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 07:41:46 -0700
+Date: Mon, 16 Mar 2026 16:41:43 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Olivier Moysan <olivier.moysan@foss.st.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 4/4] iio: adc: ad4080: add support for AD4880
+ dual-channel ADC
+Message-ID: <abgWpzT_fcMqRHzf@ashevche-desk.local>
+References: <20260313115856.87763-1-antoniu.miclaus@analog.com>
+ <20260313115856.87763-5-antoniu.miclaus@analog.com>
+ <abQdvXq9MtIZ0EpZ@ashevche-desk.local>
+ <20260314120022.56265de3@jic23-huawei>
+ <abfT3qbFaM6PIDKx@ashevche-desk.local>
+ <SN6SPR01MB00908E6EDB8F4D20D391664B9B40A@SN6SPR01MB0090.namprd03.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH] iio: light: vcnl4035: fix scan buffer on big-endian
-To: Markus Elfring <Markus.Elfring@web.de>, linux-iio@vger.kernel.org,
- Andy Shevchenko <andy@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Parthiban Nallathambi <pn@denx.de>
-Cc: LKML <linux-kernel@vger.kernel.org>,
- Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <20260314-iio-light-vcnl4035c-clean-up-scan-buf-v1-1-400d273eb026@baylibre.com>
- <06cc64e8-38e1-4940-b129-75c74b7058fb@web.de>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <06cc64e8-38e1-4940-b129-75c74b7058fb@web.de>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <SN6SPR01MB00908E6EDB8F4D20D391664B9B40A@SN6SPR01MB0090.namprd03.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 3/16/26 5:42 AM, Markus Elfring wrote:
->> Rework vcnl4035_trigger_consumer_handler() so that we are not passing
->> what should be a u16 value as an int * to regmap_read(). This won't
->> work on bit endian systems.
-> â€¦
->           big?
-> 
-> 
-> See also once more:
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/process/stable-kernel-rules.rst?h=v7.0-rc4#n34
+On Mon, Mar 16, 2026 at 12:31:09PM +0000, Miclaus, Antoniu wrote:
+> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
+> > Sent: Monday, March 16, 2026 11:57 AM
+> > On Sat, Mar 14, 2026 at 12:00:22PM +0000, Jonathan Cameron wrote:
+> > > On Fri, 13 Mar 2026 16:22:53 +0200
+> > > Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+> > > > On Fri, Mar 13, 2026 at 01:58:53PM +0200, Antoniu Miclaus wrote:
 
-Jonathan always adds the Cc: stable@ when appropriate, so I've gotten
-in the habit of leaving it out.
+...
 
+> > > > - What is special about channel 0?
+> > >
+> > > Nothing.
+> > 
+> > Then why code does explicit access to regmap channel 0?
+> > We should have regmap[ch] in all cases in the code.
+> > 
+>   There are three places that use channel 0 explicitly, none of which
+>   imply channel 0 is functionally special from a hardware perspective:
 > 
-> Regards,
-> Markus
+>   1. ad4080_reg_access() - the debugfs reg_access callback has no
+>   channel concept, it's a single (reg, val) interface. We have to
+>   pick one regmap, channel 0 is the default choice. I can improve
+>   the comment to make this clearer.
+
+Then it's simply wrong. You allow only one channel to be printed. The debugfs
+has to print two channels, no?
+
+>   2. ad4080_properties_parse() - uses regmap_get_device(st->regmap[0])
+>   solely to obtain the struct device * for reading DT properties.
+>   The device tree properties live on the parent SPI node, which is
+>   channel 0's device. This isn't "channel 0 is special", it's just
+>   "DT properties belong to the primary SPI device."
+
+Can we simply pass the struct device to that function?
+
+>   3. devm_iio_backend_request_buffer() - requests the buffer from
+>   st->back[0] because all channel data is interleaved into a
+>   single stream (there's an inline comment). Only one buffer is needed.
+
+But this is not regmap related, is it?
+
+>   All register configuration (setup, filter, decimation) already uses
+>   regmap[ch] throughout.
+> 
+> > > > - Is it okay to communicate with different channels simultaneously?
+> > >
+> > > Yes. They are entirely parallel bits of silicon. Own state machines
+> > > and everything.
+> > > The configuration registers section of the datasheet says:
+> > > "Each channel has it's own independent configuration memory
+> > > accessible through it's separate configuration SPI interface."
+> > >
+> > > >   Wouldn't be a nasty race with HW IO?
+> > >
+> > > Nope. You are talking to different devices (more or less).
+> > 
+> > If it's a twins in the package, why do we have a special handling and not just
+> > describing two independent devices in the DT/fw?
+> 
+> Because they are not fully independent - they share:
+> - Power supplies and voltage reference
+> - The CNV clock (conversion trigger)
+
+Okay, then why not having a core part and a glue driver that registers as many
+devices as you wish and provides just a common stuff?
+
+We have similar (to some extend) cases with SPI/I²C where
+drivers/platform/x86/serial-multi-instantiate.c services as "MFD" for that
+type of busses.
+
+> - A single interleaved data output stream
+
+How does it work in non-racy way?
+
+> Describing them as two independent DT nodes would mean duplicating
+> all the shared resources, and more importantly, the data interface
+> is a single interleaved stream feeding into one IIO buffer. Having
+> two separate IIO devices would make synchronized capture impossible
+> from userspace.
+> 
+> This is exactly the use case spi_new_ancillary_device() was designed
+> for - a multi-die device sharing a bus with separate chip selects for
+> configuration but common data/clock/power infrastructure.
+
+See above.
+
+> > TO me is either something special about channel 0, then we have to
+> > synchronise
+> > accesses, or there is no point to have this patch at all, just make devices to
+> > be the same under the hood and describe as independent pair.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
