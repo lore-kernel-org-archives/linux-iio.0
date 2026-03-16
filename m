@@ -1,104 +1,101 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 79E39352FB0;
-	Mon, 16 Mar 2026 10:13:29 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F9CC37C0F1;
+	Mon, 16 Mar 2026 10:15:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773656009; cv=none; b=mtpY8ZFph5U6au30xpf3ntUyl+ITkwr3cN0SPgSqXMcdoqHUFkLZpppSndT17sY43P25GvLNAptNsqDgyx++bQFBG0+DnDHOa00P66odSR5XzHKQAtIru5mClyQWR9T6VteogFeiLF09qF/lTR0alRtiD/wvV8S/7Xe9B1+RZxM=
+	t=1773656127; cv=none; b=LM5OpQiy4oX9OJmG4l5gm3LWRUCCq0zqlelS/xbJqtUhx1igtR5eiByY805VdzIGrOfKTunXYmoWwfScox7cYniShyKyqpUKcImjc8oC7MTxS6OkPWLu436yisJRIKdKfQ+C4hSGkM/UJExzZy3995D4Y1tsVyM3EMKJAynczjE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773656009; c=relaxed/simple;
-	bh=uvmNUVeW05PxXKT9g2Z+LxiEzXQO/dH0eTByg8eVn/E=;
-	h=Message-ID:Date:MIME-Version:From:Subject:To:Cc:References:
-	 In-Reply-To:Content-Type; b=ssNTsGohgZYngPIs79aKxiZphKr37eV9Oypao/hVTuXQ+dAeJLNNugDscfclkgKtgOkKlLioayQ6pVXX9kEv2rIHSSc02M8GuB0KgkrR6REyq6AtZWzbu8AM4uhy+ODdzfBec/BD7pJn/GBjFxjfZvad4RyEy4PZs7+RrB+dk3w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=lYtnYR7z; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773656127; c=relaxed/simple;
+	bh=vY29cWqRnr3YbqfTvrLrabpL0G4X8yTIx7yS+USS6MM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=XrKHHzm5g3d8FEZHyy8BzdOjd/BhSXC2IvixPIvLGHi2jLlXoXuzHhH5dbaxkd+UkVmcCY0sgMlD9bmh3T7jalTYV1eqbHQrnHSzoSuaOtGsp0nAhih9bdYrElCuz6O4Q8Mkfu2i7DBgwHvAt+4qdlNVyGzf9tjy2YLdBI4Jb6E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=SiCEzlnz; arc=none smtp.client-ip=192.198.163.9
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="lYtnYR7z"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11CAFC19421;
-	Mon, 16 Mar 2026 10:13:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773656009;
-	bh=uvmNUVeW05PxXKT9g2Z+LxiEzXQO/dH0eTByg8eVn/E=;
-	h=Date:From:Subject:To:Cc:References:In-Reply-To:From;
-	b=lYtnYR7zUf8+8AfVyh/A1n57n6tphcah6GFYj7Jo/9aIARfwXp8r6N6yEdvwIiYbA
-	 MxsfxmkmPUedlm8Clq0Ea6IoktbCDeemrI5SxPI05iqqaiJaFd1M5wKga64jjOdfqL
-	 u0UoX6DNe1pPlnr0HoWK09ICt0+LHOvFugc/iPJUaAIACExyipxDux3uhhfpyWSzmS
-	 iOaD+GXjRQJkb0kU7M6Ui6vq54TTDZLqzDErNCb/CV+DN4oRZQyjXrBfeDAyOZ/I0G
-	 GZ2uuCIhc4xw8jH17oTosyW78b3Sm8OyPtFEpmAIteJtNIbT3Vyi7Y14tl1CThSLp4
-	 dr7aI7fRPgSbg==
-Message-ID: <8fcc1419-266c-429e-b1bf-1799322eb69e@kernel.org>
-Date: Mon, 16 Mar 2026 11:13:24 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="SiCEzlnz"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773656125; x=1805192125;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=vY29cWqRnr3YbqfTvrLrabpL0G4X8yTIx7yS+USS6MM=;
+  b=SiCEzlnzUBcNc5IGeIsSt3xg8kSQ5w1K+5XyVkLZy5anulAVhd95/ryN
+   TRUR3/xywMUGyY2bi84zpYhfa6HHUTZ1d5zk4bnh0bD9+nA1YZmViztGV
+   Rc1ZV5rPb1neQKkoCdLui9um2e24IgfrIGETeYJE1uHxfMWc3js2QyC7o
+   Q3ei3xInQOFEiyVm9bEy93Es0dIJe7teliFqWqWMaapBpYxtQi6XQNeD1
+   4OYhlR4fcqFcyNMtAasfHU6uT9Xa08PGZhm74kxDsHRmI04qAL5l02UM0
+   0y5JTMvbpQTeH6g19VzJEuMxlbNQkT5hFioCdoOktrNQpDF8z6ga0MzOs
+   Q==;
+X-CSE-ConnectionGUID: mpp8UFh9Rq+Ytce1E/BuJg==
+X-CSE-MsgGUID: HlD4kraKT8+tfzuzqNsDXA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="85368688"
+X-IronPort-AV: E=Sophos;i="6.23,123,1770624000"; 
+   d="scan'208";a="85368688"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 03:15:24 -0700
+X-CSE-ConnectionGUID: 29/mWe93Q0uKpGvs7TlvGQ==
+X-CSE-MsgGUID: 5+FjK84kRVKDmIz4xtLJ+w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,123,1770624000"; 
+   d="scan'208";a="225990371"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.237])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 03:15:22 -0700
+Date: Mon, 16 Mar 2026 12:15:19 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Parthiban Nallathambi <pn@denx.de>,
+	Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: vcnl4035: fix scan buffer on big-endian
+Message-ID: <abfYN9gszSSb83J9@ashevche-desk.local>
+References: <20260314-iio-light-vcnl4035c-clean-up-scan-buf-v1-1-400d273eb026@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-From: Hans Verkuil <hverkuil+cisco@kernel.org>
-Subject: Re: [PATCH v2 1/6] media: vidtv: Rename PI definition to PI_SAMPLES
-To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
- linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
- linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Benson Leung <bleung@chromium.org>,
- Guenter Roeck <groeck@chromium.org>, Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- "Daniel W. S. Almeida" <dwlsalmeida@gmail.com>
-References: <20251107201005.3156118-1-andriy.shevchenko@linux.intel.com>
- <20251107201005.3156118-2-andriy.shevchenko@linux.intel.com>
-Content-Language: en-US, nl
-In-Reply-To: <20251107201005.3156118-2-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260314-iio-light-vcnl4035c-clean-up-scan-buf-v1-1-400d273eb026@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Andy,
-
-Just FYI: I'll take this patch. Regardless of the other patches in this series it does
-make sense. I haven't seen any updates to this series, is it abandoned?
-
-Regards,
-
-	Hans
-
-On 07/11/2025 21:02, Andy Shevchenko wrote:
-> The definition of PI in the driver is not the actual value in radians,
-> but rather degrees. Since we are going to have a value in radians
-> defined in a global header, rename this definition to avoid potential
-> collisions. No functional changes.
+On Sat, Mar 14, 2026 at 05:18:10PM -0500, David Lechner wrote:
+> Rework vcnl4035_trigger_consumer_handler() so that we are not passing
+> what should be a u16 value as an int * to regmap_read(). This won't
+> work on bit endian systems.
 > 
-> Acked-by: Hans Verkuil <hverkuil+cisco@kernel.org>
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/media/test-drivers/vidtv/vidtv_s302m.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+> Instead, add a new unsigned int variable to pass to regmap_read(). Then
+> copy that value into the buffer struct.
 > 
-> diff --git a/drivers/media/test-drivers/vidtv/vidtv_s302m.c b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-> index 9da18eac04b5..b3217d643b1e 100644
-> --- a/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-> +++ b/drivers/media/test-drivers/vidtv/vidtv_s302m.c
-> @@ -45,7 +45,7 @@
->  #define FF_S302M_DEFAULT_PTS_OFFSET 100000
->  
->  /* Used by the tone generator: number of samples for PI */
-> -#define PI		180
-> +#define PI_SAMPLES		180
->  
->  static const u8 reverse[256] = {
->  	/* from ffmpeg */
-> @@ -259,10 +259,10 @@ static u16 vidtv_s302m_get_sample(struct vidtv_encoder *e)
->  		if (!ctx->last_tone)
->  			return 0x8000;
->  
-> -		pos = (2 * PI * ctx->note_offset * ctx->last_tone) / S302M_SAMPLING_RATE_HZ;
-> +		pos = (2 * PI_SAMPLES * ctx->note_offset * ctx->last_tone) / S302M_SAMPLING_RATE_HZ;
->  		ctx->note_offset++;
->  
-> -		return (fixp_sin32(pos % (2 * PI)) >> 16) + 0x8000;
-> +		return (fixp_sin32(pos % (2 * PI_SAMPLES)) >> 16) + 0x8000;
->  	}
->  
->  	/* bug somewhere */
+> The buffer array is replaced with a struct since there is only one value
+> being read. This allows us to use the correct u16 data type and has a
+> side-effect of simplifying the alignment specification.
+> 
+> Also fix the endianness of the scan format from little-endian to CPU
+> endianness. Since we are using regmap to read the value, it will be
+> CPU-endian.
+
+...
+
+> -	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+> -					iio_get_time_ns(indio_dev));
+> +
+> +	buffer.als_data = val;
+> +	iio_push_to_buffers_with_timestamp(indio_dev, &buffer,
+> +					   iio_get_time_ns(indio_dev));
+
+Do you have plans to drop this old API as well?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
