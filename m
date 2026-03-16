@@ -1,115 +1,128 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-ed1-f42.google.com (mail-ed1-f42.google.com [209.85.208.42])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5305A2E401
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 17:31:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773682295; cv=none; b=PGRL9nPPYQOrCQ/tsXKH80oQpvQvmCE6CouiC+FRW7M3nvvCSK5UbN1nrH1CE6iNKVznd66wDxW0F9ivaUbjZHdWUM1F5URjU/WPVs8bYD0SQ2lTF/IKqCA0GxP7g+5LVco2eUZD2OyOuqWRfWhogAG63HNGwHgGYul2etnehEg=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773682295; c=relaxed/simple;
-	bh=rF7xa+O1dKg1J50al7OSx5L2Ivr5slrKdOJx4ofFgoI=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=cRLMH9sv3O+gBXCtP6rNdvQ7Jthoz5x5FAksNwCvgK/p0zgO4dhQFbqdp37/JoUy87hDwvY5w2S/hfDVi5qDZ5IMqWzI8QQPdGMryjoPyxfBWxRU7mDRCb+MC+oYsbQEYu9fyjaEjUBDfJUzbpkod7S7k/CY18Njr7KMROTVm9o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c9HFCFlZ; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6BAA389109
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 18:11:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.42
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773684697; cv=pass; b=FtWQWvYJ/sSJGbT7iu3tkdB+QLT03cDKTVZx/bg6OJ39IfkasbPbHqL9fDdZ0CXSE2JoJLGvBKTLpYQiy5aAcgPRvfNkNYEzryZUcF1s6404R/suyihRFJOeChXXG/vJEI9jDOdoBFFQzLcJmhaF8XtnulaDl8WRL/V8e4qNbb0=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773684697; c=relaxed/simple;
+	bh=hphik5M+PJmUSYg+rm0OoKc4euDMNlGeZuZLytTvLfk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=Xj41jePLmyYadDIT4vkfmANzxSwb08QGJHhBrL/XNgbHMtXmG9b4c3ypb0cv1Jfy/jh4tni5ZRO90pIAjxXiBcv68aBHUJXeSMCgNXyUrGvremV0TJTS9/PDmTDvJENFlGPoItrZWxBoirC3E9xFf10GZWvPUQrYOO8GIMzX00M=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=R26O9FF3; arc=pass smtp.client-ip=209.85.208.42
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c9HFCFlZ"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2b05761bec1so5420125ad.1
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 10:31:33 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="R26O9FF3"
+Received: by mail-ed1-f42.google.com with SMTP id 4fb4d7f45d1cf-666f646f5cfso835009a12.1
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 11:11:35 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1773684694; cv=none;
+        d=google.com; s=arc-20240605;
+        b=XKaQ/VEvpkPOEC8EfWiTvkpxcspHRVVKxXlm/OClaJYdBxgaVQuUsixoJS/DQz26Mx
+         lbLjEjUMqbPx8T9WCZcqRfz3QIwRguG7qG0z6CN4ml/dsOOarqs73fgH6SoVVbPA1Y1Z
+         S3HuDz/yoTTFAqIvHBWPQp0IDWf5jYGTE7L6udXUIz31K+8GpjBpSy7BBj4FGyApqTE7
+         /KfkhxIBAAWNdKRZFRq0E2Q7eGUfGYY8VLoP+er9D9DkZ8fNcRVSgXkoK20z8OMR2nvJ
+         8Cp6uqPbCq1SAdj3cop/nyiP/paKwSXqLQTs1jThuTDDzY8EKj/eT2nLfQ9zgbPsvkMV
+         2cUQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=2mQDjvv1kYE0oq3kLc+8QgwfQbMotk4A0gZvEtKOkqw=;
+        fh=hg04e15nWpNa7dUDmTSfwmb79SwSYY7c78kPX5wPHVk=;
+        b=Qks9u0TsucphwOPL2OOAE8/wqLfaHW8wxL4hTwhnEVH2eMAoZ/VuMTTrRU4UTcxl1Q
+         J6kl5s5C9g1RsnRfSmmdaCOPDkGqvsmsYiFzNtAls7pB54izr1MYchwV7lmO0vx1kuwe
+         COWitvDtKMlq8aYLj81kTB5AkzK6O9MnYlsFL60QhDfQtGqq7YCnj7E67rguPyM6FzAs
+         4bHKSQpJNmnkgF83Pbi1nEsFz6ff4ZgeIvfP40wqDMCMXVAA0DNejZ3zfE7SIut1GNep
+         yac/A7VG1URTWTXRZQxC2ZGk0VklKXOBRKzUE7V7qsHyw7Lsm3xI8z27MQ632Lk78bBz
+         7+XA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773682293; x=1774287093; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=jjk8AiPOpTiKRWlQdLUxjRDsHhudQG2+4LwcnYhGSOM=;
-        b=c9HFCFlZI2e21/fYQZNNocpBfRnD8nAKykZK+UTTFY4uCUirgK1skCyDKUNMUOLCpF
-         ub0i+UDTDkXGLWWx9HqsdD5LWc78UmB2dOfELP2qzm80HViladX+HGs4p5Gz2Gg8FAUY
-         MAWEh6j4FOThoH0L2iNjbjA+CuxcH23XF7TgGoVomyG7V07STJ+v4cXVaLiWL4rgEk8E
-         MD/bGsGZuJPSu5VHlkeEwvu5TG+AYJFzl+JBxlC1pZ/mFvABHnpFJfOHvP5ZjIjRvBnP
-         XxYF1atkerp6tlJbnyIUoDKfkSDkvJvMBIYxUb6uPvL+1tTMAY4AwxMyC16BIVLCwexj
-         ID7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773682293; x=1774287093;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1773684694; x=1774289494; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=jjk8AiPOpTiKRWlQdLUxjRDsHhudQG2+4LwcnYhGSOM=;
-        b=d/Mu+0H2Ise3GTuZayZ3+5van5hbg0LTpLwWcKB+OUsjYscr/YKYITgEucn+zivJHY
-         3+KHfD14oxRXNWEVQ/F6fE8Cn08D/yOx9H9XjY2EnlvEJZLMLhClw9XRGTLp5hriOQ/R
-         z9OR8bfcZLTwZdkNWLOz9hEX3HKn4ArYPnQoHPHE0hFeQ575wktZI5hbvDMXxFKwWNIU
-         2o3qIltWy64gZLKArIHTuYJB6J0Hg535sPG8wel8tWpF0/6svD4/3sKsaTh0XpiWnJq/
-         qHJ25HklJftkbmExe6ZZdbww4ULuAexT9rfwA6rSi2xiZ5D0k7QbdirIqmWBTviuVjhg
-         Zpsw==
-X-Forwarded-Encrypted: i=1; AJvYcCU9FaQCdWt0Lr5eHukpj4bPIucfyDK2+aCrcVEegzcv74xXVSVv6KwvSopQ6mKziRNR9q0/Kd8r/EU=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXx/uLdUZFQOWtXO1HEK6gmzehQwN6Q8b9/tOO+oyFvanWhlUB
-	7izTZzI2SRW5NOPrymn331S38Eca8ynbIfnmneLwx3yW12KPJnpCUAfD
-X-Gm-Gg: ATEYQzxEDH32L4UVadphhbLaLezIwa8WYAQ0/uJYKxXgueyZHevaRQbJLiCeC+Bs6Ry
-	fYJZUWAy5Hl8mP1OqSf7cFS/HqsNXrCEa2Vwa1lv90UyleuEB87fpv9Erm8H+txMGWkM506+ki6
-	ozo34tq9uSd1kbsMdmcKqiGQzSmKK/tB0jIdXN7N07lnHVRsCLiOEeZ1deI+7QEBnSh/j82gCUl
-	WJK8hh1+Jd1c7LwB9cciMu4r8yMD8fzABesRZN91mtW+dJW3QJEC2+CuHhG83tfXjidwWwxd0Ln
-	UZWeXRpZttVmHwLkYEUsgd7r4fnYM+xyV9s7fJQi/k5z81E9/TXOHrnGFOwf2C+NprbRwN9GfOM
-	FT4thqflkjChrKqHG1gxFxpIf0qtw27QRIO4L/EiRkk5gceqY/sXzxM2MZvxv5iDOwGR5dMmgOY
-	qUh+vwcllEKlIEC/YHpm3StnimxAGgWNeY5InKsqrUywn3NQPEPXWow2bmJTlk+GI/Y8wAR6+oB
-	9Bf
-X-Received: by 2002:a17:903:288:b0:2b0:4f16:22f7 with SMTP id d9443c01a7336-2b06363e915mr3301005ad.16.1773682292723;
-        Mon, 16 Mar 2026 10:31:32 -0700 (PDT)
-Received: from atharv-HP-Pavilion-x360-2-in-1-Laptop-14-ek1xxx.. ([103.216.213.160])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece7ed9cdsm117046905ad.60.2026.03.16.10.31.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2026 10:31:32 -0700 (PDT)
-From: Atharv Dubey <atharvd440@gmail.com>
-To: jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	marcelo.schmitt@analog.com,
-	mazziesaccount@gmail.com,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Atharv Dubey <atharvd440@gmail.com>
-Subject: [PATCH 11/11] iio: adc : ad7944 : replace deprecated iio_push_to_buffers_with_timestamp()
-Date: Mon, 16 Mar 2026 23:01:21 +0530
-Message-ID: <20260316173121.12210-1-atharvd440@gmail.com>
-X-Mailer: git-send-email 2.43.0
+        bh=2mQDjvv1kYE0oq3kLc+8QgwfQbMotk4A0gZvEtKOkqw=;
+        b=R26O9FF3HqwSqLdYFe8chVSeIZSrmZ58zKixwJKTEOP73eITI7ZWWdhw4gCGU0XjSZ
+         nlHTGi551RoiA5PN+1KgmER/QNZXm1diyrH+LLWW03NPPKY6it4A2EbIobALB4BOpHC6
+         qARmPGsVG6G9SCgLLh5Bq70kxUVE7SumPITdtrL8lqwdKYPjeRVBjJ2B3wMJiu5N8Pnq
+         rYK//CXUjx2SNiDWa9rQarw0BUu4c4qQ6CYILl4K+F26Q1VvcF8Knf2or6dOTfjSBCdk
+         IlBIu17QPYLBxURdm8ArGxXkremk9kuT2YXO28La7fhkJNclWBULMbSzfBvA9vvoIHFk
+         ankg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773684694; x=1774289494;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=2mQDjvv1kYE0oq3kLc+8QgwfQbMotk4A0gZvEtKOkqw=;
+        b=cN3itlBNzpYJuLqw/M0jiNoMYVSaQ08SsSTR24FPHFMNWa5LRi4CzwLH0XJA75Mrv6
+         Kr+TUbol8mqHW3KR30bSQ+DY2AqXvMFjwcauNnCB+Av95yvj3MW/+wQbmPxQzXa4MXVq
+         lLRabmRdv0Xv7SKRaT71xKp1/m/GlJvmF7lc7Z0GlkR60yj+Uu8E4M+qsMfjlC/pR8Mc
+         +vgQkD7EMBuZfF8ygqUzkayXMNXehCTnkoqGcNTgdxOjrzKoifPbfKyTEaeXbThf9Jgs
+         hpYqrE9AbxsYisvQ1uUiA/t4wRhmpmyCRkcomIp0FMH419lM0qkQ9X4S/yFFxkDLzB6a
+         4Z/A==
+X-Gm-Message-State: AOJu0Yytt+taeuE+2vAgP2/FQv95QOIDa7wfrxDQTujFPFQRWvotAXvL
+	EnE1w+ccHfutuGG1ekYYtkuwa72eKZIrCMR9a3rXZwqBNv/Bf9jKX+X9VCeQoq7qCZ/9/8S6Pcz
+	caEyaEeqZ7gyoi9dvSrRDI027lMKmTj8=
+X-Gm-Gg: ATEYQzwfWcDy0luReyKj4dCfjRX6FqTxzAwT3+tsQkCDOF4n9+2YkHsRzkRWNv1AW1y
+	FmhFwd3GR1iqZ1EqVoBk60drdhegdI966zbLiTybWyGyXA/sqOL4B1ahn52kNHlycwC8dvz5Q+i
+	nIjTGBWQl5jvGmpVQDMulT5a/957pisSPqbg1yortXYDQFfw2UFse6gOoA9+c3iiE8EuxJ9eINO
+	dCrmbhagX/B8u9bYLvadXeiSqpHrQ9OvROkllKTqN8+hY4MlxLHuOLTHBh1d3qELQCIcIo+3H4B
+	oq3pWSPLudVbhdUQczFY9gbE0ntpwHeDxz4RZ8s0ET4PQuzQpes5nMPCYqkF9A3f1wxg2P21Omd
+	I5DGUC86okeMGAaVb
+X-Received: by 2002:a17:906:4fcd:b0:b97:c068:555e with SMTP id
+ a640c23a62f3a-b97d6c11d30mr41007366b.1.1773684693877; Mon, 16 Mar 2026
+ 11:11:33 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20260315224509.48111-1-rosenp@gmail.com> <abgQr6Ij_1Bpqb_R@ashevche-desk.local>
+In-Reply-To: <abgQr6Ij_1Bpqb_R@ashevche-desk.local>
+From: Rosen Penev <rosenp@gmail.com>
+Date: Mon, 16 Mar 2026 11:11:22 -0700
+X-Gm-Features: AaiRm53wZoNtoFaaBrbyHVp7EcazHCKcde8u6npD5HDg1vqyGRcfEod-hykPGRo
+Message-ID: <CAKxU2N-FopyQ51FVTWKzs7-u-MuEJVawxHX_t_iYBkpYMV4ezA@mail.gmail.com>
+Subject: Re: [PATCH] iio: iio-mux: use flexible array member
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, Peter Rosin <peda@axentia.se>, 
+	Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+	=?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-iio_push_to_buffers_with_timestamp() is deprecated. Replace it with
-iio_push_to_buffers_with_ts(), which takes the buffer size as an
-argument and helps avoid potential buffer overflows.
-
-Signed-off-by: Atharv Dubey <atharvd440@gmail.com>
----
- drivers/iio/adc/ad7944.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/adc/ad7944.c b/drivers/iio/adc/ad7944.c
-index 7722cf9e8214..479ab882edc9 100644
---- a/drivers/iio/adc/ad7944.c
-+++ b/drivers/iio/adc/ad7944.c
-@@ -532,11 +532,13 @@ static irqreturn_t ad7944_trigger_handler(int irq, void *p)
- 		goto out;
- 
- 	if (adc->spi_mode == AD7944_SPI_MODE_CHAIN)
--		iio_push_to_buffers_with_timestamp(indio_dev, adc->chain_mode_buf,
--						   pf->timestamp);
-+		iio_push_to_buffers_with_ts(indio_dev, adc->chain_mode_buf,
-+					       sizeof(adc->chain_mode_buf),
-+							    pf->timestamp);
- 	else
--		iio_push_to_buffers_with_timestamp(indio_dev, &adc->sample.raw,
--						   pf->timestamp);
-+		iio_push_to_buffers_with_ts(indio_dev, &adc->sample.raw,
-+						sizeof(adc->sample.raw),
-+							 pf->timestamp);
- 
- out:
- 	iio_trigger_notify_done(indio_dev->trig);
--- 
-2.43.0
-
+On Mon, Mar 16, 2026 at 7:16=E2=80=AFAM Andy Shevchenko
+<andriy.shevchenko@intel.com> wrote:
+>
+> On Sun, Mar 15, 2026 at 03:45:09PM -0700, Rosen Penev wrote:
+> > Allows using struct_size to simplify allocation slightly.
+> >
+> > Removes a pointer from the struct.
+>
+> ...
+>
+> > -     sizeof_priv =3D sizeof(*mux);
+> > -     sizeof_priv +=3D sizeof(*mux->child) * children;
+> > +     sizeof_priv =3D struct_size(mux, child, children);
+> >       sizeof_priv +=3D sizeof(*mux->chan) * children;
+>
+> There are two arrays that are allocated at the end of the same object.
+> Why is mux better than the chan?
+It's how it's already laid out. mux first and then the other data.
+>
+>
+> I rather would see two times array_size() than the above.
+OK
+>
+> >       sizeof_priv +=3D sizeof_ext_info;
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
