@@ -1,118 +1,106 @@
-Received: from mail-oa1-f53.google.com (mail-oa1-f53.google.com [209.85.160.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2A513932F4
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 14:58:49 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A4FC2288C39;
+	Mon, 16 Mar 2026 15:01:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773673132; cv=none; b=bo9npDiKyhyRGaoZkU6tITW5iyaa3+uyOaF8tRIrhqV1RJHtspDzeyG12AVv8t+59RlI0+Wv1lvLaQ/rspoYeJgRqxsvcb/xlLa3v61LOQ4AlgB+SbR8qkRqEYARwgfF/hTNLnyBaCR1p9OKgMQA/7FmbU6oU9p4rC1APiUULiE=
+	t=1773673266; cv=none; b=tCX4EW9HnwVYkj208iHlmm8CMx0lIX3joIdRepXj6zkBQ6Woay0TG9XHzpluzoAi0aPfo6IpgQf3aC+yr1w8vC/jqa66+Y/eBGSZ7cJnk4/GCJt7b1EmNaWy5xtR0TF7SRaDx49o+5MpFP9Mh6+yWiloKsVcSrCPefbPAzHMp/M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773673132; c=relaxed/simple;
-	bh=J52sXQFy1d+pN+ZbLoCpmzMDgrEsc/3CaV7dc1H96XE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Uq/N7QZeHU9RjOQFuuccQNk4mlKj1gEaDmooOY4Ul750vHibTval6AEQaOfePtzuDj29TFg1mWiz13pLPX0XnLD3e3XEYji5gt0PO1tWbkKYUH+8q2G6UY5uWSVvF38Gixu+wP3ztFq5hN4fPTzBwrod3bCe1cDTuyPfuFKLFiE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=g0X4Vq4H; arc=none smtp.client-ip=209.85.160.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1773673266; c=relaxed/simple;
+	bh=ed90cKLh1D3xX/AGCtlP6muk6rhRVx+JCAGAVyNx5ew=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=fbK35S4Rmv/ppv5oS/PV1B46KxQx4W/f0znqqr5aPMAQltJ/GW6KV2A0s8sFmvaTDIx6CH1W0WjLHaT9E8uy5o4z7ZjE39ClFywh4vy2DeMx+4c4XD7Cj2GCR3uR02yJFfUTV3fqdzEkZKU4g6puHUvpKjvxWo5E9momHC4Rfsc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=bDtDdtGU; arc=none smtp.client-ip=192.198.163.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="g0X4Vq4H"
-Received: by mail-oa1-f53.google.com with SMTP id 586e51a60fabf-417c34b0509so2125280fac.1
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 07:58:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773673129; x=1774277929; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=L6W3ta1EmaKi/KvddroOldqnVJ7a0ddbxWZg37STItE=;
-        b=g0X4Vq4HfQfcTUsBD5w7wjC6Maacj3kIix+UyiTsc1IS7zAg4CifEJeQz+9+z32TxW
-         BjR68xhBSzA6cFnOsllxIH1xdBZUWCkaGFrbVCsKxcsM+ZHDt1gTOI7ystn1bDxSXM5X
-         2PZOo7zzLHs1zWGU3hl/NKWMTaLu09Ahp4vpjoCwlw3XEVtff+PjH7/u/ZDLl2PKe6gF
-         P2l7SRTsQs4vGtwdUkmP/f+hRizE8JbRJX7kgbmtMqj0N1X2vnxMwcCba+4FMcOpOdpw
-         cG7bOMgFTsWhANRLHtOoom9XYyMfGdhrQ4Ruio8Zj7BuSwqcnOt2hTFQivR1tlm/INqz
-         kLhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773673129; x=1774277929;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=L6W3ta1EmaKi/KvddroOldqnVJ7a0ddbxWZg37STItE=;
-        b=WLd0NVXTrPLSudZVEn+KIv/K5LS0NlH+45XTJ4Yopb8QHcE8lHhxf4iqNhvoMDDCdb
-         r6qvbzbV90Z28MJwYUKffXT+2KjflKuxTrXTRHp7O7wqvbdpTHmlS5NkRegHFPc+UAzv
-         UiAo7E+c0Oe8WvOMOuaFhkNjtvfR0yCoWaoTaTInw7EZ8Yw1Nsl5elAJgSaKyTVMlZf5
-         5UgCkfEglf9l/V/x/kGYO3JI50L8onyRzA3mzwP0dmmKzcE+c3AX3WU25wH2HDMw6G8H
-         2MIvEv93Dd+k5EtLueCIce1Z/39IBK72/sBHPo+SRnjlvSCo8M8AUyCNJA3FrC9p7BG5
-         AEaQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVA9JQ38MkhJfnteXOLI803IU5kas1hgsSD5gzTksFZ2Nv/ikrJ14cJXNZkl9SnA8+Y0rLf4Ky/qoM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyfZ4JHhgZN1RLc9kUmrvir2asX++xb6ZBUwCyLBAs9dZdz+6aX
-	jurSDPlF/Do4gfG8E36v//QcZrcpnqAY14HsmhZVf4SC1+tBp8X8szduHX5UD+DXJkg=
-X-Gm-Gg: ATEYQzyiPLv03lETbD/9/gmJhEi8nLCWKxMEJrm1+SLOkj6qePdYWg56cgz28IXnhhG
-	ysVnwHXN30Dbzd3IZCuG+9X8dMOKYSjzhVHLNhBJci6S+4TbLQzvFcRPZtZFjz1LNiNV1Qd0RH4
-	i0iS9zZvkiioL7n4UZSkHG71WKXZtB6h7x9FzCvWn0bhHjLoWIyjN2JcizzQOHhwxI9XgjVDc9l
-	/nKXXXriLVLJvr6UlDUoznjrQ4/Y09HgXBchcR3/3fHWO/tsFgyajtEvhfnmQuaoGH4Ese9WeFz
-	y6f0bvW4c18ALN+zVM+GvymoQG3qj3u3uIz/NeqGyOrg6BeFH2goXYoRZAiEKbax0JFz5iquJcQ
-	4+clHw1nv0Dnx3pamnWymyPiFV9pWZFIfbYkexhei5pbVuB4tjce+Tls64pkU2RyGRE2lOu0lJC
-	gMc3v9J6YWbkr88YhPhre09gXbZ2Q40Z7iWyHXNNqZl4bGGCkkApk7AQoEMBl+2EHkrUwILycs2
-	w==
-X-Received: by 2002:a05:6870:44d3:b0:417:3c76:6582 with SMTP id 586e51a60fabf-417b9174e0amr8669148fac.7.1773673128824;
-        Mon, 16 Mar 2026 07:58:48 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:e504:a034:1152:a664? ([2600:8803:e7e4:500:e504:a034:1152:a664])
-        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-4177e6ae0e3sm17421386fac.16.2026.03.16.07.58.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 16 Mar 2026 07:58:48 -0700 (PDT)
-Message-ID: <f08de112-db5f-483a-bfb7-9e928c3107fd@baylibre.com>
-Date: Mon, 16 Mar 2026 09:58:47 -0500
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="bDtDdtGU"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773673264; x=1805209264;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ed90cKLh1D3xX/AGCtlP6muk6rhRVx+JCAGAVyNx5ew=;
+  b=bDtDdtGUEw4XI91gcxavufeyYXA94ZACeNSvi5rpnZ4U2i6wjtDv1nFw
+   OQTw598x/CAwfrd+gFLDmft3fnoMcPsJ42COblrryB3cJV8VOkQKYAGKQ
+   djdNGnjojvq0PBPPeio5k2QNmjOxJUQz9hDUuCt+a79fx2ik01KBEf5sl
+   LkZRkTQL1HTTyJN5Mr8WD5JnT9g7zKzQU5Rf1Ah+hrxgf4LEyoOSKBmzT
+   W53yfry3Jo7kTTMknjpTCSAIHIcBfBu8WcDTl1f79Mr7P3HRt8+s06/qi
+   PPRdupG2C5baLEbFxhiMIG8u4c1+4RIn/nBU+aMnNfxXMbBvDgpg1wntF
+   w==;
+X-CSE-ConnectionGUID: 96+51AIMSqGZt9BguJt3gQ==
+X-CSE-MsgGUID: 4wqIdVg4Qiin3T7uuUbWOg==
+X-IronPort-AV: E=McAfee;i="6800,10657,11731"; a="62258323"
+X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
+   d="scan'208";a="62258323"
+Received: from orviesa009.jf.intel.com ([10.64.159.149])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 08:01:03 -0700
+X-CSE-ConnectionGUID: K9ySngHBT7yln40sgLCntg==
+X-CSE-MsgGUID: 34G3mGOAQdeFaHlRFhmwSg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
+   d="scan'208";a="221886707"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.237])
+  by orviesa009-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 08:01:00 -0700
+Date: Mon, 16 Mar 2026 17:00:57 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Shi Hao <i.shihao.999@gmail.com>
+Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	mazziesaccount@gmail.com, nuno.sa@analog.com
+Subject: Re: [PATCH v5 00/14] iio: fix spelling mistakes in comments
+Message-ID: <abgbKZro-i2o3Opq@ashevche-desk.local>
+References: <20260316090023.14691-1-i.shihao.999@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iio: adc: ti-ads7950: use
- iio_push_to_buffers_with_ts_unaligned()
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260314-iio-adc-ti-ads7950-declare-dma-buffer-v2-1-2087fc18b077@baylibre.com>
- <abfpAcN3qDKe4zdd@ashevche-desk.local>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <abfpAcN3qDKe4zdd@ashevche-desk.local>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260316090023.14691-1-i.shihao.999@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 3/16/26 6:26 AM, Andy Shevchenko wrote:
-> On Sat, Mar 14, 2026 at 04:12:24PM -0500, David Lechner wrote:
->> Use iio_push_to_buffers_with_ts_unaligned() to avoid unaligned access
->> when writing the timestamp in the rx_buf.
->>
->> The previous implementation would have been fine on architectures that
->> support 4-byte alignment of 64-bit integers but could cause issues on
->> architectures that require 8-byte alignment.
+On Mon, Mar 16, 2026 at 02:30:08PM +0530, Shi Hao wrote:
+> This series fixes spelling mistakes in comments across several IIO
+> subsystems to improve readability and code consistency.
 > 
-> ...
+> v5:
 > 
->> +	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2] __aligned(IIO_DMA_MINALIGN);
->>  	u16 tx_buf[TI_ADS7950_MAX_CHAN + 2];
+> - Rebased on linux-next
+> - Dropped patches already fixed upstream
+> - Added 8 additional patches to previous 6-patch series
+> - Rephrased several patches for clarity and grammar
+> - Added missing article where needed
+> - Improved commit messages for clarity
 > 
-> ...
-> 
->> -	iio_push_to_buffers_with_timestamp(indio_dev, &st->rx_buf[2],
->> -					   iio_get_time_ns(indio_dev));
->> +	iio_push_to_buffers_with_ts_unaligned(indio_dev, &st->rx_buf[2],
->> +					      sizeof(*st->rx_buf) *
->> +					      TI_ADS7950_MAX_CHAN,
-> 
-> Hmm... Wouldn't this benefit from array_size() macro?
+> v4: https://lore.kernel.org/linux-iio/20260311093933.21333-1/
 
-I don't think so. This is a compile-time constant. array_size() is
-a function that handles overflow, and there is no risk of overflow
-since it is a constant.
+This URL is wrong as well as other references here.
 
+> - Fix commit message grammar and punctuation across patches
+> - Keep 'whilst' instead of 'while'
+> - Rephrase sentence in chemical driver comment
+> - Capitalize IIO in comments
 > 
->> +					      iio_get_time_ns(indio_dev));
+> v3: https://lore.kernel.org/linux-iio/20260309104513.40359-1
 > 
+> - Change commit subjects as per changes
+> - Capitalize proper acronyms (IRQ) and Celsius
+> - Fix short wrap in commit body
+> 
+> v2: https://lore.kernel.org/linux-iio/20260307104705.49129-1
+> 
+> - Split original patch into 6 commits
+> - Fixed commit message formatting and typos
+> - Added necessary tags in commits
+> - Added more fixes than previous
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
