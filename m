@@ -1,63 +1,63 @@
-Received: from mail-pl1-f181.google.com (mail-pl1-f181.google.com [209.85.214.181])
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 020DC382395
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:01:52 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.181
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9984A388361
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:01:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773651714; cv=none; b=olg2365L0Zu5/aE/TlUTM29E/Fur7zEJBsj1RCoyKVOM6wF9NQmZH7hT0s2bigYLC3BepDhPJyYgU/Q1Zn0j//cyGZToiYqVPf05KuLiSC/yZN1CIfIDib3noTBKJRpRocJ9DdK71yvoPBK6AayczMpxSOfJ+adCWQQkKavZIpA=
+	t=1773651719; cv=none; b=lDWiXs12yB6/I6ei/4AqPVZVPO/OtDnbzcpMelEmxkadBXbDql4X+/MnthzkHwFCg5J9BuAHa59U4D/a5HUaF1Pz4YiBpbBS2Hiw0sCQYEDEB6T/emrUhTEarICDOiUAVsR5SWEwOnzFij993aNGgKiL2IvN6vgnYuFYfvuy7Is=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773651714; c=relaxed/simple;
-	bh=Fe6+iphA9F6ev0JQO0Pk84PfZ7jfQsHoip4Cne45V8Y=;
+	s=arc-20240116; t=1773651719; c=relaxed/simple;
+	bh=nGVuAV7D+S8fSHs2kB1/eYAHHyt/9b3rTE3s/a4PtHU=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=NuoHv86wa/934v0y+EIrNP2KseClrZGUtdeTP4upfpBxeKpuZLjoTEHghqsgzutovNWPpsCKJskEK8GlNmEAJBzrolrKxWJjITfIs+w9qxpmvsNshnbHIsXeMbV+pSrzUjW4cs+KcllDvVl/xlBrbwFBkozJjFMJ7yf6vlKO4R0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=SBxMJU/f; arc=none smtp.client-ip=209.85.214.181
+	 MIME-Version; b=LXrT/XufJMIZCKFVFCng5PrFaaf0+H6C8eY/v4t6mi1OqkzAsBtHMqbIEhdxnCCcgJZlCdSb+lQB3Ou1ebZDujhh7o0B2mpYQTbJHRDZdZiDpa6YV0xeEHNPMb0tZIuztR3gMYiqgqMxPAFaR59frw8P4g65dyNqIIVnU/uRWd8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=MWNQrOsA; arc=none smtp.client-ip=209.85.214.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SBxMJU/f"
-Received: by mail-pl1-f181.google.com with SMTP id d9443c01a7336-2ab46931cf1so38553585ad.0
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:01:52 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MWNQrOsA"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2aae4816912so28352695ad.2
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:01:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773651712; x=1774256512; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773651718; x=1774256518; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=7NnGrKZfCQ5OdVoltW6rYje+I1caYgLD5Ja8epWAZIs=;
-        b=SBxMJU/fkwtC/24Y7v5Z0rpxy3crm6a9LZ1EEllg2YAfBzaSShzuwEBmeJDyKbrVty
-         9N1CY6Cxd/Ohy267Hf/D7e/99AC2E2QXHW/QbvvhZDve6s+0dpy5b7XAIs5FMwK5WBJc
-         t1ttmQs6HcIb7Sz6BY5uW/b2S1iE0wlFyiUX27ExDqpApsrD25iUn0gVgb6gwHug2MVr
-         pCiuSviVdJ4eaOsA//soxYI5020MgbAK+vi0s1HnpF7uXLwwr9urkqSeZ5tVNXPO/nM8
-         q9qvyVipUcNE8wd/6HhrwprvMANSf8q7xkcWDeSZE2oO/3zJQrxMA4t26BE5uU4A3Ouu
-         ykVg==
+        bh=JHq/CKBFoBWzeOSP0uPpRSevGUNZS3G/3vF8FZDnFHQ=;
+        b=MWNQrOsAYpYLjCGPEJ/8xNCcMs6YR0zvvL3StD4Bk0L86JziQR7QQlf/RBmz3ZKgQm
+         aNEiHIc4H9Uqy7+V+2wVBsCZZ/D62OIZkNXs8Qgj6dZk+RcvopsGFBiLQgx4Xx2wYNSR
+         dDKi4W1XUV4zvYs/ZK+ewD/0P2fuxGpLyFMoaHulH8Tr3oD2xQQCC6Sk2fbAZBafRvoE
+         sTBoIxdw9N3FVuTPoOm7eSS+YbImOOjU+l5AO2xnoFaqPpymOqsphvyJdVtzHeE1pvh9
+         fs1kKYNN7YUlItGnOA4wB7xt5XomaGPP2+HzvZweu2nSI+FsGzIXuqWPAiJAsGYpTBM5
+         KVWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773651712; x=1774256512;
+        d=1e100.net; s=20251104; t=1773651718; x=1774256518;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=7NnGrKZfCQ5OdVoltW6rYje+I1caYgLD5Ja8epWAZIs=;
-        b=nkWOtRmi5bXqpbK2QBxo2mcrGDeUgtD7AIWa/2ioUr6oWFR+wjE/wEy6mlYHl32XrD
-         moput0kcTCRiwXqx/HM/pKLFHOtMiFbbwos9splDLbo4Bmy4Cf3GiWIEN9axZSYPSEOk
-         yd+LxJs0itZddpiuUQfXd/jvgJcgFJW8q/N3HuX51i/YBbzuFawyYF09L5QH+2DfuVnr
-         0UUBmuRe5TnE8gWQVN/A3PG2QTtwJekq2aqOowz5sleD+IrvMngBup8sVRPnSN1wgDiq
-         J0Yy9F6GVitlOuX/gQPNfV871Ym2OBVTxdCY8WU3+VVLUuN60hv0S+ulwmOQJitT1o8Z
-         YYvQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVt34PBsFKTZRHyC+C0Kd2xRg9u3PXuqJ//wFFgb3Rzyr81b6YRSbgAxBvJMHvThSZ7iV2i1vYVni4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YydVLfnZre8l6f+6CyxA4/SjyofZywbvBlgZmmhT1bjrFx79R9m
-	Vs+YcJpZUe3MdqTa/D64F1KWcRFbFBTHAkq9W40O9XtmUrGFWcZAARHe
-X-Gm-Gg: ATEYQzyD8VMtTJ3kZmE1F3VSbRdF8t7cBG9uzc114WwzrNiIY2AUPlc2H7kr3LYK/dN
-	XG8/SuOThuYQa47s3nDvw5IdWKzSBBnUos6vOTNwl4YRWEYg8zQqd3DoQLAcHx/lJjqoFYUgI0g
-	wOetub5yjlWH/pAlC3SbzrNwPw/6iD0/mcc6XfS4Lw1ghI1a+XkcMpYHsssWhmnXrsUV9eq5lbB
-	RexD6aL6nLHCXIeRteDUCkwn91239W72+7Htm6Zswfexugb6MaT51g1xS+ze3Bul2U4mcx5llpB
-	osbnAHpJPttXnwafuUD0MpXDcJ2wrG7IWzYLqyuAjUWITg20ejR/z5QsoFVoVB7UWVL+TjEtHvB
-	XwnrEKzKY3rBN4KAq6YfKdHL5Io86vYXmNWs3UOLQvOS7v9bYFgJiZ6MS1prmMCPTLPyWZd9kxr
-	NOocBGj2Ci+KLnsO8XQXpLGXVJ
-X-Received: by 2002:a17:902:f708:b0:2ae:cd8c:bd04 with SMTP id d9443c01a7336-2aecd8cc00emr95744645ad.10.1773651712295;
-        Mon, 16 Mar 2026 02:01:52 -0700 (PDT)
+        bh=JHq/CKBFoBWzeOSP0uPpRSevGUNZS3G/3vF8FZDnFHQ=;
+        b=C6/IbMpNHrz7e8iXME2euRbuI4YDBZO8BeXxGfkSxsfoWyeE8qH0nKGi+PSauo8+/9
+         CSLuCQP4vTdquWuk1pl6jbO9nudJbsFmWHlacMKKqf+7CAMcZ8S4YXREUbHIHt/fE3/3
+         qpR0Yf0uBKAIrohJuSj8r9qHc8HSK+xG1rb6NoapHnQsFgtmVWKJD0zUoKAdxy6mL1d+
+         6R7MPwwW31W7KLAnH5Lf+DY0Ji89JxV7tqzd5a4J3IVHZkqhmx3d1/wqHgqEXBkvI4e4
+         c2XM4Jv+hbKhwZ29dzmlql2cL66/uTzCvXBRSyH3A4Azd/B7lgFoejeAcKhLJ9Bqg6xb
+         wdvQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVOsxHtWHZ4PyU4blN4ym34zfD6RJKWyf/aGoWzvh/jnHIUJECKMa81qYwnygD26FDzxcg8ce2Pijo=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw1gbzpRIxSOjQhOLTPGyphpTktRTXoqr1sj1bh7G/Wl2lF85+4
+	5zk6aXdePOPcZvg1/SboNV7qDsm2Q7IuCTKkYzmBaq87JDRVwaKln+be
+X-Gm-Gg: ATEYQzx8kSbiUZYd28FwqW6LNDklbOyagoQ6pkKj1SPQSaY10BY1dlVZlf9s0YOVBxa
+	gdvLzwAWwDQRnIk2dVfsoJQ2pHuFDxhS0O7kcg2+moTWRhPSPqWxkIUOISfurBN895KzDRixFRS
+	UXVJtpkNsYOVtREu1lTLhZ9Iv2J0BEwAxtO8QtceBC4CQPEtcb0KZ2TArXQF2CxFGE0SbHuqDUs
+	uCsD08tGK5PA/K1zutkVQX21OA2W4qR+0WegG7XHGvHtd9pOuR9bmyEBCOWv1vO0aTTuWUDm8tz
+	SEKRsGvZRUoaXLgzoFMwH8V0wqAkmujxjWpbKdqrYYaAJNVJuvYiK+LWWknj8ukEv0xxMnXxY4w
+	lAIc9dvhsc1ACWd2OQBdM97Jm0EnRJZlGlggw5iDDmQc2wvzFaiMynvgn1A2SguCvhEduJR1FHR
+	7dndSSbdW9OWefbsrHvRdZWswT
+X-Received: by 2002:a17:903:230a:b0:2ae:45b3:b688 with SMTP id d9443c01a7336-2aecac5fa42mr136507135ad.45.1773651717900;
+        Mon, 16 Mar 2026 02:01:57 -0700 (PDT)
 Received: from fedora ([2401:4900:1f33:4eeb:289f:fcde:6da5:35e3])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.01.48
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.01.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2026 02:01:51 -0700 (PDT)
+        Mon, 16 Mar 2026 02:01:57 -0700 (PDT)
 From: Shi Hao <i.shihao.999@gmail.com>
 To: jic23@kernel.org
 Cc: andriy.shevchenko@intel.com,
@@ -68,9 +68,9 @@ Cc: andriy.shevchenko@intel.com,
 	linux-kernel@vger.kernel.org,
 	mazziesaccount@gmail.com,
 	nuno.sa@analog.com
-Subject: [PATCH v5 13/14] iio: cdc: fix spelling mistakes in comments
-Date: Mon, 16 Mar 2026 14:30:21 +0530
-Message-ID: <20260316090023.14691-14-i.shihao.999@gmail.com>
+Subject: [PATCH v5 14/14] iio: amplifiers: fix typo from Curren to Current
+Date: Mon, 16 Mar 2026 14:30:22 +0530
+Message-ID: <20260316090023.14691-15-i.shihao.999@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260316090023.14691-1-i.shihao.999@gmail.com>
 References: <20260316090023.14691-1-i.shihao.999@gmail.com>
@@ -82,43 +82,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Fix spelling mistakes in comments.
-
-- becaue -> because
-- reenable -> re-enable
-- irq's -> IRQs
+Fix incorrect spelling from Curren to Current.
 
 Signed-off-by: Shi Hao <i.shihao.999@gmail.com>
 ---
- drivers/iio/cdc/ad7150.c | 2 +-
- drivers/iio/cdc/ad7746.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/amplifiers/ada4250.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/cdc/ad7150.c b/drivers/iio/cdc/ad7150.c
-index 427d32e398b3..8106a6a83561 100644
---- a/drivers/iio/cdc/ad7150.c
-+++ b/drivers/iio/cdc/ad7150.c
-@@ -306,7 +306,7 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
-						dir);
-		if (ret)
-			goto error_ret;
--		/* reenable any irq's we disabled whilst changing mode */
-+		/* re-enable any IRQs we disabled whilst changing mode */
-		enable_irq(chip->interrupts[0]);
-		enable_irq(chip->interrupts[1]);
-	}
-diff --git a/drivers/iio/cdc/ad7746.c b/drivers/iio/cdc/ad7746.c
-index 8a306d55c72a..cb97e3c978d8 100644
---- a/drivers/iio/cdc/ad7746.c
-+++ b/drivers/iio/cdc/ad7746.c
-@@ -606,7 +606,7 @@ static int ad7746_read_channel(struct iio_dev *indio_dev,
-		return ret;
+diff --git a/drivers/iio/amplifiers/ada4250.c b/drivers/iio/amplifiers/ada4250.c
+index 40f396ea9069..71e361af2074 100644
+--- a/drivers/iio/amplifiers/ada4250.c
++++ b/drivers/iio/amplifiers/ada4250.c
+@@ -109,7 +109,7 @@ static int ada4250_set_offset_uv(struct iio_dev *indio_dev,
 
 	/*
--	 * Offset applied internally becaue the _offset userspace interface is
-+	 * Offset applied internally because the _offset userspace interface is
-	 * needed for the CAP DACs which apply a controllable offset.
-	 */
-	*val = get_unaligned_be24(data) - 0x800000;
+	 * Compute Range and Voltage per LSB for the Sensor Offset Calibration
+-	 * Example of computation for Range 1 and Range 2 (Curren Bias Set = AVDD):
++	 * Example of computation for Range 1 and Range 2 (Current Bias Set = AVDD):
+	 *                     Range 1                            Range 2
+	 *   Gain   | Max Vos(mV) |   LSB(mV)        |  Max Vos(mV)  | LSB(mV) |
+	 *    2     |    X1*127   | X1=0.126(AVDD-1) |   X1*3*127    |  X1*3   |
 --
 2.53.0
