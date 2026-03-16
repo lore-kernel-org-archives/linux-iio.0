@@ -1,63 +1,63 @@
-Received: from mail-pl1-f177.google.com (mail-pl1-f177.google.com [209.85.214.177])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC6C437419C
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:00:51 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.177
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C9C9A377EB8
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:00:55 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773651653; cv=none; b=StSxVP5vvA7/MH3vYnz0SDDvpKBCTcQcH+U9JvoE5RB5yrPWb0fA3LJ8BCpJEc6mu0AEc/1XbJ5EaYsM7j6jL7vtuUjkYxu3bs89Uhxer8yJ4ZDPZjaMXSJxAxZlP6YphEqTiCYYhisbvx8PskJnOgwSqR/WbEhoht++QniQJlc=
+	t=1773651656; cv=none; b=tJ59cOxfJyHjKObgiOmEL5Oekpj9QEkJz7aaCpdP/SV8jJCwW0Bn9/UU8qBOJpfljfjUlzF+t0FboeRaQND3MC0g3/ItDLdO+U0AlKTBEHtkTU7kH3kBL7Xqkl/z4TFFDFt/lXNWIlBLxApIeoRvzK/053jdPpPt0yxIVZsKNgk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773651653; c=relaxed/simple;
-	bh=aGIOwxlkTFN9XmXTP+DXifEScsZFFp5ZytQiqt6OzYc=;
+	s=arc-20240116; t=1773651656; c=relaxed/simple;
+	bh=GX7rEU5ZjBw1ZH5RUS5Uw7wSvvBW+V6Qd58RceL8a+A=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=ZsqmIAGqhUOnfvjb5SZ9BquBI53bFJJnIhfTB1x/eJaEnhl6c6WSobAqIjgX5u4UmJzEtX9G2vkQUzhY4Y95IwFHxkAIhLDR+CpxYv+xHzgKgKonqMg4Kkr/oLadNA6Ij2WxEcs24dc24Xd0sK332rtxDacFYUa7y3jDfjdvCZc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=BUN9zlW0; arc=none smtp.client-ip=209.85.214.177
+	 MIME-Version; b=aqXmM1sONCrMDvYMHcH2PMTUspg4rG40S0hlcAdjnK+d0PWm2dUDppDiN+HXrieCPkWL4M1lcYFhXL9qGmcNbr9VKvAGkXKs1fdodS/vINkaeEBLnbCwahIiH4OMdHkGAq/W0YDLMrtx9ZpRSmph7arg4Bn69//nkzRV2JDjWGA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KU6We+z5; arc=none smtp.client-ip=209.85.214.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BUN9zlW0"
-Received: by mail-pl1-f177.google.com with SMTP id d9443c01a7336-2ad617d5b80so30256995ad.1
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:00:51 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KU6We+z5"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2ab46931cf1so38544505ad.0
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:00:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773651651; x=1774256451; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773651655; x=1774256455; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=krIBvcQ9qVWVyiQdGz226MUf38FMQABPS7ogaQR3zjU=;
-        b=BUN9zlW0kkZG6zRy6NPqBqUKmXaH2jBBKKHap8Yr3XD4a86mCCx0EyLL50TfLYTWox
-         y8FkWHpap0YgSPOTeKmvQ9oR+3i4PSzepFdyEzDyrSlIRpkFx/H12a2JcDWXziBmA5PH
-         ARJHixfSbSs0ktD3Rojt/EVHnRUDJ+4SeZ/WnwaKbnHghwtO+abq0oJeEeGgt9gZouRR
-         SjFPwjiJGi5ihjB0Tv89wLMTJCUGoljh269Xo04rMWLyjSk+a/1nwZXBJOI1y0I/8zhW
-         k5QexGkZLRTGsvl5sf28K+zY8hXxFU54C4pj5aJBJHTZd9+I3o4EUKS/4PH+TINFCbZI
-         pS3A==
+        bh=5UKNGqPVlKd4WYam9XxH2hwncXWBagNhbIFnzEHlaJc=;
+        b=KU6We+z5TK46SHO2ZQNWKk7NVv/zBOIY584j2yQsutAFm+KvrYZxE6XiNi2F8Cq8Kn
+         ToJkMpo+8naQC0k2KfRAW9IvBhUm/SeAsaOfMz7GsOkoh8hi1hlnGfVdkzBmgzI1jcWz
+         ereWaSw5xfvq4WiRwFIufJrd4jcgvCcaLa5GXaxsViV0bQkMkJGVM6YWQXGwLrBm14on
+         8jMRVDubnty+BcK5F6LNFBZDjT3wm3zXruWwM24PWijaOdr3rJPAUDmEmLbR1Ba8vJgG
+         rWMQ6EQPUMD32UjUlPtTztYVLWSEDWiRdHMl2lh1E86YqNI3E6ciWLbmUcC9VxJYOuZQ
+         Ro+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773651651; x=1774256451;
+        d=1e100.net; s=20251104; t=1773651655; x=1774256455;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=krIBvcQ9qVWVyiQdGz226MUf38FMQABPS7ogaQR3zjU=;
-        b=JIsOWm1p55Ajpd2Rn/NxdkLGbCoWZrP0hHPnJUwzR6/bGyH5J5rupHx8Fe403wUqvb
-         tIUkZCQJ5Zx0qR8QHhk54NeMEO9oxPskTaLswJRi0WjmNY62y7/+H1az6AJOlpx8Frx7
-         l5R4dUKQnd/WqOxfizA2+BOfj5OncC5iGA4mIF4PwYT8icxnv+3a4igjzgL3YKaWQY/3
-         99FyrXxYkpO51GaCgGU8CfYNItIIiE/JwpGpqpW7mXAia/PYWnG7OsjU5A10mjjoTCHo
-         1o4qXMTTiJKZvNbj8XEOZYTvqgXcuvIVmGrS9liXuOSKsUZ9/WZtA6zZ6eTZjTYbdLfn
-         akHw==
-X-Forwarded-Encrypted: i=1; AJvYcCWOuPqnFjIe16yl77H/pst4c90PkJetWe7aU9WBGfLDQyQ/A+9W36q6ps0JrMjJmTsOTwYmTVpQ2uo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzlpJcESDvhxjg8KqEfcv0OZNfu8YmpSfYbQrnUzOFXwJHjOYWU
-	VkKU55JkFPFk1nm8w/IIuUjROwgwtAoBC1OJ1+XGwHcG2XSfRu/l4Ouv
-X-Gm-Gg: ATEYQzz1ZWcmlU6GHhPNvji/Qo1eeTL8NxoiR3eup3eip65pT8Wu+OGAzJe3/EnviLW
-	/MUS0PcPTU9VyluLzsqwajkP6SBcUYkIcbhUpUFhT/8u9vJpPSXpRwRU/Sjp1RL6BQGdRDv1aUf
-	+xf5wG32hbg6Kb2TsyeRG9T1C0/ToDUPAQdOQ1W60Kj9t2DW2b153+r+4YdF+0Moa3J5LkmVLWk
-	BavPYwZa8sTNjvUgZyD3JldH3SyWlz/UY1NcweeDLZvNDdeWf/C1gd0vnxfXF69GGfxM/VyFWgt
-	Et/6lBWXrDaUC4CeE3aS7D9YX3FBsGK2Zudflr0N5/VVQiqJcevtlAiHCGB3YzhbhZBHSGgN+m3
-	wsOltsF0t3au1VKQHYM1tG3rc6curWO7dYbXi0P1CVGxHASOBH2gHOn55ioBonKO59N2lQKGhah
-	P62nz7YL3yWjdo0w1z+1LLwIAt
-X-Received: by 2002:a17:902:daca:b0:2b0:5520:f4a0 with SMTP id d9443c01a7336-2b055210ab4mr35920165ad.11.1773651649598;
-        Mon, 16 Mar 2026 02:00:49 -0700 (PDT)
+        bh=5UKNGqPVlKd4WYam9XxH2hwncXWBagNhbIFnzEHlaJc=;
+        b=qeYaWYZlAVlC7VR7N2s+dQNCKpY7QPx74tqFP33ikekEuBTOLyhh5mHE5Vm6qL+M7f
+         fFBlRsZiggVtLsexNpxONnAIEuFU0j8cFybHJu1jXDuZqCHJKIEdCgWULVj0IRtNQdI0
+         QsGbHDtShEErPPg9cLmjzdgqBDmk9kg60Ju20PKftON1snwHunab9MoCvH0lxiydtOKT
+         /Ngh8uNQjwSC+VoDGUcILMA5qXsxONGYosmUH92ykxnnZYK4V/7JoEJvFSa7yumLNa/l
+         +UBjeestbdSPowFOGINO4LpO1h21/1/rl9eMToffxK9v4Bh+e9rRUq7g2e5/WVBeFzvF
+         Q5pg==
+X-Forwarded-Encrypted: i=1; AJvYcCVEAHi6BFLgx4Npg9A0p4XFk7p7c6bGgr6u9Oc+tKArKgZSgveGq/BD4He3EFm5wCuSn4GwvpPUXxk=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yys+Ki8i/+6kZ+Mle5RqKAMNzrNWPuckq6WHSYO8Ewgf53MkYSf
+	PKIaOWJ4x7pde/x5VY39mZfQSrAVajnrru5Lg8gGiOHSVH1/AATqJXFE
+X-Gm-Gg: ATEYQzzpUQ3Xh+oi8NIfTsR1QOI8CMaUszkPGXSXtPBHjjeEnDsxuoVo0MSiEDwHrEk
+	Iqkd4I2fViOzyHwDFaVne1WxoaUNVITWMwtB0bF4JlW9cvFR8VpSMfEEs/J8LBkv/Z5/m4BHQEG
+	tGq/A2cFv0yG2RzNtoWeqLWl3WoTBrTyLX/3w1cOvDGMhbq78LOu5RVnlengEfGd0g3ictCH0za
+	ulagDfGBM77xMyA6ANlQwRE08kscodDHP7rUDLvlyaqgdvc4lsnWXD8wiUjeCPJa8FRwj4+YVwg
+	JhfzQ321kGK5COnY5mBVZBPZyVN6RznWZ4chaCT6xGQNN6k4IX4RyYriX7vW12xXKiu6BmkAMzD
+	/13nqQWq1yl6TFURV4K1Zm0aEQQYeRE0dnu/aV4Cb4ViOUWx+hufuOQLlmR73efCXgI2LMvr6fo
+	qmFXviY9urGeOFIDdJBbhVTYZs
+X-Received: by 2002:a17:903:186:b0:2ae:47b0:dc80 with SMTP id d9443c01a7336-2aeba48f0eamr151254845ad.11.1773651654933;
+        Mon, 16 Mar 2026 02:00:54 -0700 (PDT)
 Received: from fedora ([2401:4900:1f33:4eeb:289f:fcde:6da5:35e3])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.00.45
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.00.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2026 02:00:49 -0700 (PDT)
+        Mon, 16 Mar 2026 02:00:54 -0700 (PDT)
 From: Shi Hao <i.shihao.999@gmail.com>
 To: jic23@kernel.org
 Cc: andriy.shevchenko@intel.com,
@@ -68,9 +68,9 @@ Cc: andriy.shevchenko@intel.com,
 	linux-kernel@vger.kernel.org,
 	mazziesaccount@gmail.com,
 	nuno.sa@analog.com
-Subject: [PATCH v5 02/14] iio: light: fix several incorrect spellings
-Date: Mon, 16 Mar 2026 14:30:10 +0530
-Message-ID: <20260316090023.14691-3-i.shihao.999@gmail.com>
+Subject: [PATCH v5 03/14] iio: adc: add an article and use digitize instead of digitalize
+Date: Mon, 16 Mar 2026 14:30:11 +0530
+Message-ID: <20260316090023.14691-4-i.shihao.999@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260316090023.14691-1-i.shihao.999@gmail.com>
 References: <20260316090023.14691-1-i.shihao.999@gmail.com>
@@ -82,87 +82,31 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Fix spelling mistakes reported by codespell.
-
-- sesnor -> sensor
-- substraction -> subtraction
-- simulataneous -> simultaneous
-- proccessed -> processed
-- coefficents -> coefficients
+Use digitize instead of digitalize, which is the correct technical term,
+and add an article for clarity.
 
 Signed-off-by: Shi Hao <i.shihao.999@gmail.com>
 ---
- drivers/iio/light/Kconfig    | 2 +-
- drivers/iio/light/apds9160.c | 2 +-
- drivers/iio/light/ltr390.c   | 2 +-
- drivers/iio/light/opt3001.c  | 2 +-
- drivers/iio/light/tsl2772.c  | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/iio/adc/ti_am335x_adc.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index ac1408d374c9..eff33e456c70 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -359,7 +359,7 @@ config ROHM_BU27034
-	select IIO_KFIFO_BUF
-	help
-	  Enable support for the ROHM BU27034 ambient light sensor. ROHM BU27034
--	  is an ambient light sesnor with 3 channels and 3 photo diodes capable
-+	  is an ambient light sensor with 3 channels and 3 photo diodes capable
-	  of detecting a very wide range of illuminance.
-	  Typical application is adjusting LCD and backlight power of TVs and
-	  mobile phones.
-diff --git a/drivers/iio/light/apds9160.c b/drivers/iio/light/apds9160.c
-index 9b8af11b7b67..3da0bdac04cf 100644
---- a/drivers/iio/light/apds9160.c
-+++ b/drivers/iio/light/apds9160.c
-@@ -620,7 +620,7 @@ static int apds9160_set_ps_gain(struct apds9160_chip *data, int val)
-
- /*
-  * The PS intelligent cancellation level register allows
-- * for an on-chip substraction of the ADC count caused by
-+ * for an on-chip subtraction of the ADC count caused by
-  * unwanted reflected light from PS ADC output.
-  */
- static int apds9160_set_ps_cancellation_level(struct apds9160_chip *data,
-diff --git a/drivers/iio/light/ltr390.c b/drivers/iio/light/ltr390.c
-index fc387426fa87..f1702aca582d 100644
---- a/drivers/iio/light/ltr390.c
-+++ b/drivers/iio/light/ltr390.c
-@@ -101,7 +101,7 @@ enum ltr390_meas_rate {
- struct ltr390_data {
-	struct regmap *regmap;
-	struct i2c_client *client;
--	/* Protects device from simulataneous reads */
-+	/* Protects device from simultaneous reads */
-	struct mutex lock;
-	enum ltr390_mode mode;
-	int gain;
-diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 393a3d2fbe1d..53bc455b7bad 100644
---- a/drivers/iio/light/opt3001.c
-+++ b/drivers/iio/light/opt3001.c
-@@ -91,7 +91,7 @@ struct opt3001_chip_info {
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index a1a28584de93..1516dd332f90 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -113,10 +113,10 @@ static void tiadc_step_config(struct iio_dev *indio_dev)
+	 * There are 16 configurable steps and 8 analog input
+	 * lines available which are shared between Touchscreen and ADC.
+	 *
+-	 * Steps forwards i.e. from 0 towards 16 are used by ADC
+-	 * depending on number of input lines needed.
++	 * Steps forward, i.e. from 0 towards 16, are used by ADC
++	 * depending on the number of input lines needed.
+	 * Channel would represent which analog input
+-	 * needs to be given to ADC to digitalize data.
++	 * needs to be given to ADC to digitize data.
 	 */
-	int factor_integer;
-	/*
--	 * Factor used to align decimal part of proccessed value to six decimal
-+	 * Factor used to align decimal part of processed value to six decimal
-	 * places.
-	 */
-	int factor_decimal;
-diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
-index 0b171106441a..c8f15ba95267 100644
---- a/drivers/iio/light/tsl2772.c
-+++ b/drivers/iio/light/tsl2772.c
-@@ -190,7 +190,7 @@ struct tsl2772_chip {
- };
-
- /*
-- * Different devices require different coefficents, and these numbers were
-+ * Different devices require different coefficients, and these numbers were
-  * derived from the 'Lux Equation' section of the various device datasheets.
-  * All of these coefficients assume a Glass Attenuation (GA) factor of 1.
-  * The coefficients are multiplied by 1000 to avoid floating point operations.
+	for (i = 0; i < adc_dev->channels; i++) {
+		int chan;
 --
 2.53.0
