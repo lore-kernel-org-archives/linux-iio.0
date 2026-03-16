@@ -1,63 +1,63 @@
-Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+Received: from mail-pl1-f178.google.com (mail-pl1-f178.google.com [209.85.214.178])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5F767383C69
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:01:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.172
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7C9C9383C9C
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 09:01:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.178
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773651679; cv=none; b=kZJ57AUoNlcjV7NKUl22H14duRlPnC+L45Q4GTWV5sfbVgN8he9CWM3V5MbT5FGb8iOlz0bPrlj9GGybKyoNeA2jwFUKRok0L8xBtopy0MsXJ30bQOZ1gVi2EeTK85NhvP0CcPSAeOBD5ly14WyyZT99FpinwHtPpCwzukQ1mu4=
+	t=1773651684; cv=none; b=eJce28UpacMhbknwZwC7GiikZ3npStpQPgStdjeuMBp/Ys1bZ5fvr9oIKXdOMr09+4nKktovbJ/x1O+xmi5hj8GgU4C/0pOHjk6bDN1ybGEOKMuslsL7nMom+OXm/M09I/B8kHlLb9Sq6Nv9PK2eI3JmDKGNLpdFVwCIePL4c7I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773651679; c=relaxed/simple;
-	bh=43jYAPikT7gsClopq9KcKvDH+4DA4Dxsmik18qGx1MQ=;
+	s=arc-20240116; t=1773651684; c=relaxed/simple;
+	bh=ZaA88DYpvm2paOsVMP6lUg/oM7kobf2QggwDt0wLzJQ=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mu+zvX5ORw9BRYa0mT4Dcp/P3xOBolkofmPX1gfY5PJIreVAEa6Y/VdryWmn+BWI/lnQQD21YoBYta59VAAi612qb/PhvJMvLyM+KGDt+g8Nb2V7AOUxs1REAO/Rj9raZbCTXjwI42bW7X1JghPMkslUCrfiM4kYTMmbmIMb15M=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=EIRMHzUu; arc=none smtp.client-ip=209.85.214.172
+	 MIME-Version; b=YQlTyqnz5uLy5hWdB7t7yY5QaCR4CumE8mkbEFEDTevcIouqq86fSd2Mj1+KgjUxIX84j7zA9xQcQfQBxWGRGNW/nF1wBSttZW2iwHFlKRfa/fF+OtrLbWvJS6IrjovY3KARspZu7aR1y6PQbrEyUWTqmniu4F1OkzkP4WXGmis=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=KMIZHC0O; arc=none smtp.client-ip=209.85.214.178
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EIRMHzUu"
-Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2aecefc7503so17773065ad.1
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:01:18 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KMIZHC0O"
+Received: by mail-pl1-f178.google.com with SMTP id d9443c01a7336-2ab232cc803so19874855ad.3
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 02:01:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773651678; x=1774256478; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773651683; x=1774256483; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=kzdo6gYIjgrMdJXz8XZ6QtxoKRvPIRnI09TITiQ2hfs=;
-        b=EIRMHzUuEqP72WtbKnBKWpuLMO8KS++VrMjLqarnj37RXtRHUFGud/exOhbNqLZrrM
-         4TC/wr0dqkDLxlo3WonUw6x9hFJ1RWDadd6vhRW1hmjtnz8ZC0dNA99DG7whETokHTf3
-         KL+LIfN828gfwhXo8wtAj2K+8zXmyVd4ajTCgd8lLuajQ4VjeOymo3BwJSrHx4XieNhn
-         pNv7FJ/QnUcw6xTRNXjhUfKM9bcLFuHV34duwCKmlNfDZMTtWBFlFPzpcrXGY/wBPG1a
-         P2tlq2vM6Js02we4GTVXuCHioyKw14drDb46SCeLfRjaJV83Mgnb7+ShLh+YVMAsB9xp
-         /rbQ==
+        bh=1J6P+nBUFnn2G2dOENb1P2owbGwV8u/LT2CgQCE4qrM=;
+        b=KMIZHC0O+hnMqjHHSxK5mxJPjx0iTQDDe5re1zdoueamKLU9KEx5nFJmE3n1UGRdys
+         fyjWtFdTA9e7XXe0rjI1ea5yW5ENWURpI2uzu4rkqsLyU1wLBPwuon7Sq4Lk6FiNpVmp
+         hm01BiVPI+VpnRjCi6yFzn2q2FdqhYWTF6B4wnIQQ2mkTMN1sOYvZ6lrssgycDVo/hkg
+         zO3g+j4PIvVgL58jj4PhHlnZwZLC25PfXhGmIoZCSORYtFXEfDSNe7prq3+WW8U0i0VS
+         Z9qGLWI2SdpN2ymxUOBgJVVXUEHZwmDCGbGLndO5/iUr3B3akONsXucpRhwX6TzY/FnV
+         qmKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773651678; x=1774256478;
+        d=1e100.net; s=20251104; t=1773651683; x=1774256483;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=kzdo6gYIjgrMdJXz8XZ6QtxoKRvPIRnI09TITiQ2hfs=;
-        b=fw64U93FTzaZBdhwEsNvM8uk92gX4jVMPA6en4cD0vOMZqFBG3DpBWH4GaosELtzBb
-         XiljBWBgz1nbkoEnGobiLxOd1TCr2VeN34pxubPk5CoazfPyPODRbs0ug8chgdQMA/6Q
-         uFDXnrV2cuJsGqS0f/im+9hCC1ePn0ckLqDB4jJB8L7MO95PLNycyb0twT8eqKEt2j1T
-         9v/ZmJB/Mq7dAzRmaM1vIXVbxNWGW8F2tDPxZ/GzEYSJ+BN30McGLBpqO/9J6UM7F11H
-         MvNQxPdFLCAMpxRe07fJxWtBSAkqBE8HEpeZwbVQc/GwBQLqYnwF0pJhJxb1rhgbJTPR
-         NVTA==
-X-Forwarded-Encrypted: i=1; AJvYcCWIvxKXEv53qcqz42dtLukpF4+vKWC0sdC6RCAY/Bk0GqFzC8zNoJgphFtzYU5qoSiVPOb+DCz7YrA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwcU00m+7khIYd+GzVmyrihHER3xxhF2EGoTpd8RvztxuSYJgO4
-	iUVhbMWWFfAL5D12XDRdtvXkFV11QpsvxrQrE/YbEFVAlbHsvwChSLwu
-X-Gm-Gg: ATEYQzxU6JmNNmrHqg963ES5GOT9u72/rWghRn6SdZWBFpBWM4RLmWuJQgaFQ719YPX
-	pbld7BM+acZipPICniGeybFsh7ltLSR1NAkjWs/pDAD/ls81v4v78+IHG2ntJpZ4wr3VUZXgJbS
-	ZtVDWCOsccJWizVUd3g90WMJvBkEWvrsmXaaipcN+kTwUdbGILJoTDVIgDSL5C7jH7wdNxefDOh
-	pZfHnBHJlWav0bTfke5A9UBJcbkmoMl6Z6Hpom/unpT0gqmCcey3daH0euF9ISvFA1LxYLkpT9j
-	sVLvv/3jl4InQbH8oCfi7bOD8XDiIPtsUJ1jgi44u+w/+nhQoId7oTJD7pVqRZzT9qcjP7QupdY
-	ILhgtVXSWhICNb/HZNoVgbtVyJQQSxSO69B/UFTp7BMCNIEXe4i4VKgMSqW4iUDrDvoPKwSOIMZ
-	7WOaF4MsmPTqxtpXUnu8VQVC6+
-X-Received: by 2002:a17:902:ecc3:b0:2aa:e3c2:f920 with SMTP id d9443c01a7336-2aecaa96a34mr126421215ad.36.1773651677754;
-        Mon, 16 Mar 2026 02:01:17 -0700 (PDT)
+        bh=1J6P+nBUFnn2G2dOENb1P2owbGwV8u/LT2CgQCE4qrM=;
+        b=OMRW3A4c70+5lH0lvBfnmqO/mmnrHvyBp1G61iow8SPUM9lO/QeGEXEcPG4mSQwS/+
+         Rr+XUUl+e+dNFZvFW+A4StpSn3/bCQdDnDHXM7JAPymJeWd0AoOjpNzbepcn8kTbZC+Q
+         xOQQGTe9/7PONiLKPEpmZ/7uMkZzyd20Zy/vT5aI8xw8BYlQiBjakXskaJKiFLmdIHw5
+         E0lF+QJO06ya43P5UTvieqhk8iNwByegzetVjUhyT9Yk6BIM7uL3mUlbXP7d4AMKmNME
+         s7BZmxli7BmsvXR7vPuz3dsiGdJY2rHVhSAKGBtWdcyXjTzhJKgUS7WiYT+GnKse701L
+         a/dQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVesPI/c+WONLVRHsWojiKwuQI70HWWaFfeLRXNM4ASU7+3pS7oarXtdqesAhdmqbOJ34YyAHUEjwk=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzhKQWVW6i0FeOjoqKqGWu7Ewu/+5KwOj0JFcNfxR8oZ3dgHH/A
+	+MT2CFcIU4mvpNc5Mf4yEA/1zIUt0DyfiU45por2C1DXqyN+ws6Wb7w3bMNp+g==
+X-Gm-Gg: ATEYQzxkeznzBiIUSoKFoijLZnXKmZuKpvtn0Y22iTvyPCX9IPo9K07PWFH+GjjhrsG
+	OgsYv82ywn1gAhEQJhala46dCXn00ZbnZvZhYLx2d9rb0KONd05UvW1NbIi3oQdy1SNl30WD8Pf
+	q4h4f8v2x6/y1Sj58DKb8Bj0Jh0jzoKTJeamrmYbjB/vDQmLWBTZqf0eU1SlStvju20prcqWmfU
+	QVhEzQ+t6NEuQnO3YIsOk9wOsd9v9MQy/nRP2J82FKhLjCry/Y0XVlQ8vC/pXn1X+Ec2553s642
+	BnBlfRweRtTOvJfhpLqXNpVc3PQaAUYHVMohYtMHSI8BmQAuf9vXE/R+9Be7vuSvsSWi/UrBFUA
+	gfWA83fWt/Fipu00ki9Sw7QuxLJr6fWoRJ/iias3Hlly8EBko7wF8aUuUjA2Ju+kyD/CK+Dapuo
+	6FeuGgQ380lbxn2nJ+6QX5KeNV
+X-Received: by 2002:a17:903:124f:b0:2ae:803e:6c12 with SMTP id d9443c01a7336-2aeca8ef52bmr120796565ad.6.1773651682802;
+        Mon, 16 Mar 2026 02:01:22 -0700 (PDT)
 Received: from fedora ([2401:4900:1f33:4eeb:289f:fcde:6da5:35e3])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.01.13
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2aece868172sm98105835ad.89.2026.03.16.02.01.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2026 02:01:16 -0700 (PDT)
+        Mon, 16 Mar 2026 02:01:22 -0700 (PDT)
 From: Shi Hao <i.shihao.999@gmail.com>
 To: jic23@kernel.org
 Cc: andriy.shevchenko@intel.com,
@@ -68,9 +68,9 @@ Cc: andriy.shevchenko@intel.com,
 	linux-kernel@vger.kernel.org,
 	mazziesaccount@gmail.com,
 	nuno.sa@analog.com
-Subject: [PATCH v5 07/14] iio: proximity: fix typo from currenly to currently
-Date: Mon, 16 Mar 2026 14:30:15 +0530
-Message-ID: <20260316090023.14691-8-i.shihao.999@gmail.com>
+Subject: [PATCH v5 08/14] iio: resolver: fix typo from degredation to degradation
+Date: Mon, 16 Mar 2026 14:30:16 +0530
+Message-ID: <20260316090023.14691-9-i.shihao.999@gmail.com>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260316090023.14691-1-i.shihao.999@gmail.com>
 References: <20260316090023.14691-1-i.shihao.999@gmail.com>
@@ -82,25 +82,25 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Fix incorrect spelling from currenly to currently.
+Fix incorrect spelling from degredation to degradation.
 
 Signed-off-by: Shi Hao <i.shihao.999@gmail.com>
 ---
- drivers/iio/proximity/sx9324.c | 2 +-
+ drivers/iio/resolver/ad2s1210.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
-index c7b2d03c23bc..f61eff39751d 100644
---- a/drivers/iio/proximity/sx9324.c
-+++ b/drivers/iio/proximity/sx9324.c
-@@ -821,7 +821,7 @@ static const struct sx_common_reg_default sx9324_default_regs[] = {
-	{ SX9324_REG_ADV_CTRL10, 0x00, "adv_ctrl10" },
-	{ SX9324_REG_ADV_CTRL11, 0x00, "adv_ctrl11" },
-	{ SX9324_REG_ADV_CTRL12, 0x00, "adv_ctrl12" },
--	/* TODO(gwendal): SAR currenly disabled */
-+	/* TODO(gwendal): SAR currently disabled */
-	{ SX9324_REG_ADV_CTRL13, 0x00, "adv_ctrl13" },
-	{ SX9324_REG_ADV_CTRL14, 0x00, "adv_ctrl14" },
-	{ SX9324_REG_ADV_CTRL15, 0x00, "adv_ctrl15" },
+diff --git a/drivers/iio/resolver/ad2s1210.c b/drivers/iio/resolver/ad2s1210.c
+index 06d9c784f93e..e87175521ab4 100644
+--- a/drivers/iio/resolver/ad2s1210.c
++++ b/drivers/iio/resolver/ad2s1210.c
+@@ -899,7 +899,7 @@ static const struct iio_event_spec ad2s1210_monitor_signal_event_spec[] = {
+		/* Sine/cosine DOS overrange fault.*/
+		.type = IIO_EV_TYPE_THRESH,
+		.dir = IIO_EV_DIR_RISING,
+-		/* Degredation of signal overrange threshold. */
++		/* Degradation of signal overrange threshold. */
+		.mask_separate = BIT(IIO_EV_INFO_VALUE),
+	},
+	{
 --
 2.53.0
