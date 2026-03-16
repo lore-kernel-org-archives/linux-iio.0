@@ -1,58 +1,60 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD8E51E1DFC;
-	Mon, 16 Mar 2026 11:25:04 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9FFE228B4FD;
+	Mon, 16 Mar 2026 11:27:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773660306; cv=none; b=hxefqGqrzerJrDZHSD8X0OD227KgMHFUK8SvA3/VSCB9X+TI3AZoDCtExTRRjTfP3nCNOKFipJ0tTk2ZPcCW5mwo7HPkZ5yRoBCiq0ClpjKxuI+C7umCHjN+494Wvy+14ibX+40yLxG25ktK0GhgM6YoBc0YCGBFh2LoYPgr56c=
+	t=1773660423; cv=none; b=PRiBOMFJb2Ct6tc1kOBqvfTtzwpwzNZf0iEN9Se6pYgAhorEPAMLEQSMQvG24Mr3YXGJTK6UCJbVCP1htEZR3EA0K76GUHIsI+VQtAqnfWxkPIFQyUU7iuuXkJBFzioABUWvub6RItV+O8ZG6M0w6H5CHvbI15m5q+8foNQ0sOk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773660306; c=relaxed/simple;
-	bh=B1sTM5bQzllfnXzANIrljhS0l19Z0G7SH0icpqGgSV4=;
+	s=arc-20240116; t=1773660423; c=relaxed/simple;
+	bh=eJjTVDDPV3wfEwUW6pl59/ZcHzHS9NvGmYYZZMKjlJE=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=j5I8Dbsrg5UenRKeWecCerg0O00y6G8j+kMsGAG5hgzuE7tArEitbdA++3IbzUPJXOUhi/oIrfCH3xmZeeoTfcWUp4xYSZzEUAjOnVz+BDM/Vaogme95SS+7MKPzhxCpypJgJ6AZdxZsSypkyCkdZwCf4UUE2/+nApIMAiBWG4A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LcSSqdC6; arc=none smtp.client-ip=198.175.65.21
+	 Content-Type:Content-Disposition:In-Reply-To; b=mFCfbBHFVba8d3Z6/FnLAyzmvMs8tSdaBfYyM+KQC366D9nbEJ690gOZRWhTZlJJ0WBmc/8UKTMB+u+0GKNWktVrLYN1KNW8l2xtiCHrPKcV9hjmsuTolAJG6xU56OQQRmgSnOs3ba7wQpxG+AuFwh+B/cLErg6K3xqKB91tjgM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=R5xsUMOc; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LcSSqdC6"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="R5xsUMOc"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773660305; x=1805196305;
+  t=1773660422; x=1805196422;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=B1sTM5bQzllfnXzANIrljhS0l19Z0G7SH0icpqGgSV4=;
-  b=LcSSqdC6aX5pFj8rFm2J9QvUXFLD6wgd7oxNvujul98eLgZZOdj59beD
-   ekvNjgHlsroBeypLZ7JE62Kv/FUL/D0bMndTvxWJ29ZssZsx3+DxGkDts
-   9mboFnbTOz1W8hObwDuuy3kh4bL7GPBUnTJvB3ZBtVQFhUjY1ezUbUTon
-   V32lgd6A5jX6Ywv2NV8P5ZQbUq+1l+fhmew13xrLsjLAF0dkoTMiJmj2/
-   kbTIPHWoFoSLwwQfpRVitHSzvipm1V6dl9WPp6btj8jqlJptFfqfv6/vt
-   PQkgAxrbfBw/8oblO5d/wgn9G4ZY+pFwWymkBh3buBOa9S6GFI9trywaQ
-   A==;
-X-CSE-ConnectionGUID: uuP23/zESEuv1x8I+WLDHQ==
-X-CSE-MsgGUID: Kb/wLs5LT1yI3Zrc3COIWA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="74559100"
+  bh=eJjTVDDPV3wfEwUW6pl59/ZcHzHS9NvGmYYZZMKjlJE=;
+  b=R5xsUMOchq9C3nYV5U7YQivkV6FSNNv9XE9ZqEROYWwUUPplVtxBzWVs
+   KK5KQ3KYAHa270t7dgdOcFdoCA6lvP/0HFZJBf5W5PpyPs9WH6r3APb/l
+   Sb3tCA+dPGIR5Vr1vDyRL9bFk5AiLsoP7XThwj7gbATWfBu/QYO7JRzvF
+   kRfMwL3DsPHUyVVb4f6KzxAxhDbzKGtkncw8mHGQhyfU8b73NdEbLlqKZ
+   NSYrhoOUnP6HJ/bfqA0nlNPcU4ILG86Q/fHPVnNdeiCVo6cQSV2T0RBtz
+   ZQTYtgTAkWdceESwicY3IVjHpttuPEoGqlaRSK0NcMlDjqCjzhhMG8BFM
+   g==;
+X-CSE-ConnectionGUID: Txz6QXLjTo2Hc0StAS3bag==
+X-CSE-MsgGUID: fAhSWQp1RXeAitoSeMdmdw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="74860130"
 X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="74559100"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:25:04 -0700
-X-CSE-ConnectionGUID: O1dq8XFpQ8mzNAtxXdrLww==
-X-CSE-MsgGUID: qT3yoZihQeK63IpkvE6S6Q==
+   d="scan'208";a="74860130"
+Received: from orviesa007.jf.intel.com ([10.64.159.147])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:27:02 -0700
+X-CSE-ConnectionGUID: nxD/Hv3jR3egORR3uPQ+PA==
+X-CSE-MsgGUID: fGEcmMpOS7yCLMg5wlZy3Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="217727399"
+   d="scan'208";a="222089825"
 Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.237])
-  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:25:02 -0700
-Date: Mon, 16 Mar 2026 13:25:00 +0200
+  by orviesa007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:27:00 -0700
+Date: Mon, 16 Mar 2026 13:26:57 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: David Lechner <dlechner@baylibre.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: health: max30100: drop unnecessary cast
-Message-ID: <abfojPjXKhI6V9e-@ashevche-desk.local>
-References: <20260314-iio-health-max301000-drop-int-cast-v1-1-ed4982d559f5@baylibre.com>
+	Andy Shevchenko <andy@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ti-ads7950: use
+ iio_push_to_buffers_with_ts_unaligned()
+Message-ID: <abfpAcN3qDKe4zdd@ashevche-desk.local>
+References: <20260314-iio-adc-ti-ads7950-declare-dma-buffer-v2-1-2087fc18b077@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -61,23 +63,34 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260314-iio-health-max301000-drop-int-cast-v1-1-ed4982d559f5@baylibre.com>
+In-Reply-To: <20260314-iio-adc-ti-ads7950-declare-dma-buffer-v2-1-2087fc18b077@baylibre.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, Mar 14, 2026 at 05:33:01PM -0500, David Lechner wrote:
-> Drop an unnecessary cast in max30100_led_init().
+On Sat, Mar 14, 2026 at 04:12:24PM -0500, David Lechner wrote:
+> Use iio_push_to_buffers_with_ts_unaligned() to avoid unaligned access
+> when writing the timestamp in the rx_buf.
 > 
-> val is defined as unsigned int val[2]; so the cast is not needed, nor
-> is the address-of operator &.
-> 
-> Also fix alignment with ( while we are touching this.
+> The previous implementation would have been fine on architectures that
+> support 4-byte alignment of 64-bit integers but could cause issues on
+> architectures that require 8-byte alignment.
 
->  	ret = device_property_read_u32_array(dev, "maxim,led-current-microamp",
-> -					(unsigned int *) &val, 2);
-> +					     val, 2);
+...
 
-You want to have ARRAY_SIZE() as well.
+> +	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2] __aligned(IIO_DMA_MINALIGN);
+>  	u16 tx_buf[TI_ADS7950_MAX_CHAN + 2];
+
+...
+
+> -	iio_push_to_buffers_with_timestamp(indio_dev, &st->rx_buf[2],
+> -					   iio_get_time_ns(indio_dev));
+> +	iio_push_to_buffers_with_ts_unaligned(indio_dev, &st->rx_buf[2],
+> +					      sizeof(*st->rx_buf) *
+> +					      TI_ADS7950_MAX_CHAN,
+
+Hmm... Wouldn't this benefit from array_size() macro?
+
+> +					      iio_get_time_ns(indio_dev));
 
 -- 
 With Best Regards,
