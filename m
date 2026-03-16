@@ -1,64 +1,64 @@
-Received: from mail-pf1-f173.google.com (mail-pf1-f173.google.com [209.85.210.173])
+Received: from mail-pf1-f169.google.com (mail-pf1-f169.google.com [209.85.210.169])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B866D33A9DE
-	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 17:28:01 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 23514331215
+	for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 17:28:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.169
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773682084; cv=none; b=NuMox4l/r4Io+LH0qSc+Wnrpicw6a+KYlf6RnGkD9zWFKWWR/aJc/4b/MT06Z984uRxGHptPugxeq8MvHcwOpZgItx2wcDKmo1RHcBTqXC7OZSOUg+cZi3fQnDeOPRZjy+ZZZp3R/UPGS2ZORyRWNLpJ3fdxY+xJKFVE2NWhLhE=
+	t=1773682090; cv=none; b=JIEYPbUHgyeabxVrwG5AOKuG+VT3Kq2+aH1ecR9UuLSpra2KdVQg4GjoYnRp+yKKV+Ua5EjooP8Z5yB1r0Vn6IloyEUoUJM4fry9mz+2yLxSnRGeGQ25BHqwo5APUeejh27/Od8Ct2RhqRz3dqvqLMHBngNgnasida27CjF9EM8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773682084; c=relaxed/simple;
-	bh=UH3kb4gt0+9ZpweWT40BehwDYP5y+PKMX0nK5W8Jvnw=;
+	s=arc-20240116; t=1773682090; c=relaxed/simple;
+	bh=5YGtrRDq8ooKXsX8CiLRFRvIdmuPExPvepOdmFuD5qI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=k1pbODdP5oZFTxg4aCJOA2gZAXiTc6Tuk9H7aGaPPIxtSvYRwT5BghITJGFhYbbKqZxJggma6HqvfGvXy9fqDIQsIXcRi8DK8XIIAinCar3UZ8I77PwjeQiz+8wrisd1owddgd3Z2IE/pQL2ygDEV3Sye+fLKanJdywellvgAaQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ninh1NOG; arc=none smtp.client-ip=209.85.210.173
+	 MIME-Version; b=suSr7wdeq9ifiIpGwWoCb5Vwns6QySRSDWtcjHoduQyehLPIo1xmz0w6KJ3xBk39cVAnG8h2D8/pu5DjiAPMPB/p0c61KUIx92kb6vSJr5xOm/VvwhkowzcVtwBhyer0JV8bcRgE0EdSln7QEsZAdvH9uKU5urflUbMBqliF2Ac=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=JDR/Ymhp; arc=none smtp.client-ip=209.85.210.169
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ninh1NOG"
-Received: by mail-pf1-f173.google.com with SMTP id d2e1a72fcca58-82a124f3a5bso2545972b3a.0
-        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 10:28:01 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JDR/Ymhp"
+Received: by mail-pf1-f169.google.com with SMTP id d2e1a72fcca58-829865a8471so4564246b3a.3
+        for <linux-iio@vger.kernel.org>; Mon, 16 Mar 2026 10:28:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773682081; x=1774286881; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773682088; x=1774286888; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=+5vDax/ZtqQf5s3e6+BhsYeXroKNvJZuzGVQzpGYaig=;
-        b=ninh1NOGYG2uJjA2X3kPT5Iqg3OWDZ4AUnSQtiKukHPtCPvcgNQCrm6jYZJG0Q+0W0
-         qJgVST2QwIP8107jzBU4ZiwNlN4v5YIxC12yXvs2vP2BeGcNaAfPu7KbQRCV4x6mcg1H
-         B6VsbH0S4yVAG4F0B1YHHmsqwGw3pzTbkiW6GSknQ9UOIaEE1orxCeQZYVcD2tg9/szJ
-         8JGp81JzNptxW+4eB9AkdbggmWhKwvvgdwc0qNddbmILs2yAmMDF92Z67Q6OPL9huEwF
-         e3yyjORDiKxQZIr8fNNNyBUEGBcPZJzCd9O+nvKq6litNMFz8P5q7agtIbTCqnvhuRC9
-         wthg==
+        bh=BrniVMmfDN+xSnBB54KhdubfbYa2sZYHaW9MDFzlvxE=;
+        b=JDR/YmhpjpZwLjLQtzd4YjB+I44UL0oieBipg8g34IfxUwGNq16tyJUP3Gaq6uKk2G
+         csq7o4SX/c2RA0UoEXF2x3nrV2C2bZNqHauRmRjisnSCC/hNU9Pq5UxcCVh5UXdIjOxC
+         gzpUQFUqO5OR1w/7KtQPXbTV5bRslIF50r8tQ4b44PsAoR8gAhjlQpD3BXBsgqGBcXAz
+         fzBX2GpCjeINnS1Nv3iVpc60ao7Rx7ofuII0l3jK2RXcBLsO5ll4xNaU2nCmRGg7FYOc
+         AKpiqas7p2tX1luCJRh3WzWg3yAoKtjrSYTgvo+HjFcs6W5Uj2/7xu86oaakiJj1Jhdb
+         cP8g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773682081; x=1774286881;
+        d=1e100.net; s=20251104; t=1773682088; x=1774286888;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=+5vDax/ZtqQf5s3e6+BhsYeXroKNvJZuzGVQzpGYaig=;
-        b=Daig9H14n5kJY/wRDd6OF67a1bPdY6djxP0m3ZualiTjc789lcg5MzYtNMpw90xk/c
-         lqRYyjgDzoaNP+4kljjSNOG8zOj8aRpDm/emhvH6cwzFIpC9rZTUmfwGENDz/pkJrFix
-         0p1NTJjO5lX0dUCfFANofNOBQDDuIkP+eISw5DOEIFj+Nx0qaGZ6M+GmCw82URFqvENS
-         wyujRgXEfbzkPkJXs5XW9Kdkwiyg4oxQ86XWkGBUbZty3/DIS1L4VdqC2W+P/LsOGQqu
-         cERsLeCdwOyz7c56aQYrnN1sFJ/hFyk7nhbPqGaxPqDkDk56ffetF1zeTp5+oRMpMXmx
-         6dng==
-X-Forwarded-Encrypted: i=1; AJvYcCWs3XgtAqKD1Ci1UqqB27BEdbe7l71TIyKsVymX6nkYYinn0NnYZ6w5ncTn1M6dfc6w8fouElManhg=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzS3BauY8/SyMxCUMUPM/ZaNEmaY6+ovLrALJNNsbCylzD1B8K6
-	YMTAsPXmUodZt2MS3NdgvTF4JyU3Oj5CxfSrxEuNk4CYChyfDAJLcXcF
-X-Gm-Gg: ATEYQzx+v1reeJUAuJmRhHWWa89Jmxxjj2hz/vGvX4DDZaySkbsSEHkJ784AhrwzL0+
-	+idJBKGBLDvHlzwDtJqRaXj+gMB/PLKUQwGIW8JrDRW1QfeJH9JM1UJxD7mRR20zxrSSwvQRgi+
-	C62C7+s4XOcOyf0imuHiUNLsP7axvKeW1VlCm7wMl3U46xAqfh3NOG87lwDqJexSrWAQ9JPSPlW
-	cGUP9pqhZ+t3UXWPbONcp9yT1X+OJ0h7m7/Wqc6yZMZbQ5VixVUFkn6g+3D7Z8svrtz3EbZM+hj
-	U/78SrtiL4q0wzMX255WMR00H2h1UrBsVxmd0TIzX/BAcrayoL0+6QEOcqxQr7ABHvAGJ+bFReK
-	+HAYQVj0HqJPOT8TTmCOtUJ/3gv8U5W2ZfGZOpdOHzN/eqeNWkPpAD0a5B976jA9kWukslx8zly
-	xX7+ssSZFjJM86T1tO+zuO2e6SASYFTPcdf85aiCzvWH2c6xW7v68fMk40gTzRyuke2kLVcdpzs
-	7txAp0GcLij7u8=
-X-Received: by 2002:a05:6a00:6c83:b0:824:a8a9:e08e with SMTP id d2e1a72fcca58-82a1971e570mr12324931b3a.14.1773682081004;
-        Mon, 16 Mar 2026 10:28:01 -0700 (PDT)
+        bh=BrniVMmfDN+xSnBB54KhdubfbYa2sZYHaW9MDFzlvxE=;
+        b=hVOpBz7F6bnq5L2UWCDc+SQ1qu4cRPDOIX7uUYEspahU7P9Yiiyq+JwjbuLzD4R/A9
+         UNRNcjD6Sk6Xd7w9qsoQq3Wl+q0xR2gmCyEixEkN8bYTHmV7/CCh3TZpaUq/+2lyWdWo
+         9wCUsLSfypRK5Ms+mvmwqKqyKTfITxUOkzqWrZ3X70/YiM/SEzBV+kklOhLeRogb6Q1t
+         QFo6/nJpYs0F/4O982Q6Jqjp7IGzKpfY5KkLb94fJWICGx3SZ/XBfMpDi5c6VApO48p7
+         EjKvURtNrkas/1YRoSRWRu4JSZ9XK4W0+wqmVhR4ML7bqPg/UYEYE/6+tNSPbKUdEEdK
+         4kqQ==
+X-Forwarded-Encrypted: i=1; AJvYcCVzIRApDzWMxpI8yx4jl2owl6IfBSWUYKYeCpo+c2+Bj3BU/jAvmmnYctooLc1mX6FpoG2hdJGe7Rc=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwBQytfULG6XfVtQdRl/MuZBdC7x4hQEMf6BsXHOFbKtmD0nfF0
+	E4dauBQFt6x5T/bcfNIatHGVykchpuARk8UgzsW2tAiK/JvvkLB3VUUL
+X-Gm-Gg: ATEYQzwJSh2O/mSeKMpiV8mN79yEVTmx1Um7N8aLHSjQ2ql3eQdx+HPha1mWdutmzuY
+	JgHvbpbABrQ4y6OBG+AKJWPTFZlC/lbs2TqQYBwpq21/Fkce2DBHWOxFkd/vm2zM374Yz2Fj7lZ
+	Yxs4o3vhoNXxP2AQ7ke6Fb1bAZGVqqWoCdf0jPQcTPg9QNE3neQ6hrRfgUnuaHtO4gKa/ec+W/R
+	thTFXOA6Jn7IlZVDBWXy4X3/plL/nxOw/jOxdfc0ddMO5dEZt4CjBj6B0/BUJ/VKrQOt0AUeLsj
+	NKxKtY1gGl9+9eBZ1BKENhgeqPj6XNhR/V54Spq1e2aNajKbCJqEm/mGXxBDtuPEI0KCian9ZuJ
+	CYAa2/tf9ewSs1U+vW8thgqSyZjSWEIOy1TFdJCtzxDONcSGSa5uswYFWBdtms1eJRP6x8ztfka
+	CGyBteDDkJ6UO4WNVoW/LMaMhhRCOIaS8SusLAJ9Rgm9tJyIh/CliGU5qgvjtramUf48C78wvCE
+	wlU
+X-Received: by 2002:a05:6a00:bb84:b0:81f:52d4:a5ec with SMTP id d2e1a72fcca58-82a1990d95amr12392968b3a.43.1773682088359;
+        Mon, 16 Mar 2026 10:28:08 -0700 (PDT)
 Received: from atharv-HP-Pavilion-x360-2-in-1-Laptop-14-ek1xxx.. ([103.216.213.160])
-        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82a07341986sm14016183b3a.32.2026.03.16.10.27.56
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82a07341986sm14016183b3a.32.2026.03.16.10.28.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2026 10:28:00 -0700 (PDT)
+        Mon, 16 Mar 2026 10:28:07 -0700 (PDT)
 From: Atharv Dubey <atharvd440@gmail.com>
 To: jic23@kernel.org
 Cc: dlechner@baylibre.com,
@@ -69,9 +69,9 @@ Cc: dlechner@baylibre.com,
 	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org,
 	Atharv Dubey <atharvd440@gmail.com>
-Subject: [PATCH 00/11] iio: adc: replace deprecated iio_push_to_buffers_with_timestamp() 
-Date: Mon, 16 Mar 2026 22:57:26 +0530
-Message-ID: <20260316172735.11430-2-atharvd440@gmail.com>
+Subject: [PATCH 01/11] iio: ad_sigma_delta: replace deprecated iio_push_to_buffers_with_timestamp()
+Date: Mon, 16 Mar 2026 22:57:27 +0530
+Message-ID: <20260316172735.11430-3-atharvd440@gmail.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260316172735.11430-1-atharvd440@gmail.com>
 References: <20260316172735.11430-1-atharvd440@gmail.com>
@@ -83,59 +83,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Hello ,
+iio_push_to_buffers_with_timestamp() is deprecated. Replace it with
+iio_push_to_buffers_with_ts(), which takes the buffer size as an
+argument and helps avoid potential buffer overflows.
 
-The helper iio_push_to_buffers_with_timestamp() is deprecated in the IIO
-subsystem. The recommended replacement is
-iio_push_to_buffers_with_ts().
-
-This patch series updates multiple ADC drivers to use the newer helper
-API. No functional changes are intended; the patches only replace the
-deprecated calls and adjust arguments where required.
-
-The goal is to remove usage of the deprecated helper and keep the
-drivers aligned with the current IIO buffer interface. 
-
-Regards, 
-Atharv  
-
+Signed-off-by: Atharv Dubey <atharvd440@gmail.com>
 ---
-Atharv Dubey (11):
-  iio: ad_sigma_delta: replace deprecated
-    iio_push_to_buffers_with_timestamp()
-  iio: ad7766: replace deprecated iio_push_to_buffers_with_timestamp()
-  iio: adc : ads7950 : replace deprecated
-    iio_push_to_buffers_with_timestamp()
-  iio: adc : cc10001 : replace deprecated
-    iio_push_to_buffers_with_timestamp()
-  iio: adc : ad7887 : replace deprecated
-    iio_push_to_buffers_with_timestamp()
-  iio: adc : hx711 : replace deprecated
-    iio_push_to_buffers_with_timestamp()
-  iio: adc : at91 : replace deprecated
-    iio_push_to_buffers_with_timestamp()
-  iio: adc : ad799x : replace deprecated
-    iio_push_to_buffers_with_timestamp()
-  iio: adc : adc161s626 : replace deprecated
-    iio_push_to_buffers_with_timestamp()
-  iio: adc : mt6360 : replace deprecated
-    iio_push_to_buffers_with_timestamp()
-  iio: adc : ad7944 : replace deprecated
-    iio_push_to_buffers_with_timestamp()
+ drivers/iio/adc/ad_sigma_delta.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
- drivers/iio/adc/ad7766.c         |  4 ++--
- drivers/iio/adc/ad7887.c         |  4 ++--
- drivers/iio/adc/ad7944.c         | 10 ++++++----
- drivers/iio/adc/ad799x.c         |  5 +++--
- drivers/iio/adc/ad_sigma_delta.c |  6 +++---
- drivers/iio/adc/at91_adc.c       |  2 +-
- drivers/iio/adc/cc10001_adc.c    |  3 ++-
- drivers/iio/adc/hx711.c          |  5 +++--
- drivers/iio/adc/mt6360-adc.c     |  2 +-
- drivers/iio/adc/ti-adc161s626.c  |  5 +++--
- drivers/iio/adc/ti-ads7950.c     |  2 +-
- 11 files changed, 27 insertions(+), 21 deletions(-)
-
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index 7852884703b0..73f3069da987 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -636,7 +636,7 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	 * once, there is no need for sample number tracking.
+ 	 */
+ 	if (sigma_delta->active_slots == 1) {
+-		iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
++		iio_push_to_buffers_with_ts(indio_dev, data, sizeof(data), pf->timestamp);
+ 		goto irq_handled;
+ 	}
+ 
+@@ -662,8 +662,8 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 
+ 	if (sigma_delta->current_slot == sigma_delta->active_slots) {
+ 		sigma_delta->current_slot = 0;
+-		iio_push_to_buffers_with_timestamp(indio_dev, sigma_delta->samples_buf,
+-						   pf->timestamp);
++		iio_push_to_buffers_with_ts(indio_dev, sigma_delta->samples_buf,
++				sizeof(sigma_delta->sampkes_buf), pf->timestamp);
+ 	}
+ 
+ irq_handled:
 -- 
 2.43.0
 
