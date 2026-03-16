@@ -1,68 +1,58 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92E0A28D8DF;
-	Mon, 16 Mar 2026 11:18:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AD8E51E1DFC;
+	Mon, 16 Mar 2026 11:25:04 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773659942; cv=none; b=GaveVvarCCDPM5bOOpbq8bJU36IYmec5UjTHWl8qpoY/W1rsU0IBBuX2TWEd45/9OeiyTXyw2AnRCWNMVCn9sY7G/+GO7HlZgBmamNqn8CAsNy6SOntHmlPMkl16lUOHMqBgYeKiMA1XEZauEn7NiFkuTnuokrbnLSl/z7fJR5c=
+	t=1773660306; cv=none; b=hxefqGqrzerJrDZHSD8X0OD227KgMHFUK8SvA3/VSCB9X+TI3AZoDCtExTRRjTfP3nCNOKFipJ0tTk2ZPcCW5mwo7HPkZ5yRoBCiq0ClpjKxuI+C7umCHjN+494Wvy+14ibX+40yLxG25ktK0GhgM6YoBc0YCGBFh2LoYPgr56c=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773659942; c=relaxed/simple;
-	bh=pE6aBW5PWZbbitw0U2AKJCHXuOjvSiDQXNqow5+gO8M=;
+	s=arc-20240116; t=1773660306; c=relaxed/simple;
+	bh=B1sTM5bQzllfnXzANIrljhS0l19Z0G7SH0icpqGgSV4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=nRfgNi/3rr1PkbixYwQ0PLFer/W9ZqoPl1HuMKgQLlkyRqAjT1I0L1cHXdnxGc4sscCNZG+6XXLi6/NrbhvTSHKWg0iwO+tBe9C/aFNRJtATit9nYYHsQhR3oEmAUIGyaSgVjOzqfagNxoXj44M8ZbZhcyWHo4LIUmuvTdjK8s8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=jDhDZWpe; arc=none smtp.client-ip=198.175.65.16
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
+	 Content-Type:Content-Disposition:In-Reply-To; b=j5I8Dbsrg5UenRKeWecCerg0O00y6G8j+kMsGAG5hgzuE7tArEitbdA++3IbzUPJXOUhi/oIrfCH3xmZeeoTfcWUp4xYSZzEUAjOnVz+BDM/Vaogme95SS+7MKPzhxCpypJgJ6AZdxZsSypkyCkdZwCf4UUE2/+nApIMAiBWG4A=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LcSSqdC6; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="jDhDZWpe"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LcSSqdC6"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773659940; x=1805195940;
+  t=1773660305; x=1805196305;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=pE6aBW5PWZbbitw0U2AKJCHXuOjvSiDQXNqow5+gO8M=;
-  b=jDhDZWpehz1EPWyJQuRs43VyaB59Shp4QeJkqBm9nLY4R6blKTPDVBBE
-   juHH072iGksaJ43FK0rQyN0lYtOeO2JIhbgcOROdt2n+TKw0e0ot3PoAB
-   8jrIHye09rnK892M9VJL/hwSrrM3yoSqm7WKPuZMALxnRtHTUiCNhL3Xh
-   aWdj+eGhhNMNOO21iaa20hV6oUMambFow7L6KB1lG6VUXUQKlkm9FA4bT
-   /ypZW6KjbHNkvfLytbfkwk+DNPobPh8UECo6rZH7HjhKhoDPfz0NNeEmf
-   j2nEl91iT7Q55zfqpQRaItMCIXPUE4/t2Rq5Dlf0SM3h8PEQUrTYXi1Ku
-   w==;
-X-CSE-ConnectionGUID: QJV+0qGTTO20Pn9qmyJimA==
-X-CSE-MsgGUID: kF8e0KEGSA+aLLKbDrV+fA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="74859255"
+  bh=B1sTM5bQzllfnXzANIrljhS0l19Z0G7SH0icpqGgSV4=;
+  b=LcSSqdC6aX5pFj8rFm2J9QvUXFLD6wgd7oxNvujul98eLgZZOdj59beD
+   ekvNjgHlsroBeypLZ7JE62Kv/FUL/D0bMndTvxWJ29ZssZsx3+DxGkDts
+   9mboFnbTOz1W8hObwDuuy3kh4bL7GPBUnTJvB3ZBtVQFhUjY1ezUbUTon
+   V32lgd6A5jX6Ywv2NV8P5ZQbUq+1l+fhmew13xrLsjLAF0dkoTMiJmj2/
+   kbTIPHWoFoSLwwQfpRVitHSzvipm1V6dl9WPp6btj8jqlJptFfqfv6/vt
+   PQkgAxrbfBw/8oblO5d/wgn9G4ZY+pFwWymkBh3buBOa9S6GFI9trywaQ
+   A==;
+X-CSE-ConnectionGUID: uuP23/zESEuv1x8I+WLDHQ==
+X-CSE-MsgGUID: Kb/wLs5LT1yI3Zrc3COIWA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11730"; a="74559100"
 X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="74859255"
-Received: from fmviesa005.fm.intel.com ([10.60.135.145])
-  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:18:59 -0700
-X-CSE-ConnectionGUID: E2MwWpkJQNOfO5ddsF+RhA==
-X-CSE-MsgGUID: UgCg/HY5TB6FwcRY/0Q7Vw==
+   d="scan'208";a="74559100"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:25:04 -0700
+X-CSE-ConnectionGUID: O1dq8XFpQ8mzNAtxXdrLww==
+X-CSE-MsgGUID: qT3yoZihQeK63IpkvE6S6Q==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
-   d="scan'208";a="226559096"
+   d="scan'208";a="217727399"
 Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.237])
-  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:18:55 -0700
-Date: Mon, 16 Mar 2026 13:18:53 +0200
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To: Hans Verkuil <hverkuil+cisco@kernel.org>
-Cc: linux-iio@vger.kernel.org, chrome-platform@lists.linux.dev,
-	linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Mar 2026 04:25:02 -0700
+Date: Mon, 16 Mar 2026 13:25:00 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Benson Leung <bleung@chromium.org>,
-	Guenter Roeck <groeck@chromium.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	"Daniel W. S. Almeida" <dwlsalmeida@gmail.com>
-Subject: Re: [PATCH v2 1/6] media: vidtv: Rename PI definition to PI_SAMPLES
-Message-ID: <abfnHSoZcKJUPAzd@ashevche-desk.local>
-References: <20251107201005.3156118-1-andriy.shevchenko@linux.intel.com>
- <20251107201005.3156118-2-andriy.shevchenko@linux.intel.com>
- <8fcc1419-266c-429e-b1bf-1799322eb69e@kernel.org>
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: health: max30100: drop unnecessary cast
+Message-ID: <abfojPjXKhI6V9e-@ashevche-desk.local>
+References: <20260314-iio-health-max301000-drop-int-cast-v1-1-ed4982d559f5@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,29 +61,23 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <8fcc1419-266c-429e-b1bf-1799322eb69e@kernel.org>
+In-Reply-To: <20260314-iio-health-max301000-drop-int-cast-v1-1-ed4982d559f5@baylibre.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Mar 16, 2026 at 11:13:24AM +0100, Hans Verkuil wrote:
+On Sat, Mar 14, 2026 at 05:33:01PM -0500, David Lechner wrote:
+> Drop an unnecessary cast in max30100_led_init().
 > 
-> Just FYI: I'll take this patch. Regardless of the other patches in this series it does
-> make sense.
+> val is defined as unsigned int val[2]; so the cast is not needed, nor
+> is the address-of operator &.
+> 
+> Also fix alignment with ( while we are touching this.
 
-Thank you!
+>  	ret = device_property_read_u32_array(dev, "maxim,led-current-microamp",
+> -					(unsigned int *) &val, 2);
+> +					     val, 2);
 
-> I haven't seen any updates to this series, is it abandoned?
-
-There is no consensus which names should be chosen. I have strong opinion about
-my choice, some do not agree with. Id est I like the idea to have PI as PI and
-not something longer and confusing. Same for 64-bit, just some short.
-
-My rationale is that, in most of the cases the 32-bit value will be used and
-having it as is would be nice.
-
-Another point is to have a macro that gives PI rounded to the chosen amount of
-digits (to avoid / 10 / 100 / et cetera in the users). I don't know how to
-implement that nicely, there is no loops or alike in C preprocessor.
+You want to have ARRAY_SIZE() as well.
 
 -- 
 With Best Regards,
