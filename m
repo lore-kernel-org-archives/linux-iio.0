@@ -1,145 +1,229 @@
-Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3797396589
-	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 08:23:45 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 923F2359A9F;
+	Tue, 17 Mar 2026 09:11:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773735827; cv=none; b=CxMwsbnoNvsDudWRyjEg0296MHmw4uZ+LlFATovDZeI8pX25oC84REXZjzXmRKcek1l/Ma+hRYk9uz/Zhe1FyOL/fCwFq+lt9U1WXZX7W1paLsXrcPZ9mKdoWSrPZAlhZGUMfsedqKK0hWiu/zdFFoqW4mprzlzC93PLY6ryk/g=
+	t=1773738713; cv=none; b=Iiqw0LxhS7/QAm+/u00a1XOEpzIsaoVjy/rutXggGsTAVOsjmN7MB6ED2O1V5Row6+PrtlQkaZYz8tpfiobBfXJcijmNsPvC/cGp6phbgN/snqffiuJOFmF0YvGuw2sJtIvqUAg7WHNswD6dgk8SYNUSDdD62w0rixI4r4dSFEk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773735827; c=relaxed/simple;
-	bh=aTR0ByVDp5twPVDF0We0yxjjtWE6HL5DaVZrXfqb4cU=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=NnGBEHFbx7/cBw8OsBt/O3Su0w55YiZjZoIDXGyhjO9WhFuAfklRw3UYnuipd9YrcN+yrWUz9WxKyTuvWvujSD8x7pwwtKDjx2A4RN8ULK4BWvi0Jbzzj2XLbmBddJxJ/VlgKvesuZgFIBUaMfBd8lJftFG/N3fC6thMzMbcbMI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-56b7fce3ae6so529623e0c.1
-        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 01:23:45 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773735825; x=1774340625;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=/BWsLLpeb8S2Ruk3mIA0NNiewV90E5kBU5fFfxw9bA0=;
-        b=ltIpIM7Nl3sI46u2V3vbpkAc8HQI18DUJPPzeUUe4dInbmKF2HS+neQxAp//OpoAQF
-         gbaOLadm5YM8POFRG4w1RMOPnJPlmI4i9pDCt+3MgkWgqXymUDdrsbgobtnEQ0B3o4MY
-         nL9lGHgOwdy4ikPcqaPHSJZq7aDn81ymWyzRHWfCE/Rmh+MsxIsXWrk6OZoI1K7mHeHE
-         ifeXeWnhwQzrfxYKWIucu1gjOzwhqtBPyFrog1zVrpo/hjsFbl0Ta2rOVpn3OVeOZQQG
-         +9acMpN3Dp23nYKmuRILRe56uwq7KF02ET26/IOIU7fkY/ovcdLALcCJQlZ5e/I4Nd9I
-         Rhzw==
-X-Forwarded-Encrypted: i=1; AJvYcCVG+aYM1EtbWLwVT8CoWACq8mZ9WdIRXfvCSgC9TP1USdX/aDik+rb1uPQLEyBde1O3+rvnYd6InBA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxFhaoSiH9C/9v698ESavN1NP/5yPtBIHhZekBcbOuB4Rw4z+3k
-	a799slrJOC491WqkQ5zCpZQkpWysDrmAnvjbeZlMJ8N9N5YoCSOvwr2Z4FVfSFS2
-X-Gm-Gg: ATEYQzwy0rIZ7EOPNxuR6T7utEd4Mh0zUuK61MU4DHpXEznIkAfZzPk/Z1NPyMsJAP0
-	eb/+mM10Ge0kK7UxBrVNcB7nWuYwDvIEbcxNDGm+jGWbPIFQBuUNT9cAxZcc/kePMhh2+nKJi2R
-	IAOThbW94rcug/UBxPo+qHOJMqeuzk7BsrYRzFD0AfOU2seQ3mSkc590WgilPjvuD5gtuHnBRjf
-	TgUOc9kEUMOEpdkpFxfR2cXsRjMN23poSywq80hGJJ4cAa2DvYhyQ5sTCGAi8dPVzxr+Mj5UyJO
-	rxxOFZFKpAjSyAwlDEXB3vVqNhrUqt6Fxq3Fick4GqcHrx+uUDLJo9XlPIN/IsS8JWuPgKYOR8Y
-	dmwV/Iano+L3LpF9o+TDKnIriO80nsUbmCp6aT1UtxvK7DTZ4ronwfMw9ni0Grjh/WXvYcqscBj
-	mTezhDux8MmaxrMLT2koUX1ZzN3xVRbxFrC+0lqzsDhMQdmosAT1AUUb3t69n8UYJGSgtHHXo=
-X-Received: by 2002:ac5:c00d:0:10b0:56b:9534:c06f with SMTP id 71dfb90a1353d-56b95dad5bdmr872155e0c.3.1773735824737;
-        Tue, 17 Mar 2026 01:23:44 -0700 (PDT)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56b4646bdfasm9323949e0c.13.2026.03.17.01.23.44
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Mar 2026 01:23:44 -0700 (PDT)
-Received: by mail-ua1-f41.google.com with SMTP id a1e0cc1a2514c-950c26b6b05so332483241.1
-        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 01:23:44 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCW4sX/K/ptux2GAFO02yrToAifR86JTqayqxLYjPPy5LQxmRXzcyccNX3peu/H6DD3TDRnL3dCPyOI=@vger.kernel.org
-X-Received: by 2002:a05:6102:38d4:b0:5ff:de83:3e46 with SMTP id
- ada2fe7eead31-60263d8f933mr1167606137.7.1773735823847; Tue, 17 Mar 2026
- 01:23:43 -0700 (PDT)
+	s=arc-20240116; t=1773738713; c=relaxed/simple;
+	bh=0l/t4CYYEEuOnqrcSlC1/kHh+SqwOHv3bW2imv6CkdM=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=OFi2zweDrFsQvRV3ZaMgjAZRgHFwiOOxg/DwhxeFmnJBtFsQlpH73hR98RM3XREvSFsP6dOyTM6fVi18r0e+KLA1jjPZ/oXgYIZo2caVQIHGfEPzNjBCb+l2HoHLeNk9wm7G65Uz+YmD8CaPam4Y+Rv0EStrAhWpjdQtESQxPL4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MeSsBWqP; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MeSsBWqP"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6116C19425;
+	Tue, 17 Mar 2026 09:11:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773738713;
+	bh=0l/t4CYYEEuOnqrcSlC1/kHh+SqwOHv3bW2imv6CkdM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=MeSsBWqPfpZBsUSt6TPTi+zNR+hwQIp/QBF9B/3XBvowELF+YzpAdZrkD3obDQQHS
+	 +i56lWkjYNVdH19g7cMhJ4rBuRVJkaEA/Gl/Tu/8l35vmdFpzXzvI3hCSm4sqIByW7
+	 dMpeYIn2znqMvGHuzI0Ybm682ety0XBWiesIUVa6jhQ41cGSfozzeZ1m/XwL6zUXVS
+	 ukKoj3oKMLxarbAsn3fLCuTGPWtitkncsDH/iuD5Vr2yu8fVZcL1An1j4stBo0vYKG
+	 fStdm1+ICXgFhc3+zJxr089Dr5YcFFBsi74hWvwbky4maXvCZuAeFQ1RgJqkxym2Fv
+	 hS6P5qsu5sTOA==
+Date: Tue, 17 Mar 2026 10:11:50 +0100
+From: Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <ukleinek@kernel.org>
+To: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Cc: Biju Das <biju.das.jz@bp.renesas.com>, 
+	William Breathitt Gray <wbg@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Thierry Reding <thierry.reding@gmail.com>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, "stable@vger.kernel.org" <stable@vger.kernel.org>
+Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
+ channel
+Message-ID: <abkX1ssLhkGxryfM@monoceros>
+References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
+ <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
+ <aaqTVDQa7xn70bR_@monoceros>
+ <TYRPR01MB156191C8E77BDA44AE23A7D4F857AA@TYRPR01MB15619.jpnprd01.prod.outlook.com>
+ <TYRPR01MB156192CC838EC0B3DD66246158540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
- <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
- <aaqTVDQa7xn70bR_@monoceros> <TYRPR01MB156191C8E77BDA44AE23A7D4F857AA@TYRPR01MB15619.jpnprd01.prod.outlook.com>
- <TYRPR01MB156192CC838EC0B3DD66246158540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
- <CAMuHMdVqqGTmxiKRQBbphw8KmtG66HLaZhDVvtSK81cfiMsXcQ@mail.gmail.com> <TYRPR01MB156193245985A82B792817FE68540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
-In-Reply-To: <TYRPR01MB156193245985A82B792817FE68540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Tue, 17 Mar 2026 09:23:32 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdV6c1F8eVOi6bQssq3qsBcpGnQ-cT1AeXLqXXYEgK4xrg@mail.gmail.com>
-X-Gm-Features: AaiRm50jZRADgQIXJgbrFUg4WeDPSzcNuPJxTTXR-hiMiTGwpkXr0IAMZW3mmeM
-Message-ID: <CAMuHMdV6c1F8eVOi6bQssq3qsBcpGnQ-cT1AeXLqXXYEgK4xrg@mail.gmail.com>
-Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd channel
-To: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
-	Biju Das <biju.das.jz@bp.renesas.com>, William Breathitt Gray <wbg@kernel.org>, Lee Jones <lee@kernel.org>, 
-	Thierry Reding <thierry.reding@gmail.com>, 
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, 
-	"stable@vger.kernel.org" <stable@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="hkbpaws2c2rivpjg"
+Content-Disposition: inline
+In-Reply-To: <TYRPR01MB156192CC838EC0B3DD66246158540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
 
-Hi Cosmin,
 
-On Mon, 16 Mar 2026 at 20:13, Cosmin-Gabriel Tanislav
-<cosmin-gabriel.tanislav.xa@renesas.com> wrote:
-> > From: Geert Uytterhoeven <geert@linux-m68k.org>
-> > Sent: Monday, March 16, 2026 8:26 PM
-> >
-> > Hi Cosmin,
-> >
-> > On Mon, 16 Mar 2026 at 16:52, Cosmin-Gabriel Tanislav
-> > <cosmin-gabriel.tanislav.xa@renesas.com> wrote:
-> > > static int rz_mtu3_sibling_hwpwm(u32 hwpwm, u32 *sibling_hwpwm)
-> >
-> > Unused sibling_hwpwm?
-> >
-> > > {
-> > >         if (!rz_mtu3_hwpwm_is_primary(hwpwm))
-> > >                 return hwpwm - 1;
-> > >
-> > >         if (rz_mtu3_hwpwm_is_primary(hwpwm + 1))
-> > >                 return -EINVAL;
-> > >
-> > >         return hwpwm + 1;
-> > > }
+--hkbpaws2c2rivpjg
+Content-Type: text/plain; protected-headers=v1; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
+ channel
+MIME-Version: 1.0
 
-> It's funny how even after triple-checking the message I was about to
-> send, I didn't notice it.
->
-> This should have been what I sent.
->
+Hello,
+
+On Mon, Mar 16, 2026 at 03:49:35PM +0000, Cosmin-Gabriel Tanislav wrote:
+> What do you think about this setup for mapping from PWM to HW?
+>=20
+> #define RZ_MTU3_PWM_IO(ch, secondary) \
+> 	(((ch) << 1) | (secondary))
+>=20
+> #define RZ_MTU3_PWM_1_IO(ch) \
+> 	RZ_MTU3_PWM_IO(ch, 0)
+>=20
+> #define RZ_MTU3_PWM_2_IO(ch) \
+> 	RZ_MTU3_PWM_IO(ch, 0), \
+> 	RZ_MTU3_PWM_IO(ch, 1)
+>=20
+> static const u8 rz_mtu3_pwm_io_map[] =3D {
+> 	RZ_MTU3_PWM_2_IO(0), /* MTU0 */
+> 	RZ_MTU3_PWM_1_IO(1), /* MTU1 */
+> 	RZ_MTU3_PWM_1_IO(2), /* MTU2 */
+> 	RZ_MTU3_PWM_2_IO(3), /* MTU3 */
+> 	RZ_MTU3_PWM_2_IO(4), /* MTU4 */
+> 	RZ_MTU3_PWM_2_IO(5), /* MTU6 */
+> 	RZ_MTU3_PWM_2_IO(6), /* MTU7 */
+> };
+> static_assert(ARRAY_SIZE(rz_mtu3_pwm_io_map) =3D=3D RZ_MTU3_MAX_PWM_CHANN=
+ELS);
+
+I think the RZ_MTU3_PWM_1_IO and RZ_MTU3_PWM_2_IO macros are a bit too
+magic and would use
+
+static const u8 rz_mtu3_pwm_io_map[] =3D {
+	RZ_MTU3_PWM_IO(0, 0),
+	RZ_MTU3_PWM_IO(0, 1),
+	RZ_MTU3_PWM_IO(1, 0),
+	RZ_MTU3_PWM_IO(2, 0),
+	RZ_MTU3_PWM_IO(3, 0),
+	RZ_MTU3_PWM_IO(3, 1),
+	RZ_MTU3_PWM_IO(4, 0),
+	RZ_MTU3_PWM_IO(4, 1),
+	RZ_MTU3_PWM_IO(5, 0),
+	RZ_MTU3_PWM_IO(5, 1),
+	RZ_MTU3_PWM_IO(6, 0),
+	RZ_MTU3_PWM_IO(6, 1),
+};
+
+and then maybe just:
+
+#define RZ_MTU3_NUM_PWM_CHANNELS ARRAY_SIZE(rz_mtu3_pwm_io_map)
+
+instead of the static_assert. But I guess this is mostly subjective and
+I won't try to convince you of my approach if you prefer your
+suggestion.
+
+> static unsigned int rz_mtu3_hwpwm_ch(u32 hwpwm)
+> {
+> 	return rz_mtu3_pwm_io_map[hwpwm] >> 1;
+> }
+>=20
+> static bool rz_mtu3_hwpwm_is_primary(u32 hwpwm)
+> {
+> 	return !(rz_mtu3_pwm_io_map[hwpwm] & 1);
+> }
+>=20
+> static struct rz_mtu3_pwm_channel *
+> rz_mtu3_get_channel(struct rz_mtu3_pwm_chip *rz_mtu3_pwm, u32 hwpwm)
+> {
+> 	unsigned int ch =3D rz_mtu3_hwpwm_ch(hwpwm);
+>=20
+> 	return &rz_mtu3_pwm->channel_data[ch];
+> }
+>=20
+> This gets rid of the loop inside rz_mtu3_get_channel() quite nicely.
+>=20
+> priv->map->base_pwm_number =3D=3D hwpwm checks will in turn be reduced to
+> rz_mtu3_hwpwm_is_primary(hwpwm).
+>=20
+> If you decide that we should keep the sibling check inside
+> rz_mtu3_pwm_config() as-is then we can do the following, without having
+> to encode the number of channels for each HW channel explicitly.
+>=20
+> Please note that hwpwm + 1 is fine in this case as the last hwpwm of
+> rz_mtu3_pwm_io_map is never primary.
+
+This needs a comment plus (if possible) an assert.
+
 > static int rz_mtu3_sibling_hwpwm(u32 hwpwm, u32 *sibling_hwpwm)
 > {
->         if (!rz_mtu3_hwpwm_is_primary(hwpwm)) {
->                 *sibling_hwpwm = hwpwm - 1;
->                 return 0;
->         }
->
->         if (rz_mtu3_hwpwm_is_primary(hwpwm + 1))
->                 return -EINVAL;
->
->         *sibling_hwpwm = hwpwm + 1;
->
->         return 0;
+> 	if (!rz_mtu3_hwpwm_is_primary(hwpwm))
+> 		return hwpwm - 1;
+>=20
+> 	if (rz_mtu3_hwpwm_is_primary(hwpwm + 1))
+> 		return -EINVAL;
+>=20
+> 	return hwpwm + 1;
 > }
+>=20
+> Although, I would much rather have the following logic rather than the
+> sibling check, which matches one of the alternatives you proposed earlier.
+>=20
+> Hopefully, the comment explains the situation well.
 
-Thanks, now I can see what you intended ;-)
-As the output parameter value is unsigned, and never very large,
-returning that value or a negative error code as the return value may
-be simpler (i.e. use the original "bad" version, and drop the unused
-output parameter)?
+I got it, thanks.
 
+> static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device *p=
+wm,
+> 			      const struct pwm_state *state)
+> {
+> 	...
+>=20
+> 	u32 enable_count;
+>=20
+> 	...
+>=20
+> 	/*
+> 	 * Account for the case where one IO is already enabled and this call
+> 	 * enables the second one, to prevent the prescale from being changed.
+> 	 * If this PWM is currently disabled it will be enabled by this call,
+> 	 * so include it in the enable count. If it is already enabled, it has
+> 	 * already been accounted for.
+> 	 */
+> 	enable_count =3D rz_mtu3_pwm->enable_count[ch] + (pwm->state.enabled ? 0=
+ : 1);
+>=20
+> 	...
+>=20
+> 	if (enable_count > 1) {
+> 		if (rz_mtu3_pwm->prescale[ch] > prescale)
+> 			return -EBUSY;
+>=20
+> 		prescale =3D rz_mtu3_pwm->prescale[ch];
+> 	}
+>=20
+> Please let me know what you think so we can proceed with the work
+> internally.
 
+I'd prefer the `rz_mtu3_pwm->enable_count[ch] + (pwm->state.enabled ? 0 : 1=
+);`
+variant. I understand that this is also the variant you prefer, so
+that's great, but I wouldn't stop you using the sibling option.
 
-Gr{oetje,eeting}s,
+You can gain some extra points for not using pwm->state. This is a relic
+=66rom the legacy pwm abstraction and doesn't make much sense with the
+waveform callbacks. The alternative would be to check the hardware for
+being on or not. But there are many users of this member, that I also
+won't yell at you for also using it.
 
-                        Geert
+Best regards
+Uwe
 
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+--hkbpaws2c2rivpjg
+Content-Type: application/pgp-signature; name="signature.asc"
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEP4GsaTp6HlmJrf7Tj4D7WH0S/k4FAmm5GtQACgkQj4D7WH0S
+/k4Rwwf9Hut4P4Qx1G7RdoBINBH/21rIgc1qZkpDovIq6qmB1grJs2EFSNviWTp3
+7ANYEwouj4hNWBkQERzDT46d3kHkVqpxuP9Lqk5KmJpx1Qkt+zLBgL2Na30Nt1PP
+9U1YYQSCkLXOJXCH6RR+B/1GD0VU5pm4oxbBMlfBehFD1XXk3DJP2IJF1vFi/4FL
+EVBV0IIr63Vy9jKhTwB2qQl4KlowI/B6VPH3n7EFr6EyUR0dF6rlYbtJd16eoKJu
+EL1aNGKblInghfnbXd8r81ScCb3MuO/wmwIdJ5P5HJn+eAv2cDDGR5uDUu1XAfTI
+urSPuimscoRgY5KtF/soj0iroNek5Q==
+=6oTZ
+-----END PGP SIGNATURE-----
+
+--hkbpaws2c2rivpjg--
