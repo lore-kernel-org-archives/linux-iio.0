@@ -1,45 +1,43 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D0633946C;
-	Tue, 17 Mar 2026 07:20:08 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E09A6946C;
+	Tue, 17 Mar 2026 07:22:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773732008; cv=none; b=qCDaKIAmmI1WDUQg2Z1b8KqwpJ8AjVEDg1KSXaXsvUjQrNbYw/BJeIzJJhyIWZq1nNbPE7V3kozICwbfYgR9sDxy/lc2mUVqwuHjMS3SE+v+xsCA6ikswBn34zWCWAOeAYDC1LMNuohrMqT5QcntbWfq+705cAeiDujU1todrV8=
+	t=1773732151; cv=none; b=SxQUffWDkoWiUROTy79lS0zt1UtbfBM/tdfhI1bnz7o7AQNgb7eCW/HodwhLIXE8MM6IDx0qTmRx4FXafFgsgAN502pFw9pc31IAbl/bjRxmf7IaveI+j4TlG+ulYZ4l8cDOUI02yaou5/qDztebx14dMloqXllwoTzNGaeChec=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773732008; c=relaxed/simple;
-	bh=17I5AKEtPfO6q1JpSx7o444U78m/ylhWetYIHxoJrVY=;
+	s=arc-20240116; t=1773732151; c=relaxed/simple;
+	bh=j3GfO6T03uUb2UbTw9iMfFr61eMXHUJG2Fj4b9Og+0M=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=uOVvizo2bp28estDQjSSfpDnCha4nqqX/D2kKr6gfOVMmWGApYsjlLDP7YWLGTgm8uLEjdnyQ7lIRqj3uQ9o1dtHySJA1gIjzBoNA70qEF+Dakqa5gScihW/sKkWYoXbBPNlt0x7hU0eXy2Buxr/KtaoknAAjUyj6QEGPpc3AYc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=OLqi2nMA; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=J6UMhX41RarjCeQssDMwlD7A0AKpFmIoow+XdLLXf6XLVZO7OIFhhMB9BfYTa++5buzMGjcnWFWzLpnRPBzTAsLy4THCgg/fjpZeDMnq6di6VUTzcyiW0IKly842zFh29uh5BmUE8mZeRLpbv/TGLi2mBSL+F0YSxZzpO/+dK6o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=oVtgcm4z; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="OLqi2nMA"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CEC5AC4CEF7;
-	Tue, 17 Mar 2026 07:20:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="oVtgcm4z"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E0CAAC4CEF7;
+	Tue, 17 Mar 2026 07:22:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773732008;
-	bh=17I5AKEtPfO6q1JpSx7o444U78m/ylhWetYIHxoJrVY=;
+	s=k20201202; t=1773732150;
+	bh=j3GfO6T03uUb2UbTw9iMfFr61eMXHUJG2Fj4b9Og+0M=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=OLqi2nMAr3/yjGI1CEf55AQzxtWZQHBfq3ZtYK6XldbJeRf8M2hdq+OjuOMngmD7e
-	 /jRToatryzClCtsvv+26TqQ2XPymbuj+mehC8NM1QShs5FQUVvIrUYubfH1EkdRYS9
-	 Afnd30zPqPANGeh2QN7nIcDKsktKCcpSwVhAoHQEPYMCXdD+lWYA4spJTkWtKtQsRC
-	 C79sxiDrr8g9QLRL6Hqr1KcEUztxCgT3I0zXSpHjpHeaEJoqvsCtjMlhotf2gfhocS
-	 A+WMe+Zm6xb+nFcOR2vJyKa6TTn2M13EDZN4LhYCEabxuD2oe14jj0ETn5FGYa4Zb3
-	 6GD1bR0Fjs2wQ==
-Date: Tue, 17 Mar 2026 08:20:05 +0100
+	b=oVtgcm4zXXv72VswBD5Xq1gUUNESDa6q90oQ2dRf3Ze3O2WCMSM+wSFaiGtBMvVqG
+	 S+afTIiM7iyiNBVhk9ZACaU4STbo1C1qF4P4q8L+lkBSNlm0BS/yfavsqfmYFMqBM7
+	 aY0Gr/FKdi0pBEPCZ9A0/lG+y0h5A1xY7q3CC5Q5PKsxYz9vcqJ5QJdOXF9rGVd4HP
+	 yUmNVIrV/ozFxunn+PArUYpLh80ZLVX6sOCrBNy3fcJI6aBp1EMid/N7EtxmGnUXXb
+	 xEilFCKqqeYQJH8251M/zJ/X6Sldw/f9XR9fCtmcVFdrigCkfS4MnMxc4qwM0RuGab
+	 6vFtHvway+nXQ==
+Date: Tue, 17 Mar 2026 08:22:28 +0100
 From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Erikas Bitovtas <xerikasxx@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
-	phone-devel@vger.kernel.org
-Subject: Re: [PATCH v4 1/7] dt-bindings: iio: light: vcnl4000: add regulators
-Message-ID: <20260317-tricky-pony-of-assurance-7a8cac@quoll>
-References: <20260316-vcnl4000-regulators-v4-0-854fc2eaf54b@gmail.com>
- <20260316-vcnl4000-regulators-v4-1-854fc2eaf54b@gmail.com>
+To: Jonathan Santos <Jonathan.Santos@analog.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, 
+	devicetree@vger.kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com, 
+	cosmin.tanislav@analog.com, jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, 
+	andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org
+Subject: Re: [PATCH v2 1/5] dt-bindings: iio: adc: ad4130: Document
+ interrupts property
+Message-ID: <20260317-little-belligerent-mongrel-6f380a@quoll>
+References: <cover.1773311639.git.Jonathan.Santos@analog.com>
+ <0db1d36106b052d8fbf5dbc8e936558fde87bdbb.1773311639.git.Jonathan.Santos@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -48,35 +46,20 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20260316-vcnl4000-regulators-v4-1-854fc2eaf54b@gmail.com>
+In-Reply-To: <0db1d36106b052d8fbf5dbc8e936558fde87bdbb.1773311639.git.Jonathan.Santos@analog.com>
 
-On Mon, Mar 16, 2026 at 07:19:45PM +0200, Erikas Bitovtas wrote:
-> These sensors can accept 2 supplies - one for the sensor and one for IR
-> LED [1]. Add supply properties for the sensor - 2 for the sensors and
-> one external, for their I2C bus, to ensure the sensor is powered on
-> before proceeding with setup.
-> 
-> [1] https://www.vishay.com/docs/84274/vcnl4040.pdf
-> 
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
-> ---
->  Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> index 2ba4d5de4ec4..a1b4c02db246 100644
-> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> @@ -33,6 +33,10 @@ properties:
->    interrupts:
->      maxItems: 1
->  
-> +  vdd-supply: true
-> +  vddio-supply: true
-> +  vled-supply: true
+On Mon, Mar 16, 2026 at 08:45:06AM -0300, Jonathan Santos wrote:
+> the Data Ready/FIFO interrupt has a special behavior that inverts the
 
-Same comments as before, I do not see improvements.
+s/the/The/
+
+> IRQ polarity when devices with FIFO support enter FIFO mode, while using
+> normal polarity for data ready.
+> 
+> Document the interrupts property to clarify this special behavior for
+> users.
+
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@oss.qualcomm.com>
 
 Best regards,
 Krzysztof
