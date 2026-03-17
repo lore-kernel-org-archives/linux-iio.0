@@ -1,120 +1,126 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4EC903939B3
-	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 08:03:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11482393DC8
+	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 08:07:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773734608; cv=none; b=TCWr6Sdne2h2CllUedcJVNQOLuTkJY5HEWdQwHrPeHACvFRg99ozU/JQ0RaVtYpW48+pxOLCFkLFawrSoVuYv7lzbC57BUB9Yl1LXuoDy8LZgh8s9GQum5nibTfFMrxX9RXeuutE9YTi7LsjSOWtqk8qjK+gcf8KYk2vbyItX1w=
+	t=1773734867; cv=none; b=fB8IaWzUbDE6tVnp9CrCNhjN3+xmpK6Filfopo36Cwig+41pKhPjqs5AgdicWEsO3tyCJJGzfSaJ5QEcFVZjNM+Utkn8fnb9NDoKpKrlldqx6i7TsdAjOkX1D5jLsjlUfrQzH8h0hI2iP7eQF/5E4+PYDWiuByicImub/r6InTM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773734608; c=relaxed/simple;
-	bh=AwpUgBzE27P3UMhRNvadII3Q4oufX6g3hHFnm5BdOOg=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=g1vVHCIcMdpBZPvr+budk+NxLC+dYbl2eh9RSzSAjdXDt9zS4q8luV16PuCmglktQFT/itWbv8Y2K+A8OX7TANzENlotsnXNDSS02QMv0Z9cCjCGHPgQqp49Pn4vvkAOd2M0JUfo1waYP4yDNm/As5vzbEnbCt507nk46Dr0mv0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=sh6+a1VK; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1773734867; c=relaxed/simple;
+	bh=xjMI3kWLb004RFGciwvvZcxiwmFj4VVzpHoNLJgITKQ=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=V1XzqBWqghxZikiA9MPZb6WlgXWjK4L45YcnL3KU1d7bZfvcPWgVMNh9XRDa8j3R6OXng1AYugwU/waJtr7ucxtTgoaoH2v+FidtdlMPvQ0N2x4PHpiF+NMSwaIa/fjOOxPFoPtAWzwjRPproQC+BmXRR0EDWoWWuD+mOAcMALw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yr/HjY3i; arc=none smtp.client-ip=209.85.208.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="sh6+a1VK"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-4852b81c73aso48100895e9.3
-        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 01:03:26 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yr/HjY3i"
+Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6651702ea48so3823089a12.2
+        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 01:07:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773734605; x=1774339405; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=AwpUgBzE27P3UMhRNvadII3Q4oufX6g3hHFnm5BdOOg=;
-        b=sh6+a1VK2O6FM8cgOdvxQd/x3Z/v/ZiaZ8riBSVW+Dhy6dfDF/54VNWWKfN8Hywyos
-         sxfc8AEPPidr/zm9C8o4sn6M0fsx8/IG0B16aohX7fyeYSjVO+NZgbf0A33J1cVk7+aq
-         UXPcgnYBpcqV56L4nppLBtkgeW73oIIv3PYr7e7Vy7CBWUe2pXcNxdtORNvRs3BRT16i
-         louGvAAVkLPyL2HJsSynhraFHKDrGGbRxYk0hvT0Lg77WDCnQBUv/8k+JdbYwU3Mp0wz
-         hM2/lotfEJAjNCQl32RQhhaMo0brxaOMQ3TowOWKmAWZbAlxDaNzyMrVc6qRRD5id9ot
-         riaA==
+        d=gmail.com; s=20230601; t=1773734863; x=1774339663; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zH58nQVPnaeEnUw730ASGfF9l+ejJ6sv9p1FAkERXbs=;
+        b=Yr/HjY3i0z05NXV2n+9u2rLpjSTAQA6C5n5F6bXf5kuhRPunLI+fR5ENlF8X2e/2qY
+         aiE547oHcpobbrStQkqGCvT2OdzmG5jogJYsVCyd356eEWLhVy9wvxlPMOKyeLpJy1JC
+         FKWklfEzrseRM97NkJ8573zCuA4bUaZnokqkXtwOQ+9X6uj3jMM7o5elCcEcSS8pAV2h
+         k/hiqVNqkXSidFLyq4ZgLQYEOfTnnbr2gL2KDmFAFIjh+7zEcrFcJeGQqsW0nqwDZxya
+         H0CGYEBuohgoLOZKwRiJXTRvPewVLChYCHwc/7n/lKI5w+Xq0W+ajSb+K0A/lD/Ntr08
+         TZIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773734605; x=1774339405;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AwpUgBzE27P3UMhRNvadII3Q4oufX6g3hHFnm5BdOOg=;
-        b=bSyqbpzncn5uLb+82oDTxl+BlrBTZh5sC42bzoFtgJY4YZsjraL7CpnPqR6FSs4viW
-         zoePshNzDUKrrXKLv8D0TiadP3QaC+k27Equ7vTPJMxiNOEi2A3RW9L0Jrsul8TQmp85
-         b/fm13hWhiO53ftws57DUpnWmL49gk28nsBJvd3LQ2F8WOcZqhxtfJ74XZFhR0wb9bhr
-         H7fyT1QyNyis5J8VJlfZt3s/9FzCx5oaJLWFGDVBypAzHeOBOVb1/BFX0aBoba+LfNWd
-         vW9A2Cf9YwPHSG9xnfe0BkrgcxbyvQiAwOK1QIXzA65EnpT/5uylM2Zkjm0EZAu08QB6
-         Hc4Q==
-X-Gm-Message-State: AOJu0YyuklXfkpBEVe7PZUSIS7GbISMk0Qwp3yDX3lnh8f4imwDZ96Ve
-	tHR0I2+320X4l1g6dVx74QSqVjNqtg1W3VnGtjBbyKwBxk8rn34zyLo+6frgtA0xQuY=
-X-Gm-Gg: ATEYQzx44q6mkMoFt8YSyyrbNJI27+jUFwr7AuiVfDVC9Q/xdp63hsXJrFbLGTs6NbE
-	MDr6nbMvqmgztt2mDNoCgDhbPMX6cUvv4SZIq1wFYWhe0esYQ5Mqnh5anu+Xhz2uy691CA1H/a6
-	x6cWjALETOqg4VBlt6G4dxAqp4tSQSKXz+MqIPkLz7bKuFY9mHdzpJTNZ5vJW3DBoVGAylCR3KO
-	DElp64bI7RXAzVVaOarzupMq2MlkRHp8eOn99W0G4lp2Eh7Boq/f6s8mEogHasgmRe9GFwgbEiv
-	AN7ELWSxyY1X/ZbwgdqzkriWM6j0+RQ7Bh6SFhhtU+Kr3A8Ao8xE4KrMURTB5GwkTkp6XKKiH+w
-	cIvuz566XToSnJ3y/fIq5MSHyS4V9E9ydyJ2qTgTPPR2vqL8W7sUEPxEJbZJKGI3DjSNjshXd07
-	HeamiOCSE=
-X-Received: by 2002:a05:600c:1e8c:b0:483:7783:537b with SMTP id 5b1f17b1804b1-4855670b73cmr257690325e9.24.1773734604563;
-        Tue, 17 Mar 2026 01:03:24 -0700 (PDT)
-Received: from [10.128.148.212] ([151.47.69.120])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-439fe20c473sm51723671f8f.24.2026.03.17.01.03.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2026 01:03:24 -0700 (PDT)
-Message-ID: <7ec90ee310c6d765090ec39b96f76155b66a773a.camel@baylibre.com>
-Subject: Re: [PATCH v2 1/2] iio: add IIO_DECLARE_QUATERNION() macro
-From: Francesco Lavra <flavra@baylibre.com>
-To: David Lechner <dlechner@baylibre.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, Jonathan
- Cameron <Jonathan.Cameron@huawei.com>, linux-input@vger.kernel.org,
- Jonathan Cameron <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Jiri Kosina
- <jikos@kernel.org>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>
-Date: Tue, 17 Mar 2026 09:03:21 +0100
-In-Reply-To: <b050ce49-9880-4d87-8e52-09705e7166bc@baylibre.com>
-References: 
-	<20260228-iio-fix-repeat-alignment-v2-0-d58bfaa2920d@baylibre.com>
-	 <20260228-iio-fix-repeat-alignment-v2-1-d58bfaa2920d@baylibre.com>
-	 <7f000ea5-1a41-4da8-aad5-04aa875fa4bc@baylibre.com>
-	 <0b9ac137f52c2c279e07b2d1d8f7379ca9631cef.camel@baylibre.com>
-	 <b050ce49-9880-4d87-8e52-09705e7166bc@baylibre.com>
-Organization: BayLibre
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-2 
+        d=1e100.net; s=20251104; t=1773734863; x=1774339663;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zH58nQVPnaeEnUw730ASGfF9l+ejJ6sv9p1FAkERXbs=;
+        b=ksU9OV9gXefjKMVcstHMsBDh2HHcMNcs5RCnj5q0i+qsvxUTcIM5YnOrk0SVNWLdCW
+         qr03GL0Gn3ZXFzIizmJ7eezEJyK2JSkFvkv70hYGA7UtNTLERFAGP+Mf8sGx0aRjYDPJ
+         yjDLUd8ElhUxm1rR5u7Ye1p86QW6pW9yWIF94bSkP+YC5hnJaXHVB4ESyrhGaiz1+9wR
+         XrePGS43EVeD7oAZCUx/HH70HHbJ7h0yQCrSZdwH39XvVfdi31/VL5UsqoSE5Of8oGkr
+         5W0WFoYSioqKK7D+BQ4dnaLbn699yU4kWQNhMN2dab4bb4wdIlZBi+2hK+r/N4RMWS23
+         UCLg==
+X-Forwarded-Encrypted: i=1; AJvYcCUn0UkUNPBQLRuEYfnvPWEtyFPIWSv0p/qoYPFDZCU6JRUFRNcMTDs3NTouBuHWJvu2LdhhKkgotzY=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz1l7VoCDSEQmj4gCC8rU1LF448jd0tnKaL7ZH3MvXioZHqNFYj
+	TfKFQuFbvKQ1G7h/LWEkXWjod9/8a5sggg+scmlYQfsCS+SBOOi1OOvv
+X-Gm-Gg: ATEYQzzJ7vLjn7tupuasi6PxV2PyeflcmwVptRJf4z7la0OKa16TD0MjQsTHGwkDubt
+	BBZXpOdg6yw11DGqOt03MMq9nsW6QV5hBIi1mjxuP0n9fzV/Kx6Az0Nzm71b0NJ+uSQ/6pgNohT
+	80hW7Sn3NrVZ9vwhDeCXFjfQMC8Rale8RV02SOW/ftlJMD68fPewTNxQRVtuivzTsFeXgJmkayH
+	Ued+1xYrA7Ke5CEFQhL2zZvCCsBQt8R9+FGWlPxmj0J2La7jVHGFEnEXrHiVKtoS/JUgNnstGFd
+	qhHlefua1TxR39L+vbk+zHFagG0Q7zzNnxKqVsyZduFDwj2uWvn7Zfxhv1nndbPBC9fJE1LzEza
+	1UKnBMq8B4z0AoZf4B7xYgQm9JDRYSEMzP8SLfCdxNgRU5ZbzfQ9lid3wBJd29VvYfdIM39FqD6
+	jvwKvZJYiuT3BIwtYrii1wJ6KWfzfLBaAWhofY
+X-Received: by 2002:a17:907:6d05:b0:b97:b378:62ba with SMTP id a640c23a62f3a-b97b3786658mr484917966b.33.1773734862942;
+        Tue, 17 Mar 2026 01:07:42 -0700 (PDT)
+Received: from [192.168.0.39] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b976cdb47fasm666212966b.43.2026.03.17.01.07.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Mar 2026 01:07:42 -0700 (PDT)
+Message-ID: <da9850da-af27-48d9-9e5e-2d187c35d262@gmail.com>
+Date: Tue, 17 Mar 2026 10:07:41 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/7] dt-bindings: iio: light: vcnl4000: add regulators
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+ phone-devel@vger.kernel.org
+References: <20260316-vcnl4000-regulators-v4-0-854fc2eaf54b@gmail.com>
+ <20260316-vcnl4000-regulators-v4-1-854fc2eaf54b@gmail.com>
+ <20260317-tricky-pony-of-assurance-7a8cac@quoll>
+Content-Language: en-US
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+In-Reply-To: <20260317-tricky-pony-of-assurance-7a8cac@quoll>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Mon, 2026-03-16 at 14:56 -0500, David Lechner wrote:
-...
-> > As for the alignment, according to your patch at [1], when the repeat
-> > number is not a power of two, it is (will be) rounded up to the next
-> > power
-> > of two (and this is consistent with what the lsm6dsx driver expects),
-> > so
-> > the alignment will be 8 bytes.
->=20
-> I think you are referring to the 8-byte alignment for the timestamp?
->=20
-> Patch [1] should make a difference when the timestamp is not enabled
-> in a buffered read though.
->=20
-> When the timestamp is enabled, the buffer is going to be 16 bytes per
-> sample no matter what because of the 8-byte alignment of the timestamp.
->=20
-> But if the timestamp is not enabled, then for 16-bit storagebits and
-> repeat of 3, before the patch, the buffer would only be 6 bytes per
-> sample, but after the patch would be 8 bytes per sample. This doesn't
-> make a difference in the driver itself, but does make a difference to
-> userspace that is reading the buffer.
 
-I was referring to alignment in general, regardless of the timestamp being
-enabled. From my understanding, the computed storage size is also used for
-alignment. Anyway, yes, after [1] the storage size for the quaternion scan
-element will be 8 bytes, with the last 2 bytes of each sample zeroed out.
 
->=20
-> > [1]
-> > https://lore.kernel.org/linux-iio/20260307-iio-fix-timestamp-alignment-=
-v2-4-d1d48fbadbbf@baylibre.com/
+On 3/17/26 9:20 AM, Krzysztof Kozlowski wrote:
+> On Mon, Mar 16, 2026 at 07:19:45PM +0200, Erikas Bitovtas wrote:
+>> These sensors can accept 2 supplies - one for the sensor and one for IR
+>> LED [1]. Add supply properties for the sensor - 2 for the sensors and
+>> one external, for their I2C bus, to ensure the sensor is powered on
+>> before proceeding with setup.
+>>
+>> [1] https://www.vishay.com/docs/84274/vcnl4040.pdf
+>>
+>> Reviewed-by: David Lechner <dlechner@baylibre.com>
+>> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
+>> ---
+>>  Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml | 7 +++++++
+>>  1 file changed, 7 insertions(+)
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+>> index 2ba4d5de4ec4..a1b4c02db246 100644
+>> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+>> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+>> @@ -33,6 +33,10 @@ properties:
+>>    interrupts:
+>>      maxItems: 1
+>>  
+>> +  vdd-supply: true
+>> +  vddio-supply: true
+>> +  vled-supply: true
+> 
+> Same comments as before, I do not see improvements.
+> 
+> Best regards,
+> Krzysztof
+> 
+
+I explained why in v3. The message can be found here:
+https://lore.kernel.org/linux-iio/cb92bb47-9078-475d-b242-71e3f9181a72@baylibre.com/T/#m6da277894cf5c2b473fbeebd4b7bafc7519ebc26
