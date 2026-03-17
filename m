@@ -1,126 +1,145 @@
-Received: from mail-ed1-f43.google.com (mail-ed1-f43.google.com [209.85.208.43])
+Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 11482393DC8
-	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 08:07:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E3797396589
+	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 08:23:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.182
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773734867; cv=none; b=fB8IaWzUbDE6tVnp9CrCNhjN3+xmpK6Filfopo36Cwig+41pKhPjqs5AgdicWEsO3tyCJJGzfSaJ5QEcFVZjNM+Utkn8fnb9NDoKpKrlldqx6i7TsdAjOkX1D5jLsjlUfrQzH8h0hI2iP7eQF/5E4+PYDWiuByicImub/r6InTM=
+	t=1773735827; cv=none; b=CxMwsbnoNvsDudWRyjEg0296MHmw4uZ+LlFATovDZeI8pX25oC84REXZjzXmRKcek1l/Ma+hRYk9uz/Zhe1FyOL/fCwFq+lt9U1WXZX7W1paLsXrcPZ9mKdoWSrPZAlhZGUMfsedqKK0hWiu/zdFFoqW4mprzlzC93PLY6ryk/g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773734867; c=relaxed/simple;
-	bh=xjMI3kWLb004RFGciwvvZcxiwmFj4VVzpHoNLJgITKQ=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=V1XzqBWqghxZikiA9MPZb6WlgXWjK4L45YcnL3KU1d7bZfvcPWgVMNh9XRDa8j3R6OXng1AYugwU/waJtr7ucxtTgoaoH2v+FidtdlMPvQ0N2x4PHpiF+NMSwaIa/fjOOxPFoPtAWzwjRPproQC+BmXRR0EDWoWWuD+mOAcMALw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Yr/HjY3i; arc=none smtp.client-ip=209.85.208.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+	s=arc-20240116; t=1773735827; c=relaxed/simple;
+	bh=aTR0ByVDp5twPVDF0We0yxjjtWE6HL5DaVZrXfqb4cU=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=NnGBEHFbx7/cBw8OsBt/O3Su0w55YiZjZoIDXGyhjO9WhFuAfklRw3UYnuipd9YrcN+yrWUz9WxKyTuvWvujSD8x7pwwtKDjx2A4RN8ULK4BWvi0Jbzzj2XLbmBddJxJ/VlgKvesuZgFIBUaMfBd8lJftFG/N3fC6thMzMbcbMI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.221.182
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=linux-m68k.org
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Yr/HjY3i"
-Received: by mail-ed1-f43.google.com with SMTP id 4fb4d7f45d1cf-6651702ea48so3823089a12.2
-        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 01:07:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773734863; x=1774339663; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=zH58nQVPnaeEnUw730ASGfF9l+ejJ6sv9p1FAkERXbs=;
-        b=Yr/HjY3i0z05NXV2n+9u2rLpjSTAQA6C5n5F6bXf5kuhRPunLI+fR5ENlF8X2e/2qY
-         aiE547oHcpobbrStQkqGCvT2OdzmG5jogJYsVCyd356eEWLhVy9wvxlPMOKyeLpJy1JC
-         FKWklfEzrseRM97NkJ8573zCuA4bUaZnokqkXtwOQ+9X6uj3jMM7o5elCcEcSS8pAV2h
-         k/hiqVNqkXSidFLyq4ZgLQYEOfTnnbr2gL2KDmFAFIjh+7zEcrFcJeGQqsW0nqwDZxya
-         H0CGYEBuohgoLOZKwRiJXTRvPewVLChYCHwc/7n/lKI5w+Xq0W+ajSb+K0A/lD/Ntr08
-         TZIQ==
+Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-56b7fce3ae6so529623e0c.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 01:23:45 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773734863; x=1774339663;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=zH58nQVPnaeEnUw730ASGfF9l+ejJ6sv9p1FAkERXbs=;
-        b=ksU9OV9gXefjKMVcstHMsBDh2HHcMNcs5RCnj5q0i+qsvxUTcIM5YnOrk0SVNWLdCW
-         qr03GL0Gn3ZXFzIizmJ7eezEJyK2JSkFvkv70hYGA7UtNTLERFAGP+Mf8sGx0aRjYDPJ
-         yjDLUd8ElhUxm1rR5u7Ye1p86QW6pW9yWIF94bSkP+YC5hnJaXHVB4ESyrhGaiz1+9wR
-         XrePGS43EVeD7oAZCUx/HH70HHbJ7h0yQCrSZdwH39XvVfdi31/VL5UsqoSE5Of8oGkr
-         5W0WFoYSioqKK7D+BQ4dnaLbn699yU4kWQNhMN2dab4bb4wdIlZBi+2hK+r/N4RMWS23
-         UCLg==
-X-Forwarded-Encrypted: i=1; AJvYcCUn0UkUNPBQLRuEYfnvPWEtyFPIWSv0p/qoYPFDZCU6JRUFRNcMTDs3NTouBuHWJvu2LdhhKkgotzY=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yz1l7VoCDSEQmj4gCC8rU1LF448jd0tnKaL7ZH3MvXioZHqNFYj
-	TfKFQuFbvKQ1G7h/LWEkXWjod9/8a5sggg+scmlYQfsCS+SBOOi1OOvv
-X-Gm-Gg: ATEYQzzJ7vLjn7tupuasi6PxV2PyeflcmwVptRJf4z7la0OKa16TD0MjQsTHGwkDubt
-	BBZXpOdg6yw11DGqOt03MMq9nsW6QV5hBIi1mjxuP0n9fzV/Kx6Az0Nzm71b0NJ+uSQ/6pgNohT
-	80hW7Sn3NrVZ9vwhDeCXFjfQMC8Rale8RV02SOW/ftlJMD68fPewTNxQRVtuivzTsFeXgJmkayH
-	Ued+1xYrA7Ke5CEFQhL2zZvCCsBQt8R9+FGWlPxmj0J2La7jVHGFEnEXrHiVKtoS/JUgNnstGFd
-	qhHlefua1TxR39L+vbk+zHFagG0Q7zzNnxKqVsyZduFDwj2uWvn7Zfxhv1nndbPBC9fJE1LzEza
-	1UKnBMq8B4z0AoZf4B7xYgQm9JDRYSEMzP8SLfCdxNgRU5ZbzfQ9lid3wBJd29VvYfdIM39FqD6
-	jvwKvZJYiuT3BIwtYrii1wJ6KWfzfLBaAWhofY
-X-Received: by 2002:a17:907:6d05:b0:b97:b378:62ba with SMTP id a640c23a62f3a-b97b3786658mr484917966b.33.1773734862942;
-        Tue, 17 Mar 2026 01:07:42 -0700 (PDT)
-Received: from [192.168.0.39] ([79.133.247.80])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b976cdb47fasm666212966b.43.2026.03.17.01.07.41
+        d=1e100.net; s=20251104; t=1773735825; x=1774340625;
+        h=cc:to:subject:message-id:date:from:in-reply-to:references
+         :mime-version:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=/BWsLLpeb8S2Ruk3mIA0NNiewV90E5kBU5fFfxw9bA0=;
+        b=ltIpIM7Nl3sI46u2V3vbpkAc8HQI18DUJPPzeUUe4dInbmKF2HS+neQxAp//OpoAQF
+         gbaOLadm5YM8POFRG4w1RMOPnJPlmI4i9pDCt+3MgkWgqXymUDdrsbgobtnEQ0B3o4MY
+         nL9lGHgOwdy4ikPcqaPHSJZq7aDn81ymWyzRHWfCE/Rmh+MsxIsXWrk6OZoI1K7mHeHE
+         ifeXeWnhwQzrfxYKWIucu1gjOzwhqtBPyFrog1zVrpo/hjsFbl0Ta2rOVpn3OVeOZQQG
+         +9acMpN3Dp23nYKmuRILRe56uwq7KF02ET26/IOIU7fkY/ovcdLALcCJQlZ5e/I4Nd9I
+         Rhzw==
+X-Forwarded-Encrypted: i=1; AJvYcCVG+aYM1EtbWLwVT8CoWACq8mZ9WdIRXfvCSgC9TP1USdX/aDik+rb1uPQLEyBde1O3+rvnYd6InBA=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxFhaoSiH9C/9v698ESavN1NP/5yPtBIHhZekBcbOuB4Rw4z+3k
+	a799slrJOC491WqkQ5zCpZQkpWysDrmAnvjbeZlMJ8N9N5YoCSOvwr2Z4FVfSFS2
+X-Gm-Gg: ATEYQzwy0rIZ7EOPNxuR6T7utEd4Mh0zUuK61MU4DHpXEznIkAfZzPk/Z1NPyMsJAP0
+	eb/+mM10Ge0kK7UxBrVNcB7nWuYwDvIEbcxNDGm+jGWbPIFQBuUNT9cAxZcc/kePMhh2+nKJi2R
+	IAOThbW94rcug/UBxPo+qHOJMqeuzk7BsrYRzFD0AfOU2seQ3mSkc590WgilPjvuD5gtuHnBRjf
+	TgUOc9kEUMOEpdkpFxfR2cXsRjMN23poSywq80hGJJ4cAa2DvYhyQ5sTCGAi8dPVzxr+Mj5UyJO
+	rxxOFZFKpAjSyAwlDEXB3vVqNhrUqt6Fxq3Fick4GqcHrx+uUDLJo9XlPIN/IsS8JWuPgKYOR8Y
+	dmwV/Iano+L3LpF9o+TDKnIriO80nsUbmCp6aT1UtxvK7DTZ4ronwfMw9ni0Grjh/WXvYcqscBj
+	mTezhDux8MmaxrMLT2koUX1ZzN3xVRbxFrC+0lqzsDhMQdmosAT1AUUb3t69n8UYJGSgtHHXo=
+X-Received: by 2002:ac5:c00d:0:10b0:56b:9534:c06f with SMTP id 71dfb90a1353d-56b95dad5bdmr872155e0c.3.1773735824737;
+        Tue, 17 Mar 2026 01:23:44 -0700 (PDT)
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
+        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56b4646bdfasm9323949e0c.13.2026.03.17.01.23.44
+        for <linux-iio@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Mar 2026 01:07:42 -0700 (PDT)
-Message-ID: <da9850da-af27-48d9-9e5e-2d187c35d262@gmail.com>
-Date: Tue, 17 Mar 2026 10:07:41 +0200
+        Tue, 17 Mar 2026 01:23:44 -0700 (PDT)
+Received: by mail-ua1-f41.google.com with SMTP id a1e0cc1a2514c-950c26b6b05so332483241.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 01:23:44 -0700 (PDT)
+X-Forwarded-Encrypted: i=1; AJvYcCW4sX/K/ptux2GAFO02yrToAifR86JTqayqxLYjPPy5LQxmRXzcyccNX3peu/H6DD3TDRnL3dCPyOI=@vger.kernel.org
+X-Received: by 2002:a05:6102:38d4:b0:5ff:de83:3e46 with SMTP id
+ ada2fe7eead31-60263d8f933mr1167606137.7.1773735823847; Tue, 17 Mar 2026
+ 01:23:43 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v4 1/7] dt-bindings: iio: light: vcnl4000: add regulators
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, David Lechner
- <dlechner@baylibre.com>, =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
- phone-devel@vger.kernel.org
-References: <20260316-vcnl4000-regulators-v4-0-854fc2eaf54b@gmail.com>
- <20260316-vcnl4000-regulators-v4-1-854fc2eaf54b@gmail.com>
- <20260317-tricky-pony-of-assurance-7a8cac@quoll>
-Content-Language: en-US
-From: Erikas Bitovtas <xerikasxx@gmail.com>
-In-Reply-To: <20260317-tricky-pony-of-assurance-7a8cac@quoll>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
+ <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
+ <aaqTVDQa7xn70bR_@monoceros> <TYRPR01MB156191C8E77BDA44AE23A7D4F857AA@TYRPR01MB15619.jpnprd01.prod.outlook.com>
+ <TYRPR01MB156192CC838EC0B3DD66246158540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
+ <CAMuHMdVqqGTmxiKRQBbphw8KmtG66HLaZhDVvtSK81cfiMsXcQ@mail.gmail.com> <TYRPR01MB156193245985A82B792817FE68540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
+In-Reply-To: <TYRPR01MB156193245985A82B792817FE68540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Tue, 17 Mar 2026 09:23:32 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdV6c1F8eVOi6bQssq3qsBcpGnQ-cT1AeXLqXXYEgK4xrg@mail.gmail.com>
+X-Gm-Features: AaiRm50jZRADgQIXJgbrFUg4WeDPSzcNuPJxTTXR-hiMiTGwpkXr0IAMZW3mmeM
+Message-ID: <CAMuHMdV6c1F8eVOi6bQssq3qsBcpGnQ-cT1AeXLqXXYEgK4xrg@mail.gmail.com>
+Subject: Re: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd channel
+To: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Cc: =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <ukleinek@kernel.org>, 
+	Biju Das <biju.das.jz@bp.renesas.com>, William Breathitt Gray <wbg@kernel.org>, Lee Jones <lee@kernel.org>, 
+	Thierry Reding <thierry.reding@gmail.com>, 
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
+	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>, 
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
+	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>, 
+	"stable@vger.kernel.org" <stable@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+
+Hi Cosmin,
+
+On Mon, 16 Mar 2026 at 20:13, Cosmin-Gabriel Tanislav
+<cosmin-gabriel.tanislav.xa@renesas.com> wrote:
+> > From: Geert Uytterhoeven <geert@linux-m68k.org>
+> > Sent: Monday, March 16, 2026 8:26 PM
+> >
+> > Hi Cosmin,
+> >
+> > On Mon, 16 Mar 2026 at 16:52, Cosmin-Gabriel Tanislav
+> > <cosmin-gabriel.tanislav.xa@renesas.com> wrote:
+> > > static int rz_mtu3_sibling_hwpwm(u32 hwpwm, u32 *sibling_hwpwm)
+> >
+> > Unused sibling_hwpwm?
+> >
+> > > {
+> > >         if (!rz_mtu3_hwpwm_is_primary(hwpwm))
+> > >                 return hwpwm - 1;
+> > >
+> > >         if (rz_mtu3_hwpwm_is_primary(hwpwm + 1))
+> > >                 return -EINVAL;
+> > >
+> > >         return hwpwm + 1;
+> > > }
+
+> It's funny how even after triple-checking the message I was about to
+> send, I didn't notice it.
+>
+> This should have been what I sent.
+>
+> static int rz_mtu3_sibling_hwpwm(u32 hwpwm, u32 *sibling_hwpwm)
+> {
+>         if (!rz_mtu3_hwpwm_is_primary(hwpwm)) {
+>                 *sibling_hwpwm = hwpwm - 1;
+>                 return 0;
+>         }
+>
+>         if (rz_mtu3_hwpwm_is_primary(hwpwm + 1))
+>                 return -EINVAL;
+>
+>         *sibling_hwpwm = hwpwm + 1;
+>
+>         return 0;
+> }
+
+Thanks, now I can see what you intended ;-)
+As the output parameter value is unsigned, and never very large,
+returning that value or a negative error code as the return value may
+be simpler (i.e. use the original "bad" version, and drop the unused
+output parameter)?
 
 
 
-On 3/17/26 9:20 AM, Krzysztof Kozlowski wrote:
-> On Mon, Mar 16, 2026 at 07:19:45PM +0200, Erikas Bitovtas wrote:
->> These sensors can accept 2 supplies - one for the sensor and one for IR
->> LED [1]. Add supply properties for the sensor - 2 for the sensors and
->> one external, for their I2C bus, to ensure the sensor is powered on
->> before proceeding with setup.
->>
->> [1] https://www.vishay.com/docs/84274/vcnl4040.pdf
->>
->> Reviewed-by: David Lechner <dlechner@baylibre.com>
->> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
->> ---
->>  Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml | 7 +++++++
->>  1 file changed, 7 insertions(+)
->>
->> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
->> index 2ba4d5de4ec4..a1b4c02db246 100644
->> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
->> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
->> @@ -33,6 +33,10 @@ properties:
->>    interrupts:
->>      maxItems: 1
->>  
->> +  vdd-supply: true
->> +  vddio-supply: true
->> +  vled-supply: true
-> 
-> Same comments as before, I do not see improvements.
-> 
-> Best regards,
-> Krzysztof
-> 
+Gr{oetje,eeting}s,
 
-I explained why in v3. The message can be found here:
-https://lore.kernel.org/linux-iio/cb92bb47-9078-475d-b242-71e3f9181a72@baylibre.com/T/#m6da277894cf5c2b473fbeebd4b7bafc7519ebc26
+                        Geert
+
+-- 
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
