@@ -1,286 +1,133 @@
-Received: from TY3P286CU002.outbound.protection.outlook.com (mail-japaneastazon11010055.outbound.protection.outlook.com [52.101.229.55])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EC8121C8634;
-	Tue, 17 Mar 2026 23:02:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.229.55
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773788541; cv=fail; b=e+m7HojlY2TJWgyOS9paLeeaNpGu8p6l8tN6hRomACTsgkyH+HlynobxjXSbsFGjyW4Hr8DaVGCBtI37JnrMaNnWMYIaF9DdhQu247BO19PvwBAFFaLEnAkYFqKLurm/SNVB3s7+mjLNTlAC+zdUdWBRFhmk/F+9TCYyhsxPQ4Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773788541; c=relaxed/simple;
-	bh=dzzroiBI1m/FQqNe8jAbV7XTblbNCYFvv2z+Yh39uT8=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=KTSarf0SJDX5/xHEN6StWrj0GGrZ/Ik3Z0nOpRgloKkG/STGfxZkZjhwo1hHvsV99h1ykJR0JXbyfYOnWtqG/YSuvrAzAKEo3ufQJoG/ARdHLO0SV0ZXfaWP6kdQhfCZmStzxOtVY1aG7pR5gy81L6chLcZYZjabpjjLTpb+syU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=QAtcGhtV; arc=fail smtp.client-ip=52.101.229.55
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 418DC3F65FC
+	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 23:26:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773789977; cv=none; b=t1UWEDIs2/opLpCFdt32VVyAw765bsRnXgN8lVAgBxbIw1s+LTIkJ+vVsejKU9NDoSoWIJodmj0I4WJhTM5/JehFJVzGn4AIhmshGp4osLC9amn6+Kg97tONWaSS0VwZwlo0DRbf5AOHl9euOz6SA/gLh5h4/VRs49DWJvXyrpA=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773789977; c=relaxed/simple;
+	bh=4dM1evO6mevasb9VEJZzj39UyIUZj0TgsTs6USorWfo=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UFea5X8X5T/+dQo/slDbefUXPMWiWTxMf3OT2+gk3W9eG1o2UUG2nI9pCToB5y+07eALJ6RJRJz41omVM0ZYeSd00VsztJGFe5F6N+XgXPpgHk4iKPxvdp6oO3IGlD2ESSHEd5ncsGyjfDEXWgQejGowoGjrB9nrmRjwQhCEs58=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y8pC8+TE; arc=none smtp.client-ip=209.85.214.175
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="QAtcGhtV"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=Z4zaKDV+IWb+cOwCsf+h0rDhxFyQ1KtW3LKFl6ZFJ+6DK2/ng0/j0+oLPbKsQ9et/g34rAjmL4P2PqSwSvD5GkUk14ov35Bnl/2s8NK8SIBeF5qDZzYG1LtiMbYkahISxAKcEd3E2mPs1UBcyZvvABjZKhe2qALAYNM+jPObLwGu2hMnCT4+LvgXUvxPRUytxQlv+Qx0CMx0/Qaf3EuQgq+sJCVBFDVr9H/Q745P1RZteBA2W2jPn9mOvdLVpR+Gez+NGPu/JNEyKIuyGiTdnd6MaC0EuS02GTV//YViaKKO4qIt/tbQfijQbMTaucNvDBrnjKrEYOxzRsbe+PXQQA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=39ZBaR2DKfmFE1KCq29B8ZSlZKRvyjla+hfWeoiFIYY=;
- b=Mm5XAkTX1H/vMfsZLfoGxMT2lHdspYcuYdbvFmRw8XFjv6sB3wKz9ZoPwpsnySwleCjV2lPD1bROd31A3q5uqymU5bEwNu5+qmU4Fr7jab3q64ynUprOHm8ndN9tIE6fb/vFgY4mq5xDc6eEylwe8MZjeu7D7/Vjf2GWhfQITlVRZvQY76VvmyXHWQ3uNnNoXKbCzTgJF7NRzfZ5/cmFX3KAhcV7ahUdp4dr7aDmvnLyo7ojFrV5TxH0dwKqENK/DH68yfiY9wtVoN9St/Fb7SiT0WYtH+ppPadidzD4dt7ih5XHYDteVpRiHvchrqKnmaJmTNKfL49i/5P4g2SfnQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=39ZBaR2DKfmFE1KCq29B8ZSlZKRvyjla+hfWeoiFIYY=;
- b=QAtcGhtVLCsyG4+8iDbdwSKGwNmTTgUni0D2UwYK6vPYf/TLxnjoOdlk4i/gIUy8pO8v1qO9H9A9uVrsCdLGjq+BmGNuD6cLeQfOsCNVG6XWja9dzbBgKo5W29G239zQsaS63HLsV7NB9MZmNCyHngQ12eJ5zhQPWdS6cWCc0aw=
-Received: from TYYPR01MB15615.jpnprd01.prod.outlook.com
- (2603:1096:405:291::13) by OS9PR01MB12167.jpnprd01.prod.outlook.com
- (2603:1096:604:2e5::6) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.19; Tue, 17 Mar
- 2026 23:02:15 +0000
-Received: from TYYPR01MB15615.jpnprd01.prod.outlook.com
- ([fe80::d8aa:d4b:55a1:2948]) by TYYPR01MB15615.jpnprd01.prod.outlook.com
- ([fe80::d8aa:d4b:55a1:2948%7]) with mapi id 15.20.9700.024; Tue, 17 Mar 2026
- 23:02:12 +0000
-From: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-To: =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?= <ukleinek@kernel.org>
-CC: Biju Das <biju.das.jz@bp.renesas.com>, William Breathitt Gray
-	<wbg@kernel.org>, Lee Jones <lee@kernel.org>, Thierry Reding
-	<thierry.reding@gmail.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
-	<linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org"
-	<linux-pwm@vger.kernel.org>, "stable@vger.kernel.org"
-	<stable@vger.kernel.org>
-Subject: RE: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
- channel
-Thread-Topic: [PATCH 1/5] pwm: rz-mtu3: fix prescale check when enabling 2nd
- channel
-Thread-Index: AQHckeNxm+l5nvVDhECE0kd9r0GiYLWhc7cAgAAuuBCAD+SBUIABMXYAgACMt/A=
-Date: Tue, 17 Mar 2026 23:02:12 +0000
-Message-ID:
- <TYYPR01MB15615FA52860D81F04E42F2C48541A@TYYPR01MB15615.jpnprd01.prod.outlook.com>
-References: <20260130122353.2263273-1-cosmin-gabriel.tanislav.xa@renesas.com>
- <20260130122353.2263273-2-cosmin-gabriel.tanislav.xa@renesas.com>
- <aaqTVDQa7xn70bR_@monoceros>
- <TYRPR01MB156191C8E77BDA44AE23A7D4F857AA@TYRPR01MB15619.jpnprd01.prod.outlook.com>
- <TYRPR01MB156192CC838EC0B3DD66246158540A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
- <abkX1ssLhkGxryfM@monoceros>
-In-Reply-To: <abkX1ssLhkGxryfM@monoceros>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYYPR01MB15615:EE_|OS9PR01MB12167:EE_
-x-ms-office365-filtering-correlation-id: a563d3f6-a608-4b5e-d6f3-08de847939af
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|1800799024|366016|38070700021|56012099003|22082099003|18002099003;
-x-microsoft-antispam-message-info:
- RBdenGucKofbikrOjMOOVITVBv3t0TcmGyjnYxEDtMc5cTYgPNemrJqDPyxZ4SCJzeLe3Gt2ItxClLNaPCKNib87tZW4HGVxW+CxDj2LHHw7gSx0bNSNj6hV3SRo33+afcZhQBEbzWerbeiSmgXIPGjb9Im/+COix+OhiJgCTSA71M4zcT7HRBK/90Akilpu1FaQXSNDssBzkpo1sVJe41EHBmiHPjz/C4KzFuZf3Hi40pdMr3fHdEpbRdOT2T3y0RSdtI0r8V0S4UGv+C+kjxK6rZjm731o9IVJr2AOeSGaFg6ZOWGWB7Q/RfCwLy53Pv1EOqf4e8kyTsCI0ipj+wvoY4ePJWCfUC5RvN9POMst0eCFxOJwHBr5eVK2XJF9D+IgSjkKUER8dh62jILNBjnL3qpwYZDwyCl6IOjNYyNxRtZoYo9V1v0AuL08W1wrwwQFWyg3hOBb8NWe2hAb2lew0zueywPvlo6nKLctQEdaG/dSF6/CoVQalNVBUlWrAx1stkzACjv9k7miFxYqJKgvDXIAVoAsHKavKPkpCwhS/8NLBJ/dgx+pUmtEdqkSuSD3n7AwtUJ9VeO7DTA7yayfX7IX6BtK25iTGAfTCHGAGtbjXXmMX5Eu4ug60t+BNSS19wtrxNgLHYfGRNPWskAgRn1uC/qDjuBVKN9oj0uAdp/0Mcj/fkc3VbskqaBvXCzyQSO35yDOeRGTZltYnRAc01Z6MFT7ZAfu6rhbNKCzSWyX9uEcie8s3XDK7eltJhMRIn9RoDVN3HqpmR9bWfaJtJyfaUUN5RPupLZ3/X4=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYYPR01MB15615.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(1800799024)(366016)(38070700021)(56012099003)(22082099003)(18002099003);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?rMBgm5NDuD61fZl25jz3hL8WrTvduQrooG/5bujK8tro7pxSFyOQRwBlfI?=
- =?iso-8859-1?Q?WRQX0JN1KECKXEpFTod2gUhb8tyWrxHHD1wuKOmQ//QieIeNmIQLYlS7EI?=
- =?iso-8859-1?Q?J9cOuk2/ir/DBSHQWlhYgIDkxhPwQCNC4OR5IC5hdaVUW3+WheDui+TfOk?=
- =?iso-8859-1?Q?CT7yNPEAVsPbeMqzAWA8snfIJQnYH0BM+vcYY7yJWNJ+lFa71+5weZPFp9?=
- =?iso-8859-1?Q?xG0oASWJkk5wJuK29O8gsYjdHtC5M001leB5S05r8gluXA1ix47SnsCLgj?=
- =?iso-8859-1?Q?+sOXPkJLGolijYI44lve1stvcdKTdF+PkZJtK7gU7diXpKiS85zF35Mxri?=
- =?iso-8859-1?Q?zjXajm7gQVykM4E6wvTWLZpq0eHVPAL3R18Y5qFANTBCH94XEi505xhhrN?=
- =?iso-8859-1?Q?AJJdredAehTAUtwAvXb01J/NXv0uWZbwXPtzV4qFgkCvkAF9N6TBlroAFE?=
- =?iso-8859-1?Q?i3ISBP6j07euneHzXG1xW35DqfHbJ6wH8+gtVOUoDOGBBwEYzHAS52T0u6?=
- =?iso-8859-1?Q?cVz4PreFVFSoJyjsOa5eiCVd1aa6ihfN63vli6igi+baLfzRIk+m1rq2vo?=
- =?iso-8859-1?Q?vEZgSFolMv0S96x44XzHFm7Nu31hXY81QKIf2GBvxHSaq79iB09lpgjg5g?=
- =?iso-8859-1?Q?Xw+LkQua2xLuJBEjqbCz0luo5cr/V54MkBaSKm8VC5+HVYv9AtxDfls3CU?=
- =?iso-8859-1?Q?W+l3UOuENh6pTp65/tU9NrLPBcoIQhWbvitrm3v5EPBz8bL6cvwOssXZ8w?=
- =?iso-8859-1?Q?SoNeaj3iLi2JFfjD1KChqo4nTvtpJVX6EWYzbbuLM0/NnL2kTQ3OEsf3D6?=
- =?iso-8859-1?Q?0apOZWNFL33/RFurFKnw5ZhqFKpbZNpioJbSwEKiF+36dr6kmJKC345uE1?=
- =?iso-8859-1?Q?foLy01s3JyQ6LWeClDcYAyrNNN3IvBqsXyIi2/JYJ4gJcyIrEYkVSZkMq3?=
- =?iso-8859-1?Q?ntPItz65nUPignLmgn7lHkRgzYethH7giIvQ/ytXFjFKwWyHYCO9kosHmp?=
- =?iso-8859-1?Q?rdOSq7HUtr2h4Iwd+rgaZnOTJ6pr2GW7ArRaG0um+30RNqkqtPgWvaAoz8?=
- =?iso-8859-1?Q?xkfZ6rqzrwX9Ty7BFHvcZGjsauKWAxYTdF7+QQazwmeHeRxtlSvJsPaGKU?=
- =?iso-8859-1?Q?ziOe5GJT1zzsWj4HCQUrd5wfaw1oTcIkeIGZrgHK79D5cnp/wnxPUzrYbD?=
- =?iso-8859-1?Q?QYUs1Zgj9xOWwztF2OhsU5psb3NiqPtqLd/lAanYAdoy2z1rRckJSO4Bjv?=
- =?iso-8859-1?Q?drMKGZOU/H2YrMXn3bWBMKpDn+wv+sa3q964w/YL5W335L/HsvON7LqoS0?=
- =?iso-8859-1?Q?kNMGOwNxLz0aIB+Acvfd5wQNZEnbMEuxQCk2neEullEbeiTfo4ZfoEu44c?=
- =?iso-8859-1?Q?10nnJCyQXaG2L/Ou6lnxeDcjFjYSw1xOczjrfc6skeVD2kUJuUapJL0kjN?=
- =?iso-8859-1?Q?/5F0aMnyrwuUPkruLVDnmjYrGqNNv8Jifc8S7D7obUB60USdcF6nxwvo8j?=
- =?iso-8859-1?Q?TWhXxeh1fEDHjM/ESHdT+pUXpCpWT8Jp9LgjfR41J4C06s5VgflOYhATBN?=
- =?iso-8859-1?Q?SLZdTl8vPuayW8Q8hOisIokEaOe26nkkYuoNyVNgDGcdz8K7SALD+gLOag?=
- =?iso-8859-1?Q?mAEyU4QqcZ+DOdmzg/CvCdE/hYx/XGjxETv0RUkFH5reG3fmb/kpq6MseW?=
- =?iso-8859-1?Q?MZVvmTnzGJAn+CnIGbI4MS8RrDAQsYoguq4LJpGD1JMhDxfxAm/EMwjwUh?=
- =?iso-8859-1?Q?PV8RdEmiJxqsof/33ExzQys7n4OFeYsug2ci0smYMeZ9gbBG3g6w6hPRvY?=
- =?iso-8859-1?Q?y0smqeEzpt4zDlIqDIYwXZVuCT98aAIfz285k8+tKuRSfstKuqsl?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y8pC8+TE"
+Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2addb31945aso48624655ad.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 16:26:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773789974; x=1774394774; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=HEDOBzod6EyW+d389//yTAK4IQGF1tCpnJcK+pS+3Aw=;
+        b=Y8pC8+TEO9NMEMshqkLaHpFQAzOrQvqx5YQYfwL9gTdLH8HgYeHKpNvKqWAbvH55CP
+         ykENLtC86cy73zYC/th9ADcLn5Px+rbOR3yAPkmFCtARX8plUH3+R3xZSR+5bRWLcJac
+         q8xc5q0ohcW+vocRKrWrPfUqvNMnNh2+xSQ1uxOTPnqE8geko6d4RyyyfFWcJUZ6WS9i
+         CVNZD5ZkI6pwb8JA8KoN1nYDnQ69HMuS6X1vO+7+9gc/0LIgtzN5FsBQxFlufEm/ZY1i
+         gmH9MM6VdIsxGKFdKescAdcVJ5pl1vFic1O8w8H1luSYjaRxbunkWkyj+pYw7X7Vroyr
+         MMpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773789974; x=1774394774;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=HEDOBzod6EyW+d389//yTAK4IQGF1tCpnJcK+pS+3Aw=;
+        b=bruCL+0klJcjtq2W2t+3LcEWOfIufIUIxu1ebT/8nCStf6ekzMZpfxcegTsYG/yPtl
+         NzNer3I/MSm2nZxeDCe51ZvwIsCkXMN42k8h1zSJIr7S6Z68zxhnYluO+R32TU31JxUB
+         wrhOyZ244kOsJbhmpEN04/2zty0oI4x0Ej+OnjIakxLumMIxBIA5JRiN2JwAhuCqs2tI
+         9RotM6ISiqghvDtPX8wYkCaQm48WWe0UGYPxWPhEhlNf6THgdKQYawNiVMDRNqcr4v3L
+         nuciQ5gtwTiXAHgjVMD/hxWgCuR/c1eEBqya7rI8ws6V4QlM1YxaKlFnh4XOow6E9JZB
+         9eBA==
+X-Gm-Message-State: AOJu0YzIRppLry3Jthc5nC1Y8HLddiVYtEH5qPRMBrmOY+LC5MO60CXU
+	eXC2sey0rDkl8TGVCYrrHZUsB4uO2gjYJZ3bQIfccDn2wuUlNY4YnHlJJQ8BOg==
+X-Gm-Gg: ATEYQzxCtk6QkLea/9I1JKL5JUjHcLueeuHbB8Rh0eJ3jnME07oVV/d7MeJEw4A8Abb
+	VjJGskAbKohRsCuLLQmuQUEPV/xxsiOc9YEFhr5m7eTSm/9jHBFos7hofnD2rU/n5ngKxCYTisB
+	7YMCSpKflrbX72Zw7VfjU9aUsjMT/4QSf288Lt0KZp4C3DcjSGMAwkeTOTycz1dTya8hA6FKJ2J
+	2yitnzpG0f5HUTRtoKuVtg2zygTtX18W+i+PYkuAfHHZE/rvqw2PtrIQIXMYprBeRpavmUs9huI
+	M9NawL2NaMktIn9VmuTpcFUp/M8TO0dnVEowApB2BJbEKqWTP/P5e0SEHRyVFPWbg+Z4fYLlPS9
+	QMXuVLnKDWkWpcxG+g7Yu1Xyb8dKUhPJHbK3GiEUIGoQUSNCfmVO1sfjE26IXBBVbLw1d3rrldV
+	5pG1NcB2NhpP2vIxTtxoEnpgM=
+X-Received: by 2002:a17:903:1a83:b0:2b0:58a8:5f9b with SMTP id d9443c01a7336-2b06e43d446mr13526465ad.49.1773789973936;
+        Tue, 17 Mar 2026 16:26:13 -0700 (PDT)
+Received: from arch ([2409:40c2:5004:9b1f:c2b:f32d:d22e:ca20])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b06e41a29dsm6582635ad.13.2026.03.17.16.26.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Mar 2026 16:26:13 -0700 (PDT)
+From: Bhargav Joshi <rougueprince47@gmail.com>
+To: linux-iio@vger.kernel.org,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	rougueprince47@gmail.com
+Subject: [PATCH] iio: frequency: ad9523: check return value of ad9523_io_update()
+Date: Wed, 18 Mar 2026 04:55:52 +0530
+Message-ID: <20260317232552.28485-1-rougueprince47@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYYPR01MB15615.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a563d3f6-a608-4b5e-d6f3-08de847939af
-X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Mar 2026 23:02:12.6467
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 1fdsJUb1yfuTWvmpDFXRrQmzf9nrd8pFtV4BYLjPJbXtSXVnsvtonbwgMiBtyfURQ75wNNJUkT//m0PwURnftfMEXX/d6/WDPhpp2oc4vGgXPTN0auitCTNZL7kkTlqt
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OS9PR01MB12167
+Content-Transfer-Encoding: 8bit
 
-> From: Uwe Kleine-K=F6nig <ukleinek@kernel.org>
-> Sent: Tuesday, March 17, 2026 11:12 AM
->=20
-> Hello,
->=20
-> On Mon, Mar 16, 2026 at 03:49:35PM +0000, Cosmin-Gabriel Tanislav wrote:
-> > What do you think about this setup for mapping from PWM to HW?
-> >
-> > #define RZ_MTU3_PWM_IO(ch, secondary) \
-> > 	(((ch) << 1) | (secondary))
-> >
-> > #define RZ_MTU3_PWM_1_IO(ch) \
-> > 	RZ_MTU3_PWM_IO(ch, 0)
-> >
-> > #define RZ_MTU3_PWM_2_IO(ch) \
-> > 	RZ_MTU3_PWM_IO(ch, 0), \
-> > 	RZ_MTU3_PWM_IO(ch, 1)
-> >
-> > static const u8 rz_mtu3_pwm_io_map[] =3D {
-> > 	RZ_MTU3_PWM_2_IO(0), /* MTU0 */
-> > 	RZ_MTU3_PWM_1_IO(1), /* MTU1 */
-> > 	RZ_MTU3_PWM_1_IO(2), /* MTU2 */
-> > 	RZ_MTU3_PWM_2_IO(3), /* MTU3 */
-> > 	RZ_MTU3_PWM_2_IO(4), /* MTU4 */
-> > 	RZ_MTU3_PWM_2_IO(5), /* MTU6 */
-> > 	RZ_MTU3_PWM_2_IO(6), /* MTU7 */
-> > };
-> > static_assert(ARRAY_SIZE(rz_mtu3_pwm_io_map) =3D=3D RZ_MTU3_MAX_PWM_CHA=
-NNELS);
->=20
-> I think the RZ_MTU3_PWM_1_IO and RZ_MTU3_PWM_2_IO macros are a bit too
-> magic and would use
->=20
-> static const u8 rz_mtu3_pwm_io_map[] =3D {
-> 	RZ_MTU3_PWM_IO(0, 0),
-> 	RZ_MTU3_PWM_IO(0, 1),
-> 	RZ_MTU3_PWM_IO(1, 0),
-> 	RZ_MTU3_PWM_IO(2, 0),
-> 	RZ_MTU3_PWM_IO(3, 0),
-> 	RZ_MTU3_PWM_IO(3, 1),
-> 	RZ_MTU3_PWM_IO(4, 0),
-> 	RZ_MTU3_PWM_IO(4, 1),
-> 	RZ_MTU3_PWM_IO(5, 0),
-> 	RZ_MTU3_PWM_IO(5, 1),
-> 	RZ_MTU3_PWM_IO(6, 0),
-> 	RZ_MTU3_PWM_IO(6, 1),
-> };
->=20
+Several functions in ad9523 driver calls ad9523_io_update() to apply
+register changes but fail to check its return value.
 
-Sure, I'll remove the extra macros.
+If the function fails, driver silently ignore the error and returns
+success. This results in user-space assuming register changes even if
+they are failed.
 
-> and then maybe just:
->=20
-> #define RZ_MTU3_NUM_PWM_CHANNELS ARRAY_SIZE(rz_mtu3_pwm_io_map)
->=20
+Fix this by properly catching and returning the error code from
+ad9523_io_update() in ad9523_sync(), ad9523_write_raw(), and
+ad9523_reg_access()
 
-Good idea, I'll change to this.
+Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
+---
+ drivers/iio/frequency/ad9523.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-> instead of the static_assert. But I guess this is mostly subjective and
-> I won't try to convince you of my approach if you prefer your
-> suggestion.
->=20
-
-...
-
->=20
-> > static int rz_mtu3_pwm_config(struct pwm_chip *chip, struct pwm_device =
-*pwm,
-> > 			      const struct pwm_state *state)
-> > {
-> > 	...
-> >
-> > 	u32 enable_count;
-> >
-> > 	...
-> >
-> > 	/*
-> > 	 * Account for the case where one IO is already enabled and this call
-> > 	 * enables the second one, to prevent the prescale from being changed.
-> > 	 * If this PWM is currently disabled it will be enabled by this call,
-> > 	 * so include it in the enable count. If it is already enabled, it has
-> > 	 * already been accounted for.
-> > 	 */
-> > 	enable_count =3D rz_mtu3_pwm->enable_count[ch] + (pwm->state.enabled ?=
- 0 : 1);
-> >
-> > 	...
-> >
-> > 	if (enable_count > 1) {
-> > 		if (rz_mtu3_pwm->prescale[ch] > prescale)
-> > 			return -EBUSY;
-> >
-> > 		prescale =3D rz_mtu3_pwm->prescale[ch];
-> > 	}
-> >
-> > Please let me know what you think so we can proceed with the work
-> > internally.
->=20
-> I'd prefer the `rz_mtu3_pwm->enable_count[ch] + (pwm->state.enabled ? 0 :=
- 1);`
-> variant. I understand that this is also the variant you prefer, so
-> that's great, but I wouldn't stop you using the sibling option.
->=20
-
-I realized the check could be simplified quite a bit while achieving
-the same outcome.
-
-	if (rz_mtu3_pwm->enable_count[ch] > pwm->state.enabled) {
-		...
-	}
-
-2 > 1 -> true, prescale gets checked when updating one of the IOs if
-both are enabled
-
-1 > 0 -> true, prescale gets checked when enabling the second IO
-
-1 > 1 -> false, prescale is not checked when updating a single enabled
-IO
-
-0 > 0 -> false, prescale is not checked when enabling the first IO
-
-2 > 0 and 0 > 1 -> impossible since enable_count is always in sync
-with PWM state
-
-> You can gain some extra points for not using pwm->state. This is a relic
-> from the legacy pwm abstraction and doesn't make much sense with the
-> waveform callbacks.=20
-
-I can switch from enable_count to an enable_mask in a later commit, and
-that will allow us to both get rid of PWM state access entirely and also
-make the sibling check more obvious, by doing something like:
-
-	if (rz_mtu3_pwm->enable_mask[ch] & ~BIT(rz_mtu3_hwpwm_io(pwm->hwpwm))) {
-		...
-	}
-
-Which would read like "is any other IO enabled?". If yes, don't touch
-prescale.
-
-But for the scope of these fixes we need to keep accessing PWM state as I
-would like them to be backported to stable.
-
-enable_mask must remain per-HW channel because it makes the enable /
-disable checks simpler.
-
-If this sounds good to you, I will proceed with all of these changes.
-
-Thank you.
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index 63c485e9e44c..66bba37fb199 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -495,7 +495,10 @@ static int ad9523_sync(struct iio_dev *indio_dev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ad9523_io_update(indio_dev);
++	ret = ad9523_io_update(indio_dev);
++	if (ret < 0)
++		return ret;
++
+ 	tmp &= ~AD9523_STATUS_SIGNALS_SYNC_MAN_CTRL;
+ 
+ 	ret = ad9523_write(indio_dev, AD9523_STATUS_SIGNALS, tmp);
+@@ -716,7 +719,7 @@ static int ad9523_write_raw(struct iio_dev *indio_dev,
+ 	if (ret < 0)
+ 		goto out;
+ 
+-	ad9523_io_update(indio_dev);
++	ret = ad9523_io_update(indio_dev);
+ out:
+ 	mutex_unlock(&st->lock);
+ 	return ret;
+@@ -732,7 +735,9 @@ static int ad9523_reg_access(struct iio_dev *indio_dev,
+ 	mutex_lock(&st->lock);
+ 	if (readval == NULL) {
+ 		ret = ad9523_write(indio_dev, reg | AD9523_R1B, writeval);
+-		ad9523_io_update(indio_dev);
++		if (ret < 0)
++			goto out_unlock;
++		ret = ad9523_io_update(indio_dev);
+ 	} else {
+ 		ret = ad9523_read(indio_dev, reg | AD9523_R1B);
+ 		if (ret < 0)
+-- 
+2.53.0
 
