@@ -1,74 +1,75 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F6383E9F77
-	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 15:03:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E8EA43EAC62
+	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 15:04:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773759837; cv=none; b=BOCRU0SMl67tuJgHIsZ+rsr083XKHpRtntOb3xHlDkmIoNBmajewwzeQZz64wglbrEaHVYwMSSWQoWo1GvEpWVh/lIv+dJazWuLaP6owAGMw+MZhF4u2Zfe9dO4QHa1+NsvXCde9m9stfs5Uhahw3+YIkvxkuNIQBRwTab3bMSQ=
+	t=1773759845; cv=none; b=jYEzWtTkRd6cRcKaopQ2hvzVCz5Bdus3jUGXJctGMD9vDzgZlvTXWykS29Di26psnO0k+7zpGXRbwYmzahYjbfLJR4P5QR2tVy6MSo+xTWgIeRwIX4cLfuc4ZjhA0ypYTpn5206yVuLwy6WIrWFstLuSYhZFpsjnEK0YsGWOy1k=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773759837; c=relaxed/simple;
-	bh=LhhuQW+kXumxf4ZHnfybInW36mhcntwwfWxHRNAL3MI=;
+	s=arc-20240116; t=1773759845; c=relaxed/simple;
+	bh=3gJuZXgHzE2rXI2domcIKlpvuPEWhFJR3203rfyOu8M=;
 	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=GX3Bt1a6/oSp1tQL9yacSgdGAVD7IZJgyqGjxhU+qL2Bls+jVeGWcJag932spxA59z/bc8IIVHe53l3BO6jJsbVkqghFl6BU19hoH0n2u3AICbUNrwbSg1iMA+zLS6VZzOd4E221LK3GpQbQraVyoaKmaqDKjFDzUbv79F1jFBA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=PEt4xb8b; arc=none smtp.client-ip=209.85.128.53
+	 MIME-Version; b=O11NAIZtYcnjgY6i4JbZ/BjlYfrhmfL8zMlEmZUZrAkeUVLQwkTwy2e2rA9+hHbUQ6o3Ut/gslM2vcgyyMLfusz676U7sCR1NKyGmlOdsjgpWm8pZXtZYTYmhaMyh//6wxZ4zSLPxgi2cw3OrYgC5TthSaJbQHdZ7WZD9I00NB0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=0xRNsv0n; arc=none smtp.client-ip=209.85.221.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="PEt4xb8b"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-48334ee0aeaso52280355e9.1
-        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 08:03:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="0xRNsv0n"
+Received: by mail-wr1-f53.google.com with SMTP id ffacd0b85a97d-439c9bdc1eeso5803452f8f.3
+        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 08:04:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773759834; x=1774364634; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773759842; x=1774364642; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=D6Ly+Y1OaGrVPqGuh6+YPQYhQbgbR6xEfPk5ktqV5IQ=;
-        b=PEt4xb8bTBmjG8/yiQqWtWbhlqRlleg5cuuPH4tW3mNdQ9lGjqiB5f34TGWOQMEpKU
-         UraYsoxowHUnVWE/0IlxbDAD4yoVA7F+jIkzBHqYdqmMslWFndRXK/T/VkvIjyvOkndS
-         1VIX2jqTd1gT/Bqu0tXZ6/UjalIh4soy0LPncQnt7i78Mwx+XT9zmGS1zt16nLmU6NBB
-         5cdWF/H6VafobRLAt81RjL8RNpf2Stq43qBIXNkGg0/Rmf811LoaeSCOC+lnl+JXahUo
-         B3JfWnwVzqIlSzF+ap7M2KLpisfOAW1XBEPxNvRllBOsELeKRqIMmFBPcUHFb+sziK+y
-         2ZcA==
+        bh=GfDNVGPIN2le5n46HwmmKt51w/MhetLaeIkD5JM163s=;
+        b=0xRNsv0nD+VHXoC38gnW3k1RGqDejLthpxdk2Nq0PserZeUBy6rE1UALNE6A2wlIWj
+         +5Rj+yLWIlgVECggNZbAqTmVPZi2JSOvfZkaYe/ejcN3UoRZanBQmG0QKedQRnTBzOKp
+         vrmx0ib/vackG7y4z5Jj5Rxa8XFLdQYobF7gWLgJtjXs6J2iyh6DhQWOwgUn58qKtqst
+         Taj5Y+tfgUAD91TZwLqUJ0qZ+X0rdhUQnCmTBkjl65XqziTzP4pCam/HzvY4mTJmTFI+
+         20NIz+91f1Rpx+By9fwaKPiO3cn/tDrbxb0ipsn8VOKsqRckt6zYNeIw5GPHK/yoGWYe
+         Xw9Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773759834; x=1774364634;
+        d=1e100.net; s=20251104; t=1773759842; x=1774364642;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=D6Ly+Y1OaGrVPqGuh6+YPQYhQbgbR6xEfPk5ktqV5IQ=;
-        b=AG94QunuYu2YEtLwJiuovS2JpVH8srKYKSBuGJb3+ZqPdmbJnIfux6RBtJMM7VlX71
-         lH1lWeg3sBmySmwuzYeM0N8cIqJc528fVBioPBBxSdwpg5zSyX/v+Asrvy35plADxoqJ
-         fc2jIatStSDDMH7IOgAn88ppnF2D6BzijpOC1fwjB2nLkKLaW6kReQfoKr/WJlcre5uL
-         TtiDqzevYLW/1suLWOiZVtYuJDfnO8/xNRIOr4xYwlQy5/2jImN2sLHxSVPmvsEzi3Yr
-         enYLFdQd5yOL9trp4+DJUf8UAqQTbev566Vtx4kE4k0BjfG4W4i8/7tscgr2FdNJrt1x
-         UIAA==
-X-Forwarded-Encrypted: i=1; AJvYcCWsqJooFHm2N3msiCkFuGZXMJFt/caLi7QW8F4bVN5T+Yjr1Pv9AB3aQV7CfdfjdVmTwJkppYSTY+4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwPcsO2CC8avOB/FEVeoKVTY4n8AIwHhWCZ/UF2qhRYsy/yIT5y
-	vVLnRcSm+oh8fd8dDJ9HSQYK9L7Xunz0f/k9KH+70KIPo57GxLeN0ctNNiT9+lQdyxA=
-X-Gm-Gg: ATEYQzyh5RJ4f2BmTHJv8nB8V51z1lQ7P+LpocYiAWqPqJwYCYBeXB3hxCtWRFv8XUQ
-	+C8RfV+sZdZfSJOf2fNENkQJ2l9TVy58WsXuCPvXydMz8k2G5Vfnj3bcUXe3EuVs7MDb4W3aIlF
-	pdNh6gcRYZR2TOlA3lny1Uhr0qKjbePE5aCW7vx4kekYTD1SixLmMetajDtZ1RGOWoGl7QrDXrY
-	v9lr79hlbpsskbL3WLvD2AA74e58QWjWggHrU14B5V2EC+gG68tQMDCAApZFCTkjKzbZOcYMvBn
-	IuX+qN7K7HKVY/ZsbwsUOWZMHDsjFFF+ZoxGKJ8W4EExXHtiKUOH/iOPLUqLr6iNpvjUwGGYawV
-	KikHEu9nn9plSPZ0glAhMVonEcHpY3/AKocfRri9e7kWJ8ZEBLbaKfjDoV9JuWDbqGCNfGPS/RA
-	lw33ns
-X-Received: by 2002:a05:600c:c8d:b0:486:de04:5906 with SMTP id 5b1f17b1804b1-486de045a22mr27707715e9.19.1773759834477;
-        Tue, 17 Mar 2026 08:03:54 -0700 (PDT)
+        bh=GfDNVGPIN2le5n46HwmmKt51w/MhetLaeIkD5JM163s=;
+        b=rmu6Z9kfIlfgzf4rHa7b3Vib1Vl++4s5JhKugVSPoI9ch3BFCueR6loW+h8v+vGKTg
+         6wGobQbT/cxljQZXzN01IZCmGjN6GujSrX+5c8/JrBddecoyJKn1YtVi3+2fMGZeMYjS
+         ja4UuQaoP65Ct30gcDNLDRy576216ALFnWW1kqMdNkF3Oiik1U/z53L2pOKiIJPjXfa7
+         5x6UhrLJQ7hfvCtykdHbrm7vrk/9Gr3Xc/mgdGJt7KArrJzLXuYzbEILV7O7095xsXzq
+         pv4Qolu5BElBsqueNHB91Xlca0z6KxzjLskt1Y7KpyQLwg/zy8JV6/ZJNJyDetu+KCp7
+         nD3Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXspS3+TyTDw2aDoQnUu1o5KRwoVh+KIS16FiA7mgQMhDBikC6MC+WgzbKNQ+6+d0vk5k7K7aFtiqg=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw5q0bHNthwYoMDfWXg8HzWE5tliCT7u8pls2h8yDL1NMxeINBR
+	75n9LC3fkftR39GLzDA/SCeDk29Nx6j9lk3wBIZW6nzBTKreeh+fD+bIMflUiD3J4fY=
+X-Gm-Gg: ATEYQzzjFZ2PXqOrkgpCTAlV4dD4HDyN+E6Dk7WRvM/NSqC2gpDTeBBl5AeTtSdjCYV
+	VQposrNXho9LaJK63ka6qOkfPCERdpj801k8zkql8nfKE+z1AzuW8MyDohvN7o5B0p3jhfeADOO
+	HTvmX3EQ0wEGcvMWqmGlQGbW1b365syF6hTmSwLV9lAIn0OkCCimMsZ9ZvbDG1HqZ68EYpfEep8
+	1JlS+fIQCVPftMs5eroABLcANIjBuDfov5we8t7l+PnZy4VuWcnJ4jqr1Prd8hgv//JloYmAd+H
+	nPfPFm9dP+NE76Aa5hGGdxJiZwxIcTJtJFxiBozfWCRW1bdYCr4WZ/HmkNDWse4xPHJjheXXu6f
+	isIz0F90rt2nnRLtucmGXNdA6jUNjhyO5ywC5PfRqalmZ7uyx21bASvFCbo7VD1Fti66+Sw==
+X-Received: by 2002:a05:6000:230f:b0:439:b79d:b99f with SMTP id ffacd0b85a97d-43a04dc0568mr31062236f8f.40.1773759842112;
+        Tue, 17 Mar 2026 08:04:02 -0700 (PDT)
 Received: from localhost ([151.37.101.237])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48634a7ac93sm51971735e9.2.2026.03.17.08.03.53
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b51852aa8sm89261f8f.15.2026.03.17.08.04.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2026 08:03:53 -0700 (PDT)
+        Tue, 17 Mar 2026 08:04:01 -0700 (PDT)
 From: Francesco Lavra <flavra@baylibre.com>
-To: Lorenzo Bianconi <lorenzo@kernel.org>,
+To: Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
 	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v8 1/6] iio: imu: st_lsm6dsx: Fix check for invalid samples from FIFO
-Date: Tue, 17 Mar 2026 16:03:53 +0100
-Message-Id: <20260317150353.3878258-1-flavra@baylibre.com>
+	linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v8 2/6] iio: Replace 'sign' field with union in struct iio_scan_type
+Date: Tue, 17 Mar 2026 16:04:01 +0100
+Message-Id: <20260317150401.3878294-1-flavra@baylibre.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260317150316.3878107-1-flavra@baylibre.com>
 References: <20260317150316.3878107-1-flavra@baylibre.com>
@@ -78,114 +79,83 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3896; i=flavra@baylibre.com; h=from:subject; bh=LhhuQW+kXumxf4ZHnfybInW36mhcntwwfWxHRNAL3MI=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpuW1ZL3a1po6S4t6UgIXVMNxGsQxe+I2iIBwUl 6sQCXcfE7yJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCabltWQAKCRDt8TtzzpQ2 X1J/DACyD4pzkSXnCGT5iq86Iumn+gkCFDC3Pr9/8KiY6RtBNBRXV0Lo1jKtM0nfoTfr6jOddm5 3oHlr8qpqd8tdfuywK2UVpeYjhx8+eggCUizNtoJSNzAsTXjWSOxRcGSxK2kusKOWGHhc9H+UlB biQffbicZ6+L9j09cOvI4MNbMphHBiuub8QvDMXXzwiezy6FblGoRdKKTUkfSPcwrUqYuP8FdxT aYRtOPDYgH5D9KvXage+7hqGu2iZZ0QAp8ERB3xzRDyQ0Ov/NeVlVtZNfWRymI/llgJDXlCMk6w 80FjomauvE8v6nK7WohfLgXoEygwHIa6q9E3WEPZbyQdQnTLOZ3aBiJtdqoQtYX78T+vfT/Iixr eloR4uYJc7arn7OZ0xMWMDKVIhzUM8rBnY8J4yBitHS99hLDhyg6SktlRnSs9kVAk4Kv6AnCraJ m2eMWcvp6bTiXjxzNVtfeZn8/zdOPt6Vk6X7zJOfA7Q/CDQ23THXC24zQU4D5F3zC080M=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2677; i=flavra@baylibre.com; h=from:subject; bh=3gJuZXgHzE2rXI2domcIKlpvuPEWhFJR3203rfyOu8M=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpuW1h1uYuWrYCw/6uqGVTi6n5o9bz5kSuOfvy1 L61H6lo4CCJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCabltYQAKCRDt8TtzzpQ2 X9qWC/9ql0gkurGhYbfnfbYoMG+f/91ADwASWY5YXLGiPA5G3QMNu/I+kMij7XDcyxiN6rA2CJu 7jYFCUtQD/AgLCiNvuI+8rkTLSUW5Ugy+xDso9bg+qZGNP9CeISr4yFfG8xj1CNmWQrFbWVjouz ROZ19D8K9+JkXvvV1JO9bjdGWOUnVaNKKTWTgM3ZUbfIEYk7xAA0UZG1Ngk7kYfjImit+LwmJl2 qeXkPBtfY9AJZb6mEzqFWLmnDBH1HJbuD73enxc4M41tQeq/rmSzefdNxay6ZSi2dEM5xW08Rz3 uOkiTduKfdhV4F+OhUIMrbu5gAUycX+9Kob/OUDsQYn3Y4qn8OTB99LzxMXbWD4LWQzLMA79dz7 h4XDvOXxuLrPOAgwzY98066xPi8wSVsk9zjgprt+0XU+U4sPM0VallOWJwLU8eOGvvA92+k7e0m 0n/5LFcO9JY9pq3GyZtILwcgn+5BjXMLUkc1Cl+sJC8nYIabutM+dsL8TysSpeHuby8n0=
 X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
 Content-Transfer-Encoding: 8bit
 
-The DRDY_MASK feature implemented in sensor chips marks gyroscope and
-accelerometer invalid samples (i.e. samples that have been acquired during
-the settling time of sensor filters) with the special values 0x7FFFh,
-0x7FFE, and 0x7FFD.
-The driver checks FIFO samples against these special values in order to
-discard invalid samples; however, it does the check regardless of the type
-of samples being processed, whereas this feature is specific to gyroscope
-and accelerometer data. This could cause valid samples to be discarded.
+This field is used to differentiate between signed and unsigned integers.
+A following commit will extend its use in order to add support for non-
+integer scan elements; therefore, replace it with a union that contains a
+more generic 'format' field. This union will be dropped when all drivers
+are changed to use the format field.
+Opportunistically replace character literals with symbolic constants that
+represent the set of allowed values for the format field.
 
-Fix the above check so that it takes into account the type of samples being
-processed. To avoid casting to __le16 * when checking sample values, clean
-up the type representation for data read from the FIFO.
-
-Fixes: 960506ed2c69 ("iio: imu: st_lsm6dsx: enable drdy-mask if available")
 Signed-off-by: Francesco Lavra <flavra@baylibre.com>
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 31 +++++++++++++------
- 1 file changed, 22 insertions(+), 9 deletions(-)
+ Documentation/driver-api/iio/buffers.rst |  4 ++--
+ include/linux/iio/iio.h                  | 17 +++++++++++++++--
+ 2 files changed, 17 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-index 5b28a3ffcc3d..19232146bd61 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-@@ -365,8 +365,6 @@ static inline int st_lsm6dsx_read_block(struct st_lsm6dsx_hw *hw, u8 addr,
- 	return 0;
- }
+diff --git a/Documentation/driver-api/iio/buffers.rst b/Documentation/driver-api/iio/buffers.rst
+index 63f364e862d1..e16abaf826fe 100644
+--- a/Documentation/driver-api/iio/buffers.rst
++++ b/Documentation/driver-api/iio/buffers.rst
+@@ -78,7 +78,7 @@ fields in iio_chan_spec definition::
+    /* other members */
+            int scan_index
+            struct {
+-                   char sign;
++                   char format;
+                    u8 realbits;
+                    u8 storagebits;
+                    u8 shift;
+@@ -98,7 +98,7 @@ following channel definition::
+ 		   /* other stuff here */
+ 		   .scan_index = 0,
+ 		   .scan_type = {
+-		           .sign = 's',
++		           .format = IIO_SCAN_FORMAT_SIGNED_INT,
+ 			   .realbits = 12,
+ 			   .storagebits = 16,
+ 			   .shift = 4,
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index a9ecff191bd9..d48a0ab01b8d 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -176,9 +176,19 @@ struct iio_event_spec {
+ 	unsigned long mask_shared_by_all;
+ };
  
--#define ST_LSM6DSX_IIO_BUFF_SIZE	(ALIGN(ST_LSM6DSX_SAMPLE_SIZE, \
--					       sizeof(s64)) + sizeof(s64))
++/*
++ * Format values in scan type
++ * @IIO_SCAN_FORMAT_SIGNED_INT: Signed integer (two's complement).
++ * @IIO_SCAN_FORMAT_UNSIGNED_INT: Unsigned integer.
++ */
++#define IIO_SCAN_FORMAT_SIGNED_INT	's'
++#define IIO_SCAN_FORMAT_UNSIGNED_INT	'u'
++
  /**
-  * st_lsm6dsx_read_fifo() - hw FIFO read routine
-  * @hw: Pointer to instance of struct st_lsm6dsx_hw.
-@@ -537,16 +535,24 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
- }
- 
- #define ST_LSM6DSX_INVALID_SAMPLE	0x7ffd
-+static bool st_lsm6dsx_check_data(u8 tag, __le16 *data)
-+{
-+	if ((tag == ST_LSM6DSX_GYRO_TAG || tag == ST_LSM6DSX_ACC_TAG) &&
-+	    (s16)le16_to_cpup(data) >= ST_LSM6DSX_INVALID_SAMPLE)
-+		return false;
-+
-+	return true;
-+}
-+
- static int
- st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
--			    u8 *data, s64 ts)
-+			    __le16 *data, s64 ts)
- {
--	s16 val = le16_to_cpu(*(__le16 *)data);
- 	struct st_lsm6dsx_sensor *sensor;
- 	struct iio_dev *iio_dev;
- 
- 	/* invalid sample during bootstrap phase */
--	if (val >= ST_LSM6DSX_INVALID_SAMPLE)
-+	if (!st_lsm6dsx_check_data(tag, data))
- 		return -EINVAL;
- 
- 	/*
-@@ -609,7 +615,13 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
- 	 * must be passed a buffer that is aligned to 8 bytes so
- 	 * as to allow insertion of a naturally aligned timestamp.
- 	 */
--	u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE] __aligned(8);
-+	struct {
-+		union {
-+			__le16 data[3];
-+			__le32 fifo_ts;
-+		};
-+		aligned_s64 timestamp;
-+	} iio_buff = { };
- 	u8 tag;
- 	bool reset_ts = false;
- 	int i, err, read_len;
-@@ -648,7 +660,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
- 
- 		for (i = 0; i < pattern_len;
- 		     i += ST_LSM6DSX_TAGGED_SAMPLE_SIZE) {
--			memcpy(iio_buff, &hw->buff[i + ST_LSM6DSX_TAG_SIZE],
-+			memcpy(&iio_buff, &hw->buff[i + ST_LSM6DSX_TAG_SIZE],
- 			       ST_LSM6DSX_SAMPLE_SIZE);
- 
- 			tag = hw->buff[i] >> 3;
-@@ -659,7 +671,7 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
- 				 * B0 = ts[7:0], B1 = ts[15:8], B2 = ts[23:16],
- 				 * B3 = ts[31:24]
- 				 */
--				ts = le32_to_cpu(*((__le32 *)iio_buff));
-+				ts = le32_to_cpu(iio_buff.fifo_ts);
- 				/*
- 				 * check if hw timestamp engine is going to
- 				 * reset (the sensor generates an interrupt
-@@ -670,7 +682,8 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
- 					reset_ts = true;
- 				ts *= hw->ts_gain;
- 			} else {
--				st_lsm6dsx_push_tagged_data(hw, tag, iio_buff,
-+				st_lsm6dsx_push_tagged_data(hw, tag,
-+							    iio_buff.data,
- 							    ts);
- 			}
- 		}
+  * struct iio_scan_type - specification for channel data format in buffer
+- * @sign:		's' or 'u' to specify signed or unsigned
++ * @sign:		Deprecated, use @format instead.
++ * @format:		Data format, can have any of the IIO_SCAN_FORMAT_*
++ *			values.
+  * @realbits:		Number of valid bits of data
+  * @storagebits:	Realbits + padding
+  * @shift:		Shift right by this before masking out realbits.
+@@ -189,7 +199,10 @@ struct iio_event_spec {
+  * @endianness:		little or big endian
+  */
+ struct iio_scan_type {
+-	char	sign;
++	union {
++		char sign;
++		char format;
++	};
+ 	u8	realbits;
+ 	u8	storagebits;
+ 	u8	shift;
 -- 
 2.39.5
 
