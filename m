@@ -1,72 +1,76 @@
-Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com [209.85.167.47])
+Received: from mail-wm1-f45.google.com (mail-wm1-f45.google.com [209.85.128.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 50CBE3E867C
-	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 15:04:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C714E3EAC7E
+	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 15:04:15 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.45
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773759853; cv=none; b=ESVqg7kYHCGBn2SINN/xl8hrsTsOCBMfnyASoh/g6pK9wQbi+oCDbyMpwQieoFppid3d2pndNM6gc6eWSJngys1Z9QCrCJDLLLiN8igWznRaenadbMctl+WcQ/tnXOA42mSJ0Wt0yc0iTSy9tq5q7RSBbH6+Ukoo+KLNSFmyM+k=
+	t=1773759857; cv=none; b=XU7R439Ff4+nv2gSE+qaeOD9SEVXHELjK+Q8WE84HtXduXPex6ZZSZWgh4gK2fuECg5ilihG5F2D0ZKxG/eKb0MTnvwrCqrLLetfWGv004AZcUtk/eC6y7oSNtO+Ax6wpd9fdzAVY7jRRTZmgWrK+3UzgdXe08l/i6n8y9IicW4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773759853; c=relaxed/simple;
-	bh=6a+Xn6NnG/8MprGOzF86J6ycUeL5AAW7PxS2qczBlu4=;
+	s=arc-20240116; t=1773759857; c=relaxed/simple;
+	bh=nJstDZ/QxoZ2lCZSTohbFx88cUeNPJ2aHRDezpiEztg=;
 	h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=ShnXu3NzXN+ysJRFT+HWts1EJuJaWa8vFBwS77Hsr4jV+sn5+pl//TrytdRa4F309+RY9EIZy6L9gMobfFMQseY0/mGlWmnnHrpLeW5aNRAEZHz4CYfdUJH2YwNQ9yhU01G9rOh6RmLNDr9wDUNtoqSg6ns9cP7kp5mzv13aJ+Q=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=NHy1q47L; arc=none smtp.client-ip=209.85.167.47
+	 MIME-Version; b=CYdtNWzbDdOEQDGEfBZJcZT6Ah7dxz+hyyOUIORNUZMaRBP909ix+y+79s3bNphpg47kxEpesf1X8wN3siydsLex+pymrGUTVF/dqN3jGdlxMFFRijxfsAhmhiw54546CXZZfavlv9nxjqeauPWok+Ix3M6Jh831HTFZN/9ueJE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=vzGd9q3P; arc=none smtp.client-ip=209.85.128.45
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="NHy1q47L"
-Received: by mail-lf1-f47.google.com with SMTP id 2adb3069b0e04-5a126c8aab9so7993032e87.0
-        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 08:04:12 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="vzGd9q3P"
+Received: by mail-wm1-f45.google.com with SMTP id 5b1f17b1804b1-48558d6ef83so41562405e9.3
+        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 08:04:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773759850; x=1774364650; darn=vger.kernel.org;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773759854; x=1774364654; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=r21/87fWkstXATGZU1YjKqhkHTuYYucKq7beo3fBdD4=;
-        b=NHy1q47Lv80XssXv1bXZ1Q+gSs4yKeRe/jL08uTjUujnDq3V4fulTcQMoll1PWmHxm
-         GG4fHbeuFhXHtBqBlNxsHALx9Aw9Y1wPHQV8OkpkeYfAtL4xR+hrZJ9XJM/UVpXu4Mlu
-         SavJw+6/CYwG9kE2H/DPI0vY1TBRIDwgQXmMedwOehPlwianmufZkZj6YAEYb8mE01fs
-         c6QrFDUxAb1wnw4wJyW+4v5NQe/tfI0o9faw4kiG3nHqehpZ3NS7nPHca8i65SZKF5G6
-         NOJSgqnJLCuPvTn7EI9mZLi9zzA6ahCZzwRiycwxlWwOD6GVfjjAxcsv9cU4JmI9eIU3
-         /+Sw==
+        bh=oof/EJX4ZjAg7qi0LTv1JyI3DSw6kCFAbKLxi0V35OE=;
+        b=vzGd9q3P1man3wgFU8Ae/2FmCphz/ZIQYr9NxR3KvklRncYhwydgq2Fi5/OV745q1h
+         1TVoWQ+G6hijXFGIvsCfNs3lE6xjFjHWwJys92XSwhQCBA30Kb/d/8abvK71UT/3/aYf
+         FOHSScxLgqy+f6Clb/9qawXV08KHpTDuPhAhfLExztvvBAPX28ezB0M16lvBi0UN9HeU
+         /j0C6qSm7fs/ogV1F7VUdMLzmhMqaB35YjVMs2MCCWCX07dQzRjI4TEbqWLFVhBVDhaE
+         HdLKOSRVPyuICJy1ffHgr0j+bCIgjnGQjufpYtPyfguK6TNgNPkG0EAj/4cnffuYW998
+         f+pg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773759850; x=1774364650;
+        d=1e100.net; s=20251104; t=1773759854; x=1774364654;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:to:from:x-gm-gg:x-gm-message-state:from:to
          :cc:subject:date:message-id:reply-to;
-        bh=r21/87fWkstXATGZU1YjKqhkHTuYYucKq7beo3fBdD4=;
-        b=RTvGtNpkAW9XVPcBAlOWS4NzgfVYVx2qHDjn5fHqr8ogDNjrxnNBXhg+AfpLQK525C
-         KyN3z4/5HIYfy+Tf+dTPKBmzeTh+I0Q9l3oTXZxrHiI+G4gRJHcFomg+9lVquR8Sy0Tp
-         DmhrZUI1vHm32XULO+jy/aUuTpBisfZGVl3/XpkLxgkslCKZ+tmgDhs9wfSc87Uc9O+M
-         nyVSInlyN7UhipczTm3lrtRz5MG96dOr41VIRFQw+xz/0P3uKhrVhEdpDYPTAgNjOp6b
-         T+dWR9AwpYPpWr6M3PBdyibdQxAEgr8Avv8gedyAa4nDzKowDl18NioexU8OHSEb/DEE
-         3sDA==
-X-Forwarded-Encrypted: i=1; AJvYcCV7eMv3HeBGHdxSkvIuSKyjTUpYnfaAP7pFzdrtEv6rZUtNRBFmL1dYN3hrTUwUYnbLWnPLQwIqrEs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwlBIpJMFu2ECmKaxR19AU71T0RimjeRjdaXep4/VY4SxQS0W1x
-	6wzRZmrm2+iLuz+TrJJ/EPc0kICysbPDmMYFQTtDtbUmT5sUsJFVsczxkCnMhemZzxQ=
-X-Gm-Gg: ATEYQzx0IDiMsH2n5GDUkxGjy1dCeEqmhKfwrM3q1lDhw8twwMPyM19Go6aPH5tgj4z
-	jI7ArMtfue6ceifuPvnERZDwpxbauoLYDsJ+0uIOeXykAHHcFkhyWEtdoFh7tr2QmFZBvCRaVdi
-	PJ+UVyfD+mQE30bmD/lF7s7Jd9icSkfGhvL8zW+8Vq+q2wAzrnd4SRUDFVjbz5VyveKsSif5k8r
-	qDKQkLGqJ3zsjAgo3TbBuRXN8q4WuGkz0WHVLVDDI5rKFiX6Omapk7cxiVS0LrMMPIT5NJwKgYk
-	tVYY645KcGn5dKBgR/8d7WRvjA1YAm+UjvhNFjwM+wp5vWy6ccycuGH2CLsgAE0U1Kbzh60ESYY
-	6m0XPivV+2eoXguD3eCD+k2rD8i99wwuroilrgYTh9fq//Ow7a0obnPXfp9uNpBHasfx31Q==
-X-Received: by 2002:ac2:4e83:0:b0:5a1:4473:bb44 with SMTP id 2adb3069b0e04-5a162b12580mr4573766e87.33.1773759848791;
-        Tue, 17 Mar 2026 08:04:08 -0700 (PDT)
+        bh=oof/EJX4ZjAg7qi0LTv1JyI3DSw6kCFAbKLxi0V35OE=;
+        b=TolYZ7qsVxXoec8vz14Mt/VMt7ONUx8sAR3tFXHxqaBovAscMt4F5n8j2K9q2egjHs
+         kDQCFaPtMmeqRJNwXxZNbh2gOwPQgDm4WTeyB7auJX29xw1U3+gt9jIh1ni5Nb62xJbO
+         fQOrvtHsM1hj/SCfs9kp+8A6XVsed9J6sr+h66m/o73NdcIdFbs1bXd0du5tI2kuP38/
+         9fbgqIGrSg4AA2lRk4uAiV+OXU8CG7HbZrCNkH4dGkrRxGvCFsUT4U7LqKk9/0QvwwEi
+         b44OVfokhKiPEe3aKzHL8jQ+T9L2bm20RXKAXHYoo1v7azGIhrxbq1znJBRcg9iDK0xe
+         eLWQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXxf/tzSrIOSK2gVgzg8tTxp18hh1vXjf9hJp0hdPtS6ZmqZ4B9slPCEKMqM1T2+Yto7RswXVOgmXg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxBBBYaI7UC927I66JPAXQiSgpGqZoEcKGzplYEQgS0bqOfcYMz
+	+3VzYia1XxvymvEuUAnwANAn1WXMlJys/bFwuZtrj3tbh1kX2H0sO303SoGOMAtU7o4=
+X-Gm-Gg: ATEYQzyMqVqmcuuDYZrRebOpObBxo6+D6QbYemArDOV3YfhoU+XXPmGUoV9I+XbteFt
+	bLOTdQKfdffgdXI5XocR0ho2e0MTOF8ZZoqLsLnasKoE65ANxMpgPFjtn7NRMlFwF3DvfQAVrTV
+	uo00gOisKjfl8cIrT5LTrT0AKNt9rmE4leDlvNP7qWcjaVnTGx+az+RWVmjgSV11lY1KBUcmdG1
+	izC0q4qvWqEo6wdJLWMCxDSD4hX1NKj7hxohtPIVtAMYoIkRre3DrX92JN2f1OaNzEGkgw7ESRB
+	spJs/f4IimTuiJCGoP26vgBJZc6bdgGvh7akSQVjN737r2QiRYnGHIS1ppw013NtUfShUyXWmsW
+	qvdGOS6869QpwQKvoNQJThUKyNVO5jxXu8S7drqR1QYoroFkc6R+gzpjkfiM/CTnFFL1Rq7FsUt
+	/nZHFOtrTKhH9FXg==
+X-Received: by 2002:a05:600c:1388:b0:483:badb:618f with SMTP id 5b1f17b1804b1-485567050dcmr289431605e9.25.1773759854008;
+        Tue, 17 Mar 2026 08:04:14 -0700 (PDT)
 Received: from localhost ([151.37.101.237])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b51852097sm104795f8f.9.2026.03.17.08.04.08
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4856eaeca12sm131699815e9.12.2026.03.17.08.04.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2026 08:04:08 -0700 (PDT)
+        Tue, 17 Mar 2026 08:04:13 -0700 (PDT)
 From: Francesco Lavra <flavra@baylibre.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
 	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
 	Andy Shevchenko <andy@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
 	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v8 3/6] iio: tools: Add support for floating-point types in buffer scan elements
-Date: Tue, 17 Mar 2026 16:04:08 +0100
-Message-Id: <20260317150408.3878335-1-flavra@baylibre.com>
+	linux-kernel@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: [PATCH v8 4/6] iio: ABI: Add support for floating-point numbers in buffer scan elements
+Date: Tue, 17 Mar 2026 16:04:13 +0100
+Message-Id: <20260317150413.3878365-1-flavra@baylibre.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260317150316.3878107-1-flavra@baylibre.com>
 References: <20260317150316.3878107-1-flavra@baylibre.com>
@@ -76,196 +80,116 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=5878; i=flavra@baylibre.com; h=from:subject; bh=6a+Xn6NnG/8MprGOzF86J6ycUeL5AAW7PxS2qczBlu4=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpuW1ngtBo1B9Hy5EL0X1iDU+Zh8q1yasMlCqGN +ghrVMIeciJAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCabltZwAKCRDt8TtzzpQ2 X75jDACKVpDjf9TWI33WXpoWG71eq4jtbJ4CtB4pAPmc+kqfdWtIMIatKtFsf4WS9cljpWgWPPt 3pckJjP1KYEOpQnmKue1LVNjOGb6vOGJ2CrHgKpWxnSXw0BVmgTPN6pLeaTpoENNZFIbYeCXO44 iz9iJddl2wN8NnV8SaR2RjKr+dlVZH74Pytza2hKmkF4zQuXuKmANcqmhKC2lEk2X9cRcQMr8Dw 5AEHykS18AAmMDLHniMLhqnbfdsi71WKR4GczJjDvEGTxcFZl7brToMPKT2/Jb/V7GvL1i0thqI tRpV689r0RdqUkZ4tFFzxaNUT455z5wQ+XkC48SKtW53alKZk0U7rhQ+Rv4BRLK7H9ntxoMlUIj FRtwlaLEEec9DOnOQEUxxrf6E1oCgaZYMP/WCp9RORG7Phd1JugMjYTJeImpQRZAzJyH83RQrpp xINDlHb1Jklj9t6CqJ4Wbg9JSyoAKeSz/TVRLkVLfpZwIhVJTZmkt3989yMOe7MRltIXk=
+X-Developer-Signature: v=1; a=openpgp-sha256; l=5769; i=flavra@baylibre.com; h=from:subject; bh=nJstDZ/QxoZ2lCZSTohbFx88cUeNPJ2aHRDezpiEztg=; b=owEB7QES/pANAwAKAe3xO3POlDZfAcsmYgBpuW1t8z8jlx35g+4GGQ9DFdnRdXczS088/vY6/ 7I230SyTA+JAbMEAAEKAB0WIQSGV4VPlTvcox7DFObt8TtzzpQ2XwUCabltbQAKCRDt8TtzzpQ2 X77VC/4qIu1oMFG1fT+Ujce45VvyVrqPCWBtWmoJuSCMcE84ii/nMOAI8amjPmTrut/ZeSF3RMA tRQWc1HXiyrN9TXlLGFAI2I60729IxamVGmO2WN0qE/Xv1NcHsn2Vd/O1wZb+XhvD2ZKw3gcaTv 4Pr+X8uaNwof5k4AoCbIsXvuEyOxTU8bhQyDlsuPvTiQHqaYlC6p8SQv+agknLOP2lL4cg2AtTc o5/U248wVWXY7iTdCwL4h3QNY4ze7XLTs+eky4ZxO6a0+c2/gy8IcalxghC4LgB/5Im5BcpXvhL MhujgxqoGzmUBLB1bKMxMNPLDillRTPfcSBJkkuezC2Vs3M8iVcNQJh68teEBcsabsYGFi4fw5s 8g3TJ2rT4DIPWjiZa4MrZg8GtQiK0BR+7V2daqkH5HL5AUxsY5SXipYjcXY1JYxw3qj5shHK00O JGHJ+8hBqaWkz3aN9+YILQa++ryvU84lLiZinXyTbs8k4yEo0rk/OwYf4vmKA3XYt4/nU=
 X-Developer-Key: i=flavra@baylibre.com; a=openpgp; fpr=8657854F953BDCA31EC314E6EDF13B73CE94365F
 Content-Transfer-Encoding: 8bit
 
-A subsequent commit will add floating-point support to the ABI; enhance
-the iio_generic_buffer tool to be able to parse this new data format.
+In the data storage description of a scan element, the first character
+after the colon can have the values 's' and 'u' to specify signed and
+unsigned integers, respectively.
+Add 'f' as an allowed value to specify floating-point numbers formatted
+according to the IEEE 754 standard.
 
 Signed-off-by: Francesco Lavra <flavra@baylibre.com>
 ---
- tools/iio/iio_generic_buffer.c | 59 ++++++++++++++++++++++++++++++----
- tools/iio/iio_utils.c          |  8 ++---
- tools/iio/iio_utils.h          |  4 +--
- 3 files changed, 58 insertions(+), 13 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio  | 33 +++++++++++++-----------
+ Documentation/driver-api/iio/buffers.rst |  3 ++-
+ Documentation/iio/iio_devbuf.rst         |  3 ++-
+ include/linux/iio/iio.h                  |  2 ++
+ 4 files changed, 24 insertions(+), 17 deletions(-)
 
-diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-index bc82bb6a7a2a..a21552c2b190 100644
---- a/tools/iio/iio_generic_buffer.c
-+++ b/tools/iio/iio_generic_buffer.c
-@@ -26,6 +26,7 @@
- #include <string.h>
- #include <poll.h>
- #include <endian.h>
-+#include <float.h>
- #include <getopt.h>
- #include <inttypes.h>
- #include <stdbool.h>
-@@ -89,7 +90,7 @@ static void print1byte(uint8_t input, struct iio_channel_info *info)
- 	 */
- 	input >>= info->shift;
- 	input &= info->mask;
--	if (info->is_signed) {
-+	if (info->format == 's') {
- 		int8_t val = (int8_t)(input << (8 - info->bits_used)) >>
- 			     (8 - info->bits_used);
- 		printf("%05f ", ((float)val + info->offset) * info->scale);
-@@ -112,12 +113,28 @@ static void print2byte(uint16_t input, struct iio_channel_info *info)
- 	 */
- 	input >>= info->shift;
- 	input &= info->mask;
--	if (info->is_signed) {
-+	switch (info->format) {
-+	case 's': {
- 		int16_t val = (int16_t)(input << (16 - info->bits_used)) >>
- 			      (16 - info->bits_used);
- 		printf("%05f ", ((float)val + info->offset) * info->scale);
--	} else {
-+		break;
-+	}
-+	case 'u':
- 		printf("%05f ", ((float)input + info->offset) * info->scale);
-+		break;
-+#if defined(__FLT16_MAX__)
-+	case 'f': {
-+		union {
-+			uint16_t u;
-+			_Float16 f;
-+		} converter;
-+
-+		converter.u = input;
-+		printf("%05f ", ((float)converter.f + info->offset) * info->scale);
-+		break;
-+	}
-+#endif
- 	}
- }
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 5f87dcee78f7..bd6c3305dd2b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1510,21 +1510,24 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Description of the scan element data storage within the buffer
+ 		and hence the form in which it is read from user-space.
+-		Form is [be|le]:[s|u]bits/storagebits[>>shift].
+-		be or le specifies big or little endian. s or u specifies if
+-		signed (2's complement) or unsigned. bits is the number of bits
+-		of data and storagebits is the space (after padding) that it
+-		occupies in the buffer. shift if specified, is the shift that
+-		needs to be applied prior to masking out unused bits. Some
+-		devices put their data in the middle of the transferred elements
+-		with additional information on both sides.  Note that some
+-		devices will have additional information in the unused bits
+-		so to get a clean value, the bits value must be used to mask
+-		the buffer output value appropriately.  The storagebits value
+-		also specifies the data alignment.  So s48/64>>2 will be a
+-		signed 48 bit integer stored in a 64 bit location aligned to
+-		a 64 bit boundary. To obtain the clean value, shift right 2
+-		and apply a mask to zero the top 16 bits of the result.
++		Form is [be|le]:[f|s|u]bits/storagebits[>>shift].
++		be or le specifies big or little endian. f means floating-point
++		(IEEE 754 binary format), s means signed (2's complement), u means
++		unsigned. bits is the number of bits of data and storagebits is the
++		space (after padding) that it occupies in the buffer; when using a
++		floating-point format, bits must be one of the width values defined
++		in the IEEE 754 standard for binary interchange formats (e.g. 16
++		indicates the binary16 format for half-precision numbers). shift,
++		if specified, is the shift that needs to be applied prior to
++		masking out unused bits. Some devices put their data in the middle
++		of the transferred elements with additional information on both
++		sides. Note that some devices will have additional information in
++		the unused bits, so to get a clean value the bits value must be
++		used to mask the buffer output value appropriately. The storagebits
++		value also specifies the data alignment. So s48/64>>2 will be a
++		signed 48 bit integer stored in a 64 bit location aligned to a 64
++		bit boundary. To obtain the clean value, shift right 2 and apply a
++		mask to zero the top 16 bits of the result.
+ 		For other storage combinations this attribute will be extended
+ 		appropriately.
  
-@@ -135,12 +152,26 @@ static void print4byte(uint32_t input, struct iio_channel_info *info)
- 	 */
- 	input >>= info->shift;
- 	input &= info->mask;
--	if (info->is_signed) {
-+	switch (info->format) {
-+	case 's': {
- 		int32_t val = (int32_t)(input << (32 - info->bits_used)) >>
- 			      (32 - info->bits_used);
- 		printf("%05f ", ((float)val + info->offset) * info->scale);
--	} else {
-+		break;
-+	}
-+	case 'u':
- 		printf("%05f ", ((float)input + info->offset) * info->scale);
-+		break;
-+	case 'f': {
-+		union {
-+			uint32_t u;
-+			float f;
-+		} converter;
-+
-+		converter.u = input;
-+		printf("%05f ", (converter.f + info->offset) * info->scale);
-+		break;
-+	}
- 	}
- }
+diff --git a/Documentation/driver-api/iio/buffers.rst b/Documentation/driver-api/iio/buffers.rst
+index e16abaf826fe..8779022e3da5 100644
+--- a/Documentation/driver-api/iio/buffers.rst
++++ b/Documentation/driver-api/iio/buffers.rst
+@@ -37,9 +37,10 @@ directory contains attributes of the following form:
+ * :file:`index`, the scan_index of the channel.
+ * :file:`type`, description of the scan element data storage within the buffer
+   and hence the form in which it is read from user space.
+-  Format is [be|le]:[s|u]bits/storagebits[Xrepeat][>>shift] .
++  Format is [be|le]:[f|s|u]bits/storagebits[Xrepeat][>>shift] .
  
-@@ -158,7 +189,8 @@ static void print8byte(uint64_t input, struct iio_channel_info *info)
- 	 */
- 	input >>= info->shift;
- 	input &= info->mask;
--	if (info->is_signed) {
-+	switch (info->format) {
-+	case 's': {
- 		int64_t val = (int64_t)(input << (64 - info->bits_used)) >>
- 			      (64 - info->bits_used);
- 		/* special case for timestamp */
-@@ -167,8 +199,21 @@ static void print8byte(uint64_t input, struct iio_channel_info *info)
- 		else
- 			printf("%05f ",
- 			       ((float)val + info->offset) * info->scale);
--	} else {
-+		break;
-+	}
-+	case 'u':
- 		printf("%05f ", ((float)input + info->offset) * info->scale);
-+		break;
-+	case 'f': {
-+		union {
-+			uint64_t u;
-+			double f;
-+		} converter;
-+
-+		converter.u = input;
-+		printf("%05f ", (converter.f + info->offset) * info->scale);
-+		break;
-+	}
- 	}
- }
+   * *be* or *le*, specifies big or little endian.
++  * *f*, specifies if floating-point.
+   * *s* or *u*, specifies if signed (2's complement) or unsigned.
+   * *bits*, is the number of valid data bits.
+   * *storagebits*, is the number of bits (after padding) that it occupies in the
+diff --git a/Documentation/iio/iio_devbuf.rst b/Documentation/iio/iio_devbuf.rst
+index dca1f0200b0d..e91730fa3cea 100644
+--- a/Documentation/iio/iio_devbuf.rst
++++ b/Documentation/iio/iio_devbuf.rst
+@@ -83,9 +83,10 @@ and the relevant _type attributes to establish the data storage format.
  
-diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-index c5c5082cb24e..f1d58db69942 100644
---- a/tools/iio/iio_utils.c
-+++ b/tools/iio/iio_utils.c
-@@ -70,7 +70,7 @@ int iioutils_break_up_name(const char *full_name, char **generic_name)
+ Read-only attribute containing the description of the scan element data storage
+ within the buffer and hence the form in which it is read from userspace. Format
+-is [be|le]:[s|u]bits/storagebits[Xrepeat][>>shift], where:
++is [be|le]:[f|s|u]bits/storagebits[Xrepeat][>>shift], where:
+ 
+ - **be** or **le** specifies big or little-endian.
++- **f** specifies if floating-point.
+ - **s** or **u** specifies if signed (2's complement) or unsigned.
+ - **bits** is the number of valid data bits.
+ - **storagebits** is the number of bits (after padding) that it occupies in the
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index d48a0ab01b8d..1f2c1cb03394 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -180,9 +180,11 @@ struct iio_event_spec {
+  * Format values in scan type
+  * @IIO_SCAN_FORMAT_SIGNED_INT: Signed integer (two's complement).
+  * @IIO_SCAN_FORMAT_UNSIGNED_INT: Unsigned integer.
++ * @IIO_SCAN_FORMAT_FLOAT: Floating point.
+  */
+ #define IIO_SCAN_FORMAT_SIGNED_INT	's'
+ #define IIO_SCAN_FORMAT_UNSIGNED_INT	'u'
++#define IIO_SCAN_FORMAT_FLOAT		'f'
  
  /**
-  * iioutils_get_type() - find and process _type attribute data
-- * @is_signed: output whether channel is signed
-+ * @format: output channel format
-  * @bytes: output how many bytes the channel storage occupies
-  * @bits_used: output number of valid bits of data
-  * @shift: output amount of bits to shift right data before applying bit mask
-@@ -83,7 +83,7 @@ int iioutils_break_up_name(const char *full_name, char **generic_name)
-  *
-  * Returns a value >= 0 on success, otherwise a negative error code.
-  **/
--static int iioutils_get_type(unsigned int *is_signed, unsigned int *bytes,
-+static int iioutils_get_type(char *format, unsigned int *bytes,
- 			     unsigned int *bits_used, unsigned int *shift,
- 			     uint64_t *mask, unsigned int *be,
- 			     const char *device_dir, int buffer_idx,
-@@ -162,7 +162,7 @@ static int iioutils_get_type(unsigned int *is_signed, unsigned int *bytes,
- 			else
- 				*mask = (1ULL << *bits_used) - 1ULL;
- 
--			*is_signed = (signchar == 's');
-+			*format = signchar;
- 			if (fclose(sysfsfp)) {
- 				ret = -errno;
- 				fprintf(stderr, "Failed to close %s\n",
-@@ -487,7 +487,7 @@ int build_channel_array(const char *device_dir, int buffer_idx,
- 			if ((ret < 0) && (ret != -ENOENT))
- 				goto error_cleanup_array;
- 
--			ret = iioutils_get_type(&current->is_signed,
-+			ret = iioutils_get_type(&current->format,
- 						&current->bytes,
- 						&current->bits_used,
- 						&current->shift,
-diff --git a/tools/iio/iio_utils.h b/tools/iio/iio_utils.h
-index 663c94a6c705..8c72f002d050 100644
---- a/tools/iio/iio_utils.h
-+++ b/tools/iio/iio_utils.h
-@@ -32,7 +32,7 @@ extern const char *iio_dir;
-  * @shift: amount of bits to shift right data before applying bit mask
-  * @mask: a bit mask for the raw output
-  * @be: flag if data is big endian
-- * @is_signed: is the raw value stored signed
-+ * @format: format of the raw value
-  * @location: data offset for this channel inside the buffer (in bytes)
-  **/
- struct iio_channel_info {
-@@ -46,7 +46,7 @@ struct iio_channel_info {
- 	unsigned shift;
- 	uint64_t mask;
- 	unsigned be;
--	unsigned is_signed;
-+	char format;
- 	unsigned location;
- };
- 
+  * struct iio_scan_type - specification for channel data format in buffer
 -- 
 2.39.5
 
