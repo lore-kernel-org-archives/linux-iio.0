@@ -1,179 +1,104 @@
-Received: from mail-wr1-f50.google.com (mail-wr1-f50.google.com [209.85.221.50])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.13])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B6CA735B651
-	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 10:40:58 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D732A3A6F1E;
+	Tue, 17 Mar 2026 10:43:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773744060; cv=none; b=ofQXyk7fLLEafU2cmsO8fnlWhxFbFRjdDONN/bDGL1JdNU9bn+rOS4rAOs6GPy7ZwR2ALiQyGfvIUWWcHAmrjr24BTg+pGzwhQzcoddV+HJCwtRi9gbjxmd3oa/ZRS0WP1ZJQby5sm009Sac/smMZiWZgBaGRGikNAPeovg4bGY=
+	t=1773744215; cv=none; b=sgb6/KTtCd+e+wSRsJamSslvMk3ePyeU1DvmgAAOB5h5lSrQIFrTCPUccf0n0+i+M1o+lfHYu+bmZdvdSRYIZ+SqrTIy4BdalK/Lmmc8bX0IrEUhSCKcGxkTzqb31Lf+/tHf25ZcSOnmUxKrn0azHxhtwT+NN8u12eeSc9MQpJQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773744060; c=relaxed/simple;
-	bh=d4KD+yU5s7d45rA5ExgcEGlswfbkgijWZZsbyiom9Ug=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=fZJFAbyqYbXz7Z7RhQrM5R75kN/zX9iJDj0kYyf8Nzm5yROPo4LaFjfb3F87oP03Pq5hKA+41rrQsd9NiTUuo1pGXl4warSwg2oZrCUXI2Mdcx7Ki2aLifth040mhwxhdJqDfiVLCNZlfsx4+EE0/vYc4yig2CXKVexwcIdjXBY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=G8J/BKoo; arc=none smtp.client-ip=209.85.221.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1773744215; c=relaxed/simple;
+	bh=6FdHlQFrwR4c8Ja2fUIysHsxFeBq9+NT4YfB6VEXTR4=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=A7gRH0jVLgKP6t5nhNBnYqa3Kk+svzu4lHtixASlIgQIVQan5NHLShEytAgr2uGhEmNLApI1Iwe8qea1bFRAuf5hGyHER5ycezWEBoubUkgjFF8Q/uQZhBk97xrGFly/rxt7krH4zDKri67jnO+0drovWqZHA4R6QWfP4OPnqC4=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fc0jEXmH; arc=none smtp.client-ip=192.198.163.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="G8J/BKoo"
-Received: by mail-wr1-f50.google.com with SMTP id ffacd0b85a97d-439bcec8613so4262014f8f.3
-        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 03:40:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773744057; x=1774348857; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=d4KD+yU5s7d45rA5ExgcEGlswfbkgijWZZsbyiom9Ug=;
-        b=G8J/BKoo9f+EWdZfUu9gMkvuFwkHmjOw4+tOVbNC62eQlglZjwB8z3xjB6TcMoxYti
-         u5uE0iTBBCGjfl1/jitKphMYSXRQufoeQvhmU89sfr8dX3+i4XwKXbV8ae+86ZW+2Kkx
-         HEDa2AJ1AFamz7an2IN301dUSCgyjIpNsu4ALMxcdB8ammNV4uAQ/WeZT0Za4Jv1yxRF
-         SCURgTaccLhh6sh+5bniMYOT8xTY0lFjE76sBXtxs+YnJ/eo6JuKX+nHGP/HHnnI1CMd
-         Rv/Qjss3vnNDG9QYUJB9/N1I0e3qShMBqbtiIupEIg2YSQZrDYPJvqNIqaITMP9bbiqi
-         f4BA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773744057; x=1774348857;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=d4KD+yU5s7d45rA5ExgcEGlswfbkgijWZZsbyiom9Ug=;
-        b=Ja23XIIenhexbU9Gz2bNXP7DUDXC+eucCeJK6aAyb535ejg/oVwnM2uQ0SXFXI9FO0
-         ZXjg3c4tT3giJOiAkxXvlH9TGJGx8TGvKvlImJr4/PFo3V833EB9iuak3dOH5SZ0J9Zx
-         uudec9QbENi8BoYTNWjWiAVrE1vfDQ0BeHn+v+4M7CX7Dpgv4SYp1pyBdHm1/C37ctPN
-         7DiNOHS84XysEtb6LTQFwqGD8lPm0cwxSNY4n+D7jxc64gqb6P42tNA35gHOnaTRLTBs
-         1Qj+LDmjCM+dzEkj5rLpL5ZcL0+CeGn+/CSMqRUH34aaFK56caP4xK6ySkXJIEDh+fFA
-         /lCg==
-X-Forwarded-Encrypted: i=1; AJvYcCXLNchJr+5wplkbYFb5CXp/fww3BWqbo6M5OU2Rx5SJxbX4IvCRsh9Hc6dNIdS352tM5NF59m7UKqo=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw1iwdsd7q5hblYg+yQljOIAQzu2dSMWnjJL1fd9ZELbUsEPz02
-	h94rP2lM4/sXiX0unUrKM05uLEJJOVniVQrhvyyMoE49jgkNpSEmK7/ull9nSzDUHao=
-X-Gm-Gg: ATEYQzxOpgDHYPzN4ey0Vx+HQy+5IrSj1f4Vn7jK1pIslBOqXkYDd/CVs2Xkvoz6UqZ
-	XXI82ZKDhxdZiKI38+4Q3VGCLzoZ02PGB5OqNdH/4uxTzHzphWGxfV43qFgYVuCra8uhnEVQ02f
-	CnIqZXxcWcPOYDp7v2YykUm1llkvSy3a3V6rg8dGevwEyfRrgBZJUMC2d116fZuOdQTy8OOYVKH
-	cNjFCaqCXkCZYo9vq65FJQ/mFl5b9O00XcloQXr1btWkftdVYXZi57RdLJdvHnzu1tzgBALbAQR
-	KSKYeR0kUpXhUxIyi8DEoeji2O9azv9cfm6KRiiBlpSNHslK+6PqacCb6j0JuufdpAoRbBxvw63
-	8IRJNUazkqZ3R2pc5/Y4bOnbIgKXUBkMI1foDe0Erc5Cw5odOtxmfRohpYkA1dIY8dF5YQ9VISV
-	qFTVOiAvA=
-X-Received: by 2002:a05:6000:2283:b0:436:3707:2bf0 with SMTP id ffacd0b85a97d-43a04db7556mr30851486f8f.35.1773744057079;
-        Tue, 17 Mar 2026 03:40:57 -0700 (PDT)
-Received: from [10.128.148.212] ([151.37.253.94])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b41dd93c0sm17716128f8f.10.2026.03.17.03.40.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2026 03:40:56 -0700 (PDT)
-Message-ID: <1d268ffefd2a035331fd4ab7a920559fdf11cdda.camel@baylibre.com>
-Subject: Re: [PATCH v7 4/6] iio: ABI: Add support for floating-point numbers
- in buffer scan elements
-From: Francesco Lavra <flavra@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>, Andy Shevchenko
-	 <andriy.shevchenko@intel.com>
-Cc: David Lechner <dlechner@baylibre.com>, Andy Shevchenko
- <andy.shevchenko@gmail.com>, Nuno =?ISO-8859-1?Q?S=E1?=
- <nuno.sa@analog.com>,  Andy Shevchenko <andy@kernel.org>, Jonathan Corbet
- <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>,
- linux-iio@vger.kernel.org,  linux-kernel@vger.kernel.org,
- linux-doc@vger.kernel.org
-Date: Tue, 17 Mar 2026 11:40:54 +0100
-In-Reply-To: <20260307125150.3bc60a45@jic23-huawei>
-References: <20260304080519.2844101-1-flavra@baylibre.com>
-	 <20260304080658.2844434-1-flavra@baylibre.com>
-	 <70f25902-5c79-46f9-8c67-99633b22b5ac@baylibre.com>
-	 <098886563f5fdcde837989d0556ed9a2d8d3203b.camel@baylibre.com>
-	 <CAHp75Vdni=OgHiDi8G5s6CgBFZZuypOyJSo5DFjaKYFkLGPqkQ@mail.gmail.com>
-	 <dd6d1436-d509-4233-ba1f-5a3f870f35fb@baylibre.com>
-	 <aarED5TAWg2qFtxi@ashevche-desk.local>
-	 <20260307125150.3bc60a45@jic23-huawei>
-Organization: BayLibre
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-2 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fc0jEXmH"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773744213; x=1805280213;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=6FdHlQFrwR4c8Ja2fUIysHsxFeBq9+NT4YfB6VEXTR4=;
+  b=fc0jEXmHrLWtxyZDeKx9jJW2A40iG9n63yc2Ykt1suhlMBK7Yy3Ckf66
+   m33PflhJqXVBGGbnnkx6M8K926iWLy55okAiYJiTqay5a9ciz3RuoDeTw
+   K/Q1goixRYs0js+SsrDd0ENS8AgC7EDiCcKG/g/VOhAkE0aF/Qeh1dQmQ
+   JuYTHD6hnRxPwFX4ggz4BJOorP3JFRDDyiALgvS0Is99g0z6Awf9uZkgK
+   ALOn95rg2x3QJtr+B1EgKqm/kqLS47atKoXcV9j7fT9XpOxK/iBUTS0I/
+   ++qq2lLLDESb9NAq1UlbzS5zrOMr1otgLMkPuoqpG01gtqM8ya9wT55DA
+   g==;
+X-CSE-ConnectionGUID: MuScCdJrTVO6qjj3yXd7nA==
+X-CSE-MsgGUID: jFLEH5dVQ3uIHh8XmQSmfw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11731"; a="77382090"
+X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
+   d="scan'208";a="77382090"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by fmvoesa107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 03:43:32 -0700
+X-CSE-ConnectionGUID: 66rNbHKVS7uNc7s7xwX3iw==
+X-CSE-MsgGUID: EmOr9u7nQmSqU09/FRkleA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,124,1770624000"; 
+   d="scan'208";a="221456042"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.245.97])
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2026 03:42:11 -0700
+Date: Tue, 17 Mar 2026 12:42:07 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Nuno =?iso-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
+	Alisa-Dariana Roman <alisadariana@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Alisa-Dariana Roman <alisa.roman@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio: adc: ad7191: Don't check for specific errors
+ when parsing properties
+Message-ID: <abkv_76b1cue1bGK@ashevche-desk.local>
+References: <20260219143936.2276366-1-andriy.shevchenko@linux.intel.com>
+ <c59c19d923d369eac2a0a46405e13e41836591c2.camel@gmail.com>
+ <CAHp75VcpuxP=3cGuVrJoSuirQ3vPNR9LLWkf5CyaGcghJ2hzag@mail.gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VcpuxP=3cGuVrJoSuirQ3vPNR9LLWkf5CyaGcghJ2hzag@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Sat, 2026-03-07 at 12:51 +0000, Jonathan Cameron wrote:
-> On Fri, 6 Mar 2026 14:09:51 +0200
-> Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
->=20
-> > On Thu, Mar 05, 2026 at 08:37:48AM -0600, David Lechner wrote:
-> > > On 3/5/26 3:23 AM, Andy Shevchenko wrote:=C2=A0=20
-> > > > On Thu, Mar 5, 2026 at 11:09=E2=80=AFAM Francesco Lavra
-> > > > <flavra@baylibre.com> wrote:=C2=A0=20
-> > > > > On Wed, 2026-03-04 at 16:45 -0600, David Lechner wrote:=C2=A0=20
-> > > > > > On 3/4/26 2:06 AM, Francesco Lavra wrote:=C2=A0=20
-> > > > > > > In the data storage description of a scan element, the first
-> > > > > > > character
-> > > > > > > after the colon can have the values 's' and 'u' to specify
-> > > > > > > signed and
-> > > > > > > unsigned integers, respectively.
-> > > > > > > Add 'f' as an allowed value to specify floating-point numbers
-> > > > > > > formatted
-> > > > > > > according to the IEEE 754 standard.=C2=A0=20
-> >=20
-> > ...
-> >=20
-> > > > > > > -=C2=A0 Format is [be|le]:[s|u]bits/storagebits[Xrepeat][>>sh=
-ift]
-> > > > > > > .
-> > > > > > > +=C2=A0 Format is
-> > > > > > > [be|le]:[f|s|u]bits/storagebits[Xrepeat][>>shift] .
-> > > > > > >=20
-> > > > > > > =C2=A0=C2=A0 * *be* or *le*, specifies big or little endian.
-> > > > > > > +=C2=A0 * *f*, specifies if floating-point.
-> > > > > > > =C2=A0=C2=A0 * *s* or *u*, specifies if signed (2's complemen=
-t) or
-> > > > > > > unsigned.=C2=A0=20
-> > > > > >=20
-> > > > > > I would keep all of the format options on one bullet point.=C2=
-=A0=20
-> > > > >=20
-> > > > > That's what I did initially, but Andy suggested doing differently
-> > > > > [1].=C2=A0=20
-> > > >=20
-> > > > And still I think it's better to not mix them. The floating in the
-> > > > same sentence is confusing (along with 2's complement mention and
-> > > > sign).=C2=A0=20
-> > >=20
-> > > Then I would split up all 3. It is strange to mix some and not
-> > > all.=C2=A0=20
-> >=20
-> > I don't find it 'strange'. The integer are grouped together, floats do
-> > not
-> > belong to that group.
-> Maybe two paragaraphs in one bullet point?
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0* *f*, specifies if float=
-ing-point.
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 *s* or *u*, specif=
-ies if signed (2's complement) or unsigned.=C2=A0=20
->=20
-> Though then we'll definitely need to check it didn't break the formatting
-> in the docs generated from these files.
+On Fri, Feb 20, 2026 at 12:33:28PM +0200, Andy Shevchenko wrote:
+> On Fri, Feb 20, 2026 at 12:04 PM Nuno Sá <noname.nuno@gmail.com> wrote:
+> > On Thu, 2026-02-19 at 15:39 +0100, Andy Shevchenko wrote:
+> > > Instead of checking for the specific error codes (that can be considered
+> > > a layering violation to some extent) check for the property existence first
+> > > and then either parse it, or apply a default value.
+> >
+> > Not really sure how I feel about this one. Checking for specific errors is a very common
+> > pattern and this change just makes it we check for the property presence twice. That said,
+> > this makes it more "future proof" (though I find it very unlikely for ret value o change).
+> 
+> I already have an answer to this:
+> https://lore.kernel.org/r/aZcenabXYsOdBu84@smile.fi.intel.com
 
-This does break the formatting in the HTML docs, where the two paragraphs
-end up in the same line.
+Does it help?
 
-> For me any of the above are fine.
+> > Anyways, even if we choose to go down this route, I don't see much benefit in starting
+> > converting the drivers with the pattern below (which should be a considerable number).
+> 
+> There is not a big number of them, so I prefer to have common patterns
+> without exact error code checks.
 
-I will keep it as is.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> > ...
-> >=20
-> > > > > > > -is [be|le]:[s|u]bits/storagebits[Xrepeat][>>shift], where:
-> > > > > > > +is [be|le]:[f|s|u]bits/storagebits[Xrepeat][>>shift], where:
-> > > > > > >=20
-> > > > > > > =C2=A0- **be** or **le** specifies big or little-endian.
-> > > > > > > +- **f** specifies if floating-point.
-> > > > > > > =C2=A0- **s** or **u** specifies if signed (2's complement) o=
-r
-> > > > > > > unsigned.=C2=A0=20
-> > > > > >=20
-> > > > > > same here=C2=A0=20
-> > > > >=20
-> > > > > [1]
-> > > > > https://lore.kernel.org/linux-iio/aZ7dCdLs5xcJ4UGW@smile.fi.intel=
-.com/
-> > > > > =C2=A0
-> > > >=20
-> > > > Same here.
 
-Same here.
