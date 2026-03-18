@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B733C3624B8;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B779137B01C;
 	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773856571; cv=none; b=lQuL7Yfcup/dIhcueQkIjP2hwKs4rAFDpH8dWr6iWAjjSLpU1prYBFNe9TAsAF2IdkDtpRDzeRwScsXS5cZ6YI4MqhaTzTN+JUeOQGm+QWzTXjgDtxSOgz5cIfX6dbiIJKsztULG6t1a00/+xTibmgd4vi7HRXH2HfCF9oVmNPs=
+	t=1773856571; cv=none; b=u7UlZPh8Iiy19lddMSTJOI5ZqBQxZhxFvKDaNXa7BUpr4KVpN7p/VVjy+CrfeQ6MDkaueOSkx6FvrHCJg19zAjCZIBLoOGxg6rimwVCClHFTgYOgDzBAb0GIMd57Vi6w8/RHxua7zDJEXyvoeqsuQjO4PV9pscUlgAQvaHYoBcA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1773856571; c=relaxed/simple;
-	bh=hH7DqG3aXlSBRqsvoK/w+ko1R6Mr5k3mXHHJWySXZzc=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=Redsnh0m3bJWyo3EA0GFHzBO79eVZOSFSpxhhX9wt925LqQyn7AcspvBQjCw7JyINda534S7AeZ4dh9UIGm/fjEX2Gu9WR7Q5ryiqiFiSVXanx/NE2sOp3Ok8mWRueCwDewV1UrCFf2EaXJD1Z6cKdg9I22k430Bq23oG8NYId8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kzghvDob; arc=none smtp.client-ip=10.30.226.201
+	bh=Uvo457Wh7y4+UHfmA1m+9aW9HdSvK6o1Rnp5RB93Ae8=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ZfSIf7QxxAKnqQ2EDWHMGrpOafl3rCJqakK/FaU6R7DFR94++fFnYNHyilujLWuB2OtGkGuxJnVGHuZrZtqxQbcn4zy7rqxm0QmXglCA5ZBYzEYYQ+B2ml3KQ0aUOJ3Vn5a5/mG21/rC74DjjrT1UvC2XeIl/fQPsh5NwnR0EC0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pwj5M45d; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kzghvDob"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 2CE37C19421;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pwj5M45d"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 14957C2BC87;
 	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1773856571;
-	bh=hH7DqG3aXlSBRqsvoK/w+ko1R6Mr5k3mXHHJWySXZzc=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=kzghvDobVa+KZLlp9dP5fncZRzdD9Zsgk8x2XfTYxkp8q1WX/aP7Vp1vWdjlBNo0k
-	 bb39mf+4oXXD0Fp3u98Rho61BakddEgE4EHj+YOO7oGFPkFVAazFxL7CJejxQFzQAs
-	 lpKW8tp2TEgJ9IKH8zTpdFXMqhJTzdkb4lSTu5NutXeKGtnFDPOjwuXOXbBVSCLpAG
-	 HCaTHcBpQHZPR5yWh6Qa7uYxR7HyAlVWUzHMA43KUrcb/JR9uuz3UXw/1AZjVobdPE
-	 B3s0eDQ0ooWhGxWK2e0GXCpf9mnO1DxpvjopF60+A/SmzulFTzsvsMwj+S7tvilXwQ
-	 0wHpj5iE3jhPg==
+	bh=Uvo457Wh7y4+UHfmA1m+9aW9HdSvK6o1Rnp5RB93Ae8=;
+	h=From:Subject:Date:To:Cc:Reply-To:From;
+	b=pwj5M45dSRaeyr0JBBBEOYVnGw+cmWRmTMnkfbNCFzh6rxklvj7GY+/koJGN+7DhT
+	 xfLvnZDSs//dcA7LWhXM8LendIIEIxDZEj9WzbaKnGDOp3tut1sI5IU8Q0LU9p1nU4
+	 V6njkWd77SVjz8VP+fi1QBRFA7yesAs3bi3Dttt/0kbnPoZs8DdSFTHKRCyksaeaos
+	 iYWcagcKkdOpSGPrQOO22lyMERpLc6hS7XjJoIKDcurQoYb/LNuBMoIfyclDHQSPTR
+	 3UO9q7lI7ddzdv71c/bvLLKUrCl/nGDTPYXut0seI4CCkLIOI2lj5/ooMVwrtf4cz5
+	 wqlVA1Ry09MvQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1961310775FC;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DD510775FE;
 	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 18 Mar 2026 17:56:01 +0000
-Subject: [PATCH RFC v2 1/9] dt-bindings: iio: frequency: add ad9910
+Subject: [PATCH RFC v2 0/9] AD9910 Direct Digital Synthesizer
+Date: Wed, 18 Mar 2026 17:56:00 +0000
+Message-Id: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,9 +40,11 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260318-ad9910-iio-driver-v2-1-e79f93becf11@analog.com>
-References: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
-In-Reply-To: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
+X-B4-Tracking: v=1; b=H4sIADDnumkC/22NwQrCMBBEf6Xs2Uh2G0vrSRD8AK/Sw7ZJ2wVtJ
+ JGglP67oV49vhnmzQLRBXERjsUCwSWJ4ucMtCugn3genRKbGUhTpQlrxbZpUCsRr2yQ5IJqutI
+ Smp4OOEDePYMb5L05b3C9nKHN4STx5cNn+0m4VT8l6T/KhEqrsqPKMJuaUZ945rsf971/QLuu6
+ xcCgM4guAAAAA==
+X-Change-ID: 20260218-ad9910-iio-driver-9b3d214c251f
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -54,11 +56,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1773856569; l=6418;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1773856569; l=8760;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=k7FO/6zhIeaj/fXIdp66n/3OjAKLzxmA4t3hZbmQGww=;
- b=juJZ08HIy86wqrGJWgB1AhSRKkraKZQ5gmP3C2YxQZtC7x0K+yLs3vls5g/2NqGACSGY6smPX
- GXJxt1YYJvDBWnbNNFgfNRdl63Ip5e5rC68zQgqSjkvC5SLTXZgtopr
+ bh=Uvo457Wh7y4+UHfmA1m+9aW9HdSvK6o1Rnp5RB93Ae8=;
+ b=SR/nFpnm9hGI+jcZfDTxLu2NZd/po8+ZMuiaaF9nhKfGlUgb6/q7MD+GfocPrYrVUKSe1Ki9w
+ RDaCqtkcuCSAKtk0MKyTX+jvsIQwBfXvRiDd9iIVlyC2Fj6mcqQGb8l
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -66,232 +68,184 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+This patch series adds support for the Analog Devices AD9910 DDS.
+This is a RFC so that we can agree/discuss on the design that follows:
 
-DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
-configurations for clocks, DAC current, reset and basic GPIO control.
+This is a follow-up of the V1 discussion. We are reaching into this
+channel composition agreement where physical channels may have
+sub-channels. That adds the flexibility necessary for this design.
+Nothing has been changed to iio-core yet, so I've just addressed
+comments, aiming to keep the discussion going forward.
+
+The AD9910 DDS core can be driven through several independent mechanisms:
+single tone profiles, a digital ramp generator, an internal RAM playback
+engine, a parallel data port, and output shift keying. Each of these
+represents a distinct signal path into the DDS accumulator, so the driver
+models them as separate IIO output channels (all IIO_ALTVOLTAGE type).
+This per-channel separation allows userspace to configure each mode
+independently through its own set of sysfs attributes, and to
+enable/disable modes individually via IIO_CHAN_INFO_ENABLE, relying on
+the hardware's own mode selection architecture.
+
+The AD9910 register map is not suited for the regmap framework: register
+widths vary across the map (16, 32, and 64 bits). The driver instead
+implements direct SPI access helpers with a software register cache, using
+type-specific read/write/update functions (ad9910_reg{16,32,64}_{read,
+write,update}) that handle endianness conversion and cache coherency.
+
+Registers are cached for several reasons. The control/function registers
+(CFR1, CFR2) are frequently queried to determine the current operating
+mode (e.g., checking RAM_ENABLE before every profile register access),
+and caching avoids repeated SPI read transactions for what are
+essentially state checks. The cache also enables efficient
+read-modify-write updates on multi-byte registers: the update functions
+merge new field values with the cached register content without issuing
+a SPI read, and skip the write entirely when the value is unchanged.
+Finally, the profile registers serve dual purposes depending on whether
+RAM mode is active -- they hold single tone parameters (FTW, POW, ASF)
+in normal operation but are repurposed for RAM playback configuration
+(start/end address, step rate, operating mode) when RAM is enabled. A
+shadow register array (reg_profile[]) preserves the inactive mode's
+settings across transitions, so no state is lost when switching between
+single tone and RAM operation.
+
+RAM data is loaded through firmware upload infrastructure. Userspace
+writes the waveform data as a raw binary buffer (up to 4096 bytes for
+the full 1024x32-bit RAM), and the driver reverses the byte array and
+transfers it to the device in a single SPI transaction. Per-profile
+start/end addresses and playback parameters (operating mode, step rate,
+no-dwell control) are configured through the RAM channel's ext_info
+attributes.
+
+Streaming data to the DDS core through the parallel data port at the
+PD_CLK rate is not covered by this series. That functionality would
+be added in a separate patch series, building on top of the IIO backend
+infrastructure to provide a proper buffered data path.
+
+As I am pushing implementation, as lot has been done already without much
+supervision or agreement, still I would be interested on hearing about
+the design choices discussed above. Here is the output for the iio_info
+at this point:
+
+iio:device3: ad9910
+  8 channels found:
+      altvoltage120:  (output)
+      7 channel-specific attributes found:
+          attr  0: en value: 0
+          attr  1: frequency_offset value: 0.000000
+          attr  2: frequency_scale value: 1
+          attr  3: label value: parallel_port
+          attr  4: phase_offset value: 0.000000
+          attr  5: sampling_frequency value: 250000000.000000
+          attr  6: scale_offset value: 0.000000
+      altvoltage140:  (output)
+      11 channel-specific attributes found:
+          attr  0: address_end value: 1023
+          attr  1: address_start value: 0
+          attr  2: destination value: frequency
+          attr  3: destination_available value: frequency phase amplitude polar
+          attr  4: en value: 0
+          attr  5: frequency value: 0.000000
+          attr  6: label value: ram_control
+          attr  7: operating_mode value: direct_switch
+          attr  8: operating_mode_available value: direct_switch ramp_up
+		           bidirectional bidirectional_continuous ramp_up_continuous
+				   sequenced sequenced_continuous
+          attr  9: phase value: 0.000000
+          attr 10: sampling_frequency value: 250000000.000000
+      altvoltage130:  (output)
+      11 channel-specific attributes found:
+          attr  0: destination value: frequency
+          attr  1: destination_available value: frequency phase amplitude
+          attr  2: en value: 0
+          attr  3: label value: digital_ramp_generator
+          attr  4: operating_mode value: bidirectional_continuous
+          attr  5: operating_mode_available value: bidirectional ramp_down
+		           ramp_up bidirectional_continuous
+      altvoltage110:  (output)
+      4 channel-specific attributes found:
+          attr  0: frequency value: 0.000000
+          attr  1: label value: single_tone
+          attr  2: phase value: 0.000000
+          attr  3: scale value: 0.000000
+      altvoltage132:  (output)
+      8 channel-specific attributes found:
+          attr  0: frequency value: 0.000000
+          attr  1: frequency_step value: 0.000000
+          attr  2: label value: digital_ramp_down
+          attr  3: phase value: 0.000000000
+          attr  4: phase_step value: 0.000000000
+          attr  5: sampling_frequency value: 250000000.000000
+          attr  6: scale value: 0.000000000
+          attr  7: scale_step value: 0.000000000
+      altvoltage131:  (output)
+      8 channel-specific attributes found:
+          attr  0: frequency value: 0.000000
+          attr  1: frequency_step value: 0.000000
+          attr  2: label value: digital_ramp_up
+          attr  3: phase value: 0.000000000
+          attr  4: phase_step value: 0.000000000
+          attr  5: sampling_frequency value: 250000000.000000
+          attr  6: scale value: 0.000000000
+          attr  7: scale_step value: 0.000000000
+      altvoltage100:  (output)
+      4 channel-specific attributes found:
+          attr  0: label value: phy
+          attr  1: powerdown value: 0
+          attr  2: profile value: 0
+          attr  3: sampling_frequency value: 1000000000
+      altvoltage150:  (output)
+      6 channel-specific attributes found:
+          attr  0: en value: 0
+          attr  1: label value: output_shift_keying
+          attr  2: pinctrl_en value: 0
+          attr  3: sampling_frequency value: 250000000.000000
+          attr  4: scale value: 0.000000
+          attr  5: scale_step value: 0.000000
+  4 debug attributes found:
+          debug attr  1: ram_data ERROR: Input/output error (5)
+          debug attr  2: ram_loading value: 0
+          debug attr  3: direct_reg_access value: 0x2
+
+Kind regards,
+
+Rodrigo Alencar
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- .../bindings/iio/frequency/adi,ad9910.yaml         | 189 +++++++++++++++++++++
- MAINTAINERS                                        |   7 +
- 2 files changed, 196 insertions(+)
+Changes in v2:
+- Device-tree bindings changes.
+- RAM loading to use firmware update interface.
+- Rearrange of channels into a hierarchy.
+- Link to v1: https://lore.kernel.org/r/20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com
 
-diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-new file mode 100644
-index 000000000000..68eaefea3f5a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-@@ -0,0 +1,189 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices AD9910 Direct Digital Synthesizer
-+
-+maintainers:
-+  - Rodrigo Alencar <rodrigo.alencar@analog.com>
-+
-+description:
-+  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
-+  14-bit DAC. It features single tone mode with 8 configurable profiles,
-+  a digital ramp generator, RAM control, OSK, and a parallel data port for
-+  high-speed streaming.
-+
-+  https://www.analog.com/en/products/ad9910.html
-+
-+properties:
-+  compatible:
-+    const: adi,ad9910
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 70000000
-+
-+  clocks:
-+    minItems: 1
-+    maxItems: 2
-+    description:
-+      First clock is always the reference clock (REF_CLK), while the second
-+      clock is an optional synchronization clock (SYNC_IN).
-+
-+  clock-names:
-+    oneOf:
-+      - items:
-+          - const: ref_clk
-+      - items:
-+          - const: ref_clk
-+          - const: sync_in
-+
-+  '#clock-cells':
-+    const: 1
-+
-+  clock-output-names:
-+    minItems: 1
-+    maxItems: 3
-+    items:
-+      enum: [ sync_clk, pdclk, sync_out ]
-+
-+  interrupts:
-+    minItems: 1
-+    maxItems: 2
-+
-+  interrupt-names:
-+    minItems: 1
-+    maxItems: 2
-+    items:
-+      enum: [ drover, ram_swp_ovr ]
-+
-+  dvdd-io33-supply:
-+    description: 3.3V Digital I/O supply.
-+
-+  avdd33-supply:
-+    description: 3.3V Analog DAC supply.
-+
-+  dvdd18-supply:
-+    description: 1.8V Digital Core supply.
-+
-+  avdd18-supply:
-+    description: 1.8V Analog Core supply.
-+
-+  reset-gpios:
-+    description:
-+      GPIOs controlling the Main Device reset.
-+
-+  io-reset-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO controlling the I/O_RESET pin.
-+
-+  powerdown-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO controlling the EXT_PWR_DWN pin.
-+
-+  update-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO controlling the I/O_UPDATE pin.
-+
-+  profile-gpios:
-+    minItems: 3
-+    maxItems: 3
-+    description:
-+      GPIOs controlling the PROFILE[2:0] pins for profile selection.
-+
-+  sync-err-gpios:
-+    maxItems: 1
-+    description:
-+      GPIO used to read SYNC_SMP_ERR pin status.
-+
-+  adi,pll-enable:
-+    type: boolean
-+    description:
-+      Indicates that a loop filter is connected and the internal PLL is enabled.
-+      Often used when the reference clock is provided by a crystal or by a
-+      single-ended on-board oscillator.
-+
-+  adi,charge-pump-current-microamp:
-+    minimum: 212
-+    maximum: 387
-+    default: 387
-+    description:
-+      PLL charge pump current in microamps. Only applicable when the internal
-+      PLL is enabled. The value is rounded to the nearest supported step. This
-+      value depends mostly on the loop filter design.
-+
-+  adi,refclk-out-drive-strength:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    enum: [ disabled, low, medium, high ]
-+    default: disabled
-+    description:
-+      Reference clock output (DRV0) drive strength. Only applicable when
-+      the internal PLL is enabled.
-+
-+  adi,dac-output-current-microamp:
-+    minimum: 8640
-+    maximum: 31590
-+    default: 20070
-+    description:
-+      DAC full-scale output current in microamps.
-+
-+dependencies:
-+  adi,charge-pump-current-microamp: [ 'adi,pll-enable' ]
-+  adi,refclk-out-drive-strength: [ 'adi,pll-enable' ]
-+  interrupts: [ interrupt-names ]
-+  clocks: [ clock-names ]
-+  '#clock-cells': [ clock-output-names ]
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - dvdd-io33-supply
-+  - avdd33-supply
-+  - dvdd18-supply
-+  - avdd18-supply
-+
-+allOf:
-+  - $ref: /schemas/spi/spi-peripheral-props.yaml#
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        dds@0 {
-+            compatible = "adi,ad9910";
-+            reg = <0>;
-+            spi-max-frequency = <1000000>;
-+            clocks = <&ad9910_refclk>;
-+            clock-names = "ref_clk";
-+
-+            dvdd-io33-supply = <&vdd_io33>;
-+            avdd33-supply = <&vdd_a33>;
-+            dvdd18-supply = <&vdd_d18>;
-+            avdd18-supply = <&vdd_a18>;
-+
-+            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
-+            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
-+            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
-+            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
-+            profile-gpios = <&gpio 4 GPIO_ACTIVE_HIGH>,
-+                            <&gpio 5 GPIO_ACTIVE_HIGH>,
-+                            <&gpio 6 GPIO_ACTIVE_HIGH>;
-+
-+            adi,pll-enable;
-+            adi,charge-pump-current-microamp = <387>;
-+            adi,refclk-out-drive-strength = "disabled";
-+        };
-+    };
-+...
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 08d8ddf4ef68..2ca8b68e5daa 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1630,6 +1630,13 @@ W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
- F:	drivers/iio/dac/ad9739a.c
- 
-+ANALOG DEVICES INC AD9910 DRIVER
-+M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-+
- ANALOG DEVICES INC MAX22007 DRIVER
- M:	Janani Sunil <janani.sunil@analog.com>
- L:	linux-iio@vger.kernel.org
+---
+Rodrigo Alencar (9):
+      dt-bindings: iio: frequency: add ad9910
+      iio: frequency: ad9910: initial driver implementation
+      iio: frequency: ad9910: add simple parallel port mode support
+      iio: frequency: ad9910: add digital ramp generator support
+      iio: frequency: ad9910: add RAM mode support
+      iio: frequency: ad9910: add output shift keying support
+      iio: frequency: ad9910: add channel labels
+      Documentation: ABI: testing: add docs for ad9910 sysfs entries
+      docs: iio: add documentation for ad9910 driver
 
+ .../ABI/testing/sysfs-bus-iio-frequency-ad9910     |  182 ++
+ .../bindings/iio/frequency/adi,ad9910.yaml         |  189 ++
+ Documentation/iio/ad9910.rst                       |  654 ++++++
+ Documentation/iio/index.rst                        |    1 +
+ MAINTAINERS                                        |   10 +
+ drivers/iio/frequency/Kconfig                      |   20 +
+ drivers/iio/frequency/Makefile                     |    1 +
+ drivers/iio/frequency/ad9910.c                     | 2261 ++++++++++++++++++++
+ 8 files changed, 3318 insertions(+)
+---
+base-commit: ff0843ceb1fb11a6b73e0e77b932ef7967aecd4b
+change-id: 20260218-ad9910-iio-driver-9b3d214c251f
+
+Best regards,
 -- 
-2.43.0
+Rodrigo Alencar <rodrigo.alencar@analog.com>
 
 
