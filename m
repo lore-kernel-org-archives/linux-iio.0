@@ -1,63 +1,63 @@
-Received: from mail-pg1-f171.google.com (mail-pg1-f171.google.com [209.85.215.171])
+Received: from mail-pj1-f54.google.com (mail-pj1-f54.google.com [209.85.216.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38A913AEF3B
-	for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2026 09:29:56 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FED93B894A
+	for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2026 09:30:01 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773826200; cv=none; b=rBXfwk3U2hJ1lCXJUFe9vLd+RqO00k0Zhb/stpZjkYZlgQjnnKc9eL+WoXEnZAnBdkc+9sjyNB1ZlniHVTA2vqyiN7GlV+0ZW4WBjfCvZp1vfhG9Gb/XC8Uhoyxvd/4nNm8ZjqEkKO+aLwCuBDyPvo+0WYcXIDQVYBHMHsA+3OU=
+	t=1773826207; cv=none; b=kBH+0cPt6l9wZ4eWsqje7Q/jN4F6a7PkWBbDz5XpqteNaan7HUu+PQq5nCQh+3iqxCeyN8Q494hns0mgM98QM9JREArGP1J/3S6Wm1bX/MJPhclj08jpCcK3pRJ/xtsI5w+RgrqgbfrGAINNNW4/XpJxxNWxAxi0CHUQxjSqnh0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773826200; c=relaxed/simple;
-	bh=pRd86ixJCsIKMhFYIEKfaVMan2Ea5weBwsSCy5N7fHc=;
+	s=arc-20240116; t=1773826207; c=relaxed/simple;
+	bh=Tk8gsHUA/br8aqrC1iyhj1FHWqR7iTwilxeIVhkRv9w=;
 	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-	 MIME-Version; b=UYHsalR929867Vs4y2P8QgasPdGkeub0ZIk1z4CxQIf/KJE0vir8P0yN7x/8+HY0Yp8GpEcVnLIJGz/y0tOT3+2ogmvwkINhPrjUP0LwR25PPsUZ2S8cuED5bGqRiBnQWuCDzpNlfL3KY0gxTPCBjotvvgnQ6KvFz+o+hXFr49c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=f73HQSMl; arc=none smtp.client-ip=209.85.215.171
+	 MIME-Version; b=DbApiRZavx9ElYBwnmzCVo/vRIxs9ppbzxOoCP51Tzbw49J30zdSVwebFDFwTnmso6XqivPOQjWzbM5pXmkJElahXpTmapr2MEd+eBHcq7G/27IiZFsa/1PSDuJh4z3zC2mE2JwWCREpKfYp0GcGaiai7WbYi/qn4x0fl/7DNwo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=AOHjbepp; arc=none smtp.client-ip=209.85.216.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f73HQSMl"
-Received: by mail-pg1-f171.google.com with SMTP id 41be03b00d2f7-c7384f5a9cdso2930874a12.0
-        for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2026 02:29:56 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AOHjbepp"
+Received: by mail-pj1-f54.google.com with SMTP id 98e67ed59e1d1-35ba2ae4df3so2068318a91.2
+        for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2026 02:30:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773826195; x=1774430995; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773826200; x=1774431000; darn=vger.kernel.org;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=5FT3FCWE6d/BfnmV6V9NTfwQvybJ7Oe0ujhNN4DmJ54=;
-        b=f73HQSMlulRLagBtJc98PwMTa9Wsejt/Q86wDSG/iSq24v6CGFnaaJlXKOudSZwxfw
-         XZdC5plIre3Big5KcDYZa31rahN+wVlO+ewOetKIUZX07X9oSTPQoWAV0EKHEY3BAa5J
-         fy8YqXtd4lh8tP/cwyfuHVXEu2fWoYOW/vskxJgJd9hPfMtMK0jqL4NySGYle8GfOX91
-         l/LS2AiWtMgypPu2jeZB/v+oMrGfPvZ8aueHn3GQ2bGoHJqRrCyFnfK7P/QR90d8Tvfv
-         KBqiuqIihwFxF1njy86RVFhI1jXPUQlWRm7hmHBdQN3ESDKCo6M3CdgOeAT//wE5Knoi
-         8TWw==
+        bh=9q1E7NzrKrJ5QZEJfz50RfWy0GA0rHOKbA0v+tdNbCk=;
+        b=AOHjbeppezO+IB3o22PtkZEljCIWN/f0U085hTyGBxAj3qPKpiDn5BLbyYpNasceuT
+         iLhEASduwPMzmBipPm3hM8boqad5dzc0xGvLILa5TDx1xxXvDiZBBUW1Z99CAJw5r7az
+         fCZk2DNUxLxZzx+wvW7DVT9Yfz2dnrblVUnRA/RTH1jgKkRMU7O2/+w1GOegaicRQv4X
+         MUAThMAJB2ejYYb2OR0ZyzeQ1ibT+U+saTpK+4DH618dziDEQnXsdGsFkOBH4qm4DONw
+         uv4HD0wauiklnpmccpJY865hb1oLRDdUxKDZwwfjpEb8XQBt8NcTQFT86lr1X4km+NIK
+         2ucg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773826195; x=1774430995;
+        d=1e100.net; s=20251104; t=1773826200; x=1774431000;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=5FT3FCWE6d/BfnmV6V9NTfwQvybJ7Oe0ujhNN4DmJ54=;
-        b=FBYo1NbAsKDffkZGdXcr4Fd3S7cxV5SsvtRHC6web6AdUMJxv2KAYGX0BLdyh+6mja
-         EXBa9xfMhyc4kUaI306T7+FVFtNPynS2hKc6qNI/vYafYHu3lIUez0AiF5uP7y12BE1n
-         GTm7dq5Triguku55kS2g6kUwlbwdR7PrChptTf1NycF6dvGuz1AbozX5p+8O8oJebXeF
-         +/l61/qoKGmph/hdIjUoUzm+05ORZUCg6lOZt28Rbg8oxWVbZCD7+nTLgYA3wJg7ziLz
-         tUYkvZUGzPCz0G8DodELzfaGLYSJ6YxCL0D77YsE0jIJzluxbal+wx5LmCC87sf9MAnA
-         eSxg==
-X-Forwarded-Encrypted: i=1; AJvYcCXD5d5t1yC2fVDxGZEHKCz9kuPigkEXcmvGXrz2nz+qlVsuYlN9uh+03gtS7Fmoa+sMXfztHd37phU=@vger.kernel.org
-X-Gm-Message-State: AOJu0Ywtg5wLVIeWzC/PCDncuUJvKM8UUvML59UHS5JTaO40JBj8/K8V
-	h6VyrOjuccsCmSHF3EqDj5vEvwNMFGS2tmlEE0b0YRLtoVj3Q0zCx0Qu
-X-Gm-Gg: ATEYQzx05zx9yOrUjX+sUcijX7TOlMCVBcM+2YhLHB8h8pNnXmlXQE/0RrNfT7kJjNH
-	8HE/G8qC9n2/0See/4BSX0ZFXspgpqb7+ZbnaMWy/BBj6HLkb4atbK3EUS9BVokdVAYVJ8U12fR
-	IW2ZWY5XWghpa6tvRI2ilj3p6LgXBe1mv/24u/nA3SZLzieEVv2mvEO1wPM5HIRtCnZWdY63hUv
-	gA6IIrcOX5JNerumaLfQOgYvSd2TL6+e9qyBfTMLn+pBUMvWqfIJLR7dTWFU9kWToDiEBQPQPLQ
-	bS0Y8Yol+6VSGZFZfdti64wkBTbNwAFJXxGNigVJYeGJO8stHLw+UF7Eeg4BPlKNiOzXHhMAVOJ
-	nMbXt1gvQpj+4xd/LiaWaFr6iJ8WXrgVWt+Rb4qBtT4Q4O1T7z7X4QsB9Lh0SwkWrYNh6XIifJP
-	qYlbXwD6gRthUqAdzdQiu65dV8fG+4HYo4OGsOqchOGTah838bzZSUq3/VMNMi+Zza5CBY0kZ5
-X-Received: by 2002:a17:902:f708:b0:2ae:4445:f39a with SMTP id d9443c01a7336-2b06e2fbf94mr27636655ad.7.1773826195304;
-        Wed, 18 Mar 2026 02:29:55 -0700 (PDT)
+        bh=9q1E7NzrKrJ5QZEJfz50RfWy0GA0rHOKbA0v+tdNbCk=;
+        b=CqINmyVxCrrnGSL+v40d45720+EmvZdFpdqbAK8/J/yBJtJcuFjhbEq0l5Ogpc6CiL
+         Lo0G/bkJBu83mhfSvSRDhYIJmUMOx38xseuCqVmWaro+lV1DNk3o3y4K+jBUVuSOQ9fd
+         Y/sJ/Ys//hebnu/03IG63FbZ1S8J9sEmSJoUZBL6a73irXWgvg07Cvy85awUAdJsnVv6
+         AuxNyLahT/bvbz3hhn3/Z6z53FznGTY016/cfVlo1C+/tDMj6SuVn8YoABBXQ3vTDbtu
+         bdNAb7aut0192QY5KJnsOqAKrMi/07ageVcwMbBDLGkzodNOwkofqh7QRWRXimkZ8WFh
+         4n7Q==
+X-Forwarded-Encrypted: i=1; AJvYcCWOE4wv7UV2BYGv8gG9p6E+CTf6fJr4McxrzOZyIWTQf+lfp2ig4MuOIo/xvocUbE2XnhJSi6c9wz8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwIIGf0aa1zvuQVKTmWAqemKOsYyLMPALw+DIybIHL9Wu4o6WEN
+	V8I3nLwz4BFtdo2xstbafhUeV/+SbFhquhtAllADYFrGgDQNft71anN0
+X-Gm-Gg: ATEYQzwauSMFaLHix81a7WzLb9T6GNDibBlJr2Fv3iIkSLxq8hDm0iCZ46lWxUZbllr
+	RNdV/Sq+RTD8LOlEXXLkKq4bitEvNFVxRXTWKeob2Dq6CagMBqtwVJzteay1iZLPJSSiOvq/msy
+	p/BWH1zCO9Go5+K6bi+R4HPJxOyL3ClP6ysIy2bpitOSS4gBznQ0CZcSZ8+8elnv4ca72dL9gzY
+	WyZZn0MDkwBH4nOgcUpftCrqAbvxcWwbfLRHNmwG9SmaMu8CGJLhK5Zv5jlmUQN0MQX9FnV3DLM
+	4KxP6i2CmMMCbBA3iLrwSGdJiqER6xf2amV2sLBSc95eNzCXJ2+oSt/5j6ESUtDzD7QkkfAjGWd
+	mvdMsoRn2Riw81gc6ru/eQ05NlGuo9EYlHIKVvYAHzJk++2SRoSaSxb7DNa2UV7C1zX57nXBsus
+	esVsCr5jv5z+W1I/5iTaiwzH7PR94iNgkX7KDmMg6lTjfxc2/iwYY9o8B9VaJ8uxawtHc6vNYR
+X-Received: by 2002:a17:903:2445:b0:2ae:ceb0:d5eb with SMTP id d9443c01a7336-2b06e30fcadmr29723885ad.6.1773826200285;
+        Wed, 18 Mar 2026 02:30:00 -0700 (PDT)
 Received: from debian.ari ([152.58.182.62])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b06e616351sm21168315ad.67.2026.03.18.02.29.51
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b06e616351sm21168315ad.67.2026.03.18.02.29.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2026 02:29:54 -0700 (PDT)
+        Wed, 18 Mar 2026 02:29:59 -0700 (PDT)
 From: Archit Anant <architanant5@gmail.com>
 To: jic23@kernel.org,
 	lars@metafoo.de,
@@ -69,9 +69,9 @@ Cc: dlechner@baylibre.com,
 	linux-staging@lists.linux.dev,
 	linux-kernel@vger.kernel.org,
 	Archit Anant <architanant5@gmail.com>
-Subject: [PATCH v5 3/4] iio: adc: ad799x: cache regulator voltages during probe
-Date: Wed, 18 Mar 2026 14:57:14 +0530
-Message-Id: <20260318092715.42538-4-architanant5@gmail.com>
+Subject: [PATCH v5 4/4] iio: adc: ad799x: use devm_iio_device_register and drop remove()
+Date: Wed, 18 Mar 2026 14:57:15 +0530
+Message-Id: <20260318092715.42538-5-architanant5@gmail.com>
 X-Mailer: git-send-email 2.39.5
 In-Reply-To: <20260318092715.42538-1-architanant5@gmail.com>
 References: <20260318092715.42538-1-architanant5@gmail.com>
@@ -83,82 +83,158 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Reading the regulator voltage via regulator_get_voltage() can be a slow
-operation. Since the reference voltages for this ADC are not expected to
-change at runtime, it is inefficient to query the regulator API every
-time userspace reads the IIO_CHAN_INFO_SCALE attribute.
+Convert the driver to use the device-managed versions of
+iio_device_register(), iio_triggered_buffer_setup(), and mutex_init().
 
-Determine the active reference voltage (either VREF or VCC) during
-probe() and cache it in the state structure. This improves the
-performance of ad799x_read_raw() and removes the dependency on the
-regulator pointers during fast-path reads.
+Use devm_add_action_or_reset() to ensure that the VCC and VREF
+regulators are disabled safely and in the correct order during
+driver teardown or probe failure.
+
+Because all resources (buffer, regulators, IRQs, IIO device, mutex)
+are now fully managed by the devm core, the unwinding order is
+guaranteed to be correct (reverse order of allocation). We can now
+safely remove all manual error handling goto labels in ad799x_probe()
+and delete the ad799x_remove() function entirely.
+
+This eliminates boilerplate code and prevents potential resource leaks.
 
 Suggested-by: Jonathan Cameron <jic23@kernel.org>
 Suggested-by: David Lechner <dlechner@baylibre.com>
 Signed-off-by: Archit Anant <architanant5@gmail.com>
 ---
- drivers/iio/adc/ad799x.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
+ drivers/iio/adc/ad799x.c | 62 ++++++++++++++++------------------------
+ 1 file changed, 25 insertions(+), 37 deletions(-)
 
 diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 7504bcf627da..ae2ad4bd37cc 100644
+index ae2ad4bd37cc..3d745612bb80 100644
 --- a/drivers/iio/adc/ad799x.c
 +++ b/drivers/iio/adc/ad799x.c
-@@ -30,6 +30,7 @@
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/bitops.h>
-+#include <linux/units.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -135,6 +136,9 @@ struct ad799x_state {
- 	u16				config;
- 
- 	unsigned int			transfer_size;
-+
-+	int				vref_uV;
-+
- 	IIO_DECLARE_BUFFER_WITH_TS(__be16, rx_buf, AD799X_MAX_CHANNELS);
+@@ -774,6 +774,11 @@ static const struct ad799x_chip_info ad799x_chip_info_tbl[] = {
+ 	},
  };
  
-@@ -302,14 +306,7 @@ static int ad799x_read_raw(struct iio_dev *indio_dev,
- 			GENMASK(chan->scan_type.realbits - 1, 0);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		if (st->vref)
--			ret = regulator_get_voltage(st->vref);
--		else
--			ret = regulator_get_voltage(st->reg);
--
--		if (ret < 0)
--			return ret;
--		*val = ret / 1000;
-+		*val = st->vref_uV / MILLI;
- 		*val2 = chan->scan_type.realbits;
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	}
-@@ -828,9 +825,20 @@ static int ad799x_probe(struct i2c_client *client)
++static void ad799x_reg_disable(void *reg)
++{
++	regulator_disable(reg);
++}
++
+ static int ad799x_probe(struct i2c_client *client)
+ {
+ 	struct device *dev = &client->dev;
+@@ -808,13 +813,17 @@ static int ad799x_probe(struct i2c_client *client)
+ 	if (ret)
+ 		return ret;
+ 
++	ret = devm_add_action_or_reset(dev, ad799x_reg_disable, st->reg);
++	if (ret)
++		return ret;
++
+ 	/* check if an external reference is supplied */
+ 	if (chip_info->has_vref) {
+ 		st->vref = devm_regulator_get_optional(dev, "vref");
+ 		ret = PTR_ERR_OR_ZERO(st->vref);
+ 		if (ret) {
+ 			if (ret != -ENODEV)
+-				goto error_disable_reg;
++				return ret;
+ 			st->vref = NULL;
+ 			dev_info(dev, "Using VCC reference voltage\n");
+ 		}
+@@ -824,10 +833,15 @@ static int ad799x_probe(struct i2c_client *client)
+ 			extra_config |= AD7991_REF_SEL;
  			ret = regulator_enable(st->vref);
  			if (ret)
- 				goto error_disable_reg;
-+			ret = regulator_get_voltage(st->vref);
-+			if (ret < 0)
-+				goto error_disable_vref;
-+			st->vref_uV = ret;
+-				goto error_disable_reg;
++				return ret;
++
++			ret = devm_add_action_or_reset(dev, ad799x_reg_disable, st->vref);
++			if (ret)
++				return ret;
++
+ 			ret = regulator_get_voltage(st->vref);
+ 			if (ret < 0)
+-				goto error_disable_vref;
++				return ret;
+ 			st->vref_uV = ret;
  		}
  	}
+@@ -835,7 +849,7 @@ static int ad799x_probe(struct i2c_client *client)
+ 	if (!st->vref) {
+ 		ret = regulator_get_voltage(st->reg);
+ 		if (ret < 0)
+-			goto error_disable_reg;
++			return ret;
+ 		st->vref_uV = ret;
+ 	}
  
-+	if (!st->vref) {
-+		ret = regulator_get_voltage(st->reg);
-+		if (ret < 0)
-+			goto error_disable_reg;
-+		st->vref_uV = ret;
-+	}
-+
- 	st->client = client;
+@@ -850,12 +864,12 @@ static int ad799x_probe(struct i2c_client *client)
  
- 	indio_dev->name = id->name;
+ 	ret = ad799x_update_config(st, st->chip_config->default_config | extra_config);
+ 	if (ret)
+-		goto error_disable_vref;
++		return ret;
+ 
+-	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+ 		&ad799x_trigger_handler, NULL);
+ 	if (ret)
+-		goto error_disable_vref;
++		return ret;
+ 
+ 	if (client->irq > 0) {
+ 		ret = devm_request_threaded_irq(dev,
+@@ -867,39 +881,14 @@ static int ad799x_probe(struct i2c_client *client)
+ 						client->name,
+ 						indio_dev);
+ 		if (ret)
+-			goto error_cleanup_ring;
++			return ret;
+ 	}
+ 
+-	mutex_init(&st->lock);
+-
+-	ret = iio_device_register(indio_dev);
++	ret = devm_mutex_init(dev, &st->lock);
+ 	if (ret)
+-		goto error_cleanup_ring;
+-
+-	return 0;
+-
+-error_cleanup_ring:
+-	iio_triggered_buffer_cleanup(indio_dev);
+-error_disable_vref:
+-	if (st->vref)
+-		regulator_disable(st->vref);
+-error_disable_reg:
+-	regulator_disable(st->reg);
+-
+-	return ret;
+-}
+-
+-static void ad799x_remove(struct i2c_client *client)
+-{
+-	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+-	struct ad799x_state *st = iio_priv(indio_dev);
+-
+-	iio_device_unregister(indio_dev);
++		return ret;
+ 
+-	iio_triggered_buffer_cleanup(indio_dev);
+-	if (st->vref)
+-		regulator_disable(st->vref);
+-	regulator_disable(st->reg);
++	return devm_iio_device_register(dev, indio_dev);
+ }
+ 
+ static int ad799x_suspend(struct device *dev)
+@@ -969,7 +958,6 @@ static struct i2c_driver ad799x_driver = {
+ 		.pm = pm_sleep_ptr(&ad799x_pm_ops),
+ 	},
+ 	.probe = ad799x_probe,
+-	.remove = ad799x_remove,
+ 	.id_table = ad799x_id,
+ };
+ module_i2c_driver(ad799x_driver);
 -- 
 2.39.5
 
