@@ -1,133 +1,98 @@
-Received: from mail-pl1-f175.google.com (mail-pl1-f175.google.com [209.85.214.175])
+Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 418DC3F65FC
-	for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 23:26:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 24CFB15E8B
+	for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2026 01:28:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.171
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773789977; cv=none; b=t1UWEDIs2/opLpCFdt32VVyAw765bsRnXgN8lVAgBxbIw1s+LTIkJ+vVsejKU9NDoSoWIJodmj0I4WJhTM5/JehFJVzGn4AIhmshGp4osLC9amn6+Kg97tONWaSS0VwZwlo0DRbf5AOHl9euOz6SA/gLh5h4/VRs49DWJvXyrpA=
+	t=1773797303; cv=none; b=Vw5FedNYpzSML0zzGHvzmfacrJcLg5VJ4XEGKGbuWCkYIjHt23UQ1PW//syMcHOSqUfagGtltXkw296zWrs3+P8jb984T78/GR413z9q9gQstepW0zNLjnP7aXSoNvDPNAgemMondFkngD5PIeE/m7pvGM77b8+8UMJ+NaaFYu8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773789977; c=relaxed/simple;
-	bh=4dM1evO6mevasb9VEJZzj39UyIUZj0TgsTs6USorWfo=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UFea5X8X5T/+dQo/slDbefUXPMWiWTxMf3OT2+gk3W9eG1o2UUG2nI9pCToB5y+07eALJ6RJRJz41omVM0ZYeSd00VsztJGFe5F6N+XgXPpgHk4iKPxvdp6oO3IGlD2ESSHEd5ncsGyjfDEXWgQejGowoGjrB9nrmRjwQhCEs58=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=Y8pC8+TE; arc=none smtp.client-ip=209.85.214.175
+	s=arc-20240116; t=1773797303; c=relaxed/simple;
+	bh=D/vFvlz7mnswjWr7ccVTBYAgPfv4L/kFCLA3fQaPfK8=;
+	h=Mime-Version:Content-Type:Date:Message-Id:Cc:Subject:From:To:
+	 References:In-Reply-To; b=g0eH3L+YWq9UTyhVFa35gnipXG69dKngC0q8uRjlVm19Eso2ZcyQtdW+W/305Os+OHGREsNGwuAmHGETVpwn5VzYzFe5VS3sjcn0sfjyvuR0ZAWm88K4P+uesr6Kqv/Fh0hB3nmYpacmymKFdMEG4Hn5fnWLlpa+Wngi1Ke+IDc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=c/Qaf/EU; arc=none smtp.client-ip=209.85.128.171
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y8pC8+TE"
-Received: by mail-pl1-f175.google.com with SMTP id d9443c01a7336-2addb31945aso48624655ad.1
-        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 16:26:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c/Qaf/EU"
+Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-79827d28fc4so1993677b3.1
+        for <linux-iio@vger.kernel.org>; Tue, 17 Mar 2026 18:28:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773789974; x=1774394774; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=HEDOBzod6EyW+d389//yTAK4IQGF1tCpnJcK+pS+3Aw=;
-        b=Y8pC8+TEO9NMEMshqkLaHpFQAzOrQvqx5YQYfwL9gTdLH8HgYeHKpNvKqWAbvH55CP
-         ykENLtC86cy73zYC/th9ADcLn5Px+rbOR3yAPkmFCtARX8plUH3+R3xZSR+5bRWLcJac
-         q8xc5q0ohcW+vocRKrWrPfUqvNMnNh2+xSQ1uxOTPnqE8geko6d4RyyyfFWcJUZ6WS9i
-         CVNZD5ZkI6pwb8JA8KoN1nYDnQ69HMuS6X1vO+7+9gc/0LIgtzN5FsBQxFlufEm/ZY1i
-         gmH9MM6VdIsxGKFdKescAdcVJ5pl1vFic1O8w8H1luSYjaRxbunkWkyj+pYw7X7Vroyr
-         MMpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773789974; x=1774394774;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+        d=gmail.com; s=20230601; t=1773797301; x=1774402101; darn=vger.kernel.org;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:from:to:cc:subject:date
          :message-id:reply-to;
-        bh=HEDOBzod6EyW+d389//yTAK4IQGF1tCpnJcK+pS+3Aw=;
-        b=bruCL+0klJcjtq2W2t+3LcEWOfIufIUIxu1ebT/8nCStf6ekzMZpfxcegTsYG/yPtl
-         NzNer3I/MSm2nZxeDCe51ZvwIsCkXMN42k8h1zSJIr7S6Z68zxhnYluO+R32TU31JxUB
-         wrhOyZ244kOsJbhmpEN04/2zty0oI4x0Ej+OnjIakxLumMIxBIA5JRiN2JwAhuCqs2tI
-         9RotM6ISiqghvDtPX8wYkCaQm48WWe0UGYPxWPhEhlNf6THgdKQYawNiVMDRNqcr4v3L
-         nuciQ5gtwTiXAHgjVMD/hxWgCuR/c1eEBqya7rI8ws6V4QlM1YxaKlFnh4XOow6E9JZB
-         9eBA==
-X-Gm-Message-State: AOJu0YzIRppLry3Jthc5nC1Y8HLddiVYtEH5qPRMBrmOY+LC5MO60CXU
-	eXC2sey0rDkl8TGVCYrrHZUsB4uO2gjYJZ3bQIfccDn2wuUlNY4YnHlJJQ8BOg==
-X-Gm-Gg: ATEYQzxCtk6QkLea/9I1JKL5JUjHcLueeuHbB8Rh0eJ3jnME07oVV/d7MeJEw4A8Abb
-	VjJGskAbKohRsCuLLQmuQUEPV/xxsiOc9YEFhr5m7eTSm/9jHBFos7hofnD2rU/n5ngKxCYTisB
-	7YMCSpKflrbX72Zw7VfjU9aUsjMT/4QSf288Lt0KZp4C3DcjSGMAwkeTOTycz1dTya8hA6FKJ2J
-	2yitnzpG0f5HUTRtoKuVtg2zygTtX18W+i+PYkuAfHHZE/rvqw2PtrIQIXMYprBeRpavmUs9huI
-	M9NawL2NaMktIn9VmuTpcFUp/M8TO0dnVEowApB2BJbEKqWTP/P5e0SEHRyVFPWbg+Z4fYLlPS9
-	QMXuVLnKDWkWpcxG+g7Yu1Xyb8dKUhPJHbK3GiEUIGoQUSNCfmVO1sfjE26IXBBVbLw1d3rrldV
-	5pG1NcB2NhpP2vIxTtxoEnpgM=
-X-Received: by 2002:a17:903:1a83:b0:2b0:58a8:5f9b with SMTP id d9443c01a7336-2b06e43d446mr13526465ad.49.1773789973936;
-        Tue, 17 Mar 2026 16:26:13 -0700 (PDT)
-Received: from arch ([2409:40c2:5004:9b1f:c2b:f32d:d22e:ca20])
-        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b06e41a29dsm6582635ad.13.2026.03.17.16.26.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 17 Mar 2026 16:26:13 -0700 (PDT)
-From: Bhargav Joshi <rougueprince47@gmail.com>
-To: linux-iio@vger.kernel.org,
-	lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	rougueprince47@gmail.com
-Subject: [PATCH] iio: frequency: ad9523: check return value of ad9523_io_update()
-Date: Wed, 18 Mar 2026 04:55:52 +0530
-Message-ID: <20260317232552.28485-1-rougueprince47@gmail.com>
-X-Mailer: git-send-email 2.53.0
+        bh=D/vFvlz7mnswjWr7ccVTBYAgPfv4L/kFCLA3fQaPfK8=;
+        b=c/Qaf/EUGqOqQqeuPAv1PylQw7SsTvfvzPTkT8hiBACmWnM719guAANatTY52ecx88
+         RdWNzzcHraW8OWRBFQG0ppzBPb0lN7O/9tjhGXYfUzeb9SttuR/xw1w+bh7zN7f4H1dV
+         Sp86Vv62nlAal1UUQVgIdFrV7VhC9ClBn2zAY4F8jJroVWGpq+dFCjsIbx4tICiY/oFC
+         b18MMqBNej6BGU25zZ+4FlPQnAdTTYJT83gZVCVEmwiWAKS8xPOVz/s7RhQmQoyUhwEf
+         9owShN4qTfh2+6AqpiX9mQHXtUBwj9Ks4ZRvg44203aZ9x2GzHKNgnScuTD6AAgM4efn
+         MCVw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773797301; x=1774402101;
+        h=in-reply-to:references:to:from:subject:cc:message-id:date
+         :content-transfer-encoding:mime-version:x-gm-gg:x-gm-message-state
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=D/vFvlz7mnswjWr7ccVTBYAgPfv4L/kFCLA3fQaPfK8=;
+        b=MK9ryz5WpSMZS7pkK6fNNG10H6MvWiNPoExLVXeGp9FvXfUFygTGVYMyvBlxakyqOl
+         bJucZBY9srr0tBHS348+yOeIz1DuzOrxT4rlQ3CNaV7lHK7oQn3LROg6tF37O4PCPLVz
+         KSs2lt9bgHBPKJwDauFCXQx0PlqfyAnbH7WlwF3260Ddt9bhuupWntRPuU9ykZaB0Zji
+         HaS5JeMlLa0rxAJRWti0/jjM9IxkJWy6RbuuUYKkol/k+R1342stRdTKaEDehtpkqSaG
+         20+z8FnoHJsnh/xQQxV7xFCmQ9lesEnEjCA4EzCD5KN93SIsihYzZk3O0k0tI+1XT8tt
+         KWQg==
+X-Forwarded-Encrypted: i=1; AJvYcCWwQw+FqLTp4PlTzwYjN4/60UWpqdFveI0BiK9L4PSaVuINxoGcE+DyTnkPtykw7p2ZNsJvQK6L3eU=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yzbi0GfKjn0Px8NKCFg7pAz8+Nq9f5nisk/b5xxlGOfhEF1GN2p
+	Q/pDX0wdERuriNesCq1ulePPWc+l7JeUgFvdkbHjI/bMZQKeSdlbeOsn
+X-Gm-Gg: ATEYQzyIszTuf67vm5QlOLkge3Tvbt8KQ3V8r3AXPBGJ/ON/XBJL3NPLV+nlYFWl4eT
+	uzyWHEyGs0iarqI2HRAUA9hgeDrTWiXxyUmQYAlYmLqmQ3LR+VvD4eLYJTijN8w3s/lw4aNNSjO
+	9oPtXlC3HmOScckXPbdyYw8xlv8vMh3t3jZ7imbaRpzyQMtrXoa92JxR3Kg1w2UpRyiJotvR8OT
+	DHkE7XHn6YkrXzH62U/5WnY+q3qZCl/nLYvDmYwu2yOiICsHVLArQ0uVAATJy2SRc2qlIvSs1uZ
+	Nbg882dDBvrO/93eAyYWZukhjYmyk7wCdoSF8cCyjx+MC//KZfgw1zbx+yO3GDfrHMS5QgBPwjv
+	eQU33zGqINh+cau3FGqp6WQMMUysfRj/cpuxVVPllLHgR00US90ynRMK5KLIzZ0oqmmP2U+jkey
+	N8HYe9K0rWT6X19gS/knbSARaW5+52+XVoeWsFnCSGLmsWBVxUeXsyMMwpuqqxyaLWXP9/xviG0
+	QR8Ha3c1CGTJyWngpKh4VjveMrCv+SZWh+Guk4Qcy0=
+X-Received: by 2002:a05:690c:6b82:b0:798:7e05:ee9 with SMTP id 00721157ae682-79a718c4a8fmr16913527b3.19.1773797301101;
+        Tue, 17 Mar 2026 18:28:21 -0700 (PDT)
+Received: from localhost ([2601:7c0:c37e:2360::f769])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-79a713d1d29sm8226747b3.14.2026.03.17.18.28.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 17 Mar 2026 18:28:20 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Mime-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Tue, 17 Mar 2026 20:28:19 -0500
+Message-Id: <DH5INY5N2FHG.28BPSODTP2T7Q@gmail.com>
+Cc: "Andy Shevchenko" <andy.shevchenko@gmail.com>, <andy@kernel.org>,
+ <linux-iio@vger.kernel.org>
+Subject: Re: [RFC] GSoC 2026: Transitioning IIO to guard() and
+ scoped_guard()
+From: "Ethan Tidmore" <ethantidmore06@gmail.com>
+To: "Ethan Tidmore" <ethantidmore06@gmail.com>, "Jonathan Cameron"
+ <jic23@kernel.org>
+X-Mailer: aerc 0.21.0-0-g5549850facc2
+References: <20260311194624.1521-1-ethantidmore06@gmail.com>
+ <CAHp75VeZb0pSiAkHo9QUeS+2L-qP_83-dKKRSp7-1VfZrtr1bw@mail.gmail.com>
+ <20260314110758.2fc20704@jic23-huawei>
+ <DH2PF86XN60W.2MVDUHLKPR7LH@gmail.com>
+ <20260315184140.6f34f76a@jic23-huawei>
+ <DH3T1X5IS1W1.350OY1AGJ315O@gmail.com>
+In-Reply-To: <DH3T1X5IS1W1.350OY1AGJ315O@gmail.com>
 
-Several functions in ad9523 driver calls ad9523_io_update() to apply
-register changes but fail to check its return value.
+On Sun Mar 15, 2026 at 8:11 PM CDT, Ethan Tidmore wrote:
+> On Sun Mar 15, 2026 at 1:41 PM CDT, Jonathan Cameron wrote:
+>> On Sat, 14 Mar 2026 13:08:04 -0500
+>> "Ethan Tidmore" <ethantidmore06@gmail.com> wrote:
 
-If the function fails, driver silently ignore the error and returns
-success. This results in user-space assuming register changes even if
-they are failed.
+Just found out that the IIO Group isn't doing GSoC this year. Will look
+into Device Tree Bindings instead.
 
-Fix this by properly catching and returning the error code from
-ad9523_io_update() in ad9523_sync(), ad9523_write_raw(), and
-ad9523_reg_access()
+Thanks,
 
-Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com>
----
- drivers/iio/frequency/ad9523.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
-index 63c485e9e44c..66bba37fb199 100644
---- a/drivers/iio/frequency/ad9523.c
-+++ b/drivers/iio/frequency/ad9523.c
-@@ -495,7 +495,10 @@ static int ad9523_sync(struct iio_dev *indio_dev)
- 	if (ret < 0)
- 		return ret;
- 
--	ad9523_io_update(indio_dev);
-+	ret = ad9523_io_update(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
- 	tmp &= ~AD9523_STATUS_SIGNALS_SYNC_MAN_CTRL;
- 
- 	ret = ad9523_write(indio_dev, AD9523_STATUS_SIGNALS, tmp);
-@@ -716,7 +719,7 @@ static int ad9523_write_raw(struct iio_dev *indio_dev,
- 	if (ret < 0)
- 		goto out;
- 
--	ad9523_io_update(indio_dev);
-+	ret = ad9523_io_update(indio_dev);
- out:
- 	mutex_unlock(&st->lock);
- 	return ret;
-@@ -732,7 +735,9 @@ static int ad9523_reg_access(struct iio_dev *indio_dev,
- 	mutex_lock(&st->lock);
- 	if (readval == NULL) {
- 		ret = ad9523_write(indio_dev, reg | AD9523_R1B, writeval);
--		ad9523_io_update(indio_dev);
-+		if (ret < 0)
-+			goto out_unlock;
-+		ret = ad9523_io_update(indio_dev);
- 	} else {
- 		ret = ad9523_read(indio_dev, reg | AD9523_R1B);
- 		if (ret < 0)
--- 
-2.53.0
-
+ET
