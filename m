@@ -1,37 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B779137B01C;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D297739A070;
 	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773856571; cv=none; b=u7UlZPh8Iiy19lddMSTJOI5ZqBQxZhxFvKDaNXa7BUpr4KVpN7p/VVjy+CrfeQ6MDkaueOSkx6FvrHCJg19zAjCZIBLoOGxg6rimwVCClHFTgYOgDzBAb0GIMd57Vi6w8/RHxua7zDJEXyvoeqsuQjO4PV9pscUlgAQvaHYoBcA=
+	t=1773856571; cv=none; b=GPd1YMASZ3pA7vSsMQ/I1x3rsn6bu922RQjsjRx//N0C1NdQw3aZBx8v0VhEEn8xxgX8CzcLjBeg3bj1jYZ6uLc9b9xYl5yOAxvoCAgXNLUClqI8vY+OPRk5Gi+7BjRzPzLa0PnE+4Bl6xJhw5OaeEZsMiKgaaHJNldZwaPtLhM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1773856571; c=relaxed/simple;
-	bh=Uvo457Wh7y4+UHfmA1m+9aW9HdSvK6o1Rnp5RB93Ae8=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=ZfSIf7QxxAKnqQ2EDWHMGrpOafl3rCJqakK/FaU6R7DFR94++fFnYNHyilujLWuB2OtGkGuxJnVGHuZrZtqxQbcn4zy7rqxm0QmXglCA5ZBYzEYYQ+B2ml3KQ0aUOJ3Vn5a5/mG21/rC74DjjrT1UvC2XeIl/fQPsh5NwnR0EC0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pwj5M45d; arc=none smtp.client-ip=10.30.226.201
+	bh=/KzS/M4ABuIdWGUdpOmtJQvj5/5kh7xOnWVLXVz6tQ0=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=FxvJClcN0XTTDZ8OE0IyRtWg+pMIR7nYwBKAACfu5zonD1C48FdukY+mP0I5hfHPomhnMaDCk9s2s7t1/hhk8bq3uSgFkj9KniC9MIN23vEvFYPdH8vkgKzfuK1R+4nfOSCbtDo9/Zu6AZEfAV6e9ny9SAvr8v2kVcWb+7jL2l8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=nYZKhEfE; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pwj5M45d"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 14957C2BC87;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="nYZKhEfE"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4AC2EC2BCAF;
 	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1773856571;
-	bh=Uvo457Wh7y4+UHfmA1m+9aW9HdSvK6o1Rnp5RB93Ae8=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=pwj5M45dSRaeyr0JBBBEOYVnGw+cmWRmTMnkfbNCFzh6rxklvj7GY+/koJGN+7DhT
-	 xfLvnZDSs//dcA7LWhXM8LendIIEIxDZEj9WzbaKnGDOp3tut1sI5IU8Q0LU9p1nU4
-	 V6njkWd77SVjz8VP+fi1QBRFA7yesAs3bi3Dttt/0kbnPoZs8DdSFTHKRCyksaeaos
-	 iYWcagcKkdOpSGPrQOO22lyMERpLc6hS7XjJoIKDcurQoYb/LNuBMoIfyclDHQSPTR
-	 3UO9q7lI7ddzdv71c/bvLLKUrCl/nGDTPYXut0seI4CCkLIOI2lj5/ooMVwrtf4cz5
-	 wqlVA1Ry09MvQ==
+	bh=/KzS/M4ABuIdWGUdpOmtJQvj5/5kh7xOnWVLXVz6tQ0=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=nYZKhEfEXdOWRDBneUjX87j+V/T73GgDvSHt9EoGDoVgphMggcDGmF0U5vGDRVYrM
+	 5HiUtPBFmigbyxQdMe7YPTdu5vqwl5R+gpTt8O18Z7eylMcjhHqHvaPPPVVrbFyqlJ
+	 i58+aytUlptm2a7fcwCuAHvNUPRMHsFgTFW7I58JFEleHVc1YB0YwIrQaE57tzhI8D
+	 vBZKN1El7ZeMwgGp40vga2uGFcRGJYd9ZTJ0oq6e39TymGedDkPACDtqZ8v8my1VAO
+	 zooPSqK82S71sRryG04/0QWVBr1dr3cJYuo7ngOQZjOj/4xBivaYGul1kEf3soaXpZ
+	 uQHzaikMbkGZg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DD510775FE;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7EC1077602;
 	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH RFC v2 0/9] AD9910 Direct Digital Synthesizer
-Date: Wed, 18 Mar 2026 17:56:00 +0000
-Message-Id: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
+Date: Wed, 18 Mar 2026 17:56:03 +0000
+Subject: [PATCH RFC v2 3/9] iio: frequency: ad9910: add simple parallel
+ port mode support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,11 +41,9 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIADDnumkC/22NwQrCMBBEf6Xs2Uh2G0vrSRD8AK/Sw7ZJ2wVtJ
- JGglP67oV49vhnmzQLRBXERjsUCwSWJ4ucMtCugn3genRKbGUhTpQlrxbZpUCsRr2yQ5IJqutI
- Smp4OOEDePYMb5L05b3C9nKHN4STx5cNn+0m4VT8l6T/KhEqrsqPKMJuaUZ945rsf971/QLuu6
- xcCgM4guAAAAA==
-X-Change-ID: 20260218-ad9910-iio-driver-9b3d214c251f
+Message-Id: <20260318-ad9910-iio-driver-v2-3-e79f93becf11@analog.com>
+References: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
+In-Reply-To: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -56,11 +55,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1773856569; l=8760;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1773856569; l=8543;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=Uvo457Wh7y4+UHfmA1m+9aW9HdSvK6o1Rnp5RB93Ae8=;
- b=SR/nFpnm9hGI+jcZfDTxLu2NZd/po8+ZMuiaaF9nhKfGlUgb6/q7MD+GfocPrYrVUKSe1Ki9w
- RDaCqtkcuCSAKtk0MKyTX+jvsIQwBfXvRiDd9iIVlyC2Fj6mcqQGb8l
+ bh=PlCtBUP0RZJkGXyIdwIVJVBbtVxiO7gUEORlBP1VJcM=;
+ b=WPq7P/A++Yx7bK3PCfCWYJWTK8QPPCG7P2gHc9v416Vk2IvG4sfvWLTkPpCa0uGHfGUpc5ck+
+ si6K7wxOVyaDtv+w9J1p8wTf7T5a0HV7abVWnQfeQRlC19MGx1TzSto
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,184 +67,285 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-This patch series adds support for the Analog Devices AD9910 DDS.
-This is a RFC so that we can agree/discuss on the design that follows:
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-This is a follow-up of the V1 discussion. We are reaching into this
-channel composition agreement where physical channels may have
-sub-channels. That adds the flexibility necessary for this design.
-Nothing has been changed to iio-core yet, so I've just addressed
-comments, aiming to keep the discussion going forward.
-
-The AD9910 DDS core can be driven through several independent mechanisms:
-single tone profiles, a digital ramp generator, an internal RAM playback
-engine, a parallel data port, and output shift keying. Each of these
-represents a distinct signal path into the DDS accumulator, so the driver
-models them as separate IIO output channels (all IIO_ALTVOLTAGE type).
-This per-channel separation allows userspace to configure each mode
-independently through its own set of sysfs attributes, and to
-enable/disable modes individually via IIO_CHAN_INFO_ENABLE, relying on
-the hardware's own mode selection architecture.
-
-The AD9910 register map is not suited for the regmap framework: register
-widths vary across the map (16, 32, and 64 bits). The driver instead
-implements direct SPI access helpers with a software register cache, using
-type-specific read/write/update functions (ad9910_reg{16,32,64}_{read,
-write,update}) that handle endianness conversion and cache coherency.
-
-Registers are cached for several reasons. The control/function registers
-(CFR1, CFR2) are frequently queried to determine the current operating
-mode (e.g., checking RAM_ENABLE before every profile register access),
-and caching avoids repeated SPI read transactions for what are
-essentially state checks. The cache also enables efficient
-read-modify-write updates on multi-byte registers: the update functions
-merge new field values with the cached register content without issuing
-a SPI read, and skip the write entirely when the value is unchanged.
-Finally, the profile registers serve dual purposes depending on whether
-RAM mode is active -- they hold single tone parameters (FTW, POW, ASF)
-in normal operation but are repurposed for RAM playback configuration
-(start/end address, step rate, operating mode) when RAM is enabled. A
-shadow register array (reg_profile[]) preserves the inactive mode's
-settings across transitions, so no state is lost when switching between
-single tone and RAM operation.
-
-RAM data is loaded through firmware upload infrastructure. Userspace
-writes the waveform data as a raw binary buffer (up to 4096 bytes for
-the full 1024x32-bit RAM), and the driver reverses the byte array and
-transfers it to the device in a single SPI transaction. Per-profile
-start/end addresses and playback parameters (operating mode, step rate,
-no-dwell control) are configured through the RAM channel's ext_info
-attributes.
-
-Streaming data to the DDS core through the parallel data port at the
-PD_CLK rate is not covered by this series. That functionality would
-be added in a separate patch series, building on top of the IIO backend
-infrastructure to provide a proper buffered data path.
-
-As I am pushing implementation, as lot has been done already without much
-supervision or agreement, still I would be interested on hearing about
-the design choices discussed above. Here is the output for the iio_info
-at this point:
-
-iio:device3: ad9910
-  8 channels found:
-      altvoltage120:  (output)
-      7 channel-specific attributes found:
-          attr  0: en value: 0
-          attr  1: frequency_offset value: 0.000000
-          attr  2: frequency_scale value: 1
-          attr  3: label value: parallel_port
-          attr  4: phase_offset value: 0.000000
-          attr  5: sampling_frequency value: 250000000.000000
-          attr  6: scale_offset value: 0.000000
-      altvoltage140:  (output)
-      11 channel-specific attributes found:
-          attr  0: address_end value: 1023
-          attr  1: address_start value: 0
-          attr  2: destination value: frequency
-          attr  3: destination_available value: frequency phase amplitude polar
-          attr  4: en value: 0
-          attr  5: frequency value: 0.000000
-          attr  6: label value: ram_control
-          attr  7: operating_mode value: direct_switch
-          attr  8: operating_mode_available value: direct_switch ramp_up
-		           bidirectional bidirectional_continuous ramp_up_continuous
-				   sequenced sequenced_continuous
-          attr  9: phase value: 0.000000
-          attr 10: sampling_frequency value: 250000000.000000
-      altvoltage130:  (output)
-      11 channel-specific attributes found:
-          attr  0: destination value: frequency
-          attr  1: destination_available value: frequency phase amplitude
-          attr  2: en value: 0
-          attr  3: label value: digital_ramp_generator
-          attr  4: operating_mode value: bidirectional_continuous
-          attr  5: operating_mode_available value: bidirectional ramp_down
-		           ramp_up bidirectional_continuous
-      altvoltage110:  (output)
-      4 channel-specific attributes found:
-          attr  0: frequency value: 0.000000
-          attr  1: label value: single_tone
-          attr  2: phase value: 0.000000
-          attr  3: scale value: 0.000000
-      altvoltage132:  (output)
-      8 channel-specific attributes found:
-          attr  0: frequency value: 0.000000
-          attr  1: frequency_step value: 0.000000
-          attr  2: label value: digital_ramp_down
-          attr  3: phase value: 0.000000000
-          attr  4: phase_step value: 0.000000000
-          attr  5: sampling_frequency value: 250000000.000000
-          attr  6: scale value: 0.000000000
-          attr  7: scale_step value: 0.000000000
-      altvoltage131:  (output)
-      8 channel-specific attributes found:
-          attr  0: frequency value: 0.000000
-          attr  1: frequency_step value: 0.000000
-          attr  2: label value: digital_ramp_up
-          attr  3: phase value: 0.000000000
-          attr  4: phase_step value: 0.000000000
-          attr  5: sampling_frequency value: 250000000.000000
-          attr  6: scale value: 0.000000000
-          attr  7: scale_step value: 0.000000000
-      altvoltage100:  (output)
-      4 channel-specific attributes found:
-          attr  0: label value: phy
-          attr  1: powerdown value: 0
-          attr  2: profile value: 0
-          attr  3: sampling_frequency value: 1000000000
-      altvoltage150:  (output)
-      6 channel-specific attributes found:
-          attr  0: en value: 0
-          attr  1: label value: output_shift_keying
-          attr  2: pinctrl_en value: 0
-          attr  3: sampling_frequency value: 250000000.000000
-          attr  4: scale value: 0.000000
-          attr  5: scale_step value: 0.000000
-  4 debug attributes found:
-          debug attr  1: ram_data ERROR: Input/output error (5)
-          debug attr  2: ram_loading value: 0
-          debug attr  3: direct_reg_access value: 0x2
-
-Kind regards,
-
-Rodrigo Alencar
+Add parallel port channel with frequency scale, frequency offset, phase
+offset, and amplitude offset extended attributes for configuring the
+parallel data path.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Changes in v2:
-- Device-tree bindings changes.
-- RAM loading to use firmware update interface.
-- Rearrange of channels into a hierarchy.
-- Link to v1: https://lore.kernel.org/r/20260220-ad9910-iio-driver-v1-0-3b264aa48a10@analog.com
+ drivers/iio/frequency/ad9910.c | 173 ++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 170 insertions(+), 3 deletions(-)
 
----
-Rodrigo Alencar (9):
-      dt-bindings: iio: frequency: add ad9910
-      iio: frequency: ad9910: initial driver implementation
-      iio: frequency: ad9910: add simple parallel port mode support
-      iio: frequency: ad9910: add digital ramp generator support
-      iio: frequency: ad9910: add RAM mode support
-      iio: frequency: ad9910: add output shift keying support
-      iio: frequency: ad9910: add channel labels
-      Documentation: ABI: testing: add docs for ad9910 sysfs entries
-      docs: iio: add documentation for ad9910 driver
+diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
+index a362d96cf651..726fac0b9fc1 100644
+--- a/drivers/iio/frequency/ad9910.c
++++ b/drivers/iio/frequency/ad9910.c
+@@ -114,9 +114,13 @@
+ /* Auxiliary DAC Control Register Bits */
+ #define AD9910_AUX_DAC_FSC_MSK			GENMASK(7, 0)
+ 
++/* POW Register Bits */
++#define AD9910_POW_PP_LSB_MSK			GENMASK(7, 0)
++
+ /* ASF Register Bits */
+ #define AD9910_ASF_RAMP_RATE_MSK		GENMASK(31, 16)
+ #define AD9910_ASF_SCALE_FACTOR_MSK		GENMASK(15, 2)
++#define AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK	GENMASK(7, 2)
+ #define AD9910_ASF_STEP_SIZE_MSK		GENMASK(1, 0)
+ 
+ /* Multichip Sync Register Bits */
+@@ -140,7 +144,9 @@
+ #define AD9910_MAX_PHASE_MICRORAD	(AD9910_PI_NANORAD / 500)
+ 
+ #define AD9910_ASF_MAX			(BIT(14) - 1)
++#define AD9910_ASF_PP_LSB_MAX		(BIT(6) - 1)
+ #define AD9910_POW_MAX			(BIT(16) - 1)
++#define AD9910_POW_PP_LSB_MAX		(BIT(8) - 1)
+ #define AD9910_NUM_PROFILES		8
+ 
+ /* PLL constants */
+@@ -184,10 +190,12 @@
+  *
+  * @AD9910_CHANNEL_PHY: Physical output channel
+  * @AD9910_CHANNEL_SINGLE_TONE: Single tone output channel
++ * @AD9910_CHANNEL_PARALLEL_PORT: Parallel port output channel
+  */
+ enum ad9910_channel {
+ 	AD9910_CHANNEL_PHY = 100,
+ 	AD9910_CHANNEL_SINGLE_TONE = 110,
++	AD9910_CHANNEL_PARALLEL_PORT = 120,
+ };
+ 
+ enum {
+@@ -204,6 +212,10 @@ enum {
+ enum {
+ 	AD9910_PROFILE,
+ 	AD9910_POWERDOWN,
++	AD9910_PP_FREQ_SCALE,
++	AD9910_PP_FREQ_OFFSET,
++	AD9910_PP_PHASE_OFFSET,
++	AD9910_PP_AMP_OFFSET,
+ };
+ 
+ struct ad9910_data {
+@@ -468,6 +480,10 @@ static ssize_t ad9910_ext_info_read(struct iio_dev *indio_dev,
+ 		val = !!FIELD_GET(AD9910_CFR1_SOFT_POWER_DOWN_MSK,
+ 				  st->reg[AD9910_REG_CFR1].val32);
+ 		break;
++	case AD9910_PP_FREQ_SCALE:
++		val = BIT(FIELD_GET(AD9910_CFR2_FM_GAIN_MSK,
++				    st->reg[AD9910_REG_CFR2].val32));
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -503,6 +519,15 @@ static ssize_t ad9910_ext_info_write(struct iio_dev *indio_dev,
+ 					  AD9910_CFR1_SOFT_POWER_DOWN_MSK,
+ 					  val32, true);
+ 		break;
++	case AD9910_PP_FREQ_SCALE:
++		if (val32 > BIT(15) || !is_power_of_2(val32))
++			return -EINVAL;
++
++		val32 = FIELD_PREP(AD9910_CFR2_FM_GAIN_MSK, ilog2(val32));
++		ret = ad9910_reg32_update(st, AD9910_REG_CFR2,
++					  AD9910_CFR2_FM_GAIN_MSK,
++					  val32, true);
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -510,20 +535,132 @@ static ssize_t ad9910_ext_info_write(struct iio_dev *indio_dev,
+ 	return ret ?: len;
+ }
+ 
+-#define AD9910_EXT_INFO(_name, _ident, _shared) { \
++static ssize_t ad9910_pp_attrs_read(struct iio_dev *indio_dev,
++				    uintptr_t private,
++				    const struct iio_chan_spec *chan,
++				    char *buf)
++{
++	struct ad9910_state *st = iio_priv(indio_dev);
++	int vals[2];
++	u32 tmp32;
++	u64 tmp64;
++
++	guard(mutex)(&st->lock);
++
++	switch (private) {
++	case AD9910_PP_FREQ_OFFSET:
++		tmp64 = (u64)st->reg[AD9910_REG_FTW].val32 * st->data.sysclk_freq_hz;
++		vals[0] = upper_32_bits(tmp64);
++		vals[1] = upper_32_bits((u64)lower_32_bits(tmp64) * MICRO);
++		break;
++	case AD9910_PP_PHASE_OFFSET:
++		tmp32 = FIELD_GET(AD9910_POW_PP_LSB_MSK,
++				  st->reg[AD9910_REG_POW].val16);
++		tmp32 = (tmp32 * AD9910_MAX_PHASE_MICRORAD) >> 16;
++		vals[0] = tmp32 / MICRO;
++		vals[1] = tmp32 % MICRO;
++		break;
++	case AD9910_PP_AMP_OFFSET:
++		tmp32 = FIELD_GET(AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK,
++				  st->reg[AD9910_REG_ASF].val32);
++		vals[0] = 0;
++		vals[1] = (u64)tmp32 * MICRO >> 14;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, ARRAY_SIZE(vals), vals);
++}
++
++static ssize_t ad9910_pp_attrs_write(struct iio_dev *indio_dev,
++				     uintptr_t private,
++				     const struct iio_chan_spec *chan,
++				     const char *buf, size_t len)
++{
++	struct ad9910_state *st = iio_priv(indio_dev);
++	int val, val2;
++	u32 tmp32;
++	int ret;
++
++	ret = iio_str_to_fixpoint(buf, MICRO / 10, &val, &val2);
++	if (ret)
++		return ret;
++
++	guard(mutex)(&st->lock);
++
++	switch (private) {
++	case AD9910_PP_FREQ_OFFSET:
++		if (!in_range(val, 0, st->data.sysclk_freq_hz / 2))
++			return -EINVAL;
++
++		tmp32 = ad9910_rational_scale((u64)val * MICRO + val2, BIT_ULL(32),
++					      (u64)MICRO * st->data.sysclk_freq_hz);
++		ret = ad9910_reg32_write(st, AD9910_REG_FTW, tmp32, true);
++		break;
++	case AD9910_PP_PHASE_OFFSET:
++		if (val)
++			return -EINVAL;
++
++		if (!in_range(val2, 0, (AD9910_MAX_PHASE_MICRORAD >> 8)))
++			return -EINVAL;
++
++		tmp32 = DIV_ROUND_CLOSEST((u32)val2 << 16, AD9910_MAX_PHASE_MICRORAD);
++		tmp32 = min(tmp32, AD9910_POW_PP_LSB_MAX);
++		tmp32 = FIELD_PREP(AD9910_POW_PP_LSB_MSK, tmp32);
++		ret = ad9910_reg16_update(st, AD9910_REG_POW,
++					  AD9910_POW_PP_LSB_MSK,
++					  tmp32, true);
++		break;
++	case AD9910_PP_AMP_OFFSET:
++		if (val)
++			return -EINVAL;
++
++		if (!in_range(val2, 0, (MICRO >> 8)))
++			return -EINVAL;
++
++		tmp32 = DIV_ROUND_CLOSEST((u32)val2 << 14, MICRO);
++		tmp32 = min(tmp32, AD9910_ASF_PP_LSB_MAX);
++		tmp32 = FIELD_PREP(AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK, tmp32);
++		ret = ad9910_reg32_update(st, AD9910_REG_ASF,
++					  AD9910_ASF_SCALE_FACTOR_PP_LSB_MSK,
++					  tmp32, true);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return ret ?: len;
++}
++
++#define AD9910_EXT_INFO_TMPL(_name, _ident, _shared, _fn_desc) { \
+ 	.name = _name, \
+-	.read = ad9910_ext_info_read, \
+-	.write = ad9910_ext_info_write, \
++	.read = ad9910_ ## _fn_desc ## _read, \
++	.write = ad9910_ ## _fn_desc ## _write, \
+ 	.private = _ident, \
+ 	.shared = _shared, \
+ }
+ 
++#define AD9910_EXT_INFO(_name, _ident, _shared) \
++	AD9910_EXT_INFO_TMPL(_name, _ident, _shared, ext_info)
++
++#define AD9910_PP_EXT_INFO(_name, _ident) \
++	AD9910_EXT_INFO_TMPL(_name, _ident, IIO_SEPARATE, pp_attrs)
++
+ static const struct iio_chan_spec_ext_info ad9910_phy_ext_info[] = {
+ 	AD9910_EXT_INFO("profile", AD9910_PROFILE, IIO_SEPARATE),
+ 	AD9910_EXT_INFO("powerdown", AD9910_POWERDOWN, IIO_SEPARATE),
+ 	{ }
+ };
+ 
++static const struct iio_chan_spec_ext_info ad9910_pp_ext_info[] = {
++	AD9910_EXT_INFO("frequency_scale", AD9910_PP_FREQ_SCALE, IIO_SEPARATE),
++	AD9910_PP_EXT_INFO("frequency_offset", AD9910_PP_FREQ_OFFSET),
++	AD9910_PP_EXT_INFO("phase_offset", AD9910_PP_PHASE_OFFSET),
++	AD9910_PP_EXT_INFO("scale_offset", AD9910_PP_AMP_OFFSET),
++	{ }
++};
++
+ static const struct iio_chan_spec ad9910_channels[] = {
+ 	[AD9910_CHAN_IDX_PHY] = {
+ 		.type = IIO_ALTVOLTAGE,
+@@ -546,6 +683,15 @@ static const struct iio_chan_spec ad9910_channels[] = {
+ 				      BIT(IIO_CHAN_INFO_PHASE) |
+ 				      BIT(IIO_CHAN_INFO_SCALE),
+ 	},
++	[AD9910_CHAN_IDX_PARALLEL_PORT] = {
++		.type = IIO_ALTVOLTAGE,
++		.indexed = 1,
++		.output = 1,
++		.channel = AD9910_CHANNEL_PARALLEL_PORT,
++		.address = AD9910_CHAN_IDX_PARALLEL_PORT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_ENABLE),
++		.ext_info = ad9910_pp_ext_info,
++	},
+ };
+ 
+ static int ad9910_read_raw(struct iio_dev *indio_dev,
+@@ -559,6 +705,16 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+ 	guard(mutex)(&st->lock);
+ 
+ 	switch (info) {
++	case IIO_CHAN_INFO_ENABLE:
++		switch (chan->channel) {
++		case AD9910_CHANNEL_PARALLEL_PORT:
++			*val = FIELD_GET(AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
++					 st->reg[AD9910_REG_CFR2].val32);
++			break;
++		default:
++			return -EINVAL;
++		}
++		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_FREQUENCY:
+ 		switch (chan->channel) {
+ 		case AD9910_CHANNEL_SINGLE_TONE:
+@@ -619,6 +775,17 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 	guard(mutex)(&st->lock);
+ 
+ 	switch (info) {
++	case IIO_CHAN_INFO_ENABLE:
++		val = !!val;
++		switch (chan->channel) {
++		case AD9910_CHANNEL_PARALLEL_PORT:
++			tmp32 = FIELD_PREP(AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK, val);
++			return ad9910_reg32_update(st, AD9910_REG_CFR2,
++						   AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
++						   tmp32, true);
++		default:
++			return -EINVAL;
++		}
+ 	case IIO_CHAN_INFO_FREQUENCY:
+ 		if (!in_range(val, 0, st->data.sysclk_freq_hz / 2))
+ 			return -EINVAL;
 
- .../ABI/testing/sysfs-bus-iio-frequency-ad9910     |  182 ++
- .../bindings/iio/frequency/adi,ad9910.yaml         |  189 ++
- Documentation/iio/ad9910.rst                       |  654 ++++++
- Documentation/iio/index.rst                        |    1 +
- MAINTAINERS                                        |   10 +
- drivers/iio/frequency/Kconfig                      |   20 +
- drivers/iio/frequency/Makefile                     |    1 +
- drivers/iio/frequency/ad9910.c                     | 2261 ++++++++++++++++++++
- 8 files changed, 3318 insertions(+)
----
-base-commit: ff0843ceb1fb11a6b73e0e77b932ef7967aecd4b
-change-id: 20260218-ad9910-iio-driver-9b3d214c251f
-
-Best regards,
 -- 
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+2.43.0
 
 
