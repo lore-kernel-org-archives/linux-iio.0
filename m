@@ -1,150 +1,215 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.8])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3142B2E5B27;
-	Wed, 18 Mar 2026 09:46:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.8
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0BB43BB9EE
+	for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2026 10:10:29 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773827211; cv=none; b=a6zEqd+viziiQ6TnI387RWAMkEovE/3w/2nGiWAzNIJ2j/ZM+cIE82ZANGL5B7p4gYZc/lEJGHFsZhutI6UEeFhAyTefoYw0JBn5p3tt0GeitsV/99btTWydkyFw3K5V/CdVb1EUQJIcTYjXpPNyet7N6dlEJKyW8O/ZNBEJOnw=
+	t=1773828630; cv=none; b=pHaDonxmgt/LdaJaTg76K6yN2zXVl/vCpRwfR1dQhuYOgrJNUGFn9U+NiL23cCzOq4T060NMMdzMl1EwsGgzcoy0J2QdK48bnrlUNhe3U1x4lnmdPIdZyUbG/nHtpupErl4rktLxV/PQBzWM7Ja7GQhKc/m2yjvjBGhU/fMst54=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773827211; c=relaxed/simple;
-	bh=ihjhU69L0KQ3hSQ0nv4BylA0DtPfOoTddmdqvoNOxvU=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rqIVXrEHSEFWEbU+28c84kTeWLSU5vvZ5LbEcT48S63Tm1X1lo97JNlFa/+TosSM7vWzmOkS2l4q1ziEq+N5xAbFKn8R0/iZ94vPuqjv83SmNZFZvnX+hBnAhgdaQI5E4fq/SYExIDpOz+WHDOYWdxNFgXx6U/GBXWWMcERwjws=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=PIyg29IR; arc=none smtp.client-ip=192.198.163.8
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1773828630; c=relaxed/simple;
+	bh=BgBE6HAFPtLYRcK0P6IbQNWAsaIGfUiXN1xVcKWj4vc=;
+	h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version; b=cBD+1jOAzjQ9LD9pqLVI2eotLXWVnGf4AIir6m3kkd6+iaCJCNCH5FyfAU7copjEQtFpoKkV12oOIX+1dFZY8r9GDPJFe+M/Os3QtOEo7SZC0uvPrDBWbeKHew9m/XLJ8UA4nsVw2qzzd+I5HG3e+hZHLFME1fXqwJ7ZkUB6AnA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=S77+nBrq; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="PIyg29IR"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773827205; x=1805363205;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ihjhU69L0KQ3hSQ0nv4BylA0DtPfOoTddmdqvoNOxvU=;
-  b=PIyg29IRNa8/jPIpJuF918iVGSnPAQXrCDOtYpepU6H070bPA3WkEWYt
-   99lIj0uUzeqTN0cI7dtt4ogAfxOvgfQoyaKIdIaGG0RvGMJpwLNrRzoiN
-   q19rDfhZkCGTs5uZtDIod7BRmBDG1ZvwmDHMQXBXHNvP7g8N+AxUy2r7u
-   ZvL4H74GhRNCHKJQQSMhDAki2ITCANn8s/uINorWJA/S5QuT+AlsnOsu6
-   C0j4N/HmLzlOhpErE2k5kLoyGmdlQdeCvfZl92/r7uxBMuwRyd8mtoLFR
-   LZs0fMMdnmV0jFVCCmA6Mh6bDG7Pv0jn1EFxHjLk4qCaQAUxM/aiWRCYe
-   Q==;
-X-CSE-ConnectionGUID: meLCc36xSx6Kbl5whE9Usg==
-X-CSE-MsgGUID: +xhpXrfiTXq/WbA880uf3g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11732"; a="92445784"
-X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
-   d="scan'208";a="92445784"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by fmvoesa102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 02:46:44 -0700
-X-CSE-ConnectionGUID: qElVMAsgSNywk+Ymp68ONA==
-X-CSE-MsgGUID: l7BvO4LYShC41yWRpNUvPg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
-   d="scan'208";a="227515662"
-Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.240])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 02:46:40 -0700
-Date: Wed, 18 Mar 2026 11:46:37 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Cc: Michal Simek <michal.simek@amd.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, saikrishna12468@gmail.com,
-	git@amd.com
-Subject: Re: [PATCH 3/5] iio: adc: xilinx-xadc: Replace module macro with
- custom init/exit functions
-Message-ID: <abp0fWQVqhNeQVG7@ashevche-desk.local>
-References: <20260220053941.611415-1-sai.krishna.potthuri@amd.com>
- <20260220053941.611415-4-sai.krishna.potthuri@amd.com>
- <aZgS2c45nGTozHkv@smile.fi.intel.com>
- <fab2599c-e749-4aa1-8157-c7ac358c6f36@amd.com>
- <aZgWvjWBusT_JQgE@smile.fi.intel.com>
- <ca6050a2-72a5-4d13-b89c-10e78364e5fc@amd.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="S77+nBrq"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4F3CAC2BCB3
+	for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2026 10:10:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1773828629;
+	bh=BgBE6HAFPtLYRcK0P6IbQNWAsaIGfUiXN1xVcKWj4vc=;
+	h=From:To:Subject:Date:From;
+	b=S77+nBrq6pKSgDKAmGV/qJ9Mh0a9EYZrzH/vxIygEsOaWh/7428Rl1WEoe+viPYkn
+	 cw0FPu8/AHpDeHgE9pLCl8rd9tSbCL4NMFts4MrcxPubnKTIFvtu5EOVpOQ7FYXgru
+	 uwsgBol4KQj7xUnOiCmHRzObmh2B8ywGIDOPgjN2ARqahcx4jk01ZIiljN/zqmPuI+
+	 PT3K9pX4JjfV4TZDQpN6CU20ZFtqBlAJmOpnCDBX5Be7tMHjXl8QEP5089imr6ADV7
+	 Bx8AepRp8RisiRJQt9OPJUUr194FQ0ot5dRJ0VOxyPW3kIO8QhWvO7ErwzZSs2X6TH
+	 oa6QLZlLjDMzA==
+Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
+	id 41246C4160E; Wed, 18 Mar 2026 10:10:29 +0000 (UTC)
+From: bugzilla-daemon@kernel.org
+To: linux-iio@vger.kernel.org
+Subject: [Bug 221256] New: On Boot - WARNING: kernel/irq/manage.c:1502 at
+ __setup_irq+0x5bb/0x800, CPU#7: iio-sensor-prox/932
+Date: Wed, 18 Mar 2026 10:10:29 +0000
+X-Bugzilla-Reason: None
+X-Bugzilla-Type: new
+X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
+X-Bugzilla-Product: Drivers
+X-Bugzilla-Component: IIO
+X-Bugzilla-Version: 2.5
+X-Bugzilla-Keywords: 
+X-Bugzilla-Severity: high
+X-Bugzilla-Who: alain.cousinie@laposte.net
+X-Bugzilla-Status: NEW
+X-Bugzilla-Resolution: 
+X-Bugzilla-Priority: P3
+X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
+X-Bugzilla-Flags: 
+X-Bugzilla-Changed-Fields: bug_id short_desc product version rep_platform
+ op_sys bug_status bug_severity priority component assigned_to reporter
+ cf_regression
+Message-ID: <bug-221256-217253@https.bugzilla.kernel.org/>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Bugzilla-URL: https://bugzilla.kernel.org/
+Auto-Submitted: auto-generated
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ca6050a2-72a5-4d13-b89c-10e78364e5fc@amd.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Mar 18, 2026 at 02:43:41PM +0530, Sai Krishna Potthuri wrote:
-> On 2/20/2026 1:39 PM, Andy Shevchenko wrote:
-> > On Fri, Feb 20, 2026 at 08:54:26AM +0100, Michal Simek wrote:
-> > > On 2/20/26 08:52, Andy Shevchenko wrote:
-> > > > On Fri, Feb 20, 2026 at 11:09:39AM +0530, Sai Krishna Potthuri wrote:
-> > > > > Replace module_platform_driver() macro with custom init and exit functions
-> > > > > to prepare for supporting multiple bus interfaces (platform + I2C).
-> > > > 
-> > > > No, this is not how it should be done.
-> > > 
-> > > And how should it be done? separate file?
-> > 
-> > I answered somewhere else, but I can elaborate here as well.
-> > 
-> > The idea, yes, to have the driver in the parts:
-> >   _core.c
-> >   _platform.c
-> >   _i2c.c
-> > 
-> > To achieve that, it needs first to split the driver followed by likely
-> > conversion to regmap. With that done it may be used in i2c with a little
-> > code added into _i2c.c.
-> > 
-> > We have examples in kernel for that.
-> > 
-> > 0daede80f870 ("i2c: designware: Convert driver to using regmap API")
-> > fcb82a939df8 ("i2c: designware: Add Baikal-T1 System I2C support")
-> 
-> Sorry for the delayed response. I have gone through regmap implementation to
-> understand the approach and started converting the XADC driver accordingly.
-> During the implementation, I see few challenges with using the standard
-> regmap MMIO and I2C interfaces, which requires defining custom regmap
-> read/write hooks for both MMIO and I2C.
-> 
-> For the platform/MMIO case,
-> Zynq platform has its own FIFO-based mechanism for hardware reads and
-> writes, whereas the AXI variants require additional offset manipulation
-> before accessing the registers. These platform-specific requirements force
-> us to use custom read/write implementations rather than the standard regmap
-> MMIO helpers.
-> 
-> For the I2C case,
-> 32-bit DRP packet needs to be framed before issuing any I2C transactions.
-> Since this packet framing logic is specific to the XADC DRP interface, it
-> again requires a custom read/write implementations.
-> 
-> Considering all these, regmap may end up as a wrapper on top of these custom
-> xadc_ops read/write functions, which may not add any additional value. Since
-> the XADC driver already has the xadc_ops to support custom read/write
-> implementations, can we continue using the existing xadc_ops read/write
-> paths and skip the regmap conversion?
+https://bugzilla.kernel.org/show_bug.cgi?id=3D221256
 
-Thanks for elaboration. Indeed, the regmap approach in this situation gives
-not much of benefit (there still is, nevertheless).
+            Bug ID: 221256
+           Summary: On Boot - WARNING: kernel/irq/manage.c:1502 at
+                    __setup_irq+0x5bb/0x800, CPU#7: iio-sensor-prox/932
+           Product: Drivers
+           Version: 2.5
+          Hardware: Intel
+                OS: Linux
+            Status: NEW
+          Severity: high
+          Priority: P3
+         Component: IIO
+          Assignee: drivers_iio@kernel-bugs.kernel.org
+          Reporter: alain.cousinie@laposte.net
+        Regression: No
 
-So, the compromise may be done in a way that you define custom IO accessors
-and respecting callbacks in the private data structure first, then split
-the driver to _core and existing _platform driver. Add _i2c on top of this
-refactoring.
+Since the beginning of 7.0 rc1 to rc4, I have had a boot error.
+(I recompile the kernel with each RC release)
 
-> Please let me know if I am missing anything in my understanding.
+[    7.425262] ------------[ cut here ]------------
+[    7.425264] WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x5bb/0x800,
+CPU#7: iio-sensor-prox/932
+[    7.425270] Modules linked in: bnep at24 ee1004 spd5118 nls_ascii nls_cp=
+437
+vfat fat snd_ctl_led snd_soc_skl_hda_dsp(+) snd_soc_intel_sof_board_helpers
+snd_sof_probes snd_soc_intel_hda_dsp_common snd_hda_codec_intelhdmi
+snd_hda_codec_hdmi snd_hda_codec_alc269 snd_hda_codec_realtek_lib
+snd_hda_scodec_component snd_hda_codec_generic snd_soc_dmic snd_hda_intel
+snd_sof_pci_intel_mtl snd_sof_intel_hda_generic soundwire_intel
+soundwire_generic_allocation snd_sof_intel_hda_sdw_bpt snd_sof_intel_hda_co=
+mmon
+snd_soc_hdac_hda snd_sof_intel_hda_mlink snd_sof_intel_hda soundwire_cadence
+snd_sof_pci snd_sof_xtensa_dsp intel_uncore_frequency snd_soc_sdw_utils
+intel_uncore_frequency_common x86_pkg_temp_thermal snd_sof intel_powerclamp
+coretemp iwlmld snd_sof_utils snd_hda_ext_core kvm_intel snd_hda_codec
+snd_hda_core mac80211 kvm snd_intel_dspcfg snd_hda_scodec_cs35l41_spi
+regmap_spi snd_intel_sdw_acpi snd_soc_acpi_intel_match
+snd_soc_acpi_intel_sdca_quirks snd_soc_acpi snd_hwdep crc8 soundwire_bus
+snd_soc_sdca libarc4
+[    7.425297]  intel_ipu6_isys snd_soc_core btusb videobuf2_dma_sg
+hp_bioscfg(+) videobuf2_memops btmtk videobuf2_v4l2 btrtl irqbypass
+mei_gsc_proxy iwlwifi videobuf2_common intel_rapl_msr ghash_clmulni_intel
+snd_compress btbcm aesni_intel firmware_attributes_class ac97_bus btintel
+snd_pcm_dmaengine snd_hda_scodec_cs35l41_i2c cfg80211 gf128mul
+snd_hda_scodec_cs35l41 hp_wmi snd_pcm snd_soc_cs_amp_lib bluetooth spi_nor
+hid_sensor_magn_3d hid_sensor_accel_3d hid_sensor_gyro_3d hid_sensor_rotati=
+on
+snd_soc_cs35l41_lib hid_sensor_trigger wmi_bmof snd_timer cs_dsp
+processor_thermal_device_pci hid_sensor_iio_common pcspkr mtd intel_vpu ov0=
+8x40
+industrialio_triggered_buffer processor_thermal_device kfifo_buf snd mei_me
+industrialio v4l2_fwnode intel_skl_int3472_tps68470 tps68470_regulator
+processor_thermal_wt_hint v4l2_async mei clk_tps68470 soundcore
+drm_shmem_helper rfkill serial_multi_instantiate videodev
+platform_temperature_control intel_pmc_core processor_thermal_soc_slider
+platform_profile processor_thermal_rfim mc
+[    7.425325]  processor_thermal_rapl intel_skl_int3472_discrete
+intel_skl_int3472_common intel_rapl_common joydev processor_thermal_wt_req
+pmt_telemetry intel_ipu6 processor_thermal_power_floor acpi_tad pmt_discove=
+ry
+int3403_thermal processor_thermal_mbox intel_hid pmt_class ipu_bridge
+int340x_thermal_zone sparse_keymap intel_pmc_ssram_telemetry soc_button_arr=
+ay
+acpi_pad ac igen6_edac button evdev binfmt_misc parport_pc ppdev lp parport
+i2c_dev msr nvme_fabrics efi_pstore nfnetlink efivarfs autofs4 uhci_hcd
+ehci_pci ehci_hcd xe drm_ttm_helper drm_suballoc_helper gpu_sched drm_gpuvm
+drm_exec configfs drm_gpusvm_helper hid_sensor_custom hid_sensor_hub usbhid
+intel_ishtp_hid i915 hid_multitouch i2c_algo_bit drm_buddy ttm
+drm_display_helper xhci_pci hid_generic xhci_hcd cec nvme i2c_hid_acpi i2c_=
+hid
+rc_core nvme_core ucsi_acpi psmouse hid drm_client_lib typec_ucsi iTCO_wdt
+drm_kms_helper intel_pmc_bxt typec watchdog video intel_ish_ipc roles
+nvme_keyring serio_raw drm usbcore thunderbolt nvme_auth int3400_thermal
+battery
+[    7.425359]  intel_ishtp i2c_i801 wmi intel_lpss_pci hkdf acpi_thermal_r=
+el
+fan intel_lpss i2c_smbus usb_common intel_vsec idma64
+[    7.425366] CPU: 7 UID: 0 PID: 932 Comm: iio-sensor-prox Not tainted
+7.0.0-rc4-meteor #1 PREEMPT(full)=20
+[    7.425368] Hardware name: HP HP Spectre x360 2-in-1 Laptop 14-eu0xxx/8C=
+15,
+BIOS F.16 12/16/2025
+[    7.425368] RIP: 0010:__setup_irq+0x5bb/0x800
+[    7.425370] Code: 94 24 f0 00 00 00 e9 cb fe ff ff b8 01 00 00 00 48 c7 =
+c2
+ff ff ff ff f3 48 0f bc d2 c4 e2 e9 f7 c0 49 89 47 48 e9 86 fd ff ff <0f> 0=
+b f6
+c6 80 75 70 81 e2 00 00 01 00 0f 85 c5 fa ff ff 66 90 49
+[    7.425371] RSP: 0018:ffffd1b2c740bb58 EFLAGS: 00010246
+[    7.425373] RAX: 0000000000002000 RBX: ffff8d7942c91700 RCX:
+0000000000000000
+[    7.425374] RDX: 0000000000000400 RSI: ffff8d7960d9ec00 RDI:
+ffffffffc1876a80
+[    7.425374] RBP: 00000000000000d2 R08: 0000000000000080 R09:
+ffff8d7942c91700
+[    7.425375] R10: 0000000000000000 R11: 0000000000000001 R12:
+ffff8d7960d9ec00
+[    7.425376] R13: ffff8d7960d9ec00 R14: 0000000000000400 R15:
+ffff8d7942c91700
+[    7.425377] FS:  00007f6716751980(0000) GS:ffff8d810f4e4000(0000)
+knlGS:0000000000000000
+[    7.425377] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[    7.425378] CR2: 00007fff3d530fd0 CR3: 00000001282b2005 CR4:
+0000000000f72ef0
+[    7.425379] PKRU: 55555554
+[    7.425380] Call Trace:
+[    7.425381]  <TASK>
+[    7.425382]  ? __kmalloc_cache_noprof+0x12f/0x4b0
+[    7.425385]  ? request_threaded_irq+0x96/0x1a0
+[    7.425389]  ? __pfx_iio_pollfunc_store_time+0x10/0x10 [industrialio]
+[    7.425393]  request_threaded_irq+0xd9/0x1a0
+[    7.425395]  iio_trigger_attach_poll_func+0xbe/0x1c0 [industrialio]
+[    7.425398]  __iio_update_buffers+0xddd/0xed0 [industrialio]
+[    7.425402]  enable_store+0x81/0xe0 [industrialio]
+[    7.425405]  kernfs_fop_write_iter+0x149/0x200
+[    7.425408]  vfs_write+0x363/0x530
+[    7.425411]  __x64_sys_write+0x70/0xe0
+[    7.425412]  do_syscall_64+0x118/0xd70
+[    7.425416]  ? __x64_sys_openat+0xe9/0x230
+[    7.425417]  ? do_syscall_64+0x118/0xd70
+[    7.425418]  ? do_syscall_64+0x118/0xd70
+[    7.425419]  ? do_syscall_64+0x118/0xd70
+[    7.425420]  ? __sysvec_apic_timer_interrupt+0x58/0x140
+[    7.425423]  ? irq_exit_rcu+0x41/0xe0
+[    7.425425]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+[    7.425427] RIP: 0033:0x7f6716b596be
+[    7.425429] Code: 08 0f 85 15 47 ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 =
+ce
+4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 9=
+0 48
+83 ec 08 bf 01 00 00 00 e8 a2 e5 05 00 bf 01 00 00 00 89
+[    7.425430] RSP: 002b:00007fff3d532238 EFLAGS: 00000246 ORIG_RAX:
+0000000000000001
+[    7.425431] RAX: ffffffffffffffda RBX: 0000564c8378b310 RCX:
+00007f6716b596be
+[    7.425432] RDX: 0000000000000001 RSI: 00007fff3d5323f0 RDI:
+0000000000000008
+[    7.425432] RBP: 0000000000000001 R08: 0000000000000000 R09:
+0000000000000000
+[    7.425433] R10: 0000000000000000 R11: 0000000000000246 R12:
+0000000000000001
+[    7.425433] R13: 00007fff3d5323f0 R14: 0000000000000002 R15:
+0000000000000001
+[    7.425434]  </TASK>
+[    7.425435] ---[ end trace 0000000000000000 ]---
 
-> I will still proceed with splitting the driver into three files (core,
-> platform, and I2C), as you suggested.
+--=20
+You may reply to this email to add a comment.
 
-Sure, this needs to be done independently on regmap.
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+You are receiving this mail because:
+You are watching the assignee of the bug.=
