@@ -1,49 +1,49 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.15])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6258B3290D0;
-	Wed, 18 Mar 2026 18:28:41 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.15
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D07FC3F0AB8;
+	Wed, 18 Mar 2026 19:14:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773858522; cv=none; b=NeHMADi8egJyyUjApcnNCVCRajKSDYGtFEGjnGVAPg/bQJEddr+IGrvrfV6VoVj/cYqMs+bSTh8L+QyOhEG8Q91peMrU/w7P2jdO6CvHIdrBZyps6chUqC+StFaj9xBGUd0EgFPacFU8YZBfH40IUExeVEc4mI8g8MKlGTn8aY4=
+	t=1773861263; cv=none; b=eimtSYMJh+tDXePRVNdpI8kcmOUxioKOj8Cr5OqaGKJnlzSFLH4sQpiIngixn0746GKRlO9rgukEwRSfa/bWgqdZSA5eSIBmto61rz6lKNVWrGExmLxuClbD2tZl5zQ542narpVCfYln+rBUqE1tFlUyarxPXBzYebRFc7TJWBA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773858522; c=relaxed/simple;
-	bh=XOaTiZHn9UMaLOFROLfov5TVFH+Ngph/fryjaROjd4k=;
+	s=arc-20240116; t=1773861263; c=relaxed/simple;
+	bh=iaMJc/x0hbL4+hGkHwPxGwqgMJ633NGk0/QTlyPgmQ0=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=pwKCkIbUBZNHn4F/b/02a3IvtOsw4JXXg23NT84DdQsEXDIrUHy48jF6ro2E1Y1rYcAz/89aTg/9J0Q/HWrIjoveBKELQs7p3Iwadil/XhJZajU2pnsQ8rtU/ARv/OTNVZ6Q7OkvxQqTsdm2l9UOrPYUBvD8ZGoGDnMrDB1hj9A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=lXInBPzU; arc=none smtp.client-ip=198.175.65.15
+	 Content-Type:Content-Disposition:In-Reply-To; b=sDJYmiqCj0YwnwK+oZ6ATBcdvvRKz+olIS759dHJ7bFBrIYokOKcJKxOzGDLOFUV7s+TSEnbQsWMXvurobbhegKqiGKCNTKG7AqZJ5wEaM8Jo/B/a5L92a3OKF7SIbJNXSXzv6yXgXKm3OpZIYL1J//3TiVxVc+cdUEI/CtfauE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=D+Iodw/R; arc=none smtp.client-ip=198.175.65.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="lXInBPzU"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="D+Iodw/R"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773858521; x=1805394521;
+  t=1773861261; x=1805397261;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=XOaTiZHn9UMaLOFROLfov5TVFH+Ngph/fryjaROjd4k=;
-  b=lXInBPzUh85wcEapgU/wOJDLBR9uPwsu9p8Brl3kDxrfaZwdXLHpcqi6
-   4YinRmdDShv6fY1CV9mzVIGFRHlPu379e+/3LY9Nq0sSIaODJuMNt5/Zb
-   zItkJZylaVPOFC0xKX60ntrXuC24GqXsec0QkAXYcRuofPx2tlwOn2gWF
-   e17lDcRrjCmqgUqyupDcojQ8aULnVrrS1d2hDs7cOMli/sl6HSD37ZTOW
-   6QFJ9eem5rhZZc382E/oaPICB6LdT5uvQhwktKMzxfdWrCqsf0gkqcGzI
-   7e/aq4WerRnSfFJsOnzJj5XR5NTHXWO6ZM4XILwDw9ub79r6Imj2pjFBW
-   g==;
-X-CSE-ConnectionGUID: hym9qKl0RIuwoh9yTiexIg==
-X-CSE-MsgGUID: ON02GIcWRSCJiltue9JdCg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11733"; a="78530243"
+  bh=iaMJc/x0hbL4+hGkHwPxGwqgMJ633NGk0/QTlyPgmQ0=;
+  b=D+Iodw/R+pUMFEEAmMSZd59qwBs2KYY7W9Q89uuvyOn5lh0UPm6IFhL2
+   XFPRVzTUlxf7CyQ9qUGk9NQxZ5etTGa8QTWz9g0ELmtgvop2Hq+fXGfm+
+   uhft2F+bgEAf6xAPjP2olF5fVDUrLybeownqcDInnnck6zGlTXHgdng4M
+   OxLCF/4dbNGA/a5gPwcreGrAFXYE2hSM9S37prRohATKay+Sms6Kgp8lz
+   FCZKXVT/MNQhdBExgMczItiYi5ahXudSThIrRU5UyGxnGqhyRGmRz+dLC
+   8TWYiLx8OhloKnttEIwVVgVl6C6Q5x3COrb3C585vmIxVlJXX02/1jS33
+   w==;
+X-CSE-ConnectionGUID: 7mz/3sHJSUWPzcRndmInjA==
+X-CSE-MsgGUID: XtDaBOo8QempVQET6jOWgA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11733"; a="97536673"
 X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
-   d="scan'208";a="78530243"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa107.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 11:28:41 -0700
-X-CSE-ConnectionGUID: UzIakgAVRrq12NOlHw5oXA==
-X-CSE-MsgGUID: Zahpa9bsRB+EbyZpLr3K+Q==
+   d="scan'208";a="97536673"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 12:14:20 -0700
+X-CSE-ConnectionGUID: qojLmZmzTe6qpnWD1m/YZA==
+X-CSE-MsgGUID: 3YcMJB16TIqoozb7h5nrpg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
-   d="scan'208";a="221952312"
+   d="scan'208";a="227423817"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.240])
-  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 11:28:37 -0700
-Date: Wed, 18 Mar 2026 20:28:34 +0200
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 12:14:16 -0700
+Date: Wed, 18 Mar 2026 21:14:14 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
 To: rodrigo.alencar@analog.com
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
@@ -58,11 +58,11 @@ Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	Philipp Zabel <p.zabel@pengutronix.de>,
 	Jonathan Corbet <corbet@lwn.net>,
 	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH RFC v2 3/9] iio: frequency: ad9910: add simple parallel
- port mode support
-Message-ID: <abru0mNtpJSPSJux@ashevche-desk.local>
+Subject: Re: [PATCH RFC v2 4/9] iio: frequency: ad9910: add digital ramp
+ generator support
+Message-ID: <abr5hoBIQLlcOk_v@ashevche-desk.local>
 References: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
- <20260318-ad9910-iio-driver-v2-3-e79f93becf11@analog.com>
+ <20260318-ad9910-iio-driver-v2-4-e79f93becf11@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -71,68 +71,76 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260318-ad9910-iio-driver-v2-3-e79f93becf11@analog.com>
+In-Reply-To: <20260318-ad9910-iio-driver-v2-4-e79f93becf11@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Mar 18, 2026 at 05:56:03PM +0000, Rodrigo Alencar via B4 Relay wrote:
+On Wed, Mar 18, 2026 at 05:56:04PM +0000, Rodrigo Alencar via B4 Relay wrote:
 
-> Add parallel port channel with frequency scale, frequency offset, phase
-> offset, and amplitude offset extended attributes for configuring the
-> parallel data path.
-
-...
-
-> +	ret = iio_str_to_fixpoint(buf, MICRO / 10, &val, &val2);
-
-I think here we just use 100000 as it's in so many drivers de facto use.
-ideally this should be fixed on API level.
-
-> +	if (ret)
-> +		return ret;
+> Add DRG channels with destination selection (frequency, phase, or
+> amplitude), operating mode control, configurable upper/lower limits,
+> increment/decrement step sizes, and step rate settings for the digital
+> ramp generator.
 
 ...
 
-> -#define AD9910_EXT_INFO(_name, _ident, _shared) { \
-
-> +#define AD9910_EXT_INFO_TMPL(_name, _ident, _shared, _fn_desc) { \
->  	.name = _name, \
-> -	.read = ad9910_ext_info_read, \
-> -	.write = ad9910_ext_info_write, \
-> +	.read = ad9910_ ## _fn_desc ## _read, \
-> +	.write = ad9910_ ## _fn_desc ## _write, \
->  	.private = _ident, \
->  	.shared = _shared, \
->  }
-
-> +#define AD9910_EXT_INFO(_name, _ident, _shared) \
-> +	AD9910_EXT_INFO_TMPL(_name, _ident, _shared, ext_info)
+> +static ssize_t ad9910_drg_attrs_read(struct iio_dev *indio_dev,
+> +				     uintptr_t private,
+> +				     const struct iio_chan_spec *chan,
+> +				     char *buf)
+> +{
+> +	struct ad9910_state *st = iio_priv(indio_dev);
+> +	unsigned int type;
+> +	int vals[2];
+> +	u64 tmp64;
 > +
-> +#define AD9910_PP_EXT_INFO(_name, _ident) \
-> +	AD9910_EXT_INFO_TMPL(_name, _ident, IIO_SEPARATE, pp_attrs)
+> +	guard(mutex)(&st->lock);
+> +
+> +	switch (chan->channel) {
+> +	case AD9910_CHANNEL_DRG_RAMP_UP:
+> +		tmp64 = FIELD_GET(AD9910_DRG_STEP_INC_MSK,
+> +				  st->reg[AD9910_REG_DRG_STEP].val64);
+> +		break;
+> +	case AD9910_CHANNEL_DRG_RAMP_DOWN:
+> +		tmp64 = FIELD_GET(AD9910_DRG_STEP_DEC_MSK,
+> +				  st->reg[AD9910_REG_DRG_STEP].val64);
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	switch (private) {
+> +	case AD9910_DRG_FREQ_STEP:
+> +		type = IIO_VAL_INT_PLUS_MICRO;
+> +		tmp64 *= st->data.sysclk_freq_hz;
 
-I don't see why you should have so many - lines. This TMPL should be introduced
-in the first patch.
+> +		vals[0] = upper_32_bits(tmp64);
+> +		vals[1] = upper_32_bits((u64)lower_32_bits(tmp64) * MICRO);
 
-...
+Not sure if wordparts.h fits here, esp. taking into account...
 
-> +	case IIO_CHAN_INFO_ENABLE:
-> +		val = !!val;
+> +		break;
+> +	case AD9910_DRG_PHASE_STEP:
+> +		type = IIO_VAL_INT_PLUS_NANO;
+> +		tmp64 *= AD9910_PI_NANORAD;
+> +		tmp64 >>= 31;
+> +		vals[0] = div_u64_rem(tmp64, NANO, &vals[1]);
+> +		break;
+> +	case AD9910_DRG_AMP_STEP:
+> +		type = IIO_VAL_INT_PLUS_NANO;
+> +		vals[0] = 0;
+> +		vals[1] = tmp64 * NANO >> 32;
 
-Only used once, why do we need this...
+...open coded approach here. I think the open coded calculations.
 
-> +		switch (chan->channel) {
-> +		case AD9910_CHANNEL_PARALLEL_PORT:
-> +			tmp32 = FIELD_PREP(AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK, val);
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return iio_format_value(buf, type, ARRAY_SIZE(vals), vals);
+> +}
 
-...and not just here?
-
-> +			return ad9910_reg32_update(st, AD9910_REG_CFR2,
-> +						   AD9910_CFR2_PARALLEL_DATA_PORT_EN_MSK,
-> +						   tmp32, true);
-> +		default:
-> +			return -EINVAL;
-> +		}
 
 -- 
 With Best Regards,
