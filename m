@@ -1,115 +1,89 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 55F9624503F;
-	Wed, 18 Mar 2026 06:59:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8653037BE6C
+	for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2026 08:10:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773817165; cv=none; b=rD/mqmz6rpgWgU113HvxrCkscwbV5c8mgR6vpUJfJXUyPk4zO7bnLH1oNuad6w1G1x2jKxKwM+eOZM0tUHANDzZdC+buFImX8EzIgIEqybLVR2UODa4O8vewELhKzdSgxXRCrkccoaBgHwZeVxr7AVuYDsUyvvd+528E3Ckgx6w=
+	t=1773821415; cv=none; b=qmJCTHc7cwZnTZVwbx2OIfd7ajd93GmB/0T6TEVfg8KngMoahOM7hSk/8kHbvOciZk7LJAzCDfMa28f3+P90vM2y4x87ju6hCIhcWY1uqz6CaL0ZTZkqJHEFuvNh+XR/wu3/k1u2Jp50se/uxnE3SxqbIH0SdoLL8QE8b2csvG0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773817165; c=relaxed/simple;
-	bh=NidCI9RZeC8ymNKpQd1RLFfUtw0i6kZOvvecFoFXkKo=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=qdPIbtNf9v2zGliC9dUQ+GqzUExZ+fiPO1sS3JgygALOa1PqoByXPjP8SAEWwO7XRBwTY4H4yQYnMR1zWZtiugs1pqQc2gDtjFJKpgIF5SgXovk2ppAqr5MkPNdLB0t+9fJJk+27qDgBbd/9I8Uli981vYzEAE7rjR6G0VXyTfg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=HMFv5UUt; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773821415; c=relaxed/simple;
+	bh=/89UglCQEFsNMkKCX4a2maiifcZ+Tudeezt9sHARHYA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=DSwWQEYYHx4M43o+rCtGiV53oBXaVt/4TSCKEUv2z+CCq8+yfSr+YHeDanaVWdJdntLYkRCD21SR6EDQZTxa1XNH/lslLotTuI950nBduSa4X615PprbqkUVl8jTXFQSkixR3GkpgYEzwZlLOyLe96kQmm9NYjhE7fLs1298OEQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=ePYGq10d; arc=none smtp.client-ip=192.198.163.18
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="HMFv5UUt"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A96CC19421;
-	Wed, 18 Mar 2026 06:59:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773817164;
-	bh=NidCI9RZeC8ymNKpQd1RLFfUtw0i6kZOvvecFoFXkKo=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=HMFv5UUt+MAdGCDa9apoV7eEhA7wNOPt1CKC/MF5t509grPaW7kZUSqg24VSzwYcT
-	 pPsyWg8KrL53hl+30/GUL3Cw8cCgPGkwpwBtfIqHS3jJLzPtqo+CyAbg7CLLsa93+f
-	 1S9o2wQPBCjAw6qXZoquV52VpGHlW8gBD+YSpF29p4qC3WI7bWQ2R4+2+E0Y3lJPgl
-	 FCnabq9MUyZnfgkAoJ+1dEl6ZZVnabOvPBmIgfkcqr50T21387nQ4X9s89IGsXNSig
-	 OD2KwPo92BVQPbpn7B9hyqu+vSrDTm0AAtRU5JA/B4W4EgKSpk2qtF+XaMe5eCn/LY
-	 BZ/KEFHWBHLXA==
-Message-ID: <90033bd6-aade-4e76-8cbe-4002b983bf67@kernel.org>
-Date: Wed, 18 Mar 2026 07:59:20 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="ePYGq10d"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1773821415; x=1805357415;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/89UglCQEFsNMkKCX4a2maiifcZ+Tudeezt9sHARHYA=;
+  b=ePYGq10dLVwmSfGSMo25juy6p/kV+8OIu+zCPcCGMFbFs+rgBg1sCCwd
+   +/57LdVbPQA7ewtp4zGHFbvv/miIsnGU/kM5mCRa4yg+hyMq/RIW9yjJq
+   hUiRKBBySDSLZd0rRdbgW7c3aAsb1SiSZ4RDMiOphrxxDad8BaPvsEjtk
+   QEKtWkBrraZHfH9MxQaF8CsK2rg+C9L3ezayU4arzOofHwc2vMFEymNFD
+   DjhgpqHP4X/Kg+S1xfHGzUNnRMwYriO0FYp6mwaGwWy17wue4ZgdklLbj
+   Q7DzvBMrqk69zNzHxOlQrU2JWcJT7konnpKdiU4Bw2VLrJX1WgbgOM8fO
+   g==;
+X-CSE-ConnectionGUID: 8VxsAxQaSkuHgeBvCSL4BA==
+X-CSE-MsgGUID: e0vQG/8GSeyUooDkOfh5QQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11732"; a="74049863"
+X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
+   d="scan'208";a="74049863"
+Received: from fmviesa003.fm.intel.com ([10.60.135.143])
+  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 01:10:14 -0700
+X-CSE-ConnectionGUID: qNrR/lepSHaFH5eilXz4OQ==
+X-CSE-MsgGUID: y5GPu7EzSD2ZMD+g66Bt4A==
+X-ExtLoop1: 1
+Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.240])
+  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 01:10:11 -0700
+Date: Wed, 18 Mar 2026 10:10:09 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Bhargav Joshi <rougueprince47@gmail.com>
+Cc: linux-iio@vger.kernel.org, lars@metafoo.de,
+	Michael.Hennerich@analog.com, jic23@kernel.org,
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org
+Subject: Re: [PATCH] iio: frequency: ad9523: check return value of
+ ad9523_io_update()
+Message-ID: <abpd4Y88DhBlr0Cj@ashevche-desk.local>
+References: <20260317232552.28485-1-rougueprince47@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v3 1/2] dt-bindings: iio: dac: Add ADI AD5706R
-To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Michael Hennerich <Michael.Hennerich@analog.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260318-dev_ad5706r-v3-0-5d078f41e988@analog.com>
- <20260318-dev_ad5706r-v3-1-5d078f41e988@analog.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- xsFNBFVDQq4BEAC6KeLOfFsAvFMBsrCrJ2bCalhPv5+KQF2PS2+iwZI8BpRZoV+Bd5kWvN79
- cFgcqTTuNHjAvxtUG8pQgGTHAObYs6xeYJtjUH0ZX6ndJ33FJYf5V3yXqqjcZ30FgHzJCFUu
- JMp7PSyMPzpUXfU12yfcRYVEMQrmplNZssmYhiTeVicuOOypWugZKVLGNm0IweVCaZ/DJDIH
- gNbpvVwjcKYrx85m9cBVEBUGaQP6AT7qlVCkrf50v8bofSIyVa2xmubbAwwFA1oxoOusjPIE
- J3iadrwpFvsZjF5uHAKS+7wHLoW9hVzOnLbX6ajk5Hf8Pb1m+VH/E8bPBNNYKkfTtypTDUCj
- NYcd27tjnXfG+SDs/EXNUAIRefCyvaRG7oRYF3Ec+2RgQDRnmmjCjoQNbFrJvJkFHlPeHaeS
- BosGY+XWKydnmsfY7SSnjAzLUGAFhLd/XDVpb1Een2XucPpKvt9ORF+48gy12FA5GduRLhQU
- vK4tU7ojoem/G23PcowM1CwPurC8sAVsQb9KmwTGh7rVz3ks3w/zfGBy3+WmLg++C2Wct6nM
- Pd8/6CBVjEWqD06/RjI2AnjIq5fSEH/BIfXXfC68nMp9BZoy3So4ZsbOlBmtAPvMYX6U8VwD
- TNeBxJu5Ex0Izf1NV9CzC3nNaFUYOY8KfN01X5SExAoVTr09ewARAQABzSVLcnp5c3p0b2Yg
- S296bG93c2tpIDxrcnprQGtlcm5lbC5vcmc+wsGVBBMBCgA/AhsDBgsJCAcDAgYVCAIJCgsE
- FgIDAQIeAQIXgBYhBJvQfg4MUfjVlne3VBuTQ307QWKbBQJoF1BKBQkWlnSaAAoJEBuTQ307
- QWKbHukP/3t4tRp/bvDnxJfmNdNVn0gv9ep3L39IntPalBFwRKytqeQkzAju0whYWg+R/rwp
- +r2I1Fzwt7+PTjsnMFlh1AZxGDmP5MFkzVsMnfX1lGiXhYSOMP97XL6R1QSXxaWOpGNCDaUl
- ajorB0lJDcC0q3xAdwzRConxYVhlgmTrRiD8oLlSCD5baEAt5Zw17UTNDnDGmZQKR0fqLpWy
- 786Lm5OScb7DjEgcA2PRm17st4UQ1kF0rQHokVaotxRM74PPDB8bCsunlghJl1DRK9s1aSuN
- hL1Pv9VD8b4dFNvCo7b4hfAANPU67W40AaaGZ3UAfmw+1MYyo4QuAZGKzaP2ukbdCD/DYnqi
- tJy88XqWtyb4UQWKNoQqGKzlYXdKsldYqrLHGoMvj1UN9XcRtXHST/IaLn72o7j7/h/Ac5EL
- 8lSUVIG4TYn59NyxxAXa07Wi6zjVL1U11fTnFmE29ALYQEXKBI3KUO1A3p4sQWzU7uRmbuxn
- naUmm8RbpMcOfa9JjlXCLmQ5IP7Rr5tYZUCkZz08LIfF8UMXwH7OOEX87Y++EkAB+pzKZNNd
- hwoXulTAgjSy+OiaLtuCys9VdXLZ3Zy314azaCU3BoWgaMV0eAW/+gprWMXQM1lrlzvwlD/k
- whyy9wGf0AEPpLssLVt9VVxNjo6BIkt6d1pMg6mHsUEVzsFNBFVDXDQBEADNkrQYSREUL4D3
- Gws46JEoZ9HEQOKtkrwjrzlw/tCmqVzERRPvz2Xg8n7+HRCrgqnodIYoUh5WsU84N03KlLue
- MNsWLJBvBaubYN4JuJIdRr4dS4oyF1/fQAQPHh8Thpiz0SAZFx6iWKB7Qrz3OrGCjTPcW6ei
- OMheesVS5hxietSmlin+SilmIAPZHx7n242u6kdHOh+/SyLImKn/dh9RzatVpUKbv34eP1wA
- GldWsRxbf3WP9pFNObSzI/Bo3kA89Xx2rO2roC+Gq4LeHvo7ptzcLcrqaHUAcZ3CgFG88CnA
- 6z6lBZn0WyewEcPOPdcUB2Q7D/NiUY+HDiV99rAYPJztjeTrBSTnHeSBPb+qn5ZZGQwIdUW9
- YegxWKvXXHTwB5eMzo/RB6vffwqcnHDoe0q7VgzRRZJwpi6aMIXLfeWZ5Wrwaw2zldFuO4Dt
- 91pFzBSOIpeMtfgb/Pfe/a1WJ/GgaIRIBE+NUqckM+3zJHGmVPqJP/h2Iwv6nw8U+7Yyl6gU
- BLHFTg2hYnLFJI4Xjg+AX1hHFVKmvl3VBHIsBv0oDcsQWXqY+NaFahT0lRPjYtrTa1v3tem/
- JoFzZ4B0p27K+qQCF2R96hVvuEyjzBmdq2esyE6zIqftdo4MOJho8uctOiWbwNNq2U9pPWmu
- 4vXVFBYIGmpyNPYzRm0QPwARAQABwsF8BBgBCgAmAhsMFiEEm9B+DgxR+NWWd7dUG5NDfTtB
- YpsFAmgXUF8FCRaWWyoACgkQG5NDfTtBYptO0w//dlXJs5/42hAXKsk+PDg3wyEFb4NpyA1v
- qmx7SfAzk9Hf6lWwU1O6AbqNMbh6PjEwadKUk1m04S7EjdQLsj/MBSgoQtCT3MDmWUUtHZd5
- RYIPnPq3WVB47GtuO6/u375tsxhtf7vt95QSYJwCB+ZUgo4T+FV4hquZ4AsRkbgavtIzQisg
- Dgv76tnEv3YHV8Jn9mi/Bu0FURF+5kpdMfgo1sq6RXNQ//TVf8yFgRtTUdXxW/qHjlYURrm2
- H4kutobVEIxiyu6m05q3e9eZB/TaMMNVORx+1kM3j7f0rwtEYUFzY1ygQfpcMDPl7pRYoJjB
- dSsm0ZuzDaCwaxg2t8hqQJBzJCezTOIkjHUsWAK+tEbU4Z4SnNpCyM3fBqsgYdJxjyC/tWVT
- AQ18NRLtPw7tK1rdcwCl0GFQHwSwk5pDpz1NH40e6lU+NcXSeiqkDDRkHlftKPV/dV+lQXiu
- jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
- zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
- XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <20260318-dev_ad5706r-v3-1-5d078f41e988@analog.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260317232552.28485-1-rougueprince47@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 18/03/2026 06:13, Alexis Czezar Torreno wrote:
-> Add device tree binding documentation for the Analog Devices
-> AD5706R 4-channel 16-bit current output digital-to-analog converter.
+On Wed, Mar 18, 2026 at 04:55:52AM +0530, Bhargav Joshi wrote:
+> Several functions in ad9523 driver calls ad9523_io_update() to apply
+> register changes but fail to check its return value.
 > 
-> Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+> If the function fails, driver silently ignore the error and returns
+> success. This results in user-space assuming register changes even if
+> they are failed.
 > 
-> ---
-> Changes since v1:
->   - Removed clocks, clock-names, pwms, pwm-names, gpio properties
+> Fix this by properly catching and returning the error code from
+> ad9523_io_update() in ad9523_sync(), ad9523_write_raw(), and
+> ad9523_reg_access()
 
-Why? This is odd, there was no review to drop clocks, pwms, gpios.
+Missing period at the end.
 
-Please read writing bindings - you are supposed to post complete binding.
+...
+
+So, now the errors that were non-fatal become fatal. Is it a problem from
+functional behaviour point of view? How did you test this?
+
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
-Best regards,
-Krzysztof
