@@ -1,140 +1,297 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E436230CDB6;
-	Wed, 18 Mar 2026 17:38:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B733C3624B8;
+	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773855490; cv=none; b=lVshsru5fyWAU3HTyHXg6v0zlkE3+vz+c9HSJTn8HCPn9gveI4A9HnLyuSHKAWOU9miKh5GHoJx9j9bj8zycx2osNxmzNg8/VKs1PrswGiHgggvb+7OCDK58ZTUOLUxTDSqqNcQ8IdEnnmyIL5gxIuAE9DxsfuI0EHtYlgtQ5Ts=
+	t=1773856571; cv=none; b=lQuL7Yfcup/dIhcueQkIjP2hwKs4rAFDpH8dWr6iWAjjSLpU1prYBFNe9TAsAF2IdkDtpRDzeRwScsXS5cZ6YI4MqhaTzTN+JUeOQGm+QWzTXjgDtxSOgz5cIfX6dbiIJKsztULG6t1a00/+xTibmgd4vi7HRXH2HfCF9oVmNPs=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773855490; c=relaxed/simple;
-	bh=HPl+5k0VOQiOi37dHewPhIufg1R1qsuZGRuoSVJRbLg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=Q7F2ETr1BJASgFK/j6G0QN6KjhQH2EFwe5ZZPocAk02BggM0EpFaapz/yVnlSRld3IXST8sVbVVnwGuJaNRJHanl0XKNeti9BVwjYU7guYpzm7c1ywjLMueL9+VBrCll+M89NEZ51OybrIxjEWfDizvM+nO9Tj1zMs24mPTFxcs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qo/9MguC; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1773856571; c=relaxed/simple;
+	bh=hH7DqG3aXlSBRqsvoK/w+ko1R6Mr5k3mXHHJWySXZzc=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=Redsnh0m3bJWyo3EA0GFHzBO79eVZOSFSpxhhX9wt925LqQyn7AcspvBQjCw7JyINda534S7AeZ4dh9UIGm/fjEX2Gu9WR7Q5ryiqiFiSVXanx/NE2sOp3Ok8mWRueCwDewV1UrCFf2EaXJD1Z6cKdg9I22k430Bq23oG8NYId8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kzghvDob; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qo/9MguC"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A999C19421;
-	Wed, 18 Mar 2026 17:38:07 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kzghvDob"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 2CE37C19421;
+	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773855489;
-	bh=HPl+5k0VOQiOi37dHewPhIufg1R1qsuZGRuoSVJRbLg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=qo/9MguCk2jSOcuQM5E82tSD79b0rJ+ZNkixOzIwCC2I7zbDnOLrxgt21ahKKxrMk
-	 /gNqJcYC311pXfLXLz1gtYBNmbrUib+fK1EzVUrvRlUCCINJMC3CUsvj/wlVuan1Rr
-	 yCndb3SvDaJA0Box9M9C4KfsWas0kKL1kBlZixp3u17YRuGDkyeUONIwO2463EcTDL
-	 KdQm31YovClvRLCe0GrSAGnur+Q5XblxZFbfsEQShQB108qJm5D774O//zsB7/+Cei
-	 lsXhrWRHqTMke3xBiuJAXZUoLtuEv3Ak2gfzUIW9AvN1ydIyVgnQAnowyjeFjsvmCR
-	 ZaPE6LZQJ7NFw==
-Date: Wed, 18 Mar 2026 17:38:04 +0000
-From: Conor Dooley <conor@kernel.org>
-To: David =?utf-8?Q?Marinovi=C4=87?= <david.marinovic@pupin.rs>
-Cc: jic23@kernel.org, andriy.shevchenko@intel.com, dlechner@baylibre.com,
-	nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, michael.hennerich@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/3] dt-bindings: iio: dac: ltc2632: add LTC2654
- compatible strings
-Message-ID: <20260318-case-landslide-cdff9d99cd56@spud>
-References: <5d4fb8998d9634c3e5a8ed17b80dae07@pupin.rs>
- <20260318135736.91564-1-david.marinovic@pupin.rs>
- <20260318135736.91564-3-david.marinovic@pupin.rs>
+	s=k20201202; t=1773856571;
+	bh=hH7DqG3aXlSBRqsvoK/w+ko1R6Mr5k3mXHHJWySXZzc=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=kzghvDobVa+KZLlp9dP5fncZRzdD9Zsgk8x2XfTYxkp8q1WX/aP7Vp1vWdjlBNo0k
+	 bb39mf+4oXXD0Fp3u98Rho61BakddEgE4EHj+YOO7oGFPkFVAazFxL7CJejxQFzQAs
+	 lpKW8tp2TEgJ9IKH8zTpdFXMqhJTzdkb4lSTu5NutXeKGtnFDPOjwuXOXbBVSCLpAG
+	 HCaTHcBpQHZPR5yWh6Qa7uYxR7HyAlVWUzHMA43KUrcb/JR9uuz3UXw/1AZjVobdPE
+	 B3s0eDQ0ooWhGxWK2e0GXCpf9mnO1DxpvjopF60+A/SmzulFTzsvsMwj+S7tvilXwQ
+	 0wHpj5iE3jhPg==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1961310775FC;
+	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Wed, 18 Mar 2026 17:56:01 +0000
+Subject: [PATCH RFC v2 1/9] dt-bindings: iio: frequency: add ad9910
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="UUFt2eb+o6gxv3mb"
-Content-Disposition: inline
-In-Reply-To: <20260318135736.91564-3-david.marinovic@pupin.rs>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260318-ad9910-iio-driver-v2-1-e79f93becf11@analog.com>
+References: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
+In-Reply-To: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, 
+ Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1773856569; l=6418;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=k7FO/6zhIeaj/fXIdp66n/3OjAKLzxmA4t3hZbmQGww=;
+ b=juJZ08HIy86wqrGJWgB1AhSRKkraKZQ5gmP3C2YxQZtC7x0K+yLs3vls5g/2NqGACSGY6smPX
+ GXJxt1YYJvDBWnbNNFgfNRdl63Ip5e5rC68zQgqSjkvC5SLTXZgtopr
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
+
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+
+DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
+configurations for clocks, DAC current, reset and basic GPIO control.
+
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+---
+ .../bindings/iio/frequency/adi,ad9910.yaml         | 189 +++++++++++++++++++++
+ MAINTAINERS                                        |   7 +
+ 2 files changed, 196 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+new file mode 100644
+index 000000000000..68eaefea3f5a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+@@ -0,0 +1,189 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,ad9910.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD9910 Direct Digital Synthesizer
++
++maintainers:
++  - Rodrigo Alencar <rodrigo.alencar@analog.com>
++
++description:
++  The AD9910 is a 1 GSPS direct digital synthesizer (DDS) with an integrated
++  14-bit DAC. It features single tone mode with 8 configurable profiles,
++  a digital ramp generator, RAM control, OSK, and a parallel data port for
++  high-speed streaming.
++
++  https://www.analog.com/en/products/ad9910.html
++
++properties:
++  compatible:
++    const: adi,ad9910
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 70000000
++
++  clocks:
++    minItems: 1
++    maxItems: 2
++    description:
++      First clock is always the reference clock (REF_CLK), while the second
++      clock is an optional synchronization clock (SYNC_IN).
++
++  clock-names:
++    oneOf:
++      - items:
++          - const: ref_clk
++      - items:
++          - const: ref_clk
++          - const: sync_in
++
++  '#clock-cells':
++    const: 1
++
++  clock-output-names:
++    minItems: 1
++    maxItems: 3
++    items:
++      enum: [ sync_clk, pdclk, sync_out ]
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++
++  interrupt-names:
++    minItems: 1
++    maxItems: 2
++    items:
++      enum: [ drover, ram_swp_ovr ]
++
++  dvdd-io33-supply:
++    description: 3.3V Digital I/O supply.
++
++  avdd33-supply:
++    description: 3.3V Analog DAC supply.
++
++  dvdd18-supply:
++    description: 1.8V Digital Core supply.
++
++  avdd18-supply:
++    description: 1.8V Analog Core supply.
++
++  reset-gpios:
++    description:
++      GPIOs controlling the Main Device reset.
++
++  io-reset-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_RESET pin.
++
++  powerdown-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the EXT_PWR_DWN pin.
++
++  update-gpios:
++    maxItems: 1
++    description:
++      GPIO controlling the I/O_UPDATE pin.
++
++  profile-gpios:
++    minItems: 3
++    maxItems: 3
++    description:
++      GPIOs controlling the PROFILE[2:0] pins for profile selection.
++
++  sync-err-gpios:
++    maxItems: 1
++    description:
++      GPIO used to read SYNC_SMP_ERR pin status.
++
++  adi,pll-enable:
++    type: boolean
++    description:
++      Indicates that a loop filter is connected and the internal PLL is enabled.
++      Often used when the reference clock is provided by a crystal or by a
++      single-ended on-board oscillator.
++
++  adi,charge-pump-current-microamp:
++    minimum: 212
++    maximum: 387
++    default: 387
++    description:
++      PLL charge pump current in microamps. Only applicable when the internal
++      PLL is enabled. The value is rounded to the nearest supported step. This
++      value depends mostly on the loop filter design.
++
++  adi,refclk-out-drive-strength:
++    $ref: /schemas/types.yaml#/definitions/string
++    enum: [ disabled, low, medium, high ]
++    default: disabled
++    description:
++      Reference clock output (DRV0) drive strength. Only applicable when
++      the internal PLL is enabled.
++
++  adi,dac-output-current-microamp:
++    minimum: 8640
++    maximum: 31590
++    default: 20070
++    description:
++      DAC full-scale output current in microamps.
++
++dependencies:
++  adi,charge-pump-current-microamp: [ 'adi,pll-enable' ]
++  adi,refclk-out-drive-strength: [ 'adi,pll-enable' ]
++  interrupts: [ interrupt-names ]
++  clocks: [ clock-names ]
++  '#clock-cells': [ clock-output-names ]
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - dvdd-io33-supply
++  - avdd33-supply
++  - dvdd18-supply
++  - avdd18-supply
++
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        dds@0 {
++            compatible = "adi,ad9910";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
++            clocks = <&ad9910_refclk>;
++            clock-names = "ref_clk";
++
++            dvdd-io33-supply = <&vdd_io33>;
++            avdd33-supply = <&vdd_a33>;
++            dvdd18-supply = <&vdd_d18>;
++            avdd18-supply = <&vdd_a18>;
++
++            reset-gpios = <&gpio 0 GPIO_ACTIVE_HIGH>;
++            io-reset-gpios = <&gpio 1 GPIO_ACTIVE_HIGH>;
++            powerdown-gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
++            update-gpios = <&gpio 3 GPIO_ACTIVE_HIGH>;
++            profile-gpios = <&gpio 4 GPIO_ACTIVE_HIGH>,
++                            <&gpio 5 GPIO_ACTIVE_HIGH>,
++                            <&gpio 6 GPIO_ACTIVE_HIGH>;
++
++            adi,pll-enable;
++            adi,charge-pump-current-microamp = <387>;
++            adi,refclk-out-drive-strength = "disabled";
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 08d8ddf4ef68..2ca8b68e5daa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1630,6 +1630,13 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/dac/adi,ad9739a.yaml
+ F:	drivers/iio/dac/ad9739a.c
+ 
++ANALOG DEVICES INC AD9910 DRIVER
++M:	Rodrigo Alencar <rodrigo.alencar@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
++
+ ANALOG DEVICES INC MAX22007 DRIVER
+ M:	Janani Sunil <janani.sunil@analog.com>
+ L:	linux-iio@vger.kernel.org
+
+-- 
+2.43.0
 
 
---UUFt2eb+o6gxv3mb
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Mar 18, 2026 at 02:57:31PM +0100, David Marinovi=C4=87 wrote:
-> From: David Marinovic <david.marinovic@pupin.rs>
->=20
-> The LTC2654 is a quad-channel, 16-/12-bit DAC with internal
-> reference voltage and SPI interface, sharing the same 24-bit
-> SPI protocol as the LTC2632/2634/2636 family.
-
-What makes these devices incompatible from the existing ones in the
-file?
-Can you add a note about that please?
-
-Thanks,
-Conor.
-
->=20
-> Add compatible strings for the following variants:
-> - lltc,ltc2654-l16: 16-bit, 2.5V internal reference
-> - lltc,ltc2654-l12: 12-bit, 2.5V internal reference
-> - lltc,ltc2654-h16: 16-bit, 4.096V internal reference
-> - lltc,ltc2654-h12: 12-bit, 4.096V internal reference
->=20
-> Signed-off-by: David Marinovic <david.marinovic@pupin.rs>
-> ---
->  .../devicetree/bindings/iio/dac/lltc,ltc2632.yaml    | 12 +++++++++---
->  1 file changed, 9 insertions(+), 3 deletions(-)
->=20
-> diff --git a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml =
-b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> index 733edc7d6d17..b22df24dee07 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> +++ b/Documentation/devicetree/bindings/iio/dac/lltc,ltc2632.yaml
-> @@ -4,14 +4,16 @@
->  $id: http://devicetree.org/schemas/iio/dac/lltc,ltc2632.yaml#
->  $schema: http://devicetree.org/meta-schemas/core.yaml#
-> =20
-> -title: Linear Technology LTC263x 12-/10-/8-Bit Rail-to-Rail DAC
-> +title: Linear Technology LTC263x and LTC2654 Rail-to-Rail DAC
-> =20
->  maintainers:
->    - Michael Hennerich <michael.hennerich@analog.com>
-> =20
->  description: |
-> -  Bindings for the Linear Technology LTC2632/2634/2636 DAC
-> -  Datasheet can be found here: https://www.analog.com/media/en/technical=
--documentation/data-sheets/LTC263[246].pdf
-> +  Bindings for the Linear Technology LTC2632/2634/2636/2654 DAC
-> +  Datasheet can be found here:
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-LTC263[246].pdf
-> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
-2654f.pdf
-> =20
->  properties:
->    compatible:
-> @@ -34,6 +36,10 @@ properties:
->        - lltc,ltc2636-h12
->        - lltc,ltc2636-h10
->        - lltc,ltc2636-h8
-> +      - lltc,ltc2654-l16
-> +      - lltc,ltc2654-l12
-> +      - lltc,ltc2654-h16
-> +      - lltc,ltc2654-h12
-> =20
->    reg:
->      maxItems: 1
-> --=20
-> 2.50.1
->=20
-
---UUFt2eb+o6gxv3mb
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCabri/AAKCRB4tDGHoIJi
-0pBIAP9RORlhRv+rtXxBd65FrAKSXHwlMibwlikrHN1jdZdYxwEAtxWPpFhgKynw
-5UKK16RnBapFLp4/z+cEHSkCHyxGgAs=
-=kFnl
------END PGP SIGNATURE-----
-
---UUFt2eb+o6gxv3mb--
