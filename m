@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3F64039F16D;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2C2DA39E184;
 	Wed, 18 Mar 2026 17:56:12 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773856572; cv=none; b=uT3usoQjnSvRerzGiWsbdJ/fbcl7xPu8kVsTftPMgUbeXigjVzUWFHSv6vE0QZJ8LisHKMX/6XKGfaFY2hS3wGeqBf5pAa16/IzDOVklYBcv0Cy216KTETPY+EzSxRN8B8/SNTiA51bAQOAbFhHfboa4GeBjdqflt7kkDrrZrw8=
+	t=1773856572; cv=none; b=lvX87tim5xnyRiLI5b9Zp1Tn9FDfqJf/gtqUT/rffshAcfaN/1Hga/vspRFCNaz1Wwme8SGg4jfWhBVDDx7FRKiENEfIXJFvEVH/LpJANOQcSqvzV4d59CCtqpvpugIIN19rRhRTycBCShrk4/bwvEUsb6NZnAOKfIMvv46X494=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1773856572; c=relaxed/simple;
-	bh=UHRm0tBHOkHuYW6t7Dwc+FrXs/D+HUeI1hwiWguAHfU=;
+	bh=hInQUNzq5eQPv4K36fHnbpy43TxJeb6LYn7FbJqfTkM=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=erHU1TdcccFSO5PnV3uev3ty736raPhkBzou+vimS6b7689ZED3gCglBdrP0hUMHiRMc7LVgoWeqH5aB6ONDHqS7xCqk8J8Fg+j7rksly2ZZqj/WfUUotCGFaCQHgiSiaITipN6de/gb05pC6Uxy1EOTZTQeP4rPX+VTO9KQJiw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=t/6o99BE; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=Ov1KmtMDe+zZpZTjVUW5unBxJPjWa5VV01O1hpKXKp09T4kdXVcR0k7Y8BtsrCpCUguBOeVGO9NmzEFXb1R7HhaF5XagQisybp7RcIO0P5+Y6W83VC4V28fm03f3gbvnXL6/GHJFW3HEZRntDzrfJ58bsfeGFNnawK+EEOEmwHg=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=L0hjHz35; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="t/6o99BE"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B0075C2BCB2;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="L0hjHz35"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 67E90C2BCC4;
 	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1773856571;
-	bh=UHRm0tBHOkHuYW6t7Dwc+FrXs/D+HUeI1hwiWguAHfU=;
+	bh=hInQUNzq5eQPv4K36fHnbpy43TxJeb6LYn7FbJqfTkM=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=t/6o99BEmE4tfBVxoNC6dkjrX2zinmonqXphlAHpRyu8KMJ+KyrXq1M1VwFkOLSk/
-	 SY+xrQ9d7W7veCy5IXnRZb0nPyrhbiaXtZVAHvzaHa6LMotWZ6aPm1lBkyQmKkSytp
-	 HIOjANmoNJghmlGbCpvXb19fKUg75JrG1iDPJMFIrAgjxuFpIgVQMnGNMeQN10u0I4
-	 ZrAxyoFld3vk2lGVq0QbrOvsQxv5ROi3wPDT9kCZvBjT9Oxacb9B+3Sd3nvtpxUnSz
-	 Hz++6uQszIU7CGFKRiIo3KW2OpWGOV6Nh7UVh0vJBcwoAHIsT5Rig+I8U8EiK9sjx1
-	 Zyzs8xDth9yHg==
+	b=L0hjHz35IRQ+aSWUWFIQByv/CPGngjrJJWkbOXBfHO+LtUfTr06qD+AuihKQpiIZU
+	 aqi+OehUx5u0YAuBa9bfP2aw8Lx7POPted1ZYNIs9/egTIX9T1FFraOqviRYNKBNFW
+	 QFxkQ54q6SYBnquUZqAvHT5I6iI4fdhvLi2A0R+fIEViUekKNQpoVL35yZ1e+4CM31
+	 HHy4EQ4f3F4rXjtHXrmic1tZGWHZ940eIFEqZPCjO/N4HLEklH1pfDppVFWOvFiLfA
+	 +v6LKIscC/lyfvQZhsoFPOHFg6Xu3Taj2jpNKZG3RSSE1Jg3I+n2Kgp0P7TeQVk6Y6
+	 iTx3y5TGQp0gQ==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A55531077603;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D4FD1077603;
 	Wed, 18 Mar 2026 17:56:11 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Wed, 18 Mar 2026 17:56:09 +0000
-Subject: [PATCH RFC v2 9/9] docs: iio: add documentation for ad9910 driver
+Date: Wed, 18 Mar 2026 17:56:05 +0000
+Subject: [PATCH RFC v2 5/9] iio: frequency: ad9910: add RAM mode support
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -40,7 +40,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260318-ad9910-iio-driver-v2-9-e79f93becf11@analog.com>
+Message-Id: <20260318-ad9910-iio-driver-v2-5-e79f93becf11@analog.com>
 References: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
 In-Reply-To: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
@@ -54,11 +54,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Jonathan Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1773856569; l=21400;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1773856569; l=27152;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=CD1yxulQBdjCdan4eY1kiOcKuvikV8SBaM67bnyl/XA=;
- b=/flYDKSK2fJCsml/JLxLVY/6iVZJv+YXX/UuLX3aeSu8FtXnynxB3CVSqXZ0eSIVJQP4GaJVZ
- ET9auFwWK3fAoXDKNCEyew33ILpdmUq6SdNaBY7BTzvFMrxaUshnIf4
+ bh=f87YRyYgMlZ1bM+LRFDR1AdWyuDGLtwNgYqb09iYYj4=;
+ b=YSM4wxkcPhVIbp0mxURc15ASTMke6nFf7jjhlp3ZyKCxb/sixvljOcdrAnhSv3MVGfz3R+yNT
+ F+P8bXmQ79gBcyZlbdcZqqLagCcx2C2aWeWH/sGzA+JuOSgMW5Q5E2z
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -68,700 +68,812 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Add documentation for the AD9910 DDS IIO driver, which describes channels,
-DDS modes, attributes and ABI usage examples.
+Add RAM channel with support for profile-based control. This includes:
+- RAM data loading via firmware upload interface;
+- Per-profile RAM configuration (start/end address, step rate, operating
+  mode, dwell control);
+- RAM destination control (frequency, phase, amplitude, polar);
+- RAM operating modes (direct switch, ramp up, bidirectional ramp,
+  continuous bidirectional, continuous recirculate);
+- Profile switching for RAM playback;
+- Sampling frequency control via profile step rate;
+- ram-enable-aware read/write paths that redirect single tone
+  frequency/phase/amplitude access through reg_profile cache when RAM is
+  active;
+
+When RAM is enabled, the DDS core parameters (frequency, phase, amplitude)
+for the single tone channel are sourced from a shadow register cache
+(reg_profile[]) since the profile registers are repurposed for RAM control.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- Documentation/iio/ad9910.rst | 654 +++++++++++++++++++++++++++++++++++++++++++
- Documentation/iio/index.rst  |   1 +
- MAINTAINERS                  |   1 +
- 3 files changed, 656 insertions(+)
+ drivers/iio/frequency/Kconfig  |   2 +
+ drivers/iio/frequency/ad9910.c | 464 ++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 462 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/iio/ad9910.rst b/Documentation/iio/ad9910.rst
-new file mode 100644
-index 000000000000..116f6af4bc2e
---- /dev/null
-+++ b/Documentation/iio/ad9910.rst
-@@ -0,0 +1,654 @@
-+.. SPDX-License-Identifier: GPL-2.0-only
-+
-+=============
-+AD9910 driver
-+=============
-+
-+DDS (Direct Digital Synthesizer) driver for the Analog Devices Inc. AD9910.
-+The module name is ``ad9910``.
-+
-+* `AD9910 <https://www.analog.com/en/products/ad9910.html>`_
-+
-+The AD9910 is a 1 GSPS DDS with a 14-bit DAC, driven over SPI. The driver
-+exposes the device through the IIO ``altvoltage`` channel type and supports
-+five DDS operating modes: single tone, parallel port modulation, digital ramp
-+generation (DRG), RAM playback and output shift keying (OSK). The device has
-+8 hardware profiles, each capable of storing independent single tone and RAM
-+playback parameters.
-+
-+
-+Channel hierarchy
-+=================
-+
-+The driver exposes the following IIO output channels, each identified by a
-+unique channel number and a human-readable label:
-+
-+* ``out_altvoltage100``: ``phy``: Physical output: system clock and profile control
-+
-+  * ``out_altvoltage110``: ``single_tone``: Single tone mode: per-profile
-+    frequency, phase, amplitude
-+
-+  * ``out_altvoltage120``: ``parallel_port``: Parallel port modulation: enable
-+    and offset/scale parameters
-+
-+  * ``out_altvoltage130``: ``digital_ramp_generator``: DRG control: enable,
-+    destination, operating mode
-+
-+    * ``out_altvoltage131``: ``digital_ramp_up``: DRG ramp-up parameters:
-+      limits, step sizes, ramp rate
-+    * ``out_altvoltage132``: ``digital_ramp_down``: DRG ramp-down parameters:
-+      limits, step sizes, ramp rate
-+
-+  * ``out_altvoltage140``: ``ram_control``: RAM playback: enable, destination,
-+    operating mode, address range
-+
-+  * ``out_altvoltage150``: ``output_shift_keying``: OSK: enable, amplitude
-+    scale, ramp rate, auto/manual control
-+
-+The ``phy`` channel is the root of the hierarchy. Changing its
-+``sampling_frequency`` reconfigures the system clock (SYSCLK) which affects all
-+other channels. The ``profile`` attribute on this channel selects the active
-+hardware profile (0-7) used by the single tone and RAM channels.
-+
-+All mode-specific channels (parallel port, DRG, RAM, OSK) have an ``enable``
-+attribute. The DRG and RAM channels additionally have ``destination`` and
-+``operating_mode`` attributes that configure which DDS core parameter is
-+modulated and how.
-+
-+DDS modes
-+=========
-+
-+The AD9910 supports multiple modes of operation that can be configured
-+independently or in combination. Such modes and their corresponding IIO channels
-+are described in this section. The following tables are extracted from the
-+AD9910 datasheet and summarizes the control parameters for each mode and their
-+priority when multiple sources are enabled simultaneously:
-+
-+.. flat-table:: DDS Frequency Control
-+   :header-rows: 1
-+
-+   * - Priority
-+     - Data Source
-+     - Conditions
-+
-+   * - Highest Priority
-+     - RAM
-+     - RAM enabled and data destination is frequency
-+
-+   * -
-+     - DRG
-+     - DRG enabled and data destination is frequency
-+
-+   * -
-+     - Parallel data and FTW (frequency_offset)
-+     - Parallel data port enabled and data destination is frequency
-+
-+   * -
-+     - FTW (frequency)
-+     - RAM enabled and data destination is not frequency
-+
-+   * -
-+     - FTW (frequency) in single tone channel for the active profile
-+     - DRG enabled and data destination is not frequency
-+
-+   * -
-+     - FTW (frequency) in single tone channel for the active profile
-+     - Parallel data port enabled and data destination is not frequency
-+
-+   * - Lowest Priority
-+     - FTW (frequency) in single tone channel for the active profile
-+     - None
-+
-+.. flat-table:: DDS Phase Control
-+   :header-rows: 1
-+
-+   * - Priority
-+     - Data Source
-+     - Conditions
-+
-+   * - Highest Priority
-+     - RAM
-+     - RAM enabled and data destination is phase or polar
-+
-+   * -
-+     - DRG
-+     - DRG enabled and data destination is phase
-+
-+   * -
-+     - Parallel data port
-+     - Parallel data port enabled and data destination is phase
-+
-+   * -
-+     - Parallel data port and POW register LSBs (phase_offset)
-+     - Parallel data port enabled and data destination is polar
-+
-+   * -
-+     - POW (phase)
-+     - RAM enabled and destination is not phase nor polar
-+
-+   * -
-+     - POW (phase) in single tone channel for the active profile
-+     - DRG enabled and data destination is not phase
-+
-+   * -
-+     - POW (phase) in single tone channel for the active profile
-+     - Parallel data port enabled and data destination is not phase nor polar
-+
-+   * - Lowest Priority
-+     - POW (phase) in single tone channel for the active profile
-+     - None
-+
-+.. flat-table:: DDS Amplitude Control
-+   :header-rows: 1
-+
-+   * - Priority
-+     - Data Source
-+     - Conditions
-+
-+   * - Highest Priority
-+     - OSK generator
-+     - OSK enabled (auto mode)
-+
-+   * -
-+     - ASF register
-+     - OSK enabled (manual mode)
-+
-+   * -
-+     - RAM
-+     - RAM enabled and data destination is amplitude or polar
-+
-+   * -
-+     - DRG
-+     - DRG enabled and data destination is amplitude
-+
-+   * -
-+     - Parallel data port
-+     - Parallel data port enabled and data destination is amplitude
-+
-+   * -
-+     - Parallel data port and ASF register LSBs (scale_offset)
-+     - Parallel data port enabled and data destination is polar
-+
-+   * - Lowest Priority
-+     - ASF (scale) in single tone channel for the active profile
-+     - (Amplitude scale is already enabled by default)
-+
-+Single tone mode
-+----------------
-+
-+Single tone is the baseline operating mode. The ``single_tone`` channel
-+provides per-profile frequency, phase and amplitude control:
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Attribute
-+     - Unit
-+     - Description
-+
-+   * - ``out_altvoltage110_frequency``
-+     - Hz
-+     - Output frequency. Range [0, SYSCLK/2). Stored in the active profile's
-+       frequency tuning word (FTW).
-+
-+   * - ``out_altvoltage110_phase``
-+     - rad
-+     - Phase offset. Range [0, 2*pi). Stored in the active profile's phase
-+       offset word (POW).
-+
-+   * - ``out_altvoltage110_scale``
-+     - fractional
-+     - Amplitude scale factor. Range [0, 1]. Stored in the active profile's
-+       amplitude scale factor (ASF).
-+
-+When RAM mode is enabled, single tone parameters are stored in a shadow
-+register and are not written to hardware until RAM mode is disabled.
-+
-+Usage examples
-+^^^^^^^^^^^^^^
-+
-+Set the active profile to 2 and configure a 100 MHz tone:
-+
-+.. code-block:: bash
-+
-+	echo 2 > /sys/bus/iio/devices/iio:device0/out_altvoltage100_profile
-+	echo 100000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage110_frequency
-+	echo 0.5 > /sys/bus/iio/devices/iio:device0/out_altvoltage110_scale
-+	echo 0 > /sys/bus/iio/devices/iio:device0/out_altvoltage110_phase
-+
-+Read back the current single tone frequency:
-+
-+.. code-block:: bash
-+
-+	cat /sys/bus/iio/devices/iio:device0/out_altvoltage110_frequency
-+
-+Parallel port mode
-+------------------
-+
-+When enabled, the parallel port allows real-time modulation of DDS parameters
-+through a 16-bit external data bus.
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Attribute
-+     - Unit
-+     - Description
-+
-+   * - ``out_altvoltage120_en``
-+     - boolean
-+     - Enable/disable the parallel data port.
-+
-+   * - ``out_altvoltage120_frequency_scale``
-+     - power-of-2
-+     - FM gain multiplier applied to 16-bit parallel input. Range [1, 32768],
-+       must be a power of 2.
-+
-+   * - ``out_altvoltage120_frequency_offset``
-+     - Hz
-+     - Base FTW to which scaled parallel data is added. Range [0, SYSCLK/2).
-+
-+   * - ``out_altvoltage120_phase_offset``
-+     - rad
-+     - Base phase for polar modulation. Lower 8 bits of POW register.
-+       Range [0, 2*pi/256).
-+
-+   * - ``out_altvoltage120_scale_offset``
-+     - fractional
-+     - Base amplitude for polar modulation. Lower 6 bits of ASF register.
-+       Range [0, 1/256).
-+
-+Usage examples
-+^^^^^^^^^^^^^^
-+
-+Enable parallel port with a frequency scale of 16 and a 50 MHz offset:
-+
-+.. code-block:: bash
-+
-+	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage120_en
-+	echo 16 > /sys/bus/iio/devices/iio:device0/out_altvoltage120_frequency_scale
-+	echo 50000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage120_frequency_offset
-+
-+Digital ramp generator (DRG)
-+----------------------------
-+
-+The DRG produces linear frequency, phase or amplitude sweeps using dedicated
-+hardware. It is controlled through three channels: a parent control channel
-+(``digital_ramp_generator``) and two child ramp channels
-+(``digital_ramp_up``, ``digital_ramp_down``).
-+
-+Control channel attributes
-+^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Attribute
-+     - Unit
-+     - Description
-+
-+   * - ``out_altvoltage130_en``
-+     - boolean
-+     - Enable/disable the DRG.
-+
-+   * - ``out_altvoltage130_destination``
-+     - enum
-+     - Which DDS parameter is swept: ``frequency``, ``phase`` or
-+       ``amplitude``.
-+
-+   * - ``out_altvoltage130_destination_available``
-+     - string
-+     - Lists available destination values.
-+
-+   * - ``out_altvoltage130_operating_mode``
-+     - enum
-+     - Ramp behavior (see table below).
-+
-+   * - ``out_altvoltage130_operating_mode_available``
-+     - string
-+     - Lists available operating mode values.
-+
-+DRG operating modes:
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Mode
-+     - Description
-+
-+   * - ``bidirectional``
-+     - Ramp up then down, dwelling at limits.
-+
-+   * - ``ramp_down``
-+     - No-dwell low; resets to upper limit at lower limit.
-+
-+   * - ``ramp_up``
-+     - No-dwell high; resets to lower limit at upper limit.
-+
-+   * - ``bidirectional_continuous``
-+     - Continuous sweep without dwelling at either limit.
-+
-+Ramp channel attributes
-+^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+The ``digital_ramp_up`` (channel 131) and ``digital_ramp_down`` (channel 132)
-+channels share the same attribute set but configure ascending and descending
-+ramp parameters independently:
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Attribute
-+     - Unit
-+     - Description
-+
-+   * - ``frequency``
-+     - Hz
-+     - Ramp limit when destination is ``frequency``. Range [0, SYSCLK/2).
-+
-+   * - ``phase``
-+     - rad
-+     - Ramp limit when destination is ``phase``. Range [0, 2*pi).
-+
-+   * - ``scale``
-+     - fractional
-+     - Ramp limit when destination is ``amplitude``. Range [0, 1).
-+
-+   * - ``sampling_frequency``
-+     - Hz
-+     - Ramp clock rate: SYSCLK / (4 * divider).
-+
-+   * - ``frequency_step``
-+     - Hz
-+     - Per-tick frequency increment/decrement when destination is
-+       ``frequency``.
-+
-+   * - ``phase_step``
-+     - rad
-+     - Per-tick phase increment/decrement when destination is ``phase``.
-+
-+   * - ``scale_step``
-+     - fractional
-+     - Per-tick amplitude increment/decrement when destination is
-+       ``amplitude``. Range [0, 1).
-+
-+Usage examples
-+^^^^^^^^^^^^^^
-+
-+Configure a frequency sweep from 10 MHz to 100 MHz at a 1 MHz step:
-+
-+.. code-block:: bash
-+
-+	# Set DRG destination to frequency
-+	echo frequency > /sys/bus/iio/devices/iio:device0/out_altvoltage130_destination
-+
-+	# Set operating mode
-+	echo bidirectional_continuous > /sys/bus/iio/devices/iio:device0/out_altvoltage130_operating_mode
-+
-+	# Set ramp limits
-+	echo 60000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage131_frequency
-+	echo 40000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage132_frequency
-+
-+	# Set ramp step size to 1 MHz
-+	echo 1000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage131_frequency_step
-+	echo 1000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage132_frequency_step
-+
-+	# Set ramp clock rate
-+	echo 50000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage131_sampling_frequency
-+
-+	# Enable the DRG
-+	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage130_en
-+
-+Read the current DRG operating mode:
-+
-+.. code-block:: bash
-+
-+	cat /sys/bus/iio/devices/iio:device0/out_altvoltage130_operating_mode
-+
-+RAM mode
-+--------
-+
-+The AD9910 contains a 1024 x 32-bit RAM that can be loaded with waveform data
-+and played back to modulate frequency, phase, amplitude, or polar (phase +
-+amplitude) parameters.
-+
-+RAM control channel attributes
-+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Attribute
-+     - Unit
-+     - Description
-+
-+   * - ``out_altvoltage140_en``
-+     - boolean
-+     - Enable/disable RAM playback. Toggling swaps profile registers between
-+       single tone and RAM configurations across all 8 profiles.
-+
-+   * - ``out_altvoltage140_destination``
-+     - enum
-+     - RAM data target: ``frequency``, ``phase``, ``amplitude`` or ``polar``.
-+       Cannot be changed while RAM mode is enabled.
-+
-+   * - ``out_altvoltage140_destination_available``
-+     - string
-+     - Lists available destination values.
-+
-+   * - ``out_altvoltage140_operating_mode``
-+     - enum
-+     - Playback behavior (see table below).
-+
-+   * - ``out_altvoltage140_operating_mode_available``
-+     - string
-+     - Lists available operating mode values.
-+
-+   * - ``out_altvoltage140_frequency``
-+     - Hz
-+     - Frequency tuning word used as the single tone frequency when
-+       RAM destination is not ``frequency``. Range [0, SYSCLK/2).
-+
-+   * - ``out_altvoltage140_phase``
-+     - rad
-+     - Phase offset word used as the single tone phase when RAM destination
-+       is not ``phase``. Range [0, 2*pi).
-+
-+   * - ``out_altvoltage140_sampling_frequency``
-+     - Hz
-+     - RAM playback step rate controlling how fast the address counter
-+       advances: SYSCLK / (4 * step_rate). Stored per-profile.
-+
-+   * - ``out_altvoltage140_address_start``
-+     - integer
-+     - Start address for the active profile. Range [0, 1023]. Cannot be
-+       changed while RAM mode is enabled. If set above current end address,
-+       end address is automatically adjusted.
-+
-+   * - ``out_altvoltage140_address_end``
-+     - integer
-+     - End address for the active profile. Range [address_start, 1023].
-+       Cannot be changed while RAM mode is enabled.
-+
-+RAM operating modes:
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Mode
-+     - Description
-+
-+   * - ``direct_switch``
-+     - Start address defines a fixed word used by the selected profile.
-+
-+   * - ``ramp_up``
-+     - One-shot ramp through the current profile's address range.
-+
-+   * - ``bidirectional``
-+     - Ramp up then down through profile 0's address range.
-+
-+   * - ``bidirectional_continuous``
-+     - Continuous ramp up/down through current profile's address range.
-+
-+   * - ``ramp_up_continuous``
-+     - Continuous ramp up through current profile's address range.
-+
-+   * - ``sequenced``
-+     - Sequential playback from profile 0 to the active profile.
-+       Requires active profile > 0.
-+
-+   * - ``sequenced_continuous``
-+     - Continuous sequential playback. Requires active profile > 0.
-+
-+Loading RAM data
-+^^^^^^^^^^^^^^^^
-+
-+RAM data is loaded through the firmware upload framework. The driver registers
-+a firmware upload device named ``iio_deviceX:ram``. Data must be a multiple of
-+4 bytes (32-bit words) and at most 4096 bytes (1024 words).
-+
-+Usage examples
-+^^^^^^^^^^^^^^
-+
-+Configure RAM mode with frequency destination and load a waveform:
-+
-+.. code-block:: bash
-+
-+	# Set RAM address range for profile 0
-+	echo 0 > /sys/bus/iio/devices/iio:device0/out_altvoltage140_address_start
-+	echo 999 > /sys/bus/iio/devices/iio:device0/out_altvoltage140_address_end
-+
-+	# Set destination and operating mode
-+	echo frequency > /sys/bus/iio/devices/iio:device0/out_altvoltage140_destination
-+	echo ramp_up_continuous > /sys/bus/iio/devices/iio:device0/out_altvoltage140_operating_mode
-+
-+	# Set playback rate
-+	echo 250000 > /sys/bus/iio/devices/iio:device0/out_altvoltage140_sampling_frequency
-+
-+	# Load RAM data via firmware upload
-+	echo 1 > /sys/class/firmware/iio\:device0\:ram/loading
-+	cat waveform.bin > /sys/class/firmware/iio\:device0\:ram/data
-+	echo 0 > /sys/class/firmware/iio\:device0\:ram/loading
-+
-+	# Enable RAM mode
-+	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage140_en
-+
-+Read the current RAM operating mode:
-+
-+.. code-block:: bash
-+
-+	cat /sys/bus/iio/devices/iio:device0/out_altvoltage140_operating_mode
-+
-+Output shift keying (OSK)
-+-------------------------
-+
-+OSK controls the output amplitude envelope, allowing the output to be ramped
-+on/off rather than switched abruptly.
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Attribute
-+     - Unit
-+     - Description
-+
-+   * - ``out_altvoltage150_en``
-+     - boolean
-+     - Enable/disable OSK.
-+
-+   * - ``out_altvoltage150_scale``
-+     - fractional
-+     - Target amplitude for the OSK ramp. 14-bit ASF field. Range [0, 1).
-+
-+   * - ``out_altvoltage150_sampling_frequency``
-+     - Hz
-+     - OSK ramp rate: SYSCLK / (4 * divider).
-+
-+   * - ``out_altvoltage150_pinctrl_en``
-+     - boolean
-+     - Enable manual external pin control. When enabled, the OSK pin directly
-+       gates the output on/off instead of using the automatic ramp.
-+
-+   * - ``out_altvoltage150_scale_step``
-+     - fractional
-+     - Automatic OSK amplitude step. Writing non-zero enables automatic OSK
-+       and sets the per-tick increment. Writing ``0`` disables it. Rounded to
-+       nearest hardware step: 0.000061, 0.000122, 0.000244 or 0.000488.
-+
-+Usage examples
-+^^^^^^^^^^^^^^
-+
-+Enable OSK with automatic ramping:
-+
-+.. code-block:: bash
-+
-+	# Set ramp rate
-+	echo 1000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_sampling_frequency
-+
-+	# Enable automatic OSK with step size
-+	echo 0.000244 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_scale_step
-+
-+	# Enable OSK
-+	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_en
-+
-+Enable manual pin-controlled OSK:
-+
-+.. code-block:: bash
-+
-+	# Set target amplitude to full scale
-+	echo 1.0 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_scale
-+
-+	# Enable manual pin control
-+	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_pinctrl_en
-+	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_en
-+
-+
-+Physical channel
-+================
-+
-+The ``phy`` channel provides device-level control:
-+
-+.. flat-table::
-+   :header-rows: 1
-+
-+   * - Attribute
-+     - Unit
-+     - Description
-+
-+   * - ``out_altvoltage100_sampling_frequency``
-+     - Hz
-+     - System clock (SYSCLK) frequency. With PLL enabled, configures the PLL
-+       multiplier (range 420-1000 MHz). Without PLL, ref clock can only be
-+       divided by 2.
-+
-+   * - ``out_altvoltage100_profile``
-+     - integer
-+     - Active profile index [0, 7]. Selected via GPIO pins. Each profile
-+       stores an independent set of single tone and RAM playback parameters.
-+
-+   * - ``out_altvoltage100_powerdown``
-+     - boolean
-+     - Software power-down. Writing 1 powers down the digital core, DAC,
-+       reference clock input and auxiliary DAC simultaneously.
-+
-+Usage examples
-+--------------
-+
-+Set the system clock to 1 GHz and select profile 3:
-+
-+.. code-block:: bash
-+
-+	echo 1000000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage100_sampling_frequency
-+	echo 3 > /sys/bus/iio/devices/iio:device0/out_altvoltage100_profile
-+
-+Read current system clock frequency:
-+
-+.. code-block:: bash
-+
-+	cat /sys/bus/iio/devices/iio:device0/out_altvoltage100_sampling_frequency
-+
-+Power down the device:
-+
-+.. code-block:: bash
-+
-+	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage100_powerdown
-diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-index ba3e609c6a13..55cb1ce84ba8 100644
---- a/Documentation/iio/index.rst
-+++ b/Documentation/iio/index.rst
-@@ -29,6 +29,7 @@ Industrial I/O Kernel Drivers
-    ad7606
-    ad7625
-    ad7944
-+   ad9910
-    ade9000
-    adis16475
-    adis16480
-diff --git a/MAINTAINERS b/MAINTAINERS
-index edd87ee7da5f..14e4272357ce 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1637,6 +1637,7 @@ S:	Supported
- W:	https://ez.analog.com/linux-software-drivers
- F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
- F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
-+F:	Documentation/iio/ad9910.rst
- F:	drivers/iio/frequency/ad9910.c
+diff --git a/drivers/iio/frequency/Kconfig b/drivers/iio/frequency/Kconfig
+index 180e74f62d11..a5b2e5cb5269 100644
+--- a/drivers/iio/frequency/Kconfig
++++ b/drivers/iio/frequency/Kconfig
+@@ -29,6 +29,8 @@ config AD9910
+ 	tristate "Analog Devices AD9910 Direct Digital Synthesizer"
+ 	depends on SPI
+ 	depends on GPIOLIB
++	select FW_LOADER
++	select FW_UPLOAD
+ 	help
+ 	  Say yes here to build support for Analog Devices AD9910
+ 	  1 GSPS, 14-Bit DDS with integrated DAC.
+diff --git a/drivers/iio/frequency/ad9910.c b/drivers/iio/frequency/ad9910.c
+index d3367e211dcf..747f4f407536 100644
+--- a/drivers/iio/frequency/ad9910.c
++++ b/drivers/iio/frequency/ad9910.c
+@@ -8,9 +8,11 @@
+ #include <linux/array_size.h>
+ #include <linux/bitfield.h>
+ #include <linux/clk.h>
++#include <linux/debugfs.h>
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/err.h>
++#include <linux/firmware.h>
+ #include <linux/gpio/consumer.h>
+ #include <linux/log2.h>
+ #include <linux/math64.h>
+@@ -149,6 +151,15 @@
+ #define AD9910_PROFILE_ST_POW_MSK		GENMASK_ULL(47, 32)
+ #define AD9910_PROFILE_ST_FTW_MSK		GENMASK_ULL(31, 0)
  
- ANALOG DEVICES INC MAX22007 DRIVER
++/* Profile Register Format (RAM Mode) */
++#define AD9910_PROFILE_RAM_OPEN_MSK		GENMASK_ULL(61, 57)
++#define AD9910_PROFILE_RAM_STEP_RATE_MSK	GENMASK_ULL(55, 40)
++#define AD9910_PROFILE_RAM_END_ADDR_MSK		GENMASK_ULL(39, 30)
++#define AD9910_PROFILE_RAM_START_ADDR_MSK	GENMASK_ULL(23, 14)
++#define AD9910_PROFILE_RAM_NO_DWELL_HIGH_MSK	BIT_ULL(5)
++#define AD9910_PROFILE_RAM_ZERO_CROSSING_MSK	BIT_ULL(3)
++#define AD9910_PROFILE_RAM_MODE_CONTROL_MSK	GENMASK_ULL(2, 0)
++
+ /* Device constants */
+ #define AD9910_PI_NANORAD		3141592653UL
+ 
+@@ -163,6 +174,17 @@
+ #define AD9910_NUM_PROFILES		8
+ 
+ #define AD9910_DRG_DEST_NUM		3
++#define AD9910_RAM_DEST_NUM		4
++
++#define AD9910_RAM_SIZE_MAX_WORDS	1024
++#define AD9910_RAM_WORD_SIZE		sizeof(u32)
++#define AD9910_RAM_SIZE_MAX_BYTES	(AD9910_RAM_SIZE_MAX_WORDS * AD9910_RAM_WORD_SIZE)
++#define AD9910_RAM_ADDR_MAX		(AD9910_RAM_SIZE_MAX_WORDS - 1)
++
++#define AD9910_RAM_PROFILE_CTL_CONT_MSK	BIT(4)
++
++#define AD9910_RAM_ENABLED(st)		\
++	FIELD_GET(AD9910_CFR1_RAM_ENABLE_MSK, (st)->reg[AD9910_REG_CFR1].val32)
+ 
+ /* PLL constants */
+ #define AD9910_PLL_MIN_N		12
+@@ -195,7 +217,7 @@
+ #define AD9910_REFDIV2_MAX_FREQ_HZ	(1900 * HZ_PER_MHZ)
+ 
+ #define AD9910_SPI_DATA_IDX		1
+-#define AD9910_SPI_DATA_LEN_MAX		sizeof(__be64)
++#define AD9910_SPI_DATA_LEN_MAX		AD9910_RAM_SIZE_MAX_BYTES
+ #define AD9910_SPI_MESSAGE_LEN_MAX	(AD9910_SPI_DATA_IDX + AD9910_SPI_DATA_LEN_MAX)
+ #define AD9910_SPI_READ_MSK		BIT(7)
+ #define AD9910_SPI_ADDR_MSK		GENMASK(4, 0)
+@@ -209,6 +231,7 @@
+  * @AD9910_CHANNEL_DRG: Digital Ramp Generator output channel
+  * @AD9910_CHANNEL_DRG_RAMP_UP: DRG ramp up channel
+  * @AD9910_CHANNEL_DRG_RAMP_DOWN: DRG ramp down channel
++ * @AD9910_CHANNEL_RAM: RAM control output channel
+  */
+ enum ad9910_channel {
+ 	AD9910_CHANNEL_PHY = 100,
+@@ -217,6 +240,7 @@ enum ad9910_channel {
+ 	AD9910_CHANNEL_DRG = 130,
+ 	AD9910_CHANNEL_DRG_RAMP_UP = 131,
+ 	AD9910_CHANNEL_DRG_RAMP_DOWN = 132,
++	AD9910_CHANNEL_RAM = 140,
+ };
+ 
+ /**
+@@ -249,6 +273,27 @@ enum ad9910_drg_oper_mode {
+ 	AD9910_DRG_OPER_MODE_BIDIR_CONT,
+ };
+ 
++/**
++ * enum ad9910_ram_oper_mode - AD9910 RAM Playback Operating Mode
++ *
++ * @AD9910_RAM_MODE_DIRECT_SWITCH: Direct profile switching between profiles
++ * @AD9910_RAM_MODE_RAMP_UP: Ramp up for current profile
++ * @AD9910_RAM_MODE_BIDIR: Ramp up/down for profile 0
++ * @AD9910_RAM_MODE_BIDIR_CONT: Continuous ramp up/down for current profile
++ * @AD9910_RAM_MODE_RAMP_UP_CONT: Continuous ramp up for current profile
++ * @AD9910_RAM_MODE_SEQ: Sequenced playback of RAM profiles up to target profile
++ * @AD9910_RAM_MODE_SEQ_CONT: Continuous sequenced playback of RAM profiles
++ */
++enum ad9910_ram_oper_mode {
++	AD9910_RAM_MODE_DIRECT_SWITCH,
++	AD9910_RAM_MODE_RAMP_UP,
++	AD9910_RAM_MODE_BIDIR,
++	AD9910_RAM_MODE_BIDIR_CONT,
++	AD9910_RAM_MODE_RAMP_UP_CONT,
++	AD9910_RAM_MODE_SEQ,
++	AD9910_RAM_MODE_SEQ_CONT,
++};
++
+ enum {
+ 	AD9910_CHAN_IDX_PHY,
+ 	AD9910_CHAN_IDX_SINGLE_TONE,
+@@ -270,6 +315,8 @@ enum {
+ 	AD9910_DRG_FREQ_STEP,
+ 	AD9910_DRG_PHASE_STEP,
+ 	AD9910_DRG_AMP_STEP,
++	AD9910_RAM_START_ADDR,
++	AD9910_RAM_END_ADDR,
+ };
+ 
+ struct ad9910_data {
+@@ -284,6 +331,7 @@ struct ad9910_data {
+ struct ad9910_state {
+ 	struct spi_device *spi;
+ 	struct clk *refclk;
++	struct fw_upload *ram_fwu;
+ 
+ 	struct gpio_desc *gpio_pwdown;
+ 	struct gpio_desc *gpio_update;
+@@ -296,12 +344,22 @@ struct ad9910_state {
+ 		u16 val16;
+ 	} reg[AD9910_REG_NUM_CACHED];
+ 
++	/*
++	 * alternate profile registers used to store RAM profile settings when
++	 * RAM mode is disabled and Single Tone profile settings when RAM mode
++	 * is enabled.
++	 */
++	u64 reg_profile[AD9910_NUM_PROFILES];
++
+ 	/* Lock for accessing device registers and state variables */
+ 	struct mutex lock;
+ 
+ 	struct ad9910_data data;
+ 	u8 profile;
+ 
++	bool ram_fwu_cancel;
++	char ram_fwu_name[20];
++
+ 	union {
+ 		__be64 be64;
+ 		__be32 be32;
+@@ -337,6 +395,16 @@ static const char * const ad9910_drg_oper_mode_str[] = {
+ 	[AD9910_DRG_OPER_MODE_BIDIR_CONT] = "bidirectional_continuous",
+ };
+ 
++static const char * const ad9910_ram_oper_mode_str[] = {
++	[AD9910_RAM_MODE_DIRECT_SWITCH] = "direct_switch",
++	[AD9910_RAM_MODE_RAMP_UP] = "ramp_up",
++	[AD9910_RAM_MODE_BIDIR] = "bidirectional",
++	[AD9910_RAM_MODE_BIDIR_CONT] = "bidirectional_continuous",
++	[AD9910_RAM_MODE_RAMP_UP_CONT] = "ramp_up_continuous",
++	[AD9910_RAM_MODE_SEQ] = "sequenced",
++	[AD9910_RAM_MODE_SEQ_CONT] = "sequenced_continuous",
++};
++
+ /**
+  * ad9910_rational_scale() - Perform scaling of input given a reference.
+  * @input: The input value to be scaled.
+@@ -352,6 +420,22 @@ static const char * const ad9910_drg_oper_mode_str[] = {
+ 	mul_u64_add_u64_div_u64(input, scale, _tmp >> 1, _tmp);	\
+ })
+ 
++static inline u64 ad9910_ram_profile_val(struct ad9910_state *st)
++{
++	if (AD9910_RAM_ENABLED(st))
++		return st->reg_profile[st->profile];
++	else
++		return st->reg[st->profile].val64;
++}
++
++static inline u64 ad9910_st_profile_val(struct ad9910_state *st)
++{
++	if (AD9910_RAM_ENABLED(st))
++		return st->reg[st->profile].val64;
++	else
++		return st->reg_profile[st->profile];
++}
++
+ static int ad9910_io_update(struct ad9910_state *st)
+ {
+ 	if (st->gpio_update) {
+@@ -544,6 +628,14 @@ static int ad9910_chan_destination_set(struct iio_dev *indio_dev,
+ 					   AD9910_CFR2_DRG_DEST_MSK,
+ 					   FIELD_PREP(AD9910_CFR2_DRG_DEST_MSK, val),
+ 					   true);
++	case AD9910_CHANNEL_RAM:
++		if (AD9910_RAM_ENABLED(st))
++			return -EBUSY;
++
++		return ad9910_reg32_update(st, AD9910_REG_CFR1,
++					   AD9910_CFR1_RAM_PLAYBACK_DEST_MSK,
++					   FIELD_PREP(AD9910_CFR1_RAM_PLAYBACK_DEST_MSK, val),
++					   true);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -560,6 +652,9 @@ static int ad9910_chan_destination_get(struct iio_dev *indio_dev,
+ 	case AD9910_CHANNEL_DRG:
+ 		return FIELD_GET(AD9910_CFR2_DRG_DEST_MSK,
+ 				 st->reg[AD9910_REG_CFR2].val32);
++	case AD9910_CHANNEL_RAM:
++		return FIELD_GET(AD9910_CFR1_RAM_PLAYBACK_DEST_MSK,
++				 st->reg[AD9910_REG_CFR1].val32);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -590,6 +685,93 @@ static int ad9910_drg_oper_mode_get(struct iio_dev *indio_dev,
+ 			 st->reg[AD9910_REG_CFR2].val32);
+ }
+ 
++static int ad9910_ram_oper_mode_set(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    unsigned int val)
++{
++	struct ad9910_state *st = iio_priv(indio_dev);
++	u32 profile_ctl;
++	int ret;
++
++	guard(mutex)(&st->lock);
++
++	/*
++	 * RAM sequenced modes use the internal profile control:
++	 *  - Sequence mode takes precedence over regular profile modes
++	 *  - Active profile defines the internal profile control target
++	 *  - Profile 0 cannot be used as sequenced mode target
++	 *  - Profile X cannot be set as sequenced mode target if another
++	 *    profile is currently set.
++	 */
++	profile_ctl = FIELD_GET(AD9910_CFR1_INT_PROFILE_CTL_MSK,
++				st->reg[AD9910_REG_CFR1].val32);
++	if (AD9910_RAM_PROFILE_CTL_CONT_MSK & profile_ctl)
++		profile_ctl = (profile_ctl & ~AD9910_RAM_PROFILE_CTL_CONT_MSK) + 1;
++
++	if (val >= AD9910_RAM_MODE_SEQ) {
++		if (!st->profile)
++			return -EINVAL;
++
++		if (profile_ctl && profile_ctl != st->profile)
++			return -EBUSY;
++
++		/* update profile control */
++		profile_ctl = st->profile;
++		if (val == AD9910_RAM_MODE_SEQ_CONT)
++			profile_ctl = AD9910_RAM_PROFILE_CTL_CONT_MSK | (profile_ctl - 1);
++		profile_ctl = FIELD_PREP(AD9910_CFR1_INT_PROFILE_CTL_MSK, profile_ctl);
++		return ad9910_reg32_update(st, AD9910_REG_CFR1,
++					   AD9910_CFR1_INT_PROFILE_CTL_MSK,
++					   profile_ctl, true);
++	}
++
++	if (profile_ctl && profile_ctl == st->profile) {
++		/* clear internal profile control */
++		ret = ad9910_reg32_update(st, AD9910_REG_CFR1,
++					  AD9910_CFR1_INT_PROFILE_CTL_MSK,
++					  0, true);
++		if (ret)
++			return ret;
++	}
++
++	if (AD9910_RAM_ENABLED(st))
++		return ad9910_reg64_update(st, AD9910_REG_PROFILE(st->profile),
++					   AD9910_PROFILE_RAM_MODE_CONTROL_MSK,
++					   FIELD_PREP(AD9910_PROFILE_RAM_MODE_CONTROL_MSK, val),
++					   true);
++
++	FIELD_MODIFY(AD9910_PROFILE_RAM_MODE_CONTROL_MSK,
++		     &st->reg_profile[st->profile], val);
++	return 0;
++}
++
++static int ad9910_ram_oper_mode_get(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan)
++{
++	struct ad9910_state *st = iio_priv(indio_dev);
++	u32 profile_ctl;
++	bool seq_cont = false;
++
++	guard(mutex)(&st->lock);
++
++	profile_ctl = FIELD_GET(AD9910_CFR1_INT_PROFILE_CTL_MSK,
++				st->reg[AD9910_REG_CFR1].val32);
++	if (AD9910_RAM_PROFILE_CTL_CONT_MSK & profile_ctl) {
++		seq_cont = true;
++		profile_ctl = (profile_ctl & ~AD9910_RAM_PROFILE_CTL_CONT_MSK) + 1;
++	}
++
++	if (profile_ctl && profile_ctl == st->profile)
++		return (seq_cont) ? AD9910_RAM_MODE_SEQ_CONT : AD9910_RAM_MODE_SEQ;
++
++	if (AD9910_RAM_ENABLED(st))
++		return FIELD_GET(AD9910_PROFILE_RAM_MODE_CONTROL_MSK,
++				 st->reg[AD9910_REG_PROFILE(st->profile)].val64);
++
++	return FIELD_GET(AD9910_PROFILE_RAM_MODE_CONTROL_MSK,
++			 st->reg_profile[st->profile]);
++}
++
+ static ssize_t ad9910_ext_info_read(struct iio_dev *indio_dev,
+ 				    uintptr_t private,
+ 				    const struct iio_chan_spec *chan,
+@@ -612,6 +794,14 @@ static ssize_t ad9910_ext_info_read(struct iio_dev *indio_dev,
+ 		val = BIT(FIELD_GET(AD9910_CFR2_FM_GAIN_MSK,
+ 				    st->reg[AD9910_REG_CFR2].val32));
+ 		break;
++	case AD9910_RAM_START_ADDR:
++		val = FIELD_GET(AD9910_PROFILE_RAM_START_ADDR_MSK,
++				ad9910_ram_profile_val(st));
++		break;
++	case AD9910_RAM_END_ADDR:
++		val = FIELD_GET(AD9910_PROFILE_RAM_END_ADDR_MSK,
++				ad9910_ram_profile_val(st));
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -656,6 +846,33 @@ static ssize_t ad9910_ext_info_write(struct iio_dev *indio_dev,
+ 					  AD9910_CFR2_FM_GAIN_MSK,
+ 					  val32, true);
+ 		break;
++	case AD9910_RAM_START_ADDR:
++		if (AD9910_RAM_ENABLED(st))
++			return -EBUSY;
++
++		if (val32 > AD9910_RAM_ADDR_MAX)
++			return -EINVAL;
++
++		if (val32 > FIELD_GET(AD9910_PROFILE_RAM_END_ADDR_MSK,
++				      st->reg_profile[st->profile]))
++			FIELD_MODIFY(AD9910_PROFILE_RAM_END_ADDR_MSK,
++				     &st->reg_profile[st->profile], val32);
++
++		FIELD_MODIFY(AD9910_PROFILE_RAM_START_ADDR_MSK,
++			     &st->reg_profile[st->profile], val32);
++		break;
++	case AD9910_RAM_END_ADDR:
++		if (AD9910_RAM_ENABLED(st))
++			return -EBUSY;
++
++		if (val32 > AD9910_RAM_ADDR_MAX ||
++		    val32 < FIELD_GET(AD9910_PROFILE_RAM_START_ADDR_MSK,
++				      st->reg_profile[st->profile]))
++			return -EINVAL;
++
++		FIELD_MODIFY(AD9910_PROFILE_RAM_END_ADDR_MSK,
++			     &st->reg_profile[st->profile], val32);
++		break;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -919,6 +1136,20 @@ static const struct iio_enum ad9910_drg_oper_mode_enum = {
+ 	.get = ad9910_drg_oper_mode_get,
+ };
+ 
++static const struct iio_enum ad9910_ram_destination_enum = {
++	.items = ad9910_destination_str,
++	.num_items = AD9910_RAM_DEST_NUM,
++	.set = ad9910_chan_destination_set,
++	.get = ad9910_chan_destination_get,
++};
++
++static const struct iio_enum ad9910_ram_oper_mode_enum = {
++	.items = ad9910_ram_oper_mode_str,
++	.num_items = ARRAY_SIZE(ad9910_ram_oper_mode_str),
++	.set = ad9910_ram_oper_mode_set,
++	.get = ad9910_ram_oper_mode_get,
++};
++
+ static const struct iio_chan_spec_ext_info ad9910_phy_ext_info[] = {
+ 	AD9910_EXT_INFO("profile", AD9910_PROFILE, IIO_SEPARATE),
+ 	AD9910_EXT_INFO("powerdown", AD9910_POWERDOWN, IIO_SEPARATE),
+@@ -948,6 +1179,16 @@ static const struct iio_chan_spec_ext_info ad9910_drg_ramp_ext_info[] = {
+ 	{ }
+ };
+ 
++static const struct iio_chan_spec_ext_info ad9910_ram_ext_info[] = {
++	IIO_ENUM("destination", IIO_SEPARATE, &ad9910_ram_destination_enum),
++	IIO_ENUM_AVAILABLE("destination", IIO_SEPARATE, &ad9910_ram_destination_enum),
++	IIO_ENUM("operating_mode", IIO_SEPARATE, &ad9910_ram_oper_mode_enum),
++	IIO_ENUM_AVAILABLE("operating_mode", IIO_SEPARATE, &ad9910_ram_oper_mode_enum),
++	AD9910_EXT_INFO("address_start", AD9910_RAM_START_ADDR, IIO_SEPARATE),
++	AD9910_EXT_INFO("address_end", AD9910_RAM_END_ADDR, IIO_SEPARATE),
++	{ }
++};
++
+ static const struct iio_chan_spec ad9910_channels[] = {
+ 	[AD9910_CHAN_IDX_PHY] = {
+ 		.type = IIO_ALTVOLTAGE,
+@@ -1015,6 +1256,19 @@ static const struct iio_chan_spec ad9910_channels[] = {
+ 				      BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 		.ext_info = ad9910_drg_ramp_ext_info,
+ 	},
++	[AD9910_CHAN_IDX_RAM] = {
++		.type = IIO_ALTVOLTAGE,
++		.indexed = 1,
++		.output = 1,
++		.channel = AD9910_CHANNEL_RAM,
++		.address = AD9910_CHAN_IDX_RAM,
++		.scan_index = -1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_ENABLE) |
++				      BIT(IIO_CHAN_INFO_FREQUENCY) |
++				      BIT(IIO_CHAN_INFO_PHASE) |
++				      BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.ext_info = ad9910_ram_ext_info,
++	},
+ };
+ 
+ static int ad9910_read_raw(struct iio_dev *indio_dev,
+@@ -1038,6 +1292,10 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+ 			*val = FIELD_GET(AD9910_CFR2_DRG_ENABLE_MSK,
+ 					 st->reg[AD9910_REG_CFR2].val32);
+ 			break;
++		case AD9910_CHANNEL_RAM:
++			*val = FIELD_GET(AD9910_CFR1_RAM_ENABLE_MSK,
++					 st->reg[AD9910_REG_CFR1].val32);
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -1046,7 +1304,7 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+ 		switch (chan->channel) {
+ 		case AD9910_CHANNEL_SINGLE_TONE:
+ 			tmp32 = FIELD_GET(AD9910_PROFILE_ST_FTW_MSK,
+-					  st->reg[AD9910_REG_PROFILE(st->profile)].val64);
++					  ad9910_st_profile_val(st));
+ 			break;
+ 		case AD9910_CHANNEL_DRG_RAMP_UP:
+ 			tmp32 = FIELD_GET(AD9910_DRG_LIMIT_UPPER_MSK,
+@@ -1056,6 +1314,9 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+ 			tmp32 = FIELD_GET(AD9910_DRG_LIMIT_LOWER_MSK,
+ 					  st->reg[AD9910_REG_DRG_LIMIT].val64);
+ 			break;
++		case AD9910_CHANNEL_RAM:
++			tmp32 = st->reg[AD9910_REG_FTW].val32;
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -1067,7 +1328,7 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+ 		switch (chan->channel) {
+ 		case AD9910_CHANNEL_SINGLE_TONE:
+ 			tmp64 = FIELD_GET(AD9910_PROFILE_ST_POW_MSK,
+-					  st->reg[AD9910_REG_PROFILE(st->profile)].val64);
++					  ad9910_st_profile_val(st));
+ 			tmp32 = (tmp64 * AD9910_MAX_PHASE_MICRORAD) >> 16;
+ 			*val = tmp32 / MICRO;
+ 			*val2 = tmp32 % MICRO;
+@@ -1084,6 +1345,12 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+ 			tmp64 = (tmp64 * AD9910_PI_NANORAD) >> 31;
+ 			*val = div_u64_rem(tmp64, NANO, val2);
+ 			return IIO_VAL_INT_PLUS_NANO;
++		case AD9910_CHANNEL_RAM:
++			tmp64 = st->reg[AD9910_REG_POW].val16;
++			tmp32 = (tmp64 * AD9910_MAX_PHASE_MICRORAD) >> 16;
++			*val = tmp32 / MICRO;
++			*val2 = tmp32 % MICRO;
++			return IIO_VAL_INT_PLUS_MICRO;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -1091,7 +1358,7 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+ 		switch (chan->channel) {
+ 		case AD9910_CHANNEL_SINGLE_TONE:
+ 			tmp64 = FIELD_GET(AD9910_PROFILE_ST_ASF_MSK,
+-					  st->reg[AD9910_REG_PROFILE(st->profile)].val64);
++					  ad9910_st_profile_val(st));
+ 			*val = 0;
+ 			*val2 = tmp64 * MICRO >> 14;
+ 			return IIO_VAL_INT_PLUS_MICRO;
+@@ -1123,6 +1390,10 @@ static int ad9910_read_raw(struct iio_dev *indio_dev,
+ 			tmp32 = FIELD_GET(AD9910_DRG_RATE_DEC_MSK,
+ 					  st->reg[AD9910_REG_DRG_RATE].val32);
+ 			break;
++		case AD9910_CHANNEL_RAM:
++			tmp32 = FIELD_GET(AD9910_PROFILE_RAM_STEP_RATE_MSK,
++					  ad9910_ram_profile_val(st));
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -1144,6 +1415,7 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 	struct ad9910_state *st = iio_priv(indio_dev);
+ 	u64 tmp64;
+ 	u32 tmp32;
++	int ret, i;
+ 
+ 	guard(mutex)(&st->lock);
+ 
+@@ -1161,6 +1433,26 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 			return ad9910_reg32_update(st, AD9910_REG_CFR2,
+ 						   AD9910_CFR2_DRG_ENABLE_MSK,
+ 						   tmp32, true);
++		case AD9910_CHANNEL_RAM:
++			if (AD9910_RAM_ENABLED(st) == val)
++				return 0;
++
++			/* switch profile configs */
++			for (i = 0; i < AD9910_NUM_PROFILES; i++) {
++				tmp64 = st->reg[AD9910_REG_PROFILE(i)].val64;
++				ret = ad9910_reg64_write(st,
++							 AD9910_REG_PROFILE(i),
++							 st->reg_profile[i],
++							 false);
++				if (ret)
++					return ret;
++				st->reg_profile[i] = tmp64;
++			}
++
++			tmp32 = FIELD_PREP(AD9910_CFR1_RAM_ENABLE_MSK, val);
++			return ad9910_reg32_update(st, AD9910_REG_CFR1,
++						   AD9910_CFR1_RAM_ENABLE_MSK,
++						   tmp32, true);
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -1173,6 +1465,11 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 		tmp64 = min(tmp64, U32_MAX);
+ 		switch (chan->channel) {
+ 		case AD9910_CHANNEL_SINGLE_TONE:
++			if (AD9910_RAM_ENABLED(st)) {
++				FIELD_MODIFY(AD9910_PROFILE_ST_FTW_MSK,
++					     &st->reg_profile[st->profile], tmp64);
++				return 0;
++			}
+ 			tmp64 = FIELD_PREP(AD9910_PROFILE_ST_FTW_MSK, tmp64);
+ 			return ad9910_reg64_update(st, AD9910_REG_PROFILE(st->profile),
+ 						   AD9910_PROFILE_ST_FTW_MSK,
+@@ -1187,6 +1484,8 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 			return ad9910_reg64_update(st, AD9910_REG_DRG_LIMIT,
+ 						   AD9910_DRG_LIMIT_LOWER_MSK,
+ 						   tmp64, true);
++		case AD9910_CHANNEL_RAM:
++			return ad9910_reg32_write(st, AD9910_REG_FTW, tmp64, true);
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -1203,6 +1502,13 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 			tmp64 <<= 16;
+ 			tmp64 = DIV_U64_ROUND_CLOSEST(tmp64, AD9910_MAX_PHASE_MICRORAD);
+ 			tmp64 = min(tmp64, AD9910_POW_MAX);
++
++			if (AD9910_RAM_ENABLED(st)) {
++				FIELD_MODIFY(AD9910_PROFILE_ST_POW_MSK,
++					     &st->reg_profile[st->profile], tmp64);
++				return 0;
++			}
++
+ 			tmp64 = FIELD_PREP(AD9910_PROFILE_ST_POW_MSK, tmp64);
+ 			return ad9910_reg64_update(st, AD9910_REG_PROFILE(st->profile),
+ 						   AD9910_PROFILE_ST_POW_MSK,
+@@ -1231,6 +1537,15 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 			return ad9910_reg64_update(st, AD9910_REG_DRG_LIMIT,
+ 						   AD9910_DRG_LIMIT_LOWER_MSK,
+ 						   tmp64, true);
++		case AD9910_CHANNEL_RAM:
++			tmp64 = (u64)val * MICRO + val2;
++			if (tmp64 >= AD9910_MAX_PHASE_MICRORAD)
++				return -EINVAL;
++
++			tmp64 <<= 16;
++			tmp64 = DIV_U64_ROUND_CLOSEST(tmp64, AD9910_MAX_PHASE_MICRORAD);
++			tmp64 = min(tmp64, AD9910_POW_MAX);
++			return ad9910_reg16_write(st, AD9910_REG_POW, tmp64, true);
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -1243,6 +1558,13 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 			tmp64 = ((u64)val * MICRO + val2) << 14;
+ 			tmp64 = DIV_U64_ROUND_CLOSEST(tmp64, MICRO);
+ 			tmp64 = min(tmp64, AD9910_ASF_MAX);
++
++			if (AD9910_RAM_ENABLED(st)) {
++				FIELD_MODIFY(AD9910_PROFILE_ST_ASF_MSK,
++					     &st->reg_profile[st->profile], tmp64);
++				return 0;
++			}
++
+ 			tmp64 = FIELD_PREP(AD9910_PROFILE_ST_ASF_MSK, tmp64);
+ 			return ad9910_reg64_update(st, AD9910_REG_PROFILE(st->profile),
+ 						   AD9910_PROFILE_ST_ASF_MSK,
+@@ -1288,12 +1610,26 @@ static int ad9910_write_raw(struct iio_dev *indio_dev,
+ 			return ad9910_reg32_update(st, AD9910_REG_DRG_RATE,
+ 						   AD9910_DRG_RATE_DEC_MSK,
+ 						   tmp32, true);
++		case AD9910_CHANNEL_RAM:
++			if (!AD9910_RAM_ENABLED(st)) {
++				FIELD_MODIFY(AD9910_PROFILE_RAM_STEP_RATE_MSK,
++					     &st->reg_profile[st->profile], tmp32);
++				return 0;
++			}
++
++			tmp64 = FIELD_PREP(AD9910_PROFILE_RAM_STEP_RATE_MSK, tmp32);
++			return ad9910_reg64_update(st, AD9910_REG_PROFILE(st->profile),
++						   AD9910_PROFILE_RAM_STEP_RATE_MSK,
++						   tmp64, true);
++
+ 		default:
+ 			return -EINVAL;
+ 		}
+ 	default:
+ 		return -EINVAL;
+ 	}
++
++	return ret;
+ }
+ 
+ static int ad9910_write_raw_get_fmt(struct iio_dev *indio_dev,
+@@ -1309,6 +1645,7 @@ static int ad9910_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		switch (chan->channel) {
+ 		case AD9910_CHANNEL_SINGLE_TONE:
++		case AD9910_CHANNEL_RAM:
+ 			return IIO_VAL_INT_PLUS_MICRO;
+ 		case AD9910_CHANNEL_DRG_RAMP_UP:
+ 		case AD9910_CHANNEL_DRG_RAMP_DOWN:
+@@ -1401,6 +1738,88 @@ static int ad9910_reg_access(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static enum fw_upload_err ad9910_ram_fwu_prepare(struct fw_upload *fw_upload,
++						 const u8 *data, u32 size)
++{
++	struct ad9910_state *st = fw_upload->dd_handle;
++
++	if (size == 0 || size > AD9910_RAM_SIZE_MAX_BYTES ||
++	    size % AD9910_RAM_WORD_SIZE)
++		return FW_UPLOAD_ERR_INVALID_SIZE;
++
++	guard(mutex)(&st->lock);
++	st->ram_fwu_cancel = false;
++	return FW_UPLOAD_ERR_NONE;
++}
++
++static enum fw_upload_err ad9910_ram_fwu_write(struct fw_upload *fw_upload,
++					       const u8 *data, u32 offset,
++					       u32 size, u32 *written)
++{
++	struct ad9910_state *st = fw_upload->dd_handle;
++	u64 tmp64, backup;
++	int ret, ret2, idx;
++
++	if (offset != 0)
++		return FW_UPLOAD_ERR_INVALID_SIZE;
++
++	guard(mutex)(&st->lock);
++
++	if (st->ram_fwu_cancel)
++		return FW_UPLOAD_ERR_CANCELED;
++
++	if (AD9910_RAM_ENABLED(st))
++		return FW_UPLOAD_ERR_HW_ERROR;
++
++	/* ensure profile is selected */
++	ret = ad9910_profile_set(st, st->profile);
++	if (ret)
++		return FW_UPLOAD_ERR_HW_ERROR;
++
++	/* backup profile register */
++	backup = st->reg[AD9910_REG_PROFILE(st->profile)].val64;
++	tmp64 = AD9910_PROFILE_RAM_STEP_RATE_MSK |
++		FIELD_PREP(AD9910_PROFILE_RAM_START_ADDR_MSK, 0) |
++		FIELD_PREP(AD9910_PROFILE_RAM_END_ADDR_MSK,
++			   size / AD9910_RAM_WORD_SIZE - 1);
++	ret = ad9910_reg64_write(st, AD9910_REG_PROFILE(st->profile), tmp64, true);
++	if (ret)
++		return FW_UPLOAD_ERR_RW_ERROR;
++
++	/* reverse data into tx_buf[1:] */
++	for (idx = 0; idx < size; idx++)
++		st->tx_buf[size - idx] = data[idx];
++
++	/* write ram data and restore profile register */
++	ret = ad9910_spi_write(st, AD9910_REG_RAM, size, false);
++	ret2 = ad9910_reg64_write(st, AD9910_REG_PROFILE(st->profile), backup, true);
++	if (ret || ret2)
++		return FW_UPLOAD_ERR_RW_ERROR;
++
++	*written = size;
++	return FW_UPLOAD_ERR_NONE;
++}
++
++static enum fw_upload_err ad9910_ram_fwu_poll_complete(struct fw_upload *fw_upload)
++{
++	return FW_UPLOAD_ERR_NONE;
++}
++
++static void ad9910_ram_fwu_cancel(struct fw_upload *fw_upload)
++{
++	struct ad9910_state *st = fw_upload->dd_handle;
++
++	guard(mutex)(&st->lock);
++	st->ram_fwu_cancel = true;
++}
++
++static const struct fw_upload_ops ad9910_ram_fwu_ops = {
++	.prepare = ad9910_ram_fwu_prepare,
++	.write = ad9910_ram_fwu_write,
++	.poll_complete = ad9910_ram_fwu_poll_complete,
++	.cancel = ad9910_ram_fwu_cancel
++};
++
+ static const struct iio_info ad9910_info = {
+ 	.read_raw = ad9910_read_raw,
+ 	.write_raw = ad9910_write_raw,
+@@ -1503,6 +1922,13 @@ static int ad9910_setup(struct ad9910_state *st, struct reset_control *dev_rst)
+ 	if (ret)
+ 		return ret;
+ 
++	for (int i = 0; i < AD9910_NUM_PROFILES; i++) {
++		st->reg_profile[i] = AD9910_PROFILE_RAM_OPEN_MSK;
++		st->reg_profile[i] |= FIELD_PREP(AD9910_PROFILE_RAM_STEP_RATE_MSK, 1);
++		st->reg_profile[i] |= FIELD_PREP(AD9910_PROFILE_RAM_END_ADDR_MSK,
++						 AD9910_RAM_ADDR_MAX);
++	}
++
+ 	return ad9910_io_update(st);
+ }
+ 
+@@ -1510,6 +1936,8 @@ static void ad9910_release(void *data)
+ {
+ 	struct ad9910_state *st = data;
+ 
++	firmware_upload_unregister(st->ram_fwu);
++
+ 	if (!ad9910_powerdown_set(st, true))
+ 		return;
+ 
+@@ -1519,6 +1947,24 @@ static void ad9910_release(void *data)
+ 			    true);
+ }
+ 
++static inline void ad9910_debugfs_init(struct ad9910_state *st,
++				       struct iio_dev *indio_dev)
++{
++#ifdef CONFIG_DEBUG_FS
++	char buf[64];
++
++	/*
++	 * symlinks are created here so iio userspace tools can refer to them
++	 * as debug attributes.
++	 */
++	snprintf(buf, sizeof(buf), "/sys/class/firmware/%s/loading", st->ram_fwu_name);
++	debugfs_create_symlink("ram_loading", iio_get_debugfs_dentry(indio_dev), buf);
++
++	snprintf(buf, sizeof(buf), "/sys/class/firmware/%s/data", st->ram_fwu_name);
++	debugfs_create_symlink("ram_data", iio_get_debugfs_dentry(indio_dev), buf);
++#endif
++}
++
+ static int ad9910_probe(struct spi_device *spi)
+ {
+ 	struct reset_control *dev_rst;
+@@ -1606,6 +2052,16 @@ static int ad9910_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
++	snprintf(st->ram_fwu_name, sizeof(st->ram_fwu_name), "%s:ram",
++		 dev_name(&indio_dev->dev));
++	st->ram_fwu = firmware_upload_register(THIS_MODULE, dev, st->ram_fwu_name,
++					       &ad9910_ram_fwu_ops, st);
++	if (IS_ERR(st->ram_fwu))
++		return dev_err_probe(dev, PTR_ERR(st->ram_fwu),
++				     "failed to register to the RAM Upload\n");
++
++	ad9910_debugfs_init(st, indio_dev);
++
+ 	return devm_add_action_or_reset(dev, ad9910_release, st);
+ }
+ 
 
 -- 
 2.43.0
