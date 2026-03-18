@@ -1,60 +1,62 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.9])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0D7ED3DB62A;
-	Wed, 18 Mar 2026 14:44:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6BEA53DBD71;
+	Wed, 18 Mar 2026 14:49:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.9
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773845042; cv=none; b=udNmul8xpXsWHWMkvUBZgMrCe1nFsZVNYAkkc55VV1Ig8ib+6xO59oGADr3fbHp2Qj2H264Y3i5/SlPnEKI5kD0SxFbGX6asPPMfcD6J3XyXi/YGA5au7A6G3VvVVqk0jsO6WWWGITUvAF4jQ5xZMjNxLhpcVxJRu6lnP8RYbW8=
+	t=1773845388; cv=none; b=n/2DKRsgSdrCukugK3AWy9i+uHRFnbZDiryEdl8lPXvvmVaHztuayu1PnzfYaI9UEhx4Il1jYXfNQHLkk1IhHAI2cuJuhxj51CpAMX8y5fVJk6kb22fabmDEyCs95+MdsqKQbOtUhdX5sauVChZVr9EIeis1xr11FFQAlB8bG4g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773845042; c=relaxed/simple;
-	bh=ziUJJrxQoChCmmBitdk5qu+DBlIoOZvljIrMYiiSpfQ=;
+	s=arc-20240116; t=1773845388; c=relaxed/simple;
+	bh=uEWPn5jGM5fD2pT2Y42/FRgelyycChFD/1jOXgQgjbI=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=OVGZCs0rBxFL+5rT/a0SGKOR1ifn83A/nOFpNfBfMh0KAE71vFa2oK8wRTAhUp2o9AnmyOFxW40YsgeadQFZQRcYy3A/W9Fw+OAUBtusJnodQt771qaBJzcH7OsuRJdUhVQ80/LPeYVzWiEoUOkeIVl5HmCg8N2pKyS5VqlE5n8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LhFhCvKr; arc=none smtp.client-ip=192.198.163.10
+	 Content-Type:Content-Disposition:In-Reply-To; b=vBX5Xx8suEqfC2V9fArAhZFzQodUx7gXW5YmuGUBJ85MuGHwD1iJLggm5c4Dec1cccnBjW1sKQfivFRCmZMBnL/4c01GPfD8Fpe5o4kXXjKGE5QNe72iFawk2n6Y4KMsMjW2kolBta2F6w0o2k2dSONduHQWffFOb41DO6vP4/k=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=OY8CkSRX; arc=none smtp.client-ip=192.198.163.9
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LhFhCvKr"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="OY8CkSRX"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773845041; x=1805381041;
+  t=1773845386; x=1805381386;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=ziUJJrxQoChCmmBitdk5qu+DBlIoOZvljIrMYiiSpfQ=;
-  b=LhFhCvKrYFnFFRUZ0ffc0X2P8uq4lrBcnx9yNQ8T+VuTTIk7/tXNoEUt
-   iMG9aYNwPNxwv8Sxp5nBLrIe2qfAE2vOCvQYg0rjfdMVNOuKr0mA83e+x
-   T2Q4WZSOPcDjIL7uRxunk/I8aBy01Snz8A49GNcyEIP+i39Kb5sZImyQ5
-   nEOi5Mk48PM1PSlg7hGsDjEa4SDf1r1insK/bm5HTbPy4OCRpwg2aj2u2
-   A7/Gaw3LDCap0jgO/2oJ6i8JiPxjIBzEWacdWS7rbeB6aYa2O87xwbqnZ
-   ukFAqrDCHAQw1uOUgUPyuoXHHHNtgEyuQop9APp4wzajRH7RF68Qm7WYl
-   A==;
-X-CSE-ConnectionGUID: N7xsQILZR1G83jW7r+lVKg==
-X-CSE-MsgGUID: aaPxn8uiTBeKyuO1wIxXVw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11733"; a="86257299"
+  bh=uEWPn5jGM5fD2pT2Y42/FRgelyycChFD/1jOXgQgjbI=;
+  b=OY8CkSRXp0/cFQutJmr3xr064M6r1tk8j8RJtQ7z83ackEVbFJs2nrHc
+   3lqu/v5+eF3qjkze85j0zj0upNzoN6OH/Bs2MorrDtI0kOreq4xsuBtBC
+   3fGQ6sKFZS5wDfYAxfds76E6pzS66y1WLzxTm+AFjMUeyz7SEHWGu1Z1w
+   wfl2C5AxosH3M2PAAqva0tcJtkd/3LeoDSNfiK50y1Mgks/6ZFtVnPweK
+   4yCKNa8mXnRyi+OMN8PU+MHKnA6NaF2kgaQVa9kYVEXG7DXo+jIkFqH0X
+   fjkR+CZjpjdqVGhzHeHEhWlugEzeX3TpNK4NLKHXJWkOg4kqxEQNx9Ihp
+   Q==;
+X-CSE-ConnectionGUID: 8jvQnQOuSPmJ8P7TYZoUJA==
+X-CSE-MsgGUID: njofDgT8TP6DlsDApEWY0A==
+X-IronPort-AV: E=McAfee;i="6800,10657,11733"; a="85600352"
 X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
-   d="scan'208";a="86257299"
-Received: from orviesa008.jf.intel.com ([10.64.159.148])
-  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 07:44:00 -0700
-X-CSE-ConnectionGUID: Sw49CquMS4WKUCtZQP9r0Q==
-X-CSE-MsgGUID: JbrpFaUZRPWTM4c59pGXGg==
+   d="scan'208";a="85600352"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by fmvoesa103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 07:49:45 -0700
+X-CSE-ConnectionGUID: gHgxdoE1Q4KtOErVhtT/fQ==
+X-CSE-MsgGUID: ZJGL+bEqRoSCy1RA9bDXdA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,127,1770624000"; 
-   d="scan'208";a="222704468"
+   d="scan'208";a="226783693"
 Received: from pgcooper-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.240])
-  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 07:43:57 -0700
-Date: Wed, 18 Mar 2026 16:43:54 +0200
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Mar 2026 07:49:42 -0700
+Date: Wed, 18 Mar 2026 16:49:39 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Archit Anant <architanant5@gmail.com>
-Cc: jic23@kernel.org, lars@metafoo.de, Michael.Hennerich@analog.com,
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v5 4/4] iio: adc: ad799x: use devm_iio_device_register
- and drop remove()
-Message-ID: <abq6KlV7wSgAse_f@ashevche-desk.local>
-References: <20260318092715.42538-1-architanant5@gmail.com>
- <20260318092715.42538-5-architanant5@gmail.com>
+To: ShiHao <i.shihao.999@gmail.com>
+Cc: jic23@kernel.org, andy@kernel.org, dlechner@baylibre.com,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	mazziesaccount@gmail.com, nuno.sa@analog.com
+Subject: Re: [PATCH v5 08/14] iio: resolver: fix typo from degredation to
+ degradation
+Message-ID: <abq7g-9GnQaFc_1K@ashevche-desk.local>
+References: <20260316090023.14691-1-i.shihao.999@gmail.com>
+ <20260316090023.14691-9-i.shihao.999@gmail.com>
+ <abgt1yoYTnQEiAlk@ashevche-desk.local>
+ <abguXZJjIXMdqcU5@ashevche-desk.local>
+ <abqsaI6-hznIv7dO@fedora>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -63,45 +65,33 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260318092715.42538-5-architanant5@gmail.com>
+In-Reply-To: <abqsaI6-hznIv7dO@fedora>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Mar 18, 2026 at 02:57:15PM +0530, Archit Anant wrote:
-> Convert the driver to use the device-managed versions of
-> iio_device_register(), iio_triggered_buffer_setup(), and mutex_init().
-> 
-> Use devm_add_action_or_reset() to ensure that the VCC and VREF
-> regulators are disabled safely and in the correct order during
-> driver teardown or probe failure.
-> 
-> Because all resources (buffer, regulators, IRQs, IIO device, mutex)
-> are now fully managed by the devm core, the unwinding order is
-> guaranteed to be correct (reverse order of allocation). We can now
-> safely remove all manual error handling goto labels in ad799x_probe()
-> and delete the ad799x_remove() function entirely.
-> 
-> This eliminates boilerplate code and prevents potential resource leaks.
+On Wed, Mar 18, 2026 at 07:15:12PM +0530, ShiHao wrote:
+> On Mon, Mar 16, 2026 at 06:22:53PM +0200, Andy Shevchenko wrote:
+> > On Mon, Mar 16, 2026 at 06:20:44PM +0200, Andy Shevchenko wrote:
+> > > On Mon, Mar 16, 2026 at 02:30:16PM +0530, Shi Hao wrote:
 
 ...
 
->  		st->vref = devm_regulator_get_optional(dev, "vref");
->  		ret = PTR_ERR_OR_ZERO(st->vref);
->  		if (ret) {
->  			if (ret != -ENODEV)
-> -				goto error_disable_reg;
-> +				return ret;
->  			st->vref = NULL;
->  			dev_info(dev, "Using VCC reference voltage\n");
->  		}
+> > > > 		/* Sine/cosine DOS overrange fault.*/
+> > > 
+> > > Side note: missing space after period. If this is a single issu in the entire
+> > > folder, fix it here.
+> > 
+> > No need to resend just for this. Let Jonathan decide what to do with it.
 
-		if (ret == -ENODEV) {
-			st->vref = NULL;
-			dev_info(dev, "Using VCC reference voltage\n");
-		} else if (ret) {
-			return ret;
-		}
+^^^
 
+> Just wanted to ask a quick question. Do i need to send it again?
+
+Answer is in the above.
+
+> Or is it going to be accepted?
+
+I don't know. I'm not the maintainer of IIO.
 
 -- 
 With Best Regards,
