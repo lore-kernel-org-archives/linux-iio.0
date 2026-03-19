@@ -1,147 +1,108 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 608553016F1;
-	Thu, 19 Mar 2026 07:07:19 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 892E01A9FA4
+	for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 09:00:09 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773904041; cv=none; b=lZy2g8Y4sDhcwjzP8Z4KNDmhKdne+rs2ZiyHivpUoS3WbCfVqSUmkY7ZBV/eHIDVVLvQrWqrU65u5+mN0oC6Ahd7CEHE/+zojQrAJ6bAPGagthPG4SaFWv0cZJiM1Cgh7YxWnixcwyCnZaptxeK+R1v5lJ5VEA1rsv6h4gyq6Sk=
+	t=1773910810; cv=none; b=WSHhjnkROqob+UviYZ0TcrwPpLppEdsva4CVpnDErroSeE6pR+SZ2B+HvrkgZlxxfoAfPfIw//Me19NXVoZfnzrAHB7kBDGrznn1c4SNFnaLJeONmldycdVZWFItAflVu/NS0rk/KPAxZsy6E1QTVbExUOjbJar/2wGAS+sY8pE=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773904041; c=relaxed/simple;
-	bh=HqZvxv5M3Uc//u5TR+0IiGxebSg1L8EwiNhZt0Tr8Cg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=iUCqul4V1zMDyR587y10mYQA4qeu3Y0zxg7c4/LHQ5iTWUJdpcU/XoCUCsKqo9ndcfIH2SVas0Y6mPEvBEnylxMvWtwItJ1xmE6ErpB3D1VYDe/VnZRpojeLdAz6o4XxsCKiS1vuzQmiojUw0a9vC4jeNYdpSH6Fj1KO24MQe5s=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=S8vuUbf7; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1773910810; c=relaxed/simple;
+	bh=cOaR4benzuy/tAa9av2Gyt32qaUQDdgMGTX8iWpnFq0=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=KZAPJSxmCuYIwYjx20cjKgbZSu5gWynbDP9UYYLjC3jI/l/MwQJ6m2VT96yrQuvPpoNov7BP4tKM4G+P1/r8QBf2AQXOyqpQ0ScnYDFS47Xfx1IJcWEBrsCfSQvnc7o2xRrna6QxidVRclOFhMUf+4Z5Fk7mIVPUr5TFvS8WYtY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ONAVyZQV; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="S8vuUbf7"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1773904039; x=1805440039;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=HqZvxv5M3Uc//u5TR+0IiGxebSg1L8EwiNhZt0Tr8Cg=;
-  b=S8vuUbf79tQFqHgjfE+3v0v3PRDVNhvffaZtCL2xKXHMcS+5x4NTT1dm
-   AJh2FysnSQX2JpRus2CPs6b+NFj7pnj+vxtRNirmFFJ3L+k8ug9FZNwfA
-   GPpFoi7qiGPJzTkznWVXYCoq3tbMVkqnadPl60diAEF8E7UXPZUi3sa7p
-   cELa6FSVHviOr6+Tp42tp8W4jYucQy18covuejwtoxNFVB8Ja+5NN7B34
-   XGTq2LuJd4zWWCM7sGgmkZmPOUP//SqhjOS8qie2a3BlW+pV2VpuyxfTM
-   Xv8SA1h818e8DWFW97NRaXcjk/AEweR7Mu76n4IxYe9k1Hu+JTMwayJLp
-   A==;
-X-CSE-ConnectionGUID: fbqmEUm5RturZtpvrUKCUQ==
-X-CSE-MsgGUID: da4YM3/BQgGKnTrW64+k/g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11733"; a="74666116"
-X-IronPort-AV: E=Sophos;i="6.23,128,1770624000"; 
-   d="scan'208";a="74666116"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2026 00:07:19 -0700
-X-CSE-ConnectionGUID: TisbXhG1RlqXgYBlscCYDQ==
-X-CSE-MsgGUID: pLxhv4gWRk2RBqMUIujc2A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,128,1770624000"; 
-   d="scan'208";a="260772059"
-Received: from klitkey1-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.244.120])
-  by smtpauth.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Mar 2026 00:07:16 -0700
-Date: Thu, 19 Mar 2026 09:07:13 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: "Torreno, Alexis Czezar" <AlexisCzezar.Torreno@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	"Hennerich, Michael" <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	"Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
-	Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] iio: dac: ad5706r: Add support for AD5706R DAC
-Message-ID: <abugoaMtEV75Fyk8@ashevche-desk.local>
-References: <20260318-dev_ad5706r-v3-0-5d078f41e988@analog.com>
- <20260318-dev_ad5706r-v3-2-5d078f41e988@analog.com>
- <abpfdELI33a0Ncl3@ashevche-desk.local>
- <PH0PR03MB6351A1A32896F5CFF05A4C10F14FA@PH0PR03MB6351.namprd03.prod.outlook.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ONAVyZQV"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4836cd6e0d4so1024805e9.3
+        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 02:00:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773910808; x=1774515608; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=IFxMhx4qfOMJRpou8F5/5c/Jt9bsxqJx29PwWkr7lhM=;
+        b=ONAVyZQVoWKGKRLziL2sRYsQtcnt/O4wvnOZy7Yq0NFs7Dv5BQjUVibLnGNXTsfTZo
+         qVf07z5hPRVCAGRVW+nmcsvtFR4bXmDJ/zTIwIXonaL0HCZ45ga9Y0L2TKFOtpJDQUiu
+         xDZ7bAjROHBAu+JFPvzATxLhER+Caw3KtqRW2AEzXmPsXeD9V9lUDWPKIq4PmhI4J4Jw
+         envBiklOvbGb76pnQDQHco3u2C4z7Kh+QTsirUl35evCImyVlICWTETAy82nYmCGvtDp
+         sr6L+SGsvJ4uLFe6Nlc4Rfm4a7j1crRKrvne0OtJWWb19g7G5+zTtgQZ7B1WD1vKKJVR
+         8Aag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773910808; x=1774515608;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IFxMhx4qfOMJRpou8F5/5c/Jt9bsxqJx29PwWkr7lhM=;
+        b=pkl4+5tOp4n3hABzl1/+9RKDM8YiBSG1CIbvEqQQ2U0fBps/55SFZm3SbFQos4Tegg
+         Z/Q864221nVf2AJpiwOgCzWeIMgYvjkSpenvO+ussmq2W5RYzOxGaE/ZqQ94oQf+3C4V
+         A2yMm4GX6lk0MmHC0r0RNJcPKTa8NrrqekEncCWuqlWJGhKg77FZwzqob4mZNbmGenJy
+         OBEjwcCX14cmw9ee2cW9664U4d9i974NzbLt9zRbrkfrW5drIYuV92wNajzd08SFnOM/
+         NCeIj0jTAkRuVQrjzYrPAg67Tqy8aHGX39GFykAbfVWMwQl0YH6uXBDefcPM+twXnHe6
+         g9dQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWn4Lv+zGccYh1eEfjokUSDfM4a37pKwl6IYGgPKmkIfr1Z3vmC7d3fCQTDP86eRJtXc5GFJGhd7UM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyBFikWpkGQ7CZfxde9zE59YegOUwUZVOycsId/nQCsP8hJgbyg
+	pOfjq5yoLFRu5Q06lIj1DQh5QMuxNdhFv+zaqrF+osyNXQqYofyFeP67
+X-Gm-Gg: ATEYQzx0YxDpAbXCcKwJKvyqn1rb69yMBhqyqoXq+Xhro8o0PhVJjnSOq40nVIXatYd
+	Hjakfwd5V9l+2bLDYSUPTqoNnNVNhwd+7+vY7Aq7ArhoTQVatbX5YI8K28zTwpuhivX2Qj6iwCp
+	ihU75dshif3baUDvqeqdFUPX7SpefLmMwVFQed4YxAhN7/NCTz7ljQsz3lmeOgiKqcFcubbiklw
+	li5+RMui8GgbpmAnXXLQ/5aAeQZW9TtRFTwgklqfj6T1W1yD20VV6OxspOf6XAYj72Z9rPkjw+U
+	NVcteLg0lJCLCvO5K/16gQtZ9vHF8qgYLPBLaOq/7abflKQp8AXyqxptVXpSFv9ATJwu+ul/9Nu
+	6Cgtyg+aj16AFCAa2U/HXMb+S8dtkM2u6RG8e8pmMh1k24UwkxEFBR54MQ8rPx1rOEHXO2U0CXD
+	9POoRJnApeA+4pMJcA7kETFi5fejPD1y+eH2Qcrlbb/stqCck/x6YU9pGSMdwlSJCrgo1zQ42sd
+	ND9rGFCaKx++Wsk4UkXKpEMAXuQRvnfabAH/TnqkCAVVi4jadMs
+X-Received: by 2002:a05:600c:4685:b0:485:329b:24c with SMTP id 5b1f17b1804b1-486f457987dmr72673945e9.5.1773910807656;
+        Thu, 19 Mar 2026 02:00:07 -0700 (PDT)
+Received: from fedora ([149.3.87.76])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-486f8c40ccbsm87930985e9.9.2026.03.19.02.00.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Mar 2026 02:00:07 -0700 (PDT)
+From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+To: antoniu.miclaus@analog.com,
+	lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org
+Cc: dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	linux-iio@vger.kernel.org,
+	Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+Subject: [PATCH] iio: adc: qcom-spmi-adc5-gen3: remove redundant OR with zero
+Date: Thu, 19 Mar 2026 12:57:42 +0400
+Message-ID: <20260319085741.109359-2-giorgitchankvetadze1997@gmail.com>
+X-Mailer: git-send-email 2.52.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PH0PR03MB6351A1A32896F5CFF05A4C10F14FA@PH0PR03MB6351.namprd03.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Thu, Mar 19, 2026 at 05:23:07AM +0000, Torreno, Alexis Czezar wrote:
-> > On Wed, Mar 18, 2026 at 01:13:36PM +0800, Alexis Czezar Torreno wrote:
+The expression 'ADC5_GEN3_CHAN_CONV_REQ | 0' is redundant because
+OR-ing any value with zero does nothing. Remove the pointless '| 0'
+to simplify the code.
 
-...
+This cleanup has no functional change.
 
-> > > Changes since v1:
-> > >   - Removed PWM, GPIO, clock generator, debugfs, regmap, IIO_BUFFER
-> > 
-> > Why was regmap removed?! Was it not used?
-> 
-> As far as I understand it, regmap also gives access to debugfs. When I removed
-> debugfs I also added regmap as removed.
+Signed-off-by: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
+---
+ drivers/iio/adc/qcom-spmi-adc5-gen3.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Not only debugfs, and it's unrelated to the any custom debugfs interfaces in
-the driver, it's just a feature out-of-the-box of regmap.
-
-> For the spi write/read I am not using regmap as the device has some features
-> that I think regmap_read/write couldn't support. Namely the variable data width,
-> as the device only accepts exact amount of clock cycles. Future patches will also add
-> variable SPI speed.
-
-We have a lot of flexibility in regmap core. Do you think it can be improved /
-extended to cover the cases like yours?
-
-> > >   - Removed all custom ext_info sysfs attributes
-> > >   - Simplified to basic raw read/write and read-only scale
-> > >   - SPI read/write can handle multibyte registers
-
-...
-
-> > > +#include <linux/array_size.h>
-> > > +#include <linux/bits.h>
-> > > +#include <linux/cleanup.h>
-> > 
-> > + errno.h
-> > 
-> > > +#include <linux/iio/iio.h>
-> > 
-> > + mod_devicetable.h
-> > 
-> > > +#include <linux/module.h>
-> > > +#include <linux/mutex.h>
-> > > +#include <linux/spi/spi.h>
-> > 
-> > + types.h
-> > 
-> > > +#include <linux/unaligned.h>
-> > 
-> > Follow IWYU principle.
-> 
-> I did miss errno.h
-
-You missed more as I showed above.
-
-> but it seems the IWYU is stricter than pragmatic.
-
-No, it's not true. The required headers is exactly very pragmatic in order to
-untangle the dependency hell we have in the kernel. You can browse the lore
-archive for that keyword and find tons of problems people reported in the past
-10+ years with that.
-
-> Will adhere to it better.
-
-Please, do.
-
+diff --git a/drivers/iio/adc/qcom-spmi-adc5-gen3.c b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+index f8168a14b907..b3af28ad729d 100644
+--- a/drivers/iio/adc/qcom-spmi-adc5-gen3.c
++++ b/drivers/iio/adc/qcom-spmi-adc5-gen3.c
+@@ -144,7 +144,7 @@ static int adc5_gen3_configure(struct adc5_chip *adc,
+ 	 * Use channel 0 by default for immediate conversion and to indicate
+ 	 * there is an actual conversion request
+ 	 */
+-	buf[1] = ADC5_GEN3_CHAN_CONV_REQ | 0;
++	buf[1] = ADC5_GEN3_CHAN_CONV_REQ;
+ 
+ 	buf[2] = ADC5_GEN3_TIME_IMMEDIATE;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.52.0
 
