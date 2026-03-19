@@ -1,318 +1,159 @@
-Received: from mail.zeus03.de (zeus03.de [194.117.254.33])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 440333CD8BC
-	for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 11:00:50 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=194.117.254.33
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B0FF33CD8D8
+	for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 11:59:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.208.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773918052; cv=none; b=eI0JPPHB2/G9+t8/Nr/d2lxaQ0kIeEdNsVSBiChrf4OvvAUYgmeY2GP1TUwQkX9mQd0AmKUtdPRq+dL0+v//xCRxBa6P8Bh9Xtab5X2w0eFQ0oY+Xbr+5vyJNtxUnIdB0JJgtB2sZA7Gs71rCbilGVc+jHNfUbHSJw/iY9J+wx8=
+	t=1773921552; cv=none; b=SSg8a30xsim+g2Bf5lVBzT7t6+78weHvu99ZL6Fbh2Kzwx6LajKyPQop8V2mUwVm0vFTtTQtNsMao+Q6wDbkowcX8ohR8AxJAkTWwPDRleIkwVxDHtG4vfkmEe1rRyuFrPtrugPwSsYoXi5IPWVgza1NlvRbCyqF2zCJBwLLru0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773918052; c=relaxed/simple;
-	bh=xLRnabvgTKx4wYBVWJuaqvEwtn/R5RIfx0e3rV+lOBk=;
-	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=Z5slrNyzQ7IemCAqpqgSjD3TclwOJQO/J40M/SGtA3vcL+9bVJ4kxA0n0Le5XrCXnmXhoW5UWSAiq1IrtZxeAaTvwd15YxaqTbl3oc3UHTms2e+prFq17Jol9cn5GTbCE05VhJF8m784/ZPOdazhERpgbHv6P9WrKcpb5RZefuI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com; spf=pass smtp.mailfrom=sang-engineering.com; dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b=J19rHBG5; arc=none smtp.client-ip=194.117.254.33
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sang-engineering.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=sang-engineering.com
+	s=arc-20240116; t=1773921552; c=relaxed/simple;
+	bh=1E4pd2YlmrhsMWoBYpF9Kx2qDHKMBYeRsjxeemOUgUs=;
+	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=t8XuNaP+a3Mg+mxXF+XJsL0rjCGpAFJUVaXN5f7QKREpVB+tpL+7ZgICR0sW+jFQfD0WSxOCtFucqfiEQyUc8TQspMCOd+x942gJUQYaVAH6+adB+eahYEEzm4kX13Di4vP4xZJ2yj3irfAVlUgfwgptk6wHfDJbUH2uENQma00=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C/ju+rrn; arc=none smtp.client-ip=209.85.208.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=sang-engineering.com header.i=@sang-engineering.com header.b="J19rHBG5"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-	sang-engineering.com; h=from:to:cc:subject:date:message-id
-	:in-reply-to:references:mime-version:content-transfer-encoding;
-	 s=k1; bh=8P0L9KPwWoEYp1wqQDiVOeC14U3qRws47dAHCjsDfpU=; b=J19rHB
-	G516Loa6KC6cjNGGFS6o39M4DvYSmlYx0QBMOCbXALpYnvDPX8PK0Ysde2dY5S/m
-	CofMZy0XIPxcM/hMk+EKEbWc1QBaTNmwwQihV+wIdVVVGpQ+5Imfxm6mPl9dgqpU
-	KYE604Us3WOi39pIr57P/EwQ43UUFvuSO2+W5Zh8UyOD1Dh3Hvv+QVJKWF6NS/Z6
-	kTCH3carn9FCIQJqEVunQCtXr+C5x7E3kfA09zY1FbZDPYDfTJZ7RLyOYoAZ0yJD
-	onQsy/5KWEQU8kOpB97D8xHOYeql7xpruf4pyAPjoOul/oKpy0Z6v3NgySB6U4BA
-	G7HDzcHC+BiIDsug==
-Received: (qmail 1100090 invoked from network); 19 Mar 2026 12:00:14 +0100
-Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 19 Mar 2026 12:00:14 +0100
-X-UD-Smtp-Session: l3s3148p1@9ooZeV5N5K0gAwDPXzF+ANZpdrMKUeLI
-From: Wolfram Sang <wsa+renesas@sang-engineering.com>
-To: linux-renesas-soc@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org,
-	Wolfram Sang <wsa+renesas@sang-engineering.com>,
-	Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jonathan.cameron@huawei.com>,
-	Lee Jones <lee@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Linus Walleij <linusw@kernel.org>,
-	Bjorn Andersson <andersson@kernel.org>,
-	Baolin Wang <baolin.wang@linux.alibaba.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@redhat.com>,
-	Will Deacon <will@kernel.org>,
-	Boqun Feng <boqun@kernel.org>,
-	Waiman Long <longman@redhat.com>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Shuah Khan <skhan@linuxfoundation.org>,
-	"Rafael J. Wysocki" <rafael@kernel.org>,
-	Danilo Krummrich <dakr@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Orson Zhai <orsonzhai@gmail.com>,
-	Chunyan Zhang <zhang.lyra@gmail.com>,
-	Thomas Gleixner <tglx@kernel.org>,
-	Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-	Alexandre Torgue <alexandre.torgue@foss.st.com>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Srinivas Kandagatla <srini@kernel.org>,
-	Antonio Borneo <antonio.borneo@foss.st.com>,
-	Konrad Dybcio <konradybcio@kernel.org>,
-	linux-remoteproc@vger.kernel.org,
-	linux-doc@vger.kernel.org,
-	driver-core@lists.linux.dev,
-	linux-iio@vger.kernel.org,
-	linux-stm32@st-md-mailman.stormreply.com,
-	linux-arm-kernel@lists.infradead.org,
-	linux-gpio@vger.kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	linux-spi@vger.kernel.org
-Subject: [PATCH v5 15/15] hwspinlock/treewide: refactor consumer.h from public header
-Date: Thu, 19 Mar 2026 11:59:37 +0100
-Message-ID: <20260319105947.6237-16-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.51.0
-In-Reply-To: <20260319105947.6237-1-wsa+renesas@sang-engineering.com>
-References: <20260319105947.6237-1-wsa+renesas@sang-engineering.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C/ju+rrn"
+Received: by mail-ed1-f51.google.com with SMTP id 4fb4d7f45d1cf-667cc4ec065so1010538a12.1
+        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 04:59:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1773921547; x=1774526347; darn=vger.kernel.org;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=IAgP3WIG5lWDJY/O2OUHFGAnFa87nCTWJrnk0yHPluI=;
+        b=C/ju+rrn+3ZRpWK5U7+UOtxDkEUI6N7ZTUOGO9KzRKyAfBNwGncXU9LwRat4TkLdrW
+         KGU3FRJgpcB/gp6BlbU841r9iZK9R5NOrDhTqG0lURWXqQCOZzMcqmjytj44f3aooFCv
+         DWdtK6h+7r8bPBC8ndl7mfXPaDPSGZOdUlZxSPeF3YyaTDs9VsrAexITvPczr6OM3nJE
+         HFom6rrxCXvk4nZbcLlct0mJ5DWoffDC7DFjGE9OwrPc7C1XfBpaETo1dlV9u8yHhOHE
+         bU8k5sTTvph8sU8RxX57LUktnCyCKAm7SSHv63zl1Tw8rhWUVXhMEi5rZj97vs49pgQr
+         +IkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1773921547; x=1774526347;
+        h=cc:to:content-transfer-encoding:mime-version:message-id:date
+         :subject:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=IAgP3WIG5lWDJY/O2OUHFGAnFa87nCTWJrnk0yHPluI=;
+        b=s4AFlY00MthdtY1oSQrrY+8rb3XFYz8xIfMBVnqOisTPcRRjSgUWR/4CVEu43ywTWl
+         4//B6rtn2qKGRg7P9ZqknsFDo6abNJrjTeLLmP0Gw3U1ABwR08O7WrJAvlMslodg/ZHs
+         h7xuJHg0o0++hFebLIxN0P7WUWZGoOIPHUbNLqYBoJwsywOLfij9ZhlS5CM3RD4milW5
+         iM0yWO9NsLeJTsO1R1sYzTLyimXmRRf4UD7Wei+C437vMKefl7QgQKGC6/LtpOhVY8eG
+         tj0yuRUNAgVRRFqj6WssEiH9wA3ym01WEu4YvBbKrPxuwNd53XB4SsF5DWPcBaHFejzq
+         ympg==
+X-Gm-Message-State: AOJu0Yz+df5o72pJopytOM1NMKwwT3GDIozEPuOd0GovMTglawT7403s
+	J+AXO43gPndAXg+Gd9QrT1+KO6qPlHifCmFUkjb5Dm0CPAbuMsT/jjwY
+X-Gm-Gg: ATEYQzxCm1Kw2E9vmK6sdTQVbnWGGDkAyYg4/ybY7rUwo/cleSBy2jkziGecwKpiDnQ
+	PjDJDXMjykiVdmBBlT4UU0vVKq3E2hx9VlJHJFrYGur8c1B2TO021YXnmCqlnrS/2tEuwn0L56V
+	UH3M7nVW4BZI+AGsrbZSOou31e+MqPXfZS7RWVQKLc/jT2TGF0VKxYZV2CqF5I5WmZxupad94dm
+	7qGoLDLLBzn0/eD8yiSYXys08RR6km9WAW51srDnqcf5DuyLDF0ecDuBmFSZa8aO+UvCV2nIk9t
+	VAnN2jnCwI9LQvZ24XN6EPdoDLjgv1sOtbiU614zEPtthEq0Zws4djibeQDiPgIa7YOt2bB7+xw
+	MB/iC/JPHGcKAGWvSaI23HqGtAa+aZQnJ223kr520sugHW/jrlNO3YYzVLmtLS9hRAh78Es//ER
+	U464OpgZimrfnnMnlLw9/2q70ffg==
+X-Received: by 2002:a17:907:60d5:b0:b97:b379:b3fa with SMTP id a640c23a62f3a-b97f4aa62dfmr468806566b.39.1773921546437;
+        Thu, 19 Mar 2026 04:59:06 -0700 (PDT)
+Received: from [192.168.0.39] ([79.133.247.80])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b97f16d3380sm461399166b.42.2026.03.19.04.59.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Mar 2026 04:59:05 -0700 (PDT)
+From: Erikas Bitovtas <xerikasxx@gmail.com>
+Subject: [PATCH v5 0/8] iio: light: vcnl4000: add regulator support
+Date: Thu, 19 Mar 2026 13:58:38 +0200
+Message-Id: <20260319-vcnl4000-regulators-v5-0-a025d3332805@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIAAAAAAAC/23NTWrEMAwF4KsMXtdF/q3pqvcoXViKkjFkkmK3p
+ mXI3asZKIQhyyfe+3RVjWvhpl5PV1W5l1bWRUJ4Oik652ViXQbJyoKN4AzoTsvsAUBXnr7n/LX
+ WppFGgymDIY5Klp+Vx/JzV98/JJ9Lk97v/Uk3t+u/Zw69bjToGFEaiThE9zZdcpmfab2om9ft3
+ rDHhhXD4sCIhBhSfjTc3vDHhhPDkc8+DQ7iS3w0/N6Ix4YXIwU/kuU8Bo97Y9u2P0e2b9iCAQA
+ A
+X-Change-ID: 20260310-vcnl4000-regulators-bcf1b8a01ce6
+To: Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht, 
+ phone-devel@vger.kernel.org, Erikas Bitovtas <xerikasxx@gmail.com>, 
+ Raymond Hackley <raymondhackley@protonmail.com>
+X-Mailer: b4 0.14.3
 
-Factor out the entries only needed for consumers from the generic public
-header. This allows for a clean separation between providers and
-consumers. Also remove contact field in favor of MAINTAINERS entries.
-Fix the users, too.
+This patch series introduces support for voltage supply, I2C and cathode
+regulators. This fixes an issue where if a regulator is shared between
+the proximity sensor and some other device, and the other device is
+powered off, the proximity sensor would be powered off as well.
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Acked-by: Mark Brown <broonie@kernel.org>
-Acked-by: Jonathan Cameron <jonathan.cameron@huawei.com> # for IIO
-Acked-by: Lee Jones <lee@kernel.org> # for MFD
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Acked-by: Linus Walleij <linusw@kernel.org>
+One of the commits includes a Reported-by: tag without a Closes: tag -
+the report was done outside in a Matrix channel. A link to access the
+report requires sign-in, therefore it was left out.
+
+Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
 ---
- Documentation/locking/hwspinlock.rst              |  2 +-
- MAINTAINERS                                       |  1 -
- drivers/base/regmap/regmap.c                      |  2 +-
- drivers/hwspinlock/hwspinlock_core.c              |  2 +-
- drivers/iio/adc/sc27xx_adc.c                      |  2 +-
- drivers/irqchip/irq-stm32mp-exti.c                |  2 +-
- drivers/mfd/syscon.c                              |  2 +-
- drivers/nvmem/sc27xx-efuse.c                      |  2 +-
- drivers/nvmem/sprd-efuse.c                        |  2 +-
- drivers/pinctrl/stm32/pinctrl-stm32.c             |  2 +-
- drivers/soc/qcom/smem.c                           |  2 +-
- drivers/spi/spi-sprd-adi.c                        |  2 +-
- .../linux/{hwspinlock.h => hwspinlock/consumer.h} | 15 ++++++---------
- 13 files changed, 17 insertions(+), 21 deletions(-)
- rename include/linux/{hwspinlock.h => hwspinlock/consumer.h} (98%)
+Changes in v5:
+- Renamed vddio-supply to vio-supply.
+- Added parentheses to function calls in a variable usage commit message.
+- Moved the redundant "proximity-near-level" check removal into its own
+  patch.
+- Link to v4: https://lore.kernel.org/r/20260316-vcnl4000-regulators-v4-0-854fc2eaf54b@gmail.com
 
-diff --git a/Documentation/locking/hwspinlock.rst b/Documentation/locking/hwspinlock.rst
-index 6cf1975b4291..ae2d2007a442 100644
---- a/Documentation/locking/hwspinlock.rst
-+++ b/Documentation/locking/hwspinlock.rst
-@@ -306,7 +306,7 @@ Typical usage
- 
- ::
- 
--	#include <linux/hwspinlock.h>
-+	#include <linux/hwspinlock/consumer.h>
- 	#include <linux/err.h>
- 
- 	int hwspinlock_example(void)
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 117aa8d118b1..dc14679bcc31 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11212,7 +11212,6 @@ F:	Documentation/devicetree/bindings/hwlock/
- F:	Documentation/locking/hwspinlock.rst
- F:	drivers/hwspinlock/
- F:	include/linux/hwspinlock/
--F:	include/linux/hwspinlock.h
- 
- HARDWARE TRACING FACILITIES
- M:	Alexander Shishkin <alexander.shishkin@linux.intel.com>
-diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-index 607c1246d994..d25494495469 100644
---- a/drivers/base/regmap/regmap.c
-+++ b/drivers/base/regmap/regmap.c
-@@ -16,7 +16,7 @@
- #include <linux/sched.h>
- #include <linux/delay.h>
- #include <linux/log2.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/unaligned.h>
- 
- #define CREATE_TRACE_POINTS
-diff --git a/drivers/hwspinlock/hwspinlock_core.c b/drivers/hwspinlock/hwspinlock_core.c
-index 6c8a03deb00c..e78ec4b5cfa3 100644
---- a/drivers/hwspinlock/hwspinlock_core.c
-+++ b/drivers/hwspinlock/hwspinlock_core.c
-@@ -12,7 +12,7 @@
- #include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/err.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/hwspinlock/provider.h>
- #include <linux/jiffies.h>
- #include <linux/kernel.h>
-diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index 6209499c5c37..8a881d63b7dd 100644
---- a/drivers/iio/adc/sc27xx_adc.c
-+++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (C) 2018 Spreadtrum Communications Inc.
- 
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/iio/iio.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
-diff --git a/drivers/irqchip/irq-stm32mp-exti.c b/drivers/irqchip/irq-stm32mp-exti.c
-index a24f4f1a4f8f..25d5aa67728a 100644
---- a/drivers/irqchip/irq-stm32mp-exti.c
-+++ b/drivers/irqchip/irq-stm32mp-exti.c
-@@ -6,7 +6,7 @@
-  */
- 
- #include <linux/bitops.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/irq.h>
-diff --git a/drivers/mfd/syscon.c b/drivers/mfd/syscon.c
-index 21a7fcdd2737..8ec74f8513d7 100644
---- a/drivers/mfd/syscon.c
-+++ b/drivers/mfd/syscon.c
-@@ -11,7 +11,7 @@
- #include <linux/cleanup.h>
- #include <linux/clk.h>
- #include <linux/err.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/list.h>
- #include <linux/mutex.h>
- #include <linux/of.h>
-diff --git a/drivers/nvmem/sc27xx-efuse.c b/drivers/nvmem/sc27xx-efuse.c
-index 4e2ffefac96c..309090cd4ff0 100644
---- a/drivers/nvmem/sc27xx-efuse.c
-+++ b/drivers/nvmem/sc27xx-efuse.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- // Copyright (C) 2018 Spreadtrum Communications Inc.
- 
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/platform_device.h>
-diff --git a/drivers/nvmem/sprd-efuse.c b/drivers/nvmem/sprd-efuse.c
-index 1a7e4e5d8b86..92e3092719ba 100644
---- a/drivers/nvmem/sprd-efuse.c
-+++ b/drivers/nvmem/sprd-efuse.c
-@@ -3,7 +3,7 @@
- 
- #include <linux/clk.h>
- #include <linux/delay.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/nvmem-provider.h>
-diff --git a/drivers/pinctrl/stm32/pinctrl-stm32.c b/drivers/pinctrl/stm32/pinctrl-stm32.c
-index 6a99708a5a23..17b2072d609e 100644
---- a/drivers/pinctrl/stm32/pinctrl-stm32.c
-+++ b/drivers/pinctrl/stm32/pinctrl-stm32.c
-@@ -10,7 +10,7 @@
- #include <linux/clk.h>
- #include <linux/export.h>
- #include <linux/gpio/driver.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/irq.h>
- #include <linux/mfd/syscon.h>
-diff --git a/drivers/soc/qcom/smem.c b/drivers/soc/qcom/smem.c
-index d5c94b47f431..6d574d65b4a3 100644
---- a/drivers/soc/qcom/smem.c
-+++ b/drivers/soc/qcom/smem.c
-@@ -4,7 +4,7 @@
-  * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
-  */
- 
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/io.h>
- #include <linux/module.h>
- #include <linux/of.h>
-diff --git a/drivers/spi/spi-sprd-adi.c b/drivers/spi/spi-sprd-adi.c
-index e7d83c16b46c..04313e4a63dd 100644
---- a/drivers/spi/spi-sprd-adi.c
-+++ b/drivers/spi/spi-sprd-adi.c
-@@ -5,7 +5,7 @@
-  */
- 
- #include <linux/delay.h>
--#include <linux/hwspinlock.h>
-+#include <linux/hwspinlock/consumer.h>
- #include <linux/init.h>
- #include <linux/io.h>
- #include <linux/kernel.h>
-diff --git a/include/linux/hwspinlock.h b/include/linux/hwspinlock/consumer.h
-similarity index 98%
-rename from include/linux/hwspinlock.h
-rename to include/linux/hwspinlock/consumer.h
-index 4fe1c8831cd1..f476222ec924 100644
---- a/include/linux/hwspinlock.h
-+++ b/include/linux/hwspinlock/consumer.h
-@@ -1,17 +1,16 @@
- /* SPDX-License-Identifier: GPL-2.0 */
- /*
-- * Hardware spinlock public header
-+ * Hardware spinlock public header for consumers
-  *
-  * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com
-- *
-- * Contact: Ohad Ben-Cohen <ohad@wizery.com>
-+ * Copyright (C) 2026 Sang Engineering
-+ * Copyright (C) 2026 Renesas Solutions Corp.
-  */
- 
--#ifndef __LINUX_HWSPINLOCK_H
--#define __LINUX_HWSPINLOCK_H
-+#ifndef __LINUX_HWSPINLOCK_CONSUMER_H
-+#define __LINUX_HWSPINLOCK_CONSUMER_H
- 
- #include <linux/err.h>
--#include <linux/sched.h>
- 
- /* hwspinlock mode argument */
- #define HWLOCK_IRQSTATE		0x01 /* Disable interrupts, save state */
-@@ -22,8 +21,6 @@
- struct device;
- struct device_node;
- struct hwspinlock;
--struct hwspinlock_device;
--struct hwspinlock_ops;
- 
- #ifdef CONFIG_HWSPINLOCK
- 
-@@ -403,4 +400,4 @@ static inline void hwspin_unlock(struct hwspinlock *hwlock)
- 	__hwspin_unlock(hwlock, 0, NULL);
- }
- 
--#endif /* __LINUX_HWSPINLOCK_H */
-+#endif /* __LINUX_HWSPINLOCK_CONSUMER_H */
+Changes in v4:
+- Reworded device tree bindings commit into imperative mood and
+  clarified where do supplies come from.
+- Moved data->chip_spec->set_power_state() calls from init functions to
+  probe.
+- Removed explicit less than 0 checks for ret where unnecessary.
+- Moved the patch that adds regulators to the end of the series.
+- Added an explanation for removing duplicate prints in probe.
+- Fixed indentation for devm_regulator_bulk_get_enable() and i2c_smbus
+  writes in vcnl4200_init().
+- Removed a redundant check for "proximity-near-level" device property.
+- Link to v3: https://lore.kernel.org/r/20260314-vcnl4000-regulators-v3-0-3c4a48d30676@gmail.com
+
+Changes in v3:
+- Added a more detailed description for supplies in the dt-bindings commit.
+- Separated sorting includes into a commit of its own.
+- Replaced all occurrences of mutex_init with its device-managed
+  counterpart.
+- Moved client->dev variable declaration into a commit for adding
+  regulators.
+- Removed redundant dev_err messages in probe function.
+- Replaced all direct usages of client->dev and data->client into usages
+  by variable.
+- Link to v2: https://lore.kernel.org/r/20260312-vcnl4000-regulators-v2-0-2bdebbcbb58a@gmail.com
+
+Changes in v2:
+- Removed double quotes in includes.
+- Reordered includes alphabetically.
+- Enabled regulators before the mutex is initialized.
+- Replaced direct usage of &client->dev with a variable.
+- Link to v1: https://lore.kernel.org/r/20260311-vcnl4000-regulators-v1-0-66b6038ce563@gmail.com
+
+---
+Erikas Bitovtas (8):
+      dt-bindings: iio: light: vcnl4000: add regulators
+      iio: light: vcnl4000: sort includes by their name
+      iio: light: vcnl4000: move power enablement from init to probe
+      iio: light: vcnl4000: replace mutex_init with devm_mutex_init
+      iio: light: vcnl4000: remove error messages for trigger and irq
+      iio: light: vcnl4000: use variables for I2C client and device instances
+      iio: light: vcnl4000: remove redundant check for proximity-near-level
+      iio: light: vcnl4000: add support for regulators
+
+ .../bindings/iio/light/vishay,vcnl4000.yaml        |  7 ++
+ drivers/iio/light/vcnl4000.c                       | 90 ++++++++++++----------
+ 2 files changed, 56 insertions(+), 41 deletions(-)
+---
+base-commit: 8e42d2514a7e8eb8d740d0ba82339dd6c0b6463f
+change-id: 20260310-vcnl4000-regulators-bcf1b8a01ce6
+
+Best regards,
 -- 
-2.51.0
+Erikas Bitovtas <xerikasxx@gmail.com>
 
