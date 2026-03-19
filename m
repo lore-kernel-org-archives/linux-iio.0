@@ -1,199 +1,160 @@
-Received: from mail-vk1-f182.google.com (mail-vk1-f182.google.com [209.85.221.182])
+Received: from mail-oo1-f44.google.com (mail-oo1-f44.google.com [209.85.161.44])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 81EEB283C93
-	for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 18:47:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.182
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9CA9C34D903
+	for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 19:07:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773946021; cv=none; b=QfW3bvAtsuuP7AFSYwBOUB0oxTUO61GPutQna1C6zpnn6ospuU3rRMDYLpuW3VuARlCm8ihX1Lcpp1Tx7fZ5RIjc9UGt+7PXEO27zHHDFKnQBXnyI6PRindFnAe8USUfZxhksOTK9ROBH0XZ94aCwbYUwsH45B82m0JWqEHCF/8=
+	t=1773947229; cv=none; b=FGOwEKCELML0K/Tecvr6UbdmdDFW7VlF2HBCEP67GChTesOnhRe7jquQds3sGF9m9sFqj+Pn1HQ5UlEGdNlbEvj1+dQFJb5GpBL6xg8oNlVq9ihHg6S2UJj52KrEp3+1ZlcmZnaQQ1tflZiVBfZ0/RkPCYtIxlBX73Djtp4S970=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773946021; c=relaxed/simple;
-	bh=LxnmxXsFxSNIsWziPyTAvOFqSYCKkC83yG4sVGQtNSM=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=Mv77PgCQ8L218UqlvAoLU7TVzxy4pkr1AP3jIxHQIf3kiI/EfDJer7iBb2755nLBDloTUnxxiPW21RJsNELqQsa62ZwNXkoUFzkHH4PtpAPhOPe7E9ELDtR8mOXzL4Jzfd3lc9XPknRhX5A2hq6tEI3B+FAGX30O8yQYCaEJUqc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=HiCsZ2P+; arc=none smtp.client-ip=209.85.221.182
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1773947229; c=relaxed/simple;
+	bh=yW/IU3e25Zy4WJaB66NqymPliyoUarcBRbIx9wdpU0o=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=tF5q295ibVP6aZc/KFwhLLZfquKqIFKYVgAinXmGRNmfxMnRxWyIrW6FyYImVyxbRxBC9YfdlKYEoMLAZbczJg5+gLBwoqPUUIzeHsC8IsUDrh2cmqgGBMGO25LYk8qbQusV5xI41uCbiyW3z8HL8WP3etl2ZbyRPHNgp/A2Lbo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=t1lzzWZM; arc=none smtp.client-ip=209.85.161.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HiCsZ2P+"
-Received: by mail-vk1-f182.google.com with SMTP id 71dfb90a1353d-56cc8a021e2so878676e0c.0
-        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 11:47:00 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="t1lzzWZM"
+Received: by mail-oo1-f44.google.com with SMTP id 006d021491bc7-67c1d6890f3so343305eaf.1
+        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 12:07:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773946019; x=1774550819; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=N9q6os7J60I3c7phh9Hq4zpKkWGPhK1u26ddAssiUGM=;
-        b=HiCsZ2P+c9ae1U/5IpQAPl7X8riGjIoy0rUZohpCWjR9UI2Uf7sC1hYq0PQAHa0e2k
-         6w0XAbM7yjIZMz3MzLnCGWjCXXubdoy/y3r8MpzHIpijetYoJqz34OMOgamj+2uBdlTf
-         swSNAPDKXRO4DQk4jSTUoAxY4Rs03JghqkIV0CWuUlo7syX2n6zj+EdsYBaby0PP3gNq
-         8p20ZABqkfQLs7LrgcU0c/7y61tAC43TDrW+7nbGrokrNTRP5wyFCDIiZeoNzhPcfpz1
-         +RYTHvSRdr+TEShWY7eP42y2flTwZTaV52l0ewkSnNjNAxDCsu6d5jwHh6VK5USwkRvm
-         UQrg==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1773947226; x=1774552026; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=0qCQhLNUlaK92jVRFmSRxDAiEZoE/HXa9IGlyqo2jsM=;
+        b=t1lzzWZM5ng5qbMQmo3Orles0xIKvcsBntpdGd156f1a/3+T0aoVBC49MBXw6II3xM
+         a8GLgmHLbgL8DSBiciq3XFuRlmtiLFDnQUxaymVDG2gNKhpG91/STY/Kjxj8zBFwzqNM
+         ogiEzaGXs2+PsNZ+YYQyZWNk6x3Q32bGKzRiUUIRzfHeiXFcj2TcKjyedSMUvfL0TFQf
+         rcRCRXUenUqw9wdRj4cQW12JSEjg/Onsb+KBYPWf65GKmn6Ex+NVAH/lsY3OI2rrMTJh
+         LTyXVvpcmykCGXKtOxWs5xUMgdXb3BgAeMvxj2qFo/XJ38XiBuCVeUIBV33K4UHYfBe2
+         zEKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773946019; x=1774550819;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=N9q6os7J60I3c7phh9Hq4zpKkWGPhK1u26ddAssiUGM=;
-        b=n79baQ9MY0Fhs/a8f0MeXrlYun0ftyfm8Q1gZcgit47h82oz3R8pUT4umz3emVi/wY
-         HrtR5qX6qaCD1KFbeOoWi0jKGduhSlgcVvREGnsn+uloxa41ivqv52WdSibswF+B3cHR
-         HRy7+09VX40mO626FVzGUWCEpcHTEOI2B/UctjcmoZdqlzgfHhnEqfr3q9C0AvCBnS2P
-         3McacuTCs8lM0tSyf4G5BQc4RBpU84zLJYASNc1s/9Q+uOD3KjmZIPMjy/P4Pu9TpZM8
-         tlXJgqgTZLr/NV9y+w3OkMefqSA95T7uhLMMx6+byL/Kuw9wtB+kzCLZxgbyIj2e23TH
-         Bdyg==
-X-Forwarded-Encrypted: i=1; AJvYcCXkPIXKZIiUPdsVDFqxoRqqSoxAqLiDw5A+NVQu4HOeNO9CYMljgIfu+ONAk+NM8jNixCVGnMUkVzQ=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yxmt9U6zrfEMq2Yv53Jm/0u2dZYnoSnCy8XNjjQ+mB+7I5hNtL/
-	HkeN1kGdvYuj3rpFKITDzwGqfJPQHzLISIIJjc6+n8IQGe8a3xt1noX8
-X-Gm-Gg: ATEYQzztiwyhs8WrHbaQX8Utk+fjFpofz9jU+AdUqBUlDVrHB/qcrb6gAtPWjcsAyuf
-	9W2Zi3fMzNAGI57KpEy/5+pxE+fbeyvOJLAHHExbGfRLTEByX3bmlQNDcu/t4KyHHC7xaajIi5T
-	sw7D31yCBLwDwZUbvisI+gnB8fBITd/Nxr8E3j/VcyPyEBxYS/k8Cdc611ggyHMsmCRWSFT1IbS
-	wFCAcWv/CstFgC2nQf/B4qBClSy6626XG+HxcA2qgPwIENQRea+sj+VEh9blWBdiDAtrfWfFqwI
-	E2iK9CUHDPN94vp/yEVz0VDGuIOdmZpwtEMiKmmnVPA2HAcBl9TDz+Raiv98KgA5gc10DQFZbny
-	FyanedpVD8CjQRFKz6ik+3hsM6D5vkl9wsGBtvBFDooy65GR5glrgXxfllls8H3ytgTLTnR//U+
-	BhFYt5iYkJV8O6rQJE4bHg2XDFHGJ7UCkwTi2Wqg==
-X-Received: by 2002:a05:6122:2087:b0:56b:702f:d0f6 with SMTP id 71dfb90a1353d-56ccfe20238mr2207650e0c.2.1773946019435;
-        Thu, 19 Mar 2026 11:46:59 -0700 (PDT)
-Received: from localhost.localdomain ([103.68.207.146])
-        by smtp.gmail.com with ESMTPSA id 71dfb90a1353d-56cddcc2d60sm279724e0c.15.2026.03.19.11.46.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 19 Mar 2026 11:46:59 -0700 (PDT)
-From: Matheus Giarola <matheustpgiarola@gmail.com>
-X-Google-Original-From: Matheus Giarola <matheusgiarola@usp.br>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org
-Cc: dlechner@baylibre.com,
-	nuno.sa@analog.com,
-	andy@kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	matheusgiarola@usp.br,
-	arthurpilone@usp.br,
-	davidbtadokoro@ime.usp.br
-Subject: [PATCH] iio: adc: ad7280a: replace mutex_lock() with guard(mutex)
-Date: Thu, 19 Mar 2026 15:46:15 -0300
-Message-ID: <20260319184615.10970-1-matheusgiarola@usp.br>
-X-Mailer: git-send-email 2.47.3
+        d=1e100.net; s=20251104; t=1773947226; x=1774552026;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=0qCQhLNUlaK92jVRFmSRxDAiEZoE/HXa9IGlyqo2jsM=;
+        b=pvrqukntrDvlc2CjSxCTwV4gta+VSxS7Du4cy/Nm/k/zqxy5y6XQgILo7VnaBufN2P
+         HSe8e9m14MYgyFJwcqTQB9qJxgml5KvkhzewRcymXFSm08AhWhC1hiKlIK78KcHGcp4R
+         1QEvPQ8sqyKVCZwCPNH/Uq9j4rOPuIDkxnvTNJRRzfKzgo31D+D/xYeKRXrbnyodg7tr
+         Nf7tSiex9EdYKiwZ5CLPh3xKRdxVM/SHD18VfaC/0HGnHVbPO+bA9LnRLTILXSMFIFEG
+         GAYq/MP6XSJz60y1quqCMQN+Wr0QQOn9hgh1MfeV4fgs2huXDlMx5Ii9aqlfcg9mJaYJ
+         BcNQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWqBYQ7txVl+iBOiauvEP1/xnCFq3JfSonhK+zuqJ46rU6VwsTr/CdY3RKQTEHGmUp90rE1KRdGnxQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Ywrk9bgDSwFfHoV/4AYKinc8+q5AwjoFChh/Og4GPwpgUR8tfuS
+	5itOvU3S40OzhuPGJJ13WxVD59fa71D5gI5IdKyO4gqUr6CpqiSBj4Ikc46Osd29W3o=
+X-Gm-Gg: ATEYQzw+8YZy9mNiILPq8bjuJ8V8Ihz77IYZhNbfJ4w/ckTMTFDauzQWjX7mwSPkT2U
+	s/049bNsZeMLv+JryaSGGHuQ4CZVgljwpUzOpI7aWY37rDq61SVvFRUrUVRJXzYJggr2jCYbgk6
+	p/JQRU9+TNUyWZMAPDse0MUrSq935dUg6mHAo5o5JKyhu6f0AcudGpSdrUZG8fWXoyjEnVF5/HW
+	QIvi1xbw/UOQu2Lf6f7/6c9av1xdEuKtTGw3Ma1p8Tb3E2JNiUCEZa5RVp2shFnOI7BccVw1aLm
+	j/wakHgHAkjpGhiI46Xvue/LLxFnHmJdLa0n+NTdNasbu+MuyImUkts5nKYt/SskTLSwjs7e4v+
+	mxjt3RnddkPdOUJA3rtxzc7h4I1nV+SC0stZrRwqVq6GqWPyG7TnWZdFvpMYgNsm/Z4OllA/0kH
+	u+Vh0kkFQ3+qwKQfz3r7dc1pzppO7BNfmjuOweszJr/4sKk47uhCCGqZxfH9eAh29Gj2sXVPjr5
+	4nJgno2ZcPX
+X-Received: by 2002:a05:6820:806:b0:67b:a4cb:293f with SMTP id 006d021491bc7-67c235fb70fmr249017eaf.17.1773947226499;
+        Thu, 19 Mar 2026 12:07:06 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:244c:fc8c:8216:1344? ([2600:8803:e7e4:500:244c:fc8c:8216:1344])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67c0d724e53sm3921843eaf.0.2026.03.19.12.07.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Mar 2026 12:07:06 -0700 (PDT)
+Message-ID: <faa4e46b-1cc6-4bab-b13e-c527a67ec4c4@baylibre.com>
+Date: Thu, 19 Mar 2026 14:07:04 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 5/5] dt-bindings: iio: adc: xilinx-xadc: convert to YAML
+ format
+To: Krzysztof Kozlowski <krzk@kernel.org>,
+ Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Nuno Sa <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, Michal Simek <michal.simek@amd.com>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org, saikrishna12468@gmail.com, git@amd.com
+References: <20260220053941.611415-1-sai.krishna.potthuri@amd.com>
+ <20260220053941.611415-6-sai.krishna.potthuri@amd.com>
+ <20260221-dancing-papaya-wolverine-db8afd@quoll>
+ <b89933a3-5f25-466c-a2f5-6e231aa12749@amd.com>
+ <21d425bc-9406-401b-9817-7255ba3d31fc@baylibre.com>
+ <e4c9729f-1785-4d10-a337-37b0d26fe30b@amd.com>
+ <f1706ec0-3995-4fdf-a9fb-8e1e688438a7@baylibre.com>
+ <05bcc5b7-b3e8-40fb-be70-413c74afcfb1@amd.com>
+ <cf749e8c-f141-4367-81ad-827e02273ec5@baylibre.com>
+ <6a4e3d95-875f-4c2b-8443-c2f2b19ff166@amd.com>
+ <12a06779-cbbb-4dc2-b564-7b9cdff6796b@kernel.org>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <12a06779-cbbb-4dc2-b564-7b9cdff6796b@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-Use guard(mutex) instead of mutex_lock()/mutex_unlock(),
-ensuring the mutex is released automatically when leaving
-the function scope. The change improves error handling and
-avoids issues such as missing unlocks. It also simplifies the
-code by removing 'err_unlock' label and several mutex_unlock()
-calls.
+On 3/19/26 11:49 AM, Krzysztof Kozlowski wrote:
+> On 19/03/2026 16:49, Sai Krishna Potthuri wrote:
+>>>>>>>>>
+>>>>>>>>>> +
+>>>>>>>>>> +$defs:
+>>>>>>>>>
+>>>>>>>>> Why this is a def, not used directly? I see only one usage of this def.
+>>>>>>>>
+>>>>>>>> I am getting the below error if i define the patternProperties directly.
+>>>>>>>> Seems like complex vendor peroperties should be referenced via $ref.
+>>>>>>>> Please suggest if there is any better way to deal this.
+>>>>>>>
+>>>>>>> It is hard to say without seeing the new version of what you wrote.
+>>>>>>
+>>>>>> In v1 series, i created $def and referenced this in xlnx,channels to avoid the error that i mentioned.
+>>>>>
+>>>>> Is the code below the code that causes the error?
+>>>>
+>>>> No, the below code is not creating the error but Krzysztof asked the question on this code,
+>>>> "Why this is a def, not used directly? I see only one usage of this def."
+>>>>
+>>>> I am saying if i don't use the def and use it directly i am seeing the error that i mentioned. So, asking is there any better way to handle this case other than using def.
+>>>
+>>> If you could show us the actual code that is causing the error, then
+>>> we could perhaps spot a mistake or suggest an alternative.
+> 
+> Thanks David, I am surprised how many emails we need to exchange just to
+> see the actual code.
+> 
+>>
+>> Thanks. Here is the code that is causing the error
+>> ("properties:xlnx,channels:type: 'boolean' was expected").
+>>
+>> xlnx,channels:
+> 
+> Device nodes do not have any prefixes. Just take a look at any DTS or
+> any binding.
+> 
+> Probably that's the reason, because nothing in this code looks
+> particularly odd. Anyway, please do not come with odd syntax in the code
+> without any explanation, just to make it passing the tests, so for
+> example ignoring the checks we have.
+> 
+> 
+> Best regards,
+> Krzysztof
 
-Signed-off-by: Matheus Giarola <matheusgiarola@usp.br>
----
- drivers/iio/adc/ad7280a.c | 27 ++++++++-------------------
- 1 file changed, 8 insertions(+), 19 deletions(-)
+Since this is converting existing 12-years-old .txt bindings, I don't
+think we can "fix" the bindings by dropping the vendor prefix.
 
-diff --git a/drivers/iio/adc/ad7280a.c b/drivers/iio/adc/ad7280a.c
-index ba12a3796e2b..3a4f0dd37d78 100644
---- a/drivers/iio/adc/ad7280a.c
-+++ b/drivers/iio/adc/ad7280a.c
-@@ -496,7 +496,7 @@ static ssize_t ad7280_store_balance_sw(struct iio_dev *indio_dev,
- 	devaddr = chan->address >> 8;
- 	ch = chan->address & 0xFF;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	if (readin)
- 		st->cb_mask[devaddr] |= BIT(ch);
- 	else
-@@ -505,7 +505,6 @@ static ssize_t ad7280_store_balance_sw(struct iio_dev *indio_dev,
- 	ret = ad7280_write(st, devaddr, AD7280A_CELL_BALANCE_REG, 0,
- 			   FIELD_PREP(AD7280A_CELL_BALANCE_CHAN_BITMAP_MSK,
- 				      st->cb_mask[devaddr]));
--	mutex_unlock(&st->lock);
- 
- 	return ret ? ret : len;
- }
-@@ -519,10 +518,9 @@ static ssize_t ad7280_show_balance_timer(struct iio_dev *indio_dev,
- 	unsigned int msecs;
- 	int ret;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	ret = ad7280_read_reg(st, chan->address >> 8,
- 			      (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG);
--	mutex_unlock(&st->lock);
- 
- 	if (ret < 0)
- 		return ret;
-@@ -551,11 +549,10 @@ static ssize_t ad7280_store_balance_timer(struct iio_dev *indio_dev,
- 	if (val > 31)
- 		return -EINVAL;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	ret = ad7280_write(st, chan->address >> 8,
- 			   (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG, 0,
- 			   FIELD_PREP(AD7280A_CB_TIMER_VAL_MSK, val));
--	mutex_unlock(&st->lock);
- 
- 	return ret ? ret : len;
- }
-@@ -737,7 +734,7 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
- 	if (val2 != 0)
- 		return -EINVAL;
- 
--	mutex_lock(&st->lock);
-+	guard(mutex)(&st->lock);
- 	switch (chan->type) {
- 	case IIO_VOLTAGE:
- 		value = ((val - 1000) * 100) / 1568; /* LSB 15.68mV */
-@@ -760,8 +757,7 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
- 			st->cell_threshlow = value;
- 			break;
- 		default:
--			ret = -EINVAL;
--			goto err_unlock;
-+			return -EINVAL;
- 		}
- 		break;
- 	case IIO_TEMP:
-@@ -785,18 +781,12 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
- 			st->aux_threshlow = value;
- 			break;
- 		default:
--			ret = -EINVAL;
--			goto err_unlock;
-+			return -EINVAL;
- 		}
- 		break;
- 	default:
--		ret = -EINVAL;
--		goto err_unlock;
-+		return -EINVAL;
- 	}
--
--err_unlock:
--	mutex_unlock(&st->lock);
--
- 	return ret;
- }
- 
-@@ -885,13 +875,12 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--		mutex_lock(&st->lock);
-+		guard(mutex)(&st->lock);
- 		if (chan->address == AD7280A_ALL_CELLS)
- 			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
- 		else
- 			ret = ad7280_read_channel(st, chan->address >> 8,
- 						  chan->address & 0xFF);
--		mutex_unlock(&st->lock);
- 
- 		if (ret < 0)
- 			return ret;
--- 
-2.47.3
+I think in cases like this, Rob will usually fix the tooling to ignore
+this as a special case. (I had a similar case last year on a conversion
+I did.)
+
+So I think the right thing to do is to not use $def and explain in the
+commit message why the error is expected (we can't change existing bindings
+even though they are "wrong" by current standards).
+
+If this was a new binding, we should be using the common adc.yaml for IIO
+ADCs which already has patterProperties for channels and a bipolar flag.
+But we are stuck with this vendor-prefixed one here.
 
