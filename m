@@ -1,115 +1,119 @@
-Received: from mail-yx1-f43.google.com (mail-yx1-f43.google.com [74.125.224.43])
+Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1809038947A
-	for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 09:58:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=74.125.224.43
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773914345; cv=pass; b=YG9Wdpw409jmiVjzKS3QZWyULKJmoDbRbuqTLooeamWqkqkvkV0Nqm/cQH29xJWMmv15BA+V6mrC52qH3WGi1o7KjTSYfQb8Ig2OTtkbk9wTxLQQtKXN0zs12boZgkEIB+jNevFihVe8MFfe5lzqdSkjqMWbUHAuGdoB8GpJ/2Y=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773914345; c=relaxed/simple;
-	bh=5GXFnzOvDLl40ngpoW92yBM/thWmZs6+gQm2yPj1pzI=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=d1WVkIkQPt8XeYOksnImig+u2euQvSwNVMmyIbrMbEy+qQJXnAYAwUXIkq5e1d0z0SasROLejPRil8aRkVcPjxC/0YX7i/U6/5k3rXlmwyek3biXmUWpDaevBfT316E5zEejtflXIld/ByFOUlmaZH0K5c6Po5UsuOp8wXuazu8=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=PV/hQHge; arc=pass smtp.client-ip=74.125.224.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FC0A3C5DD2
+	for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 10:47:35 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1773917256; cv=none; b=TNCDn6NYIooX1a0acNcxJId0gd/jg35T7egrgz1z7Iug8wNEaq9PAIZVaxKFzWdUdSEeUZ8eft4zapvbCcDtxg7jN3GnXhTG02WlE/cMebaDbg7JlT+9sywemWGardzur+UcnJ9Aw/OEeVusDEUF6XJTfpvni9tlb2t77lF1vw4=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1773917256; c=relaxed/simple;
+	bh=hDdHmp6y0sm7eYwGhDoXVFIrc14YpS33mX0ynVrnTHA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=QvqsxLiSinsnFPmwwqZKCoyoq+BWegwH6GGF1HpDbSm3SKvP7ODR4FFoBwtkCqs7Bh/6q89f4OpNGS03t+CeCyUPIQNms1Fv3rerBXXdiD4zRFxik6LVCgYvyhCzYnWWemU/CfeUePI9Wek4EfiaXeCY4fuZ9A5uSivTBcdma68=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J2h3vGTB; arc=none smtp.client-ip=209.85.216.43
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PV/hQHge"
-Received: by mail-yx1-f43.google.com with SMTP id 956f58d0204a3-64ae58222aaso113424d50.1
-        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 02:58:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1773914339; cv=none;
-        d=google.com; s=arc-20240605;
-        b=V3ro0FzjdPtYeZZy1dwRp5pyiBsKVLtHzbNisk1SIIFlu90wsepINu2ucqRiwb5ij6
-         Ab7Z7dC2cjFnUF9SlY9wQf9nuiMJjph6pkVabujPz/HnqPEfOC7JxV85Z/daJ4yaa8ln
-         tUSyrITiDOEyt4rY9jY245ZuEWh0FCpixnQCv6lVIQHEWxyTH0t+QX4KeZvkv7A3CUrO
-         xo+lR/KE73Q4QEbrtpqhevuAaOUtY/69SibHY1rifgV8LxDxz4WhqXCT1F7ukZv1x2/j
-         0A7XAmCS4oqa5xVTWVOl1aw9u9iq04W9DclIO9n9OQZbtd7cvBQ6zAmvQEBOhySRtXyE
-         UU6Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=5GXFnzOvDLl40ngpoW92yBM/thWmZs6+gQm2yPj1pzI=;
-        fh=rtpz5N9Gb/FuP9bgkntzIL7o8pOv7+d1YAouRCZHD9U=;
-        b=ZniiIQtv60wwt4xX8mmGO5G4FJs66oKZ+CX2Ljf0VB1yhG1tlJ+oAJxvTbsc50B7qo
-         wX8iMgSma7kBGYV3qgdGgMyapBkt1i5UCB1HfIquEyyn/lojdtcxqMyh3ndCZ5eZtZZY
-         TS/jcmK3jwqZBGZwapfFeXZk5Pw8mEkUGE8tjhlGQlYdPD5Kci1u5IRFU7VRlcGUkIVX
-         S5coF9Cfg5NqcP8MhW/fV1hjyJr42+kcdCxaro+g7bajIFfS+JVlMHPGhIImYD0iNj4x
-         QpGIjXUkyYUOkrWWQRkvOprUqVhd3ejN8Gjoi7H2L7S65lwqjZwnVg4+/j8YwZGDl1D9
-         ywhg==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J2h3vGTB"
+Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-356337f058aso310635a91.2
+        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 03:47:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773914339; x=1774519139; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=5GXFnzOvDLl40ngpoW92yBM/thWmZs6+gQm2yPj1pzI=;
-        b=PV/hQHgeJg4Bk+sa3AKqIV1iFCGFlm+BYRVFpNiDpxN3Dp0dfyExfCrk/w9szxeZSg
-         M000UvGex4raWjgCHzZO9E4P9Iz5f3VyJdPzt7cdJyo/5f5Tcy8BP2/sPMD5YvxMfvvA
-         m2NSgeQ4okuSNrNyTRqlZaIvjUwBHpF3J5pPjOjNlXrR6Llw+kELpx7q66zm4bz9TYj/
-         4PbntYE+ys4f3RLiiUztIiJfno+PQO0AIZiTlIk/vZ1FQRQ1uYVzb+He/8XyHU+b3TQ3
-         JjPoyfU9vhS2WJDokv48Dn3+1e+Tbc7U0H4znR/mIZq1fswmb4z74g+q0W0TbydXoRdg
-         mwqQ==
+        d=gmail.com; s=20230601; t=1773917255; x=1774522055; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=4NgBBVmgJFvWTdpx/sZIjxnQnfSfkQj1lwQk3RKd+LM=;
+        b=J2h3vGTBeIEHBt49z5f4YU+RGVw4Nbi0wVQ6jRs2/emhQX2ZzkkVFiZvnv8DQWeK3t
+         +un6JvBkUYguw1+n4Ibm6jaU9HLLUe9R7y2P16IjHjDWf55ycfSzP8xbenuegiUYG/5V
+         5JSg5S3UWoIhkvmXByPaUyzy0nkY/4BC0kal05Sju4erLnoswEWTgwKJGylw9uH+yvPr
+         pgILPB6mLeL0CB92xtsrxQfKWELnUGlc3k1X40zCVZiH54oa35vnmq1PBLKLf2S4vSGS
+         /wUWnvPhOOTs8207BFeaqps0etvH+N0/M9OOak0q2uqno5WrDVGVpTqEZE5iZ4L48oeO
+         8x4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773914339; x=1774519139;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=5GXFnzOvDLl40ngpoW92yBM/thWmZs6+gQm2yPj1pzI=;
-        b=K6Pk7i8iCpUsoxFkweQny0kQqezLhkTzYlzg+hoenKMO7Z1GV7QKwt4NZxYoraGqRl
-         6cxBsAL7PyfyiBI+lLwdvjv66gu8brvKWzSZNNjASY53USzFDNpgXE86JyGU6VLHtUTl
-         m6hEzEDUXeJF1diIuF4S48RfFjKpclE2O0hXwmaTzqLOxFAwJCuF0+laZzHV2AV3GyoS
-         psX54qcQuGzla2EtOM4t8KPUEYmAlN4hlcHAfKD0TjkuXxsWn0AG6oeA562nYT2IVaVX
-         PJsIf7x5j9WEZ4GPb0V5PW8EtjPbL8tyJcpjKNA9gldCXvEMFxluUkR1+krQ6hiHrl9z
-         N/mA==
-X-Forwarded-Encrypted: i=1; AJvYcCXebEpd0030wfvIFuWkQzlpi8fUu+rGVPCOm2IGqmy/sKehM9VASUaq1r29MEhd6BErUtWFVdHyLZs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxHAL7xuAVHnsX0HXeTUnc0LvZbtEi2XsMxIVvzb5ALZR/mSMu4
-	p2ArZ8UUT468i+t0rbuCW3ZL65OB3vvngQ7eLuLpQ79khlT4IIwdc2vwSLB2AuWCBtAVggZumW4
-	jhvYetFLTsYkkXoOGT21vPluge5EdTK0=
-X-Gm-Gg: ATEYQzyaMZih3llJgBeIMGNqsyu4czPg2TxqZMiaPWdxpburik1MDICm0DmWlS9BGJb
-	o+nN+oh/jolgodX+6iC0EPaMaVViZYcNiCy+X51nvf4Jx2c2qJnWWGyVREUZsyfou12CFAU0MCd
-	1y9zARFiWl01ZTecj7kYD6yr46nNWJyhlwiv51m3fkx+auvAhJhnZInKMJQNyjWNTMRlJHb9hW8
-	+b1THfs3KRodwVtqDXjdCLCso5qQYQc2M3+Mlpvi/E2Nmy/+0d+kgeQPPK/dTeU81a4QrtObkDS
-	+mEo38s6cxxWVBdNxu0qJxeq7dxi5HM02rup/pMqHn01VKPaWtsR/7acEPRkCWSAxecmvXVX5FB
-	r4pQRMZS9xVn+lHt9kqZtog==
-X-Received: by 2002:a05:690e:4245:b0:64a:f23b:e2f5 with SMTP id
- 956f58d0204a3-64e9147098dmr3804442d50.3.1773914338898; Thu, 19 Mar 2026
- 02:58:58 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1773917255; x=1774522055;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=4NgBBVmgJFvWTdpx/sZIjxnQnfSfkQj1lwQk3RKd+LM=;
+        b=rYnEcEG35dbUcuWn2UyLMerzVZMpPE2YfCvUKp0b6XY9qANf/QN9vzQ/4KbcDmjQFm
+         +Suk1MI+TL6J7O3b8PolU/PyO3bn/kitb76xY/x/duB9xWjQaw7iFqL1f/SwPqHHb8tG
+         nW+eU0R4g/7J9xgPn65wWRPeOlCcQGW8eEXdHWQXqBuy7BYSAVAWp3B3XVPwA76lbKP2
+         Vaed/RW9vK1q7jgsOfMZs+RUNG/zzinft2sTgqnFon1FVmGXYcmqoPxG0EfS83FLxzha
+         iInu6dsx3DZhTsyNqELCgRRaRqDmBUbH6NErO5NcYNkR7zy4nXKPKqaSwaCXAOLxnD0p
+         Nf6Q==
+X-Forwarded-Encrypted: i=1; AJvYcCXp3q0VKQeyrpTpfV8bSUIxMCm5UH/7KvPCGvqEpyxptIuUkeGF6KXH8p4D4oMRJxe12fVaK53iPKE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzY3Co+4qosk3YRgNXsownpxNGh4V0HMpUH6h4rnbU6CISO1dhs
+	YOfC8MTRQN2Zp7vzDdhdu9gl3ghA7bwyk4uTNbhE3HMH8tHjeONFAWmA
+X-Gm-Gg: ATEYQzy/yJEY15VQL5g7gkOmOe7HnRVLp/2wifUh5A65qgbH4UpNp/emeZuIi0pZ1Xj
+	3UHJdYaHur3wFQKo+qiKAC0cIEirswm88RtLFORLFepeytVQyM6/L3pJAVikiQA1ghxo9TTaZYV
+	MKprPLKRWMTrcFAd//COAK79iq3gKBVbKNujeYB3emzOOUoF3hQrjJ1LkwP8W5B+niAuhZJiLkh
+	O5qqXFbYkKDiWmihSVIVVrn9X9so9q917k0Pf8gDFEOBUWl3owBRk/vCWMVqaXL1HYN3jyz3Jfz
+	P+oh9nsVHmzkY0IxksWOGUnGZUgO/vb8Lgd7hBzLOGF4/pkc0MOyaqUnfMlq3R/hr8/c2lTp9P1
+	KvtVcbS87Rbav9erGTpgVzDbKMWu2QDbvtWMLoSqHlgdkbyA50RZfdZxw84dMBh3WrQ5zHT7+Dj
+	TSOmrEu47VIk7MDAcZOqpiOy1OIricJRo=
+X-Received: by 2002:a17:90b:510f:b0:35b:945d:752a with SMTP id 98e67ed59e1d1-35bb9ef607cmr5986302a91.17.1773917254700;
+        Thu, 19 Mar 2026 03:47:34 -0700 (PDT)
+Received: from [192.168.0.106] ([103.216.213.160])
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c741e0b3c43sm5073500a12.4.2026.03.19.03.47.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 19 Mar 2026 03:47:34 -0700 (PDT)
+Message-ID: <cda6e549-271e-451b-a266-218d5af0ffc0@gmail.com>
+Date: Thu, 19 Mar 2026 16:17:27 +0530
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260319085741.109359-2-giorgitchankvetadze1997@gmail.com>
- <abu-21Hi5eXkuGkQ@ashevche-desk.local> <abu_2Y6gjLU1aSHv@ashevche-desk.local>
-In-Reply-To: <abu_2Y6gjLU1aSHv@ashevche-desk.local>
-From: Giorgi Tchankvetadze <giorgitchankvetadze1997@gmail.com>
-Date: Thu, 19 Mar 2026 13:58:47 +0400
-X-Gm-Features: AaiRm53FHo6leqWdkOyp1TxcJJfEEw4xcf9Vr1PIyFM2oSsl1zQ6swgB3UTl-jM
-Message-ID: <CAE7dp2qDUExWnpLcUgksmxJ9bMVjvk2uTiYU=SkiZKC1ydjrqA@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: qcom-spmi-adc5-gen3: remove redundant OR with zero
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH 00/11] iio: adc: replace deprecated
+ iio_push_to_buffers_with_timestamp()
 To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: antoniu.miclaus@analog.com, lars@metafoo.de, Michael.Hennerich@analog.com, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, marcelo.schmitt@analog.com, mazziesaccount@gmail.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20260316172735.11430-1-atharvd440@gmail.com>
+ <20260316172735.11430-2-atharvd440@gmail.com>
+ <abhgZkJu4ERvmS_S@ashevche-desk.local>
+Content-Language: en-US
+From: Atharv Dubey <atharvd440@gmail.com>
+In-Reply-To: <abhgZkJu4ERvmS_S@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Thu, Mar 19, 2026 at 1:20=E2=80=AFPM Andy Shevchenko
-<andriy.shevchenko@intel.com> wrote:
-> Have you read the comment above?
-> I believe this is done for clarity. No need to have this patch, but I won=
-'t
-> object going it in, since the comment still stays. I leave it to Jonathan=
-,
-> but I'm not going to give any tag here.
+Hi Andy,
 
-Hey Andy. Yes, I did read and consider the comment. My intent was to
-remove what is technically a no-op at the C level, but I agree that in
-this context it also serves a purpose. I might have misprioritized the
-situation or trusted Coccinelle a little too hard (Yes, I remember the
-first thing with such tools - warnings are just recommendations :P ).
+On 3/17/26 01:26, Andy Shevchenko wrote:
+> On Mon, Mar 16, 2026 at 10:57:26PM +0530, Atharv Dubey wrote:
+>> Hello ,
+>>
+>> The helper iio_push_to_buffers_with_timestamp() is deprecated in the IIO
+>> subsystem. The recommended replacement is
+>> iio_push_to_buffers_with_ts().
+>>
+>> This patch series updates multiple ADC drivers to use the newer helper
+>> API. No functional changes are intended; the patches only replace the
+>> deprecated calls and adjust arguments where required.
+>>
+>> The goal is to remove usage of the deprecated helper and keep the
+>> drivers aligned with the current IIO buffer interface.
+> You need to do this very carefully.
+> Besides that your email thread is broken:
+> - you have sent 2 time cover letter
+> - the patches 10 and 11 are detached from email thread.
+>
+> On top of that there is wrong indentation in many places.
+> I recommend you to choose something less tricky to begin
+> with.
+>
+>   
 
-Thanks for the review !
+I'll recitfy these mistakes and perhaps send a smaller patch for the 
+same. If you have some more simpler things in mind , please let me know. 
+I'll be happy to help out.
+
+Regards,
+Atharv
+
