@@ -1,66 +1,66 @@
-Received: from mail-pj1-f43.google.com (mail-pj1-f43.google.com [209.85.216.43])
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6FC0A3C5DD2
-	for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 10:47:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7926E375AC4
+	for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 10:53:08 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.175
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773917256; cv=none; b=TNCDn6NYIooX1a0acNcxJId0gd/jg35T7egrgz1z7Iug8wNEaq9PAIZVaxKFzWdUdSEeUZ8eft4zapvbCcDtxg7jN3GnXhTG02WlE/cMebaDbg7JlT+9sywemWGardzur+UcnJ9Aw/OEeVusDEUF6XJTfpvni9tlb2t77lF1vw4=
+	t=1773917589; cv=none; b=ZlIS/t79D7bbksLX7LxhKkqgZpWqc6qJFP6rZ4mYxgyQdOUKfoUoz+svAOPW1PxQRP9y0EQHj7DAjOgcJ4zf1wH8l7Pm4XwVesWGvAewSPN6/iVUJH6yF8dMEA3qOrBStI4z2assTdHleNmgalwVe7noFplPMCWVarkRaYV+x8s=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773917256; c=relaxed/simple;
-	bh=hDdHmp6y0sm7eYwGhDoXVFIrc14YpS33mX0ynVrnTHA=;
+	s=arc-20240116; t=1773917589; c=relaxed/simple;
+	bh=GRPY48Aa9FpxnnKsJcyzTy/OFANTJJLSsDtZUcY8Z+w=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=QvqsxLiSinsnFPmwwqZKCoyoq+BWegwH6GGF1HpDbSm3SKvP7ODR4FFoBwtkCqs7Bh/6q89f4OpNGS03t+CeCyUPIQNms1Fv3rerBXXdiD4zRFxik6LVCgYvyhCzYnWWemU/CfeUePI9Wek4EfiaXeCY4fuZ9A5uSivTBcdma68=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=J2h3vGTB; arc=none smtp.client-ip=209.85.216.43
+	 In-Reply-To:Content-Type; b=D6oExDGsVzTT6m+XmwtXKDwxh+4tvsfe+PEKh+enNxJUWvta6tW+AAhoL1+XpkDu5u4mn+5ADhc3AzGpQQh5q/2XUUujcrPj0Q9lQKO0bt9Gy0hPsZwqTrNNgJWQvPpHiSfH75OzSVGvmVLxCIvYHOb/FU2Vj0KEvCAU3qixqZc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=fyz3w4Pd; arc=none smtp.client-ip=209.85.215.175
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="J2h3vGTB"
-Received: by mail-pj1-f43.google.com with SMTP id 98e67ed59e1d1-356337f058aso310635a91.2
-        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 03:47:35 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fyz3w4Pd"
+Received: by mail-pg1-f175.google.com with SMTP id 41be03b00d2f7-c742723c863so435218a12.0
+        for <linux-iio@vger.kernel.org>; Thu, 19 Mar 2026 03:53:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1773917255; x=1774522055; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1773917588; x=1774522388; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=4NgBBVmgJFvWTdpx/sZIjxnQnfSfkQj1lwQk3RKd+LM=;
-        b=J2h3vGTBeIEHBt49z5f4YU+RGVw4Nbi0wVQ6jRs2/emhQX2ZzkkVFiZvnv8DQWeK3t
-         +un6JvBkUYguw1+n4Ibm6jaU9HLLUe9R7y2P16IjHjDWf55ycfSzP8xbenuegiUYG/5V
-         5JSg5S3UWoIhkvmXByPaUyzy0nkY/4BC0kal05Sju4erLnoswEWTgwKJGylw9uH+yvPr
-         pgILPB6mLeL0CB92xtsrxQfKWELnUGlc3k1X40zCVZiH54oa35vnmq1PBLKLf2S4vSGS
-         /wUWnvPhOOTs8207BFeaqps0etvH+N0/M9OOak0q2uqno5WrDVGVpTqEZE5iZ4L48oeO
-         8x4A==
+        bh=P3w6izYfrairSJ55395BwrKF4lapRGrqNyaG/W4OCKE=;
+        b=fyz3w4Pd+Ug3siwCOR4Adz8eOl5axEXvBxQqYDafh9IalJNm3EVgvfdTotxDTf9K6T
+         mzAwAws+zW/TTrMYHDs/WTiIFa6BEXPcJATUbJ1KtJefnISF67YEzTXR457vMq53HjAm
+         9sngy5AGL+i+1ouOrYm41TkbaIyKCcX0pzgc6hCX6wAoDYW5AW15HThxFqXztLbvJ/xE
+         x38haklgNvMOYmwQtWFPpVA7GAXUAjaOxsiyMVhmhUKYkr/6oPuIbP++dwo3axndMAwm
+         gIB0pStS3iEGINe2afucnlE1YxaV9nSHZufxC+y4rh4pUDozQme4Lkp5Zcrl7CT/1ag1
+         Y6gQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1773917255; x=1774522055;
+        d=1e100.net; s=20251104; t=1773917588; x=1774522388;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=4NgBBVmgJFvWTdpx/sZIjxnQnfSfkQj1lwQk3RKd+LM=;
-        b=rYnEcEG35dbUcuWn2UyLMerzVZMpPE2YfCvUKp0b6XY9qANf/QN9vzQ/4KbcDmjQFm
-         +Suk1MI+TL6J7O3b8PolU/PyO3bn/kitb76xY/x/duB9xWjQaw7iFqL1f/SwPqHHb8tG
-         nW+eU0R4g/7J9xgPn65wWRPeOlCcQGW8eEXdHWQXqBuy7BYSAVAWp3B3XVPwA76lbKP2
-         Vaed/RW9vK1q7jgsOfMZs+RUNG/zzinft2sTgqnFon1FVmGXYcmqoPxG0EfS83FLxzha
-         iInu6dsx3DZhTsyNqELCgRRaRqDmBUbH6NErO5NcYNkR7zy4nXKPKqaSwaCXAOLxnD0p
-         Nf6Q==
-X-Forwarded-Encrypted: i=1; AJvYcCXp3q0VKQeyrpTpfV8bSUIxMCm5UH/7KvPCGvqEpyxptIuUkeGF6KXH8p4D4oMRJxe12fVaK53iPKE=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzY3Co+4qosk3YRgNXsownpxNGh4V0HMpUH6h4rnbU6CISO1dhs
-	YOfC8MTRQN2Zp7vzDdhdu9gl3ghA7bwyk4uTNbhE3HMH8tHjeONFAWmA
-X-Gm-Gg: ATEYQzy/yJEY15VQL5g7gkOmOe7HnRVLp/2wifUh5A65qgbH4UpNp/emeZuIi0pZ1Xj
-	3UHJdYaHur3wFQKo+qiKAC0cIEirswm88RtLFORLFepeytVQyM6/L3pJAVikiQA1ghxo9TTaZYV
-	MKprPLKRWMTrcFAd//COAK79iq3gKBVbKNujeYB3emzOOUoF3hQrjJ1LkwP8W5B+niAuhZJiLkh
-	O5qqXFbYkKDiWmihSVIVVrn9X9so9q917k0Pf8gDFEOBUWl3owBRk/vCWMVqaXL1HYN3jyz3Jfz
-	P+oh9nsVHmzkY0IxksWOGUnGZUgO/vb8Lgd7hBzLOGF4/pkc0MOyaqUnfMlq3R/hr8/c2lTp9P1
-	KvtVcbS87Rbav9erGTpgVzDbKMWu2QDbvtWMLoSqHlgdkbyA50RZfdZxw84dMBh3WrQ5zHT7+Dj
-	TSOmrEu47VIk7MDAcZOqpiOy1OIricJRo=
-X-Received: by 2002:a17:90b:510f:b0:35b:945d:752a with SMTP id 98e67ed59e1d1-35bb9ef607cmr5986302a91.17.1773917254700;
-        Thu, 19 Mar 2026 03:47:34 -0700 (PDT)
+        bh=P3w6izYfrairSJ55395BwrKF4lapRGrqNyaG/W4OCKE=;
+        b=Qli/YyBKSXBQ3IIapocBh03yO08F47y6G3BQZlWyA3GZwb02bkWY8+GoEHlFneEUJV
+         /wTQf+iPLkIIkZdWqMiYy4+fXpm3Ge6zPRFcuWqqeK4BN6loSG7FwHzi+rQqPmER7Ne+
+         1N8E7iWRlwPzGHv2NjeR8zsT2XUsV4obyRaLSrCB129GaNTPLw1lqJFcaLjuQTngIgoF
+         7eOwNutaPqSo2UZsS54f7UTyF1pn2jdJBaQEjKq67Ui+8NaPgrlLsWxJNb5+JLSW4XaP
+         6NFFWAiCDx2+1T+ksD9ScLLYXxYaxzaf1xW9RWIvDSP+/9IHiIbF1YkpxcSEYaWOJnTa
+         LqaQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXJTj5fAxlATip+MhUvih0i2CmxxrpdeUtz80Q3PzZvbR/YtCapJSv78Y+iXxh2+vQe4Cgl9As8yQ0=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxrX/O3BKmDqCY/5A34hZnggQf0zYoTfWyYvFE+EslADcd+Ax/Y
+	gTvCmK6L28oQmdZp/cvceOFNA835zuGfOIMtpc/iJLYEuZ7/FlaQGsdP
+X-Gm-Gg: ATEYQzz1eDqWKYHofVrBtOX1Xxw731gkCIEed+wX8ompnbM+OIkjqzZnU/Af56SMovR
+	1sgn8T/JU3N7n2UGasgdzLawJo43a5IP7E8rwBGP/4nAVjx6WwV+qMO006ZhM+dskGxi3Lq7wGi
+	jNdZVTAoYiIkh8hzMH9cokCpqsR8MLgubUNnpS6DdfwWPw4YKhCmLA/fQu203RoW+JI0MBDsMzU
+	iWe9DpY/HL2BnmpN2vOApaDo7nXqGF85uNVAE5xsJOPtMJJB1XgGKHjnlbCHDbze7hQuORZ5Dvj
+	r+xUqHWPscVt1JRbcIyOwGHXtGByBDN0Rp9L1Z0+bFQz/3fmVAaXdUw/EpndLsIkhRmQcey4eQ1
+	JEhdk4oeEa8uh2FxZNislEmWcXyoyn+7uJp7VxKAA2fqLclei6tUEdmAJEfB2J0TMliJ8SkjeW3
+	+qqwT12RbGmR4UY1+jCaJOrKaCfczPjFs=
+X-Received: by 2002:a05:6a20:6a1a:b0:398:6fd3:7696 with SMTP id adf61e73a8af0-39b9a048bfemr6537821637.59.1773917587866;
+        Thu, 19 Mar 2026 03:53:07 -0700 (PDT)
 Received: from [192.168.0.106] ([103.216.213.160])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c741e0b3c43sm5073500a12.4.2026.03.19.03.47.30
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c741e58522csm5653942a12.31.2026.03.19.03.53.03
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 19 Mar 2026 03:47:34 -0700 (PDT)
-Message-ID: <cda6e549-271e-451b-a266-218d5af0ffc0@gmail.com>
-Date: Thu, 19 Mar 2026 16:17:27 +0530
+        Thu, 19 Mar 2026 03:53:06 -0700 (PDT)
+Message-ID: <f08030fc-ebbc-41b3-9237-a3a646ddd7e3@gmail.com>
+Date: Thu, 19 Mar 2026 16:23:01 +0530
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,51 +68,80 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 00/11] iio: adc: replace deprecated
+Subject: Re: [PATCH 01/11] iio: ad_sigma_delta: replace deprecated
  iio_push_to_buffers_with_timestamp()
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, marcelo.schmitt@analog.com, mazziesaccount@gmail.com,
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
+ marcelo.schmitt@analog.com, mazziesaccount@gmail.com,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <20260316172735.11430-1-atharvd440@gmail.com>
- <20260316172735.11430-2-atharvd440@gmail.com>
- <abhgZkJu4ERvmS_S@ashevche-desk.local>
+ <20260316172735.11430-3-atharvd440@gmail.com>
+ <20260316181943.50acd1a3@jic23-huawei>
 Content-Language: en-US
 From: Atharv Dubey <atharvd440@gmail.com>
-In-Reply-To: <abhgZkJu4ERvmS_S@ashevche-desk.local>
+In-Reply-To: <20260316181943.50acd1a3@jic23-huawei>
 Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 
-Hi Andy,
+Hi Jonathan,
 
-On 3/17/26 01:26, Andy Shevchenko wrote:
-> On Mon, Mar 16, 2026 at 10:57:26PM +0530, Atharv Dubey wrote:
->> Hello ,
->>
->> The helper iio_push_to_buffers_with_timestamp() is deprecated in the IIO
->> subsystem. The recommended replacement is
->> iio_push_to_buffers_with_ts().
->>
->> This patch series updates multiple ADC drivers to use the newer helper
->> API. No functional changes are intended; the patches only replace the
->> deprecated calls and adjust arguments where required.
->>
->> The goal is to remove usage of the deprecated helper and keep the
->> drivers aligned with the current IIO buffer interface.
-> You need to do this very carefully.
-> Besides that your email thread is broken:
-> - you have sent 2 time cover letter
-> - the patches 10 and 11 are detached from email thread.
+On 3/16/26 23:49, Jonathan Cameron wrote:
+> On Mon, 16 Mar 2026 22:57:27 +0530
+> Atharv Dubey <atharvd440@gmail.com> wrote:
 >
-> On top of that there is wrong indentation in many places.
-> I recommend you to choose something less tricky to begin
-> with.
+>> iio_push_to_buffers_with_timestamp() is deprecated. Replace it with
+>> iio_push_to_buffers_with_ts(), which takes the buffer size as an
+>> argument and helps avoid potential buffer overflows.
+>>
+>> Signed-off-by: Atharv Dubey <atharvd440@gmail.com>
+> Hi Atharv,
 >
+> Thank for you for your patch.
+>
+>
+>> ---
+>>   drivers/iio/adc/ad_sigma_delta.c | 6 +++---
+>>   1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+>> index 7852884703b0..73f3069da987 100644
+>> --- a/drivers/iio/adc/ad_sigma_delta.c
+>> +++ b/drivers/iio/adc/ad_sigma_delta.c
+>> @@ -636,7 +636,7 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+>>   	 * once, there is no need for sample number tracking.
+>>   	 */
+>>   	if (sigma_delta->active_slots == 1) {
+>> -		iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
+>> +		iio_push_to_buffers_with_ts(indio_dev, data, sizeof(data), pf->timestamp);
+> What is sizeof(data) and why is that the right value to pass as the new parameter?
+>
+>>   		goto irq_handled;
+>>   	}
+>>   
+>> @@ -662,8 +662,8 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+>>   
+>>   	if (sigma_delta->current_slot == sigma_delta->active_slots) {
+>>   		sigma_delta->current_slot = 0;
+>> -		iio_push_to_buffers_with_timestamp(indio_dev, sigma_delta->samples_buf,
+>> -						   pf->timestamp);
+>> +		iio_push_to_buffers_with_ts(indio_dev, sigma_delta->samples_buf,
+>> +				sizeof(sigma_delta->sampkes_buf), pf->timestamp);
+> Likewise. What value does the new parameter take?
+>
+> I'm not going to review any more of this version of the series given these are
+> both incorrect in the first patch.
+>
+> Jonathan
+
+
+You are right, both the fixes are incorrect let me try more on this. 
+I'll send a smaller patch series first and mark it as an RFC.
+
+>
+>>   	}
+>>   
+>>   irq_handled:
 >   
-
-I'll recitfy these mistakes and perhaps send a smaller patch for the 
-same. If you have some more simpler things in mind , please let me know. 
-I'll be happy to help out.
 
 Regards,
 Atharv
