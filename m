@@ -1,82 +1,78 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
+Received: from mail-pf1-f179.google.com (mail-pf1-f179.google.com [209.85.210.179])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AC4623A4523
-	for <linux-iio@vger.kernel.org>; Fri, 20 Mar 2026 11:16:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BCE1338A70C
+	for <linux-iio@vger.kernel.org>; Fri, 20 Mar 2026 11:21:53 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774005399; cv=none; b=Mx+UmOIpSf8OWcS/dURrjcjqK1y1JSgcgG2BxSzgo7ydf0x5JqMxhEfKh318qLRVxLxWmWrTy4w6XVW75KxTOyTDuEfgeX6NfV7wt21V367Vd/op0p0Z0IeEtT1zLvQGMKAbhL0DMK2M0HFj3eTw6QWuXjKwT9NFCKwlXweff00=
+	t=1774005714; cv=none; b=RVBFQTXzbcZs19oo5/8sHaOtblSiYizMDuwqWKuBATrJo8BbWZaIwCaABfzxxh2LykIWryIi8HZYTxiVOt0+M4yDIUkdBQBpiXDenVQ/u8+rLhk2FOG46Zj9/hOaLkXZpL8VuIEguSYNCSJwclvH4pSI/og+ZY4hm+T96As2zWw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774005399; c=relaxed/simple;
-	bh=MYuFIo5PKIOTB/+RPLOxw/oWCfZXFKo2lpXW4JtUSoA=;
+	s=arc-20240116; t=1774005714; c=relaxed/simple;
+	bh=Kap1NF8qAwfz1jNFb4It5HyW+OIdruVv+i8Ry9pr2sE=;
 	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=SvSrfKJ7tkHJpR7Vyqfy73k/hwKcDZkbS30I1nql8k3cfk3ifkR33cgFmeiAlD14L5LdfvbBwyQhu3HCY2HH0QZT/Mg227JC7UTPuTOzOdZDq+dwvYbXrgnkv2vIbWWqNzW+CwdnTdW3g8TTZUJfnh34OSKCoUkyXaZn0T8Pm48=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=gPQp4JxT; arc=none smtp.client-ip=209.85.128.53
+	 Content-Type:Content-Disposition:In-Reply-To; b=kezHXiGVUwrVGfrVYu+3VufQx9TsSHkuA/EGobdAdBlpKkMLRn5Vr5bzcZzcGj6qJ75qvYZ7lqCkZhVHpd+4r9SY2k98f1B3vl7wIktiN+xImtbpHIagpuhcW7mRb16gljTw5B4eHFhV547UeY8H0f+25a2pssaGuli6wcIj5rE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=ftubBwgO; arc=none smtp.client-ip=209.85.210.179
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gPQp4JxT"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-486fd5360d4so14437085e9.1
-        for <linux-iio@vger.kernel.org>; Fri, 20 Mar 2026 04:16:37 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ftubBwgO"
+Received: by mail-pf1-f179.google.com with SMTP id d2e1a72fcca58-82995242934so1353619b3a.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Mar 2026 04:21:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1774005396; x=1774610196; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1774005713; x=1774610513; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=UU7k8y/47EnkOnpuLl67VB38/rE2A9EJgbrmAlOoe7w=;
-        b=gPQp4JxTTiPDZ6X0T2sgvUUEj8pXY45paXdH8gkXVdFkQ5Qv9VEMKdbk1YueSxYWCW
-         5ox2ygd8IPXdzlDmNvkW+iAMNziIZV1hKujUFj/fd9VMR4JYjjp03dzosdVyO3E0S6cR
-         H1dGKzQL9+W5SXXXoXZtke0sF6V+jpK6bU0ep9UdrMru1qJu2IGRRK/t3JqX9yAQd5eS
-         ej0Hn/YT/VjuD/IjdYbTW5VC+PGhbGJiHQfmPOZlW3O2PtXhQoAlj4BcJ+SKeugTyhnv
-         voKg/rk0TCZ7Cw6WTrOrtYdxSuWVPSAm8VhYeerfbWa4TWx1V475YiP9c6npZ+uIFYzh
-         kC6Q==
+        bh=SERTDDOETwbnm5ZBLxTdhDL1QG1xN74dj065fjHNw4Q=;
+        b=ftubBwgOlOvPTOD5rXOwU03Pym/MvP6Q+NRhDnbJzjOmMRuzkt3EqbDB8EcGg+fUz/
+         D6VJAzhHEIEP6W31jCtBd380YedyJb9c6X9LOEYsfGnL7arXoDotLzhGeAaBGJErJWc/
+         ykucukgM/DDHmTw4fDTFmZe2RhrF3PZgIIjQ56WKk04xcfyIQWcyQqmcjz3nuzwwzilI
+         2kADyuL9iMN1r7K+J2KSX2VOUV4vx0Adm+nHHI1velzqZl6WU/5fWphySMYayYyd+Vp3
+         2aiCBjEQapuhkBuq7Iqf708W+R9NZ7oaEPk7igu48gg2XesuodFn7f+RZtaIMlSNUSq5
+         119Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774005396; x=1774610196;
+        d=1e100.net; s=20251104; t=1774005713; x=1774610513;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=UU7k8y/47EnkOnpuLl67VB38/rE2A9EJgbrmAlOoe7w=;
-        b=TNyWYBEXXj219bK3BDzpJ6hqGk9/gtU6tdYqbWQUi2yhXtEMflkRLvmasc+0ui9Fbb
-         I1h+0+27aoJOQHsLZalXPJ3nlNgGXa4LoKKzdMf6ro1ROLgnx1W+r6MhyzZxjzq3YOuL
-         Qw7uLflvgWcertkPqMU7xLYWdtOVSb+WHhaPUlnme8GenROwn0OzanPXgZdfNc6IrHxG
-         X59Dk5Z6OyUKEhTDiLMRPFc9MR3e9PncA6uvqSw6J0pllBsCi9H960HQa6j0ULq8h32N
-         64KnbIKey/FGaVkTP+rn7HaXjY09hU7z/1yxVh4DcvTUazZHv6+XNjCgtrH6U8KuEqx/
-         5MVw==
-X-Forwarded-Encrypted: i=1; AJvYcCUlqBkD9hyy8bIXccihssdWUaU/a0Wm6RLhXFkHLTb/Ok1zx+uKF6N4asKvk/t6J5qln1nZjyZhBRA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzWuHjIf6nGQ/GhwKYp0rKnMmasWcwJHle7TTxasNebvH840bCk
-	gnPPumqBAyr9PM9boJx/l6u9m3hn3K94LkLmDmIXvthdYolo0Ew1IVMl
-X-Gm-Gg: ATEYQzxNLoc2rj3V+D8eLovMNjT0sPRCpu5K0q/wdIz/UiLXI/D6v/UmyQ+/jMfYSGZ
-	JeiR3sdApMh2QmxylcjN3P2BFTnBgyP+zkUQbe7v+BLNdwKzaASoBJH/WbReF7AAvxPbVn8zF7Q
-	ttnnPekUPt9Ab3u9M1uFovlk1F9aKKtRIXkhG0Zo5M5+gegkQSkO1uCMluajFOllGj8Lsic1At5
-	0/wjrFXSGWytj/YPNTGkVJrK3N8+zLmMQVxczdXbhildV8RKokw+rpa9fgxw3NFE7R7JN79iabS
-	rowW9atMzUV3CdoQE1Fd2f7x48boVbrkRgR6vzklKjyz5b/KVPnVGi0tqLaINVC/T7kak66X9Ag
-	LtqZ7HhI/F9EtKq+uAvR05P5IOYzSE2MH91ARtBwXbBDRg4unApqo0ohBhXN9DcWdWJF042Jc88
-	xWvrHSAyMXK3PrZ8/P40HdQ4cV7h2gmBtcMdrgq/kiGnO3VrI5ZaoLsManYPrlB9yeHGTOmAdXs
-	6GIjcYyOlRmEsOW3pRbfBO2dzMnQ7uxFVgs/O7k47bdTblOMSn0U8b969S2iw==
-X-Received: by 2002:a05:600c:8b61:b0:485:3471:cffb with SMTP id 5b1f17b1804b1-486fedd8164mr37626435e9.15.1774005395763;
-        Fri, 20 Mar 2026 04:16:35 -0700 (PDT)
+        bh=SERTDDOETwbnm5ZBLxTdhDL1QG1xN74dj065fjHNw4Q=;
+        b=JD8DegYAQWMIhN8ea1BE/CaKRjT/nRC7227aIk+YrWV5BZKaB2jxcmnVV7IaTEv8Am
+         UPUMO3D3FhEeAkowkCREFzINpj1kbrHAaGTaEupRIprgkfT9bKTLn44ud/Cdm0epy1wR
+         UczcZ/zGJETOMWrVDqYgZHYeKcybva9VdI3Ufd+D5bQYa73RobRwdJSa1CiUWNRnPY71
+         3gdS3rsG7TSnxR3rP/BRpS37ziZJoyLe00hpS9hQJy++JKjHmfwWyQohVnz+1BJkm/nz
+         npdvnXt/HvvMhn13ydxi6aLXnRZhlgGAbFOWoL4H1tCTnC1KaerY5yyua8i5XWbERZ9w
+         azGg==
+X-Gm-Message-State: AOJu0YxIHwwkAZyvpFmzS4NVWPhaM+Nfa+6t6Eiil+z+V3YmuAFxKeTe
+	+X8f5wMHU+ihLFcbAnvv3qUi3flilr0EtU1DcGT7vgFlI7PPs6ZFVZwL
+X-Gm-Gg: ATEYQzx+i/SFBoYbF9b0sqKkiXbZuy0DXwVUaRf12N/o1FSwggDnkhPQ9rx6mcPoGdP
+	6DHdl7YVvBTiJnSCuOMBbzRAnFWqabIMI1hgb6YCCLYXjzO1J7akTHvNlD1wS/keTTyl1udE9X9
+	JRYlqUHJD5OsV2FICTGaKYOmhzcCiBRLVQAKTivdyO8/Sc7oLbm/sjPyX72MgPXjHut7EBkQmsr
+	2hVkrlp/1psMPKFA2CjzOwE4IdKY8o8wE3lXNOD+l7/sq92ZKuetApaNvt3i3xkhT3dgkGuo3ah
+	iZOjiz4w1Xyv6nlIsxmHwFWaAXu386KvVO6cHDTiMJ6ruwZOfwSVrHdI+zMPGzwx5x/uEt41rIL
+	O9wPWMCL/5bNR8Z8e472FU+ypywvaIkTpi9lH9jE5VPnXVVpWgA7pWQoBqYP5qCRWtlKbSjDC5b
+	RxNbp8p6MIGUgNkvxkp8RBFa/88CApKV6ZE2YIqfN4POtdop4JAeRnFRhXH7IXfe8vw4pieCgn4
+	+d/YqUlMuXpIFelegQ8oyH5BRGuvfrK44f9LtdV2+SysGHH2Bw=
+X-Received: by 2002:a05:6a00:3a18:b0:824:b304:2d1e with SMTP id d2e1a72fcca58-82a8c2a1df5mr2016480b3a.8.1774005713032;
+        Fri, 20 Mar 2026 04:21:53 -0700 (PDT)
 Received: from RDEALENC-L01.ad.analog.com (24.206.116.131.netskope-rdns.com. [24.206.116.131])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b647036e0sm5667505f8f.21.2026.03.20.04.16.33
+        by smtp.gmail.com with ESMTPSA id d2e1a72fcca58-82b0409f582sm1790118b3a.33.2026.03.20.04.21.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Mar 2026 04:16:34 -0700 (PDT)
+        Fri, 20 Mar 2026 04:21:52 -0700 (PDT)
 From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
 X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Fri, 20 Mar 2026 11:16:32 +0000
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>, 
-	Andy Shevchenko <andriy.shevchenko@intel.com>, rodrigo.alencar@analog.com
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
-	Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v8 02/10] lib: kstrtox: add kstrntoull() helper
-Message-ID: <rygken7oujyoupeanrdnl7r7smesa7js6sn3jsafbajc4sm3jh@adeslfqwwf3x>
-References: <20260303-adf41513-iio-driver-v8-0-8dd2417cc465@analog.com>
- <20260303-adf41513-iio-driver-v8-2-8dd2417cc465@analog.com>
- <aabm23jCikXs1l6F@ashevche-desk.local>
- <qcloiwjlbehs4yyuttvrt46monh7isef4d5nzuwlaby6uxfael@j3trvc5jwosy>
- <4mtdzxfj656sjr66npabfvrr7yd7q26l2unhsihjtniz4ossfj@g3qnzonoary6>
+Date: Fri, 20 Mar 2026 11:21:37 +0000
+To: Conor Dooley <conor@kernel.org>, rodrigo.alencar@analog.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+	linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, 
+	Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH RFC v2 1/9] dt-bindings: iio: frequency: add ad9910
+Message-ID: <zi7ifl45h5fu76rlbdubkeq7wa7gtve5wsdruo574gzj5qbfu6@fl6rh3soaj74>
+References: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
+ <20260318-ad9910-iio-driver-v2-1-e79f93becf11@analog.com>
+ <20260319-annex-varying-afbddcb825b7@spud>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -85,62 +81,66 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <4mtdzxfj656sjr66npabfvrr7yd7q26l2unhsihjtniz4ossfj@g3qnzonoary6>
+In-Reply-To: <20260319-annex-varying-afbddcb825b7@spud>
 
-On 26/03/04 10:02AM, Rodrigo Alencar wrote:
-> On 26/03/03 02:16PM, Rodrigo Alencar wrote:
-> > On 26/03/03 03:49PM, Andy Shevchenko wrote:
-> > > On Tue, Mar 03, 2026 at 01:27:07PM +0000, Rodrigo Alencar via B4 Relay wrote:
-> > > 
-> > > > Add kstrntoull() function, which converts a string to an ULL with a max
-> > > > character limit. The function is an alternative integer parsing function
-> > > > that does not require a null-terminated string. It becomes a better option
-> > > 
-> > > null -->  NUL
-> > > 
-> > > > over simple_strtoull() or kstrtoull() when parsing integers from a buffer
-> > > > with custom delimiters without having to create temporary copies.
-> > > > The function is consumed inside the implementation _kstrtoull(),
-> > > > promoting reuse.
-> > > 
-> > > But this will not properly convert 0000000000000000000000000000000000000000100,
-> > > for example, if the max_chars say set to 20.
+On 26/03/19 05:25PM, Conor Dooley wrote:
+> On Wed, Mar 18, 2026 at 05:56:01PM +0000, Rodrigo Alencar via B4 Relay wrote:
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > > 
-> > Why would I want that? truncation will happen in the case and the value will
-> > be zero. max_chars can be zet to INT_MAX/SIZE_MAX if you want to get 100.
+> > DT-bindings for AD9910, a 1 GSPS DDS with 14-bit DAC. It includes
+> > configurations for clocks, DAC current, reset and basic GPIO control.
 > > 
-> > > Also kstrto*() have a common idea behind to consume the only \n and allowed
-> > > digits. This (naming) doesn't fit into the kstrto*() category.
-> > 
-> > mmm ok, but include/linux/kstrtox.h is the right place for this? how about just
-> > strntoull()? I feel like a safe_ prefix does not make much sense if it is
-> > only to differentiate from simple_strto*(), which should have been safe at
-> > the first place.
-> 
-> Also kstrntoull() does not really match kstrto*(), as the 'n' is often used
-> to indicate a stop condition on amount of characters, which would not need
-> to require any termination character at all.
-> The 'k' prefix was add to 'strntoull', mostly because the function is being
-> added to the include/linux/kstrtox.h file. Other names I could think off:
-> - bounded_strtoull()
-> - bstrtoull() - 'b' for bounded
-> - bstrntoull()
-> - strtoull_bounded()
-> - strtoull_limit()
-> - safe_strntoull() - emphasizes overflow safety over simple_strtoull()
-> 
-> Extras considerations:
-> - Single-letter prefixes (bstrntoull, lstrntoull, etc.) are too cryptic
-> for a public API
-> - safe_ prefix is subjective and doesn't describe the actual behavior
-> 
-> kstrntoull() is still my first candidate, other than that it would be
-> bounded_strtoull().
+> > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Hi Andy,
+...
 
-could you provide more feedback here? Thanks!
+> > +
+> > +  clock-names:
+> > +    oneOf:
+> > +      - items:
+> > +          - const: ref_clk
+> 
+> s/_clk//, not like it can be anything else!
+> 
+> > +      - items:
+> > +          - const: ref_clk
+> > +          - const: sync_in
+> > +
+> > +  '#clock-cells':
+> > +    const: 1
+> > +
+> > +  clock-output-names:
+> > +    minItems: 1
+> > +    maxItems: 3
+> > +    items:
+> > +      enum: [ sync_clk, pdclk, sync_out ]
+> 
+> I'd say same here, but then you've got some issues with differentiation,
+> so idk.
 
+so I've got the names as they are referred in the device pins in the datasheet
+
+...
+
+> > +dependencies:
+> > +  adi,charge-pump-current-microamp: [ 'adi,pll-enable' ]
+> > +  adi,refclk-out-drive-strength: [ 'adi,pll-enable' ]
+> > +  interrupts: [ interrupt-names ]
+> > +  clocks: [ clock-names ]
+> > +  '#clock-cells': [ clock-output-names ]
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - clocks
+> 
+> Worth pointing out, you haven't made either clock-names or
+> interrupt-names (when interrupts are used) mandatory, so the properties
+> cannot be used by a driver. I suggest you make clock-names mandatory and
+> interrupts depend on interrupt-names.
+
+the dependecies is not enought make them required then? understood!
+ 
 -- 
 Kind regards,
 
