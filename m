@@ -1,72 +1,93 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9BE7D3B19C8;
-	Fri, 20 Mar 2026 17:39:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 991E934DB54;
+	Fri, 20 Mar 2026 19:35:07 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774028364; cv=none; b=h42ZqqvjEhFqxO5RKvtbgAinNmYoKPhTIZdMYFvf0saAs+GFIXzZPGaJwOS1OSy1twpBdcOCqcs6ancuJvfucbJiwDZbnHi5hZQUgPBgjlox3SdABV/E9t/ROw9bvPJqyoZ8pBVvvNXiF2aol+Sjc5Y1H4blLAN9ZlgwqQLN4lA=
+	t=1774035309; cv=none; b=YYPp5C4auH2jnOkxcvy6FDdt75ZvQh123p7JD+TdfrUQa8GvHanoj6ItjuP1F7dqRVg+tjqbc+d6VeEh9vsoEd5fo6ML56PJU3PPCE7fFDyFszUMha4ekkhIfNtW9v9UfWSL89KlLz8dWKOnmHcnKOhtLovLByha1Idvn8IxLeg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774028364; c=relaxed/simple;
-	bh=EmC83LvhVJvYi3xuGFTcrFTglNSFltf0KMf7Ig8lPtU=;
+	s=arc-20240116; t=1774035309; c=relaxed/simple;
+	bh=8YBTIlU5Zz2RAIVhWK5asqXzaMSXnEP+4TOZRUxC4zk=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=A1UYBmqwvGSosXPfaAfG/rKBOGvOqhr2mWxtSu620YcUDM5H4yx5IAoiE9vWtgU6+cNQ5NRJ49T0C4wBfpGxSP3BcPC9svkvb9Vu2iendkwghH78uGqz87B19FHk+7bfgOlNOMuwO7J341U48qLEnUSE12xOhI8IICNXzWP3EAc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JuNz7bzh; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=mMh6JnS4IXU4q1noEaN+rp+DlZYU8oeyQDcuP+2gY7y07cr6QjU+f0jJ6bXFhXv6MQoZ+er+rHEVdya5ddHbjTAz5JsQCe2NShaB9dUxFtAJVqglUpHHKGJW7LVNAbmi6huYYsohCFwmcyPhhxGCWwx81nc6cZJmq60HjTvhFn0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=fZF5O3BL; arc=none smtp.client-ip=198.175.65.16
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JuNz7bzh"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B35E9C4CEF7;
-	Fri, 20 Mar 2026 17:39:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774028364;
-	bh=EmC83LvhVJvYi3xuGFTcrFTglNSFltf0KMf7Ig8lPtU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=JuNz7bzhidytfCq09kZKJwyJBYvyYes9xox3rnttDS0EG7HYV+aZWVNhJ2MMHjugV
-	 UgxKzyFi4ZnvNG8+sEUDFGqBNwTDW3msGJxrIw9u42xAPc9C0kyufBdGv0zO5vowdT
-	 1Lij6usCBGSv5b7Ay1RLCztXcmmmf7JzFf16rUjfrvM9Qj/qzuhQqRIzKHKn8ef9Mg
-	 ceWH+RopObuNAJ4bimSbSCDWC1PPPCBgvK7LHR1bbtQxXfp64ZPow79gmBBzwXMp8O
-	 4LIZOIMEBnzM4BTbC/X/Kf8ypKcCxFB50EHggzEB8+E9rV+lIUfVP42G8iL+GG8TZJ
-	 AuX1X47T5xX/w==
-Date: Fri, 20 Mar 2026 17:39:19 +0000
-From: Conor Dooley <conor@kernel.org>
-To: Chris Morgan <macroalpha82@gmail.com>
-Cc: linux-iio@vger.kernel.org, andy@kernel.org, nuno.sa@analog.com,
-	dlechner@baylibre.com, jic23@kernel.org,
-	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
-	krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com,
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V2 1/5] dt-bindings: iio: imu: add icm42607
-Message-ID: <20260320-carless-puppet-995866998b8a@spud>
-References: <20260319182956.146976-1-macroalpha82@gmail.com>
- <20260319182956.146976-2-macroalpha82@gmail.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="fZF5O3BL"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774035307; x=1805571307;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8YBTIlU5Zz2RAIVhWK5asqXzaMSXnEP+4TOZRUxC4zk=;
+  b=fZF5O3BLjhWX/DcDT1tVesj/A00FBHsgsu2CLG4G4MWRasqeff+Ux8x/
+   Y2EiMqycOa6/HKnnBYxujpTP2boXbJ3ZpJzjdzUm5O/zRZC20D5VBdw3s
+   OsIpEUAj+vKfZ/CxVcudKEbKUC0PL5vaZc2plBAZ2hYk9xcX+2P8Ni7ky
+   DXfOJgMMYs2osysvogqLZusJRCwqm2iZjN9iC/XEZS7n5neFmMVAfXEsO
+   4Q818YCsAIhyFUGgPo0TbMXJ1HwtIUQ+ZleUwZBSacwR/HBCF8POrWoB+
+   iYFL9i5YvEygEZQ2+Aqycg2ejtyMMco1h0zGXw+GvO8v4yPJk9JSe/FUY
+   w==;
+X-CSE-ConnectionGUID: YTAXr3wPR/yrmAFKFJOMMQ==
+X-CSE-MsgGUID: ZAC2dScFShy7juh/KQwRBA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11735"; a="75320759"
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="75320759"
+Received: from orviesa008.jf.intel.com ([10.64.159.148])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 12:35:07 -0700
+X-CSE-ConnectionGUID: GW8SQ+YIQLOah75gIq0tEA==
+X-CSE-MsgGUID: TT79nw/oQ3qZY/4NM5azfQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="223408773"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.40])
+  by orviesa008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 12:35:03 -0700
+Date: Fri, 20 Mar 2026 21:35:01 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Erikas Bitovtas <xerikasxx@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+	Raymond Hackley <raymondhackley@protonmail.com>
+Subject: Re: [PATCH v6 0/8] iio: light: vcnl4000: add regulator support
+Message-ID: <ab2hZXdinHWNYB9S@ashevche-desk.local>
+References: <20260320-vcnl4000-regulators-v6-0-0d24d20b1a5b@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="aTCYQb8hepuZFpMC"
-Content-Disposition: inline
-In-Reply-To: <20260319182956.146976-2-macroalpha82@gmail.com>
-
-
---aTCYQb8hepuZFpMC
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20260320-vcnl4000-regulators-v6-0-0d24d20b1a5b@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
+On Fri, Mar 20, 2026 at 06:45:35PM +0200, Erikas Bitovtas wrote:
+> This patch series introduces support for voltage supply, I2C and cathode
+> regulators. This fixes an issue where if a regulator is shared between
+> the proximity sensor and some other device, and the other device is
+> powered off, the proximity sensor would be powered off as well.
+> 
+> One of the commits includes a Reported-by: tag without a Closes: tag -
+> the report was done outside in a Matrix channel. A link to access the
+> report requires sign-in, therefore it was left out.
 
---aTCYQb8hepuZFpMC
-Content-Type: application/pgp-signature; name="signature.asc"
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 
------BEGIN PGP SIGNATURE-----
+For the series, except the DT binding, I haven't even opened that mail.
+Also you can add Suggested-by to the selected patches.
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCab2GRwAKCRB4tDGHoIJi
-0n+2AQDOoSl2g8nQdYhadOyLnaeDez9zFjMDbF9Zq3NrhrkC6wEAlg3H0iNaDpQY
-qvxM143+V4mX/Pk/IhhYY/lb/2LBOQ4=
-=RDUK
------END PGP SIGNATURE-----
+-- 
+With Best Regards,
+Andy Shevchenko
 
---aTCYQb8hepuZFpMC--
+
