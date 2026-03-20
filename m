@@ -1,64 +1,70 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A74352DC791;
-	Fri, 20 Mar 2026 16:55:59 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0BEE1EB9E1;
+	Fri, 20 Mar 2026 17:07:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774025761; cv=none; b=O9fmaw82fw0zUqoqkAw5SkeozWi74xAT7Ts5nNXUWzOH/IdOIKoorVNa3t0mkuT0LRwj0XBdzm34K1RZG20F/P/WXqffYrO8XMRIKbOkP3H8p5cH+pfVZFCwl3nzUpajV16XOrmw4pNhQCbx2UIZA5gp6l9MBC52m6VycnwFlPo=
+	t=1774026470; cv=none; b=RVFa6uAdtHD6Jov0wbBEG0Euwkx7ODgmksfD5dc9id71pGc80Ki1N9eiKiF/+c2GIxgNJu7cRF6xvwVP23CcU8791SdIQEgfRzyVv+Ln1ejwG3cPJ70YWWsTjigB+FvhXtQNvOs3nKVIhWhD3gk2tWT7IRg7DPzjb0e2QyyJ3x0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774025761; c=relaxed/simple;
-	bh=JOsQO3st7WILZVBsC8f9R41Jc6elrwJYkP5l/BvD1+0=;
+	s=arc-20240116; t=1774026470; c=relaxed/simple;
+	bh=K0n7PtbZscSYHZTpNewnpXiO3uLV59cevvAXQJ8i2OM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=gu9pf6ngCDGII4jH85Dd9A5kRAQg3lQs/Or9oeMtrEZGzDd662TXQTUO2FIDmo+bg8+GY3hauIpWmUDagy29yQw2GHZ0v78JD3tjk+1g2Kdha99DDncER9ZSn9bXyrdmNx4ND+oiM6t47UYAoeOcDQMFmTeg/Eoz3Qw+LpqCFbQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=LXfzJLw+; arc=none smtp.client-ip=198.175.65.12
+	 Content-Type:Content-Disposition:In-Reply-To; b=n74aBNj46RnR1BQtro6PiGUS92dufIeY5npDIHlkXtrgLZNxnP4E44FZdzpvcE1pXmO90aR98gx4m6jl84saVOpU2rchClnyTF1EgOImsFe2gpj+I8npuRpwRRRxF+4UOUOUPG+QvQrSijtrB0LeHflM//4/fC7XQO2apre+xN8=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=WQKdlWMW; arc=none smtp.client-ip=198.175.65.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="LXfzJLw+"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="WQKdlWMW"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774025759; x=1805561759;
+  t=1774026468; x=1805562468;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=JOsQO3st7WILZVBsC8f9R41Jc6elrwJYkP5l/BvD1+0=;
-  b=LXfzJLw+DbmoIVkJssuGGca+WTGY9J5tbTUn73fJLyUWc1V09J17TxtD
-   CVNBiq4UqEAoxppi4izdBXj7ljDYSfCrUoU2RcPWjJ1PitCuKH2Dl8NZi
-   O0qlM/dmnz67SxGgguqRlK3T7NKUO5GugpjQZh2m6RgpXxt/mRdmv47Mi
-   zdTXY/ddp7G0rCVFl5sz4xDNholIgwZYusQ+pKdmc/Rm/kwYmwH7Of6w6
-   WyMLBdNTNUuIe8hkb/4rD3JRFsNt7kJalXbcFaAjSvus4kAPECdP6zSGV
-   HRrUS/PCOkGRF2Nd3HG/O1rVzEY1D0hOP1rcSehmhP+yKFQcDKaMN9MwN
+  bh=K0n7PtbZscSYHZTpNewnpXiO3uLV59cevvAXQJ8i2OM=;
+  b=WQKdlWMWSb3nlkrVtDEeQMXeCAgyWjblrCggpWBaiMhSwhNzKtoAAeKG
+   wnP6ubW62nmxoaP/e9jVGRdgIMC5DRgbisuiMmGBA3P8OKzIOqovmdxeH
+   JMaVUb9dfrdxzTzyTDULiXCWSpqh1n7PbsC1oQ6/k2clW1Fn3UUaZvwKV
+   xCqJPGCZ4fK8qaBOvEmWtZ3RzISo/LsYIZY+fCkT64JspToO21B1H1jrq
+   Rmw7skXED0yBvTtR3m9q33ww0Pk0AVcFtNGyyJDEtPmi2PB0zYaBKU7BU
+   SLI600VYfyGg2N2yXBGbDDZXCS0MscG6/nJYGvtxRbFZgb4vGZ3IdBTOr
    A==;
-X-CSE-ConnectionGUID: n8ZnWW3QT/+L8XxEObOLMA==
-X-CSE-MsgGUID: pXJMl3njRDCn5pIS8qiirw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11735"; a="86590450"
+X-CSE-ConnectionGUID: hhQSw12nTUC7l+Zb/cVuxw==
+X-CSE-MsgGUID: xHQs4iaDRgSLpFSXX3K3rw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11735"; a="75308976"
 X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
-   d="scan'208";a="86590450"
-Received: from orviesa010.jf.intel.com ([10.64.159.150])
-  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 09:55:54 -0700
-X-CSE-ConnectionGUID: yzTcZ5yzTPSLzbwc1yJQiw==
-X-CSE-MsgGUID: HN+kDXFUToSBAd28oBPRcw==
+   d="scan'208";a="75308976"
+Received: from fmviesa005.fm.intel.com ([10.60.135.145])
+  by orvoesa108.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 10:07:47 -0700
+X-CSE-ConnectionGUID: QfBlZzGeSyC3Ltz6/lwk4Q==
+X-CSE-MsgGUID: WSo707w0QICSzzyU2iq/fg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
-   d="scan'208";a="222569042"
-Received: from lkp-server01.sh.intel.com (HELO ba623fe84fe1) ([10.239.97.150])
-  by orviesa010.jf.intel.com with ESMTP; 20 Mar 2026 09:55:48 -0700
-Received: from kbuild by ba623fe84fe1 with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w3d8T-000000000Ar-30MX;
-	Fri, 20 Mar 2026 16:55:45 +0000
-Date: Sat, 21 Mar 2026 00:55:14 +0800
-From: kernel test robot <lkp@intel.com>
-To: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org
-Cc: oe-kbuild-all@lists.linux.dev, andy@kernel.org, nuno.sa@analog.com,
-	dlechner@baylibre.com, jic23@kernel.org,
-	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
-	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
-	krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com,
-	Chris Morgan <macromorgan@hotmail.com>
-Subject: Re: [PATCH V2 4/5] iio: imu: inv_icm42600: Add support for icm42607
-Message-ID: <202603210032.xLBroWQu-lkp@intel.com>
-References: <20260319182956.146976-5-macroalpha82@gmail.com>
+   d="scan'208";a="228066475"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.40])
+  by fmviesa005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 10:07:42 -0700
+Date: Fri, 20 Mar 2026 19:07:40 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: radu.sabau@analog.com, Wolfram Sang <wsa+renesas@sang-engineering.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH v4 4/4] iio: adc: ad4691: add SPI offload support
+Message-ID: <ab1-3FLCDbu_iEQt@ashevche-desk.local>
+References: <20260320-ad4692-multichannel-sar-adc-driver-v4-0-052c1050507a@analog.com>
+ <20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -67,102 +73,202 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260319182956.146976-5-macroalpha82@gmail.com>
+In-Reply-To: <20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a@analog.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-Hi Chris,
+On Fri, Mar 20, 2026 at 01:03:58PM +0200, Radu Sabau via B4 Relay wrote:
 
-kernel test robot noticed the following build warnings:
+> Add SPI offload support to enable DMA-based, CPU-independent data
+> acquisition using the SPI Engine offload framework.
+> 
+> When an SPI offload is available (devm_spi_offload_get() succeeds),
+> the driver registers a DMA engine IIO buffer and uses dedicated buffer
+> setup operations. If no offload is available the existing software
+> triggered buffer path is used unchanged.
+> 
+> Both CNV Burst Mode and Manual Mode support offload, but use different
+> trigger mechanisms:
+> 
+> CNV Burst Mode: the SPI Engine is triggered by the ADC's DATA_READY
+> signal on the GP pin specified by the trigger-source consumer reference
+> in the device tree (one cell = GP pin number 0-3). For this mode the
+> driver acts as both an SPI offload consumer (DMA RX stream, message
+> optimization) and a trigger source provider: it registers the
+> GP/DATA_READY output via devm_spi_offload_trigger_register() so the
+> offload framework can match the '#trigger-source-cells' phandle and
+> automatically fire the SPI Engine DMA transfer at end-of-conversion.
+> 
+> Manual Mode: the SPI Engine is triggered by a periodic trigger at
+> the configured sampling frequency. The pre-built SPI message uses
+> the pipelined CNV-on-CS protocol: N+1 4-byte transfers are issued
+> for N active channels (the first result is discarded as garbage from
+> the pipeline flush) and the remaining N results are captured by DMA.
+> 
+> All offload transfers use 32-bit frames (bits_per_word=32, len=4) for
+> DMA word alignment. This patch promotes the channel scan_type from
+> storagebits=16 (triggered-buffer path) to storagebits=32 to match the
+> DMA word size; the triggered-buffer paths are updated to the same layout
+> for consistency. CNV Burst Mode channel data arrives in the lower 16
+> bits of the 32-bit word (shift=0); Manual Mode data arrives in the upper
+> 16 bits (shift=16), matching the 4-byte SPI transfer layout
+> [data_hi, data_lo, 0, 0]. A separate ad4691_manual_channels[] array
+> encodes the shift=16 scan type for manual mode.
+> 
+> Kconfig gains a dependency on IIO_BUFFER_DMAENGINE.
 
-[auto build test WARNING on rockchip/for-next]
-[also build test WARNING on linus/master v7.0-rc4 next-20260320]
-[cannot apply to jic23-iio/togreg]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+...
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Chris-Morgan/dt-bindings-iio-imu-add-icm42607/20260320-061927
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/mmind/linux-rockchip.git for-next
-patch link:    https://lore.kernel.org/r/20260319182956.146976-5-macroalpha82%40gmail.com
-patch subject: [PATCH V2 4/5] iio: imu: inv_icm42600: Add support for icm42607
-config: i386-randconfig-r134-20260320 (https://download.01.org/0day-ci/archive/20260321/202603210032.xLBroWQu-lkp@intel.com/config)
-compiler: gcc-13 (Debian 13.3.0-16) 13.3.0
-sparse: v0.6.5-rc1
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260321/202603210032.xLBroWQu-lkp@intel.com/reproduce)
+> +	struct spi_offload		*offload;
+> +	/* SPI offload trigger - periodic (MANUAL) or DATA_READY (CNV_BURST) */
+> +	struct spi_offload_trigger	*offload_trigger;
+> +	u64				offload_trigger_hz;
+> +	struct spi_message		offload_msg;
+> +	/* Max 16 channel xfers + 1 state-reset or NOOP */
+> +	struct spi_transfer		offload_xfer[17];
+> +	u32				offload_tx_cmd[17];
+> +	u32				offload_tx_reset;
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603210032.xLBroWQu-lkp@intel.com/
+Ouch! Can you guarantee this kilobytes (isn't it?) of memory will be used in
+majority of the cases? When I got comment on replacing a single u8 by unsigned
+long in one well used data structure in the kernel I was laughing, but this
+single driver may beat the recode of memory waste on the embedded platforms.
+Perhaps having a separate structure and allocate it separately when we sure
+the offload is supported?
 
-All warnings (new ones prefixed by >>):
+Cc'ed to Wolfram.
 
-   drivers/iio/imu/inv_icm42600/inv_icm42600_core.c: In function 'inv_icm42607_hw_suspend':
->> drivers/iio/imu/inv_icm42600/inv_icm42600_core.c:1150:13: warning: variable 'accel_conf' set but not used [-Wunused-but-set-variable]
-    1150 |         int accel_conf;
-         |             ^~~~~~~~~~
---
->> drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c:108:18: warning: 'inv_icm42607_accel_filter_values' defined but not used [-Wunused-const-variable=]
-     108 | static const int inv_icm42607_accel_filter_values[] = {
-         |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+...
+
+> +	/* Scan buffer: one slot per channel (u32) plus timestamp */
+>  	struct {
+> -		u16 vals[16];
+> +		u32 vals[16];
+>  		s64 ts __aligned(8);
+
+This might break the existing cases or make code ugly and not actually
+compatible with u32 layout.
+
+>  	} scan __aligned(IIO_DMA_MINALIGN);
+
+...
+
+> +static int ad4691_cnv_burst_offload_buffer_postenable(struct iio_dev *indio_dev)
+> +{
+> +	struct ad4691_state *st = iio_priv(indio_dev);
+> +	struct device *dev = regmap_get_device(st->regmap);
+> +	struct spi_device *spi = to_spi_device(dev);
+> +	struct spi_offload_trigger_config config = {
+> +		.type = SPI_OFFLOAD_TRIGGER_DATA_READY,
+> +	};
+
+> +	unsigned int n_active = hweight_long(*indio_dev->active_scan_mask);
+
+Should be bitmap_weight() with properly given amount of bits.
 
 
-vim +/accel_conf +1150 drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+> +	unsigned int bit, k;
+> +	int ret;
+> +
+> +	ret = regmap_write(st->regmap, AD4691_ACC_MASK_REG,
+> +			   (u16)~(*indio_dev->active_scan_mask));
 
-  1144	
-  1145	static int inv_icm42607_hw_suspend(struct device *dev)
-  1146	{
-  1147		struct inv_icm42600_state *st = dev_get_drvdata(dev);
-  1148		struct device *accel_dev;
-  1149		bool wakeup;
-> 1150		int accel_conf;
-  1151		int ret = 0;
-  1152	
-  1153		guard(mutex)(&st->lock);
-  1154	
-  1155		st->suspended.gyro = st->conf.gyro.mode;
-  1156		st->suspended.accel = st->conf.accel.mode;
-  1157		st->suspended.temp = st->conf.temp_en;
-  1158		if (pm_runtime_suspended(dev))
-  1159			return 0;
-  1160	
-  1161		if (st->fifo.on) {
-  1162			ret = regmap_write(st->map, INV_ICM42607_REG_FIFO_CONFIG1,
-  1163					   INV_ICM42607_FIFO_CONFIG1_BYPASS);
-  1164			if (ret)
-  1165				return ret;
-  1166		}
-  1167	
-  1168		/* keep chip on and wake-up capable if APEX and wakeup on */
-  1169		accel_dev = &st->indio_accel->dev;
-  1170		wakeup = st->apex.on && device_may_wakeup(accel_dev);
-  1171		if (wakeup) {
-  1172			/* keep accel on and setup irq for wakeup */
-  1173			accel_conf = st->conf.accel.mode;
-  1174			enable_irq_wake(st->irq);
-  1175			disable_irq(st->irq);
-  1176		} else {
-  1177			/* disable APEX features and accel if wakeup disabled */
-  1178			if (st->apex.wom.enable) {
-  1179				ret = inv_icm42607_disable_wom(st);
-  1180				if (ret)
-  1181					return ret;
-  1182			}
-  1183			accel_conf = INV_ICM42600_SENSOR_MODE_OFF;
-  1184		}
-  1185	
-  1186		ret = inv_icm42607_set_pwr_mgmt0(st, INV_ICM42600_SENSOR_MODE_OFF,
-  1187						 INV_ICM42600_SENSOR_MODE_OFF, false,
-  1188						 NULL);
-  1189		if (ret)
-  1190			return ret;
-  1191	
-  1192		if (!wakeup)
-  1193			regulator_disable(st->vddio_supply);
-  1194	
-  1195		return 0;
-  1196	}
-  1197	
+This is not how we work with bitmaps. Use bitmap_read().
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
+> +			   *indio_dev->active_scan_mask);
+
+Ditto.
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	iio_for_each_active_channel(indio_dev, bit) {
+> +		ret = regmap_write(st->regmap, AD4691_ACC_COUNT_LIMIT(bit),
+> +				   AD4691_ACC_COUNT_VAL);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	ret = ad4691_enter_conversion_mode(st);
+> +	if (ret)
+> +		return ret;
+> +
+> +	memset(st->offload_xfer, 0, sizeof(st->offload_xfer));
+> +
+> +	/*
+> +	 * N transfers to read N AVG_IN registers plus one state-reset
+> +	 * transfer (no RX) to re-arm DATA_READY.
+> +	 *   TX: [reg_hi | 0x80, reg_lo, 0x00, 0x00]
+> +	 *   RX: [0x00, 0x00, data_hi, data_lo]   (shift=0)
+> +	 */
+> +	k = 0;
+> +	iio_for_each_active_channel(indio_dev, bit) {
+> +		unsigned int reg = AD4691_AVG_IN(bit);
+> +
+> +		st->offload_tx_cmd[k] =
+
+> +			cpu_to_be32(((reg >> 8 | 0x80) << 24) |
+> +				    ((reg & 0xFF) << 16));
+
+Isn't this is just a cpu_to_be16(0x8000 | reg) ?
+
+> +		st->offload_xfer[k].tx_buf = &st->offload_tx_cmd[k];
+> +		st->offload_xfer[k].len = sizeof(u32);
+> +		st->offload_xfer[k].bits_per_word = AD4691_OFFLOAD_BITS_PER_WORD;
+> +		st->offload_xfer[k].offload_flags = SPI_OFFLOAD_XFER_RX_STREAM;
+> +		if (k < n_active - 1)
+> +			st->offload_xfer[k].cs_change = 1;
+> +		k++;
+> +	}
+> +
+> +	/* State reset to re-arm DATA_READY for the next scan. */
+> +	st->offload_tx_reset =
+> +		cpu_to_be32(((AD4691_STATE_RESET_REG >> 8) << 24) |
+> +			    ((AD4691_STATE_RESET_REG & 0xFF) << 16) |
+> +			    (AD4691_STATE_RESET_ALL << 8));
+
+In similar way
+
+		cpu_to_be32((AD4691_STATE_RESET_REG << 16) |
+			    (AD4691_STATE_RESET_ALL << 8));
+
+> +	st->offload_xfer[k].tx_buf = &st->offload_tx_reset;
+> +	st->offload_xfer[k].len = sizeof(u32);
+> +	st->offload_xfer[k].bits_per_word = AD4691_OFFLOAD_BITS_PER_WORD;
+> +	k++;
+> +
+> +	spi_message_init_with_transfers(&st->offload_msg, st->offload_xfer, k);
+> +	st->offload_msg.offload = st->offload;
+> +
+> +	ret = spi_optimize_message(spi, &st->offload_msg);
+> +	if (ret)
+> +		goto err_exit_conversion;
+> +
+> +	ret = ad4691_sampling_enable(st, true);
+> +	if (ret)
+> +		goto err_unoptimize;
+> +
+> +	ret = spi_offload_trigger_enable(st->offload, st->offload_trigger, &config);
+> +	if (ret)
+> +		goto err_sampling_disable;
+> +
+> +	return 0;
+> +
+> +err_sampling_disable:
+> +	ad4691_sampling_enable(st, false);
+> +err_unoptimize:
+> +	spi_unoptimize_message(&st->offload_msg);
+> +err_exit_conversion:
+> +	ad4691_exit_conversion_mode(st);
+> +	return ret;
+> +}
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+With Best Regards,
+Andy Shevchenko
+
+
