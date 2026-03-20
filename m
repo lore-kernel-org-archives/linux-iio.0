@@ -1,45 +1,51 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 362923002DF;
-	Fri, 20 Mar 2026 17:20:33 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6A55B3D1711;
+	Fri, 20 Mar 2026 17:27:17 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774027233; cv=none; b=Pk7YdE3KXOMzokyKxlhjQ4sDIDGJMo7Y1wIFmq/Cv7THsnr9MtVa6ILNrHhHUr1QUdOjB23cKsP1EP0S7zNS43GEI6KA31xvg3NU2xuDRopF4uv2+tjpz2OSr/O0yTjTb5h125cxEjdAdPa5oUjhFWrBQ1F8neTK8cL5bbkld/k=
+	t=1774027637; cv=none; b=cObnGQkTlj0679EpjS6KRqcz+MaIkgqT3JAMqZXnhopoTjvDFxRC+vX+870ZmQO1H7uDuQSruUC1NsQr6qjzS9xNlJ2XhMRVmpKeQ8IVW3pETje13c860sBMFfq9AURhaSxaZdqfzZxb8lVPDuA89I/q5MnbZLAs48qQn1q8K44=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774027233; c=relaxed/simple;
-	bh=gUjmNdpoufx/LOllFEAXcboSVvQAry7b28nOT3dZAF8=;
+	s=arc-20240116; t=1774027637; c=relaxed/simple;
+	bh=6Mjk1+pZcOL6YeYH4dIY3vVPBbYPiWREkcuzQYNf8WQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=BzEWZDKtksHCo/UCAgJkqbvHBCWoFrTovx1IdkjiR1qfLO68uQsk5zLEWfjr4kvzx3Dl2fIfs0cG2g3iYXlFKcdAUX0kXHoJ63ZNkWvcnnPQqL8mjCj1k+UQh6Vl4FVWdSn5X3/KU7DEJ+bH46wKNBKIMshsQB7ouIV2DV5/+sQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hA1o/36k; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=EWPGr35etCmyfFMEe4t/gq48XY9aJ15HbPIucvXDM5JtmSeFGaMuvkH7umcyzWlhjz0koup0EU4bVsWBY12sIBd5+k/eiAzd2eo/0IGKZWqxVnLiymnIRPEATPO9EEKZWO5tuzkOC7szVV9bpUoca1u7ljkYl7e5AaBGMb85m1c=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XdzCmBr5; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hA1o/36k"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BFC00C4CEF7;
-	Fri, 20 Mar 2026 17:20:30 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XdzCmBr5"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA39AC4CEF7;
+	Fri, 20 Mar 2026 17:27:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774027233;
-	bh=gUjmNdpoufx/LOllFEAXcboSVvQAry7b28nOT3dZAF8=;
+	s=k20201202; t=1774027636;
+	bh=6Mjk1+pZcOL6YeYH4dIY3vVPBbYPiWREkcuzQYNf8WQ=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=hA1o/36kGFFDrKajyiVxRTEAv7AJZCK/+lA7KBry82O/5q84vlgtjTrdd0b0NVAxr
-	 YOfLmMDih1QZuGfw0SkgkM7mfgPRvJKekQgNBIn9lZWk3uOXcTTflLkHPJnT39gXRV
-	 WklxnGSS98gpGiWdrGwoZ2CcNGOsdCuY8hxZz8Keinp6WUgnhd8lntBCWmd3SkaVcd
-	 9c6hLMN3N6lUcXBtUtpp24lEEzkFhIY8hZ6e/yczADOJUTSalQ4uXgHgg32/Is8Cu0
-	 wFPWRjg1Bt+WHfcrY+PpWw60ZLdvDc/XkN/feVce0LLxXdwbAwyUco4ktp1t5Kg3kz
-	 cfHuXhrPrAFgg==
-Date: Fri, 20 Mar 2026 17:20:28 +0000
+	b=XdzCmBr5TwqIkh+rKFKzFbf0CQ5fmLAZmN5SEORrQemXAODzImiUY+LLxfixzW9d6
+	 jNRtBMC6EI7NDnVdkRiVcyyrb9oNfUH6npfDShkhzapMoQ9WPqEDgeJTdjcBotFXrD
+	 YNOQzURu28tkJhFChHB/PaS5FuRu9oRpG9o7/4Q9GahmZmOedgKtgu0QgpUXcIBs6k
+	 F6k/K4EsdMc6ASic0IEDY8wNwGMiE/cI/gx4LNt9CJtmlQvWXwVGAWb0UGDhLb5vFo
+	 CJGCB/7T+hgGD2bubbrTg0+Qw5rn/Mi4ncZRJ6m1t0juv8Z56osyakV694+d2i29mf
+	 kR3XRLparGFmg==
+Date: Fri, 20 Mar 2026 17:27:11 +0000
 From: Conor Dooley <conor@kernel.org>
-To: David =?utf-8?Q?Marinovi=C4=87?= <david.marinovic@pupin.rs>
-Cc: jic23@kernel.org, andriy.shevchenko@intel.com, dlechner@baylibre.com,
-	nuno.sa@analog.com, robh@kernel.org, krzk+dt@kernel.org,
-	conor+dt@kernel.org, michael.hennerich@analog.com,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/3] dt-bindings: iio: dac: ltc2632: add LTC2654
- compatible strings
-Message-ID: <20260320-doorway-rack-75f58f141999@spud>
-References: <20260318135736.91564-1-david.marinovic@pupin.rs>
- <20260320150957.105571-1-david.marinovic@pupin.rs>
- <20260320150957.105571-3-david.marinovic@pupin.rs>
+To: Carlos Jones Jr <carlosjr.jones@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Liam Beguin <liambeguin@gmail.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Tobias Sperling <tobias.sperling@softing.com>,
+	Jorge Marques <jorge.marques@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/3] dt-bindings: iio: adc: lltc,ltc2497: add LTC2305
+ support
+Message-ID: <20260320-popper-uncurled-723c68d33554@spud>
+References: <20260320140819.191700-1-carlosjr.jones@analog.com>
+ <20260320140819.191700-3-carlosjr.jones@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -47,62 +53,85 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha512;
-	protocol="application/pgp-signature"; boundary="8xyPhteJzLzSXz59"
+	protocol="application/pgp-signature"; boundary="8LrQ4qPzToout+qF"
 Content-Disposition: inline
-In-Reply-To: <20260320150957.105571-3-david.marinovic@pupin.rs>
+In-Reply-To: <20260320140819.191700-3-carlosjr.jones@analog.com>
 
 
---8xyPhteJzLzSXz59
-Content-Type: text/plain; charset=utf-8
+--8LrQ4qPzToout+qF
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Fri, Mar 20, 2026 at 04:09:47PM +0100, David Marinovi=C4=87 wrote:
-> From: David Marinovic <david.marinovic@pupin.rs>
->=20
-> Add compatible strings for the LTC2654 quad-channel DAC family.
->=20
-> The LTC2654 devices are 4-channel, 16-/12-bit DACs with an internal
-> reference and SPI interface. They use the same 24-bit SPI command
-> format as the LTC2632/2634/2636 family.
->=20
-> The 16-bit variants (LTC2654-L16 and LTC2654-H16) require new
-> compatible strings, as no existing compatibles support 16-bit
-> resolution.
->=20
-> The 12-bit variants (LTC2654-L12 and LTC2654-H12) are register-
-> compatible with LTC2634-L12 and LTC2634-H12 respectively, and can
-> use them as fallback compatibles.
->=20
+On Fri, Mar 20, 2026 at 10:08:18PM +0800, Carlos Jones Jr wrote:
+> Add support for the LTC2305 2-channel, 12-bit ADC to the existing
+> LTC2497 device tree bindings.
 
-> Changes added for:
-> - lltc,ltc2654-l16: 16-bit, 2.5V internal reference
-> - lltc,ltc2654-l12: 12-bit, 2.5V internal reference (fallback to lltc,ltc=
-2634-l12)
-> - lltc,ltc2654-h16: 16-bit, 4.096V internal reference
-> - lltc,ltc2654-h12: 12-bit, 4.096V internal reference (fallback to lltc,l=
-tc2634-h12)
+> The LTC2305 is compatible with the
+> LTC2309 driver implementation.
 
-No idea what this section is doing, could probably cull it if there's
-another version.
-Acked-by: Conor Dooley <conor.dooley@microchip.com>
-pw-bot: not-applicable
-
-btw, please don't send new versions in reply to old ones, can cause you
-to get buried in people's mailboxes.
+Clearly this is not true, given the driver patches in the series.
+pw-bot: changes-requested
 
 Cheers,
 Conor.
 
---8xyPhteJzLzSXz59
+>=20
+> Signed-off-by: Carlos Jones Jr <carlosjr.jones@analog.com>
+> ---
+>  .../devicetree/bindings/iio/adc/lltc,ltc2497.yaml        | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml =
+b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+> index 5cc6a9684077..b246d492950e 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
+> @@ -4,13 +4,19 @@
+>  $id: http://devicetree.org/schemas/iio/adc/lltc,ltc2497.yaml#
+>  $schema: http://devicetree.org/meta-schemas/core.yaml#
+> =20
+> -title: Linear Technology / Analog Devices LTC2497 and LTC2309 ADC
+> +title: Linear Technology / Analog Devices LTC2497 and similar ADCs
+> =20
+>  maintainers:
+>    - Michael Hennerich <michael.hennerich@analog.com>
+>    - Liam Beguin <liambeguin@gmail.com>
+> =20
+>  description: |
+> +  LTC2305:
+> +    low noise, low power, 2-channel, 12-bit successive approximation ADC=
+ with an
+> +    I2C compatible serial interface.
+> +
+> +    https://www.analog.com/media/en/technical-documentation/data-sheets/=
+2305fa.pdf
+> +
+>    LTC2309:
+>      low noise, low power, 8-channel, 12-bit successive approximation ADC=
+ with an
+>      I2C compatible serial interface.
+> @@ -28,6 +34,7 @@ description: |
+>  properties:
+>    compatible:
+>      enum:
+> +      - lltc,ltc2305
+>        - lltc,ltc2309
+>        - lltc,ltc2497
+>        - lltc,ltc2499
+> --=20
+> 2.43.0
+>=20
+
+--8LrQ4qPzToout+qF
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCab2B3AAKCRB4tDGHoIJi
-0oF6AQC1UxcI4CloyPGfmWXyIqR4+xy2sxzadpu6YLIlvGC0IAEA6PkyGrcN+KBx
-zzACDjW+F2kJIa8LO6Al0bAnq63QAAs=
-=rJmI
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCab2DbwAKCRB4tDGHoIJi
+0mhRAP9B9ByHEGoGo+5X5rF6oICFNxDCAGdK10ccPGjFsmaEUgD/ZiUwvv3JKYXk
+vIwsk4oQiLCspvQTC7agRfU74+Kl6gg=
+=jCNz
 -----END PGP SIGNATURE-----
 
---8xyPhteJzLzSXz59--
+--8LrQ4qPzToout+qF--
