@@ -1,106 +1,135 @@
-Received: from mail-yx1-f51.google.com (mail-yx1-f51.google.com [74.125.224.51])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.17])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 36F55345CAF
-	for <linux-iio@vger.kernel.org>; Fri, 20 Mar 2026 12:10:40 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDC4F3ACF1A;
+	Fri, 20 Mar 2026 12:24:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.17
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774008641; cv=none; b=XCFrpldriUGdl10q9YtXh9u5wm2T1dMjhBSdZcfxLL3y9T4AzWsPZlcAXxmnxs61zrOWkIzKu199VJWiIV9OGrm0kfhaQ0m1pX1CSMSZpsuegIG+CE05b4mxmIQbdNzM3SHm/tnv1lv31cu4LsJ/BgvKnBr1jdKxxOb2KPLNEf4=
+	t=1774009456; cv=none; b=mHTNzjCe4RR/1bxkE5cBqw+PMMCGhO9o5dUWVX1GZLkAWz/MOMzLWqveLPM1PJbFgfNcGrXHDD0BmDNywWQqeS97TNdXbAI2xH/G8CEmRVQuXpMZkRG96RlzCE2IjK4vmCtDtFrK1lzIUHD+ggF39gutcwNgZxOoSwGkdQ3bj+8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774008641; c=relaxed/simple;
-	bh=B3pmlX7fRUqZADkEMiZVMNjp5NfJXRwh+wSOc2Cr4IM=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=uwWEu0VTpImGcBSceCsBd5H5/aAL3vHhr1fnrxo+hI9GUGXohnonuw5JrZsicZNxuQsQp35jX6yLjBnX1U5CEzF9M+JrsP3A6Az3zOytTVwgRqc8SF0CmpXqvdqtkg2VGKjI5KNGiY+JH9UElnN8DNBdzCN/vyzZevWsVzf1RFo=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=74.125.224.51
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yx1-f51.google.com with SMTP id 956f58d0204a3-64e9f9226a7so1566472d50.2
-        for <linux-iio@vger.kernel.org>; Fri, 20 Mar 2026 05:10:40 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774008639; x=1774613439;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=ATjBD35P3zbZ6+Azz3hbE7hIAK2d60Azv4xoO5wqRiI=;
-        b=bbmvMYN+ZzZjz5zgkjb9gdLQwAwU94r1NfA5pg8zdeZYQsvs9v3j+r0QE7nDkVOI9+
-         mH7HXw3UNsOGmWOEmSsZql2nUtSl8Gnz4jze0OqlcwC3t688TjpDzQrJTgbgx2GfhKRn
-         TZSCU6NQH8UARk+f+/JsjRvONVVpzNyLwgymU5xwZkYcRZoExneG43uwhfAJGSnV+k9G
-         jSwOB6pYvUHbi276Uhvnr2kAg1Qd5VI/k4GhLjuq/0NWDTgcPXbCxdkEjq2UeQzlBUWp
-         uvFqhE689ievGNMbaiLU2cI5AFxow5aHTiOrXl3wKU0gsK1bYNF+Dg+RvreDUuP2qkMc
-         WctQ==
-X-Gm-Message-State: AOJu0YxDLyiKcuk9UITURJlPoWFBGSDqXWRmmfjIwCRUgSdtnD3mQYPn
-	y1qBKSL3uzmT1UAXxmKvl11DsDVDUTrwqFEt+xuti18SaS8/j+dvkyu2j8Y079v+Tsw=
-X-Gm-Gg: ATEYQzzxdGKXiCRQ01T+jNyMsLpa49hAqsF7hvjfUzJibSO5wF+Squyrf6I+JgIj3Uk
-	zgIChqHoX0IujA9Z9r/ddSeXVOhioQU6+6Gp9f6YNluupqYv8VvsvFMsJvbUXVT/31DXzysvy3K
-	ilWinOP/tBZDZLzWdwUkRjFP34j2dZF2GGeea6XlMMNGIvDZ+huWWPkT7/01IAGTYBb+ehqQdRW
-	CpUQ/9TFUtPPLOVy9+DDaSRpCHqS378ivakUC4H3CwnKwt5H0meRumHPcLRdEDzzcf7D8xTENZO
-	44jgjjNgLo3vQ2s9uc7AqNAXSqQPzRSveOF2x03PvchK6OfHF+UK+9N9evnifJVh/BUZjNzKIf1
-	4pazsf2jRUx4vT7DERMkd2GIUHKzC6pYj/HFDNWy/+J8i34Zto5m4/INyFOHeKm2tDRFXetqG0V
-	KoxSUaDPCV5hTsBeG6dmW1Ocy6CTc5Bjwo263X4dJYhNCdq56IPcxmxw0LGSFF76gRsjtA9hbVX
-	qLTNrP2VtpBsFALIr2bTCEC0j92mSc1vY/vjsi4ag==
-X-Received: by 2002:a53:ca4d:0:b0:64c:b68a:f519 with SMTP id 956f58d0204a3-64eaa8688d8mr2333780d50.80.1774008638847;
-        Fri, 20 Mar 2026 05:10:38 -0700 (PDT)
-Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com. [74.125.224.53])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-64eabe7e34esm1301620d50.10.2026.03.20.05.10.36
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 20 Mar 2026 05:10:36 -0700 (PDT)
-Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-64ae222d978so2179665d50.1
-        for <linux-iio@vger.kernel.org>; Fri, 20 Mar 2026 05:10:36 -0700 (PDT)
-X-Received: by 2002:a05:690e:190c:b0:64e:b4d6:e5d6 with SMTP id
- 956f58d0204a3-64eb4d6e6b1mr279913d50.7.1774008636354; Fri, 20 Mar 2026
- 05:10:36 -0700 (PDT)
+	s=arc-20240116; t=1774009456; c=relaxed/simple;
+	bh=kXdtIQsgXEinGhMSEwdoG3L66k14q9FpQSx3NwhGOos=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=tusIpciC0wyOmpl/t+51OkOEYP7Cxt7GAgT1w5fEVz/b+LSMi4qA3DEcn3NaCwfdgrlXq4COnJk96J3qlVxJEgd4kSz91YKpso57RQGR6a2EmtJybnh0oBw2rlGbGB1AuNQOJG1lpBRF6FjhHwjSHQsLPycH1wkmD6DvTgP6Ppw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=V6CoI4TP; arc=none smtp.client-ip=192.198.163.17
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="V6CoI4TP"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774009454; x=1805545454;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kXdtIQsgXEinGhMSEwdoG3L66k14q9FpQSx3NwhGOos=;
+  b=V6CoI4TPTdPlQZhH5T1jClXnfS9ije2zeaC+pLsMl/WmB6CAxY4nolsO
+   zTZZJ7EQ6/2h5/8DHlGzCdYRFfJ7pYWYU7R49WS0wMDSY5qvRiKLACyub
+   Di7kLRf6ZZ7/dH3Nql8s/penywLo08K4q3+yxdeL76SdQgx9SwyWKNhjL
+   Urun4BIzFHZdrOs36F5yCg5Uel434pOHu/71+SaNjcFQIj5fqWjfvLosL
+   tGGOS0ZUAKZ+o116g4+H3lT8yBy2FM9WpmUkEy+JHZUxYgGxoMYIthJnN
+   d7OfYExudYkP4U6vCsLJ/Mmj8n0uTnPGSQgs0NXv8Cl/etSK9OVEsHVlw
+   Q==;
+X-CSE-ConnectionGUID: qvioHfjOQhyrXHTbWHc4hg==
+X-CSE-MsgGUID: LgiHtUK1RtKsPO0NMIp7fA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11735"; a="75002228"
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="75002228"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa111.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 05:24:14 -0700
+X-CSE-ConnectionGUID: MB/c61LnQYiDQ4mVhpUG1Q==
+X-CSE-MsgGUID: m+GeijHTS0634HJNhaVxIQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="218632505"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.40])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 05:24:10 -0700
+Date: Fri, 20 Mar 2026 14:24:08 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Andrew Morton <akpm@linux-foundation.org>
+Subject: Re: [PATCH v8 02/10] lib: kstrtox: add kstrntoull() helper
+Message-ID: <ab08aHbudFWEtLi8@ashevche-desk.local>
+References: <20260303-adf41513-iio-driver-v8-0-8dd2417cc465@analog.com>
+ <20260303-adf41513-iio-driver-v8-2-8dd2417cc465@analog.com>
+ <aabm23jCikXs1l6F@ashevche-desk.local>
+ <qcloiwjlbehs4yyuttvrt46monh7isef4d5nzuwlaby6uxfael@j3trvc5jwosy>
+ <4mtdzxfj656sjr66npabfvrr7yd7q26l2unhsihjtniz4ossfj@g3qnzonoary6>
+ <rygken7oujyoupeanrdnl7r7smesa7js6sn3jsafbajc4sm3jh@adeslfqwwf3x>
+ <ab00clb7LL-bmJWe@ashevche-desk.local>
+ <ixvzb5mni2lhz733f4fvvzhozmpezkx5s2q7sash3wv3u2g7ov@pgs6pve6kxrq>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260319190738.151614-1-email@sirat.me> <20260319190738.151614-2-email@sirat.me>
- <c71a7cbb-d313-4d42-a487-b5f194d4e9bf@kernel.org>
-In-Reply-To: <c71a7cbb-d313-4d42-a487-b5f194d4e9bf@kernel.org>
-From: Sirat <email@sirat.me>
-Date: Fri, 20 Mar 2026 18:10:25 +0600
-X-Gmail-Original-Message-ID: <CANn+LWLWiyAo8_+V0EtPyie9AsNZdo+pU2MBhZ1c7im5XhagBA@mail.gmail.com>
-X-Gm-Features: AaiRm51RgqLpMK0miW91Gb0hRuE85RHbT74etOPMUjWxfOY7ewwlyNCX6BBm8Jw
-Message-ID: <CANn+LWLWiyAo8_+V0EtPyie9AsNZdo+pU2MBhZ1c7im5XhagBA@mail.gmail.com>
-Subject: Re: [PATCH v6 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF sensor
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org, 
-	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, 
-	krzk+dt@kernel.org, conor+dt@kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ixvzb5mni2lhz733f4fvvzhozmpezkx5s2q7sash3wv3u2g7ov@pgs6pve6kxrq>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Mar 20, 2026 at 3:05=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
-g> wrote:
->
-> On 19/03/2026 20:07, Siratul Islam wrote:
-> > Add device tree binding documentation for the STMicroelectronics
-> > VL53L1X Time-of-Flight ranging sensor connected via I2C.
-> >
-> > Signed-off-by: Siratul Islam <email@sirat.me>
-> > ---
-> >  .../bindings/iio/proximity/st,vl53l0x.yaml      | 17 +++++++++++++----
-> >  MAINTAINERS                                     |  6 ++++++
-> >  2 files changed, 19 insertions(+), 4 deletions(-)
-> >
->
-> Please read:
-> https://elixir.bootlin.com/linux/v6.12-rc3/source/Documentation/process/s=
-ubmitting-patches.rst#L577
->
-> If a tag was not added on purpose, please state why and what changed.
->
-> Best regards,
-> Krzysztof
->
+On Fri, Mar 20, 2026 at 12:08:41PM +0000, Rodrigo Alencar wrote:
+> On 26/03/20 01:50PM, Andy Shevchenko wrote:
+> > On Fri, Mar 20, 2026 at 11:16:32AM +0000, Rodrigo Alencar wrote:
+> > > On 26/03/04 10:02AM, Rodrigo Alencar wrote:
 
-Hi!
+...
 
-The vdd-supply requirement and the pin descriptions changed.
-I was not sure if it was a substantial change or not so I did not add
-the tag on purpose.
+> > > could you provide more feedback here? Thanks!
+> > 
+> > I don't know what new I can add here.
+> > 
+> > My suggestion was (and still is) to have something in *_strtoull() family
+> > with additional checks added, but no limitations on the input string (i.e.
+> > no max_chars).  If you look at the printf() code the max_chars was added
+> > solely for scanf() and has no use otherwise (yes, I know about and aware
+> > of initramfs case).
+> 
+> but is it include/linux/kstrtox.h the right place for this?
 
-Thanks,
-Sirat
+Seems so, there simple_strto*() are declared.
+
+> *_strtoull familly... then can we just expose simple_strntoull(), which is
+> private to lib/vsprintf.c, by changing its prototype to expose a error return?
+
+Why do you need that? I'm lost, sorry, I don't understand this big desire of
+having that max_chars parameter.
+
+> In my case the limitation on the input string is useful for the truncation of
+> decimal places when parsing the fixed point value. It would avoid a 64-bit
+> division.
+
+How is it better than checking the returned end pointer? Just treat anything
+that parses too many digits after dot as invalid input?
+
+	ret = ..._strtoull(..., &end, &result);
+	if (ret)
+		return ret; // overflow!
+
+	if (end - start > $YOUR_LIMIT)
+		return -EINVAL; // bad input
+
+	...process result...
+
+...
+
+Some (stupid) thoughts loudly. IIUC even if we implement '%g' in scanf(), it
+wont help you as you want to have more precise values. Do I get it correct?
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
