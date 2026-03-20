@@ -1,33 +1,33 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5C218248873;
-	Fri, 20 Mar 2026 12:44:24 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94CD03ACA48;
+	Fri, 20 Mar 2026 12:52:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774010664; cv=none; b=PWX5VpGV2NofgXIXZ2Wqy+M5yv96YicwxFfsKJbh3zYfDSbXw8+mITEXWzcIUCYi3oiJ7jFdsEvaW89LeHKs5X3bEq0ixU/djAfsnRcmieA6Xv5B2OlkyMalutf9mTj1FC5RbGTplnSotQwhqPMKrb831uIELJUB2YOLkgiJyfg=
+	t=1774011151; cv=none; b=WcWhkPJa7QuUxijojJtiXct1CuadD5pPRfAn/xFChXNRUB7aVb0+E91BSHCBL607i5TbtZEOeTdjsHIFQMy8eyCTEsvNwd7Q4FarvP3h3t+HEAm3HKMvuOJydNJ9ovJ5McHtpbvTYL9wOtY6Bek67goVz3kn/OMPAamrrqYa76w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774010664; c=relaxed/simple;
-	bh=LoqdrQ7kBF4E0wfY++rLiGxX3UeGD37vcOsdzMjZ9CI=;
+	s=arc-20240116; t=1774011151; c=relaxed/simple;
+	bh=Ex4ujutl+FEv6zew8/ovQA1P6gAGYLxsCZSRi1Cf6oI=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=iLnXpoAo2cKKu6vWwFErbtbRf++FtT0DqKeavXcMERDX+Gh2NeUym865XJTs3fTUAbcu3j6dHRSEkwQRs3/tAsNn/o4jNtkxu/qSIIW3TSlXAQJPNJJv4EDU20gkUBQdyS5fW+nv8y8+QlOFgvY4mRyJRG1SmP+m8YojsLgqpG8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qpqGIy7X; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:Content-Type; b=sqYwGN6Qi6PAKtuaJj/zeOlJM8agYpdle9LKA2XcJMbgzZ855fxM3kgwbhh00k9oNJskg3MX9sdS68HDOk5zBNRzgH3OZ1UB9hkBxXCAeu13Q+oy0xtdoVhFSykoKMFUQS1B5NSyN/cCsH/PVHTT4YeBWiP8u10m6Nb44OT2yjc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qOeJFEgo; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qpqGIy7X"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4EA7BC4CEF7;
-	Fri, 20 Mar 2026 12:44:21 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qOeJFEgo"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9A19FC4CEF7;
+	Fri, 20 Mar 2026 12:52:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774010663;
-	bh=LoqdrQ7kBF4E0wfY++rLiGxX3UeGD37vcOsdzMjZ9CI=;
+	s=k20201202; t=1774011151;
+	bh=Ex4ujutl+FEv6zew8/ovQA1P6gAGYLxsCZSRi1Cf6oI=;
 	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=qpqGIy7XBVOcu3vsr58F3yIyse1BmYa3hqWqvuQowBnpH9/gofxtqTDBsto+oE9Al
-	 /Bcc6I1RlNTlVoM92ONB7CaN/fQUTPmDrm6rucfxQZbX3VyDDdws3Y4u6on3ff0zjH
-	 g/U6MJ82uqewn7sDzrmH08jmam8YGr+rJzeEoy3pYncwNHsEPNwiyNa/irK3jhQ7Gm
-	 l4ZWs8m5D4Xcl45cQi8woKhwk/UShLHtfrsWexuG9ywM9yhsBzgGUj3r6UgT38eBP2
-	 zPllo7BGik6nA2d9JTe9HZ7m0k7NIMp1s97iYdI7ANzfUeM4fuFdDXQtcB/M0qVxvg
-	 feF/wKKru6yQQ==
-Message-ID: <24bdf87c-1246-46a3-a84a-c1392a82a6bd@kernel.org>
-Date: Fri, 20 Mar 2026 13:44:19 +0100
+	b=qOeJFEgouL3xTUmxvPrW24YGNehiC6K1E50HFa+pomuY1aye7e5oO3AO5w2GT8FaL
+	 6PoYCbfG388VGGbAoYneY9uvek5g8Z4ks8mhIupiE5L3JhQDG7IUvlXWFAWqdgd38E
+	 nIWdPxj3FZzyeDbJAL83izPed66TLlLwIV8PjEmjJveO2nof7/ZoKIWaNxb3Vphons
+	 0qms7V6bGHJzEg2BzYdSEnoJPH64OaJM7YaNpXytzFH995fG0bqSEwn7vFiDCHUiu6
+	 nXSiMCCtvAcIjcFxxWXxhTSALoI9XFbJ1SSwWrauo8Nq5887cmqZEsfxm7ForKoCvh
+	 kToDbHp0RnIoQ==
+Message-ID: <c59cfc77-b49a-48c4-b975-026ccd3be31a@kernel.org>
+Date: Fri, 20 Mar 2026 13:52:19 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -37,14 +37,13 @@ MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
 Subject: Re: [PATCH v6 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF
  sensor
-To: Sirat <email@sirat.me>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, linux-kernel@vger.kernel.org
+To: Siratul Islam <email@sirat.me>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org
+Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ linux-kernel@vger.kernel.org
 References: <20260319190738.151614-1-email@sirat.me>
  <20260319190738.151614-2-email@sirat.me>
- <c71a7cbb-d313-4d42-a487-b5f194d4e9bf@kernel.org>
- <CANn+LWLWiyAo8_+V0EtPyie9AsNZdo+pU2MBhZ1c7im5XhagBA@mail.gmail.com>
 From: Krzysztof Kozlowski <krzk@kernel.org>
 Content-Language: en-US
 Autocrypt: addr=krzk@kernel.org; keydata=
@@ -90,40 +89,44 @@ Autocrypt: addr=krzk@kernel.org; keydata=
  jWt87ecuHlpL3uuQ0ZZNWqHgZoQLXoqC2ZV5KrtKWb/jyiFX/sxSrodALf0zf+tfHv0FZWT2
  zHjUqd0t4njD/UOsuIMOQn4Ig0SdivYPfZukb5cdasKJukG1NOpbW7yRNivaCnfZz6dTawXw
  XRIV/KDsHQiyVxKvN73bThKhONkcX2LWuD928tAR6XMM2G5ovxLe09vuOzzfTWQDsm++9UKF a/A=
-In-Reply-To: <CANn+LWLWiyAo8_+V0EtPyie9AsNZdo+pU2MBhZ1c7im5XhagBA@mail.gmail.com>
+In-Reply-To: <20260319190738.151614-2-email@sirat.me>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 
-On 20/03/2026 13:10, Sirat wrote:
-> On Fri, Mar 20, 2026 at 3:05 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>
->> On 19/03/2026 20:07, Siratul Islam wrote:
->>> Add device tree binding documentation for the STMicroelectronics
->>> VL53L1X Time-of-Flight ranging sensor connected via I2C.
->>>
->>> Signed-off-by: Siratul Islam <email@sirat.me>
->>> ---
->>>  .../bindings/iio/proximity/st,vl53l0x.yaml      | 17 +++++++++++++----
->>>  MAINTAINERS                                     |  6 ++++++
->>>  2 files changed, 19 insertions(+), 4 deletions(-)
->>>
->>
->> Please read:
->> https://elixir.bootlin.com/linux/v6.12-rc3/source/Documentation/process/submitting-patches.rst#L577
->>
->> If a tag was not added on purpose, please state why and what changed.
->>
->> Best regards,
->> Krzysztof
->>
-> 
-> Hi!
-> 
-> The vdd-supply requirement and the pin descriptions changed.
-> I was not sure if it was a substantial change or not so I did not add
-> the tag on purpose.
+On 19/03/2026 20:07, Siratul Islam wrote:
+>  
+>  properties:
+>    compatible:
+> -    const: st,vl53l0x
+> +    enum:
+> +      - st,vl53l0x
+> +      - st,vl53l1x
+>  
+>    reg:
+>      maxItems: 1
+> @@ -21,12 +24,17 @@ properties:
+>  
+>    reset-gpios:
+>      maxItems: 1
+> +    description:
+> +      Phandle to the XSHUT GPIO. Used for hardware reset.
+>  
+> -  vdd-supply: true
+> +  vdd-supply:
+> +    description:
+> +      Phandle to the vdd input voltage. This is physically required for operation.
 
-And this must be stated clearly. I linked a document, please read it.
+Drop the description. Schema tells that.
+
+>  
+>  required:
+>    - compatible
+>    - reg
+> +  - vdd-supply
+
+That's an ABI break and nothing in commit msg explains why. You need
+rationale for this, but most likely everything was working fine before,
+so supply should not be required.
 
 Best regards,
 Krzysztof
