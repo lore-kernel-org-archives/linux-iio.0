@@ -1,73 +1,67 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.19])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.16])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 451792DF138;
-	Fri, 20 Mar 2026 14:18:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.19
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0796F3C6610;
+	Fri, 20 Mar 2026 14:44:13 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.16
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774016285; cv=none; b=JK0Vpn+Nvv/pAFFz2FP+hj3AZUHS4bgJ7IhV+w6VVQn9CD9Xe7JTqnCptM2W8tiCrZLbnJO/79+varRwrxt1Z+2wRWT0mKQ6i9Vn3xQ8Zt13Ip49tY9vEqdVxeT7cXvjJcyd02HPjUKfF7+GYkfFpGE23Gk3F30UcO8CaCwWr8A=
+	t=1774017855; cv=none; b=FraSidiJOxapgjR0uApeKQynYAp96s5PYR/1rJuu6NJpK0H4+finjOK4yAbGgFG62wI04Wo+EoKlE3uA0pP2cCQ5TOHnfkXpNnHkeqF7G2XEzGMM/Nb499Dlo5edeVgDRVtoFgN+Y8pIJ1EGWE1S3c0m0kwn292YoEwN5Wv+mtc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774016285; c=relaxed/simple;
-	bh=9gaDMcQtKU4cNNAa/T24L9kV638vzjoEWInSOi2XK/s=;
+	s=arc-20240116; t=1774017855; c=relaxed/simple;
+	bh=8kAzpA/Vk80V8Y5g8qECcysCfrjvj5fgCgcU6+EckdQ=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=mxOLwIXZjvQXCi4XdI4T6wPE64o2WCRS1fchHHxNIo+ndWjnm0JZp9gUb08Ayo6rSbtZhmt9dfx2P5apNY6d2CEFnRGDGD4jrxgwQt/aRGvI5rJx/+L7XJVjF7HfCodFj9NIE6ERJZHjTMbjt5yFSVtNISrvaPYvXUUhE/NJOJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=C3lJKcJz; arc=none smtp.client-ip=198.175.65.19
+	 Content-Type:Content-Disposition:In-Reply-To; b=QktJXyLI7E2oDSfkpy/MEtrfxxIDQLbht0yuBSXuYoTfr8BUPA3PDROKXUiyZhaw1s64WIIxDOkGpfxT1Vi7Dv0skK6n7NeFhAG2St8e/YbJ082Mw0cvh9A0RNAFJ5vN33HMAkUbklJDLs3sRZuWzhkbQ6UZyoCwlgjYmdmZP/E=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=g4qiZ9GN; arc=none smtp.client-ip=192.198.163.16
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="C3lJKcJz"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="g4qiZ9GN"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774016283; x=1805552283;
+  t=1774017854; x=1805553854;
   h=date:from:to:cc:subject:message-id:references:
    mime-version:in-reply-to;
-  bh=9gaDMcQtKU4cNNAa/T24L9kV638vzjoEWInSOi2XK/s=;
-  b=C3lJKcJzNqylisMF/FtKUUdvSv/jgzVlvmA2ELJ+tdrPVpdxE5++q0Uv
-   GF9ZooxpP7yp0XyuxPZOWP1aiziw+DLVM/d+zr2rY0K7i7cElRgaFSYIm
-   pP+9CidvYpyutADTu8a/gWWR+WJ9rhj6YMCRJ/YstdU9t0hLT6IZ/jDHB
-   ZAqAz+viilYYdv16CDDnhR884Y5bZA4Oo0gD0nih3uPwDudB0j8sVR/Vl
-   zvPylowdqonLpy1vDW1b48Cmtwxkfjqcmup1f2B4HJjFJv/gR6bD+uz9x
-   gsaVl3MOZ4crhCsV1gG9LI1CAduf8Hzsk9jJiCEhW7VmqRHSXlmrLEa2T
-   w==;
-X-CSE-ConnectionGUID: TUBchJAxSCumAEcKlqiS1A==
-X-CSE-MsgGUID: skx1cYmcR2uPgrcXmGl9gQ==
-X-IronPort-AV: E=McAfee;i="6800,10657,11735"; a="74986176"
+  bh=8kAzpA/Vk80V8Y5g8qECcysCfrjvj5fgCgcU6+EckdQ=;
+  b=g4qiZ9GNJm/Tyq1ZkEefKeMn1H4fY9d0b/S3lwYaXDgH9/wzjhPLiREe
+   rdfkFGjvioN5MwubOSSl/5qiheIR+fy2LkVRvMC70RWvVFbOZPJZNWXd6
+   DQEjG6akZLGIXsUvMndwfCXLVYOgN2F7W8/g/rNogttZgR+H7CliD8Css
+   GM/3fIHwjcyRXscj9k+ULu5wlScSRWKfl5uy9iaRUElBcoOMIXxVgFiUb
+   iZ9fCbirzGdqijKh8L1PCyMvlWIh5xqCML/QSB0bi/VQLOXec9NqOhGU9
+   LZEnm7GlJeO7Vy1GhQ/zD4qJ+emawwn9onVT1lW3LVkdmMoH1JbXIxwGG
+   Q==;
+X-CSE-ConnectionGUID: +c8V331hSpW5XhoOWf2ZRg==
+X-CSE-MsgGUID: LBxO/6blSvSVgGRoFOxF3Q==
+X-IronPort-AV: E=McAfee;i="6800,10657,11735"; a="62664209"
 X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
-   d="scan'208";a="74986176"
-Received: from fmviesa003.fm.intel.com ([10.60.135.143])
-  by orvoesa111.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 07:18:03 -0700
-X-CSE-ConnectionGUID: d25DUkM2SWGlF4rWSMEdSA==
-X-CSE-MsgGUID: Dqy7/cmxQ0yPBss3NmGLug==
+   d="scan'208";a="62664209"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by fmvoesa110.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 07:44:13 -0700
+X-CSE-ConnectionGUID: xJWdDY6FS7efULLNryweUA==
+X-CSE-MsgGUID: eCAY6FaCTD2TwdgNT6TvYQ==
 X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="228242122"
 Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.40])
-  by fmviesa003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 07:17:59 -0700
-Date: Fri, 20 Mar 2026 16:17:57 +0200
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 07:44:09 -0700
+Date: Fri, 20 Mar 2026 16:44:06 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-Cc: rodrigo.alencar@analog.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Rob Herring <robh@kernel.org>,
+To: Carlos Jones Jr <carlosjr.jones@analog.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
 	Krzysztof Kozlowski <krzk+dt@kernel.org>,
 	Conor Dooley <conor+dt@kernel.org>,
-	Jonathan Corbet <corbet@lwn.net>,
-	Andrew Morton <akpm@linux-foundation.org>
-Subject: Re: [PATCH v8 02/10] lib: kstrtox: add kstrntoull() helper
-Message-ID: <ab1XFW6qsqKFdNXP@ashevche-desk.local>
-References: <20260303-adf41513-iio-driver-v8-0-8dd2417cc465@analog.com>
- <20260303-adf41513-iio-driver-v8-2-8dd2417cc465@analog.com>
- <aabm23jCikXs1l6F@ashevche-desk.local>
- <qcloiwjlbehs4yyuttvrt46monh7isef4d5nzuwlaby6uxfael@j3trvc5jwosy>
- <4mtdzxfj656sjr66npabfvrr7yd7q26l2unhsihjtniz4ossfj@g3qnzonoary6>
- <rygken7oujyoupeanrdnl7r7smesa7js6sn3jsafbajc4sm3jh@adeslfqwwf3x>
- <ab00clb7LL-bmJWe@ashevche-desk.local>
- <ixvzb5mni2lhz733f4fvvzhozmpezkx5s2q7sash3wv3u2g7ov@pgs6pve6kxrq>
- <ab08aHbudFWEtLi8@ashevche-desk.local>
- <qsquhriyrepndxwexox35oi5i7v4klb64lajuk3j3pfozkjiew@fp55l4znck4o>
+	David Lechner <dlechner@baylibre.com>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Liam Beguin <liambeguin@gmail.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Tobias Sperling <tobias.sperling@softing.com>,
+	Jorge Marques <jorge.marques@analog.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: adc: ltc2309: introduce chip_info structure
+Message-ID: <ab1dNoC6dg4X-Yml@ashevche-desk.local>
+References: <20260320140819.191700-1-carlosjr.jones@analog.com>
+ <20260320140819.191700-2-carlosjr.jones@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -76,94 +70,54 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <qsquhriyrepndxwexox35oi5i7v4klb64lajuk3j3pfozkjiew@fp55l4znck4o>
+In-Reply-To: <20260320140819.191700-2-carlosjr.jones@analog.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Fri, Mar 20, 2026 at 12:41:57PM +0000, Rodrigo Alencar wrote:
-> On 26/03/20 02:24PM, Andy Shevchenko wrote:
-> > On Fri, Mar 20, 2026 at 12:08:41PM +0000, Rodrigo Alencar wrote:
-> > > On 26/03/20 01:50PM, Andy Shevchenko wrote:
-> > > > On Fri, Mar 20, 2026 at 11:16:32AM +0000, Rodrigo Alencar wrote:
-> > > > > On 26/03/04 10:02AM, Rodrigo Alencar wrote:
+On Fri, Mar 20, 2026 at 10:08:17PM +0800, Carlos Jones Jr wrote:
+> This is a preparatory patch that introduces a chip_info structure
+> to the LTC2309 driver to facilitate adding support for additional
+> chip variants with different channel configurations and timing
+> requirements.
+> 
+> The chip_info structure contains chip-specific data including
+> the channel specifications, number of channels, and read delay
+> timing. This change does not modify the existing LTC2309
+> functionality.
 
 ...
 
-> > > > > could you provide more feedback here? Thanks!
-> > > > 
-> > > > I don't know what new I can add here.
-> > > > 
-> > > > My suggestion was (and still is) to have something in *_strtoull() family
-> > > > with additional checks added, but no limitations on the input string (i.e.
-> > > > no max_chars).  If you look at the printf() code the max_chars was added
-> > > > solely for scanf() and has no use otherwise (yes, I know about and aware
-> > > > of initramfs case).
-> > > 
-> > > but is it include/linux/kstrtox.h the right place for this?
-> > 
-> > Seems so, there simple_strto*() are declared.
-> > 
-> > > *_strtoull familly... then can we just expose simple_strntoull(), which is
-> > > private to lib/vsprintf.c, by changing its prototype to expose a error return?
-> > 
-> > Why do you need that? I'm lost, sorry, I don't understand this big desire of
-> > having that max_chars parameter.
-> > 
-> > > In my case the limitation on the input string is useful for the truncation of
-> > > decimal places when parsing the fixed point value. It would avoid a 64-bit
-> > > division.
-> > 
-> > How is it better than checking the returned end pointer? Just treat anything
-> > that parses too many digits after dot as invalid input?
-> > 
-> > 	ret = ..._strtoull(..., &end, &result);
-> 
-> here I would want to pass max_chars as the precision of the fixed point parsing
-> 
-> > 	if (ret)
-> > 		return ret; // overflow!
-> > 
-> > 	if (end - start > $YOUR_LIMIT)
-> > 		return -EINVAL; // bad input
-> > 
-> > 	...process result...
-> 
-> otherwise, here I would need to check the amount of parsed characters and
-> perform a 64-bit division if it goes beyond the desired precision.
-> Also, having max_chars allows for more flexible usage of the parsing function.
-> 
-> this is the prototype of simple_strntoull() that would be thinking on expose:
-> 
-> int simple_strntoull(const char *startp, char **endp,
-> 		     unsigned long long *res, unsigned int base,
-> 		     size_t max_chars)
-> 
-> that would also allow to drop the existing FIXME in simple_strntoull().
+>  struct ltc2309 {
+>  	struct device		*dev;
+>  	struct i2c_client	*client;
+>  	struct mutex		lock; /* serialize data access */
+>  	int			vref_mv;
+> +	const struct ltc2309_chip_info *chip_info;
+>  };
 
-That's fine, but the prototype should be rather
+Have you checked the layout with `pahole` tool? Does it agree with your choice?
 
-int simple_strntoull(const char *startp, char **endp,
-		     unsigned int base, size_t max_chars, unsigned long long *res)
+...
 
-> > Some (stupid) thoughts loudly. IIUC even if we implement '%g' in scanf(), it
-> > wont help you as you want to have more precise values. Do I get it correct?
-> 
-> If I am parsing 3.14159265359 with 6 decimal precision I want to stop at:
-> 
-> frac = 141592
-> int = 3
+> +	if (ltc2309->chip_info->read_delay_us)
+> +		usleep_range(ltc2309->chip_info->read_delay_us,
+> +			     ltc2309->chip_info->read_delay_us * 2);
 
-This is different to what strto*() usually do. From my p.o.v. this is simply
-an invalid input, and TBH, the parsing of this is not as trivial as flooring
-the result. One might want ceiling it, and see the difference when it's about
-signed value. So, if one wants lesser precision they need to set the rules,
-and not the library, because there are several rules that the user may want
-to adjust.
+fsleep()
 
-P.S.
-Avoiding division in your case is copying a (sub)string and using kstrto*() on it.
-I believe it's always a room for 20-30 bytes on the stack for that, and it will be
-much faster than division, indeed.
+...
+
+> +static const struct ltc2309_chip_info ltc2309_chip_info = {
+> +	.channels = ltc2309_channels,
+> +	.num_channels = ARRAY_SIZE(ltc2309_channels),
+
+Perhaps you also want to add (currently missing?) array_size.h.
+
+> +	.read_delay_us = 0,
+
+Unneeded.
+
+> +};
 
 -- 
 With Best Regards,
