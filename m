@@ -1,38 +1,38 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 297AB3D1713;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64E1A3D1CB5;
 	Fri, 20 Mar 2026 16:27:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774024053; cv=none; b=dHKd0Jl2VZ4limKZIcubZGTfA3/euTY8rqlDabcT9G59OPPjw10EQVLEyH+ZGNq8VJCYdiyQYMqCwzpFdszix9l6uTMhTfCyo1HtH50jwY/s65JfY6XaHTgrP4aBXqbGwjgewjP0Jka2o+9GttWO0wEezUqrHiob6uXIM2B9xg4=
+	t=1774024053; cv=none; b=gP/8fBW4vq95CtsEYE9i22+vki7TF0GoAbTAYNkrphZNsl9lB8tvWlgrTIQhCUtU5+lgE6JSC+czQw83aa/yYQhGmZZAt++C7Ruaz5iLpQDwD8C64G5ToqepQtIy1ZQz4d4guf6drZ0uyUIP7seqt1S1ZdkB1uGRfVwf1vyixAY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1774024053; c=relaxed/simple;
-	bh=UUGqq6KuJ9zIG0X2o0ubuPGPMlCBeEdzgPCnCWv6v00=;
+	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
 	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=K3nt+ErTwtf3DDeS79jIrF71twKO+eoWe8n87Rn0ODhKd3QBEMoa+048Ed7feIPNMPsLX1y2VzDVBwBaQRnq6ry0/MX6LImateaAEYl9Yiv/JmZPOx0hbH+id8MRTDWXeCh/HOwadw/AHJOam0U9qa4SEG/QRXMa1sgMH/OqvvQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=q/BGTgzV; arc=none smtp.client-ip=10.30.226.201
+	 In-Reply-To:To:Cc; b=im1Jr46YVAq3JlNCsv/NGIEe39y9ZTr0MFt5FaXczUdSWuVA2Zt1pisKWDn1UROqCNrX+3btIwX2ciZKi0Cm6d20vmqe6j6+cVHqRTMoJOJjl+ynNio5Lf+q28OilPLrk9FeeMDODFuFQVucmxgsKbnztjmFsk8lox6ytW/uQGE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CgfXYUtv; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="q/BGTgzV"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 02723C2BCB0;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CgfXYUtv"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4533CC2BCB8;
 	Fri, 20 Mar 2026 16:27:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1774024053;
-	bh=UUGqq6KuJ9zIG0X2o0ubuPGPMlCBeEdzgPCnCWv6v00=;
+	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
 	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=q/BGTgzVzoC+HBPai968S5R5Qhq42xxOmUg+QGFHlWuKog705U3l5zQ6+JhhEVocZ
-	 nkhzKIF77ufGJn/u+E8qFNav8OoVIiR2o09QExptl1A/ZfvXKsKhyK939uXitvhQDV
-	 NWTstxXuqkUmUzYrFHYlxWgHYH/wux4lhMAXIkQZYFzXx2yVaMWwKJmlhiyRxFXsV+
-	 54LUBF5TlC6t1BEon7zVNnE+6bA3bVHTVmqIfA7ZlQS98135Gj2tO1OkFhGgiT9LIT
-	 g7Em1qY2lDnUhmplDOkpeonhJyc/yTlZ2tuKkj4Nj0sGK3/eaN4q2UhJrhe4h8RVuI
-	 9370hecuGtbeA==
+	b=CgfXYUtvYDcCTyQaxmRu1/fkAhl0fRRp58SpIl4fK9p38QB3acojKEkCbrna6zrfx
+	 Nn1rrF8wQnitmq0TugPqPhwNy6KT+nMBaBY3CPiZwbgIoXM+DnDKGfcypCtENlabV/
+	 wa+WErplX3t44i+c5DdkVdlHGaXbTBOfDBqdShZYmQr2wETWnpIqo3GjEfD4TJ8Tpz
+	 U/DPUuC5yyTjyqQ3BICIQAyq8QNhxDVPwmKYTmt4UbqAsIPkdwLwQ+Jp9LObJNS5j3
+	 N9Fwl5Noy/I8/6kPU7dQAciX3YjBBoJ+9uvn4YIF2mcCFeLJkIPCJTg0MqVmtUeIF6
+	 FROb+Xojr4V7w==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E737E10987AA;
-	Fri, 20 Mar 2026 16:27:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C3BD10987A4;
+	Fri, 20 Mar 2026 16:27:33 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 20 Mar 2026 16:27:31 +0000
-Subject: [PATCH v9 6/9] iio: frequency: adf41513: handle LE synchronization
- feature
+Date: Fri, 20 Mar 2026 16:27:34 +0000
+Subject: [PATCH v9 9/9] Documentation: ABI: testing: add common ABI file
+ for iio/frequency
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -41,7 +41,7 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-Message-Id: <20260320-adf41513-iio-driver-v9-6-132f0d076374@analog.com>
+Message-Id: <20260320-adf41513-iio-driver-v9-9-132f0d076374@analog.com>
 References: <20260320-adf41513-iio-driver-v9-0-132f0d076374@analog.com>
 In-Reply-To: <20260320-adf41513-iio-driver-v9-0-132f0d076374@analog.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
@@ -60,11 +60,11 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
  Shuah Khan <skhan@linuxfoundation.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1774024051; l=2998;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1774024051; l=2210;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=La2NnbCEmWKuh8TItMnd816K8WFyfx5bTjA0xtRndnc=;
- b=wwLZTRpVdSazqB5KW8wHgh/C/CmjvkjOtYA83WtQmKUfaEyb3nBDrFSgxiCpkEZmZ3W2Z+6jJ
- T1iR37lbKR4ADl0YZljqD33+PDLwp23rroNm7OtQX2xU/WDeCgvpOLp
+ bh=OhPLAamt4hmbeCatH+/iPHehi/HIntujTnWeOacWI/A=;
+ b=gLzhWryg6m+oV9bqr+TQj+jLfDlPUCot3iUaeFycI+CTtIlhW7ks7pcWSG3gL4t6xdeJqnGG4
+ msaFVCqE+P4AXpivuIPtTbe/wHf49VyvzsRmkdSEuvU+xqw7+nsUbP5
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -74,96 +74,50 @@ Reply-To: rodrigo.alencar@analog.com
 
 From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-When LE sync is enabled, it is must be set after powering up and must be
-disabled when powering down. It is recommended when using the PLL as
-a frequency synthesizer, where reference signal will always be present
-while the device is being configured.
+Add ABI documentation file for PLL/DDS devices with frequency_resolution
+sysfs entry attribute used by both ADF4350 and ADF41513.
 
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
- drivers/iio/frequency/adf41513.c | 35 ++++++++++++++++++++++++++++++++---
- 1 file changed, 32 insertions(+), 3 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio-frequency         | 11 +++++++++++
+ Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 | 10 ----------
+ 2 files changed, 11 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/frequency/adf41513.c b/drivers/iio/frequency/adf41513.c
-index 5a0682667d1f..caae9d53c3e2 100644
---- a/drivers/iio/frequency/adf41513.c
-+++ b/drivers/iio/frequency/adf41513.c
-@@ -222,6 +222,7 @@ struct adf41513_data {
- 	bool phase_detector_polarity;
- 
- 	bool logic_lvl_1v8_en;
-+	bool le_sync_en;
- };
- 
- struct adf41513_pll_settings {
-@@ -634,13 +635,27 @@ static int adf41513_set_frequency(struct adf41513_state *st, u64 freq_uhz, u16 s
- static int adf41513_suspend(struct adf41513_state *st)
- {
- 	st->regs[ADF41513_REG6] |= FIELD_PREP(ADF41513_REG6_POWER_DOWN_MSK, 1);
-+	st->regs[ADF41513_REG12] &= ~ADF41513_REG12_LE_SELECT_MSK;
- 	return adf41513_sync_config(st, ADF41513_SYNC_DIFF);
- }
- 
- static int adf41513_resume(struct adf41513_state *st)
- {
-+	int ret;
-+
- 	st->regs[ADF41513_REG6] &= ~ADF41513_REG6_POWER_DOWN_MSK;
--	return adf41513_sync_config(st, ADF41513_SYNC_DIFF);
-+	ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
-+	if (ret)
-+		return ret;
-+
-+	if (st->data.le_sync_en) {
-+		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
-+		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return ret;
- }
- 
- static ssize_t adf41513_read_uhz(struct iio_dev *indio_dev,
-@@ -933,6 +948,8 @@ static int adf41513_parse_fw(struct adf41513_state *st)
- 				     "invalid lock detect count: %u\n", tmp);
- 	st->data.lock_detect_count = tmp;
- 
-+	/* load enable sync */
-+	st->data.le_sync_en = device_property_read_bool(dev, "adi,le-sync-enable");
- 	st->data.freq_resolution_uhz = MICROHZ_PER_HZ;
- 
- 	return 0;
-@@ -940,6 +957,7 @@ static int adf41513_parse_fw(struct adf41513_state *st)
- 
- static int adf41513_setup(struct adf41513_state *st)
- {
-+	int ret;
- 	u32 tmp;
- 
- 	memset(st->regs_hw, 0xFF, sizeof(st->regs_hw));
-@@ -973,8 +991,19 @@ static int adf41513_setup(struct adf41513_state *st)
- 					      st->data.logic_lvl_1v8_en ? 0 : 1);
- 
- 	/* perform initialization sequence with power-up frequency */
--	return adf41513_set_frequency(st, st->data.power_up_frequency_hz * MICRO,
--				      ADF41513_SYNC_ALL);
-+	ret = adf41513_set_frequency(st, st->data.power_up_frequency_hz * MICRO,
-+				     ADF41513_SYNC_ALL);
-+	if (ret)
-+		return ret;
-+
-+	if (st->data.le_sync_en) {
-+		st->regs[ADF41513_REG12] |= ADF41513_REG12_LE_SELECT_MSK;
-+		ret = adf41513_sync_config(st, ADF41513_SYNC_DIFF);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
- }
- 
- static void adf41513_power_down(void *data)
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
+new file mode 100644
+index 000000000000..1ce8ae578fd6
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
+@@ -0,0 +1,11 @@
++What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
++KernelVersion:	6.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Stores channel Y frequency resolution/channel spacing in Hz for PLL
++		devices. The given value directly influences the operating mode when
++		fractional-N synthesis is required, as it derives values for
++		configurable modulus parameters used in the calculation of the output
++		frequency. It is assumed that the algorithm that is used to compute
++		the various dividers, is able to generate proper values for multiples
++		of channel spacing.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
+index 1254457a726e..76987a119feb 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
+@@ -1,13 +1,3 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
+-KernelVersion:	3.4.0
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Stores channel Y frequency resolution/channel spacing in Hz.
+-		The value given directly influences the MODULUS used by
+-		the fractional-N PLL. It is assumed that the algorithm
+-		that is used to compute the various dividers, is able to
+-		generate proper values for multiples of channel spacing.
+-
+ What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_refin_frequency
+ KernelVersion:	3.4.0
+ Contact:	linux-iio@vger.kernel.org
 
 -- 
 2.43.0
