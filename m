@@ -1,125 +1,127 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.14])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 64E1A3D1CB5;
-	Fri, 20 Mar 2026 16:27:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 97FF13D3312;
+	Fri, 20 Mar 2026 16:44:52 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774024053; cv=none; b=gP/8fBW4vq95CtsEYE9i22+vki7TF0GoAbTAYNkrphZNsl9lB8tvWlgrTIQhCUtU5+lgE6JSC+czQw83aa/yYQhGmZZAt++C7Ruaz5iLpQDwD8C64G5ToqepQtIy1ZQz4d4guf6drZ0uyUIP7seqt1S1ZdkB1uGRfVwf1vyixAY=
+	t=1774025094; cv=none; b=U2T+BRwLajDoUDDEjzhoKRV9ezzQd9tWbuQP6+jggDlr5B1jPPR9hZ/BEpUU5wSDvZVaazQ/ayl9CmMHcSwoCwqiMD6Ps22yk7PVFrrAvR3sNUJhKSp3N7nBS2ivKZeamI8oCZ8/pdnatQs0Uy4PjEZBTIdZDvc7H6Tft42HqUk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774024053; c=relaxed/simple;
-	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
-	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
-	 In-Reply-To:To:Cc; b=im1Jr46YVAq3JlNCsv/NGIEe39y9ZTr0MFt5FaXczUdSWuVA2Zt1pisKWDn1UROqCNrX+3btIwX2ciZKi0Cm6d20vmqe6j6+cVHqRTMoJOJjl+ynNio5Lf+q28OilPLrk9FeeMDODFuFQVucmxgsKbnztjmFsk8lox6ytW/uQGE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CgfXYUtv; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774025094; c=relaxed/simple;
+	bh=8o7EUfcliJ4m23BIGd721lVDYs7l78dCV1WdklpKn3c=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=vFPFnK4OT1Ykj82k9GQr1T8j6va3JEtotyu/BfJnv702UveQdLWED8laJHRgB4fm+1t1NACluVumpNiShWFimB+47v2AqZSyT3o1A5AamjBPjZ2cfuO0EpAzDELJIxCTAsGOM6Hq1g9yE4DU39OgCP77zLZdngmkTJxAZVPUCaU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=IXyIuBH+; arc=none smtp.client-ip=198.175.65.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CgfXYUtv"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4533CC2BCB8;
-	Fri, 20 Mar 2026 16:27:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774024053;
-	bh=9B+csSwynGBtD47HQVlSlvUhKYSoSrYkjk2oqbGoZOQ=;
-	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
-	b=CgfXYUtvYDcCTyQaxmRu1/fkAhl0fRRp58SpIl4fK9p38QB3acojKEkCbrna6zrfx
-	 Nn1rrF8wQnitmq0TugPqPhwNy6KT+nMBaBY3CPiZwbgIoXM+DnDKGfcypCtENlabV/
-	 wa+WErplX3t44i+c5DdkVdlHGaXbTBOfDBqdShZYmQr2wETWnpIqo3GjEfD4TJ8Tpz
-	 U/DPUuC5yyTjyqQ3BICIQAyq8QNhxDVPwmKYTmt4UbqAsIPkdwLwQ+Jp9LObJNS5j3
-	 N9Fwl5Noy/I8/6kPU7dQAciX3YjBBoJ+9uvn4YIF2mcCFeLJkIPCJTg0MqVmtUeIF6
-	 FROb+Xojr4V7w==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C3BD10987A4;
-	Fri, 20 Mar 2026 16:27:33 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Date: Fri, 20 Mar 2026 16:27:34 +0000
-Subject: [PATCH v9 9/9] Documentation: ABI: testing: add common ABI file
- for iio/frequency
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="IXyIuBH+"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774025093; x=1805561093;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=8o7EUfcliJ4m23BIGd721lVDYs7l78dCV1WdklpKn3c=;
+  b=IXyIuBH+A8oou4bXGydZzzx8nDt1p7vQ3VbYI90I8jk8RltGUe1q5YVN
+   Vf1Ph6W+hdAnE2mRsTDWAOP1Sq/y0J07XGAIEWIJjXodDb50WPU7jKOlg
+   dwBiN456AwnzhYMPzOsG55s/QTbU77xad9LLSL9+8PwyWmjS9q5uHSxo/
+   fz6gIIe4Y/h6fdzV1FUOWUAYwdqo+EqoBEUqD0cfajsOMW5JAgHZrM9Mv
+   7Tpzj6zy8ckHDbWvMUSx2ZsluObTofEz1iUIXxYsTdWB78YJnErKe6eoO
+   iAculf0F6qLyUZyedVaXCw3oVj5kYrcHj/mhX4+EvxKy9sh+NXnzRJFbM
+   g==;
+X-CSE-ConnectionGUID: RvTp6dK0QWqbNpxrnH8d7Q==
+X-CSE-MsgGUID: a7dugNtOSeKiazdQDcgNkA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11735"; a="78971783"
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="78971783"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by orvoesa106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 09:44:52 -0700
+X-CSE-ConnectionGUID: nL0+5e5cSUahrq/spq4G0w==
+X-CSE-MsgGUID: 1WJN9SWqTsGWbXmsk1lN7A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="253837263"
+Received: from lkp-server01.sh.intel.com (HELO ba623fe84fe1) ([10.239.97.150])
+  by orviesa002.jf.intel.com with ESMTP; 20 Mar 2026 09:44:47 -0700
+Received: from kbuild by ba623fe84fe1 with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1w3cxo-0000000009p-212j;
+	Fri, 20 Mar 2026 16:44:44 +0000
+Date: Sat, 21 Mar 2026 00:44:01 +0800
+From: kernel test robot <lkp@intel.com>
+To: Chris Morgan <macroalpha82@gmail.com>, linux-iio@vger.kernel.org
+Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev, andy@kernel.org,
+	nuno.sa@analog.com, dlechner@baylibre.com, jic23@kernel.org,
+	jean-baptiste.maneyrol@tdk.com, linux-rockchip@lists.infradead.org,
+	devicetree@vger.kernel.org, heiko@sntech.de, conor+dt@kernel.org,
+	krzk+dt@kernel.org, robh@kernel.org, andriy.shevchenko@intel.com,
+	Chris Morgan <macromorgan@hotmail.com>
+Subject: Re: [PATCH V2 4/5] iio: imu: inv_icm42600: Add support for icm42607
+Message-ID: <202603210243.jegPzaTL-lkp@intel.com>
+References: <20260319182956.146976-5-macroalpha82@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Message-Id: <20260320-adf41513-iio-driver-v9-9-132f0d076374@analog.com>
-References: <20260320-adf41513-iio-driver-v9-0-132f0d076374@analog.com>
-In-Reply-To: <20260320-adf41513-iio-driver-v9-0-132f0d076374@analog.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
- devicetree@vger.kernel.org, linux-doc@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>, 
- David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, 
- Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, Jonathan Corbet <corbet@lwn.net>, 
- Andrew Morton <akpm@linux-foundation.org>, Petr Mladek <pmladek@suse.com>, 
- Steven Rostedt <rostedt@goodmis.org>, 
- Andy Shevchenko <andriy.shevchenko@linux.intel.com>, 
- Rasmus Villemoes <linux@rasmusvillemoes.dk>, 
- Sergey Senozhatsky <senozhatsky@chromium.org>, 
- Shuah Khan <skhan@linuxfoundation.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1774024051; l=2210;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=OhPLAamt4hmbeCatH+/iPHehi/HIntujTnWeOacWI/A=;
- b=gLzhWryg6m+oV9bqr+TQj+jLfDlPUCot3iUaeFycI+CTtIlhW7ks7pcWSG3gL4t6xdeJqnGG4
- msaFVCqE+P4AXpivuIPtTbe/wHf49VyvzsRmkdSEuvU+xqw7+nsUbP5
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260319182956.146976-5-macroalpha82@gmail.com>
 
-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Hi Chris,
 
-Add ABI documentation file for PLL/DDS devices with frequency_resolution
-sysfs entry attribute used by both ADF4350 and ADF41513.
+kernel test robot noticed the following build warnings:
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
----
- Documentation/ABI/testing/sysfs-bus-iio-frequency         | 11 +++++++++++
- Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 | 10 ----------
- 2 files changed, 11 insertions(+), 10 deletions(-)
+[auto build test WARNING on rockchip/for-next]
+[also build test WARNING on linus/master v7.0-rc4 next-20260320]
+[cannot apply to jic23-iio/togreg]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-new file mode 100644
-index 000000000000..1ce8ae578fd6
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency
-@@ -0,0 +1,11 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
-+KernelVersion:	6.20
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Stores channel Y frequency resolution/channel spacing in Hz for PLL
-+		devices. The given value directly influences the operating mode when
-+		fractional-N synthesis is required, as it derives values for
-+		configurable modulus parameters used in the calculation of the output
-+		frequency. It is assumed that the algorithm that is used to compute
-+		the various dividers, is able to generate proper values for multiples
-+		of channel spacing.
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-index 1254457a726e..76987a119feb 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-@@ -1,13 +1,3 @@
--What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency_resolution
--KernelVersion:	3.4.0
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Stores channel Y frequency resolution/channel spacing in Hz.
--		The value given directly influences the MODULUS used by
--		the fractional-N PLL. It is assumed that the algorithm
--		that is used to compute the various dividers, is able to
--		generate proper values for multiples of channel spacing.
--
- What:		/sys/bus/iio/devices/iio:deviceX/out_altvoltageY_refin_frequency
- KernelVersion:	3.4.0
- Contact:	linux-iio@vger.kernel.org
+url:    https://github.com/intel-lab-lkp/linux/commits/Chris-Morgan/dt-bindings-iio-imu-add-icm42607/20260320-061927
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/mmind/linux-rockchip.git for-next
+patch link:    https://lore.kernel.org/r/20260319182956.146976-5-macroalpha82%40gmail.com
+patch subject: [PATCH V2 4/5] iio: imu: inv_icm42600: Add support for icm42607
+config: i386-buildonly-randconfig-003-20260320 (https://download.01.org/0day-ci/archive/20260321/202603210243.jegPzaTL-lkp@intel.com/config)
+compiler: clang version 20.1.8 (https://github.com/llvm/llvm-project 87f0227cb60147a26a1eeb4fb06e3b505e9c7261)
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260321/202603210243.jegPzaTL-lkp@intel.com/reproduce)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202603210243.jegPzaTL-lkp@intel.com/
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c:108:18: warning: unused variable 'inv_icm42607_accel_filter_values' [-Wunused-const-variable]
+     108 | static const int inv_icm42607_accel_filter_values[] = {
+         |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   1 warning generated.
+
+
+vim +/inv_icm42607_accel_filter_values +108 drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
+
+    95	
+    96	static const char * const inv_icm42600_accel_power_mode_items[] = {
+    97		"low-noise",
+    98		"low-power",
+    99	};
+   100	static const int inv_icm42600_accel_power_mode_values[] = {
+   101		INV_ICM42600_SENSOR_MODE_LOW_NOISE,
+   102		INV_ICM42600_SENSOR_MODE_LOW_POWER,
+   103	};
+   104	static const int inv_icm42600_accel_filter_values[] = {
+   105		INV_ICM42600_FILTER_BW_ODR_DIV_2,
+   106		INV_ICM42600_FILTER_AVG_16X,
+   107	};
+ > 108	static const int inv_icm42607_accel_filter_values[] = {
+   109		INV_ICM42607_FILTER_BW_25HZ,
+   110		INV_ICM42607_FILTER_AVG_16X,
+   111	};
+   112	
 
 -- 
-2.43.0
-
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
