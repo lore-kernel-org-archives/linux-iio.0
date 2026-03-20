@@ -1,113 +1,92 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.19])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B7FDA377012;
-	Fri, 20 Mar 2026 09:05:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7561D3451B3;
+	Fri, 20 Mar 2026 10:31:47 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.19
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1773997508; cv=none; b=ZRfzp5HxdRgXHoMWttmQ6/2QgpjFQ+OYDHv7H+wOUfeGc+Cq8/By4JXSpNfxgsNb/s+thhtEmOmcp197pKxD66FKZAokbOTycEbkt6maUjWjJ62gYaIw3WbQTWGDmzC+HLdcniC6HxP9JC1qXVO0R6F8foDUzceykTNyACaCnWw=
+	t=1774002708; cv=none; b=tFsbXDW2d8Neio4E0QwWJvfvbz8baC3rGKzRuZ8D5Q8XFRsuPDAGnZV6fFltkbrE0V6LIoSkKjjdeobprjvhHqPQRhkoVk4gySENm33bE3JoAY6Zu1q8THM7M+xSpHos8Sh20XkmdtLxIRn3WzJFqINf5K9KucpRQXa7aUU8xHA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1773997508; c=relaxed/simple;
-	bh=oudOAOoA0olsmCJKWpkN6fBcgOzsK+6o5KHPRutpKKU=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=fdCIc8wEa5bD06l28INM82hyDPfNerRQxJiLPdHd4ugdLyQKaciEeMZCuIeVgugGh4DDkrpQyHKYfDp9pYbOAm03lCObYX6qNAg7dFPmN/za/jK7cXsqHueRJjqHvZBG63CrGFI4z/COo/kUXO6j8YNOvIU13U2mqzX7PQhCrbg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=hN95PRQH; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774002708; c=relaxed/simple;
+	bh=FuyuF6cs3y/UPu3j5OaECQ1GK3ebCt60+TAC0A5pjBI=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=mTK7+dAj0sNtH1mAcqA6buM4kSZayimsKTNkmGGZ0BXiDZkt/QQ7oWpLnNBN7ZKko0BiYc15eUZrTmxwzhzkZk7rDPkN+kUKJ3CyFKxAdAb8QZeewYew3O/ILPoNjrBmpwG4jjIT6FfuWPCwxjrWXQgLy5LuswQldEhVEPv3im0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com; spf=pass smtp.mailfrom=linux.intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=gZUsMpFl; arc=none smtp.client-ip=192.198.163.19
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linux.intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linux.intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="hN95PRQH"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1D991C2BC9E;
-	Fri, 20 Mar 2026 09:05:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1773997508;
-	bh=oudOAOoA0olsmCJKWpkN6fBcgOzsK+6o5KHPRutpKKU=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=hN95PRQHiK42SDoAL74EzUkIxF7E6u5oIj0N7xIsq5wmUJWMZj2xFkvmlXKLGQ3HG
-	 +iF23BB1UAojWO8O3OzkMD+tarSL2ki0JNNnZgAfDNz7jtq8vDbw7+usgte+QxOOk7
-	 wTimZe4dIqluZxmG2KJe4oq/xKaFvzwLZJnm38CpUCqUDzvdq5nTrz0jmpLEJm6OlS
-	 IYPyrc5dfnAILvYXL9qGaZrJ8TI33bwExo0LCaZ4Dk3dMfc9Uz6vQcP98g7XapvIsM
-	 RkLnrg/VP2+F2b1XE7zBT2hj4jmKEzQpnxmRqfQfnlfFVYpW3yZEkW+B3nUnd7G8HI
-	 chNkFVj6gdktQ==
-Message-ID: <c71a7cbb-d313-4d42-a487-b5f194d4e9bf@kernel.org>
-Date: Fri, 20 Mar 2026 10:05:03 +0100
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="gZUsMpFl"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774002707; x=1805538707;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=FuyuF6cs3y/UPu3j5OaECQ1GK3ebCt60+TAC0A5pjBI=;
+  b=gZUsMpFlalYMWJja53aHCNm51bUWJgkfp+A4HAqKWOwCk+OlGo+YYEw+
+   A4JWhyP0poFvMc1/4CiaWQ+bqE5BMNM4D/DoLnsRJu1Ije4jftR2b+b/q
+   oBqXPzvH9Juj8ip3IiL61gRJJtLDacAGsLo2GnCy3LbrZfENF9kHgdalN
+   EmFmJmbipd/KB+kZimx7+Vx2iQQNI/nqAYHI0rn2sRBEFZm6wi1iFc1qE
+   zW51l48PfYgBWGCvtIq8KRg6M+GFB5fuYDcbmB5HgyIRmNvTn0arBuGbp
+   C51zggFIABM0Hjt6Bs8GUMp7Et3jEwXawelarWkapCAic3xC3E98g19ho
+   g==;
+X-CSE-ConnectionGUID: I+5C5VdxR6+cCkgeN6XAvg==
+X-CSE-MsgGUID: YAMQAUjBTkWxjoJnVExxhQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11734"; a="74100940"
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="74100940"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa113.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 03:31:47 -0700
+X-CSE-ConnectionGUID: cEr5vsElS/SoNYs1tc2rkw==
+X-CSE-MsgGUID: mbnQAE46S0y+yWubfuve9A==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,130,1770624000"; 
+   d="scan'208";a="218618516"
+Received: from egrumbac-mobl6.ger.corp.intel.com (HELO localhost) ([10.245.245.40])
+  by fmviesa006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Mar 2026 03:31:43 -0700
+Date: Fri, 20 Mar 2026 12:31:41 +0200
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To: Billy Tsai <billy_tsai@aspeedtech.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Joel Stanley <joel@jms.id.au>,
+	Andrew Jeffery <andrew@codeconstruct.com.au>,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+	morris_mao@aspeedtech.com
+Subject: Re: [PATCH v3 3/4] iio: adc: aspeed: Replace mdelay() with fsleep()
+ for ADC stabilization delay
+Message-ID: <ab0iDUp6t2LuGlAA@ashevche-desk.local>
+References: <20260320-adc-v3-0-bc0eac04ef7c@aspeedtech.com>
+ <20260320-adc-v3-3-bc0eac04ef7c@aspeedtech.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF
- sensor
-To: Siratul Islam <email@sirat.me>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org
-Cc: jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- linux-kernel@vger.kernel.org
-References: <20260319190738.151614-1-email@sirat.me>
- <20260319190738.151614-2-email@sirat.me>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <20260319190738.151614-2-email@sirat.me>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260320-adc-v3-3-bc0eac04ef7c@aspeedtech.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On 19/03/2026 20:07, Siratul Islam wrote:
-> Add device tree binding documentation for the STMicroelectronics
-> VL53L1X Time-of-Flight ranging sensor connected via I2C.
+On Fri, Mar 20, 2026 at 01:46:37PM +0800, Billy Tsai wrote:
+> The ADC stabilization delays in compensation mode and battery sensing
+> mode do not require atomic context. Using mdelay() here results in
+> unnecessary busy waiting.
 > 
-> Signed-off-by: Siratul Islam <email@sirat.me>
-> ---
->  .../bindings/iio/proximity/st,vl53l0x.yaml      | 17 +++++++++++++----
->  MAINTAINERS                                     |  6 ++++++
->  2 files changed, 19 insertions(+), 4 deletions(-)
+> Replace mdelay(1) with fsleep(1000) to allow the scheduler to run other
+> tasks while waiting for the ADC to stabilize.
 > 
+> Also fix a minor typo in the comment ("adc" -> "ADC").
 
-Please read:
-https://elixir.bootlin.com/linux/v6.12-rc3/source/Documentation/process/submitting-patches.rst#L577
+> Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-If a tag was not added on purpose, please state why and what changed.
+I haven't suggested the idea, I only suggested to use fsleep() for the purpose.
 
-Best regards,
-Krzysztof
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
