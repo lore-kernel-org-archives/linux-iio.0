@@ -1,46 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 92DAC2E5B21;
-	Sat, 21 Mar 2026 18:39:18 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C58F82D877A;
+	Sat, 21 Mar 2026 18:51:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774118358; cv=none; b=uQTJPUdUqqMNbXu7ZbP3Ao5E2jY63HUB7+/7ypNdctxjlcN7BXmMYSdHoAbR74RlFvHtVFaZaguL3jtpFxz2+Krj6X1dqL6FnU8NWovrbRoLGvTmZvswrMzQjD9WUzBr3wxE+ykFYLeNHBMU/sa+EoefCWee1qhRX3dtOGpCUWI=
+	t=1774119074; cv=none; b=qalvQHSYuDrQ/dZ1HuzgjJrEp8oQYoH5RkbzbE0jcEeiOydzFwHWLUTyBMFY3Sm1p5I19qSFBIKYU6LtvypSK22Z/7aYOT+NkHZ1CJkNmtEbQP8vksD6LcyytOlW7RCJDihXSA7ofdM+fGOWhgfHGOkk0A67ZwZnODcXyvETN6Y=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774118358; c=relaxed/simple;
-	bh=AKvPHB6/e4oPBMB57bEGs3+OhYV7XS1yw/q0PLUIB3s=;
+	s=arc-20240116; t=1774119074; c=relaxed/simple;
+	bh=YuMI4YpxPSV2VAMyw84jvK453KirgJfQdkXYVCybHBg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Hx8VUKSEqR0mf7uddqPkkom8zZaBZ6kOzPRGo+/sNAx3omfVoAIiJeIH1X2LKZW3xbzB+keEofIUGPwA3aoBxs4CEtM6jSvkE+AvtsXEeSGCNFnBl3Qi+vMXgFJ/C/cMrneQStNjME91PGYFjgGehOJKMkjsf9xey0dGHjcrYxs=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=BuAtl9o5; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=T8pBLzoemESdZIYHNiPC70pGoiHz09fqylNUYbt7KwrmO91Pt2bmt9vQx/LHUL2oKTYnHeR7IpXdBL7fLbV2ArqpeTF09qgXRr6oOiHunrL9q1sLHtSAzSJZczbPIz3HpgtPqKBhT7mVCtNYckwfSa4+0SKeg+uO+JXLz4V0YXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QibhUtGm; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="BuAtl9o5"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AF58FC19421;
-	Sat, 21 Mar 2026 18:39:13 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QibhUtGm"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6383CC19421;
+	Sat, 21 Mar 2026 18:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774118358;
-	bh=AKvPHB6/e4oPBMB57bEGs3+OhYV7XS1yw/q0PLUIB3s=;
+	s=k20201202; t=1774119074;
+	bh=YuMI4YpxPSV2VAMyw84jvK453KirgJfQdkXYVCybHBg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=BuAtl9o59uQ2hGX99UH5v2q4hdSNSXCXUeqgMHITzvVQNbfiHq/3HFbcXuf0iNSTw
-	 GCCta+pUbWq9Rde47r3dgpZj9ZWRmqUbDjDo9Q2ufzzIlSyMInrZXPG02837E324eD
-	 hvClY22fAGY5czLqWTsd6x8uuf8Mc9CemE4OhChpuUCIunzqq+TNnxuxpZZOIftMQP
-	 uJ8nMiUMd9ra+lQsJ5LrO7gUMuZkH5hdNmOYuoKHyKud4NCryTARPNhRqHOkp1E+Kx
-	 BqdZYLg5nAx7E6ORYEG05HqZgiF+fGtiEEJP61Vn3Y2k4T63ZYVOnfvZ4zOMcD5h9H
-	 eAb3MXOM/86bw==
-Date: Sat, 21 Mar 2026 18:39:09 +0000
+	b=QibhUtGmjfZfxiHIho2FeL7oKeDwpDOUizttTKkShMZZSKv+/4EoOpBw9bR7ma5kt
+	 UblmTlbJ8pJXiaQO6OjCTKRoXG5skwfsjalZSsmaYxQW80ReujdT1e99CP7iQEX223
+	 buqQ54HVRdjTbbeTu0o7k7TMSGa4YwFMzdyIuWC4vZrQE2WYiCDDy4tau9FLPLj0sP
+	 85yjpC0Zh7iacfbcoHAvgSYNdJYcAd+Q2NtcGCZMdxxr4D+kH7ZqJqOhFxjH8V05Wk
+	 B97Lr3WnMAvBXv3bIMNYMZs+2aP0l3PsAcYIQK6Q8qNrwp08Jtz58yXE8D4Eb1DU8q
+	 uHJl9kLw7wBSQ==
+Date: Sat, 21 Mar 2026 18:51:06 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, "David Lechner" <dlechner@baylibre.com>,
- Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>,
- <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] iio: dac: ad5706r: Add support for AD5706R DAC
-Message-ID: <20260321183909.45761710@jic23-huawei>
-In-Reply-To: <20260318-dev_ad5706r-v3-2-5d078f41e988@analog.com>
-References: <20260318-dev_ad5706r-v3-0-5d078f41e988@analog.com>
-	<20260318-dev_ad5706r-v3-2-5d078f41e988@analog.com>
+To: Francesco Lavra <flavra@baylibre.com>
+Cc: Lorenzo Bianconi <lorenzo@kernel.org>, David Lechner
+ <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+Subject: Re: [PATCH v8 6/6] iio: imu: st_lsm6dsx: Add support for rotation
+ sensor
+Message-ID: <20260321185106.01fc730b@jic23-huawei>
+In-Reply-To: <20260317150427.3878450-1-flavra@baylibre.com>
+References: <20260317150316.3878107-1-flavra@baylibre.com>
+	<20260317150427.3878450-1-flavra@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -51,227 +49,111 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 18 Mar 2026 13:13:36 +0800
-Alexis Czezar Torreno <alexisczezar.torreno@analog.com> wrote:
+On Tue, 17 Mar 2026 16:04:26 +0100
+Francesco Lavra <flavra@baylibre.com> wrote:
 
-> Add support for the Analog Devices AD5706R, a 4-channel 16-bit
-> current output digital-to-analog converter with SPI interface.
+> Some IMU chips in the LSM6DSX family have sensor fusion features that
+> combine data from the accelerometer and gyroscope. One of these features
+> generates rotation vector data and makes it available in the hardware
+> FIFO as a quaternion (more specifically, the X, Y and Z components of the
+> quaternion vector, expressed as 16-bit half-precision floating-point
+> numbers).
 > 
-> Features:
->   - 4 independent DAC channels
->   - Hardware and software LDAC trigger
->   - Configurable output range
->   - PWM-based LDAC control
->   - Dither and toggle modes
->   - Dynamically configurable SPI speed
+> Add support for a new sensor instance that allows receiving sensor fusion
+> data, by defining a new struct st_lsm6dsx_fusion_settings (which contains
+> chip-specific details for the sensor fusion functionality), and adding this
+> struct as a new field in struct st_lsm6dsx_settings. In st_lsm6dsx_core.c,
+> populate this new struct for the LSM6DSV and LSM6DSV16X chips, and add the
+> logic to initialize an additional IIO device if this struct is populated
+> for the hardware type being probed.
+> Note: a new IIO device is being defined (as opposed to adding channels to
+> an existing device) because the rate at which sensor fusion data is
+> generated may not match the data rate from any of the existing devices.
 > 
-> Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
+> Tested on LSMDSV16X.
 > 
-> ---
-> Changes since v1:
->   - Removed PWM, GPIO, clock generator, debugfs, regmap, IIO_BUFFER
->   - Removed all custom ext_info sysfs attributes
->   - Simplified to basic raw read/write and read-only scale
->   - SPI read/write can handle multibyte registers
-Hi Alexis,
+> Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+> Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Hi Francesco
 
-I've tried not to overlap too much with other feedback.
-
-Some comments inline.
-
-Thanks,
+Just a few really minor last (hopefully!) things from me. On the whole
+this set is looking very nice.
 
 Jonathan
 
-> diff --git a/drivers/iio/dac/ad5706r.c b/drivers/iio/dac/ad5706r.c
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> index 450cb5b47346..160cc6551853 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c
 > new file mode 100644
-> index 0000000000000000000000000000000000000000..840ee7b6db2e05ea35b27ff776f0c5c8a961d9c1
+> index 000000000000..74a2cc5cab12
 > --- /dev/null
-> +++ b/drivers/iio/dac/ad5706r.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c
+> @@ -0,0 +1,235 @@
 
 > +
-> +struct ad5706r_state {
-> +	struct spi_device *spi;
-> +	struct mutex lock; /* Protects SPI transfers */
-I assume it actually protects the buffers below. Where possible talk
-about what 'data' is being protected. It's easier to reason about than
-transfers which will be protected anyway by internal bus driver locking.
-
-> +
-> +	u8 tx_buf[4] __aligned(ARCH_DMA_MINALIGN);
-> +	u8 rx_buf[2];
-> +};
-> +
-> +static int ad5706r_reg_len(unsigned int reg)
+> +int st_lsm6dsx_fusion_set_odr(struct st_lsm6dsx_sensor *sensor, bool enable)
 > +{
-> +	if (reg >= AD5706R_MULTIBYTE_REG_START && reg <= AD5706R_MULTIBYTE_REG_END)
-> +		return AD5706R_DOUBLE_BYTE_LEN;
+> +	const struct st_lsm6dsx_fusion_settings *settings;
+> +	struct st_lsm6dsx_hw *hw = sensor->hw;
+> +	u8 data;
+> +	int err;
 > +
-> +	return AD5706R_SINGLE_BYTE_LEN;
+> +	guard(mutex)(&hw->page_lock);
+
+I missed this before, but mixing cleanup and gotos is generally not
+seen in a good light even when it doesn't introduce bugs.  See the comments in
+cleanup.h  Easiest solution here is probably a helper function doing
+the stuff after the fusion page is enabled.  That can return directly
+and we can then handle any error out here.
+
+> +
+> +	err = st_lsm6dsx_fusion_page_enable(hw);
+> +	if (err)
+> +		return err;
+> +
+> +	settings = &hw->settings->fusion_settings;
+> +	if (enable) {
+> +		const struct st_lsm6dsx_reg *reg = &settings->odr_reg;
+> +		u8 odr_val;
+> +
+> +		st_lsm6dsx_fusion_get_odr_val(settings, sensor->hwfifo_odr_mHz,
+> +					      &odr_val);
+> +		data = ST_LSM6DSX_SHIFT_VAL(odr_val, reg->mask);
+> +		err = regmap_update_bits(hw->regmap, reg->addr, reg->mask,
+> +					 data);
+> +		if (err)
+> +			goto out;
+> +	}
+> +
+> +	err = regmap_assign_bits(hw->regmap, settings->fifo_enable.addr,
+> +				 settings->fifo_enable.mask, enable);
+> +	if (err)
+> +		goto out;
+> +
+> +	return st_lsm6dsx_fusion_page_disable(hw);
+> +
+> +out:
+> +	st_lsm6dsx_fusion_page_disable(hw);
+> +
+> +	return err;
 > +}
-> +
-> +static int ad5706r_spi_write(struct ad5706r_state *st, u16 reg, u16 val)
+
+> +int st_lsm6dsx_fusion_probe(struct st_lsm6dsx_hw *hw, const char *name)
 > +{
-> +	unsigned int num_bytes = ad5706r_reg_len(reg);
-> +	struct spi_transfer xfer = {
-> +		.tx_buf = st->tx_buf,
-> +		.len = num_bytes + 2,
-> +	};
-> +
-> +	put_unaligned_be16(reg, &st->tx_buf[0]);
-> +
-> +	if (num_bytes == 1)
-> +		st->tx_buf[2] = val;
-> +	else if (num_bytes == 2)
-> +		put_unaligned_be16(val, &st->tx_buf[2]);
-> +	else
-> +		return -EINVAL;
-> +
-> +	return spi_sync_transfer(st->spi, &xfer, 1);
 
-Even though you are writing only, consider using spi_write_then_read() here
-as well. Might end up simpler and it works fine with an rx size of 0 and
-NULL buffer for rx
-
-> +}
 > +
-> +static int ad5706r_spi_read(struct ad5706r_state *st, u16 reg, u16 *val)
-> +{
-> +	unsigned int num_bytes = ad5706r_reg_len(reg);
-> +	u16 cmd;
-> +	int ret;
-> +
-> +	struct spi_transfer xfer[] = {
-> +		{
-> +			.tx_buf = st->tx_buf,
-> +			.len = 2,
-> +		},
-> +		{
-> +			.rx_buf = st->rx_buf,
-> +			.len = num_bytes,
-> +		},
-> +	};
-> +
-> +	cmd = AD5706R_RD_MASK | (reg & AD5706R_ADDR_MASK);
-> +	put_unaligned_be16(cmd, &st->tx_buf[0]);
-> +
-> +	ret = spi_sync_transfer(st->spi, xfer, ARRAY_SIZE(xfer));
+> +	/*
+> +	 *  Put the IIO device pointer in the iio_devs array so that the caller
 
-Can you use spi_write_the_read()?
-Has the added advantage that it bounces the data so doesn't need DMA safe.
-Can also use more meaningful types like 
-__be16 tx;
-__be16 rx16;
-u8 rx8;
+Really minor but why the leading double spaces?  1 should be enough I think.
 
-
-
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (num_bytes == 1)
-> +		*val = st->rx_buf[0];
-> +	else if (num_bytes == 2)
-> +		*val = get_unaligned_be16(st->rx_buf);
-> +	else
-> +		return -EINVAL;
+> +	 *  can set up a buffer and register this IIO device.
+> +	 */
+> +	hw->iio_devs[ST_LSM6DSX_ID_FUSION] = iio_dev;
 > +
 > +	return 0;
 > +}
-> +
-> +static int ad5706r_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct ad5706r_state *st = iio_priv(indio_dev);
-> +	u16 reg_val;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		scoped_guard(mutex, &st->lock) {
-Why?
-
-	case IIO_CHAN_INFO_RAW: {
-		guard(mutex)(&st->lock);
-
-		ret = ....
-
-		return IIO_VAL_INT;
-	}
-
-is easier to read and reduces the huge indent.
-
-Only use scoped_guard() when you can't do it in a more readable fashion.
-
-> +			ret = ad5706r_spi_read(st, AD5706R_REG_DAC_DATA_READBACK_CH(chan->channel),
-> +					       &reg_val);
-> +
-> +			if (ret)
-> +				return ret;
-> +
-> +			*val = reg_val;
-> +		}
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 50;
-> +		*val2 = AD5706R_DAC_RESOLUTION;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-> +
-I'd prefer an explicit
-	defualt:
-		return -EINVAL;
-	}
-to end the switch statement and make it clear within the switch that all other options
-are errors.
-
-> +	return -EINVAL;
-> +}
-> +
-> +static int ad5706r_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan, int val,
-> +			     int val2, long mask)
-> +{
-> +	struct ad5706r_state *st = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val < 0 || val >= AD5706R_DAC_MAX_CODE)
-> +			return -EINVAL;
-> +
-> +		guard(mutex)(&st->lock);
-
-What's the scope? add {} to the case block to make it clearly defined.
-
-
-> +		return ad5706r_spi_write(st,
-> +					 AD5706R_REG_DAC_INPUT_A_CH(chan->channel),
-> +					 val);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-
-> +static const struct of_device_id ad5706r_of_match[] = {
-> +	{ .compatible = "adi,ad5706r" },
-> +	{}
-
-As below.
-
-> +};
-> +MODULE_DEVICE_TABLE(of, ad5706r_of_match);
-> +
-> +static const struct spi_device_id ad5706r_id[] = {
-> +	{ "ad5706r" },
-> +	{}
-
-Trivial style thing, but we've standardized on
-	{ }
-for IIO.  Had to pick one of the two choices and that one looked
-nicer to me ;)
-
-> +};
-> +MODULE_DEVICE_TABLE(spi, ad5706r_id);
-
 
