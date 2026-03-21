@@ -1,42 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D044C361679;
-	Sat, 21 Mar 2026 20:10:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 98DF03112BC;
+	Sat, 21 Mar 2026 20:14:21 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774123845; cv=none; b=dwa3EDGuLlO+IKHH+fWc8XIyqgDA+d1vMVf2d5/0e9sp9fBUfMJqmOBf74LGaO7RWm0jCTd6mbmoZSTMJpL6QpVKm9L5zYsy8GJcjZt1ZDdvJ+LnmqIg/kVDMXryAGWZPhYLzO6Kr34zaBwTg241s84wB01iRkaJDL9ymK9/C58=
+	t=1774124061; cv=none; b=K3CXRmHBfrEF5GcK5nf3W8VLMNparRL2aMWHiYyPnB5hc131TnjjWnDo08MQcDFNOY1ktbFuOPLaut9CCob5qQdU2Uynjrxp/arQ9RuOl3CrW3LHECeyl+ca+YMY7nijirs2YX5myQcbebLusajrwd2LFlm17LBx9h5QqemHkGY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774123845; c=relaxed/simple;
-	bh=0Mh1bF1fJ7BUDbmMRB4DLU8HpWGpC1mBFVoWGsREiKM=;
+	s=arc-20240116; t=1774124061; c=relaxed/simple;
+	bh=oY8QD6jpm6/VMMcN2hDbAVaatWcxfnqJhoKkdV9sV4c=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cR8xzgb/tIJbTaBnZAIbVTmKf5osz3bpRza7OsK3PhQ2htoUkdPl+iKiRCpTl0Wvs+P5ebmoutPTfeT+BCVMS9rLwJNBnR+Pzh+lpFu9zv5k3h9L1V4vvveAKQfk8wh8d/4dE2otIk6TnlhRQ3eRtZt20Bbw31lkGZsJRyRLi5A=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=TLWCpeug; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=T0tExVfhJnKmdZf1jP9PaGNKyQQrrWpmj/F8oRX4yvOScors/TbVu55lAcNHjPbJXwimU0/dD6IYmYlrSP5k16LAOnRX2rhTmlnAI3zvT5AYoaBiCQ/nNe22gCLczTPATpILQPWGJ8BCkD0ze+0TgS/qQWKwrCjhK1u3XNg8oMY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kbqqKGi3; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="TLWCpeug"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72816C2BCAF;
-	Sat, 21 Mar 2026 20:10:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kbqqKGi3"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05BC1C19421;
+	Sat, 21 Mar 2026 20:14:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774123845;
-	bh=0Mh1bF1fJ7BUDbmMRB4DLU8HpWGpC1mBFVoWGsREiKM=;
+	s=k20201202; t=1774124061;
+	bh=oY8QD6jpm6/VMMcN2hDbAVaatWcxfnqJhoKkdV9sV4c=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=TLWCpeugD4FONvbRSPyE2r0dr4SSTdtISUkBndMdq1e9UeqDleS9bMOIprbbCgirx
-	 zIC//exCOdKbNLrk4kpTHYo2eVcnmhY8y9Bjc/ITGldO3y8BQeqkTvtHESkNktOqNb
-	 WviTeNuyCnXVTtngZ4XO5/1cHVHlmg/aRMJVecQNaRveRdW2/Cy8tbAZwDVbkD9jdn
-	 l4FxN9Mnp4yJ7sh6LZm6ZD0FdpzEAupnUQ+DBstDYoIlG00dxgOtbbSLAe6S/kj1i7
-	 bwVMOYkYOgQ/lJgqFNnZkyA/s0zVvFNWZNOneYA5jKwS9oAnKXSUdH6iicIyGZiS0R
-	 BfNjhlkZjLnag==
-Date: Sat, 21 Mar 2026 20:10:37 +0000
+	b=kbqqKGi3ywjXLbCIy8FYbvKmTACDLIFU06LmDsiPlc+VxGUUxpP/c0PeMH0BoZjux
+	 7xfxJhM3n9yD2596gQwxj3JRC4nNsxbFTULMk9Y4iMtuh1JWUsvmxhZhJAYUkIiKsF
+	 eOCPW6vRIlPQoi3W+TpTRmqAg9WfDl5bHDxeE4scdPSsBnUCwGVmmHCWTgJtCwgw+X
+	 xWZ6w++/Kunl7eZ1em7D7IZztl1qWByC5dF82gDLjIohu504Po9appIf5fTSuVR42c
+	 e1vXaYjbS8KB19rJv+WSrTRs6rzWvTiss57PF1eO/N4MzGvIt1c0iF1VbAdT5UvDJp
+	 rK2dV5Phnn5mg==
+Date: Sat, 21 Mar 2026 20:14:12 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-Cc: dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- kees@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Denis Ciocca <denis.ciocca@st.com>
-Subject: Re: [PATCH v4] iio: st_sensors: drop temporary kmalloc buffer and
- reuse buffer_data
-Message-ID: <20260321201037.638c7666@jic23-huawei>
-In-Reply-To: <20260315121625.840769-1-sanjayembedded@gmail.com>
-References: <20260315121625.840769-1-sanjayembedded@gmail.com>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Nuno =?UTF-8?B?U8Oh?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, shuaijie wang
+ <wangshuaijie@awinic.com>, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: proximity: aw96103: fix firmware read on
+ big-endian
+Message-ID: <20260321201412.16d86fe1@jic23-huawei>
+In-Reply-To: <60aea3c6-52db-42a5-b1b5-b0af50e3342b@baylibre.com>
+References: <20260314-iio-proximity-aw96103-fix-firmware-read-v1-1-c74fe9ccd82b@baylibre.com>
+	<abfZyvsfzjPv08QM@ashevche-desk.local>
+	<60aea3c6-52db-42a5-b1b5-b0af50e3342b@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -47,84 +50,32 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sun, 15 Mar 2026 17:46:25 +0530
-Sanjay Chitroda <sanjayembeddedse@gmail.com> wrote:
+On Mon, 16 Mar 2026 09:36:33 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-> From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+> On 3/16/26 5:22 AM, Andy Shevchenko wrote:
+> > On Sat, Mar 14, 2026 at 06:20:12PM -0500, David Lechner wrote:  
+> >> Use get_unaligned_le32() instead of casting to int * to make sure that
+> >> reading a 32-bit int value from the firmware binary works correctly on
+> >> big-endian architectures.  
+> > 
+> > ...
+> >   
+> >>  	bin->valid_data_addr = AW96103_BIN_VALID_DATA_OFFSET;
+> >>  	bin->valid_data_len =
+> >> -		*(unsigned int *)(bin->data + AW96103_BIN_DATA_LEN_OFFSET) -
+> >> +		get_unaligned_le32(bin->data + AW96103_BIN_DATA_LEN_OFFSET) -
+> >>  		AW96103_BIN_DATA_REG_NUM_SIZE;
+> >>  	memcpy(bin->chip_type, bin->data + AW96103_BIN_CHIP_TYPE_OFFSET,
+> >>  	       AW96103_BIN_CHIP_TYPE_SIZE);  
+> > 
+> > I gave you a tag, but I have a question here:
+> > Hmm... memcpy() happens to work probably due to keeping LE as LE and chip_type
+> > being a byte stream itself, if AW96103_BIN_CHIP_TYPE_SIZE is bigger than a
+> > byte. Otherwise it may suffer from the same issue, no?
+> >   
 > 
-> Replace the per-call kmalloc() scratch buffer with the existing
-> buffer_data[] field present in struct st_sensor_data. The existing buffer
-> is DMA-aligned and sufficiently sized for all channel widths, so using it
-> avoids unnecessary dynamic memory allocation on each read.
-> 
-> This simplifies the code, removes redundant allocation and cleanup.
-> No functional change intended.
-> 
-> Signed-off-by: Sanjay Chitroda <sanjayembeddedse@gmail.com>
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-I briefly wondered if the locking was strong enough to ensure
-this isn't used at the same time as the use of the buffer in
-the trigger handler.  I think it's fine though due to the
-fact the only path to this function has claimed direct mode.
+> I checked how bin->chip_type is used and it is a string, so not affected. 
 
-I haven't completely ruled out a race around the disable path for the
-buffer but given the worst that can happen is wrong sensor
-data I think we are fine even if there is one.
-
-So with that in mind applied to the testing branch of iio.git which
-will become togreg and get picked up by linux-next once the bots
-have taken a first look at it.
-
-Thanks,
-
-Jonathan
-
-> ---
-> Changes in v4:
-> - Rectify commit message review by David Lechner
-> - Link to v3 https://lore.kernel.org/all/20260312063424.3846945-1-sanjayembedded@gmail.com/
-> Changes in v3:
-> - fix variable declartion placement to follow kernel coding style
-> - Link to v2 https://lore.kernel.org/all/20260311182050.3467471-1-sanjayembedded@gmail.com/
-> Changes in v2:
-> - split series to individual patch
-> - address review comment from David Lechner and reuse exising buffer instead of allocation
-> - Link to v1 https://lore.kernel.org/all/20260310200513.2162018-4-sanjayembedded@gmail.com/
-> ---
->  drivers/iio/common/st_sensors/st_sensors_core.c | 11 +++--------
->  1 file changed, 3 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index dac593be5695..dbc5e16fbde4 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -501,14 +501,12 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
->  
->  	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
->  					ch->scan_type.shift, 8);
-> -	outdata = kmalloc(byte_for_channel, GFP_DMA | GFP_KERNEL);
-> -	if (!outdata)
-> -		return -ENOMEM;
-> +	outdata = sdata->buffer_data;
->  
->  	err = regmap_bulk_read(sdata->regmap, ch->address,
->  			       outdata, byte_for_channel);
->  	if (err < 0)
-> -		goto st_sensors_free_memory;
-> +		return err;
->  
->  	if (byte_for_channel == 1)
->  		*data = (s8)*outdata;
-> @@ -517,10 +515,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
->  	else if (byte_for_channel == 3)
->  		*data = (s32)sign_extend32(get_unaligned_le24(outdata), 23);
->  
-> -st_sensors_free_memory:
-> -	kfree(outdata);
-> -
-> -	return err;
-> +	return 0;
->  }
->  
->  int st_sensors_read_info_raw(struct iio_dev *indio_dev,
+I'll give this one a bit longer so Shuaijie can hopefully take a look.
 
