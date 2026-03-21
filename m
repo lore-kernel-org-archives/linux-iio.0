@@ -1,39 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E0A512FD1C2
-	for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 18:07:14 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE720307AE3
+	for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 18:13:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774116435; cv=none; b=g92XclO8WpgKcpPVI4Ks3Cj7ECAM/Ske83m/V4yGv/lAkbHKY+9lxq8wI4QBOdQngS9hAPbNjK3/wNb5XzX32Q8ivEuxBOQfcPNAUwKxRNnzNsPmRbw1B5ACo3Y9Er8s6Y/taioXXv1dyunYBLxUxlr+GWuHmq7tczL+BjP3HoE=
+	t=1774116823; cv=none; b=dGF/0cF3HS4o5xu/hSvyNlLenHpwKHQrCNLmZ34Jm6j9ckZHizl1sIFfPGWuUz1vcVeW/6M/REWKhHqP87d9/h8LhVNkac4WMzZWm+tX0ParTl+37uncHMQzzx+0KRo8ru5PKrDqSU9YQxA3pz6x0KhmekMaIziEw/R+Q5TDQA0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774116435; c=relaxed/simple;
-	bh=8THp6pHVwDEbrJOFj8ZOj66tjDce4Inw49Gpnln1zHc=;
+	s=arc-20240116; t=1774116823; c=relaxed/simple;
+	bh=fpVl7mAhM8hC9Pw8sUtZ9DSqHZ6xYvIGbsJFtP2lrH8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=bXqhnxWap3brDoP0FCEtWRd6Tka4imeWb7dR/wmG6dO2qgsBjCjTIKkoXW6MDRToC0GaMmRc4x0TgdReEl5CC77N3SBTtA2Kaie0sZmMjVFwZHCsLjmy4y6YuuQqx28GlMvgTKuFqJ+qEEgTvm+KA3XNzg57rAkZz0o+vLHa584=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=NDsPe/ex; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=L/+i6ChMWjjwnbac0yrKkTqMdeT21jTBbAPidTnIU3PAqBzjr6EY5O/njgKKb0WJDH0wabuLVe7HL7myi5ln+6Pp5Zc0m0nU6UxFgqdqfWLZh5pv4I6b15gHHaue9v+rWYrtVeXR7zFBOhAISSp6+3Y+de+XrEhgS440oxNUIsU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XypgAqzi; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="NDsPe/ex"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 961F2C19421;
-	Sat, 21 Mar 2026 18:07:12 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XypgAqzi"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572C2C19421;
+	Sat, 21 Mar 2026 18:13:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774116434;
-	bh=8THp6pHVwDEbrJOFj8ZOj66tjDce4Inw49Gpnln1zHc=;
+	s=k20201202; t=1774116823;
+	bh=fpVl7mAhM8hC9Pw8sUtZ9DSqHZ6xYvIGbsJFtP2lrH8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=NDsPe/exzvr4hi8GKQRolR5V7E39WjsbAk2mN1CJtYRRTvSv/X8NBxiP0oghbdDH9
-	 j3Jhvb3zJU7gLE5EVU2pcnwY8ry2a9HOGnHjyVXfUzQefkVVQY/Kq17YK8ojPnnCXQ
-	 /8Wfz3ryDrRAP/n8BUKoiFpRP5qpIJEoZHdrtdvqQkqTwmRY9Lv7LQuKjUF6lpiPVY
-	 lyCdX8e7hWAH8kQlXiKcQ8K6eD57IS2WoJTQSuSONUz3fOKfOaQa7OsJfX0o4DCfII
-	 21dElroQU94rZgFl6d5qw0acydW1ITxhlA0PO3Z7a4Z/dirWRHvzvXCzTGfr0K4Qwu
-	 PVmi3mslrmZpg==
-Date: Sat, 21 Mar 2026 18:07:07 +0000
+	b=XypgAqzi8GuYv0VURAXYqWgyAMj5AUKClzquQsc1lGlWuAFXbh1Ta5GwhLFmiwjqm
+	 eNaY/uZEc8UCtoRZgbQz72slDJMIJZBv0mKB9lCSHkts/PToHsvrrzpTKbJmGSV9vp
+	 MqmBFraVuoygKtKfh9aERO2NbCoC/k5tfo+A9U1FR4Zyov6282FJ/wMHGNxZihTGQs
+	 woZimELp306TqwvrXaTf/olVoZjfY2af4ZQzBtWjbZf7rCMKq+X2+bgrGejPNPtrTG
+	 j2oUc2DE48SJw3Pf2eV4czvm+pG2NALvQYES+tFWcHJ9Q1sx0vV3XX3TIT60OudIE6
+	 PRNfu9YTHP6Fw==
+Date: Sat, 21 Mar 2026 18:13:37 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nikhil Gautam <nikhilgtr@gmail.com>
-Cc: linux-iio@vger.kernel.org, dlechner@baylibre.com, anshulusr@gmail.com
-Subject: Re: [PATCH] iio: dac: mcp4821: add configurable gain support
-Message-ID: <20260321180707.73a7ad60@jic23-huawei>
-In-Reply-To: <20260319165216.351668-1-nikhilgtr@gmail.com>
-References: <20260319165216.351668-1-nikhilgtr@gmail.com>
+To: bugzilla-daemon@kernel.org
+Cc: linux-iio@vger.kernel.org
+Subject: Re: [Bug 221256] New: On Boot - WARNING: kernel/irq/manage.c:1502
+ at __setup_irq+0x5bb/0x800, CPU#7: iio-sensor-prox/932
+Message-ID: <20260321181337.2addac95@jic23-huawei>
+In-Reply-To: <bug-221256-217253@https.bugzilla.kernel.org/>
+References: <bug-221256-217253@https.bugzilla.kernel.org/>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -41,236 +42,165 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 19 Mar 2026 22:22:16 +0530
-Nikhil Gautam <nikhilgtr@gmail.com> wrote:
+On Wed, 18 Mar 2026 10:10:29 +0000
+bugzilla-daemon@kernel.org wrote:
 
-> Add support for configuring the DAC gain using the GA bit.
-> Expose gain control via IIO_CHAN_INFO_CALIBSCALE.
->=20
-> Scale is updated dynamically based on selected gain:
-> - 1x gain =E2=86=92 2.048V full-scale
-> - 2x gain =E2=86=92 4.096V full-scale
->=20
-> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
-> ---
->  drivers/iio/dac/mcp4821.c | 140 ++++++++++++++++++++++++++++----------
->  1 file changed, 104 insertions(+), 36 deletions(-)
->=20
-> diff --git a/drivers/iio/dac/mcp4821.c b/drivers/iio/dac/mcp4821.c
-> index 748bdca9a964..f9f97917bc9c 100644
-> --- a/drivers/iio/dac/mcp4821.c
-> +++ b/drivers/iio/dac/mcp4821.c
-> @@ -12,26 +12,43 @@
->   *	MCP48x2: https://ww1.microchip.com/downloads/en/DeviceDoc/20002249B.p=
-df
->   *
->   * TODO:
-> - *	- Configurable gain
->   *	- Regulator control
->   */
-> =20
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/types.h>
->  #include <linux/module.h>
->  #include <linux/mod_devicetable.h>
->  #include <linux/spi/spi.h>
-> -
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/types.h>
-> -
-Hi Nikhil,
+> https://bugzilla.kernel.org/show_bug.cgi?id=221256
+> 
+>             Bug ID: 221256
+>            Summary: On Boot - WARNING: kernel/irq/manage.c:1502 at
+>                     __setup_irq+0x5bb/0x800, CPU#7: iio-sensor-prox/932
+>            Product: Drivers
+>            Version: 2.5
+>           Hardware: Intel
+>                 OS: Linux
+>             Status: NEW
+>           Severity: high
+>           Priority: P3
+>          Component: IIO
+>           Assignee: drivers_iio@kernel-bugs.kernel.org
+>           Reporter: alain.cousinie@laposte.net
+>         Regression: No
+> 
+> Since the beginning of 7.0 rc1 to rc4, I have had a boot error.
+> (I recompile the kernel with each RC release)
+> 
+> [    7.425262] ------------[ cut here ]------------
+> [    7.425264] WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x5bb/0x800,
+> CPU#7: iio-sensor-prox/932
+> [    7.425270] Modules linked in: bnep at24 ee1004 spd5118 nls_ascii nls_cp437
+> vfat fat snd_ctl_led snd_soc_skl_hda_dsp(+) snd_soc_intel_sof_board_helpers
+> snd_sof_probes snd_soc_intel_hda_dsp_common snd_hda_codec_intelhdmi
+> snd_hda_codec_hdmi snd_hda_codec_alc269 snd_hda_codec_realtek_lib
+> snd_hda_scodec_component snd_hda_codec_generic snd_soc_dmic snd_hda_intel
+> snd_sof_pci_intel_mtl snd_sof_intel_hda_generic soundwire_intel
+> soundwire_generic_allocation snd_sof_intel_hda_sdw_bpt snd_sof_intel_hda_common
+> snd_soc_hdac_hda snd_sof_intel_hda_mlink snd_sof_intel_hda soundwire_cadence
+> snd_sof_pci snd_sof_xtensa_dsp intel_uncore_frequency snd_soc_sdw_utils
+> intel_uncore_frequency_common x86_pkg_temp_thermal snd_sof intel_powerclamp
+> coretemp iwlmld snd_sof_utils snd_hda_ext_core kvm_intel snd_hda_codec
+> snd_hda_core mac80211 kvm snd_intel_dspcfg snd_hda_scodec_cs35l41_spi
+> regmap_spi snd_intel_sdw_acpi snd_soc_acpi_intel_match
+> snd_soc_acpi_intel_sdca_quirks snd_soc_acpi snd_hwdep crc8 soundwire_bus
+> snd_soc_sdca libarc4
+> [    7.425297]  intel_ipu6_isys snd_soc_core btusb videobuf2_dma_sg
+> hp_bioscfg(+) videobuf2_memops btmtk videobuf2_v4l2 btrtl irqbypass
+> mei_gsc_proxy iwlwifi videobuf2_common intel_rapl_msr ghash_clmulni_intel
+> snd_compress btbcm aesni_intel firmware_attributes_class ac97_bus btintel
+> snd_pcm_dmaengine snd_hda_scodec_cs35l41_i2c cfg80211 gf128mul
+> snd_hda_scodec_cs35l41 hp_wmi snd_pcm snd_soc_cs_amp_lib bluetooth spi_nor
+> hid_sensor_magn_3d hid_sensor_accel_3d hid_sensor_gyro_3d hid_sensor_rotation
+> snd_soc_cs35l41_lib hid_sensor_trigger wmi_bmof snd_timer cs_dsp
+> processor_thermal_device_pci hid_sensor_iio_common pcspkr mtd intel_vpu ov08x40
+> industrialio_triggered_buffer processor_thermal_device kfifo_buf snd mei_me
+> industrialio v4l2_fwnode intel_skl_int3472_tps68470 tps68470_regulator
+> processor_thermal_wt_hint v4l2_async mei clk_tps68470 soundcore
+> drm_shmem_helper rfkill serial_multi_instantiate videodev
+> platform_temperature_control intel_pmc_core processor_thermal_soc_slider
+> platform_profile processor_thermal_rfim mc
+> [    7.425325]  processor_thermal_rapl intel_skl_int3472_discrete
+> intel_skl_int3472_common intel_rapl_common joydev processor_thermal_wt_req
+> pmt_telemetry intel_ipu6 processor_thermal_power_floor acpi_tad pmt_discovery
+> int3403_thermal processor_thermal_mbox intel_hid pmt_class ipu_bridge
+> int340x_thermal_zone sparse_keymap intel_pmc_ssram_telemetry soc_button_array
+> acpi_pad ac igen6_edac button evdev binfmt_misc parport_pc ppdev lp parport
+> i2c_dev msr nvme_fabrics efi_pstore nfnetlink efivarfs autofs4 uhci_hcd
+> ehci_pci ehci_hcd xe drm_ttm_helper drm_suballoc_helper gpu_sched drm_gpuvm
+> drm_exec configfs drm_gpusvm_helper hid_sensor_custom hid_sensor_hub usbhid
+> intel_ishtp_hid i915 hid_multitouch i2c_algo_bit drm_buddy ttm
+> drm_display_helper xhci_pci hid_generic xhci_hcd cec nvme i2c_hid_acpi i2c_hid
+> rc_core nvme_core ucsi_acpi psmouse hid drm_client_lib typec_ucsi iTCO_wdt
+> drm_kms_helper intel_pmc_bxt typec watchdog video intel_ish_ipc roles
+> nvme_keyring serio_raw drm usbcore thunderbolt nvme_auth int3400_thermal
+> battery
+> [    7.425359]  intel_ishtp i2c_i801 wmi intel_lpss_pci hkdf acpi_thermal_rel
+> fan intel_lpss i2c_smbus usb_common intel_vsec idma64
+> [    7.425366] CPU: 7 UID: 0 PID: 932 Comm: iio-sensor-prox Not tainted
+> 7.0.0-rc4-meteor #1 PREEMPT(full) 
+> [    7.425368] Hardware name: HP HP Spectre x360 2-in-1 Laptop 14-eu0xxx/8C15,
+> BIOS F.16 12/16/2025
+> [    7.425368] RIP: 0010:__setup_irq+0x5bb/0x800
+> [    7.425370] Code: 94 24 f0 00 00 00 e9 cb fe ff ff b8 01 00 00 00 48 c7 c2
+> ff ff ff ff f3 48 0f bc d2 c4 e2 e9 f7 c0 49 89 47 48 e9 86 fd ff ff <0f> 0b f6
+> c6 80 75 70 81 e2 00 00 01 00 0f 85 c5 fa ff ff 66 90 49
+> [    7.425371] RSP: 0018:ffffd1b2c740bb58 EFLAGS: 00010246
+> [    7.425373] RAX: 0000000000002000 RBX: ffff8d7942c91700 RCX:
+> 0000000000000000
+> [    7.425374] RDX: 0000000000000400 RSI: ffff8d7960d9ec00 RDI:
+> ffffffffc1876a80
+> [    7.425374] RBP: 00000000000000d2 R08: 0000000000000080 R09:
+> ffff8d7942c91700
+> [    7.425375] R10: 0000000000000000 R11: 0000000000000001 R12:
+> ffff8d7960d9ec00
+> [    7.425376] R13: ffff8d7960d9ec00 R14: 0000000000000400 R15:
+> ffff8d7942c91700
+> [    7.425377] FS:  00007f6716751980(0000) GS:ffff8d810f4e4000(0000)
+> knlGS:0000000000000000
+> [    7.425377] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [    7.425378] CR2: 00007fff3d530fd0 CR3: 00000001282b2005 CR4:
+> 0000000000f72ef0
+> [    7.425379] PKRU: 55555554
+> [    7.425380] Call Trace:
+> [    7.425381]  <TASK>
+> [    7.425382]  ? __kmalloc_cache_noprof+0x12f/0x4b0
+> [    7.425385]  ? request_threaded_irq+0x96/0x1a0
+> [    7.425389]  ? __pfx_iio_pollfunc_store_time+0x10/0x10 [industrialio]
+> [    7.425393]  request_threaded_irq+0xd9/0x1a0
+> [    7.425395]  iio_trigger_attach_poll_func+0xbe/0x1c0 [industrialio]
+> [    7.425398]  __iio_update_buffers+0xddd/0xed0 [industrialio]
+> [    7.425402]  enable_store+0x81/0xe0 [industrialio]
+> [    7.425405]  kernfs_fop_write_iter+0x149/0x200
+> [    7.425408]  vfs_write+0x363/0x530
+> [    7.425411]  __x64_sys_write+0x70/0xe0
+> [    7.425412]  do_syscall_64+0x118/0xd70
+> [    7.425416]  ? __x64_sys_openat+0xe9/0x230
+> [    7.425417]  ? do_syscall_64+0x118/0xd70
+> [    7.425418]  ? do_syscall_64+0x118/0xd70
+> [    7.425419]  ? do_syscall_64+0x118/0xd70
+> [    7.425420]  ? __sysvec_apic_timer_interrupt+0x58/0x140
+> [    7.425423]  ? irq_exit_rcu+0x41/0xe0
+> [    7.425425]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
+> [    7.425427] RIP: 0033:0x7f6716b596be
+> [    7.425429] Code: 08 0f 85 15 47 ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 ce
+> 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 90 48
+> 83 ec 08 bf 01 00 00 00 e8 a2 e5 05 00 bf 01 00 00 00 89
+> [    7.425430] RSP: 002b:00007fff3d532238 EFLAGS: 00000246 ORIG_RAX:
+> 0000000000000001
+> [    7.425431] RAX: ffffffffffffffda RBX: 0000564c8378b310 RCX:
+> 00007f6716b596be
+> [    7.425432] RDX: 0000000000000001 RSI: 00007fff3d5323f0 RDI:
+> 0000000000000008
+> [    7.425432] RBP: 0000000000000001 R08: 0000000000000000 R09:
+> 0000000000000000
+> [    7.425433] R10: 0000000000000000 R11: 0000000000000246 R12:
+> 0000000000000001
+> [    7.425433] R13: 00007fff3d5323f0 R14: 0000000000000002 R15:
+> 0000000000000001
+> [    7.425434]  </TASK>
+> [    7.425435] ---[ end trace 0000000000000000 ]---
 
-Don't do code recorganization in a patch doing anything else.
-Also, it's fairly common convention to have subsystem specific headers
-in a block at the end for a driver in that subsystem.
->  #include <linux/unaligned.h>
-This is the oddity.  Was a result of a mass change from
-asm/unaligned.h to this that didn't include reordering headers.
+There are a number of fixes working their way upstream for warnings from
+the tightening up of parameter checks on the irq_request functions.
 
-Given you are touching the driver anyway, it's fine to move that up to
-under spi.h, but should still be a seperate patch.
+Bisection will tell you it was that change of checks rather than find
+the real problem.
 
+https://lore.kernel.org/all/20260220224514.471348-1-srinivas.pandruvada@linux.intel.com/
+would be my guess for what was hit here.  That's in a pull request waiting
+for GregKH to pick up and send on to Linus.
 
-> =20
->  #define MCP4821_ACTIVE_MODE BIT(12)
->  #define MCP4802_SECOND_CHAN BIT(15)
-> +#define MCP4821_GAIN_ENABLE BIT(13)
-
-Put this in order. So above MCP4802_SECOND_CHAN
-> =20
-> -/* DAC uses an internal Voltage reference of 4.096V at a gain of 2x */
-> -#define MCP4821_2X_GAIN_VREF_MV 4096
-> +/* DAC uses an internal Voltage reference of 2.048V */
-> +#define MCP4821_VREF_MV 2048
-> =20
-> -enum mcp4821_supported_drvice_ids {
-> +/*
-> + * MCP48xx DAC output:
-> + *
-> + * Vout =3D (Vref * D / 2^N) * G
-> + *
-> + * where:
-> + *  - Vref =3D 2.048V (internal reference)
-> + *  - N =3D DAC resolution (12 bits for MCP4821)
-> + *  - G =3D gain selection:
-> + *        1x when GA bit =3D 1
-> + *        2x when GA bit =3D 0 (default)
-> + *
-> + * Therefore full-scale voltage is:
-> + *  - 1x gain: 2.048V
-> + *  - 2x gain: 4.096V
-> + *
-> + * Scale =3D Vfull-scale / 2^N
-> + */
-> +
-> +enum mcp4821_supported_device_ids {
->  	ID_MCP4801,
->  	ID_MCP4802,
->  	ID_MCP4811,
-> @@ -43,6 +60,7 @@ enum mcp4821_supported_drvice_ids {
->  struct mcp4821_state {
->  	struct spi_device *spi;
->  	u16 dac_value[2];
-> +	bool gain_1x;
->  };
-> =20
->  struct mcp4821_chip_info {
-> @@ -51,16 +69,19 @@ struct mcp4821_chip_info {
->  	const struct iio_chan_spec channels[2];
->  };
-> =20
-> -#define MCP4821_CHAN(channel_id, resolution)                          \
-> -	{                                                             \
-> -		.type =3D IIO_VOLTAGE, .output =3D 1, .indexed =3D 1,       \
-> -		.channel =3D (channel_id),                              \
-> -		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),         \
-> -		.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE), \
-> -		.scan_type =3D {                                        \
-> -			.realbits =3D (resolution),                     \
-> -			.shift =3D 12 - (resolution),                   \
-> -		},                                                    \
-> +#define MCP4821_CHAN(channel_id, resolution)					\
-> +	{															\
-> +		.type =3D IIO_VOLTAGE, .output =3D 1, .indexed =3D 1,			\
-> +		.channel =3D (channel_id),								\
-> +		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),			\
-> +		.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE) |	\
-> +			BIT(IIO_CHAN_INFO_CALIBSCALE),						\
-> +	    .info_mask_shared_by_type_available =3D					\
-> +			BIT(IIO_CHAN_INFO_CALIBSCALE),						\
-> +		.scan_type =3D {											\
-> +			.realbits =3D (resolution),							\
-> +			.shift =3D 12 - (resolution),							\
-> +		},														\
->  	}
-No idea what went wrong formatting wise here, but that needs to go back to =
-normal!
-
-Why is it calibscale as opposed to scale?  A x2 multiplier presumably affec=
-ts the
-scale userspace should apply? calibbscale is for adjusting due to minor dev=
-ice differences
-not this sort of major range adjustment.
-
-> =20
->  static const struct mcp4821_chip_info mcp4821_chip_info_table[6] =3D {
-> @@ -122,13 +143,25 @@ static int mcp4821_read_raw(struct iio_dev *indio_d=
-ev,
->  		state =3D iio_priv(indio_dev);
->  		*val =3D state->dac_value[chan->channel];
->  		return IIO_VAL_INT;
-> +
->  	case IIO_CHAN_INFO_SCALE:
-> -		*val =3D MCP4821_2X_GAIN_VREF_MV;
-> +		state =3D iio_priv(indio_dev);
-> +		if (state->gain_1x)
-> +			*val =3D MCP4821_VREF_MV;
-> +		else
-> +			*val =3D MCP4821_VREF_MV * 2;
->  		*val2 =3D chan->scan_type.realbits;
->  		return IIO_VAL_FRACTIONAL_LOG2;
-> +
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		state =3D iio_priv(indio_dev);
-> +		*val =3D state->gain_1x ? 1 : 2;
-> +		return IIO_VAL_INT;
-> +
->  	default:
-> -		return -EINVAL;
-> +		break;
->  	}
-> +	return -EINVAL;
-
-Why?  Original code was at least as good if not better.
-
->  }
-> =20
->  static int mcp4821_write_raw(struct iio_dev *indio_dev,
-> @@ -140,34 +173,68 @@ static int mcp4821_write_raw(struct iio_dev *indio_=
-dev,
->  	__be16 write_buffer;
->  	int ret;
-> =20
-> -	if (val2 !=3D 0)
-> -		return -EINVAL;
-> +	switch (mask) {
-> =20
-> -	if (val < 0 || val >=3D BIT(chan->scan_type.realbits))
-> -		return -EINVAL;
-> +	case IIO_CHAN_INFO_RAW:
-> =20
-> -	if (mask !=3D IIO_CHAN_INFO_RAW)
-> -		return -EINVAL;
-> +		if (val2 !=3D 0)
-> +			return -EINVAL;
-> +
-> +		if (val < 0 || val >=3D BIT(chan->scan_type.realbits))
-> +			return -EINVAL;
-> =20
-> -	write_val =3D MCP4821_ACTIVE_MODE | val << chan->scan_type.shift;
-> -	if (chan->channel)
-> -		write_val |=3D MCP4802_SECOND_CHAN;
-> +		write_val =3D MCP4821_ACTIVE_MODE | val << chan->scan_type.shift;
-> +		if (chan->channel)
-> +			write_val |=3D MCP4802_SECOND_CHAN;
-> +		if (state->gain_1x)
-> +			write_val |=3D MCP4821_GAIN_ENABLE;
-> =20
-> -	write_buffer =3D cpu_to_be16(write_val);
-> -	ret =3D spi_write(state->spi, &write_buffer, sizeof(write_buffer));
-> -	if (ret) {
-> -		dev_err(&state->spi->dev, "Failed to write to device: %d", ret);
-> -		return ret;
-> +		write_buffer =3D cpu_to_be16(write_val);
-> +		ret =3D spi_write(state->spi, &write_buffer, sizeof(write_buffer));
-> +		if (ret) {
-> +			dev_err(&state->spi->dev, "Failed to write to device: %d", ret);
-> +			return ret;
-> +		}
-> +
-> +		state->dac_value[chan->channel] =3D val;
-> +		return 0;
-> +
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		if (val =3D=3D 1)
-> +			state->gain_1x =3D true;
-> +		else if (val =3D=3D 2)
-> +			state->gain_1x =3D false;
-> +		else
-> +			return -EINVAL;
-> +		return 0;
-> +	default:
-> +		break;
->  	}
-> +	return -EINVAL;
-Move that up into the default.=20
-
-> +}
-
-Thanks,
+It was an odd bit of usage. There was never actually an interrupt in use
+despite a handler being registered. That patch cleans that up whilst
+going through a dance to avoid an interface regressions. Took us a little
+while to figure out the necessary dance.
 
 Jonathan
+
+
+
+
+> 
 
