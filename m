@@ -1,44 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A0F4DF9E8;
-	Sat, 21 Mar 2026 21:01:09 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47E872D8796;
+	Sat, 21 Mar 2026 21:05:43 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774126869; cv=none; b=YgeZn8upKh9gIXCicRM6Wdbl1yWM1WqJKzYu/DysBDZ1PY2Jz387MuGE6lL6NrU00XUH0PlfHqytZlpt/odSxfpvHbIM1PsOTJnxRbqwWbViPkd0q1T4xq4tiYld9Hup1lv5ssRnEWsVehPmXu5ZQ+qnoGu18mvZ/i0Bf00Kyfk=
+	t=1774127144; cv=none; b=LvkunyoEzsmtJ5M9HSTBPDlXi9ZcRQYkjAAVAmRySQAl3bTfXsRz53HvPeEtnfWKrTLur2j1JwnbZ8fOzIk3sQA86dBl+7GIExA7/ziVQFSO//CF6Z4l/Qk4B9aVMEdZ2Wxksswj61RgTw+BnLO1YZ0OEaRDdy+0x4Ddj1deR8M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774126869; c=relaxed/simple;
-	bh=kAeTQtLNT2GbrzxH5L4iT3dqYsDVuy8utf+BJNRxlpQ=;
+	s=arc-20240116; t=1774127144; c=relaxed/simple;
+	bh=c43wMP72EcijoktlW8FW/EN+U+u3RwE+mMcfgnY3Tzk=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=h2ekWW/tEsvlGv7sS+b8GkW9kCOUmJbuQmEcJTEmUDrgG/8j5YHpr5Bpiv7oXlwbG8iXBr8IgaR7EBlwy9bZB0oEQBpri8XjuInLtz+t2NL+jnjZQnwt5gRvMta/aS0OOMA1xKBF3TeQ95kT0up9EaWy9YLtlP1VfPxaTpUgBNw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=WsYTxl7V; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=p7U89gtNhWfMjuI/7xgv1Q+eNDdk0JRR5vmGMdtbDnFt8YVbxBdqBmIufwHi2dWpff9uALZI0O1LrX01mvCFEJF75JN4Fij3YPSi9ReCUAtumboPhsRK3H9dW65tmpZvlUdLFxrEVbtuiUiVQ7IaQjRilN8ykOK5XIbjr61TQ0I=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=MobX0P2w; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="WsYTxl7V"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D333C19421;
-	Sat, 21 Mar 2026 21:01:05 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="MobX0P2w"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C457C19421;
+	Sat, 21 Mar 2026 21:05:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774126869;
-	bh=kAeTQtLNT2GbrzxH5L4iT3dqYsDVuy8utf+BJNRxlpQ=;
+	s=k20201202; t=1774127143;
+	bh=c43wMP72EcijoktlW8FW/EN+U+u3RwE+mMcfgnY3Tzk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=WsYTxl7Vc0oOdcZ8y93ueRgTO7yzVKe3IUxyrWTcU8pypU3pIdlhZjMEiymMr04ji
-	 fJSLgRpMG5uBqPyW5ESt7Ank0gpA3uVn0uhmYaq5xBvMvb6jpgFfQ+nt96sElASAwp
-	 f2bIDFkOwE5n/2giqJpmtbwFewJWFH3boSmSFQpwhQr7Oyklf1WIzzpWOA9OeT4Kz0
-	 85n0hcfNKQWFNlYPnXPuspL+wjgEAiI9EPe9HYyqgdJ8q6ibN0xFMh+gkwsY8/c31/
-	 06wUM0Q9NOksOZ/FJWRfpSo/W9RqONwlpXu1JdtxgL6sRzLFjW+yvtmeqXKwIWhhkT
-	 EgYdBkvKD+W3A==
-Date: Sat, 21 Mar 2026 21:01:00 +0000
+	b=MobX0P2wvKptWHut84Cc7x20zwo6vFj7P4o2mmAsdLuLLJt7m/HqnFupaJmTdfCJe
+	 HF9DzqZPdbE2BCxrMuebZs/cCKcQGEzKlideq4AuNEjd/QOzGc/cAocrwtWYxa6DhF
+	 JIXvgzwNBewj45Iemwzb5o1Huk37kGITwrJpsRDZDdBYUBfXwqR34a/+dwoZ2J+b4d
+	 fbPpWX7ufvSImf3uU8i5dsCI4BgtZIPP+CFjZh5vmmcjU7bMmJjJ2Jwlxn2wCr3Umv
+	 Z342F8hE+bnSq79b42Q42HiBR+kjB0EL6S/HKMUCOM8UWArKCLr/Fy0zYBuKv3hD3S
+	 0Y9vnUlSLhmrQ==
+Date: Sat, 21 Mar 2026 21:05:39 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: David Lechner <dlechner@baylibre.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Parthiban
- Nallathambi <pn@denx.de>, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+Cc: Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko
+ <andy@kernel.org>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
  linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: light: vcnl4035: fix scan buffer on big-endian
-Message-ID: <20260321210100.78ca299c@jic23-huawei>
-In-Reply-To: <b8ed1390-7bd5-4f6f-8975-5aceb72cde0b@baylibre.com>
-References: <20260314-iio-light-vcnl4035c-clean-up-scan-buf-v1-1-400d273eb026@baylibre.com>
-	<abfYN9gszSSb83J9@ashevche-desk.local>
-	<b8ed1390-7bd5-4f6f-8975-5aceb72cde0b@baylibre.com>
+Subject: Re: [PATCH v2] iio: adc: ti-ads7950: use
+ iio_push_to_buffers_with_ts_unaligned()
+Message-ID: <20260321210539.2de04bc0@jic23-huawei>
+In-Reply-To: <20260314-iio-adc-ti-ads7950-declare-dma-buffer-v2-1-2087fc18b077@baylibre.com>
+References: <20260314-iio-adc-ti-ads7950-declare-dma-buffer-v2-1-2087fc18b077@baylibre.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,46 +47,90 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 16 Mar 2026 09:37:53 -0500
+On Sat, 14 Mar 2026 16:12:24 -0500
 David Lechner <dlechner@baylibre.com> wrote:
 
-> On 3/16/26 5:15 AM, Andy Shevchenko wrote:
-> > On Sat, Mar 14, 2026 at 05:18:10PM -0500, David Lechner wrote:  
-> >> Rework vcnl4035_trigger_consumer_handler() so that we are not passing
-> >> what should be a u16 value as an int * to regmap_read(). This won't
-> >> work on bit endian systems.
-> >>
-> >> Instead, add a new unsigned int variable to pass to regmap_read(). Then
-> >> copy that value into the buffer struct.
-> >>
-> >> The buffer array is replaced with a struct since there is only one value
-> >> being read. This allows us to use the correct u16 data type and has a
-> >> side-effect of simplifying the alignment specification.
-> >>
-> >> Also fix the endianness of the scan format from little-endian to CPU
-> >> endianness. Since we are using regmap to read the value, it will be
-> >> CPU-endian.  
-> > 
-> > ...
-> >   
-> >> -	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
-> >> -					iio_get_time_ns(indio_dev));
-> >> +
-> >> +	buffer.als_data = val;
-> >> +	iio_push_to_buffers_with_timestamp(indio_dev, &buffer,
-> >> +					   iio_get_time_ns(indio_dev));  
-> > 
-> > Do you have plans to drop this old API as well?
-> >   
+> Use iio_push_to_buffers_with_ts_unaligned() to avoid unaligned access
+> when writing the timestamp in the rx_buf.
 > 
-> Eventually, yes. My plan is to wait for fixes to go through first.
+> The previous implementation would have been fine on architectures that
+> support 4-byte alignment of 64-bit integers but could cause issues on
+> architectures that require 8-byte alignment.
+> 
+> Fixes: 902c4b2446d4 ("iio: adc: New driver for TI ADS7950 chips")
+> Signed-off-by: David Lechner <dlechner@baylibre.com>
+> ---
+> Since we were looking at this driver, I was going to convert this to use
+> IIO_DECLARE_DMA_BUFFER_WITH_TS() but then I noticed that we actually
+> have an unaligned access problem with the timestamp since we are
+> ignoring the first two elements in the rx_buf when pushing the data to
+> the buffer.
+> 
+> Unfortunately, this will cause a merge conflict with the series Dmitry
+> is working on. I don't think there is any rush to get this backported
+> since no one has reported a crash from unaligned access. Since fixes
+> should go before improvements, we could apply this to iio/togreg then
+> Dmitry can rebase his series on top of it.
+I've done that. Applied to the togreg branch of iio.git pushed out as
+testing etc. I've also marked it for stable so it gets picked up in the long
+run.
 
-Agreed. Given the need for backports, better to do it in two steps.
-Sooner or later we'll end up backporting the new _ts() variant
-(if it hasn't already happened!) but lets not rush it.
-
-Applied and marked for stable
 Thanks,
 
 Jonathan
+
+
+> ---
+> Changes in v2:
+> - use sizeof(*st->rx_buf)
+> - Link to v1: https://patch.msgid.link/20260307-iio-adc-ti-ads7950-declare-dma-buffer-v1-1-79b1309338df@baylibre.com
+> ---
+>  drivers/iio/adc/ti-ads7950.c | 11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+> index cdc624889559..418452aaca81 100644
+> --- a/drivers/iio/adc/ti-ads7950.c
+> +++ b/drivers/iio/adc/ti-ads7950.c
+> @@ -47,8 +47,6 @@
+>  #define TI_ADS7950_MAX_CHAN	16
+>  #define TI_ADS7950_NUM_GPIOS	4
+>  
+> -#define TI_ADS7950_TIMESTAMP_SIZE (sizeof(int64_t) / sizeof(__be16))
+> -
+>  /* val = value, dec = left shift, bits = number of bits of the mask */
+>  #define TI_ADS7950_EXTRACT(val, dec, bits) \
+>  	(((val) >> (dec)) & ((1 << (bits)) - 1))
+> @@ -105,8 +103,7 @@ struct ti_ads7950_state {
+>  	 * DMA (thus cache coherency maintenance) may require the
+>  	 * transfer buffers to live in their own cache lines.
+>  	 */
+> -	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2 + TI_ADS7950_TIMESTAMP_SIZE]
+> -		__aligned(IIO_DMA_MINALIGN);
+> +	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2] __aligned(IIO_DMA_MINALIGN);
+>  	u16 tx_buf[TI_ADS7950_MAX_CHAN + 2];
+>  	u16 single_tx;
+>  	u16 single_rx;
+> @@ -313,8 +310,10 @@ static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
+>  	if (ret < 0)
+>  		goto out;
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, &st->rx_buf[2],
+> -					   iio_get_time_ns(indio_dev));
+> +	iio_push_to_buffers_with_ts_unaligned(indio_dev, &st->rx_buf[2],
+> +					      sizeof(*st->rx_buf) *
+> +					      TI_ADS7950_MAX_CHAN,
+> +					      iio_get_time_ns(indio_dev));
+>  
+>  out:
+>  	mutex_unlock(&st->slock);
+> 
+> ---
+> base-commit: 79a86a6cc3669416a21fef32d0767d39ba84b3aa
+> change-id: 20260307-iio-adc-ti-ads7950-declare-dma-buffer-9d5269ffa8bb
+> 
+> Best regards,
+> --  
+> David Lechner <dlechner@baylibre.com>
+> 
 
