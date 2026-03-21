@@ -1,99 +1,104 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F9171B86C7;
-	Sat, 21 Mar 2026 15:30:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4876338B7A0
+	for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 15:32:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.48
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774107049; cv=none; b=JyHXS1NVqSD1d8q+lwtLcTwl8BhyKTFJVr10pM81MHo2cPGrC5yJkbduRpf3gOUxFuxWZGUmv2i2KZLtTYdO2BjzZf6hrbW5iZHnkR5bSC9AW10ZheICFfx5oe2cxR2LODfFaj+WopzQkMpIFrWExqBTBduzpm3Af2oBJ0exASQ=
+	t=1774107167; cv=none; b=sKdKbE3R9OVPHXicGIuMWNecenJkSbHoj7YEpWdGkN/Xw0a9rfitvrBJTys1I/Eu9WI3hxr1EqHq5jOEFT4Rw6RBTjvuuEQ9fkWxGSq9q3cZq7u0loioti9l3h1K/MhFkmFxpM7giaM/1odyLOw0yJN92FLZp3HUHu1BYfdr/WA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774107049; c=relaxed/simple;
-	bh=piV2Fg42vYqtFS9ibkzMbE3g0iCeOEJCg9GsYcozZw4=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=PA6zK+XwNACd5lU1g5Z2eK/zZgg9WqZY1j8w9DZWYjNMH4qyJcDRLOAFmjHxeJ1zxCQTmNwAjMyBq4ULzuv6lQnWC1twUklEZqMauSD7LRZWNcCR8kL7txpGAYZwG+dm/fjZgziX+Ll3rwDgEpuV7WLJF69ldAoI2FFZ+FLf0Os=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=PPXkcpsD; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774107167; c=relaxed/simple;
+	bh=nw4QcdSFUVxY7JeDmPlncuCvC4La8p06UFbAu6YKNFo=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=BkZpXXuw1SynZdnG/M+DU7mq2H6w2dUUi1eKaOOcFEJonq0GNO4U5qsxXxsfIGhTDyjhTk8oxCLJkfhIdjcWXKs612/wjMIrDFiT3zE+lcxghzlMw1K6tqsEoYKK7Kp0AUDXvScLozBpSXTHV0L8UMopiwU4apfP6gkEmBn4cCU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org; spf=pass smtp.mailfrom=linaro.org; dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b=qvBlp5ou; arc=none smtp.client-ip=209.85.128.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=linaro.org
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=linaro.org
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="PPXkcpsD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB821C19421;
-	Sat, 21 Mar 2026 15:30:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774107048;
-	bh=piV2Fg42vYqtFS9ibkzMbE3g0iCeOEJCg9GsYcozZw4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=PPXkcpsDoqiZcU/hxEh4ulzd9ZeXlZ9G1laHeedXtr4mpd8dJhhHtBaAhXKDedgHV
-	 4FR5jyHRaJYVG52kq+cX9a+bV/2YvPlXhmZKfyPgHkgfNCW1SQAtXSqKfg8JxZQany
-	 X9n2nKUghnuNOzlITNAUSd8dNwb6X7h+Lx6yqP3F+nO22PRTHXVXxRE3OEhLo0iBSp
-	 DX0Boq4lxenQoM0SmL2CspUSsHFBRKH8VWJIuvmn/GHiOQuhw27blzs7o+tl/jljSL
-	 erJ2BwGT9pdphbmXSlXxha3szSvVO5ViHzTGM3t+SGR3sQe0P6Lv8qvo4AS4LPHgY+
-	 CIykHHflXbDpw==
-Date: Sat, 21 Mar 2026 15:30:40 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: David =?UTF-8?B?TWFyaW5vdmnEhw==?= <david.marinovic@pupin.rs>
-Cc: andriy.shevchenko@intel.com, dlechner@baylibre.com, nuno.sa@analog.com,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- michael.hennerich@analog.com, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/3] iio: dac: ltc2632: add support for LTC2654 DAC
- family
-Message-ID: <20260321153040.2494aa9c@jic23-huawei>
-In-Reply-To: <20260320150957.105571-1-david.marinovic@pupin.rs>
-References: <20260318135736.91564-1-david.marinovic@pupin.rs>
-	<20260320150957.105571-1-david.marinovic@pupin.rs>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qvBlp5ou"
+Received: by mail-wm1-f48.google.com with SMTP id 5b1f17b1804b1-4852afd42ceso22128365e9.2
+        for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 08:32:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1774107165; x=1774711965; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=3dzHj/qPvXNDV/FPnpoktTjASNEPHELip3yFLAmvNe4=;
+        b=qvBlp5ouC9HF2+i1WYoqMCNHL704KtZdwxwbznzPxJzQKDJDoD3mvPYkNqeElCiW5S
+         22vO0K0NXjazLNVMKPuJCe67VsFzeTTHislSFzuuee3KLdiCTyCPvHHUE9BGsZYFbtgP
+         YADbMI6M3lLQyHKK9njZJw4AVvqk6wIeoP/oeIT/NvjdL99wzsskIw58GNmGfP2yxaWz
+         LpsGzkLuaaquwLGCHjE/664ebralh9b3mWUB1re8Tgx5eMkpp73mEUicA4L0nBuViAQN
+         Gwzd+7kf7ozeoJjlB28OiPtUm4Q9s0MjfAfCFjnKJCpsNgdRD8fPMboMOpwO8564OKIB
+         kN7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774107165; x=1774711965;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=3dzHj/qPvXNDV/FPnpoktTjASNEPHELip3yFLAmvNe4=;
+        b=HTZdpgeJNqfCjSBE+P/hFDU/X3ybtJBEVwaqNLnFxMUpQDRIzvSPNvA0GPlk6ylfWC
+         iMNMb1bg0mHt//ive4iSdrZDJjsNFPLvj4cnTb6O83Lnv125Sjp09P6TSr2b350Q2P6Q
+         iXS6wRlClNPYgNcYSqFX+WECTeA5vhv5nIELHe01jELZDmI9MZBW6MBJS72yS433YCUn
+         fYsVXv9PI7DvQBllV6IuxEqs6gH61CEJfa/sbr08SyjGurLudN8HPzeQTcVoA7uCdoyh
+         dr81iolPIpeQTzoBoo4ZVU2Z5sSbojpqsKJv4O6q9Fd7zG31tSu1fMIoxBISfIUuzFOb
+         m+jQ==
+X-Forwarded-Encrypted: i=1; AJvYcCXTOedvyOk4OvQfiYQpsslotYBf3AJJavTMwposEpBCNm6vIBRXn70W7W+KgUN6pIR7Y7RW6ekkYio=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzsX5T4Mo9SGFa3fDOoCUiojtXnMYwBZ4cvxrShYOd6bhu8PLhs
+	KMHdcKLm0Ih740k6B6YLGUW0z2MK1UhuSEt6dnG3OBP7Te3oK7co8JsprL55k1Ki3Ks=
+X-Gm-Gg: ATEYQzzV2HWT6e4OZHu1H5dwygLQNqo1sCEmk98fD4Tv3xieiDL879sMb1aqfP8NrPN
+	WJ53hts2YvA6gi0UNohfuBBt7KZB2FT/Fkubr6zdMveVZV+vBACLXezw291x6fgJU+dbwP5AeXN
+	Kxyq0zpnl+aMKN+hBZIQd96u6zlBICZM4xHcjX2AjfXPczRR5yLzhIkKU//FwOME4iUDUxYCw8x
+	9zVVrxf5HQNlXC0GNfX1b2N7eYh3zODW62yY1WRaCHVKtcGOqkhdXdaezAv+T2Db4Bt6XsUz0AN
+	Tu9zSZt5zZIv1haGhEPoQO950uZo/PZycPpqhgxlAuaYzyMhpOQeY0JiNjPX7xYvQWKOvEtiLnC
+	erAMltYUMptlGqF1Qtdnda2CkqeIJSTJPAQAurmHLdHJmQViNkiP6KBCGr7107IV9cQx42UbX4g
+	UqIrJWXvFfj2Pgs0RNZKP7Y5egC4QK
+X-Received: by 2002:a05:600c:a47:b0:486:fc46:be9e with SMTP id 5b1f17b1804b1-486fee265demr102213965e9.24.1774107164594;
+        Sat, 21 Mar 2026 08:32:44 -0700 (PDT)
+Received: from localhost ([196.207.164.177])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-487004e7bc4sm52580815e9.2.2026.03.21.08.32.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Mar 2026 08:32:44 -0700 (PDT)
+Date: Sat, 21 Mar 2026 18:32:41 +0300
+From: Dan Carpenter <dan.carpenter@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Gabriel Rondon <grondon@gmail.com>, lars@metafoo.de,
+	Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
+	andriy.shevchenko@intel.com, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/3] staging: iio: replace sprintf() with sysfs_emit()
+Message-ID: <ab66GQeWKck9rTSs@stanley.mountain>
+References: <20260319225719.73587-1-grondon@gmail.com>
+ <20260320222424.53294-1-grondon@gmail.com>
+ <20260321130307.7992dfb8@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260321130307.7992dfb8@jic23-huawei>
 
-On Fri, 20 Mar 2026 16:09:45 +0100
-David Marinovi=C4=87 <david.marinovic@pupin.rs> wrote:
+On Sat, Mar 21, 2026 at 01:03:07PM +0000, Jonathan Cameron wrote:
+> On Fri, 20 Mar 2026 22:24:21 +0000
+> Gabriel Rondon <grondon@gmail.com> wrote:
+> 
+> > Replace the remaining sprintf() calls with sysfs_emit() in sysfs
+> > show functions across three staging IIO drivers: ad7816, ad5933, and
+> > ad9834.
+> > 
+> > sysfs_emit() is the preferred API for sysfs callbacks as it is aware
+> > of the PAGE_SIZE buffer limit. Build tested with gcc 13.3.
+> > 
+> Firstly a process thing. Don't send a v2 in reply to a v1. It should
+> be a new email thread.  I'm not sure where this style is coming from
+> as I've never encountered any kernel subsystem who ask for it.
+> 
 
-> From: David Marinovic <david.marinovic@pupin.rs>
->=20
-> Greetings!
->=20
-> This is v3 of the LTC2654 DAC support patch series.
->=20
-> The LTC2654 is a quad-channel, 16-/12-bit DAC with internal
-> reference voltage and SPI interface, sharing the same 24-bit
-> SPI protocol as the LTC2632/2634/2636 family.
->=20
-> The LTC2654L-16 variant was tested on a Phytec phyCORE-STM32MP1
-> board with the DAC connected via SPI1. The driver probes successfully
-> and all 4 channels are accessible via IIO sysfs.
->=20
-Process comment.  Don't send new versions in reply to a previous one.
-It leads to them being well back in people's email history (depending
-on the client and how it gets sorted) and leads to hard to read threads.
+People used to do that in the early days of git, but now no one does.
+It breaks patchwork as well.
 
-Convention is new version, new email thread.
-
-Thanks,
-
-Jonathan
-
-> Changes in v3:
-> - Patch 1 unchanged
-> - DT bindings use fallback compatibles for LTC2654-L12 and
->   LTC2654-H12, which are register-compatible with LTC2634-L12
->   and LTC2634-H12
-> - LTC2654-L16 and LTC2654-H16 keep separate compatible strings
->   as no existing compatible supports 16-bit resolution
-> - 12-bit variants reuse existing LTC2634 chip_info structures,
->   so only two new chip_info structures are added for 16-bit variants
->=20
->=20
-> David Marinovic (3):
->   iio: dac: ltc2632: drop enum and use individual chip_info objects
->   dt-bindings: iio: dac: ltc2632: add LTC2654 compatible strings
->   iio: dac: ltc2632: add support for LTC2654 DAC family
->=20
->  .../bindings/iio/dac/lltc,ltc2632.yaml        |  12 +-
->  drivers/iio/dac/ltc2632.c                     | 367 +++++++++---------
->  2 files changed, 188 insertions(+), 191 deletions(-)
->=20
+regards,
+dan carpenter
 
