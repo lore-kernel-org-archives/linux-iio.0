@@ -1,32 +1,32 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2796763B9;
-	Sat, 21 Mar 2026 11:13:49 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7241D2D238F;
+	Sat, 21 Mar 2026 11:18:16 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774091630; cv=none; b=aOm/gbH6eAPmpbTjslor/f2gPRC6LczkDOTtMmkCJG6VOz3W3huPdwTHvB9LFv+mkjM39zBSc2NAMSYVJfuf12rWPzBMwy3aosRApFJEiOdI/Fg+YU19+V34S8VxbNrOh9PnWq7tSduT7QRHw3YFI+dfPRJ5TKhUFEFQREVFJNY=
+	t=1774091896; cv=none; b=ObsNrlSPeQc8WjyXWDOSrMa3umuHrQzWtXeyAxdgatSpHcVNeZ+4HR94PvUMxyjZP4p+S0MPbyUy77Ib5/Y952MIDpoTi+lWC/Iv4NrdweC4UPA+0SwFlFEohSgzZnqk9cRAF16EKtvWzEMPo3xhiBi2Y57XebhSRgw8AlGNWg4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774091630; c=relaxed/simple;
-	bh=53V1pIvWmB6t0KYEz8odqeK8jbi64ra6rOegoksrkU4=;
+	s=arc-20240116; t=1774091896; c=relaxed/simple;
+	bh=qbYquSJfO9VMqn9CRha7gwGHpjSWth4q692EvWenxlg=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=mXhEibsFHEQY6+X2QBH37DcpIUwdXyIYqLhaN/35oX7qqcGMN+wsfAla9hCl97SrESqbZw4PX8Mu71zkijHr8gxDg+OHVH2GXFwbrOF1KKXcNCUSGaIezN7uYFp9G4QKBDlF0AE3hn9YVrOLksSgczCL0/6PROmz4cPYKAH4YEw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=EKfebOYv; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=fllTgoByL8wdCmUJjuTCfRHuqDRc45nR/tRtxiA0ZmyVyb7/UvlwiGk9BGi/1peza8FockHww+ip1s4Mq8LR+PqcTudrBr3ecmfGFIgFtonSQuRMhx7L8bIvmlmhGUwtN/6aoKDu6wvM1aHda5yu2/1V6Pcnus0nphJ8Ba9RwYQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=jihw5ck/; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="EKfebOYv"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61B73C19421;
-	Sat, 21 Mar 2026 11:13:44 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="jihw5ck/"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B71AFC19421;
+	Sat, 21 Mar 2026 11:18:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774091629;
-	bh=53V1pIvWmB6t0KYEz8odqeK8jbi64ra6rOegoksrkU4=;
+	s=k20201202; t=1774091896;
+	bh=qbYquSJfO9VMqn9CRha7gwGHpjSWth4q692EvWenxlg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=EKfebOYvcrrZI5iAWbIh9jxzfnduopvCjEKX5YHfMxBAIqgwkhcikR6fwJnz+Pf1F
-	 6D/LTc0L3ghMoDhHX4G1obQWuHvKZt3/p7pxJrSDJqZA2xGzNxcATRzE/2mplVblfP
-	 nZUkeutRHfTQL2AOaPfeeOz9UG502dbWhuGq0GLxSV1rCfzN/dgQbmH6U4iGFBA2Q0
-	 h8A1TFV0RKqemKO1/S01tf/gGANyzSpn8NbE3JkN5BTowQNmjK/b1OBKUBg32nf6CC
-	 dkM57+9kLo8hNnC5m5hvEFBFLpyR21nvwuH/BMpfzC+gyIuH/YBGZkkbcw3jtnzMLz
-	 JfAbams/Haskw==
-Date: Sat, 21 Mar 2026 11:13:39 +0000
+	b=jihw5ck/wlYr3GVKEJJcAFT8LbWB5N3xvwM2grtT+2mSXdc6Yw3p/FhIZ+98A7aks
+	 5rP9NIS5wj2q3pIU4p1iYebV05OC3oxukRJJ5O7HUTn4v1WH1mOmcUKXAdQx+N/PuB
+	 RWkZePMZ/2sWnGLL9cXfIvi3ELMduOxIYJRWgVKC047ZIAYGk95QR4NsQvJR/DvExc
+	 WhEFJ00vtBwRbFEKs3ErSEUmF2NIefNz0NZM7TH7hnktMmdW9xmQ01Z0GJFtdq6KuN
+	 plKtJ2cGtKzm9/E+c5yX13xqo1LwSFfLpjCpr/sJm0gf/SNGxxv47WnD0ZLkx2Jn0r
+	 uVuscLg+cv1wQ==
+Date: Sat, 21 Mar 2026 11:18:05 +0000
 From: Jonathan Cameron <jic23@kernel.org>
 To: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Cc: Michael Hennerich <michael.hennerich@analog.com>, Marcelo Schmitt
@@ -37,12 +37,12 @@ Cc: Michael Hennerich <michael.hennerich@analog.com>, Marcelo Schmitt
  <petre.rodan@subdimension.ro>, Jorge Marques <jorge.marques@analog.com>,
  <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
  <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 1/4] iio: accel: adxl372: introduce chip_info
- structure
-Message-ID: <20260321111339.0704b83c@jic23-huawei>
-In-Reply-To: <20260321100729.2440-2-antoniu.miclaus@analog.com>
+Subject: Re: [PATCH v4 3/4] iio: accel: adxl372: factor out buffer and
+ trigger setup
+Message-ID: <20260321111805.0acc00c6@jic23-huawei>
+In-Reply-To: <20260321100729.2440-4-antoniu.miclaus@analog.com>
 References: <20260321100729.2440-1-antoniu.miclaus@analog.com>
-	<20260321100729.2440-2-antoniu.miclaus@analog.com>
+	<20260321100729.2440-4-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -53,29 +53,156 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Sat, 21 Mar 2026 12:04:56 +0200
+On Sat, 21 Mar 2026 12:04:58 +0200
 Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-> Introduce a chip_info structure to parameterize device-specific
-> properties such as ODR/bandwidth frequency tables, activity/inactivity
-> timer scale factors, and the maximum ODR value. This refactors the
-> driver to use chip_info lookups instead of hardcoded values, preparing
-> the driver to support multiple device variants.
-> 
-> The sampling_frequency and filter_low_pass_3db_frequency available
-> attributes are switched from custom sysfs callbacks to read_avail()
-> based handling via info_mask_shared_by_type_available. This enforces
-> consistent formatting through the IIO framework and makes the values
-> accessible to in-kernel consumers.
-
-I'd slightly have preferred that as a precursor patch, but never mind
-it's not too bad in here.  So this is more of a comment for 'next
-time' than anything to bother fixing for this series.
-
-> 
-> The SPI/I2C probe functions are updated to pass a chip_info pointer
-> instead of a device name string.
+> Extract the triggered buffer, trigger allocation, and IRQ request
+> logic from adxl372_probe() into a dedicated adxl372_buffer_setup()
+> helper. This reduces the probe function complexity and prepares for
+> conditionally disabling buffer support on device variants with
+> known FIFO issues.
 > 
 > No functional change intended.
 > 
 > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+A couple of comments, but all about stuff you've simply moved, so not
+asking for changes (though if you respin for other reasons, good
+to tidy up the line wrap).
+
+Jonathan
+
+> ---
+> Changes in v4:
+>  - Use 'if (ret)' instead of 'if (ret < 0)' for
+>    devm_iio_trigger_register() and devm_iio_triggered_buffer_setup_ext()
+>    return checks in adxl372_buffer_setup().
+> 
+>  drivers/iio/accel/adxl372.c | 94 ++++++++++++++++++++-----------------
+>  1 file changed, 51 insertions(+), 43 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
+> index b34b91cae753..6fd4fe0ec1d9 100644
+> --- a/drivers/iio/accel/adxl372.c
+> +++ b/drivers/iio/accel/adxl372.c
+> @@ -1193,6 +1193,56 @@ bool adxl372_readable_noinc_reg(struct device *dev, unsigned int reg)
+>  }
+>  EXPORT_SYMBOL_NS_GPL(adxl372_readable_noinc_reg, "IIO_ADXL372");
+>  
+> +static int adxl372_buffer_setup(struct iio_dev *indio_dev)
+> +{
+> +	struct adxl372_state *st = iio_priv(indio_dev);
+> +	struct device *dev = st->dev;
+> +	int ret;
+> +
+> +	ret = devm_iio_triggered_buffer_setup_ext(dev,
+> +						  indio_dev, NULL,
+Not sure why this wrapping (was in original code too)
+I might move these two up a line whilst applying.
+
+> +						  adxl372_trigger_handler,
+> +						  IIO_BUFFER_DIRECTION_IN,
+> +						  &adxl372_buffer_ops,
+> +						  adxl372_fifo_attributes);
+> +	if (ret)
+> +		return ret;
+> +
+> +	if (!st->irq)
+> +		return 0;
+> +
+> +	st->dready_trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
+> +						 indio_dev->name,
+> +						 iio_device_id(indio_dev));
+> +	if (!st->dready_trig)
+> +		return -ENOMEM;
+> +
+> +	st->peak_datardy_trig = devm_iio_trigger_alloc(dev, "%s-dev%d-peak",
+> +						       indio_dev->name,
+> +						       iio_device_id(indio_dev));
+> +	if (!st->peak_datardy_trig)
+> +		return -ENOMEM;
+> +
+> +	st->dready_trig->ops = &adxl372_trigger_ops;
+> +	st->peak_datardy_trig->ops = &adxl372_peak_data_trigger_ops;
+
+In original code so not something to fix in this patch, but odd mix
+of dready and datardy naming. I think they are both related to data
+being ready.  Either form is fine, but having both used in adjacent
+lines of code not so much!  If you have time to make that consistent
+in a follow up series that would be good.
+
+> +	iio_trigger_set_drvdata(st->dready_trig, indio_dev);
+> +	iio_trigger_set_drvdata(st->peak_datardy_trig, indio_dev);
+> +	ret = devm_iio_trigger_register(dev, st->dready_trig);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_iio_trigger_register(dev, st->peak_datardy_trig);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->trig = iio_trigger_get(st->dready_trig);
+> +
+> +	return devm_request_irq(dev, st->irq,
+> +				iio_trigger_generic_data_rdy_poll,
+> +				IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
+> +				indio_dev->name, st->dready_trig);
+> +}
+> +
+>  int adxl372_probe(struct device *dev, struct regmap *regmap,
+>  		  int irq, const struct adxl372_chip_info *chip_info)
+>  {
+> @@ -1227,52 +1277,10 @@ int adxl372_probe(struct device *dev, struct regmap *regmap,
+>  		return ret;
+>  	}
+>  
+> -	ret = devm_iio_triggered_buffer_setup_ext(dev,
+> -						  indio_dev, NULL,
+> -						  adxl372_trigger_handler,
+> -						  IIO_BUFFER_DIRECTION_IN,
+> -						  &adxl372_buffer_ops,
+> -						  adxl372_fifo_attributes);
+> +	ret = adxl372_buffer_setup(indio_dev);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	if (st->irq) {
+> -		st->dready_trig = devm_iio_trigger_alloc(dev,
+> -							 "%s-dev%d",
+> -							 indio_dev->name,
+> -							 iio_device_id(indio_dev));
+> -		if (st->dready_trig == NULL)
+> -			return -ENOMEM;
+> -
+> -		st->peak_datardy_trig = devm_iio_trigger_alloc(dev,
+> -							       "%s-dev%d-peak",
+> -							       indio_dev->name,
+> -							       iio_device_id(indio_dev));
+> -		if (!st->peak_datardy_trig)
+> -			return -ENOMEM;
+> -
+> -		st->dready_trig->ops = &adxl372_trigger_ops;
+> -		st->peak_datardy_trig->ops = &adxl372_peak_data_trigger_ops;
+> -		iio_trigger_set_drvdata(st->dready_trig, indio_dev);
+> -		iio_trigger_set_drvdata(st->peak_datardy_trig, indio_dev);
+> -		ret = devm_iio_trigger_register(dev, st->dready_trig);
+> -		if (ret < 0)
+> -			return ret;
+> -
+> -		ret = devm_iio_trigger_register(dev, st->peak_datardy_trig);
+> -		if (ret < 0)
+> -			return ret;
+> -
+> -		indio_dev->trig = iio_trigger_get(st->dready_trig);
+> -
+> -		ret = devm_request_irq(dev, st->irq,
+> -				       iio_trigger_generic_data_rdy_poll,
+> -				       IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
+> -				       indio_dev->name, st->dready_trig);
+> -		if (ret < 0)
+> -			return ret;
+> -	}
+> -
+>  	return devm_iio_device_register(dev, indio_dev);
+>  }
+>  EXPORT_SYMBOL_NS_GPL(adxl372_probe, "IIO_ADXL372");
+
