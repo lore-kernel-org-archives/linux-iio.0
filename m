@@ -1,55 +1,75 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DE720307AE3
-	for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 18:13:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0AA6C307AE3
+	for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 18:13:44 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774116823; cv=none; b=dGF/0cF3HS4o5xu/hSvyNlLenHpwKHQrCNLmZ34Jm6j9ckZHizl1sIFfPGWuUz1vcVeW/6M/REWKhHqP87d9/h8LhVNkac4WMzZWm+tX0ParTl+37uncHMQzzx+0KRo8ru5PKrDqSU9YQxA3pz6x0KhmekMaIziEw/R+Q5TDQA0=
+	t=1774116825; cv=none; b=s1NyVPXw1D6wG+r5W+HdiusJg9SUvls/Z53ak/4mCogCixuQrS0JmAAPb00Glu8FbG7UI8+Noeae1/n0nSi7ZBdviwGsqTjrVG6QExonzrCmN6nIFESDCjgpkNKr+HXyQvOpK8nMRfhOa/RMNne9v+jso3fSC5ZFnAqPwy+oJt0=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774116823; c=relaxed/simple;
-	bh=fpVl7mAhM8hC9Pw8sUtZ9DSqHZ6xYvIGbsJFtP2lrH8=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=L/+i6ChMWjjwnbac0yrKkTqMdeT21jTBbAPidTnIU3PAqBzjr6EY5O/njgKKb0WJDH0wabuLVe7HL7myi5ln+6Pp5Zc0m0nU6UxFgqdqfWLZh5pv4I6b15gHHaue9v+rWYrtVeXR7zFBOhAISSp6+3Y+de+XrEhgS440oxNUIsU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XypgAqzi; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774116825; c=relaxed/simple;
+	bh=HblOacMnMjipqaqNVenMFVdAKz+1XGcsKzJQALWW0Hk=;
+	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=Dmu4/pqJX0EvdJWUrmEuPOF3wZaLcvWOXB7nIiJpLOlu3QITmcL76jnWCeh5w03rRxsI6M0NnqqkUitfesQVKTO03edxvILKHEQB6AlM/4eJXqpw9CWsWlyjoLY5e6N805YMgxBSV7qxirm94LGNl5I9tUr8+sO9FZlB9yJTvus=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Mb3IskpM; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XypgAqzi"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 572C2C19421;
-	Sat, 21 Mar 2026 18:13:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Mb3IskpM"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id D527DC2BCB0
+	for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 18:13:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774116823;
-	bh=fpVl7mAhM8hC9Pw8sUtZ9DSqHZ6xYvIGbsJFtP2lrH8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=XypgAqzi8GuYv0VURAXYqWgyAMj5AUKClzquQsc1lGlWuAFXbh1Ta5GwhLFmiwjqm
-	 eNaY/uZEc8UCtoRZgbQz72slDJMIJZBv0mKB9lCSHkts/PToHsvrrzpTKbJmGSV9vp
-	 MqmBFraVuoygKtKfh9aERO2NbCoC/k5tfo+A9U1FR4Zyov6282FJ/wMHGNxZihTGQs
-	 woZimELp306TqwvrXaTf/olVoZjfY2af4ZQzBtWjbZf7rCMKq+X2+bgrGejPNPtrTG
-	 j2oUc2DE48SJw3Pf2eV4czvm+pG2NALvQYES+tFWcHJ9Q1sx0vV3XX3TIT60OudIE6
-	 PRNfu9YTHP6Fw==
-Date: Sat, 21 Mar 2026 18:13:37 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: bugzilla-daemon@kernel.org
-Cc: linux-iio@vger.kernel.org
-Subject: Re: [Bug 221256] New: On Boot - WARNING: kernel/irq/manage.c:1502
- at __setup_irq+0x5bb/0x800, CPU#7: iio-sensor-prox/932
-Message-ID: <20260321181337.2addac95@jic23-huawei>
+	s=k20201202; t=1774116824;
+	bh=HblOacMnMjipqaqNVenMFVdAKz+1XGcsKzJQALWW0Hk=;
+	h=From:To:Subject:Date:In-Reply-To:References:From;
+	b=Mb3IskpMg8eeBxiw4FlHcdT8oqkRFznDfyU0iiGGDUI+DWu3xr9lh5cagd3fKVihm
+	 /UignaSJ68tmXTWjkkIwFvZ3ag94/iSxefcXF/lILoNcXFrfQD+f7K87xhs+HXXHSB
+	 kTMJPShrZeIzAD3I0MzwaTKBFWqiGHQZ44ICt6tF3ztbTCKkSnT8PMCQRI3HNGpFQn
+	 AlS2tulKaO+R2OI+slPX4eun9UHu1/5LUjQXFUZJfQCuZSbsMyOpowCTnnpGlCM92R
+	 CibvMyugA2LgAIyQpQga/E0Y55SoMIVeS4GGJWojAhfApK1i6CbUyfpDIsPJ77f5tD
+	 uvn2Geg7vHQVA==
+Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
+	id C7F63C41614; Sat, 21 Mar 2026 18:13:44 +0000 (UTC)
+From: bugzilla-daemon@kernel.org
+To: linux-iio@vger.kernel.org
+Subject: [Bug 221256] On Boot - WARNING: kernel/irq/manage.c:1502 at
+ __setup_irq+0x5bb/0x800, CPU#7: iio-sensor-prox/932
+Date: Sat, 21 Mar 2026 18:13:44 +0000
+X-Bugzilla-Reason: None
+X-Bugzilla-Type: changed
+X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
+X-Bugzilla-Product: Drivers
+X-Bugzilla-Component: IIO
+X-Bugzilla-Version: 2.5
+X-Bugzilla-Keywords: 
+X-Bugzilla-Severity: high
+X-Bugzilla-Who: jic23@kernel.org
+X-Bugzilla-Status: NEW
+X-Bugzilla-Resolution: 
+X-Bugzilla-Priority: P3
+X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
+X-Bugzilla-Flags: 
+X-Bugzilla-Changed-Fields: 
+Message-ID: <bug-221256-217253-mBJq3tt1tM@https.bugzilla.kernel.org/>
 In-Reply-To: <bug-221256-217253@https.bugzilla.kernel.org/>
 References: <bug-221256-217253@https.bugzilla.kernel.org/>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Bugzilla-URL: https://bugzilla.kernel.org/
+Auto-Submitted: auto-generated
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 
+https://bugzilla.kernel.org/show_bug.cgi?id=3D221256
+
+--- Comment #2 from Jonathan Cameron (jic23@kernel.org) ---
 On Wed, 18 Mar 2026 10:10:29 +0000
 bugzilla-daemon@kernel.org wrote:
 
-> https://bugzilla.kernel.org/show_bug.cgi?id=221256
-> 
+> https://bugzilla.kernel.org/show_bug.cgi?id=3D221256
+>=20
 >             Bug ID: 221256
 >            Summary: On Boot - WARNING: kernel/irq/manage.c:1502 at
 >                     __setup_irq+0x5bb/0x800, CPU#7: iio-sensor-prox/932
@@ -64,23 +84,29 @@ bugzilla-daemon@kernel.org wrote:
 >           Assignee: drivers_iio@kernel-bugs.kernel.org
 >           Reporter: alain.cousinie@laposte.net
 >         Regression: No
-> 
+>=20
 > Since the beginning of 7.0 rc1 to rc4, I have had a boot error.
 > (I recompile the kernel with each RC release)
-> 
+>=20
 > [    7.425262] ------------[ cut here ]------------
-> [    7.425264] WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x5bb/0x800,
+> [    7.425264] WARNING: kernel/irq/manage.c:1502 at __setup_irq+0x5bb/0x8=
+00,
 > CPU#7: iio-sensor-prox/932
-> [    7.425270] Modules linked in: bnep at24 ee1004 spd5118 nls_ascii nls_cp437
-> vfat fat snd_ctl_led snd_soc_skl_hda_dsp(+) snd_soc_intel_sof_board_helpers
+> [    7.425270] Modules linked in: bnep at24 ee1004 spd5118 nls_ascii
+> nls_cp437
+> vfat fat snd_ctl_led snd_soc_skl_hda_dsp(+) snd_soc_intel_sof_board_helpe=
+rs
 > snd_sof_probes snd_soc_intel_hda_dsp_common snd_hda_codec_intelhdmi
 > snd_hda_codec_hdmi snd_hda_codec_alc269 snd_hda_codec_realtek_lib
 > snd_hda_scodec_component snd_hda_codec_generic snd_soc_dmic snd_hda_intel
 > snd_sof_pci_intel_mtl snd_sof_intel_hda_generic soundwire_intel
-> soundwire_generic_allocation snd_sof_intel_hda_sdw_bpt snd_sof_intel_hda_common
-> snd_soc_hdac_hda snd_sof_intel_hda_mlink snd_sof_intel_hda soundwire_cadence
+> soundwire_generic_allocation snd_sof_intel_hda_sdw_bpt
+> snd_sof_intel_hda_common
+> snd_soc_hdac_hda snd_sof_intel_hda_mlink snd_sof_intel_hda soundwire_cade=
+nce
 > snd_sof_pci snd_sof_xtensa_dsp intel_uncore_frequency snd_soc_sdw_utils
-> intel_uncore_frequency_common x86_pkg_temp_thermal snd_sof intel_powerclamp
+> intel_uncore_frequency_common x86_pkg_temp_thermal snd_sof intel_powercla=
+mp
 > coretemp iwlmld snd_sof_utils snd_hda_ext_core kvm_intel snd_hda_codec
 > snd_hda_core mac80211 kvm snd_intel_dspcfg snd_hda_scodec_cs35l41_spi
 > regmap_spi snd_intel_sdw_acpi snd_soc_acpi_intel_match
@@ -92,10 +118,13 @@ bugzilla-daemon@kernel.org wrote:
 > snd_compress btbcm aesni_intel firmware_attributes_class ac97_bus btintel
 > snd_pcm_dmaengine snd_hda_scodec_cs35l41_i2c cfg80211 gf128mul
 > snd_hda_scodec_cs35l41 hp_wmi snd_pcm snd_soc_cs_amp_lib bluetooth spi_nor
-> hid_sensor_magn_3d hid_sensor_accel_3d hid_sensor_gyro_3d hid_sensor_rotation
+> hid_sensor_magn_3d hid_sensor_accel_3d hid_sensor_gyro_3d hid_sensor_rota=
+tion
 > snd_soc_cs35l41_lib hid_sensor_trigger wmi_bmof snd_timer cs_dsp
-> processor_thermal_device_pci hid_sensor_iio_common pcspkr mtd intel_vpu ov08x40
-> industrialio_triggered_buffer processor_thermal_device kfifo_buf snd mei_me
+> processor_thermal_device_pci hid_sensor_iio_common pcspkr mtd intel_vpu
+> ov08x40
+> industrialio_triggered_buffer processor_thermal_device kfifo_buf snd mei_=
+me
 > industrialio v4l2_fwnode intel_skl_int3472_tps68470 tps68470_regulator
 > processor_thermal_wt_hint v4l2_async mei clk_tps68470 soundcore
 > drm_shmem_helper rfkill serial_multi_instantiate videodev
@@ -103,28 +132,39 @@ bugzilla-daemon@kernel.org wrote:
 > platform_profile processor_thermal_rfim mc
 > [    7.425325]  processor_thermal_rapl intel_skl_int3472_discrete
 > intel_skl_int3472_common intel_rapl_common joydev processor_thermal_wt_req
-> pmt_telemetry intel_ipu6 processor_thermal_power_floor acpi_tad pmt_discovery
+> pmt_telemetry intel_ipu6 processor_thermal_power_floor acpi_tad pmt_disco=
+very
 > int3403_thermal processor_thermal_mbox intel_hid pmt_class ipu_bridge
-> int340x_thermal_zone sparse_keymap intel_pmc_ssram_telemetry soc_button_array
-> acpi_pad ac igen6_edac button evdev binfmt_misc parport_pc ppdev lp parport
+> int340x_thermal_zone sparse_keymap intel_pmc_ssram_telemetry soc_button_a=
+rray
+> acpi_pad ac igen6_edac button evdev binfmt_misc parport_pc ppdev lp parpo=
+rt
 > i2c_dev msr nvme_fabrics efi_pstore nfnetlink efivarfs autofs4 uhci_hcd
-> ehci_pci ehci_hcd xe drm_ttm_helper drm_suballoc_helper gpu_sched drm_gpuvm
-> drm_exec configfs drm_gpusvm_helper hid_sensor_custom hid_sensor_hub usbhid
+> ehci_pci ehci_hcd xe drm_ttm_helper drm_suballoc_helper gpu_sched drm_gpu=
+vm
+> drm_exec configfs drm_gpusvm_helper hid_sensor_custom hid_sensor_hub usbh=
+id
 > intel_ishtp_hid i915 hid_multitouch i2c_algo_bit drm_buddy ttm
-> drm_display_helper xhci_pci hid_generic xhci_hcd cec nvme i2c_hid_acpi i2c_hid
+> drm_display_helper xhci_pci hid_generic xhci_hcd cec nvme i2c_hid_acpi
+> i2c_hid
 > rc_core nvme_core ucsi_acpi psmouse hid drm_client_lib typec_ucsi iTCO_wdt
 > drm_kms_helper intel_pmc_bxt typec watchdog video intel_ish_ipc roles
 > nvme_keyring serio_raw drm usbcore thunderbolt nvme_auth int3400_thermal
 > battery
-> [    7.425359]  intel_ishtp i2c_i801 wmi intel_lpss_pci hkdf acpi_thermal_rel
+> [    7.425359]  intel_ishtp i2c_i801 wmi intel_lpss_pci hkdf acpi_thermal=
+_rel
 > fan intel_lpss i2c_smbus usb_common intel_vsec idma64
 > [    7.425366] CPU: 7 UID: 0 PID: 932 Comm: iio-sensor-prox Not tainted
-> 7.0.0-rc4-meteor #1 PREEMPT(full) 
-> [    7.425368] Hardware name: HP HP Spectre x360 2-in-1 Laptop 14-eu0xxx/8C15,
+> 7.0.0-rc4-meteor #1 PREEMPT(full)=20
+> [    7.425368] Hardware name: HP HP Spectre x360 2-in-1 Laptop
+> 14-eu0xxx/8C15,
 > BIOS F.16 12/16/2025
 > [    7.425368] RIP: 0010:__setup_irq+0x5bb/0x800
-> [    7.425370] Code: 94 24 f0 00 00 00 e9 cb fe ff ff b8 01 00 00 00 48 c7 c2
-> ff ff ff ff f3 48 0f bc d2 c4 e2 e9 f7 c0 49 89 47 48 e9 86 fd ff ff <0f> 0b f6
+> [    7.425370] Code: 94 24 f0 00 00 00 e9 cb fe ff ff b8 01 00 00 00 48 c=
+7 c2
+> ff ff ff ff f3 48 0f bc d2 c4 e2 e9 f7 c0 49 89 47 48 e9 86 fd ff ff <0f>=
+ 0b
+> f6
 > c6 80 75 70 81 e2 00 00 01 00 0f 85 c5 fa ff ff 66 90 49
 > [    7.425371] RSP: 0018:ffffd1b2c740bb58 EFLAGS: 00010246
 > [    7.425373] RAX: 0000000000002000 RBX: ffff8d7942c91700 RCX:
@@ -164,8 +204,11 @@ bugzilla-daemon@kernel.org wrote:
 > [    7.425423]  ? irq_exit_rcu+0x41/0xe0
 > [    7.425425]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
 > [    7.425427] RIP: 0033:0x7f6716b596be
-> [    7.425429] Code: 08 0f 85 15 47 ff ff 49 89 fb 48 89 f0 48 89 d7 48 89 ce
-> 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3> 90 48
+> [    7.425429] Code: 08 0f 85 15 47 ff ff 49 89 fb 48 89 f0 48 89 d7 48 8=
+9 ce
+> 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c3>=
+ 90
+> 48
 > 83 ec 08 bf 01 00 00 00 e8 a2 e5 05 00 bf 01 00 00 00 89
 > [    7.425430] RSP: 002b:00007fff3d532238 EFLAGS: 00000246 ORIG_RAX:
 > 0000000000000001
@@ -188,7 +231,8 @@ the tightening up of parameter checks on the irq_request functions.
 Bisection will tell you it was that change of checks rather than find
 the real problem.
 
-https://lore.kernel.org/all/20260220224514.471348-1-srinivas.pandruvada@linux.intel.com/
+https://lore.kernel.org/all/20260220224514.471348-1-srinivas.pandruvada@lin=
+ux.intel.com/
 would be my guess for what was hit here.  That's in a pull request waiting
 for GregKH to pick up and send on to Linus.
 
@@ -202,5 +246,10 @@ Jonathan
 
 
 
-> 
+>
 
+--=20
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are watching the assignee of the bug.=
