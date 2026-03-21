@@ -1,47 +1,48 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2F9412D6401;
-	Sat, 21 Mar 2026 12:42:45 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 694B12DECDE;
+	Sat, 21 Mar 2026 12:51:14 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774096965; cv=none; b=O37KfKHGf4oNL9nomfU/wESLpjmVLKofjjhUedvuYRhJ4KXQx6J9xkqakFFoKNHdwo4WB/pSRbJlrcdHXnSEwmpR27Cs50vdG4QnoBJvIfQKdUtk3TKk7TT5HWzpY1tHdNGO4/7xxMf7URYQtx36Dtj9ohK72dvcl4EsJCMTfi4=
+	t=1774097474; cv=none; b=pfQSrO5mjP8KV4mR4KwwXY3fut8jjHlHhCxrEk3SeUgYdqr2U3lMM4hPinfg005ogrKwkDu6yQ6qTyjDGIczdyyyLSsGRjlZDzct9Kc2kftjWqWFH7uYJd+Rwhpkq+mA7N+EkjiFNz2oLcvdW9ykdJoRV05WsOTLHvNtPx3Ryqo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774096965; c=relaxed/simple;
-	bh=MjYkdz9+L0pyMEt2KrtErEE8PXR6dETfF3AbkkP3hG0=;
+	s=arc-20240116; t=1774097474; c=relaxed/simple;
+	bh=0uSiGaUEZeo1zPFWtkVjiXOSFqTsLfKtS9gtjb25Gf4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=VL6u9KdM70mxAd9GHW5W2nwbtHXo7v27sDed9O+L0jC/SiIU5+Clgp8pbdHlFKOi66TqKrJ8pgRo11vSJarvmcmEqmQh0RfWTOM0SWLeUrJhyrxokVex3/cRaUp/AyPU9+XJM1DmlOn7wq4WnSvJcfQPp3wPI1rkQoNyxJ3ejYI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=i7ipOjvg; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=heYV5794qwjXp+5ntNPo5FY7E/p0EYjGlhZfoCQBkD1SA5b4vGiEZPYp93eemjoskpp/220dH1jSWdztLzX44mt544nIw06jfph3GwGS5Vg54AbfWt1OapgMGaZFBK2t9vDG2PdFQ2bdBYrAhCYPabI1/XFxfwKpsfDkYSOOWdU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Znk4sBiX; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="i7ipOjvg"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03A1BC19421;
-	Sat, 21 Mar 2026 12:42:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Znk4sBiX"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5259BC2BC9E;
+	Sat, 21 Mar 2026 12:51:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774096965;
-	bh=MjYkdz9+L0pyMEt2KrtErEE8PXR6dETfF3AbkkP3hG0=;
+	s=k20201202; t=1774097474;
+	bh=0uSiGaUEZeo1zPFWtkVjiXOSFqTsLfKtS9gtjb25Gf4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=i7ipOjvgSojBhyyQqFGUVKqo+FjYzHwF0TFIW5V+Wk2gTo85vTsLXCIjtTI9eDx4p
-	 ZYpbMgBAWf1eFANJ8Ngy7a8iPkRtkoHDQyOyN69enJXQo4+rtAjQ0723PYTYducVf0
-	 A29FpB4iZm+YL8iKb5/2o960t/mFyE8ukAklHkSdTrhCaLnuGL2ql40bzWiAYTowAP
-	 vd2AK+Sex0Mtu6gezG5bAp/DkUxFSW77SYgEAALPd4i65qwZz/jguxtAQAnxz6JSn8
-	 cXrjUTXtgrZC7k3+zNuOkV6C2dKbFf1gqAYXn63aJzqqIvDmRJXrByy2vzX0kiU1D0
-	 M2VyVOMD6v/XA==
-Date: Sat, 21 Mar 2026 12:42:35 +0000
+	b=Znk4sBiXr50TUsaGDiqLHCtNVIQI8Sw5w/5bfgu6FCSRdzpb6qHf5YfZKkoq/Rww5
+	 W83CFAkAcn24xiT6uCbsXA4pn0Byv+dy7kzUdJbQ9u8C5qPB9wBLa8AU3662iDgY5D
+	 m64/xfoElldoKwiwQfFfT8ZwsiPXdXJ9frXjUHWIi/pEBR+dGanrpHX8TXWolXnjHE
+	 +4RE0D04V8h7wVEIBtBDEUw/9jNd2YELq3S4hKfF2xWsxRZCvanD9N6b8nCz09Q/Hp
+	 Szp382dRpudkTK1vsEfzLoYRFBeaIsv0ZCz4qdFEOeWlcyep6Oy6B7rGTVGzUtuQMZ
+	 vjIkwYOVF2w7g==
+Date: Sat, 21 Mar 2026 12:51:03 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Erikas Bitovtas <xerikasxx@gmail.com>
-Cc: David Lechner <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?=
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, Peter Meerwald <pmeerw@pmeerw.net>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
- phone-devel@vger.kernel.org
-Subject: Re: [PATCH v6 1/8] dt-bindings: iio: light: vcnl4000: add
- regulators
-Message-ID: <20260321124235.1d07d486@jic23-huawei>
-In-Reply-To: <20260320-vcnl4000-regulators-v6-1-0d24d20b1a5b@gmail.com>
-References: <20260320-vcnl4000-regulators-v6-0-0d24d20b1a5b@gmail.com>
-	<20260320-vcnl4000-regulators-v6-1-0d24d20b1a5b@gmail.com>
+To: Carlos Jones Jr <carlosjr.jones@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, Liam Beguin
+ <liambeguin@gmail.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>, Tobias Sperling
+ <tobias.sperling@softing.com>, Jorge Marques <jorge.marques@analog.com>,
+ <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+ <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 1/3] iio: adc: ltc2309: introduce chip_info structure
+Message-ID: <20260321125103.516b984e@jic23-huawei>
+In-Reply-To: <20260320140819.191700-2-carlosjr.jones@analog.com>
+References: <20260320140819.191700-1-carlosjr.jones@analog.com>
+	<20260320140819.191700-2-carlosjr.jones@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -52,67 +53,134 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Fri, 20 Mar 2026 18:45:36 +0200
-Erikas Bitovtas <xerikasxx@gmail.com> wrote:
+On Fri, 20 Mar 2026 22:08:17 +0800
+Carlos Jones Jr <carlosjr.jones@analog.com> wrote:
 
-> These sensors can accept 2 supplies - one for the sensor and one for IR
-> LED [1]. Add supply properties for the sensor - 2 for the sensors and
-> one external, for their open drain interrupt line, to ensure the sensor
-> is powered on before proceeding with setup.
+> This is a preparatory patch that introduces a chip_info structure
+> to the LTC2309 driver to facilitate adding support for additional
+> chip variants with different channel configurations and timing
+> requirements.
 > 
-> [1] https://www.vishay.com/docs/84274/vcnl4040.pdf
+> The chip_info structure contains chip-specific data including
+> the channel specifications, number of channels, and read delay
+> timing. This change does not modify the existing LTC2309
+> functionality.
 > 
-> Reviewed-by: David Lechner <dlechner@baylibre.com>
-> Signed-off-by: Erikas Bitovtas <xerikasxx@gmail.com>
-> ---
->  .../devicetree/bindings/iio/light/vishay,vcnl4000.yaml     | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> index 2ba4d5de4ec4..516afef7a545 100644
-> --- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> +++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-> @@ -33,6 +33,17 @@ properties:
->    interrupts:
->      maxItems: 1
->  
-> +  vdd-supply:
-> +    description: Regulator providing power to the "VDD" pin.
-> +
-> +  vio-supply:
-> +    description: Regulator providing power for pull-up of the I/O lines.
-> +      Does not connect to the sensor directly, but is needed for the
-> +      correct operation of the I2C and interrupt lines.
+> Signed-off-by: Carlos Jones Jr <carlosjr.jones@analog.com>
+Hi Carlos,
 
-It's optional so I guess it doesn't matter, but whether this supply is
-needed of not is down to whether the SoC allows for pull up on the
-interrupt and I2C lines.  Some SoCs provide this (though it's been
-a while since I used one that did.).
+Firstly welcome to IIO!
 
-In other cases an external pull up is needed. It would feel
-odd to provide a supply for the pull up it was all hidden in the SoC.
-
-Anyhow, optional so we aren't forcing this anyway.
+A few comments inline. Some overlap with Andy's review.
 
 Jonathan
 
+> ---
+>  drivers/iio/adc/ltc2309.c | 24 ++++++++++++++++++++++--
+>  1 file changed, 22 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ltc2309.c b/drivers/iio/adc/ltc2309.c
+> index 5f0d947d0615..4ea25873398c 100644
+> --- a/drivers/iio/adc/ltc2309.c
+> +++ b/drivers/iio/adc/ltc2309.c
+> @@ -8,6 +8,7 @@
+>   * Copyright (c) 2023, Liam Beguin <liambeguin@gmail.com>
+>   */
+>  #include <linux/bitfield.h>
+> +#include <linux/delay.h>
+>  #include <linux/i2c.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/kernel.h>
+> @@ -26,18 +27,26 @@
+>  #define LTC2309_DIN_UNI		BIT(3)
+>  #define LTC2309_DIN_SLEEP	BIT(2)
+>  
+> +struct ltc2309_chip_info {
+> +	const struct iio_chan_spec *channels;
+
+We now have __counted_by_ptr so you can use that marking
+to make it explicit that num_channels is telling us how
+many elements channels has.
+
+> +	unsigned int num_channels;
+> +	unsigned int read_delay_us;
+> +};
+> +
+>  /**
+>   * struct ltc2309 - internal device data structure
+>   * @dev:	Device reference
+>   * @client:	I2C reference
+>   * @lock:	Lock to serialize data access
+>   * @vref_mv:	Internal voltage reference
+> + * @chip_info:	Chip-specific configuration data
+See below. Maybe more appropriate to copy the read_delay rather
+than keeping pointer to full structure around.
+
+
+>   */
+>  struct ltc2309 {
+>  	struct device		*dev;
+>  	struct i2c_client	*client;
+>  	struct mutex		lock; /* serialize data access */
+>  	int			vref_mv;
+> +	const struct ltc2309_chip_info *chip_info;
+>  };
+>  
+>  /* Order matches expected channel address, See datasheet Table 1. */
+> @@ -117,6 +126,10 @@ static int ltc2309_read_raw_channel(struct ltc2309 *ltc2309,
+>  		return ret;
+>  	}
+>  
+> +	if (ltc2309->chip_info->read_delay_us)
+> +		usleep_range(ltc2309->chip_info->read_delay_us,
+> +			     ltc2309->chip_info->read_delay_us * 2);
+
+Andy covered this. fsleep() provides standard tolerance on
+usleeps if we don't care about precise timing (and given it's a sleep
+we never get precise timing anyway!)
 
 > +
-> +  vled-supply:
-> +    description: Regulator providing power to the IR anode pin.
-> +
->    reg:
->      maxItems: 1
+>  	ret = i2c_master_recv(ltc2309->client, (char *)&buf, 2);
+>  	if (ret < 0) {
+>  		dev_err(ltc2309->dev, "i2c read failed: %pe\n", ERR_PTR(ret));
+> @@ -156,6 +169,12 @@ static const struct iio_info ltc2309_info = {
+>  	.read_raw = ltc2309_read_raw,
+>  };
 >  
-> @@ -54,6 +65,9 @@ examples:
->              compatible = "vishay,vcnl4200";
->              reg = <0x51>;
->              proximity-near-level = <220>;
-> +            vdd-supply = <&reg_vdd>;
-> +            vio-supply = <&reg_vio>;
-> +            vled-supply = <&reg_vled>;
->          };
->      };
->  ...
-> 
+> +static const struct ltc2309_chip_info ltc2309_chip_info = {
+> +	.channels = ltc2309_channels,
+> +	.num_channels = ARRAY_SIZE(ltc2309_channels),
+> +	.read_delay_us = 0,
+> +};
+> +
+>  static int ltc2309_probe(struct i2c_client *client)
+>  {
+>  	struct iio_dev *indio_dev;
+> @@ -169,11 +188,12 @@ static int ltc2309_probe(struct i2c_client *client)
+>  	ltc2309 = iio_priv(indio_dev);
+>  	ltc2309->dev = &indio_dev->dev;
+>  	ltc2309->client = client;
+> +	ltc2309->chip_info = &ltc2309_chip_info;
+
+Given only the read_delay_us is used after probe, I'd add a variable for
+that and copy just that value over.  If you have other changes that
+are coming in the near future that will add more fields to the structure
+that are needed after probe, then fine to leave it as you have it
+(but add a mention in the commit message).
+
+
+>  
+>  	indio_dev->name = "ltc2309";
+
+Given we try to present the actual device name in sysfs, I'd expect to see the
+name coming from the chip_info structure as well.
+
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> -	indio_dev->channels = ltc2309_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(ltc2309_channels);
+> +	indio_dev->channels = ltc2309->chip_info->channels;
+> +	indio_dev->num_channels = ltc2309->chip_info->num_channels;
+>  	indio_dev->info = &ltc2309_info;
+>  
+>  	ret = devm_regulator_get_enable_read_voltage(&client->dev, "vref");
 
