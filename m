@@ -1,98 +1,86 @@
-Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2E9C82236E8
-	for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 16:32:47 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.45
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38CB5258EC2
+	for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 16:53:40 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774110769; cv=none; b=q0G3CnbYskM+8jZSZwfBdzeLwn9Ap/dJTYkki0mELZ8vAY1WsmLcMc8qbUv2BLPM1zBIOLjY19/OdlVRXR52nzbeouU/oIm8rtX4NhfaHhmrsO9pQ+WNUBgtxplC3NozCSVIvmPZ9kDhUyIEjVxL9Tn7U3vPxhW5XUEDZqKo+JE=
+	t=1774112021; cv=none; b=T+SI4dgJTQQ/ELTdeglIpuiirXlYDVlEW5ab732+V33DLyDc8j+NjAIaCYEr4SPVDOpVYK8nEQt4PiyMkSA/uI1nDWvwv3jNX/qfBbiF27OY6twNse8FHgjRFQ7o0mjD380c6IBa3eMN1eOELpJd+g5XQYU2tQdQOOLYiniOG2w=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774110769; c=relaxed/simple;
-	bh=51vCU2JKcnieIWsD8YQCefsAJtC6XXkN7CUpD28t8cY=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=CmU806eKwaUa5c2SKPGQYKVcJOv9mFecDC6Ofuq6omtROPopaVKjEhB26xccp3OWcfCOkp0psu0gHBSfdm0ooTRc34szT/Rzidg/jKmEdlFtcte0CsDTgPoOJxqcc1LnOgN3D6YKxCv9A5B6+IRnAJ9A+3cvTof9NDZ8AeTGt4c=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=uulFcl5P; arc=none smtp.client-ip=209.85.210.45
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	s=arc-20240116; t=1774112021; c=relaxed/simple;
+	bh=dAT4XoTqM4srLRTVT7YpxKj02oAsnu7R0+7Qkkkd2cM=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:MIME-Version:
+	 Content-Type:Content-Disposition; b=ATmR4R4K3OJ02b360s1GAoRfnTCw/diWAIMfHRMzarnYnboj1mQftkb3hN2/vm+nCGdfw1aEUER791GfRmsTq+qCukjyq1PFxDcTZMiZCCOF4T85ATdDynPatOaDvhN+AWiocgmVC1N4bUu0y5xwGD7f6aFmrbWmEpeCB3v5s3Y=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O6eUQctv; arc=none smtp.client-ip=209.85.221.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="uulFcl5P"
-Received: by mail-ot1-f45.google.com with SMTP id 46e09a7af769-7d55b97f358so1906465a34.3
-        for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 09:32:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O6eUQctv"
+Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-439cd6b0aedso1901194f8f.1
+        for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 09:53:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774110766; x=1774715566; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=XtwhrQ2gjpZhQ+N5aLTaxEqh+xigBy2WpOl/KG2IX60=;
-        b=uulFcl5Pv2mgJ34NHLw5llA6hsg8OnVyMP7QSIqvyQJLBYTkXH0BgYN0oO/ra2XbIE
-         si+S4ojPblpOjDIaC7DqcsWoFe/bAAAIt4fHporfh/G4Vu3tVjxPwosZ8gt097uUodnz
-         LxRV7yAnt+/JAutKXyqwt9Yu1NoMr65YcIVZD4cxi/c4TaJhaKMhMrZpANfyyJdIuEF9
-         kBdJNl/6KxwzLKWkFHCZu7+nmsCIWIWJpXuDmTy2G17tRI3qIiPkTgYM1OCNylpFVC1c
-         GjewfTiknzJ4y9GDlP3z+YRqUMALS7FiZxsvAL49plih5qfVIleaoF442u+5949WEx5z
-         xkPw==
+        d=gmail.com; s=20230601; t=1774112019; x=1774716819; darn=vger.kernel.org;
+        h=content-disposition:mime-version:in-reply-to:message-id:subject:cc
+         :to:from:date:from:to:cc:subject:date:message-id:reply-to;
+        bh=dAT4XoTqM4srLRTVT7YpxKj02oAsnu7R0+7Qkkkd2cM=;
+        b=O6eUQctvThGkJQto0jMFcGdx+qu9CvU3JXrubgcIEHlBczDkKHYs2/2UoSJzVa3xEY
+         J0PrSlmmrVgH5hlkdAzAA0ToW5wh/vaM+43C+sPnbDAvP8Nk4cYK5ffoUEDt6lP5Y0YL
+         LErJYz8vnkC1OGp6n9RbJABescCkYdej9kBhalPyGimEDbxOJo0wZ8EcnPDdfuHs8aZ7
+         w3I9Z/T8UlHndIHnsprIUXHr6bk7OAaI3H4PyWJJdk5jL4uDBLK6o8avGZwL1GTomiyC
+         jYqGbImthEkzKTCJTy5ePLujsFHQjyTW0uZCGOHDVVNZ1J+v7iHv4gnLyg3EeCiudQPu
+         VOfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774110766; x=1774715566;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=XtwhrQ2gjpZhQ+N5aLTaxEqh+xigBy2WpOl/KG2IX60=;
-        b=sS18RKH0GXG7XVOfwHquSHTqIgHOJoyYL//OhiCw4UVzuE0sHwby9ShqQG8eqNqCwv
-         WstUHWniDD4r0BhXXiLoTNwKo19CzQChsrMz4NQeTq4zJyFFqnGNQG4GxlLrId9Urayq
-         Ywm542IAwgxgFVXB6Kd3RYymf2W/joCAZx4PHCUZyrJIxbo0EFFPI4OFOIW89jErEXtB
-         X8kjxJR+u/A1sBJGspqxwhaeGWHgfn1nahSIsRxTO1G18Lp/9OYlGssGzFt5rxHNkvaO
-         2PFahOKcTJU/pnkGksKI3B7sXbyXb/rtRAyRJKh8rQMsB5/kFdNr9ncxZ7fLAIy+3Uv0
-         nRxQ==
-X-Forwarded-Encrypted: i=1; AJvYcCXzjdJoAfR1/90u0DlzSSQn60AvSpTnI+Sj1xh0rn3fDLKC6P+gjxsDm8erSZD3nWINHNP4qNLEzS4=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yw1lrgc5BGevqRgFR+7JKerfblnPrNARd5H8kFk2OzvUYnzTv/Q
-	mJUyakgGHzYIg2522sc+hRBwGlsXh3zLbKY6hyCphG1zKBx7hu78vmYU2dOXi/n/gFQ=
-X-Gm-Gg: ATEYQzw1gFt5ke3F0XasiVZVQ2kZhKpnDWVxLU9r/T2dY+XyeQilTDQ2C25LIgVmgER
-	5mIhul/rkW0iR1qjAI5xkjYX6dNsKXDFon5VSP6MbwRr+K3mbvj0/A4K2HdG0cpo2fFUy2DTqRo
-	JE7dLZlK6hG9GQj7XTNDO+DaaLNeSmgEVYgcrDeLKvAOhu9JByuPUXuekX4E8WMdPehW2U+2hrX
-	ZJnxkRlHhrv4mJx7BH/VKP0XFY1w3YYkJiueZcbn750LLK5ZpRTZmIeE972ipMb3ZmWVuiT2wbn
-	C9z9KEJw+7suO1DfCfPlVsmSrRGIAHPM+T3+XGbwOBm4vXyD2Fzmn/hdTIsh4bighLRqGxFOUv3
-	mayOrJQjZ23WjzZREN6Ji7YiCcZgmTXUDLa43SYOVLPoTFb0VNQcaNig2fW5yiWJpQRsOgND9t9
-	RbnmG8WyKYXfGXrywsLMSZTIFRp2yiTL70vdLyK5aMGVJNZibF0qjHYyra7KpIhsEOQUY2J75rJ
-	w==
-X-Received: by 2002:a05:6830:81c9:b0:7d7:de7f:1216 with SMTP id 46e09a7af769-7d7eb05988cmr4010495a34.34.1774110766143;
-        Sat, 21 Mar 2026 09:32:46 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:8e89:f58e:e4e6:5567? ([2600:8803:e7e4:500:8e89:f58e:e4e6:5567])
-        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d7eaa025dcsm5323038a34.0.2026.03.21.09.32.45
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 21 Mar 2026 09:32:45 -0700 (PDT)
-Message-ID: <fcab4c63-4055-4aab-8cb7-16cdbb917c23@baylibre.com>
-Date: Sat, 21 Mar 2026 11:32:44 -0500
+        d=1e100.net; s=20251104; t=1774112019; x=1774716819;
+        h=content-disposition:mime-version:in-reply-to:message-id:subject:cc
+         :to:from:date:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=dAT4XoTqM4srLRTVT7YpxKj02oAsnu7R0+7Qkkkd2cM=;
+        b=HQKWv0NzlCRE6UMMDSBHJmaRYXxwbKVhWu/Esi+eSOgGmYxBh76hfuEyscdZDDeWoe
+         v/sPESveZvwcRzHu1k9zt9KWhyIhahJtIqR6K5Twix6Iow3WQbDI7hOgV/2LBq/CesLO
+         71oUn5IXcc+uv30AoOpQymV36Uvq45Tok+tWcvfMdAYR6Hu/sjuWYORTJD4a+2TLNKpw
+         QK8eQSrVXsdq/0m2Z4UPASVmQP9x/7VnDNdgHYPQLwQSunVWPoW85Hmd/yK7Ip3Ii0Q+
+         X8ew4IMcT1RjCFAgS3n7p0F3N/N5jHHlKXG7aur2kozN2bCdPB320V1pTeRKFMsNvI50
+         FqEQ==
+X-Gm-Message-State: AOJu0YxsEK9TcaLPRIJqbo498upFV4H0Vc4MAGrv+TlNhVjQA2O+7FAd
+	zQigdfs3uf+aG62faI1C8XNSgQs7r8cRqdrUA9qKuabX6IyoXLSSMjCF
+X-Gm-Gg: ATEYQzzHvob7yiQJKNCoCyeAiNVJCT92BMrMOE/laYlPZ8GTK1DPnTjBPcPtKujLtFH
+	vaStzbeOJIqLLhk66lkLvfPM6SxtA8VjhB/FS5O1EGb12Io9xnXbMop+dhUW6zuKjiBWcj5XeEt
+	7DE0G1c2T9dnAQhxMRaLAcFGnagpFmSSQjpvefKOQyN3UfLZfxEJB2Pm/w+H/qsAil9yMoc/DWn
+	ifUJI7ryFSVjbkGYhe2fAsdZh4ReVWB+9MRuTe1VwuXP22ypBzP0agtbdve1yioiJpdQWm2XT6i
+	90ztPiHA5jsMp9ryzTHOYhuik0HSBs3Eb44YtYxQVzc0cckuhS/Z13KfmlGHdJaEJ17i3M0pSbR
+	QcAAyroOeOTX87erqs9Rk4S58bGHbeE5h7WManeVGOTJiJ8YXTlzvCoYa86jD0jM4r7XpUabpr4
+	NVsHDrbgThAqb4nfr82VThrOhwqsHRcVTplEi0Kg==
+X-Received: by 2002:a05:6000:290b:b0:43b:576b:5dca with SMTP id ffacd0b85a97d-43b642442f9mr11136246f8f.16.1774112018381;
+        Sat, 21 Mar 2026 09:53:38 -0700 (PDT)
+Received: from MacBookPro ([2001:8a0:6c9b:a000:bc11:6b0a:79ed:3d9f])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b644bf1c5sm16128103f8f.14.2026.03.21.09.53.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 21 Mar 2026 09:53:37 -0700 (PDT)
+Date: Sat, 21 Mar 2026 16:53:36 +0000
+From: Gabriel Rondon <grondon@gmail.com>
+To: andriy.shevchenko@linux.intel.com
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, 
+	linux-staging@lists.linux.dev
+Subject: Re: [PATCH 2/3] staging: iio: ad5933: use sysfs_emit() in show
+ functions
+Message-ID: <ab7NEIlXcg3BMmE8@MacBookPro>
+In-Reply-To: <ab0BHU8zNOUIAcJf@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 08/14] iio: resolver: fix typo from degredation to
- degradation
-To: ShiHao <i.shihao.999@gmail.com>, jic23@kernel.org
-Cc: andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20260316090023.14691-1-i.shihao.999@gmail.com>
- <20260316090023.14691-9-i.shihao.999@gmail.com>
- <abgt1yoYTnQEiAlk@ashevche-desk.local> <abguXZJjIXMdqcU5@ashevche-desk.local>
- <abqsaI6-hznIv7dO@fedora> <abq7g-9GnQaFc_1K@ashevche-desk.local>
- <ab6HPnoJZLocFIMW@fedora>
-Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <ab6HPnoJZLocFIMW@fedora>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 
-On 3/21/26 6:55 AM, ShiHao wrote:
-> Hey everyone,
-> 
->     Just checking again, is this patch series  rejected?
->     Do i need to send it again? 
-> 
-> Best regards
-> Shihao
+Hi Andy,
 
-Please give maintainers a week or two to respond. They don't have time to
-answer emails every day. And sometimes they even go on vacation. :-)
+Thanks for the review.
 
+I didn't tackle the switch resplit or the modern _avail patterns since
+those would be a larger effort toward graduating the driver to
+read_raw/write_raw/read_avail.
+
+Thanks,
+Gabriel
