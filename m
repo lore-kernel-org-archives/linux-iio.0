@@ -1,76 +1,101 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5FC20126F0A;
-	Sat, 21 Mar 2026 13:17:03 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 38174248873;
+	Sat, 21 Mar 2026 13:39:11 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774099023; cv=none; b=LsdIxf/on6Cdcci85pmDQmLzuPZ4XOJc/VniTTDjms7UcrwQjY/VAFwxL4fM1yQdrvx/5iVRep6p8AHDXcSjpVeqyEsPv3/4u/7pJ1E6KgLY71eEKi4BWvOUoDFcgqmFXoc3/Rg0wlhhZnOdI/pQ+gPjgqX/l2qcl9yPYKUsxQs=
+	t=1774100352; cv=none; b=HoqAJ8KwqILBuK42s+mFel9+VYJxQG8BoitjZJym6XyX+mzKCneN4DU8zhNcwG3z9jSxBCNTQrTVw8dNQww1a5Jny8X8uS4u1WTnmm7Q2JkLPsEYyECfdQVBDvSyHfxQttG+zUKKZ/lq8iPCG93PB46QMfmi0XjCTaYKHLCC8gc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774099023; c=relaxed/simple;
-	bh=WF5auv/jBaIBbAoJsBJO1yMRyYxEKbm687NQkpETNuk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=eOXxSqUsxM+N+22Hd+1lx4nAdZqSUeFFqH5Xi0r95YRI5ia/St4XQvoH11Z8xaDQwD6/CYQGJ436Rb+8bHOLaUJbAq64ZxMoJza0dRbJg2Jx5SX5rUTTxJTT7sAvDpmkYDaLglSXG0pK2SuY4ZZGrEkXZ4V4RFjV2MNRBrRr6CE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AGO7t/ic; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774100352; c=relaxed/simple;
+	bh=xJ2lQrO0ZwDcMWLil9O0PUiVGgTL0OmU3iujFi/H2JY=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=IiVbTRytR1zo++YM1KBFGXAp+0gAg50+Phlav6EAUu6zcP9ocuHDOr3f9ny0qi2tIkS1BVdteXQvydx+bP1Rzn0F54GJ4K4CbxcgLPFW8sWb/1aJAUUgpBfl9GGSwsSuCM2/R49//Me2Z+xeK0qszWWzJup8VUyhZDTi6/PVaBQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CjqRKp4u; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AGO7t/ic"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E9D3C19421;
-	Sat, 21 Mar 2026 13:16:58 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CjqRKp4u"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D25B3C2BC9E;
+	Sat, 21 Mar 2026 13:39:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774099022;
-	bh=WF5auv/jBaIBbAoJsBJO1yMRyYxEKbm687NQkpETNuk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=AGO7t/icTbVmLoaPDN0SSFByhDIT6xe+7Rgq+e+iOeivvmA8EibiLTgXmkznKhFlO
-	 42IcC0/vkEVSnQ7CPqw3gCiL84YHpqF1cxvgs9PUr6M9jQpsGQf6Ykf6Kg88o6TxA3
-	 NbeQXayFY0rf9Ybo/uEWRE4TPecrpn4gc3+bXYba6UIJpVbonDQd2LeApQRQuj528O
-	 h0OwCs/Slfe2yyMWZSoiuZBYl3z5s8EklHVdofNTSWztWiChkRQ2xC/aiwIViSWv88
-	 KQzkxxoXH44Xmn3T+iCzQ0B3zZm2HZrQR52nfb3M8t+sXaVDIuiyPCDR70CKd8QuG3
-	 jtJ6QmLfkrI0A==
-Date: Sat, 21 Mar 2026 13:16:52 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Gabriel Rondon <grondon@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
- gregkh@linuxfoundation.org, andriy.shevchenko@intel.com,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org,
- linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 3/3] staging: iio: ad9834: use sysfs_emit() and
- simplify show functions
-Message-ID: <20260321131652.2f25dec0@jic23-huawei>
-In-Reply-To: <20260320222424.53294-4-grondon@gmail.com>
-References: <20260319225719.73587-1-grondon@gmail.com>
-	<20260320222424.53294-1-grondon@gmail.com>
-	<20260320222424.53294-4-grondon@gmail.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	s=k20201202; t=1774100351;
+	bh=xJ2lQrO0ZwDcMWLil9O0PUiVGgTL0OmU3iujFi/H2JY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=CjqRKp4uN/O6EvthI+WXozPjjZfqoZq9vwj1axeEVe+oRHgKYZX9ao8JUm1aQSwNs
+	 PqZsDl1hkQV+bp6v8eVuzyYz2YHQKifmMPWJjuTUEUCnd5hGC24a9Jaq6QSG1SOkcV
+	 pQ21reEYRIdMTtNWS+u9qa3JujGBPq2KpIkzf4L1T1GBsRtuPK2dFJfVBlnc+fCunE
+	 pB5lXcd3bJzsx3qEP3382+R8xcE73LkUAeaKTm2ZrsU8mB9TCWMqmheruNHm5oMWCM
+	 R6FHBELzjU6SFHKupLO2KZh/Avv8OB6JxSFbm/lZ2gfkfSElEgMeywsY1zOVzLp8ga
+	 iwjC7cvexZE3Q==
+From: William Breathitt Gray <wbg@kernel.org>
+To: Daniel Lezcano <daniel.lezcano@linaro.org>
+Cc: William Breathitt Gray <wbg@kernel.org>,
+	Frank.li@nxp.com,
+	robh@kernel.org,
+	conor+dt@kernel.org,
+	krzk+dt@kernel.org,
+	s32@nxp.com,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 1/3] counters: Reorder the Makefile
+Date: Sat, 21 Mar 2026 22:38:42 +0900
+Message-ID: <20260321133854.146974-1-wbg@kernel.org>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260113165220.1599038-2-daniel.lezcano@linaro.org>
+References: 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1864; i=wbg@kernel.org; h=from:subject; bh=xJ2lQrO0ZwDcMWLil9O0PUiVGgTL0OmU3iujFi/H2JY=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDJn75vsd4ZiYu0DYp/b7zOsHnmYufXWi/D5T0ZfO5Tcnh utM3sJa2VHKwiDGxSArpsjSa3727oNLqho/XszfBjOHlQlkCAMXpwBM5EAww38/QYdqlVlmnev0 Yu3S8j5LTZx/UUS27PTZ291lJ6oLSloZ/gc5cXhM3lz32sOGg19eJ8WL/+GtGVmOrTIr77UG3pA LYgQA
+X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
+Content-Transfer-Encoding: 8bit
 
-On Fri, 20 Mar 2026 22:24:24 +0000
-Gabriel Rondon <grondon@gmail.com> wrote:
-
-> Replace sprintf() with sysfs_emit() in sysfs attribute show functions.
-> sysfs_emit() is the preferred API for sysfs callbacks as it is aware
-> of the PAGE_SIZE buffer limit.
+On Tue, Jan 13, 2026 at 05:52:18PM +0100, Daniel Lezcano wrote:
+> The next changes provide a new driver. For the sake of clarity,
+> reorder the Makefile alphabetically.
 > 
-> Also simplify the wavetype_available show functions by removing
-> the intermediate string variable and returning directly from each
-> branch.
+> No functional changes intended.
 > 
-> Signed-off-by: Gabriel Rondon <grondon@gmail.com>
-Similar to patch 2, I suspect this code will go through a lot of changes
-if anyone does the work to move this driver out of staging.
+> Signed-off-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+> ---
+>  drivers/counter/Makefile | 20 +++++++++++---------
+>  1 file changed, 11 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
+> index fa3c1d08f706..40e644948e7a 100644
+> --- a/drivers/counter/Makefile
+> +++ b/drivers/counter/Makefile
+> @@ -6,14 +6,16 @@
+>  obj-$(CONFIG_COUNTER) += counter.o
+>  counter-y := counter-core.o counter-sysfs.o counter-chrdev.o
+> 
+> -obj-$(CONFIG_I8254)		+= i8254.o
+> -obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
+> +obj-$(CONFIG_104_QUAD_8)		+= 104-quad-8.o
+> +obj-$(CONFIG_FTM_QUADDEC)		+= ftm-quaddec.o
+> +obj-$(CONFIG_I8254)			+= i8254.o
+> +obj-$(CONFIG_INTEL_QEP)			+= intel-qep.o
+>  obj-$(CONFIG_INTERRUPT_CNT)		+= interrupt-cnt.o
+> -obj-$(CONFIG_RZ_MTU3_CNT)	+= rz-mtu3-cnt.o
+> -obj-$(CONFIG_STM32_TIMER_CNT)	+= stm32-timer-cnt.o
+> -obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
+> -obj-$(CONFIG_TI_EQEP)		+= ti-eqep.o
+> -obj-$(CONFIG_FTM_QUADDEC)	+= ftm-quaddec.o
+>  obj-$(CONFIG_MICROCHIP_TCB_CAPTURE)	+= microchip-tcb-capture.o
+> -obj-$(CONFIG_INTEL_QEP)		+= intel-qep.o
+> -obj-$(CONFIG_TI_ECAP_CAPTURE)	+= ti-ecap-capture.o
+> +obj-$(CONFIG_RZ_MTU3_CNT)		+= rz-mtu3-cnt.o
+> +obj-$(CONFIG_STM32_TIMER_CNT)		+= stm32-timer-cnt.o
+> +obj-$(CONFIG_STM32_LPTIMER_CNT)		+= stm32-lptimer-cnt.o
+> +obj-$(CONFIG_TI_ECAP_CAPTURE)		+= ti-ecap-capture.o
+> +obj-$(CONFIG_TI_EQEP)			+= ti-eqep.o
+> +
+> +
 
-So I'm applying this mostly to avoid anyone else sending patches
-to do the same!
+Those two empty lines at the end look superfluous; if you remove them
+and resubmit this patch separately I should be able to pick it up.
 
-Applied.
-
-Thanks,
-
-Jonathan
+William Breathitt Gray
