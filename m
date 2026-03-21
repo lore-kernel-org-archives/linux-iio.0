@@ -1,45 +1,42 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8922929BDBF;
-	Sat, 21 Mar 2026 19:22:46 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6CB70320CCC;
+	Sat, 21 Mar 2026 19:24:01 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774120966; cv=none; b=C0NnKoe2MhzEkTisd2ETuxFzY+Fwnm4jY0BAIFoWhaFwTBb5gYvDCc97WVssFyVS4zf4VzgTZKDW3qGSE/wF6BUS1eeowaNJBa9QIDhPOG3j4l4NIOMfVeFxm7rVmWSRQFuYz12AQIkIGOzr6/siRW/eP8kHuYh7iDjYhwWVvZA=
+	t=1774121041; cv=none; b=HyAWfVt8kKYqxQN1vKiYi34Jy7dzdwu9y8IaWhsQlPydJ8KMX1urgj5ryuRelUgDaZ4UMFg6s45nydTFpql25FZF4G+H/TryPyc1AXQPGineRwNinzpSJ4VNt+1WMPb4ilb9mm5pc0e9zih7NcCmzyM2RE1GwYGzF727mjKKkk8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774120966; c=relaxed/simple;
-	bh=e7VAalkhOLnFKgoU+NXYRE948Y4LrUHN4uORvxOWnzg=;
+	s=arc-20240116; t=1774121041; c=relaxed/simple;
+	bh=ISZZ8oBNm9qPdMpJhhI9CuZ1rwjTyS0mlHF1jgAqV68=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=gPt8W9ufxybdrf6EwjhzXtiRWvHZBQAZh8SVS1nG2pcHWVtuBb+ZQ9MYiy0r2YtBT/A2RiGVxskBQr25xkIJWUQB/5Q1MniGQ3r0kMqsG8+j4sv1dvm8VUsJHULLnkLE+9CPrOFb7iuZGzlXeccq/lDsbL/wlBR3XNjDa7h5iis=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QZ1Yddmb; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=LnRL0mIseC79UgQAW/wEnGGP9oIQx7VSOvnHHGDV8ENgm6p/x4GfMbQpY9n6Y71qgeXUbD6aelDm+dS+DUHIP2NUtcIkBdUJMfQe9bkeR7Tm6JPUEcH9mf2qhVlZHrDMohM/sbDTy7hC4tG8uFhdr8u9AV452BXaKqvUTnp2HXs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Z2fyJGw0; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QZ1Yddmb"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAA60C19421;
-	Sat, 21 Mar 2026 19:22:42 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Z2fyJGw0"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DCE18C19421;
+	Sat, 21 Mar 2026 19:23:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774120966;
-	bh=e7VAalkhOLnFKgoU+NXYRE948Y4LrUHN4uORvxOWnzg=;
+	s=k20201202; t=1774121041;
+	bh=ISZZ8oBNm9qPdMpJhhI9CuZ1rwjTyS0mlHF1jgAqV68=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QZ1YddmbymqtuAyWfko/yaP+ACEDw7TmC/6CoXohWoEZljtLLv9UjFz/bIwKGLew2
-	 npQ+9bOrrSPKmoWmzm6zVr8GzP6/5B8ZrVx8xOj4rW3r/aqAsKWeUCecrirhK8FXA1
-	 WGoaeBwyYmSD1WUDfY/dNSssuqQv9coRdH7vw9Z4cMPESxi5H6jb6ybL0JFl9ARWQ0
-	 By42yYtD3YcQ7M3+4JTg8M9X2+ojvpa766DbGasukzgz9bLtGlq8JP/bKLL25XjWuw
-	 XIvSPfIVuNZuqzFboT9cW7kAPsFNdveuvMF6ReDCkcMNR3xY/QoQzE0frlopnhP/YI
-	 /0URkthqAoBuQ==
-Date: Sat, 21 Mar 2026 19:22:37 +0000
+	b=Z2fyJGw03bWoXy1GZyl5EH+6WWxQJ+2J9diYh7Gl9gbkRbNE2JgrCSZNzmIuQryZa
+	 M0wVTlF0bYQ7zo+Sjaql+Ijj2eibGL6y6Q/fN61Yd7XbIQG3ijORNG8TCC1J+2ClWF
+	 zqaR1V95Dtx/nY6MSEHQTM8PUMOWo4N5BVYmJ0F4/+xV/evlgRtIVTrhay0qJTZ8CV
+	 Rnzq+QcXIMh3EZSJ/1Cro8eqE7rvXCjejif4XK/ZwzTbkIEuF1iGaGBKM6NPuPUAza
+	 am6TEhAx+aYIq/6O5SsgLlUkp5ABZUWrFudhDfP4v13VPu4dQK8Zu712Y5nnxUouMh
+	 pKgBVcwRmq7og==
+Date: Sat, 21 Mar 2026 19:23:52 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Shi Hao <i.shihao.999@gmail.com>, andy@kernel.org,
- dlechner@baylibre.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, mazziesaccount@gmail.com, nuno.sa@analog.com
-Subject: Re: [PATCH v5 08/14] iio: resolver: fix typo from degredation to
- degradation
-Message-ID: <20260321192237.1863e3bd@jic23-huawei>
-In-Reply-To: <abguXZJjIXMdqcU5@ashevche-desk.local>
+To: Shi Hao <i.shihao.999@gmail.com>
+Cc: andriy.shevchenko@intel.com, andy@kernel.org, dlechner@baylibre.com,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ mazziesaccount@gmail.com, nuno.sa@analog.com
+Subject: Re: [PATCH v5 09/14] iio: temp: fix spelling mistakes in comments
+Message-ID: <20260321192352.2f231769@jic23-huawei>
+In-Reply-To: <20260316090023.14691-10-i.shihao.999@gmail.com>
 References: <20260316090023.14691-1-i.shihao.999@gmail.com>
-	<20260316090023.14691-9-i.shihao.999@gmail.com>
-	<abgt1yoYTnQEiAlk@ashevche-desk.local>
-	<abguXZJjIXMdqcU5@ashevche-desk.local>
+	<20260316090023.14691-10-i.shihao.999@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,39 +47,17 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Mon, 16 Mar 2026 18:22:53 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+On Mon, 16 Mar 2026 14:30:17 +0530
+Shi Hao <i.shihao.999@gmail.com> wrote:
 
-> On Mon, Mar 16, 2026 at 06:20:44PM +0200, Andy Shevchenko wrote:
-> > On Mon, Mar 16, 2026 at 02:30:16PM +0530, Shi Hao wrote:  
-> > > Fix incorrect spelling from degredation to degradation.  
+> Fix spelling mistakes in comments.
 > 
-> ...
+> - catched -> caught
+> - chanel -> channel
 > 
-> > > 		/* Sine/cosine DOS overrange fault.*/  
-> > 
-> > Side note: missing space after period. If this is a single issu in the entire
-> > folder, fix it here.  
-> 
-> No need to resend just for this. Let Jonathan decide what to do with it.
-There were two of them in this file.  I fixed those up whilst applying
-and tweaked the message to mention them.
-
-May well be others so that might be a useful follow up cleanup!
-
+> Signed-off-by: Shi Hao <i.shihao.999@gmail.com>
 Applied.
 
-Thanks
+Tah
 
-Jonathan
-
-> 
-> ...
-> 
-> > > -		/* Degredation of signal overrange threshold. */
-> > > +		/* Degradation of signal overrange threshold. */  
-> > 
-> > 
-> > (Left for the sake of context.)  
-> 
-
+J
