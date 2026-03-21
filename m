@@ -1,87 +1,126 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-oa1-f50.google.com (mail-oa1-f50.google.com [209.85.160.50])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5947E38D6BA;
-	Sat, 21 Mar 2026 15:55:39 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 61ED32F1FD0
+	for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 16:11:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.160.50
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774108539; cv=none; b=srlsuEXWi6Yw9mL9buTpAgWtVMX8+FWv638lvu1XoQ28J2/LacelmKOD2XSWLwqr5PQbK5fOZsciXudCNSF4SMzf6+zp1VdETeJz7yT5f6F3wiM2WEgmjuvpY/97GlF/r0Qc54i8q9KetDAfs5NjuHvLWj7hnLf2cue/As1AFBo=
+	t=1774109482; cv=none; b=u/N3OgspM4rM2d15wFeEsFBLNEIxIxVtUpbk9eOGDmQ0mWMTlbF9T9fGaU6Krz59yRZGoR+ac+XKo19JfpWY2UMIYj+f/taZklItb1VVZgY+Ahw+ZYLuIN/Uwi4y65ZEAc3Cx5Pm4cgpS6cdbG1UJ/r6rpzMIt1EBug/AnQduEM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774108539; c=relaxed/simple;
-	bh=VaQ+jymaIkSr+qqYgvztyRfgwS1httzGJjcJpYuXUFM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=oIlbS8yAg5Gi89P7aMSn2jZwE6omcZ+vDEBNCxJLUehN+KqrZld5ASsu9gBRwSjNCky0pC8hFXfQDp/hvJKzkzi+RnIyTOnV2JsL8a4LO5lIFaWMLeblRF8zs2p2yEPqe5i3EhIc9zu0fcJKpY2HKc0IkHrrOvy5YJt0SV620YQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=mXNtXisl; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774109482; c=relaxed/simple;
+	bh=Rf5h3AQOLeWbNsSTZIKH+4HXwvmOWLUEZ4Elupi7TOU=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=GcN6jM1XUNjjVMFFvJQ71oDCycjVqjdP5OU8sSXSu5wyHhi8vBQUDdIM7FaPkv9+/MV8fddCE4IwDz46eTaxu1e9guMSRNrKK/HxCBgEg470bWT2BXu5PQeoU/nOV5BxpnhYt0lJBV4ZZSS/CqgRqkAiINz5+Svn/NoUF9bD0ZY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=t7FfDnxv; arc=none smtp.client-ip=209.85.160.50
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="mXNtXisl"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FA88C19421;
-	Sat, 21 Mar 2026 15:55:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774108538;
-	bh=VaQ+jymaIkSr+qqYgvztyRfgwS1httzGJjcJpYuXUFM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=mXNtXislYpt5AgN1YT4WKzzFo17yISLzCPmblJP8xAlj5AFaPlkOw+W1EGLE6f2k3
-	 ard6ObR+aIHKYPqDR3DgMAQASQSmdP0olNdZJsvfNhKoDQRVEGhn36q4dk+3DzkaPc
-	 zOgxWnednT4czjId0HcRpgSv2vypjFZ8l5VorC54azriPyVSTNFynGudsHJd/e8EOJ
-	 u3YHITCwGB1ldcA1HOIAlwZOo/KQAcqmbVZaWndXTFD/p5W8sj9KQ1J7+h8kpi0q1E
-	 YN6EFTBYbjHdOlhiHYJScXw9eKWmYlB5jd4ceCUidcD8R1TGuFOIfLRcnRnV3mJ9RC
-	 xeLWd5dhAxCgA==
-Date: Sat, 21 Mar 2026 15:55:30 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Matheus Giarola <matheustpgiarola@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
- nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, matheusgiarola@usp.br, arthurpilone@usp.br,
- davidbtadokoro@ime.usp.br
-Subject: Re: [PATCH] iio: adc: ad7280a: replace mutex_lock() with
- guard(mutex)
-Message-ID: <20260321155530.27751a72@jic23-huawei>
-In-Reply-To: <20260319184615.10970-1-matheusgiarola@usp.br>
-References: <20260319184615.10970-1-matheusgiarola@usp.br>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="t7FfDnxv"
+Received: by mail-oa1-f50.google.com with SMTP id 586e51a60fabf-40429b1d8baso992323fac.0
+        for <linux-iio@vger.kernel.org>; Sat, 21 Mar 2026 09:11:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774109479; x=1774714279; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=ePBnLY2HsewubhlIjuJ77dk8XdKtMQwZQ4cBTDjuGuM=;
+        b=t7FfDnxv18XmM8nw3xqghoKvm7duSLaIJdcSHDcs5SVo2t5CzdnoABMUmhdUE1gp/N
+         tSL0SU55VVq1YUwl8mqbtYjAyDJMiHeuTMTuBDCyf0jy8cv5BvWOeXwWL7Nr+bp/RIYc
+         lu/mNg6i4GLVXCQ6LGmh3GD5cvnb15Zh779RX260mGhPTR/fN1hCb1nWOXUyNRBFC+X9
+         rx483XCPDzt119oiZoY6xfdyDzmm4T4KGuJ+wt3wUiWoEank+s01xFp+CY5vaAqCQSex
+         SdlCV35eYe7csjL49IakP0Fh52qs3b0F4lFjhIEBI+G2ak7gEJyuXaEP+/5imoogQXKj
+         i5/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774109479; x=1774714279;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=ePBnLY2HsewubhlIjuJ77dk8XdKtMQwZQ4cBTDjuGuM=;
+        b=o1gArcli8MrZDV1sH6p+ODS+y6KpramKEmh4gCN++luWCGKSVLgzoqv23QhrlcpoJ1
+         4TeTgPPxhcHFRlLhKXH609ZWGeWAURz4qjOtFktcznGGE8XGNypr+UGknhi7YsDyoCmP
+         EU7cOt9+IyJ/QRjczXET50IzwI0Hfq1II0cgCXb4Bhg7XWRFdKFzHvjko3pqaEmp3e6K
+         hfUkYBfTRrItaGqJZsrPQnk8ZN/flRvGndJVn/kHD3BQlFX+0lOO9ShxRtoPQQz1sKtw
+         PsLYBQCOeif05JR0JXrVZw7Kro7BjDKKAXRMcfsFOg+GytGPnBia8JR+LINaCHdbGUjX
+         PaHg==
+X-Gm-Message-State: AOJu0Yxpo1i+HJMj96tXzCu+KV9brJ4TBBIleQeSCBMm6X4geEFRnmzm
+	GFg3OBSPn+vKaExd9ADrKF/Qf4C7Q1aGZkEQgM8WULNGTGhLVE1nwjuSEYm/5bz4ksk=
+X-Gm-Gg: ATEYQzyr3UDSnFKgLl7xiGn/MqvuFo8rY/8Ij/laxievrkOdBWYwmREwtx06+xWtXY4
+	IHkXfqxDaQzjuzLXlwWemZjrdR7Wq7qYVyTUGvg8EDRBN+PIorjt2NeRAVKcD0cRHOcy59VGiNz
+	IU+6voi8qjvZ0z5wB32Foec6EkIxCkrBm+u+1nBmTeKx82WvdnmoxjtSrwtMWwqxqgVRODuHq04
+	uRZ95RAs34pN/GGT4f8xpH3cZx4t+jI0k+DhU6kNBQjK4RQcQVVbVHlVwL0iCulVOQEqpocbzHR
+	uMwckRpYTM140nk3RnurmGJsCc97fmKDhP6hsObChkVvKAdfGldt0UEB7ITo7h1bGnemBpbaN3D
+	4DRSwGEfz+WJ2IIv7tKzTUNUuPbjuFGQCFEUGf7qbMgYENrl2JsrNDFC+KqWS4IGoBthVN2NAEx
+	pZm9QfwCsBwfLYeMT27lupMoqS5pJLDd5vZt50xCTAMhem2N7TqEDEABRqwKLc5SxWVp6xdNSy5
+	Q==
+X-Received: by 2002:a05:6871:80d:b0:41c:1036:84b with SMTP id 586e51a60fabf-41c112440femr4336750fac.39.1774109479055;
+        Sat, 21 Mar 2026 09:11:19 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:8e89:f58e:e4e6:5567? ([2600:8803:e7e4:500:8e89:f58e:e4e6:5567])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-41c149103b0sm4635730fac.5.2026.03.21.09.11.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 21 Mar 2026 09:11:17 -0700 (PDT)
+Message-ID: <486fe1c2-3734-43ea-b7cd-7bbba2eeb891@baylibre.com>
+Date: Sat, 21 Mar 2026 11:11:16 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v4 1/4] dt-bindings: iio: adc: add AD4691 family
+To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+ Michael Hennerich <Michael.Hennerich@analog.com>,
+ Jonathan Cameron <jic23@kernel.org>, =?UTF-8?Q?Nuno_S=C3=A1?=
+ <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
+ Conor Dooley <conor+dt@kernel.org>, =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?=
+ <ukleinek@kernel.org>, Liam Girdwood <lgirdwood@gmail.com>,
+ Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+ Bartosz Golaszewski <brgl@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+ linux-gpio@vger.kernel.org
+References: <20260320-ad4692-multichannel-sar-adc-driver-v4-0-052c1050507a@analog.com>
+ <20260320-ad4692-multichannel-sar-adc-driver-v4-1-052c1050507a@analog.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260320-ad4692-multichannel-sar-adc-driver-v4-1-052c1050507a@analog.com>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 
-On Thu, 19 Mar 2026 15:46:15 -0300
-Matheus Giarola <matheustpgiarola@gmail.com> wrote:
-
-> Use guard(mutex) instead of mutex_lock()/mutex_unlock(),
-> ensuring the mutex is released automatically when leaving
-> the function scope. The change improves error handling and
-> avoids issues such as missing unlocks. It also simplifies the
-> code by removing 'err_unlock' label and several mutex_unlock()
-> calls.
+On 3/20/26 6:03 AM, Radu Sabau via B4 Relay wrote:
+> From: Radu Sabau <radu.sabau@analog.com>
 > 
-> Signed-off-by: Matheus Giarola <matheusgiarola@usp.br>
-Hi Matheus.
+> Add DT bindings for the Analog Devices AD4691 family of multichannel
+> SAR ADCs (AD4691, AD4692, AD4693, AD4694).
+> 
 
+...
 
-> @@ -885,13 +875,12 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (m) {
->  	case IIO_CHAN_INFO_RAW:
-> -		mutex_lock(&st->lock);
-> +		guard(mutex)(&st->lock);
+> +allOf:
+> +  # ref-supply and refin-supply are mutually exclusive, one is required
+> +  - oneOf:
+> +      - required:
+> +          - ref-supply
+> +      - required:
+> +          - refin-supply
+> +
+> +  # CNV Burst Mode (pwms present) without SPI offload requires a DRDY interrupt.
+> +  # Offload configurations expose '#trigger-source-cells' instead.
 
-Scope missing...
+This sounds like a current driver limitation, not a wiring limitation.
+So doesn't belong in the devicetree.
 
-Thanks,
+A driver could use e.g. timer wait for the conversion instead of an interrupt.
 
-Jonathan
-
->  		if (chan->address == AD7280A_ALL_CELLS)
->  			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
->  		else
->  			ret = ad7280_read_channel(st, chan->address >> 8,
->  						  chan->address & 0xFF);
-> -		mutex_unlock(&st->lock);
->  
->  		if (ret < 0)
->  			return ret;
-
+> +  - if:
+> +      required:
+> +        - pwms
+> +      not:
+> +        required:
+> +          - '#trigger-source-cells'
+> +    then:
+> +      required:
+> +        - interrupts
+> +
