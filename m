@@ -1,56 +1,56 @@
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+Received: from mx0b-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 2B0AC305047;
-	Sat, 21 Mar 2026 10:08:34 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 477362EC54C;
+	Sat, 21 Mar 2026 10:08:38 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774087718; cv=none; b=YR/60U95ZJQbWVP+bxwreel5xGxujwbd4ddl4UymbbcYDTf3dL6B37NZXK1rjylai5ZWEx0ewO9EDaXD89ZtMvixPRsbL7QtWGNEToE65z0Uckv8249ocLUThTfqgwQ3IAN1YNsRHE7nDkg3ixfwpD1OsJQcdz7Gl0ehQy4Cj9I=
+	t=1774087722; cv=none; b=PKWki34xupkMyiS3b4xxZe8SngCv4pAEkZgA19soSeoAsmdBbEzIpzS1WI+RXsPdP6C8CSY8rel3WeLmKMF91/VifChXNBk3M6ysmi6ZiOJVLEcDaMVXeYFWlvK6F2HLpnqmP2pr0eDhaNWby7QmZIBus9YvervCY2RAJXWnXyo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774087718; c=relaxed/simple;
-	bh=dUqHv1oKCUB6hZIxrLcH3JDuuPyQHCalSC/O1SBb1G8=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MWpLBQ1YuoWwRVNdFSYha+DbNhxPVvVf27rLUdSEGbP5dpBxHDHoKnOtMQf8VPHdGU40E5/Rmjd6suI3sz+TguXAgPAlsW6JIfFD0nWSBOaaDfiEcw5L3WZwwnqUzdiwZVxrV6WOcJ9DUJ9Da07nxic43cpKfmUw6Eq3CzgRfe0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=GkuR1HpK; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1774087722; c=relaxed/simple;
+	bh=i42kPBtMAxsdh94IYQ1R9RK00+hwdpG/RwU8nHWVIBQ=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=gQMkeCNtSFETFt3eAKo4/VW4i1mP+rVWQFuoOw29snBAX3MmbHM5BIzYNkIZcsJDQQQ8Ord+LA2ooo3k07cI973uhZ8k4UL0UaNJuGXgx+WGqe3X5rUS7L/Ar4KsVyCZwN7FzTjOg5Da5pUUUREzCoqRDO0fmxdRCYT+X6XMtkU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=05CB6g7Q; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="GkuR1HpK"
-Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62L4qURb3520948;
-	Sat, 21 Mar 2026 06:08:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
-	content-transfer-encoding:content-type:date:from:in-reply-to
-	:message-id:mime-version:references:subject:to; s=DKIM; bh=XE6Ms
-	10QoZAD1d+tBarrfI54kwBggNkCyFlg58aywqw=; b=GkuR1HpKICwbVyw6jzoEc
-	5X1FsfDTG8QYxYBNIJRcq61MgOV+fyIhur7LV897I89gr11MExOz0VQH37J4mmUi
-	LbXQZGySbtcqj2oz92GFFoSpBBmOpzMv2WlK7Dy46xK1mqK8DH2hsnacO1U57ksY
-	OcMfoKMVjtISbYQie9i0zWUrNGDNa7qVAjJo/O0jmQUq0f2p11HpyYr1sfOExCKv
-	OnnwY61nXpKmqmBm1TnFvcMkH4tTYSxb/MMgrYjCCLtwf25+i5m7lLgovxy3gxJ2
-	G3OXNULRunM00nV0NK5KluOyKRj5MIKKBxsCacqQrBL+/UR2/RKncpr76NIpGSFa
-	Q==
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="05CB6g7Q"
+Received: from pps.filterd (m0375855.ppops.net [127.0.0.1])
+	by mx0b-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62L4pgio4101438;
+	Sat, 21 Mar 2026 06:08:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=eICa/
+	2mAWhd/A9sXj7mNFrNn90mT+hl0T+qTC9TrGpY=; b=05CB6g7Q9KWQOvBHqqpUd
+	qwC/ClNTQjBq15Ox09QDONy3+pT10CL2fN9n9yR+9c88prH6qyDUaOnnawHUgQx8
+	fKtQEv0+cCNwKdgC42rgYpNtfbqF8l3tHQETZDmNvAPdgizlusk2x5M6YySaRy1/
+	CFwtJs/FEyHx8QR37IEyrNRCN72OyaQ3G863JkqVOhjYtkO68syHsh2Q5NwfXhym
+	xVI3T7hA1WcZvPnB+N4TLSGPVpHL0FY2wbOQrp9OYYhSVyVDUt9OlzteGanuI66Q
+	IXcM06STMO/dTyNx3OzwpGkBQd5nZBFocf2HG6L65mRtrss0xwqGQOSfJ+Hjwxqt
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cyx8m4std-1
+	by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 4cyxn24nc6-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Sat, 21 Mar 2026 06:08:12 -0400 (EDT)
+	Sat, 21 Mar 2026 06:08:18 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62LA8Bjt041644
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62LA8HAM041656
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Sat, 21 Mar 2026 06:08:12 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+	Sat, 21 Mar 2026 06:08:17 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
  ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Sat, 21 Mar 2026 06:08:11 -0400
+ 15.2.1748.37; Sat, 21 Mar 2026 06:08:17 -0400
 Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.1748.37; Sat, 21 Mar 2026 06:08:11 -0400
+ 15.2.1748.37; Sat, 21 Mar 2026 06:08:16 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Sat, 21 Mar 2026 06:08:11 -0400
+ Transport; Sat, 21 Mar 2026 06:08:16 -0400
 Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.226.156])
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62LA7nOJ016475;
-	Sat, 21 Mar 2026 06:08:03 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62LA7nOK016475;
+	Sat, 21 Mar 2026 06:08:07 -0400
 From: Antoniu Miclaus <antoniu.miclaus@analog.com>
 To: Michael Hennerich <michael.hennerich@analog.com>,
         Marcelo Schmitt
@@ -67,9 +67,10 @@ To: Michael Hennerich <michael.hennerich@analog.com>,
         Jorge Marques
 	<jorge.marques@analog.com>, <linux-iio@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v4 1/4] iio: accel: adxl372: introduce chip_info structure
-Date: Sat, 21 Mar 2026 12:04:56 +0200
-Message-ID: <20260321100729.2440-2-antoniu.miclaus@analog.com>
+CC: Conor Dooley <conor.dooley@microchip.com>
+Subject: [PATCH v4 2/4] dt-bindings: iio: accel: adi,adxl372: add ADXL371 compatible
+Date: Sat, 21 Mar 2026 12:04:57 +0200
+Message-ID: <20260321100729.2440-3-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.43.0
 In-Reply-To: <20260321100729.2440-1-antoniu.miclaus@analog.com>
 References: <20260321100729.2440-1-antoniu.miclaus@analog.com>
@@ -79,450 +80,101 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: ycOeIX1HnOoPf7tEuW4rctQH-k2iVFUi
-X-Proofpoint-GUID: ycOeIX1HnOoPf7tEuW4rctQH-k2iVFUi
-X-Authority-Analysis: v=2.4 cv=WfoBqkhX c=1 sm=1 tr=0 ts=69be6e0d cx=c_pps
+X-Authority-Analysis: v=2.4 cv=PejyRyhd c=1 sm=1 tr=0 ts=69be6e12 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
- a=OmVn7CZJonkx5R5zMQLL:22 a=gAnH3GRIAAAA:8 a=jxnvQMpmH7UaMOIg134A:9
- a=FHz5paCR_PjzkVn5qDnB:22
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzIxMDA4MiBTYWx0ZWRfXwNnpYPHa0fS9
- wu6f6FmEA8q9Wdydi1UtXlzrvvgm/m3vKVQ2B7tPr6dHIcqhL8cl5x3wqzrhNO3H68hqyDc3wNq
- pfZi8IL2W99mdZEmaxFWdxNCTwBLBY8uy59odbzKpaLYz06lsDsbBeLNqyDTPZ436QuIIjA+Ec2
- pN3phnhUw31Tgmer7NhwoqNaxOGJ9knWSYRVaTlc7fH8MhylovRi4bWoX7z9nrwcrC3mZYOi7Ux
- lE3il7LzFZPco4K6mv9yxl7tuA1OsY80msTHUnnaZ50+dUrnsplHndVKjBKBRbWTtzJUcMmyS2d
- AxWKR+qQvPcGwvpUZIoiC5Qb2unGPuSjK/4LJgDslW4irfLK2fA+aTl8pYXlp13miyDF1sTvvZJ
- Sm4odcmK4Yz04goMegxTRA1C/AeuqgawevzMKYV3FXmsP0zemQuoNecaWExp4HxVtqfdns35S6i
- +3gn2+4qlNolz3ozvIw==
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=N--XFCr6TIEc_64PeIT2:22 a=gEfo2CItAAAA:8
+ a=gAnH3GRIAAAA:8 a=XYAwZIGsAAAA:8 a=85po4vX9ZQbJAwHx--8A:9 a=3ZKOabzyN94A:10
+ a=QEXdDO2ut3YA:10 a=sptkURWiP4Gy88Gu7hUp:22 a=E8ToXWR_bxluHZ7gmE-Z:22
+X-Proofpoint-GUID: u2loBGukDEOOsBXnkTwoFMv_p8j8Tq_c
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzIxMDA4MiBTYWx0ZWRfXxoZMft3rknAx
+ q/N2UTd1a8kEl1rsBycQU+nhn61BtVTpE2jZ6jrQNIDw/j5mhe+HlsvDtdr2FoO3TXL8HVmJoDt
+ OgeNQ3o3ryfpVRWK+eUz2eKzgWYNM9ICBGvcVRKrMxBXQiAgMrZEPrzyMYTNvIJYVG+JAXYdXgY
+ EfxR5QPBy2Lo/m3we7XinbqPSdBZ/hPssDiaFnzWdi8bjbA84mbAxiU8m2lTQeKgZpk7EFNz3C3
+ SoV38OvF8RAdDduXzXpel8CKOgh+cAiUPEwQXkhQ3/qItyuGuHI5IjE55nmRQmCTUVuQaVJUV9+
+ JWTjbxb21OxQ/OLsvQOm2tqvpZJ9Nb9PafIcL2PD1evZmX7sd583fT3++iYBSnDpc6YwNiiv3Ah
+ TuE88iEvg0hU0oK8At9qilHFCKEpJlTILoJY5d1J63AFr7Gtkp9L7H7sytSb6HNI81xbZaFR+Tp
+ Fn1HoODj40wxvM9b/yg==
+X-Proofpoint-ORIG-GUID: u2loBGukDEOOsBXnkTwoFMv_p8j8Tq_c
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-03-21_03,2026-03-20_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 priorityscore=1501 phishscore=0 malwarescore=0
- lowpriorityscore=0 clxscore=1015 bulkscore=0 adultscore=0 spamscore=0
- impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ spamscore=0 adultscore=0 impostorscore=0 suspectscore=0 phishscore=0
+ priorityscore=1501 clxscore=1015 bulkscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=typeunknown authscore=0 authtc= authcc=
  route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
  definitions=main-2603210082
 
-Introduce a chip_info structure to parameterize device-specific
-properties such as ODR/bandwidth frequency tables, activity/inactivity
-timer scale factors, and the maximum ODR value. This refactors the
-driver to use chip_info lookups instead of hardcoded values, preparing
-the driver to support multiple device variants.
+Add the adi,adxl371 compatible string to the ADXL372 binding. The
+ADXL371 is a +-200g 3-axis MEMS accelerometer nearly identical to
+the ADXL372 in register layout, differing only in ODR/bandwidth
+values, timer scale factors, and a silicon anomaly affecting FIFO
+operation.
 
-The sampling_frequency and filter_low_pass_3db_frequency available
-attributes are switched from custom sysfs callbacks to read_avail()
-based handling via info_mask_shared_by_type_available. This enforces
-consistent formatting through the IIO framework and makes the values
-accessible to in-kernel consumers.
+Update the title and description to reflect both devices.
 
-The SPI/I2C probe functions are updated to pass a chip_info pointer
-instead of a device name string.
-
-No functional change intended.
-
+Acked-by: Conor Dooley <conor.dooley@microchip.com>
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
 Changes in v4:
- - Reformat info_mask_shared_by_type to use consistent multi-line
-   style matching info_mask_shared_by_type_available.
- - Drop trailing comma from ADXL372_ODR_NUM enum terminator.
- - Drop redundant NULL checks for chip_info in SPI/I2C probe
-   functions since match data is always provided.
+ - None.
 
- drivers/iio/accel/adxl372.c     | 151 ++++++++++++++++++--------------
- drivers/iio/accel/adxl372.h     |  16 +++-
- drivers/iio/accel/adxl372_i2c.c |  10 ++-
- drivers/iio/accel/adxl372_spi.c |  10 ++-
- 4 files changed, 112 insertions(+), 75 deletions(-)
+ .../devicetree/bindings/iio/accel/adi,adxl372.yaml       | 9 ++++++---
+ MAINTAINERS                                              | 5 ++++-
+ 2 files changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index 28a8793a53b6..b34b91cae753 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -180,6 +180,7 @@ enum adxl372_odr {
- 	ADXL372_ODR_1600HZ,
- 	ADXL372_ODR_3200HZ,
- 	ADXL372_ODR_6400HZ,
-+	ADXL372_ODR_NUM
- };
+diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml
+index 0ba0df46c3a9..02e734946f44 100644
+--- a/Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml
+@@ -4,20 +4,23 @@
+ $id: http://devicetree.org/schemas/iio/accel/adi,adxl372.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
- enum adxl372_bandwidth {
-@@ -214,14 +215,35 @@ enum adxl372_fifo_mode {
- 	ADXL372_FIFO_OLD_SAVED
- };
+-title: Analog Devices ADXL372 3-Axis, +/-(200g) Digital Accelerometer
++title: Analog Devices ADXL371/ADXL372 3-Axis, +/-(200g) Digital Accelerometer
  
--static const int adxl372_samp_freq_tbl[5] = {
--	400, 800, 1600, 3200, 6400,
-+static const int adxl372_samp_freq_tbl[ADXL372_ODR_NUM] = {
-+	[ADXL372_ODR_400HZ] = 400,
-+	[ADXL372_ODR_800HZ] = 800,
-+	[ADXL372_ODR_1600HZ] = 1600,
-+	[ADXL372_ODR_3200HZ] = 3200,
-+	[ADXL372_ODR_6400HZ] = 6400,
- };
+ maintainers:
+   - Marcelo Schmitt <marcelo.schmitt@analog.com>
+   - Nuno Sá <nuno.sa@analog.com>
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
  
--static const int adxl372_bw_freq_tbl[5] = {
--	200, 400, 800, 1600, 3200,
-+static const int adxl372_bw_freq_tbl[ADXL372_ODR_NUM] = {
-+	[ADXL372_BW_200HZ] = 200,
-+	[ADXL372_BW_400HZ] = 400,
-+	[ADXL372_BW_800HZ] = 800,
-+	[ADXL372_BW_1600HZ] = 1600,
-+	[ADXL372_BW_3200HZ] = 3200,
- };
+ description: |
+-  Analog Devices ADXL372 3-Axis, +/-(200g) Digital Accelerometer that supports
+-  both I2C & SPI interfaces
++  Analog Devices ADXL371/ADXL372 3-Axis, +/-(200g) Digital Accelerometer that
++  supports both I2C & SPI interfaces
++    https://www.analog.com/en/products/adxl371.html
+     https://www.analog.com/en/products/adxl372.html
  
-+const struct adxl372_chip_info adxl372_chip_info = {
-+	.name = "adxl372",
-+	.samp_freq_tbl = adxl372_samp_freq_tbl,
-+	.bw_freq_tbl = adxl372_bw_freq_tbl,
-+	.num_freqs = ARRAY_SIZE(adxl372_samp_freq_tbl),
-+	.act_time_scale_us = 3300,
-+	.act_time_scale_low_us = 6600,
-+	.inact_time_scale_ms = 13,
-+	.inact_time_scale_low_ms = 26,
-+	.max_odr = ADXL372_ODR_6400HZ,
-+};
-+EXPORT_SYMBOL_NS_GPL(adxl372_chip_info, "IIO_ADXL372");
-+
- struct adxl372_axis_lookup {
- 	unsigned int bits;
- 	enum adxl372_fifo_format fifo_format;
-@@ -257,8 +279,12 @@ static const struct iio_event_spec adxl372_events[] = {
- 	.modified = 1,							\
- 	.channel2 = IIO_MOD_##axis,					\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
--				    BIT(IIO_CHAN_INFO_SAMP_FREQ) |	\
-+	.info_mask_shared_by_type =					\
-+		BIT(IIO_CHAN_INFO_SCALE) |				\
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |				\
-+		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
-+	.info_mask_shared_by_type_available =				\
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |				\
- 		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
- 	.scan_index = index,						\
- 	.scan_type = {							\
-@@ -279,6 +305,7 @@ static const struct iio_chan_spec adxl372_channels[] = {
- };
+ properties:
+   compatible:
+     enum:
++      - adi,adxl371
+       - adi,adxl372
  
- struct adxl372_state {
-+	const struct adxl372_chip_info	*chip_info;
- 	int				irq;
- 	struct device			*dev;
- 	struct regmap			*regmap;
-@@ -471,13 +498,14 @@ static int adxl372_set_activity_time_ms(struct adxl372_state *st,
- 	int ret;
+   reg:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index dc82a6bd1a61..34a1e1386b66 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -651,8 +651,11 @@ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
+ F:	drivers/iio/accel/adxl367*
  
- 	/*
--	 * 3.3 ms per code is the scale factor of the TIME_ACT register for
--	 * ODR = 6400 Hz. It is 6.6 ms per code for ODR = 3200 Hz and below.
-+	 * The scale factor of the TIME_ACT register depends on the ODR.
-+	 * A higher scale factor is used at the maximum ODR and a lower
-+	 * one at all other rates.
- 	 */
--	if (st->odr == ADXL372_ODR_6400HZ)
--		scale_factor = 3300;
-+	if (st->odr == st->chip_info->max_odr)
-+		scale_factor = st->chip_info->act_time_scale_us;
- 	else
--		scale_factor = 6600;
-+		scale_factor = st->chip_info->act_time_scale_low_us;
- 
- 	reg_val = DIV_ROUND_CLOSEST(act_time_ms * 1000, scale_factor);
- 
-@@ -501,13 +529,14 @@ static int adxl372_set_inactivity_time_ms(struct adxl372_state *st,
- 	int ret;
- 
- 	/*
--	 * 13 ms per code is the scale factor of the TIME_INACT register for
--	 * ODR = 6400 Hz. It is 26 ms per code for ODR = 3200 Hz and below.
-+	 * The scale factor of the TIME_INACT register depends on the ODR.
-+	 * A higher scale factor is used at the maximum ODR and a lower
-+	 * one at all other rates.
- 	 */
--	if (st->odr == ADXL372_ODR_6400HZ)
--		scale_factor = 13;
-+	if (st->odr == st->chip_info->max_odr)
-+		scale_factor = st->chip_info->inact_time_scale_ms;
- 	else
--		scale_factor = 26;
-+		scale_factor = st->chip_info->inact_time_scale_low_ms;
- 
- 	res = DIV_ROUND_CLOSEST(inact_time_ms, scale_factor);
- 	reg_val_h = (res >> 8) & 0xFF;
-@@ -717,7 +746,7 @@ static int adxl372_setup(struct adxl372_state *st)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = adxl372_set_odr(st, ADXL372_ODR_6400HZ);
-+	ret = adxl372_set_odr(st, st->chip_info->max_odr);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -777,10 +806,10 @@ static int adxl372_read_raw(struct iio_dev *indio_dev,
- 		*val2 = ADXL372_USCALE;
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		*val = adxl372_samp_freq_tbl[st->odr];
-+		*val = st->chip_info->samp_freq_tbl[st->odr];
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
--		*val = adxl372_bw_freq_tbl[st->bw];
-+		*val = st->chip_info->bw_freq_tbl[st->bw];
- 		return IIO_VAL_INT;
- 	}
- 
-@@ -796,23 +825,17 @@ static int adxl372_write_raw(struct iio_dev *indio_dev,
- 
- 	switch (info) {
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		odr_index = adxl372_find_closest_match(adxl372_samp_freq_tbl,
--					ARRAY_SIZE(adxl372_samp_freq_tbl),
--					val);
-+		odr_index = adxl372_find_closest_match(st->chip_info->samp_freq_tbl,
-+						       st->chip_info->num_freqs,
-+						       val);
- 		ret = adxl372_set_odr(st, odr_index);
- 		if (ret < 0)
- 			return ret;
--		/*
--		 * The timer period depends on the ODR selected.
--		 * At 3200 Hz and below, it is 6.6 ms; at 6400 Hz, it is 3.3 ms
--		 */
-+		/* Recalculate activity time as the timer period depends on ODR */
- 		ret = adxl372_set_activity_time_ms(st, st->act_time_ms);
- 		if (ret < 0)
- 			return ret;
--		/*
--		 * The timer period depends on the ODR selected.
--		 * At 3200 Hz and below, it is 26 ms; at 6400 Hz, it is 13 ms
--		 */
-+		/* Recalculate inactivity time as the timer period depends on ODR */
- 		ret = adxl372_set_inactivity_time_ms(st, st->inact_time_ms);
- 		if (ret < 0)
- 			return ret;
-@@ -825,9 +848,9 @@ static int adxl372_write_raw(struct iio_dev *indio_dev,
- 
- 		return ret;
- 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
--		bw_index = adxl372_find_closest_match(adxl372_bw_freq_tbl,
--					ARRAY_SIZE(adxl372_bw_freq_tbl),
--					val);
-+		bw_index = adxl372_find_closest_match(st->chip_info->bw_freq_tbl,
-+						      st->chip_info->num_freqs,
-+						      val);
- 		return adxl372_set_bandwidth(st, bw_index);
- 	default:
- 		return -EINVAL;
-@@ -957,24 +980,6 @@ static int adxl372_write_event_config(struct iio_dev *indio_dev, const struct ii
- 	return adxl372_set_interrupts(st, st->int1_bitmask, 0);
- }
- 
--static ssize_t adxl372_show_filter_freq_avail(struct device *dev,
--					      struct device_attribute *attr,
--					      char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct adxl372_state *st = iio_priv(indio_dev);
--	int i;
--	size_t len = 0;
--
--	for (i = 0; i <= st->odr; i++)
--		len += scnprintf(buf + len, PAGE_SIZE - len,
--				 "%d ", adxl372_bw_freq_tbl[i]);
--
--	buf[len - 1] = '\n';
--
--	return len;
--}
--
- static ssize_t adxl372_get_fifo_enabled(struct device *dev,
- 					  struct device_attribute *attr,
- 					  char *buf)
-@@ -1142,25 +1147,38 @@ static const struct iio_trigger_ops adxl372_peak_data_trigger_ops = {
- 	.set_trigger_state = adxl372_peak_dready_trig_set_state,
- };
- 
--static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("400 800 1600 3200 6400");
--static IIO_DEVICE_ATTR(in_accel_filter_low_pass_3db_frequency_available,
--		       0444, adxl372_show_filter_freq_avail, NULL, 0);
--
--static struct attribute *adxl372_attributes[] = {
--	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
--	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
--	NULL,
--};
-+static int adxl372_read_avail(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      const int **vals, int *type, int *length,
-+			      long mask)
-+{
-+	struct adxl372_state *st = iio_priv(indio_dev);
- 
--static const struct attribute_group adxl372_attrs_group = {
--	.attrs = adxl372_attributes,
--};
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*vals = st->chip_info->samp_freq_tbl;
-+		*type = IIO_VAL_INT;
-+		*length = st->chip_info->num_freqs;
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		*vals = st->chip_info->bw_freq_tbl;
-+		*type = IIO_VAL_INT;
-+		/*
-+		 * Bandwidth cannot exceed half the sampling frequency
-+		 * (Nyquist), so limit available values based on current ODR.
-+		 */
-+		*length = st->odr + 1;
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
- 
- static const struct iio_info adxl372_info = {
- 	.validate_trigger = &adxl372_validate_trigger,
--	.attrs = &adxl372_attrs_group,
- 	.read_raw = adxl372_read_raw,
- 	.write_raw = adxl372_write_raw,
-+	.read_avail = adxl372_read_avail,
- 	.read_event_config = adxl372_read_event_config,
- 	.write_event_config = adxl372_write_event_config,
- 	.read_event_value = adxl372_read_event_value,
-@@ -1176,7 +1194,7 @@ bool adxl372_readable_noinc_reg(struct device *dev, unsigned int reg)
- EXPORT_SYMBOL_NS_GPL(adxl372_readable_noinc_reg, "IIO_ADXL372");
- 
- int adxl372_probe(struct device *dev, struct regmap *regmap,
--		  int irq, const char *name)
-+		  int irq, const struct adxl372_chip_info *chip_info)
- {
- 	struct iio_dev *indio_dev;
- 	struct adxl372_state *st;
-@@ -1192,13 +1210,14 @@ int adxl372_probe(struct device *dev, struct regmap *regmap,
- 	st->dev = dev;
- 	st->regmap = regmap;
- 	st->irq = irq;
-+	st->chip_info = chip_info;
- 
- 	mutex_init(&st->threshold_m);
- 
- 	indio_dev->channels = adxl372_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(adxl372_channels);
- 	indio_dev->available_scan_masks = adxl372_channel_masks;
--	indio_dev->name = name;
-+	indio_dev->name = chip_info->name;
- 	indio_dev->info = &adxl372_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
- 
-diff --git a/drivers/iio/accel/adxl372.h b/drivers/iio/accel/adxl372.h
-index 80a0aa9714fc..3ce06609446c 100644
---- a/drivers/iio/accel/adxl372.h
-+++ b/drivers/iio/accel/adxl372.h
-@@ -10,8 +10,22 @@
- 
- #define ADXL372_REVID	0x03
- 
-+struct adxl372_chip_info {
-+	const char *name;
-+	const int *samp_freq_tbl;
-+	const int *bw_freq_tbl;
-+	unsigned int num_freqs;
-+	unsigned int act_time_scale_us;
-+	unsigned int act_time_scale_low_us;
-+	unsigned int inact_time_scale_ms;
-+	unsigned int inact_time_scale_low_ms;
-+	unsigned int max_odr;
-+};
-+
-+extern const struct adxl372_chip_info adxl372_chip_info;
-+
- int adxl372_probe(struct device *dev, struct regmap *regmap,
--		  int irq, const char *name);
-+		  int irq, const struct adxl372_chip_info *chip_info);
- bool adxl372_readable_noinc_reg(struct device *dev, unsigned int reg);
- 
- #endif /* _ADXL372_H_ */
-diff --git a/drivers/iio/accel/adxl372_i2c.c b/drivers/iio/accel/adxl372_i2c.c
-index 186d4fe9a556..5d135b1150c8 100644
---- a/drivers/iio/accel/adxl372_i2c.c
-+++ b/drivers/iio/accel/adxl372_i2c.c
-@@ -20,11 +20,13 @@ static const struct regmap_config adxl372_regmap_config = {
- 
- static int adxl372_i2c_probe(struct i2c_client *client)
- {
--	const struct i2c_device_id *id = i2c_client_get_device_id(client);
-+	const struct adxl372_chip_info *chip_info;
- 	struct regmap *regmap;
- 	unsigned int regval;
- 	int ret;
- 
-+	chip_info = i2c_get_match_data(client);
-+
- 	regmap = devm_regmap_init_i2c(client, &adxl372_regmap_config);
- 	if (IS_ERR(regmap))
- 		return PTR_ERR(regmap);
-@@ -38,17 +40,17 @@ static int adxl372_i2c_probe(struct i2c_client *client)
- 		dev_warn(&client->dev,
- 		"I2C might not work properly with other devices on the bus");
- 
--	return adxl372_probe(&client->dev, regmap, client->irq, id->name);
-+	return adxl372_probe(&client->dev, regmap, client->irq, chip_info);
- }
- 
- static const struct i2c_device_id adxl372_i2c_id[] = {
--	{ "adxl372" },
-+	{ "adxl372", (kernel_ulong_t)&adxl372_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(i2c, adxl372_i2c_id);
- 
- static const struct of_device_id adxl372_of_match[] = {
--	{ .compatible = "adi,adxl372" },
-+	{ .compatible = "adi,adxl372", .data = &adxl372_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, adxl372_of_match);
-diff --git a/drivers/iio/accel/adxl372_spi.c b/drivers/iio/accel/adxl372_spi.c
-index 39941b519c3b..e96a355bfe67 100644
---- a/drivers/iio/accel/adxl372_spi.c
-+++ b/drivers/iio/accel/adxl372_spi.c
-@@ -22,24 +22,26 @@ static const struct regmap_config adxl372_spi_regmap_config = {
- 
- static int adxl372_spi_probe(struct spi_device *spi)
- {
--	const struct spi_device_id *id = spi_get_device_id(spi);
-+	const struct adxl372_chip_info *chip_info;
- 	struct regmap *regmap;
- 
-+	chip_info = spi_get_device_match_data(spi);
-+
- 	regmap = devm_regmap_init_spi(spi, &adxl372_spi_regmap_config);
- 	if (IS_ERR(regmap))
- 		return PTR_ERR(regmap);
- 
--	return adxl372_probe(&spi->dev, regmap, spi->irq, id->name);
-+	return adxl372_probe(&spi->dev, regmap, spi->irq, chip_info);
- }
- 
- static const struct spi_device_id adxl372_spi_id[] = {
--	{ "adxl372", 0 },
-+	{ "adxl372", (kernel_ulong_t)&adxl372_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(spi, adxl372_spi_id);
- 
- static const struct of_device_id adxl372_of_match[] = {
--	{ .compatible = "adi,adxl372" },
-+	{ .compatible = "adi,adxl372", .data = &adxl372_chip_info },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, adxl372_of_match);
+-ADXL372 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
++ADXL371/ADXL372 THREE-AXIS DIGITAL ACCELEROMETER DRIVER
+ M:	Michael Hennerich <michael.hennerich@analog.com>
++M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
++M:	Nuno Sá <nuno.sa@analog.com>
++M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
+ S:	Supported
+ W:	https://ez.analog.com/linux-software-drivers
+ F:	Documentation/devicetree/bindings/iio/accel/adi,adxl372.yaml
 -- 
 2.43.0
 
