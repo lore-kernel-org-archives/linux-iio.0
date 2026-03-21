@@ -1,148 +1,159 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDE7340DFB0;
-	Sat, 21 Mar 2026 10:00:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id ACE6C1339B1;
+	Sat, 21 Mar 2026 10:02:48 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774087225; cv=none; b=thdG8KffQTnZRJkvkPreMxk5IH7Egqbf3sNVLdS2Ussz33WDuoYDk9YeOwPT4rlDTYgEW6BQLT1AR9lu8JlJOlHqcKHs6SjrgCfizSAUiP8PTYd2P0rIggOC+vH3UDgeZhOchtbebpvJnY+MP0/kvFr21FR4pQYxNhtG6nDmfH0=
+	t=1774087370; cv=none; b=ffROjnqA0deP4W9MTcPNtK7FpxomHAvx2nEVXgo7mqnTAGj3F+8dKclC76K6jVUj7NBMGEUWBTE0Cn3FjQ8Et84hbo5YlfrH07pie5iY3gS1e6gJoehhrep9ixE8UyVVPKa7oqR5OeVIAVbR4hNcpBzFvT+C4wsl+900p/2Q7jg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774087225; c=relaxed/simple;
-	bh=Kb974ZkNTfjOEet/Vg6UwvvagVCTUeeUHmntE6yBEJE=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=cAusy83iUFDpVm4lPc06EfjINSB69yNER+tFoi8lQVdL1xNHc4fk7xtWMKa1v57KW6OXmNA2nqkx+q3euLJTrAU7CT/ysdIzwAwr81UX5qEwdeLouBKzxVfWWqt/9omzNJidFvXO34uWCRk18Q2MPjYOV0tmhL4G0vSmONjF9Xk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=f3MFA5LF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774087370; c=relaxed/simple;
+	bh=XclwdClvcuDooBQd+jzjF+vaHEyMD7jBf0RBw+BIRhQ=;
+	h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type; b=sJjPe1z3kKOmBthkRl5ewIK4SJlR3EXGJF5rq+6peqje5owoVpxegk8ozyw8DMqEXWDK2BhkWpr0uETGEDid9vfYg83YWoPNLkdR+ii8azigIQTfdtYuSGqElqSa8Tky3VN0OBCJ/PLoRfZC/fzGHnva/BaPdmPgwxBIpQXN6lQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=ZeHTK8e+; arc=none smtp.client-ip=148.163.135.77
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="f3MFA5LF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1317DC19421;
-	Sat, 21 Mar 2026 10:00:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774087224;
-	bh=Kb974ZkNTfjOEet/Vg6UwvvagVCTUeeUHmntE6yBEJE=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=f3MFA5LFmfYk7WVizXC6/6RI4TRVxI9PwKF64/BEm0bqWFwnI4MfpYHwWymzCAn3H
-	 cXCXeebGImPp6U3T1a52risiPVw3iMWAq8PgkjDWMNLRZohnqDAytQwT+rZDUDHNTQ
-	 p07OX7wKi+Fsnm3l5E5MqikNO4FjI0OYktBRuwFftFdrDIN946JMk9NdVohVL6tkCb
-	 1FT8hq/Q4Fyt4hI/mbQyny+cwScD4GNOVMFSb0LP4NbYjOEabZN9RgWrmgVWR5292i
-	 O8zmLsecA+lHa8DPfMptg/OwbNjYbq7qTlm0rRRmesS16+waJuScm20GukF9vvlIk+
-	 jWWc3hzqWdP+A==
-Message-ID: <66396d68-19e4-45eb-9ffa-af1215c8590e@kernel.org>
-Date: Sat, 21 Mar 2026 11:00:20 +0100
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="ZeHTK8e+"
+Received: from pps.filterd (m0516787.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62L4qUE83520946;
+	Sat, 21 Mar 2026 06:02:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=
+	content-transfer-encoding:content-type:date:from:message-id
+	:mime-version:subject:to; s=DKIM; bh=oxONm++xuomuzvf4ptoMK6qsvJJ
+	jvS82s9yXDn8ipdM=; b=ZeHTK8e+jx3gm0caJ/rXLICyt3TuKkhkJagn8vrRJln
+	3OA2feGpf38/RmUS6mVn2lGUUUYSPRqvU3V8lOMjwN/zQZIgmAIwsWiLXd/hClO4
+	pewNxiIKRXYG9S6f2qS/SqwkWU2kqO+ON/HFTnLduc8WH58OEdGx06EiyVlz1Z9M
+	F3hRvzxosd/ZIW8CXsZCCQoZXFUA4L5M/FP92i+nReHCprDevqTpZjWNxxws06X6
+	RwkFREQWrBaPcKMp1hoXuuHtPozfIgawEGZ64MjSkYx3QPVhr63JOKatLNNzvM50
+	4XAY81QJcMnn0YmeA8g/NiKKewx06vPQa4vY7FMZUMg==
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4cyx8m4s9g-1
+	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+	Sat, 21 Mar 2026 06:02:26 -0400 (EDT)
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62LA2P1X041090
+	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+	Sat, 21 Mar 2026 06:02:25 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Sat, 21 Mar 2026 06:02:25 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Sat, 21 Mar 2026 06:02:25 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
+ Transport; Sat, 21 Mar 2026 06:02:25 -0400
+Received: from HYB-b1tGeUj4GP1.ad.analog.com ([10.32.226.156])
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62LA29Uq016218;
+	Sat, 21 Mar 2026 06:02:11 -0400
+From: Antoniu Miclaus <antoniu.miclaus@analog.com>
+To: Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Lars-Peter Clausen
+	<lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        "Jonathan Cameron" <jic23@kernel.org>,
+        David Lechner <dlechner@baylibre.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Rob Herring
+	<robh@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>,
+        Conor Dooley
+	<conor+dt@kernel.org>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v7 0/4] iio: adc: ad4080: add support for AD4880 dual-channel ADC
+Date: Sat, 21 Mar 2026 12:01:50 +0200
+Message-ID: <20260321100154.1258-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.43.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v6 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF
- sensor
-To: Sirat <email@sirat.me>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, linux-kernel@vger.kernel.org
-References: <20260319190738.151614-1-email@sirat.me>
- <20260319190738.151614-2-email@sirat.me>
- <c59cfc77-b49a-48c4-b975-026ccd3be31a@kernel.org>
- <CANn+LW+zdT-kHN-SyHeogEk9FdsaXYkkobia=Tn9-FQmVv2nOw@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <CANn+LW+zdT-kHN-SyHeogEk9FdsaXYkkobia=Tn9-FQmVv2nOw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: 7hvh6mxlKoGrw2qZThjlPt2uG16Vs4vO
+X-Proofpoint-GUID: 7hvh6mxlKoGrw2qZThjlPt2uG16Vs4vO
+X-Authority-Analysis: v=2.4 cv=WfoBqkhX c=1 sm=1 tr=0 ts=69be6cb2 cx=c_pps
+ a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
+ a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
+ a=0sLvza09kfJOxVLZPwjg:22 a=OmVn7CZJonkx5R5zMQLL:22 a=iti6l8p0ZQHA_bzYsP0A:9
+ a=QEXdDO2ut3YA:10
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzIxMDA4MSBTYWx0ZWRfX6OHjGR+b5jLk
+ asjEJhoqagTkuop+F6jKJ5JOq7aNN/4F9nRol4/exppwEH+hOos5YlbhTjV7E4KBBVzz7ZKRhQg
+ UBwbh1x5jcFbbgicMoatq+rPPluV59JViobyiiwIKSazDQfAaEJq8KI6YmFxPoayKHYlKlB9vSa
+ L2fQUs0kSjeb0zX8W+LGqqhhFqHrZAao8GlSWzOc2OVOKdq+Q49Oo3Fm7N/l7Ux1vg1LBusQzU0
+ xmGP/ew7M/OfweX9LjCMbaWsFuKbazr8e8E+T72GbSbYfHkPGhcBH+QTO8InkQ9CbkdJchZbCgX
+ 5tsRyIND+SDK9v2NYARv+PHilXLouzlK7QqqTzSzyJRajIr9FJtYVab6bfoy2h06Uw+icSeZJNP
+ 2k77R2PV1GyOpg6PF/Eo1iNTaAi5f+d7NFO4s/Be7glNMKD2gU5vvrLgy63aghG94YAt57LwksF
+ MemJQwv85O91iIQO/tA==
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
+ definitions=2026-03-21_03,2026-03-20_02,2025-10-01_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
+ suspectscore=0 priorityscore=1501 phishscore=0 malwarescore=0
+ lowpriorityscore=0 clxscore=1015 bulkscore=0 adultscore=0 spamscore=0
+ impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
+ route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
+ definitions=main-2603210081
 
-On 20/03/2026 14:28, Sirat wrote:
-> On Fri, Mar 20, 2026 at 6:52 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>
->> On 19/03/2026 20:07, Siratul Islam wrote:
->>>
->>>  properties:
->>>    compatible:
->>> -    const: st,vl53l0x
->>> +    enum:
->>> +      - st,vl53l0x
->>> +      - st,vl53l1x
->>>
->>>    reg:
->>>      maxItems: 1
->>> @@ -21,12 +24,17 @@ properties:
->>>
->>>    reset-gpios:
->>>      maxItems: 1
->>> +    description:
->>> +      Phandle to the XSHUT GPIO. Used for hardware reset.
->>>
->>> -  vdd-supply: true
->>> +  vdd-supply:
->>> +    description:
->>> +      Phandle to the vdd input voltage. This is physically required for operation.
->>
->> Drop the description. Schema tells that.
->>
->>>
->>>  required:
->>>    - compatible
->>>    - reg
->>> +  - vdd-supply
->>
->> That's an ABI break and nothing in commit msg explains why. You need
->> rationale for this, but most likely everything was working fine before,
->> so supply should not be required.
->>
-> The vdd-supply is practically required by both the drivers depending
-> on this binding,
-> But the original driver author did not specify the requirement on the binding.
-> The driver works with or without the binding (it falls back to a dummy
-> regulator when not specified),
-> but specifying it makes the intent clear.
+Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC with
+integrated fully differential amplifiers (FDA).
 
-"That's an ABI break and nothing in commit msg explains why. "
+Architecture notes:
 
-Please don't ask me to quote it third time... See also writing-bindings
-doc. You must provide rationale for ABI changes.
+The AD4880 is modeled as a single IIO device rather than two independent
+devices because the channels share power supplies, a voltage reference,
+the CNV conversion clock, and a single interleaved data output stream.
+Splitting them into separate IIO devices would make synchronized
+dual-channel capture impossible from userspace.
 
-Best regards,
-Krzysztof
+An MFD approach does not apply here either - the channels are not
+functionally distinct sub-devices but identical ADC paths sharing a
+common data interface.
+
+Each channel has fully independent configuration registers accessible
+through separate SPI chip selects, so per-channel regmaps are used with
+no locking between them. The data path has no software involvement at
+runtime: the CNV clock triggers simultaneous conversions and the device
+outputs an interleaved bitstream captured directly by the IIO backend
+(FPGA). spi_new_ancillary_device() handles the configuration path;
+the IIO backend handles the data path.
+
+The debugfs_reg_access callback is not exposed for the dual-channel
+variant since the IIO framework provides a single (reg, val) interface
+with no channel parameter, and exposing only one channel would be
+misleading.
+
+The AD4880 is a fairly unique part - having separate SPI config
+interfaces per channel with a shared interleaved data output is not
+a common pattern.
+
+Changes in v7:
+  - Drop debugfs_reg_access for dual-channel AD4880 variant
+  - Pass struct device * to ad4080_properties_parse() instead of
+    using regmap_get_device(st->regmap[0])
+  - Use 100-column limit consistently for function signatures
+  - Add architecture summary to cover letter (per Andy's request)
+
+Antoniu Miclaus (4):
+  iio: backend: use __free(fwnode_handle) for automatic cleanup
+  iio: backend: add devm_iio_backend_get_by_index()
+  dt-bindings: iio: adc: ad4080: add AD4880 support
+  iio: adc: ad4080: add support for AD4880 dual-channel ADC
+
+ .../bindings/iio/adc/adi,ad4080.yaml          |  53 +++-
+ drivers/iio/adc/ad4080.c                      | 231 ++++++++++++++----
+ drivers/iio/industrialio-backend.c            |  59 +++--
+ include/linux/iio/backend.h                   |   1 +
+ 4 files changed, 273 insertions(+), 71 deletions(-)
+
+-- 
+2.43.0
+
