@@ -1,102 +1,74 @@
-Received: from mail-dy1-f175.google.com (mail-dy1-f175.google.com [74.125.82.175])
+Received: from mail-dy1-f176.google.com (mail-dy1-f176.google.com [74.125.82.176])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 00D472D12F3
-	for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 22:26:07 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.175
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 124942F6910
+	for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 22:30:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.82.176
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774218370; cv=none; b=QHZj1Kl2AcARaWco1P3lj9xcNRq1ZHjHxuVtQ9E4LWks8+TR4VW4CxOXRoZ1BsIKXt1CAoxAX7q9t9xk300OC4JrEaAqU04OOhTJpionRbf4i9fTzSq6X3XPSaRTm/r8O8KhpHefumTXFL1jgegvoCkoUhAxtf8AXRwbuWJBUo4=
+	t=1774218629; cv=none; b=mM7zCXXLhfpwt6Oo5Ul/A6ZHT3MH3lOosbrr8MqxoWkhQj5JYi7l4berDme6pXzdWBWhZiOoY6V9Kbs/uOpK7Axkmc562oUHBMJTxs96UsQ0cxyVBkg6Z1BjsPsjJmYUsZYkRa3VB5IaFVVoBsxM8r7ERjHiGkVp+6TptYVTk3I=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774218370; c=relaxed/simple;
-	bh=ELcx204Cby/dJnsY8H4NrZVX+UUsPAla3X1U1xwxuPU=;
+	s=arc-20240116; t=1774218629; c=relaxed/simple;
+	bh=NJZZRr6u7AK+2zjoYjxWMsNR4fFjykW2ztLeAXUoaiM=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=rpa6xuvIMNjP9VZDBjUJMRq0Z6MA0b8l7+8vvThvRdRd+lZ2QGx33x6VdS3u8B6S9Nc7YPgfhy+I2fHtyIBnXrgf+qw6pYjoC0yyG81gLvLj4f96Yhp6iu8hdlrNY6y+7RpvWMMHdUamlsrkRaJCxycdIb3kCYuifkh5fZqnKVM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=h6+E9+uL; arc=none smtp.client-ip=74.125.82.175
+	 Content-Type:Content-Disposition:In-Reply-To; b=GHEWEfQ/bnWB8brs+bsfJv9aNdoUPOjUHwFuDsGL6MEwa4zT0jiXGjDXrkb9kh6ZaXsgug6yZaDZ7iQ1boBQknL0jkDEneMRnUhHKL/JJsuBfqA3j2GjuEh1rilMy1ZR1r81Ow3QQUB9KpaPM6dvEb1KB3GNIV4vLoZ0metQkM0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=epjURxeg; arc=none smtp.client-ip=74.125.82.176
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="h6+E9+uL"
-Received: by mail-dy1-f175.google.com with SMTP id 5a478bee46e88-2ba895adfeaso3911372eec.0
-        for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 15:26:07 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="epjURxeg"
+Received: by mail-dy1-f176.google.com with SMTP id 5a478bee46e88-2c10a2e2cd1so1201978eec.0
+        for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 15:30:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1774218367; x=1774823167; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1774218626; x=1774823426; darn=vger.kernel.org;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:from:to:cc:subject:date:message-id:reply-to;
-        bh=+mst3cEdRUvZvV8FPAK+ab6xPtMgdVjX2HSYh8y/2ug=;
-        b=h6+E9+uLA8xRXNgJferHczQafyyNfWNDUBvAT4x0tADovM1UnNssK7ZVWrjyvYG82n
-         Am2bw6wx3hSf2XkDhk8z93gIdfdRT5bMOzuapMmK2n3Xp+aSv8B3jQf5lliuOAeM6BaO
-         YaUtkUyAay0I8wYaSqZPGvsoQ7M5JmNqQkcfNrIwVbwfIzAGeW3o8GGYwyvDCr+RK3TW
-         wus0I234JZvMLDHBR7LSi/4r//62KExFUSPOXXndjXv3DfrX04UBwt4PAs+sMNQ0yJ3c
-         +5uTEUOkVhomhMkKraS7iP5Iz84IhS0t6NqKzSJBOs16ht0izRnh8okWM4aR/76An0ch
-         Hvhg==
+        bh=v8/snDZPO6XeO4hSNMbxl+x8zM51kjYVWzx4jFJ4eVs=;
+        b=epjURxegdfxhbUotuR3zifm+ylcqb+nD3QBCrTB05jxUOfkE3CF4umIhowaajO2gqy
+         L+LyMf20YsJm0qJDlvcbJYciDRt7NXQxKyEWRETYxjZeResFC6VwapjhlBe8CU4Qift3
+         xfzgTTAEf44+qxJ2qGiJzl9u1TfKazLD4bAu/zxBX12t76n3h5k65iyhDe3i0G6cMV2b
+         wN3tgiWeAGNdPcp3S36uH0AmAvoM9ufaJGIiZvtiPtl0YjdKGLwbvwNERTh9JlXbz1Sf
+         X2/9j1L6YoJWKa8N1QMCtMhdeVjrvDqsVEhMrluQbAXrNXliHC31Sqg5Pdx3UjtLBLAP
+         i0tA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774218367; x=1774823167;
+        d=1e100.net; s=20251104; t=1774218626; x=1774823426;
         h=in-reply-to:content-disposition:mime-version:references:message-id
          :subject:cc:to:from:date:x-gm-gg:x-gm-message-state:from:to:cc
          :subject:date:message-id:reply-to;
-        bh=+mst3cEdRUvZvV8FPAK+ab6xPtMgdVjX2HSYh8y/2ug=;
-        b=XfeJg4UePa5kh1HPGvTDHU/oiZ/jJUtqszVIL0vDEG4x21NV7GjbCWLa/9lWQQVm7B
-         f+3MC6RFOrdir/q7/8FANmdAXhwT1hZQr3FvG2N+/f3te41hVH4HhlsyIPmKVRl026Ck
-         ZU1nrxa3FVk7R/eq2ZzDPiw5GoYSK2QvLG4vb4O0SYr10N9XIFk9ma1Afr2lB6n7cqDU
-         zHdDn7aIbyENm1j8k7W2GM2gIsPnKvSrgD4SnI+ABiMkqQdZ8Aut5rYSq2GznGwrTbMG
-         zKwIkuO2NVqneIU9GmxWzRc1VoYUJLIkXs52KdW1+zqCBTjZul400FT8sExKZDo0QH8S
-         hLxA==
-X-Forwarded-Encrypted: i=1; AJvYcCUnlZqUOeGXv9tRa+2nRCCrP3UsFd5g0jGde//ZXT+eFYOCEOSlGy2Ql8s0MDKADXOrDGyh4AoqQIg=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yzm1lAyoSSd24L0jE8piUGiEabihoPH3yKiLR35e0QMtWvtt3Kn
-	yZjRHTxhfdgXtlhVC0nnTjzgdznK0hbz6oO+N1VYxqzEDtTT++af6sqF
-X-Gm-Gg: ATEYQzweX0n0Hh6cVihC5qkZTwCckZX6vBiVMAA/CmvonlbrT8mDJF/GTbZK7I9fyi4
-	0oLiID3Ebuats0Ybng5rFRcqKrastPsYZ50uqt6lf9gWH+loFdyjm0HIs/Ey+6QMhIHz7s+hNNo
-	JJwU1XVsOhYP1cPBxyz9/Y0n8JtqoQvbfK3CZaFXOk3wSxV50dyJkegL2o7jLh+KkOOv9iNSZsV
-	SDf4inb2ShafzwqqGbMQtBGBkGyNXa4nO9FNM93ZfOP9nIjU+SDWMqJnvwi35cXU2EPksLTnchv
-	nGLAxNYMcRS5TZolW5SN2NbolzSaf6vmJ3Bn/rc9fZiDWfxWx62Yrf4+FlIeNLg6/96cSE28Opl
-	Vb9m4qLbrfcvUaRycHJdfTy7DhGtD/EAC6Z5igLnFvEckKWN+Y49V3+C76UbZznSDJb13TJTSCk
-	tEmg5ZpCxrgl/QBYJHOh7XjDCqV/fgHTD+LzFnlzhgHRRTRlHKLctwl5GIG45DlWY/
-X-Received: by 2002:a05:7300:aca2:b0:2c0:be45:6815 with SMTP id 5a478bee46e88-2c10981e483mr3694786eec.32.1774218367042;
-        Sun, 22 Mar 2026 15:26:07 -0700 (PDT)
+        bh=v8/snDZPO6XeO4hSNMbxl+x8zM51kjYVWzx4jFJ4eVs=;
+        b=NJF/EACfc9guCkB8mWIb7c3Keq//Jn8B5qcsCFS64V6DQVrLwy3w6mqg2DRtRwR9TH
+         ciE4XIuTopdNnD0ucsgpYUzB5uY06mgurCO7ri8qkhbcXSnKCwKDDJf19A9D9C27nF+J
+         th2MTzSEzp+G4y4jLKxwLbphNc3LOYgQ6OZTACvwM2tdkKQ0h2zZncagttl8C7D98AlU
+         cYy2l6zXKlCZ6rMsQ5ZE2w6IPqeIfu6TPRBukhPNUlDRJqr0vtzDW0Swt7qB8bWEvBWS
+         8uk3Wy+Zykq7O1kjE3XvbbhfEwxWvYmFlPADyVVCReYxk1JpSbnrmyuBHo7KEDfh8JuE
+         C0zg==
+X-Forwarded-Encrypted: i=1; AJvYcCXRwm+jEGpRuPLNeUPQiq+byUF06ecglqRbl/svcNKyVoqDO5YUKdBM+PMNarNR925XqjAnUdMFxJw=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yw9drfjJAvYQmgCMff0AbwIic4pq7NTYjr3H+C7AayloWeo7owT
+	6IQpC2j5BdD7upDlPxzdL4Nilc1aZoZhu5n7OcU4lFzGyuWYjVzsAPD8
+X-Gm-Gg: ATEYQzxFUqkJcjZU1Jgdz2PHRbNcpwAlabVa/T+FmGmebfgq6GbET6XGNPgXMJlTZ8i
+	zIkheSQMSAKsNRpj+AN2/3JhHMcQa+/NSg+IQKECVyNr9ZqG1fW+BTEHYausH7kbocyOQeryRE5
+	9z9OUv1ZUKoDcCKD/1pKKx9avg+n5IIfQ5N/kuhSlQe3a7zPdZVDbCm4h2x02hvND52eL/H9SaT
+	u2xxizHGQSIOo53RZwzjugvP4sA0lAF/ZGHq/RZCwRFO0mJRLS9t6rvzx2gQKsXupJKQJS8ryzf
+	xHE5Xsg56X7JbSUdechKBk8xj7IDmzLj33wbl11eSpKvGvEzLRLCNWbMD1Hk71Fi7YUDbiR2OHY
+	jMlsRiD8K/KvKj5A4zkc5nmUS1WPEp2D3O29s4LQB0BmKOTO+wnpJGZ+rIY7rjS//KJT1PHsVyI
+	nsKWzUmdcLPk8phR6ztaLOcBbcOEb6IbxX3Zv2II3vg7oAqLmksVXuC91dvt5I9GWW0BRD5x4lf
+	RA=
+X-Received: by 2002:a05:7300:d945:b0:2c1:1aad:61ad with SMTP id 5a478bee46e88-2c11aad9c45mr1952031eec.8.1774218625893;
+        Sun, 22 Mar 2026 15:30:25 -0700 (PDT)
 Received: from google.com ([2a00:79e0:2ebe:8:b768:22ed:3eba:aeb3])
-        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2c10b31bef1sm13678234eec.26.2026.03.22.15.26.03
+        by smtp.gmail.com with ESMTPSA id 5a478bee46e88-2c10b17b8f2sm15091997eec.9.2026.03.22.15.30.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Mar 2026 15:26:06 -0700 (PDT)
-Date: Sun, 22 Mar 2026 15:26:01 -0700
+        Sun, 22 Mar 2026 15:30:24 -0700 (PDT)
+Date: Sun, 22 Mar 2026 15:30:21 -0700
 From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Romain Gantois <romain.gantois@bootlin.com>, 
-	MyungJoo Ham <myungjoo.ham@samsung.com>, Chanwoo Choi <cw00.choi@samsung.com>, 
-	Guenter Roeck <linux@roeck-us.net>, Peter Rosin <peda@axentia.se>, 
-	David Lechner <dlechner@baylibre.com>, Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>, 
-	Michael Hennerich <Michael.Hennerich@analog.com>, Mariel Tinaco <Mariel.Tinaco@analog.com>, 
-	Kevin Tsai <ktsai@capellamicro.com>, Linus Walleij <linus.walleij@linaro.org>, 
-	Eugen Hristev <eugen.hristev@linaro.org>, Vinod Koul <vkoul@kernel.org>, 
-	Kishon Vijay Abraham I <kishon@kernel.org>, Sebastian Reichel <sre@kernel.org>, Chen-Yu Tsai <wens@csie.org>, 
-	Hans de Goede <hansg@kernel.org>, Support Opensource <support.opensource@diasemi.com>, 
-	Paul Cercueil <paul@crapouillou.net>, Iskren Chernev <me@iskren.info>, 
-	Krzysztof Kozlowski <krzk@kernel.org>, Marek Szyprowski <m.szyprowski@samsung.com>, 
-	Matheus Castello <matheus@castello.eng.br>, Saravanan Sekar <sravanhome@gmail.com>, 
-	Matthias Brugger <matthias.bgg@gmail.com>, 
-	AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>, Casey Connolly <casey.connolly@linaro.org>, 
-	Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>, Orson Zhai <orsonzhai@gmail.com>, 
-	Baolin Wang <baolin.wang@linux.alibaba.com>, Chunyan Zhang <zhang.lyra@gmail.com>, 
-	Amit Kucheria <amitk@kernel.org>, Thara Gopinath <thara.gopinath@gmail.com>, 
-	"Rafael J. Wysocki" <rafael@kernel.org>, Daniel Lezcano <daniel.lezcano@linaro.org>, 
-	Zhang Rui <rui.zhang@intel.com>, Lukasz Luba <lukasz.luba@arm.com>, 
-	Claudiu Beznea <claudiu.beznea.uj@bp.renesas.com>, Liam Girdwood <lgirdwood@gmail.com>, 
-	Mark Brown <broonie@kernel.org>, Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>, 
-	Sylwester Nawrocki <s.nawrocki@samsung.com>, Olivier Moysan <olivier.moysan@foss.st.com>, 
-	Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>, 
-	Alexandre Torgue <alexandre.torgue@foss.st.com>, Thomas Petazzoni <thomas.petazzoni@bootlin.com>, 
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org, 
-	linux-input@vger.kernel.org, linux-phy@lists.infradead.org, linux-pm@vger.kernel.org, 
-	linux-mips@vger.kernel.org, linux-mediatek@lists.infradead.org, 
-	linux-arm-msm@vger.kernel.org, linux-sound@vger.kernel.org, 
-	linux-stm32@st-md-mailman.stormreply.com, Sebastian Reichel <sebastian.reichel@collabora.com>, 
-	Andy Shevchenko <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v2 2/2] iio: inkern: Use namespaced exports
-Message-ID: <acBsI0PxvxDGymCa@google.com>
-References: <20251209-iio-inkern-use-namespaced-exports-v2-0-9799a33c4b7f@bootlin.com>
- <20251209-iio-inkern-use-namespaced-exports-v2-2-9799a33c4b7f@bootlin.com>
- <20260111170222.43aee69a@jic23-huawei>
- <20260322122529.62093f12@jic23-huawei>
+Cc: David Lechner <dlechner@baylibre.com>, 
+	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org, 
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ti-ads7950: use
+ iio_push_to_buffers_with_ts_unaligned()
+Message-ID: <acBtUzrkMGK2Wd19@google.com>
+References: <20260314-iio-adc-ti-ads7950-declare-dma-buffer-v2-1-2087fc18b077@baylibre.com>
+ <20260321210539.2de04bc0@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -105,44 +77,39 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260322122529.62093f12@jic23-huawei>
+In-Reply-To: <20260321210539.2de04bc0@jic23-huawei>
 
-On Sun, Mar 22, 2026 at 12:25:29PM +0000, Jonathan Cameron wrote:
-> On Sun, 11 Jan 2026 17:02:22 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
+On Sat, Mar 21, 2026 at 09:05:39PM +0000, Jonathan Cameron wrote:
+> On Sat, 14 Mar 2026 16:12:24 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
 > 
-> > On Tue, 09 Dec 2025 09:25:56 +0100
-> > Romain Gantois <romain.gantois@bootlin.com> wrote:
+> > Use iio_push_to_buffers_with_ts_unaligned() to avoid unaligned access
+> > when writing the timestamp in the rx_buf.
 > > 
-> > > Use namespaced exports for IIO consumer API functions.
-> > > 
-> > > This will make it easier to manage the IIO export surface. Consumer drivers
-> > > will only be provided access to a specific set of functions, thereby
-> > > restricting usage of internal IIO functions by other parts of the kernel.
-> > > 
-> > > This change cannot be split into several parts without breaking
-> > > bisectability, thus all of the affected drivers are modified at once.
-> > > 
-> > > Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com> # for power-supply
-> > > Acked-by: Guenter Roeck <linux@roeck-us.net>
-> > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > > Signed-off-by: Romain Gantois <romain.gantois@bootlin.com>  
-> > Ideally looking for a couple more Acks.
+> > The previous implementation would have been fine on architectures that
+> > support 4-byte alignment of 64-bit integers but could cause issues on
+> > architectures that require 8-byte alignment.
 > > 
-> > If any of the maintainers of other trees who haven't already replied
-> > have time for a quick glance that would be great.  I'll spin an
-> > immutable branch but I'm not really expecting any non trivial
-> > conflicts unless there is a new user in flight that I've forgotten
-> > about.
-> 
-> At this stage, given I'm still waiting on replies from a couple of
-> subsystem maintainers, I'm thinking we'll do this next cycle and I'll
-> provide an immutable branch based on rc1 for anyone to grab if they
-> run into merge conflicts in linux-next.
+> > Fixes: 902c4b2446d4 ("iio: adc: New driver for TI ADS7950 chips")
+> > Signed-off-by: David Lechner <dlechner@baylibre.com>
+> > ---
+> > Since we were looking at this driver, I was going to convert this to use
+> > IIO_DECLARE_DMA_BUFFER_WITH_TS() but then I noticed that we actually
+> > have an unaligned access problem with the timestamp since we are
+> > ignoring the first two elements in the rx_buf when pushing the data to
+> > the buffer.
+> > 
+> > Unfortunately, this will cause a merge conflict with the series Dmitry
+> > is working on. I don't think there is any rush to get this backported
+> > since no one has reported a crash from unaligned access. Since fixes
+> > should go before improvements, we could apply this to iio/togreg then
+> > Dmitry can rebase his series on top of it.
+> I've done that. Applied to the togreg branch of iio.git pushed out as
+> testing etc. I've also marked it for stable so it gets picked up in the long
+> run.
 
-Sorry, I just acked the input bits in the patch, but in general I feel
-these kind of mechanical changes in consumers do not require an ack and
-you can just go an apply such changes.
+Cool, I'll rebase and send out my patches as soon as this hits
+linux-next.
 
 Thanks.
 
