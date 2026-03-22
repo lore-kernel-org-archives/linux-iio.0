@@ -1,115 +1,128 @@
-Received: from mail-yw1-f171.google.com (mail-yw1-f171.google.com [209.85.128.171])
+Received: from mail-ot1-f54.google.com (mail-ot1-f54.google.com [209.85.210.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A220F35BDD5
-	for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 13:52:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.171
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id DA6C333B974
+	for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 14:34:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774187565; cv=none; b=rrlJdms57F1Fjsx208V4LvrAalVQeoWr6A8BIbeWBpUDejH8KFzWHECDC0nQBgn4LOhpyXmTvXayzbsF18JmwH3tqHinyj7KQuEYTPCTmpSvC45xAHkmlUNlgXMNOwEimVHgtba8D50iGR93CbcyNQnAHauDM51iNHgLG8yph1w=
+	t=1774190069; cv=none; b=YzErtejtc3kFp6YuCnTjTTDZPaG06JfWt3GZ4iyp4lShrqQpzHTiM2D4fByDQ/nF3tvk0aeRpj5ZwcMU9pQ1x2O+gb5TUo9+ek7zpMAjKEPunqmV1UqS63nPEPdrjp0HXqUAL6aXRsxjJjpCjOve8lV8IvHBfzZlWwjLUylslc4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774187565; c=relaxed/simple;
-	bh=w+DQX1w7FFlPVsKbazN8qiswzg+87TvbKsY2zMl+ALs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=oTvoeBYRubE9ufsBl2ekZL7A6CI52Lw6ZjQ8Og0RknNNHY7JU/0jjtLKa+H+Io2E1vvNvjJp4+8PkqLCvvq66GwAB5xJ/I67QXWMi1/vNI9tNU7PSLA82VbwyuN4HuAKbV74HcYCyExtqXIFId70UBk1ymYly9n2ofyiXISoO9U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.171
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f171.google.com with SMTP id 00721157ae682-79a3ba1653fso22645877b3.3
-        for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 06:52:44 -0700 (PDT)
+	s=arc-20240116; t=1774190069; c=relaxed/simple;
+	bh=U7KSkfO7CouU1DVjGUDWy4vJlG1h+IQKkVaM4pMQIEc=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=oT3BCNMnKVMwZLEixCp5pWzaXI/RbzBxH2oexgYj8sWZVu/wyI1K4sm+K6UZN/66nVX9ZL8BxKn/R31g7CLIgq7JdyisH1Wk4Xu5+RfJ2sDJjW/YMQSnyzXb7qSWjhcmjhoowqNDmZwC3W1KiAcL9ayg6bWNEBVc3UIW4WZKdEk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=eJXfjWn/; arc=none smtp.client-ip=209.85.210.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="eJXfjWn/"
+Received: by mail-ot1-f54.google.com with SMTP id 46e09a7af769-7d7422b4ff1so1130324a34.3
+        for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 07:34:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774190066; x=1774794866; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=EWy0Djm3zJ1FDFJX6sj4xTqQeSs9XFMQf8coYBnmbE4=;
+        b=eJXfjWn/NIhAlDxms9b45lp1DX/XkAD4hS6W7Yt84L0V4pL/gcnDWimKH0/DJv/YLP
+         /C3LPrDVE3ADCxVfe0NTJMzjyQyWqlrDzeYP9gNWVoz2KxVjvX39SRI1UsyxtlP37AoE
+         0FZHo5CPbxanKGqV+4KB4x0Vo7drH4jfuU/6LNbeI5rT4p9N6fXWpQ5tSbNtzGBayq5c
+         vw/hG5pQQt9VSeP4TRFEN09ExHxU3ydo6xHpCxT8P/bghK8ekawydSgNmO+pjq/+cR+L
+         Qkrmau227i6pMYvol/XZbnzL8NkTyTFx0wAeaQOglFGexkkMtg98EeIEro0/zr9XexzY
+         LqBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774187563; x=1774792363;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=w+DQX1w7FFlPVsKbazN8qiswzg+87TvbKsY2zMl+ALs=;
-        b=rmuqpKBcZUxYpTNQ/GgvcNShex0kqfw8PeHisQmjTrAcGBsvMNkD3tX+IJRwbiIrxG
-         jgHtgwqrRqAE2BrHnndoHAUI4yMAFbZR4dDMPMvmVNqQwyaz8NRxOUda3IWo/qtDCNfT
-         wwuh3dV4sq25xDcLvQRuyjWHW/Nrp7FoYcY1/3g8Xv09BvVZMZBSsTMCinCIO3lr6uYu
-         Du0pug9Mcjceb3cGRD27ipTfn50MRdJUo9nH8epqucoh2TvZSZBqhWtY/ksT/EGuwcTi
-         k53kyzEzQy7l8MVEZ65067cvtt0ZrWOIvyDl/HDSEqiR98ocB9YtDLiAhOe45y+XjalI
-         bWtg==
-X-Forwarded-Encrypted: i=1; AJvYcCVAmFl4NwWMIFvpbC2zLDBoX5aOoFRO0C0KKoVW5o5tuhvPWkExcX7JtuKjPU5e+uTwtqHZf87W9OA=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzXBKSoJ+eXPPdw3tT5vlISmooZlKZ/1gCmevJf5/Y5HyflZ3FX
-	u8F1zwiH1TSWw8gg/zOVFafLVp8aKzr0DvCGkxab1Hln94OrrQJCCXwUY6nw6ZcfARA=
-X-Gm-Gg: ATEYQzy1ggtj8DKdfZCSISrPUYr2rPtfE2a4gI+TsyEW/2dDTcpmATqeKnb0+c9zMY8
-	juIaJHrP6ElJLmAqRvhdWIYhZd6LVgbUywpjxx8v4Gsky9wpDKFXdYYw5HinwGoPInMe4wTfCwt
-	lK6k0kxBZcD6MjwLrORNn9Ep4P0VwoMOqc9V5qitfIQLlPCQNqFbw5zjVMyGi3Fleqg4j8K/AXP
-	IczTtgoZKXjemwy+rkg5sb0Qh8BgqL4DmthC4m4td8Nva8hYG4KybsQsZqbhHCX2UFQjXeND1yC
-	l9UCXRKAv2uy4h10vfAm5gySmouF21czsX95dY4/d8rvsoSw6MftF6+nn2qrv+RBSYtqUdj9RMd
-	LZovYiztXHxkZGceqxgfMHCXi1lGZSSi/Z4fkT/bH3JvYiHSDRPEttAjYaQ2p7C9sYYv8qzCZmH
-	ZAHPBCBZPZoBABtUhBPWCAddMVi9vpPd+GgjrsUNioJKMQUx/eCKMqxAH5dbvhSL9UEdXPCBtft
-	TgACFl6LPN1qCpznuxtQRWimzJiOpG63qH0sVIZNA==
-X-Received: by 2002:a05:690c:6d83:b0:79a:526d:9123 with SMTP id 00721157ae682-79a90c6d14dmr94416567b3.62.1774187563377;
-        Sun, 22 Mar 2026 06:52:43 -0700 (PDT)
-Received: from mail-yx1-f50.google.com (mail-yx1-f50.google.com. [74.125.224.50])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-79a90580d7csm43344147b3.37.2026.03.22.06.52.41
-        for <linux-iio@vger.kernel.org>
+        d=1e100.net; s=20251104; t=1774190066; x=1774794866;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=EWy0Djm3zJ1FDFJX6sj4xTqQeSs9XFMQf8coYBnmbE4=;
+        b=AN0Z4SKppPLZu16+/94JT9d7jAuGjTEoEspQze7dXctO8WV84a899gGIUEb+LGp4B/
+         c+DGO/PrrcHDXAK6Ha2EmLtvNzc7M+ldoY9Jz2fUKqrY2IttuZ6WNzVKbBSOhJ/1qydm
+         V61K8Nr/HBPyi/KZwxyI54KygEzpzPBwvEgvPmROt6PRRWifcbISEvgY1vkhCunEchMI
+         K9ukmCpbGvHqi7uftqsPmBxTxWv3TVcw0mkqqDG/EJ0ps3KDSlOFBVadhwFjWN8dFkrf
+         masmsObQi+dz8OoW2RpAHVezR33kvGq7jXAnPwqzucYQnfiBi3m/jZKKH6qwr4G96DkO
+         V0Ug==
+X-Forwarded-Encrypted: i=1; AJvYcCWaa1bFdJaGpuEBR8hD+p8D+wijNGq/EONYYaD6fLLMUQO9dn5s6qOfOqqEMHl8F7NH7YvsZeIriUo=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyiKvLIqbsMMUq+IARNnrar50aJYZmV/xCsoh/EwxpGNGnmJGXK
+	UaHwCrTEAWHFqtpbseslSk9kUd1X+QPmUcDBRBcMY1ZgF7Q18eLUjK4cN0sAgW3ezKl+EAuZD6n
+	WPb3u
+X-Gm-Gg: ATEYQzybu3sJ/DZPoLSZ8YiCAAkIrjKl9+R+my54k19l3wfNXAsPBkFKDIu45YzDAFg
+	jiqRzhJdRTaLOYd14WI+rq3FhBuZoqDVZu3gLahlnar9RCBZBj3mHzLPl73Abu+P0YeiIKTeoL1
+	1VVbPG+bkGv4YzDW6/JrvTuJr8W7KHrjgwtJbnFvdBBrqR/R2zOGkxhZX2u4sXrGmzYdEgu42uO
+	IXLFcmjuEgwP751vA0Tq6ozn80OVrNNeEe9EuEHK5KUhvBHCLP4UK1LH/7w452OG9/uah2sQ68S
+	cOpiB1t4SJAiiYUD9vLqkvPoCR/aSBMBIAphQiqJOPRygnU9YADKRpXLdgJILQ7Z16Ju03W3aWp
+	7cDDRis6f0G+WPOPmUGSbUd2bLDoBUOPA+WT2wkB9iJxhCwIbxyg6Nsy0WZ70iIw0JiD+Uaqsjf
+	j5qMQQmj/kIrhLEHTUm6C1GbBVso3Mx0+wXQkN1xmPjpNbqmTTv/R0uZXpmNBm/2gPWf8SgI8=
+X-Received: by 2002:a05:6830:4491:b0:7d7:fc2a:2fab with SMTP id 46e09a7af769-7d7fc2a32f5mr4003877a34.33.1774190065660;
+        Sun, 22 Mar 2026 07:34:25 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:fb84:df2:aafb:553d? ([2600:8803:e7e4:500:fb84:df2:aafb:553d])
+        by smtp.gmail.com with ESMTPSA id 46e09a7af769-7d7f8ec22casm5207885a34.21.2026.03.22.07.34.24
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Mar 2026 06:52:42 -0700 (PDT)
-Received: by mail-yx1-f50.google.com with SMTP id 956f58d0204a3-64e8c7f5082so2960745d50.0
-        for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 06:52:41 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWg0iyvWHwZe3WdrZsA4xg33Zof5oyCvkyOJR3VxtcNfsna+KQFnea/1WkVzFY9gNT7NdNfBr+f87U=@vger.kernel.org
-X-Received: by 2002:a05:690e:2557:b0:648:f57b:d07c with SMTP id
- 956f58d0204a3-64eaa7a3d25mr6790302d50.50.1774187561442; Sun, 22 Mar 2026
- 06:52:41 -0700 (PDT)
+        Sun, 22 Mar 2026 07:34:25 -0700 (PDT)
+Message-ID: <b90be3d0-1372-4ace-8e7c-aeab1ff60815@baylibre.com>
+Date: Sun, 22 Mar 2026 09:34:24 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260319190738.151614-1-email@sirat.me> <20260319190738.151614-3-email@sirat.me>
- <8502eb51-53c9-4f1b-92d0-21b06fa4802e@baylibre.com> <CANn+LWJEJJoGQU7p2P2GrOcA_g2x7jEnvjcTJYG1hDRUnRw3UA@mail.gmail.com>
- <b1da32d2-e1f7-4fea-82a7-a40e8073a100@baylibre.com> <20260322110319.7d7558f3@jic23-huawei>
-In-Reply-To: <20260322110319.7d7558f3@jic23-huawei>
-From: Sirat <email@sirat.me>
-Date: Sun, 22 Mar 2026 19:52:30 +0600
-X-Gmail-Original-Message-ID: <CANn+LWJwPUiCkz_godEeBvZnXEXzNmCW_-ou=wHL+kjfn0zF_Q@mail.gmail.com>
-X-Gm-Features: AaiRm52NweY6HyFIQby7OSMCCfV58Jsxo_o9z1JQPpqAQeFp4LsvOu-yTm0_v6Y
-Message-ID: <CANn+LWJwPUiCkz_godEeBvZnXEXzNmCW_-ou=wHL+kjfn0zF_Q@mail.gmail.com>
-Subject: Re: [PATCH v6 2/2] iio: proximity: add driver for ST VL53L1X ToF sensor
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, nuno.sa@analog.com, andy@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2] iio: chemical: mhz19b: bound receive buffer copy
+To: Pengpeng Hou <pengpeng@iscas.ac.cn>, linux-iio@vger.kernel.org
+Cc: Gyeyoung Baek <gye976@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org
+References: <20260322031923.58031-1-pengpeng@iscas.ac.cn>
+ <20260322134807.16217-1-pengpeng@iscas.ac.cn>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <20260322134807.16217-1-pengpeng@iscas.ac.cn>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 
-On Sun, Mar 22, 2026 at 5:03=E2=80=AFPM Jonathan Cameron <jic23@kernel.org>=
- wrote:
->
-> On Sat, 21 Mar 2026 19:37:58 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
->
-> > On 3/21/26 5:39 PM, Sirat wrote:
-> > > On Sat, Mar 21, 2026 at 11:09=E2=80=AFPM David Lechner <dlechner@bayl=
-ibre.com> wrote:
-> > >>
-> > >> On 3/19/26 2:07 PM, Siratul Islam wrote:
-...
-> >
-> > If you do a buffered read, which stop ranging when it is done,
-> > then how can the direct read work after that?
-> >
-> > Can we just start and stop ranging momentarily for a direct
-> > read?
-> If the latency is high, then worth considering whether autosuspend
-> and runtime pm can help. That way a burst of reads will see low
-> latency after the first one but we won't be wasting power when
-> no one cares.
->
-> J
-> >
-> > Otherwise, is seems like we would want to have ranging always
-> > enabled.
-> >
-Maybe we should go with continuous ranging then since it's the
-vendor-intended behaviour.
-Since there is no hardware single-shot mode, by design, I think the
-driver should just behave
-as the hardware intended.
-> >
->
-Thanks,
-Sirat
+On 3/22/26 8:48 AM, Pengpeng Hou wrote:
+> `mhz19b_receive_buf()` appends bytes to the fixed 9-byte command buffer
+> without first checking that the new chunk fits in the remaining space.
+> A single receive callback can therefore write past the end of `st->buf`
+> before the driver sees that the command is complete.
+> 
+> Drop overlong chunks and reset the partial command state before the
+> copy.
+> 
+> Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+> ---
+
+Please don't make v2 a reply to v1. It makes it hard to see that a new
+version has been sent. Also, please include a changelog here (below the
+---) when sending new revisions so that we know what changed compared
+to v1.
+
+For this patch, you can just reply with the changelog instead of sending
+a new revision.
+
+Also, you received an Acked-by on v1, so you need to explain why you did
+not keep that tag when you sent v2.
+
+>  drivers/iio/chemical/mhz19b.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
+> 
+> diff --git a/drivers/iio/chemical/mhz19b.c b/drivers/iio/chemical/mhz19b.c
+> index 3c64154918b1..fbd7f14483b3 100644
+> --- a/drivers/iio/chemical/mhz19b.c
+> +++ b/drivers/iio/chemical/mhz19b.c
+> @@ -240,6 +240,12 @@ static size_t mhz19b_receive_buf(struct serdev_device *serdev,
+>  {
+>  	struct iio_dev *indio_dev = dev_get_drvdata(&serdev->dev);
+>  	struct mhz19b_state *st = iio_priv(indio_dev);
+> +	size_t remaining = sizeof(st->buf) - st->buf_idx;
+> +
+> +	if (unlikely(len > remaining)) {
+> +		st->buf_idx = 0;
+> +		return len;
+> +	}
+>  
+>  	memcpy(st->buf + st->buf_idx, data, len);
+>  	st->buf_idx += len;
+
