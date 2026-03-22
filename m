@@ -1,204 +1,175 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from TY3P286CU002.outbound.protection.outlook.com (mail-japaneastazon11010055.outbound.protection.outlook.com [52.101.229.55])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 03E6D35E95F;
-	Sun, 22 Mar 2026 17:39:26 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774201167; cv=none; b=LmxWmUFXBP//4M8Cd1d3dQzhwV2RlZS090/rdegIoPmuhUKpW+rOtD8e2M+7eWlvgLKI3HaM7/FdQaGxnhoTTZg57T3iBSnAiDevTF8oDs835ICsR9+d4hji2nbf7VFoEmlODlJvoZbFZ1qCVESggaAeXaviEfHa5zZyu+UsOl8=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774201167; c=relaxed/simple;
-	bh=rGqoyqNhFMHPVA+bY2FxyFQo/Q2vXVxgKNZAjG66XwA=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=cMh1b8hK9wHBOgt1FH/4b07yNH19sEKn84AoHLN9hhRFh5qPWTN0o2F5heJ+tWOi+hoy15PeXF8/JbvUJsL9G6WR/HFqgCOQct8EciTP6u4ZN5Nu8EuWSU8VgscevwGF8PxrDsw67WbO83/+HcLV/iDCG4ZBTahhEfugnvGA2so=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=CYa38JzD; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 59E3337648D;
+	Sun, 22 Mar 2026 18:57:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.229.55
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774205844; cv=fail; b=OpGclFHEcjICFb5US96Gnb5uHKgKO6S7tUOfuv8vaDTXc75v7yG2jL4ASyeRkRQQo9fqRlPkBiIkak+RobAWedp6sPXwc1pJ+HGsDc1RywJ2hRJiwL+vlWw8RTDHtLBblAfTDJCpJKO1VL8du3i/XlcFHW8wy1KLVfamKxQrwwM=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774205844; c=relaxed/simple;
+	bh=5E5ffIitIKdLXGDVpQoCtA4fx2ilernXbWLTqOFOjf8=;
+	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
+	 Content-Type:MIME-Version; b=F446tHqTzeZ1Y7kVMaSLhIdrFb35mD27VrQzG2g9ynjMAsvsPtEw6zqQYyj1H3npLSiZgI4LWCjw3Al0rXNwFZmi0294J/vZj8Xuieviak2GkTQWxPM4QGSPyp1y3WUGnwhc62tvzmcJNGAH6jCumv+ynTApvplan9XxWgNbC0Y=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=nRUDA9IS; arc=fail smtp.client-ip=52.101.229.55
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="CYa38JzD"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEF9FC19424;
-	Sun, 22 Mar 2026 17:39:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774201166;
-	bh=rGqoyqNhFMHPVA+bY2FxyFQo/Q2vXVxgKNZAjG66XwA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=CYa38JzDoTDeMANgMjx+JHX6sDcsvehICcGWNcpqkAQs/Rl5YfQ8nSCCc0ctnS+Ur
-	 nu7C2WmTJl1MefIO3pnJN2U/+zDqUTLFSqRS82350t5K81DmkYveIKXbtNPRwNcCKw
-	 qVMrJykjIUqtUF0ic3vb6nzH4gSEVRk5yGfrsYL8saVJseDbZhbMm+OXOzy9MJ7Bwx
-	 EVqFvDbrZe9tIwI1n/i95Z4enOMffnx302mvcKAQtHysQ75qHcEa+yFvsgVy1Oeswv
-	 ml6GV9GRTAa7uklaYuW+XkK93K3iUHUUxM1oqHndk7f1y2kjU+x0GV7k8xbNsO0Uqi
-	 tDzbpjI6S8bfQ==
-Date: Sun, 22 Mar 2026 17:39:16 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"
- <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, "Sa,
- Nuno" <Nuno.Sa@analog.com>, Rob Herring <robh@kernel.org>, Krzysztof
- Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Olivier
- Moysan <olivier.moysan@foss.st.com>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
- <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v7 4/4] iio: adc: ad4080: add support for AD4880
- dual-channel ADC
-Message-ID: <20260322173916.0dba368d@jic23-huawei>
-In-Reply-To: <CY4PR03MB339971AED25BA03A4E6947CC9B4AA@CY4PR03MB3399.namprd03.prod.outlook.com>
-References: <20260321100154.1258-1-antoniu.miclaus@analog.com>
-	<20260321100154.1258-5-antoniu.miclaus@analog.com>
-	<20260321121806.3bc18f53@jic23-huawei>
-	<CY4PR03MB339971AED25BA03A4E6947CC9B4AA@CY4PR03MB3399.namprd03.prod.outlook.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="nRUDA9IS"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=HtGDHCWn90NVu5d6oMP+MKPErS0uzLRIy+mjUDYRIl+LYFd1Sx8gjJW7edxKRdfvjLdd0n2Yfj5iKgufQmXtR/gGkmTXIMJVZ8WXiPRoycuAoOxs9eG8hvho+EhkQrYg9Y4YoxFRWwGzF63g5HHOU0Et66hyKHA0n74YiNh6jwg2HpJ6viVlN+Rss96+q0lfm69SqYcmEO7Lm6onScTRTKsUqlG8cV5FWILvYcUelXjxbz85aY/bANSa6EwdjhLrZDflTyGNz+xlmMTC6czbp30PB/+uAiiZphJWlC2fsmFLgA9t3oTW63abPTv4w8T3LPYqzlSxHQUKILaqtkiFpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=5E5ffIitIKdLXGDVpQoCtA4fx2ilernXbWLTqOFOjf8=;
+ b=DvZjcXzF9Fvi+1J5Fuq8DsUGVnVYFMFdewa4M9Og7CkfVlHbKXuoAwnclP4gzC3DG4CdSbwf8CKFtZ3qkbK85SGvXArj3OdvDVB3GR8Sk9LS8ss8nt2z7VSDrWGvTwVmx5yrS6X5ALYZtH31ZG/evaDjbSjrhZEPC6OvV8CDnTUFBeHmcwwSAlLL8aCfzpTHUPHbANINElaCS2Uj/ccZBa8pxbA0UN7LW9CwICoxFJ1IUvMQtT9aylvniF7hxmq5VDAdVik/Lwdj8MUwnrLm8ryo8cZE6vwIHBqlv8egIKfDQRSnrmQQEON+0IRykbmLecO4x4hFX5GAcWhnWdmfLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
+ dkim=pass header.d=renesas.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5E5ffIitIKdLXGDVpQoCtA4fx2ilernXbWLTqOFOjf8=;
+ b=nRUDA9ISJ5kVffsgjw2g7K0f32qAO39nOyU3LeqHS1FN/ZXpRnTitVk3cfUTr3zKM002rn3a5PoIgNPIM2YZlDR1juL9CFMaVxFSRpx7+5DEMo0ZE0jb59GY+oiSCZcCt/5pBIFgGzXI6eK67DEWXs/mo77uosW7RNWvivKzYM8=
+Received: from TYRPR01MB15619.jpnprd01.prod.outlook.com
+ (2603:1096:405:29b::10) by TYWPR01MB10997.jpnprd01.prod.outlook.com
+ (2603:1096:400:395::10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9723.25; Sun, 22 Mar
+ 2026 18:57:01 +0000
+Received: from TYRPR01MB15619.jpnprd01.prod.outlook.com
+ ([fe80::a68f:5c9:9de8:4fa4]) by TYRPR01MB15619.jpnprd01.prod.outlook.com
+ ([fe80::a68f:5c9:9de8:4fa4%5]) with mapi id 15.20.9723.030; Sun, 22 Mar 2026
+ 18:57:02 +0000
+From: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+To: William Breathitt Gray <wbg@kernel.org>
+CC: Biju Das <biju.das.jz@bp.renesas.com>, =?iso-8859-1?Q?Uwe_Kleine-K=F6nig?=
+	<ukleinek@kernel.org>, Lee Jones <lee@kernel.org>, Thierry Reding
+	<thierry.reding@gmail.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "linux-renesas-soc@vger.kernel.org"
+	<linux-renesas-soc@vger.kernel.org>, "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>, "linux-pwm@vger.kernel.org"
+	<linux-pwm@vger.kernel.org>, "stable@vger.kernel.org"
+	<stable@vger.kernel.org>
+Subject: RE: [PATCH 5/5] counter: rz-mtu3-cnt: do not use struct
+ rz_mtu3_channel's dev member
+Thread-Topic: [PATCH 5/5] counter: rz-mtu3-cnt: do not use struct
+ rz_mtu3_channel's dev member
+Thread-Index: AQHckeN+zOWlZRxvjEyvqD48rWtiM7W6braAgADGS+A=
+Date: Sun, 22 Mar 2026 18:57:02 +0000
+Message-ID:
+ <TYRPR01MB15619A8E68E7CDDBB0B66C8DE854AA@TYRPR01MB15619.jpnprd01.prod.outlook.com>
+References: <20260130122353.2263273-6-cosmin-gabriel.tanislav.xa@renesas.com>
+ <20260322065813.264398-1-wbg@kernel.org>
+In-Reply-To: <20260322065813.264398-1-wbg@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach:
+X-MS-TNEF-Correlator:
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=renesas.com;
+x-ms-publictraffictype: Email
+x-ms-traffictypediagnostic: TYRPR01MB15619:EE_|TYWPR01MB10997:EE_
+x-ms-office365-filtering-correlation-id: 49b54688-b9e7-4471-efbb-08de8844cd95
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam:
+ BCL:0;ARA:13230040|366016|376014|1800799024|38070700021|56012099003|18002099003|22082099003;
+x-microsoft-antispam-message-info:
+ ik1zTsyrrt0pQaNBK6FKZWPd9X5Nt27FvOqRFSieQSlkXZrQPRAQttlG2DwVagZoIetE4x4y/rShTbZKSupZA5Adc9BgYGD4tdcNwf+zDo4FgRWARKnRhxxatxML9z768EKQRl7Hp9UyS4nbfkj/3PX3nkHpzW1z2Fr999SQ/cGStlVfslbhFf+DPFY8xaAVVcGM+qOnI3UBXAcBDPnH4ISh0nij8pOa9LBXfHN+XYNveH9mdgPb6obSenLCozJodYjAG/pO4Sd6r8vzW723tof4DmNDOqOwXcMqiH1NQkrOoJNJyMfkWrfstjiNRUKiV85ZNL9KB4ByA4YkGmIAYkRZFzTpZ79q1GVbRXI0m8LxZA38zaxsdDB7xLeJftJm6xy3GqF5/bpGRLrqTlWlSx97uVSCuz2GXXz88ao5YszH0duRA/cv8uQ2fWv1kZGDdY4uqPl239SJX6URXvpBkiz19Xwd95dSYAP2RodOCnX8VBpdKbwL1ZoPTnbIN9i8ASCtL4rLchEt8CiVv0nluXylIzer90ASLQSFpo0z5CkraDiD2nxvPOXOLdiTaMYPvplYYw2wH7Q5ezG77k8662tVajr1k1VtbWQ995CuFVJFhhuvSsk512O+x3znF9MOqd2CwkbONtdrHtde00lp0vByN0MkgwBMXOiK2Bj9zPn2mcX3pZhT1pT5IWrx97Dv0YnCbjRjA24AfI4kURfv62nMaCrzvDUCSTMrh4UIShAvby5z2miyq2uUonLiEMQ9O37OfzIYPgrYrWIoggksr9pDypkxakOcUK7TAvoa5Wk=
+x-forefront-antispam-report:
+ CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYRPR01MB15619.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(366016)(376014)(1800799024)(38070700021)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0:
+ =?iso-8859-1?Q?XIVMMAoFozAxaS3n5sPQ0yW3yezlNC411HqRHdNrsjpmt5Alg4wS1PeFck?=
+ =?iso-8859-1?Q?9y3880elmhgG9RrrxSD1EAfbKN+xCLojMzfRwwG8cfJmF8DAaszMyBLvcd?=
+ =?iso-8859-1?Q?yEAuchG5G9emYPr819R2bdGgAKsOZdCQ95N+4X5UIhXxlypO0+ehtkib0I?=
+ =?iso-8859-1?Q?T1+T7YKRqPNcQc2J913Wj5sIFjojSiktD4p6eGYtz1KPNH0SyQhWYdt7C5?=
+ =?iso-8859-1?Q?AFv5TZI1LmBohL5XzuxyjU6xLSXkmUdJvRSp9Yv32eV+UaUhSEetqI87TH?=
+ =?iso-8859-1?Q?wcyAzYhJCdc8/Vw/3Fw+ZN1LY6F7sIbGdGwbAobkc9f1tG//okP4WtKR9Y?=
+ =?iso-8859-1?Q?4S8IRpZCa7dmEzSpPIjdk2V/edudTzDziLugqAuEIFxQNRftrMA8ZUvIBk?=
+ =?iso-8859-1?Q?tUZlb49LXYKKtOut+Ag3igl2myydlHml9frGMYQSuGnZgq2HWwIg3a9omB?=
+ =?iso-8859-1?Q?3lBUKaaklUxyLMC0C2QOC8lVsl+GcBknDAntuBqGg5uAOBj3VDEaazRv43?=
+ =?iso-8859-1?Q?FG+rINkEhVDPU31Ag4kscld0SHj4DCSMfj2v5Evn5s2o/hVAxdQkhSzscz?=
+ =?iso-8859-1?Q?MGcX058Hw6Ukz6sJ/hgyQqYLIYuHR4He4kEAiTsTeO2vCLBin0ql3PMQk5?=
+ =?iso-8859-1?Q?9QPAQOX7LQZcqO+cpgGawTImEFZawE8uoQCOfHqy0GBjp/paJPrABJOVAw?=
+ =?iso-8859-1?Q?QYRqgQ6R/8ZFnBHZj/r0sfxG8EdaU2WXDG8ocESmmnJkeio2/r5iGqsQHP?=
+ =?iso-8859-1?Q?zxx+hbhEtC9VH5kCQoX104jH6bWFFvQRcdb//s/WwWLwD/v7wyDyLLwf7E?=
+ =?iso-8859-1?Q?TEZPxr65U2XHplX9mWUeJ2T/q5kME2nNtNvQ6M2y8lkIoNP1/5wpDCuybx?=
+ =?iso-8859-1?Q?CvX6oMijF499kyQpRB1AoL0WSZLSW1861TtZGZvpcMJp86/BF10BhRlMYS?=
+ =?iso-8859-1?Q?kXcqwksDoA1dmwm3wCdqKQUSWt4USItd30TsbRw+hqz8LyA2YzrYpjGZqa?=
+ =?iso-8859-1?Q?ZZwWBUhDtLhNQsVjqI69yeXqjVUXx6rw1zRvH8C1RuTwt1EN4JJSL39702?=
+ =?iso-8859-1?Q?1I+2aYJon/TLs/Z8gcCWkV2pOuCJgqyeylk63OE8M5lXwdUViAsWZeIZSJ?=
+ =?iso-8859-1?Q?9DwSGMOA6OIH4SvCh7h8kCW/jY1BF1VyECbqza+efm8Sa0s1LSr/eCom3f?=
+ =?iso-8859-1?Q?xUXTod6MGNB+TG5nEap12HPtfV7dOXVA91ZbxxBaXTpU0Z7TIoPMaqpHXd?=
+ =?iso-8859-1?Q?lgegLfnuUF/h2PdO3Lci6f8XRmpjP5O2RmHSLf3mC+qN1SEI23O1f1vFbi?=
+ =?iso-8859-1?Q?d8alvGhj0jQOJ0R+tqoO33TR4gzfmZH/dmHZOd1wsQBVEQ/PRlBkIhqa5U?=
+ =?iso-8859-1?Q?xNowxxQE727BrtEa3cyiBGAnlBcUJ1fkFfAD8Pvg4Nx2BaI05zacyhIKan?=
+ =?iso-8859-1?Q?jC5TlqYEd0GXdk/gUcp/FHXcMF04sAAIQbGZpvtuTVSWLo7SaWpOQlVWJi?=
+ =?iso-8859-1?Q?aD44q8sHQj+uss6fP34xt32f4bM5WtRoFT+sP8/EUaAPXiyRnALJJ1kd6t?=
+ =?iso-8859-1?Q?1Zfhma6GJf2+CDtX+z/5l9rve0NlC0yRpx3abZvy4rlBs+HEMqY1vZkAKx?=
+ =?iso-8859-1?Q?QATo9v6O/z5444w38diiaIZaAgxLHr8KKG1CBNwza6RSyBEK9OJEjKBUKL?=
+ =?iso-8859-1?Q?H8zs0wEiZNtRkxoyeKapmemZzpO9gOMlXjetas5aJ2Zl9oJn8uMPrq8ent?=
+ =?iso-8859-1?Q?fFH23lVmR6Hu9rYW77VfO3JFEb+tMpAaEG8soqF6Wwp6PyB9/ZQM217hfm?=
+ =?iso-8859-1?Q?i5mo9Toqk6ZkKmnhzOzH3DPW9KQPRXvY0cT8nF2eev9mPxAofMa2?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: renesas.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: TYRPR01MB15619.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49b54688-b9e7-4471-efbb-08de8844cd95
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Mar 2026 18:57:02.1105
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EZsqU8CeSMidCvbuPn7IHMFY8xdYShS13QvR1xLpykuYYxmdFjF5KVK6rJyJe2QtL2HeoJ5ImUWJCmNx1aP/1kDmUbTC+veu7Ki9YfrtWgcMQr8mkW5HH6oPQCVDJR3h
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: TYWPR01MB10997
 
-On Sun, 22 Mar 2026 16:26:58 +0000
-"Miclaus, Antoniu" <Antoniu.Miclaus@analog.com> wrote:
-
-> > -----Original Message-----
-> > From: Jonathan Cameron <jic23@kernel.org>
-> > Sent: Saturday, March 21, 2026 2:18 PM
-> > To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
-> > Cc: Lars-Peter Clausen <lars@metafoo.de>; Hennerich, Michael
-> > <Michael.Hennerich@analog.com>; David Lechner <dlechner@baylibre.com>;
-> > Sa, Nuno <Nuno.Sa@analog.com>; Rob Herring <robh@kernel.org>; Krzysztof
-> > Kozlowski <krzk+dt@kernel.org>; Conor Dooley <conor+dt@kernel.org>;
-> > Olivier Moysan <olivier.moysan@foss.st.com>; linux-iio@vger.kernel.org;
-> > devicetree@vger.kernel.org; linux-kernel@vger.kernel.org
-> > Subject: Re: [PATCH v7 4/4] iio: adc: ad4080: add support for AD4880 du=
-al-
-> > channel ADC
-> >=20
-> > [External]
-> >=20
-> > On Sat, 21 Mar 2026 12:01:54 +0200
-> > Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
-> >  =20
-> > > Add support for the AD4880, a dual-channel 20-bit 40MSPS SAR ADC with
-> > > integrated fully differential amplifiers (FDA).
-> > >
-> > > The AD4880 has two independent ADC channels, each with its own SPI
-> > > configuration interface. The driver uses spi_new_ancillary_device() to
-> > > create an additional SPI device for the second channel, allowing both
-> > > channels to share the same SPI bus with different chip selects. =20
-> >=20
-> > Silly question - can we be sure that they both are on the same SPI bus?
-> > I think it's reasonable to assume no one would burn pins to wire the
-> > control interfaces up to separate busses. I'm not even sure how we'd
-> > do a binding if they were on separate busses.
-> >=20
-> > Otherwise, a follow on from the 'is it one backend or two' question
-> > on the binding.
-> >=20
-> > That long discussion between you and Andy has me looking at this a litt=
-le
-> > more closely. =20
+> From: William Breathitt Gray <wbg@kernel.org>
+> Sent: Sunday, March 22, 2026 8:58 AM
 >=20
->   Yes, both channels are on the same SPI bus with two chip
->   selects =E2=80=94 one per internal ADC die.
-
-Can you give a reference for this?  The datasheet I'm looking at
-has separate cs, sclk, sdi and sdo per channel.  So it would be
-a board thing only that puts them on the same SPI bus.
-=20
+> On Fri, Jan 30, 2026 at 02:23:53PM +0200, Cosmin Tanislav wrote:
+> > The counter driver can use HW channels 1 and 2, while the PWM driver ca=
+n
+> > use HW channels 0, 1, 2, 3, 4, 6, 7.
+> >
+> > The dev member is assigned both by the counter driver and the PWM drive=
+r
+> > for channels 1 and 2, to their own struct device instance, overwriting
+> > the previous value.
+> >
+> > The sub-drivers race to assign their own struct device pointer to the
+> > same struct rz_mtu3_channel's dev member.
+> >
+> > The dev member of struct rz_mtu3_channel is used by the counter
+> > sub-driver for runtime PM.
+> >
+> > Depending on the probe order of the counter and PWM sub-drivers, the
+> > dev member may point to the wrong struct device instance, causing the
+> > counter sub-driver to do runtime PM actions on the wrong device.
+> >
+> > To fix this, use the parent pointer of the counter, which is assigned
+> > during probe to the correct struct device, not the struct device pointe=
+r
+> > inside the shared struct rz_mtu3_channel.
 >=20
->   For the backend question =E2=80=94 as explained in my reply to the
->   binding patch, the FPGA uses two separate axi_ad408x IP
->   instances. The buffer is requested from back[0] because
->   the packer output feeds the DMA through backend A's clock
->   domain.
+> It looks like you replace every instance of ch->dev in the file,
+> except in rz_mtu3_cnt_probe where it is initially set as ch->dev =3D dev.
+> Is that line in rz_mtu3_cnt_probe still needed, or can it now be removed
+> too?
 
-Ok. So given the packer part makes this really one FPGA IP
-with two 'backend interfaces'.
+The MTU3 MFD driver still depends on struct rz_mtu3_channel::dev being
+initialized for retrieving private data from the channels.
 
-Lets be clear about that in the comments etc.
+I have patches prepared to remove that dependency and removing the dev memb=
+er
+will come afterwards.
 
-Jonathan
-
->=20
-> > Jonathan
-> >  =20
-> > >
-> > > Reviewed-by: David Lechner <dlechner@baylibre.com>
-> > > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-> > > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> > > ---
-> > > Changes in v7:
-> > >   - Drop debugfs_reg_access for dual-channel AD4880 variant
-> > >   - Pass struct device * to ad4080_properties_parse() instead of
-> > >     using regmap_get_device(st->regmap[0])
-> > >
-> > >  drivers/iio/adc/ad4080.c | 231 ++++++++++++++++++++++++++++++----- =
-=20
-> > ---- =20
-> > >  1 file changed, 181 insertions(+), 50 deletions(-)
-> > >
-> > > diff --git a/drivers/iio/adc/ad4080.c b/drivers/iio/adc/ad4080.c
-> > > index 7cf3b6ed7940..8767eef418e9 100644
-> > > --- a/drivers/iio/adc/ad4080.c
-> > > +++ b/drivers/iio/adc/ad4080.c =20
-> >  =20
-> > > @@ -632,9 +752,10 @@ static int ad4080_probe(struct spi_device *spi)
-> > >  	indio_dev->name =3D st->info->name;
-> > >  	indio_dev->channels =3D st->info->channels;
-> > >  	indio_dev->num_channels =3D st->info->num_channels;
-> > > -	indio_dev->info =3D &ad4080_iio_info;
-> > > +	indio_dev->info =3D st->info->num_channels > 1 ?
-> > > +			  &ad4880_iio_info : &ad4080_iio_info;
-> > >
-> > > -	ret =3D ad4080_properties_parse(st);
-> > > +	ret =3D ad4080_properties_parse(st, dev);
-> > >  	if (ret)
-> > >  		return ret;
-> > >
-> > > @@ -644,15 +765,23 @@ static int ad4080_probe(struct spi_device *spi)
-> > >
-> > >  	st->clk_rate =3D clk_get_rate(clk);
-> > >
-> > > -	st->back =3D devm_iio_backend_get(dev, NULL);
-> > > -	if (IS_ERR(st->back))
-> > > -		return PTR_ERR(st->back);
-> > > +	/* Get backends for all channels */
-> > > +	for (unsigned int ch =3D 0; ch < st->info->num_channels; ch++) {
-> > > +		st->back[ch] =3D devm_iio_backend_get_by_index(dev, ch);
-> > > +		if (IS_ERR(st->back[ch]))
-> > > +			return PTR_ERR(st->back[ch]);
-> > >
-> > > -	ret =3D devm_iio_backend_request_buffer(dev, st->back, indio_dev);
-> > > -	if (ret)
-> > > -		return ret;
-> > > +		ret =3D devm_iio_backend_enable(dev, st->back[ch]);
-> > > +		if (ret)
-> > > +			return ret;
-> > > +	}
-> > >
-> > > -	ret =3D devm_iio_backend_enable(dev, st->back);
-> > > +	/*
-> > > +	 * Request buffer from the first backend only. For multi-channel
-> > > +	 * devices (e.g., AD4880), all backends share a single IIO buffer
-> > > +	 * as data from all ADC channels is interleaved into one stream.
-> > > +	 */
-> > > +	ret =3D devm_iio_backend_request_buffer(dev, st->back[0], indio_dev=
-); =20
-> >=20
-> > So this is the interleaving bit.  Follows on from my question on the bi=
-nding
-> > and whether it is appropriate to represent it as two separate backends
-> > vs a single one.  With a single one we'd need to make the control inter=
-faces
-> > take a parameter to say which 'front end' we were configuring - though =
-it
-> > kind of maps to channels in the particular case and we already have
-> > a parameter for that.
-> >=20
-> > The other option might be to make the dt-binding take a phandle + index=
- to
-> > say this backend, with this front end interface.
-> >  =20
-> > >  	if (ret)
-> > >  		return ret; =20
->=20
+Thank you for applying the patches!
 
