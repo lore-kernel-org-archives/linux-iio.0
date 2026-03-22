@@ -1,182 +1,109 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 22C3B2F4A0C;
-	Sun, 22 Mar 2026 09:55:23 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8ABE8226D02;
+	Sun, 22 Mar 2026 11:03:29 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774173324; cv=none; b=f08fm9AqXoIaFzL4K3uNtspfwzCpLWGUk+IzMG2HK5kDV1LY6DPrPENNkqK4XroxUx6KZ9JVVYHylT4/s7mFnMQAxZrTJVdH8+giy2g2gynV21wLEaF6pug+2Bhy04ABJVe6nXv7IlWis/wcAw/o2PTfZhm/ECvt6r/1qsuB7AE=
+	t=1774177409; cv=none; b=OL1uBoMk9DQtFkBsA2WweeYZuhP1QDIILArHwq1RvRfujz5a1mK50h1Ejm3ZoCRGYWlhuWArQq/eIGREGAIQe1d606avd9qwB00i0nk+FCZIWPv84MBHyBDEfVLegJm5VbVa9Cj+nfeBH9uDW7cTtlZTz7VEUj99LNpuzCEEuzA=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774173324; c=relaxed/simple;
-	bh=wds4pz1vo4hnU97Ycw1V36BOoaG56UpHueqjDmj507M=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=M5j4ru58KwjOOkVcKl7vPnfWYiYaUJjknPGu5yil4F1UlZa05vbZz9H5y4BCCP72Ltai4K7mYu5AziZEiHUFiI27FgPvVnLRhnqBuZPUZ5LIwRVxeiuWnFhZ5dLzMBtN+dGec5ce+s07ZcWqub6LcEpvdNViP4SQzDIkvyDw7A8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Glr449GF; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774177409; c=relaxed/simple;
+	bh=hn8/vfejfcSVY3nOh3VQo3mhPIdf+VP8rhVsppTD938=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=trml9p6gWqODYqU7meIFs/sxXagwYNBcCyv5FG3NFyYoM0RCkn+Vfk/Om5VQtlM4oTZ4A7KNXVFtCAwojoClgtfcPLexlE49J/4eB1sQSadYjkLkGndLFqGi6BzKdhsMAViP98yD+LLZj3b0Zf59Y7Qm+pz8vTt5uKqQvI22sFU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=FAc6GVIj; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Glr449GF"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CF91C19424;
-	Sun, 22 Mar 2026 09:55:20 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="FAc6GVIj"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F983C19424;
+	Sun, 22 Mar 2026 11:03:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774173323;
-	bh=wds4pz1vo4hnU97Ycw1V36BOoaG56UpHueqjDmj507M=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=Glr449GFxMkqC3eb7DHpp2nEiEZn4tkpvQhrQkkZk34f2MhfFTdPAlV/3BHWC2Z5J
-	 9dUvwUIHcPg053EXP5b5/Zcl7f5DeI6n1p7xvBhbr6VbqeW0n1rXi1f/AFgjj4QZ4J
-	 LJRtz7J12UVbR8xQlEdtHYh7nH5ykBNtqczuN9svOO3ABY5ONMtC/WDXBJjIhlfxXe
-	 YLK4L+/l4PGnYe61qmxaTtugHMbSctS7BV/Bk0Zcf7N9pXEZ5vOICsJTECSWXQCJk6
-	 iSTPAl1U+ugBbLtOhNbs3Rs8Bn6HjBdZbd9egZovXr6WhNQT4QiBe/q14SKARvJEJR
-	 PWUp+Gj/0/6qQ==
-Message-ID: <2e43f7e5-09b8-4f95-815c-0954c579a623@kernel.org>
-Date: Sun, 22 Mar 2026 10:55:18 +0100
+	s=k20201202; t=1774177409;
+	bh=hn8/vfejfcSVY3nOh3VQo3mhPIdf+VP8rhVsppTD938=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=FAc6GVIjTwSoCeGLusIcwzK2Bpt+cXmOGV9Gq3FvVONrvpqZ/mA3j82xxZcVyoJt5
+	 ywgY5/SKJ9mxk9FWHKEDpoilEVoGeHG83pnDUwLZD6QmoLYfq+QpwvCPtV8ZrmZr+E
+	 dPLz6Uv0kgRJ++L2rtKDpl/zHqhy0nGGdHo5p+OvHybU9uaTHWGIcBnWIzsCd6QLvA
+	 gWUNoMtdgS2puapiuZxJunyEzWUEWbkLzZd/8LcAESaJJbxBra12D362vC0emy656D
+	 e255GgmKwVSR/alws6mUE9E925t2t0u5JJDTibE3roD1euj13yI+y+lJgcFs9Rmyvn
+	 7Fbym8dCivjTQ==
+Date: Sun, 22 Mar 2026 11:03:19 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: David Lechner <dlechner@baylibre.com>
+Cc: Sirat <email@sirat.me>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, nuno.sa@analog.com, andy@kernel.org,
+ robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
+ linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v6 2/2] iio: proximity: add driver for ST VL53L1X ToF
+ sensor
+Message-ID: <20260322110319.7d7558f3@jic23-huawei>
+In-Reply-To: <b1da32d2-e1f7-4fea-82a7-a40e8073a100@baylibre.com>
+References: <20260319190738.151614-1-email@sirat.me>
+	<20260319190738.151614-3-email@sirat.me>
+	<8502eb51-53c9-4f1b-92d0-21b06fa4802e@baylibre.com>
+	<CANn+LWJEJJoGQU7p2P2GrOcA_g2x7jEnvjcTJYG1hDRUnRw3UA@mail.gmail.com>
+	<b1da32d2-e1f7-4fea-82a7-a40e8073a100@baylibre.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH 5/5] dt-bindings: iio: adc: xilinx-xadc: convert to YAML
- format
-To: David Lechner <dlechner@baylibre.com>,
- Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Nuno Sa <nuno.sa@analog.com>,
- Andy Shevchenko <andy@kernel.org>, Michal Simek <michal.simek@amd.com>,
- Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
- Conor Dooley <conor+dt@kernel.org>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org, saikrishna12468@gmail.com, git@amd.com
-References: <20260220053941.611415-1-sai.krishna.potthuri@amd.com>
- <20260220053941.611415-6-sai.krishna.potthuri@amd.com>
- <20260221-dancing-papaya-wolverine-db8afd@quoll>
- <b89933a3-5f25-466c-a2f5-6e231aa12749@amd.com>
- <21d425bc-9406-401b-9817-7255ba3d31fc@baylibre.com>
- <e4c9729f-1785-4d10-a337-37b0d26fe30b@amd.com>
- <f1706ec0-3995-4fdf-a9fb-8e1e688438a7@baylibre.com>
- <05bcc5b7-b3e8-40fb-be70-413c74afcfb1@amd.com>
- <cf749e8c-f141-4367-81ad-827e02273ec5@baylibre.com>
- <6a4e3d95-875f-4c2b-8443-c2f2b19ff166@amd.com>
- <12a06779-cbbb-4dc2-b564-7b9cdff6796b@kernel.org>
- <faa4e46b-1cc6-4bab-b13e-c527a67ec4c4@baylibre.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <faa4e46b-1cc6-4bab-b13e-c527a67ec4c4@baylibre.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 
-On 19/03/2026 20:07, David Lechner wrote:
-> On 3/19/26 11:49 AM, Krzysztof Kozlowski wrote:
->> On 19/03/2026 16:49, Sai Krishna Potthuri wrote:
->>>>>>>>>>
->>>>>>>>>>> +
->>>>>>>>>>> +$defs:
->>>>>>>>>>
->>>>>>>>>> Why this is a def, not used directly? I see only one usage of this def.
->>>>>>>>>
->>>>>>>>> I am getting the below error if i define the patternProperties directly.
->>>>>>>>> Seems like complex vendor peroperties should be referenced via $ref.
->>>>>>>>> Please suggest if there is any better way to deal this.
->>>>>>>>
->>>>>>>> It is hard to say without seeing the new version of what you wrote.
->>>>>>>
->>>>>>> In v1 series, i created $def and referenced this in xlnx,channels to avoid the error that i mentioned.
->>>>>>
->>>>>> Is the code below the code that causes the error?
->>>>>
->>>>> No, the below code is not creating the error but Krzysztof asked the question on this code,
->>>>> "Why this is a def, not used directly? I see only one usage of this def."
->>>>>
->>>>> I am saying if i don't use the def and use it directly i am seeing the error that i mentioned. So, asking is there any better way to handle this case other than using def.
->>>>
->>>> If you could show us the actual code that is causing the error, then
->>>> we could perhaps spot a mistake or suggest an alternative.
->>
->> Thanks David, I am surprised how many emails we need to exchange just to
->> see the actual code.
->>
->>>
->>> Thanks. Here is the code that is causing the error
->>> ("properties:xlnx,channels:type: 'boolean' was expected").
->>>
->>> xlnx,channels:
->>
->> Device nodes do not have any prefixes. Just take a look at any DTS or
->> any binding.
->>
->> Probably that's the reason, because nothing in this code looks
->> particularly odd. Anyway, please do not come with odd syntax in the code
->> without any explanation, just to make it passing the tests, so for
->> example ignoring the checks we have.
->>
->>
->> Best regards,
->> Krzysztof
-> 
-> Since this is converting existing 12-years-old .txt bindings, I don't
-> think we can "fix" the bindings by dropping the vendor prefix.
+On Sat, 21 Mar 2026 19:37:58 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-Indeed. It is being also in the driver. The prefix must stay and this
-oddity must be explained in the commit msg.
+> On 3/21/26 5:39 PM, Sirat wrote:
+> > On Sat, Mar 21, 2026 at 11:09=E2=80=AFPM David Lechner <dlechner@baylib=
+re.com> wrote: =20
+> >>
+> >> On 3/19/26 2:07 PM, Siratul Islam wrote: =20
+> >>> Add support for the STMicroelectronics VL53L1X Time-of-Flight
+> >>> ranging sensor with I2C interface.
+> >>> =20
+> ...
+>=20
+> >>> +
+> >>> +     ret =3D vl53l1x_start_ranging(data);
+> >>> +     if (ret)
+> >>> +             return ret; =20
+> >>
+> >> Why start ranging here? It looks like this is controlled during buffer
+> >> enable/disable.
+> >> =20
+> > The VL53L1X (unlike L0X) does not have a single-shot mode. So every
+> > measurement requires the device
+> > to be running (Autonomous mode according to the datasheet). Starting
+> > ranging once
+> > in probe allows the direct read path to work without any additional
+> > start/stop logic inside read_raw().
+> > This keeps that path simple and low-latency. The buffered/triggered
+> > path independently controls
+> > ranging via postenable/predisable, so there is no conflict. =20
+>=20
+> If you do a buffered read, which stop ranging when it is done,
+> then how can the direct read work after that?
+>=20
+> Can we just start and stop ranging momentarily for a direct
+> read?
+If the latency is high, then worth considering whether autosuspend
+and runtime pm can help. That way a burst of reads will see low
+latency after the first one but we won't be wasting power when
+no one cares.
 
-Commit msg must explain all the non-obvious, unusual, unexpected odd
-things the patch is doing.
+J
+>=20
+> Otherwise, is seems like we would want to have ranging always
+> enabled.
+>=20
+> >>
+> >> =20
+> > I will address the rest of your review in the next version.
+> >=20
+> > Thanks,
+> > Sirat =20
+>=20
+>=20
 
-> 
-> I think in cases like this, Rob will usually fix the tooling to ignore
-> this as a special case. (I had a similar case last year on a conversion
-> I did.)
-> 
-> So I think the right thing to do is to not use $def and explain in the
-> commit message why the error is expected (we can't change existing bindings
-> even though they are "wrong" by current standards).
-> 
-> If this was a new binding, we should be using the common adc.yaml for IIO
-> ADCs which already has patterProperties for channels and a bipolar flag.
-> But we are stuck with this vendor-prefixed one here.
-> 
-
-
-Best regards,
-Krzysztof
