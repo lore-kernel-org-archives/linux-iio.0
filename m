@@ -1,110 +1,138 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f172.google.com (mail-pl1-f172.google.com [209.85.214.172])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BAD091B6D1A;
-	Sun, 22 Mar 2026 11:52:03 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774180323; cv=none; b=gTkugkdsanogf8zO6tTRyopEu3b1BewSWVD/lvfF1xv0glhIhGegNYZHggXbWn8CC35/e70E5CAG8VmBP+eVVPjXw9z39FcObMnHWBQC0uLQHTRD3bqbH1+7zy+ynY0yYLrpn6v8oxluz2GuT5JMHuLkVX4QGGdGkkJBe3k7CFQ=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774180323; c=relaxed/simple;
-	bh=SXBDfBvRx04l2CCVp87HENbJiCXeMjKNmo1BP3/dTSk=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=Fq9N8+815lMyxz1nD/GpuH0qW+8/9hTyCP4Qnaj8xuek3WIqG0AxNBjb9z1vuWRt1yI1ZE2MruesEbGQaZKsyPxIpMi9DxxXrM/Ybp7/gcLG8bNkTDpkO+1GGem/4leBnQxCGC5dnxBpmIXzVZZ55ieZRsNH7GaJaBj+XA9BUhc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JV4+VwWW; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C80729D291
+	for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 11:52:26 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.214.172
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774180347; cv=pass; b=MKssn8UJA17XlA8DQVIX+o5BhautgMUIz2TSkbBH5E4zmRFRQYBlTUm5wkcAcZxoGM4Okm3feopYPLCriOzcxBHEO+Ddq90HSrtdo30F8ZXh05XHrU++rflm4KTTBcthBvCn+nEnUxoUBsR6wTxEUix7lj1Fc5g5lM6wy6KHgbE=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774180347; c=relaxed/simple;
+	bh=m+Z4rvcVZ1jhYQImGnrMUvMxAmlc4/vY69TOrXNHdrA=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=j3WJT6inEzt9ZhZamj2thaFMvqvQryqarsgiDRSJ+Eg8HygXgD5A2MCAhJ6jgLfWRSr0ba4fQDp/5WwcNt2xWIPGPkOaja7tYiwp58UlSwVWSeXSdolIUJkc/8+wnat4ZAdLQ/SaR9V0zuI3+4g0g4i6D0tz2mY7sA5DQe2TbNw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=aKRz9ZBj; arc=pass smtp.client-ip=209.85.214.172
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JV4+VwWW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAEBEC19424;
-	Sun, 22 Mar 2026 11:51:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774180323;
-	bh=SXBDfBvRx04l2CCVp87HENbJiCXeMjKNmo1BP3/dTSk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=JV4+VwWWjR4xBPkGDV/pD9N6lLZGzdMPiCg1xDEe5ffftOJYvq03OGWBvTRbOjMlf
-	 SYrAyeys7WtUf2S1kX4A7S8Qh2xo+vziet6w4VO32UdcmssHk4Ul1StlN6cmd5LS0J
-	 2jCFSmRmTiOmwO/fBR7K+PIt7hOHv48eUYP0YO7WalyG4Xa+h35Z8WEXVZ3fuUstZ/
-	 EKLBfU69+SRkmUfO6Vufeaz7qHXzQlkeVPaNd0eDrybKZJLsnc1BnIqibfS+y1Ik/K
-	 Hi9Y/duaGq+Nb8waKITUmRsLR6JRAErPzDkoLtrXP419OuI09hZMnI5KbtfYJCGrzt
-	 pGYCNQFN2oaxw==
-Date: Sun, 22 Mar 2026 11:51:54 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Neel Bullywon <neelb2403@gmail.com>, lars@metafoo.de,
- Michael.Hennerich@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: frequency: adf4350: replace loop with
- fls_long()
-Message-ID: <20260322115154.40de9b1c@jic23-huawei>
-In-Reply-To: <abf6RwTHSapCUw52@ashevche-desk.local>
-References: <20260311020115.56321-1-neelb2403@gmail.com>
-	<20260314172006.69744-1-neelb2403@gmail.com>
-	<abf6RwTHSapCUw52@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aKRz9ZBj"
+Received: by mail-pl1-f172.google.com with SMTP id d9443c01a7336-2adff872068so8556875ad.1
+        for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 04:52:26 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1774180345; cv=none;
+        d=google.com; s=arc-20240605;
+        b=clSmTaM3qg/4ucAYTxpoRIZKA08nmladUeLPIDJMWCdxoD2OSmhsozFWXb7k0uY4a+
+         zygQkeIaagH5Ua0SYV0YMQLkuk6SwX3XJBdgJ05fzW8+AQ2Y/Ftjn+DLyKXydpFOcAxp
+         MlbqfS8zvHh5s3VL6j6SoBQf6yAnegiEBN2QLz2556yKltGtRgcRCeROPA+sfy4wHuGd
+         tF991xaKc5ewl0EYmvFy7s+u6KgJR4Gi6JJYCnZ8Y0EecWLgKthcnh+krg+Eo7NYsm82
+         WkJ9L7GrF05iubOqEH1pwmjjbKpzrhwFtvNsti0c0jV0yXn8eoE5qZ5RtiuBoc8AP8CF
+         In4A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=2EuarJFO7EQBeVIouMxE1VIq1W6+abe3kbfVekSMSfo=;
+        fh=btk6J8PvNG5HVZJzIKIPAF/PJyUmgyDuJiU8Zj6xKk4=;
+        b=CYTFu94ss0VF9W4sHiJzTJsyKTEgkagG0bznoneC5hOVl9/ooah+txYFE4iOe/0Gam
+         yKXf2Asi91w41WO5Dl2rJNBrIzLsdpCIi1on+jpY33DlmlapEIp6ZSsMkKh0pXavzp70
+         karfT1jPYjOzmHErdxJoY6gM9hocGdsN3lnkZGpXmvVsnzlcrCq6C8NF+pftHFlslf1R
+         EiqiMeUYAn38ev1Tly8OdHIW52X2ojFbq+0m7dLbBUSJXiaKHkE9p9vAZVVGDM/2t505
+         V98SQ9hn7XKhjr00T3UlioWQIVXdGQG9QVttGY7qocVAD42XeDxHtAVMzJ9Kjiwomnzc
+         8emg==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1774180345; x=1774785145; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=2EuarJFO7EQBeVIouMxE1VIq1W6+abe3kbfVekSMSfo=;
+        b=aKRz9ZBjGLSqEDGodNxTCOg2+wq/YI80XXTn9VtZb+soCZSzlBZb6vDO/Hk7LGhe7N
+         4ijwfoJ9mR4YdFlhL3rvUQSceAu5oBzT9lyu0OZkGlWgaGlM5ikff2oXg+y31qUYOHOU
+         ly08TbRrpslIaQsuNITpTsS+DQepaAKJ1FtpG5VDmy9yKdV89uSD/K8rdRbuaXqxrzyo
+         QFFmBCeJR4LeuZNgQRAFimAHkT3THcQfz16lFhi3yG4SgbzOsjrY1Pddgl2Z9rqsW4A7
+         yhSq3RlhJF7lqOW78uAE2z3q8Rg8er0c7oSzHSaj/ERmTT93T44BFpq7kOOp9OOE5KA0
+         4FnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774180345; x=1774785145;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=2EuarJFO7EQBeVIouMxE1VIq1W6+abe3kbfVekSMSfo=;
+        b=Jyk5JAHsAS2R46G+eNWOkRzclvOecteqybjMI8OZSglY22+o7SRXIQku7MhQhF67Jw
+         mnOIx+pKYUFYhvEf0yLKJbXwbGPasfh/p7vRu9tMgADcd18UderrEPeiKti0nk7jZgSF
+         xrX9yJkJHD+abMmhgOzVD28atCyk7dOcOE1gTn4AX4KzAiog9JQt/SgjUr4PUJyACjnw
+         LHXwwkGjSsC+t/nnNGzL8fWgpEKr6SWR9ytc/BDPdPeBLKc0H5LYtipNCqi5W8s4hM6X
+         S6rUno8bF0U6DLQgO4yvseWsvgVNQPRnQRxGvHrJwLnthXH9Gc983QN0GGR5sHqM40Fa
+         8IFA==
+X-Gm-Message-State: AOJu0YwaIGFAysq0N3+Es4WW7T536Cukx/YzCRRYebBe5bj653c6SsEf
+	EoBYfoYq88HaFHiS3BzqzzvwiYFAIaIy7UaKmliIunEVLiQwhnXK37XrhodkexNI0VtXZMz03xO
+	zIr3RwvQuqeYHhfbuRHXGrL1whwIX1gg=
+X-Gm-Gg: ATEYQzwfJHQwMiEpEY6j1eQr49olPE4TpSD+TZJOksKcDEq12TyRrtCcOQ+fi5SsLz+
+	XZhqjT29i6VnbNnbBYvti+RiYddCjlt+ZGkk3j1qqR7Th9xNRZVHPEqMUUBE24OW79Gy1mRvj2j
+	hxKkmj38p8YjnfwFrxsodFYfWZ31GGl7loScJjt6F6IXeVwpjYj25jOlNfLYMPdwCtzX2fzNDud
+	rIDMjWpFSGiU/80VcA3awSxFiRGIvTEnxvVPIQd0PHtg8x8WXNqt9TCF+16ZQ7HcbbEWOgt6ihH
+	3Xw1xg==
+X-Received: by 2002:a17:903:244b:b0:2b0:74df:3c4c with SMTP id
+ d9443c01a7336-2b0827e2d39mr82231455ad.42.1774180345557; Sun, 22 Mar 2026
+ 04:52:25 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20260322031923.58031-1-pengpeng@iscas.ac.cn>
+In-Reply-To: <20260322031923.58031-1-pengpeng@iscas.ac.cn>
+From: Gyeyoung Baek <gye976@gmail.com>
+Date: Sun, 22 Mar 2026 20:52:14 +0900
+X-Gm-Features: AaiRm51UWgvGbQ9RWQbicUSsJRKQosyTHuOvk_JpKQlOiBwVq9B4KgKYXxwfc8I
+Message-ID: <CAKbEznu0eFtnxTFUFR=P-HPugU=Xt7C3XHFwb_Mx1KO2yMwzCQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: chemical: mhz19b: bound receive buffer copy
+To: Pengpeng Hou <pengpeng@iscas.ac.cn>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, 
+	David Lechner <dlechner@baylibre.com>, =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>, 
+	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Mon, 16 Mar 2026 14:40:39 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+Hello Pengpeng,
 
-> On Sat, Mar 14, 2026 at 01:20:06PM -0400, Neel Bullywon wrote:
-> > Address the TODO in adf4350_set_freq() by replacing the iterative
-> > power-of-2 shift loop with a constant-time bitwise calculation.
-> > 
-> > By comparing the highest set bits of the target constant and freq
-> > using fls_long(), we can calculate the required RF divider selection
-> > in a single step without relying on expensive 64-bit division.
-> > 
-> > This ensures freq is properly shifted to meet or exceed the minimum
-> > VCO frequency.  
-> 
-> ...
-> 
-> >  	st->r4_rf_div_sel = 0;  
-> 
-> > -	while (freq < ADF4350_MIN_VCO_FREQ) {
-> > -		freq <<= 1;
-> > -		st->r4_rf_div_sel++;
-> > +	if (freq < ADF4350_MIN_VCO_FREQ) {
-> > +		st->r4_rf_div_sel = fls_long(ADF4350_MIN_VCO_FREQ - 1) - fls_long(freq);
-> > +		if ((freq << st->r4_rf_div_sel) < ADF4350_MIN_VCO_FREQ)
-> > +			st->r4_rf_div_sel++;
-> >  	}
-> >  
-> > +	freq <<= st->r4_rf_div_sel;  
-> 
-> Yeah, unfortunately it looks like too complicated in comparison with the
-> original code. Have you checked binary output? My gut feelings that this
-> gives also a lot of code in addition to.
-> 
-> Little optimisation can be like:
-> 
-> 	if (freq < ADF4350_MIN_VCO_FREQ) {
-> 		st->r4_rf_div_sel = fls_long(ADF4350_MIN_VCO_FREQ - 1) - fls_long(freq);
-> 		freq <<= st->r4_rf_div_sel;
-> 		if (freq < ADF4350_MIN_VCO_FREQ) {
-> 			st->r4_rf_div_sel++;
-> 			freq <<= 1;
-> 		}
-> 	}
-> 
-> but it is still too much.
-> 
-> ...
-> 
-> Maybe we simply need to replace TODO with a NOTE explaining that if better algo
-> is found we can replace.
-> 
-This comment update makes sense to me as will make people look for previous
-attempts before sending a new one!
+On Sun, Mar 22, 2026 at 12:19=E2=80=AFPM Pengpeng Hou <pengpeng@iscas.ac.cn=
+> wrote:
+>
+> `mhz19b_receive_buf()` appends bytes to the fixed 9-byte command buffer
+> without first checking that the new chunk fits in the remaining space.
+> A single receive callback can therefore write past the end of `st->buf`
+> before the driver sees that the command is complete.
+>
+> Drop overlong chunks and reset the partial command state before the
+> copy.
+>
+> Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
+> ---
+>  drivers/iio/chemical/mhz19b.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/drivers/iio/chemical/mhz19b.c b/drivers/iio/chemical/mhz19b.=
+c
+> index 3c64154918b1..a028216fa2a9 100644
+> --- a/drivers/iio/chemical/mhz19b.c
+> +++ b/drivers/iio/chemical/mhz19b.c
+> @@ -241,6 +241,11 @@ static size_t mhz19b_receive_buf(struct serdev_devic=
+e *serdev,
+>         struct iio_dev *indio_dev =3D dev_get_drvdata(&serdev->dev);
+>         struct mhz19b_state *st =3D iio_priv(indio_dev);
+>
+> +       if (len > sizeof(st->buf) - st->buf_idx) {
+> +               st->buf_idx =3D 0;
+> +               return len;
+> +       }
+> +
 
-Neel, you ran into tricky challenge - thanks for giving it a go!
+It would be better to handle err immediately on the condition, but it
+still looks much better than before.
 
-Jonathan
+Acked-by: Gyeyoung Baek <gye976@gmail.com>
 
-
+--
+Thanks,
+Gyeyoung
