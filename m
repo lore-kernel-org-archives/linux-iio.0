@@ -1,50 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B003226D02;
-	Sun, 22 Mar 2026 11:57:13 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49B692C11F3;
+	Sun, 22 Mar 2026 12:06:30 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774180634; cv=none; b=O6G5orQEy4Kf3euAq7gl65A6H5ytDs9fis4Ur5N+K6wYG7/9zna3189kRjfjr9GcAWOOsWlv7vTtE+ARBKpPBN2jBtPK5N6+fRn2eyqMQJ0ls/TRLI2af7kCmzrwfNldxbPt7sVrTjQSZ8/paOUJrldEdPfdTiD1vjSTAidrVQw=
+	t=1774181190; cv=none; b=bnSrFSvlQEwcaEeL1GEaLw9QkA/FfDW2p/XeZxSI4y8q87zF1VXb01TE0qM15PBejlYah+iL2MOLgpbsq3tQHzJCEPaF/Wvn/AQuxE41V1o0J8RJ/GjtUCmozf6wdtI2T6AyX1xFubr770aBj4tMJYqWDvDuHyxOq0pkFF8RN6M=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774180634; c=relaxed/simple;
-	bh=uDdkpNKiU/H9sQNOeRNY+hTbjl0KzXECc5f2+g3mHn8=;
+	s=arc-20240116; t=1774181190; c=relaxed/simple;
+	bh=dZ9gD+DMUsKDGu9hoskcxNTy0Xk8K0Sxcn1V8b1mhp0=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=CbTr7OBZpcAzATZud+coJPcHliknUOx/oCGxRE2ZyFXjm1vDosszxVBvjdj9lI0L+Ly+bGJFILu9V47v0us+e1QNUdAIWPW0qTBAqBRHY3TGqRE1hrIUHv42JuLnveDhGKMkbZIYYKNUewY+GGM1Tpi2FBP1zU0EiLJ66QRxJlQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=vN5aoGJd; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=m/MyToqkSVa4HossjyZVSFjM4oYuJZTisj6vR4PRwo97Al872SgN9Tsi6sHY+qjRjTZdBFOvzLZPYwH6Eg2DXM34AJPE94xEz4f0IlyijmCnR0puY5JcWOV4VBp+OVe6d0wtWhRDEG1f/nLK64jW3ahnUFp0VCRyMu2Fl+RFuFE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rrh+/vFK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="vN5aoGJd"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6921CC19424;
-	Sun, 22 Mar 2026 11:57:09 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rrh+/vFK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F037C19424;
+	Sun, 22 Mar 2026 12:06:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774180633;
-	bh=uDdkpNKiU/H9sQNOeRNY+hTbjl0KzXECc5f2+g3mHn8=;
+	s=k20201202; t=1774181190;
+	bh=dZ9gD+DMUsKDGu9hoskcxNTy0Xk8K0Sxcn1V8b1mhp0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=vN5aoGJdTBuiMK5mjY2fuGtHPxPL1jEFqfRNbANfeZ5LWIcC15QDEa2rQC2zxIi4w
-	 uT0GP8aaoeuhg2Q/RiGasgAD1gVKLZz2P63AVHnEbx3L9AMYFkpmF48Fm1Ml5AWbJC
-	 2BzsRr9z3FKCPNLCVBca7PNm0NVUHRqWWwlw/BjPiUaZfwJ6jpJfWNXezeuLZql9yu
-	 F7L+jB7NruNBz+b4smX6RSFJSWHOaUSB5pMMoK3+8KIqmB2Rtf5q4Ooryv10gzS6uL
-	 Bxuheu6pkpgmv3qUhPem3luUhWcxaD1DX2ngU8+2DIMkwJas9kaUoRSdajmDEdVbQD
-	 81tUbLpJy6e1g==
-Date: Sun, 22 Mar 2026 11:57:04 +0000
+	b=Rrh+/vFKqKZa6J0PltZ8Phia+4bSQjpzOpUExkjpJc0VlaBAcr9byqSk3Aud1kwvM
+	 1yK32Mw+Byx2p/fpb5qExQxa2hzUhaCdlCREsUxEPfKmX5HiHjiF/wj4D2t6Tl61xl
+	 iOvykX+FzpMrEegfeZqXibJyhwisJEnaiFSVSG+NWkmec3Pps8f+0wdHFj4LnjZ0iN
+	 HpmZP2AghQ957OqC0zK4PvfH4kOHdh0bYDbZJJMVTo2jRIrDevN2hYr6YCdAzGMNIl
+	 skxyrvKXNdnuA1TP7fkCq5/RuG22vJrPuXGm9fkpvJRE4tC7wmMNlCkxrPL+Puom5r
+	 tWbgJcOaQPM2g==
+Date: Sun, 22 Mar 2026 12:06:21 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Sirat <email@sirat.me>
-Cc: David Lechner <dlechner@baylibre.com>, Andy Shevchenko
- <andriy.shevchenko@intel.com>, linux-iio@vger.kernel.org,
- devicetree@vger.kernel.org, nuno.sa@analog.com, andy@kernel.org,
- robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/2] iio: proximity: add driver for ST VL53L1X ToF
- sensor
-Message-ID: <20260322115704.10b2e0d4@jic23-huawei>
-In-Reply-To: <CANn+LWL85Ot6yrfuNB4qw3YoUJPyE1YD2gf9PPPGoAGv8EOJ9w@mail.gmail.com>
-References: <20260311224044.21480-1-email@sirat.me>
-	<abLNbGUmaA7K0s68@ashevche-desk.local>
-	<CANn+LW+F2bVMAGwoF8q9yBpF3x5r_hWDqvE3_JYjcLd16A_cEA@mail.gmail.com>
-	<a2486bc7-13be-4567-a53c-b37921df7bcd@baylibre.com>
-	<CANn+LWK2OZ1dm0TAstM2hr6O6h2nEPRrNfje0mC3a2uc0HEwVQ@mail.gmail.com>
-	<20260315185715.2f97c496@jic23-huawei>
-	<CANn+LWL85Ot6yrfuNB4qw3YoUJPyE1YD2gf9PPPGoAGv8EOJ9w@mail.gmail.com>
+To: ShiHao <i.shihao.999@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ marcelo.schmitt@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
+ andy@kernel.org, mazziesaccount@gmail.com, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, till@linux.com
+Subject: Re: Request for guidence
+Message-ID: <20260322120621.5eaf627f@jic23-huawei>
+In-Reply-To: <abD572bpEU8f9Uil@fedora>
+References: <aapjuiq0JSVWfmWA@fedora>
+	<ebb8bcb5-660c-409c-89b1-d473ba5140d3@gmail.com>
+	<aa_yTUNAmkOUnN7j@ashevche-desk.local>
+	<abD572bpEU8f9Uil@fedora>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -55,63 +50,61 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, 16 Mar 2026 05:20:29 +0600
-Sirat <email@sirat.me> wrote:
+On Wed, 11 Mar 2026 10:43:19 +0530
+ShiHao <i.shihao.999@gmail.com> wrote:
 
-> On Mon, Mar 16, 2026 at 12:57=E2=80=AFAM Jonathan Cameron <jic23@kernel.o=
-rg> wrote:
+> On Tue, Mar 10, 2026 at 12:28:29PM +0200, Andy Shevchenko wrote:
+> > We are already in the relevant mailing list, so if ShiHao wants to work=
+ on IIO
+> > drivers, welcome! =20
+>=20
+> > With Best Regards,
+> > Andy Shevchenko
 > >
-> > On Sat, 14 Mar 2026 21:25:44 +0600
-> > Sirat <email@sirat.me> wrote:
 > > =20
-> > > On Sat, Mar 14, 2026 at 8:39=E2=80=AFPM David Lechner <dlechner@bayli=
-bre.com> wrote: =20
-> > > >
-> > > > On 3/12/26 10:12 AM, Sirat wrote: =20
-> > > > > On Thu, Mar 12, 2026 at 8:28=E2=80=AFPM Andy Shevchenko
-> > > > > <andriy.shevchenko@intel.com> wrote: =20
-> > > > >>
-> > > > >> On Thu, Mar 12, 2026 at 04:40:35AM +0600, Siratul Islam wrote: =
-=20
-> > > > > ... =20
-> > > > >>> --- =20
-> ...
-> > Can make it required in the binding. Just explain clearly why
-> > it should be there.  The driver should carry on coping without
-> > it though (and leave a comment so we don't break that in the future).
-> >
-> > Jonathan
-> > =20
-> > > =20
-> > =20
-> Just to make sure that I understand this correctly,
+> Hello,
+> 	First of all, thank you all for your time and responses. After
+> 	learning that the IIO driver development project will not be
+> 	part of this year=E2=80=99s GSoC, I shifted my preparation toward the
+> 	DT binding project idea since it aligns with my driver development
+> 	goals and Thank you, Andy, for letting me know that I can still
+> 	work on driver development. However, I still have no clear idea
+> 	how to get started.
 >=20
-> I will
->   - make vdd-supply required and add a description of what it is.
->   - add a comment in the driver like "vdd-supply is required in the DT
-> binding but we continue if missing to support older DTs."
->   - also add reset-gpio description and update the example to include the=
- vdd.
->=20
->  I'll send v6 after a few days.
->=20
-Ah sorry. Took me too long to catch up with emails.
+> 	My main questions are: how should I begin, which sensors currently
+> 	need drivers, and what happens if someone else is already working
+> 	on a particular driver? Would it still be possible for me to
+> 	contribute?
 
-Bit late now but for the record, what we were aiming for was:
+For devices that need drivers, best bet is normally to see if a commonly
+available part with a break out board (to avoid having to design and build
+circuit boards!) is not yet supported.  Works best when it's something
+you are interested in.
 
-Make it required and add a note to the commit message to say why
-the requirement should always have been there. Devices tend not to work
-with no power.
+Other alternatives that can be good places to learn are around modernising =
+or
+debugging existing drivers.  Either get the hardware if possible, or
+another useful skill to learn is how to emulate that hardware.
+Personally I tend to do that on QEMU but that's because I'm more familiar
+with that than other alternatives.=20
 
-The driver fallback stuff to provide a stub powersupply is very standard
-so no specific need to call that out.
+Other than mechanical changes where we can easily see there is no functional
+affect I wouldn't advise trying to work on drivers unless you have good
+emulation to test against.  Doing emulation for a device that isn't current=
+ly
+supported is also unwise because it's hard to know if it is right without
+getting that thoroughly reviewed. As such it tends to be most helpful when
+you can assume the existing code works, test the emulation using that and
+then test your refactors and updates.
 
 Jonathan
 
-
-
-> Thanks,
-> Sirat
-> >
-> > =20
+>=20
+> 	Therefore, I would really appreciate some guidance on how to get
+> 	started. Any help would be greatly appreciated. Thank you all again.
+>=20
+> With sincere regards,
+> Shi Hao
+>=20
+>=20
 
