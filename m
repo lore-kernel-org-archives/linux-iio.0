@@ -1,89 +1,84 @@
-Received: from cstnet.cn (smtp25.cstnet.cn [159.226.251.25])
-	(using TLSv1.2 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A300F37DEAD;
-	Sun, 22 Mar 2026 03:19:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=159.226.251.25
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8A9C43382F7;
+	Sun, 22 Mar 2026 06:58:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774149579; cv=none; b=BymPYcS9ptSacoT//lIYxAw8NfN2ozv16hzV4XjMLC/nMr2g8quSUuSTIHwTJTZT1YxeQCaZrp1Qmga/7lz7hQVvsx2EKiLtnkOMh7HNdKTGNXqQWIu4wuuZQsdxO+YkP7s3W7KSKzFQPjS6dZvWUXM7Dx/2Iy+q6KIdpe1yMKo=
+	t=1774162701; cv=none; b=lwGZhpN3Ytg+Ty7i5vXoKEIyjj4onXiMgtaaaf2nANHtYOlkhVCPGO4KGL31VAMJ4JyOrki7xap2raO7WAq2vjLXLuX/Il9Gj6aZCjfee4YgzOB3pMHq72HHiK5v7c2ahAJxVQWT9xIT9fvSaxwu/iMY1vC+3D6BlXO0Vy0xpXk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774149579; c=relaxed/simple;
-	bh=dRRHJP/o97UdiIWF7mfrp2KAzhmcDLpnzYSFg3fB5E0=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=bYJLTWDmCecvhm+3Fckzq/Gk51XHYsJB8C9BTzUmmRHb8246DlvCxbvGGgASRN46w3H3nUoh+6/fZD+04rixcKdKwgrRW6Iy4urvzBwHUfvkZbmp8/TlFdLgAXZwvPbH2sUI+xlI7g/UFlLR1o5M2wiKwFdK1+cmMykITNtRSI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn; spf=pass smtp.mailfrom=iscas.ac.cn; arc=none smtp.client-ip=159.226.251.25
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=iscas.ac.cn
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=iscas.ac.cn
-Received: from localhost.localdomain (unknown [111.196.245.197])
-	by APP-05 (Coremail) with SMTP id zQCowAAXpQi7X79p2k8eCw--.33030S2;
-	Sun, 22 Mar 2026 11:19:24 +0800 (CST)
-From: Pengpeng Hou <pengpeng@iscas.ac.cn>
-To: linux-iio@vger.kernel.org
-Cc: pengpeng@iscas.ac.cn,
-	Gyeyoung Baek <gye976@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: chemical: mhz19b: bound receive buffer copy
-Date: Sun, 22 Mar 2026 11:19:23 +0800
-Message-ID: <20260322031923.58031-1-pengpeng@iscas.ac.cn>
-X-Mailer: git-send-email 2.50.1
+	s=arc-20240116; t=1774162701; c=relaxed/simple;
+	bh=J0oBN7mLaCh0P3ukmH4JfbB6/WVDt4bg5xlG51w0gkU=;
+	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version; b=cwT29wZC5ET5LL+0S7HCe9s/laJiQtHFxisiTuciJOXbfuYgrAruGIgo9CtBZMHy+MmA/l6CNEBw6sLE40PgReIO5R44VwSMSYTIBz+x16Qlg7ojBMSGZvMbDRsFK5yQhSUJZKPmRJHwddj7cOlzysydG4larf0TBvbswDZlL8o=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RW09B80N; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RW09B80N"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7219C19424;
+	Sun, 22 Mar 2026 06:58:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774162701;
+	bh=J0oBN7mLaCh0P3ukmH4JfbB6/WVDt4bg5xlG51w0gkU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+	b=RW09B80NewEr4+1f/Osk33PN82xXXfxO25hunasttlPxf604ED3qxGuwu8o8TKWQH
+	 tczxqj0fAJP8IAI7n3gp4Hh8ml2BMJkAdGzDRoW2N8rCB82KhnunsKRESx++5R0Utx
+	 edq7YYXAVpThuWADs3Qb2zreAEQMwbYmt9qGbBb9J4dVskU/JzHr8URUUFWke04fRC
+	 vR15cpT9G2h0siSFjnz/VFNwJuCH1/uLb0aEw0sogjpRgzall6GSPnpo/20J70W3/9
+	 h6p75Ia0gNnApdSZUA2cpiaHGmJ7Frdi9M//aBIh+MU5AJeJVTKsxNzVgWAVPnZaqC
+	 zNVsbDL/Dfy1Q==
+From: William Breathitt Gray <wbg@kernel.org>
+To: Cosmin Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
+Cc: William Breathitt Gray <wbg@kernel.org>,
+	Biju Das <biju.das.jz@bp.renesas.com>,
+	=?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@kernel.org>,
+	Lee Jones <lee@kernel.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	linux-iio@vger.kernel.org,
+	linux-renesas-soc@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org,
+	stable@vger.kernel.org
+Subject: Re: [PATCH 5/5] counter: rz-mtu3-cnt: do not use struct rz_mtu3_channel's dev member
+Date: Sun, 22 Mar 2026 15:58:11 +0900
+Message-ID: <20260322065813.264398-1-wbg@kernel.org>
+X-Mailer: git-send-email 2.53.0
+In-Reply-To: <20260130122353.2263273-6-cosmin-gabriel.tanislav.xa@renesas.com>
+References: 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1244; i=wbg@kernel.org; h=from:subject; bh=J0oBN7mLaCh0P3ukmH4JfbB6/WVDt4bg5xlG51w0gkU=; b=owGbwMvMwCW21SPs1D4hZW3G02pJDJn7J132EdTIjTz28cnXxvqfcZrMBXK2rO6y+2eHv8yLO ml77/+9jlIWBjEuBlkxRZZe87N3H1xS1fjxYv42mDmsTCBDGLg4BWAiU54xMizf/zHeYVVGy7Sa xvdsq+Z3fpWr+2Ddd0+neeKv5Z9MYicx/M/sf5P9QSTpZLZbH+uNQI7PjL48e6u3Xz5xburJ4zI ZhlwA
+X-Developer-Key: i=wbg@kernel.org; a=openpgp; fpr=8D37CDDDE0D22528F8E89FB6B54856CABE12232B
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID:zQCowAAXpQi7X79p2k8eCw--.33030S2
-X-Coremail-Antispam: 1UD129KBjvdXoW7Jr47AF15CrWkWw1UZF1rtFb_yoWDKrb_C3
-	W8Arn7urW5GFnrKan2vF1a9ryaya9F9F17Wa1avFy3Gry2qFn7Zw1kZrsxKrsxuFWI9Fnr
-	Xw4DWF1Svry3CjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-	9fnUUIcSsGvfJTRUUUb4xFF20E14v26r4j6ryUM7CY07I20VC2zVCF04k26cxKx2IYs7xG
-	6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-	A2z4x0Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr0_
-	Cr1l84ACjcxK6I8E87Iv67AKxVWxJr0_GcWl84ACjcxK6I8E87Iv6xkF7I0E14v26F4UJV
-	W0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-	I7IYx2IY67AKxVWUAVWUtwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-	4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY1x0262kKe7AKxVWU
-	AVWUtwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
-	v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkG
-	c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
-	0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4A2jsIE14v26r1j6r4U
-	MIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0JUmjgxUUU
-	UU=
-X-CM-SenderInfo: pshqw1xhqjqxpvfd2hldfou0/
 
-`mhz19b_receive_buf()` appends bytes to the fixed 9-byte command buffer
-without first checking that the new chunk fits in the remaining space.
-A single receive callback can therefore write past the end of `st->buf`
-before the driver sees that the command is complete.
+On Fri, Jan 30, 2026 at 02:23:53PM +0200, Cosmin Tanislav wrote:
+> The counter driver can use HW channels 1 and 2, while the PWM driver can
+> use HW channels 0, 1, 2, 3, 4, 6, 7.
+> 
+> The dev member is assigned both by the counter driver and the PWM driver
+> for channels 1 and 2, to their own struct device instance, overwriting
+> the previous value.
+> 
+> The sub-drivers race to assign their own struct device pointer to the
+> same struct rz_mtu3_channel's dev member.
+> 
+> The dev member of struct rz_mtu3_channel is used by the counter
+> sub-driver for runtime PM.
+> 
+> Depending on the probe order of the counter and PWM sub-drivers, the
+> dev member may point to the wrong struct device instance, causing the
+> counter sub-driver to do runtime PM actions on the wrong device.
+> 
+> To fix this, use the parent pointer of the counter, which is assigned
+> during probe to the correct struct device, not the struct device pointer
+> inside the shared struct rz_mtu3_channel.
 
-Drop overlong chunks and reset the partial command state before the
-copy.
+It looks like you replace every instance of ch->dev in the file,
+except in rz_mtu3_cnt_probe where it is initially set as ch->dev = dev.
+Is that line in rz_mtu3_cnt_probe still needed, or can it now be removed
+too?
 
-Signed-off-by: Pengpeng Hou <pengpeng@iscas.ac.cn>
----
- drivers/iio/chemical/mhz19b.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/drivers/iio/chemical/mhz19b.c b/drivers/iio/chemical/mhz19b.c
-index 3c64154918b1..a028216fa2a9 100644
---- a/drivers/iio/chemical/mhz19b.c
-+++ b/drivers/iio/chemical/mhz19b.c
-@@ -241,6 +241,11 @@ static size_t mhz19b_receive_buf(struct serdev_device *serdev,
- 	struct iio_dev *indio_dev = dev_get_drvdata(&serdev->dev);
- 	struct mhz19b_state *st = iio_priv(indio_dev);
- 
-+	if (len > sizeof(st->buf) - st->buf_idx) {
-+		st->buf_idx = 0;
-+		return len;
-+	}
-+
- 	memcpy(st->buf + st->buf_idx, data, len);
- 	st->buf_idx += len;
- 
--- 
-2.50.1 (Apple Git-155)
-
+William Breathitt Gray
