@@ -1,45 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 49B692C11F3;
-	Sun, 22 Mar 2026 12:06:30 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id D019A36897E;
+	Sun, 22 Mar 2026 12:08:19 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774181190; cv=none; b=bnSrFSvlQEwcaEeL1GEaLw9QkA/FfDW2p/XeZxSI4y8q87zF1VXb01TE0qM15PBejlYah+iL2MOLgpbsq3tQHzJCEPaF/Wvn/AQuxE41V1o0J8RJ/GjtUCmozf6wdtI2T6AyX1xFubr770aBj4tMJYqWDvDuHyxOq0pkFF8RN6M=
+	t=1774181299; cv=none; b=PsB8PFhw/aY739DnjwUrKyxaOlQxPr3I6DAtgoVKm/dwrIl1Ac8HIWlkQjKhPq3eXkDo6TZuhc886tOvz8Vv/3pPqLjTaGXyRdpNd0JiDe4lrH4v0vK1dx9FAMAskgkG0v9aHX1ztiGWb5oXx4ncgJhJ310il4/m2y3M6y53lTI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774181190; c=relaxed/simple;
-	bh=dZ9gD+DMUsKDGu9hoskcxNTy0Xk8K0Sxcn1V8b1mhp0=;
+	s=arc-20240116; t=1774181299; c=relaxed/simple;
+	bh=BBnqDGxsqmTJAWTFAfi9gkdGcIx3QZvEsQYJ7GGYIEY=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=m/MyToqkSVa4HossjyZVSFjM4oYuJZTisj6vR4PRwo97Al872SgN9Tsi6sHY+qjRjTZdBFOvzLZPYwH6Eg2DXM34AJPE94xEz4f0IlyijmCnR0puY5JcWOV4VBp+OVe6d0wtWhRDEG1f/nLK64jW3ahnUFp0VCRyMu2Fl+RFuFE=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Rrh+/vFK; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=ESCYRuzVk5OpymcTaG/dgKb8yJ+mQhggKIFJSxsoVNM2yoKHli7TuzJfbgi5u8P/5612F3+5cY0eLj+ifvoQ7Tu7VPQGWvdBFL/M2tkHLyogQl74/FlflMCEcBYikJpmC8OkTvWvSsV9oGSBkBYbN8MCBBK9DimazHQwkf0XS3M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=DwlhZ1SH; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rrh+/vFK"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F037C19424;
-	Sun, 22 Mar 2026 12:06:25 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="DwlhZ1SH"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B031C19424;
+	Sun, 22 Mar 2026 12:08:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774181190;
-	bh=dZ9gD+DMUsKDGu9hoskcxNTy0Xk8K0Sxcn1V8b1mhp0=;
+	s=k20201202; t=1774181299;
+	bh=BBnqDGxsqmTJAWTFAfi9gkdGcIx3QZvEsQYJ7GGYIEY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Rrh+/vFKqKZa6J0PltZ8Phia+4bSQjpzOpUExkjpJc0VlaBAcr9byqSk3Aud1kwvM
-	 1yK32Mw+Byx2p/fpb5qExQxa2hzUhaCdlCREsUxEPfKmX5HiHjiF/wj4D2t6Tl61xl
-	 iOvykX+FzpMrEegfeZqXibJyhwisJEnaiFSVSG+NWkmec3Pps8f+0wdHFj4LnjZ0iN
-	 HpmZP2AghQ957OqC0zK4PvfH4kOHdh0bYDbZJJMVTo2jRIrDevN2hYr6YCdAzGMNIl
-	 skxyrvKXNdnuA1TP7fkCq5/RuG22vJrPuXGm9fkpvJRE4tC7wmMNlCkxrPL+Puom5r
-	 tWbgJcOaQPM2g==
-Date: Sun, 22 Mar 2026 12:06:21 +0000
+	b=DwlhZ1SH1MX2zzQ7JYVUM+nS6ZKm1wWWcqHpkVNR1mEjChgRIa1KQtJIdZQCoPChB
+	 C/xtlR4lIOM/FLRR9abmP+lB0ZNPPshQmEG45ZPG6rDz7ikv9SRGNCVQShWs9YClBU
+	 1d9i17TQvru2kBMgIfoUPT7YDtu481vrVPN3yPsR945h+doEh9M5zdDb8tXeVo7G8E
+	 61HfGhaL4NbniESXJO9iMCL73FGagGBWuCXKWN+ytMFGFukij151jU4h5UBLUmGd1E
+	 db6q2GiYeHZMqpEulxzgY3nvibP6vVdMF764XzzAVyad4xG4ZZdIUflyYDoJIM+npG
+	 MABYUhkrEU7Xg==
+Date: Sun, 22 Mar 2026 12:08:10 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: ShiHao <i.shihao.999@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- marcelo.schmitt@analog.com, dlechner@baylibre.com, nuno.sa@analog.com,
- andy@kernel.org, mazziesaccount@gmail.com, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, till@linux.com
-Subject: Re: Request for guidence
-Message-ID: <20260322120621.5eaf627f@jic23-huawei>
-In-Reply-To: <abD572bpEU8f9Uil@fedora>
-References: <aapjuiq0JSVWfmWA@fedora>
-	<ebb8bcb5-660c-409c-89b1-d473ba5140d3@gmail.com>
-	<aa_yTUNAmkOUnN7j@ashevche-desk.local>
-	<abD572bpEU8f9Uil@fedora>
+To: Bhargav Joshi <rougueprince47@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-staging@lists.linux.dev,
+ tomasborquez13@gmail.com
+Subject: Re: [RFC PATCH] staging: iio: ad9832: modernize ABI and remove
+ dds.h dependency
+Message-ID: <20260322120810.01ba87dd@jic23-huawei>
+In-Reply-To: <CAPC4XCQC_JqdFXf5_OYBPk-KOcg_xDBo0N-s0uQie-t7wZHoFg@mail.gmail.com>
+References: <20260305210347.120446-1-rougueprince47@gmail.com>
+	<20260308183135.1de38062@jic23-huawei>
+	<CAPC4XCQC_JqdFXf5_OYBPk-KOcg_xDBo0N-s0uQie-t7wZHoFg@mail.gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -50,61 +50,108 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
 
-On Wed, 11 Mar 2026 10:43:19 +0530
-ShiHao <i.shihao.999@gmail.com> wrote:
+On Mon, 9 Mar 2026 04:49:01 +0530
+Bhargav Joshi <rougueprince47@gmail.com> wrote:
 
-> On Tue, Mar 10, 2026 at 12:28:29PM +0200, Andy Shevchenko wrote:
-> > We are already in the relevant mailing list, so if ShiHao wants to work=
- on IIO
-> > drivers, welcome! =20
+> Hello Jonathan,
 >=20
-> > With Best Regards,
-> > Andy Shevchenko
+> On Mon, Mar 9, 2026 at 12:01=E2=80=AFAM Jonathan Cameron <jic23@kernel.or=
+g> wrote:
+> >
+> > On Fri,  6 Mar 2026 02:33:47 +0530
+> > Bhargav Joshi <rougueprince47@gmail.com> wrote:
+> > =20
+> > > The AD9832 driver currently relies on legacy custom IIO macros defined
+> > > in dds.h. This triggers checkpatch.pl warnings (NON_OCTAL_PERMISSIONS)
+> > > and, more importantly, exposes a non-standard sysfs ABI (e.g.,
+> > > frequency0, frequency1, phase0-3) directly to user space.
+> > >
+> > > This patch removes the custom macros and migrates the driver to stand=
+ard
+> > > IIO API mechanisms:
+> > > - Standard attributes (frequency, phase) now use info_mask_separate.
+> > > - Non standard specific toggles (frequencysymbol, phasesymbol,
+> > >   pincontrol) have been migrated to an ext_info array.
+> > > - Remove dds.h header dependency.
+> > > - Pointless frequency_scale and phase_scale attributes are dropped as
+> > >   suggested by Jonathan in
+> > >   https://lore.kernel.org/linux-iio/20251231180939.422e9e62@jic23-hua=
+wei/
+> > >
+> > > NOTE: This patch introduces an intentional ABI changes. The non-stand=
+ard
+> > > attributes (out_altvoltage0_frequency0, etc.) have been removed. They
+> > > are replaced by standard attributes (out_altvoltage0_frequency and
+> > > out_altvoltage0_phase). Routing to correct register while writing is
+> > > handled by checking currently active frequencysymbol or phasesymbol. =
+=20
+> >
+> > Ah I think maybe the discussions around this bit got confused as this w=
+as
+> > not the direction I was expecting it to go in.
+> >
+> > This doesn't align with the existing cases of how we do symbol selection
+> > devices.
+> >
+> > Often the last thing we want to do is change the active symbol before w=
+e've set
+> > the value. We could have done a multiplexing write function but if
+> > we had it would need to be separate from the controls on which symbol is
+> > in use.
+> > =20
+> I initially thought multiplexing would help perfectly standardize the
+> frequency and
+> phase attributes, but you are right. Multiplexing would break
+> hardware's modulation
+> leading to unwanted glitches.
+>=20
+> While we can still use a single standard attribute by introducing
+> separate freq_write_target
+> (and phase_write_target) selector, but that will overcomplicate it for th=
+e user.
+>=20
+> So, for v2, I should drop the multiplexing approach and keep
+> frequency0/1 and phase0-3
+> separated using the ext_info array.
+>=20
+> > There are a few examples of existing ABI for this in tree.
+> > e.g.
+> > dac/ad8460.c which has 16 different rawX outputs and a symbol to pick b=
+etween those.
+> > dac/ltc2644.c which has _raw0 and _raw1 for similar purposes
+> > dac/ltc2688.c is similar.
+> >
+> > We've never added more 'standard' control for channels with symbol cont=
+rols simply
+> > because there aren't that many users yet.
 > >
 > > =20
-> Hello,
-> 	First of all, thank you all for your time and responses. After
-> 	learning that the IIO driver development project will not be
-> 	part of this year=E2=80=99s GSoC, I shifted my preparation toward the
-> 	DT binding project idea since it aligns with my driver development
-> 	goals and Thank you, Andy, for letting me know that I can still
-> 	work on driver development. However, I still have no clear idea
-> 	how to get started.
->=20
-> 	My main questions are: how should I begin, which sensors currently
-> 	need drivers, and what happens if someone else is already working
-> 	on a particular driver? Would it still be possible for me to
-> 	contribute?
+> > >
+> > > Testing: This patch has been strictly compile-tested. I do not have
+> > > access to physical AD9832 hardware. I am submitting this as an RFC to
+> > > see if these changes are acceptable, and to ask if someone with physi=
+cal
+> > > hardware could test thisg and provide a Tested-by tag.
+> > > =20
+> Considering David's valid reply: I would not be able to get hands on
+> AD9832 hardware
+> to validate these changes. So I am not quite sure if I should continue
+> with v2 or not?
 
-For devices that need drivers, best bet is normally to see if a commonly
-available part with a break out board (to avoid having to design and build
-circuit boards!) is not yet supported.  Works best when it's something
-you are interested in.
+This sort of ABI update can in my view be safely done against emulation,
+but for that you'd need to first emulate the device carefully then verify
+that emulation (to some degree anyway) using the existing driver.
 
-Other alternatives that can be good places to learn are around modernising =
-or
-debugging existing drivers.  Either get the hardware if possible, or
-another useful skill to learn is how to emulate that hardware.
-Personally I tend to do that on QEMU but that's because I'm more familiar
-with that than other alternatives.=20
-
-Other than mechanical changes where we can easily see there is no functional
-affect I wouldn't advise trying to work on drivers unless you have good
-emulation to test against.  Doing emulation for a device that isn't current=
-ly
-supported is also unwise because it's hard to know if it is right without
-getting that thoroughly reviewed. As such it tends to be most helpful when
-you can assume the existing code works, test the emulation using that and
-then test your refactors and updates.
+So up to you on how large a project you want to take on!
 
 Jonathan
 
 >=20
-> 	Therefore, I would really appreciate some guidance on how to get
-> 	started. Any help would be greatly appreciated. Thank you all again.
+> Thank you for the feedback!
 >=20
-> With sincere regards,
-> Shi Hao
+> Best regards,
+> Bhargav
 >=20
->=20
+> > > Signed-off-by: Bhargav Joshi <rougueprince47@gmail.com> =20
+> > =20
 
