@@ -1,97 +1,783 @@
-Received: from metis.whiteo.stw.pengutronix.de (metis.whiteo.stw.pengutronix.de [185.203.201.7])
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4BDC036B071
-	for <linux-iio@vger.kernel.org>; Sun, 22 Mar 2026 17:23:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.203.201.7
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4C05C36B07F;
+	Sun, 22 Mar 2026 17:34:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774200193; cv=none; b=F2T6eS9oUxBYGfONLhJIt9Cp/ZJJ17Ie/MDcyl+pvwr3KViigjFqzYWfQ4R/hB9/K1pzZ2wQrETrhRp0TqmrbiNsJxzj4vgP8AgWB06499DwEAtrK3DTJEeegHC+CeRjv4/i8gZD/uqVuXDU2P91+XQ3EbME90g3Ipz65r32caI=
+	t=1774200886; cv=none; b=NS6V+9kcxexYzadqIWYILdlQUxXfw+F//rxDKqfkOnc1Mw0qNHigFYBarJv5vg8eSKydD6hw752H+Rr7VzigdbC2wlVkdiYwkE060NuU5NQmxDYCLgk+aZhf9aLBY4IlKzA1Lxw8u4BLTzOwmZy0JOVquwn4PJes/OeEJQrFeLk=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774200193; c=relaxed/simple;
-	bh=eX0bMyQPn5KGVvIqo0BQQ1L5w7k5BdKAxmTmGe4uD70=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=WzsMeZapxfUTa8oeNL4ICiuuxW95rUf5AOj/uJS7N+FtkU10VpHmqWy8mbsnqBWf9ufZ57MXFOxfOB/fbSn2nobNEeiqqVCJYPJRfa5phM/BUuW43hoVEzY2ozV6qAtHrtle5X5juiRTzk6mGKZ9a9TEYzDZsKByAmD/KcES85E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de; spf=pass smtp.mailfrom=pengutronix.de; arc=none smtp.client-ip=185.203.201.7
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=pengutronix.de
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=pengutronix.de
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-	by metis.whiteo.stw.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <ore@pengutronix.de>)
-	id 1w4MVj-0005Wx-5u; Sun, 22 Mar 2026 18:22:47 +0100
-Received: from pty.whiteo.stw.pengutronix.de ([2a0a:edc0:2:b01:1d::c5])
-	by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-	(Exim 4.96)
-	(envelope-from <ore@pengutronix.de>)
-	id 1w4MVi-001awa-0G;
-	Sun, 22 Mar 2026 18:22:46 +0100
-Received: from ore by pty.whiteo.stw.pengutronix.de with local (Exim 4.98.2)
-	(envelope-from <ore@pengutronix.de>)
-	id 1w4MVh-0000000GaXd-45Vq;
-	Sun, 22 Mar 2026 18:22:45 +0100
-Date: Sun, 22 Mar 2026 18:22:45 +0100
-From: Oleksij Rempel <o.rempel@pengutronix.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Rob Herring <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Andy Shevchenko <andy@kernel.org>, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>, kernel@pengutronix.de,
-	David Jander <david@protonic.nl>,
-	David Lechner <dlechner@baylibre.com>
-Subject: Re: [PATCH v6 00/12] iio: dac: ds4424: add DS4402/DS4404 support and
- scale
-Message-ID: <acAlZe8Y5Qj5a_Vf@pengutronix.de>
-References: <20260210135110.2027073-1-o.rempel@pengutronix.de>
- <aaAHbOVL-83tgIEc@pengutronix.de>
- <20260226100833.24fa15b5@jic23-huawei>
- <20260322124539.64485997@jic23-huawei>
+	s=arc-20240116; t=1774200886; c=relaxed/simple;
+	bh=ivvoEILu7FXVKN8zFV0A2+VfDeeA/EFCriMCaomHoPg=;
+	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=WFIdCocC64BvCpqaGNmxexhXtKIS0SJrul4F1IWzjiWrSjz9ekUE/arbQsDf6s0yNMY9Vw0aKFVkHABrFrTYv9qRNo2xqeR02o+iJYI3e8Sg+cbLbwjVc08M+VORwdHhIILq00DpBjJBh+x6AG4i7PaBKKBOa1zxwFp6L7Oo9Fk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pUEEabFF; arc=none smtp.client-ip=10.30.226.201
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pUEEabFF"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80CDCC19424;
+	Sun, 22 Mar 2026 17:34:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774200885;
+	bh=ivvoEILu7FXVKN8zFV0A2+VfDeeA/EFCriMCaomHoPg=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+	b=pUEEabFFCzgPZD5k0P5R50FxOD62XMZh7jqRTNNfmuXHk0rZPO7tGi/soUaSZNK+F
+	 bTI8dLhdKc5LRImRjO56HkoRkRoKPlG9mE9E5Yc459BM+/70ByfjwVrfQapdF/7Mw5
+	 XpQR+elQmoeLuzvWMsTzhh3zZ9zkWQxF83HNeTak+xaEz94JFqtBvXZosy6bLJmLM2
+	 7jrJxFakX/Vr+KC1CkWBQ7nfsqFpcKj7reEgHHHDv6pFACnt2z6o2Hlua3CcAMaSRI
+	 ltojt3iE3c5Uzoe1ulrV31h/xteIzfj1iEQXBhdTVVo4HR8LQYTO6xKQw1zKoL0KsJ
+	 n6kQQZIBkgYCg==
+Date: Sun, 22 Mar 2026 17:34:34 +0000
+From: Jonathan Cameron <jic23@kernel.org>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+ linux-doc@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>, Michael
+ Hennerich <Michael.Hennerich@analog.com>, David Lechner
+ <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring
+ <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, Philipp Zabel <p.zabel@pengutronix.de>, Jonathan
+ Corbet <corbet@lwn.net>, Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH RFC v2 9/9] docs: iio: add documentation for ad9910
+ driver
+Message-ID: <20260322173434.23d2ee0d@jic23-huawei>
+In-Reply-To: <20260318-ad9910-iio-driver-v2-9-e79f93becf11@analog.com>
+References: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
+	<20260318-ad9910-iio-driver-v2-9-e79f93becf11@analog.com>
+X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20260322124539.64485997@jic23-huawei>
-X-Sent-From: Pengutronix Hildesheim
-X-URL: http://www.pengutronix.de/
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.whiteo.stw.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Sun, Mar 22, 2026 at 12:45:39PM +0000, Jonathan Cameron wrote:
-> On Thu, 26 Feb 2026 10:08:33 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 18 Mar 2026 17:56:09 +0000
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+
+> From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 > 
-> > On Thu, 26 Feb 2026 09:42:20 +0100
-> > Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> > 
-> > > Hi Jonathan,
-> > > 
-> > > Should I resend this patch series?  
-> > No need.   For future reference I use patchwork.kernel.org to track
-> > status of series.   This one is sat there because I need to do a pull
-> > request for the precursor fix (which I'll do shortly).  That then needs
-> > to loop around into a suitable upstream tree before I can pick this
-> > series up on top of it.
-> > 
-> I merge 7.0-rc4 into the testing branch of iio.git and applied this on top.
-> If the build bots are happy I'll push that out as togreg in the next few days.
-> A little bit of fuzz in a few patches but otherwise it went on pretty cleanly.
+> Add documentation for the AD9910 DDS IIO driver, which describes channels,
+> DDS modes, attributes and ABI usage examples.
 > 
-> Please take a quick look to make sure I didn't mess anything up.
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-LGTM. Thank you!
+A few things inline. I've not cropped as there is a lot here and I'd like
+it all to remain visible in the reply.
 
-Best Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+Overall this is a very interesting device so whilst I think we are making
+progress it might still take a while to come to an overall conclusion
+on the ABI!
+
+> ---
+>  Documentation/iio/ad9910.rst | 654 +++++++++++++++++++++++++++++++++++++++++++
+>  Documentation/iio/index.rst  |   1 +
+>  MAINTAINERS                  |   1 +
+>  3 files changed, 656 insertions(+)
+> 
+> diff --git a/Documentation/iio/ad9910.rst b/Documentation/iio/ad9910.rst
+> new file mode 100644
+> index 000000000000..116f6af4bc2e
+> --- /dev/null
+> +++ b/Documentation/iio/ad9910.rst
+> @@ -0,0 +1,654 @@
+> +.. SPDX-License-Identifier: GPL-2.0-only
+> +
+> +=============
+> +AD9910 driver
+> +=============
+> +
+> +DDS (Direct Digital Synthesizer) driver for the Analog Devices Inc. AD9910.
+> +The module name is ``ad9910``.
+> +
+> +* `AD9910 <https://www.analog.com/en/products/ad9910.html>`_
+> +
+> +The AD9910 is a 1 GSPS DDS with a 14-bit DAC, driven over SPI. The driver
+> +exposes the device through the IIO ``altvoltage`` channel type and supports
+> +five DDS operating modes: single tone, parallel port modulation, digital ramp
+> +generation (DRG), RAM playback and output shift keying (OSK). The device has
+> +8 hardware profiles, each capable of storing independent single tone and RAM
+> +playback parameters.
+> +
+> +
+> +Channel hierarchy
+> +=================
+> +
+> +The driver exposes the following IIO output channels, each identified by a
+> +unique channel number and a human-readable label:
+> +
+> +* ``out_altvoltage100``: ``phy``: Physical output: system clock and profile control
+> +
+> +  * ``out_altvoltage110``: ``single_tone``: Single tone mode: per-profile
+> +    frequency, phase, amplitude
+> +
+> +  * ``out_altvoltage120``: ``parallel_port``: Parallel port modulation: enable
+> +    and offset/scale parameters
+> +
+> +  * ``out_altvoltage130``: ``digital_ramp_generator``: DRG control: enable,
+> +    destination, operating mode
+> +
+> +    * ``out_altvoltage131``: ``digital_ramp_up``: DRG ramp-up parameters:
+> +      limits, step sizes, ramp rate
+> +    * ``out_altvoltage132``: ``digital_ramp_down``: DRG ramp-down parameters:
+> +      limits, step sizes, ramp rate
+> +
+> +  * ``out_altvoltage140``: ``ram_control``: RAM playback: enable, destination,
+> +    operating mode, address range
+> +
+> +  * ``out_altvoltage150``: ``output_shift_keying``: OSK: enable, amplitude
+> +    scale, ramp rate, auto/manual control
+> +
+> +The ``phy`` channel is the root of the hierarchy. Changing its
+> +``sampling_frequency`` reconfigures the system clock (SYSCLK) which affects all
+> +other channels. The ``profile`` attribute on this channel selects the active
+> +hardware profile (0-7) used by the single tone and RAM channels.
+I asked out this profile thing in one of the other patches.  Key to me is
+that how we write non active profiles?  The most similar thing we've seen
+in the past has been setting other frequencies for FSK or phases for PSK or
+more mundane DC DAC output that are symbol based. (often an external signal)
+
+For those we have added an additional index so we can see which symbol we
+are changing parameters for.  Here it might need to be done in the channel
+numbering. I'm not sure.
+
+> +
+> +All mode-specific channels (parallel port, DRG, RAM, OSK) have an ``enable``
+> +attribute. The DRG and RAM channels additionally have ``destination`` and
+> +``operating_mode`` attributes that configure which DDS core parameter is
+> +modulated and how.
+
+I wonder if we flatten things out and have separate channels for each type
+of modulation. Might lead to a more standard looking interfaces. We don't really
+have a standard path to control one type of thing feeding another, whereas
+we do have simple 'enable' interfaces.
+
+> +
+> +DDS modes
+> +=========
+> +
+> +The AD9910 supports multiple modes of operation that can be configured
+> +independently or in combination. Such modes and their corresponding IIO channels
+> +are described in this section. The following tables are extracted from the
+> +AD9910 datasheet and summarizes the control parameters for each mode and their
+> +priority when multiple sources are enabled simultaneously:
+> +
+> +.. flat-table:: DDS Frequency Control
+> +   :header-rows: 1
+> +
+> +   * - Priority
+> +     - Data Source
+> +     - Conditions
+> +
+> +   * - Highest Priority
+> +     - RAM
+> +     - RAM enabled and data destination is frequency
+> +
+> +   * -
+> +     - DRG
+> +     - DRG enabled and data destination is frequency
+> +
+> +   * -
+> +     - Parallel data and FTW (frequency_offset)
+> +     - Parallel data port enabled and data destination is frequency
+> +
+> +   * -
+> +     - FTW (frequency)
+> +     - RAM enabled and data destination is not frequency
+> +
+> +   * -
+> +     - FTW (frequency) in single tone channel for the active profile
+> +     - DRG enabled and data destination is not frequency
+> +
+> +   * -
+> +     - FTW (frequency) in single tone channel for the active profile
+> +     - Parallel data port enabled and data destination is not frequency
+> +
+> +   * - Lowest Priority
+> +     - FTW (frequency) in single tone channel for the active profile
+> +     - None
+> +
+> +.. flat-table:: DDS Phase Control
+> +   :header-rows: 1
+> +
+> +   * - Priority
+> +     - Data Source
+> +     - Conditions
+> +
+> +   * - Highest Priority
+> +     - RAM
+> +     - RAM enabled and data destination is phase or polar
+> +
+> +   * -
+> +     - DRG
+> +     - DRG enabled and data destination is phase
+> +
+> +   * -
+> +     - Parallel data port
+> +     - Parallel data port enabled and data destination is phase
+> +
+> +   * -
+> +     - Parallel data port and POW register LSBs (phase_offset)
+> +     - Parallel data port enabled and data destination is polar
+> +
+> +   * -
+> +     - POW (phase)
+> +     - RAM enabled and destination is not phase nor polar
+> +
+> +   * -
+> +     - POW (phase) in single tone channel for the active profile
+> +     - DRG enabled and data destination is not phase
+> +
+> +   * -
+> +     - POW (phase) in single tone channel for the active profile
+> +     - Parallel data port enabled and data destination is not phase nor polar
+> +
+> +   * - Lowest Priority
+> +     - POW (phase) in single tone channel for the active profile
+> +     - None
+> +
+> +.. flat-table:: DDS Amplitude Control
+> +   :header-rows: 1
+> +
+> +   * - Priority
+> +     - Data Source
+> +     - Conditions
+> +
+> +   * - Highest Priority
+> +     - OSK generator
+> +     - OSK enabled (auto mode)
+> +
+> +   * -
+> +     - ASF register
+> +     - OSK enabled (manual mode)
+> +
+> +   * -
+> +     - RAM
+> +     - RAM enabled and data destination is amplitude or polar
+> +
+> +   * -
+> +     - DRG
+> +     - DRG enabled and data destination is amplitude
+> +
+> +   * -
+> +     - Parallel data port
+> +     - Parallel data port enabled and data destination is amplitude
+> +
+> +   * -
+> +     - Parallel data port and ASF register LSBs (scale_offset)
+> +     - Parallel data port enabled and data destination is polar
+> +
+> +   * - Lowest Priority
+> +     - ASF (scale) in single tone channel for the active profile
+> +     - (Amplitude scale is already enabled by default)
+> +
+> +Single tone mode
+> +----------------
+> +
+> +Single tone is the baseline operating mode. The ``single_tone`` channel
+> +provides per-profile frequency, phase and amplitude control:
+> +
+> +.. flat-table::
+> +   :header-rows: 1
+> +
+> +   * - Attribute
+> +     - Unit
+> +     - Description
+> +
+> +   * - ``out_altvoltage110_frequency``
+> +     - Hz
+> +     - Output frequency. Range [0, SYSCLK/2). Stored in the active profile's
+> +       frequency tuning word (FTW).
+> +
+> +   * - ``out_altvoltage110_phase``
+> +     - rad
+> +     - Phase offset. Range [0, 2*pi). Stored in the active profile's phase
+> +       offset word (POW).
+> +
+> +   * - ``out_altvoltage110_scale``
+> +     - fractional
+> +     - Amplitude scale factor. Range [0, 1]. Stored in the active profile's
+> +       amplitude scale factor (ASF).
+> +
+> +When RAM mode is enabled, single tone parameters are stored in a shadow
+> +register and are not written to hardware until RAM mode is disabled.
+> +
+> +Usage examples
+> +^^^^^^^^^^^^^^
+> +
+> +Set the active profile to 2 and configure a 100 MHz tone:
+> +
+> +.. code-block:: bash
+> +
+> +	echo 2 > /sys/bus/iio/devices/iio:device0/out_altvoltage100_profile
+> +	echo 100000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage110_frequency
+> +	echo 0.5 > /sys/bus/iio/devices/iio:device0/out_altvoltage110_scale
+> +	echo 0 > /sys/bus/iio/devices/iio:device0/out_altvoltage110_phase
+> +
+> +Read back the current single tone frequency:
+> +
+> +.. code-block:: bash
+> +
+> +	cat /sys/bus/iio/devices/iio:device0/out_altvoltage110_frequency
+> +
+> +Parallel port mode
+> +------------------
+> +
+> +When enabled, the parallel port allows real-time modulation of DDS parameters
+> +through a 16-bit external data bus.
+> +
+> +.. flat-table::
+> +   :header-rows: 1
+> +
+> +   * - Attribute
+> +     - Unit
+> +     - Description
+> +
+> +   * - ``out_altvoltage120_en``
+> +     - boolean
+> +     - Enable/disable the parallel data port.
+> +
+> +   * - ``out_altvoltage120_frequency_scale``
+> +     - power-of-2
+> +     - FM gain multiplier applied to 16-bit parallel input. Range [1, 32768],
+> +       must be a power of 2.
+> +
+> +   * - ``out_altvoltage120_frequency_offset``
+> +     - Hz
+> +     - Base FTW to which scaled parallel data is added. Range [0, SYSCLK/2).
+> +
+> +   * - ``out_altvoltage120_phase_offset``
+> +     - rad
+> +     - Base phase for polar modulation. Lower 8 bits of POW register.
+> +       Range [0, 2*pi/256).
+> +
+> +   * - ``out_altvoltage120_scale_offset``
+> +     - fractional
+> +     - Base amplitude for polar modulation. Lower 6 bits of ASF register.
+> +       Range [0, 1/256).
+> +
+> +Usage examples
+> +^^^^^^^^^^^^^^
+> +
+> +Enable parallel port with a frequency scale of 16 and a 50 MHz offset:
+> +
+> +.. code-block:: bash
+> +
+> +	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage120_en
+> +	echo 16 > /sys/bus/iio/devices/iio:device0/out_altvoltage120_frequency_scale
+> +	echo 50000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage120_frequency_offset
+> +
+> +Digital ramp generator (DRG)
+> +----------------------------
+> +
+> +The DRG produces linear frequency, phase or amplitude sweeps using dedicated
+> +hardware. It is controlled through three channels: a parent control channel
+> +(``digital_ramp_generator``) and two child ramp channels
+> +(``digital_ramp_up``, ``digital_ramp_down``).
+> +
+> +Control channel attributes
+> +^^^^^^^^^^^^^^^^^^^^^^^^^^
+> +
+> +.. flat-table::
+> +   :header-rows: 1
+> +
+> +   * - Attribute
+> +     - Unit
+> +     - Description
+> +
+> +   * - ``out_altvoltage130_en``
+> +     - boolean
+> +     - Enable/disable the DRG.
+> +
+> +   * - ``out_altvoltage130_destination``
+> +     - enum
+> +     - Which DDS parameter is swept: ``frequency``, ``phase`` or
+> +       ``amplitude``.
+> +
+> +   * - ``out_altvoltage130_destination_available``
+> +     - string
+> +     - Lists available destination values.
+> +
+> +   * - ``out_altvoltage130_operating_mode``
+> +     - enum
+> +     - Ramp behavior (see table below).
+> +
+> +   * - ``out_altvoltage130_operating_mode_available``
+> +     - string
+> +     - Lists available operating mode values.
+> +
+> +DRG operating modes:
+> +
+> +.. flat-table::
+> +   :header-rows: 1
+> +
+> +   * - Mode
+> +     - Description
+> +
+> +   * - ``bidirectional``
+> +     - Ramp up then down, dwelling at limits.
+> +
+> +   * - ``ramp_down``
+> +     - No-dwell low; resets to upper limit at lower limit.
+> +
+> +   * - ``ramp_up``
+> +     - No-dwell high; resets to lower limit at upper limit.
+> +
+> +   * - ``bidirectional_continuous``
+> +     - Continuous sweep without dwelling at either limit.
+> +
+> +Ramp channel attributes
+> +^^^^^^^^^^^^^^^^^^^^^^^^
+> +
+> +The ``digital_ramp_up`` (channel 131) and ``digital_ramp_down`` (channel 132)
+> +channels share the same attribute set but configure ascending and descending
+> +ramp parameters independently:
+> +
+> +.. flat-table::
+> +   :header-rows: 1
+> +
+> +   * - Attribute
+> +     - Unit
+> +     - Description
+> +
+> +   * - ``frequency``
+> +     - Hz
+> +     - Ramp limit when destination is ``frequency``. Range [0, SYSCLK/2).
+> +
+> +   * - ``phase``
+> +     - rad
+> +     - Ramp limit when destination is ``phase``. Range [0, 2*pi).
+> +
+> +   * - ``scale``
+> +     - fractional
+> +     - Ramp limit when destination is ``amplitude``. Range [0, 1).
+> +
+> +   * - ``sampling_frequency``
+> +     - Hz
+> +     - Ramp clock rate: SYSCLK / (4 * divider).
+> +
+> +   * - ``frequency_step``
+> +     - Hz
+> +     - Per-tick frequency increment/decrement when destination is
+> +       ``frequency``.
+> +
+> +   * - ``phase_step``
+> +     - rad
+> +     - Per-tick phase increment/decrement when destination is ``phase``.
+> +
+> +   * - ``scale_step``
+> +     - fractional
+> +     - Per-tick amplitude increment/decrement when destination is
+> +       ``amplitude``. Range [0, 1).
+> +
+> +Usage examples
+> +^^^^^^^^^^^^^^
+> +
+> +Configure a frequency sweep from 10 MHz to 100 MHz at a 1 MHz step:
+> +
+> +.. code-block:: bash
+> +
+> +	# Set DRG destination to frequency
+> +	echo frequency > /sys/bus/iio/devices/iio:device0/out_altvoltage130_destination
+> +
+> +	# Set operating mode
+> +	echo bidirectional_continuous > /sys/bus/iio/devices/iio:device0/out_altvoltage130_operating_mode
+> +
+> +	# Set ramp limits
+> +	echo 60000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage131_frequency
+> +	echo 40000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage132_frequency
+> +
+> +	# Set ramp step size to 1 MHz
+> +	echo 1000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage131_frequency_step
+> +	echo 1000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage132_frequency_step
+> +
+> +	# Set ramp clock rate
+> +	echo 50000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage131_sampling_frequency
+> +
+> +	# Enable the DRG
+> +	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage130_en
+> +
+> +Read the current DRG operating mode:
+> +
+> +.. code-block:: bash
+> +
+> +	cat /sys/bus/iio/devices/iio:device0/out_altvoltage130_operating_mode
+> +
+> +RAM mode
+> +--------
+> +
+> +The AD9910 contains a 1024 x 32-bit RAM that can be loaded with waveform data
+> +and played back to modulate frequency, phase, amplitude, or polar (phase +
+> +amplitude) parameters.
+> +
+> +RAM control channel attributes
+> +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> +
+> +.. flat-table::
+> +   :header-rows: 1
+> +
+> +   * - Attribute
+> +     - Unit
+> +     - Description
+> +
+> +   * - ``out_altvoltage140_en``
+> +     - boolean
+> +     - Enable/disable RAM playback. Toggling swaps profile registers between
+> +       single tone and RAM configurations across all 8 profiles.
+> +
+> +   * - ``out_altvoltage140_destination``
+> +     - enum
+> +     - RAM data target: ``frequency``, ``phase``, ``amplitude`` or ``polar``.
+> +       Cannot be changed while RAM mode is enabled.
+> +
+> +   * - ``out_altvoltage140_destination_available``
+> +     - string
+> +     - Lists available destination values.
+> +
+> +   * - ``out_altvoltage140_operating_mode``
+> +     - enum
+> +     - Playback behavior (see table below).
+> +
+> +   * - ``out_altvoltage140_operating_mode_available``
+> +     - string
+> +     - Lists available operating mode values.
+> +
+> +   * - ``out_altvoltage140_frequency``
+> +     - Hz
+> +     - Frequency tuning word used as the single tone frequency when
+> +       RAM destination is not ``frequency``. Range [0, SYSCLK/2).
+> +
+> +   * - ``out_altvoltage140_phase``
+> +     - rad
+> +     - Phase offset word used as the single tone phase when RAM destination
+> +       is not ``phase``. Range [0, 2*pi).
+> +
+> +   * - ``out_altvoltage140_sampling_frequency``
+> +     - Hz
+> +     - RAM playback step rate controlling how fast the address counter
+> +       advances: SYSCLK / (4 * step_rate). Stored per-profile.
+> +
+> +   * - ``out_altvoltage140_address_start``
+Do we need this flexibility to set the start?  We needed a length, but
+if we want different effective start can just load a different image.
+> +     - integer
+> +     - Start address for the active profile. Range [0, 1023]. Cannot be
+> +       changed while RAM mode is enabled. If set above current end address,
+> +       end address is automatically adjusted.
+> +
+> +   * - ``out_altvoltage140_address_end``
+> +     - integer
+> +     - End address for the active profile. Range [address_start, 1023].
+> +       Cannot be changed while RAM mode is enabled.
+> +
+> +RAM operating modes:
+> +
+> +.. flat-table::
+> +   :header-rows: 1
+> +
+> +   * - Mode
+> +     - Description
+> +
+> +   * - ``direct_switch``
+> +     - Start address defines a fixed word used by the selected profile.
+> +
+> +   * - ``ramp_up``
+> +     - One-shot ramp through the current profile's address range.
+> +
+> +   * - ``bidirectional``
+> +     - Ramp up then down through profile 0's address range.
+> +
+> +   * - ``bidirectional_continuous``
+> +     - Continuous ramp up/down through current profile's address range.
+> +
+> +   * - ``ramp_up_continuous``
+> +     - Continuous ramp up through current profile's address range.
+> +
+> +   * - ``sequenced``
+> +     - Sequential playback from profile 0 to the active profile.
+> +       Requires active profile > 0.
+> +
+> +   * - ``sequenced_continuous``
+> +     - Continuous sequential playback. Requires active profile > 0.
+> +
+> +Loading RAM data
+> +^^^^^^^^^^^^^^^^
+> +
+> +RAM data is loaded through the firmware upload framework. The driver registers
+> +a firmware upload device named ``iio_deviceX:ram``. Data must be a multiple of
+> +4 bytes (32-bit words) and at most 4096 bytes (1024 words).
+> +
+> +Usage examples
+> +^^^^^^^^^^^^^^
+> +
+> +Configure RAM mode with frequency destination and load a waveform:
+> +
+> +.. code-block:: bash
+> +
+> +	# Set RAM address range for profile 0
+> +	echo 0 > /sys/bus/iio/devices/iio:device0/out_altvoltage140_address_start
+> +	echo 999 > /sys/bus/iio/devices/iio:device0/out_altvoltage140_address_end
+> +
+> +	# Set destination and operating mode
+> +	echo frequency > /sys/bus/iio/devices/iio:device0/out_altvoltage140_destination
+> +	echo ramp_up_continuous > /sys/bus/iio/devices/iio:device0/out_altvoltage140_operating_mode
+> +
+> +	# Set playback rate
+> +	echo 250000 > /sys/bus/iio/devices/iio:device0/out_altvoltage140_sampling_frequency
+> +
+> +	# Load RAM data via firmware upload
+> +	echo 1 > /sys/class/firmware/iio\:device0\:ram/loading
+> +	cat waveform.bin > /sys/class/firmware/iio\:device0\:ram/data
+> +	echo 0 > /sys/class/firmware/iio\:device0\:ram/loading
+> +
+> +	# Enable RAM mode
+> +	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage140_en
+> +
+> +Read the current RAM operating mode:
+> +
+> +.. code-block:: bash
+> +
+> +	cat /sys/bus/iio/devices/iio:device0/out_altvoltage140_operating_mode
+> +
+> +Output shift keying (OSK)
+> +-------------------------
+> +
+> +OSK controls the output amplitude envelope, allowing the output to be ramped
+> +on/off rather than switched abruptly.
+> +
+> +.. flat-table::
+> +   :header-rows: 1
+> +
+> +   * - Attribute
+> +     - Unit
+> +     - Description
+> +
+> +   * - ``out_altvoltage150_en``
+> +     - boolean
+> +     - Enable/disable OSK.
+> +
+> +   * - ``out_altvoltage150_scale``
+> +     - fractional
+> +     - Target amplitude for the OSK ramp. 14-bit ASF field. Range [0, 1).
+> +
+> +   * - ``out_altvoltage150_sampling_frequency``
+> +     - Hz
+> +     - OSK ramp rate: SYSCLK / (4 * divider).
+> +
+> +   * - ``out_altvoltage150_pinctrl_en``
+> +     - boolean
+> +     - Enable manual external pin control. When enabled, the OSK pin directly
+> +       gates the output on/off instead of using the automatic ramp.
+> +
+> +   * - ``out_altvoltage150_scale_step``
+> +     - fractional
+> +     - Automatic OSK amplitude step. Writing non-zero enables automatic OSK
+> +       and sets the per-tick increment. Writing ``0`` disables it. Rounded to
+> +       nearest hardware step: 0.000061, 0.000122, 0.000244 or 0.000488.
+> +
+> +Usage examples
+> +^^^^^^^^^^^^^^
+> +
+> +Enable OSK with automatic ramping:
+> +
+> +.. code-block:: bash
+> +
+> +	# Set ramp rate
+> +	echo 1000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_sampling_frequency
+> +
+> +	# Enable automatic OSK with step size
+> +	echo 0.000244 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_scale_step
+> +
+> +	# Enable OSK
+> +	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_en
+> +
+> +Enable manual pin-controlled OSK:
+> +
+> +.. code-block:: bash
+> +
+> +	# Set target amplitude to full scale
+> +	echo 1.0 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_scale
+> +
+> +	# Enable manual pin control
+> +	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_pinctrl_en
+> +	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage150_en
+> +
+> +
+> +Physical channel
+> +================
+> +
+> +The ``phy`` channel provides device-level control:
+> +
+> +.. flat-table::
+> +   :header-rows: 1
+> +
+> +   * - Attribute
+> +     - Unit
+> +     - Description
+> +
+> +   * - ``out_altvoltage100_sampling_frequency``
+> +     - Hz
+> +     - System clock (SYSCLK) frequency. With PLL enabled, configures the PLL
+> +       multiplier (range 420-1000 MHz). Without PLL, ref clock can only be
+> +       divided by 2.
+> +
+> +   * - ``out_altvoltage100_profile``
+> +     - integer
+> +     - Active profile index [0, 7]. Selected via GPIO pins. Each profile
+> +       stores an independent set of single tone and RAM playback parameters.
+> +
+> +   * - ``out_altvoltage100_powerdown``
+> +     - boolean
+> +     - Software power-down. Writing 1 powers down the digital core, DAC,
+> +       reference clock input and auxiliary DAC simultaneously.
+> +
+> +Usage examples
+> +--------------
+> +
+> +Set the system clock to 1 GHz and select profile 3:
+> +
+> +.. code-block:: bash
+> +
+> +	echo 1000000000 > /sys/bus/iio/devices/iio:device0/out_altvoltage100_sampling_frequency
+> +	echo 3 > /sys/bus/iio/devices/iio:device0/out_altvoltage100_profile
+> +
+> +Read current system clock frequency:
+> +
+> +.. code-block:: bash
+> +
+> +	cat /sys/bus/iio/devices/iio:device0/out_altvoltage100_sampling_frequency
+> +
+> +Power down the device:
+> +
+> +.. code-block:: bash
+> +
+> +	echo 1 > /sys/bus/iio/devices/iio:device0/out_altvoltage100_powerdown
+> diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+> index ba3e609c6a13..55cb1ce84ba8 100644
+> --- a/Documentation/iio/index.rst
+> +++ b/Documentation/iio/index.rst
+> @@ -29,6 +29,7 @@ Industrial I/O Kernel Drivers
+>     ad7606
+>     ad7625
+>     ad7944
+> +   ad9910
+>     ade9000
+>     adis16475
+>     adis16480
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index edd87ee7da5f..14e4272357ce 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1637,6 +1637,7 @@ S:	Supported
+>  W:	https://ez.analog.com/linux-software-drivers
+>  F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9910
+>  F:	Documentation/devicetree/bindings/iio/frequency/adi,ad9910.yaml
+> +F:	Documentation/iio/ad9910.rst
+>  F:	drivers/iio/frequency/ad9910.c
+>  
+>  ANALOG DEVICES INC MAX22007 DRIVER
+> 
+
