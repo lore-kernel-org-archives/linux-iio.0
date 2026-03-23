@@ -1,259 +1,140 @@
-Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
+Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6B743B4E8C
-	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 15:11:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 203C53B9DA5
+	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 16:04:14 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774278664; cv=none; b=R0la0+kl4pXQRU3NS7mVTB2Srehg8YLqXmHWVdqqSYSIRVhY5oLvEM52YDO3yM5+5Nmg3G7eBbIvIxE8v4kWlOm/zEHLJvB3uuVngzBr61hA1K5tXmKqc+aCSJRTEX3DRFaCvNlIkz6a6dm2Ist8OBN9uRTDQKnm4rom/8WmdFo=
+	t=1774281857; cv=none; b=HNZkgP8UpC19g5iCVuwMLKTa12J1JrNyxguyv1WxzMjnkBMsQ2gzp+GT6VdbYheUSjTqYy/KWYYC/REO8Mpp0Uaz3HQkq5FQh56c573VBfASy/BonrDmHQYHYzHOavfZDgC1mmbfN07++0xCHrsxTGYQaidiQ3HEcWuO6lCa4Oc=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774278664; c=relaxed/simple;
-	bh=TSoqxiKvRUR1dZa1woJkYuljpKESR7AwTa16MhoVDHs=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=lOL9Hj/kmSy3sbChYu/eOxz0WMReH3um7tSgM0KFi+NEue2F7cJ+m3fAEmDo9Q4O2FWzbyxCW7eFdMbtMBWc3oARhaFdoSyXW3loeLbTcA7NG7UcZ/Dpu3UKg6l/qXePT/IlBpfcliRKITQBwzioD+/9QLxPhIRK2XCA5+nF6PY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FSlKzMuM; arc=none smtp.client-ip=209.85.167.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1774281857; c=relaxed/simple;
+	bh=8ha1A3Upqoft3A/vZsGBrxpfXd8ABWmzhRsBL16vIYU=;
+	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=nmx+xKeyhalnKl+dLTjRnVbCEGU6RnQDNtuxwCJwxl3+eLkJkYOoDNWMLsUTNXL99J7l83bXYBRwUq6+tZcLQLOeOnguYWkwLuo74dRV0TZcWmswFU15E92b0B8impUIR5YAARcuM9QHC4+gyltFvY0F53NP5LiEFSzwbKjYlJU=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=kS+QmkK7; arc=none smtp.client-ip=209.85.221.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FSlKzMuM"
-Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5a133b686f7so252676e87.0
-        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 08:11:02 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="kS+QmkK7"
+Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-43b4915161fso2929279f8f.2
+        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 09:04:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1774278661; x=1774883461; darn=vger.kernel.org;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :from:to:cc:subject:date:message-id:reply-to;
-        bh=SJ3emijR5oNOwnSkFZn8zHS372Ef2TX2E+/n8RR77do=;
-        b=FSlKzMuMWaAwq4KhZubx9pLa5E+CAieFIOwRjP3EdPiDRaS3KwudBbvgcu44KGD/Yr
-         oUToEnF1Ha5YC0kIBKylxW+0ZuN6g/16TR73HAbbNtCsxWi9i4h8UEOUFlam5AQ2hLDJ
-         XCiM5Yj/Md2itZMt9pabOsCX/nEPwTJpDaP7ZjIaOHNXTejxX6D5oVNI8y395MBE8c7f
-         7NF606SFmUxpiWyxNBBgSp2DS5cDkc0ADAuTyN7twfmhp/jDTpYPvqfQdnLXJ4k++5BY
-         Ef/QvI+PqHmYbPKhOyHSDL0/OZbU9/nqbYytIogrjmSCmTeGnTueBoHyBE/4HSy1YamL
-         Gn/A==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774281853; x=1774886653; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:organization
+         :references:in-reply-to:date:to:from:subject:message-id:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=8ha1A3Upqoft3A/vZsGBrxpfXd8ABWmzhRsBL16vIYU=;
+        b=kS+QmkK7qwGvF8EIctTG4pvdoWb4tMqENHrQzXCkQyiBiJfhhL9/Y1DW/hOyW1+Wzs
+         iinuqwrE9/4Wrk3M+LvkN73bRUMZXFFqKZPlJAPQYTNrBG++GCodqIy0CY83BKGsPbfy
+         Id/ojcwcGtSM9Ia0/1ya5/o5lQzIEypIY59uvjm2N7gCi0bcfc9b0ZNAMdbVwFZGHerK
+         qOkBtCfNYoZWUrVf6waLJnRwbiE7whghztMqyqlGw6ztW8pxzeKfTmku+ArcysLqdafF
+         G0xMLFuWLtR683fiK9Wk3IN9YAkzpSlVjINKfC64EdJI4Usz1hq/vRJK7EQCUpiFCxXh
+         XWLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774278661; x=1774883461;
-        h=content-transfer-encoding:in-reply-to:from:content-language
-         :references:cc:to:subject:user-agent:mime-version:date:message-id
-         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
-         :reply-to;
-        bh=SJ3emijR5oNOwnSkFZn8zHS372Ef2TX2E+/n8RR77do=;
-        b=RyNwNH/6zI8SGEDfg2HhuqpGFCx8vMhofPMtLVV4jfOEVbU7HLM0+17dfW/BBKCKok
-         JeOQffJT5DTEe+9iWIyQv6nZpVk1FpIDUVHHvDIjyEKel8tgsRVfRbQ0/AzzcjZgMhZI
-         gKQO9r4VnpWy+aQsuq2yYs6fnNk9ZP8uChz0kDt7EXzDicugOqxEBZuVRK4bwEzA/1QK
-         dYA+gd2K48l0dWzl+JUL1r/4vDEbKUW2soHezMk5ySwtFUcgIL9msJrsb80JZlFSWLq2
-         1r1wbr2ZPBxRo4Am57h3Yt2plews5hiNgq48G7iZ7TwXmM7LqaC+1Ec53Me9tYN+JN5j
-         5w4Q==
-X-Gm-Message-State: AOJu0Yx27jRld/Mf5zr++JMveEf0EPcSW1RDdZL1dMdI40vml46dOGSd
-	wtdjDYg/aMDhn5/GQSEL7QHaBjkLK0tySggftIPbE7vlwP3/9Zv5fer5
-X-Gm-Gg: ATEYQzw0pJmtNciFJE7iGs8P5Zii1TU/k7ajqwIU5hZgoIVsAoXykU6H1+jO+fZocvY
-	M6FngPcCY3JCZdy6DjTxx6iUD93hDdGga66xfKCx+GqYfTEDspolhtxhQeafG1puBv1HKDkNhG+
-	puXLGegSAYQ9AjUo+HlTSCCTtplBFu7dDFFM6EKwkZTw232iOgm5i9WAFkUG/RVi/70Fs7JryZy
-	EAB6dv2VMgq6mRTrsRhGxjtLVlnOvQIl1Q/Z94ZrN9asksDg7Eh61HEWiNBdesV3r85+otvidmS
-	79YsDt3mmq7Wu/7J59jYXQpDhmq1X0WtiZXbT7flWEtdnzHrnStK24qJXYXWmYrlUaNjN0Lg+mv
-	G/x0Xk4zzRrVbOQZurbtzGQsPPl15uFRfo0ok8IzOPXbQwKO55pASnGMC1Us99AqR6TlCn4ydvS
-	s0tJKImXCsZhdKZ8GxU12FcmTi1wNKAyRGCp8RrzRyjCEF/smIeskRkv7QUXSJpMI0qLj51WWCR
-	ZEXow/93+wUmKf3Xc2bp9THrYiQU/N1qq8WamvqLU4609HpYfpL3iAOt+9tMLLSuw==
-X-Received: by 2002:a05:6512:ad4:b0:5a1:38c4:4247 with SMTP id 2adb3069b0e04-5a285ae5251mr4347077e87.1.1774278660268;
-        Mon, 23 Mar 2026 08:11:00 -0700 (PDT)
-Received: from ?IPV6:2001:14ba:6e:3100:284d:5aa8:b8e7:1b28? (2001-14ba-6e-3100-284d-5aa8-b8e7-1b28.rev.dnainternet.fi. [2001:14ba:6e:3100:284d:5aa8:b8e7:1b28])
-        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a2851ac33dsm2644116e87.31.2026.03.23.08.10.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Mar 2026 08:10:59 -0700 (PDT)
-Message-ID: <7ef87de7-9731-46fb-9608-34c07fcf03cd@gmail.com>
-Date: Mon, 23 Mar 2026 17:10:58 +0200
+        d=1e100.net; s=20251104; t=1774281853; x=1774886653;
+        h=mime-version:user-agent:content-transfer-encoding:organization
+         :references:in-reply-to:date:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=8ha1A3Upqoft3A/vZsGBrxpfXd8ABWmzhRsBL16vIYU=;
+        b=VnOfL7ypHlthfWWG5UnlXCVvtS/bEIBxb4WgoRVbF01Q62vFVOebCxdPSwaXJzXiH+
+         RMRU3dpFGRLwxkx0dN549bHPh0C27QTilbXeBxRgoo91yCyYXmqTCsfV95zxSAz97fMH
+         5UhbczbbftprDiQXC11yzVe5uDUpR2TAbbfTTqFsgdiFPZzOnZJOIEZ4/D0LzQotCLj7
+         8LrCfdiMO0zL0Fryj7Jln8s+y1jwWvyoXwViSPffa2M/+xvQe8AZKft7RkaJ06XzubF+
+         EXG573rnUSunRHXzNDdajaHCoY+0R2FRl2GQW9JalQ38Hrt+XGRYUoHhYURL+dvQFLoB
+         3ojA==
+X-Forwarded-Encrypted: i=1; AJvYcCXBolgGewBOaA+hisKvpOjDYq8N1UEDApCkafW368tg4kkpTWn1rwjl8SojdR1DjtzFIlA1FZdvE4Y=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzmqRZyTyyWmcH6NLGyQ6Fhu6hTbFctVqHB8P+Cw3kxhyD08G6v
+	f52DEzC6x2Ea/Pan98HJ2XjTQtbP17V+V68TrLxQ/KuzF+raWOuhr/bOZkucGD3+jEY=
+X-Gm-Gg: ATEYQzxf6dPoRY2qcpgGH2GvkNKQwJqBEtLdoMVitmxr74DH3PhWUqjS8UkMKxayTS1
+	Zexp35UAOVXA9u971xO0lgmKCmZcvZjH6+eVUhCWFXojsLlLTQgNbKkvVVYU3jvfigQ26UMINAR
+	32mUcIUh7rjvUJ0Cj24XqVJsFAP8TzvbW3BFYAHAyQjcj+fG7qXfeVTu3fJw+YopBXsZul7cJ/W
+	EyDFhcmI9gkmrKJ00UTDidE6R2UzuL0+iyFMuizlneRJECJc00M7R5SH3IYZssVbcCtaHu2biGF
+	3uxaudZgqPpu8NWgaZfaqLyRfnjWcf15uw2II+mWB3ceqRgvl6RfRfCmoCMMuRjuvfL6RPzC4yA
+	lCV+LY2bt8XIst4TuF/VyATyRtFdqnh1PEG/f4CGOCaBhMrkl873Eh3NtEoR2UIW5qniecZu2zl
+	uWXbgP
+X-Received: by 2002:a05:600c:45c7:b0:485:3fd1:9936 with SMTP id 5b1f17b1804b1-486fede721amr164460475e9.5.1774281853328;
+        Mon, 23 Mar 2026 09:04:13 -0700 (PDT)
+Received: from [10.76.209.31] ([151.35.182.48])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-486fe032a55sm555492685e9.7.2026.03.23.09.04.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Mar 2026 09:04:13 -0700 (PDT)
+Message-ID: <af2128c68d2a14e1eb664ce9dc075ed02b640407.camel@baylibre.com>
+Subject: Re: [PATCH v8 2/6] iio: Replace 'sign' field with union in struct
+ iio_scan_type
+From: Francesco Lavra <flavra@baylibre.com>
+To: David Lechner <dlechner@baylibre.com>, Jonathan Corbet <corbet@lwn.net>,
+  Shuah Khan <skhan@linuxfoundation.org>, Jonathan Cameron
+ <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>,  linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org,  linux-iio@vger.kernel.org
+Date: Mon, 23 Mar 2026 17:04:10 +0100
+In-Reply-To: <4723284d-1e18-4a13-9ec1-878220af257e@baylibre.com>
+References: <20260317150316.3878107-1-flavra@baylibre.com>
+	 <20260317150401.3878294-1-flavra@baylibre.com>
+	 <4723284d-1e18-4a13-9ec1-878220af257e@baylibre.com>
+Organization: BayLibre
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: base64
+User-Agent: Evolution 3.46.4-2 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2] iio: hid-sensors: Use software trigger
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
- jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, bigeasy@linutronix.de, spasswolf@web.de,
- linux-kernel@vger.kernel.org
-References: <20260220224514.471348-1-srinivas.pandruvada@linux.intel.com>
-Content-Language: en-US
-From: =?UTF-8?B?SGFubmUtTG90dGEgTcOkZW5ww6TDpA==?= <hannelotta@gmail.com>
-In-Reply-To: <20260220224514.471348-1-srinivas.pandruvada@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
 
-On 2/21/26 12:45 AM, Srinivas Pandruvada wrote:
-> Recent changes linux mainline resulted in warning:
-> "genirq: Warn about using IRQF_ONESHOT without a threaded handler"
-> when HID sensor hub is used.
-> 
-> When INDIO_BUFFER_TRIGGERED is used, the core attaches a poll function
-> when enabling the buffer. This poll function uses request_threaded_irq()
-> with both bottom half and top half handlers. But when using HID
-> sensor hub, bottom half (thread handler) is not registered.
-> 
-> In HID sensors, once a sensor is powered on, the hub collects samples
-> and pushes data to the host when programmed thresholds are met. When
-> this data is received for a sensor, it is pushed using
-> iio_push_to_buffers_with_ts().
-> 
-> The sensor is powered ON or OFF based on the trigger callback
-> set_trigger_state() when the poll function is attached. During the call
-> to iio_triggered_buffer_setup_ext(), the HID sensor specifies only a
-> handler function but provides no thread handler, as there is no data
-> to read from the hub in thread context. Internally, this results in
-> calling request_threaded_irq(). Recent kernel changes now warn when
-> request_threaded_irq() is called without a thread handler.
-> 
-> To address this issue, fundamental changes are required to avoid using
-> iio_triggered_buffer_setup_ext(). HID sensors can use
-> INDIO_BUFFER_SOFTWARE instead of INDIO_BUFFER_TRIGGERED, as this can
-> work in trigger-less mode.
-> 
-> In this approach, when user space opens the buffer, the sensor is powered
-> on, and when the buffer is closed, the sensor is powered off using
-> iio_buffer_setup_ops callbacks.
-> 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> ---
-> Changes:
-> v2:
-> changed
-> indio_dev->modes |= INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
-> to
-> indio_dev->modes = INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
-> 
->  From RFC
-> - The trigger alloc and register is still kept as old code with
-> additional
-> indio_dev->modes |= INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
-> 
->   .../common/hid-sensors/hid-sensor-trigger.c   | 48 ++++++++++++-------
->   1 file changed, 30 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 5540e2d28f4a..417c4ab8c1b2 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -14,6 +14,7 @@
->   #include <linux/iio/triggered_buffer.h>
->   #include <linux/iio/trigger_consumer.h>
->   #include <linux/iio/sysfs.h>
-> +#include <linux/iio/kfifo_buf.h>
->   #include "hid-sensor-trigger.h"
->   
->   static ssize_t _hid_sensor_set_report_latency(struct device *dev,
-> @@ -202,12 +203,21 @@ static void hid_sensor_set_power_work(struct work_struct *work)
->   		_hid_sensor_power_state(attrb, true);
->   }
->   
-> -static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> -						bool state)
-> +static int buffer_postenable(struct iio_dev *indio_dev)
->   {
-> -	return hid_sensor_power_state(iio_trigger_get_drvdata(trig), state);
-> +	return hid_sensor_power_state(iio_device_get_drvdata(indio_dev), 1);
->   }
->   
-> +static int buffer_predisable(struct iio_dev *indio_dev)
-> +{
-> +	return hid_sensor_power_state(iio_device_get_drvdata(indio_dev), 0);
-> +}
-> +
-> +static const struct iio_buffer_setup_ops hid_sensor_buffer_ops = {
-> +	.postenable = buffer_postenable,
-> +	.predisable = buffer_predisable,
-> +};
-> +
->   void hid_sensor_remove_trigger(struct iio_dev *indio_dev,
->   			       struct hid_sensor_common *attrb)
->   {
-> @@ -219,14 +229,9 @@ void hid_sensor_remove_trigger(struct iio_dev *indio_dev,
->   	cancel_work_sync(&attrb->work);
->   	iio_trigger_unregister(attrb->trigger);
->   	iio_trigger_free(attrb->trigger);
-> -	iio_triggered_buffer_cleanup(indio_dev);
->   }
->   EXPORT_SYMBOL_NS(hid_sensor_remove_trigger, "IIO_HID");
->   
-> -static const struct iio_trigger_ops hid_sensor_trigger_ops = {
-> -	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
-> -};
-> -
->   int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
->   				struct hid_sensor_common *attrb)
->   {
-> @@ -239,25 +244,34 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
->   	else
->   		fifo_attrs = NULL;
->   
-> -	ret = iio_triggered_buffer_setup_ext(indio_dev,
-> -					     &iio_pollfunc_store_time, NULL,
-> -					     IIO_BUFFER_DIRECTION_IN,
-> -					     NULL, fifo_attrs);
-> +	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
-> +
-> +	ret = devm_iio_kfifo_buffer_setup_ext(&indio_dev->dev, indio_dev,
-> +					      &hid_sensor_buffer_ops,
-> +					      fifo_attrs);
->   	if (ret) {
-> -		dev_err(&indio_dev->dev, "Triggered Buffer Setup Failed\n");
-> +		dev_err(&indio_dev->dev, "Kfifo Buffer Setup Failed\n");
->   		return ret;
->   	}
->   
-> +	/*
-> +	 * The current user space in distro "iio-sensor-proxy" is not working in
-> +	 * trigerless mode and it expects
-> +	 * /sys/bus/iio/devices/iio:device0/trigger/current_trigger.
-> +	 * The change replacing iio_triggered_buffer_setup_ext() with
-> +	 * devm_iio_kfifo_buffer_setup_ext() will not create attribute without
-> +	 * registering a trigger with INDIO_HARDWARE_TRIGGERED.
-> +	 * So the below code fragment is still required.
-> +	 */
-> +
->   	trig = iio_trigger_alloc(indio_dev->dev.parent,
->   				 "%s-dev%d", name, iio_device_id(indio_dev));
->   	if (trig == NULL) {
->   		dev_err(&indio_dev->dev, "Trigger Allocate Failed\n");
-> -		ret = -ENOMEM;
-> -		goto error_triggered_buffer_cleanup;
-> +		return -ENOMEM;
->   	}
->   
->   	iio_trigger_set_drvdata(trig, attrb);
-> -	trig->ops = &hid_sensor_trigger_ops;
->   	ret = iio_trigger_register(trig);
->   
->   	if (ret) {
-> @@ -284,8 +298,6 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
->   	iio_trigger_unregister(trig);
->   error_free_trig:
->   	iio_trigger_free(trig);
-> -error_triggered_buffer_cleanup:
-> -	iio_triggered_buffer_cleanup(indio_dev);
->   	return ret;
->   }
->   EXPORT_SYMBOL_NS(hid_sensor_setup_trigger, "IIO_HID");
+T24gU2F0LCAyMDI2LTAzLTIxIGF0IDEyOjIyIC0wNTAwLCBEYXZpZCBMZWNobmVyIHdyb3RlOgo+
+IE9uIDMvMTcvMjYgMTA6MDQgQU0sIEZyYW5jZXNjbyBMYXZyYSB3cm90ZToKPiA+IFRoaXMgZmll
+bGQgaXMgdXNlZCB0byBkaWZmZXJlbnRpYXRlIGJldHdlZW4gc2lnbmVkIGFuZCB1bnNpZ25lZAo+
+ID4gaW50ZWdlcnMuCj4gPiBBIGZvbGxvd2luZyBjb21taXQgd2lsbCBleHRlbmQgaXRzIHVzZSBp
+biBvcmRlciB0byBhZGQgc3VwcG9ydCBmb3Igbm9uLQo+ID4gaW50ZWdlciBzY2FuIGVsZW1lbnRz
+OyB0aGVyZWZvcmUsIHJlcGxhY2UgaXQgd2l0aCBhIHVuaW9uIHRoYXQgY29udGFpbnMKPiA+IGEK
+PiA+IG1vcmUgZ2VuZXJpYyAnZm9ybWF0JyBmaWVsZC4gVGhpcyB1bmlvbiB3aWxsIGJlIGRyb3Bw
+ZWQgd2hlbiBhbGwKPiA+IGRyaXZlcnMKPiA+IGFyZSBjaGFuZ2VkIHRvIHVzZSB0aGUgZm9ybWF0
+IGZpZWxkLgo+ID4gT3Bwb3J0dW5pc3RpY2FsbHkgcmVwbGFjZSBjaGFyYWN0ZXIgbGl0ZXJhbHMg
+d2l0aCBzeW1ib2xpYyBjb25zdGFudHMKPiA+IHRoYXQKPiA+IHJlcHJlc2VudCB0aGUgc2V0IG9m
+IGFsbG93ZWQgdmFsdWVzIGZvciB0aGUgZm9ybWF0IGZpZWxkLgo+ID4gCj4gPiBTaWduZWQtb2Zm
+LWJ5OiBGcmFuY2VzY28gTGF2cmEgPGZsYXZyYUBiYXlsaWJyZS5jb20+Cj4gPiAtLS0KPiA+IMKg
+RG9jdW1lbnRhdGlvbi9kcml2ZXItYXBpL2lpby9idWZmZXJzLnJzdCB8wqAgNCArKy0tCj4gPiDC
+oGluY2x1ZGUvbGludXgvaWlvL2lpby5owqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oCB8IDE3ICsrKysrKysrKysrKysrKy0tCj4gPiDCoDIgZmlsZXMgY2hhbmdlZCwgMTcgaW5zZXJ0
+aW9ucygrKSwgNCBkZWxldGlvbnMoLSkKPiA+IAo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRp
+b24vZHJpdmVyLWFwaS9paW8vYnVmZmVycy5yc3QKPiA+IGIvRG9jdW1lbnRhdGlvbi9kcml2ZXIt
+YXBpL2lpby9idWZmZXJzLnJzdAo+ID4gaW5kZXggNjNmMzY0ZTg2MmQxLi5lMTZhYmFmODI2ZmUg
+MTAwNjQ0Cj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RyaXZlci1hcGkvaWlvL2J1ZmZlcnMucnN0
+Cj4gPiArKysgYi9Eb2N1bWVudGF0aW9uL2RyaXZlci1hcGkvaWlvL2J1ZmZlcnMucnN0Cj4gPiBA
+QCAtNzgsNyArNzgsNyBAQCBmaWVsZHMgaW4gaWlvX2NoYW5fc3BlYyBkZWZpbml0aW9uOjoKPiA+
+IMKgwqDCoCAvKiBvdGhlciBtZW1iZXJzICovCj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlu
+dCBzY2FuX2luZGV4Cj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCB7Cj4gPiAtwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNoYXIgc2lnbjsKPiA+ICvCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY2hhciBmb3JtYXQ7Cj4gPiDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1OCByZWFsYml0czsKPiA+IMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHU4IHN0b3JhZ2ViaXRzOwo+ID4gwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdTggc2hpZnQ7Cj4gPiBAQCAtOTgsNyArOTgs
+NyBAQCBmb2xsb3dpbmcgY2hhbm5lbCBkZWZpbml0aW9uOjoKPiA+IMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBvdGhlciBzdHVmZiBoZXJlICovCj4gPiDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnNjYW5faW5kZXggPSAwLAo+ID4gwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5zY2FuX3R5cGUgPSB7Cj4gPiAtwqDCoMKgwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnNpZ24gPSAncycsCj4g
+PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLmZv
+cm1hdCA9IElJT19TQ0FOX0ZPUk1BVF9TSUdORURfSU5ULAo+ID4gwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAucmVhbGJpdHMgPSAxMiwKPiA+IMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnN0b3Jh
+Z2ViaXRzID0gMTYsCj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgIC5zaGlmdCA9IDQsCj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9p
+aW8vaWlvLmggYi9pbmNsdWRlL2xpbnV4L2lpby9paW8uaAo+ID4gaW5kZXggYTllY2ZmMTkxYmQ5
+Li5kNDhhMGFiMDFiOGQgMTAwNjQ0Cj4gPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2lpby9paW8uaAo+
+ID4gKysrIGIvaW5jbHVkZS9saW51eC9paW8vaWlvLmgKPiA+IEBAIC0xNzYsOSArMTc2LDE5IEBA
+IHN0cnVjdCBpaW9fZXZlbnRfc3BlYyB7Cj4gPiDCoMKgwqDCoMKgwqDCoMKgdW5zaWduZWQgbG9u
+ZyBtYXNrX3NoYXJlZF9ieV9hbGw7Cj4gPiDCoH07Cj4gPiDCoAo+ID4gKy8qCj4gPiArICogRm9y
+bWF0IHZhbHVlcyBpbiBzY2FuIHR5cGUKPiA+ICsgKiBASUlPX1NDQU5fRk9STUFUX1NJR05FRF9J
+TlQ6IFNpZ25lZCBpbnRlZ2VyICh0d28ncyBjb21wbGVtZW50KS4KPiA+ICsgKiBASUlPX1NDQU5f
+Rk9STUFUX1VOU0lHTkVEX0lOVDogVW5zaWduZWQgaW50ZWdlci4KPiA+ICsgKi8KPiAKPiBXZSBj
+b3VsZCBtYWtlIHRoaXMgcHJvcGVyIGtlcm5lbCBkb2MgZm9ybWF0IHdpdGggb25lIGNvbW1lbnQg
+cGVyIG1hY3JvLgoKQWN0dWFsbHksIGEgc2V0IG9mIHJlbGF0ZWQgI2RlZmluZXMgY2FuIGJlIGRv
+Y3VtZW50ZWQgd2l0aCBhIHNpbmdsZQpjb21tZW50LiBJIHNlZSBhIGZldyBleGFtcGxlcyBkb2lu
+ZyB0aGF0IGluIGluY2x1ZGUvbGludXgvZ2ZwX3R5cGVzLmggYW5kCmluY2x1ZGUvbGludXgvZnBn
+YS9mcGdhLW1nci5oCgoKPiA+ICsjZGVmaW5lIElJT19TQ0FOX0ZPUk1BVF9TSUdORURfSU5UwqDC
+oMKgwqDCoCdzJwo+ID4gKyNkZWZpbmUgSUlPX1NDQU5fRk9STUFUX1VOU0lHTkVEX0lOVMKgwqDC
+oCd1Jwo+ID4gKwoK
 
-
-Hi,
-
-This patch clears the warning "WARNING: kernel/irq/manage.c:1502 at 
-__setup_irq" on Debian forky.
-
-Tested-by: Hanne-Lotta Mäenpää
-
-The referenced commit ID could be included in the commit message, like this:
-
-Commit aef30c8d569c0f317154 ("genirq: Warn about using IRQF_ONESHOT 
-without a threaded handler")
-
-With that included, this patch will be easier to find if someone bisects 
-the issue.
-
-Also, a Closes tag could be added:
-
-Closes: https://bugzilla.kernel.org/show_bug.cgi?id=221256
-
-Best regards,
-
-Hanne-Lotta Mäenpää
