@@ -1,142 +1,208 @@
-Received: from mail-ed1-f46.google.com (mail-ed1-f46.google.com [209.85.208.46])
+Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 5DE3839B949
-	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 11:47:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.208.46
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774266436; cv=pass; b=o4FeBTLxcYln51rjhl68HKxnLh2Zuq0eo8UStDhnW87qJWIZrssoDnosTxnkzUvuK9SGUqZF9VATnpaFff/bobQcbIVLvBxxVFFBfdkrZpEXgl334AHT4zGf8eMglTY3I72L3baBjyJbTiJv+F+a27jXJhW96/r0oU1Jy0USJEY=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774266436; c=relaxed/simple;
-	bh=4nry2qzy5pcCzAM5woH+HOmFMTfIBTI3KVX7x2x4kfs=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=mNQkf/X3xVYmZCukaWew2Eb8YZa1LGZil/iqaNdO40gpIjCiKCIedbMviC8ppn7aZ+iRnOBzY3A+/4fCsN8QnE0ICU/mNnayAz9RG+tJ2TBPjaKqKAwC2mecX9l6k+O2kvS27+7YTpgApJOBuWk4PVRCyG8HdGl//4h4gIp4jN4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=bkBD3ak5; arc=pass smtp.client-ip=209.85.208.46
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FD7D39B965
+	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 11:59:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774267144; cv=none; b=SxOMouCvfuFb4PzJsMkQUSATWLcabZEUXkVYv/5MraDtlQZ9HgxlUYOgipX2Vh8iCgReubl7sCravZBbs1zzArWM/Sv8rZc8GwAIKpHzD1y7OQaf4sTehq5wwRf+LpBknkYdiv2kzcy1ebS1bhSXEqNpXBvPr2WA8oMJp9M6TSU=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774267144; c=relaxed/simple;
+	bh=ELtImlRs/RlYTP+Zv0TOi4aJNiHzPqCPYyRyWRRAAK8=;
+	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=B5GsfBmbDwaBdPErbRCzMnhwJr4poH07YEPO55tExBqZzyNyn1BdFix+eQGlarZgPrXzINfiDBJzm010WJrPozLxYdx11rREEsdmUGle3c1EEQZiMpI+fuV3ck5YJX4AIfv7k6MS7dUfwIZ9e+dOXEyc5Qq438d6Y2JxYyoPnoY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e+pEUPqk; arc=none smtp.client-ip=209.85.218.54
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bkBD3ak5"
-Received: by mail-ed1-f46.google.com with SMTP id 4fb4d7f45d1cf-6689033d0c3so4129687a12.0
-        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 04:47:15 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1774266434; cv=none;
-        d=google.com; s=arc-20240605;
-        b=NO+3PIQzRd23EkXp0xxnM/5Pj5vVBNjVDpH6vnSXhy5EdzM7ebA0u2n0rPLnDrzhOo
-         Z4QqtAMsZwFJ1lBaGLOhbTDsBykGT/rSfe5ssoZc/Figjn/KlvK+RnDn2v9/h30D3FwU
-         A4GFzNsudkse1Z2MGZFcUsI1UD6BfVwn/RW2t9Aw3fwtBGloj8laH6XENr+FcC+ZwFqo
-         rlCJ8gl9L7cGYHcxts3tycHPkfar9tXI1BchRVmN++Xk8R3yxPi+Ghm6rf9eS0Yi5sob
-         71Tn52kWy6F4yMO/wsYpxYYKyQ9wz9FK0/OYgQJKIDzWr31z/VOOQGC+XQzG94zLYiai
-         bYnw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=QUJUjulURT0vpMbu4RaHS8o5NCexbA+knxvjmiKjiF4=;
-        fh=cltfnVJDkRVJn5KpXw8VAUkyFz8HN856/CTgMyRPMVQ=;
-        b=XdcxETqK+oZ9DSrVi17VZiFDzt19mK8bvokN+qYRIeW3ch82IzHavTF/U23DdKWDyu
-         md3FR02qmp0qINRB2yJ75eevyQf80AQsNxdbIfQsMFBsrxfDkzlaaDm1jE0YZfq0dyxF
-         26yk8dAu0IulM8+IghSexxPdtM4yhbd50rZ4br3svE2SY6QBCJWKxfBLqF4yjhbX71cn
-         Bj8u9dBF4NTkB7+/EL65WdQJtw/YG/AIrnVfvvifxY5swItssttwrpd0aP3+/W0oi7T2
-         nD2hkN8oerNj3qZUd2Y4nRC/k9YOiHBGCtdBvox139U/rbe2qL9rR/IX5mtehKX45ovY
-         mWZQ==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e+pEUPqk"
+Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b9358bc9c50so12271866b.1
+        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 04:59:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1774266434; x=1774871234; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=QUJUjulURT0vpMbu4RaHS8o5NCexbA+knxvjmiKjiF4=;
-        b=bkBD3ak5oAisJnsH4PpYJ8wjAViMT79GTt+9X8OvP8z+n9lgcVTMqEXpBZr32kxBRw
-         NieMkROZNyZ5yzDIqEnKzVmXXUygFteakZMlsRTePnGnE0jjoHkPt1C2zRXBS9phJAoD
-         B81qFffIggUjXlVPYm7ieba61/MfmV26R+2HxTkOxEMnDA0J+MHg0GoSKpJOKT2vwl16
-         6OPxbpUqRoPE3Fo0kSyuMV+RaXNTVGvUxTbYquX2tEkpF9Q/JEukvMMOyxOBxPIPqyPm
-         7tDzlqCoO1emYyYu5WgLz1SRDxG3j+1EX8txRF+EF3lQBDaKe4mk9yYOB+BIanWwenpm
-         xVWA==
+        d=gmail.com; s=20230601; t=1774267141; x=1774871941; darn=vger.kernel.org;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=RU6NYRz6AVXhi5ZvZvCh4JAOhWnWFdHOlwdskFh6xa4=;
+        b=e+pEUPqkJf0PV9orarFsbxEOZl4avUX+L7fgplxP/WjHxt5CdG9TOREvZEjKodbrcm
+         lL96qAT4L7JDKJg2X1cHhM9/B3pKrb+LIzpdTzgdlY9dqtvKkHY0V7DmD3ZBEelmTzc9
+         8SKDueW4zwx3fz10TsTfbfdgu1uGkP/4avaOl50E88eK1mGrVyl/M931O1m6ctNaJLzM
+         Xb+dqcM2UDO+YalCbloqc9/dc6VO5vIaTal3rPPtO989LpRD9VQhcdY9/8tu/fDORxb3
+         hGHqgDXfTcjC9HQePN7kX3KXcu1q2kPp/aSogvPQBVLWC+KwNSVuoPrZXJLmyx5iyz3L
+         dr6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774266434; x=1774871234;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=QUJUjulURT0vpMbu4RaHS8o5NCexbA+knxvjmiKjiF4=;
-        b=jr6wrJwiPkhpReDjwgGQeroqeE2XB46+fpR6JoCeiPsVhSgW4W71GcrFcI7/O7OMX4
-         lsmfn1eyHso3MBaPU98ackRLFXTs5A1TxDaGdNc8p51nmmzipcSd1+mb4Tbc3bxJHoKD
-         hsVQFnPeYUudF2rSsN/fDX8J0Cau3zpkJe4vzNFKYp5RAT5okBlXgnUhkuknNa0+KORi
-         CpjiRXriZePC1TSwUxSL46cA5vuavThZL5Fq8jFgNHV0SRTJcIcFjKdj2zG+yPT6upnm
-         bgUpgo5cpxdwUARQ6SAt2IGtlZlZOV6MJtvVoeeHGOxwXQXNwrvceKIDNfyngiUqEFvZ
-         c14g==
-X-Forwarded-Encrypted: i=1; AJvYcCXA5Eg9HUivlTQx0G0Hnu6TMJOOU4/b5HBUtXxRQe1MbDeyfs+SCt3mMICB4Hzvyjs4rkyUgAmNgI4=@vger.kernel.org
-X-Gm-Message-State: AOJu0YxPKI0DkfIsc4PGq95awOnu+AQHdB6zsTxLtm6hi/RGGXnxLFLi
-	TA0H1gJwcyL4qnClLhuU0sDdri2zHnGenie/Rr31C3ntor2IP5FsNQBMj7vS3tzMzoPbaA0tzjo
-	eb5fy4VBTeyxyGjO9pe+ObvIXIpaE/7Q=
-X-Gm-Gg: ATEYQzwprcY+wnzWpyjm2J0qBRfzg9MZZpR8oczmKRFlKjadn/ozzRsbow7j0T5LMeq
-	v5M0ueuPWx7ZtZtq7llqyIFp5k1Hwun64kx3ifmsV4P6HfhhJCGsXI0nDaoXNiQpeXCneELIqog
-	sxoOHhSzTdBSJ6Vkvki5EFl+2OKqzVoONVv4Hrv26o7bw88mOBkgAwQ/QC61mZtJ0o9TT52Q40p
-	kX4T8CmStf6Mb4TmbCGCifpBByAaLMBlyJh9dsHpma6FT5h8GSKweIcHbvFam69HW7FsI3L5WKE
-	r5fKpnrspNiWA9DLs0qgK+o7rMiI1Fd4mqKOIS1Svf5iPZ8TTwmVpDscQR4XwF8vX2iN8W+2oQX
-	hUWgIbLk=
-X-Received: by 2002:a17:907:6b06:b0:b97:f050:d115 with SMTP id
- a640c23a62f3a-b982f0c310amr932278966b.9.1774266433441; Mon, 23 Mar 2026
- 04:47:13 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1774267141; x=1774871941;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=RU6NYRz6AVXhi5ZvZvCh4JAOhWnWFdHOlwdskFh6xa4=;
+        b=OT+R7eHkWYIyLcFEvA3IgxIqgZCQ80sC+kCV7rtU86zX05Kt9wUmgEI8Q3Dprn96h8
+         Klu2TuMuDo3VTdjUFI4xrvVY/v+kIDsHIEOsRDMMonoJFv75jDcM7UI/lk2cc6M6NH5x
+         HEyc/1ji4dceCR7YtCcMYTRtPlPwTZryRarJ8r6greqBa1drl2SQ7akgkV2fUobNRJ0X
+         TXlXHLpaQKazt9Yo3WFkTcy0H9t5xtrRPg3yMi8vBIUaQG2Y+Jm4HyXgjxTqJVlxg7oT
+         rD4IQpPpx5EljQzPWPe5KaggWCo61Ice3w+FPLiIk9PnXLaZTaSpBojApcqCk0ywpd6p
+         Gbaw==
+X-Forwarded-Encrypted: i=1; AJvYcCXoNPo6NpsYA2nKwX01Bxyr3wfZVT0hHxgcHkQyyPXmAQ5AQEKW9uR/BK4zZ/wXkLB/q7lFZCQvyM8=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzYRJu+B9zPistd/yPVNP6XghRFlJ/9PTNmhQ87AudO0lNKf9cK
+	Rti9hsb1NuacwzfXJBn6FTeg0NL++p0KkvM9kx1nL7uvkYgZ4e6koNID
+X-Gm-Gg: ATEYQzxWk27tyuP8sNWAGMRPRd9if+RZgAcIh6q1coVMv1R8iSj3UtSv0MiCOo2A9Wa
+	s0VXUemAqQXWfeA6j7AtiU8VNeXNBqg2TaH22poaquL+Fque0tno48J2FXhMi2V7saY1tK+59PQ
+	Qu62effSpAVsmH0GvphNp+xJNLRKqL6R9XJBCigVxybN3PN/qA/9mlKxuv3DBDtyCCglaqvRrV0
+	K8WuZz1sRAlVqKTKFmW816n2Oi2tzJj16PNMHa41vkP3ySN2mcOefPRdPvtJgih3iscnSQlnhJh
+	VUNk9r+KFEpUeUXimbO3qS3EgXwqKsSJ6ej6vWWZMSJvOn4IuYpXAz7UAU1Gqgpmo+d52HcZH8H
+	+b/uaQnlQ/GUMX8kQbIZvZGRlcloMO81oNJgV0FrMHtIxNmGJeWH3egVwlJP7aB/xzuqEJd0W9P
+	+/kYBVp4Wg6oAVthzVj1a/Pr4Y1jEK8oQQDEA9HRGnnvHIijqWb7+vGGDhsxxS2nLV5Zt8hYuFS
+	0i49QxpksgyZnaBistZcBzMOh3SiwB7JA+s4eLkCo7PzfKwJ3Y=
+X-Received: by 2002:a17:907:c789:b0:b88:6164:6421 with SMTP id a640c23a62f3a-b982f1f2b12mr865165466b.16.1774267140453;
+        Mon, 23 Mar 2026 04:59:00 -0700 (PDT)
+Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
+        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b98416ac27asm362764166b.59.2026.03.23.04.58.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 23 Mar 2026 04:58:59 -0700 (PDT)
+From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
+X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
+Date: Mon, 23 Mar 2026 11:58:53 +0000
+To: Jonathan Cameron <jic23@kernel.org>, 
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
+	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
+	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
+	Shuah Khan <skhan@linuxfoundation.org>
+Subject: Re: [PATCH RFC v2 9/9] docs: iio: add documentation for ad9910 driver
+Message-ID: <g57xnbhtvu25dvzy5b5pz76yzalpcjpnyclob6dy6j7fphxqle@5vww7psogbv3>
+References: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
+ <20260318-ad9910-iio-driver-v2-9-e79f93becf11@analog.com>
+ <20260322173434.23d2ee0d@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260323074505.3853353-1-sai.krishna.potthuri@amd.com>
- <20260323074505.3853353-4-sai.krishna.potthuri@amd.com> <acEbZ0O3HKrGx0u1@ashevche-desk.local>
- <8c8fa211-6244-43d3-9350-856301075e2b@amd.com>
-In-Reply-To: <8c8fa211-6244-43d3-9350-856301075e2b@amd.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Mon, 23 Mar 2026 13:46:37 +0200
-X-Gm-Features: AaiRm51igNpVP2kCtjt-uVTIXp5cT3pPNV4OvOgkKtoQyGTUIfXrJkbDCsd2ufI
-Message-ID: <CAHp75VdcrfJn=VBnjJbA8QQnstaTay+39bumJiLt796fXsKmTA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/4] iio: adc: xilinx-xadc: Add I2C interface support
-To: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>, Jonathan Cameron <jic23@kernel.org>, 
-	David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, 
-	Andy Shevchenko <andy@kernel.org>, "Simek, Michal" <michal.simek@amd.com>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, 
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>, 
-	"linux-arm-kernel@lists.infradead.org" <linux-arm-kernel@lists.infradead.org>, 
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, 
-	"saikrishna12468@gmail.com" <saikrishna12468@gmail.com>, "git (AMD-Xilinx)" <git@amd.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260322173434.23d2ee0d@jic23-huawei>
 
-On Mon, Mar 23, 2026 at 1:32=E2=80=AFPM Sai Krishna Potthuri
-<sai.krishna.potthuri@amd.com> wrote:
-> > -----Original Message-----
-> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > Sent: Monday, March 23, 2026 4:22 PM
-> > On Mon, Mar 23, 2026 at 01:15:04PM +0530, Sai Krishna Potthuri wrote:
+On 26/03/22 05:34PM, Jonathan Cameron wrote:
+> On Wed, 18 Mar 2026 17:56:09 +0000
+> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+> 
+> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > 
+> > Add documentation for the AD9910 DDS IIO driver, which describes channels,
+> > DDS modes, attributes and ABI usage examples.
+> > 
+> > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
 ...
 
-> > >  int xadc_write_samplerate(struct xadc *xadc, int val)  {
-> > > -   unsigned long clk_rate =3D xadc_get_dclk_rate(xadc);
-> > > +   unsigned long clk_rate;
-> > >     unsigned int div;
-> > >
-> > > +   if (!xadc->ops->get_dclk_rate)
-> > > +           return -EOPNOTSUPP;
-> >
-> > > +   clk_rate =3D xadc_get_dclk_rate(xadc);
-> > > +
-> >
-> > Unneeded blank line.
-> >
-> > Also, don't you asked for options?
-> This callback is defined for all other platforms except I2C.
-> Currently for I2c interface we are not supporting any configuration, it
-> is used only to read the channels.
+> > +Channel hierarchy
+> > +=================
+> > +
+> > +The driver exposes the following IIO output channels, each identified by a
+> > +unique channel number and a human-readable label:
+> > +
+> > +* ``out_altvoltage100``: ``phy``: Physical output: system clock and profile control
+> > +
+> > +  * ``out_altvoltage110``: ``single_tone``: Single tone mode: per-profile
+> > +    frequency, phase, amplitude
+> > +
+> > +  * ``out_altvoltage120``: ``parallel_port``: Parallel port modulation: enable
+> > +    and offset/scale parameters
+> > +
+> > +  * ``out_altvoltage130``: ``digital_ramp_generator``: DRG control: enable,
+> > +    destination, operating mode
+> > +
+> > +    * ``out_altvoltage131``: ``digital_ramp_up``: DRG ramp-up parameters:
+> > +      limits, step sizes, ramp rate
+> > +    * ``out_altvoltage132``: ``digital_ramp_down``: DRG ramp-down parameters:
+> > +      limits, step sizes, ramp rate
+> > +
+> > +  * ``out_altvoltage140``: ``ram_control``: RAM playback: enable, destination,
+> > +    operating mode, address range
+> > +
+> > +  * ``out_altvoltage150``: ``output_shift_keying``: OSK: enable, amplitude
+> > +    scale, ramp rate, auto/manual control
+> > +
+> > +The ``phy`` channel is the root of the hierarchy. Changing its
+> > +``sampling_frequency`` reconfigures the system clock (SYSCLK) which affects all
+> > +other channels. The ``profile`` attribute on this channel selects the active
+> > +hardware profile (0-7) used by the single tone and RAM channels.
+> I asked out this profile thing in one of the other patches.  Key to me is
+> that how we write non active profiles?  The most similar thing we've seen
+> in the past has been setting other frequencies for FSK or phases for PSK or
+> more mundane DC DAC output that are symbol based. (often an external signal)
 
-If the callback defined you should use its value and not hardcoded one, rig=
-ht?
+Yes, not allowing to configure a non-active profile at this point.
+Initially was not seeing this as a problem, but would you think different
+channels for each profiles should be created? e.g.:
 
-> > >     if (!clk_rate)
-> > >             return -EINVAL;
+- out_altvoltage111 ... out_altvoltage118 for single tone profiles; and
+- out_altvoltage141 .. out_altvoltage148 for RAM profiles
 
---=20
-With Best Regards,
-Andy Shevchenko
+That would not remove the need for something like the profile attribute.
+
+> For those we have added an additional index so we can see which symbol we
+> are changing parameters for.  Here it might need to be done in the channel
+> numbering. I'm not sure.
+> 
+> > +
+> > +All mode-specific channels (parallel port, DRG, RAM, OSK) have an ``enable``
+> > +attribute. The DRG and RAM channels additionally have ``destination`` and
+> > +``operating_mode`` attributes that configure which DDS core parameter is
+> > +modulated and how.
+> 
+> I wonder if we flatten things out and have separate channels for each type
+> of modulation. Might lead to a more standard looking interfaces. We don't really
+> have a standard path to control one type of thing feeding another, whereas
+> we do have simple 'enable' interfaces.
+
+...
+
+> > +RAM mode
+> > +--------
+> > +
+> > +The AD9910 contains a 1024 x 32-bit RAM that can be loaded with waveform data
+> > +and played back to modulate frequency, phase, amplitude, or polar (phase +
+> > +amplitude) parameters.
+> > +
+> > +RAM control channel attributes
+> > +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> > +
+> > +.. flat-table::
+> > +   :header-rows: 1
+> > +
+> > +   * - Attribute
+> > +     - Unit
+> > +     - Description
+> > +
+> > +   * - ``out_altvoltage140_en``
+> > +     - boolean
+> > +     - Enable/disable RAM playback. Toggling swaps profile registers between
+> > +       single tone and RAM configurations across all 8 profiles.
+
+...
+
+> > +   * - ``out_altvoltage140_address_start``
+> Do we need this flexibility to set the start?  We needed a length, but
+> if we want different effective start can just load a different image.
+
+There is one image being loaded into the entire RAM and each profile may choose
+from wich sample it starts and ends its address ramp.
+The profiles can have those address ranges to overlap or not, then I suppose
+considering different images would just complicate things.
+
+> > +     - integer
+> > +     - Start address for the active profile. Range [0, 1023]. Cannot be
+> > +       changed while RAM mode is enabled. If set above current end address,
+> > +       end address is automatically adjusted.
+> > +
+
+...
+
+-- 
+Kind regards,
+
+Rodrigo Alencar
