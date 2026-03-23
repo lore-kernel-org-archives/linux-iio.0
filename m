@@ -1,124 +1,197 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B72BB3C7DF4
-	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 17:37:43 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E41673C9440;
+	Mon, 23 Mar 2026 17:55:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774287465; cv=none; b=K0Km2f8M/oiN7kfS6jeTjBOQ+DnkZiYRBFx2wdefgCxoMpIv3fcxRUQJN/O+VKgUw6oDiz/iP/Hn99O36nA7MBLcobf2FqP4r4q6zZesehobQ7KXlAu+uBUHAIcJVy4YhLKLzuu9tdvxbMpBJEc36Dt2BgxOs5nC1N+cdfrwYcI=
+	t=1774288526; cv=none; b=ieIgjShnggdsYZ/HZLnwIqRloLQKpGSU9VpxVXyDl9q+Hg1iBSm/GTZKMpY+NRNT+36aIpNBmlGp58S4TU5mtO84jw2OT08gjVxEL2PwB0o2ayqRQ2bn1Z6IYgfkLkQPAfHwbuWXCoIRBASiGi3d9EO0DnRqEm6cxxbuQz4reXg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774287465; c=relaxed/simple;
-	bh=cK4s+aRJJfMSKQPfpYFlQXybNBTHKRc80Yo7MgBs5M4=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=i8CxewGxICcbUmw6GgLWqoDHmwIYuck/3GqywziXRZ55AtbTqdKPZy9UbkhU2I6oLnEtU5RMbhEt66xG9opIqA1HRfibjoOW1/k2hGg01PnCw1iDF83t1gzfKYPqnRrmEIshCbAA88zm0mbr8CEUSrSmySVZ1o2HVb+dOnsGemY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=os8CgyaT; arc=none smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="os8CgyaT"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-4852e9ca034so29169305e9.2
-        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 10:37:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774287462; x=1774892262; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:cc:to:from:subject:message-id:from:to
-         :cc:subject:date:message-id:reply-to;
-        bh=cK4s+aRJJfMSKQPfpYFlQXybNBTHKRc80Yo7MgBs5M4=;
-        b=os8CgyaT2Mfz2n5P0+B7XxDrx7gL3g88ShQLrki2M4e144FPKUn1XxUPfsHpLN5Zub
-         G6xFyrd3BBBRL6Md6X2/9q5RJTzmxc9TjSNGYD1+jhpR7eujKs0ckniNbroFIIGMjfWw
-         xeqOr6U3cbtdP26rQvI2AqYqFjcMTBY+j2UJfRLOXCaf9qAQ0jXTogahDA1gNEHKK3oA
-         dD/UByI4Pmcl6j3iso9U2yz/K0aalDedmKSq6Du0PeFhD7+Cmz/00JYO69KIziaPgUGU
-         9zjzPYE7HwijkdjxVkn9lsk0M5mZcZ/mm2TY91Y50KcEPzo1GezdgEZGTQOGPEFe+PMN
-         wcog==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774287462; x=1774892262;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=cK4s+aRJJfMSKQPfpYFlQXybNBTHKRc80Yo7MgBs5M4=;
-        b=eV4mejTEUtl+v5LEvtJL4baSW0yfmTlfYDoyq7GJTSZlslsBL9pQ8uvVGD8x+rzF3n
-         Vj/GELB3amveXIyBuTR0L6fL7IKykyoC7ffNgvfsSUVntvQmV1lmdtmcKsqN/oQgtXgu
-         o2l/JjewDBqQ4jy3pspSXuENQvtPSj/65TDdA1dpBFMSpkf0iu/Lmok2PnyCcc6MwOqD
-         9k5odCz8MedtnsU6VMzfKvNKJ5AFDfX+98DH6ADvTlt0sbjw/UCscfj4Nb7s5WlMXvZV
-         TSsAQpZqE0HGoV67ptuzl2hfP8NKMNyCy0EOYZrQcBF9awj7fYC8Z2O7l5x629ORX11s
-         7ddg==
-X-Forwarded-Encrypted: i=1; AJvYcCW5swJedsxIM1+T0YdtI9BEbMN1kwYz6OoI2oCLr34TFBAmxP0W6udL+1iOyLsXAfVP1MRIvDlwnHo=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzsHBkHe7u5Ml7SHQQOT+MGR/AqzPoewWYspE5dpDPg+rN96zxO
-	5AJ4d8+kYzSIfuocBOLTthKhVzzjXZsqOcGlAOJ2dRT1mtsXAdOvPA0hPZu5nzvXE1A=
-X-Gm-Gg: ATEYQzyZIX79kHWl3r104/4THnjpAajQWEFOmEgrZC0VqPZ92gzdvvWWukm7lDDNdgr
-	VMSr10suJqt6gF6sVGY/mS6IgiC3govQ54GObSPHxa/kqJTUV+surb0+UEB5jSpuYznr8yj5t0D
-	BrxYFdnxrzJlvviM4y88YNdbeI6I8klExPZy6y3kDH6A115ujjZTDeKVswBjpiB8m9WszOBYNiL
-	4nbzgkWGCrWaHdrpCpHTFTn+ZN2I1S/EILdLnu7g3MwThd6CXNKmBWjzX3dS0IaddAKlpqFcHbE
-	MgItbpC3SBxSbSmQtsI/+lMN1UNJiE+bN+YiIMRCfkXC4it1CURzbKxM4OjLLhVYET7xhGBMjM9
-	Quas3X49GVf8AcbdelcPq43er/zSTL47x6tZu87KMQHOW+XXqiaXAG9JHqIu7yy8svFcrJm2sY4
-	O/iuO+
-X-Received: by 2002:a05:600c:a4a:b0:485:5c6e:8a38 with SMTP id 5b1f17b1804b1-486fee0fbabmr173331945e9.17.1774287462040;
-        Mon, 23 Mar 2026 10:37:42 -0700 (PDT)
-Received: from [10.76.209.31] ([151.35.182.48])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-486ff1d6fbdsm80846685e9.33.2026.03.23.10.37.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2026 10:37:41 -0700 (PDT)
-Message-ID: <5c780b1be8a64f7862a421db5a1f5be861cb197c.camel@baylibre.com>
-Subject: Re: [PATCH v8 2/6] iio: Replace 'sign' field with union in struct
- iio_scan_type
-From: Francesco Lavra <flavra@baylibre.com>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: David Lechner <dlechner@baylibre.com>, Jonathan Corbet <corbet@lwn.net>,
-  Shuah Khan <skhan@linuxfoundation.org>, Jonathan Cameron
- <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>,  linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org,  linux-iio@vger.kernel.org
-Date: Mon, 23 Mar 2026 18:37:38 +0100
-In-Reply-To: <acFvHgTo-3cxH_UP@ashevche-desk.local>
-References: <20260317150316.3878107-1-flavra@baylibre.com>
-	 <20260317150401.3878294-1-flavra@baylibre.com>
-	 <4723284d-1e18-4a13-9ec1-878220af257e@baylibre.com>
-	 <af2128c68d2a14e1eb664ce9dc075ed02b640407.camel@baylibre.com>
-	 <acFvHgTo-3cxH_UP@ashevche-desk.local>
-Organization: BayLibre
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.46.4-2 
+	s=arc-20240116; t=1774288526; c=relaxed/simple;
+	bh=h4l96PV0swKh3/xZqtsIDbG14spzc78TV5rRfckoqHM=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=LALEbz8Xu2yAfc0hAqLIB1Pwlg7WbKcyXusWLsufNxPfKk4G0zP9yT1j0N7Pd9UwBeqEKJxUy2ua+rRUwkePZSpqax6ckKbxu5A45Qc+Tm3P1pgHkDOuMd4GX4xvwtJ+GaeokvyKEfcj+sT2hUlha58Wic2JjtWeIqNHY65maBE=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.224.83])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4ffgmT5gplzHnGgp;
+	Tue, 24 Mar 2026 01:54:49 +0800 (CST)
+Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
+	by mail.maildlp.com (Postfix) with ESMTPS id 9870140086;
+	Tue, 24 Mar 2026 01:55:21 +0800 (CST)
+Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
+ (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Mon, 23 Mar
+ 2026 17:55:20 +0000
+Date: Mon, 23 Mar 2026 17:55:19 +0000
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: David Lechner <dlechner@baylibre.com>
+CC: Archit Anant <architanant5@gmail.com>, Jonathan Cameron
+	<jic23@kernel.org>, <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+	<nuno.sa@analog.com>, <andy@kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-staging@lists.linux.dev>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 3/4] iio: adc: ad799x: cache regulator voltages
+ during probe
+Message-ID: <20260323175519.00003b58@huawei.com>
+In-Reply-To: <eaaee132-d5ff-42ff-9f68-5d6736127caf@baylibre.com>
+References: <20260318092715.42538-1-architanant5@gmail.com>
+	<20260318092715.42538-4-architanant5@gmail.com>
+	<20260321182710.1621d1aa@jic23-huawei>
+	<CADJHxWADo9rA8vt6EEVLXSBb9EqXvyBg=L_YmusaMdtRnOr0rQ@mail.gmail.com>
+	<eaaee132-d5ff-42ff-9f68-5d6736127caf@baylibre.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: lhrpeml100010.china.huawei.com (7.191.174.197) To
+ dubpeml500005.china.huawei.com (7.214.145.207)
 
-On Mon, 2026-03-23 at 18:49 +0200, Andy Shevchenko wrote:
-> On Mon, Mar 23, 2026 at 05:04:10PM +0100, Francesco Lavra wrote:
-> > On Sat, 2026-03-21 at 12:22 -0500, David Lechner wrote:
-> > > On 3/17/26 10:04 AM, Francesco Lavra wrote:
->=20
-> ...
->=20
-> > > > + * @IIO_SCAN_FORMAT_SIGNED_INT: Signed integer (two's complement).
-> > > > + * @IIO_SCAN_FORMAT_UNSIGNED_INT: Unsigned integer.
->=20
-> > > We could make this proper kernel doc format with one comment per
-> > > macro.
-> >=20
-> > Actually, a set of related #defines can be documented with a single
-> > comment. I see a few examples doing that in include/linux/gfp_types.h
-> > and
-> > include/linux/fpga/fpga-mgr.h
-> >=20
-> > > > +#define IIO_SCAN_FORMAT_SIGNED_INT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0's=
-'
-> > > > +#define IIO_SCAN_FORMAT_UNSIGNED_INT=C2=A0=C2=A0=C2=A0'u'
->=20
-> ...or use enum
->=20
-> /**
-> =C2=A0* ...kernel-doc for enum...
-> =C2=A0*/
-> enum {
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0IIO_SCAN_FORMAT_SIGNED_IN=
-T =3D 's',
-> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0IIO_SCAN_FORMAT_UNSIGNED_=
-INT =3D 'u',
-> };
+On Mon, 23 Mar 2026 09:39:44 -0500
+David Lechner <dlechner@baylibre.com> wrote:
 
-There is no standard kernel-doc format for anonymous enums.
+> On 3/23/26 7:22 AM, Archit Anant wrote:
+> > On Sat, Mar 21, 2026 at 11:57=E2=80=AFPM Jonathan Cameron <jic23@kernel=
+.org> wrote: =20
+> >>
+> >> On Wed, 18 Mar 2026 14:57:14 +0530
+> >> Archit Anant <architanant5@gmail.com> wrote:
+> >> =20
+> >>> Reading the regulator voltage via regulator_get_voltage() can be a sl=
+ow
+> >>> operation. =20
+> >>
+> >> Whilst that might be true, it isn't a reason for this change.
+> >> Sysfs reads that would cause it to be read are never a particularly
+> >> fast path anyway. So drop this first sentence.
+> >> =20
+> >>> Since the reference voltages for this ADC are not expected to
+> >>> change at runtime, it is inefficient to query the regulator API every
+> >>> time userspace reads the IIO_CHAN_INFO_SCALE attribute.
+> >>>
+> >>> Determine the active reference voltage (either VREF or VCC) during
+> >>> probe() and cache it in the state structure. This improves the
+> >>> performance of ad799x_read_raw() and removes the dependency on the
+> >>> regulator pointers during fast-path reads.
+> >>>
+> >>> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> >>> Suggested-by: David Lechner <dlechner@baylibre.com>
+> >>> Signed-off-by: Archit Anant <architanant5@gmail.com> =20
+> >>
+> >> A suggested alternative approach inline.
+> >>
+> >> Thanks,
+> >>
+> >> Jonathan
+> >> =20
+> >>> ---
+> >>>  drivers/iio/adc/ad799x.c | 24 ++++++++++++++++--------
+> >>>  1 file changed, 16 insertions(+), 8 deletions(-)
+> >>>
+> >>> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+> >>> index 7504bcf627da..ae2ad4bd37cc 100644
+> >>> --- a/drivers/iio/adc/ad799x.c
+> >>> +++ b/drivers/iio/adc/ad799x.c
+> >>> @@ -30,6 +30,7 @@
+> >>>  #include <linux/module.h>
+> >>>  #include <linux/mutex.h>
+> >>>  #include <linux/bitops.h>
+> >>> +#include <linux/units.h>
+> >>>
+> >>>  #include <linux/iio/iio.h>
+> >>>  #include <linux/iio/sysfs.h>
+> >>> @@ -135,6 +136,9 @@ struct ad799x_state {
+> >>>       u16                             config;
+> >>>
+> >>>       unsigned int                    transfer_size;
+> >>> +
+> >>> +     int                             vref_uV;
+> >>> +
+> >>>       IIO_DECLARE_BUFFER_WITH_TS(__be16, rx_buf, AD799X_MAX_CHANNELS);
+> >>>  };
+> >>>
+> >>> @@ -302,14 +306,7 @@ static int ad799x_read_raw(struct iio_dev *indio=
+_dev,
+> >>>                       GENMASK(chan->scan_type.realbits - 1, 0);
+> >>>               return IIO_VAL_INT;
+> >>>       case IIO_CHAN_INFO_SCALE:
+> >>> -             if (st->vref)
+> >>> -                     ret =3D regulator_get_voltage(st->vref);
+> >>> -             else
+> >>> -                     ret =3D regulator_get_voltage(st->reg);
+> >>> -
+> >>> -             if (ret < 0)
+> >>> -                     return ret;
+> >>> -             *val =3D ret / 1000;
+> >>> +             *val =3D st->vref_uV / MILLI;
+> >>>               *val2 =3D chan->scan_type.realbits;
+> >>>               return IIO_VAL_FRACTIONAL_LOG2;
+> >>>       }
+> >>> @@ -828,9 +825,20 @@ static int ad799x_probe(struct i2c_client *clien=
+t)
+> >>>                       ret =3D regulator_enable(st->vref);
+> >>>                       if (ret)
+> >>>                               goto error_disable_reg;
+> >>> +                     ret =3D regulator_get_voltage(st->vref); =20
+> >>
+> >> For vref I don't think we need to keep the regulator around, so you sh=
+ould
+> >> be able to use devm_regulator_get_enable_read_voltage() with checking
+> >> for -ENODEV to identify it simply isn't there.
+> >>
+> >> It would need a tiny bit of reordering though or a custom
+> >> devm_add_action_or_reset() registered callback to ensure that regulator
+> >> disable for vcc happens in reverse sequence of what happens on setup.
+> >>
+> >> Anyone think there are actually ordering constraints on these regulato=
+rs?
+> >> Would be fairly unusual for this sort of device, but not impossible.
+> >> If not, cleanest option might be; =20
+> > ... =20
+> >> Then no need to undo anything by hand in remove() and no need to keep
+> >> a pointer to any regulators around for later. =20
+> >=20
+> > I completely agree that devm_regulator_get_enable_read_voltage() is
+> > the cleanest approach.
+> >=20
+> > However, as I noted briefly in the v5 changelog (which I should have
+> > highlighted better), the driver currently relies on those regulator
+> > pointers (st->reg and st->vref) in the ad799x_suspend() and
+> > ad799x_resume() callbacks.
+> >=20
+> > If we drop the pointers from the state structure, we lose the ability
+> > to disable the regulators during system sleep.
+> >=20
+> > If keeping power management active during suspend is still desired for
+> > this driver, I believe we are forced to keep the pointers and use the
+> > devm_add_action_or_reset() pattern. =20
+>=20
+> Yes, this is the best we can do with current regulator APIs.
+>=20
+> >=20
+> > If you prefer, I can drop the manual regulator control from the PM
+> > callbacks entirely (or drop the PM callbacks altogether), which would
+> > allow us to use the cleaner devm_regulator_get_enable_read_voltage()
+> > helper. =20
+>=20
+> We can't do this unless we can be 100% sure we don't break existing
+> users who might be depending on power management working as-is.
+Yeah, I missed the use in suspend / resume for some reason.
+
+Not much we can do to improve things :(
+
+Jonathan
+
+>=20
+> >=20
+> > Let me know which path you prefer for v6!
+> >  =20
+>=20
+>=20
+>=20
 
