@@ -1,90 +1,113 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A67DF364939;
-	Mon, 23 Mar 2026 07:54:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 17B3B36494E;
+	Mon, 23 Mar 2026 07:55:27 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774252464; cv=none; b=ffPH7xhw9W8oH+1SREQ9FQsz9rHx0kqPb687JxL0yzw8l246XA2kTbcCminQdkfmAOr7Tu4iPOm8bxdXE6sBAXKXmHMuyYfDrtBvi5xKX6uv7G/Bsp09dlDpixJdk2rWu6KFlGn96N9Gwiv7JrG3R8MntEGzVWIHL+vC/3Xnj/0=
+	t=1774252529; cv=none; b=edicbuQvK90IjbIYwAZqYh2Qb8xVX2UO/GVRBLlh6yr2OqNKoGl5BgeUEedyJgN00mV3vz+M/Ba0oWOFszGzmYrBjmmSEQwUPo5VjBivhrnFsMH6rsmT03KgVEMWIR7kAlH5aHhQQWTzq5fUsV/Oi9gfiH+J5vcfZCSo/UGSkAg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774252464; c=relaxed/simple;
-	bh=4nI58+qRE2GtQ0izikLXOL0cpLBkhqpsV4mcS9D3lD4=;
+	s=arc-20240116; t=1774252529; c=relaxed/simple;
+	bh=owvtYeTUbbA3TgdihxMC7YgENUJxawHLPvflL7SRtn4=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=KfLcvEjZj1M110hZNq2ICvKPErZYn2N/2cW0rt4cmzBeffD5IJRcdTUUpl0M3M2teyHymXsd1v4c4y1YBGP5WfsUvsQQBbuIzwlwtEqUOIfEGusC3sZa2Ixotlt2EXRuRhDBWzNA1HQ7aD4GGp6gxm1pgpL2p8QnsqsI0Ef4Yv4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=K6p0VKN3; arc=none smtp.client-ip=10.30.226.201
+	 Content-Type:Content-Disposition:In-Reply-To; b=UodIQ4fn8qjub6fcq0PhHxLLqn7HTvxZN0D90i1GN3J57ncNR18Ix+QB139wh2SklbGfduAMxMKbJnMUoZ+vJ1dmHX9Bvkz0kDX272Az6a4DTDXU5k/kR/IhL+utD5Zf78kEd4wiM4naYjkWwSI9AX6Hw8k/dPatjEo8AuGHBl0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UlZvEo1E; arc=none smtp.client-ip=198.175.65.13
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="K6p0VKN3"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8FFBC4CEF7;
-	Mon, 23 Mar 2026 07:54:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774252464;
-	bh=4nI58+qRE2GtQ0izikLXOL0cpLBkhqpsV4mcS9D3lD4=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-	b=K6p0VKN3yoPEvE4orghwUnJTvJEOytkhKlz8EFdpfxjAYOZiuKVsC4tHbcRwWqAQz
-	 cWEsPnqklsXdI7DDvn3zcq8qPrm3jbKNgnlkefQ8hQ/DRQoUIuJsxViEaPztOoZdID
-	 3GkqjSkU/1Z0ie8YLb3Z5aCf1H3Uu+0cDi8YAvEH3Q8ze/AHZSx3M/q3bPXHP3nnhK
-	 9AwlD8ISq8CrrP3+Mbw0omPoSP84vAlOUx5bsthKksHjchWuW9qnqtPMjVDnkg1mNL
-	 S7CO6haiQoQEoTcZMtOVZ4XelZm/L6iQPUYOGEv9LaSrmiIMe+PVv+bIVPckWEScF3
-	 5WYEH3y0SuvZg==
-Date: Mon, 23 Mar 2026 08:54:21 +0100
-From: Krzysztof Kozlowski <krzk@kernel.org>
-To: Nick Xie <nick@khadas.com>
-Cc: neil.armstrong@linaro.org, khilman@baylibre.com, 
-	martin.blumenstingl@googlemail.com, jbrunet@baylibre.com, jic23@kernel.org, dlechner@baylibre.com, 
-	andy@kernel.org, krzk+dt@kernel.org, robh@kernel.org, conor+dt@kernel.org, 
-	linux-iio@vger.kernel.org, linux-amlogic@lists.infradead.org, 
-	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] iio: adc: meson-saradc: add support for Meson S4
-Message-ID: <20260323-quizzical-striped-husky-68e24e@quoll>
-References: <20260323013408.429701-1-nick@khadas.com>
- <20260323013408.429701-3-nick@khadas.com>
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UlZvEo1E"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774252528; x=1805788528;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=owvtYeTUbbA3TgdihxMC7YgENUJxawHLPvflL7SRtn4=;
+  b=UlZvEo1Ery64snfhi8SI7bselOlbzh8Uil8C53ebk71Cqdjga3W3bn8p
+   1rcylqpjN9hUcoZwRyzHfU8sFI237l3m8lLQLoBmr34YnGMK+1oGNfNOU
+   k26o9BasT17o3Yk0A+PmhjHgkrrN9iXYkMRsboWKtDzfgNe9uZ3643RRl
+   HpzaDcU+O3a7gsVwtNl3onrwH/HTK6VMna0EVnqrkTuGiZIOrqYGeYyfn
+   0rPXVO994My7bVJrOGxUAsgB5u32oDFfwxaPWWg+DB4YLFBjefvKcyzR5
+   Ct3OrBgzjgRrG2eUJeWH5QJBATwBUUBHBes9MREC+D8IlDErc4LR/QiuH
+   g==;
+X-CSE-ConnectionGUID: sWFluW4eStOMSTQkBDHfug==
+X-CSE-MsgGUID: 1oVgVsi7RM+fnrUhaDa/UA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11737"; a="86316579"
+X-IronPort-AV: E=Sophos;i="6.23,136,1770624000"; 
+   d="scan'208";a="86316579"
+Received: from orviesa005.jf.intel.com ([10.64.159.145])
+  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2026 00:55:27 -0700
+X-CSE-ConnectionGUID: IWOUnePpS5CjHS4xrdO1JA==
+X-CSE-MsgGUID: BwEE3Ci7RAax/y1HfAm8eg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,136,1770624000"; 
+   d="scan'208";a="228871391"
+Received: from vpanait-mobl.ger.corp.intel.com (HELO localhost) ([10.245.244.22])
+  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2026 00:55:25 -0700
+Date: Mon, 23 Mar 2026 09:55:22 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Archit Anant <architanant5@gmail.com>, lars@metafoo.de,
+	Michael.Hennerich@analog.com, dlechner@baylibre.com,
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org,
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 3/4] iio: adc: ad799x: cache regulator voltages during
+ probe
+Message-ID: <acDx6nORF5zX4UjC@ashevche-desk.local>
+References: <20260318092715.42538-1-architanant5@gmail.com>
+ <20260318092715.42538-4-architanant5@gmail.com>
+ <20260321182710.1621d1aa@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20260323013408.429701-3-nick@khadas.com>
+In-Reply-To: <20260321182710.1621d1aa@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Mon, Mar 23, 2026 at 09:34:06AM +0800, Nick Xie wrote:
-> Add support for the SARADC found on the Amlogic Meson S4 SoC.
-> According to the documentation and current testing, it is fully
-> compatible with the G12A parameter set, so we reuse
-> `meson_sar_adc_g12a_data` for this new compatible string.
+On Sat, Mar 21, 2026 at 06:27:10PM +0000, Jonathan Cameron wrote:
+> On Wed, 18 Mar 2026 14:57:14 +0530
+> Archit Anant <architanant5@gmail.com> wrote:
+
+...
+
+> cleanest option might be;
 > 
-> Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Signed-off-by: Nick Xie <nick@khadas.com>
-> ---
->  drivers/iio/adc/meson_saradc.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
+> 	ret = devm_regulator_get_enable_read_voltage(dev, "vref");
+
+> 	if (ret < 0 && ret != -ENODEV){ //get the actual error out the way first.
+> 		return ret;
+
+While the comment is true, I nevertheless prefer in this case (basically
+regulator) to avoid double checking for ENODEV, id est...
+
+> 	if (ret == -ENODEV) {
+> 		ret = devm_regulator_get_enable_read_voltage(dev, "vcc");
+> 		if (ret < 0)
+> 			return ret;
 > 
-> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> index 47cd350498a0d..3ac48b7842c4f 100644
-> --- a/drivers/iio/adc/meson_saradc.c
-> +++ b/drivers/iio/adc/meson_saradc.c
-> @@ -1313,6 +1313,11 @@ static const struct meson_sar_adc_data meson_sar_adc_g12a_data = {
->  	.name = "meson-g12a-saradc",
->  };
->  
-> +static const struct meson_sar_adc_data meson_sar_adc_s4_data = {
-> +	.param = &meson_sar_adc_g12a_param,
-> +	.name = "meson-s4-saradc",
-> +};
-> +
->  static const struct of_device_id meson_sar_adc_of_match[] = {
->  	{
->  		.compatible = "amlogic,meson8-saradc",
-> @@ -1341,6 +1346,9 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
->  	}, {
->  		.compatible = "amlogic,meson-g12a-saradc",
->  		.data = &meson_sar_adc_g12a_data,
-> +	}, {
-> +		.compatible = "amlogic,meson-s4-saradc",
+> 		st->vref_uv = ret;
 
-The point of compatible devices is to not add such entries. Drop.
+...put it here as
 
-Best regards,
-Krzysztof
+	} else if (ret) {
+		return ret;
+
+> 	} else {
+> 		st->vref_uv = ret;
+> 		ret = devm_regulator_get_enabled(dev, "vcc);
+> 		if (ret)
+> 			return ret;
+> 	}
+> 
+> Then no need to undo anything by hand in remove() and no need to keep
+> a pointer to any regulators around for later.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
