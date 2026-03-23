@@ -1,66 +1,66 @@
-Received: from mail-ot1-f50.google.com (mail-ot1-f50.google.com [209.85.210.50])
+Received: from mail-lf1-f54.google.com (mail-lf1-f54.google.com [209.85.167.54])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3B9893AE6F7
-	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 14:39:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.50
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6B743B4E8C
+	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 15:11:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.167.54
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774276790; cv=none; b=S92MMZWxYzDFuH3aeJ1vb2sNNg70zw7tVy0twf+pdnJEHOphm2eo1m842J4Wn/FuWYX3R1488YOQ6a1CgASzxP1sSSjR3k3G+GXO3o9DvSr0RHwcsRm7eHvlrQAb1L6htlhBLtwYII8D3frKD1wO1Mmr3ucDelorTzKtjrpggkQ=
+	t=1774278664; cv=none; b=R0la0+kl4pXQRU3NS7mVTB2Srehg8YLqXmHWVdqqSYSIRVhY5oLvEM52YDO3yM5+5Nmg3G7eBbIvIxE8v4kWlOm/zEHLJvB3uuVngzBr61hA1K5tXmKqc+aCSJRTEX3DRFaCvNlIkz6a6dm2Ist8OBN9uRTDQKnm4rom/8WmdFo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774276790; c=relaxed/simple;
-	bh=/Vc04mp+YvGzxnIgYBmQ5LjwPSfRG5KdQa8ysQAw3eE=;
+	s=arc-20240116; t=1774278664; c=relaxed/simple;
+	bh=TSoqxiKvRUR1dZa1woJkYuljpKESR7AwTa16MhoVDHs=;
 	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=Hx/P3xTPVYAV/UApYywWoEOjSfe3jpEeM+lycl/S0qsk3BjGX0UQ1LmJL4zYpol01tD7GCOsELLEwxDGLxsVTyMb0w6Cqfs27szLht4BQGUeol1bMq8WSDG5pCdc8pPztGofRBcDtoc7svO82Ziuem9Eb/xEdkHKbRAZ02X4T5o=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=muhWkSEE; arc=none smtp.client-ip=209.85.210.50
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
+	 In-Reply-To:Content-Type; b=lOL9Hj/kmSy3sbChYu/eOxz0WMReH3um7tSgM0KFi+NEue2F7cJ+m3fAEmDo9Q4O2FWzbyxCW7eFdMbtMBWc3oARhaFdoSyXW3loeLbTcA7NG7UcZ/Dpu3UKg6l/qXePT/IlBpfcliRKITQBwzioD+/9QLxPhIRK2XCA5+nF6PY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=FSlKzMuM; arc=none smtp.client-ip=209.85.167.54
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="muhWkSEE"
-Received: by mail-ot1-f50.google.com with SMTP id 46e09a7af769-7d7f92bde91so1527505a34.1
-        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 07:39:46 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FSlKzMuM"
+Received: by mail-lf1-f54.google.com with SMTP id 2adb3069b0e04-5a133b686f7so252676e87.0
+        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 08:11:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774276786; x=1774881586; darn=vger.kernel.org;
+        d=gmail.com; s=20230601; t=1774278661; x=1774883461; darn=vger.kernel.org;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :from:to:cc:subject:date:message-id:reply-to;
-        bh=9JeALHOS5PAPURwj6AYWeAG7dI7olikWsM+DOIkL5mk=;
-        b=muhWkSEEOIr0r1HABPGLoDEiNYbOGYBkiqu3R9H0q/8y9dIbXK5R0ru+2mkMPr5oGS
-         Ctl11GOTGM+0aq7Wk4IrDrqQOO0Q5b8CaKWT99ziIzWJeBw6MNkQNtEeXc465JkYlNdK
-         WVatuNlhS6lGwLigm4APXJRe1Q9FxLiBWVZl/Ac29CykT7MOBBcNxUCaZzTt9XgF6HW2
-         c2Ys7ntNSFyFl1BqiTNIx251F+5P7h81ajm19LVQkxKGiWXP7b8xkM7Wx8Y5EClOym8V
-         kvu+wEkOKbXH5d0YnL+tteJzRwtoZotR2TSu+bgVrFVUCMnmLjf9s5PlM1fysG8/RruH
-         /18Q==
+        bh=SJ3emijR5oNOwnSkFZn8zHS372Ef2TX2E+/n8RR77do=;
+        b=FSlKzMuMWaAwq4KhZubx9pLa5E+CAieFIOwRjP3EdPiDRaS3KwudBbvgcu44KGD/Yr
+         oUToEnF1Ha5YC0kIBKylxW+0ZuN6g/16TR73HAbbNtCsxWi9i4h8UEOUFlam5AQ2hLDJ
+         XCiM5Yj/Md2itZMt9pabOsCX/nEPwTJpDaP7ZjIaOHNXTejxX6D5oVNI8y395MBE8c7f
+         7NF606SFmUxpiWyxNBBgSp2DS5cDkc0ADAuTyN7twfmhp/jDTpYPvqfQdnLXJ4k++5BY
+         Ef/QvI+PqHmYbPKhOyHSDL0/OZbU9/nqbYytIogrjmSCmTeGnTueBoHyBE/4HSy1YamL
+         Gn/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774276786; x=1774881586;
+        d=1e100.net; s=20251104; t=1774278661; x=1774883461;
         h=content-transfer-encoding:in-reply-to:from:content-language
          :references:cc:to:subject:user-agent:mime-version:date:message-id
          :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
          :reply-to;
-        bh=9JeALHOS5PAPURwj6AYWeAG7dI7olikWsM+DOIkL5mk=;
-        b=d9o9oW1Ntnwp5c59NOUjFDpugXKrBgOk07Kj9FBy+/LjGYPj0/HuFiVLZ6LdDetJdd
-         hPKg1KJ9hs3t03txM6+31ABJZJLEZ5BDqWMCaX0GCt/m+dryaK4tG4ZXhIkxz9+mE/33
-         pMKodyJjRTLpdQwBepfPZpbXy/lG4xuu/4R8oaoEeABVTMc9vyHiBp5kblnJQgsRfbN4
-         E/IiDtuzwMFuI6bvTvkr23selwR6LNc0h7Cf4cR3noGSBIe+qhslSL6NUhOsgN/Ok55j
-         FHicY5+1wBmE7eROQVeA/JlC8ozkga/fGERSofxtjXmFYaFw8maHEf/AM8O5A0tuz+u5
-         CX0g==
-X-Forwarded-Encrypted: i=1; AJvYcCUuwzlGjPJ7oKb6DT7hvhxVvdMNW6Dsind38seiF+fQx/8BfvHWPX1lkGi3gUOAj4uy7ktoVFuNQUE=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx0378tMcNkOfSWpOlKcA63jGzobQV3VymHdNUdtNNlAVeVh0WF
-	8juPD1cENgiWO/+m8SOI9Ts5KnFhdd/jAcbsRcWyMPjK0UcFxw4Kee90MMgxmAapVMQ=
-X-Gm-Gg: ATEYQzzpxsCrHEN2bIidZWhwVR9EFk+cWyktJ4gKMYfh9373N5uBoiA/NsumMX7FeAD
-	7LI7ZcKxabktHiaoIZXZa8UicuL5dUfCaQaY+92dG2sQ6s6KGt+NBLooV62n6uNOzW9xsOxi2dn
-	Hu7aDoWki1gyr0O27HlG7ybmKGL2S8CS37toBMA21a1w+gsLuIQyGhe9RBqmuoDGFt0RMpKXe9H
-	l1dlYnzrK9wanj34n3FK1jeN7ZdKw3aj4nDt3mJAj3/gvm6yQL/uEMsUIopP8Jtchs/Y8xaoHZr
-	e/JyCJwq3+Oo5FatBUG5+S4h8Ca1E+qiiDlZ5jYQnaRVM2kscmP2BEKm597Xycax/hfRuODKI6o
-	eYdRcp2JU1q81N2gFCRyLaCwz8muLUxUmNZbtF5l2zfjRZyP8+yCSHk+ZZbaY9jJyE3ji7PV2DG
-	GL4x7+84IExl5U1crlQVlD12llsvzFdtuQsRSpZxVSIRzdbuvI+44iSWLZjKjwCAi24ahHR8E=
-X-Received: by 2002:a05:6820:8ca:b0:67b:aca0:3d96 with SMTP id 006d021491bc7-67c22fc295bmr8670885eaf.65.1774276785962;
-        Mon, 23 Mar 2026 07:39:45 -0700 (PDT)
-Received: from ?IPV6:2600:8803:e7e4:500:964:f712:dbc7:4119? ([2600:8803:e7e4:500:964:f712:dbc7:4119])
-        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67c252c892dsm6680581eaf.4.2026.03.23.07.39.45
+        bh=SJ3emijR5oNOwnSkFZn8zHS372Ef2TX2E+/n8RR77do=;
+        b=RyNwNH/6zI8SGEDfg2HhuqpGFCx8vMhofPMtLVV4jfOEVbU7HLM0+17dfW/BBKCKok
+         JeOQffJT5DTEe+9iWIyQv6nZpVk1FpIDUVHHvDIjyEKel8tgsRVfRbQ0/AzzcjZgMhZI
+         gKQO9r4VnpWy+aQsuq2yYs6fnNk9ZP8uChz0kDt7EXzDicugOqxEBZuVRK4bwEzA/1QK
+         dYA+gd2K48l0dWzl+JUL1r/4vDEbKUW2soHezMk5ySwtFUcgIL9msJrsb80JZlFSWLq2
+         1r1wbr2ZPBxRo4Am57h3Yt2plews5hiNgq48G7iZ7TwXmM7LqaC+1Ec53Me9tYN+JN5j
+         5w4Q==
+X-Gm-Message-State: AOJu0Yx27jRld/Mf5zr++JMveEf0EPcSW1RDdZL1dMdI40vml46dOGSd
+	wtdjDYg/aMDhn5/GQSEL7QHaBjkLK0tySggftIPbE7vlwP3/9Zv5fer5
+X-Gm-Gg: ATEYQzw0pJmtNciFJE7iGs8P5Zii1TU/k7ajqwIU5hZgoIVsAoXykU6H1+jO+fZocvY
+	M6FngPcCY3JCZdy6DjTxx6iUD93hDdGga66xfKCx+GqYfTEDspolhtxhQeafG1puBv1HKDkNhG+
+	puXLGegSAYQ9AjUo+HlTSCCTtplBFu7dDFFM6EKwkZTw232iOgm5i9WAFkUG/RVi/70Fs7JryZy
+	EAB6dv2VMgq6mRTrsRhGxjtLVlnOvQIl1Q/Z94ZrN9asksDg7Eh61HEWiNBdesV3r85+otvidmS
+	79YsDt3mmq7Wu/7J59jYXQpDhmq1X0WtiZXbT7flWEtdnzHrnStK24qJXYXWmYrlUaNjN0Lg+mv
+	G/x0Xk4zzRrVbOQZurbtzGQsPPl15uFRfo0ok8IzOPXbQwKO55pASnGMC1Us99AqR6TlCn4ydvS
+	s0tJKImXCsZhdKZ8GxU12FcmTi1wNKAyRGCp8RrzRyjCEF/smIeskRkv7QUXSJpMI0qLj51WWCR
+	ZEXow/93+wUmKf3Xc2bp9THrYiQU/N1qq8WamvqLU4609HpYfpL3iAOt+9tMLLSuw==
+X-Received: by 2002:a05:6512:ad4:b0:5a1:38c4:4247 with SMTP id 2adb3069b0e04-5a285ae5251mr4347077e87.1.1774278660268;
+        Mon, 23 Mar 2026 08:11:00 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:6e:3100:284d:5aa8:b8e7:1b28? (2001-14ba-6e-3100-284d-5aa8-b8e7-1b28.rev.dnainternet.fi. [2001:14ba:6e:3100:284d:5aa8:b8e7:1b28])
+        by smtp.gmail.com with ESMTPSA id 2adb3069b0e04-5a2851ac33dsm2644116e87.31.2026.03.23.08.10.59
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 23 Mar 2026 07:39:45 -0700 (PDT)
-Message-ID: <eaaee132-d5ff-42ff-9f68-5d6736127caf@baylibre.com>
-Date: Mon, 23 Mar 2026 09:39:44 -0500
+        Mon, 23 Mar 2026 08:10:59 -0700 (PDT)
+Message-ID: <7ef87de7-9731-46fb-9608-34c07fcf03cd@gmail.com>
+Date: Mon, 23 Mar 2026 17:10:58 +0200
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -68,144 +68,192 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v5 3/4] iio: adc: ad799x: cache regulator voltages during
- probe
-To: Archit Anant <architanant5@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, nuno.sa@analog.com,
- andy@kernel.org, linux-iio@vger.kernel.org, linux-staging@lists.linux.dev,
+Subject: Re: [PATCH v2] iio: hid-sensors: Use software trigger
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+ jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, bigeasy@linutronix.de, spasswolf@web.de,
  linux-kernel@vger.kernel.org
-References: <20260318092715.42538-1-architanant5@gmail.com>
- <20260318092715.42538-4-architanant5@gmail.com>
- <20260321182710.1621d1aa@jic23-huawei>
- <CADJHxWADo9rA8vt6EEVLXSBb9EqXvyBg=L_YmusaMdtRnOr0rQ@mail.gmail.com>
+References: <20260220224514.471348-1-srinivas.pandruvada@linux.intel.com>
 Content-Language: en-US
-From: David Lechner <dlechner@baylibre.com>
-In-Reply-To: <CADJHxWADo9rA8vt6EEVLXSBb9EqXvyBg=L_YmusaMdtRnOr0rQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
+From: =?UTF-8?B?SGFubmUtTG90dGEgTcOkZW5ww6TDpA==?= <hannelotta@gmail.com>
+In-Reply-To: <20260220224514.471348-1-srinivas.pandruvada@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 
-On 3/23/26 7:22 AM, Archit Anant wrote:
-> On Sat, Mar 21, 2026 at 11:57 PM Jonathan Cameron <jic23@kernel.org> wrote:
->>
->> On Wed, 18 Mar 2026 14:57:14 +0530
->> Archit Anant <architanant5@gmail.com> wrote:
->>
->>> Reading the regulator voltage via regulator_get_voltage() can be a slow
->>> operation.
->>
->> Whilst that might be true, it isn't a reason for this change.
->> Sysfs reads that would cause it to be read are never a particularly
->> fast path anyway. So drop this first sentence.
->>
->>> Since the reference voltages for this ADC are not expected to
->>> change at runtime, it is inefficient to query the regulator API every
->>> time userspace reads the IIO_CHAN_INFO_SCALE attribute.
->>>
->>> Determine the active reference voltage (either VREF or VCC) during
->>> probe() and cache it in the state structure. This improves the
->>> performance of ad799x_read_raw() and removes the dependency on the
->>> regulator pointers during fast-path reads.
->>>
->>> Suggested-by: Jonathan Cameron <jic23@kernel.org>
->>> Suggested-by: David Lechner <dlechner@baylibre.com>
->>> Signed-off-by: Archit Anant <architanant5@gmail.com>
->>
->> A suggested alternative approach inline.
->>
->> Thanks,
->>
->> Jonathan
->>
->>> ---
->>>  drivers/iio/adc/ad799x.c | 24 ++++++++++++++++--------
->>>  1 file changed, 16 insertions(+), 8 deletions(-)
->>>
->>> diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
->>> index 7504bcf627da..ae2ad4bd37cc 100644
->>> --- a/drivers/iio/adc/ad799x.c
->>> +++ b/drivers/iio/adc/ad799x.c
->>> @@ -30,6 +30,7 @@
->>>  #include <linux/module.h>
->>>  #include <linux/mutex.h>
->>>  #include <linux/bitops.h>
->>> +#include <linux/units.h>
->>>
->>>  #include <linux/iio/iio.h>
->>>  #include <linux/iio/sysfs.h>
->>> @@ -135,6 +136,9 @@ struct ad799x_state {
->>>       u16                             config;
->>>
->>>       unsigned int                    transfer_size;
->>> +
->>> +     int                             vref_uV;
->>> +
->>>       IIO_DECLARE_BUFFER_WITH_TS(__be16, rx_buf, AD799X_MAX_CHANNELS);
->>>  };
->>>
->>> @@ -302,14 +306,7 @@ static int ad799x_read_raw(struct iio_dev *indio_dev,
->>>                       GENMASK(chan->scan_type.realbits - 1, 0);
->>>               return IIO_VAL_INT;
->>>       case IIO_CHAN_INFO_SCALE:
->>> -             if (st->vref)
->>> -                     ret = regulator_get_voltage(st->vref);
->>> -             else
->>> -                     ret = regulator_get_voltage(st->reg);
->>> -
->>> -             if (ret < 0)
->>> -                     return ret;
->>> -             *val = ret / 1000;
->>> +             *val = st->vref_uV / MILLI;
->>>               *val2 = chan->scan_type.realbits;
->>>               return IIO_VAL_FRACTIONAL_LOG2;
->>>       }
->>> @@ -828,9 +825,20 @@ static int ad799x_probe(struct i2c_client *client)
->>>                       ret = regulator_enable(st->vref);
->>>                       if (ret)
->>>                               goto error_disable_reg;
->>> +                     ret = regulator_get_voltage(st->vref);
->>
->> For vref I don't think we need to keep the regulator around, so you should
->> be able to use devm_regulator_get_enable_read_voltage() with checking
->> for -ENODEV to identify it simply isn't there.
->>
->> It would need a tiny bit of reordering though or a custom
->> devm_add_action_or_reset() registered callback to ensure that regulator
->> disable for vcc happens in reverse sequence of what happens on setup.
->>
->> Anyone think there are actually ordering constraints on these regulators?
->> Would be fairly unusual for this sort of device, but not impossible.
->> If not, cleanest option might be;
-> ...
->> Then no need to undo anything by hand in remove() and no need to keep
->> a pointer to any regulators around for later.
+On 2/21/26 12:45 AM, Srinivas Pandruvada wrote:
+> Recent changes linux mainline resulted in warning:
+> "genirq: Warn about using IRQF_ONESHOT without a threaded handler"
+> when HID sensor hub is used.
 > 
-> I completely agree that devm_regulator_get_enable_read_voltage() is
-> the cleanest approach.
+> When INDIO_BUFFER_TRIGGERED is used, the core attaches a poll function
+> when enabling the buffer. This poll function uses request_threaded_irq()
+> with both bottom half and top half handlers. But when using HID
+> sensor hub, bottom half (thread handler) is not registered.
 > 
-> However, as I noted briefly in the v5 changelog (which I should have
-> highlighted better), the driver currently relies on those regulator
-> pointers (st->reg and st->vref) in the ad799x_suspend() and
-> ad799x_resume() callbacks.
+> In HID sensors, once a sensor is powered on, the hub collects samples
+> and pushes data to the host when programmed thresholds are met. When
+> this data is received for a sensor, it is pushed using
+> iio_push_to_buffers_with_ts().
 > 
-> If we drop the pointers from the state structure, we lose the ability
-> to disable the regulators during system sleep.
+> The sensor is powered ON or OFF based on the trigger callback
+> set_trigger_state() when the poll function is attached. During the call
+> to iio_triggered_buffer_setup_ext(), the HID sensor specifies only a
+> handler function but provides no thread handler, as there is no data
+> to read from the hub in thread context. Internally, this results in
+> calling request_threaded_irq(). Recent kernel changes now warn when
+> request_threaded_irq() is called without a thread handler.
 > 
-> If keeping power management active during suspend is still desired for
-> this driver, I believe we are forced to keep the pointers and use the
-> devm_add_action_or_reset() pattern.
+> To address this issue, fundamental changes are required to avoid using
+> iio_triggered_buffer_setup_ext(). HID sensors can use
+> INDIO_BUFFER_SOFTWARE instead of INDIO_BUFFER_TRIGGERED, as this can
+> work in trigger-less mode.
+> 
+> In this approach, when user space opens the buffer, the sensor is powered
+> on, and when the buffer is closed, the sensor is powered off using
+> iio_buffer_setup_ops callbacks.
+> 
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> ---
+> Changes:
+> v2:
+> changed
+> indio_dev->modes |= INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
+> to
+> indio_dev->modes = INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
+> 
+>  From RFC
+> - The trigger alloc and register is still kept as old code with
+> additional
+> indio_dev->modes |= INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
+> 
+>   .../common/hid-sensors/hid-sensor-trigger.c   | 48 ++++++++++++-------
+>   1 file changed, 30 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> index 5540e2d28f4a..417c4ab8c1b2 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> @@ -14,6 +14,7 @@
+>   #include <linux/iio/triggered_buffer.h>
+>   #include <linux/iio/trigger_consumer.h>
+>   #include <linux/iio/sysfs.h>
+> +#include <linux/iio/kfifo_buf.h>
+>   #include "hid-sensor-trigger.h"
+>   
+>   static ssize_t _hid_sensor_set_report_latency(struct device *dev,
+> @@ -202,12 +203,21 @@ static void hid_sensor_set_power_work(struct work_struct *work)
+>   		_hid_sensor_power_state(attrb, true);
+>   }
+>   
+> -static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> -						bool state)
+> +static int buffer_postenable(struct iio_dev *indio_dev)
+>   {
+> -	return hid_sensor_power_state(iio_trigger_get_drvdata(trig), state);
+> +	return hid_sensor_power_state(iio_device_get_drvdata(indio_dev), 1);
+>   }
+>   
+> +static int buffer_predisable(struct iio_dev *indio_dev)
+> +{
+> +	return hid_sensor_power_state(iio_device_get_drvdata(indio_dev), 0);
+> +}
+> +
+> +static const struct iio_buffer_setup_ops hid_sensor_buffer_ops = {
+> +	.postenable = buffer_postenable,
+> +	.predisable = buffer_predisable,
+> +};
+> +
+>   void hid_sensor_remove_trigger(struct iio_dev *indio_dev,
+>   			       struct hid_sensor_common *attrb)
+>   {
+> @@ -219,14 +229,9 @@ void hid_sensor_remove_trigger(struct iio_dev *indio_dev,
+>   	cancel_work_sync(&attrb->work);
+>   	iio_trigger_unregister(attrb->trigger);
+>   	iio_trigger_free(attrb->trigger);
+> -	iio_triggered_buffer_cleanup(indio_dev);
+>   }
+>   EXPORT_SYMBOL_NS(hid_sensor_remove_trigger, "IIO_HID");
+>   
+> -static const struct iio_trigger_ops hid_sensor_trigger_ops = {
+> -	.set_trigger_state = &hid_sensor_data_rdy_trigger_set_state,
+> -};
+> -
+>   int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+>   				struct hid_sensor_common *attrb)
+>   {
+> @@ -239,25 +244,34 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+>   	else
+>   		fifo_attrs = NULL;
+>   
+> -	ret = iio_triggered_buffer_setup_ext(indio_dev,
+> -					     &iio_pollfunc_store_time, NULL,
+> -					     IIO_BUFFER_DIRECTION_IN,
+> -					     NULL, fifo_attrs);
+> +	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_HARDWARE_TRIGGERED;
+> +
+> +	ret = devm_iio_kfifo_buffer_setup_ext(&indio_dev->dev, indio_dev,
+> +					      &hid_sensor_buffer_ops,
+> +					      fifo_attrs);
+>   	if (ret) {
+> -		dev_err(&indio_dev->dev, "Triggered Buffer Setup Failed\n");
+> +		dev_err(&indio_dev->dev, "Kfifo Buffer Setup Failed\n");
+>   		return ret;
+>   	}
+>   
+> +	/*
+> +	 * The current user space in distro "iio-sensor-proxy" is not working in
+> +	 * trigerless mode and it expects
+> +	 * /sys/bus/iio/devices/iio:device0/trigger/current_trigger.
+> +	 * The change replacing iio_triggered_buffer_setup_ext() with
+> +	 * devm_iio_kfifo_buffer_setup_ext() will not create attribute without
+> +	 * registering a trigger with INDIO_HARDWARE_TRIGGERED.
+> +	 * So the below code fragment is still required.
+> +	 */
+> +
+>   	trig = iio_trigger_alloc(indio_dev->dev.parent,
+>   				 "%s-dev%d", name, iio_device_id(indio_dev));
+>   	if (trig == NULL) {
+>   		dev_err(&indio_dev->dev, "Trigger Allocate Failed\n");
+> -		ret = -ENOMEM;
+> -		goto error_triggered_buffer_cleanup;
+> +		return -ENOMEM;
+>   	}
+>   
+>   	iio_trigger_set_drvdata(trig, attrb);
+> -	trig->ops = &hid_sensor_trigger_ops;
+>   	ret = iio_trigger_register(trig);
+>   
+>   	if (ret) {
+> @@ -284,8 +298,6 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+>   	iio_trigger_unregister(trig);
+>   error_free_trig:
+>   	iio_trigger_free(trig);
+> -error_triggered_buffer_cleanup:
+> -	iio_triggered_buffer_cleanup(indio_dev);
+>   	return ret;
+>   }
+>   EXPORT_SYMBOL_NS(hid_sensor_setup_trigger, "IIO_HID");
 
-Yes, this is the best we can do with current regulator APIs.
 
-> 
-> If you prefer, I can drop the manual regulator control from the PM
-> callbacks entirely (or drop the PM callbacks altogether), which would
-> allow us to use the cleaner devm_regulator_get_enable_read_voltage()
-> helper.
+Hi,
 
-We can't do this unless we can be 100% sure we don't break existing
-users who might be depending on power management working as-is.
+This patch clears the warning "WARNING: kernel/irq/manage.c:1502 at 
+__setup_irq" on Debian forky.
 
-> 
-> Let me know which path you prefer for v6!
-> 
+Tested-by: Hanne-Lotta Mäenpää
 
+The referenced commit ID could be included in the commit message, like this:
+
+Commit aef30c8d569c0f317154 ("genirq: Warn about using IRQF_ONESHOT 
+without a threaded handler")
+
+With that included, this patch will be easier to find if someone bisects 
+the issue.
+
+Also, a Closes tag could be added:
+
+Closes: https://bugzilla.kernel.org/show_bug.cgi?id=221256
+
+Best regards,
+
+Hanne-Lotta Mäenpää
