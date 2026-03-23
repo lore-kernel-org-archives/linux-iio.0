@@ -1,140 +1,162 @@
-Received: from mail-wr1-f51.google.com (mail-wr1-f51.google.com [209.85.221.51])
+Received: from mail-oo1-f47.google.com (mail-oo1-f47.google.com [209.85.161.47])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 203C53B9DA5
-	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 16:04:14 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.51
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4F8133B8BB2
+	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 16:08:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.161.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774281857; cv=none; b=HNZkgP8UpC19g5iCVuwMLKTa12J1JrNyxguyv1WxzMjnkBMsQ2gzp+GT6VdbYheUSjTqYy/KWYYC/REO8Mpp0Uaz3HQkq5FQh56c573VBfASy/BonrDmHQYHYzHOavfZDgC1mmbfN07++0xCHrsxTGYQaidiQ3HEcWuO6lCa4Oc=
+	t=1774282094; cv=none; b=ndp/iebIxU4NxA/cxMPag82dgw3P4yuGTM2xOxBSmCT4wVF3R9ZVP3cIvaGSOhkyTHWtO0459awyMtw7uFyL9jvvOxZm1U8lmvG+X4mPbW26FUFZkgOBqzILQoweoleFHgibtiUPm6aJL2BdgWqpH59FUDP+IlJqA41VvsfoHQw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774281857; c=relaxed/simple;
-	bh=8ha1A3Upqoft3A/vZsGBrxpfXd8ABWmzhRsBL16vIYU=;
-	h=Message-ID:Subject:From:To:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=nmx+xKeyhalnKl+dLTjRnVbCEGU6RnQDNtuxwCJwxl3+eLkJkYOoDNWMLsUTNXL99J7l83bXYBRwUq6+tZcLQLOeOnguYWkwLuo74dRV0TZcWmswFU15E92b0B8impUIR5YAARcuM9QHC4+gyltFvY0F53NP5LiEFSzwbKjYlJU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=kS+QmkK7; arc=none smtp.client-ip=209.85.221.51
+	s=arc-20240116; t=1774282094; c=relaxed/simple;
+	bh=o2DCwQCqpStVaX+n7FZYKQBtL2OGc+iF8tHcAp7A8DE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:References:From:
+	 In-Reply-To:Content-Type; b=Cr5uFBeUcX3y96iAuSEkzHHpHYlPZXe1G9AQciOAZPUXUbEugBHxHSdwYXyhMK/AcsxlhCWDj2trxmmAgk7Sg3wzu8bgtEUTAGX11QxoXGwXC2Y3KbcykOI2PhWLcdArlNrjl1CFSFuCwybLSZ+uusGycPsqbu2t3luqY7zzvkY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=Z52zxUR/; arc=none smtp.client-ip=209.85.161.47
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="kS+QmkK7"
-Received: by mail-wr1-f51.google.com with SMTP id ffacd0b85a97d-43b4915161fso2929279f8f.2
-        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 09:04:14 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="Z52zxUR/"
+Received: by mail-oo1-f47.google.com with SMTP id 006d021491bc7-67df55bb1efso66256eaf.2
+        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 09:08:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774281853; x=1774886653; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:to:from:subject:message-id:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=8ha1A3Upqoft3A/vZsGBrxpfXd8ABWmzhRsBL16vIYU=;
-        b=kS+QmkK7qwGvF8EIctTG4pvdoWb4tMqENHrQzXCkQyiBiJfhhL9/Y1DW/hOyW1+Wzs
-         iinuqwrE9/4Wrk3M+LvkN73bRUMZXFFqKZPlJAPQYTNrBG++GCodqIy0CY83BKGsPbfy
-         Id/ojcwcGtSM9Ia0/1ya5/o5lQzIEypIY59uvjm2N7gCi0bcfc9b0ZNAMdbVwFZGHerK
-         qOkBtCfNYoZWUrVf6waLJnRwbiE7whghztMqyqlGw6ztW8pxzeKfTmku+ArcysLqdafF
-         G0xMLFuWLtR683fiK9Wk3IN9YAkzpSlVjINKfC64EdJI4Usz1hq/vRJK7EQCUpiFCxXh
-         XWLQ==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774282086; x=1774886886; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=wyzGrNVisRoMpOWKYhySoLBPe/90QEbmgHqpo3IVsN4=;
+        b=Z52zxUR/IBz7v+oXaimaZCu91W0Bnq9GPOANruxKsfoK9XiRJ1HkAdJxxxWNjd1A6s
+         lTzSoY4hE1TnlVN6+6+vDdhHwdlZZreyCJ7GGUe8U5WerjxeFLuC/CKeVset+RT0MKSc
+         fgFlD0rdJyVcT9PHeO57T6uLAl5QFTR/89Vo/WiZyjtIy64nfwGzgeSEddahXlM/LO9K
+         gGRwLO+WwNDRGveKg8Ny5QOLzR7f9Z70S3Igz4Z46WUxjdJ1frUSXy943v8VcZjrROH2
+         461O/D98Z3Yj6s1Q6JYK0vKLKwU8Wu4HnQaI8x07ijhAJItIV3iHcyK/oeLctLBnvgQO
+         kPzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774281853; x=1774886653;
-        h=mime-version:user-agent:content-transfer-encoding:organization
-         :references:in-reply-to:date:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=8ha1A3Upqoft3A/vZsGBrxpfXd8ABWmzhRsBL16vIYU=;
-        b=VnOfL7ypHlthfWWG5UnlXCVvtS/bEIBxb4WgoRVbF01Q62vFVOebCxdPSwaXJzXiH+
-         RMRU3dpFGRLwxkx0dN549bHPh0C27QTilbXeBxRgoo91yCyYXmqTCsfV95zxSAz97fMH
-         5UhbczbbftprDiQXC11yzVe5uDUpR2TAbbfTTqFsgdiFPZzOnZJOIEZ4/D0LzQotCLj7
-         8LrCfdiMO0zL0Fryj7Jln8s+y1jwWvyoXwViSPffa2M/+xvQe8AZKft7RkaJ06XzubF+
-         EXG573rnUSunRHXzNDdajaHCoY+0R2FRl2GQW9JalQ38Hrt+XGRYUoHhYURL+dvQFLoB
-         3ojA==
-X-Forwarded-Encrypted: i=1; AJvYcCXBolgGewBOaA+hisKvpOjDYq8N1UEDApCkafW368tg4kkpTWn1rwjl8SojdR1DjtzFIlA1FZdvE4Y=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzmqRZyTyyWmcH6NLGyQ6Fhu6hTbFctVqHB8P+Cw3kxhyD08G6v
-	f52DEzC6x2Ea/Pan98HJ2XjTQtbP17V+V68TrLxQ/KuzF+raWOuhr/bOZkucGD3+jEY=
-X-Gm-Gg: ATEYQzxf6dPoRY2qcpgGH2GvkNKQwJqBEtLdoMVitmxr74DH3PhWUqjS8UkMKxayTS1
-	Zexp35UAOVXA9u971xO0lgmKCmZcvZjH6+eVUhCWFXojsLlLTQgNbKkvVVYU3jvfigQ26UMINAR
-	32mUcIUh7rjvUJ0Cj24XqVJsFAP8TzvbW3BFYAHAyQjcj+fG7qXfeVTu3fJw+YopBXsZul7cJ/W
-	EyDFhcmI9gkmrKJ00UTDidE6R2UzuL0+iyFMuizlneRJECJc00M7R5SH3IYZssVbcCtaHu2biGF
-	3uxaudZgqPpu8NWgaZfaqLyRfnjWcf15uw2II+mWB3ceqRgvl6RfRfCmoCMMuRjuvfL6RPzC4yA
-	lCV+LY2bt8XIst4TuF/VyATyRtFdqnh1PEG/f4CGOCaBhMrkl873Eh3NtEoR2UIW5qniecZu2zl
-	uWXbgP
-X-Received: by 2002:a05:600c:45c7:b0:485:3fd1:9936 with SMTP id 5b1f17b1804b1-486fede721amr164460475e9.5.1774281853328;
-        Mon, 23 Mar 2026 09:04:13 -0700 (PDT)
-Received: from [10.76.209.31] ([151.35.182.48])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-486fe032a55sm555492685e9.7.2026.03.23.09.04.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2026 09:04:13 -0700 (PDT)
-Message-ID: <af2128c68d2a14e1eb664ce9dc075ed02b640407.camel@baylibre.com>
-Subject: Re: [PATCH v8 2/6] iio: Replace 'sign' field with union in struct
- iio_scan_type
-From: Francesco Lavra <flavra@baylibre.com>
-To: David Lechner <dlechner@baylibre.com>, Jonathan Corbet <corbet@lwn.net>,
-  Shuah Khan <skhan@linuxfoundation.org>, Jonathan Cameron
- <jic23@kernel.org>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>,  linux-doc@vger.kernel.org,
- linux-kernel@vger.kernel.org,  linux-iio@vger.kernel.org
-Date: Mon, 23 Mar 2026 17:04:10 +0100
-In-Reply-To: <4723284d-1e18-4a13-9ec1-878220af257e@baylibre.com>
-References: <20260317150316.3878107-1-flavra@baylibre.com>
-	 <20260317150401.3878294-1-flavra@baylibre.com>
-	 <4723284d-1e18-4a13-9ec1-878220af257e@baylibre.com>
-Organization: BayLibre
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: base64
-User-Agent: Evolution 3.46.4-2 
+        d=1e100.net; s=20251104; t=1774282086; x=1774886886;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=wyzGrNVisRoMpOWKYhySoLBPe/90QEbmgHqpo3IVsN4=;
+        b=HznC5q/1OTa2wGv40EMLKUp3Xwf79GpmMwyN+NUkpeP8myHqwSDj80jwQWmbw2qDwY
+         EstADlc9FACV2c8r/s5MOTOJGdp2SYswa55L/zaMtvbk4y9WIUfSYhryKCDL2aGPPd0j
+         4DGNwouWz1W+2fmoVidh1rPp9vJPA2h6DB+uxeTmB23qi1GnJKD+eIriRSG6OIasBwYn
+         jCipCCTjyCMoJNhnAUPIiylfXOJghEo0Rk1zOw0QagxhjMLDb6JAnAtkonRI59hKqjDO
+         V6nzYMawEnKon9raJWGvCegtgumrblo5v3GpR74anVwOhT2tPEQn/cyObG4cyIM4Ek1Y
+         279Q==
+X-Forwarded-Encrypted: i=1; AJvYcCUX0zuJg+lNdueGW5jeeHLyLLDCsyJt3lnYxU6l0II8cvUVuH7DARVZAWx9LX+J5lJh74WuDgKerKE=@vger.kernel.org
+X-Gm-Message-State: AOJu0YwBh+UJ9OKBTT5/in5kkHKeUjjnkPPxTQfdO8VnCY14fyzUYzl8
+	7DYHdyRqMCkw1IVRdONsred3X7UwrPbhPBlfqE5O7PgAEDMasw2RcWIy5kjzXtUadBc=
+X-Gm-Gg: ATEYQzzk2rw9dIx0ptWZfj/QyrWvAI/7wwc3mHFxuoE3Ug9ap80H60/ICXJpaYfeFhZ
+	hVFZvXEsjN9Y9On81jLnT45Oj+i7x9smHfN0+fcQrO0/nBUQ5/ZcCtlkTDbbQ1GeCnXFSogSpj7
+	Aipo6tO97WTETdYetxdZyhvzrHSiDMM8sZpqX3R8N7hyCLuemuM2w929xBYEveunK59QckObXgx
+	peADu/3XtPkDRLukucjQKgHXSJWFZ4cHFNOPSmdb0wZ2Zi1ZV8shC54vb6R/dHxTXC0QAAYNFgI
+	o99yWF/ayPzkJ73LhhfJH5b6pxDFHSlU5GvsBOeP9WJEdcXzhiF/qpskJ2lUQ80OapA+7J4cCvd
+	wHRU+zVMpZ+s/7ZwFOxBWLdnwb+Np2nll6gPEY6m5D8uOXf7wz3+K83ft5z6r3GKdtvsc9R9iXY
+	jvkqu/SnZM+uh7YLjnnE5jMO5/CsXEILrjrZpSfK4qGWEgNzLhB0GDW1Lx5V6mISsSHNoJErk=
+X-Received: by 2002:a4a:e90f:0:b0:67b:c368:136b with SMTP id 006d021491bc7-67c22ef5124mr8523215eaf.29.1774282085727;
+        Mon, 23 Mar 2026 09:08:05 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:964:f712:dbc7:4119? ([2600:8803:e7e4:500:964:f712:dbc7:4119])
+        by smtp.gmail.com with ESMTPSA id 006d021491bc7-67c252fe793sm6809434eaf.8.2026.03.23.09.08.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 23 Mar 2026 09:08:05 -0700 (PDT)
+Message-ID: <1272b66f-2d7e-4f18-bf00-f49b3c02213e@baylibre.com>
+Date: Mon, 23 Mar 2026 11:08:04 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v8 2/6] iio: Replace 'sign' field with union in struct
+ iio_scan_type
+To: Francesco Lavra <flavra@baylibre.com>, Jonathan Corbet <corbet@lwn.net>,
+ Shuah Khan <skhan@linuxfoundation.org>, Jonathan Cameron <jic23@kernel.org>,
+ =?UTF-8?Q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
+ Andy Shevchenko <andy@kernel.org>, linux-doc@vger.kernel.org,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+References: <20260317150316.3878107-1-flavra@baylibre.com>
+ <20260317150401.3878294-1-flavra@baylibre.com>
+ <4723284d-1e18-4a13-9ec1-878220af257e@baylibre.com>
+ <af2128c68d2a14e1eb664ce9dc075ed02b640407.camel@baylibre.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <af2128c68d2a14e1eb664ce9dc075ed02b640407.camel@baylibre.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-T24gU2F0LCAyMDI2LTAzLTIxIGF0IDEyOjIyIC0wNTAwLCBEYXZpZCBMZWNobmVyIHdyb3RlOgo+
-IE9uIDMvMTcvMjYgMTA6MDQgQU0sIEZyYW5jZXNjbyBMYXZyYSB3cm90ZToKPiA+IFRoaXMgZmll
-bGQgaXMgdXNlZCB0byBkaWZmZXJlbnRpYXRlIGJldHdlZW4gc2lnbmVkIGFuZCB1bnNpZ25lZAo+
-ID4gaW50ZWdlcnMuCj4gPiBBIGZvbGxvd2luZyBjb21taXQgd2lsbCBleHRlbmQgaXRzIHVzZSBp
-biBvcmRlciB0byBhZGQgc3VwcG9ydCBmb3Igbm9uLQo+ID4gaW50ZWdlciBzY2FuIGVsZW1lbnRz
-OyB0aGVyZWZvcmUsIHJlcGxhY2UgaXQgd2l0aCBhIHVuaW9uIHRoYXQgY29udGFpbnMKPiA+IGEK
-PiA+IG1vcmUgZ2VuZXJpYyAnZm9ybWF0JyBmaWVsZC4gVGhpcyB1bmlvbiB3aWxsIGJlIGRyb3Bw
-ZWQgd2hlbiBhbGwKPiA+IGRyaXZlcnMKPiA+IGFyZSBjaGFuZ2VkIHRvIHVzZSB0aGUgZm9ybWF0
-IGZpZWxkLgo+ID4gT3Bwb3J0dW5pc3RpY2FsbHkgcmVwbGFjZSBjaGFyYWN0ZXIgbGl0ZXJhbHMg
-d2l0aCBzeW1ib2xpYyBjb25zdGFudHMKPiA+IHRoYXQKPiA+IHJlcHJlc2VudCB0aGUgc2V0IG9m
-IGFsbG93ZWQgdmFsdWVzIGZvciB0aGUgZm9ybWF0IGZpZWxkLgo+ID4gCj4gPiBTaWduZWQtb2Zm
-LWJ5OiBGcmFuY2VzY28gTGF2cmEgPGZsYXZyYUBiYXlsaWJyZS5jb20+Cj4gPiAtLS0KPiA+IMKg
-RG9jdW1lbnRhdGlvbi9kcml2ZXItYXBpL2lpby9idWZmZXJzLnJzdCB8wqAgNCArKy0tCj4gPiDC
-oGluY2x1ZGUvbGludXgvaWlvL2lpby5owqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oCB8IDE3ICsrKysrKysrKysrKysrKy0tCj4gPiDCoDIgZmlsZXMgY2hhbmdlZCwgMTcgaW5zZXJ0
-aW9ucygrKSwgNCBkZWxldGlvbnMoLSkKPiA+IAo+ID4gZGlmZiAtLWdpdCBhL0RvY3VtZW50YXRp
-b24vZHJpdmVyLWFwaS9paW8vYnVmZmVycy5yc3QKPiA+IGIvRG9jdW1lbnRhdGlvbi9kcml2ZXIt
-YXBpL2lpby9idWZmZXJzLnJzdAo+ID4gaW5kZXggNjNmMzY0ZTg2MmQxLi5lMTZhYmFmODI2ZmUg
-MTAwNjQ0Cj4gPiAtLS0gYS9Eb2N1bWVudGF0aW9uL2RyaXZlci1hcGkvaWlvL2J1ZmZlcnMucnN0
-Cj4gPiArKysgYi9Eb2N1bWVudGF0aW9uL2RyaXZlci1hcGkvaWlvL2J1ZmZlcnMucnN0Cj4gPiBA
-QCAtNzgsNyArNzgsNyBAQCBmaWVsZHMgaW4gaWlvX2NoYW5fc3BlYyBkZWZpbml0aW9uOjoKPiA+
-IMKgwqDCoCAvKiBvdGhlciBtZW1iZXJzICovCj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGlu
-dCBzY2FuX2luZGV4Cj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHN0cnVjdCB7Cj4gPiAtwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIGNoYXIgc2lnbjsKPiA+ICvCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgY2hhciBmb3JtYXQ7Cj4gPiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCB1OCByZWFsYml0czsKPiA+IMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIHU4IHN0b3JhZ2ViaXRzOwo+ID4gwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgdTggc2hpZnQ7Cj4gPiBAQCAtOTgsNyArOTgs
-NyBAQCBmb2xsb3dpbmcgY2hhbm5lbCBkZWZpbml0aW9uOjoKPiA+IMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoCAvKiBvdGhlciBzdHVmZiBoZXJlICovCj4gPiDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnNjYW5faW5kZXggPSAwLAo+ID4gwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgIC5zY2FuX3R5cGUgPSB7Cj4gPiAtwqDCoMKgwqDC
-oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnNpZ24gPSAncycsCj4g
-PiArwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLmZv
-cm1hdCA9IElJT19TQ0FOX0ZPUk1BVF9TSUdORURfSU5ULAo+ID4gwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoCAucmVhbGJpdHMgPSAxMiwKPiA+IMKg
-wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqAgLnN0b3Jh
-Z2ViaXRzID0gMTYsCj4gPiDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgIC5zaGlmdCA9IDQsCj4gPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9p
-aW8vaWlvLmggYi9pbmNsdWRlL2xpbnV4L2lpby9paW8uaAo+ID4gaW5kZXggYTllY2ZmMTkxYmQ5
-Li5kNDhhMGFiMDFiOGQgMTAwNjQ0Cj4gPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2lpby9paW8uaAo+
-ID4gKysrIGIvaW5jbHVkZS9saW51eC9paW8vaWlvLmgKPiA+IEBAIC0xNzYsOSArMTc2LDE5IEBA
-IHN0cnVjdCBpaW9fZXZlbnRfc3BlYyB7Cj4gPiDCoMKgwqDCoMKgwqDCoMKgdW5zaWduZWQgbG9u
-ZyBtYXNrX3NoYXJlZF9ieV9hbGw7Cj4gPiDCoH07Cj4gPiDCoAo+ID4gKy8qCj4gPiArICogRm9y
-bWF0IHZhbHVlcyBpbiBzY2FuIHR5cGUKPiA+ICsgKiBASUlPX1NDQU5fRk9STUFUX1NJR05FRF9J
-TlQ6IFNpZ25lZCBpbnRlZ2VyICh0d28ncyBjb21wbGVtZW50KS4KPiA+ICsgKiBASUlPX1NDQU5f
-Rk9STUFUX1VOU0lHTkVEX0lOVDogVW5zaWduZWQgaW50ZWdlci4KPiA+ICsgKi8KPiAKPiBXZSBj
-b3VsZCBtYWtlIHRoaXMgcHJvcGVyIGtlcm5lbCBkb2MgZm9ybWF0IHdpdGggb25lIGNvbW1lbnQg
-cGVyIG1hY3JvLgoKQWN0dWFsbHksIGEgc2V0IG9mIHJlbGF0ZWQgI2RlZmluZXMgY2FuIGJlIGRv
-Y3VtZW50ZWQgd2l0aCBhIHNpbmdsZQpjb21tZW50LiBJIHNlZSBhIGZldyBleGFtcGxlcyBkb2lu
-ZyB0aGF0IGluIGluY2x1ZGUvbGludXgvZ2ZwX3R5cGVzLmggYW5kCmluY2x1ZGUvbGludXgvZnBn
-YS9mcGdhLW1nci5oCgoKPiA+ICsjZGVmaW5lIElJT19TQ0FOX0ZPUk1BVF9TSUdORURfSU5UwqDC
-oMKgwqDCoCdzJwo+ID4gKyNkZWZpbmUgSUlPX1NDQU5fRk9STUFUX1VOU0lHTkVEX0lOVMKgwqDC
-oCd1Jwo+ID4gKwoK
+On 3/23/26 11:04 AM, Francesco Lavra wrote:
+> On Sat, 2026-03-21 at 12:22 -0500, David Lechner wrote:
+>> On 3/17/26 10:04 AM, Francesco Lavra wrote:
+>>> This field is used to differentiate between signed and unsigned
+>>> integers.
+>>> A following commit will extend its use in order to add support for non-
+>>> integer scan elements; therefore, replace it with a union that contains
+>>> a
+>>> more generic 'format' field. This union will be dropped when all
+>>> drivers
+>>> are changed to use the format field.
+>>> Opportunistically replace character literals with symbolic constants
+>>> that
+>>> represent the set of allowed values for the format field.
+>>>
+>>> Signed-off-by: Francesco Lavra <flavra@baylibre.com>
+>>> ---
+>>>  Documentation/driver-api/iio/buffers.rst |  4 ++--
+>>>  include/linux/iio/iio.h                  | 17 +++++++++++++++--
+>>>  2 files changed, 17 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/Documentation/driver-api/iio/buffers.rst
+>>> b/Documentation/driver-api/iio/buffers.rst
+>>> index 63f364e862d1..e16abaf826fe 100644
+>>> --- a/Documentation/driver-api/iio/buffers.rst
+>>> +++ b/Documentation/driver-api/iio/buffers.rst
+>>> @@ -78,7 +78,7 @@ fields in iio_chan_spec definition::
+>>>     /* other members */
+>>>             int scan_index
+>>>             struct {
+>>> -                   char sign;
+>>> +                   char format;
+>>>                     u8 realbits;
+>>>                     u8 storagebits;
+>>>                     u8 shift;
+>>> @@ -98,7 +98,7 @@ following channel definition::
+>>>                    /* other stuff here */
+>>>                    .scan_index = 0,
+>>>                    .scan_type = {
+>>> -                          .sign = 's',
+>>> +                          .format = IIO_SCAN_FORMAT_SIGNED_INT,
+>>>                            .realbits = 12,
+>>>                            .storagebits = 16,
+>>>                            .shift = 4,
+>>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+>>> index a9ecff191bd9..d48a0ab01b8d 100644
+>>> --- a/include/linux/iio/iio.h
+>>> +++ b/include/linux/iio/iio.h
+>>> @@ -176,9 +176,19 @@ struct iio_event_spec {
+>>>         unsigned long mask_shared_by_all;
+>>>  };
+>>>  
+>>> +/*
+>>> + * Format values in scan type
+>>> + * @IIO_SCAN_FORMAT_SIGNED_INT: Signed integer (two's complement).
+>>> + * @IIO_SCAN_FORMAT_UNSIGNED_INT: Unsigned integer.
+>>> + */
+>>
+>> We could make this proper kernel doc format with one comment per macro.
+> 
+> Actually, a set of related #defines can be documented with a single
+> comment. I see a few examples doing that in include/linux/gfp_types.h and
+> include/linux/fpga/fpga-mgr.h
+
+Fancy. Although, IDEs tend to be able to handle doc comments better
+if they are not combined (i.e. getting the docs when you hold the
+mouse over an identifier).
+
+> 
+> 
+>>> +#define IIO_SCAN_FORMAT_SIGNED_INT     's'
+>>> +#define IIO_SCAN_FORMAT_UNSIGNED_INT   'u'
+>>> +
+> 
 
