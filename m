@@ -1,208 +1,189 @@
-Received: from mail-ej1-f54.google.com (mail-ej1-f54.google.com [209.85.218.54])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012000.outbound.protection.outlook.com [40.107.209.0])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8FD7D39B965
-	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 11:59:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.218.54
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774267144; cv=none; b=SxOMouCvfuFb4PzJsMkQUSATWLcabZEUXkVYv/5MraDtlQZ9HgxlUYOgipX2Vh8iCgReubl7sCravZBbs1zzArWM/Sv8rZc8GwAIKpHzD1y7OQaf4sTehq5wwRf+LpBknkYdiv2kzcy1ebS1bhSXEqNpXBvPr2WA8oMJp9M6TSU=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774267144; c=relaxed/simple;
-	bh=ELtImlRs/RlYTP+Zv0TOi4aJNiHzPqCPYyRyWRRAAK8=;
-	h=From:Date:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=B5GsfBmbDwaBdPErbRCzMnhwJr4poH07YEPO55tExBqZzyNyn1BdFix+eQGlarZgPrXzINfiDBJzm010WJrPozLxYdx11rREEsdmUGle3c1EEQZiMpI+fuV3ck5YJX4AIfv7k6MS7dUfwIZ9e+dOXEyc5Qq438d6Y2JxYyoPnoY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=e+pEUPqk; arc=none smtp.client-ip=209.85.218.54
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35756398919;
+	Mon, 23 Mar 2026 12:16:44 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.0
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774268206; cv=fail; b=ghsIX3YE2NEk16SyJhpPqPDo6EZRCM6hpnlfhRPqivVnfJXXRb1+hhQ7P+WuPDC0g85jsDQm967tTJhhLAKqwPGQNS2ryfvDycuZjgPcKXB1zUDa9pOVQ812j69lrLfnNfHpHVQxfYnlM7etFIhiRqAPpqUXh7EECRRX0vRJpdw=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774268206; c=relaxed/simple;
+	bh=LarJgyYUW3xL7277pJPYNxPxxJUT3J0KxdLHVTrDMAc=;
+	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
+	 Content-Type:MIME-Version; b=S8zHKI2N1aVf1ycFj4teo+G/h41nLweuwt3OiF1Jn1nWKRcjjiMmzzqaddm25HsR5kXcjzhyvYetTp8xtgMItHYRp/AlzQbGe/dXWvoQwFER+XtkETPfBLmyuMzNWhQ+x+vzjOvUvKlWNk3dvVpt9BUov1cBK6y457JaPqoWYsA=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=IT+AGXRQ; arc=fail smtp.client-ip=40.107.209.0
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
+Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e+pEUPqk"
-Received: by mail-ej1-f54.google.com with SMTP id a640c23a62f3a-b9358bc9c50so12271866b.1
-        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 04:59:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20230601; t=1774267141; x=1774871941; darn=vger.kernel.org;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=RU6NYRz6AVXhi5ZvZvCh4JAOhWnWFdHOlwdskFh6xa4=;
-        b=e+pEUPqkJf0PV9orarFsbxEOZl4avUX+L7fgplxP/WjHxt5CdG9TOREvZEjKodbrcm
-         lL96qAT4L7JDKJg2X1cHhM9/B3pKrb+LIzpdTzgdlY9dqtvKkHY0V7DmD3ZBEelmTzc9
-         8SKDueW4zwx3fz10TsTfbfdgu1uGkP/4avaOl50E88eK1mGrVyl/M931O1m6ctNaJLzM
-         Xb+dqcM2UDO+YalCbloqc9/dc6VO5vIaTal3rPPtO989LpRD9VQhcdY9/8tu/fDORxb3
-         hGHqgDXfTcjC9HQePN7kX3KXcu1q2kPp/aSogvPQBVLWC+KwNSVuoPrZXJLmyx5iyz3L
-         dr6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774267141; x=1774871941;
-        h=in-reply-to:content-disposition:mime-version:references:message-id
-         :subject:cc:to:date:from:x-gm-gg:x-gm-message-state:from:to:cc
-         :subject:date:message-id:reply-to;
-        bh=RU6NYRz6AVXhi5ZvZvCh4JAOhWnWFdHOlwdskFh6xa4=;
-        b=OT+R7eHkWYIyLcFEvA3IgxIqgZCQ80sC+kCV7rtU86zX05Kt9wUmgEI8Q3Dprn96h8
-         Klu2TuMuDo3VTdjUFI4xrvVY/v+kIDsHIEOsRDMMonoJFv75jDcM7UI/lk2cc6M6NH5x
-         HEyc/1ji4dceCR7YtCcMYTRtPlPwTZryRarJ8r6greqBa1drl2SQ7akgkV2fUobNRJ0X
-         TXlXHLpaQKazt9Yo3WFkTcy0H9t5xtrRPg3yMi8vBIUaQG2Y+Jm4HyXgjxTqJVlxg7oT
-         rD4IQpPpx5EljQzPWPe5KaggWCo61Ice3w+FPLiIk9PnXLaZTaSpBojApcqCk0ywpd6p
-         Gbaw==
-X-Forwarded-Encrypted: i=1; AJvYcCXoNPo6NpsYA2nKwX01Bxyr3wfZVT0hHxgcHkQyyPXmAQ5AQEKW9uR/BK4zZ/wXkLB/q7lFZCQvyM8=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzYRJu+B9zPistd/yPVNP6XghRFlJ/9PTNmhQ87AudO0lNKf9cK
-	Rti9hsb1NuacwzfXJBn6FTeg0NL++p0KkvM9kx1nL7uvkYgZ4e6koNID
-X-Gm-Gg: ATEYQzxWk27tyuP8sNWAGMRPRd9if+RZgAcIh6q1coVMv1R8iSj3UtSv0MiCOo2A9Wa
-	s0VXUemAqQXWfeA6j7AtiU8VNeXNBqg2TaH22poaquL+Fque0tno48J2FXhMi2V7saY1tK+59PQ
-	Qu62effSpAVsmH0GvphNp+xJNLRKqL6R9XJBCigVxybN3PN/qA/9mlKxuv3DBDtyCCglaqvRrV0
-	K8WuZz1sRAlVqKTKFmW816n2Oi2tzJj16PNMHa41vkP3ySN2mcOefPRdPvtJgih3iscnSQlnhJh
-	VUNk9r+KFEpUeUXimbO3qS3EgXwqKsSJ6ej6vWWZMSJvOn4IuYpXAz7UAU1Gqgpmo+d52HcZH8H
-	+b/uaQnlQ/GUMX8kQbIZvZGRlcloMO81oNJgV0FrMHtIxNmGJeWH3egVwlJP7aB/xzuqEJd0W9P
-	+/kYBVp4Wg6oAVthzVj1a/Pr4Y1jEK8oQQDEA9HRGnnvHIijqWb7+vGGDhsxxS2nLV5Zt8hYuFS
-	0i49QxpksgyZnaBistZcBzMOh3SiwB7JA+s4eLkCo7PzfKwJ3Y=
-X-Received: by 2002:a17:907:c789:b0:b88:6164:6421 with SMTP id a640c23a62f3a-b982f1f2b12mr865165466b.16.1774267140453;
-        Mon, 23 Mar 2026 04:59:00 -0700 (PDT)
-Received: from RDEALENC-L01.ad.analog.com (24.206.116.103.netskope-rdns.com. [24.206.116.103])
-        by smtp.gmail.com with ESMTPSA id a640c23a62f3a-b98416ac27asm362764166b.59.2026.03.23.04.58.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 23 Mar 2026 04:58:59 -0700 (PDT)
-From: Rodrigo Alencar <455.rodrigo.alencar@gmail.com>
-X-Google-Original-From: Rodrigo Alencar <rdealenc@rdealenc-l01.ad.analog.com>
-Date: Mon, 23 Mar 2026 11:58:53 +0000
-To: Jonathan Cameron <jic23@kernel.org>, 
-	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org, 
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org, 
-	Lars-Peter Clausen <lars@metafoo.de>, Michael Hennerich <Michael.Hennerich@analog.com>, 
-	David Lechner <dlechner@baylibre.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
-	Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
-	Philipp Zabel <p.zabel@pengutronix.de>, Jonathan Corbet <corbet@lwn.net>, 
-	Shuah Khan <skhan@linuxfoundation.org>
-Subject: Re: [PATCH RFC v2 9/9] docs: iio: add documentation for ad9910 driver
-Message-ID: <g57xnbhtvu25dvzy5b5pz76yzalpcjpnyclob6dy6j7fphxqle@5vww7psogbv3>
-References: <20260318-ad9910-iio-driver-v2-0-e79f93becf11@analog.com>
- <20260318-ad9910-iio-driver-v2-9-e79f93becf11@analog.com>
- <20260322173434.23d2ee0d@jic23-huawei>
+	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="IT+AGXRQ"
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
+ b=w/HKhZfsx6mvL0BT3Lr039i56m74rlMbLfgw7D73sSdPeLh4nxmysOUpdfjsm5Vh9tkVJuGJChEG+z/53ku64SKMotNPCXj3cUK7LNTtOq6J5TQv75hGCkYYl+x0ln9I/RvefpQLAM4b4C2YfIiVlffGmvSA6NvAjLWm4Z/JEVjM4k35EC3h9CdrvXnTAZ+UHb8f8AsTFyEMbl+FYONTwZrMhW7tA6J1bRL0oUZJ4O+FHFN3GFbzOhOCieKmLowUph7M2u3DPJr1t+dbm+EQGG07W7EGc/KiloXTIR0ESSk1whvfRWT1Ohv9ZQNUmgxfs/jzHspkJk00KNOuOusmhA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector10001;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=PKu+Nq3USJBuF4YFxfN8+S6iFmONKDYN8PtRLUnOXIA=;
+ b=kGovE+MqWmA9o4nYsrNkK5mbLqe4br6MRrkC79xYgbF4wUj8E3CzWkgDKjLfwC+dp0h2PQ7fR2h+b9+UwUx13JxmV5w9Q89mogJ2TcYF8iJf5zP48cdq1IQdbEyn9MYc4tI1FJSBcBO/G7gu/uzriCo8Q2PZ6/heK7VA2UK4dFUZhR8BxfUt8E4dECeUSir8TTI9HGEyNmOZWdbhEdEz1jYD5hZcxo/orPrt/+3aoYkt0fBRwvFqWPM3VE2F8WtTM/f2+uvE/3CDhzQi61NbDkcqAiUP3127KUNgLaTynhvUbKvDm36d7xQxAT2p9lKzTjLjI5w7UCxVAObfv6M97Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PKu+Nq3USJBuF4YFxfN8+S6iFmONKDYN8PtRLUnOXIA=;
+ b=IT+AGXRQOV3pOQstIPWzgB7MZaYET9ikTUaM0nD3tzOSLd3C3D66YQ2q6nliC1z93zQpyrB0ZE8o4XGUa6LI330o8zSp/aB6DPylweZvZhaigZdO5qXRBEPA+e3qIoP5dsNZ/Lncw2u4oB0KIMiKre2lKC4Ou7FfdMcRTs48sEg=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from SJ2PR12MB8690.namprd12.prod.outlook.com (2603:10b6:a03:540::10)
+ by LV2PR12MB5942.namprd12.prod.outlook.com (2603:10b6:408:171::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.20; Mon, 23 Mar
+ 2026 12:16:39 +0000
+Received: from SJ2PR12MB8690.namprd12.prod.outlook.com
+ ([fe80::18c4:be41:febf:7e45]) by SJ2PR12MB8690.namprd12.prod.outlook.com
+ ([fe80::18c4:be41:febf:7e45%6]) with mapi id 15.20.9745.012; Mon, 23 Mar 2026
+ 12:16:39 +0000
+Message-ID: <cdc752bd-733f-4262-9660-d78f54ee771b@amd.com>
+Date: Mon, 23 Mar 2026 17:46:30 +0530
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v2 3/4] iio: adc: xilinx-xadc: Add I2C interface support
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
+ Nuno Sa <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
+ "Simek, Michal" <michal.simek@amd.com>, Rob Herring <robh@kernel.org>,
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
+ <conor+dt@kernel.org>, "linux-iio@vger.kernel.org"
+ <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+ "linux-arm-kernel@lists.infradead.org"
+ <linux-arm-kernel@lists.infradead.org>,
+ "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+ "saikrishna12468@gmail.com" <saikrishna12468@gmail.com>,
+ "git (AMD-Xilinx)" <git@amd.com>
+References: <20260323074505.3853353-1-sai.krishna.potthuri@amd.com>
+ <20260323074505.3853353-4-sai.krishna.potthuri@amd.com>
+ <acEbZ0O3HKrGx0u1@ashevche-desk.local>
+ <8c8fa211-6244-43d3-9350-856301075e2b@amd.com>
+ <CAHp75VdcrfJn=VBnjJbA8QQnstaTay+39bumJiLt796fXsKmTA@mail.gmail.com>
+Content-Language: en-US
+From: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
+In-Reply-To: <CAHp75VdcrfJn=VBnjJbA8QQnstaTay+39bumJiLt796fXsKmTA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: PN4PR01CA0028.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:c01:273::9) To SJ2PR12MB8690.namprd12.prod.outlook.com
+ (2603:10b6:a03:540::10)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260322173434.23d2ee0d@jic23-huawei>
+X-MS-PublicTrafficType: Email
+X-MS-TrafficTypeDiagnostic: SJ2PR12MB8690:EE_|LV2PR12MB5942:EE_
+X-MS-Office365-Filtering-Correlation-Id: 8a5209e8-616a-4730-c70a-08de88d60942
+X-LD-Processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam:
+	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|56012099003|18002099003|22082099003;
+X-Microsoft-Antispam-Message-Info:
+	1u7HaLZLzW2f+sp7QsGW/IH0jC6Uux/2QJ7c7Y8QQx0175FUQ+kPwlXCawFDNjsXHpeNqyGZQCXeUtw9NebA7zNIO7gr6xHhcR8fjgt174iBCN6Q7P/vaDTZRD6h/MhWCltdIenuXcvLYNmuVf3kOIb+buloNANGvGDJuh9EyRrbnaVWJy8m6pVuRAOfqSno6AWPSjMGuMMeidgjbzQzenkvcx0uk6F99tn7WF2oqUjPm6CrmGesg99yz/LB0HcsaUFjdMk+XPRlmaz1z8v09ehYsDq9QHFMq7zqKs/tGtLnmbyWcei2gOa8A/W7fdqVjzHOf1yFlCR4OkEk6/3ne2Q6e4fdPctl8S2gl0jbV+YlGmyd8OdSB1f4dsu+JREhjtzQ7bQom5LI3EgTgh+TQLRak7dijoK4i/arTXOBJ7PCrO5XcLDGIbzojzqlMoWzngdUd4KZ9noHmvJQmnIKCvx+WwpOgwW299/cyrukMXzro8TyQ1D739+MSXB4LOf4k/8iF065a/EjG1c415bydRrSDDThpQDFoJ24OxubdTI1hsP6sjrt1ZY+Im72QfLTp57c2a1vG+2a5d0U9/ZA8T36EhS79gdECdIHSmLkz2l/FcBZeYJYEc4+ZriweaXxnCxTpy1pXlcGGwHoAiA4rR+ROwrpznJPd7KdRSo2TgQqv13ejiGESAT/io+MeXv2QDBEuyCdliipmaB8MU508kZ2ftTetnaUOhcyWxw4KlU=
+X-Forefront-Antispam-Report:
+	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB8690.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0:
+	=?utf-8?B?RnkzNWcxTUF4b3BONjFUSlNYNkN0Wis0TnhhMFFidzJOUXdnM0k1cGc5bXlP?=
+ =?utf-8?B?bHVERmVrZG5iSHNXMlVneTFkZ0lIVDUwRHFqV0daTEVLTldTK1Rrbk5OQjlC?=
+ =?utf-8?B?OEtuY29LeldTK2xBY21OUkl1ekgrOGc5RGZ2UTExNytmbGVQN25Lam4rS2RI?=
+ =?utf-8?B?WDBqeGNwa2F1T3NPVUNhNU1HUHRxcXkvMlBMdTF0Q1hFaGcyTzd0aFN1ends?=
+ =?utf-8?B?bDRaVTlMTlNVUWdCd1VmcGVPR2JnanpHdDlvSWFFWDFiVmJ4Q0xZSFgweHlV?=
+ =?utf-8?B?RE16NTgveTNJWXRVbGw3UXdJT1NMcHFvZlBRdXNnOHY5dm1wVVBNL2RKV1Uz?=
+ =?utf-8?B?UE03RGx1N1RqMy90VjVmRDQyWU02RDc3b0wvN3VBc0pvcGgvUUlhV1hPQXBQ?=
+ =?utf-8?B?TytJSG1Bb3pSR0RhMi9Bc0kxRlhscHBDZk9FWFpOUTFKZTd3KytHc3Z2elNt?=
+ =?utf-8?B?MXBmNHVCSmhXR0tvOGFMTzFOdUtGTWNiNU5UYWZOdHdWT3owekcyNHVoVjEv?=
+ =?utf-8?B?ZFg4NnV6dkdpTWd1dlNHQ1cxa3pFZld4R0FjRlhvUmpjRVI2amVlWE1DaCt5?=
+ =?utf-8?B?NXp3WkVnTjg1Vy9PazAzOXdGamo3azc1WXVnNW01UHJRbHo1QVVxV25oZzVz?=
+ =?utf-8?B?WEVrSVdETStGckx3bjVydDZDckc4QWpGU3VxTTNLdjJqQ2MrNWJjQU5mcXRX?=
+ =?utf-8?B?VVVibE9yV3RvMmxiMWJnMi9OSzFmbEhtMjBkcXN3SzZra09NQzAzc3l2aUsw?=
+ =?utf-8?B?eWptdERTRXdRVVJpcHBWd1hzdHc2YVhvMEV5V1dNdUQ2K0gwTzBOUVlTMENG?=
+ =?utf-8?B?Uzlmd1BnYkFFMytuQjE2Q3Nxa2lwclNBcGhzU0dsOFNGb2VPcndieGZ4YkI2?=
+ =?utf-8?B?Y0l3OXhmbUhQZmNiSVp6eGZpYXZ0SHhQenhIUlkwY3BuRHVCTng5RHhNbzVJ?=
+ =?utf-8?B?VVdwNDJ2VkZ4ME8yc3JXelkrdjU0OVBHSzRFa0wvQzBwM0hQdU5FWnAvZFd0?=
+ =?utf-8?B?bVl5d21XSnVjdHk3TE8wSFNzSzZueENpbFF3TmZTWkZxWWxIaUN3K2JVOUJQ?=
+ =?utf-8?B?enlOcE5JTTRRaExmVEZtNGltYXlzVXN5dnBtMW9JTTlOU21hUDdCbDBwWW9I?=
+ =?utf-8?B?cDM3Y1VYK3FZZ01ZTDNqNzAzekwxdWR4N0luS0hPbFRmYVc3aDVBRjV3aWNZ?=
+ =?utf-8?B?U3NpR1ErYUxnWTlVZDlMaS9wYjlRSWJSQXlHNUIvSldUbWRuSnBFTEtLdG5V?=
+ =?utf-8?B?UjdZRGx0azluWFBhMzJhandQTElrNGx3QVdTRm4xb0xabEF5MktyNmhidGhC?=
+ =?utf-8?B?SkJpcTJTaU9sekorRE1EOWI2QXZjS1dKNENJRUVZRHVhQ29sK3AyU3ZXZEQr?=
+ =?utf-8?B?elAzNjlhR2FSSzA5YkdFMm9FamozUEpDWVFnNVE0cUxJZmRvcEYyekl6bEov?=
+ =?utf-8?B?bmhxQU9UNmpYSy9uMnBpb2h2YitkYWF4UjdXT1JlRk5kZVg5Z09JTzZQTUJj?=
+ =?utf-8?B?MkNBK0UwNEVhczdBZmJJRDFLOHB6eGY2b1BCcXdIaTdQTTZoMTZYY1l6V3Aw?=
+ =?utf-8?B?R3BBMXJEU1RGSHVJWXNsSXJheEh2dkJWaHBKQWhad0t4T1FmVzdxVkN1Z0RT?=
+ =?utf-8?B?S0pObndQQUZWMGZSbHdTamFGTVRJQjR0akgxc0tQYjlCL3dGbnoyUGxsYmRJ?=
+ =?utf-8?B?cEh6d2IxcnlSUjdib0Z3a1MxS0xDTlJDV3ZSSHRtTEZxYjQwS1FKL3IvVXdt?=
+ =?utf-8?B?SW9teGFMaC9JdW0yK1dkOXBKWitJdzRBWktCZ25RaEx1S3Nmd2Y4bG5QVzI2?=
+ =?utf-8?B?VXUzS2hVci9SaGsvN1dLblZueWtrRElVS0RqVDlSSmFQR1IxYlJBRVdGMHBl?=
+ =?utf-8?B?SGFNL3hmQjJNeVMvVzIrVDB5MHdwQTgydzlpQ0dSTXdFMnVieEVMaFNaakM1?=
+ =?utf-8?B?eWpHS25oWElkeHpsUVI3UmJaTUFNaFhFdzJUZ2V6NEdRV2t5akcwQkhoNVRE?=
+ =?utf-8?B?R1VMVml4OVpVVlZSUnZEelBja1o3c3c5SllidTBSQWpqMjFGOEdmMUVuS1dq?=
+ =?utf-8?B?U0E1UzVvL2pqSHBqQ3Q5TCsrRENNRWdmTE5KVXBvSnROcHAvakFSOUljWmRF?=
+ =?utf-8?B?Q2J0V3lYODZRY2o4b1hRSUIvUnlBRWdXajBzUUVvckNUYno4VUFkbVFQdi9n?=
+ =?utf-8?B?SHJGZkEwVEU0QmNlS3BuRG13RFJhd2hCMmZzcHpCTEFwN2VTRGhZUGsyQlFR?=
+ =?utf-8?B?aEx6bWtkMWlUV2tqTm9aTEdJbkNHN0d0YmRlNDJUcHJYRkdPU25YRTlzTUh1?=
+ =?utf-8?B?V1hnaEdKV1o3WllCUjBSSG1aMDhKZy9KK3gwM0ZhZXg3TUhIYkZQZz09?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8a5209e8-616a-4730-c70a-08de88d60942
+X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB8690.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2026 12:16:39.6342
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 0Tq7ZRtwdCBJUN8ye3PvTSz1Wl+c3sPL4M8QnRqjiEwraIxfN3bc78L1m7ZHkfx23Dqfvu8+hMd8rA2q1z997w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5942
 
-On 26/03/22 05:34PM, Jonathan Cameron wrote:
-> On Wed, 18 Mar 2026 17:56:09 +0000
-> Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
+Hi Andy Shevchenko,
+
+On 3/23/2026 5:16 PM, Andy Shevchenko wrote:
+> On Mon, Mar 23, 2026 at 1:32 PM Sai Krishna Potthuri
+> <sai.krishna.potthuri@amd.com> wrote:
+>>> -----Original Message-----
+>>> From: Andy Shevchenko <andriy.shevchenko@intel.com>
+>>> Sent: Monday, March 23, 2026 4:22 PM
+>>> On Mon, Mar 23, 2026 at 01:15:04PM +0530, Sai Krishna Potthuri wrote:
 > 
-> > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-> > 
-> > Add documentation for the AD9910 DDS IIO driver, which describes channels,
-> > DDS modes, attributes and ABI usage examples.
-> > 
-> > Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
-
-...
-
-> > +Channel hierarchy
-> > +=================
-> > +
-> > +The driver exposes the following IIO output channels, each identified by a
-> > +unique channel number and a human-readable label:
-> > +
-> > +* ``out_altvoltage100``: ``phy``: Physical output: system clock and profile control
-> > +
-> > +  * ``out_altvoltage110``: ``single_tone``: Single tone mode: per-profile
-> > +    frequency, phase, amplitude
-> > +
-> > +  * ``out_altvoltage120``: ``parallel_port``: Parallel port modulation: enable
-> > +    and offset/scale parameters
-> > +
-> > +  * ``out_altvoltage130``: ``digital_ramp_generator``: DRG control: enable,
-> > +    destination, operating mode
-> > +
-> > +    * ``out_altvoltage131``: ``digital_ramp_up``: DRG ramp-up parameters:
-> > +      limits, step sizes, ramp rate
-> > +    * ``out_altvoltage132``: ``digital_ramp_down``: DRG ramp-down parameters:
-> > +      limits, step sizes, ramp rate
-> > +
-> > +  * ``out_altvoltage140``: ``ram_control``: RAM playback: enable, destination,
-> > +    operating mode, address range
-> > +
-> > +  * ``out_altvoltage150``: ``output_shift_keying``: OSK: enable, amplitude
-> > +    scale, ramp rate, auto/manual control
-> > +
-> > +The ``phy`` channel is the root of the hierarchy. Changing its
-> > +``sampling_frequency`` reconfigures the system clock (SYSCLK) which affects all
-> > +other channels. The ``profile`` attribute on this channel selects the active
-> > +hardware profile (0-7) used by the single tone and RAM channels.
-> I asked out this profile thing in one of the other patches.  Key to me is
-> that how we write non active profiles?  The most similar thing we've seen
-> in the past has been setting other frequencies for FSK or phases for PSK or
-> more mundane DC DAC output that are symbol based. (often an external signal)
-
-Yes, not allowing to configure a non-active profile at this point.
-Initially was not seeing this as a problem, but would you think different
-channels for each profiles should be created? e.g.:
-
-- out_altvoltage111 ... out_altvoltage118 for single tone profiles; and
-- out_altvoltage141 .. out_altvoltage148 for RAM profiles
-
-That would not remove the need for something like the profile attribute.
-
-> For those we have added an additional index so we can see which symbol we
-> are changing parameters for.  Here it might need to be done in the channel
-> numbering. I'm not sure.
+> ...
 > 
-> > +
-> > +All mode-specific channels (parallel port, DRG, RAM, OSK) have an ``enable``
-> > +attribute. The DRG and RAM channels additionally have ``destination`` and
-> > +``operating_mode`` attributes that configure which DDS core parameter is
-> > +modulated and how.
+>>>>   int xadc_write_samplerate(struct xadc *xadc, int val)  {
+>>>> -   unsigned long clk_rate = xadc_get_dclk_rate(xadc);
+>>>> +   unsigned long clk_rate;
+>>>>      unsigned int div;
+>>>>
+>>>> +   if (!xadc->ops->get_dclk_rate)
+>>>> +           return -EOPNOTSUPP;
+>>>
+>>>> +   clk_rate = xadc_get_dclk_rate(xadc);
+>>>> +
+>>>
+>>> Unneeded blank line.
+>>>
+>>> Also, don't you asked for options?
+>> This callback is defined for all other platforms except I2C.
+>> Currently for I2c interface we are not supporting any configuration, it
+>> is used only to read the channels.
 > 
-> I wonder if we flatten things out and have separate channels for each type
-> of modulation. Might lead to a more standard looking interfaces. We don't really
-> have a standard path to control one type of thing feeding another, whereas
-> we do have simple 'enable' interfaces.
+> If the callback defined you should use its value and not hardcoded one, right?
 
-...
+Yes, that's the intention.
+xadc_get_dclk_rate() - this is a wrapper function to call
+xadc->ops->get_dclk_rate(). May be i will remove the wrapper function or
+move the if (!xadc->ops->get_dclk_rate) check inside wrapper.
 
-> > +RAM mode
-> > +--------
-> > +
-> > +The AD9910 contains a 1024 x 32-bit RAM that can be loaded with waveform data
-> > +and played back to modulate frequency, phase, amplitude, or polar (phase +
-> > +amplitude) parameters.
-> > +
-> > +RAM control channel attributes
-> > +^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> > +
-> > +.. flat-table::
-> > +   :header-rows: 1
-> > +
-> > +   * - Attribute
-> > +     - Unit
-> > +     - Description
-> > +
-> > +   * - ``out_altvoltage140_en``
-> > +     - boolean
-> > +     - Enable/disable RAM playback. Toggling swaps profile registers between
-> > +       single tone and RAM configurations across all 8 profiles.
+Regards
+Sai Krishna
+> 
+>>>>      if (!clk_rate)
+>>>>              return -EINVAL;
+> 
 
-...
-
-> > +   * - ``out_altvoltage140_address_start``
-> Do we need this flexibility to set the start?  We needed a length, but
-> if we want different effective start can just load a different image.
-
-There is one image being loaded into the entire RAM and each profile may choose
-from wich sample it starts and ends its address ramp.
-The profiles can have those address ranges to overlap or not, then I suppose
-considering different images would just complicate things.
-
-> > +     - integer
-> > +     - Start address for the active profile. Range [0, 1023]. Cannot be
-> > +       changed while RAM mode is enabled. If set above current end address,
-> > +       end address is automatically adjusted.
-> > +
-
-...
-
--- 
-Kind regards,
-
-Rodrigo Alencar
