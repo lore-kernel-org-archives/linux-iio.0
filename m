@@ -1,189 +1,221 @@
-Received: from PH8PR06CU001.outbound.protection.outlook.com (mail-westus3azon11012000.outbound.protection.outlook.com [40.107.209.0])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f176.google.com (mail-yw1-f176.google.com [209.85.128.176])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 35756398919;
-	Mon, 23 Mar 2026 12:16:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=40.107.209.0
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 26A06330301
+	for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 12:22:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.176
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774268206; cv=fail; b=ghsIX3YE2NEk16SyJhpPqPDo6EZRCM6hpnlfhRPqivVnfJXXRb1+hhQ7P+WuPDC0g85jsDQm967tTJhhLAKqwPGQNS2ryfvDycuZjgPcKXB1zUDa9pOVQ812j69lrLfnNfHpHVQxfYnlM7etFIhiRqAPpqUXh7EECRRX0vRJpdw=
+	t=1774268559; cv=pass; b=TzkaL7LzQzjtS67wBpQtg59ngw+gneDIxprurQ/5ObY4vbT7wbG8WB9NL10n0Xot5UwDohnW+PIy3GvZ3tQli3JycDLJX+VzIGEySXhNKG4laEQrMdJknvgOiwb2aNYW7/bLQE7g87BA7rPWUY8v+P2s4HWpITt2VjO0b3NT66E=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774268206; c=relaxed/simple;
-	bh=LarJgyYUW3xL7277pJPYNxPxxJUT3J0KxdLHVTrDMAc=;
-	h=Message-ID:Date:Subject:To:Cc:References:From:In-Reply-To:
-	 Content-Type:MIME-Version; b=S8zHKI2N1aVf1ycFj4teo+G/h41nLweuwt3OiF1Jn1nWKRcjjiMmzzqaddm25HsR5kXcjzhyvYetTp8xtgMItHYRp/AlzQbGe/dXWvoQwFER+XtkETPfBLmyuMzNWhQ+x+vzjOvUvKlWNk3dvVpt9BUov1cBK6y457JaPqoWYsA=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com; spf=fail smtp.mailfrom=amd.com; dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b=IT+AGXRQ; arc=fail smtp.client-ip=40.107.209.0
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=amd.com
-Authentication-Results: smtp.subspace.kernel.org; spf=fail smtp.mailfrom=amd.com
+	s=arc-20240116; t=1774268559; c=relaxed/simple;
+	bh=5vEl7rEPdJTFVmLfF07NHC5wR9rgIR84jjWBbsemezk=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=uq/VFK6FJQ6lFdq5UzrOdWN56QExtPkdvWo8Y+Is/P1wFFhh7O+MftxIwkSiiLd8o6nXKYJ+/UGaNKqtGUNbMeaiPefLpxBk2zMLAkbRiEQHH+hyqrECHWvUCqKrrZYEjh3QudkQXTwXusg9oTC89CTK9XEUVf3jTLpEBd0B47w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=NWd+WjEX; arc=pass smtp.client-ip=209.85.128.176
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=amd.com header.i=@amd.com header.b="IT+AGXRQ"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=w/HKhZfsx6mvL0BT3Lr039i56m74rlMbLfgw7D73sSdPeLh4nxmysOUpdfjsm5Vh9tkVJuGJChEG+z/53ku64SKMotNPCXj3cUK7LNTtOq6J5TQv75hGCkYYl+x0ln9I/RvefpQLAM4b4C2YfIiVlffGmvSA6NvAjLWm4Z/JEVjM4k35EC3h9CdrvXnTAZ+UHb8f8AsTFyEMbl+FYONTwZrMhW7tA6J1bRL0oUZJ4O+FHFN3GFbzOhOCieKmLowUph7M2u3DPJr1t+dbm+EQGG07W7EGc/KiloXTIR0ESSk1whvfRWT1Ohv9ZQNUmgxfs/jzHspkJk00KNOuOusmhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=PKu+Nq3USJBuF4YFxfN8+S6iFmONKDYN8PtRLUnOXIA=;
- b=kGovE+MqWmA9o4nYsrNkK5mbLqe4br6MRrkC79xYgbF4wUj8E3CzWkgDKjLfwC+dp0h2PQ7fR2h+b9+UwUx13JxmV5w9Q89mogJ2TcYF8iJf5zP48cdq1IQdbEyn9MYc4tI1FJSBcBO/G7gu/uzriCo8Q2PZ6/heK7VA2UK4dFUZhR8BxfUt8E4dECeUSir8TTI9HGEyNmOZWdbhEdEz1jYD5hZcxo/orPrt/+3aoYkt0fBRwvFqWPM3VE2F8WtTM/f2+uvE/3CDhzQi61NbDkcqAiUP3127KUNgLaTynhvUbKvDm36d7xQxAT2p9lKzTjLjI5w7UCxVAObfv6M97Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PKu+Nq3USJBuF4YFxfN8+S6iFmONKDYN8PtRLUnOXIA=;
- b=IT+AGXRQOV3pOQstIPWzgB7MZaYET9ikTUaM0nD3tzOSLd3C3D66YQ2q6nliC1z93zQpyrB0ZE8o4XGUa6LI330o8zSp/aB6DPylweZvZhaigZdO5qXRBEPA+e3qIoP5dsNZ/Lncw2u4oB0KIMiKre2lKC4Ou7FfdMcRTs48sEg=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from SJ2PR12MB8690.namprd12.prod.outlook.com (2603:10b6:a03:540::10)
- by LV2PR12MB5942.namprd12.prod.outlook.com (2603:10b6:408:171::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.20; Mon, 23 Mar
- 2026 12:16:39 +0000
-Received: from SJ2PR12MB8690.namprd12.prod.outlook.com
- ([fe80::18c4:be41:febf:7e45]) by SJ2PR12MB8690.namprd12.prod.outlook.com
- ([fe80::18c4:be41:febf:7e45%6]) with mapi id 15.20.9745.012; Mon, 23 Mar 2026
- 12:16:39 +0000
-Message-ID: <cdc752bd-733f-4262-9660-d78f54ee771b@amd.com>
-Date: Mon, 23 Mar 2026 17:46:30 +0530
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v2 3/4] iio: adc: xilinx-xadc: Add I2C interface support
-To: Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc: Andy Shevchenko <andriy.shevchenko@intel.com>,
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
- Nuno Sa <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>,
- "Simek, Michal" <michal.simek@amd.com>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- "linux-arm-kernel@lists.infradead.org"
- <linux-arm-kernel@lists.infradead.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
- "saikrishna12468@gmail.com" <saikrishna12468@gmail.com>,
- "git (AMD-Xilinx)" <git@amd.com>
-References: <20260323074505.3853353-1-sai.krishna.potthuri@amd.com>
- <20260323074505.3853353-4-sai.krishna.potthuri@amd.com>
- <acEbZ0O3HKrGx0u1@ashevche-desk.local>
- <8c8fa211-6244-43d3-9350-856301075e2b@amd.com>
- <CAHp75VdcrfJn=VBnjJbA8QQnstaTay+39bumJiLt796fXsKmTA@mail.gmail.com>
-Content-Language: en-US
-From: Sai Krishna Potthuri <sai.krishna.potthuri@amd.com>
-In-Reply-To: <CAHp75VdcrfJn=VBnjJbA8QQnstaTay+39bumJiLt796fXsKmTA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: PN4PR01CA0028.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:273::9) To SJ2PR12MB8690.namprd12.prod.outlook.com
- (2603:10b6:a03:540::10)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NWd+WjEX"
+Received: by mail-yw1-f176.google.com with SMTP id 00721157ae682-79a3e2e64f4so626317b3.1
+        for <linux-iio@vger.kernel.org>; Mon, 23 Mar 2026 05:22:37 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1774268557; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Vj0ObdKH0ceAPG1rrptpAM/ligyup9gkmyGFJ9tedPMnqmZeCz4nncN1sywk7YLboi
+         zbmSznCdc/l9Zis8NPItPn9f5cWksRBadYTJNgpg3n2jjzmqSs9rRTqW9xHCV9XS3qS9
+         dxkcR3OG1etLT7jexVTmAJbURQtv6ehxyuzplc2tMBiJBcnauwObZ3cPHkELlMH493/Z
+         B4NlgT55Y5CdfgIMybry9QsjfILYEv5/5Y2r2pT/yk3evublGg64vQNXJTHtdJYkecOO
+         lj1+2EV1UWyZe77QJl5jl3eqW4vI1Ktbcv/342tNZSVfhH6DSFvhHBJ7VYN7h+q91hEs
+         g8RA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=I87yG6R3rMiJQKakv77MaKgjNhD1r5kVSJz2kpVoVvA=;
+        fh=wIZIDX09y1ntJb/fQSqR9CFtsSXoE3TS2xkmuoRgTws=;
+        b=g2q5KdnI8RsM6ePQhUTSUJ7J2zaSaf/REw9v9zdH8t9stzr0c1EYFh8VlTDm4bpN6w
+         xnEoc0mT6DRrHoNpbrDDnCitNZaSafAkOAOkTAX5HLdf2mKeiSnMnL0LsiUtXvc/Rrdd
+         JVpLiAUdI7VvpiCuS/uLY60s5dp/jIhIZKAnqHVhJ5wqB7W5SFiABNXg+Q0axQ8JS/i6
+         MeT7WO+2vvWMzjJJHGizXjkAkkNyJLyID2ZocUNNybi25cHX1cqZ2H+cE0JGNUwiehNg
+         380b26HS9q4lcoLP4Go4XeOBCjZ/VIJHuvHqI4Y+Q7+fpQqI2rxQLH0qqjjEGPgdmD1S
+         2eZw==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20230601; t=1774268557; x=1774873357; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=I87yG6R3rMiJQKakv77MaKgjNhD1r5kVSJz2kpVoVvA=;
+        b=NWd+WjEXCl1AO96/Xx3n45YUKKOj8e2YEnWULTgR61D9tqnVtnUZJhdlHAnpWjHjy8
+         8zhg2g8B1+/z7WWSTduzZPVK4W7ixZbqHhmBsWltsnEQ9eBkveKGo1Z3VHtwtQVA3qQU
+         twbAHC8bLG4q4Pfe6d7B2rz/zinPazCQfSBCsvdMN+BCztN9kBdPgQCVVCYpdmaq4jau
+         7U6azcWR8xXUdtmVhzJf9Hma75D4TAAbmBGNW0fiR4KyMCzeHehxs32g6HekUN71m4ii
+         DdKcabL2EiMjY/WztLYXKRa9NNsxE9xZM5YkCVI0sVDYYwKk6uWa7vrEv0ryNWNdVNpP
+         g+yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774268557; x=1774873357;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=I87yG6R3rMiJQKakv77MaKgjNhD1r5kVSJz2kpVoVvA=;
+        b=nLvEMLx09Y75Bl/niRqqr4tGxL+lk0vQMFl9jMBdsETi3SFKOU8M+J94w0ZNSRv+xl
+         7dGlI3zPJchtD5NqAxkCnr3QvNE/tVcG9YuRhRRIDVuIcnCmPcOr8cuJPoFpOnrRlVMc
+         Aurv5vfWcGDtY2u8//Vr79WIMmunUiHAK2JeVwnsZACiDHsZbmNhpOM9Hnowd6Q6PY0H
+         j+0/3d+fvaiXOiAgj9ge/AZnJOwmT9n7ZSxzrzPbeWWyuvIG1U93ViQZfBtXJ36wkAEP
+         MPsCQ3dak4K6ZPNfL3SMk4WKOMVBCaojc11Cpdvvbmy+6G5jpGVU2ejED0k18jHBjtxO
+         YB9Q==
+X-Forwarded-Encrypted: i=1; AJvYcCVnhlxpMq+F/Phuy7Ql0/spbdDFlDxybYDfukd2atmRyiKbwDl042SXCqAF6py6DtWXh2Uvnwa9bRQ=@vger.kernel.org
+X-Gm-Message-State: AOJu0Yz1G0ysNG7PWYqGsFYzoB7zpJZWZYSSEYf48xYdckwvXcFgGXdC
+	VSheyFYEvYQTo0+9VM/ilJH2rBo9CuGQOI9kvplEZOLON7w+D3brun8jueoj3Fie11szQdBjl1f
+	d4JgDu67EJo01WIvE31OZj93kYsrKJ9k=
+X-Gm-Gg: ATEYQzxDPqbbadNc1Qj1c9ndOOLqWehbrCWcaS8215SkLX6K+zWuGcXBdiRFdV3zwpZ
+	mujovDzY6W6e7BbhKnoj7C/omr1lPRanYiJOY4TMZJz5Q7hmdsUQDGeA28sylvkNnji6y5JqzHa
+	DAiSqkMvXO3FkV2j6H9viXm0PpFzcU3Zc3oFfGdqOWnjvGCzLhJ4bytRk5Hr5BtSx2g6X3icn3E
+	aOEL9YSrTtdJ8WfVRAe7I7xt09NsagqLlOy/PzhuyMkSjPBucMjGhECcsbcQNcbSZDJAZ0o0+VC
+	rcj9JD4nhi5HSAGRcH2/51V4PV3zTP7wuzJxTwNNfs1W7hYA5e64kFHx4GA2peIHx8Znw43YRA=
+	=
+X-Received: by 2002:a05:690c:48c1:b0:79a:3edf:a049 with SMTP id
+ 00721157ae682-79a90aeb03dmr123603607b3.24.1774268557032; Mon, 23 Mar 2026
+ 05:22:37 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: SJ2PR12MB8690:EE_|LV2PR12MB5942:EE_
-X-MS-Office365-Filtering-Correlation-Id: 8a5209e8-616a-4730-c70a-08de88d60942
-X-LD-Processed: 3dd8961f-e488-4e60-8e11-a82d994e183d,ExtAddr
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam:
-	BCL:0;ARA:13230040|1800799024|7416014|376014|366016|56012099003|18002099003|22082099003;
-X-Microsoft-Antispam-Message-Info:
-	1u7HaLZLzW2f+sp7QsGW/IH0jC6Uux/2QJ7c7Y8QQx0175FUQ+kPwlXCawFDNjsXHpeNqyGZQCXeUtw9NebA7zNIO7gr6xHhcR8fjgt174iBCN6Q7P/vaDTZRD6h/MhWCltdIenuXcvLYNmuVf3kOIb+buloNANGvGDJuh9EyRrbnaVWJy8m6pVuRAOfqSno6AWPSjMGuMMeidgjbzQzenkvcx0uk6F99tn7WF2oqUjPm6CrmGesg99yz/LB0HcsaUFjdMk+XPRlmaz1z8v09ehYsDq9QHFMq7zqKs/tGtLnmbyWcei2gOa8A/W7fdqVjzHOf1yFlCR4OkEk6/3ne2Q6e4fdPctl8S2gl0jbV+YlGmyd8OdSB1f4dsu+JREhjtzQ7bQom5LI3EgTgh+TQLRak7dijoK4i/arTXOBJ7PCrO5XcLDGIbzojzqlMoWzngdUd4KZ9noHmvJQmnIKCvx+WwpOgwW299/cyrukMXzro8TyQ1D739+MSXB4LOf4k/8iF065a/EjG1c415bydRrSDDThpQDFoJ24OxubdTI1hsP6sjrt1ZY+Im72QfLTp57c2a1vG+2a5d0U9/ZA8T36EhS79gdECdIHSmLkz2l/FcBZeYJYEc4+ZriweaXxnCxTpy1pXlcGGwHoAiA4rR+ROwrpznJPd7KdRSo2TgQqv13ejiGESAT/io+MeXv2QDBEuyCdliipmaB8MU508kZ2ftTetnaUOhcyWxw4KlU=
-X-Forefront-Antispam-Report:
-	CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ2PR12MB8690.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(1800799024)(7416014)(376014)(366016)(56012099003)(18002099003)(22082099003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?RnkzNWcxTUF4b3BONjFUSlNYNkN0Wis0TnhhMFFidzJOUXdnM0k1cGc5bXlP?=
- =?utf-8?B?bHVERmVrZG5iSHNXMlVneTFkZ0lIVDUwRHFqV0daTEVLTldTK1Rrbk5OQjlC?=
- =?utf-8?B?OEtuY29LeldTK2xBY21OUkl1ekgrOGc5RGZ2UTExNytmbGVQN25Lam4rS2RI?=
- =?utf-8?B?WDBqeGNwa2F1T3NPVUNhNU1HUHRxcXkvMlBMdTF0Q1hFaGcyTzd0aFN1ends?=
- =?utf-8?B?bDRaVTlMTlNVUWdCd1VmcGVPR2JnanpHdDlvSWFFWDFiVmJ4Q0xZSFgweHlV?=
- =?utf-8?B?RE16NTgveTNJWXRVbGw3UXdJT1NMcHFvZlBRdXNnOHY5dm1wVVBNL2RKV1Uz?=
- =?utf-8?B?UE03RGx1N1RqMy90VjVmRDQyWU02RDc3b0wvN3VBc0pvcGgvUUlhV1hPQXBQ?=
- =?utf-8?B?TytJSG1Bb3pSR0RhMi9Bc0kxRlhscHBDZk9FWFpOUTFKZTd3KytHc3Z2elNt?=
- =?utf-8?B?MXBmNHVCSmhXR0tvOGFMTzFOdUtGTWNiNU5UYWZOdHdWT3owekcyNHVoVjEv?=
- =?utf-8?B?ZFg4NnV6dkdpTWd1dlNHQ1cxa3pFZld4R0FjRlhvUmpjRVI2amVlWE1DaCt5?=
- =?utf-8?B?NXp3WkVnTjg1Vy9PazAzOXdGamo3azc1WXVnNW01UHJRbHo1QVVxV25oZzVz?=
- =?utf-8?B?WEVrSVdETStGckx3bjVydDZDckc4QWpGU3VxTTNLdjJqQ2MrNWJjQU5mcXRX?=
- =?utf-8?B?VVVibE9yV3RvMmxiMWJnMi9OSzFmbEhtMjBkcXN3SzZra09NQzAzc3l2aUsw?=
- =?utf-8?B?eWptdERTRXdRVVJpcHBWd1hzdHc2YVhvMEV5V1dNdUQ2K0gwTzBOUVlTMENG?=
- =?utf-8?B?Uzlmd1BnYkFFMytuQjE2Q3Nxa2lwclNBcGhzU0dsOFNGb2VPcndieGZ4YkI2?=
- =?utf-8?B?Y0l3OXhmbUhQZmNiSVp6eGZpYXZ0SHhQenhIUlkwY3BuRHVCTng5RHhNbzVJ?=
- =?utf-8?B?VVdwNDJ2VkZ4ME8yc3JXelkrdjU0OVBHSzRFa0wvQzBwM0hQdU5FWnAvZFd0?=
- =?utf-8?B?bVl5d21XSnVjdHk3TE8wSFNzSzZueENpbFF3TmZTWkZxWWxIaUN3K2JVOUJQ?=
- =?utf-8?B?enlOcE5JTTRRaExmVEZtNGltYXlzVXN5dnBtMW9JTTlOU21hUDdCbDBwWW9I?=
- =?utf-8?B?cDM3Y1VYK3FZZ01ZTDNqNzAzekwxdWR4N0luS0hPbFRmYVc3aDVBRjV3aWNZ?=
- =?utf-8?B?U3NpR1ErYUxnWTlVZDlMaS9wYjlRSWJSQXlHNUIvSldUbWRuSnBFTEtLdG5V?=
- =?utf-8?B?UjdZRGx0azluWFBhMzJhandQTElrNGx3QVdTRm4xb0xabEF5MktyNmhidGhC?=
- =?utf-8?B?SkJpcTJTaU9sekorRE1EOWI2QXZjS1dKNENJRUVZRHVhQ29sK3AyU3ZXZEQr?=
- =?utf-8?B?elAzNjlhR2FSSzA5YkdFMm9FamozUEpDWVFnNVE0cUxJZmRvcEYyekl6bEov?=
- =?utf-8?B?bmhxQU9UNmpYSy9uMnBpb2h2YitkYWF4UjdXT1JlRk5kZVg5Z09JTzZQTUJj?=
- =?utf-8?B?MkNBK0UwNEVhczdBZmJJRDFLOHB6eGY2b1BCcXdIaTdQTTZoMTZYY1l6V3Aw?=
- =?utf-8?B?R3BBMXJEU1RGSHVJWXNsSXJheEh2dkJWaHBKQWhad0t4T1FmVzdxVkN1Z0RT?=
- =?utf-8?B?S0pObndQQUZWMGZSbHdTamFGTVRJQjR0akgxc0tQYjlCL3dGbnoyUGxsYmRJ?=
- =?utf-8?B?cEh6d2IxcnlSUjdib0Z3a1MxS0xDTlJDV3ZSSHRtTEZxYjQwS1FKL3IvVXdt?=
- =?utf-8?B?SW9teGFMaC9JdW0yK1dkOXBKWitJdzRBWktCZ25RaEx1S3Nmd2Y4bG5QVzI2?=
- =?utf-8?B?VXUzS2hVci9SaGsvN1dLblZueWtrRElVS0RqVDlSSmFQR1IxYlJBRVdGMHBl?=
- =?utf-8?B?SGFNL3hmQjJNeVMvVzIrVDB5MHdwQTgydzlpQ0dSTXdFMnVieEVMaFNaakM1?=
- =?utf-8?B?eWpHS25oWElkeHpsUVI3UmJaTUFNaFhFdzJUZ2V6NEdRV2t5akcwQkhoNVRE?=
- =?utf-8?B?R1VMVml4OVpVVlZSUnZEelBja1o3c3c5SllidTBSQWpqMjFGOEdmMUVuS1dq?=
- =?utf-8?B?U0E1UzVvL2pqSHBqQ3Q5TCsrRENNRWdmTE5KVXBvSnROcHAvakFSOUljWmRF?=
- =?utf-8?B?Q2J0V3lYODZRY2o4b1hRSUIvUnlBRWdXajBzUUVvckNUYno4VUFkbVFQdi9n?=
- =?utf-8?B?SHJGZkEwVEU0QmNlS3BuRG13RFJhd2hCMmZzcHpCTEFwN2VTRGhZUGsyQlFR?=
- =?utf-8?B?aEx6bWtkMWlUV2tqTm9aTEdJbkNHN0d0YmRlNDJUcHJYRkdPU25YRTlzTUh1?=
- =?utf-8?B?V1hnaEdKV1o3WllCUjBSSG1aMDhKZy9KK3gwM0ZhZXg3TUhIYkZQZz09?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a5209e8-616a-4730-c70a-08de88d60942
-X-MS-Exchange-CrossTenant-AuthSource: SJ2PR12MB8690.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Mar 2026 12:16:39.6342
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0Tq7ZRtwdCBJUN8ye3PvTSz1Wl+c3sPL4M8QnRqjiEwraIxfN3bc78L1m7ZHkfx23Dqfvu8+hMd8rA2q1z997w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: LV2PR12MB5942
+References: <20260318092715.42538-1-architanant5@gmail.com>
+ <20260318092715.42538-4-architanant5@gmail.com> <20260321182710.1621d1aa@jic23-huawei>
+In-Reply-To: <20260321182710.1621d1aa@jic23-huawei>
+From: Archit Anant <architanant5@gmail.com>
+Date: Mon, 23 Mar 2026 17:52:25 +0530
+X-Gm-Features: AaiRm51Rot4baxif9O-Ehoe91d1_ioEF6O3LhNGXIxm4TboBtdFdoMeAHUSo0ns
+Message-ID: <CADJHxWADo9rA8vt6EEVLXSBb9EqXvyBg=L_YmusaMdtRnOr0rQ@mail.gmail.com>
+Subject: Re: [PATCH v5 3/4] iio: adc: ad799x: cache regulator voltages during probe
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, dlechner@baylibre.com, 
+	nuno.sa@analog.com, andy@kernel.org, linux-iio@vger.kernel.org, 
+	linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Andy Shevchenko,
+On Sat, Mar 21, 2026 at 11:57=E2=80=AFPM Jonathan Cameron <jic23@kernel.org=
+> wrote:
+>
+> On Wed, 18 Mar 2026 14:57:14 +0530
+> Archit Anant <architanant5@gmail.com> wrote:
+>
+> > Reading the regulator voltage via regulator_get_voltage() can be a slow
+> > operation.
+>
+> Whilst that might be true, it isn't a reason for this change.
+> Sysfs reads that would cause it to be read are never a particularly
+> fast path anyway. So drop this first sentence.
+>
+> > Since the reference voltages for this ADC are not expected to
+> > change at runtime, it is inefficient to query the regulator API every
+> > time userspace reads the IIO_CHAN_INFO_SCALE attribute.
+> >
+> > Determine the active reference voltage (either VREF or VCC) during
+> > probe() and cache it in the state structure. This improves the
+> > performance of ad799x_read_raw() and removes the dependency on the
+> > regulator pointers during fast-path reads.
+> >
+> > Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> > Suggested-by: David Lechner <dlechner@baylibre.com>
+> > Signed-off-by: Archit Anant <architanant5@gmail.com>
+>
+> A suggested alternative approach inline.
+>
+> Thanks,
+>
+> Jonathan
+>
+> > ---
+> >  drivers/iio/adc/ad799x.c | 24 ++++++++++++++++--------
+> >  1 file changed, 16 insertions(+), 8 deletions(-)
+> >
+> > diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+> > index 7504bcf627da..ae2ad4bd37cc 100644
+> > --- a/drivers/iio/adc/ad799x.c
+> > +++ b/drivers/iio/adc/ad799x.c
+> > @@ -30,6 +30,7 @@
+> >  #include <linux/module.h>
+> >  #include <linux/mutex.h>
+> >  #include <linux/bitops.h>
+> > +#include <linux/units.h>
+> >
+> >  #include <linux/iio/iio.h>
+> >  #include <linux/iio/sysfs.h>
+> > @@ -135,6 +136,9 @@ struct ad799x_state {
+> >       u16                             config;
+> >
+> >       unsigned int                    transfer_size;
+> > +
+> > +     int                             vref_uV;
+> > +
+> >       IIO_DECLARE_BUFFER_WITH_TS(__be16, rx_buf, AD799X_MAX_CHANNELS);
+> >  };
+> >
+> > @@ -302,14 +306,7 @@ static int ad799x_read_raw(struct iio_dev *indio_d=
+ev,
+> >                       GENMASK(chan->scan_type.realbits - 1, 0);
+> >               return IIO_VAL_INT;
+> >       case IIO_CHAN_INFO_SCALE:
+> > -             if (st->vref)
+> > -                     ret =3D regulator_get_voltage(st->vref);
+> > -             else
+> > -                     ret =3D regulator_get_voltage(st->reg);
+> > -
+> > -             if (ret < 0)
+> > -                     return ret;
+> > -             *val =3D ret / 1000;
+> > +             *val =3D st->vref_uV / MILLI;
+> >               *val2 =3D chan->scan_type.realbits;
+> >               return IIO_VAL_FRACTIONAL_LOG2;
+> >       }
+> > @@ -828,9 +825,20 @@ static int ad799x_probe(struct i2c_client *client)
+> >                       ret =3D regulator_enable(st->vref);
+> >                       if (ret)
+> >                               goto error_disable_reg;
+> > +                     ret =3D regulator_get_voltage(st->vref);
+>
+> For vref I don't think we need to keep the regulator around, so you shoul=
+d
+> be able to use devm_regulator_get_enable_read_voltage() with checking
+> for -ENODEV to identify it simply isn't there.
+>
+> It would need a tiny bit of reordering though or a custom
+> devm_add_action_or_reset() registered callback to ensure that regulator
+> disable for vcc happens in reverse sequence of what happens on setup.
+>
+> Anyone think there are actually ordering constraints on these regulators?
+> Would be fairly unusual for this sort of device, but not impossible.
+> If not, cleanest option might be;
+...
+> Then no need to undo anything by hand in remove() and no need to keep
+> a pointer to any regulators around for later.
 
-On 3/23/2026 5:16 PM, Andy Shevchenko wrote:
-> On Mon, Mar 23, 2026 at 1:32 PM Sai Krishna Potthuri
-> <sai.krishna.potthuri@amd.com> wrote:
->>> -----Original Message-----
->>> From: Andy Shevchenko <andriy.shevchenko@intel.com>
->>> Sent: Monday, March 23, 2026 4:22 PM
->>> On Mon, Mar 23, 2026 at 01:15:04PM +0530, Sai Krishna Potthuri wrote:
-> 
-> ...
-> 
->>>>   int xadc_write_samplerate(struct xadc *xadc, int val)  {
->>>> -   unsigned long clk_rate = xadc_get_dclk_rate(xadc);
->>>> +   unsigned long clk_rate;
->>>>      unsigned int div;
->>>>
->>>> +   if (!xadc->ops->get_dclk_rate)
->>>> +           return -EOPNOTSUPP;
->>>
->>>> +   clk_rate = xadc_get_dclk_rate(xadc);
->>>> +
->>>
->>> Unneeded blank line.
->>>
->>> Also, don't you asked for options?
->> This callback is defined for all other platforms except I2C.
->> Currently for I2c interface we are not supporting any configuration, it
->> is used only to read the channels.
-> 
-> If the callback defined you should use its value and not hardcoded one, right?
+I completely agree that devm_regulator_get_enable_read_voltage() is
+the cleanest approach.
 
-Yes, that's the intention.
-xadc_get_dclk_rate() - this is a wrapper function to call
-xadc->ops->get_dclk_rate(). May be i will remove the wrapper function or
-move the if (!xadc->ops->get_dclk_rate) check inside wrapper.
+However, as I noted briefly in the v5 changelog (which I should have
+highlighted better), the driver currently relies on those regulator
+pointers (st->reg and st->vref) in the ad799x_suspend() and
+ad799x_resume() callbacks.
 
-Regards
-Sai Krishna
-> 
->>>>      if (!clk_rate)
->>>>              return -EINVAL;
-> 
+If we drop the pointers from the state structure, we lose the ability
+to disable the regulators during system sleep.
 
+If keeping power management active during suspend is still desired for
+this driver, I believe we are forced to keep the pointers and use the
+devm_add_action_or_reset() pattern.
+
+If you prefer, I can drop the manual regulator control from the PM
+callbacks entirely (or drop the PM callbacks altogether), which would
+allow us to use the cleaner devm_regulator_get_enable_read_voltage()
+helper.
+
+Let me know which path you prefer for v6!
+
+--=20
+Sincerely,
+Archit Anant
