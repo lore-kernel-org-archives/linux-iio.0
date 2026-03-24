@@ -1,260 +1,121 @@
-Received: from CY3PR05CU001.outbound.protection.outlook.com (mail-westcentralusazolkn19013083.outbound.protection.outlook.com [52.103.7.83])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1F1F83FE344;
-	Tue, 24 Mar 2026 15:25:24 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.103.7.83
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 672BA3F076E
+	for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 17:20:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.180
 ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774365926; cv=fail; b=rvb049Y53LUY3SDUcgljUZO8JrIyeS8YL4YcazOl3pF/Yr2Yrj6LgX0OnWXo4vjbOCnBIac5xGX10dHTDasjR7xTKSh0KYfyqnRCLFWU9dmvtyuDCP0jkeA2UiYGHQxR51FxQkUGgPibtjOUYZF1C6xp4SpG7oTbK38C5P/NmgE=
+	t=1774372858; cv=pass; b=ItOwB3NxEZktStil9CIUKSOQz+mwFbIh6ImDcfBYyBvsSeVckZs5sXMYU1A7kKZwkAig8Tvzecgf4tryYql2RBbznRyOwaxJTamwwFop1jQtIJRopj107q5O8n+lzGx+jMHe8H8xcG4tHXZCxuYgbwp5Ppf2yoLKqIiEoQ6JLb8=
 ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774365926; c=relaxed/simple;
-	bh=aCz7czJcZJguhZtI4tCBpPNpQjFQ8FAJRDRTNo+i6VQ=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:Content-Type:
-	 Content-Disposition:In-Reply-To:MIME-Version; b=eOvJI0sjR7zFUMkpXvq+bZIJjKgqEUBmXj0Rr3Bda0jc2HEs07owznlZxMXj2IBte9aE6/f1hPW8HWT6sVmLwPSy7hicCoinhoXhttud3VsXAtIWvVhiRnyfc9FIsAMsK31btmlQ5Bus6wbVKz6xyHRcnGGtv1tNPp/MCCXIQYU=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com; spf=pass smtp.mailfrom=hotmail.com; dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b=r+A3hgGC; arc=fail smtp.client-ip=52.103.7.83
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=hotmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=hotmail.com
+	s=arc-20240116; t=1774372858; c=relaxed/simple;
+	bh=WCBe6xC/pB6p+aMNfwKmK2EHutkGGduXZX/L2BqsHYE=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=qVYkcE7rjYh8+YjDxZILWO6fsEalzGZh64nvsJ1H858FwO4EAuNTY6RW+ewMPDG4eX5YWAIp7/pgFgBY2j7ecAAiK0XNzYl2oJUk33ABT87zQHUKhqHH44MwoOWKCxSULeyNRblXb2p4NZNPV8W9U/75eXtWUiJjsSA/07FLm0w=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X/NlSpte; arc=pass smtp.client-ip=209.85.128.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=hotmail.com header.i=@hotmail.com header.b="r+A3hgGC"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=oGn2+YiygUKH6Dl7fe1vQeciN80F47Q7H+Me8bX5kEamHNYY+PsN+xeHXIiaw8jjOxITcCF8CbAxcFgNaF+khaXjpEAPg6ocGv0vGXu/8dzHu1GszpX11tBA6qfNxc9V0/DOjlgTHiFHaeJKia3BpBBmBgy/6eWI7KUTwxOgd+JO4aRJ2eie9FE8CKKtvHcTdw1QV2YOBBbR6cJB6+n7PSo+QJS3yHyyMQh1+0DLS7nuE9l+wbkUjTdeuQdK/gmVRcAH/ipqOfP5Z9L+uw6JTb+QXHO4cYAcPwglTvu6v071O7w9+Y5TRxp16NmWEVLkNq4fn2BnBf1kPQpD02WHCg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=HjFl6ZofEOE43CJCTjzXrMpzeoVO3dAyGChQnU+Dt2c=;
- b=OqQj87KofMvOHo7m2zVYR9MPJRrL+zr2ZnFekGYoO75dgodPsTD1X024yVJNfMhlGzW5lhdyzmpYcshkNgZ5vzgSuRQ3/lwHzNgm4Psr4zC9ZtswBXfFCW/JFVfQhRbBhl060QxNn1NBUxyCBMJM5hp+1WRubk01eAHV0WsVTgDMU+Bq2JEMOD7GQN67hcM66pPrxyT4LS4RDqxEfMHhAD2i1XnkvAshmXx6BgxgI57OcviJ02gvWTv5yQtc5V/fAzLpcel3SzQNFDWxH2P4wCKcgHt6xQK5met3yVNkLbX8qJ4I95dNupfiRhhd+dn4QTfDpCXgcnx8RjxRplQ07g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=hotmail.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HjFl6ZofEOE43CJCTjzXrMpzeoVO3dAyGChQnU+Dt2c=;
- b=r+A3hgGC0Jad7y4m+p8X+9KLMKAe/K7yhBphzGzhtITKyxhWLm7DiF5vaXugiz80KCNyVIKEm8VwqHA2ojmJtaZ+nhPbbbTkkwk2ALZNjZSs3Yi7YkxVmfTHSqI7IVECjvNiwF9Xylu7EPoJHX+FbEru5emWtTMfaXaKfcYN1cllnafNSgTcwNO7VYUM+3gHQD/XWOzepWMcHdPJdVniBTpSzBYmcZ3rRshDN2fjlwl+5w6c7hRve9/u85ugeT/Zfx6Cw2IukFCfd/pAub9qh+V5W204jzs7mSjqqBXRMGLMvPrYgoVbjumrufO9htj+jS28L+1A9BiDIbeDQenxpw==
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18) by CO1PR19MB5061.namprd19.prod.outlook.com
- (2603:10b6:303:f7::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.20; Tue, 24 Mar
- 2026 15:25:21 +0000
-Received: from PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172]) by PH0PR19MB997338.namprd19.prod.outlook.com
- ([fe80::fd22:ee23:3e25:3172%7]) with mapi id 15.20.9723.030; Tue, 24 Mar 2026
- 15:25:21 +0000
-Date: Tue, 24 Mar 2026 10:25:18 -0500
-From: Chris Morgan <macromorgan@hotmail.com>
-To: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>
-Cc: Chris Morgan <macroalpha82@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"andy@kernel.org" <andy@kernel.org>,
-	"nuno.sa@analog.com" <nuno.sa@analog.com>,
-	"dlechner@baylibre.com" <dlechner@baylibre.com>,
-	"jic23@kernel.org" <jic23@kernel.org>,
-	"linux-rockchip@lists.infradead.org" <linux-rockchip@lists.infradead.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	"heiko@sntech.de" <heiko@sntech.de>,
-	"conor+dt@kernel.org" <conor+dt@kernel.org>,
-	"krzk+dt@kernel.org" <krzk+dt@kernel.org>,
-	"robh@kernel.org" <robh@kernel.org>,
-	"andriy.shevchenko@intel.com" <andriy.shevchenko@intel.com>
-Subject: Re: [PATCH v2 0/5] Add Invensense ICM42607
-Message-ID:
- <PH0PR19MB997338F89E780686797B1D14A0A548A@PH0PR19MB997338.namprd19.prod.outlook.com>
-References: <20260319182956.146976-1-macroalpha82@gmail.com>
- <FR3P281MB1437798EE08EADF674E42526CE4FA@FR3P281MB1437.DEUP281.PROD.OUTLOOK.COM>
- <abxrQ7MUw4QXnYZG@wintermute.localhost.fail>
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <abxrQ7MUw4QXnYZG@wintermute.localhost.fail>
-X-ClientProxiedBy: SA1PR02CA0009.namprd02.prod.outlook.com
- (2603:10b6:806:2cf::14) To PH0PR19MB997338.namprd19.prod.outlook.com
- (2603:10b6:510:3b1::18)
-X-Microsoft-Original-Message-ID: <acKs3hV9Q4COyeMC@wintermute.localhost.fail>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X/NlSpte"
+Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-799001d73bdso13586517b3.0
+        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 10:20:54 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1774372853; cv=none;
+        d=google.com; s=arc-20240605;
+        b=Re7KbcUNaUh7siVUjZGQzer+DbGubu0kYPeYo3uWBZSUEc08+zgIMAB4oUQmze0nvj
+         W0Ozci4IPqM0DcRFwa7OM5r6CbgxHubkIPEuBwLXM0sqOmGMLKrqhomKCHrnzDCzbE65
+         1noW7+5fKR4ILzWgx0ZASCPVoCUQGQS3/UGx0+p+GGO0Vm8FRE4HTM6DP9VTkwFFDEyi
+         ExL3Bm6yAnlUbbBVuPJjYFjDHg2/ktELIA7TaKcqQoai9/7Xf6hmsDZWN70uNc8wHzil
+         ouTjUv+fpoDSLQtDSn6hRYTZTmJqCEc21sGyNusTz+S8vAEzBRQf9uahFAT2LFH+gSjM
+         EZxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:dkim-signature;
+        bh=WCBe6xC/pB6p+aMNfwKmK2EHutkGGduXZX/L2BqsHYE=;
+        fh=t8POMALac9yIkdVauzstvk9o9YjR5pDBl7lljz3rAiA=;
+        b=Wx9JewZbmCuG/9vZfGH8Wrpbd1+A0NqgLple7tLIVr25+CKLdlYfkQRx1fPhcOEWcU
+         UPOzM94ZpREKvPRKSV2pZ/nx1n+N54fOIlG6KfcJVu1ZEbHwe/s0aGd0pGsI4/pLIdFX
+         uEMFK8JqJgObS1259JCZysDl4DdyhAY2Ohds9eSggGyR4cWLqR8HpdrTgyNgEkhpfU4f
+         UGcStds4qD/nZeLAxHxlrLuoyO+MYg99QnWhQ4XPL4k9hmhlSZJDVcjIIkuGWdmS4ABu
+         S+Rsdoeo+7Io+o8AYP4avJGieJKnjPi0T1mTONbUUqEFlJhN5oPyg8fS0XYdANn1g6Mc
+         vxLA==;
+        darn=vger.kernel.org
+ARC-Authentication-Results: i=1; mx.google.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774372853; x=1774977653; darn=vger.kernel.org;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=WCBe6xC/pB6p+aMNfwKmK2EHutkGGduXZX/L2BqsHYE=;
+        b=X/NlSpteYyH81K4nNxjpxDMygjfA3azE5w3bxcFhtg3iHKVTJkrTGfweRDZNTUI8yZ
+         gStSGIhvDCye/J7YUjIQKW6W2OQnpVgsgd1RMF7lLXANb7+ZZwuPPwuFAMniw67XIzVx
+         2Wh466gpBlHnHYW3AZf3urUMS639JxXL3DH5oEIfVQpCIfffqMDXhgeQ0tfdCbnChhWx
+         cN+o4z5zUw7pfIizLwraSm2HIB3757WgnYa9o+RdZ6vVvNgPDqzC4Fq6TZ8clHeN9I8B
+         p3rEC15M8djfkE1NmQHJCADkRLocXGFIKun3I5xCRdIvDk/0KYWNFbkLOBufATev03Aj
+         DZqQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774372853; x=1774977653;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=WCBe6xC/pB6p+aMNfwKmK2EHutkGGduXZX/L2BqsHYE=;
+        b=Y69+XX73M5/2r/jKmKZdlUi1eQw3pkxfisW7KE7X296ADIhYX9+6kfxF4SbQaKJSD4
+         Y8Mw1S82DbO0/wNvAkgsDg8PMm0Jttsysxwbv9fWrSy3HPa4p1fr8zDIhpWDiFCoA0Vx
+         M2BZVsVx2+rm0U2EP9QC+u8JIPs5hczkFZrk5Q8Bg+tR5a5oof6xfxA6bigRwfHCUeJE
+         fzJPasTGMX/KU8hMVW5KsFdsc6FdxtHaUpNevvQJWs49xtv7xo7sCxEmZiCSUCHKYIHd
+         fzQOr456y1KHA8dPRhpTCI/W6Zd9joB+HeoDQsMrBWrtMBNyqn7N2uB08/ATDwjOiVnJ
+         x7sw==
+X-Forwarded-Encrypted: i=1; AJvYcCWdXHzSY/9ZVK/+MCnVb7ko4fCr/pLkvfgCxb6/Hc8E7LybvRjHPNMQVqK0I61H47FRYHmvckCpsAI=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLgozeidgF4ZT83H3XGWAm3JG+Lm3LkgB6iP8Z9Ai50ZObHPZ3
+	R8aZBJmhC784k/dzjbeaAYLc+Kd+/Sk50qDegEG5Ajzs8DRBGgwXB5xeGTtT3uB8OJ8LFuUg5fF
+	Pp2j1EjH7EzWDh/8AiSM7eykzlHFgc4E=
+X-Gm-Gg: ATEYQzyEz3hmf3euhmqNBXU0Wj0PlAemsn6+XtCJ8w0T15at0OxIaN3LQ4+8G0l6aKF
+	oopGC9zJbXhs8CwHAItRalvk2p/OGuHscwDrIdR+PUcIlgyiKkkZuNHJINNGfF1++CwL8Lsjhix
+	U4d0qbQh2w7TYcQLipMMcAPObqTTUlRyM7Ef3srtx2SfXBwuJjGiY0q+jmuaGlrUj2AIo5cWq6L
+	uTCEZtFRpetok0KWINwsmkvAih3xqIrXWXBCj3Ik4JaE57GHMjzsiPu8Akym6e4Tl1Pts0lB2wQ
+	S2AHp88sqc3t707jQB6o2R9sC+WdH6C5cWtW9N44mOjS5D6BLIjEU6iGMct7uQA88SVp2jU=
+X-Received: by 2002:a05:690c:ec5:b0:798:138c:76de with SMTP id
+ 00721157ae682-79acf6c8528mr5404347b3.41.1774372852853; Tue, 24 Mar 2026
+ 10:20:52 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-X-MS-PublicTrafficType: Email
-X-MS-TrafficTypeDiagnostic: PH0PR19MB997338:EE_|CO1PR19MB5061:EE_
-X-MS-Office365-Filtering-Correlation-Id: 5aa12630-336a-4b4d-3f94-08de89b9903a
-X-Microsoft-Antispam:
-	BCL:0;ARA:14566002|12121999013|6090799003|19110799012|23021999003|51005399006|5072599009|37011999003|15080799012|461199028|8060799015|25031999004|40105399003|440099028|3412199025;
-X-Microsoft-Antispam-Message-Info:
-	=?utf-8?B?akxKN2kzYVN5MVA1MVJjQm16dTRSNUswOEJXTVVIYk5xcnFMWDVsd2pURDlF?=
- =?utf-8?B?Y1VBM3JUdzE0RllQZ1dteStMWWVkT0VjZ3podG1HZUV2bUxTVDE5bzBBWndU?=
- =?utf-8?B?YVNyVGZBc213aW80N3IrWitscVVtTTJMVDRKOE9WVUhlNUxVWGlScUEyYjVi?=
- =?utf-8?B?M0Q2WlMrSksyanNZcWNVYWdGTWRCano3eHRqaUNGZGF2QlN1bXhmWm9OdTVy?=
- =?utf-8?B?L2V2YlpzaHVaeUl6aXhpemx5U2xwS1RCODFaWTc5TGsyUXcxa2xGL3hlYXRs?=
- =?utf-8?B?ejRiZnVNaElnb1hMSFpJVjNuQTMzWUJIRVptRXpmcThLbnRadUJUSVN1VHgw?=
- =?utf-8?B?aDNTZjhxSGwvRGNRcU44NVR2KzJyNlRJWkpWZlBteWtOZ3JNeHNSNmVRdGVN?=
- =?utf-8?B?L1dLSVhXSmtqUXdseTlKS0Q0SUx2MW4zVXRqaCtyRWlKa01mVzltYkMzODdC?=
- =?utf-8?B?aXluc1lONDRzNFMxM0haZDhGV1lhbFhqeTJ4TGZRb3hFbVgzenJYeE5uZ1Rv?=
- =?utf-8?B?OVFGS1BzZkhGeDVZckxMYXArSVlUdUJFeTFzVFMyYjVoaXFIY3pEM1RCTkxD?=
- =?utf-8?B?UTAvTlREY3oxdlBzcVNwUE5yeVl6WU1lMVFNWGN3SzlrYXpjVzZFSnY2bDla?=
- =?utf-8?B?YUxTNnhzWGRCNVhVWUppUithMXFmeUM5elVJRnVBMjNHRjZMOG1XeWFsRmpJ?=
- =?utf-8?B?dTFMMkVVQTNER1k3Q3dyOFdRZE15MjlIWXNINjBHY1kzUVU3RUI3ZFpxSE5j?=
- =?utf-8?B?MnRSeDMxVm5sbjRaZkJvaTV1MGxVT1N0U1JsdnV3UEV5NEU5TU5zVXBkd29w?=
- =?utf-8?B?WHJvanZrcUY3d3VoUTVucmY0b0gwT3p4Y01sOFNhSVhPWTRHMDJ2RzhSVW9G?=
- =?utf-8?B?WjdVc0ZHVXVNNTNrbnpCQlZaMVBzZERvSCtGSFNzOGk4OGlGNFZBLzBLbFhX?=
- =?utf-8?B?UmgwVW9uZGlwQ2ZtRW5PcTltS21NOE9nOUhpRU55OHBkay9NK1pTTmtyQWdj?=
- =?utf-8?B?dU9yeVZaalRYSmRmdjA5M3l6Um1CN2gvT2o3MExHM1hoUDFkNm5YVGQvZ2ts?=
- =?utf-8?B?TmliZEZpRk5qanhybmJLRk1WVVZ2dHhDUGcxVFp5S0NLaS80dUpub3Q3dGho?=
- =?utf-8?B?dnNFVU9HSEI1bVpGWHR0NUEzVUpPRDJpY3l5WW52bG1DZ1VVSVVTS25jYWo1?=
- =?utf-8?B?WmlsQ1M4b1dRZ1Bhb1FjeFBQamtqZmtJM1dBVnBYZGx3aW02Mm9KSmxMeWdY?=
- =?utf-8?B?Y0I3MlBheFIrTm50RlE0M2txVEhmVFU4ZnhmRzVCdVVTWWxGMkVVa2RpNlhN?=
- =?utf-8?B?bjlrWEtvczZGdW5qRGdBd21WY2ZVWUVCS1FDVlVmK3BmOWZnY2w3SUpGQWpl?=
- =?utf-8?Q?sNSoGpO/rUn6MXV/vZzgbkTzJb50N6xE=3D?=
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0:
-	=?utf-8?B?OUxDamhnQ1Q0OWMxa3pBeld1V1lRVjJXK1VlQ3ZVM3h0Ync1WnBZeWFzbXRq?=
- =?utf-8?B?SEJnWndiRzZjNjh0dTBEZ0YvQ3V4ZGZ6WmdrZ0IwbUI4YmY4eEtpUEJRWTZ0?=
- =?utf-8?B?dWZaMnUzR1lRVmwyclpPWjc3RnNPL05TaVgrY3BWT010cytjazNsVDZiL1ll?=
- =?utf-8?B?WXpZWlkzTytJamlIRG5yWExrdlVSUjRWQXBCWG1QeFFpK1NrbHNjRW95dWh0?=
- =?utf-8?B?YUpRaEpUQXd0ZUR2S1hIZkVIZW43bjBtSERoTlptOWt0Z2VHZjdqSys4Z2kv?=
- =?utf-8?B?cm5WZXFBNkMrZWpjQVlqNXBHZWJuYlJMek9hTTZtNDdUODhhM25HNHVHYWFH?=
- =?utf-8?B?dHFwSHRrUnN2emxaazRIeStBYnpGWFNvWXZnWiszTXJMVE1odmJOMUlLUHVi?=
- =?utf-8?B?KzBFZ05WZ08yc3V4M2ZLM2hWTHJET0hldmtrQ3pBRlNxMU9QWE1NT0p3Vitv?=
- =?utf-8?B?cFVTeFdoRENkQUJHbTJzVWc4U2MvSFRDNFZ3SVVFM3J5S0UvWk5RUUxzMjMv?=
- =?utf-8?B?NGlrTktLNWJmS3FLeUJNVUMvL2k4Smc4TVJsMzRLS1B3K2luU3VQMWJwR2FL?=
- =?utf-8?B?QjM1SS80YmR3bzAwQjIzdXNDZWdhZE9URkszWko0VEVGOGx2aXhvbkczRkRC?=
- =?utf-8?B?ZVlWb3NIa2dPYmRUbUlQRkptQy9hWGxPNVBta1AvVFp5R29BeEw5YUtrMy9C?=
- =?utf-8?B?RjlvV2U2Q0U0UXdrY2pveFR5ektvYWxldG1rWjM3cGcxYmtTaDI0QUhmU0sr?=
- =?utf-8?B?QWhSeEs2TUNVTnE2WklEYVA4SkwzU3MzeGxxRVZ0MkNBcGRpNjJRemRPZkF5?=
- =?utf-8?B?TXFreXZKM3NhWTNrZ0g4SGpHT3VSbXdxdHFNWTl0ZjlyUVExdFdodDhnVW1p?=
- =?utf-8?B?aFR3ZDR2b0RidXpkajBZVHp5QUtrYlI1ZURyQ2JqM3Zla0xReHJlMllLSjBs?=
- =?utf-8?B?cW0yZ05MTzUyOEtGS29BaUpRSVZvaXJDT1JUNG9VZHREdFpPYU9ESmJsM2JI?=
- =?utf-8?B?QmZWbnFmRVV6N09jYkZiaWx3bXp3TXJXR0FBSkdRZmlqOWxmcDllL1lZaFF4?=
- =?utf-8?B?MkpwQkEyRStubUhZZnBQZFR3Yk9RbE10Ykw2QnNoQnpMT3VzaDdTbzZieXlm?=
- =?utf-8?B?TXBkekovK0JmakFpdEFRYzViZmU4WkFpK3lybkdkcDRsRmx5TXZxenRydEN3?=
- =?utf-8?B?TE5qdGpFM1l3b2JzcWNIZjVqcUpnL1JOQ29Ca0lOa0w4dDVMY1hYZGFIM1ll?=
- =?utf-8?B?dU5NNVNNZWVSbkNXUjBVUVc0cjFEb1ljVU01UDh4SlBtWmNyU0NSUDFUVDE5?=
- =?utf-8?B?L2d5dmtoelIvRXpTOTBkN05LVmFzRkVGRU5VUEVZZEd2Zm9uVTlkWkdZTDFQ?=
- =?utf-8?B?ZTZBRzdBZ1BBeCtRci92RG9wMlM4cVA5eVJadnVxemw1YTAxNDFvaEwwQmdT?=
- =?utf-8?B?NTA2SGZUbWU0REpoNjYxQXE5Y0NvbTdsRXljY0UrN1pTaGZORHF5WTUyUmtS?=
- =?utf-8?B?Z3RUbUlZaEVRcDJZb3YvRGZlT2dGdk1KaUdRNnN5bDVYMG1QSlYzZmR2L0RT?=
- =?utf-8?B?SUFBUFFOSzNEN2tyRkg3Z1VWcGoxVXR5QlVBUnhHRXZ6TTdzanBBUzYzZHdU?=
- =?utf-8?B?QWhFWVJjRXIyaXNUVlBzU3VBbTFjMGlZSW9OQjVFNEFYWHk2L3FNdzdPbG12?=
- =?utf-8?B?Q3VseDlTc2FBK1JVU04vU2VNcGcxc1pTcHNPaXEzbEVFd1l3Z3I3bnU2WXlD?=
- =?utf-8?B?UCs2ZzN1RDMrNTh5YW5CdisySUxxb0lIYTVaclYvM0tUYnZlMVExWFdvaWFq?=
- =?utf-8?B?cEpQZEY2THV1d2xGSFc5d0VhSUc5MWF1bys3M0txRjZvMDFlaUgwUE5XRnpt?=
- =?utf-8?B?dUdhdG00WDYyQ2cvc0ZSV0hCRk1RM1RuOXowT3ZidGUvMHFDQUZScjQyckw3?=
- =?utf-8?Q?l7yyGWLDIpk2mYOzZCtP9g/tyUznvyWj?=
-X-OriginatorOrg: sct-15-20-9412-4-msonline-outlook-990eb.templateTenant
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5aa12630-336a-4b4d-3f94-08de89b9903a
-X-MS-Exchange-CrossTenant-AuthSource: PH0PR19MB997338.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Mar 2026 15:25:21.7106
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg:
-	00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO1PR19MB5061
+References: <20260318092715.42538-1-architanant5@gmail.com>
+ <20260318092715.42538-4-architanant5@gmail.com> <20260321182710.1621d1aa@jic23-huawei>
+ <CADJHxWADo9rA8vt6EEVLXSBb9EqXvyBg=L_YmusaMdtRnOr0rQ@mail.gmail.com>
+ <eaaee132-d5ff-42ff-9f68-5d6736127caf@baylibre.com> <20260323175519.00003b58@huawei.com>
+In-Reply-To: <20260323175519.00003b58@huawei.com>
+From: Archit Anant <architanant5@gmail.com>
+Date: Tue, 24 Mar 2026 22:50:41 +0530
+X-Gm-Features: AaiRm50fVU4XvLJ1Cao7roR1u0mpa8WhOURP1OasnKa21QaZVfaQKrpJ8vLFHLk
+Message-ID: <CADJHxWBXTorkb2BkhsjFCjN3cL+QcDKGg9urQPUou-d2r2TktA@mail.gmail.com>
+Subject: Re: [PATCH v5 3/4] iio: adc: ad799x: cache regulator voltages during probe
+To: Jonathan Cameron <jonathan.cameron@huawei.com>
+Cc: David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, lars@metafoo.de, 
+	Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org, 
+	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
+	linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, Mar 19, 2026 at 04:31:50PM -0500, Chris Morgan wrote:
-> On Thu, Mar 19, 2026 at 07:55:19PM +0000, Jean-Baptiste Maneyrol wrote:
-> > >
-> > >________________________________________
-> > >From: Chris Morgan <macroalpha82@gmail.com>
-> > >Sent: Thursday, March 19, 2026 19:29
-> > >To: linux-iio@vger.kernel.org <linux-iio@vger.kernel.org>
-> > >Cc: andy@kernel.org <andy@kernel.org>; nuno.sa@analog.com <nuno.sa@analog.com>; dlechner@baylibre.com <dlechner@baylibre.com>; jic23@kernel.org <jic23@kernel.org>; Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>; linux-rockchip@lists.infradead.org <linux-rockchip@lists.infradead.org>; devicetree@vger.kernel.org <devicetree@vger.kernel.org>; heiko@sntech.de <heiko@sntech.de>; conor+dt@kernel.org <conor+dt@kernel.org>; krzk+dt@kernel.org <krzk+dt@kernel.org>; robh@kernel.org <robh@kernel.org>; andriy.shevchenko@intel.com <andriy.shevchenko@intel.com>; Chris Morgan <macromorgan@hotmail.com>
-> > >Subject: [PATCH v2 0/5] Add Invensense ICM42607
-> > > 
-> > >From: Chris Morgan <macromorgan@ hotmail. com> Add support for the ICM42607 IMU. This sensor shares the same functionality but a different register layout with the existing ICM42600. This driver should work with the ICM42607 and ICM42607P
-> > >ZjQcmQRYFpfptBannerStart
-> > >This Message Is From an Untrusted Sender
-> > >You have not previously corresponded with this sender.
-> > > 
-> > >ZjQcmQRYFpfptBannerEnd
-> > >From: Chris Morgan <macromorgan@hotmail.com>
-> > >
-> > >Add support for the ICM42607 IMU. This sensor shares the same
-> > >functionality but a different register layout with the existing
-> > >ICM42600.
-> > >
-> > >This driver should work with the ICM42607 and ICM42607P over both I2C
-> > >and SPI, however only the ICM42607P over I2C could be tested.
-> > >
-> > >Changes Since V1:
-> > > - Instead of creating a new driver, merged with the existing inv_icm42600
-> > >   driver. This necessitated adding some code to the existing driver to
-> > >   permit using a different register layout for the same functionality.
-> > > - Split changes up a bit more to decrease the size of the individual
-> > >   patches. Note that patch 0004 is still pretty hefty; if I need to split
-> > >   further I may need to create some temporary stub functions.
-> > > - Used guard() and PM_RUNTIME_ACQUIRE_AUTOSUSPEND() on the new functions
-> > >   per Jonathan's recommendations.
-> > >
-> > >Chris Morgan (5):
-> > >  dt-bindings: iio: imu: add icm42607
-> > >  iio: imu: inv_icm42600: Add support for using alternate registers
-> > >  iio: imu: inv_icm42600: Add registers for icm42607
-> > >  iio: imu: inv_icm42600: Add support for icm42607
-> > >  arm64: dts: rockchip: Add icm42607p IMU for RG-DS
-> > >
-> > > .../bindings/iio/imu/invensense,icm42600.yaml |   4 +
-> > > .../dts/rockchip/rk3568-anbernic-rg-ds.dts    |  20 +-
-> > > drivers/iio/imu/inv_icm42600/inv_icm42600.h   | 333 +++++++-
-> > > .../iio/imu/inv_icm42600/inv_icm42600_accel.c | 497 ++++++++++-
-> > > .../imu/inv_icm42600/inv_icm42600_buffer.c    | 240 +++++-
-> > > .../imu/inv_icm42600/inv_icm42600_buffer.h    |   5 +
-> > > .../iio/imu/inv_icm42600/inv_icm42600_core.c  | 795 +++++++++++++++---
-> > > .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 379 ++++++++-
-> > > .../iio/imu/inv_icm42600/inv_icm42600_i2c.c   |  53 +-
-> > > .../iio/imu/inv_icm42600/inv_icm42600_spi.c   |  59 +-
-> > > .../iio/imu/inv_icm42600/inv_icm42600_temp.c  |  64 ++
-> > > .../iio/imu/inv_icm42600/inv_icm42600_temp.h  |   4 +
-> > > 12 files changed, 2289 insertions(+), 164 deletions(-)
-> > >
-> > >-- 
-> > >2.43.0
-> > >
-> > >
-> > 
-> > Hello Chris,
-> > 
-> > thanks for the patch, but beware that there is a major difference between this
-> > chip and inv_icm42600 chips family that is preventing to have a common driver.
-> > 
-> > inv_icm42600 chips are using direct register access with bank while icm42607
-> > chip is using indirect register access using IREG specific registers. Some
-> > registers cannot be read/write directly and requires programming specific
-> > registers. The mechanism is similar to the one in inv_icm45600 driver, you can
-> > have a look in this driver.
-> 
-> I didn't see anything in the datasheet for the 42607P in regards to the IREG,
-> but I did see something in the 42607C. That said, near as I can tell from the
-> drivers that I used as a reference from the Rockchip and Lineage trees this driver
-> doesn't access anything from those registers.
-> 
-> Still, I'll defer to you on what you think is best. As long as I can use my
-> accelerometer that's all I care about.
+On Mon, Mar 23, 2026 at 11:25=E2=80=AFPM Jonathan Cameron
+<jonathan.cameron@huawei.com> wrote:
+>
+> On Mon, 23 Mar 2026 09:39:44 -0500
+> David Lechner <dlechner@baylibre.com> wrote:
+>
+...
+> > We can't do this unless we can be 100% sure we don't break existing
+> > users who might be depending on power management working as-is.
+> Yeah, I missed the use in suspend / resume for some reason.
+>
+> Not much we can do to improve things :(
+>
 
-So closer looking at the 42607-C datasheet, it looks like they have MREG banks, is
-that what you're talking about?
+That settles it then, I'll implement Andy's style preference changes
+and send a final v6 shortly.
 
-If so I can either remove this and create a new driver (as I did with V1),
-or I can just keep the 42607P in this driver since it does appear to use only
-direct register access.
-
-Let me know what you think so I can rewrite and resubmit it. I'll try to better
-break it up this time too by seeing if I can make temp, gyro, and accel functions
-all with different commits.
-
-Thank you,
-Chris
-
-> 
-> > 
-> > Using the same driver is not possible I think, since register access is different.
-> > 
-> > And there are also more differences between the 2 chip families that is making
-> > a common driver quite difficult to do.
-> > 
-> > Thanks,
-> > JB
-> 
-> Chris
+--=20
+Sincerely,
+Archit Anant
