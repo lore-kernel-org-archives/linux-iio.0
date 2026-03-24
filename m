@@ -1,83 +1,75 @@
-Received: from mail-wr1-f54.google.com (mail-wr1-f54.google.com [209.85.221.54])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3DC1B3EB80B
-	for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 12:22:06 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.54
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 834BE3F23DB
+	for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 12:24:00 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774354928; cv=none; b=TiUw+Mj+svCg+ehbAv5MLulgqG8xZN7XzgjzYy+Mpm6yMv3SSL0W5SEZMehx9BtzUUTw/0h/rWeNI0i4/W7FMhfouwtkxqqPBL24rQxV8zDXIEKftmLn0ND0h9wBzXcBMiheonHTMuNZxMyriryCx0nKNas2goo17LnhHbG0G1s=
+	t=1774355043; cv=none; b=jk1j3QNixJUIB/MyHOOrAf3902j5aRbBHG3+Zl9hSCC6OrAuTcaJ8v39ESUDgc+bxV/UA/TWOR5m1luYOSaZJUMvoRIVy2gFh+V1q0jOL+BOCTUpe6c08ZLVTdg1Oym+Vq8jn080YacsUiyW88EukSWJZQ60P+Uf6+WPeQPSLqw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774354928; c=relaxed/simple;
-	bh=r1GJsCW8OLWD6HbAwhJRnQ4Q6N5LSNo7LvQtNAUbDmw=;
+	s=arc-20240116; t=1774355043; c=relaxed/simple;
+	bh=lr6jiPIpLky0GuKyeChe9rFkYM2HR+DgUJmFtFLBbyI=;
 	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=TaPHEU+3MiqYoPiwAN+C2yCh/mnJSX3qC6mdZrWkGtfxkBU+9OC0Fh3LB+Of2p2io5JGnfQblnyUFoEq7sGPyKQfRaZHb9oKpLZ7jzpW6hcsnnlRcZuh9cY3jpX6r7mQbIGhLHXThTH6grVeGyK290t6CxjnX3W4mYT7LeG9Jbk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=hu+iy2MX; arc=none smtp.client-ip=209.85.221.54
+	 Content-Type:MIME-Version; b=cvgpv5ehXdCsJBCJUmBHcBeAIqR0RvMI2UgRDgDgXtWQ4zqaG2/MM+aQJ0w1OnFWgAfeT5TWHFYV4bIHuIQG/eF+RjNgZCho7UwADeyonJZbpEH7uE3LSa0i/Kw2t/QPulkPudkytCI57K+oHHZ3EyQQZ342lus8yplNlQLyoeQ=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=mXjjklpR; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hu+iy2MX"
-Received: by mail-wr1-f54.google.com with SMTP id ffacd0b85a97d-439b94a19fdso3631003f8f.0
-        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 05:22:06 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mXjjklpR"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-486fe2024a9so30222625e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 05:24:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774354925; x=1774959725; darn=vger.kernel.org;
+        d=gmail.com; s=20251104; t=1774355039; x=1774959839; darn=vger.kernel.org;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
          :date:message-id:reply-to;
-        bh=q5dvk7Zm80VcMEttb3GAfdno1MkIso7lnn9GAMceQ6w=;
-        b=hu+iy2MXoQ27dPUT/Emhf66o/sCS7kRpgWAzzUgtKuBuaa2xT/LofKdvNvRjNzI/n5
-         lAAj2lzgI/q/3QLLohY17ZHgjGSOZehWnuDmIlEww0S1OpeYx0WzzDTw21i2z7Cx44A6
-         1C/KWGI26/d9ZwTtHldBoCOVuRr4KvrhGtspgqUQ8yn0GQTq5lsHUh32KKBLIewGqc1r
-         /Rw4lr4uMn3zJkF9rTX7YEyjKSAcKdKHEkKfTe7hVa6k1Y0aczqmvwzRdRoimhfrq4d7
-         VoJRvIdsvn5WHVOHLtCutxOZTdd2U25LI4kEx8QWjKT/2UIUvy/c1tuw817DVVvaJgrr
-         rwKQ==
+        bh=81frdM2Oa48B98UOrUG3uZiR8G5c1Jk4OAiomv1LF0A=;
+        b=mXjjklpRA+ZthGKi2L75ymV0GQVI1iSguAwp+krahpu5STQFwP5UHrt7fOxDGWloGg
+         nyXynWXIwcdnrkyoO3bFw88K+QN06M1IBMpwO4VKVvEY9nEAqbZKRZv95yDQ8VR4CN4Z
+         HDtGbMlsOkl8cJB9YxX9ErUhIgXdLJ+3ph60LiEB4qSVPNnEwWhaTct4f6S/JUeV7ahW
+         1fN+6w4vQhhBZGP4W6t2yhXJwbx2sJOEoDe4Et7EYUPc4c2iqgysul5sT4wV/a3C5/Bo
+         X9Tk2P0bay95Qi3UKKc575R5w8dnC6WlGAh4RVMiPy+DBQ9LbU9qbV+VlBa5bfKeeRWM
+         u/0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774354925; x=1774959725;
+        d=1e100.net; s=20251104; t=1774355039; x=1774959839;
         h=mime-version:user-agent:content-transfer-encoding:references
          :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
          :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=q5dvk7Zm80VcMEttb3GAfdno1MkIso7lnn9GAMceQ6w=;
-        b=CUFfK0CCO93koCjc8pSdh6T3qT0b0Ij913ixknX5+3909BH3I32JlA3LuGsZoK7cX3
-         mwilHkcagOFxmb/+qtq5GOBOy1q25aQU8FqaYAir1YSMPuPpdK17z/6berYm1p7d1Bbj
-         UmISusLD/AtWvOh902sBBtDzKY+DxzNwvaO0ZXE+mWqVqKBLqr7juYMTCSQDeKjjApJQ
-         tMBIUgEnKXOqRNP6OwNDYCRQ4NvUtcfY3ljtXgVm1YQJecxQhlHBhBpAA1vXdJ+2gDfX
-         4WYrohUM5LovrzGl6rj1suUhFxKvjW1eSOQdCeCG08+R5WO7S1e0FjfNvwCDYEjQFacL
-         WFnw==
-X-Gm-Message-State: AOJu0Yzm/6TY/T8NynMkw0NW4DSlw/kfmiFhI3ridcd4NfS7UnjOR8NJ
-	hYcWt1uhkHcS/H2DKrzaZkSxzxB/QBxMIr1nT4TAUieVa5/ZqTaBb6R/
-X-Gm-Gg: ATEYQzxU6yH3OGQZDKQShqloR55WaylwaDlKyqysAzK+urnLeh3Bzl6ovymTUs4jYxJ
-	D7yFHDv32+MTdH48IYtiNYGaYU/CQAb8lScO0cPz+zHmBmnyln6AiJn1hveW4snSOlprMXIuV3B
-	pvXZ77O+v5DfsJ3IGDQ+haCaOqvQbM/hUBKnjA8JxVxqIZUZOpLmfKts8hpwrDohOGNFGb6TK6G
-	alDTbW2HWiS3ffc/OZ8XD21k8oVOWQ/Xsjp2wYu5+MkY8bu8jLeNDxk6ChqdG/ANvB8iaaUEpSk
-	DQ8oUhUwaWJbPPfR0vA2+ypgMtiKuKA5IFIRWzzM5YO3thy4BkCZWqMpWZo+IdybKq37/ncQpoz
-	DBLyaV6+toX8YuLrHOPb+TelzNG7Xd8S0C67xNZ7RJ0PIQKncrPkwWAKbfJYof1EBQU+bhjaMQU
-	jFw37ZW14uPtanCzHUuCzXiUk14oBziFEsvjZnM1HXVA==
-X-Received: by 2002:a05:6000:2010:b0:43b:4ec7:f924 with SMTP id ffacd0b85a97d-43b64264073mr24532596f8f.34.1774354924370;
-        Tue, 24 Mar 2026 05:22:04 -0700 (PDT)
+        bh=81frdM2Oa48B98UOrUG3uZiR8G5c1Jk4OAiomv1LF0A=;
+        b=sq1GrdqbfXYNmrVDVxoOOcDVtYqIxkiBMPO6Y8YCruLYR1LDpu2NnxQBoZxVxP5eyK
+         mcBoJC6m9brvzkrBfwaFUM9g9nrNMc4M4xYaCgQMLSPiAH+LEsvhGLZB8rWxEX7ZLiRt
+         EJoQj2gh9bwP6antFN3RmT3W4EudVsukwRVlNoGrOeQvaXyxaKNhoyH8DUu7A+BxZJuy
+         3XhXn9UlnA3tzwTJHlLSnb50iDpawBpY9m6MignFu+izqMqgZaUN2H5dVAVcsfDzOIdR
+         PhYNC5TyTD6TCXLH+TA7cGgKKR3n36GMQBq6NXqrdSqVRd74HakYFaYyhhivjqICikF0
+         FtFw==
+X-Forwarded-Encrypted: i=1; AJvYcCU5n3i0BYVcpmU20xsvN0FLJJ59XVljVKkhTEcbcwiU+hVLzPuR9+Xp3yMGW9UkvKVgAN9msl2X3Mw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzQHZACMzyhdrhy+gwGgJYzt2V9nrnI+o1OPTx7wlmmJke0WVTa
+	rz/DlVOjzS0UhgTnfMvgbj3GzD22H0RPRCaZ/HdJxN4LC8MlwWVRMcQN
+X-Gm-Gg: ATEYQzwCnx0EGLx7cnjMyz3Wd/wGsxdgdZTpdKVmN44Iv3MkWpAyFEASNsdCXMN5xQU
+	7RvSdG8ao3yHROaDIUeJgfjQnb9t8Fsa/ayMF5wMxaM2MDYrb7fbGBw6NtDEpuY6WTIAy6fBQZS
+	XMeBlxqsvlRu/INDeN0BRxCCfR42ZKOqZc9hz18m7eQtOf94P09JfGLnK5Nfp2cDc5jkqM+NFqJ
+	Z8ysaJzR68IZ6GlFMEi4Qkmm5gp8oaRhZc1UjkHlNetYpx7lvUQBTxYLJNiIvX51e3tUzjMWjn7
+	GCn7nI8rBT6BuyYVGG/cRbY04JYq3DBvlTVQ6sq1fJkku3JZyQlsRvovxaXYWUdrTQ8lDH0dYcj
+	U6nw9lIqLQEIHXmDDCUtXkTC8kOPJOJ8gz4smdZ+CIdhBmZ23yWtDtITUIKhs5of4n63n7xhZOD
+	GEEkXNTWxkDu0FYiEuYBYIDg5P6zFCozE=
+X-Received: by 2002:a05:600c:c84:b0:480:1c69:9d36 with SMTP id 5b1f17b1804b1-486fee0d808mr230563355e9.17.1774355038309;
+        Tue, 24 Mar 2026 05:23:58 -0700 (PDT)
 Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b6470c239sm37754549f8f.27.2026.03.24.05.22.02
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4871107b43esm17847145e9.21.2026.03.24.05.23.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2026 05:22:03 -0700 (PDT)
-Message-ID: <83d87ff35002e5c7b9448a5ee7f2791a63c38c38.camel@gmail.com>
-Subject: Re: [PATCH v4 3/4] iio: adc: ad4691: add triggered buffer support
+        Tue, 24 Mar 2026 05:23:57 -0700 (PDT)
+Message-ID: <5a610d89d307940e5e72644a83ca77cef6a65241.camel@gmail.com>
+Subject: Re: [PATCH] iio: adc: ti-ads8688: use read_avail for available
+ attributes
 From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: radu.sabau@analog.com, Lars-Peter Clausen <lars@metafoo.de>, Michael
- Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron
- <jic23@kernel.org>, David Lechner	 <dlechner@baylibre.com>, Nuno
- =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,  Andy Shevchenko	
- <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof Kozlowski	
- <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, Uwe
- =?ISO-8859-1?Q?Kleine-K=F6nig?=	 <ukleinek@kernel.org>, Liam Girdwood
- <lgirdwood@gmail.com>, Mark Brown	 <broonie@kernel.org>, Linus Walleij
- <linusw@kernel.org>, Bartosz Golaszewski	 <brgl@kernel.org>, Philipp Zabel
- <p.zabel@pengutronix.de>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org, 
-	linux-gpio@vger.kernel.org
-Date: Tue, 24 Mar 2026 12:22:50 +0000
-In-Reply-To: <20260320-ad4692-multichannel-sar-adc-driver-v4-3-052c1050507a@analog.com>
-References: 
-	<20260320-ad4692-multichannel-sar-adc-driver-v4-0-052c1050507a@analog.com>
-	 <20260320-ad4692-multichannel-sar-adc-driver-v4-3-052c1050507a@analog.com>
+To: Gabriel Rondon <grondon@gmail.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, 
+ Andy Shevchenko
+	 <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Date: Tue, 24 Mar 2026 12:24:44 +0000
+In-Reply-To: <b980b8ad92cf560021a8b428ed0134ca582895c8.camel@gmail.com>
+References: <20260323215633.8140-1-grondon@gmail.com>
+	 <b980b8ad92cf560021a8b428ed0134ca582895c8.camel@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 User-Agent: Evolution 3.58.3 
@@ -88,476 +80,185 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 
-Hi Radu,
-
-Some comments from me.
-
-On Fri, 2026-03-20 at 13:03 +0200, Radu Sabau via B4 Relay wrote:
-> From: Radu Sabau <radu.sabau@analog.com>
+On Tue, 2026-03-24 at 11:42 +0000, Nuno S=C3=A1 wrote:
+> On Mon, 2026-03-23 at 21:56 +0000, Gabriel Rondon wrote:
+> > Convert the in_voltage_scale_available and in_voltage_offset_available
+> > attributes from legacy IIO_DEVICE_ATTR with custom show functions to th=
+e
+> > IIO framework's read_avail callback. This uses the framework's built-in
+> > support for _available attributes, removing the need for manual sysfs
+> > formatting.
+> >=20
+> > Precompute the available scale values at probe time since they depend o=
+n
+> > the reference voltage which does not change after initialization.
+> >=20
+> > Signed-off-by: Gabriel Rondon <grondon@gmail.com>
+> > ---
 >=20
-> Add buffered capture support using the IIO triggered buffer framework.
+> Hi Grabriel,
 >=20
-> CNV Burst Mode: the GP pin identified by interrupt-names in the device
-> tree is configured as DATA_READY output. The IRQ handler stops
-> conversions and fires the IIO trigger; the trigger handler executes a
-> pre-built SPI message that reads all active channels from the AVG_IN
-> accumulator registers and then resets accumulator state and restarts
-> conversions for the next cycle.
+> Thanks for your patch, just some minor nits from me. Anyways:
 >=20
-> Manual Mode: CNV is tied to SPI CS so each transfer simultaneously
-> reads the previous result and starts the next conversion (pipelined
-> N+1 scheme). At preenable time a pre-built, optimised SPI message of
-> N+1 transfers is constructed (N channel reads plus one NOOP to drain
-> the pipeline). The trigger handler executes the message in a single
-> spi_sync() call and collects the results. An external trigger (e.g.
-> iio-trig-hrtimer) is required to drive the trigger at the desired
-> sample rate.
+> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
 >=20
-> Both modes share the same trigger handler and push a complete scan =E2=80=
-=94
-> one u16 slot per channel at its scan_index position, followed by a
-> timestamp =E2=80=94 to the IIO buffer via iio_push_to_buffers_with_ts().
+> > =C2=A0drivers/iio/adc/ti-ads8688.c | 73 +++++++++++++++++++------------=
+-----
+> > =C2=A01 file changed, 38 insertions(+), 35 deletions(-)
+> >=20
+> > diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.=
+c
+> > index b0bf46cae..f37098db9 100644
+> > --- a/drivers/iio/adc/ti-ads8688.c
+> > +++ b/drivers/iio/adc/ti-ads8688.c
+> > @@ -6,7 +6,6 @@
+> > =C2=A0#include <linux/device.h>
+> > =C2=A0#include <linux/kernel.h>
+> > =C2=A0#include <linux/slab.h>
+> > -#include <linux/sysfs.h>
+> > =C2=A0#include <linux/spi/spi.h>
+> > =C2=A0#include <linux/regulator/consumer.h>
+> > =C2=A0#include <linux/err.h>
+> > @@ -17,7 +16,6 @@
+> > =C2=A0#include <linux/iio/buffer.h>
+> > =C2=A0#include <linux/iio/trigger_consumer.h>
+> > =C2=A0#include <linux/iio/triggered_buffer.h>
+> > -#include <linux/iio/sysfs.h>
+> > =C2=A0
+> > =C2=A0#define ADS8688_CMD_REG(x)		(x << 8)
+> > =C2=A0#define ADS8688_CMD_REG_NOOP		0x00
+> > @@ -66,6 +64,7 @@ struct ads8688_state {
+> > =C2=A0	const struct ads8688_chip_info	*chip_info;
+> > =C2=A0	struct spi_device		*spi;
+> > =C2=A0	unsigned int			vref_mv;
+> > +	int				scale_avail[3][2];
+> > =C2=A0	enum ads8688_range		range[8];
+> > =C2=A0	union {
+> > =C2=A0		__be32 d32;
+> > @@ -114,37 +113,9 @@ static const struct ads8688_ranges ads8688_range_d=
+ef[5] =3D {
+> > =C2=A0	}
+> > =C2=A0};
+> > =C2=A0
+> > -static ssize_t ads8688_show_scales(struct device *dev,
+> > -				=C2=A0=C2=A0 struct device_attribute *attr, char *buf)
+> > -{
+> > -	struct ads8688_state *st =3D iio_priv(dev_to_iio_dev(dev));
+> > -
+> > -	return sprintf(buf, "0.%09u 0.%09u 0.%09u\n",
+> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ads8688_range_def[0].scale * st=
+->vref_mv,
+> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ads8688_range_def[1].scale * st=
+->vref_mv,
+> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ads8688_range_def[2].scale * st=
+->vref_mv);
+> > -}
+> > -
+> > -static ssize_t ads8688_show_offsets(struct device *dev,
+> > -				=C2=A0=C2=A0=C2=A0 struct device_attribute *attr, char *buf)
+> > -{
+> > -	return sprintf(buf, "%d %d\n", ads8688_range_def[0].offset,
+> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ads8688_range_def[3].offset);
+> > -}
+> > -
+> > -static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
+> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ads8688_show_scales, NULL, 0);
+> > -static IIO_DEVICE_ATTR(in_voltage_offset_available, S_IRUGO,
+> > -		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 ads8688_show_offsets, NULL, 0);
+> > -
+> > -static struct attribute *ads8688_attributes[] =3D {
+> > -	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+> > -	&iio_dev_attr_in_voltage_offset_available.dev_attr.attr,
+> > -	NULL,
+> > -};
+> > -
+> > -static const struct attribute_group ads8688_attribute_group =3D {
+> > -	.attrs =3D ads8688_attributes,
+> > +static const int ads8688_offset_avail[] =3D {
+> > +	-(1 << (ADS8688_REALBITS - 1)),
+> > +	0,
+> > =C2=A0};
+> > =C2=A0
+> > =C2=A0#define ADS8688_CHAN(index)					\
+> > @@ -155,6 +126,9 @@ static const struct attribute_group ads8688_attribu=
+te_group =3D {
+> > =C2=A0	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW)		\
+> > =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | BIT(IIO_CHAN_INFO_SCALE)	\
+> > =C2=A0			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | BIT(IIO_CHAN_INFO_OFFSET),	\
+> > +	.info_mask_shared_by_type_available =3D			\
+> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 BIT(IIO_CHAN_INFO_SCALE)		\
+> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 | BIT(IIO_CHAN_INFO_OFFSET),	\
+> > =C2=A0	.scan_index =3D index,					\
+> > =C2=A0	.scan_type =3D {						\
+> > =C2=A0		.sign =3D 'u',					\
+> > @@ -369,11 +343,34 @@ static int ads8688_write_raw_get_fmt(struct iio_d=
+ev *indio_dev,
+> > =C2=A0	return -EINVAL;
+> > =C2=A0}
+> > =C2=A0
+> > +static int ads8688_read_avail(struct iio_dev *indio_dev,
+> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *chan,
+> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 const int **vals, int *type, int *le=
+ngth,
+> > +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 long mask)
+> > +{
+> > +	struct ads8688_state *st =3D iio_priv(indio_dev);
+> > +
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_SCALE:
+> > +		*vals =3D (const int *)st->scale_avail;
+> > +		*type =3D IIO_VAL_INT_PLUS_NANO;
+> > +		*length =3D ARRAY_SIZE(st->scale_avail) * 2;
+> > +		return IIO_AVAIL_LIST;
+> > +	case IIO_CHAN_INFO_OFFSET:
+> > +		*vals =3D ads8688_offset_avail;
+> > +		*type =3D IIO_VAL_INT;
+> > +		*length =3D ARRAY_SIZE(ads8688_offset_avail);
+> > +		return IIO_AVAIL_LIST;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +}
+> > +
+> > =C2=A0static const struct iio_info ads8688_info =3D {
+> > =C2=A0	.read_raw =3D &ads8688_read_raw,
+> > +	.read_avail =3D &ads8688_read_avail,
+> > =C2=A0	.write_raw =3D &ads8688_write_raw,
+> > =C2=A0	.write_raw_get_fmt =3D &ads8688_write_raw_get_fmt,
+> > -	.attrs =3D &ads8688_attribute_group,
+> > =C2=A0};
+> > =C2=A0
+> > =C2=A0static irqreturn_t ads8688_trigger_handler(int irq, void *p)
+> > @@ -412,7 +409,7 @@ static int ads8688_probe(struct spi_device *spi)
+> > =C2=A0{
+> > =C2=A0	struct ads8688_state *st;
+> > =C2=A0	struct iio_dev *indio_dev;
+> > -	int ret;
+> > +	int ret, i;
 >=20
-> The CNV Burst Mode sampling frequency (PWM period) is exposed as a
-> buffer-level attribute via IIO_DEVICE_ATTR.
+> These days you could just declare i in the for() loop and make it
+> unsigned int.
 >=20
-> Signed-off-by: Radu Sabau <radu.sabau@analog.com>
-> ---
-> =C2=A0drivers/iio/adc/Kconfig=C2=A0 |=C2=A0=C2=A0 2 +
-> =C2=A0drivers/iio/adc/ad4691.c | 584 ++++++++++++++++++++++++++++++++++++=
-+++++++++--
-> =C2=A02 files changed, 571 insertions(+), 15 deletions(-)
+> > =C2=A0
+> > =C2=A0	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> > =C2=A0	if (indio_dev =3D=3D NULL)
+> > @@ -426,6 +423,12 @@ static int ads8688_probe(struct spi_device *spi)
+> > =C2=A0
+> > =C2=A0	st->vref_mv =3D ret =3D=3D -ENODEV ? ADS8688_VREF_MV : ret / 100=
+0;
+> > =C2=A0
+> > +	for (i =3D 0; i < ARRAY_SIZE(st->scale_avail); i++) {
+> > +		st->scale_avail[i][0] =3D 0;
+> > +		st->scale_avail[i][1] =3D ads8688_range_def[i].scale *
+> > +					st->vref_mv;
+> > +	}
 >=20
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 3685a03aa8dc..d498f16c0816 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -142,6 +142,8 @@ config AD4170_4
-> =C2=A0config AD4691
-> =C2=A0	tristate "Analog Devices AD4691 Family ADC Driver"
-> =C2=A0	depends on SPI
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> =C2=A0	select REGMAP
-> =C2=A0	help
-> =C2=A0	=C2=A0 Say yes here to build support for Analog Devices AD4691 Fam=
-ily MuxSAR
-> diff --git a/drivers/iio/adc/ad4691.c b/drivers/iio/adc/ad4691.c
-> index 5e02eb44ca44..db776de32846 100644
-> --- a/drivers/iio/adc/ad4691.c
-> +++ b/drivers/iio/adc/ad4691.c
-> @@ -9,9 +9,12 @@
-> =C2=A0#include <linux/delay.h>
-> =C2=A0#include <linux/device.h>
-> =C2=A0#include <linux/err.h>
-> +#include <linux/interrupt.h>
-> =C2=A0#include <linux/math.h>
-> =C2=A0#include <linux/module.h>
-> =C2=A0#include <linux/mod_devicetable.h>
-> +#include <linux/property.h>
-> +#include <linux/pwm.h>
-> =C2=A0#include <linux/regmap.h>
-> =C2=A0#include <linux/regulator/consumer.h>
-> =C2=A0#include <linux/reset.h>
-> @@ -19,7 +22,12 @@
-> =C2=A0#include <linux/units.h>
-> =C2=A0#include <linux/unaligned.h>
-> =C2=A0
-> +#include <linux/iio/buffer.h>
-> =C2=A0#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> =C2=A0
-> =C2=A0#define AD4691_VREF_uV_MIN			2400000
-> =C2=A0#define AD4691_VREF_uV_MAX			5250000
-> @@ -28,6 +36,8 @@
-> =C2=A0#define AD4691_VREF_3P3_uV_MAX			3750000
-> =C2=A0#define AD4691_VREF_4P096_uV_MAX		4500000
-> =C2=A0
-> +#define AD4691_CNV_DUTY_CYCLE_NS		380
-> +
-> =C2=A0#define AD4691_SPI_CONFIG_A_REG			0x000
-> =C2=A0#define AD4691_SW_RESET				(BIT(7) | BIT(0))
-> =C2=A0
+> Even though the above crosses the column preferred limit, I don't think
+> the line break hurts readability.=20
 
-...
-
->=20
-> +static int ad4691_cnv_burst_buffer_preenable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad4691_state *st =3D iio_priv(indio_dev);
-> +	struct device *dev =3D regmap_get_device(st->regmap);
-> +	struct spi_device *spi =3D to_spi_device(dev);
-> +	unsigned int n_active =3D hweight_long(*indio_dev->active_scan_mask);
-> +	unsigned int bit, k, i;
-> +	int ret;
-> +
-> +	st->scan_devm_group =3D devres_open_group(dev, NULL, GFP_KERNEL);
-> +	if (!st->scan_devm_group)
-> +		return -ENOMEM;
-
-Agree with Jonathan. Not seeing a valid reason for the above.
-
-> +
-> +	st->scan_xfers =3D devm_kcalloc(dev, 2 * n_active, sizeof(*st->scan_xfe=
-rs),
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 GFP_KERNEL);
-> +	st->scan_tx =3D devm_kcalloc(dev, n_active, sizeof(*st->scan_tx),
-> +				=C2=A0=C2=A0 GFP_KERNEL);
-> +	st->scan_rx =3D devm_kcalloc(dev, n_active, sizeof(*st->scan_rx),
-> +				=C2=A0=C2=A0 GFP_KERNEL);
-> +	if (!st->scan_xfers || !st->scan_tx || !st->scan_rx) {
-> +		devres_release_group(dev, st->scan_devm_group);
-> +		return -ENOMEM;
-> +	}
-> +
-> +	spi_message_init(&st->scan_msg);
-> +
-> +	/*
-> +	 * Each AVG_IN read needs two transfers: a 2-byte address write phase
-> +	 * followed by a 2-byte data read phase. CS toggles between channels
-> +	 * (cs_change=3D1 on the read phase of all but the last channel).
-> +	 */
-> +	k =3D 0;
-> +	iio_for_each_active_channel(indio_dev, i) {
-> +		st->scan_tx[k] =3D cpu_to_be16(0x8000 | AD4691_AVG_IN(i));
-> +		st->scan_xfers[2 * k].tx_buf =3D &st->scan_tx[k];
-> +		st->scan_xfers[2 * k].len =3D sizeof(__be16);
-> +		spi_message_add_tail(&st->scan_xfers[2 * k], &st->scan_msg);
-> +		st->scan_xfers[2 * k + 1].rx_buf =3D &st->scan_rx[k];
-> +		st->scan_xfers[2 * k + 1].len =3D sizeof(__be16);
-> +		if (k < n_active - 1)
-> +			st->scan_xfers[2 * k + 1].cs_change =3D 1;
-> +		spi_message_add_tail(&st->scan_xfers[2 * k + 1], &st->scan_msg);
-> +		k++;
-> +	}
-> +
-> +	devres_close_group(dev, st->scan_devm_group);
-> +
-> +	st->scan_msg.spi =3D spi;
-> +
-> +	ret =3D spi_optimize_message(spi, &st->scan_msg);
-> +	if (ret) {
-> +		devres_release_group(dev, st->scan_devm_group);
-> +		return ret;
-> +	}
-> +
-> +	ret =3D regmap_write(st->regmap, AD4691_ACC_MASK_REG,
-> +			=C2=A0=C2=A0 (u16)~(*indio_dev->active_scan_mask));
-> +	if (ret)
-> +		goto err;
-> +
-> +	ret =3D regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
-> +			=C2=A0=C2=A0 *indio_dev->active_scan_mask);
-> +	if (ret)
-> +		goto err;
-> +
-> +	iio_for_each_active_channel(indio_dev, bit) {
-> +		ret =3D regmap_write(st->regmap, AD4691_ACC_COUNT_LIMIT(bit),
-> +				=C2=A0=C2=A0 AD4691_ACC_COUNT_VAL);
-> +		if (ret)
-> +			goto err;
-> +	}
-> +
-> +	ret =3D ad4691_enter_conversion_mode(st);
-> +	if (ret)
-> +		goto err;
-> +
-> +	ret =3D ad4691_sampling_enable(st, true);
-> +	if (ret)
-> +		goto err;
-> +
-> +	enable_irq(st->irq);
-> +	return 0;
-> +err:
-> +	spi_unoptimize_message(&st->scan_msg);
-> +	devres_release_group(dev, st->scan_devm_group);
-> +	return ret;
-> +}
-> +
-> +static int ad4691_cnv_burst_buffer_postdisable(struct iio_dev *indio_dev=
-)
-> +{
-> +	struct ad4691_state *st =3D iio_priv(indio_dev);
-> +	struct device *dev =3D regmap_get_device(st->regmap);
-> +	int ret;
-> +
-> +	disable_irq(st->irq);
-
-Should we use disable_irq_sync()?
-> +
-> +	ret =3D ad4691_sampling_enable(st, false);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret =3D regmap_write(st->regmap, AD4691_STD_SEQ_CONFIG,
-> +			=C2=A0=C2=A0 AD4691_SEQ_ALL_CHANNELS_OFF);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret =3D ad4691_exit_conversion_mode(st);
-> +	spi_unoptimize_message(&st->scan_msg);
-> +	devres_release_group(dev, st->scan_devm_group);
-> +	return ret;
-> +}
-> +
-> +static const struct iio_buffer_setup_ops ad4691_cnv_burst_buffer_setup_o=
-ps =3D {
-> +	.preenable =3D &ad4691_cnv_burst_buffer_preenable,
-> +	.postdisable =3D &ad4691_cnv_burst_buffer_postdisable,
-> +};
-> +
-> +static ssize_t sampling_frequency_show(struct device *dev,
-> +					struct device_attribute *attr,
-> +					char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct ad4691_state *st =3D iio_priv(indio_dev);
-> +
-> +	if (st->manual_mode)
-> +		return -ENODEV;
-
-Can the above happen at all? I think you're making sure (at probe) this int=
-erface
-never get's exposed in manual mode.
-
-> +
-> +	return sysfs_emit(buf, "%u\n", (u32)(NSEC_PER_SEC / st->cnv_period_ns))=
-;
-> +}
-> +
-> +static ssize_t sampling_frequency_store(struct device *dev,
-> +					 struct device_attribute *attr,
-> +					 const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct ad4691_state *st =3D iio_priv(indio_dev);
-> +	int freq, ret;
-> +
-> +	if (st->manual_mode)
-> +		return -ENODEV;
-> +
-> +	ret =3D kstrtoint(buf, 10, &freq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	ret =3D ad4691_set_pwm_freq(st, freq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return len;
-> +}
-> +
-> +static IIO_DEVICE_ATTR(sampling_frequency, 0644,
-> +		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sampling_frequency_show,
-> +		=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 sampling_frequency_store, 0);
-> +
-> +static const struct iio_dev_attr *ad4691_buffer_attrs[] =3D {
-> +	&iio_dev_attr_sampling_frequency,
-> +	NULL,
-> +};
-> +
-> +static irqreturn_t ad4691_irq(int irq, void *private)
-> +{
-> +	struct iio_dev *indio_dev =3D private;
-> +	struct ad4691_state *st =3D iio_priv(indio_dev);
-> +
-> +	/*
-> +	 * GPx has asserted: stop conversions before reading so the
-> +	 * accumulator does not continue sampling while the trigger handler
-> +	 * processes the data. Then fire the IIO trigger to push the sample
-> +	 * to the buffer.
-> +	 */
-> +	ad4691_sampling_enable(st, false);
-> +	iio_trigger_poll(st->trig);
-
-Not sure you need to save trig in your struct. We already have it in indio_=
-dev->trig. Sure,
-it is a private member but still fairly common to see (this patch included)=
-:
-
-indio_dev->trig =3D iio_trigger_get(trig);
-
-So I would say we either assume it's public or start to not allow the above
-pattern.
-
-Alternatively, I don't think you're using indio_dev driverdata right? Could=
- save it
-in there.
-
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static const struct iio_trigger_ops ad4691_trigger_ops =3D {
-> +	.validate_device =3D iio_trigger_validate_own_device,
-> +};
-> +
-> +static irqreturn_t ad4691_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf =3D p;
-> +	struct iio_dev *indio_dev =3D pf->indio_dev;
-> +	struct ad4691_state *st =3D iio_priv(indio_dev);
-> +	unsigned int i, k =3D 0;
-> +	int ret;
-> +
-> +	guard(mutex)(&st->lock);
-> +
-> +	ret =3D spi_sync(st->scan_msg.spi, &st->scan_msg);
-> +	if (ret)
-> +		goto done;
-> +
-> +	if (st->manual_mode) {
-> +		iio_for_each_active_channel(indio_dev, i) {
-> +			st->scan.vals[i] =3D be16_to_cpu(st->scan_rx[k + 1]);
-> +			k++;
-> +		}
-> +	} else {
-> +		iio_for_each_active_channel(indio_dev, i) {
-> +			st->scan.vals[i] =3D be16_to_cpu(st->scan_rx[k]);
-> +			k++;
-> +		}
-> +
-> +		ret =3D regmap_write(st->regmap, AD4691_STATE_RESET_REG,
-> +				=C2=A0=C2=A0 AD4691_STATE_RESET_ALL);
-> +		if (ret)
-> +			goto done;
-> +
-> +		ret =3D ad4691_sampling_enable(st, true);
-> +		if (ret)
-> +			goto done;
-> +	}
-> +
-> +	iio_push_to_buffers_with_ts(indio_dev, &st->scan, sizeof(st->scan),
-> +				=C2=A0=C2=A0=C2=A0 pf->timestamp);
-> +
-> +done:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	return IRQ_HANDLED;
-> +}
-> +
-> =C2=A0static const struct iio_info ad4691_info =3D {
-> =C2=A0	.read_raw =3D &ad4691_read_raw,
-> =C2=A0	.write_raw =3D &ad4691_write_raw,
-> @@ -495,6 +934,25 @@ static const struct iio_info ad4691_info =3D {
-> =C2=A0	.debugfs_reg_access =3D &ad4691_reg_access,
-> =C2=A0};
-> =C2=A0
-> +static int ad4691_pwm_setup(struct ad4691_state *st)
-> +{
-> +	struct device *dev =3D regmap_get_device(st->regmap);
-> +	int ret;
-> +
-> +	st->conv_trigger =3D devm_pwm_get(dev, "cnv");
-> +	if (IS_ERR(st->conv_trigger))
-> +		return dev_err_probe(dev, PTR_ERR(st->conv_trigger),
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to get cnv pwm\n");
-> +
-> +	ret =3D devm_add_action_or_reset(dev, ad4691_disable_pwm,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 st->conv_trigger);
-
-This is a suspicious pattern. But I do see it's used like this in more plac=
-es and it's a no-op
-if PWM is already disabled. Still, not sure if agree with this kind "unbala=
-nced" handling.
-
-> +	if (ret)
-> +		return dev_err_probe(dev, ret,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to register PWM disable action\n");
-> +
-> +	return ad4691_set_pwm_freq(st, st->info->max_rate);
-> +}
-> +
-> =C2=A0static int ad4691_regulator_setup(struct ad4691_state *st)
-> =C2=A0{
-> =C2=A0	struct device *dev =3D regmap_get_device(st->regmap);
-> @@ -555,12 +1013,30 @@ static int ad4691_reset(struct ad4691_state *st)
-> =C2=A0	return 0;
-> =C2=A0}
-> =C2=A0
-> -static int ad4691_config(struct ad4691_state *st)
-> +static int ad4691_config(struct ad4691_state *st, u32 max_speed_hz)
-
-My eyes might be failing me but where is 'max_speed_hz' used?
-
-
-> =C2=A0{
-> =C2=A0	struct device *dev =3D regmap_get_device(st->regmap);
-> =C2=A0	enum ad4691_ref_ctrl ref_val;
-> +	const char *irq_name;
-> +	unsigned int gp_num;
-> =C2=A0	int ret;
-> =C2=A0
-> +	/*
-> +	 * Determine buffer conversion mode from DT: if a PWM is provided it
-> +	 * drives the CNV pin (CNV_BURST_MODE); otherwise CNV is tied to CS
-> +	 * and each SPI transfer triggers a conversion (MANUAL_MODE).
-> +	 * Both modes idle in AUTONOMOUS mode so that read_raw can use the
-> +	 * internal oscillator without disturbing the hardware configuration.
-> +	 */
-> +	if (device_property_present(dev, "pwms")) {
-> +		st->manual_mode =3D false;
-> +		ret =3D ad4691_pwm_setup(st);
-> +		if (ret)
-> +			return ret;
-> +	} else {
-> +		st->manual_mode =3D true;
-> +	}
-> +
-> =C2=A0	switch (st->vref_uV) {
-> =C2=A0	case AD4691_VREF_uV_MIN ... AD4691_VREF_2P5_uV_MAX:
-> =C2=A0		ref_val =3D AD4691_VREF_2P5;
-> @@ -595,17 +1071,91 @@ static int ad4691_config(struct ad4691_state *st)
-> =C2=A0		return dev_err_probe(dev, ret, "Failed to write DEVICE_SETUP\n");
-> =C2=A0
-> =C2=A0	/*
-> -	 * Set the internal oscillator to the highest valid rate for this chip.
-> -	 * Index 0 (1 MHz) is valid only for AD4692/AD4694; AD4691/AD4693 start
-> -	 * at index 1 (500 kHz).
-> +	 * Set the internal oscillator to the highest rate this chip supports.
-> +	 * Index 0 (1 MHz) exceeds the 500 kHz max of AD4691/AD4693, so those
-> +	 * chips start at index 1 (500 kHz).
-> =C2=A0	 */
-> =C2=A0	ret =3D regmap_write(st->regmap, AD4691_OSC_FREQ_REG,
-> -			=C2=A0=C2=A0 (st->info->max_rate =3D=3D HZ_PER_MHZ) ? 0 : 1);
-> +			=C2=A0=C2=A0 (ad4691_osc_freqs[0] > st->info->max_rate) ? 1 : 0);
-
-Does this belong to this commit?
-
-> =C2=A0	if (ret)
-> =C2=A0		return dev_err_probe(dev, ret, "Failed to write OSC_FREQ\n");
-> =C2=A0
-> =C2=A0	/* Device always operates in AUTONOMOUS mode. */
-> -	return regmap_write(st->regmap, AD4691_ADC_SETUP, AD4691_AUTONOMOUS_MOD=
-E_VAL);
-> +	ret =3D regmap_write(st->regmap, AD4691_ADC_SETUP, AD4691_AUTONOMOUS_MO=
-DE);
-> +	if (ret)
-> +		return dev_err_probe(dev, ret, "Failed to write ADC_SETUp\n");
-> +
-> +	if (st->manual_mode)
-> +		return 0;
-> +
-> +	ret =3D device_property_read_string_array(dev, "interrupt-names",
-> +						&irq_name, 1);
-> +	if (ret < 0)
-> +		return dev_err_probe(dev, ret,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Failed to read interrupt-names\n");
-> +
-> +	if (strncmp(irq_name, "gp", 2) !=3D 0 ||
-> +	=C2=A0=C2=A0=C2=A0 kstrtouint(irq_name + 2, 10, &gp_num) || gp_num > 3)
-> +		return dev_err_probe(dev, -EINVAL,
-> +				=C2=A0=C2=A0=C2=A0=C2=A0 "Invalid interrupt name '%s'\n", irq_name);
-> +
-
-I would likely prefer something like [1] rather than the string parsing.
-
-[1]: https://elixir.bootlin.com/linux/v7.0-rc5/source/drivers/iio/imu/adis1=
-6480.c#L1582
+Naturally I meant that the line break __hurts__ (to me at least :))
 
 - Nuno S=C3=A1
-
+>=20
+> - Nuno S=C3=A1
+> >=20
