@@ -1,109 +1,109 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A6D87275AFD;
-	Tue, 24 Mar 2026 12:17:15 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CC5933E0224
+	for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 12:20:03 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774354637; cv=none; b=VGXYdS0lLvmoYjaPArl6OwYCZ4NVzgz4dOm45+AkEL4AobJYhc4HAlvqOp7UWf8D9k09gnEfluoS0diH84E8PApp/iq/YK/RldmVEZOPb3oAG1r1VVv3S0dZ0dsrMEuEj6jUSxAGb4dqoOlHo/b2UFGujB/XS+/XyAAAGHiAOTE=
+	t=1774354805; cv=none; b=IsJ9Ouw5DYjXkQlQvNJrbD9OvNTYLxOV9kvgKQFbJcic2Clts8zOyIJmHDP8b33pa05iRaKf+Nhl6p/T5fi5FEZNtvlsf/LsN6V3Xqy8XnxVoByuWDkvYZyDaZo6684ehwBiXcl7NEi8KLQrW9Dg/hz2Vnkb/FEhd+oIQ8C8z6g=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774354637; c=relaxed/simple;
-	bh=EeNKUcc+UstYrxCT3YVrGgDkq/aCvxIDxvmk7IPO/os=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dmUDyA2BFfXUs2Q0FymZIGGLdwIWj70kQ+rln1aqx/+8bs4ELDytkyzQgk/K0zToXG0VFcgzmN4Ro/XjVsJvmGLOeL73+evpHHleoKoGggOXAwErGw/xVpARdlZQOcOxAFnEJPCwdWeVWjy5YIDpDTJYeK5jY0OVNZIs4Wy86C0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=cg408YMX; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1774354805; c=relaxed/simple;
+	bh=GuqqBIfeWAwrMihNMcO1RBag4cy/713ffU8ACJsVy8E=;
+	h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
+	 MIME-Version; b=QP1Q/11aiUN6RtCiE5v0b8aWoNUi5f9Le80nLrpMrU+GAh2/LOTbxi6PH9lSawqjdNhl7nl8hQ2pQj/rF3C086DRMqMBLBsXZbiumcYu8YdwpRtn7jDhpLldGmOMp+kQOZZDaLsudAGGIIf9mx8D8+FP6zV8QE3ngetzmm5qpvs=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=rvsfnG9u; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="cg408YMX"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774354636; x=1805890636;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=EeNKUcc+UstYrxCT3YVrGgDkq/aCvxIDxvmk7IPO/os=;
-  b=cg408YMX4By9+63aoJfmmkfuwDxXl3j0iWnRnAsIYSMMogVCOkuCOiUp
-   ImLmcLXn91KPkr1YmsieQ9uUYZStiZHx3o6HKkWOGuWfZhGi41DqoxpBo
-   iynggYYzMAAeKHyKiysny/d2mLJROol7k7Fs4YMmCho2okmSYSizTE8rM
-   IBRc6/W01Wkxk3FEQnQlBfy68ISESN8RXQ3hpu8aAVDD3jHVMQRy/R128
-   a/L2LTTzTRepRYUgKqdbRSQIB8uQ+jbvIimsfQ/DARM1t48FV0a36ycw4
-   J+V6MLKHLQNHFA0F8eXdpIqAjs6bQgcNdjuIb2QrsdvsGQXBpYJSjdXlV
-   g==;
-X-CSE-ConnectionGUID: 62yh7g+uSSmyW82F935OBQ==
-X-CSE-MsgGUID: qsvdrqr1Q/mOhlsj5NQygg==
-X-IronPort-AV: E=McAfee;i="6800,10657,11738"; a="92746740"
-X-IronPort-AV: E=Sophos;i="6.23,138,1770624000"; 
-   d="scan'208";a="92746740"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2026 05:17:15 -0700
-X-CSE-ConnectionGUID: JpPVZz7KQQ+HW3YlnhqMww==
-X-CSE-MsgGUID: x5pr3EyXS2Wwz6DgRxv/Cw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,138,1770624000"; 
-   d="scan'208";a="217760557"
-Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.214])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2026 05:17:13 -0700
-Date: Tue, 24 Mar 2026 14:17:11 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Francesco Lavra <flavra@baylibre.com>
-Cc: Lorenzo Bianconi <lorenzo@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rvsfnG9u"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-486ff3a0fc1so33042925e9.2
+        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 05:20:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774354802; x=1774959602; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=GuqqBIfeWAwrMihNMcO1RBag4cy/713ffU8ACJsVy8E=;
+        b=rvsfnG9ut3wLkh5gwA0zQsIVUi8L4jzx/gChLSp5b1lXSwp5e7I68S+DhVv8FnqidU
+         1TjgBjvu32+BkTL9Je7oEZbYPHlqBMtFdUdD2Gscrn6jFPfZinUlj5VM1H+ax9OMPIH+
+         BhcPynZFiJIwRph2f+okwfMfNWKOPjv3k1R4klP9F/30sZ7CDrnK/S78pmAXZ6H0fFco
+         c3JfQYgCIMPPE/JRd8OJI1nKZ3ieGtbbp+Fn/GsIlTc2/38+9DO+TnJ27BIUIYzr9fBo
+         vu+r5ZOOCAMFXGVh8dYn2eLaJrznf2ZxaXBYi2OktQiBAIT+2Gvxb8oCTq7C8CWDGtAM
+         jcNg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774354802; x=1774959602;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=GuqqBIfeWAwrMihNMcO1RBag4cy/713ffU8ACJsVy8E=;
+        b=ksM+7Ko704o0p/m4lywqSevQt0D+zjfxWeFsR+svxKzg4ZWnjYmaGEo4w0RBVfm/Bw
+         oHf7IY5eJnuSmk/U5UTD3ySexDA1OcwT6GGmE1JGEXqiqYED7fs/pFqJuegvsA5OGDNP
+         5Nk6whVnFru/6wKm2J2tL/R87bsx6R+11QS0wxqhbqqN4IQ5Dfhq9K/3foISkCrwg6Fy
+         riLjDgKYE7kAnRf/f25Jw8aVMghx5Yshko/115trewRlQKS6GsN7ef1BoMYGVOP6gjrG
+         M1+ijQJHJ6tzazigJdrJVw94N3w6v/1KobUXqz6oC5WGJ1ZyINKT+1Ymub5S5Y96aSXo
+         mIDQ==
+X-Forwarded-Encrypted: i=1; AJvYcCWR4i1DqfVx6RyT/C3WlQ4zZ/cnrEhoUXXiWt7H+B7w4ulY5hEyfVHcpO+IFfTw+9tO5Y/Ajrukiac=@vger.kernel.org
+X-Gm-Message-State: AOJu0YzLwgCjT9ZkrOyGDzmzP7XgQdfjos9QlMyHHHPqXcPpyoRsO27Q
+	EOSdqGJ5l67DZG90DFhETyG9vjSOLZik8CVzQYyXwULmBLIgp4zjRvXi3EELKdPFo3I=
+X-Gm-Gg: ATEYQzz7wdyRQU0w7RCdz1AR8XD6Nj7p8O6/u70NfmEiOQAbiA0i0ElOjbqzWmPkLqy
+	FwfQkheVQoHbQSAYT4yiie2fbPNjByu/IpGGPDV+NQKrTQ5hwWxq/8dP7zbtOaNh/85AO8Dl1fF
+	Qnl4WPmJboudoiqqZGLKCmOD52QniPWjpGQ2EenMjFhOBVdQdWqU3gZVcdM4G8SuiBO16a7R226
+	I/w8cF79FA2Ynt4uOwhF8eD7frasyv1xtRVTpP7e1zt7Fg378/adqtm0eKQyBhNJ8R7By9fKuWA
+	gkGdPSjoEhcD3kIn3ICHTffB2GaQA4hExbVKKV2ym2maiCziFftZ5/7e+Zs7gBTdSuZ2573s9l1
+	ctlCdgyUvAjrLGvqW26ZIHOhvO4FEBvb1N19I4RKfcsmyhtIGqbP36nuXsqwTRQIo7kR/rzbDp5
+	S4LvmQr1IrB9Sof7ZQK4wDSOjqSML6nFsBZaUcGn3ke4PGcEhOBdIDlRUaHLgLuQ==
+X-Received: by 2002:a05:600c:3d97:b0:486:fa35:aef2 with SMTP id 5b1f17b1804b1-486febb5989mr223615895e9.4.1774354801994;
+        Tue, 24 Mar 2026 05:20:01 -0700 (PDT)
+Received: from localhost.localdomain ([2001:8a0:6c9b:a000:e561:a158:b78:a92e])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48710fa0e35sm43400685e9.3.2026.03.24.05.19.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Mar 2026 05:20:00 -0700 (PDT)
+From: Gabriel Rondon <grondon@gmail.com>
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	Nuno Sa <nuno.sa@analog.com>,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v9 1/6] iio: imu: st_lsm6dsx: Fix check for invalid
- samples from FIFO
-Message-ID: <acKAx34s1MStfy3G@ashevche-desk.local>
-References: <20260324084655.653781-1-flavra@baylibre.com>
- <20260324084733.653906-1-flavra@baylibre.com>
+Subject: Re: [PATCH] iio: adc: ti-ads8688: use read_avail for available attributes
+Date: Tue, 24 Mar 2026 12:19:57 +0000
+Message-Id: <20260324121957.75404-1-grondon@gmail.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <acJ4sPoX_UqorDXS@ashevche-desk.local>
+References: <acJ4sPoX_UqorDXS@ashevche-desk.local>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260324084733.653906-1-flavra@baylibre.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+Content-Transfer-Encoding: 8bit
 
-On Tue, Mar 24, 2026 at 09:47:33AM +0100, Francesco Lavra wrote:
-> The DRDY_MASK feature implemented in sensor chips marks gyroscope and
-> accelerometer invalid samples (i.e. samples that have been acquired during
-> the settling time of sensor filters) with the special values 0x7FFFh,
-> 0x7FFE, and 0x7FFD.
-> The driver checks FIFO samples against these special values in order to
-> discard invalid samples; however, it does the check regardless of the type
-> of samples being processed, whereas this feature is specific to gyroscope
-> and accelerometer data. This could cause valid samples to be discarded.
-> 
-> Fix the above check so that it takes into account the type of samples being
-> processed. To avoid casting to __le16 * when checking sample values, clean
-> up the type representation for data read from the FIFO.
+On Tue, 24 Mar 2026 13:42:40 +0200, Andy Shevchenko wrote:
+> This is fragile code (however it probably won't be exposed IRL)
+> if ADS8688_REALBITS == 32 this is UB in accordance with C standard.
+>
+> Also the trick with -BIT(x) is harder to read than simple GENMASK().
 
-...
+Good point. Will rework the expression in v2.
 
->  static int
->  st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
-> -			    u8 *data, s64 ts)
-> +			    __le16 *data, s64 ts)
+> Do not add trailing comma to a terminator.
 
-Dunno why this indentation, but if you need to send a new version, consider
+Will fix.
 
-static int st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
-				       __le16 *data, s64 ts)
+> This is actually slightly different style to what is put in the above.
+> Ideally should be unified, but probably matter for another change
 
-OR
+Agreed, will leave for a separate change.
 
-static int
-st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag, __le16 *data, s64 ts)
+> Why is 'i' signed?
 
-(yes, the second one goes to 83 characters).
+Will declare as unsigned int in the for loop.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> I would leave this on a single line (it's only 81 characters).
 
+Will do.
 
+Thanks for the review.
+
+Gabriel
