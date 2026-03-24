@@ -1,139 +1,105 @@
-Received: from mail-yw1-f173.google.com (mail-yw1-f173.google.com [209.85.128.173])
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com [209.85.128.46])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 1519431F98A
-	for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 18:04:18 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.173
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id BDE5C283FEF
+	for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 19:38:54 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.46
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774375460; cv=none; b=Wc1XCt9l35pLw5jp3Mt/TvMlXV4yretE2hYFZyPDQBoooURCYX3FDSoEFxvmePQM5Jl493VbMEaGFMR6/snorei9vQygbhzd0B5LCNvaGO6aRmK3BTBZe8Y2N9lvf2WznaNy2orwIgjFrhoOUPm9UHL/ah0hzSHJo8X4mUvgHd8=
+	t=1774381136; cv=none; b=Oiq8z5Iddr/sekH8hepBfNujKsN5rpIKMh+pm7m6NIq2l/owuy1wuwHrFO3ko9BG1p9JqDym8KMVwJRQ9wMIrkFIbSKbiPCa/fZCf9WJxY8/EUWB5K+QktQiu3EhvRscX4tgMmebDeNcHGdO74fEObJoGmJt8FTM5vb8otJd8rg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774375460; c=relaxed/simple;
-	bh=DqpRarMkcjYJnQFn7d42wtThvbJ7HIf2d50RwTXnK58=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=OwWdv+49eU7RzkFTGqr9DvHdiQ1Qm8ARfpGrF7byG79dFE81aeRk3g1rfJBB0A0WQtJU+laivbpmq37rMM0SsdF987n8WdPJ3/7REXttt6Agj8t8h/5+hpAk3MN8/8saiKrOAmmfnNppdAn7PacNwqNvro2x56nDPIpOk1SQ4p0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.173
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
+	s=arc-20240116; t=1774381136; c=relaxed/simple;
+	bh=cscqrZnzpkMAgjJVuIb9Y9gEYIIdtCV+T1lp5zPSGnE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=UUxnmjgPdYJWZbIDaDhMd35QFJAaRONWyToBL1icNct4s07Ch9CpiBUIm//ZdmVPdS7bgdHFHzhbyl1J/DAVsw3rZwDH3GjLG5cjSWH9/2hf1wO/fz6WHu5uPyPUTAcX8KV7CFwR/9gUus+x5oc+74OcLGLe8dEGn2uaOkFX/xM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=O8RttVaS; arc=none smtp.client-ip=209.85.128.46
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yw1-f173.google.com with SMTP id 00721157ae682-79a46260385so17719697b3.3
-        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 11:04:18 -0700 (PDT)
+Authentication-Results: smtp.subspace.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O8RttVaS"
+Received: by mail-wm1-f46.google.com with SMTP id 5b1f17b1804b1-486b9675d36so47398625e9.0
+        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 12:38:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774381133; x=1774985933; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=nLg9qfVDz+TYTt33jHtLD4fAgojMn/cehyZVkxLC8is=;
+        b=O8RttVaSjxOjIcAe741QxE/aP6X/SbSmwZW5+aq5fLMe2mRoBJTGNq5HboHkDSIGX8
+         Bki2cnx+X4Rhiukp4+WnGgtAG1XpeBQX6BAnBmgC9GzTxTCTJi0YYJSat7K/F3n+vvVA
+         EwftNIoLzOuQzc2oaHDb5h4/YYziuqz4LReBjJh6Bx6didtYZmrTcoAd9ww5JbLJSekg
+         Ft+aCIMDNplM3HrUXOSGCvm8IcAwdC8XACE4stlWGo0KhpMNxWjLNkizvBS56wmNM9TB
+         KdNelDW341kDPRtXPhlntaouZK5Mv67PZAOyX2vxArWvWVfsmQ6exuuYMBXMWqTRUvMr
+         +1rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774375458; x=1774980258;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=DqpRarMkcjYJnQFn7d42wtThvbJ7HIf2d50RwTXnK58=;
-        b=BrSzu5mn1NKOUIAzmr+Q12XAlQIXxj3TXTQwh5diwlzbdFNWhBw74w+A3pelgOdtxA
-         GizbuTm5I48Sl0Ygaic/J3HsMGbvClAJuwXzWXZuVnGhOnvQgitHHNziiPV2ThbdN8iI
-         WGdSt6f3Wytkt9WA0JNsa9Q6v371OmUFL5ly7p6gh1Is8neLIZvhWkTYStho7Kn2kdPs
-         7/w6dJ2lg7XuXUvezg75TReaNgzQVuQKqlaHwODLQsmP33dznj3rWLgDbE/cY3ns8MkJ
-         LF5g/Z5LnTXLHn+x01LYfkY/ajf8WN2Uk0CfhGaLTJH7C6gnO7+UF4n4bPnnFSGLCdjf
-         SWuQ==
-X-Forwarded-Encrypted: i=1; AJvYcCVGvVXcfmPNlo0Xg5LTtR2The+tKFTkgu0P+b2d5mBF+wr2UVPakg6ebrn+hSew2HDvk78wK8CWSVs=@vger.kernel.org
-X-Gm-Message-State: AOJu0YwTBtKlTIjgXtuGQMjLObBv1CRwM6XwWdonLc2QsrR2A5UpmXw5
-	/dZOrTyN4Shuv2+xi23qCpGzgh05K1K7cyz9SlWH7KzdeJnEfo1VikG4EV4mr+by
-X-Gm-Gg: ATEYQzzTEfaKH55KXk8T2fleZq6vNnQLDenLGOE4b1bgHoV41P3BbNZFKTHzj1/UGTV
-	NpjUg3Sn2fmWbvLCoQqnfGF4PAwsZj8aVqXEg96gj8GyFFZMDlHCMfOnm0Sh74KTeuo/QlQ5Oip
-	samRzvMq3Zdn0NasIF2QHsPAZQ1EoIGzkyX/6M5K/zepv9DuGEpLiQmvSUGJkY7WaPXYDx7zU3A
-	ltGG99BGkjzmk4oAUwczNdKXgQTZzXza/tvBYh0cvJi0bLIE4gvVbz+Q7ajxElPY09F89bn1ivW
-	sjFgn9s+BzMuK2lI8Nuee2UzCoo4eqwkI7Mih51ht7IMX+kaB5r/0Ut+6967Bq7Q4otDN+pWeCZ
-	WPvvkjXPwqy6ylQOxq5xsw+yAnIkpvIiQ+qKRcEGePvY5uFblLq2IpkiA1QKOlL2zUtj2MNSpeT
-	M6b7ZROJV/23ytA7UNq7ZTP53hcvLjpdgWpCmtWzIt0GnbpPpOfDAvrueKf/C1XivETaUHXM/+m
-	pIr5k5LZWGnyw/6iRTUbIe70GPkH56xVQbsRxRZRg==
-X-Received: by 2002:a05:690c:c50a:b0:79a:5164:bb1f with SMTP id 00721157ae682-79acf374b17mr7098117b3.7.1774375457615;
-        Tue, 24 Mar 2026 11:04:17 -0700 (PDT)
-Received: from mail-yx1-f53.google.com (mail-yx1-f53.google.com. [74.125.224.53])
-        by smtp.gmail.com with ESMTPSA id 00721157ae682-79a903a5ac0sm76314957b3.9.2026.03.24.11.04.16
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 24 Mar 2026 11:04:16 -0700 (PDT)
-Received: by mail-yx1-f53.google.com with SMTP id 956f58d0204a3-64ae2ce2fe1so1747492d50.1
-        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 11:04:16 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCUwGly53EntE/95n4qnRktEBlY54lX234kPYSdylBTmic4emEnBqk1mZ4gkEAYxXzbE9qxEmTC/1DE=@vger.kernel.org
-X-Received: by 2002:a05:690e:434d:b0:64e:a30f:e67e with SMTP id
- 956f58d0204a3-64ee6166545mr392009d50.67.1774375456606; Tue, 24 Mar 2026
- 11:04:16 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1774381133; x=1774985933;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=nLg9qfVDz+TYTt33jHtLD4fAgojMn/cehyZVkxLC8is=;
+        b=QIt88VwULIvULAJ5W7Bm2KCnhkwmTlJP7541RpQfET2sU55gkjH4BdL/JqoXWPyIVG
+         vOIG0EQlTLQErCUxn2S+uURZgbROmkS1wr44wQoS7R4bqH4ZQZqKjN0f/nHCB9IZqOkt
+         RCaT3XTICJI3RDGAivnCDifu7Ssp8o3oTTe/fALXN5DE+Kjth5KgnMAQiHXOoAS0+Ix+
+         WblDVhYPuRq7XXW9zwkNRo5k2FonO1ejbb/HvtQCdKEMJ04P1kxLdOGBF5rCVG+QwugN
+         EqTbCiBJi007DNJW/W7jiperJJc/KMC6gdHhvRbJcReKI2ILhuPW9ZtxSyQSfKSVMtss
+         nFjg==
+X-Gm-Message-State: AOJu0Yzi41jQDZhhBfizabhSVW6mQa0bfHHnTItJa1A9LVpWfUbwv3eQ
+	zv+rV+qEZ0VSduxfPgpLXQgjy3I8bC6g88HHok5Cu5Lg0LReZCdQWPqkvoGkBR4r4Ig=
+X-Gm-Gg: ATEYQzy+nJ1jOVlJMvpsmNrT+bFAz6r52O7d/xGVYETZ/rbXASHrAAKEj2ogdeHfwOp
+	wfj/KiUFrHfMjRxQk7futPxmYyUvwSzM+/EQwHzC1j89OMQ/X0UHUsfCm9qKX6Om59PAxjCbFZ4
+	INh5MyGSMUinJQW2nrqOWUpLUE6aXgb2iLmNtLg4Zlbpt7vsdV7uC3ZuDJSaB6YeM/tGlu+gGzX
+	VejgkX+ebRtb7y+SfPptStAQh/IiSaVcWNLAVDvUVjdXFkBTSm3Wx2BPctfXtyMZah4+OJTKGAu
+	1dMHTRDEOTgy6Rm3CVN26lgOho/AdNO71TcZFQ1q8Dz8yQ0MUM5zhRM1uzzgGmjPgq9U0vKJvNn
+	yesK+zTbsFQUXdOi824FMzbvqvpPiXRKoyllQNeNtGxPcgrf7IkuBA78hu+tnpWZS3+mauJ/zCT
+	N1CUljzJEgVUl/qt7etg==
+X-Received: by 2002:a05:600c:1d0e:b0:485:3ec6:e634 with SMTP id 5b1f17b1804b1-48715febda2mr14974115e9.15.1774381132881;
+        Tue, 24 Mar 2026 12:38:52 -0700 (PDT)
+Received: from archlinux ([2a00:10:8f5a:ad01:2e5d:326:c17f:af98])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4871174f2desm92176815e9.9.2026.03.24.12.38.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Mar 2026 12:38:52 -0700 (PDT)
+From: Milan Misic <twoexem@gmail.com>
+To: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Cc: lorenzo@kernel.org,
+	jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	Milan Misic <twoexem@gmail.com>
+Subject: [PATCH] iio: imu: st_lsm6dsx: Add ACPI ID for SHIFT13mi gyroscope
+Date: Tue, 24 Mar 2026 20:36:26 +0100
+Message-ID: <20260324193626.77231-1-twoexem@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260319190738.151614-1-email@sirat.me> <20260319190738.151614-3-email@sirat.me>
- <8502eb51-53c9-4f1b-92d0-21b06fa4802e@baylibre.com> <CANn+LWJEJJoGQU7p2P2GrOcA_g2x7jEnvjcTJYG1hDRUnRw3UA@mail.gmail.com>
- <b1da32d2-e1f7-4fea-82a7-a40e8073a100@baylibre.com> <20260322110319.7d7558f3@jic23-huawei>
- <CANn+LWJwPUiCkz_godEeBvZnXEXzNmCW_-ou=wHL+kjfn0zF_Q@mail.gmail.com>
- <CANn+LW+OPP2riP1d=zZKz8MnTk2yo2CL3qn17_LYD=1SmCAQgw@mail.gmail.com> <c1d99a64-ea4e-4cd5-9b1e-0972a5e0d61c@baylibre.com>
-In-Reply-To: <c1d99a64-ea4e-4cd5-9b1e-0972a5e0d61c@baylibre.com>
-From: Sirat <email@sirat.me>
-Date: Wed, 25 Mar 2026 00:04:05 +0600
-X-Gmail-Original-Message-ID: <CANn+LW+aUhGRMJUmZ8um2uf=a+b1sUx7P3nruxeUbK7Z9ezOFg@mail.gmail.com>
-X-Gm-Features: AQROBzDXT9oI5nYjcAVZ-dcUoSSKziBDDF9I0zkXnoSwc36QQZqLk-uB4ApvdCs
-Message-ID: <CANn+LW+aUhGRMJUmZ8um2uf=a+b1sUx7P3nruxeUbK7Z9ezOFg@mail.gmail.com>
-Subject: Re: [PATCH v6 2/2] iio: proximity: add driver for ST VL53L1X ToF sensor
-To: David Lechner <dlechner@baylibre.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org, 
-	conor+dt@kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 
-On Tue, Mar 24, 2026 at 11:29=E2=80=AFPM David Lechner <dlechner@baylibre.c=
-om> wrote:
->
-> On 3/24/26 10:17 AM, Sirat wrote:
-> > On Sun, Mar 22, 2026 at 7:52=E2=80=AFPM Sirat <email@sirat.me> wrote:
-> >>
-> >> On Sun, Mar 22, 2026 at 5:03=E2=80=AFPM Jonathan Cameron <jic23@kernel=
-.org> wrote:
-> >>>
-> >>> On Sat, 21 Mar 2026 19:37:58 -0500
-> >>> David Lechner <dlechner@baylibre.com> wrote:
-> >>>
-> >>>> On 3/21/26 5:39 PM, Sirat wrote:
-> >>>>> On Sat, Mar 21, 2026 at 11:09=E2=80=AFPM David Lechner <dlechner@ba=
-ylibre.com> wrote:
-> >>>>>>
-> >>>>>> On 3/19/26 2:07 PM, Siratul Islam wrote:
-> >> ...
-> >>>>
-> >>>> If you do a buffered read, which stop ranging when it is done,
-> >>>> then how can the direct read work after that?
-> >>>>
-> >>>> Can we just start and stop ranging momentarily for a direct
-> >>>> read?
-> >>> If the latency is high, then worth considering whether autosuspend
-> >>> and runtime pm can help. That way a burst of reads will see low
-> >>> latency after the first one but we won't be wasting power when
-> >>> no one cares.
-> >>>
-> >>> J
-> >>>>
-> >>>> Otherwise, is seems like we would want to have ranging always
-> >>>> enabled.
-> >>>>
-> >> Maybe we should go with continuous ranging then since it's the
-> >> vendor-intended behaviour.
-> >> Since there is no hardware single-shot mode, by design, I think the
-> >> driver should just behave
-> >> as the hardware intended.
-> >>>>
-> >>>
-> > Just for the record, I'm dropping postenable, and keeping predisable
-> > for only the cleanup.
-> >
-> > Thanks,
-> > Sirat
->
-> predisable must clean up anything done in postenable. So it doesn't
-> make sense to have predisable without a postenable.
->
-> If there is something unusual going on here, it will need comments
-> with a clear explanation of why it still works when it is breaking
-> the convention.
->
->
-I was thinking about the drain logic. But looks like it is not needed.
-Dropping predisable too.
-Thanks for the insight!
+The SHIFT13mi or SHIFTbook tablet device by the German manufacturer
+SHIFT contains an STM LSM6DSO IMU declared in the DSDT with the
+hardware ID SMOCF00. Add this ID to the ACPI match table so that the
+driver binds correctly to this device.
 
-Sirat
+WHO_AM_I register returns 0x6c, confirming LSM6DSO.
+
+Signed-off-by: Milan Misic <twoexem@gmail.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+index 7c9332180..b2a7c2eaf 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+@@ -144,6 +144,7 @@ MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
+ 
+ static const struct acpi_device_id st_lsm6dsx_i2c_acpi_match[] = {
+ 	{ "SMO8B30", ST_LSM6DS3TRC_ID, },
++	{ "SMOCF00", ST_LSM6DSO_ID, },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, st_lsm6dsx_i2c_acpi_match);
+-- 
+2.53.0
+
