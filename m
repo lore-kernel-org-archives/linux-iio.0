@@ -1,121 +1,139 @@
-Received: from mail-yw1-f180.google.com (mail-yw1-f180.google.com [209.85.128.180])
+Received: from mail-ot1-f48.google.com (mail-ot1-f48.google.com [209.85.210.48])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 672BA3F076E
-	for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 17:20:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=209.85.128.180
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774372858; cv=pass; b=ItOwB3NxEZktStil9CIUKSOQz+mwFbIh6ImDcfBYyBvsSeVckZs5sXMYU1A7kKZwkAig8Tvzecgf4tryYql2RBbznRyOwaxJTamwwFop1jQtIJRopj107q5O8n+lzGx+jMHe8H8xcG4tHXZCxuYgbwp5Ppf2yoLKqIiEoQ6JLb8=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774372858; c=relaxed/simple;
-	bh=WCBe6xC/pB6p+aMNfwKmK2EHutkGGduXZX/L2BqsHYE=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=qVYkcE7rjYh8+YjDxZILWO6fsEalzGZh64nvsJ1H858FwO4EAuNTY6RW+ewMPDG4eX5YWAIp7/pgFgBY2j7ecAAiK0XNzYl2oJUk33ABT87zQHUKhqHH44MwoOWKCxSULeyNRblXb2p4NZNPV8W9U/75eXtWUiJjsSA/07FLm0w=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=X/NlSpte; arc=pass smtp.client-ip=209.85.128.180
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07655405AC5
+	for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 17:29:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.210.48
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774373361; cv=none; b=gjuN3L4Rs97ALXfk+1Ha1cj1xY0x3AgVEnKcCvaiTcw7haYbcKrNivisLpFfMyPOx9Nmdr2gvnvkj1F3Chd/j0cHwXjvpyk+UoXiy87GT14AZVlGHbawr00ffSKxjvpAUzthrhJvLp6X2LbV34XhXWqwJfVh7azIljPed1aen8g=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774373361; c=relaxed/simple;
+	bh=+ZEbCLyLoc1U+1Me6J7mvrYpkghwfgGTcKlIxBiMGjA=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=d4efbUh6xyAyndu9TuoZ0mmOAXvWv4yZnAfykJjzmaDtGLftjHH/LyQGdLNsAuFNhxSjwhH9X5VVXftrDU0fSnZLAcA0g29S2xTCpjMJeeeUAwHjl/7s74xIZ6MBrYn75X3+hIHLVDc7SgFhb22XowGYuikk0MBl+FOFwebBaAw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com; spf=pass smtp.mailfrom=baylibre.com; dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b=gig/XURb; arc=none smtp.client-ip=209.85.210.48
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=baylibre.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=baylibre.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X/NlSpte"
-Received: by mail-yw1-f180.google.com with SMTP id 00721157ae682-799001d73bdso13586517b3.0
-        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 10:20:54 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; t=1774372853; cv=none;
-        d=google.com; s=arc-20240605;
-        b=Re7KbcUNaUh7siVUjZGQzer+DbGubu0kYPeYo3uWBZSUEc08+zgIMAB4oUQmze0nvj
-         W0Ozci4IPqM0DcRFwa7OM5r6CbgxHubkIPEuBwLXM0sqOmGMLKrqhomKCHrnzDCzbE65
-         1noW7+5fKR4ILzWgx0ZASCPVoCUQGQS3/UGx0+p+GGO0Vm8FRE4HTM6DP9VTkwFFDEyi
-         ExL3Bm6yAnlUbbBVuPJjYFjDHg2/ktELIA7TaKcqQoai9/7Xf6hmsDZWN70uNc8wHzil
-         ouTjUv+fpoDSLQtDSn6hRYTZTmJqCEc21sGyNusTz+S8vAEzBRQf9uahFAT2LFH+gSjM
-         EZxw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20240605;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:dkim-signature;
-        bh=WCBe6xC/pB6p+aMNfwKmK2EHutkGGduXZX/L2BqsHYE=;
-        fh=t8POMALac9yIkdVauzstvk9o9YjR5pDBl7lljz3rAiA=;
-        b=Wx9JewZbmCuG/9vZfGH8Wrpbd1+A0NqgLple7tLIVr25+CKLdlYfkQRx1fPhcOEWcU
-         UPOzM94ZpREKvPRKSV2pZ/nx1n+N54fOIlG6KfcJVu1ZEbHwe/s0aGd0pGsI4/pLIdFX
-         uEMFK8JqJgObS1259JCZysDl4DdyhAY2Ohds9eSggGyR4cWLqR8HpdrTgyNgEkhpfU4f
-         UGcStds4qD/nZeLAxHxlrLuoyO+MYg99QnWhQ4XPL4k9hmhlSZJDVcjIIkuGWdmS4ABu
-         S+Rsdoeo+7Io+o8AYP4avJGieJKnjPi0T1mTONbUUqEFlJhN5oPyg8fS0XYdANn1g6Mc
-         vxLA==;
-        darn=vger.kernel.org
-ARC-Authentication-Results: i=1; mx.google.com; arc=none
+	dkim=pass (2048-bit key) header.d=baylibre-com.20230601.gappssmtp.com header.i=@baylibre-com.20230601.gappssmtp.com header.b="gig/XURb"
+Received: by mail-ot1-f48.google.com with SMTP id 46e09a7af769-7d77b179b52so1125083a34.2
+        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 10:29:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774372853; x=1774977653; darn=vger.kernel.org;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=WCBe6xC/pB6p+aMNfwKmK2EHutkGGduXZX/L2BqsHYE=;
-        b=X/NlSpteYyH81K4nNxjpxDMygjfA3azE5w3bxcFhtg3iHKVTJkrTGfweRDZNTUI8yZ
-         gStSGIhvDCye/J7YUjIQKW6W2OQnpVgsgd1RMF7lLXANb7+ZZwuPPwuFAMniw67XIzVx
-         2Wh466gpBlHnHYW3AZf3urUMS639JxXL3DH5oEIfVQpCIfffqMDXhgeQ0tfdCbnChhWx
-         cN+o4z5zUw7pfIizLwraSm2HIB3757WgnYa9o+RdZ6vVvNgPDqzC4Fq6TZ8clHeN9I8B
-         p3rEC15M8djfkE1NmQHJCADkRLocXGFIKun3I5xCRdIvDk/0KYWNFbkLOBufATev03Aj
-         DZqQ==
+        d=baylibre-com.20230601.gappssmtp.com; s=20230601; t=1774373359; x=1774978159; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=zhy7rQIQOTUlhyX3h0JAVHxGs6BVrDyegAUb4sJpE/k=;
+        b=gig/XURbyRAsg/bb8Zyf7Wtsozf4/11Hsf/+ggaOK+YgLbT67Cgf0Db1awJU/+Nosa
+         NFnyeuDEzCyqBlTO9kq/2Zm0h/XIAzB3jmS7VmtmE9iYRYTBA1B2aCSJ8YBxW60FTHUk
+         YvpRfuoRQ4pWbOrOIl26SNA+BjfJXqTbcVSPoyU+CgbCPo9w7VTGlz1BMsYjek0wQebr
+         GYt5OO8fjV+1aUksClRqTPZ11kqtuBlFkjQVtsjLVoDZw2hNI0TTqyGBwn/HuI0mqZbs
+         LjnoL7LyXLJGuJT9IWUvd0PWDLSmaDrhQPmSt7boBFzZb3XFrnmvehylwKOeV9r1axAP
+         pWBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774372853; x=1774977653;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=WCBe6xC/pB6p+aMNfwKmK2EHutkGGduXZX/L2BqsHYE=;
-        b=Y69+XX73M5/2r/jKmKZdlUi1eQw3pkxfisW7KE7X296ADIhYX9+6kfxF4SbQaKJSD4
-         Y8Mw1S82DbO0/wNvAkgsDg8PMm0Jttsysxwbv9fWrSy3HPa4p1fr8zDIhpWDiFCoA0Vx
-         M2BZVsVx2+rm0U2EP9QC+u8JIPs5hczkFZrk5Q8Bg+tR5a5oof6xfxA6bigRwfHCUeJE
-         fzJPasTGMX/KU8hMVW5KsFdsc6FdxtHaUpNevvQJWs49xtv7xo7sCxEmZiCSUCHKYIHd
-         fzQOr456y1KHA8dPRhpTCI/W6Zd9joB+HeoDQsMrBWrtMBNyqn7N2uB08/ATDwjOiVnJ
-         x7sw==
-X-Forwarded-Encrypted: i=1; AJvYcCWdXHzSY/9ZVK/+MCnVb7ko4fCr/pLkvfgCxb6/Hc8E7LybvRjHPNMQVqK0I61H47FRYHmvckCpsAI=@vger.kernel.org
-X-Gm-Message-State: AOJu0YzLgozeidgF4ZT83H3XGWAm3JG+Lm3LkgB6iP8Z9Ai50ZObHPZ3
-	R8aZBJmhC784k/dzjbeaAYLc+Kd+/Sk50qDegEG5Ajzs8DRBGgwXB5xeGTtT3uB8OJ8LFuUg5fF
-	Pp2j1EjH7EzWDh/8AiSM7eykzlHFgc4E=
-X-Gm-Gg: ATEYQzyEz3hmf3euhmqNBXU0Wj0PlAemsn6+XtCJ8w0T15at0OxIaN3LQ4+8G0l6aKF
-	oopGC9zJbXhs8CwHAItRalvk2p/OGuHscwDrIdR+PUcIlgyiKkkZuNHJINNGfF1++CwL8Lsjhix
-	U4d0qbQh2w7TYcQLipMMcAPObqTTUlRyM7Ef3srtx2SfXBwuJjGiY0q+jmuaGlrUj2AIo5cWq6L
-	uTCEZtFRpetok0KWINwsmkvAih3xqIrXWXBCj3Ik4JaE57GHMjzsiPu8Akym6e4Tl1Pts0lB2wQ
-	S2AHp88sqc3t707jQB6o2R9sC+WdH6C5cWtW9N44mOjS5D6BLIjEU6iGMct7uQA88SVp2jU=
-X-Received: by 2002:a05:690c:ec5:b0:798:138c:76de with SMTP id
- 00721157ae682-79acf6c8528mr5404347b3.41.1774372852853; Tue, 24 Mar 2026
- 10:20:52 -0700 (PDT)
+        d=1e100.net; s=20251104; t=1774373359; x=1774978159;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=zhy7rQIQOTUlhyX3h0JAVHxGs6BVrDyegAUb4sJpE/k=;
+        b=pUw4C6Uiqsa/gdWJdv87Badop5eMDpgxr8z4Bw/8QvavRhM9KuUwATN3qrccZygkhB
+         M0L4aV+peR+st/kmDP+sC3xvptaJz+vmyfEKZLaF8l22XUkg1uiJ843ij2P4podWOdK+
+         Bd3U6aGUjjkH4WWVydgPmQHf6JM99EXZUC7tyYcU3wVse9FxFOGJLrz93Dx+Ixf6IHWx
+         UjgYnhtxrnKq6XVEYbjLPVOxGcUfCsWtJSK5tugPpM9ZZ46L7obPxhf74rnQS504pmTT
+         O/iaJkQmqCivf11t5rUQWU9EGOb7LCGMB8ox+tJbbcE8L+312mqYAa8FOKrMmut2gCR3
+         65bg==
+X-Gm-Message-State: AOJu0YzC4ikDGOaHkoX8Y9NBTjQj/35m6H79JtYAbctATD88A0GzEcxy
+	I5bx+GgRS00IgJ27EZwEVE1QEfcW3y8OS0inPQxzrheTCpQ9LZ666jM8HA+LgR/qQWY=
+X-Gm-Gg: ATEYQzyPZlLyL1CgSHjqu2pcgEkQOeAXWj2XbUl/29PDmuKDYjHNC8DM7gRgJjqeuhR
+	Z7FQWWPaZeYPsiemwwKLTfCl6MZBNbLE28Md/vOjThjYpVqvcYvCEWjarhTtbCzejYU0sQWBHht
+	/aS2fJrHvHBhvBaQJ1lCjBMsfDvddDutmChH7pMPXGmicuZxYvZEAJgJq69+SgjmF9d/trQPOQP
+	oifbsH3+Fb5YoSPkQmeHoiDhhMvpe98r72R1PdlK57KOhyV752feWjIOJzshOUw7xpu/HON7CS/
+	2Dp+7CY+QNbw64sGuOa7pOucxd2amBYEjoACt9RgjHDOI4p5qboD9Law67ZRO9RHsaAx+L0VQUJ
+	XITNP14ElBIq6WD7kkxBnh/BoGpNxvrb8nbgwekVuLEPr/yNVvAwexGnBH0G/e83lR0Cs4/vYqA
+	ildeOJwkwOwixqfozqu06pOZdETcxDRFjc/TGKsGy2zRxJBqyZe1sqMxUbnWGxDRBP4aCS+Ug=
+X-Received: by 2002:a05:6820:985:b0:67b:bc25:2670 with SMTP id 006d021491bc7-67dff42078dmr407150eaf.26.1774373358893;
+        Tue, 24 Mar 2026 10:29:18 -0700 (PDT)
+Received: from ?IPV6:2600:8803:e7e4:500:8a85:a776:3f75:a1d? ([2600:8803:e7e4:500:8a85:a776:3f75:a1d])
+        by smtp.gmail.com with ESMTPSA id 586e51a60fabf-41c148a5f99sm14342917fac.2.2026.03.24.10.29.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 24 Mar 2026 10:29:18 -0700 (PDT)
+Message-ID: <c1d99a64-ea4e-4cd5-9b1e-0972a5e0d61c@baylibre.com>
+Date: Tue, 24 Mar 2026 12:29:17 -0500
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260318092715.42538-1-architanant5@gmail.com>
- <20260318092715.42538-4-architanant5@gmail.com> <20260321182710.1621d1aa@jic23-huawei>
- <CADJHxWADo9rA8vt6EEVLXSBb9EqXvyBg=L_YmusaMdtRnOr0rQ@mail.gmail.com>
- <eaaee132-d5ff-42ff-9f68-5d6736127caf@baylibre.com> <20260323175519.00003b58@huawei.com>
-In-Reply-To: <20260323175519.00003b58@huawei.com>
-From: Archit Anant <architanant5@gmail.com>
-Date: Tue, 24 Mar 2026 22:50:41 +0530
-X-Gm-Features: AaiRm50fVU4XvLJ1Cao7roR1u0mpa8WhOURP1OasnKa21QaZVfaQKrpJ8vLFHLk
-Message-ID: <CADJHxWBXTorkb2BkhsjFCjN3cL+QcDKGg9urQPUou-d2r2TktA@mail.gmail.com>
-Subject: Re: [PATCH v5 3/4] iio: adc: ad799x: cache regulator voltages during probe
-To: Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc: David Lechner <dlechner@baylibre.com>, Jonathan Cameron <jic23@kernel.org>, lars@metafoo.de, 
-	Michael.Hennerich@analog.com, nuno.sa@analog.com, andy@kernel.org, 
-	linux-iio@vger.kernel.org, linux-staging@lists.linux.dev, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH v6 2/2] iio: proximity: add driver for ST VL53L1X ToF
+ sensor
+To: Sirat <email@sirat.me>, Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, krzk+dt@kernel.org,
+ conor+dt@kernel.org, linux-kernel@vger.kernel.org
+References: <20260319190738.151614-1-email@sirat.me>
+ <20260319190738.151614-3-email@sirat.me>
+ <8502eb51-53c9-4f1b-92d0-21b06fa4802e@baylibre.com>
+ <CANn+LWJEJJoGQU7p2P2GrOcA_g2x7jEnvjcTJYG1hDRUnRw3UA@mail.gmail.com>
+ <b1da32d2-e1f7-4fea-82a7-a40e8073a100@baylibre.com>
+ <20260322110319.7d7558f3@jic23-huawei>
+ <CANn+LWJwPUiCkz_godEeBvZnXEXzNmCW_-ou=wHL+kjfn0zF_Q@mail.gmail.com>
+ <CANn+LW+OPP2riP1d=zZKz8MnTk2yo2CL3qn17_LYD=1SmCAQgw@mail.gmail.com>
+Content-Language: en-US
+From: David Lechner <dlechner@baylibre.com>
+In-Reply-To: <CANn+LW+OPP2riP1d=zZKz8MnTk2yo2CL3qn17_LYD=1SmCAQgw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Mon, Mar 23, 2026 at 11:25=E2=80=AFPM Jonathan Cameron
-<jonathan.cameron@huawei.com> wrote:
->
-> On Mon, 23 Mar 2026 09:39:44 -0500
-> David Lechner <dlechner@baylibre.com> wrote:
->
-...
-> > We can't do this unless we can be 100% sure we don't break existing
-> > users who might be depending on power management working as-is.
-> Yeah, I missed the use in suspend / resume for some reason.
->
-> Not much we can do to improve things :(
->
+On 3/24/26 10:17 AM, Sirat wrote:
+> On Sun, Mar 22, 2026 at 7:52 PM Sirat <email@sirat.me> wrote:
+>>
+>> On Sun, Mar 22, 2026 at 5:03 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>>>
+>>> On Sat, 21 Mar 2026 19:37:58 -0500
+>>> David Lechner <dlechner@baylibre.com> wrote:
+>>>
+>>>> On 3/21/26 5:39 PM, Sirat wrote:
+>>>>> On Sat, Mar 21, 2026 at 11:09 PM David Lechner <dlechner@baylibre.com> wrote:
+>>>>>>
+>>>>>> On 3/19/26 2:07 PM, Siratul Islam wrote:
+>> ...
+>>>>
+>>>> If you do a buffered read, which stop ranging when it is done,
+>>>> then how can the direct read work after that?
+>>>>
+>>>> Can we just start and stop ranging momentarily for a direct
+>>>> read?
+>>> If the latency is high, then worth considering whether autosuspend
+>>> and runtime pm can help. That way a burst of reads will see low
+>>> latency after the first one but we won't be wasting power when
+>>> no one cares.
+>>>
+>>> J
+>>>>
+>>>> Otherwise, is seems like we would want to have ranging always
+>>>> enabled.
+>>>>
+>> Maybe we should go with continuous ranging then since it's the
+>> vendor-intended behaviour.
+>> Since there is no hardware single-shot mode, by design, I think the
+>> driver should just behave
+>> as the hardware intended.
+>>>>
+>>>
+> Just for the record, I'm dropping postenable, and keeping predisable
+> for only the cleanup.
+> 
+> Thanks,
+> Sirat
 
-That settles it then, I'll implement Andy's style preference changes
-and send a final v6 shortly.
+predisable must clean up anything done in postenable. So it doesn't
+make sense to have predisable without a postenable.
 
---=20
-Sincerely,
-Archit Anant
+If there is something unusual going on here, it will need comments
+with a clear explanation of why it still works when it is breaking
+the convention.
+
+
