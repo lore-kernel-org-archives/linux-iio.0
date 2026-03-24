@@ -1,129 +1,118 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.21])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A65F33DA5BB;
-	Tue, 24 Mar 2026 09:07:08 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9F37C393DD1;
+	Tue, 24 Mar 2026 11:04:58 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.21
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774343228; cv=none; b=suKTfeDbk3wWGpe8qxL8C91RRtUBqSJd5spxugEnSnbc+zZahMEcz1WrGU3kOIY+XvMn7J4C0HCxOLGBpKZbr/ft+HdLDD1APSQVkwYn9zN5c9lUSakJr0Bo0HiygLn4QzkWNZ3dO+wauQ7FNbFdokaK+3FmskzQqX4qhfNtYGE=
+	t=1774350299; cv=none; b=Pz183vKRx/cpNyHXgvizvHhqx2EZeKF5sa/yh/coW4RFXh6Ly4dGxF0RwQuR/mbGBytg+Ai9xa3ov9ZezFP672+arVR/TgR16QQM7D0ZLumwAhrCcsLkh1H/Px3u9gZz55ccaWaZnt8/UAC/1vovJxNT0pzITs7tEHLgTg1Z3OQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774343228; c=relaxed/simple;
-	bh=ipl++/qAmGUU8wsdRN7gsKCaqWSN3ktvNdzN9/XyDGE=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=MeOS8hDdwm4+xgFTHJn/dvbRvi3lVXfVRpMZME6gFf4mvbykVVdwNAGgXvGmPGn8rzJ6YD/FhEcyMT04ehWS/dZLBNoUna00oT9SEpr8+zohFnrrpOcPCtBxYHihxvYUwEDwX6scDAiLskooG5ebMbNg/qc+iDuGTNZdG4c7pbw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=QISBbcTW; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774350299; c=relaxed/simple;
+	bh=7fgL+jbl1yX77Nmgi06PFmHDTr5zkExshmudbUrXM9Q=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=eW61kGvoMQFkLObP6aHg0wZ6qQx2IKoYD8INrYH2tvspil4o3vc7vszYZ5y7MNlzvhIiGZLX2wXfcrl42yOxvg8zW9FYCDqy+ut/xxhLv8GqY0BDllBEZaGW22n0slmNCG8UgdUKPbH/ny01yTBgsz4BkPvXEVWec0TsSJD0R6M=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=AzoYtKsT; arc=none smtp.client-ip=198.175.65.21
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="QISBbcTW"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A690DC19424;
-	Tue, 24 Mar 2026 09:07:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774343228;
-	bh=ipl++/qAmGUU8wsdRN7gsKCaqWSN3ktvNdzN9/XyDGE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=QISBbcTWH1BjuTXj5tdCebK+STCgtUuleFKaXSW4FFWEJ6gfDdgmiq9AatHiZRsIf
-	 k6ZH9Dch1wRCTUDmjT85C07fUhpMdA1Kjarpmrsq6MpZtmhut7J5ONlQ9iqc6f1/ft
-	 oV9cHiq1agKy2CzVyhw6H7b1byxLCgN+Vywf2slwkg2pm9SVABgOmuSa8RV9gOm0/G
-	 LCGNceGgQ36wgwy+e4qLcsEkpYHA0y8WFVZlpBpEIWXgwPPF9aGmD51bHvZdzTd9zX
-	 PBvWgMeTuMf2IpMtFyrCLbtKvTuVsPqQF2D9ArCe2ZWLwRvOTyrc7oH5a0+m9F2DZV
-	 KqA3bT75B5d3w==
-Date: Tue, 24 Mar 2026 09:06:57 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Krzysztof Kozlowski <krzk@kernel.org>
-Cc: Nick Xie <nick@khadas.com>, neil.armstrong@linaro.org,
- khilman@baylibre.com, martin.blumenstingl@googlemail.com,
- jbrunet@baylibre.com, dlechner@baylibre.com, andy@kernel.org,
- krzk+dt@kernel.org, robh@kernel.org, conor+dt@kernel.org,
- linux-iio@vger.kernel.org, linux-amlogic@lists.infradead.org,
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 2/4] iio: adc: meson-saradc: add support for Meson S4
-Message-ID: <20260324090657.211d5046@jic23-huawei>
-In-Reply-To: <171e30f3-e294-40fb-8731-476fb51d5a3c@kernel.org>
-References: <20260323013408.429701-1-nick@khadas.com>
-	<20260323013408.429701-3-nick@khadas.com>
-	<20260323-quizzical-striped-husky-68e24e@quoll>
-	<20260323200501.6c116226@jic23-huawei>
-	<171e30f3-e294-40fb-8731-476fb51d5a3c@kernel.org>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="AzoYtKsT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774350299; x=1805886299;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=7fgL+jbl1yX77Nmgi06PFmHDTr5zkExshmudbUrXM9Q=;
+  b=AzoYtKsTG9RmC34h8SmAZzJFMkLmoBgbwm0tOVxQvNIfokmXrNTdyzbV
+   l+DyhPrfVwIQh6mSmaLx9FGG0g4Nr6rg+msUSTzbIFrznsyoSplYMbddP
+   thdZSa/xGxDJtGJhlrT9twzCVzlT70s2WLAkelIP9ZEi9ZzN7oLOa4By5
+   XbfoA4AhQcBVIoNt+deHnlc/t2L+yPxjM+3bkcCH9mpXUQ8JEv5a381YS
+   bXkUAvhbByEGRw72z3LWEfYvVLHLvHgzoEY+BGIhBwt1l0xQXqh8tZ9nb
+   xoW7r46QpJNv/9j304HCseaYKGNmEJSK5rAIG5oIHenPjwAiQs4hpy+bQ
+   w==;
+X-CSE-ConnectionGUID: 2KhPGfSFTomZWprY2ilnBQ==
+X-CSE-MsgGUID: 2FmmEA6tQV+aI4g6PsH/zw==
+X-IronPort-AV: E=McAfee;i="6800,10657,11738"; a="75242079"
+X-IronPort-AV: E=Sophos;i="6.23,138,1770624000"; 
+   d="scan'208";a="75242079"
+Received: from orviesa003.jf.intel.com ([10.64.159.143])
+  by orvoesa113.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2026 04:04:58 -0700
+X-CSE-ConnectionGUID: mtn3E9MkSBGQ1UeLE2fXcg==
+X-CSE-MsgGUID: QrU9g7V0TNySo/M9fgS6rQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,138,1770624000"; 
+   d="scan'208";a="228379651"
+Received: from abityuts-desk.ger.corp.intel.com (HELO localhost) ([10.245.244.214])
+  by ORVIESA003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Mar 2026 04:04:56 -0700
+Date: Tue, 24 Mar 2026 13:04:53 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Francesco Lavra <flavra@baylibre.com>
+Cc: David Lechner <dlechner@baylibre.com>, Jonathan Corbet <corbet@lwn.net>,
+	Shuah Khan <skhan@linuxfoundation.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-doc@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v8 2/6] iio: Replace 'sign' field with union in struct
+ iio_scan_type
+Message-ID: <acJv1RNLugS0aat9@ashevche-desk.local>
+References: <20260317150316.3878107-1-flavra@baylibre.com>
+ <20260317150401.3878294-1-flavra@baylibre.com>
+ <4723284d-1e18-4a13-9ec1-878220af257e@baylibre.com>
+ <af2128c68d2a14e1eb664ce9dc075ed02b640407.camel@baylibre.com>
+ <acFvHgTo-3cxH_UP@ashevche-desk.local>
+ <5c780b1be8a64f7862a421db5a1f5be861cb197c.camel@baylibre.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <5c780b1be8a64f7862a421db5a1f5be861cb197c.camel@baylibre.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Tue, 24 Mar 2026 08:07:15 +0100
-Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On Mon, Mar 23, 2026 at 06:37:38PM +0100, Francesco Lavra wrote:
+> On Mon, 2026-03-23 at 18:49 +0200, Andy Shevchenko wrote:
+> > On Mon, Mar 23, 2026 at 05:04:10PM +0100, Francesco Lavra wrote:
+> > > On Sat, 2026-03-21 at 12:22 -0500, David Lechner wrote:
+> > > > On 3/17/26 10:04 AM, Francesco Lavra wrote:
 
-> On 23/03/2026 21:05, Jonathan Cameron wrote:
-> > On Mon, 23 Mar 2026 08:54:21 +0100
-> > Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> >   
-> >> On Mon, Mar 23, 2026 at 09:34:06AM +0800, Nick Xie wrote:  
-> >>> Add support for the SARADC found on the Amlogic Meson S4 SoC.
-> >>> According to the documentation and current testing, it is fully
-> >>> compatible with the G12A parameter set, so we reuse
-> >>> `meson_sar_adc_g12a_data` for this new compatible string.
-> >>>
-> >>> Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> >>> Signed-off-by: Nick Xie <nick@khadas.com>
-> >>> ---
-> >>>  drivers/iio/adc/meson_saradc.c | 8 ++++++++
-> >>>  1 file changed, 8 insertions(+)
-> >>>
-> >>> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> >>> index 47cd350498a0d..3ac48b7842c4f 100644
-> >>> --- a/drivers/iio/adc/meson_saradc.c
-> >>> +++ b/drivers/iio/adc/meson_saradc.c
-> >>> @@ -1313,6 +1313,11 @@ static const struct meson_sar_adc_data meson_sar_adc_g12a_data = {
-> >>>  	.name = "meson-g12a-saradc",
-> >>>  };
-> >>>  
-> >>> +static const struct meson_sar_adc_data meson_sar_adc_s4_data = {
-> >>> +	.param = &meson_sar_adc_g12a_param,
-> >>> +	.name = "meson-s4-saradc",
-> >>> +};
-> >>> +
-> >>>  static const struct of_device_id meson_sar_adc_of_match[] = {
-> >>>  	{
-> >>>  		.compatible = "amlogic,meson8-saradc",
-> >>> @@ -1341,6 +1346,9 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
-> >>>  	}, {
-> >>>  		.compatible = "amlogic,meson-g12a-saradc",
-> >>>  		.data = &meson_sar_adc_g12a_data,
-> >>> +	}, {
-> >>> +		.compatible = "amlogic,meson-s4-saradc",    
-> >>
-> >> The point of compatible devices is to not add such entries. Drop.  
-> > It's used for naming in the userspace ABI which is supposed to reflect the part number.  
+...
+
+> > > > > + * @IIO_SCAN_FORMAT_SIGNED_INT: Signed integer (two's complement).
+> > > > > + * @IIO_SCAN_FORMAT_UNSIGNED_INT: Unsigned integer.
+> > 
+> > > > We could make this proper kernel doc format with one comment per
+> > > > macro.
+> > > 
+> > > Actually, a set of related #defines can be documented with a single
+> > > comment. I see a few examples doing that in include/linux/gfp_types.h
+> > > and
+> > > include/linux/fpga/fpga-mgr.h
+> > > 
+> > > > > +#define IIO_SCAN_FORMAT_SIGNED_INT     's'
+> > > > > +#define IIO_SCAN_FORMAT_UNSIGNED_INT   'u'
+> > 
+> > ...or use enum
+> > 
+> > /**
+> >  * ...kernel-doc for enum...
+> >  */
+> > enum {
+> >         IIO_SCAN_FORMAT_SIGNED_INT = 's',
+> >         IIO_SCAN_FORMAT_UNSIGNED_INT = 'u',
+> > };
 > 
-> Indeed, I saw this pattern in more places. Does userspace need it? There
-> is no "compatible" entry shown?
+> There is no standard kernel-doc format for anonymous enums.
 
-Yes. Userspace uses this (+ a label) to identify which of multiple devices
-it is talking to.  Given some of these parts are very specific rather than
-covering a general purpose, people tend to be looking at datasheets if there
-are multiple parts and they want to know which is which.  Knowing whether
-it's compatible with something else doesn't help with that identification
-part.  
+What do you mean? We have such in kernel, for example,
+drivers/pinctrl/intel/pinctrl-intel.c.
 
-> 
-> If there is no, then probably this could be automated by taking the name
-> from compatible after ',', but that would be out of scope for this set,
-> so here it is fine.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-For DT that works but not for other firmware types.  We had a bunch of bugs
-where people ended up putting out ACPI IDs (some of which we've had to leave
-in place to avoid regressions).  Hence I've always been nervous about not
-encoding the string explicitly in the driver.  Obviously this is a bit
-paranoid for DT where it's reasonably tightly defined.
-
-Jonathan
-
-> 
-> 
-> Best regards,
-> Krzysztof
 
