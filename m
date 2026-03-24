@@ -1,50 +1,56 @@
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EDE1C3264D9;
-	Tue, 24 Mar 2026 07:14:27 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 07E8C3BA225;
+	Tue, 24 Mar 2026 07:14:33 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=148.163.135.77
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774336475; cv=none; b=jtaen1dyZYgvlK1aF6X13MSwTFtN3/DhtWkQEsdtTxOpAx4kV6xGJ0eWJnISd0ypcLiqWHqb1SFsbprurCXiOPdDe/fc2tVDcJo5ZFoZoGzBwc/WKb/CGump0M47f3s4d8eDhFGGvp6W1EWzD6IuGg5siV7pktIzARXhWnWFe7w=
+	t=1774336482; cv=none; b=XYyMrjgH6R8xuc4JUDDNu0UiUWGyQUvgJa1VoAF6ta0WvuAqw6DPt6L2v1ZmFtsShgMQRrhw6VumB679tEb7USfBHzfxBfufiDjfPYnMknWe/foSRXy4YG6ZKMsbTZIQmtGvAa3ZF0A0Pf4oCEznymCOSyNrma/KodJN4Yg8g4E=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774336475; c=relaxed/simple;
-	bh=bs9igt7QnRCfi3tNaWUo+QmiS8fZ9TbwBeMVconoKwU=;
-	h=From:To:CC:Subject:Date:Message-ID:MIME-Version:Content-Type; b=Y2CfhPFqKUPXe70AD6JLgRoN1XcRkKUY6COD/4HXGmeKNm+7A0dvCmN4NqH4+gFkY17PjCOuDWNQQlY6QFE9JVLOJwn0ntvs+itsd0wB3xCZJcZKAa7jhImzREswTt8gxTHPnLI2qQnj5jLnf1UnCWxamvEsNctOk+BTE4h+tfc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=sRhzucIw; arc=none smtp.client-ip=148.163.135.77
+	s=arc-20240116; t=1774336482; c=relaxed/simple;
+	bh=wN9HE5O+IPyUmehFY9bXGf8km+mj/XuYyBsRnP1EBgI=;
+	h=From:To:CC:Subject:Date:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=hm5CLFdafBe9YUPXIhRgwYSsHtkSgeHf1KbkNNZA9fgBMpJCnzwRNvHpkuFTp3Sx4uAOxKwztQMB+62Y18LpZeWvD5Npsn9KvGiTDU9MsRbnhlYSFJyooXXILARr7e13llPeiWtF+MI0S8HBusjMO/qVCmC73U8QMvLCYtB3GrI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com; spf=pass smtp.mailfrom=analog.com; dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b=q+4rZ3DW; arc=none smtp.client-ip=148.163.135.77
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=analog.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=analog.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="sRhzucIw"
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62O411pr2961633;
-	Tue, 24 Mar 2026 03:14:02 -0400
+	dkim=pass (2048-bit key) header.d=analog.com header.i=@analog.com header.b="q+4rZ3DW"
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+	by mx0a-00128a01.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62O40mw2662592;
+	Tue, 24 Mar 2026 03:14:08 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=analog.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=DKIM; bh=+sl3PiRipwsGINx83TTd88wQxhb
-	ZVt0kR+Q83e5WkSA=; b=sRhzucIw/vbzU2d9S/UhmR2zoQzpO16wwUcwMCRuVxM
-	gkPhlJEYlVB3KKYDP+4/2rT8EzYcUeGDFDXSY41HCJoQVtl2VGvf7ktTVHBVVJxN
-	fPAlXKpL7qqMj2soo98t33czYOqL/AtvPcPFMd0ftZrdz055wI9mp4Jxlzd1JSmG
-	6BgLfAmpEI9FgBcoa43+o0dY1A1ocMnj5nAc3ra1vIlPJ8OF0dLyjs7D8Rhp1w0M
-	2AHXcYZjMZZrMoNWJXpiD8IF7D4qC2HoFBqEGMZJzf0oWu7lpdRVx8awifRfy4A3
-	gHUDq3MBKnEA/DTBc8bpwHeVYh2v+UZXBx7HK2mJODw==
+	:content-transfer-encoding:content-type:date:from:in-reply-to
+	:message-id:mime-version:references:subject:to; s=DKIM; bh=tY6YM
+	xJ4WjG+clpVVwul7m5JoaLSzMSyfjlx4I9sgIM=; b=q+4rZ3DWboYXJia9NJMbU
+	cLQb3N4xP0Z71gQ87YPNYJNark1DTWM/5vdflBFvh8xFGXT5hFsgAShNvrIIgW8d
+	FyzUZqInHZrSb+6s/Ty9Zyp4wudBJyH6hf7c0NqFRKZ19GK+m+09eSyHJUq2pNJr
+	lNqE6LqZCiNXD7kYz6D9v/t6bfKT9MUxf1PWl0gJYjRrTe1l69e8JGA5SmfLWR7A
+	HkTgzdAWpz0of0B6rvqp/UHh4OMVDKSeIx0ThigvGcgDQ4Jl+kGqowkm8DOCBcLE
+	41CEycPYgEiAxUYwd5B0Hmb+yLYX8BLB7VhByI9S6UjjY1NclnS1cLCUZiYl7qJV
+	A==
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4d1r822nea-1
+	by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 4d1n62399w-1
 	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-	Tue, 24 Mar 2026 03:14:02 -0400 (EDT)
+	Tue, 24 Mar 2026 03:14:08 -0400 (EDT)
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62O7E1Zr020225
+	by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 62O7E7K3020237
 	(version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-	Tue, 24 Mar 2026 03:14:01 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1748.37; Tue, 24 Mar
- 2026 03:14:01 -0400
+	Tue, 24 Mar 2026 03:14:07 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 24 Mar 2026 03:14:07 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.1748.37; Tue, 24 Mar 2026 03:14:06 -0400
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
  (10.64.17.10) with Microsoft SMTP Server id 15.2.1748.37 via Frontend
- Transport; Tue, 24 Mar 2026 03:14:01 -0400
+ Transport; Tue, 24 Mar 2026 03:14:06 -0400
 Received: from CJONES7-T01.ad.analog.com (HYB-jCCu8MOWEgi.ad.analog.com [10.116.223.230] (may be forged))
-	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62O7Dg0b003654;
-	Tue, 24 Mar 2026 03:13:45 -0400
+	by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 62O7Dg0c003654;
+	Tue, 24 Mar 2026 03:13:57 -0400
 From: Carlos Jones Jr <carlosjr.jones@analog.com>
 To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh@kernel.org>,
@@ -55,97 +61,166 @@ To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
         Liam Beguin
 	<liambeguin@gmail.com>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy
- Shevchenko <andy@kernel.org>,
-        Tobias Sperling <tobias.sperling@softing.com>,
+        "Andy Shevchenko" <andy@kernel.org>,
+        Tobias Sperling
+	<tobias.sperling@softing.com>,
         Jorge Marques <jorge.marques@analog.com>
 CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 0/4] Add support for LTC2305
-Date: Tue, 24 Mar 2026 15:13:27 +0800
-Message-ID: <20260324071331.842-1-carlosjr.jones@analog.com>
+Subject: [PATCH v2 1/4] iio: adc: ltc2309: Introduce chip_info structure
+Date: Tue, 24 Mar 2026 15:13:28 +0800
+Message-ID: <20260324071331.842-2-carlosjr.jones@analog.com>
 X-Mailer: git-send-email 2.43.0
+In-Reply-To: <20260324071331.842-1-carlosjr.jones@analog.com>
+References: <20260324071331.842-1-carlosjr.jones@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzI0MDA1NyBTYWx0ZWRfX+YzO/GMqt2CP
- tMTTIK44NKtHB0RBULDx2Y8AAOwuyilWe6w7Es6z72a5AUro1i447qTBaGMNPAWcVDBYIsW7Rcm
- lqbXP89GrH3UfDvIsjaKQIx9o9jcIqZlRfhU57Jsuzvyk375G6CxRUyGgN7FkGyh2x3Yf07lsP6
- v5Q3qpLIoOzzGJf5v94M159au6M2cKVvpzEzr8gjUfPxkEFvBYL86h9B99fXX7B4sV5R45n0PxP
- 8uRzhDoysIjLp2+Y8rAsoIU6LWkxVbdEZA93b6Hj/Zix4bo1v9ZSi8dyLKJw7A/RjdUz587x3TT
- 69wdTl9OcDz0tWG3H6+aC5z6RVvdv8cFdd56FloXqJllSsdreD4i+no+W9KrzBjbWG6A54hdNOQ
- CLdyP+tJF3EJIobKe8KPmN2RpZGJrFDHzW6SNhelKMLrbphhh70oAYXiQKySeTdVxGfCepOP3xP
- 1jJBAaScYx+SfYR6w/w==
-X-Authority-Analysis: v=2.4 cv=edIwvrEH c=1 sm=1 tr=0 ts=69c239ba cx=c_pps
+X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzI0MDA1NyBTYWx0ZWRfX3f41DVeIZC3r
+ U+/BHCRJVgDvPTVBWYvC314LjwC3p8GsNAm4rG6yDCgIEqbkDkHMJlPu0WyJ+2+pMHCWgZ8nwa9
+ JlYoRznQGCe3IuVyeKiMs+8MK7sFeuBlFpHF3+PbM7zvTdDFu4cJ1GBZWyqPgE77EEbZ0JB8j0S
+ RR1aFrcDPTCpRgd8cV2mw1SpyYFRxHsp0YAc8fsCL6zlE47Zr4Sf9OtfChjjXNZ2DPXaK6G2Nu9
+ 47+IqQyU44zs6soTz5KBobl4cH8JjpRcSiWkUuu4unEPO9RasPWKe2fBKUZqs4PLMmqh/cXtVPU
+ Ki+iuUQqfqZAXvR12wdNVFcA0RWVOpdoLIGwJgo43IN17C/Eku8e/MCoFOv4Z8qv26KBL26wauX
+ 1yBjOjp8FCVCoz0yyrgfvo4jIzzIxyqMystEnZSjTVOZjvHZgIw3sex7Q8nAUfwpRBFG5JRB2RZ
+ qpotWEAwLk904/HFSBg==
+X-Proofpoint-ORIG-GUID: juYBNpryKw1xcwZfj62WEpe10yTlWbE0
+X-Proofpoint-GUID: juYBNpryKw1xcwZfj62WEpe10yTlWbE0
+X-Authority-Analysis: v=2.4 cv=D59K6/Rj c=1 sm=1 tr=0 ts=69c239c0 cx=c_pps
  a=3WNzaoukacrqR9RwcOSAdA==:117 a=3WNzaoukacrqR9RwcOSAdA==:17
- a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=0sLvza09kfJOxVLZPwjg:22 a=Z0pTeXoby7EwIRygza74:22 a=VwQbUJbxAAAA:8
- a=gAnH3GRIAAAA:8 a=bnWB3NjIizojX1aHmW8A:9 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: -khZwBqQp4_JLI1EnviBjP1Q_hPuU7r0
-X-Proofpoint-GUID: -khZwBqQp4_JLI1EnviBjP1Q_hPuU7r0
+ a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22 a=0sLvza09kfJOxVLZPwjg:22
+ a=uXIjobp8t2wMuQ0fPvqm:22 a=gAnH3GRIAAAA:8 a=pGLkceISAAAA:8
+ a=ZorkHgBYlZiqIV_WkfAA:9
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
  definitions=2026-03-24_02,2026-03-23_02,2025-10-01_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0
- suspectscore=0 spamscore=0 adultscore=0 clxscore=1015 phishscore=0
- lowpriorityscore=0 bulkscore=0 priorityscore=1501 malwarescore=0
- impostorscore=0 classifier=typeunknown authscore=0 authtc= authcc=
- route=outbound adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
+ suspectscore=0 priorityscore=1501 lowpriorityscore=0 malwarescore=0
+ adultscore=0 impostorscore=0 clxscore=1015 spamscore=0 phishscore=0
+ bulkscore=0 classifier=typeunknown authscore=0 authtc= authcc= route=outbound
+ adjust=0 reason=mlx scancount=1 engine=8.22.0-2603050001
  definitions=main-2603240057
 
-The LTC2305 is a 2-channel, 12-bit, fast ADC with an I2C interface,
-compatible with the LTC2309 (which has 8 channels).
+Introduce a chip_info structure to facilitate adding support for
+chip variants with different channel configurations and timing
+requirements.
 
-This patch adds support for the LTC2305 by introducing a chip_info
-structure to handle the different channel configurations between the two
-variants. The LTC2305 exposes 2 single-ended channels and 2 differential
-combinations.
+The chip_info structure contains:
+- Device name for proper sysfs identification
+- Channel specifications and count
+- Read delay timing for variants requiring settling time
 
-Also updates the device tree bindings to include the lltc,ltc2305
-compatible string and documents it in the Kconfig.
+The ltc2309 struct is modified to store only the read_delay_us value
+rather than a pointer to the full chip_info, as this is the only
+runtime-accessed field after probe.
+
+This preparatory refactoring does not modify existing LTC2309
+functionality.
+
+Signed-off-by: Carlos Jones Jr <carlosjr.jones@analog.com>
 ---
-Changes in v2:
-- Changed usleep_range() to fsleep()
-- Added missing #include <linux/array_size.h> header
-- Removed explicit .read_delay_us = 0 initialization (implicit zero)
-- Added __counted_by_ptr() annotation to channels pointer
-- Modified ltc2309 struct to store only read_delay_us value instead
-  of full chip_info pointer, reducing memory overhead
-- Alphabetically ordered device entries in ID tables (ltc2305
-  before ltc2309)
-- Reformatted Kconfig help text with explicit bulleted list of
-  supported devices instead of vague "and similar" language
-- Added device names to chip_info structure for proper sysfs
-  identification
-- Split changes into proper preparatory patches before adding
-  new device support
-- Link to v1: https://lore.kernel.org/all/20260320140819.191700-1-carlosjr.jones@analog.com/
+ drivers/iio/adc/ltc2309.c | 30 +++++++++++++++++++++++++++---
+ 1 file changed, 27 insertions(+), 3 deletions(-)
 
-Note:
-The ltc2309_chip_info structure has a 4-byte hole due to alignment
-requirements for the __counted_by_ptr() annotation. The count field
-must precede the pointer field for the bounds checking to work correctly.
-The total structure size remains 32 bytes either way due to required
-padding, so the memory overhead is minimal (8 bytes total for both chip
-variants).
----
-Carlos Jones Jr (4):
-  iio: adc: ltc2309: Introduce chip_info structure
-  iio: adc: ltc2309: Use i2c_get_match_data() helper
-  dt-bindings: iio: adc: ltc2497: Add LTC2305 compatible
-  iio: adc: ltc2309: Add LTC2305 support
-
- .../bindings/iio/adc/lltc,ltc2497.yaml        |  9 ++-
- drivers/iio/adc/Kconfig                       |  8 ++-
- drivers/iio/adc/ltc2309.c                     | 59 ++++++++++++++++---
- 3 files changed, 65 insertions(+), 11 deletions(-)
-
+diff --git a/drivers/iio/adc/ltc2309.c b/drivers/iio/adc/ltc2309.c
+index 5f0d947d0615..0644b1f02568 100644
+--- a/drivers/iio/adc/ltc2309.c
++++ b/drivers/iio/adc/ltc2309.c
+@@ -8,12 +8,14 @@
+  * Copyright (c) 2023, Liam Beguin <liambeguin@gmail.com>
+  */
+ #include <linux/bitfield.h>
++#include <linux/delay.h>
+ #include <linux/i2c.h>
+ #include <linux/iio/iio.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/array_size.h>
+ 
+ #define LTC2309_ADC_RESOLUTION	12
+ #define LTC2309_INTERNAL_REF_MV 4096
+@@ -26,18 +28,27 @@
+ #define LTC2309_DIN_UNI		BIT(3)
+ #define LTC2309_DIN_SLEEP	BIT(2)
+ 
++struct ltc2309_chip_info {
++	const char *name;
++	unsigned int num_channels;
++	const struct iio_chan_spec *channels __counted_by_ptr(num_channels);
++	unsigned int read_delay_us;
++};
++
+ /**
+  * struct ltc2309 - internal device data structure
+  * @dev:	Device reference
+  * @client:	I2C reference
+  * @lock:	Lock to serialize data access
+  * @vref_mv:	Internal voltage reference
++ * @read_delay_us:	Chip-specific read delay in microseconds
+  */
+ struct ltc2309 {
+ 	struct device		*dev;
+ 	struct i2c_client	*client;
+ 	struct mutex		lock; /* serialize data access */
+ 	int			vref_mv;
++	unsigned int		read_delay_us;
+ };
+ 
+ /* Order matches expected channel address, See datasheet Table 1. */
+@@ -117,6 +128,9 @@ static int ltc2309_read_raw_channel(struct ltc2309 *ltc2309,
+ 		return ret;
+ 	}
+ 
++	if (ltc2309->read_delay_us)
++		fsleep(ltc2309->read_delay_us);
++
+ 	ret = i2c_master_recv(ltc2309->client, (char *)&buf, 2);
+ 	if (ret < 0) {
+ 		dev_err(ltc2309->dev, "i2c read failed: %pe\n", ERR_PTR(ret));
+@@ -156,10 +170,18 @@ static const struct iio_info ltc2309_info = {
+ 	.read_raw = ltc2309_read_raw,
+ };
+ 
++static const struct ltc2309_chip_info ltc2309_chip_info = {
++	.name = "ltc2309",
++	.num_channels = ARRAY_SIZE(ltc2309_channels),
++	.channels = ltc2309_channels,
++};
++
++
+ static int ltc2309_probe(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct ltc2309 *ltc2309;
++	const struct ltc2309_chip_info *chip_info;
+ 	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*ltc2309));
+@@ -169,11 +191,13 @@ static int ltc2309_probe(struct i2c_client *client)
+ 	ltc2309 = iio_priv(indio_dev);
+ 	ltc2309->dev = &indio_dev->dev;
+ 	ltc2309->client = client;
++	chip_info = &ltc2309_chip_info;
++	ltc2309->read_delay_us = chip_info->read_delay_us;
+ 
+-	indio_dev->name = "ltc2309";
++	indio_dev->name = chip_info->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->channels = ltc2309_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(ltc2309_channels);
++	indio_dev->channels = chip_info->channels;
++	indio_dev->num_channels = chip_info->num_channels;
+ 	indio_dev->info = &ltc2309_info;
+ 
+ 	ret = devm_regulator_get_enable_read_voltage(&client->dev, "vref");
 -- 
 2.43.0
 
