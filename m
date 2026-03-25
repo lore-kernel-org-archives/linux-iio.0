@@ -1,414 +1,229 @@
-Received: from mail-wr1-f47.google.com (mail-wr1-f47.google.com [209.85.221.47])
+Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 58F923BE16E
-	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 11:01:54 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.221.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 389163CCFD2
+	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 11:09:46 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774436516; cv=none; b=Luk7bwoTXUxW7uhWc9fq4Dv1EXoz7dB2gRSWF+Uu1KdqH4dniLTKFOVRnzLp+e2ZXxh8FVYw1XkbWCarJYlYBL6UH31ipkbGCETBi3hnC1kCej3v7voHgtryifVG0CM5JBBahb/fJGx2MPEDpqvN5a1Xo3oiPFkkJZ2I1Sm1Ijo=
+	t=1774436992; cv=none; b=nuqq0jeEYXItEaYJHXTFXWd4T8DDIIRzMIYoYSiLI5lLEpaDs2G77StQ9a1nKyG0Q+Tc9KoIMNDXPllKEdYv4LOk83qT7SOSPpeD1CEuaXJGNam7ecdODJBM4O+jKbgYIKQa//jwHVOMOdcvXq/2kxPbcr4WhwRoLU3iTJ2RhAM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774436516; c=relaxed/simple;
-	bh=cig6sPdMQIkhTTtCcrsqWIpzCRGJ5kA8tX/p0P6Yo20=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=pm2iiNi0MXAjGc9Gt39IBN852z79f7rUFD2YUJXz3IMdJPm0chkAusup+jQRA0pVxIjWKrrbwx1ITJVPKYHdjDWElWjgOUe1NX+6/3/sDHLH4JLTQPOkaWxQPspkG2RltwBSpR51IQSCjxE+YPVxOZYlMdmNjqol5apGaHjU6FY=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=TPhieP6S; arc=none smtp.client-ip=209.85.221.47
+	s=arc-20240116; t=1774436992; c=relaxed/simple;
+	bh=W7zUZDtGNn20lMvdnvzQKIeaqO3L7T2YvE8j3vlT8QY=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=g5hGCHsl/hB5sMaq2dzAja88z07TQi60juP75mgRVy28mRY+gfsOqyXTvAuTVAzDnPcIASaR2rhZz4WGnMTNOlpdQT2LFfPNtZqbgkI2X6vwEJ7ZkKrIF8diMp7snys/+ZMODpw/YyCPtovf2zRlpagCvQqJQiUPfxD+4xu0sfM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C4c8d5/M; arc=none smtp.client-ip=209.85.128.53
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TPhieP6S"
-Received: by mail-wr1-f47.google.com with SMTP id ffacd0b85a97d-43b87970468so1038913f8f.3
-        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 04:01:54 -0700 (PDT)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C4c8d5/M"
+Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-486fd5360d4so26385535e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 04:09:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774436513; x=1775041313; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=2CmYpByYPZGX4g9nqhPAYqXEmVxCeRwCQg1UHu6Jr9s=;
-        b=TPhieP6SQhw2sy7V84ELwhFcyzmNua9Ic6KTAK/H1E7QAqqW4BNhkCqdPBfjWUgHXX
-         0R6TfOXOi7+T5iLH7bYjiH61Jg5F0WYa6Y1yVNbKWDVJjjj6ndbUozj8GO5gEbIiGKw+
-         9H5ln6GboOl68rFgymt2YrAXO3zZ3cE0dvnAGPZCP+Biy+9wrDtZ92dl0iOf8qIpRdJN
-         BwuFkJajcyIMJTSFnl+rJTQdJZ2bH2o8NSXpcYYjHUEp8vGuEiDk7TzmBjCbj4Wmw7Np
-         lq6pooptU9EHlhm01sjyFhcqcKsZxHjA+kyxw1PWKDD09kTmInBJOax+0CmCmNA1oAgw
-         Ia4w==
+        d=gmail.com; s=20251104; t=1774436985; x=1775041785; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=uVK4wjtaqmG3ZXCPVMVUf5h3phFobdBtD0gg2Af7Zb8=;
+        b=C4c8d5/M2ugcwRoA1z33G6uXZCzU5veRhVBJm76WRf5PnE/hT0jYjiznQrtPINUldt
+         IRuigQ7weuTbKuv9K2kbYsbN1e2It7c7WMmx52LOk5fcrgB/kLzzZZ22nnpKdaWwX1+f
+         6/A7biIOBI0+8Wgwm2vnYpqjiwa/i++Xe0i4OQACLBzddu4RnQvQeV0LgBlaFl214/AW
+         CbY7vXfdSHseDpHzJ41k++OQnuO6xjuJHfyejORwGssvwmQdjyjoVO1Nie8DP2KJiPmA
+         7aCFabRd5d9ESQskBT5CalNw5HRJJzElqvJh1+i2uEdMK879cqsyA4KyJROLd39rwAFu
+         DZKQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774436513; x=1775041313;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=2CmYpByYPZGX4g9nqhPAYqXEmVxCeRwCQg1UHu6Jr9s=;
-        b=I/+t1fMyb3NdJC7KbsEhwcWyGh6naOuqlq45T/86Tx4fPv/WYGPavHY7rNObkJ9MoB
-         gZG53uBIpBAO0XVF5k+/+cxjLui+o0q7Uu5UNxBm962dQ1MMgdcdkQArIJZ0LhLVtsC8
-         OZfcEHae7kAf9gRKxv8RVWtp9Gy3a0nSVivch1tFlHjR+vJrjPO/yC77COnfCTzDrEJQ
-         6djLu0hue4FhnwExJUa9jVRr+UBpWxot1efhB787ZZhjvu7hzCP3o/7hfmuo02xtB31L
-         5+YlwPytzsZQJNXKaX0sw+HZ3BB+LUySXE0kIHvx9rWkUPU1rfZgKDQRhB8f6UZS+GpH
-         L/vA==
-X-Gm-Message-State: AOJu0YwOn0jrXxWFBslJqcDt1eR+CbWS1//SIlnkcUQazSh41PS+6T9V
-	xKyPsc909IUBUqprGRk3jNnHmGMbWB9A1MOUFu7XyGuIfN8lRffOa6xd
-X-Gm-Gg: ATEYQzyoHcos4UpzT9sHwD6g2SxZuylp06tV/cfTKjf2KEYNcLMMUnDYhD4RN9cNXR5
-	3UCTn15cicjCny8Wi+maal4HhfqL9CNvm8oFl+1/pyB++4vYemxtLv4dhq9U2hJEajhF9nftct9
-	WNQ3MA+HBOjR9JcoERl+U/iEv+V/y/eEgw5jehSFCZqGDMdcoR8JqVID/xOTQ4gQmcfB3pKzbTf
-	A3ZQ1Lycg1u4ysZvXAD5EO4VLP+Ep3aHOQzt0TNVmm+XmB+LLMrHzJ17nmdQhaLMLOGqIpzfj6J
-	axbZRf5UQSX0lL/PsK2LIpq7kkywZ5BSrSdMECP/4LZ1qCC/b6/kQnaU43SWpGXXHUeVWzTierx
-	t+5ILk7AJiePRznYj47I6ZpAHbwertDqBpcZSbWIuAiEQ7iwgWdBhlLkP+qG1w2tDO2ZlESE7AD
-	h7Emp6H+bqa7JBFZtQO8ZiVhYfD6BxVR8=
-X-Received: by 2002:a05:6000:2483:b0:43b:4aba:8f4f with SMTP id ffacd0b85a97d-43b88a8ead2mr4271739f8f.45.1774436512571;
-        Wed, 25 Mar 2026 04:01:52 -0700 (PDT)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b64703c27sm46296280f8f.18.2026.03.25.04.01.51
+        d=1e100.net; s=20251104; t=1774436985; x=1775041785;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=uVK4wjtaqmG3ZXCPVMVUf5h3phFobdBtD0gg2Af7Zb8=;
+        b=TYp+2Mfd/P0HmyDTrfY8/GliVpfeadFD+AgtyAVrxvtBElJMvVBw1PagFKxdgIJHPU
+         MOvyTyRyr/3S1Dl0Cqss/zNhrxz1mhBy2j93k4ir9HBMoWRuHhUW4TmaeYG3zLJFTLBU
+         dcOAcGqlniGYXoGAcgDnVsn14nEstVhsDLf4XODcssRlsu2d8vog7BIO6snv2g8ezxrZ
+         xuZgTR0z6o1EbXng0yW/n2SS5IPDg9E0aVVKlpU7Jto6M6EykHtYipE61nxHDM3oo0I0
+         ITSNLRE+biktCis1G15hxixGvQ/m1X/WUFkRrK++GOaWf56uTKTzR4Qx15ryCP40oUyp
+         i52A==
+X-Forwarded-Encrypted: i=1; AJvYcCVd/wAWkHiIzrSHlrZtJgDA8UPAFts7JFK95sZWZCsPrGrGyTTyyuibKprMTAcOoVNwuSTpOZK9ekM=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyaTGBs4GSDHbAEsu0e2DPuTjilV2DXDHVZ2TyBrR9wL6h7Mjet
+	fzEZu8S1QT5XlAKJP7uH+wTofc1mNn3fLMlMPwqlW4vkdBcj0X5G7lSw
+X-Gm-Gg: ATEYQzy9ykxxtFmidBDYFXreLjW1vSOoYl4399Eq8RRlBalUlw248iGS/JhmWEn8qEg
+	5NkaxQrV5/dFgjb7m+oN3hHpq+hjt4BKACPqUV9a2TsQl7waLNSPPVYlGuxYX+QcBpmg7Lr7rwN
+	N3AipmdKTivvztzgGqTcmSHoRk9NqEn2WjFDMGrFWthIEdW3N3Dl5p4+q4noOgZIkaJqsi9GilT
+	GY312pR7AV+8Ran1oKeb1O18anF/DryR1xy4K4VWWuXA/6RuSMSygublBtXmRBRZ9YysCjVlkGW
+	f66a28GucZVTGxvKN0XA4tbn9h1ZootR74v4xR75nLuNbUyCTcW+tBz08hRrbfZYAbO85/0kcM6
+	lvyMIG0AXNABd+5nGtcJDPwyDqESTBA2dA0JxDTf8K0XzFqG9dr6tNYUOxR8IDWye2f755wNqOh
+	6ClLiMP7OqMLUwOKUiTQ0inB8octJjPH6uENl1Cy4cXmoX8veJf1BB
+X-Received: by 2002:a05:600c:45d4:b0:487:1114:d42f with SMTP id 5b1f17b1804b1-48715fd4aa6mr45424655e9.1.1774436985034;
+        Wed, 25 Mar 2026 04:09:45 -0700 (PDT)
+Received: from localhost.localdomain ([2001:8a0:6c9b:a000:28db:f3e8:2f9b:ca58])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48711701804sm125621605e9.4.2026.03.25.04.09.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2026 04:01:52 -0700 (PDT)
-Message-ID: <1920a90a223c1394004d269895df54eee720125a.camel@gmail.com>
-Subject: Re: [PATCH v3 2/2] iio: dac: ad5706r: Add support for AD5706R DAC
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>, Lars-Peter
- Clausen <lars@metafoo.de>, Michael Hennerich
- <Michael.Hennerich@analog.com>, Jonathan Cameron	 <jic23@kernel.org>, David
- Lechner <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?=	
- <nuno.sa@analog.com>, Andy Shevchenko <andy@kernel.org>, Rob Herring	
- <robh@kernel.org>, Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley	
- <conor+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+        Wed, 25 Mar 2026 04:09:44 -0700 (PDT)
+From: Gabriel Rondon <grondon@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	linux-iio@vger.kernel.org,
 	linux-kernel@vger.kernel.org
-Date: Wed, 25 Mar 2026 11:02:38 +0000
-In-Reply-To: <20260318-dev_ad5706r-v3-2-5d078f41e988@analog.com>
-References: <20260318-dev_ad5706r-v3-0-5d078f41e988@analog.com>
-	 <20260318-dev_ad5706r-v3-2-5d078f41e988@analog.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+Subject: [PATCH v2] iio: adc: ti-ads8688: use read_avail for available attributes
+Date: Wed, 25 Mar 2026 11:09:42 +0000
+Message-Id: <20260325110942.65337-1-grondon@gmail.com>
+X-Mailer: git-send-email 2.33.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 
-On Wed, 2026-03-18 at 13:13 +0800, Alexis Czezar Torreno wrote:
-> Add support for the Analog Devices AD5706R, a 4-channel 16-bit
-> current output digital-to-analog converter with SPI interface.
->=20
-> Features:
-> =C2=A0 - 4 independent DAC channels
-> =C2=A0 - Hardware and software LDAC trigger
-> =C2=A0 - Configurable output range
-> =C2=A0 - PWM-based LDAC control
-> =C2=A0 - Dither and toggle modes
-> =C2=A0 - Dynamically configurable SPI speed
->=20
-> Signed-off-by: Alexis Czezar Torreno <alexisczezar.torreno@analog.com>
->=20
-> ---
+Convert the in_voltage_scale_available and in_voltage_offset_available
+attributes from legacy IIO_DEVICE_ATTR with custom show functions to the
+IIO framework's read_avail callback. This uses the framework's built-in
+support for _available attributes, removing the need for manual sysfs
+formatting.
 
-Not sure if everyone is aware of this but AI review in:
+Precompute the available scale values at probe time since they depend on
+the reference voltage which does not change after initialization.
 
-https://sashiko.dev/#/patchset/20260318-dev_ad5706r-v3-0-5d078f41e988%40ana=
-log.com
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Gabriel Rondon <grondon@gmail.com>
+---
+Changes in v2:
+- Use -BIT() macro instead of -(1 << ...) to avoid potential UB and
+  improve readability (Andy Shevchenko)
+- Remove trailing comma from offset_avail array (Andy Shevchenko)
+- Declare loop counter as unsigned int in for() (Andy Shevchenko, Nuno Sá)
+- Keep scale_avail assignment on a single line (Andy Shevchenko, Nuno Sá)
 
-The DMA comment is an interesting one. Likely it needs improvement in the r=
-eview-prompt repo given
-it's one of those case we know what we're doing (at least we think we know =
-:)).=C2=A0Still has a point
-in that IIO_DMA_MINALIGN should be used.
+ drivers/iio/adc/ti-ads8688.c | 70 +++++++++++++++++++-----------------
+ 1 file changed, 36 insertions(+), 34 deletions(-)
 
-At some point we need to add some IIO specific bits :)
-
-- Nuno S=C3=A1
-
-> Changes since v1:
-> =C2=A0 - Removed PWM, GPIO, clock generator, debugfs, regmap, IIO_BUFFER
-> =C2=A0 - Removed all custom ext_info sysfs attributes
-> =C2=A0 - Simplified to basic raw read/write and read-only scale
-> =C2=A0 - SPI read/write can handle multibyte registers
-> ---
-> ---
-> =C2=A0MAINTAINERS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 |=C2=A0=C2=A0 1 +
-> =C2=A0drivers/iio/dac/Kconfig=C2=A0=C2=A0 |=C2=A0 10 +++
-> =C2=A0drivers/iio/dac/Makefile=C2=A0 |=C2=A0=C2=A0 1 +
-> =C2=A0drivers/iio/dac/ad5706r.c | 222 +++++++++++++++++++++++++++++++++++=
-+++++++++++
-> =C2=A04 files changed, 234 insertions(+)
->=20
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 17a3d2d45fccb9cd3c93fd35666fb85d17d53cde..3d7bd98b4d1b55836e40687a9=
-a3ac9f4935a8acb 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1502,6 +1502,7 @@ L:	linux-iio@vger.kernel.org
-> =C2=A0S:	Supported
-> =C2=A0W:	https://ez.analog.com/linux-software-drivers
-> =C2=A0F:	Documentation/devicetree/bindings/iio/dac/adi,ad5706r.yaml
-> +F:	drivers/iio/dac/ad5706r.c
-> =C2=A0
-> =C2=A0ANALOG DEVICES INC AD7091R DRIVER
-> =C2=A0M:	Marcelo Schmitt <marcelo.schmitt@analog.com>
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index db9f5c711b3df90641f017652fbbef594cc1627d..8ccbdf6dfbca8640a47bf05b4=
-afc6b4bf90a7e26 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -178,6 +178,16 @@ config AD5624R_SPI
-> =C2=A0	=C2=A0 Say yes here to build support for Analog Devices AD5624R, A=
-D5644R and
-> =C2=A0	=C2=A0 AD5664R converters (DAC). This driver uses the common SPI i=
-nterface.
-> =C2=A0
-> +config AD5706R
-> +	tristate "Analog Devices AD5706R DAC driver"
-> +	depends on SPI
-> +	help
-> +	=C2=A0 Say yes here to build support for Analog Devices AD5706R 4-chann=
-el,
-> +	=C2=A0 16-bit current output DAC.
-> +
-> +	=C2=A0 To compile this driver as a module, choose M here: the
-> +	=C2=A0 module will be called ad5706r.
-> +
-> =C2=A0config AD9739A
-> =C2=A0	tristate "Analog Devices AD9739A RF DAC spi driver"
-> =C2=A0	depends on SPI
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index 2a80bbf4e80ad557da79ed916027cedff286984b..0034317984985035f7987a744=
-899924bfd4612e3 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -21,6 +21,7 @@ obj-$(CONFIG_AD5449) +=3D ad5449.o
-> =C2=A0obj-$(CONFIG_AD5592R_BASE) +=3D ad5592r-base.o
-> =C2=A0obj-$(CONFIG_AD5592R) +=3D ad5592r.o
-> =C2=A0obj-$(CONFIG_AD5593R) +=3D ad5593r.o
-> +obj-$(CONFIG_AD5706R) +=3D ad5706r.o
-> =C2=A0obj-$(CONFIG_AD5755) +=3D ad5755.o
-> =C2=A0obj-$(CONFIG_AD5758) +=3D ad5758.o
-> =C2=A0obj-$(CONFIG_AD5761) +=3D ad5761.o
-> diff --git a/drivers/iio/dac/ad5706r.c b/drivers/iio/dac/ad5706r.c
-> new file mode 100644
-> index 0000000000000000000000000000000000000000..840ee7b6db2e05ea35b27ff77=
-6f0c5c8a961d9c1
-> --- /dev/null
-> +++ b/drivers/iio/dac/ad5706r.c
-> @@ -0,0 +1,222 @@
-> +// SPDX-License-Identifier: GPL-2.0-only
-> +/*
-> + * AD5706R 16-bit Current Output Digital to Analog Converter
-> + *
-> + * Copyright 2026 Analog Devices Inc.
-> + */
-> +
-> +#include <linux/array_size.h>
-> +#include <linux/bits.h>
-> +#include <linux/cleanup.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/unaligned.h>
-> +
-> +/* SPI frame layout */
-> +#define AD5706R_RD_MASK			BIT(15)
-> +#define AD5706R_ADDR_MASK		GENMASK(11, 0)
-> +
-> +/* Registers */
-> +#define AD5706R_REG_DAC_INPUT_A_CH(x)		(0x60 + ((x) * 2))
-> +#define AD5706R_REG_DAC_DATA_READBACK_CH(x)	(0x68 + ((x) * 2))
-> +
-> +#define AD5706R_DAC_RESOLUTION		16
-> +#define AD5706R_DAC_MAX_CODE		BIT(16)
-> +#define AD5706R_MULTIBYTE_REG_START	0x14
-> +#define AD5706R_MULTIBYTE_REG_END	0x71
-> +#define AD5706R_SINGLE_BYTE_LEN		1
-> +#define AD5706R_DOUBLE_BYTE_LEN		2
-> +
-> +struct ad5706r_state {
-> +	struct spi_device *spi;
-> +	struct mutex lock; /* Protects SPI transfers */
-> +
-> +	u8 tx_buf[4] __aligned(ARCH_DMA_MINALIGN);
-> +	u8 rx_buf[2];
-> +};
-> +
-> +static int ad5706r_reg_len(unsigned int reg)
-> +{
-> +	if (reg >=3D AD5706R_MULTIBYTE_REG_START && reg <=3D AD5706R_MULTIBYTE_=
-REG_END)
-> +		return AD5706R_DOUBLE_BYTE_LEN;
-> +
-> +	return AD5706R_SINGLE_BYTE_LEN;
-> +}
-> +
-> +static int ad5706r_spi_write(struct ad5706r_state *st, u16 reg, u16 val)
-> +{
-> +	unsigned int num_bytes =3D ad5706r_reg_len(reg);
-> +	struct spi_transfer xfer =3D {
-> +		.tx_buf =3D st->tx_buf,
-> +		.len =3D num_bytes + 2,
-> +	};
-> +
-> +	put_unaligned_be16(reg, &st->tx_buf[0]);
-> +
-> +	if (num_bytes =3D=3D 1)
-> +		st->tx_buf[2] =3D val;
-> +	else if (num_bytes =3D=3D 2)
-> +		put_unaligned_be16(val, &st->tx_buf[2]);
-> +	else
-> +		return -EINVAL;
-> +
-> +	return spi_sync_transfer(st->spi, &xfer, 1);
-> +}
-> +
-> +static int ad5706r_spi_read(struct ad5706r_state *st, u16 reg, u16 *val)
-> +{
-> +	unsigned int num_bytes =3D ad5706r_reg_len(reg);
-> +	u16 cmd;
-> +	int ret;
-> +
-> +	struct spi_transfer xfer[] =3D {
-> +		{
-> +			.tx_buf =3D st->tx_buf,
-> +			.len =3D 2,
-> +		},
-> +		{
-> +			.rx_buf =3D st->rx_buf,
-> +			.len =3D num_bytes,
-> +		},
-> +	};
-> +
-> +	cmd =3D AD5706R_RD_MASK | (reg & AD5706R_ADDR_MASK);
-> +	put_unaligned_be16(cmd, &st->tx_buf[0]);
-> +
-> +	ret =3D spi_sync_transfer(st->spi, xfer, ARRAY_SIZE(xfer));
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (num_bytes =3D=3D 1)
-> +		*val =3D st->rx_buf[0];
-> +	else if (num_bytes =3D=3D 2)
-> +		*val =3D get_unaligned_be16(st->rx_buf);
-> +	else
-> +		return -EINVAL;
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad5706r_read_raw(struct iio_dev *indio_dev,
-> +			=C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *chan, int *val,
-> +			=C2=A0=C2=A0=C2=A0 int *val2, long mask)
-> +{
-> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
-> +	u16 reg_val;
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		scoped_guard(mutex, &st->lock) {
-> +			ret =3D ad5706r_spi_read(st, AD5706R_REG_DAC_DATA_READBACK_CH(chan-
-> >channel),
-> +					=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 &reg_val);
-> +
-> +			if (ret)
-> +				return ret;
-> +
-> +			*val =3D reg_val;
-> +		}
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val =3D 50;
-> +		*val2 =3D AD5706R_DAC_RESOLUTION;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int ad5706r_write_raw(struct iio_dev *indio_dev,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *chan, int val,
-> +			=C2=A0=C2=A0=C2=A0=C2=A0 int val2, long mask)
-> +{
-> +	struct ad5706r_state *st =3D iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (val < 0 || val >=3D AD5706R_DAC_MAX_CODE)
-> +			return -EINVAL;
-> +
-> +		guard(mutex)(&st->lock);
-> +		return ad5706r_spi_write(st,
-> +					 AD5706R_REG_DAC_INPUT_A_CH(chan->channel),
-> +					 val);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info ad5706r_info =3D {
-> +	.read_raw =3D ad5706r_read_raw,
-> +	.write_raw =3D ad5706r_write_raw,
-> +};
-> +
-> +#define AD5706R_CHAN(_channel) {				\
-> +	.type =3D IIO_CURRENT,					\
-> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |		\
-> +			=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 BIT(IIO_CHAN_INFO_SCALE),	\
-> +	.output =3D 1,						\
-> +	.indexed =3D 1,						\
-> +	.channel =3D _channel,					\
-> +}
-> +
-> +static const struct iio_chan_spec ad5706r_channels[] =3D {
-> +	AD5706R_CHAN(0),
-> +	AD5706R_CHAN(1),
-> +	AD5706R_CHAN(2),
-> +	AD5706R_CHAN(3),
-> +};
-> +
-> +static int ad5706r_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct ad5706r_state *st;
-> +	int ret;
-> +
-> +	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	st =3D iio_priv(indio_dev);
-> +	st->spi =3D spi;
-> +
-> +	ret =3D devm_mutex_init(&spi->dev, &st->lock);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->name =3D "ad5706r";
-> +	indio_dev->info =3D &ad5706r_info;
-> +	indio_dev->modes =3D INDIO_DIRECT_MODE;
-> +	indio_dev->channels =3D ad5706r_channels;
-> +	indio_dev->num_channels =3D ARRAY_SIZE(ad5706r_channels);
-> +
-> +	return devm_iio_device_register(&spi->dev, indio_dev);
-> +}
-> +
-> +static const struct of_device_id ad5706r_of_match[] =3D {
-> +	{ .compatible =3D "adi,ad5706r" },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, ad5706r_of_match);
-> +
-> +static const struct spi_device_id ad5706r_id[] =3D {
-> +	{ "ad5706r" },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, ad5706r_id);
-> +
-> +static struct spi_driver ad5706r_driver =3D {
-> +	.driver =3D {
-> +		.name =3D "ad5706r",
-> +		.of_match_table =3D ad5706r_of_match,
-> +	},
-> +	.probe =3D ad5706r_probe,
-> +	.id_table =3D ad5706r_id,
-> +};
-> +module_spi_driver(ad5706r_driver);
-> +
-> +MODULE_AUTHOR("Alexis Czezar Torreno <alexisczezar.torreno@analog.com>")=
-;
-> +MODULE_DESCRIPTION("AD5706R 16-bit Current Output DAC driver");
-> +MODULE_LICENSE("GPL");
+diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
+index b0bf46cae..31c43a4cb 100644
+--- a/drivers/iio/adc/ti-ads8688.c
++++ b/drivers/iio/adc/ti-ads8688.c
+@@ -6,7 +6,6 @@
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/slab.h>
+-#include <linux/sysfs.h>
+ #include <linux/spi/spi.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/err.h>
+@@ -17,7 +16,6 @@
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+-#include <linux/iio/sysfs.h>
+ 
+ #define ADS8688_CMD_REG(x)		(x << 8)
+ #define ADS8688_CMD_REG_NOOP		0x00
+@@ -66,6 +64,7 @@ struct ads8688_state {
+ 	const struct ads8688_chip_info	*chip_info;
+ 	struct spi_device		*spi;
+ 	unsigned int			vref_mv;
++	int				scale_avail[3][2];
+ 	enum ads8688_range		range[8];
+ 	union {
+ 		__be32 d32;
+@@ -114,37 +113,9 @@ static const struct ads8688_ranges ads8688_range_def[5] = {
+ 	}
+ };
+ 
+-static ssize_t ads8688_show_scales(struct device *dev,
+-				   struct device_attribute *attr, char *buf)
+-{
+-	struct ads8688_state *st = iio_priv(dev_to_iio_dev(dev));
+-
+-	return sprintf(buf, "0.%09u 0.%09u 0.%09u\n",
+-		       ads8688_range_def[0].scale * st->vref_mv,
+-		       ads8688_range_def[1].scale * st->vref_mv,
+-		       ads8688_range_def[2].scale * st->vref_mv);
+-}
+-
+-static ssize_t ads8688_show_offsets(struct device *dev,
+-				    struct device_attribute *attr, char *buf)
+-{
+-	return sprintf(buf, "%d %d\n", ads8688_range_def[0].offset,
+-		       ads8688_range_def[3].offset);
+-}
+-
+-static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
+-		       ads8688_show_scales, NULL, 0);
+-static IIO_DEVICE_ATTR(in_voltage_offset_available, S_IRUGO,
+-		       ads8688_show_offsets, NULL, 0);
+-
+-static struct attribute *ads8688_attributes[] = {
+-	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+-	&iio_dev_attr_in_voltage_offset_available.dev_attr.attr,
+-	NULL,
+-};
+-
+-static const struct attribute_group ads8688_attribute_group = {
+-	.attrs = ads8688_attributes,
++static const int ads8688_offset_avail[] = {
++	-BIT(ADS8688_REALBITS - 1),
++	0
+ };
+ 
+ #define ADS8688_CHAN(index)					\
+@@ -155,6 +126,9 @@ static const struct attribute_group ads8688_attribute_group = {
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
+ 			      | BIT(IIO_CHAN_INFO_SCALE)	\
+ 			      | BIT(IIO_CHAN_INFO_OFFSET),	\
++	.info_mask_shared_by_type_available =			\
++			      BIT(IIO_CHAN_INFO_SCALE)		\
++			      | BIT(IIO_CHAN_INFO_OFFSET),	\
+ 	.scan_index = index,					\
+ 	.scan_type = {						\
+ 		.sign = 'u',					\
+@@ -369,11 +343,34 @@ static int ads8688_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static int ads8688_read_avail(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      const int **vals, int *type, int *length,
++			      long mask)
++{
++	struct ads8688_state *st = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		*vals = (const int *)st->scale_avail;
++		*type = IIO_VAL_INT_PLUS_NANO;
++		*length = ARRAY_SIZE(st->scale_avail) * 2;
++		return IIO_AVAIL_LIST;
++	case IIO_CHAN_INFO_OFFSET:
++		*vals = ads8688_offset_avail;
++		*type = IIO_VAL_INT;
++		*length = ARRAY_SIZE(ads8688_offset_avail);
++		return IIO_AVAIL_LIST;
++	default:
++		return -EINVAL;
++	}
++}
++
+ static const struct iio_info ads8688_info = {
+ 	.read_raw = &ads8688_read_raw,
++	.read_avail = &ads8688_read_avail,
+ 	.write_raw = &ads8688_write_raw,
+ 	.write_raw_get_fmt = &ads8688_write_raw_get_fmt,
+-	.attrs = &ads8688_attribute_group,
+ };
+ 
+ static irqreturn_t ads8688_trigger_handler(int irq, void *p)
+@@ -426,6 +423,11 @@ static int ads8688_probe(struct spi_device *spi)
+ 
+ 	st->vref_mv = ret == -ENODEV ? ADS8688_VREF_MV : ret / 1000;
+ 
++	for (unsigned int i = 0; i < ARRAY_SIZE(st->scale_avail); i++) {
++		st->scale_avail[i][0] = 0;
++		st->scale_avail[i][1] = ads8688_range_def[i].scale * st->vref_mv;
++	}
++
+ 	st->chip_info =	&ads8688_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+ 
+ 	spi->mode = SPI_MODE_1;
+-- 
+2.33.0
