@@ -1,90 +1,112 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.10])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0232638C2C4;
-	Wed, 25 Mar 2026 19:42:35 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 0627A3F99FD;
+	Wed, 25 Mar 2026 19:43:31 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.10
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774467756; cv=none; b=YOfjts3p/S+VT8yapMRaibOS+eGMMWhE2RTqTEmf7Po/mrv/T/Np324YJuGqJP+L114UnR4bVVpoLVefDKzoncTsfSpBKdmiDW//PnQShAOHC67lEZ6vjw+X+swq/eVpzljszaeIkdjc70rndnyuACU8OHKU+aWCbktN5LdTz90=
+	t=1774467815; cv=none; b=GN1wVzBznDUaqdHX1ahgNBvEV5Bd887ryIKtHXIc102J5OknUu5vLHz5nShORGCt/FZyv32FVbfAUukED72MV6vL4pJi9t3xVGb25MpYWtaTvMdSD7JitDbApfGV/45Qv+l6ns5/nEGolYcITAdcfAidLVaS2gy3L91nQwqKJj4=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774467756; c=relaxed/simple;
-	bh=casEECSCZFqzaWXZa5uVv2GLE6pia8LBWKJV9Nkem4o=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=jfZKwJzHfmjQ4oORnItwALS2ioXYSn98LPw9gcuWhVwm84qz/aWh9iLp5nMn5sZ93NR/o+qN/CoOoC0aL1awTgadfYveXNEXimntLha3tfqYUKshE7lttBNnyydvNWBAuSYjeBCgfN8HGUNHqp5mZIYZCYO6TszWT5CafsciQ5U=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=JmXiUHPJ; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774467815; c=relaxed/simple;
+	bh=h+2et9AATJvAXKRz1JEaiYX/PdeNyQMAxsAsRq8acjA=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=P31likiVhxoYz0Ls61Vu+1H2kVDqSQqTLfJvPziwcXL9bc+lgvnfDIy8RzNcK5L1M217+eNtGISsVi6ZsgBvtvGDe0mi4o6eIdg/2SF6SiZiSbWWUynXXSOizWSViJ95bAeM8fQEpytjHcG/6FeQt+t7GGIgLii8lN6J2ojUr/U=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=mud1EH0r; arc=none smtp.client-ip=192.198.163.10
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="JmXiUHPJ"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4D43C4CEF7;
-	Wed, 25 Mar 2026 19:42:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774467755;
-	bh=casEECSCZFqzaWXZa5uVv2GLE6pia8LBWKJV9Nkem4o=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=JmXiUHPJA+L12PjxMiAw6qmVr5LWtN2igfZykPyMev3rzaxbYX+G5ZK66Lmunf7NW
-	 R1WBTo3h0Y0wAIo6YFWdLpjImdSG2wNwfgdv4nHK5Cl7Ipm3vM0z0sAZ2nM5C3CIDP
-	 LFO71a2KJT1Z9MvK7gnS4CCwbkTN3MExmBA2k+DDNj1XlLA7GbEAgQbuDjkekOpEgY
-	 Agwm2hJ2er3NkewmDRehXu7zmpwWl+JqtAPTelNDnAhL+/tyUXM3cHyxbZxTjIo0KA
-	 NIgnQsXdi6WSnkSog9qJPjx/1XlDfndR5S8ZqXf6RWELuZzRcTUN5kVcvbaDEAEjSi
-	 CcUFFdBFEv0Ng==
-Date: Wed, 25 Mar 2026 19:42:27 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: Andy Shevchenko <andriy.shevchenko@intel.com>
-Cc: Gabriel Rondon <grondon@gmail.com>, David Lechner
- <dlechner@baylibre.com>, Nuno Sa <nuno.sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-ads8688: use read_avail for available
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="mud1EH0r"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774467812; x=1806003812;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=h+2et9AATJvAXKRz1JEaiYX/PdeNyQMAxsAsRq8acjA=;
+  b=mud1EH0ra36Qh4/DNbJbp2wn7y6JlxCMbfY6HKF3OyMCn7QGH/5vKbGi
+   t4Nk7DNQLSwHawCqntrg5NdvXZnSqxZuzJnX6H6/ta9/FPcvg/0LBk5fE
+   iNWodP4sy6h2KM19DQhLmMgtzIi3nsSM0NDqH9WJ8d4xuFI/QWnz+t0ae
+   YqQIs+trDLRLZZ8rGF3XfBXeWBRbJ4uVOnSHR01HB9qesDiHEkUeP/pv/
+   QlaCXyxEqLf7L9fm780PF57nyR+rw3GzH40ZqVGNLp5htmvkEHvlTud9y
+   h9S2mzJlHIbxzTXVNi5Sn0r3q44QA0IZ7jsOhMmCU1WZS1/4Ck9kBLuPo
+   A==;
+X-CSE-ConnectionGUID: C3pUPdq2SuGCMDTObjMiAQ==
+X-CSE-MsgGUID: oD2M1UdeSlaufBgiKIV0RQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11740"; a="86894739"
+X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
+   d="scan'208";a="86894739"
+Received: from orviesa002.jf.intel.com ([10.64.159.142])
+  by fmvoesa104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 12:43:31 -0700
+X-CSE-ConnectionGUID: w/GBflgjQe6ihgbKLxjR0Q==
+X-CSE-MsgGUID: xuQClG6hSwWUkPukvBv7dw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
+   d="scan'208";a="255275032"
+Received: from lkp-server01.sh.intel.com (HELO 3905d212be1b) ([10.239.97.150])
+  by orviesa002.jf.intel.com with ESMTP; 25 Mar 2026 12:43:29 -0700
+Received: from kbuild by 3905d212be1b with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1w5U8U-000000007bl-1CTb;
+	Wed, 25 Mar 2026 19:43:26 +0000
+Date: Thu, 26 Mar 2026 03:42:49 +0800
+From: kernel test robot <lkp@intel.com>
+To: Gabriel Rondon <grondon@gmail.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: oe-kbuild-all@lists.linux.dev, David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] iio: adc: ti-ads8688: use read_avail for available
  attributes
-Message-ID: <20260325194227.5d112a85@jic23-huawei>
-In-Reply-To: <acJ4sPoX_UqorDXS@ashevche-desk.local>
-References: <20260323215633.8140-1-grondon@gmail.com>
-	<acJ4sPoX_UqorDXS@ashevche-desk.local>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+Message-ID: <202603260345.PUPcPFND-lkp@intel.com>
+References: <20260325110942.65337-1-grondon@gmail.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260325110942.65337-1-grondon@gmail.com>
 
-On Tue, 24 Mar 2026 13:42:40 +0200
-Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+Hi Gabriel,
 
-> On Mon, Mar 23, 2026 at 09:56:33PM +0000, Gabriel Rondon wrote:
-> > Convert the in_voltage_scale_available and in_voltage_offset_available
-> > attributes from legacy IIO_DEVICE_ATTR with custom show functions to the
-> > IIO framework's read_avail callback. This uses the framework's built-in
-> > support for _available attributes, removing the need for manual sysfs
-> > formatting.
-> > 
-> > Precompute the available scale values at probe time since they depend on
-> > the reference voltage which does not change after initialization.  
-> 
-> ...
-> 
-> > +static const int ads8688_offset_avail[] = {
-> > +	-(1 << (ADS8688_REALBITS - 1)),  
-> 
-> This is fragile code (however it probably won't be exposed IRL)
-> if ADS8688_REALBITS == 32 this is UB in accordance with C standard.
-> 
-> Also the trick with -BIT(x) is harder to read than simple GENMASK().
-> If ADS8688_REALBITS == 1, this becomes -1 (all ones), is it correct?
-> 
-> > +	0,  
+kernel test robot noticed the following build warnings:
 
-Replying here because the follow up lost too much context.
-This is a classic offset for bipolar ADC, which is - half the full
-range binary value.  So we won't hit the edge cases, but maybe
-expressing it different will be clearer.
+[auto build test WARNING on jic23-iio/togreg]
+[also build test WARNING on linus/master v7.0-rc5 next-20260325]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch#_base_tree_information]
 
--(GENMASK(ADS8688_REALBITS - 1, 0) >> 1) does feel a bit overkill
-but -GENMASK(ADS8688_REALBITS - 2, 0) feels under explained (much
-like the current).
+url:    https://github.com/intel-lab-lkp/linux/commits/Gabriel-Rondon/iio-adc-ti-ads8688-use-read_avail-for-available-attributes/20260325-195933
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+patch link:    https://lore.kernel.org/r/20260325110942.65337-1-grondon%40gmail.com
+patch subject: [PATCH v2] iio: adc: ti-ads8688: use read_avail for available attributes
+config: riscv-randconfig-001-20260326 (https://download.01.org/0day-ci/archive/20260326/202603260345.PUPcPFND-lkp@intel.com/config)
+compiler: riscv64-linux-gcc (GCC) 10.5.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260326/202603260345.PUPcPFND-lkp@intel.com/reproduce)
 
-We 'could' use -(U16MAX >> 1) but that feels very specific to
-it being 16 bits.
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202603260345.PUPcPFND-lkp@intel.com/
 
-Maybe just leave this as it already is in the table the value
-is copied from. 
+All warnings (new ones prefixed by >>):
+
+>> drivers/iio/adc/ti-ads8688.c:117:2: warning: overflow in conversion from 'long unsigned int' to 'int' changes value from '18446744073709518848' to '-32768' [-Woverflow]
+     117 |  -BIT(ADS8688_REALBITS - 1),
+         |  ^
+
+
+vim +117 drivers/iio/adc/ti-ads8688.c
+
+   115	
+   116	static const int ads8688_offset_avail[] = {
+ > 117		-BIT(ADS8688_REALBITS - 1),
+   118		0
+   119	};
+   120	
+
+-- 
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
