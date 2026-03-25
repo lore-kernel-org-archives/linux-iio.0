@@ -1,108 +1,111 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f51.google.com (mail-pj1-f51.google.com [209.85.216.51])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 187573C9EC1;
-	Wed, 25 Mar 2026 11:33:33 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E89CB3CEBBC
+	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 11:43:06 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.51
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774438415; cv=none; b=rfU5yVWCno4s+652qHu6dqx3mj6bk6+ik2yh6ED8t9n5ulzHcyhjB53+Yd9B02+GsuON7nGSidrFweY3nrxO3xcBOi9Q5pKZowT+n/G64L9VapI7niJoxb4i6we733E2MrYUNhg9qKG6jFh2mRamg6QgmNo5IyFaeSPk71eabVw=
+	t=1774438988; cv=none; b=kMauveta8sVQfstllFiB33kOuc0BkKnr4dgQ2ADCKJ75f2iGHB0FDt90NlhOgyQLYGCnEmEXqatY9/ImU6ivPj4e8VKIcfz4ZipU3dsmDEk9DTSvTDcM2loYMLcmYtYG6Atfm/5b+ZeoucmKGFl9v1z+FirledZJiVTmhMFV9Bw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774438415; c=relaxed/simple;
-	bh=SVgS/c3csFd9u/m9vlt0wexGSwtyJ6O5udDeLz/HdPc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=dyeqi3F/pqJt7QB+o4txaBBNphvjhNYmpCx8XynyoUa8KRHFOgZ/yodJlwUjB175dSd9LX3wXmXRrgPYV0Y7krCv7/et9XHIng89GnY/2u7etH94R01+ju/ELF3418acQdjDmijIIwXCnweftjIInxoHWgXjueDLwQ+ZDNZ1sI0=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HaNMdamF; arc=none smtp.client-ip=192.198.163.14
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1774438988; c=relaxed/simple;
+	bh=Errhj4nqvarB4bR7L42ihMdmjZHZvkGEfEh2AiA7mY4=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=oEy6oe7bHRj/Z9fN77TA4BX8r+X1FqrGzM8JICSz9BRCur4u9qOV1z5wxZ3nbtgwZ7sBeuDlvmjxjfr/GRoyM/Q7M1awMK0kK4qaQMfUEMe690iJSjNE8YDp0k8uZceVxIpnSvL8CO1V/ah6yB/4VDBGaMH7Hh9AQVtnVh62qRY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=eSK6Rnsg; arc=none smtp.client-ip=209.85.216.51
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HaNMdamF"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774438414; x=1805974414;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=SVgS/c3csFd9u/m9vlt0wexGSwtyJ6O5udDeLz/HdPc=;
-  b=HaNMdamFxGOG+S/OI+n77nmpQ6p0Qmcli0+tlWZUoHlXfwWTmr3y2jAO
-   iy4jd2FyzL0yNWNsqrYX9PoZHEoYa4+p95GIK/b8ss9EkViN0uLN3vWn5
-   LSjzli2Ug5qoPq+dLFtCsKqjv1G7vQ2euclvZj4VHRb1x5fNWMS03cZuX
-   xaDxzYy2+prIK+68QLlNEMChn4fLGw4zI440svBe78isMUrH6tU+FzOxZ
-   lLc2ZDI26PnH+BvZ6pU3JdG7xH5cc4q0vuitZ6hXdCfIJneFtRVEZRf15
-   8NDw4TGpMqcJAFqySSPh5yopIK+i/4ydm2yuyti46mZJMC0gkQAGz693C
-   A==;
-X-CSE-ConnectionGUID: Lpaq3+ZTSPe+XmnLkcVFnQ==
-X-CSE-MsgGUID: RU6RxR4sQviJwHKxw/mEQA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11739"; a="75539630"
-X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
-   d="scan'208";a="75539630"
-Received: from fmviesa006.fm.intel.com ([10.60.135.146])
-  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 04:33:33 -0700
-X-CSE-ConnectionGUID: SsrqaiHRQjKJ9G0vieL5ig==
-X-CSE-MsgGUID: yKxUJewKQAyCBv06w/Hncg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
-   d="scan'208";a="219804166"
-Received: from lkp-server01.sh.intel.com (HELO 3905d212be1b) ([10.239.97.150])
-  by fmviesa006.fm.intel.com with ESMTP; 25 Mar 2026 04:33:28 -0700
-Received: from kbuild by 3905d212be1b with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w5MUG-000000006k5-3sfo;
-	Wed, 25 Mar 2026 11:33:24 +0000
-Date: Wed, 25 Mar 2026 19:32:43 +0800
-From: kernel test robot <lkp@intel.com>
-To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk@kernel.org>,
-	Conor Dooley <conor+dt@kernel.org>,
-	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
-	Bartosz Golaszewski <brgl@kernel.org>,
-	Philipp Zabel <p.zabel@pengutronix.de>
-Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
-	Radu Sabau <radu.sabau@analog.com>
-Subject: Re: [PATCH v4 4/4] iio: adc: ad4691: add SPI offload support
-Message-ID: <202603251904.qcAGC4cf-lkp@intel.com>
-References: <20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eSK6Rnsg"
+Received: by mail-pj1-f51.google.com with SMTP id 98e67ed59e1d1-35a094cc3e9so4341400a91.3
+        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 04:43:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774438986; x=1775043786; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=QeIqQjw3j6V6uN9k74bW2SknjbNp/c13xxutsDP8fWk=;
+        b=eSK6RnsgUIkhnxjfnzTxb2/QGQvZ38WzTUtUAlLLWWZD6wgeRx9WZI+URmukMrNXwU
+         +mDTzlzUtuLe4NE5oixmxMlRhceloTSJTycc+gpLteKjtZW0txaJvjDLBwtztOMO202L
+         2aKh3X3YwfL0xiYUbKjwMjultkdiIHA5xl5aOHrmia33wHy4X1Ulu7SZvdFDg+NF4l+Z
+         bAxQ0+XEdE1NjtSS/cIOBXTohgRpObs8Z1pU0oUjXDGt3QUcB8gO3UCRBOfa04AexnYr
+         ODvg+iplEKtCeoZmD6vJEfnyskChDVycQKYU8uZWE8m+Vh7keX5tnKO4H+lYgloMp95V
+         AENw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774438986; x=1775043786;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=QeIqQjw3j6V6uN9k74bW2SknjbNp/c13xxutsDP8fWk=;
+        b=LnWZCieryIMCisMc8I9JdZou0B9d9V2UPW6kRqSjz7nGPa4Ez1wMAC0O10FGXgESgp
+         75agH+wbxY6klAmUYKY5sjRsdfvpK+xKVvY3EtGLNU3DJxQ3ihde5HQ9qHc5pfK488LT
+         S0be2dRe9GwMuI7OZOC8qeA9Ij7A3yGKwg5GfmUETYfxSjJlJlaHYCbXtCBl529BhUbt
+         VPqGVvKP2NyD6Uz4VjzPIsxaY9r+VaxRE1bNOl16xmOO6DEoeF62o+iKjX0fXOopjHcF
+         qklNsrs1Ih+Vr01AiiqbE/vXhAGXenPRq9vWpWEkIQwCaNnDIOMrgBEwcsr+fDWa2q9G
+         C1ig==
+X-Forwarded-Encrypted: i=1; AJvYcCWxQxRBmbqAN/COfXdCXrJs0mAXKSVs1JN1pFif9oI/yXEtBDWpJqNxN9RP1cZVWFOMw2SdCfYW4bg=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyeLrPKFs6bjAoLQQNLQ3geSqqxmdfqe2gf6TqfBrWOxe6ABVSo
+	gRC10+6x68GZECs2VmYelnJNwbm0WJ0cxhkg7CabiyUkKRpOL6X1xkc=
+X-Gm-Gg: ATEYQzwXMKp6fR0m52N9zRoWmtFCObaqCQ/VVq2r8dYhYFTZEONccKf8jrVocswi7aS
+	5uKarxiXiLnokuXiZc3Qg2Dtd2BTtOlDM7fRjej+nd+qCQefBR8UnjNG40rSmAWVv760pDhgWtg
+	z1wHFDMr/NySAzrZlsrHvrdlb/c15Ay+2IRkxm4fF+82jIVWXu4ebfWj2J55S5elKLqX8yJqjqu
+	8YALAnVGjov0tXtTkKyegwDcNZkiQvxm8Ok+4NJp3qsPczuR13Vyyt+eP+YhTpwQcVgC3UJZkl1
+	/xxTF0I7T1RghLeAmD6DodwMjsdN7ULOXieWclToB1V8pc/P6qRhhX9NVR28tYoA7QYD+n8u3uv
+	OcSU9ZsXaNwnLdqLE6z0fNjefDmfcDuKeexel9nRl1SoZtI+W8kYoQvamacfGcbshZEpj6tScqn
+	fPkTKOQO4ENYHA81nG2Ih9JODU7+Wo+4dQjndbqzt2Q2LHbsFAaTgBwQWng3FHNS1uUtI=
+X-Received: by 2002:a17:903:1b44:b0:2b0:60f1:de58 with SMTP id d9443c01a7336-2b0b0b1e2camr35173035ad.45.1774438986204;
+        Wed, 25 Mar 2026 04:43:06 -0700 (PDT)
+Received: from nik.. ([101.0.62.243])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b0836b97fesm172471825ad.84.2026.03.25.04.43.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Mar 2026 04:43:05 -0700 (PDT)
+From: Nikhil Gautam <nikhilgtr@gmail.com>
+To: jic23@kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	linux-iio@vger.kernel.org,
+	Nikhil Gautam <nikhilgtr@gmail.com>
+Subject: [PATCH] iio: accel: adxl380: fix typo in PART_ID register macro
+Date: Wed, 25 Mar 2026 17:12:51 +0530
+Message-Id: <20260325114251.20827-1-nikhilgtr@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a@analog.com>
+Content-Transfer-Encoding: 8bit
 
-Hi Radu,
+Fix a typo in the ADXL380_PART_ID_REG macro name where it was
+incorrectly defined as ADLX380_PART_ID_REG.
 
-kernel test robot noticed the following build errors:
+Also update its usage in adxl380_setup().
 
-[auto build test ERROR on 11439c4635edd669ae435eec308f4ab8a0804808]
+Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+---
+ drivers/iio/accel/adxl380.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Radu-Sabau-via-B4-Relay/dt-bindings-iio-adc-add-AD4691-family/20260321-120718
-base:   11439c4635edd669ae435eec308f4ab8a0804808
-patch link:    https://lore.kernel.org/r/20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a%40analog.com
-patch subject: [PATCH v4 4/4] iio: adc: ad4691: add SPI offload support
-config: openrisc-randconfig-r063-20260325 (https://download.01.org/0day-ci/archive/20260325/202603251904.qcAGC4cf-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 14.3.0
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260325/202603251904.qcAGC4cf-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603251904.qcAGC4cf-lkp@intel.com/
-
-All errors (new ones prefixed by >>, old ones prefixed by <<):
-
->> ERROR: modpost: module ad4691 uses symbol devm_iio_dmaengine_buffer_setup_with_handle from namespace IIO_DMAENGINE_BUFFER, but does not import it.
-
+diff --git a/drivers/iio/accel/adxl380.c b/drivers/iio/accel/adxl380.c
+index 0cf3c6815829..d7c3dcf8b620 100644
+--- a/drivers/iio/accel/adxl380.c
++++ b/drivers/iio/accel/adxl380.c
+@@ -29,7 +29,7 @@
+ #define ADXL382_ID_VAL				382
+ 
+ #define ADXL380_DEVID_AD_REG			0x00
+-#define ADLX380_PART_ID_REG			0x02
++#define ADXL380_PART_ID_REG			0x02
+ 
+ #define ADXL380_X_DATA_H_REG			0x15
+ #define ADXL380_Y_DATA_H_REG			0x17
+@@ -1773,7 +1773,7 @@ static int adxl380_setup(struct iio_dev *indio_dev)
+ 	if (reg_val != ADXL380_DEVID_AD_VAL)
+ 		dev_warn(st->dev, "Unknown chip id %x\n", reg_val);
+ 
+-	ret = regmap_bulk_read(st->regmap, ADLX380_PART_ID_REG,
++	ret = regmap_bulk_read(st->regmap, ADXL380_PART_ID_REG,
+ 			       &st->transf_buf, 2);
+ 	if (ret)
+ 		return ret;
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.34.1
+
