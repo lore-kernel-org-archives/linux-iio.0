@@ -1,60 +1,87 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id E2E9E2F290B
-	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 09:38:48 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9715419E7F7
+	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 10:12:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.44
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774431529; cv=none; b=qWgmoCcGx28QcXla8EsrMsKnD7/4l5HA8oXEOXLC2eAacPPKA1KM3FCiuqSfX6uVXeUbloj4RQyTucMuFjn54Zb1QV327fBbmB8bZqAtF2fhq/aanU0qefiticCXjHKxKsbl4KX3C/OFb+fdjD1IVTOw3eBjrWRNXsgn66JVUGM=
+	t=1774433547; cv=none; b=W9xGgq20Jz1OoesI5Kr7I7Hk5z92ChTEFrapMLCUu+cYPZO+gHq/Gsnoo+W3Qv6FX9sXmObxg4glEDc/VMRjAIjxC3zt5xYWIz41fbAEcMorsBuE2cvRODQa56x1yia12Hq3nGw7UN+7RwMRr6sNcVfShnLlEcRIYfW6Ng4ObCQ=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774431529; c=relaxed/simple;
-	bh=Nd6fflvBzgtMZYUwBMiWnHTxU1EQHKX5ZyUyNgBUf4c=;
-	h=From:To:Subject:Date:Message-ID:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=eF4bcP6rpUq2CGqfX5HU8fZX+MONmZm02tQIoFdrYd+F42z3cn8M2BsnCzb6z0JdKNS0I0kTBY0b6SNnyklq9u6P6PtsZSf/FJaCP+HD8iRaREw2tIlW5+sqYLMsrpLG+obdaLXlKd+ZAEl+oV5sINJvUNUen8G/VDc61Z4OmR8=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=pTtAk/PK; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774433547; c=relaxed/simple;
+	bh=m56/b3WOzdczHaxO3PWQ3LHZIR79H+h2yCAj5xOJYe0=;
+	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
+	 Content-Type:MIME-Version; b=MYy6noLmqzsoI3eZw+x5pzpA3ysXjVxQtMj9Zdj/vu/91QXMNSk/RRyEo0ST/XNaspFyNMwuLEYIpbMxx/wCS7I1ZX/hgjuevCsV2u52tQXhwR+bEsI9S+sp/T72TUrbJ+HV33dte03nHUJKjEQaePLJfIrczxZuJf3onh/3ZGo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=avc3bssr; arc=none smtp.client-ip=209.85.128.44
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="pTtAk/PK"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 728D2C4CEF7
-	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 09:38:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774431528;
-	bh=Nd6fflvBzgtMZYUwBMiWnHTxU1EQHKX5ZyUyNgBUf4c=;
-	h=From:To:Subject:Date:In-Reply-To:References:From;
-	b=pTtAk/PKeObA/e65imyN77BQEU6dpOCNRNEimyFLlRccT5wekmiehPBrhM1+B+Vyb
-	 /fXLhjIv6PgxBFEMbsh1U9Nk65tD6Jk0w3fJ3HCpt/7PlAviIsKhkR17V+WGAcLh7E
-	 8MYWBxhyxpFYW1CsgQio89+yv7IAwlRdXGH1+bLdDY8bG+PXCGicURgKPrNgvr/pj7
-	 Bautspn4eIbGCioMHLdeC+KoqR2B+H5mPSP4DNwjtIh5/ofX5z6hplwZco8BDOT2WF
-	 G9wgNiEnlQcOEC7RZ0upfo7SSiAMW8u2MYTcxpmZmiA4LyfWFmfE1FUe+xzGNkOOpZ
-	 3RvSrRZ6jR8Gw==
-Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
-	id 6EC0BC41613; Wed, 25 Mar 2026 09:38:48 +0000 (UTC)
-From: bugzilla-daemon@kernel.org
-To: linux-iio@vger.kernel.org
-Subject: [Bug 221256] On Boot - WARNING: kernel/irq/manage.c:1502 at
- __setup_irq+0x5bb/0x800, CPU#7: iio-sensor-prox/932
-Date: Wed, 25 Mar 2026 09:38:48 +0000
-X-Bugzilla-Reason: None
-X-Bugzilla-Type: changed
-X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Product: Drivers
-X-Bugzilla-Component: IIO
-X-Bugzilla-Version: 2.5
-X-Bugzilla-Keywords: 
-X-Bugzilla-Severity: high
-X-Bugzilla-Who: alain.cousinie@laposte.net
-X-Bugzilla-Status: NEW
-X-Bugzilla-Resolution: 
-X-Bugzilla-Priority: P3
-X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Flags: 
-X-Bugzilla-Changed-Fields: cf_kernel_version cf_regression
-Message-ID: <bug-221256-217253-Hck3zIq7Dp@https.bugzilla.kernel.org/>
-In-Reply-To: <bug-221256-217253@https.bugzilla.kernel.org/>
-References: <bug-221256-217253@https.bugzilla.kernel.org/>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="avc3bssr"
+Received: by mail-wm1-f44.google.com with SMTP id 5b1f17b1804b1-483487335c2so52224815e9.2
+        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 03:12:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774433544; x=1775038344; darn=vger.kernel.org;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
+         :date:message-id:reply-to;
+        bh=m56/b3WOzdczHaxO3PWQ3LHZIR79H+h2yCAj5xOJYe0=;
+        b=avc3bssreIgFfAmdzrvzIr/Tf0xQ5t5dN+pgfWGhW8TlGyuDhQu385sDwBo9iYv65m
+         F3vBh9M+VfI2ywySrtXISxuUxZnh3t3/MjuVBFbISOx8XRSiVGGS7LIjtzRtmfV/7FNK
+         zcmE+HhMM9YrfKw2eLjAjSABm1cNthihOdV18QgwPNX+lyIKoCXtpnoI52J9UVZvwKyU
+         IwGw+sV3fSDxumuqECvL4rK5LQeKV/oIjZKJ0Q78oGUbECJPJ4aU1RslBFmilm11Pf3M
+         gRWBH4yx4U7cQxAaaMDfuVyjCjFu0sNvzZ8sf6hw/b95Td+l/4QmMZIhQ77aihwMNzUD
+         yN1w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774433544; x=1775038344;
+        h=mime-version:user-agent:content-transfer-encoding:references
+         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
+         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
+        bh=m56/b3WOzdczHaxO3PWQ3LHZIR79H+h2yCAj5xOJYe0=;
+        b=Vlnda6NvG3yclD8Gz6Yc5tkHrtqGwxaf0bl5Q1v6NT7zIp3dWy15ZJtgweq2d99UJl
+         nBQawoCkBtn1HKmiD0RWtdD5/icnx9XrBbsYhTBwO1fY8qNLfn6NZAlQXQCrJFV/SZg1
+         qvRp801gCi2zmmphmb1XnaBiaQo5x1cnGnE+uArnSS22jeYmUGRj3jTqCNkiNx5k4yE2
+         K+Kdp/KM/LBrOxEwRIqccG+K8KxfjC9pUv6wsulRJHvtVBNjeziB26LQ0tgGd8BuybZE
+         H2IZCRJ80efv0t4xq9tFi/aPso7SFmf5BsOmmYqIuOK1gWYxZxR91LbPaaVtHZB0rcZc
+         5Qow==
+X-Forwarded-Encrypted: i=1; AJvYcCXGUd3bphezW9cwwx4h4pARiLNaMGuqm+ZOMJIWFkzngw1t6YhVsk7LT3felcqmDD9w/YWCSKBCIlY=@vger.kernel.org
+X-Gm-Message-State: AOJu0YyOUFud1gHTaK63WBSjSJ9LUNhPdqY4YnbV5C9qui6d7guJCQwf
+	YUd8K6qhZXyqhRFhaQqolGIHSY5tTWxchwdO1WZq6GM7eIiTAy+kLVtoNLEhjzwHNSA=
+X-Gm-Gg: ATEYQzyXJ1bGsXGMGFrfW2P9swA8I7MlyFn0o+MdTW2BzPS8mNGlUOWHQmBHSKK02r/
+	Zj7H3s8lEMqbexFvIffFSXvn32RlJOhkPjkRBGyI5GVyKwORx/qn8U4hAVOoGS6/p1Rn9VXE4LY
+	SoCrOgvLpbvK8IJ0xMT5y9sKOFhmHAh3smshggxFys08CiC9NXPLpUhczfc7IO11w2nnwTzZAxf
+	JYCty7uSubG4+18w0ggYCRpwaHLo3xUatwmI7Y3sJDGvYMFrXeP57smhK14ByrDkWfiqJcM+pPm
+	cUtw7gg6LFlklIxlubVAcHBoXxrgkLQf5yI8LqA+bKLPbKsDDBjoZyW9S6saNjHf7S+FVpBpC9T
+	GOX2tPjPRbi7qY8+dOO4GhRccW24TZljz0H2pTOhz0cKGHZDx+GMl8rz/SQW89eSYiLTSu14n2R
+	tfTJVpP2ov0dcoBnY2XgVEq/36T/13PUs=
+X-Received: by 2002:a05:600c:5296:b0:487:13d:4e77 with SMTP id 5b1f17b1804b1-48716067315mr43725525e9.27.1774433543852;
+        Wed, 25 Mar 2026 03:12:23 -0700 (PDT)
+Received: from [192.168.1.187] ([148.63.225.166])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4871739609csm16267605e9.33.2026.03.25.03.12.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Mar 2026 03:12:23 -0700 (PDT)
+Message-ID: <9bd364de66e86c8f94e410cc926775997f85b070.camel@gmail.com>
+Subject: Re: [PATCH v3 2/2] iio: dac: ad5706r: Add support for AD5706R DAC
+From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To: "Torreno, Alexis Czezar" <AlexisCzezar.Torreno@analog.com>, Andy
+ Shevchenko <andriy.shevchenko@intel.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, "Hennerich, Michael"	
+ <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>, David
+ Lechner <dlechner@baylibre.com>, "Sa, Nuno" <Nuno.Sa@analog.com>, Andy
+ Shevchenko <andy@kernel.org>,  Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>, 
+ "linux-iio@vger.kernel.org"	 <linux-iio@vger.kernel.org>,
+ "devicetree@vger.kernel.org"	 <devicetree@vger.kernel.org>,
+ "linux-kernel@vger.kernel.org"	 <linux-kernel@vger.kernel.org>
+Date: Wed, 25 Mar 2026 10:13:10 +0000
+In-Reply-To: <PH0PR03MB63519301C13837DBD94535E2F149A@PH0PR03MB6351.namprd03.prod.outlook.com>
+References: <20260318-dev_ad5706r-v3-0-5d078f41e988@analog.com>
+	 <20260318-dev_ad5706r-v3-2-5d078f41e988@analog.com>
+	 <abpfdELI33a0Ncl3@ashevche-desk.local>
+	 <PH0PR03MB6351A1A32896F5CFF05A4C10F14FA@PH0PR03MB6351.namprd03.prod.outlook.com>
+	 <abugoaMtEV75Fyk8@ashevche-desk.local>
+	 <PH0PR03MB63519301C13837DBD94535E2F149A@PH0PR03MB6351.namprd03.prod.outlook.com>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
-X-Bugzilla-URL: https://bugzilla.kernel.org/
-Auto-Submitted: auto-generated
+User-Agent: Evolution 3.58.3 
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -62,225 +89,47 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 
-https://bugzilla.kernel.org/show_bug.cgi?id=3D221256
-
-AlainC (alain.cousinie@laposte.net) changed:
-
-           What    |Removed                     |Added
-----------------------------------------------------------------------------
-     Kernel Version|                            |7.0
-         Regression|No                          |Yes
-
---- Comment #4 from AlainC (alain.cousinie@laposte.net) ---
-(In reply to Jonathan Cameron from comment #2)
-> On Wed, 18 Mar 2026 10:10:29 +0000
-> bugzilla-daemon@kernel.org wrote:
->=20
-> > https://bugzilla.kernel.org/show_bug.cgi?id=3D221256
+On Wed, 2026-03-25 at 01:07 +0000, Torreno, Alexis Czezar wrote:
+> > > > > Changes since v1:
+> > > > > =C2=A0 - Removed PWM, GPIO, clock generator, debugfs, regmap,
+> > > > > IIO_BUFFER
+> > > >=20
+> > > > Why was regmap removed?! Was it not used?
+> > >=20
+> > > As far as I understand it, regmap also gives access to debugfs. When =
+I
+> > > removed debugfs I also added regmap as removed.
 > >=20
-> >             Bug ID: 221256
-> >            Summary: On Boot - WARNING: kernel/irq/manage.c:1502 at
-> >                     __setup_irq+0x5bb/0x800, CPU#7: iio-sensor-prox/932
-> >            Product: Drivers
-> >            Version: 2.5
-> >           Hardware: Intel
-> >                 OS: Linux
-> >             Status: NEW
-> >           Severity: high
-> >           Priority: P3
-> >          Component: IIO
-> >           Assignee: drivers_iio@kernel-bugs.kernel.org
-> >           Reporter: alain.cousinie@laposte.net
-> >         Regression: No
+> > Not only debugfs, and it's unrelated to the any custom debugfs interfac=
+es in
+> > the driver, it's just a feature out-of-the-box of regmap.
 > >=20
-> > Since the beginning of 7.0 rc1 to rc4, I have had a boot error.
-> > (I recompile the kernel with each RC release)
+> > > For the spi write/read I am not using regmap as the device has some
+> > > features that I think regmap_read/write couldn't support. Namely the
+> > > variable data width, as the device only accepts exact amount of clock
+> > > cycles. Future patches will also add variable SPI speed.
 > >=20
-> > [    7.425262] ------------[ cut here ]------------
-> > [    7.425264] WARNING: kernel/irq/manage.c:1502 at
-> __setup_irq+0x5bb/0x800,
-> > CPU#7: iio-sensor-prox/932
-> > [    7.425270] Modules linked in: bnep at24 ee1004 spd5118 nls_ascii
-> > nls_cp437
-> > vfat fat snd_ctl_led snd_soc_skl_hda_dsp(+) snd_soc_intel_sof_board_hel=
-pers
-> > snd_sof_probes snd_soc_intel_hda_dsp_common snd_hda_codec_intelhdmi
-> > snd_hda_codec_hdmi snd_hda_codec_alc269 snd_hda_codec_realtek_lib
-> > snd_hda_scodec_component snd_hda_codec_generic snd_soc_dmic snd_hda_int=
-el
-> > snd_sof_pci_intel_mtl snd_sof_intel_hda_generic soundwire_intel
-> > soundwire_generic_allocation snd_sof_intel_hda_sdw_bpt
-> > snd_sof_intel_hda_common
-> > snd_soc_hdac_hda snd_sof_intel_hda_mlink snd_sof_intel_hda
-> soundwire_cadence
-> > snd_sof_pci snd_sof_xtensa_dsp intel_uncore_frequency snd_soc_sdw_utils
-> > intel_uncore_frequency_common x86_pkg_temp_thermal snd_sof intel_powerc=
-lamp
-> > coretemp iwlmld snd_sof_utils snd_hda_ext_core kvm_intel snd_hda_codec
-> > snd_hda_core mac80211 kvm snd_intel_dspcfg snd_hda_scodec_cs35l41_spi
-> > regmap_spi snd_intel_sdw_acpi snd_soc_acpi_intel_match
-> > snd_soc_acpi_intel_sdca_quirks snd_soc_acpi snd_hwdep crc8 soundwire_bus
-> > snd_soc_sdca libarc4
-> > [    7.425297]  intel_ipu6_isys snd_soc_core btusb videobuf2_dma_sg
-> > hp_bioscfg(+) videobuf2_memops btmtk videobuf2_v4l2 btrtl irqbypass
-> > mei_gsc_proxy iwlwifi videobuf2_common intel_rapl_msr ghash_clmulni_int=
-el
-> > snd_compress btbcm aesni_intel firmware_attributes_class ac97_bus btint=
-el
-> > snd_pcm_dmaengine snd_hda_scodec_cs35l41_i2c cfg80211 gf128mul
-> > snd_hda_scodec_cs35l41 hp_wmi snd_pcm snd_soc_cs_amp_lib bluetooth spi_=
-nor
-> > hid_sensor_magn_3d hid_sensor_accel_3d hid_sensor_gyro_3d
-> hid_sensor_rotation
-> > snd_soc_cs35l41_lib hid_sensor_trigger wmi_bmof snd_timer cs_dsp
-> > processor_thermal_device_pci hid_sensor_iio_common pcspkr mtd intel_vpu
-> > ov08x40
-> > industrialio_triggered_buffer processor_thermal_device kfifo_buf snd me=
-i_me
-> > industrialio v4l2_fwnode intel_skl_int3472_tps68470 tps68470_regulator
-> > processor_thermal_wt_hint v4l2_async mei clk_tps68470 soundcore
-> > drm_shmem_helper rfkill serial_multi_instantiate videodev
-> > platform_temperature_control intel_pmc_core processor_thermal_soc_slider
-> > platform_profile processor_thermal_rfim mc
-> > [    7.425325]  processor_thermal_rapl intel_skl_int3472_discrete
-> > intel_skl_int3472_common intel_rapl_common joydev processor_thermal_wt_=
-req
-> > pmt_telemetry intel_ipu6 processor_thermal_power_floor acpi_tad
-> pmt_discovery
-> > int3403_thermal processor_thermal_mbox intel_hid pmt_class ipu_bridge
-> > int340x_thermal_zone sparse_keymap intel_pmc_ssram_telemetry
-> soc_button_array
-> > acpi_pad ac igen6_edac button evdev binfmt_misc parport_pc ppdev lp par=
-port
-> > i2c_dev msr nvme_fabrics efi_pstore nfnetlink efivarfs autofs4 uhci_hcd
-> > ehci_pci ehci_hcd xe drm_ttm_helper drm_suballoc_helper gpu_sched drm_g=
-puvm
-> > drm_exec configfs drm_gpusvm_helper hid_sensor_custom hid_sensor_hub us=
-bhid
-> > intel_ishtp_hid i915 hid_multitouch i2c_algo_bit drm_buddy ttm
-> > drm_display_helper xhci_pci hid_generic xhci_hcd cec nvme i2c_hid_acpi
-> > i2c_hid
-> > rc_core nvme_core ucsi_acpi psmouse hid drm_client_lib typec_ucsi iTCO_=
-wdt
-> > drm_kms_helper intel_pmc_bxt typec watchdog video intel_ish_ipc roles
-> > nvme_keyring serio_raw drm usbcore thunderbolt nvme_auth int3400_thermal
-> > battery
-> > [    7.425359]  intel_ishtp i2c_i801 wmi intel_lpss_pci hkdf
-> acpi_thermal_rel
-> > fan intel_lpss i2c_smbus usb_common intel_vsec idma64
-> > [    7.425366] CPU: 7 UID: 0 PID: 932 Comm: iio-sensor-prox Not tainted
-> > 7.0.0-rc4-meteor #1 PREEMPT(full)=20
-> > [    7.425368] Hardware name: HP HP Spectre x360 2-in-1 Laptop
-> > 14-eu0xxx/8C15,
-> > BIOS F.16 12/16/2025
-> > [    7.425368] RIP: 0010:__setup_irq+0x5bb/0x800
-> > [    7.425370] Code: 94 24 f0 00 00 00 e9 cb fe ff ff b8 01 00 00 00 48=
- c7
-> c2
-> > ff ff ff ff f3 48 0f bc d2 c4 e2 e9 f7 c0 49 89 47 48 e9 86 fd ff ff <0=
-f>
-> 0b
-> > f6
-> > c6 80 75 70 81 e2 00 00 01 00 0f 85 c5 fa ff ff 66 90 49
-> > [    7.425371] RSP: 0018:ffffd1b2c740bb58 EFLAGS: 00010246
-> > [    7.425373] RAX: 0000000000002000 RBX: ffff8d7942c91700 RCX:
-> > 0000000000000000
-> > [    7.425374] RDX: 0000000000000400 RSI: ffff8d7960d9ec00 RDI:
-> > ffffffffc1876a80
-> > [    7.425374] RBP: 00000000000000d2 R08: 0000000000000080 R09:
-> > ffff8d7942c91700
-> > [    7.425375] R10: 0000000000000000 R11: 0000000000000001 R12:
-> > ffff8d7960d9ec00
-> > [    7.425376] R13: ffff8d7960d9ec00 R14: 0000000000000400 R15:
-> > ffff8d7942c91700
-> > [    7.425377] FS:  00007f6716751980(0000) GS:ffff8d810f4e4000(0000)
-> > knlGS:0000000000000000
-> > [    7.425377] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > [    7.425378] CR2: 00007fff3d530fd0 CR3: 00000001282b2005 CR4:
-> > 0000000000f72ef0
-> > [    7.425379] PKRU: 55555554
-> > [    7.425380] Call Trace:
-> > [    7.425381]  <TASK>
-> > [    7.425382]  ? __kmalloc_cache_noprof+0x12f/0x4b0
-> > [    7.425385]  ? request_threaded_irq+0x96/0x1a0
-> > [    7.425389]  ? __pfx_iio_pollfunc_store_time+0x10/0x10 [industrialio]
-> > [    7.425393]  request_threaded_irq+0xd9/0x1a0
-> > [    7.425395]  iio_trigger_attach_poll_func+0xbe/0x1c0 [industrialio]
-> > [    7.425398]  __iio_update_buffers+0xddd/0xed0 [industrialio]
-> > [    7.425402]  enable_store+0x81/0xe0 [industrialio]
-> > [    7.425405]  kernfs_fop_write_iter+0x149/0x200
-> > [    7.425408]  vfs_write+0x363/0x530
-> > [    7.425411]  __x64_sys_write+0x70/0xe0
-> > [    7.425412]  do_syscall_64+0x118/0xd70
-> > [    7.425416]  ? __x64_sys_openat+0xe9/0x230
-> > [    7.425417]  ? do_syscall_64+0x118/0xd70
-> > [    7.425418]  ? do_syscall_64+0x118/0xd70
-> > [    7.425419]  ? do_syscall_64+0x118/0xd70
-> > [    7.425420]  ? __sysvec_apic_timer_interrupt+0x58/0x140
-> > [    7.425423]  ? irq_exit_rcu+0x41/0xe0
-> > [    7.425425]  entry_SYSCALL_64_after_hwframe+0x76/0x7e
-> > [    7.425427] RIP: 0033:0x7f6716b596be
-> > [    7.425429] Code: 08 0f 85 15 47 ff ff 49 89 fb 48 89 f0 48 89 d7 48=
- 89
-> ce
-> > 4c 89 c2 4d 89 ca 4c 8b 44 24 08 4c 8b 4c 24 10 4c 89 5c 24 08 0f 05 <c=
-3>
-> 90
-> > 48
-> > 83 ec 08 bf 01 00 00 00 e8 a2 e5 05 00 bf 01 00 00 00 89
-> > [    7.425430] RSP: 002b:00007fff3d532238 EFLAGS: 00000246 ORIG_RAX:
-> > 0000000000000001
-> > [    7.425431] RAX: ffffffffffffffda RBX: 0000564c8378b310 RCX:
-> > 00007f6716b596be
-> > [    7.425432] RDX: 0000000000000001 RSI: 00007fff3d5323f0 RDI:
-> > 0000000000000008
-> > [    7.425432] RBP: 0000000000000001 R08: 0000000000000000 R09:
-> > 0000000000000000
-> > [    7.425433] R10: 0000000000000000 R11: 0000000000000246 R12:
-> > 0000000000000001
-> > [    7.425433] R13: 00007fff3d5323f0 R14: 0000000000000002 R15:
-> > 0000000000000001
-> > [    7.425434]  </TASK>
-> > [    7.425435] ---[ end trace 0000000000000000 ]---
+> > We have a lot of flexibility in regmap core. Do you think it can be imp=
+roved /
+> > extended to cover the cases like yours?
+> >=20
 >=20
-> There are a number of fixes working their way upstream for warnings from
-> the tightening up of parameter checks on the irq_request functions.
+> To neatly summarize, my needs are: (in future patches)
+> 1. SPI read/write can have different frequencies and runtime changeable
+> 2. SPI data bits needs to be exactly 8bits or 16bits depending on registe=
+r width
+> 3. DAC Device reads SPI command bits [14:12] for communication, not just =
+chip select
 >=20
-> Bisection will tell you it was that change of checks rather than find
-> the real problem.
+> For regmap to be used
+> 1. regmap_config would need new read_speed and write_speed entries.
+> 2. val_bits must now be changeable depending on the need.
+> 3. I think the read/write_flag_mask can do this.
 >=20
-> https://lore.kernel.org/all/20260220224514.471348-1-srinivas.
-> pandruvada@linux.intel.com/
-> would be my guess for what was hit here.  That's in a pull request waiting
-> for GregKH to pick up and send on to Linus.
->=20
-> It was an odd bit of usage. There was never actually an interrupt in use
-> despite a handler being registered. That patch cleans that up whilst
-> going through a dance to avoid an interface regressions. Took us a little
-> while to figure out the necessary dance.
->=20
-> Jonathan
->=20
->=20
->=20
->=20
-> >
 
-(In reply to AlainC from comment #3)
-> I'm sorry, but I didn't quite understand what you were saying.
->=20
-> I recompiled with the patch from=20
-> https://lore.kernel.org/all/20260220224514.471348-1-srinivas.
-> pandruvada@linux.intel.com/
-> And the result is positive; there are no more errors.
->=20
-> Alain
+Do not forget you can just implement your custom regmap_bus which also open=
+s new "doors".
 
-The bug has been present since version 7.0-rc1.
-Versions 6.19, including 6.19.9, are not affected.
 
---=20
-You may reply to this email to add a comment.
+- Nuno S=C3=A1
 
-You are receiving this mail because:
-You are watching the assignee of the bug.=
