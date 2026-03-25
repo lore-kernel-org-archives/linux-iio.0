@@ -1,191 +1,310 @@
-Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com [74.125.224.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CD2E43E7170
-	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 14:39:02 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=74.125.224.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C0B8F3E4C86;
+	Wed, 25 Mar 2026 14:47:23 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774449544; cv=none; b=PuipQq9vrppzeUNIc3gIur6yQf78GXbMHI0ZwoVufZ2TsW/SvBLm8cR06HArBzwkU9yJumIpNdGdfDBt468E1XKMvuieD3xysSMf7NyzWTuzB7IwSqDmVfhK/wliI2ET+xnBVAnlKXk0SXVeV0J9h4+QbGsViV11l4/+bcdMjiw=
+	t=1774450047; cv=none; b=usREeBPW15bBM8nD4+VnH4QLe4P9HEKX7Wu3M6L55N+uR4Rln5XsVd8Oq25HX7Nhci8bUhw6uo5p2Th6DUAGdvTY4IX05OA1qDYiguTLJhyIvMUnW+JNMDuEfW4kX/ASeShYtPuOO1Txvj4H8htpbRjvsJO1JqV9IFIkEVRGtwg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774449544; c=relaxed/simple;
-	bh=igOIPBvufIdq/zX1gcJ+5PZ3YA+A8TDi5yscYGtrCSc=;
-	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-	 To:Cc:Content-Type; b=o+RsYzLvvBf6OKo5HgQyp/WXqquWIaiiaXeiEwCFBcY+k8SAnKnaWaFcHLFeTnupPcr3z/1ENZZr/eVvCZIetEWlR5sLyyqBzONOj3pxro8ZAbQEQ9rmPFqtd5XcE1zDZKZCiInEC9ZxAqtVgYKmrOAO0xLPas7u8O4li46cj70=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=74.125.224.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-64edf260b49so1584675d50.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 07:39:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774449542; x=1775054342;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
-         :to:cc:subject:date:message-id:reply-to;
-        bh=61Bu6okO/rekN6OSvH+vN+cZWNdav7wgTTpXxse1ogQ=;
-        b=sCAjapMR5kmm8zNZpff8fhCNyaJkl/03fNeLT1YSDqAb+2I8q6YkSmjRDJ8IwO6r2m
-         lgFkNXXIPZQ5i1ofGNKXsknqNxI8Fag9eTVYimaYaYFCbvFmr18q5ucYBVy/dM+hEj9O
-         8xp+Km+9SNL1i50K3Clfq5HFoCEYFbW1uRZl+F/Qt/6aizFl/R1L6MqeqTT14G+O8cbg
-         bSDzw4AtYvHvOUcLUyBCcJ292ziQjcXoVAFNiEdAYTDhGYw9PTaq6S/KK+gLw1NZXuR9
-         wEEBC7oG90MearPBpYXnX6rBa8twT4vx3D19eT4ix2TReu0FQuaiO1JcK5SViCwtpbYd
-         mX5g==
-X-Forwarded-Encrypted: i=1; AJvYcCX7vmZdryVzrFImlTJRtaUZHyQxmbQBkkT7aJdZk6JedHqLlg/czo1jztHOB+oYvk9vC2VbcTLnlzs=@vger.kernel.org
-X-Gm-Message-State: AOJu0Yx48jpFiFPCRMyPYwWvIfxr4b3fTincYYkcG8/WgAsGicwkRbJK
-	u1N44T7F6cVkhHZwVHBdV1uxzCE+FOu93rXkcKKDQlOvIPAks1BX2C5RjFQWuXDu
-X-Gm-Gg: ATEYQzwTYYFUXX8KKKTvhaax1iQuCv64os1zCIYa8DWFxFlgqzrkDgewWIbPa8gMzgI
-	5/ExYLI6UZC1SKfgoHdF0Ft3dT0MTSS8wprZg6dnD+0ZL629Ma0KpLIsOqJ3E3Y617k+D0FEDrh
-	gIDNrul1qGWsSkCxWk2rJeto9Sm3t9F12BbapjI+m9dBMlxUuSKJd0XEasd6Wd7xoQjU+fiiMdA
-	UeScQvknbS5/skwiqNxVn9/nCVdaJWiwltqD5QM2kpMY2c/5VWWQHqHuAVVXlikc/VTSfNIA9dY
-	X0XOpLQuS79yWy/fc8IHDsQouNsdfYP8iDox2p3QN+zRWhVuHE01tLMDcZeK52CZZENCWLrGk5K
-	opPYLQNm5Ym4Qd4LSQyyD9S3HPvImEP1FLrfdbfh96BEfCa3IbByfjYUEpvhOGnM0CVspdmFUS1
-	V+4FO21GZk36YY5QMOlnsan2uODcz1NclPk68Ks/YSssTuQYMFID8unsRBEXBLhwNy65qQhyMlf
-	3v94rvVinNKswLYKM/Jie1zXm5E40xJBl70IyYw8Q==
-X-Received: by 2002:a53:d013:0:b0:64d:6cac:ecb3 with SMTP id 956f58d0204a3-64ee54f657bmr3468685d50.35.1774449541498;
-        Wed, 25 Mar 2026 07:39:01 -0700 (PDT)
-Received: from mail-yx1-f48.google.com (mail-yx1-f48.google.com. [74.125.224.48])
-        by smtp.gmail.com with ESMTPSA id 956f58d0204a3-64ef57bfc09sm71668d50.3.2026.03.25.07.39.00
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 25 Mar 2026 07:39:00 -0700 (PDT)
-Received: by mail-yx1-f48.google.com with SMTP id 956f58d0204a3-64e8cdafeffso1560088d50.1
-        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 07:39:00 -0700 (PDT)
-X-Forwarded-Encrypted: i=1; AJvYcCWD+ZP6FMJgiCYcq4bvrrKCjUG+k0+h1pEJrsxnNmej3sdMgEg9AvwBJYXQ1N/8aZMaMkCyK1k2M8g=@vger.kernel.org
-X-Received: by 2002:a05:690e:14c6:b0:64a:d677:85c with SMTP id
- 956f58d0204a3-64ed7976bffmr6741184d50.37.1774449540439; Wed, 25 Mar 2026
- 07:39:00 -0700 (PDT)
+	s=arc-20240116; t=1774450047; c=relaxed/simple;
+	bh=/C6cB0+Xx+NDl68yR+mJudD4MBpP7mbYmW9+uHqkPW8=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ZFEUYOuYAPX2a+3l5TirGUyIdrCs0B4n17z6V0Oty9QNdGQ3pthUtMl5CtxDCtTqcQ5TOWZpgE7UMO+6+PakqjKJyiFP7qEY9SO4oy9wYIiEpu+ZPM7ruTcH2bBqsMXYdJtXdAIw506QTkyzzfrNw2is/2tGiu3e/PM/rosJfNw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.224.150])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4fgqVY3yYLzHnGj3;
+	Wed, 25 Mar 2026 22:46:45 +0800 (CST)
+Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
+	by mail.maildlp.com (Postfix) with ESMTPS id 123EE40571;
+	Wed, 25 Mar 2026 22:47:21 +0800 (CST)
+Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
+ (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Wed, 25 Mar
+ 2026 14:47:20 +0000
+Date: Wed, 25 Mar 2026 14:47:19 +0000
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Siratul Islam <email@sirat.me>
+CC: <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<jic23@kernel.org>, <dlechner@baylibre.com>, <nuno.sa@analog.com>,
+	<andy@kernel.org>, <robh@kernel.org>, <krzk+dt@kernel.org>,
+	<conor+dt@kernel.org>, <linux-kernel@vger.kernel.org>, Andy Shevchenko
+	<andriy.shevchenko@intel.com>
+Subject: Re: [PATCH v7 2/2] iio: proximity: add driver for ST VL53L1X ToF
+ sensor
+Message-ID: <20260325144719.00005a92@huawei.com>
+In-Reply-To: <20260325063254.18062-3-email@sirat.me>
+References: <20260325063254.18062-1-email@sirat.me>
+	<20260325063254.18062-3-email@sirat.me>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-References: <20260325063254.18062-1-email@sirat.me> <20260325063254.18062-2-email@sirat.me>
- <20260325-gentle-earthworm-of-progress-1f9f46@quoll> <CANn+LW+Y6j0xk2x02-BUL9qNq2gf-PXspi4wP_KGd7Abz3hOYw@mail.gmail.com>
- <4d10b6c0-d599-4fc5-b9ed-ce669ac46e84@kernel.org> <CANn+LWJQM45rAT+mzS9ZEGBgmqChbxUtStdzhbzthXUPJ=2csg@mail.gmail.com>
- <20260325133806.00007b68@huawei.com> <f27bfbe4-aa90-4631-b96b-efb8465b05d4@kernel.org>
- <20260325140633.0000059c@huawei.com>
-In-Reply-To: <20260325140633.0000059c@huawei.com>
-From: Sirat <email@sirat.me>
-Date: Wed, 25 Mar 2026 20:38:48 +0600
-X-Gmail-Original-Message-ID: <CANn+LW+X5puvzY+cKYKAbWY6L2d_0P_2AZxuRkwH7ngc6T-vJA@mail.gmail.com>
-X-Gm-Features: AQROBzDkjAh4hCh3Uyr-Slorzdt9NTaXwv1Q7lSZlelAjuGoxx4z2SpgGTTNCdg
-Message-ID: <CANn+LW+X5puvzY+cKYKAbWY6L2d_0P_2AZxuRkwH7ngc6T-vJA@mail.gmail.com>
-Subject: Re: [PATCH v7 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF sensor
-To: Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc: Krzysztof Kozlowski <krzk@kernel.org>, linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
-	jic23@kernel.org, dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, 
-	robh@kernel.org, krzk+dt@kernel.org, conor+dt@kernel.org, 
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: lhrpeml500010.china.huawei.com (7.191.174.240) To
+ dubpeml500005.china.huawei.com (7.214.145.207)
 
-On Wed, Mar 25, 2026 at 8:06=E2=80=AFPM Jonathan Cameron
-<jonathan.cameron@huawei.com> wrote:
->
-> On Wed, 25 Mar 2026 14:44:13 +0100
-> Krzysztof Kozlowski <krzk@kernel.org> wrote:
->
-> > On 25/03/2026 14:38, Jonathan Cameron wrote:
-> > > On Wed, 25 Mar 2026 15:18:05 +0600
-> > > Sirat <email@sirat.me> wrote:
-> > >
-> > >> On Wed, Mar 25, 2026 at 2:58=E2=80=AFPM Krzysztof Kozlowski <krzk@ke=
-rnel.org> wrote:
-> > >>>
-> > >>> On 25/03/2026 09:48, Sirat wrote:
-> > >>>> On Wed, Mar 25, 2026 at 2:05=E2=80=AFPM Krzysztof Kozlowski <krzk@=
-kernel.org> wrote:
-> > >>>>>
-> > >>>>> On Wed, Mar 25, 2026 at 12:32:22PM +0600, Siratul Islam wrote:
-> > >>>>>> Add device tree binding documentation for the STMicroelectronics
-> > >>>>>> VL53L1X Time-of-Flight ranging sensor connected via I2C.
-> > >>>>>>
-> > >>>>>> Make vdd-supply required. The device requires power to operate
-> > >>>>>> and the property should have been required from the start.
-> > >>>>>
-> > >>>>> That's ABI break and device for many years was working fine, so t=
-his
-> > >>>>> should not be changed.
-> > >>>>>
-> > >>>> Jonathan and David asked that vdd-supply be made required. I feel =
-like
-> > >>>> there is a conflict here that I am not able to resolve myself.
-> > >>>>
-> > >>>> What I think about it is the binding does not correctly describe t=
-he
-> > >>>> hardware and we should consider this a bug and fix it.
-> > >>>> The driver worked because of a fallback mechanism (dummy/fake
-> > >>>> regulator) and not because power was optional.
-> > >>>>
-> > >>>
-> > >>>
-> > >>> I looked at v6 and v5 and I do not see such comment for binding tha=
-t
-> > >>> existing device should change ABI. Can you point me to it?
-> > >>>
-> > >> "Make it required and add a note to the commit message to say why th=
-e
-> > >> requirement should always have been there. Devices tend not to work
-> > >> with no power." - Jonathan (v3:
-> > >> https://lore.kernel.org/linux-iio/20260322115704.10b2e0d4@jic23-huaw=
-ei)
-> > >>
-> > >> "No, bindings should not depend on driver implementation." - David
-> > >> (When I asked if I should  drop the hard requirement in the binding,
-> > >> v6: https://lore.kernel.org/linux-iio/55e92148-b5de-4fb8-af0b-947623=
-5341bc@baylibre.com/)
-> > >>
-> > >> "From the point of view of the devicetree, it doesn't matter what th=
-e
-> > >> driver does. It matters that the chip can't work without power. ;-)"=
- -
-> > >> David (v1: https://lore.kernel.org/linux-iio/d0ec6a2f-6d30-4774-8950=
--15dd3c4b020b@baylibre.com)
-> > >>
-> > >> I'm not sure if this is the correct way to quote. But I have added t=
-he links.
-> > >
-> > > This came up a few years back - though I doubt I can track down the
-> > > exact discussion however.
-> > >
-> > > From a Linux point of view we are breaking binding checks only if the
-> > > supply (that should always have been there as chips tend not to work
-> > > well without power) is not present.  We absolutely have to
-> > > keep the driver running whether or not the supply is specified.
-> > > Do other DT users provide such a constraint? I've no idea.
-> > >
-> > > If the DT maintainer preference is leave it not required (perhaps
-> > > with a comment saying new users of the binding should supply it)
-> > > then that's fine by me. I'll keep it in mind for future similar chang=
-es.
-> >
-> > If this was other ABI, e.g. clock, then answer would be - do not requir=
-e
-> > it, because that's ABI break. Therefore I would stick to that also to
-> > regulators. Once Rob also expressed such thoughts, although noting that
-> > it is not that big deal.
-> >
-> > New device in this binding of course should require the supply.
-> Seems my memory was less than perfect on this :
-> https://lore.kernel.org/linux-iio/20241119140409.GA1093349-robh@kernel.or=
-g/#t
->
-> Rob expressed that we are inconsistent on this, but he'd rather not
-> have regulators as a special case.
->
-> So let's only make this required for the new device.
->
-So since it is a new device, how do I require this? should we split to
-a new binding (like I had in v1) and make that required. That would
-also allow us to correctly name the xshut pin.
+On Wed, 25 Mar 2026 12:32:23 +0600
+Siratul Islam <email@sirat.me> wrote:
 
-Or do we do the "allOf:" exclusion? In that case, I think it wouldn't
-make sense to someone reading the binding without the context of
-commit history, as it would imply one of the devices explicitly
-doesn't need power.
+> Add support for the STMicroelectronics VL53L1X Time-of-Flight
+> ranging sensor with I2C interface.
+> 
+> Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
+> Signed-off-by: Siratul Islam <email@sirat.me>
 
-I'm willing to do whichever is prefered tough and move this forward.
->
->
+Hi Siratul,
+
+I used this as a bit of an experiment as you'd +CC lkml and took a close
+read of the feedback google's AI bot produced.
+https://sashiko.dev/#/patchset/20260325063254.18062-1-email%40sirat.me
+
+Be very careful when considering the output. There are some things
+in here that are not true, or we don't generally defend against (like the
+interrupt type related comments).
+
+The iio_trigger_get() is (I think) a more general problem so ignore that
+for your driver - will just be a tiny memory leak and stop the
+module being easily unloaded.  I'll take a look at that one on a more general
+basis. 
+
+The regmap one is where these bots excel in that they sometimes go deeper
+in analysis than a typical person focused on one driver.
+
+The stuff on using standard devm_ wasn't from the bot and I think will make
+things rather simpler.
+
 Thanks,
 
-Sirat
+Jonathan
+
+
+> ---
+>  MAINTAINERS                         |   1 +
+>  drivers/iio/proximity/Kconfig       |  15 +
+>  drivers/iio/proximity/Makefile      |   1 +
+>  drivers/iio/proximity/vl53l1x-i2c.c | 795 ++++++++++++++++++++++++++++
+>  4 files changed, 812 insertions(+)
+>  create mode 100644 drivers/iio/proximity/vl53l1x-i2c.c
+> 
+
+> diff --git a/drivers/iio/proximity/vl53l1x-i2c.c b/drivers/iio/proximity/vl53l1x-i2c.c
+> new file mode 100644
+> index 000000000000..085bff04f5d9
+> --- /dev/null
+> +++ b/drivers/iio/proximity/vl53l1x-i2c.c
+
+> +static void vl53l1x_power_off(void *priv)
+
+See below. I'm not seeing a reason we need to handle this
+in a driver specific way.
+
+> +{
+> +	struct vl53l1x_data *data = priv;
+> +
+> +	reset_control_assert(data->xshut_reset);
+> +	regulator_disable(data->vdd_supply);
+> +}
+> +
+> +static int vl53l1x_power_on(struct vl53l1x_data *data)
+> +{
+> +	int ret;
+> +
+> +	ret = regulator_enable(data->vdd_supply);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = reset_control_deassert(data->xshut_reset);
+> +	if (ret) {
+> +		regulator_disable(data->vdd_supply);
+> +		return ret;
+> +	}
+> +	/*
+> +	 * 1.2 ms max boot duration.
+> +	 * Datasheet Section 3.6 "Power up and boot sequence".
+> +	 */
+> +	fsleep(1200);
+> +
+> +	return 0;
+> +}
+> +
+
+> +
+> +static int vl53l1x_probe(struct i2c_client *client)
+> +{
+> +	struct device *dev = &client->dev;
+> +	struct vl53l1x_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_READ_I2C_BLOCK |
+> +				     I2C_FUNC_SMBUS_BYTE_DATA))
+Sashiko had an interesting comment on this...
+https://sashiko.dev/#/patchset/20260325063254.18062-1-email%40sirat.me
+(note in general be careful with this tools feedback, it has a significant
+false positive rate!)
+
+"Does this check needlessly reject pure I2C adapters?
+The driver configures regmap with reg_bits = 16, which forces regmap to use
+raw I2C transfers requiring I2C_FUNC_I2C. Checking for SMBUS_READ_I2C_BLOCK
+might prevent the driver from loading on pure I2C adapters that can perfectly
+support the device via regmap."
+
+By by reading the comment is actually wrong, however... It did made me look.
+With regbits == 16 & valbits == 8
+The regmap code checks for I2C_FUNC_SMBUS_I2C_BLOCK
+(and if not present fails).
+
+So the I2C_FUNC_SMBUS_BYTE_DATA seems unused and
+a broader check on both read and write versions of I2C_BLOCK seems
+appropriate.
+
+However, not a lot of point in checking it at all given regmap does
+so for us. So I'd drop this check.
+
+If anyone is bored, we should probably take a look to see if there
+are other redundant (or wrong) calls for this.
+
+There is another point about trigger references that might be
+correct (but not unique to this driver so ignore it).  That warrants
+some investigation - I'll take a look in near future.
+
+> +		return -EOPNOTSUPP;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->irq = client->irq;
+> +
+> +	data->regmap = devm_regmap_init_i2c(client, &vl53l1x_regmap_config);
+> +	if (IS_ERR(data->regmap))
+> +		return dev_err_probe(dev, PTR_ERR(data->regmap),
+> +				     "regmap initialization failed\n");
+> +
+> +	data->vdd_supply = devm_regulator_get(dev, "vdd");
+
+I'm not sure if we had this discussion already but why do you need to keep vdd_supply
+around?  Why not
+	devm_regulator_get_enabled()?
+
+Given you turn it on before reset and off afterwards and otherwise don't touch
+it should end up as effectively the same as you have here.
+
+I was expecting to see use of the regulator elsewhere, but seems not for now.
+Note that if you do change this then rename the helpers to reflect they are
+only doing reset handling.
+
+
+> +	if (IS_ERR(data->vdd_supply))
+> +		return dev_err_probe(dev, PTR_ERR(data->vdd_supply),
+> +				     "Unable to get VDD regulator\n");
+> +
+> +	/*
+> +	 * XSHUT held low puts the chip in hardware standby. All register
+> +	 * state is lost on de-assert so this is functionally a reset.
+> +	 */
+> +	data->xshut_reset = devm_reset_control_get_optional_exclusive(dev, NULL);
+
+If you can switch to devm_regulator_get_enabled() this can I think be
+	ret = devm_reset_control_get_optional_exclusive_deasserted()
+removing the need to register the action to power off.
+
+If you do that remember we still need the sleep after this call.
+
+> +	if (IS_ERR(data->xshut_reset))
+> +		return dev_err_probe(dev, PTR_ERR(data->xshut_reset),
+> +				     "Cannot get reset control\n");
+> +
+> +	ret = vl53l1x_power_on(data);
+> +	if (ret)
+> +		return dev_err_probe(dev, ret, "Failed to power on the chip\n");
+> +
+> +	ret = devm_add_action_or_reset(dev, vl53l1x_power_off, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = vl53l1x_chip_init(data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = vl53l1x_set_distance_mode(data, VL53L1X_LONG);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* 50 ms timing budget (per ST Ultra Lite Driver) */
+> +	ret = vl53l1x_set_timing_budget(data, 50);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* 50 ms inter-measurement period (per ST Ultra Lite Driver) */
+> +	ret = vl53l1x_set_inter_measurement_ms(data, 50);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * The hardware only supports "autonomous" continuous ranging mode.
+> +	 * Start ranging here and leave it running for the lifetime of
+> +	 * the device. Both direct reads and the buffer path rely on this.
+> +	 */
+> +	ret = vl53l1x_start_ranging(data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = devm_add_action_or_reset(dev, vl53l1x_stop_ranging_action, data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->name = "vl53l1x";
+> +	indio_dev->info = &vl53l1x_info;
+> +	indio_dev->channels = vl53l1x_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(vl53l1x_channels);
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	if (client->irq) {
+> +		struct iio_trigger *trig;
+> +
+> +		init_completion(&data->completion);
+> +
+> +		trig = devm_iio_trigger_alloc(dev, "%s-dev%d", indio_dev->name,
+> +					      iio_device_id(indio_dev));
+> +		if (!trig)
+> +			return -ENOMEM;
+> +
+> +		trig->ops = &vl53l1x_trigger_ops;
+> +		iio_trigger_set_drvdata(trig, indio_dev);
+> +		ret = devm_iio_trigger_register(dev, trig);
+> +		if (ret)
+> +			return ret;
+> +
+> +		indio_dev->trig = iio_trigger_get(trig);
+
+So Sashiko had a comment on this that has me thinking.  Don't bother fixing it
+in this driver as it true it's a common bug (and leaks a trigger structure).
+I'll look into it.
+
+
+> +
+> +		ret = vl53l1x_configure_irq(dev, client->irq, indio_dev);
+> +		if (ret)
+> +			return ret;
+> +
+> +		ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+> +						      &vl53l1x_trigger_handler,
+> +						      NULL);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+
+
