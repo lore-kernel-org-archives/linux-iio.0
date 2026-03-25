@@ -1,118 +1,100 @@
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6639519E7F7
-	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 12:30:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 532213D3D18;
+	Wed, 25 Mar 2026 12:36:37 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774441845; cv=none; b=V+fIT+RJRjx9OKbjWp9zLxTC1uePKFIJorV23Ejrwr20kHq75npUYNilItdP9u7LYnj7yQIduALtZOYMWbazufuRXUD7EXEgsPUf8KujcggsFPsjWz+GOMyWguljHdelCUlDB0/uKgg2eIr0n4BxGUKExhj8Ejqrq9CsIQBL32w=
+	t=1774442199; cv=none; b=Oo3BZnBAeVmr5QUWjA//XMtarPtMPHHuhY2xq/x3YOGKpRriILLcJX0rwUfCkSE/nFEgAjn2TjL2bvR5Ntf1UAIQ3b87VKcSzOOEQZOecrcJCEsUuOHpbqCbdC1Rho1JHlqNZMqck9SihsnVxJPzIMVyhVvJJnpuHlMPwezW8Ew=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774441845; c=relaxed/simple;
-	bh=eW8kpaempfoOD2PkQU4ZCS5kv+yUGMeXcQOzVD1ag18=;
-	h=Message-ID:Subject:From:To:Cc:Date:In-Reply-To:References:
-	 Content-Type:MIME-Version; b=fngrW9431EiD6sj9tHXtaGDhmqFAESoy+a+R57YmHUwm7hQo1DaI/IpWsDAGUJjemZTob5oNNx/PeOB/jUhCVgFzkgUo2UaU6oeNpN8B4xtRvLQ8QH5EH7cKCA1CCH7oCho10MuHd4x8jnJGExwaeBduPocJQBG4sIg+ULUe6gU=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=n0/AknVX; arc=none smtp.client-ip=209.85.128.42
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1774442199; c=relaxed/simple;
+	bh=4man5hbIxPpGdcVKoEV5Ed+cY08xcLbgso5K7L07aGc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=e3xqG06ph/VgORgax59p7XuJQqsnLasuoa99yMq6F4nS3ddeo1++y/u7mIPaiOqOJoWjmnlDRR6X1KigSMFOI1E3Blcyrbcey3+08qm9i0LnZaXw68Ewd88H6Y2V+3OLJEtAT8k4Il8Cg9+qTSZ7FJnGRKyD5FTTyhD/ypWW3qw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aIL1OXMs; arc=none smtp.client-ip=198.175.65.20
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="n0/AknVX"
-Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-486fb112c09so45107845e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 05:30:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774441843; x=1775046643; darn=vger.kernel.org;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:from:to:cc:subject
-         :date:message-id:reply-to;
-        bh=AUT5pxZXZKBVWVTz66dzQVLCyUuxaud/nyfeqc23uAs=;
-        b=n0/AknVXuSpI2SNPr4J7342FmwqKdO5TBkQj8GVGsk/0lXMzEyLgNqp0WsQJCbyi93
-         4fFcrh8eNJ1gEwifFNLDODWkoeuxkW3+kJHwX4YoX9dfB0BW+A+UeEELH4GTtPAt2K5H
-         4NB+vNjiWXAHDkTNkOF+6/BLkS2eUaV4M9uB6er4WhwB8+5kB9S1i1sZiYLxH7xn6do8
-         EOlo8YNCANF1rN8GAYaFhO05YTaOibTMSd23k0oxlhHGu2cCRacXOaSDZFFGxYVZkfjl
-         5564ob5F1yzdLPhfq3H6IJ343lVbDO+bI7rn+OOaJ2KZcFwXl8gissPEKKsDlVb0Tg6b
-         P8OA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774441843; x=1775046643;
-        h=mime-version:user-agent:content-transfer-encoding:references
-         :in-reply-to:date:cc:to:from:subject:message-id:x-gm-gg
-         :x-gm-message-state:from:to:cc:subject:date:message-id:reply-to;
-        bh=AUT5pxZXZKBVWVTz66dzQVLCyUuxaud/nyfeqc23uAs=;
-        b=mG+WMq6HKI7mm8IjragR/RnP50hOdMPNAqcO7jJ1v7xkIZlm//dVxJibeI3nH/Qi4X
-         twvgti26Q2iS4kyb+0tOsy83WpZH6qzoKlm2LPwaO9KJJ3I1wEtdvr+D7uNV5PL3DRJC
-         JqHy3F4/8sRdJ3pX/lnxq0ujxz6mSIqk5VYDozd8yvxUAAGMgp4QMIbZmPRAFloI+EIU
-         kdkVgW/fQMwvXbz2wBfu/qjDCHIciPpYjEortM+DrGb/q5Df0Rlayc7vFkxTj88H7pVM
-         uj6UD6IgBDlhYCvtvLvYxSvDH24u87ovnzZ37mLTbhmnbnfb1PGBGxQRWU3iKBZ88ZNI
-         +5Mg==
-X-Gm-Message-State: AOJu0YzPjfH5K3o2RjR6rGMBu+Ritls8NzRSR6N/arh+M2dWPPrS3UtA
-	xxn1siktwikgpuPmrsQMQrEiSJR/43wu4lYd9CFyNq32G99NL3Bt3fJM
-X-Gm-Gg: ATEYQzzyWtX26jGw8xzbDFDcyZmTuiPjErnD8R4Fp9BL7KRssxhmcbEuK05WmZP7g+l
-	RCUB2dHJNJ2pWTMRxsHTBRpaRXwHuPajfYuyhk5gIBzievfSVkhgjvIUg5i2MLym2JcbpmfPbAQ
-	7tTdjI9wPtNkPWf9E/In8xJ0W0uyxlf2rDNCTRWHiigQ+eTOR3rU0VpRu4Ekdkwe8BdZC0A0fCs
-	mmC/4uR3vuoRZBec7zi2Gld11Hk8TomzluraH61qanE85wzeCQjD/OsTuvsqR+lJhJOzDY/8tsa
-	rjoAwODJofsF27pxa0tj/C2fsMMIPl4ZdlTcIbBj9z7HZNJmIwB2f+38EssUlGYquSOBWbEstiO
-	lHfW21YK7pIv4fROEfqCk7giy3JosiV0iBT89oCYsG3VL15K1vvBoj3f+JzPx4yjy4lc1oY0WUe
-	Wh1wggD870pZXlxbSYlke98rHpbZZ7P1764fSf+whMDQ==
-X-Received: by 2002:a05:600c:4705:b0:486:fc4a:2951 with SMTP id 5b1f17b1804b1-48716083231mr51669045e9.28.1774441842471;
-        Wed, 25 Mar 2026 05:30:42 -0700 (PDT)
-Received: from [192.168.1.187] ([148.63.225.166])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-487116ac0a8sm223803905e9.6.2026.03.25.05.30.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2026 05:30:42 -0700 (PDT)
-Message-ID: <510e9313c229341f963508ca480ef6e5c5342b75.camel@gmail.com>
-Subject: Re: [PATCH] iio: light: veml6070: fix veml6070_read() return value
-From: Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
-To: Aldo Conte <aldocontelk@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, David Lechner
-	 <dlechner@baylibre.com>, Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>, 
- Andy Shevchenko
-	 <andy@kernel.org>, Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Date: Wed, 25 Mar 2026 12:31:29 +0000
-In-Reply-To: <20260325113216.170357-1-aldocontelk@gmail.com>
-References: <20260325113216.170357-1-aldocontelk@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-User-Agent: Evolution 3.58.3 
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aIL1OXMs"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774442198; x=1805978198;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=4man5hbIxPpGdcVKoEV5Ed+cY08xcLbgso5K7L07aGc=;
+  b=aIL1OXMsM8JBgIuXYRyA9tWERS1dMeNXfKdyE/yNbWYe/LGOvBzzVRkc
+   XMMp0AdgcVLlP6zDpRoSm2uh9ksqdV7y4zHrUf9hWk5+384ninSWQolBY
+   O1B1HE3iZyLUgFlky6vfbLnX/uTNpQyur7vfuw/5GJj4ptmXPVk3ugdzm
+   FTE9gqK32vvnHkPi9934LddSSqt2Ejh55UL8PFAcutz5//8lbd/G+BFCW
+   PgEV6BO4SAaFHZ+6XfqJEbTU0O7MIKROOJcBy/VZyuiMm07uGh7aNqrRT
+   ve1FZd980nJOkyVKCzDkkdIipndMcNkDdc+Pc12dbKIFCsD3R+0ZuzvdM
+   w==;
+X-CSE-ConnectionGUID: JdRcl0SFQvamyscMbku6GQ==
+X-CSE-MsgGUID: sqYq14DwTnG5+Lb5a/GC8g==
+X-IronPort-AV: E=McAfee;i="6800,10657,11739"; a="75192772"
+X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
+   d="scan'208";a="75192772"
+Received: from fmviesa009.fm.intel.com ([10.60.135.149])
+  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 05:36:37 -0700
+X-CSE-ConnectionGUID: 88v3fi6NTK6ro6buabzNiQ==
+X-CSE-MsgGUID: qN7wI6ZNTciHn7ziYmK21w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
+   d="scan'208";a="218094253"
+Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.32])
+  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 05:36:34 -0700
+Date: Wed, 25 Mar 2026 14:36:31 +0200
+From: Andy Shevchenko <andriy.shevchenko@intel.com>
+To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Marc Titinger <mtitinger@baylibre.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, dan.carpenter@linaro.org,
+	kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH] iio: ina2xx-adc: fix regmap max_register off-by-one
+Message-ID: <acPWzzmdjmet7i9I@ashevche-desk.local>
+References: <20260325054313.868261-1-harshit.m.mogalapalli@oracle.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20260325054313.868261-1-harshit.m.mogalapalli@oracle.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
+ krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, 2026-03-25 at 12:32 +0100, Aldo Conte wrote:
-> veml6070_read() computes the sensor value in ret but
-> returns 0 instead of the actual result. This causes
-> veml6070_read_raw() to always report 0.
->=20
-> Return the computed value instead of 0.
->=20
-> Running make W=3D1 returns no errors. I was unable
-> to test the patch because I do not have the hardware.
-> Found by code inspection.
->=20
-> Fixes: bb18885ed823 ("iio: light: veml6070: add support for integration t=
-ime")
-> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+On Tue, Mar 24, 2026 at 10:43:09PM -0700, Harshit Mogalapalli wrote:
+> regmap_config.max_register is supposed to store the highest valid
+> register but this driver assigns the number of registers
+> INA2XX_MAX_REGISTERS is 8, the highest valid register address is 7.
+> 
+> Fix this by subtracting 1 so max_register is inclusive.
+
+This matches with my understanding of max_register in regmap.
+But what I have noticed is that we have two drivers for the same subset
+of the chips. Why? Also one may note the differences in max_register.
+
+Taking that into account with the fact that most likely there is nothing wrong
+to access that register (in the other driver they allow up to 13), I think you
+can rather add a 0x07 register to the ADC driver and change the value of
+_MAX_REGISTERS to be equal to 0x07 as done in hwmon driver.
+
+> Fixes: c43a102e67db ("iio: ina2xx: add support for TI INA2xx Power Monitors")
+> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
 > ---
+> Found by static analysis using smatch, code review and guess work.
+> NOT TESTED.  Please review carefully!
 
-Makes sense...
+Right, see above.
 
-Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> =C2=A0drivers/iio/light/veml6070.c | 4 +---
-> =C2=A01 file changed, 1 insertion(+), 3 deletions(-)
->=20
-> diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
-> index 6d4483c85f30..74d7246e5225 100644
-> --- a/drivers/iio/light/veml6070.c
-> +++ b/drivers/iio/light/veml6070.c
-> @@ -134,9 +134,7 @@ static int veml6070_read(struct veml6070_data *data)
-> =C2=A0	if (ret < 0)
-> =C2=A0		return ret;
-> =C2=A0
-> -	ret =3D (msb << 8) | lsb;
-> -
-> -	return 0;
-> +	return (msb << 8) | lsb;
-> =C2=A0}
-> =C2=A0
-> =C2=A0static const struct iio_chan_spec veml6070_channels[] =3D {
+
