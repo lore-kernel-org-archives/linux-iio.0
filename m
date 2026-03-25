@@ -1,124 +1,125 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-yw1-f179.google.com (mail-yw1-f179.google.com [209.85.128.179])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B063039282C;
-	Wed, 25 Mar 2026 08:58:00 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3940B314A9F
+	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 09:18:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.179
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774429080; cv=none; b=XHcwx1p6YHU6JMK2GhWtXK0xZxIVqgCjeuXJT5ZRen+UsRZQCHetzKLqmYbZwhwYxyvPg7LeRl7b5zG/394nmEOMSUk8SsvjYw+fg2xBWxGxr0y0j3f5+DfgFUmmOkVddtWOqm7cl3pvzVp20C7eynMKeU+O1NIToKD5wtGz5w0=
+	t=1774430301; cv=none; b=H403guzNgQ8U/cLSucpephXPzxLSIVzeC3uLoaI2Tqh+WKaaW5KfWu17/g24F4LdKM29kL0+Wj6rUxFI5VOUvdUdQ5u8IB8lCWbbV4CQNHkBR3WcVkIVkXQHD9FkIXH3xgyf21tdHwI4qX/avxQhwaIjbhfKoRSB3w6E2FUjXLo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774429080; c=relaxed/simple;
-	bh=RHV7dPFjKCS10WhsyRbEySf3zhgA9Tr47TRrrff7hII=;
-	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-	 In-Reply-To:Content-Type; b=XZ6q6zPWzHvTJcfFEMiZlf6Vhr4qp4ENVkap5uRkYw16e6Xw0OkoZrH35gHfuEWdPEw7jlQMdhlE49Gzo7Y912XlNHExt976ASB1v4tee+i6CkEFFFaDGDZtGZbXBXrFYj+YQEa7iEFbHfUxDZMdyO+QGZ5kBYYmM+3j38tJWwA=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=fQecE42v; arc=none smtp.client-ip=10.30.226.201
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="fQecE42v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E65A8C4CEF7;
-	Wed, 25 Mar 2026 08:57:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774429080;
-	bh=RHV7dPFjKCS10WhsyRbEySf3zhgA9Tr47TRrrff7hII=;
-	h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-	b=fQecE42v6hrZZj04TpdxDuhwrnuaslBdBkQmkvtTudL1/AmjbmtL7D2Olr9qThA/J
-	 eP4ikVWjqENAlwcNXMxEUdV6lNMUDWWRyW1hhXATGN90qFj/EDI/dM95Q68PVvUPXh
-	 fsBik2+gFfQJP2sNRZfg0bsd2PSYD53jiuHHxINY6bYZbB6tSZ0VtCmRL987fVwI4Y
-	 QTCaXlhKb20T4t7KbDtyZk518sBzhIwnrp6fU44fJM2v6J6zgyH7gFL0CoJznU1wmi
-	 T35KPPm8WQQ8hutj0+fWwskRMEV9DFvLaXd5iC7QJn+WCKAL2+0UxL/GQpXeijDKxN
-	 o3Az/SyKrK70g==
-Message-ID: <4d10b6c0-d599-4fc5-b9ed-ce669ac46e84@kernel.org>
-Date: Wed, 25 Mar 2026 09:57:56 +0100
+	s=arc-20240116; t=1774430301; c=relaxed/simple;
+	bh=qrYKJpnV5q5wsZW/KCJEGBve3p9zylQB/0fgxRV8QwI=;
+	h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+	 To:Cc:Content-Type; b=GcpnAZFAQFmEVpwOuHO+FJF/WhIYkH+QOm9NnfxwC9DtULtZQnQrEjKSxogG4wEvYg0fN8hAjF7AoGCw4y0OIue3S+tLizz8pFzDI4i0ez93wurjs5JYrROc8orSWLl2CQWpwzULLA/6MCnRU1UyFlKt2fY9vLGsNPHfaCnRQhw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.128.179
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-yw1-f179.google.com with SMTP id 00721157ae682-79827d28fc4so54983607b3.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 02:18:20 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774430299; x=1775035099;
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-gg:x-gm-message-state:from
+         :to:cc:subject:date:message-id:reply-to;
+        bh=kqw4hGAptzQW40hqgwgs8wt06iUhcX/hjN2fKnH5lLk=;
+        b=ZPaUQgIiTOez94PPSU6GW2wm79yo4v5LmoUD8oQs1/pInbtBclV1aq6j9WO50aTEPI
+         PMH0epqfC8pdgc8p2OtmJKR4hK6ZLeyYGFzD4//IW3mkv+xj24MGtD5f3cXrxAt8EO+H
+         9Jeqp0Ui7SjPCPKWwhIyrRST5Vikl7fPDrgOd/MXpT6DfHkcetxgotf/ruhRR/y/xUCi
+         T6/5Uc8dnb9oXNcRaD/sXfy8gunkPKkg/Gc8MiEsr1RxjsGErbHthalsBNb9IzRrtHT7
+         kaMWCgyGllmRisKN2CcjoJGS6CmeQ98FdLSrB1EDpkn6D+uA2IODvEgpbNbAWzCKfDYr
+         hsHw==
+X-Gm-Message-State: AOJu0YxZIFiucnFIWW/hZbuJMJJlosdy8MGn78aLyfJS0e5iqqP8nP/b
+	SnBvv8ebTplJaYRuPnG7CtMtA96YuP3KBvpk5fqyLItWSUSWml45C/JX4/4/+rZP
+X-Gm-Gg: ATEYQzxGKi0dikC978Vc0xBJAIIl9riUTeyR+6bDXT745aej/8Y1mRdMwtW11CznPMX
+	9dQhzB/XNDA+39Hn//u634pQOEYRK4jBlus5w2DZzJIcRE+JujODjTS2ws/Ybx0vS4VcaTkbI7e
+	gaD5fh8RDJm83AaD7hKjdKB0xZGX9Ak35RZQnpThFtRHkJwxWj5m+UFHuWFFYN6MDYcp8vdm9Io
+	uIgZeZ0tBL33HCPL5K0L2OyJ8TW9sRCxIJulix3IWa9NCyuyI81QhI5BqlgIlQW6mTj5g96LuxP
+	pZHIOGngzSeqI58nGI4jsVdBdF0I635LlCsR4n2wvR/m4P87jMXHcilU3CaZfzSCYhnIlmnBk12
+	VA+wVt97TVvZnJTZCUdyHZH6z3fy3U6Jllu8k6en9fZT22/E3DykYQZoBanA2ODBJNbYgp8tBLW
+	ufQSUNfw2z3P1KC27bqqAb8uzcmZFqCzci9TC13Q5NqZNvTU5Yu4BmKl8/cbr9F3MvhvaU5adbH
+	rWRNMYxMnpSs9O7sbFHKEzhGABILmeyOqF2U+lXce8DZw==
+X-Received: by 2002:a05:690c:6b07:b0:795:294c:fd4d with SMTP id 00721157ae682-79acf614d01mr28381587b3.37.1774430298960;
+        Wed, 25 Mar 2026 02:18:18 -0700 (PDT)
+Received: from mail-yx1-f52.google.com (mail-yx1-f52.google.com. [74.125.224.52])
+        by smtp.gmail.com with ESMTPSA id 00721157ae682-79aca5fef49sm17256437b3.30.2026.03.25.02.18.17
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Mar 2026 02:18:17 -0700 (PDT)
+Received: by mail-yx1-f52.google.com with SMTP id 956f58d0204a3-64e9f9226a7so5716992d50.2
+        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 02:18:17 -0700 (PDT)
+X-Received: by 2002:a05:690e:dc9:b0:64e:a7bd:b9d0 with SMTP id
+ 956f58d0204a3-64ee6180639mr2634258d50.68.1774430297013; Wed, 25 Mar 2026
+ 02:18:17 -0700 (PDT)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla Thunderbird
-Subject: Re: [PATCH v7 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF
- sensor
-To: Sirat <email@sirat.me>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org,
- dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org,
- krzk+dt@kernel.org, conor+dt@kernel.org, linux-kernel@vger.kernel.org
-References: <20260325063254.18062-1-email@sirat.me>
- <20260325063254.18062-2-email@sirat.me>
- <20260325-gentle-earthworm-of-progress-1f9f46@quoll>
- <CANn+LW+Y6j0xk2x02-BUL9qNq2gf-PXspi4wP_KGd7Abz3hOYw@mail.gmail.com>
-From: Krzysztof Kozlowski <krzk@kernel.org>
-Content-Language: en-US
-Autocrypt: addr=krzk@kernel.org; keydata=
- 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 a/A=
-In-Reply-To: <CANn+LW+Y6j0xk2x02-BUL9qNq2gf-PXspi4wP_KGd7Abz3hOYw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20260325063254.18062-1-email@sirat.me> <20260325063254.18062-2-email@sirat.me>
+ <20260325-gentle-earthworm-of-progress-1f9f46@quoll> <CANn+LW+Y6j0xk2x02-BUL9qNq2gf-PXspi4wP_KGd7Abz3hOYw@mail.gmail.com>
+ <4d10b6c0-d599-4fc5-b9ed-ce669ac46e84@kernel.org>
+In-Reply-To: <4d10b6c0-d599-4fc5-b9ed-ce669ac46e84@kernel.org>
+From: Sirat <email@sirat.me>
+Date: Wed, 25 Mar 2026 15:18:05 +0600
+X-Gmail-Original-Message-ID: <CANn+LWJQM45rAT+mzS9ZEGBgmqChbxUtStdzhbzthXUPJ=2csg@mail.gmail.com>
+X-Gm-Features: AQROBzDJdQ9Ro-BvrJ9gUlQ4zZ0Q8A9d8tMT9v5AumlPlE1K2xslZ-F-ZXsII98
+Message-ID: <CANn+LWJQM45rAT+mzS9ZEGBgmqChbxUtStdzhbzthXUPJ=2csg@mail.gmail.com>
+Subject: Re: [PATCH v7 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF sensor
+To: Krzysztof Kozlowski <krzk@kernel.org>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, jic23@kernel.org, 
+	dlechner@baylibre.com, nuno.sa@analog.com, andy@kernel.org, robh@kernel.org, 
+	krzk+dt@kernel.org, conor+dt@kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-On 25/03/2026 09:48, Sirat wrote:
-> On Wed, Mar 25, 2026 at 2:05 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
->>
->> On Wed, Mar 25, 2026 at 12:32:22PM +0600, Siratul Islam wrote:
->>> Add device tree binding documentation for the STMicroelectronics
->>> VL53L1X Time-of-Flight ranging sensor connected via I2C.
->>>
->>> Make vdd-supply required. The device requires power to operate
->>> and the property should have been required from the start.
->>
->> That's ABI break and device for many years was working fine, so this
->> should not be changed.
->>
-> Jonathan and David asked that vdd-supply be made required. I feel like
-> there is a conflict here that I am not able to resolve myself.
-> 
-> What I think about it is the binding does not correctly describe the
-> hardware and we should consider this a bug and fix it.
-> The driver worked because of a fallback mechanism (dummy/fake
-> regulator) and not because power was optional.
-> 
+On Wed, Mar 25, 2026 at 2:58=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.or=
+g> wrote:
+>
+> On 25/03/2026 09:48, Sirat wrote:
+> > On Wed, Mar 25, 2026 at 2:05=E2=80=AFPM Krzysztof Kozlowski <krzk@kerne=
+l.org> wrote:
+> >>
+> >> On Wed, Mar 25, 2026 at 12:32:22PM +0600, Siratul Islam wrote:
+> >>> Add device tree binding documentation for the STMicroelectronics
+> >>> VL53L1X Time-of-Flight ranging sensor connected via I2C.
+> >>>
+> >>> Make vdd-supply required. The device requires power to operate
+> >>> and the property should have been required from the start.
+> >>
+> >> That's ABI break and device for many years was working fine, so this
+> >> should not be changed.
+> >>
+> > Jonathan and David asked that vdd-supply be made required. I feel like
+> > there is a conflict here that I am not able to resolve myself.
+> >
+> > What I think about it is the binding does not correctly describe the
+> > hardware and we should consider this a bug and fix it.
+> > The driver worked because of a fallback mechanism (dummy/fake
+> > regulator) and not because power was optional.
+> >
+>
+>
+> I looked at v6 and v5 and I do not see such comment for binding that
+> existing device should change ABI. Can you point me to it?
+>
+"Make it required and add a note to the commit message to say why the
+requirement should always have been there. Devices tend not to work
+with no power." - Jonathan (v3:
+https://lore.kernel.org/linux-iio/20260322115704.10b2e0d4@jic23-huawei)
 
+"No, bindings should not depend on driver implementation." - David
+(When I asked if I should  drop the hard requirement in the binding,
+v6: https://lore.kernel.org/linux-iio/55e92148-b5de-4fb8-af0b-9476235341bc@=
+baylibre.com/)
 
-I looked at v6 and v5 and I do not see such comment for binding that
-existing device should change ABI. Can you point me to it?
+"From the point of view of the devicetree, it doesn't matter what the
+driver does. It matters that the chip can't work without power. ;-)" -
+David (v1: https://lore.kernel.org/linux-iio/d0ec6a2f-6d30-4774-8950-15dd3c=
+4b020b@baylibre.com)
 
-Best regards,
-Krzysztof
+I'm not sure if this is the correct way to quote. But I have added the link=
+s.
+
+Thanks,
+Sirat
