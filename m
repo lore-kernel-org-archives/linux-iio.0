@@ -1,111 +1,108 @@
-Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.14])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA1B63CA483
-	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 11:32:20 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 187573C9EC1;
+	Wed, 25 Mar 2026 11:33:33 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.14
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774438342; cv=none; b=T5jvpefS4MnzATJLMT6Lw8ZcBxkYG/+hYoWuBwcES8ZWnSjFDsQy3t1RiAT4NkQGycOz8F0VAIiOznOjlxUj2jNcIZGkP4tsXSU+G9NyzUbQaiJ7hyXcGM4EoB5lfiepqVIbH8FptWxTPq7xw4bCwD096KqimiPDUrBZvvqJctU=
+	t=1774438415; cv=none; b=rfU5yVWCno4s+652qHu6dqx3mj6bk6+ik2yh6ED8t9n5ulzHcyhjB53+Yd9B02+GsuON7nGSidrFweY3nrxO3xcBOi9Q5pKZowT+n/G64L9VapI7niJoxb4i6we733E2MrYUNhg9qKG6jFh2mRamg6QgmNo5IyFaeSPk71eabVw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774438342; c=relaxed/simple;
-	bh=9bHD5B8Z/ub079DT2qNTWRc1w7uwq67J5LW4kHpKAwE=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=V82mMjnSHemoQbrkelOjFr82LBog6UOZK1K4x8Xe/0spu1NMWHwFGVfHqYsvZnqqXGbcCb+xSFXDwpoGcsCSAT1az40o0RFa55JVm4iG/lcBgbEjLx8bDne1RjTwsRjflVF3F1KFiFAP59Tv36Lg1Hd1kjh+EAxVsb5ESSa5jnk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=buATWnnr; arc=none smtp.client-ip=209.85.128.43
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1774438415; c=relaxed/simple;
+	bh=SVgS/c3csFd9u/m9vlt0wexGSwtyJ6O5udDeLz/HdPc=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=dyeqi3F/pqJt7QB+o4txaBBNphvjhNYmpCx8XynyoUa8KRHFOgZ/yodJlwUjB175dSd9LX3wXmXRrgPYV0Y7krCv7/et9XHIng89GnY/2u7etH94R01+ju/ELF3418acQdjDmijIIwXCnweftjIInxoHWgXjueDLwQ+ZDNZ1sI0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=HaNMdamF; arc=none smtp.client-ip=192.198.163.14
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="buATWnnr"
-Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-48700b1ba53so46486405e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 04:32:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774438339; x=1775043139; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=OLb8SeapcYekp0ky/kzoMYcKAyEOhoSGzMw7aqCMNho=;
-        b=buATWnnrUsdye2HS+LEooLSx+VDaKO7Ag0CgeFmDxJTSrB1OYWKA1V1pmDm7/EA5Hp
-         u018xpdqgWa/93ZVQnfHWB4JukFMEw0pKfKD9Shx5FoPPCQyznBWB/pRVDdbiWnGqYcG
-         ZGuyc2Z7HoQ7sKamDmRBHkFY3NetIRbC80Bc7Pu2049HsWJ+fQPzlCvOYYxzT2vHlHeT
-         f8KRBjfqW5XHl1iZu/m01Z/OMEyw9hd34thpJXcJ4c4aZLXAt4xAHYh/EhVJg5AWRE0d
-         lMcYZGQZmmpihI7pj1BI0CuvvCSeXP3XHozyLyPMovc4Tku8aJ7/JweE7nIy6DsYgn/B
-         foVg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774438339; x=1775043139;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=OLb8SeapcYekp0ky/kzoMYcKAyEOhoSGzMw7aqCMNho=;
-        b=KqwWQpWT5bG92o9fHBluh+hGI6XbGYHjpc4JABMSoViJbgWq+RCGGIWmXItZiEMy4z
-         fe6ulS//vX3ThXvOLMYvePr8SSKe7zjZQk+czeCGtus9HdVDg5NiSWakbLLtswy5X/r9
-         leTPoeUHz1ZfmtwGLYY16mFqGZOtSVNwgn/mO7uTp+AAgbAJHiUMi0uX2/Yt21/xiLbk
-         2Fs5vHzENSdjXtofe2OChgMij3JfmQTdhKnDFj5UnKJnFgNdNQPSZx6o+Zltkxh4J5Jl
-         fxJNMhSTXAT6871rdA/i/9Nq6zhk4bdnJrh8v9AGiua8I1k2dLKxWkKSD97fq/Tgg94U
-         dPtg==
-X-Gm-Message-State: AOJu0YyS161aSHwcaPXZF8LCnJhWxju9Rm6lfazWE4WUN05sfPWbwxTC
-	9NtZPLn4VwJzaDCOcw2hCeK0C2HxRQPi4s9xf8CobNugQqR9MeP8TRwi
-X-Gm-Gg: ATEYQzzRJxZGYFqcu8v8a7C80yWk/tjBxsdnF63ZJNhVTZADUyS3uzU0SIn4wFdB8xM
-	1faOLHojP3VS3HvhK22rUJrgWhirzw52Lv5nxgrBBWFY/ZiKQWK1BjqjYek2OuA58gAO8qYJ2Ip
-	S6O4YmG+qqTyvsnrM79s1O9zHhcv6FPlW+GShfxxNJq+ifTNxYp0G9MxP+yn03UsOtIwqeZ+oka
-	gc64giSHLnm00hN/wL+5Xg/JxzKWmwxMOFMyjALxwUpq8vpdXz9Tr+OnY8ykux+1eY2a1kfqdKj
-	qyr2v3JaVDWwRoOSOBWzAg34nihZj/t0UdR6RKa+IGh9cWujOJfSh7neYKPqJnzQQgaD1Bi/HYm
-	KtD72kqnYsJXVXT/oYEdEKCT9yqMQMDaqo4EX6OIPuSn7a+a7mrmxk/U4Zj3+XCOKYKB8wHf2SR
-	y5If0+kh+LpuwfDx/lkT5Ey7vbA8KoYeTjWHAKg1ca7PVDUHe6XhVu
-X-Received: by 2002:a05:600c:a4f:b0:480:1e40:3d2 with SMTP id 5b1f17b1804b1-48716067246mr41383255e9.29.1774438338781;
-        Wed, 25 Mar 2026 04:32:18 -0700 (PDT)
-Received: from aldo-conte-t14.tailf68ad9.ts.net ([217.61.173.50])
-        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b64703c27sm46510360f8f.18.2026.03.25.04.32.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2026 04:32:18 -0700 (PDT)
-From: Aldo Conte <aldocontelk@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="HaNMdamF"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1774438414; x=1805974414;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=SVgS/c3csFd9u/m9vlt0wexGSwtyJ6O5udDeLz/HdPc=;
+  b=HaNMdamFxGOG+S/OI+n77nmpQ6p0Qmcli0+tlWZUoHlXfwWTmr3y2jAO
+   iy4jd2FyzL0yNWNsqrYX9PoZHEoYa4+p95GIK/b8ss9EkViN0uLN3vWn5
+   LSjzli2Ug5qoPq+dLFtCsKqjv1G7vQ2euclvZj4VHRb1x5fNWMS03cZuX
+   xaDxzYy2+prIK+68QLlNEMChn4fLGw4zI440svBe78isMUrH6tU+FzOxZ
+   lLc2ZDI26PnH+BvZ6pU3JdG7xH5cc4q0vuitZ6hXdCfIJneFtRVEZRf15
+   8NDw4TGpMqcJAFqySSPh5yopIK+i/4ydm2yuyti46mZJMC0gkQAGz693C
+   A==;
+X-CSE-ConnectionGUID: Lpaq3+ZTSPe+XmnLkcVFnQ==
+X-CSE-MsgGUID: RU6RxR4sQviJwHKxw/mEQA==
+X-IronPort-AV: E=McAfee;i="6800,10657,11739"; a="75539630"
+X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
+   d="scan'208";a="75539630"
+Received: from fmviesa006.fm.intel.com ([10.60.135.146])
+  by fmvoesa108.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 04:33:33 -0700
+X-CSE-ConnectionGUID: SsrqaiHRQjKJ9G0vieL5ig==
+X-CSE-MsgGUID: yKxUJewKQAyCBv06w/Hncg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
+   d="scan'208";a="219804166"
+Received: from lkp-server01.sh.intel.com (HELO 3905d212be1b) ([10.239.97.150])
+  by fmviesa006.fm.intel.com with ESMTP; 25 Mar 2026 04:33:28 -0700
+Received: from kbuild by 3905d212be1b with local (Exim 4.98.2)
+	(envelope-from <lkp@intel.com>)
+	id 1w5MUG-000000006k5-3sfo;
+	Wed, 25 Mar 2026 11:33:24 +0000
+Date: Wed, 25 Mar 2026 19:32:43 +0800
+From: kernel test robot <lkp@intel.com>
+To: Radu Sabau via B4 Relay <devnull+radu.sabau.analog.com@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Subject: [PATCH] iio: light: veml6070: fix veml6070_read() return value
-Date: Wed, 25 Mar 2026 12:32:16 +0100
-Message-ID: <20260325113216.170357-1-aldocontelk@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= <ukleinek@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>,
+	Mark Brown <broonie@kernel.org>, Linus Walleij <linusw@kernel.org>,
+	Bartosz Golaszewski <brgl@kernel.org>,
+	Philipp Zabel <p.zabel@pengutronix.de>
+Cc: oe-kbuild-all@lists.linux.dev, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-pwm@vger.kernel.org, linux-gpio@vger.kernel.org,
+	Radu Sabau <radu.sabau@analog.com>
+Subject: Re: [PATCH v4 4/4] iio: adc: ad4691: add SPI offload support
+Message-ID: <202603251904.qcAGC4cf-lkp@intel.com>
+References: <20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a@analog.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a@analog.com>
 
-veml6070_read() computes the sensor value in ret but
-returns 0 instead of the actual result. This causes
-veml6070_read_raw() to always report 0.
+Hi Radu,
 
-Return the computed value instead of 0.
+kernel test robot noticed the following build errors:
 
-Running make W=1 returns no errors. I was unable
-to test the patch because I do not have the hardware.
-Found by code inspection.
+[auto build test ERROR on 11439c4635edd669ae435eec308f4ab8a0804808]
 
-Fixes: bb18885ed823 ("iio: light: veml6070: add support for integration time")
-Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
----
- drivers/iio/light/veml6070.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+url:    https://github.com/intel-lab-lkp/linux/commits/Radu-Sabau-via-B4-Relay/dt-bindings-iio-adc-add-AD4691-family/20260321-120718
+base:   11439c4635edd669ae435eec308f4ab8a0804808
+patch link:    https://lore.kernel.org/r/20260320-ad4692-multichannel-sar-adc-driver-v4-4-052c1050507a%40analog.com
+patch subject: [PATCH v4 4/4] iio: adc: ad4691: add SPI offload support
+config: openrisc-randconfig-r063-20260325 (https://download.01.org/0day-ci/archive/20260325/202603251904.qcAGC4cf-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 14.3.0
+reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260325/202603251904.qcAGC4cf-lkp@intel.com/reproduce)
 
-diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
-index 6d4483c85f30..74d7246e5225 100644
---- a/drivers/iio/light/veml6070.c
-+++ b/drivers/iio/light/veml6070.c
-@@ -134,9 +134,7 @@ static int veml6070_read(struct veml6070_data *data)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = (msb << 8) | lsb;
--
--	return 0;
-+	return (msb << 8) | lsb;
- }
- 
- static const struct iio_chan_spec veml6070_channels[] = {
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot <lkp@intel.com>
+| Closes: https://lore.kernel.org/oe-kbuild-all/202603251904.qcAGC4cf-lkp@intel.com/
+
+All errors (new ones prefixed by >>, old ones prefixed by <<):
+
+>> ERROR: modpost: module ad4691 uses symbol devm_iio_dmaengine_buffer_setup_with_handle from namespace IIO_DMAENGINE_BUFFER, but does not import it.
+
 -- 
-2.53.0
-
+0-DAY CI Kernel Test Service
+https://github.com/intel/lkp-tests/wiki
