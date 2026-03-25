@@ -1,100 +1,102 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.20])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com [209.85.128.42])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 532213D3D18;
-	Wed, 25 Mar 2026 12:36:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.20
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id CFA1318C933
+	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 12:39:45 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.42
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774442199; cv=none; b=Oo3BZnBAeVmr5QUWjA//XMtarPtMPHHuhY2xq/x3YOGKpRriILLcJX0rwUfCkSE/nFEgAjn2TjL2bvR5Ntf1UAIQ3b87VKcSzOOEQZOecrcJCEsUuOHpbqCbdC1Rho1JHlqNZMqck9SihsnVxJPzIMVyhVvJJnpuHlMPwezW8Ew=
+	t=1774442387; cv=none; b=cF1bbWvOBs3HVlREh45XQ9DZ+s0ZiR46m7OM/9EsBBR84mB2ouM3ZWLjKsXpzJB0Bzbm+SGPAv3onbMes7BsfC50FIpCwd9IO7Y5EMY7oA1Ny/m0pVBgLBn4CR0C4LO9RV0hfWsyMuVZy4KVR8JtQcTZ0U61hm8xFuXexe9bJK8=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774442199; c=relaxed/simple;
-	bh=4man5hbIxPpGdcVKoEV5Ed+cY08xcLbgso5K7L07aGc=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=e3xqG06ph/VgORgax59p7XuJQqsnLasuoa99yMq6F4nS3ddeo1++y/u7mIPaiOqOJoWjmnlDRR6X1KigSMFOI1E3Blcyrbcey3+08qm9i0LnZaXw68Ewd88H6Y2V+3OLJEtAT8k4Il8Cg9+qTSZ7FJnGRKyD5FTTyhD/ypWW3qw=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=aIL1OXMs; arc=none smtp.client-ip=198.175.65.20
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	s=arc-20240116; t=1774442387; c=relaxed/simple;
+	bh=LL+RpZvN5aIZuMMfWu6fIx5AX+0hj8PRMxFjqNRV0iE=;
+	h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+	 In-Reply-To:Content-Type; b=bPEr/bQRvbR74q5t8TNDbXlF9JpPcElxmf/aYWx5Z6CLKt7rI7qjZlnSH0BCd7vthgANKEFsr7icU4ilCAzm+aWc869e4wkntLLNWL6VXC0s1FgC3eFzwTv3C94isESLCrK/jeNrIH9IcnUA9IPsPW2hkF1MhLADsPUJTwnYTL0=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=r8LdRDXS; arc=none smtp.client-ip=209.85.128.42
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="aIL1OXMs"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774442198; x=1805978198;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=4man5hbIxPpGdcVKoEV5Ed+cY08xcLbgso5K7L07aGc=;
-  b=aIL1OXMsM8JBgIuXYRyA9tWERS1dMeNXfKdyE/yNbWYe/LGOvBzzVRkc
-   XMMp0AdgcVLlP6zDpRoSm2uh9ksqdV7y4zHrUf9hWk5+384ninSWQolBY
-   O1B1HE3iZyLUgFlky6vfbLnX/uTNpQyur7vfuw/5GJj4ptmXPVk3ugdzm
-   FTE9gqK32vvnHkPi9934LddSSqt2Ejh55UL8PFAcutz5//8lbd/G+BFCW
-   PgEV6BO4SAaFHZ+6XfqJEbTU0O7MIKROOJcBy/VZyuiMm07uGh7aNqrRT
-   ve1FZd980nJOkyVKCzDkkdIipndMcNkDdc+Pc12dbKIFCsD3R+0ZuzvdM
-   w==;
-X-CSE-ConnectionGUID: JdRcl0SFQvamyscMbku6GQ==
-X-CSE-MsgGUID: sqYq14DwTnG5+Lb5a/GC8g==
-X-IronPort-AV: E=McAfee;i="6800,10657,11739"; a="75192772"
-X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
-   d="scan'208";a="75192772"
-Received: from fmviesa009.fm.intel.com ([10.60.135.149])
-  by orvoesa112.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 05:36:37 -0700
-X-CSE-ConnectionGUID: 88v3fi6NTK6ro6buabzNiQ==
-X-CSE-MsgGUID: qN7wI6ZNTciHn7ziYmK21w==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
-   d="scan'208";a="218094253"
-Received: from dalessan-mobl3.ger.corp.intel.com (HELO localhost) ([10.245.245.32])
-  by fmviesa009-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 05:36:34 -0700
-Date: Wed, 25 Mar 2026 14:36:31 +0200
-From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Marc Titinger <mtitinger@baylibre.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, dan.carpenter@linaro.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] iio: ina2xx-adc: fix regmap max_register off-by-one
-Message-ID: <acPWzzmdjmet7i9I@ashevche-desk.local>
-References: <20260325054313.868261-1-harshit.m.mogalapalli@oracle.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r8LdRDXS"
+Received: by mail-wm1-f42.google.com with SMTP id 5b1f17b1804b1-486ff201041so44770135e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 05:39:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774442384; x=1775047184; darn=vger.kernel.org;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :from:to:cc:subject:date:message-id:reply-to;
+        bh=xtuXp+6WgHbRT0cszKDOE39oBvxZ938mbsv9Ak13mSI=;
+        b=r8LdRDXSkPFV3f/ybLzqWpTwH9+BN0dK50qgZluS5s2xQB8VFoGMB8TQiUZcmCzVWP
+         L+fZyp1JxteW1iZL9vsrwE/Yb01E8E1LFpS/LnYx3C0gMU6yoaaBctxkgFndezRREXeQ
+         VvoYg/aFcDodkLGC2iivMnvgrTd46vXtA2p2eTAk6fxRuLjkJAGui4jmRcbVPkghBiqD
+         JzjiuYaxklYH4iWHiLXbaECmCZLRLMjl0c2kO8lxjFlsugz0jVCyj9WdPcrXs1IyR0K2
+         qYA6lg9tMfN6iX1ie54jr9oL3ofjBvf7QPQF+qU/Xbf9aPIQQ7AjBL6e81B8j7VyqDkH
+         lhTQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774442384; x=1775047184;
+        h=content-transfer-encoding:in-reply-to:from:content-language
+         :references:cc:to:subject:user-agent:mime-version:date:message-id
+         :x-gm-gg:x-gm-message-state:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=xtuXp+6WgHbRT0cszKDOE39oBvxZ938mbsv9Ak13mSI=;
+        b=jrgfWjOfHyzCPVZnu7sGfyy+wY0hkvjd3mQA8fJwS7nZRe2E41XSjgotCFuYXGk4St
+         xJvpr9Ajih5dNvkbJ1v/NOOTH1sbL8tCyY/BNg+Z0pDtbEHwNrrsim9AG4EK9bGdih0j
+         f0mexzOJjmbwl9XLdSwo9EzpXfXdP1GXOUbG7rio3g0Fvqb8nlIBnr+dn0i4T7dwmGTQ
+         dD0LsA+fEmWBahX0kZI4nACWHvo6SNQzqkqVX8A0p7GcbtOERpObNirSvmA4ZhUCnXNc
+         +fRxVWnVUblfjhJjKlHSWz0zNZ2gPLWlyFp5jZZMDOuRHmM6vOIASkh6iRFoWn5Cfp5p
+         KRig==
+X-Gm-Message-State: AOJu0YwJ7yZ8rJa6tJDVN+DMjhW0g6e1QEbta1+0jNf7XiWYcqkx9Ywn
+	IWsvGH6xK3SNz+tzsr6dYsCscFB7QUe1YoWC8Gy4YROrtF8LiWwdQ16v
+X-Gm-Gg: ATEYQzwpvxSSSJRfOzNCAOqu9ORHFJ9kBLx1VrU4pEg6j2PW0nbDxvaym32IO0X9XzC
+	oIwAjJ941xitu/f0KmWhU5VI7kg7+vvmGIo6tFbXnw4DIxPjzLhr8fqxE7VAX3iR5z3S0m6nxd5
+	2MnCZlu4n+UaZy0qZDcP6deugMRir24ClJuiJAkL2ndC9zcHVllFj8qlxT6DRt2rWIRrzQYt+aQ
+	8jO0ahnIUJdKcL4NMPtfqdIW6r3bB3RfvSzNW7Gl2bRF21ZHnSYMF48/JkdCmEPQb+WNtiJJDVH
+	nnithxCm03ZOU12zlNUt7DotGYYd3DnTcp1Iw0ZR1LXpNNnxf85/mPqxiqcxYULguWNa2Vx21eL
+	gzKlfn/oBskEsIQNToQe+CaVdds3kFgXOI+McqE11gJPG9PW6GA+N3fWE6ERWR3kdA7ygp574WT
+	yspNhGFe8ChJFYqL0jWxYIC7jmsxISdKyUrTWzG35kHYXBnSwzeMuR8msx2o0yS5I=
+X-Received: by 2002:a05:600c:1f12:b0:487:338:b4eb with SMTP id 5b1f17b1804b1-487160564f9mr48382215e9.28.1774442383796;
+        Wed, 25 Mar 2026 05:39:43 -0700 (PDT)
+Received: from ?IPV6:2a00:10:8f5a:ad01:f856:f975:7cf:79d7? ([2a00:10:8f5a:ad01:f856:f975:7cf:79d7])
+        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-4871728a19dsm43893515e9.1.2026.03.25.05.39.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 25 Mar 2026 05:39:43 -0700 (PDT)
+Message-ID: <71a591fa-d103-4043-a313-e796483e8709@gmail.com>
+Date: Wed, 25 Mar 2026 13:39:42 +0100
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20260325054313.868261-1-harshit.m.mogalapalli@oracle.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
- krs, Bertel Jungin Aukio 5, 02600 Espoo
+User-Agent: Mozilla Thunderbird
+Subject: Re: [PATCH] iio: imu: st_lsm6dsx: Add ACPI ID for SHIFT13mi gyroscope
+To: Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ lorenzo@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
+ nuno.sa@analog.com, andy@kernel.org
+References: <20260324193626.77231-1-twoexem@gmail.com>
+ <acPNhGlmTJk4pfRG@ashevche-desk.local>
+ <2ac6cca6-a7c5-4892-93d9-49f850953511@gmail.com>
+ <acPU86AwRJPUb22L@ashevche-desk.local>
+Content-Language: de-DE, en-US
+From: =?UTF-8?B?TWlsYW4gTWnFoWnEhw==?= <twoexem@gmail.com>
+In-Reply-To: <acPU86AwRJPUb22L@ashevche-desk.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 
-On Tue, Mar 24, 2026 at 10:43:09PM -0700, Harshit Mogalapalli wrote:
-> regmap_config.max_register is supposed to store the highest valid
-> register but this driver assigns the number of registers
-> INA2XX_MAX_REGISTERS is 8, the highest valid register address is 7.
-> 
-> Fix this by subtracting 1 so max_register is inclusive.
+On 3/25/26 13:28, Andy Shevchenko wrote:
+> Interestingly it has accelerometer and gyroscope described there.
+> Is the other part already supported?
 
-This matches with my understanding of max_register in regmap.
-But what I have noticed is that we have two drivers for the same subset
-of the chips. Why? Also one may note the differences in max_register.
+Hi Andy,
+The accelerometer is supported. Checking iio devices:
 
-Taking that into account with the fact that most likely there is nothing wrong
-to access that register (in the other driver they allow up to 13), I think you
-can rather add a 0x07 register to the ADC driver and change the value of
-_MAX_REGISTERS to be equal to 0x07 as done in hwmon driver.
+$ cat /sys/bus/iio/devices/iio:device*/name 
+  
 
-> Fixes: c43a102e67db ("iio: ina2xx: add support for TI INA2xx Power Monitors")
-> Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-> ---
-> Found by static analysis using smatch, code review and guess work.
-> NOT TESTED.  Please review carefully!
+i2c-CPLM3218:00
+lsm6dso_gyro
+lsm6dso_accel
 
-Right, see above.
+Both the gyroscope and accelerometer are shown and recognised.
 
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+Best regards,
+Milan Misic
