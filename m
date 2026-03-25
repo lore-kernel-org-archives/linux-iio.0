@@ -1,201 +1,129 @@
-Received: from TYVP286CU001.outbound.protection.outlook.com (mail-japaneastazon11011041.outbound.protection.outlook.com [52.101.125.41])
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA1E123B612;
-	Wed, 25 Mar 2026 13:24:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=fail smtp.client-ip=52.101.125.41
-ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774445088; cv=fail; b=rv1sJWzacqgkBviiiIB0r+KA/fomE/XU7qUkSzX0r795I91r3wgKKnVJkSux2JewsnYABg1svA55mH1/70TXMCArnIzg4WipvbWsoZLjIspv/OMNBvuEMV6ScngdX1OijZkgFUzTcj5jTlkXLsixI7MNfU93l9f2VgvJ3YROMMM=
-ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774445088; c=relaxed/simple;
-	bh=UrARRqdIpHugyLFlkgXSeaDSgI0XE6zr7Q+rOKSeDWI=;
-	h=From:To:CC:Subject:Date:Message-ID:References:In-Reply-To:
-	 Content-Type:MIME-Version; b=eoedvlqilDtNdKUBthKzurZMaooV0GVorzs5GdUGMQpF9tSGZrnqwuEXHAV+kHEnjXXv98xG7BV7FuQLEzBF05OJCSPyHfc6DY+uqFkETLFMbJ46DNKWAB2+V3wiwIzxlYXn+t65BesGalycU/K/zMG0A+ITxHTTW24D32ugGp4=
-ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com; spf=pass smtp.mailfrom=renesas.com; dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b=p7CNbKW8; arc=fail smtp.client-ip=52.101.125.41
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=renesas.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=renesas.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (1024-bit key) header.d=renesas.com header.i=@renesas.com header.b="p7CNbKW8"
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector10001; d=microsoft.com; cv=none;
- b=j95IivfK/DHwv0n696uDcUUKVneJbMx/TnzgoVR7MIropYssZ7bsD1YlU8cn5JX648erOekm0/nk0FI/X6lrasY0LxjGq5v/VM840HFBatm25nYUM0HG6SolQgAeCjoSVET50UlWltp2kVIJe34YrEy9OSYcJ9QtnSl/W2myHkCzXCCDpEcamFcX30rtgEp5z2uqm2CoLOUh29NSkqDBq/uknYcAEF+m7qvdvsChS1jiMJaqoeEodeRP9rWw/fTZ3kxm3xPeHEfEyz5N7YcyFfc0Yq3G49+dwJqLrLMFhZshnVIwk8DswKP8r6Bo2SuAI56hxPZR66JXZzkBR6ATFQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector10001;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=FzgQwQKSDWuEXBbTjlnuX4CDkii5p9E5LHX5EYSk4ao=;
- b=TVyoKILFwtFGkFYZkIFtzUPGksVRsGubS5ACJTSy33cFt8uexkRLFOr3MXTFaSEkoQX8nR+vM046tTJpZGOMESOKHA8OSjsnC9woI6VYqq+240GjSPL61FaWaR9qYyjj9s8EpKtrvqhcUyfllB3pDVYz7Ueid7yM5dHOf+afLKEBR2LRpVqGYUR+Evr4WqO8t5IUS76OwbsMC3a50kfbZLxFaSS4jzQXzq8TixQXuigTZRrCDmfwharaKMC43vMBTaCZDBiLNTDyrWaNOeOoq4ASBCMos56p7AyWu1XYjHn7BwVeXvjlH4B96A/YcTD2G/PkFGY269N79Fmmtrb0Tg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=renesas.com; dmarc=pass action=none header.from=renesas.com;
- dkim=pass header.d=renesas.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=renesas.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FzgQwQKSDWuEXBbTjlnuX4CDkii5p9E5LHX5EYSk4ao=;
- b=p7CNbKW8lw04lJNofx3lf3/OdGTB+GGnQKcIRS+a48z9Swy8orkpIPAf28XcUK3Is9vvV77no1+zhxnpWtLmqzVwCl3030alVfbVvYPVlvpqO7DBcSjICvFXCo000ZO8b28haJzoqLGIK05ikJBXfaQiezLQBZHDkT96QNbRVpA=
-Received: from TYRPR01MB15619.jpnprd01.prod.outlook.com
- (2603:1096:405:29b::10) by TY4PR01MB12748.jpnprd01.prod.outlook.com
- (2603:1096:405:1ea::10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.9745.20; Wed, 25 Mar
- 2026 13:24:41 +0000
-Received: from TYRPR01MB15619.jpnprd01.prod.outlook.com
- ([fe80::a68f:5c9:9de8:4fa4]) by TYRPR01MB15619.jpnprd01.prod.outlook.com
- ([fe80::a68f:5c9:9de8:4fa4%5]) with mapi id 15.20.9745.019; Wed, 25 Mar 2026
- 13:24:40 +0000
-From: Cosmin-Gabriel Tanislav <cosmin-gabriel.tanislav.xa@renesas.com>
-To: "u.kleine-koenig@baylibre.com" <u.kleine-koenig@baylibre.com>, Biju Das
-	<biju.das.jz@bp.renesas.com>, Daniel Lezcano <daniel.lezcano@linaro.org>,
-	Thomas Gleixner <tglx@linutronix.de>, Rob Herring <robh@kernel.org>,
-	Krzysztof Kozlowski <krzk+dt@kernel.org>
-CC: Conor Dooley <conor+dt@kernel.org>, Geert Uytterhoeven
-	<geert+renesas@glider.be>, magnus.damm <magnus.damm@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-pwm@vger.kernel.org" <linux-pwm@vger.kernel.org>,
-	"linux-renesas-soc@vger.kernel.org" <linux-renesas-soc@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: RE: [PATCH] dt-bindings: timer: renesas,rz-mtu3: Use #pwm-cells = <3>
-Thread-Topic: [PATCH] dt-bindings: timer: renesas,rz-mtu3: Use #pwm-cells =
- <3>
-Thread-Index: AQHcvEqlan+ixJQ7D0WSZ1JkvkuZj7W/POEg
-Date: Wed, 25 Mar 2026 13:24:40 +0000
-Message-ID:
- <TYRPR01MB1561945B6057A2ABFCF25C6788549A@TYRPR01MB15619.jpnprd01.prod.outlook.com>
-References: <20250527205823.377785-2-u.kleine-koenig@baylibre.com>
-In-Reply-To: <20250527205823.377785-2-u.kleine-koenig@baylibre.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach:
-X-MS-TNEF-Correlator:
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=renesas.com;
-x-ms-publictraffictype: Email
-x-ms-traffictypediagnostic: TYRPR01MB15619:EE_|TY4PR01MB12748:EE_
-x-ms-office365-filtering-correlation-id: ea156c0e-1b18-4858-6e79-08de8a71ded9
-x-ld-processed: 53d82571-da19-47e4-9cb4-625a166a4a2a,ExtAddr
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam:
- BCL:0;ARA:13230040|376014|7416014|366016|1800799024|56012099003|22082099003|18002099003|38070700021;
-x-microsoft-antispam-message-info:
- 1t+WkyMHpC0jtoBiy1v03/zxYE2x9i9f59/bIIeN0PUEU8h8CstMHuA4smLSROrCS+YFcOnN3dflLbMGuyxrnhtBm3kxMr94/VjNAawP6gTEfXhLaH4T36PeJuh3+EAbv33xb/lI5QfqOpLk6SOepV1w+v+gN2oP3WQ5wXgz3rnL+0V3lxMoRf8gL+3AKEUuwUQw7iHekXc4ZrU/3UEwHYfsOdJFhsh30sUw3rVZrs+wkWIOTxstgVIPH585ZPcxLCsVzNL9Z/ukbRGeCXNI1Z1CVrKyBhoEgRpcWAWpTuPy3vgA3wkn46oHvvN2q0CKdHRdlsVY/Yo87qLclVI9sxoG1kQsYy/MuSn4PNcFgCYSvyIns9FkJ8w/NXVdZcKKwZJkmYp5uFiByC0GhKknJdZKdw4Zd0kgrJ6DB7wnm+CYn/gzvlyV8NEJHDJTTIp5LQRP0RDajZznukxLFbCHVLiUdyMgdup/l5MmDOa6RuoMpGJU9MiyVzjzN1MIo1Fo7jW3kVJr0vv7Bc6FJqxDcwhr6zBQK2G3GxDaFvE4Hk1/bY29vYNMPuQJRU9qEJwrpukRqVRY5jwvb5JY7JokvPFl0b80byaCVXTr224ra1zgHjVMxiK7x6ZgI68rQOeF5iz7cw4x0kZ8EDRBd/ZyOxNHxOYZXVQxmTlWt/nNAcRx13eFR3RYP7i1vw7OpFgGtzzv2na/geu9EcEZ+PvwwTwWmmvByU352CN9IBL1p0P+03KSXd3Sx070uyZU1p4ulXBqUEbzlJdxNisOmduWtJ4elPiV5PyLlNabizzhrfM=
-x-forefront-antispam-report:
- CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:TYRPR01MB15619.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230040)(376014)(7416014)(366016)(1800799024)(56012099003)(22082099003)(18002099003)(38070700021);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0:
- =?iso-8859-1?Q?SjvRmeJL30MXQqUjws0ReXcJG4UMeM5mxascvv72nfGfu2fOql09WvrDGN?=
- =?iso-8859-1?Q?S2N71JZQHzBtMsUW7Mb9dqTIxKEX2aXTkPrijsskr/ksllqrrr0uh3Ozip?=
- =?iso-8859-1?Q?Os61HpoOFRc2VIMcvz0kdsoI0tb4I050gfP1f7LFABqHbKcWckFGZCVM80?=
- =?iso-8859-1?Q?q3ma5/41Hy1Qa5OUqfFFrQLzVf+EtAQOjQnLwN70PzW9hz5AnCEWC5Fvom?=
- =?iso-8859-1?Q?SSBDqZ844UpBJMidplES1ilUYK9DDs1yMwkJwxJVBXQvR6xZ7Yy25adeey?=
- =?iso-8859-1?Q?KoGgLY3SfUPWJhDeobw3xfQ0A64WPsKOT60/Ng5RGJldmT14ff3QFWdzUX?=
- =?iso-8859-1?Q?H7LmrdP0VXEnf+acXIiBce7qt/thjJnbiYnl7CbXxuqe98pIInDUMt9YqA?=
- =?iso-8859-1?Q?ke/SBkHZ6yqNEm3gMQjTT7hWR0HWW26lhO8pSOiQEuEnUtGp42240IuSj/?=
- =?iso-8859-1?Q?p2t0RnOLvHtMWFv9xanyzeNXOZbHS9MJ+MROV1851OZEhWbnFbexE9R2Cj?=
- =?iso-8859-1?Q?rt9NW3P5SUNI/8Xo3QAXtKoLJxONh7lFHWB4g/aMR7scOMQmrMw3sAWhZG?=
- =?iso-8859-1?Q?LhwjLFRaGKoiNCniyC5Y0KUBpt+onSQWTjPXLIxChW8tUMmrBC9dCUIhxb?=
- =?iso-8859-1?Q?PHnhSYGQG6X2UwqUE/FJT0fSC5wNYSlIIuWVZo/V2rTpyJo80VJi2UmNjb?=
- =?iso-8859-1?Q?Bq4BU1pe4jQa/+uV8ZVn8ckEo+3t4r5expKoctVS9fgtlc7c5P0TaGamBP?=
- =?iso-8859-1?Q?XbhqGg3DBIyzVD989ymvabjpJHgupEtR/dxwG4a0Dnz9ga5tw3IvJbIenj?=
- =?iso-8859-1?Q?h/iLEDQF0mdsbarB/g293pptMly7DGGy/w0fG5b2KnhnJPL9uzZ31fSpnw?=
- =?iso-8859-1?Q?yIPv6v0Wf64Boj1j+c4UQaMP8ntVCe/Q+QeNJYJjDT3KDuK9SUmRLPLRfg?=
- =?iso-8859-1?Q?7mbSwGS0anfPDsAxpyzguhS3uka4YSu8TMjQFZzPzVkohDWw9ZYmvElQD1?=
- =?iso-8859-1?Q?xrkbGmC94l8hRK3cQTKjfdr2Sh5Qo2zwK0+GxqNiVXPVjy6oxjSV08Z0SI?=
- =?iso-8859-1?Q?OQf1BTqF8wMCU6Tp0AtAPGUJ+WrbFbbJ4qvLyKDZQGkt9JNdkA5pyJCxfR?=
- =?iso-8859-1?Q?wrR3fQnXopfHgADY8+PBGH0UHuYXDObfVIiJgpwJdr+sx1K80pv2R3DWRo?=
- =?iso-8859-1?Q?7myAb4pu83zu3kahKWDgC/2ELMymSkvXp0b6Nbu3Av2LjYXatr9nqN7SAp?=
- =?iso-8859-1?Q?ftsMVii3uD9yw4FyB4Ui0ky4MxLRtq2ZVsDE1zuG9MSaE6c22zZLiJr010?=
- =?iso-8859-1?Q?A9+uQkcxNHkZThy11iwgNMDMTyfvIg2xEavehIanvA/x25VXOaEjDw41+f?=
- =?iso-8859-1?Q?31snPxs+zp9sRSIJErwVnpJC0DCG3Z5Lhtxb7pQH5JJOAP00433kxp75AD?=
- =?iso-8859-1?Q?sPixwXpnUXyiBFh9YOqNeakQ7YVh+HL5JNx3bWhhRRWP4pque1btTuy0qh?=
- =?iso-8859-1?Q?cJ5ewausEPYE0Ths2hvaG+o8TvzYihU28mHhu21yCWt2q7cFNQ5worqxVa?=
- =?iso-8859-1?Q?d+kyvO0KdJGMYEjCi9g48dlmjTf61bkVRUMa+WMUjhSTbcTDGRRFyIja2t?=
- =?iso-8859-1?Q?VqSoJjF0W2Gn2OgjMuPieJreZrqRbpzMHs7B6j2b8pUzL77pGfh0fEVZUB?=
- =?iso-8859-1?Q?2f+m4SXslRN5l9b9p4oyhxmWOfq4QmEq8hhUfUsJYd+gKTmV7UhcksZqai?=
- =?iso-8859-1?Q?UUu8RZe3YsQtk9h+3mmLKrhzKEiXjO3/Xw6DuBG/Kqw9yCqFnHkQ0dFKod?=
- =?iso-8859-1?Q?P+98pipFLmewOy7bI9IbQejnulqOQsWYDdPCkYEYcVEDTMULnfwo?=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id A60D5233722;
+	Wed, 25 Mar 2026 13:38:12 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=185.176.79.56
+ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774445895; cv=none; b=eRSm015Az3tbXc0Z8lyhx2YJfloMK8ec7il55n0utl9OxviQphLtOcI9cm/z1g4MUOcFyW7SYs53BBE9LsG6C6CGz8fZuKzWKbFTV5xm0OTZi50uREhLWer22jCywiypzUuYASMkMGZfFF70ZcdmY4v3kQWaRbledWEoIvugYWQ=
+ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774445895; c=relaxed/simple;
+	bh=NiNWg3IbyVoGqxPoeC/ygcgrciSr53x9ao4CqjN0MDQ=;
+	h=Date:From:To:CC:Subject:Message-ID:In-Reply-To:References:
+	 MIME-Version:Content-Type; b=ga9l4j/zH01MI4UV/ItzY8VoL8uVgizvpxMHbd4b/AjMljpMcBnajYZyJ3rtWumvr7YEAYrrgRp7qBcn2HEeErNKt7tg/U17No2T+PN/HZN6vY0pdYp04PafmwkEikxMZIHbWkTyrP6CblZbHMmEslrHphT0qaRS5gpBi5dM1sA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com; spf=pass smtp.mailfrom=huawei.com; arc=none smtp.client-ip=185.176.79.56
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=quarantine dis=none) header.from=huawei.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=huawei.com
+Received: from mail.maildlp.com (unknown [172.18.224.83])
+	by frasgout.his.huawei.com (SkyGuard) with ESMTPS id 4fgnzD4cJyzJ469q;
+	Wed, 25 Mar 2026 21:38:00 +0800 (CST)
+Received: from dubpeml500005.china.huawei.com (unknown [7.214.145.207])
+	by mail.maildlp.com (Postfix) with ESMTPS id 400D540569;
+	Wed, 25 Mar 2026 21:38:09 +0800 (CST)
+Received: from localhost (10.203.177.15) by dubpeml500005.china.huawei.com
+ (7.214.145.207) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.1544.11; Wed, 25 Mar
+ 2026 13:38:08 +0000
+Date: Wed, 25 Mar 2026 13:38:06 +0000
+From: Jonathan Cameron <jonathan.cameron@huawei.com>
+To: Sirat <email@sirat.me>
+CC: Krzysztof Kozlowski <krzk@kernel.org>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <jic23@kernel.org>, <dlechner@baylibre.com>,
+	<nuno.sa@analog.com>, <andy@kernel.org>, <robh@kernel.org>,
+	<krzk+dt@kernel.org>, <conor+dt@kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v7 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF
+ sensor
+Message-ID: <20260325133806.00007b68@huawei.com>
+In-Reply-To: <CANn+LWJQM45rAT+mzS9ZEGBgmqChbxUtStdzhbzthXUPJ=2csg@mail.gmail.com>
+References: <20260325063254.18062-1-email@sirat.me>
+	<20260325063254.18062-2-email@sirat.me>
+	<20260325-gentle-earthworm-of-progress-1f9f46@quoll>
+	<CANn+LW+Y6j0xk2x02-BUL9qNq2gf-PXspi4wP_KGd7Abz3hOYw@mail.gmail.com>
+	<4d10b6c0-d599-4fc5-b9ed-ce669ac46e84@kernel.org>
+	<CANn+LWJQM45rAT+mzS9ZEGBgmqChbxUtStdzhbzthXUPJ=2csg@mail.gmail.com>
+X-Mailer: Claws Mail 4.3.0 (GTK 3.24.42; x86_64-w64-mingw32)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: renesas.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: TYRPR01MB15619.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ea156c0e-1b18-4858-6e79-08de8a71ded9
-X-MS-Exchange-CrossTenant-originalarrivaltime: 25 Mar 2026 13:24:40.7674
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 53d82571-da19-47e4-9cb4-625a166a4a2a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mRrJNcC//Q4w07tUQeguK7CL6LNoc368RiZLcR3Za0Ia1enEC/n6B935tvseyseQwEz3EZUvrt/m3Fmy35Xvfoijg6bwY9AMzgoDGN01pAbsCrEmqVS8AFwiGDardjca
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: TY4PR01MB12748
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-ClientProxiedBy: lhrpeml500011.china.huawei.com (7.191.174.215) To
+ dubpeml500005.china.huawei.com (7.214.145.207)
 
-> From: Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com>
-> Sent: Tuesday, May 27, 2025 11:58 PM
+On Wed, 25 Mar 2026 15:18:05 +0600
+Sirat <email@sirat.me> wrote:
+
+> On Wed, Mar 25, 2026 at 2:58=E2=80=AFPM Krzysztof Kozlowski <krzk@kernel.=
+org> wrote:
+> >
+> > On 25/03/2026 09:48, Sirat wrote: =20
+> > > On Wed, Mar 25, 2026 at 2:05=E2=80=AFPM Krzysztof Kozlowski <krzk@ker=
+nel.org> wrote: =20
+> > >>
+> > >> On Wed, Mar 25, 2026 at 12:32:22PM +0600, Siratul Islam wrote: =20
+> > >>> Add device tree binding documentation for the STMicroelectronics
+> > >>> VL53L1X Time-of-Flight ranging sensor connected via I2C.
+> > >>>
+> > >>> Make vdd-supply required. The device requires power to operate
+> > >>> and the property should have been required from the start. =20
+> > >>
+> > >> That's ABI break and device for many years was working fine, so this
+> > >> should not be changed.
+> > >> =20
+> > > Jonathan and David asked that vdd-supply be made required. I feel like
+> > > there is a conflict here that I am not able to resolve myself.
+> > >
+> > > What I think about it is the binding does not correctly describe the
+> > > hardware and we should consider this a bug and fix it.
+> > > The driver worked because of a fallback mechanism (dummy/fake
+> > > regulator) and not because power was optional.
+> > > =20
+> >
+> >
+> > I looked at v6 and v5 and I do not see such comment for binding that
+> > existing device should change ABI. Can you point me to it?
+> > =20
+> "Make it required and add a note to the commit message to say why the
+> requirement should always have been there. Devices tend not to work
+> with no power." - Jonathan (v3:
+> https://lore.kernel.org/linux-iio/20260322115704.10b2e0d4@jic23-huawei)
 >=20
-> With the goal to unify all PWM bindings to use #pwm-cells =3D <3> update
-> the renesas,rz-mtu3 binding accordingly. Keep <2> documented as a
-> deprecated value at least until the in-tree device trees are fixed
-> accordingly.
+> "No, bindings should not depend on driver implementation." - David
+> (When I asked if I should  drop the hard requirement in the binding,
+> v6: https://lore.kernel.org/linux-iio/55e92148-b5de-4fb8-af0b-9476235341b=
+c@baylibre.com/)
 >=20
-
-Hello Uwe, Rob, Krzysztof.
-
-Sorry for replying to an old patch, but the context is relevant to my
-question.
-
-I'm working on adding MTU3 support for a new platform, Renesas RZ/T2H.
-
-From this patch, it is clear that new platforms should use
-#pwm-cells =3D <3>; as <2> is deprecated.
-
-What I would like to clarify is whether existing platforms are also
-expected to be migrated from #pwm-cells =3D <2> to #pwm-cells =3D <3>.
-
-My understanding is that changing the provider to #pwm-cells =3D <3> would
-break existing consumers that still specify only two cells in their PWM
-specifiers, since those references would then fail the checks inside
-of_phandle_iterator_next().
-
-There are no existing consumers in-tree, but there might be out-of-tree
-ones that depend on #pwm-cells =3D <2>;.
-
-If we're okay with the ABI breakage I can proceed with the changes for
-existing platforms too.
-
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@baylibre.com>
-> ---
->  .../devicetree/bindings/timer/renesas,rz-mtu3.yaml         | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+> "From the point of view of the devicetree, it doesn't matter what the
+> driver does. It matters that the chip can't work without power. ;-)" -
+> David (v1: https://lore.kernel.org/linux-iio/d0ec6a2f-6d30-4774-8950-15dd=
+3c4b020b@baylibre.com)
 >=20
-> diff --git a/Documentation/devicetree/bindings/timer/renesas,rz-mtu3.yaml
-> b/Documentation/devicetree/bindings/timer/renesas,rz-mtu3.yaml
-> index 3931054b42fb..3ad10c5b66ba 100644
-> --- a/Documentation/devicetree/bindings/timer/renesas,rz-mtu3.yaml
-> +++ b/Documentation/devicetree/bindings/timer/renesas,rz-mtu3.yaml
-> @@ -221,7 +221,10 @@ properties:
->      maxItems: 1
+> I'm not sure if this is the correct way to quote. But I have added the li=
+nks.
+
+This came up a few years back - though I doubt I can track down the
+exact discussion however.
+
+=46rom a Linux point of view we are breaking binding checks only if the
+supply (that should always have been there as chips tend not to work
+well without power) is not present.  We absolutely have to
+keep the driver running whether or not the supply is specified.
+Do other DT users provide such a constraint? I've no idea.
+
+If the DT maintainer preference is leave it not required (perhaps
+with a comment saying new users of the binding should supply it)
+then that's fine by me. I'll keep it in mind for future similar changes.
+
+Thanks,
+
+Jonathan
+
 >=20
->    "#pwm-cells":
-> -    const: 2
-> +    oneOf:
-> +      - const: 2
-> +        deprecated: true
-> +      - const: 3
+> Thanks,
+> Sirat
 >=20
->  required:
->    - compatible
-> @@ -299,5 +302,5 @@ examples:
->        clocks =3D <&cpg CPG_MOD R9A07G044_MTU_X_MCK_MTU3>;
->        power-domains =3D <&cpg>;
->        resets =3D <&cpg R9A07G044_MTU_X_PRESET_MTU3>;
-> -      #pwm-cells =3D <2>;
-> +      #pwm-cells =3D <3>;
->      };
->=20
-> base-commit: 0ff41df1cb268fc69e703a08a57ee14ae967d0ca
-> --
-> 2.47.2
 >=20
 
