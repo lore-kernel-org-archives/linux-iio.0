@@ -1,116 +1,151 @@
-Received: from mgamail.intel.com (mgamail.intel.com [192.198.163.18])
+Received: from crocodile.elm.relay.mailchannels.net (crocodile.elm.relay.mailchannels.net [23.83.212.45])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9049F286881;
-	Wed, 25 Mar 2026 20:46:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=192.198.163.18
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774471599; cv=none; b=kNxgdXSuHk/RvoQASzW4Mrzaz9Z0q3uq8PnSJKXDxp030pjILXvWix8Ap0Y4PMdC9IPbMJsb/lwi02oB+WY88PtcwE65Z6/gEoFGSIg1bTjRhP6T6mWaRgasqmYgTMCdpAiXl4wt5jp/6mi0F18n2yMnHZ8k+yMLnXTZYxiVsTo=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774471599; c=relaxed/simple;
-	bh=ESfw6dxTCsicaJGE5YT4ygR3J83yYbYKDVrzpvPTkpg=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=CAld3qXi1gqHUruNhjv2xRHshr1dLteDDfndt6Uu7LtUW/n2diuQ8Wb6MRFrQrMGE6AUacyEc2dCjlWIrzBAJoJv6XpaXh950QRgGPMCL+6/0PXIpC7kbcvxdSlXSzTk+9xisxhX5oASiM5gV0dg9DDD7ILAdHhAp80WVq2aP4w=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=hBFfveeC; arc=none smtp.client-ip=192.198.163.18
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 41F843264CF;
+	Wed, 25 Mar 2026 21:02:43 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.212.45
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774472566; cv=pass; b=Ykkea9S0zYNFuGc15Y8WnXt06tXSw+DXyCcGipx+R5RiN8B0QU1Kf9ZsDiG3ZSnWYUTuHAR+D1ARb+4czQzkm5BbQvbCO6zGI82eNqj7d5gQ/EdEFUjxK7K/DQqHMHgMKSr88NFX0Q3UxmNAusc/TdnzYP1RpdIJ/njdSy0i3r8=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774472566; c=relaxed/simple;
+	bh=wACdQNI+8zAec/s3V3rt5YY4G202YVIBUqhgbpq2kKs=;
+	h=From:Subject:Message-Id:MIME-Version:Content-Type:To:Cc:Date; b=jwrcyOWOAlYoavPT3UeicVNWRIvIsKya93ffqL8i4+xvhgJ4m5l93X3Rq8K86rfHH7pqhV62lgqO9dBCZjULP0dY4omIan0MfUci4ZAYE2rI8Km60TdXW53+6kYrXTwrxyMWBI7PhX0G95rPltMUpCzmggzW6nJditTXfsFgNP0=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=VKqdalQr; arc=pass smtp.client-ip=23.83.212.45
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="hBFfveeC"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774471597; x=1806007597;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ESfw6dxTCsicaJGE5YT4ygR3J83yYbYKDVrzpvPTkpg=;
-  b=hBFfveeCZJUdezkrICk+tyPbtfUqtftwMp40rebpNUhJcuBsHskVt5cQ
-   +MUh/7kjMPr5B6uaC1S/WIS4NVkRBN243o4D5RRZJuj7bcFvdkYgseH2/
-   8YOET5Wu2WwDz+jiMgx0ldqvtEwWJ6lfXiJaIGsYDQ8KGa/OpxzXvAeOw
-   J7zCkEO3IqtFIw+HbAKnHQ6UoKoGsV4b6i0pdGVRakc8To6Dxh6tsxV/j
-   plEHWVZGpQL0j+K+GuV0Qyi8LCEsvgt7B62NHpjPiBjUZ9KlDZqlP1jqN
-   o17NX6r9dSKBIBytfpp/1n7O+FSAcuuRLIyWLncnJ/S8lFDnUHKxsESqj
-   Q==;
-X-CSE-ConnectionGUID: dRsmEFB3RtiSVzcqg//zHQ==
-X-CSE-MsgGUID: fXaDyzhfT1yXJHqNOzooTA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11740"; a="74701281"
-X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
-   d="scan'208";a="74701281"
-Received: from orviesa001.jf.intel.com ([10.64.159.141])
-  by fmvoesa112.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 13:46:37 -0700
-X-CSE-ConnectionGUID: YC5nO0R4TVCXj0vXWaiMgA==
-X-CSE-MsgGUID: ucf2/eJBR9iCnzxF94wvKA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
-   d="scan'208";a="262716939"
-Received: from lkp-server01.sh.intel.com (HELO 3905d212be1b) ([10.239.97.150])
-  by orviesa001.jf.intel.com with ESMTP; 25 Mar 2026 13:46:35 -0700
-Received: from kbuild by 3905d212be1b with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w5V7X-000000007i1-2bWR;
-	Wed, 25 Mar 2026 20:46:31 +0000
-Date: Thu, 26 Mar 2026 04:46:21 +0800
-From: kernel test robot <lkp@intel.com>
-To: Gabriel Rondon <grondon@gmail.com>, Jonathan Cameron <jic23@kernel.org>
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: ti-ads8688: use read_avail for available
- attributes
-Message-ID: <202603260401.2g0RDxuL-lkp@intel.com>
-References: <20260325110942.65337-1-grondon@gmail.com>
+	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="VKqdalQr"
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 8452D401D86;
+	Wed, 25 Mar 2026 21:02:43 +0000 (UTC)
+Received: from fr-int-smtpout25.hostinger.io (100-96-3-148.trex-nlb.outbound.svc.cluster.local [100.96.3.148])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id 505F54019F2;
+	Wed, 25 Mar 2026 21:02:39 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1774472561;
+	b=yjnqidl4fAjbA1IhAlxhr5W/ECfVLMJnz2Ierlq8Lwq8y50ywrj1UfCM0lvzpJ4sZdRVDZ
+	W3scnfcJzoeQvAcXRXIfOcfmFJgDhZgIs3P9pdYLyanX+avmATX2nvm/MGBAljk2Te3vOp
+	mRbT4d87g6PKEGzqrSdfh0hrhFkNGAWdBbLrEzAvfMjmzACGJVXbFK0QbLMqXDYx785Avp
+	bdrgQKimXLaE6om+a58OwuiZL07bgOdfOBFQaxytAggm2KUq2ALArXYvjcSRro8/2Pc1Xi
+	FAh1PplYqn1u52qKx6+YM9BtWQCFapJLJFyBEUCh01AAqXSHRb9/9cLtMzzXAg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1774472561;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:dkim-signature;
+	bh=OH8COS2pCIjBs8hij3fLubn5K83F6iOpok5M1DQoARo=;
+	b=wmP/XVxmngHY+JS11NS3jW+8m5oyCvntfezWmXyArCmv8l1KU26uEYhPqpZOkN6n2mbOt1
+	DM9pZMbayy3C5Zn3nYd/t4TUi9hgpJP+xRz2k6uvHyAPn/M+9PwpEXI45c5LPXt6Z2cqKi
+	LOtqzBKZArBinXR3oeQ3rgaSU20axH/3/g+/Qa/CsLFeQoiJWZJ1v2sjwj8HJ2Ugojsfb2
+	YSYF173bRDdHaKeHnyMujosaDUAw21liNYsNgVO84E+zaGympenohPrw/6ECL+o7QsGJaj
+	ypT+ePkbdc6m1J8JQweUEcl5p6ykyHQiABsvfSiuzJ79B5ddbCZPiCbhVYyeKg==
+ARC-Authentication-Results: i=1;
+	rspamd-db964497c-g7vbt;
+	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Bottle-Wipe: 296c16f64cb0b399_1774472563407_200871386
+X-MC-Loop-Signature: 1774472563407:3782653531
+X-MC-Ingress-Time: 1774472563407
+Received: from fr-int-smtpout25.hostinger.io (fr-int-smtpout25.hostinger.io
+ [148.222.54.38])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.96.3.148 (trex/7.1.5);
+	Wed, 25 Mar 2026 21:02:43 +0000
+Received: from [172.17.0.2] (unknown [180.253.44.220])
+	(Authenticated sender: linux@smankusors.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4fgzrB1BDLz1xpk;
+	Wed, 25 Mar 2026 21:02:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
+	s=hostingermail-a; t=1774472557;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding;
+	bh=OH8COS2pCIjBs8hij3fLubn5K83F6iOpok5M1DQoARo=;
+	b=VKqdalQr8k1J7BL3fktoyk+cX58ZCd/7Lz87OZTmG+Xi8L2lNUbxNNo1e0N504AG3TRc5O
+	HwkquOCOwIzYUXBtha4pG5nbkNqAqhEm/WELvsWbFJIp+stse2xRPkNeMr9qiYW44Ta7Wl
+	KTtzZJ6oY7/yKOgG7UNxamjU0TxuUVawS2+ZQJ28NcE3+9iRqAoIkXM1o1sVTaa1M+N+V1
+	RgmVoNL6io8nqtT3om29wE1OM25c//rmn5h6cOiNplpMmLUnbnSKzkLcKe3bTrVR8GC6zc
+	mjmTPeCMCX2JwPL0VBrK1DehHZABR/BFvMLGhBGLNyN0LMjLLUuTbefVkPhH2w==
+From: Antony Kurniawan Soemardi <linux@smankusors.com>
+Subject: [PATCH 0/2] iio: adc: qcom-pm8xxx-xoadc: add support for reading
+ channel labels from DT
+Message-Id: <20260326-pm8xxx-xoadc-label-v1-0-027805dad4db@smankusors.com>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260325110942.65337-1-grondon@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-B4-Tracking: v=1; b=H4sIADBNxGkC/x3MSQqAMAxA0atI1gZqFaeriItoUw040YIExLtbX
+ L7F/w9EDsIR+uyBwLdEOY+EIs9gXulYGMUlgzW2NqUt8NpbVUU9yc240cQbVg155xtvauoghVd
+ gL/pPh/F9P55ww49kAAAA
+X-Change-ID: 20260321-pm8xxx-xoadc-label-47afdf7f06a9
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ phone-devel@vger.kernel.org, 
+ Antony Kurniawan Soemardi <linux@smankusors.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1774472553; l=1433;
+ i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
+ bh=wACdQNI+8zAec/s3V3rt5YY4G202YVIBUqhgbpq2kKs=;
+ b=ngiU1utpjKX9QkjYMT7YkL/wUgt/0RSA9kG2krG7tk3hEMlcX7VAA1wqk9EOQuWa7SqrU7ETQ
+ QPc5aZ3y/XxCaN0nBCxgTOL0qNLNWTSsy7AkUXPqbfR83Un+3FXBSQa
+X-Developer-Key: i=linux@smankusors.com; a=ed25519;
+ pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
+Date: Wed, 25 Mar 2026 21:02:33 +0000 (UTC)
+X-CM-Analysis: v=2.4 cv=UN2PHzfy c=1 sm=1 tr=0 ts=69c44d6d a=9XgiG0qChrIWxZZBWkq1Wg==:117 a=9XgiG0qChrIWxZZBWkq1Wg==:17 a=IkcTkHD0fZMA:10 a=VwQbUJbxAAAA:8 a=wxLWbCv9AAAA:8 a=zjR9frvayTJ3PP2CzHgA:9 a=QEXdDO2ut3YA:10 a=QJY96suAAestDpCc5Gi9:22
+X-CM-Envelope: MS4xfA7a2X59ChSMD813BX2eR1odEZ2qEOMwPOVe0DQZDcCg2f/jysaAd1GCL2jeNExy4PzxZ8mcVyGujDtHwKMavW9mdtXwEWqWxGa1riumiOfHYCwh0RJ0 bzY1vovyWT3+cM7a8Zk+AzsQZALioXLQnR895C7L6kKZSTkGv+qk9jwu3KtMHnrFehwOLacczz/dvqGWNs4AMR6jSx/q4RzhjjCOYRk2eolkCYC3r/7QM66a qxm7t5rp90ccnPC9SvYXOYVCUjmPLr9ixpI6g8DD0XFqKKKj5/DQltz2w6B8H010ME3WTUcg3GS16saIZ/JVAq7PTNWkk1akU4EO65H0jph3vw/rDEKmcrMc NpRNIb/A/kucF6ODvSwZ3laTdibNR+zq4eRw0cOU7bLjKtr04ehl+OijsdutgyTnjwmTO5dQu9dHovL1TJsOJzBkuhhfY5ogB3NmO99s2OOCni0hWgS0pS/K qXFyetOMQc5kiEQ69eQRloJK7LJqrwswThZxRZgwU26yg+t1P9xNC+fyNbz3TVqNYUzqXIMSePLqbIwR69b/fMSyEAgTzf0ewXtxMeKaLKHiPVPCGR01kyFf wX4uQP2UUWdYqavRNO8aw3Dv7MScSthZqFp8qFiMiyMQIkx4oTa4l5+eIeK4D005/aA=
+X-AuthUser: linux@smankusors.com
 
-Hi Gabriel,
+This series adds support for reading channel labels from the device tree
+in the the Qualcomm PM8xxx XOADC driver, along with the corresponding
+DT updates for the PM8921 PMIC.
 
-kernel test robot noticed the following build warnings:
+Tested on Sony Xperia SP (PM8921):
+> cat /sys/bus/iio/devices/iio\:device0/in_voltage7_label
+usb_vbus
+> cat /sys/bus/iio/devices/iio\:device0/in_temp12_label
+ref_muxoff
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on linus/master v7.0-rc5 next-20260325]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
+This patch was originally part of the larger series addressing the said
+driver improvements. As the calibration fixes are not yet ready, the
+label support is split out to allow independent review and merging.
 
-url:    https://github.com/intel-lab-lkp/linux/commits/Gabriel-Rondon/iio-adc-ti-ads8688-use-read_avail-for-available-attributes/20260325-195933
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-patch link:    https://lore.kernel.org/r/20260325110942.65337-1-grondon%40gmail.com
-patch subject: [PATCH v2] iio: adc: ti-ads8688: use read_avail for available attributes
-config: s390-allmodconfig (https://download.01.org/0day-ci/archive/20260326/202603260401.2g0RDxuL-lkp@intel.com/config)
-compiler: clang version 18.1.8 (https://github.com/llvm/llvm-project 3b5b5c1ec4a3095ab096dd780e84d7ab81f3d7ff)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260326/202603260401.2g0RDxuL-lkp@intel.com/reproduce)
+Changes since original patch:
+- The label is now read from the platform description (device tree)
+  instead of the internal datasheet name.
+- Link to original patch:
+  https://lore.kernel.org/all/20251028-pm8xxx-xoadc-fix-v1-1-b000e1036e41@smankusors.com/
 
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603260401.2g0RDxuL-lkp@intel.com/
+Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+---
+Antony Kurniawan Soemardi (2):
+      ARM: dts: qcom: pm8921: add labels for ADC channels
+      iio: adc: qcom-pm8xxx-xoadc: add support for reading channel labels
 
-All warnings (new ones prefixed by >>):
+ arch/arm/boot/dts/qcom/pm8921.dtsi  | 12 ++++++++++++
+ drivers/iio/adc/qcom-pm8xxx-xoadc.c | 26 +++++++++++++++++++++-----
+ 2 files changed, 33 insertions(+), 5 deletions(-)
+---
+base-commit: c612261bedd6bbab7109f798715e449c9d20ff2f
+change-id: 20260321-pm8xxx-xoadc-label-47afdf7f06a9
 
->> drivers/iio/adc/ti-ads8688.c:117:2: warning: implicit conversion from 'unsigned long' to 'int' changes value from 18446744073709518848 to -32768 [-Wconstant-conversion]
-     116 | static const int ads8688_offset_avail[] = {
-         |                                           ~
-     117 |         -BIT(ADS8688_REALBITS - 1),
-         |         ^~~~~~~~~~~~~~~~~~~~~~~~~~
-   1 warning generated.
+Best regards,
+--
+Antony Kurniawan Soemardi <linux@smankusors.com>
 
-
-vim +117 drivers/iio/adc/ti-ads8688.c
-
-   115	
-   116	static const int ads8688_offset_avail[] = {
- > 117		-BIT(ADS8688_REALBITS - 1),
-   118		0
-   119	};
-   120	
-
--- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
