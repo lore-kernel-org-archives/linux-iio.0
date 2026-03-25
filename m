@@ -1,229 +1,150 @@
-Received: from mail-wm1-f53.google.com (mail-wm1-f53.google.com [209.85.128.53])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 389163CCFD2
-	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 11:09:46 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.53
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47A5016A956;
+	Wed, 25 Mar 2026 11:12:25 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774436992; cv=none; b=nuqq0jeEYXItEaYJHXTFXWd4T8DDIIRzMIYoYSiLI5lLEpaDs2G77StQ9a1nKyG0Q+Tc9KoIMNDXPllKEdYv4LOk83qT7SOSPpeD1CEuaXJGNam7ecdODJBM4O+jKbgYIKQa//jwHVOMOdcvXq/2kxPbcr4WhwRoLU3iTJ2RhAM=
+	t=1774437145; cv=none; b=PVOqAndpC7yISTObDt5ddIAGcMzWybNx5ULUj7r6PaqG08rsNuoNXaMMkODB3dHHoxlL5hrnRbzf9ipHCD4Ic9srpisr0a5pTOBwilHn+1WR64xkmJQoj9M85m4baJnzSzENmCDMK01M94cTm3M8vjh7y66etmI1TRkAC+FJKjY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774436992; c=relaxed/simple;
-	bh=W7zUZDtGNn20lMvdnvzQKIeaqO3L7T2YvE8j3vlT8QY=;
-	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type; b=g5hGCHsl/hB5sMaq2dzAja88z07TQi60juP75mgRVy28mRY+gfsOqyXTvAuTVAzDnPcIASaR2rhZz4WGnMTNOlpdQT2LFfPNtZqbgkI2X6vwEJ7ZkKrIF8diMp7snys/+ZMODpw/YyCPtovf2zRlpagCvQqJQiUPfxD+4xu0sfM=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=C4c8d5/M; arc=none smtp.client-ip=209.85.128.53
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1774437145; c=relaxed/simple;
+	bh=v1y5m4SGLtIgpA6R72CXUvsNNMHPFRUQdZtH3CuzF60=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=pL9bYhyY/0Y3mcukyArgvS5E6L56LGElhsNffTXL251CM+YdyCRD6zKGm5cvdshrpzg6eSM8f4KXt1hPhloT9Y5MbD9sYMKO4Atv4TptXh3jdPd+cuC+/9zZ2r2KkIbP0qalgm3A+aV2bGg63PvYanlKrw+zT5nIK417eF264nI=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=p0ob1MNs; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="C4c8d5/M"
-Received: by mail-wm1-f53.google.com with SMTP id 5b1f17b1804b1-486fd5360d4so26385535e9.1
-        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 04:09:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774436985; x=1775041785; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=uVK4wjtaqmG3ZXCPVMVUf5h3phFobdBtD0gg2Af7Zb8=;
-        b=C4c8d5/M2ugcwRoA1z33G6uXZCzU5veRhVBJm76WRf5PnE/hT0jYjiznQrtPINUldt
-         IRuigQ7weuTbKuv9K2kbYsbN1e2It7c7WMmx52LOk5fcrgB/kLzzZZ22nnpKdaWwX1+f
-         6/A7biIOBI0+8Wgwm2vnYpqjiwa/i++Xe0i4OQACLBzddu4RnQvQeV0LgBlaFl214/AW
-         CbY7vXfdSHseDpHzJ41k++OQnuO6xjuJHfyejORwGssvwmQdjyjoVO1Nie8DP2KJiPmA
-         7aCFabRd5d9ESQskBT5CalNw5HRJJzElqvJh1+i2uEdMK879cqsyA4KyJROLd39rwAFu
-         DZKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774436985; x=1775041785;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=uVK4wjtaqmG3ZXCPVMVUf5h3phFobdBtD0gg2Af7Zb8=;
-        b=TYp+2Mfd/P0HmyDTrfY8/GliVpfeadFD+AgtyAVrxvtBElJMvVBw1PagFKxdgIJHPU
-         MOvyTyRyr/3S1Dl0Cqss/zNhrxz1mhBy2j93k4ir9HBMoWRuHhUW4TmaeYG3zLJFTLBU
-         dcOAcGqlniGYXoGAcgDnVsn14nEstVhsDLf4XODcssRlsu2d8vog7BIO6snv2g8ezxrZ
-         xuZgTR0z6o1EbXng0yW/n2SS5IPDg9E0aVVKlpU7Jto6M6EykHtYipE61nxHDM3oo0I0
-         ITSNLRE+biktCis1G15hxixGvQ/m1X/WUFkRrK++GOaWf56uTKTzR4Qx15ryCP40oUyp
-         i52A==
-X-Forwarded-Encrypted: i=1; AJvYcCVd/wAWkHiIzrSHlrZtJgDA8UPAFts7JFK95sZWZCsPrGrGyTTyyuibKprMTAcOoVNwuSTpOZK9ekM=@vger.kernel.org
-X-Gm-Message-State: AOJu0YyaTGBs4GSDHbAEsu0e2DPuTjilV2DXDHVZ2TyBrR9wL6h7Mjet
-	fzEZu8S1QT5XlAKJP7uH+wTofc1mNn3fLMlMPwqlW4vkdBcj0X5G7lSw
-X-Gm-Gg: ATEYQzy9ykxxtFmidBDYFXreLjW1vSOoYl4399Eq8RRlBalUlw248iGS/JhmWEn8qEg
-	5NkaxQrV5/dFgjb7m+oN3hHpq+hjt4BKACPqUV9a2TsQl7waLNSPPVYlGuxYX+QcBpmg7Lr7rwN
-	N3AipmdKTivvztzgGqTcmSHoRk9NqEn2WjFDMGrFWthIEdW3N3Dl5p4+q4noOgZIkaJqsi9GilT
-	GY312pR7AV+8Ran1oKeb1O18anF/DryR1xy4K4VWWuXA/6RuSMSygublBtXmRBRZ9YysCjVlkGW
-	f66a28GucZVTGxvKN0XA4tbn9h1ZootR74v4xR75nLuNbUyCTcW+tBz08hRrbfZYAbO85/0kcM6
-	lvyMIG0AXNABd+5nGtcJDPwyDqESTBA2dA0JxDTf8K0XzFqG9dr6tNYUOxR8IDWye2f755wNqOh
-	6ClLiMP7OqMLUwOKUiTQ0inB8octJjPH6uENl1Cy4cXmoX8veJf1BB
-X-Received: by 2002:a05:600c:45d4:b0:487:1114:d42f with SMTP id 5b1f17b1804b1-48715fd4aa6mr45424655e9.1.1774436985034;
-        Wed, 25 Mar 2026 04:09:45 -0700 (PDT)
-Received: from localhost.localdomain ([2001:8a0:6c9b:a000:28db:f3e8:2f9b:ca58])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48711701804sm125621605e9.4.2026.03.25.04.09.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2026 04:09:44 -0700 (PDT)
-From: Gabriel Rondon <grondon@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: adc: ti-ads8688: use read_avail for available attributes
-Date: Wed, 25 Mar 2026 11:09:42 +0000
-Message-Id: <20260325110942.65337-1-grondon@gmail.com>
-X-Mailer: git-send-email 2.33.0
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="p0ob1MNs"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id F288CC2BCB0;
+	Wed, 25 Mar 2026 11:12:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774437145;
+	bh=v1y5m4SGLtIgpA6R72CXUvsNNMHPFRUQdZtH3CuzF60=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=p0ob1MNshvCefh2W0rwRDSn4lcR26R7SXo1G+mgHHMBCMDqWjbtQt1AIWh6S3Hyfp
+	 o0++lLG3s4u7PMUilLnVp2zplbqQZH+tppgf1Ocp9nwK8DZLofGQXfyyYZ3V0oa0yr
+	 qiTZqVMdqO4jzNVG+QP/OQ7XMdiCpga9L+lSduKS14Gd4T2bBUwQ+eH8i4Xo8J5gae
+	 q4gLVGsYgmyJbV6mllxo4RZ+eBzSFnAKiZ8OWIkw0qAeawiGzwxuV+qYpaw8HGlZlc
+	 n0/XhQ8T5tRaUOaYeJUs76uYlnje1d1gG8U8eEyu7fXT+X4pXihEMe2MtnFOkzJJKs
+	 GNWqvL1gbBZ+Q==
+Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2EC7103A9AB;
+	Wed, 25 Mar 2026 11:12:24 +0000 (UTC)
+From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
+Date: Wed, 25 Mar 2026 11:12:03 +0000
+Subject: [PATCH 2/2] iio: amplifiers: ad8366: add support for adrf5702/3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260325-adrf570x-iio-support-v1-2-9a2685eb2e55@analog.com>
+References: <20260325-adrf570x-iio-support-v1-0-9a2685eb2e55@analog.com>
+In-Reply-To: <20260325-adrf570x-iio-support-v1-0-9a2685eb2e55@analog.com>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org
+Cc: Lars-Peter Clausen <lars@metafoo.de>, 
+ Michael Hennerich <Michael.Hennerich@analog.com>, 
+ Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
+ Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, 
+ Rodrigo Alencar <rodrigo.alencar@analog.com>
+X-Mailer: b4 0.14.3
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1774437143; l=3508;
+ i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
+ bh=AsNs5tyHtb0PShFN/SAT4QMGDo6HOT+KvogC5g2UCX8=;
+ b=2+oY5DPNo4WEC+olLvftCchq99Nj6592+xVQpUbXn3yDSbD5KE4kh7b45GuQaUI6OWfOrcHzl
+ yY9QCHxPnZ4BNXXGS9xpE4YBGEynpu22KBe9wVgDCN1gs0cKd3Wohum
+X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
+ pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
+X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
+ with auth_id=561
+X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Reply-To: rodrigo.alencar@analog.com
 
-Convert the in_voltage_scale_available and in_voltage_offset_available
-attributes from legacy IIO_DEVICE_ATTR with custom show functions to the
-IIO framework's read_avail callback. This uses the framework's built-in
-support for _available attributes, removing the need for manual sysfs
-formatting.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
-Precompute the available scale values at probe time since they depend on
-the reference voltage which does not change after initialization.
+Add chip info structs and device table entries for ADRF5702 and ADRF5703
+Digital Step Attenuators.
 
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Signed-off-by: Gabriel Rondon <grondon@gmail.com>
+Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Changes in v2:
-- Use -BIT() macro instead of -(1 << ...) to avoid potential UB and
-  improve readability (Andy Shevchenko)
-- Remove trailing comma from offset_avail array (Andy Shevchenko)
-- Declare loop counter as unsigned int in for() (Andy Shevchenko, Nuno Sá)
-- Keep scale_avail assignment on a single line (Andy Shevchenko, Nuno Sá)
+ drivers/iio/amplifiers/Kconfig  |  2 ++
+ drivers/iio/amplifiers/ad8366.c | 22 ++++++++++++++++++++++
+ 2 files changed, 24 insertions(+)
 
- drivers/iio/adc/ti-ads8688.c | 70 +++++++++++++++++++-----------------
- 1 file changed, 36 insertions(+), 34 deletions(-)
+diff --git a/drivers/iio/amplifiers/Kconfig b/drivers/iio/amplifiers/Kconfig
+index 39d280d4d437..9e24421b5e97 100644
+--- a/drivers/iio/amplifiers/Kconfig
++++ b/drivers/iio/amplifiers/Kconfig
+@@ -18,6 +18,8 @@ config AD8366
+ 	    AD8366 Dual-Digital Variable Gain Amplifier (VGA)
+ 	    ADA4961 BiCMOS RF Digital Gain Amplifier (DGA)
+ 	    ADL5240 Digitally controlled variable gain amplifier (VGA)
++	    ADRF5702: 0.125 dB LSB, 8-Bit, Silicon Digital Attenuator
++	    ADRF5703: 0.25 dB LSB, 7-Bit, Silicon Digital Attenuator
+ 	    ADRF5720: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator
+ 	    ADRF5730: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator
+ 	    ADRF5731: 2 dB LSB, 4-Bit, Silicon Digital Attenuator
+diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
+index 334ca91c0f59..bbf41a1fb3a1 100644
+--- a/drivers/iio/amplifiers/ad8366.c
++++ b/drivers/iio/amplifiers/ad8366.c
+@@ -5,6 +5,8 @@
+  *   AD8366 Dual-Digital Variable Gain Amplifier (VGA)
+  *   ADA4961 BiCMOS RF Digital Gain Amplifier (DGA)
+  *   ADL5240 Digitally controlled variable gain amplifier (VGA)
++ *   ADRF5702: 0.125 dB LSB, 8-Bit, Silicon Digital Attenuator, 50 MHz to 20 GHz
++ *   ADRF5703: 0.25 dB LSB, 7-Bit, Silicon Digital Attenuator, 9 kHz to 20 GHz
+  *   ADRF5720: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator, 9 kHz to 40 GHz
+  *   ADRF5730: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator, 100 MHz to 40 GHz
+  *   ADRF5731: 2 dB LSB, 4-Bit, Silicon Digital Attenuator, 100 MHz to 40 GHz
+@@ -106,6 +108,22 @@ static const struct ad8366_info adl5240_chip_info = {
+ 	.num_channels = 1,
+ };
+ 
++static const struct ad8366_info adrf5702_chip_info = {
++	.name = "adrf5702",
++	.gain_min = -31875,
++	.gain_max = 0,
++	.gain_step = -125,
++	.num_channels = 1,
++};
++
++static const struct ad8366_info adrf5703_chip_info = {
++	.name = "adrf5703",
++	.gain_min = -31750,
++	.gain_max = 0,
++	.gain_step = -250,
++	.num_channels = 1,
++};
++
+ static const struct ad8366_info adrf5720_chip_info = {
+ 	.name = "adrf5720",
+ 	.gain_min = -31500,
+@@ -337,6 +355,8 @@ static const struct spi_device_id ad8366_id[] = {
+ 	{ "ad8366", (kernel_ulong_t)&ad8366_chip_info },
+ 	{ "ada4961", (kernel_ulong_t)&ada4961_chip_info },
+ 	{ "adl5240", (kernel_ulong_t)&adl5240_chip_info },
++	{ "adrf5702", (kernel_ulong_t)&adrf5702_chip_info },
++	{ "adrf5703", (kernel_ulong_t)&adrf5703_chip_info },
+ 	{ "adrf5720", (kernel_ulong_t)&adrf5720_chip_info },
+ 	{ "adrf5730", (kernel_ulong_t)&adrf5730_chip_info },
+ 	{ "adrf5731", (kernel_ulong_t)&adrf5731_chip_info },
+@@ -353,6 +373,8 @@ static const struct of_device_id ad8366_of_match[] = {
+ 	{ .compatible = "adi,ad8366", .data = &ad8366_chip_info },
+ 	{ .compatible = "adi,ada4961", .data = &ada4961_chip_info },
+ 	{ .compatible = "adi,adl5240", .data = &adl5240_chip_info },
++	{ .compatible = "adi,adrf5702", .data = &adrf5702_chip_info },
++	{ .compatible = "adi,adrf5703", .data = &adrf5703_chip_info },
+ 	{ .compatible = "adi,adrf5720", .data = &adrf5720_chip_info },
+ 	{ .compatible = "adi,adrf5730", .data = &adrf5730_chip_info },
+ 	{ .compatible = "adi,adrf5731", .data = &adrf5731_chip_info },
 
-diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-index b0bf46cae..31c43a4cb 100644
---- a/drivers/iio/adc/ti-ads8688.c
-+++ b/drivers/iio/adc/ti-ads8688.c
-@@ -6,7 +6,6 @@
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- #include <linux/spi/spi.h>
- #include <linux/regulator/consumer.h>
- #include <linux/err.h>
-@@ -17,7 +16,6 @@
- #include <linux/iio/buffer.h>
- #include <linux/iio/trigger_consumer.h>
- #include <linux/iio/triggered_buffer.h>
--#include <linux/iio/sysfs.h>
- 
- #define ADS8688_CMD_REG(x)		(x << 8)
- #define ADS8688_CMD_REG_NOOP		0x00
-@@ -66,6 +64,7 @@ struct ads8688_state {
- 	const struct ads8688_chip_info	*chip_info;
- 	struct spi_device		*spi;
- 	unsigned int			vref_mv;
-+	int				scale_avail[3][2];
- 	enum ads8688_range		range[8];
- 	union {
- 		__be32 d32;
-@@ -114,37 +113,9 @@ static const struct ads8688_ranges ads8688_range_def[5] = {
- 	}
- };
- 
--static ssize_t ads8688_show_scales(struct device *dev,
--				   struct device_attribute *attr, char *buf)
--{
--	struct ads8688_state *st = iio_priv(dev_to_iio_dev(dev));
--
--	return sprintf(buf, "0.%09u 0.%09u 0.%09u\n",
--		       ads8688_range_def[0].scale * st->vref_mv,
--		       ads8688_range_def[1].scale * st->vref_mv,
--		       ads8688_range_def[2].scale * st->vref_mv);
--}
--
--static ssize_t ads8688_show_offsets(struct device *dev,
--				    struct device_attribute *attr, char *buf)
--{
--	return sprintf(buf, "%d %d\n", ads8688_range_def[0].offset,
--		       ads8688_range_def[3].offset);
--}
--
--static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
--		       ads8688_show_scales, NULL, 0);
--static IIO_DEVICE_ATTR(in_voltage_offset_available, S_IRUGO,
--		       ads8688_show_offsets, NULL, 0);
--
--static struct attribute *ads8688_attributes[] = {
--	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage_offset_available.dev_attr.attr,
--	NULL,
--};
--
--static const struct attribute_group ads8688_attribute_group = {
--	.attrs = ads8688_attributes,
-+static const int ads8688_offset_avail[] = {
-+	-BIT(ADS8688_REALBITS - 1),
-+	0
- };
- 
- #define ADS8688_CHAN(index)					\
-@@ -155,6 +126,9 @@ static const struct attribute_group ads8688_attribute_group = {
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)		\
- 			      | BIT(IIO_CHAN_INFO_SCALE)	\
- 			      | BIT(IIO_CHAN_INFO_OFFSET),	\
-+	.info_mask_shared_by_type_available =			\
-+			      BIT(IIO_CHAN_INFO_SCALE)		\
-+			      | BIT(IIO_CHAN_INFO_OFFSET),	\
- 	.scan_index = index,					\
- 	.scan_type = {						\
- 		.sign = 'u',					\
-@@ -369,11 +343,34 @@ static int ads8688_write_raw_get_fmt(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
-+static int ads8688_read_avail(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      const int **vals, int *type, int *length,
-+			      long mask)
-+{
-+	struct ads8688_state *st = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*vals = (const int *)st->scale_avail;
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		*length = ARRAY_SIZE(st->scale_avail) * 2;
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*vals = ads8688_offset_avail;
-+		*type = IIO_VAL_INT;
-+		*length = ARRAY_SIZE(ads8688_offset_avail);
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static const struct iio_info ads8688_info = {
- 	.read_raw = &ads8688_read_raw,
-+	.read_avail = &ads8688_read_avail,
- 	.write_raw = &ads8688_write_raw,
- 	.write_raw_get_fmt = &ads8688_write_raw_get_fmt,
--	.attrs = &ads8688_attribute_group,
- };
- 
- static irqreturn_t ads8688_trigger_handler(int irq, void *p)
-@@ -426,6 +423,11 @@ static int ads8688_probe(struct spi_device *spi)
- 
- 	st->vref_mv = ret == -ENODEV ? ADS8688_VREF_MV : ret / 1000;
- 
-+	for (unsigned int i = 0; i < ARRAY_SIZE(st->scale_avail); i++) {
-+		st->scale_avail[i][0] = 0;
-+		st->scale_avail[i][1] = ads8688_range_def[i].scale * st->vref_mv;
-+	}
-+
- 	st->chip_info =	&ads8688_chip_info_tbl[spi_get_device_id(spi)->driver_data];
- 
- 	spi->mode = SPI_MODE_1;
 -- 
-2.33.0
+2.43.0
+
+
