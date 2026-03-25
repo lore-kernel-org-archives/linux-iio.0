@@ -1,49 +1,49 @@
-Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 7684135FF6B
-	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 20:20:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4228E3644D1
+	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 20:20:32 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.215.170
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774470026; cv=none; b=e0s+Nr7OxmpfNck+GREGQ1ppp6Gy98vPFR6iWJhe7k+3+4k6TMFRqDb7UH/UPiH2r5H4dn006i/oae7hlxRkVJOMVJHQA47Bq8+m0qU+Jbhqk2QX6Z9x52w6pSTy2gON+Z23Sg43GmQw+V5zpttVs5PwtAes7o3IUrWt07zzVn8=
+	t=1774470034; cv=none; b=l2F2Y0UimEoI5qGYYdE7rckMbgie4q0UYDgDNzrIdA44ioaQn6bAfRDTXf7F43LQ6lhOSNYr6PfsGCnI5OxEcNQdTY+eNsSQaIix71C0q0x7EzNukl5kt1Lx8g3xnwX/tuS+hxJyXAAsA0eLdAFjXoV7iMpwnhXtiILxyGSHRQg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774470026; c=relaxed/simple;
-	bh=8R2nRMTpNx0hPRXdARFDfIVrrrQqtMRyhIM/X1ptw4M=;
+	s=arc-20240116; t=1774470034; c=relaxed/simple;
+	bh=lqyAKYlUaLNS5eTo6kvAqc5n8fs1IiyPBlGjQDbG9MI=;
 	h=From:To:Cc:Subject:Date:Message-ID:In-Reply-To:References:
-	 MIME-Version; b=mnMlJ70Vlh+bmximDWyaSQY/5/aMJ1+bjglT3nHxV67BnfYfisKV9urrNRtJl8WWCgy58/7yt79O2ZChowHUX6Hfpq5lo+1iQ+Sgs1LUCKMw924+Q441OXtHC/qfQhLU3zFxFSz0TjENJT734asf4ecGbQF77YqpmiSPB1F0Vmk=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.216.47
+	 MIME-Version; b=imMPfyP/nwvB1Z3jbZ9nxjE+5ImvqWoy10cnie4ppQVTXuim+WbTVl1TwHPWmHiurMIz5i3/CW5L51xCJDamI/gm+dYB9/i2AcQMTQ5h43UFYFRS3ybkt/CaHqnaskK505f1R9GLlyYp0nuqVUbLbjhYnSS8otbT/gr+TVHoZcc=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.215.170
 Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
-Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-35b98def50bso189244a91.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 13:20:25 -0700 (PDT)
+Received: by mail-pg1-f170.google.com with SMTP id 41be03b00d2f7-c73c990a96dso163536a12.0
+        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 13:20:32 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774470025; x=1775074825;
+        d=1e100.net; s=20251104; t=1774470031; x=1775074831;
         h=content-transfer-encoding:mime-version:references:in-reply-to
          :message-id:date:subject:cc:to:from:x-gm-gg:x-gm-message-state:from
          :to:cc:subject:date:message-id:reply-to;
-        bh=yQv+ZppFPPLtEPidAQ+20u5P3TvQUDZOQRWkCdljIik=;
-        b=LD10v6owdT4EeQM3IwdC60CpQdYf0ebWv/Y+wW5xX655z2pFrr/7WwuxFW17wK7XFd
-         Rr1xpG8T3JdphBIYvTM+cw0Y2f9odBmz83jcIuFRCjFwf6Jh/HrJ5vePF4S+7CYQZH9K
-         0MXYHKz35INOfie8AxJj6aG7bt6TDwJ2vwv30s0tgkSVMPA+RK/XFXLp3PvFoFRwPpzn
-         3uG/ZTB/jjVZ/70oNMxFrhKd4jG/mEfF8R4HOjpxaZhtrC9OKsiS0R0JpHDaozw8VmE3
-         4qNSz5MLU34BrOtPKdzqQsKFoXlttYstNRwAuLAF9cJIz8mSTSmfUOoC7hILrlhBIbxG
-         B6+A==
-X-Gm-Message-State: AOJu0YzVGeGfNreV/cmeqqKSn3nlS3zm2MVWeOCHCPl8V/eIS9thOPrE
-	36TopPooQPnVcN7jHXghNP2hB1LtRw6+PRocexlqWAoFxQqiM9o44v8dmkPYiDPHpUg=
-X-Gm-Gg: ATEYQzww0RFUZxZ/H0tJ2ubH9nAwo1krdhka82HBycSluPWVI5BUctwJTUajhN3gGsd
-	2QJTMulfbof+/RzIqx4oT/eyCH8IT8zTeIKJQkrrO84Z4QvESEJ0fJloo51VLQZTuwJsdJvFigV
-	ktHWZUkMmWFhnFBW4a89iNds3/mAyKlbnjMRncI1ip9D5M0mrkCaWKjGX+r+v9SUBnf7LsrMhfs
-	wQb4BJl6yd3LAYDjOekb67jUtGOu8wms94ubbQnTozSKrM9i8igbqV0LLdZMxMAjpSoTsR9Fl8a
-	/WfLJR8pOwI+zpSxv6reA0WDfFkcuvGUR+uWrRtegp9BjGwkDKMrm8s5G+mvb+BAPiRfTA5a6Xl
-	oZzT+gczHSp86/pDGrRJVkSYmYxiRMUG4Egh0GwI5h6wPXm2OitBMKWF3SlHZfUHNLWz5kH+Z8n
-	rdwzgfB5ZkaSGFWyOBzBAj3FYxvjKYOO3FmVA7n0A3M/AagL2zj1Z2BlAol3Afn0Gy10JH5YwTO
-	c1TYiWmF3hQq6vKEMrIzFu1
-X-Received: by 2002:a17:90b:540f:b0:356:1db4:8fe5 with SMTP id 98e67ed59e1d1-35c0ddaa5admr4243177a91.29.1774470024544;
-        Wed, 25 Mar 2026 13:20:24 -0700 (PDT)
+        bh=yVCJ3ME8cErAiwPyq9xUJraI9dGBTt7JzbdpzeTTMq0=;
+        b=PL1Q1u9QHOgTtygg9bdwaLt7EISvl5MHflLvg2OGfFjnJA1k1Vs2cztrGs5FAdYygG
+         arM1A+x21HYcZ6Hu8JdSanxIPOZqj1o3zOwf1r0D1SlE49n5/vW3Dvc8KSx2woO3rdrM
+         2en5nb20MZuVcNp0+DM+xK2QRRPFjZ3GgCwL1lSnogQ802ouzDSO57q+VhXWK/QdGajj
+         uNN4xCCxgG8BbXb/DOQVaZbw3Y640I8kleYr+uu7djGo3cgKWyt4QQApUf+HGJq7UEoZ
+         Ux+Bi3HO66BSQEEDYryS5qyQKGlDy0F7FfUooVHDBKb5IiR5nlrN7bZ6Wn24ayxBxrYn
+         TcGQ==
+X-Gm-Message-State: AOJu0YySDW++wX2O4TZda1ibD+VV46RfI4xbhnX7WCKseTGEeeCxPLk5
+	20s0mDSMZOSPT7ePSPIt//l5zUKxZc+w7uX2uk4VVZh+kTLIVsjJwYjdmGLYZqT9E9w=
+X-Gm-Gg: ATEYQzzbw3N854tqoSV5nMN3lnosV4KJC9tdevRxKGe2NPSQbVAzSB3H52/Pl3vdddf
+	9SHp8pLsZDfQJ3cs//DN8VORad35L7NQ4A91/rOZPcSYG3+0d7KoNwSmS8aTYsIWYh1zPP5Uh2n
+	Xk3S3xEWGwI6n1ka1uL8j9G9fX1V52DcXLw0s5ABovCSPWNGGUHRxDl64R04MeXIF/yW7wYamjP
+	909vyPdO10DHtwM5royzq2TU+mupAO+gZD/9QT1irYCDSJuPWt1Tr/Fgz3gXR2xve6ly9uHtGS2
+	LpxG7xEN7Loc9WtIVwi6YuVONtnKcPswdLAEEtAEhabM9m7A6uS0tbNYhgksqKlyO0YDwrUbnuk
+	TU7lgKf9jB0INKoxdp5Kh5l3cbCH718Qu8Vgb1kry8yONvTdu/ZNSp46N3x9hqaf8l5LcUOtJaH
+	oAVJzj74V6fZioQC2OJTYiMquRyMb3ERopo/xoHtoci6Rc2YZ3TQkbT7MJbLRMlQEaft4r86ccS
+	TvNFmy45W/82c56Sn5pef+P
+X-Received: by 2002:a05:6a21:6d88:b0:39c:2a9c:bbe2 with SMTP id adf61e73a8af0-39c4ac3a14fmr4833403637.24.1774470031001;
+        Wed, 25 Mar 2026 13:20:31 -0700 (PDT)
 Received: from archlinux.www.tp-link.com ([103.135.252.24])
-        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c7673933816sm280511a12.21.2026.03.25.13.20.18
+        by smtp.gmail.com with ESMTPSA id 41be03b00d2f7-c7673933816sm280511a12.21.2026.03.25.13.20.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2026 13:20:24 -0700 (PDT)
+        Wed, 25 Mar 2026 13:20:30 -0700 (PDT)
 From: Siratul Islam <email@sirat.me>
 To: linux-iio@vger.kernel.org,
 	devicetree@vger.kernel.org
@@ -55,10 +55,11 @@ Cc: jic23@kernel.org,
 	krzk+dt@kernel.org,
 	conor+dt@kernel.org,
 	linux-kernel@vger.kernel.org,
-	Siratul Islam <email@sirat.me>
-Subject: [PATCH v8 1/2] dt-bindings: iio: proximity: add ST VL53L1X ToF sensor
-Date: Thu, 26 Mar 2026 02:19:41 +0600
-Message-ID: <20260325202005.29822-2-email@sirat.me>
+	Siratul Islam <email@sirat.me>,
+	Andy Shevchenko <andriy.shevchenko@intel.com>
+Subject: [PATCH v8 2/2] iio: proximity: add driver for ST VL53L1X ToF sensor
+Date: Thu, 26 Mar 2026 02:19:42 +0600
+Message-ID: <20260325202005.29822-3-email@sirat.me>
 X-Mailer: git-send-email 2.53.0
 In-Reply-To: <20260325202005.29822-1-email@sirat.me>
 References: <20260325202005.29822-1-email@sirat.me>
@@ -70,95 +71,830 @@ List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 
-Add device tree binding documentation for the STMicroelectronics
-VL53L1X Time-of-Flight ranging sensor connected via I2C.
+Add support for the STMicroelectronics VL53L1X Time-of-Flight
+ranging sensor with I2C interface.
 
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com>
 Signed-off-by: Siratul Islam <email@sirat.me>
 ---
- .../bindings/iio/proximity/st,vl53l0x.yaml    | 24 ++++++++++++++++---
- MAINTAINERS                                   |  6 +++++
- 2 files changed, 27 insertions(+), 3 deletions(-)
+ MAINTAINERS                         |   1 +
+ drivers/iio/proximity/Kconfig       |  15 +
+ drivers/iio/proximity/Makefile      |   1 +
+ drivers/iio/proximity/vl53l1x-i2c.c | 756 ++++++++++++++++++++++++++++
+ 4 files changed, 773 insertions(+)
+ create mode 100644 drivers/iio/proximity/vl53l1x-i2c.c
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml b/Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
-index 322befc41de6..9adb9b13ccc5 100644
---- a/Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
-+++ b/Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
-@@ -4,14 +4,17 @@
- $id: http://devicetree.org/schemas/iio/proximity/st,vl53l0x.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
- 
--title: ST VL53L0X ToF ranging sensor
-+title: ST VL53L0X/VL53L1X ToF ranging sensor
- 
- maintainers:
-   - Song Qiang <songqiang1304521@gmail.com>
-+  - Siratul Islam <email@sirat.me>
- 
- properties:
-   compatible:
--    const: st,vl53l0x
-+    enum:
-+      - st,vl53l0x
-+      - st,vl53l1x
- 
-   reg:
-     maxItems: 1
-@@ -21,6 +24,8 @@ properties:
- 
-   reset-gpios:
-     maxItems: 1
-+    description:
-+      Phandle to the XSHUT GPIO. Used for hardware reset.
- 
-   vdd-supply: true
- 
-@@ -28,6 +33,18 @@ required:
-   - compatible
-   - reg
- 
-+# vdd-supply is not made globally required to maintain backwards compatibility
-+# with existing st,vl53l0x devicetrees that do not specify it.
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            const: st,vl53l1x
-+    then:
-+      required:
-+        - vdd-supply
-+
- additionalProperties: false
- 
- examples:
-@@ -38,8 +55,9 @@ examples:
-         #size-cells = <0>;
- 
-         proximity@29 {
--            compatible = "st,vl53l0x";
-+            compatible = "st,vl53l1x";
-             reg = <0x29>;
-+            vdd-supply = <&reg_3v3>;
-             interrupt-parent = <&gpio>;
-             interrupts = <23 IRQ_TYPE_EDGE_FALLING>;
-         };
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 61bf550fd37c..a142a97be4cb 100644
+index a142a97be4cb..50531a87bf2e 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -25093,6 +25093,12 @@ S:	Maintained
+@@ -25098,6 +25098,7 @@ M:	Siratul Islam <email@sirat.me>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
  F:	Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
- F:	drivers/iio/proximity/vl53l0x-i2c.c
++F:	drivers/iio/proximity/vl53l1x-i2c.c
  
-+ST VL53L1X ToF RANGER(I2C) IIO DRIVER
-+M:	Siratul Islam <email@sirat.me>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/proximity/st,vl53l0x.yaml
-+
  STABLE BRANCH
  M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
- M:	Sasha Levin <sashal@kernel.org>
+diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+index 6070974c2c85..bb77fad2a1b3 100644
+--- a/drivers/iio/proximity/Kconfig
++++ b/drivers/iio/proximity/Kconfig
+@@ -244,6 +244,21 @@ config VL53L0X_I2C
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called vl53l0x-i2c.
+ 
++config VL53L1X_I2C
++	tristate "STMicroelectronics VL53L1X ToF ranger sensor (I2C)"
++	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	select REGMAP_I2C
++	select RESET_CONTROLLER
++	help
++	  Say Y here to build a driver for STMicroelectronics VL53L1X
++	  ToF ranger sensors with i2c interface.
++	  This driver can be used to measure the distance of objects.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called vl53l1x-i2c.
++
+ config AW96103
+ 	tristate "AW96103/AW96105 Awinic proximity sensor"
+ 	select REGMAP_I2C
+diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+index 152034d38c49..4352833dd8a4 100644
+--- a/drivers/iio/proximity/Makefile
++++ b/drivers/iio/proximity/Makefile
+@@ -23,5 +23,6 @@ obj-$(CONFIG_SX_COMMON) 	+= sx_common.o
+ obj-$(CONFIG_SX9500)		+= sx9500.o
+ obj-$(CONFIG_VCNL3020)		+= vcnl3020.o
+ obj-$(CONFIG_VL53L0X_I2C)	+= vl53l0x-i2c.o
++obj-$(CONFIG_VL53L1X_I2C)	+= vl53l1x-i2c.o
+ obj-$(CONFIG_AW96103)		+= aw96103.o
+ 
+diff --git a/drivers/iio/proximity/vl53l1x-i2c.c b/drivers/iio/proximity/vl53l1x-i2c.c
+new file mode 100644
+index 000000000000..4d9cb3983dba
+--- /dev/null
++++ b/drivers/iio/proximity/vl53l1x-i2c.c
+@@ -0,0 +1,756 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++/*
++ * Support for ST VL53L1X FlightSense ToF Ranging Sensor on a i2c bus.
++ *
++ * Copyright (C) 2026 Siratul Islam <email@sirat.me>
++ *
++ * Datasheet available at
++ * <https://www.st.com/resource/en/datasheet/vl53l1x.pdf>
++ *
++ * Default 7-bit i2c slave address 0x29.
++ *
++ * The VL53L1X requires a firmware configuration blob to be loaded at boot.
++ * Register values for the default configuration are taken from
++ * ST's VL53L1X Ultra Lite Driver (STSW-IMG009).
++ */
++
++#include <linux/array_size.h>
++#include <linux/bits.h>
++#include <linux/bitfield.h>
++#include <linux/completion.h>
++#include <linux/delay.h>
++#include <linux/dev_printk.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/interrupt.h>
++#include <linux/math.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
++#include <linux/reset.h>
++#include <linux/time.h>
++#include <linux/types.h>
++
++#include <asm/byteorder.h>
++
++#include <linux/iio/buffer.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#define VL53L1X_REG_SOFT_RESET						0x0000
++#define VL53L1X_REG_VHV_CONFIG__TIMEOUT_MACROP_LOOP_BOUND		0x0008
++#define VL53L1X_REG_VHV_CONFIG__INIT					0x000B
++#define VL53L1X_REG_GPIO_HV_MUX__CTRL					0x0030
++#define VL53L1X_REG_GPIO__TIO_HV_STATUS					0x0031
++#define VL53L1X_REG_SYSTEM__INTERRUPT_CONFIG_GPIO			0x0046
++#define VL53L1X_REG_PHASECAL_CONFIG__TIMEOUT_MACROP			0x004B
++#define VL53L1X_REG_RANGE_CONFIG__TIMEOUT_MACROP_A			0x005E
++#define VL53L1X_REG_RANGE_CONFIG__VCSEL_PERIOD_A			0x0060
++#define VL53L1X_REG_RANGE_CONFIG__TIMEOUT_MACROP_B			0x0061
++#define VL53L1X_REG_RANGE_CONFIG__VCSEL_PERIOD_B			0x0063
++#define VL53L1X_REG_RANGE_CONFIG__VALID_PHASE_HIGH			0x0069
++#define VL53L1X_REG_SYSTEM__INTERMEASUREMENT_PERIOD			0x006C
++#define VL53L1X_REG_SD_CONFIG__WOI_SD0					0x0078
++#define VL53L1X_REG_SD_CONFIG__WOI_SD1					0x0079
++#define VL53L1X_REG_SD_CONFIG__INITIAL_PHASE_SD0			0x007A
++#define VL53L1X_REG_SD_CONFIG__INITIAL_PHASE_SD1			0x007B
++#define VL53L1X_REG_SYSTEM__INTERRUPT_CLEAR				0x0086
++#define VL53L1X_REG_SYSTEM__MODE_START					0x0087
++#define VL53L1X_REG_RESULT__RANGE_STATUS				0x0089
++#define VL53L1X_REG_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0	0x0096
++#define VL53L1X_REG_RESULT__OSC_CALIBRATE_VAL				0x00DE
++#define VL53L1X_REG_FIRMWARE__SYSTEM_STATUS				0x00E5
++#define VL53L1X_REG_IDENTIFICATION__MODEL_ID				0x010F
++#define VL53L1X_REG_DEFAULT_CONFIG					0x002D
++
++#define VL53L1X_MODEL_ID_VAL		0xEACC
++
++#define VL53L1X_MODE_START_TIMED	0x40
++#define VL53L1X_MODE_START_STOP		0x00
++
++#define VL53L1X_INT_NEW_SAMPLE_READY	0x02
++
++#define VL53L1X_GPIO_HV_MUX_POLARITY	BIT(4)
++
++#define VL53L1X_VHV_LOOP_BOUND_TWO	0x09
++
++#define VL53L1X_RANGE_STATUS_MASK	GENMASK(4, 0)
++#define VL53L1X_RANGE_STATUS_VALID	9
++
++#define VL53L1X_OSC_CALIBRATE_MASK	GENMASK(9, 0)
++
++/* Inter-measurement period uses PLL divider with 1.075 oscillator correction */
++static const struct u32_fract vl53l1x_osc_correction = {
++	.numerator = 1075,
++	.denominator = 1000,
++};
++
++enum vl53l1x_distance_mode {
++	VL53L1X_SHORT,
++	VL53L1X_LONG,
++};
++
++struct vl53l1x_data {
++	struct regmap *regmap;
++	struct completion completion;
++	struct reset_control *xshut_reset;
++	enum vl53l1x_distance_mode distance_mode;
++	u8 gpio_polarity;
++	int irq;
++};
++
++static const struct regmap_range vl53l1x_volatile_ranges[] = {
++	regmap_reg_range(VL53L1X_REG_GPIO__TIO_HV_STATUS,
++			 VL53L1X_REG_GPIO__TIO_HV_STATUS),
++	regmap_reg_range(VL53L1X_REG_RESULT__RANGE_STATUS,
++			 VL53L1X_REG_RESULT__RANGE_STATUS),
++	regmap_reg_range(VL53L1X_REG_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0,
++			 VL53L1X_REG_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0 + 1),
++	regmap_reg_range(VL53L1X_REG_RESULT__OSC_CALIBRATE_VAL,
++			 VL53L1X_REG_RESULT__OSC_CALIBRATE_VAL + 1),
++	regmap_reg_range(VL53L1X_REG_FIRMWARE__SYSTEM_STATUS,
++			 VL53L1X_REG_FIRMWARE__SYSTEM_STATUS),
++};
++
++static const struct regmap_access_table vl53l1x_volatile_table = {
++	.yes_ranges = vl53l1x_volatile_ranges,
++	.n_yes_ranges = ARRAY_SIZE(vl53l1x_volatile_ranges),
++};
++
++static const struct regmap_range vl53l1x_write_only_ranges[] = {
++	regmap_reg_range(VL53L1X_REG_SOFT_RESET, VL53L1X_REG_SOFT_RESET),
++	regmap_reg_range(VL53L1X_REG_SYSTEM__INTERRUPT_CLEAR,
++			 VL53L1X_REG_SYSTEM__MODE_START),
++};
++
++static const struct regmap_access_table vl53l1x_readable_table = {
++	.no_ranges = vl53l1x_write_only_ranges,
++	.n_no_ranges = ARRAY_SIZE(vl53l1x_write_only_ranges),
++};
++
++static const struct regmap_config vl53l1x_regmap_config = {
++	.reg_bits = 16,
++	.val_bits = 8,
++	/* MODEL_ID is 16-bit. +1 covers the second byte at 0x0110 */
++	.max_register = VL53L1X_REG_IDENTIFICATION__MODEL_ID + 1,
++	.cache_type = REGCACHE_MAPLE,
++	.volatile_table = &vl53l1x_volatile_table,
++	.rd_table = &vl53l1x_readable_table,
++};
++
++static int vl53l1x_read_u16(struct vl53l1x_data *data, u16 reg, u16 *val)
++{
++	__be16 buf;
++	int ret;
++
++	ret = regmap_bulk_read(data->regmap, reg, &buf, sizeof(buf));
++	if (ret)
++		return ret;
++
++	*val = be16_to_cpu(buf);
++	return 0;
++}
++
++static int vl53l1x_write_u16(struct vl53l1x_data *data, u16 reg, u16 val)
++{
++	__be16 buf = cpu_to_be16(val);
++
++	return regmap_bulk_write(data->regmap, reg, &buf, sizeof(buf));
++}
++
++static int vl53l1x_write_u32(struct vl53l1x_data *data, u16 reg, u32 val)
++{
++	__be32 buf = cpu_to_be32(val);
++
++	return regmap_bulk_write(data->regmap, reg, &buf, sizeof(buf));
++}
++
++static int vl53l1x_clear_irq(struct vl53l1x_data *data)
++{
++	return regmap_write(data->regmap, VL53L1X_REG_SYSTEM__INTERRUPT_CLEAR, 0x01);
++}
++
++static int vl53l1x_start_ranging(struct vl53l1x_data *data)
++{
++	int ret;
++
++	ret = vl53l1x_clear_irq(data);
++	if (ret)
++		return ret;
++
++	return regmap_write(data->regmap, VL53L1X_REG_SYSTEM__MODE_START,
++			    VL53L1X_MODE_START_TIMED);
++}
++
++static int vl53l1x_stop_ranging(struct vl53l1x_data *data)
++{
++	return regmap_write(data->regmap, VL53L1X_REG_SYSTEM__MODE_START,
++			    VL53L1X_MODE_START_STOP);
++}
++
++/*
++ * Default configuration blob from ST's VL53L1X Ultra Lite Driver
++ * (STSW-IMG009).
++ */
++static const u8 vl53l1x_default_config[] = {
++	0x00, 0x00, 0x00, 0x01, 0x02, 0x00, 0x02, 0x08,	/* reg 0x2d..0x34 */
++	0x00, 0x08, 0x10, 0x01, 0x01, 0x00, 0x00, 0x00,	/* reg 0x35..0x3c */
++	0x00, 0xFF, 0x00, 0x0F, 0x00, 0x00, 0x00, 0x00,	/* reg 0x3d..0x44 */
++	0x00, 0x20, 0x0B, 0x00, 0x00, 0x02, 0x0A, 0x21,	/* reg 0x45..0x4c */
++	0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x00, 0xC8,	/* reg 0x4d..0x54 */
++	0x00, 0x00, 0x38, 0xFF, 0x01, 0x00, 0x08, 0x00,	/* reg 0x55..0x5c */
++	0x00, 0x01, 0xCC, 0x0F, 0x01, 0xF1, 0x0D, 0x01,	/* reg 0x5d..0x64 */
++	0x68, 0x00, 0x80, 0x08, 0xB8, 0x00, 0x00, 0x00,	/* reg 0x65..0x6c */
++	0x00, 0x0F, 0x89, 0x00, 0x00, 0x00, 0x00, 0x00,	/* reg 0x6d..0x74 */
++	0x00, 0x00, 0x01, 0x0F, 0x0D, 0x0E, 0x0E, 0x00,	/* reg 0x75..0x7c */
++	0x00, 0x02, 0xC7, 0xFF, 0x9B, 0x00, 0x00, 0x00,	/* reg 0x7d..0x84 */
++	0x01, 0x00, 0x00,				/* reg 0x85..0x87 */
++};
++
++static int vl53l1x_chip_init(struct vl53l1x_data *data)
++{
++	struct device *dev = regmap_get_device(data->regmap);
++	unsigned int val;
++	u16 model_id;
++	int ret;
++
++	if (!data->xshut_reset) {
++		ret = regmap_write(data->regmap, VL53L1X_REG_SOFT_RESET, 0x00);
++		if (ret)
++			return ret;
++		fsleep(100); /* conservative reset pulse, no spec */
++
++		ret = regmap_write(data->regmap, VL53L1X_REG_SOFT_RESET, 0x01);
++		if (ret)
++			return ret;
++		fsleep(1000); /* conservative boot wait, no spec */
++	}
++
++	ret = regmap_read_poll_timeout(data->regmap,
++				       VL53L1X_REG_FIRMWARE__SYSTEM_STATUS, val,
++				       val & BIT(0),
++				       1 * USEC_PER_MSEC,
++				       100 * USEC_PER_MSEC);
++	if (ret)
++		return dev_err_probe(dev, ret, "firmware boot timeout\n");
++
++	ret = vl53l1x_read_u16(data, VL53L1X_REG_IDENTIFICATION__MODEL_ID,
++			       &model_id);
++	if (ret)
++		return ret;
++
++	if (model_id != VL53L1X_MODEL_ID_VAL)
++		dev_info(dev, "unknown model id: 0x%04x, continuing\n", model_id);
++
++	ret = regmap_bulk_write(data->regmap, VL53L1X_REG_DEFAULT_CONFIG,
++				vl53l1x_default_config,
++				sizeof(vl53l1x_default_config));
++	if (ret)
++		return ret;
++
++	ret = regmap_read(data->regmap, VL53L1X_REG_GPIO_HV_MUX__CTRL, &val);
++	if (ret)
++		return ret;
++	data->gpio_polarity = !!(val & VL53L1X_GPIO_HV_MUX_POLARITY);
++
++	/* Initial ranging cycle for VHV calibration */
++	ret = vl53l1x_start_ranging(data);
++	if (ret)
++		return ret;
++
++	/* 1ms poll, 1s timeout covers max timing budgets (per ST Ultra Lite Driver) */
++	ret = regmap_read_poll_timeout(data->regmap,
++				       VL53L1X_REG_GPIO__TIO_HV_STATUS, val,
++				       (val & 1) != data->gpio_polarity,
++				       1 * USEC_PER_MSEC,
++				       1000 * USEC_PER_MSEC);
++	if (ret)
++		return ret;
++
++	ret = vl53l1x_clear_irq(data);
++	if (ret)
++		return ret;
++
++	ret = vl53l1x_stop_ranging(data);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(data->regmap,
++			   VL53L1X_REG_VHV_CONFIG__TIMEOUT_MACROP_LOOP_BOUND,
++			   VL53L1X_VHV_LOOP_BOUND_TWO);
++	if (ret)
++		return ret;
++
++	return regmap_write(data->regmap, VL53L1X_REG_VHV_CONFIG__INIT, 0x00);
++}
++
++static const struct reg_sequence vl53l1x_mode_short[] = {
++	{ VL53L1X_REG_PHASECAL_CONFIG__TIMEOUT_MACROP,		0x14 },
++	{ VL53L1X_REG_RANGE_CONFIG__VCSEL_PERIOD_A,		0x07 },
++	{ VL53L1X_REG_RANGE_CONFIG__VCSEL_PERIOD_B,		0x05 },
++	{ VL53L1X_REG_RANGE_CONFIG__VALID_PHASE_HIGH,		0x38 },
++	{ VL53L1X_REG_SD_CONFIG__WOI_SD0,			0x07 },
++	{ VL53L1X_REG_SD_CONFIG__WOI_SD1,			0x05 },
++	{ VL53L1X_REG_SD_CONFIG__INITIAL_PHASE_SD0,		0x06 },
++	{ VL53L1X_REG_SD_CONFIG__INITIAL_PHASE_SD1,		0x06 },
++};
++
++static const struct reg_sequence vl53l1x_mode_long[] = {
++	{ VL53L1X_REG_PHASECAL_CONFIG__TIMEOUT_MACROP,		0x0A },
++	{ VL53L1X_REG_RANGE_CONFIG__VCSEL_PERIOD_A,		0x0F },
++	{ VL53L1X_REG_RANGE_CONFIG__VCSEL_PERIOD_B,		0x0D },
++	{ VL53L1X_REG_RANGE_CONFIG__VALID_PHASE_HIGH,		0xB8 },
++	{ VL53L1X_REG_SD_CONFIG__WOI_SD0,			0x0F },
++	{ VL53L1X_REG_SD_CONFIG__WOI_SD1,			0x0D },
++	{ VL53L1X_REG_SD_CONFIG__INITIAL_PHASE_SD0,		0x0E },
++	{ VL53L1X_REG_SD_CONFIG__INITIAL_PHASE_SD1,		0x0E },
++};
++
++static const struct {
++	const struct reg_sequence *regs;
++	size_t num_regs;
++} vl53l1x_mode_configs[] = {
++	[VL53L1X_SHORT] = { vl53l1x_mode_short, ARRAY_SIZE(vl53l1x_mode_short) },
++	[VL53L1X_LONG]  = { vl53l1x_mode_long, ARRAY_SIZE(vl53l1x_mode_long) },
++};
++
++static int vl53l1x_set_distance_mode(struct vl53l1x_data *data,
++				     enum vl53l1x_distance_mode mode)
++{
++	int ret;
++
++	if (mode >= ARRAY_SIZE(vl53l1x_mode_configs))
++		return -EINVAL;
++
++	ret = regmap_multi_reg_write(data->regmap,
++				     vl53l1x_mode_configs[mode].regs,
++				     vl53l1x_mode_configs[mode].num_regs);
++	if (ret)
++		return ret;
++
++	data->distance_mode = mode;
++	return 0;
++}
++
++/*
++ * The timing budget controls how long the sensor spends collecting
++ * a single range measurement. Pre-computed TIMEOUT_MACROP register
++ * values from ST's VL53L1X Ultra Lite Driver.
++ */
++static int vl53l1x_set_timing_budget(struct vl53l1x_data *data, u16 budget_ms)
++{
++	u16 timeout_a, timeout_b;
++	int ret;
++
++	switch (data->distance_mode) {
++	case VL53L1X_SHORT:
++		switch (budget_ms) {
++		case 15:
++			timeout_a = 0x001D;
++			timeout_b = 0x0027;
++			break;
++		case 20:
++			timeout_a = 0x0051;
++			timeout_b = 0x006E;
++			break;
++		case 33:
++			timeout_a = 0x00D6;
++			timeout_b = 0x006E;
++			break;
++		case 50:
++			timeout_a = 0x01AE;
++			timeout_b = 0x01E8;
++			break;
++		case 100:
++			timeout_a = 0x02E1;
++			timeout_b = 0x0388;
++			break;
++		case 200:
++			timeout_a = 0x03E1;
++			timeout_b = 0x0496;
++			break;
++		case 500:
++			timeout_a = 0x0591;
++			timeout_b = 0x05C1;
++			break;
++		default:
++			return -EINVAL;
++		}
++		break;
++	case VL53L1X_LONG:
++		switch (budget_ms) {
++		case 20:
++			timeout_a = 0x001E;
++			timeout_b = 0x0022;
++			break;
++		case 33:
++			timeout_a = 0x0060;
++			timeout_b = 0x006E;
++			break;
++		case 50:
++			timeout_a = 0x00AD;
++			timeout_b = 0x00C6;
++			break;
++		case 100:
++			timeout_a = 0x01CC;
++			timeout_b = 0x01EA;
++			break;
++		case 200:
++			timeout_a = 0x02D9;
++			timeout_b = 0x02F8;
++			break;
++		case 500:
++			timeout_a = 0x048F;
++			timeout_b = 0x04A4;
++			break;
++		default:
++			return -EINVAL;
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	ret = vl53l1x_write_u16(data, VL53L1X_REG_RANGE_CONFIG__TIMEOUT_MACROP_A,
++				timeout_a);
++	if (ret)
++		return ret;
++
++	return vl53l1x_write_u16(data, VL53L1X_REG_RANGE_CONFIG__TIMEOUT_MACROP_B,
++				 timeout_b);
++}
++
++static int vl53l1x_set_inter_measurement_ms(struct vl53l1x_data *data,
++					    u16 period_ms)
++{
++	u16 osc_calibrate_val;
++	u16 clock_pll;
++	u32 inter_meas;
++	int ret;
++
++	ret = vl53l1x_read_u16(data, VL53L1X_REG_RESULT__OSC_CALIBRATE_VAL,
++			       &osc_calibrate_val);
++	if (ret)
++		return ret;
++
++	clock_pll = osc_calibrate_val & VL53L1X_OSC_CALIBRATE_MASK;
++	inter_meas = (clock_pll * period_ms * vl53l1x_osc_correction.numerator) /
++		     vl53l1x_osc_correction.denominator;
++
++	return vl53l1x_write_u32(data,
++				 VL53L1X_REG_SYSTEM__INTERMEASUREMENT_PERIOD,
++				 inter_meas);
++}
++
++static int vl53l1x_read_proximity(struct vl53l1x_data *data, int *val)
++{
++	unsigned int range_status;
++	u16 distance;
++	int ret;
++
++	if (data->irq) {
++		reinit_completion(&data->completion);
++
++		ret = vl53l1x_clear_irq(data);
++		if (ret)
++			return ret;
++
++		if (!wait_for_completion_timeout(&data->completion, HZ))
++			return -ETIMEDOUT;
++	} else {
++		unsigned int rdy;
++
++		/* 1ms poll, 1s timeout covers max timing budgets (per ST Ultra Lite Driver) */
++		ret = regmap_read_poll_timeout(data->regmap,
++					       VL53L1X_REG_GPIO__TIO_HV_STATUS, rdy,
++					       (rdy & 1) != data->gpio_polarity,
++					       1 * USEC_PER_MSEC,
++					       1000 * USEC_PER_MSEC);
++		if (ret)
++			return ret;
++	}
++
++	ret = regmap_read(data->regmap, VL53L1X_REG_RESULT__RANGE_STATUS,
++			  &range_status);
++	if (ret)
++		goto clear_irq;
++
++	if (FIELD_GET(VL53L1X_RANGE_STATUS_MASK, range_status) !=
++	    VL53L1X_RANGE_STATUS_VALID) {
++		ret = -EIO;
++		goto clear_irq;
++	}
++
++	ret = vl53l1x_read_u16(data,
++			       VL53L1X_REG_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0,
++			       &distance);
++	if (ret)
++		goto clear_irq;
++
++	*val = distance;
++
++clear_irq:
++	vl53l1x_clear_irq(data);
++	return ret;
++}
++
++static const struct iio_chan_spec vl53l1x_channels[] = {
++	{
++		.type = IIO_DISTANCE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++		},
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(1),
++};
++
++static int vl53l1x_read_raw(struct iio_dev *indio_dev,
++			    const struct iio_chan_spec *chan,
++			    int *val, int *val2, long mask)
++{
++	struct vl53l1x_data *data = iio_priv(indio_dev);
++	int ret;
++
++	if (chan->type != IIO_DISTANCE)
++		return -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (!iio_device_claim_direct(indio_dev))
++			return -EBUSY;
++		ret = vl53l1x_read_proximity(data, val);
++		iio_device_release_direct(indio_dev);
++		if (ret)
++			return ret;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 0;
++		*val2 = 1000;
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info vl53l1x_info = {
++	.read_raw = vl53l1x_read_raw,
++	.validate_trigger = iio_validate_own_trigger,
++};
++
++static irqreturn_t vl53l1x_trigger_handler(int irq, void *priv)
++{
++	struct iio_poll_func *pf = priv;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct vl53l1x_data *data = iio_priv(indio_dev);
++	struct {
++		u16 distance;
++		aligned_s64 timestamp;
++	} scan = { };
++	unsigned int range_status;
++	int ret;
++
++	ret = regmap_read(data->regmap, VL53L1X_REG_RESULT__RANGE_STATUS,
++			  &range_status);
++	if (ret)
++		goto notify_and_clear_irq;
++	if (FIELD_GET(VL53L1X_RANGE_STATUS_MASK, range_status) !=
++		      VL53L1X_RANGE_STATUS_VALID)
++		goto notify_and_clear_irq;
++
++	ret = vl53l1x_read_u16(data,
++			       VL53L1X_REG_RESULT__FINAL_CROSSTALK_CORRECTED_RANGE_MM_SD0,
++			       &scan.distance);
++	if (ret)
++		goto notify_and_clear_irq;
++
++	iio_push_to_buffers_with_ts(indio_dev, &scan, sizeof(scan),
++				    iio_get_time_ns(indio_dev));
++
++notify_and_clear_irq:
++	iio_trigger_notify_done(indio_dev->trig);
++	vl53l1x_clear_irq(data);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t vl53l1x_irq_handler(int irq, void *priv)
++{
++	struct iio_dev *indio_dev = priv;
++	struct vl53l1x_data *data = iio_priv(indio_dev);
++
++	if (iio_buffer_enabled(indio_dev))
++		iio_trigger_poll(indio_dev->trig);
++	else
++		complete(&data->completion);
++
++	return IRQ_HANDLED;
++}
++
++static const struct iio_trigger_ops vl53l1x_trigger_ops = {
++	.validate_device = iio_trigger_validate_own_device,
++};
++
++static void vl53l1x_stop_ranging_action(void *priv)
++{
++	vl53l1x_stop_ranging(priv);
++}
++
++static int vl53l1x_configure_irq(struct device *dev, int irq,
++				 struct iio_dev *indio_dev)
++{
++	struct vl53l1x_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = devm_request_irq(dev, irq, vl53l1x_irq_handler, IRQF_NO_THREAD,
++			       indio_dev->name, indio_dev);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(data->regmap, VL53L1X_REG_SYSTEM__INTERRUPT_CONFIG_GPIO,
++			   VL53L1X_INT_NEW_SAMPLE_READY);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to configure IRQ\n");
++
++	return 0;
++}
++
++static int vl53l1x_probe(struct i2c_client *client)
++{
++	struct device *dev = &client->dev;
++	struct vl53l1x_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	data->irq = client->irq;
++
++	data->regmap = devm_regmap_init_i2c(client, &vl53l1x_regmap_config);
++	if (IS_ERR(data->regmap))
++		return dev_err_probe(dev, PTR_ERR(data->regmap),
++				     "regmap initialization failed\n");
++
++	ret = devm_regulator_get_enable(dev, "vdd");
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to enable VDD regulator\n");
++
++	/*
++	 * XSHUT held low puts the chip in hardware standby. All register
++	 * state is lost on de-assert so this is functionally a reset.
++	 */
++	data->xshut_reset = devm_reset_control_get_optional_exclusive_deasserted(dev, NULL);
++	if (IS_ERR(data->xshut_reset))
++		return dev_err_probe(dev, PTR_ERR(data->xshut_reset),
++				     "Cannot get reset control\n");
++
++	/*
++	 * 1.2 ms max boot duration.
++	 * Datasheet Section 3.6 "Power up and boot sequence".
++	 */
++	fsleep(1200);
++
++	ret = vl53l1x_chip_init(data);
++	if (ret)
++		return ret;
++
++	ret = vl53l1x_set_distance_mode(data, VL53L1X_LONG);
++	if (ret)
++		return ret;
++
++	/* 50 ms timing budget (per ST Ultra Lite Driver) */
++	ret = vl53l1x_set_timing_budget(data, 50);
++	if (ret)
++		return ret;
++
++	/* 50 ms inter-measurement period (per ST Ultra Lite Driver) */
++	ret = vl53l1x_set_inter_measurement_ms(data, 50);
++	if (ret)
++		return ret;
++
++	/*
++	 * The hardware only supports "autonomous" continuous ranging mode.
++	 * Start ranging here and leave it running for the lifetime of
++	 * the device. Both direct reads and the buffer path rely on this.
++	 */
++	ret = vl53l1x_start_ranging(data);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(dev, vl53l1x_stop_ranging_action, data);
++	if (ret)
++		return ret;
++
++	indio_dev->name = "vl53l1x";
++	indio_dev->info = &vl53l1x_info;
++	indio_dev->channels = vl53l1x_channels;
++	indio_dev->num_channels = ARRAY_SIZE(vl53l1x_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	if (client->irq) {
++		struct iio_trigger *trig;
++
++		init_completion(&data->completion);
++
++		trig = devm_iio_trigger_alloc(dev, "%s-dev%d", indio_dev->name,
++					      iio_device_id(indio_dev));
++		if (!trig)
++			return -ENOMEM;
++
++		trig->ops = &vl53l1x_trigger_ops;
++		iio_trigger_set_drvdata(trig, indio_dev);
++		ret = devm_iio_trigger_register(dev, trig);
++		if (ret)
++			return ret;
++
++		indio_dev->trig = iio_trigger_get(trig);
++
++		ret = vl53l1x_configure_irq(dev, client->irq, indio_dev);
++		if (ret)
++			return ret;
++
++		ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
++						      &vl53l1x_trigger_handler,
++						      NULL);
++		if (ret)
++			return ret;
++	}
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct i2c_device_id vl53l1x_id[] = {
++	{ "vl53l1x" },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, vl53l1x_id);
++
++static const struct of_device_id st_vl53l1x_dt_match[] = {
++	{ .compatible = "st,vl53l1x" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, st_vl53l1x_dt_match);
++
++static struct i2c_driver vl53l1x_driver = {
++	.driver = {
++		.name = "vl53l1x-i2c",
++		.of_match_table = st_vl53l1x_dt_match,
++	},
++	.probe = vl53l1x_probe,
++	.id_table = vl53l1x_id,
++};
++module_i2c_driver(vl53l1x_driver);
++
++MODULE_AUTHOR("Siratul Islam <email@sirat.me>");
++MODULE_DESCRIPTION("ST VL53L1X ToF ranging sensor driver");
++MODULE_LICENSE("Dual BSD/GPL");
 -- 
 2.53.0
 
