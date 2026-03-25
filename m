@@ -1,120 +1,189 @@
-Received: from mx0b-00069f02.pphosted.com (mx0b-00069f02.pphosted.com [205.220.177.32])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pj1-f47.google.com (mail-pj1-f47.google.com [209.85.216.47])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C6746279DC2;
-	Wed, 25 Mar 2026 05:43:44 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=205.220.177.32
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A6F1355F30
+	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 06:33:19 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.216.47
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774417426; cv=none; b=NJ32j2Fns6bf3jfvc0ArdcSgZuszUnOxw+2cx1GOtmZvRwKTwvDBhsMCAUzdsPqEUPyRhGkb/bqbS4FZ/cYcrINtkDiel9euH0LGC2rudYWih0ndg4jtooVEW2wSXicjz6IMLBeOonG/IGiIEMcH3GmJcbwddu3YNgoRzuxl2IQ=
+	t=1774420400; cv=none; b=cogKYWlWIkVzn3jhlHBfnmJrciurRkql9alm4mJYNZAvSNvk20NOnkt90AyYKLJQVW/Nog6lRNHFbDl3dhtTDXNzua2rnB4ZfZ2bLMWtClgP3TceFbiDXE4LMH+fGB4USbbSdTOOdhfpa9UIsGeDAYqqLl/c5n3G/mT1xhexmFM=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774417426; c=relaxed/simple;
-	bh=bYikgk+vQUQlqxCaN3q7Io2ssK/VGSv9sCZHj2fQ7Kg=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version:Content-Type; b=ZXdo2+rYdWzYvajxKBfnMCBmZSVVp1SxnvssN7iGmUW8tDSRn9jtmsT3HLVLWvCJ+A4wWLkSbwkl/tzZ2LYfhYoeuh7bJk9yIdmi1YM7TRRwdLhHxwurpnh8JI+g4riKfz2uzbRol+xImf2ebNcArhnJZdilHhiZ/Oi96u2qsbI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com; spf=pass smtp.mailfrom=oracle.com; dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b=sC2ha+sR; arc=none smtp.client-ip=205.220.177.32
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=reject dis=none) header.from=oracle.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=oracle.com
-Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="sC2ha+sR"
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-	by mx0b-00069f02.pphosted.com (8.18.1.11/8.18.1.11) with ESMTP id 62OMBwV82579160;
-	Wed, 25 Mar 2026 05:43:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc
-	:content-transfer-encoding:content-type:date:from:message-id
-	:mime-version:subject:to; s=corp-2025-04-25; bh=j8Iv0nFixpzCQj4i
-	di0jKx5N99bawBqJjOIv6r515Wo=; b=sC2ha+sRhsp1HomluSPDdUtUs+U3KtmY
-	IoA8XZscg/vDgayo9qKR5lPwHEESjFElptLmhg9FjQdNdEScgnFA6AWc5pYRzh8j
-	LwKIo9sr6ySyIeEcG2hyfx9FG3C1A2HZaRcXyFeaKouZ3HAEmHtfuSRpnBT5lCCb
-	BREODp4z++u4j8FsOG1FAAnYXUQT77XjG92tQooKxbZij5vaxOYUDN84kErniZEF
-	NMSNXnsx9Y5a6+lfLBuagiEhSRIeAUDUhL+eCDwoirY2xmP6ldittcc79/yU1RY+
-	4NKn97VGQzlhZDb0GyvQEpqkxi/EF34zIwcE4tR8BwCItduzNFniKg==
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.appoci.oracle.com [147.154.114.232])
-	by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 4d1kja5ppa-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 25 Mar 2026 05:43:38 +0000 (GMT)
-Received: from pps.filterd (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (8.18.1.2/8.18.1.2) with ESMTP id 62P5QwVq000671;
-	Wed, 25 Mar 2026 05:43:38 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTPS id 4d1hsaxj9j-1
-	(version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-	Wed, 25 Mar 2026 05:43:37 +0000
-Received: from phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-	by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 62P5hafC007031;
-	Wed, 25 Mar 2026 05:43:37 GMT
-Received: from ca-dev112.us.oracle.com (ca-dev112.us.oracle.com [10.129.136.47])
-	by phxpaimrmta02.imrmtpd1.prodappphxaev1.oraclevcn.com (PPS) with ESMTP id 4d1hsaxj45-1;
-	Wed, 25 Mar 2026 05:43:36 +0000
-From: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
-To: Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Andy Shevchenko <andy@kernel.org>,
-        Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>,
-        Marc Titinger <mtitinger@baylibre.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc: dan.carpenter@linaro.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] iio: ina2xx-adc: fix regmap max_register off-by-one
-Date: Tue, 24 Mar 2026 22:43:09 -0700
-Message-ID: <20260325054313.868261-1-harshit.m.mogalapalli@oracle.com>
-X-Mailer: git-send-email 2.50.1
+	s=arc-20240116; t=1774420400; c=relaxed/simple;
+	bh=uHir9CYrWEBi781+9y6gAhB+KAavpeSqcW3nrlXIWqI=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=vDd5/TmYtlpQ08muCKLN1pnldidZ5EvvfqwExSxVTMCrz3sjbSdFIiFNYoBX/+A7dGZhwLJt+Oh/70BWPwOU57AhnBaAs6EWSQ3L1qs97ACMBeyo0EIRQnZeMF63H0wS/YY2FcEUfnnwUdjNCzMBowXxuloAAn7/mOycw/kwcbY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me; spf=pass smtp.mailfrom=gmail.com; arc=none smtp.client-ip=209.85.216.47
+Authentication-Results: smtp.subspace.kernel.org; dmarc=none (p=none dis=none) header.from=sirat.me
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+Received: by mail-pj1-f47.google.com with SMTP id 98e67ed59e1d1-35b905a05a8so3683106a91.1
+        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2026 23:33:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774420398; x=1775025198;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=a3T22FtHj7PiVjh8CPSoc3ZFVw7lP3ieK+jLM3FL9ck=;
+        b=UaLqiNSnE1ZfN0y6z8UQ2UhaosQg6vaFNFE+Tv6y7+AQyivpXBymXHvwulH7ElFlKn
+         DqaSY8EYa0p4iFfi0fdttAPxX0i/fBE//RIAXkiJw6i1MIWjlx6GL9B0t0mLKCW3GItB
+         LVSayZHHC4L1Rc5tgr5tx7w/DPNYIwpCEh/OJPrQ7fgF0iebUgnoaGZPsRnBzM0X7GUL
+         agBaMk2R6UU4Gh9lajs7PesxGMG5Vv0F1Nvsap/PW2fsyHAHrSYOARS0rx3DeP1xtdo8
+         R5Pt8dmlGquj1RdYH4DSndIyFFcOrD4Ys8GqT2/mr1uhdL0mm9KulbCNrCS9I//3p8BZ
+         asGg==
+X-Gm-Message-State: AOJu0YyFSHvM20c6nQ52vM+sYpLdLIOadXhtWaam4jeoiYytiJv+ZXqd
+	V6ZX3siEin8N0YzutCVUz7CEnPMqtJjs4qzYQCs7oIMkxm2CUyr6GwgvFfQoIjWlZbU=
+X-Gm-Gg: ATEYQzwOmC47MvxLvUnPSEGKkWeRs8iTQEgGoNBt6cOZtYbSPJeLc2NdBYH77KDSTU/
+	NFkyoVs56sdfqlgW7cbHSq5tITYbYC6myk54ChrULsnRfIxhnk9tv7WIs+xiLedwApWK5fp6m9i
+	B0R8741BbSJ2Fizfore7JwbtBnDcCz2LZSvedp6uxbwrlinfP8BzysifjHDtrzAP+eQGAtnL3cD
+	J1xUpISXfXSf3twJ3w4LAWb/Op1ErdYpaqRKNy2sNgpsSfVQvdUpqWhCH2bpIlDu5Ae74YZcQFQ
+	+dKT14YItHIVremZ4YjbD+gjDCm2q98CZYZzwfyuFMXLVYPsF4iutv5Hn1Eokj6jznxF7q6vrAT
+	lIJtwXyJdGtj6cVQvdXc9GKsk+JDLqoB7d85CQv6SDNAfhK64TwXHx3zPIgc63dH43Q3qP1+ROj
+	KaBXro1NuYJ/syjLqdEXNqQsHFR0MGm/fjzClV1zho53q4SXLggc4zv7hdFfQEkj/n52R/Zuyum
+	wxvlV680PCLMTTrfg==
+X-Received: by 2002:a17:90b:3c08:b0:35b:945d:752a with SMTP id 98e67ed59e1d1-35c0dd6b7bfmr2049677a91.17.1774420398092;
+        Tue, 24 Mar 2026 23:33:18 -0700 (PDT)
+Received: from archlinux ([103.135.252.21])
+        by smtp.gmail.com with ESMTPSA id 98e67ed59e1d1-35c0e954ba9sm526854a91.5.2026.03.24.23.33.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Mar 2026 23:33:17 -0700 (PDT)
+From: Siratul Islam <email@sirat.me>
+To: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Cc: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org,
+	robh@kernel.org,
+	krzk+dt@kernel.org,
+	conor+dt@kernel.org,
+	linux-kernel@vger.kernel.org,
+	Siratul Islam <email@sirat.me>
+Subject: [PATCH v7 0/2] iio: proximity: add driver for ST VL53L1X ToF sensor
+Date: Wed, 25 Mar 2026 12:32:21 +0600
+Message-ID: <20260325063254.18062-1-email@sirat.me>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.293,Aquarius:18.0.1143,Hydra:6.1.51,FMLib:17.12.100.49
- definitions=2026-03-25_02,2026-03-24_01,2025-10-01_01
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0 mlxscore=0
- suspectscore=0 spamscore=0 malwarescore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2603050001
- definitions=main-2603250038
-X-Proofpoint-Spam-Details-Enc: AW1haW4tMjYwMzI1MDAzNyBTYWx0ZWRfX8j3BTZn3OeZ0
- 6gHpDb8T0Qd8RHpwYTQRiQEd5tccRouzXaRQvMI5BK0YVEyH5f7GeJW17IEqHElPEl4BJ6JL8JS
- qU3ByunEv/Rpfhvqfj3cRTWLPYX90NtbP4lyOl2GGiZbnQuQJgpdP6L0EamU7hWP1eUAxVtbxk+
- gNUAvIqx5OlFA94u3Bpcwai7LGzoqivCNy+FU6yqJmtacy2+7xRemadjVJyxzmBiU+ciBk0pWzW
- Xc5lyH5vKrS1WIYAk81t3sVSOdcpkRpFSR8ycFzR9b6escAXUPsXmMfiq2K8CpMjiGhK7vxkflt
- uCYc9H64eFWz5z2NX0WFo5w2hHHJm7NQBwvCCSzcVG7I5xGB53BMfd7G5Y1nJKMwz94r7FNOYg2
- jWu9vrzqFw2+eRdQxC39AagVvT8gboHUd8uCt/gqSyVI/Ndi5kGtpBkO++rljS+Er0P6xl1rbpI
- /YHi/hQ8Z5v+1jUzgAA==
-X-Proofpoint-GUID: seFQ5tEEOOWtJS_RQMlodnPGe0_z3_Vv
-X-Authority-Analysis: v=2.4 cv=TPdIilla c=1 sm=1 tr=0 ts=69c3760b cx=c_pps
- a=OOZaFjgC48PWsiFpTAqLcw==:117 a=OOZaFjgC48PWsiFpTAqLcw==:17
- a=IkcTkHD0fZMA:10 a=Yq5XynenixoA:10 a=VkNPw1HP01LnGYTKEx00:22
- a=jiCTI4zE5U7BLdzWsZGv:22 a=o5oIOnhZENCTenyL_yNV:22 a=yPCof4ZbAAAA:8
- a=UEHRISqDphSmfm_4Y50A:9 a=3ZKOabzyN94A:10 a=QEXdDO2ut3YA:10
-X-Proofpoint-ORIG-GUID: seFQ5tEEOOWtJS_RQMlodnPGe0_z3_Vv
 
-regmap_config.max_register is supposed to store the highest valid
-register but this driver assigns the number of registers
-INA2XX_MAX_REGISTERS is 8, the highest valid register address is 7.
+This series adds support for the STMicroelectronics VL53L1X
+Time-of-Flight ranging sensor.
 
-Fix this by subtracting 1 so max_register is inclusive.
+The VL53L1X is a ToF laser-ranging sensor with I2C interface,
+capable of measuring distances up to 4 meters. The driver
+supports both interrupt-driven and polled operation.
 
-Fixes: c43a102e67db ("iio: ina2xx: add support for TI INA2xx Power Monitors")
-Signed-off-by: Harshit Mogalapalli <harshit.m.mogalapalli@oracle.com>
+Why a separate driver is needed (instead of extending vl53l0x-i2c.c):
+The VL53L1X is fundamentally different from the VL53L0X despite the
+similar naming. Extending the existing driver would require rewriting
+the majority of it.
+
+Key differences include:
+- A different register map (16-bit addresses vs. 8-bit addresses).
+- Requires a 91-byte firmware configuration blob to be loaded at boot.
+- Requires a VHV calibration cycle.
+- Has distance mode and timing budget configurations.
+- Uses the regmap API rather than raw i2c_smbus calls.
+
+I also reviewed other drivers in drivers/iio/proximity/ and can
+confirm this IP block does not appear to be shared by any other
+existing driver.
+
+Tested on Raspberry Pi 5 with a VL53L1X breakout board.
+
+Note on vdd-supply:
+vdd-supply is now required. The VL53L0X required a physical
+regulator, but it did not specify the requirement in the binding.
+It should have always been there. The VL53L1X also requires it.
+Hence I added the requirement.
+
 ---
-Found by static analysis using smatch, code review and guess work.
-NOT TESTED.  Please review carefully!
----
- drivers/iio/adc/ina2xx-adc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v7:
+- Add VL53L1X_REG_ prefix for register defines.
+- Use iio_push_to_buffers_with_ts().
+- Use continuous ranging and drop postenable/predisable.
+- Add comments for XSHUT reset, default config values.
+- Drop vdd-supply description in binding and comment in driver.
+- Add ABI rationale for vdd-supply to commit message (per Krzysztof, Jonathan).
 
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 857e1b69d6cd..d200b8e87839 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -116,7 +116,7 @@ static inline bool is_signed_reg(unsigned int reg)
- static const struct regmap_config ina2xx_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 16,
--	.max_register = INA2XX_MAX_REGISTERS,
-+	.max_register = INA2XX_MAX_REGISTERS - 1,
- 	.writeable_reg = ina2xx_is_writeable_reg,
- 	.volatile_reg = ina2xx_is_volatile_reg,
- };
--- 
-2.50.1
+
+Changes in v6:
+- Make vdd-supply required. Add descriptions to vdd-supply and reset-gpios (per Jonathan).
+- Check reset_control_deassert() return value (per Andy).
+- Use volatile table for result registers and caching for the rest. Also mark write-only registers.
+
+
+Changes in v5:
+- Patch 1: No changes. Collected Reviewed-by tag from Krzysztof Kozlowski.
+- Switch XSHUT pin handling from the GPIO consumer API to the Reset controller API.
+- Drop <linux/gpio/consumer.h> and include <linux/reset.h>.
+
+
+Changes in v4:
+- Move i2c_check_functionality() to the top of probe before allocations.
+- Use struct u32_fract for oscillator correction math.
+- Explicitly set .cache_type = REGCACHE_NONE.
+- Document intentional predisable drain
+- Use dev_err_probe() for firmware boot timeout and remove duplicate IRQ request error message.
+- Use sizeof() in regmap bulk read/writes instead of hardcoded lengths.
+- Add missing headers (<linux/math.h>, <linux/time.h>, <asm/byteorder.h>).
+- Various formatting cleanups per Andy's review.
+
+
+Changes in v3:
+- Merge DT binding into existing st,vl53l0x.yaml (per Krzysztof).
+- Use "reset-gpios" in the binding but xshut_gpio in the driver since that's the actual pin name.
+- Replace manual polling loops in chip_init and read_proximity with regmap_read_poll_timeout().
+- Remove irq_get_trigger_type() and pass IRQF_NO_THREAD directly (per Andy).
+- Drop struct i2c_client from private data and store irq as int instead. Derive struct device from regmap where needed.
+- Add dev_err_probe() to first devm_request_irq() error path.
+- Replace linux/device.h with linux/dev_printk.h, add linux/array_size.h, linux/err.h, linux/types.h (per Andy).
+- Use USEC_PER_MSEC for poll timeouts.
+- Remove unnecessary casts.
+- Divide long config blob to 8 values per line.
+- Rename goto label to notify_and_clear_irq and drop unused dev_dbg.
+- Add datasheet section reference for boot delay comment.
+- vdd-supply no longer required in shared binding to avoid breaking existing st,vl53l0x devicetrees.
+
+
+Changes in v2:
+- Skip software reset in chip_init when xshut GPIO is available, since the device was already hardware-reset during power-on.
+- Rename "reset" GPIO to "xshut" to match the datasheet pin name and updated DT binding accordingly.
+- Make vdd-supply required in DT binding.
+- Use reg_sequence arrays and regmap_multi_reg_write() for distance mode configuration.
+- Switch to a hardirq handler with iio_trigger_poll() and IRQF_NO_THREAD instead of a threaded handler.
+- Drop IRQF_TRIGGER_FALLING fallback. Leave trigger type to firmware/DT.
+- Use iio_validate_own_trigger() instead of a custom validate_trigger, drop trig pointer from driver data.
+- Switch usleep_range() to fsleep() throughout and add comments for sleep values.
+- Don't fail probe on unknown model ID, just log with dev_info().
+- Split stop_ranging cleanup into its own devm action, separate from power_off.
+- Add missing includes: device.h, bitfield.h, completion.h, mod_devicetable.h.
+- Use FIELD_GET() for range status checks.
+- Move configure_irq() closer to probe(), use dev_err_probe() for its error paths.
+- Fix buffer ops symmetry: postdisable -> predisable.
+- Drop reg_format_endian from regmap config.
+- Various alignment and formatting fixes.
+
+Link to v6: https://lore.kernel.org/linux-iio/20260319190738.151614-1-email@sirat.me
+Link to v5: https://lore.kernel.org/linux-iio/20260313113737.151881-1-email@sirat.me
+Link to v4: https://lore.kernel.org/linux-iio/20260312183721.40482-1-email@sirat.me
+Link to v3: https://lore.kernel.org/linux-iio/20260311224044.21480-1-email@sirat.me
+Link to v2: https://lore.kernel.org/linux-iio/20260308113728.40860-1-email@sirat.me
+Link to v1: https://lore.kernel.org/linux-iio/20260303090253.42076-1-email@sirat.me
+
+Siratul Islam (2):
+  dt-bindings: iio: proximity: add ST VL53L1X ToF sensor
+  iio: proximity: add driver for ST VL53L1X ToF sensor
+
+ .../bindings/iio/proximity/st,vl53l0x.yaml    |  13 +-
+ MAINTAINERS                                   |   7 +
+ drivers/iio/proximity/Kconfig                 |  15 +
+ drivers/iio/proximity/Makefile                |   1 +
+ drivers/iio/proximity/vl53l1x-i2c.c           | 795 ++++++++++++++++++
+ 5 files changed, 828 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/iio/proximity/vl53l1x-i2c.c
+
+--
+2.53.0
 
