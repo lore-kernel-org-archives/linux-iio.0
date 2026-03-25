@@ -1,136 +1,194 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.10])
+Received: from elephant.ash.relay.mailchannels.net (elephant.ash.relay.mailchannels.net [23.83.222.57])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id B2C87348469;
-	Wed, 25 Mar 2026 21:52:38 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.10
-ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774475560; cv=none; b=GnN7jOx/VXgu8Ef4Q/o8dQaBtzB2ANELpn2YHWi4VgeUuFkEydH0ImLLjLda8kpzg31RinpOlkH7Hoe0S2oD5yqPt8GySwIdzOvIMndwiYKM7XyHDO41uumU+vLKIv2aajAKPH7V6sWX1bjbXo0eN/hWyAyMj7Dla3091cCrOw4=
-ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774475560; c=relaxed/simple;
-	bh=Q7B85Xvgrvo3bG7ajXwbX4TG7TU43r/vTtJVGXACYEY=;
-	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=e993rrCVoMsHFjcZxudbNEtZRRFs4JmdztBt+QsjH76vikUkCyzahz3umXle2HPVE+gd47Znd98XAjQTFC3xGdS6TbBOyiVTt6T2K4XG/RhhGvg3ZV30xIdempFOR9M2Z2c9rrckKvxncmY1kglf0svY/84QHlr5QSnSUyyAkJQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=GQYUiwFa; arc=none smtp.client-ip=198.175.65.10
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 3A1BB30EF84;
+	Wed, 25 Mar 2026 22:20:22 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=pass smtp.client-ip=23.83.222.57
+ARC-Seal:i=2; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
+	t=1774477225; cv=pass; b=WNsQzgrnkMAbgpUHsLxkt8nKOo6uBnSJFRFjN2WGJZpJqNFGSSaNJfcDjbTFf84ERwOEoSkAYUco3mqKjBOSFnRkFal8d3GkyjrtqnsdTv2fJlQnD1Wbl9OdPRBdlzoDlatrjAkV7mwAac1zaTez2GwiN+RiTI658D6LIFhjO2U=
+ARC-Message-Signature:i=2; a=rsa-sha256; d=subspace.kernel.org;
+	s=arc-20240116; t=1774477225; c=relaxed/simple;
+	bh=nJbv4Uv7vv3VstTMSXBfyR9c+4pxEc0DD1EnJ4GOiVQ=;
+	h=From:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc:Date; b=Sp5FQV4UY3Rie2M4Q3PQuuYO0NA/TSanKQJqF2aMu72ryPQU99FOtvInkwOqlQqFegHn5ppGtL/5ITDYFCrKcIT3BHckroA+JsYxz1Jus+nzjuO25dOHf/hYrqxZBV0DinLatZ9THHNFGEgzT/QlYHotohKmEyyWNABk7T8Xgsw=
+ARC-Authentication-Results:i=2; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com; spf=pass smtp.mailfrom=smankusors.com; dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b=VYtyKf84; arc=pass smtp.client-ip=23.83.222.57
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=smankusors.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=smankusors.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="GQYUiwFa"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774475558; x=1806011558;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Q7B85Xvgrvo3bG7ajXwbX4TG7TU43r/vTtJVGXACYEY=;
-  b=GQYUiwFarfGj1hUWSttF+hemaI9jgH53MaxfSlaOj4hnA1PvFMEzUrGd
-   +s8ufamxyadURGsYcCwDVzaCTf/mMWcbivzAgf+ML6VZ4YGM6H6C3rNT6
-   oyRneuDzjmWLdtG4fO8K5vEmFxVG2DX+SBeiKYoiYCt9dNjmIdx1U+lIJ
-   0lIeml+SHRDNNnAW7fDe3UeZW9M+jMlfoUvXAOgrW03m0nGbGMbTfzkrY
-   dm0kDCysUFJXoeoMjRhGZt7joKJX2AX1uRF6iVmRkStLooyS+Dct+QTgt
-   QjqvYx30vRbOxhi+bY3VkMBzh0SomT9BlKQGrhVJEWDfHBmr+k+FHgb43
-   Q==;
-X-CSE-ConnectionGUID: gHbBbhVUSF2zScDTQ+oGXQ==
-X-CSE-MsgGUID: c/o+U4avQwW5qP4KXbVFZA==
-X-IronPort-AV: E=McAfee;i="6800,10657,11740"; a="92903530"
-X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
-   d="scan'208";a="92903530"
-Received: from fmviesa007.fm.intel.com ([10.60.135.147])
-  by orvoesa102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Mar 2026 14:52:38 -0700
-X-CSE-ConnectionGUID: E57rZIlRSx2HddfN/QdFEg==
-X-CSE-MsgGUID: l+vFGtC+T+ufMRZX/FGotw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="6.23,140,1770624000"; 
-   d="scan'208";a="221482266"
-Received: from lkp-server01.sh.intel.com (HELO 3905d212be1b) ([10.239.97.150])
-  by fmviesa007.fm.intel.com with ESMTP; 25 Mar 2026 14:52:36 -0700
-Received: from kbuild by 3905d212be1b with local (Exim 4.98.2)
-	(envelope-from <lkp@intel.com>)
-	id 1w5W9R-000000007lB-1qTC;
-	Wed, 25 Mar 2026 21:52:33 +0000
-Date: Thu, 26 Mar 2026 05:52:14 +0800
-From: kernel test robot <lkp@intel.com>
-To: Francesco Lavra <flavra@baylibre.com>,
-	Lorenzo Bianconi <lorenzo@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	David Lechner <dlechner@baylibre.com>,
-	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Cc: llvm@lists.linux.dev, oe-kbuild-all@lists.linux.dev
-Subject: Re: [PATCH v9 6/6] iio: imu: st_lsm6dsx: Add support for rotation
- sensor
-Message-ID: <202603260526.WbXSysM8-lkp@intel.com>
-References: <20260324084808.654118-1-flavra@baylibre.com>
+	dkim=pass (2048-bit key) header.d=smankusors.com header.i=@smankusors.com header.b="VYtyKf84"
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+Received: from relay.mailchannels.net (localhost [127.0.0.1])
+	by relay.mailchannels.net (Postfix) with ESMTP id 05AFB401DE1;
+	Wed, 25 Mar 2026 21:02:47 +0000 (UTC)
+Received: from fr-int-smtpout25.hostinger.io (100-96-3-148.trex-nlb.outbound.svc.cluster.local [100.96.3.148])
+	(Authenticated sender: hostingeremail)
+	by relay.mailchannels.net (Postfix) with ESMTPA id BFF234022D1;
+	Wed, 25 Mar 2026 21:02:42 +0000 (UTC)
+ARC-Seal: i=1; a=rsa-sha256; d=mailchannels.net; s=arc-2022; cv=none;
+	t=1774472565;
+	b=gyyaBMjzjlb9IQAAr3ppxC78TiHyLWg5MLvuPcWkR0WNpagQKWxMrd6Qimi5c70xKbCZo0
+	LHRMo478dWh81OnDNbz8/rlygQ5Qe0SJ7JeJdDGwE95FIv+jU6/M76Otps8CWM7d2GFWIk
+	rEcqk7gMFQ0yY0i6yp8U96DCgVinUiGEzgAB923k2f2fBbHxQv4sDFktzw0F1Lhkg108d1
+	ebbpQndqC21cyGGm7OSH2RODgCxhRFrz1P0L+dWi2/GZqX2AHaiEH1k3agBxkhZiF0pdZh
+	tWAT69PepK17LAOInQ3/NsPfLhCGdTNKf7hwZQefI05ZG+Kzj2DvBnJq3WkDZg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=mailchannels.net;
+	s=arc-2022; t=1774472565;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references:dkim-signature;
+	bh=lm0BxjCjfCkRl1JbPIp6Z4LxVXg7sLgdMNJO9XHpTAg=;
+	b=7gxHuyyGxI9hjhUQo/22kBYtD+I0kFw/2As0UzcrE+D8wI3Do8ZIU5JqSnqw+L0qeaTPUE
+	/ZPdDpkgbQ5V2ZbGFayqmRfQ7Cb+kMeMdAATNWeDGUsLBSHxTKBOzODhmW/R3hK0BGSASR
+	mAN382YDZ5KyKDQeH5Swc0kTO7XN52K2QEqflroG7dagQYGjXeurkxvZjEIzUh5+BnKUw+
+	7oCuscZsR1/25ymRYRbqlAc+r5kKI772gsVnGoryPIgqD2HPE778hP2vsExipbxQyOLGME
+	xhgDaKBKGn0sKDyR8uWLjGquhDTyobPCYBDrErD1lzKhhlmeSpmqmBaqZhdpVQ==
+ARC-Authentication-Results: i=1;
+	rspamd-db964497c-jpd75;
+	auth=pass smtp.auth=hostingeremail smtp.mailfrom=linux@smankusors.com
+X-Sender-Id: hostingeremail|x-authuser|linux@smankusors.com
+X-MC-Relay: Neutral
+X-MailChannels-SenderId: hostingeremail|x-authuser|linux@smankusors.com
+X-MailChannels-Auth-Id: hostingeremail
+X-Whispering-Belong: 7c605ef37447ce8c_1774472566727_2979167319
+X-MC-Loop-Signature: 1774472566727:1219778712
+X-MC-Ingress-Time: 1774472566726
+Received: from fr-int-smtpout25.hostinger.io (fr-int-smtpout25.hostinger.io
+ [148.222.54.38])
+	(using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384)
+	by 100.96.3.148 (trex/7.1.5);
+	Wed, 25 Mar 2026 21:02:46 +0000
+Received: from [172.17.0.2] (unknown [180.253.44.220])
+	(Authenticated sender: linux@smankusors.com)
+	by smtp.hostinger.com (smtp.hostinger.com) with ESMTPSA id 4fgzrG17MFz1xms;
+	Wed, 25 Mar 2026 21:02:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=smankusors.com;
+	s=hostingermail-a; t=1774472561;
+	h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+	 to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+	 content-transfer-encoding:content-transfer-encoding:
+	 in-reply-to:in-reply-to:references:references;
+	bh=lm0BxjCjfCkRl1JbPIp6Z4LxVXg7sLgdMNJO9XHpTAg=;
+	b=VYtyKf843P7EVGIShIRpS4ELubeLGe+TwHyENeZSfe2WYxGOXqF4FDQ5Ln7S+wqLeR+Peh
+	eQEnNBr4rrXFGjwSbiRema6yrz/8u7Osq+fz4ZDvaShB8/Bj+Yt5arRfo6aoDNcz0FC+wi
+	X6VlG4hJJZwghVGcpu6orij8wcbDV2qTcuFY7qrH8V1QZq5cDqIOyg+Bn9pql+lX9jwxlZ
+	siIToRMP3i72e0jtfttPuekSLZePursDsq8L7CtrmFfZYSWOlvmLCbsKJhnPT+xtQYsT7u
+	IYzgCzoPYyMrLU1lr7FiDn/bj20Qn5mt7MN4juvMskGW6zAuxhxXqI64Ngks6w==
+From: Antony Kurniawan Soemardi <linux@smankusors.com>
+Subject: [PATCH 1/2] ARM: dts: qcom: pm8921: add labels for ADC channels
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20260324084808.654118-1-flavra@baylibre.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Message-Id: <20260326-pm8xxx-xoadc-label-v1-1-027805dad4db@smankusors.com>
+References: <20260326-pm8xxx-xoadc-label-v1-0-027805dad4db@smankusors.com>
+In-Reply-To: <20260326-pm8xxx-xoadc-label-v1-0-027805dad4db@smankusors.com>
+To: Bjorn Andersson <andersson@kernel.org>, 
+ Konrad Dybcio <konradybcio@kernel.org>, Rob Herring <robh@kernel.org>, 
+ Krzysztof Kozlowski <krzk+dt@kernel.org>, 
+ Conor Dooley <conor+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>, 
+ David Lechner <dlechner@baylibre.com>, 
+ =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>, 
+ Andy Shevchenko <andy@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org, 
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, 
+ phone-devel@vger.kernel.org, 
+ Antony Kurniawan Soemardi <linux@smankusors.com>
+X-Mailer: b4 0.14.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1774472553; l=1799;
+ i=linux@smankusors.com; s=20250609; h=from:subject:message-id;
+ bh=nJbv4Uv7vv3VstTMSXBfyR9c+4pxEc0DD1EnJ4GOiVQ=;
+ b=4atxdDVRyt//kBzSeYlAOxvHGqp+6XZPjDgeiKNvK+eUy6qgsFBKXxEoY0SoiCaxoWUj1b865
+ YBwOrXwFClyA7f5cCBQf8rppvuGPBSX+jtsKA9qUwWsOZtctnOtgqzM
+X-Developer-Key: i=linux@smankusors.com; a=ed25519;
+ pk=65wTy06fJl2/h/EJwjr704YG+yjHFhZObJBWzzK+N00=
+Date: Wed, 25 Mar 2026 21:02:37 +0000 (UTC)
+X-CM-Analysis: v=2.4 cv=GMJaEfNK c=1 sm=1 tr=0 ts=69c44d71 a=9XgiG0qChrIWxZZBWkq1Wg==:117 a=9XgiG0qChrIWxZZBWkq1Wg==:17 a=IkcTkHD0fZMA:10 a=wxLWbCv9AAAA:8 a=rt3x4hDEALvJiYIjBx4A:9 a=QEXdDO2ut3YA:10 a=A2jKFiM6YE6-xbDe-2e4:22 a=QJY96suAAestDpCc5Gi9:22
+X-CM-Envelope: MS4xfPgPRraqBYvL/4a+NiP2k4Jb3qXBKE25GbkM3H+WWm4CQ4pT9tayRkhYvAD57xxqu8ht5CTi15Ud70V4IpSiYBFj0cdbL35Ait8tSe4mZSEHF2DdPG/w bHfxuiRRUkUfDH0drJ+tWROfntIZFNHVLNDvQk5ErUO9C0huS/EeUKBOMygxoRyAXj+n6O6iqQlWu7SBTTQ0UvyWp13PEgH5keFPQj0Jd3DQO1WHH61zjk+u DcKzkxTOccS8Zmmb0azcjp67o+PMhpcuZXJOYpdZ5CWRqgLAQCcO3a7UcdPavSLim1t0ujvbHZmexuTgaxaB8QhVnZh2sgKZnD6nevDo6h/8pr7RA2DeJiUc XbDEHEQJbw3t/E5zvjlar0wbuXK/cRrqrnKZZNDYjv15iSkq2jv/T0u1kRdza0mkXPgzsrFtT5ORogUkqBewJyimTABwUuTFbKpqMEk0i9bUtR5mZz0yHtWE X6k7sOD6rZ1MGlcwCl+zkaLvmlzJOkfee9fxmShnQeGag0WBkn2Cb7101kFcHOPSUhIMa1Op1LUsMPRA1Os3UFUpowfCNPq/p22ltP1gta8J6LLaownqZ6uk CncMnh6VH48KIA5y4AT+ey1FJbkvlPZB6M/FYY23sRIXmvuHY3QQc/Kt3AnEMMOkLP8=
+X-AuthUser: linux@smankusors.com
 
-Hi Francesco,
+Add label properties to all XOADC ADC channel nodes in the PM8921 PMIC
+device tree. This allows userspace and drivers to identify channels by
+name rather than relying on datasheet name.
 
-kernel test robot noticed the following build warnings:
+Signed-off-by: Antony Kurniawan Soemardi <linux@smankusors.com>
+---
+ arch/arm/boot/dts/qcom/pm8921.dtsi | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-[auto build test WARNING on next-20260323]
-[cannot apply to jic23-iio/togreg linus/master v7.0-rc5 v7.0-rc4 v7.0-rc3 v7.0-rc5]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch#_base_tree_information]
-
-url:    https://github.com/intel-lab-lkp/linux/commits/Francesco-Lavra/iio-imu-st_lsm6dsx-Fix-check-for-invalid-samples-from-FIFO/20260325-021519
-base:   next-20260323
-patch link:    https://lore.kernel.org/r/20260324084808.654118-1-flavra%40baylibre.com
-patch subject: [PATCH v9 6/6] iio: imu: st_lsm6dsx: Add support for rotation sensor
-config: hexagon-allmodconfig (https://download.01.org/0day-ci/archive/20260326/202603260526.WbXSysM8-lkp@intel.com/config)
-compiler: clang version 17.0.6 (https://github.com/llvm/llvm-project 6009708b4367171ccdbf4b5905cb6a803753fe18)
-reproduce (this is a W=1 build): (https://download.01.org/0day-ci/archive/20260326/202603260526.WbXSysM8-lkp@intel.com/reproduce)
-
-If you fix the issue in a separate patch/commit (i.e. not just a new version of
-the same patch/commit), kindly add following tags
-| Reported-by: kernel test robot <lkp@intel.com>
-| Closes: https://lore.kernel.org/oe-kbuild-all/202603260526.WbXSysM8-lkp@intel.com/
-
-All warnings (new ones prefixed by >>):
-
->> drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c:138:1: warning: label at end of compound statement is a C2x extension [-Wc2x-extensions]
-     138 | }
-         | ^
-   drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c:137:1: warning: unused label 'out' [-Wunused-label]
-     137 | out:
-         | ^~~~
-   2 warnings generated.
-
-
-vim +138 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_fusion.c
-
-   117	
-   118	int st_lsm6dsx_fusion_set_odr(struct st_lsm6dsx_sensor *sensor, bool enable)
-   119	{
-   120		struct st_lsm6dsx_hw *hw = sensor->hw;
-   121		int err;
-   122	
-   123		guard(mutex)(&hw->page_lock);
-   124	
-   125		err = st_lsm6dsx_fusion_page_enable(hw);
-   126		if (err)
-   127			return err;
-   128	
-   129		err = st_lsm6dsx_fusion_set_odr_locked(sensor, enable);
-   130		if (err) {
-   131			st_lsm6dsx_fusion_page_disable(hw);
-   132			return err;
-   133		}
-   134	
-   135		return st_lsm6dsx_fusion_page_disable(hw);
-   136	
-   137	out:
- > 138	}
-   139	
+diff --git a/arch/arm/boot/dts/qcom/pm8921.dtsi b/arch/arm/boot/dts/qcom/pm8921.dtsi
+index 535cb6a2543f69bc30abc89bff4e14a19147ce38..15246f4bd2672ccd4fc3359b66541d53d4da88b4 100644
+--- a/arch/arm/boot/dts/qcom/pm8921.dtsi
++++ b/arch/arm/boot/dts/qcom/pm8921.dtsi
+@@ -75,50 +75,62 @@ pm8921_xoadc: xoadc@197 {
+ 
+ 			vcoin: adc-channel@0 {
+ 				reg = <0x00 0x00>;
++				label = "vcoin";
+ 			};
+ 
+ 			vbat: adc-channel@1 {
+ 				reg = <0x00 0x01>;
++				label = "vbat";
+ 			};
+ 
+ 			dcin: adc-channel@2 {
+ 				reg = <0x00 0x02>;
++				label = "dcin";
+ 			};
+ 
+ 			vph_pwr: adc-channel@4 {
+ 				reg = <0x00 0x04>;
++				label = "vph_pwr";
+ 			};
+ 
+ 			batt_therm: adc-channel@8 {
+ 				reg = <0x00 0x08>;
++				label = "batt_therm";
+ 			};
+ 
+ 			batt_id: adc-channel@9 {
+ 				reg = <0x00 0x09>;
++				label = "batt_id";
+ 			};
+ 
+ 			usb_vbus: adc-channel@a {
+ 				reg = <0x00 0x0a>;
++				label = "usb_vbus";
+ 			};
+ 
+ 			die_temp: adc-channel@b {
+ 				reg = <0x00 0x0b>;
++				label = "die_temp";
+ 			};
+ 
+ 			ref_625mv: adc-channel@c {
+ 				reg = <0x00 0x0c>;
++				label = "ref_625mv";
+ 			};
+ 
+ 			ref_1250mv: adc-channel@d {
+ 				reg = <0x00 0x0d>;
++				label = "ref_1250mv";
+ 			};
+ 
+ 			chg_temp: adc-channel@e {
+ 				reg = <0x00 0x0e>;
++				label = "chg_temp";
+ 			};
+ 
+ 			ref_muxoff: adc-channel@f {
+ 				reg = <0x00 0x0f>;
++				label = "ref_muxoff";
+ 			};
+ 		};
+ 	};
 
 -- 
-0-DAY CI Kernel Test Service
-https://github.com/intel/lkp-tests/wiki
+2.34.1
+
