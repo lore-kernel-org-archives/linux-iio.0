@@ -1,91 +1,111 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-wm1-f43.google.com (mail-wm1-f43.google.com [209.85.128.43])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 47BEE3A7F61;
-	Wed, 25 Mar 2026 11:12:25 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA1B63CA483
+	for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 11:32:20 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.43
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774437145; cv=none; b=MtiRjoUwfEiYNDLTZFKdMG6YAAlGLOwv3EJId9EuGzal+FOAY/Omhh0PA+8QSV70IF+7oIFTiv9FN2kkYFeavMOT13vT7WHJASjRSG5Cb6O8kKsmha5XvWNFD158SoYsr5WW4tjCGsdi+eFVPLW8aEvX9qlx/cbQQzQ8hdGgrZ4=
+	t=1774438342; cv=none; b=T5jvpefS4MnzATJLMT6Lw8ZcBxkYG/+hYoWuBwcES8ZWnSjFDsQy3t1RiAT4NkQGycOz8F0VAIiOznOjlxUj2jNcIZGkP4tsXSU+G9NyzUbQaiJ7hyXcGM4EoB5lfiepqVIbH8FptWxTPq7xw4bCwD096KqimiPDUrBZvvqJctU=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774437145; c=relaxed/simple;
-	bh=6s60KjYjwOw1gKouJIv1rbJ9T2v6rnXR5nRknIdF0GA=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=GCEKKqiRquScCQpHwv8Uox8ZzRCEt5fwTFbX/bKGYlJaDZ+VN3gMTQah1BoXNCbnDQZaGlAOCim3HMwiaJkY9LHv4A4f07zXGM78T6FEoHuqVhqpnk9BpuRmIfpTx3iTqE7pjYXK2R1vC2bQ/9nNx+IrnkIRn8OX1olgy2faGfI=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=kK8vWb1p; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774438342; c=relaxed/simple;
+	bh=9bHD5B8Z/ub079DT2qNTWRc1w7uwq67J5LW4kHpKAwE=;
+	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=V82mMjnSHemoQbrkelOjFr82LBog6UOZK1K4x8Xe/0spu1NMWHwFGVfHqYsvZnqqXGbcCb+xSFXDwpoGcsCSAT1az40o0RFa55JVm4iG/lcBgbEjLx8bDne1RjTwsRjflVF3F1KFiFAP59Tv36Lg1Hd1kjh+EAxVsb5ESSa5jnk=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=buATWnnr; arc=none smtp.client-ip=209.85.128.43
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="kK8vWb1p"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id D245EC4CEF7;
-	Wed, 25 Mar 2026 11:12:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774437144;
-	bh=6s60KjYjwOw1gKouJIv1rbJ9T2v6rnXR5nRknIdF0GA=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=kK8vWb1p69BI7KeERRSBDvAYW5L0xziU0go+jmtNUufwvms8AMl8tAq4f70DyQ1HO
-	 sS50RQjOXFtSwz2QpFlE8NR2c4sXSd7bMOvYHBgEmfcC8MD410PsrnbH/7P5VqncUZ
-	 Cvp8SF8844DKISU78/rEWIPZQhtRZ0WstszbGb6jZNm80RQCVQtOIrAQzjPvvezfs4
-	 iAiuHpidY3qypAnJkw8pbs9gmjtVECpJGc8bH1DuGUKcn9yCyVpf/WnnI/c3s4o+qo
-	 rZ8ZYk4F6XjfMkDBCxEyqy6snCdnGfOqTJPIR++mBJ478/XFwIijflRFWa5c0sPyJb
-	 0qlviIen0u5pg==
-Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0310FEA83E;
-	Wed, 25 Mar 2026 11:12:24 +0000 (UTC)
-From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH 0/2] ADRF5702/ADRF5703 Digital Attenuator support
-Date: Wed, 25 Mar 2026 11:12:01 +0000
-Message-Id: <20260325-adrf570x-iio-support-v1-0-9a2685eb2e55@analog.com>
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="buATWnnr"
+Received: by mail-wm1-f43.google.com with SMTP id 5b1f17b1804b1-48700b1ba53so46486405e9.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Mar 2026 04:32:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774438339; x=1775043139; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=OLb8SeapcYekp0ky/kzoMYcKAyEOhoSGzMw7aqCMNho=;
+        b=buATWnnrUsdye2HS+LEooLSx+VDaKO7Ag0CgeFmDxJTSrB1OYWKA1V1pmDm7/EA5Hp
+         u018xpdqgWa/93ZVQnfHWB4JukFMEw0pKfKD9Shx5FoPPCQyznBWB/pRVDdbiWnGqYcG
+         ZGuyc2Z7HoQ7sKamDmRBHkFY3NetIRbC80Bc7Pu2049HsWJ+fQPzlCvOYYxzT2vHlHeT
+         f8KRBjfqW5XHl1iZu/m01Z/OMEyw9hd34thpJXcJ4c4aZLXAt4xAHYh/EhVJg5AWRE0d
+         lMcYZGQZmmpihI7pj1BI0CuvvCSeXP3XHozyLyPMovc4Tku8aJ7/JweE7nIy6DsYgn/B
+         foVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774438339; x=1775043139;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=OLb8SeapcYekp0ky/kzoMYcKAyEOhoSGzMw7aqCMNho=;
+        b=KqwWQpWT5bG92o9fHBluh+hGI6XbGYHjpc4JABMSoViJbgWq+RCGGIWmXItZiEMy4z
+         fe6ulS//vX3ThXvOLMYvePr8SSKe7zjZQk+czeCGtus9HdVDg5NiSWakbLLtswy5X/r9
+         leTPoeUHz1ZfmtwGLYY16mFqGZOtSVNwgn/mO7uTp+AAgbAJHiUMi0uX2/Yt21/xiLbk
+         2Fs5vHzENSdjXtofe2OChgMij3JfmQTdhKnDFj5UnKJnFgNdNQPSZx6o+Zltkxh4J5Jl
+         fxJNMhSTXAT6871rdA/i/9Nq6zhk4bdnJrh8v9AGiua8I1k2dLKxWkKSD97fq/Tgg94U
+         dPtg==
+X-Gm-Message-State: AOJu0YyS161aSHwcaPXZF8LCnJhWxju9Rm6lfazWE4WUN05sfPWbwxTC
+	9NtZPLn4VwJzaDCOcw2hCeK0C2HxRQPi4s9xf8CobNugQqR9MeP8TRwi
+X-Gm-Gg: ATEYQzzRJxZGYFqcu8v8a7C80yWk/tjBxsdnF63ZJNhVTZADUyS3uzU0SIn4wFdB8xM
+	1faOLHojP3VS3HvhK22rUJrgWhirzw52Lv5nxgrBBWFY/ZiKQWK1BjqjYek2OuA58gAO8qYJ2Ip
+	S6O4YmG+qqTyvsnrM79s1O9zHhcv6FPlW+GShfxxNJq+ifTNxYp0G9MxP+yn03UsOtIwqeZ+oka
+	gc64giSHLnm00hN/wL+5Xg/JxzKWmwxMOFMyjALxwUpq8vpdXz9Tr+OnY8ykux+1eY2a1kfqdKj
+	qyr2v3JaVDWwRoOSOBWzAg34nihZj/t0UdR6RKa+IGh9cWujOJfSh7neYKPqJnzQQgaD1Bi/HYm
+	KtD72kqnYsJXVXT/oYEdEKCT9yqMQMDaqo4EX6OIPuSn7a+a7mrmxk/U4Zj3+XCOKYKB8wHf2SR
+	y5If0+kh+LpuwfDx/lkT5Ey7vbA8KoYeTjWHAKg1ca7PVDUHe6XhVu
+X-Received: by 2002:a05:600c:a4f:b0:480:1e40:3d2 with SMTP id 5b1f17b1804b1-48716067246mr41383255e9.29.1774438338781;
+        Wed, 25 Mar 2026 04:32:18 -0700 (PDT)
+Received: from aldo-conte-t14.tailf68ad9.ts.net ([217.61.173.50])
+        by smtp.gmail.com with ESMTPSA id ffacd0b85a97d-43b64703c27sm46510360f8f.18.2026.03.25.04.32.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 Mar 2026 04:32:18 -0700 (PDT)
+From: Aldo Conte <aldocontelk@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	David Lechner <dlechner@baylibre.com>,
+	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>,
+	Javier Carrasco <javier.carrasco.cruz@gmail.com>
+Subject: [PATCH] iio: light: veml6070: fix veml6070_read() return value
+Date: Wed, 25 Mar 2026 12:32:16 +0100
+Message-ID: <20260325113216.170357-1-aldocontelk@gmail.com>
+X-Mailer: git-send-email 2.53.0
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAAHDw2kC/x3MPQqAMAxA4atIZgNt/fcq4lA11Sy2pCqCeHeL4
- ze890AkYYrQZw8IXRzZ7wk6z2De7L4S8pIMRplaFaZCu4irGnUjs8d4huDlQNJdV+rWTbZUkNI
- g5Pj+t8P4vh8P9djDZgAAAA==
-X-Change-ID: 20260325-adrf570x-iio-support-e199418fba40
-To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
- linux-kernel@vger.kernel.org
-Cc: Lars-Peter Clausen <lars@metafoo.de>, 
- Michael Hennerich <Michael.Hennerich@analog.com>, 
- Jonathan Cameron <jic23@kernel.org>, David Lechner <dlechner@baylibre.com>, 
- Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, 
- Krzysztof Kozlowski <krzk+dt@kernel.org>, 
- Conor Dooley <conor+dt@kernel.org>, 
- Rodrigo Alencar <rodrigo.alencar@analog.com>
-X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1774437143; l=808;
- i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=6s60KjYjwOw1gKouJIv1rbJ9T2v6rnXR5nRknIdF0GA=;
- b=WeuRfH4St3KVL/xuGRUuA2Qs5GkPq1aVPv3shOLplBnzEEx6J6SVYouOOVp1O0u5S6+l6S9NY
- IqP8VuewfihAvZJQkvjMCLINNZAs8klQg8/T/tohFachBrVXVtifHHt
-X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
- pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
-X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
- with auth_id=561
-X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
-Reply-To: rodrigo.alencar@analog.com
+Content-Transfer-Encoding: 8bit
 
-This is a small patch series that adds support for two extra attenuators.
-Basically, new chip info and device table entries are added into the
-AD8366 IIO driver.
+veml6070_read() computes the sensor value in ret but
+returns 0 instead of the actual result. This causes
+veml6070_read_raw() to always report 0.
 
-Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+Return the computed value instead of 0.
+
+Running make W=1 returns no errors. I was unable
+to test the patch because I do not have the hardware.
+Found by code inspection.
+
+Fixes: bb18885ed823 ("iio: light: veml6070: add support for integration time")
+Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
 ---
-Rodrigo Alencar (2):
-      dt-bindings: iio: amplifiers: ad8366: add adrf5702/3 support
-      iio: amplifiers: ad8366: add support for adrf5702/3
+ drivers/iio/light/veml6070.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
- .../bindings/iio/amplifiers/adi,ad8366.yaml        |  4 ++++
- drivers/iio/amplifiers/Kconfig                     |  2 ++
- drivers/iio/amplifiers/ad8366.c                    | 22 ++++++++++++++++++++++
- 3 files changed, 28 insertions(+)
----
-base-commit: af980a79bfed43c4a0be12cca786be46f1a0c5e8
-change-id: 20260325-adrf570x-iio-support-e199418fba40
-
-Best regards,
+diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
+index 6d4483c85f30..74d7246e5225 100644
+--- a/drivers/iio/light/veml6070.c
++++ b/drivers/iio/light/veml6070.c
+@@ -134,9 +134,7 @@ static int veml6070_read(struct veml6070_data *data)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = (msb << 8) | lsb;
+-
+-	return 0;
++	return (msb << 8) | lsb;
+ }
+ 
+ static const struct iio_chan_spec veml6070_channels[] = {
 -- 
-Rodrigo Alencar <rodrigo.alencar@analog.com>
-
+2.53.0
 
