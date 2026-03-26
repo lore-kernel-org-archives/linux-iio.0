@@ -1,88 +1,98 @@
-Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.13])
+Received: from mgamail.intel.com (mgamail.intel.com [198.175.65.12])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F198D369229;
-	Thu, 26 Mar 2026 08:31:37 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.13
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D04E3B7767;
+	Thu, 26 Mar 2026 08:36:02 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=198.175.65.12
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774513899; cv=none; b=rM3Zu1ArjWoDf1c+wM1n7Gz+z+0OF+9Kd2PpjYh8PaAfJ3foLCEsz+fEAAQS7E5bdEQSE25xqrfiRA5UG1V/no38Dg8xeUzTWQIlJlKgDBd5Ru0c1In3/r6M9UHoQkA/Pa+tHfL0srcvr1jN1qMJhLFEmTn+1NRTRaGKER60AOc=
+	t=1774514164; cv=none; b=SyH/jvOd0PDaBMeBMduGI1Sp3pNGq6lhkVlCmQG/xAa5s0afqvyH8PDtjg1g7ifcK7LrFZO2aaLUejLQQeSMyMBpcI3YqZZ3dA6U26QUSuXq9mcf8pa+ijj9nY6ZgqpyNKBJBerKzuCxmn0WJE0v7dsKNNDWez8bFrJEylzAQOg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774513899; c=relaxed/simple;
-	bh=gAWH2snjGO4sJBIFc7ZRvsV2TukPjjVSLaNtvLdSxx0=;
+	s=arc-20240116; t=1774514164; c=relaxed/simple;
+	bh=tw0hkbX7T+R4yf6F39ZSAKLfdvx8h74vIHmlYTacV2I=;
 	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-	 Content-Type:Content-Disposition:In-Reply-To; b=jnl1UkbFlmOUErrtlHh8fzEKr/BTlgBQzbmcDNMVCJGkO9D46gfDZ4SdMXxHLuaMVyy+agQNNnFh+E0RwuTIVODrqVgwomKE/E+NLQRwypirMk2d9o1IWodKT4A6QNa3ZHfSshdIYRu8f9Yu9YoDZKBXuNQju5JSdcscpbjOu7E=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=UoG5pcvI; arc=none smtp.client-ip=198.175.65.13
+	 Content-Type:Content-Disposition:In-Reply-To; b=Rif+2CERZIqlcQr7iH0VQlnhlxwaYiSTCkACHkARiZEuNN9w+Tbp3ZL4OHTCE1DcR+30W8CxGUv6K3tRzon9NzU7rM1FB5z3H7EsIPrRGyrQytMbFsw6Q8onyVYuBtbjAdzo+EF/8dHXHFvTNGMqA0+3MyGyDDxiDY/XKTaYNFM=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com; spf=pass smtp.mailfrom=intel.com; dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b=MIj43aCO; arc=none smtp.client-ip=198.175.65.12
 Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=intel.com
 Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=intel.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="UoG5pcvI"
+	dkim=pass (2048-bit key) header.d=intel.com header.i=@intel.com header.b="MIj43aCO"
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1774513898; x=1806049898;
+  t=1774514163; x=1806050163;
   h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=gAWH2snjGO4sJBIFc7ZRvsV2TukPjjVSLaNtvLdSxx0=;
-  b=UoG5pcvIRyxZ2GPRsvODJTN85d1StMlaeX723cJcz6s19bH9czdrTRaj
-   LrKJtmJhkAr2vCXE7PrOxhseq7OFDpal3wLShp6ianE5TfqivjO/MlBPR
-   FtJjEA4b7nHqLHAuonjXinTVOSfmD4RkgETv+U+GvsJ6Xf5yLAmpre9SJ
-   eXxSoSd/KHxhGuBS5Zr4dgGtVFQfImYALDImjGOEtxfyv5YU53kzR5Sz2
-   jFqvSXu7qj8YO/x38ADX/mT0rT6t8VZLR1tqOBxLlIX7cN7DuU9uL/XF6
-   5KtmI7qpE6krFl/WklH5EI1GuXjDzMMk0M53DycZazPGDlpprnBgkVKUJ
-   Q==;
-X-CSE-ConnectionGUID: HP4uDM5wSBWuoCCGvTF/WQ==
-X-CSE-MsgGUID: vWDJsefUR/q1FHiKvYeulw==
-X-IronPort-AV: E=McAfee;i="6800,10657,11740"; a="86643223"
+   mime-version:in-reply-to;
+  bh=tw0hkbX7T+R4yf6F39ZSAKLfdvx8h74vIHmlYTacV2I=;
+  b=MIj43aCO1vRAAmm4qOHzd1QzRsbvkKILe8IsKstOJmTubkO5Bo26K/kC
+   wVlrMGETrUuZzMbpskLql5cDwQPFSSPHtGOFfhqKZnMiK30Zez54NUoG1
+   yygMa9HNZSY1zPmroJD3XrTvY9kY+rRoGgM3PX20Eb1HFg+3mRyCQ4zLL
+   6GczjSPip8k4cZ+ANPjcAYM1Y0UMu/EmAKH8MKRHIixoDszr7YeH5o7LA
+   C96sXIUvcEkH4Fc7POW/Tp9TRXRJL1KBs6dw3TEafhHggFqvibOWflMO0
+   uWoawWnBp81xWIih7pmS7+fjZxDCUCkl4u0sjjX4axEOMWe3AHKqLamk0
+   g==;
+X-CSE-ConnectionGUID: GoQ7GIdJRD+WuFX/yJgVcA==
+X-CSE-MsgGUID: 1mMobJJ7SLyJxe39QnWOTQ==
+X-IronPort-AV: E=McAfee;i="6800,10657,11740"; a="87041274"
 X-IronPort-AV: E=Sophos;i="6.23,141,1770624000"; 
-   d="scan'208";a="86643223"
-Received: from orviesa005.jf.intel.com ([10.64.159.145])
-  by orvoesa105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 01:31:37 -0700
-X-CSE-ConnectionGUID: nMD3rO//QbKLo77sOe3rMQ==
-X-CSE-MsgGUID: Tcrn44/fSBCSzo87LS8wIg==
+   d="scan'208";a="87041274"
+Received: from orviesa010.jf.intel.com ([10.64.159.150])
+  by orvoesa104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 01:36:02 -0700
+X-CSE-ConnectionGUID: 4kgQWgZISwO7qyYkhdpZDA==
+X-CSE-MsgGUID: bncX8UGESIyL6btUwhrGAA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="6.23,141,1770624000"; 
-   d="scan'208";a="229872567"
+   d="scan'208";a="224123654"
 Received: from smoticic-mobl1.ger.corp.intel.com (HELO localhost) ([10.245.245.216])
-  by orviesa005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 01:31:35 -0700
-Date: Thu, 26 Mar 2026 10:31:32 +0200
+  by orviesa010-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Mar 2026 01:35:58 -0700
+Date: Thu, 26 Mar 2026 10:35:55 +0200
 From: Andy Shevchenko <andriy.shevchenko@intel.com>
-To: Milan =?utf-8?B?TWnFoWnEhw==?= <twoexem@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	lorenzo@kernel.org, jic23@kernel.org, dlechner@baylibre.com,
-	nuno.sa@analog.com, andy@kernel.org
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: Add ACPI ID for SHIFT13mi gyroscope
-Message-ID: <acTu5PEOCSpMU1wz@ashevche-desk.local>
-References: <20260324193626.77231-1-twoexem@gmail.com>
- <acPNhGlmTJk4pfRG@ashevche-desk.local>
- <2ac6cca6-a7c5-4892-93d9-49f850953511@gmail.com>
- <acPU86AwRJPUb22L@ashevche-desk.local>
- <71a591fa-d103-4043-a313-e796483e8709@gmail.com>
- <acPsxval-nfltuVP@ashevche-desk.local>
- <891e9fa4-3a84-4a26-80f0-8503e71aee5c@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Kyle Hsieh <kylehsieh1995@gmail.com>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	David Lechner <dlechner@baylibre.com>,
+	Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>,
+	Liam Beguin <liambeguin@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 0/3] iio: adc: ltc2309: add support driver for ltc2305
+Message-ID: <acTv64TrwxQlpp3F@ashevche-desk.local>
+References: <20260325-add_ltc2305_driver-v5-0-e0d29daa54f9@gmail.com>
+ <20260325195035.26214c91@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <891e9fa4-3a84-4a26-80f0-8503e71aee5c@gmail.com>
+In-Reply-To: <20260325195035.26214c91@jic23-huawei>
 Organization: Intel Finland Oy - BIC 0357606-4 - c/o Alberga Business Park, 6
  krs, Bertel Jungin Aukio 5, 02600 Espoo
 
-On Wed, Mar 25, 2026 at 03:22:55PM +0100, Milan Mišić wrote:
-> On 3/25/26 15:10, Andy Shevchenko wrote:
-> > Hmm... But it has different HID? Can you also cut'n'paste that
-> > device description from DSDT?
+On Wed, Mar 25, 2026 at 07:50:35PM +0000, Jonathan Cameron wrote:
+> On Wed, 25 Mar 2026 10:24:19 +0800
+> Kyle Hsieh <kylehsieh1995@gmail.com> wrote:
 > 
-> the LSM6DSO is a combined unit that only has one hardware ID. The DSDT only
-> has the GYRO node, there is no separate node for the accelerometer. The only
-> other node besides GYRO in that DSDT section is for the ambient light
-> sensor.
+> > The series add support for ltc2305 controller from 
+> > Linear Technology Corporation(lltc).
+> > This is low noise, low power, 2 channels 12-bit successive
+> > approximation ADCs.
+> > 
+> > Signed-off-by: Kyle Hsieh <kylehsieh1995@gmail.com>
+> Applied to the togreg branch of iio.git.
 
-Ah, right, the third one there is probably touchscreen or touchpad wit
-the HID CPLM3218.
+With this version I also noticed a clash, but I forgot to reply yesterday...
+TBH, I prefer the approach in the other series. But this can also do it
+by splitting the chip_info introduction to the separate change.
+
+Anyway, if it's applied, in the case of _this_ work it's not a big deal as
+the result looks sane.
+
+> To hussle things along a touch I skipped the normal pushing
+> it out as testing first (what could possibly go wrong ;)
 
 -- 
 With Best Regards,
