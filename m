@@ -1,37 +1,37 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87ACE39FCAC;
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 87B6539FCAD;
 	Thu, 26 Mar 2026 18:32:23 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774549943; cv=none; b=tSoE5l+LpvzylgBcx1uDDI7GzvnakxKvjN4uNLrEvyCz/mT1KUGAUZnb6M4hEGAX1jZkgRnYnigZul8jrfN86IjE1QSDbZ74TCxTjBgGgp3vjnFY6+EM6GoPEM2e6njQkTJl/3V1ZWiRM4drgkyK1NUn4cF4ineuzYrtCqHbjLA=
+	t=1774549943; cv=none; b=XweSbSd8E54bkzwDvKQYkFtBtJlACwC0tbgvFA42Nzq/7J7PING6gtgzI9JWu8ktK+ifNRlV+uYbOcTcxFzbABHIUSt777Y6aNDCWx2YRSmSGBiVmEU2nqSD3aOkQv7P6EBeHh1+Ps3Rv/aYqIFxku1v+p3Z3ioIXlsnJ7SW1mo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
 	s=arc-20240116; t=1774549943; c=relaxed/simple;
-	bh=CzsFZIJiKMsLWlfT0H5N9wCIpe9LumoDaQPCrhbfnfI=;
-	h=From:Subject:Date:Message-Id:MIME-Version:Content-Type:To:Cc; b=A+klh7wY2VsLMv8+HMAR9lEamaWQ64QX1CYznRfj0AtipVwe/CFZcGMk0uL0ACPSzCZ/ZKKUVYGapuxG69voEZQOcgg6QcgAaK9oWRKiOINjcCveJ1Hmz8OUeIen8vzMvTRSAPhoVXZJIJAGSGImRkXNoNPK7zEW6cVmKmNY6r4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=XkI7yvsQ; arc=none smtp.client-ip=10.30.226.201
+	bh=Hom04uPizYqHH9Z7CUP6T+8bG4T7pz30VDETLsxikXo=;
+	h=From:Date:Subject:MIME-Version:Content-Type:Message-Id:References:
+	 In-Reply-To:To:Cc; b=nXhzMb4DEIm0Rc/NMHcJB1xB4sdUErIXcxNjwa5qkanZkioFY6tQN5UO/q5qmZCIt+DyLzbBrWuBf03W0cHxLFdAWyUO94MdjHxdWnK3Ij20PTCdHhe5iRNRaJsjYvHx8ivB2kzzJWcQrELDUWy6O9laVbsl5bjSrME+XRZCzTo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=LRYQeNqe; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="XkI7yvsQ"
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 23C81C116C6;
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="LRYQeNqe"
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 466C1C2BCB2;
 	Thu, 26 Mar 2026 18:32:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=k20201202; t=1774549943;
-	bh=CzsFZIJiKMsLWlfT0H5N9wCIpe9LumoDaQPCrhbfnfI=;
-	h=From:Subject:Date:To:Cc:Reply-To:From;
-	b=XkI7yvsQQp9pk4i9aTqXbp7iRnWawmQ56KO6+yiJb2nlaEGMc/Rw3C65LyPKRZ6P9
-	 ArhR9U7kAXTNMaskuDgtNQRiKbJ0y/lX3aUADJHfoTJkHWsMFxLFy4Gr21NYSxDNBD
-	 jBx6cTWfoCxw4vVhWHhO+LTYbpQKRoQwruXZ1J8fx4rHlMetsGqU28mDmjnCE8qJL7
-	 b+Xvfqv+OUw2xO456Kvjjfk+06v3qqFZRGWsh1wuZEF4RU3h4cKU2vv4KnY5e7IXD/
-	 9ucz7QBpshHEzaEYjWvwLXS2pkqErX1ZAuRRj12Yd74Kj6/OqBFqqKoe9mRV0AlY26
-	 EbAEZjOz8hgwA==
+	bh=Hom04uPizYqHH9Z7CUP6T+8bG4T7pz30VDETLsxikXo=;
+	h=From:Date:Subject:References:In-Reply-To:To:Cc:Reply-To:From;
+	b=LRYQeNqeMxxZLZq+s/Xhf5Xwa2D9/q/z0dKdznRLzFbr75wFclTZMl77FKX8J3CeZ
+	 Lmysg/U7zRRGZ9drdG/wq7SRCOM3d0R/00HPXdpF1VD8lQSA+3+K3HOZDUfVvyTisN
+	 8bvG1GfcRW4+753rWzJqftTkMz6KCbjpRPUvAuPXccXSrw0AVcEsoZtrTWc6T/+G8G
+	 DrznNSf16NC1QUUnOzawI+nmgRoGtjUR68KO4DWfuf5uQyRt30ZA5+c/lM+JlGcJmP
+	 sld40QeyWNWvm8dTexCWPInKorDtDBXXHO26QA8hkHjAzqWtNGShpiqg7Vp3MN4946
+	 cvz1808fYUsqg==
 Received: from aws-us-west-2-korg-lkml-1.web.codeaurora.org (localhost.localdomain [127.0.0.1])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1094810A3D96;
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32CDC10A1E63;
 	Thu, 26 Mar 2026 18:32:23 +0000 (UTC)
 From: Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>
-Subject: [PATCH v2 0/2] ADRF5702/ADRF5703 Digital Attenuator support
-Date: Thu, 26 Mar 2026 18:32:15 +0000
-Message-Id: <20260326-adrf570x-iio-support-v2-0-b622a17335d0@analog.com>
+Date: Thu, 26 Mar 2026 18:32:17 +0000
+Subject: [PATCH v2 2/2] iio: amplifiers: ad8366: add support for adrf5702/3
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
@@ -39,12 +39,10 @@ List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-B4-Tracking: v=1; b=H4sIAK97xWkC/4WNQQ6CMBBFr0Jm7Zi2UgRX3sOwKDCFSZQ2LRIM6
- d2tXMDle8l/f4dIgSnCrdgh0MqR3ZxBnQroJzOPhDxkBiVUJS5KoxmC1VexIbPD+PbehQVJNk0
- pa9uZUkCe+kCWtyP7aDNPHBcXPsfLKn/2T3CVKLAxqqo1dYq0vpvZPN147t0L2pTSF8ftO6G5A
- AAA
-X-Change-ID: 20260325-adrf570x-iio-support-e199418fba40
+Content-Transfer-Encoding: 8bit
+Message-Id: <20260326-adrf570x-iio-support-v2-2-b622a17335d0@analog.com>
+References: <20260326-adrf570x-iio-support-v2-0-b622a17335d0@analog.com>
+In-Reply-To: <20260326-adrf570x-iio-support-v2-0-b622a17335d0@analog.com>
 To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org, 
  linux-kernel@vger.kernel.org
 Cc: Lars-Peter Clausen <lars@metafoo.de>, 
@@ -55,11 +53,11 @@ Cc: Lars-Peter Clausen <lars@metafoo.de>,
  Conor Dooley <conor+dt@kernel.org>, 
  Rodrigo Alencar <rodrigo.alencar@analog.com>
 X-Mailer: b4 0.14.3
-X-Developer-Signature: v=1; a=ed25519-sha256; t=1774549942; l=986;
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1774549942; l=3552;
  i=rodrigo.alencar@analog.com; s=default; h=from:subject:message-id;
- bh=CzsFZIJiKMsLWlfT0H5N9wCIpe9LumoDaQPCrhbfnfI=;
- b=TuNHdp+ljawlKp6O97s1DzuisbOEEDdcextDE34p8Mt70LsrYQpTHXumNirEjUzRJvPrvTbP7
- DERO2VcEXyGD1oxR8My5XngtUgyqr9XJth0tYG8MOZwhwIIsbiNOFdr
+ bh=C6P6Zr+ZHRuErV9w+QMBv1TsPXudqbrh6GcR2maa73k=;
+ b=ixIs+B5ItIa27KzDB0Q8Ui8rF3K+OdrI65dGqEd+ydTV2axa3QYIbvhwJmGgHcsSuwyQ3i4XR
+ QVDGvhI7hOXDU2s5wJGBHUn9jdR7JbUyYnKLQvgYJP1vRS1JXbwwPFu
 X-Developer-Key: i=rodrigo.alencar@analog.com; a=ed25519;
  pk=ULeHbgU/OYh/PG/4anHDfLgldFItQHAhOktYRVLMFRo=
 X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
@@ -67,31 +65,87 @@ X-Endpoint-Received: by B4 Relay for rodrigo.alencar@analog.com/default
 X-Original-From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 Reply-To: rodrigo.alencar@analog.com
 
-This is a small patch series that adds support for two extra attenuators.
-Basically, new chip info and device table entries are added into the
-AD8366 IIO driver.
+From: Rodrigo Alencar <rodrigo.alencar@analog.com>
 
+Add chip info structs and device table entries for ADRF5702 and ADRF5703
+Digital Step Attenuators.
+
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
 ---
-Changes in v2:
-- Add more context to the dt-bindings commit message.
-- Link to v1: https://lore.kernel.org/r/20260325-adrf570x-iio-support-v1-0-9a2685eb2e55@analog.com
+ drivers/iio/amplifiers/Kconfig  |  2 ++
+ drivers/iio/amplifiers/ad8366.c | 22 ++++++++++++++++++++++
+ 2 files changed, 24 insertions(+)
 
----
-Rodrigo Alencar (2):
-      dt-bindings: iio: amplifiers: ad8366: add adrf5702/3 support
-      iio: amplifiers: ad8366: add support for adrf5702/3
+diff --git a/drivers/iio/amplifiers/Kconfig b/drivers/iio/amplifiers/Kconfig
+index 39d280d4d437..9e24421b5e97 100644
+--- a/drivers/iio/amplifiers/Kconfig
++++ b/drivers/iio/amplifiers/Kconfig
+@@ -18,6 +18,8 @@ config AD8366
+ 	    AD8366 Dual-Digital Variable Gain Amplifier (VGA)
+ 	    ADA4961 BiCMOS RF Digital Gain Amplifier (DGA)
+ 	    ADL5240 Digitally controlled variable gain amplifier (VGA)
++	    ADRF5702: 0.125 dB LSB, 8-Bit, Silicon Digital Attenuator
++	    ADRF5703: 0.25 dB LSB, 7-Bit, Silicon Digital Attenuator
+ 	    ADRF5720: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator
+ 	    ADRF5730: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator
+ 	    ADRF5731: 2 dB LSB, 4-Bit, Silicon Digital Attenuator
+diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
+index 334ca91c0f59..bbf41a1fb3a1 100644
+--- a/drivers/iio/amplifiers/ad8366.c
++++ b/drivers/iio/amplifiers/ad8366.c
+@@ -5,6 +5,8 @@
+  *   AD8366 Dual-Digital Variable Gain Amplifier (VGA)
+  *   ADA4961 BiCMOS RF Digital Gain Amplifier (DGA)
+  *   ADL5240 Digitally controlled variable gain amplifier (VGA)
++ *   ADRF5702: 0.125 dB LSB, 8-Bit, Silicon Digital Attenuator, 50 MHz to 20 GHz
++ *   ADRF5703: 0.25 dB LSB, 7-Bit, Silicon Digital Attenuator, 9 kHz to 20 GHz
+  *   ADRF5720: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator, 9 kHz to 40 GHz
+  *   ADRF5730: 0.5 dB LSB, 6-Bit, Silicon Digital Attenuator, 100 MHz to 40 GHz
+  *   ADRF5731: 2 dB LSB, 4-Bit, Silicon Digital Attenuator, 100 MHz to 40 GHz
+@@ -106,6 +108,22 @@ static const struct ad8366_info adl5240_chip_info = {
+ 	.num_channels = 1,
+ };
+ 
++static const struct ad8366_info adrf5702_chip_info = {
++	.name = "adrf5702",
++	.gain_min = -31875,
++	.gain_max = 0,
++	.gain_step = -125,
++	.num_channels = 1,
++};
++
++static const struct ad8366_info adrf5703_chip_info = {
++	.name = "adrf5703",
++	.gain_min = -31750,
++	.gain_max = 0,
++	.gain_step = -250,
++	.num_channels = 1,
++};
++
+ static const struct ad8366_info adrf5720_chip_info = {
+ 	.name = "adrf5720",
+ 	.gain_min = -31500,
+@@ -337,6 +355,8 @@ static const struct spi_device_id ad8366_id[] = {
+ 	{ "ad8366", (kernel_ulong_t)&ad8366_chip_info },
+ 	{ "ada4961", (kernel_ulong_t)&ada4961_chip_info },
+ 	{ "adl5240", (kernel_ulong_t)&adl5240_chip_info },
++	{ "adrf5702", (kernel_ulong_t)&adrf5702_chip_info },
++	{ "adrf5703", (kernel_ulong_t)&adrf5703_chip_info },
+ 	{ "adrf5720", (kernel_ulong_t)&adrf5720_chip_info },
+ 	{ "adrf5730", (kernel_ulong_t)&adrf5730_chip_info },
+ 	{ "adrf5731", (kernel_ulong_t)&adrf5731_chip_info },
+@@ -353,6 +373,8 @@ static const struct of_device_id ad8366_of_match[] = {
+ 	{ .compatible = "adi,ad8366", .data = &ad8366_chip_info },
+ 	{ .compatible = "adi,ada4961", .data = &ada4961_chip_info },
+ 	{ .compatible = "adi,adl5240", .data = &adl5240_chip_info },
++	{ .compatible = "adi,adrf5702", .data = &adrf5702_chip_info },
++	{ .compatible = "adi,adrf5703", .data = &adrf5703_chip_info },
+ 	{ .compatible = "adi,adrf5720", .data = &adrf5720_chip_info },
+ 	{ .compatible = "adi,adrf5730", .data = &adrf5730_chip_info },
+ 	{ .compatible = "adi,adrf5731", .data = &adrf5731_chip_info },
 
- .../bindings/iio/amplifiers/adi,ad8366.yaml        |  4 ++++
- drivers/iio/amplifiers/Kconfig                     |  2 ++
- drivers/iio/amplifiers/ad8366.c                    | 22 ++++++++++++++++++++++
- 3 files changed, 28 insertions(+)
----
-base-commit: af980a79bfed43c4a0be12cca786be46f1a0c5e8
-change-id: 20260325-adrf570x-iio-support-e199418fba40
-
-Best regards,
 -- 
-Rodrigo Alencar <rodrigo.alencar@analog.com>
+2.43.0
 
 
