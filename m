@@ -1,43 +1,40 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 94E9C3A6414;
-	Thu, 26 Mar 2026 20:29:43 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id C761639A7F6
+	for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 20:38:31 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774556983; cv=none; b=Iz0nLDYxFdPS31HofxFe3ZxwUXk5Ei/ddKfomHDCWE5+qvR2M8BpkLbREOdC9KB35DuTfnjA87dATgGZAGioFPPqwr6kHFzxq9V/v/8GRtM2jV9CALyetab+OrYQ4BwunGkZLxq0LVHPjUVn0QkSOxpLGu33z6JMdUnwIF1sbzE=
+	t=1774557511; cv=none; b=AzBbn4TdPiCnSDNUN8v1+5LscAmpbRvF4qxJLvyMP83M0WBgowspF0Up1PQl+LoaWpP3bwMGLogOMlh4lnL8WfSJZ3GONf+MxTR4AX6xn4cSQc79+QBQYbE2PgpbqhkgnYBxT/7532kszqYGiRu1fPk2iTOQBfRtIyORBLw9zgI=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774556983; c=relaxed/simple;
-	bh=+5HtaPXgncHoPTKPpgQX0ebqh9DlexC5Jm5bZcnIwdE=;
+	s=arc-20240116; t=1774557511; c=relaxed/simple;
+	bh=CejSRyWsuA1et1DDvUxGTd3//qRgOpgWhr+RF60/1I8=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=EZuw+UHeqoqIu1R70jmctAsUzSuppqXdKHKAxSxBvJHZZ1GkhB2Io0+FIXWh4EerQ9PbaYSxequDp2ErHn3ywKsQEykMwHpBXUq9mI1HAQpxOFTSCPMOlNCKqwsEBxjMx1JReR83/MXIRV9uYv7V2jG1i/qo7/iQ92eYi9MW4bg=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=RyVTygID; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=esnROBmiZZxX/3EWtpXH+nw/LRBwcj9u9pKeu86gSZ75cNY7b/Ka3hYo7nnQawqz8l8oY9Ykyzz1WdIc312cijZTd7zkq9Azz1cBRtkyI1fT2kUZ6l1oavsgyCA9uZgLY7OGffzmqcVvXohj6exRW6jbUy4o7D/0x3ZoVT4jwIA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=qD1rRRdK; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="RyVTygID"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29F6AC2BCB4;
-	Thu, 26 Mar 2026 20:29:39 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="qD1rRRdK"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 39BB7C116C6;
+	Thu, 26 Mar 2026 20:38:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774556983;
-	bh=+5HtaPXgncHoPTKPpgQX0ebqh9DlexC5Jm5bZcnIwdE=;
+	s=k20201202; t=1774557511;
+	bh=CejSRyWsuA1et1DDvUxGTd3//qRgOpgWhr+RF60/1I8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=RyVTygIDK54P2hJpBfRMI5qBvcBhRkHY8L1XvEFIk9p9BDq4mF1rbWYI3lAJJpP5F
-	 5t36REGOx3Y5199Vdb67smxmXQ8ZBNxmpi3AzIedWoYNIqYSys2qQgdqc7OhmXzYzc
-	 vOVzmlOQPzl4pQXkwiLnkU6BLaBQijnhSd7WKzu/S0wHOAMAvsFbmetgJlyzv6rVfU
-	 MmJYt0E6xBsuu9YVEOOaojAgghKl03PUieJG038kw03ZBflMFclPLkR/LvdhxYxSSW
-	 pOwGTGoKC83lnYhqRlkYMOx5mYky2l169ebPzceikJHXGJwc3NkxJu603gbIlj+63f
-	 SFUTOBlP0Pvqg==
-Date: Thu, 26 Mar 2026 20:29:36 +0000
+	b=qD1rRRdKTB5OPdRMJRX83fFpDawkvD1g6ujJHe/+EQsnA/T9AeC1OnLz6LWqO0A3E
+	 2w4Weivki1u3o29hLoyF6PlBhNSkJ1XoFqN7qOQf3pZorvHAan8XbakJDgW/aVpN+G
+	 Zg06a5y2wSGcpI5d53tE1lYHmncq20JifDKzwSy/lIiVWrRcsFy8opYLu4hYtt5pN8
+	 6JM8BLDlXvSf9Hurmu37dk2TJyaf/HT3rHZfZIsrxIqbHixZrJ5/6hySoKxlKYvM46
+	 3XR3Cj3OFR7O6jYUGLU+jwUhDcGPyOpVtKj9UbXRCcnhAuLlFEJMgXOjSa4gAhBE0D
+	 M7Xo3iUBVm4og==
+Date: Thu, 26 Mar 2026 20:38:24 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Aldo Conte <aldocontelk@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, David Lechner
- <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, Javier Carrasco
- <javier.carrasco.cruz@gmail.com>
-Subject: Re: [PATCH v2] iio: light: veml6070: fix veml6070_read() return
- value
-Message-ID: <20260326202936.0bd34713@jic23-huawei>
-In-Reply-To: <20260326163808.21404-1-aldocontelk@gmail.com>
-References: <20260326163808.21404-1-aldocontelk@gmail.com>
+To: Nikhil Gautam <nikhilgtr@gmail.com>
+Cc: anshulusr@gmail.com, dlechner@baylibre.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: dac: mcp4821: add configurable gain support
+Message-ID: <20260326203824.59e8e950@jic23-huawei>
+In-Reply-To: <20260326071242.9218-1-nikhilgtr@gmail.com>
+References: <20260321180707.73a7ad60@jic23-huawei>
+	<20260326071242.9218-1-nikhilgtr@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -45,50 +42,42 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-On Thu, 26 Mar 2026 17:38:08 +0100
-Aldo Conte <aldocontelk@gmail.com> wrote:
+On Thu, 26 Mar 2026 12:42:42 +0530
+Nikhil Gautam <nikhilgtr@gmail.com> wrote:
 
-> veml6070_read() computes the sensor value in ret but
-> returns 0 instead of the actual result. This causes
-> veml6070_read_raw() to always report 0.
-> 
-> Return the computed value instead of 0.
-> 
-> Running make W=1 returns no errors. I was unable
-> to test the patch because I do not have the hardware.
-> Found by code inspection.
-> 
-> Fixes: fc38525135dd ("iio: light: veml6070: use guard to handle mutex")
-> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
-> 
-Thanks for resend but as I replied (late) to your question its
-already queued with the tag fixed:
-https://web.git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?h=fixes-togreg
+> Add support for configuring the DAC gain using the GA bit.
+> Expose gain control via IIO_CHAN_INFO_CALIBSCALE.
+>=20
+> Scale is updated dynamically based on selected gain:
+> - 1x gain =E2=86=92 2.048V full-scale
+> - 2x gain =E2=86=92 4.096V full-scale
+>=20
+> Signed-off-by: Nikhil Gautam <nikhilgtr@gmail.com>
+Just one small thing from me.
 
-> ---
-> 
-> v2:
-> - Fix correct commit in Fixes tag
-> ---
->  drivers/iio/light/veml6070.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
-> index 6d4483c85f30..74d7246e5225 100644
-> --- a/drivers/iio/light/veml6070.c
-> +++ b/drivers/iio/light/veml6070.c
-> @@ -134,9 +134,7 @@ static int veml6070_read(struct veml6070_data *data)
->  	if (ret < 0)
->  		return ret;
->  
-> -	ret = (msb << 8) | lsb;
-> -
-> -	return 0;
-> +	return (msb << 8) | lsb;
->  }
->  
->  static const struct iio_chan_spec veml6070_channels[] = {
+>  static int mcp4821_probe(struct spi_device *spi)
+> @@ -177,12 +235,15 @@ static int mcp4821_probe(struct spi_device *spi)
+>  	const struct mcp4821_chip_info *info;
+> =20
+>  	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*state));
+> -	if (indio_dev =3D=3D NULL)
+> +	if (!indio_dev)
+
+Not related to rest of the patch. So doesn't belong in here.
+Also generally not worth the noise of changing these.
+
+>  		return -ENOMEM;
+> =20
+>  	state =3D iio_priv(indio_dev);
+>  	state->spi =3D spi;
+> =20
+> +	/* default gain is 2x as GA bit is active low*/
+> +	state->gain_1x =3D false;
+> +
+>  	info =3D spi_get_device_match_data(spi);
+>  	indio_dev->name =3D info->name;
+>  	indio_dev->info =3D &mcp4821_info;
 
