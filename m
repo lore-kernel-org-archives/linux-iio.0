@@ -1,116 +1,108 @@
-Received: from mail-wm1-f52.google.com (mail-wm1-f52.google.com [209.85.128.52])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 8384C38734D
-	for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 16:38:12 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.128.52
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id EAE613A5444;
+	Thu, 26 Mar 2026 17:46:38 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774543093; cv=none; b=MUML4y3gRjs+sXUBnJXpdaJkZqJ5fsGxjFcj22Ia8ZarGPApUdyYe//3zCjKHkU9eoqx0hTiK3KkyXbytLjVxTHi9sGWdGP8Pj3xgpuU5tMdfHVWhyFsEsbA28fStqHkWzwrcORVkRW/D5Qfd646X65xKm+hfmsIB5YnQ9kTxpk=
+	t=1774547199; cv=none; b=IUwrKZFx9qmDRC4OzS7X2keW02aCa033XjOcH7L3np0vZXDI987W1SOkJX+U04L3xsrTiVxaoIvYRnRH9iMtsa6uBmNYPToCNsqU9F3tOSLIIVBTGJShVOMEmHmpLRLNGFNBKDxQs3WyUf5n4gsB9NmDkbo46QCmNJic3lvSrxw=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774543093; c=relaxed/simple;
-	bh=gJi5eJfPbZOwrKwGfWtvogi2mRH4nUzmcJdMXEiFq4s=;
-	h=From:To:Cc:Subject:Date:Message-ID:MIME-Version; b=AFZUxAu2olDSbZu6D4UbCfcZsz3F5oB8Mk3bW/0outbxhYBV2CVVLVrQD85mQ20YTJBjGGfux9fdlPodBE+l96NPbfdvvbfDzRL9r/O38TeOd28+vItJKlqt8VjItAnXTzdUyJ+RyjRTsV+sZGPygeVsCReBn60EkA33nJRgmDc=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=K/0FYZk5; arc=none smtp.client-ip=209.85.128.52
-Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
-Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
+	s=arc-20240116; t=1774547199; c=relaxed/simple;
+	bh=CVwfAmH5u+DO6xJAeimWSSYi2LBO8JE7ZmqRYhQRusw=;
+	h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
+	 Content-Type:Content-Disposition:In-Reply-To; b=s0Ah2wQm64umJT03ueODLj+pIzaDeHeA/8NMdCLaP4LyTbiKYFl3s665XcmdbcL+hMIIjpnt3pdEaUTeLG25odtvvfzFpcvDrXSjtgeCRAUGk9y1MscCRa5GW7okk9+z201ZOwNbDIQC2amDMSP9PWvJwBDFeltgxcliO6JukJY=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=GQ1w7PZY; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K/0FYZk5"
-Received: by mail-wm1-f52.google.com with SMTP id 5b1f17b1804b1-4853c1ca73aso12177375e9.2
-        for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 09:38:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20251104; t=1774543091; x=1775147891; darn=vger.kernel.org;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc:subject:date:message-id:reply-to;
-        bh=bmiT/zLXH0XNbRo012mXxoY2S9iYTJ549SWUrsIQVqg=;
-        b=K/0FYZk50/jKkvtybBmZeTfI0Jg55zE6VXmQtikH2tR01/t0tIDhmNdJCVv86rNjKc
-         OFYu3t20Z/VJlrzImWxrVu2pKJfG2cCnVAFKabEbDqWDoeydJx3bVjO/WhIYfpRl2irh
-         XHUMaeozn0sLWESSpMN0OLbTnde90edk4cR5ZGkukZVGO4lqOIpmDxTfH9eDZkeB+y5m
-         rslTDPFxMizjsOGjVN8Cn/BNz6zDfAV542wiXdApMaWzYjaMqD2mJzS2/fwCv+K7uyCI
-         cw5Uu2soP5vgyi0bV25J7984AJx0p7E9QyEES5rzI7Xn0mm6a1IXov4PYbT9iYCREhz7
-         PN5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20251104; t=1774543091; x=1775147891;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
-         :message-id:reply-to;
-        bh=bmiT/zLXH0XNbRo012mXxoY2S9iYTJ549SWUrsIQVqg=;
-        b=e92PdEhtMRoAhtQuB0jQY6PdfJsJkeUAc7Q75RSV87gW/S2rZAfJyKXoAF4vY8gQvL
-         g6qDdHrrwk0p/AzGAQCRWa0ClDbRUpEnnM8JiOy6od8KWX1wI8wftx/Rl24xG0ZD6mTk
-         x3Uk6OdG8Qgq1Q0OzaU/oV5b0FnWIvIMkX7jx05gaK/Eu+Q5sIvddZPDX3F+/k77s7wn
-         GWR4YZuFuzKwuIPKMEKHkWZcosJnrUBzG3xa0dbmUDQvC23uHt7iO4DHFgN0IIJ+uty5
-         mfIlTyTQNqiDwhO8Zw5QY7XKZEB9tucBmcOaKOSfIyTwKPybm3AbHUfMpc6W3/Vvb4BK
-         XUVQ==
-X-Gm-Message-State: AOJu0Yzop9NcaWMyVnsUTnZUNrhb9N4cigxYYUe1k+JQTMzfPXxlujQi
-	GlblyxzTgEc1Q/wWFrJYRrJYa7J8SLOc0U9byxw45j1dgHxwFKzuhen+
-X-Gm-Gg: ATEYQzxeVIvM/n2slgoukPxFFhfYAdl10AK7bOgx+XjfyYklojbqYo7FmaRBY9EmLrm
-	aocxU0ncvYFo8UD5L6TYzOL2+OW/w0wY8VILBBDJrIl+/EajJOwpPVWKFKy5dHFJSE+b5ZcRY/q
-	fF/s/MmdLGhyC9So+1kkPVfHE8TyFmY9LNpK77Rs5tVCx4hljh9yXUgrCGk1HOW4fn41uQRjQyu
-	r4BDkQ96O5RUa09S87FXzfyxhQ2uQNiIvv3Re3ELjiGrs6WnZp/licvx/Gx+xTewRiYxnHKn3SN
-	3Zwiq+HcbkmVbw1fG7GAQTo7L6E6vpsObKMHk1u4wUcpROIWEgRPm1U6AH0EL2fwMbJelVNY6Iz
-	he/C6oIdXK9GD4KSftJ9S1wM9+reQVlfcUh74rRCehyTl9tsHy598DQQGYzn0w5l8+WiKBzQKtW
-	7b/VM0NugBXu+yCy6Yb8V8HlRqIC30Zos8XXbhVDnsZqcHycdCI+qD
-X-Received: by 2002:a05:600c:5296:b0:485:364e:9328 with SMTP id 5b1f17b1804b1-4871605ceb5mr131644045e9.16.1774543090349;
-        Thu, 26 Mar 2026 09:38:10 -0700 (PDT)
-Received: from aldo-conte-t14.tailf68ad9.ts.net ([217.61.173.50])
-        by smtp.gmail.com with ESMTPSA id 5b1f17b1804b1-48725eae727sm445325e9.2.2026.03.26.09.38.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 26 Mar 2026 09:38:10 -0700 (PDT)
-From: Aldo Conte <aldocontelk@gmail.com>
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="GQ1w7PZY"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B77D1C2BCB1;
+	Thu, 26 Mar 2026 17:46:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=k20201202; t=1774547198;
+	bh=CVwfAmH5u+DO6xJAeimWSSYi2LBO8JE7ZmqRYhQRusw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+	b=GQ1w7PZYNZh8Sx6kO9Iba1IUYQFPP8rxiobY3yDsSYyHVKpZmMnCIV1xPMgJkEUGE
+	 2HZtbh7eq33c/qG1EejSJ1VciKx3AwVdhcV3F1U04MfOzy9faEe3q7dLqhjO2pLX2F
+	 Gh30xCiPDoW2lYdp2aZmQFwKKpedIVY/ZgRPEeBsKw+I8IDIHKZJ2Cz9hSIvp/CLtH
+	 68h8TwZY925iXNNIsc4EhtaYhYSU9rp/eL3VI3z325Yntjlwrvd7XLFntveHZlCSJe
+	 YPrcNoKEHhDEdWctJfrZLUMbsWMMOfIPSNWWG70Kt3A5AfIG/I2LrS7cdopoQ+mQfh
+	 YglkJdmXnJt1Q==
+Date: Thu, 26 Mar 2026 17:46:33 +0000
+From: Conor Dooley <conor@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
+Cc: Jonathan Cameron <jonathan.cameron@huawei.com>,
+	Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org>,
+	rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
 	David Lechner <dlechner@baylibre.com>,
-	=?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-	Andy Shevchenko <andy@kernel.org>,
-	Javier Carrasco <javier.carrasco.cruz@gmail.com>
-Subject: [PATCH v2] iio: light: veml6070: fix veml6070_read() return value
-Date: Thu, 26 Mar 2026 17:38:08 +0100
-Message-ID: <20260326163808.21404-1-aldocontelk@gmail.com>
-X-Mailer: git-send-email 2.53.0
+	Andy Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>,
+	Krzysztof Kozlowski <krzk+dt@kernel.org>,
+	Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: amplifiers: ad8366: add adrf5702/3
+ support
+Message-ID: <20260326-swimwear-thrash-dc6668850621@spud>
+References: <20260325-adrf570x-iio-support-v1-0-9a2685eb2e55@analog.com>
+ <20260325-adrf570x-iio-support-v1-1-9a2685eb2e55@analog.com>
+ <20260325124627.00006828@huawei.com>
+ <20260325-possibly-deploy-3ff69076a6e9@spud>
+ <20260325191953.290a204f@jic23-huawei>
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+	protocol="application/pgp-signature"; boundary="NpFQbEmKAM2pTwcr"
+Content-Disposition: inline
+In-Reply-To: <20260325191953.290a204f@jic23-huawei>
 
-veml6070_read() computes the sensor value in ret but
-returns 0 instead of the actual result. This causes
-veml6070_read_raw() to always report 0.
 
-Return the computed value instead of 0.
+--NpFQbEmKAM2pTwcr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Running make W=1 returns no errors. I was unable
-to test the patch because I do not have the hardware.
-Found by code inspection.
+On Wed, Mar 25, 2026 at 07:19:53PM +0000, Jonathan Cameron wrote:
+> On Wed, 25 Mar 2026 18:13:45 +0000
+> Conor Dooley <conor@kernel.org> wrote:
+>=20
+> > On Wed, Mar 25, 2026 at 12:46:27PM +0000, Jonathan Cameron wrote:
+> > > On Wed, 25 Mar 2026 11:12:02 +0000
+> > > Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kern=
+el.org> wrote:
+> > >  =20
+> > > > From: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> > > >=20
+> > > > Add compatible entries for ADRF5702 and ADRF5703 Digital Attenuator=
+s. =20
+> > >=20
+> > > Explain how they are different from the existing supported devices.
+> > >=20
+> > > Something simple like the "Each device has its own gain range and ste=
+p,
+> > > hence no fallback compatibles are used." that you had in the original=
+ patch
+> > > is what we need here. =20
+> >=20
+> > Which means that this is a v2 that doesn't say it is a v2, or explain
+> > what has changed?
+>=20
+> I meant the original driver - which only landed recently and answered
+> the question of difference nicely.
 
-Fixes: fc38525135dd ("iio: light: veml6070: use guard to handle mutex")
-Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+Ah I see. Wording confused me!
 
----
+--NpFQbEmKAM2pTwcr
+Content-Type: application/pgp-signature; name="signature.asc"
 
-v2:
-- Fix correct commit in Fixes tag
----
- drivers/iio/light/veml6070.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+-----BEGIN PGP SIGNATURE-----
 
-diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
-index 6d4483c85f30..74d7246e5225 100644
---- a/drivers/iio/light/veml6070.c
-+++ b/drivers/iio/light/veml6070.c
-@@ -134,9 +134,7 @@ static int veml6070_read(struct veml6070_data *data)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = (msb << 8) | lsb;
--
--	return 0;
-+	return (msb << 8) | lsb;
- }
- 
- static const struct iio_chan_spec veml6070_channels[] = {
--- 
-2.53.0
+iHUEABYKAB0WIQRh246EGq/8RLhDjO14tDGHoIJi0gUCacVw+QAKCRB4tDGHoIJi
+0gBsAP0QnDgQfS0TqUCIclAilJpw2cqxQmeObA99EigK7X/wZgEA498b9J7Vy5zA
+CQspXNTjWiFMfu6AqMcgdEFwk3UvrgQ=
+=T+DN
+-----END PGP SIGNATURE-----
 
+--NpFQbEmKAM2pTwcr--
