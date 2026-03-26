@@ -1,123 +1,136 @@
-Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
-	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+Received: from mail-pl1-f180.google.com (mail-pl1-f180.google.com [209.85.214.180])
+	(using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 4D0EA311942;
-	Thu, 26 Mar 2026 08:17:16 +0000 (UTC)
-Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id F164C37B400
+	for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 08:18:21 +0000 (UTC)
+Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=209.85.214.180
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774513036; cv=none; b=dwnrz2SfAN4VVvIHsSEXdoBAqDR+fnq1OtyYHskXMHEa3S0i6vOiolVcxDlvnVIniBQwe2x6wiPhG4BaHLZSlNSpyUDOfVcMRqcNu9zkZDvONzXk9Sk8l1fdv4TLO7Co2fKdMXoaAgeTppqyrC39KhksPLYVx3WDverJW3Tk0Yk=
+	t=1774513103; cv=none; b=AGDxr/+T+MLfhIjTdvHiJQqNWeoN6vvbMCUW0DYym3rgvcMklYqnRJnixokXYbuuteoEPd1lTybOdzdCG1ZOW8XYo4f1x3Qm6pyf+sfVORPHUbz7rl8DR0/3dvpL+bR/qAO5iYRHYCKKDR6b243Ix9AV56IR7AqM+U5Pf+rf9qY=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774513036; c=relaxed/simple;
-	bh=o5w9pCdQJwJqIVMSOTmmS4wYOSdHSHb2HuYN1QFD+iM=;
-	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=TtPfYiHrA0wmO16QG/TddO1BJpLyBspOD69ZXBuIjjzpRijV4x3iWNgHbit7i8YeCxSGq67ywV0zzw+QMY5AJARiPjf4wavG9oO9aoJBm07dYZAvFnLgTBgHga4n5+MvcSipPIRbDeYhF5uVfrlGJ4B7v7F9DG41mkL/uENtk+4=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=iROPofh8; arc=none smtp.client-ip=10.30.226.201
+	s=arc-20240116; t=1774513103; c=relaxed/simple;
+	bh=dCaFEx2o+0LHihwArJ97BO8PX8v5GOTP6rU3/4UO94c=;
+	h=From:To:Cc:Subject:Date:Message-Id:MIME-Version; b=Ssss5DUCY5H8dHwTvFOZr04aUxJPgQs8VlPjIpp4n9LTI4j38TDdtDYZfPZNcLIcu10nI7SOE56CEfJZghS1r+LFym7hU+UgtUOEIny4FzHi7dfHWjUMXmDyB/570tNLa4Gaa9k0jcqdXQkBMm9Am3sDnZIZ5wbfKdKQLLVrAKo=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com; spf=pass smtp.mailfrom=gmail.com; dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b=WsoKPT2Y; arc=none smtp.client-ip=209.85.214.180
+Authentication-Results: smtp.subspace.kernel.org; dmarc=pass (p=none dis=none) header.from=gmail.com
+Authentication-Results: smtp.subspace.kernel.org; spf=pass smtp.mailfrom=gmail.com
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="iROPofh8"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FE0EC116C6;
-	Thu, 26 Mar 2026 08:17:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774513035;
-	bh=o5w9pCdQJwJqIVMSOTmmS4wYOSdHSHb2HuYN1QFD+iM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=iROPofh8FMQsZItMkKQeqjSxBOoQDko4rjzNC4WXNGgosWHZYvS0goy5tCRlc+4Np
-	 NQfss1cj9XhKsN3P4btYYz3xCJdei9fskeQ6gkEo2TXRRW67Z0wNLmn83N3YDWzxjW
-	 HSvXNMWsEbNlDy/lJP34ri9Qyzj3yV7Tz6Riou2aXLDfRr2Fkxhd6ICSzY7Zj2udDd
-	 BqvpYDjPbwWQ0sqy4gVi/TiPgbZU5rRZvHblVpDYIkwP063XKectD7noXqoy0CPFNc
-	 SteGkqLGRYTSEDHU8Hlt8ssOIt69eMUMRcO+WaC/FNB3gohnBk9LGHitDBuyCh076m
-	 jHS8YXlhSK71w==
-Date: Thu, 26 Mar 2026 08:17:08 +0000
-From: Jonathan Cameron <jic23@kernel.org>
-To: "Jones, Carlos jr" <Carlosjr.Jones@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh@kernel.org>,
- Krzysztof Kozlowski <krzk+dt@kernel.org>, Conor Dooley
- <conor+dt@kernel.org>, David Lechner <dlechner@baylibre.com>, "Hennerich,
- Michael" <Michael.Hennerich@analog.com>, Liam Beguin
- <liambeguin@gmail.com>, "Sa, Nuno" <Nuno.Sa@analog.com>, Andy Shevchenko
- <andy@kernel.org>, Tobias Sperling <tobias.sperling@softing.com>, "Marques,
- Jorge" <Jorge.Marques@analog.com>, "linux-iio@vger.kernel.org"
- <linux-iio@vger.kernel.org>, "devicetree@vger.kernel.org"
- <devicetree@vger.kernel.org>, "linux-kernel@vger.kernel.org"
- <linux-kernel@vger.kernel.org>, Kyle Hsieh <kylehsieh1995@gmail.com>
-Subject: Re: [PATCH v2 0/4] Add support for LTC2305
-Message-ID: <20260326081708.05b50999@jic23-huawei>
-In-Reply-To: <SJ0PR03MB5854559AD0D2624A6251ED6FF456A@SJ0PR03MB5854.namprd03.prod.outlook.com>
-References: <20260324071331.842-1-carlosjr.jones@analog.com>
-	<20260325201931.26ca84c1@jic23-huawei>
-	<SJ0PR03MB5854559AD0D2624A6251ED6FF456A@SJ0PR03MB5854.namprd03.prod.outlook.com>
-X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WsoKPT2Y"
+Received: by mail-pl1-f180.google.com with SMTP id d9443c01a7336-2adbfab4501so3140255ad.2
+        for <linux-iio@vger.kernel.org>; Thu, 26 Mar 2026 01:18:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20251104; t=1774513101; x=1775117901; darn=vger.kernel.org;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:from:to:cc:subject:date:message-id:reply-to;
+        bh=YTQBQpGXKWiqONM2FeQOohjZzg7y+zTv62Tl5GC5mXs=;
+        b=WsoKPT2YKBk+QVj4LTlcK7cB/KNzzjLBCKqG41jaqMkn34vEsfiPXTg6T0f0BSAN5S
+         jVemKz2JkCJvxLqsqC3rFhmF0aEIjjPMwCziY6R1nbx67kZx7gLvhP+q0yUP+F3aomWU
+         /GJl9/M8P5Ot8nl1VJAGmUHby8TxfnlMXONALSlQScpxYrBTkpQITyN56Q9ZeoF9N8P8
+         x+ypVzvg6J4XnhsTcaurtXArO0rD87VDmbvdch91ZdyPS17GGhlGsd24F2JOV9Sa92LZ
+         X+e58pvOsys+NDkjVy+J5/RuWJEWg7Is39qk2FTV3vFzhkF00eX7/3MaXu4s2eWMIW3G
+         H15g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20251104; t=1774513101; x=1775117901;
+        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
+         :to:from:x-gm-gg:x-gm-message-state:from:to:cc:subject:date
+         :message-id:reply-to;
+        bh=YTQBQpGXKWiqONM2FeQOohjZzg7y+zTv62Tl5GC5mXs=;
+        b=dNv5PJNkx8oELFL3ja+jxbqq6FU3gmhjUvI1gX8Wrt3UNk3+xrormdgwOwNQEhw6e2
+         KaFUOKTsuP5e6d5zLtpk2gSr6kBDocvDhKhvJtAP4hE3WHaeTC417sMWzKTlcyz3tDdz
+         wkZFa4kXYx91IQx2KktGQ2leyk2OhVouK2m77WMUmFeGV+t+G0mxRUebrqxm+g+ijHMD
+         zzICdnB0GdEahQHWorodgvRjIFABOH/rVENROyB2cGrooM7tDTxVSJbXf/KeTwapYU7l
+         ZwD6KryHGJYen+HQ9N5+hnKhQHUsFJ9n/PWxQgWf6KAPpBtX8yg4j4h6yhBnKkefwMrW
+         /4iA==
+X-Forwarded-Encrypted: i=1; AJvYcCXcA7xo4lC+E9jNQafKY8ZKUB5szeP8YU8xm6sMTVM9C3ZBXJEYC5EkB9+qYW91Bi0ui27O8w/jtlw=@vger.kernel.org
+X-Gm-Message-State: AOJu0YxHmTcO0weXREp2h0TLg3qga3TGFLEqCOchL0L8TUbO3blNhbJV
+	uHhTXPQCjHiZZnXrMQELw2aGBkevoPRhi/b25dO9jDsNfH4my6MV0xoi
+X-Gm-Gg: ATEYQzxuJSdeix1Ha1jfcJ2uMNEaypz8+hFtjbmhYkiiVGtahmmOMIIfUaLl4X+pWd5
+	G172i8un3MF6ZUwQrNlgSvfAEWlVgBJvVwfClK3Tda2PUcnQ6PsxY8XLkaDBAHiCrXSdaYi6h6F
+	+k3gOPMN8fLLYSCkckiM9u5kf2h6sFftuLJpO0QSyXNV9f/rtmq57QBqXtVH9h2Qb88Mt0xsOJD
+	HWlgB4GK63e0KkWEH3BnJW47Z9tA4H2Lf6zb0j5fpkcRsu4ke01vugDaeV2Uu0NJQpFEocuOdjT
+	/b5uJSAUWvzNd+tBeF9UgoWJ6XqRgC5c68LNsuS2eOb2/qt1I0+tLv13nIlh7zsoI4bgCqqBbDf
+	Ulxv/AXEvEFghfTvPkMhuovUd3I6VLHNVCJ8AbIY4UQEuf5pBVcJJbje9r5+2nVWEdNmKhCCgZR
+	VN+PfGMeBZytswTHpnVuWfLfjttscEEvJvtlzIfrWKCmMKcEaAf51VuW5E06U=
+X-Received: by 2002:a17:902:ea12:b0:2ae:aafa:ec95 with SMTP id d9443c01a7336-2b0b099d294mr77686465ad.11.1774513101341;
+        Thu, 26 Mar 2026 01:18:21 -0700 (PDT)
+Received: from hu-ckantibh-hyd.qualcomm.com ([202.46.23.25])
+        by smtp.gmail.com with ESMTPSA id d9443c01a7336-2b0bc87e6cfsm21855535ad.39.2026.03.26.01.18.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Mar 2026 01:18:20 -0700 (PDT)
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
+X-Google-Original-From: Sanjay Chitroda <sanjayembedded@gmail.com>
+To: jic23@kernel.org,
+	dlechner@baylibre.com,
+	nuno.sa@analog.com,
+	andy@kernel.org
+Cc: kees@kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	sanjayembeddedse@gmail.com
+Subject: [PATCH v4 0/4] iio: ssp_sensors: improve resource cleanup with cleanup.h
+Date: Thu, 26 Mar 2026 13:48:11 +0530
+Message-Id: <20260326081815.925373-1-sanjayembedded@gmail.com>
+X-Mailer: git-send-email 2.34.1
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
 List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-On Thu, 26 Mar 2026 02:21:28 +0000
-"Jones, Carlos jr" <Carlosjr.Jones@analog.com> wrote:
+From: Sanjay Chitroda <sanjayembeddedse@gmail.com>
 
-> > On Tue, 24 Mar 2026 15:13:27 +0800
-> > Carlos Jones Jr <carlosjr.jones@analog.com> wrote:
-> >   
-> > > The LTC2305 is a 2-channel, 12-bit, fast ADC with an I2C interface,
-> > > compatible with the LTC2309 (which has 8 channels).
-> > >
-> > > This patch adds support for the LTC2305 by introducing a chip_info
-> > > structure to handle the different channel configurations between the
-> > > two variants. The LTC2305 exposes 2 single-ended channels and 2
-> > > differential combinations.
-> > >
-> > > Also updates the device tree bindings to include the lltc,ltc2305
-> > > compatible string and documents it in the Kconfig.
-> > > ---  
-> > 
-> > Whilst checking for what comments were in v1, I realized we have two
-> > different people looking at the same thing within a few weeks of each other.
-> > +cc Kyle.
-> > 
-> > https://urldefense.com/v3/__https://lore.kernel.org/all/20260325-
-> > add_ltc2305_driver-v5-0-
-> > e0d29daa54f9@gmail.com/*r__;Iw!!A3Ni8CS0y2Y!6jxk_dJQLHUO4PVi3Oca_
-> > VzVHN-qeFu-y2tE5xXMwuy-
-> > x2UFG5Fn3KO4Cw15QcDsqTCgFXQQLLRQrdgokg$
-> > 
-> > I guess this is just a case of neither noticing on the list?
-> > Too many similar part names, so I missed it until now.
-> > 
-> > Currently I have Kyle's patches queued up.  All else being equal that seems fair
-> > as Kyle started on this last year whereas Carlos' work on this is much more
-> > recent.
-> > 
-> > I'm seeing some small differences. Please could you work together on this.
-> > Ideally send any additional changes on top of Kyle's series.
-> > 
-> > Thanks,
-> > 
-> > Jonathan
-> >   
-> 
-> First off, my apologies to everyone for not knowing how to check for
-> existing upstream request for the LTC2305 device before working on it
-> and wasting everyone's review time. It's a learning experience for me.
-It is pretty rare!  Only tend to see this sort of collision once every
-few years.
+Hi all,
 
-> 
-> But it's still awesome to see how both ended up with almost the same
-> code after review.
-> 
-> I'll reply to Kyle's series to ask if the delay for LTC2305 could be included.
-Excellent!  Note I've merged Kyle's code, so patches on top please.
-Potentially the delay might be a fix if I understand it correctly.
+This patch series improves resource cleanup and error handling in the
+SSP IIO SPI driver by adopting the recently introduced cleanup
+helpers.
+
+The changes focus on making probe/remove paths more robust and easier
+to reason about by reducing manual unwind logic and ensuring that locks
+and dynamically allocated resources are released consistently across
+all exit paths.
+
+Key highlights of this series:
+
+- Reuse preallocate rx buffer for SPI transfer instead of allocating new
+  DMA memory in interrupt context for write transaction between AP <-> HUB.
+- Use guard() helpers to automatically release mutexes on scope exit,
+  avoiding missing unlocks on error paths.
+- Address minor codestyle warnings introduced or exposed by the cleanup
+  refactoring.
+
+Changes in v4:
+- Update sequence and make checkpatch style fix in base change
+- Split WARNING and CHECK change with input of Andy as 0001 and 0002
+- 0003: Use guard() instead of scoped_guard()
+- 0004: Use preallocated buffer to stash memory allocation
+
+No functional behavior changes are intended.
+
+Testing:
+  - Compiled with W=1
+  - Build-tested on QEMU x86_64
+
+Based on:
+  <linux-v7.0-rc5>
+
+Feedback and reviews are very welcome.
 
 Thanks,
+Sanjay Chitroda
 
-Jonathan
+Sanjay Chitroda (4):
+  iio: ssp_sensors: cleanup codestyle warning
+  iio: ssp_sensors: cleanup codestyle check
+  iio: ssp_sensors: ssp_spi: use guard() to release mutexes
+  iio: ssp_sensors: reuse preallocated RX buffer for SPI transfers
 
-> 
-> Kind regards,
-> Carlos
-> 
+ drivers/iio/common/ssp_sensors/ssp.h     |  5 ++
+ drivers/iio/common/ssp_sensors/ssp_dev.c | 11 ++++
+ drivers/iio/common/ssp_sensors/ssp_spi.c | 71 +++++++++---------------
+ 3 files changed, 41 insertions(+), 46 deletions(-)
+
+-- 
+2.34.1
 
