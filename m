@@ -1,46 +1,44 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 42C9F33CEBB;
-	Thu, 26 Mar 2026 20:22:10 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 9E0A3336882;
+	Thu, 26 Mar 2026 20:23:10 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774556531; cv=none; b=S6wvnv8GidaeyNlX7ukidIwbLzeSXvAh/AcynhfeshmSyMFX617oX4OAxnG4NoA0K2SjBQFhKmnMEc3CcUOsqCXnqAXBXf7oi+A9ym3XqGIqOzWB7y9qIfdsE/TBgxLHY6CR4CKyHL9Y/5iF0smumI+KZOZV/waiImTPXv7Fv5U=
+	t=1774556590; cv=none; b=DtIJA43Zh8YOJj709PazUcPB7HG9n/p5maFG/KAWpQYhNMLKJkoVw2jMfXosSCw2Qtlu/mm/1L37auh35BbkAclTHQnt2aCepOJHYIwv8Iwk+s23bbFfMjmawBjwG2zL2OGZrIz523LDiVRHVUScB76FH9mXNOOd2csLTYc6szo=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774556531; c=relaxed/simple;
-	bh=5bJsGWMV/dZKOnAYV4yBrsthY/VX0YpUGNd2DCyOjGY=;
+	s=arc-20240116; t=1774556590; c=relaxed/simple;
+	bh=6m/H3j8IsrBdv9gezuJcmcavp1CyYx+IhU/TicXb0/4=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=SlsxWhfQUPZKlSxZRHtiMMPtoAcbwYSybYYfvvi58H/Y7yEtx4REhVuF27rgCqflqmKpq7qbwUY1WpvqvamTiljV8M9UozoPZHca/orKWae6wyJCZ/rRnhvzxaSTDSvmFYY+EctykZ0rYaVSibmwHmzdbFvqKIWcgt7giXXf0ds=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=AUiuVs5v; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=abSd9GSBsO4jZB1S9tBHVKd9UGVisbquYAWf1vsbdi8RpapOVyJuSvkxKu2SmF9V8YntzqHzHJjMurOeNWjsBQ7iAQbEBwy7MCnQx7inguSYG7Q2sj/Ph1KythcRdgugrvmnTbYGi2LS3Ok09AjnO/o4m6pK7jQnTDgq/Rh8NBw=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=k2h9WROu; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="AUiuVs5v"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 703C0C19423;
-	Thu, 26 Mar 2026 20:22:06 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="k2h9WROu"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C4F6C116C6;
+	Thu, 26 Mar 2026 20:23:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774556530;
-	bh=5bJsGWMV/dZKOnAYV4yBrsthY/VX0YpUGNd2DCyOjGY=;
+	s=k20201202; t=1774556590;
+	bh=6m/H3j8IsrBdv9gezuJcmcavp1CyYx+IhU/TicXb0/4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=AUiuVs5v96EEx3bjw4n+crXOHVRU+UcaCSlMFIH4OmPu5uLVgRtDLN+nCRYoLi9uI
-	 NG9Qle2KHMVSmXJFjjydGjK08lwmKzMqKRNM+dALFvWPx0Izr/uhLsMFY/bNAEj5nU
-	 MCXvm4Zrr4V7tRNmZ3yY8k0Cy2goQjKyKIzvTHVBiHq7IFrXxLr2Fx9EncrN5CylSl
-	 gt+NprrWcQXPa/9ZoVaOFvFc1W6+KK19Jl2qEEwpsq0c5aDhGQZ5xRe94I7KavuaI4
-	 //9LXvxpcjNP1M3fb+Zg2Q8pQ0hOaJ75Q6jpABtKj8dCGgwTmaoVtkyKRJLefcrJsd
-	 VAWju+8HeHM5A==
-Date: Thu, 26 Mar 2026 20:22:02 +0000
+	b=k2h9WROu7wbO6ds6MrotxbzTGd6t89oZtBQTkKx3dQTALcAtHOO93NMfA6sIOYOAQ
+	 QCw6CdLstJOlHjGDTOdWllRMrNrYa9QvnS6dNCKnO9RbrmdeBz2RvkjQgDAeQU6/oE
+	 YS7MmhmJ1LUHu2rLh5JL+uElupIsFmbofv5BzKWQuhfXQZFL5uS/aE8uZ8PZeJe3A5
+	 BWWF1GbNU+ztE69ABlmhAk1vWlNCVp1mrqjythE6HnFA3gY7ygG/fQ1uSRAq5HkPNi
+	 u1KBR9Ed1xOLCRF/mZHe1Y+dPNkgNRh+scXcqc0ZbVp0k4K71+ijYswb4Dh2sMoYnV
+	 g9CnI+Jeh1VoA==
+Date: Thu, 26 Mar 2026 20:23:02 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Bartosz Golaszewski <brgl@kernel.org>
-Cc: Guenter Roeck <linux@roeck-us.net>, Bartosz Golaszewski
- <bartosz.golaszewski@oss.qualcomm.com>, David Lechner
+To: Aldo Conte <aldocontelk@gmail.com>
+Cc: Javier Carrasco <javier.carrasco.cruz@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, David Lechner
  <dlechner@baylibre.com>, Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>, Andy
- Shevchenko <andy@kernel.org>, linux-kernel@vger.kernel.org,
- linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] hwmon: (ina2xx) drop unused platform data
-Message-ID: <20260326202202.69510f44@jic23-huawei>
-In-Reply-To: <CAMRc=MfYixLYcYz20dv9Afek77b3cqQh7nne93WLOusHnyJKMA@mail.gmail.com>
-References: <20260326-drop-ina2xx-pdata-v1-1-c159437bb2df@oss.qualcomm.com>
-	<a4661a50-1419-458f-a0f9-a9d9f6f59177@roeck-us.net>
-	<fd613c1d-c9c0-464a-ab1f-16bfe20e122d@roeck-us.net>
-	<CAMRc=MfYixLYcYz20dv9Afek77b3cqQh7nne93WLOusHnyJKMA@mail.gmail.com>
+ Shevchenko <andy@kernel.org>
+Subject: Re: [PATCH] iio: light: veml6070: fix veml6070_read() return value
+Message-ID: <20260326202302.17791c6a@jic23-huawei>
+In-Reply-To: <9f81cdd6-7f20-45fe-a431-78d75016f7a0@gmail.com>
+References: <20260325113216.170357-1-aldocontelk@gmail.com>
+	<DHC96AXSNFEZ.121C1XIAZNAMZ@gmail.com>
+	<9f81cdd6-7f20-45fe-a431-78d75016f7a0@gmail.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -48,57 +46,68 @@ List-Id: <linux-iio.vger.kernel.org>
 List-Subscribe: <mailto:linux-iio+subscribe@vger.kernel.org>
 List-Unsubscribe: <mailto:linux-iio+unsubscribe@vger.kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 
-On Thu, 26 Mar 2026 14:24:20 +0100
-Bartosz Golaszewski <brgl@kernel.org> wrote:
+On Thu, 26 Mar 2026 14:14:16 +0100
+Aldo Conte <aldocontelk@gmail.com> wrote:
 
-> On Thu, Mar 26, 2026 at 12:33=E2=80=AFPM Guenter Roeck <linux@roeck-us.ne=
-t> wrote:
-> >
-> > On Thu, Mar 26, 2026 at 04:28:16AM -0700, Guenter Roeck wrote: =20
-> > > Hi,
-> > >
-> > > On Thu, Mar 26, 2026 at 10:30:00AM +0100, Bartosz Golaszewski wrote: =
-=20
-> > > > Nobody defines struct ina2xx_platform_data. Remove platform data su=
-pport
-> > > > from the drivers which still have it (it's effectively dead code) a=
-nd
-> > > > remove the header.
-> > > >
-> > > > Signed-off-by: Bartosz Golaszewski <bartosz.golaszewski@oss.qualcom=
-m.com>
-> > > > Reviewed-by: Andy Shevchenko <andriy.shevchenko@intel.com> =20
-> > >
-> > > Thanks a lot for your patch. Checkpatch complains:
-> > >
-> > > CHECK: Alignment should match open parenthesis
-> > >
-> > > No need to resend, I'll fix that up.
-> > >
-> > > Applied.
-> > > =20
-> >
-> > Ah, no, I can not do that. You also touched drivers/iio/adc/ina2xx-adc.=
-c,
-> > meaning I'll either need an Ack from Jonathan or the patch will need to=
- be
-> > split.
-> >
-> > Guenter =20
->=20
-> Yes, sorry I should have mentioned it. This should go through the
-> hwmon tree with an Ack from iio maintainers.
-Acked-by: Jonathan Cameron <jonathan.cameron@huawei.com>
+> On 3/26/26 00:30, Javier Carrasco wrote:
+> > Hi Aldo,
+> > 
+> > On Wed Mar 25, 2026 at 10:32 PM AEDT, Aldo Conte wrote:  
+> >> veml6070_read() computes the sensor value in ret but
+> >> returns 0 instead of the actual result. This causes
+> >> veml6070_read_raw() to always report 0.
+> >>
+> >> Return the computed value instead of 0.
+> >>
+> >> Running make W=1 returns no errors. I was unable
+> >> to test the patch because I do not have the hardware.
+> >> Found by code inspection.
+> >>  
+> > 
+> > The fix is correct, but not the commit it addresses.
+> > This bug was introduced when the guard to handle the mutex was added.
+> > 
+> > It should be:
+> > 
+> > Fixes: fc38525135dd ("iio: light: veml6070: use guard to handle mutex")
+> >   
+> >> Fixes: bb18885ed823 ("iio: light: veml6070: add support for integration time")
+> >> Signed-off-by: Aldo Conte <aldocontelk@gmail.com>
+> >> ---
+> >>   drivers/iio/light/veml6070.c | 4 +---
+> >>   1 file changed, 1 insertion(+), 3 deletions(-)
+> >>
+> >> diff --git a/drivers/iio/light/veml6070.c b/drivers/iio/light/veml6070.c
+> >> index 6d4483c85f30..74d7246e5225 100644
+> >> --- a/drivers/iio/light/veml6070.c
+> >> +++ b/drivers/iio/light/veml6070.c
+> >> @@ -134,9 +134,7 @@ static int veml6070_read(struct veml6070_data *data)
+> >>   	if (ret < 0)
+> >>   		return ret;
+> >>
+> >> -	ret = (msb << 8) | lsb;
+> >> -
+> >> -	return 0;
+> >> +	return (msb << 8) | lsb;
+> >>   }
+> >>
+> >>   static const struct iio_chan_spec veml6070_channels[] = {  
+> > 
+> > Best regards,
+> > Javier  
+> Hi Javier,Thank you for your correction.
+> I got the wrong result from the grep command.
+> Do I need to do a review, or is Jonathan's correction enough?
+It's applied on my tree so all good - no need to do anything.
 
-I have one patch on this driver queued on this driver, but the patch seems
-to apply just fine on top of that so hopefully the merge will be automatic
-/ trivial.
-https://lore.kernel.org/all/20260315182304.613783-1-git@chuang.cz/
+Thanks,
 
+Jonathan
 
->=20
-> Bart
+> 
+> Thanks,
+> Aldo
 
