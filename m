@@ -1,44 +1,45 @@
 Received: from smtp.kernel.org (aws-us-west-2-korg-mail-1.web.codeaurora.org [10.30.226.201])
 	(using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
 	(No client certificate requested)
-	by smtp.subspace.kernel.org (Postfix) with ESMTPS id AA5D334B662;
-	Thu, 26 Mar 2026 19:57:35 +0000 (UTC)
+	by smtp.subspace.kernel.org (Postfix) with ESMTPS id 6843A1A9FB7;
+	Thu, 26 Mar 2026 20:12:36 +0000 (UTC)
 Authentication-Results: smtp.subspace.kernel.org; arc=none smtp.client-ip=10.30.226.201
 ARC-Seal:i=1; a=rsa-sha256; d=subspace.kernel.org; s=arc-20240116;
-	t=1774555055; cv=none; b=EwIplTUcuSY6IH0O2EQlpCw5auFzeyDoXMM7oDJTdu0MW2C23UUWYC84HM2Dy1NUHtoeu0wwyIq5m0L1zvhvo88H8JqXwp0IUd+gjDHsdZf0gK9XK2PgYcfHM3fbkP7pOljJlJDAY6CccvICrEBJmWEf7m4NahYYxshJD8QnouQ=
+	t=1774555956; cv=none; b=U9Yxu/Rdb9u5fle7ubIQ3o+Add/tV6GT6UkvVVE6Cum3aaZFPj56+3I5RyEIsl4HmsBqo1syuZEPCLVwzJ/s/uC6jkUDKOpOWuZ4txjeewxp+GrWH+jzJOveZHMYSshfbrkQghqQ7EZ7MAaaWYd9z2XvC8Bw0RM/9u4p2L1jPCg=
 ARC-Message-Signature:i=1; a=rsa-sha256; d=subspace.kernel.org;
-	s=arc-20240116; t=1774555055; c=relaxed/simple;
-	bh=JttQr6ja19BA2NJCGUge8nm+gAYUlqCp/BXQRJsn6tk=;
+	s=arc-20240116; t=1774555956; c=relaxed/simple;
+	bh=slBF8u0NbpBSkCbGlWeZUuwlUfMLTy/e44e1DiZ5TwU=;
 	h=Date:From:To:Cc:Subject:Message-ID:In-Reply-To:References:
-	 MIME-Version:Content-Type; b=LCxC59vrNrQ2S+6U1yOSUIbbPujAlOyKBeiR2lcda7gR7ih0skchiVKwbjv4JwJImHo9lwxCbXgkyPNSMOUIiyxEcWPwg3ai4l5lt52/Zw20GempgoW+1rFVQ/PWrb2Ok1gtKjlxnChpS2481XXcpsOZfOpbEM3LDz16c81NKnQ=
-ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=Q4rcr3ic; arc=none smtp.client-ip=10.30.226.201
+	 MIME-Version:Content-Type; b=IMgS9n3q4HoFdIm8rpuZI5wnTu++rXi9yWFQ64BIAY+vf/gaEO93SIEnEK5+qcvBPasAbSiB6qNO56+FDTxcoGS21ToYOx48hTOEyBll1RbNuXJgrvf8BrThKjYxcytwUomdvrdxx7l4o6hlSAP3DHM+6UErJBn+2hO8lcPdkmA=
+ARC-Authentication-Results:i=1; smtp.subspace.kernel.org; dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b=J6EXy7eB; arc=none smtp.client-ip=10.30.226.201
 Authentication-Results: smtp.subspace.kernel.org;
-	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="Q4rcr3ic"
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EB2D5C116C6;
-	Thu, 26 Mar 2026 19:57:29 +0000 (UTC)
+	dkim=pass (2048-bit key) header.d=kernel.org header.i=@kernel.org header.b="J6EXy7eB"
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D2CAC116C6;
+	Thu, 26 Mar 2026 20:12:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=k20201202; t=1774555055;
-	bh=JttQr6ja19BA2NJCGUge8nm+gAYUlqCp/BXQRJsn6tk=;
+	s=k20201202; t=1774555955;
+	bh=slBF8u0NbpBSkCbGlWeZUuwlUfMLTy/e44e1DiZ5TwU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-	b=Q4rcr3icHxtXNIKV8otrzy/M2ts4J7FKyHvTRDMiThEsg3UsHYnmzKAdkZBLAiAVw
-	 eFF4tMoGYttH/02V0fPgQPIa3MhtZJ8b+yceKHAxBRXzsbt1N+72iLv03D+yauctUu
-	 9LT26ZJbFPwjYlnM7WNeCBaos22MgZljhJCRLJKRfGjVy+9rUmnGupu+cy6fXs5B7y
-	 8kuddANncDFk51SIdCZLxdHVk0ima/XP8697+mocmMMikvRi9Hqbr400A6GkIqfXOz
-	 nkUwG1vWUhYvBsSGmWl9Gs6Opcb8SRt/6C3Lw8M1h5hApLzdIb4Wg10GlygF926V2O
-	 Be9VPD/rBkL7Q==
-Date: Thu, 26 Mar 2026 19:57:25 +0000
+	b=J6EXy7eBfqZln2aRps1MplO/koQ+fm7Tw7QQe4ZAyRe2myru9cTOobRSnccVI4LUz
+	 2fE+QxUXE2dcHjs0GS98UasSFA/JzG0U0pVVvmg4zZ56NUIJrG2MRTABRNXiDaiq7P
+	 jKZuobC4yfai0w4gXC3hsXKwC/3r2yZuHju1bLmvxBAjCubpF2HWKMq8NiovMRMJij
+	 VbzupeTpC0pSxIqQlwux7gZckgGADBTz++b1TdMzQIUvnmqN0Gh1qJII94STOidZXy
+	 rcryNMCFZCoPqQuwefqhF5hBrcjMRDjXEzwUPwfm/JydCDPlETx/hygJwGWv7XKon7
+	 YHzpFoL+OluSg==
+Date: Thu, 26 Mar 2026 20:12:25 +0000
 From: Jonathan Cameron <jic23@kernel.org>
-To: Nick Xie <nick@khadas.com>
-Cc: neil.armstrong@linaro.org, khilman@baylibre.com,
- martin.blumenstingl@googlemail.com, jbrunet@baylibre.com,
- dlechner@baylibre.com, andy@kernel.org, krzk+dt@kernel.org,
- robh@kernel.org, conor+dt@kernel.org, linux-iio@vger.kernel.org,
- linux-amlogic@lists.infradead.org, linux-arm-kernel@lists.infradead.org,
- devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 0/4] iio: adc: meson-saradc: add support for Meson S4
-Message-ID: <20260326195725.4be0624a@jic23-huawei>
-In-Reply-To: <20260325070618.81955-1-nick@khadas.com>
-References: <20260325070618.81955-1-nick@khadas.com>
+To: Rodrigo Alencar via B4 Relay
+ <devnull+rodrigo.alencar.analog.com@kernel.org>
+Cc: rodrigo.alencar@analog.com, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-kernel@vger.kernel.org, Lars-Peter
+ Clausen <lars@metafoo.de>, Michael Hennerich
+ <Michael.Hennerich@analog.com>, David Lechner <dlechner@baylibre.com>, Andy
+ Shevchenko <andy@kernel.org>, Rob Herring <robh@kernel.org>, Krzysztof
+ Kozlowski <krzk+dt@kernel.org>, Conor Dooley <conor+dt@kernel.org>
+Subject: Re: [PATCH v2 0/2] ADRF5702/ADRF5703 Digital Attenuator support
+Message-ID: <20260326201225.65b1fa93@jic23-huawei>
+In-Reply-To: <20260326-adrf570x-iio-support-v2-0-b622a17335d0@analog.com>
+References: <20260326-adrf570x-iio-support-v2-0-b622a17335d0@analog.com>
 X-Mailer: Claws Mail 4.4.0 (GTK 3.24.51; x86_64-pc-linux-gnu)
 Precedence: bulk
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -49,50 +50,44 @@ MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 
-On Wed, 25 Mar 2026 15:06:14 +0800
-Nick Xie <nick@khadas.com> wrote:
+On Thu, 26 Mar 2026 18:32:15 +0000
+Rodrigo Alencar via B4 Relay <devnull+rodrigo.alencar.analog.com@kernel.org> wrote:
 
-> This series adds support for the SARADC IP block found in the Amlogic
-> Meson S4 (S905Y4) SoC and enables it for the Khadas VIM1S board to
-> support the onboard ADC 'Function' key.
+> This is a small patch series that adds support for two extra attenuators.
+> Basically, new chip info and device table entries are added into the
+> AD8366 IIO driver.
 > 
-> There are no known hardware differences between the SARADC on the S4
-> and the previous G12A generation. The S4 bindings utilize a fallback
-> to G12A, but a dedicated driver match entry is included to ensure the
-> correct part name is exposed to the userspace ABI.
-> 
-Applied patches 1 and 2 to the togreg branch of iio.git.
-
-> Changes in v3:
-> - Patch 1: Updated the commit message to explicitly explain why the
->   comment regarding the generic fallback was added.
-> - Patch 2: Retained the driver patch and updated the commit message to
->   clarify that the dedicated match entry is kept specifically for
->   userspace ABI naming purposes.
-> - Link to v2: https://lore.kernel.org/all/20260323013408.429701-1-nick@khadas.com/
-> 
+> Signed-off-by: Rodrigo Alencar <rodrigo.alencar@analog.com>
+> ---
 > Changes in v2:
-> - Addressed feedback from Krzysztof Kozlowski:
->   - Updated dt-bindings commit message to explain the hardware compatibility.
->   - Separated the S4 compatible string in the YAML bindings to ensure it
->     correctly falls back to the specific "amlogic,meson-g12a-saradc" rather
->     than the generic "amlogic,meson-saradc".
->   - Updated the S4 SoC dtsi to use the correct G12A fallback.
-> - Added Martin's Reviewed-by tags where appropriate.
-> - Link to v1: https://lore.kernel.org/all/20260228065840.702651-1-nick@khadas.com/
+> - Add more context to the dt-bindings commit message.
+> - Link to v1: https://lore.kernel.org/r/20260325-adrf570x-iio-support-v1-0-9a2685eb2e55@analog.com
+
+Given I want to get this a tiny bit of exposure in next (tomorrow hopefully)
+prior to sending a pull request on the weekend I've applied this now.
+
+Given how near the top of the tree this is and short window I may well
+apply any tags from dt-maintainers etc after applying.
+
+(as background I'm travelling next week so scooping stuff up now)
+
+Thanks,
+
+Jonathan
+
 > 
+> ---
+> Rodrigo Alencar (2):
+>       dt-bindings: iio: amplifiers: ad8366: add adrf5702/3 support
+>       iio: amplifiers: ad8366: add support for adrf5702/3
 > 
-> Nick Xie (4):
->   dt-bindings: iio: adc: amlogic,meson-saradc: add S4 compatible
->   iio: adc: meson-saradc: add support for Meson S4
->   arm64: dts: amlogic: meson-s4: add internal SARADC controller
->   arm64: dts: amlogic: meson-s4-s905y4-khadas-vim1s: add Function key
->     support
+>  .../bindings/iio/amplifiers/adi,ad8366.yaml        |  4 ++++
+>  drivers/iio/amplifiers/Kconfig                     |  2 ++
+>  drivers/iio/amplifiers/ad8366.c                    | 22 ++++++++++++++++++++++
+>  3 files changed, 28 insertions(+)
+> ---
+> base-commit: af980a79bfed43c4a0be12cca786be46f1a0c5e8
+> change-id: 20260325-adrf570x-iio-support-e199418fba40
 > 
->  .../iio/adc/amlogic,meson-saradc.yaml         |  4 ++++
->  .../amlogic/meson-s4-s905y4-khadas-vim1s.dts  | 19 +++++++++++++++++++
->  arch/arm64/boot/dts/amlogic/meson-s4.dtsi     | 14 ++++++++++++++
->  drivers/iio/adc/meson_saradc.c                |  8 ++++++++
->  4 files changed, 45 insertions(+)
-> 
+> Best regards,
 
